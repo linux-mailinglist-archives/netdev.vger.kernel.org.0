@@ -2,435 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 21F9F464575
-	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 04:30:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B25ED464579
+	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 04:32:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346461AbhLADdw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 22:33:52 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:60854 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1346457AbhLADdv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Nov 2021 22:33:51 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=GNwsx/ftSm60AbNlPVu5nGzjW/JWKbSzeBUqa2jTAq8=; b=HNOve7z3JUTdWNpk8OhN2XzS2/
-        8JhwiA0HnZ2cHZjKjyV7/p+R6FniMWRxbKedltpDdRa7N49XFMPmg2T19nH8bXd8EbSejfp/pb9tq
-        XMa/gA/2Ohy89fFSTSLm5BrKrJKdS/8r9aI+ej6hFABAGSL+tZEFnviXiXMMmeIDk7yo=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1msGK7-00FATs-Uy; Wed, 01 Dec 2021 04:30:23 +0100
-Date:   Wed, 1 Dec 2021 04:30:23 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Wells Lu <wellslutw@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, p.zabel@pengutronix.de,
-        wells.lu@sunplus.com, vincent.shih@sunplus.com
-Subject: Re: [PATCH net-next v3 2/2] net: ethernet: Add driver for Sunplus
- SP7021
-Message-ID: <YabsT0/dASvYUH2p@lunn.ch>
-References: <1638266572-5831-1-git-send-email-wellslutw@gmail.com>
- <1638266572-5831-3-git-send-email-wellslutw@gmail.com>
+        id S241570AbhLADgL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 22:36:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38182 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233370AbhLADgK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 22:36:10 -0500
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03E88C061574
+        for <netdev@vger.kernel.org>; Tue, 30 Nov 2021 19:32:51 -0800 (PST)
+Received: by mail-pf1-x433.google.com with SMTP id n85so22841166pfd.10
+        for <netdev@vger.kernel.org>; Tue, 30 Nov 2021 19:32:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CQTl1SrNMBCKPYTErlNsmnZqp5NDlN0J75RgC9/kOQM=;
+        b=XzzegEnm/NtosugWhprIhx6iSW+/Qpq7OP7b0M0W8hSb6YXGOW+CcxCQD45glBvXme
+         SL4IiLlHlcSMn2ePlc/47qU9lffgISNusytJfEtbvl8s/7hLliwnKPIqjKIp62qFJHsd
+         S720QGhSto6EaT0oJa2qbi6cjAgA5Y19Vqv2hmtleo/M+KPazroPI4K0kctGC8ERPjaj
+         0UJdNMHaMAbwVwj/OiEfAK+a0Ls4rY5NSqbutuQ+d0VlXT8BPp7gzLxem0XRG9V5sE5H
+         07SVRnrQR3gfSYI2zH5a+w4+5e++4Q/vhPYVJmAjHH253P8kV+bmGkDAk8BnFZ7Ba56k
+         th5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CQTl1SrNMBCKPYTErlNsmnZqp5NDlN0J75RgC9/kOQM=;
+        b=rAqaZ651RhXHO0kFqD1AWo+GLkEaOjeUmTghjhdhbGXPZnEc1HIvv+CMnGGq/yK1RQ
+         yZV07lsjmCGuvVkmrCJEmzefxZ/NnbKdaEaMLDWG4UuCCb9z9lamV3rlw3My3bJ2F2Uz
+         igbVP6AuL9MQsUrkUb33RLiKPVJpgxBqEWKLLklnlndnBV9NCDOyRg69iZmGQuG+TCLW
+         T5TKUvfE31YzDTktPoNk4MK9yDbfe+ijbQuwEbN1CWRpNuldgZ2cCqfzS62mhWaiYW++
+         BkNrh5bTHPvo85evd9mLaQP7pFn8SpP8dqH/x9EHTdppiYIVXN2w2FzTqTc5+VF8RF//
+         VVTA==
+X-Gm-Message-State: AOAM530Q4kzihFlw0zg69QvNtyi/b+t4yHp1QfEQFxQw6ETxO8Xy9va6
+        Ud12774df4HK67bBI5Enh2s=
+X-Google-Smtp-Source: ABdhPJxcYtQLQSkYzTSu0W5tNOl5PB2d18BKLjiPV0/GQ1yTFj3/eD7DI4ZOnSa+C6B5fPil1+tbfQ==
+X-Received: by 2002:a63:1956:: with SMTP id 22mr2692654pgz.452.1638329570095;
+        Tue, 30 Nov 2021 19:32:50 -0800 (PST)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:8fa3:c6c6:cc36:151])
+        by smtp.gmail.com with ESMTPSA id mv22sm3763028pjb.36.2021.11.30.19.32.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 30 Nov 2021 19:32:49 -0800 (PST)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Menglong Dong <imagedong@tencent.com>
+Subject: [PATCH net-next] Revert "net: snmp: add statistics for tcp small queue check"
+Date:   Tue, 30 Nov 2021 19:32:46 -0800
+Message-Id: <20211201033246.2826224-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.34.0.rc2.393.gf8c9666880-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1638266572-5831-3-git-send-email-wellslutw@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +++ b/drivers/net/ethernet/sunplus/spl2sw_define.h
-> @@ -0,0 +1,301 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +/* Copyright Sunplus Technology Co., Ltd.
-> + *       All rights reserved.
-> + */
-> +
-> +#ifndef __SPL2SW_DEFINE_H__
-> +#define __SPL2SW_DEFINE_H__
-> +
-> +#include <linux/module.h>
-> +#include <linux/errno.h>
-> +#include <linux/types.h>
-> +#include <linux/interrupt.h>
-> +#include <linux/netdevice.h>
-> +#include <linux/etherdevice.h>
-> +#include <linux/skbuff.h>
-> +#include <linux/ethtool.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/phy.h>
-> +#include <linux/mii.h>
-> +#include <linux/io.h>
-> +#include <linux/dma-mapping.h>
-> +#include <linux/of_address.h>
-> +#include <linux/of_mdio.h>
-> +#include <linux/bitfield.h>
+From: Eric Dumazet <edumazet@google.com>
 
-Please put these in the .c file, and only include those that are
-needed in each .c file.
+This reverts commit aeeecb889165617a841e939117f9a8095d0e7d80.
 
-> +int spl2sw_rx_descs_init(struct spl2sw_common *comm)
-> +{
-> +	struct spl2sw_skb_info *rx_skbinfo;
-> +	struct spl2sw_mac_desc *rx_desc;
-> +	struct sk_buff *skb;
-> +	u32 i, j;
-> +
-> +	for (i = 0; i < RX_DESC_QUEUE_NUM; i++) {
-> +		comm->rx_skb_info[i] = kcalloc(comm->rx_desc_num[i], sizeof(*rx_skbinfo),
-> +					       GFP_KERNEL | GFP_DMA);
-> +		if (!comm->rx_skb_info[i])
-> +			goto mem_alloc_fail;
-> +
-> +		rx_skbinfo = comm->rx_skb_info[i];
-> +		rx_desc = comm->rx_desc[i];
-> +		for (j = 0; j < comm->rx_desc_num[i]; j++) {
-> +			skb = __dev_alloc_skb(comm->rx_desc_buff_size, GFP_KERNEL | GFP_DMA);
+The new SNMP variable (TCPSmallQueueFailure) can be incremented
+for good reasons, even on a 100Gbit single TCP_STREAM flow.
 
-I generally don't look to closely at buffer handling in drivers. But
-the __ caught my eye. There is a comment:
+If we really wanted to ease driver debugging [1], this would
+require something more sophisticated.
 
-/* legacy helper around __netdev_alloc_skb() */
+[1] Usually, if a driver is delaying TX completions too much,
+this can lead to stalls in TCP output. Various work arounds
+have been used in the past, like skb_orphan() in ndo_start_xmit().
 
-Since this is legacy, you probably should not be using it. I don't
-know what you should be using though.
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Menglong Dong <imagedong@tencent.com>
+---
+ include/uapi/linux/snmp.h | 1 -
+ net/ipv4/proc.c           | 1 -
+ net/ipv4/tcp_output.c     | 5 +----
+ 3 files changed, 1 insertion(+), 6 deletions(-)
 
-> +static u32 spl2sw_init_netdev(struct platform_device *pdev, int eth_no,
-> +			      struct net_device **r_ndev)
-> +{
-> +	struct net_device *ndev;
-> +	struct spl2sw_mac *mac;
-> +	char *m_addr_name;
-> +	ssize_t otp_l = 0;
-> +	char *otp_v;
-> +	int ret;
-> +
-> +	m_addr_name = (eth_no == 0) ? "mac_addr0" : "mac_addr1";
-> +
-> +	/* Allocate the devices, and also allocate spl2sw_mac,
-> +	 * we can get it by netdev_priv().
-> +	 */
-> +	ndev = devm_alloc_etherdev(&pdev->dev, sizeof(*mac));
-> +	if (!ndev) {
-> +		*r_ndev = NULL;
-> +		return -ENOMEM;
-> +	}
-> +	SET_NETDEV_DEV(ndev, &pdev->dev);
-> +	ndev->netdev_ops = &netdev_ops;
-> +
-> +	mac = netdev_priv(ndev);
-> +	mac->ndev = ndev;
-> +
-> +	/* Get property 'mac-addr0' or 'mac-addr1' from dts. */
-> +	otp_v = spl2sw_otp_read_mac(&pdev->dev, &otp_l, m_addr_name);
-> +	if (otp_l < ETH_ALEN || IS_ERR_OR_NULL(otp_v)) {
-> +		dev_err(&pdev->dev, "OTP mac %s (len = %zd) is invalid, using default!\n",
-> +			m_addr_name, otp_l);
-> +		otp_l = 0;
+diff --git a/include/uapi/linux/snmp.h b/include/uapi/linux/snmp.h
+index e32ec6932e8200fbc9e1f27d00bd43e7b34633d4..904909d020e2c8974128392370540c0ba3af4e15 100644
+--- a/include/uapi/linux/snmp.h
++++ b/include/uapi/linux/snmp.h
+@@ -292,7 +292,6 @@ enum
+ 	LINUX_MIB_TCPDSACKIGNOREDDUBIOUS,	/* TCPDSACKIgnoredDubious */
+ 	LINUX_MIB_TCPMIGRATEREQSUCCESS,		/* TCPMigrateReqSuccess */
+ 	LINUX_MIB_TCPMIGRATEREQFAILURE,		/* TCPMigrateReqFailure */
+-	LINUX_MIB_TCPSMALLQUEUEFAILURE,		/* TCPSmallQueueFailure */
+ 	__LINUX_MIB_MAX
+ };
+ 
+diff --git a/net/ipv4/proc.c b/net/ipv4/proc.c
+index 43b7a77cd6b4588cc10150613cf05154640d679f..f30273afb5399ddf0122e46e36da2ddae720a1c3 100644
+--- a/net/ipv4/proc.c
++++ b/net/ipv4/proc.c
+@@ -297,7 +297,6 @@ static const struct snmp_mib snmp4_net_list[] = {
+ 	SNMP_MIB_ITEM("TCPDSACKIgnoredDubious", LINUX_MIB_TCPDSACKIGNOREDDUBIOUS),
+ 	SNMP_MIB_ITEM("TCPMigrateReqSuccess", LINUX_MIB_TCPMIGRATEREQSUCCESS),
+ 	SNMP_MIB_ITEM("TCPMigrateReqFailure", LINUX_MIB_TCPMIGRATEREQFAILURE),
+-	SNMP_MIB_ITEM("TCPSmallQueueFailure", LINUX_MIB_TCPSMALLQUEUEFAILURE),
+ 	SNMP_MIB_SENTINEL
+ };
+ 
+diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+index c4ab6c8f0c77d32e1c4e7e558a6a0f0aa17a5986..5079832af5c1090917a8fd5dfb1a3025e2d85ae0 100644
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -2524,11 +2524,8 @@ static bool tcp_small_queue_check(struct sock *sk, const struct sk_buff *skb,
+ 		 * test again the condition.
+ 		 */
+ 		smp_mb__after_atomic();
+-		if (refcount_read(&sk->sk_wmem_alloc) > limit) {
+-			NET_INC_STATS(sock_net(sk),
+-				      LINUX_MIB_TCPSMALLQUEUEFAILURE);
++		if (refcount_read(&sk->sk_wmem_alloc) > limit)
+ 			return true;
+-		}
+ 	}
+ 	return false;
+ }
+-- 
+2.34.0.rc2.393.gf8c9666880-goog
 
-This is not actually an error, in that you keep going and use the
-default. So dev_info() would be better, here and the other calls in
-this function.
-
-> +	} else {
-> +		/* Check if MAC address is valid or not. If not, copy from default. */
-> +		ether_addr_copy(mac->mac_addr, otp_v);
-> +
-> +		/* Byte order of Some samples are reversed. Convert byte order here. */
-> +		spl2sw_check_mac_vendor_id_and_convert(mac->mac_addr);
-> +
-> +		if (!is_valid_ether_addr(mac->mac_addr)) {
-> +			dev_err(&pdev->dev, "Invalid mac in OTP[%s] = %pM, use default!\n",
-> +				m_addr_name, mac->mac_addr);
-> +			otp_l = 0;
-> +		}
-> +	}
-> +	if (otp_l != 6) {
-> +		/* MAC address is invalid. Generate one using random number. */
-> +		ether_addr_copy(mac->mac_addr, spl2sw_def_mac_addr);
-> +		mac->mac_addr[3] = get_random_int() % 256;
-> +		mac->mac_addr[4] = get_random_int() % 256;
-> +		mac->mac_addr[5] = get_random_int() % 256;
-> +	}
-> +
-> +	eth_hw_addr_set(ndev, mac->mac_addr);
-> +	dev_info(&pdev->dev, "HW Addr = %pM\n", mac->mac_addr);
-> +
-> +	ret = register_netdev(ndev);
-> +	if (ret) {
-> +		dev_err(&pdev->dev, "Failed to register net device \"%s\"!\n",
-> +			ndev->name);
-> +		free_netdev(ndev);
-> +		*r_ndev = NULL;
-> +		return ret;
-> +	}
-> +	netdev_info(ndev, "Registered net device \"%s\" successfully.\n", ndev->name);
-
-netdev_dbg().
-
-> +	*r_ndev = ndev;
-> +	return 0;
-> +}
-
-> +
-> +static int spl2sw_probe(struct platform_device *pdev)
-> +{
-> +	struct device_node *eth_ports_np;
-> +	struct device_node *port_np;
-> +	struct spl2sw_common *comm;
-> +	struct device_node *phy_np;
-> +	phy_interface_t phy_mode;
-> +	struct net_device *ndev;
-> +	struct spl2sw_mac *mac;
-> +	struct resource *rc;
-> +	int irq, i;
-> +	int ret;
-> +
-> +	if (platform_get_drvdata(pdev))
-> +		return -ENODEV;
-> +
-> +	/* Allocate memory for 'spl2sw_common' area. */
-> +	comm = devm_kzalloc(&pdev->dev, sizeof(*comm), GFP_KERNEL);
-> +	if (!comm)
-> +		return -ENOMEM;
-> +	comm->pdev = pdev;
-> +
-> +	spin_lock_init(&comm->rx_lock);
-> +	spin_lock_init(&comm->tx_lock);
-> +	spin_lock_init(&comm->mdio_lock);
-> +
-> +	/* Get memory resoruce "emac" from dts. */
-
-resource
-
-> +	/* Enable clock. */
-> +	clk_prepare_enable(comm->clk);
-> +	udelay(1);
-> +
-> +	reset_control_assert(comm->rstc);
-> +	udelay(1);
-> +	reset_control_deassert(comm->rstc);
-> +	udelay(1);
-> +
-> +	/* Get child node ethernet-ports. */
-> +	eth_ports_np = of_get_child_by_name(pdev->dev.of_node, "ethernet-ports");
-> +	if (!eth_ports_np) {
-> +		dev_err(&pdev->dev, "No ethernet-ports child node found!\n");
-
-You should disable the clock before returning.
-
-> +		return -ENODEV;
-> +	}
-> +
-> +	for (i = 0; i < MAX_NETDEV_NUM; i++) {
-> +		/* Get port@i of node ethernet-ports. */
-> +		port_np = spl2sw_get_eth_child_node(eth_ports_np, i);
-> +		if (!port_np)
-> +			continue;
-> +
-> +		/* Get phy-mode. */
-> +		if (of_get_phy_mode(port_np, &phy_mode)) {
-> +			dev_err(&pdev->dev, "Failed to get phy-mode property of port@%d!\n",
-> +				i);
-> +			continue;
-> +		}
-> +
-> +		/* Get phy-handle. */
-> +		phy_np = of_parse_phandle(port_np, "phy-handle", 0);
-> +		if (!phy_np) {
-> +			dev_err(&pdev->dev, "Failed to get phy-handle property of port@%d!\n",
-> +				i);
-> +			continue;
-> +		}
-> +
-> +		/* Get address of phy. */
-> +		if (of_property_read_u32(phy_np, "reg", &comm->phy_addr[i])) {
-
-This does not appear to be used.
-
-> +			dev_err(&pdev->dev, "Failed to get reg property of phy node!\n");
-> +			continue;
-> +		}
-> +
-> +		if (comm->phy_addr[i] >= PHY_MAX_ADDR - 1) {
-> +			dev_err(&pdev->dev, "Invalid phy address (reg = <%d>)!\n",
-> +				comm->phy_addr[i]);
-> +			continue;
-> +		}
-
-phylib should validate this.
-
-> +
-> +		if (!comm->mdio_node) {
-> +			comm->mdio_node = of_get_parent(phy_np);
-> +			if (!comm->mdio_node) {
-> +				dev_err(&pdev->dev, "Failed to get mdio_node!\n");
-> +				return -ENODATA;
-> +			}
-> +		}
-
-This does not look correct. The PHY could be on any MDIO bus. It does
-not have to be the bus of this device. There should not be any need to
-follow the pointer. 
-
-> +static int spl2sw_bit_pos_to_port_num(int n)
-> +{
-> +	int i;
-> +
-> +	for (i = 0; i < MAX_NETDEV_NUM; i++) {
-> +		if (n & 1)
-> +			break;
-> +		n >>= 1;
-> +	}
-> +	return i;
-
-Look at the ffs() helper. But since MAX_NETDEV_NUM is two, the
-compiler might be smart enough to unroll the loop and just use simple
-logic operations which could be faster.
-
-> +void spl2sw_mac_addr_add(struct spl2sw_mac *mac)
-> +{
-> +	struct spl2sw_common *comm = mac->comm;
-> +	u32 reg;
-> +
-> +	/* Write 6-octet MAC address. */
-> +	writel((mac->mac_addr[0] << 0) + (mac->mac_addr[1] << 8),
-> +	       comm->l2sw_reg_base + L2SW_W_MAC_15_0);
-> +	writel((mac->mac_addr[2] << 0) + (mac->mac_addr[3] << 8) +
-> +	       (mac->mac_addr[4] << 16) + (mac->mac_addr[5] << 24),
-> +	       comm->l2sw_reg_base + L2SW_W_MAC_47_16);
-> +
-> +	/* Set learn port = cpu_port, aging = 1 */
-> +	reg = MAC_W_CPU_PORT_0 | FIELD_PREP(MAC_W_VID, mac->vlan_id) |
-> +	      FIELD_PREP(MAC_W_AGE, 1) | MAC_W_MAC_CMD;
-> +	writel(reg, comm->l2sw_reg_base + L2SW_WT_MAC_AD0);
-> +
-> +	/* Wait for completing. */
-> +	do {
-> +		reg = readl(comm->l2sw_reg_base + L2SW_WT_MAC_AD0);
-> +		ndelay(10);
-> +		netdev_dbg(mac->ndev, "wt_mac_ad0 = %08x\n", reg);
-> +	} while (!(reg & MAC_W_MAC_DONE));
-
-linux/iopoll.h 
-
-
-> +
-> +	netdev_dbg(mac->ndev, "mac_ad0 = %08x, mac_ad = %08x%04x\n",
-> +		   readl(comm->l2sw_reg_base + L2SW_WT_MAC_AD0),
-> +		   (u32)FIELD_GET(MAC_W_MAC_47_16,
-> +		   readl(comm->l2sw_reg_base + L2SW_W_MAC_47_16)),
-> +		   (u32)FIELD_GET(MAC_W_MAC_15_0,
-> +		   readl(comm->l2sw_reg_base + L2SW_W_MAC_15_0)));
-> +}
-> +
-> +void spl2sw_mac_addr_del(struct spl2sw_mac *mac)
-> +{
-> +	struct spl2sw_common *comm = mac->comm;
-> +	u32 reg;
-> +
-> +	/* Write 6-octet MAC address. */
-> +	writel((mac->mac_addr[0] << 0) + (mac->mac_addr[1] << 8),
-> +	       comm->l2sw_reg_base + L2SW_W_MAC_15_0);
-> +	writel((mac->mac_addr[2] << 0) + (mac->mac_addr[3] << 8) +
-> +	       (mac->mac_addr[4] << 16) + (mac->mac_addr[5] << 24),
-> +	       comm->l2sw_reg_base + L2SW_W_MAC_47_16);
-> +
-> +	/* Set learn port = lan_port0 and aging = 0
-> +	 * to wipe (age) out the entry.
-> +	 */
-> +	reg = MAC_W_LAN_PORT_0 | FIELD_PREP(MAC_W_VID, mac->vlan_id) | MAC_W_MAC_CMD;
-> +	writel(reg, comm->l2sw_reg_base + L2SW_WT_MAC_AD0);
-> +
-> +	/* Wait for completing. */
-> +	do {
-> +		reg = readl(comm->l2sw_reg_base + L2SW_WT_MAC_AD0);
-> +		ndelay(10);
-> +		netdev_dbg(mac->ndev, "wt_mac_ad0 = %08x\n", reg);
-> +	} while (!(reg & MAC_W_MAC_DONE));
-
-Here as well. Any where you need to wait for some sort of completion,
-it is best you use these helpers. They will also do a timeout, just in
-case the hardware dies.
-
-> +static int spl2sw_mii_read(struct mii_bus *bus, int addr, int regnum)
-> +{
-> +	struct spl2sw_common *comm = bus->priv;
-> +	int ret;
-> +
-> +	if (regnum & MII_ADDR_C45)
-> +		return -EOPNOTSUPP;
-> +
-> +	ret = spl2sw_mdio_access(comm, SPL2SW_MDIO_READ_CMD, addr, regnum, 0);
-> +	if (ret < 0)
-> +		return -EOPNOTSUPP;
-
-spl2sw_mdio_access() returns an error code, -ETIMEDOUT. So us it.
-
-> +u32 spl2sw_mdio_init(struct spl2sw_common *comm)
-> +{
-> +	struct mii_bus *mii_bus;
-> +	int ret;
-> +
-> +	mii_bus = devm_mdiobus_alloc(&comm->pdev->dev);
-> +	if (!mii_bus)
-> +		return -ENOMEM;
-> +
-> +	mii_bus->name = "sunplus_mii_bus";
-> +	mii_bus->parent = &comm->pdev->dev;
-> +	mii_bus->priv = comm;
-> +	mii_bus->read = spl2sw_mii_read;
-> +	mii_bus->write = spl2sw_mii_write;
-> +	snprintf(mii_bus->id, MII_BUS_ID_SIZE, "%s-mii", dev_name(&comm->pdev->dev));
-> +
-> +	ret = of_mdiobus_register(mii_bus, comm->mdio_node);
-
-Here you should be looking into the device tree to find the mdio node
-and passing it.
-
-> +	if (ret) {
-> +		dev_err(&comm->pdev->dev, "Failed to register mdiobus!\n");
-> +		return ret;
-> +	}
-> +
-> +	comm->mii_bus = mii_bus;
-> +	return ret;
-> +}
-
-> +int spl2sw_phy_connect(struct spl2sw_common *comm)
-> +{
-> +	struct phy_device *phydev;
-> +	struct net_device *ndev;
-> +	struct spl2sw_mac *mac;
-> +	int i;
-> +
-> +	for (i = 0; i < MAX_NETDEV_NUM; i++)
-> +		if (comm->ndev[i]) {
-> +			ndev = comm->ndev[i];
-> +			mac = netdev_priv(ndev);
-> +			phydev = of_phy_connect(ndev, mac->phy_node, spl2sw_mii_link_change,
-> +						0, mac->phy_mode);
-> +			if (!phydev)
-> +				return -ENODEV;
-> +
-> +			linkmode_copy(phydev->advertising, phydev->supported);
-
-There should not be any need to do this.
-
-> +
-> +			/* Enable polling mode */
-> +			phydev->irq = PHY_POLL;
-
-And that should be the default, so no need to set it.
-
-> +		}
-> +
-> +	return 0;
-> +}
-
-This is looking a lot better.
-
-     Andrew
