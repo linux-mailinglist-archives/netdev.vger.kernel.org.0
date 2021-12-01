@@ -2,132 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 78DF1464BA2
-	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 11:29:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A298464C01
+	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 11:51:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348669AbhLAKdA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Dec 2021 05:33:00 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:36870 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348628AbhLAKc7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 05:32:59 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D040EB81E29;
-        Wed,  1 Dec 2021 10:29:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEBF0C53FCC;
-        Wed,  1 Dec 2021 10:29:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638354576;
-        bh=AETMMOBDPGn+QVfejghVAmHwWjI/7/bsub2Dx0V2n1k=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=kKgNhAT9qH3X2bUtpCTaa4PNttI8HZMuvoKs8aX6pG8r4gCGfx5dMJ9/G5IojdnF/
-         GWHDgbTR/TDyRo3f6cbXyTjzYQTqgN6bZFr7zUK4d1hxBtNdgteSj5cRFLCLRXJNwA
-         /ZJBUwyY1+upcObJyXqZifHGIEweRgPdO0F8Y3T6KqKa2cwoC7yaVbNIzJmO/KPVqC
-         Uw5O8sCg4RIjbd1HoZdVa5MVqIq8gLT59onNjcqsJA03dXd2pBHV2IYeRnMbrusKwD
-         0qqD0LWz+0TAsaaIOLHoNwoYmhnVIx69NoL8WVdNd+jyMtlh++pQuhxYNK2FzhE/Y3
-         eELnK/kXRIHDg==
-Date:   Wed, 1 Dec 2021 12:29:32 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Bixuan Cui <cuibixuan@linux.alibaba.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>
-Subject: Re: [PATCH -next] bpf: Add oversize check before call kvmalloc()
-Message-ID: <YadOjJXMTjP85MQx@unreal>
-References: <1638027102-22686-1-git-send-email-cuibixuan@linux.alibaba.com>
- <CAEf4BzbV=s+C=dFS5YfAdJhiBv+3ocanaZ-NNHoPz8RzHhGCbQ@mail.gmail.com>
+        id S242437AbhLAKyp convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 1 Dec 2021 05:54:45 -0500
+Received: from eu-smtp-delivery-151.mimecast.com ([185.58.85.151]:27301 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229793AbhLAKyo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 05:54:44 -0500
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-234-4a_ior_BOZqj3sK0_ELJ2g-1; Wed, 01 Dec 2021 10:51:21 +0000
+X-MC-Unique: 4a_ior_BOZqj3sK0_ELJ2g-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.26; Wed, 1 Dec 2021 10:51:21 +0000
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.026; Wed, 1 Dec 2021 10:51:21 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Eric Dumazet' <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        "Andrew Cooper" <andrew.cooper3@citrix.com>
+Subject: RE: [PATCH v2] x86/csum: rewrite csum_partial()
+Thread-Topic: [PATCH v2] x86/csum: rewrite csum_partial()
+Thread-Index: AQHX1+EjTNUIwu5klUmT0ItnijFgT6wdiFww
+Date:   Wed, 1 Dec 2021 10:51:20 +0000
+Message-ID: <cd7a346d37174ae7b90d149d5b8f3d4e@AcuMS.aculab.com>
+References: <20211112161950.528886-1-eric.dumazet@gmail.com>
+In-Reply-To: <20211112161950.528886-1-eric.dumazet@gmail.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzbV=s+C=dFS5YfAdJhiBv+3ocanaZ-NNHoPz8RzHhGCbQ@mail.gmail.com>
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 30, 2021 at 02:53:16PM -0800, Andrii Nakryiko wrote:
-> On Sat, Nov 27, 2021 at 7:32 AM Bixuan Cui <cuibixuan@linux.alibaba.com> wrote:
-> >
-> > Commit 7661809d493b ("mm: don't allow oversized kvmalloc() calls") add
-> > the oversize check. When the allocation is larger than what kvmalloc()
-> > supports, the following warning triggered:
-> >
-> > WARNING: CPU: 1 PID: 372 at mm/util.c:597 kvmalloc_node+0x111/0x120
-> > mm/util.c:597
-> > Modules linked in:
-> > CPU: 1 PID: 372 Comm: syz-executor.4 Not tainted 5.15.0-syzkaller #0
-> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
-> > Google 01/01/2011
-> > RIP: 0010:kvmalloc_node+0x111/0x120 mm/util.c:597
-> > Code: 01 00 00 00 4c 89 e7 e8 7d f7 0c 00 49 89 c5 e9 69 ff ff ff e8 60
-> > 20 d1 ff 41 89 ed 41 81 cd 00 20 01 00 eb 95 e8 4f 20 d1 ff <0f> 0b e9
-> > 4c ff ff ff 0f 1f 84 00 00 00 00 00 55 48 89 fd 53 e8 36
-> > RSP: 0018:ffffc90002bf7c98 EFLAGS: 00010216
-> > RAX: 00000000000000ec RBX: 1ffff9200057ef9f RCX: ffffc9000ac63000
-> > RDX: 0000000000040000 RSI: ffffffff81a6a621 RDI: 0000000000000003
-> > RBP: 0000000000102cc0 R08: 000000007fffffff R09: 00000000ffffffff
-> > R10: ffffffff81a6a5de R11: 0000000000000000 R12: 00000000ffff9aaa
-> > R13: 0000000000000000 R14: 00000000ffffffff R15: 0000000000000000
-> > FS:  00007f05f2573700(0000) GS:ffff8880b9d00000(0000)
-> > knlGS:0000000000000000
-> > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > CR2: 0000001b2f424000 CR3: 0000000027d2c000 CR4: 00000000003506e0
-> > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> > Call Trace:
-> >  <TASK>
-> >  kvmalloc include/linux/slab.h:741 [inline]
-> >  map_lookup_elem kernel/bpf/syscall.c:1090 [inline]
-> >  __sys_bpf+0x3a5b/0x5f00 kernel/bpf/syscall.c:4603
-> >  __do_sys_bpf kernel/bpf/syscall.c:4722 [inline]
-> >  __se_sys_bpf kernel/bpf/syscall.c:4720 [inline]
-> >  __x64_sys_bpf+0x75/0xb0 kernel/bpf/syscall.c:4720
-> >  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-> >  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
-> >  entry_SYSCALL_64_after_hwframe+0x44/0xae
-> >
-> > The type of 'value_size' is u32, its value may exceed INT_MAX.
-> >
-> > Reported-by: syzbot+cecf5b7071a0dfb76530@syzkaller.appspotmail.com
-> > Signed-off-by: Bixuan Cui <cuibixuan@linux.alibaba.com>
-> > ---
-> >  kernel/bpf/syscall.c | 4 ++++
-> >  1 file changed, 4 insertions(+)
-> >
-> > diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-> > index 1033ee8..f5bc380 100644
-> > --- a/kernel/bpf/syscall.c
-> > +++ b/kernel/bpf/syscall.c
-> > @@ -1094,6 +1094,10 @@ static int map_lookup_elem(union bpf_attr *attr)
-> >         }
-> >
-> >         value_size = bpf_map_value_size(map);
-> > +       if (value_size > INT_MAX) {
-> > +               err = -EINVAL;
+From: Eric Dumazet
+> Sent: 12 November 2021 16:20
 > 
-> -E2BIG makes a bit more sense in this scenario?
+> With more NIC supporting CHECKSUM_COMPLETE, and IPv6 being widely used.
+> csum_partial() is heavily used with small amount of bytes,
+> and is consuming many cycles.
+> 
+> IPv6 header size for instance is 40 bytes.
+> 
+> Another thing to consider is that NET_IP_ALIGN is 0 on x86,
+> meaning that network headers are not word-aligned, unless
+> the driver forces this.
+> 
+> This means that csum_partial() fetches one u16
+> to 'align the buffer', then perform three u64 additions
+> with carry in a loop, then a remaining u32, then a remaining u16.
+> 
+> With this new version, we perform a loop only for the 64 bytes blocks,
+> then the remaining is bisected.
+> 
 
-kvmalloc should be fixed do not print WARN_ON() on attempts to provide
-such allocations sizes.
+I missed this going through, a couple of comments.
+I've removed all the old lines from the patch to make it readable.
 
-We are in RDMA, and everyone who receives this size as an input from the
-user, seeing this type of error.
+> +__wsum csum_partial(const void *buff, int len, __wsum sum)
+>  {
+> +	u64 temp64 = (__force u64)sum;
+> +	unsigned odd, result;
+> 
+>  	odd = 1 & (unsigned long) buff;
+>  	if (unlikely(odd)) {
+> +		if (unlikely(len == 0))
+> +			return sum;
+> +		temp64 += (*(unsigned char *)buff << 8);
+>  		len--;
+>  		buff++;
+>  	}
 
-Thanks
+Do you need to special case an odd buffer address?
+You are doing misaligned reads for other (more likely)
+misaligned addresses so optimising for odd buffer addresses
+is rather pointless.
+If misaligned reads do cost an extra clock then it might
+be worth detecting the more likely '4n+2' alignment of a receive
+buffer and aligning that to 8n.
 
 > 
-> > +               goto err_put;
-> > +       }
-> >
-> >         err = -ENOMEM;
-> >         value = kvmalloc(value_size, GFP_USER | __GFP_NOWARN);
-> > --
-> > 1.8.3.1
-> >
+> +	while (unlikely(len >= 64)) {
+> +		asm("addq 0*8(%[src]),%[res]\n\t"
+> +		    "adcq 1*8(%[src]),%[res]\n\t"
+> +		    "adcq 2*8(%[src]),%[res]\n\t"
+> +		    "adcq 3*8(%[src]),%[res]\n\t"
+> +		    "adcq 4*8(%[src]),%[res]\n\t"
+> +		    "adcq 5*8(%[src]),%[res]\n\t"
+> +		    "adcq 6*8(%[src]),%[res]\n\t"
+> +		    "adcq 7*8(%[src]),%[res]\n\t"
+> +		    "adcq $0,%[res]"
+> +		    : [res] "+r" (temp64)
+> +		    : [src] "r" (buff)
+> +		    : "memory");
+> +		buff += 64;
+> +		len -= 64;
+> +	}
+> +
+> +	if (len & 32) {
+> +		asm("addq 0*8(%[src]),%[res]\n\t"
+> +		    "adcq 1*8(%[src]),%[res]\n\t"
+> +		    "adcq 2*8(%[src]),%[res]\n\t"
+> +		    "adcq 3*8(%[src]),%[res]\n\t"
+> +		    "adcq $0,%[res]"
+> +			: [res] "+r" (temp64)
+> +			: [src] "r" (buff)
+> +			: "memory");
+> +		buff += 32;
+> +	}
+> +	if (len & 16) {
+> +		asm("addq 0*8(%[src]),%[res]\n\t"
+> +		    "adcq 1*8(%[src]),%[res]\n\t"
+> +		    "adcq $0,%[res]"
+> +			: [res] "+r" (temp64)
+> +			: [src] "r" (buff)
+> +			: "memory");
+> +		buff += 16;
+> +	}
+> +	if (len & 8) {
+> +		asm("addq 0*8(%[src]),%[res]\n\t"
+> +		    "adcq $0,%[res]"
+> +			: [res] "+r" (temp64)
+> +			: [src] "r" (buff)
+> +			: "memory");
+> +		buff += 8;
+> +	}
+
+I suspect it is worth doing:
+	switch (len & 24) {
+	}
+and separately coding the 24 byte case
+to reduce the number of 'adc $0,%reg'.
+Although writing the conditions by hand might needed to get
+the likely code first (whichever length it is).
+
+> +	if (len & 7) {
+> +		unsigned int shift = (8 - (len & 7)) * 8;
+> +		unsigned long trail;
+> 
+> +		trail = (load_unaligned_zeropad(buff) << shift) >> shift;
+> 
+> +		asm("addq %[trail],%[res]\n\t"
+> +		    "adcq $0,%[res]"
+> +			: [res] "+r" (temp64)
+> +			: [trail] "r" (trail));
+>  	}
+
+If you do the 'len & 7' test at the top the 56bit 'trail' value
+can just be added to the 32bit 'sum' input.
+Just:
+		temp64 += *(u64 *)(buff + len - 8) << shift;
+would do - except it can fall off the beginning of a page :-(
+Maybe:
+		temp64 += load_unaligned_zeropad(buff + (len & ~7)) & (~0ull >> shift);
+Generating the mask reduces the register dependency chain length.
+
+Although I remember trying to do something like this and finding
+it was actually slower than the old code.
+The problem is likely to be the long register chain generating 'shift'
+compared to the latency of multiple memory reads that you only get once.
+So potentially a 'switch (len & 6)' followed by a final test for odd
+length may in fact be better - who knows.
+
+> +	result = add32_with_carry(temp64 >> 32, temp64 & 0xffffffff);
+>  	if (unlikely(odd)) {
+>  		result = from32to16(result);
+>  		result = ((result >> 8) & 0xff) | ((result & 0xff) << 8);
+>  	}
+> +	return (__force __wsum)result;
+>  }
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
+
