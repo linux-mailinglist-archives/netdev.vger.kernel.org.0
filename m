@@ -2,120 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CFF1146549C
-	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 19:00:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D0F0C46549E
+	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 19:00:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352255AbhLASDi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Dec 2021 13:03:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38270 "EHLO
+        id S1351955AbhLASD6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Dec 2021 13:03:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352217AbhLASDf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 13:03:35 -0500
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2EA9C061757;
-        Wed,  1 Dec 2021 10:00:09 -0800 (PST)
-Received: by mail-yb1-xb2a.google.com with SMTP id v203so65941798ybe.6;
-        Wed, 01 Dec 2021 10:00:09 -0800 (PST)
+        with ESMTP id S244442AbhLASDy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 13:03:54 -0500
+Received: from mail-ot1-x332.google.com (mail-ot1-x332.google.com [IPv6:2607:f8b0:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD0C6C06175A;
+        Wed,  1 Dec 2021 10:00:28 -0800 (PST)
+Received: by mail-ot1-x332.google.com with SMTP id a23-20020a9d4717000000b0056c15d6d0caso36330463otf.12;
+        Wed, 01 Dec 2021 10:00:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HqmiQnDRTjj/jEX9dCcjQmmJFmf4eT5WJK3sC9iS/1U=;
-        b=b25MRS025CkdbGsudPrm5ePOwOP3Ej2cgctY29rzprzVbIXuToUk6/I6OnVd2zQAWr
-         XN16mBQmEbzU1IMczWLTlrhtXe1xJuSkJe4I+PPdUJcgELAMsMzPbv5U62K26qpJzBEk
-         I2l90aqQ6xu6ulnsCsaS4sRoON1CeP5IVUEWlqK0FTUN8VCV9GO8zVvsevG07f2lfsJO
-         1JyxqjbPzbPngZQCpVrXmzTr2flgnQ9grdGM6KBqSGn4Hdbqorcp4d4Gy5TBb3fEueah
-         lwEVoNH3u1N+piuK65drK3sZQ619EWg2Wh2XrOhr7zksuipF0YqEk+tAJA3f0zTu5f6w
-         08tA==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=nNVvEOq93JWamao+YcMq3xOX4iABQzAW3EEbbTihUNM=;
+        b=VH7t2cbohM97lC3HGUQUJ817xIGaAfG2iELCzfbTbuOqaz/TmthSdNbW4quNai1twf
+         w7m+dj7tn2ct3BM3wBi84n3EnKJoxy67iFmsfLE2nHRs+FHPBpa2rpQd0btc759YeglG
+         J9FAkCoiQgSOIyFU5tGV7Qh68U4KcLsseGxCG3XBpN31Stj/J9i7OTgMTfmVzEqUdqHR
+         MI4SzLH18Ad+QAZuYwup5gNIlorvUK4rjfT+m8ipl2igcJ+yN6iJ3mbLcgvXnDu9iD5u
+         +61xMmkN9dSjqzdpXjOSErGIDURdGldKNcV12ZU6OppNYVGXOHtINTHmaPMl4+4e5gei
+         BEFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HqmiQnDRTjj/jEX9dCcjQmmJFmf4eT5WJK3sC9iS/1U=;
-        b=VFR6Z4H4V8LOTbP6OHBzInPl0rDSmFDEKkhGL4U2OppROlMCQ7/P7q/VFtNMuE4Lq5
-         px0EdCJCxZ3DZVwse3CpkF4t90q+YjHuTYuymVSsjDKGzpBVVQsfshx9e/SaFZcSh0Fa
-         t2YUgepEJIC3M0HpZcK6qgVLEi9IwbVB9Y/GrwsGr2Tc7ZNatspnzt80CNU0R5rxBh8k
-         PzgzSX+aLN5SKjQfVqUP+8WtYli0Bkdfx5vbXPpCkgAAGVAuEhjr/el6cMXchjyhINZT
-         Zp7Z+RDAOW71yccSKuRxarAhwcnI0lRdzha2xpq5Qu+biYUmKX1tNrjD1dI7SXXfFM1s
-         W3lw==
-X-Gm-Message-State: AOAM531o1OjkfCLQrPuq7szv3OYpgAVeQAsuSYi7JKxIOKoLneN1tGQX
-        6g4pyIEizXqEVMcnHGcwmPYDiOQcITYHojU19dU=
-X-Google-Smtp-Source: ABdhPJyggSwGuRRc6sc9wL5n4bByxZeHYKQWeYMY48A70Zuhc0n1G+2RI61BXXI9VGbRu8GM9kj0oF/yRGQRLW0m0A8=
-X-Received: by 2002:a25:2c92:: with SMTP id s140mr8849957ybs.308.1638381608888;
- Wed, 01 Dec 2021 10:00:08 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=nNVvEOq93JWamao+YcMq3xOX4iABQzAW3EEbbTihUNM=;
+        b=P5A+weGNE4Y6cXY5i2pflWoYyuCxzyjdwBNG5MXArnzA7k61BhFN+b131Qrrgcodqx
+         j9J0SZQ0y3Ov/VIKEcBCi10VMrKRl3yNTNEJNQAgjBpqkYvUE7pMrjpuiXY1In5QM/JJ
+         ZefDcim02yJVN8rOp8WiN8bS4NuOdwkM8hVTfmkwR6kf7FAFKT6gFHkYHFaeH0BYnAQn
+         35nT4Q/a+uAAH0+cDWwb62c+N6O0geFHHmDA5DP6YguOiHcY0W39nBSCN/dIv2DNCva+
+         x2nHbeFM7BX8cBECVAQ7lGL/8avlC5LjJ3/mLnKwP2qx78XDO1iCz0FYjBd1w2XjEdIv
+         Ro/w==
+X-Gm-Message-State: AOAM533b689KbneUw89CfsR7UJPT8raG4KSgvrmvMWtnAeib8iw93MsR
+        nalfN7tVtSLLqXo9G+KZYL0=
+X-Google-Smtp-Source: ABdhPJz9EYrKK0WLxoTC42FdvhUK7xBT4nj/WMOlpSca1NcyLdWBMq2Qi93lN43PUxYRX2w7EER9cg==
+X-Received: by 2002:a9d:2243:: with SMTP id o61mr7032643ota.126.1638381628140;
+        Wed, 01 Dec 2021 10:00:28 -0800 (PST)
+Received: from [172.16.0.2] ([8.48.134.30])
+        by smtp.googlemail.com with ESMTPSA id j10sm139420ooq.5.2021.12.01.10.00.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 01 Dec 2021 10:00:27 -0800 (PST)
+Message-ID: <42b5ebde-2a36-3956-d6dd-bd50e18ff6dc@gmail.com>
+Date:   Wed, 1 Dec 2021 11:00:26 -0700
 MIME-Version: 1.0
-References: <20211118112455.475349-1-jolsa@kernel.org> <20211118112455.475349-7-jolsa@kernel.org>
- <CAEf4Bza0UZv6EFdELpg30o=67-Zzs6ggZext4u40+if9a5oQDg@mail.gmail.com>
- <YaPFEpAqIREeUMU7@krava> <CAEf4BzbauHaDDJvGpx4oCRddd4KWpb4PkxUiUJvx-CXqEN2sdQ@mail.gmail.com>
- <CAADnVQ+6iMkRh3YLjJpyoLtqgzU2Fwhdhbv3ue7ObWWoZTmFmw@mail.gmail.com>
-In-Reply-To: <CAADnVQ+6iMkRh3YLjJpyoLtqgzU2Fwhdhbv3ue7ObWWoZTmFmw@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 1 Dec 2021 09:59:57 -0800
-Message-ID: <CAEf4BzabQ9YU=d-F0ypA6W73YD534cAb2SkAkwYuyD6dk71LSQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 06/29] bpf: Add bpf_arg/bpf_ret_value helpers for
- tracing programs
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Jiri Olsa <jolsa@redhat.com>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.3.1
+Subject: Re: [PATCH net v3] selftests/fib_tests: Rework fib_rp_filter_test()
+Content-Language: en-US
+To:     Peilin Ye <yepeilin.cs@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Shuah Khan <shuah@kernel.org>
+Cc:     Peilin Ye <peilin.ye@bytedance.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Hangbin Liu <liuhangbin@gmail.com>, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20211130004905.4146-1-yepeilin.cs@gmail.com>
+ <20211201004720.6357-1-yepeilin.cs@gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <20211201004720.6357-1-yepeilin.cs@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 1, 2021 at 9:37 AM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Tue, Nov 30, 2021 at 11:13 PM Andrii Nakryiko
-> <andrii.nakryiko@gmail.com> wrote:
-> >
-> > Hm... I'd actually try to keep kprobe BTF-free. We have fentry for
-> > cases where BTF is present and the function is simple enough (like <=6
-> > args, etc). Kprobe is an escape hatch mechanism when all the BTF
-> > fanciness just gets in the way (retsnoop being a primary example from
-> > my side). What I meant here was that bpf_get_arg(int n) would read
-> > correct fields from pt_regs that map to first N arguments passed in
-> > the registers. What we currently have with PT_REGS_PARM macros in
-> > bpf_tracing.h, but with a proper unified BPF helper.
->
-> and these macros are arch specific.
-> which means that it won't be a trivial patch to add bpf_get_arg()
-> support for kprobes.
+On 11/30/21 5:47 PM, Peilin Ye wrote:
+> From: Peilin Ye <peilin.ye@bytedance.com>
+> 
+> Currently rp_filter tests in fib_tests.sh:fib_rp_filter_test() are
+> failing.  ping sockets are bound to dummy1 using the "-I" option
+> (SO_BINDTODEVICE), but socket lookup is failing when receiving ping
+> replies, since the routing table thinks they belong to dummy0.
+> 
+> For example, suppose ping is using a SOCK_RAW socket for ICMP messages.
+> When receiving ping replies, in __raw_v4_lookup(), sk->sk_bound_dev_if
+> is 3 (dummy1), but dif (skb_rtable(skb)->rt_iif) says 2 (dummy0), so the
+> raw_sk_bound_dev_eq() check fails.  Similar things happen in
+> ping_lookup() for SOCK_DGRAM sockets.
+> 
+> These tests used to pass due to a bug [1] in iputils, where "ping -I"
+> actually did not bind ICMP message sockets to device.  The bug has been
+> fixed by iputils commit f455fee41c07 ("ping: also bind the ICMP socket
+> to the specific device") in 2016, which is why our rp_filter tests
+> started to fail.  See [2] .
+> 
+> Fixing the tests while keeping everything in one netns turns out to be
+> nontrivial.  Rework the tests and build the following topology:
+> 
+>  ┌─────────────────────────────┐    ┌─────────────────────────────┐
+>  │  network namespace 1 (ns1)  │    │  network namespace 2 (ns2)  │
+>  │                             │    │                             │
+>  │  ┌────┐     ┌─────┐         │    │  ┌─────┐            ┌────┐  │
+>  │  │ lo │<───>│veth1│<────────┼────┼─>│veth2│<──────────>│ lo │  │
+>  │  └────┘     ├─────┴──────┐  │    │  ├─────┴──────┐     └────┘  │
+>  │             │192.0.2.1/24│  │    │  │192.0.2.1/24│             │
+>  │             └────────────┘  │    │  └────────────┘             │
+>  └─────────────────────────────┘    └─────────────────────────────┘
+> 
 
-no one suggested it would be trivial :) things worth doing are usually
-non-trivial, as can be evidenced by Jiri's patch set
-
-> Plenty of things to consider. Like should it return an error
-> at run-time or verification time when a particular arch is not supported.
-
-See my other replies to Jiri, I'm more and more convinced that dynamic
-is the way to go for things like this, where the safety of the kernel
-or BPF program are not compromised.
-
-But you emphasized an important point, that it's probably good to
-allow users to distinguish errors from reading actual value 0. There
-are and will be situations where argument isn't available or some
-combination of conditions are not supported. So I think, while it's a
-bit more verbose, these forms are generally better:
-
-int bpf_get_func_arg(int n, u64 *value);
-int bpf_get_func_ret(u64 *value);
-
-WDYT?
-
-> Or argument 6 might be available on one arch, but not on the other.
-> 32-bit CPU regs vs 64-bit regs of BPF, etc.
-> I wouldn't attempt to mix this work with current patches.
-
-Oh, I didn't suggest doing it as part of this already huge and
-complicated set. But I think it's good to think a bit ahead and design
-the helper API appropriately, at the very least.
-
-And again, I think bpf_get_func_arg/bpf_get_func_ret deserve their own
-patch set where we can discuss all this independently from
-multi-attach.
+if the intention of the tests is to validate that rp_filter = 1 works as
+designed, then I suggest a simpler test. 2 namespaces, 2 veth pairs.
+Request goes through one interface, and the response comes in the other
+via routing in ns2. ns1 would see the response coming in the 'wrong'
+interface and drops it.
