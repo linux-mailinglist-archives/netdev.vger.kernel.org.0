@@ -2,95 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 948984644CE
-	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 03:16:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 929074644D4
+	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 03:20:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237551AbhLACTf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 21:19:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49220 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229538AbhLACTe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 21:19:34 -0500
-Received: from mail-ua1-x933.google.com (mail-ua1-x933.google.com [IPv6:2607:f8b0:4864:20::933])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 836AAC061574;
-        Tue, 30 Nov 2021 18:16:14 -0800 (PST)
-Received: by mail-ua1-x933.google.com with SMTP id n6so45811495uak.1;
-        Tue, 30 Nov 2021 18:16:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0RteSdb/R0jAzB1lXUtH7yILGR4OkUHo/u21+WaN7Uc=;
-        b=fdHDhoVcfJRyxCaPJ0r+dEuNkvh5NZMouiLAd8laOjYfj8vrye04yRNcNk4A5xyeKr
-         e3F5UMAp9H5ofbLmOogsvzEHM8ntIsL/as0Tl0F4Lz1QKs9ZJkvR/Rn+xD0IQnc3feU9
-         D+1KxQq3tlanTPLvBUszeVQxacrUaGif/3BJGVJ+D9TubPDN6//QMsIy+opwiDvCC2xo
-         s7YMkjG4g7O4J1BpCLQ8Frayj6EBMh5n0msxPeybhL2RLl2sMIv/CeJSim+kA6eRSEmo
-         6hEjSg8qLMTA+0/lM7SQIpXflgdrRsvB4PmHQylrKAbxzjAFod/SxeSUTaTftYsSZvq8
-         W4hQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0RteSdb/R0jAzB1lXUtH7yILGR4OkUHo/u21+WaN7Uc=;
-        b=1WMTkqHTiLUhsaAaCoFAa+WcR5l7phNRpHPgmZPYAZ3j/6Qm01ZquCyxt5i25+LVZX
-         /dbIURw+GKhgfSxNxuB9I4gPmoqkEkBfmfzGXm9WOLzuR8uAlCC+Afpy8VzxCTmrq/pD
-         nDRqU7SRaY/v3CYLFj5VqZTKJbDZc3BCLC3XZtaA/XHpFkMoYM75DWwkCqwZ2uPprtsJ
-         KwOrFOUO7OxOlp1xfFEKUnNqplsz9+uCRUUiVkWRxMws46NRVwMHZtreXyQAc7z26AHx
-         5PncpxyjxuuoqjRtEp59bm02FPs5DVn3i8u5ArMFFozythopsNTQBMEHnqf6u70BUWbP
-         epEA==
-X-Gm-Message-State: AOAM533UusXzUPAVc9EO36U54DfJIPqK2fwrYiyU0Fou4m2YbwsarDkS
-        yXZXiN34NzD2AlieUhNlkJgbT5ib5TUR7JJe1TE=
-X-Google-Smtp-Source: ABdhPJwPsk0H7uL7kqrMTBV0zIRZYhIaGzzD3FpNJ9Gl1Az+2m03A8enSStCO9ubUBfV90oyYTjD0RZ+DZLRiOPdWbI=
-X-Received: by 2002:a67:e114:: with SMTP id d20mr5058285vsl.5.1638324973624;
- Tue, 30 Nov 2021 18:16:13 -0800 (PST)
+        id S241292AbhLACXc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 21:23:32 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:49730 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229538AbhLACXb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 21:23:31 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 72AF8B81C0F;
+        Wed,  1 Dec 2021 02:20:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 25E5CC53FC7;
+        Wed,  1 Dec 2021 02:20:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1638325209;
+        bh=NsrkI24hix3RptPZuZ71vjwQOEYKri4EMggY7An9M6U=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=sAGx29hvH+xkMzOQWtp5v2Die9qU1BN6CCNeMpEGnBVKREsljq/WZ0X1qijFtwMl9
+         zTG1RkrwDTkMZv5tr5/LU6OdQ+oOWGFlRQ3z1OMGQhUnZPxaaXLXYM7nKPCFfvejIX
+         I+yCRWwgHQrvcI2oZhTrjjNR7N4wer1okY+b1kNv/AxPbA+A8GsnVf2SOMcl995Kp2
+         40+XOO4odY+y41w1tDNldBQdz8elmfPc8IxYvQfAv0pSWP62nzGGzv077FPGpHAXa8
+         TjoakFcldckXEMcCBtBqkW+9K/V+uU3X3S+oIlby2cuHmu6UGxVSs3A89DVP7Y6zXF
+         7wEWTSICMt4Cw==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 0C33B60A38;
+        Wed,  1 Dec 2021 02:20:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20211201000215.1134831-1-luiz.dentz@gmail.com>
- <20211201000215.1134831-2-luiz.dentz@gmail.com> <20211130171105.64d6cf36@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211130171105.64d6cf36@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date:   Tue, 30 Nov 2021 18:16:02 -0800
-Message-ID: <CABBYNZJGpswn03StZb97XQOUu5rj2_GGkj-UdZWdQOwuWwNVXQ@mail.gmail.com>
-Subject: Re: [PATCH 01/15] skbuff: introduce skb_pull_data
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Miller <davem@davemloft.net>,
-        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH -next] mctp: remove unnecessary check before calling
+ kfree_skb()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163832520904.6106.12847821764543488258.git-patchwork-notify@kernel.org>
+Date:   Wed, 01 Dec 2021 02:20:09 +0000
+References: <20211130031243.768823-1-yangyingliang@huawei.com>
+In-Reply-To: <20211130031243.768823-1-yangyingliang@huawei.com>
+To:     Yang Yingliang <yangyingliang@huawei.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        jk@codeconstruct.com.au, davem@davemloft.net, kuba@kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub,
+Hello:
 
-On Tue, Nov 30, 2021 at 5:11 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Tue, 30 Nov 2021 16:02:01 -0800 Luiz Augusto von Dentz wrote:
-> > From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-> >
-> > Like skb_pull but returns the original data pointer before pulling the
-> > data after performing a check against sbk->len.
-> >
-> > This allows to change code that does "struct foo *p = (void *)skb->data;"
-> > which is hard to audit and error prone, to:
-> >
-> >         p = skb_pull_data(skb, sizeof(*p));
-> >         if (!p)
-> >                 return;
-> >
-> > Which is both safer and cleaner.
->
-> It doesn't take a data pointer, so not really analogous to
-> skb_put_data() and friends which come to mind. But I have
-> no better naming suggestions. You will need to respin, tho,
-> if you want us to apply these directly, the patches as posted
-> don't apply to either netdev tree.
+This patch was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-I cross posted it to net-dev just in case you guys had some strong
-opinions on introducing such a function, it was in fact suggested by
-Dan but I also didn't find a better name so I went with it, if you
-guys prefer we can merge it in bluetooth-next first as usual.
+On Tue, 30 Nov 2021 11:12:43 +0800 you wrote:
+> The skb will be checked inside kfree_skb(), so remove the
+> outside check.
+> 
+> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+> ---
+>  net/mctp/af_mctp.c | 3 +--
+>  net/mctp/route.c   | 4 +---
+>  2 files changed, 2 insertions(+), 5 deletions(-)
 
+Here is the summary with links:
+  - [-next] mctp: remove unnecessary check before calling kfree_skb()
+    https://git.kernel.org/netdev/net-next/c/5cfe53cfeb1c
+
+You are awesome, thank you!
 -- 
-Luiz Augusto von Dentz
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
