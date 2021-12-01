@@ -2,48 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AAD64650AB
-	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 16:00:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 59D554650AC
+	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 16:00:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239205AbhLAPDg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Dec 2021 10:03:36 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:57316 "EHLO
+        id S243580AbhLAPDi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Dec 2021 10:03:38 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:57326 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234074AbhLAPDf (ORCPT
+        with ESMTP id S234427AbhLAPDf (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 10:03:35 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8A0CAB81DF7
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9A882B81FE6
         for <netdev@vger.kernel.org>; Wed,  1 Dec 2021 15:00:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 42743C53FCC;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 4EDA0C53FCF;
         Wed,  1 Dec 2021 15:00:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1638370812;
-        bh=E+TvqxTnujw5hkNDeyBFgT96PNp8YZnui8e5/zqw9bk=;
+        bh=Oq+F1LUn2R8fSmR/zCpVuG6Bc8KJZFMlzEIGmNOFq9E=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Z6DGJxuu3xupO5F3X67mok4uk1Ha1qt6V0CJdFWvDMdKH6gGqLYC3uoYSgpmZGgvF
-         MLc9jOQLy+J4v49C2+N0+LgMiJQ+Ac3k4rKSIfeoOEclp0otHE3xrMpB7QnIMDdnL8
-         DL0sMPex1UqBt/AuyZkzdrrzq3Er+wh8L2A3nH8+bfZIKANekWZ3LYmAQZMf4GKO6v
-         ezy3VMsX6g2voImYtMYQpqgFT2+41oNBKtgB7ytQSdL1qeLF8GLk0k0aVzPDwVT6Hs
-         6oLdVDL4vB7v9mqmO4Sr+U0JtwQ61HDd28yRVUCyLcQGm2d2ZknG6mjvahIIvw+UE9
-         +lhNTbOVbE70g==
+        b=aq0ipk0JQ50K2iZNrl9kWefF3hOXJXCCRHB3Zj8vlA5BjnRF9eCGY1FYYFFYr78Y3
+         3CJTDB1WiK8LvJbr8rX/qRE0zvnNCED+UYrsvsMejrsbCud9upkGRHGVqI91yaWVEb
+         LEKecdlzU4FL2WM8Nn7P+ep3aID/xzl+YPFE0lUGUYVrmIZJrcB/6W7xeleCx3PFb+
+         oct/LMpiLOPzZonBP1o1TvglrwLaHKOfSLT4FEAZL0S0uajFb937XnroJY/4CQ36yG
+         tRoyaEaEtMtWLzn5hdNjC4a+H/IuYzXEczMILU8VXVIeAh5rpTXg/oyPoW/kDaEvc/
+         iF+TSjd2k9Ktw==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 253F260A88;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 37EAC60A59;
         Wed,  1 Dec 2021 15:00:12 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [net 01/13] net/mlx5e: IPsec: Fix Software parser inner l3 type
- setting in case of encapsulation
+Subject: Re: [PATCH net v2 0/6] mv88e6xxx fixes (mainly 88E6393X family)
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163837081214.15182.14162375624201338855.git-patchwork-notify@kernel.org>
+Message-Id: <163837081222.15182.6326131384377421175.git-patchwork-notify@kernel.org>
 Date:   Wed, 01 Dec 2021 15:00:12 +0000
-References: <20211201063709.229103-2-saeed@kernel.org>
-In-Reply-To: <20211201063709.229103-2-saeed@kernel.org>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        raeds@nvidia.com, maord@nvidia.com, saeedm@nvidia.com
+References: <20211130170151.7741-1-kabel@kernel.org>
+In-Reply-To: <20211130170151.7741-1-kabel@kernel.org>
+To:     =?utf-8?q?Marek_Beh=C3=BAn_=3Ckabel=40kernel=2Eorg=3E?=@ci.codeaurora.org
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, rmk+kernel@armlinux.org.uk,
+        kuba@kernel.org, davem@davemloft.net, olteanv@gmail.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -51,47 +50,33 @@ X-Mailing-List: netdev@vger.kernel.org
 Hello:
 
 This series was applied to netdev/net.git (master)
-by Saeed Mahameed <saeedm@nvidia.com>:
+by David S. Miller <davem@davemloft.net>:
 
-On Tue, 30 Nov 2021 22:36:57 -0800 you wrote:
-> From: Raed Salem <raeds@nvidia.com>
+On Tue, 30 Nov 2021 18:01:45 +0100 you wrote:
+> Hello,
 > 
-> Current code wrongly uses the skb->protocol field which reflects the
-> outer l3 protocol to set the inner l3 type in Software Parser (SWP)
-> fields settings in the ethernet segment (eseg) in flows where inner
-> l3 exists like in Vxlan over ESP flow, the above method wrongly use
-> the outer protocol type instead of the inner one. thus breaking cases
-> where inner and outer headers have different protocols.
+> sending v2 of these fixes.
+> 
+> Original cover letter:
+> 
+> So I managed to discovered how to fix inband AN for 2500base-x mode on
+> 88E6393x (Amethyst) family.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,01/13] net/mlx5e: IPsec: Fix Software parser inner l3 type setting in case of encapsulation
-    https://git.kernel.org/netdev/net/c/c65d638ab390
-  - [net,02/13] net/mlx5e: Fix missing IPsec statistics on uplink representor
-    https://git.kernel.org/netdev/net/c/51ebf5db67f5
-  - [net,03/13] net/mlx5e: Sync TIR params updates against concurrent create/modify
-    https://git.kernel.org/netdev/net/c/4cce2ccf08fb
-  - [net,04/13] net/mlx5: Move MODIFY_RQT command to ignore list in internal error state
-    https://git.kernel.org/netdev/net/c/e45c0b34493c
-  - [net,05/13] net/mlx5: Lag, Fix recreation of VF LAG
-    https://git.kernel.org/netdev/net/c/ffdf45315226
-  - [net,06/13] net/mlx5: E-switch, Respect BW share of the new group
-    https://git.kernel.org/netdev/net/c/1e59b32e45e4
-  - [net,07/13] net/mlx5: E-Switch, fix single FDB creation on BlueField
-    https://git.kernel.org/netdev/net/c/43a0696f1156
-  - [net,08/13] net/mlx5: E-Switch, Check group pointer before reading bw_share value
-    https://git.kernel.org/netdev/net/c/5c4e8ae7aa48
-  - [net,09/13] net/mlx5: E-Switch, Use indirect table only if all destinations support it
-    https://git.kernel.org/netdev/net/c/e219440da0c3
-  - [net,10/13] net/mlx5: Fix use after free in mlx5_health_wait_pci_up
-    https://git.kernel.org/netdev/net/c/76091b0fb609
-  - [net,11/13] net/mlx5: Fix too early queueing of log timestamp work
-    https://git.kernel.org/netdev/net/c/924cc4633f04
-  - [net,12/13] net/mlx5: Fix access to a non-supported register
-    https://git.kernel.org/netdev/net/c/502e82b91361
-  - [net,13/13] net/mlx5e: SHAMPO, Fix constant expression result
-    https://git.kernel.org/netdev/net/c/8c8cf0382257
+  - [net,v2,1/6] net: dsa: mv88e6xxx: Fix application of erratum 4.8 for 88E6393X
+    https://git.kernel.org/netdev/net/c/21635d9203e1
+  - [net,v2,2/6] net: dsa: mv88e6xxx: Drop unnecessary check in mv88e6393x_serdes_erratum_4_6()
+    https://git.kernel.org/netdev/net/c/8c3318b4874e
+  - [net,v2,3/6] net: dsa: mv88e6xxx: Save power by disabling SerDes trasmitter and receiver
+    https://git.kernel.org/netdev/net/c/7527d66260ac
+  - [net,v2,4/6] net: dsa: mv88e6xxx: Add fix for erratum 5.2 of 88E6393X family
+    https://git.kernel.org/netdev/net/c/93fd8207bed8
+  - [net,v2,5/6] net: dsa: mv88e6xxx: Fix inband AN for 2500base-x on 88E6393X family
+    https://git.kernel.org/netdev/net/c/163000dbc772
+  - [net,v2,6/6] net: dsa: mv88e6xxx: Link in pcs_get_state() if AN is bypassed
+    https://git.kernel.org/netdev/net/c/ede359d8843a
 
 You are awesome, thank you!
 -- 
