@@ -2,94 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E6B89465640
-	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 20:20:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CAA4465676
+	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 20:27:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232671AbhLATXT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Dec 2021 14:23:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57750 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229646AbhLATXS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 14:23:18 -0500
-Received: from mail-ua1-x92e.google.com (mail-ua1-x92e.google.com [IPv6:2607:f8b0:4864:20::92e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8AF3C061574
-        for <netdev@vger.kernel.org>; Wed,  1 Dec 2021 11:19:57 -0800 (PST)
-Received: by mail-ua1-x92e.google.com with SMTP id t13so51267144uad.9
-        for <netdev@vger.kernel.org>; Wed, 01 Dec 2021 11:19:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=88OGwaTzogdv9EvwjwZwdMjE77fRE7nweThuCebIBJs=;
-        b=EB8Mc6zz2YJVZOVO3CpWN99VvtDFgsJp48RbyjJxHRvf4H1GIf7r2MVF6dl5bBaHn6
-         kRGd6/g5R4LwcvdktZI13VDniKJp/lY6Xy5lVkkOGObFldg3gdmt+AfQi+PSUkNyduz2
-         zm52ziFHW6thZa+Xv9RbxCT/fInpImBZpyw/mj92XXwurmIwLt+nPVuTYuH4vq6UQvMA
-         ujodRxRS64YTsKlaInQtE1VZ47M9zoWBnheSJ+XyHDkPRv9SCWytF5UaR1/AUJRZvstM
-         Gfe41QR8VS3KGBwavrP1HSFzhsJSZfBwbRylH70TDMOhYngXc9gvSouDSOeJXmFlwD1g
-         rwbQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=88OGwaTzogdv9EvwjwZwdMjE77fRE7nweThuCebIBJs=;
-        b=8GdgNWajG69EOuZjCfraOVFmHrHaILXxjJ/aNutWS6TRtsdcjXG+ixbBjrImWnz4MP
-         j36BRMf27WULUWjn+rWQVNP2Lf2VR65DKnqLTzjdJfoSQEJprpwNwCmh3YbvnVWB7FDz
-         tJZClhfYPVaYsxcvOfVwPOAGAfSAbzxYlB+62q4gj/WvukY4K4wtth4aFBEoEEItgc1Y
-         mZjSVCTGDq5A6Kah5klydD6EDp9m7g0k/TgU0pz/TIck6VDrKu6FPp22qygQaSGhIaMN
-         oC5wSHHz9s3i1BmwKTGBZkpIBYcMBLb6gjErRfcmBHuxHgcjj2sAN2w2BYdcKGZ1Eq2P
-         L9FA==
-X-Gm-Message-State: AOAM530lrnCyVmFsZVDB/ludRbe9H83a5rnG/ALOrsfj0FFqSiLsV9zN
-        ytKajAgY2kXv0ML1qeFb0Tfwwc9ucHagNA==
-X-Google-Smtp-Source: ABdhPJwn0KYx8zX0hYtcJ+UGWImvyJw50PC/dDUk74gTd+K9tov4w6UNHhpc4Q9VGRkGDFx8AitgAg==
-X-Received: by 2002:a05:6102:38b:: with SMTP id m11mr9745669vsq.36.1638386396965;
-        Wed, 01 Dec 2021 11:19:56 -0800 (PST)
-Received: from mail-ua1-f47.google.com (mail-ua1-f47.google.com. [209.85.222.47])
-        by smtp.gmail.com with ESMTPSA id w22sm383450vsk.11.2021.12.01.11.19.56
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 01 Dec 2021 11:19:56 -0800 (PST)
-Received: by mail-ua1-f47.google.com with SMTP id p37so51220106uae.8
-        for <netdev@vger.kernel.org>; Wed, 01 Dec 2021 11:19:56 -0800 (PST)
-X-Received: by 2002:a05:6102:3053:: with SMTP id w19mr5158445vsa.60.1638386395854;
- Wed, 01 Dec 2021 11:19:55 -0800 (PST)
-MIME-Version: 1.0
-References: <20211201163245.3629254-1-andrew@lunn.ch> <20211201163245.3629254-3-andrew@lunn.ch>
- <CA+FuTSfLxEic2ZtD8ygzUQMrftLkRyfjdf7GH6Pf8ioSRjHrOg@mail.gmail.com>
- <Yae6lGvTt8sCtLJX@lunn.ch> <CA+FuTSce_Q=uyn9brCDmwijf5-zOp3G9QDqSAaU=PC7=oCxUPQ@mail.gmail.com>
- <YafG5hboD7itUddn@lunn.ch>
-In-Reply-To: <YafG5hboD7itUddn@lunn.ch>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Wed, 1 Dec 2021 11:19:16 -0800
-X-Gmail-Original-Message-ID: <CA+FuTSdjd2yrD-t8E=KuvEix3dJmgrtpEktZTKEPQ+ExwvoNqg@mail.gmail.com>
-Message-ID: <CA+FuTSdjd2yrD-t8E=KuvEix3dJmgrtpEktZTKEPQ+ExwvoNqg@mail.gmail.com>
-Subject: Re: [patch RFC net-next 2/3] icmp: ICMPV6: Examine invoking packet
- for Segment Route Headers.
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        James Prestwood <prestwoj@gmail.com>,
-        Justin Iurman <justin.iurman@uliege.be>,
-        Praveen Chaudhary <praveen5582@gmail.com>,
-        "Jason A . Donenfeld" <Jason@zx2c4.com>,
+        id S234646AbhLATbH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Dec 2021 14:31:07 -0500
+Received: from smtp8.emailarray.com ([65.39.216.67]:56423 "EHLO
+        smtp8.emailarray.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1352757AbhLATbE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 14:31:04 -0500
+Received: (qmail 95186 invoked by uid 89); 1 Dec 2021 19:20:45 -0000
+Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTYzLjExNC4xMzIuNw==) (POLARISLOCAL)  
+  by smtp8.emailarray.com with SMTP; 1 Dec 2021 19:20:45 -0000
+Date:   Wed, 1 Dec 2021 11:20:43 -0800
+From:   Jonathan Lemon <jonathan.lemon@gmail.com>
+To:     Pavel Begunkov <asml.silence@gmail.com>
+Cc:     io-uring@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Willem de Bruijn <willemb@google.com>,
         Eric Dumazet <edumazet@google.com>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>, Jens Axboe <axboe@kernel.dk>
+Subject: Re: [RFC 05/12] net: optimise page get/free for bvec zc
+Message-ID: <20211201192043.tqed7rtwibnwhw7c@bsd-mbp.dhcp.thefacebook.com>
+References: <cover.1638282789.git.asml.silence@gmail.com>
+ <72608c13553a1372e7f6f7a32eb53d5d4b23a1fc.1638282789.git.asml.silence@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <72608c13553a1372e7f6f7a32eb53d5d4b23a1fc.1638282789.git.asml.silence@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > Then if the packet is not shared, you can just temporarily reset the
-> > network header and revert it after?
->
-> Maybe. I was worried about any side affects of such an
-> operation. Working on a clone seemed a lot less risky.
->
-> Is it safe to due such games with the network header?
+On Tue, Nov 30, 2021 at 03:18:53PM +0000, Pavel Begunkov wrote:
+> get_page() in __zerocopy_sg_from_bvec() and matching put_page()s are
+> expensive. However, we can avoid it if the caller can guarantee that
+> pages stay alive until the corresponding ubuf_info is not released.
+> In particular, it targets io_uring with fixed buffers following the
+> described contract.
+> 
+> Assuming that nobody yet uses bvec together with zerocopy, make all
+> calls with bvec iterators follow this model.
+> 
+> Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
+> ---
+>  include/linux/skbuff.h | 10 +++++++++-
+>  net/core/datagram.c    |  9 +++++++--
+>  net/core/skbuff.c      | 16 +++++++++++++---
+>  net/ipv4/ip_output.c   |  4 ++++
+>  4 files changed, 33 insertions(+), 6 deletions(-)
+> 
+> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+> index 750b7518d6e2..ebb12a7d386d 100644
+> --- a/include/linux/skbuff.h
+> +++ b/include/linux/skbuff.h
+> @@ -461,6 +461,11 @@ enum {
+>  	SKBFL_PURE_ZEROCOPY = BIT(2),
+>  
+>  	SKBFL_DONT_ORPHAN = BIT(3),
+> +
+> +	/* page references are managed by the ubuf_info, so it's safe to
+> +	 * use frags only up until ubuf_info is released
+> +	 */
+> +	SKBFL_MANAGED_FRAGS = BIT(4),
+>  };
+>  
+>  #define SKBFL_ZEROCOPY_FRAG	(SKBFL_ZEROCOPY_ENABLE | SKBFL_SHARED_FRAG)
+> @@ -3154,7 +3159,10 @@ static inline void __skb_frag_unref(skb_frag_t *frag, bool recycle)
+>   */
+>  static inline void skb_frag_unref(struct sk_buff *skb, int f)
+>  {
+> -	__skb_frag_unref(&skb_shinfo(skb)->frags[f], skb->pp_recycle);
+> +	struct skb_shared_info *shinfo = skb_shinfo(skb);
+> +
+> +	if (!(shinfo->flags & SKBFL_MANAGED_FRAGS))
+> +		__skb_frag_unref(&shinfo->frags[f], skb->pp_recycle);
+>  }
+>  
+>  /**
+> diff --git a/net/core/datagram.c b/net/core/datagram.c
+> index e00f7e0a7a0a..5cf0672039d6 100644
+> --- a/net/core/datagram.c
+> +++ b/net/core/datagram.c
+> @@ -642,7 +642,6 @@ static int __zerocopy_sg_from_bvec(struct sock *sk, struct sk_buff *skb,
+>  		v = mp_bvec_iter_bvec(from->bvec, bi);
+>  		copied += v.bv_len;
+>  		truesize += PAGE_ALIGN(v.bv_len + v.bv_offset);
+> -		get_page(v.bv_page);
+>  		skb_fill_page_desc(skb, frag++, v.bv_page, v.bv_offset, v.bv_len);
+>  		bvec_iter_advance_single(from->bvec, &bi, v.bv_len);
+>  	}
+> @@ -671,9 +670,15 @@ int __zerocopy_sg_from_iter(struct sock *sk, struct sk_buff *skb,
+>  			    struct iov_iter *from, size_t length)
+>  {
+>  	int frag = skb_shinfo(skb)->nr_frags;
+> +	bool managed = skb_shinfo(skb)->flags & SKBFL_MANAGED_FRAGS;
+>  
+> -	if (iov_iter_is_bvec(from))
+> +	if (iov_iter_is_bvec(from) && (managed || frag == 0)) {
+> +		skb_shinfo(skb)->flags |= SKBFL_MANAGED_FRAGS;
+>  		return __zerocopy_sg_from_bvec(sk, skb, from, length);
+> +	}
+> +
+> +	if (managed)
+> +		return -EFAULT;
+>  
+>  	while (length && iov_iter_count(from)) {
+>  		struct page *pages[MAX_SKB_FRAGS];
+> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> index b23db60ea6f9..b7b087815539 100644
+> --- a/net/core/skbuff.c
+> +++ b/net/core/skbuff.c
+> @@ -666,10 +666,14 @@ static void skb_release_data(struct sk_buff *skb)
+>  			      &shinfo->dataref))
+>  		goto exit;
+>  
+> -	skb_zcopy_clear(skb, true);
+> +	if (!(shinfo->flags & SKBFL_MANAGED_FRAGS)) {
+> +		for (i = 0; i < shinfo->nr_frags; i++)
+> +			__skb_frag_unref(&shinfo->frags[i], skb->pp_recycle);
+> +	} else {
+> +		shinfo->flags &= ~SKBFL_MANAGED_FRAGS;
+> +	}
+>  
+> -	for (i = 0; i < shinfo->nr_frags; i++)
+> -		__skb_frag_unref(&shinfo->frags[i], skb->pp_recycle);
+> +	skb_zcopy_clear(skb, true);
 
-As long as nothing else is accessing the skb, so only if it is not shared.
-
-Packet sockets do similar temporary modifications, for one example.
-See drop_n_restore in packet_rcv.
+It would be better if all of this logic was moved into the callback
+under zcopy_clear.  Note that this path is called for both TX and RX.
+-- 
+Jonathan
