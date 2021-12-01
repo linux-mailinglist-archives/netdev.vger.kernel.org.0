@@ -2,71 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 475824644E0
-	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 03:27:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4126F4644E9
+	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 03:31:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245544AbhLACbI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 21:31:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51738 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241245AbhLACbH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 21:31:07 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27CF5C061574;
-        Tue, 30 Nov 2021 18:27:47 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 73EEACE1D62;
-        Wed,  1 Dec 2021 02:27:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65133C53FCB;
-        Wed,  1 Dec 2021 02:27:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638325663;
-        bh=InhH7V0QxXh94iwiWcagV90SEoJ3BYWf2hm34dKpvYA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=XZkZ3RHQNOHB05pOK+PWwGechLeeqsrc6J8zivtQQUXbx7TmvtvR/0Ov/CPNRwNP5
-         wkxPZ058nj1Fw3D2hCuioJuHvAvi/DMN1IeQx1Wgd1dJ8xdOaazZWxmcLWMNE7qKKQ
-         1S/sqW2Hfu9u2K63nfCZN8RTgOBL4kYmBLlLcRNArOhIP96lJ9bXIId2OGDxTtxEw/
-         RhjNWSFHIV0XTx8/3ze0R7bGcBALI5l0lyyjpqzYO5Gr9LAvbWTUoBlgqpPsvesDdS
-         z+cknIl6sqUwxCrk3EdssQKuv4glPHDlgDfZDQ6K+jGPDW8lmsN2Cx+bIH5mHKqmTF
-         6B0e2g11S3KCg==
-Date:   Tue, 30 Nov 2021 18:27:42 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Subject: Re: [PATCH 01/15] skbuff: introduce skb_pull_data
-Message-ID: <20211130182742.7537e212@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CABBYNZJGpswn03StZb97XQOUu5rj2_GGkj-UdZWdQOwuWwNVXQ@mail.gmail.com>
-References: <20211201000215.1134831-1-luiz.dentz@gmail.com>
-        <20211201000215.1134831-2-luiz.dentz@gmail.com>
-        <20211130171105.64d6cf36@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CABBYNZJGpswn03StZb97XQOUu5rj2_GGkj-UdZWdQOwuWwNVXQ@mail.gmail.com>
+        id S241235AbhLACfK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 21:35:10 -0500
+Received: from out30-42.freemail.mail.aliyun.com ([115.124.30.42]:57949 "EHLO
+        out30-42.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235229AbhLACfJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 21:35:09 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=dust.li@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0UyvwTLH_1638325907;
+Received: from localhost(mailfrom:dust.li@linux.alibaba.com fp:SMTPD_---0UyvwTLH_1638325907)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 01 Dec 2021 10:31:48 +0800
+From:   Dust Li <dust.li@linux.alibaba.com>
+To:     Karsten Graul <kgraul@linux.ibm.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ursula Braun <ubraun@linux.ibm.com>
+Cc:     Tony Lu <tonylu@linux.alibaba.com>,
+        Wen Gu <guwen@linux.alibaba.com>, linux-s390@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH net v2] net/smc: fix wrong list_del in smc_lgr_cleanup_early
+Date:   Wed,  1 Dec 2021 10:31:47 +0800
+Message-Id: <20211201023147.42923-1-dust.li@linux.alibaba.com>
+X-Mailer: git-send-email 2.19.1.3.ge56e4f7
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 30 Nov 2021 18:16:02 -0800 Luiz Augusto von Dentz wrote:
-> > It doesn't take a data pointer, so not really analogous to
-> > skb_put_data() and friends which come to mind. But I have
-> > no better naming suggestions. You will need to respin, tho,
-> > if you want us to apply these directly, the patches as posted
-> > don't apply to either netdev tree.  
-> 
-> I cross posted it to net-dev just in case you guys had some strong
-> opinions on introducing such a function,
+smc_lgr_cleanup_early() meant to delete the link
+group from the link group list, but it deleted
+the list head by mistake.
 
-Someone else still may, I don't :)
+This may cause memory corruption since we didn't
+remove the real link group from the list and later
+memseted the link group structure.
+We got a list corruption panic when testing:
 
-> it was in fact suggested by Dan but I also didn't find a better name
-> so I went with it, if you guys prefer we can merge it in
-> bluetooth-next first as usual.
+[  231.277259] list_del corruption. prev->next should be ffff8881398a8000, but was 0000000000000000
+[  231.278222] ------------[ cut here ]------------
+[  231.278726] kernel BUG at lib/list_debug.c:53!
+[  231.279326] invalid opcode: 0000 [#1] SMP NOPTI
+[  231.279803] CPU: 0 PID: 5 Comm: kworker/0:0 Not tainted 5.10.46+ #435
+[  231.280466] Hardware name: Alibaba Cloud ECS, BIOS 8c24b4c 04/01/2014
+[  231.281248] Workqueue: events smc_link_down_work
+[  231.281732] RIP: 0010:__list_del_entry_valid+0x70/0x90
+[  231.282258] Code: 4c 60 82 e8 7d cc 6a 00 0f 0b 48 89 fe 48 c7 c7 88 4c
+60 82 e8 6c cc 6a 00 0f 0b 48 89 fe 48 c7 c7 c0 4c 60 82 e8 5b cc 6a 00 <0f>
+0b 48 89 fe 48 c7 c7 00 4d 60 82 e8 4a cc 6a 00 0f 0b cc cc cc
+[  231.284146] RSP: 0018:ffffc90000033d58 EFLAGS: 00010292
+[  231.284685] RAX: 0000000000000054 RBX: ffff8881398a8000 RCX: 0000000000000000
+[  231.285415] RDX: 0000000000000001 RSI: ffff88813bc18040 RDI: ffff88813bc18040
+[  231.286141] RBP: ffffffff8305ad40 R08: 0000000000000003 R09: 0000000000000001
+[  231.286873] R10: ffffffff82803da0 R11: ffffc90000033b90 R12: 0000000000000001
+[  231.287606] R13: 0000000000000000 R14: ffff8881398a8000 R15: 0000000000000003
+[  231.288337] FS:  0000000000000000(0000) GS:ffff88813bc00000(0000) knlGS:0000000000000000
+[  231.289160] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  231.289754] CR2: 0000000000e72058 CR3: 000000010fa96006 CR4: 00000000003706f0
+[  231.290485] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[  231.291211] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[  231.291940] Call Trace:
+[  231.292211]  smc_lgr_terminate_sched+0x53/0xa0
+[  231.292677]  smc_switch_conns+0x75/0x6b0
+[  231.293085]  ? update_load_avg+0x1a6/0x590
+[  231.293517]  ? ttwu_do_wakeup+0x17/0x150
+[  231.293907]  ? update_load_avg+0x1a6/0x590
+[  231.294317]  ? newidle_balance+0xca/0x3d0
+[  231.294716]  smcr_link_down+0x50/0x1a0
+[  231.295090]  ? __wake_up_common_lock+0x77/0x90
+[  231.295534]  smc_link_down_work+0x46/0x60
+[  231.295933]  process_one_work+0x18b/0x350
 
-Going via bluetooth-next sounds good!
+Fixes: a0a62ee15a829 ("net/smc: separate locks for SMCD and SMCR link group lists")
+Signed-off-by: Dust Li <dust.li@linux.alibaba.com>
+Acked-by: Karsten Graul <kgraul@linux.ibm.com>
+---
+v2:
+- Remove unused lgr_list
+---
+ net/smc/smc_core.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
+index bb52c8b5f148..8759f9fd8113 100644
+--- a/net/smc/smc_core.c
++++ b/net/smc/smc_core.c
+@@ -625,18 +625,16 @@ int smcd_nl_get_lgr(struct sk_buff *skb, struct netlink_callback *cb)
+ void smc_lgr_cleanup_early(struct smc_connection *conn)
+ {
+ 	struct smc_link_group *lgr = conn->lgr;
+-	struct list_head *lgr_list;
+ 	spinlock_t *lgr_lock;
+ 
+ 	if (!lgr)
+ 		return;
+ 
+ 	smc_conn_free(conn);
+-	lgr_list = smc_lgr_list_head(lgr, &lgr_lock);
+ 	spin_lock_bh(lgr_lock);
+ 	/* do not use this link group for new connections */
+-	if (!list_empty(lgr_list))
+-		list_del_init(lgr_list);
++	if (!list_empty(&lgr->list))
++		list_del_init(&lgr->list);
+ 	spin_unlock_bh(lgr_lock);
+ 	__smc_lgr_terminate(lgr, true);
+ }
+-- 
+2.19.1.3.ge56e4f7
+
