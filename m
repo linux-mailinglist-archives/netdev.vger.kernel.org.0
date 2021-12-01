@@ -2,117 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E0F7346453B
-	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 04:02:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 65376464545
+	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 04:09:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346373AbhLADGD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 22:06:03 -0500
-Received: from out4436.biz.mail.alibaba.com ([47.88.44.36]:63893 "EHLO
-        out4436.biz.mail.alibaba.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1346365AbhLADGD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 22:06:03 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R621e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=dust.li@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0UywMJZt_1638327750;
-Received: from localhost(mailfrom:dust.li@linux.alibaba.com fp:SMTPD_---0UywMJZt_1638327750)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 01 Dec 2021 11:02:30 +0800
-From:   Dust Li <dust.li@linux.alibaba.com>
-To:     Karsten Graul <kgraul@linux.ibm.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ursula Braun <ubraun@linux.ibm.com>
-Cc:     Tony Lu <tonylu@linux.alibaba.com>,
-        Wen Gu <guwen@linux.alibaba.com>, linux-s390@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH net v3] net/smc: fix wrong list_del in smc_lgr_cleanup_early
-Date:   Wed,  1 Dec 2021 11:02:30 +0800
-Message-Id: <20211201030230.8896-1-dust.li@linux.alibaba.com>
-X-Mailer: git-send-email 2.19.1.3.ge56e4f7
+        id S1346357AbhLADM4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 22:12:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32992 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346422AbhLADMx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 22:12:53 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2880FC061574
+        for <netdev@vger.kernel.org>; Tue, 30 Nov 2021 19:09:31 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 71C4BCE1A31
+        for <netdev@vger.kernel.org>; Wed,  1 Dec 2021 03:09:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69B04C53FCC;
+        Wed,  1 Dec 2021 03:09:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1638328167;
+        bh=lwLCqyAnfFMpSY98Obo0M9K79bb8rX1EcoFWZxOrSK8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=DdkPMLmiU2x/t3ruorIwY+sAkdhYM1Gd2WtoJMaDVhKM/CxJm5ue2HDsrEEqFH+br
+         2/DN0UB83YCOiU+Brjlze6L2JvTYDvPqOKdLIKzs8NnhNMPO/4CcK2bLu9GlxgH9Bv
+         iAIOvvQafkMG2ketjzGjyXlgtC7vsVTR6zOBgtUab7PldTWAzsrnkG5SBE4acJYTd1
+         Al6U2FsHM+9FpTVtSDavQve0Bqz8F3lvUX1XPufv0vvMZFhLmZbqa59XF3HXy16Thx
+         LPrUxCtIZv90IFqZHPGX05dHZZJFADEW258zT+uT0OlgRrQsUtMjnV1LrblnkXhQ9I
+         KkpiDbPsOYKbA==
+Date:   Tue, 30 Nov 2021 19:09:26 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Hayes Wang <hayeswang@realtek.com>
+Cc:     "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        nic_swsd <nic_swsd@realtek.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
+Subject: Re: [RFC PATCH 0/4] r8169: support dash
+Message-ID: <20211130190926.7c1d735d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <918d75ea873a453ab2ba588a35d66ab6@realtek.com>
+References: <20211129101315.16372-381-nic_swsd@realtek.com>
+        <20211129095947.547a765f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <918d75ea873a453ab2ba588a35d66ab6@realtek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-smc_lgr_cleanup_early() meant to delete the link
-group from the link group list, but it deleted
-the list head by mistake.
+On Wed, 1 Dec 2021 02:57:00 +0000 Hayes Wang wrote:
+> Jakub Kicinski <kuba@kernel.org>
+> > Sent: Tuesday, November 30, 2021 2:00 AM
+> > Subject: Re: [RFC PATCH 0/4] r8169: support dash
+> > 
+> > On Mon, 29 Nov 2021 18:13:11 +0800 Hayes Wang wrote:  
+> > > These patches are used to support dash for RTL8111EP and
+> > > RTL8111FP(RTL81117).  
+> > 
+> > If I understand correctly DASH is a DMTF standard for remote control.
+> > 
+> > Since it's a standard I think we should have a common way of
+> > configuring it across drivers.  
+> 
+> Excuse me. I am not familiar with it.
+> What document or sample code could I start?
+> 
+> > Is enable/disable the only configuration
+> > that we will need?  
+> 
+> I don't think I could answer it before I understand the above way
+> you mentioned.
+> 
+> > We don't use sysfs too much these days, can we move the knob to
+> > devlink, please? (If we only need an on/off switch generic devlink param
+> > should be fine).  
+> 
+> Thanks. I would study devlink.
 
-This may cause memory corruption since we didn't
-remove the real link group from the list and later
-memseted the link group structure.
-We got a list corruption panic when testing:
+I'm not sure how relevant it will be to you but this is the
+documentation we have:
 
-[  231.277259] list_del corruption. prev->next should be ffff8881398a8000, but was 0000000000000000
-[  231.278222] ------------[ cut here ]------------
-[  231.278726] kernel BUG at lib/list_debug.c:53!
-[  231.279326] invalid opcode: 0000 [#1] SMP NOPTI
-[  231.279803] CPU: 0 PID: 5 Comm: kworker/0:0 Not tainted 5.10.46+ #435
-[  231.280466] Hardware name: Alibaba Cloud ECS, BIOS 8c24b4c 04/01/2014
-[  231.281248] Workqueue: events smc_link_down_work
-[  231.281732] RIP: 0010:__list_del_entry_valid+0x70/0x90
-[  231.282258] Code: 4c 60 82 e8 7d cc 6a 00 0f 0b 48 89 fe 48 c7 c7 88 4c
-60 82 e8 6c cc 6a 00 0f 0b 48 89 fe 48 c7 c7 c0 4c 60 82 e8 5b cc 6a 00 <0f>
-0b 48 89 fe 48 c7 c7 00 4d 60 82 e8 4a cc 6a 00 0f 0b cc cc cc
-[  231.284146] RSP: 0018:ffffc90000033d58 EFLAGS: 00010292
-[  231.284685] RAX: 0000000000000054 RBX: ffff8881398a8000 RCX: 0000000000000000
-[  231.285415] RDX: 0000000000000001 RSI: ffff88813bc18040 RDI: ffff88813bc18040
-[  231.286141] RBP: ffffffff8305ad40 R08: 0000000000000003 R09: 0000000000000001
-[  231.286873] R10: ffffffff82803da0 R11: ffffc90000033b90 R12: 0000000000000001
-[  231.287606] R13: 0000000000000000 R14: ffff8881398a8000 R15: 0000000000000003
-[  231.288337] FS:  0000000000000000(0000) GS:ffff88813bc00000(0000) knlGS:0000000000000000
-[  231.289160] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  231.289754] CR2: 0000000000e72058 CR3: 000000010fa96006 CR4: 00000000003706f0
-[  231.290485] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[  231.291211] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[  231.291940] Call Trace:
-[  231.292211]  smc_lgr_terminate_sched+0x53/0xa0
-[  231.292677]  smc_switch_conns+0x75/0x6b0
-[  231.293085]  ? update_load_avg+0x1a6/0x590
-[  231.293517]  ? ttwu_do_wakeup+0x17/0x150
-[  231.293907]  ? update_load_avg+0x1a6/0x590
-[  231.294317]  ? newidle_balance+0xca/0x3d0
-[  231.294716]  smcr_link_down+0x50/0x1a0
-[  231.295090]  ? __wake_up_common_lock+0x77/0x90
-[  231.295534]  smc_link_down_work+0x46/0x60
-[  231.295933]  process_one_work+0x18b/0x350
+https://www.kernel.org/doc/html/latest/networking/devlink/index.html
+https://www.kernel.org/doc/html/latest/networking/devlink/devlink-params.html
 
-Fixes: a0a62ee15a829 ("net/smc: separate locks for SMCD and SMCR link group lists")
-Signed-off-by: Dust Li <dust.li@linux.alibaba.com>
-Acked-by: Karsten Graul <kgraul@linux.ibm.com>
----
-v2: Remove unused lgr_list
-v2->v3: Fix uninitialized lgr_lock, thanks Jakub Kicinski !
----
- net/smc/smc_core.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+You'll need to add a generic parameter (define + a short description)
+like 325e0d0aa683 ("devlink: Add 'enable_iwarp' generic device param")
 
-diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
-index bb52c8b5f148..387d28b2f8dd 100644
---- a/net/smc/smc_core.c
-+++ b/net/smc/smc_core.c
-@@ -625,18 +625,17 @@ int smcd_nl_get_lgr(struct sk_buff *skb, struct netlink_callback *cb)
- void smc_lgr_cleanup_early(struct smc_connection *conn)
- {
- 	struct smc_link_group *lgr = conn->lgr;
--	struct list_head *lgr_list;
- 	spinlock_t *lgr_lock;
- 
- 	if (!lgr)
- 		return;
- 
- 	smc_conn_free(conn);
--	lgr_list = smc_lgr_list_head(lgr, &lgr_lock);
-+	smc_lgr_list_head(lgr, &lgr_lock);
- 	spin_lock_bh(lgr_lock);
- 	/* do not use this link group for new connections */
--	if (!list_empty(lgr_list))
--		list_del_init(lgr_list);
-+	if (!list_empty(&lgr->list))
-+		list_del_init(&lgr->list);
- 	spin_unlock_bh(lgr_lock);
- 	__smc_lgr_terminate(lgr, true);
- }
--- 
-2.19.1.3.ge56e4f7
+In terms of driver changes I think the most relevant example to you
+will be:
 
+drivers/net/ethernet/ti/cpsw_new.c
+
+You need to call devlink_alloc(), devlink_register and
+devlink_params_register() (and the inverse functions).
