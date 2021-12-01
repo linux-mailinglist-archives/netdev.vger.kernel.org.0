@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 07AB94643CB
-	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 01:03:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A76264643D0
+	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 01:03:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345598AbhLAAGu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 19:06:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47962 "EHLO
+        id S1345617AbhLAAGy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 19:06:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345580AbhLAAG3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 19:06:29 -0500
+        with ESMTP id S1345596AbhLAAGa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 19:06:30 -0500
 Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AFB5C06174A;
-        Tue, 30 Nov 2021 16:03:08 -0800 (PST)
-Received: by mail-pj1-x102e.google.com with SMTP id gf14-20020a17090ac7ce00b001a7a2a0b5c3so19544436pjb.5;
-        Tue, 30 Nov 2021 16:03:08 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D121C061756;
+        Tue, 30 Nov 2021 16:03:09 -0800 (PST)
+Received: by mail-pj1-x102e.google.com with SMTP id fv9-20020a17090b0e8900b001a6a5ab1392so18819197pjb.1;
+        Tue, 30 Nov 2021 16:03:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=rAgw96mWSTxvK0gyqEQQZc+al2NNhHRrOI3U1Yiwed8=;
-        b=dBTD/QMPoS8OZGbjOcnwRWjy5R3oylcokNDgXTgTJV+L0BMEX8eKVF27FVodldn0JI
-         hsEp/bMFz0UHzaExEdfgTOmQoXGtB/oeNZAWyd4Xt9HK9SZ6+Oz4pzLztP8ad9pX3A9Y
-         Aiq3SSx3cMegWR3FYNsRMmJPCAxf/Eb3txMC3sBPhPXFldTBh7pMBK0uG62HLrPOc3Qi
-         RwQ4SWUKNwb9ocfH6j20INfZIqPRfCMuJpz/bxUu+JJKg0B38Dk6E3SpxM7/ykyKkniv
-         fJNqxezvIa5i4TfDD3hM7e20uqNuTerzhDL6Pv3nLfetpg4ePJwNJb0im+KtrfNg/nJh
-         Towg==
+        bh=K0Q/AjPg4LwkcVHvTd078tsJRcQ1xeg7l6PZYQuqunw=;
+        b=WbU1ITqH1tiaIbMD4bl1B6A5+smKGv6EiOcy9IpTkXHRwymNZybXjW5E8jcmeA9TJ2
+         yHXAZWCGB5tXlt1zNrYVoukhb2oJfTtXkP6c/GXg7WzihL9F9nsdXgKxSWyFQzMLQS+5
+         S6vglZxrE7L+n1qKbBGckQ9P2LzKrX7GefdMWL+QQA1XFAa1adurZEFRLlUBI8676IEk
+         KluFDnsYhPiv8Pjv9SSLzR1HCf63LpAG9m98wvN4bDhVm6+LXYZul8dWgERIz9okawIn
+         kqHPfXH7S2pSSuLEMRdzFuqQKjyFKsvKIc5BiFzMrFlHOmpW2w29Be1VG4mJAJ6maJ7W
+         mLsw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=rAgw96mWSTxvK0gyqEQQZc+al2NNhHRrOI3U1Yiwed8=;
-        b=b6Ymh0F4cO4TcW4nMgC3mGEVXjpyw/NUm65D2lBFEaxN9++nWI2586KWpnimi8t+ja
-         h0pmAUYQoKSqv9Bh15DroepUVKZXv//cC32P+WJ2gOm3c3VpgWNffMRlggTTG/6i3U4H
-         y78HZNZ40qC7SwoCgJv/IwqNxRYmJs2eq/GdQsdsAQR8MraIydeYOzhiwLJ0KeF9WyD/
-         KH0zf+Px0NTUup4LdDYhlVEV54eGoP7iYdhoMuNbLYTtIZNKEUR6kZHTgeVOZ3q5PNu+
-         h82Yd3MnU2LelyOB+6zIsZoZukxYMW/KKukXF+TueTYT/kRrXpF+zeZauITEVByLVCTF
-         XnoQ==
-X-Gm-Message-State: AOAM5323W3bEfEXN6sV0d4dFfjYIGG4sc4ln+yC+1X6uSaQZhIf1pSlO
-        0P++WmijujA8XpOoJXpwtM8=
-X-Google-Smtp-Source: ABdhPJwzxUAHsrJLqiGYwciSMRm9HvsvVgXoF7kEetjK/Sv7HQSd78Mpsy9tUCyvJcd2caK0F1eBCw==
-X-Received: by 2002:a17:90a:7e10:: with SMTP id i16mr2820782pjl.185.1638316987518;
-        Tue, 30 Nov 2021 16:03:07 -0800 (PST)
+        bh=K0Q/AjPg4LwkcVHvTd078tsJRcQ1xeg7l6PZYQuqunw=;
+        b=OgHlHygCvKfARltf7HvS8TTwV8rJiUazBbEufqjjKI3DBEh22XscX8m91BqOU1rQfA
+         MwXIdmHpXsuC5we8Q5OrPPiVZsc3r95tzZZlhDf01xnesgIGrocfdRIUBqy515HzWTpF
+         cr8RNY4BeZIhc4pT+PGAt5pL3o/YDitZi+vpTiGkGVcn7w6PZjkBXYbn3mizQwZcAvIr
+         FrQAq1m49NnqejGUs2ixysWqCOBHSsncdSY9S0WRsacc5wINELPvropqZ+fhoA7Vt7rE
+         Ki5AgJEE15Zk4gE8USuP0hQCLSFMmtDfRmZodFU/NP3W6RDZDFhvHMorsMx9IsP+o/tx
+         k7aA==
+X-Gm-Message-State: AOAM531EyBndub6dACU81PRtUk6obiX1lZ0pdV+6NTTxvJqYaRc8XgYJ
+        V0J7q3vCIxsgdcTXVVBeoK+KSp0CRBQ=
+X-Google-Smtp-Source: ABdhPJzgaIrbYyE2vs0b6m1UGF+hihLQmYMzM6RPffGWCptX+Qd3N/H37zX3zQNX7vCA19UOr62Y7g==
+X-Received: by 2002:a17:90b:4f44:: with SMTP id pj4mr2960526pjb.150.1638316988551;
+        Tue, 30 Nov 2021 16:03:08 -0800 (PST)
 Received: from lvondent-mobl4.intel.com (c-71-56-157-77.hsd1.or.comcast.net. [71.56.157.77])
-        by smtp.gmail.com with ESMTPSA id j13sm21001739pfc.151.2021.11.30.16.03.06
+        by smtp.gmail.com with ESMTPSA id j13sm21001739pfc.151.2021.11.30.16.03.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Nov 2021 16:03:07 -0800 (PST)
+        Tue, 30 Nov 2021 16:03:08 -0800 (PST)
 From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
         dan.carpenter@oracle.com,
         Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Subject: [PATCH 10/15] Bluetooth: HCI: Use skb_pull_data to parse LE Ext Advertising Report event
-Date:   Tue, 30 Nov 2021 16:02:10 -0800
-Message-Id: <20211201000215.1134831-11-luiz.dentz@gmail.com>
+Subject: [PATCH 11/15] Bluetooth: HCI: Use skb_pull_data to parse LE Direct Advertising Report event
+Date:   Tue, 30 Nov 2021 16:02:11 -0800
+Message-Id: <20211201000215.1134831-12-luiz.dentz@gmail.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20211201000215.1134831-1-luiz.dentz@gmail.com>
 References: <20211201000215.1134831-1-luiz.dentz@gmail.com>
@@ -66,115 +66,83 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 
-This uses skb_pull_data to check the LE Extended Advertising Report
+This uses skb_pull_data to check the LE Direct Advertising Report
 events received have the minimum required length.
 
 Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 ---
- include/net/bluetooth/hci.h | 17 +++++++++++------
- net/bluetooth/hci_event.c   | 36 +++++++++++++++++++++++++-----------
- 2 files changed, 36 insertions(+), 17 deletions(-)
+ include/net/bluetooth/hci.h |  7 ++++++-
+ net/bluetooth/hci_event.c   | 26 +++++++++++++++++++-------
+ 2 files changed, 25 insertions(+), 8 deletions(-)
 
 diff --git a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
-index c005b1ccdbc5..d3f2da9b2ac2 100644
+index d3f2da9b2ac2..4343f79bd02c 100644
 --- a/include/net/bluetooth/hci.h
 +++ b/include/net/bluetooth/hci.h
-@@ -2517,8 +2517,8 @@ struct hci_ev_le_phy_update_complete {
- } __packed;
+@@ -2500,7 +2500,7 @@ struct hci_ev_le_data_len_change {
  
- #define HCI_EV_LE_EXT_ADV_REPORT    0x0d
--struct hci_ev_le_ext_adv_report {
--	__le16 	 evt_type;
-+struct hci_ev_le_ext_adv_info {
-+	__le16   type;
+ #define HCI_EV_LE_DIRECT_ADV_REPORT	0x0B
+ struct hci_ev_le_direct_adv_info {
+-	__u8	 evt_type;
++	__u8	 type;
  	__u8	 bdaddr_type;
  	bdaddr_t bdaddr;
- 	__u8	 primary_phy;
-@@ -2526,11 +2526,16 @@ struct hci_ev_le_ext_adv_report {
- 	__u8	 sid;
- 	__u8	 tx_power;
+ 	__u8	 direct_addr_type;
+@@ -2508,6 +2508,11 @@ struct hci_ev_le_direct_adv_info {
  	__s8	 rssi;
--	__le16 	 interval;
--	__u8  	 direct_addr_type;
-+	__le16   interval;
-+	__u8     direct_addr_type;
- 	bdaddr_t direct_addr;
--	__u8  	 length;
--	__u8	 data[];
-+	__u8     length;
-+	__u8     data[];
-+} __packed;
-+
-+struct hci_ev_le_ext_adv_report {
-+	__u8     num;
-+	struct hci_ev_le_ext_adv_info info[];
  } __packed;
  
- #define HCI_EV_LE_ENHANCED_CONN_COMPLETE    0x0a
++struct hci_ev_le_direct_adv_report {
++	__u8	 num;
++	struct hci_ev_le_direct_adv_info info[];
++} __packed;
++
+ #define HCI_EV_LE_PHY_UPDATE_COMPLETE	0x0c
+ struct hci_ev_le_phy_update_complete {
+ 	__u8  status;
 diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index 42ffd5df6d4b..23cfcb1c0ca3 100644
+index 23cfcb1c0ca3..8f21405997d1 100644
 --- a/net/bluetooth/hci_event.c
 +++ b/net/bluetooth/hci_event.c
-@@ -6649,26 +6649,40 @@ static u8 ext_evt_type_to_legacy(struct hci_dev *hdev, u16 evt_type)
- 
- static void hci_le_ext_adv_report_evt(struct hci_dev *hdev, struct sk_buff *skb)
+@@ -6881,19 +6881,31 @@ static void hci_le_remote_conn_param_req_evt(struct hci_dev *hdev,
+ static void hci_le_direct_adv_report_evt(struct hci_dev *hdev,
+ 					 struct sk_buff *skb)
  {
 -	u8 num_reports = skb->data[0];
--	void *ptr = &skb->data[1];
-+	struct hci_ev_le_ext_adv_report *ev;
+-	struct hci_ev_le_direct_adv_info *ev = (void *)&skb->data[1];
++	struct hci_ev_le_direct_adv_report *ev;
++	int i;
 +
-+	ev = hci_le_ev_skb_pull(hdev, skb, HCI_EV_LE_EXT_ADV_REPORT,
++	ev = hci_le_ev_skb_pull(hdev, skb, HCI_EV_LE_DIRECT_ADV_REPORT,
 +				sizeof(*ev));
 +	if (!ev)
 +		return;
+ 
+-	if (!num_reports || skb->len < num_reports * sizeof(*ev) + 1)
++	if (!hci_le_ev_skb_pull(hdev, skb, HCI_EV_LE_DIRECT_ADV_REPORT,
++				flex_array_size(ev, info, ev->num)))
++		return;
 +
 +	if (!ev->num)
-+		return;
+ 		return;
  
  	hci_dev_lock(hdev);
  
--	while (num_reports--) {
--		struct hci_ev_le_ext_adv_report *ev = ptr;
-+	while (ev->num--) {
-+		struct hci_ev_le_ext_adv_info *info;
- 		u8 legacy_evt_type;
- 		u16 evt_type;
- 
--		evt_type = __le16_to_cpu(ev->evt_type);
-+		info = hci_le_ev_skb_pull(hdev, skb, HCI_EV_LE_EXT_ADV_REPORT,
-+					  sizeof(*info));
-+		if (!info)
-+			break;
+-	for (; num_reports; num_reports--, ev++)
+-		process_adv_report(hdev, ev->evt_type, &ev->bdaddr,
+-				   ev->bdaddr_type, &ev->direct_addr,
+-				   ev->direct_addr_type, ev->rssi, NULL, 0,
++	for (i = 0; i < ev->num; i++) {
++		struct hci_ev_le_direct_adv_info *info = &ev->info[i];
 +
-+		if (!hci_le_ev_skb_pull(hdev, skb, HCI_EV_LE_EXT_ADV_REPORT,
-+					info->length))
-+			break;
-+
-+		evt_type = __le16_to_cpu(info->type);
- 		legacy_evt_type = ext_evt_type_to_legacy(hdev, evt_type);
- 		if (legacy_evt_type != LE_ADV_INVALID) {
--			process_adv_report(hdev, legacy_evt_type, &ev->bdaddr,
--					   ev->bdaddr_type, NULL, 0, ev->rssi,
--					   ev->data, ev->length,
-+			process_adv_report(hdev, legacy_evt_type, &info->bdaddr,
-+					   info->bdaddr_type, NULL, 0,
-+					   info->rssi, info->data, info->length,
- 					   !(evt_type & LE_EXT_ADV_LEGACY_PDU));
- 		}
--
--		ptr += sizeof(*ev) + ev->length;
- 	}
++		process_adv_report(hdev, info->type, &info->bdaddr,
++				   info->bdaddr_type, &info->direct_addr,
++				   info->direct_addr_type, info->rssi, NULL, 0,
+ 				   false);
++	}
  
  	hci_dev_unlock(hdev);
-@@ -7019,7 +7033,7 @@ static void hci_store_wake_reason(struct hci_dev *hdev, u8 event,
- {
- 	struct hci_ev_le_advertising_info *adv;
- 	struct hci_ev_le_direct_adv_info *direct_adv;
--	struct hci_ev_le_ext_adv_report *ext_adv;
-+	struct hci_ev_le_ext_adv_info *ext_adv;
- 	const struct hci_ev_conn_complete *conn_complete = (void *)skb->data;
- 	const struct hci_ev_conn_request *conn_request = (void *)skb->data;
- 
+ }
 -- 
 2.33.1
 
