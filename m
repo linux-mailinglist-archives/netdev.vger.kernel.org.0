@@ -2,121 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B390746452F
-	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 03:57:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FE90464531
+	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 03:57:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241503AbhLADAd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 22:00:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58456 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230406AbhLADAb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 22:00:31 -0500
-Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DA4FC061746;
-        Tue, 30 Nov 2021 18:57:11 -0800 (PST)
-Received: by mail-io1-xd2e.google.com with SMTP id v23so28871876iom.12;
-        Tue, 30 Nov 2021 18:57:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=wiPYTcAHVwhA2rfc2hhHlD9xwe9XFPwcNmMOICFA7To=;
-        b=EqWzuWgHFKYe/ZKczz4kJDJc96hbbpE0lcICbU+CtZAoLV1Fsjxf/D+EHgd2pWfTZ7
-         91ndcPI8szo56Kk2hiokoJYWxYJx+XTpI1KLVxBV14ubqDKgRzLhLE64vFfwoi/JLloG
-         cfPOwTVpvs8XW3xIDHQ9kPw0hNGLeztmY1huszYrS7g6RAo/nMN/lnWRmXoLCaFwHF+T
-         ogo7iZ6nCGGAt4pDy8OyzxN731l44F5Y7FnZFNHK6C/53/ThOx1NqdAGXQLeWjqIZz+3
-         WyaQU0ON3aLSZyB7LtyRJGPtpbE69PCkBuJaRU/OHjReOyR0eydMx3QPh00tOwerE/IL
-         Ua7w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=wiPYTcAHVwhA2rfc2hhHlD9xwe9XFPwcNmMOICFA7To=;
-        b=j+cfhkVoEXvXNu0FoIGWW6ncMn2Fj4wg6M7OY9AvoLcaCbxXTuOkh8VAs0kI0bYdLn
-         plMWRGTgXoY41mCFIg/DXgNKdcwnTEyFE7FcNUqGfsze+qzaJmKIXScq+9lrdVFW5c6C
-         Wio2TbKBwd0c5mJr9p+cxNMFSGcsZK+KBQNXzdF6YFp1rwJBENOsMjOR872oxmMHIiI5
-         t2T+zYcxVbf5ZfeeShjywq6yUIGGj/sNZchgMl3acfNV1JUgtJRnPlLooRwQXKR4WrZ7
-         QTroXRORpbtzTqGG0QuZzTtHvghmFGE5y562hMwKinzkw9UcCvsLSZBd6zIwNIv4i925
-         zF/g==
-X-Gm-Message-State: AOAM533cfxxaXr5Lyh3QaiSjfsESs+R4UN5aejTh2aMy/VkbhVLdcSa8
-        yFPx1KUVjk2Enm3TeVO38d6cGCoZnPK63g==
-X-Google-Smtp-Source: ABdhPJzF5T+B1XnrxQ+NMydVZTt6lbDQT6IGiz4ewIcx/Dcd5VbMf2lNHLtbhW2bn6f9dtxjEJgjLw==
-X-Received: by 2002:a05:6602:3c2:: with SMTP id g2mr5750281iov.65.1638327429577;
-        Tue, 30 Nov 2021 18:57:09 -0800 (PST)
-Received: from cth-desktop-dorm.mad.wi.cth451.me ([2600:6c44:113f:8901:6f66:c6f8:91db:cfda])
-        by smtp.gmail.com with ESMTPSA id j8sm8385799ilu.64.2021.11.30.18.57.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Nov 2021 18:57:09 -0800 (PST)
-Date:   Tue, 30 Nov 2021 20:57:06 -0600
-From:   Tianhao Chai <cth451@gmail.com>
-To:     Igor Russkikh <irusskikh@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Julian Wiedmann <jwi@linux.ibm.com>
-Cc:     Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>
-Subject: [PATCHv3] ethernet: aquantia: Try MAC address from device tree
-Message-ID: <20211201025706.GA2181732@cth-desktop-dorm.mad.wi.cth451.me>
+        id S1346327AbhLADAm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 22:00:42 -0500
+Received: from mailgw01.mediatek.com ([60.244.123.138]:35110 "EHLO
+        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1346324AbhLADAm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 22:00:42 -0500
+X-UUID: 20eedf528da8464482d2d31b868615a4-20211201
+X-UUID: 20eedf528da8464482d2d31b868615a4-20211201
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
+        (envelope-from <xiayu.zhang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 435790683; Wed, 01 Dec 2021 10:57:19 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Wed, 1 Dec 2021 10:57:17 +0800
+Received: from mcddlt001.gcn.mediatek.inc (10.19.240.15) by
+ mtkcas11.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.0.1497.2 via Frontend Transport; Wed, 1 Dec 2021 10:57:16 +0800
+From:   <xiayu.zhang@mediatek.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <haijun.liu@mediatek.com>, <zhaoping.shu@mediatek.com>,
+        <hw.he@mediatek.com>, <srv_heupstream@mediatek.com>,
+        Xiayu Zhang <Xiayu.Zhang@mediatek.com>
+Subject: [PATCH] Fix Comment of ETH_P_802_3_MIN
+Date:   Wed, 1 Dec 2021 10:57:13 +0800
+Message-ID: <20211201025713.185516-1-xiayu.zhang@mediatek.com>
+X-Mailer: git-send-email 2.17.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Apple M1 Mac minis (2020) with 10GE NICs do not have MAC address in the
-card, but instead need to obtain MAC addresses from the device tree. In
-this case the hardware will report an invalid MAC.
+From: Xiayu Zhang <Xiayu.Zhang@mediatek.com>
 
-Currently atlantic driver does not query the DT for MAC address and will
-randomly assign a MAC if the NIC doesn't have a permanent MAC burnt in.
-This patch causes the driver to perfer a valid MAC address from OF (if
-present) over HW self-reported MAC and only fall back to a random MAC
-address when neither of them is valid.
+The description of ETH_P_802_3_MIN is misleading.
+The value of EthernetType in Ethernet II frame is more than 0x0600,
+the value of Length in 802.3 frame is less than 0x0600.
 
-Signed-off-by: Tianhao Chai <cth451@gmail.com>
+Signed-off-by: Xiayu Zhang <Xiayu.Zhang@mediatek.com>
 ---
- .../net/ethernet/aquantia/atlantic/aq_nic.c   | 24 +++++++++++--------
- 1 file changed, 14 insertions(+), 10 deletions(-)
+ include/uapi/linux/if_ether.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
-index 1acf544afeb4..2a1ab154f681 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
-@@ -316,18 +316,22 @@ int aq_nic_ndev_register(struct aq_nic_s *self)
- 	aq_macsec_init(self);
- #endif
+diff --git a/include/uapi/linux/if_ether.h b/include/uapi/linux/if_ether.h
+index 5da4ee234e0b..c0c2f3ed5729 100644
+--- a/include/uapi/linux/if_ether.h
++++ b/include/uapi/linux/if_ether.h
+@@ -117,7 +117,7 @@
+ #define ETH_P_IFE	0xED3E		/* ForCES inter-FE LFB type */
+ #define ETH_P_AF_IUCV   0xFBFB		/* IBM af_iucv [ NOT AN OFFICIALLY REGISTERED ID ] */
  
--	mutex_lock(&self->fwreq_mutex);
--	err = self->aq_fw_ops->get_mac_permanent(self->aq_hw, addr);
--	mutex_unlock(&self->fwreq_mutex);
--	if (err)
--		goto err_exit;
-+	if (platform_get_ethdev_address(&self->pdev->dev, self->ndev) != 0) {
-+		// If DT has none or an invalid one, ask device for MAC address
-+		mutex_lock(&self->fwreq_mutex);
-+		err = self->aq_fw_ops->get_mac_permanent(self->aq_hw, addr);
-+		mutex_unlock(&self->fwreq_mutex);
+-#define ETH_P_802_3_MIN	0x0600		/* If the value in the ethernet type is less than this value
++#define ETH_P_802_3_MIN	0x0600		/* If the value in the ethernet type is more than this value
+ 					 * then the frame is Ethernet II. Else it is 802.3 */
  
--	eth_hw_addr_set(self->ndev, addr);
-+		if (err)
-+			goto err_exit;
- 
--	if (!is_valid_ether_addr(self->ndev->dev_addr) ||
--	    !aq_nic_is_valid_ether_addr(self->ndev->dev_addr)) {
--		netdev_warn(self->ndev, "MAC is invalid, will use random.");
--		eth_hw_addr_random(self->ndev);
-+		if (is_valid_ether_addr(addr) &&
-+		    aq_nic_is_valid_ether_addr(addr)) {
-+			eth_hw_addr_set(self->ndev, addr);
-+		} else {
-+			netdev_warn(self->ndev, "MAC is invalid, will use random.");
-+			eth_hw_addr_random(self->ndev);
-+		}
- 	}
- 
- #if defined(AQ_CFG_MAC_ADDR_PERMANENT)
+ /*
 -- 
-2.30.2
+2.17.0
 
