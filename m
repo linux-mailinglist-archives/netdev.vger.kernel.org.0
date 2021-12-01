@@ -2,90 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C22C9465096
-	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 15:54:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AAD64650AB
+	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 16:00:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229675AbhLAO5z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Dec 2021 09:57:55 -0500
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:61196 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350065AbhLAO5y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 09:57:54 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1638370474; x=1669906474;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=0qvWck5Yix73HsfxULTOKRP79t2JigsTEYRwVg5Gvdg=;
-  b=ZG/zDOMOabVfG2GrIMDw3zYmqcvLU4U5w6xiYVKqjkGM2Z8DOc1uRENU
-   A4IE1IBxVpCl6XCz/BDHQAPtzYQ0zaZAXZZ59HEgGHzsB4SG9GiQP0Z75
-   VkfScI2AeiMiGrvT5UEUv16jbgGLLogZ5j154yq5XIb1LYqyzDSFw3ZiT
-   zm9SE+tDHT1YfvsDD1SikSSw2YnBK5f2GP+QJmjqVpjG6Fv76Iwz7zl+2
-   shylImuxU/vHE5ojf2lO5E/BgtAT0HFHMQuIqPY1z6Fl0zlTI1DVT1MjT
-   JnjtnA02rbqkSeQmKa9w25Go/O1BRmsVGcJJ0j02Yzg2gzGizjXwam/yd
-   Q==;
-IronPort-SDR: gxo3uT2B/bnm9RGb0LowVFeh/JX+LbgIuXlsHrD7FI7LZodTvmMPqd+MRyE2lTaTJIwSIiMuZQ
- wL7PIw8bjH/Wp3rOTzXEdPjrVv9isK9lNUoRWbrzpdCUXKzslJsgQQ1GaIbrGS3Fe0kOa38TFu
- mSoi8TCVjUaU47M7w9LHZ9NCjYtlbG1StIqgOvSwLKHZ3IJV/xQIKDvEUDwnNo9FYC+407c1aA
- +i0f/J3/PjPWPOfO/dqMBQ3w0n2T02aDLSPxcV1Uw7CQ1dhPOtsF1+zYWkh2mOHELB5mrKYO9g
- CQTgAdm+fB5rtplFZ783bJza
-X-IronPort-AV: E=Sophos;i="5.87,278,1631602800"; 
-   d="scan'208";a="145139566"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 01 Dec 2021 07:54:30 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Wed, 1 Dec 2021 07:54:29 -0700
-Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2176.14 via Frontend Transport; Wed, 1 Dec 2021 07:54:28 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <UNGLinuxDriver@microchip.com>, <davem@davemloft.net>,
-        <kuba@kernel.org>, <dan.carpenter@oracle.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <kernel-janitors@vger.kernel.org>
-CC:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net-next] net: lan966x: Fix duplicate check in frame extraction
-Date:   Wed, 1 Dec 2021 15:53:51 +0100
-Message-ID: <20211201145351.152208-1-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.33.0
+        id S239205AbhLAPDg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Dec 2021 10:03:36 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:57316 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234074AbhLAPDf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 10:03:35 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8A0CAB81DF7
+        for <netdev@vger.kernel.org>; Wed,  1 Dec 2021 15:00:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 42743C53FCC;
+        Wed,  1 Dec 2021 15:00:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1638370812;
+        bh=E+TvqxTnujw5hkNDeyBFgT96PNp8YZnui8e5/zqw9bk=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Z6DGJxuu3xupO5F3X67mok4uk1Ha1qt6V0CJdFWvDMdKH6gGqLYC3uoYSgpmZGgvF
+         MLc9jOQLy+J4v49C2+N0+LgMiJQ+Ac3k4rKSIfeoOEclp0otHE3xrMpB7QnIMDdnL8
+         DL0sMPex1UqBt/AuyZkzdrrzq3Er+wh8L2A3nH8+bfZIKANekWZ3LYmAQZMf4GKO6v
+         ezy3VMsX6g2voImYtMYQpqgFT2+41oNBKtgB7ytQSdL1qeLF8GLk0k0aVzPDwVT6Hs
+         6oLdVDL4vB7v9mqmO4Sr+U0JtwQ61HDd28yRVUCyLcQGm2d2ZknG6mjvahIIvw+UE9
+         +lhNTbOVbE70g==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 253F260A88;
+        Wed,  1 Dec 2021 15:00:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Subject: Re: [net 01/13] net/mlx5e: IPsec: Fix Software parser inner l3 type
+ setting in case of encapsulation
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163837081214.15182.14162375624201338855.git-patchwork-notify@kernel.org>
+Date:   Wed, 01 Dec 2021 15:00:12 +0000
+References: <20211201063709.229103-2-saeed@kernel.org>
+In-Reply-To: <20211201063709.229103-2-saeed@kernel.org>
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        raeds@nvidia.com, maord@nvidia.com, saeedm@nvidia.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The blamed commit generates the following smatch static checker warning:
+Hello:
 
- drivers/net/ethernet/microchip/lan966x/lan966x_main.c:515 lan966x_xtr_irq_handler()
-         warn: duplicate check 'sz < 0' (previous on line 502)
+This series was applied to netdev/net.git (master)
+by Saeed Mahameed <saeedm@nvidia.com>:
 
-This patch fixes this issue removing the duplicate check 'sz < 0'
+On Tue, 30 Nov 2021 22:36:57 -0800 you wrote:
+> From: Raed Salem <raeds@nvidia.com>
+> 
+> Current code wrongly uses the skb->protocol field which reflects the
+> outer l3 protocol to set the inner l3 type in Software Parser (SWP)
+> fields settings in the ethernet segment (eseg) in flows where inner
+> l3 exists like in Vxlan over ESP flow, the above method wrongly use
+> the outer protocol type instead of the inner one. thus breaking cases
+> where inner and outer headers have different protocols.
+> 
+> [...]
 
-Fixes: d28d6d2e37d10d ("net: lan966x: add port module support")
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
----
- drivers/net/ethernet/microchip/lan966x/lan966x_main.c | 5 -----
- 1 file changed, 5 deletions(-)
+Here is the summary with links:
+  - [net,01/13] net/mlx5e: IPsec: Fix Software parser inner l3 type setting in case of encapsulation
+    https://git.kernel.org/netdev/net/c/c65d638ab390
+  - [net,02/13] net/mlx5e: Fix missing IPsec statistics on uplink representor
+    https://git.kernel.org/netdev/net/c/51ebf5db67f5
+  - [net,03/13] net/mlx5e: Sync TIR params updates against concurrent create/modify
+    https://git.kernel.org/netdev/net/c/4cce2ccf08fb
+  - [net,04/13] net/mlx5: Move MODIFY_RQT command to ignore list in internal error state
+    https://git.kernel.org/netdev/net/c/e45c0b34493c
+  - [net,05/13] net/mlx5: Lag, Fix recreation of VF LAG
+    https://git.kernel.org/netdev/net/c/ffdf45315226
+  - [net,06/13] net/mlx5: E-switch, Respect BW share of the new group
+    https://git.kernel.org/netdev/net/c/1e59b32e45e4
+  - [net,07/13] net/mlx5: E-Switch, fix single FDB creation on BlueField
+    https://git.kernel.org/netdev/net/c/43a0696f1156
+  - [net,08/13] net/mlx5: E-Switch, Check group pointer before reading bw_share value
+    https://git.kernel.org/netdev/net/c/5c4e8ae7aa48
+  - [net,09/13] net/mlx5: E-Switch, Use indirect table only if all destinations support it
+    https://git.kernel.org/netdev/net/c/e219440da0c3
+  - [net,10/13] net/mlx5: Fix use after free in mlx5_health_wait_pci_up
+    https://git.kernel.org/netdev/net/c/76091b0fb609
+  - [net,11/13] net/mlx5: Fix too early queueing of log timestamp work
+    https://git.kernel.org/netdev/net/c/924cc4633f04
+  - [net,12/13] net/mlx5: Fix access to a non-supported register
+    https://git.kernel.org/netdev/net/c/502e82b91361
+  - [net,13/13] net/mlx5e: SHAMPO, Fix constant expression result
+    https://git.kernel.org/netdev/net/c/8c8cf0382257
 
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-index e9e4dca6542d..be5e2b3a7f43 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-@@ -512,11 +512,6 @@ static irqreturn_t lan966x_xtr_irq_handler(int irq, void *args)
- 			*buf = val;
- 		}
- 
--		if (sz < 0) {
--			err = sz;
--			break;
--		}
--
- 		skb->protocol = eth_type_trans(skb, dev);
- 
- 		netif_rx_ni(skb);
+You are awesome, thank you!
 -- 
-2.33.0
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
