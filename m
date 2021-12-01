@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 07AF84643F7
-	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 01:35:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 545814643F9
+	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 01:36:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345792AbhLAAjQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 19:39:16 -0500
-Received: from inva021.nxp.com ([92.121.34.21]:42646 "EHLO inva021.nxp.com"
+        id S1345805AbhLAAjS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 19:39:18 -0500
+Received: from inva021.nxp.com ([92.121.34.21]:42720 "EHLO inva021.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1345744AbhLAAjQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Nov 2021 19:39:16 -0500
+        id S1345797AbhLAAjS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 30 Nov 2021 19:39:18 -0500
 Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 31A7F20119F;
-        Wed,  1 Dec 2021 01:35:55 +0100 (CET)
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 1444A20118C;
+        Wed,  1 Dec 2021 01:35:57 +0100 (CET)
 Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id E94A520118A;
-        Wed,  1 Dec 2021 01:35:54 +0100 (CET)
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id CC0D920118A;
+        Wed,  1 Dec 2021 01:35:56 +0100 (CET)
 Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id BE91F183ACCB;
-        Wed,  1 Dec 2021 08:35:52 +0800 (+08)
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 72AF7183AC4E;
+        Wed,  1 Dec 2021 08:35:54 +0800 (+08)
 From:   Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
 To:     davem@davemloft.net, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
@@ -29,82 +29,84 @@ Cc:     kuba@kernel.org, qiangqing.zhang@nxp.com, Anson.Huang@nxp.com,
         boon.leong.ong@intel.com, Jose.Abreu@synopsys.com, mst@redhat.com,
         Joao.Pinto@synopsys.com, mingkai.hu@nxp.com, leoyang.li@nxp.com,
         xiaoliang.yang_1@nxp.com
-Subject: [PATCH 1/2] arm64: dts: imx8mp-evk: configure multiple queues on eqos
-Date:   Wed,  1 Dec 2021 08:47:49 +0800
-Message-Id: <20211201004750.49010-1-xiaoliang.yang_1@nxp.com>
+Subject: [PATCH 2/2] net: stmmac: make stmmac-tx-timeout configurable in Kconfig
+Date:   Wed,  1 Dec 2021 08:47:50 +0800
+Message-Id: <20211201004750.49010-2-xiaoliang.yang_1@nxp.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20211201004750.49010-1-xiaoliang.yang_1@nxp.com>
+References: <20211201004750.49010-1-xiaoliang.yang_1@nxp.com>
 X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Eqos ethernet support five queues on hardware, enable these queues and
-configure the priority of each queue.
+stmmac_tx_timeout() function is called when a queue transmission
+timeout. When Strict Priority is used as scheduling algorithms, the
+lower priority queue may be blocked by a higher prority queue, which
+will lead to tx timeout. We don't want to enable the tx watchdog timeout
+in this case. Therefore, this patch make stmmac-tx-timeout configurable.
+
+This patch set the CONFIG_STMMAC_TX_TIMEOUT by default when STMMAC_ETH
+is selected. If anyone want to disable the tx watchdog timeout of
+stmmac, he can unset the CONFIG_STMMAC_TX_TIMEOUT in menuconfig.
 
 Signed-off-by: Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
 ---
- arch/arm64/boot/dts/freescale/imx8mp-evk.dts | 41 ++++++++++++++++++++
- 1 file changed, 41 insertions(+)
+ drivers/net/ethernet/stmicro/stmmac/Kconfig       | 12 ++++++++++++
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c |  4 ++++
+ 2 files changed, 16 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/freescale/imx8mp-evk.dts b/arch/arm64/boot/dts/freescale/imx8mp-evk.dts
-index 7b99fad6e4d6..1e523b3d122b 100644
---- a/arch/arm64/boot/dts/freescale/imx8mp-evk.dts
-+++ b/arch/arm64/boot/dts/freescale/imx8mp-evk.dts
-@@ -86,6 +86,9 @@
- 	pinctrl-0 = <&pinctrl_eqos>;
- 	phy-mode = "rgmii-id";
- 	phy-handle = <&ethphy0>;
-+	snps,force_thresh_dma_mode;
-+	snps,mtl-tx-config = <&mtl_tx_setup>;
-+	snps,mtl-rx-config = <&mtl_rx_setup>;
- 	status = "okay";
+diff --git a/drivers/net/ethernet/stmicro/stmmac/Kconfig b/drivers/net/ethernet/stmicro/stmmac/Kconfig
+index 929cfc22cd0c..856c7d056b61 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/Kconfig
++++ b/drivers/net/ethernet/stmicro/stmmac/Kconfig
+@@ -271,4 +271,16 @@ config STMMAC_PCI
+ 	  If you have a controller with this interface, say Y or M here.
  
- 	mdio {
-@@ -99,6 +102,44 @@
- 			eee-broken-1000t;
- 		};
- 	};
+ 	  If unsure, say N.
 +
-+	mtl_tx_setup: tx-queues-config {
-+		snps,tx-queues-to-use = <5>;
-+		queue0 {
-+			snps,priority = <0x0>;
-+		};
-+		queue1 {
-+			snps,priority = <0x1>;
-+		};
-+		queue2 {
-+			snps,priority = <0x2>;
-+		};
-+		queue3 {
-+			snps,priority = <0x3>;
-+		};
-+		queue4 {
-+			snps,priority = <0x4>;
-+		};
-+	};
++config STMMAC_TX_TIMEOUT
++	bool "STMMAC TX timeout support"
++	default STMMAC_ETH
++	depends on STMMAC_ETH
++	help
++	  Support for TX timeout enable on stmmac.
 +
-+	mtl_rx_setup: rx-queues-config {
-+		snps,rx-queues-to-use = <5>;
-+		queue0 {
-+			snps,priority = <0x0>;
-+		};
-+		queue1 {
-+			snps,priority = <0x1>;
-+		};
-+		queue2 {
-+			snps,priority = <0x2>;
-+		};
-+		queue3 {
-+			snps,priority = <0x3>;
-+		};
-+		queue4 {
-+			snps,priority = <0x4>;
-+		};
-+	};
- };
++	  This selects the TX watchdog timeout support for stmmac driver. The
++	  feature is enabled by default when STMMAC_ETH is selected. If you
++	  want to disable the TX watchdog timeout feature, say N here.
++
+ endif
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 89a6c35e2546..0a712b5d0715 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -5421,6 +5421,7 @@ static int stmmac_napi_poll_rxtx(struct napi_struct *napi, int budget)
+ 	return min(rxtx_done, budget - 1);
+ }
  
- &fec {
++#ifdef CONFIG_STMMAC_TX_TIMEOUT
+ /**
+  *  stmmac_tx_timeout
+  *  @dev : Pointer to net device structure
+@@ -5436,6 +5437,7 @@ static void stmmac_tx_timeout(struct net_device *dev, unsigned int txqueue)
+ 
+ 	stmmac_global_err(priv);
+ }
++#endif
+ 
+ /**
+  *  stmmac_set_rx_mode - entry point for multicast addressing
+@@ -6632,7 +6634,9 @@ static const struct net_device_ops stmmac_netdev_ops = {
+ 	.ndo_fix_features = stmmac_fix_features,
+ 	.ndo_set_features = stmmac_set_features,
+ 	.ndo_set_rx_mode = stmmac_set_rx_mode,
++#ifdef CONFIG_STMMAC_TX_TIMEOUT
+ 	.ndo_tx_timeout = stmmac_tx_timeout,
++#endif
+ 	.ndo_eth_ioctl = stmmac_ioctl,
+ 	.ndo_setup_tc = stmmac_setup_tc,
+ 	.ndo_select_queue = stmmac_select_queue,
 -- 
 2.17.1
 
