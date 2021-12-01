@@ -2,93 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B85D464FDE
-	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 15:35:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A9FE546505E
+	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 15:48:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350438AbhLAOiM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Dec 2021 09:38:12 -0500
-Received: from mail-oi1-f169.google.com ([209.85.167.169]:41504 "EHLO
-        mail-oi1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350334AbhLAOgw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 09:36:52 -0500
-Received: by mail-oi1-f169.google.com with SMTP id u74so48879766oie.8;
-        Wed, 01 Dec 2021 06:33:27 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=4mVcnYqOvWqu8VcZ1MXpxqRjFIUZ505WaFehSXIj24Y=;
-        b=e1oqoSquESnCRAju+77JedTCUEIUd8vJK/JdqnrFwLryTaD/lf2F5gzf8SkE84i/c0
-         BOa7W9RN78B7jx1GbI4p556k1TD2VmjtfSTwuQWLLSWmv8ZPWJ2ZJ4+LBW4bzHzO788y
-         Nan3eLTDWXucS4dMJx9SmL82bE20prN9zhCr/jThZQvDk9ip/V7IxcRVbZn6iweEu+bv
-         8FXH2ZRi3rrFFd7edoX4OyilzROqAsk/bpuL/WDdeNfKifG9YDGeczOA5MtOMPfD9Q73
-         i7uRPd/J8H837e6CECaid7KPm3+v15zrgH0BD7TtYqIEe8aVTKRZkLFQugmYvHajR7vP
-         aP5g==
-X-Gm-Message-State: AOAM5317Kro2adwELrSIBZnbu+klQ+xASH3XB7MdXi4+OnOl/JvuoXnB
-        eqQGuM/P7EHCHYPRwcE27g==
-X-Google-Smtp-Source: ABdhPJxjc985MIwhTdWCLcKMo32v7Tkz/if0R9oT3CwPoOgJQIdms4+/SKc/nMyXQkRrhPelOLqrPQ==
-X-Received: by 2002:aca:3642:: with SMTP id d63mr6168003oia.95.1638369206746;
-        Wed, 01 Dec 2021 06:33:26 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id r26sm217otn.15.2021.12.01.06.33.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Dec 2021 06:33:25 -0800 (PST)
-Received: (nullmailer pid 1684352 invoked by uid 1000);
-        Wed, 01 Dec 2021 14:33:22 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     linux-arm-kernel@lists.infradead.org,
-        bcm-kernel-feedback-list@broadcom.com, devicetree@vger.kernel.org,
-        Scott Branden <sbranden@broadcom.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Doug Berger <opendmb@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        =?utf-8?b?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
-        Ray Jui <rjui@broadcom.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>
-In-Reply-To: <20211201041228.32444-8-f.fainelli@gmail.com>
-References: <20211201041228.32444-1-f.fainelli@gmail.com> <20211201041228.32444-8-f.fainelli@gmail.com>
-Subject: Re: [PATCH net-next 7/7] dt-bindings: net: Convert iProc MDIO mux to YAML
-Date:   Wed, 01 Dec 2021 08:33:22 -0600
-Message-Id: <1638369202.222306.1684348.nullmailer@robh.at.kernel.org>
+        id S240633AbhLAOwE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Dec 2021 09:52:04 -0500
+Received: from w4.tutanota.de ([81.3.6.165]:58692 "EHLO w4.tutanota.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230185AbhLAOwA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 1 Dec 2021 09:52:00 -0500
+X-Greylist: delayed 567 seconds by postgrey-1.27 at vger.kernel.org; Wed, 01 Dec 2021 09:51:58 EST
+Received: from w3.tutanota.de (unknown [192.168.1.164])
+        by w4.tutanota.de (Postfix) with ESMTP id 0D0881060391;
+        Wed,  1 Dec 2021 14:39:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1638369548;
+        s=s1; d=tuta.io;
+        h=From:From:To:To:Subject:Subject:Content-Description:Content-ID:Content-Type:Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:In-Reply-To:MIME-Version:MIME-Version:Message-ID:Message-ID:Reply-To:References:Sender;
+        bh=saLGlVSL4WbeU5QgS57F+QIGU1jTliY0Iykn4jzGXTQ=;
+        b=J92rg+uQpiL9UpbVsGK8qAO8TxtkSPRcZ87A5MuCTnncOIGbySGVgSQsV85CBptB
+        uCqS43FRehGluROI1iWBJP7gxn9WFu+t4UdMy7ED2R2c8w6mwrY2M8fMoL2dckPhZwQ
+        4HGKF6XkxAUAPVu0xLSRvf+pPtYCzFtmWllPtevwMwSYZupIo3sOZ816KxVJsthL1c/
+        rTImwtJwbXT3+9Wvxbv10jiqOtOHhFMiOfRUXF1Akpy189rofxZKFpa7eAFLO8S8XZP
+        Ey5BSMZL3roHaxh73LzGK823J6+M/3GWWmxEIjoFHyqBZa3BEf9usGF2wX6yuh8QVsI
+        KaltbEouww==
+Date:   Wed, 1 Dec 2021 15:39:08 +0100 (CET)
+From:   Adam Kandur <rndd@tuta.io>
+To:     netdev@vger.kernel.org
+Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Message-ID: <MpqQpIa--F-2@tuta.io>
+Subject: [PATCH] QLGE: qlge_main: Fix style
+MIME-Version: 1.0
+Content-Type: multipart/mixed; 
+        boundary="----=_Part_341183_1571019938.1638369549034"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 30 Nov 2021 20:12:28 -0800, Florian Fainelli wrote:
-> Conver the Broadcom iProc MDIO mux Device Tree binding to YAML.
-> 
-> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-> ---
->  .../bindings/net/brcm,mdio-mux-iproc.txt      | 62 --------------
->  .../bindings/net/brcm,mdio-mux-iproc.yaml     | 80 +++++++++++++++++++
->  2 files changed, 80 insertions(+), 62 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/net/brcm,mdio-mux-iproc.txt
->  create mode 100644 Documentation/devicetree/bindings/net/brcm,mdio-mux-iproc.yaml
-> 
+------=_Part_341183_1571019938.1638369549034
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-yamllint warnings/errors:
 
-dtschema/dtc warnings/errors:
-Documentation/devicetree/bindings/net/brcm,mdio-mux-iproc.example.dt.yaml:0:0: /example-0/mdio-mux@66020000/mdio@0/pci-phy@0: failed to match any schema with compatible: ['brcm,ns2-pcie-phy']
-Documentation/devicetree/bindings/net/brcm,mdio-mux-iproc.example.dt.yaml:0:0: /example-0/mdio-mux@66020000/mdio@7/pci-phy@0: failed to match any schema with compatible: ['brcm,ns2-pcie-phy']
 
-doc reference errors (make refcheckdocs):
+------=_Part_341183_1571019938.1638369549034
+Content-Type: application/octet-stream; 
+	name=0001-QLGE-qlge_main-Fix-style.patch
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; 
+	filename=0001-QLGE-qlge_main-Fix-style.patch
 
-See https://patchwork.ozlabs.org/patch/1562000
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
-
+RnJvbSA0MTI2NmE3MmFlMmFkOGZiNDVlOTZlNDU1YzUxOTE3N2JmZDIzYmMwIE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQpGcm9tOiBBZGFtIEthbmR1ciA8cm5kZEB0dXRhLmlvPgpEYXRlOiBXZWQs
+IDEgRGVjIDIwMjEgMTc6MzI6MTEgKzAzMDAKU3ViamVjdDogW1BBVENIXSBRTEdFOiBxbGdlX21h
+aW46IEZpeCBzdHlsZQoKLS0tCiBkcml2ZXJzL3N0YWdpbmcvcWxnZS9xbGdlX21haW4uYyB8IDI4
+ICsrKysrKysrKysrKystLS0tLS0tLS0tLS0tLS0KIDEgZmlsZSBjaGFuZ2VkLCAxMyBpbnNlcnRp
+b25zKCspLCAxNSBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL3N0YWdpbmcvcWxn
+ZS9xbGdlX21haW4uYyBiL2RyaXZlcnMvc3RhZ2luZy9xbGdlL3FsZ2VfbWFpbi5jCmluZGV4IDk4
+NzNiYjJhOS4uYzg2ZTJhOTM2IDEwMDY0NAotLS0gYS9kcml2ZXJzL3N0YWdpbmcvcWxnZS9xbGdl
+X21haW4uYworKysgYi9kcml2ZXJzL3N0YWdpbmcvcWxnZS9xbGdlX21haW4uYwpAQCAtMTIwMCwx
+MSArMTIwMCwxMSBAQCBzdGF0aWMgdm9pZCBxbGdlX3VubWFwX3NlbmQoc3RydWN0IHFsZ2VfYWRh
+cHRlciAqcWRldiwKIAkJCSAqIGVsZW1lbnQgYW5kIHRoZXJlIGlzIG1vcmUgdGhhbiA2IGZyYWdz
+LAogCQkJICogdGhlbiBpdHMgYW4gT0FMLgogCQkJICovCi0JCQlpZiAoaSA9PSA3KSB7CisJCQlp
+ZiAoaSA9PSA3KQogCQkJCW5ldGlmX3ByaW50ayhxZGV2LCB0eF9kb25lLCBLRVJOX0RFQlVHLAog
+CQkJCQkgICAgIHFkZXYtPm5kZXYsCiAJCQkJCSAgICAgInVubWFwcGluZyBPQUwgYXJlYS5cbiIp
+OwotCQkJfQorCiAJCQlkbWFfdW5tYXBfc2luZ2xlKCZxZGV2LT5wZGV2LT5kZXYsCiAJCQkJCSBk
+bWFfdW5tYXBfYWRkcigmdHhfcmluZ19kZXNjLT5tYXBbaV0sCiAJCQkJCQkJbWFwYWRkciksCkBA
+IC0xMjM2LDEwICsxMjM2LDEwIEBAIHN0YXRpYyBpbnQgcWxnZV9tYXBfc2VuZChzdHJ1Y3QgcWxn
+ZV9hZGFwdGVyICpxZGV2LAogCXN0cnVjdCB0eF9idWZfZGVzYyAqdGJkID0gbWFjX2lvY2JfcHRy
+LT50YmQ7CiAJaW50IGZyYWdfY250ID0gc2tiX3NoaW5mbyhza2IpLT5ucl9mcmFnczsKIAotCWlm
+IChmcmFnX2NudCkgeworCWlmIChmcmFnX2NudCkKIAkJbmV0aWZfcHJpbnRrKHFkZXYsIHR4X3F1
+ZXVlZCwgS0VSTl9ERUJVRywgcWRldi0+bmRldiwKIAkJCSAgICAgImZyYWdfY250ID0gJWQuXG4i
+LCBmcmFnX2NudCk7Ci0JfQorCiAJLyoKIAkgKiBNYXAgdGhlIHNrYiBidWZmZXIgZmlyc3QuCiAJ
+ICovCkBAIC0zMzUxLDEyICszMzUxLDExIEBAIHN0YXRpYyB2b2lkIHFsZ2VfZnJlZV9pcnEoc3Ry
+dWN0IHFsZ2VfYWRhcHRlciAqcWRldikKIAogCWZvciAoaSA9IDA7IGkgPCBxZGV2LT5pbnRyX2Nv
+dW50OyBpKyssIGludHJfY29udGV4dCsrKSB7CiAJCWlmIChpbnRyX2NvbnRleHQtPmhvb2tlZCkg
+ewotCQkJaWYgKHRlc3RfYml0KFFMX01TSVhfRU5BQkxFRCwgJnFkZXYtPmZsYWdzKSkgeworCQkJ
+aWYgKHRlc3RfYml0KFFMX01TSVhfRU5BQkxFRCwgJnFkZXYtPmZsYWdzKSkKIAkJCQlmcmVlX2ly
+cShxZGV2LT5tc2lfeF9lbnRyeVtpXS52ZWN0b3IsCiAJCQkJCSAmcWRldi0+cnhfcmluZ1tpXSk7
+Ci0JCQl9IGVsc2UgeworCQkJZWxzZQogCQkJCWZyZWVfaXJxKHFkZXYtPnBkZXYtPmlycSwgJnFk
+ZXYtPnJ4X3JpbmdbMF0pOwotCQkJfQogCQl9CiAJfQogCXFsZ2VfZGlzYWJsZV9tc2l4KHFkZXYp
+OwpAQCAtNDEyOCwyMiArNDEyNywyMSBAQCBzdGF0aWMgdm9pZCBxbGdlX3NldF9tdWx0aWNhc3Rf
+bGlzdChzdHJ1Y3QgbmV0X2RldmljZSAqbmRldikKIAlpZiAobmRldi0+ZmxhZ3MgJiBJRkZfUFJP
+TUlTQykgewogCQlpZiAoIXRlc3RfYml0KFFMX1BST01JU0NVT1VTLCAmcWRldi0+ZmxhZ3MpKSB7
+CiAJCQlpZiAocWxnZV9zZXRfcm91dGluZ19yZWcKLQkJCSAgICAocWRldiwgUlRfSURYX1BST01J
+U0NVT1VTX1NMT1QsIFJUX0lEWF9WQUxJRCwgMSkpIHsKKwkJCSAgICAocWRldiwgUlRfSURYX1BS
+T01JU0NVT1VTX1NMT1QsIFJUX0lEWF9WQUxJRCwgMSkpCiAJCQkJbmV0aWZfZXJyKHFkZXYsIGh3
+LCBxZGV2LT5uZGV2LAogCQkJCQkgICJGYWlsZWQgdG8gc2V0IHByb21pc2N1b3VzIG1vZGUuXG4i
+KTsKLQkJCX0gZWxzZSB7CisJCQllbHNlCiAJCQkJc2V0X2JpdChRTF9QUk9NSVNDVU9VUywgJnFk
+ZXYtPmZsYWdzKTsKLQkJCX0KLQkJfQogCX0gZWxzZSB7CiAJCWlmICh0ZXN0X2JpdChRTF9QUk9N
+SVNDVU9VUywgJnFkZXYtPmZsYWdzKSkgewotCQkJaWYgKHFsZ2Vfc2V0X3JvdXRpbmdfcmVnCi0J
+CQkgICAgKHFkZXYsIFJUX0lEWF9QUk9NSVNDVU9VU19TTE9ULCBSVF9JRFhfVkFMSUQsIDApKSB7
+CisJCQlpZiAocWxnZV9zZXRfcm91dGluZ19yZWcgKHFkZXYsCisJCQkJCQkgIFJUX0lEWF9QUk9N
+SVNDVU9VU19TTE9ULAorCQkJCQkJICBSVF9JRFhfVkFMSUQsCisJCQkJCQkgIDApKQogCQkJCW5l
+dGlmX2VycihxZGV2LCBodywgcWRldi0+bmRldiwKIAkJCQkJICAiRmFpbGVkIHRvIGNsZWFyIHBy
+b21pc2N1b3VzIG1vZGUuXG4iKTsKLQkJCX0gZWxzZSB7CisJCQllbHNlCiAJCQkJY2xlYXJfYml0
+KFFMX1BST01JU0NVT1VTLCAmcWRldi0+ZmxhZ3MpOwotCQkJfQogCQl9CiAJfQogCi0tIAoyLjM0
+LjAKCg==
+------=_Part_341183_1571019938.1638369549034--
