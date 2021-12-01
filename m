@@ -2,32 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2068B46568C
-	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 20:36:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B7890465692
+	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 20:37:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245430AbhLATkQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Dec 2021 14:40:16 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:34048 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234430AbhLATkP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 14:40:15 -0500
+        id S245513AbhLATkT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Dec 2021 14:40:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33580 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239341AbhLATkQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 14:40:16 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF0A7C061748;
+        Wed,  1 Dec 2021 11:36:54 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 960DAB820F1;
-        Wed,  1 Dec 2021 19:36:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D335C53FCC;
-        Wed,  1 Dec 2021 19:36:49 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 270C3CE20D7;
+        Wed,  1 Dec 2021 19:36:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84F01C53FD2;
+        Wed,  1 Dec 2021 19:36:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638387410;
-        bh=kc5/OleVC6fEtlPhvq/xyc1UpZEv5YKknWvWDA4gvg8=;
+        s=k20201202; t=1638387411;
+        bh=IYyg1u8T7so8ka7N+0GTaJz8oYtsZpRFGY/nRldkmwQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kvhinP9GFlxWiFJqOm1r0sCPlDn9ljLffM1uC71aTXIOgcbxrmfR3so8Zz8Qud1Da
-         NXtUdnrtqZrS2gzhYTt7Mpuc9bbtKV4oprZY6BoMww29ZiYqsYTl4eLuwfMtkBdz19
-         /xJd/vX7ovZVhguoX0m3IWlc2dURYtfE5S+u6D4ZUlRCjw3plZg+2ScWiGuuAW/BBF
-         AUGz4YlRAu6Th7XAahQdmmQ1EWoozq6eKCWzpPGxS0OrKmxW3/P5MEOfhnAcDWhvLz
-         1r4EKrUDB+S7u3OHfknZvoNb2L7vPiIbg9kWxFekTAUyMTLSc2Mzc6Jp7drMQTH9Yi
-         hMkeJhRKDTVCw==
+        b=d6ZRIUvwsoAH/8bgHFJli1im9lV7iycAVSVyfEBa+O+BuE7K3f5ygsGSJEHojb0iD
+         YnQpb05z+Du918ravsxT7G3ganWyN5yg6Lv2YUrrwDDyy5qscNGOcIeM3rBuaFFyj8
+         hs/I2FFv4v/tlTLZL7QYADxmbWkl7QQ2+/vwLBtROIkcASEeUCvo0EsWbL7g32hTlt
+         V+2PyxDGvto9aPL4+/3x6LFN4cAPbpKhmd078XeirDdu1rTQatEvI/vulX+/xzEWqZ
+         4eRtqeWGYPTdyjpWdhGpL6f+pfziC8P4v+BwoPqvBeDtNnILTTgVsfeQHn1jvdKSPd
+         CZr0fgDd5XeyA==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     Saeed Mahameed <saeedm@nvidia.com>,
         Leon Romanovsky <leonro@nvidia.com>
@@ -35,9 +38,9 @@ Cc:     Jason Gunthorpe <jgg@nvidia.com>, Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
         linux-rdma@vger.kernel.org, Maor Gottlieb <maorg@nvidia.com>,
         Mark Bloch <mbloch@nvidia.com>
-Subject: [PATCH mlx5-next 1/4] net/mlx5: Separate FDB namespace
-Date:   Wed,  1 Dec 2021 11:36:18 -0800
-Message-Id: <20211201193621.9129-2-saeed@kernel.org>
+Subject: [PATCH mlx5-next 2/4] net/mlx5: Refactor mlx5_get_flow_namespace
+Date:   Wed,  1 Dec 2021 11:36:19 -0800
+Message-Id: <20211201193621.9129-3-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211201193621.9129-1-saeed@kernel.org>
 References: <20211201193621.9129-1-saeed@kernel.org>
@@ -49,127 +52,90 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Maor Gottlieb <maorg@nvidia.com>
 
-This patch doesn't add an additional namespaces, but just separates the
-naming to be used by each FDB user, bypass and kernel.
-Downstream patches will actually split this up and allow to have more
-than single priority for the bypass users.
+Have all the namespace type check in the same switch case.
 
 Signed-off-by: Maor Gottlieb <maorg@nvidia.com>
 Reviewed-by: Mark Bloch <mbloch@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/infiniband/hw/mlx5/fs.c                   | 14 +++++++-------
- drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.c  |  4 +++-
- drivers/net/ethernet/mellanox/mlx5/core/fs_core.c |  1 +
- include/linux/mlx5/fs.h                           |  1 +
- 4 files changed, 12 insertions(+), 8 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/fs_core.c | 44 ++++++++++++++-----
+ 1 file changed, 32 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/infiniband/hw/mlx5/fs.c b/drivers/infiniband/hw/mlx5/fs.c
-index b780185d9dc6..510ef85ef6e4 100644
---- a/drivers/infiniband/hw/mlx5/fs.c
-+++ b/drivers/infiniband/hw/mlx5/fs.c
-@@ -1508,7 +1508,7 @@ _get_flow_table(struct mlx5_ib_dev *dev,
- 		    !esw_encap)
- 			flags |= MLX5_FLOW_TABLE_TUNNEL_EN_REFORMAT;
- 		break;
--	case MLX5_FLOW_NAMESPACE_FDB:
-+	case MLX5_FLOW_NAMESPACE_FDB_BYPASS:
- 		max_table_size = BIT(
- 			MLX5_CAP_ESW_FLOWTABLE_FDB(dev->mdev, log_max_ft_size));
- 		if (MLX5_CAP_ESW_FLOWTABLE_FDB(dev->mdev, decap) && esw_encap)
-@@ -1546,7 +1546,7 @@ _get_flow_table(struct mlx5_ib_dev *dev,
- 	case MLX5_FLOW_NAMESPACE_EGRESS:
- 		prio = &dev->flow_db->egress_prios[priority];
- 		break;
--	case MLX5_FLOW_NAMESPACE_FDB:
-+	case MLX5_FLOW_NAMESPACE_FDB_BYPASS:
- 		prio = &dev->flow_db->fdb;
- 		break;
- 	case MLX5_FLOW_NAMESPACE_RDMA_RX:
-@@ -1937,7 +1937,7 @@ mlx5_ib_ft_type_to_namespace(enum mlx5_ib_uapi_flow_table_type table_type,
- 		*namespace = MLX5_FLOW_NAMESPACE_EGRESS;
- 		break;
- 	case MLX5_IB_UAPI_FLOW_TABLE_TYPE_FDB:
--		*namespace = MLX5_FLOW_NAMESPACE_FDB;
-+		*namespace = MLX5_FLOW_NAMESPACE_FDB_BYPASS;
- 		break;
- 	case MLX5_IB_UAPI_FLOW_TABLE_TYPE_RDMA_RX:
- 		*namespace = MLX5_FLOW_NAMESPACE_RDMA_RX;
-@@ -2029,8 +2029,8 @@ static int get_dests(struct uverbs_attr_bundle *attrs,
- 	}
- 
- 	/* Allow only DEVX object, drop as dest for FDB */
--	if (fs_matcher->ns_type == MLX5_FLOW_NAMESPACE_FDB && !(dest_devx ||
--	     (*flags & MLX5_IB_ATTR_CREATE_FLOW_FLAGS_DROP)))
-+	if (fs_matcher->ns_type == MLX5_FLOW_NAMESPACE_FDB_BYPASS &&
-+	    !(dest_devx || (*flags & MLX5_IB_ATTR_CREATE_FLOW_FLAGS_DROP)))
- 		return -EINVAL;
- 
- 	/* Allow only DEVX object or QP as dest when inserting to RDMA_RX */
-@@ -2050,7 +2050,7 @@ static int get_dests(struct uverbs_attr_bundle *attrs,
- 		if (!is_flow_dest(devx_obj, dest_id, dest_type))
- 			return -EINVAL;
- 		/* Allow only flow table as dest when inserting to FDB or RDMA_RX */
--		if ((fs_matcher->ns_type == MLX5_FLOW_NAMESPACE_FDB ||
-+		if ((fs_matcher->ns_type == MLX5_FLOW_NAMESPACE_FDB_BYPASS ||
- 		     fs_matcher->ns_type == MLX5_FLOW_NAMESPACE_RDMA_RX) &&
- 		    *dest_type != MLX5_FLOW_DESTINATION_TYPE_FLOW_TABLE)
- 			return -EINVAL;
-@@ -2320,7 +2320,7 @@ static int UVERBS_HANDLER(MLX5_IB_METHOD_FLOW_MATCHER_CREATE)(
- 	if (err)
- 		goto end;
- 
--	if (obj->ns_type == MLX5_FLOW_NAMESPACE_FDB &&
-+	if (obj->ns_type == MLX5_FLOW_NAMESPACE_FDB_BYPASS &&
- 	    mlx5_eswitch_mode(dev->mdev) != MLX5_ESWITCH_OFFLOADS) {
- 		err = -EINVAL;
- 		goto end;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.c b/drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.c
-index 750b21124a1a..762b9730a897 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.c
-@@ -788,7 +788,8 @@ static int mlx5_cmd_packet_reformat_alloc(struct mlx5_flow_root_namespace *ns,
- 	int err;
- 	u32 *in;
- 
--	if (namespace == MLX5_FLOW_NAMESPACE_FDB)
-+	if (namespace == MLX5_FLOW_NAMESPACE_FDB ||
-+	    namespace == MLX5_FLOW_NAMESPACE_FDB_BYPASS)
- 		max_encap_size = MLX5_CAP_ESW(dev, max_encap_header_size);
- 	else
- 		max_encap_size = MLX5_CAP_FLOWTABLE(dev, max_encap_header_size);
-@@ -860,6 +861,7 @@ static int mlx5_cmd_modify_header_alloc(struct mlx5_flow_root_namespace *ns,
- 
- 	switch (namespace) {
- 	case MLX5_FLOW_NAMESPACE_FDB:
-+	case MLX5_FLOW_NAMESPACE_FDB_BYPASS:
- 		max_actions = MLX5_CAP_ESW_FLOWTABLE_FDB(dev, max_modify_header_actions);
- 		table_type = FS_FT_FDB;
- 		break;
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-index 386ab9a2d490..2d26e16a67cd 100644
+index 2d26e16a67cd..9736f0dd6a49 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-@@ -2220,6 +2220,7 @@ struct mlx5_flow_namespace *mlx5_get_flow_namespace(struct mlx5_core_dev *dev,
+@@ -2206,6 +2206,22 @@ struct mlx5_flow_namespace *mlx5_get_fdb_sub_ns(struct mlx5_core_dev *dev,
+ }
+ EXPORT_SYMBOL(mlx5_get_fdb_sub_ns);
  
- 	switch (type) {
- 	case MLX5_FLOW_NAMESPACE_FDB:
-+	case MLX5_FLOW_NAMESPACE_FDB_BYPASS:
- 		if (steering->fdb_root_ns)
- 			return &steering->fdb_root_ns->ns;
++static bool is_nic_rx_ns(enum mlx5_flow_namespace_type type)
++{
++	switch (type) {
++	case MLX5_FLOW_NAMESPACE_BYPASS:
++	case MLX5_FLOW_NAMESPACE_LAG:
++	case MLX5_FLOW_NAMESPACE_OFFLOADS:
++	case MLX5_FLOW_NAMESPACE_ETHTOOL:
++	case MLX5_FLOW_NAMESPACE_KERNEL:
++	case MLX5_FLOW_NAMESPACE_LEFTOVERS:
++	case MLX5_FLOW_NAMESPACE_ANCHOR:
++		return true;
++	default:
++		return false;
++	}
++}
++
+ struct mlx5_flow_namespace *mlx5_get_flow_namespace(struct mlx5_core_dev *dev,
+ 						    enum mlx5_flow_namespace_type type)
+ {
+@@ -2236,31 +2252,35 @@ struct mlx5_flow_namespace *mlx5_get_flow_namespace(struct mlx5_core_dev *dev,
+ 		if (steering->sniffer_tx_root_ns)
+ 			return &steering->sniffer_tx_root_ns->ns;
  		return NULL;
-diff --git a/include/linux/mlx5/fs.h b/include/linux/mlx5/fs.h
-index cd2d4c572367..b1aad14689e3 100644
---- a/include/linux/mlx5/fs.h
-+++ b/include/linux/mlx5/fs.h
-@@ -73,6 +73,7 @@ enum mlx5_flow_namespace_type {
- 	MLX5_FLOW_NAMESPACE_KERNEL,
- 	MLX5_FLOW_NAMESPACE_LEFTOVERS,
- 	MLX5_FLOW_NAMESPACE_ANCHOR,
-+	MLX5_FLOW_NAMESPACE_FDB_BYPASS,
- 	MLX5_FLOW_NAMESPACE_FDB,
- 	MLX5_FLOW_NAMESPACE_ESW_EGRESS,
- 	MLX5_FLOW_NAMESPACE_ESW_INGRESS,
+-	default:
+-		break;
+-	}
+-
+-	if (type == MLX5_FLOW_NAMESPACE_EGRESS ||
+-	    type == MLX5_FLOW_NAMESPACE_EGRESS_KERNEL) {
++	case MLX5_FLOW_NAMESPACE_EGRESS:
++	case MLX5_FLOW_NAMESPACE_EGRESS_KERNEL:
+ 		root_ns = steering->egress_root_ns;
+ 		prio = type - MLX5_FLOW_NAMESPACE_EGRESS;
+-	} else if (type == MLX5_FLOW_NAMESPACE_RDMA_RX) {
++		break;
++	case MLX5_FLOW_NAMESPACE_RDMA_RX:
+ 		root_ns = steering->rdma_rx_root_ns;
+ 		prio = RDMA_RX_BYPASS_PRIO;
+-	} else if (type == MLX5_FLOW_NAMESPACE_RDMA_RX_KERNEL) {
++		break;
++	case MLX5_FLOW_NAMESPACE_RDMA_RX_KERNEL:
+ 		root_ns = steering->rdma_rx_root_ns;
+ 		prio = RDMA_RX_KERNEL_PRIO;
+-	} else if (type == MLX5_FLOW_NAMESPACE_RDMA_TX) {
++		break;
++	case MLX5_FLOW_NAMESPACE_RDMA_TX:
+ 		root_ns = steering->rdma_tx_root_ns;
+-	} else if (type == MLX5_FLOW_NAMESPACE_RDMA_RX_COUNTERS) {
++		break;
++	case MLX5_FLOW_NAMESPACE_RDMA_RX_COUNTERS:
+ 		root_ns = steering->rdma_rx_root_ns;
+ 		prio = RDMA_RX_COUNTERS_PRIO;
+-	} else if (type == MLX5_FLOW_NAMESPACE_RDMA_TX_COUNTERS) {
++		break;
++	case MLX5_FLOW_NAMESPACE_RDMA_TX_COUNTERS:
+ 		root_ns = steering->rdma_tx_root_ns;
+ 		prio = RDMA_TX_COUNTERS_PRIO;
+-	} else { /* Must be NIC RX */
++		break;
++	default: /* Must be NIC RX */
++		WARN_ON(!is_nic_rx_ns(type));
+ 		root_ns = steering->root_ns;
+ 		prio = type;
++		break;
+ 	}
+ 
+ 	if (!root_ns)
 -- 
 2.31.1
 
