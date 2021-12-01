@@ -2,99 +2,236 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AFF34655FD
-	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 20:03:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8AEC0465625
+	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 20:07:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245030AbhLATGt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Dec 2021 14:06:49 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:34202 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1352632AbhLATGl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 1 Dec 2021 14:06:41 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=w7Zif49jo+7Du23s9WYO9kqOZP/pxG5qld7sHh40ygU=; b=5eFd53MiNT8FilJNQOmX9KJs39
-        JUUCw+s9hV0a+Hj/4NuExBiPii93rD2EtmkXjBIB6pBRP70rGGfXvti+CBdM6FqoD4aUtMahCRREj
-        wi5d9eN6NSnJ869Ycs1LgNIYHolxVtcGS2on4uDXlyq1nb+dvdS3rky9LIx2Da6xqs2A=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1msUsg-00FFT8-DQ; Wed, 01 Dec 2021 20:03:02 +0100
-Date:   Wed, 1 Dec 2021 20:03:02 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
+        id S243486AbhLATK2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Dec 2021 14:10:28 -0500
+Received: from mail-ot1-f51.google.com ([209.85.210.51]:37604 "EHLO
+        mail-ot1-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239347AbhLATK0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 14:10:26 -0500
+Received: by mail-ot1-f51.google.com with SMTP id h19-20020a9d3e53000000b0056547b797b2so36611328otg.4;
+        Wed, 01 Dec 2021 11:07:00 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Ns1VGFmIcxV8dyTDHSaaXTsKQnH3/DvAnnTtMRYBS+Q=;
+        b=ERHEm+eSieZOplMSofp1XjojM34V/fNPDhjBawGpNSfUez5ls4INXm3s4gaGwV6aIk
+         Od0843fwnxmu3igurGD6OOoTXq6Rr3jNxmSJe//cnxDsUelIiLSgpXl5JE+RbdK8chBj
+         5Wv5jKk+h2SuCLtJ+YbVcyh+vYnrSSD+Q1iA5HoUCqDOFEykjBEGHG09kaFlvfCnvPAW
+         XYjWnk5PTQ9WhiPl7Twsk630A1N6yBv7TuQQZR+8bDYe9s7y+1CFEiIANKWd8aDrVixU
+         SD7kv9PIP5K7Jx/yIPkyd7JcXRj7KGKwL8MLvRnY9Oj4rpXT6IXwaDmVjmMV0TaOSe1X
+         06pQ==
+X-Gm-Message-State: AOAM5304O65amjDcPA7i4OF1KJ+2pB/W7kh9QTxtiaxntnrUsadCnj9P
+        pD36GE3Qj5spA5qEdUi65g==
+X-Google-Smtp-Source: ABdhPJyuR82qEd6pOKlVcbGE8T/SQxfzOcBBPB6zaklRvnXx6zarsyFBDAGE0kbYD4LuWHhdyxwljg==
+X-Received: by 2002:a05:6830:195:: with SMTP id q21mr7238076ota.355.1638385620493;
+        Wed, 01 Dec 2021 11:07:00 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id n26sm201220ooq.36.2021.12.01.11.06.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 01 Dec 2021 11:06:59 -0800 (PST)
+Received: (nullmailer pid 2270663 invoked by uid 1000);
+        Wed, 01 Dec 2021 19:06:58 -0000
+Date:   Wed, 1 Dec 2021 13:06:58 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        James Prestwood <prestwoj@gmail.com>,
-        Justin Iurman <justin.iurman@uliege.be>,
-        Praveen Chaudhary <praveen5582@gmail.com>,
-        "Jason A . Donenfeld" <Jason@zx2c4.com>,
-        Eric Dumazet <edumazet@google.com>,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: [patch RFC net-next 2/3] icmp: ICMPV6: Examine invoking packet
- for Segment Route Headers.
-Message-ID: <YafG5hboD7itUddn@lunn.ch>
-References: <20211201163245.3629254-1-andrew@lunn.ch>
- <20211201163245.3629254-3-andrew@lunn.ch>
- <CA+FuTSfLxEic2ZtD8ygzUQMrftLkRyfjdf7GH6Pf8ioSRjHrOg@mail.gmail.com>
- <Yae6lGvTt8sCtLJX@lunn.ch>
- <CA+FuTSce_Q=uyn9brCDmwijf5-zOp3G9QDqSAaU=PC7=oCxUPQ@mail.gmail.com>
+        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
+        "maintainer:BROADCOM IPROC GBIT ETHERNET DRIVER" 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Doug Berger <opendmb@gmail.com>, Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "moderated list:BROADCOM IPROC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH net-next 7/7] dt-bindings: net: Convert iProc MDIO mux to
+ YAML
+Message-ID: <YafH0nADqO7DTU4A@robh.at.kernel.org>
+References: <20211201041228.32444-1-f.fainelli@gmail.com>
+ <20211201041228.32444-8-f.fainelli@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CA+FuTSce_Q=uyn9brCDmwijf5-zOp3G9QDqSAaU=PC7=oCxUPQ@mail.gmail.com>
+In-Reply-To: <20211201041228.32444-8-f.fainelli@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 01, 2021 at 10:22:38AM -0800, Willem de Bruijn wrote:
-> > > > +static void icmpv6_notify_srh(struct sk_buff *skb, struct inet6_skb_parm *opt)
-> > > > +{
-> > > > +       struct sk_buff *skb_orig;
-> > > > +       struct ipv6_sr_hdr *srh;
-> > > > +
-> > > > +       skb_orig = skb_clone(skb, GFP_ATOMIC);
-> > > > +       if (!skb_orig)
-> > > > +               return;
-> > >
-> > > Is this to be allowed to write to skb->cb? Or because seg6_get_srh
-> > > calls pskb_may_pull to parse the headers?
-> >
-> > This is an ICMP error message. So we have an IP packet, skb, which
-> > contains in the message body the IP packet which invoked the error. If
-> > we pass skb to seg6_get_srh() it will look in the received ICMP
-> > packet. But we actually want to find the SRH in the packet which
-> > invoked the error, the one which is in the message body. So the code
-> > makes a clone of the skb, and then updates the pointers so that it
-> > points to the invoking packet within the ICMP packet. Then we can use
-> > seg6_get_srh() on this inner packet, since it just looks like an
-> > ordinary IP packet.
+On Tue, Nov 30, 2021 at 08:12:28PM -0800, Florian Fainelli wrote:
+> Conver the Broadcom iProc MDIO mux Device Tree binding to YAML.
 > 
-> Ah of course. I clearly did not appreciate the importance of that
-> skb_reset_network_header.
-
-So i should probably add a comment here. If we stick with this design.
-
-> > Yes, i checked that. Because the skb has been cloned, if it needs to
-> > rearrange the packet because it goes over a fragment boundary,
-> > pskb_may_pull() will return false. And then we won't find the
-> > SRH.
+> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+> ---
+>  .../bindings/net/brcm,mdio-mux-iproc.txt      | 62 --------------
+>  .../bindings/net/brcm,mdio-mux-iproc.yaml     | 80 +++++++++++++++++++
+>  2 files changed, 80 insertions(+), 62 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/net/brcm,mdio-mux-iproc.txt
+>  create mode 100644 Documentation/devicetree/bindings/net/brcm,mdio-mux-iproc.yaml
 > 
-> Great. So the feature only works if the SRH is in the linear header.
+> diff --git a/Documentation/devicetree/bindings/net/brcm,mdio-mux-iproc.txt b/Documentation/devicetree/bindings/net/brcm,mdio-mux-iproc.txt
+> deleted file mode 100644
+> index deb9e852ea27..000000000000
+> --- a/Documentation/devicetree/bindings/net/brcm,mdio-mux-iproc.txt
+> +++ /dev/null
+> @@ -1,62 +0,0 @@
+> -Properties for an MDIO bus multiplexer found in Broadcom iProc based SoCs.
+> -
+> -This MDIO bus multiplexer defines buses that could be internal as well as
+> -external to SoCs and could accept MDIO transaction compatible to C-22 or
+> -C-45 Clause. When child bus is selected, one needs to select these two
+> -properties as well to generate desired MDIO transaction on appropriate bus.
+> -
+> -Required properties in addition to the generic multiplexer properties:
+> -
+> -MDIO multiplexer node:
+> -- compatible: brcm,mdio-mux-iproc.
+> -
+> -Every non-ethernet PHY requires a compatible so that it could be probed based
+> -on this compatible string.
+> -
+> -Optional properties:
+> -- clocks: phandle of the core clock which drives the mdio block.
+> -
+> -Additional information regarding generic multiplexer properties can be found
+> -at- Documentation/devicetree/bindings/net/mdio-mux.yaml
+> -
+> -
+> -for example:
+> -		mdio_mux_iproc: mdio-mux@66020000 {
+> -			compatible = "brcm,mdio-mux-iproc";
+> -			reg = <0x66020000 0x250>;
+> -			#address-cells = <1>;
+> -			#size-cells = <0>;
+> -
+> -			mdio@0 {
+> -				reg = <0x0>;
+> -				#address-cells = <1>;
+> -				#size-cells = <0>;
+> -
+> -				pci_phy0: pci-phy@0 {
+> -					compatible = "brcm,ns2-pcie-phy";
+> -					reg = <0x0>;
+> -					#phy-cells = <0>;
+> -				};
+> -			};
+> -
+> -			mdio@7 {
+> -				reg = <0x7>;
+> -				#address-cells = <1>;
+> -				#size-cells = <0>;
+> -
+> -				pci_phy1: pci-phy@0 {
+> -					compatible = "brcm,ns2-pcie-phy";
+> -					reg = <0x0>;
+> -					#phy-cells = <0>;
+> -				};
+> -			};
+> -			mdio@10 {
+> -				reg = <0x10>;
+> -				#address-cells = <1>;
+> -				#size-cells = <0>;
+> -
+> -				gphy0: eth-phy@10 {
+> -					reg = <0x10>;
+> -				};
+> -			};
+> -		};
+> diff --git a/Documentation/devicetree/bindings/net/brcm,mdio-mux-iproc.yaml b/Documentation/devicetree/bindings/net/brcm,mdio-mux-iproc.yaml
+> new file mode 100644
+> index 000000000000..a576fb87bfc8
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/brcm,mdio-mux-iproc.yaml
+> @@ -0,0 +1,80 @@
+> +# SPDX-License-Identifier: GPL-2.0
 
-Yes, traceroute will remain broken if the invoking SRH header is not
-in the linear header.
+All Broadcom authors on the original. Please add BSD-2-Clause.
 
-> Then if the packet is not shared, you can just temporarily reset the
-> network header and revert it after?
-
-Maybe. I was worried about any side affects of such an
-operation. Working on a clone seemed a lot less risky.
-
-Is it safe to due such games with the network header?
-
-	Andrew
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/net/brcm,mdio-mux-iproc.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: MDIO bus multiplexer found in Broadcom iProc based SoCs.
+> +
+> +maintainers:
+> +  - Florian Fainelli <f.fainelli@gmail.com>
+> +
+> +description:
+> +  This MDIO bus multiplexer defines buses that could be internal as well as
+> +  external to SoCs and could accept MDIO transaction compatible to C-22 or
+> +  C-45 Clause. When child bus is selected, one needs to select these two
+> +  properties as well to generate desired MDIO transaction on appropriate bus.
+> +
+> +allOf:
+> +  - $ref: /schemas/net/mdio-mux.yaml#
+> +
+> +properties:
+> +  compatible:
+> +    const: brcm,mdio-mux-iproc
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  clocks:
+> +    maxItems: 1
+> +    description: core clock driving the MDIO block
+> +
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +
+> +unevaluatedProperties: false
+> +
+> +examples:
+> +  - |
+> +    mdio_mux_iproc: mdio-mux@66020000 {
+> +        compatible = "brcm,mdio-mux-iproc";
+> +        reg = <0x66020000 0x250>;
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +
+> +        mdio@0 {
+> +           reg = <0x0>;
+> +           #address-cells = <1>;
+> +           #size-cells = <0>;
+> +
+> +           pci_phy0: pci-phy@0 {
+> +              compatible = "brcm,ns2-pcie-phy";
+> +              reg = <0x0>;
+> +              #phy-cells = <0>;
+> +           };
+> +        };
+> +
+> +        mdio@7 {
+> +           reg = <0x7>;
+> +           #address-cells = <1>;
+> +           #size-cells = <0>;
+> +
+> +           pci_phy1: pci-phy@0 {
+> +              compatible = "brcm,ns2-pcie-phy";
+> +              reg = <0x0>;
+> +              #phy-cells = <0>;
+> +           };
+> +        };
+> +
+> +        mdio@10 {
+> +           reg = <0x10>;
+> +           #address-cells = <1>;
+> +           #size-cells = <0>;
+> +
+> +           gphy0: eth-phy@10 {
+> +              reg = <0x10>;
+> +           };
+> +        };
+> +    };
+> -- 
+> 2.25.1
+> 
+> 
