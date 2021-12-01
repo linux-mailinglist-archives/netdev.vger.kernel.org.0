@@ -2,144 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A45E4645A5
-	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 05:00:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 25F064645AE
+	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 05:12:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241667AbhLAEEN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 23:04:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44338 "EHLO
+        id S1346513AbhLAEPz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 23:15:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241642AbhLAEEM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 23:04:12 -0500
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95A6EC061574
-        for <netdev@vger.kernel.org>; Tue, 30 Nov 2021 20:00:52 -0800 (PST)
-Received: by mail-pf1-x435.google.com with SMTP id p13so15270417pfw.2
-        for <netdev@vger.kernel.org>; Tue, 30 Nov 2021 20:00:52 -0800 (PST)
+        with ESMTP id S1346507AbhLAEPy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 23:15:54 -0500
+Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79F6BC061574;
+        Tue, 30 Nov 2021 20:12:33 -0800 (PST)
+Received: by mail-pg1-x52e.google.com with SMTP id m15so22196715pgu.11;
+        Tue, 30 Nov 2021 20:12:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=7aYhjtGlxM/PKdsgMDzbERImGjg2ijv4dkzyPE2SdmM=;
-        b=Rk12vG24rlsgfovfk6sJILiLptA/YRH+WHyQp8scqxdJytO8zbyAP5YNNNaJk3QIDJ
-         VgT1BKib0G0S4SGV3cpkW4QiuaC96Cyztn37KRrHWZrJOj824C+ofWpVP6+pVF9oAO7H
-         S7sDwndT3TVGkMzA403Af3iAAcDJQyq7tuZxuQB9CiEGRGYagaFhoMBge+W2lWzYG0A3
-         Rsi5s765vBIKFGh04mT5iYLXQCe9A7laxmMwhoGamBRHzZj77wIIulAarcKNBVlhKVuF
-         YEeadV/GeRDdWFAWh/Bx+SpvRfyLebo3XffWW0HBO1WOAYjpRkkxwN1jejAd5uHS8XGn
-         0qGQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hB7RjF5Zqk06UnaHimAPbZGbA5Zgh9K2pcqrGIW9790=;
+        b=ZwUKltzt7wcl/6iFt6MsHDF3Vx4lJdbMtyYJeis4PMKzSbi2RDu0XYcGuYyj48SRLM
+         fHn2l7ClAgB9WOEYpI2w0a/tKy1JAgCWnxa2M/Vz08Z4y/H7G0qG3t5sVmTM9pZQ/ucW
+         jMogKF0Md4Mu2y7QZUhVTeSndDB5lAFrjJBUb2wHkN3qCO+NU+UNW1P7afYA15n9IoI4
+         IO3yS0xzG50JsfzogbmeK+FkcIUs2+YcBdB3t0L9MHtbr6IP3rpjgPdc5EGDWdUSizw+
+         T7ZK/VPFEddQltqRQtWz5LoHf5D+vJC+ps8rQrbouc4ltcfdW8g6srBLh4gT8v1NshD7
+         Ve8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=7aYhjtGlxM/PKdsgMDzbERImGjg2ijv4dkzyPE2SdmM=;
-        b=ruIlR7ti/9FQL/z80gxaFJDU/7EBvXopLxOH3e73tHXSLIj0gjuwEaDiF8G3FtHjqB
-         zs8BlLSLqjF371vjNFyXke9zVUWNaffTETiVgcxFO3ShD2rWbOklCUMVLTvn097Bi0tg
-         8zhBLWJbhGNirrIlH4n4Pvw7URmKqb7o9Htz+KZmUPFxidsBqKaxnulK2ldeCL6wlaXN
-         QqC6ssMus9kujtt1J8QEz8IRMs1bFE4NVErZkTcNC8zlJVBY5jSzjXGs/gTwdypq2uo0
-         2vU62EfFMRZkawy++K1enrCDDucVPPkqfHpl91tjwsARcidmVpR6+dvTIdiF/kMiXbkA
-         D/iw==
-X-Gm-Message-State: AOAM531ed02gEMBklbRoCyO0idX2t6GBQF3jZl5AIltprI7Tq3RgWk89
-        QKpSp1U7v/w4bKxKgEO2Pdheit8674c=
-X-Google-Smtp-Source: ABdhPJwBxh6wAJUo7EJ1iX/rM3pRO3x2cuqXm2dhTE472NyUaYPXdPDO1eqG5x7EkS5cmMzXCfMlEw==
-X-Received: by 2002:a65:55c1:: with SMTP id k1mr2713889pgs.84.1638331252022;
-        Tue, 30 Nov 2021 20:00:52 -0800 (PST)
-Received: from [192.168.86.22] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id n3sm3027298pgc.76.2021.11.30.20.00.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 30 Nov 2021 20:00:51 -0800 (PST)
-Subject: Re: [PATCH net-next] tcp: remove the TCPSmallQueueFailure counter
-To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, imagedong@tencent.com
-References: <20211201015144.112701-1-kuba@kernel.org>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <31ca5dff-f69d-fc2a-64fe-145561fd18f6@gmail.com>
-Date:   Tue, 30 Nov 2021 20:00:50 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hB7RjF5Zqk06UnaHimAPbZGbA5Zgh9K2pcqrGIW9790=;
+        b=edtfxQLjDIW4YbdLba+NXTOdMdX8aHtsQk6XUjKqTbCVK7Cwfhc8aGujlac0aYXR9d
+         bSJd1OWnaF1Dx4b5XNyD7MdFVR0XJopP4Lma6gPOUtrxGmGvlx1TCN2KtVLLv9eEJgNl
+         JQqhRJsoZt3Bq7ioHG2mWGleEe6Rk240mly2i2n+oWz3CYPbGl+nGj+b7CZeW9rHScDe
+         q4XMSE77z0jCzJv466qaWIvXA6yNTb3TUYIpm7mIv+g+e0tynKiyVt6zN7Ka3x+SUoB+
+         SS25+o+mITVKW15hDRSAF7XRDS31INs9ebZG92emtmhXIKB1Xw5ss/pIh4HCWqG+BbaM
+         QTsw==
+X-Gm-Message-State: AOAM530DGPi9FsYfUuhOzmjZatFsLg0hBLYwfK6TeGV02nOKwrziDwbl
+        fdDwkAQXgA+KB3cZxcrAq0lRpoicgY4=
+X-Google-Smtp-Source: ABdhPJx/PeM2SREJeHchU7DrZ2FlQra+UUx52NbkGXe4DJSKCmxVkSQ4KkgX7Aof4ZUOMeZ4htqU9g==
+X-Received: by 2002:a65:6251:: with SMTP id q17mr2963493pgv.403.1638331952671;
+        Tue, 30 Nov 2021 20:12:32 -0800 (PST)
+Received: from 7YHHR73.igp.broadcom.net ([192.19.161.250])
+        by smtp.gmail.com with ESMTPSA id s8sm4296451pfe.196.2021.11.30.20.12.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 30 Nov 2021 20:12:31 -0800 (PST)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
+        bcm-kernel-feedback-list@broadcom.com (maintainer:BROADCOM IPROC GBIT
+        ETHERNET DRIVER), Doug Berger <opendmb@gmail.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
+        DEVICE TREE BINDINGS), linux-kernel@vger.kernel.org (open list),
+        linux-arm-kernel@lists.infradead.org (moderated list:BROADCOM IPROC ARM
+        ARCHITECTURE)
+Subject: [PATCH net-next 0/7] Broadcom DT bindings conversion to YAML
+Date:   Tue, 30 Nov 2021 20:12:21 -0800
+Message-Id: <20211201041228.32444-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <20211201015144.112701-1-kuba@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi all,
 
-On 11/30/21 5:51 PM, Jakub Kicinski wrote:
-> This reverts commit aeeecb889165 ("net: snmp: add statistics for
-> tcp small queue check").
->
-> The recently added TSQ-limit-hit metric does not provide clear,
-> actionable signal and can be confusing to the user as it may
-> well increment under normal operation (yet it has Failure in
-> its name). Menglong mentioned that the condition he was
-> targetting arised due to a bug in the virtio driver.
->
-> Link: https://lore.kernel.org/r/20211128060102.6504-1-imagedong@tencent.com/
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+This patch series converts 3 Broadcom Ethernet controller Device Tree
+bindings to YAML and the iProc MDIO mux. Please wait for a review from
+Rob before applying, thank you!
 
+Florian Fainelli (7):
+  dt-bindings: net: brcm,unimac-mdio: reg-names is optional
+  dt-bindings: net: brcm,unimac-mdio: Update maintainers for binding
+  dt-bindings: net: Document moca PHY interface
+  dt-bindings: net: Convert GENET binding to YAML
+  dt-bindings: net: Convert AMAC to YAML
+  dt-bindings: net: Convert SYSTEMPORT to YAML
+  dt-bindings: net: Convert iProc MDIO mux to YAML
 
-Oops, I have seen this a bit late.
+ .../devicetree/bindings/net/brcm,amac.txt     |  30 ----
+ .../devicetree/bindings/net/brcm,amac.yaml    |  88 +++++++++++
+ .../devicetree/bindings/net/brcm,bcmgenet.txt | 125 ---------------
+ .../bindings/net/brcm,bcmgenet.yaml           | 146 ++++++++++++++++++
+ .../bindings/net/brcm,mdio-mux-iproc.txt      |  62 --------
+ .../bindings/net/brcm,mdio-mux-iproc.yaml     |  80 ++++++++++
+ .../bindings/net/brcm,systemport.txt          |  38 -----
+ .../bindings/net/brcm,systemport.yaml         |  83 ++++++++++
+ .../bindings/net/brcm,unimac-mdio.yaml        |   3 +-
+ .../bindings/net/ethernet-controller.yaml     |   1 +
+ MAINTAINERS                                   |   5 +-
+ 11 files changed, 403 insertions(+), 258 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/net/brcm,amac.txt
+ create mode 100644 Documentation/devicetree/bindings/net/brcm,amac.yaml
+ delete mode 100644 Documentation/devicetree/bindings/net/brcm,bcmgenet.txt
+ create mode 100644 Documentation/devicetree/bindings/net/brcm,bcmgenet.yaml
+ delete mode 100644 Documentation/devicetree/bindings/net/brcm,mdio-mux-iproc.txt
+ create mode 100644 Documentation/devicetree/bindings/net/brcm,mdio-mux-iproc.yaml
+ delete mode 100644 Documentation/devicetree/bindings/net/brcm,systemport.txt
+ create mode 100644 Documentation/devicetree/bindings/net/brcm,systemport.yaml
 
+-- 
+2.25.1
 
-Maybe because my primary email address is edumazet@google.com, and that 
-my @gmail.com
-
-accounts have some lag.
-
-
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-
-
-Thanks.
-
-
-> ---
->   include/uapi/linux/snmp.h | 1 -
->   net/ipv4/proc.c           | 1 -
->   net/ipv4/tcp_output.c     | 5 +----
->   3 files changed, 1 insertion(+), 6 deletions(-)
->
-> diff --git a/include/uapi/linux/snmp.h b/include/uapi/linux/snmp.h
-> index e32ec6932e82..904909d020e2 100644
-> --- a/include/uapi/linux/snmp.h
-> +++ b/include/uapi/linux/snmp.h
-> @@ -292,7 +292,6 @@ enum
->   	LINUX_MIB_TCPDSACKIGNOREDDUBIOUS,	/* TCPDSACKIgnoredDubious */
->   	LINUX_MIB_TCPMIGRATEREQSUCCESS,		/* TCPMigrateReqSuccess */
->   	LINUX_MIB_TCPMIGRATEREQFAILURE,		/* TCPMigrateReqFailure */
-> -	LINUX_MIB_TCPSMALLQUEUEFAILURE,		/* TCPSmallQueueFailure */
->   	__LINUX_MIB_MAX
->   };
->   
-> diff --git a/net/ipv4/proc.c b/net/ipv4/proc.c
-> index 43b7a77cd6b4..f30273afb539 100644
-> --- a/net/ipv4/proc.c
-> +++ b/net/ipv4/proc.c
-> @@ -297,7 +297,6 @@ static const struct snmp_mib snmp4_net_list[] = {
->   	SNMP_MIB_ITEM("TCPDSACKIgnoredDubious", LINUX_MIB_TCPDSACKIGNOREDDUBIOUS),
->   	SNMP_MIB_ITEM("TCPMigrateReqSuccess", LINUX_MIB_TCPMIGRATEREQSUCCESS),
->   	SNMP_MIB_ITEM("TCPMigrateReqFailure", LINUX_MIB_TCPMIGRATEREQFAILURE),
-> -	SNMP_MIB_ITEM("TCPSmallQueueFailure", LINUX_MIB_TCPSMALLQUEUEFAILURE),
->   	SNMP_MIB_SENTINEL
->   };
->   
-> diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-> index c4ab6c8f0c77..5079832af5c1 100644
-> --- a/net/ipv4/tcp_output.c
-> +++ b/net/ipv4/tcp_output.c
-> @@ -2524,11 +2524,8 @@ static bool tcp_small_queue_check(struct sock *sk, const struct sk_buff *skb,
->   		 * test again the condition.
->   		 */
->   		smp_mb__after_atomic();
-> -		if (refcount_read(&sk->sk_wmem_alloc) > limit) {
-> -			NET_INC_STATS(sock_net(sk),
-> -				      LINUX_MIB_TCPSMALLQUEUEFAILURE);
-> +		if (refcount_read(&sk->sk_wmem_alloc) > limit)
->   			return true;
-> -		}
->   	}
->   	return false;
->   }
