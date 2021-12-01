@@ -2,111 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 545814643F9
-	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 01:36:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D35446444A
+	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 01:52:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345805AbhLAAjS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 19:39:18 -0500
-Received: from inva021.nxp.com ([92.121.34.21]:42720 "EHLO inva021.nxp.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1345797AbhLAAjS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Nov 2021 19:39:18 -0500
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 1444A20118C;
-        Wed,  1 Dec 2021 01:35:57 +0100 (CET)
-Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id CC0D920118A;
-        Wed,  1 Dec 2021 01:35:56 +0100 (CET)
-Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 72AF7183AC4E;
-        Wed,  1 Dec 2021 08:35:54 +0800 (+08)
-From:   Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
-To:     davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     kuba@kernel.org, qiangqing.zhang@nxp.com, Anson.Huang@nxp.com,
-        peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
-        joabreu@synopsys.com, yannick.vignon@nxp.com,
-        boon.leong.ong@intel.com, Jose.Abreu@synopsys.com, mst@redhat.com,
-        Joao.Pinto@synopsys.com, mingkai.hu@nxp.com, leoyang.li@nxp.com,
-        xiaoliang.yang_1@nxp.com
-Subject: [PATCH 2/2] net: stmmac: make stmmac-tx-timeout configurable in Kconfig
-Date:   Wed,  1 Dec 2021 08:47:50 +0800
-Message-Id: <20211201004750.49010-2-xiaoliang.yang_1@nxp.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20211201004750.49010-1-xiaoliang.yang_1@nxp.com>
-References: <20211201004750.49010-1-xiaoliang.yang_1@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1346246AbhLAAzs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 19:55:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58318 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346148AbhLAAyg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 19:54:36 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CDB9C0617A0;
+        Tue, 30 Nov 2021 16:50:34 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 3F7B1CE1D5A;
+        Wed,  1 Dec 2021 00:50:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65A72C53FCB;
+        Wed,  1 Dec 2021 00:50:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1638319830;
+        bh=Dho9jZYQAxQreqJGYGeVwHqRvMi7nJtvEsyDeEnGsCA=;
+        h=Date:From:To:Cc:Subject:Reply-To:From;
+        b=hn7FoChv4yGJef6buV70Oqy0Pi0sObtduaofg/Y58Sh0DSdfYXY7w3Sfa7w4bthFb
+         UpgHtCthKDdBV2f51g7Mf+oFjNgD+CG3iCmeHtAmmtrykQBUE/DhDqoICzECkjmDRc
+         smQ2zetkupIXR9liACHPNvvKX9r2R18YbcBe1DDD804/pLBCY2T8MDQ/QR50sJW3Mg
+         mxtONdrTtc3PZM2PZvoq2Ff/MpEGWJiDjC24lrTLJFOpotFlHO7qjpCZnPglc6h+SH
+         nQueebF0tvqr8wtQcRH2IAKmUNM2Aa/GrGHsNK1K/qU5Tq9i/y1sdJbmDe/92CvcNZ
+         JzuTtZ74L8IlA==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 22A435C0E58; Tue, 30 Nov 2021 16:50:30 -0800 (PST)
+Date:   Tue, 30 Nov 2021 16:50:30 -0800
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     ast@kernel.org, shuah@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org
+Subject: [PATCH] testing/bpf: Update test names for xchg and cmpxchg
+Message-ID: <20211201005030.GA3071525@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-stmmac_tx_timeout() function is called when a queue transmission
-timeout. When Strict Priority is used as scheduling algorithms, the
-lower priority queue may be blocked by a higher prority queue, which
-will lead to tx timeout. We don't want to enable the tx watchdog timeout
-in this case. Therefore, this patch make stmmac-tx-timeout configurable.
+The test_cmpxchg() and test_xchg() functions say "test_run add".
+Therefore, make them say "test_run cmpxchg" and "test_run xchg",
+respectively.
 
-This patch set the CONFIG_STMMAC_TX_TIMEOUT by default when STMMAC_ETH
-is selected. If anyone want to disable the tx watchdog timeout of
-stmmac, he can unset the CONFIG_STMMAC_TX_TIMEOUT in menuconfig.
+Cc: Shuah Khan <shuah@kernel.org>
+Cc: Alexei Starovoitov <ast@kernel.org>
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Cc: Andrii Nakryiko <andrii@kernel.org>
+Cc: Martin KaFai Lau <kafai@fb.com>
+Cc: Song Liu <songliubraving@fb.com>
+Cc: Yonghong Song <yhs@fb.com>
+Cc: John Fastabend <john.fastabend@gmail.com>
+Cc: KP Singh <kpsingh@kernel.org>
+Cc: <linux-kselftest@vger.kernel.org>
+Cc: <netdev@vger.kernel.org>
+Cc: <bpf@vger.kernel.org>
+Cc: <linux-kernel@vger.kernel.org>
+Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 
-Signed-off-by: Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
----
- drivers/net/ethernet/stmicro/stmmac/Kconfig       | 12 ++++++++++++
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c |  4 ++++
- 2 files changed, 16 insertions(+)
-
-diff --git a/drivers/net/ethernet/stmicro/stmmac/Kconfig b/drivers/net/ethernet/stmicro/stmmac/Kconfig
-index 929cfc22cd0c..856c7d056b61 100644
---- a/drivers/net/ethernet/stmicro/stmmac/Kconfig
-+++ b/drivers/net/ethernet/stmicro/stmmac/Kconfig
-@@ -271,4 +271,16 @@ config STMMAC_PCI
- 	  If you have a controller with this interface, say Y or M here.
+diff --git a/tools/testing/selftests/bpf/prog_tests/atomics.c b/tools/testing/selftests/bpf/prog_tests/atomics.c
+index 0f9525293881b..86b7d5d84eec4 100644
+--- a/tools/testing/selftests/bpf/prog_tests/atomics.c
++++ b/tools/testing/selftests/bpf/prog_tests/atomics.c
+@@ -167,7 +167,7 @@ static void test_cmpxchg(struct atomics_lskel *skel)
+ 	prog_fd = skel->progs.cmpxchg.prog_fd;
+ 	err = bpf_prog_test_run(prog_fd, 1, NULL, 0,
+ 				NULL, NULL, &retval, &duration);
+-	if (CHECK(err || retval, "test_run add",
++	if (CHECK(err || retval, "test_run cmpxchg",
+ 		  "err %d errno %d retval %d duration %d\n", err, errno, retval, duration))
+ 		goto cleanup;
  
- 	  If unsure, say N.
-+
-+config STMMAC_TX_TIMEOUT
-+	bool "STMMAC TX timeout support"
-+	default STMMAC_ETH
-+	depends on STMMAC_ETH
-+	help
-+	  Support for TX timeout enable on stmmac.
-+
-+	  This selects the TX watchdog timeout support for stmmac driver. The
-+	  feature is enabled by default when STMMAC_ETH is selected. If you
-+	  want to disable the TX watchdog timeout feature, say N here.
-+
- endif
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 89a6c35e2546..0a712b5d0715 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -5421,6 +5421,7 @@ static int stmmac_napi_poll_rxtx(struct napi_struct *napi, int budget)
- 	return min(rxtx_done, budget - 1);
- }
+@@ -196,7 +196,7 @@ static void test_xchg(struct atomics_lskel *skel)
+ 	prog_fd = skel->progs.xchg.prog_fd;
+ 	err = bpf_prog_test_run(prog_fd, 1, NULL, 0,
+ 				NULL, NULL, &retval, &duration);
+-	if (CHECK(err || retval, "test_run add",
++	if (CHECK(err || retval, "test_run xchg",
+ 		  "err %d errno %d retval %d duration %d\n", err, errno, retval, duration))
+ 		goto cleanup;
  
-+#ifdef CONFIG_STMMAC_TX_TIMEOUT
- /**
-  *  stmmac_tx_timeout
-  *  @dev : Pointer to net device structure
-@@ -5436,6 +5437,7 @@ static void stmmac_tx_timeout(struct net_device *dev, unsigned int txqueue)
- 
- 	stmmac_global_err(priv);
- }
-+#endif
- 
- /**
-  *  stmmac_set_rx_mode - entry point for multicast addressing
-@@ -6632,7 +6634,9 @@ static const struct net_device_ops stmmac_netdev_ops = {
- 	.ndo_fix_features = stmmac_fix_features,
- 	.ndo_set_features = stmmac_set_features,
- 	.ndo_set_rx_mode = stmmac_set_rx_mode,
-+#ifdef CONFIG_STMMAC_TX_TIMEOUT
- 	.ndo_tx_timeout = stmmac_tx_timeout,
-+#endif
- 	.ndo_eth_ioctl = stmmac_ioctl,
- 	.ndo_setup_tc = stmmac_setup_tc,
- 	.ndo_select_queue = stmmac_select_queue,
--- 
-2.17.1
-
