@@ -2,133 +2,317 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F8024659B7
-	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 00:19:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 05BF54659C7
+	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 00:25:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353788AbhLAXWw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Dec 2021 18:22:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55806 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353743AbhLAXW0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 18:22:26 -0500
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A8E6C061748;
-        Wed,  1 Dec 2021 15:19:02 -0800 (PST)
-Received: by mail-wr1-x42c.google.com with SMTP id c4so55684488wrd.9;
-        Wed, 01 Dec 2021 15:19:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=EzC0k6nBAvRvAw7gyjq7IDylMxnD4ESkb6qtGxCuVII=;
-        b=b1NhGGLGDb6KYltl9BhRSXXD/t88zckVMdA+cG+MNyRXy31tAoBPePRstDUAmfAEis
-         Swf0av6eSnIl0luetl8jSM5F7rZlcvVW+i+UjOFkC3NbAjiQ3yC5LpiSn/bfnBdLAyII
-         jfAF5Czs/zP/y5704D2W6xJtvfPDVCw844UqAJ62C4YwRIzzfk91J0TseRwpWvqyHYjE
-         mDUZpvN37o1NI6u9IBECwPRw0EedjVLj5lSNJgOYqI83xnIDYcaxSVApN4xOH443gTua
-         HdQ4+h5RcOV4g5WsesDuI8wm+0JIEbN3pmcdY57bt4LPdjJUyafBBm2eUJ8s3rppphPe
-         /fTA==
+        id S1343866AbhLAX2z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Dec 2021 18:28:55 -0500
+Received: from mail-oi1-f170.google.com ([209.85.167.170]:41593 "EHLO
+        mail-oi1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232038AbhLAX2x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 18:28:53 -0500
+Received: by mail-oi1-f170.google.com with SMTP id u74so51904400oie.8;
+        Wed, 01 Dec 2021 15:25:32 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=EzC0k6nBAvRvAw7gyjq7IDylMxnD4ESkb6qtGxCuVII=;
-        b=wzfatWYlqvN7iAfYnnKkU+Z/NqytPOIWKTbQfB46yk19wlC7vNHeJJxZoS9gH+rop1
-         lQ5kZ+NJvAkuinK59ZChjxllNPNjxRhZwseLrrLl9wNyjgYANYx1KT6tUsPioQOL/vEp
-         b4jLhROTQ8X+Em5/65G+xzSPPmNNvpPiWxDuT8eGXR6idoHqWmkmtp7tl60FX5pUfBUT
-         m+H+cQ5heiNt7yye2hANqr25iDnDXrC5IBNCg354oU5pxBvSLeUBpYGgvsJpCUCERV3m
-         fHReaY42x3ekFSvDxr093VBKh3o4YkTMABg4hACL6m+nLk/uO222Z5DZaH1ndTU0ZnEO
-         8SBQ==
-X-Gm-Message-State: AOAM531N+ROIEHVrg+LOvfwyOnkO4KxCm5lFWHUB0pDwhtxq6o0p0Z0H
-        m9HcG/sKYgVDzgfU0AWkNtA=
-X-Google-Smtp-Source: ABdhPJzKFsgXCyPxwcXAFJPUaYkK9C1dCnD88t0s+vtUJcIQvcRMvd/w+qyE7NO9HgEtfKz3D2FSDw==
-X-Received: by 2002:adf:eb05:: with SMTP id s5mr9669480wrn.448.1638400741025;
-        Wed, 01 Dec 2021 15:19:01 -0800 (PST)
-Received: from [192.168.8.198] ([185.69.144.129])
-        by smtp.gmail.com with ESMTPSA id m3sm956221wrv.95.2021.12.01.15.18.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 01 Dec 2021 15:19:00 -0800 (PST)
-Message-ID: <3e2caa38-27a1-986f-7187-b4e333105371@gmail.com>
-Date:   Wed, 1 Dec 2021 23:18:36 +0000
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=WTjMPCDcvihuyQh1uMy5fkLE4TiLB9ELZo1Z/fdtOEw=;
+        b=WTVFkVslcTWA49+QYlHt62STpwRIzrvjFztO1+AefJx4gqAV6+y0V7gWkIStg8ajw5
+         HAwzYvYJSSDjl2kfvRtsF4J177BaNt6+UNf2i+rnvjKvrTjRDCGiBfREN4BnkG2V5CFR
+         tDfW4N/uFjmvlhCtjZN06xfahCKQdyk4iqBUyFHBUUpzIBlV+7S5NjO2MEYd2qmHfh2+
+         mc0AMYmE8EK3WhaRKIl85/TXATrUzRDKRvPfr1RnBYVtkPyjKww8aACsBt3wXW0xA3di
+         uup2GrZP6izEr3G8mYrzZrE3/Ma34wTAw1sq5EI5DV8uraiJaIREYXzdDzdtzF5412gR
+         Xthw==
+X-Gm-Message-State: AOAM531FcFuhk/UXU2SyjUfHCHpjCY/7ZKTIJT+e8ZyU30MrpjRBlcNa
+        HDopsKz6Fo21SbhLp5YD63i2ZvGttw==
+X-Google-Smtp-Source: ABdhPJztTIjtw8p6wfPDDYXpZSzufRDbtyNTF/8BLndTPrdzJ33MB5cgnYIg8K+nbzlsmt/oPcwitA==
+X-Received: by 2002:aca:2b0f:: with SMTP id i15mr1457619oik.114.1638401131619;
+        Wed, 01 Dec 2021 15:25:31 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id f20sm686814oiw.48.2021.12.01.15.25.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 01 Dec 2021 15:25:31 -0800 (PST)
+Received: (nullmailer pid 3176562 invoked by uid 1000);
+        Wed, 01 Dec 2021 23:25:30 -0000
+Date:   Wed, 1 Dec 2021 17:25:30 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: net: cdns,macb: Convert to json-schema
+Message-ID: <YagEai+VPAnjAq4X@robh.at.kernel.org>
+References: <104dcbfd22f95fc77de9fe15e8abd83869603ea5.1637927673.git.geert@linux-m68k.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.2
-Subject: Re: [RFC 00/12] io_uring zerocopy send
-Content-Language: en-US
-To:     Martin KaFai Lau <kafai@fb.com>, David Ahern <dsahern@gmail.com>
-Cc:     io-uring@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Willem de Bruijn <willemb@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>, Jens Axboe <axboe@kernel.dk>
-References: <cover.1638282789.git.asml.silence@gmail.com>
- <ae2d2dab-6f42-403a-f167-1ba3db3fd07f@gmail.com>
- <994e315b-fdb7-1467-553e-290d4434d853@gmail.com>
- <c4424a7a-2ef1-6524-9b10-1e7d1f1e1fe4@gmail.com>
- <889c0306-afed-62cd-d95b-a20b8e798979@gmail.com>
- <0b92f046-5ac3-7138-2775-59fadee6e17a@gmail.com>
- <974b266e-d224-97da-708f-c4a7e7050190@gmail.com>
- <20211201215157.kgqd5attj3dytfgs@kafai-mbp.dhcp.thefacebook.com>
- <66dc5bcb-633d-efe8-0ccc-dcb97d08769c@gmail.com>
- <20211201230757.fuhnhgtbx5o22wgs@kafai-mbp.dhcp.thefacebook.com>
-From:   Pavel Begunkov <asml.silence@gmail.com>
-In-Reply-To: <20211201230757.fuhnhgtbx5o22wgs@kafai-mbp.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <104dcbfd22f95fc77de9fe15e8abd83869603ea5.1637927673.git.geert@linux-m68k.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/1/21 23:07, Martin KaFai Lau wrote:
-> On Wed, Dec 01, 2021 at 03:35:49PM -0700, David Ahern wrote:
->> On 12/1/21 2:51 PM, Martin KaFai Lau wrote:
->>>
->>> To tx out dummy, I did:
->>> #> ip a add 10.0.0.1/24 dev dummy0
->>                ^^^^^^^^
->>>
->>> #> ip -4 r
->>> 10.0.0.0/24 dev dummy0 proto kernel scope link src 10.0.0.1
->>>
->>> #> ./send-zc -4 -D 10.0.0.(2) -t 10 udp
->>                       ^^^^^^^^^^
->>
->> Pavel's commands have: 'send-zc -4 -D <dummy_ip_addr> -t 10 udp'
->>
->> I read dummy_ip_addr as the address assigned to dummy0; that's an
->> important detail. You are sending to an address on that network, not the
->> address assigned to the device, in which case packets are created and
->> then dropped by the dummy driver - nothing actually makes it to the server.
-> Right, I assumed "dropped by dummy driver" is the usual intention
-> for using dummy, so just in case if it was the intention for
-> testing tx only.  You are right and it seems the intention
-> of this command is to have server receiving the packets.
+On Fri, Nov 26, 2021 at 12:57:00PM +0100, Geert Uytterhoeven wrote:
+> Convert the Cadence MACB/GEM Ethernet controller Device Tree binding
+> documentation to json-schema.
+> 
+> Re-add "cdns,gem" (removed in commit a217d8711da5c87f ("dt-bindings:
+> Remove PicoXcell bindings")) as there are active users on non-PicoXcell
+> platforms.
+> Add missing "ether_clk" clock.
+> Add missing properties.
+> 
+> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+> ---
+>  .../devicetree/bindings/net/cdns,macb.yaml    | 162 ++++++++++++++++++
+>  .../devicetree/bindings/net/macb.txt          |  60 -------
+>  2 files changed, 162 insertions(+), 60 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/net/cdns,macb.yaml
+>  delete mode 100644 Documentation/devicetree/bindings/net/macb.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/net/cdns,macb.yaml b/Documentation/devicetree/bindings/net/cdns,macb.yaml
+> new file mode 100644
+> index 0000000000000000..c7d00350430aa503
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/cdns,macb.yaml
+> @@ -0,0 +1,162 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/net/cdns,macb.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Cadence MACB/GEM Ethernet controller
+> +
+> +maintainers:
+> +  - Nicolas Ferre <nicolas.ferre@microchip.com>
+> +  - Claudiu Beznea <claudiu.beznea@microchip.com>
+> +
+> +properties:
+> +  compatible:
+> +    oneOf:
+> +      - items:
+> +          - enum:
+> +              - cdns,at91rm9200-emac  # Atmel at91rm9200 SoC
+> +          - const: cdns,emac          # Generic
+> +
+> +      - items:
+> +          - enum:
+> +              - cdns,zynq-gem         # Xilinx Zynq-7xxx SoC
+> +              - cdns,zynqmp-gem       # Xilinx Zynq Ultrascale+ MPSoC
+> +          - const: cdns,gem           # Generic
+> +
+> +      - items:
+> +          - enum:
+> +              - cdns,at91sam9260-macb # Atmel at91sam9 SoCs
+> +              - cdns,sam9x60-macb     # Microchip sam9x60 SoC
+> +          - const: cdns,macb          # Generic
+> +
+> +      - items:
+> +          - enum:
+> +              - atmel,sama5d3-macb    # 10/100Mbit IP on Atmel sama5d3 SoCs
+> +          - enum:
+> +              - cdns,at91sam9260-macb # Atmel at91sam9 SoCs.
+> +          - const: cdns,macb          # Generic
+> +
+> +      - enum:
+> +          - atmel,sama5d29-gem        # GEM XL IP (10/100) on Atmel sama5d29 SoCs
+> +          - atmel,sama5d2-gem         # GEM IP (10/100) on Atmel sama5d2 SoCs
+> +          - atmel,sama5d3-gem         # Gigabit IP on Atmel sama5d3 SoCs
+> +          - atmel,sama5d4-gem         # GEM IP (10/100) on Atmel sama5d4 SoCs
+> +          - cdns,at32ap7000-macb      # Other 10/100 usage or use the generic form
+> +          - cdns,np4-macb             # NP4 SoC devices
+> +          - microchip,sama7g5-emac    # Microchip SAMA7G5 ethernet interface
+> +          - microchip,sama7g5-gem     # Microchip SAMA7G5 gigabit ethernet interface
+> +          - sifive,fu540-c000-gem     # SiFive FU540-C000 SoC
+> +          - cdns,emac                 # Generic
+> +          - cdns,gem                  # Generic
+> +          - cdns,macb                 # Generic
+> +
+> +  reg:
+> +    minItems: 1
+> +    items:
+> +      - description: Basic register set
+> +      - description: GEMGXL Management block registers on SiFive FU540-C000 SoC
+> +
+> +  interrupts:
+> +    minItems: 1
+> +    maxItems: 8
+> +    description: One interrupt per available hardware queue
+> +
+> +  clocks:
+> +    minItems: 1
+> +    maxItems: 5
+> +
+> +  clock-names:
+> +    minItems: 1
+> +    items:
+> +      - enum: [ ether_clk, hclk, pclk ]
+> +      - enum: [ hclk, pclk ]
+> +      - const: tx_clk
+> +      - enum: [ rx_clk, tsu_clk ]
+> +      - const: tsu_clk
+> +
+> +  local-mac-address: true
+> +
+> +  phy-mode: true
+> +
+> +  phy-handle: true
+> +
+> +  fixed-link: true
+> +
+> +  iommus:
+> +    maxItems: 1
+> +
+> +  power-domains:
+> +    maxItems: 1
+> +
+> +  '#address-cells':
+> +    const: 1
+> +
+> +  '#size-cells':
+> +    const: 0
+> +
+> +  '#stream-id-cells':
+> +    const: 1
 
-I see, it seems we found the misunderstanding:
+I can't figure out why you have this here. I'll drop it while applying.
 
-For dummy device, I indeed was testing only tx part without
-a server, in my understanding it better approximates an actual
-fast NIC. I don't think dummy is even capable to pass the data,
-so was thinking that it's given that there is no receive side,
-and so no "msg_zerocopy -r".
-
-For localhost testing (with the hack), there was a server
-verifying data.
-
-
->>
->>> ip -s link show dev dummy0
->>> 2: dummy0: <BROADCAST,NOARP,UP,LOWER_UP> mtu 65535 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
->>>     link/ether 82:0f:e0:dc:f7:e6 brd ff:ff:ff:ff:ff:ff
->>>     RX:    bytes packets errors dropped  missed   mcast
->>>                0       0      0       0       0       0
->>>     TX:    bytes packets errors dropped carrier collsns
->>>     140800890299 2150397      0       0       0       0
->>>
->>
-
--- 
-Pavel Begunkov
+> +
+> +  mdio:
+> +    type: object
+> +    description:
+> +      Node containing PHY children. If this node is not present, then PHYs will
+> +      be direct children.
+> +
+> +patternProperties:
+> +  "^ethernet-phy@[0-9a-f]$":
+> +    type: object
+> +    $ref: ethernet-phy.yaml#
+> +
+> +    properties:
+> +      reset-gpios: true
+> +
+> +      magic-packet:
+> +        description:
+> +          Indicates that the hardware supports waking up via magic packet.
+> +
+> +    unevaluatedProperties: false
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - interrupts
+> +  - clocks
+> +  - clock-names
+> +  - phy-mode
+> +
+> +allOf:
+> +  - $ref: ethernet-controller.yaml#
+> +
+> +  - if:
+> +      not:
+> +        properties:
+> +          compatible:
+> +            contains:
+> +              const: sifive,fu540-c000-gem
+> +    then:
+> +      properties:
+> +        reg:
+> +          maxItems: 1
+> +
+> +unevaluatedProperties: false
+> +
+> +examples:
+> +  - |
+> +    macb0: ethernet@fffc4000 {
+> +            compatible = "cdns,at32ap7000-macb";
+> +            reg = <0xfffc4000 0x4000>;
+> +            interrupts = <21>;
+> +            phy-mode = "rmii";
+> +            local-mac-address = [3a 0e 03 04 05 06];
+> +            clock-names = "pclk", "hclk", "tx_clk";
+> +            clocks = <&clkc 30>, <&clkc 30>, <&clkc 13>;
+> +            #address-cells = <1>;
+> +            #size-cells = <0>;
+> +
+> +            ethernet-phy@1 {
+> +                    reg = <0x1>;
+> +                    reset-gpios = <&pioE 6 1>;
+> +            };
+> +    };
+> diff --git a/Documentation/devicetree/bindings/net/macb.txt b/Documentation/devicetree/bindings/net/macb.txt
+> deleted file mode 100644
+> index a1b06fd1962e4d93..0000000000000000
+> --- a/Documentation/devicetree/bindings/net/macb.txt
+> +++ /dev/null
+> @@ -1,60 +0,0 @@
+> -* Cadence MACB/GEM Ethernet controller
+> -
+> -Required properties:
+> -- compatible: Should be "cdns,[<chip>-]{macb|gem}"
+> -  Use "cdns,at91rm9200-emac" Atmel at91rm9200 SoC.
+> -  Use "cdns,at91sam9260-macb" for Atmel at91sam9 SoCs.
+> -  Use "cdns,sam9x60-macb" for Microchip sam9x60 SoC.
+> -  Use "cdns,np4-macb" for NP4 SoC devices.
+> -  Use "cdns,at32ap7000-macb" for other 10/100 usage or use the generic form: "cdns,macb".
+> -  Use "atmel,sama5d2-gem" for the GEM IP (10/100) available on Atmel sama5d2 SoCs.
+> -  Use "atmel,sama5d29-gem" for GEM XL IP (10/100) available on Atmel sama5d29 SoCs.
+> -  Use "atmel,sama5d3-macb" for the 10/100Mbit IP available on Atmel sama5d3 SoCs.
+> -  Use "atmel,sama5d3-gem" for the Gigabit IP available on Atmel sama5d3 SoCs.
+> -  Use "atmel,sama5d4-gem" for the GEM IP (10/100) available on Atmel sama5d4 SoCs.
+> -  Use "cdns,zynq-gem" Xilinx Zynq-7xxx SoC.
+> -  Use "cdns,zynqmp-gem" for Zynq Ultrascale+ MPSoC.
+> -  Use "sifive,fu540-c000-gem" for SiFive FU540-C000 SoC.
+> -  Use "microchip,sama7g5-emac" for Microchip SAMA7G5 ethernet interface.
+> -  Use "microchip,sama7g5-gem" for Microchip SAMA7G5 gigabit ethernet interface.
+> -  Or the generic form: "cdns,emac".
+> -- reg: Address and length of the register set for the device
+> -	For "sifive,fu540-c000-gem", second range is required to specify the
+> -	address and length of the registers for GEMGXL Management block.
+> -- interrupts: Should contain macb interrupt
+> -- phy-mode: See ethernet.txt file in the same directory.
+> -- clock-names: Tuple listing input clock names.
+> -	Required elements: 'pclk', 'hclk'
+> -	Optional elements: 'tx_clk'
+> -	Optional elements: 'rx_clk' applies to cdns,zynqmp-gem
+> -	Optional elements: 'tsu_clk'
+> -- clocks: Phandles to input clocks.
+> -
+> -Optional properties:
+> -- mdio: node containing PHY children. If this node is not present, then PHYs
+> -        will be direct children.
+> -
+> -The MAC address will be determined using the optional properties
+> -defined in ethernet.txt.
+> -
+> -Optional properties for PHY child node:
+> -- reset-gpios : Should specify the gpio for phy reset
+> -- magic-packet : If present, indicates that the hardware supports waking
+> -  up via magic packet.
+> -- phy-handle : see ethernet.txt file in the same directory
+> -
+> -Examples:
+> -
+> -	macb0: ethernet@fffc4000 {
+> -		compatible = "cdns,at32ap7000-macb";
+> -		reg = <0xfffc4000 0x4000>;
+> -		interrupts = <21>;
+> -		phy-mode = "rmii";
+> -		local-mac-address = [3a 0e 03 04 05 06];
+> -		clock-names = "pclk", "hclk", "tx_clk";
+> -		clocks = <&clkc 30>, <&clkc 30>, <&clkc 13>;
+> -		ethernet-phy@1 {
+> -			reg = <0x1>;
+> -			reset-gpios = <&pioE 6 1>;
+> -		};
+> -	};
+> -- 
+> 2.25.1
+> 
+> 
