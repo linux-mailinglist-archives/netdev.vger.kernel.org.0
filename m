@@ -2,51 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C01184650AE
-	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 16:00:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EDAF84650AD
+	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 16:00:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244738AbhLAPDo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1346117AbhLAPDo (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Wed, 1 Dec 2021 10:03:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52536 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245597AbhLAPDl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 10:03:41 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8F35C061748
-        for <netdev@vger.kernel.org>; Wed,  1 Dec 2021 07:00:20 -0800 (PST)
+Received: from ams.source.kernel.org ([145.40.68.75]:57372 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234427AbhLAPDj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 10:03:39 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 87BE9CE1E66
+        by ams.source.kernel.org (Postfix) with ESMTPS id 13B85B81FE7
         for <netdev@vger.kernel.org>; Wed,  1 Dec 2021 15:00:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id B771AC53FCD;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id BF851C53FCF;
         Wed,  1 Dec 2021 15:00:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1638370816;
-        bh=lwpABV+8ivoPJCm3yDJlFE2a7GhvRSbLCJnuu9L3VgQ=;
+        bh=KHwM3gqHYdctEom8HypJnOrFbufKLa/BxeYtOkF2MGk=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=oIr+1vFNrDaKfuh6s1f/ajnSipXdDAyXwoRg0Y/MXqwmesEytqRdPsVF07p47RT53
-         dDcHtZGOxs9xkVxk4yC6T7MLRE/+8WCJjUzo3GmuY++31H0BDxqh4b87kLxuxJgFnQ
-         cYTpiBn6e3ONW18zL5WCTXkVySCaP4hdr3KpxYscPLb8s0xhPqcI+iFVVBuLki/m9f
-         gHfkg9hjmaU6BKG+GYGURfAcmMjhfwao4b2C4qSsnRNJrbSdYVBew+0Y2rpL0iHVQw
-         PA7i19iXbpLxJI58ggUhoKOy9P8JjyLcAXLV1Yh1b2OKsY0ZvV7MAVoBVgUzQLogFq
-         0eU7xm0fd6Zfg==
+        b=CfPSksOW9poItNpMojnaE7qcaQRFTtOdyc4DKbQJzmvBTGWQgCYoPFxoiAYdf0i8g
+         QYfSi4OjPBX6wA1vzs6nY9FAiJni6S+YiZ/pkuuuT9ow2TrkaLZ1KbNGC2cO+oGkJH
+         P9/DRjdpG4Lvg0VmrajykYDRwZDT3ZrBSbKyS4fr1A3cNm0NKrj3RcV6K9+XU+2sDi
+         mPpoe0WYoget1v3cvyRK7cHje3nDntT0m353Q09Tog37WrWrsTsmI9ol6ZRp5y2L/E
+         dSVx3F0YziwIc+AdLzLAphtEv0WB2Em4TEnVDxYVSaL4EhPfMXc+GDPTQDFweAUn0X
+         kavytqNeKvxYg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id A2AD4609EF;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id AABFB60BE3;
         Wed,  1 Dec 2021 15:00:16 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2 00/10][pull request] 40GbE Intel Wired LAN Driver
- Updates 2021-11-30
+Subject: Re: [PATCH net-next 00/10] mlxsw: Spectrum-4 preparations
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163837081666.15182.1986279159744817517.git-patchwork-notify@kernel.org>
+Message-Id: <163837081669.15182.316558560943506127.git-patchwork-notify@kernel.org>
 Date:   Wed, 01 Dec 2021 15:00:16 +0000
-References: <20211130212004.198898-1-anthony.l.nguyen@intel.com>
-In-Reply-To: <20211130212004.198898-1-anthony.l.nguyen@intel.com>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        sassmann@redhat.com
+References: <20211201081240.3767366-1-idosch@idosch.org>
+In-Reply-To: <20211201081240.3767366-1-idosch@idosch.org>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        jiri@nvidia.com, amcohen@nvidia.com, mlxsw@nvidia.com,
+        idosch@nvidia.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -54,39 +51,39 @@ X-Mailing-List: netdev@vger.kernel.org
 Hello:
 
 This series was applied to netdev/net-next.git (master)
-by Tony Nguyen <anthony.l.nguyen@intel.com>:
+by David S. Miller <davem@davemloft.net>:
 
-On Tue, 30 Nov 2021 13:19:54 -0800 you wrote:
-> This series contains updates to iavf driver only.
+On Wed,  1 Dec 2021 10:12:30 +0200 you wrote:
+> From: Ido Schimmel <idosch@nvidia.com>
 > 
-> Patryk adds a debug message when MTU is changed.
-> 
-> Grzegorz adds messaging when transitioning in and out of multicast
-> promiscuous mode.
+> The Spectrum-4 ASIC will support more than 256 ports, unlike existing
+> ASICs. As such, various device registers were extended with two
+> additional bits to encode a 10 bit local port. In some cases, new
+> (Version 2) registers were introduced.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,v2,01/10] iavf: Add change MTU message
-    https://git.kernel.org/netdev/net-next/c/aeb5d11fd1ef
-  - [net-next,v2,02/10] iavf: Log info when VF is entering and leaving Allmulti mode
-    https://git.kernel.org/netdev/net-next/c/f1db020ba4ef
-  - [net-next,v2,03/10] iavf: return errno code instead of status code
-    https://git.kernel.org/netdev/net-next/c/9f4651ea3e07
-  - [net-next,v2,04/10] iavf: Add trace while removing device
-    https://git.kernel.org/netdev/net-next/c/bdb9e5c7aec7
-  - [net-next,v2,05/10] iavf: Enable setting RSS hash key
-    https://git.kernel.org/netdev/net-next/c/b231b59a2f96
-  - [net-next,v2,06/10] iavf: Refactor iavf_mac_filter struct memory usage
-    https://git.kernel.org/netdev/net-next/c/4d0dbd9678ad
-  - [net-next,v2,07/10] iavf: Fix static code analysis warning
-    https://git.kernel.org/netdev/net-next/c/349181b7b863
-  - [net-next,v2,08/10] iavf: Refactor text of informational message
-    https://git.kernel.org/netdev/net-next/c/fbe66f57d371
-  - [net-next,v2,09/10] iavf: Refactor string format to avoid static analysis warnings
-    https://git.kernel.org/netdev/net-next/c/c2fbcc94d511
-  - [net-next,v2,10/10] iavf: Fix displaying queue statistics shown by ethtool
-    https://git.kernel.org/netdev/net-next/c/64430f70ba6f
+  - [net-next,01/10] mlxsw: spectrum: Bump minimum FW version to xx.2010.1006
+    https://git.kernel.org/netdev/net-next/c/2cb310dc4402
+  - [net-next,02/10] mlxsw: reg: Remove unused functions
+    https://git.kernel.org/netdev/net-next/c/b25dea489b55
+  - [net-next,03/10] mlxsw: item: Add support for local_port field in a split form
+    https://git.kernel.org/netdev/net-next/c/fda39347d90f
+  - [net-next,04/10] mlxsw: reg: Align existing registers to use extended local_port field
+    https://git.kernel.org/netdev/net-next/c/fd24b29a1b74
+  - [net-next,05/10] mlxsw: reg: Increase 'port_num' field in PMTDB register
+    https://git.kernel.org/netdev/net-next/c/da56f1a0d2a5
+  - [net-next,06/10] mlxsw: reg: Adjust PPCNT register to support local port 255
+    https://git.kernel.org/netdev/net-next/c/242e696e035f
+  - [net-next,07/10] mlxsw: Use u16 for local_port field instead of u8
+    https://git.kernel.org/netdev/net-next/c/c934757d9000
+  - [net-next,08/10] mlxsw: Add support for more than 256 ports in SBSR register
+    https://git.kernel.org/netdev/net-next/c/f8538aec88b4
+  - [net-next,09/10] mlxsw: Use Switch Flooding Table Register Version 2
+    https://git.kernel.org/netdev/net-next/c/e86ad8ce5bed
+  - [net-next,10/10] mlxsw: Use Switch Multicast ID Register Version 2
+    https://git.kernel.org/netdev/net-next/c/51ef6b00798c
 
 You are awesome, thank you!
 -- 
