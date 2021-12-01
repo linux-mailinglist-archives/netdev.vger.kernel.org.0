@@ -2,81 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 59D554650AC
-	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 16:00:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C01184650AE
+	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 16:00:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243580AbhLAPDi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Dec 2021 10:03:38 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:57326 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234427AbhLAPDf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 10:03:35 -0500
+        id S244738AbhLAPDo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Dec 2021 10:03:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52536 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245597AbhLAPDl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 10:03:41 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8F35C061748
+        for <netdev@vger.kernel.org>; Wed,  1 Dec 2021 07:00:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9A882B81FE6
-        for <netdev@vger.kernel.org>; Wed,  1 Dec 2021 15:00:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 4EDA0C53FCF;
-        Wed,  1 Dec 2021 15:00:12 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 87BE9CE1E66
+        for <netdev@vger.kernel.org>; Wed,  1 Dec 2021 15:00:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id B771AC53FCD;
+        Wed,  1 Dec 2021 15:00:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638370812;
-        bh=Oq+F1LUn2R8fSmR/zCpVuG6Bc8KJZFMlzEIGmNOFq9E=;
+        s=k20201202; t=1638370816;
+        bh=lwpABV+8ivoPJCm3yDJlFE2a7GhvRSbLCJnuu9L3VgQ=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=aq0ipk0JQ50K2iZNrl9kWefF3hOXJXCCRHB3Zj8vlA5BjnRF9eCGY1FYYFFYr78Y3
-         3CJTDB1WiK8LvJbr8rX/qRE0zvnNCED+UYrsvsMejrsbCud9upkGRHGVqI91yaWVEb
-         LEKecdlzU4FL2WM8Nn7P+ep3aID/xzl+YPFE0lUGUYVrmIZJrcB/6W7xeleCx3PFb+
-         oct/LMpiLOPzZonBP1o1TvglrwLaHKOfSLT4FEAZL0S0uajFb937XnroJY/4CQ36yG
-         tRoyaEaEtMtWLzn5hdNjC4a+H/IuYzXEczMILU8VXVIeAh5rpTXg/oyPoW/kDaEvc/
-         iF+TSjd2k9Ktw==
+        b=oIr+1vFNrDaKfuh6s1f/ajnSipXdDAyXwoRg0Y/MXqwmesEytqRdPsVF07p47RT53
+         dDcHtZGOxs9xkVxk4yC6T7MLRE/+8WCJjUzo3GmuY++31H0BDxqh4b87kLxuxJgFnQ
+         cYTpiBn6e3ONW18zL5WCTXkVySCaP4hdr3KpxYscPLb8s0xhPqcI+iFVVBuLki/m9f
+         gHfkg9hjmaU6BKG+GYGURfAcmMjhfwao4b2C4qSsnRNJrbSdYVBew+0Y2rpL0iHVQw
+         PA7i19iXbpLxJI58ggUhoKOy9P8JjyLcAXLV1Yh1b2OKsY0ZvV7MAVoBVgUzQLogFq
+         0eU7xm0fd6Zfg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 37EAC60A59;
-        Wed,  1 Dec 2021 15:00:12 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id A2AD4609EF;
+        Wed,  1 Dec 2021 15:00:16 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v2 0/6] mv88e6xxx fixes (mainly 88E6393X family)
+Subject: Re: [PATCH net-next v2 00/10][pull request] 40GbE Intel Wired LAN Driver
+ Updates 2021-11-30
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163837081222.15182.6326131384377421175.git-patchwork-notify@kernel.org>
-Date:   Wed, 01 Dec 2021 15:00:12 +0000
-References: <20211130170151.7741-1-kabel@kernel.org>
-In-Reply-To: <20211130170151.7741-1-kabel@kernel.org>
-To:     =?utf-8?q?Marek_Beh=C3=BAn_=3Ckabel=40kernel=2Eorg=3E?=@ci.codeaurora.org
-Cc:     netdev@vger.kernel.org, andrew@lunn.ch, rmk+kernel@armlinux.org.uk,
-        kuba@kernel.org, davem@davemloft.net, olteanv@gmail.com
+Message-Id: <163837081666.15182.1986279159744817517.git-patchwork-notify@kernel.org>
+Date:   Wed, 01 Dec 2021 15:00:16 +0000
+References: <20211130212004.198898-1-anthony.l.nguyen@intel.com>
+In-Reply-To: <20211130212004.198898-1-anthony.l.nguyen@intel.com>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        sassmann@redhat.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
+This series was applied to netdev/net-next.git (master)
+by Tony Nguyen <anthony.l.nguyen@intel.com>:
 
-On Tue, 30 Nov 2021 18:01:45 +0100 you wrote:
-> Hello,
+On Tue, 30 Nov 2021 13:19:54 -0800 you wrote:
+> This series contains updates to iavf driver only.
 > 
-> sending v2 of these fixes.
+> Patryk adds a debug message when MTU is changed.
 > 
-> Original cover letter:
-> 
-> So I managed to discovered how to fix inband AN for 2500base-x mode on
-> 88E6393x (Amethyst) family.
+> Grzegorz adds messaging when transitioning in and out of multicast
+> promiscuous mode.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,v2,1/6] net: dsa: mv88e6xxx: Fix application of erratum 4.8 for 88E6393X
-    https://git.kernel.org/netdev/net/c/21635d9203e1
-  - [net,v2,2/6] net: dsa: mv88e6xxx: Drop unnecessary check in mv88e6393x_serdes_erratum_4_6()
-    https://git.kernel.org/netdev/net/c/8c3318b4874e
-  - [net,v2,3/6] net: dsa: mv88e6xxx: Save power by disabling SerDes trasmitter and receiver
-    https://git.kernel.org/netdev/net/c/7527d66260ac
-  - [net,v2,4/6] net: dsa: mv88e6xxx: Add fix for erratum 5.2 of 88E6393X family
-    https://git.kernel.org/netdev/net/c/93fd8207bed8
-  - [net,v2,5/6] net: dsa: mv88e6xxx: Fix inband AN for 2500base-x on 88E6393X family
-    https://git.kernel.org/netdev/net/c/163000dbc772
-  - [net,v2,6/6] net: dsa: mv88e6xxx: Link in pcs_get_state() if AN is bypassed
-    https://git.kernel.org/netdev/net/c/ede359d8843a
+  - [net-next,v2,01/10] iavf: Add change MTU message
+    https://git.kernel.org/netdev/net-next/c/aeb5d11fd1ef
+  - [net-next,v2,02/10] iavf: Log info when VF is entering and leaving Allmulti mode
+    https://git.kernel.org/netdev/net-next/c/f1db020ba4ef
+  - [net-next,v2,03/10] iavf: return errno code instead of status code
+    https://git.kernel.org/netdev/net-next/c/9f4651ea3e07
+  - [net-next,v2,04/10] iavf: Add trace while removing device
+    https://git.kernel.org/netdev/net-next/c/bdb9e5c7aec7
+  - [net-next,v2,05/10] iavf: Enable setting RSS hash key
+    https://git.kernel.org/netdev/net-next/c/b231b59a2f96
+  - [net-next,v2,06/10] iavf: Refactor iavf_mac_filter struct memory usage
+    https://git.kernel.org/netdev/net-next/c/4d0dbd9678ad
+  - [net-next,v2,07/10] iavf: Fix static code analysis warning
+    https://git.kernel.org/netdev/net-next/c/349181b7b863
+  - [net-next,v2,08/10] iavf: Refactor text of informational message
+    https://git.kernel.org/netdev/net-next/c/fbe66f57d371
+  - [net-next,v2,09/10] iavf: Refactor string format to avoid static analysis warnings
+    https://git.kernel.org/netdev/net-next/c/c2fbcc94d511
+  - [net-next,v2,10/10] iavf: Fix displaying queue statistics shown by ethtool
+    https://git.kernel.org/netdev/net-next/c/64430f70ba6f
 
 You are awesome, thank you!
 -- 
