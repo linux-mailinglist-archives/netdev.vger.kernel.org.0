@@ -2,39 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1070D464562
-	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 04:23:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6929E464560
+	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 04:23:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346428AbhLAD0Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 22:26:25 -0500
-Received: from mga06.intel.com ([134.134.136.31]:62636 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1346328AbhLAD0Y (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1346391AbhLAD0Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Tue, 30 Nov 2021 22:26:24 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10184"; a="297177250"
+Received: from mga14.intel.com ([192.55.52.115]:14529 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S241422AbhLAD0X (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 30 Nov 2021 22:26:23 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10184"; a="236603690"
 X-IronPort-AV: E=Sophos;i="5.87,277,1631602800"; 
-   d="scan'208";a="297177250"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Nov 2021 19:23:03 -0800
+   d="scan'208";a="236603690"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Nov 2021 19:23:03 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.87,277,1631602800"; 
-   d="scan'208";a="677102410"
+   d="scan'208";a="747234956"
 Received: from lkp-server02.sh.intel.com (HELO 9e1e9f9b3bcb) ([10.239.97.151])
-  by orsmga005.jf.intel.com with ESMTP; 30 Nov 2021 19:23:01 -0800
+  by fmsmga005.fm.intel.com with ESMTP; 30 Nov 2021 19:23:00 -0800
 Received: from kbuild by 9e1e9f9b3bcb with local (Exim 4.92)
         (envelope-from <lkp@intel.com>)
-        id 1msGCy-000E8R-AE; Wed, 01 Dec 2021 03:23:00 +0000
-Date:   Wed, 1 Dec 2021 11:22:04 +0800
+        id 1msGCy-000E8b-CC; Wed, 01 Dec 2021 03:23:00 +0000
+Date:   Wed, 1 Dec 2021 11:22:07 +0800
 From:   kernel test robot <lkp@intel.com>
 To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>, davem@davemloft.net,
         kuba@kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        dan.carpenter@oracle.com,
+Cc:     kbuild-all@lists.01.org, linux-bluetooth@vger.kernel.org,
+        netdev@vger.kernel.org, dan.carpenter@oracle.com,
         Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 Subject: Re: [PATCH 12/15] Bluetooth: hci_event: Use of a function table to
  handle HCI events
-Message-ID: <202112011149.SZaZiW8X-lkp@intel.com>
+Message-ID: <202112011107.rTK0mEYG-lkp@intel.com>
 References: <20211201000215.1134831-13-luiz.dentz@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -58,8 +57,8 @@ https://git-scm.com/docs/git-format-patch]
 
 url:    https://github.com/0day-ci/linux/commits/Luiz-Augusto-von-Dentz/Rework-parsing-of-HCI-events/20211201-080632
 base:   https://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth-next.git master
-config: hexagon-randconfig-r026-20211130 (https://download.01.org/0day-ci/archive/20211201/202112011149.SZaZiW8X-lkp@intel.com/config)
-compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 25eb7fa01d7ebbe67648ea03841cda55b4239ab2)
+config: h8300-randconfig-r022-20211130 (https://download.01.org/0day-ci/archive/20211201/202112011107.rTK0mEYG-lkp@intel.com/config)
+compiler: h8300-linux-gcc (GCC) 11.2.0
 reproduce (this is a W=1 build):
         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
         chmod +x ~/bin/make.cross
@@ -69,30 +68,35 @@ reproduce (this is a W=1 build):
         git checkout bd4b2eeacef50f9df8f08056e9f6523083ac96f3
         # save the config file to linux build tree
         mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash net/bluetooth/
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=h8300 SHELL=/bin/bash net/bluetooth/
 
 If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
 
 All error/warnings (new ones prefixed by >>):
 
->> net/bluetooth/hci_event.c:7129:24: error: incompatible function pointer types initializing 'void (*)(struct hci_dev *, void *, struct sk_buff *)' with an expression of type 'void (struct hci_dev *, struct sk_buff *)' [-Werror,-Wincompatible-function-pointer-types]
-           HCI_EV(HCI_EV_VENDOR, msft_vendor_evt, 0),
-                                 ^~~~~~~~~~~~~~~
-   net/bluetooth/hci_event.c:6958:17: note: expanded from macro 'HCI_EV'
-           HCI_EV_VL(_op, _func, _len, _len)
-                          ^~~~~
-   net/bluetooth/hci_event.c:6952:10: note: expanded from macro 'HCI_EV_VL'
-           .func = _func, \
-                   ^~~~~
->> net/bluetooth/hci_event.c:7132:6: warning: no previous prototype for function 'hci_event_func' [-Wmissing-prototypes]
-   void hci_event_func(struct hci_dev *hdev, u8 event, struct sk_buff *skb,
-        ^
-   net/bluetooth/hci_event.c:7132:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   void hci_event_func(struct hci_dev *hdev, u8 event, struct sk_buff *skb,
-   ^
-   static 
-   1 warning and 1 error generated.
+>> net/bluetooth/hci_event.c:7129:31: error: initialization of 'void (*)(struct hci_dev *, void *, struct sk_buff *)' from incompatible pointer type 'void (*)(struct hci_dev *, struct sk_buff *)' [-Werror=incompatible-pointer-types]
+    7129 |         HCI_EV(HCI_EV_VENDOR, msft_vendor_evt, 0),
+         |                               ^~~~~~~~~~~~~~~
+   net/bluetooth/hci_event.c:6952:17: note: in definition of macro 'HCI_EV_VL'
+    6952 |         .func = _func, \
+         |                 ^~~~~
+   net/bluetooth/hci_event.c:7129:9: note: in expansion of macro 'HCI_EV'
+    7129 |         HCI_EV(HCI_EV_VENDOR, msft_vendor_evt, 0),
+         |         ^~~~~~
+   net/bluetooth/hci_event.c:7129:31: note: (near initialization for 'hci_ev_table[255].<anonymous>.func')
+    7129 |         HCI_EV(HCI_EV_VENDOR, msft_vendor_evt, 0),
+         |                               ^~~~~~~~~~~~~~~
+   net/bluetooth/hci_event.c:6952:17: note: in definition of macro 'HCI_EV_VL'
+    6952 |         .func = _func, \
+         |                 ^~~~~
+   net/bluetooth/hci_event.c:7129:9: note: in expansion of macro 'HCI_EV'
+    7129 |         HCI_EV(HCI_EV_VENDOR, msft_vendor_evt, 0),
+         |         ^~~~~~
+>> net/bluetooth/hci_event.c:7132:6: warning: no previous prototype for 'hci_event_func' [-Wmissing-prototypes]
+    7132 | void hci_event_func(struct hci_dev *hdev, u8 event, struct sk_buff *skb,
+         |      ^~~~~~~~~~~~~~
+   cc1: some warnings being treated as errors
 
 
 vim +7129 net/bluetooth/hci_event.c
