@@ -2,92 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0333F4650DD
-	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 16:05:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D6D664650EA
+	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 16:06:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350427AbhLAPIp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Dec 2021 10:08:45 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:59750 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350460AbhLAPIh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 10:08:37 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A05A9B81FE1
-        for <netdev@vger.kernel.org>; Wed,  1 Dec 2021 15:05:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1843BC53FCD;
-        Wed,  1 Dec 2021 15:05:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638371114;
-        bh=JoQ9VfRB6MiEGwQi1FdAb0VtjRCTSz1UIG5ga/e2/+w=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=MxSw0aHDPXvGQRnJiYl38C9FVrJyU/4P+mnx7K7nEf13MdGzCOYqWVOXhHtoFhsRz
-         MxttTQz/dKxAhf6rnK9ghgpArR+SYxyZfj5RJExHSAoCNHksrD+NNUtmZxcyIMZRLc
-         McjycHsijwjJA++zESlBwwZv9pXkMUMTpjkjexxfpZIJpUKR72d+IKoC23uiEi1G1t
-         fP8D59hNlNzRf7Bd/fJkk/2gT6P5t5TsEezzgvHlGm6utAfbY/BRs7LwbOY9PcDvL8
-         VV/h2RyHUFV/NUSJfFzlDg2MtoAeweFPDcTRZewmZi3/8gBmgYBxpUnAVC+2wtFDmp
-         H3Sm+YmOSKKkQ==
-Date:   Wed, 1 Dec 2021 07:05:13 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Antoine Tenart <atenart@kernel.org>
-Cc:     davem@davemloft.net, alexander.duyck@gmail.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net] net-sysfs: update the queue counts in the
- unregistration path
-Message-ID: <20211201070513.6830f1d4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <163835112179.4366.10853783909376430643@kwain>
-References: <20211129154520.295823-1-atenart@kernel.org>
-        <20211130180839.285e31be@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <163835112179.4366.10853783909376430643@kwain>
+        id S237755AbhLAPJ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Dec 2021 10:09:59 -0500
+Received: from mga02.intel.com ([134.134.136.20]:31466 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235152AbhLAPJ6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 1 Dec 2021 10:09:58 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10184"; a="223704308"
+X-IronPort-AV: E=Sophos;i="5.87,278,1631602800"; 
+   d="scan'208";a="223704308"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Dec 2021 07:06:37 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.87,278,1631602800"; 
+   d="scan'208";a="677287331"
+Received: from lkp-server02.sh.intel.com (HELO 9e1e9f9b3bcb) ([10.239.97.151])
+  by orsmga005.jf.intel.com with ESMTP; 01 Dec 2021 07:06:35 -0800
+Received: from kbuild by 9e1e9f9b3bcb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1msRBq-000F3A-GW; Wed, 01 Dec 2021 15:06:34 +0000
+Date:   Wed, 1 Dec 2021 23:06:25 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     kbuild-all@lists.01.org, linux-bluetooth@vger.kernel.org,
+        netdev@vger.kernel.org, dan.carpenter@oracle.com,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Subject: Re: [PATCH 02/15] Bluetooth: HCI: Use skb_pull_data to parse BR/EDR
+ events
+Message-ID: <202112012251.iGUVb22U-lkp@intel.com>
+References: <20211201000215.1134831-3-luiz.dentz@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211201000215.1134831-3-luiz.dentz@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 01 Dec 2021 10:32:01 +0100 Antoine Tenart wrote:
-> > Would you mind pointing where in the code that happens? I can't seem 
-> > to find anything looking at real_num_.x_queues outside dev.c and
-> > net-sysfs.c :S  
-> 
-> I read the above commit message again; it's not well explained... Sorry
-> for that.
-> 
-> The above trace was triggered using veths and this patch would solve
-> this as veths do use real_num_x_queues to fill 'struct ethtool_channels'
-> in its get_channels ops[1] which is then used to avoid making channel
-> counts updates if it is 0[2].
+Hi Luiz,
 
-But when we are at line 175 in [2] we already updated the values from
-the user space request at lines 144-151. This check validates the new
-config so a transition from 0 -> n should not be prevented here AFAICT.
+I love your patch! Yet something to improve:
 
-> In addition, keeping track of the queue counts in the unregistration
-> path do help other drivers as it will allow adding a warning in
-> netdev_queue_update_kobjects when adding queues after unregister
-> (without tracking the queue counts in the unregistration path we can't
-> detect illegal queue additions). We could also not only warn for illegal
-> uses of netdev_queue_update_kobjects but also return an error.
-> 
-> Another change that was discussed is to forbid ethtool ops after
-> unregister. This is good, but is outside of the queue code so it might
-> not solve all issues.
-> 
-> (I do have those two patches, warn + ethtool, in my local tree and plan
-> on targeting net-next).
-> 
-> As you can see I'm a bit puzzled at how to fix this in the best way
-> possible[3]. I think the combination of the three patches should be good
-> enough, with only one sent to net as it does fix veths which IMHO is
-> easier to trigger. WDYT?
-> 
-> [1] https://elixir.bootlin.com/linux/latest/source/drivers/net/veth.c#L222
-> [2] https://elixir.bootlin.com/linux/latest/source/net/ethtool/channels.c#L175
-> [3] Because the queue code does rely on external states.
+[auto build test ERROR on bluetooth-next/master]
+[also build test ERROR on net-next/master net/master linus/master bluetooth/master v5.16-rc3 next-20211201]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-Any way of fixing this is fine. If you ask me personally I'd probably
-go with the ethtool fix to net and the zeroing and warn to net-next.
-Unless I'm misreading and this fix does work, in which case your plan
-is good, too.
+url:    https://github.com/0day-ci/linux/commits/Luiz-Augusto-von-Dentz/Rework-parsing-of-HCI-events/20211201-080632
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth-next.git master
+config: nios2-randconfig-r004-20211201 (https://download.01.org/0day-ci/archive/20211201/202112012251.iGUVb22U-lkp@intel.com/config)
+compiler: nios2-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/ccec11fda2c9e92440427cb397e3fdd8e46b2827
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Luiz-Augusto-von-Dentz/Rework-parsing-of-HCI-events/20211201-080632
+        git checkout ccec11fda2c9e92440427cb397e3fdd8e46b2827
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=nios2 SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>, old ones prefixed by <<):
+
+ERROR: modpost: "__mulsi3" [net/vmw_vsock/vsock.ko] undefined!
+ERROR: modpost: "__mulsi3" [net/mac802154/mac802154.ko] undefined!
+ERROR: modpost: "__mulsi3" [net/ieee802154/ieee802154.ko] undefined!
+ERROR: modpost: "__mulsi3" [net/atm/lec.ko] undefined!
+ERROR: modpost: "__mulsi3" [net/atm/atm.ko] undefined!
+>> ERROR: modpost: "skb_pull_data" [net/bluetooth/bluetooth.ko] undefined!
+ERROR: modpost: "__mulsi3" [net/bluetooth/bluetooth.ko] undefined!
+ERROR: modpost: "__mulsi3" [net/lapb/lapb.ko] undefined!
+ERROR: modpost: "__mulsi3" [sound/virtio/virtio_snd.ko] undefined!
+ERROR: modpost: "__mulsi3" [sound/hda/snd-hda-core.ko] undefined!
+WARNING: modpost: suppressed 804 unresolved symbol warnings because there were too many)
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
