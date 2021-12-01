@@ -2,67 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 00D65464470
-	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 02:11:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 63DF0464484
+	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 02:33:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345982AbhLABOa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 20:14:30 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:49170 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236405AbhLABO3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 20:14:29 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DBE07B81BBC;
-        Wed,  1 Dec 2021 01:11:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EF48C53FC7;
-        Wed,  1 Dec 2021 01:11:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638321066;
-        bh=ibYEhdQ6qCb6NIp86asXF/EY13plUiUKGpSjmmIhbHo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=dblL7bnu7vujLOp1KvLALeTX6p3V/4T3ReMT7ZpOj77Pi40eCve4tM6hCdZq6Yhw3
-         ti1H/CyR83EY9NR+ctrYnsDcGPhjsQqfcd2IJdLbSlhf3B7qHbSpSuqsBg9aBuhFF/
-         b2AljWkgqr1yMsfO3Jnq2KDLLtdw1kx1XMGgQKwv9gyiPXDj2lQxSTM6Jh+wQLSeYU
-         DBUHxpy9J6krZ/mhsTbvWU0xvtuMO8IGtkDFuDnf0NVlT/CWbYgllw4UZrTQZsXN8U
-         JG70+KJp8HAjblXwRqN0l4gmPj8ntrdkFLg9+wYL/zBakPe+aXwuv4xNJ2jVgPwOuX
-         N1VLOV5pAs7rA==
-Date:   Tue, 30 Nov 2021 17:11:05 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Cc:     davem@davemloft.net, linux-bluetooth@vger.kernel.org,
-        netdev@vger.kernel.org, dan.carpenter@oracle.com,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Subject: Re: [PATCH 01/15] skbuff: introduce skb_pull_data
-Message-ID: <20211130171105.64d6cf36@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211201000215.1134831-2-luiz.dentz@gmail.com>
-References: <20211201000215.1134831-1-luiz.dentz@gmail.com>
-        <20211201000215.1134831-2-luiz.dentz@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S237463AbhLABgt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 20:36:49 -0500
+Received: from out30-132.freemail.mail.aliyun.com ([115.124.30.132]:51031 "EHLO
+        out30-132.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230044AbhLABgt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 20:36:49 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=cuibixuan@linux.alibaba.com;NM=1;PH=DS;RN=13;SR=0;TI=SMTPD_---0UyvGYGl_1638322402;
+Received: from VM20210331-25.tbsite.net(mailfrom:cuibixuan@linux.alibaba.com fp:SMTPD_---0UyvGYGl_1638322402)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 01 Dec 2021 09:33:26 +0800
+From:   Bixuan Cui <cuibixuan@linux.alibaba.com>
+To:     linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, andrii.nakryiko@gmail.com
+Cc:     cuibixuan@linux.alibaba.com, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org
+Subject: [PATCH -next v2] bpf: Add oversize check before call kvmalloc()
+Date:   Wed,  1 Dec 2021 09:33:22 +0800
+Message-Id: <1638322402-54754-1-git-send-email-cuibixuan@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 30 Nov 2021 16:02:01 -0800 Luiz Augusto von Dentz wrote:
-> From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-> 
-> Like skb_pull but returns the original data pointer before pulling the
-> data after performing a check against sbk->len.
-> 
-> This allows to change code that does "struct foo *p = (void *)skb->data;"
-> which is hard to audit and error prone, to:
-> 
->         p = skb_pull_data(skb, sizeof(*p));
->         if (!p)
->                 return;
-> 
-> Which is both safer and cleaner.
+Commit 7661809d493b ("mm: don't allow oversized kvmalloc() calls") add
+the oversize check. When the allocation is larger than what kvmalloc()
+supports, the following warning triggered:
 
-It doesn't take a data pointer, so not really analogous to
-skb_put_data() and friends which come to mind. But I have 
-no better naming suggestions. You will need to respin, tho,
-if you want us to apply these directly, the patches as posted 
-don't apply to either netdev tree.
+WARNING: CPU: 1 PID: 372 at mm/util.c:597 kvmalloc_node+0x111/0x120
+mm/util.c:597
+Modules linked in:
+CPU: 1 PID: 372 Comm: syz-executor.4 Not tainted 5.15.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
+Google 01/01/2011
+RIP: 0010:kvmalloc_node+0x111/0x120 mm/util.c:597
+Code: 01 00 00 00 4c 89 e7 e8 7d f7 0c 00 49 89 c5 e9 69 ff ff ff e8 60
+20 d1 ff 41 89 ed 41 81 cd 00 20 01 00 eb 95 e8 4f 20 d1 ff <0f> 0b e9
+4c ff ff ff 0f 1f 84 00 00 00 00 00 55 48 89 fd 53 e8 36
+RSP: 0018:ffffc90002bf7c98 EFLAGS: 00010216
+RAX: 00000000000000ec RBX: 1ffff9200057ef9f RCX: ffffc9000ac63000
+RDX: 0000000000040000 RSI: ffffffff81a6a621 RDI: 0000000000000003
+RBP: 0000000000102cc0 R08: 000000007fffffff R09: 00000000ffffffff
+R10: ffffffff81a6a5de R11: 0000000000000000 R12: 00000000ffff9aaa
+R13: 0000000000000000 R14: 00000000ffffffff R15: 0000000000000000
+FS:  00007f05f2573700(0000) GS:ffff8880b9d00000(0000)
+knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000001b2f424000 CR3: 0000000027d2c000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ kvmalloc include/linux/slab.h:741 [inline]
+ map_lookup_elem kernel/bpf/syscall.c:1090 [inline]
+ __sys_bpf+0x3a5b/0x5f00 kernel/bpf/syscall.c:4603
+ __do_sys_bpf kernel/bpf/syscall.c:4722 [inline]
+ __se_sys_bpf kernel/bpf/syscall.c:4720 [inline]
+ __x64_sys_bpf+0x75/0xb0 kernel/bpf/syscall.c:4720
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+The type of 'value_size' is u32, its value may exceed INT_MAX.
+
+Reported-by: syzbot+cecf5b7071a0dfb76530@syzkaller.appspotmail.com
+Signed-off-by: Bixuan Cui <cuibixuan@linux.alibaba.com>
+---
+Changes in v2:
+* Change the err from -EINVAL to -E2BIG;
+* Change "goto err_put" to "goto free_key";
+
+ kernel/bpf/syscall.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index 1033ee8..30aabdd 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -1094,6 +1094,10 @@ static int map_lookup_elem(union bpf_attr *attr)
+ 	}
+ 
+ 	value_size = bpf_map_value_size(map);
++	if (value_size > INT_MAX) {
++		err = -E2BIG;
++		goto free_key;
++	}
+ 
+ 	err = -ENOMEM;
+ 	value = kvmalloc(value_size, GFP_USER | __GFP_NOWARN);
+-- 
+1.8.3.1
+
