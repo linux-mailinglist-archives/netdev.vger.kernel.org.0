@@ -2,88 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 59AFB465447
-	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 18:50:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B382465460
+	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 18:57:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347793AbhLARyH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Dec 2021 12:54:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36042 "EHLO
+        id S1351955AbhLASAi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Dec 2021 13:00:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237013AbhLARyG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 12:54:06 -0500
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 143E4C061574;
-        Wed,  1 Dec 2021 09:50:45 -0800 (PST)
-Received: by mail-pj1-x102d.google.com with SMTP id gf14-20020a17090ac7ce00b001a7a2a0b5c3so320658pjb.5;
-        Wed, 01 Dec 2021 09:50:45 -0800 (PST)
+        with ESMTP id S236519AbhLASAV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 13:00:21 -0500
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6EA1C061748;
+        Wed,  1 Dec 2021 09:57:00 -0800 (PST)
+Received: by mail-pg1-x52b.google.com with SMTP id r5so24351153pgi.6;
+        Wed, 01 Dec 2021 09:57:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=V3raaT8C9wOT/pdQPVt8b1fbEFpeQjlqQ444DbTsRHg=;
-        b=SqGR8zp6Tf/aDJElUh0WfWCF8qhJIUnB463tOZNqMejXxD6HlPbitmCMfv8NTeWxHK
-         jBcJwrv8ab6Vgl2j27Ue2V0nydacF6UjWxJSUmn0/yH1p/CFEm559+ijeGsuDRHW4TyO
-         mWr/y/9lboL8wKr7UCaezesrcSrEN5M6aTndsq/TI90YgMU20pADd8pDBAkSMKPhzFQ9
-         nWMCn8ClIxYhECwhrSiwL7aL0FL+ZwFW+KIOvm76lqU49W9IKE5xKdXsFykUJnVA7dkk
-         7j9zmi3kKKpwZTOQ3KrTQktCX8kfi0MdVCZE9N/iJ7Kcxre/H4Q/J0YuhNfgv5/bpk7o
-         r22Q==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=YH7GGCYhB4tao9D+uXBMuduOWm7x34SLXOg19azbyvw=;
+        b=noFtrm6PLX2WhF4tykayOXxTZvaQZaXGwG5u2QkLE173zEZwCAoOPvJOwHoQze75XX
+         50hrCjYoGEJmx2k2RA057N0mPlyPGirpVxuSBvLFC02PUrX+e+2TaJfvmVbKnctbEyJk
+         +rHyL9rY4mEZf+i7PBRvveaj4HIfJqBgOe0Cn6V5fB7CyvCzcGbN6Am6dasfaOpJYA+o
+         aIBkrDlcwEWKVp+J5FZlhM7ZYXSmuVCCe2ONolZCAF8B+wgxsQcafpPWnZd6gipKUxv4
+         9WH6KXB4WQkx15+BpmZ+dPiBYK9kJ/pCwEVl2fVj80WMFhs2zkc6dSNUvHQB25A9NaUp
+         uz7Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=V3raaT8C9wOT/pdQPVt8b1fbEFpeQjlqQ444DbTsRHg=;
-        b=PDWxxXobC36LV4X9JFRwKzTlFU3smt84P5NrFVVmIi54i1QHyYmeqyJhONvhLcgiAC
-         dGPlJNKUj8HJKYPmX35YpIlpwKReDvDrvucCNVEm/DxcYPV3dGcHT3/6HLwTLp9fgXlR
-         kPuO5Is2+n5iZPfuhuLQgfgIFxfKGiQKoSMBn9CzWi2KmlFHiWYMnGKP9b4hOO+J0t4V
-         FQwzN/LVZyowUKlvd31yDsCxO2tQuNzaU3QzpHC/XwINKL59ZMB6IFM2hxIP+b1IIneF
-         vSeaTv2l61mcb4EnydrgOdRsGmvTnUUOhzxgf3UcTkMEO3NeZ8f3Gf5SwrJSoN+qgFeA
-         I2Lg==
-X-Gm-Message-State: AOAM533WSSG/tGKO4PjFyJSO7yGB4H8351Ug4g+lhCxUfiQJEEoMjJcO
-        pRi5pS3A468Xdgr55oMUXXwr/dx/b2LmdC4cnl8=
-X-Google-Smtp-Source: ABdhPJxOdY1WyGUOgzHwlzaRW7sUgZdXT+JhrzXVYN365QjmaEShsGw0023vzaqTmO8p5byH0bQEvy4gqBC7Dms5VwU=
-X-Received: by 2002:a17:903:2306:b0:141:e52e:457d with SMTP id
- d6-20020a170903230600b00141e52e457dmr9233368plh.3.1638381044511; Wed, 01 Dec
- 2021 09:50:44 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=YH7GGCYhB4tao9D+uXBMuduOWm7x34SLXOg19azbyvw=;
+        b=nSeJXlLM85w2Zod7shzAv+fe+kdmmnA8AnQB0/WLHeJMz2SUhoXFRQXIOJg+ddbf4O
+         LIek5zs9UP6/ovkXHob15A0M3fIPrAQl7L9+MpNF/eRFj4ZVzArmgkYKI+UPskqvUNHJ
+         dKob86NojkoVSBwzgwoJMnJz7dOZ38n2P7nyqxWIu1yls8tlJNSGu1o6Ilvme32JGczY
+         m+NU3jhVGjk+ecJ5Ve1N2gxo/qJjrmZ9UAuuNmEvkIMGsw/kEpU7cMGpVcgpNZcK4Un9
+         v2LNCe4Zcj2cBl6ItUq8sMPgHil3byesIKJ4jJ/xRfYL789T677AizOJVCe7y5yQFFUs
+         IbXw==
+X-Gm-Message-State: AOAM5335io1lKCXL9jedu5KSZKO66lfgY/WjOlYeBU/6LhMdHvXnQBnT
+        pfj8MiFOIoJ2lMGWzlTtZYZL7TxiH44=
+X-Google-Smtp-Source: ABdhPJwYspeZxsIzy8BwyltvOICyH7yKqgNufLA6pu2F6n6Vt9d21WPjf/klHsf4yrP4cSAz1hGRWw==
+X-Received: by 2002:a63:82c6:: with SMTP id w189mr5959474pgd.491.1638381419822;
+        Wed, 01 Dec 2021 09:56:59 -0800 (PST)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id j13sm471546pfc.151.2021.12.01.09.56.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 01 Dec 2021 09:56:59 -0800 (PST)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
+        bcm-kernel-feedback-list@broadcom.com (maintainer:BROADCOM IPROC GBIT
+        ETHERNET DRIVER), Doug Berger <opendmb@gmail.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
+        DEVICE TREE BINDINGS), linux-kernel@vger.kernel.org (open list),
+        linux-arm-kernel@lists.infradead.org (moderated list:BROADCOM IPROC ARM
+        ARCHITECTURE),
+        linux-phy@lists.infradead.org (open list:GENERIC PHY FRAMEWORK)
+Subject: [PATCH net-next v2 0/9] Broadcom DT bindings conversion to YAML
+Date:   Wed,  1 Dec 2021 09:56:43 -0800
+Message-Id: <20211201175652.4722-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20211201073458.2731595-1-houtao1@huawei.com> <20211201073458.2731595-2-houtao1@huawei.com>
-In-Reply-To: <20211201073458.2731595-2-houtao1@huawei.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 1 Dec 2021 09:50:33 -0800
-Message-ID: <CAADnVQJ7wMxfLKgQuPYE82dXOi5dO5r77PkZR=+17JpvJoBAVQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v4 1/2] bpf: clean-up bpf_verifier_vlog() for
- BPF_LOG_KERNEL log level
-To:     Hou Tao <houtao1@huawei.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 30, 2021 at 11:19 PM Hou Tao <houtao1@huawei.com> wrote:
->
-> An extra newline will output for bpf_log() with BPF_LOG_KERNEL level
-> as shown below:
->
-> [   52.095704] BPF:The function test_3 has 12 arguments. Too many.
-> [   52.095704]
-> [   52.096896] Error in parsing func ptr test_3 in struct bpf_dummy_ops
->
-> Now all bpf_log() are ended by newline, but not all btf_verifier_log()
-> are ended by newline, so checking whether or not the log message
-> has the trailing newline and adding a newline if not.
->
-> Also there is no need to calculate the left userspace buffer size
-> for kernel log output and to truncate the output by '\0' which
-> has already been done by vscnprintf(), so only do these for
-> userspace log output.
->
-> Signed-off-by: Hou Tao <houtao1@huawei.com>
-> Acked-by: Yonghong Song <yhs@fb.com>
-> Acked-by: Martin KaFai Lau <kafai@fb.com>
+Hi all,
 
-Applied this patch. Thanks
+This patch series converts 3 Broadcom Ethernet controller Device Tree
+bindings to YAML and the iProc MDIO mux. Please wait for a review from
+Rob before applying, thank you!
+
+Changes in v2;
+
+- converted Northstar 2 PCIe binding to YAML as well
+- fixed DT_CHECKER_FLAGS=-m warnings
+- documented 2500 Mbits/sec for fixed-link
+
+Florian Fainelli (9):
+  dt-bindings: net: Document 2500Mbits/sec fixed link
+  dt-bindings: net: brcm,unimac-mdio: reg-names is optional
+  dt-bindings: net: brcm,unimac-mdio: Update maintainers for binding
+  dt-bindings: net: Document moca PHY interface
+  dt-bindings: net: Convert GENET binding to YAML
+  dt-bindings: net: Convert AMAC to YAML
+  dt-bindings: net: Convert SYSTEMPORT to YAML
+  dt-bindings: phy: Convert Northstar 2 PCIe PHY to YAML
+  dt-bindings: net: Convert iProc MDIO mux to YAML
+
+ .../devicetree/bindings/net/brcm,amac.txt     |  30 ----
+ .../devicetree/bindings/net/brcm,amac.yaml    |  88 +++++++++++
+ .../devicetree/bindings/net/brcm,bcmgenet.txt | 125 ---------------
+ .../bindings/net/brcm,bcmgenet.yaml           | 145 ++++++++++++++++++
+ .../bindings/net/brcm,mdio-mux-iproc.txt      |  62 --------
+ .../bindings/net/brcm,mdio-mux-iproc.yaml     |  80 ++++++++++
+ .../bindings/net/brcm,systemport.txt          |  38 -----
+ .../bindings/net/brcm,systemport.yaml         |  82 ++++++++++
+ .../bindings/net/brcm,unimac-mdio.yaml        |   3 +-
+ .../bindings/net/ethernet-controller.yaml     |   3 +-
+ .../bindings/phy/brcm,mdio-mux-bus-pci.txt    |  27 ----
+ .../bindings/phy/brcm,ns2-pcie-phy.yaml       |  41 +++++
+ MAINTAINERS                                   |   5 +-
+ 13 files changed, 443 insertions(+), 286 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/net/brcm,amac.txt
+ create mode 100644 Documentation/devicetree/bindings/net/brcm,amac.yaml
+ delete mode 100644 Documentation/devicetree/bindings/net/brcm,bcmgenet.txt
+ create mode 100644 Documentation/devicetree/bindings/net/brcm,bcmgenet.yaml
+ delete mode 100644 Documentation/devicetree/bindings/net/brcm,mdio-mux-iproc.txt
+ create mode 100644 Documentation/devicetree/bindings/net/brcm,mdio-mux-iproc.yaml
+ delete mode 100644 Documentation/devicetree/bindings/net/brcm,systemport.txt
+ create mode 100644 Documentation/devicetree/bindings/net/brcm,systemport.yaml
+ delete mode 100644 Documentation/devicetree/bindings/phy/brcm,mdio-mux-bus-pci.txt
+ create mode 100644 Documentation/devicetree/bindings/phy/brcm,ns2-pcie-phy.yaml
+
+-- 
+2.25.1
+
