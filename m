@@ -2,171 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DCA24645CA
-	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 05:17:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A85F4645CE
+	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 05:19:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241687AbhLAEUz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Nov 2021 23:20:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48010 "EHLO
+        id S241792AbhLAEWy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Nov 2021 23:22:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229590AbhLAEUy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 23:20:54 -0500
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49376C061574;
-        Tue, 30 Nov 2021 20:17:34 -0800 (PST)
-Received: by mail-yb1-xb33.google.com with SMTP id v64so59397622ybi.5;
-        Tue, 30 Nov 2021 20:17:34 -0800 (PST)
+        with ESMTP id S229590AbhLAEWx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Nov 2021 23:22:53 -0500
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88DADC061574;
+        Tue, 30 Nov 2021 20:19:32 -0800 (PST)
+Received: by mail-yb1-xb2f.google.com with SMTP id v203so59415681ybe.6;
+        Tue, 30 Nov 2021 20:19:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=BffJ4sWQgdBaiuYpbIS7hR41JOI6EP0ZzM2HFXgplcQ=;
-        b=fLbVwBEnBndOyzpou0qLz9v/pSu31J8kq+XFRrd32O/u/h48CNV5WjXtV02iwumesA
-         zyNOVTdlvInWdpegfFwBq61ad0WEscWG8GrPVB91j54caGZrfWvi/F49I0Zv/sFEiLAN
-         aCwNeVoacB0lyjF3j8/W0iBzKRnnNtwiqK56R7nqLTdoO9HhnMA0oZzFbUHKOIlIReLz
-         oFZ6+kuemKcGHrxipfkrPYSf89scjyNEV0lNZMxXL660xyPKbpGpwPtTtrv9CJ6fPQ/u
-         lbK/JdcXYkVKKFxOfxYdWzeowPbUA/YGEjSXAiQL+j6Zrc4EWKlAVM8xEeHMnivJC/tp
-         DjAA==
+        bh=X/3fFovD46a9y4YQmrvpTwUaa4qtKNVsMZP/WV66wQQ=;
+        b=gJVyl5VcXzBOaT8p4+fIiKm7kUeZyTvhub7zGiBv7W8CZ0YfMUuq0wWVeFWBcgU1e/
+         veSemlGDydp7UXpBP9KLlZY5oEGQmzIBw042B61iU76IE/W251WD9SaB0v5XlLkJNQAA
+         H37/XZ38Oq2rKdOq6Ep5PVEsJf+pry9PfRrrQwi7d8V0nReW8Z1A8Bte5kZE6xpLWhYG
+         iFPYbfo3ck8zEtUAjzw7LQiDcWs56wBC8SwGCQIHvwvpNrcmRnXfr9nj2B5rsc22Ym7v
+         0gkDCMBwiBTIE4kbf3T4yYPUQf983BolrgTPL//Gt5OMiu4mwgHwDo7wmxRJfy9obhaa
+         SJyQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=BffJ4sWQgdBaiuYpbIS7hR41JOI6EP0ZzM2HFXgplcQ=;
-        b=brpPPxN9iFHSwKlX7ReHCj0fpNvKwOhCstCQU7BV6fsZfNwQG6Uxt9V/nGuWxfszZw
-         dH1e0CCxnGavwZmXhzn14hBbHs4Z2LdphX5IRbFl7AEIdlEU7gDbzVbwKsS5cU1G/07u
-         vI0ejdsm++ela5EUdOv+BedHeU46puTaONcOI39+rm2IyKOzzI1Y7+D7cnGyzEE1XdEa
-         3Xfwwd0a3Og0PmQuIYIJk5jnJTb0Yy8zuyVQdqRwRkyBHC5cCEamLV5i3X82dlQzc1Mj
-         IjRrKLrXVQClGNA7weD81lZZ05t4z+44Yj9f4BOjo2ScL7GaJgPSBXCPILyJys/A15C/
-         pNpA==
-X-Gm-Message-State: AOAM531DYUpNCxZIctOl1x+e/wa/hjqe6NWYc892zOCxGvREAO44VlpQ
-        hUw0ksOeACuoFBaz3ZNO4EedK6o8DzHvNjt+n5dss+IGiKRTrw==
-X-Google-Smtp-Source: ABdhPJyc6lmjzO8grzlbNLzgClqcVWxkdSl+vfkqdlC812ycU+qm0WdweURPP4TGSCNi/NmkZFzaTj2mskjm//fzNGY=
-X-Received: by 2002:a25:e617:: with SMTP id d23mr4160796ybh.555.1638332253447;
- Tue, 30 Nov 2021 20:17:33 -0800 (PST)
+        bh=X/3fFovD46a9y4YQmrvpTwUaa4qtKNVsMZP/WV66wQQ=;
+        b=pf67PCfIdbeSfmD01dmCBAmHmZikjenogU0ET69y9iWyh41yBeGIIyuYPl9wq9RCpx
+         6sTUOJTbnOv0ApX8stXz5vLrFmbPmajetJbWhwz9Sgwp3OLgEMf8r4k7KxfRNNDv5dIf
+         XEbGkiQvzBWRUWK2cxvcDlKxCnVM6kXzVoKvb0t2QXrXiOQfrhHgzbEZw8R8EY0Tk/fW
+         Wlosv2ibuPPpQwhVenpkKC03qJ001F57Pdix1/R5vAUSgfu44AvtFeyASsxlhD6hdm7Q
+         old/rNofqzSJgCMeUmpI4oLUMuQere5eq9Es40iIUeqxoRaHxARy+TQog44LlkCuXLEN
+         80vA==
+X-Gm-Message-State: AOAM530jP3Tyg76LDKeEOZEPvuAm0mZt2MYt+DkZX3goUF5Cp5VadPk/
+        t5pcIT3RwR89yfY8Owza6E4e0D9HMwdtt7I3o2U=
+X-Google-Smtp-Source: ABdhPJwFdB20jvrdKNn0k66aTCNzR+3nfVEVKM2MCD3ZeJsSKCwGu3X9XbUhsZNcCl2P/KuK5OaaGhTNhDPEtspJ4q8=
+X-Received: by 2002:a25:13c6:: with SMTP id 189mr4368242ybt.113.1638332371727;
+ Tue, 30 Nov 2021 20:19:31 -0800 (PST)
 MIME-Version: 1.0
-References: <20211201035450.31083-1-zhoufeng.zf@bytedance.com>
-In-Reply-To: <20211201035450.31083-1-zhoufeng.zf@bytedance.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 30 Nov 2021 20:17:22 -0800
-Message-ID: <CAEf4BzZ5Q9QkRGsT2kW+3AW4s7=qixJYO84heeu64TLG9DP3+A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] libbpf: Let any two INT/UNION compatible if
- their names and sizes match
-To:     Feng zhou <zhoufeng.zf@bytedance.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
+References: <20211126204108.11530-1-xiyou.wangcong@gmail.com>
+ <CAPhsuW4zR5Yuwuywd71fdfP1YXX5cw6uNmhqULHy8BhfcbEAAQ@mail.gmail.com>
+ <YaU9Mdv+7kEa4JOJ@unknown> <CAPhsuW4M5Zf9ryWihNSc6DPnXAq0PDJReD2-exxNZp4PDvsSXQ@mail.gmail.com>
+In-Reply-To: <CAPhsuW4M5Zf9ryWihNSc6DPnXAq0PDJReD2-exxNZp4PDvsSXQ@mail.gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Tue, 30 Nov 2021 20:19:20 -0800
+Message-ID: <CAM_iQpVrv8C9opCCMb9ZYtemp32vdv8No2XDwYmDAaCgPtq+RA@mail.gmail.com>
+Subject: Re: [PATCH bpf] libbpf: fix missing section "sk_skb/skb_verdict"
+To:     Song Liu <song@kernel.org>
+Cc:     Andrii Nakryiko <andrii@kernel.org>,
         Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        duanxiongchun@bytedance.com,
-        Muchun Song <songmuchun@bytedance.com>,
-        zhouchengming@bytedance.com
+        Cong Wang <cong.wang@bytedance.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 30, 2021 at 7:55 PM Feng zhou <zhoufeng.zf@bytedance.com> wrote:
+On Tue, Nov 30, 2021 at 3:33 PM Song Liu <song@kernel.org> wrote:
 >
-> From: Feng Zhou <zhoufeng.zf@bytedance.com>
+> On Mon, Nov 29, 2021 at 12:51 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> >
+> > On Fri, Nov 26, 2021 at 04:20:34PM -0800, Song Liu wrote:
+> > > On Fri, Nov 26, 2021 at 12:45 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> > > >
+> > > > From: Cong Wang <cong.wang@bytedance.com>
+> > > >
+> > > > When BPF_SK_SKB_VERDICT was introduced, I forgot to add
+> > > > a section mapping for it in libbpf.
+> > > >
+> > > > Fixes: a7ba4558e69a ("sock_map: Introduce BPF_SK_SKB_VERDICT")
+> > > > Cc: Daniel Borkmann <daniel@iogearbox.net>
+> > > > Cc: John Fastabend <john.fastabend@gmail.com>
+> > > > Cc: Jakub Sitnicki <jakub@cloudflare.com>
+> > > > Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+> > >
+> > > The patch looks good to me. But seems the selftests are OK without this. So,
+> > > do we really need this?
+> > >
+> >
+> > Not sure if I understand this question.
+> >
+> > At least BPF_SK_SKB_STREAM_PARSER and BPF_SK_SKB_STREAM_VERDICT are already
+> > there, so either we should remove all of them or add BPF_SK_SKB_VERDICT for
+> > completeness.
+> >
+> > Or are you suggesting we should change it back in selftests too? Note, it was
+> > changed by Andrii in commit 15669e1dcd75fe6d51e495f8479222b5884665b6:
+> >
+> > -SEC("sk_skb/skb_verdict")
+> > +SEC("sk_skb")
 >
-> commit:67c0496e87d193b8356d2af49ab95e8a1b954b3c(kernfs: convert
-> kernfs_node->id from union kernfs_node_id to u64).
->
-> The bpf program compiles on the kernel version after this commit and
-> then tries to run on the kernel before this commit, libbpf will report
-> an error. The reverse is also same.
->
-> libbpf: prog 'tcp_retransmit_synack_tp': relo #4: kind <byte_off> (0),
-> spec is [342] struct kernfs_node.id (0:9 @ offset 104)
-> libbpf: prog 'tcp_retransmit_synack_tp': relo #4: non-matching candidate
-> libbpf: prog 'tcp_retransmit_synack_tp': relo #4: non-matching candidate
-> libbpf: prog 'tcp_retransmit_synack_tp': relo #4: no matching targets
-> found
->
-> The type before this commit:
->         union kernfs_node_id    id;
->         union kernfs_node_id {
->                 struct {
->                         u32             ino;
->                         u32             generation;
->                 };
->                 u64                     id;
->         };
->
-> The type after this commit:
->         u64 id;
->
-> We can find that the variable name and size have not changed except for
-> the type change.
-> So I added some judgment to let any two INT/UNION are compatible, if
-> their names and sizes match.
->
-> Reported-by: Chengming Zhou <zhouchengming@bytedance.com>
-> Tested-by: Chengming Zhou <zhouchengming@bytedance.com>
-> Signed-off-by: Feng Zhou <zhoufeng.zf@bytedance.com>
-> ---
+> Yes, I noticed that Andrii made the change, and it seems to work
+> as-is. Therefore,
+> I had the question "do we really need it".
 
-This should be handled by application, not by hacking libbpf's CO-RE
-relocation logic. See [0] for how this should be done with existing
-BPF CO-RE mechanisms.
+Same question from me: why still keep sk_skb/stream_parser and
+sk_skb/stream_verdict? ;) I don't see any reason these two are more
+special than sk_skb/skb_verdict, therefore we should either keep all
+of them or remove all of them.
 
-  [0] https://nakryiko.com/posts/bpf-core-reference-guide/#handling-incompatible-field-and-type-changes
+>
+> If we do need to differentiate skb_verdict from just sk_skb, could you
 
->  tools/lib/bpf/relo_core.c | 21 +++++++++++++++++----
->  1 file changed, 17 insertions(+), 4 deletions(-)
+Are you sure sk_skb is a real attach type?? To me, it is an umbrella to
+catch all of them:
+
+SEC_DEF("sk_skb",               SK_SKB, 0, SEC_NONE | SEC_SLOPPY_PFX),
+
+whose expected_attach_type is 0. The reason why it works is
+probably because we don't check BPF_PROG_TYPE_SK_SKB in
+bpf_prog_load_check_attach().
+
+> please add a
+> case selftest for skb_verdict?
+
+Ah, sure, I didn't know we have sec_name_test.
+
 >
-> diff --git a/tools/lib/bpf/relo_core.c b/tools/lib/bpf/relo_core.c
-> index b5b8956a1be8..ff7f4e97bafb 100644
-> --- a/tools/lib/bpf/relo_core.c
-> +++ b/tools/lib/bpf/relo_core.c
-> @@ -294,6 +294,7 @@ static int bpf_core_parse_spec(const struct btf *btf,
->   *   - any two FLOATs are always compatible;
->   *   - for ARRAY, dimensionality is ignored, element types are checked for
->   *     compatibility recursively;
-> + *   - any two INT/UNION are compatible, if their names and sizes match;
->   *   - everything else shouldn't be ever a target of relocation.
->   * These rules are not set in stone and probably will be adjusted as we get
->   * more experience with using BPF CO-RE relocations.
-> @@ -313,8 +314,14 @@ static int bpf_core_fields_are_compat(const struct btf *local_btf,
->
->         if (btf_is_composite(local_type) && btf_is_composite(targ_type))
->                 return 1;
-> -       if (btf_kind(local_type) != btf_kind(targ_type))
-> -               return 0;
-> +       if (btf_kind(local_type) != btf_kind(targ_type)) {
-> +               if (local_type->size == targ_type->size &&
-> +                   (btf_is_union(local_type) || btf_is_union(targ_type)) &&
-> +                   (btf_is_int(local_type) || btf_is_int(targ_type)))
-> +                       return 1;
-> +               else
-> +                       return 0;
-> +       }
->
->         switch (btf_kind(local_type)) {
->         case BTF_KIND_PTR:
-> @@ -384,11 +391,17 @@ static int bpf_core_match_member(const struct btf *local_btf,
->         targ_type = skip_mods_and_typedefs(targ_btf, targ_id, &targ_id);
->         if (!targ_type)
->                 return -EINVAL;
-> -       if (!btf_is_composite(targ_type))
-> -               return 0;
->
->         local_id = local_acc->type_id;
->         local_type = btf__type_by_id(local_btf, local_id);
-> +       if (!btf_is_composite(targ_type)) {
-> +               if (local_type->size == targ_type->size &&
-> +                   btf_is_union(local_type) && btf_is_int(targ_type))
-> +                       return 1;
-> +               else
-> +                       return 0;
-> +       }
-> +
->         local_member = btf_members(local_type) + local_acc->idx;
->         local_name = btf__name_by_offset(local_btf, local_member->name_off);
->
-> --
-> 2.11.0
->
+> Also, maybe we can name it as "sk_skb/verdict" to avoid duplication?
+
+At least we used to call it sk_skb/skb_verdict before commit 15669e1dcd.
+
+Thanks.
