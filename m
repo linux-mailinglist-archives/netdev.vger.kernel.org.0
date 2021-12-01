@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7117F4656D3
-	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 21:00:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BD874656F5
+	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 21:17:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242466AbhLAUD2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Dec 2021 15:03:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38904 "EHLO
+        id S1352934AbhLAUU3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Dec 2021 15:20:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230197AbhLAUDZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 15:03:25 -0500
+        with ESMTP id S239508AbhLAUS7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 15:18:59 -0500
 Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A708EC061574;
-        Wed,  1 Dec 2021 12:00:03 -0800 (PST)
-Received: by mail-wr1-x435.google.com with SMTP id t9so37825102wrx.7;
-        Wed, 01 Dec 2021 12:00:03 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15B65C061748;
+        Wed,  1 Dec 2021 12:15:36 -0800 (PST)
+Received: by mail-wr1-x435.google.com with SMTP id o13so54743032wrs.12;
+        Wed, 01 Dec 2021 12:15:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Vt+OcMY2R/jF1z+M9gOwwL9VOFGJf09UHYeezsdqi70=;
-        b=gn8U7lCPTHHd1UixZQINYzwt6etsT47Gn4SrC+8juSJ6OoI07j67cotK1qYYrmUewX
-         LipC8ulYkDfYPhQuEEHzxWVXPoEf3XbEHB4esp7hHydnFGguI8MDhEoX3siBNAvQUzcF
-         kVpVbStYwvgN6ft+l22tPnvia9lDPU0Q6qeiIN8l3GNZe3gEd2hDCp63gWrEWSH48tuq
-         FmgCVmqbwWNNBEfKgYn1igMyqFuY4xAbp56UBv/agjvO20L3DJ2Z9woj/JO/DzmPgpmh
-         VpWf30agsfQysuvzbruLAutlkmvCG8ehaWuyXIsuOepvqCyXMv6ZapIaQqMz6dQAoSmP
-         Ar/Q==
+        bh=y2ou2loVuUAqTFRrcmUldgZpHhhd49WhK2i6oFOiRYg=;
+        b=c/sl4gXkqY+Scm9abe//cpBB8N0BZSbR1jYzwq9TQ6GH0yyyGn7zC3hB07NceYOSCp
+         iD782u1p7/IYh9IeYkATLv4p4H4oG3DzdHCZYScF0DcYWk80lJsn2mPpEi6p3qmSvmTy
+         xsRM+wuGJr6Mp+SiXHxU/GwqVCkrhaK9N5gI78Gv+OTEMq35tHMmzRcOHjmJx64ilEwZ
+         qQ9+V/M26c3fzIawMO6AKYVfIFgwFA8mljxI6OEkQ8A47wN2NRelWHjtCOfwmhvAhaaf
+         KwTMdcBQ86cxvaokcsZhc3k4ZMFi2GknWh8pIJqHKb9JYIJUKidQphlRT4MZHVcSbYO9
+         PTnw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=Vt+OcMY2R/jF1z+M9gOwwL9VOFGJf09UHYeezsdqi70=;
-        b=dPNeNp/27vWayt1dn4wbnOn97m/RIVZHhS4VEvANZezcbrdF+WFHau3CidfRCTk2Qa
-         Xox4ynMHJSnt0gEYqvZdsLdZgP+fLEyGAAEe7LH5qSOyt3Jl/HrlA0JCLmIoJN6XWus2
-         3BKZ8vEvJGgMm4tXVThjr2f/ooMQS66XuWZ9HVGh/4S9BLfyJXyE/vwaQScD/x7rO63Y
-         +IP2rHVinoMtsVYxGt6hiPSK/9mBAGeieXz6IkEGpWE90zfNIRdoD7Y9CS1n1QRC/KGZ
-         5sZjCckp/SxHPQ0xP7pDI6zjklyBXO7rIBwegkxTy3w3UdiVEVHbTZnVoqbEfQr6RkwR
-         GSKg==
-X-Gm-Message-State: AOAM5335td9RyuzBG3zrZYBboXBYn+ImO2BVpNir0/ofqoFaTwFEboFn
-        XnjmgQMOiEUS09Z/FWuyEsY=
-X-Google-Smtp-Source: ABdhPJy1l9L3ZH8uahJZMf/734rIewzeh/+l47lBDFm6L8ZIDbZDeD+qZQcXMLnTp5gzDWWFASQMRQ==
-X-Received: by 2002:a5d:40cf:: with SMTP id b15mr9366547wrq.161.1638388802346;
-        Wed, 01 Dec 2021 12:00:02 -0800 (PST)
+        bh=y2ou2loVuUAqTFRrcmUldgZpHhhd49WhK2i6oFOiRYg=;
+        b=iV7hjsm4uqU/Uf5rfeRa2VHIXTd9eEuMElYX1WuHVMqf2RD2th1CJP660QmJYcOSo0
+         5YeQTRCilLD4iA9DZUb08MfYJu5daQbcCcWDIHI0DUeXr5jLdi9YQronbYrxAYInWvTT
+         ZgWGcQubNmqL4Pr3IPVrU2RquQ9vF0Oz6wpibFlixQjWlMoNCPp9+useV9dLlMNSKw8I
+         GcdzuxgZqQbj8uzDwYxxgVUpwMOKpEsQdEj14CosL2jtpQvVasTkWSdTtZkaC0dHupsZ
+         hXJ5Lq1SsAon4y+mhFIBiBOQOgKtrqoh/HlNi17O27O+SKCdZwzvVNPHHgy7AIAX5HkI
+         nZBw==
+X-Gm-Message-State: AOAM530FaTUiwH7BjAL0gYmGRfEAKPBh0wIll6TKf79sYQ3QbVWvHHNw
+        cdgOQdgcvw881cNng/JHp6wh0KdTfYM=
+X-Google-Smtp-Source: ABdhPJwCwlAhadM/OXW/0yhHMeZfNEMZdw3cI8WOOIMT+UKT7Wma+pZBDtRfcPQwalh2iNoTwhegHQ==
+X-Received: by 2002:a5d:4d8b:: with SMTP id b11mr9050264wru.393.1638389734759;
+        Wed, 01 Dec 2021 12:15:34 -0800 (PST)
 Received: from [192.168.8.198] ([185.69.144.129])
-        by smtp.gmail.com with ESMTPSA id b6sm233654wmq.45.2021.12.01.12.00.01
+        by smtp.gmail.com with ESMTPSA id g13sm1049555wrd.57.2021.12.01.12.15.33
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 01 Dec 2021 12:00:01 -0800 (PST)
-Message-ID: <1281a755-bef4-d2c8-4416-e4b5734118af@gmail.com>
-Date:   Wed, 1 Dec 2021 19:59:58 +0000
+        Wed, 01 Dec 2021 12:15:34 -0800 (PST)
+Message-ID: <974b266e-d224-97da-708f-c4a7e7050190@gmail.com>
+Date:   Wed, 1 Dec 2021 20:15:28 +0000
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.3.2
@@ -65,33 +65,42 @@ Cc:     Jakub Kicinski <kuba@kernel.org>,
         Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
         David Ahern <dsahern@kernel.org>, Jens Axboe <axboe@kernel.dk>
 References: <cover.1638282789.git.asml.silence@gmail.com>
- <4c0170fa-5b6f-ff76-0eff-a83ffec9864d@gmail.com>
- <2c8bf94e-1265-2f3c-98ae-dfc73598f8f2@gmail.com>
+ <ae2d2dab-6f42-403a-f167-1ba3db3fd07f@gmail.com>
+ <994e315b-fdb7-1467-553e-290d4434d853@gmail.com>
+ <c4424a7a-2ef1-6524-9b10-1e7d1f1e1fe4@gmail.com>
+ <889c0306-afed-62cd-d95b-a20b8e798979@gmail.com>
+ <0b92f046-5ac3-7138-2775-59fadee6e17a@gmail.com>
 From:   Pavel Begunkov <asml.silence@gmail.com>
-In-Reply-To: <2c8bf94e-1265-2f3c-98ae-dfc73598f8f2@gmail.com>
+In-Reply-To: <0b92f046-5ac3-7138-2775-59fadee6e17a@gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/1/21 17:49, David Ahern wrote:
-> On 12/1/21 7:31 AM, Pavel Begunkov wrote:
->>
->> Also, as was asked, attaching a standalone .c version of the
->> benchmark. Requires any relatively up-to-date liburing installed.
->>
-> attached command differs from the version mentioned in the cover letter:
-
-I guess you mean the new options mentioned in the message that
-were added to that standalone script. They look useful, will
-update the repo with a similar change later.
-
-
-> https://github.com/isilence/liburing.git zc_v1
+On 12/1/21 19:20, David Ahern wrote:
+> On 12/1/21 12:11 PM, Pavel Begunkov wrote:
+>> btw, why a dummy device would ever go through loopback? It doesn't
+>> seem to make sense, though may be missing something.
 > 
-> copying this version into that branch, removing the duplicate
-> definitions and it works.
+> You are sending to a local ip address, so the fib_lookup returns
+> RTN_LOCAL. The code makes dev_out the loopback:
+> 
+> https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/tree/net/ipv4/route.c#n2773
+
+I see, thanks. I still don't use the skb_orphan_frags_rx() hack
+and it doesn't go through the loopback (for my dummy tests), just
+dummy_xmit() and no mention of loopback in perf data, see the
+flamegraph. Don't know what is the catch.
+
+I'm illiterate of the routing paths. Can it be related to
+the "ip route add"? How do you get an ipv4 address for the device?
+
+> 
+> (you are not using vrf so ignore the l3mdev reference). loopback device
+> has the logic to put the skb back in the stack for Rx processing:
+> 
+> https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/tree/drivers/net/loopback.c#n68
 > 
 
 -- 
