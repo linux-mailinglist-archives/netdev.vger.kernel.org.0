@@ -2,107 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4602346535B
-	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 17:50:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CC49F46537E
+	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 18:03:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244011AbhLAQxX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Dec 2021 11:53:23 -0500
-Received: from mga12.intel.com ([192.55.52.136]:26944 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242868AbhLAQxW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 1 Dec 2021 11:53:22 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10185"; a="216513901"
-X-IronPort-AV: E=Sophos;i="5.87,279,1631602800"; 
-   d="scan'208";a="216513901"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Dec 2021 08:50:00 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.87,279,1631602800"; 
-   d="scan'208";a="677324335"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga005.jf.intel.com with ESMTP; 01 Dec 2021 08:49:55 -0800
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 1B1GnsGV021198;
-        Wed, 1 Dec 2021 16:49:54 GMT
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH bpf-next] samples: bpf: fix conflicting types in fds_example
-Date:   Wed,  1 Dec 2021 17:49:31 +0100
-Message-Id: <20211201164931.47357-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.33.1
+        id S1351666AbhLARHB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Dec 2021 12:07:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53514 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238178AbhLARHA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 12:07:00 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20899C061574
+        for <netdev@vger.kernel.org>; Wed,  1 Dec 2021 09:03:39 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DC35AB82049
+        for <netdev@vger.kernel.org>; Wed,  1 Dec 2021 17:03:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26E55C53FAD;
+        Wed,  1 Dec 2021 17:03:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1638378216;
+        bh=0Qfmh9rQCf8d1/5uWmMF5YNcwNSblT3dOPeADSBceZk=;
+        h=In-Reply-To:References:From:Subject:Cc:To:Date:From;
+        b=Gj81L5nG+lRfH89AC36Tx6tGiv3c/uc3Db6g0LvZYMw/b3cG81u0RxvtQhqpIyKNN
+         Xs+sTyXSGRTCTYrslTuf52xk9E1ajE6x8EuhEa5ak/emxxz0U/XyYfM+4zdgKHhCio
+         50r9y060XbmBmsXj3XzF8asBp9QE2EWD+ynyD5JZpOY1DpyiimnIsAkKdK0tkzZ+XU
+         QB16PyfGZw/720jdGPfQbK7t7/Rl+VARYFyeUTvH/Xrg/oI8Z9HOEGw8NbmZCSfdly
+         IC/MXilu+CcSRd0by6d8A/g/GApUkaA+9nf/N5r2x09v2TYFRr2p/lGJu8wWNrf50z
+         71J3P1VIi/uXQ==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20211201070513.6830f1d4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20211129154520.295823-1-atenart@kernel.org> <20211130180839.285e31be@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <163835112179.4366.10853783909376430643@kwain> <20211201070513.6830f1d4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Antoine Tenart <atenart@kernel.org>
+Subject: Re: [PATCH net] net-sysfs: update the queue counts in the unregistration path
+Cc:     davem@davemloft.net, alexander.duyck@gmail.com,
+        netdev@vger.kernel.org
+To:     Jakub Kicinski <kuba@kernel.org>
+Message-ID: <163837821333.4357.11290896995730684742@kwain>
+Date:   Wed, 01 Dec 2021 18:03:33 +0100
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix the following samples/bpf build error appeared after the
-introduction of bpf_map_create() in libbpf:
+Quoting Jakub Kicinski (2021-12-01 16:05:13)
+> On Wed, 01 Dec 2021 10:32:01 +0100 Antoine Tenart wrote:
+> > > Would you mind pointing where in the code that happens? I can't seem =
 
-  CC  samples/bpf/fds_example.o
-samples/bpf/fds_example.c:49:12: error: static declaration of 'bpf_map_create' follows non-static declaration
-static int bpf_map_create(void)
-           ^
-samples/bpf/libbpf/include/bpf/bpf.h:55:16: note: previous declaration is here
-LIBBPF_API int bpf_map_create(enum bpf_map_type map_type,
-               ^
-samples/bpf/fds_example.c:82:23: error: too few arguments to function call, expected 6, have 0
-                fd = bpf_map_create();
-                     ~~~~~~~~~~~~~~ ^
-samples/bpf/libbpf/include/bpf/bpf.h:55:16: note: 'bpf_map_create' declared here
-LIBBPF_API int bpf_map_create(enum bpf_map_type map_type,
-               ^
-2 errors generated.
+> > > to find anything looking at real_num_.x_queues outside dev.c and
+> > > net-sysfs.c :S =20
+> >=20
+> > The above trace was triggered using veths and this patch would solve
+> > this as veths do use real_num_x_queues to fill 'struct ethtool_channels'
+> > in its get_channels ops[1] which is then used to avoid making channel
+> > counts updates if it is 0[2].
+>=20
+> But when we are at line 175 in [2] we already updated the values from
+> the user space request at lines 144-151. This check validates the new
+> config so a transition from 0 -> n should not be prevented here AFAICT.
 
-fds_example by accident has a static function with the same name.
-It's not worth it to separate a single call into its own function,
-so just embed it.
+You're right. It worked in my testbed because I was not providing the
+number of Rx channels with Ethtool, so channels.rx_counts wasn't updated
+and still had the value veth provided. It "fixed" the issue for a
+completely unrelated reason and obviously can't be a fix for the issue
+described here. Thanks for having a second look at this, I completely
+missed it...
 
-Fixes: 992c4225419a ("libbpf: Unify low-level map creation APIs w/ new bpf_map_create()")
-Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-Reviewed-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
----
- samples/bpf/fds_example.c | 9 ++-------
- 1 file changed, 2 insertions(+), 7 deletions(-)
+> Any way of fixing this is fine. If you ask me personally I'd probably
+> go with the ethtool fix to net and the zeroing and warn to net-next.
+> Unless I'm misreading and this fix does work, in which case your plan
+> is good, too.
 
-diff --git a/samples/bpf/fds_example.c b/samples/bpf/fds_example.c
-index 59f45fef5110..9a7c1fd7a4a8 100644
---- a/samples/bpf/fds_example.c
-+++ b/samples/bpf/fds_example.c
-@@ -46,12 +46,6 @@ static void usage(void)
- 	printf("       -h          Display this help.\n");
- }
- 
--static int bpf_map_create(void)
--{
--	return bpf_create_map(BPF_MAP_TYPE_ARRAY, sizeof(uint32_t),
--			      sizeof(uint32_t), 1024, 0);
--}
--
- static int bpf_prog_create(const char *object)
- {
- 	static struct bpf_insn insns[] = {
-@@ -79,7 +73,8 @@ static int bpf_do_map(const char *file, uint32_t flags, uint32_t key,
- 	int fd, ret;
- 
- 	if (flags & BPF_F_PIN) {
--		fd = bpf_map_create();
-+		fd = bpf_create_map(BPF_MAP_TYPE_ARRAY, sizeof(uint32_t),
-+				    sizeof(uint32_t), 1024, 0);
- 		printf("bpf: map fd:%d (%s)\n", fd, strerror(errno));
- 		assert(fd > 0);
- 
--- 
-2.33.1
+I think you're right. Let's target net with the ethtool patch[1]. This
+patch (still needed to keep track of the queue counts) and the warning
+one can target net-next.
 
+[1] And probably another one for the old ethtool ioctl interface too.
+
+Thanks!
+Antoine
