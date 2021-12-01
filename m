@@ -2,202 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC33846463D
-	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 06:04:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 61827464675
+	for <lists+netdev@lfdr.de>; Wed,  1 Dec 2021 06:20:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235872AbhLAFHT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Dec 2021 00:07:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58134 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230021AbhLAFHS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 00:07:18 -0500
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8746EC061574;
-        Tue, 30 Nov 2021 21:03:58 -0800 (PST)
-Received: by mail-yb1-xb2a.google.com with SMTP id e136so59504493ybc.4;
-        Tue, 30 Nov 2021 21:03:58 -0800 (PST)
+        id S230492AbhLAFX6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Dec 2021 00:23:58 -0500
+Received: from mx0b-00069f02.pphosted.com ([205.220.177.32]:31972 "EHLO
+        mx0b-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229463AbhLAFX5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 00:23:57 -0500
+Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1B14j0AJ007291;
+        Wed, 1 Dec 2021 05:20:30 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=corp-2021-07-09;
+ bh=ByO4DXcb24a95O2TJihWwnHqGog4UStGC9bf1kL/fzM=;
+ b=pvM2pJKVOB0tHDVd0N+58OFdmCmwSp3ljrwPCuoVMVEWq2A0Dd5vV672zjhP0GDf5O10
+ qAVwxgPw6TbyOO/gWakZLTssonHsx3a5TPeI+RqJJjEH9ePYTUrnoj7S16oGy6RamNC2
+ rBmb8Mgcq/qWB44pn6gMiZVCnkdIdS1NYMa6DD2rTLxtJcr8b4Vhe6zlWw9k22UDNSqb
+ cHTfuiuyXTYrN6xuiLnHqJpCIYTQtiL0wB8UH2MMxqLwjGIyVX3JQ8iRPEd3ChwwyDMN
+ xh5IbI6AIJHEys61KJRixeLcBggWkjBoZ0yRW0aR7zXCha+oirGhbmSF3k+EZkcixFa7 wg== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3cmuc9xgmb-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 01 Dec 2021 05:20:30 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 1B15F7sj195092;
+        Wed, 1 Dec 2021 05:20:29 GMT
+Received: from nam11-co1-obe.outbound.protection.outlook.com (mail-co1nam11lp2172.outbound.protection.outlook.com [104.47.56.172])
+        by aserp3030.oracle.com with ESMTP id 3ckaqfxv0m-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 01 Dec 2021 05:20:29 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=L3xL4FBjonKI+G0M8RWBy4Ib0kWanf7XnWM7EP7e9sp+TGXk4Nh8q0Q/jZfZPTeLdB7r2DrvXCN85Zx1rmT4J6SWSMbdlro7QSwpt99K46D+67RQUBG7MFhz4k0zg5H1awepnZW2wVxZeCzp+Ui6KFhlhCZu3N16/ZDPAcu4D+qBJdnMLa/VYV5a8mmeVLQQi0jT3WFnt6x6fapCHRwHfL1L6uoSx4YzRGlsmY1YmKLV9QDNjPukjMd5DDdrbXtq64iwpQt+wB0uekPM6wMGUnQL8LBbH7TiRy4IQ6q7ysDJELfeZey7sh4dhyzQvZV6n0lKEkq1yHwAHOF4C63bRw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ByO4DXcb24a95O2TJihWwnHqGog4UStGC9bf1kL/fzM=;
+ b=ld4OI1amqiN0KfEHX1aCRKjrO9dxQRM/TSmitqgleB1xBlozVxltBkSqifCmW1XRHVcUHVWRBE73s/fQHgIFQq0mtFBm+bUrP5vrijvhHahblYiFTqmXsDqgPbOB/9FODuW1wQAoasDAKQM8/jVe7vVeBxrmrLQtIxaklZqt3Uat2ycJaLXHSqCdffFCK9ZtBAlEdXCo/zIkH2OKMgPxWt6vpiazf3sDdTGMyTy17OWS4qubB1hYXarS00eLXfkS/NO7iIaeElqYcwZ+Nc0WwETu6PEtQnDb40I/MADV3ZV0/vAEBWOfaZi8DV7UBKo9HduoDCPtdXayOsRiuBB9OA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Qg1yxwbeofVGjh/45BLN8J5HN9IzS64zV7+tlROSMHk=;
-        b=I7xLRT8f7a1sNAzHDdQ8mim7DNBsKjDhX5MJN1AxB1C2aFwN6e9isttGM5pJaj6i2m
-         ZoNcsFprD1Ym2/qNLY4uvRRoeEo+QhAMqtFtM4SBdqm2Kr6dodkr/Uc5oPCiJs1N5ftE
-         879VeMfFnx4hqfLhpKemmEF6ZoTttsvbbWoIs0IUuCcRisj39TorHe768ytkbgdtmWER
-         6+vuUBn6h72i1Wsz2zkdDtcNoA4oLFWh0fznMnHsM1KoW3bNph5jJC67h056PMkXQpBw
-         HYNt2LfQ4EOiiw94SIK5Glj8WBy7GjErUgAeJKlnmP2kU2yDgwzQUu/OHeCBbZbsGFY0
-         kD6Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Qg1yxwbeofVGjh/45BLN8J5HN9IzS64zV7+tlROSMHk=;
-        b=JVwOMzZjQznaS/OVloFzuialB9UcHNQN9AnULARVrPf7A33olUIkeab+CyGWOgUwen
-         /q1kUBOnxCWAYO8FTPTR7FTAJquTB6RHfaeGN0Zuz+ozihcmubqBQersDbSw6uVKQ3fb
-         /yQ6CWb0m36Bv2TwWM+O9w1Usj0bpaed9WciId4YdNpYI9iDxbBmv3GwOfE9LsFbJNtD
-         3BpHsfzN5TYZbgfrcmHs/DTMTYMZGuI2EOTlTHxzwUcCNFHAiga1wEAfkvRJfdQsdWZs
-         q20j3zwD7yyHcVj6fPdrh8wS9/FJ/NSMau66sRIFNztJl8KSOifv/MYWEP8RY4d7PhSl
-         pIFA==
-X-Gm-Message-State: AOAM532Iex5EfhUfU34A9XppDINhKhXT/c99GVgoKTSVgQxfleE4joW9
-        gVOYTSRdxPHfytOieW6gBvITvaZDwjt6sW/7f5P2ilML3t8=
-X-Google-Smtp-Source: ABdhPJze7bzfkeTtw2WH0v1vsY8m/RbEpLFbBDwp1SN0UlDhoAtTobcl3pZtvAguPhlx8Xi/J8ufO51b1Ac9zVq3XKs=
-X-Received: by 2002:a25:7b41:: with SMTP id w62mr4498861ybc.164.1638335037726;
- Tue, 30 Nov 2021 21:03:57 -0800 (PST)
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ByO4DXcb24a95O2TJihWwnHqGog4UStGC9bf1kL/fzM=;
+ b=VpbUZ0Ps/o2D0VOfmuju5SZJR15DB4WSqxM1KyXCcgBihs6CN/l40vItJiegfuHFT1aGKCws8g18NnbZRYO2sPO5W3T5Oi4VJRjNjAaEqn8dRmg07/iIOOVUrodsshZTaWQcs0QbHNCTukWN3DILC5RW6pxl7dINKy9JBDM3X1s=
+Received: from CY4PR1001MB2358.namprd10.prod.outlook.com
+ (2603:10b6:910:4a::32) by CY4PR10MB1863.namprd10.prod.outlook.com
+ (2603:10b6:903:11e::21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4734.24; Wed, 1 Dec
+ 2021 05:20:27 +0000
+Received: from CY4PR1001MB2358.namprd10.prod.outlook.com
+ ([fe80::b0e9:35ff:73d:b96]) by CY4PR1001MB2358.namprd10.prod.outlook.com
+ ([fe80::b0e9:35ff:73d:b96%3]) with mapi id 15.20.4734.024; Wed, 1 Dec 2021
+ 05:20:27 +0000
+Date:   Wed, 1 Dec 2021 08:20:08 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Subject: Re: [PATCH 01/15] skbuff: introduce skb_pull_data
+Message-ID: <20211201052008.GA18178@kadam>
+References: <20211201000215.1134831-1-luiz.dentz@gmail.com>
+ <20211201000215.1134831-2-luiz.dentz@gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211201000215.1134831-2-luiz.dentz@gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: JNAP275CA0061.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:4f::19)
+ To CY4PR1001MB2358.namprd10.prod.outlook.com (2603:10b6:910:4a::32)
 MIME-Version: 1.0
-References: <20211126204108.11530-1-xiyou.wangcong@gmail.com>
- <CAPhsuW4zR5Yuwuywd71fdfP1YXX5cw6uNmhqULHy8BhfcbEAAQ@mail.gmail.com>
- <YaU9Mdv+7kEa4JOJ@unknown> <CAPhsuW4M5Zf9ryWihNSc6DPnXAq0PDJReD2-exxNZp4PDvsSXQ@mail.gmail.com>
- <CAM_iQpVrv8C9opCCMb9ZYtemp32vdv8No2XDwYmDAaCgPtq+RA@mail.gmail.com> <CAEf4BzZUdE+gsgiLRRissh1Vskf2Ea4WT3gAseV1b9cvNnaBVQ@mail.gmail.com>
-In-Reply-To: <CAEf4BzZUdE+gsgiLRRissh1Vskf2Ea4WT3gAseV1b9cvNnaBVQ@mail.gmail.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Tue, 30 Nov 2021 21:03:46 -0800
-Message-ID: <CAM_iQpV3+bYqw4n494-hc=3DcDkBpM8k9gd=iPwqR4X_Vw6LhQ@mail.gmail.com>
-Subject: Re: [PATCH bpf] libbpf: fix missing section "sk_skb/skb_verdict"
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Song Liu <song@kernel.org>, Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>
-Content-Type: text/plain; charset="UTF-8"
+Received: from kadam (102.222.70.114) by JNAP275CA0061.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:4f::19) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4734.23 via Frontend Transport; Wed, 1 Dec 2021 05:20:22 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: c2610327-806d-4d81-34c2-08d9b48a48e2
+X-MS-TrafficTypeDiagnostic: CY4PR10MB1863:
+X-Microsoft-Antispam-PRVS: <CY4PR10MB1863A874F2A586EAABAAD4478E689@CY4PR10MB1863.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5516;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: HiTQfK3jDH6atTSoEbOz3CF7CS5ycKAXHl6rDcNMDLkYUSEFxBh+tHvQPDrfDDi96b1DVoPnQwNwGRMfXz1HgiVAXmDC5ow6l2knRBuowWybxsBR7fFsFVb63iHfrq1PLMSiTK2XExVZxnVoYcn9kPr0UiWalzJZJQgfN+2UtHdgPVB71tbTLz57XKH9xDOV0ldfZ7/gm6ypge8m2A5b+O99WS/9iz30Q3OX5VeWYICvGyva8bc1JmdQp2sRQGR8TXQaxTgN+e4UCFFV1ktJyQKWMG0XAG3uaBZ5wnM1Dk+ns4zSn33wPyFaKwftiB0XsWw7FLMWkRe3dRTttjOrlDsDFyEGTZjwix1vLYcUDngf1EdOoyvVPwOjE02yTRPxWOYCaGMFo1NOXAF1aYr8aDsS8SHAAwtMl+u9KBuzAZqv4jitFe9zoVcilhNI1myVK6IcEOfwyElJipc6D5WgrEXYXlRrAy42rxv0BO1bkL5itPoguwinbq5I+j2EFnxVCQHaQLAq7WQ7HKuF+AMzbaJkFqz/7UFJEZ451RrG3QP0BInJPWQXMxBqBfMMK+7onq25875uyp05au2Oln3bSjTCxs7P8B38Rp7Ezsodihs4kbc6SFlkoyrkjkntOUhP5uQokWnDJZKNKbOUi5dhibkDWkL3PlzHdqM/xQF5gu6C6b3By2tJkLUkuY9sLax+cym+x98hl3FwOdXfJigIEQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY4PR1001MB2358.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(9686003)(26005)(6496006)(1076003)(956004)(38100700002)(38350700002)(52116002)(8676002)(2906002)(316002)(66946007)(66476007)(33716001)(66556008)(6916009)(5660300002)(6666004)(4326008)(86362001)(508600001)(9576002)(186003)(33656002)(44832011)(55016003)(558084003)(8936002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?VliB3Mz60JKLjtAynsz44qUaazeLW0lqopISi3y3POAj96Fgk04UPnNKNQj+?=
+ =?us-ascii?Q?OGTw0QFSfR72cs8KKA293iQ5eV+Ir2MtoMJk9Gtgq7MIwXJ3OzLiCu+e7uVJ?=
+ =?us-ascii?Q?jQL9Fczj//7icSm0jEnDY4oBk0E3ROLzXXRYI7ahRvBoJzNv7mJT5Go5Krfq?=
+ =?us-ascii?Q?gDY8re5GWfUyA5pRBoob1sukCYVaxjMrZJ2Xd+SEY5RHyfA2sSEtM9kTlXVL?=
+ =?us-ascii?Q?TlFP72tDMO3pLviot2+MmScHEDeTB53Y8T/BG82GQ7wdNI/6lVd5BuqYj498?=
+ =?us-ascii?Q?mf+tEfpziXdaKhHLDwLFGIlUZ9YXiRHOAm2oq35RQ0iTFZqsz01GmOnUK4Sg?=
+ =?us-ascii?Q?WfP1BWTUUMBctfiT4L+bAnG8MqhLz/al8fxLVRzNK27BrxUqHsRlP7uR+OL4?=
+ =?us-ascii?Q?roSRRCI2Bjg/o+An5FxWRe4bZ6zgY99EGFLD03v9nErwsyIA6u6MeGdh9+kv?=
+ =?us-ascii?Q?X0ud9EwWy/Sb5D5/9umoCEecPss1YPiMqSvBMAZYgJU3tHBHmqykKmRNdtDc?=
+ =?us-ascii?Q?cIu5VZI5TqxRzAJlruY9IecvVBcmEExMHL5cRI792DErJjSn1iLwfieARiow?=
+ =?us-ascii?Q?UWXVBU0g/KC64IPviWQDiGW7R/IsOu55RigxG6n2WPguTfRU3lNHebd/1wQo?=
+ =?us-ascii?Q?4HNi9MkQj928cEBtVotspNhIkjAZvhUgrrun/ZjypYhR3gibywYkS4sB1XT+?=
+ =?us-ascii?Q?CcVLvP8Fc3Zkg6W1GslNwcmbMW5q8+73t25rPj/FH3wn/olsIYpVgCiTC4Q2?=
+ =?us-ascii?Q?LPrQE4AG+M5v5ma1en9yCUYKf4dAyRRHoo9T2OsOJFJjBgeAshfzjXZTlEB8?=
+ =?us-ascii?Q?kcBZ2um262zdY4NN2PyvBmRjN1/79vD9Z8XxD7ZUBwEyczNzlvLXa+TYUUGB?=
+ =?us-ascii?Q?9Ijw9KgTiNT0useDtSiLHnh0JyLqx2SPhNPh3RQ7+SxGUrv5jloNRAFslNEQ?=
+ =?us-ascii?Q?QrEdazcKLofdUu/4gQwyX/z7rKIUv5L/bAFt7kY8BzucM9y1Y9CHILiClv1L?=
+ =?us-ascii?Q?JsrbuOeXiDrJJfb7am8wpxSL0sC1dhnN6vS5xBgkCzxp2jyNQo/ngHYUGsbz?=
+ =?us-ascii?Q?EHs036Jw1T/5OPCJJH2UqQ3rvSZhaetXdRyb90GuSSyaFhrc29bbHCH83MbA?=
+ =?us-ascii?Q?CQTYRlFyABgaaRuShWzW/tzOjbcD/DyUhocsVmH4Px8EtAnLJ/J8OLhf8T1C?=
+ =?us-ascii?Q?AwBnxpkhccL6r9OGbyaOHi/Tmgt2cHf+cgiQviwlfEuyYGLFJWQKIXCptsic?=
+ =?us-ascii?Q?fLlFFQQCvAzgEC8D4dHxQC4kRligMb963sYOILfBHpiyanTCvrI1WbSwp0Uf?=
+ =?us-ascii?Q?x69fUJhJl7Hfrz9YoNCcQtemmRmx4RewuBtbj9pMdlh0lYp/ak9W2re3h3u+?=
+ =?us-ascii?Q?h1oe1O+5/bi4XaW8kWWhrXd9vYDUXgUrHFFVyQgl8FBdmfILGedIsfHOvQIz?=
+ =?us-ascii?Q?ByU1jaCcLGqSi1X+uJaZr9FDPzY+rKN3r9yQQPXUZyWt2GamKccRlVbAPfsf?=
+ =?us-ascii?Q?/z80nEIn1mycw0AuzE7MRgSNTg60nj+f5DLjOvpVHNLX1cObea7jX6SNzKwz?=
+ =?us-ascii?Q?xRwFl55n7t2Rq7gWI5LA1lf4h93ZgBVb1ZGVER5am3IPLUnf7NdqXkEMK6gw?=
+ =?us-ascii?Q?KhfTXQIPO2nVxnlkuSJ3OxeL4R0d2JVIQn2CyuhlylkE2RUSg5BIEvkjZI/N?=
+ =?us-ascii?Q?MqDWdILg9x798ECeQLC0n66UCO0=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c2610327-806d-4d81-34c2-08d9b48a48e2
+X-MS-Exchange-CrossTenant-AuthSource: CY4PR1001MB2358.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Dec 2021 05:20:27.3515
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: IoFShMGjv+lMT9EY53zpcmEnqJXCeCcrOHzMRTmWMlSiKAvAwL5an35yPBAoiALSiZIBLURaMjqxoJ2FHBFubVg6W1XVeBE7oQyR4eWOWz0=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR10MB1863
+X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10184 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 malwarescore=0 mlxscore=0
+ suspectscore=0 mlxlogscore=909 spamscore=0 phishscore=0 bulkscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2110150000
+ definitions=main-2112010030
+X-Proofpoint-GUID: xvXAwABqtC8a3iK5XS3AzNqJwb_RHaYw
+X-Proofpoint-ORIG-GUID: xvXAwABqtC8a3iK5XS3AzNqJwb_RHaYw
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 30, 2021 at 8:33 PM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Tue, Nov 30, 2021 at 8:19 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> >
-> > On Tue, Nov 30, 2021 at 3:33 PM Song Liu <song@kernel.org> wrote:
-> > >
-> > > On Mon, Nov 29, 2021 at 12:51 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> > > >
-> > > > On Fri, Nov 26, 2021 at 04:20:34PM -0800, Song Liu wrote:
-> > > > > On Fri, Nov 26, 2021 at 12:45 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> > > > > >
-> > > > > > From: Cong Wang <cong.wang@bytedance.com>
-> > > > > >
-> > > > > > When BPF_SK_SKB_VERDICT was introduced, I forgot to add
-> > > > > > a section mapping for it in libbpf.
-> > > > > >
-> > > > > > Fixes: a7ba4558e69a ("sock_map: Introduce BPF_SK_SKB_VERDICT")
-> > > > > > Cc: Daniel Borkmann <daniel@iogearbox.net>
-> > > > > > Cc: John Fastabend <john.fastabend@gmail.com>
-> > > > > > Cc: Jakub Sitnicki <jakub@cloudflare.com>
-> > > > > > Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-> > > > >
-> > > > > The patch looks good to me. But seems the selftests are OK without this. So,
-> > > > > do we really need this?
-> > > > >
-> > > >
-> > > > Not sure if I understand this question.
-> > > >
-> > > > At least BPF_SK_SKB_STREAM_PARSER and BPF_SK_SKB_STREAM_VERDICT are already
-> > > > there, so either we should remove all of them or add BPF_SK_SKB_VERDICT for
-> > > > completeness.
-> > > >
-> > > > Or are you suggesting we should change it back in selftests too? Note, it was
-> > > > changed by Andrii in commit 15669e1dcd75fe6d51e495f8479222b5884665b6:
-> > > >
-> > > > -SEC("sk_skb/skb_verdict")
-> > > > +SEC("sk_skb")
-> > >
-> > > Yes, I noticed that Andrii made the change, and it seems to work
-> > > as-is. Therefore,
-> > > I had the question "do we really need it".
-> >
-> > Same question from me: why still keep sk_skb/stream_parser and
-> > sk_skb/stream_verdict? ;) I don't see any reason these two are more
-> > special than sk_skb/skb_verdict, therefore we should either keep all
-> > of them or remove all of them.
-> >
->
-> "sk_skb/skb_verdict" was treated by libbpf *exactly* the same way as
-> "sk_skb". Which means the attach type was set to BPF_PROG_TYPE_SK_SKB
-> and expected_attach_type was 0 (not BPF_SK_SKB_VERDICT!). So that
-> program is definitely not a BPF_SK_SKB_VERDICT, libbpf pre-1.0 just
-> has a sloppy prefix matching logic.
+Thanks for following up on this!  I had forgotten about it.  I'm really
+happy this is going forward.
 
-This is exactly what I meant by "umbrella". ;)
+regards,
+dan carpenter
 
->
-> So Song's point is valid, we currently don't have selftests that tests
-> BPF_SK_SKB_VERDICT expected attach type, so it would be good to add
-> it. Or make sure that existing test that was supposed to test it is
-> actually testing it.
-
-Sure, I just noticed we have section name tests a few minutes ago. Will add
-it in V2.
-
->
-> > >
-> > > If we do need to differentiate skb_verdict from just sk_skb, could you
-> >
-> > Are you sure sk_skb is a real attach type?? To me, it is an umbrella to
-> > catch all of them:
-> >
-> > SEC_DEF("sk_skb",               SK_SKB, 0, SEC_NONE | SEC_SLOPPY_PFX),
-> >
-> > whose expected_attach_type is 0. The reason why it works is
-> > probably because we don't check BPF_PROG_TYPE_SK_SKB in
-> > bpf_prog_load_check_attach().
->
-> We don't check expected_attach_type in prog_load, but
-
-I see many checks in bpf_prog_load_check_attach(), for instance:
-
-2084         switch (prog_type) {
-2085         case BPF_PROG_TYPE_CGROUP_SOCK:
-2086                 switch (expected_attach_type) {
-2087                 case BPF_CGROUP_INET_SOCK_CREATE:
-2088                 case BPF_CGROUP_INET_SOCK_RELEASE:
-2089                 case BPF_CGROUP_INET4_POST_BIND:
-2090                 case BPF_CGROUP_INET6_POST_BIND:
-2091                         return 0;
-2092                 default:
-2093                         return -EINVAL;
-2094                 }
-
-
-> sock_map_prog_update in net/core/sock_map.c is checking expected
-> attach type and should return -EOPNOTSUPP. But given that no test is
-> failing our tests don't even try to attach anything, I assume. Which
-> makes them not so great at actually testing anything. Please see if
-> you can improve that.
-
-sock_map_prog_update() checks for attach_type, not
-expected_attach_type.
-
->
-> >
-> > > please add a
-> > > case selftest for skb_verdict?
-> >
-> > Ah, sure, I didn't know we have sec_name_test.
-> >
-> > >
-> > > Also, maybe we can name it as "sk_skb/verdict" to avoid duplication?
-> >
-> > At least we used to call it sk_skb/skb_verdict before commit 15669e1dcd.
->
-> As I mentioned above, it could have been called "sk_skb!dontcare" and
-
-So why commit c6f6851b28ae26000352598f01968b3ff7dcf58 if your point
-here is we don't need any name? ;)
-
-> that would still work (and still does if strict mode is not enabled
-> for libbpf). For consistency with UAPI expected_attach_type enum it
-> should be called "sk_skb/verdict" because BPF_SK_SKB_VERDICT vs
-> BPF_SK_SKB_STREAM_VERDICT vs BPF_SK_SKB_STREAM_PARSER.
-
-To me, "verdict" is too broad, it could refer "stream_verdict" or "skb_verdict".
-And let me quote commit c6f6851b28ae26000352598f01968b3ff7dcf588:
-
-    "stream_parser" and "stream_verdict" are used instead of simple "parser"
-    and "verdict" just to avoid possible confusion in a place where attach
-    type is used alone (e.g. in bpftool's show sub-commands) since there is
-    another attach point that can be named as "verdict": BPF_SK_MSG_VERDICT.
-
-Thanks.
