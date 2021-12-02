@@ -2,140 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 229ED4669A0
-	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 19:11:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D7A5466A04
+	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 19:47:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376571AbhLBSPI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Dec 2021 13:15:08 -0500
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:8540 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1376574AbhLBSO4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 13:14:56 -0500
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 1B2E1su2022386
-        for <netdev@vger.kernel.org>; Thu, 2 Dec 2021 10:11:33 -0800
-Received: from nam10-bn7-obe.outbound.protection.outlook.com (mail-bn7nam10lp2100.outbound.protection.outlook.com [104.47.70.100])
-        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3cpr522wmt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 02 Dec 2021 10:11:33 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=IrsffBsjHTQw3GsrC04Q2jf22w9g3YO59mIU0C4Y11xeaiwZp8s/XS/9GNIPijzaYGmqsfKUkRNcntIGtyvow2WtgxBTuGHQCruCCtxPBWCMJqSwU6Z2BQXXb/tMFJZ05BDi4p3BlPIGVMmWNMDBjUIOjLXAPfERokr0O9Hiei/W6XNQskgplr6h0OPB94mW/jmfKZVrbgonFj2IQL9oXAm6SjY2LvMxdrFeYjFF/Uxcpjjs1Rxta9s7TIrsqXs4Y/9/UU8Pz91ULnHYEfJPROxgwU1Kpj+mXvpyZypIa7+mir4ANM13HgXTm3CXFnL89IMotBphY1xLvHEetHjLlQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=56SjoKmAHZY6k2/2CfZFkcB0ylipV0heuTc7afhTExc=;
- b=Kh4r8UQnEESZ2UPobaPFo0tcV2PUIYQCjRSgr0mcMNNLQTJiba2TZQ/spc9PPjW53VjAXCCirXIwQW5iFRqF7+c0z0uLt7EKrTn3NNsyxN8z81sUiXwOpi6K0qaLMtzPmr8cqVvjcFGbmHrQnpTA8p7pt3J3i8t/M+Y7JPmwESBiKysPDhWYpTX7qQx5b4z02zZeMS7eH3iqcJ7gDY050t+sAFMM+6zlWkMdGZrJJnYIZWrGoYu3Kxz5X1PQtCzJETrdoTJe5hVBhvFFBhrOiirre9odmWKxxlh5s0LEkrY3ustdfiYD7fgJFk0Um+Z1cb2TZEO7VAzSqrBtDXtJeA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
- dkim=pass header.d=marvell.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=56SjoKmAHZY6k2/2CfZFkcB0ylipV0heuTc7afhTExc=;
- b=r8PhQr62KsPLs1nfmpBYsMQrHVouBOyDCmGjDuUx3eElOeNQkUC4AaVnzIBc1CAynTiJGXs9esTH029oLlUl+NdCIz7tnMLNDI7717AidodyWXSbybrUMDnb6SHzJHXoeNHC/URp2RK94Bm+Zr+oHsgz8IaU3Wq51tsLDcJXJGo=
-Received: from CO6PR18MB4465.namprd18.prod.outlook.com (2603:10b6:303:13b::10)
- by CO1PR18MB4810.namprd18.prod.outlook.com (2603:10b6:303:ed::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.16; Thu, 2 Dec
- 2021 18:11:31 +0000
-Received: from CO6PR18MB4465.namprd18.prod.outlook.com
- ([fe80::c9db:92b7:a285:d0d2]) by CO6PR18MB4465.namprd18.prod.outlook.com
- ([fe80::c9db:92b7:a285:d0d2%5]) with mapi id 15.20.4755.016; Thu, 2 Dec 2021
- 18:11:31 +0000
-From:   Arijit De <arijitde@marvell.com>
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: How to avoid getting ndo_open() immediately after probe
-Thread-Topic: How to avoid getting ndo_open() immediately after probe
-Thread-Index: Adfnp2Kk/EIWcMA+SEe6g4pRQpEDXA==
-Date:   Thu, 2 Dec 2021 18:11:30 +0000
-Message-ID: <CO6PR18MB4465B4170C7A3B8F6DEFB369D4699@CO6PR18MB4465.namprd18.prod.outlook.com>
-Accept-Language: en-IN, en-US
-Content-Language: en-US
+        id S1348385AbhLBSuh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Dec 2021 13:50:37 -0500
+Received: from mswedge1.sunplus.com ([60.248.182.113]:59368 "EHLO
+        mg.sunplus.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S233228AbhLBSuc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 13:50:32 -0500
+X-MailGates: (flag:3,DYNAMIC,RELAY,NOHOST:PASS)(compute_score:DELIVER,40
+        ,3)
+Received: from 172.17.9.112
+        by mg01.sunplus.com with MailGates ESMTP Server V5.0(5599:6:AUTH_RELAY)
+        (envelope-from <wells.lu@sunplus.com>); Fri, 03 Dec 2021 02:46:53 +0800 (CST)
+Received: from sphcmbx02.sunplus.com.tw (172.17.9.112) by
+ sphcmbx02.sunplus.com.tw (172.17.9.112) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.23; Fri, 3 Dec 2021 02:46:40 +0800
+Received: from sphcmbx02.sunplus.com.tw ([::1]) by sphcmbx02.sunplus.com.tw
+ ([fe80::f8bb:bd77:a854:5b9e%14]) with mapi id 15.00.1497.023; Fri, 3 Dec 2021
+ 02:46:40 +0800
+From:   =?big5?B?V2VsbHMgTHUgp2aq2sTL?= <wells.lu@sunplus.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     Wells Lu <wellslutw@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
+        =?big5?B?VmluY2VudCBTaGloIKxJwEPCRQ==?= <vincent.shih@sunplus.com>
+Subject: RE: [PATCH net-next v3 2/2] net: ethernet: Add driver for Sunplus
+ SP7021
+Thread-Topic: [PATCH net-next v3 2/2] net: ethernet: Add driver for Sunplus
+ SP7021
+Thread-Index: AQHX5dF9eGPWQxkNKU64ogPFWvAIaqwcdcyAgAE+n/CAAPQwgIAA4eHw
+Date:   Thu, 2 Dec 2021 18:46:40 +0000
+Message-ID: <2fded2fc3a1344d0882ae2f186257911@sphcmbx02.sunplus.com.tw>
+References: <1638266572-5831-1-git-send-email-wellslutw@gmail.com>
+ <1638266572-5831-3-git-send-email-wellslutw@gmail.com>
+ <YabsT0/dASvYUH2p@lunn.ch>
+ <cf60c230950747ec918acfc6dda595d6@sphcmbx02.sunplus.com.tw>
+ <YajEbXtBwlDL4gOL@lunn.ch>
+In-Reply-To: <YajEbXtBwlDL4gOL@lunn.ch>
+Accept-Language: zh-TW, en-US
+Content-Language: zh-TW
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: a4710d17-b1d4-46e6-673a-08d9b5bf2ad0
-x-ms-traffictypediagnostic: CO1PR18MB4810:
-x-microsoft-antispam-prvs: <CO1PR18MB4810F35326E86CB5B0173022D4699@CO1PR18MB4810.namprd18.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7219;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: h1rIBQJkM10zgCaq+PMt7QvOgewtt8F72n4Y6lTCyiPTYGPe3r6a4JueC7PR2tpQWGV2ac79A7c8JLFRHkU4DpMG4lHubeQXjgTJu1taQN4dgBiDzKd+SHye/w7PSMaeR6ChYWWFFX1H09sjHOHABvrk0NEPGBV5U69n7McGUcYZDFKJNbbxC5JvQGbaVahsN6IJEXJVhPT6btFR6zyre4cZqpZkIOcL5cqtq1kl61kJT58rM1jpDJvVJD9fR8hsaKsszZ1+flpUjTrtTWF4WTzPRQQaAI7/toBER1abHUoIYh9x497sRhB+sEIcJqUUl8ui5hODHFmARWodfjBnnIKMPa3rqgQxAtFF0taRmg6AougwBYvFXT0uwW60EQ4Gbt6loms0b4CNUHi3bB/by2eS3AzfiR0+hYcYVSBaO7KK8OlLLJjDaTItnzEb7Zsi7JY/6PrnIfEZE9be7MWtFriFrZzbRb7bUUMoc/Zib2CKvifYtZpt63hX0nP+yZvuo7Vc8WbBYfTH1FnGOxDdSMtEVUXu6HZ7dj1BDjCvCgDjonYagq05RLqxSCYM4vchtFqgbIAxC62r59e6OEMzbJ8pgcIPYReOQJj6T66bwUUylgPu1+Q+VYdB+0nkypnbcnZeTs0INl8Nea2UOXd78EEMpQslJti1d7CA5+TO/RXRivZd+sGy52HcSeaOzn6vfjfaLqEE1jnqez4FTWpY+mUhr3Jumh2lTzm9TSpKkzQmac/Od1+5DG7JmSzQosZ7jpRs2MNmaClLnFtUhuEniI7lwdSjdSknF7iMG4DODK8=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO6PR18MB4465.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(316002)(6506007)(6916009)(33656002)(71200400001)(86362001)(9686003)(55236004)(2906002)(5660300002)(122000001)(508600001)(38100700002)(52536014)(55016003)(83380400001)(76116006)(8936002)(4744005)(66476007)(66556008)(66946007)(64756008)(66446008)(8676002)(26005)(7696005)(186003)(38070700005)(14773001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?1bp4uZCN/UqE1710JGhjlVfSujv6dOVz38kcB3O4N0YrZKTdcp/i59MhN5DD?=
- =?us-ascii?Q?vn2Z8hzAA9bqaY+NcLyKxAa0ZnOPl0xyJtUkWzh4bN6qxATyp9DVk17GLDZQ?=
- =?us-ascii?Q?b3G7ey1KtkfPBYsSnrjUIyATZBOmoS5hooZLhz9X3MDWY74PhgCsV7Ndp2hi?=
- =?us-ascii?Q?4NITcEcvOtmoI2GgiDK4bTp0wa66IZsCnxfWtRQYH/wfbX7jx4Ao6dQENv19?=
- =?us-ascii?Q?oN+PoEiHJwj42CmadJbIqq0oNlw3RQU2z2BpyLk4Y9eJWHDqkKOZxcZhsIa3?=
- =?us-ascii?Q?861EH9TVCBf4Jh3FIGiV9lJATVLtE+HVWvZWYPRv4+LFtJVWgeviyWFRCuNE?=
- =?us-ascii?Q?ULJBmCQUJXTpc4GbJTVfXZlhNTsOW0tzRaedrtiO+6Br9dFbALUrrkon9KW5?=
- =?us-ascii?Q?Z63fviBKZgzPCYfcTDUJsDf4oH6zUtlVio1QOshisvc0OBon14zpQXShsr/F?=
- =?us-ascii?Q?D7r5YplN94wdUobqRcCcXxdimOglSAgfBXwMhuWnHVBUIrVjILOfZVC6DxyV?=
- =?us-ascii?Q?PnEfgERJ6U1dLwHVKudihAkrV5DKw+mzTc8V8e6aatT+Cwu+IHGlJWtx8A7F?=
- =?us-ascii?Q?OpP9sWnU/M8YRvo8KVjhmkzYFAu7B8W+2ROQwaNxjS1pOWUvQG7qmvt6NdFA?=
- =?us-ascii?Q?Vvf4PRfYvMKwQhIe+9jKgNMFe2hWVkPRtZ4WltHNEAUnXdn7DUkYddAC7NYl?=
- =?us-ascii?Q?wyZ6gR94/f5IahYaiE71h/m+4NOzB7khiCTWZ2DAfAk+s6rAnY6mhQf0knqV?=
- =?us-ascii?Q?g5YxpB0rd8cyrnulbLvru2xMqPv4+9C6s4jr9ULvi4D5Y4++xR/lYe+ezClh?=
- =?us-ascii?Q?H5VccPWVVz7HsSzsX4+ln71bUJtgfC/dzq9e+nykgcMUp++De/Yc9HRBRzaC?=
- =?us-ascii?Q?xNhPgVrJVj1F2bGdmqf+996bgcXUmKtE0L+E6dfyGL9540lKroY0mI4NnE6n?=
- =?us-ascii?Q?34DGx3RqH5eMVotAxP8WsFHtBWKVFU3brtW5ySG6qG0C3i/ZOopEl36rUFuR?=
- =?us-ascii?Q?9H9RJfBWQZmB7QBJljw3Th9iQmzENg6/sAr+AzVFu8fn818+NM/GX1dX/LfB?=
- =?us-ascii?Q?5gy4H2ZWdk210//GEKlcNITDrA7DN2+N5oX/NDPPWEFFq7v9OmLaCweawfqP?=
- =?us-ascii?Q?yL+5gLHptJ4jLVSLuF5SuDzsUmLBdqJlzK17vXJYc3W2NTPeHWkjRgAJSYmL?=
- =?us-ascii?Q?9dWSpFZMxHrd9q0NamwIb5PhyaXEeqpD2kG/rGw2i2+ics9sTIhJohcEqBpI?=
- =?us-ascii?Q?CwkgIPOtB7Cw6X5nnju0opWqC1igd/py4dMANzIS1xX599O+yJuZR3AzWNfE?=
- =?us-ascii?Q?u8Vv9Vgf1JviiU5w4xBhVVY1UwHXgmdeVv1OXxaR6bxu2E+u7uh2MacI65G/?=
- =?us-ascii?Q?gsUyT51hcJalTsTPO2TJVzA6WQ3WQs0Kdlmej6HnWsOjnwUUnKbM1ppB68g5?=
- =?us-ascii?Q?tjzamvwpnNhJD2urpNxI+6NJ1yqVxcrDfx98XvbxEr8dkZWTyo7G99h/yTN2?=
- =?us-ascii?Q?sEcQCWV420Q/8v/SV+04fAwzgY6XAKH1sykTW160nk20+tDzgjqADLzoekkC?=
- =?us-ascii?Q?ISeCaVkJY0rJIJd5XNmuJikTTi7jsQjr74hHMKEc+pXI8FO40L4qvVAdGWXL?=
- =?us-ascii?Q?YQ=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [172.25.108.39]
+Content-Type: text/plain; charset="big5"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-OriginatorOrg: marvell.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CO6PR18MB4465.namprd18.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a4710d17-b1d4-46e6-673a-08d9b5bf2ad0
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Dec 2021 18:11:30.9854
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ygkZHjVLz8ebAkG90mjXOv5HDwT6l6Hgq2rSqtNlwGVtwFPEGerRhz8e6wJQ6p8FjKPpDMy6fCvs794n5xBPMQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR18MB4810
-X-Proofpoint-GUID: RFIm2yCg7RbHi--ZXuwgAe6A7JjLhRmf
-X-Proofpoint-ORIG-GUID: RFIm2yCg7RbHi--ZXuwgAe6A7JjLhRmf
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2021-12-02_12,2021-12-02_01,2021-12-02_01
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-I have handled the probe() and registered the netdev structure using regist=
-er_netdev().
-I have observed in other opensource driver(i.e. Intel e1000e driver) that n=
-do_open() gets called only when we try to bring up the interface (i.e. ifco=
-nfig <ip> ifconfig eth0 <ip-addr> netmask <net-mask> up).
-But in my network driver I am getting ndo_open() call immediately after I h=
-andle the probe(). It's a wrong behavior, also my network interface is gett=
-ing to UP/RUNNING state(as shown below) even without any valid ip address.
-
-enp1s0: flags=3D4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
-        ether 00:22:55:33:22:28  txqueuelen 1000  (Ethernet)
-        RX packets 0  bytes 0 (0.0 B)
-        RX errors 0  dropped 0  overruns 0  frame 0
-        TX packets 252  bytes 43066 (43.0 KB)
-        TX errors 0  dropped 0 overruns 0  carrier 0  collisions
-
-What is the change required in the driver such that my network interface(en=
-p1s0) should be in down state(BROADCAST & MULTICAST only) after probe()
-and ndo_open() call should happen only when device gets configured?
-
-Thanks
-Arijit
+SGkgQW5kcmV3LA0KDQpUaGFuayB5b3UgZm9yIGV4cGxhbmF0aW9uLg0KDQpJJ2xsIGFkZCBwaHlf
+c3VwcG9ydF9hc3ltX3BhdXNlKCkgYWZ0ZXIgUEhZIGNvbm5lY3RlZCBuZXh0IHBhdGNoLg0KDQpJ
+IGZvdW5kIHNvbWUgZHJpdmVycyBjYWxsIHBoeV9zZXRfbWF4X3NwZWVkKCkgdG8gc2V0IFBIWSBz
+cGVlZCB0bw0KMTAwTSBhZnRlciBQSFkgY29ubmVjdGVkLiBJcyB0aGF0IG5lY2Vzc2FyeT8gRnJv
+bSAnc3VwcG9ydGVkJywgUEhZIA0Kc3VwcG9ydHMgMTBNLzEwME0gYWxyZWFkeS4NCg0KSSBhbHNv
+IGZvdW5kIHNvbWUgZHJpdmVycyBjYWxsIHBoeV9zdGFydF9hbmVnKCkgYWZ0ZXIgUEhZIHN0YXJ0
+ZWQuDQpJcyB0aGF0IG5lY2Vzc2FyeT8gRnJvbSBzdGF0dXMgcmVnaXN0ZXIgb2YgUEhZLCAnYXV0
+by1uZWdvJyBoYXMgDQpjb21wbGV0ZWQuDQoNCg0KQmVzdCByZWdhcmRzLA0KV2VsbHMNCg0KDQo+
+ID4gSSBwcmludGVkIG91dCB0aGUgdmFsdWUgb2YgJ3N1cHBvcnRlZCcgYW5kICdhZHZlcnRpc2lu
+ZycuDQo+ID4gJ3N1cHBvcnRlZCcgc2hvd3MgUEhZIGRldmljZSBzdXBwb3J0cyBQYXVzZSBhbmQg
+QXN5bVBhdXNlICgweDYyY2YpLg0KPiA+IEJ1dCAnYWR2ZXJ0aXNpbmcnIHNob3dzIFBIWSBkZXZp
+Y2UgZG9lcyBub3Qgc3VwcG9ydCBQYXVzZSBvciBBc3ltUGF1c2UgKDB4MDJjZikuDQo+ID4gSXMg
+dGhpcyBjb3JyZWN0Pw0KPiA+DQo+ID4gSG93IHRvIGxldCBsaW5rIHBhcnRuZXIga25vdyBsb2Nh
+bCBub2RlIHN1cHBvcnRzIFBhdXNlICYgQXN5bVBhdXNlDQo+ID4gKGZsb3cgY29udHJvbCk/DQo+
+ID4NCj4gDQo+ICdzdXBwb3J0ZWQnIGluZGljYXRlcyB0aGF0IHRoZSBQSFkgY2FuIGRvLiBJdCBo
+YXMgdGhlIGFiaWxpdHkgdG8gYWR2ZXJ0aXNlIHBhdXNlLiBCdXQgd2UNCj4gZG9uJ3QgYXV0b21h
+dGljYWxseSBjb3B5IHRob3NlIGJpdHMgaW50byAnYWR2ZXJ0aXNpbmcnIGJlY2F1c2Ugd2UgZG9u
+J3Qga25vdyBpZiB0aGUgTUFDDQo+IGFjdHVhbGx5IHN1cHBvcnRzIHBhdXNlL2FzeW0gcGF1c2Uu
+DQo+IA0KPiBUaGUgTUFDIGRyaXZlciBuZWVkcyB0byBjYWxsIHBoeV9zdXBwb3J0X3N5bV9wYXVz
+ZSgpIG9yDQo+IHBoeV9zdXBwb3J0X2FzeW1fcGF1c2UoKSB0byBsZXQgcGh5bGliIGtub3cgd2hh
+dCBpdCBjYW4gZG8uIHBoeWxpYiB3aWxsIHRoZW4gYWRkIHRoZQ0KPiBhcHByb3ByaWF0ZSBiaXRz
+IHRvICdhZHZlcnRpc2luZycuDQo+IA0KPiA+IFdpbGwgbWlpX3JlYWQoKSBhbmQgbWlpX3dyaXRl
+KCkgYmUgY2FsbGVkIGluIGludGVycnVwdCBjb250ZXh0Pw0KPiANCj4gTm8uIE9ubHkgdGhyZWFk
+IGNvbnRleHQsIGJlY2F1c2UgaXQgdXNlcyBhIG11dGV4IHRvIHByZXZlbnQgbXVsdGlwbGUgYWNj
+ZXNzZXMgYXQgdGhlIHNhbWUNCj4gdGltZS4NCj4gDQo+IAkgQW5kcmV3DQo=
