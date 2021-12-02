@@ -2,50 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D9768465BCE
-	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 02:48:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E6FF465BD5
+	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 02:52:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347629AbhLBBv7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Dec 2021 20:51:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33946 "EHLO
+        id S1348448AbhLBB4E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Dec 2021 20:56:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347291AbhLBBvr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 20:51:47 -0500
+        with ESMTP id S1349741AbhLBByC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 20:54:02 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F26AC061574;
-        Wed,  1 Dec 2021 17:48:25 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E247C061757;
+        Wed,  1 Dec 2021 17:50:40 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5A141B821BB;
-        Thu,  2 Dec 2021 01:48:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A20E8C00446;
-        Thu,  2 Dec 2021 01:48:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 385ABB80DAC;
+        Thu,  2 Dec 2021 01:50:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB519C00446;
+        Thu,  2 Dec 2021 01:50:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638409703;
-        bh=rX6Hzb6QHB/vShLCZQuiRt4vZUktSxPTk8iSZdxIzrY=;
+        s=k20201202; t=1638409838;
+        bh=QTnBVlSoKyzB4f36a959kaReUyDXjm7tKy4VxWwcZ1Y=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=U1LTYfKULVcS40C1rBGuW/+sUUKw4ue2cnd0j0PRe9ZIUPbeYYrekO6RGNj9xd2Nw
-         exNofflc5oLklBSM0h1S4icPNvdd3X0ORciFOigMbBTd6fzW50vm5hg8uL3Dq/82yl
-         P0FizyUopCZsghMKm2lXrcSmQuDKkZeIUsjRhPmhapj+nyeWuCY+jts7JzvQhLpIEF
-         L9wpxnjJpWKi92xAtH2YQzEljLSdi4wxGPU/lTnh11TtqUmV5idlkYqxfon6tYINEs
-         Tb8joZPIIle6ovI/D6qzjvWIOrggSbiRCW6rEFGH+1ltfSr2ZihHVg8XXdaDR9kbSd
-         odztmsbStbooA==
-Date:   Wed, 1 Dec 2021 17:48:21 -0800
+        b=r34/oO3dVC1XxrnPUFf6HULsDlaxAbStU94EYPytWtAnQuWkoFjeAsfWb2TT2bURT
+         PflD+GXKJa39hg4pivUBbov3LA95bueqXe2BZ/aG7fw5tbv/wjS8XymBocNeFBUg3b
+         VyX1PykJDU/LhQphANUGUsihYoDLoZynEa+AnkoxBI/lMmYaYPoV1PWXh+5qGZ4U2w
+         gdBF09TRmTOZLraj0+QnpxyA5wRPIjv6uQm67zRluzeD8BFcFXIdKcZrXX5jwbCl+k
+         +IcN2LsHTxFxl+bvjEhCS4h0oRxQnzJkQfdQO0abN4NNyBDHIw8T7KKWM7ghaBvaN8
+         u9ynX5zgw0rOg==
+Date:   Wed, 1 Dec 2021 17:50:36 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     "lizhijian@fujitsu.com" <lizhijian@fujitsu.com>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
-        "shuah@kernel.org" <shuah@kernel.org>,
-        "dsahern@gmail.com" <dsahern@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 2/3] selftests: add option to list all avaliable tests
-Message-ID: <20211201174821.2d40a3eb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <f4ebc027-5f5d-1a4a-8a33-964cd7214af8@fujitsu.com>
+To:     Li Zhijian <lizhijian@cn.fujitsu.com>
+Cc:     <davem@davemloft.net>, <shuah@kernel.org>, <dsahern@gmail.com>,
+        <netdev@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 1/3] selftest: net: Correct case name
+Message-ID: <20211201175036.5e71ee13@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211201111025.13834-1-lizhijian@cn.fujitsu.com>
 References: <20211201111025.13834-1-lizhijian@cn.fujitsu.com>
-        <20211201111025.13834-2-lizhijian@cn.fujitsu.com>
-        <f4ebc027-5f5d-1a4a-8a33-964cd7214af8@fujitsu.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -53,11 +48,17 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 1 Dec 2021 11:22:03 +0000 lizhijian@fujitsu.com wrote:
-> sent V2 to fix a typo
+On Wed, 1 Dec 2021 19:10:23 +0800 Li Zhijian wrote:
+> Fixes: 34d0302ab86 ("selftests: Add ipv6 address bind tests to fcnal-test")
+> Fixes: 75b2b2b3db4 ("selftests: Add ipv4 address bind tests to fcnal-test")
 
-You need to resend the entire series, patchwork does not understand
-updating single patches:
-
-https://patchwork.kernel.org/project/netdevbpf/list/?series=588501
-https://patchwork.kernel.org/project/netdevbpf/list/?series=588507
+Fixes tag: Fixes: 34d0302ab86 ("selftests: Add ipv6 address bind tests to fcnal-test")
+Has these problem(s):
+	- SHA1 should be at least 12 digits long
+	  Can be fixed by setting core.abbrev to 12 (or more) or (for git v2.11
+	  or later) just making sure it is not set (or set to "auto").
+Fixes tag: Fixes: 75b2b2b3db4 ("selftests: Add ipv4 address bind tests to fcnal-test")
+Has these problem(s):
+	- SHA1 should be at least 12 digits long
+	  Can be fixed by setting core.abbrev to 12 (or more) or (for git v2.11
+	  or later) just making sure it is not set (or set to "auto").
