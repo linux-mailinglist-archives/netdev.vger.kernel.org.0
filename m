@@ -2,137 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B3E4466BBA
-	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 22:40:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9095E466BC2
+	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 22:45:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349117AbhLBVnf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Dec 2021 16:43:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49980 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349087AbhLBVnf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 16:43:35 -0500
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57EBDC061757
-        for <netdev@vger.kernel.org>; Thu,  2 Dec 2021 13:40:12 -0800 (PST)
-Received: by mail-ed1-x52b.google.com with SMTP id o20so3332915eds.10
-        for <netdev@vger.kernel.org>; Thu, 02 Dec 2021 13:40:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=WkWbuNbEXp98K6ev9TQhQlZN/KCyILTBLV4Ez+Ae1wA=;
-        b=MC2ZemWE7c+3TiTz//LHZhCGYHIAYaxlWnGPuXZ0k1lh37ko3JRzDrFsQc8OfQdsoj
-         dgKrrWc8Ik0x1MIxybuD36Z67WIdXkkkYIgHc8MkS+bD1NyOGuoxrYIxzvgkeNQz298e
-         MTd5ItIlTLtoVvD/fI5nL7ZrVyfF4PIGMDWWp1StA+/Z50vbSIW71IajpmwvM8yy8rdx
-         pz+tEk/E7q0cqdOBC9vTK0mYe8LESMCz+u+6grYfPv8jLWkfLvB0A2VT6MGA2VfW9RmC
-         S2gwKRsmryUrY53SBzYWz/uso1YU6j4KbppLwUOhjJ44hYOOyxbtaPBMxmGejAcBOxym
-         NccQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=WkWbuNbEXp98K6ev9TQhQlZN/KCyILTBLV4Ez+Ae1wA=;
-        b=1cUu6cA5F0pjKfxfsOFiUtomwAPhe+giagjkiTdVAOjktMRVE6fhIOYXOoS7FXQbmF
-         /zix2xcP/4Nm63is2s7uaceKryvuxvYMNrhZ0l0R/v1R5oGoM8N9zb9ppTAI22yxmMsi
-         Hh6MNfoGsqps9YtPdYd4SOdjecwgrj1zryylBu7psf4qfpzOE8l4PNJKclBUuG+aV2z1
-         hvQIsI6ixwawBAnWREY6+zUIJ3AfL9KZkSPNH2pzditRoO1Qs9TwKQYDSv1xOvfdYJYG
-         rOiP1JZrW9DETuzhCWZtjwk0Fp6NtSBunToY4cLuRZ/PtdIfLjnuj+Vzxe1rLJaDL6cE
-         IowQ==
-X-Gm-Message-State: AOAM5307kRO4VFue0xYXvbNkxUUwHrlv6bkJUNtSUgzI6Phj0Tr8IVVr
-        aqkqbK9lc4l6krkePWrBhiQ=
-X-Google-Smtp-Source: ABdhPJxKuz21wZ8CoVx2DfHexbIB5jd5WL0xggVSbjQ4qXEnUWcUtOewgFfOxqFhj9lrRfSCOxcZVw==
-X-Received: by 2002:a05:6402:42d5:: with SMTP id i21mr21008504edc.373.1638481210896;
-        Thu, 02 Dec 2021 13:40:10 -0800 (PST)
-Received: from skbuf ([188.25.173.50])
-        by smtp.gmail.com with ESMTPSA id t5sm600187edd.68.2021.12.02.13.40.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Dec 2021 13:40:10 -0800 (PST)
-Date:   Thu, 2 Dec 2021 23:40:09 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     David Laight <David.Laight@ACULAB.COM>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next 2/2] net: optimize skb_postpull_rcsum()
-Message-ID: <20211202214009.5hm3diwom4qsbsjd@skbuf>
-References: <20211124202446.2917972-1-eric.dumazet@gmail.com>
- <20211124202446.2917972-3-eric.dumazet@gmail.com>
- <20211202131040.rdxzbfwh2slhftg5@skbuf>
- <CANn89iLW4kwKf0x094epVeCaKhB4GtYgbDwE2=Fp0HnW8UdKzw@mail.gmail.com>
- <20211202162916.ieb2wn35z5h4aubh@skbuf>
- <CANn89iJEfDL_3C39Gp9eD=yPDqW4MGcVm7AyUBcTVdakS-X2dg@mail.gmail.com>
- <20211202204036.negad3mnrm2gogjd@skbuf>
- <9eefc224988841c9b1a0b6c6eb3348b8@AcuMS.aculab.com>
+        id S1377151AbhLBVso (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Dec 2021 16:48:44 -0500
+Received: from smtp-out2.suse.de ([195.135.220.29]:39934 "EHLO
+        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1377128AbhLBVsn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 16:48:43 -0500
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id E12CC1FC9E;
+        Thu,  2 Dec 2021 21:45:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1638481519; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=j2DnTWp7hSyJVr2OsPZMHDP0+c+zaKi0mJP2lumqW0Y=;
+        b=lWh5B2gOebFNnwwg1piYMwFa3W+5w9/OGrDGSg6JA6ef5hAKAMaDXZP4xRywJvz7NpwIZQ
+        xzjJ4JyqxDfFHuTCKT7hC6w2bOTQKDVNpAjFpf3gobxUB9kQrdSFCRvqVQ16ACZwNT+WMG
+        CJ9AIiS1R/IPst9kJiQ7nL5HLRnsDXk=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1638481519;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=j2DnTWp7hSyJVr2OsPZMHDP0+c+zaKi0mJP2lumqW0Y=;
+        b=wshWrkKTXOMbASY2ym8iiQ2mMUNBq3YtPHPxOLsO9t+VMAWd6hhMoiFr/ILGL3kaZm/ZK/
+        15ShkdBFCdacZZBg==
+Received: from lion.mk-sys.cz (unknown [10.100.225.114])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id D161EA3B84;
+        Thu,  2 Dec 2021 21:45:19 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id B5E50607CC; Thu,  2 Dec 2021 22:45:18 +0100 (CET)
+Date:   Thu, 2 Dec 2021 22:45:18 +0100
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, popadrian1996@gmail.com, andrew@lunn.ch,
+        mlxsw@nvidia.com, moshe@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [PATCH ethtool-next 0/8] ethtool: Add support for CMIS
+ diagnostic information
+Message-ID: <20211202214518.rwhrmzwhdmzs3kue@lion.mk-sys.cz>
+References: <20211123174102.3242294-1-idosch@idosch.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="lux2x4vyqlzdd4ov"
 Content-Disposition: inline
-In-Reply-To: <9eefc224988841c9b1a0b6c6eb3348b8@AcuMS.aculab.com>
+In-Reply-To: <20211123174102.3242294-1-idosch@idosch.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 02, 2021 at 08:58:46PM +0000, David Laight wrote:
-> > To me it looks like the strange part is that the checksum of the removed
-> > block (printed by me as "csum_partial(start, len, 0)" inside
-> > skb_postpull_rcsum()) is the same as the skb->csum itself.
-> 
-> If you are removing all the bytes that made the original checksum
-> that will happen.
-> And that might be true for the packets you are building.
 
-Yes, I am not removing all the bytes that made up the original L2
-payload csum. Let me pull up the skb_dump from my original message:
+--lux2x4vyqlzdd4ov
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-                        here is where the enetc saw the          the "start" variable (old skb->data)
-                        beginning of the frame                   points here
-                        v                                         v
-skb headroom: 00000040: 88 80 00 0a 00 33 9d 40 f0 41 01 80 00 00 08 0f
+On Tue, Nov 23, 2021 at 07:40:54PM +0200, Ido Schimmel wrote:
+> From: Ido Schimmel <idosch@nvidia.com>
+>=20
+> This patchset extends ethtool(8) to retrieve, parse and print CMIS
+> diagnostic information. This information includes module-level monitors
+> (e.g., temperature, voltage), channel-level monitors (e.g., Tx optical
+> power) and related thresholds and flags.
+>=20
+> ethtool(8) already supports SFF-8636 (e.g., QSFP) and SFF-8472 (e.g.,
+> SFP) diagnostic information, but until recently CMIS diagnostic
+> information was unavailable to ethtool(8) as it resides in optional and
+> banked pages.
+>=20
+> Testing
+> =3D=3D=3D=3D=3D=3D=3D
+>=20
+> Build tested each patch with the following configuration options:
+>=20
+> netlink | pretty-dump
+> --------|------------
+> v       | v
+> x       | x
+> v       | x
+> x       | v
+>=20
+> Except fields that were added, no difference in output before and after
+> the patchset. Tested with both PC and AOC QSFP-DD modules.
+>=20
+> No reports from AddressSanitizer / valgrind.
+>=20
+> Patchset overview
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>=20
+> Patches #1-#2 are small preparations.
+>=20
+> Patches #3-#4 retrieve (over netlink) and initialize the optional and
+> banked pages in the CMIS memory map. These pages contain the previously
+> mentioned diagnostic information.
+>=20
+> Patch #5 parses and prints the CMIS diagnostic information in a similar
+> fashion to the way it is done for SFF-8636.
+>=20
+> Patches #6-#7 print a few additional fields from the CMIS EEPROM dump.
+> The examples contain an ethtool command that is supported by the kernel,
+> but not yet by ethtool(8). It will be sent as a follow-up patchset.
+>=20
+> Patch #8 prints the equivalent module-level fields for SFF-8636.
 
-                              OCELOT_TAG_LEN bytes into the frame,
-                              the real MAC header can be found
-                                    v
-skb headroom: 00000050: 00 10 00 00 00 04 9f 05 f6 28 ba ae e4 b6 2c 3d
-skb headroom: 00000060: 08 00
-skb linear:   00000000: 45 00 00 54 27 ac 00 00 40 01 09 a8 c0 a8 64 03
-                        ^
-                        the skb_postpull_rcsum is called from "start"
-                        pointer until the first byte prior to this one
+The series looks good to me and I'm ready to merge it but as it is
+marked "ethtool-next", I better make sure: is it OK to merge it into
+master branch (targeting ethtool 5.16)? In other words, do I see
+correctly that it does not depend on any features that would be missing
+in 5.16 kernel?
 
-skb linear:   00000010: c0 a8 64 01 00 00 10 e6 01 5c 00 04 49 30 a7 61
-skb linear:   00000020: 00 00 00 00 3d 55 01 00 00 00 00 00 10 11 12 13
-skb linear:   00000030: 14 15 16 17 18 19 1a 1b 1c 1d 1e 1f 20 21 22 23
-skb linear:   00000040: 24 25 26 27 28 29 2a 2b 2c 2d 2e 2f 30 31 32 33
-skb linear:   00000050: 34 35 36 37
+Michal
 
-So skb_postpull_rcsum() is called from "skb headroom" offset 0x4e to
-offset 0x61 inclusive (0x61 - 0x4e + 1 = 20 == OCELOT_TAG_LEN).
+--lux2x4vyqlzdd4ov
+Content-Type: application/pgp-signature; name="signature.asc"
 
-However as I understand it, the CHECKSUM_COMPLETE of this packet is
-calculated by enetc from "skb headroom" offset 0x4e and all the way
-until "skb linear" offset 0x53. So there is still a good chunk of packet
-to go. That's why it is still a mystery to me why the checksums would be
-equal. They still are, with your change suggested below, of course, but
-at least there is no splat now.
+-----BEGIN PGP SIGNATURE-----
 
-> 
-> Try replacing both ~ with -.
-> So replace:
-> 		skb->csum = ~csum_partial(start, len, ~skb->csum);
-> with:
-> 		skb->csum = -csum_partial(start, len, -skb->csum);
-> 
-> That should geneate ~0u instead 0 (if I've got my maths right).
+iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAmGpPmgACgkQ538sG/LR
+dpUuCwf9FPOYihMMKAvkh4KfI8b7gFyW4QQKFbP7qXsv1zqcGs9/8ol1THRYg2Zb
+6H+/FXNojLHBbODq6smlSga2aVP7lPyCB35HTgorby7fL+z2N6YQzT+gViqS6i4g
+nyyH9ortqbpLu/rlaUMKVY4k/gpOnViphMZzj6rdi5i1KV1XC6E5m6Il5p+ksjov
+0vZsSlWg/k4BVnGYf65GlIpQh+B98ZAH74d6B2iyYgo6EjxfzYKYzpb0jX/5Badt
+tRFWKwO6Il0hbc4ywZPDcQCmQaOQpUPtjMIKALqr9Jg7KrBh+TsUhVpmtfNLtGxT
+RqWRR9n3132buSNhef5HtYcLJfkNog==
+=oo00
+-----END PGP SIGNATURE-----
 
-Indeed, replacing both one's complement operations with two's complement
-seems to produce correct results (consistent with old code) in all cases
-that I am testing with (ICMP, TCP, UDP). Thanks!
-
-> 
-> 	David
-> 
-> -
-> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-> Registration No: 1397386 (Wales)
-> 
+--lux2x4vyqlzdd4ov--
