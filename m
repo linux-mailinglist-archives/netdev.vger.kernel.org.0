@@ -2,82 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7ED274662B7
-	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 12:49:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B7A8C4662BE
+	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 12:50:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357323AbhLBLw5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Dec 2021 06:52:57 -0500
-Received: from mga02.intel.com ([134.134.136.20]:1837 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1346549AbhLBLw4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 2 Dec 2021 06:52:56 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10185"; a="223923161"
-X-IronPort-AV: E=Sophos;i="5.87,281,1631602800"; 
-   d="scan'208";a="223923161"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Dec 2021 03:49:33 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.87,281,1631602800"; 
-   d="scan'208";a="459630558"
-Received: from lkp-server02.sh.intel.com (HELO 9e1e9f9b3bcb) ([10.239.97.151])
-  by orsmga003.jf.intel.com with ESMTP; 02 Dec 2021 03:49:30 -0800
-Received: from kbuild by 9e1e9f9b3bcb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1mskaf-000GGw-K4; Thu, 02 Dec 2021 11:49:29 +0000
-Date:   Thu, 2 Dec 2021 19:48:55 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Maciej Machnikowski <maciej.machnikowski@intel.com>,
-        netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        arkadiusz.kubalewski@intel.com
-Cc:     kbuild-all@lists.01.org, richardcochran@gmail.com, abyagowi@fb.com,
-        anthony.l.nguyen@intel.com, davem@davemloft.net, kuba@kernel.org,
-        linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v4 net-next 2/4] ethtool: Add ability to configure
- recovered clock for SyncE feature
-Message-ID: <202112021948.p1Sqfiw5-lkp@intel.com>
-References: <20211201180208.640179-3-maciej.machnikowski@intel.com>
+        id S1357444AbhLBLx3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Dec 2021 06:53:29 -0500
+Received: from out30-54.freemail.mail.aliyun.com ([115.124.30.54]:47320 "EHLO
+        out30-54.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1346623AbhLBLxS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 06:53:18 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04407;MF=cuibixuan@linux.alibaba.com;NM=1;PH=DS;RN=14;SR=0;TI=SMTPD_---0UzAd3ah_1638445791;
+Received: from 30.43.84.45(mailfrom:cuibixuan@linux.alibaba.com fp:SMTPD_---0UzAd3ah_1638445791)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 02 Dec 2021 19:49:53 +0800
+Message-ID: <7ef20c24-efcc-2103-0727-3933b0f9b3a3@linux.alibaba.com>
+Date:   Thu, 2 Dec 2021 19:49:51 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211201180208.640179-3-maciej.machnikowski@intel.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.1.1
+Subject: Re: [PATCH -next] mm: delete oversized WARN_ON() in kvmalloc() calls
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        torvalds@linux-foundation.org, leon@kernel.org, w@1wt.eu,
+        keescook@chromium.org, bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Kicinski <kuba@kernel.org>, kvm@vger.kernel.org,
+        netfilter-devel@vger.kernel.org
+References: <1638410784-48646-1-git-send-email-cuibixuan@linux.alibaba.com>
+ <20211201192643.ecb0586e0d53bf8454c93669@linux-foundation.org>
+ <10cb0382-012b-5012-b664-c29461ce4de8@linux.alibaba.com>
+ <20211201202905.b9892171e3f5b9a60f9da251@linux-foundation.org>
+From:   Bixuan Cui <cuibixuan@linux.alibaba.com>
+In-Reply-To: <20211201202905.b9892171e3f5b9a60f9da251@linux-foundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Maciej,
 
-Thank you for the patch! Perhaps something to improve:
+在 2021/12/2 下午12:29, Andrew Morton 写道:
+> Thanks, that's helpful.
+>
+> Let's bring all these to the attention of the relevant developers.
+>
+> If the consensus is "the code's fine, the warning is bogus" then let's
+> consider retiring the warning.
+>
+> If the consensus is otherwise then hopefully they will fix their stuff!
 
-[auto build test WARNING on net-next/master]
+Ok,thanks for your advice :-)
 
-url:    https://github.com/0day-ci/linux/commits/Maciej-Machnikowski/Add-ethtool-interface-for-SyncE/20211202-021915
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 23ea630f86c70cbe6691f9f839e7b6742f0e9ad3
-reproduce: make htmldocs
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Thanks,
 
-All warnings (new ones prefixed by >>):
+Bixuan Cui
 
-include/uapi/linux/ethtool.h:1: warning: 'ethtool_rclk_pin_state' not found
-
-vim +/ethtool_rclk_pin_state +1 include/uapi/linux/ethtool.h
-
-6f52b16c5b29b8 Greg Kroah-Hartman 2017-11-01  @1  /* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-607ca46e97a1b6 David Howells      2012-10-13   2  /*
-607ca46e97a1b6 David Howells      2012-10-13   3   * ethtool.h: Defines for Linux ethtool.
-607ca46e97a1b6 David Howells      2012-10-13   4   *
-607ca46e97a1b6 David Howells      2012-10-13   5   * Copyright (C) 1998 David S. Miller (davem@redhat.com)
-607ca46e97a1b6 David Howells      2012-10-13   6   * Copyright 2001 Jeff Garzik <jgarzik@pobox.com>
-607ca46e97a1b6 David Howells      2012-10-13   7   * Portions Copyright 2001 Sun Microsystems (thockin@sun.com)
-607ca46e97a1b6 David Howells      2012-10-13   8   * Portions Copyright 2002 Intel (eli.kupermann@intel.com,
-607ca46e97a1b6 David Howells      2012-10-13   9   *                                christopher.leech@intel.com,
-607ca46e97a1b6 David Howells      2012-10-13  10   *                                scott.feldman@intel.com)
-607ca46e97a1b6 David Howells      2012-10-13  11   * Portions Copyright (C) Sun Microsystems 2008
-607ca46e97a1b6 David Howells      2012-10-13  12   */
-607ca46e97a1b6 David Howells      2012-10-13  13  
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
