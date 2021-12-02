@@ -2,95 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A5C0466BE7
-	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 23:01:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 41548466BFD
+	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 23:15:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349144AbhLBWEi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Dec 2021 17:04:38 -0500
-Received: from smtp-out1.suse.de ([195.135.220.28]:47678 "EHLO
-        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243287AbhLBWEh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 17:04:37 -0500
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 3E492218A8;
-        Thu,  2 Dec 2021 22:01:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1638482474; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=pJ41qSFY8Qkwt3MoV9ljeGyWcEsXreDZOYw+KJ41B4A=;
-        b=vNwNlxUq7FYsVBcHbMYk7gYCuIZ0g1ihw+m2nGJpCZHXazrZxsWe6xYVo0JXmytIPVGFui
-        RvUZWuRhSprKF0c2sy2btKXUEfJiDFq0WhuKIhondZ8/QxI5E3igF/UdWUQwCbwnesLuT0
-        hWMEKQ8QqcYKNH0tcehUdQoTqVFym3Q=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1638482474;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=pJ41qSFY8Qkwt3MoV9ljeGyWcEsXreDZOYw+KJ41B4A=;
-        b=/ax6b6wFm4lnXQ76QJr22cjAMxEEqAPJWa+LS1AgNqVAbVK5YJ8oSc5NsVDkwDzAs3JYSY
-        KqMkABmD9WMXzAAw==
-Received: from lion.mk-sys.cz (unknown [10.100.225.114])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 2C8EEA3B83;
-        Thu,  2 Dec 2021 22:01:14 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 080B9607CC; Thu,  2 Dec 2021 23:01:14 +0100 (CET)
-Date:   Thu, 2 Dec 2021 23:01:14 +0100
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, popadrian1996@gmail.com, andrew@lunn.ch,
-        mlxsw@nvidia.com, moshe@nvidia.com,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: Re: [PATCH ethtool-next 0/8] ethtool: Add support for CMIS
- diagnostic information
-Message-ID: <20211202220114.n6vzttsvrujhbe2h@lion.mk-sys.cz>
-References: <20211123174102.3242294-1-idosch@idosch.org>
- <20211202214518.rwhrmzwhdmzs3kue@lion.mk-sys.cz>
- <YalAO4PwKrJaFAZ4@shredder>
+        id S236008AbhLBWTM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Dec 2021 17:19:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57798 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229836AbhLBWTL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 17:19:11 -0500
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 948D7C06174A;
+        Thu,  2 Dec 2021 14:15:48 -0800 (PST)
+Received: by mail-wr1-x42f.google.com with SMTP id d9so1701512wrw.4;
+        Thu, 02 Dec 2021 14:15:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Yff+1FpOuMigZbAy73J63jy1kO8FukCv/6vnynIzzvw=;
+        b=m7vw3K0ooNVuluM9tx9YuP9gt3hvjazf/xJuqhZaUTEyFbMV27ooosY8kotGRMfbUJ
+         Ul/aC7auJnanWmh6B5rnVBGeZW0QMFEx2dlW6MIBRv538NC1B0T6peUzZcuI+oAo+9EZ
+         wPWOOqiL9oe8oPFNiS2gzfK4NOaA9HSOannG9uHvwC41sqDg8L9MnQzqIBLjsxFZilx7
+         mw/XLLN+QHq2kkt6I8xxjIkkS5USR4xSanBl+0L7uXh7hFt+ZKDWyWNjBAlCRMgNgKTD
+         cf3+814AUWKcCgxsw5gJmul1K3+3nFAQLVbb2Pm4vzwbFZXxZEoQd6GoJ+nRVzjLZqtn
+         Jx6Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Yff+1FpOuMigZbAy73J63jy1kO8FukCv/6vnynIzzvw=;
+        b=COeMJHcLnfUqIL1ko2Qn71ARKu+0BiQCZQr7cb2sqNkbHT4L0RYYQXlXUQ9VbpbzhL
+         eq9yfZo/WMvFgcnp4ILeYmZBgrmrs9jUyBfnEjoh83RJIcQSMhVYqD+AiCaRKF9DYyOi
+         ORO6A0Efmy8/3zpj28azxFb4IMJcIPVHfKHL1dEJCcBnIu8yTJflw7ukgQrhgFaSfXhI
+         2sdV7zaBgFJ7dyrUZH4thlBi9w3BC1KTnRDOvdVaiitbO2+AXf7OVJPmgVddpNekUEyQ
+         P27pByp2ewNEeUwtnapBq6g1mAY0ghbYPWlqMz7I8dHq4yM1wpOCSPRXt91iH9QH6TYB
+         xEOg==
+X-Gm-Message-State: AOAM530vYkj7j4G2/eloqEe/hFJEgmntg55h91Nl5qX1fmDDCxRlha5A
+        v+lQKikfCt26wOJrMCbkE/+SHGOJdNS5VAG0
+X-Google-Smtp-Source: ABdhPJyw0fnVHwqCbx2j/3f+LhuiQhCMSFhQy7mZzArLrLknGa+6azR8ta8grSX8QHKGzuZfQd0QYg==
+X-Received: by 2002:adf:dc44:: with SMTP id m4mr17644222wrj.550.1638483347151;
+        Thu, 02 Dec 2021 14:15:47 -0800 (PST)
+Received: from localhost.localdomain ([39.48.206.151])
+        by smtp.gmail.com with ESMTPSA id h15sm3600820wmq.32.2021.12.02.14.15.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 Dec 2021 14:15:46 -0800 (PST)
+From:   Ameer Hamza <amhamza.mgc@gmail.com>
+To:     saeedm@nvidia.com, leon@kernel.org, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-kernel@vger.kernel.org, amhamza.mgc@gmail.com
+Subject: [PATCH] net/mlx5: Fix dangling pointer access
+Date:   Fri,  3 Dec 2021 03:15:39 +0500
+Message-Id: <20211202221539.113434-1-amhamza.mgc@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="bgip6c3vizw4mzj3"
-Content-Disposition: inline
-In-Reply-To: <YalAO4PwKrJaFAZ4@shredder>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Fix for dangling pointer access reported by Coverity.
 
---bgip6c3vizw4mzj3
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Addresses-Coverity: 1494138 ("Use after free")
 
-On Thu, Dec 02, 2021 at 11:52:59PM +0200, Ido Schimmel wrote:
-> On Thu, Dec 02, 2021 at 10:45:18PM +0100, Michal Kubecek wrote:
-> > The series looks good to me and I'm ready to merge it but as it is
-> > marked "ethtool-next", I better make sure: is it OK to merge it into
-> > master branch (targeting ethtool 5.16)? In other words, do I see
-> > correctly that it does not depend on any features that would be missing
-> > in 5.16 kernel?
->=20
-> Yes
+Signed-off-by: Ameer Hamza <amhamza.mgc@gmail.com>
+---
+ drivers/net/ethernet/mellanox/mlx5/core/health.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thank you. The series is merged into master branch now.
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/health.c b/drivers/net/ethernet/mellanox/mlx5/core/health.c
+index 3ca998874c50..856023321972 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/health.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/health.c
+@@ -335,7 +335,7 @@ static int mlx5_health_try_recover(struct mlx5_core_dev *dev)
+ {
+ 	mlx5_core_warn(dev, "handling bad device here\n");
+ 	mlx5_handle_bad_state(dev);
+-	if (mlx5_health_wait_pci_up(dev)) {
++	if (dev->timeouts && mlx5_health_wait_pci_up(dev)) {
+ 		mlx5_core_err(dev, "health recovery flow aborted, PCI reads still not working\n");
+ 		return -EIO;
+ 	}
+-- 
+2.25.1
 
-Michal
-
---bgip6c3vizw4mzj3
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAmGpQiQACgkQ538sG/LR
-dpVtfgf/QzB0GOl2x7Jv1/hzVuWLtWXMDTc/luHBxn0OqEYcih3eYgcK4Jk+RFW6
-qQ+6pnLMEAlw9r49KSZR56l38Ob7sgAkYxyYmQFJLHFFKKElF+oh/cssx9NMFjqR
-mbrb1A2BWvX5eVw0SO0isMSP0pggXa2nOu+U+7964Hb9WWtvsA+G0L+lCDbV693c
-XW4tWNC8vu6dEESwn08iDyP9ln0O/prHwlC9Ofa1VIGR9RYLXsRfpkLWIiJ33cOB
-dUv+zJ7L8ledyiBPj6ZdspfT1mDhEZHjew+7yqlm4T5F7C2b6Irk6MhEkdpNMhus
-ZHOJls8uLZrBNU/jzzX4gvX1xNgz8g==
-=iR0Z
------END PGP SIGNATURE-----
-
---bgip6c3vizw4mzj3--
