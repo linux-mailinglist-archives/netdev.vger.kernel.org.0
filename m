@@ -2,124 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 34656465DAB
-	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 06:10:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3085E465DAD
+	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 06:11:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231640AbhLBFNt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Dec 2021 00:13:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50606 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229469AbhLBFNp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 00:13:45 -0500
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 585F1C061574;
-        Wed,  1 Dec 2021 21:10:23 -0800 (PST)
-Received: by mail-pf1-x436.google.com with SMTP id o4so26798849pfp.13;
-        Wed, 01 Dec 2021 21:10:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=nYhvOFpnD+nATcij6pHFj/RlZs5yXdc5UYRL9Bv7hdA=;
-        b=igG5uKin/YSTcw0YoaxGhQ3fNMMy/FFFseT8g7XGwh6qtPPs+iMBMJHnn+l6dfDVsd
-         VYbFQUj/92Da0DLd3/XJgpv5F3P2a341NZDME8GFl4+J+9OhL5pou0Dhx3iYoIG5UKfA
-         XGpDYNdioRMGWm/RhuuyV+5SGoW9kFsDDlHirpZ6SjwveAK6nOX3lRKrKbWMhiSn0pBo
-         vo5QWmn5H53+u9YLVsCv0m5NP89cqTrHhnQ8aDo6xqqGFmyecP5Rkn6WbOMhrfRLFfSW
-         L1eDHRgQ8DzsHD7/uRS99ue+WtLW7KZgYUQjp5JOnBOgeVYLdBjRWc2+YBECiDfVqwQI
-         ZsTQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=nYhvOFpnD+nATcij6pHFj/RlZs5yXdc5UYRL9Bv7hdA=;
-        b=dlDQvaYouBpzlQw3dEdm9e6vKfLUf2vRdBTmA1PZHZacIWYglkwvMSNdqgXjZTOTQQ
-         CCTLmah91TW/5GZnuifdpIsKNW5J+ROCYtge76qpwKSmyM+DCh6QZCR3EHE7ncLj+yky
-         LALSShweFEzEHPIqkVLbI2pZLjU0efkTRbyFkdMg5ZYGnYakHBoZcQVJaWvVDFxbjj8s
-         z78iq3UYMySzZHbnuznxyByerxWYMlLObndZhIx9A2HdEGaYI71vdMBWnba0+BvMcUMq
-         MwlJ1uoOtRbnHOW2dqtbKElGsdldc810yH78vZB0h+eupxsOyVQUVM1fYMjk/yG6iVzs
-         m0mQ==
-X-Gm-Message-State: AOAM530OidGc1g6IOfcQwr/zCMtlWMrh2KP5fXREdu74dH98MKfxKvke
-        424GZfR0xL/bzLBn9MYqdJo+fD4vVqAfULs6uxloCUqdRWA=
-X-Google-Smtp-Source: ABdhPJy3xHjQer45zHTeWlFMZJmSYmh1eCEl5lkNepg7G+3DkiIDapz3rtXABRbc8iCwVyYY5YGKLntUwHu6Q5Lx4CA=
-X-Received: by 2002:a63:6881:: with SMTP id d123mr7798010pgc.497.1638421822722;
- Wed, 01 Dec 2021 21:10:22 -0800 (PST)
+        id S233952AbhLBFOR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Dec 2021 00:14:17 -0500
+Received: from marcansoft.com ([212.63.210.85]:47542 "EHLO mail.marcansoft.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229469AbhLBFOQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 2 Dec 2021 00:14:16 -0500
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (No client certificate requested)
+        (Authenticated sender: marcan@marcan.st)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id 3B5CE41F5F;
+        Thu,  2 Dec 2021 05:10:50 +0000 (UTC)
+Subject: Re: [PATCH] ethernet: aquantia: Try MAC address from device tree
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Tianhao Chai <cth451@gmail.com>,
+        Igor Russkikh <irusskikh@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>
+References: <20211128023733.GA466664@cth-desktop-dorm.mad.wi.cth451.me>
+ <YaOvShya4kP4SRk7@lunn.ch> <37679b8b-7a81-5605-23af-e442f9e91816@marcan.st>
+ <YaWNKiXwr/uHlNJD@lunn.ch>
+From:   Hector Martin <marcan@marcan.st>
+Message-ID: <80083aba-c906-f076-c887-910d3fe186f6@marcan.st>
+Date:   Thu, 2 Dec 2021 14:10:49 +0900
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-References: <20211124084119.260239-1-jolsa@kernel.org> <20211124084119.260239-2-jolsa@kernel.org>
- <CAEf4Bzb5wyW=62fr-BzQsuFL+mt5s=+jGcdxKwZK0+AW18uD_Q@mail.gmail.com> <Yafp193RdskXofbH@krava>
-In-Reply-To: <Yafp193RdskXofbH@krava>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 1 Dec 2021 21:10:11 -0800
-Message-ID: <CAADnVQK2vEjnZVasTKASG6AmeWyyEF8Q3bpRfWvuJJ6_qHnEig@mail.gmail.com>
-Subject: Re: [PATCH 1/8] perf/kprobe: Add support to create multiple probes
-To:     Jiri Olsa <jolsa@redhat.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Peter Zijlstra <a.p.zijlstra@chello.nl>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Ravi Bangoria <ravi.bangoria@amd.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <YaWNKiXwr/uHlNJD@lunn.ch>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: es-ES
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 1, 2021 at 1:32 PM Jiri Olsa <jolsa@redhat.com> wrote:
->
-> On Tue, Nov 30, 2021 at 10:53:58PM -0800, Andrii Nakryiko wrote:
-> > On Wed, Nov 24, 2021 at 12:41 AM Jiri Olsa <jolsa@redhat.com> wrote:
-> > >
-> > > Adding support to create multiple probes within single perf event.
-> > > This way we can associate single bpf program with multiple kprobes,
-> > > because bpf program gets associated with the perf event.
-> > >
-> > > The perf_event_attr is not extended, current fields for kprobe
-> > > attachment are used for multi attachment.
-> >
-> > I'm a bit concerned with complicating perf_event_attr further to
-> > support this multi-attach. For BPF, at least, we now have
-> > bpf_perf_link and corresponding BPF_LINK_CREATE command in bpf()
-> > syscall which allows much simpler and cleaner API to do this. Libbpf
-> > will actually pick bpf_link-based attachment if kernel supports it. I
-> > think we should better do bpf_link-based approach from the get go.
-> >
-> > Another thing I'd like you to keep in mind and think about is BPF
-> > cookie. Currently kprobe/uprobe/tracepoint allow to associate
-> > arbitrary user-provided u64 value which will be accessible from BPF
-> > program with bpf_get_attach_cookie(). With multi-attach kprobes this
-> > because extremely crucial feature to support, otherwise it's both
-> > expensive, inconvenient and complicated to be able to distinguish
-> > between different instances of the same multi-attach kprobe
-> > invocation. So with that, what would be the interface to specify these
-> > BPF cookies for this multi-attach kprobe, if we are going through
-> > perf_event_attr. Probably picking yet another unused field and
-> > union-izing it with a pointer. It will work, but makes the interface
-> > even more overloaded. While for LINK_CREATE we can just add another
-> > pointer to a u64[] with the same size as number of kfunc names and
-> > offsets.
->
-> I'm not sure we could bypass perf event easily.. perhaps introduce
-> BPF_PROG_TYPE_RAW_KPROBE as we did for tracepoints or just new
-> type for multi kprobe attachment like BPF_PROG_TYPE_MULTI_KPROBE
-> that might be that way we'd have full control over the API
+On 30/11/2021 11.32, Andrew Lunn wrote:
+> On Mon, Nov 29, 2021 at 02:08:28AM +0900, Hector Martin wrote:
+>> On 29/11/2021 01.33, Andrew Lunn wrote:
+>>> On Sat, Nov 27, 2021 at 08:37:33PM -0600, Tianhao Chai wrote:
+>>>> Apple M1 Mac minis (2020) with 10GE NICs do not have MAC address in the
+>>>> card, but instead need to obtain MAC addresses from the device tree. In
+>>>> this case the hardware will report an invalid MAC.
+>>>>
+>>>> Currently atlantic driver does not query the DT for MAC address and will
+>>>> randomly assign a MAC if the NIC doesn't have a permanent MAC burnt in.
+>>>> This patch causes the driver to perfer a valid MAC address from OF (if
+>>>> present) over HW self-reported MAC and only fall back to a random MAC
+>>>> address when neither of them is valid.
+>>>
+>>> This is a change in behaviour, and could cause regressions. It would
+>>> be better to keep with the current flow. Call
+>>> aq_fw_ops->get_mac_permanent() first. If that does not give a valid
+>>> MAC address, then try DT, and lastly use a random MAC address.
+>>
+>> On DT platforms, it is expected that the device tree MAC will override
+>> whatever the device thinks is its MAC address.
+> 
+> Can you point to any documentation of that expectation?
 
-Indeed. The existing kprobe prog type has this api:
- * Return: BPF programs always return an integer which is interpreted by
- * kprobe handler as:
- * 0 - return from kprobe (event is filtered out)
- * 1 - store kprobe event into ring buffer
+I don't think this is explicitly clarified anywhere, but the DT binding 
+says:
 
-that part we cannot change.
-No one was using that filtering feature. It often was in a way.
-New MULTI_KPROBE prog type should not have it.
+ > Specifies the MAC address that was assigned to the network device.
+
+It certainly doesn't say this should be a fallback only to be used if 
+the device doesn't have some idea of its MAC. Usually you'd expect 
+firmware information to override whatever the device's built-in defaults 
+are.
+
+>> I would not expect any other existing platform to have a MAC assigned to the
+>> device in this way using these cards; if any platforms do, chances are they
+>> intended it for it to be used and this patch will fix a current bug. If some
+>> platforms out there really have bogus MACs assigned in this way, that's a
+>> firmware bug, and we'd have to find out and add explicit, targeted
+>> workaround code. Are you aware of any such platforms? :)
+> 
+> I'm not aware of any, because i try to avoid making behaviour changes.
+> 
+> Anyway, lets go with this, and if stuff breaks we can always change
+> the order to what i suggested in order to unbreak stuff. I'm assuming
+> for Apple M1 Mac minis the order does not actually matter?
+
+Correct, on these machines the burned-in MAC is invalid so it doesn't 
+matter.
+
+
+-- 
+Hector Martin (marcan@marcan.st)
+Public Key: https://mrcn.st/pub
