@@ -2,82 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 31D3A466B50
-	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 22:00:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B8792466B4C
+	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 21:59:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349038AbhLBVD0 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 2 Dec 2021 16:03:26 -0500
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:53663 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234616AbhLBVDY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 16:03:24 -0500
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mtapsc-8-1TBcfAgSODeo9XmlqApOIQ-1; Thu, 02 Dec 2021 20:58:47 +0000
-X-MC-Unique: 1TBcfAgSODeo9XmlqApOIQ-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.26; Thu, 2 Dec 2021 20:58:46 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.026; Thu, 2 Dec 2021 20:58:46 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Vladimir Oltean' <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>
-CC:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        id S1349056AbhLBVDL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Dec 2021 16:03:11 -0500
+Received: from mga09.intel.com ([134.134.136.24]:39397 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234616AbhLBVDL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 2 Dec 2021 16:03:11 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10186"; a="236645008"
+X-IronPort-AV: E=Sophos;i="5.87,282,1631602800"; 
+   d="scan'208";a="236645008"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Dec 2021 12:58:54 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.87,282,1631602800"; 
+   d="scan'208";a="677822787"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga005.jf.intel.com with ESMTP; 02 Dec 2021 12:58:52 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 91AB1109; Thu,  2 Dec 2021 22:58:57 +0200 (EET)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Wolfgang Grandegger <wg@grandegger.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Subject: RE: [PATCH net-next 2/2] net: optimize skb_postpull_rcsum()
-Thread-Topic: [PATCH net-next 2/2] net: optimize skb_postpull_rcsum()
-Thread-Index: AQHX57zbDWxMByH9C0Scwj/3q1CYoawfrjxg
-Date:   Thu, 2 Dec 2021 20:58:46 +0000
-Message-ID: <9eefc224988841c9b1a0b6c6eb3348b8@AcuMS.aculab.com>
-References: <20211124202446.2917972-1-eric.dumazet@gmail.com>
- <20211124202446.2917972-3-eric.dumazet@gmail.com>
- <20211202131040.rdxzbfwh2slhftg5@skbuf>
- <CANn89iLW4kwKf0x094epVeCaKhB4GtYgbDwE2=Fp0HnW8UdKzw@mail.gmail.com>
- <20211202162916.ieb2wn35z5h4aubh@skbuf>
- <CANn89iJEfDL_3C39Gp9eD=yPDqW4MGcVm7AyUBcTVdakS-X2dg@mail.gmail.com>
- <20211202204036.negad3mnrm2gogjd@skbuf>
-In-Reply-To: <20211202204036.negad3mnrm2gogjd@skbuf>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 1/1] can: mcp251x: Get rid of duplicate of_node assignment
+Date:   Thu,  2 Dec 2021 22:58:55 +0200
+Message-Id: <20211202205855.76946-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> To me it looks like the strange part is that the checksum of the removed
-> block (printed by me as "csum_partial(start, len, 0)" inside
-> skb_postpull_rcsum()) is the same as the skb->csum itself.
+GPIO library does copy the of_node from the parent device of
+the GPIO chip, there is no need to repeat this in the individual
+drivers. Remove assignment here.
 
-If you are removing all the bytes that made the original checksum
-that will happen.
-And that might be true for the packets you are building.
+For the details one may look into the of_gpio_dev_init() implementation.
 
-Try replacing both ~ with -.
-So replace:
-		skb->csum = ~csum_partial(start, len, ~skb->csum);
-with:
-		skb->csum = -csum_partial(start, len, -skb->csum);
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/net/can/spi/mcp251x.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-That should geneate ~0u instead 0 (if I've got my maths right).
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+diff --git a/drivers/net/can/spi/mcp251x.c b/drivers/net/can/spi/mcp251x.c
+index 0579ab74f728..0cec808e8727 100644
+--- a/drivers/net/can/spi/mcp251x.c
++++ b/drivers/net/can/spi/mcp251x.c
+@@ -600,9 +600,6 @@ static int mcp251x_gpio_setup(struct mcp251x_priv *priv)
+ 	gpio->ngpio = ARRAY_SIZE(mcp251x_gpio_names);
+ 	gpio->names = mcp251x_gpio_names;
+ 	gpio->can_sleep = true;
+-#ifdef CONFIG_OF_GPIO
+-	gpio->of_node = priv->spi->dev.of_node;
+-#endif
+ 
+ 	return devm_gpiochip_add_data(&priv->spi->dev, gpio, priv);
+ }
+-- 
+2.33.0
 
