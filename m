@@ -2,93 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 71683466607
-	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 15:59:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 81E8E46660E
+	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 16:01:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357757AbhLBPCx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Dec 2021 10:02:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43656 "EHLO
+        id S1355302AbhLBPEZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Dec 2021 10:04:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358856AbhLBPCu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 10:02:50 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D8DCC06174A
-        for <netdev@vger.kernel.org>; Thu,  2 Dec 2021 06:59:27 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 234DFB823B7
-        for <netdev@vger.kernel.org>; Thu,  2 Dec 2021 14:59:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FF11C53FCB;
-        Thu,  2 Dec 2021 14:59:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638457164;
-        bh=zoYHUlVmtalqaqaWlI4ZeuDLit6/dPkwjzcMVkmVLNo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=JXIIR7dXPIojilNVLkiWZVf7qGZ3XVWcuyLudVZPlm9c5InqVp4UdpwlU+7WMuPNF
-         YphYGgZIfO/mRHZQVEaM8y3LXlCY76hnbu2sckU3IZtGL68GIQVNJXQTQFbnUvzey6
-         fAn77XZNU6TzNP0ZiEtUkwqh8K4g7iX9/u3lNgCwss7XHuqFUAhlF8JUor6AwbOvdn
-         /lT3mGdBT9SMAEwWz1e5bXYA7TC2yLJlOXvQdbOgr/arcE2h8ABCXYpwLfDfK0Ybtj
-         ANHNPusXX5eJAt39b7SCPCRLHdWxFDgbSJSp2/htQkR6I0zUdbBbGEF1x3miO+JDqY
-         /ZCsjIUri3+yQ==
-Date:   Thu, 2 Dec 2021 06:59:23 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     netdev@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>, davem@davemloft.net,
-        Richard Cochran <richardcochran@gmail.com>,
-        Miroslav Lichvar <mlichvar@redhat.com>
-Subject: Re: [PATCH net-next] bond: pass get_ts_info and SIOC[SG]HWTSTAMP
- ioctl to active device
-Message-ID: <20211202065923.7fc5aa8f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <Yag3yI4cNnUK2Yjy@Laptop-X1>
-References: <20211130070932.1634476-1-liuhangbin@gmail.com>
-        <20211130071956.5ad2c795@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <YacAstl+brTqgAu8@Laptop-X1>
-        <20211201071118.749a3ed4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <Yag3yI4cNnUK2Yjy@Laptop-X1>
+        with ESMTP id S1347390AbhLBPEY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 10:04:24 -0500
+Received: from mail-il1-x130.google.com (mail-il1-x130.google.com [IPv6:2607:f8b0:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADCDFC06174A
+        for <netdev@vger.kernel.org>; Thu,  2 Dec 2021 07:01:01 -0800 (PST)
+Received: by mail-il1-x130.google.com with SMTP id i6so29256141ila.0
+        for <netdev@vger.kernel.org>; Thu, 02 Dec 2021 07:01:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=GHNkghZ/SHmwrMzY7g0MQJmTTVnThVnJgPEL1u34LOU=;
+        b=jSEj79iP+aqL8Y3IFkzmIYzeBVQYDMt941pZhGGfs6J0gS5DgFmTA9oq3EIGd4BO5e
+         Bm+lym4IqAjf7yBYfDpClxPWg2sXR4tT5tXlwsRJrETiPOl7zJoHz5uflTcd3G3UlEQi
+         CpAA3GwlEq22ZA6yNH8Ynl6Ibn1d3o2esPyyzUT6P7cercGXY8XpqW8ZClfbNUbfZYmi
+         EMbLbzmL+QrlJ9hvPg3abaWUw15g9mvnttbwz7Cu5aO+NRzYVue022tNi/NmFo9ZI+7T
+         mR8RCrevapuadvzD6lk8URynwHPn75cgj+6dUt9HIzFQt/MR4Ibx6wAzkesNEfBmIcL7
+         LsdQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=GHNkghZ/SHmwrMzY7g0MQJmTTVnThVnJgPEL1u34LOU=;
+        b=aicvNEeBZ16gZkjz4bA+TVNclcFL181buEsP0M847ZVp60T4s/xjFeFpXsgFQr1zDS
+         8WRY/iwypIACRIt6xLleLiFZqW+TwbMrUm/fo/BBzqaE64DvDrX/DkBfynurDY5U96qU
+         0R7mdrLGXaSQ1I3GWRKDo7ZBWEv9KHjNc3tnXJbagsY9IynlHXv/PN5C4XvFaQ9gBX7b
+         rszUfZEOvvfvu/6bvGDESwBz6dneWkDvK2m47E6sxTKdDEdxrDZ2JO9b6+fDVMDQeJP2
+         0tBJ6VT7+P48KzepKFT6NTKzL07pnpkuD7QD7SThWmGd/L4s2euDIdfJ0zNmwliym9rr
+         A+hg==
+X-Gm-Message-State: AOAM530qwJoMt1tw0YA98prBXbzdlRC++kRKWWfcrmoIpfOwTegGhB51
+        WYBswFtQW2lmYAJY/ozTalyRVG33teMMZWvZMgk=
+X-Google-Smtp-Source: ABdhPJxWwlA+oLnZYhiTa2vvqEzZRxE/NIsPemGlE1wONZvVaiq7xaq3A+vRIGSd9RdVqnYt9Gz1EkcZIUy3d7us5QM=
+X-Received: by 2002:a05:6e02:de3:: with SMTP id m3mr15538986ilj.58.1638457260949;
+ Thu, 02 Dec 2021 07:01:00 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Received: by 2002:a05:6602:1550:0:0:0:0 with HTTP; Thu, 2 Dec 2021 07:01:00
+ -0800 (PST)
+Reply-To: nistelvaraj@gmail.com
+From:   Anitha Selvaraj <joakum11@gmail.com>
+Date:   Thu, 2 Dec 2021 16:01:00 +0100
+Message-ID: <CAOvonVsV7yQZtVWo6B5gG8W2an7C9ouZoWvE++g6Uf=051T_ow@mail.gmail.com>
+Subject: Beloved one in Christ
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2 Dec 2021 11:04:40 +0800 Hangbin Liu wrote:
-> > Yeah, there should be some form of well understood indication in the
-> > uAPI telling the user space daemon that the PHC may get swapped on the
-> > interface, and a reliable notification which indicates PHC change.
-> > There is a number of user space daemons out there, fixing linuxptp does
-> > not mean other user space won't be broken/surprised/angry.  
-> 
-> This is a RFE, I don't think this patch will affect the current user space as
-> the new topology is not supported before. i.e. no user space tool will configure
-> PTP based on bond or vlan over bond. And even the user space use other ways to
-> get bond's active interface, e.g. via netlink message. It still not affected
-> and could keep using the old way. So I think this patch should be safe.
-> 
-> Did I miss any thing?
+-- 
+Dearest one in Christ,
 
-User can point their PTP daemon at any interface. Since bond now
-supports the uAPI the user will be blissfully unaware that their
-configuration will break if failover happens.
+I am Mrs Anitha Selvaraj, I married Mr.Francis Selvaraj, for 19 years
+without a child  and my husband died in 2007. I'm contacting you so
+that you will know my desire to donate the sum of ( 6,500,000 Dollars
+) that I inherited from my late husband to charity, currently the fund
+is still in the bank. Recently, my doctor told me that I have serious
+sickness which is cancer problem and I will not last for the next 2
+months.
 
-We can't expect every user and every PTP daemon to magically understand
-the implicit quirks of the drivers. Quirks which are not even
-documented.
+I want a person  that will use this fund for orphanages, schools,
+churches, widows, propagating the word of God in his country.
+Reply me for more information's,
 
-What I'm saying is that we should have a new bit in the uAPI that
-tells us that the user space can deal with unstable PHC idx and reject
-the request forwarding in bond if that bit is not set. We have a flags
-field in hwtstamp_config which should fit the bill. Make sense?
-
-> > What notification is linuxptp listening on, SETLINK?  
-> 
-> Currently, I send RTM_GETLINK message on bond and listening on
-> RTM_NEWLINK message to get IFLA_LINKINFO info.
-> 
-> But for the new VLAN over bond topology. I haven't figure out a good solution.
-> Maybe I can just check the active interface status. When it get down,
-> do get_ts_info once again to get the new active interface on the VLAN over
-> bond interface. I need some testing.
+Remain blessed
+Your sister in christ
+Mrs. Anitha Selvaraj
