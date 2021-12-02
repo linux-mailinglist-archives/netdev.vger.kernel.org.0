@@ -2,68 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1098C466A7F
-	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 20:34:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 82EBE466A93
+	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 20:42:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357980AbhLBThW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Dec 2021 14:37:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50164 "EHLO
+        id S232756AbhLBTpj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Dec 2021 14:45:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357706AbhLBThV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 14:37:21 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66C38C061757;
-        Thu,  2 Dec 2021 11:33:58 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 01CA1627E8;
-        Thu,  2 Dec 2021 19:33:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 59CCAC00446;
-        Thu,  2 Dec 2021 19:33:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638473637;
-        bh=aX5cHLwYJklM0jbjaAkX3L8eXFwLTVCGnqF7OxJBdcc=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=eXGZCo+tfLE4CfYpkWkOWvIgC3v8eitiAMISLzxxSlmtrV8vPDwey3SlLaTWgPPF8
-         vXknfK1UPmkF/dGlrAOVI2D1faFFvrT2nT+TmOLOQ4zxMp2w+pzzr5/p0Ta3/+kTmI
-         cs5wF1i+bole0t/GQK/aYMFZ0T/2XXxu6pz7F6JX+x5p6ZceTNWTGOywy6QmolqNlV
-         Z6ONwpW41O0LTCg6wI5PywG5l7wS7iPtZCGcxYIU6g98zqkdJ+NCIxkqOtejsv9JI2
-         PBLRcci1o5li/CFv+MPD7/T8O/4zAkohWWWlCWJrKWK4+Ri13c0BcN0BGOC5BamLkQ
-         kjMgDs3oR8EvQ==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 35DFE609E7;
-        Thu,  2 Dec 2021 19:33:57 +0000 (UTC)
-Subject: Re: [GIT PULL] Networking for 5.16-rc4
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20211202155158.791350-1-kuba@kernel.org>
-References: <20211202155158.791350-1-kuba@kernel.org>
-X-PR-Tracked-List-Id: <netdev.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20211202155158.791350-1-kuba@kernel.org>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.16-rc4
-X-PR-Tracked-Commit-Id: 88362ebfd7fb569c78d5cb507aa9d3c8fc203839
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: a51e3ac43ddbad891c2b1a4f3aa52371d6939570
-Message-Id: <163847363716.31731.16344662560558983887.pr-tracker-bot@kernel.org>
-Date:   Thu, 02 Dec 2021 19:33:57 +0000
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     torvalds@linux-foundation.org, kuba@kernel.org,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kvalo@codeaurora.org
+        with ESMTP id S242720AbhLBTpH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 14:45:07 -0500
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42C39C06174A
+        for <netdev@vger.kernel.org>; Thu,  2 Dec 2021 11:41:44 -0800 (PST)
+Received: by mail-pj1-x102d.google.com with SMTP id w33-20020a17090a6ba400b001a722a06212so3723152pjj.0
+        for <netdev@vger.kernel.org>; Thu, 02 Dec 2021 11:41:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=GmCpvTi4+KgCcKBrfAymYCijwgutRdSDGHmxrOe/0Rk=;
+        b=7l1m63AEuMhCUEHQ3xOJfOK0gOMWocEeLXSnslG3wRT1CkEoDZeTL2RsN+detpuzFV
+         AY06DFcqQFTuDA+t8jr7n5RcLJOHI72k4ACIKyVpMka5kcXRDTxjEjkYN2kZvk6UGiEw
+         nAb4BH/qL1NVcrtC7fVrpitmNGOacYvTAAiSPijA6OsonQNCPbr2ZvfnQt8HsehMsYjC
+         /RFd6EUT9CJybJP46popr3jYkj7N7JScSmB46ZQHyRjFUYaXIxThL8ll/jwdKRmtnYn/
+         KxFTbIQYOSzF1edKbscf2yrA2bEhHV8Bq5IiEhogEvjQSexnjgIKXCiRDA8mwdipSY+B
+         PFFQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=GmCpvTi4+KgCcKBrfAymYCijwgutRdSDGHmxrOe/0Rk=;
+        b=GI+iN7S5a+nqwgGo7vLwPqtPgKVqQ5HnqTLwxcJPQ102fse/x0IfCzqBVJgxbDr8RD
+         QTif8bzmeCDIlw0st4yS8Fpl3b5hIryU2WaU13L+lodKlFYdezCEL4RoY9ieABA7MuCP
+         cW932WjZ8EHj5zQFNymCf9KDFix1h22DXqWaIK9Xqc8F+Wd8seszheSskoKi0XQZPzoE
+         dnaiQ4tRNedJ7UlFy7Xyun/VX/2WRYpRHEJXWfbVrkRaqbZJLtbQNmk3ShVYsIuT2Wee
+         W8EOh5v8gst1tFE8v7J4QAV3qqEpOfhcEq0tGQvQgOfwgRDcfzcpnTpHj+VJDCxCgQRX
+         DnMQ==
+X-Gm-Message-State: AOAM5305jr2OGf7Ko9bRqYOopQktCeUGLCQa1T+cJ4nKB6ivm/8G6Ibu
+        9xHYY7fIuX6Yb8YhPEe53FS+q5i7ifXwwQ==
+X-Google-Smtp-Source: ABdhPJzcGokZDB5Bi+9GaW7r0x+vIvuKpeDGCUElU63JD+RBsfakGBKtAmaVvOW5KGcET0hs05ObzQ==
+X-Received: by 2002:a17:90a:b107:: with SMTP id z7mr8156292pjq.104.1638474103782;
+        Thu, 02 Dec 2021 11:41:43 -0800 (PST)
+Received: from hermes.local (204-195-33-123.wavecable.com. [204.195.33.123])
+        by smtp.gmail.com with ESMTPSA id d9sm3682370pjs.2.2021.12.02.11.41.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 Dec 2021 11:41:43 -0800 (PST)
+Date:   Thu, 2 Dec 2021 11:41:41 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Arijit De <arijitde@marvell.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: How to avoid getting ndo_open() immediately after probe
+Message-ID: <20211202114141.35e40115@hermes.local>
+In-Reply-To: <CO6PR18MB4465B4170C7A3B8F6DEFB369D4699@CO6PR18MB4465.namprd18.prod.outlook.com>
+References: <CO6PR18MB4465B4170C7A3B8F6DEFB369D4699@CO6PR18MB4465.namprd18.prod.outlook.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The pull request you sent on Thu,  2 Dec 2021 07:51:58 -0800:
+On Thu, 2 Dec 2021 18:11:30 +0000
+Arijit De <arijitde@marvell.com> wrote:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.16-rc4
+> Hi,
+> 
+> I have handled the probe() and registered the netdev structure using register_netdev().
+> I have observed in other opensource driver(i.e. Intel e1000e driver) that ndo_open() gets called only when we try to bring up the interface (i.e. ifconfig <ip> ifconfig eth0 <ip-addr> netmask <net-mask> up).
+> But in my network driver I am getting ndo_open() call immediately after I handle the probe(). It's a wrong behavior, also my network interface is getting to UP/RUNNING state(as shown below) even without any valid ip address.
+> 
+> enp1s0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+>         ether 00:22:55:33:22:28  txqueuelen 1000  (Ethernet)
+>         RX packets 0  bytes 0 (0.0 B)
+>         RX errors 0  dropped 0  overruns 0  frame 0
+>         TX packets 252  bytes 43066 (43.0 KB)
+>         TX errors 0  dropped 0 overruns 0  carrier 0  collisions
+> 
+> What is the change required in the driver such that my network interface(enp1s0) should be in down state(BROADCAST & MULTICAST only) after probe()
+> and ndo_open() call should happen only when device gets configured?
+> 
+> Thanks
+> Arijit
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/a51e3ac43ddbad891c2b1a4f3aa52371d6939570
+ndo_open gets called when userspace brings the device up.
+Based on the device name, you are running on a distribution which renames
+devices; probably systemd/networkd and it is starting the device.
 
-Thank you!
-
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+You need to change userspace configuration 
