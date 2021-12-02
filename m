@@ -2,80 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E93C8465C5A
-	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 04:00:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5378F465C64
+	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 04:04:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355069AbhLBDD7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Dec 2021 22:03:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49922 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355049AbhLBDDf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 22:03:35 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26CB7C061748;
-        Wed,  1 Dec 2021 19:00:13 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 741B0CE2161;
-        Thu,  2 Dec 2021 03:00:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 9D5D7C53FD0;
-        Thu,  2 Dec 2021 03:00:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638414009;
-        bh=uM3kZTvQUL2wFJbHg4TF3Fza4zm19zNXQ8R8Degy2ww=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=CtQtJ6z2+FsIjz4QXlXaOMKlYUJ1lO4S8wtoKRu5IVW2kg37idr0umeq03IOQH3nr
-         ZNPW84NeGgkZ8FZcH//5Z9dnn6zmiKXdfXoy3JPlvgFVJ1AnWt3WyaX6OHA0MYMVs6
-         y3gGZ4KEI0NKj5WArPmMUpy0ToG6Gq6cczwrSU0tjAO7eQG79bSQ2KCndQzTGKHJbv
-         HcBehcoEFJizYKkXzdoTYKpKLLDpnTGxc40z0G7BwCw0a8cokVsnjLAXEA7XCkrVLV
-         6n1hiyCBuXSOPA4ufdUZII+rfK8hCZ9pkDs5FY2trX4J2SEbG5d3XtNxyuMTVXzL/u
-         gWyXj1LyFtGKw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 8A89A60A59;
-        Thu,  2 Dec 2021 03:00:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: mdio: mscc-miim: Add depend of REGMAP_MMIO on
- MDIO_MSCC_MIIM
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163841400956.24500.13032222988826524797.git-patchwork-notify@kernel.org>
-Date:   Thu, 02 Dec 2021 03:00:09 +0000
-References: <20211130110209.804536-1-dtcccc@linux.alibaba.com>
-In-Reply-To: <20211130110209.804536-1-dtcccc@linux.alibaba.com>
-To:     Tianchen Ding <dtcccc@linux.alibaba.com>
-Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        davem@davemloft.net, kuba@kernel.org,
-        colin.foster@in-advantage.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+        id S232952AbhLBDHB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Dec 2021 22:07:01 -0500
+Received: from out30-132.freemail.mail.aliyun.com ([115.124.30.132]:39114 "EHLO
+        out30-132.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1355118AbhLBDEv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 22:04:51 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0Uz76wRn_1638414085;
+Received: from j63c13417.sqa.eu95.tbsite.net(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0Uz76wRn_1638414085)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 02 Dec 2021 11:01:27 +0800
+From:   Yang Li <yang.lee@linux.alibaba.com>
+To:     davem@davemloft.net
+Cc:     kuba@kernel.org, amitkarwar@gmail.com, ganapathi017@gmail.com,
+        sharvari.harisangam@nxp.com, huxinming820@gmail.com,
+        kvalo@codeaurora.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Yang Li <yang.lee@linux.alibaba.com>
+Subject: [PATCH -next] wireless: Clean up some inconsistent indenting
+Date:   Thu,  2 Dec 2021 11:01:16 +0800
+Message-Id: <1638414076-53227-1-git-send-email-yang.lee@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Eliminate the follow smatch warnings:
 
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+drivers/net/wireless/marvell/mwifiex/pcie.c:3376
+mwifiex_unregister_dev() warn: inconsistent indenting
+drivers/net/wireless/marvell/mwifiex/uap_event.c:285
+mwifiex_process_uap_event() warn: inconsistent indenting
+drivers/net/wireless/marvell/mwifiex/sta_event.c:797
+mwifiex_process_sta_event() warn: inconsistent indenting
 
-On Tue, 30 Nov 2021 19:02:09 +0800 you wrote:
-> There's build error while CONFIG_REGMAP_MMIO is not set
-> and CONFIG_MDIO_MSCC_MIIM=m.
-> 
-> ERROR: modpost: "__devm_regmap_init_mmio_clk"
-> [drivers/net/mdio/mdio-mscc-miim.ko] undefined!
-> 
-> Add the depend of REGMAP_MMIO to fix it.
-> 
-> [...]
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+---
+ drivers/net/wireless/marvell/mwifiex/pcie.c      | 2 +-
+ drivers/net/wireless/marvell/mwifiex/sta_event.c | 2 +-
+ drivers/net/wireless/marvell/mwifiex/uap_event.c | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
 
-Here is the summary with links:
-  - net: mdio: mscc-miim: Add depend of REGMAP_MMIO on MDIO_MSCC_MIIM
-    https://git.kernel.org/netdev/net-next/c/8057cbb8335c
-
-You are awesome, thank you!
+diff --git a/drivers/net/wireless/marvell/mwifiex/pcie.c b/drivers/net/wireless/marvell/mwifiex/pcie.c
+index d5fb294..43bdcbc 100644
+--- a/drivers/net/wireless/marvell/mwifiex/pcie.c
++++ b/drivers/net/wireless/marvell/mwifiex/pcie.c
+@@ -3373,7 +3373,7 @@ static void mwifiex_unregister_dev(struct mwifiex_adapter *adapter)
+ 	} else {
+ 		mwifiex_dbg(adapter, INFO,
+ 			    "%s(): calling free_irq()\n", __func__);
+-	       free_irq(card->dev->irq, &card->share_irq_ctx);
++		free_irq(card->dev->irq, &card->share_irq_ctx);
+ 
+ 		if (card->msi_enable)
+ 			pci_disable_msi(pdev);
+diff --git a/drivers/net/wireless/marvell/mwifiex/sta_event.c b/drivers/net/wireless/marvell/mwifiex/sta_event.c
+index 80e5d44..9a3fbfb 100644
+--- a/drivers/net/wireless/marvell/mwifiex/sta_event.c
++++ b/drivers/net/wireless/marvell/mwifiex/sta_event.c
+@@ -794,7 +794,7 @@ int mwifiex_process_sta_event(struct mwifiex_private *priv)
+ 					 MWIFIEX_TxPD_POWER_MGMT_LAST_PACKET))
+ 						adapter->ps_state =
+ 							PS_STATE_SLEEP;
+-					return 0;
++				return 0;
+ 			}
+ 		}
+ 		adapter->ps_state = PS_STATE_AWAKE;
+diff --git a/drivers/net/wireless/marvell/mwifiex/uap_event.c b/drivers/net/wireless/marvell/mwifiex/uap_event.c
+index 2e25d72..e31de7a 100644
+--- a/drivers/net/wireless/marvell/mwifiex/uap_event.c
++++ b/drivers/net/wireless/marvell/mwifiex/uap_event.c
+@@ -282,7 +282,7 @@ int mwifiex_process_uap_event(struct mwifiex_private *priv)
+ 					 MWIFIEX_TxPD_POWER_MGMT_LAST_PACKET))
+ 						adapter->ps_state =
+ 							PS_STATE_SLEEP;
+-					return 0;
++				return 0;
+ 			}
+ 		}
+ 		adapter->ps_state = PS_STATE_AWAKE;
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+1.8.3.1
 
