@@ -2,72 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9555D466B54
-	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 22:00:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DA03466B56
+	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 22:02:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231682AbhLBVEM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Dec 2021 16:04:12 -0500
-Received: from mga12.intel.com ([192.55.52.136]:23858 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229683AbhLBVEL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 2 Dec 2021 16:04:11 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10186"; a="216854520"
-X-IronPort-AV: E=Sophos;i="5.87,282,1631602800"; 
-   d="scan'208";a="216854520"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Dec 2021 13:00:28 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.87,282,1631602800"; 
-   d="scan'208";a="597312254"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by FMSMGA003.fm.intel.com with ESMTP; 02 Dec 2021 13:00:25 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 22E4D109; Thu,  2 Dec 2021 23:00:31 +0200 (EET)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 1/1] net: dsa: vsc73xxx: Get rid of duplicate of_node assignment
-Date:   Thu,  2 Dec 2021 23:00:29 +0200
-Message-Id: <20211202210029.77466-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.33.0
+        id S233166AbhLBVFt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Dec 2021 16:05:49 -0500
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:10210 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229683AbhLBVFt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 16:05:49 -0500
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 1B2E1mI8022148;
+        Thu, 2 Dec 2021 13:02:23 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=recJJvWfP/eYifLDVR7B6lWTU3vKD0yFANzLAdiWpB0=;
+ b=FFTSw1BlcgkJu4KA/EdlFfHPtNinh6Hp34dVlxf0bly8GcsAR7jdg2EmnomPQGc/2E0L
+ PDStbqiYr2mCQw78JBIcfKsHYBa0Y3gcnpjXR5puKKJtgqybmNvIT5vqq+XFj3wRSazH
+ YzGd5IPOB3sYlV7QeowcY5oKDXX/x3NscyGnC2ux7PMgCMVWlt9HlM1mWqxGhCyCPN9o
+ uGRhBIKageLWror6V8jgwnODMNBtu2ACC49fC33COMRw3WxgQP8g8TtDbIq/+K3Wpwda
+ KQEtnVVjrKFmlFRzwZmB5uLrnkaljsVeTRzpNRT0Bhk+N4Msgp8Giq0Ryq4dULKmJtfQ yA== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3cpr523njd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Thu, 02 Dec 2021 13:02:23 -0800
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 2 Dec
+ 2021 13:02:21 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
+ Transport; Thu, 2 Dec 2021 13:02:21 -0800
+Received: from dut1171.mv.qlogic.com (unknown [10.112.88.18])
+        by maili.marvell.com (Postfix) with ESMTP id 8ECAD3F7090;
+        Thu,  2 Dec 2021 13:02:21 -0800 (PST)
+Received: from dut1171.mv.qlogic.com (localhost [127.0.0.1])
+        by dut1171.mv.qlogic.com (8.14.7/8.14.7) with ESMTP id 1B2L2DnO025567;
+        Thu, 2 Dec 2021 13:02:13 -0800
+Received: (from root@localhost)
+        by dut1171.mv.qlogic.com (8.14.7/8.14.7/Submit) id 1B2L1wAt025566;
+        Thu, 2 Dec 2021 13:01:58 -0800
+From:   Manish Chopra <manishc@marvell.com>
+To:     <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <aelior@marvell.com>,
+        <palok@marvell.com>, <pkushwaha@marvell.com>
+Subject: [PATCH v2 net-next 0/2] qed*: enhancements
+Date:   Thu, 2 Dec 2021 13:01:55 -0800
+Message-ID: <20211202210157.25530-1-manishc@marvell.com>
+X-Mailer: git-send-email 2.12.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-GUID: 5i0yh_Ipx4vi_-cMyayogtakzc4l9N9V
+X-Proofpoint-ORIG-GUID: 5i0yh_Ipx4vi_-cMyayogtakzc4l9N9V
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2021-12-02_14,2021-12-02_01,2021-12-02_01
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-GPIO library does copy the of_node from the parent device of
-the GPIO chip, there is no need to repeat this in the individual
-drivers. Remove assignment here.
+Hello Jakub,
 
-For the details one may look into the of_gpio_dev_init() implementation.
+This series adds below enhancements for qed/qede drivers
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/net/dsa/vitesse-vsc73xx-core.c | 3 ---
- 1 file changed, 3 deletions(-)
+patch 1: Improves tx timeout debug data logs.
+patch 2: Add ESL(Enhanced system lockdown) priv flag cap/status support.
 
-diff --git a/drivers/net/dsa/vitesse-vsc73xx-core.c b/drivers/net/dsa/vitesse-vsc73xx-core.c
-index 4c18f619ec02..ae55167ce0a6 100644
---- a/drivers/net/dsa/vitesse-vsc73xx-core.c
-+++ b/drivers/net/dsa/vitesse-vsc73xx-core.c
-@@ -1122,9 +1122,6 @@ static int vsc73xx_gpio_probe(struct vsc73xx *vsc)
- 	vsc->gc.ngpio = 4;
- 	vsc->gc.owner = THIS_MODULE;
- 	vsc->gc.parent = vsc->dev;
--#if IS_ENABLED(CONFIG_OF_GPIO)
--	vsc->gc.of_node = vsc->dev->of_node;
--#endif
- 	vsc->gc.base = -1;
- 	vsc->gc.get = vsc73xx_gpio_get;
- 	vsc->gc.set = vsc73xx_gpio_set;
+V1->V2: (addressed comments from Jakub)
+----------------------------------------
+
+* Fixed cosmetic issues in both patches
+* Added ESL feature description in patch #2
+
+Please consider applying it to "net-next"
+
+Manish Chopra (2):
+  qed*: enhance tx timeout debug info
+  qed*: esl priv flag support through ethtool
+
+ drivers/net/ethernet/qlogic/qed/qed_int.c     | 22 +++++
+ drivers/net/ethernet/qlogic/qed/qed_int.h     | 13 +++
+ drivers/net/ethernet/qlogic/qed/qed_main.c    | 72 ++++++++++++++-
+ drivers/net/ethernet/qlogic/qed/qed_mcp.c     | 22 +++++
+ drivers/net/ethernet/qlogic/qed/qed_mcp.h     | 22 +++++
+ drivers/net/ethernet/qlogic/qed/qed_mfw_hsi.h |  1 +
+ .../net/ethernet/qlogic/qed/qed_reg_addr.h    |  2 +
+ .../net/ethernet/qlogic/qede/qede_ethtool.c   | 13 +++
+ drivers/net/ethernet/qlogic/qede/qede_main.c  | 91 ++++++++++++++++---
+ include/linux/qed/qed_if.h                    | 14 +++
+ 10 files changed, 256 insertions(+), 16 deletions(-)
+
 -- 
-2.33.0
+2.27.0
 
