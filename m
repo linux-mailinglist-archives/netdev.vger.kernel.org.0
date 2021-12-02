@@ -2,107 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E4C9D466AE8
-	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 21:29:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C1597466AF7
+	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 21:37:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237785AbhLBUcu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Dec 2021 15:32:50 -0500
-Received: from mout.gmx.net ([212.227.15.18]:42781 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233848AbhLBUct (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 2 Dec 2021 15:32:49 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1638476962;
-        bh=ZVWw8lnrOIDf4I/NH+xL0MSPheAEx/mApVEL3wsHvW8=;
-        h=X-UI-Sender-Class:Subject:To:References:From:Date:In-Reply-To;
-        b=BaaPKMbR2c2itzzFX4TSUrGsRxS06oaqqRL30edb+kSSdL+iOKuLYlIDXjkq11ua1
-         9A7FefzW4uo/mX5UVXsXe9ny6UWO6ov/PBnG+2msH074fjwXEqqELkBb7wxcGGCHv6
-         eIJOq4qfVtUlnt381flUFn8U4H+dM4GpVNOryXmE=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.178.59] ([46.223.119.124]) by mail.gmx.net (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MbzuH-1mIzC23BUt-00dY4M; Thu, 02
- Dec 2021 21:29:21 +0100
-Subject: Re: How to avoid getting ndo_open() immediately after probe
-To:     Arijit De <arijitde@marvell.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <CO6PR18MB4465B4170C7A3B8F6DEFB369D4699@CO6PR18MB4465.namprd18.prod.outlook.com>
-From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Message-ID: <83adf5a5-11a2-e778-e455-c570caca7823@gmx.de>
-Date:   Thu, 2 Dec 2021 21:29:21 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1348823AbhLBUlL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Dec 2021 15:41:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36030 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243367AbhLBUlK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 15:41:10 -0500
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D195C06174A
+        for <netdev@vger.kernel.org>; Thu,  2 Dec 2021 12:37:47 -0800 (PST)
+Received: by mail-yb1-xb2e.google.com with SMTP id g17so2889460ybe.13
+        for <netdev@vger.kernel.org>; Thu, 02 Dec 2021 12:37:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=n/uzzDP/KEOZb6z5lQcDqcGP9+OgszyEqZbSzyf61YA=;
+        b=oBI23LCsNi3hsn88gcxRLJPPcXbVbb1MWSl+Nsm6mftaifdwfiMhJRmWi20FqnG2aa
+         RmjhKRiTy5O6/kQ86YmLS9+P+NUW7i0+mdzHwFxWdjBl+/6lYxjVNwBehAJINKkeNJhN
+         UUsLKUvZK1EFrC3uRTX4RjXgAjHXcovbvaB474KnVe7IV4Jo1sQGZxt1xS1vk+bKHUK9
+         qziZbMczXJMWLbKdGgiY1n2Wgqz+uh77LcZrohbMv4U/4wOxdv37JW+LUVAsgxKIZ0aI
+         1h9W2Gn0vmfhcdvRjiDRi91Gp8xKkDlQfCUOEE9GHLw/5jdHbGaXCrTCZbCu0vsEibZ5
+         pv+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=n/uzzDP/KEOZb6z5lQcDqcGP9+OgszyEqZbSzyf61YA=;
+        b=ieD/pV1gl1/enetUfL1YHq7IPXO1Sl7wLNhu1KWA8ptpfXvNzRiIdERLjLrTz2gD2v
+         bUd6hhnX1+OX1yx7hxgOq2K1Ej/Ik9sEv3UBOrYE8Y7csMotJkcgXTjeRkMvIT17K6b8
+         qkajvNuTHke1XOfxLa6InOZ75vKjS4tsSeymNhprNVUWJNMi7PJQM/xInTfFX4o7u01J
+         Y6ZhGFJpjWCdQWCUi4MxBgqN8AiiSyuj01JzIyzqlyi/GLhY8H9pdYbuy6Ynsx9gfWXh
+         gBt3cg8vXKiMlqJziN1+r9ZOYFXMqufRMJmjkchDQoK3x6ZA85N2Lqxd3I+djjA9UVXG
+         ftSA==
+X-Gm-Message-State: AOAM533A0dabJHKzKPF9AQTluitIf4Do4tVsY4wKWLG4mUqI/R9jkq9T
+        ws4cCkEDLCaAv/arslLUvTskGIV0y3SPq53ojknh5qO52wctIQ==
+X-Google-Smtp-Source: ABdhPJxgxHPTwJjoC+sYOh6ONz9LcdiLCKsYjVSb+8uPPDh45Ub7wFeyxH0sphMqDITommqfNCqOTrMOIinx8xt0jOg=
+X-Received: by 2002:a25:760d:: with SMTP id r13mr19153112ybc.296.1638477466349;
+ Thu, 02 Dec 2021 12:37:46 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <CO6PR18MB4465B4170C7A3B8F6DEFB369D4699@CO6PR18MB4465.namprd18.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:eF6RgdqLmOiXhpgOho9ulJle7yhp8IiKSTXH+hWRMhGCOvNmZ82
- CdXCrZ1EtBzX/swa5Ehh2wwZPAC31ZLOrSJpooaRg3o75/pgEvzR/WLSD1t2749WzWqM+jf
- 6M2SuBduw+dEr2ZeVEKEgkeZ0iatPNaH2Ku0Vgn8TAbOgHMxux+qPdFp8BzeXCtC1NaRfSL
- eAEPKSLEeQNbb0ElBSNwA==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:5+W9KLE7gQw=:pKyQOwNmbrcnYLaHBTpxU2
- 6I9Q0ldcJDXEvJ/rJ9gxIhBBY/iwD4eFleOCtL2VclZ0QsMgatxs5zvyJS3ZJeKMifjSryjSR
- n00Ucikpm2Ld7d89tDrbeyWVeMb4gc43fort3nyF57VTt0EvKGojmjxb5cJlX7kJlq1J6fWyd
- 7+M9WGKOw9cCzUrEXDuVfYmUpViNOgb9LFnk+lENGjJPh0SSwhS7zBS7itYQVJMbt53RNTvCk
- Er9jIWF06ZYjbQ7UiSxMiQMRrklpcFZBeH/APLAIddAOIIkbvifdSN3ytvMjNurxSBtBFBaZw
- z4taEYB/CxG/IfOk6nQBwyPPiFhaqlhEO5Zxp/bE0wh4GtycClJJKMUAwP4blfWiBWJfH8+Jy
- f4lYFnUdOCECqYKRNFyevReduVNA3JLDXEv7sIfnHk8evyBQQhnWbnBtjDt+Of+OqQ+f3Ks6n
- kHoNXFd8fDmlXZo7Xh8Jn8/RIPZyRX8TKMQe5W+yG7UPEx79o6gW1iqw65icszRM5YMfQqsZp
- x3LKEDbGGc1DqRgJHj3iQUpsTEPldchj6GEldXYc/MXgta70pbYRUyXUqP+F0q2YulT8Lfw7Z
- iUxqgff2r+kwEq4PHrvJVzZGI/nNEeqE9zsLQFu2YHLRC9PWijWjarl35VhmZ1ltjI/oXpe8f
- L2nDc8ATbVvZ87XMt4JfgduLFDvONSIHwT7vswj2cTFLk7cUVyyQnklvNUsOO2Q2sySjjgyVG
- cBhPBOaT8EGIIxoNhT8qVXnH0VJ8vTVSCB/Nu6ZmRfjsGVf/lh7ZUcAmo7QZdcvbegPf5+fLH
- ReMgfO1TK7cRzFR+uKV6RKaSfrQAiYc0fKUCXMR8wcpDydbIF9tE7yO2dwwyziGZm84mC4IHy
- oSikpmrt+3SYgKtQiJpcLSBY/PPXV9JLmxtEyTEdHmZzlW+ehhx276462NqLSobYcj3MRAyiQ
- pFkINy4Rw+2wXN7dn81ENO1i3R5FO3+5PoB8Vj1YnUoKhWdEA9150KqRK4V5Ql8Yf3cjzsxZT
- mQssR6COCaugxYDfMzRMGQXDZiB6rMTUGLzQsTobId24xIUOXyJv0iOzUp75vENT/EuNtoncx
- 8eNdo4JQqFfm8g=
+References: <20211124202446.2917972-1-eric.dumazet@gmail.com>
+ <20211124202446.2917972-3-eric.dumazet@gmail.com> <20211202131040.rdxzbfwh2slhftg5@skbuf>
+ <CANn89iLW4kwKf0x094epVeCaKhB4GtYgbDwE2=Fp0HnW8UdKzw@mail.gmail.com>
+ <20211202162916.ieb2wn35z5h4aubh@skbuf> <CANn89iJEfDL_3C39Gp9eD=yPDqW4MGcVm7AyUBcTVdakS-X2dg@mail.gmail.com>
+In-Reply-To: <CANn89iJEfDL_3C39Gp9eD=yPDqW4MGcVm7AyUBcTVdakS-X2dg@mail.gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 2 Dec 2021 12:37:35 -0800
+Message-ID: <CANn89iJOH0QtRhDfBzJr3fpJPNCQJhbMqT_8sa+vH_6mmZ7xhw@mail.gmail.com>
+Subject: Re: [PATCH net-next 2/2] net: optimize skb_postpull_rcsum()
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        David Laight <David.Laight@aculab.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-Hi,
-
-On 02.12.21 at 19:11, Arijit De wrote:
-> Hi,
+On Thu, Dec 2, 2021 at 11:32 AM Eric Dumazet <edumazet@google.com> wrote:
 >
-> I have handled the probe() and registered the netdev structure using reg=
-ister_netdev().
-> I have observed in other opensource driver(i.e. Intel e1000e driver) tha=
-t ndo_open() gets called only when we try to bring up the interface (i.e. =
-ifconfig <ip> ifconfig eth0 <ip-addr> netmask <net-mask> up).
-> But in my network driver I am getting ndo_open() call immediately after =
-I handle the probe(). It's a wrong behavior, also my network interface is =
-getting to UP/RUNNING state(as shown below) even without any valid ip addr=
-ess.
-
-There is nothing wrong here. As soon as you register the netdevice with th=
-e kernel it is available
-for userspace and userspace is free to bring it up. This may happen immedi=
-ately after registration,
-so your driver has to be prepared for this.
-Its absolutely fine to bring up a network device without any ip address as=
-signed.
-
-Regards,
-Lino
-
-
+> Thanks Vladimir
 >
-> enp1s0: flags=3D4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
->         ether 00:22:55:33:22:28  txqueuelen 1000  (Ethernet)
->         RX packets 0  bytes 0 (0.0 B)
->         RX errors 0  dropped 0  overruns 0  frame 0
->         TX packets 252  bytes 43066 (43.0 KB)
->         TX errors 0  dropped 0 overruns 0  carrier 0  collisions
+> I think that maybe the issue is that the initial skb->csum is zero,
+> and the csum_parttial(removed_block) is also zero.
 >
-> What is the change required in the driver such that my network interface=
-(enp1s0) should be in down state(BROADCAST & MULTICAST only) after probe()
-> and ndo_open() call should happen only when device gets configured?
+> But the initial skb->csum should not be zero if you have a non " all
+> zero"  frame.
 >
-> Thanks
-> Arijit
->
+> Can you double check this in drivers/net/ethernet/freescale/enetc/enetc.c ?
 
+
+Yes, I am not sure why the csum is inverted in enetc_get_offloads()
+
+Perhaps
+
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc.c
+b/drivers/net/ethernet/freescale/enetc/enetc.c
+index 504e12554079e306e477b9619f272d6e96527377..72524f14cae0093763f8a3f57b1e08e31bc4df1a
+100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc.c
++++ b/drivers/net/ethernet/freescale/enetc/enetc.c
+@@ -986,7 +986,7 @@ static void enetc_get_offloads(struct enetc_bdr *rx_ring,
+        if (rx_ring->ndev->features & NETIF_F_RXCSUM) {
+                u16 inet_csum = le16_to_cpu(rxbd->r.inet_csum);
+
+-               skb->csum = csum_unfold((__force __sum16)~htons(inet_csum));
++               skb->csum = csum_unfold((__force __sum16)htons(inet_csum));
+                skb->ip_summed = CHECKSUM_COMPLETE;
+        }
+
+If this does not work, then maybe :
+
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc.c
+b/drivers/net/ethernet/freescale/enetc/enetc.c
+index 504e12554079e306e477b9619f272d6e96527377..d190faa9a8242f9f3f962dd30b9f4409a83ee697
+100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc.c
++++ b/drivers/net/ethernet/freescale/enetc/enetc.c
+@@ -987,7 +987,8 @@ static void enetc_get_offloads(struct enetc_bdr *rx_ring,
+                u16 inet_csum = le16_to_cpu(rxbd->r.inet_csum);
+
+                skb->csum = csum_unfold((__force __sum16)~htons(inet_csum));
+-               skb->ip_summed = CHECKSUM_COMPLETE;
++               if (likely(skb->csum))
++                       skb->ip_summed = CHECKSUM_COMPLETE;
+        }
+
+        if (le16_to_cpu(rxbd->r.flags) & ENETC_RXBD_FLAG_VLAN) {
