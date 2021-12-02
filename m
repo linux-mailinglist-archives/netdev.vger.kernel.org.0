@@ -2,148 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 627BD466CF6
-	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 23:35:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 91B8D466CF8
+	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 23:35:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377247AbhLBWiC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Dec 2021 17:38:02 -0500
-Received: from mga07.intel.com ([134.134.136.100]:40876 "EHLO mga07.intel.com"
+        id S244131AbhLBWjT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Dec 2021 17:39:19 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:36496 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1377426AbhLBWhq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 2 Dec 2021 17:37:46 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10186"; a="300245957"
-X-IronPort-AV: E=Sophos;i="5.87,282,1631602800"; 
-   d="scan'208";a="300245957"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Dec 2021 14:34:22 -0800
-X-IronPort-AV: E=Sophos;i="5.87,282,1631602800"; 
-   d="scan'208";a="746314689"
-Received: from vcostago-desk1.jf.intel.com (HELO vcostago-desk1) ([10.54.70.10])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Dec 2021 14:34:21 -0800
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     Stefan Dietrich <roots@gmx.de>
-Cc:     kuba@kernel.org, greg@kroah.com, netdev@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org, regressions@lists.linux.dev
-Subject: Re: [PATCH] igc: Avoid possible deadlock during suspend/resume
-In-Reply-To: <5a4b31d43d9bf32e518188f3ef84c433df3a18b1.camel@gmx.de>
-References: <87r1awtdx3.fsf@intel.com>
- <20211201185731.236130-1-vinicius.gomes@intel.com>
- <5a4b31d43d9bf32e518188f3ef84c433df3a18b1.camel@gmx.de>
-Date:   Thu, 02 Dec 2021 14:34:21 -0800
-Message-ID: <87o85yljpu.fsf@intel.com>
+        id S238803AbhLBWjS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 2 Dec 2021 17:39:18 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=E2ZQufWrzofDnKHyWJaWMhk0I2dw6veQFpqqAeuR3aU=; b=H3UxwnBN0uwgzwktnlsfS7LbBo
+        S2wT+IIsPCtthYIJ7YSl4gXn3dzx1s/sOUTe0yXV6K6JeDJkSXYRQs79kbZQM0/XYvAUphEXPWSuL
+        HuHHHMyzoEEEcdHQH54deZqQe/I6HDZRSus1q+32pD+Wi7vSkoD+1dMs/79qnp14LptU=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1msugC-00FMx5-4J; Thu, 02 Dec 2021 23:35:52 +0100
+Date:   Thu, 2 Dec 2021 23:35:52 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Cc:     Arijit De <arijitde@marvell.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: How to avoid getting ndo_open() immediately after probe
+Message-ID: <YalKSIlxgt1utNOk@lunn.ch>
+References: <CO6PR18MB4465B4170C7A3B8F6DEFB369D4699@CO6PR18MB4465.namprd18.prod.outlook.com>
+ <83adf5a5-11a2-e778-e455-c570caca7823@gmx.de>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <83adf5a5-11a2-e778-e455-c570caca7823@gmx.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Stefan,
+On Thu, Dec 02, 2021 at 09:29:21PM +0100, Lino Sanfilippo wrote:
+> 
+> Hi,
+> 
+> On 02.12.21 at 19:11, Arijit De wrote:
+> > Hi,
+> >
+> > I have handled the probe() and registered the netdev structure using register_netdev().
+> > I have observed in other opensource driver(i.e. Intel e1000e driver) that ndo_open() gets called only when we try to bring up the interface (i.e. ifconfig <ip> ifconfig eth0 <ip-addr> netmask <net-mask> up).
+> > But in my network driver I am getting ndo_open() call immediately after I handle the probe(). It's a wrong behavior, also my network interface is getting to UP/RUNNING state(as shown below) even without any valid ip address.
+> 
+> There is nothing wrong here. As soon as you register the netdevice with the kernel it is available
+> for userspace and userspace is free to bring it up. This may happen immediately after registration,
+> so your driver has to be prepared for this.
+> Its absolutely fine to bring up a network device without any ip address assigned.
 
-Stefan Dietrich <roots@gmx.de> writes:
+And if you are using NFS root, the kernel can actually call ndo_open()
+before register_netdev() even completes.
 
-> Hi Vinicius,
->
-> thanks for the patch - unfortunately it did not solve the issue and I
-> am still getting reboots/lockups.
->
+This is a common bug i look for in new drivers, register_netdev()
+pretty much has to be the last thing done inside the probe function.
 
-Thanks for the test. We learned something, not a lot, but something: the
-problem you are facing is PTM related and it's not the same bug as that
-PM deadlock.
-
-I am still trying to understand what's going on.
-
-Are you able to send me the 'dmesg' output for the two kernel configs
-(CONFIG_PCIE_PTM enabled and disabled)? (no need to bring the network
-interface up or down). Your kernel .config would be useful as well.
-
->
-> Cheers,
-> Stefan
->
-> On Wed, 2021-12-01 at 10:57 -0800, Vinicius Costa Gomes wrote:
->> Inspired by:
->> https://bugzilla.kernel.org/show_bug.cgi?id=215129
->>
->> Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
->> ---
->> Just to see if it's indeed the same problem as the bug report above.
->>
->>  drivers/net/ethernet/intel/igc/igc_main.c | 19 +++++++++++++------
->>  1 file changed, 13 insertions(+), 6 deletions(-)
->>
->> diff --git a/drivers/net/ethernet/intel/igc/igc_main.c
->> b/drivers/net/ethernet/intel/igc/igc_main.c
->> index 0e19b4d02e62..c58bf557a2a1 100644
->> --- a/drivers/net/ethernet/intel/igc/igc_main.c
->> +++ b/drivers/net/ethernet/intel/igc/igc_main.c
->> @@ -6619,7 +6619,7 @@ static void igc_deliver_wake_packet(struct
->> net_device *netdev)
->>  	netif_rx(skb);
->>  }
->>
->> -static int __maybe_unused igc_resume(struct device *dev)
->> +static int __maybe_unused __igc_resume(struct device *dev, bool rpm)
->>  {
->>  	struct pci_dev *pdev = to_pci_dev(dev);
->>  	struct net_device *netdev = pci_get_drvdata(pdev);
->> @@ -6661,20 +6661,27 @@ static int __maybe_unused igc_resume(struct
->> device *dev)
->>
->>  	wr32(IGC_WUS, ~0);
->>
->> -	rtnl_lock();
->> +	if (!rpm)
->> +		rtnl_lock();
->>  	if (!err && netif_running(netdev))
->>  		err = __igc_open(netdev, true);
->>
->>  	if (!err)
->>  		netif_device_attach(netdev);
->> -	rtnl_unlock();
->> +	if (!rpm)
->> +		rtnl_unlock();
->>
->>  	return err;
->>  }
->>
->>  static int __maybe_unused igc_runtime_resume(struct device *dev)
->>  {
->> -	return igc_resume(dev);
->> +	return __igc_resume(dev, true);
->> +}
->> +
->> +static int __maybe_unused igc_resume(struct device *dev)
->> +{
->> +	return __igc_resume(dev, false);
->>  }
->>
->>  static int __maybe_unused igc_suspend(struct device *dev)
->> @@ -6738,7 +6745,7 @@ static pci_ers_result_t
->> igc_io_error_detected(struct pci_dev *pdev,
->>   *  @pdev: Pointer to PCI device
->>   *
->>   *  Restart the card from scratch, as if from a cold-boot.
->> Implementation
->> - *  resembles the first-half of the igc_resume routine.
->> + *  resembles the first-half of the __igc_resume routine.
->>   **/
->>  static pci_ers_result_t igc_io_slot_reset(struct pci_dev *pdev)
->>  {
->> @@ -6777,7 +6784,7 @@ static pci_ers_result_t
->> igc_io_slot_reset(struct pci_dev *pdev)
->>   *
->>   *  This callback is called when the error recovery driver tells us
->> that
->>   *  its OK to resume normal operation. Implementation resembles the
->> - *  second-half of the igc_resume routine.
->> + *  second-half of the __igc_resume routine.
->>   */
->>  static void igc_io_resume(struct pci_dev *pdev)
->>  {
->
-
-
-Cheers,
--- 
-Vinicius
+       Andrew
