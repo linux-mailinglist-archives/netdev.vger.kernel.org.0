@@ -2,162 +2,296 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 40C8E46684C
-	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 17:29:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E41A46686F
+	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 17:35:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232491AbhLBQco (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Dec 2021 11:32:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36564 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231298AbhLBQcm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 11:32:42 -0500
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A136FC06174A
-        for <netdev@vger.kernel.org>; Thu,  2 Dec 2021 08:29:19 -0800 (PST)
-Received: by mail-ed1-x534.google.com with SMTP id z5so396670edd.3
-        for <netdev@vger.kernel.org>; Thu, 02 Dec 2021 08:29:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=I+H3YCtL9ETdNmFvyRoNMrbLNLft8EXwdUiAQTkOXII=;
-        b=gF9bWoEni/1qv8TSGh0LYMC+G33OSajbnaZaAAgB3bDVhelxYC3Qdh3O+ZXKxyPyxF
-         sI7IPCmqAau8mic34PhYo9xB/hv/viNkMtQPB6l1smY7Z2cK7rOvf35fjIZN2Px78zgp
-         lNyHizxW+nHxgIUddFLdM7HLOvzvZEULoO+hQ2fCowOuPJ4gW2sFCvn/VsGJss28Hmvc
-         BYkccbJMkeDYI3RVJVUzlsTrH4gD+n76lmKm6MfYcAqdB0QaHYNdWGHFeqd0jR7v6lfc
-         upcFn93gynGeTc0qHi3M5vGsP1FWsfYGm3fPg0W8nYGoUomXnj2SvWv0hHii6wmPdoD9
-         NPfw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=I+H3YCtL9ETdNmFvyRoNMrbLNLft8EXwdUiAQTkOXII=;
-        b=eup2u1kG6CPX+Hk20Ix/H/dOrMGb9VOx2DclnyTmeDBJ8CSfbLW5iQOg2q+qc+Ovxv
-         aCPwwta7ffhcJBqRCiy3HHES6NI4tAgrs/MToaFtALoohmABUOr8KZIoyWd/W7q5lSiW
-         gW0SdMBLEAbAKa8Mo5R/ztQurz4jdRzFQKnVo1X6XffjyKQtKN5XFXxtCUihtD6pWN8X
-         piEE6xNX+sGLTsb70ppVWRGBnWCa+1q1QMFTj0dPpqriNIXBsq9COGqwZZjaTRX64HMV
-         w10beKHY+/cHgLfyJIGBotxf3VWuQilZnrLXdN0XbrZ3jV7V+uWpN4Bfeo6ckqOyLns/
-         Gs2w==
-X-Gm-Message-State: AOAM530jOpz+M5RFboQo8yk+di/KJrvOH+EIKscGUcq2oYaIlT/uFwyv
-        fCjZvmCJo+d8ocWEgdSqv70=
-X-Google-Smtp-Source: ABdhPJxrAiKpS/QzyMXtmj4ic6qTB7EKhGY20FexAE6RP7FPOlqYejw4ptGsLA1N3qhfDgnys2GOlQ==
-X-Received: by 2002:a05:6402:90c:: with SMTP id g12mr19158409edz.36.1638462558084;
-        Thu, 02 Dec 2021 08:29:18 -0800 (PST)
-Received: from skbuf ([188.25.173.50])
-        by smtp.gmail.com with ESMTPSA id e8sm165569edz.73.2021.12.02.08.29.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Dec 2021 08:29:17 -0800 (PST)
-Date:   Thu, 2 Dec 2021 18:29:16 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        David Laight <David.Laight@aculab.com>
-Subject: Re: [PATCH net-next 2/2] net: optimize skb_postpull_rcsum()
-Message-ID: <20211202162916.ieb2wn35z5h4aubh@skbuf>
-References: <20211124202446.2917972-1-eric.dumazet@gmail.com>
- <20211124202446.2917972-3-eric.dumazet@gmail.com>
- <20211202131040.rdxzbfwh2slhftg5@skbuf>
- <CANn89iLW4kwKf0x094epVeCaKhB4GtYgbDwE2=Fp0HnW8UdKzw@mail.gmail.com>
+        id S1359590AbhLBQjM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Dec 2021 11:39:12 -0500
+Received: from new1-smtp.messagingengine.com ([66.111.4.221]:42813 "EHLO
+        new1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S242448AbhLBQjM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 11:39:12 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 57355580341;
+        Thu,  2 Dec 2021 11:35:49 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Thu, 02 Dec 2021 11:35:49 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:content-type
+        :date:from:in-reply-to:message-id:mime-version:references
+        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm1; bh=qO5TWxz0VslvcOPL4PWFP816jxX9utC+/FimQIERU
+        oE=; b=DvpkVY4eNf/ISg9YT7lCd2aobYCRqQiD7VaWgVEwTOrDLgJg/RsCVl9kR
+        sgb2lmGWZIWsU8WfQnCJFATzzzT7Mu5CgGSonU7A561T7ib5noFGuAsTzmJl8kJL
+        qpvdIv0prOhQ+6yzhnNz0ix7szhlWqY/3eeBNfFc1efjLljZwmuAx22XwnSgLHKl
+        CRsYep934PXyCY7TblM5W1R8yMaFVDTUUIo5xYQY2PYZrJHcUsId8mKQL3M5srHp
+        iT93plcXQd9iwwwOGL3qYCiTwrueTO+L+094r40oN6MHqds9AOMDqkHz4CwQMjO5
+        jhboK8QuzfexHcuXSbeqN4r7tQLlA==
+X-ME-Sender: <xms:5PWoYXaqOPyybGbY5I3Zb_oCog9pe3AhEUUYReJn05L61kdPJwjGMA>
+    <xme:5PWoYWa0BA4bjelgU2Se6lF9SZcP8i9FAowAKxH9MrlBgBl-Xvt0C7VsvuDdQ3ZlM
+    rkIWSkk5LhFl7s>
+X-ME-Received: <xmr:5PWoYZ_LfOu10llXNK7sCW28cLN69Oo7pPcIHvL_YIcLTbMahD6kecWlHzYs-By_NrePUNShOfTG88NbnBh0mkgJGwmzRA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvuddrieehgdeltdcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggugfgjsehtkeertddttdejnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
+    gvrhhnpeefheethffhhfdvueevkeffffefjeejffefuedtfedvgfettdetkedtgfejtdeh
+    udenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivgeptd
+    enucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:5PWoYdr4ikClrFN0UvQNPm_Y5eE5-c5o_3QUTXh3XOSmAARhxRwZ5w>
+    <xmx:5PWoYSqV-wd9DCF_9KQhJGiu1n2SybsYCB0K0-J5BeYIe5IriFRQeQ>
+    <xmx:5PWoYTTbwN3opt7JNHRXOrIpWpeZpa2ES6EcOaAh8C_ZiSQShAYa7g>
+    <xmx:5fWoYfQi1OGKqDll9M4pqZzdy6oYdmikVu9XJEgYTIpX_97nlRzK5Q>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 2 Dec 2021 11:35:47 -0500 (EST)
+Date:   Thu, 2 Dec 2021 18:35:42 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     "Machnikowski, Maciej" <maciej.machnikowski@intel.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>,
+        "richardcochran@gmail.com" <richardcochran@gmail.com>,
+        "abyagowi@fb.com" <abyagowi@fb.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+        "mkubecek@suse.cz" <mkubecek@suse.cz>,
+        "saeed@kernel.org" <saeed@kernel.org>,
+        "michael.chan@broadcom.com" <michael.chan@broadcom.com>,
+        "petrm@nvidia.com" <petrm@nvidia.com>
+Subject: Re: [PATCH v4 net-next 2/4] ethtool: Add ability to configure
+ recovered clock for SyncE feature
+Message-ID: <Yaj13pwDKrG78W5Y@shredder>
+References: <20211201180208.640179-1-maciej.machnikowski@intel.com>
+ <20211201180208.640179-3-maciej.machnikowski@intel.com>
+ <Yai/e5jz3NZAg0pm@shredder>
+ <MW5PR11MB5812455176BC656BABCFF1B0EA699@MW5PR11MB5812.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <CANn89iLW4kwKf0x094epVeCaKhB4GtYgbDwE2=Fp0HnW8UdKzw@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <MW5PR11MB5812455176BC656BABCFF1B0EA699@MW5PR11MB5812.namprd11.prod.outlook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 02, 2021 at 06:51:47AM -0800, Eric Dumazet wrote:
-> Hi Vladimir
-> > I am seeing some errors after this patch, and I am not able to
-> > understand why. Specifically, __skb_gro_checksum_complete() hits this
-> > condition:
+On Thu, Dec 02, 2021 at 03:17:06PM +0000, Machnikowski, Maciej wrote:
+> > -----Original Message-----
+> > From: Ido Schimmel <idosch@idosch.org>
+> > Sent: Thursday, December 2, 2021 1:44 PM
+> > To: Machnikowski, Maciej <maciej.machnikowski@intel.com>
+> > Subject: Re: [PATCH v4 net-next 2/4] ethtool: Add ability to configure
+> > recovered clock for SyncE feature
+> > 
+> > On Wed, Dec 01, 2021 at 07:02:06PM +0100, Maciej Machnikowski wrote:
+> > > +RCLK_GET
+> > > +========
+> > > +
+> > > +Get status of an output pin for PHY recovered frequency clock.
+> > > +
+> > > +Request contents:
+> > > +
+> > > +  ======================================  ======
+> > ==========================
+> > > +  ``ETHTOOL_A_RCLK_HEADER``               nested  request header
+> > > +  ``ETHTOOL_A_RCLK_OUT_PIN_IDX``          u32     index of a pin
+> > > +  ======================================  ======
+> > ==========================
+> > > +
+> > > +Kernel response contents:
+> > > +
+> > > +  ======================================  ======
+> > ==========================
+> > > +  ``ETHTOOL_A_RCLK_OUT_PIN_IDX``          u32     index of a pin
+> > > +  ``ETHTOOL_A_RCLK_PIN_FLAGS``            u32     state of a pin
+> > > +  ``ETHTOOL_A_RCLK_RANGE_MIN_PIN``        u32     min index of RCLK pins
+> > > +  ``ETHTOOL_A_RCLK_RANGE_MAX_PIN``        u32     max index of RCLK
+> > pins
+> > > +  ======================================  ======
+> > ==========================
+> > > +
+> > > +Supported device can have mulitple reference recover clock pins available
+> > 
+> > s/mulitple/multiple/
+> > 
+> > > +to be used as source of frequency for a DPLL.
+> > > +Once a pin on given port is enabled. The PHY recovered frequency is being
+> > > +fed onto that pin, and can be used by DPLL to synchonize with its signal.
+> > 
+> > s/synchonize/synchronize/
+> > 
+> > Please run a spell checker on documentation
+> > 
+> > > +Pins don't have to start with index equal 0 - device can also have different
+> > > +external sources pins.
+> > > +
+> > > +The ``ETHTOOL_A_RCLK_OUT_PIN_IDX`` is optional parameter. If present
+> > in
+> > > +the RCLK_GET request, the ``ETHTOOL_A_RCLK_PIN_ENABLED`` is
+> > provided in a
+> > 
+> > The `ETHTOOL_A_RCLK_PIN_ENABLED` attribute is no where to be found in
+> > this submission
+> > 
+> > > +response, it contatins state of the pin pointed by the index. Values are:
+> > 
+> > s/contatins/contains/
+> > 
+> > > +
+> > > +.. kernel-doc:: include/uapi/linux/ethtool.h
+> > > +    :identifiers: ethtool_rclk_pin_state
+> > 
+> > This structure is also no where to be found
+> > 
+> > > +
+> > > +If ``ETHTOOL_A_RCLK_OUT_PIN_IDX`` is not present in the RCLK_GET
+> > request,
+> > > +the range of available pins is returned:
+> > > +``ETHTOOL_A_RCLK_RANGE_MIN_PIN`` is lowest possible index of a pin
+> > available
+> > > +for recovering frequency from PHY.
+> > > +``ETHTOOL_A_RCLK_RANGE_MAX_PIN`` is highest possible index of a pin
+> > available
+> > > +for recovering frequency from PHY.
+> > > +
+> > > +RCLK_SET
+> > > +==========
+> > > +
+> > > +Set status of an output pin for PHY recovered frequency clock.
+> > > +
+> > > +Request contents:
+> > > +
+> > > +  ======================================  ======
+> > ========================
+> > > +  ``ETHTOOL_A_RCLK_HEADER``               nested  request header
+> > > +  ``ETHTOOL_A_RCLK_OUT_PIN_IDX``          u32     index of a pin
+> > > +  ``ETHTOOL_A_RCLK_PIN_FLAGS``            u32      requested state
+> > > +  ======================================  ======
+> > ========================
+> > > +
+> > > +``ETHTOOL_A_RCLK_OUT_PIN_IDX`` is a index of a pin for which the
+> > change of
+> > > +state is requested. Values of ``ETHTOOL_A_RCLK_PIN_ENABLED`` are:
+> > > +
+> > > +.. kernel-doc:: include/uapi/linux/ethtool.h
+> > > +    :identifiers: ethtool_rclk_pin_state
+> > 
+> > Same.
 > 
-> There were two patches, one for GRO, one for skb_postpull_rcsum()
+> Done - rewritten the manual
 > 
-> I am a bit confused by your report. Which one is causing problems ?
-
-I'm sorry, indeed it seems that I missed to provide that info.
-Anyway, it is the skb_postpull_rcsum() call from the DSA switch driver,
-that I pointed to, which seems to be problematic.
-
-[  754.211845] mscc_felix 0000:00:00.5 swp0: hw csum failure
-[  754.217670] skb len=64 headroom=118 headlen=64 tailroom=1546
-[  754.217670] mac=(84,14) net=(98,20) trans=118
-[  754.217670] shinfo(txflags=0 nr_frags=0 gso(size=0 type=0 segs=0))
-[  754.217670] csum(0x0 ip_summed=2 complete_sw=0 valid=0 level=0)
-[  754.217670] hash(0x0 sw=0 l4=0) proto=0x0800 pkttype=0 iif=9
-[  754.246905] dev name=swp0 feat=0x0x0002000000195829
-[  754.253200] skb headroom: 00000000: ef be ad de ef be ad de ef be ad de ef be ad de
-[  754.261751] skb headroom: 00000010: ef be ad de ef be ad de ef be ad de ef be ad de
-[  754.269444] skb headroom: 00000020: ef be ad de ef be ad de ef be ad de ef be ad de
-[  754.277135] skb headroom: 00000030: ef be ad de ef be ad de ef be ad de ef be ad de
-[  754.284826] skb headroom: 00000040: 88 80 00 0a 00 3e 6b e3 36 a1 01 80 00 00 00 0f
-[  754.292516] skb headroom: 00000050: 00 10 00 00 d2 ee 27 92 2d 6c 6a b6 a6 22 19 47
-[  754.300207] skb headroom: 00000060: 08 00 45 00 00 54 2d 7c 00 00 40 01 03 d9 c0 a8
-[  754.307897] skb headroom: 00000070: 64 02 c0 a8 64 01
-[  754.312971] skb linear:   00000000: 00 00 60 4d 03 af 00 01 77 eb a8 61 00 00 00 00
-[  754.320662] skb linear:   00000010: b6 e2 06 00 00 00 00 00 10 11 12 13 14 15 16 17
-[  754.328352] skb linear:   00000020: 18 19 1a 1b 1c 1d 1e 1f 20 21 22 23 24 25 26 27
-[  754.336042] skb linear:   00000030: 28 29 2a 2b 2c 2d 2e 2f 30 31 32 33 34 35 36 37
-[  754.343732] skb tailroom: 00000000: 00 00 00 00 00 00 00 00 00 00 ef be ad de ef be
-[  754.351423] skb tailroom: 00000010: ad de ef be ad de ef be ad de ef be ad de ef be
-(irrelevant tailroom trimmed)
-[  755.088130] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.16.0-rc3-next-20211202-07010-ga9b9500ffaac-dirty #1531
-[  755.098169] Hardware name: LS1028A RDB Board (DT)
-[  755.102885] Call trace:
-[  755.105333]  dump_backtrace+0x0/0x1ac
-[  755.109016]  show_stack+0x18/0x70
-[  755.112341]  dump_stack_lvl+0x68/0x84
-[  755.116022]  dump_stack+0x18/0x34
-[  755.119345]  netdev_rx_csum_fault+0x60/0x64
-[  755.123549]  __skb_checksum_complete+0x104/0x10c
-[  755.128180]  icmp_rcv+0x9c/0x3f0
-[  755.131421]  ip_protocol_deliver_rcu+0x40/0x220
-[  755.135965]  ip_local_deliver_finish+0x68/0x84
-[  755.140421]  ip_local_deliver+0x7c/0x120
-[  755.144353]  ip_sublist_rcv_finish+0x48/0x70
-[  755.148643]  ip_sublist_rcv+0x168/0x1f0
-[  755.152489]  ip_list_rcv+0xf8/0x1a0
-[  755.155985]  __netif_receive_skb_list_core+0x184/0x214
-[  755.161142]  netif_receive_skb_list_internal+0x180/0x29c
-[  755.166471]  napi_complete_done+0x68/0x1bc
-[  755.170581]  gro_cell_poll+0x80/0xa0
-[  755.174176]  __napi_poll+0x38/0x184
-[  755.177674]  net_rx_action+0xe8/0x280
-[  755.181347]  __do_softirq+0x124/0x2a0
-[  755.185019]  __irq_exit_rcu+0xe4/0x100
-[  755.188782]  irq_exit_rcu+0x10/0x1c
-[  755.192278]  el1_interrupt+0x38/0x84
-[  755.195864]  el1h_64_irq_handler+0x18/0x24
-[  755.199972]  el1h_64_irq+0x78/0x7c
-[  755.203380]  cpuidle_enter_state+0x12c/0x2f0
-[  755.207671]  cpuidle_enter+0x38/0x50
-[  755.211256]  do_idle+0x214/0x29c
-[  755.214495]  cpu_startup_entry+0x24/0x80
-[  755.218428]  rest_init+0xe4/0xf4
-[  755.221664]  arch_call_rest_init+0x10/0x1c
-[  755.225778]  start_kernel+0x628/0x668
-[  755.229450]  __primary_switched+0xc0/0xc8
-
-> > There seems to be a disparity when the skb->csum is calculated by
-> > skb_postpull_rcsum as zero. Before, it was calculated as 0xffff.
+> > Looking at the diagram from the previous submission [1]:
+> > 
+> >       ┌──────────┬──────────┐
+> >       │ RX       │ TX       │
+> >   1   │ ports    │ ports    │ 1
+> >   ───►├─────┐    │          ├─────►
+> >   2   │     │    │          │ 2
+> >   ───►├───┐ │    │          ├─────►
+> >   3   │   │ │    │          │ 3
+> >   ───►├─┐ │ │    │          ├─────►
+> >       │ ▼ ▼ ▼    │          │
+> >       │ ──────   │          │
+> >       │ \____/   │          │
+> >       └──┼──┼────┴──────────┘
+> >         1│ 2│        ▲
+> >  RCLK out│  │        │ TX CLK in
+> >          ▼  ▼        │
+> >        ┌─────────────┴───┐
+> >        │                 │
+> >        │       SEC       │
+> >        │                 │
+> >        └─────────────────┘
+> > 
+> > Given a netdev (1, 2 or 3 in the diagram), the RCLK_SET message allows
+> > me to redirect the frequency recovered from this netdev to the EEC via
+> > either pin 1, pin 2 or both.
+> > 
+> > Given a netdev, the RCLK_GET message allows me to query the range of
+> > pins (RCLK out 1-2 in the diagram) through which the frequency can be
+> > fed into the EEC.
+> > 
+> > Questions:
+> > 
+> > 1. The query for all the above netdevs will return the same range of
+> > pins. How does user space know that these are the same pins? That is,
+> > how does user space know that RCLK_SET message to redirect the frequency
+> > recovered from netdev 1 to pin 1 will be overridden by the same message
+> > but for netdev 2?
 > 
-> skb->csum is 32bit, so there are about 2^16 different values for a
-> given Internet checksum
-
-I meant 0xffffffff, sorry. It is visible in the skb_dump output that it
-was 0xffffffff before and now it is 0.
-
-> > Do you have some suggestions as to what may be wrong? Thanks.
+> We don't have a way to do so right now. When we have EEC subsystem in place
+> the right thing to do will be to add EEC input index and EEC index as additional
+> arguments
 > 
-> What kind of traffic is triggering the fault ? TCP, UDP, something else ?
+> > 2. How does user space know the mapping between a netdev and an EEC?
+> > That is, how does user space know that RCLK_SET message for netdev 1
+> > will cause the Tx frequency of netdev 2 to change according to the
+> > frequency recovered from netdev 1?
+> 
+> Ditto - currently we don't have any entity to link the pins to ATM,
+> but we can address that in userspace just like PTP pins are used now
+> 
+> > 3. If user space sends two RCLK_SET messages to redirect the frequency
+> > recovered from netdev 1 to RCLK out 1 and from netdev 2 to RCLK out 2,
+> > how does it know which recovered frequency is actually used an input to
+> > the EEC?
 
-The simplest to reproduce would be for ICMP. I'm pretty sure I had a
-stack trace with TCP as well, but I don't seem to be able to reproduce
-that right now.
+User space doesn't know this as well?
 
-> Do you have a stack trace to provide, because it is not clear from
-> where the issue is detected.
+> >
+> > 4. Why these pins are represented as attributes of a netdev and not as
+> > attributes of the EEC? That is, why are they represented as output pins
+> > of the PHY as opposed to input pins of the EEC?
+> 
+> They are 2 separate beings. Recovered clock outputs are controlled
+> separately from EEC inputs. 
+
+Separate how? What does it mean that they are controlled separately? In
+which sense? That redirection of recovered frequency to pin is
+controlled via PHY registers whereas priority setting between EEC inputs
+is controlled via EEC registers? If so, this is an implementation detail
+of a specific design. It is not of any importance to user space.
+
+> If we mix them it'll be hard to control everything especially that a
+> single EEC can support multiple devices.
+
+Hard how? Please provide concrete examples.
+
+What do you mean by "multiple devices"? A multi-port adapter with a
+single EEC or something else?
+
+> Also if we make those pins attributes of the EEC it'll become extremally hard
+> to map them to netdevs and control them from the userspace app that will
+> receive the ESMC message with a given QL level on netdev X.
+
+Hard how? What is the problem with something like:
+
+# eec set source 1 type netdev dev swp1
+
+The EEC object should be registered by the same entity that registers
+the netdevs whose Tx frequency is controlled by the EEC, the MAC driver.
+
+>  
+> > 5. What is the problem with the following model?
+> > 
+> > - The EEC is a separate object with following attributes:
+> >   * State: Invalid / Freerun / Locked / etc
+> >   * Sources: Netdev / external / etc
+> >   * Potentially more
+> > 
+> > - Notifications are emitted to user space when the state of the EEC
+> >   changes. Drivers will either poll the state from the device or get
+> >   interrupts
+> > 
+> > - The mapping from netdev to EEC is queried via ethtool
+> 
+> Yep - that will be part of the EEC (DPLL) subsystem
+
+This model avoids all the problems I pointed out in the current
+proposal.
+
+> 
+> > [1] https://lore.kernel.org/netdev/20211110114448.2792314-1-
+> > maciej.machnikowski@intel.com/
