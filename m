@@ -2,46 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 91621465EF9
-	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 08:52:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 42BF0465EFE
+	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 08:54:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345468AbhLBH4T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Dec 2021 02:56:19 -0500
-Received: from smtp23.cstnet.cn ([159.226.251.23]:39492 "EHLO cstnet.cn"
+        id S232923AbhLBH6E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Dec 2021 02:58:04 -0500
+Received: from smtp23.cstnet.cn ([159.226.251.23]:39800 "EHLO cstnet.cn"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1355952AbhLBHz7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 2 Dec 2021 02:55:59 -0500
+        id S230274AbhLBH6D (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 2 Dec 2021 02:58:03 -0500
 Received: from localhost.localdomain (unknown [124.16.141.244])
-        by APP-03 (Coremail) with SMTP id rQCowABHYJIoe6hhZk7eAA--.65530S2;
-        Thu, 02 Dec 2021 15:52:10 +0800 (CST)
+        by APP-03 (Coremail) with SMTP id rQCowAA3UJKre6hh6VfeAA--.64066S2;
+        Thu, 02 Dec 2021 15:54:20 +0800 (CST)
 From:   Xu Wang <vulab@iscas.ac.cn>
-To:     pshelar@ovn.org, davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, dev@openvswitch.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] net: openvswitch: Remove redundant if statements
-Date:   Thu,  2 Dec 2021 07:51:48 +0000
-Message-Id: <20211202075148.34136-1-vulab@iscas.ac.cn>
+To:     davem@davemloft.net, zkuba@kernel.org, trix@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] ipvlan: Remove redundant if statements
+Date:   Thu,  2 Dec 2021 07:53:59 +0000
+Message-Id: <20211202075359.34291-1-vulab@iscas.ac.cn>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: rQCowABHYJIoe6hhZk7eAA--.65530S2
-X-Coremail-Antispam: 1UD129KBjvdXoWruw43WF4fGF17Wr18Kr1Utrb_yoWxtrgE9a
-        n2yF4kXr45AF1jkr4UCF45Zrn2qr47Jr4Ivr17XF43Ja4UX39xXrW8Ww17uryUWF4Uury7
-        X3Z7XrW3KF47ujkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUb28YjsxI4VWkCwAYFVCjjxCrM7AC8VAFwI0_Jr0_Gr1l1xkIjI8I
-        6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM2
-        8CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW8JVW5JwA2z4x0Y4vE2Ix0
-        cI8IcVCY1x0267AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIE14v26F4UJVW0owA2z4x0Y4vEx4
-        A2jsIEc7CjxVAFwI0_Cr1j6rxdM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI
-        64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r106r15McIj6I8E87Iv67AKxVWUJVW8Jw
-        Am72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lc2xSY4AK67AK6r4xMxAIw28I
-        cxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2
-        IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWUtwCIc40Y0x0EwIxGrwCI
-        42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJVW8JwCI42
-        IY6xAIw20EY4v20xvaj40_WFyUJVCq3wCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E
-        87Iv6xkF7I0E14v26r1j6r4UYxBIdaVFxhVjvjDU0xZFpf9x07jePfQUUUUU=
+X-CM-TRANSID: rQCowAA3UJKre6hh6VfeAA--.64066S2
+X-Coremail-Antispam: 1UD129KBjvJXoWruw47uFyfKr4UAw4xAFW5ZFb_yoW8JrWrpr
+        4DtFy8CF4xKa1kJ34rAa1xXFy3K3Z7try2k3yDC3s5X3s5JF1jkFyjyF9rZF40qr45KF4a
+        vF1Syry7G3W5JrUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUk2b7Iv0xC_KF4lb4IE77IF4wAFF20E14v26r1j6r4UM7CY07I2
+        0VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rw
+        A2F7IY1VAKz4vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Gr0_Xr1l84ACjcxK6xII
+        jxv20xvEc7CjxVAFwI0_Gr0_Cr1l84ACjcxK6I8E87Iv67AKxVWxJr0_GcWl84ACjcxK6I
+        8E87Iv6xkF7I0E14v26F4UJVW0owAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC
+        0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUXVWUAwAv7VC2z280aVAFwI0_Jr0_Gr
+        1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI48JMxkIecxEwVAFwVW8CwCF04k2
+        0xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI
+        8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_JF0_Jw1lIxkGc2Ij64vIr41l
+        IxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIx
+        AIcVCF04k26cxKx2IYs7xG6Fyj6rWUJwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E
+        87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjxUcG-eUUUUU
 X-Originating-IP: [124.16.141.244]
-X-CM-SenderInfo: pyxotu46lvutnvoduhdfq/1tbiBgkDA10TfzmcDgAAsV
+X-CM-SenderInfo: pyxotu46lvutnvoduhdfq/1tbiCQgDA102awiHrwAAsh
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -51,23 +50,38 @@ redundant if statements.
 
 Signed-off-by: Xu Wang <vulab@iscas.ac.cn>
 ---
- net/openvswitch/vport-netdev.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/ipvlan/ipvlan_core.c | 3 +--
+ drivers/net/ipvlan/ipvlan_main.c | 3 +--
+ 2 files changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/net/openvswitch/vport-netdev.c b/net/openvswitch/vport-netdev.c
-index 8e1a88f13622..c1ad6699b1f8 100644
---- a/net/openvswitch/vport-netdev.c
-+++ b/net/openvswitch/vport-netdev.c
-@@ -137,8 +137,7 @@ static void vport_netdev_free(struct rcu_head *rcu)
- {
- 	struct vport *vport = container_of(rcu, struct vport, rcu);
- 
--	if (vport->dev)
--		dev_put(vport->dev);
-+	dev_put(vport->dev);
- 	ovs_vport_free(vport);
+diff --git a/drivers/net/ipvlan/ipvlan_core.c b/drivers/net/ipvlan/ipvlan_core.c
+index 6cd50106e611..c613900c3811 100644
+--- a/drivers/net/ipvlan/ipvlan_core.c
++++ b/drivers/net/ipvlan/ipvlan_core.c
+@@ -291,8 +291,7 @@ void ipvlan_process_multicast(struct work_struct *work)
+ 			else
+ 				kfree_skb(skb);
+ 		}
+-		if (dev)
+-			dev_put(dev);
++		dev_put(dev);
+ 		cond_resched();
+ 	}
  }
- 
+diff --git a/drivers/net/ipvlan/ipvlan_main.c b/drivers/net/ipvlan/ipvlan_main.c
+index 1d2f4e7d7324..e90518952db9 100644
+--- a/drivers/net/ipvlan/ipvlan_main.c
++++ b/drivers/net/ipvlan/ipvlan_main.c
+@@ -100,8 +100,7 @@ static void ipvlan_port_destroy(struct net_device *dev)
+ 	netdev_rx_handler_unregister(dev);
+ 	cancel_work_sync(&port->wq);
+ 	while ((skb = __skb_dequeue(&port->backlog)) != NULL) {
+-		if (skb->dev)
+-			dev_put(skb->dev);
++		dev_put(skb->dev);
+ 		kfree_skb(skb);
+ 	}
+ 	ida_destroy(&port->ida);
 -- 
 2.25.1
 
