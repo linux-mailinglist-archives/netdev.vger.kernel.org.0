@@ -2,100 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB5EE466D1D
-	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 23:42:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A2AF466D1F
+	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 23:42:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377435AbhLBWpq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Dec 2021 17:45:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36044 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377333AbhLBWpp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 17:45:45 -0500
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C894CC06174A
-        for <netdev@vger.kernel.org>; Thu,  2 Dec 2021 14:42:22 -0800 (PST)
-Received: by mail-pf1-x434.google.com with SMTP id z6so976340pfe.7
-        for <netdev@vger.kernel.org>; Thu, 02 Dec 2021 14:42:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ZqLCHCq3ElFYJfr/YjWjRUYKiB+GTa+FYdLrZR8qFYg=;
-        b=hdzyyrudf97FMGw5mkuyGqPS+cp1uh089FzGrrb8mV9NWu9egjALT3iNsxclroElSr
-         LFPlJ2CMfopXw1S7dY5sOpljyK5gdCNajBHw89LbQc71A6MNdCNDz8jfspd25w5wrabI
-         4I0Lk26K0c/PWG6rUuHU+pjF5+MdrI25KV9DHG4rvNo5DXFBwTzYWR1PTtjguhSTS825
-         pAzpHPeaYN/nSzuGah/hNLV19iBTgA518LwXtzBpf1fbdekhCzUgz2Znqp+iV8UEM1hZ
-         rvanIxipcE9WNPig6oLVmK2wUNAUtv4V/95H3lwhTmO56V5lFQvZIYJpbzL5zVbkBs3a
-         ez2w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ZqLCHCq3ElFYJfr/YjWjRUYKiB+GTa+FYdLrZR8qFYg=;
-        b=0oPK8+N5b6CClPEuDkcrTz6nzMHduoLV3vnM3s+NckAPxiM7GSRrBXXf8NYxT6cvAT
-         OkTYq1T4CCAUEYQlwmKJmGJrLLtgxOVqxdLovZqhQw/r4YPbfEOs8yAF40zb/N0EJGJs
-         tZRtawOXE32Dk+FyYwyHcqlvXs3UZyS6/6AZvM1L9bJ4mkxJM/8FIe09/b9H29RQdj0X
-         BtTqjJaJACBd4ub0IgJVZSCbNzFielCzhCtLkos26L/I5v260gdqG5J6ddVyme7lHgM9
-         FhbLpBpM2wg+wfMlGr5us5DwZ8ee1Frp4DD00re3IV/WcZvveOsn/XcEVkvusGtsK43+
-         dgtg==
-X-Gm-Message-State: AOAM531Lu8YxghVd95PI6AwoqI7lJSyn9wstHDLhkUSdEeIp9AZYPAex
-        QEhI+wgF7muFvF4tRMsppuE=
-X-Google-Smtp-Source: ABdhPJzs6lV5W5GNuSbpuxau2RC1vGkPtBp7hFa78pEjzhmJPrEBjZCATGbraNndLDyzmhsxYqGmNA==
-X-Received: by 2002:a05:6a00:2387:b0:49f:af00:d5d0 with SMTP id f7-20020a056a00238700b0049faf00d5d0mr15597565pfc.1.1638484942406;
-        Thu, 02 Dec 2021 14:42:22 -0800 (PST)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:6c4b:c5cb:ac63:1ebf])
-        by smtp.gmail.com with ESMTPSA id d15sm760560pfl.126.2021.12.02.14.42.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Dec 2021 14:42:21 -0800 (PST)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Tariq Toukan <tariqt@nvidia.com>
-Subject: [PATCH net] inet: use #ifdef CONFIG_SOCK_RX_QUEUE_MAPPING consistently
-Date:   Thu,  2 Dec 2021 14:42:18 -0800
-Message-Id: <20211202224218.269441-1-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.34.1.400.ga245620fadb-goog
+        id S1377454AbhLBWqJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Dec 2021 17:46:09 -0500
+Received: from mga04.intel.com ([192.55.52.120]:51276 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1377333AbhLBWqJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 2 Dec 2021 17:46:09 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10186"; a="235595164"
+X-IronPort-AV: E=Sophos;i="5.87,283,1631602800"; 
+   d="scan'208";a="235595164"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Dec 2021 14:42:45 -0800
+X-IronPort-AV: E=Sophos;i="5.87,283,1631602800"; 
+   d="scan'208";a="541405470"
+Received: from rmarti10-mobl2.amr.corp.intel.com (HELO [10.209.114.198]) ([10.209.114.198])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Dec 2021 14:42:44 -0800
+Message-ID: <7ed54978-5a64-f932-e1dc-dd8b47b67d63@linux.intel.com>
+Date:   Thu, 2 Dec 2021 14:42:44 -0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.2
+Subject: Re: [PATCH v2 03/14] net: wwan: t7xx: Add core components
+Content-Language: en-US
+To:     Sergey Ryazanov <ryazanov.s.a@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        M Chetan Kumar <m.chetan.kumar@intel.com>,
+        chandrashekar.devegowda@intel.com,
+        Intel Corporation <linuxwwan@intel.com>,
+        chiranjeevi.rapolu@linux.intel.com, haijun.liu@mediatek.com,
+        amir.hanania@intel.com,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        dinesh.sharma@intel.com, eliot.lee@intel.com,
+        mika.westerberg@linux.intel.com, moises.veleta@intel.com,
+        pierre-louis.bossart@intel.com, muralidharan.sethuraman@intel.com,
+        Soumya.Prakash.Mishra@intel.com, sreehari.kancharla@intel.com,
+        suresh.nagaraj@intel.com
+References: <20211101035635.26999-1-ricardo.martinez@linux.intel.com>
+ <20211101035635.26999-4-ricardo.martinez@linux.intel.com>
+ <CAHNKnsTd0-AwXwmPmXy_oKjYJA5vGDHo7VJbn5NqTngmhSpmfw@mail.gmail.com>
+From:   "Martinez, Ricardo" <ricardo.martinez@linux.intel.com>
+In-Reply-To: <CAHNKnsTd0-AwXwmPmXy_oKjYJA5vGDHo7VJbn5NqTngmhSpmfw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
 
-Since commit 4e1beecc3b58 ("net/sock: Add kernel config
-SOCK_RX_QUEUE_MAPPING"),
-sk_rx_queue_mapping access is guarded by CONFIG_SOCK_RX_QUEUE_MAPPING.
+On 11/6/2021 11:05 AM, Sergey Ryazanov wrote:
+> On Mon, Nov 1, 2021 at 6:57 AM Ricardo Martinez
+> <ricardo.martinez@linux.intel.com> wrote:
+>> Registers the t7xx device driver with the kernel. Setup all the core
+>> components: PCIe layer, Modem Host Cross Core Interface (MHCCIF),
+>> modem control operations, modem state machine, and build
+>> infrastructure.
+>>
+>> * PCIe layer code implements driver probe and removal.
+>> * MHCCIF provides interrupt channels to communicate events
+>>    such as handshake, PM and port enumeration.
+>> * Modem control implements the entry point for modem init,
+>>    reset and exit.
+>> * The modem status monitor is a state machine used by modem control
+>>    to complete initialization and stop. It is used also to propagate
+>>    exception events reported by other components.
+> [skipped]
+>
+>>   drivers/net/wwan/t7xx/t7xx_monitor.h       | 144 +++++
+>> ...
+>>   drivers/net/wwan/t7xx/t7xx_state_monitor.c | 598 +++++++++++++++++++++
+> Out of curiosity, why is this file called t7xx_state_monitor.c, while
+> the corresponding header file is called simply t7xx_monitor.h? Are any
+> other monitors planed?
+>
+> [skipped]
 
-Fixes: 54b92e841937 ("tcp: Migrate TCP_ESTABLISHED/TCP_SYN_RECV sockets in accept queues.")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Martin KaFai Lau <kafai@fb.com>
-Cc: Tariq Toukan <tariqt@nvidia.com>
----
- net/ipv4/inet_connection_sock.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+No other monitors, I'll rename it to make it consistent.
 
-diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
-index f7fea3a7c5e64b92ca9c6b56293628923649e58c..62a67fdc344cd21505a84c905c1e2c05cc0ff866 100644
---- a/net/ipv4/inet_connection_sock.c
-+++ b/net/ipv4/inet_connection_sock.c
-@@ -721,7 +721,7 @@ static struct request_sock *inet_reqsk_clone(struct request_sock *req,
- 
- 	sk_node_init(&nreq_sk->sk_node);
- 	nreq_sk->sk_tx_queue_mapping = req_sk->sk_tx_queue_mapping;
--#ifdef CONFIG_XPS
-+#ifdef CONFIG_SOCK_RX_QUEUE_MAPPING
- 	nreq_sk->sk_rx_queue_mapping = req_sk->sk_rx_queue_mapping;
- #endif
- 	nreq_sk->sk_incoming_cpu = req_sk->sk_incoming_cpu;
--- 
-2.34.1.400.ga245620fadb-goog
+[skipped]
+
+>
+>> diff --git a/drivers/net/wwan/t7xx/t7xx_skb_util.c b/drivers/net/wwan/t7xx/t7xx_skb_util.c
+>> ...
+>> +static struct sk_buff *alloc_skb_from_pool(struct skb_pools *pools, size_t size)
+>> +{
+>> +       if (size > MTK_SKB_4K)
+>> +               return ccci_skb_dequeue(pools->reload_work_queue, &pools->skb_pool_64k);
+>> +       else if (size > MTK_SKB_16)
+>> +               return ccci_skb_dequeue(pools->reload_work_queue, &pools->skb_pool_4k);
+>> +       else if (size > 0)
+>> +               return ccci_skb_dequeue(pools->reload_work_queue, &pools->skb_pool_16);
+>> +
+>> +       return NULL;
+>> +}
+>> +
+>> +static struct sk_buff *alloc_skb_from_kernel(size_t size, gfp_t gfp_mask)
+>> +{
+>> +       if (size > MTK_SKB_4K)
+>> +               return __dev_alloc_skb(MTK_SKB_64K, gfp_mask);
+>> +       else if (size > MTK_SKB_1_5K)
+>> +               return __dev_alloc_skb(MTK_SKB_4K, gfp_mask);
+>> +       else if (size > MTK_SKB_16)
+>> +               return __dev_alloc_skb(MTK_SKB_1_5K, gfp_mask);
+>> +       else if (size > 0)
+>> +               return __dev_alloc_skb(MTK_SKB_16, gfp_mask);
+>> +
+>> +       return NULL;
+>> +}
+> I am wondering what performance gains have you achieved with these skb
+> pools? Can we see any numbers?
+>
+> I do not think the control path performance is worth the complexity of
+> the multilayer skb allocation. In the data packet Rx path, you need to
+> allocate skb anyway as soon as the driver passes them to the stack. So
+> what is the gain?
+>
+> [skipped]
+
+Agree, we are removing the skb pools for the control path.
+
+Regarding Rx data path, we'll get some numbers to see if the pool is 
+worth it,
+
+otherwise remove it too.
+
+[skipped]
+
 
