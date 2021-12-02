@@ -2,104 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B7CE465D67
-	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 05:29:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 72FE8465D9B
+	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 05:50:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355335AbhLBEcd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Dec 2021 23:32:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41542 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344863AbhLBEcc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 23:32:32 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DD81C061574;
-        Wed,  1 Dec 2021 20:29:10 -0800 (PST)
-Received: from mail.kernel.org (unknown [198.145.29.99])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 44E74B8214E;
-        Thu,  2 Dec 2021 04:29:09 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3531D60E0B;
-        Thu,  2 Dec 2021 04:29:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1638419347;
-        bh=/Avwtz+hyAMoKucKqNis+tKLK0MEdhOVdr1B0uiyAy0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Aea2wso8gFOcCnWcSUUXbz2cdA9ahhoAHGkCMgws6l3vbOedtiIRehS9E8VAcUAhZ
-         zJQ2WHZLwTKSR6G6dVSEgjv8d6yhjzJc9ZPHU58JYEVulTwO5eK9XY3C6qpHSBmZgP
-         ln3T9NVPm+VvUhKlhyvG6A0QWqhU734VXMGTKAME=
-Date:   Wed, 1 Dec 2021 20:29:05 -0800
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     Bixuan Cui <cuibixuan@linux.alibaba.com>
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        torvalds@linux-foundation.org, leon@kernel.org, w@1wt.eu,
-        keescook@chromium.org, bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Kicinski <kuba@kernel.org>, kvm@vger.kernel.org,
-        netfilter-devel@vger.kernel.org
-Subject: Re: [PATCH -next] mm: delete oversized WARN_ON() in kvmalloc()
- calls
-Message-Id: <20211201202905.b9892171e3f5b9a60f9da251@linux-foundation.org>
-In-Reply-To: <10cb0382-012b-5012-b664-c29461ce4de8@linux.alibaba.com>
-References: <1638410784-48646-1-git-send-email-cuibixuan@linux.alibaba.com>
-        <20211201192643.ecb0586e0d53bf8454c93669@linux-foundation.org>
-        <10cb0382-012b-5012-b664-c29461ce4de8@linux.alibaba.com>
-X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.31; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        id S1345100AbhLBExw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Dec 2021 23:53:52 -0500
+Received: from o1.ptr2625.egauge.net ([167.89.112.53]:39468 "EHLO
+        o1.ptr2625.egauge.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345191AbhLBExp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 23:53:45 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=egauge.net;
+        h=from:subject:mime-version:to:cc:content-transfer-encoding:
+        content-type;
+        s=sgd; bh=V+rt97Ma1A4UbCvm3uO5ua9m0ulcAqxqdZw+J3rZCwI=;
+        b=Lx8UIrjFU4IGIZkzFgTI7JUosgizwYqwCIPY/nVYepOMj5dLL1LoPgnqbOiejr78zR6k
+        xhg9ICeX6CEWjSDYHIp2ms5Gc4hCTdCrbQJwsn+8GBoC4L7lfbUuz8OVvW2RpKeGjZl+dJ
+        YqkiHGSzzLLy8nIRwUGp/2zuFnNEVndy5iacyXJhM6Y/IZmJ/Yx5+3WZ+cvfSOkspQSHLL
+        spvX0BcvNfrzC0QEY12kHNSApG+JMVZuPjtXmZB50o1din512B9i8Ld2O2WhsaUM6QBzmi
+        u9AHxjivNs0okSgFWBcDRcIo2kJ8VFo7bIFj3Bb9VE3T4OB+obCqgMWLkQ8n2sKA==
+Received: by filterdrecv-64fcb979b9-ds7qn with SMTP id filterdrecv-64fcb979b9-ds7qn-1-61A85080-1A
+        2021-12-02 04:50:09.051111042 +0000 UTC m=+6843203.979711569
+Received: from pearl.egauge.net (unknown)
+        by geopod-ismtpd-6-0 (SG)
+        with ESMTP
+        id Zn13KC9PRh2A2BycfNBQfA
+        Thu, 02 Dec 2021 04:50:08.802 +0000 (UTC)
+Received: by pearl.egauge.net (Postfix, from userid 1000)
+        id 777B9700280; Wed,  1 Dec 2021 21:50:06 -0700 (MST)
+From:   David Mosberger-Tang <davidm@egauge.net>
+Subject: [PATCH] wilc1000: Add id_table to spi_driver
+Date:   Thu, 02 Dec 2021 04:50:09 +0000 (UTC)
+Message-Id: <20211202045001.2901903-1-davidm@egauge.net>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+X-SG-EID: =?us-ascii?Q?+kMxBqj35EdRUKoy8diX1j4AXmPtd302oan+iXZuF8m2Nw4HRW2irNspffT=2Fkh?=
+ =?us-ascii?Q?ET6RJF6+Prbl0h=2FEtF1rRLvFUO26UYtrY3fq4tZ?=
+ =?us-ascii?Q?RSGLd0N8Ue0pAwWsK8z9wfwxmsh=2FJiH7coen+AR?=
+ =?us-ascii?Q?S72BgC5KehvSCik7mvkEZyg3FXMvoohsqIdIQRL?=
+ =?us-ascii?Q?oENyWtpyj49KqLJalOMcsOdSlhK216AV192vV18?=
+ =?us-ascii?Q?JJKkVQSS0TdKX53Y8AqSCVLB4=2FRU3ZAC23w+mR?=
+To:     Ajay Singh <ajay.kathat@microchip.com>
+Cc:     Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        David Mosberger-Tang <davidm@egauge.net>
+X-Entity-ID: Xg4JGAcGrJFIz2kDG9eoaQ==
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2 Dec 2021 12:05:15 +0800 Bixuan Cui <cuibixuan@linux.alibaba.com> wrote:
+This eliminates warning message:
 
-> 
-> 在 2021/12/2 上午11:26, Andrew Morton 写道:
-> >> Delete the WARN_ON() and return NULL directly for oversized parameter
-> >> in kvmalloc() calls.
-> >> Also add unlikely().
-> >>
-> >> Fixes: 7661809d493b ("mm: don't allow oversized kvmalloc() calls")
-> >> Signed-off-by: Bixuan Cui<cuibixuan@linux.alibaba.com>
-> >> ---
-> >> There are a lot of oversize warnings and patches about kvmalloc() calls
-> >> recently. Maybe these warnings are not very necessary.
-> > Or maybe they are.  Please let's take a look at these warnings, one at
-> > a time.  If a large number of them are bogus then sure, let's disable
-> > the runtime test.  But perhaps it's the case that calling code has
-> > genuine issues and should be repaired.
-> Such as：
+	SPI driver WILC_SPI has no spi_device_id for microchip,wilc1000
 
-Thanks, that's helpful.
+and makes device-tree autoloading work.
 
-Let's bring all these to the attention of the relevant developers.
+Signed-off-by: David Mosberger-Tang <davidm@egauge.net>
+---
+ drivers/net/wireless/microchip/wilc1000/spi.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-If the consensus is "the code's fine, the warning is bogus" then let's
-consider retiring the warning.
-
-If the consensus is otherwise then hopefully they will fix their stuff!
-
-
-
-> https://syzkaller.appspot.com/bug?id=24452f89446639c901ac07379ccc702808471e8e
-
-(cc bpf@vger.kernel.org)
-
-> https://syzkaller.appspot.com/bug?id=f7c5a86e747f9b7ce333e7295875cd4ede2c7a0d
-
-(cc netdev@vger.kernel.org, maintainers)
-
-> https://syzkaller.appspot.com/bug?id=8f306f3db150657a1f6bbe1927467084531602c7
-
-(cc kvm@vger.kernel.org)
-
-> https://syzkaller.appspot.com/bug?id=6f30adb592d476978777a1125d1f680edfc23e00
-
-(cc netfilter-devel@vger.kernel.org)
-
-> https://syzkaller.appspot.com/bug?id=4c9ab8c7d0f8b551950db06559dc9cde4119ac83
-
-(bpf again).
+diff --git a/drivers/net/wireless/microchip/wilc1000/spi.c b/drivers/net/wireless/microchip/wilc1000/spi.c
+index 640850f989dd..6e7fd18c14e7 100644
+--- a/drivers/net/wireless/microchip/wilc1000/spi.c
++++ b/drivers/net/wireless/microchip/wilc1000/spi.c
+@@ -203,11 +203,18 @@ static const struct of_device_id wilc_of_match[] = {
+ };
+ MODULE_DEVICE_TABLE(of, wilc_of_match);
+ 
++static const struct spi_device_id wilc_spi_id[] = {
++	{ "wilc1000", 0 },
++	{ /* sentinel */ }
++};
++MODULE_DEVICE_TABLE(spi, wilc_spi_id);
++
+ static struct spi_driver wilc_spi_driver = {
+ 	.driver = {
+ 		.name = MODALIAS,
+ 		.of_match_table = wilc_of_match,
+ 	},
++	.id_table = wilc_spi_id,
+ 	.probe =  wilc_bus_probe,
+ 	.remove = wilc_bus_remove,
+ };
+-- 
+2.25.1
 
