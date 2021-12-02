@@ -2,105 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 62915466A32
-	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 20:12:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 49C6F466A6B
+	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 20:25:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355929AbhLBTPg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Dec 2021 14:15:36 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:36292 "EHLO vps0.lunn.ch"
+        id S242465AbhLBT3O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Dec 2021 14:29:14 -0500
+Received: from mga07.intel.com ([134.134.136.100]:25210 "EHLO mga07.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1348386AbhLBTPg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 2 Dec 2021 14:15:36 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=zSUh0xNwlHbletDfJShKsJGi0R+3zGCiKfa/HR3mOHs=; b=1gQJz4HZYQM/iJAN5xnVO88dwG
-        Da3TIZmhidfERIC0KB6Hf0tMHQ9zY6kq86f7vvvOSvu+aS/iRgR/zZkH6w75R9Qlyan+FSoOb6GHJ
-        rg+RyVIMHix1W7ND2Q0rd1E5EH2+PFxsRyXTby2IIFU/zXJfQNlUIHcx3L0y3qaWTktM=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1msrUs-00FM4A-CB; Thu, 02 Dec 2021 20:11:58 +0100
-Date:   Thu, 2 Dec 2021 20:11:58 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        James Prestwood <prestwoj@gmail.com>,
-        Justin Iurman <justin.iurman@uliege.be>,
-        Praveen Chaudhary <praveen5582@gmail.com>,
-        "Jason A . Donenfeld" <Jason@zx2c4.com>,
-        Eric Dumazet <edumazet@google.com>,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: [patch RFC net-next v2 2/3] icmp: ICMPV6: Examine invoking
- packet for Segment Route Headers.
-Message-ID: <YakafsFxVxg8/ulH@lunn.ch>
-References: <20211201202519.3637005-1-andrew@lunn.ch>
- <20211201202519.3637005-3-andrew@lunn.ch>
- <d284a03b-baf8-339f-05bb-c42c3a2fb3f8@gmail.com>
+        id S237532AbhLBT3L (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 2 Dec 2021 14:29:11 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10185"; a="300173712"
+X-IronPort-AV: E=Sophos;i="5.87,282,1631602800"; 
+   d="scan'208";a="300173712"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Dec 2021 11:25:46 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.87,282,1631602800"; 
+   d="scan'208";a="677789259"
+Received: from lkp-server02.sh.intel.com (HELO 9e1e9f9b3bcb) ([10.239.97.151])
+  by orsmga005.jf.intel.com with ESMTP; 02 Dec 2021 11:25:40 -0800
+Received: from kbuild by 9e1e9f9b3bcb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1msri7-000GcG-PY; Thu, 02 Dec 2021 19:25:39 +0000
+Date:   Fri, 3 Dec 2021 03:25:34 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     kbuild-all@lists.01.org, netdev <netdev@vger.kernel.org>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Eric Dumazet <edumazet@google.com>
+Subject: Re: [PATCH net-next 02/19] lib: add tests for reference tracker
+Message-ID: <202112030323.z9IhC2B3-lkp@intel.com>
+References: <20211202032139.3156411-3-eric.dumazet@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <d284a03b-baf8-339f-05bb-c42c3a2fb3f8@gmail.com>
+In-Reply-To: <20211202032139.3156411-3-eric.dumazet@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 02, 2021 at 09:38:36AM -0700, David Ahern wrote:
-> On 12/1/21 1:25 PM, Andrew Lunn wrote:
-> > diff --git a/net/ipv6/icmp.c b/net/ipv6/icmp.c
-> > index a7c31ab67c5d..dd1fe8a822e3 100644
-> > --- a/net/ipv6/icmp.c
-> > +++ b/net/ipv6/icmp.c
-> > @@ -818,9 +819,40 @@ static void icmpv6_echo_reply(struct sk_buff *skb)
-> >  	local_bh_enable();
-> >  }
-> >  
-> > +/* Determine if the invoking packet contains a segment routing header.
-> > + * If it does, extract the true destination address, which is in the
-> > + * first segment address
-> > + */
-> > +static void icmpv6_notify_srh(struct sk_buff *skb, struct inet6_skb_parm *opt)
-> > +{
-> > +	__u16 network_header = skb->network_header;
-> > +	struct ipv6_sr_hdr *srh;
-> > +
-> > +	/* Update network header to point to the invoking packet
-> > +	 * inside the ICMP packet, so we can use the seg6_get_srh()
-> > +	 * helper.
-> > +	 */
-> > +	skb_reset_network_header(skb);
-> > +
-> > +	srh = seg6_get_srh(skb, 0);
-> > +	if (!srh)
-> > +		goto out;
-> > +
-> > +	if (srh->type != IPV6_SRCRT_TYPE_4)
-> > +		goto out;
-> > +
-> > +	opt->flags |= IP6SKB_SEG6;
-> > +	opt->srhoff = (unsigned char *)srh - skb->data;
-> > +
-> > +out:
-> > +	/* Restore the network header back to the ICMP packet */
-> > +	skb->network_header = network_header;
-> > +}
-> > +
-> 
-> since this is SR specific, why not put it in seg6.c?
+Hi Eric,
 
-Hi David
+I love your patch! Yet something to improve:
 
-I can move it.
+[auto build test ERROR on net-next/master]
 
-I was thinking it is only every going to be called from one location,
-so having it here the compiler will inline it.
+url:    https://github.com/0day-ci/linux/commits/Eric-Dumazet/net-add-preliminary-netdev-refcount-tracking/20211202-112353
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 8057cbb8335cf6d419866737504473833e1d128a
+config: nios2-allyesconfig (https://download.01.org/0day-ci/archive/20211203/202112030323.z9IhC2B3-lkp@intel.com/config)
+compiler: nios2-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/5da0cdb1848fae9fb2d9d749bb94e568e2493df8
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Eric-Dumazet/net-add-preliminary-netdev-refcount-tracking/20211202-112353
+        git checkout 5da0cdb1848fae9fb2d9d749bb94e568e2493df8
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=nios2 SHELL=/bin/bash
 
-And it is also very specific to ICMP.  If you are not thinking ICMP,
-you might not actually understand what it is doing.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-    Andrew
+All errors (new ones prefixed by >>):
+
+   nios2-linux-ld: kernel/stacktrace.o: in function `stack_trace_save':
+>> (.text+0x2e4): undefined reference to `save_stack_trace'
+   (.text+0x2e4): relocation truncated to fit: R_NIOS2_CALL26 against `save_stack_trace'
+
+Kconfig warnings: (for reference only)
+   WARNING: unmet direct dependencies detected for STACKTRACE
+   Depends on STACKTRACE_SUPPORT
+   Selected by
+   - STACKDEPOT
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
