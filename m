@@ -2,60 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 69660465D38
-	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 05:01:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E90D9465D46
+	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 05:17:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345185AbhLBEEn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Dec 2021 23:04:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35420 "EHLO
+        id S1355360AbhLBEUw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Dec 2021 23:20:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344960AbhLBEEi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 23:04:38 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E25FAC061574
-        for <netdev@vger.kernel.org>; Wed,  1 Dec 2021 20:01:15 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id F1926CE2151
-        for <netdev@vger.kernel.org>; Thu,  2 Dec 2021 04:01:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E017EC53FCD;
-        Thu,  2 Dec 2021 04:01:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638417672;
-        bh=0JmrUxC1brkG33sPzmnb5m+fEpbpDoNqzokppUh15mM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ZjJwJBJiwZWuGi2whtA6aMYejzSq3RWO2mxz2tFZDLTHj3xgtI3925gRhFxdB8irJ
-         1uppSO2DLlCbGbGtiB5X/YWQynzP6IXKM+QqwVDliFh5A1ZDyOcBsWYHQAPwVY2lTT
-         oIrqgZJKnFh0YmreB95WvwrbvuAl5lH/ZlSug1q2bHkSRByNYezT3yN/FqPQ/djeAP
-         tURiDipUZDApq9jc0Hbca9TubBW9aR4tFPMl2R+YUSJ3+b8nU3R+60pbwHhveTZQYD
-         J1Q5cRFEVZ2LtA3Mwuhcd2yUP2idywX8wSwIy7lRLjwdqwdb9FPb4yO8u0zMzbkS6Y
-         uSGbrUodrA0BQ==
-Date:   Wed, 1 Dec 2021 20:01:10 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>
-Subject: Re: [PATCH net] net: avoid uninit-value from tcp_conn_request
-Message-ID: <20211201200110.7d664790@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211130182939.2584764-1-eric.dumazet@gmail.com>
-References: <20211130182939.2584764-1-eric.dumazet@gmail.com>
+        with ESMTP id S1355335AbhLBEUs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 23:20:48 -0500
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E43BFC06174A;
+        Wed,  1 Dec 2021 20:17:23 -0800 (PST)
+Received: by mail-pl1-x629.google.com with SMTP id y7so19350098plp.0;
+        Wed, 01 Dec 2021 20:17:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=sqMHXH/ut028Uv9GgMbyl0T/geqI+fdfbszgip1rFB0=;
+        b=ql3VIdVxIqDWZsROgDF2tX7EG4VE/HEQ+JHSOnyMUq1ttA8jy+/gy0D7sI3jCkBoej
+         NccGNN79jzngMl07kRdkeRLMhlKHZXBYnwTcGEJUA20URDodCpzniNRXSns4pQbWQ0sE
+         Jg1eS1/heh6Mp1Fvwue/gpL/L1JIIIIJgYdoaQQoaDCqXLXgti0qJKGtHe14Zk8KCHAj
+         IN1riJjwG5RDL/VleRyn4dNyrIXszptqqJkFbrnIQbX62voUbKY38OD8b5k9UTuLKlq1
+         SK5R/aK+JfUeTgcKGTSYev6E45BQviiE8dyOrtZ5ECYAt0gzNHDihIIN8Sw/wKDzdU6W
+         BcVg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=sqMHXH/ut028Uv9GgMbyl0T/geqI+fdfbszgip1rFB0=;
+        b=MAmkwkIVsO416UBxdNpOkEmY+t/e6WVH215R3/sXO7FsM8vJoADe252yDLt9VMvMzt
+         W9COcGMmjh6MNW85AOJ1sQZI1xUpsFY1d2Qf76hRYpgfER54nMZdBhpefDdnwi50AESQ
+         tAHLQKW0Y4VYnIbzLGHRU1gsNItSCavH9NS0KpBgKQWdYh6LemQOU+NNTafq+uUuhM7F
+         9d0CYcUEQ4m9S1ZnCp8z4b9UW24qVycD/AfQlnR6G5gszfSVANO3MTcjExEaXFnkxHBe
+         c9qKGXctCLIXGxwdaaayL6wmkSOhTkwyH19fcH/T+Oq45tmiTKI1rkJhUuApumwqFuLX
+         fJsg==
+X-Gm-Message-State: AOAM5320fmZWwmAYqZwugA5mwXFyGRAB/GTXwaxY8a8T89toVTN+Z62I
+        McJoYIBGt1DOyPOYWNXRRoCoAe/gXP8=
+X-Google-Smtp-Source: ABdhPJwQnAjWuHeiKIuwjZNmTA1xTAbcNC5QmpOWp73034u2V76kCUeRvbm9SH2WoonOL9cVJTjDyA==
+X-Received: by 2002:a17:90a:fe0a:: with SMTP id ck10mr3182462pjb.216.1638418643155;
+        Wed, 01 Dec 2021 20:17:23 -0800 (PST)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id u13sm1070374pgp.27.2021.12.01.20.17.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 01 Dec 2021 20:17:22 -0800 (PST)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     broonie@kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH net] net: dsa: b53: Add SPI ID table
+Date:   Wed,  1 Dec 2021 20:17:20 -0800
+Message-Id: <20211202041720.1013279-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 30 Nov 2021 10:29:39 -0800 Eric Dumazet wrote:
-> +static inline void sk_rx_queue_update(struct sock *sk, const struct sk_buff *skb)
-> +{
-> +	__sk_rx_queue_set(sk, skb, false);
-> +}
-> +
-> +
+Currently autoloading for SPI devices does not use the DT ID table, it
+uses SPI modalises. Supporting OF modalises is going to be difficult if
+not impractical, an attempt was made but has been reverted, so ensure
+that module autoloading works for this driver by adding an id_table
+listing the SPI IDs for everything.
 
-I assumed this double new line was unintentional so fixed that up and
-applied, thanks!
+Fixes: 96c8395e2166 ("spi: Revert modalias changes")
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+ drivers/net/dsa/b53/b53_spi.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+diff --git a/drivers/net/dsa/b53/b53_spi.c b/drivers/net/dsa/b53/b53_spi.c
+index 01e37b75471e..2b88f03e5252 100644
+--- a/drivers/net/dsa/b53/b53_spi.c
++++ b/drivers/net/dsa/b53/b53_spi.c
+@@ -349,6 +349,19 @@ static const struct of_device_id b53_spi_of_match[] = {
+ };
+ MODULE_DEVICE_TABLE(of, b53_spi_of_match);
+ 
++static const struct spi_device_id b53_spi_ids[] = {
++	{ .name = "bcm5325" },
++	{ .name = "bcm5365" },
++	{ .name = "bcm5395" },
++	{ .name = "bcm5397" },
++	{ .name = "bcm5398" },
++	{ .name = "bcm53115" },
++	{ .name = "bcm53125" },
++	{ .name = "bcm53128" },
++	{ /* sentinel */ }
++};
++MODULE_DEVICE_TABLE(spi, b53_spi_ids);
++
+ static struct spi_driver b53_spi_driver = {
+ 	.driver = {
+ 		.name	= "b53-switch",
+@@ -357,6 +370,7 @@ static struct spi_driver b53_spi_driver = {
+ 	.probe	= b53_spi_probe,
+ 	.remove	= b53_spi_remove,
+ 	.shutdown = b53_spi_shutdown,
++	.id_table = b53_spi_ids,
+ };
+ 
+ module_spi_driver(b53_spi_driver);
+-- 
+2.25.1
+
