@@ -2,203 +2,299 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E5545466949
-	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 18:40:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 915CA46695A
+	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 18:45:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353731AbhLBRoH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Dec 2021 12:44:07 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:22480 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236969AbhLBRoG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 12:44:06 -0500
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1B2E5cmk001121;
-        Thu, 2 Dec 2021 09:40:36 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
- subject : message-id : references : content-type : in-reply-to :
- mime-version; s=facebook; bh=rZji21vlj8WfJJqsyzR1k1brFm2xXDd8Xueesz0kxYE=;
- b=F1eVX/YGa1h6NmH/lePbrTSRURXqo4k54L3ZIbTNQhqnZpTvmD1W/pUFr0Jjgq55w3Ki
- FweDbqx/6SakaCBAyYOAZEamikBoX3+lhlTC++UaGq+0lhpPszaJC0GjZMnx3EUFjGVL
- hKR1gLIRURnrI4Fum5LxzJpBACC+OHWJDQw= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 3cpjn5x22n-13
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 02 Dec 2021 09:40:36 -0800
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.228) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Thu, 2 Dec 2021 09:40:34 -0800
+        id S1348201AbhLBRsl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Dec 2021 12:48:41 -0500
+Received: from dispatch1-eu1.ppe-hosted.com ([185.132.181.6]:38012 "EHLO
+        dispatch1-eu1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S242150AbhLBRsl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 12:48:41 -0500
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-db3eur04lp2054.outbound.protection.outlook.com [104.47.12.54])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-eu1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 731EE80071;
+        Thu,  2 Dec 2021 17:45:16 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dDUGZHmZMN0yoIhtlzQCN3ESI0lqV+e8djv7OuwhowDtij8wmqCEURSPXKQhBNfgC6MjN3YQRPuK02xx+fTTY0E74H2ZYWO3qxRZyhFVnSNI3Byp5eth3SNzQF1eugyVwPzDLJJoKIzSkiTJbx2HN8kmvKR90dce1kSRsmRRxzryggG63oU+K557CS/0BBwvLe8/jKR35gnQ89Q/eq8f4qJk0heApIWfrWTCWhKHgp1734Jq+uBQoTPKjNpg+K4HFpFKVcxvuJKQ5+gnxDmzb5KjnQ4V4rM0GMNwgI0f26po+MNkbAHarHNvGSvP44vnQxlQKaYHYuB0xX0lTuqtRg==
+ b=AsmdvCis6CNmMOdjs5dV5HT/inRQmmDlv86ztr+hMSCDIN7AhhgT52sAQqljkqmxdk24fcC4VxN+jCc8C1JTfC3vRpJUDRg7h9DWWqSUZzI6ZVJAPZwowYfia+IKR1KlAmr0jsOvdwUSWDM1nHjobZbEkcWqS3Zszr74CFyxmYWpFXDkqGfjB32+pEDoZPjxXNe0l4ix1KbF8xLpZ87E6sVKTCnNgIhaKhf1F3LBRWlExzjgJgsKE/pVbStf4BRnQ5l6JYkcq9nNjeKBBrfizYnnznfuUouczTLYM8/uLohCGYIH62YS4IRjQ3iL8EuROn/ySHp9eEMu0hWEZEALGA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=rZji21vlj8WfJJqsyzR1k1brFm2xXDd8Xueesz0kxYE=;
- b=HBeGLLm/89mz31veFPlI94ipRHRRGttcw4+XKZPXKUYjPg/39KastbZHzsnSe7qadnpCSSLfGrkuNX4yylYn1kWDmupA/iimJW2fmawh0FzG4/FGEFNbRzrHSBucxq3as/Po0OVqDGnTySir0eY11dR71Job3L0v2FSITbQduDZWNKVtekYA8CPj18+qVQdqwnJtDxS7a+FdfGI015Mo+imXrqWD6yFEuW6XkbDmYudrtyUyy61E+jimjnsM0lU8ZCLUNr75lnkF5Jc2DvPWHw7bb9wsjlZmHnSFNTo7aQNDDlSwddWDyRv4KSpgcJRORX60YfYSFZyY5e3zNHL3TA==
+ bh=lvuv+bO5+0RTeAyT+w/Mwq5vPMpV6JoNLTQwRXs/hxM=;
+ b=MQnGGw81myuB+IgcprufEwAjWi2Wc3TRhyycJjAY9ny34Y9e30wC/M5dRFf83kECb73EdvAkxpGHGoOfHoqDGyVRUe70iudgclThgBzpSFB/Yw/06u6Nn18zonhDrNKClE9GVhcqlNyMLeIaEyof1qpkpSNevjMTG+lTxo5uUh9hHJByu2UJIv/o8b1oKUrkLiZV7AiLgD4niwvTAcY8AAWsxyxlkUrwFYL+XNyL7iR54Y+1cfS6V4wd4LVXcmnQd+AkJH0ie4fk0FJ081TyIQLlKS4IG0jFVCb7vNk7rwHQCu2az9/5uqAd95ONg1JXWfDecviwmGED4tMCof7Lgw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Received: from SA1PR15MB5016.namprd15.prod.outlook.com (2603:10b6:806:1db::19)
- by SA1PR15MB4402.namprd15.prod.outlook.com (2603:10b6:806:191::7) with
+ smtp.mailfrom=drivenets.com; dmarc=pass action=none
+ header.from=drivenets.com; dkim=pass header.d=drivenets.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=drivenets.onmicrosoft.com; s=selector2-drivenets-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=lvuv+bO5+0RTeAyT+w/Mwq5vPMpV6JoNLTQwRXs/hxM=;
+ b=WHXURKb4tF9PlBKbQykf+VSzvPlFCvvOuX9lqkLOarJP+Sqjo562olmJRhh2ynW7D1tg/h04W4mtoKW4Jii6MuR0sTBmjClAwFgfFCKiqlAZinu8ucDiAcEJG1mAMnjUlqasFU+YpHgXv3Hch7+UmUrRAhI+VFgTGSTMafKSSw4=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=drivenets.com;
+Received: from VI1PR08MB3518.eurprd08.prod.outlook.com (2603:10a6:803:7a::23)
+ by VE1PR08MB4703.eurprd08.prod.outlook.com (2603:10a6:802:b1::11) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.11; Thu, 2 Dec
- 2021 17:40:33 +0000
-Received: from SA1PR15MB5016.namprd15.prod.outlook.com
- ([fe80::e589:cc2c:1c9c:8010]) by SA1PR15MB5016.namprd15.prod.outlook.com
- ([fe80::e589:cc2c:1c9c:8010%7]) with mapi id 15.20.4734.024; Thu, 2 Dec 2021
- 17:40:33 +0000
-Date:   Thu, 2 Dec 2021 09:40:29 -0800
-From:   Martin KaFai Lau <kafai@fb.com>
-To:     Pavel Begunkov <asml.silence@gmail.com>
-CC:     David Ahern <dsahern@gmail.com>, <io-uring@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Willem de Bruijn <willemb@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>, Jens Axboe <axboe@kernel.dk>
-Subject: Re: [RFC 00/12] io_uring zerocopy send
-Message-ID: <20211202174029.qtwtw7e2je7v3chl@kafai-mbp.dhcp.thefacebook.com>
-References: <cover.1638282789.git.asml.silence@gmail.com>
- <ae2d2dab-6f42-403a-f167-1ba3db3fd07f@gmail.com>
- <994e315b-fdb7-1467-553e-290d4434d853@gmail.com>
- <c4424a7a-2ef1-6524-9b10-1e7d1f1e1fe4@gmail.com>
- <889c0306-afed-62cd-d95b-a20b8e798979@gmail.com>
- <0b92f046-5ac3-7138-2775-59fadee6e17a@gmail.com>
- <974b266e-d224-97da-708f-c4a7e7050190@gmail.com>
- <20211201215157.kgqd5attj3dytfgs@kafai-mbp.dhcp.thefacebook.com>
- <ffd25188-aa92-2d69-a749-3058d1d33bc1@gmail.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <ffd25188-aa92-2d69-a749-3058d1d33bc1@gmail.com>
-X-ClientProxiedBy: MW4PR04CA0066.namprd04.prod.outlook.com
- (2603:10b6:303:6b::11) To SA1PR15MB5016.namprd15.prod.outlook.com
- (2603:10b6:806:1db::19)
-Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:32bf) by MW4PR04CA0066.namprd04.prod.outlook.com (2603:10b6:303:6b::11) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4734.22 via Frontend Transport; Thu, 2 Dec 2021 17:40:32 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4734.24; Thu, 2 Dec
+ 2021 17:45:12 +0000
+Received: from VI1PR08MB3518.eurprd08.prod.outlook.com
+ ([fe80::28b3:9174:b581:3037]) by VI1PR08MB3518.eurprd08.prod.outlook.com
+ ([fe80::28b3:9174:b581:3037%5]) with mapi id 15.20.4734.024; Thu, 2 Dec 2021
+ 17:45:12 +0000
+From:   Lahav Schlesinger <lschlesinger@drivenets.com>
+To:     netdev@vger.kernel.org
+Cc:     kuba@kernel.org, dsahern@gmail.com
+Subject: [PATCH net-next v4] rtnetlink: Support fine-grained netdevice bulk deletion
+Date:   Thu,  2 Dec 2021 19:45:02 +0200
+Message-Id: <20211202174502.28903-1-lschlesinger@drivenets.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-ClientProxiedBy: AM9P192CA0016.EURP192.PROD.OUTLOOK.COM
+ (2603:10a6:20b:21d::21) To VI1PR08MB3518.eurprd08.prod.outlook.com
+ (2603:10a6:803:7a::23)
+MIME-Version: 1.0
+Received: from kgollan-pc.dev.drivenets.net (199.203.244.232) by AM9P192CA0016.EURP192.PROD.OUTLOOK.COM (2603:10a6:20b:21d::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.11 via Frontend Transport; Thu, 2 Dec 2021 17:45:11 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 24336053-aaed-4fe8-f766-08d9b5bad766
-X-MS-TrafficTypeDiagnostic: SA1PR15MB4402:
-X-Microsoft-Antispam-PRVS: <SA1PR15MB4402CB2374853C31A1949C01D5699@SA1PR15MB4402.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
+X-MS-Office365-Filtering-Correlation-Id: 9624ce7e-3a07-4d9c-3a03-08d9b5bb7dc4
+X-MS-TrafficTypeDiagnostic: VE1PR08MB4703:
+X-Microsoft-Antispam-PRVS: <VE1PR08MB4703FEC30B8DDEFC51AFF8EDCC699@VE1PR08MB4703.eurprd08.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:67;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: yLxa3rtjcdVgBf1pAUVM+eiZbLtdZo+HF+YN2h7CBE47reYa+pnVhEaLUE0cU/yL8TH8CTPEvTeRZtTpXNvKEyIVcbHBLAa6T0Q+1SXHL07EutjH5E539k64o9L2Y3iMSK9hyDUy7lxzZUmqAtp5Wzm4xhNTcZovc+7jKnZhYsG/SIyQFT65elZIiEc3tgydw81tmaE3MkJjbM29rzod08tVkKAIvFr+p6S6E8JP8Npo5fvHBXRJRtTzWXP0TEJLiJd74JfP7LZxPnLgw/mzqLLBF6KyMzdPfmodvV9EokR41Cy1VrZutnVX4rIoWSF9uSS65dDZ39EGPq2uFvUn6MEi/FVhfhBzBzpKZDiTexXkTfplQ/f90piifsl/qot1Od5O1rQw4WWiTGGtVlSzmtLSd/GpJqDWpQCRhhJRJAWAHkdGRab837ua/jhLfRDzAARaIHZjaXaRRwbdIOgiSRG+SZCjLusYJhA07WHKhuqLvrDPTK7HwgX2cbh7TnNqu76IbIrKUd+TlslKLSSQtexcjahDQVwNuqWlFHSLNlzdd8aoddKtd4FYrqoq8Ov0ZWG8a0H7zLGa0FNEvsyoRHEnPkuA+tl/Ozj6Smgn076XyuMWhQUHoSMfrMj4Xh3BJcvSBNb9GnnCGMUOfdKr8trDi02N6LFzl5eMAEsj9Hf3hXOk3l1KvLHl8hYth+oWeY6hQ2wQytmjMRT/T2Yn32ZSPbzay4L6lxvAm9MLQSg=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR15MB5016.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(8676002)(6666004)(8936002)(66476007)(66556008)(186003)(38100700002)(66946007)(2906002)(9686003)(52116002)(508600001)(6916009)(53546011)(86362001)(4326008)(7416002)(7696005)(316002)(966005)(1076003)(55016003)(5660300002)(54906003)(6506007);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: p+1QZ+VZtqdgjkIJ0gbIlrvyNWgTchkasBnqEnxQMJcH5InVDVM2+j0TDhPJPdPHC9k4EtbiLbTn+FSk9VOU6Ga3gGPmiUVs+Rd0dPK+lyAfyFG69U2gwRDjrnbN54EggvQMWJmoxTOSspZgVbocWsyF1wfXcBdP7bUVas71BSvS6mCHVTMtWxaEWCkjg+cpMLCL6asJgIeHGiProxK8dPIZgFVftVUnF48tlcd0sRmIugwT2hSvhn+t3BIAqJ0CmSw6TGXaMLtgy3CCZrJXoNAUgOPSMJSRMT7LaYW4qJyEHxfnJ8LC9/frw+/L1u1n0xaQaDB5c2fH8pQNqviUaVPJIPrkMMc76UnJCYotOCwYy22qUFnsppkvahtEIGHFL47v0+4KSfN1tjOQZwreR13A9rRmOxoUJcE/3eUqzh3kaaFS2hdV6R8qfEYnRpi0kji8dpeIuyUVlS6WzBifVh6lN2l96dx5LJALC+UNbQae2Dy9hXsxkOTh0+xOuXa6lVzCwQTclmovU+cZVrB1uPTYPkDCAhX5OiELtwU3xyvTFLaCCfS1rP8sPlZtCa8WooveO/TLLMmnxcgfhecVHm+3jtj5QOMN6T/PCneWxqFlP0/CtwHvZ/iikkQjtuD/IUS8N46MMHD1OBrp+bYh82sVgjjPG94zum3OkA2U5EiGdQLfaA6q7snhryTTmOMWTRtn728yhjXeJF5D4upbCqqk3uVj4CbvNAiEnUY6Z9g=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR08MB3518.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(36756003)(2616005)(2906002)(6916009)(6506007)(316002)(6666004)(186003)(38100700002)(38350700002)(6486002)(956004)(508600001)(5660300002)(83380400001)(66946007)(26005)(8936002)(4326008)(6512007)(66556008)(66574015)(66476007)(52116002)(86362001)(1076003)(8676002)(16060500005);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ugejHPLx5AfvInxe8NRl9O86W4Uamzkp4UxMqJAZf3VaD5xZZCRBl2XVAw0X?=
- =?us-ascii?Q?zjmj/sR7YbTubdfLrKbWSF4rFDobwBoZ2nFYZEKg/d0G0QzJRskmYPsBrODM?=
- =?us-ascii?Q?pYfIMLquxRWqB8jk0YvZEJlIfLjuEkoL/R6l6P2R/KcG4zRQc1xBkh1WMDEc?=
- =?us-ascii?Q?RczSWFYQ6T/ohh9kEL+z6zeLR96rE6bh+XVcM8yfeHRSYFfU3vv/Ypv6SRHo?=
- =?us-ascii?Q?2003oR7MSgdwWXJ8i8gZIfkhFtscXeqynoFihhQbegND4Kn3FEUmbFXtFrJt?=
- =?us-ascii?Q?iWzqpybC3cR/f4Mz5T3y3uW7dgIThb0x9bWpbYUzVydUJk81pINGpBymttC0?=
- =?us-ascii?Q?Lq0hCBkZv0yw17MWCsIyU+dlI9X0QO4MZV0KvdYp2gostnPCJNn9GDaMoD4W?=
- =?us-ascii?Q?XSvfLFsXrpCj2OJhGW2SK5vWCxeKLO2flaenPAXe+Db9mWhPEPL4xAx1zu72?=
- =?us-ascii?Q?d0yg0JKEYHKFOV9UYHAOVLr9xa10V0AjAfxFUfQ9c5z/0OMEqrkOHqYRgmsL?=
- =?us-ascii?Q?fWa5DsUcub1OZ3wicJwi+tbxcvCYJUbcJGpZkNM/Siso03TP4Tpoe6Eu8aq7?=
- =?us-ascii?Q?3S8UgX2FsnRBj4EpocnEG007qpfQSXpiYhbuaZsM2l7dD/RC9tj/06Iua+Jx?=
- =?us-ascii?Q?OVC6lWXQBWWE9hakguwiY1/dmIf9kLNws+hvJyTZFk/QzPHx7OQr1HKbKnPQ?=
- =?us-ascii?Q?TCa9EL99FnAUj3SoU3xl0gozgdi9ARKSXqE0K/n1DvEkICyi8xYRuCs7qt3J?=
- =?us-ascii?Q?S4awTtP7vx6YYM1BhDNKr3/kbQsCJX3LHR6E47oZ3b4RocAhybj12prQkVHr?=
- =?us-ascii?Q?EafGwnWwYuZiPwtu6xprFy48kw6YzFzCToogylLR8lwZ6VSiRGesKerr7yXv?=
- =?us-ascii?Q?quM4kSK7h3eXCjU3J1gRei1V5EmWjIc6d6F2kDlo4nbVKHBEOAqGhVQw8NTW?=
- =?us-ascii?Q?4L1E2jcT70/J+hJRBF5WTEM4zdXpf23mt5Ed8TdrNVZVKwcREImEGKXZhaRg?=
- =?us-ascii?Q?ouGYv6tgiNuZU5uhyrVBs0vfM/rbF25qm9sC5+fsO+/vSSsV75LH+VeAWk3H?=
- =?us-ascii?Q?rlGiDh4dK6E8Fa9pZTY5FmqmKxEKtkgR1wdPFB1tmzltAiNCIioWvfN83AFw?=
- =?us-ascii?Q?g+8tZUkEwPRx9T+jLHQIOdznRtLHGEKvLbjZQV5PL3MnjgJzNvbXdxALnfdQ?=
- =?us-ascii?Q?oS3H46QfR4+hmtV5+BtG9K8yKiarcJ2n1w75MXwLONWJjFX7imkE3tv0D6O/?=
- =?us-ascii?Q?0mr5lumsdMh8qoAwvMCZ0hcYpYxxOGI902U2yV//IeBWwvrGG7QOzWjrguKO?=
- =?us-ascii?Q?U5Z32hihayup93dY/LD2yoAJJeVxx02LYDzlXWCOlAF6vOgEDg6ck0ZVnm3j?=
- =?us-ascii?Q?Ixl9Mu4ayuPTPyNQyGXDPVjTHIGDgIMdrdUdGqIubdjlxiIoZKIoJUJpmp8l?=
- =?us-ascii?Q?1QMgjzhpcLjnM9kdEv+G9RZwBkHqzPp2aLWtoucvSe8JAzhTH0wmWUYqTsD3?=
- =?us-ascii?Q?DgX4tLVQBAmrwWygQw7NajsQL61cxIi5wji2MAbXg+j27QS/YUAVGEGV7bSB?=
- =?us-ascii?Q?/wdWZ3E63SVxZolYlUuMlTtriKtx9dUZmSUB7ci6?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 24336053-aaed-4fe8-f766-08d9b5bad766
-X-MS-Exchange-CrossTenant-AuthSource: SA1PR15MB5016.namprd15.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?gNN3baLuxMOE5mp0Lo+Grk1uN82DHNT29EGSLp/ugLZl7zM3+VtJf38Wi3hP?=
+ =?us-ascii?Q?Pa3ZHc8K3dWj7VSsUvSJlYlv4LVfTyTRNKwZfs4BC06B0X2nc/kvvSPT8Xxm?=
+ =?us-ascii?Q?Y5bW/3n3/IQZxbLejOln3ZAzKyRKbaq3tt4vdj8c9nnhpKcul8taKAd9/FuJ?=
+ =?us-ascii?Q?K2/q15l0jS5/84yxyIW2c/nClu19XGqULpf4WUI9Zywc5biHBObLREJOFBb/?=
+ =?us-ascii?Q?ZMAvtATtPlHTRDQOE03yRB3QnYJU6cDs7FQQlyAysEd3plzznNn/WbVu+yYs?=
+ =?us-ascii?Q?Rb01yVie9hCgWXvugwYHLzIZQ6uAeDUB2Fk4FID7Qdo1rmxVFE9Ufmf9qflf?=
+ =?us-ascii?Q?cXjmRhNmuhUVlq1mszOI82Xi/zWreENkUvm24N4tRBE4CtM5PZytglfSFal+?=
+ =?us-ascii?Q?tQP2Zh5sV5J9WuVgKR5ceBI5RZyMakbFZ7xjH1ysuwHcGHZMLojRYZFTVxvv?=
+ =?us-ascii?Q?obQ0uuFtFX29nYiA+IUmvO3QrAA7wwNJeuoQQQcNerCSuvlgzDUpjy3gcSOM?=
+ =?us-ascii?Q?BaoF0vpBdK2BfjacqL5+od+spYwn1F2XzTyz0DiMJfrlp8fpeK+AntCIcct8?=
+ =?us-ascii?Q?c3UOO+hGUIZU6UWTj/hOVgZDiDTGe0ZB5b2nHqFSkd+KmURN2ltN14GN/XOa?=
+ =?us-ascii?Q?OPCedduAo5ZsiVJGjoxml/ObjECul3LoOztg7VwXAh8hIuLRAisIwx/7Thvv?=
+ =?us-ascii?Q?Euth/bAzGqg5zmxFM65qDZUBkA3qlsDhroGocsemX7jw/VjxRi5a1pMKEzGJ?=
+ =?us-ascii?Q?Zofhi+Tx73P5ZkGB4JCo2OCfzEEV6skNBgKfU4Lq2eBX9ioKjvCBb3HCLv3/?=
+ =?us-ascii?Q?ODk6PA4YnSCW1U3fA3NiL761v4IvTpIBsFCAj8f6cCgMZ/02qVewqIxjPAg/?=
+ =?us-ascii?Q?L5tw+1eds65d2oVVYT8L5In0WRXPLlIWmGQCep7xlC8AxpnPqNCQdosQQjKf?=
+ =?us-ascii?Q?fMSICtA34ZU+1q3rQNbWIVtOAF93DL+GE54NkcbJn/sndQ9D5qa0HRpabn/D?=
+ =?us-ascii?Q?xGsnunY2Y5q9MOI21F+gir7MhOlbUDitsmRXJ2MFNShBMmbSjtyC0IlrKLpw?=
+ =?us-ascii?Q?8oilZOopDRR4G7NSVNa4UMIJSewknJPTvcKZcL4HaVOwUDwb4QeV36KRIF/T?=
+ =?us-ascii?Q?wj5zGzXN3akhZA6amkSNGQkyPT8wMIWMbe4eEVJrtqbOW/fj8MKJ0kvH+ng7?=
+ =?us-ascii?Q?XHPm3HocM23PIGCcSKHsWodzZK3iynCzD2PIkU7T5usfOCztA+g+CaqBEeF/?=
+ =?us-ascii?Q?EKZcn9dTqJWS2KWRIpDzUyvCNjcs4PiHT1V5/XFvM6UitAi9Ki3v4GzprPg1?=
+ =?us-ascii?Q?2GpwwtxjN+u/T46gITXKOnf9hs706aqLn/D6JSniGV3+a+MGZPrc6SeBf1Ms?=
+ =?us-ascii?Q?OWmHM1KTI3xo9mS6xPm0XiacAVuFCSRGh+wo3vd4iAJm6dBSe8mrP9QKe0kd?=
+ =?us-ascii?Q?/isBBvvYkIoA2+wKjqiH7nYqZtHch0uqoCgbcfr3+jx5kxrcHbqFG0xq1AEN?=
+ =?us-ascii?Q?nGEsVgPkMHNuTYfjiQi3ZhykTKS8SWt7U3ZWN0pbC2Rbz5evtmhAUbxZgAhm?=
+ =?us-ascii?Q?AHUCFMxS8pGtKHelMSYXeJWSCC3wo+VVv5rg84ZSl+Q+ZNdr4AMts7jDC+lD?=
+ =?us-ascii?Q?ecTTLOfhoh3RN1xs2+n5wd6KiA2goWlAM09T7N/+P39CHlks1FZ2Pc2afj+s?=
+ =?us-ascii?Q?SvTJ56k829lo/rUIm5MdXdXjpb4=3D?=
+X-OriginatorOrg: drivenets.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9624ce7e-3a07-4d9c-3a03-08d9b5bb7dc4
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR08MB3518.eurprd08.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Dec 2021 17:40:33.3433
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Dec 2021 17:45:12.4528
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-Id: 662f82da-cf45-4bdf-b295-33b083f5d229
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ffPraYHeFUzeCz3XtWiefuVAY6DfHj0cLuG2lF27+H9n/yzkogJdd4fVYLA23X1g
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR15MB4402
-X-OriginatorOrg: fb.com
-X-Proofpoint-GUID: MnnIWN_pujlljCEux_wuSvg342LXyX9b
-X-Proofpoint-ORIG-GUID: MnnIWN_pujlljCEux_wuSvg342LXyX9b
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
-MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2021-12-02_12,2021-12-02_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1015
- adultscore=0 impostorscore=0 spamscore=0 lowpriorityscore=0 suspectscore=0
- malwarescore=0 priorityscore=1501 mlxlogscore=547 phishscore=0 mlxscore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2110150000 definitions=main-2112020114
-X-FB-Internal: deliver
+X-MS-Exchange-CrossTenant-UserPrincipalName: JQEdRx/MI+4guBBFuFi2NHNdGem/G5D0n47mf5CrivGU4/M1v5zlVSycJ7y7IgKOFMrdpqZk5SvjoCoOiWXx7sWCgxk+LxQMqHTsmL8K6tk=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR08MB4703
+X-MDID: 1638467117-BEYMGs4OeqqX
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 02, 2021 at 03:48:14PM +0000, Pavel Begunkov wrote:
-> On 12/1/21 21:51, Martin KaFai Lau wrote:
-> > On Wed, Dec 01, 2021 at 08:15:28PM +0000, Pavel Begunkov wrote:
-> > > On 12/1/21 19:20, David Ahern wrote:
-> > > > On 12/1/21 12:11 PM, Pavel Begunkov wrote:
-> > > > > btw, why a dummy device would ever go through loopback? It doesn't
-> > > > > seem to make sense, though may be missing something.
-> > > > 
-> > > > You are sending to a local ip address, so the fib_lookup returns
-> > > > RTN_LOCAL. The code makes dev_out the loopback:
-> > > > 
-> > > > https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/tree/net/ipv4/route.c#n2773
-> > > 
-> > > I see, thanks. I still don't use the skb_orphan_frags_rx() hack
-> > > and it doesn't go through the loopback (for my dummy tests), just
-> > > dummy_xmit() and no mention of loopback in perf data, see the
-> > > flamegraph. Don't know what is the catch.
-> > > 
-> > > I'm illiterate of the routing paths. Can it be related to
-> > > the "ip route add"? How do you get an ipv4 address for the device?
-> > I also bumped into the udp-connect() => ECONNREFUSED (111) error from send-zc.
-> > because I assumed no server is needed by using dummy.  Then realized
-> > the cover letter mentioned msg_zerocopy is used as the server.
-> > Mentioning just in case someone hits it also.
-> > 
-> > To tx out dummy, I did:
-> > #> ip a add 10.0.0.1/24 dev dummy0
-> 
-> Works well for me, IOW getting the same behaviour as with my
-> ip route add <ip> dev dummy0
-> 
-> I'm curious what is the difference bw them?
-No difference.  It should be the same.  The skb should still go out
-of dummy (instead of lo) and then get drop/kfree.  I think
-the confusion is probably from the name "<dummy_ip_addr>" which
-points to the intention that the dummy0 has this ip addr
-instead of dummy having a route to this ip address.
-The need for running msg_zerocopy as the server also
-adds to this confusion.  There should be no need for
-server in dummy test.  No skb can reach the server anyway.
+Under large scale, some routers are required to support tens of thousands
+of devices at once, both physical and virtual (e.g. loopbacks, tunnels,
+vrfs, etc).
+At times such routers are required to delete massive amounts of devices
+at once, such as when a factory reset is performed on the router (causing
+a deletion of all devices), or when a configuration is restored after an
+upgrade, or as a request from an operator.
 
-> 
-> 
-> > #> ip -4 r
-> > 10.0.0.0/24 dev dummy0 proto kernel scope link src 10.0.0.1
-> > 
-> > #> ./send-zc -4 -D 10.0.0.(2) -t 10 udp
-> > ip -s link show dev dummy0
-> > 2: dummy0: <BROADCAST,NOARP,UP,LOWER_UP> mtu 65535 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
-> >     link/ether 82:0f:e0:dc:f7:e6 brd ff:ff:ff:ff:ff:ff
-> >     RX:    bytes packets errors dropped  missed   mcast
-> >                0       0      0       0       0       0
-> >     TX:    bytes packets errors dropped carrier collsns
-> >     140800890299 2150397      0       0       0       0
-> > 
-> 
-> -- 
-> Pavel Begunkov
+Currently there are 2 means of deleting devices using Netlink:
+1. Deleting a single device (either by ifindex using ifinfomsg::ifi_index,
+or by name using IFLA_IFNAME)
+2. Delete all device that belong to a group (using IFLA_GROUP)
+
+Deletion of devices one-by-one has poor performance on large scale of
+devices compared to "group deletion":
+After all device are handled, netdev_run_todo() is called which
+calls rcu_barrier() to finish any outstanding RCU callbacks that were
+registered during the deletion of the device, then wait until the
+refcount of all the devices is 0, then perform final cleanups.
+
+However, calling rcu_barrier() is a very costly operation, each call
+taking in the order of 10s of milliseconds.
+
+When deleting a large number of device one-by-one, rcu_barrier()
+will be called for each device being deleted.
+As an example, following benchmark deletes 10K loopback devices,
+all of which are UP and with only IPv6 LLA being configured:
+
+1. Deleting one-by-one using 1 thread : 243 seconds
+2. Deleting one-by-one using 10 thread: 70 seconds
+3. Deleting one-by-one using 50 thread: 54 seconds
+4. Deleting all using "group deletion": 30 seconds
+
+Note that even though the deletion logic takes place under the rtnl
+lock, since the call to rcu_barrier() is outside the lock we gain
+some improvements.
+
+But, while "group deletion" is the fastest, it is not suited for
+deleting large number of arbitrary devices which are unknown a head of
+time. Furthermore, moving large number of devices to a group is also a
+costly operation.
+
+This patch adds support for passing an arbitrary list of ifindex of
+devices to delete with a new IFLA_IFINDEX attribute. A single message
+may contain multiple instances of this attribute).
+This gives a more fine-grained control over which devices to delete,
+while still resulting in rcu_barrier() being called only once.
+Indeed, the timings of using this new API to delete 10K devices is
+the same as using the existing "group" deletion.
+
+Signed-off-by: Lahav Schlesinger <lschlesinger@drivenets.com>
+---
+v3 -> v4
+ - Change single IFLA_INDEX_LIST into multiple IFLA_IFINDEX
+ - Fail if passing both IFLA_GROUP and at least one IFLA_IFNEX
+
+v2 -> v3
+ - Rename 'ifindex_list' to 'ifindices', and pass it as int*
+ - Clamp 'ops' variable in second loop.
+
+v1 -> v2
+ - Unset 'len' of IFLA_IFINDEX_LIST in policy.
+ - Use __dev_get_by_index() instead of n^2 loop.
+ - Return -ENODEV if any ifindex is not present.
+ - Saved devices in an array.
+ - Fix formatting.
+
+ include/uapi/linux/if_link.h |  1 +
+ net/core/rtnetlink.c         | 68 ++++++++++++++++++++++++++++++++++++
+ 2 files changed, 69 insertions(+)
+
+diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+index eebd3894fe89..68fcde9c0c5e 100644
+--- a/include/uapi/linux/if_link.h
++++ b/include/uapi/linux/if_link.h
+@@ -348,6 +348,7 @@ enum {
+ 	IFLA_PARENT_DEV_NAME,
+ 	IFLA_PARENT_DEV_BUS_NAME,
+ 
++	IFLA_IFINDEX,
+ 	__IFLA_MAX
+ };
+ 
+diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+index fd030e02f16d..9d804866fe72 100644
+--- a/net/core/rtnetlink.c
++++ b/net/core/rtnetlink.c
+@@ -1880,6 +1880,7 @@ static const struct nla_policy ifla_policy[IFLA_MAX+1] = {
+ 	[IFLA_PROTO_DOWN_REASON] = { .type = NLA_NESTED },
+ 	[IFLA_NEW_IFINDEX]	= NLA_POLICY_MIN(NLA_S32, 1),
+ 	[IFLA_PARENT_DEV_NAME]	= { .type = NLA_NUL_STRING },
++	[IFLA_IFINDEX]		= { .type = NLA_S32 },
+ };
+ 
+ static const struct nla_policy ifla_info_policy[IFLA_INFO_MAX+1] = {
+@@ -3050,6 +3051,65 @@ static int rtnl_group_dellink(const struct net *net, int group)
+ 	return 0;
+ }
+ 
++static int rtnl_ifindex_dellink(struct net *net, struct nlattr *head, int len,
++				struct netlink_ext_ack *extack)
++{
++	int i = 0, num_devices = 0, rem;
++	struct net_device **dev_list;
++	const struct nlattr *nla;
++	LIST_HEAD(list_kill);
++	int ret;
++
++	nla_for_each_attr(nla, head, len, rem) {
++		if (nla_type(nla) == IFLA_IFINDEX)
++			num_devices++;
++	}
++
++	dev_list = kmalloc_array(num_devices, sizeof(*dev_list), GFP_KERNEL);
++	if (!dev_list)
++		return -ENOMEM;
++
++	nla_for_each_attr(nla, head, len, rem) {
++		const struct rtnl_link_ops *ops;
++		struct net_device *dev;
++		int ifindex;
++
++		if (nla_type(nla) != IFLA_IFINDEX)
++			continue;
++
++		ifindex = nla_get_s32(nla);
++		ret = -ENODEV;
++		dev = __dev_get_by_index(net, ifindex);
++		if (!dev) {
++			NL_SET_ERR_MSG_ATTR(extack, nla, "Unknown ifindex");
++			goto out_free;
++		}
++
++		ret = -EOPNOTSUPP;
++		ops = dev->rtnl_link_ops;
++		if (!ops || !ops->dellink) {
++			NL_SET_ERR_MSG_ATTR(extack, nla, "Device cannot be deleted");
++			goto out_free;
++		}
++
++		dev_list[i++] = dev;
++	}
++
++	for (i = 0; i < num_devices; i++) {
++		struct net_device *dev = dev_list[i];
++
++		dev->rtnl_link_ops->dellink(dev, &list_kill);
++	}
++
++	unregister_netdevice_many(&list_kill);
++
++	ret = 0;
++
++out_free:
++	kfree(dev_list);
++	return ret;
++}
++
+ int rtnl_delete_link(struct net_device *dev)
+ {
+ 	const struct rtnl_link_ops *ops;
+@@ -3093,6 +3153,11 @@ static int rtnl_dellink(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 			return PTR_ERR(tgt_net);
+ 	}
+ 
++	if (tb[IFLA_GROUP] && tb[IFLA_IFINDEX]) {
++		NL_SET_ERR_MSG(extack, "Can't pass both IFLA_GROUP and IFLA_IFINDEX");
++		return -EOPNOTSUPP;
++	}
++
+ 	err = -EINVAL;
+ 	ifm = nlmsg_data(nlh);
+ 	if (ifm->ifi_index > 0)
+@@ -3102,6 +3167,9 @@ static int rtnl_dellink(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 				   tb[IFLA_ALT_IFNAME], NULL);
+ 	else if (tb[IFLA_GROUP])
+ 		err = rtnl_group_dellink(tgt_net, nla_get_u32(tb[IFLA_GROUP]));
++	else if (tb[IFLA_IFINDEX])
++		err = rtnl_ifindex_dellink(tgt_net, nlmsg_attrdata(nlh, sizeof(*ifm)),
++					   nlmsg_attrlen(nlh, sizeof(*ifm)), extack);
+ 	else
+ 		goto out;
+ 
+-- 
+2.25.1
+
