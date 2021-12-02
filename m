@@ -2,74 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E8B41465A52
-	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 01:04:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A4759465A4E
+	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 01:04:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353974AbhLBAH1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Dec 2021 19:07:27 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:56004 "EHLO
+        id S1353989AbhLBAHU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Dec 2021 19:07:20 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:27717 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1353968AbhLBAHU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 19:07:20 -0500
+        by vger.kernel.org with ESMTP id S1344175AbhLBAHR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 19:07:17 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1638403437;
+        s=mimecast20190719; t=1638403436;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=fSr+KoEIWo8E81JSKgnaP/OFNTm6nID/Hkd90v+JLcg=;
-        b=NR/s7FqTv++A7IaIJahG5zH9ooZI7G0rOBlw15qJS8mmkCmsvpw78XL4wsEb0XK3X1UuY9
-        m11gAq20LNZ120qNbm8cEPnjABaWl6jgHnGFCvWX280cQcKMuC3KnJqSVhMOcMeb726oMU
-        jSkDY+qGX62TN8TCByPEsXeQe4HF8vU=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=U/VVqJ2rvS3+utXonMTYrBEeM8oEcGBPKY47J7o2598=;
+        b=XX+GAkY+VwEhfrfduVBKBk6jW1cawTvExATVkTuUe3/ayEosE8PS+NzCoc2Q4QvSf1Ri37
+        9wJfjfQVgKyhtTXm3sPcuCL9NyIaFnSpDpkToG1wbCOPiF6gEkDV9JHLAQj8ADJM/gNN5Y
+        xbKz/7vghGKeOAq7hoG3FFaXLIIgBeU=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-389-P5qoJwqmOOS-Vz2MisjJBw-1; Wed, 01 Dec 2021 19:03:56 -0500
-X-MC-Unique: P5qoJwqmOOS-Vz2MisjJBw-1
-Received: by mail-ed1-f72.google.com with SMTP id b15-20020aa7c6cf000000b003e7cf0f73daso21783810eds.22
-        for <netdev@vger.kernel.org>; Wed, 01 Dec 2021 16:03:56 -0800 (PST)
+ us-mta-585-4S4UNNNvMy-ZdJ1ueW7-mA-1; Wed, 01 Dec 2021 19:03:55 -0500
+X-MC-Unique: 4S4UNNNvMy-ZdJ1ueW7-mA-1
+Received: by mail-ed1-f69.google.com with SMTP id y9-20020aa7c249000000b003e7bf7a1579so21804283edo.5
+        for <netdev@vger.kernel.org>; Wed, 01 Dec 2021 16:03:54 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=fSr+KoEIWo8E81JSKgnaP/OFNTm6nID/Hkd90v+JLcg=;
-        b=Z1l/ptjsuwcaFew3bJUcE6eRF+m0cEaeqA8yEHTD4H7R+QwvIAf8m/aab0XNex2a1l
-         ifokCt3OmqUmmfZ6lS4RlsfXVXZ58m8kuxymW4MLHJAOU8Ftnn+lkiIldoSXpEQiS94L
-         QFqCZZaa8dziUX1oZk4X4A4TyyxdXrnmoKhISjT32wOWFuPMMagC/d/DQ98c1vZUPB6x
-         2vbPG5aBgBmVUav8f0ivo4RkU/ZRU+Tb5IG7kWlsxYXmGrMbM0hEFHSufgsvIp+L8AJo
-         wdw+kPPjcFKsr6Tg8553xS0H5CsE5Gmu/DAnCzHjsZWYRgjgMbxvvoFD2aSkG9T3ov55
-         gyUw==
-X-Gm-Message-State: AOAM533MQmBTTygFj5A4Yj2LT0eN4DOwue5yeYnHVRKIRI4KZkB9nj0h
-        xyMuKDHuKOL1Tc1NYXtrXmryaOh8sa5JJPUEPx7uU2BAWcJ/M3e88yGarHC8VrbuQgTq88fgH0k
-        AXKog30MxPv1ftkTz
-X-Received: by 2002:a50:ec16:: with SMTP id g22mr12502164edr.214.1638403433485;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=U/VVqJ2rvS3+utXonMTYrBEeM8oEcGBPKY47J7o2598=;
+        b=G8S9lKij/Y0qqfJQlU41y5TgW4sCK2lwB6slu/OjLLC3VlBG5kBMpTv2w+Vhh+iRrS
+         FNeZJbT3VIQmw7Xm32x8CV9fCOiMh4/B1L1iaeVDXGlB4GPArjSkMaxrVSWFRx1C6452
+         ZRqs79RUdiFrLBlnIeH9dpWBPV7CCzr3aT3+FnxEFUZabPAkOBi12/Cw7Q2xJS1hntgg
+         NVrs+a/YJJNc4/v221fo+2cxh8gHoVoX1nKqwqAy0Kg0IsKvjVK2JP4uIZQ3o1gYb63v
+         /1myUQvuMHmSXMZoK4FN3qajulqmvFIsgsUPPnjOIDN3cQhhKBiH2hRPC2GSjZSegwel
+         ySyg==
+X-Gm-Message-State: AOAM530jut1WhDOCYM2gDSRLUI9UIv4zsqhic10MDjriVnG2e0/qxHg1
+        los6wdjFzDXDT8y9kupCo6B4LV0F8nzVFZiQ+931UEx0ik49TSGG3N2kAU2Xom4nTehrP/fyUdO
+        SjL5aEEN9Fm0DPz7Y
+X-Received: by 2002:a50:e102:: with SMTP id h2mr12566893edl.298.1638403433879;
         Wed, 01 Dec 2021 16:03:53 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyu1r8ybiI3w4s1N7qY0K+P1bCSCb7+/OV7H9aieQDcNQt9JLQxWIcdvoO+IZoJvKC2UpE0TA==
-X-Received: by 2002:a50:ec16:: with SMTP id g22mr12502024edr.214.1638403432375;
-        Wed, 01 Dec 2021 16:03:52 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id sa3sm625053ejc.113.2021.12.01.16.03.51
+X-Google-Smtp-Source: ABdhPJyZmHop5Ge6qSzyuP7uAvHY/UWbBwr7FnWuIOUcaT9S7FEQFAGTzcI+yRyeuOzgpn3YScDHQA==
+X-Received: by 2002:a50:e102:: with SMTP id h2mr12566858edl.298.1638403433621;
+        Wed, 01 Dec 2021 16:03:53 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id g1sm621476eje.105.2021.12.01.16.03.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Dec 2021 16:03:51 -0800 (PST)
+        Wed, 01 Dec 2021 16:03:53 -0800 (PST)
 Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 3C7C81802A0; Thu,  2 Dec 2021 01:03:50 +0100 (CET)
+        id ABD431802A0; Thu,  2 Dec 2021 01:03:52 +0100 (CET)
 From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
+To:     Jesper Dangaard Brouer <hawk@kernel.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
+        KP Singh <kpsingh@kernel.org>
 Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH bpf-next 0/8] Add support for transmitting packets using XDP in bpf_prog_run()
-Date:   Thu,  2 Dec 2021 01:02:21 +0100
-Message-Id: <20211202000232.380824-1-toke@redhat.com>
+Subject: [PATCH bpf-next 1/8] page_pool: Add callback to init pages when they are allocated
+Date:   Thu,  2 Dec 2021 01:02:22 +0100
+Message-Id: <20211202000232.380824-2-toke@redhat.com>
 X-Mailer: git-send-email 2.34.0
+In-Reply-To: <20211202000232.380824-1-toke@redhat.com>
+References: <20211202000232.380824-1-toke@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -77,66 +80,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series adds support for transmitting packets using XDP in
-bpf_prog_run(), by enabling the xdp_do_redirect() callback so XDP programs
-can perform "real" redirects to devices or maps, using an opt-in flag when
-executing the program.
+Add a new callback function to page_pool that, if set, will be called every
+time a new page is allocated. This will be used from bpf_test_run() to
+initialise the page data with the data provided by userspace when running
+XDP programs with redirect turned on.
 
-The primary use case for this is testing the redirect map types and the
-ndo_xdp_xmit driver operation without generating external traffic. But it
-turns out to also be useful for creating a programmable traffic generator.
-The last patch adds a sample traffic generator to bpf/samples, which
-can transmit up to 11.5 Mpps/core on my test machine.
+Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+---
+ include/net/page_pool.h | 2 ++
+ net/core/page_pool.c    | 2 ++
+ 2 files changed, 4 insertions(+)
 
-To transmit the frames, the new mode instantiates a page_pool structure in
-bpf_prog_run() and initialises the pages with the data passed in by
-userspace. These pages can then be redirected using the normal redirection
-mechanism, and the existing page_pool code takes care of returning and
-recycling them. The setup is optimised for high performance with a high
-number of repetitions to support stress testing and the traffic generator
-use case; see patch 6 for details.
-
-The series is structured as follows: Patches 1-2 adds a few features to
-page_pool that are needed for the usage in bpf_prog_run(). Similarly,
-patches 3-5 performs a couple of preparatory refactorings of the XDP
-redirect and memory management code. Patch 6 adds the support to
-bpf_prog_run() itself, patch 7 adds a selftest, and patch 8 adds the
-traffic generator example to samples/bpf.
-
-Toke Høiland-Jørgensen (8):
-  page_pool: Add callback to init pages when they are allocated
-  page_pool: Store the XDP mem id
-  xdp: Allow registering memory model without rxq reference
-  xdp: Move conversion to xdp_frame out of map functions
-  xdp: add xdp_do_redirect_frame() for pre-computed xdp_frames
-  bpf: Add XDP_REDIRECT support to XDP for bpf_prog_run()
-  selftests/bpf: Add selftest for XDP_REDIRECT in bpf_prog_run()
-  samples/bpf: Add xdp_trafficgen sample
-
- include/linux/bpf.h                           |  20 +-
- include/linux/filter.h                        |   4 +
- include/net/page_pool.h                       |  11 +-
- include/net/xdp.h                             |   3 +
- include/uapi/linux/bpf.h                      |   2 +
- kernel/bpf/Kconfig                            |   1 +
- kernel/bpf/cpumap.c                           |   8 +-
- kernel/bpf/devmap.c                           |  32 +-
- net/bpf/test_run.c                            | 197 +++++++-
- net/core/filter.c                             |  41 +-
- net/core/page_pool.c                          |   6 +-
- net/core/xdp.c                                |  94 ++--
- samples/bpf/.gitignore                        |   1 +
- samples/bpf/Makefile                          |   4 +
- samples/bpf/xdp_redirect.bpf.c                |  34 ++
- samples/bpf/xdp_trafficgen_user.c             | 444 ++++++++++++++++++
- tools/include/uapi/linux/bpf.h                |   2 +
- .../bpf/prog_tests/xdp_do_redirect.c          |  74 +++
- .../bpf/progs/test_xdp_do_redirect.c          |  34 ++
- 19 files changed, 920 insertions(+), 92 deletions(-)
- create mode 100644 samples/bpf/xdp_trafficgen_user.c
- create mode 100644 tools/testing/selftests/bpf/prog_tests/xdp_do_redirect.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_xdp_do_redirect.c
-
+diff --git a/include/net/page_pool.h b/include/net/page_pool.h
+index 3855f069627f..a71201854c41 100644
+--- a/include/net/page_pool.h
++++ b/include/net/page_pool.h
+@@ -80,6 +80,8 @@ struct page_pool_params {
+ 	enum dma_data_direction dma_dir; /* DMA mapping direction */
+ 	unsigned int	max_len; /* max DMA sync memory size */
+ 	unsigned int	offset;  /* DMA addr offset */
++	void (*init_callback)(struct page *page, void *arg);
++	void *init_arg;
+ };
+ 
+ struct page_pool {
+diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+index 9b60e4301a44..fb5a90b9d574 100644
+--- a/net/core/page_pool.c
++++ b/net/core/page_pool.c
+@@ -219,6 +219,8 @@ static void page_pool_set_pp_info(struct page_pool *pool,
+ {
+ 	page->pp = pool;
+ 	page->pp_magic |= PP_SIGNATURE;
++	if (unlikely(pool->p.init_callback))
++		pool->p.init_callback(page, pool->p.init_arg);
+ }
+ 
+ static void page_pool_clear_pp_info(struct page *page)
 -- 
 2.34.0
 
