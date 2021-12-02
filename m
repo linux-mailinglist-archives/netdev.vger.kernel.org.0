@@ -2,123 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1782E466B6D
-	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 22:11:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B92A1466B70
+	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 22:13:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356316AbhLBVPI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Dec 2021 16:15:08 -0500
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:47595 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229683AbhLBVPH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 16:15:07 -0500
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-283-q5l0cWmjOraT5uYWJuky4w-1; Thu, 02 Dec 2021 21:11:42 +0000
-X-MC-Unique: q5l0cWmjOraT5uYWJuky4w-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.26; Thu, 2 Dec 2021 21:11:41 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.026; Thu, 2 Dec 2021 21:11:41 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Noah Goldstein' <goldstein.w.n@gmail.com>,
-        Eric Dumazet <edumazet@google.com>
-CC:     "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        Borislav Petkov <bp@alien8.de>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        X86 ML <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "alexanderduyck@fb.com" <alexanderduyck@fb.com>,
-        "open list" <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Subject: RE: [PATCH v1] x86/lib: Optimize 8x loop and memory clobbers in
- csum_partial.c
-Thread-Topic: [PATCH v1] x86/lib: Optimize 8x loop and memory clobbers in
- csum_partial.c
-Thread-Index: AQHX4nNzHa79im/GnUeKV4t1ya1z3awZWESAgAAYhYCABdIhIIAAbAaSgAALIYA=
-Date:   Thu, 2 Dec 2021 21:11:41 +0000
-Message-ID: <ca8dcc5b6fbf47b29d55a2ab9815c182@AcuMS.aculab.com>
-References: <20211125193852.3617-1-goldstein.w.n@gmail.com>
- <CANn89iLnH5B11CtzZ14nMFP7b--7aOfnQqgmsER+NYNzvnVurQ@mail.gmail.com>
- <CAFUsyfK-znRWJN7FTMdJaDTd45DgtBQ9ckKGyh8qYqn0eFMMFA@mail.gmail.com>
- <CAFUsyfLKqonuKAh4k2qdBa24H1wQtR5FkAmmtXQGBpyizi6xvQ@mail.gmail.com>
- <CAFUsyfJ619Jx_BS515Se0V_zRdypOg3_2YzbKUk5zDBNaixhaQ@mail.gmail.com>
- <8e4961ae0cf04a5ca4dffdec7da2e57b@AcuMS.aculab.com>
- <CAFUsyfLoEckBrnYKUgqWC7AJPTBDfarjBOgBvtK7eGVZj9muYQ@mail.gmail.com>
- <29cf408370b749069f3b395781fe434c@AcuMS.aculab.com>
- <CANn89iJgNie40sGqAyJ8CM3yKNqRXGGPkMtTPwXQ4S_9jVspgw@mail.gmail.com>
- <CAFUsyfJticWKb3fv12r5L5QZ0AVxytWqtPVkYKeFYLW3K1SMNw@mail.gmail.com>
-In-Reply-To: <CAFUsyfJticWKb3fv12r5L5QZ0AVxytWqtPVkYKeFYLW3K1SMNw@mail.gmail.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S1356170AbhLBVQ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Dec 2021 16:16:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43896 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243377AbhLBVQ0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 16:16:26 -0500
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10F64C06174A;
+        Thu,  2 Dec 2021 13:13:03 -0800 (PST)
+Received: by mail-ed1-x533.google.com with SMTP id z5so3306536edd.3;
+        Thu, 02 Dec 2021 13:13:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=CosSd+cgUcNUiaY0hs7VW9skwmiaGD8L6mDXn30jLrE=;
+        b=JdXG6rsH5kxSnasrKVMg86W+ysQD/1JwF4sgOtgQREvDvaiw5rfW6E/IchkwkJeOFH
+         svKXqSr3i91JLZZzugdUqIPapjn13w7Ov/bo36TeHD8r1wYC6mwz3/np/TdjS1LFLp7L
+         AXBYuO34jZsl6JpNILpjmr7zQX3v0gyAVG5MdTGdZORF7Y049BAgyD/6mmtBdnc6fXsD
+         QaqA8YEJAdi89KP3Ib1u3Ss5umfkF9rY9w3mDk3yv/bLXbkFO2V92E0nPKoH/AGcM7WB
+         BKo/Dd4FAe0inxeZSVNtaMvKSdc6ly8E6VqabSp7ZtRyQ1EWQf/Z3vSO/T8JunoHZ5vR
+         QZuA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=CosSd+cgUcNUiaY0hs7VW9skwmiaGD8L6mDXn30jLrE=;
+        b=HCTTBqvRpUnoB98fz/WG/tLBggZeHgKtT1GQJBl9gHvVXtrtOHzQK5iJettVrDNXk8
+         Q2n/J8Z2Lw104AeRvy+nVGqpybjHWbnWkTcTUPi+O6Fykq44UrSJsmBgNkAwCJORlg8v
+         Z1LABZzWzwE6SVfmNFKSHVgzCm8bdpOOlq4u7LTOtAqGR+hTB1o2CQeH6pnXIRuCU8/C
+         t9z3erTnfDoF+/yHQcCFgkE7wdQMMAM8rcg63R6geSlVlxJ7r9xAtyI9FwLGGew0hCac
+         4h//mhm5Rda+g//+8D/W7PqPdfhJ6Torq6mHzT7u7eXFy9fn04vZC9xlBydmQBXWt/Tb
+         0VvA==
+X-Gm-Message-State: AOAM532weJV8cI2I1LNpcdw68WY7laLhQRZSnX9rqaHvVc/Y6AZd9sM0
+        mV8RTCuY0OaYhDRWGarwa9Q=
+X-Google-Smtp-Source: ABdhPJwx6u0YDT9Q5iFGmV1UgIGHGbcKO1BBHb/CW6Gku0y4F30OzcH6F/wEO+rS4b4N4yi9ocfkdA==
+X-Received: by 2002:a17:907:3f83:: with SMTP id hr3mr18410051ejc.555.1638479581662;
+        Thu, 02 Dec 2021 13:13:01 -0800 (PST)
+Received: from skbuf ([188.25.173.50])
+        by smtp.gmail.com with ESMTPSA id gs15sm625863ejc.42.2021.12.02.13.13.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 Dec 2021 13:13:01 -0800 (PST)
+Date:   Thu, 2 Dec 2021 23:12:59 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Linus Walleij <linus.walleij@linaro.org>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH v1 1/1] net: dsa: vsc73xxx: Get rid of duplicate of_node
+ assignment
+Message-ID: <20211202211259.qzdg3zs7lkjbykhn@skbuf>
+References: <20211202210029.77466-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211202210029.77466-1-andriy.shevchenko@linux.intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogTm9haCBHb2xkc3RlaW4NCj4gU2VudDogMDIgRGVjZW1iZXIgMjAyMSAyMDoxOQ0KPiAN
-Cj4gT24gVGh1LCBEZWMgMiwgMjAyMSBhdCA5OjAxIEFNIEVyaWMgRHVtYXpldCA8ZWR1bWF6ZXRA
-Z29vZ2xlLmNvbT4gd3JvdGU6DQo+ID4NCj4gPiBPbiBUaHUsIERlYyAyLCAyMDIxIGF0IDY6MjQg
-QU0gRGF2aWQgTGFpZ2h0IDxEYXZpZC5MYWlnaHRAYWN1bGFiLmNvbT4gd3JvdGU6DQo+ID4gPg0K
-PiA+ID4gSSd2ZSBkdWcgb3V0IG15IHRlc3QgcHJvZ3JhbSBhbmQgbWVhc3VyZWQgdGhlIHBlcmZv
-cm1hbmNlIG9mDQo+ID4gPiB2YXJpb3VzIGNvcGllZCBvZiB0aGUgaW5uZXIgbG9vcCAtIHVzdWFs
-bHkgNjQgYnl0ZXMvaXRlcmF0aW9uLg0KPiA+ID4gQ29kZSBpcyBiZWxvdy4NCj4gPiA+DQo+ID4g
-PiBJdCB1c2VzIHRoZSBoYXJkd2FyZSBwZXJmb3JtYW5jZSBjb3VudGVyIHRvIGdldCB0aGUgbnVt
-YmVyIG9mDQo+ID4gPiBjbG9ja3MgdGhlIGlubmVyIGxvb3AgdGFrZXMuDQo+ID4gPiBUaGlzIGlz
-IHJlYXNvbmFibGUgc3RhYmxlIG9uY2UgdGhlIGJyYW5jaCBwcmVkaWN0b3IgaGFzIHNldHRsZWQg
-ZG93bi4NCj4gPiA+IFNvIHRoZSBkaWZmZXJlbnQgaW4gY2xvY2tzIGJldHdlZW4gYSA2NCBieXRl
-IGJ1ZmZlciBhbmQgYSAxMjggYnl0ZQ0KPiA+ID4gYnVmZmVyIGlzIHRoZSBudW1iZXIgb2YgY2xv
-Y2tzIGZvciA2NCBieXRlcy4NCj4gDQo+IEludHVpdGl2ZWx5IDEwIHBhc3NlcyBpcyBhIGJpdCBs
-b3cuDQoNCkknbSBkb2luZyAxMCBzZXBhcmF0ZSBtZWFzdXJlbWVudHMuDQpUaGUgZmlyc3Qgb25l
-IGlzIG11Y2ggc2xvd2VyIGJlY2F1c2UgdGhlIGNhY2hlIGlzIGNvbGQuDQpBbGwgdGhlIG9uZXMg
-YWZ0ZXIgKHR5cGljYWxseSkgbnVtYmVyIDUgb3IgNiB0ZW5kIHRvIGdpdmUgdGhlIHNhbWUgYW5z
-d2VyLg0KMTAgaXMgcGxlbnR5IHRvIGdpdmUgeW91IHRoYXQgJ3dhcm0gZnV6enkgZmVlbGluZycg
-dGhhdCB5b3UndmUgZ290DQphIGNvbnNpc3RlbnQgYW5zd2VyLg0KDQpSdW4gdGhlIHByb2dyYW0g
-NSBvciA2IHRpbWVzIHdpdGggdGhlIHNhbWUgcGFyYW1ldGVycyBhbmQgeW91IHNvbWV0aW1lcw0K
-Z2V0IGEgZGlmZmVyZW50IHN0YWJsZSB2YWx1ZSAtIHByb2JhYmx5IHNvbWV0aGluZyB0byBkbyB3
-aXRoIHN0YWNrIGFuZA0KZGF0YSBwaHlzaWNhbCBwYWdlcy4NCldhcyBtb3JlIG9idmlvdXMgd2hl
-biBJIHdhcyB0aW1pbmcgYSBzeXN0ZW0gY2FsbC4NCg0KPiBBbHNvIHlvdSBtaWdodCBjb25zaWRl
-ciBhbGlnbmluZw0KPiB0aGUgYGNzdW02NGAgZnVuY3Rpb24gYW5kIHBvc3NpYmx5IHRoZSBsb29w
-cy4NCg0KV29uJ3QgbWF0dGVyIGhlcmUsIGluc3RydWN0aW9uIGRlY29kZSBpc24ndCB0aGUgcHJv
-YmxlbS4NCkFsc28gdGhlIHVvcHMgYWxsIGNvbWUgb3V0IG9mIHRoZSBsb29wIHVvcCBjYWNoZS4N
-Cg0KPiBUaGVyZSBhIHJlYXNvbiB5b3UgcHV0IGAganJjeHpgIGF0IHRoZSBiZWdpbm5pbmcgb2Yg
-dGhlIGxvb3BzIGluc3RlYWQNCj4gb2YgdGhlIGVuZD8NCg0KanJjeHogaXMgJ2p1bXAgaWYgY3gg
-emVybycgLSBoYXJkIHRvIHVzZSBhdCB0aGUgYm90dG9tIG9mIGEgbG9vcCENCg0KVGhlICdwYWly
-ZWQnIGxvb3AgZW5kIGluc3RydWN0aW9uIGlzICdsb29wJyAtIGRlY3JlbWVudCAlY3ggYW5kIGp1
-bXAgbm9uLXplcm8uDQpCdXQgdGhhdCBpcyA3KyBjeWNsZXMgb24gY3VycmVudCBJbnRlbCBjcHUg
-KG9rIG9uIGFtZCBvbmVzKS4NCg0KSSBjYW4gZ2V0IGEgdHdvIGNsb2NrIGxvb3Agd2l0aCBqcmN4
-eiBhbmQgam1wIC0gYXMgaW4gdGhlIGV4YW1wbGVzLg0KQnV0IGl0IGlzIG1vcmUgc3RhYmxlIHRh
-a2VuIG91dCB0byA0IGNsb2Nrcy4NCg0KWW91IGNhbid0IGRvIGEgb25lIGNsb2NrIGxvb3AgOi0o
-DQoNCj4gPiA+IChVbmxpa2UgdGhlIFRTQyB0aGUgcG1jIGNvdW50IGRvZXNuJ3QgZGVwZW5kIG9u
-IHRoZSBjcHUgZnJlcXVlbmN5LikNCj4gPiA+DQo+ID4gPiBXaGF0IGlzIGludGVyZXN0aW5nIGlz
-IHRoYXQgZXZlbiBzb21lIG9mIHRoZSB0cml2aWFsIGxvb3BzIGFwcGVhcg0KPiA+ID4gdG8gYmUg
-ZG9pbmcgMTYgYnl0ZXMgcGVyIGNsb2NrIGZvciBzaG9ydCBidWZmZXJzIC0gd2hpY2ggaXMgaW1w
-b3NzaWJsZS4NCj4gPiA+IENoZWNrc3VtIDFrIGJ5dGVzIGFuZCB5b3UgZ2V0IGFuIGVudGlyZWx5
-IGRpZmZlcmVudCBhbnN3ZXIuDQo+ID4gPiBUaGUgb25seSBsb29wIHRoYXQgcmVhbGx5IGV4Y2Vl
-ZHMgOCBieXRlcy9jbG9jayBmb3IgbG9uZyBidWZmZXJzDQo+ID4gPiBpcyB0aGUgYWR4Yy9hZG9j
-IG9uZS4NCj4gPiA+DQo+ID4gPiBXaGF0IGlzIGFsbW9zdCBjZXJ0YWlubHkgaGFwcGVuaW5nIGlz
-IHRoYXQgYWxsIHRoZSBtZW1vcnkgcmVhZHMgYW5kDQo+ID4gPiB0aGUgZGVwZW5kYW50IGFkZC9h
-ZGMgaW5zdHJ1Y3Rpb25zIGFyZSBhbGwgcXVldWVkIHVwIGluIHRoZSAnb3V0IG9mDQo+ID4gPiBv
-cmRlcicgZXhlY3V0aW9uIHVuaXQuDQo+ID4gPiBTaW5jZSAncmRwbWMnIGlzbid0IGEgc2VyaWFs
-aXNpbmcgaW5zdHJ1Y3Rpb24gdGhleSBjYW4gc3RpbGwgYmUNCj4gPiA+IG91dHN0YW5kaW5nIHdo
-ZW4gdGhlIGZ1bmN0aW9uIHJldHVybnMuDQo+ID4gPiBVbmNvbW1lbnQgdGhlICdyZHRzYycgYW5k
-IHlvdSBnZXQgbXVjaCBzbG93ZXIgdmFsdWVzIGZvciBzaG9ydCBidWZmZXJzLg0KPiANCj4gTWF5
-YmUgYWRkIGFuIGBsZmVuY2VgIGJlZm9yZSAvIGFmdGVyIGBjc3VtNjRgDQoNClRoYXQncyBwcm9i
-YWJseSBsZXNzIHN0cm9uZyB0aGFuIHJkdHNjLCBJIG1pZ2h0IHRyeSBpdC4NCg0KCURhdmlkDQoN
-Ci0NClJlZ2lzdGVyZWQgQWRkcmVzcyBMYWtlc2lkZSwgQnJhbWxleSBSb2FkLCBNb3VudCBGYXJt
-LCBNaWx0b24gS2V5bmVzLCBNSzEgMVBULCBVSw0KUmVnaXN0cmF0aW9uIE5vOiAxMzk3Mzg2IChX
-YWxlcykNCg==
+On Thu, Dec 02, 2021 at 11:00:29PM +0200, Andy Shevchenko wrote:
+> GPIO library does copy the of_node from the parent device of
+> the GPIO chip, there is no need to repeat this in the individual
+> drivers. Remove assignment here.
+> 
+> For the details one may look into the of_gpio_dev_init() implementation.
+> 
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> ---
+>  drivers/net/dsa/vitesse-vsc73xx-core.c | 3 ---
+>  1 file changed, 3 deletions(-)
+> 
+> diff --git a/drivers/net/dsa/vitesse-vsc73xx-core.c b/drivers/net/dsa/vitesse-vsc73xx-core.c
+> index 4c18f619ec02..ae55167ce0a6 100644
+> --- a/drivers/net/dsa/vitesse-vsc73xx-core.c
+> +++ b/drivers/net/dsa/vitesse-vsc73xx-core.c
+> @@ -1122,9 +1122,6 @@ static int vsc73xx_gpio_probe(struct vsc73xx *vsc)
+>  	vsc->gc.ngpio = 4;
+>  	vsc->gc.owner = THIS_MODULE;
+>  	vsc->gc.parent = vsc->dev;
+> -#if IS_ENABLED(CONFIG_OF_GPIO)
+> -	vsc->gc.of_node = vsc->dev->of_node;
+> -#endif
+>  	vsc->gc.base = -1;
+>  	vsc->gc.get = vsc73xx_gpio_get;
+>  	vsc->gc.set = vsc73xx_gpio_set;
+> -- 
+> 2.33.0
+> 
 
+I'm in To: and everyone else is in Cc? I don't even have the hardware.
+Adding Linus just in case, although the change seems correct.
+
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
