@@ -2,98 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3085E465DAD
-	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 06:11:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E3AE465DF7
+	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 06:41:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233952AbhLBFOR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Dec 2021 00:14:17 -0500
-Received: from marcansoft.com ([212.63.210.85]:47542 "EHLO mail.marcansoft.com"
+        id S1355557AbhLBFoc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Dec 2021 00:44:32 -0500
+Received: from mga01.intel.com ([192.55.52.88]:35206 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229469AbhLBFOQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 2 Dec 2021 00:14:16 -0500
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        (Authenticated sender: marcan@marcan.st)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id 3B5CE41F5F;
-        Thu,  2 Dec 2021 05:10:50 +0000 (UTC)
-Subject: Re: [PATCH] ethernet: aquantia: Try MAC address from device tree
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Tianhao Chai <cth451@gmail.com>,
-        Igor Russkikh <irusskikh@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>
-References: <20211128023733.GA466664@cth-desktop-dorm.mad.wi.cth451.me>
- <YaOvShya4kP4SRk7@lunn.ch> <37679b8b-7a81-5605-23af-e442f9e91816@marcan.st>
- <YaWNKiXwr/uHlNJD@lunn.ch>
-From:   Hector Martin <marcan@marcan.st>
-Message-ID: <80083aba-c906-f076-c887-910d3fe186f6@marcan.st>
-Date:   Thu, 2 Dec 2021 14:10:49 +0900
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        id S1355337AbhLBFob (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 2 Dec 2021 00:44:31 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10185"; a="260622526"
+X-IronPort-AV: E=Sophos;i="5.87,281,1631602800"; 
+   d="scan'208";a="260622526"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Dec 2021 21:41:09 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.87,281,1631602800"; 
+   d="scan'208";a="459513515"
+Received: from lkp-server02.sh.intel.com (HELO 9e1e9f9b3bcb) ([10.239.97.151])
+  by orsmga003.jf.intel.com with ESMTP; 01 Dec 2021 21:41:06 -0800
+Received: from kbuild by 9e1e9f9b3bcb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1mseqA-000Fux-17; Thu, 02 Dec 2021 05:41:06 +0000
+Date:   Thu, 2 Dec 2021 13:40:38 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     kbuild-all@lists.01.org, netdev <netdev@vger.kernel.org>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Eric Dumazet <edumazet@google.com>
+Subject: Re: [PATCH net-next 08/19] drop_monitor: add net device refcount
+ tracker
+Message-ID: <202112021345.IlporM5t-lkp@intel.com>
+References: <20211202032139.3156411-9-eric.dumazet@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <YaWNKiXwr/uHlNJD@lunn.ch>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: es-ES
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211202032139.3156411-9-eric.dumazet@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 30/11/2021 11.32, Andrew Lunn wrote:
-> On Mon, Nov 29, 2021 at 02:08:28AM +0900, Hector Martin wrote:
->> On 29/11/2021 01.33, Andrew Lunn wrote:
->>> On Sat, Nov 27, 2021 at 08:37:33PM -0600, Tianhao Chai wrote:
->>>> Apple M1 Mac minis (2020) with 10GE NICs do not have MAC address in the
->>>> card, but instead need to obtain MAC addresses from the device tree. In
->>>> this case the hardware will report an invalid MAC.
->>>>
->>>> Currently atlantic driver does not query the DT for MAC address and will
->>>> randomly assign a MAC if the NIC doesn't have a permanent MAC burnt in.
->>>> This patch causes the driver to perfer a valid MAC address from OF (if
->>>> present) over HW self-reported MAC and only fall back to a random MAC
->>>> address when neither of them is valid.
->>>
->>> This is a change in behaviour, and could cause regressions. It would
->>> be better to keep with the current flow. Call
->>> aq_fw_ops->get_mac_permanent() first. If that does not give a valid
->>> MAC address, then try DT, and lastly use a random MAC address.
->>
->> On DT platforms, it is expected that the device tree MAC will override
->> whatever the device thinks is its MAC address.
-> 
-> Can you point to any documentation of that expectation?
+Hi Eric,
 
-I don't think this is explicitly clarified anywhere, but the DT binding 
-says:
+I love your patch! Perhaps something to improve:
 
- > Specifies the MAC address that was assigned to the network device.
+[auto build test WARNING on net-next/master]
 
-It certainly doesn't say this should be a fallback only to be used if 
-the device doesn't have some idea of its MAC. Usually you'd expect 
-firmware information to override whatever the device's built-in defaults 
-are.
+url:    https://github.com/0day-ci/linux/commits/Eric-Dumazet/net-add-preliminary-netdev-refcount-tracking/20211202-112353
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 8057cbb8335cf6d419866737504473833e1d128a
+config: nds32-allyesconfig (https://download.01.org/0day-ci/archive/20211202/202112021345.IlporM5t-lkp@intel.com/config)
+compiler: nds32le-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/6b336d0b301ebb1097132101a9e3bd01f71c40d4
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Eric-Dumazet/net-add-preliminary-netdev-refcount-tracking/20211202-112353
+        git checkout 6b336d0b301ebb1097132101a9e3bd01f71c40d4
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=nds32 SHELL=/bin/bash net/core/
 
->> I would not expect any other existing platform to have a MAC assigned to the
->> device in this way using these cards; if any platforms do, chances are they
->> intended it for it to be used and this patch will fix a current bug. If some
->> platforms out there really have bogus MACs assigned in this way, that's a
->> firmware bug, and we'd have to find out and add explicit, targeted
->> workaround code. Are you aware of any such platforms? :)
-> 
-> I'm not aware of any, because i try to avoid making behaviour changes.
-> 
-> Anyway, lets go with this, and if stuff breaks we can always change
-> the order to what i suggested in order to unbreak stuff. I'm assuming
-> for Apple M1 Mac minis the order does not actually matter?
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Correct, on these machines the burned-in MAC is invalid so it doesn't 
-matter.
+All warnings (new ones prefixed by >>):
+
+   net/core/drop_monitor.c: In function 'net_dm_hw_metadata_free':
+>> net/core/drop_monitor.c:869:47: warning: passing argument 2 of 'dev_put_track' discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
+     869 |         dev_put_track(hw_metadata->input_dev, &hw_metadata->dev_tracker);
+         |                                               ^~~~~~~~~~~~~~~~~~~~~~~~~
+   In file included from net/core/drop_monitor.c:10:
+   include/linux/netdevice.h:3863:53: note: expected 'struct ref_tracker **' but argument is of type 'struct ref_tracker * const*'
+    3863 |                                  netdevice_tracker *tracker)
+         |                                  ~~~~~~~~~~~~~~~~~~~^~~~~~~
 
 
--- 
-Hector Martin (marcan@marcan.st)
-Public Key: https://mrcn.st/pub
+vim +869 net/core/drop_monitor.c
+
+   865	
+   866	static void
+   867	net_dm_hw_metadata_free(const struct devlink_trap_metadata *hw_metadata)
+   868	{
+ > 869		dev_put_track(hw_metadata->input_dev, &hw_metadata->dev_tracker);
+   870		kfree(hw_metadata->fa_cookie);
+   871		kfree(hw_metadata->trap_name);
+   872		kfree(hw_metadata->trap_group_name);
+   873		kfree(hw_metadata);
+   874	}
+   875	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
