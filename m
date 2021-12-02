@@ -2,63 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 91B8D466CF8
-	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 23:35:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7245D466CFC
+	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 23:37:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244131AbhLBWjT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Dec 2021 17:39:19 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:36496 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238803AbhLBWjS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 2 Dec 2021 17:39:18 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=E2ZQufWrzofDnKHyWJaWMhk0I2dw6veQFpqqAeuR3aU=; b=H3UxwnBN0uwgzwktnlsfS7LbBo
-        S2wT+IIsPCtthYIJ7YSl4gXn3dzx1s/sOUTe0yXV6K6JeDJkSXYRQs79kbZQM0/XYvAUphEXPWSuL
-        HuHHHMyzoEEEcdHQH54deZqQe/I6HDZRSus1q+32pD+Wi7vSkoD+1dMs/79qnp14LptU=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1msugC-00FMx5-4J; Thu, 02 Dec 2021 23:35:52 +0100
-Date:   Thu, 2 Dec 2021 23:35:52 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Cc:     Arijit De <arijitde@marvell.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: How to avoid getting ndo_open() immediately after probe
-Message-ID: <YalKSIlxgt1utNOk@lunn.ch>
-References: <CO6PR18MB4465B4170C7A3B8F6DEFB369D4699@CO6PR18MB4465.namprd18.prod.outlook.com>
- <83adf5a5-11a2-e778-e455-c570caca7823@gmx.de>
+        id S1349644AbhLBWlK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Dec 2021 17:41:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34854 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349648AbhLBWlA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 17:41:00 -0500
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B55F9C06174A;
+        Thu,  2 Dec 2021 14:37:36 -0800 (PST)
+Received: by mail-wr1-x429.google.com with SMTP id q3so1770513wru.5;
+        Thu, 02 Dec 2021 14:37:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Kmcp57kL2SB6d/jhzWeEG601S67EDYKctUDcqu13bXM=;
+        b=GQj3vRK5mnzvz5sRXm9g1NQTRSQRdFCqzH9f8tMDNUuTxxMGMjdWJ4geOfjxM9YhjX
+         SUCs5K9J2Z1VFNVayPSLQrb60D/R6WZdfRzSW1NfZzPzCB54gP7ZHWcNJWFL02P1von5
+         LFazIsKPDmZcGdI8XE3PqzBhup1jwmGmwslgJ0dJen+D4OyrZbq7VhZzn2Gm7kT0LipB
+         2oJ7UaIGqWQ16nPFDz64E8p5jQb1mtCRGRheq1qtwG5KEW4xOCEJhvSJSC78udBUsfCe
+         br9HJUOMtt/yUkGD8tYXOhP/PLK/uQGP6ni03jLIHefweQ1DVPAkpDCKdIWX6sz1ZkZd
+         g1Ew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Kmcp57kL2SB6d/jhzWeEG601S67EDYKctUDcqu13bXM=;
+        b=nBjMkwrsT3FAleJq264f3v3bTqR7lGKrTEPnJZSOT6FSf2/h82H1MMO15/pYtsBdta
+         J1OIxTU+u88Zox230j/Mfi0sSVQ+hgPiYT30IqHnKwPtCNcoUpw2zMZc6pC9u0+B1vvB
+         /ChzoEdt+4amGCdRiqlckZmWTlnl7BIMtE45+HvGykUUWIS+p7bWPDmzfvh18rvW/Van
+         oYwDHf6YhMDS2i+dRURymxko+VJdpCwOb/SVHxojfW3AH2VozWGjP5nzmuIyVbbGhaAv
+         r0aAxkAfjFIfHGPbiPIMnFdYCq6Zn06KKlEtz4h94Q+UATjQ2esVFge4I0UwGVftacii
+         6QxA==
+X-Gm-Message-State: AOAM533gbW8kSphpd16h1yOGL+jZiqJr0pvC5z3TiTtInZjhST207IC6
+        FeQcp0ND9rhYSH3apwH0U4ml7YkcrGJpsQWV
+X-Google-Smtp-Source: ABdhPJxS7b97mhiyH/MfSwV6mhLzAwqSZ8AmmyjSrZMm60rJO+4B8Ek/XhXNaSKLVunCZl2SzED0xQ==
+X-Received: by 2002:a5d:42cc:: with SMTP id t12mr17389409wrr.129.1638484655295;
+        Thu, 02 Dec 2021 14:37:35 -0800 (PST)
+Received: from localhost.localdomain ([39.48.206.151])
+        by smtp.gmail.com with ESMTPSA id m125sm3321222wmm.39.2021.12.02.14.37.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 Dec 2021 14:37:34 -0800 (PST)
+From:   Ameer Hamza <amhamza.mgc@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, mcoquelin.stm32@gmail.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     amhamza.mgc@gmail.com
+Subject: [PATCH] net: stmmac: Fix possible division by zero
+Date:   Fri,  3 Dec 2021 03:37:29 +0500
+Message-Id: <20211202223729.134238-1-amhamza.mgc@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <83adf5a5-11a2-e778-e455-c570caca7823@gmx.de>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 02, 2021 at 09:29:21PM +0100, Lino Sanfilippo wrote:
-> 
-> Hi,
-> 
-> On 02.12.21 at 19:11, Arijit De wrote:
-> > Hi,
-> >
-> > I have handled the probe() and registered the netdev structure using register_netdev().
-> > I have observed in other opensource driver(i.e. Intel e1000e driver) that ndo_open() gets called only when we try to bring up the interface (i.e. ifconfig <ip> ifconfig eth0 <ip-addr> netmask <net-mask> up).
-> > But in my network driver I am getting ndo_open() call immediately after I handle the probe(). It's a wrong behavior, also my network interface is getting to UP/RUNNING state(as shown below) even without any valid ip address.
-> 
-> There is nothing wrong here. As soon as you register the netdevice with the kernel it is available
-> for userspace and userspace is free to bring it up. This may happen immediately after registration,
-> so your driver has to be prepared for this.
-> Its absolutely fine to bring up a network device without any ip address assigned.
+Fix for divide by zero error reported by Coverity.
 
-And if you are using NFS root, the kernel can actually call ndo_open()
-before register_netdev() even completes.
+Addresses-Coverity: 1494557 ("Division or modulo by zero")
 
-This is a common bug i look for in new drivers, register_netdev()
-pretty much has to be the last thing done inside the probe function.
+Signed-off-by: Ameer Hamza <amhamza.mgc@gmail.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-       Andrew
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index da8306f60730..f44400323407 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -863,7 +863,7 @@ int stmmac_init_tstamp_counter(struct stmmac_priv *priv, u32 systime_flags)
+ 	stmmac_config_sub_second_increment(priv, priv->ptpaddr,
+ 					   priv->plat->clk_ptp_rate,
+ 					   xmac, &sec_inc);
+-	temp = div_u64(1000000000ULL, sec_inc);
++	temp = div_u64(1000000000ULL, (sec_inc > 0) ? sec_inc : 1);
+ 
+ 	/* Store sub second increment for later use */
+ 	priv->sub_second_inc = sec_inc;
+-- 
+2.25.1
+
