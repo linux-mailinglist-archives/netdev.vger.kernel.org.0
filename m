@@ -2,103 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B3A8466909
-	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 18:24:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B44046690A
+	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 18:26:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376292AbhLBR1q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Dec 2021 12:27:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48982 "EHLO
+        id S1376299AbhLBR32 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Dec 2021 12:29:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242092AbhLBR1p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 12:27:45 -0500
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EF8EC06174A
-        for <netdev@vger.kernel.org>; Thu,  2 Dec 2021 09:24:22 -0800 (PST)
-Received: by mail-yb1-xb2c.google.com with SMTP id 131so1549238ybc.7
-        for <netdev@vger.kernel.org>; Thu, 02 Dec 2021 09:24:22 -0800 (PST)
+        with ESMTP id S1376294AbhLBR32 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 12:29:28 -0500
+Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82AEBC061757
+        for <netdev@vger.kernel.org>; Thu,  2 Dec 2021 09:26:05 -0800 (PST)
+Received: by mail-qv1-xf2e.google.com with SMTP id jo22so100373qvb.13
+        for <netdev@vger.kernel.org>; Thu, 02 Dec 2021 09:26:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=qMteKLxxWZIbMF68B5UDKV/rkpcwWnnS8TTYuWJf4hA=;
-        b=tJAtUh4DvOOIFyFQ5KKaRqRH/F9qRXlqqfqzAihO3m6KcqIUiqVrOEl7eYM5V3VY5e
-         uiXIQ8RWRlN0TLh+9g7b7kP2HQFiy6GO8HJkHsC6AvZcOe7uACz0GHPGNYPjIPA53UIE
-         bkDM+Kfkr0F/yRvuqF+Mgmp4d8mvK2M2AdhqraKIyfFMfeB0iA6Q32W7XexeEamamxCk
-         JcwB8gEsWIN6nYvLZZVUh7ai//GG23oGxi20WCz/q02oRkEXw5mFdJ7gxyl5oY7PBe0w
-         mi2Zkj3fU1pACM/lhxv6ZKlKJ4/rlf5Xyrg6EyQfESe4Pm3CX21VhvT0dW0Qsg/7euDg
-         WbPg==
+        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=tPWb18pzdYP4gepUET+WlF/T7jKUlf4IkvWpJ/7uajs=;
+        b=HWU/YEOe7zB1KHKCkY+8Ou6+yhZt0XooYuPjbA55YiEU8E9Jh92ee8ugy9PBGvlp6/
+         wmEyJG2p3k4DveKEGgY9W+3D2HkSHyGxtOtIyPQDeXBnmxr52SEc30rAnSDnbfpB9wGH
+         zweXfJvbTchrWtOIdTNg+/on+15ZkEYeVKAOJeTujXX6Qo9u0eQPTWPlAP1VNhUXAtxq
+         /HKQ5okeVjvWRa/jCYOJshNXaqPcHdt4NoevKj4uYcc+PtMtEe5n7z2R/WxD+zMbw/2R
+         l4g6dZYJOi+GR9ooJU5NitWpPCB7xOjK5vlCObtVSyyb9cSafSOAtBvZMOcxiVMg96iI
+         yWRg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=qMteKLxxWZIbMF68B5UDKV/rkpcwWnnS8TTYuWJf4hA=;
-        b=lVeKV6+T4IlDVWEbysx6SYrdza5u+mrwkjcjC60zN49MoDosUKedX8hsF8tlSAvKlM
-         4wVc3WI0j8JJXxuPJveBP6qAk704Z0bBmqOnJplRiVTVdPkyA3vyx+U6hQGiFOJ9WUVy
-         /rriw81KkSFxZLdbti1vkPAOln08p1ojSWMjkzwszmQCFx7a1pmbJ7WVcyNzo3s8q8AW
-         45Ztygbq78tj1FyRAWl+mCFIEeFcW/FSqQPcB7ldZirvvh/e1EhuqpHpGvkFjKyQFmml
-         UCtr5VoJQ7KnhKdkrrgQMxnxyNH4BgF0Ln2K6FvcJw4oCOz52C6UzP9cnYo4RqZ02KwB
-         3wkw==
-X-Gm-Message-State: AOAM532DPyBGdWn4EKXj9WIF+eFI9Z7YBQJAeHCHbCFI3uEKhJLpGosp
-        88n7Pv2DxecpwnAVjZZHXpx2qy0wHFchqPUVzDSYRA==
-X-Google-Smtp-Source: ABdhPJyrLwSG2+cOha6iaJWHs7ijIsk/XPVkICJTf5UOeEhqZ3Ql5J5mg2oaBOyN43CWL4M2l1LPg9woy8a2wFZpMDg=
-X-Received: by 2002:a25:760d:: with SMTP id r13mr17944040ybc.296.1638465861444;
- Thu, 02 Dec 2021 09:24:21 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=tPWb18pzdYP4gepUET+WlF/T7jKUlf4IkvWpJ/7uajs=;
+        b=ej2tdRaQK0ravbSDH61SGN2uilRZGROgm+dGI1vWffEDLsFfl6MLUfvjmDtU4IYdBz
+         KL5GvCy2J5GbwmERE4GUOp3bNJdKRD6mDikvKiYxuw3sziToFaETlL2luxO7jAnzIR+k
+         fQOiljUaOE0TEf1BuEkuc0r4yxl9uhlNVel7msMkCAHvgFhqJ3/rJq0S1xIN2JNzmtHM
+         QPRGn65x6bzXHjeQciCFc2KfWHIYwQhXYrHzq74TVIHiXM7hOJBaATcS22DogIpFJt7e
+         n6OReMzUEEuWXL0uH7jJ/8cChW3Bl3F8Ecmcc+E2FAXzM8BUuyZFRcjJlx8fZlxfNlYv
+         gaGQ==
+X-Gm-Message-State: AOAM533NdpeJ5lT1hQTa8atv/P/Bn+yG6dR6vUOkI9mztFSUqNJxGyCx
+        YdQubnaAGgPqHQKfCx8ZsXP5MHh8YuGgtg==
+X-Google-Smtp-Source: ABdhPJwPi2N4tWTQDbGIqoIjqHoLgu/k7WNG6Bdr/7aD60T2LHSMCLBsTMn1/Myl0ewziNJJomShQg==
+X-Received: by 2002:a05:6214:29c3:: with SMTP id gh3mr14425707qvb.44.1638465964664;
+        Thu, 02 Dec 2021 09:26:04 -0800 (PST)
+Received: from [192.168.1.173] (bras-base-kntaon1617w-grc-33-142-112-185-132.dsl.bell.ca. [142.112.185.132])
+        by smtp.googlemail.com with ESMTPSA id 2sm266083qkr.126.2021.12.02.09.26.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 02 Dec 2021 09:26:04 -0800 (PST)
+Message-ID: <1e86c2c7-eb84-4170-00f2-007bed67f93a@mojatatu.com>
+Date:   Thu, 2 Dec 2021 12:26:03 -0500
 MIME-Version: 1.0
-References: <5c7100d2-8327-1e5d-d04b-3db1bb86227a@gmail.com>
- <20211202164031.18134-1-hmukos@yandex-team.ru> <20211202164031.18134-5-hmukos@yandex-team.ru>
-In-Reply-To: <20211202164031.18134-5-hmukos@yandex-team.ru>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 2 Dec 2021 09:24:10 -0800
-Message-ID: <CANn89iKsq6fghsyfoeOjN8f7bpREq48tGAQSXz54Q2tp_J9DTQ@mail.gmail.com>
-Subject: Re: [RFC PATCH v2 net-next 4/4] tcp: change SYN ACK retransmit
- behaviour to account for rehash
-To:     Akhmat Karakotov <hmukos@yandex-team.ru>
-Cc:     eric.dumazet@gmail.com, mitradir@yandex-team.ru,
-        netdev@vger.kernel.org, tom@herbertland.com, zeil@yandex-team.ru
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.2
+Subject: Re: [PATCH net-next] net: prestera: flower template support
+Content-Language: en-US
+To:     Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
+        netdev@vger.kernel.org
+Cc:     Taras Chornyi <taras.chornyi@plvision.eu>,
+        Mickey Rachamim <mickeyr@marvell.com>,
+        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
+        Volodymyr Mytnyk <vmytnyk@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
+References: <1638460259-12619-1-git-send-email-volodymyr.mytnyk@plvision.eu>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+In-Reply-To: <1638460259-12619-1-git-send-email-volodymyr.mytnyk@plvision.eu>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 2, 2021 at 8:41 AM Akhmat Karakotov <hmukos@yandex-team.ru> wrote:
->
-> Disabling rehash behavior did not affect SYN ACK retransmits because hash
-> was forcefully changed bypassing the sk_rethink_hash function. This patch
-> adds a condition which checks for rehash mode before resetting hash.
->
-> Signed-off-by: Akhmat Karakotov <hmukos@yandex-team.ru>
-> ---
->  net/ipv4/tcp_output.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
->
-> diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-> index 6d72f3ea48c4..7d54bbe00cde 100644
-> --- a/net/ipv4/tcp_output.c
-> +++ b/net/ipv4/tcp_output.c
-> @@ -4108,7 +4108,8 @@ int tcp_rtx_synack(const struct sock *sk, struct request_sock *req)
->         struct flowi fl;
->         int res;
->
-> -       tcp_rsk(req)->txhash = net_tx_rndhash();
-> +       if (sk->sk_txrehash == SOCK_TXREHASH_ENABLED)
+On 2021-12-02 10:50, Volodymyr Mytnyk wrote:
+> From: Volodymyr Mytnyk<vmytnyk@marvell.com>
+> 
+> Add user template explicit support. At this moment, max
+> TCAM rule size is utilized for all rules, doesn't matter
+> which and how much flower matches are provided by user. It
+> means that some of TCAM space is wasted, which impacts
+> the number of filters that can be offloaded.
+> 
+> Introducing the template, allows to have more HW offloaded
+> filters.
+> 
+> Example:
+>    tc qd add dev PORT clsact
+>    tc chain add dev PORT ingress protocol ip \
+>      flower dst_ip 0.0.0.0/16
 
-Since you add a new sk->sk_txrehash, you probably want to add
-READ_ONCE()/WRITE_ONCE() over the reads/writes,
-because at this point the listener socket lock is not held.
+"chain" or "filter"?
 
-      /* Paired with WRITE_ONCE() in sock_setsockopt() */
-       if (READ_ONCE(sk->sk_txrehash) == SOCK_TXREHASH_ENABLED)
+>    tc filter add dev PORT ingress protocol ip \
+>      flower skip_sw dst_ip 1.2.3.4/16 action drop
 
-sock_setsockopt() would need a similar comment
-    /* Paired with READ_ONCE() in tcp_rtx_synack() */
-     WRITE_ONCE(sk->sk_txrehash, val);
+You are not using tc priority? Above will result in two priorities
+(the 0.0.0.0 entry will be more important) and in classical flower
+approach two  different tables.
+I am wondering how you map the table to the TCAM.
+Is the priority sorting entirely based on masks in hardware?
 
-
-
-> +               tcp_rsk(req)->txhash = net_tx_rndhash();
->         res = af_ops->send_synack(sk, NULL, &fl, req, NULL, TCP_SYNACK_NORMAL,
->                                   NULL);
->         if (!res) {
-> --
-> 2.17.1
->
+cheers,
+jamal
