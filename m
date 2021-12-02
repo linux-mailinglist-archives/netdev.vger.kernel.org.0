@@ -2,101 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E4CC46665D
-	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 16:22:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4405C466694
+	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 16:34:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358920AbhLBPZw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Dec 2021 10:25:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48856 "EHLO
+        id S1359025AbhLBPiL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Dec 2021 10:38:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358923AbhLBPZw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 10:25:52 -0500
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7BD3C06174A
-        for <netdev@vger.kernel.org>; Thu,  2 Dec 2021 07:22:29 -0800 (PST)
-Received: by mail-yb1-xb36.google.com with SMTP id v64so554566ybi.5
-        for <netdev@vger.kernel.org>; Thu, 02 Dec 2021 07:22:29 -0800 (PST)
+        with ESMTP id S1358984AbhLBPiK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 10:38:10 -0500
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7515AC06174A;
+        Thu,  2 Dec 2021 07:34:47 -0800 (PST)
+Received: by mail-pl1-x62c.google.com with SMTP id u11so20495031plf.3;
+        Thu, 02 Dec 2021 07:34:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=TUht/ntf/ensvlsmzh+M2wDOvlyEVZyPmC8DOWE2/yY=;
-        b=HFK94NWCMnYwmwTIXgerTojSRw+PzyEDfc+p6TkyU649F7e5YU5lGc6eiI6DZo0+bY
-         IeNen/mLoiiB4k0F00yCH2I0Q1P9AowD2g7MRouwywls2X4Kpu9K4kPko8pRLibDIyNR
-         a7miTOhawxIeSMNMWliPO2Y8xuLeP8xPj6nlctq8QNFaao6Z4H+zXlY/9oU8xm1ZMzvu
-         wSt0kihGZCFgd9mMDwg3bBZ+SCUSg70Be6bmAYKBdYUPpIpe6yTLeT/NLi4kUCWoRbCN
-         n7P09U4VhIkLqmjXR3NwvPK+XOw/wCjMU6DCowBIecg/MCv0S0MBBdCQWIbfgFOHn7Dl
-         /1SQ==
+         :cc:content-transfer-encoding;
+        bh=uDWxolb0OqtHKB4fKXPCc+zsagXL08BS8V3CqyXaOR4=;
+        b=X6AiT4U8iUfomEWuT1XhKlXnFMYwOmjeg/ucbcvfGTcQHDH9naMZnZRRJNw7Wp1nm5
+         jLaUzr3w7qIWRH9UpxqeULBIQYSWSdDOCS6vmxYWCeuz45Hv2ojOp4KsAENUyht/mViE
+         Jy/E5FjF+w6vnca5qNN47VQTOXCbUfC5OsBtLBvGwyKec41HDVwbCBTibycVScSpldrt
+         I0JhrLr3Uh946GCYYGpPUdfE5xf2HWRMHB/bEPEh2pVwvU4jkc1tAtXmb4nude5L4NMf
+         Z9WS9NimwocCDAalKX9JioFVkvj/iDiO4sNRJ8DTuqo4PcCyfnj7neQdPEPr8U2KXrju
+         2XQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=TUht/ntf/ensvlsmzh+M2wDOvlyEVZyPmC8DOWE2/yY=;
-        b=FgBxu77PxWI51r4QO1MfQuFDBPTFlCyiygTBnM9ABzWlQ4b4K2xF1I6NPIiX2YpgV3
-         45msxWx1xATlCnnhfiG746m7KOqeZLLGRVsGOEhsFeVGfnzBCjlkOU0UX14ksY9/Q27V
-         aDM5QOTQb+bB9Jki0YFtH8MXFk9u/p2o0pDXjEoFYiFsz1FSCAVyTMCVw4vvuBge4E/v
-         oyY5O3Qr1ZXZiyPUy4JM+LMNKlvFx9g44hMA97wWoGK3ryt6xCuytJVOR753vLwNEIbZ
-         jVG52wK/puDy0IxSbiAUgt7ImPu+qwm9zu5t7OPQFngu8s5PQjz6TVy2ejWowpmJrvzO
-         3kog==
-X-Gm-Message-State: AOAM532xbA4CW/wRcC5s64BWxLjALswA89DuTPnr5/DLp/uYjPDOlIR9
-        AwI8FkFBfaitzoV9FVB8jMbE7zuoacn9PqXdBp4Jqg==
-X-Google-Smtp-Source: ABdhPJyHeuvmT8TGJMYREpEP/EUUevyGiUabsj1qEHu03mYQ/Z2cYumbFr5cJqxs9FLSigPkxyDQssKbhbDQp8hQkm4=
-X-Received: by 2002:a05:6902:1025:: with SMTP id x5mr16286645ybt.156.1638458548592;
- Thu, 02 Dec 2021 07:22:28 -0800 (PST)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=uDWxolb0OqtHKB4fKXPCc+zsagXL08BS8V3CqyXaOR4=;
+        b=6VVuq7o+kcWEFY2wycELFLn6NTNX14/gyaQI5EUht1zrYCtXkibS00y5y+Uc65M6S6
+         ojwdamwhzwysukTZ3IwJxMT43PJDsuXuQFZ3gKU80CTdLdvzpwSYs6d6SbLHzXSKCR61
+         3QvmwMTBXPr+Pf3PtymujcZPQki0drF0VHE2yo3OlGicq63WQ6QDOgKaNy6cOfTuL3ey
+         ywjet/aOHvO84TtpDrmEcRIrx3t2LqfnThxIZ5eI6eVT2blQghrGR9Ws1eFRw72HJF+0
+         +G7NhkUHWMMMzOwID0UAcAue7UtvAZDdjMn6b4h9RAwD+Xx751zJxCSjuuFnB055Iieg
+         R+Fg==
+X-Gm-Message-State: AOAM531s7j3gSUr+XXTp7jMwUVs8eEYgchwJcam/g/Q4MAs7bslEHyNx
+        s3/Q+u8fbYt8mXQwYj/Yv4B6PHdOHG0oLe6moyU3oO78
+X-Google-Smtp-Source: ABdhPJyLbnAxanq+pggWtpgv5XgeL/6gLOqJ+UyeprNu4u/eezoRktisT2yjFB+ZKKcQAc9tf0H+5jnCY/j9ioB+OFk=
+X-Received: by 2002:a17:902:b588:b0:143:b732:834 with SMTP id
+ a8-20020a170902b58800b00143b7320834mr16304369pls.22.1638459286910; Thu, 02
+ Dec 2021 07:34:46 -0800 (PST)
 MIME-Version: 1.0
-References: <20211124202446.2917972-1-eric.dumazet@gmail.com>
- <20211124202446.2917972-3-eric.dumazet@gmail.com> <20211202131040.rdxzbfwh2slhftg5@skbuf>
- <88b82ae31dc54a4c8b2173487f61ffe9@AcuMS.aculab.com>
-In-Reply-To: <88b82ae31dc54a4c8b2173487f61ffe9@AcuMS.aculab.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 2 Dec 2021 07:22:17 -0800
-Message-ID: <CANn89iLok_EZ1L0ZYxQ+H9Wi+SPrgiyhWpAnVnQBfc5qcKgHWw@mail.gmail.com>
-Subject: Re: [PATCH net-next 2/2] net: optimize skb_postpull_rcsum()
-To:     David Laight <David.Laight@aculab.com>
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        David Lebrun <dlebrun@google.com>
+References: <1638410784-48646-1-git-send-email-cuibixuan@linux.alibaba.com>
+ <20211201192643.ecb0586e0d53bf8454c93669@linux-foundation.org>
+ <10cb0382-012b-5012-b664-c29461ce4de8@linux.alibaba.com> <20211201202905.b9892171e3f5b9a60f9da251@linux-foundation.org>
+ <YaiiFxD7jfFT9cSR@azazel.net>
+In-Reply-To: <YaiiFxD7jfFT9cSR@azazel.net>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 2 Dec 2021 07:34:36 -0800
+Message-ID: <CAADnVQLV4Tf3LemvZoZHw7jcywZ4qqckv_EMQx3JF9kXtHhY-Q@mail.gmail.com>
+Subject: Re: [PATCH -next] mm: delete oversized WARN_ON() in kvmalloc() calls
+To:     Jeremy Sowden <jeremy@azazel.net>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Bixuan Cui <cuibixuan@linux.alibaba.com>,
+        linux-mm <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Leon Romanovsky <leon@kernel.org>, Willy Tarreau <w@1wt.eu>,
+        Kees Cook <keescook@chromium.org>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Kicinski <kuba@kernel.org>, kvm@vger.kernel.org,
+        netfilter-devel <netfilter-devel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 2, 2021 at 7:06 AM David Laight <David.Laight@aculab.com> wrote:
+On Thu, Dec 2, 2021 at 2:38 AM Jeremy Sowden <jeremy@azazel.net> wrote:
 >
-> From: Vladimir Oltean
-> > Sent: 02 December 2021 13:11
-> ...
-> > > --- a/include/linux/skbuff.h
-> > > +++ b/include/linux/skbuff.h
-> > > @@ -3485,7 +3485,11 @@ __skb_postpull_rcsum(struct sk_buff *skb, const void *start, unsigned int
-> > len,
-> > >  static inline void skb_postpull_rcsum(struct sk_buff *skb,
-> > >                                   const void *start, unsigned int len)
-> > >  {
-> > > -   __skb_postpull_rcsum(skb, start, len, 0);
-> > > +   if (skb->ip_summed == CHECKSUM_COMPLETE)
-> > > +           skb->csum = ~csum_partial(start, len, ~skb->csum);
+> On 2021-12-01, at 20:29:05 -0800, Andrew Morton wrote:
+> > On Thu, 2 Dec 2021 12:05:15 +0800 Bixuan Cui wrote:
+> > > =E5=9C=A8 2021/12/2 =E4=B8=8A=E5=8D=8811:26, Andrew Morton =E5=86=99=
+=E9=81=93:
+> > > >> Delete the WARN_ON() and return NULL directly for oversized
+> > > >> parameter in kvmalloc() calls.
+> > > >> Also add unlikely().
+> > > >>
+> > > >> Fixes: 7661809d493b ("mm: don't allow oversized kvmalloc() calls")
+> > > >> Signed-off-by: Bixuan Cui<cuibixuan@linux.alibaba.com>
+> > > >> ---
+> > > >> There are a lot of oversize warnings and patches about kvmalloc()
+> > > >> calls recently. Maybe these warnings are not very necessary.
+> > > >
+> > > > Or maybe they are.  Please let's take a look at these warnings,
+> > > > one at a time.  If a large number of them are bogus then sure,
+> > > > let's disable the runtime test.  But perhaps it's the case that
+> > > > calling code has genuine issues and should be repaired.
+> > >
+> > > Such as=EF=BC=9A
+> >
+> > Thanks, that's helpful.
+> >
+> > Let's bring all these to the attention of the relevant developers.
+> >
+> > If the consensus is "the code's fine, the warning is bogus" then let's
+> > consider retiring the warning.
+> >
+> > If the consensus is otherwise then hopefully they will fix their stuff!
+> >
+> > > https://syzkaller.appspot.com/bug?id=3D24452f89446639c901ac07379ccc70=
+2808471e8e
+> >
+> > (cc bpf@vger.kernel.org)
+> >
+> > > https://syzkaller.appspot.com/bug?id=3Df7c5a86e747f9b7ce333e7295875cd=
+4ede2c7a0d
+> >
+> > (cc netdev@vger.kernel.org, maintainers)
+> >
+> > > https://syzkaller.appspot.com/bug?id=3D8f306f3db150657a1f6bbe19274670=
+84531602c7
+> >
+> > (cc kvm@vger.kernel.org)
+> >
+> > > https://syzkaller.appspot.com/bug?id=3D6f30adb592d476978777a1125d1f68=
+0edfc23e00
+> >
+> > (cc netfilter-devel@vger.kernel.org)
 >
-> You can't do that, the domain is 1..0xffff (or maybe 0xffffffff).
-> The invert has to convert ~0 to ~0 not zero.
-> ...
-> > There seems to be a disparity when the skb->csum is calculated by
-> > skb_postpull_rcsum as zero. Before, it was calculated as 0xffff.
+> The netfilter bug has since been fixed:
 >
-> Which is what that will do for some inputs at least.
-> Maybe:
->                 skb->csum = 1 + ~csum_partial(start, len, ~skb->csum + 1);
-> is right.
-> I think that is the same as:
->                 skb->csum = -csum_partial(start, len, -skb->csum);
-> Although letting the compiler do that transform probably makes
-> the code easier to read.
->
->
+>   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/log/=
+?id=3D7bbc3d385bd813077acaf0e6fdb2a86a901f5382
 
-Interesting, update_csum_diff4() and update_csum_diff16() seem to both use.
+How is this a "fix" ?
+u32 was the limit and because of the new warn the limit
+got reduced to s32.
+Every subsystem is supposed to do this "fix" now?
 
-skb->csum = ~csum_partial((char *)diff, sizeof(diff), ~skb->csum);
+> > > https://syzkaller.appspot.com/bug?id=3D4c9ab8c7d0f8b551950db06559dc9c=
+de4119ac83
+> >
+> > (bpf again).
+>
+> J.
