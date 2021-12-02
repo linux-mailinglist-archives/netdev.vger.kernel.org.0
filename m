@@ -2,93 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 71CA1465C52
-	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 03:58:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CBC65465C5B
+	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 04:00:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235024AbhLBDBv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Dec 2021 22:01:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49468 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232276AbhLBDBn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 22:01:43 -0500
-Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B33C3C061574
-        for <netdev@vger.kernel.org>; Wed,  1 Dec 2021 18:58:17 -0800 (PST)
-Received: by mail-yb1-xb34.google.com with SMTP id g17so69227586ybe.13
-        for <netdev@vger.kernel.org>; Wed, 01 Dec 2021 18:58:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=78PHn77LAmjIiUtxuGHawuHvS1eSCmxYWfTTBrmMsrU=;
-        b=tZDt32JHhlujgV2Uqsjl4yKpebdEYZ5BbDYDITSeCL+MawRUHhzOHVJiQkqnN7qQK1
-         bInTqTd95dtU8MUbhcIEJrE9Y4bY8LoJPGqS9tGAeCIC5g9CEYaiEnnoismyOg1uP9wG
-         Gj48mUQ/79Y4Ljt9K8+f53Oi0/+h1v5n6TrGO0NcKKDLE8IscgNwjYFiCcE1cWaKtCE0
-         SaFkHHZpWoCSzidvo5AAmupobgvVvnjgJSbBgu2zvl3/rBE2O97CxKFEbmJUBuC4COXH
-         BFOzFCYjtx+yGS5IT2yILplScJzwnVzKNGP314n1lPtxSUSo8oAeFNyOgoMfCICrkHmG
-         x1Zw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=78PHn77LAmjIiUtxuGHawuHvS1eSCmxYWfTTBrmMsrU=;
-        b=aKzM0mRXRTmiOnwaXLoXfwwgDbBjOgdKr6oNKYLg+oYZFlprdg2Fn1Xk7f3+RnNPq5
-         22jtwL/ntaxDZ+TAHiyGuqple+f4xPOQxj9KxJUBnComGOfakpZVsQX3hOPY4yuJBKJO
-         p8Z+bN1xndQaL4hUWdIaPGOq/pkfX5+ascEk/Vps/ZmmktGslaWoJ0K033/RS9s3gu+p
-         HUsnfumY2f2/1LMPJojAJVgH/fhWZKadOfnNraFj44XL0ijTlulqIHpoBbV0D5MPHkma
-         7GXkt2VFi5pHnKy6tmrDLvs/l81L2mAOfRVmFIEbsT7tp8w99uSa7JlqgaHF6uNZapnI
-         prLA==
-X-Gm-Message-State: AOAM533wl+bLMw9TX/hTWuCU+f0xoCW7svjLHExbuhzfUkOdAOR02VXU
-        762JOZ0NoZn/9KfrjiFDF3lGwqGr7y35buv1pU5bH8Do1Io=
-X-Google-Smtp-Source: ABdhPJy1v7u8yafDQKpj9ZzaF+nCxGR1slr80Bgapd4o9tl/J7mYhO2VbB+3C1LZ57zt6/NyRXgnCK96VNFyN2jrTNU=
-X-Received: by 2002:a05:6902:1025:: with SMTP id x5mr12556684ybt.156.1638413896568;
- Wed, 01 Dec 2021 18:58:16 -0800 (PST)
+        id S1355029AbhLBDEG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Dec 2021 22:04:06 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:59480 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1355038AbhLBDDf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 22:03:35 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 70F10B82172;
+        Thu,  2 Dec 2021 03:00:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 339AFC53FAD;
+        Thu,  2 Dec 2021 03:00:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1638414009;
+        bh=hDYWhvPof6o9IIOEXiRK5hQa70O9agXY5UfnOP66XgE=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=BSt2RqY1gc8wAycsu6r4KFRbU/8jKG6GSx/CsNtb5J8QoY+fjrU/5d4QFcpBdUvPk
+         xotRmWsIuCjoEKa4ZgnekDnYkKNaNcovvNn7OqRwplC4UheIh72NAHCB9GEg8XfxA3
+         WtBkxvXDFt16YDf2v3vc4LGLaUtioBo+AM64/Hgblz6vvJfEZaRbcgZbtvxfMfzjU7
+         /FzzEPvAA3uLfxyPUmw2DiuBVuFi8C/5r5fsYZMsd88v6xGlLxr2ZFmmCzkwwnEwxY
+         CI2rDp0JJ7cYWYpYhCazaSwGj6JADqMh7JcCS0Glt/HXDAhC50IREoh1xv1AIxl1yq
+         eh47UF9F3+I/A==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 18263609EF;
+        Thu,  2 Dec 2021 03:00:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20211202022635.2864113-1-eric.dumazet@gmail.com> <0369c4e8-e19d-d376-06f1-3742da0cc003@gmail.com>
-In-Reply-To: <0369c4e8-e19d-d376-06f1-3742da0cc003@gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 1 Dec 2021 18:58:05 -0800
-Message-ID: <CANn89iLh_n686bwDWhkiq9J0iqjmBNCDh8SVB+tHWUnqiOH+OA@mail.gmail.com>
-Subject: Re: [PATCH net] ipv4: convert fib_num_tclassid_users to atomic_t
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>, David Ahern <dsahern@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] clk: mediatek: net: qlogic: qlcnic: Fix a NULL pointer
+ dereference in qlcnic_83xx_add_rings()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163841400909.24500.703686292422770664.git-patchwork-notify@kernel.org>
+Date:   Thu, 02 Dec 2021 03:00:09 +0000
+References: <20211130110848.109026-1-zhou1615@umn.edu>
+In-Reply-To: <20211130110848.109026-1-zhou1615@umn.edu>
+To:     Zhou Qingyang <zhou1615@umn.edu>
+Cc:     kjlu@umn.edu, shshaikh@marvell.com, manishc@marvell.com,
+        GR-Linux-NIC-Dev@marvell.com, davem@davemloft.net, kuba@kernel.org,
+        matthias.bgg@gmail.com, sucheta.chakraborty@qlogic.com,
+        sritej.velaga@qlogic.com, sony.chacko@qlogic.com,
+        anirban.chakraborty@qlogic.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 1, 2021 at 6:42 PM David Ahern <dsahern@gmail.com> wrote:
->
-> On 12/1/21 7:26 PM, Eric Dumazet wrote:
-> > From: Eric Dumazet <edumazet@google.com>
-> >
-> > Before commit faa041a40b9f ("ipv4: Create cleanup helper for fib_nh")
-> > changes to net->ipv4.fib_num_tclassid_users were protected by RTNL.
-> >
-> > After the change, this is no longer the case, as free_fib_info_rcu()
-> > runs after rcu grace period, without rtnl being held.
-> >
-> > Fixes: faa041a40b9f ("ipv4: Create cleanup helper for fib_nh")
-> > Signed-off-by: Eric Dumazet <edumazet@google.com>
-> > Cc: David Ahern <dsahern@kernel.org>
-> > ---
-> >  include/net/ip_fib.h     | 2 +-
-> >  include/net/netns/ipv4.h | 2 +-
-> >  net/ipv4/fib_frontend.c  | 2 +-
-> >  net/ipv4/fib_rules.c     | 4 ++--
-> >  net/ipv4/fib_semantics.c | 4 ++--
-> >  5 files changed, 7 insertions(+), 7 deletions(-)
-> >
->
-> Thanks, Eric. Was this found by syzbot or code inspection?
->
+Hello:
 
-Code inspection, while plumbing my dev_hold_track() and dev_put_track() helpers.
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Tue, 30 Nov 2021 19:08:48 +0800 you wrote:
+> In qlcnic_83xx_add_rings(), the indirect function of
+> ahw->hw_ops->alloc_mbx_args will be called to allocate memory for
+> cmd.req.arg, and there is a dereference of it in qlcnic_83xx_add_rings(),
+> which could lead to a NULL pointer dereference on failure of the
+> indirect function like qlcnic_83xx_alloc_mbx_args().
+> 
+> Fix this bug by adding a check of alloc_mbx_args(), this patch
+> imitates the logic of mbx_cmd()'s failure handling.
+> 
+> [...]
+
+Here is the summary with links:
+  - clk: mediatek: net: qlogic: qlcnic: Fix a NULL pointer dereference in qlcnic_83xx_add_rings()
+    https://git.kernel.org/netdev/net/c/e2dabc4f7e7b
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
-> Reviewed-by: David Ahern <dsahern@kernel.org>
->
->
