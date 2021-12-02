@@ -2,98 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EBCA466D1C
-	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 23:42:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB5EE466D1D
+	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 23:42:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377412AbhLBWpi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Dec 2021 17:45:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36014 "EHLO
+        id S1377435AbhLBWpq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Dec 2021 17:45:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377333AbhLBWpi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 17:45:38 -0500
-Received: from mail-ua1-x931.google.com (mail-ua1-x931.google.com [IPv6:2607:f8b0:4864:20::931])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 233D6C06174A
-        for <netdev@vger.kernel.org>; Thu,  2 Dec 2021 14:42:15 -0800 (PST)
-Received: by mail-ua1-x931.google.com with SMTP id p37so1955674uae.8
-        for <netdev@vger.kernel.org>; Thu, 02 Dec 2021 14:42:15 -0800 (PST)
+        with ESMTP id S1377333AbhLBWpp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 17:45:45 -0500
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C894CC06174A
+        for <netdev@vger.kernel.org>; Thu,  2 Dec 2021 14:42:22 -0800 (PST)
+Received: by mail-pf1-x434.google.com with SMTP id z6so976340pfe.7
+        for <netdev@vger.kernel.org>; Thu, 02 Dec 2021 14:42:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=WjGInSXjOzFeYXK8IrlkDMiFkwVJjfntG08vZHGTiDI=;
-        b=CBvCRrl0fibp0MVVvbGKVNtyV/39Y27GfR8ht3aKkcpBsp5u1spcewSLtzQrDR4YtY
-         1mKcj8E+cw3ZqBXK1CGt7hUt44Zid3OukJkr67c2EVGm2hQWdRYlrefRwNVEBiEarOoz
-         BjDfWQCYCBgiTvMdv3C5b7Plt/UPSjzGeGQW7B5/bOAxqi0/K6xXwo2b3egUY3205rwU
-         hh3b+f5fS8Wy3WVw9OKGWuRNR2mKxp5RoR6AVZTfFMKIxuN2fvK1e5UAsDbXX66iv0tM
-         yNpUJg0bUJI0j8K/K+gxP+ncmP3PJYqMMVh1AgSeuzSc40diq9ZyQGQN3o7w89Z34AaA
-         2hNw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZqLCHCq3ElFYJfr/YjWjRUYKiB+GTa+FYdLrZR8qFYg=;
+        b=hdzyyrudf97FMGw5mkuyGqPS+cp1uh089FzGrrb8mV9NWu9egjALT3iNsxclroElSr
+         LFPlJ2CMfopXw1S7dY5sOpljyK5gdCNajBHw89LbQc71A6MNdCNDz8jfspd25w5wrabI
+         4I0Lk26K0c/PWG6rUuHU+pjF5+MdrI25KV9DHG4rvNo5DXFBwTzYWR1PTtjguhSTS825
+         pAzpHPeaYN/nSzuGah/hNLV19iBTgA518LwXtzBpf1fbdekhCzUgz2Znqp+iV8UEM1hZ
+         rvanIxipcE9WNPig6oLVmK2wUNAUtv4V/95H3lwhTmO56V5lFQvZIYJpbzL5zVbkBs3a
+         ez2w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=WjGInSXjOzFeYXK8IrlkDMiFkwVJjfntG08vZHGTiDI=;
-        b=TSJqe1zURFu4dOdudx64TPbFaLUQLib2Si6Ma5Qd29bBzAiOBeyYBlBhRG/h8cVl41
-         QntM7rGZzLhqyIQ5ZGFaQrSFmSsQZgWgKqYiOphMIfCtPnW1gHNQNBCHP8BmfGwOo7lu
-         YknRGOmdnM0SXbBDIinbzd2dtNv2eOmNH49Epatp6wpDETIJcOZH42TnNZtdQhR0BhF8
-         mknZu7WXkcmF1xuC3gUyVJHJFu8GYUr6mCCojpZZYTO2LuxwcP5kNcKBJSPkscmk79nP
-         CeoxBRFVfdikIgFrDwKg9V9tClvAO40fmBr/yTp0dmc4etlFliuFBu3sFkSJrayiLlUE
-         WOzA==
-X-Gm-Message-State: AOAM531kPPPL5SjT8/pDYKu35OuzwvThUFMZfvVWugCm+Zv/r6qaGhhN
-        I2YNOCWx8ojBKO0A0l1KHhpVJ2Kn5izhsvr3jdQ=
-X-Google-Smtp-Source: ABdhPJwcJclDVG5A3TvtdSSctUcSaBf8Vc4B/TnGLpq5nkuhxbDgVe5pGPqhaP8D6/o1RHfBmkweLQ9vT7z8VvKmGvs=
-X-Received: by 2002:a67:d893:: with SMTP id f19mr18520321vsj.39.1638484934188;
- Thu, 02 Dec 2021 14:42:14 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZqLCHCq3ElFYJfr/YjWjRUYKiB+GTa+FYdLrZR8qFYg=;
+        b=0oPK8+N5b6CClPEuDkcrTz6nzMHduoLV3vnM3s+NckAPxiM7GSRrBXXf8NYxT6cvAT
+         OkTYq1T4CCAUEYQlwmKJmGJrLLtgxOVqxdLovZqhQw/r4YPbfEOs8yAF40zb/N0EJGJs
+         tZRtawOXE32Dk+FyYwyHcqlvXs3UZyS6/6AZvM1L9bJ4mkxJM/8FIe09/b9H29RQdj0X
+         BtTqjJaJACBd4ub0IgJVZSCbNzFielCzhCtLkos26L/I5v260gdqG5J6ddVyme7lHgM9
+         FhbLpBpM2wg+wfMlGr5us5DwZ8ee1Frp4DD00re3IV/WcZvveOsn/XcEVkvusGtsK43+
+         dgtg==
+X-Gm-Message-State: AOAM531Lu8YxghVd95PI6AwoqI7lJSyn9wstHDLhkUSdEeIp9AZYPAex
+        QEhI+wgF7muFvF4tRMsppuE=
+X-Google-Smtp-Source: ABdhPJzs6lV5W5GNuSbpuxau2RC1vGkPtBp7hFa78pEjzhmJPrEBjZCATGbraNndLDyzmhsxYqGmNA==
+X-Received: by 2002:a05:6a00:2387:b0:49f:af00:d5d0 with SMTP id f7-20020a056a00238700b0049faf00d5d0mr15597565pfc.1.1638484942406;
+        Thu, 02 Dec 2021 14:42:22 -0800 (PST)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:6c4b:c5cb:ac63:1ebf])
+        by smtp.gmail.com with ESMTPSA id d15sm760560pfl.126.2021.12.02.14.42.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 Dec 2021 14:42:21 -0800 (PST)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Tariq Toukan <tariqt@nvidia.com>
+Subject: [PATCH net] inet: use #ifdef CONFIG_SOCK_RX_QUEUE_MAPPING consistently
+Date:   Thu,  2 Dec 2021 14:42:18 -0800
+Message-Id: <20211202224218.269441-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.34.1.400.ga245620fadb-goog
 MIME-Version: 1.0
-References: <20211128125522.23357-1-ryazanov.s.a@gmail.com>
- <20211128125522.23357-6-ryazanov.s.a@gmail.com> <ac532d400cd61a0f86ad5b1931df87a83582323c.camel@sipsolutions.net>
- <CAHNKnsSgc0bEwJbS01f26JRLpnzky9mcSJ6sWy2vFDuNOHz-Xw@mail.gmail.com>
- <YaR17NOQqvFxXEVs@unreal> <CAHNKnsTYzkz+n6rxrFsDSBuYtaqX0vePPv3s3ghB4KfXbP5m+A@mail.gmail.com>
- <YaX3V12BTl6pXsYr@unreal> <CAHNKnsT10PPUXEVJajHkYXyrya2_O7b80D8dcXOpcH5n0LVzLw@mail.gmail.com>
- <Yai2FxeS3zOHcitl@unreal>
-In-Reply-To: <Yai2FxeS3zOHcitl@unreal>
-From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
-Date:   Fri, 3 Dec 2021 01:42:04 +0300
-Message-ID: <CAHNKnsQ1abmGQs5990dK0nN7zNnZG7=hPNJAX__VREw1=Ky2Vw@mail.gmail.com>
-Subject: Re: [PATCH RESEND net-next 5/5] net: wwan: core: make debugfs optional
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Johannes Berg <johannes@sipsolutions.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        M Chetan Kumar <m.chetan.kumar@intel.com>,
-        Intel Corporation <linuxwwan@intel.com>,
-        Loic Poulain <loic.poulain@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 2, 2021 at 3:03 PM Leon Romanovsky <leon@kernel.org> wrote:
-> On Thu, Dec 02, 2021 at 01:03:33AM +0300, Sergey Ryazanov wrote:
->> Ironically, I took your "don't over-engineer" argument and started
->> removing the IOSM specific configuration option when I realized that
->> the IOSM debugfs interface depends on relayfs and so it should select
->> the RELAY option. Without the IOSM debugfs option, we should either
->> place RELAY selection to an option that enables the driver itself, or
->> to the WWAN subsystem debugfs enabling option. The former will cause
->> the kernel inflation even with the WWAN debugfs interface disabled.
->> The latter will simply be misleading. In the end, I decided to keep
->> both config options in the V2.
->
-> Something like this will do the trick.
->
-> diff --git a/drivers/net/wwan/Kconfig b/drivers/net/wwan/Kconfig
-> index bdb2b0e46c12..ebb7292421a1 100644
-> --- a/drivers/net/wwan/Kconfig
-> +++ b/drivers/net/wwan/Kconfig
-> @@ -85,6 +85,7 @@ config IOSM
->         tristate "IOSM Driver for Intel M.2 WWAN Device"
->         depends on INTEL_IOMMU
->         select NET_DEVLINK
-> +        select RELAY if WWAN_DEBUGFS
->         help
->           This driver enables Intel M.2 WWAN Device communication.
+From: Eric Dumazet <edumazet@google.com>
 
-Yes! This is exactly what I need to finally solve this puzzle. Thank you!
+Since commit 4e1beecc3b58 ("net/sock: Add kernel config
+SOCK_RX_QUEUE_MAPPING"),
+sk_rx_queue_mapping access is guarded by CONFIG_SOCK_RX_QUEUE_MAPPING.
 
+Fixes: 54b92e841937 ("tcp: Migrate TCP_ESTABLISHED/TCP_SYN_RECV sockets in accept queues.")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Cc: Martin KaFai Lau <kafai@fb.com>
+Cc: Tariq Toukan <tariqt@nvidia.com>
+---
+ net/ipv4/inet_connection_sock.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
+index f7fea3a7c5e64b92ca9c6b56293628923649e58c..62a67fdc344cd21505a84c905c1e2c05cc0ff866 100644
+--- a/net/ipv4/inet_connection_sock.c
++++ b/net/ipv4/inet_connection_sock.c
+@@ -721,7 +721,7 @@ static struct request_sock *inet_reqsk_clone(struct request_sock *req,
+ 
+ 	sk_node_init(&nreq_sk->sk_node);
+ 	nreq_sk->sk_tx_queue_mapping = req_sk->sk_tx_queue_mapping;
+-#ifdef CONFIG_XPS
++#ifdef CONFIG_SOCK_RX_QUEUE_MAPPING
+ 	nreq_sk->sk_rx_queue_mapping = req_sk->sk_rx_queue_mapping;
+ #endif
+ 	nreq_sk->sk_incoming_cpu = req_sk->sk_incoming_cpu;
 -- 
-Sergey
+2.34.1.400.ga245620fadb-goog
+
