@@ -2,73 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AF043465B94
-	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 02:24:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D9768465BCE
+	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 02:48:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354268AbhLBB1X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Dec 2021 20:27:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56762 "EHLO
+        id S1347629AbhLBBv7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Dec 2021 20:51:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343896AbhLBB1V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 20:27:21 -0500
-Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 542FFC061574
-        for <netdev@vger.kernel.org>; Wed,  1 Dec 2021 17:24:00 -0800 (PST)
-Received: by mail-io1-xd2a.google.com with SMTP id c3so33419289iob.6
-        for <netdev@vger.kernel.org>; Wed, 01 Dec 2021 17:24:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=l9MiJduzGKTaR516b21qkjg2BwY3YgrQYKdOYXily4Q=;
-        b=H/zNbqVd2RbcmMz3HoiFpvjyEPFqv3v9Da1UXrADZ223WACEMnrxzQ3hywVgO0n6Rj
-         C9FDTwZkW/DLIS/chMzdIbbTQ65dLNaVVEp6i2KcIFSUyV4TChnx7AXySZ5R2vpd+Rsi
-         KF2TQ6/R/hKUNAPd3CDHwJ2MamdffPwasbihPc4px44w1vdKhM0vAGDbQxpP0EXKr0A3
-         TbdBCBIPUqELJsSu36fwAvCxi7/NuDdZVAKrnRosYFWiTFKFz5UV+mNKQdF9vhziHA7H
-         lAeybxK4tqWwNE5FlQPcCAhE4M0KWd8j3zId5fsAq66+BPPIGAB3k8Efz8TN2CQRB0TX
-         CV6Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=l9MiJduzGKTaR516b21qkjg2BwY3YgrQYKdOYXily4Q=;
-        b=DgVPs0hU7cDl4yemgFo8/EzOj3wc+Tahsdnp6a3eywOLj0wx/VlIkgfiKEsspBlqHX
-         tJYfjcEIHf77pgQZqX1MV2oNKudTbLABI46/XQyU1EyCoNf76QE2TH6xSTE1ACy1QXon
-         NXfPKkPmMje7jpGw+lXv7Oy1uzQ4B6AyoEzK5+rHhwXng9u3JNKiLioS17oO3lqOfkGZ
-         cRCjkYaxVgWnoS3Hme8w2AIaPwozViMM0TuRbR12jM2Mkao8Qn8ToDXYwEljHJeSCVo7
-         gLn8nJiTJxMgXIfQA1cFp7tHwKeGjAtUBjGjufltuGMkjpBdWErAVNNj7i7WbjzjEz3E
-         kMYA==
-X-Gm-Message-State: AOAM533ztpa2jMRWYHdanYdOYFBur28VQIls+4ycX/aHhFzj6KpBisTq
-        8uT5XKNwOihJNnjkVAIkvQThB0s5gcF3VdoeGyI=
-X-Google-Smtp-Source: ABdhPJxWEgIDjlPfyIJRHaxcyQmjIhQB986b4raczcySKlaTIYwzprqbkgSzndUkjsuVJ5/KNNe8F1Nt4300cWzyQ8Q=
-X-Received: by 2002:a05:6638:13c5:: with SMTP id i5mr16154599jaj.88.1638408239690;
- Wed, 01 Dec 2021 17:23:59 -0800 (PST)
+        with ESMTP id S1347291AbhLBBvr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 20:51:47 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F26AC061574;
+        Wed,  1 Dec 2021 17:48:25 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5A141B821BB;
+        Thu,  2 Dec 2021 01:48:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A20E8C00446;
+        Thu,  2 Dec 2021 01:48:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1638409703;
+        bh=rX6Hzb6QHB/vShLCZQuiRt4vZUktSxPTk8iSZdxIzrY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=U1LTYfKULVcS40C1rBGuW/+sUUKw4ue2cnd0j0PRe9ZIUPbeYYrekO6RGNj9xd2Nw
+         exNofflc5oLklBSM0h1S4icPNvdd3X0ORciFOigMbBTd6fzW50vm5hg8uL3Dq/82yl
+         P0FizyUopCZsghMKm2lXrcSmQuDKkZeIUsjRhPmhapj+nyeWuCY+jts7JzvQhLpIEF
+         L9wpxnjJpWKi92xAtH2YQzEljLSdi4wxGPU/lTnh11TtqUmV5idlkYqxfon6tYINEs
+         Tb8joZPIIle6ovI/D6qzjvWIOrggSbiRCW6rEFGH+1ltfSr2ZihHVg8XXdaDR9kbSd
+         odztmsbStbooA==
+Date:   Wed, 1 Dec 2021 17:48:21 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     "lizhijian@fujitsu.com" <lizhijian@fujitsu.com>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        "shuah@kernel.org" <shuah@kernel.org>,
+        "dsahern@gmail.com" <dsahern@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 2/3] selftests: add option to list all avaliable tests
+Message-ID: <20211201174821.2d40a3eb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <f4ebc027-5f5d-1a4a-8a33-964cd7214af8@fujitsu.com>
+References: <20211201111025.13834-1-lizhijian@cn.fujitsu.com>
+        <20211201111025.13834-2-lizhijian@cn.fujitsu.com>
+        <f4ebc027-5f5d-1a4a-8a33-964cd7214af8@fujitsu.com>
 MIME-Version: 1.0
-Received: by 2002:a5e:a804:0:0:0:0:0 with HTTP; Wed, 1 Dec 2021 17:23:59 -0800 (PST)
-Reply-To: aishaalqaddafi61@aol.com
-From:   Mrs Aisha Al-Qaddafi <mrsaishaalqad109@gmail.com>
-Date:   Wed, 1 Dec 2021 17:23:59 -0800
-Message-ID: <CADYuZ=faffP8xuTx2_8ce9bDdXO9Jxh7RnME2WGrhDp4snzseA@mail.gmail.com>
-Subject: I am Mrs. Aisha al-Gaddafi
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Have a nice weekend,
+On Wed, 1 Dec 2021 11:22:03 +0000 lizhijian@fujitsu.com wrote:
+> sent V2 to fix a typo
 
-I am Mrs. Aisha al-Gaddafi, the daughter of the late Libyan president,
+You need to resend the entire series, patchwork does not understand
+updating single patches:
 
- i am contacting you, because I need a Partner or an investor
-
-Who will help me in investing the sum of $27.5 MillionUSD  in his or
-her country?
-
-The funds are deposited  in Burkina Faso, where I am living for the
-moment with my children Please after reading this mail try to  contact
-me through  this my private email address :{ aishaalqaddafi61@aol.com}
- if you really want me to see your response
-
-Thanks, I await your response
-
-Mrs. Aisha al-gaddafi.
+https://patchwork.kernel.org/project/netdevbpf/list/?series=588501
+https://patchwork.kernel.org/project/netdevbpf/list/?series=588507
