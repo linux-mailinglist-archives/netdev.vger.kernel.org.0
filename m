@@ -2,228 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F23564665D6
-	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 15:52:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 984E64665F7
+	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 15:58:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358806AbhLBOzX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Dec 2021 09:55:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41932 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358641AbhLBOzW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 09:55:22 -0500
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46896C06174A
-        for <netdev@vger.kernel.org>; Thu,  2 Dec 2021 06:52:00 -0800 (PST)
-Received: by mail-yb1-xb33.google.com with SMTP id f186so327934ybg.2
-        for <netdev@vger.kernel.org>; Thu, 02 Dec 2021 06:52:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=eEARW4cHzJB7x5jV86ocedSL7FpHsr0vkyzSjUsyqC0=;
-        b=q2XfthD/JQRcHO5xmmpFT0D8QQgRNrhvglryG9e11Xht4u//Kp1IPdf7OpL5H4p6wz
-         NmK6KPS7//8fxiE0VhmCJ/1YYY0sSA2aS+gQU50NruCneHFbryZA4xSsrDXHIb37TTz8
-         cQQinSpqI6j2UCg7XhcNIIt6pt5A34K5GhsF/v1NAjqT0ohSu5OVcrZ0T9MnoshqwOuU
-         jFtxav8Npa+jOTfFF+4U8CLdGRR7tJkGqWl/5N8kFysl8tt8L0CWkNCLwRZnX3/UzgIc
-         64wUs/WyNyT+WXImsP40D6v5AE7m9HKEZoSoMa+HoxxOQS2LZrk56SLtWT80S+lDkfyH
-         qwaw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=eEARW4cHzJB7x5jV86ocedSL7FpHsr0vkyzSjUsyqC0=;
-        b=Bk7uW+/jNGJgzR2lHxQev0SDsHjBJmL32ZjzZK6CShCa76ZuHr7jmfiwbG49zmgXQp
-         h0C3mqQCj/+x9tOgiRr0KDQ4wwBJeG84ydxJXdHFNQh+cvgPJ/GxBbStzqqISunSxwzO
-         TROoaAX+9EzsKaYF5B0+mH7E2m1wHwPoJcGZ8yz6oCufh4ccLtaA+LOfmJ12YJ1Dn8dG
-         NJMFjBbfemUWbe2+P+vkd5m4i298IJiF/yjyt2UF0bzjvwAOA3t7EOZ9/L0BPHnaLQJY
-         tY5tZRKqILed4966QhfLY5JyVyzCPjl/WjV48G/07eermkwffbMBlTGhjyYbeR193Zjs
-         +1FA==
-X-Gm-Message-State: AOAM532Ek5ixd9mS3ZrblSNIAO3eeDI2mtAoserr01ZP+bkHmlHI8YVi
-        uS3f9mWMfMJ5GCnEV3E6CfSHy15FUicYDRlOGVJCng==
-X-Google-Smtp-Source: ABdhPJwa0qPl5t+lOLT/TBQ7a2btIQhjY/2Ben0gtu16TIj+G5I265DomnvEkH5jEpRgwo8t1QUowqdEP+yqOBcpLpQ=
-X-Received: by 2002:a05:6902:120e:: with SMTP id s14mr17104274ybu.277.1638456719106;
- Thu, 02 Dec 2021 06:51:59 -0800 (PST)
-MIME-Version: 1.0
-References: <20211124202446.2917972-1-eric.dumazet@gmail.com>
- <20211124202446.2917972-3-eric.dumazet@gmail.com> <20211202131040.rdxzbfwh2slhftg5@skbuf>
-In-Reply-To: <20211202131040.rdxzbfwh2slhftg5@skbuf>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 2 Dec 2021 06:51:47 -0800
-Message-ID: <CANn89iLW4kwKf0x094epVeCaKhB4GtYgbDwE2=Fp0HnW8UdKzw@mail.gmail.com>
-Subject: Re: [PATCH net-next 2/2] net: optimize skb_postpull_rcsum()
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        id S1358833AbhLBPBq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Dec 2021 10:01:46 -0500
+Received: from mail-bn8nam12on2085.outbound.protection.outlook.com ([40.107.237.85]:25344
+        "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1347191AbhLBPBn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 2 Dec 2021 10:01:43 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dR3D67zq9QutVJnxGo6FEtzjN9rKqvXJ8Tl/m7ExR+2iCX0Q/3A+EH/ClSoUlUO3JjCBwx9A3xVhCzcFc8FXGfZICnF1Sugfvazzz0xHZ0mkV3JfLanwwTr7R2jM7d9L4YQ1j/yOpnfF/TRKLBlI7gRKxV0ZBj/TG12euOLXma6A+oyduNeqQQBJDJJY8mPvQGXFALFMS/Vpeb5fbSAUrSfRO/VyPb8T+oKzSQnDppjkVBQCgCzaqY7kmw8XfqRptQH/HT6qkoX6MtWY7eo8HV3RBP6qGnrdjh+L1CLSgiAYc2Xe2a6gWXdRRsITyf0le0yYfR5+6SUy1nv0vQMrmQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=d5ClcepjWUjKXc3he0VEjXLIMDxnyRIT4CruirbxSpU=;
+ b=HES6e3LYD2/fJmgo+O7S/w29aylYqhQkz/xjYKu00Pf/z6IvKOqnxYamNRqkfq9SmLik1+RrR8vbKVFWyHKU7JFSriTSVE6AVn+eCzhH2oVbzkUC9LeRQuLM3uoVn6+2FSOGIs1lsKmWqh/IvxkzGoGb1Iom9N9yFE0Jio1zXhUsxsnZ11M4D4WQHa+QFHQSAxipWgi2dOLO0fx1SvTrpUIYiaLsDxDsQ5xEyx65gQ720183Dn4leionRSIO0BopxUORH1qrpSObNSCdUNEAnQ8fLiYsJMRGJyREmbONG54bf5ltUFqJHK1Iskq9dix5V1dCgiuj9WUDOfPui7Y7Zg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.112.34) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=nvidia.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=d5ClcepjWUjKXc3he0VEjXLIMDxnyRIT4CruirbxSpU=;
+ b=LE8MDfYeS8Yc3CdNocFLnkgX7fQ5AJ5FdL8+3pqF+FsBvdHZd30Hz29cf9ZjzJ52GQiSIVV0dY3VNBq9sj6nIV/Rz9aDmDBInhc0nHYg7Xtx2Bgq1CGxfODqW0ZHtzBtgwMhgSsDVvYwLEqMlKAkpbLWUBBll5XXK1b3sJW6yNkP5fig9P5Y8/1Uc16O8+6KLIcxPE+upnsiGtLBnxdYIGhAhNSO6bZvjg4AX6IwsZJMMqIgbrGtGXUcFSriBOhqi1k9pIHb8WW5plNRcNdYfv89F7RyYaYtp3oYhJAqlkro71cwTAILF0SfUs2MRR/pRAqv7cVZJXtd8baoIUiN5g==
+Received: from BN9PR03CA0263.namprd03.prod.outlook.com (2603:10b6:408:ff::28)
+ by DM6PR12MB4713.namprd12.prod.outlook.com (2603:10b6:5:7d::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4734.24; Thu, 2 Dec
+ 2021 14:58:18 +0000
+Received: from BN8NAM11FT041.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:ff:cafe::43) by BN9PR03CA0263.outlook.office365.com
+ (2603:10b6:408:ff::28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.17 via Frontend
+ Transport; Thu, 2 Dec 2021 14:58:18 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.34; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.34) by
+ BN8NAM11FT041.mail.protection.outlook.com (10.13.177.18) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4755.13 via Frontend Transport; Thu, 2 Dec 2021 14:58:17 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 2 Dec
+ 2021 14:58:16 +0000
+Received: from localhost (172.20.187.6) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.986.9; Thu, 2 Dec 2021
+ 06:58:15 -0800
+Date:   Thu, 2 Dec 2021 16:58:11 +0200
+From:   Leon Romanovsky <leonro@nvidia.com>
+To:     Saeed Mahameed <saeed@kernel.org>
+CC:     Saeed Mahameed <saeedm@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        David Laight <David.Laight@aculab.com>
-Content-Type: text/plain; charset="UTF-8"
+        "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <linux-rdma@vger.kernel.org>, Maor Gottlieb <maorg@nvidia.com>,
+        Mark Bloch <mbloch@nvidia.com>
+Subject: Re: [PATCH mlx5-next 1/4] net/mlx5: Separate FDB namespace
+Message-ID: <YajfA2p+e6AvgX6I@unreal>
+References: <20211201193621.9129-1-saeed@kernel.org>
+ <20211201193621.9129-2-saeed@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20211201193621.9129-2-saeed@kernel.org>
+X-Originating-IP: [172.20.187.6]
+X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: ac9fd888-27ef-4110-f294-08d9b5a42c59
+X-MS-TrafficTypeDiagnostic: DM6PR12MB4713:
+X-Microsoft-Antispam-PRVS: <DM6PR12MB47133F36CDE3DA04703F1D45BD699@DM6PR12MB4713.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: KztEC4Kpl0R6Vd7uazzghEf48wvfIRnc71wHriokYJFftJ0xA1wBdvK69+ibuj0K3Kda7RUiaBMlTYLjL1fdfmB6sGTeVokO6fNfHuq/FBHyOVvRPHTYHbPPN1XLG7KQycgeGQ29DoVCajyqUQ77fEo7hBboCqqYJEnri6udTmHjg6R6iHb5G6a6Tlttu0LvwCN8PeiNtrIsHikp8DRMP3dwK9vIO2X/0sXlroUupVbBqnyXoqdSvV4jJYU3N99LZlUxkoKGPUFdDGjgmpo+gUBsAmtWhLtAgac0zE0oJdjYmm9g3zlYdAf1XYjlFRt44jr8ADxc5XfudRJkDsK0iDtqx/xvI2z6QdeDVicMklTrkP1wrsYTc/duhhF+y9m73nXgory5ufKbshn1t23rB88ENYuwWFRLOOVPa6GGIocstUd+693k7xx2/ErfEiO1mSHhowU5YuqFl/wftdC+7Gf3rpK0f6pnhQ/WSGxB12GOW4Ybx4Rw/+qBT84mxAkUpbkwyikSt7RZk/j4wZ7ur1huxh2hJDTHIbszqzQoykxM8A6v7kGcAYN9dh4H4WcquyYxW6K3hQEGTk4kiLfdGi0WrRW6LLDx1v7wOXeTOp04xqpIhG5iRKH1w/MViPdUZ3UeOkZL3c3aX3cDDTLZxkQjIZ4Z1DcNXvX0F7oepEqjbFRx9pYTcHOo2HYGcqPeIrZHk7h8fj8L0jAG9x0awhLq5x1xt2ZSabtqLrhxv9cjJ63MMdfkE3vzESpFetzuqmtPXJTgs8j5tZS3V+JsJ/zttKGhREX8vk81rsz+2LI=
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(7916004)(4636009)(36840700001)(46966006)(40470700001)(83380400001)(8676002)(186003)(508600001)(6916009)(70586007)(5660300002)(70206006)(26005)(16526019)(316002)(2906002)(4326008)(54906003)(9686003)(6666004)(8936002)(36860700001)(7636003)(426003)(47076005)(82310400004)(33716001)(86362001)(356005)(336012)(40460700001)(4744005)(107886003)(67856001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Dec 2021 14:58:17.1273
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: ac9fd888-27ef-4110-f294-08d9b5a42c59
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT041.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4713
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Vladimir
+On Wed, Dec 01, 2021 at 11:36:18AM -0800, Saeed Mahameed wrote:
+> From: Maor Gottlieb <maorg@nvidia.com>
+> 
+> This patch doesn't add an additional namespaces, but just separates the
+> naming to be used by each FDB user, bypass and kernel.
+> Downstream patches will actually split this up and allow to have more
+> than single priority for the bypass users.
+> 
+> Signed-off-by: Maor Gottlieb <maorg@nvidia.com>
+> Reviewed-by: Mark Bloch <mbloch@nvidia.com>
+> Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+> ---
+>  drivers/infiniband/hw/mlx5/fs.c                   | 14 +++++++-------
+>  drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.c  |  4 +++-
+>  drivers/net/ethernet/mellanox/mlx5/core/fs_core.c |  1 +
+>  include/linux/mlx5/fs.h                           |  1 +
+>  4 files changed, 12 insertions(+), 8 deletions(-)
+> 
 
-On Thu, Dec 2, 2021 at 5:10 AM Vladimir Oltean <olteanv@gmail.com> wrote:
->
-> Hello,
->
-> On Wed, Nov 24, 2021 at 12:24:46PM -0800, Eric Dumazet wrote:
-> > From: Eric Dumazet <edumazet@google.com>
-> >
-> > Remove one pair of add/adc instructions and their dependency
-> > against carry flag.
-> >
-> > We can leverage third argument to csum_partial():
-> >
-> >   X = csum_block_sub(X, csum_partial(start, len, 0), 0);
-> >
-> >   -->
-> >
-> >   X = csum_block_add(X, ~csum_partial(start, len, 0), 0);
-> >
-> >   -->
-> >
-> >   X = ~csum_partial(start, len, ~X);
-> >
-> > Signed-off-by: Eric Dumazet <edumazet@google.com>
-> > ---
-> >  include/linux/skbuff.h | 6 +++++-
-> >  1 file changed, 5 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-> > index eba256af64a577b458998845f2dc01a5ec80745a..eae4bd3237a41cc1b60b44c91fbfe21dfdd8f117 100644
-> > --- a/include/linux/skbuff.h
-> > +++ b/include/linux/skbuff.h
-> > @@ -3485,7 +3485,11 @@ __skb_postpull_rcsum(struct sk_buff *skb, const void *start, unsigned int len,
-> >  static inline void skb_postpull_rcsum(struct sk_buff *skb,
-> >                                     const void *start, unsigned int len)
-> >  {
-> > -     __skb_postpull_rcsum(skb, start, len, 0);
-> > +     if (skb->ip_summed == CHECKSUM_COMPLETE)
-> > +             skb->csum = ~csum_partial(start, len, ~skb->csum);
-> > +     else if (skb->ip_summed == CHECKSUM_PARTIAL &&
-> > +              skb_checksum_start_offset(skb) < 0)
-> > +             skb->ip_summed = CHECKSUM_NONE;
-> >  }
-> >
-> >  static __always_inline void
-> > --
-> > 2.34.0.rc2.393.gf8c9666880-goog
-> >
->
-> I am seeing some errors after this patch, and I am not able to
-> understand why. Specifically, __skb_gro_checksum_complete() hits this
-> condition:
-
-There were two patches, one for GRO, one for skb_postpull_rcsum()
-
-I am a bit confused by your report. Which one is causing problems ?
-
->
->         wsum = skb_checksum(skb, skb_gro_offset(skb), skb_gro_len(skb), 0);
->
->         /* NAPI_GRO_CB(skb)->csum holds pseudo checksum */
->         sum = csum_fold(csum_add(NAPI_GRO_CB(skb)->csum, wsum));
->         /* See comments in __skb_checksum_complete(). */
->         if (likely(!sum)) {
->                 if (unlikely(skb->ip_summed == CHECKSUM_COMPLETE) &&
->                     !skb->csum_complete_sw)
->                         netdev_rx_csum_fault(skb->dev, skb);
->         }
->
-> To test, I am using a DSA switch network interface with an IPv4 address
-> and pinging through it.
->
-> The idea is as follows: an enetc port is attached to a switch, and that
-> switch places a frame header before the Ethernet header.
-> The enetc calculates the L2 payload (actually what it perceives as L2
-> payload, since it has no insight into the switch header format) checksum
-> and puts it in skb->csum:
-> https://elixir.bootlin.com/linux/latest/source/drivers/net/ethernet/freescale/enetc/enetc.c#L726
->
-> Then, the switch driver packet type handler is invoked, and this strips
-> that header and recalculates the checksum (then it changes skb->dev and
-> this is how pinging is done through the DSA interface, but that is
-> irrelevant).
-> https://elixir.bootlin.com/linux/latest/source/net/dsa/tag_ocelot.c#L56
->
-> There seems to be a disparity when the skb->csum is calculated by
-> skb_postpull_rcsum as zero. Before, it was calculated as 0xffff.
-
-skb->csum is 32bit, so there are about 2^16 different values for a
-given Internet checksum
-
->
-> Below is a dump added by me in skb_postpull_rcsum when the checksums
-> calculated through both methods differ. I've kept the old implementation
-> inside skb->csum and this is what skb_dump() sees:
->
-> [   99.891524] skb csum of 20 bytes (20 to left of skb->data) using method 1: 0x0 method 2 0xffffffff, orig 0xf470
-> [   99.901701] skb len=84 headroom=98 headlen=84 tailroom=1546
-> [   99.901701] mac=(84,-6) net=(78,0) trans=78
-> [   99.901701] shinfo(txflags=0 nr_frags=0 gso(size=0 type=0 segs=0))
-> [   99.901701] csum(0xffffffff ip_summed=2 complete_sw=0 valid=0 level=0)
-> [   99.901701] hash(0x0 sw=0 l4=0) proto=0x00f8 pkttype=3 iif=7
-> [   99.929916] dev name=eno2 feat=0x0x00020100001149a9
-> [   99.934831] skb headroom: 00000000: 00 c0 b1 a4 ff ff 00 00 00 e0 b1 a4 ff ff 00 00
-> [   99.942533] skb headroom: 00000010: 00 6f 5b 02 f8 14 ff ff 40 62 5b 02 f8 14 ff ff
-> [   99.950232] skb headroom: 00000020: 21 6f 5b 02 f8 14 ff ff 00 00 00 00 00 00 00 00
-> [   99.957931] skb headroom: 00000030: 00 00 00 00 00 00 00 00 00 40 00 00 00 00 00 00
-> [   99.965631] skb headroom: 00000040: 88 80 00 0a 00 33 9d 40 f0 41 01 80 00 00 08 0f
-> [   99.973330] skb headroom: 00000050: 00 10 00 00 00 04 9f 05 f6 28 ba ae e4 b6 2c 3d
-> [   99.981028] skb headroom: 00000060: 08 00
-> [   99.985062] skb linear:   00000000: 45 00 00 54 27 ac 00 00 40 01 09 a8 c0 a8 64 03
-> [   99.992762] skb linear:   00000010: c0 a8 64 01 00 00 10 e6 01 5c 00 04 49 30 a7 61
-> [  100.000462] skb linear:   00000020: 00 00 00 00 3d 55 01 00 00 00 00 00 10 11 12 13
-> [  100.008162] skb linear:   00000030: 14 15 16 17 18 19 1a 1b 1c 1d 1e 1f 20 21 22 23
-> [  100.015862] skb linear:   00000040: 24 25 26 27 28 29 2a 2b 2c 2d 2e 2f 30 31 32 33
-> [  100.023561] skb linear:   00000050: 34 35 36 37
->
-> And below is the same output as above, but annotated by me with some comments:
->
-> [   99.891524] skb csum of 20 bytes (20 to left of skb->data) using method 1: 0x0 method 2 0xffffffff, orig 0xf470
-> [   99.901701] skb len=84 headroom=98 headlen=84 tailroom=1546
-> [   99.901701] mac=(84,-6) net=(78,0) trans=78
->                ^^^^^^^^^^^^^^^^^^^^^^
->                since the print is done from ocelot_rcv, the network and
->                transport headers haven't yet been updated
->
-> [   99.901701] shinfo(txflags=0 nr_frags=0 gso(size=0 type=0 segs=0))
-> [   99.901701] csum(0xffffffff ip_summed=2 complete_sw=0 valid=0 level=0)
-> [   99.901701] hash(0x0 sw=0 l4=0) proto=0x00f8 pkttype=3 iif=7
-> [   99.929916] dev name=eno2 feat=0x0x00020100001149a9
-> [   99.934831] skb headroom: 00000000: 00 c0 b1 a4 ff ff 00 00 00 e0 b1 a4 ff ff 00 00
-> [   99.942533] skb headroom: 00000010: 00 6f 5b 02 f8 14 ff ff 40 62 5b 02 f8 14 ff ff
-> [   99.950232] skb headroom: 00000020: 21 6f 5b 02 f8 14 ff ff 00 00 00 00 00 00 00 00
-> [   99.957931] skb headroom: 00000030: 00 00 00 00 00 00 00 00 00 40 00 00 00 00 00 00
->
->                                        here is where the enetc saw the          the "start" variable (old skb->data)
->                                        beginning of the frame                   points here
->                                        v                                         v
-> [   99.965631] skb headroom: 00000040: 88 80 00 0a 00 33 9d 40 f0 41 01 80 00 00 08 0f
->
->                                                    OCELOT_TAG_LEN bytes
->                                                    later is the real MAC header
->                                                    v
-> [   99.973330] skb headroom: 00000050: 00 10 00 00 00 04 9f 05 f6 28 ba ae e4 b6 2c 3d
-> [   99.981028] skb headroom: 00000060: 08 00
->                                        ^
->                                        the skb_postpull_rcsum is called from "start"
->                                        until the first byte prior to this one
->
-> [   99.985062] skb linear:   00000000: 45 00 00 54 27 ac 00 00 40 01 09 a8 c0 a8 64 03
-> [   99.992762] skb linear:   00000010: c0 a8 64 01 00 00 10 e6 01 5c 00 04 49 30 a7 61
-> [  100.000462] skb linear:   00000020: 00 00 00 00 3d 55 01 00 00 00 00 00 10 11 12 13
-> [  100.008162] skb linear:   00000030: 14 15 16 17 18 19 1a 1b 1c 1d 1e 1f 20 21 22 23
-> [  100.015862] skb linear:   00000040: 24 25 26 27 28 29 2a 2b 2c 2d 2e 2f 30 31 32 33
-> [  100.023561] skb linear:   00000050: 34 35 36 37
->
-> Do you have some suggestions as to what may be wrong? Thanks.
-
-What kind of traffic is triggering the fault ? TCP, UDP, something else ?
-
-Do you have a stack trace to provide, because it is not clear from
-where the issue is detected.
-
-Thanks.
+Thanks,
+Acked-by: Leon Romanovsky <leonro@nvidia.com>
