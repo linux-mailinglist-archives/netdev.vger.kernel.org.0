@@ -2,129 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5103F466B66
-	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 22:07:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1782E466B6D
+	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 22:11:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356945AbhLBVKe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Dec 2021 16:10:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42598 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229683AbhLBVKb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 16:10:31 -0500
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56C4CC06174A
-        for <netdev@vger.kernel.org>; Thu,  2 Dec 2021 13:07:08 -0800 (PST)
-Received: by mail-ed1-x52f.google.com with SMTP id r25so3088536edq.7
-        for <netdev@vger.kernel.org>; Thu, 02 Dec 2021 13:07:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=M1R/ikzMyGfO3PAEq/5iOfsrHH1xbNlGGQr4YAkm4vg=;
-        b=Eqn/gcOy2a5BO3y0BwKddQbliABExIIH7nm/2jI4KmWBSFskYMT7CE6kf0Ui7eDMRK
-         CD2WFgS5d94jH/xFD6y3fn6jke5H4pvUECID9Y65CcV9gAX8i3gX/2F8WCMDH522ezNt
-         OYNPRth+HmDLJASO9vcy14lWwAq2iewl1apt2tiCZwgtIvn1YjBS34gPvwv1ebla/d/Z
-         duxKVa7+hvaCXBU0EnNGVQuHRrbLBmqTE4pfdphn57SQLVVTWdN4s2bcX/GqnQioh+IS
-         4T2yvsAFYpOtRvMTfPm1Slsr7ct0SMkKPx0sr846CPKYAW8CLQX9GWa7h0keRE18lnDD
-         r8lw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=M1R/ikzMyGfO3PAEq/5iOfsrHH1xbNlGGQr4YAkm4vg=;
-        b=2Cei0eDMiMG7mibZiZX/bsM2yx7nRKSPT3rIvZ1c5mkttHGny4LF2t619FVocz3fse
-         1ypFNxymYVUxfOag7WRzLT8ZKAr1VgC2HgAaM1i70cc2PkGG+hepmiqydoNr0piMb3sO
-         U78tIfJ3PhBs8FYHKzaGbl4tXQj+1xNwU97lJkOj4HkbXxSR3YEekqEDNuvdP2ItIIe8
-         SopSFX9jy2OL4q6MummMRdXOMD19guC2Ghp4sPEgHBbkU/L8wvq9YcnT5jeVifI43kNK
-         6hsEfsiHffxM5aXg/yCMS1e7sFWh+PG/xw4QJBU5XXgZkqRCaoNIMZVaSzvMXcrNlCxP
-         VK7Q==
-X-Gm-Message-State: AOAM5301kCL/ESObIqqJ0WtEUJYi+J4lA9sf5CMIiPL+wYmvuEOxA/x7
-        T0zXwoKLuJxiREy7P7V7xO8=
-X-Google-Smtp-Source: ABdhPJy6GSdreeHoFKPHdtC7JmH4cRhphP3Bcz0MzefRi7oXkYpJJ5EkRqaJjzTictINW//sUGDnIA==
-X-Received: by 2002:a50:f09b:: with SMTP id v27mr20882459edl.53.1638479226831;
-        Thu, 02 Dec 2021 13:07:06 -0800 (PST)
-Received: from skbuf ([188.25.173.50])
-        by smtp.gmail.com with ESMTPSA id ar4sm524493ejc.52.2021.12.02.13.07.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Dec 2021 13:07:06 -0800 (PST)
-Date:   Thu, 2 Dec 2021 23:07:05 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        David Laight <David.Laight@aculab.com>
-Subject: Re: [PATCH net-next 2/2] net: optimize skb_postpull_rcsum()
-Message-ID: <20211202210705.vsqr67svt3sm53h3@skbuf>
-References: <20211124202446.2917972-1-eric.dumazet@gmail.com>
- <20211124202446.2917972-3-eric.dumazet@gmail.com>
- <20211202131040.rdxzbfwh2slhftg5@skbuf>
- <CANn89iLW4kwKf0x094epVeCaKhB4GtYgbDwE2=Fp0HnW8UdKzw@mail.gmail.com>
- <20211202162916.ieb2wn35z5h4aubh@skbuf>
- <CANn89iJEfDL_3C39Gp9eD=yPDqW4MGcVm7AyUBcTVdakS-X2dg@mail.gmail.com>
- <CANn89iJOH0QtRhDfBzJr3fpJPNCQJhbMqT_8sa+vH_6mmZ7xhw@mail.gmail.com>
+        id S1356316AbhLBVPI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Dec 2021 16:15:08 -0500
+Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:47595 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229683AbhLBVPH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 16:15:07 -0500
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-283-q5l0cWmjOraT5uYWJuky4w-1; Thu, 02 Dec 2021 21:11:42 +0000
+X-MC-Unique: q5l0cWmjOraT5uYWJuky4w-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.26; Thu, 2 Dec 2021 21:11:41 +0000
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.026; Thu, 2 Dec 2021 21:11:41 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Noah Goldstein' <goldstein.w.n@gmail.com>,
+        Eric Dumazet <edumazet@google.com>
+CC:     "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        Borislav Petkov <bp@alien8.de>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        X86 ML <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "alexanderduyck@fb.com" <alexanderduyck@fb.com>,
+        "open list" <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Subject: RE: [PATCH v1] x86/lib: Optimize 8x loop and memory clobbers in
+ csum_partial.c
+Thread-Topic: [PATCH v1] x86/lib: Optimize 8x loop and memory clobbers in
+ csum_partial.c
+Thread-Index: AQHX4nNzHa79im/GnUeKV4t1ya1z3awZWESAgAAYhYCABdIhIIAAbAaSgAALIYA=
+Date:   Thu, 2 Dec 2021 21:11:41 +0000
+Message-ID: <ca8dcc5b6fbf47b29d55a2ab9815c182@AcuMS.aculab.com>
+References: <20211125193852.3617-1-goldstein.w.n@gmail.com>
+ <CANn89iLnH5B11CtzZ14nMFP7b--7aOfnQqgmsER+NYNzvnVurQ@mail.gmail.com>
+ <CAFUsyfK-znRWJN7FTMdJaDTd45DgtBQ9ckKGyh8qYqn0eFMMFA@mail.gmail.com>
+ <CAFUsyfLKqonuKAh4k2qdBa24H1wQtR5FkAmmtXQGBpyizi6xvQ@mail.gmail.com>
+ <CAFUsyfJ619Jx_BS515Se0V_zRdypOg3_2YzbKUk5zDBNaixhaQ@mail.gmail.com>
+ <8e4961ae0cf04a5ca4dffdec7da2e57b@AcuMS.aculab.com>
+ <CAFUsyfLoEckBrnYKUgqWC7AJPTBDfarjBOgBvtK7eGVZj9muYQ@mail.gmail.com>
+ <29cf408370b749069f3b395781fe434c@AcuMS.aculab.com>
+ <CANn89iJgNie40sGqAyJ8CM3yKNqRXGGPkMtTPwXQ4S_9jVspgw@mail.gmail.com>
+ <CAFUsyfJticWKb3fv12r5L5QZ0AVxytWqtPVkYKeFYLW3K1SMNw@mail.gmail.com>
+In-Reply-To: <CAFUsyfJticWKb3fv12r5L5QZ0AVxytWqtPVkYKeFYLW3K1SMNw@mail.gmail.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CANn89iJOH0QtRhDfBzJr3fpJPNCQJhbMqT_8sa+vH_6mmZ7xhw@mail.gmail.com>
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 02, 2021 at 12:37:35PM -0800, Eric Dumazet wrote:
-> On Thu, Dec 2, 2021 at 11:32 AM Eric Dumazet <edumazet@google.com> wrote:
-> >
-> > Thanks Vladimir
-> >
-> > I think that maybe the issue is that the initial skb->csum is zero,
-> > and the csum_parttial(removed_block) is also zero.
-> >
-> > But the initial skb->csum should not be zero if you have a non " all
-> > zero"  frame.
-> >
-> > Can you double check this in drivers/net/ethernet/freescale/enetc/enetc.c ?
-> 
-> Yes, I am not sure why the csum is inverted in enetc_get_offloads()
+RnJvbTogTm9haCBHb2xkc3RlaW4NCj4gU2VudDogMDIgRGVjZW1iZXIgMjAyMSAyMDoxOQ0KPiAN
+Cj4gT24gVGh1LCBEZWMgMiwgMjAyMSBhdCA5OjAxIEFNIEVyaWMgRHVtYXpldCA8ZWR1bWF6ZXRA
+Z29vZ2xlLmNvbT4gd3JvdGU6DQo+ID4NCj4gPiBPbiBUaHUsIERlYyAyLCAyMDIxIGF0IDY6MjQg
+QU0gRGF2aWQgTGFpZ2h0IDxEYXZpZC5MYWlnaHRAYWN1bGFiLmNvbT4gd3JvdGU6DQo+ID4gPg0K
+PiA+ID4gSSd2ZSBkdWcgb3V0IG15IHRlc3QgcHJvZ3JhbSBhbmQgbWVhc3VyZWQgdGhlIHBlcmZv
+cm1hbmNlIG9mDQo+ID4gPiB2YXJpb3VzIGNvcGllZCBvZiB0aGUgaW5uZXIgbG9vcCAtIHVzdWFs
+bHkgNjQgYnl0ZXMvaXRlcmF0aW9uLg0KPiA+ID4gQ29kZSBpcyBiZWxvdy4NCj4gPiA+DQo+ID4g
+PiBJdCB1c2VzIHRoZSBoYXJkd2FyZSBwZXJmb3JtYW5jZSBjb3VudGVyIHRvIGdldCB0aGUgbnVt
+YmVyIG9mDQo+ID4gPiBjbG9ja3MgdGhlIGlubmVyIGxvb3AgdGFrZXMuDQo+ID4gPiBUaGlzIGlz
+IHJlYXNvbmFibGUgc3RhYmxlIG9uY2UgdGhlIGJyYW5jaCBwcmVkaWN0b3IgaGFzIHNldHRsZWQg
+ZG93bi4NCj4gPiA+IFNvIHRoZSBkaWZmZXJlbnQgaW4gY2xvY2tzIGJldHdlZW4gYSA2NCBieXRl
+IGJ1ZmZlciBhbmQgYSAxMjggYnl0ZQ0KPiA+ID4gYnVmZmVyIGlzIHRoZSBudW1iZXIgb2YgY2xv
+Y2tzIGZvciA2NCBieXRlcy4NCj4gDQo+IEludHVpdGl2ZWx5IDEwIHBhc3NlcyBpcyBhIGJpdCBs
+b3cuDQoNCkknbSBkb2luZyAxMCBzZXBhcmF0ZSBtZWFzdXJlbWVudHMuDQpUaGUgZmlyc3Qgb25l
+IGlzIG11Y2ggc2xvd2VyIGJlY2F1c2UgdGhlIGNhY2hlIGlzIGNvbGQuDQpBbGwgdGhlIG9uZXMg
+YWZ0ZXIgKHR5cGljYWxseSkgbnVtYmVyIDUgb3IgNiB0ZW5kIHRvIGdpdmUgdGhlIHNhbWUgYW5z
+d2VyLg0KMTAgaXMgcGxlbnR5IHRvIGdpdmUgeW91IHRoYXQgJ3dhcm0gZnV6enkgZmVlbGluZycg
+dGhhdCB5b3UndmUgZ290DQphIGNvbnNpc3RlbnQgYW5zd2VyLg0KDQpSdW4gdGhlIHByb2dyYW0g
+NSBvciA2IHRpbWVzIHdpdGggdGhlIHNhbWUgcGFyYW1ldGVycyBhbmQgeW91IHNvbWV0aW1lcw0K
+Z2V0IGEgZGlmZmVyZW50IHN0YWJsZSB2YWx1ZSAtIHByb2JhYmx5IHNvbWV0aGluZyB0byBkbyB3
+aXRoIHN0YWNrIGFuZA0KZGF0YSBwaHlzaWNhbCBwYWdlcy4NCldhcyBtb3JlIG9idmlvdXMgd2hl
+biBJIHdhcyB0aW1pbmcgYSBzeXN0ZW0gY2FsbC4NCg0KPiBBbHNvIHlvdSBtaWdodCBjb25zaWRl
+ciBhbGlnbmluZw0KPiB0aGUgYGNzdW02NGAgZnVuY3Rpb24gYW5kIHBvc3NpYmx5IHRoZSBsb29w
+cy4NCg0KV29uJ3QgbWF0dGVyIGhlcmUsIGluc3RydWN0aW9uIGRlY29kZSBpc24ndCB0aGUgcHJv
+YmxlbS4NCkFsc28gdGhlIHVvcHMgYWxsIGNvbWUgb3V0IG9mIHRoZSBsb29wIHVvcCBjYWNoZS4N
+Cg0KPiBUaGVyZSBhIHJlYXNvbiB5b3UgcHV0IGAganJjeHpgIGF0IHRoZSBiZWdpbm5pbmcgb2Yg
+dGhlIGxvb3BzIGluc3RlYWQNCj4gb2YgdGhlIGVuZD8NCg0KanJjeHogaXMgJ2p1bXAgaWYgY3gg
+emVybycgLSBoYXJkIHRvIHVzZSBhdCB0aGUgYm90dG9tIG9mIGEgbG9vcCENCg0KVGhlICdwYWly
+ZWQnIGxvb3AgZW5kIGluc3RydWN0aW9uIGlzICdsb29wJyAtIGRlY3JlbWVudCAlY3ggYW5kIGp1
+bXAgbm9uLXplcm8uDQpCdXQgdGhhdCBpcyA3KyBjeWNsZXMgb24gY3VycmVudCBJbnRlbCBjcHUg
+KG9rIG9uIGFtZCBvbmVzKS4NCg0KSSBjYW4gZ2V0IGEgdHdvIGNsb2NrIGxvb3Agd2l0aCBqcmN4
+eiBhbmQgam1wIC0gYXMgaW4gdGhlIGV4YW1wbGVzLg0KQnV0IGl0IGlzIG1vcmUgc3RhYmxlIHRh
+a2VuIG91dCB0byA0IGNsb2Nrcy4NCg0KWW91IGNhbid0IGRvIGEgb25lIGNsb2NrIGxvb3AgOi0o
+DQoNCj4gPiA+IChVbmxpa2UgdGhlIFRTQyB0aGUgcG1jIGNvdW50IGRvZXNuJ3QgZGVwZW5kIG9u
+IHRoZSBjcHUgZnJlcXVlbmN5LikNCj4gPiA+DQo+ID4gPiBXaGF0IGlzIGludGVyZXN0aW5nIGlz
+IHRoYXQgZXZlbiBzb21lIG9mIHRoZSB0cml2aWFsIGxvb3BzIGFwcGVhcg0KPiA+ID4gdG8gYmUg
+ZG9pbmcgMTYgYnl0ZXMgcGVyIGNsb2NrIGZvciBzaG9ydCBidWZmZXJzIC0gd2hpY2ggaXMgaW1w
+b3NzaWJsZS4NCj4gPiA+IENoZWNrc3VtIDFrIGJ5dGVzIGFuZCB5b3UgZ2V0IGFuIGVudGlyZWx5
+IGRpZmZlcmVudCBhbnN3ZXIuDQo+ID4gPiBUaGUgb25seSBsb29wIHRoYXQgcmVhbGx5IGV4Y2Vl
+ZHMgOCBieXRlcy9jbG9jayBmb3IgbG9uZyBidWZmZXJzDQo+ID4gPiBpcyB0aGUgYWR4Yy9hZG9j
+IG9uZS4NCj4gPiA+DQo+ID4gPiBXaGF0IGlzIGFsbW9zdCBjZXJ0YWlubHkgaGFwcGVuaW5nIGlz
+IHRoYXQgYWxsIHRoZSBtZW1vcnkgcmVhZHMgYW5kDQo+ID4gPiB0aGUgZGVwZW5kYW50IGFkZC9h
+ZGMgaW5zdHJ1Y3Rpb25zIGFyZSBhbGwgcXVldWVkIHVwIGluIHRoZSAnb3V0IG9mDQo+ID4gPiBv
+cmRlcicgZXhlY3V0aW9uIHVuaXQuDQo+ID4gPiBTaW5jZSAncmRwbWMnIGlzbid0IGEgc2VyaWFs
+aXNpbmcgaW5zdHJ1Y3Rpb24gdGhleSBjYW4gc3RpbGwgYmUNCj4gPiA+IG91dHN0YW5kaW5nIHdo
+ZW4gdGhlIGZ1bmN0aW9uIHJldHVybnMuDQo+ID4gPiBVbmNvbW1lbnQgdGhlICdyZHRzYycgYW5k
+IHlvdSBnZXQgbXVjaCBzbG93ZXIgdmFsdWVzIGZvciBzaG9ydCBidWZmZXJzLg0KPiANCj4gTWF5
+YmUgYWRkIGFuIGBsZmVuY2VgIGJlZm9yZSAvIGFmdGVyIGBjc3VtNjRgDQoNClRoYXQncyBwcm9i
+YWJseSBsZXNzIHN0cm9uZyB0aGFuIHJkdHNjLCBJIG1pZ2h0IHRyeSBpdC4NCg0KCURhdmlkDQoN
+Ci0NClJlZ2lzdGVyZWQgQWRkcmVzcyBMYWtlc2lkZSwgQnJhbWxleSBSb2FkLCBNb3VudCBGYXJt
+LCBNaWx0b24gS2V5bmVzLCBNSzEgMVBULCBVSw0KUmVnaXN0cmF0aW9uIE5vOiAxMzk3Mzg2IChX
+YWxlcykNCg==
 
-I guess it's inverted because the hardware doesn't provide its one's
-complement.
-
-> Perhaps
-> 
-> diff --git a/drivers/net/ethernet/freescale/enetc/enetc.c
-> b/drivers/net/ethernet/freescale/enetc/enetc.c
-> index 504e12554079e306e477b9619f272d6e96527377..72524f14cae0093763f8a3f57b1e08e31bc4df1a
-> 100644
-> --- a/drivers/net/ethernet/freescale/enetc/enetc.c
-> +++ b/drivers/net/ethernet/freescale/enetc/enetc.c
-> @@ -986,7 +986,7 @@ static void enetc_get_offloads(struct enetc_bdr *rx_ring,
->         if (rx_ring->ndev->features & NETIF_F_RXCSUM) {
->                 u16 inet_csum = le16_to_cpu(rxbd->r.inet_csum);
-> 
-> -               skb->csum = csum_unfold((__force __sum16)~htons(inet_csum));
-> +               skb->csum = csum_unfold((__force __sum16)htons(inet_csum));
->                 skb->ip_summed = CHECKSUM_COMPLETE;
->         }
-> 
-> If this does not work, then maybe :
-> 
-> diff --git a/drivers/net/ethernet/freescale/enetc/enetc.c
-> b/drivers/net/ethernet/freescale/enetc/enetc.c
-> index 504e12554079e306e477b9619f272d6e96527377..d190faa9a8242f9f3f962dd30b9f4409a83ee697
-> 100644
-> --- a/drivers/net/ethernet/freescale/enetc/enetc.c
-> +++ b/drivers/net/ethernet/freescale/enetc/enetc.c
-> @@ -987,7 +987,8 @@ static void enetc_get_offloads(struct enetc_bdr *rx_ring,
->                 u16 inet_csum = le16_to_cpu(rxbd->r.inet_csum);
-> 
->                 skb->csum = csum_unfold((__force __sum16)~htons(inet_csum));
-> -               skb->ip_summed = CHECKSUM_COMPLETE;
-> +               if (likely(skb->csum))
-> +                       skb->ip_summed = CHECKSUM_COMPLETE;
->         }
-> 
->         if (le16_to_cpu(rxbd->r.flags) & ENETC_RXBD_FLAG_VLAN) {
-
-I guess you aren't interested any longer in the result of these changes,
-since the csum isn't zero in enetc?
