@@ -2,116 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C6E0E465C2B
-	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 03:30:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 628B0465C45
+	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 03:42:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350100AbhLBCdt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Dec 2021 21:33:49 -0500
-Received: from mail.cn.fujitsu.com ([183.91.158.132]:38602 "EHLO
-        heian.cn.fujitsu.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1348605AbhLBCds (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 21:33:48 -0500
-IronPort-Data: =?us-ascii?q?A9a23=3AfmFwEK8PV/iXO2rP7mm0DrUDJXyTJUtcMsCJ2f8?=
- =?us-ascii?q?bfWQNrUok0TUPy2NLWzvSbKyCZTP1c9x/Otuy90MD7JOGmodjTVdlrnsFo1Bi8?=
- =?us-ascii?q?5ScXYvDRqvT04J+FuWaFQQ/qZx2huDodKjYdVeB4EfyWlTdhSMkj/jRHOKlULW?=
- =?us-ascii?q?s1h1ZHmeIdg9w0HqPpMZp2uaEsfDha++8kYuaT//3YTdJ6BYoWo4g0J9vnTs01?=
- =?us-ascii?q?BjEVJz0iXRlDRxDlAe2e3D4l/vzL4npR5fzatE88uJX24/+IL+FEmPxp3/BC/u?=
- =?us-ascii?q?ulPD1b08LXqXPewOJjxK6WYD72l4b+HN0if19aZLwam8O49mNt9Rw2tVMt525T?=
- =?us-ascii?q?y8nI6/NhP8AFRJfFkmSOIUfoe+ceSPk7Jf7I0ruNiGEL+9VJE0/I4Ad0up+H2x?=
- =?us-ascii?q?L8fsWNHYLYwzrr+6tybK2UO9EicEqLc2tN4Qa0llj0DvQJfUrW5bOR+PN/9Aw9?=
- =?us-ascii?q?Cwwm8lONfXTfcwUbXxodhuoSxlOPEoHTZEzhuGlglHhfDBC7lGYv6w65y7U1gM?=
- =?us-ascii?q?Z+LzsNsfFP9+RSMFbgkuDukrY8GnjRBIXLtqSzXyC6H3ErunCgS/2RqoMG7Cis?=
- =?us-ascii?q?P1nmluewioUEhJ+aLcRiZFVkWbnA5QGdRNSoXFo8MAPGIWQZoGVd3WFTLSs53b?=
- =?us-ascii?q?wg+ZtLtA=3D?=
-IronPort-HdrOrdr: =?us-ascii?q?A9a23=3A6NrPAazyMCwUc9Z3eKy0KrPwEL1zdoMgy1kn?=
- =?us-ascii?q?xilNoH1uA6ilfqWV8cjzuiWbtN9vYhsdcLy7WZVoIkmskKKdg7NhXotKNTOO0A?=
- =?us-ascii?q?SVxepZnOnfKlPbexHWx6p00KdMV+xEAsTsMF4St63HyTj9P9E+4NTvysyVuds?=
- =?us-ascii?q?=3D?=
-X-IronPort-AV: E=Sophos;i="5.87,280,1631548800"; 
-   d="scan'208";a="118303353"
-Received: from unknown (HELO cn.fujitsu.com) ([10.167.33.5])
-  by heian.cn.fujitsu.com with ESMTP; 02 Dec 2021 10:30:25 +0800
-Received: from G08CNEXMBPEKD04.g08.fujitsu.local (unknown [10.167.33.201])
-        by cn.fujitsu.com (Postfix) with ESMTP id 9EDD94D13BC1;
-        Thu,  2 Dec 2021 10:30:24 +0800 (CST)
-Received: from G08CNEXCHPEKD07.g08.fujitsu.local (10.167.33.80) by
- G08CNEXMBPEKD04.g08.fujitsu.local (10.167.33.201) with Microsoft SMTP Server
- (TLS) id 15.0.1497.23; Thu, 2 Dec 2021 10:30:25 +0800
-Received: from FNSTPC.g08.fujitsu.local (10.167.226.45) by
- G08CNEXCHPEKD07.g08.fujitsu.local (10.167.33.209) with Microsoft SMTP Server
- id 15.0.1497.23 via Frontend Transport; Thu, 2 Dec 2021 10:30:24 +0800
-From:   Li Zhijian <lizhijian@cn.fujitsu.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <shuah@kernel.org>,
-        <dsahern@gmail.com>
-CC:     <netdev@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Li Zhijian <lizhijian@cn.fujitsu.com>
-Subject: [PATCH v2 2/2] selftests: add option to list all available tests
-Date:   Thu, 2 Dec 2021 10:29:54 +0800
-Message-ID: <20211202022954.23545-2-lizhijian@cn.fujitsu.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20211202022954.23545-1-lizhijian@cn.fujitsu.com>
-References: <20211202022954.23545-1-lizhijian@cn.fujitsu.com>
+        id S1354955AbhLBCpp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Dec 2021 21:45:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46002 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348543AbhLBCpp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 21:45:45 -0500
+Received: from mail-ot1-x32b.google.com (mail-ot1-x32b.google.com [IPv6:2607:f8b0:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8757EC061574
+        for <netdev@vger.kernel.org>; Wed,  1 Dec 2021 18:42:23 -0800 (PST)
+Received: by mail-ot1-x32b.google.com with SMTP id x3-20020a05683000c300b0057a5318c517so7808391oto.13
+        for <netdev@vger.kernel.org>; Wed, 01 Dec 2021 18:42:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=zBWecEJC7qnc085ASpGHy8GCzy8WEB+uI8PPrCc+M7Q=;
+        b=JiB0FI7rfgEWGT1QfWlh4L8QntwwrfQeiQXzEZoK3D6L0ozZFFaeymNFbq+faBecbB
+         3LZXhFx4pLcNGANH07DFs3q3weIwT9xh2xxeTFA1mtvNnyE5V7ILqsaiE4hSQdbxhZ61
+         OD+rlpoQ/Iwwdxpx7MoTME7F+S9ycKQFAsgfxb3keyconkKl9arl4a78m2eREgEm2rOt
+         k1deXDNgnvfW/yUwD9xDIrUQevNh7qg0o8NOfv5Ofy9RCRiC5Gv6ofHuITqebOk0sjWX
+         0Gu4ur3VlrZb3OyxJV+aVm6AQoh5gdNEHGd2QB4NlEPU2y2823SFuo8zGWfpsEv8mGoi
+         Ol0g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=zBWecEJC7qnc085ASpGHy8GCzy8WEB+uI8PPrCc+M7Q=;
+        b=6CgNGUkIC/GqTbIpf8+j+fhdxm2RfV06dLry1l5nP1fYEV2Ox2vNeAc3+d1eBaA1ec
+         YL/EZuTXWK2SbLJUhHyRDz/47LYk/6uY0SsM73/LBbd2LBPv9Ns/SqHMwsiid/J+LgN2
+         yVdoQdTOG5MCv2iJLnDlhMHVzDxrZS82lnVx13RG1gFBd2L9ekUh4WEkE91xNwz0FrDK
+         XgkTgziE33FbiYYBpt4KfkE7LSeI03o4/FdKJaspzHAR5u214ySDdnaKHIzdKCdH3Cw/
+         mIy4bqwociwUwAy9+hEm4Oj2MH4Htg72Qcx19J8IzzTWyjZWKfKbXQgrKJCSgaPjp3Ka
+         wSNQ==
+X-Gm-Message-State: AOAM532gV4xVuH31d7lP50AwcctxP7cJtr/dAqpCr6tINCAB4LTQGbD0
+        jQMD4OP6hQNDUf7CwEDy6hM=
+X-Google-Smtp-Source: ABdhPJxhHnQPKWZJq1UfeZtM5RDsQC9lV4towINkQD5KE/c4NErVQs+Z/z9x5KKW/zhsb78H/jJmJw==
+X-Received: by 2002:a05:6830:44c:: with SMTP id d12mr9151744otc.66.1638412942910;
+        Wed, 01 Dec 2021 18:42:22 -0800 (PST)
+Received: from [172.16.0.2] ([8.48.134.30])
+        by smtp.googlemail.com with ESMTPSA id n6sm673468otj.78.2021.12.01.18.42.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 01 Dec 2021 18:42:22 -0800 (PST)
+Message-ID: <0369c4e8-e19d-d376-06f1-3742da0cc003@gmail.com>
+Date:   Wed, 1 Dec 2021 19:42:17 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-yoursite-MailScanner-ID: 9EDD94D13BC1.AE47F
-X-yoursite-MailScanner: Found to be clean
-X-yoursite-MailScanner-From: lizhijian@fujitsu.com
-X-Spam-Status: No
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.3.1
+Subject: Re: [PATCH net] ipv4: convert fib_num_tclassid_users to atomic_t
+Content-Language: en-US
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        David Ahern <dsahern@kernel.org>
+References: <20211202022635.2864113-1-eric.dumazet@gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <20211202022635.2864113-1-eric.dumazet@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-$ ./fcnal-test.sh -l
-Test names: ipv4_ping ipv4_tcp ipv4_udp ipv4_bind ipv4_runtime ipv4_netfilter
-ipv6_ping ipv6_tcp ipv6_udp ipv6_bind ipv6_runtime ipv6_netfilter
-use_cases
+On 12/1/21 7:26 PM, Eric Dumazet wrote:
+> From: Eric Dumazet <edumazet@google.com>
+> 
+> Before commit faa041a40b9f ("ipv4: Create cleanup helper for fib_nh")
+> changes to net->ipv4.fib_num_tclassid_users were protected by RTNL.
+> 
+> After the change, this is no longer the case, as free_fib_info_rcu()
+> runs after rcu grace period, without rtnl being held.
+> 
+> Fixes: faa041a40b9f ("ipv4: Create cleanup helper for fib_nh")
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Cc: David Ahern <dsahern@kernel.org>
+> ---
+>  include/net/ip_fib.h     | 2 +-
+>  include/net/netns/ipv4.h | 2 +-
+>  net/ipv4/fib_frontend.c  | 2 +-
+>  net/ipv4/fib_rules.c     | 4 ++--
+>  net/ipv4/fib_semantics.c | 4 ++--
+>  5 files changed, 7 insertions(+), 7 deletions(-)
+> 
 
-Signed-off-by: Li Zhijian <lizhijian@cn.fujitsu.com>
----
- tools/testing/selftests/net/fcnal-test.sh | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+Thanks, Eric. Was this found by syzbot or code inspection?
 
-diff --git a/tools/testing/selftests/net/fcnal-test.sh b/tools/testing/selftests/net/fcnal-test.sh
-index 5cb59947eed2..7e78be99aa4c 100755
---- a/tools/testing/selftests/net/fcnal-test.sh
-+++ b/tools/testing/selftests/net/fcnal-test.sh
-@@ -3993,6 +3993,7 @@ usage: ${0##*/} OPTS
- 	-4          IPv4 tests only
- 	-6          IPv6 tests only
- 	-t <test>   Test name/set to run
-+	-l          List all available tests
- 	-p          Pause on fail
- 	-P          Pause after each test
- 	-v          Be verbose
-@@ -4006,10 +4007,15 @@ TESTS_IPV4="ipv4_ping ipv4_tcp ipv4_udp ipv4_bind ipv4_runtime ipv4_netfilter"
- TESTS_IPV6="ipv6_ping ipv6_tcp ipv6_udp ipv6_bind ipv6_runtime ipv6_netfilter"
- TESTS_OTHER="use_cases"
- 
-+list()
-+{
-+	echo "Test names: $TESTS_IPV4 $TESTS_IPV6 $TESTS_OTHER"
-+}
-+
- PAUSE_ON_FAIL=no
- PAUSE=no
- 
--while getopts :46t:pPvh o
-+while getopts :46lt:pPvh o
- do
- 	case $o in
- 		4) TESTS=ipv4;;
-@@ -4018,6 +4024,7 @@ do
- 		p) PAUSE_ON_FAIL=yes;;
- 		P) PAUSE=yes;;
- 		v) VERBOSE=1;;
-+		l) list; exit 0;;
- 		h) usage; exit 0;;
- 		*) usage; exit 1;;
- 	esac
--- 
-2.33.0
-
+Reviewed-by: David Ahern <dsahern@kernel.org>
 
 
