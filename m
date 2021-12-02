@@ -2,94 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 72FE8465D9B
-	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 05:50:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 34656465DAB
+	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 06:10:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345100AbhLBExw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Dec 2021 23:53:52 -0500
-Received: from o1.ptr2625.egauge.net ([167.89.112.53]:39468 "EHLO
-        o1.ptr2625.egauge.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345191AbhLBExp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Dec 2021 23:53:45 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=egauge.net;
-        h=from:subject:mime-version:to:cc:content-transfer-encoding:
-        content-type;
-        s=sgd; bh=V+rt97Ma1A4UbCvm3uO5ua9m0ulcAqxqdZw+J3rZCwI=;
-        b=Lx8UIrjFU4IGIZkzFgTI7JUosgizwYqwCIPY/nVYepOMj5dLL1LoPgnqbOiejr78zR6k
-        xhg9ICeX6CEWjSDYHIp2ms5Gc4hCTdCrbQJwsn+8GBoC4L7lfbUuz8OVvW2RpKeGjZl+dJ
-        YqkiHGSzzLLy8nIRwUGp/2zuFnNEVndy5iacyXJhM6Y/IZmJ/Yx5+3WZ+cvfSOkspQSHLL
-        spvX0BcvNfrzC0QEY12kHNSApG+JMVZuPjtXmZB50o1din512B9i8Ld2O2WhsaUM6QBzmi
-        u9AHxjivNs0okSgFWBcDRcIo2kJ8VFo7bIFj3Bb9VE3T4OB+obCqgMWLkQ8n2sKA==
-Received: by filterdrecv-64fcb979b9-ds7qn with SMTP id filterdrecv-64fcb979b9-ds7qn-1-61A85080-1A
-        2021-12-02 04:50:09.051111042 +0000 UTC m=+6843203.979711569
-Received: from pearl.egauge.net (unknown)
-        by geopod-ismtpd-6-0 (SG)
-        with ESMTP
-        id Zn13KC9PRh2A2BycfNBQfA
-        Thu, 02 Dec 2021 04:50:08.802 +0000 (UTC)
-Received: by pearl.egauge.net (Postfix, from userid 1000)
-        id 777B9700280; Wed,  1 Dec 2021 21:50:06 -0700 (MST)
-From:   David Mosberger-Tang <davidm@egauge.net>
-Subject: [PATCH] wilc1000: Add id_table to spi_driver
-Date:   Thu, 02 Dec 2021 04:50:09 +0000 (UTC)
-Message-Id: <20211202045001.2901903-1-davidm@egauge.net>
-X-Mailer: git-send-email 2.25.1
+        id S231640AbhLBFNt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Dec 2021 00:13:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50606 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229469AbhLBFNp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 00:13:45 -0500
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 585F1C061574;
+        Wed,  1 Dec 2021 21:10:23 -0800 (PST)
+Received: by mail-pf1-x436.google.com with SMTP id o4so26798849pfp.13;
+        Wed, 01 Dec 2021 21:10:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=nYhvOFpnD+nATcij6pHFj/RlZs5yXdc5UYRL9Bv7hdA=;
+        b=igG5uKin/YSTcw0YoaxGhQ3fNMMy/FFFseT8g7XGwh6qtPPs+iMBMJHnn+l6dfDVsd
+         VYbFQUj/92Da0DLd3/XJgpv5F3P2a341NZDME8GFl4+J+9OhL5pou0Dhx3iYoIG5UKfA
+         XGpDYNdioRMGWm/RhuuyV+5SGoW9kFsDDlHirpZ6SjwveAK6nOX3lRKrKbWMhiSn0pBo
+         vo5QWmn5H53+u9YLVsCv0m5NP89cqTrHhnQ8aDo6xqqGFmyecP5Rkn6WbOMhrfRLFfSW
+         L1eDHRgQ8DzsHD7/uRS99ue+WtLW7KZgYUQjp5JOnBOgeVYLdBjRWc2+YBECiDfVqwQI
+         ZsTQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=nYhvOFpnD+nATcij6pHFj/RlZs5yXdc5UYRL9Bv7hdA=;
+        b=dlDQvaYouBpzlQw3dEdm9e6vKfLUf2vRdBTmA1PZHZacIWYglkwvMSNdqgXjZTOTQQ
+         CCTLmah91TW/5GZnuifdpIsKNW5J+ROCYtge76qpwKSmyM+DCh6QZCR3EHE7ncLj+yky
+         LALSShweFEzEHPIqkVLbI2pZLjU0efkTRbyFkdMg5ZYGnYakHBoZcQVJaWvVDFxbjj8s
+         z78iq3UYMySzZHbnuznxyByerxWYMlLObndZhIx9A2HdEGaYI71vdMBWnba0+BvMcUMq
+         MwlJ1uoOtRbnHOW2dqtbKElGsdldc810yH78vZB0h+eupxsOyVQUVM1fYMjk/yG6iVzs
+         m0mQ==
+X-Gm-Message-State: AOAM530OidGc1g6IOfcQwr/zCMtlWMrh2KP5fXREdu74dH98MKfxKvke
+        424GZfR0xL/bzLBn9MYqdJo+fD4vVqAfULs6uxloCUqdRWA=
+X-Google-Smtp-Source: ABdhPJy3xHjQer45zHTeWlFMZJmSYmh1eCEl5lkNepg7G+3DkiIDapz3rtXABRbc8iCwVyYY5YGKLntUwHu6Q5Lx4CA=
+X-Received: by 2002:a63:6881:: with SMTP id d123mr7798010pgc.497.1638421822722;
+ Wed, 01 Dec 2021 21:10:22 -0800 (PST)
 MIME-Version: 1.0
-X-SG-EID: =?us-ascii?Q?+kMxBqj35EdRUKoy8diX1j4AXmPtd302oan+iXZuF8m2Nw4HRW2irNspffT=2Fkh?=
- =?us-ascii?Q?ET6RJF6+Prbl0h=2FEtF1rRLvFUO26UYtrY3fq4tZ?=
- =?us-ascii?Q?RSGLd0N8Ue0pAwWsK8z9wfwxmsh=2FJiH7coen+AR?=
- =?us-ascii?Q?S72BgC5KehvSCik7mvkEZyg3FXMvoohsqIdIQRL?=
- =?us-ascii?Q?oENyWtpyj49KqLJalOMcsOdSlhK216AV192vV18?=
- =?us-ascii?Q?JJKkVQSS0TdKX53Y8AqSCVLB4=2FRU3ZAC23w+mR?=
-To:     Ajay Singh <ajay.kathat@microchip.com>
-Cc:     Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        David Mosberger-Tang <davidm@egauge.net>
-X-Entity-ID: Xg4JGAcGrJFIz2kDG9eoaQ==
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset=us-ascii
+References: <20211124084119.260239-1-jolsa@kernel.org> <20211124084119.260239-2-jolsa@kernel.org>
+ <CAEf4Bzb5wyW=62fr-BzQsuFL+mt5s=+jGcdxKwZK0+AW18uD_Q@mail.gmail.com> <Yafp193RdskXofbH@krava>
+In-Reply-To: <Yafp193RdskXofbH@krava>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Wed, 1 Dec 2021 21:10:11 -0800
+Message-ID: <CAADnVQK2vEjnZVasTKASG6AmeWyyEF8Q3bpRfWvuJJ6_qHnEig@mail.gmail.com>
+Subject: Re: [PATCH 1/8] perf/kprobe: Add support to create multiple probes
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Peter Zijlstra <a.p.zijlstra@chello.nl>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Ravi Bangoria <ravi.bangoria@amd.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This eliminates warning message:
+On Wed, Dec 1, 2021 at 1:32 PM Jiri Olsa <jolsa@redhat.com> wrote:
+>
+> On Tue, Nov 30, 2021 at 10:53:58PM -0800, Andrii Nakryiko wrote:
+> > On Wed, Nov 24, 2021 at 12:41 AM Jiri Olsa <jolsa@redhat.com> wrote:
+> > >
+> > > Adding support to create multiple probes within single perf event.
+> > > This way we can associate single bpf program with multiple kprobes,
+> > > because bpf program gets associated with the perf event.
+> > >
+> > > The perf_event_attr is not extended, current fields for kprobe
+> > > attachment are used for multi attachment.
+> >
+> > I'm a bit concerned with complicating perf_event_attr further to
+> > support this multi-attach. For BPF, at least, we now have
+> > bpf_perf_link and corresponding BPF_LINK_CREATE command in bpf()
+> > syscall which allows much simpler and cleaner API to do this. Libbpf
+> > will actually pick bpf_link-based attachment if kernel supports it. I
+> > think we should better do bpf_link-based approach from the get go.
+> >
+> > Another thing I'd like you to keep in mind and think about is BPF
+> > cookie. Currently kprobe/uprobe/tracepoint allow to associate
+> > arbitrary user-provided u64 value which will be accessible from BPF
+> > program with bpf_get_attach_cookie(). With multi-attach kprobes this
+> > because extremely crucial feature to support, otherwise it's both
+> > expensive, inconvenient and complicated to be able to distinguish
+> > between different instances of the same multi-attach kprobe
+> > invocation. So with that, what would be the interface to specify these
+> > BPF cookies for this multi-attach kprobe, if we are going through
+> > perf_event_attr. Probably picking yet another unused field and
+> > union-izing it with a pointer. It will work, but makes the interface
+> > even more overloaded. While for LINK_CREATE we can just add another
+> > pointer to a u64[] with the same size as number of kfunc names and
+> > offsets.
+>
+> I'm not sure we could bypass perf event easily.. perhaps introduce
+> BPF_PROG_TYPE_RAW_KPROBE as we did for tracepoints or just new
+> type for multi kprobe attachment like BPF_PROG_TYPE_MULTI_KPROBE
+> that might be that way we'd have full control over the API
 
-	SPI driver WILC_SPI has no spi_device_id for microchip,wilc1000
+Indeed. The existing kprobe prog type has this api:
+ * Return: BPF programs always return an integer which is interpreted by
+ * kprobe handler as:
+ * 0 - return from kprobe (event is filtered out)
+ * 1 - store kprobe event into ring buffer
 
-and makes device-tree autoloading work.
-
-Signed-off-by: David Mosberger-Tang <davidm@egauge.net>
----
- drivers/net/wireless/microchip/wilc1000/spi.c | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/drivers/net/wireless/microchip/wilc1000/spi.c b/drivers/net/wireless/microchip/wilc1000/spi.c
-index 640850f989dd..6e7fd18c14e7 100644
---- a/drivers/net/wireless/microchip/wilc1000/spi.c
-+++ b/drivers/net/wireless/microchip/wilc1000/spi.c
-@@ -203,11 +203,18 @@ static const struct of_device_id wilc_of_match[] = {
- };
- MODULE_DEVICE_TABLE(of, wilc_of_match);
- 
-+static const struct spi_device_id wilc_spi_id[] = {
-+	{ "wilc1000", 0 },
-+	{ /* sentinel */ }
-+};
-+MODULE_DEVICE_TABLE(spi, wilc_spi_id);
-+
- static struct spi_driver wilc_spi_driver = {
- 	.driver = {
- 		.name = MODALIAS,
- 		.of_match_table = wilc_of_match,
- 	},
-+	.id_table = wilc_spi_id,
- 	.probe =  wilc_bus_probe,
- 	.remove = wilc_bus_remove,
- };
--- 
-2.25.1
-
+that part we cannot change.
+No one was using that filtering feature. It often was in a way.
+New MULTI_KPROBE prog type should not have it.
