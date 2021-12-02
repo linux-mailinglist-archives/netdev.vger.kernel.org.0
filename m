@@ -2,90 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 82EBE466A93
-	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 20:42:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B2C5466A99
+	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 20:46:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232756AbhLBTpj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Dec 2021 14:45:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52038 "EHLO
+        id S241934AbhLBTtt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Dec 2021 14:49:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242720AbhLBTpH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 14:45:07 -0500
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42C39C06174A
-        for <netdev@vger.kernel.org>; Thu,  2 Dec 2021 11:41:44 -0800 (PST)
-Received: by mail-pj1-x102d.google.com with SMTP id w33-20020a17090a6ba400b001a722a06212so3723152pjj.0
-        for <netdev@vger.kernel.org>; Thu, 02 Dec 2021 11:41:44 -0800 (PST)
+        with ESMTP id S232629AbhLBTts (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 14:49:48 -0500
+Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 839D3C06174A
+        for <netdev@vger.kernel.org>; Thu,  2 Dec 2021 11:46:25 -0800 (PST)
+Received: by mail-yb1-xb34.google.com with SMTP id f9so2587711ybq.10
+        for <netdev@vger.kernel.org>; Thu, 02 Dec 2021 11:46:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=GmCpvTi4+KgCcKBrfAymYCijwgutRdSDGHmxrOe/0Rk=;
-        b=7l1m63AEuMhCUEHQ3xOJfOK0gOMWocEeLXSnslG3wRT1CkEoDZeTL2RsN+detpuzFV
-         AY06DFcqQFTuDA+t8jr7n5RcLJOHI72k4ACIKyVpMka5kcXRDTxjEjkYN2kZvk6UGiEw
-         nAb4BH/qL1NVcrtC7fVrpitmNGOacYvTAAiSPijA6OsonQNCPbr2ZvfnQt8HsehMsYjC
-         /RFd6EUT9CJybJP46popr3jYkj7N7JScSmB46ZQHyRjFUYaXIxThL8ll/jwdKRmtnYn/
-         KxFTbIQYOSzF1edKbscf2yrA2bEhHV8Bq5IiEhogEvjQSexnjgIKXCiRDA8mwdipSY+B
-         PFFQ==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=SDZLKXnzOEdeJG8V9HgCvcfDjwGbShjjCQ8MCbphcsI=;
+        b=pXTLRtZx2LzbjO0zAhK5z/GBd5bimySbFsnQXestIwvBaHmaWg5C+/Be6MR9g2t4d0
+         46yQCx1GBi129CF5c/tpmF5cwCl5wjQ5Ss7laMz0ekTPXc4FJ7LIBPvqnqwlFOBIU5Vo
+         nVySzYTcHT4NVHpAhIFoiF0haD9aU6/CUp8wNgWx47ZwYL+grHR73KRosACFT0u2Q6Yc
+         2/e7zr/tWqfGSXBooeXnQVxS+WmsASuoVV1a+ZLVJXoOfD7shaAY+ZwBa9ODACMRQHGF
+         TfMTiBfOkm4IrCUl3k4+W94XWZmzKZvx2lCCds7CxQBQFdfDfiYB+HjY7CrUZAv50tj1
+         Tvvg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=GmCpvTi4+KgCcKBrfAymYCijwgutRdSDGHmxrOe/0Rk=;
-        b=GI+iN7S5a+nqwgGo7vLwPqtPgKVqQ5HnqTLwxcJPQ102fse/x0IfCzqBVJgxbDr8RD
-         QTif8bzmeCDIlw0st4yS8Fpl3b5hIryU2WaU13L+lodKlFYdezCEL4RoY9ieABA7MuCP
-         cW932WjZ8EHj5zQFNymCf9KDFix1h22DXqWaIK9Xqc8F+Wd8seszheSskoKi0XQZPzoE
-         dnaiQ4tRNedJ7UlFy7Xyun/VX/2WRYpRHEJXWfbVrkRaqbZJLtbQNmk3ShVYsIuT2Wee
-         W8EOh5v8gst1tFE8v7J4QAV3qqEpOfhcEq0tGQvQgOfwgRDcfzcpnTpHj+VJDCxCgQRX
-         DnMQ==
-X-Gm-Message-State: AOAM5305jr2OGf7Ko9bRqYOopQktCeUGLCQa1T+cJ4nKB6ivm/8G6Ibu
-        9xHYY7fIuX6Yb8YhPEe53FS+q5i7ifXwwQ==
-X-Google-Smtp-Source: ABdhPJzcGokZDB5Bi+9GaW7r0x+vIvuKpeDGCUElU63JD+RBsfakGBKtAmaVvOW5KGcET0hs05ObzQ==
-X-Received: by 2002:a17:90a:b107:: with SMTP id z7mr8156292pjq.104.1638474103782;
-        Thu, 02 Dec 2021 11:41:43 -0800 (PST)
-Received: from hermes.local (204-195-33-123.wavecable.com. [204.195.33.123])
-        by smtp.gmail.com with ESMTPSA id d9sm3682370pjs.2.2021.12.02.11.41.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Dec 2021 11:41:43 -0800 (PST)
-Date:   Thu, 2 Dec 2021 11:41:41 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Arijit De <arijitde@marvell.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: How to avoid getting ndo_open() immediately after probe
-Message-ID: <20211202114141.35e40115@hermes.local>
-In-Reply-To: <CO6PR18MB4465B4170C7A3B8F6DEFB369D4699@CO6PR18MB4465.namprd18.prod.outlook.com>
-References: <CO6PR18MB4465B4170C7A3B8F6DEFB369D4699@CO6PR18MB4465.namprd18.prod.outlook.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=SDZLKXnzOEdeJG8V9HgCvcfDjwGbShjjCQ8MCbphcsI=;
+        b=PCto3VxtNJwTAwuJ03UGjciClJiDo3p8GaDrPOUQDEZZv6rSAllPhLy3dZu76M1Qei
+         TYP/1ec334MDtXUDlyMHuQmRZP1M1NOR1dw4rZ/njikr6WbhXirb+7Ec99rhPTcydok5
+         TzmdLiZ8N1Pk7ce0L8YOONIGVBw/e3yRNS1U0fWaVS0Ynudrnue6UmxOxV7TP1OZjY4T
+         +V9K3VApP8SphjGr2r+PmxUbq8pJQQSDUtGZi8/Ba5/2R5iQjua0NJ7YvE++0M4Z02sR
+         ViRdB1VqcEJfsfaBGFO9aF4jA9gIeH2VfYy/L1UFXK92lyma8xy6J3QZABk3T3DCqTsA
+         rfTQ==
+X-Gm-Message-State: AOAM532Jv1ekLabIUGy8WDJ8tf9SJ8Y1V8jOFdoMMzheS44hm9m5qQws
+        yRF+G/Xio2H2GYK8zVVlquFmdwhJbd3wQbs6mHtEzw==
+X-Google-Smtp-Source: ABdhPJwNuahf4HXN0L/Rzzs0IjA1Gw+nU8VNR6uVUcRNULTkbPHjNwDGucoJlEkwycXnDEqpbeghp6Y5Kkr2EYZAFBs=
+X-Received: by 2002:a25:3252:: with SMTP id y79mr16952312yby.5.1638474384344;
+ Thu, 02 Dec 2021 11:46:24 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20211202032139.3156411-3-eric.dumazet@gmail.com> <202112030323.z9IhC2B3-lkp@intel.com>
+In-Reply-To: <202112030323.z9IhC2B3-lkp@intel.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 2 Dec 2021 11:46:13 -0800
+Message-ID: <CANn89iLi6Dh3_hhDO8u9xJ+nA4eSEgpyv3sMVz3A8bcbp-6-TA@mail.gmail.com>
+Subject: Re: [PATCH net-next 02/19] lib: add tests for reference tracker
+To:     kernel test robot <lkp@intel.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, kbuild-all@lists.01.org,
+        netdev <netdev@vger.kernel.org>,
+        Dmitry Vyukov <dvyukov@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2 Dec 2021 18:11:30 +0000
-Arijit De <arijitde@marvell.com> wrote:
+On Thu, Dec 2, 2021 at 11:25 AM kernel test robot <lkp@intel.com> wrote:
+>
+> Hi Eric,
+>
+> I love your patch! Yet something to improve:
+>
+> [auto build test ERROR on net-next/master]
+>
+> url:    https://github.com/0day-ci/linux/commits/Eric-Dumazet/net-add-preliminary-netdev-refcount-tracking/20211202-112353
+> base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 8057cbb8335cf6d419866737504473833e1d128a
+> config: nios2-allyesconfig (https://download.01.org/0day-ci/archive/20211203/202112030323.z9IhC2B3-lkp@intel.com/config)
+> compiler: nios2-linux-gcc (GCC) 11.2.0
+> reproduce (this is a W=1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # https://github.com/0day-ci/linux/commit/5da0cdb1848fae9fb2d9d749bb94e568e2493df8
+>         git remote add linux-review https://github.com/0day-ci/linux
+>         git fetch --no-tags linux-review Eric-Dumazet/net-add-preliminary-netdev-refcount-tracking/20211202-112353
+>         git checkout 5da0cdb1848fae9fb2d9d749bb94e568e2493df8
+>         # save the config file to linux build tree
+>         mkdir build_dir
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=nios2 SHELL=/bin/bash
+>
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
+>
+> All errors (new ones prefixed by >>):
+>
+>    nios2-linux-ld: kernel/stacktrace.o: in function `stack_trace_save':
+> >> (.text+0x2e4): undefined reference to `save_stack_trace'
+>    (.text+0x2e4): relocation truncated to fit: R_NIOS2_CALL26 against `save_stack_trace'
+>
+> Kconfig warnings: (for reference only)
+>    WARNING: unmet direct dependencies detected for STACKTRACE
+>    Depends on STACKTRACE_SUPPORT
+>    Selected by
+>    - STACKDEPOT
+>
 
-> Hi,
-> 
-> I have handled the probe() and registered the netdev structure using register_netdev().
-> I have observed in other opensource driver(i.e. Intel e1000e driver) that ndo_open() gets called only when we try to bring up the interface (i.e. ifconfig <ip> ifconfig eth0 <ip-addr> netmask <net-mask> up).
-> But in my network driver I am getting ndo_open() call immediately after I handle the probe(). It's a wrong behavior, also my network interface is getting to UP/RUNNING state(as shown below) even without any valid ip address.
-> 
-> enp1s0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
->         ether 00:22:55:33:22:28  txqueuelen 1000  (Ethernet)
->         RX packets 0  bytes 0 (0.0 B)
->         RX errors 0  dropped 0  overruns 0  frame 0
->         TX packets 252  bytes 43066 (43.0 KB)
->         TX errors 0  dropped 0 overruns 0  carrier 0  collisions
-> 
-> What is the change required in the driver such that my network interface(enp1s0) should be in down state(BROADCAST & MULTICAST only) after probe()
-> and ndo_open() call should happen only when device gets configured?
-> 
-> Thanks
-> Arijit
+I am not sure I understand this.
 
-ndo_open gets called when userspace brings the device up.
-Based on the device name, you are running on a distribution which renames
-devices; probably systemd/networkd and it is starting the device.
+Dmitry, do I need to add a depends on STACKTRACE_SUPPORT.
 
-You need to change userspace configuration 
+Thanks !
