@@ -2,141 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A4E67466AD5
-	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 21:19:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B364466AD7
+	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 21:20:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348753AbhLBUWy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Dec 2021 15:22:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60342 "EHLO
+        id S1348780AbhLBUX4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Dec 2021 15:23:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235095AbhLBUWx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 15:22:53 -0500
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C5FDC06174A;
-        Thu,  2 Dec 2021 12:19:31 -0800 (PST)
-Received: by mail-pl1-x636.google.com with SMTP id b11so501057pld.12;
-        Thu, 02 Dec 2021 12:19:31 -0800 (PST)
+        with ESMTP id S1348771AbhLBUXv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 15:23:51 -0500
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2F11C06174A;
+        Thu,  2 Dec 2021 12:20:26 -0800 (PST)
+Received: by mail-lj1-x22f.google.com with SMTP id v15so2077118ljc.0;
+        Thu, 02 Dec 2021 12:20:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=EZyJYJGDiU9aKpyBczLv1xRZG/LkexDA2FqwX44VCAM=;
-        b=SBmk8vku3Nle/xiZM+Y7yBU8eKxHyoFJVTeABCRA51m1JnxPVovLBWj3uThFliSkll
-         2btIwOZuM0nBBKSBByl73odrP3zidi5MTg/xfDuDNOFaaChdA3AQc4b0B2ohMwq1vLwv
-         2QUTs1QLxvP2BVjzsztwShPgCvnfcKs1lbsN1fDzR9ovyFtVHyyM2Cc6ywjN4rOvs9qv
-         hpCbqNMukcgleu7V4WPfotDSnP07ZSf6oM4y0xHX4aKotj4MXBNdQ/Mt6BjS8t6RCV0v
-         kHQAFDtkdYKpG94g8X8Bbikju2h6B/2XMMVjXoWYUP87BXmHkoBez8yOfw6Qmjx2ljqb
-         ItaA==
+        bh=fCzrqr37/Pa5nR8At64WlrHZN/bairxH2LuamcatVLw=;
+        b=CUCBR/Ff7yjRk9IS8y2DBx2HmQPWsnyXqPWvLAfvwFZTAWH8l16MK5PJ3n0oDkX3di
+         RN4SjcIISRc3g/84B8h4kiReDbDAkXIhiOGEeFzCR0d8Dj8oaYUhu4WuDDa4CdaA4mlI
+         bj8LhXMcnyMUow8T17L+QndhrwI56Z0EwlDlU1W3QGOCTboUaLMT1v4+PakGfqwXXg4r
+         Cr7LHqEF1BP9ro5FUzGBV/H/S8S0+JrEZc7+ZHPjynkGx4UB2Y2biNo0ses392sEokbi
+         mya3W7EsD/1q9P6Al1qXAKQ66U+nwKJMg4UA0R++FqGjfYxxq0PzuRz27KEHj89TJXC9
+         3ihA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=EZyJYJGDiU9aKpyBczLv1xRZG/LkexDA2FqwX44VCAM=;
-        b=ueSYXvCX27Qq0Z8i3kPTtz3G+fiaLgF/u8414gDYq+k99dwcjXGEk/jbHIjea6afdb
-         w20QM1sYoZcJef3Jf0LY92BEkqozGUIkqBIPByqEOYh5F0Ndnss1VYdBKZTsHJ+M/x6A
-         CoFvfbuNmNrkzgkFF/GWTEU7tZ9J4OSS2HDYqq5GNAV1bzrjmBWSdRYDkDlOF+M71LhG
-         FfaQhz2jOe7obVNJJ3Hbs58BS7FLTfNE9rCfbnsNvRkaTwHH57WrNFrVMH3jzXwFZrIn
-         L90mWzjoUxzHVdQ8s4g78ep1lnmvy9ycb3Lkq8jkN/qxu6mYvKeKxzSv2+1fXOHlqObt
-         4+Hw==
-X-Gm-Message-State: AOAM5310Yv2Z/QJ9315sbWoLj5H5dipxm2gh+pCZpu1UuXgFcLSxdLUf
-        VadN69kbBqLrqELvkBLMsout9RHxiN7tQ3zTKSc=
-X-Google-Smtp-Source: ABdhPJwpJOfg8iRFGqhbc7DMWiH3xS7W842CCQOTVqBCazcIAFXk5W6AmCe0joYoZh7cWSkvJ5m5a9NObL9koqYFfE4=
-X-Received: by 2002:a17:90b:1892:: with SMTP id mn18mr8464878pjb.178.1638476370639;
- Thu, 02 Dec 2021 12:19:30 -0800 (PST)
+        bh=fCzrqr37/Pa5nR8At64WlrHZN/bairxH2LuamcatVLw=;
+        b=R6xG4YogV0oGMebM5wc6xrxYVp85VC5pWMAsxb9o4FLj2XQSXEZXO6PduMuEY8dL7Q
+         0TWdjKJv17baWdiEJZw5L2uEQNa9MmdJgmoxhLkCkStDUJbKltHFUt3b3K4SPZsz/az7
+         rAI/ZTmgC21Kptpq/LHHHxkd4fntDObyyQqBfLNE0yEiSeuzR9Tbt2o0+RK8Am+PlUP5
+         3udKMoT/7tq31g56mMDC40TId+eN2Iw4d9tFy8xR3gKhtUbGzWuC5O3ZMfl8IkqqH3na
+         kZpo/FckJsEdsk8fKyP0IKfuoMCA+VoMbmcoicQu0KkD6rAioquuOIyI0vhjCJluumZQ
+         yFGw==
+X-Gm-Message-State: AOAM532i3/lCV2mkSZmVxp+uIKd6sUP36sPYCYCeSOh/XErp7eP4Y1eE
+        hSe8aablMeHrH4EiSD32vGI9O4cqOF+vYcMhJrk=
+X-Google-Smtp-Source: ABdhPJwRnG3pGN65CEPU0PxEFQ6Hhgtf6hLpY+v4ZNfIvtzJ3wYjDctmWxV2DJiX6mNGD/eMjZEpMcuqkEcRMEnGvfE=
+X-Received: by 2002:a2e:a792:: with SMTP id c18mr14177493ljf.443.1638476425201;
+ Thu, 02 Dec 2021 12:20:25 -0800 (PST)
 MIME-Version: 1.0
-References: <20211125193852.3617-1-goldstein.w.n@gmail.com>
- <CANn89iLnH5B11CtzZ14nMFP7b--7aOfnQqgmsER+NYNzvnVurQ@mail.gmail.com>
- <CAFUsyfK-znRWJN7FTMdJaDTd45DgtBQ9ckKGyh8qYqn0eFMMFA@mail.gmail.com>
- <CAFUsyfLKqonuKAh4k2qdBa24H1wQtR5FkAmmtXQGBpyizi6xvQ@mail.gmail.com>
- <CAFUsyfJ619Jx_BS515Se0V_zRdypOg3_2YzbKUk5zDBNaixhaQ@mail.gmail.com>
- <8e4961ae0cf04a5ca4dffdec7da2e57b@AcuMS.aculab.com> <CAFUsyfLoEckBrnYKUgqWC7AJPTBDfarjBOgBvtK7eGVZj9muYQ@mail.gmail.com>
- <29cf408370b749069f3b395781fe434c@AcuMS.aculab.com> <CANn89iJgNie40sGqAyJ8CM3yKNqRXGGPkMtTPwXQ4S_9jVspgw@mail.gmail.com>
-In-Reply-To: <CANn89iJgNie40sGqAyJ8CM3yKNqRXGGPkMtTPwXQ4S_9jVspgw@mail.gmail.com>
-From:   Noah Goldstein <goldstein.w.n@gmail.com>
-Date:   Thu, 2 Dec 2021 14:19:19 -0600
-Message-ID: <CAFUsyfJticWKb3fv12r5L5QZ0AVxytWqtPVkYKeFYLW3K1SMNw@mail.gmail.com>
-Subject: Re: [PATCH v1] x86/lib: Optimize 8x loop and memory clobbers in csum_partial.c
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     David Laight <David.Laight@aculab.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        Borislav Petkov <bp@alien8.de>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        X86 ML <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "alexanderduyck@fb.com" <alexanderduyck@fb.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
+References: <20211124193327.2736-1-cpp.code.lv@gmail.com> <CAOrHB_AUCGG0uF4d30Eb4dguPqwvDL8A2c=2EGXqdcqkqLZK-g@mail.gmail.com>
+In-Reply-To: <CAOrHB_AUCGG0uF4d30Eb4dguPqwvDL8A2c=2EGXqdcqkqLZK-g@mail.gmail.com>
+From:   Cpp Code <cpp.code.lv@gmail.com>
+Date:   Thu, 2 Dec 2021 12:20:14 -0800
+Message-ID: <CAASuNyWViYk6rt7bpqVApMFJB+k9NKSwasm1H_70uMMRUHxoHw@mail.gmail.com>
+Subject: Re: [PATCH net-next v8] net: openvswitch: IPv6: Add IPv6 extension
+ header support
+To:     Pravin Shelar <pravin.ovn@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        ovs dev <dev@openvswitch.org>,
+        LKML <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 2, 2021 at 9:01 AM Eric Dumazet <edumazet@google.com> wrote:
+On Wed, Dec 1, 2021 at 11:34 PM Pravin Shelar <pravin.ovn@gmail.com> wrote:
 >
-> On Thu, Dec 2, 2021 at 6:24 AM David Laight <David.Laight@aculab.com> wrote:
+> On Wed, Nov 24, 2021 at 11:33 AM Toms Atteka <cpp.code.lv@gmail.com> wrote:
 > >
-> > I've dug out my test program and measured the performance of
-> > various copied of the inner loop - usually 64 bytes/iteration.
-> > Code is below.
+> > This change adds a new OpenFlow field OFPXMT_OFB_IPV6_EXTHDR and
+> > packets can be filtered using ipv6_ext flag.
 > >
-> > It uses the hardware performance counter to get the number of
-> > clocks the inner loop takes.
-> > This is reasonable stable once the branch predictor has settled down.
-> > So the different in clocks between a 64 byte buffer and a 128 byte
-> > buffer is the number of clocks for 64 bytes.
+> > Signed-off-by: Toms Atteka <cpp.code.lv@gmail.com>
+> > ---
+> >  include/uapi/linux/openvswitch.h |   6 ++
+> >  net/openvswitch/flow.c           | 140 +++++++++++++++++++++++++++++++
+> >  net/openvswitch/flow.h           |  14 ++++
+> >  net/openvswitch/flow_netlink.c   |  26 +++++-
+> >  4 files changed, 184 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/include/uapi/linux/openvswitch.h b/include/uapi/linux/openvswitch.h
+> > index a87b44cd5590..43790f07e4a2 100644
+> > --- a/include/uapi/linux/openvswitch.h
+> > +++ b/include/uapi/linux/openvswitch.h
+> > @@ -342,6 +342,7 @@ enum ovs_key_attr {
+> >         OVS_KEY_ATTR_CT_ORIG_TUPLE_IPV4,   /* struct ovs_key_ct_tuple_ipv4 */
+> >         OVS_KEY_ATTR_CT_ORIG_TUPLE_IPV6,   /* struct ovs_key_ct_tuple_ipv6 */
+> >         OVS_KEY_ATTR_NSH,       /* Nested set of ovs_nsh_key_* */
+> > +       OVS_KEY_ATTR_IPV6_EXTHDRS,  /* struct ovs_key_ipv6_exthdr */
+> >
+> >  #ifdef __KERNEL__
+> >         OVS_KEY_ATTR_TUNNEL_INFO,  /* struct ip_tunnel_info */
+> > @@ -421,6 +422,11 @@ struct ovs_key_ipv6 {
+> >         __u8   ipv6_frag;       /* One of OVS_FRAG_TYPE_*. */
+> >  };
+> >
+> > +/* separate structure to support backward compatibility with older user space */
+> > +struct ovs_key_ipv6_exthdrs {
+> > +       __u16  hdrs;
+> > +};
+> > +
+> >  struct ovs_key_tcp {
+> >         __be16 tcp_src;
+> >         __be16 tcp_dst;
+> > diff --git a/net/openvswitch/flow.c b/net/openvswitch/flow.c
+> > index 9d375e74b607..28acb40437ca 100644
+> > --- a/net/openvswitch/flow.c
+> > +++ b/net/openvswitch/flow.c
+> > @@ -239,6 +239,144 @@ static bool icmphdr_ok(struct sk_buff *skb)
+> >                                   sizeof(struct icmphdr));
+> >  }
+> >
+> > +/**
+> > + * get_ipv6_ext_hdrs() - Parses packet and sets IPv6 extension header flags.
+> > + *
+> > + * @skb: buffer where extension header data starts in packet
+> > + * @nh: ipv6 header
+> > + * @ext_hdrs: flags are stored here
+> > + *
+> > + * OFPIEH12_UNREP is set if more than one of a given IPv6 extension header
+> > + * is unexpectedly encountered. (Two destination options headers may be
+> > + * expected and would not cause this bit to be set.)
+> > + *
+> > + * OFPIEH12_UNSEQ is set if IPv6 extension headers were not in the order
+> > + * preferred (but not required) by RFC 2460:
+> > + *
+> > + * When more than one extension header is used in the same packet, it is
+> > + * recommended that those headers appear in the following order:
+> > + *      IPv6 header
+> > + *      Hop-by-Hop Options header
+> > + *      Destination Options header
+> > + *      Routing header
+> > + *      Fragment header
+> > + *      Authentication header
+> > + *      Encapsulating Security Payload header
+> > + *      Destination Options header
+> > + *      upper-layer header
+> > + */
+> > +static void get_ipv6_ext_hdrs(struct sk_buff *skb, struct ipv6hdr *nh,
+> > +                             u16 *ext_hdrs)
+> > +{
+> > +       u8 next_type = nh->nexthdr;
+> > +       unsigned int start = skb_network_offset(skb) + sizeof(struct ipv6hdr);
+> > +       int dest_options_header_count = 0;
+> > +
+> > +       *ext_hdrs = 0;
+> > +
+> > +       while (ipv6_ext_hdr(next_type)) {
+> > +               struct ipv6_opt_hdr _hdr, *hp;
+> > +
+> > +               switch (next_type) {
+> > +               case IPPROTO_NONE:
+> > +                       *ext_hdrs |= OFPIEH12_NONEXT;
+> > +                       /* stop parsing */
+> > +                       return;
+> > +
+> > +               case IPPROTO_ESP:
+> > +                       if (*ext_hdrs & OFPIEH12_ESP)
+> > +                               *ext_hdrs |= OFPIEH12_UNREP;
+> > +                       if ((*ext_hdrs & ~(OFPIEH12_HOP | OFPIEH12_DEST |
+> > +                                          OFPIEH12_ROUTER | IPPROTO_FRAGMENT |
+> > +                                          OFPIEH12_AUTH | OFPIEH12_UNREP)) ||
+> > +                           dest_options_header_count >= 2) {
+> > +                               *ext_hdrs |= OFPIEH12_UNSEQ;
+> > +                       }
+> > +                       *ext_hdrs |= OFPIEH12_ESP;
+> > +                       break;
+> you need to check_header() before looking into each extension header.
 
-Intuitively 10 passes is a bit low. Also you might consider aligning
-the `csum64` function and possibly the loops.
-
-There a reason you put ` jrcxz` at the beginning of the loops instead
-of the end?
-
-> > (Unlike the TSC the pmc count doesn't depend on the cpu frequency.)
-> >
-> > What is interesting is that even some of the trivial loops appear
-> > to be doing 16 bytes per clock for short buffers - which is impossible.
-> > Checksum 1k bytes and you get an entirely different answer.
-> > The only loop that really exceeds 8 bytes/clock for long buffers
-> > is the adxc/adoc one.
-> >
-> > What is almost certainly happening is that all the memory reads and
-> > the dependant add/adc instructions are all queued up in the 'out of
-> > order' execution unit.
-> > Since 'rdpmc' isn't a serialising instruction they can still be
-> > outstanding when the function returns.
-> > Uncomment the 'rdtsc' and you get much slower values for short buffers.
-
-Maybe add an `lfence` before / after `csum64`
-> >
-> > When testing the full checksum function the queued up memory
-> > reads and adc are probably running in parallel with the logic
-> > that is handling lengths that aren't multiples of 64.
-> >
-> > I also found nothing consistently different for misaligned reads.
-> >
-> > These were all tested on my i7-7700 cpu.
-> >
->
-> I usually do not bother timing each call.
-> I instead time a loop of 1,000,000,000 calls.
-> Yes, this includes loop cost, but this is the same cost for all variants.
->    for (i = 0; i < 100*1000*1000; i++) {
->         res += csum_partial((void *)frame + 14 + 64*0, 40, 0);
->         res += csum_partial((void *)frame + 14 + 64*1, 40, 0);
->         res += csum_partial((void *)frame + 14 + 64*2, 40, 0);
->         res += csum_partial((void *)frame + 14 + 64*3, 40, 0);
->         res += csum_partial((void *)frame + 14 + 64*4, 40, 0);
->         res += csum_partial((void *)frame + 14 + 64*5, 40, 0);
->         res += csum_partial((void *)frame + 14 + 64*6, 40, 0);
->         res += csum_partial((void *)frame + 14 + 64*7, 40, 0);
->         res += csum_partial((void *)frame + 14 + 64*8, 40, 0);
->         res += csum_partial((void *)frame + 14 + 64*9, 40, 0);
->     }
-
-+ 1. You can also feed `res` from previous iteration to the next
-iteration to measure latency cheaply if that is better
-predictor of performance.
-
->
-> Then use " perf stat ./bench"   or similar.
+Could you elaborate why I need to add check_header(),
+skb_header_pointer() is doing sanitization.
