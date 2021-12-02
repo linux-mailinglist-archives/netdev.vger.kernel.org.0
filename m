@@ -2,258 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 595D8465FB5
-	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 09:41:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A37D9466016
+	for <lists+netdev@lfdr.de>; Thu,  2 Dec 2021 10:05:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345887AbhLBIoU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Dec 2021 03:44:20 -0500
-Received: from szxga03-in.huawei.com ([45.249.212.189]:29146 "EHLO
-        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345821AbhLBIoK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 03:44:10 -0500
-Received: from kwepemi500001.china.huawei.com (unknown [172.30.72.56])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4J4TrR0W8NzXdQv;
-        Thu,  2 Dec 2021 16:38:47 +0800 (CST)
-Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- kwepemi500001.china.huawei.com (7.221.188.114) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Thu, 2 Dec 2021 16:40:46 +0800
-Received: from localhost.localdomain (10.67.165.24) by
- kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Thu, 2 Dec 2021 16:40:45 +0800
-From:   Guangbin Huang <huangguangbin2@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <wangjie125@huawei.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
-        <chenhao288@hisilicon.com>
-Subject: [PATCH net-next 9/9] net: hns3: refactor function hns3_get_vector_ring_chain()
-Date:   Thu, 2 Dec 2021 16:36:03 +0800
-Message-ID: <20211202083603.25176-10-huangguangbin2@huawei.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20211202083603.25176-1-huangguangbin2@huawei.com>
-References: <20211202083603.25176-1-huangguangbin2@huawei.com>
+        id S1345572AbhLBJHg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Dec 2021 04:07:36 -0500
+Received: from mga03.intel.com ([134.134.136.65]:47444 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1345465AbhLBJHf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 2 Dec 2021 04:07:35 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10185"; a="236606094"
+X-IronPort-AV: E=Sophos;i="5.87,281,1631602800"; 
+   d="scan'208";a="236606094"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Dec 2021 01:04:13 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.87,281,1631602800"; 
+   d="scan'208";a="609909625"
+Received: from lkp-server02.sh.intel.com (HELO 9e1e9f9b3bcb) ([10.239.97.151])
+  by orsmga004.jf.intel.com with ESMTP; 02 Dec 2021 01:04:11 -0800
+Received: from kbuild by 9e1e9f9b3bcb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1msi0g-000G6x-Gw; Thu, 02 Dec 2021 09:04:10 +0000
+Date:   Thu, 2 Dec 2021 17:03:42 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     kbuild-all@lists.01.org, netdev <netdev@vger.kernel.org>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Eric Dumazet <edumazet@google.com>
+Subject: Re: [PATCH net-next 02/19] lib: add tests for reference tracker
+Message-ID: <202112021600.8HBrwOX4-lkp@intel.com>
+References: <20211202032139.3156411-3-eric.dumazet@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- kwepemm600016.china.huawei.com (7.193.23.20)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211202032139.3156411-3-eric.dumazet@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jie Wang <wangjie125@huawei.com>
+Hi Eric,
 
-Currently  hns3_get_vector_ring_chain() is a bit long. Refactor it by
-extracting sub process to improve the readability.
+I love your patch! Yet something to improve:
 
-Signed-off-by: Jie Wang <wangjie125@huawei.com>
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+[auto build test ERROR on net-next/master]
+
+url:    https://github.com/0day-ci/linux/commits/Eric-Dumazet/net-add-preliminary-netdev-refcount-tracking/20211202-112353
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 8057cbb8335cf6d419866737504473833e1d128a
+config: sparc-buildonly-randconfig-r005-20211202 (https://download.01.org/0day-ci/archive/20211202/202112021600.8HBrwOX4-lkp@intel.com/config)
+compiler: sparc-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/5da0cdb1848fae9fb2d9d749bb94e568e2493df8
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Eric-Dumazet/net-add-preliminary-netdev-refcount-tracking/20211202-112353
+        git checkout 5da0cdb1848fae9fb2d9d749bb94e568e2493df8
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=sparc SHELL=/bin/bash arch/sparc/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   In file included from arch/sparc/kernel/stacktrace.c:11:
+   arch/sparc/kernel/kstack.h: In function 'kstack_valid':
+>> arch/sparc/kernel/kstack.h:23:13: error: 'hardirq_stack' undeclared (first use in this function)
+      23 |         if (hardirq_stack[tp->cpu]) {
+         |             ^~~~~~~~~~~~~
+   arch/sparc/kernel/kstack.h:23:13: note: each undeclared identifier is reported only once for each function it appears in
+>> arch/sparc/kernel/kstack.h:28:40: error: 'softirq_stack' undeclared (first use in this function)
+      28 |                 base = (unsigned long) softirq_stack[tp->cpu];
+         |                                        ^~~~~~~~~~~~~
+   arch/sparc/kernel/kstack.h: In function 'kstack_is_trap_frame':
+   arch/sparc/kernel/kstack.h:46:13: error: 'hardirq_stack' undeclared (first use in this function)
+      46 |         if (hardirq_stack[tp->cpu]) {
+         |             ^~~~~~~~~~~~~
+   arch/sparc/kernel/kstack.h:51:40: error: 'softirq_stack' undeclared (first use in this function)
+      51 |                 base = (unsigned long) softirq_stack[tp->cpu];
+         |                                        ^~~~~~~~~~~~~
+>> arch/sparc/kernel/kstack.h:59:18: error: 'struct pt_regs' has no member named 'magic'
+      59 |         if ((regs->magic & ~0x1ff) == PT_REGS_MAGIC)
+         |                  ^~
+>> arch/sparc/kernel/kstack.h:59:39: error: 'PT_REGS_MAGIC' undeclared (first use in this function); did you mean 'PT_V9_MAGIC'?
+      59 |         if ((regs->magic & ~0x1ff) == PT_REGS_MAGIC)
+         |                                       ^~~~~~~~~~~~~
+         |                                       PT_V9_MAGIC
+   arch/sparc/kernel/kstack.h: In function 'set_hardirq_stack':
+   arch/sparc/kernel/kstack.h:67:30: error: 'hardirq_stack' undeclared (first use in this function); did you mean 'set_hardirq_stack'?
+      67 |         void *orig_sp, *sp = hardirq_stack[smp_processor_id()];
+         |                              ^~~~~~~~~~~~~
+         |                              set_hardirq_stack
+   arch/sparc/kernel/stacktrace.c: In function '__save_stack_trace':
+>> arch/sparc/kernel/stacktrace.c:46:35: error: 'struct pt_regs' has no member named 'tstate'
+      46 |                         if (!(regs->tstate & TSTATE_PRIV))
+         |                                   ^~
+>> arch/sparc/kernel/stacktrace.c:46:46: error: 'TSTATE_PRIV' undeclared (first use in this function)
+      46 |                         if (!(regs->tstate & TSTATE_PRIV))
+         |                                              ^~~~~~~~~~~
+>> arch/sparc/kernel/stacktrace.c:48:36: error: 'struct pt_regs' has no member named 'tpc'; did you mean 'pc'?
+      48 |                         pc = regs->tpc;
+         |                                    ^~~
+         |                                    pc
+
+Kconfig warnings: (for reference only)
+   WARNING: unmet direct dependencies detected for STACKTRACE
+   Depends on STACKTRACE_SUPPORT
+   Selected by
+   - STACKDEPOT
+
+
+vim +/hardirq_stack +23 arch/sparc/kernel/kstack.h
+
+4f70f7a91bffdc arch/sparc64/kernel/kstack.h David S. Miller 2008-08-12   9  
+4f70f7a91bffdc arch/sparc64/kernel/kstack.h David S. Miller 2008-08-12  10  /* SP must be STACK_BIAS adjusted already.  */
+4f70f7a91bffdc arch/sparc64/kernel/kstack.h David S. Miller 2008-08-12  11  static inline bool kstack_valid(struct thread_info *tp, unsigned long sp)
+4f70f7a91bffdc arch/sparc64/kernel/kstack.h David S. Miller 2008-08-12  12  {
+4f70f7a91bffdc arch/sparc64/kernel/kstack.h David S. Miller 2008-08-12  13  	unsigned long base = (unsigned long) tp;
+4f70f7a91bffdc arch/sparc64/kernel/kstack.h David S. Miller 2008-08-12  14  
+232486e1e9f348 arch/sparc/kernel/kstack.h   David S. Miller 2010-02-12  15  	/* Stack pointer must be 16-byte aligned.  */
+232486e1e9f348 arch/sparc/kernel/kstack.h   David S. Miller 2010-02-12  16  	if (sp & (16UL - 1))
+232486e1e9f348 arch/sparc/kernel/kstack.h   David S. Miller 2010-02-12  17  		return false;
+232486e1e9f348 arch/sparc/kernel/kstack.h   David S. Miller 2010-02-12  18  
+4f70f7a91bffdc arch/sparc64/kernel/kstack.h David S. Miller 2008-08-12  19  	if (sp >= (base + sizeof(struct thread_info)) &&
+4f70f7a91bffdc arch/sparc64/kernel/kstack.h David S. Miller 2008-08-12  20  	    sp <= (base + THREAD_SIZE - sizeof(struct sparc_stackf)))
+4f70f7a91bffdc arch/sparc64/kernel/kstack.h David S. Miller 2008-08-12  21  		return true;
+4f70f7a91bffdc arch/sparc64/kernel/kstack.h David S. Miller 2008-08-12  22  
+6f63e781eaf6a7 arch/sparc64/kernel/kstack.h David S. Miller 2008-08-13 @23  	if (hardirq_stack[tp->cpu]) {
+4f70f7a91bffdc arch/sparc64/kernel/kstack.h David S. Miller 2008-08-12  24  		base = (unsigned long) hardirq_stack[tp->cpu];
+4f70f7a91bffdc arch/sparc64/kernel/kstack.h David S. Miller 2008-08-12  25  		if (sp >= base &&
+4f70f7a91bffdc arch/sparc64/kernel/kstack.h David S. Miller 2008-08-12  26  		    sp <= (base + THREAD_SIZE - sizeof(struct sparc_stackf)))
+4f70f7a91bffdc arch/sparc64/kernel/kstack.h David S. Miller 2008-08-12  27  			return true;
+4f70f7a91bffdc arch/sparc64/kernel/kstack.h David S. Miller 2008-08-12 @28  		base = (unsigned long) softirq_stack[tp->cpu];
+4f70f7a91bffdc arch/sparc64/kernel/kstack.h David S. Miller 2008-08-12  29  		if (sp >= base &&
+4f70f7a91bffdc arch/sparc64/kernel/kstack.h David S. Miller 2008-08-12  30  		    sp <= (base + THREAD_SIZE - sizeof(struct sparc_stackf)))
+4f70f7a91bffdc arch/sparc64/kernel/kstack.h David S. Miller 2008-08-12  31  			return true;
+6f63e781eaf6a7 arch/sparc64/kernel/kstack.h David S. Miller 2008-08-13  32  	}
+4f70f7a91bffdc arch/sparc64/kernel/kstack.h David S. Miller 2008-08-12  33  	return false;
+4f70f7a91bffdc arch/sparc64/kernel/kstack.h David S. Miller 2008-08-12  34  }
+4f70f7a91bffdc arch/sparc64/kernel/kstack.h David S. Miller 2008-08-12  35  
+4f70f7a91bffdc arch/sparc64/kernel/kstack.h David S. Miller 2008-08-12  36  /* Does "regs" point to a valid pt_regs trap frame?  */
+4f70f7a91bffdc arch/sparc64/kernel/kstack.h David S. Miller 2008-08-12  37  static inline bool kstack_is_trap_frame(struct thread_info *tp, struct pt_regs *regs)
+4f70f7a91bffdc arch/sparc64/kernel/kstack.h David S. Miller 2008-08-12  38  {
+4f70f7a91bffdc arch/sparc64/kernel/kstack.h David S. Miller 2008-08-12  39  	unsigned long base = (unsigned long) tp;
+4f70f7a91bffdc arch/sparc64/kernel/kstack.h David S. Miller 2008-08-12  40  	unsigned long addr = (unsigned long) regs;
+4f70f7a91bffdc arch/sparc64/kernel/kstack.h David S. Miller 2008-08-12  41  
+4f70f7a91bffdc arch/sparc64/kernel/kstack.h David S. Miller 2008-08-12  42  	if (addr >= base &&
+4f70f7a91bffdc arch/sparc64/kernel/kstack.h David S. Miller 2008-08-12  43  	    addr <= (base + THREAD_SIZE - sizeof(*regs)))
+4f70f7a91bffdc arch/sparc64/kernel/kstack.h David S. Miller 2008-08-12  44  		goto check_magic;
+4f70f7a91bffdc arch/sparc64/kernel/kstack.h David S. Miller 2008-08-12  45  
+6f63e781eaf6a7 arch/sparc64/kernel/kstack.h David S. Miller 2008-08-13  46  	if (hardirq_stack[tp->cpu]) {
+4f70f7a91bffdc arch/sparc64/kernel/kstack.h David S. Miller 2008-08-12  47  		base = (unsigned long) hardirq_stack[tp->cpu];
+4f70f7a91bffdc arch/sparc64/kernel/kstack.h David S. Miller 2008-08-12  48  		if (addr >= base &&
+4f70f7a91bffdc arch/sparc64/kernel/kstack.h David S. Miller 2008-08-12  49  		    addr <= (base + THREAD_SIZE - sizeof(*regs)))
+4f70f7a91bffdc arch/sparc64/kernel/kstack.h David S. Miller 2008-08-12  50  			goto check_magic;
+4f70f7a91bffdc arch/sparc64/kernel/kstack.h David S. Miller 2008-08-12  51  		base = (unsigned long) softirq_stack[tp->cpu];
+4f70f7a91bffdc arch/sparc64/kernel/kstack.h David S. Miller 2008-08-12  52  		if (addr >= base &&
+4f70f7a91bffdc arch/sparc64/kernel/kstack.h David S. Miller 2008-08-12  53  		    addr <= (base + THREAD_SIZE - sizeof(*regs)))
+4f70f7a91bffdc arch/sparc64/kernel/kstack.h David S. Miller 2008-08-12  54  			goto check_magic;
+6f63e781eaf6a7 arch/sparc64/kernel/kstack.h David S. Miller 2008-08-13  55  	}
+4f70f7a91bffdc arch/sparc64/kernel/kstack.h David S. Miller 2008-08-12  56  	return false;
+4f70f7a91bffdc arch/sparc64/kernel/kstack.h David S. Miller 2008-08-12  57  
+4f70f7a91bffdc arch/sparc64/kernel/kstack.h David S. Miller 2008-08-12  58  check_magic:
+4f70f7a91bffdc arch/sparc64/kernel/kstack.h David S. Miller 2008-08-12 @59  	if ((regs->magic & ~0x1ff) == PT_REGS_MAGIC)
+4f70f7a91bffdc arch/sparc64/kernel/kstack.h David S. Miller 2008-08-12  60  		return true;
+4f70f7a91bffdc arch/sparc64/kernel/kstack.h David S. Miller 2008-08-12  61  	return false;
+4f70f7a91bffdc arch/sparc64/kernel/kstack.h David S. Miller 2008-08-12  62  
+
 ---
- .../net/ethernet/hisilicon/hns3/hns3_enet.c   | 121 ++++++++----------
- 1 file changed, 53 insertions(+), 68 deletions(-)
-
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-index 8dcc2d80553b..babc5d7a3b52 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-@@ -4342,87 +4342,70 @@ static int hns3_nic_common_poll(struct napi_struct *napi, int budget)
- 	return rx_pkt_total;
- }
- 
--static int hns3_get_vector_ring_chain(struct hns3_enet_tqp_vector *tqp_vector,
--				      struct hnae3_ring_chain_node *head)
-+static int hns3_create_ring_chain(struct hns3_enet_tqp_vector *tqp_vector,
-+				  struct hnae3_ring_chain_node **head,
-+				  bool is_tx)
- {
-+	u32 bit_value = is_tx ? HNAE3_RING_TYPE_TX : HNAE3_RING_TYPE_RX;
-+	u32 field_value = is_tx ? HNAE3_RING_GL_TX : HNAE3_RING_GL_RX;
-+	struct hnae3_ring_chain_node *cur_chain = *head;
- 	struct pci_dev *pdev = tqp_vector->handle->pdev;
--	struct hnae3_ring_chain_node *cur_chain = head;
- 	struct hnae3_ring_chain_node *chain;
--	struct hns3_enet_ring *tx_ring;
--	struct hns3_enet_ring *rx_ring;
--
--	tx_ring = tqp_vector->tx_group.ring;
--	if (tx_ring) {
--		cur_chain->tqp_index = tx_ring->tqp->tqp_index;
--		hnae3_set_bit(cur_chain->flag, HNAE3_RING_TYPE_B,
--			      HNAE3_RING_TYPE_TX);
--		hnae3_set_field(cur_chain->int_gl_idx, HNAE3_RING_GL_IDX_M,
--				HNAE3_RING_GL_IDX_S, HNAE3_RING_GL_TX);
--
--		cur_chain->next = NULL;
--
--		while (tx_ring->next) {
--			tx_ring = tx_ring->next;
--
--			chain = devm_kzalloc(&pdev->dev, sizeof(*chain),
--					     GFP_KERNEL);
--			if (!chain)
--				goto err_free_chain;
--
--			cur_chain->next = chain;
--			chain->tqp_index = tx_ring->tqp->tqp_index;
--			hnae3_set_bit(chain->flag, HNAE3_RING_TYPE_B,
--				      HNAE3_RING_TYPE_TX);
--			hnae3_set_field(chain->int_gl_idx,
--					HNAE3_RING_GL_IDX_M,
--					HNAE3_RING_GL_IDX_S,
--					HNAE3_RING_GL_TX);
--
--			cur_chain = chain;
--		}
--	}
-+	struct hns3_enet_ring *ring;
- 
--	rx_ring = tqp_vector->rx_group.ring;
--	if (!tx_ring && rx_ring) {
--		cur_chain->next = NULL;
--		cur_chain->tqp_index = rx_ring->tqp->tqp_index;
--		hnae3_set_bit(cur_chain->flag, HNAE3_RING_TYPE_B,
--			      HNAE3_RING_TYPE_RX);
--		hnae3_set_field(cur_chain->int_gl_idx, HNAE3_RING_GL_IDX_M,
--				HNAE3_RING_GL_IDX_S, HNAE3_RING_GL_RX);
-+	ring = is_tx ? tqp_vector->tx_group.ring : tqp_vector->rx_group.ring;
- 
--		rx_ring = rx_ring->next;
-+	if (cur_chain) {
-+		while (cur_chain->next)
-+			cur_chain = cur_chain->next;
- 	}
- 
--	while (rx_ring) {
-+	while (ring) {
- 		chain = devm_kzalloc(&pdev->dev, sizeof(*chain), GFP_KERNEL);
- 		if (!chain)
--			goto err_free_chain;
--
--		cur_chain->next = chain;
--		chain->tqp_index = rx_ring->tqp->tqp_index;
-+			return -ENOMEM;
-+		if (cur_chain)
-+			cur_chain->next = chain;
-+		else
-+			*head = chain;
-+		chain->tqp_index = ring->tqp->tqp_index;
- 		hnae3_set_bit(chain->flag, HNAE3_RING_TYPE_B,
--			      HNAE3_RING_TYPE_RX);
--		hnae3_set_field(chain->int_gl_idx, HNAE3_RING_GL_IDX_M,
--				HNAE3_RING_GL_IDX_S, HNAE3_RING_GL_RX);
-+				bit_value);
-+		hnae3_set_field(chain->int_gl_idx,
-+				HNAE3_RING_GL_IDX_M,
-+				HNAE3_RING_GL_IDX_S, field_value);
- 
- 		cur_chain = chain;
- 
--		rx_ring = rx_ring->next;
-+		ring = ring->next;
- 	}
- 
- 	return 0;
-+}
-+
-+static struct hnae3_ring_chain_node *
-+hns3_get_vector_ring_chain(struct hns3_enet_tqp_vector *tqp_vector)
-+{
-+	struct pci_dev *pdev = tqp_vector->handle->pdev;
-+	struct hnae3_ring_chain_node *cur_chain = NULL;
-+	struct hnae3_ring_chain_node *chain;
-+
-+	if (hns3_create_ring_chain(tqp_vector, &cur_chain, true))
-+		goto err_free_chain;
-+
-+	if (hns3_create_ring_chain(tqp_vector, &cur_chain, false))
-+		goto err_free_chain;
-+
-+	return cur_chain;
- 
- err_free_chain:
--	cur_chain = head->next;
- 	while (cur_chain) {
- 		chain = cur_chain->next;
- 		devm_kfree(&pdev->dev, cur_chain);
- 		cur_chain = chain;
- 	}
--	head->next = NULL;
- 
--	return -ENOMEM;
-+	return NULL;
- }
- 
- static void hns3_free_vector_ring_chain(struct hns3_enet_tqp_vector *tqp_vector,
-@@ -4431,7 +4414,7 @@ static void hns3_free_vector_ring_chain(struct hns3_enet_tqp_vector *tqp_vector,
- 	struct pci_dev *pdev = tqp_vector->handle->pdev;
- 	struct hnae3_ring_chain_node *chain_tmp, *chain;
- 
--	chain = head->next;
-+	chain = head;
- 
- 	while (chain) {
- 		chain_tmp = chain->next;
-@@ -4546,7 +4529,7 @@ static int hns3_nic_init_vector_data(struct hns3_nic_priv *priv)
- 	}
- 
- 	for (i = 0; i < priv->vector_num; i++) {
--		struct hnae3_ring_chain_node vector_ring_chain;
-+		struct hnae3_ring_chain_node *vector_ring_chain;
- 
- 		tqp_vector = &priv->tqp_vector[i];
- 
-@@ -4556,15 +4539,16 @@ static int hns3_nic_init_vector_data(struct hns3_nic_priv *priv)
- 		tqp_vector->tx_group.total_packets = 0;
- 		tqp_vector->handle = h;
- 
--		ret = hns3_get_vector_ring_chain(tqp_vector,
--						 &vector_ring_chain);
--		if (ret)
-+		vector_ring_chain = hns3_get_vector_ring_chain(tqp_vector);
-+		if (!vector_ring_chain) {
-+			ret = -ENOMEM;
- 			goto map_ring_fail;
-+		}
- 
- 		ret = h->ae_algo->ops->map_ring_to_vector(h,
--			tqp_vector->vector_irq, &vector_ring_chain);
-+			tqp_vector->vector_irq, vector_ring_chain);
- 
--		hns3_free_vector_ring_chain(tqp_vector, &vector_ring_chain);
-+		hns3_free_vector_ring_chain(tqp_vector, vector_ring_chain);
- 
- 		if (ret)
- 			goto map_ring_fail;
-@@ -4663,7 +4647,7 @@ static void hns3_clear_ring_group(struct hns3_enet_ring_group *group)
- 
- static void hns3_nic_uninit_vector_data(struct hns3_nic_priv *priv)
- {
--	struct hnae3_ring_chain_node vector_ring_chain;
-+	struct hnae3_ring_chain_node *vector_ring_chain;
- 	struct hnae3_handle *h = priv->ae_handle;
- 	struct hns3_enet_tqp_vector *tqp_vector;
- 	int i;
-@@ -4678,13 +4662,14 @@ static void hns3_nic_uninit_vector_data(struct hns3_nic_priv *priv)
- 		 * chain between vector and ring, we should go on to deal with
- 		 * the remaining options.
- 		 */
--		if (hns3_get_vector_ring_chain(tqp_vector, &vector_ring_chain))
-+		vector_ring_chain = hns3_get_vector_ring_chain(tqp_vector);
-+		if (!vector_ring_chain)
- 			dev_warn(priv->dev, "failed to get ring chain\n");
- 
- 		h->ae_algo->ops->unmap_ring_from_vector(h,
--			tqp_vector->vector_irq, &vector_ring_chain);
-+			tqp_vector->vector_irq, vector_ring_chain);
- 
--		hns3_free_vector_ring_chain(tqp_vector, &vector_ring_chain);
-+		hns3_free_vector_ring_chain(tqp_vector, vector_ring_chain);
- 
- 		hns3_clear_ring_group(&tqp_vector->rx_group);
- 		hns3_clear_ring_group(&tqp_vector->tx_group);
--- 
-2.33.0
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
