@@ -2,41 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A0C4F466ED9
-	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 01:56:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C151466EDE
+	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 01:56:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343626AbhLCA74 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Dec 2021 19:59:56 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:60698 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245297AbhLCA7y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 19:59:54 -0500
+        id S245080AbhLCA76 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Dec 2021 19:59:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38322 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244682AbhLCA7z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 19:59:55 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77258C06174A
+        for <netdev@vger.kernel.org>; Thu,  2 Dec 2021 16:56:32 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 150436291D
-        for <netdev@vger.kernel.org>; Fri,  3 Dec 2021 00:56:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83D3CC56747;
-        Fri,  3 Dec 2021 00:56:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0ECCB6291C
+        for <netdev@vger.kernel.org>; Fri,  3 Dec 2021 00:56:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1718BC53FCC;
+        Fri,  3 Dec 2021 00:56:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638492990;
-        bh=pqb4XF7KYhI8aMTdW8nPJNcVsIutSo0c0atOU/CDoPs=;
+        s=k20201202; t=1638492991;
+        bh=d7r1odX6bgJjpPBQIYygGGN4YFrgOLd2cc7E3+n/7ts=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CFXo98od7Q8Zcj3sCZGNb9tBvsPpiqd34tcUtyCtlZYqayfBZ7xW704AizTtz8+gc
-         jebZkWu9LzIkp57XCG1nw1M1P2ht9Mm+5Z8/fHBGt44mgr+qKXFYrcSRZ/lW1QQ1ll
-         /psugylmga+MBX5qvLvIjQfk8yBjcRGB5Cz8q8gAHaGVzbaf1Dx7JRKnrWMwDz4y+m
-         n98Rs9Ow+lK1lklG8DVmvAPgKPqhkFNiSOV/rFb4ynUpYyYMQKYCpAhfTl2FZkkgzM
-         xQRGHCcX2fYX9EGXF5BTN+SrPSuUYd2dfE78ihf1zULVg3dYy5Cz9Ls55x1FufOPEh
-         ho1y+y7Kehrug==
+        b=nXXXwD4waOS/dhCBD3TVBaOcc5LqTg8kJeXO0dpHzcnUFniw83imyVEh7xbYQMFWH
+         mnWXJpNRbZTTJ7G7u+O/mdICYTlJM5jgG44nQHO7pjF/oZHfM8ZVA+mqtxqxUU/+rN
+         bisCogMAyA1+qubGhJYpP1SMBvgab6pz1VLdwgmb3pDPIN+BTFsv4AWm/ZzcFtbneL
+         LlY6rbHkkvUYNuYDtyLteU0as+rb8+9qUFCTIb3vsws+YslV/5hWaVNfa96lg0eEL8
+         tfkWYuczvFCNjMayXwtvNp1j0rGI4hSfM+62oyhavOoyV/+m2L468O7SJBkYNPK/AQ
+         iY/D4lLuDtCFQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Roi Dayan <roid@nvidia.com>,
         Oz Shlomo <ozsh@nvidia.com>, Maor Dickman <maord@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next v0 11/14] net/mlx5e: Remove redundant actions arg from vlan push/pop funcs
-Date:   Thu,  2 Dec 2021 16:56:19 -0800
-Message-Id: <20211203005622.183325-12-saeed@kernel.org>
+Subject: [net-next v0 12/14] net/mlx5e: TC, Move common flow_action checks into function
+Date:   Thu,  2 Dec 2021 16:56:20 -0800
+Message-Id: <20211203005622.183325-13-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211203005622.183325-1-saeed@kernel.org>
 References: <20211203005622.183325-1-saeed@kernel.org>
@@ -48,82 +51,85 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Roi Dayan <roid@nvidia.com>
 
-Passing actions is redundant and can be retrieved from flow attr.
+Remove duplicate checks on flow_action by using common function.
 
 Signed-off-by: Roi Dayan <roid@nvidia.com>
 Reviewed-by: Oz Shlomo <ozsh@nvidia.com>
 Reviewed-by: Maor Dickman <maord@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 16 ++++++----------
- 1 file changed, 6 insertions(+), 10 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/en_tc.c   | 44 ++++++++++---------
+ 1 file changed, 24 insertions(+), 20 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-index 90fca3555563..3c5e9efb9873 100644
+index 3c5e9efb9873..c7f1c93709cd 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -3682,7 +3682,6 @@ static struct net_device *get_fdb_out_dev(struct net_device *uplink_dev,
- static int add_vlan_push_action(struct mlx5e_priv *priv,
- 				struct mlx5_flow_attr *attr,
- 				struct net_device **out_dev,
--				u32 *action,
- 				struct netlink_ext_ack *extack)
- {
- 	struct net_device *vlan_dev = *out_dev;
-@@ -3694,7 +3693,7 @@ static int add_vlan_push_action(struct mlx5e_priv *priv,
- 	};
- 	int err;
- 
--	err = parse_tc_vlan_action(priv, &vlan_act, attr->esw_attr, action, extack);
-+	err = parse_tc_vlan_action(priv, &vlan_act, attr->esw_attr, &attr->action, extack);
- 	if (err)
- 		return err;
- 
-@@ -3705,14 +3704,13 @@ static int add_vlan_push_action(struct mlx5e_priv *priv,
- 		return -ENODEV;
- 
- 	if (is_vlan_dev(*out_dev))
--		err = add_vlan_push_action(priv, attr, out_dev, action, extack);
-+		err = add_vlan_push_action(priv, attr, out_dev, extack);
- 
- 	return err;
+@@ -3444,6 +3444,24 @@ actions_prepare_mod_hdr_actions(struct mlx5e_priv *priv,
+ 	return 0;
  }
  
- static int add_vlan_pop_action(struct mlx5e_priv *priv,
- 			       struct mlx5_flow_attr *attr,
--			       u32 *action,
- 			       struct netlink_ext_ack *extack)
- {
- 	struct flow_action_entry vlan_act = {
-@@ -3723,7 +3721,8 @@ static int add_vlan_pop_action(struct mlx5e_priv *priv,
- 	nest_level = attr->parse_attr->filter_dev->lower_level -
- 						priv->netdev->lower_level;
- 	while (nest_level--) {
--		err = parse_tc_vlan_action(priv, &vlan_act, attr->esw_attr, action, extack);
-+		err = parse_tc_vlan_action(priv, &vlan_act, attr->esw_attr,
-+					   &attr->action, extack);
- 		if (err)
- 			return err;
- 	}
-@@ -4093,16 +4092,13 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
- 					return -ENODEV;
++static int
++flow_action_supported(struct flow_action *flow_action,
++		      struct netlink_ext_ack *extack)
++{
++	if (!flow_action_has_entries(flow_action)) {
++		NL_SET_ERR_MSG_MOD(extack, "Flow action doesn't have any entries");
++		return -EINVAL;
++	}
++
++	if (!flow_action_hw_stats_check(flow_action, extack,
++					FLOW_ACTION_HW_STATS_DELAYED_BIT)) {
++		NL_SET_ERR_MSG_MOD(extack, "Flow action HW stats type is not supported");
++		return -EOPNOTSUPP;
++	}
++
++	return 0;
++}
++
+ static int
+ parse_tc_nic_actions(struct mlx5e_priv *priv,
+ 		     struct flow_action *flow_action,
+@@ -3457,16 +3475,9 @@ parse_tc_nic_actions(struct mlx5e_priv *priv,
+ 	struct mlx5_nic_flow_attr *nic_attr;
+ 	int err, i;
  
- 				if (is_vlan_dev(out_dev)) {
--					err = add_vlan_push_action(priv, attr,
--								   &out_dev,
--								   &attr->action, extack);
-+					err = add_vlan_push_action(priv, attr, &out_dev, extack);
- 					if (err)
- 						return err;
- 				}
+-	if (!flow_action_has_entries(flow_action)) {
+-		NL_SET_ERR_MSG_MOD(extack, "Flow action doesn't have any entries");
+-		return -EINVAL;
+-	}
+-
+-	if (!flow_action_hw_stats_check(flow_action, extack,
+-					FLOW_ACTION_HW_STATS_DELAYED_BIT)) {
+-		NL_SET_ERR_MSG_MOD(extack, "Flow action HW stats type is not supported");
+-		return -EOPNOTSUPP;
+-	}
++	err = flow_action_supported(flow_action, extack);
++	if (err)
++		return err;
  
- 				if (is_vlan_dev(parse_attr->filter_dev)) {
--					err = add_vlan_pop_action(priv, attr,
--								  &attr->action, extack);
-+					err = add_vlan_pop_action(priv, attr, extack);
- 					if (err)
- 						return err;
- 				}
+ 	nic_attr = attr->nic_attr;
+ 	nic_attr->flow_tag = MLX5_FS_DEFAULT_FLOW_TAG;
+@@ -3883,16 +3894,9 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
+ 	bool ptype_host = false;
+ 	bool mpls_push = false;
+ 
+-	if (!flow_action_has_entries(flow_action)) {
+-		NL_SET_ERR_MSG_MOD(extack, "Flow action doesn't have any entries");
+-		return -EINVAL;
+-	}
+-
+-	if (!flow_action_hw_stats_check(flow_action, extack,
+-					FLOW_ACTION_HW_STATS_DELAYED_BIT)) {
+-		NL_SET_ERR_MSG_MOD(extack, "Flow action HW stats type is not supported");
+-		return -EOPNOTSUPP;
+-	}
++	err = flow_action_supported(flow_action, extack);
++	if (err)
++		return err;
+ 
+ 	esw_attr = attr->esw_attr;
+ 	parse_attr = attr->parse_attr;
 -- 
 2.31.1
 
