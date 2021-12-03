@@ -2,194 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 112B2467202
-	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 07:35:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A305346724D
+	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 07:57:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378665AbhLCGiI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Dec 2021 01:38:08 -0500
-Received: from mailgw01.mediatek.com ([60.244.123.138]:43464 "EHLO
-        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1378607AbhLCGiG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Dec 2021 01:38:06 -0500
-X-UUID: 16660dfa11384bf0b9616458ab0b7e6c-20211203
-X-UUID: 16660dfa11384bf0b9616458ab0b7e6c-20211203
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
-        (envelope-from <biao.huang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1700923660; Fri, 03 Dec 2021 14:34:37 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Fri, 3 Dec 2021 14:34:36 +0800
-Received: from mhfsdcap04.gcn.mediatek.inc (10.17.3.154) by
- mtkcas11.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.0.1497.2 via Frontend Transport; Fri, 3 Dec 2021 14:34:34 +0800
-From:   Biao Huang <biao.huang@mediatek.com>
-To:     <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
-CC:     Matthias Brugger <matthias.bgg@gmail.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Biao Huang <biao.huang@mediatek.com>, <netdev@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <srv_heupstream@mediatek.com>, <macpaul.lin@mediatek.com>,
-        <angelogioacchino.delregno@collabora.com>, <dkirjanov@suse.de>
-Subject: [PATCH v4 7/7] net-next: dt-bindings: dwmac: add support for mt8195
-Date:   Fri, 3 Dec 2021 14:34:18 +0800
-Message-ID: <20211203063418.14892-8-biao.huang@mediatek.com>
+        id S1378727AbhLCHBF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Dec 2021 02:01:05 -0500
+Received: from szxga01-in.huawei.com ([45.249.212.187]:32874 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345605AbhLCHBF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Dec 2021 02:01:05 -0500
+Received: from dggpeml500023.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4J53Y74W81zcbgT;
+        Fri,  3 Dec 2021 14:57:31 +0800 (CST)
+Received: from dggpeml500017.china.huawei.com (7.185.36.243) by
+ dggpeml500023.china.huawei.com (7.185.36.114) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Fri, 3 Dec 2021 14:57:40 +0800
+Received: from huawei.com (10.175.103.91) by dggpeml500017.china.huawei.com
+ (7.185.36.243) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.20; Fri, 3 Dec
+ 2021 14:57:39 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     <tchornyi@marvell.com>, <vmytnyk@marvell.com>,
+        <davem@davemloft.net>, <kuba@kernel.org>
+Subject: [PATCH -next] net: prestera: acl: fix return value check in prestera_acl_rule_entry_find()
+Date:   Fri, 3 Dec 2021 15:04:18 +0800
+Message-ID: <20211203070418.465144-1-yangyingliang@huawei.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20211203063418.14892-1-biao.huang@mediatek.com>
-References: <20211203063418.14892-1-biao.huang@mediatek.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpeml500017.china.huawei.com (7.185.36.243)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add binding document for the ethernet on mt8195.
+rhashtable_lookup_fast() returns NULL pointer not ERR_PTR().
+Return rhashtable_lookup_fast() directly to fix this.
 
-Signed-off-by: Biao Huang <biao.huang@mediatek.com>
+Fixes: 47327e198d42 ("net: prestera: acl: migrate to new vTCAM api")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 ---
- .../bindings/net/mediatek-dwmac.yaml          | 86 +++++++++++++++----
- 1 file changed, 70 insertions(+), 16 deletions(-)
+ drivers/net/ethernet/marvell/prestera/prestera_acl.c | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml b/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
-index 9207266a6e69..fb04166404d8 100644
---- a/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
-+++ b/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
-@@ -19,11 +19,67 @@ select:
-       contains:
-         enum:
-           - mediatek,mt2712-gmac
-+          - mediatek,mt8195-gmac
-   required:
-     - compatible
- 
- allOf:
-   - $ref: "snps,dwmac.yaml#"
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - mediatek,mt2712-gmac
-+
-+    then:
-+      properties:
-+        clocks:
-+          minItems: 5
-+          items:
-+            - description: AXI clock
-+            - description: APB clock
-+            - description: MAC Main clock
-+            - description: PTP clock
-+            - description: RMII reference clock provided by MAC
-+
-+        clock-names:
-+          minItems: 5
-+          items:
-+            - const: axi
-+            - const: apb
-+            - const: mac_main
-+            - const: ptp_ref
-+            - const: rmii_internal
-+
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - mediatek,mt8195-gmac
-+
-+    then:
-+      properties:
-+        clocks:
-+          minItems: 6
-+          items:
-+            - description: AXI clock
-+            - description: APB clock
-+            - description: MAC clock gate
-+            - description: MAC Main clock
-+            - description: PTP clock
-+            - description: RMII reference clock provided by MAC
-+
-+        clock-names:
-+          minItems: 6
-+          items:
-+            - const: axi
-+            - const: apb
-+            - const: mac_cg
-+            - const: mac_main
-+            - const: ptp_ref
-+            - const: rmii_internal
- 
- properties:
-   compatible:
-@@ -32,22 +88,10 @@ properties:
-           - enum:
-               - mediatek,mt2712-gmac
-           - const: snps,dwmac-4.20a
+diff --git a/drivers/net/ethernet/marvell/prestera/prestera_acl.c b/drivers/net/ethernet/marvell/prestera/prestera_acl.c
+index da0b6525ef9a..fc7f2fedafd7 100644
+--- a/drivers/net/ethernet/marvell/prestera/prestera_acl.c
++++ b/drivers/net/ethernet/marvell/prestera/prestera_acl.c
+@@ -419,11 +419,8 @@ struct prestera_acl_rule_entry *
+ prestera_acl_rule_entry_find(struct prestera_acl *acl,
+ 			     struct prestera_acl_rule_entry_key *key)
+ {
+-	struct prestera_acl_rule_entry *e;
 -
--  clocks:
--    items:
--      - description: AXI clock
--      - description: APB clock
--      - description: MAC Main clock
--      - description: PTP clock
--      - description: RMII reference clock provided by MAC
--
--  clock-names:
--    items:
--      - const: axi
--      - const: apb
--      - const: mac_main
--      - const: ptp_ref
--      - const: rmii_internal
-+      - items:
-+          - enum:
-+              - mediatek,mt8195-gmac
-+          - const: snps,dwmac-5.10a
+-	e = rhashtable_lookup_fast(&acl->acl_rule_entry_ht, key,
+-				   __prestera_acl_rule_entry_ht_params);
+-	return IS_ERR(e) ? NULL : e;
++	return rhashtable_lookup_fast(&acl->acl_rule_entry_ht, key,
++				      __prestera_acl_rule_entry_ht_params);
+ }
  
-   mediatek,pericfg:
-     $ref: /schemas/types.yaml#/definitions/phandle
-@@ -62,6 +106,8 @@ properties:
-       or will round down. Range 0~31*170.
-       For MT2712 RMII/MII interface, Allowed value need to be a multiple of 550,
-       or will round down. Range 0~31*550.
-+      For MT8195 RGMII/RMII/MII interface, Allowed value need to be a multiple of 290,
-+      or will round down. Range 0~31*290.
- 
-   mediatek,rx-delay-ps:
-     description:
-@@ -70,6 +116,8 @@ properties:
-       or will round down. Range 0~31*170.
-       For MT2712 RMII/MII interface, Allowed value need to be a multiple of 550,
-       or will round down. Range 0~31*550.
-+      For MT8195 RGMII/RMII/MII interface, Allowed value need to be a multiple
-+      of 290, or will round down. Range 0~31*290.
- 
-   mediatek,rmii-rxc:
-     type: boolean
-@@ -103,6 +151,12 @@ properties:
-       3. the inside clock, which be sent to MAC, will be inversed in RMII case when
-          the reference clock is from MAC.
- 
-+  mediatek,mac-wol:
-+    type: boolean
-+    description:
-+      If present, indicates that MAC supports WOL(Wake-On-LAN), and MAC WOL will be enabled.
-+      Otherwise, PHY WOL is perferred.
-+
- required:
-   - compatible
-   - reg
+ static int __prestera_acl_rule_entry2hw_del(struct prestera_switch *sw,
 -- 
 2.25.1
 
