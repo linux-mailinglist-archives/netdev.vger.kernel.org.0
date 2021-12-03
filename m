@@ -2,87 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 841DF466F8E
-	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 03:09:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8AA38466F97
+	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 03:10:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350532AbhLCCMg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Dec 2021 21:12:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54432 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240479AbhLCCMf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 21:12:35 -0500
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1143C06174A;
-        Thu,  2 Dec 2021 18:09:12 -0800 (PST)
-Received: by mail-pf1-x434.google.com with SMTP id i12so1412219pfd.6;
-        Thu, 02 Dec 2021 18:09:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kKifCJOL21DqZReCuwTUr92jHLQ7PGUk0VCEWwgIjTE=;
-        b=i8HliV3ysp4XqzXebUOKa2pct9hK8o7LdmERiduOjG++WjRZaTHCJKbLEuV/x6h+xK
-         pMW8GqXErRXy4Q50XGX668X+Yi22dTTZ59zLxbm91lXqg08vCTLtTbKLfGs4vkvXrbAT
-         /NCWWx5evVnE3NyxnrVV/12A3LqZlpcJDwt7bmDxAFcyzv7mLJUi4tct+cywb/rQZY2E
-         wYX2VFBcmz4E8gqbWZQn3RKcYNrxMfTfEL4t2BniUNv61TTLnrHwdCzXwmZlJXWnDYlb
-         nVKGkwVDO7s3/EkKeGzXOx+85tLxELo0X2IJZUnGbL7Nhrs2AaMVnxIqvTUVVSA2G9q2
-         CZGA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kKifCJOL21DqZReCuwTUr92jHLQ7PGUk0VCEWwgIjTE=;
-        b=1BRFWU1xGlYIh84dhboegv1/KB7JxQnrhWQ0/Yr01bH1Gel8Coj1i1pk0ydEcfmjQP
-         7t4OdRhaKPS2jmyLmlzsLm3JMcU2BImzZqhV8cnT8IezpRHIgDKbZtzNzdh5vwXJfoXs
-         0cH+170NATJQtCO8f+fhCPASBxdpvwUwCtNreg+3dvGN0SEjDYBPW2ZlgItENNaPTpCI
-         bTEaFuDhovzzmz7CBptGgGmWQLXLVWq0R8FrB6vWld4gzVj87vbIUwXUxrweOw0lD7Po
-         ogLNIzBB9JCVg2xx+CZZYA2UQDtsAVFhM22UXHBB7K81z1Dz8CYN8tIipcGwGZ2gyedn
-         OMIA==
-X-Gm-Message-State: AOAM531kKrbCFOn0UiNjC0oogxv7dMnQ7dpm0EnWZ1JtM+skjdgTSWaN
-        vxundhRGmBy30Xd1pOnoNmeeAvby84MUGPy7EDSMm8FF
-X-Google-Smtp-Source: ABdhPJyvKqFEth5YZbF7xNtOxRGqDFFVjANfTuhVhd9+9SDAWpxScRMOwiz8IPbd7lM5qOgSnVBjdlJhclcn/Q4KGiA=
-X-Received: by 2002:a63:6881:: with SMTP id d123mr2246483pgc.497.1638497352287;
- Thu, 02 Dec 2021 18:09:12 -0800 (PST)
+        id S1378012AbhLCCNv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Dec 2021 21:13:51 -0500
+Received: from smtp-relay-canonical-1.canonical.com ([185.125.188.121]:36818
+        "EHLO smtp-relay-canonical-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1377988AbhLCCNu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 21:13:50 -0500
+Received: from localhost.localdomain (unknown [10.101.196.174])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id DF23C41B8A;
+        Fri,  3 Dec 2021 02:10:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1638497426;
+        bh=MTq2dYtg3YeoM4VKuKUBUvX2WOXVAXc3ZzvEPiuJkuM=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=ue794apfTGL1FQ8SvpLX8YhtNWHKiOn9/r1q4bBFDs+p/iK9z5SqrKpaV8vmgnco8
+         yHkCXmtcLeYhp0G/6QedSlnjF7UXWOmhL5GSSGUotGU+EBX++rhvVTkXoKmkk9mQeU
+         FQ6y3oFbieUbvTWQKa2ce9GrotFsUWBb0hVPP7F6nbgvDItwn8nkvpONldAp9Ew7u9
+         xS32QQ/yPJYwyzxjlltpfOd2Zqtm5lyibE6Bad2gdAExFgNlVM7JnHIEO9wGjX1RSi
+         LeE1VLicE4s+SeKFNWNw0O68FouT1/mEwMccDXKMaftjIw+Rl2jRSSOWOKHib0OH3k
+         SCjvjgC8iqiCA==
+From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
+To:     luciano.coelho@intel.com
+Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Dror Moshe <drorx.moshe@intel.com>,
+        Miri Korenblit <miriam.rachel.korenblit@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Mordechay Goodstein <mordechay.goodstein@intel.com>,
+        Abhishek Naik <abhishek.naik@intel.com>,
+        Gregory Greenman <gregory.greenman@intel.com>,
+        Ayala Barazani <ayala.barazani@intel.com>,
+        Harish Mitty <harish.mitty@intel.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] iwlwifi: Increase microcodes loading timeout
+Date:   Fri,  3 Dec 2021 10:09:28 +0800
+Message-Id: <20211203020931.1419572-1-kai.heng.feng@canonical.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-References: <20211130142215.1237217-1-houtao1@huawei.com>
-In-Reply-To: <20211130142215.1237217-1-houtao1@huawei.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 2 Dec 2021 18:09:01 -0800
-Message-ID: <CAADnVQ+KVfcU6gvYPmLvPk3-SHwuWEbhttzE24gC0RSCQgxv6g@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 0/5] introduce bpf_strncmp() helper
-To:     Hou Tao <houtao1@huawei.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 30, 2021 at 6:07 AM Hou Tao <houtao1@huawei.com> wrote:
->
-> Hi,
->
-> The motivation for introducing bpf_strncmp() helper comes from
-> two aspects:
->
-> (1) clang doesn't always replace strncmp() automatically
-> In tracing program, sometimes we need to using a home-made
-> strncmp() to check whether or not the file name is expected.
->
-> (2) the performance of home-made strncmp is not so good
-> As shown in the benchmark in patch #4, the performance of
-> bpf_strncmp() helper is 18% or 33% better than home-made strncmp()
-> under x86-64 or arm64 when the compared string length is 64. When
-> the string length grows to 4095, the performance win will be
-> 179% or 600% under x86-64 or arm64.
+Intel AX201/AX211 device may not work at boot:
+[    8.875307] iwlwifi 0000:00:14.3: SecBoot CPU1 Status: 0x7267, CPU2 Status: 0xb03
+[    8.875418] iwlwifi 0000:00:14.3: UMAC PC: 0x80481126
+[    8.875426] iwlwifi 0000:00:14.3: LMAC PC: 0x1541c
+[    8.875430] iwlwifi 0000:00:14.3: WRT: Collecting data: ini trigger 13 fired (delay=0ms).
+[    8.877906] iwlwifi 0000:00:14.3: Loaded firmware version: 64.97bbee0a.0 so-a0-gf-a0-64.ucode
+...
+[    8.878997] iwlwifi 0000:00:14.3: Failed to start RT ucode: -110
+[    8.878999] iwlwifi 0000:00:14.3: Failed to start RT ucode: -110
 
-I think 'home made' strncmp could have been written
-differently. I bet in bpf assembly it would be much closer
-in performance if not the same,
-but the helper is useful.
-The patch set doesn't apply cleanly.
-Pls respin.
+Increase MVM_UCODE_ALIVE_TIMEOUT to 2 seconds can solve the issue.
+
+The PNVM loading can also fail:
+[    5.159949] iwlwifi 0000:00:14.3: loaded PNVM version 4b50f925
+[    5.414211] iwlwifi 0000:00:14.3: Timeout waiting for PNVM load!
+[    5.414219] iwlwifi 0000:00:14.3: Failed to start RT ucode: -110
+[    5.414224] iwlwifi 0000:00:14.3: WRT: Collecting data: ini trigger 13 fired (delay=0ms).
+[    5.416618] iwlwifi 0000:00:14.3: Start IWL Error Log Dump:
+[    5.416619] iwlwifi 0000:00:14.3: Transport status: 0x00000042, valid: 6
+[    5.416620] iwlwifi 0000:00:14.3: Loaded firmware version: 64.97bbee0a.0 so-a0-gf-a0-64.ucode
+...
+[    5.914276] iwlwifi 0000:00:14.3: Failed to run INIT ucode: -110
+
+Trial and error shows that the MVM_UCODE_PNVM_TIMEOUT also needs to be
+bumped to 2 seconds to fully eliminate the issue.
+
+The timeout values are verified by rebooting over 10k times.
+
+Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+---
+ drivers/net/wireless/intel/iwlwifi/fw/pnvm.h | 2 +-
+ drivers/net/wireless/intel/iwlwifi/mvm/fw.c  | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/wireless/intel/iwlwifi/fw/pnvm.h b/drivers/net/wireless/intel/iwlwifi/fw/pnvm.h
+index 203c367dd4dee..b730330d8feac 100644
+--- a/drivers/net/wireless/intel/iwlwifi/fw/pnvm.h
++++ b/drivers/net/wireless/intel/iwlwifi/fw/pnvm.h
+@@ -10,7 +10,7 @@
+ 
+ #include "fw/notif-wait.h"
+ 
+-#define MVM_UCODE_PNVM_TIMEOUT	(HZ / 4)
++#define MVM_UCODE_PNVM_TIMEOUT	(2 * HZ)
+ 
+ #define MAX_PNVM_NAME  64
+ 
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/fw.c b/drivers/net/wireless/intel/iwlwifi/mvm/fw.c
+index 6ce78c03e51f7..0c5375f7baecf 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/fw.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/fw.c
+@@ -24,7 +24,7 @@
+ #include "iwl-modparams.h"
+ #include "iwl-nvm-parse.h"
+ 
+-#define MVM_UCODE_ALIVE_TIMEOUT	(HZ)
++#define MVM_UCODE_ALIVE_TIMEOUT	(2 * HZ)
+ #define MVM_UCODE_CALIB_TIMEOUT	(2 * HZ)
+ 
+ #define UCODE_VALID_OK	cpu_to_le32(0x1)
+-- 
+2.32.0
+
