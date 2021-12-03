@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A763467FF8
-	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 23:36:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D7E39467FF7
+	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 23:36:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383434AbhLCWjV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1383439AbhLCWjV (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Fri, 3 Dec 2021 17:39:21 -0500
-Received: from mga18.intel.com ([134.134.136.126]:46471 "EHLO mga18.intel.com"
+Received: from mga18.intel.com ([134.134.136.126]:46477 "EHLO mga18.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1383431AbhLCWjQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1383432AbhLCWjQ (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 3 Dec 2021 17:39:16 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10187"; a="223940936"
+X-IronPort-AV: E=McAfee;i="6200,9189,10187"; a="223940937"
 X-IronPort-AV: E=Sophos;i="5.87,284,1631602800"; 
-   d="scan'208";a="223940936"
+   d="scan'208";a="223940937"
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
   by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Dec 2021 14:35:47 -0800
 X-IronPort-AV: E=Sophos;i="5.87,284,1631602800"; 
-   d="scan'208";a="460185311"
+   d="scan'208";a="460185313"
 Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.251.18.88])
   by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Dec 2021 14:35:47 -0800
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
 To:     netdev@vger.kernel.org
-Cc:     Florian Westphal <fw@strlen.de>, davem@davemloft.net,
+Cc:     Maxim Galaganov <max@internet.ru>, davem@davemloft.net,
         kuba@kernel.org, matthieu.baerts@tessares.net,
-        mptcp@lists.linux.dev,
+        mptcp@lists.linux.dev, Paolo Abeni <pabeni@redhat.com>,
         Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next 07/10] selftests: mptcp: check IP_TOS in/out are the same
-Date:   Fri,  3 Dec 2021 14:35:38 -0800
-Message-Id: <20211203223541.69364-8-mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next 08/10] tcp: expose __tcp_sock_set_cork and __tcp_sock_set_nodelay
+Date:   Fri,  3 Dec 2021 14:35:39 -0800
+Message-Id: <20211203223541.69364-9-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20211203223541.69364-1-mathew.j.martineau@linux.intel.com>
 References: <20211203223541.69364-1-mathew.j.martineau@linux.intel.com>
@@ -38,130 +38,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Maxim Galaganov <max@internet.ru>
 
-Check that getsockopt(IP_TOS) returns what setsockopt(IP_TOS) did set
-right before.
+Expose __tcp_sock_set_cork() and __tcp_sock_set_nodelay() for use in
+MPTCP setsockopt code -- namely for syncing MPTCP socket options with
+subflows inside sync_socket_options() while already holding the subflow
+socket lock.
 
-Also check that socklen_t == 0 and -1 input values match those
-of normal tcp sockets.
-
-Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-Signed-off-by: Florian Westphal <fw@strlen.de>
+Acked-by: Paolo Abeni <pabeni@redhat.com>
+Acked-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+Signed-off-by: Maxim Galaganov <max@internet.ru>
 Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 ---
- .../selftests/net/mptcp/mptcp_sockopt.c       | 63 +++++++++++++++++++
- 1 file changed, 63 insertions(+)
+ include/linux/tcp.h | 2 ++
+ net/ipv4/tcp.c      | 4 ++--
+ 2 files changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/tools/testing/selftests/net/mptcp/mptcp_sockopt.c b/tools/testing/selftests/net/mptcp/mptcp_sockopt.c
-index 417b11cafafe..ac9a4d9c1764 100644
---- a/tools/testing/selftests/net/mptcp/mptcp_sockopt.c
-+++ b/tools/testing/selftests/net/mptcp/mptcp_sockopt.c
-@@ -4,6 +4,7 @@
+diff --git a/include/linux/tcp.h b/include/linux/tcp.h
+index 48d8a363319e..78b91bb92f0d 100644
+--- a/include/linux/tcp.h
++++ b/include/linux/tcp.h
+@@ -512,11 +512,13 @@ static inline u16 tcp_mss_clamp(const struct tcp_sock *tp, u16 mss)
+ int tcp_skb_shift(struct sk_buff *to, struct sk_buff *from, int pcount,
+ 		  int shiftlen);
  
- #include <assert.h>
- #include <errno.h>
-+#include <fcntl.h>
- #include <limits.h>
- #include <string.h>
- #include <stdarg.h>
-@@ -13,6 +14,7 @@
- #include <stdio.h>
- #include <stdlib.h>
- #include <strings.h>
-+#include <time.h>
- #include <unistd.h>
- 
- #include <sys/socket.h>
-@@ -594,6 +596,44 @@ static int server(int pipefd)
- 	return 0;
- }
- 
-+static void test_ip_tos_sockopt(int fd)
-+{
-+	uint8_t tos_in, tos_out;
-+	socklen_t s;
-+	int r;
-+
-+	tos_in = rand() & 0xfc;
-+	r = setsockopt(fd, SOL_IP, IP_TOS, &tos_in, sizeof(tos_out));
-+	if (r != 0)
-+		die_perror("setsockopt IP_TOS");
-+
-+	tos_out = 0;
-+	s = sizeof(tos_out);
-+	r = getsockopt(fd, SOL_IP, IP_TOS, &tos_out, &s);
-+	if (r != 0)
-+		die_perror("getsockopt IP_TOS");
-+
-+	if (tos_in != tos_out)
-+		xerror("tos %x != %x socklen_t %d\n", tos_in, tos_out, s);
-+
-+	if (s != 1)
-+		xerror("tos should be 1 byte");
-+
-+	s = 0;
-+	r = getsockopt(fd, SOL_IP, IP_TOS, &tos_out, &s);
-+	if (r != 0)
-+		die_perror("getsockopt IP_TOS 0");
-+	if (s != 0)
-+		xerror("expect socklen_t == 0");
-+
-+	s = -1;
-+	r = getsockopt(fd, SOL_IP, IP_TOS, &tos_out, &s);
-+	if (r != -1 && errno != EINVAL)
-+		die_perror("getsockopt IP_TOS did not indicate -EINVAL");
-+	if (s != -1)
-+		xerror("expect socklen_t == -1");
-+}
-+
- static int client(int pipefd)
++void __tcp_sock_set_cork(struct sock *sk, bool on);
+ void tcp_sock_set_cork(struct sock *sk, bool on);
+ int tcp_sock_set_keepcnt(struct sock *sk, int val);
+ int tcp_sock_set_keepidle_locked(struct sock *sk, int val);
+ int tcp_sock_set_keepidle(struct sock *sk, int val);
+ int tcp_sock_set_keepintvl(struct sock *sk, int val);
++void __tcp_sock_set_nodelay(struct sock *sk, bool on);
+ void tcp_sock_set_nodelay(struct sock *sk);
+ void tcp_sock_set_quickack(struct sock *sk, int val);
+ int tcp_sock_set_syncnt(struct sock *sk, int val);
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 6ab82e1a1d41..20054618c87e 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -3207,7 +3207,7 @@ static void tcp_enable_tx_delay(void)
+  * TCP_CORK can be set together with TCP_NODELAY and it is stronger than
+  * TCP_NODELAY.
+  */
+-static void __tcp_sock_set_cork(struct sock *sk, bool on)
++void __tcp_sock_set_cork(struct sock *sk, bool on)
  {
- 	int fd = -1;
-@@ -611,6 +651,8 @@ static int client(int pipefd)
- 		xerror("Unknown pf %d\n", pf);
- 	}
+ 	struct tcp_sock *tp = tcp_sk(sk);
  
-+	test_ip_tos_sockopt(fd);
-+
- 	connect_one_server(fd, pipefd);
- 
- 	return 0;
-@@ -642,6 +684,25 @@ static int rcheck(int wstatus, const char *what)
- 	return 111;
- }
- 
-+static void init_rng(void)
-+{
-+	int fd = open("/dev/urandom", O_RDONLY);
-+
-+	if (fd >= 0) {
-+		unsigned int foo;
-+		ssize_t ret;
-+
-+		/* can't fail */
-+		ret = read(fd, &foo, sizeof(foo));
-+		assert(ret == sizeof(foo));
-+
-+		close(fd);
-+		srand(foo);
-+	} else {
-+		srand(time(NULL));
-+	}
-+}
-+
- int main(int argc, char *argv[])
+@@ -3235,7 +3235,7 @@ EXPORT_SYMBOL(tcp_sock_set_cork);
+  * However, when TCP_NODELAY is set we make an explicit push, which overrides
+  * even TCP_CORK for currently queued segments.
+  */
+-static void __tcp_sock_set_nodelay(struct sock *sk, bool on)
++void __tcp_sock_set_nodelay(struct sock *sk, bool on)
  {
- 	int e1, e2, wstatus;
-@@ -650,6 +711,8 @@ int main(int argc, char *argv[])
- 
- 	parse_opts(argc, argv);
- 
-+	init_rng();
-+
- 	e1 = pipe(pipefds);
- 	if (e1 < 0)
- 		die_perror("pipe");
+ 	if (on) {
+ 		tcp_sk(sk)->nonagle |= TCP_NAGLE_OFF|TCP_NAGLE_PUSH;
 -- 
 2.34.1
 
