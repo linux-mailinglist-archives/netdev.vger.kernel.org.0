@@ -2,121 +2,225 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D2E1466DFF
-	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 00:47:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 56F12466E5F
+	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 01:15:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377605AbhLBXup (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Dec 2021 18:50:45 -0500
-Received: from mail-io1-f71.google.com ([209.85.166.71]:38591 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349609AbhLBXup (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 18:50:45 -0500
-Received: by mail-io1-f71.google.com with SMTP id l124-20020a6b3e82000000b005ed165a1506so926013ioa.5
-        for <netdev@vger.kernel.org>; Thu, 02 Dec 2021 15:47:22 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=ARLQXRQ3vGLI5tqgE5JCO+5Ssy6hqYcNjGBxU79YdC0=;
-        b=J2m2rD5nwUCDOFaMX7RozXong9WClq1eMU+uei791bhrqpe+OOhJfv7k+5G3qWdT5t
-         3eParhe9/+kPCOuAB07IvoGyQidLJGZ3Vj6lHCxjmzleCiRo01n7EOannrI6TFUYKAXw
-         MSI8pfL6k33OxwBeuHvrm5QsiTj1E0NMPaZVKeqiDNoeuI1F5UrZ1u8NmXFqBwlnZBuc
-         q5AgggYQpapeNyaDazQamRxEe+PW3fllBi+a00MC8dClfFjw5ZTSWTNA7tu/SvF9vPxQ
-         h/u51hkcBlx5Wf67Hy33MhH69eHUXwYKaeEUJwH8pGIJuF3c2dgHLV+r9lbI49hlJE/k
-         ZIqQ==
-X-Gm-Message-State: AOAM530besO+mfdUf8bc8/WipT7zszKgwr8FLFDGn6MA/IMpBstUxdn4
-        iHlgtDIQ+8URlj32IA2txhtYNr92AuaT21wj2lKNDxNxcHXJ
-X-Google-Smtp-Source: ABdhPJyfueGHO8wx+XsXa2i6YsfNSgD5OYIf+nn4DzEx4Vj1Ba2fFuSDCGZniCHXxs3xeE68mbs2NZqiQaPAdTj2y3+9XdQ+Eog7
+        id S232580AbhLCASx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Dec 2021 19:18:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57100 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229598AbhLCASu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 19:18:50 -0500
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [IPv6:2404:9400:2:0:216:3eff:fee2:21ea])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03275C06174A;
+        Thu,  2 Dec 2021 16:15:19 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4J4td20mpMz4xZ4;
+        Fri,  3 Dec 2021 11:15:17 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1638490518;
+        bh=MpVMBw9H1sDbcQJnxKdIN+V8pRD1fEVLC6dEr0fpgAA=;
+        h=Date:From:To:Cc:Subject:From;
+        b=TPm2o3ayYQVJASgIPbu63tca+bJK+dxorLNRNccIbOcXAJPKW64wEgv/5eIwImhm9
+         Vne3Ho61th5BJpbV1z+wM2ah4dNeMYay7Mt5YGr9Xsn+CDxBku0zmTL+QB/m6b2w8C
+         6hubdg25vvXIDzU+EJt2suAUeXVRpsANJ+vn00n4Bngx745HSRPTMGAci0/h+3jZ7P
+         IzrGBxIukoluaUiyomNXMKdgc7HHtotxLbQHt0G4qqEbaJTqSExvqwCQNNzuc25KbL
+         y412XMudpf4VgM0wY9gjr+iQH70qUmqSpn6PPEaV3/eVyj0oiLRhgNz6VH1niSyUmN
+         P5r1whRd1wBSg==
+Date:   Fri, 3 Dec 2021 11:15:16 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: build failure after merge of the bpf-next tree
+Message-ID: <20211203111516.3f22aa95@canb.auug.org.au>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6602:2c83:: with SMTP id i3mr18453619iow.54.1638488841849;
- Thu, 02 Dec 2021 15:47:21 -0800 (PST)
-Date:   Thu, 02 Dec 2021 15:47:21 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000630d8505d2326961@google.com>
-Subject: [syzbot] WARNING in rtl92cu_hw_init
-From:   syzbot <syzbot+cce1ee31614c171f5595@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, kvalo@codeaurora.org,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        pkshih@realtek.com, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; boundary="Sig_/KmNnKRBrIaMX/2EzgPiwUoA";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+--Sig_/KmNnKRBrIaMX/2EzgPiwUoA
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-syzbot found the following issue on:
+Hi all,
 
-HEAD commit:    c4bc515d73b5 usb: dwc2: gadget: use existing helper
-git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/usb.git usb-testing
-console output: https://syzkaller.appspot.com/x/log.txt?x=12c7d311b00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=1fa54650ce78e6dc
-dashboard link: https://syzkaller.appspot.com/bug?extid=cce1ee31614c171f5595
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+After merging the bpf-next tree, today's linux-next build (native perf)
+failed like this:
 
-Unfortunately, I don't have any reproducer for this issue yet.
+tests/bpf.c: In function 'check_env':
+tests/bpf.c:299:2: error: 'bpf_load_program' is deprecated: libbpf v0.7+: u=
+se bpf_prog_load() instead [-Werror=3Ddeprecated-declarations]
+  299 |  err =3D bpf_load_program(BPF_PROG_TYPE_KPROBE, insns,
+      |  ^~~
+In file included from tests/bpf.c:28:
+tools/lib/bpf/bpf.h:204:16: note: declared here
+  204 | LIBBPF_API int bpf_load_program(enum bpf_prog_type type,
+      |                ^~~~~~~~~~~~~~~~
+cc1: all warnings being treated as errors
+util/bpf-loader.c: In function 'bpf__clear':
+util/bpf-loader.c:115:2: error: 'bpf_object__next' is deprecated: libbpf v0=
+.7+: track bpf_objects in application code instead [-Werror=3Ddeprecated-de=
+clarations]
+  115 |  bpf_object__for_each_safe(obj, tmp) {
+      |  ^~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from util/bpf-loader.c:10:
+tools/lib/bpf/libbpf.h:176:20: note: declared here
+  176 | struct bpf_object *bpf_object__next(struct bpf_object *prev);
+      |                    ^~~~~~~~~~~~~~~~
+util/bpf-loader.c:115:2: error: 'bpf_object__next' is deprecated: libbpf v0=
+.7+: track bpf_objects in application code instead [-Werror=3Ddeprecated-de=
+clarations]
+  115 |  bpf_object__for_each_safe(obj, tmp) {
+      |  ^~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from util/bpf-loader.c:10:
+tools/lib/bpf/libbpf.h:176:20: note: declared here
+  176 | struct bpf_object *bpf_object__next(struct bpf_object *prev);
+      |                    ^~~~~~~~~~~~~~~~
+util/bpf-loader.c:115:2: error: 'bpf_object__next' is deprecated: libbpf v0=
+.7+: track bpf_objects in application code instead [-Werror=3Ddeprecated-de=
+clarations]
+  115 |  bpf_object__for_each_safe(obj, tmp) {
+      |  ^~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from util/bpf-loader.c:10:
+tools/lib/bpf/libbpf.h:176:20: note: declared here
+  176 | struct bpf_object *bpf_object__next(struct bpf_object *prev);
+      |                    ^~~~~~~~~~~~~~~~
+util/bpf-loader.c: In function 'hook_load_preprocessor':
+util/bpf-loader.c:621:2: error: 'bpf_program__set_prep' is deprecated: libb=
+pf v0.7+: use bpf_program__insns() for getting bpf_program instructions [-W=
+error=3Ddeprecated-declarations]
+  621 |  err =3D bpf_program__set_prep(prog, priv->nr_types,
+      |  ^~~
+In file included from util/bpf-loader.c:10:
+tools/lib/bpf/libbpf.h:467:16: note: declared here
+  467 | LIBBPF_API int bpf_program__set_prep(struct bpf_program *prog, int =
+nr_instance,
+      |                ^~~~~~~~~~~~~~~~~~~~~
+util/bpf-loader.c: In function 'bpf__foreach_event':
+util/bpf-loader.c:776:5: error: 'bpf_program__nth_fd' is deprecated: libbpf=
+ v0.7+: multi-instance bpf_program support is deprecated [-Werror=3Ddepreca=
+ted-declarations]
+  776 |     fd =3D bpf_program__nth_fd(prog, type);
+      |     ^~
+In file included from util/bpf-loader.c:10:
+tools/lib/bpf/libbpf.h:471:16: note: declared here
+  471 | LIBBPF_API int bpf_program__nth_fd(const struct bpf_program *prog, =
+int n);
+      |                ^~~~~~~~~~~~~~~~~~~
+util/bpf-loader.c: In function 'bpf__apply_obj_config':
+util/bpf-loader.c:1501:2: error: 'bpf_object__next' is deprecated: libbpf v=
+0.7+: track bpf_objects in application code instead [-Werror=3Ddeprecated-d=
+eclarations]
+ 1501 |  bpf_object__for_each_safe(obj, tmp) {
+      |  ^~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from util/bpf-loader.c:10:
+tools/lib/bpf/libbpf.h:176:20: note: declared here
+  176 | struct bpf_object *bpf_object__next(struct bpf_object *prev);
+      |                    ^~~~~~~~~~~~~~~~
+util/bpf-loader.c:1501:2: error: 'bpf_object__next' is deprecated: libbpf v=
+0.7+: track bpf_objects in application code instead [-Werror=3Ddeprecated-d=
+eclarations]
+ 1501 |  bpf_object__for_each_safe(obj, tmp) {
+      |  ^~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from util/bpf-loader.c:10:
+tools/lib/bpf/libbpf.h:176:20: note: declared here
+  176 | struct bpf_object *bpf_object__next(struct bpf_object *prev);
+      |                    ^~~~~~~~~~~~~~~~
+util/bpf-loader.c:1501:2: error: 'bpf_object__next' is deprecated: libbpf v=
+0.7+: track bpf_objects in application code instead [-Werror=3Ddeprecated-d=
+eclarations]
+ 1501 |  bpf_object__for_each_safe(obj, tmp) {
+      |  ^~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from util/bpf-loader.c:10:
+tools/lib/bpf/libbpf.h:176:20: note: declared here
+  176 | struct bpf_object *bpf_object__next(struct bpf_object *prev);
+      |                    ^~~~~~~~~~~~~~~~
+util/bpf-loader.c: In function 'bpf__setup_output_event':
+util/bpf-loader.c:1529:2: error: 'bpf_object__next' is deprecated: libbpf v=
+0.7+: track bpf_objects in application code instead [-Werror=3Ddeprecated-d=
+eclarations]
+ 1529 |  bpf__for_each_map_named(map, obj, tmp, name) {
+      |  ^~~~~~~~~~~~~~~~~~~~~~~
+In file included from util/bpf-loader.c:10:
+tools/lib/bpf/libbpf.h:176:20: note: declared here
+  176 | struct bpf_object *bpf_object__next(struct bpf_object *prev);
+      |                    ^~~~~~~~~~~~~~~~
+util/bpf-loader.c:1529:2: error: 'bpf_object__next' is deprecated: libbpf v=
+0.7+: track bpf_objects in application code instead [-Werror=3Ddeprecated-d=
+eclarations]
+ 1529 |  bpf__for_each_map_named(map, obj, tmp, name) {
+      |  ^~~~~~~~~~~~~~~~~~~~~~~
+In file included from util/bpf-loader.c:10:
+tools/lib/bpf/libbpf.h:176:20: note: declared here
+  176 | struct bpf_object *bpf_object__next(struct bpf_object *prev);
+      |                    ^~~~~~~~~~~~~~~~
+util/bpf-loader.c:1529:2: error: 'bpf_object__next' is deprecated: libbpf v=
+0.7+: track bpf_objects in application code instead [-Werror=3Ddeprecated-d=
+eclarations]
+ 1529 |  bpf__for_each_map_named(map, obj, tmp, name) {
+      |  ^~~~~~~~~~~~~~~~~~~~~~~
+In file included from util/bpf-loader.c:10:
+tools/lib/bpf/libbpf.h:176:20: note: declared here
+  176 | struct bpf_object *bpf_object__next(struct bpf_object *prev);
+      |                    ^~~~~~~~~~~~~~~~
+util/bpf-loader.c:1565:2: error: 'bpf_object__next' is deprecated: libbpf v=
+0.7+: track bpf_objects in application code instead [-Werror=3Ddeprecated-d=
+eclarations]
+ 1565 |  bpf__for_each_map_named(map, obj, tmp, name) {
+      |  ^~~~~~~~~~~~~~~~~~~~~~~
+In file included from util/bpf-loader.c:10:
+tools/lib/bpf/libbpf.h:176:20: note: declared here
+  176 | struct bpf_object *bpf_object__next(struct bpf_object *prev);
+      |                    ^~~~~~~~~~~~~~~~
+util/bpf-loader.c:1565:2: error: 'bpf_object__next' is deprecated: libbpf v=
+0.7+: track bpf_objects in application code instead [-Werror=3Ddeprecated-d=
+eclarations]
+ 1565 |  bpf__for_each_map_named(map, obj, tmp, name) {
+      |  ^~~~~~~~~~~~~~~~~~~~~~~
+In file included from util/bpf-loader.c:10:
+tools/lib/bpf/libbpf.h:176:20: note: declared here
+  176 | struct bpf_object *bpf_object__next(struct bpf_object *prev);
+      |                    ^~~~~~~~~~~~~~~~
+util/bpf-loader.c:1565:2: error: 'bpf_object__next' is deprecated: libbpf v=
+0.7+: track bpf_objects in application code instead [-Werror=3Ddeprecated-d=
+eclarations]
+ 1565 |  bpf__for_each_map_named(map, obj, tmp, name) {
+      |  ^~~~~~~~~~~~~~~~~~~~~~~
+In file included from util/bpf-loader.c:10:
+tools/lib/bpf/libbpf.h:176:20: note: declared here
+  176 | struct bpf_object *bpf_object__next(struct bpf_object *prev);
+      |                    ^~~~~~~~~~~~~~~~
+cc1: all warnings being treated as errors
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+cce1ee31614c171f5595@syzkaller.appspotmail.com
+I am not sure what caused this, but I have just used the bpf-next tree
+from next-20211202 for today.
 
-------------[ cut here ]------------
-raw_local_irq_restore() called with IRQs enabled
-WARNING: CPU: 1 PID: 1206 at kernel/locking/irqflag-debug.c:10 warn_bogus_irq_restore+0x1d/0x20 kernel/locking/irqflag-debug.c:10
-Modules linked in:
-CPU: 1 PID: 1206 Comm: dhcpcd Not tainted 5.16.0-rc1-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:warn_bogus_irq_restore+0x1d/0x20 kernel/locking/irqflag-debug.c:10
-Code: d3 ff cc cc cc cc cc cc cc cc cc cc cc 80 3d e7 4e dc 02 00 74 01 c3 48 c7 c7 a0 85 27 86 c6 05 d6 4e dc 02 01 e8 fd 13 d3 ff <0f> 0b c3 44 8b 05 75 05 e7 02 55 53 65 48 8b 1c 25 80 6f 02 00 45
-RSP: 0018:ffffc90000f0f6a8 EFLAGS: 00010286
-RAX: 0000000000000000 RBX: 0000000000000200 RCX: 0000000000000000
-RDX: ffff8881100f1c00 RSI: ffffffff812bae78 RDI: fffff520001e1ec7
-RBP: 0000000000000200 R08: 0000000000000000 R09: 0000000000000001
-R10: ffffffff812b4c4e R11: 0000000000000000 R12: ffff88814b2047c0
-R13: 0000000000000000 R14: 0000000000000000 R15: 00000000ffffffff
-FS:  00007f0d4252e740(0000) GS:ffff8881f6900000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fd8c7ba7718 CR3: 0000000117bd2000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- rtl92cu_hw_init.cold+0x119f/0x34c5 drivers/net/wireless/realtek/rtlwifi/rtl8192cu/hw.c:1003
- rtl_usb_start+0xaf/0x740 drivers/net/wireless/realtek/rtlwifi/usb.c:743
- rtl_op_start+0x139/0x1b0 drivers/net/wireless/realtek/rtlwifi/core.c:140
- drv_start+0x168/0x440 net/mac80211/driver-ops.c:23
- ieee80211_do_open+0xae4/0x2430 net/mac80211/iface.c:1125
- ieee80211_open net/mac80211/iface.c:362 [inline]
- ieee80211_open+0x1a0/0x240 net/mac80211/iface.c:348
- __dev_open+0x2bc/0x4d0 net/core/dev.c:1490
- __dev_change_flags+0x583/0x750 net/core/dev.c:8793
- dev_change_flags+0x93/0x170 net/core/dev.c:8864
- devinet_ioctl+0x15d1/0x1ca0 net/ipv4/devinet.c:1144
- inet_ioctl+0x1e6/0x320 net/ipv4/af_inet.c:969
- sock_do_ioctl+0xcc/0x230 net/socket.c:1118
- sock_ioctl+0x2f1/0x640 net/socket.c:1235
- vfs_ioctl fs/ioctl.c:51 [inline]
- __do_sys_ioctl fs/ioctl.c:874 [inline]
- __se_sys_ioctl fs/ioctl.c:860 [inline]
- __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:860
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7f0d4261c0e7
-Code: 3c 1c e8 1c ff ff ff 85 c0 79 87 49 c7 c4 ff ff ff ff 5b 5d 4c 89 e0 41 5c c3 66 0f 1f 84 00 00 00 00 00 b8 10 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 61 9d 0c 00 f7 d8 64 89 01 48
-RSP: 002b:00007ffcb59c0a08 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-RAX: ffffffffffffffda RBX: 00007f0d4252e6c8 RCX: 00007f0d4261c0e7
-RDX: 00007ffcb59d0bf8 RSI: 0000000000008914 RDI: 0000000000000005
-RBP: 00007ffcb59e0da8 R08: 00007ffcb59d0bb8 R09: 00007ffcb59d0b68
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007ffcb59d0bf8 R14: 0000000000000028 R15: 0000000000008914
- </TASK>
+--=20
+Cheers,
+Stephen Rothwell
 
+--Sig_/KmNnKRBrIaMX/2EzgPiwUoA
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+-----BEGIN PGP SIGNATURE-----
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmGpYZQACgkQAVBC80lX
+0GxT1AgAn37c09ci5LxrwKVewgxdKFgU66BwND4c8dUpMZ7enT6IrmmK2wfSyOdL
+9DFZXM8NPGbfDxUN3b5JhRg3zvcTEDx7edHY3du7NDZ5Pion5cduvkenpmwcf5QK
+VTH+Y6KLI4Y/yInJ+biDjhBzEujo2ZK24vO1NguyDkKjEyhxjx855GABp8CkeRT9
+h4cAZ3qMwWcRMWRac3RFbgry1Ai8P3yqVGAlF0QBG33cWt0OgpjehrgTga33eR1+
+b99STtlHMDZj9C1OJHaTZplqyMjmvcrxNChf82sS/wlrHEuQHmVHH7iK/ZhryI68
+aZTx9YELDNlVmQBre5l4lzC8uNytWQ==
+=RZbd
+-----END PGP SIGNATURE-----
+
+--Sig_/KmNnKRBrIaMX/2EzgPiwUoA--
