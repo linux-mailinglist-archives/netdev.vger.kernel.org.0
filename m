@@ -2,79 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4135F467CB7
-	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 18:41:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F0E3467CC2
+	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 18:44:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353051AbhLCRpE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Dec 2021 12:45:04 -0500
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.85.151]:56235 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S239496AbhLCRpD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Dec 2021 12:45:03 -0500
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-190-8NX8uH2WMXqI8RlibkF1_Q-1; Fri, 03 Dec 2021 17:41:37 +0000
-X-MC-Unique: 8NX8uH2WMXqI8RlibkF1_Q-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.26; Fri, 3 Dec 2021 17:41:36 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.026; Fri, 3 Dec 2021 17:41:36 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Eric Dumazet' <edumazet@google.com>,
-        David Lebrun <dlebrun@google.com>
-CC:     Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        "Jakub Kicinski" <kuba@kernel.org>, netdev <netdev@vger.kernel.org>
-Subject: RE: [PATCH net-next 2/2] net: optimize skb_postpull_rcsum()
-Thread-Topic: [PATCH net-next 2/2] net: optimize skb_postpull_rcsum()
-Thread-Index: AQHX57zbDWxMByH9C0Scwj/3q1CYoawfrjxggAAMpYCAASAbAIAAG8JygAADGpCAAATDgIAAB6sg
-Date:   Fri, 3 Dec 2021 17:41:36 +0000
-Message-ID: <8ebf0214bdef4c50bff5ae19171e8e53@AcuMS.aculab.com>
-References: <20211124202446.2917972-1-eric.dumazet@gmail.com>
- <20211124202446.2917972-3-eric.dumazet@gmail.com>
- <20211202131040.rdxzbfwh2slhftg5@skbuf>
- <CANn89iLW4kwKf0x094epVeCaKhB4GtYgbDwE2=Fp0HnW8UdKzw@mail.gmail.com>
- <20211202162916.ieb2wn35z5h4aubh@skbuf>
- <CANn89iJEfDL_3C39Gp9eD=yPDqW4MGcVm7AyUBcTVdakS-X2dg@mail.gmail.com>
- <20211202204036.negad3mnrm2gogjd@skbuf>
- <9eefc224988841c9b1a0b6c6eb3348b8@AcuMS.aculab.com>
- <20211202214009.5hm3diwom4qsbsjd@skbuf>
- <eb25fee06370430d8cd14e25dff5e653@AcuMS.aculab.com>
- <20211203161429.htqt4vuzd22rlwkf@skbuf>
- <CANn89iKk=DZEbwAeaborF-Q5pE9=Jahc0TP1_wk59s2eqB0o1A@mail.gmail.com>
- <43cc0ca9a0e14fc995c0c28d31440c15@AcuMS.aculab.com>
- <CANn89i+sANhK4m_JptWgnjXf5VRuSYw6MkLKfS3ut5SbUbrmoQ@mail.gmail.com>
-In-Reply-To: <CANn89i+sANhK4m_JptWgnjXf5VRuSYw6MkLKfS3ut5SbUbrmoQ@mail.gmail.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S1353352AbhLCRsU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Dec 2021 12:48:20 -0500
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:13100 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S229789AbhLCRsT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Dec 2021 12:48:19 -0500
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 1B38QEL1014985;
+        Fri, 3 Dec 2021 09:44:47 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=1bTEKIufp1t3DOJeTbdyZ16H21n4dfI3fUoV7QVFp8g=;
+ b=SkwPYCc/qOuhy14Wl87LSYagQlNTnoOqfwAYkNsLs4E5RBJrRY3uxPd4HNJtYfU4UhT+
+ F5nd2DTI/jCxrv9Yyxpm8ryyVxY2tUFrRS6RfrABlPtYyo4AkZjFd/YH6efQjwog/Xfw
+ szUfDfLAGKI8Ebgdg6RdXtObHzXGUgkqVbCVJQn61RwjNMfmUKHQZAVai9xWOfpsdbnR
+ 6acvRPeaFlOgrLbT2SPU//sLEOJM9kKKL4z8eKtVmSuuRV9CVlGdds0qeQ+hY83HLCGu
+ RboZppHJkM7ns7CqKCf2hNw5F4k5K+3/oVYFUzk64UOVRGTX441B0QuHFZEXkRTGMEVD tw== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3cqfqqa03g-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Fri, 03 Dec 2021 09:44:46 -0800
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 3 Dec
+ 2021 09:44:45 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
+ Transport; Fri, 3 Dec 2021 09:44:45 -0800
+Received: from dut1171.mv.qlogic.com (unknown [10.112.88.18])
+        by maili.marvell.com (Postfix) with ESMTP id 58C713F7068;
+        Fri,  3 Dec 2021 09:44:45 -0800 (PST)
+Received: from dut1171.mv.qlogic.com (localhost [127.0.0.1])
+        by dut1171.mv.qlogic.com (8.14.7/8.14.7) with ESMTP id 1B3HiU5o013128;
+        Fri, 3 Dec 2021 09:44:30 -0800
+Received: (from root@localhost)
+        by dut1171.mv.qlogic.com (8.14.7/8.14.7/Submit) id 1B3HiEvk013126;
+        Fri, 3 Dec 2021 09:44:14 -0800
+From:   Manish Chopra <manishc@marvell.com>
+To:     <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <aelior@marvell.com>,
+        <palok@marvell.com>, <pkushwaha@marvell.com>
+Subject: [PATCH v2 net] qede: validate non LSO skb length
+Date:   Fri, 3 Dec 2021 09:44:13 -0800
+Message-ID: <20211203174413.13090-1-manishc@marvell.com>
+X-Mailer: git-send-email 2.12.0
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+Content-Type: text/plain
+X-Proofpoint-GUID: MDJ0PbU7TMHNiGygQ8I_fKMKbd4rAAwp
+X-Proofpoint-ORIG-GUID: MDJ0PbU7TMHNiGygQ8I_fKMKbd4rAAwp
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2021-12-03_07,2021-12-02_01,2021-12-02_01
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Li4uDQo+ID4gVGhlcmUgYXJlIGFsc28gNDAgY3N1bV9wYXJ0aWFsKGJ1ZiwgbGVuLCAwKS4NCj4g
-PiBJZiBhbGwgdGhlIGJ1ZmZlciBpcyB6ZXJvIHRoZXknbGwgcmV0dXJuIHplcm8gLSBpbnZhbGlk
-Lg0KPiA+IFRoZXkgb3VnaHQgdG8gYmUgY2hhbmdlZCB0byBjc3VtX3BhcnRpYWwoYnVmLCBsZW4s
-IDB4ZmZmZikuDQo+ID4NCj4gDQo+IFBsZWFzZSBwb2ludCB3aGVyZSBhbGwgemVybyBidWZmZXJz
-IGNhbiBiZSB2YWxpZCBpbiB0aGUgZmlyc3QgcGxhY2UuDQoNClRoZXkgcHJvYmFibHkgY2FuJ3Qg
-YmUuDQpCdXQgSSBiZXQgYSBsb3Qgb2YgdGhlIGNvZGUgd2FzIHdyaXR0ZW4gd2l0aG91dCByZWFs
-aXNpbmcgaXQgbWF0dGVyZWQuDQoNCkEgcXVpY2sgc2NhbiBkb2VzIGltcGx5IHRoYXQgdGhleSBh
-cmUgYWxsIHByb2JhYmx5IG9rLg0KDQpCdXQgSSBoYXZlIHNwb3R0ZWQgMTggfmNzdW1fZm9sZCgp
-IC0gdGhleSBtYXkgYmUgZHViaW91cy4NCg0KCURhdmlkDQoNCi0NClJlZ2lzdGVyZWQgQWRkcmVz
-cyBMYWtlc2lkZSwgQnJhbWxleSBSb2FkLCBNb3VudCBGYXJtLCBNaWx0b24gS2V5bmVzLCBNSzEg
-MVBULCBVSw0KUmVnaXN0cmF0aW9uIE5vOiAxMzk3Mzg2IChXYWxlcykNCg==
+Although it is unlikely that stack could transmit a non LSO
+skb with length > MTU, however in some cases or environment such
+occurrences actually resulted into firmware asserts due to packet
+length being greater than the max supported by the device (~9700B).
+
+This patch adds the safeguard for such odd cases to avoid firmware
+asserts.
+
+v1->v2:
+--------
+
+* Added "Fixes" tag with one of the initial driver commit
+  which enabled the TX traffic actually (as this was probably
+  day1 issue which was discovered recently by some customer
+  environment)
+
+Fixes: a2ec6172d29c ("qede: Add support for link")
+Signed-off-by: Manish Chopra <manishc@marvell.com>
+Signed-off-by: Alok Prasad <palok@marvell.com>
+Signed-off-by: Prabhakar Kushwaha <pkushwaha@marvell.com>
+Signed-off-by: Ariel Elior <aelior@marvell.com>
+---
+ drivers/net/ethernet/qlogic/qede/qede_fp.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/drivers/net/ethernet/qlogic/qede/qede_fp.c b/drivers/net/ethernet/qlogic/qede/qede_fp.c
+index 065e900..999abcf 100644
+--- a/drivers/net/ethernet/qlogic/qede/qede_fp.c
++++ b/drivers/net/ethernet/qlogic/qede/qede_fp.c
+@@ -1643,6 +1643,13 @@ netdev_tx_t qede_start_xmit(struct sk_buff *skb, struct net_device *ndev)
+ 			data_split = true;
+ 		}
+ 	} else {
++		if (unlikely(skb->len > ETH_TX_MAX_NON_LSO_PKT_LEN)) {
++			DP_ERR(edev, "Unexpected non LSO skb length = 0x%x\n", skb->len);
++			qede_free_failed_tx_pkt(txq, first_bd, 0, false);
++			qede_update_tx_producer(txq);
++			return NETDEV_TX_OK;
++		}
++
+ 		val |= ((skb->len & ETH_TX_DATA_1ST_BD_PKT_LEN_MASK) <<
+ 			 ETH_TX_DATA_1ST_BD_PKT_LEN_SHIFT);
+ 	}
+--
+1.8.3.1
 
