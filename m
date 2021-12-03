@@ -2,94 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B502466F6E
-	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 02:58:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C3F8466F87
+	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 03:06:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235940AbhLCCCJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Dec 2021 21:02:09 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:53810 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229503AbhLCCCI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 21:02:08 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1377978AbhLCCKQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Dec 2021 21:10:16 -0500
+Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:60090
+        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1377963AbhLCCKP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 21:10:15 -0500
+Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com [209.85.160.199])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6F36F6284B
-        for <netdev@vger.kernel.org>; Fri,  3 Dec 2021 01:58:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93669C00446;
-        Fri,  3 Dec 2021 01:58:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638496724;
-        bh=9kRopIxFaf5ct/hJg/sAhFDbClvS75bU0MQpqYIsx+o=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=XAeaNHoxJrc3Q15lmViQspCBWX8GWcw7MM/ZbrQcPNTdlWRYxZnQmukUbjE9S2XW5
-         wNdWa5g/C6BV3B6VrEnvOaQ0UbY8UK3ti7nMhN0HP+rso6XqEQaKfUEkw66FKSn7y2
-         To8sss6vJ1hKG3tWn7TA8bQvTVRX01yeqN+gET3OWafHV1PhL7qJuq681DresBnr2G
-         Ci38C0vzzhgBOO5FZh2XnfwDXYXXLjDqz823S/eosFV14ithn5ZoO+xmfPUQk6XFc1
-         VMOFlIkewvfEhfCSsKA4ZVobl99ikqkGJ8yPPIHZmmK9+5D1CUqZUvN1Qhou19xQFe
-         ysgcj9pz8240w==
-Date:   Thu, 2 Dec 2021 17:58:43 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Russell King <rmk+kernel@armlinux.org.uk>
-Cc:     =?UTF-8?B?QmrDuHJu?= Mork <bjorn@mork.no>, netdev@vger.kernel.org,
-        =?UTF-8?B?54Wn5bGx5ZGo5LiA6YOO?= <teruyama@springboard-inc.jp>
-Subject: Re: [PATCH net,stable] phy: sfp: fix high power modules without
- diag mode
-Message-ID: <20211202175843.0210476e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211130073929.376942-1-bjorn@mork.no>
-References: <20211130073929.376942-1-bjorn@mork.no>
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 743983F1F2
+        for <netdev@vger.kernel.org>; Fri,  3 Dec 2021 02:06:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1638497210;
+        bh=BrU2Q27F3zwyVziRmal9LmGlZ7G8dV/WLaFe+j0TIm4=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=SnbyR14lswsqN9iwLGiAkB1Tlsx61fJPysUvALDysFkHUjOq47e1CDz/4M9eLpj3q
+         uNQPzudKgIYJEJmLosH1T7PmHfVZtLezkDTpLxDkUIFeo04kaeWdKqsXZMw8t+pbPP
+         Rs1y1onUSLP1p3pOScZiDnYffHDrG/JUwgJ3smhhVwwcJzYhpaU1XZ5OQljytRhXMq
+         iCcX72alYNulf1HPR2aHtSI33FsGlJ5kHUPW8Gemqb26lp4krn9159z4IhESoiGxQ7
+         Pef6RfDagi+Xnx5WCNOj1u5//6Qn0xMfvZf55bMoNjkWSncjDhM/JQA1rAHCQqb1qH
+         wJG839jfJR++Q==
+Received: by mail-qt1-f199.google.com with SMTP id i5-20020ac85c05000000b002ae12b76e64so1920178qti.6
+        for <netdev@vger.kernel.org>; Thu, 02 Dec 2021 18:06:50 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=BrU2Q27F3zwyVziRmal9LmGlZ7G8dV/WLaFe+j0TIm4=;
+        b=OrM8ZJ9F8+eM3klsnnYf2pNrd8DDzU7NF3PeC4eeb9l0i2zvsokhihcWUgOybbf/jA
+         6T/rGDAjH5/ck0/pMSF51eYu2P9S1ZadEWz8r0sMSF2sAU9a+xw4i6UWBg8wFrPGdRJZ
+         kpX5/jXLPditX80tgaEaJMR1r/iiCl8xZzzEsUSSfe6fChLRs4Nzsh322m5V+r8YYsEq
+         cMdcpBnoCljxKo25M/Y847+/OV+Za7xMPU5Q8qWTQMJszpFlrcN1tFKeLZaJHIoU/V+h
+         bqETVYzageznaWfI3NCVlBkevVNkrKfxjb2eXdmxgDZS+xNvLurng5ODg2/n7kCn7AnS
+         8rtw==
+X-Gm-Message-State: AOAM530tNCJ8gC/6B3cxf4m8vdO4HL1k7Hf9UZCRoZiBqkih6rnOKCeH
+        LIfWWdS0x2udG2+23netGF6jeZonm1NYcZRmLEdwpVwDGQKb52kgIxlNypdPib/2nmjdy2DRnfg
+        36uXdoDZIjtOY1b4HIk89H3hZt3cV5dgdAg==
+X-Received: by 2002:a05:622a:1306:: with SMTP id v6mr18136644qtk.115.1638497209600;
+        Thu, 02 Dec 2021 18:06:49 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxqZPMGMVu6qVqXIsSCsiSzpXSoXA0wtn6y7tSEyAGLVQqcoKOtOntbdP/v48vwFGS89L77qg==
+X-Received: by 2002:a05:622a:1306:: with SMTP id v6mr18136626qtk.115.1638497209404;
+        Thu, 02 Dec 2021 18:06:49 -0800 (PST)
+Received: from lukenow-XPS-13-9380.attlocal.net (108-249-109-234.lightspeed.sndgca.sbcglobal.net. [108.249.109.234])
+        by smtp.gmail.com with ESMTPSA id v12sm1327227qtx.80.2021.12.02.18.06.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 Dec 2021 18:06:49 -0800 (PST)
+From:   Luke Nowakowski-Krijger <luke.nowakowskikrijger@canonical.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Kees Cook <keescook@chromium.org>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Will Drewry <wad@chromium.org>, Shuah Khan <shuah@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, linux-kselftest@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH v2] selftests/seccomp: Unconditionally define seccomp_metadata
+Date:   Thu,  2 Dec 2021 18:06:39 -0800
+Message-Id: <20211203020639.6773-1-luke.nowakowskikrijger@canonical.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 30 Nov 2021 08:39:29 +0100 Bj=C3=B8rn Mork wrote:
-> Commit 7cfa9c92d0a3 ("net: sfp: avoid power switch on address-change
-> modules") changed semantics for high power modules without diag mode.
-> We repeatedly try to read the current power status from the non-existing
-> 0xa2 address, in the futile hope this failure is temporary:
->=20
-> [    8.856051] sfp sfp-eth3: module NTT              0000000000000000 rev=
- 0000 sn 0000000000000000 dc 160408
-> [    8.865843] mvpp2 f4000000.ethernet eth3: switched to inband/1000base-=
-x link mode
-> [    8.873469] sfp sfp-eth3: Failed to read EEPROM: -5
-> [    8.983251] sfp sfp-eth3: Failed to read EEPROM: -5
-> [    9.103250] sfp sfp-eth3: Failed to read EEPROM: -5
->=20
-> Eeprom dump:
->=20
-> 0x0000: 03 04 01 00 00 00 80 00 00 00 00 01 0d 00 0a 64
-> 0x0010: 00 00 00 00 4e 54 54 20 20 20 20 20 20 20 20 20
-> 0x0020: 20 20 20 20 00 00 00 00 30 30 30 30 30 30 30 30
-> 0x0030: 30 30 30 30 30 30 30 30 30 30 30 30 05 1e 00 7d
-> 0x0040: 02 00 00 00 30 30 30 30 30 30 30 30 30 30 30 30
-> 0x0050: 30 30 30 30 31 36 30 34 30 38 20 20 00 00 00 75
-> 0x0060: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-> 0x0070: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-> 0x0080: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-> 0x0090: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-> 0x00a0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-> 0x00b0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-> 0x00c0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-> 0x00d0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-> 0x00e0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-> 0x00f0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
->=20
-> Previously we assumed such modules were powered up in the correct
-> mode, continuing without further configuration as long as the
-> required power class was supported by the host.
->=20
-> Revert to that behaviour, refactoring to keep the improved
-> diagnostic messages.
->=20
-> Fixes: 7cfa9c92d0a3 ("net: sfp: avoid power switch on address-change modu=
-les")
-> Reported-and-tested-by: =E7=85=A7=E5=B1=B1=E5=91=A8=E4=B8=80=E9=83=8E <te=
-ruyama@springboard-inc.jp>
-> Cc: Russell King <rmk+kernel@armlinux.org.uk>
-> Signed-off-by: Bj=C3=B8rn Mork <bjorn@mork.no>
+Unconditonally define seccomp_metadata and remove the linux/ptrace.h
+include.
 
-Russell, any comments?
+There are conflicts between glibc system headers sys/ptrace.h and
+linux/ptrace.h that can likely cause seccomp_metadata to not be
+defined depending on what system header versions are installed,
+leading to compile errors. This fix makes this test more likely to
+compile on a wider variety of systems.
+
+Signed-off-by: Luke Nowakowski-Krijger <luke.nowakowskikrijger@canonical.com>
+---
+v2 + resend: 
+Added comment to explain why there is a header definiton being
+defined in the file and to suggest to future developers that they
+might have to do the same for future fixes for definition issues like
+this.
+
+ tools/testing/selftests/seccomp/seccomp_bpf.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/tools/testing/selftests/seccomp/seccomp_bpf.c b/tools/testing/selftests/seccomp/seccomp_bpf.c
+index d425688cf59c..19d0b448511c 100644
+--- a/tools/testing/selftests/seccomp/seccomp_bpf.c
++++ b/tools/testing/selftests/seccomp/seccomp_bpf.c
+@@ -26,7 +26,6 @@
+ #include <sys/ptrace.h>
+ #include <sys/user.h>
+ #include <linux/prctl.h>
+-#include <linux/ptrace.h>
+ #include <linux/seccomp.h>
+ #include <pthread.h>
+ #include <semaphore.h>
+@@ -171,12 +170,17 @@ struct seccomp_data {
+ 
+ #ifndef PTRACE_SECCOMP_GET_METADATA
+ #define PTRACE_SECCOMP_GET_METADATA	0x420d
++#endif
+ 
++/*
++ * There are conflicting definitions in ptrace system headers that lead to
++ * struct seccomp_metadata to not be defined. So until those conflicts get
++ * sorted out, we should rely on some of our own in-tree ptrace definitions.
++ */
+ struct seccomp_metadata {
+ 	__u64 filter_off;       /* Input: which filter */
+ 	__u64 flags;             /* Output: filter's flags */
+ };
+-#endif
+ 
+ #ifndef SECCOMP_FILTER_FLAG_NEW_LISTENER
+ #define SECCOMP_FILTER_FLAG_NEW_LISTENER	(1UL << 3)
+-- 
+2.32.0
+
