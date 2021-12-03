@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 81B43467C5B
-	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 18:19:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 00695467C5E
+	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 18:20:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353413AbhLCRXV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Dec 2021 12:23:21 -0500
-Received: from relay12.mail.gandi.net ([217.70.178.232]:50061 "EHLO
+        id S1353259AbhLCRXY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Dec 2021 12:23:24 -0500
+Received: from relay12.mail.gandi.net ([217.70.178.232]:51763 "EHLO
         relay12.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353361AbhLCRXV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Dec 2021 12:23:21 -0500
+        with ESMTP id S1353408AbhLCRXW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Dec 2021 12:23:22 -0500
 Received: (Authenticated sender: clement.leger@bootlin.com)
-        by relay12.mail.gandi.net (Postfix) with ESMTPSA id C5C38200003;
-        Fri,  3 Dec 2021 17:19:53 +0000 (UTC)
+        by relay12.mail.gandi.net (Postfix) with ESMTPSA id 3A31E200007;
+        Fri,  3 Dec 2021 17:19:56 +0000 (UTC)
 From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -28,10 +28,12 @@ Cc:     =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Denis Kirjanov <dkirjanov@suse.de>,
         Julian Wiedmann <jwi@linux.ibm.com>
-Subject: [PATCH net-next v4 0/4] Add FDMA support on ocelot switch driver
-Date:   Fri,  3 Dec 2021 18:19:12 +0100
-Message-Id: <20211203171916.378735-1-clement.leger@bootlin.com>
+Subject: [PATCH net-next v4 1/4] net: ocelot: export ocelot_ifh_port_set() to setup IFH
+Date:   Fri,  3 Dec 2021 18:19:13 +0100
+Message-Id: <20211203171916.378735-2-clement.leger@bootlin.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20211203171916.378735-1-clement.leger@bootlin.com>
+References: <20211203171916.378735-1-clement.leger@bootlin.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -39,68 +41,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series adds support for the Frame DMA present on the VSC7514
-switch. The FDMA is able to extract and inject packets on the various
-ethernet interfaces present on the switch.
+FDMA will need this code to prepare the injection frame header when
+sending SKBs. Move this code into ocelot_ifh_port_set() and add
+conditional IFH setting for vlan and rew op if they are not set.
 
-While adding FDMA support, bindings were switched from .txt to .yaml
-and MAC address reading from device-tree was added for testing
-purposes.
+Signed-off-by: Clément Léger <clement.leger@bootlin.com>
+---
+ drivers/net/ethernet/mscc/ocelot.c | 18 +++++++++++++-----
+ include/soc/mscc/ocelot.h          |  1 +
+ 2 files changed, 14 insertions(+), 5 deletions(-)
 
-------------------
-Changes in V4:
-  - Use regmap for register access
-  - Removed yaml bindings convertion as well as mac address from dt
-  - Removed pre-computed IFH for the moment
-  - Fixed timestamp reading for PTP in FDMA
-  - Fixed wrong exit path for fdma netdev init
-  - Removed spinlock from TX cleanup
-  - Add asynchronous RX chan stop before refilling
-  - Reduce CH_SAFE wait time to 10us
-  - Reduce waiting time for channel to be safe
-  - Completely rework rx to use page recycling (code from gianfar)
-  - Reenable MTU change support since FDMA now supports it transparently
-  - Split TX and RX ring size
-  - Larger RX size to lower page allocation rate
-  - Add static key to check for FDMA to be enabled in fast path
-
-Changes in V3:
-  - Add timeouts for hardware registers read
-  - Add cleanup path in fdma_init
-  - Rework injection and extraction to used ring like structure
-  - Added PTP support to FDMA
-  - Use pskb_expand_head instead of skb_copy_expand in xmit
-  - Drop jumbo support
-  - Use of_get_ethdev_address
-  - Add ocelot_fdma_netdev_init/deinit
-
-Changes in V2:
-  - Read MAC for each port and not as switch base MAC address
-  - Add missing static for some functions in ocelot_fdma.c
-  - Split change_mtu from fdma commit
-  - Add jumbo support for register based xmit
-  - Move precomputed header into ocelot_port struct
-  - Remove use of QUIRK_ENDIAN_LITTLE due to misconfiguration for tests
-  - Remove fragmented packet sending which has not been tested
-
-Clément Léger (4):
-  net: ocelot: export ocelot_ifh_port_set() to setup IFH
-  net: ocelot: add and export ocelot_ptp_rx_timestamp()
-  net: ocelot: add support for ndo_change_mtu
-  net: ocelot: add FDMA support
-
- drivers/net/ethernet/mscc/Makefile         |   1 +
- drivers/net/ethernet/mscc/ocelot.c         |  59 +-
- drivers/net/ethernet/mscc/ocelot.h         |   3 +
- drivers/net/ethernet/mscc/ocelot_fdma.c    | 885 +++++++++++++++++++++
- drivers/net/ethernet/mscc/ocelot_fdma.h    | 177 +++++
- drivers/net/ethernet/mscc/ocelot_net.c     |  39 +-
- drivers/net/ethernet/mscc/ocelot_vsc7514.c |   8 +
- include/soc/mscc/ocelot.h                  |   9 +
- 8 files changed, 1155 insertions(+), 26 deletions(-)
- create mode 100644 drivers/net/ethernet/mscc/ocelot_fdma.c
- create mode 100644 drivers/net/ethernet/mscc/ocelot_fdma.h
-
+diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
+index e6c18b598d5c..59943835d18c 100644
+--- a/drivers/net/ethernet/mscc/ocelot.c
++++ b/drivers/net/ethernet/mscc/ocelot.c
+@@ -1076,6 +1076,18 @@ bool ocelot_can_inject(struct ocelot *ocelot, int grp)
+ }
+ EXPORT_SYMBOL(ocelot_can_inject);
+ 
++void ocelot_ifh_port_set(void *ifh, int port, u32 rew_op, u32 vlan_tag)
++{
++	ocelot_ifh_set_bypass(ifh, 1);
++	ocelot_ifh_set_dest(ifh, BIT_ULL(port));
++	ocelot_ifh_set_tag_type(ifh, IFH_TAG_TYPE_C);
++	if (vlan_tag)
++		ocelot_ifh_set_vlan_tci(ifh, vlan_tag);
++	if (rew_op)
++		ocelot_ifh_set_rew_op(ifh, rew_op);
++}
++EXPORT_SYMBOL(ocelot_ifh_port_set);
++
+ void ocelot_port_inject_frame(struct ocelot *ocelot, int port, int grp,
+ 			      u32 rew_op, struct sk_buff *skb)
+ {
+@@ -1085,11 +1097,7 @@ void ocelot_port_inject_frame(struct ocelot *ocelot, int port, int grp,
+ 	ocelot_write_rix(ocelot, QS_INJ_CTRL_GAP_SIZE(1) |
+ 			 QS_INJ_CTRL_SOF, QS_INJ_CTRL, grp);
+ 
+-	ocelot_ifh_set_bypass(ifh, 1);
+-	ocelot_ifh_set_dest(ifh, BIT_ULL(port));
+-	ocelot_ifh_set_tag_type(ifh, IFH_TAG_TYPE_C);
+-	ocelot_ifh_set_vlan_tci(ifh, skb_vlan_tag_get(skb));
+-	ocelot_ifh_set_rew_op(ifh, rew_op);
++	ocelot_ifh_port_set(ifh, port, rew_op, skb_vlan_tag_get(skb));
+ 
+ 	for (i = 0; i < OCELOT_TAG_LEN / 4; i++)
+ 		ocelot_write_rix(ocelot, ifh[i], QS_INJ_WR, grp);
+diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
+index fef3a36b0210..4bdaf7520fba 100644
+--- a/include/soc/mscc/ocelot.h
++++ b/include/soc/mscc/ocelot.h
+@@ -754,6 +754,7 @@ void __ocelot_target_write_ix(struct ocelot *ocelot, enum ocelot_target target,
+ bool ocelot_can_inject(struct ocelot *ocelot, int grp);
+ void ocelot_port_inject_frame(struct ocelot *ocelot, int port, int grp,
+ 			      u32 rew_op, struct sk_buff *skb);
++void ocelot_ifh_port_set(void *ifh, int port, u32 rew_op, u32 vlan_tag);
+ int ocelot_xtr_poll_frame(struct ocelot *ocelot, int grp, struct sk_buff **skb);
+ void ocelot_drain_cpu_queue(struct ocelot *ocelot, int grp);
+ 
 -- 
 2.34.1
 
