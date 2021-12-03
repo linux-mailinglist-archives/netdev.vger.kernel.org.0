@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 99611467805
-	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 14:19:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E661467808
+	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 14:19:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352398AbhLCNWc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Dec 2021 08:22:32 -0500
-Received: from smtp04.smtpout.orange.fr ([80.12.242.126]:51909 "EHLO
+        id S1380028AbhLCNWh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Dec 2021 08:22:37 -0500
+Received: from smtp04.smtpout.orange.fr ([80.12.242.126]:59128 "EHLO
         smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352267AbhLCNW0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Dec 2021 08:22:26 -0500
+        with ESMTP id S1379857AbhLCNWf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Dec 2021 08:22:35 -0500
 Received: from localhost.localdomain ([114.149.34.46])
         by smtp.orange.fr with ESMTPA
-        id t8S9mZgOjWUfjt8Somn0zJ; Fri, 03 Dec 2021 14:19:01 +0100
+        id t8S9mZgOjWUfjt8Swmn11n; Fri, 03 Dec 2021 14:19:10 +0100
 X-ME-Helo: localhost.localdomain
 X-ME-Auth: MDU0YmViZGZmMDIzYiBlMiM2NTczNTRjNWZkZTMwOGRiOGQ4ODf3NWI1ZTMyMzdiODlhOQ==
-X-ME-Date: Fri, 03 Dec 2021 14:19:01 +0100
+X-ME-Date: Fri, 03 Dec 2021 14:19:10 +0100
 X-ME-IP: 114.149.34.46
 From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 To:     Marc Kleine-Budde <mkl@pengutronix.de>, linux-can@vger.kernel.org
@@ -24,10 +24,11 @@ Cc:     Oliver Hartkopp <socketcan@hartkopp.net>,
         Jimmy Assarsson <extja@kvaser.com>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-sunxi@lists.linux.dev,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Subject: [PATCH v4 2/5] can: kvaser_usb: do not increase tx statistics when sending error message frames
-Date:   Fri,  3 Dec 2021 22:18:05 +0900
-Message-Id: <20211203131808.2380042-3-mailhol.vincent@wanadoo.fr>
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Yasushi SHOJI <yashi@spacecubics.com>
+Subject: [PATCH v4 3/5] can: do not copy the payload of RTR frames
+Date:   Fri,  3 Dec 2021 22:18:06 +0900
+Message-Id: <20211203131808.2380042-4-mailhol.vincent@wanadoo.fr>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20211203131808.2380042-1-mailhol.vincent@wanadoo.fr>
 References: <20211203131808.2380042-1-mailhol.vincent@wanadoo.fr>
@@ -37,65 +38,87 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The CAN error message frames (i.e. error skb) are an interface
-specific to socket CAN. The payload of the CAN error message frames
-does not correspond to any actual data sent on the wire. Only an error
-flag and a delimiter are transmitted when an error occurs (c.f. ISO
-11898-1 section 10.4.4.2 "Error flag").
+The actual payload length of the CAN Remote Transmission Request (RTR)
+frames is always 0, i.e. nothing is transmitted on the wire. However,
+those RTR frames still use the DLC to indicate the length of the
+requested frame.
 
-For this reason, it makes no sense to increment the tx_packets and
-tx_bytes fields of struct net_device_stats when sending an error
-message frame because no actual payload will be transmitted on the
-wire.
+For this reason, it is incorrect to copy the payload of RTR frames
+(the payload buffer would only contain garbage data). This patch
+encapsulates the payload copy in a check toward the RTR flag.
 
-N.B. Sending error message frames is a very specific feature which, at
-the moment, is only supported by the Kvaser Hydra hardware. Please
-refer to [1] for more details on the topic.
-
-[1] https://lore.kernel.org/linux-can/CAMZ6RqK0rTNg3u3mBpZOoY51jLZ-et-J01tY6-+mWsM4meVw-A@mail.gmail.com/t/#u
-
-Co-developed-by: Jimmy Assarsson <extja@kvaser.com>
-Signed-off-by: Jimmy Assarsson <extja@kvaser.com>
+CC: Yasushi SHOJI <yashi@spacecubics.com>
 Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 ---
- drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/net/can/pch_can.c      | 15 ++++++++-------
+ drivers/net/can/spi/mcp251x.c  |  3 ++-
+ drivers/net/can/usb/mcba_usb.c |  8 ++++----
+ 3 files changed, 14 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c b/drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c
-index 3398da323126..75009d38f8e3 100644
---- a/drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c
-+++ b/drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c
-@@ -295,6 +295,7 @@ struct kvaser_cmd {
- #define KVASER_USB_HYDRA_CF_FLAG_OVERRUN	BIT(1)
- #define KVASER_USB_HYDRA_CF_FLAG_REMOTE_FRAME	BIT(4)
- #define KVASER_USB_HYDRA_CF_FLAG_EXTENDED_ID	BIT(5)
-+#define KVASER_USB_HYDRA_CF_FLAG_TX_ACK		BIT(6)
- /* CAN frame flags. Used in ext_rx_can and ext_tx_can */
- #define KVASER_USB_HYDRA_CF_FLAG_OSM_NACK	BIT(12)
- #define KVASER_USB_HYDRA_CF_FLAG_ABL		BIT(13)
-@@ -1113,6 +1114,7 @@ static void kvaser_usb_hydra_tx_acknowledge(const struct kvaser_usb *dev,
- 	struct kvaser_usb_net_priv *priv;
- 	unsigned long irq_flags;
- 	bool one_shot_fail = false;
-+	bool is_err_frame = false;
- 	u16 transid = kvaser_usb_hydra_get_cmd_transid(cmd);
- 
- 	priv = kvaser_usb_hydra_net_priv_from_cmd(dev, cmd);
-@@ -1131,10 +1133,13 @@ static void kvaser_usb_hydra_tx_acknowledge(const struct kvaser_usb *dev,
- 			kvaser_usb_hydra_one_shot_fail(priv, cmd_ext);
- 			one_shot_fail = true;
+diff --git a/drivers/net/can/pch_can.c b/drivers/net/can/pch_can.c
+index 6b45840db1f9..4bf9bfc4de72 100644
+--- a/drivers/net/can/pch_can.c
++++ b/drivers/net/can/pch_can.c
+@@ -677,16 +677,17 @@ static int pch_can_rx_normal(struct net_device *ndev, u32 obj_num, int quota)
+ 			cf->can_id = id;
  		}
-+
-+		is_err_frame = flags & KVASER_USB_HYDRA_CF_FLAG_TX_ACK &&
-+			       flags & KVASER_USB_HYDRA_CF_FLAG_ERROR_FRAME;
+ 
+-		if (id2 & PCH_ID2_DIR)
+-			cf->can_id |= CAN_RTR_FLAG;
+-
+ 		cf->len = can_cc_dlc2len((ioread32(&priv->regs->
+ 						    ifregs[0].mcont)) & 0xF);
+ 
+-		for (i = 0; i < cf->len; i += 2) {
+-			data_reg = ioread16(&priv->regs->ifregs[0].data[i / 2]);
+-			cf->data[i] = data_reg;
+-			cf->data[i + 1] = data_reg >> 8;
++		if (id2 & PCH_ID2_DIR) {
++			cf->can_id |= CAN_RTR_FLAG;
++		} else {
++			for (i = 0; i < cf->len; i += 2) {
++				data_reg = ioread16(&priv->regs->ifregs[0].data[i / 2]);
++				cf->data[i] = data_reg;
++				cf->data[i + 1] = data_reg >> 8;
++			}
+ 		}
+ 
+ 		rcv_pkts++;
+diff --git a/drivers/net/can/spi/mcp251x.c b/drivers/net/can/spi/mcp251x.c
+index 0579ab74f728..db3fa98569c4 100644
+--- a/drivers/net/can/spi/mcp251x.c
++++ b/drivers/net/can/spi/mcp251x.c
+@@ -733,7 +733,8 @@ static void mcp251x_hw_rx(struct spi_device *spi, int buf_idx)
+ 	}
+ 	/* Data length */
+ 	frame->len = can_cc_dlc2len(buf[RXBDLC_OFF] & RXBDLC_LEN_MASK);
+-	memcpy(frame->data, buf + RXBDAT_OFF, frame->len);
++	if (!(frame->can_id & CAN_RTR_FLAG))
++		memcpy(frame->data, buf + RXBDAT_OFF, frame->len);
+ 
+ 	priv->net->stats.rx_packets++;
+ 	priv->net->stats.rx_bytes += frame->len;
+diff --git a/drivers/net/can/usb/mcba_usb.c b/drivers/net/can/usb/mcba_usb.c
+index a1a154c08b7f..162d2e11cadd 100644
+--- a/drivers/net/can/usb/mcba_usb.c
++++ b/drivers/net/can/usb/mcba_usb.c
+@@ -450,12 +450,12 @@ static void mcba_usb_process_can(struct mcba_priv *priv,
+ 		cf->can_id = (sid & 0xffe0) >> 5;
  	}
  
- 	context = &priv->tx_contexts[transid % dev->max_tx_urbs];
--	if (!one_shot_fail) {
-+	if (!one_shot_fail && !is_err_frame) {
- 		struct net_device_stats *stats = &priv->netdev->stats;
+-	if (msg->dlc & MCBA_DLC_RTR_MASK)
+-		cf->can_id |= CAN_RTR_FLAG;
+-
+ 	cf->len = can_cc_dlc2len(msg->dlc & MCBA_DLC_MASK);
  
- 		stats->tx_packets++;
+-	memcpy(cf->data, msg->data, cf->len);
++	if (msg->dlc & MCBA_DLC_RTR_MASK)
++		cf->can_id |= CAN_RTR_FLAG;
++	else
++		memcpy(cf->data, msg->data, cf->len);
+ 
+ 	stats->rx_packets++;
+ 	stats->rx_bytes += cf->len;
 -- 
 2.32.0
 
