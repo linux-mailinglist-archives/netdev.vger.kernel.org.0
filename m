@@ -2,119 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A9D44672B0
-	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 08:38:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C868F4672B1
+	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 08:39:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350881AbhLCHlU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Dec 2021 02:41:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43490 "EHLO
+        id S1350882AbhLCHnM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Dec 2021 02:43:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350852AbhLCHlU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Dec 2021 02:41:20 -0500
-Received: from mail-oo1-xc2a.google.com (mail-oo1-xc2a.google.com [IPv6:2607:f8b0:4864:20::c2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6963C06174A
-        for <netdev@vger.kernel.org>; Thu,  2 Dec 2021 23:37:56 -0800 (PST)
-Received: by mail-oo1-xc2a.google.com with SMTP id v19-20020a4a2453000000b002bb88bfb594so1508219oov.4
-        for <netdev@vger.kernel.org>; Thu, 02 Dec 2021 23:37:56 -0800 (PST)
+        with ESMTP id S1350852AbhLCHnM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Dec 2021 02:43:12 -0500
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA5AEC06174A
+        for <netdev@vger.kernel.org>; Thu,  2 Dec 2021 23:39:48 -0800 (PST)
+Received: by mail-wr1-x434.google.com with SMTP id v11so3765139wrw.10
+        for <netdev@vger.kernel.org>; Thu, 02 Dec 2021 23:39:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=1zMWGmGY4+8W9Z4xeHe+E4bygT9LxpnGhYn3E+9Xi0s=;
-        b=QryXv6DIGIapmaBc6WnQtLYuq3ucxcwp/SjvUtRN2ME5ZZzhA9hVCP70rJbbGsW9nf
-         7cNMVNdM6nmPSWysVqLSD+E676NAohvDLLsT+B0WsNyg1OoAmz9lU2MchXa5ageXjXAv
-         eUg5mA6djJjfvef2KMpiGSKRt5aWLXaSDfyQOs0uz4FBsu5J29+M3sVwVnwr4z3eL0n6
-         3E5TslheSzXPXwhD9EC7wjPIVnIawvpsf2/xA8zYWhKLo7p3wkQfSgxKF7pNomJjAciu
-         lEeOeFgMspecTyH05LXwaUxjLKB02Q+/7+eUzfHtuXmznRTbLY+ic00exoDoq6/dM6/A
-         ES+w==
+        bh=Eaevo7pi2ak/CI9ILvZnxO/c89nGvOIVsZxXThgQ/hU=;
+        b=RZrJjgNJF2WcSycg6tM84V6fNwdCkf7KDEi08wtYiUmMAuy1M+uLgvkgrRtuXXQFGt
+         QsCn4iAu9Sm0h5fMFJ7GHRa8e5XhybAw0sAHjtqDCEnrnS++O48yG4GJtmbgUDMBDou0
+         eToI3g6KyEt0W0E9XPsYL0M1Ks/N92e7Py0HVCn0QtkIZi76oT74bDER2WHApzydrtdP
+         pnLiaUkW11L0h80cdXV+WQJIOMDbLb9j4K7N5rUXO7NnVPvBBxyAc0bNuprAcpnTzBVq
+         VaEbtSye8POlakf3GsIgon84MFn8uUxBVV2HgJsE3HxhU2l3KC0P+Al0BtY4GxhZ6wNn
+         PJYw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=1zMWGmGY4+8W9Z4xeHe+E4bygT9LxpnGhYn3E+9Xi0s=;
-        b=T1XiBrE00/Xkp4VaHHzAdMgyOKh8XVofX+drkCV7nJSR3r/MK6KJTnFxGQ7g/6lJzc
-         mXuYu/4ptO7LgpUIe+JV5+0VkWijIz+aqKtzbIWXdFEfZfgWM2xiD6PjBwUMZZ8B+ntx
-         UcNjGUANrtdQyYypPQ7tf2PPhRBQ2Zhv32woILYxIm/zR+i16/wFsMGXDSVFoE4yGca0
-         YcCwsT7JPFDfmgMYNIM9pjyBHhVCBDufTHP30yrQXVR62rR4xHxfgxV/PM4TpuUVxfSg
-         rgd6oL5RDdAcVBWm7W4UOqTlxebCc8CU76fv4OKZSjGRuEi0f+tWCSpDYoewesNnV02N
-         H+fA==
-X-Gm-Message-State: AOAM5327qgci2jotbtD2/BBZLGWdfCziz+VGw7efqhlYWQLm9RlEZO90
-        L0v8xFRLkJc5xRpCgouKTK6D7JUZ0OkgfvNIuQeLeQ==
-X-Google-Smtp-Source: ABdhPJzDlQxkkAjxoMps/gl9jDxYkF0VP7injFBiCmJlLi/jkbejZDq/buuqqSHSjYQEtLlIb7Ty+y2aTBnaTMeCYXs=
-X-Received: by 2002:a05:6830:1356:: with SMTP id r22mr14977516otq.196.1638517075994;
- Thu, 02 Dec 2021 23:37:55 -0800 (PST)
+        bh=Eaevo7pi2ak/CI9ILvZnxO/c89nGvOIVsZxXThgQ/hU=;
+        b=ZL4R0MJK0+x59ygFyjrQiea9Wbh+i9KhPdn3kaybnGYYiPAvZDvmwiVtgs/5UQ2qRE
+         GjOtFTprd9yeDsnnQXKyk+BC0j8/ANHs8TocEHaVaOJCd5n67Zpgs7qXgeOiwa/XC3fa
+         B7i1KyF83nCaCEqk7qwJKOVX3H4QDBO1jOQ4L20xQIGEG99OGiw/FjrTtLToYHOdjXb3
+         r3FI7wFHcVcZv4PdgjmXe1Rsxz/7yFk0euQJXztlzduRhO4Cak8xpVCVZl4/uz69UlZl
+         54Fz05ezS4hmAYZ1OCtcX4czwcnMUzh3JJb01YmRnYb8CGSQKRrwNg11bdX7y287fBx5
+         xOhA==
+X-Gm-Message-State: AOAM531bqS6JSepJUWKNBgY2OZvWhHyukTxwBEnQMmk7+F6iOr5SMGJx
+        /PhhCi6hi6QHNKdCtcCzePMh2Bibx5xHa4B8nY0kbFnh
+X-Google-Smtp-Source: ABdhPJxgirRZFhwWr7EXzlEJXB9qslwfd1FK2oavhrAU1fvekz/Ooe8hDbXfGCuEIjbqrNDzjbVTgJecLQuVd4WR2oc=
+X-Received: by 2002:adf:8bd9:: with SMTP id w25mr19089154wra.519.1638517187296;
+ Thu, 02 Dec 2021 23:39:47 -0800 (PST)
 MIME-Version: 1.0
-References: <20211202032139.3156411-3-eric.dumazet@gmail.com>
- <202112030323.z9IhC2B3-lkp@intel.com> <CANn89iLi6Dh3_hhDO8u9xJ+nA4eSEgpyv3sMVz3A8bcbp-6-TA@mail.gmail.com>
-In-Reply-To: <CANn89iLi6Dh3_hhDO8u9xJ+nA4eSEgpyv3sMVz3A8bcbp-6-TA@mail.gmail.com>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Fri, 3 Dec 2021 08:37:45 +0100
-Message-ID: <CACT4Y+Y8upXSt7j4MT8jfj_s2kVKCEN0nyJmb0PQ=teiUqGVQg@mail.gmail.com>
-Subject: Re: [PATCH net-next 02/19] lib: add tests for reference tracker
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     kernel test robot <lkp@intel.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, kbuild-all@lists.01.org,
-        netdev <netdev@vger.kernel.org>
+References: <CACS3ZpA=QDLqXE6RyCox8sCX753B=8+JC3jSxpv+vkbKAOwkYQ@mail.gmail.com>
+ <3DEFF398-F151-487E-A2F8-5AB593E4A21B@massar.ch> <CACS3ZpDLpxNStsS61MV_yadERP=PDLJovp44M7e7YSBkadyC8g@mail.gmail.com>
+In-Reply-To: <CACS3ZpDLpxNStsS61MV_yadERP=PDLJovp44M7e7YSBkadyC8g@mail.gmail.com>
+From:   Juhamatti Kuusisaari <juhamatk@gmail.com>
+Date:   Fri, 3 Dec 2021 09:39:26 +0200
+Message-ID: <CACS3ZpDi-=H9J=vVoqxqd7J=ftBCmKNpetzTyMOkH-N2L7C7hg@mail.gmail.com>
+Subject: Re: IPv6 Router Advertisement Router Preference (RFC 4191) behavior issue
+To:     Jeroen Massar <jeroen@massar.ch>
+Cc:     netdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2 Dec 2021 at 20:46, Eric Dumazet <edumazet@google.com> wrote:
+Hello,
+
+On Thu, 18 Nov 2021 at 15:12, Juhamatti Kuusisaari <juhamatk@gmail.com> wrote:
 >
-> On Thu, Dec 2, 2021 at 11:25 AM kernel test robot <lkp@intel.com> wrote:
+> On Thu, 18 Nov 2021 at 12:49, Jeroen Massar <jeroen@massar.ch> wrote:
 > >
-> > Hi Eric,
 > >
-> > I love your patch! Yet something to improve:
 > >
-> > [auto build test ERROR on net-next/master]
+> > > On 20211118, at 11:35, Juhamatti Kuusisaari <juhamatk@gmail.com> wrote:
+> > >
+> > > Hello,
+> > >
+> > > I have been testing IPv6 Router Advertisement Default Router
+> > > Preference on 5.1X and it seems it is not honoured by the Linux
+> > > networking stack. Whenever a new default router preference with a
+> > > higher or lower preference value is received, a new default gateway is
+> > > added as an ECMP route in the routing table with equal weight. This is
+> > > a bit surprising as RFC 4191 Sec. 3.2 mentions that the higher
+> > > preference value should be preferred. This part seems to be missing
+> > > from the Linux implementation.
 > >
-> > url:    https://github.com/0day-ci/linux/commits/Eric-Dumazet/net-add-preliminary-netdev-refcount-tracking/20211202-112353
-> > base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 8057cbb8335cf6d419866737504473833e1d128a
-> > config: nios2-allyesconfig (https://download.01.org/0day-ci/archive/20211203/202112030323.z9IhC2B3-lkp@intel.com/config)
-> > compiler: nios2-linux-gcc (GCC) 11.2.0
-> > reproduce (this is a W=1 build):
-> >         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-> >         chmod +x ~/bin/make.cross
-> >         # https://github.com/0day-ci/linux/commit/5da0cdb1848fae9fb2d9d749bb94e568e2493df8
-> >         git remote add linux-review https://github.com/0day-ci/linux
-> >         git fetch --no-tags linux-review Eric-Dumazet/net-add-preliminary-netdev-refcount-tracking/20211202-112353
-> >         git checkout 5da0cdb1848fae9fb2d9d749bb94e568e2493df8
-> >         # save the config file to linux build tree
-> >         mkdir build_dir
-> >         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=nios2 SHELL=/bin/bash
-> >
-> > If you fix the issue, kindly add following tag as appropriate
-> > Reported-by: kernel test robot <lkp@intel.com>
-> >
-> > All errors (new ones prefixed by >>):
-> >
-> >    nios2-linux-ld: kernel/stacktrace.o: in function `stack_trace_save':
-> > >> (.text+0x2e4): undefined reference to `save_stack_trace'
-> >    (.text+0x2e4): relocation truncated to fit: R_NIOS2_CALL26 against `save_stack_trace'
-> >
-> > Kconfig warnings: (for reference only)
-> >    WARNING: unmet direct dependencies detected for STACKTRACE
-> >    Depends on STACKTRACE_SUPPORT
-> >    Selected by
-> >    - STACKDEPOT
-> >
+> > Do watch out that there are a couple of user space tools (yes, that thing) that think that they have to handle RAs.... and thus one might get conflicts about reasoning between the kernel doing it or that user space daemon thing.
 >
-> I am not sure I understand this.
+> Thanks for the heads-up. AFAIK, I am not running anything extra in the
+> user space of the receiving node.
 >
-> Dmitry, do I need to add a depends on STACKTRACE_SUPPORT.
+> Here are some more details:
+>
+> 1) RA with pref medium is received over enp0s8 from router X at
+> fe80::a00:27ff:fe90:5a8a:
+> ::1 dev lo proto kernel metric 256 pref medium
+> fe80::/64 dev enp0s8 proto kernel metric 256 pref medium
+> fe80::/64 dev enp0s3 proto kernel metric 256 pref medium
+> default via fe80::a00:27ff:fe90:5a8a dev enp0s8 proto ra metric 1024
+> expires 273sec pref medium
+>
+> 2) RA with pref high is received over enp0s8 from router Y at
+> fe80::ffff:a00:275e:85ca:
+> ::1 dev lo proto kernel metric 256 pref medium
+> fe80::/64 dev enp0s8 proto kernel metric 256 pref medium
+> fe80::/64 dev enp0s3 proto kernel metric 256 pref medium
+> default proto ra metric 1024 expires 276sec pref medium
+>         nexthop via fe80::a00:27ff:fe90:5a8a dev enp0s8 weight 1
+>         nexthop via fe80::ffff:a00:275e:85ca dev enp0s8 weight 1
+>
+> i.e. the default ends up as an ECMP configuration. I would have
+> expected it to change to a high preference route via
+> fe80::ffff:a00:275e:85ca only.
 
-Humm... There is something strange about nios2 arch.
+The above behaviour does not quite match the code - and indeed, a
+userspace tool did take over RAs by default. I disabled it and the
+kernel behaviour looks like this:
 
-KASAN depends on ARCH_HAVE_KASAN which is not selected for nios2, so
-it implicitly avoids this issue.
+::1 dev lo proto kernel metric 256 pref medium
+fe80::/64 dev enp0s8 proto kernel metric 256 pref medium
+fe80::/64 dev enp0s3 proto kernel metric 256 pref medium
+default via fe80::a00:27ff:fe5e:85ca dev enp0s8 proto ra metric 1024
+expires 261sec pref medium
+default via fe80::ffff:a00:275e:85ca dev enp0s8 proto ra metric 1024
+expires 261sec pref high
 
-But I see PAGE_OWNER that also uses STACKDEPOT has "Depends on
-STACKTRACE_SUPPORT".
-So I guess yes.
+To be sure, I verified from ND-kernel logs that this really goes to the kernel.
 
-I am not sure how Kconfig will reach if we make STACKDEPOT depend on
-STACKTRACE_SUPPORT  and your config  says "select STACKDEPOT"...
+It still does not look quite right to me. I would have expected, based
+on the RFC 4191, that only high pref default is there or that it has
+priority by other means. AFAICT, now the routing takes the default
+that happens to match the lookup first. Without router preference this
+is fine.
+
+Thanks,
+--
+ Juhamatti
