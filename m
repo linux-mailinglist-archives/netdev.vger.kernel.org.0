@@ -2,79 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 852C0467058
-	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 03:58:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D30B46706E
+	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 04:03:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345945AbhLCDBm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Dec 2021 22:01:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37326 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242005AbhLCDBl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 22:01:41 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E63A5C06174A
-        for <netdev@vger.kernel.org>; Thu,  2 Dec 2021 18:58:17 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 81CB66281C
-        for <netdev@vger.kernel.org>; Fri,  3 Dec 2021 02:58:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97996C00446;
-        Fri,  3 Dec 2021 02:58:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638500296;
-        bh=6xGCtty0xr69UE/JfzcRLENFCltTmG3Uu0JbhsTjEM0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=TT6jW1n7ZvkaCv0Z/nSi0IwKqXWS5vWUALa/JUQItedBNmNBnMM1Keuqh83y/Is5B
-         X6ka0qrwg5JtfaUD/uZXrTR9Lk/yjz7mp1yFUwwvwihVktSrpJqD2Ira10mOTsgJjJ
-         VhvZATVzQTUqQgKMthJ0eJYz9XMNVX/BJwlfdIGJcVQCQ4lK2tGtkXh5JKeifTMnez
-         xwNbS0rmr46/bUjpQvNLKyIs+UvjY32WiImPbLs4BJGVHzBIbchl+atb5UDTUnoAtw
-         X89pqqVIzVfiifUQsnPOlU3kX+V9b2UaSdh3nT7GgrWMb0b/e6YPUGaYNR7jsINS7n
-         Yz7QHOXRIkr1g==
-Date:   Thu, 2 Dec 2021 18:58:15 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     netdev@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>, davem@davemloft.net,
-        Richard Cochran <richardcochran@gmail.com>,
-        Miroslav Lichvar <mlichvar@redhat.com>
-Subject: Re: [PATCH net-next] bond: pass get_ts_info and SIOC[SG]HWTSTAMP
- ioctl to active device
-Message-ID: <20211202185815.27e42ac0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <YamHCHzmmQFA6Wxb@Laptop-X1>
-References: <20211130070932.1634476-1-liuhangbin@gmail.com>
-        <20211130071956.5ad2c795@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <YacAstl+brTqgAu8@Laptop-X1>
-        <20211201071118.749a3ed4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <Yag3yI4cNnUK2Yjy@Laptop-X1>
-        <20211202065923.7fc5aa8f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <YamHCHzmmQFA6Wxb@Laptop-X1>
+        id S1378323AbhLCDGr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Dec 2021 22:06:47 -0500
+Received: from smtp25.cstnet.cn ([159.226.251.25]:51826 "EHLO cstnet.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S239667AbhLCDGr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 2 Dec 2021 22:06:47 -0500
+Received: from localhost.localdomain (unknown [124.16.138.128])
+        by APP-05 (Coremail) with SMTP id zQCowAAnCRbdiKlhM80FAQ--.32888S2;
+        Fri, 03 Dec 2021 11:02:53 +0800 (CST)
+From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
+To:     rafal@milecki.pl, bcm-kernel-feedback-list@broadcom.com,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org, fw@strlen.de,
+        Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Subject: [PATCH v2] net: broadcom: Catch the Exception
+Date:   Fri,  3 Dec 2021 11:02:50 +0800
+Message-Id: <20211203030250.1512671-1-jiasheng@iscas.ac.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: zQCowAAnCRbdiKlhM80FAQ--.32888S2
+X-Coremail-Antispam: 1UD129KBjvdXoWrur43JFWxuryUCr4rGr43GFg_yoWDKwbEgF
+        yUZ3sag3y8CryYkwsakw43Zry0k3yqvw18uFyvgrZaqr98ur1Dt3yktF1rtw1UWrWDJFyS
+        yrnxtFZxA340gjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUb4xFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Gr0_Xr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Cr0_
+        Gr1UM28EF7xvwVC2z280aVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gr
+        1j6F4UJwAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv
+        7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r
+        1j6r4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY02Avz4vE14v_
+        Gr4l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxV
+        WUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI
+        7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r
+        1j6r4UMIIF0xvE42xK8VAvwI8IcIk0rVWrZr1j6s0DMIIF0xvEx4A2jsIE14v26r1j6r4U
+        MIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JU-miiUUU
+        UU=
+X-Originating-IP: [124.16.138.128]
+X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 3 Dec 2021 10:55:04 +0800 Hangbin Liu wrote:
-> On Thu, Dec 02, 2021 at 06:59:23AM -0800, Jakub Kicinski wrote:
-> > On Thu, 2 Dec 2021 11:04:40 +0800 Hangbin Liu wrote:  
-> > User can point their PTP daemon at any interface. Since bond now
-> > supports the uAPI the user will be blissfully unaware that their
-> > configuration will break if failover happens.
-> > 
-> > We can't expect every user and every PTP daemon to magically understand
-> > the implicit quirks of the drivers. Quirks which are not even
-> > documented.  
-> 
-> Thanks for the explanation. I understand what you mean now.
-> > 
-> > What I'm saying is that we should have a new bit in the uAPI that
-> > tells us that the user space can deal with unstable PHC idx and reject
-> > the request forwarding in bond if that bit is not set. We have a flags
-> > field in hwtstamp_config which should fit the bill. Make sense?  
-> 
-> Yes, this makes sense for me. I check this and try post a patch next week.
+The return value of dma_set_coherent_mask() is not always 0.
+To catch the exception in case that dma is not support the mask.
 
-SGTM, thanks!
+Fixes: 9d61d138ab30 ("net: broadcom: rename BCM4908 driver & update DT binding")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+---
+Changelog
+
+v1 -> v2
+
+* Change 1. Correct the Fixes tags.
+* Change 2. CC Florian.
+---
+ drivers/net/ethernet/broadcom/bcm4908_enet.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/broadcom/bcm4908_enet.c b/drivers/net/ethernet/broadcom/bcm4908_enet.c
+index 02a569500234..376f81796a29 100644
+--- a/drivers/net/ethernet/broadcom/bcm4908_enet.c
++++ b/drivers/net/ethernet/broadcom/bcm4908_enet.c
+@@ -708,7 +708,9 @@ static int bcm4908_enet_probe(struct platform_device *pdev)
+ 
+ 	enet->irq_tx = platform_get_irq_byname(pdev, "tx");
+ 
+-	dma_set_coherent_mask(dev, DMA_BIT_MASK(32));
++	err = dma_set_coherent_mask(dev, DMA_BIT_MASK(32));
++	if (err)
++		return err;
+ 
+ 	err = bcm4908_enet_dma_alloc(enet);
+ 	if (err)
+-- 
+2.25.1
+
