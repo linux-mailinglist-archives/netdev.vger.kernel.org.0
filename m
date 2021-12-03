@@ -2,78 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F20446796D
-	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 15:30:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 737F9467986
+	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 15:37:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381484AbhLCOdj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Dec 2021 09:33:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53678 "EHLO
+        id S1381509AbhLCOke (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Dec 2021 09:40:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381468AbhLCOdf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Dec 2021 09:33:35 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D856C061751;
-        Fri,  3 Dec 2021 06:30:11 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EDB5D62B90;
-        Fri,  3 Dec 2021 14:30:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 52635C53FD5;
-        Fri,  3 Dec 2021 14:30:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638541810;
-        bh=q30pyTBR82omI8E5JxUHdp2juwGj4MauuXsFkozBqTM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=RIZ17F6SBRWoNkvGoJOP9FQbf5qOtjQP3fwHjjKmlHeYUcMWH/wxd1LvyhbymHrJL
-         /QWbNc5cuhBDEf8eOwUtG9ByZHj4r4pE/RS0zvr0C0+2CkcDZWwsZrKFfsK36Z3Wup
-         1Xq4H8ILKnWBLJh8R06uYncW3JT8N+4vjtB5rLwsMV15pSGtmwGTjx5mKjHRyD/2ho
-         SxlCnBEC/b6yIK1l+3W3wiD2FiF2oO1xj0DXtLsm0aO+0pswmE1qngWktaZPFES8cM
-         SgNWp327/y70mBlrqGC6E9l6Z59j/H27N8LMxvldxob0Dm9+uNSNtO2qZHXsRSMqvB
-         Q+iriatXxQqrQ==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 3F3A260A90;
-        Fri,  3 Dec 2021 14:30:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S1381439AbhLCOke (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Dec 2021 09:40:34 -0500
+Received: from canardo.mork.no (canardo.mork.no [IPv6:2001:4641::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C056FC061751;
+        Fri,  3 Dec 2021 06:37:09 -0800 (PST)
+Received: from miraculix.mork.no ([IPv6:2a01:799:c9f:8608:6e64:956a:daea:cf2f])
+        (authenticated bits=0)
+        by canardo.mork.no (8.15.2/8.15.2) with ESMTPSA id 1B3EauaF032016
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
+        Fri, 3 Dec 2021 15:36:56 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
+        t=1638542218; bh=PEPNEv0Kw/wnByNDIDdaU8KIbUcqTaS3nEk6m9pZYqg=;
+        h=From:To:Cc:Subject:References:Date:Message-ID:From;
+        b=J6I9sXgxiOWfZuTmgyxGDN7VscmaGLAHncZe4JcP+f1n+CpHSfzVGVAudCY7JvDNc
+         ebO9MXi/TYzFpbqEPNNVu/ZGywXJE/XbLoU7QJwU9c3To6qN7nDJIfgqfwPGMrx/BL
+         hm+rVIP+dLfUvyld9g9vDIdHjrTk0WXiDXq47iGQ=
+Received: from bjorn by miraculix.mork.no with local (Exim 4.94.2)
+        (envelope-from <bjorn@mork.no>)
+        id 1mt9gF-001jeT-LR; Fri, 03 Dec 2021 15:36:55 +0100
+From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
+To:     Lee Jones <lee.jones@linaro.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org, Oliver Neukum <oliver@neukum.org>,
+        "David S. Miller" <davem@davemloft.net>, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH 1/1] net: cdc_ncm: Allow for dwNtbOutMaxSize to be unset
+ or zero
+Organization: m
+References: <20211202143437.1411410-1-lee.jones@linaro.org>
+        <20211202175134.5b463e18@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <87o85yj81l.fsf@miraculix.mork.no> <Yan+nvfyS21z7ZUw@google.com>
+        <87ilw5kfrm.fsf@miraculix.mork.no> <YaoeKfmJrDPhMXWp@google.com>
+Date:   Fri, 03 Dec 2021 15:36:55 +0100
+In-Reply-To: <YaoeKfmJrDPhMXWp@google.com> (Lee Jones's message of "Fri, 3 Dec
+        2021 13:39:53 +0000")
+Message-ID: <871r2tkb5k.fsf@miraculix.mork.no>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: lan966x: fix a IS_ERR() vs NULL check in
- lan966x_create_targets()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163854181025.31528.983813324370479762.git-patchwork-notify@kernel.org>
-Date:   Fri, 03 Dec 2021 14:30:10 +0000
-References: <20211203095531.GB2480@kili>
-In-Reply-To: <20211203095531.GB2480@kili>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     horatiu.vultur@microchip.com, UNGLinuxDriver@microchip.com,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Virus-Scanned: clamav-milter 0.103.3 at canardo
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Lee Jones <lee.jones@linaro.org> writes:
+> On Fri, 03 Dec 2021, Bj=C3=B8rn Mork wrote:
 
-This patch was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+>> This I don't understand.  If we have for example
+>>=20
+>>  new_tx =3D 0
+>>  max =3D 0
+>>  min =3D 1514(=3Ddatagram) + 8(=3Dndp) + 2(=3D1+1) * 4(=3Ddpe) + 12(=3Dn=
+th) =3D 1542
+>>=20
+>> then
+>>=20
+>>  max =3D max(min, max) =3D 1542
+>>  val =3D clamp_t(u32, new_tx, min, max) =3D 1542
+>>=20
+>> so we return 1542 and everything is fine.
+>
+> I don't believe so.
+>
+> #define clamp_t(type, val, lo, hi) \
+>               min_t(type, max_t(type, val, lo), hi)
+>
+> So:
+>               min_t(u32, max_t(u32, 0, 1542), 0)
 
-On Fri, 3 Dec 2021 12:55:31 +0300 you wrote:
-> The devm_ioremap() function does not return error pointers.  It returns
-> NULL.
-> 
-> Fixes: db8bcaad5393 ("net: lan966x: add the basic lan966x driver")
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-> ---
->  drivers/net/ethernet/microchip/lan966x/lan966x_main.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
 
-Here is the summary with links:
-  - [net-next] net: lan966x: fix a IS_ERR() vs NULL check in lan966x_create_targets()
-    https://git.kernel.org/netdev/net-next/c/bb14bfc7eb92
+I don't think so.  If we have:
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+ new_tx =3D 0
+ max =3D 0
+ min =3D 1514(=3Ddatagram) + 8(=3Dndp) + 2(=3D1+1) * 4(=3Ddpe) + 12(=3Dnth)=
+ =3D 1542
+ max =3D max(min, max) =3D 1542
+
+Then we have
+
+  min_t(u32, max_t(u32, 0, 1542), 1542)
 
 
+If it wasn't clear - My proposal was to change this:
+
+  - min =3D min(min, max);
+  + max =3D max(min, max);
+
+in the original code.
+
+
+But looking further I don't think that's a good idea either.  I searched
+through old email and found this commit:
+
+commit a6fe67087d7cb916e41b4ad1b3a57c91150edb88
+Author: Bj=C3=B8rn Mork <bjorn@mork.no>
+Date:   Fri Nov 1 11:17:01 2013 +0100
+
+    net: cdc_ncm: no not set tx_max higher than the device supports
+=20=20=20=20
+    There are MBIM devices out there reporting
+=20=20=20=20
+      dwNtbInMaxSize=3D2048 dwNtbOutMaxSize=3D2048
+=20=20=20=20
+    and since the spec require a datagram max size of at least
+    2048, this means that a full sized datagram will never fit.
+=20=20=20=20
+    Still, sending larger NTBs than the device supports is not
+    going to help.  We do not have any other options than either
+     a) refusing to bindi, or
+     b) respect the insanely low value.
+=20=20=20=20
+    Alternative b will at least make these devices work, so go
+    for it.
+=20=20=20=20
+    Cc: Alexey Orishko <alexey.orishko@gmail.com>
+    Signed-off-by: Bj=C3=B8rn Mork <bjorn@mork.no>
+    Signed-off-by: David S. Miller <davem@davemloft.net>
+
+diff --git a/drivers/net/usb/cdc_ncm.c b/drivers/net/usb/cdc_ncm.c
+index 4531f38fc0e5..11c703337577 100644
+--- a/drivers/net/usb/cdc_ncm.c
++++ b/drivers/net/usb/cdc_ncm.c
+@@ -159,8 +159,7 @@ static u8 cdc_ncm_setup(struct usbnet *dev)
+        }
+=20
+        /* verify maximum size of transmitted NTB in bytes */
+-       if ((ctx->tx_max < (CDC_NCM_MIN_HDR_SIZE + ctx->max_datagram_size))=
+ ||
+-           (ctx->tx_max > CDC_NCM_NTB_MAX_SIZE_TX)) {
++       if (ctx->tx_max > CDC_NCM_NTB_MAX_SIZE_TX) {
+                dev_dbg(&dev->intf->dev, "Using default maximum transmit le=
+ngth=3D%d\n",
+                        CDC_NCM_NTB_MAX_SIZE_TX);
+                ctx->tx_max =3D CDC_NCM_NTB_MAX_SIZE_TX;
+
+
+
+
+
+So there are real devices depending on a dwNtbOutMaxSize which is too
+low.  Our calculated minimum for MBIM will not fit.
+
+So let's go back your original test for zero.  It's better than
+nothing.  I'll just ack that.
+
+
+> Perhaps we should use max_t() here instead of clamp?
+
+No.  That would allow userspace to set an unlimited buffer size.
+
+
+
+Bj=C3=B8rn
