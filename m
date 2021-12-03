@@ -2,141 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC934467D88
-	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 19:52:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CD90467D9A
+	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 19:57:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382722AbhLCS4H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Dec 2021 13:56:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57794 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231605AbhLCS4H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Dec 2021 13:56:07 -0500
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE653C061751
-        for <netdev@vger.kernel.org>; Fri,  3 Dec 2021 10:52:42 -0800 (PST)
-Received: by mail-pj1-x102f.google.com with SMTP id nh10-20020a17090b364a00b001a69adad5ebso3250085pjb.2
-        for <netdev@vger.kernel.org>; Fri, 03 Dec 2021 10:52:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=KBYB1zous+wYSIZpAQJAlVBFmIOAdoFBOd+JjPvbgKI=;
-        b=MUwKuAUWP54KJICw7bYTn+qwaVTkWNcW5r+AnI6tXpKUvamEn6t9p4QllBZzDRrrBu
-         xCi1G5p6VJhdK9uAwvo9uPyz9LdETGDdtj3u0OhobooeX4ilXn5TlanLaZnkeAVr8ZU4
-         mJnzn+3cQZhu31dXeTYyCGrVFzXXq8w4u5vVj8mZT1lL0dCciNZUR9HQTgfCEJwa7BQv
-         20xf9Do4EFfhi3UI0MiSsUYdWmbvi3q2WBIsoUI6ziZjXc+PU6Q2k3rXdhjUbt3JL4AO
-         U5765mInlLNdsghDNo76swP89F1/RbwX3jJjeN9UO8kyIh7lgIBZXEsBZaoSoKuZR/a0
-         ILPQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=KBYB1zous+wYSIZpAQJAlVBFmIOAdoFBOd+JjPvbgKI=;
-        b=O1nt+yCzpKJyeZC9lY121xgoyGJLh19IXGfCG/MqZ/uibE53/FR0neausla2kHpaC4
-         BEeZJqqPdRI9E5hQYJNXTSjFtP/9QT9iXec+P8Bg438DxK3/xIsbhWtQxd2t8ziZYQKX
-         a8DgnPWT7JwXu+10qsn5lwp/I1/YuP3q4NXiXrhmww+oMOg4ejFK+hxOGaRIhUeH9nli
-         6iDATUufCueR2WGORv5m3ndRi5M1rxhl1JXdYp8ySY5LI0gxHQhEWk8y8ogSBULyDUl9
-         aU4S1al602CnJB1VaS0FGsXvjuMsJCb9Er9SQWOmbdNC4EP0JKKE1FILtLjTh3AfnAoe
-         2MtQ==
-X-Gm-Message-State: AOAM532z+O11+8BfWspv/5O5ujL/7iptTqRlY3n92JHwMpeHy0eKk7yg
-        VXTTgz/UWE8kvNgHklye+cY=
-X-Google-Smtp-Source: ABdhPJwJfLz2/5sJtWzyDj9+N3yikZ+eHHCM0H7vf4ImivLU+6gblUHtDU8FfBzNjJ/EcIwjKRbFdA==
-X-Received: by 2002:a17:90a:6906:: with SMTP id r6mr16098734pjj.118.1638557562434;
-        Fri, 03 Dec 2021 10:52:42 -0800 (PST)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:2440:7862:6d8b:2ea])
-        by smtp.gmail.com with ESMTPSA id 26sm2992724pgn.82.2021.12.03.10.52.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 03 Dec 2021 10:52:42 -0800 (PST)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        David Laight <David.Laight@ACULAB.COM>,
-        David Lebrun <dlebrun@google.com>
-Subject: [PATCH net-next] net: fix recent csum changes
-Date:   Fri,  3 Dec 2021 10:52:38 -0800
-Message-Id: <20211203185238.2011081-1-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.34.1.400.ga245620fadb-goog
+        id S238492AbhLCTAe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Dec 2021 14:00:34 -0500
+Received: from sin.source.kernel.org ([145.40.73.55]:41150 "EHLO
+        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231935AbhLCTAd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Dec 2021 14:00:33 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 20C0FCE281C;
+        Fri,  3 Dec 2021 18:57:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 544E6C53FCD;
+        Fri,  3 Dec 2021 18:57:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1638557826;
+        bh=dp0Dwd7/FHERsJ8wdDWfIhc5JTBnL6SdxrHXd1BnkM4=;
+        h=From:To:Cc:Subject:Date:From;
+        b=NI4Hs4SiNcOvJHXCSQ7uZ4OyzZ37IDbKuol2GAoBpzOyDSLaoQ1N2GDQnRFTz5WWv
+         hKvHUrO4MhSqnm2Y9kNlMFs4OufqeNo1Gk68HKJt6LS+6stm8Og0umfW7EdlNSmrHu
+         PGrxS6zZn/m5kspUgpt0Aiw1qDjoBqCiocWRV5O4mVYrsT1dzyqgKSSXl16fFWRmPe
+         qlXS4YdTClsMJWIR2yq9ZZ2VSfADE2R0g2dIulZEDjRMLKaEEauYNpngCmL81YAI+E
+         VVowzcBB2iRhwoln8XzGFrQrGZ2iz+IHIYT0somlBepEf0/rME/cis76Ob24WD93t4
+         wr+tH1TSXwU5Q==
+From:   Arnd Bergmann <arnd@kernel.org>
+To:     Johannes Berg <johannes@sipsolutions.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Finn Behrens <me@kloenk.dev>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Ilan Peer <ilan.peer@intel.com>,
+        Bhaskar Chowdhury <unixbhaskar@gmail.com>,
+        Miri Korenblit <miriam.rachel.korenblit@intel.com>,
+        Sriram R <srirrama@codeaurora.org>,
+        Qiheng Lin <linqiheng@huawei.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] nl80211: use correct enum type in reg_reload_regdb
+Date:   Fri,  3 Dec 2021 19:56:45 +0100
+Message-Id: <20211203185700.756121-1-arnd@kernel.org>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Arnd Bergmann <arnd@arndb.de>
 
-Vladimir reported csum issues after my recent change in skb_postpull_rcsum()
+NL80211_USER_REG_HINT_USER is not something that can be
+assigned to an 'enum nl80211_reg_initiator', as pointed out
+by gcc.
 
-Issue here is the following:
+net/wireless/reg.c: In function 'reg_reload_regdb':
+net/wireless/reg.c:1137:28: error: implicit conversion from 'enum nl80211_user_reg_hint_type' to 'enum nl80211_reg_initiator' [-Werror=enum-conversion]
 
-initial skb->csum is the csum of
+I don't know what was intended here, most likely it was either
+NL80211_REGDOM_SET_BY_CORE (same numeric value) or
+NL80211_REGDOM_SET_BY_USER (most similar name), so I pick the former
+here, leaving the behavior unchanged while avoiding the warning.
 
-[part to be pulled][rest of packet]
-
-Old code:
- skb->csum = csum_sub(skb->csum, csum_partial(pull, pull_length, 0));
-
-New code:
- skb->csum = ~csum_partial(pull, pull_length, ~skb->csum);
-
-This is broken if the csum of [pulled part]
-happens to be equal to skb->csum, because end
-result of skb->csum is 0 in new code, instead
-of being 0xffffffff
-
-David Laight suggested to use
-
-skb->csum = -csum_partial(pull, pull_length, -skb->csum);
-
-I based my patches on existing code present in include/net/seg6.h,
-update_csum_diff4() and update_csum_diff16() which might need
-a similar fix.
-
-I guess that my tests, mostly pulling 40 bytes of IPv6 header
-were not providing enough entropy to hit this bug.
-
-Fixes: 29c3002644bd ("net: optimize skb_postpull_rcsum()")
-Fixes: 0bd28476f636 ("gro: optimize skb_gro_postpull_rcsum()")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Suggested-by: David Laight <David.Laight@ACULAB.COM>
-Cc: David Lebrun <dlebrun@google.com>
+Fixes: 1eda919126b4 ("nl80211: reset regdom when reloading regdb")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- include/linux/skbuff.h | 2 +-
- include/net/gro.h      | 4 ++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ net/wireless/reg.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index eae4bd3237a41cc1b60b44c91fbfe21dfdd8f117..2bbcdaf99ed3df739ddfd2de4be747262226d4b9 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -3486,7 +3486,7 @@ static inline void skb_postpull_rcsum(struct sk_buff *skb,
- 				      const void *start, unsigned int len)
- {
- 	if (skb->ip_summed == CHECKSUM_COMPLETE)
--		skb->csum = ~csum_partial(start, len, ~skb->csum);
-+		skb->csum = -csum_partial(start, len, -skb->csum);
- 	else if (skb->ip_summed == CHECKSUM_PARTIAL &&
- 		 skb_checksum_start_offset(skb) < 0)
- 		skb->ip_summed = CHECKSUM_NONE;
-diff --git a/include/net/gro.h b/include/net/gro.h
-index b1139fca7c435ca0c353c4ed17628dd7f3df4401..4529c4c6f3ca4ac23da569b0bc0e00e3c9dcd765 100644
---- a/include/net/gro.h
-+++ b/include/net/gro.h
-@@ -173,8 +173,8 @@ static inline void skb_gro_postpull_rcsum(struct sk_buff *skb,
- 					const void *start, unsigned int len)
- {
- 	if (NAPI_GRO_CB(skb)->csum_valid)
--		NAPI_GRO_CB(skb)->csum = ~csum_partial(start, len,
--						       ~NAPI_GRO_CB(skb)->csum);
-+		NAPI_GRO_CB(skb)->csum = -csum_partial(start, len,
-+						       -NAPI_GRO_CB(skb)->csum);
- }
+diff --git a/net/wireless/reg.c b/net/wireless/reg.c
+index 61f1bf1bc4a7..edb2081f75e8 100644
+--- a/net/wireless/reg.c
++++ b/net/wireless/reg.c
+@@ -1134,7 +1134,7 @@ int reg_reload_regdb(void)
+ 	request->wiphy_idx = WIPHY_IDX_INVALID;
+ 	request->alpha2[0] = current_regdomain->alpha2[0];
+ 	request->alpha2[1] = current_regdomain->alpha2[1];
+-	request->initiator = NL80211_USER_REG_HINT_USER;
++	request->initiator = NL80211_REGDOM_SET_BY_CORE;
+ 	request->user_reg_hint_type = NL80211_USER_REG_HINT_USER;
+ 	request->reload = true;
  
- /* GRO checksum functions. These are logical equivalents of the normal
 -- 
-2.34.1.400.ga245620fadb-goog
+2.29.2
 
