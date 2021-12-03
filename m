@@ -2,125 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C96746733C
-	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 09:27:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CF9B0467382
+	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 09:50:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356960AbhLCIau (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Dec 2021 03:30:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54692 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244052AbhLCIau (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Dec 2021 03:30:50 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87048C06173E
-        for <netdev@vger.kernel.org>; Fri,  3 Dec 2021 00:27:26 -0800 (PST)
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1638520044;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=g0fx3UXWMVoGzPBk5fEDKu36ASA9VIkThUlF3tQh6AM=;
-        b=VI4llcgLfEdPMISgewnoVfuVuGD4mD5MjdVjhVQm7Vfc5jzMsExYg7icjisYi2dCaLtvZo
-        yJA3N/ZDVfXZsVSeFxR9G1l8WFO0yqi5k3XABg2VI9UakC3Esp11plyFLkm/q5JK1wB4Ua
-        tIo5a+IthCffzEpWOvp0xAmL0is9M0EziqlJSfa/0otugp2kZ8jWLYEIMD0QqC4fLzB/GR
-        sLL7HFsmwhnwJf2whikAmgrIG9F4JFqcovOSfiMX6OKvhR2+pxwgsQ8Bwo5yrBBi0g5E0Y
-        qe85xvHKjjiwURNgyLs0fc4tzo8O7+jGNv20CZcbEMpXdFvrRDCIMdHuWqNPkw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1638520044;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=g0fx3UXWMVoGzPBk5fEDKu36ASA9VIkThUlF3tQh6AM=;
-        b=xONYmP+dLt99odrQflOpZ0+in59HYjIoiWeQD+FmAD6ZFYMBeel0rd2WznkMUTDvwffTOn
-        FMUAgiZlOft4JFCg==
-To:     Richard Cochran <richardcochran@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Po Liu <po.liu@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        "Y.B. Lu" <yangbo.lu@nxp.com>, Rui Sousa <rui.sousa@nxp.com>,
-        "Allan W . Nielsen" <allan.nielsen@microchip.com>
-Subject: Re: [PATCH net-next 4/4] net: mscc: ocelot: set up traps for PTP
- packets
-In-Reply-To: <20211126170801.GF27081@hoboy.vegasvil.org>
-References: <20211125232118.2644060-1-vladimir.oltean@nxp.com>
- <20211125232118.2644060-5-vladimir.oltean@nxp.com>
- <20211126165847.GD27081@hoboy.vegasvil.org>
- <20211126170112.cw53nmeb6usv63bl@skbuf>
- <20211126170801.GF27081@hoboy.vegasvil.org>
-Date:   Fri, 03 Dec 2021 09:27:22 +0100
-Message-ID: <87ilw66ql1.fsf@kurt>
+        id S1379360AbhLCIxa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Dec 2021 03:53:30 -0500
+Received: from peace.netnation.com ([204.174.223.2]:36488 "EHLO
+        peace.netnation.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1379362AbhLCIx3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Dec 2021 03:53:29 -0500
+X-Greylist: delayed 908 seconds by postgrey-1.27 at vger.kernel.org; Fri, 03 Dec 2021 03:53:28 EST
+Received: from sim by peace.netnation.com with local (Exim 4.92)
+        (envelope-from <sim@hostway.ca>)
+        id 1mt41s-0001aj-4m; Fri, 03 Dec 2021 00:34:52 -0800
+Date:   Fri, 3 Dec 2021 00:34:52 -0800
+From:   Simon Kirby <sim@hostway.ca>
+To:     Florian Westphal <fw@strlen.de>
+Cc:     netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        lvs-devel@vger.kernel.org
+Subject: Re: Inability to IPVS DR with nft dnat since 9971a514ed26
+Message-ID: <20211203083452.GA13536@hostway.ca>
+References: <20190327062650.GA10700@hostway.ca>
+ <20190327093027.gmflo27icuhr326p@breakpoint.cc>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190327093027.gmflo27icuhr326p@breakpoint.cc>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
+On Wed, Mar 27, 2019 at 10:30:27AM +0100, Florian Westphal wrote:
 
-Hi Richard,
+> Simon Kirby <sim@hostway.ca> wrote:
+> > We have been successfully using nft dnat and IPVS in DR mode on 4.9, 4.14
+> > kernels, but since upgrading to 4.19, such rules now appear to miss the
+> > IPVS input hook and instead appear to hit localhost (and "tcpdump -ni lo"
+> > shows the packets) instead of being forwarded to a real server.
+> > 
+> > I bisected this to 9971a514ed2697e542f3984a6162eac54bb1da98 ("netfilter:
+> > nf_nat: add nat type hooks to nat core").
+> > 
+> > It should be pretty easy to see this with a minimal setup:
+> > 
+> > /etc/nftables.conf:
+> > 
+> > table ip nat {
+> >         chain prerouting {
+> >                 type nat hook prerouting priority 0;
+> > 
+> > 		ip daddr $ext_ip dnat to $vip
+> > 	}
+> > 	chain postrouting {
+> > 		type nat hook postrouting priority 100;
+> > 
+> > 		# In theory this hook no longer needed since this commit,
+> > 		# but we also need to do some unrelated snatting.
+> > 	}
+> > }
+> > 
+> > /etc/sysctl.conf:
+> > 	
+> > net.ipv4.conf.all.accept_local = 1
+> > net.ipv4.vs.conntrack = 1
+> > 
+> > IPVS DR setup:
+> > 
+> > ipvsadm -A -t $vip:80 -s wrr
+> > ipvsadm -a -t $vip:80 -r $real_ip:80 -g -w 100
+> 
+> I have a hard time figuring out how to expand $ext_ip, $vip and $real_ip,
+> and where to place those addresses on the nft machine.
 
-On Fri Nov 26 2021, Richard Cochran wrote:
-> On Fri, Nov 26, 2021 at 05:01:13PM +0000, Vladimir Oltean wrote:
->
->> This, to me, sounds more like the bridge trapping the packets on br0
->> instead of letting them flow on the port netdevices, which is solved by
->> some netfilter rules? Or is it really a driver/hardware issue?
->>=20
->> https://lore.kernel.org/netdev/20211116102138.26vkpeh23el6akya@skbuf/
->
-> Yeah, thanks for the link.  I had seen it, but alas it came too late
-> for me to try on actual working HW.  Maybe it fixes the issue.
->
-> If someone out there has a Marvell switch, please try it and let us
-> know...
+I had some time to set up some test VMs for this, which I can post if
+you'd like (several GB), or I can tarball up the configs.
 
-I did some testing on a Marvell Topaz switch (mv88e6341). The Boundary
-Clock over UDPv4/UDPv6 using Vladimir's netfilter rules doesn't
-work. Even though I've successfully tested these rules on TI CPSW
-(switchdev variant) and hellcreek.
+Our setup still doesn't work in 5.15, and we have some LVS servers held
+up on 4.14 kernels that are the last working stable branch.
 
-However, BC over Layer 2 transport is also not really working well, as
-the switch forwards PTP packets (instead of trapping?). Furthermore,
-ptp4l reports loosing of timestamps when running on multiple switch
-ports.
+LVS expects the VIPs to route to loopback in order to reach the ipvs
+hook, and since 9971a514ed2697e542f3984a6162eac54bb1da98 ("netfilter:
+nf_nat: add nat type hooks to nat core"), the nftrace output changes to
+show that the ipvs_vs_dr_xmit packet is oif "lo" rather than "enp1s0".
 
-Tested with Linux v5.16.
+With perf probes, I found that the reason the outbound device is changing
+is that there is an nft hook that ends up calling ip_route_me_harder().
 
-Thanks,
-Kurt
+This function is not called prior to this change, but we can make it be
+called even on 4.14 by hooking nat output (with no rules) or route output
+with anything modifying, such as "mark set 1".
 
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
+We just didn't happen to hook this previously, so it worked for us, but
+after this change, all hooks (including output) are always applied.
 
------BEGIN PGP SIGNATURE-----
+# perf probe -a 'ip_route_me_harder%return retval=$retval'
+# perf record -g -e probe:ip_route_me_harder__return -aR sleep 4
+(send a test connection)
+# perf script
+swapper     0 [000]  1654.547622: probe:ip_route_me_harder__return: (ffffffff819ac910 <- ffffffffa002b8f6) retval=0x0
+        ffffffff810564b0 kretprobe_trampoline+0x0 (vmlinux-4.14.252)
+        ffffffffa0084090 nft_nat_ipv4_local_fn+0x10 ([nft_chain_nat_ipv4])
+        ffffffff8193e793 nf_hook_slow+0x43 (vmlinux-4.14.252)
+        ffffffffa004af2b ip_vs_dr_xmit+0x18b ([ip_vs])
+        ffffffffa003fb2e ip_vs_in+0x58e ([ip_vs])
+        ffffffffa00400d1 ip_vs_local_request4+0x21 ([ip_vs])
+        ffffffffa00400e9 ip_vs_remote_request4+0x9 ([ip_vs])
+        ffffffff8193e793 nf_hook_slow+0x43 (vmlinux-4.14.252)
+        ffffffff8195c48b ip_local_deliver+0x7b (vmlinux-4.14.252)
+        ffffffff8195c0b8 ip_rcv_finish+0x1f8 (vmlinux-4.14.252)
+        ffffffff8195c7b7 ip_rcv+0x2e7 (vmlinux-4.14.252)
+        ffffffff818dc113 __netif_receive_skb_core+0x883 (vmlinux-4.14.252)
+(pruned a bit)
 
-iQJHBAEBCgAxFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAmGp1OoTHGt1cnRAbGlu
-dXRyb25peC5kZQAKCRB5KluBy5jwplKmEACRSr0usMLtxIedkkwdRDvswJoMxzaQ
-tmBIJtSr3VPNZh/HhPUY8D4GAIIe+wfs/T0ZH/IyWn5TQd8cvH4m/4qSgg7pAukU
-uaXKRwnkas41PnRjC5ptesv2N+N6XwepkOMH4Nk+mliRi18c+tRvgtHSGOOWiacE
-tf5ztBkMvpx7kRnYJELCmRz+4xiEqDL0uAold02kD3DwVT16sYSkWoBdyGtiotRR
-r9ngK0JkQCfMXzXnO8yTFw4+PmChqt+0Qy0n4H8ZzjYv3l2nS7aKyobvqgBdyLRj
-wb5bAgRh1MGKn2JfTniIopY3MfhgUZmxojiBRMl9eLutdubuazTWHqu0+lxgy4XM
-hG2XHHj+4soVqqBtKuP2c5NvHfj/B1EKzMgAmxZVIoM2mNFOWkflRl+eE7epG2N8
-opYxbim9jfoIl5Fjl4/EgTbYvPTxBQK194aatYu+D143VGAoOu/wwcw3oNerH2+A
-Uo5HNH8I44ApuCKhGoX8clwR1XxN3aw1SlPwymULobPUtx9wwQe34zTIx8suaT7N
-oLdv4OH/eXe/SMuaYXibKYFoPAbfqkklEGZsk2Thhegi8xiGJjuoUAEW4FuW28Sb
-5arLuKa5bP0d969u9IUukAD4/txPxoQ+PhOyzEJXzW6Dq+qepT2TneZ3qWHOaaxx
-N27DQQauFpyEOA==
-=x4GW
------END PGP SIGNATURE-----
---=-=-=--
+On 5.15, the trace is similar, but nft_nat_ipv4_local_fn is gone
+(nft_nat_do_chain is inlined).
+
+nftrace output through "nft monitor trace" shows it changing the packet
+dest between filter output and nat postrouting:
+
+...
+trace id 32904fd3 ip filter output packet: oif "enp1s0" @ll,0,112 0x5254009039555254002ace280800 ip saddr 192.168.7.1 ip daddr 10.99.99.10 ip dscp 0x04 ip ecn not-ect ip ttl 63 ip id 5753 ip length 60 tcp sport 58620 tcp dport 80 tcp flags == syn tcp window 64240
+trace id 32904fd3 ip filter output verdict continue
+trace id 32904fd3 ip filter output policy accept
+trace id 32904fd3 ip nat postrouting packet: iif "enp1s0" oif "lo" ether saddr 52:54:00:2a:ce:28 ether daddr 52:54:00:90:39:55 ip saddr 192.168.7.1 ip daddr 10.99.99.10 ip dscp 0x04 ip ecn not-ect ip ttl 63 ip id 5753 ip length 60 tcp sport 58620 tcp dport 80 tcp flags == syn tcp window 64240
+trace id 32904fd3 ip nat postrouting verdict continue
+trace id 32904fd3 ip nat postrouting policy accept
+
+On 4.14 without hooking nat output, the oif for nat postrouting remains
+unchanged ("enp1s0").
+
+If we avoid the nftables dnat rule and connect directly to the LVS VIP,
+it still works on newer kernels, I suspect because nf_nat_ipv4_fn()
+doesn't match. If we dnat directly to the DR VIP without LVS, it works
+because the dest is not loopback, as expected. It's the combination of
+these two that used to work, but now doesn't.
+
+Our specific use case here is that we're doing the dnat from public to
+rfc1918 space, and the rfc1918 LVS VIPs support some hairpinning cases.
+
+Any ideas?
+
+Simon-
