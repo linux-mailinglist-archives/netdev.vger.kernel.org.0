@@ -2,60 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E6F4B46704A
-	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 03:51:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0513046705E
+	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 03:59:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378230AbhLCCzE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Dec 2021 21:55:04 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:49974 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243536AbhLCCzC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 21:55:02 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 85252B825A5;
-        Fri,  3 Dec 2021 02:51:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F00D6C00446;
-        Fri,  3 Dec 2021 02:51:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638499897;
-        bh=SPyWCI8ZuPK4KnQdtSifu2zrWu2175zpw89LiBJE9qE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=gZ4p7GvY5pv+BrYDsURNHh+DbsdYNX25UFmQuBoPNAzSPqZU8IeDD2xByrrK3p2V/
-         b5pl/+KBiErbBMBuUjNOyJsemGPB71AL8WeOddXp5Sg7sCAJu96uWnOOWVwmRP9PHK
-         Hj7EHVoUhdjjJ3BMdPi7QE+TAF4OIZ88UNoTPgfE+Sa+AHtKQ0hsrxTTEYRk25hw34
-         eB4eyyg9H9hBs6IzxssWyOEAUyO4esUCYjeexvQIWQuWs0rykgbAnJfjql7vkoDhv6
-         S2gitia4NfJNRWHPOsaNhkqlJOmSVL0TWqi9Wd2l0iFC0BhUhl1ULBJMmNF3g95AoY
-         Uf7Pes7OL4giw==
-Date:   Thu, 2 Dec 2021 18:51:35 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Cc:     rafal@milecki.pl, bcm-kernel-feedback-list@broadcom.com,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: broadcom: Catch the Exception
-Message-ID: <20211202185135.5b1f4d1a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211203012615.1512601-1-jiasheng@iscas.ac.cn>
-References: <20211203012615.1512601-1-jiasheng@iscas.ac.cn>
+        id S1354605AbhLCDCf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Dec 2021 22:02:35 -0500
+Received: from mga01.intel.com ([192.55.52.88]:57249 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1347836AbhLCDCf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 2 Dec 2021 22:02:35 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10186"; a="260901961"
+X-IronPort-AV: E=Sophos;i="5.87,283,1631602800"; 
+   d="scan'208";a="260901961"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Dec 2021 18:59:11 -0800
+X-IronPort-AV: E=Sophos;i="5.87,283,1631602800"; 
+   d="scan'208";a="501015253"
+Received: from liweilv-mobl.ccr.corp.intel.com (HELO lkp-bingo.fnst-test.com) ([10.255.30.243])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Dec 2021 18:59:05 -0800
+From:   Li Zhijian <zhijianx.li@intel.com>
+To:     kuba@kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+        jiri@resnulli.us, shuah@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org, lizhijian@cn.fujitsu.com,
+        Li Zhijian <zhijianx.li@intel.com>,
+        Philip Li <philip.li@intel.com>,
+        kernel test robot <lkp@intel.com>,
+        Davide Caratti <dcaratti@redhat.com>
+Subject: [PATCH v3 1/3] selftests/tc-testing: add exit code
+Date:   Fri,  3 Dec 2021 10:53:21 +0800
+Message-Id: <20211203025323.6052-1-zhijianx.li@intel.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri,  3 Dec 2021 09:26:15 +0800 Jiasheng Jiang wrote:
-> The return value of dma_set_coherent_mask() is not always 0.
-> To catch the exception in case that dma is not support the mask.
-> 
-> Fixes: 9d61d138ab30 ("net: broadcom: rename BCM4908 driver & update DT
-> binding")
+Mark the summary result as FAIL to prevent from confusing the selftest
+framework if some of them are failed.
 
-Please don't line wrap the Fixes tags.
+Previously, the selftest framework always treats it as *ok* even though
+some of them are failed actually. That's because the script tdc.sh always
+return 0.
 
-Please CC Florian as he reviewed the original patch.
+ # All test results:
+ #
+ # 1..97
+ # ok 1 83be - Create FQ-PIE with invalid number of flows
+ # ok 2 8b6e - Create RED with no flags
+[...snip]
+ # ok 6 5f15 - Create RED with flags ECN, harddrop
+ # ok 7 53e8 - Create RED with flags ECN, nodrop
+ # ok 8 d091 - Fail to create RED with only nodrop flag
+ # ok 9 af8e - Create RED with flags ECN, nodrop, harddrop
+ # not ok 10 ce7d - Add mq Qdisc to multi-queue device (4 queues)
+ #       Could not match regex pattern. Verify command output:
+ # qdisc mq 1: root
+ # qdisc fq_codel 0: parent 1:4 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+ # qdisc fq_codel 0: parent 1:3 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+[...snip]
+ # ok 96 6979 - Change quantum of a strict ETS band
+ # ok 97 9a7d - Change ETS strict band without quantum
+ #
+ #
+ #
+ #
+ ok 1 selftests: tc-testing: tdc.sh <<< summary result
 
-Repost with those changes made. 
+CC: Philip Li <philip.li@intel.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Li Zhijian <zhijianx.li@intel.com>
+Acked-by: Davide Caratti <dcaratti@redhat.com>
+Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
+---
+V3: repost to netdev
+V2: Fix missing ':'
+---
+ tools/testing/selftests/tc-testing/tdc.py | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-Thanks!
+diff --git a/tools/testing/selftests/tc-testing/tdc.py b/tools/testing/selftests/tc-testing/tdc.py
+index a3e43189d940..ee22e3447ec7 100755
+--- a/tools/testing/selftests/tc-testing/tdc.py
++++ b/tools/testing/selftests/tc-testing/tdc.py
+@@ -716,6 +716,7 @@ def set_operation_mode(pm, parser, args, remaining):
+         list_test_cases(alltests)
+         exit(0)
+ 
++    exit_code = 0 # KSFT_PASS
+     if len(alltests):
+         req_plugins = pm.get_required_plugins(alltests)
+         try:
+@@ -724,6 +725,8 @@ def set_operation_mode(pm, parser, args, remaining):
+             print('The following plugins were not found:')
+             print('{}'.format(pde.missing_pg))
+         catresults = test_runner(pm, args, alltests)
++        if catresults.count_failures() != 0:
++            exit_code = 1 # KSFT_FAIL
+         if args.format == 'none':
+             print('Test results output suppression requested\n')
+         else:
+@@ -748,6 +751,8 @@ def set_operation_mode(pm, parser, args, remaining):
+                         gid=int(os.getenv('SUDO_GID')))
+     else:
+         print('No tests found\n')
++        exit_code = 4 # KSFT_SKIP
++    exit(exit_code)
+ 
+ def main():
+     """
+@@ -767,8 +772,5 @@ def main():
+ 
+     set_operation_mode(pm, parser, args, remaining)
+ 
+-    exit(0)
+-
+-
+ if __name__ == "__main__":
+     main()
+-- 
+2.32.0
+
