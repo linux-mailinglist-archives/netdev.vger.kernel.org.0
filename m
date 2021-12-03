@@ -2,106 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F23464676A3
-	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 12:37:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 465124676B9
+	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 12:50:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380507AbhLCLlL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Dec 2021 06:41:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42038 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380475AbhLCLlH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Dec 2021 06:41:07 -0500
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02957C06173E
-        for <netdev@vger.kernel.org>; Fri,  3 Dec 2021 03:37:44 -0800 (PST)
-Received: by mail-wm1-x333.google.com with SMTP id y196so2090596wmc.3
-        for <netdev@vger.kernel.org>; Fri, 03 Dec 2021 03:37:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=jD3dyFUpQpd8ra1mBckqXsjcLQy5IODiwzKky7B7kHg=;
-        b=PAwTrBnjeNpWNvnu5qIoxa/cQZEaEBdoUa7m7o19f/5a3eRmkSjI5hxPnJdv64vZsf
-         Sa0JMnyrhRQj1pnXFnLVDDE8YMIsitBMwLIDkxkJxfKNFlhH89X1a2PitmLWV1CuAd6F
-         WYDZJqQRbLLcD38XnKAlAnMoWNzyBy5DGR1ZIw1kQceZwDIChPgOrsKJUvKc7YU0sFF3
-         DMuQIvrOdqk2kPSaLIQBpZbxcINX6iedBq7ju7HwgHtsAOsX/7faTfnOmjNGu+d4V+y9
-         OYW6LKDuruYSjvN2SAcjoMcgGqdOYIlUOHILset5uGaP+wNxJ2EGK44Cv9atCh/F/PV4
-         SuaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=jD3dyFUpQpd8ra1mBckqXsjcLQy5IODiwzKky7B7kHg=;
-        b=nl+0FY3eYQKZVsEgzVG+lvogju2nzoDHCD7mOxaGL1RWinAXkJbPWmd0A6+/sNkqZq
-         uxIuIQOjPGkBYzKB/6KlSp8O3AS1Bnx8dsOxTkJ7TGAt9HDV/86D0XrjqBtGfh7E2++4
-         OdAJ6triQcNS7aAUQrwisoH66ZtI9jY2lH4cBwWyjGuqWJNCebWoL5nTi70ZazX6pt1m
-         gr/dQ7ajnZwW87QRMFPF3DP8JZMu6xFHTmA1Ix+gsCutQkBLFB255NV+EBmZhkDpOwzN
-         6LFdu/qh54XBNs53c6w+UVkmtfol2AgKVrDXSJx0jrewfA72qcZnoKVDf8Q4ALxmQUsj
-         dw4g==
-X-Gm-Message-State: AOAM5320ib/eMqxdfPUqP8q1tW3H0BF8pBJLt+592wcg6Z3N4uEvx2Lk
-        fezyVhD0CVPNKomB4RWeDEdfl6q+u5g=
-X-Google-Smtp-Source: ABdhPJxw81j1InOPZC8tqhh5WuMZRwPEOuWajt1DB3Ea5wqel0/dZL9IoZzRsUat5iu1syxtK3rwHA==
-X-Received: by 2002:a05:600c:34d6:: with SMTP id d22mr13953774wmq.160.1638531462582;
-        Fri, 03 Dec 2021 03:37:42 -0800 (PST)
-Received: from ?IPV6:2003:ea:8f1a:f00:ddb4:c635:82a6:bc31? (p200300ea8f1a0f00ddb4c63582a6bc31.dip0.t-ipconnect.de. [2003:ea:8f1a:f00:ddb4:c635:82a6:bc31])
-        by smtp.googlemail.com with ESMTPSA id o63sm2314986wme.2.2021.12.03.03.37.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 03 Dec 2021 03:37:42 -0800 (PST)
-Message-ID: <401273a6-37f7-8a27-457b-dbd73a0bbc97@gmail.com>
-Date:   Fri, 3 Dec 2021 12:37:34 +0100
+        id S1380535AbhLCLxg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Dec 2021 06:53:36 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:35414 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231944AbhLCLxg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Dec 2021 06:53:36 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 77879B825B7;
+        Fri,  3 Dec 2021 11:50:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 0CBB9C53FCB;
+        Fri,  3 Dec 2021 11:50:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1638532210;
+        bh=nz1rdy8mTg+6h44HhRn77M8064IfHx4IJ0EH7ACo3zc=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=D3Aa0f5NDP/obRqGxWrChpkcOw3pT7MyCABvZqWfjMqvshretW5FJb/QJzZ5NCZ01
+         bOEDUtdF9z2niz6nsInvEkugtByfLU+A37avqx2XYU3oGW/CSU4sByX4XTFHx4TIui
+         3oveAAYTJEQDAVBfes3MM03uF5p4h/0FS0FXr4bNzMDNmY70vnIoPfsPUlHnnwsxLr
+         y0VNjCZ27rG8YM31pzMau/vV+GoVUdrMvteewjvQEnMQ4svRPDoF37L/o1yQfjXVXF
+         8C/4zR8UDOTtA7/CRwzBYvCmSJXtm30t/jbb4gbdPilNuUzdAACGJIq96fR4NyRx1x
+         HNalByG6p9mMw==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id E8D0E60A5A;
+        Fri,  3 Dec 2021 11:50:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.2
-Subject: Re: [RFC PATCH 3/4] r8169: support CMAC
-Content-Language: en-US
-To:     Hayes Wang <hayeswang@realtek.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        nic_swsd <nic_swsd@realtek.com>
-References: <20211129101315.16372-381-nic_swsd@realtek.com>
- <20211129101315.16372-384-nic_swsd@realtek.com>
- <3b610e64-9013-5c8c-93e9-95994d79f128@gmail.com>
- <f56cc112d886490792fcb98c8faadff6@realtek.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-In-Reply-To: <f56cc112d886490792fcb98c8faadff6@realtek.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v3 1/3] selftests/tc-testing: add exit code
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163853220994.27545.12950451952422618579.git-patchwork-notify@kernel.org>
+Date:   Fri, 03 Dec 2021 11:50:09 +0000
+References: <20211203025323.6052-1-zhijianx.li@intel.com>
+In-Reply-To: <20211203025323.6052-1-zhijianx.li@intel.com>
+To:     Li Zhijian <zhijianx.li@intel.com>
+Cc:     kuba@kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+        jiri@resnulli.us, shuah@kernel.org, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lizhijian@cn.fujitsu.com, philip.li@intel.com, lkp@intel.com,
+        dcaratti@redhat.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 03.12.2021 08:57, Hayes Wang wrote:
-> Heiner Kallweit <hkallweit1@gmail.com>
->> Sent: Tuesday, November 30, 2021 4:47 AM
->> To: Hayes Wang <hayeswang@realtek.com>; Jakub Kicinski <kuba@kernel.org>;
-> [...]
->>> +struct rtl_dash {
->>> +	struct rtl8169_private *tp;
->>> +	struct pci_dev *pdev_cmac;
->>> +	void __iomem *cmac_ioaddr;
->>> +	struct cmac_desc *tx_desc, *rx_desc;
->>> +	struct page *tx_buf, *rx_buf;
->>> +	struct dash_tx_info tx_info[CMAC_DESC_NUM];
->>> +	struct tasklet_struct tl;
->>
->> Please see the following in include/linux/interrupt.h:
->>
->> /* Tasklets --- multithreaded analogue of BHs.
->>
->>    This API is deprecated. Please consider using threaded IRQs instead:
-> 
-> How about replacing the tasklet with work?
-> It seems that the bottom half of threaded IRQ
-> is the work, too.
-> 
-Right, it's running in process context. It's to a certain extent
-comparable with the efforts to move NAPI processing from softirg
-context to threads.
+Hello:
 
-> Best Regards,
-> Hayes
+This series was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Fri,  3 Dec 2021 10:53:21 +0800 you wrote:
+> Mark the summary result as FAIL to prevent from confusing the selftest
+> framework if some of them are failed.
 > 
+> Previously, the selftest framework always treats it as *ok* even though
+> some of them are failed actually. That's because the script tdc.sh always
+> return 0.
 > 
+> [...]
+
+Here is the summary with links:
+  - [v3,1/3] selftests/tc-testing: add exit code
+    https://git.kernel.org/netdev/net/c/96f389678015
+  - [v3,2/3] selftests/tc-testing: add missing config
+    https://git.kernel.org/netdev/net/c/a8c9505c53c5
+  - [v3,3/3] selftests/tc-testing: Fix cannot create /sys/bus/netdevsim/new_device: Directory nonexistent
+    https://git.kernel.org/netdev/net/c/db925bca33a9
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
