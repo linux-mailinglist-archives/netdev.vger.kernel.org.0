@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 36B79467FF1
-	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 23:35:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DE35467FF4
+	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 23:35:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383427AbhLCWjM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Dec 2021 17:39:12 -0500
-Received: from mga18.intel.com ([134.134.136.126]:46470 "EHLO mga18.intel.com"
+        id S1383430AbhLCWjO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Dec 2021 17:39:14 -0500
+Received: from mga18.intel.com ([134.134.136.126]:46471 "EHLO mga18.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1383422AbhLCWjM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1383423AbhLCWjM (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 3 Dec 2021 17:39:12 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10187"; a="223940931"
+X-IronPort-AV: E=McAfee;i="6200,9189,10187"; a="223940932"
 X-IronPort-AV: E=Sophos;i="5.87,284,1631602800"; 
-   d="scan'208";a="223940931"
+   d="scan'208";a="223940932"
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
   by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Dec 2021 14:35:47 -0800
 X-IronPort-AV: E=Sophos;i="5.87,284,1631602800"; 
-   d="scan'208";a="460185304"
+   d="scan'208";a="460185306"
 Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.251.18.88])
   by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Dec 2021 14:35:47 -0800
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
@@ -26,9 +26,9 @@ Cc:     Florian Westphal <fw@strlen.de>, davem@davemloft.net,
         kuba@kernel.org, matthieu.baerts@tessares.net,
         mptcp@lists.linux.dev,
         Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next 02/10] selftests: mptcp: add TCP_INQ support
-Date:   Fri,  3 Dec 2021 14:35:33 -0800
-Message-Id: <20211203223541.69364-3-mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next 03/10] mptcp: add SIOCINQ, OUTQ and OUTQNSD ioctls
+Date:   Fri,  3 Dec 2021 14:35:34 -0800
+Message-Id: <20211203223541.69364-4-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20211203223541.69364-1-mathew.j.martineau@linux.intel.com>
 References: <20211203223541.69364-1-mathew.j.martineau@linux.intel.com>
@@ -40,174 +40,96 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Florian Westphal <fw@strlen.de>
 
-Do checks on the returned inq counter.
+Allows to query in-sequence data ready for read(), total bytes in
+write queue and total bytes in write queue that have not yet been sent.
 
-Fail on:
-1. Huge value (> 1 kbyte, test case files are 1 kb)
-2. last hint larger than returned bytes when read was short
-3. erronenous indication of EOF.
-
-3) happens when a hint of X bytes reads X-1 on next call
-   but next recvmsg returns more data (instead of EOF).
+v2: remove unneeded READ_ONCE() (Paolo Abeni)
+v3: check for new data unconditionally in SIOCINQ ioctl (Mat Martineau)
 
 Signed-off-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 ---
- .../selftests/net/mptcp/mptcp_connect.c       | 60 ++++++++++++++++++-
- .../selftests/net/mptcp/mptcp_sockopt.sh      |  4 +-
- 2 files changed, 61 insertions(+), 3 deletions(-)
+ net/mptcp/protocol.c | 53 ++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 53 insertions(+)
 
-diff --git a/tools/testing/selftests/net/mptcp/mptcp_connect.c b/tools/testing/selftests/net/mptcp/mptcp_connect.c
-index ada9b80774d4..98de28ac3ba8 100644
---- a/tools/testing/selftests/net/mptcp/mptcp_connect.c
-+++ b/tools/testing/selftests/net/mptcp/mptcp_connect.c
-@@ -73,12 +73,20 @@ static uint32_t cfg_mark;
- struct cfg_cmsg_types {
- 	unsigned int cmsg_enabled:1;
- 	unsigned int timestampns:1;
-+	unsigned int tcp_inq:1;
- };
+diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
+index ffc8068aaad0..943f74e804bd 100644
+--- a/net/mptcp/protocol.c
++++ b/net/mptcp/protocol.c
+@@ -22,6 +22,7 @@
+ #endif
+ #include <net/mptcp.h>
+ #include <net/xfrm.h>
++#include <asm/ioctls.h>
+ #include "protocol.h"
+ #include "mib.h"
  
- struct cfg_sockopt_types {
- 	unsigned int transparent:1;
- };
- 
-+struct tcp_inq_state {
-+	unsigned int last;
-+	bool expect_eof;
-+};
-+
-+static struct tcp_inq_state tcp_inq;
-+
- static struct cfg_cmsg_types cfg_cmsg_types;
- static struct cfg_sockopt_types cfg_sockopt_types;
- 
-@@ -389,7 +397,9 @@ static size_t do_write(const int fd, char *buf, const size_t len)
- static void process_cmsg(struct msghdr *msgh)
- {
- 	struct __kernel_timespec ts;
-+	bool inq_found = false;
- 	bool ts_found = false;
-+	unsigned int inq = 0;
- 	struct cmsghdr *cmsg;
- 
- 	for (cmsg = CMSG_FIRSTHDR(msgh); cmsg ; cmsg = CMSG_NXTHDR(msgh, cmsg)) {
-@@ -398,12 +408,27 @@ static void process_cmsg(struct msghdr *msgh)
- 			ts_found = true;
- 			continue;
- 		}
-+		if (cmsg->cmsg_level == IPPROTO_TCP && cmsg->cmsg_type == TCP_CM_INQ) {
-+			memcpy(&inq, CMSG_DATA(cmsg), sizeof(inq));
-+			inq_found = true;
-+			continue;
-+		}
-+
- 	}
- 
- 	if (cfg_cmsg_types.timestampns) {
- 		if (!ts_found)
- 			xerror("TIMESTAMPNS not present\n");
- 	}
-+
-+	if (cfg_cmsg_types.tcp_inq) {
-+		if (!inq_found)
-+			xerror("TCP_INQ not present\n");
-+
-+		if (inq > 1024)
-+			xerror("tcp_inq %u is larger than one kbyte\n", inq);
-+		tcp_inq.last = inq;
-+	}
+@@ -3211,6 +3212,57 @@ static int mptcp_forward_alloc_get(const struct sock *sk)
+ 	return sk->sk_forward_alloc + mptcp_sk(sk)->rmem_fwd_alloc;
  }
  
- static ssize_t do_recvmsg_cmsg(const int fd, char *buf, const size_t len)
-@@ -420,10 +445,23 @@ static ssize_t do_recvmsg_cmsg(const int fd, char *buf, const size_t len)
- 		.msg_controllen = sizeof(msg_buf),
- 	};
- 	int flags = 0;
-+	unsigned int last_hint = tcp_inq.last;
- 	int ret = recvmsg(fd, &msg, flags);
- 
--	if (ret <= 0)
-+	if (ret <= 0) {
-+		if (ret == 0 && tcp_inq.expect_eof)
-+			return ret;
++static int mptcp_ioctl_outq(const struct mptcp_sock *msk, u64 v)
++{
++	const struct sock *sk = (void *)msk;
++	u64 delta;
 +
-+		if (ret == 0 && cfg_cmsg_types.tcp_inq)
-+			if (last_hint != 1 && last_hint != 0)
-+				xerror("EOF but last tcp_inq hint was %u\n", last_hint);
++	if (sk->sk_state == TCP_LISTEN)
++		return -EINVAL;
 +
- 		return ret;
++	if ((1 << sk->sk_state) & (TCPF_SYN_SENT | TCPF_SYN_RECV))
++		return 0;
++
++	delta = msk->write_seq - v;
++	if (delta > INT_MAX)
++		delta = INT_MAX;
++
++	return (int)delta;
++}
++
++static int mptcp_ioctl(struct sock *sk, int cmd, unsigned long arg)
++{
++	struct mptcp_sock *msk = mptcp_sk(sk);
++	bool slow;
++	int answ;
++
++	switch (cmd) {
++	case SIOCINQ:
++		if (sk->sk_state == TCP_LISTEN)
++			return -EINVAL;
++
++		lock_sock(sk);
++		__mptcp_move_skbs(msk);
++		answ = mptcp_inq_hint(sk);
++		release_sock(sk);
++		break;
++	case SIOCOUTQ:
++		slow = lock_sock_fast(sk);
++		answ = mptcp_ioctl_outq(msk, READ_ONCE(msk->snd_una));
++		unlock_sock_fast(sk, slow);
++		break;
++	case SIOCOUTQNSD:
++		slow = lock_sock_fast(sk);
++		answ = mptcp_ioctl_outq(msk, msk->snd_nxt);
++		unlock_sock_fast(sk, slow);
++		break;
++	default:
++		return -ENOIOCTLCMD;
 +	}
 +
-+	if (tcp_inq.expect_eof)
-+		xerror("expected EOF, last_hint %u, now %u\n",
-+		       last_hint, tcp_inq.last);
- 
- 	if (msg.msg_controllen && !cfg_cmsg_types.cmsg_enabled)
- 		xerror("got %lu bytes of cmsg data, expected 0\n",
-@@ -435,6 +473,19 @@ static ssize_t do_recvmsg_cmsg(const int fd, char *buf, const size_t len)
- 	if (msg.msg_controllen)
- 		process_cmsg(&msg);
- 
-+	if (cfg_cmsg_types.tcp_inq) {
-+		if ((size_t)ret < len && last_hint > (unsigned int)ret) {
-+			if (ret + 1 != (int)last_hint) {
-+				int next = read(fd, msg_buf, sizeof(msg_buf));
++	return put_user(answ, (int __user *)arg);
++}
 +
-+				xerror("read %u of %u, last_hint was %u tcp_inq hint now %u next_read returned %d/%m\n",
-+				       ret, (unsigned int)len, last_hint, tcp_inq.last, next);
-+			} else {
-+				tcp_inq.expect_eof = true;
-+			}
-+		}
-+	}
-+
- 	return ret;
- }
- 
-@@ -944,6 +995,8 @@ static void apply_cmsg_types(int fd, const struct cfg_cmsg_types *cmsg)
- 
- 	if (cmsg->timestampns)
- 		xsetsockopt(fd, SOL_SOCKET, SO_TIMESTAMPNS_NEW, &on, sizeof(on));
-+	if (cmsg->tcp_inq)
-+		xsetsockopt(fd, IPPROTO_TCP, TCP_INQ, &on, sizeof(on));
- }
- 
- static void parse_cmsg_types(const char *type)
-@@ -965,6 +1018,11 @@ static void parse_cmsg_types(const char *type)
- 		return;
- 	}
- 
-+	if (strncmp(type, "TCPINQ", len) == 0) {
-+		cfg_cmsg_types.tcp_inq = 1;
-+		return;
-+	}
-+
- 	fprintf(stderr, "Unrecognized cmsg option %s\n", type);
- 	exit(1);
- }
-diff --git a/tools/testing/selftests/net/mptcp/mptcp_sockopt.sh b/tools/testing/selftests/net/mptcp/mptcp_sockopt.sh
-index 41de643788b8..c8c364369599 100755
---- a/tools/testing/selftests/net/mptcp/mptcp_sockopt.sh
-+++ b/tools/testing/selftests/net/mptcp/mptcp_sockopt.sh
-@@ -178,7 +178,7 @@ do_transfer()
- 
- 	timeout ${timeout_test} \
- 		ip netns exec ${listener_ns} \
--			$mptcp_connect -t ${timeout_poll} -l -M 1 -p $port -s ${srv_proto} -c TIMESTAMPNS \
-+			$mptcp_connect -t ${timeout_poll} -l -M 1 -p $port -s ${srv_proto} -c TIMESTAMPNS,TCPINQ \
- 				${local_addr} < "$sin" > "$sout" &
- 	spid=$!
- 
-@@ -186,7 +186,7 @@ do_transfer()
- 
- 	timeout ${timeout_test} \
- 		ip netns exec ${connector_ns} \
--			$mptcp_connect -t ${timeout_poll} -M 2 -p $port -s ${cl_proto} -c TIMESTAMPNS \
-+			$mptcp_connect -t ${timeout_poll} -M 2 -p $port -s ${cl_proto} -c TIMESTAMPNS,TCPINQ \
- 				$connect_addr < "$cin" > "$cout" &
- 
- 	cpid=$!
+ static struct proto mptcp_prot = {
+ 	.name		= "MPTCP",
+ 	.owner		= THIS_MODULE,
+@@ -3223,6 +3275,7 @@ static struct proto mptcp_prot = {
+ 	.shutdown	= mptcp_shutdown,
+ 	.destroy	= mptcp_destroy,
+ 	.sendmsg	= mptcp_sendmsg,
++	.ioctl		= mptcp_ioctl,
+ 	.recvmsg	= mptcp_recvmsg,
+ 	.release_cb	= mptcp_release_cb,
+ 	.hash		= mptcp_hash,
 -- 
 2.34.1
 
