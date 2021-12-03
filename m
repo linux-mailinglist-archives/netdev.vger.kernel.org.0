@@ -2,112 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AFC96466F1B
-	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 02:28:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 61D74466F2C
+	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 02:38:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377925AbhLCBb3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Dec 2021 20:31:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45350 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377888AbhLCBb3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 20:31:29 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07DDFC06174A;
-        Thu,  2 Dec 2021 17:28:06 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9C19E628A9;
-        Fri,  3 Dec 2021 01:28:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD68AC00446;
-        Fri,  3 Dec 2021 01:28:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638494885;
-        bh=OkSCwBuYLTYykjXFiRND6TNstXo05tFEWLU7PYXH85U=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=OcwRueO9VFvJVmuc/bIbkjeYC1A/Un0krvr9XG5XICqKUvPqsPWJQsm0wx74URKeZ
-         LcksgMi2oxX2vnrOai9v0rM1dgKyIGijE5JoHwN+kg5P+AAJoKz/rNPzXJ4eZRqtBo
-         rV38FlfnAVKfIVwe+YNaE18gVhyjkQL25IfaOZJTJJ+GsJ2UFliDv4RS63ZkMtVt68
-         eZizxxWHiBqoYSdvk7ElBERQIndyKdAxKbf8q/SAb00X8q7apyZJDBrX9iMXiJi1hf
-         T2PorrNGX91oL0fue9YAsiV8ayXdSZ4bzwC/r1Hgv9hCcOPaghTLsADuKrLfA48raV
-         Cc5apWG2wCrRg==
-Date:   Thu, 2 Dec 2021 17:28:03 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Saeed Mahameed <saeedm@nvidia.com>
-Cc:     Shay Drory <shayd@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
+        id S1377966AbhLCBlk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Dec 2021 20:41:40 -0500
+Received: from mswedge1.sunplus.com ([60.248.182.113]:45288 "EHLO
+        mg.sunplus.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1377962AbhLCBlb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 20:41:31 -0500
+X-MailGates: (flag:3,DYNAMIC,RELAY,NOHOST:PASS)(compute_score:DELIVER,40
+        ,3)
+Received: from 172.17.9.112
+        by mg01.sunplus.com with MailGates ESMTP Server V5.0(5128:0:AUTH_RELAY)
+        (envelope-from <wells.lu@sunplus.com>); Fri, 03 Dec 2021 09:36:40 +0800 (CST)
+Received: from sphcmbx02.sunplus.com.tw (172.17.9.112) by
+ sphcmbx02.sunplus.com.tw (172.17.9.112) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.23; Fri, 3 Dec 2021 09:36:41 +0800
+Received: from sphcmbx02.sunplus.com.tw ([::1]) by sphcmbx02.sunplus.com.tw
+ ([fe80::f8bb:bd77:a854:5b9e%14]) with mapi id 15.00.1497.023; Fri, 3 Dec 2021
+ 09:36:41 +0800
+From:   =?utf-8?B?V2VsbHMgTHUg5ZGC6Iqz6aiw?= <wells.lu@sunplus.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     Wells Lu <wellslutw@gmail.com>,
         "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next 0/4] net/mlx5: Memory optimizations
-Message-ID: <20211202172803.10cd5deb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <36d138a36fb1f86397929d56e6b716e89fc61e2e.camel@nvidia.com>
-References: <20211130150705.19863-1-shayd@nvidia.com>
-        <20211130113910.25a9e3ab@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <879d6d7c-f789-69bc-9f2d-bf77d558586a@nvidia.com>
-        <20211202093129.2713b64f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <36d138a36fb1f86397929d56e6b716e89fc61e2e.camel@nvidia.com>
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
+        =?utf-8?B?VmluY2VudCBTaGloIOaWvemMlem0uw==?= 
+        <vincent.shih@sunplus.com>
+Subject: RE: [PATCH net-next v3 2/2] net: ethernet: Add driver for Sunplus
+ SP7021
+Thread-Topic: [PATCH net-next v3 2/2] net: ethernet: Add driver for Sunplus
+ SP7021
+Thread-Index: AQHX5dF9eGPWQxkNKU64ogPFWvAIaqwcdcyAgAE+n/CAAPQwgIAA4eHw//+CcACAAPOLMA==
+Date:   Fri, 3 Dec 2021 01:36:41 +0000
+Message-ID: <ad04e59777694bbcbcf52f518a2c16a0@sphcmbx02.sunplus.com.tw>
+References: <1638266572-5831-1-git-send-email-wellslutw@gmail.com>
+ <1638266572-5831-3-git-send-email-wellslutw@gmail.com>
+ <YabsT0/dASvYUH2p@lunn.ch>
+ <cf60c230950747ec918acfc6dda595d6@sphcmbx02.sunplus.com.tw>
+ <YajEbXtBwlDL4gOL@lunn.ch>
+ <2fded2fc3a1344d0882ae2f186257911@sphcmbx02.sunplus.com.tw>
+ <YakYlHzvlAI+1at+@lunn.ch>
+In-Reply-To: <YakYlHzvlAI+1at+@lunn.ch>
+Accept-Language: zh-TW, en-US
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [172.25.108.39]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2 Dec 2021 18:55:37 +0000 Saeed Mahameed wrote:
-> On Thu, 2021-12-02 at 09:31 -0800, Jakub Kicinski wrote:
-> > On Wed, 1 Dec 2021 10:22:17 +0200 Shay Drory wrote:  
-> > > EQ resides in the host memory. It is RO for host driver, RW by
-> > > device.
-> > > When interrupt is generated EQ entry is placed by device and read
-> > > by driver.
-> > > It indicates about what event occurred such as CQE, async and more.  
-> > 
-> > I understand that. My point was the resource which is being consumed
-> > here is _host_ memory. Is there precedent for configuring host memory
-> > consumption via devlink resource?
-> 
-> it's a device resource size nonetheless, devlink resource API makes
-> total sense.
-
-I disagree. Devlink resources were originally written to partition
-finite device resources. You're just sizing a queue here.
-
-> > I'd even question whether this belongs in devlink in the first place.
-> > It is not global device config in any way. If devlink represents the
-> > entire device it's rather strange to have a case where main instance
-> > limits a size of some resource by VFs and other endpoints can still
-> > choose whatever they want.
-> 
-> This resource is per function instance, we have devlink instance per
-> function, e.g. in the VM, there is a VF devlink instance the VM user
-> can use to control own VF resources. in the PF/Hypervisor, the only
-> devlink representation of the VF will be devlink port function (used
-> for other purposes)
-> 
-> for example:
-> 
-> A tenant can fine-tune a resource size tailored to their needs via the
-> VF's own devlink instance.
-
-Yeah, because it's a device resource. Tenant can consume their host
-DRAM in any way they find suitable.
-
-> An admin can only control or restrict a max size of a resource for a
-> given port function ( the devlink instance that represents the VF in
-> the hypervisor). (note: this patchset is not about that)
-> 
-> > > So far no feedback by other vendors.
-> > > The resources are implemented in generic way, if other vendors
-> > > would
-> > > like to implement them.  
-> > 
-> > Well, I was hoping you'd look around, but maybe that's too much to
-> > ask of a vendor.  
-> 
-> We looked, eq is a common object among many other drivers.
-> and DEVLINK_PARAM_GENERIC_ID_MAX_MACS is already a devlink generic
-> param, and i am sure other vendors have limited macs per VF :) .. 
-> so this applies to all vendors even if they don't advertise it.
-
-Yeah, if you're not willing to model the Event Queue as a queue using
-params seems like a better idea than abusing resources.
+SGkgQW5kcmV3LA0KDQpUaGFuayB5b3UgZm9yIGV4cGxhbmF0aW9uLg0KDQoNCkJlc3QgcmVnYXJk
+cywNCldlbGxzIEx1DQoNCg0KPiA+IEhpIEFuZHJldywNCj4gPg0KPiA+IFRoYW5rIHlvdSBmb3Ig
+ZXhwbGFuYXRpb24uDQo+ID4NCj4gPiBJJ2xsIGFkZCBwaHlfc3VwcG9ydF9hc3ltX3BhdXNlKCkg
+YWZ0ZXIgUEhZIGNvbm5lY3RlZCBuZXh0IHBhdGNoLg0KPiA+DQo+ID4gSSBmb3VuZCBzb21lIGRy
+aXZlcnMgY2FsbCBwaHlfc2V0X21heF9zcGVlZCgpIHRvIHNldCBQSFkgc3BlZWQgdG8gMTAwTQ0K
+PiA+IGFmdGVyIFBIWSBjb25uZWN0ZWQuIElzIHRoYXQgbmVjZXNzYXJ5Pw0KPiANCj4gPiBGcm9t
+ICdzdXBwb3J0ZWQnLCBQSFkgc3VwcG9ydHMgMTBNLzEwME0gYWxyZWFkeS4NCj4gDQo+IFlvdSBu
+ZWVkIHBoeV9zZXRfbWF4X3NwZWVkKCkgd2hlbiBpdCBpcyBwb3NzaWJsZSB0byBjb25uZWN0IGEg
+MTAvMTAwIE1BQyB0byBhIDFHIFBIWS4gIFlvdQ0KPiBzb21ldGltZSBkbyB0aGlzIGJlY2F1c2Ug
+YSAxRyBQSFkgaXMgY2hlYXBlciB0aGFuIGEgMTAwTSBQSFkuIFVubGVzcyBsaW1pdGVkLCB0aGUg
+UEhZIHdpbGwNCj4gYWR2ZXJ0aXNlIGFuZCBjb3VsZCBuZWdvdGlhdGUgYSAxRyBsaW5rLCBidXQg
+dGhlIE1BQyBjb3VsZCB0aGVuIG5vdCBzdXBwb3J0IGl0LiBJZiBpdCBpcw0KPiBub3QgcGh5c2lj
+YWxseSBwb3NzaWJsZSB0byBjb25uZWN0IGEgMUcgUEhZIHRvIHlvdXIgTUFDLCB5b3UgZG9uJ3Qg
+bmVlZCB0byB3b3JyeS4NCj4gDQo+ID4gSSBhbHNvIGZvdW5kIHNvbWUgZHJpdmVycyBjYWxsIHBo
+eV9zdGFydF9hbmVnKCkgYWZ0ZXIgUEhZIHN0YXJ0ZWQuDQo+IA0KPiBJdCBpcyBub3QgbmVlZGVk
+Lg0KPiANCj4gICAgQW5kcmV3DQo=
