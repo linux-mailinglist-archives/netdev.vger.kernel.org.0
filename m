@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5985E467047
+	by mail.lfdr.de (Postfix) with ESMTP id AE275467048
 	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 03:48:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378287AbhLCCvv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Dec 2021 21:51:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35164 "EHLO
+        id S1378281AbhLCCvy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Dec 2021 21:51:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378281AbhLCCvu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 21:51:50 -0500
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63631C061757
-        for <netdev@vger.kernel.org>; Thu,  2 Dec 2021 18:48:27 -0800 (PST)
-Received: by mail-pj1-x1030.google.com with SMTP id x7so1278157pjn.0
-        for <netdev@vger.kernel.org>; Thu, 02 Dec 2021 18:48:27 -0800 (PST)
+        with ESMTP id S243536AbhLCCvy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 21:51:54 -0500
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5859EC061757
+        for <netdev@vger.kernel.org>; Thu,  2 Dec 2021 18:48:31 -0800 (PST)
+Received: by mail-pj1-x102b.google.com with SMTP id fv9-20020a17090b0e8900b001a6a5ab1392so1317630pjb.1
+        for <netdev@vger.kernel.org>; Thu, 02 Dec 2021 18:48:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=B7Re4yLZ+fuYk4ANOX5YYpTdXnzZcADisbjZ5HdspLY=;
-        b=gC/oHPrEFOVhy88cOw2COweOFlE5lWIUB3rRXGr6h/tJNCQ6BrklX5yAPie4n1Tc4F
-         NwOlUse9p1NJKnEW1hO7JYczRuOIG6aQh4gzY+K6RDZthFQ0+l4EnFnVRFdHvFXVngcp
-         MU8vH8IxM+X4GZ2vT+Mvd0IwPnBeBWZqJc+prBpIz6PBasTvDGGfqHIsDBOlgmErHnIM
-         GcgcckLdGin5nWkGaHJTLM+2HHRtRfa3J9WkPLaxaLhZYb4tiXl/1Vbt2GgSjQG4fqpN
-         OOvY0u5GRfw95HkfpGEBh90m/livBwMN0X1NewVUsIqbFLXAHYcVnJFXkN2zfEWqJE2C
-         MwBQ==
+        bh=0ueK711Sqj023gTBd/tQUmqv75JSIuZMHZ4ezZabzok=;
+        b=KlUDesw8YSizLlQhEfHdLI9QCaWH2ugPczTJSmFz4qf49JfvNhVu2ck9fJqgROWX7L
+         x2sIOSnVQ2PBv1vi0buoXBG0b4cmC+ocjLhnLSrP2ZdOXNSQ6zt1XbWrVNdrcUpmrRF7
+         kwaATo/2Ijxq1KkgFktTsZGZqiruqN41aprvwqaV9Gd6Z8/6RqkSfYd4s+f/KW/RwK5Z
+         ERo0EiyrTVCEjOF3audO+9alxYlZ48N7NXzfq2HWyu2XHGbt13bSlT6ZgDsO3iXzgNOa
+         BxTgPjxcN25Ym/J4buszCzizMtulgOcllayQ7p9BJJ+heU610lBoBcgyTO/PUnWikfDh
+         bosw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=B7Re4yLZ+fuYk4ANOX5YYpTdXnzZcADisbjZ5HdspLY=;
-        b=A4aeHsBLaNA+tSeBmaNwzJy21RMePGppV9AbpWvd2VhluTV+P0bmiuedV2kihCAYiB
-         9eASZuxrObuVVmUKHfYrEAygd1OSp9qPmvVHlzcFAlYX6EG5Ra7HjOkXBw4lnJz8jo3S
-         pJ2KiZAUkr9fs1iJgfFPtnKXaYU4OqgTUoNsN4uZppLmmeJrWqK6rjDwZHCY09MuDzdx
-         itTItfi8rYeCw3GBG81lruPpXoQqSMkXF+Emy+PWohDBAG2qqB8jdstFk2l04cRFfFar
-         GLrsvBCChVgMjSSbJD1b04ldx+9RIXQxY/zl94ctNUDGhFadO9wJw4HvriX1sEGywEKQ
-         ResQ==
-X-Gm-Message-State: AOAM531dg0XHePWLBNVt/WnQabwcuTR3SaOvYYjZw21rPba/m5v/8Qo+
-        rXtSQVZWWHo3yDsPll87DaY=
-X-Google-Smtp-Source: ABdhPJwZJmGphbWw6Pfuk2oiQ9ivB8YgTF/IVdUJ5LzdEpc2gtA9On/GH9BfqsjqDIrB5heu2Gf2kQ==
-X-Received: by 2002:a17:90a:590d:: with SMTP id k13mr10486668pji.184.1638499706988;
-        Thu, 02 Dec 2021 18:48:26 -0800 (PST)
+        bh=0ueK711Sqj023gTBd/tQUmqv75JSIuZMHZ4ezZabzok=;
+        b=K65hXerG/9Sd+C9o+j6s6K33K6zBRJ5Lf613sEexaWArze6ckLbpmiAmsJWJjyPh4A
+         89A9fEI4TTptXhF6lpfobkfFm3rRBIqS9lkkDTZC/ts/5d/n6T2Mza1mmL1wPfjLBlJA
+         BZg3Qe7Iog9QHOAUnvZAdEHAE0kVA1EZSfCSlXxxKI5wECOx3paEIkAKLH2CVz3UgOEV
+         Ql26LE0b2qxU+JZ9dVAOq98MVrpvkdhhA3RvyzTQUOXljHFH/QoeFHw7n22xz8aBWJK8
+         RjhP9Qh922g6iKlDOjAUwnysW8IfYfWM/QpETLuBRRESL+mt6tXqq2uQuovDopI8Hswh
+         qbkA==
+X-Gm-Message-State: AOAM530g1ZFP9ZIfqPjMgNcj2WalySA27uk2KNx5VnrvqFFyWGl+BzYE
+        9srKkouWaVJPS4yR250eWsQ=
+X-Google-Smtp-Source: ABdhPJw7kHjDgxV4vbW8Mt6LiAxPh1MEjLdqnzCfNIj7jeLeJaXv5MPYRi6cMMc9R7fxXsEj0hdhCQ==
+X-Received: by 2002:a17:90b:3b8e:: with SMTP id pc14mr10367006pjb.129.1638499710942;
+        Thu, 02 Dec 2021 18:48:30 -0800 (PST)
 Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:6c4b:c5cb:ac63:1ebf])
-        by smtp.gmail.com with ESMTPSA id k2sm1230260pfc.53.2021.12.02.18.48.26
+        by smtp.gmail.com with ESMTPSA id k2sm1230260pfc.53.2021.12.02.18.48.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Dec 2021 18:48:26 -0800 (PST)
+        Thu, 02 Dec 2021 18:48:30 -0800 (PST)
 From:   Eric Dumazet <eric.dumazet@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -54,9 +54,9 @@ Cc:     netdev <netdev@vger.kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         Dmitry Vyukov <dvyukov@google.com>,
         Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH v2 net-next 22/23] ipmr, ip6mr: add net device refcount tracker to struct vif_device
-Date:   Thu,  2 Dec 2021 18:46:39 -0800
-Message-Id: <20211203024640.1180745-23-eric.dumazet@gmail.com>
+Subject: [PATCH v2 net-next 23/23] netpoll: add net device refcount tracker to struct netpoll
+Date:   Thu,  2 Dec 2021 18:46:40 -0800
+Message-Id: <20211203024640.1180745-24-eric.dumazet@gmail.com>
 X-Mailer: git-send-email 2.34.1.400.ga245620fadb-goog
 In-Reply-To: <20211203024640.1180745-1-eric.dumazet@gmail.com>
 References: <20211203024640.1180745-1-eric.dumazet@gmail.com>
@@ -70,65 +70,58 @@ From: Eric Dumazet <edumazet@google.com>
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- include/linux/mroute_base.h | 1 +
- net/ipv4/ipmr.c             | 3 ++-
- net/ipv6/ip6mr.c            | 3 ++-
- 3 files changed, 5 insertions(+), 2 deletions(-)
+ drivers/net/netconsole.c | 2 +-
+ include/linux/netpoll.h  | 1 +
+ net/core/netpoll.c       | 4 ++--
+ 3 files changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/include/linux/mroute_base.h b/include/linux/mroute_base.h
-index 8071148f29a6ec6a95df7e74bbfdeab5b5f6a644..91ab497bd3e579b9d78f423d8c28310cf6b07f58 100644
---- a/include/linux/mroute_base.h
-+++ b/include/linux/mroute_base.h
-@@ -26,6 +26,7 @@
-  */
- struct vif_device {
+diff --git a/drivers/net/netconsole.c b/drivers/net/netconsole.c
+index ccecba908ded61370f8fc408ea53aa1ff305aca3..ab8cd555102083c2f0179898681489b987afe5b0 100644
+--- a/drivers/net/netconsole.c
++++ b/drivers/net/netconsole.c
+@@ -721,7 +721,7 @@ static int netconsole_netdev_event(struct notifier_block *this,
+ 				__netpoll_cleanup(&nt->np);
+ 
+ 				spin_lock_irqsave(&target_list_lock, flags);
+-				dev_put(nt->np.dev);
++				dev_put_track(nt->np.dev, &nt->np.dev_tracker);
+ 				nt->np.dev = NULL;
+ 				nt->enabled = false;
+ 				stopped = true;
+diff --git a/include/linux/netpoll.h b/include/linux/netpoll.h
+index e6a2d72e0dc7a6929d32a2e994f24719e073121e..bd19c4b91e31204e85d30884720b761116d5c036 100644
+--- a/include/linux/netpoll.h
++++ b/include/linux/netpoll.h
+@@ -24,6 +24,7 @@ union inet_addr {
+ 
+ struct netpoll {
  	struct net_device *dev;
 +	netdevice_tracker dev_tracker;
- 	unsigned long bytes_in, bytes_out;
- 	unsigned long pkt_in, pkt_out;
- 	unsigned long rate_limit;
-diff --git a/net/ipv4/ipmr.c b/net/ipv4/ipmr.c
-index 2dda856ca260259e5626577e2b2993a6d9967aa6..4c7aca884fa9a35816008a5f3a1a58dd1baf6c06 100644
---- a/net/ipv4/ipmr.c
-+++ b/net/ipv4/ipmr.c
-@@ -696,7 +696,7 @@ static int vif_delete(struct mr_table *mrt, int vifi, int notify,
- 	if (v->flags & (VIFF_TUNNEL | VIFF_REGISTER) && !notify)
- 		unregister_netdevice_queue(dev, head);
+ 	char dev_name[IFNAMSIZ];
+ 	const char *name;
  
--	dev_put(dev);
-+	dev_put_track(dev, &v->dev_tracker);
+diff --git a/net/core/netpoll.c b/net/core/netpoll.c
+index edfc0f8011f88a7d46d69e94c6343489369fa78c..db724463e7cd5089d85d8f75a77ad83bbece82dc 100644
+--- a/net/core/netpoll.c
++++ b/net/core/netpoll.c
+@@ -776,7 +776,7 @@ int netpoll_setup(struct netpoll *np)
+ 	err = __netpoll_setup(np, ndev);
+ 	if (err)
+ 		goto put;
+-
++	netdev_tracker_alloc(ndev, &np->dev_tracker, GFP_KERNEL);
+ 	rtnl_unlock();
  	return 0;
- }
  
-@@ -896,6 +896,7 @@ static int vif_add(struct net *net, struct mr_table *mrt,
- 	/* And finish update writing critical data */
- 	write_lock_bh(&mrt_lock);
- 	v->dev = dev;
-+	netdev_tracker_alloc(dev, &v->dev_tracker, GFP_ATOMIC);
- 	if (v->flags & VIFF_REGISTER)
- 		mrt->mroute_reg_vif_num = vifi;
- 	if (vifi+1 > mrt->maxvif)
-diff --git a/net/ipv6/ip6mr.c b/net/ipv6/ip6mr.c
-index 36ed9efb88254003720549da52f39b11e9bf911f..a77a15a7f3dcb61c53a86e055b8a1507d9d591f8 100644
---- a/net/ipv6/ip6mr.c
-+++ b/net/ipv6/ip6mr.c
-@@ -746,7 +746,7 @@ static int mif6_delete(struct mr_table *mrt, int vifi, int notify,
- 	if ((v->flags & MIFF_REGISTER) && !notify)
- 		unregister_netdevice_queue(dev, head);
- 
--	dev_put(dev);
-+	dev_put_track(dev, &v->dev_tracker);
- 	return 0;
- }
- 
-@@ -919,6 +919,7 @@ static int mif6_add(struct net *net, struct mr_table *mrt,
- 	/* And finish update writing critical data */
- 	write_lock_bh(&mrt_lock);
- 	v->dev = dev;
-+	netdev_tracker_alloc(dev, &v->dev_tracker, GFP_ATOMIC);
- #ifdef CONFIG_IPV6_PIMSM_V2
- 	if (v->flags & MIFF_REGISTER)
- 		mrt->mroute_reg_vif_num = vifi;
+@@ -853,7 +853,7 @@ void netpoll_cleanup(struct netpoll *np)
+ 	if (!np->dev)
+ 		goto out;
+ 	__netpoll_cleanup(np);
+-	dev_put(np->dev);
++	dev_put_track(np->dev, &np->dev_tracker);
+ 	np->dev = NULL;
+ out:
+ 	rtnl_unlock();
 -- 
 2.34.1.400.ga245620fadb-goog
 
