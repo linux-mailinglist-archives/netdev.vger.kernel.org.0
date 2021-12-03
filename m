@@ -2,103 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 61597467494
-	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 11:13:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D5A2A4674E5
+	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 11:30:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379798AbhLCKQr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Dec 2021 05:16:47 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:34056 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379673AbhLCKQq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Dec 2021 05:16:46 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C0C0C6293C
-        for <netdev@vger.kernel.org>; Fri,  3 Dec 2021 10:13:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83F18C53FC7;
-        Fri,  3 Dec 2021 10:13:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638526402;
-        bh=Vlmux8NkkE2ZiuwiSuMMf7TnqH8fZNsIDhuJxsiW6l4=;
-        h=From:To:Cc:Subject:Date:From;
-        b=UynUmRlo5xnZOFFAS9o3mb+8iogWwBXjGCShOcusMJken8RWWIb91CZUQwqFXPOcr
-         EQW4FYoVoCIrqcCxHW8FZAxWCHSs5PyuLoeNqmYtaSl2cqw3qOR5Uj9uT0dAMi3+E5
-         mZ+/JWLrMc65ohM+8nByfN5pjmPtRqusCBkEpmTPWXM65rd/9hnHCsBszQx7zwot/k
-         Ab28bufk1rFlUzju6NE7/mjwQVlDBQ177ZT+A70Qyv6j05XB3spaUjTRWPXT4lR5C+
-         dFkk69XarDlUmVybzguBaXjieAf/Yq6vJD9yvAcLg6AXTcq/iJ2Q214A1gsReZQiNX
-         +ZNOkouZy502A==
-From:   Antoine Tenart <atenart@kernel.org>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Antoine Tenart <atenart@kernel.org>, alexander.duyck@gmail.com,
-        mkubecek@suse.cz, netdev@vger.kernel.org
-Subject: [PATCH net] ethtool: do not perform operations on net devices being unregistered
-Date:   Fri,  3 Dec 2021 11:13:18 +0100
-Message-Id: <20211203101318.435618-1-atenart@kernel.org>
-X-Mailer: git-send-email 2.33.1
+        id S1351621AbhLCKdW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Dec 2021 05:33:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54204 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1379993AbhLCKdR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Dec 2021 05:33:17 -0500
+Received: from canardo.mork.no (canardo.mork.no [IPv6:2001:4641::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0586C061761
+        for <netdev@vger.kernel.org>; Fri,  3 Dec 2021 02:29:53 -0800 (PST)
+Received: from miraculix.mork.no ([IPv6:2a01:799:c9f:8608:6e64:956a:daea:cf2f])
+        (authenticated bits=0)
+        by canardo.mork.no (8.15.2/8.15.2) with ESMTPSA id 1B3ATQik004949
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
+        Fri, 3 Dec 2021 11:29:27 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
+        t=1638527368; bh=7uIxMTluRMvr3/z2O0SnlcTpQBZG2IIH26NnHiMzPDM=;
+        h=From:To:Cc:Subject:References:Date:Message-ID:From;
+        b=IBpRl5/hbDS84/K4yZpnyIqn/mJvBohOc92m9QvM3FCqlgSZRQJGqLQfIcFhBKWlr
+         J6dVJ4YUm1b0Uzdy910tlu11TSg4Uv3LaCoHCwDpe2GjUzHkzKzrzU11sj/D8J3gYk
+         Isq4Nbsh6akpnz6a1aJ4INm8l6uzX7a+3VptHnyg=
+Received: from bjorn by miraculix.mork.no with local (Exim 4.94.2)
+        (envelope-from <bjorn@mork.no>)
+        id 1mt5ok-001jKr-9W; Fri, 03 Dec 2021 11:29:26 +0100
+From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
+To:     Lee Jones <lee.jones@linaro.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org, Oliver Neukum <oliver@neukum.org>,
+        "David S. Miller" <davem@davemloft.net>, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH 1/1] net: cdc_ncm: Allow for dwNtbOutMaxSize to be unset
+ or zero
+Organization: m
+References: <20211202143437.1411410-1-lee.jones@linaro.org>
+        <20211202175134.5b463e18@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Date:   Fri, 03 Dec 2021 11:29:26 +0100
+In-Reply-To: <20211202175134.5b463e18@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        (Jakub Kicinski's message of "Thu, 2 Dec 2021 17:51:34 -0800")
+Message-ID: <87o85yj81l.fsf@miraculix.mork.no>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Virus-Scanned: clamav-milter 0.103.3 at canardo
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is a short period between a net device starts to be unregistered
-and when it is actually gone. In that time frame ethtool operations
-could still be performed, which might end up in unwanted or undefined
-behaviours[1].
+Hello Lee!
 
-Do not allow ethtool operations after a net device starts its
-unregistration. This patch targets the netlink part as the ioctl one
-isn't affected: the reference to the net device is taken and the
-operation is executed within an rtnl lock section and the net device
-won't be found after unregister.
+Jakub Kicinski <kuba@kernel.org> writes:
 
-[1] For example adding Tx queues after unregister ends up in NULL
-    pointer exceptions and UaFs, such as:
+> On Thu,  2 Dec 2021 14:34:37 +0000 Lee Jones wrote:
+>> Currently, due to the sequential use of min_t() and clamp_t() macros,
+>> in cdc_ncm_check_tx_max(), if dwNtbOutMaxSize is not set, the logic
+>> sets tx_max to 0.  This is then used to allocate the data area of the
+>> SKB requested later in cdc_ncm_fill_tx_frame().
+>>=20
+>> This does not cause an issue presently because when memory is
+>> allocated during initialisation phase of SKB creation, more memory
+>> (512b) is allocated than is required for the SKB headers alone (320b),
+>> leaving some space (512b - 320b =3D 192b) for CDC data (172b).
+>>=20
+>> However, if more elements (for example 3 x u64 =3D [24b]) were added to
+>> one of the SKB header structs, say 'struct skb_shared_info',
+>> increasing its original size (320b [320b aligned]) to something larger
+>> (344b [384b aligned]), then suddenly the CDC data (172b) no longer
+>> fits in the spare SKB data area (512b - 384b =3D 128b).
+>>=20
+>> Consequently the SKB bounds checking semantics fails and panics:
+>>=20
+>>   skbuff: skb_over_panic: text:ffffffff830a5b5f len:184 put:172   \
+>>      head:ffff888119227c00 data:ffff888119227c00 tail:0xb8 end:0x80 dev:=
+<NULL>
+>>=20
+>>   ------------[ cut here ]------------
+>>   kernel BUG at net/core/skbuff.c:110!
+>>   RIP: 0010:skb_panic+0x14f/0x160 net/core/skbuff.c:106
+>>   <snip>
+>>   Call Trace:
+>>    <IRQ>
+>>    skb_over_panic+0x2c/0x30 net/core/skbuff.c:115
+>>    skb_put+0x205/0x210 net/core/skbuff.c:1877
+>>    skb_put_zero include/linux/skbuff.h:2270 [inline]
+>>    cdc_ncm_ndp16 drivers/net/usb/cdc_ncm.c:1116 [inline]
+>>    cdc_ncm_fill_tx_frame+0x127f/0x3d50 drivers/net/usb/cdc_ncm.c:1293
+>>    cdc_ncm_tx_fixup+0x98/0xf0 drivers/net/usb/cdc_ncm.c:1514
+>>=20
+>> By overriding the max value with the default CDC_NCM_NTB_MAX_SIZE_TX
+>> when not offered through the system provided params, we ensure enough
+>> data space is allocated to handle the CDC data, meaning no crash will
+>> occur.
 
-      BUG: KASAN: use-after-free in kobject_get+0x14/0x90
-      Read of size 1 at addr ffff88801961248c by task ethtool/755
+Just out of curiouslity: Is this a real device, or was this the result
+of fuzzing around?
 
-      CPU: 0 PID: 755 Comm: ethtool Not tainted 5.15.0-rc6+ #778
-      Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-4.fc34 04/014
-      Call Trace:
-       dump_stack_lvl+0x57/0x72
-       print_address_description.constprop.0+0x1f/0x140
-       kasan_report.cold+0x7f/0x11b
-       kobject_get+0x14/0x90
-       kobject_add_internal+0x3d1/0x450
-       kobject_init_and_add+0xba/0xf0
-       netdev_queue_update_kobjects+0xcf/0x200
-       netif_set_real_num_tx_queues+0xb4/0x310
-       veth_set_channels+0x1c3/0x550
-       ethnl_set_channels+0x524/0x610
+Not that it matters - it's obviously a bug to fix in any case.  Good catch!
 
-Fixes: 041b1c5d4a53 ("ethtool: helper functions for netlink interface")
-Suggested-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Antoine Tenart <atenart@kernel.org>
----
+(We probably have many more of the same, assuming the device presents
+semi-sane values in the NCM parameter struct)
 
-Following the discussions in those threads:
-- https://lore.kernel.org/all/20211129154520.295823-1-atenart@kernel.org/T/
-- https://lore.kernel.org/all/20211122162007.303623-1-atenart@kernel.org/T/
+>> diff --git a/drivers/net/usb/cdc_ncm.c b/drivers/net/usb/cdc_ncm.c
+>> index 24753a4da7e60..e303b522efb50 100644
+>> --- a/drivers/net/usb/cdc_ncm.c
+>> +++ b/drivers/net/usb/cdc_ncm.c
+>> @@ -181,6 +181,8 @@ static u32 cdc_ncm_check_tx_max(struct usbnet *dev, =
+u32 new_tx)
+>>  		min =3D ctx->max_datagram_size + ctx->max_ndp_size + sizeof(struct us=
+b_cdc_ncm_nth32);
+>>=20=20
+>>  	max =3D min_t(u32, CDC_NCM_NTB_MAX_SIZE_TX, le32_to_cpu(ctx->ncm_parm.=
+dwNtbOutMaxSize));
+>> +	if (max =3D=3D 0)
+>> +		max =3D CDC_NCM_NTB_MAX_SIZE_TX; /* dwNtbOutMaxSize not set */
+>>=20=20
+>>  	/* some devices set dwNtbOutMaxSize too low for the above default */
+>>  	min =3D min(min, max);
 
- net/ethtool/netlink.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+It's been a while since I looked at this, so excuse me if I read it
+wrongly.  But I think we need to catch more illegal/impossible values
+than just zero here?  Any buffer size which cannot hold a single
+datagram is pointless.
 
-diff --git a/net/ethtool/netlink.c b/net/ethtool/netlink.c
-index 38b44c0291b1..96f4180aabd2 100644
---- a/net/ethtool/netlink.c
-+++ b/net/ethtool/netlink.c
-@@ -40,7 +40,8 @@ int ethnl_ops_begin(struct net_device *dev)
- 	if (dev->dev.parent)
- 		pm_runtime_get_sync(dev->dev.parent);
- 
--	if (!netif_device_present(dev)) {
-+	if (!netif_device_present(dev) ||
-+	    dev->reg_state == NETREG_UNREGISTERING) {
- 		ret = -ENODEV;
- 		goto err;
- 	}
--- 
-2.33.1
+Trying to figure out what I possible meant to do with that
 
+ 	min =3D min(min, max);
+
+I don't think it makes any sense?  Does it?  The "min" value we've
+carefully calculated allow one max sized datagram and headers. I don't
+think we should ever continue with a smaller buffer than that. Or are
+there cases where this is valid?
+
+So that really should haven been catching this bug with a
+
+  max =3D max(min, max)
+
+or maybe more readable
+
+  if (max < min)
+     max =3D min
+
+What do you think?
+
+
+Bj=C3=B8rn
