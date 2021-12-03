@@ -2,95 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 111C7467C20
-	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 18:01:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E2B3E467C27
+	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 18:02:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353372AbhLCRDs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Dec 2021 12:03:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60022 "EHLO
+        id S239612AbhLCRFT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Dec 2021 12:05:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382707AbhLCRDG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Dec 2021 12:03:06 -0500
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5C97C061751
-        for <netdev@vger.kernel.org>; Fri,  3 Dec 2021 08:59:01 -0800 (PST)
-Received: by mail-yb1-xb30.google.com with SMTP id v138so11104693ybb.8
-        for <netdev@vger.kernel.org>; Fri, 03 Dec 2021 08:59:01 -0800 (PST)
+        with ESMTP id S238421AbhLCRFN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Dec 2021 12:05:13 -0500
+Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90225C061354
+        for <netdev@vger.kernel.org>; Fri,  3 Dec 2021 09:01:48 -0800 (PST)
+Received: by mail-oi1-x22a.google.com with SMTP id n66so6924164oia.9
+        for <netdev@vger.kernel.org>; Fri, 03 Dec 2021 09:01:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=SKrgr4/QRUfvFou9rJRtZQrnb3bU2LhbgcrC85cTs7c=;
-        b=b1aBltB5mYFuzHHOLymOYVitbn4OVTlk+u+Ujdp7hPM7K6U+9wYkx1LTTKlgZv8mng
-         6rPPhtdh3UotBQPhKaV/TybuasWJkbMhU/kEfT1iVQ+P1u6A9od+WJf4wkOh1JOf2+8z
-         osB0inGBB3zCfdguY5ph3FDkPjDJ2NSTsaiXCAJA398aJn6hC64bsO6k6WA2gcWO7/pi
-         utZi6YfzoA2CFsKw65FXhC/HZRI8c+T27p8EC9lZ0lJz0L4MKqMPOFimfvDVQFofDLBK
-         /nFkSoxNH7oXxAEQsRxVsfIPIlHtGtBKBsYiGf0c6LjdY3vrgY6BzcQeRyXwVAjvS80b
-         D2ZA==
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=tbEwySXb6yGxG6N7AFD65uHpUF9qIsmwiRZG3EFyfoQ=;
+        b=d9FGTw97nQD8RVohATVwa6tURsiCtdhyWxDCP+26+2Ikkr/XRh+pPSWCpeCH4rnVYB
+         oGUBk4yopd0Z2OEEVwiP6lupdhrTzce9hz+z6ulzORp22FeRLLgxy7Qwt7Ir/tlNU8UF
+         PX5IeZYu+ttbrZXG/yR0aT9/nYTAQZLkzBoUEPi38eMUUHove2S0H1Ur2ktHHBn1mDVw
+         tSUr0UrwAqJOC0zj0ruLb3Rije4TpUP+E2xxIxDanNTN9MH3lBPNANxZJs9WEePWjb/e
+         wwfLzWtMjNbobR2ybnomh9q+0ZFKzDfTwQYP8v04m6zlboke0kD5otrmDN2uvbTCKbUm
+         Ts7w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=SKrgr4/QRUfvFou9rJRtZQrnb3bU2LhbgcrC85cTs7c=;
-        b=r73nf5rhfkZKWRqGzV4g7VgvUG/f6RCSklcSM/PI/K7M++Oid6T5u6lfxSvTlnoe1z
-         dESyz0Q8IGvrSZPdrg33cRTRBVbRI7k3Zg0qEAUhN4XIjFAriXjQrhPVhM71ckpc4Uy6
-         GHvT75D1KRkLRddhcVCCkq/ttytdCcC1yxGzeTzVkEZvsTq/tdaHqZAWbRqWdzpl5/Hb
-         OOZoLiYo/E8v717+fa7d9CkhYOoh+uUyzkTxgKGsDLXgYAIsRLVOD3udMo3+j2AczGYk
-         1XS7rXWchhfbPyp1eZ2SCDvx4+0NleIVjdCt42zcXJPD3wKz7S4P9k5nzZqkiPitChod
-         6MIQ==
-X-Gm-Message-State: AOAM530V5/C/BUpUnXxvw2hsb/cW9MD7fTFZOlt1uHmhmGXQvPz/tGN8
-        eXn8dFFYjxySIdpIk0i6xovyCX2Q/PGueJb354b9SQ==
-X-Google-Smtp-Source: ABdhPJwoFItaxd17vob+tKYt+YjvICMkyxD27hw3N3wBDv5Vq7QKEc8VbIXCFU31Lt1Pl+FB/V58FI5lT77NZrEu+xA=
-X-Received: by 2002:a5b:5c3:: with SMTP id w3mr5339059ybp.293.1638550740504;
- Fri, 03 Dec 2021 08:59:00 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=tbEwySXb6yGxG6N7AFD65uHpUF9qIsmwiRZG3EFyfoQ=;
+        b=48qN+4EnRTdDf7NURvXVhGzU+5T9EA2t14h027AWKVr5PM3uU8BsvoCK4NYYgc6d3H
+         8886dE/jNIYxAxaoej5sLW9zmLbzM0BtZywj5AwSg5rInHF8Tw7c3xizKUYEAnwuVElW
+         Xe+irddUuffU6OuqjOm5otGe8Mh9LdWUKlF69qZ4brue3xS0EUQDTC6YHK1PWG+mf98j
+         Fucf+tHq3ZsEynf8os+64BUso608703bc6J3o0FeD6BfhSj49C5G4bcqHys1A1qzhd5R
+         daXki35Q8nFaeBXq6+TKKKWK3VQyqfdUI0TeI+LPbaVOZVQYJxUEQCQK313psFWhOLvy
+         8qCQ==
+X-Gm-Message-State: AOAM532+ytUNSaqw05SQz8Ji27/A59U/qJK5EEjZD+f32B5bwXatL5NI
+        9pKP5LNxoDBnQhetsERdQlI=
+X-Google-Smtp-Source: ABdhPJwA0bZvUL3WcE1oyAKNlsn3/8Ee5b6FzsxNUmDJeKAM1vTb6I7OCxXwldT3drUiGwTyvxNX4w==
+X-Received: by 2002:a05:6808:aa7:: with SMTP id r7mr10976017oij.120.1638550907915;
+        Fri, 03 Dec 2021 09:01:47 -0800 (PST)
+Received: from [172.16.0.2] ([8.48.134.30])
+        by smtp.googlemail.com with ESMTPSA id 69sm704731otf.33.2021.12.03.09.01.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 03 Dec 2021 09:01:47 -0800 (PST)
+Message-ID: <778b1eb5-3f46-2489-4de8-17fda15d3dd5@gmail.com>
+Date:   Fri, 3 Dec 2021 10:01:46 -0700
 MIME-Version: 1.0
-References: <20211124202446.2917972-1-eric.dumazet@gmail.com>
- <20211124202446.2917972-3-eric.dumazet@gmail.com> <20211202131040.rdxzbfwh2slhftg5@skbuf>
- <CANn89iLW4kwKf0x094epVeCaKhB4GtYgbDwE2=Fp0HnW8UdKzw@mail.gmail.com>
- <20211202162916.ieb2wn35z5h4aubh@skbuf> <CANn89iJEfDL_3C39Gp9eD=yPDqW4MGcVm7AyUBcTVdakS-X2dg@mail.gmail.com>
- <20211202204036.negad3mnrm2gogjd@skbuf> <9eefc224988841c9b1a0b6c6eb3348b8@AcuMS.aculab.com>
- <20211202214009.5hm3diwom4qsbsjd@skbuf> <eb25fee06370430d8cd14e25dff5e653@AcuMS.aculab.com>
- <20211203161429.htqt4vuzd22rlwkf@skbuf> <CANn89iKk=DZEbwAeaborF-Q5pE9=Jahc0TP1_wk59s2eqB0o1A@mail.gmail.com>
- <43cc0ca9a0e14fc995c0c28d31440c15@AcuMS.aculab.com>
-In-Reply-To: <43cc0ca9a0e14fc995c0c28d31440c15@AcuMS.aculab.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 3 Dec 2021 08:58:49 -0800
-Message-ID: <CANn89i+sANhK4m_JptWgnjXf5VRuSYw6MkLKfS3ut5SbUbrmoQ@mail.gmail.com>
-Subject: Re: [PATCH net-next 2/2] net: optimize skb_postpull_rcsum()
-To:     David Laight <David.Laight@aculab.com>,
-        David Lebrun <dlebrun@google.com>
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.3.2
+Subject: Re: [iproute2-next 4/4] vdpa: Enable user to set mtu of the vdpa
+ device
+Content-Language: en-US
+To:     Parav Pandit <parav@nvidia.com>, stephen@networkplumber.org,
+        netdev@vger.kernel.org
+Cc:     virtualization@lists.linux-foundation.org, mst@redhat.com,
+        jasowang@redhat.com
+References: <20211202042239.2454-1-parav@nvidia.com>
+ <20211202042239.2454-5-parav@nvidia.com>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <20211202042239.2454-5-parav@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 3, 2021 at 8:47 AM David Laight <David.Laight@aculab.com> wrote:
->
-> > > Eric, could you please send a patch with this change?
-> >
-> > Sure, I will do this today, after more testing.
->
-> I've just done a quick grep and found two ~csum_partial() in
-> include/net/seg6.h.
+On 12/1/21 9:22 PM, Parav Pandit wrote:
+> @@ -154,6 +156,31 @@ static int vdpa_argv_mac(struct vdpa *vdpa, int argc, char **argv, char *mac)
+>  	return 0;
+>  }
+>  
+> +static int strtouint16_t(const char *str, uint16_t *p_val)
+> +{
+> +	char *endptr;
+> +	unsigned long int val;
+> +
+> +	val = strtoul(str, &endptr, 10);
+> +	if (endptr == str || *endptr != '\0')
+> +		return -EINVAL;
+> +	if (val > USHRT_MAX)
+> +		return -ERANGE;
+> +	*p_val = val;
+> +	return 0;
+> +}
 
-This is what I already mentioned in this email thread, and the reason
-I have CCed David Lebrun.
-
-https://marc.info/?l=linux-netdev&m=163845851801840&w=2
-
-David, can you comment on this ?
-
-
-> Both are wrong (and completely horrid).
->
-> There are also 40 csum_partial(buf, len, 0).
-> If all the buffer is zero they'll return zero - invalid.
-> They ought to be changed to csum_partial(buf, len, 0xffff).
->
-
-Please point where all zero buffers can be valid in the first place.
+duplicates get_u16
