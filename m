@@ -2,68 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 17D0B467274
-	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 08:16:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EC297467287
+	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 08:23:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378820AbhLCHUK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Dec 2021 02:20:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38732 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378806AbhLCHUJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Dec 2021 02:20:09 -0500
-Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 527DDC061757
-        for <netdev@vger.kernel.org>; Thu,  2 Dec 2021 23:16:46 -0800 (PST)
-Received: by mail-yb1-xb44.google.com with SMTP id q74so6551519ybq.11
-        for <netdev@vger.kernel.org>; Thu, 02 Dec 2021 23:16:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=iFLW7ypIlH5Ez67nJfKko4ZQMsP63c1pEmVzMKAAiIM=;
-        b=Pi0Y16KTyyKb1g9OzpLOv+adGg8ozW+3YowJXMtXVE1Y2a4NpgvS0uOUO1rjiOeZI/
-         imbrwynVk/SJmRLV4rffqTDHqulu2jPdqqEnMDCOUSE04WG124EUgku7LCLjzwxP/jL6
-         k8jlCwjVGHHfw5Z0gU97+dcUJsu3CsuNcpuu5w0QfaOiRZ7AxQLU+6YjFZ8rrZ4AsKwP
-         E25ggGmJLmuQjSatlnbTnemL248VPYzzEgdJVYyovUwhnzV7/jNBTk9N82+mx1G8sunH
-         Dc1rn50UnIU3XQRGXnV8kibwBO9WjHpuf8IKBBmQX/lnz/PXFlmT5X4ABMFL5vIAV9Xv
-         1ftw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=iFLW7ypIlH5Ez67nJfKko4ZQMsP63c1pEmVzMKAAiIM=;
-        b=3jZePezTkn22kaoKabN7pEGmIGtSwXe0FdCAtPQizSSoNLu/DOL4VXVrcSVWqmxDAW
-         Ys/tynOw8r9t7CNLFGhsBE4B+x2RJ16i4MnAZ5DUqefLMahQJk9mlh9ddaCE3Q6/538E
-         WQ0XbGx9ofIjjd/qULDtlC2b+MMs7e4EQTGyktIa4ByxLDZ62BMxQ0m2VIkLNRml1p5m
-         CQ1M0VGevMcfsfdGxjwuMZC3SEoSWapZAF0tQMqxLYdsvKxLO/tJDuR/FNR5hMoJob3m
-         xsD43KslqwXtyPaneTDrwZ1vD5BmIALJ33SbvW50uSsYZEFOt6JnGfpbzky5g0G35UiL
-         iptQ==
-X-Gm-Message-State: AOAM531ai5/qBt7g5muNSe3xeu6nIm7KrGkob5WKTcCcLRp789m9gK3d
-        Eu5hOGEBou8U1Q1ya3WJ7Dh1imSEQQ0A14vVSZs=
-X-Google-Smtp-Source: ABdhPJwvJWD4GCGG72boLkhSgQvolDmdwS0WBhrrGBOtVMX88JKkHVgfsK7VDkW/IR/JEyNZ8B9geMZilJcnQViiVcE=
-X-Received: by 2002:a25:d743:: with SMTP id o64mr19639170ybg.81.1638515804413;
- Thu, 02 Dec 2021 23:16:44 -0800 (PST)
+        id S1378851AbhLCH1R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Dec 2021 02:27:17 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:27468 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1378847AbhLCH1Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Dec 2021 02:27:16 -0500
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1B35mtNJ014385;
+        Fri, 3 Dec 2021 07:23:51 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=7jK/DqTPoidVaJEX18uzm+IrGyjBANRXRpCuB5Lwwro=;
+ b=tgwzXiiajNwAVBdUFEhoV+i0eCynkCBO5pSgeT6UIH8EW3ZGXkl20HJdVhWXw33zwC0q
+ +gcfrBJtMfrGPJ9bMuSzNBBIemU/pbaRmXiV3n8I1d7ob3Zs5qyG+/U+VvIDFpSHhpBd
+ x01YHUHbMsFPxMgKnCsLKwUnBPtC3WFWSid3xfdHDbsdW0PR1/auo6fe/h96Ar7OgMHB
+ 4c1/sgASugeC88I3u09UpA0CmXZJTdK/Z/d9QWxti+AWhY2947s89A2w6hCEvMWMbaVB
+ Bt0cvD9HyDjIpAQRRqIuGM7gjVa1r1ViS+6/t2JaSdBGgLIjHwyx83JANqLTdjnVMGLw Zg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3cqd1khxu6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 03 Dec 2021 07:23:50 +0000
+Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 1B37NeGI002902;
+        Fri, 3 Dec 2021 07:23:50 GMT
+Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3cqd1khxtq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 03 Dec 2021 07:23:50 +0000
+Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
+        by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 1B37LSP6012587;
+        Fri, 3 Dec 2021 07:23:48 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma05fra.de.ibm.com with ESMTP id 3ckcaa8knd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 03 Dec 2021 07:23:47 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 1B37NjZk32637258
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 3 Dec 2021 07:23:45 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 7AF4511C093;
+        Fri,  3 Dec 2021 07:23:45 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 2994D11C097;
+        Fri,  3 Dec 2021 07:23:45 +0000 (GMT)
+Received: from [9.145.87.55] (unknown [9.145.87.55])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri,  3 Dec 2021 07:23:45 +0000 (GMT)
+Message-ID: <d74219b7-79b4-7286-1dcd-8cbd9b93408b@linux.ibm.com>
+Date:   Fri, 3 Dec 2021 08:23:47 +0100
 MIME-Version: 1.0
-Received: by 2002:a05:7000:b80b:0:0:0:0 with HTTP; Thu, 2 Dec 2021 23:16:43
- -0800 (PST)
-Reply-To: plidiaherreros@gmail.com
-From:   LIDIA HERREROS PADILLA <jacobbarney32@gmail.com>
-Date:   Fri, 3 Dec 2021 10:16:43 +0300
-Message-ID: <CAO1RZwOSYFeyR3qY4Fu2yPo-DEoVPKPB=nfZ9BqJZc59duAHaQ@mail.gmail.com>
-Subject: Greetings to You
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.2
+Subject: Re: [PATCH net] net/smc: Clear memory when release and reuse buffer
+Content-Language: en-US
+To:     Tony Lu <tonylu@linux.alibaba.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-rdma@vger.kernel.org
+References: <20211125122858.90726-1-tonylu@linux.alibaba.com>
+ <20211126112855.37274cb7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <YaWR6zXoYKrqtznt@TonyMac-Alibaba>
+ <a98a49d9-a7e9-4dbc-8e3d-8ff4d917546b@linux.ibm.com>
+ <YamPi+seNs4yhlaV@TonyMac-Alibaba>
+From:   Karsten Graul <kgraul@linux.ibm.com>
+Organization: IBM Deutschland Research & Development GmbH
+In-Reply-To: <YamPi+seNs4yhlaV@TonyMac-Alibaba>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: sRLAGiD8T25GMtzDikTi07te54AOedkl
+X-Proofpoint-GUID: KE5RjdCQPbN3n6dDyPrkS9Anj9Sn24Yc
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2021-12-03_04,2021-12-02_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 adultscore=0
+ malwarescore=0 phishscore=0 impostorscore=0 mlxscore=0 priorityscore=1501
+ lowpriorityscore=0 spamscore=0 bulkscore=0 mlxlogscore=901 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2110150000
+ definitions=main-2112030044
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Greetings,
-I'm financial Management Consultant and my name is Mrs. Lidia Herreros
-Padilla. I'm excited to approach you and present you with a lucrative
-proposition that I've prepared for you. Please respond as soon as
-possible if you are interested in the details.
+On 03/12/2021 04:31, Tony Lu wrote:
+> On Thu, Dec 02, 2021 at 03:23:07PM +0100, Karsten Graul wrote:
+>> On 30/11/2021 03:52, Tony Lu wrote:
+>>> Sorry for the unclear tag. This patch introduces a performance
+>>> improvement. It should be with net-next.
+>>>
+>>> I will fix it and send v2. Thank you.
+>>
+>> Will you now send a v2 to net-next, or should I pick your v1 and 
+>> submit it via our tree?
+> 
+> Sorry about my unclear reply in the previous mail. It's nice to pick v1
+> to your tree. If v2 is needed, I will send it out soon. Thank you.
+> 
+> Thanks,
+> Tony Lu
+> 
 
-Please email me at (plidiaherreros@gmail.com) or fax me at (+34 932 71 56 35).
-
-Kind regards
-Mrs. Lidia Herreros Padilla
-Financial Management Consultant.
+Okay, I pick it up now. Thank you.
