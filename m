@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BE274673EA
-	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 10:25:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D81D54673F1
+	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 10:25:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379595AbhLCJ3F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Dec 2021 04:29:05 -0500
-Received: from szxga08-in.huawei.com ([45.249.212.255]:29086 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379576AbhLCJ3E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Dec 2021 04:29:04 -0500
-Received: from kwepemi500004.china.huawei.com (unknown [172.30.72.55])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4J56mv6WWSz1DJKQ;
-        Fri,  3 Dec 2021 17:22:55 +0800 (CST)
+        id S1379619AbhLCJ3N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Dec 2021 04:29:13 -0500
+Received: from szxga01-in.huawei.com ([45.249.212.187]:15692 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1379610AbhLCJ3L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Dec 2021 04:29:11 -0500
+Received: from kwepemi500007.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4J56n150pMzZdMG;
+        Fri,  3 Dec 2021 17:23:01 +0800 (CST)
 Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- kwepemi500004.china.huawei.com (7.221.188.17) with Microsoft SMTP Server
+ kwepemi500007.china.huawei.com (7.221.188.207) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Fri, 3 Dec 2021 17:25:39 +0800
+ 15.1.2308.20; Fri, 3 Dec 2021 17:25:40 +0800
 Received: from localhost.localdomain (10.67.165.24) by
  kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
@@ -27,9 +27,9 @@ To:     <davem@davemloft.net>, <kuba@kernel.org>, <wangjie125@huawei.com>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
         <chenhao288@hisilicon.com>
-Subject: [PATCH net-next 01/11] net: hns3: optimize function hclge_cfg_common_loopback()
-Date:   Fri, 3 Dec 2021 17:20:49 +0800
-Message-ID: <20211203092059.24947-2-huangguangbin2@huawei.com>
+Subject: [PATCH net-next 02/11] net: hns3: refactor function hclge_set_vlan_filter_hw
+Date:   Fri, 3 Dec 2021 17:20:50 +0800
+Message-ID: <20211203092059.24947-3-huangguangbin2@huawei.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211203092059.24947-1-huangguangbin2@huawei.com>
 References: <20211203092059.24947-1-huangguangbin2@huawei.com>
@@ -44,127 +44,80 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yufeng Mo <moyufeng@huawei.com>
+Function hclge_set_vlan_filter_hw() is a bit too long, so add a new
+function hclge_need_update_port_vlan() to simplify code and improve
+code readability.
 
-hclge_cfg_common_loopback() is a bit too long, so
-encapsulate hclge_cfg_common_loopback_cmd_send() and
-hclge_cfg_common_loopback_wait() two functions to
-improve readability.
-
-Signed-off-by: Yufeng Mo <moyufeng@huawei.com>
 Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 ---
- .../hisilicon/hns3/hns3pf/hclge_main.c        | 62 +++++++++++++------
- 1 file changed, 42 insertions(+), 20 deletions(-)
+ .../hisilicon/hns3/hns3pf/hclge_main.c        | 45 +++++++++++--------
+ 1 file changed, 27 insertions(+), 18 deletions(-)
 
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index 6d68cc23f1c0..5a5e74dfd0be 100644
+index 5a5e74dfd0be..0d2ed05c4f50 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -8000,16 +8000,13 @@ static int hclge_set_app_loopback(struct hclge_dev *hdev, bool en)
+@@ -10005,6 +10005,32 @@ static int hclge_set_port_vlan_filter(struct hclge_dev *hdev, __be16 proto,
  	return ret;
  }
  
--static int hclge_cfg_common_loopback(struct hclge_dev *hdev, bool en,
--				     enum hnae3_loop loop_mode)
-+static int hclge_cfg_common_loopback_cmd_send(struct hclge_dev *hdev, bool en,
-+					      enum hnae3_loop loop_mode)
- {
--#define HCLGE_COMMON_LB_RETRY_MS	10
--#define HCLGE_COMMON_LB_RETRY_NUM	100
++static bool hclge_need_update_port_vlan(struct hclge_dev *hdev, u16 vport_id,
++					u16 vlan_id, bool is_kill)
++{
++	/* vlan 0 may be added twice when 8021q module is enabled */
++	if (!is_kill && !vlan_id &&
++	    test_bit(vport_id, hdev->vlan_table[vlan_id]))
++		return false;
++
++	if (!is_kill && test_and_set_bit(vport_id, hdev->vlan_table[vlan_id])) {
++		dev_warn(&hdev->pdev->dev,
++			 "Add port vlan failed, vport %u is already in vlan %u\n",
++			 vport_id, vlan_id);
++		return false;
++	}
++
++	if (is_kill &&
++	    !test_and_clear_bit(vport_id, hdev->vlan_table[vlan_id])) {
++		dev_warn(&hdev->pdev->dev,
++			 "Delete port vlan failed, vport %u is not in vlan %u\n",
++			 vport_id, vlan_id);
++		return false;
++	}
++
++	return true;
++}
++
+ static int hclge_set_vlan_filter_hw(struct hclge_dev *hdev, __be16 proto,
+ 				    u16 vport_id, u16 vlan_id,
+ 				    bool is_kill)
+@@ -10026,26 +10052,9 @@ static int hclge_set_vlan_filter_hw(struct hclge_dev *hdev, __be16 proto,
+ 		return ret;
+ 	}
+ 
+-	/* vlan 0 may be added twice when 8021q module is enabled */
+-	if (!is_kill && !vlan_id &&
+-	    test_bit(vport_id, hdev->vlan_table[vlan_id]))
++	if (!hclge_need_update_port_vlan(hdev, vport_id, vlan_id, is_kill))
+ 		return 0;
+ 
+-	if (!is_kill && test_and_set_bit(vport_id, hdev->vlan_table[vlan_id])) {
+-		dev_err(&hdev->pdev->dev,
+-			"Add port vlan failed, vport %u is already in vlan %u\n",
+-			vport_id, vlan_id);
+-		return -EINVAL;
+-	}
 -
- 	struct hclge_common_lb_cmd *req;
- 	struct hclge_desc desc;
--	int ret, i = 0;
- 	u8 loop_mode_b;
-+	int ret;
- 
- 	req = (struct hclge_common_lb_cmd *)desc.data;
- 	hclge_cmd_setup_basic_desc(&desc, HCLGE_OPC_COMMON_LOOPBACK, false);
-@@ -8026,23 +8023,34 @@ static int hclge_cfg_common_loopback(struct hclge_dev *hdev, bool en,
- 		break;
- 	default:
- 		dev_err(&hdev->pdev->dev,
--			"unsupported common loopback mode %d\n", loop_mode);
-+			"unsupported loopback mode %d\n", loop_mode);
- 		return -ENOTSUPP;
- 	}
- 
--	if (en) {
-+	req->mask = loop_mode_b;
-+	if (en)
- 		req->enable = loop_mode_b;
--		req->mask = loop_mode_b;
--	} else {
--		req->mask = loop_mode_b;
+-	if (is_kill &&
+-	    !test_and_clear_bit(vport_id, hdev->vlan_table[vlan_id])) {
+-		dev_err(&hdev->pdev->dev,
+-			"Delete port vlan failed, vport %u is not in vlan %u\n",
+-			vport_id, vlan_id);
+-		return -EINVAL;
 -	}
+-
+ 	for_each_set_bit(vport_idx, hdev->vlan_table[vlan_id], HCLGE_VPORT_NUM)
+ 		vport_num++;
  
- 	ret = hclge_cmd_send(&hdev->hw, &desc, 1);
--	if (ret) {
-+	if (ret)
- 		dev_err(&hdev->pdev->dev,
--			"common loopback set fail, ret = %d\n", ret);
--		return ret;
--	}
-+			"failed to send loopback cmd, loop_mode = %d, ret = %d\n",
-+			loop_mode, ret);
-+
-+	return ret;
-+}
-+
-+static int hclge_cfg_common_loopback_wait(struct hclge_dev *hdev)
-+{
-+#define HCLGE_COMMON_LB_RETRY_MS	10
-+#define HCLGE_COMMON_LB_RETRY_NUM	100
-+
-+	struct hclge_common_lb_cmd *req;
-+	struct hclge_desc desc;
-+	u32 i = 0;
-+	int ret;
-+
-+	req = (struct hclge_common_lb_cmd *)desc.data;
- 
- 	do {
- 		msleep(HCLGE_COMMON_LB_RETRY_MS);
-@@ -8051,20 +8059,34 @@ static int hclge_cfg_common_loopback(struct hclge_dev *hdev, bool en,
- 		ret = hclge_cmd_send(&hdev->hw, &desc, 1);
- 		if (ret) {
- 			dev_err(&hdev->pdev->dev,
--				"common loopback get, ret = %d\n", ret);
-+				"failed to get loopback done status, ret = %d\n",
-+				ret);
- 			return ret;
- 		}
- 	} while (++i < HCLGE_COMMON_LB_RETRY_NUM &&
- 		 !(req->result & HCLGE_CMD_COMMON_LB_DONE_B));
- 
- 	if (!(req->result & HCLGE_CMD_COMMON_LB_DONE_B)) {
--		dev_err(&hdev->pdev->dev, "common loopback set timeout\n");
-+		dev_err(&hdev->pdev->dev, "wait loopback timeout\n");
- 		return -EBUSY;
- 	} else if (!(req->result & HCLGE_CMD_COMMON_LB_SUCCESS_B)) {
--		dev_err(&hdev->pdev->dev, "common loopback set failed in fw\n");
-+		dev_err(&hdev->pdev->dev, "faile to do loopback test\n");
- 		return -EIO;
- 	}
--	return ret;
-+
-+	return 0;
-+}
-+
-+static int hclge_cfg_common_loopback(struct hclge_dev *hdev, bool en,
-+				     enum hnae3_loop loop_mode)
-+{
-+	int ret;
-+
-+	ret = hclge_cfg_common_loopback_cmd_send(hdev, en, loop_mode);
-+	if (ret)
-+		return ret;
-+
-+	return hclge_cfg_common_loopback_wait(hdev);
- }
- 
- static int hclge_set_common_loopback(struct hclge_dev *hdev, bool en,
 -- 
 2.33.0
 
