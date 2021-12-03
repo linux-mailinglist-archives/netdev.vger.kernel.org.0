@@ -2,99 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 584DE4670A5
-	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 04:20:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 889F44670AF
+	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 04:23:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242472AbhLCDXh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Dec 2021 22:23:37 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:34658 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241442AbhLCDXh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 22:23:37 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 427EEB825AF
-        for <netdev@vger.kernel.org>; Fri,  3 Dec 2021 03:20:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D410BC00446;
-        Fri,  3 Dec 2021 03:20:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638501611;
-        bh=Ih6QJE8jAZ5PiGqV1Zd0Pq/yzOpCiEibh5Mp9nw/fY8=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=XspwGG3IwkfyOjRtFQXU17GptmmOF5QqhH/7jkZiv/BrLhYjn6r03P8v8+r4iDWJf
-         hHBa30YlGDCp/CBbjGJnGPraT90omv1qnwDq667//MiEeiuNUAoDuVXn8aClvfKPkS
-         761b/fDleGrHrJFogQ7XbOC85hNxvzzQu6hAyWUmJ15HAzMkjn6zNB/onSVVlqco+f
-         clMCSJlIsHuQpiiAUUSTWFdAUuLLelQSx7r2rdTyzzEtC231JcvePxrH2C87fsOjt0
-         xoLROzk533K5adP4wfvQet/ZhAX8ZmDhNZbOM2+h8yfBqYU+ap6a9V9pVVHpJgmhcm
-         o152FEqG5uCHA==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id BD3F260A5A;
-        Fri,  3 Dec 2021 03:20:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S244433AbhLCD0l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Dec 2021 22:26:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42996 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230294AbhLCD0k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 22:26:40 -0500
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4243EC06174A;
+        Thu,  2 Dec 2021 19:23:17 -0800 (PST)
+Received: by mail-pg1-x533.google.com with SMTP id j11so1730426pgs.2;
+        Thu, 02 Dec 2021 19:23:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=SZcoSQC4tK0BM2V0ptt5rU8q5yfPbEErr3YDPv1t14g=;
+        b=okL6ZZYKfXl3K+ctD5TI6k3CpwmDCbsMX5V4FUQDzmC2e6esrJmh6yx//6mMrtxgGD
+         vK0cPlts9crBLkRxmYWy6itaX3ZLe9YqPRiEuzkA0szVscmkTT/ddinsbzHK94UAt8XN
+         qqGqSdlpZSltgxwduVaNdEfQYxYYKrhhBGAEgNy4cfr+a00AQsR/hRsyk80CM2ITy1Y7
+         7jkkKxpgX9086ncJ/iYFG3vD8oa6Xu4ncDA3+DAwHtASKzkluq2UJhQPIw0Y3dFWX8BA
+         iGhxxq/tXRvLSoagYfzjfXFhieGHJ5GyrnsTJBrZFy2zxvV8o6OSGnK8jRucFVgRgjNJ
+         /0Sg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=SZcoSQC4tK0BM2V0ptt5rU8q5yfPbEErr3YDPv1t14g=;
+        b=Y+1cyJz5fVdBY1+YLUebXYpzQzplSaWNn94DPQF07HkZg6NKEW4BAS9yz5Lkn/svPq
+         Y9MEEFx95QF9B6X8doJDcFvv3wkMXp+AgsCplm+/fyYsA+ZqQkg0kXEHkepJNLUio5KB
+         9y9p3h2X3Hr2ziiSE1QzdcNZFVdPTeS1JA92+Qk4Wf6NP3jxTZ1uBPNHkt55nhB7+Yp3
+         So5TbQwH//7Xi/c/X2qITGPjJV4WZ28/8j/6hTHDoenE9vAlTcQNcbCmsWn2GQ+XTfJN
+         Selfn2YEMK8RUkNgALpYdCLhzCzlRZNl12iJeugQdJv526sm6FpDOh9ciDJk/ud0kE79
+         JvXQ==
+X-Gm-Message-State: AOAM530XDAgWGBidiZb5mlSCoLXXS7UKryeWCU54HC14dA0uzlI6/+Kw
+        dqRsOJS+zxRFOwhSHptkHIg=
+X-Google-Smtp-Source: ABdhPJxEBfglBpaRkhl8Uys2pcFwaClQdsQICQ/6kOnrkc+XVQSI8Vprk670oahYuX/mtAYSSMcNpg==
+X-Received: by 2002:a63:4a4b:: with SMTP id j11mr2588286pgl.580.1638501796741;
+        Thu, 02 Dec 2021 19:23:16 -0800 (PST)
+Received: from [10.230.2.23] ([192.19.161.250])
+        by smtp.gmail.com with ESMTPSA id s21sm1197580pfk.3.2021.12.02.19.23.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 02 Dec 2021 19:23:16 -0800 (PST)
+Message-ID: <43da99eb-6279-bf7a-3039-3f59f14ceadc@gmail.com>
+Date:   Thu, 2 Dec 2021 19:23:14 -0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [net-next v0 01/14] mlx5: fix psample_sample_packet link error
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163850161177.31717.8006639067892103879.git-patchwork-notify@kernel.org>
-Date:   Fri, 03 Dec 2021 03:20:11 +0000
-References: <20211203005622.183325-2-saeed@kernel.org>
-In-Reply-To: <20211203005622.183325-2-saeed@kernel.org>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        arnd@arndb.de, saeedm@nvidia.com
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.2
+Subject: Re: [PATCH v2] net: broadcom: Catch the Exception
+Content-Language: en-US
+To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>, rafal@milecki.pl,
+        bcm-kernel-feedback-list@broadcom.com, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org, fw@strlen.de
+References: <20211203030250.1512671-1-jiasheng@iscas.ac.cn>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20211203030250.1512671-1-jiasheng@iscas.ac.cn>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
 
-This series was applied to netdev/net-next.git (master)
-by Saeed Mahameed <saeedm@nvidia.com>:
 
-On Thu,  2 Dec 2021 16:56:09 -0800 you wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
+On 12/2/2021 7:02 PM, Jiasheng Jiang wrote:
+> The return value of dma_set_coherent_mask() is not always 0.
+> To catch the exception in case that dma is not support the mask.
 > 
-> When PSAMPLE is a loadable module, built-in drivers cannot use it:
-> 
-> aarch64-linux-ld: drivers/net/ethernet/mellanox/mlx5/core/en/tc/sample.o: in function `mlx5e_tc_sample_skb':
-> sample.c:(.text+0xd68): undefined reference to `psample_sample_packet'
-> 
-> [...]
+> Fixes: 9d61d138ab30 ("net: broadcom: rename BCM4908 driver & update DT binding")
+> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-Here is the summary with links:
-  - [net-next,v0,01/14] mlx5: fix psample_sample_packet link error
-    https://git.kernel.org/netdev/net-next/c/7a7dd5114f53
-  - [net-next,v0,02/14] mlx5: fix mlx5i_grp_sw_update_stats() stack usage
-    https://git.kernel.org/netdev/net-next/c/d2b8c7ba3c79
-  - [net-next,v0,03/14] net/mlx5: Fix error return code in esw_qos_create()
-    https://git.kernel.org/netdev/net-next/c/baf5c001300e
-  - [net-next,v0,04/14] net/mlx5: Fix some error handling paths in 'mlx5e_tc_add_fdb_flow()'
-    https://git.kernel.org/netdev/net-next/c/31108d142f36
-  - [net-next,v0,05/14] net/mlx5: SF, silence an uninitialized variable warning
-    https://git.kernel.org/netdev/net-next/c/c64d01b3ceba
-  - [net-next,v0,06/14] net/mlx5: Print more info on pci error handlers
-    https://git.kernel.org/netdev/net-next/c/fad1783a6d66
-  - [net-next,v0,07/14] net/mlx5e: SHAMPO, clean MLX5E_MAX_KLM_PER_WQE macro
-    https://git.kernel.org/netdev/net-next/c/3ef1f8e795ba
-  - [net-next,v0,08/14] net/mlx5e: Hide function mlx5e_num_channels_changed
-    https://git.kernel.org/netdev/net-next/c/e9542221c4f5
-  - [net-next,v0,09/14] net/mlx5e: TC, Remove redundant action stack var
-    https://git.kernel.org/netdev/net-next/c/9745dbe03669
-  - [net-next,v0,10/14] net/mlx5e: Remove redundant actions arg from validate_goto_chain()
-    https://git.kernel.org/netdev/net-next/c/3cc78411f3f4
-  - [net-next,v0,11/14] net/mlx5e: Remove redundant actions arg from vlan push/pop funcs
-    https://git.kernel.org/netdev/net-next/c/70a140ea6f79
-  - [net-next,v0,12/14] net/mlx5e: TC, Move common flow_action checks into function
-    https://git.kernel.org/netdev/net-next/c/df990477242f
-  - [net-next,v0,13/14] net/mlx5e: TC, Set flow attr ip_version earlier
-    https://git.kernel.org/netdev/net-next/c/d4bb053139e7
-  - [net-next,v0,14/14] net/mlx5: Dynamically resize flow counters query buffer
-    https://git.kernel.org/netdev/net-next/c/b247f32aecad
+Can you come up with a better subject, maybe:
 
-You are awesome, thank you!
+net: bcm4908: Handle dma_set_coherent_mask error codes
+
+or something like that?
+
+> ---
+> Changelog
+> 
+> v1 -> v2
+> 
+> * Change 1. Correct the Fixes tags.
+> * Change 2. CC Florian.
+> ---
+>   drivers/net/ethernet/broadcom/bcm4908_enet.c | 4 +++-
+>   1 file changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/broadcom/bcm4908_enet.c b/drivers/net/ethernet/broadcom/bcm4908_enet.c
+> index 02a569500234..376f81796a29 100644
+> --- a/drivers/net/ethernet/broadcom/bcm4908_enet.c
+> +++ b/drivers/net/ethernet/broadcom/bcm4908_enet.c
+> @@ -708,7 +708,9 @@ static int bcm4908_enet_probe(struct platform_device *pdev)
+>   
+>   	enet->irq_tx = platform_get_irq_byname(pdev, "tx");
+>   
+> -	dma_set_coherent_mask(dev, DMA_BIT_MASK(32));
+> +	err = dma_set_coherent_mask(dev, DMA_BIT_MASK(32));
+> +	if (err)
+> +		return err;
+>   
+>   	err = bcm4908_enet_dma_alloc(enet);
+>   	if (err)
+> 
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Florian
