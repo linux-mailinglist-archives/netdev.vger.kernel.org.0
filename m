@@ -2,94 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F7FB466F96
-	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 03:10:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B625D466FB3
+	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 03:22:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378009AbhLCCNp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Dec 2021 21:13:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54692 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377988AbhLCCNo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 21:13:44 -0500
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAD2CC06174A;
-        Thu,  2 Dec 2021 18:10:21 -0800 (PST)
-Received: by mail-pf1-x433.google.com with SMTP id b68so1385922pfg.11;
-        Thu, 02 Dec 2021 18:10:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=bxhOSDS1lNWNpu/rAHqT3lxazEqCiE8aaLRVb2r1asI=;
-        b=VYIZk+aVeAHQLn4E4G1U3HpLkN056bvtFTgSir4Oyh1j8ThZbWFWl2mNGHkzqGbAEt
-         Srk6WfqPpHaLOUfMd769pz3HH1ZwjxAWHLvBBegQs7mpOaawd6ue+meXqixh4fSAtAKG
-         LS62frFX+pLnwd9M4PigQULHMr6mkgyMeTuqQEsYHImfCGQc6OgjJxAMhHtfOKBVp0pA
-         IlLyTHbGwu//HxbWiZ0RDe41UndXWd/3bLCRNzivBLimUI1Gpr1W9KQTgOest1foFWJ7
-         J38wD+bPaDk+Ny8gmCKG+cNuZtfI1+GUa1WRnEMEfTNyMSxZtsM2P5rX4x0aLpF2cpkz
-         sHXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=bxhOSDS1lNWNpu/rAHqT3lxazEqCiE8aaLRVb2r1asI=;
-        b=1Ur/BqbG1mgF9P/vKgNxQC0movcZ3DsWg016MiL1gATmZqwYINNEXD9mxw4B04qYHH
-         AXaQUQhUkIG4lXs6Dr+4JU5kcPc4XCo1XmxFUS0ZhDt60vzgpKQL4d3Pk2h/zJtrWbx1
-         7O+dKyYFCPKJeThKRNpl97dNJiJDS8AjiC8YjCTBSJj2SuL2EtuvKeywY+yZu/gUrSkZ
-         6VNrcCnYDF/qFRX993HmTK3AGIogomCwExotppoyLXgepCpeOTYkTsEJv4lQEZ+pO9/8
-         /yRkOHApjuyyyyz3IfdAQke3e3QMz2IVf/RbhUSdrohzQfl3tpO6AIx+XKXDFOnOui5d
-         3vBQ==
-X-Gm-Message-State: AOAM530tQPooOY2HUz/9HemPIJoZSKJvme4hQR4AtJJBvClXCDPixYHz
-        cr9wunlgyxSRVdvhI+6geXFQhmXergeWFyu4vIs=
-X-Google-Smtp-Source: ABdhPJzBXq+jxloCupcSZbQpB2kWI24EoHIcHOM/rgbzpzNBN+jmAFZPZEqL4x6AEbemWriXCubgf6I2GP/YaTaHuEo=
-X-Received: by 2002:a63:e954:: with SMTP id q20mr2254641pgj.375.1638497421174;
- Thu, 02 Dec 2021 18:10:21 -0800 (PST)
+        id S1350559AbhLCCZ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Dec 2021 21:25:27 -0500
+Received: from mga01.intel.com ([192.55.52.88]:54788 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S240146AbhLCCZ0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 2 Dec 2021 21:25:26 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10186"; a="260897580"
+X-IronPort-AV: E=Sophos;i="5.87,283,1631602800"; 
+   d="scan'208";a="260897580"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Dec 2021 18:22:03 -0800
+X-IronPort-AV: E=Sophos;i="5.87,283,1631602800"; 
+   d="scan'208";a="459894360"
+Received: from liweilv-mobl.ccr.corp.intel.com (HELO [10.167.226.45]) ([10.255.30.243])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Dec 2021 18:22:00 -0800
+Subject: Re: [PATCH v2 1/3] selftests/tc-testing: add exit code
+To:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Davide Caratti <dcaratti@redhat.com>, shuah@kernel.org,
+        linux-kselftest@vger.kernel.org, lizhijian@cn.fujitsu.com,
+        linux-kernel@vger.kernel.org, lkp@intel.com, philip.li@intel.com,
+        Networking <netdev@vger.kernel.org>
+References: <20211117054517.31847-1-zhijianx.li@intel.com>
+ <YZTDcjv4ZPXv8Oaz@dcaratti.users.ipa.redhat.com>
+ <20211117060535.1d47295a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <4ed23cd5-f4a1-aa70-183f-fbea407c19ee@mojatatu.com>
+ <20211117084854.0d44d64b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <d0c32c34-b0a4-ce1e-35d6-1894222e825a@mojatatu.com>
+From:   Li Zhijian <zhijianx.li@intel.com>
+Message-ID: <236a81d3-db14-902f-8833-377ec0a9b7da@intel.com>
+Date:   Fri, 3 Dec 2021 10:21:31 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-References: <cover.1638272238.git.lorenzo@kernel.org> <Yad/QE+3gW3u64hc@lore-desk>
-In-Reply-To: <Yad/QE+3gW3u64hc@lore-desk>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 2 Dec 2021 18:10:10 -0800
-Message-ID: <CAADnVQL6WQL460G1cn_n68oAOMcJGJ0JBr+ksR=i7VL4W7Z56A@mail.gmail.com>
-Subject: Re: [PATCH v19 bpf-next 00/23] mvneta: introduce XDP multi-buffer support
-To:     Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, shayagr@amazon.com,
-        John Fastabend <john.fastabend@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Saeed Mahameed <saeed@kernel.org>,
-        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        tirthendu.sarkar@intel.com,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <d0c32c34-b0a4-ce1e-35d6-1894222e825a@mojatatu.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 1, 2021 at 5:57 AM Lorenzo Bianconi
-<lorenzo.bianconi@redhat.com> wrote:
->
-> [...]
->
-> @Alexei and @Daniel,
->
-> there is a trivial conflict with bpf_loop helper (because the series was not
-> merged when I posted v19):
->
-> commit e6f2dd0f80674e9d5960337b3e9c2a242441b326
-> Author: Joanne Koong <joannekoong@fb.com>
-> Date:   Mon Nov 29 19:06:19 2021 -0800
->
->     bpf: Add bpf_loop helper
->
-> Do you want me to post v20 after waiting for some more feedbacks on v19?
+CCed netdev
 
-Let's wait for Daniel's review before respin.
+Kindly ping
+
+
+On 18/11/2021 00:51, Jamal Hadi Salim wrote:
+> On 2021-11-17 11:48, Jakub Kicinski wrote:
+>> On Wed, 17 Nov 2021 11:41:18 -0500 Jamal Hadi Salim wrote:
+>>> Did you mean adding a maintainer for tdc or just generally point
+>>> who/what to involve when making changes? Typically the mailing list
+>>> should be sufficient. Outside the list, at the moment, any outstanding
+>>> issues on tdc are discussed/resolved in the monthly TC meetups (where
+>>> all the stake holders show up)...
+>>
+>> I'm mostly interested in the code review and merging part.
+>>
+>> Would be great to have a MAINTAINERS entry with a set of folks
+>> who can review patches, so that get_maintainers.pl can do its job.
+>>
+>> At the very least to make sure netdev is CCed.
+>
+> ACK.
+>
+> cheers,
+> jamal
+>
+
