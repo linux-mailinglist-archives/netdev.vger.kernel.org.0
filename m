@@ -2,170 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FAC4467430
-	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 10:40:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 017EE467441
+	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 10:44:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351581AbhLCJnw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Dec 2021 04:43:52 -0500
-Received: from mail.netfilter.org ([217.70.188.207]:58552 "EHLO
-        mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350990AbhLCJnv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Dec 2021 04:43:51 -0500
-Received: from netfilter.org (unknown [78.30.32.163])
-        by mail.netfilter.org (Postfix) with ESMTPSA id 13926605C1;
-        Fri,  3 Dec 2021 10:38:07 +0100 (CET)
-Date:   Fri, 3 Dec 2021 10:40:21 +0100
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Simon Kirby <sim@hostway.ca>
-Cc:     Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, lvs-devel@vger.kernel.org
-Subject: Re: Inability to IPVS DR with nft dnat since 9971a514ed26
-Message-ID: <YanmBakAtiqyoR3b@salvia>
-References: <20190327062650.GA10700@hostway.ca>
- <20190327093027.gmflo27icuhr326p@breakpoint.cc>
- <20211203083452.GA13536@hostway.ca>
+        id S1379619AbhLCJsJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Dec 2021 04:48:09 -0500
+Received: from mail2-relais-roc.national.inria.fr ([192.134.164.83]:54614 "EHLO
+        mail2-relais-roc.national.inria.fr" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1379612AbhLCJsJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Dec 2021 04:48:09 -0500
+IronPort-Data: =?us-ascii?q?A9a23=3AewDhkK6Yx6AvaCeURWuN7AxRtH3GchMFZxGqfqr?=
+ =?us-ascii?q?LsXjdYENSgzdUzmZKWWuOPP+CNjajeI0kbNiyp0MAsMODmoM1GQY5pCpnJ55og?=
+ =?us-ascii?q?ZqcVI7Bdi8cHAvLc5adFBo/hykmh2ipwPkcFhcwnT/wdOi+xZVA/fvQHOOlUra?=
+ =?us-ascii?q?eYnsZqTJME0/NtzoywobVvaY42bBVMyvV0T/Di5W31G2Ng1aYAUpIg063ky6Di?=
+ =?us-ascii?q?dyp0N8uUvPSUtgQ1LPWvyF94JvyvshdJVOgKmVfNrbSq+ouUNiEEm3lExcFUrt?=
+ =?us-ascii?q?Jk577e0EQQ7PUVeSMoioLHfbyxEEY/2prjf1T2Pk0MC+7jx2LgtRwwZNJvIO5T?=
+ =?us-ascii?q?QMBP6vWme1bXQMw/yRWbfQdoeKcexBTtuTWlSUqaUDE3fB/EEcnPqUd8/xpDGV?=
+ =?us-ascii?q?Ks/cfLVglbRqehua6hbu/TsFoh98/N4+zZcUYoH4I5TXYC+s2BJXGa6bU7NRbm?=
+ =?us-ascii?q?jAqiahmBvvEZ8sILzBobRfHSxhGIEkaDJZ4l+Ct7lHjeD1fslSEpIIy6nLNwQh?=
+ =?us-ascii?q?1lrPqNbL9ecGATO1Wk1yeq2aA+H72ajkcOcCTxCSt7H2hnKnMkDn9VYZUE6e3n?=
+ =?us-ascii?q?tZugVuO1ikQBQcQWF+Tv/a0kAi9VshZJkhS/TAhxZXeXmTDosLVBkLj5ife51h?=
+ =?us-ascii?q?CC5wATqsg5R/L0aTOpQCUGgA5ovd6QIROnKcLqfYCjDdlR+/UOAE=3D?=
+IronPort-HdrOrdr: =?us-ascii?q?A9a23=3ASAs6O6ifFRbQn3FR4TTqWRlBx3BQX4x13DAb?=
+ =?us-ascii?q?v31ZSRFFG/Fws/re7cjzsiWEwQr5OUtQ0exoXZPwJU80mqQFm7X5V43OYODZgh?=
+ =?us-ascii?q?riEGgP1/qU/9SCIVyBygc+79YcT0EkMqyFMbESt6+Ti2XWYrRQpajhgcbY/Jan?=
+ =?us-ascii?q?vgxQoBlRGsJdBmFCe3Cm+2JNNUN77PECZemhD6R81kadkDgsH7uG7rhsZZmwm/?=
+ =?us-ascii?q?T70LbvYRsDDxliwBCWljW25LO/OwXw5GZvb9vBqY1ShFQt/jaS2oyT986W8SL9?=
+ =?us-ascii?q?/Uf3q7Ru3OP8wsBKA9GNjcRQChiEsGiVTbUkZJG4gRAeiMTqyG9vqvPlhDANEq?=
+ =?us-ascii?q?1Iik/5TyWLjSDR+yPJ9XIP0jvZ0FedxUHop9f0LQhbN/Z8?=
+X-IronPort-AV: E=Sophos;i="5.87,283,1631570400"; 
+   d="scan'208";a="8131532"
+Received: from 173.121.68.85.rev.sfr.net (HELO hadrien) ([85.68.121.173])
+  by mail2-relais-roc.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 03 Dec 2021 10:44:44 +0100
+Date:   Fri, 3 Dec 2021 10:44:43 +0100 (CET)
+From:   Julia Lawall <julia.lawall@inria.fr>
+X-X-Sender: jll@hadrien
+To:     Volodymyr Mytnyk <vmytnyk@marvell.com>
+cc:     kbuild-all@lists.01.org,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Serhiy Boiko <serhiy.boiko@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] net: prestera: fix flexible_array.cocci warnings
+Message-ID: <alpine.DEB.2.22.394.2112031043180.5247@hadrien>
+User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20211203083452.GA13536@hostway.ca>
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+From: kernel test robot <lkp@intel.com>
 
-On Fri, Dec 03, 2021 at 12:34:52AM -0800, Simon Kirby wrote:
-> On Wed, Mar 27, 2019 at 10:30:27AM +0100, Florian Westphal wrote:
-> 
-> > Simon Kirby <sim@hostway.ca> wrote:
-> > > We have been successfully using nft dnat and IPVS in DR mode on 4.9, 4.14
-> > > kernels, but since upgrading to 4.19, such rules now appear to miss the
-> > > IPVS input hook and instead appear to hit localhost (and "tcpdump -ni lo"
-> > > shows the packets) instead of being forwarded to a real server.
-> > > 
-> > > I bisected this to 9971a514ed2697e542f3984a6162eac54bb1da98 ("netfilter:
-> > > nf_nat: add nat type hooks to nat core").
-> > > 
-> > > It should be pretty easy to see this with a minimal setup:
-> > > 
-> > > /etc/nftables.conf:
-> > > 
-> > > table ip nat {
-> > >         chain prerouting {
-> > >                 type nat hook prerouting priority 0;
+Zero-length and one-element arrays are deprecated, see
+Documentation/process/deprecated.rst
+Flexible-array members should be used instead.
 
-This priority number does not look correct, this should be -100 which
-is NF_IP_PRI_NAT_DST (in recent nftables versions you can use:
+Generated by: scripts/coccinelle/misc/flexible_array.cocci
 
-        ... priority dstnat;
+Fixes: 6e36c7bcb461 ("net: prestera: add counter HW API")
+CC: Volodymyr Mytnyk <vmytnyk@marvell.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Julia Lawall <julia.lawall@inria.fr>
+---
 
-> > > 		ip daddr $ext_ip dnat to $vip
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
+head:   9606f9efb1cec7f8f5912326f182fbfbcad34382
+commit: 6e36c7bcb4611414b339173cdc33fdcb55c08f9e [4129/4921] net: prestera: add counter HW API
+:::::: branch date: 19 hours ago
+:::::: commit date: 3 days ago
 
-Why do you need DNAT in this case? In the IPVS DR mode virtual server
-and the load balancer already own the same IP address.
+Please take the patch only if it's a positive warning. Thanks!
 
-> > > 	}
-> > > 	chain postrouting {
-> > > 		type nat hook postrouting priority 100;
-> > > 
-> > > 		# In theory this hook no longer needed since this commit,
-> > > 		# but we also need to do some unrelated snatting.
-> > > 	}
+ prestera_hw.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Your configuration is also missing the input/output nat hooks, which
-also need to be registered manually. Otherwise, NAT and locally
-generated traffic might break.
+--- a/drivers/net/ethernet/marvell/prestera/prestera_hw.c
++++ b/drivers/net/ethernet/marvell/prestera/prestera_hw.c
+@@ -443,7 +443,7 @@ struct prestera_msg_counter_resp {
+ 	__le32 offset;
+ 	__le32 num_counters;
+ 	__le32 done;
+-	struct prestera_msg_counter_stats stats[0];
++	struct prestera_msg_counter_stats stats[];
+ };
 
-In the kernel 4.14 and below, all of the NAT hooks in nftables need to
-be manually registered in order for NAT to work.
-
-> > > }
-> > > 
-> > > /etc/sysctl.conf:
-> > > 	
-> > > net.ipv4.conf.all.accept_local = 1
-> > > net.ipv4.vs.conntrack = 1
-> > > 
-> > > IPVS DR setup:
-> > > 
-> > > ipvsadm -A -t $vip:80 -s wrr
-> > > ipvsadm -a -t $vip:80 -r $real_ip:80 -g -w 100
-> > 
-> > I have a hard time figuring out how to expand $ext_ip, $vip and $real_ip,
-> > and where to place those addresses on the nft machine.
-> 
-> I had some time to set up some test VMs for this, which I can post if
-> you'd like (several GB), or I can tarball up the configs.
-> 
-> Our setup still doesn't work in 5.15, and we have some LVS servers held
-> up on 4.14 kernels that are the last working stable branch.
-> 
-> LVS expects the VIPs to route to loopback in order to reach the ipvs
-> hook, and since 9971a514ed2697e542f3984a6162eac54bb1da98 ("netfilter:
-> nf_nat: add nat type hooks to nat core"), the nftrace output changes to
-> show that the ipvs_vs_dr_xmit packet is oif "lo" rather than "enp1s0".
-> 
-> With perf probes, I found that the reason the outbound device is changing
-> is that there is an nft hook that ends up calling ip_route_me_harder().
-
-This is called from local_out path for NAT, is the $vip owned by your
-load balancer? Then the route lookup is correct since it points to the
-address that your load balancer owns.
-
-> This function is not called prior to this change, but we can make it be
-> called even on 4.14 by hooking nat output (with no rules) or route output
-> with anything modifying, such as "mark set 1".
-> 
-> We just didn't happen to hook this previously, so it worked for us, but
-> after this change, all hooks (including output) are always applied.
-> 
-> # perf probe -a 'ip_route_me_harder%return retval=$retval'
-> # perf record -g -e probe:ip_route_me_harder__return -aR sleep 4
-> (send a test connection)
-> # perf script
-> swapper     0 [000]  1654.547622: probe:ip_route_me_harder__return: (ffffffff819ac910 <- ffffffffa002b8f6) retval=0x0
->         ffffffff810564b0 kretprobe_trampoline+0x0 (vmlinux-4.14.252)
->         ffffffffa0084090 nft_nat_ipv4_local_fn+0x10 ([nft_chain_nat_ipv4])
->         ffffffff8193e793 nf_hook_slow+0x43 (vmlinux-4.14.252)
->         ffffffffa004af2b ip_vs_dr_xmit+0x18b ([ip_vs])
->         ffffffffa003fb2e ip_vs_in+0x58e ([ip_vs])
->         ffffffffa00400d1 ip_vs_local_request4+0x21 ([ip_vs])
->         ffffffffa00400e9 ip_vs_remote_request4+0x9 ([ip_vs])
->         ffffffff8193e793 nf_hook_slow+0x43 (vmlinux-4.14.252)
->         ffffffff8195c48b ip_local_deliver+0x7b (vmlinux-4.14.252)
->         ffffffff8195c0b8 ip_rcv_finish+0x1f8 (vmlinux-4.14.252)
->         ffffffff8195c7b7 ip_rcv+0x2e7 (vmlinux-4.14.252)
->         ffffffff818dc113 __netif_receive_skb_core+0x883 (vmlinux-4.14.252)
-> (pruned a bit)
-> 
-> On 5.15, the trace is similar, but nft_nat_ipv4_local_fn is gone
-> (nft_nat_do_chain is inlined).
-> 
-> nftrace output through "nft monitor trace" shows it changing the packet
-> dest between filter output and nat postrouting:
-> 
-> ...
-> trace id 32904fd3 ip filter output packet: oif "enp1s0" @ll,0,112 0x5254009039555254002ace280800 ip saddr 192.168.7.1 ip daddr 10.99.99.10 ip dscp 0x04 ip ecn not-ect ip ttl 63 ip id 5753 ip length 60 tcp sport 58620 tcp dport 80 tcp flags == syn tcp window 64240
-> trace id 32904fd3 ip filter output verdict continue
-> trace id 32904fd3 ip filter output policy accept
-> trace id 32904fd3 ip nat postrouting packet: iif "enp1s0" oif "lo" ether saddr 52:54:00:2a:ce:28 ether daddr 52:54:00:90:39:55 ip saddr 192.168.7.1 ip daddr 10.99.99.10 ip dscp 0x04 ip ecn not-ect ip ttl 63 ip id 5753 ip length 60 tcp sport 58620 tcp dport 80 tcp flags == syn tcp window 64240
-> trace id 32904fd3 ip nat postrouting verdict continue
-> trace id 32904fd3 ip nat postrouting policy accept
-> 
-> On 4.14 without hooking nat output, the oif for nat postrouting remains
-> unchanged ("enp1s0").
-> 
-> If we avoid the nftables dnat rule and connect directly to the LVS VIP,
-> it still works on newer kernels, I suspect because nf_nat_ipv4_fn()
-> doesn't match. If we dnat directly to the DR VIP without LVS, it works
-> because the dest is not loopback, as expected. It's the combination of
-> these two that used to work, but now doesn't.
-
-Is your load balancer owning the IP address that you use to dnat?
-
-> Our specific use case here is that we're doing the dnat from public to
-> rfc1918 space, and the rfc1918 LVS VIPs support some hairpinning cases.
-> 
-> Any ideas?
-> 
-> Simon-
+ struct prestera_msg_span_req {
