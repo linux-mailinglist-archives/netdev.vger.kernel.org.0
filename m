@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 15446467041
+	by mail.lfdr.de (Postfix) with ESMTP id 824C5467042
 	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 03:48:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378270AbhLCCvc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Dec 2021 21:51:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35070 "EHLO
+        id S1378272AbhLCCvf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Dec 2021 21:51:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378269AbhLCCvb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 21:51:31 -0500
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3E4EC061757
-        for <netdev@vger.kernel.org>; Thu,  2 Dec 2021 18:48:08 -0800 (PST)
-Received: by mail-pf1-x431.google.com with SMTP id x5so1546060pfr.0
-        for <netdev@vger.kernel.org>; Thu, 02 Dec 2021 18:48:08 -0800 (PST)
+        with ESMTP id S1378269AbhLCCve (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 21:51:34 -0500
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0A54C06174A
+        for <netdev@vger.kernel.org>; Thu,  2 Dec 2021 18:48:11 -0800 (PST)
+Received: by mail-pg1-x533.google.com with SMTP id 137so1655012pgg.3
+        for <netdev@vger.kernel.org>; Thu, 02 Dec 2021 18:48:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=20Cb5L4Nfh6M+TGH/ohYepS0hgWA3PLHDkuxzPE2zO0=;
-        b=b1y0hvvODp4aUqy4VRJeN4mnsi80HDuqUbHPIpjAiccEEV6CFJh+CISv2XkWczU2Uc
-         vkITUNVbOtn+cesV5N6Na7CbKUFL2VHFQ/TwgFJw+l2tmFmrH2uOyRH61fSzPg8ZCkGS
-         YWRhwHQyL6RVUKYS7C4fmWqeQN2oRr6wcxvqIOf3XRWlEK7O/dlJyoLzyW1cM1UJN8AE
-         IKDGn6v1iysiJwNTW/RXQHXHPZIov3Ew71O2R8id9oDOlM4NK0BYxP087jiriGyGruy9
-         aMmWbqltx8wMPzJOwu0+XVVMgZdURPzrrDrF2S/1ionmU5EJymRbnj4Hw4CtSj6hKggV
-         ah5A==
+        bh=K+AadUv33QFmjFDOBOvnFpBm7Lw7zZYJtLUilhe63TU=;
+        b=ZJ4PlXxjX2lftb8BX5v0JSYBVXhN/flxonV6GkHwzVI0o0qOKeUZoNCfjR9nJTmVF5
+         cPFWpAJdRk53+t+meXand+XoH3Qbp6S/OM4/Srcisg1oBlKHCuXAGRUxQqwTNWpqVx68
+         a2VVEi4KJqPaUf1ujJ6zgA8oi9h20lxmCgKRIfdgeZn1YcItZmCOcYDqGa/jPklVGbGp
+         YQDZo6RPIi6cK0mI5sEevS2nqkVr81jsTaQXFYOupMs0w3OGkovFb3lGFZDgSBdgO3gi
+         PrIXKmh+9P3VWR9Qmfwu/FfufT6Uvx9pPSnijekzbceKZWURxEULnjZlTGNyuGTP9mxB
+         N+Aw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=20Cb5L4Nfh6M+TGH/ohYepS0hgWA3PLHDkuxzPE2zO0=;
-        b=SZpIMcHjRE0bKdqpTjskEBaljCJdm86wRL41cx8n0VjOp5L5NkqxLw0pPRheLb97yC
-         vqn2PzgCgbPcqDYd3s+q6UBP06tLilnxwMyZYn+HItI+l3dSxnwXKuSAFYFY97fnWP1Q
-         eeV1XOezN49AzxAHTf0W+35MQwFf0VlAl6rNpOy+z7vrRchMYiaUfu59JV1mtNZ/4uSF
-         2PJLTC/m9FXA8tr2BQZi3L7OPxAttxBSY8VUbU/O/KppNERr2fWVhEIfaqQxGEfII445
-         qafOBeUz+ki9Bel0vxDyNVVPZRlQo7eJHcXOScbtPBSvndTpMLmW480sxjvY+zVmvZXV
-         f12w==
-X-Gm-Message-State: AOAM5307pyLCE0Y+6W9G9HRzgd9Foh2+/qPpjMsvFqo/Lb+E3vBdNRVX
-        39PghIh2Z7QVO86vHSdgJMc=
-X-Google-Smtp-Source: ABdhPJwCymo+fxCDMIaxF2rsqHnd5NzqmOjOZF9fEbIwx/m51uH8L7gq+WmvAZPRBmc/+dHQF4K1QQ==
-X-Received: by 2002:a63:2cd1:: with SMTP id s200mr2423573pgs.489.1638499688351;
-        Thu, 02 Dec 2021 18:48:08 -0800 (PST)
+        bh=K+AadUv33QFmjFDOBOvnFpBm7Lw7zZYJtLUilhe63TU=;
+        b=VsWVEzFLWzlXhojXXfZ5PxC0P7sg7YtT+n7zBRAwsM4UXOTg6QnguR0DxA8A6Pym5f
+         +RPYc0U8gdXHImYZ+DDl1tQKG8zF5aqBGgzxzlkbw3gIkyOjTH5cuUI4HSenUt3MSPl7
+         VhHcCzPWmxKFBYjdsbo8nxtG/CLZ6JhGTujehUTMhIe72cqV930XeM2tIS+/WjMa23Mz
+         AYWwSjfHvZxcNawc9ZC09NTR7IulCOgUgINPBosDnJmLMtfCWO83jPyB0kzO9PmjYI0b
+         BtHM7Qk2iVtIAEvVQD1atk3wP+pyJ7aWpgs8ATxPhjipf4yPK1HfxyDPULzsKN/qHnpK
+         h6lA==
+X-Gm-Message-State: AOAM533RyQIq8FiAHNYMO1Y/Q9ZOcKdJjw4VBa2uECzkdmJuKJCz+3va
+        BgegghVGeI0TEB0x6cgXDgg=
+X-Google-Smtp-Source: ABdhPJwQWmUo3EeJjEmhqdCdAErHrw4N1NCmN1Smpz9OC+/QpFBAtjb1RCm7Ah3jeRt50qwPScGJhQ==
+X-Received: by 2002:a63:6a82:: with SMTP id f124mr2529692pgc.154.1638499691248;
+        Thu, 02 Dec 2021 18:48:11 -0800 (PST)
 Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:6c4b:c5cb:ac63:1ebf])
-        by smtp.gmail.com with ESMTPSA id k2sm1230260pfc.53.2021.12.02.18.48.07
+        by smtp.gmail.com with ESMTPSA id k2sm1230260pfc.53.2021.12.02.18.48.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Dec 2021 18:48:08 -0800 (PST)
+        Thu, 02 Dec 2021 18:48:10 -0800 (PST)
 From:   Eric Dumazet <eric.dumazet@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -54,9 +54,9 @@ Cc:     netdev <netdev@vger.kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         Dmitry Vyukov <dvyukov@google.com>,
         Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH v2 net-next 16/23] net: add net device refcount tracker to struct netdev_adjacent
-Date:   Thu,  2 Dec 2021 18:46:33 -0800
-Message-Id: <20211203024640.1180745-17-eric.dumazet@gmail.com>
+Subject: [PATCH v2 net-next 17/23] ipv6: add net device refcount tracker to struct inet6_dev
+Date:   Thu,  2 Dec 2021 18:46:34 -0800
+Message-Id: <20211203024640.1180745-18-eric.dumazet@gmail.com>
 X-Mailer: git-send-email 2.34.1.400.ga245620fadb-goog
 In-Reply-To: <20211203024640.1180745-1-eric.dumazet@gmail.com>
 References: <20211203024640.1180745-1-eric.dumazet@gmail.com>
@@ -70,49 +70,56 @@ From: Eric Dumazet <edumazet@google.com>
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- net/core/dev.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ include/net/if_inet6.h   | 1 +
+ net/ipv6/addrconf.c      | 4 ++--
+ net/ipv6/addrconf_core.c | 2 +-
+ 3 files changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 1740d6cfe86b58359cceaec7ee9cc015a3843723..4420086f3aeb34614fc8222206dff2b2caa31d02 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -6537,6 +6537,7 @@ static __latent_entropy void net_rx_action(struct softirq_action *h)
+diff --git a/include/net/if_inet6.h b/include/net/if_inet6.h
+index 653e7d0f65cb7a5e7458daf860215d1873c532e7..f026cf08a8e86c54ea5d9f1abddd5f0e3caf402b 100644
+--- a/include/net/if_inet6.h
++++ b/include/net/if_inet6.h
+@@ -160,6 +160,7 @@ struct ipv6_devstat {
  
- struct netdev_adjacent {
- 	struct net_device *dev;
-+	netdevice_tracker dev_tracker;
+ struct inet6_dev {
+ 	struct net_device	*dev;
++	netdevice_tracker	dev_tracker;
  
- 	/* upper master flag, there can only be one master device per list */
- 	bool master;
-@@ -7301,7 +7302,7 @@ static int __netdev_adjacent_dev_insert(struct net_device *dev,
- 	adj->ref_nr = 1;
- 	adj->private = private;
- 	adj->ignore = false;
--	dev_hold(adj_dev);
-+	dev_hold_track(adj_dev, &adj->dev_tracker, GFP_KERNEL);
+ 	struct list_head	addr_list;
  
- 	pr_debug("Insert adjacency: dev %s adj_dev %s adj->ref_nr %d; dev_hold on %s\n",
- 		 dev->name, adj_dev->name, adj->ref_nr, adj_dev->name);
-@@ -7330,8 +7331,8 @@ static int __netdev_adjacent_dev_insert(struct net_device *dev,
- 	if (netdev_adjacent_is_neigh_list(dev, adj_dev, dev_list))
- 		netdev_adjacent_sysfs_del(dev, adj_dev->name, dev_list);
- free_adj:
-+	dev_put_track(adj_dev, &adj->dev_tracker);
- 	kfree(adj);
--	dev_put(adj_dev);
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index 3445f8017430f145496bad78afd6378bf5cb1c02..3eee17790a82fe6c528db4e821b11444cfa26866 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -405,13 +405,13 @@ static struct inet6_dev *ipv6_add_dev(struct net_device *dev)
+ 	if (ndev->cnf.forwarding)
+ 		dev_disable_lro(dev);
+ 	/* We refer to the device */
+-	dev_hold(dev);
++	dev_hold_track(dev, &ndev->dev_tracker, GFP_KERNEL);
  
- 	return ret;
- }
-@@ -7372,7 +7373,7 @@ static void __netdev_adjacent_dev_remove(struct net_device *dev,
- 	list_del_rcu(&adj->list);
- 	pr_debug("adjacency: dev_put for %s, because link removed from %s to %s\n",
- 		 adj_dev->name, dev->name, adj_dev->name);
--	dev_put(adj_dev);
-+	dev_put_track(adj_dev, &adj->dev_tracker);
- 	kfree_rcu(adj, rcu);
- }
- 
+ 	if (snmp6_alloc_dev(ndev) < 0) {
+ 		netdev_dbg(dev, "%s: cannot allocate memory for statistics\n",
+ 			   __func__);
+ 		neigh_parms_release(&nd_tbl, ndev->nd_parms);
+-		dev_put(dev);
++		dev_put_track(dev, &ndev->dev_tracker);
+ 		kfree(ndev);
+ 		return ERR_PTR(err);
+ 	}
+diff --git a/net/ipv6/addrconf_core.c b/net/ipv6/addrconf_core.c
+index 1d4054bb345b72204179c17b4ebc69e11e3faf53..881d1477d24ad5af79fd744bee1e0792fcfa483d 100644
+--- a/net/ipv6/addrconf_core.c
++++ b/net/ipv6/addrconf_core.c
+@@ -263,7 +263,7 @@ void in6_dev_finish_destroy(struct inet6_dev *idev)
+ #ifdef NET_REFCNT_DEBUG
+ 	pr_debug("%s: %s\n", __func__, dev ? dev->name : "NIL");
+ #endif
+-	dev_put(dev);
++	dev_put_track(dev, &idev->dev_tracker);
+ 	if (!idev->dead) {
+ 		pr_warn("Freeing alive inet6 device %p\n", idev);
+ 		return;
 -- 
 2.34.1.400.ga245620fadb-goog
 
