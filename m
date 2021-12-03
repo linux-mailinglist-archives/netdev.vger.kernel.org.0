@@ -2,93 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2955B467C33
-	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 18:05:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 81B43467C5B
+	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 18:19:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240032AbhLCRIu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Dec 2021 12:08:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33290 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234423AbhLCRIu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Dec 2021 12:08:50 -0500
-Received: from mail-ot1-x32f.google.com (mail-ot1-x32f.google.com [IPv6:2607:f8b0:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A6F5C061751
-        for <netdev@vger.kernel.org>; Fri,  3 Dec 2021 09:05:26 -0800 (PST)
-Received: by mail-ot1-x32f.google.com with SMTP id x19-20020a9d7053000000b0055c8b39420bso4152039otj.1
-        for <netdev@vger.kernel.org>; Fri, 03 Dec 2021 09:05:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=utEWWJWCkIkBpnfbd0GlEWSSdXyFrxBmwVjIY7e8ZOk=;
-        b=QOgYXXrH89NVmvg1JknUCwAtXYQETcJIXfkETH/lKpXH48TIx/5VkG+X3WHOPrZD7J
-         YMXS5X8IPUoK+ZoJXdX6FJ1gG8XI7/6JTwTjFEUV5mj84ArSl0230nhlqpAoDsyg3PZ8
-         n4ez55Vw9+6xol6gNhLvhcCcapGhtIIXrY8TLOfHmabllUmhxXD5qOWS4yBLz9TpoOtp
-         VLUJMmujA3VIPU94tGNlYDU7VQzbivSNt8r7xSmsEGSatvubYDMAKu97XXFkso4nakYO
-         1aoAR2efqZkU70eYrP6sjpuOXei7gdaPMmkRI59vPCW8CxABmwh5lFSQ1M99hVOpQSJB
-         XREQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=utEWWJWCkIkBpnfbd0GlEWSSdXyFrxBmwVjIY7e8ZOk=;
-        b=jDH0mTdX6NwSBqVyvLZ+OaMo+ceRQ8ZNDz9sm8AHr1mLGWI+liiPWOghDQ7BXQt8d8
-         0vwDZMANWaCo5reCbDLk8anY07NYX7A4ewiV8fC3Ng1rgNsydPiWvhbHDBofC+CBttL/
-         8mv3Fnyt1gGZO10Ec4NET6Lhwj2rrJgppBL34kJuFg+17FC24eTaiu8acFLQyLrcWUSK
-         5RZ+gkMO6gLecMXdvRx8bIQ9iXY0ZfxMgFhaQ69VBfFePFz6nIw2suFVnNMkQgcohRNM
-         igGUCQPdquxw5IVUqx9vCbJ5RzWAUC8YSoywG+aGfBEvCHvjqREfbbMRGxvtZkbvKtBM
-         u9Tg==
-X-Gm-Message-State: AOAM530f1I1ujdyfmfh4RxWtwL231QU7ENsWNNaYS0RMUc8m6EbZM1q9
-        KrGqeSZDCGR8b1L/wtR7IceAWmVQ1E0=
-X-Google-Smtp-Source: ABdhPJxTQr22OYqI+8MVVWX2lPRrsqqfuOBij7hFh8aXcoar0mz8cpSccgVfGj2Djx64YxbporFoXA==
-X-Received: by 2002:a05:6830:1e97:: with SMTP id n23mr16892839otr.4.1638551125619;
-        Fri, 03 Dec 2021 09:05:25 -0800 (PST)
-Received: from [172.16.0.2] ([8.48.134.30])
-        by smtp.googlemail.com with ESMTPSA id o6sm704286oou.41.2021.12.03.09.05.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 03 Dec 2021 09:05:25 -0800 (PST)
-Message-ID: <3cbabdb5-8c45-68e0-e60e-7bf16fe19f54@gmail.com>
-Date:   Fri, 3 Dec 2021 10:05:24 -0700
+        id S1353413AbhLCRXV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Dec 2021 12:23:21 -0500
+Received: from relay12.mail.gandi.net ([217.70.178.232]:50061 "EHLO
+        relay12.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1353361AbhLCRXV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Dec 2021 12:23:21 -0500
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by relay12.mail.gandi.net (Postfix) with ESMTPSA id C5C38200003;
+        Fri,  3 Dec 2021 17:19:53 +0000 (UTC)
+From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>
+Cc:     =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Denis Kirjanov <dkirjanov@suse.de>,
+        Julian Wiedmann <jwi@linux.ibm.com>
+Subject: [PATCH net-next v4 0/4] Add FDMA support on ocelot switch driver
+Date:   Fri,  3 Dec 2021 18:19:12 +0100
+Message-Id: <20211203171916.378735-1-clement.leger@bootlin.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.3.2
-Subject: Re: [iproute2-next 3/4] vdpa: Enable user to set mac address of vdpa
- device
-Content-Language: en-US
-To:     Parav Pandit <parav@nvidia.com>, stephen@networkplumber.org,
-        netdev@vger.kernel.org
-Cc:     virtualization@lists.linux-foundation.org, mst@redhat.com,
-        jasowang@redhat.com
-References: <20211202042239.2454-1-parav@nvidia.com>
- <20211202042239.2454-4-parav@nvidia.com>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <20211202042239.2454-4-parav@nvidia.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/1/21 9:22 PM, Parav Pandit wrote:
-> @@ -233,6 +254,15 @@ static int vdpa_argv_parse(struct vdpa *vdpa, int argc, char **argv,
->  
->  			NEXT_ARG_FWD();
->  			o_found |= VDPA_OPT_VDEV_MGMTDEV_HANDLE;
-> +		} else if ((matches(*argv, "mac")  == 0) &&
+This series adds support for the Frame DMA present on the VSC7514
+switch. The FDMA is able to extract and inject packets on the various
+ethernet interfaces present on the switch.
 
-use strcmp; we are not taking any more uses of matches() for parameters.
+While adding FDMA support, bindings were switched from .txt to .yaml
+and MAC address reading from device-tree was added for testing
+purposes.
 
+------------------
+Changes in V4:
+  - Use regmap for register access
+  - Removed yaml bindings convertion as well as mac address from dt
+  - Removed pre-computed IFH for the moment
+  - Fixed timestamp reading for PTP in FDMA
+  - Fixed wrong exit path for fdma netdev init
+  - Removed spinlock from TX cleanup
+  - Add asynchronous RX chan stop before refilling
+  - Reduce CH_SAFE wait time to 10us
+  - Reduce waiting time for channel to be safe
+  - Completely rework rx to use page recycling (code from gianfar)
+  - Reenable MTU change support since FDMA now supports it transparently
+  - Split TX and RX ring size
+  - Larger RX size to lower page allocation rate
+  - Add static key to check for FDMA to be enabled in fast path
 
-> +			   (o_all & VDPA_OPT_VDEV_MAC)) {
-> +			NEXT_ARG_FWD();
-> +			err = vdpa_argv_mac(vdpa, argc, argv, opts->mac);
-> +			if (err)
-> +				return err;
-> +
-> +			NEXT_ARG_FWD();
-> +			o_found |= VDPA_OPT_VDEV_MAC;
->  		} else {
->  			fprintf(stderr, "Unknown option \"%s\"\n", *argv);
->  			return -EINVAL;
+Changes in V3:
+  - Add timeouts for hardware registers read
+  - Add cleanup path in fdma_init
+  - Rework injection and extraction to used ring like structure
+  - Added PTP support to FDMA
+  - Use pskb_expand_head instead of skb_copy_expand in xmit
+  - Drop jumbo support
+  - Use of_get_ethdev_address
+  - Add ocelot_fdma_netdev_init/deinit
+
+Changes in V2:
+  - Read MAC for each port and not as switch base MAC address
+  - Add missing static for some functions in ocelot_fdma.c
+  - Split change_mtu from fdma commit
+  - Add jumbo support for register based xmit
+  - Move precomputed header into ocelot_port struct
+  - Remove use of QUIRK_ENDIAN_LITTLE due to misconfiguration for tests
+  - Remove fragmented packet sending which has not been tested
+
+Clément Léger (4):
+  net: ocelot: export ocelot_ifh_port_set() to setup IFH
+  net: ocelot: add and export ocelot_ptp_rx_timestamp()
+  net: ocelot: add support for ndo_change_mtu
+  net: ocelot: add FDMA support
+
+ drivers/net/ethernet/mscc/Makefile         |   1 +
+ drivers/net/ethernet/mscc/ocelot.c         |  59 +-
+ drivers/net/ethernet/mscc/ocelot.h         |   3 +
+ drivers/net/ethernet/mscc/ocelot_fdma.c    | 885 +++++++++++++++++++++
+ drivers/net/ethernet/mscc/ocelot_fdma.h    | 177 +++++
+ drivers/net/ethernet/mscc/ocelot_net.c     |  39 +-
+ drivers/net/ethernet/mscc/ocelot_vsc7514.c |   8 +
+ include/soc/mscc/ocelot.h                  |   9 +
+ 8 files changed, 1155 insertions(+), 26 deletions(-)
+ create mode 100644 drivers/net/ethernet/mscc/ocelot_fdma.c
+ create mode 100644 drivers/net/ethernet/mscc/ocelot_fdma.h
+
+-- 
+2.34.1
 
