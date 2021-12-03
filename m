@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BAF03467045
-	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 03:48:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FE9B467046
+	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 03:48:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378277AbhLCCvp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Dec 2021 21:51:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35124 "EHLO
+        id S1378282AbhLCCvr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Dec 2021 21:51:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243291AbhLCCvn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 21:51:43 -0500
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 907AFC06174A
-        for <netdev@vger.kernel.org>; Thu,  2 Dec 2021 18:48:20 -0800 (PST)
-Received: by mail-pj1-x102e.google.com with SMTP id j6-20020a17090a588600b001a78a5ce46aso4079151pji.0
-        for <netdev@vger.kernel.org>; Thu, 02 Dec 2021 18:48:20 -0800 (PST)
+        with ESMTP id S243291AbhLCCvr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 21:51:47 -0500
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB50EC06174A
+        for <netdev@vger.kernel.org>; Thu,  2 Dec 2021 18:48:23 -0800 (PST)
+Received: by mail-pf1-x436.google.com with SMTP id 8so1505466pfo.4
+        for <netdev@vger.kernel.org>; Thu, 02 Dec 2021 18:48:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ZJIQeK0EgG/UV5Pt+YkA9U7JwgoNnEnSIPXGj3Jg9Fg=;
-        b=L1uMVXmb4X2+FpKOA9muyrb3cnE3qVmxMS6oBUluU2d15OkQBuWAE6iOvR0ABP1uFW
-         EoUqoUy4KnyxEHJarGxqfA4juDQ0wTGgGqFBJIZfGBdc3Jk5Tih+ptmaCXABlHM8mcF3
-         ibQ9qvB25oKtWQCI/L1TzyfnmUdsMR+Rj1YbmQ4s1nkYaUYgCpwNgx6J3xe2Xli32Ma3
-         eavSKjmu9FyY/SIZ8d5QFWaYYpzMDxZNxJwlUJcYsoYtEeajy5JfceS/3/3SOm5J1X4y
-         q9M7oL5dzk1M8YiIYM/K9xNb8CBOofSX4xQEc0kWX7JdFeoZChfM//NxxCb07VGaf2TI
-         T7Hg==
+        bh=uOGDxUJKSk/sPCLCmeDkNNHP+gUxPNLx3WgXYaYfGGQ=;
+        b=WIrmF0QqnBl45nCot1nWCrdBpNHZNq/MXn+JkP7rRjemAwHK8fq3HLfTtqlFCzYcJm
+         NMfsm+een5yWBRiU5CmOO8YsMCEiTNbDBYTOMrbC89u7FQd4BzIGXweD7b1DdB+2vmYP
+         RT9Tua9upgSGtYWTZc9vUf+fnmvZijCvWlB4OUngy7dj/7NU0GTzxwKBmkdoOGAlcQtD
+         pb4YFHrU9z/SJb/E1trLjTHcNCHIgu9YvzCrVS+xxgWeXpysBf/kbG0Umhak5/RFvfOC
+         wS7mnBjq8o+WSoA89srzfc5S7o/eZ1eke68RQA7Bg7G9qGPoWv6MVtkaMZiFklkZ4FNn
+         bC2A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ZJIQeK0EgG/UV5Pt+YkA9U7JwgoNnEnSIPXGj3Jg9Fg=;
-        b=5r/XoH9LU2LZzI/ozhqLiwXWQkpY/xZjcCtFIrc2KlAZmLkIwel481O/HTEzh++9s8
-         xHhqI6ngxBmhDenVNpd8PQX+Pa8lPsawQMQD9pBeR5I9Nj1//6238odQUQz3uOjyoKGB
-         1cDSJ8/urdrVE+LxcpIBN+iuKbgdgEZTN81IZe6pUb7IdM3jpn74cof0wk2cUTeizPxO
-         Z5XA6UnkoZvp0tuPX8kb4qMv8Ugci/OIzZSrLkY2LWu7JfGuQUvnfsgWowgO7uJ+b+2T
-         8BLqUVuM+HQWEvbLGtU4mHQq67qhpq6wDAPTvWS1MKSS3WMxup3DQqMYFv7pAotFgqXq
-         NqYw==
-X-Gm-Message-State: AOAM5321q4wxyPkJXCxRXGXpUf8jGsvyU2lDawLbC8ak/ogUJt7bpCWN
-        v8YQrm9ZpcUg3qv/GMKsAUbpj+FMEJg=
-X-Google-Smtp-Source: ABdhPJwgJqmIJbTu1O8PpxXhTwO5zB+0SgBPBJrwVAPmb2fNEf5BLZQKXSQCJ8jJvl2kBMdtUIBCFQ==
-X-Received: by 2002:a17:90b:4a0f:: with SMTP id kk15mr10444126pjb.223.1638499700126;
-        Thu, 02 Dec 2021 18:48:20 -0800 (PST)
+        bh=uOGDxUJKSk/sPCLCmeDkNNHP+gUxPNLx3WgXYaYfGGQ=;
+        b=1/7PDufDvXQaIttESkkLZCc2m6ATEDRaKZdp0vb/nWlT6Qbfl9NEJ3hldv5xwXx/2R
+         tx3nMrWJ5SNFQ7GEcR6smUS6zlLJZCl/jPBw22tSBeHZJib/aP1p4wAdqu8cqr6/PDF/
+         a7pgcJ3KLhIN0bdZFEBCfEDj3tKtjdNFZoyzym2asJ+gyyZL/fOnBEA7DlRFwDywclul
+         K+BVFLkdQU5m6fB7xTI+IrDW7mosaKXKLhGGrKCv2jf+COKU3UeXI5pOz2xseLEzo1WG
+         xe3GMn5CAhw3jkuCQrR1xPEjDXMHSTH2Uu1gOPS0EdF2mcxDMzfdSvohgvNLoqS+YSxY
+         u2iA==
+X-Gm-Message-State: AOAM533B2HaWia7yn6ThM9VaXn/Ks2bXcmDyxJ7cvnIjqdOYXdw4Jmow
+        s+sFO7VXNXDOiOweSaNmgfY=
+X-Google-Smtp-Source: ABdhPJzZO5a7aBvu42U14Xoq61pyDVk94I+LPLPzI5cd107E3DrvjAj0YKpfMjZtnPR8jF0Dy9aiWg==
+X-Received: by 2002:a65:4cc7:: with SMTP id n7mr2452528pgt.179.1638499703554;
+        Thu, 02 Dec 2021 18:48:23 -0800 (PST)
 Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:6c4b:c5cb:ac63:1ebf])
-        by smtp.gmail.com with ESMTPSA id k2sm1230260pfc.53.2021.12.02.18.48.19
+        by smtp.gmail.com with ESMTPSA id k2sm1230260pfc.53.2021.12.02.18.48.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Dec 2021 18:48:19 -0800 (PST)
+        Thu, 02 Dec 2021 18:48:23 -0800 (PST)
 From:   Eric Dumazet <eric.dumazet@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -54,9 +54,9 @@ Cc:     netdev <netdev@vger.kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         Dmitry Vyukov <dvyukov@google.com>,
         Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH v2 net-next 20/23] net: linkwatch: add net device refcount tracker
-Date:   Thu,  2 Dec 2021 18:46:37 -0800
-Message-Id: <20211203024640.1180745-21-eric.dumazet@gmail.com>
+Subject: [PATCH v2 net-next 21/23] net: failover: add net device refcount tracker
+Date:   Thu,  2 Dec 2021 18:46:38 -0800
+Message-Id: <20211203024640.1180745-22-eric.dumazet@gmail.com>
 X-Mailer: git-send-email 2.34.1.400.ga245620fadb-goog
 In-Reply-To: <20211203024640.1180745-1-eric.dumazet@gmail.com>
 References: <20211203024640.1180745-1-eric.dumazet@gmail.com>
@@ -68,49 +68,46 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Eric Dumazet <edumazet@google.com>
 
-Add a netdevice_tracker inside struct net_device, to track
-the self reference when a device is in lweventlist.
-
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- include/linux/netdevice.h | 1 +
- net/core/link_watch.c     | 4 ++--
+ include/net/failover.h | 1 +
+ net/core/failover.c    | 4 ++--
  2 files changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index d2bbae8464fc9a2367ee063bdbcba4caa994fa5c..990fb906b524860451b32df6b4bf625780b6d9d7 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -2279,6 +2279,7 @@ struct net_device {
- 	struct bpf_xdp_entity	xdp_state[__MAX_XDP_MODE];
- 
- 	u8 dev_addr_shadow[MAX_ADDR_LEN];
-+	netdevice_tracker	linkwatch_dev_tracker;
+diff --git a/include/net/failover.h b/include/net/failover.h
+index bb15438f39c7d98fe7c5637f08c3cfb23e7e79d2..f2b42b4b9cd6c1fb6561e7deca3c549dcf04f20f 100644
+--- a/include/net/failover.h
++++ b/include/net/failover.h
+@@ -25,6 +25,7 @@ struct failover_ops {
+ struct failover {
+ 	struct list_head list;
+ 	struct net_device __rcu *failover_dev;
++	netdevice_tracker	dev_tracker;
+ 	struct failover_ops __rcu *ops;
  };
- #define to_net_dev(d) container_of(d, struct net_device, dev)
  
-diff --git a/net/core/link_watch.c b/net/core/link_watch.c
-index 9599afd0862dabfca4560de6ec36606bf3742fd6..d7d089963b1da4142a0863715382aa81241625eb 100644
---- a/net/core/link_watch.c
-+++ b/net/core/link_watch.c
-@@ -109,7 +109,7 @@ static void linkwatch_add_event(struct net_device *dev)
- 	spin_lock_irqsave(&lweventlist_lock, flags);
- 	if (list_empty(&dev->link_watch_list)) {
- 		list_add_tail(&dev->link_watch_list, &lweventlist);
--		dev_hold(dev);
-+		dev_hold_track(dev, &dev->linkwatch_dev_tracker, GFP_ATOMIC);
- 	}
- 	spin_unlock_irqrestore(&lweventlist_lock, flags);
- }
-@@ -166,7 +166,7 @@ static void linkwatch_do_dev(struct net_device *dev)
+diff --git a/net/core/failover.c b/net/core/failover.c
+index b5cd3c727285d7a1738118c246abce8d31dac08f..dcaa92a85ea23c54bc5ea68eb8a0f38fb31ff436 100644
+--- a/net/core/failover.c
++++ b/net/core/failover.c
+@@ -252,7 +252,7 @@ struct failover *failover_register(struct net_device *dev,
+ 		return ERR_PTR(-ENOMEM);
  
- 		netdev_state_change(dev);
- 	}
--	dev_put(dev);
-+	dev_put_track(dev, &dev->linkwatch_dev_tracker);
- }
+ 	rcu_assign_pointer(failover->ops, ops);
+-	dev_hold(dev);
++	dev_hold_track(dev, &failover->dev_tracker, GFP_KERNEL);
+ 	dev->priv_flags |= IFF_FAILOVER;
+ 	rcu_assign_pointer(failover->failover_dev, dev);
  
- static void __linkwatch_run_queue(int urgent_only)
+@@ -285,7 +285,7 @@ void failover_unregister(struct failover *failover)
+ 		    failover_dev->name);
+ 
+ 	failover_dev->priv_flags &= ~IFF_FAILOVER;
+-	dev_put(failover_dev);
++	dev_put_track(failover_dev, &failover->dev_tracker);
+ 
+ 	spin_lock(&failover_lock);
+ 	list_del(&failover->list);
 -- 
 2.34.1.400.ga245620fadb-goog
 
