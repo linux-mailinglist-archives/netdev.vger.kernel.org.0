@@ -2,99 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D575467AB4
-	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 16:58:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 008AA467B1A
+	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 17:15:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381932AbhLCQCJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Dec 2021 11:02:09 -0500
-Received: from new1-smtp.messagingengine.com ([66.111.4.221]:39485 "EHLO
-        new1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1381936AbhLCQBu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Dec 2021 11:01:50 -0500
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id D5DC2580299;
-        Fri,  3 Dec 2021 10:58:25 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Fri, 03 Dec 2021 10:58:25 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=JjPqo0
-        7GzclQowIXgO11ef1Z0XrbTc75Ybow2HLgDHM=; b=f4shhmDNENyDIebbipMSlH
-        ZDnY9Qay2V4O8BXWtRSo/7eU3xDc0vBMjSuTuSj0ailJOl9sIASZGKUiHgCMVPNm
-        fVdUcOWgvvMP2w0HCG1jVP8bO65EfZFVHuRZ4lZ5qU8t1Bp6OWnXLPGrq3dbUTBA
-        1KuxcogyhdAY4VNH2JQW84eWLB3y4+TRnr/dBvzTcnQV2o5cpo7RWM6xFDP9wl1C
-        4PE0q9VRN3Bg5F9ETZIQ1ZA3vjedBaIbuFxdoKqhzs2Z7tlH+2prWtK1pXru0srq
-        IBr5kpvqCzQTkULEUR3IssG1lUXVd0bPifWPKX1KUpFBSWqXP4WM/Rlg1PPPqXgQ
-        ==
-X-ME-Sender: <xms:oD6qYd8-8iXaSgjmR-3yWDwQ9ES9WB1nk8nwwJWlk-FnwiwBBrRwvw>
-    <xme:oD6qYRs7K2ycOb1iLZ3nscl1P6KoRYe3LV9tioru5qpZF4hFwQSITCJMjgfKK9yH8
-    2tLa94rjQgUL9Y>
-X-ME-Received: <xmr:oD6qYbDExsN3C_3mTW8t16u5-uaxEbr4d62EFMx2hFoEbPLispkPVoHJJCtXnnnFYODlp_E1lOO3MdB1NB4Uu5fuHchkVw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvuddrieejgdekhecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
-    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
-    hrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudehleet
-    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
-    hstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:oD6qYRdLeye03_rgc5cL3zP7pLEfKRfZwqSkL36AvB2ysANkSLz4CA>
-    <xmx:oD6qYSNnbfx2ESeHx3Zao7XWS76_Q2NnJULK88qFPKIe-ofNeziHdg>
-    <xmx:oD6qYTn4aLShaqiV6UJ9DP_cXopWd_4jbOr1h3NkyY_sosidcAj0Lw>
-    <xmx:oT6qYTmLAbk0-3K-u7gNJcTljd7ZhtXJxMhgpGSR16Vbc-hkfIG3qg>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 3 Dec 2021 10:58:23 -0500 (EST)
-Date:   Fri, 3 Dec 2021 17:58:20 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     "Machnikowski, Maciej" <maciej.machnikowski@intel.com>
-Cc:     Petr Machata <petrm@nvidia.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>,
-        "richardcochran@gmail.com" <richardcochran@gmail.com>,
-        "abyagowi@fb.com" <abyagowi@fb.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-        "mkubecek@suse.cz" <mkubecek@suse.cz>,
-        "saeed@kernel.org" <saeed@kernel.org>,
-        "michael.chan@broadcom.com" <michael.chan@broadcom.com>
-Subject: Re: [PATCH v4 net-next 2/4] ethtool: Add ability to configure
- recovered clock for SyncE feature
-Message-ID: <Yao+nK40D0+u8UKL@shredder>
-References: <20211201180208.640179-1-maciej.machnikowski@intel.com>
- <20211201180208.640179-3-maciej.machnikowski@intel.com>
- <Yai/e5jz3NZAg0pm@shredder>
- <MW5PR11MB5812455176BC656BABCFF1B0EA699@MW5PR11MB5812.namprd11.prod.outlook.com>
- <Yaj13pwDKrG78W5Y@shredder>
- <PH0PR11MB583105F8678665253A362797EA699@PH0PR11MB5831.namprd11.prod.outlook.com>
- <87pmqdojby.fsf@nvidia.com>
- <MW5PR11MB581202E2A601D34E30F1E5AEEA6A9@MW5PR11MB5812.namprd11.prod.outlook.com>
+        id S235626AbhLCQSP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Dec 2021 11:18:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49496 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238837AbhLCQSO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Dec 2021 11:18:14 -0500
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F15E5C061751
+        for <netdev@vger.kernel.org>; Fri,  3 Dec 2021 08:14:49 -0800 (PST)
+Received: by mail-ed1-x530.google.com with SMTP id y13so13470762edd.13
+        for <netdev@vger.kernel.org>; Fri, 03 Dec 2021 08:14:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=qOK8iUXpKDtshLKXbEzuxzFWHAuraVg3kVy5fN0voAk=;
+        b=VArjfpIsvH7R37KlNSdcBWmjGSZIJqnqn1EnSvl8n7a8QAUXYDblPj4hhC2rVV3gSc
+         /HwrwJYJh8wxrf4eLI/u0GJkvtLfHyYGNuE7qS21BqexrswUPfAFx8IupyRHWjQmFdyu
+         OpLuS5ztvgtTTMLF/K8chaNP/urkxVy+J82sefAzMDnq0jdQhGptNRXyuQzL9NUUIGJX
+         AywgnwfPlvlaoWRn4TqVeNikb3CDgXgRD1hPyDWta0nDDd+2CkbFLQlPpBfjyzM3cdjY
+         zGZoXnW6HFUyER5ilFML2CKhG+JGwqiYZKhhUmgce4E1BeA2QMwlf2pTFp0JbmHoA4wR
+         VzMw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=qOK8iUXpKDtshLKXbEzuxzFWHAuraVg3kVy5fN0voAk=;
+        b=Qu6hlzXBC7ddgcgVeDXKMkVauJ0ugu2s82/sHaFbfgwXpVvJ051+i3Q5oVzJtN6e7I
+         k5Wdrc6gRrH6aw2EEYJx8SLrH23xRFVOYmIWcD4ICdlBNqFng4isf259m9s6QISWkId5
+         9yKY6UAPbx1eSSKm+T2q4w0D/uGMGl7QHyo2W5aA7+bW7LQjzSzwCWnlzN7QWWxa16qQ
+         fuDvCEn2Um/vySEOaYzHYO8n5+hG/XmttH8j22qnn+rt/L4sa5ghnkq9seW6pJTEEUIw
+         l9Pkko7Gj3u6we5ofZ951rHdbvHlJ0aAVFbzXU62e1baMzXyFxsDjFp0164Hx664FvqZ
+         GKpQ==
+X-Gm-Message-State: AOAM533o7TnlZNdsEmaXxAG/nz2b9wjeOOjRevbWAwoo1zQibBv81RIc
+        hhoYTABumI0SAQdpmERKVnuwbBwcgs0=
+X-Google-Smtp-Source: ABdhPJwKgEdtAc9TV9frP08kvkgmb/kIL3rQ0YP3AWft0f5I1pRzvgOZ64QXwpAatfmaUCTEO/tGAw==
+X-Received: by 2002:a17:907:3f95:: with SMTP id hr21mr24808575ejc.427.1638548071461;
+        Fri, 03 Dec 2021 08:14:31 -0800 (PST)
+Received: from skbuf ([188.25.173.50])
+        by smtp.gmail.com with ESMTPSA id el20sm2109680ejc.40.2021.12.03.08.14.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 03 Dec 2021 08:14:31 -0800 (PST)
+Date:   Fri, 3 Dec 2021 18:14:29 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     David Laight <David.Laight@ACULAB.COM>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next 2/2] net: optimize skb_postpull_rcsum()
+Message-ID: <20211203161429.htqt4vuzd22rlwkf@skbuf>
+References: <20211124202446.2917972-1-eric.dumazet@gmail.com>
+ <20211124202446.2917972-3-eric.dumazet@gmail.com>
+ <20211202131040.rdxzbfwh2slhftg5@skbuf>
+ <CANn89iLW4kwKf0x094epVeCaKhB4GtYgbDwE2=Fp0HnW8UdKzw@mail.gmail.com>
+ <20211202162916.ieb2wn35z5h4aubh@skbuf>
+ <CANn89iJEfDL_3C39Gp9eD=yPDqW4MGcVm7AyUBcTVdakS-X2dg@mail.gmail.com>
+ <20211202204036.negad3mnrm2gogjd@skbuf>
+ <9eefc224988841c9b1a0b6c6eb3348b8@AcuMS.aculab.com>
+ <20211202214009.5hm3diwom4qsbsjd@skbuf>
+ <eb25fee06370430d8cd14e25dff5e653@AcuMS.aculab.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <MW5PR11MB581202E2A601D34E30F1E5AEEA6A9@MW5PR11MB5812.namprd11.prod.outlook.com>
+In-Reply-To: <eb25fee06370430d8cd14e25dff5e653@AcuMS.aculab.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 03, 2021 at 02:55:05PM +0000, Machnikowski, Maciej wrote:
-> If you have 32 port switch chip with 2 recovered clock outputs how will you
-> tell the chip to get the 18th port to pin 0 and from port 20 to pin 1? That's
-> the part those patches addresses. The further side of "which clock should the
-> EEC use" belongs to the DPLL subsystem and I agree with that.
+On Fri, Dec 03, 2021 at 02:57:04PM +0000, David Laight wrote:
+> From: Vladimir Oltean
+> > Sent: 02 December 2021 21:40
+> ...
+> > >
+> > > Try replacing both ~ with -.
+> > > So replace:
+> > > 		skb->csum = ~csum_partial(start, len, ~skb->csum);
+> > > with:
+> > > 		skb->csum = -csum_partial(start, len, -skb->csum);
+> > >
+> > > That should geneate ~0u instead 0 (if I've got my maths right).
+> > 
+> > Indeed, replacing both one's complement operations with two's complement
+> > seems to produce correct results (consistent with old code) in all cases
+> > that I am testing with (ICMP, TCP, UDP). Thanks!
 > 
-> Or to put it into different words:
-> This API will configure given quality level  frequency reference outputs on chip's
-> Dedicated outputs. On a board you will connect those to the EEC's reference inputs.
+> You need to generate (or persuade Eric to generate) a patch.
+> I don't have the right source tree.
+> 
+> Any code that does ~csum_partial() is 'dubious' unless followed
+> by a check for 0.
+> The two's compliment negate save the conditional - provided the
+> offset of 1 can be added in earlier.
+> 
+> 	David
+> 
+> -
+> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+> Registration No: 1397386 (Wales)
+> 
 
-So these outputs are hardwired into the EEC's inputs and are therefore
-only meaningful as EEC inputs? If so, why these outputs are not
-configured via the EEC object?
-
-> 
-> The EEC's job is to validate the inputs and lock to them following certain rules,
-> The PHY/MAC (and this API) job is to deliver reference signals to the EEC. 
-> 
+Eric, could you please send a patch with this change?
+If you want and if it helps, I can also help you reproduce this locally
+using the dsa_loop mockup driver.
