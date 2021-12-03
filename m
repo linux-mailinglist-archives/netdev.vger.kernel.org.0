@@ -2,230 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA006466F30
-	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 02:39:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ED5D8466F4E
+	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 02:51:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377971AbhLCBnS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Dec 2021 20:43:18 -0500
-Received: from smtp-fw-2101.amazon.com ([72.21.196.25]:53613 "EHLO
-        smtp-fw-2101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377968AbhLCBnR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 20:43:17 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1638495594; x=1670031594;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=SC5WLpsetFc9SNsXuO1/rAy94miJ/5ojJLIk+X43Ttc=;
-  b=tiqVk/z+WUUKYxD2fzQEmDy+3quPlhSl6g/ohiNQwUJgwYjA3YO9fT3e
-   1crnTew632T0XAr1pz3r8jmuKUUvbxc/M+N8uB1WqlXb1eQ1fZCJ5hlAp
-   RmoV0zVn33nzmnMRs4T3f5H1x/sN06Q7owwOs4zMKn5VOaatgfXX1NOGt
-   4=;
-X-IronPort-AV: E=Sophos;i="5.87,283,1631577600"; 
-   d="scan'208";a="156333486"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-pdx-2a-e6c05252.us-west-2.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-2101.iad2.amazon.com with ESMTP; 03 Dec 2021 01:39:52 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
-        by email-inbound-relay-pdx-2a-e6c05252.us-west-2.amazon.com (Postfix) with ESMTPS id F069941FC6;
-        Fri,  3 Dec 2021 01:39:52 +0000 (UTC)
-Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.26; Fri, 3 Dec 2021 01:39:52 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.160.59) by
- EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.26; Fri, 3 Dec 2021 01:39:48 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-To:     <bigeasy@linutronix.de>
-CC:     <eric.dumazet@gmail.com>, <kafai@fb.com>, <davem@davemloft.net>,
-        <dsahern@kernel.org>, <efault@gmx.de>, <kuba@kernel.org>,
-        <netdev@vger.kernel.org>, <tglx@linutronix.de>,
-        <yoshfuji@linux-ipv6.org>, Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-Subject: Re: [PATCH net-next] tcp: Don't acquire inet_listen_hashbucket::lock with disabled BH.
-Date:   Fri, 3 Dec 2021 10:39:34 +0900
-Message-ID: <20211203013934.20645-1-kuniyu@amazon.co.jp>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20211130142302.ikcnjgo2xlbxbbl3@linutronix.de>
-References: <20211130142302.ikcnjgo2xlbxbbl3@linutronix.de>
+        id S243010AbhLCBzB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Dec 2021 20:55:01 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:51474 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236943AbhLCBzA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 20:55:00 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DD91662905;
+        Fri,  3 Dec 2021 01:51:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F38D6C00446;
+        Fri,  3 Dec 2021 01:51:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1638496296;
+        bh=8c4aq1AdxZxDjQt/G6uY3qiBn94axpo7U7Hv78cF/qo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=L4e0sxUPh5LFvxb1DnC5Z9J+c1ilHchyonJW3i9ecYCK3hkNIxEvSDh4/yq8R3dgP
+         tvq8nHtt1dJkoJ2Qz36dgFmSsIN/zT9q4FBkr4bZAcjNEHOaKDOEFwmBTwIXGI4lFU
+         R7/K26jGw9iprRmpgunkn0FFbyAGe3Af4tCVRJRHYlTdr7PlAZnWOp7YRgTtV/6m3g
+         1FYdQiHF8cNOsp0IjajBMS3dnltPHSypD6ihvEdYpJqdQs+2WNm9BQxw8350u963cK
+         rXjc5avgWyCzzb6ex0TdLgQ+h3IDil6grmbfW+AuDTwlc96vGACOM5XTtrYP/OJc6U
+         JTSj9xC+BHazg==
+Date:   Thu, 2 Dec 2021 17:51:34 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Lee Jones <lee.jones@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Oliver Neukum <oliver@neukum.org>,
+        "David S. Miller" <davem@davemloft.net>, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, bjorn@mork.no
+Subject: Re: [PATCH 1/1] net: cdc_ncm: Allow for dwNtbOutMaxSize to be unset
+ or zero
+Message-ID: <20211202175134.5b463e18@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211202143437.1411410-1-lee.jones@linaro.org>
+References: <20211202143437.1411410-1-lee.jones@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.160.59]
-X-ClientProxiedBy: EX13D49UWB001.ant.amazon.com (10.43.163.72) To
- EX13D04ANC001.ant.amazon.com (10.43.157.89)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Date:   Tue, 30 Nov 2021 15:23:02 +0100
-> Commit
->    9652dc2eb9e40 ("tcp: relax listening_hash operations")
+On Thu,  2 Dec 2021 14:34:37 +0000 Lee Jones wrote:
+> Currently, due to the sequential use of min_t() and clamp_t() macros,
+> in cdc_ncm_check_tx_max(), if dwNtbOutMaxSize is not set, the logic
+> sets tx_max to 0.  This is then used to allocate the data area of the
+> SKB requested later in cdc_ncm_fill_tx_frame().
 > 
-> removed the need to disable bottom half while acquiring
-> listening_hash.lock. There are still two callers left which disable
-> bottom half before the lock is acquired.
+> This does not cause an issue presently because when memory is
+> allocated during initialisation phase of SKB creation, more memory
+> (512b) is allocated than is required for the SKB headers alone (320b),
+> leaving some space (512b - 320b = 192b) for CDC data (172b).
 > 
-> On PREEMPT_RT the softirqs are preemptible and local_bh_disable() acts
-> as a lock to ensure that resources, that are protected by disabling
-> bottom halves, remain protected.
-> This leads to a circular locking dependency if the lock acquired with
-> disabled bottom halves is also acquired with enabled bottom halves
-> followed by disabling bottom halves. This is the reverse locking order.
-> It has been observed with inet_listen_hashbucket::lock:
+> However, if more elements (for example 3 x u64 = [24b]) were added to
+> one of the SKB header structs, say 'struct skb_shared_info',
+> increasing its original size (320b [320b aligned]) to something larger
+> (344b [384b aligned]), then suddenly the CDC data (172b) no longer
+> fits in the spare SKB data area (512b - 384b = 128b).
 > 
-> local_bh_disable() + spin_lock(&ilb->lock):
->   inet_listen()
->     inet_csk_listen_start()
->       sk->sk_prot->hash() := inet_hash()
-> 	local_bh_disable()
-> 	__inet_hash()
-> 	  spin_lock(&ilb->lock);
-> 	    acquire(&ilb->lock);
+> Consequently the SKB bounds checking semantics fails and panics:
 > 
-> Reverse order: spin_lock(&ilb->lock) + local_bh_disable():
->   tcp_seq_next()
->     listening_get_next()
->       spin_lock(&ilb->lock);
-> 	acquire(&ilb->lock);
+>   skbuff: skb_over_panic: text:ffffffff830a5b5f len:184 put:172   \
+>      head:ffff888119227c00 data:ffff888119227c00 tail:0xb8 end:0x80 dev:<NULL>
 > 
->   tcp4_seq_show()
->     get_tcp4_sock()
->       sock_i_ino()
-> 	read_lock_bh(&sk->sk_callback_lock);
-> 	  acquire(softirq_ctrl)	// <---- whoops
-> 	  acquire(&sk->sk_callback_lock)
+>   ------------[ cut here ]------------
+>   kernel BUG at net/core/skbuff.c:110!
+>   RIP: 0010:skb_panic+0x14f/0x160 net/core/skbuff.c:106
+>   <snip>
+>   Call Trace:
+>    <IRQ>
+>    skb_over_panic+0x2c/0x30 net/core/skbuff.c:115
+>    skb_put+0x205/0x210 net/core/skbuff.c:1877
+>    skb_put_zero include/linux/skbuff.h:2270 [inline]
+>    cdc_ncm_ndp16 drivers/net/usb/cdc_ncm.c:1116 [inline]
+>    cdc_ncm_fill_tx_frame+0x127f/0x3d50 drivers/net/usb/cdc_ncm.c:1293
+>    cdc_ncm_tx_fixup+0x98/0xf0 drivers/net/usb/cdc_ncm.c:1514
 > 
-> Drop local_bh_disable() around __inet_hash() which acquires
-> listening_hash->lock. Split inet_unhash() and acquire the
-> listen_hashbucket lock without disabling bottom halves; the inet_ehash
-> lock with disabled bottom halves.
+> By overriding the max value with the default CDC_NCM_NTB_MAX_SIZE_TX
+> when not offered through the system provided params, we ensure enough
+> data space is allocated to handle the CDC data, meaning no crash will
+> occur.
 > 
-> Reported-by: Mike Galbraith <efault@gmx.de>
-> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-> Link: https://lkml.kernel.org/r/12d6f9879a97cd56c09fb53dee343cbb14f7f1f7.camel@gmx.de
-> Link: https://lkml.kernel.org/r/X9CheYjuXWc75Spa@hirez.programming.kicks-ass.net
+> Cc: stable@vger.kernel.org
+> Cc: Oliver Neukum <oliver@neukum.org>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: linux-usb@vger.kernel.org
+> Cc: netdev@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+> Fixes: 289507d3364f9 ("net: cdc_ncm: use sysfs for rx/tx aggregation tuning")
+> Signed-off-by: Lee Jones <lee.jones@linaro.org>
 
-I think this patch is for the net tree and needs a Fixes: tag of the commit
-mentioned in the description.
-The patch itself looks good to me.
+CC: bjorn@mork.no
 
-Acked-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+Please make sure you CC the authors of all blamed commits as they are
+likely to have the most context.
 
-Also, added Eric and Martin on CC.
+> diff --git a/drivers/net/usb/cdc_ncm.c b/drivers/net/usb/cdc_ncm.c
+> index 24753a4da7e60..e303b522efb50 100644
+> --- a/drivers/net/usb/cdc_ncm.c
+> +++ b/drivers/net/usb/cdc_ncm.c
+> @@ -181,6 +181,8 @@ static u32 cdc_ncm_check_tx_max(struct usbnet *dev, u32 new_tx)
+>  		min = ctx->max_datagram_size + ctx->max_ndp_size + sizeof(struct usb_cdc_ncm_nth32);
+>  
+>  	max = min_t(u32, CDC_NCM_NTB_MAX_SIZE_TX, le32_to_cpu(ctx->ncm_parm.dwNtbOutMaxSize));
+> +	if (max == 0)
+> +		max = CDC_NCM_NTB_MAX_SIZE_TX; /* dwNtbOutMaxSize not set */
+>  
+>  	/* some devices set dwNtbOutMaxSize too low for the above default */
+>  	min = min(min, max);
 
-
-> ---
->  net/ipv4/inet_hashtables.c  | 53 ++++++++++++++++++++++---------------
->  net/ipv6/inet6_hashtables.c |  5 +---
->  2 files changed, 33 insertions(+), 25 deletions(-)
-> 
-> diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
-> index 75737267746f8..7bd1e10086f0a 100644
-> --- a/net/ipv4/inet_hashtables.c
-> +++ b/net/ipv4/inet_hashtables.c
-> @@ -637,7 +637,9 @@ int __inet_hash(struct sock *sk, struct sock *osk)
->  	int err = 0;
->  
->  	if (sk->sk_state != TCP_LISTEN) {
-> +		local_bh_disable();
->  		inet_ehash_nolisten(sk, osk, NULL);
-> +		local_bh_enable();
->  		return 0;
->  	}
->  	WARN_ON(!sk_unhashed(sk));
-> @@ -669,45 +671,54 @@ int inet_hash(struct sock *sk)
->  {
->  	int err = 0;
->  
-> -	if (sk->sk_state != TCP_CLOSE) {
-> -		local_bh_disable();
-> +	if (sk->sk_state != TCP_CLOSE)
->  		err = __inet_hash(sk, NULL);
-> -		local_bh_enable();
-> -	}
->  
->  	return err;
->  }
->  EXPORT_SYMBOL_GPL(inet_hash);
->  
-> -void inet_unhash(struct sock *sk)
-> +static void __inet_unhash(struct sock *sk, struct inet_listen_hashbucket *ilb)
->  {
-> -	struct inet_hashinfo *hashinfo = sk->sk_prot->h.hashinfo;
-> -	struct inet_listen_hashbucket *ilb = NULL;
-> -	spinlock_t *lock;
-> -
->  	if (sk_unhashed(sk))
->  		return;
->  
-> -	if (sk->sk_state == TCP_LISTEN) {
-> -		ilb = &hashinfo->listening_hash[inet_sk_listen_hashfn(sk)];
-> -		lock = &ilb->lock;
-> -	} else {
-> -		lock = inet_ehash_lockp(hashinfo, sk->sk_hash);
-> -	}
-> -	spin_lock_bh(lock);
-> -	if (sk_unhashed(sk))
-> -		goto unlock;
-> -
->  	if (rcu_access_pointer(sk->sk_reuseport_cb))
->  		reuseport_stop_listen_sock(sk);
->  	if (ilb) {
-> +		struct inet_hashinfo *hashinfo = sk->sk_prot->h.hashinfo;
-> +
->  		inet_unhash2(hashinfo, sk);
->  		ilb->count--;
->  	}
->  	__sk_nulls_del_node_init_rcu(sk);
->  	sock_prot_inuse_add(sock_net(sk), sk->sk_prot, -1);
-> -unlock:
-> -	spin_unlock_bh(lock);
-> +}
-> +
-> +void inet_unhash(struct sock *sk)
-> +{
-> +	struct inet_hashinfo *hashinfo = sk->sk_prot->h.hashinfo;
-> +
-> +	if (sk_unhashed(sk))
-> +		return;
-> +
-> +	if (sk->sk_state == TCP_LISTEN) {
-> +		struct inet_listen_hashbucket *ilb;
-> +
-> +		ilb = &hashinfo->listening_hash[inet_sk_listen_hashfn(sk)];
-> +		/* Don't disable bottom halves while acquiring the lock to
-> +		 * avoid circular locking dependency on PREEMPT_RT.
-> +		 */
-> +		spin_lock(&ilb->lock);
-> +		__inet_unhash(sk, ilb);
-> +		spin_unlock(&ilb->lock);
-> +	} else {
-> +		spinlock_t *lock = inet_ehash_lockp(hashinfo, sk->sk_hash);
-> +
-> +		spin_lock_bh(lock);
-> +		__inet_unhash(sk, NULL);
-> +		spin_unlock_bh(lock);
-> +	}
->  }
->  EXPORT_SYMBOL_GPL(inet_unhash);
->  
-> diff --git a/net/ipv6/inet6_hashtables.c b/net/ipv6/inet6_hashtables.c
-> index 67c9114835c84..0a2e7f2283911 100644
-> --- a/net/ipv6/inet6_hashtables.c
-> +++ b/net/ipv6/inet6_hashtables.c
-> @@ -333,11 +333,8 @@ int inet6_hash(struct sock *sk)
->  {
->  	int err = 0;
->  
-> -	if (sk->sk_state != TCP_CLOSE) {
-> -		local_bh_disable();
-> +	if (sk->sk_state != TCP_CLOSE)
->  		err = __inet_hash(sk, NULL);
-> -		local_bh_enable();
-> -	}
->  
->  	return err;
->  }
-> -- 
-> 2.34.1
-> 
