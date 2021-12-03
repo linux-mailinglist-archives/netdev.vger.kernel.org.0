@@ -2,79 +2,230 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 61D74466F2C
-	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 02:38:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BA006466F30
+	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 02:39:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377966AbhLCBlk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Dec 2021 20:41:40 -0500
-Received: from mswedge1.sunplus.com ([60.248.182.113]:45288 "EHLO
-        mg.sunplus.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1377962AbhLCBlb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 20:41:31 -0500
-X-MailGates: (flag:3,DYNAMIC,RELAY,NOHOST:PASS)(compute_score:DELIVER,40
-        ,3)
-Received: from 172.17.9.112
-        by mg01.sunplus.com with MailGates ESMTP Server V5.0(5128:0:AUTH_RELAY)
-        (envelope-from <wells.lu@sunplus.com>); Fri, 03 Dec 2021 09:36:40 +0800 (CST)
-Received: from sphcmbx02.sunplus.com.tw (172.17.9.112) by
- sphcmbx02.sunplus.com.tw (172.17.9.112) with Microsoft SMTP Server (TLS) id
- 15.0.1497.23; Fri, 3 Dec 2021 09:36:41 +0800
-Received: from sphcmbx02.sunplus.com.tw ([::1]) by sphcmbx02.sunplus.com.tw
- ([fe80::f8bb:bd77:a854:5b9e%14]) with mapi id 15.00.1497.023; Fri, 3 Dec 2021
- 09:36:41 +0800
-From:   =?utf-8?B?V2VsbHMgTHUg5ZGC6Iqz6aiw?= <wells.lu@sunplus.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     Wells Lu <wellslutw@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
-        =?utf-8?B?VmluY2VudCBTaGloIOaWvemMlem0uw==?= 
-        <vincent.shih@sunplus.com>
-Subject: RE: [PATCH net-next v3 2/2] net: ethernet: Add driver for Sunplus
- SP7021
-Thread-Topic: [PATCH net-next v3 2/2] net: ethernet: Add driver for Sunplus
- SP7021
-Thread-Index: AQHX5dF9eGPWQxkNKU64ogPFWvAIaqwcdcyAgAE+n/CAAPQwgIAA4eHw//+CcACAAPOLMA==
-Date:   Fri, 3 Dec 2021 01:36:41 +0000
-Message-ID: <ad04e59777694bbcbcf52f518a2c16a0@sphcmbx02.sunplus.com.tw>
-References: <1638266572-5831-1-git-send-email-wellslutw@gmail.com>
- <1638266572-5831-3-git-send-email-wellslutw@gmail.com>
- <YabsT0/dASvYUH2p@lunn.ch>
- <cf60c230950747ec918acfc6dda595d6@sphcmbx02.sunplus.com.tw>
- <YajEbXtBwlDL4gOL@lunn.ch>
- <2fded2fc3a1344d0882ae2f186257911@sphcmbx02.sunplus.com.tw>
- <YakYlHzvlAI+1at+@lunn.ch>
-In-Reply-To: <YakYlHzvlAI+1at+@lunn.ch>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [172.25.108.39]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1377971AbhLCBnS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Dec 2021 20:43:18 -0500
+Received: from smtp-fw-2101.amazon.com ([72.21.196.25]:53613 "EHLO
+        smtp-fw-2101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1377968AbhLCBnR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Dec 2021 20:43:17 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
+  s=amazon201209; t=1638495594; x=1670031594;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=SC5WLpsetFc9SNsXuO1/rAy94miJ/5ojJLIk+X43Ttc=;
+  b=tiqVk/z+WUUKYxD2fzQEmDy+3quPlhSl6g/ohiNQwUJgwYjA3YO9fT3e
+   1crnTew632T0XAr1pz3r8jmuKUUvbxc/M+N8uB1WqlXb1eQ1fZCJ5hlAp
+   RmoV0zVn33nzmnMRs4T3f5H1x/sN06Q7owwOs4zMKn5VOaatgfXX1NOGt
+   4=;
+X-IronPort-AV: E=Sophos;i="5.87,283,1631577600"; 
+   d="scan'208";a="156333486"
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-pdx-2a-e6c05252.us-west-2.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-2101.iad2.amazon.com with ESMTP; 03 Dec 2021 01:39:52 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
+        by email-inbound-relay-pdx-2a-e6c05252.us-west-2.amazon.com (Postfix) with ESMTPS id F069941FC6;
+        Fri,  3 Dec 2021 01:39:52 +0000 (UTC)
+Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.26; Fri, 3 Dec 2021 01:39:52 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.160.59) by
+ EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.26; Fri, 3 Dec 2021 01:39:48 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+To:     <bigeasy@linutronix.de>
+CC:     <eric.dumazet@gmail.com>, <kafai@fb.com>, <davem@davemloft.net>,
+        <dsahern@kernel.org>, <efault@gmx.de>, <kuba@kernel.org>,
+        <netdev@vger.kernel.org>, <tglx@linutronix.de>,
+        <yoshfuji@linux-ipv6.org>, Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+Subject: Re: [PATCH net-next] tcp: Don't acquire inet_listen_hashbucket::lock with disabled BH.
+Date:   Fri, 3 Dec 2021 10:39:34 +0900
+Message-ID: <20211203013934.20645-1-kuniyu@amazon.co.jp>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20211130142302.ikcnjgo2xlbxbbl3@linutronix.de>
+References: <20211130142302.ikcnjgo2xlbxbbl3@linutronix.de>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.160.59]
+X-ClientProxiedBy: EX13D49UWB001.ant.amazon.com (10.43.163.72) To
+ EX13D04ANC001.ant.amazon.com (10.43.157.89)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgQW5kcmV3LA0KDQpUaGFuayB5b3UgZm9yIGV4cGxhbmF0aW9uLg0KDQoNCkJlc3QgcmVnYXJk
-cywNCldlbGxzIEx1DQoNCg0KPiA+IEhpIEFuZHJldywNCj4gPg0KPiA+IFRoYW5rIHlvdSBmb3Ig
-ZXhwbGFuYXRpb24uDQo+ID4NCj4gPiBJJ2xsIGFkZCBwaHlfc3VwcG9ydF9hc3ltX3BhdXNlKCkg
-YWZ0ZXIgUEhZIGNvbm5lY3RlZCBuZXh0IHBhdGNoLg0KPiA+DQo+ID4gSSBmb3VuZCBzb21lIGRy
-aXZlcnMgY2FsbCBwaHlfc2V0X21heF9zcGVlZCgpIHRvIHNldCBQSFkgc3BlZWQgdG8gMTAwTQ0K
-PiA+IGFmdGVyIFBIWSBjb25uZWN0ZWQuIElzIHRoYXQgbmVjZXNzYXJ5Pw0KPiANCj4gPiBGcm9t
-ICdzdXBwb3J0ZWQnLCBQSFkgc3VwcG9ydHMgMTBNLzEwME0gYWxyZWFkeS4NCj4gDQo+IFlvdSBu
-ZWVkIHBoeV9zZXRfbWF4X3NwZWVkKCkgd2hlbiBpdCBpcyBwb3NzaWJsZSB0byBjb25uZWN0IGEg
-MTAvMTAwIE1BQyB0byBhIDFHIFBIWS4gIFlvdQ0KPiBzb21ldGltZSBkbyB0aGlzIGJlY2F1c2Ug
-YSAxRyBQSFkgaXMgY2hlYXBlciB0aGFuIGEgMTAwTSBQSFkuIFVubGVzcyBsaW1pdGVkLCB0aGUg
-UEhZIHdpbGwNCj4gYWR2ZXJ0aXNlIGFuZCBjb3VsZCBuZWdvdGlhdGUgYSAxRyBsaW5rLCBidXQg
-dGhlIE1BQyBjb3VsZCB0aGVuIG5vdCBzdXBwb3J0IGl0LiBJZiBpdCBpcw0KPiBub3QgcGh5c2lj
-YWxseSBwb3NzaWJsZSB0byBjb25uZWN0IGEgMUcgUEhZIHRvIHlvdXIgTUFDLCB5b3UgZG9uJ3Qg
-bmVlZCB0byB3b3JyeS4NCj4gDQo+ID4gSSBhbHNvIGZvdW5kIHNvbWUgZHJpdmVycyBjYWxsIHBo
-eV9zdGFydF9hbmVnKCkgYWZ0ZXIgUEhZIHN0YXJ0ZWQuDQo+IA0KPiBJdCBpcyBub3QgbmVlZGVk
-Lg0KPiANCj4gICAgQW5kcmV3DQo=
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date:   Tue, 30 Nov 2021 15:23:02 +0100
+> Commit
+>    9652dc2eb9e40 ("tcp: relax listening_hash operations")
+> 
+> removed the need to disable bottom half while acquiring
+> listening_hash.lock. There are still two callers left which disable
+> bottom half before the lock is acquired.
+> 
+> On PREEMPT_RT the softirqs are preemptible and local_bh_disable() acts
+> as a lock to ensure that resources, that are protected by disabling
+> bottom halves, remain protected.
+> This leads to a circular locking dependency if the lock acquired with
+> disabled bottom halves is also acquired with enabled bottom halves
+> followed by disabling bottom halves. This is the reverse locking order.
+> It has been observed with inet_listen_hashbucket::lock:
+> 
+> local_bh_disable() + spin_lock(&ilb->lock):
+>   inet_listen()
+>     inet_csk_listen_start()
+>       sk->sk_prot->hash() := inet_hash()
+> 	local_bh_disable()
+> 	__inet_hash()
+> 	  spin_lock(&ilb->lock);
+> 	    acquire(&ilb->lock);
+> 
+> Reverse order: spin_lock(&ilb->lock) + local_bh_disable():
+>   tcp_seq_next()
+>     listening_get_next()
+>       spin_lock(&ilb->lock);
+> 	acquire(&ilb->lock);
+> 
+>   tcp4_seq_show()
+>     get_tcp4_sock()
+>       sock_i_ino()
+> 	read_lock_bh(&sk->sk_callback_lock);
+> 	  acquire(softirq_ctrl)	// <---- whoops
+> 	  acquire(&sk->sk_callback_lock)
+> 
+> Drop local_bh_disable() around __inet_hash() which acquires
+> listening_hash->lock. Split inet_unhash() and acquire the
+> listen_hashbucket lock without disabling bottom halves; the inet_ehash
+> lock with disabled bottom halves.
+> 
+> Reported-by: Mike Galbraith <efault@gmx.de>
+> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> Link: https://lkml.kernel.org/r/12d6f9879a97cd56c09fb53dee343cbb14f7f1f7.camel@gmx.de
+> Link: https://lkml.kernel.org/r/X9CheYjuXWc75Spa@hirez.programming.kicks-ass.net
+
+I think this patch is for the net tree and needs a Fixes: tag of the commit
+mentioned in the description.
+The patch itself looks good to me.
+
+Acked-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+
+Also, added Eric and Martin on CC.
+
+
+> ---
+>  net/ipv4/inet_hashtables.c  | 53 ++++++++++++++++++++++---------------
+>  net/ipv6/inet6_hashtables.c |  5 +---
+>  2 files changed, 33 insertions(+), 25 deletions(-)
+> 
+> diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+> index 75737267746f8..7bd1e10086f0a 100644
+> --- a/net/ipv4/inet_hashtables.c
+> +++ b/net/ipv4/inet_hashtables.c
+> @@ -637,7 +637,9 @@ int __inet_hash(struct sock *sk, struct sock *osk)
+>  	int err = 0;
+>  
+>  	if (sk->sk_state != TCP_LISTEN) {
+> +		local_bh_disable();
+>  		inet_ehash_nolisten(sk, osk, NULL);
+> +		local_bh_enable();
+>  		return 0;
+>  	}
+>  	WARN_ON(!sk_unhashed(sk));
+> @@ -669,45 +671,54 @@ int inet_hash(struct sock *sk)
+>  {
+>  	int err = 0;
+>  
+> -	if (sk->sk_state != TCP_CLOSE) {
+> -		local_bh_disable();
+> +	if (sk->sk_state != TCP_CLOSE)
+>  		err = __inet_hash(sk, NULL);
+> -		local_bh_enable();
+> -	}
+>  
+>  	return err;
+>  }
+>  EXPORT_SYMBOL_GPL(inet_hash);
+>  
+> -void inet_unhash(struct sock *sk)
+> +static void __inet_unhash(struct sock *sk, struct inet_listen_hashbucket *ilb)
+>  {
+> -	struct inet_hashinfo *hashinfo = sk->sk_prot->h.hashinfo;
+> -	struct inet_listen_hashbucket *ilb = NULL;
+> -	spinlock_t *lock;
+> -
+>  	if (sk_unhashed(sk))
+>  		return;
+>  
+> -	if (sk->sk_state == TCP_LISTEN) {
+> -		ilb = &hashinfo->listening_hash[inet_sk_listen_hashfn(sk)];
+> -		lock = &ilb->lock;
+> -	} else {
+> -		lock = inet_ehash_lockp(hashinfo, sk->sk_hash);
+> -	}
+> -	spin_lock_bh(lock);
+> -	if (sk_unhashed(sk))
+> -		goto unlock;
+> -
+>  	if (rcu_access_pointer(sk->sk_reuseport_cb))
+>  		reuseport_stop_listen_sock(sk);
+>  	if (ilb) {
+> +		struct inet_hashinfo *hashinfo = sk->sk_prot->h.hashinfo;
+> +
+>  		inet_unhash2(hashinfo, sk);
+>  		ilb->count--;
+>  	}
+>  	__sk_nulls_del_node_init_rcu(sk);
+>  	sock_prot_inuse_add(sock_net(sk), sk->sk_prot, -1);
+> -unlock:
+> -	spin_unlock_bh(lock);
+> +}
+> +
+> +void inet_unhash(struct sock *sk)
+> +{
+> +	struct inet_hashinfo *hashinfo = sk->sk_prot->h.hashinfo;
+> +
+> +	if (sk_unhashed(sk))
+> +		return;
+> +
+> +	if (sk->sk_state == TCP_LISTEN) {
+> +		struct inet_listen_hashbucket *ilb;
+> +
+> +		ilb = &hashinfo->listening_hash[inet_sk_listen_hashfn(sk)];
+> +		/* Don't disable bottom halves while acquiring the lock to
+> +		 * avoid circular locking dependency on PREEMPT_RT.
+> +		 */
+> +		spin_lock(&ilb->lock);
+> +		__inet_unhash(sk, ilb);
+> +		spin_unlock(&ilb->lock);
+> +	} else {
+> +		spinlock_t *lock = inet_ehash_lockp(hashinfo, sk->sk_hash);
+> +
+> +		spin_lock_bh(lock);
+> +		__inet_unhash(sk, NULL);
+> +		spin_unlock_bh(lock);
+> +	}
+>  }
+>  EXPORT_SYMBOL_GPL(inet_unhash);
+>  
+> diff --git a/net/ipv6/inet6_hashtables.c b/net/ipv6/inet6_hashtables.c
+> index 67c9114835c84..0a2e7f2283911 100644
+> --- a/net/ipv6/inet6_hashtables.c
+> +++ b/net/ipv6/inet6_hashtables.c
+> @@ -333,11 +333,8 @@ int inet6_hash(struct sock *sk)
+>  {
+>  	int err = 0;
+>  
+> -	if (sk->sk_state != TCP_CLOSE) {
+> -		local_bh_disable();
+> +	if (sk->sk_state != TCP_CLOSE)
+>  		err = __inet_hash(sk, NULL);
+> -		local_bh_enable();
+> -	}
+>  
+>  	return err;
+>  }
+> -- 
+> 2.34.1
+> 
