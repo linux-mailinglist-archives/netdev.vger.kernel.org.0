@@ -2,86 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E52C2467E84
-	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 20:55:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C3A5C467E95
+	for <lists+netdev@lfdr.de>; Fri,  3 Dec 2021 21:03:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382909AbhLCT7E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Dec 2021 14:59:04 -0500
-Received: from mga05.intel.com ([192.55.52.43]:21039 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1353675AbhLCT7B (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 3 Dec 2021 14:59:01 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10187"; a="323301133"
-X-IronPort-AV: E=Sophos;i="5.87,284,1631602800"; 
-   d="scan'208";a="323301133"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Dec 2021 11:55:36 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.87,284,1631602800"; 
-   d="scan'208";a="501312024"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga007.jf.intel.com with ESMTP; 03 Dec 2021 11:55:33 -0800
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 1B3JtUVN022961;
-        Fri, 3 Dec 2021 19:55:31 GMT
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
-Subject: [PATCH bpf 2/2] samples: bpf: fix 'unknown warning group' build warning on Clang
-Date:   Fri,  3 Dec 2021 20:50:04 +0100
-Message-Id: <20211203195004.5803-3-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20211203195004.5803-1-alexandr.lobakin@intel.com>
-References: <20211203195004.5803-1-alexandr.lobakin@intel.com>
+        id S1382978AbhLCUGw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Dec 2021 15:06:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45780 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1353557AbhLCUGw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Dec 2021 15:06:52 -0500
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBF37C061751
+        for <netdev@vger.kernel.org>; Fri,  3 Dec 2021 12:03:27 -0800 (PST)
+Received: by mail-pl1-x636.google.com with SMTP id y8so2857710plg.1
+        for <netdev@vger.kernel.org>; Fri, 03 Dec 2021 12:03:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=FW0hrJpjceL/mxaGmLjKzD8cucFO2qTxLAh5+loCnRM=;
+        b=kfl6BmM5Bu5cRIa4cr4Uep9JYzpXKEUZOhL9WUnBQJ9MDINEsf7DAIL+LV1y0cjvAG
+         HgwQtbNgJCRqGpRI5+2scOL3B86cIl2BkyHPfHI9toZWk/72PgnwbP4P6SGKqo4aiYsd
+         O3RvCOFfSBhlbBunJkDyad9zr+jGOiUoXuIgj0UGOfomYqm/ZVHD+E3quNCfZWZ8m6pF
+         Usg3ol1zJKr0gofaFJosogt1RzMZqfjHaRFoE1J/5/ATC+GyKh68zVUHZicttg0ktq59
+         28mKmiYkq+8fUxyXQaFjJbMkQYrqsaWj5b1k52w9gQ9H0j7iCePqxqpikHz6OkOdSotw
+         XeiA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=FW0hrJpjceL/mxaGmLjKzD8cucFO2qTxLAh5+loCnRM=;
+        b=SRmiCT1S0622TY31jXL1JEC6mq/ZkPV31Z6FxiYEPKpMGORhH3TpMDMpZ5g03ctzzJ
+         dtM5jkOoPuCOfAuFHZiYoo2yr2Cn8YDnPLkVkHphnOH/5aAcLVmiALcLcbnczosFGlZ3
+         /dWK0UcV6KW+1fwYCPmbQ986c1zEa0YxztAholfNgZ55GhlJU+Ndd6E8ZvFXLpMz5EeM
+         iik7iLB+wGCpkFT4y/zhygBokGZfcYycBPgvouzjrHgqhejOcsJox1tcsUieXOoMNJjP
+         uR9e1+UJ9DU+YmQ3xNH1ZoY/aksMFhJKjOIU7PLMlByFfDEUFFyAoxGUjrObr940xUZv
+         5xNg==
+X-Gm-Message-State: AOAM5321Xpo4KQVJaLN+Q+AiyMFFaIIdq+WiQphekuvdLJLKXwsA4oGg
+        ur+n075AVo7ULU72K0b5DQg=
+X-Google-Smtp-Source: ABdhPJw4y74E/bj3alm95TB+WgEHDZ1pZnDCJLCpaq8jqKihtn6ScPjU4cDuAhg7RG9fwk2CBDWNSg==
+X-Received: by 2002:a17:90b:1d0e:: with SMTP id on14mr16615733pjb.3.1638561807432;
+        Fri, 03 Dec 2021 12:03:27 -0800 (PST)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id j20sm1156878pjl.3.2021.12.03.12.03.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 03 Dec 2021 12:03:26 -0800 (PST)
+Subject: Re: [PATCH RFC net-next 05/12] net: dsa: bcm_sf2: convert to
+ phylink_generic_validate()
+To:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Woojung Huh <woojung.huh@microchip.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        UNGLinuxDriver@microchip.com
+References: <YZ56WapOaVpUbRuT@shell.armlinux.org.uk>
+ <E1mpwRs-00D8LK-N3@rmk-PC.armlinux.org.uk>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <6ef4f764-cd91-91bd-e921-407e9d198179@gmail.com>
+Date:   Fri, 3 Dec 2021 12:03:25 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <E1mpwRs-00D8LK-N3@rmk-PC.armlinux.org.uk>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Clang doesn't have 'stringop-truncation' group like GCC does, and
-complains about it when building samples which use xdp_sample_user
-infra:
+On 11/24/21 9:52 AM, Russell King (Oracle) wrote:
+> Populate the supported interfaces and MAC capabilities for the bcm_sf2
+> DSA switch and remove the old validate implementation to allow DSA to
+> use phylink_generic_validate() for this switch driver.
+> 
+> The exclusion of Gigabit linkmodes for MII and Reverse MII links is
+> handled within phylink_generic_validate() in phylink, so there is no
+> need to make them conditional on the interface mode in the driver.
+> 
+> Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
- samples/bpf/xdp_sample_user.h:48:32: warning: unknown warning group '-Wstringop-truncation', ignored [-Wunknown-warning-option]
- #pragma GCC diagnostic ignored "-Wstringop-truncation"
-                                ^
-[ repeat ]
+Tested-by: Florian Fainelli <f.fainelli@gmail.com>
 
-Those are harmless, but avoidable when guarding it with ifdef.
-I could guard push/pop as well, but this would require one more
-ifdef cruft around a single line which I don't think is reasonable.
+but it looks like the fixed link ports are reporting some pretty strange
+advertisement values one of my two platforms running the same kernel image:
 
-Fixes: 156f886cf697 ("samples: bpf: Add basic infrastructure for XDP samples")
-Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
----
- samples/bpf/xdp_sample_user.h | 2 ++
- 1 file changed, 2 insertions(+)
+# ethtool rgmii_2
+Settings for rgmii_2:
+        Supported ports: [ MII ]
+        Supported link modes:   1000baseKX/Full
+        Supported pause frame use: Symmetric Receive-only
+        Supports auto-negotiation: Yes
+        Supported FEC modes: Not reported
+        Advertised link modes:  1000baseKX/Full
+        Advertised pause frame use: Symmetric Receive-only
+        Advertised auto-negotiation: Yes
+        Advertised FEC modes: Not reported
+        Link partner advertised link modes:  1000baseKX/Full
+        Link partner advertised pause frame use: No
+        Link partner advertised auto-negotiation: No
+        Link partner advertised FEC modes: Not reported
+        Speed: 1000Mb/s
+        Duplex: Full
+        Auto-negotiation: on
+        Port: MII
+        PHYAD: 0
+        Transceiver: internal
+        Supports Wake-on: gsf
+        Wake-on: d
+        SecureOn password: 00:00:00:00:00:00
+        Link detected: yes
+#
 
-diff --git a/samples/bpf/xdp_sample_user.h b/samples/bpf/xdp_sample_user.h
-index d97465ff8c62..5f44b877ecf5 100644
---- a/samples/bpf/xdp_sample_user.h
-+++ b/samples/bpf/xdp_sample_user.h
-@@ -45,7 +45,9 @@ const char *get_driver_name(int ifindex);
- int get_mac_addr(int ifindex, void *mac_addr);
- 
- #pragma GCC diagnostic push
-+#ifndef __clang__
- #pragma GCC diagnostic ignored "-Wstringop-truncation"
-+#endif
- __attribute__((unused))
- static inline char *safe_strncpy(char *dst, const char *src, size_t size)
- {
+These should be 1000BaseT/Full since these are RGMII fixed links:
+
+# ethtool rgmii_2
+Settings for rgmii_2:
+        Supported ports: [ MII ]
+        Supported link modes:   1000baseT/Full
+        Supported pause frame use: Symmetric Receive-only
+        Supports auto-negotiation: Yes
+        Supported FEC modes: Not reported
+        Advertised link modes:  1000baseT/Full
+        Advertised pause frame use: Symmetric Receive-only
+        Advertised auto-negotiation: Yes
+        Advertised FEC modes: Not reported
+        Link partner advertised link modes:  1000baseT/Full
+        Link partner advertised pause frame use: No
+        Link partner advertised auto-negotiation: No
+        Link partner advertised FEC modes: Not reported
+        Speed: 1000Mb/s
+        Duplex: Full
+        Auto-negotiation: on
+        Port: MII
+        PHYAD: 0
+        Transceiver: internal
+        Supports Wake-on: gsf
+        Wake-on: d
+        SecureOn password: 00:00:00:00:00:00
+        Link detected: yes
+#
+
+There is no problem with Linus' master branch at
+net-5.16-rc4-173-ga51e3ac43ddb, let me see if I can bisect this and/or
+fix it in the next days.
+
+Thanks!
 -- 
-2.33.1
-
+Florian
