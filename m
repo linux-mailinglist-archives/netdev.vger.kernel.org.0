@@ -2,66 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 810544685DA
-	for <lists+netdev@lfdr.de>; Sat,  4 Dec 2021 16:12:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AC928468602
+	for <lists+netdev@lfdr.de>; Sat,  4 Dec 2021 16:47:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245292AbhLDPPd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Dec 2021 10:15:33 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:38786 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236002AbhLDPPc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 4 Dec 2021 10:15:32 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=Tk/UqSNzICTCyklEj06uzagFaWHZBnaPByLqiCpPEh8=; b=L61e0AiozsAIdFBUauvAEIiDbV
-        uK0AgSSdx9G/n7kKFtPwWz3tjjtX3Wn3L47QxkJhL0R5pO43+C5QSD+LBQnWJea4pe6olZtfx4/q0
-        dZhhTIR1DxD/TVXCUrurZF7y2hI5bH+ZTiJjfSM4/bE8BUrPMFFBJ/fQhMsT2AAdWyNA=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mtWhe-00FVjc-2u; Sat, 04 Dec 2021 16:11:54 +0100
-Date:   Sat, 4 Dec 2021 16:11:54 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Yinbo Zhu <zhuyinbo@loongson.cn>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kbuild@vger.kernel.org
-Subject: Re: [PATCH v4 1/2] modpost: file2alias: make mdio alias configure
- match mdio uevent
-Message-ID: <YauFOgy6tjH+kf3J@lunn.ch>
-References: <1638609208-10339-1-git-send-email-zhuyinbo@loongson.cn>
+        id S1345197AbhLDPvR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Dec 2021 10:51:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51210 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231259AbhLDPvR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Dec 2021 10:51:17 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67317C061751;
+        Sat,  4 Dec 2021 07:47:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
+        :Reply-To:Content-ID:Content-Description;
+        bh=WRnKEg35GZRxlFBDZ8nAe1ThfeNpialM6JAsEXyKYhE=; b=gdprMrDXo5A4+arqeARYGRAihR
+        UdIvyB7kSxMOpV82l7r42HGn+k8Pel//Fd6868kXaKf4Qr+b9Qmq6EKRqYQEJP7V5gnrk+QrxrXAD
+        mykg2ZBbnLSU6pLhGOGjvdPXSFn5PdcVQVQ9y7mRCl03rsCS9WSRpFFd3WWVfrZGAL7WqvmY5Eqgr
+        0IQQ9BPScEkxQ1hUsiP/91ERtF1rnqdHsBH2Qc/q+pHEVObYFcujp3SA55Eh0QMNk1UweLqMOJnsU
+        Bl8HBm62h7KPbvgA/o1BOnvvMVg9adm005X8DLTmPuv9odQyGr4vTsszpxNeD6jYhFO05AbOy6lCF
+        fhVkisiA==;
+Received: from [2602:306:c5a2:a380:b27b:25ff:fe2c:51a8]
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1mtXGK-00DcGI-Uq; Sat, 04 Dec 2021 15:47:45 +0000
+Subject: Re: [PATCH] net: spider_net: Use non-atomic bitmap API when
+ applicable
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        kou.ishizaki@toshiba.co.jp, davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+References: <3de0792f5088f00d135c835df6c19e63ae95f5d2.1638026251.git.christophe.jaillet@wanadoo.fr>
+From:   Geoff Levand <geoff@infradead.org>
+Message-ID: <450ecfe8-94ce-46cb-0216-9fff22682426@infradead.org>
+Date:   Sat, 4 Dec 2021 07:47:41 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1638609208-10339-1-git-send-email-zhuyinbo@loongson.cn>
+In-Reply-To: <3de0792f5088f00d135c835df6c19e63ae95f5d2.1638026251.git.christophe.jaillet@wanadoo.fr>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Dec 04, 2021 at 05:13:27PM +0800, Yinbo Zhu wrote:
-> The do_mdio_entry was responsible for generating a phy alias configure
-> that according to the phy driver's mdio_device_id, before apply this
-> patch, which alias configure is like "alias mdio:000000010100000100001
-> 1011101????", it doesn't match the phy_id of mdio_uevent, because of
-> the phy_id was a hexadecimal digit and the mido uevent is consisit of
-> phy_id with the char 'p', the uevent string is different from alias.
-> Add this patch that mdio alias configure will can match mdio uevent.
+Hi Christophe,
+
+On 11/27/21 7:18 AM, Christophe JAILLET wrote:
+> No concurrent access is possible when a bitmap is local to a function.
+> So prefer the non-atomic functions to save a few cycles.
+>    - replace a 'for' loop by an equivalent non-atomic 'bitmap_fill()' call
+>    - use '__set_bit()'
 > 
-> Signed-off-by: Yinbo Zhu <zhuyinbo@loongson.cn>
+> While at it, clear the 'bitmask' bitmap only when needed.
+> 
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 > ---
-> Change in v4:
-> 		Add following explain information.
+> This patch is *not* compile tested. I don't have the needed cross compiling
+> tool chain.
+> ---
+>  drivers/net/ethernet/toshiba/spider_net.c | 12 ++++++------
+>  1 file changed, 6 insertions(+), 6 deletions(-)
 
-Adding an explanation will not stop the regression happening. You will
-continue to get a NACK while your change causes a regression. Please
-do not post again until you have addressed the regression.
+As I mentioned, my tdd-builder Docker image has a
+gcc-powerpc-linux-gnu cross compiler that can be used to build
+a ppc64 kernel:
 
-   Andrew
+  https://hub.docker.com/r/glevand/tdd-builder
+
+I also have a few helper scripts to run the container and cross
+compile a kernel:
+
+  https://github.com/glevand/tdd--docker/blob/master/builder/run-builder.sh
+  https://github.com/glevand/tdd-project/blob/master/scripts/build-linux-kernel.sh
+
+
+I applied your patch to v5.16-rc3 and no spider_net warnings
+or errors were seen when building with ppc64_defconfig. Thanks
+for your contribution.
+
+Acked-by: Geoff Levand <geoff@infradead.org>
