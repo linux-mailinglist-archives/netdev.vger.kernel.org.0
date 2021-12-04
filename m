@@ -2,85 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC928468602
-	for <lists+netdev@lfdr.de>; Sat,  4 Dec 2021 16:47:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 823D4468620
+	for <lists+netdev@lfdr.de>; Sat,  4 Dec 2021 17:16:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345197AbhLDPvR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Dec 2021 10:51:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51210 "EHLO
+        id S1355179AbhLDQUU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Dec 2021 11:20:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231259AbhLDPvR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Dec 2021 10:51:17 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67317C061751;
-        Sat,  4 Dec 2021 07:47:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=WRnKEg35GZRxlFBDZ8nAe1ThfeNpialM6JAsEXyKYhE=; b=gdprMrDXo5A4+arqeARYGRAihR
-        UdIvyB7kSxMOpV82l7r42HGn+k8Pel//Fd6868kXaKf4Qr+b9Qmq6EKRqYQEJP7V5gnrk+QrxrXAD
-        mykg2ZBbnLSU6pLhGOGjvdPXSFn5PdcVQVQ9y7mRCl03rsCS9WSRpFFd3WWVfrZGAL7WqvmY5Eqgr
-        0IQQ9BPScEkxQ1hUsiP/91ERtF1rnqdHsBH2Qc/q+pHEVObYFcujp3SA55Eh0QMNk1UweLqMOJnsU
-        Bl8HBm62h7KPbvgA/o1BOnvvMVg9adm005X8DLTmPuv9odQyGr4vTsszpxNeD6jYhFO05AbOy6lCF
-        fhVkisiA==;
-Received: from [2602:306:c5a2:a380:b27b:25ff:fe2c:51a8]
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1mtXGK-00DcGI-Uq; Sat, 04 Dec 2021 15:47:45 +0000
-Subject: Re: [PATCH] net: spider_net: Use non-atomic bitmap API when
- applicable
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        kou.ishizaki@toshiba.co.jp, davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
-References: <3de0792f5088f00d135c835df6c19e63ae95f5d2.1638026251.git.christophe.jaillet@wanadoo.fr>
-From:   Geoff Levand <geoff@infradead.org>
-Message-ID: <450ecfe8-94ce-46cb-0216-9fff22682426@infradead.org>
-Date:   Sat, 4 Dec 2021 07:47:41 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        with ESMTP id S242107AbhLDQUU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Dec 2021 11:20:20 -0500
+Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66DCBC061751
+        for <netdev@vger.kernel.org>; Sat,  4 Dec 2021 08:16:54 -0800 (PST)
+Received: by mail-lj1-x244.google.com with SMTP id i63so12321124lji.3
+        for <netdev@vger.kernel.org>; Sat, 04 Dec 2021 08:16:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=O/5DwbR3i07orri/qb4pLuqhVl3i0JLC32OKnCnU2So=;
+        b=Wx0tlp4o0ksaWtjxwJQuUMQ9ofQXPaxt+tGXdbfiw822d/mva8Dc4UHd9UMCIR2mN3
+         McttMBvXrnLLZHwx2Eyo2WReOAhPtt0O6as722ScTCHbqOZYAIsy6FY6SBe0ow9NWomq
+         tATDrU10iGToiRu3QRClad8CX54ATkvIDlmgTECeOWOwXU9CptbgWOJV65yIl9zRnCZ3
+         M0uv0BsoojmEhxBI1W3iWsWfObW4hosyCkVw+mQAaH7RfAixmv226akoTflJOEvLhE8D
+         vmv/bUq7CG+/W0KmdXXYTWQGsE9fFnUF2mZEJgd2+zZmIh18QTQVZfWPumvbj9I7dVyz
+         vIBw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=O/5DwbR3i07orri/qb4pLuqhVl3i0JLC32OKnCnU2So=;
+        b=mV2nHuPn4e4gSTGOcjqvoA2irqXKCURWx2xGdOYcwcWWPoETSOeChIjdpTMPKtlgRN
+         Xm6clo13tbCG0u1M850J/9DiL/Zxe06dAobS5sqpa3vN67zA94L5868cdEhToCuqmcev
+         +yHiCGnq4NKM3iqKdKMk4ZvH4NTBPyXzdk4BwFoT7QwTFsiqXWA+tArpa5NutOkn/ueo
+         XpqwjfGR8YAEdRrTw41TJEVaq3RE8WxHaAoFOUsng0Y0zTswAkty4MnBTdfXdeRyOGiv
+         gCUNna9/4qjR61bUNMhlPCJUS9+WZRLhJ91QV28+n11rzDXQK1hcgNeivt3jyg5uFMsr
+         7mgA==
+X-Gm-Message-State: AOAM533RKnDs3h+wVmtTp1qs7fuCm2nW8f9tOXHtbkZJdQWdMD619T59
+        3gFxbnN3VsWaKgLYVOo7hOfIKTsgKHv/gWCussQ=
+X-Google-Smtp-Source: ABdhPJyuE1eLXsV1814Y6z+6TOuFVsmW28UMcapAnOR//JEeddtytCMAQ3iMOm7daO0vVT8PYhb7/03UVEH8FiUl85g=
+X-Received: by 2002:a2e:a593:: with SMTP id m19mr25986733ljp.407.1638634612524;
+ Sat, 04 Dec 2021 08:16:52 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <3de0792f5088f00d135c835df6c19e63ae95f5d2.1638026251.git.christophe.jaillet@wanadoo.fr>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Received: by 2002:a05:6512:2604:0:0:0:0 with HTTP; Sat, 4 Dec 2021 08:16:52
+ -0800 (PST)
+Reply-To: drabrarzebadiyah@gmail.com
+From:   "dr.Abrar Zebadiyah" <zahraasemotauyi@gmail.com>
+Date:   Sat, 4 Dec 2021 08:16:52 -0800
+Message-ID: <CAAeQ4C5aB63LRAhugGguXdwvSyV+uXuf1HYZzOxohD4xHGum2Q@mail.gmail.com>
+Subject: HELLO
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Christophe,
+My Dear Friend.
 
-On 11/27/21 7:18 AM, Christophe JAILLET wrote:
-> No concurrent access is possible when a bitmap is local to a function.
-> So prefer the non-atomic functions to save a few cycles.
->    - replace a 'for' loop by an equivalent non-atomic 'bitmap_fill()' call
->    - use '__set_bit()'
-> 
-> While at it, clear the 'bitmask' bitmap only when needed.
-> 
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-> ---
-> This patch is *not* compile tested. I don't have the needed cross compiling
-> tool chain.
-> ---
->  drivers/net/ethernet/toshiba/spider_net.c | 12 ++++++------
->  1 file changed, 6 insertions(+), 6 deletions(-)
+How are you and your family Today? I hope all is well, and I am happy
+to share this transaction with you ,but you must keep everything as
+secret and very confidential.
 
-As I mentioned, my tdd-builder Docker image has a
-gcc-powerpc-linux-gnu cross compiler that can be used to build
-a ppc64 kernel:
+I have a very lucrative business transaction which requires your
+utmost discretion. Please understand that you and me, are to work as
+one team to inherit this fund, hence I am your insider in the bank as
+the transaction commence. I advise you to feel free with me for all is
+going to be well with us. This business is 100% risk free.
 
-  https://hub.docker.com/r/glevand/tdd-builder
+Though, I know it would come to you at uttermost surprise unbelief
+because it is virtually impossible to know who is trustworthy and who
+to believed I am dr.Abrar Zebadiyah sum of $10.5 million is lying in
+our bank without claim i want you to help me to claim and receive it
+to your account in your country for our benefit.
 
-I also have a few helper scripts to run the container and cross
-compile a kernel:
+I am aware of the unsafe nature of the internet, and was compelled to
+use this medium due to the nature of this project.I have access to
+every vital information that can be used to transfer this huge amount
+of money, which may culminate into the investment of the said funds
+into your account or any lucrative company in your country.
 
-  https://github.com/glevand/tdd--docker/blob/master/builder/run-builder.sh
-  https://github.com/glevand/tdd-project/blob/master/scripts/build-linux-kernel.sh
+If you will like to assist me as a partner then indicate your
+interest, after which we shall both discuss the modalities and the
+sharing percentage. Upon receipt of your reply on your expression of
+interest, I will give you full details on how the business will be
+executed. I am open for negotiation,
 
+Thanks for your anticipated cooperation.Note you might receive this
+message in your inbox or spam folder, depends on your web host or
+server network
 
-I applied your patch to v5.16-rc3 and no spider_net warnings
-or errors were seen when building with ppc64_defconfig. Thanks
-for your contribution.
+Contact my private email only if you are interested (drabrarzebadiyah@gmail.com)
 
-Acked-by: Geoff Levand <geoff@infradead.org>
+Compliment of the day,
+Regards,
+
+dr.Abrar Zebadiyah
