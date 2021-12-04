@@ -2,45 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BC88468383
-	for <lists+netdev@lfdr.de>; Sat,  4 Dec 2021 10:18:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 66ECC468388
+	for <lists+netdev@lfdr.de>; Sat,  4 Dec 2021 10:19:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384439AbhLDJV4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Dec 2021 04:21:56 -0500
-Received: from mail-io1-f71.google.com ([209.85.166.71]:56061 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384433AbhLDJVx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Dec 2021 04:21:53 -0500
-Received: by mail-io1-f71.google.com with SMTP id y74-20020a6bc84d000000b005e700290338so4334527iof.22
-        for <netdev@vger.kernel.org>; Sat, 04 Dec 2021 01:18:28 -0800 (PST)
+        id S1384455AbhLDJWu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Dec 2021 04:22:50 -0500
+Received: from mail-il1-f199.google.com ([209.85.166.199]:41914 "EHLO
+        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1354944AbhLDJWu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Dec 2021 04:22:50 -0500
+Received: by mail-il1-f199.google.com with SMTP id r1-20020a92cd81000000b002a3ae5f6ad9so3646540ilb.8
+        for <netdev@vger.kernel.org>; Sat, 04 Dec 2021 01:19:25 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=CUg3SKRRr5AZRrrRAfBqwmKAe9l+DABQvp0lKUAZGW4=;
-        b=22D4xlMduEt+pKrEpEeMYXua1eWreF5rLofUPYapVkJYfgiaGEO57KZDN46/+7bcql
-         D/7wR4G5ai0X5UHEFsDANHamdkB/y/AJMxG7jw8LN2vrlEFk/62iJQ/O51XtFx7h61FH
-         R23qxAGoPTwJg1ASFhM6M5R3Mfv/+Yg5oGMWY866cHVvQ6H4rg3x3r23EdYwP1BA6HW4
-         NVP45pGPU2HrGHqNUFptrDaoZihwcgpvnEOO0USJ1ngpzTfgH+gPWhJC9SHjQogZ86oD
-         ZJwXndPwHWV7lbh2mHSVoWk3uIkSOuCO+GALwGeHzSD1RHT2o/RM9waeeWes1g3utWcQ
-         BIAg==
-X-Gm-Message-State: AOAM5302mJU9Mcqeyz8Ha191dU09KYcJILPbVWPH9qxx7U/OhbPhvYdA
-        aciLTHQedMj1FGjlgXI3VnINIDjs7zYrkE957QvSokQIY3kv
-X-Google-Smtp-Source: ABdhPJzAficTU5yYxlsBfgJBI6iE30UopThIcBDgy4Jniw7LCPCs+V9xZYzu/6bHKQNczIo5WTUTgJ5bl1S+aT7AL2HCH+lLOjIV
+        bh=YLnHcb4u/Rbh+CEAOHev0nwUvyI4FI+70xSJiBr2up0=;
+        b=KlqIx8shyxOgx7mBR0vpObOAwNCFGEBSbp481cBx+5XRYRV/pVqvNz4a1tJa8eSSKu
+         d/+bGR4O0CODkqHULi9bwXCzXrNCCsSCe7DVHcnJbNQysgH3a+JY3frVXdYKzqtVGygu
+         EYboJ2Hbo22ce2N5WMzc/kprBsf4WqK7R3+/aSeRycZVzEIgIM4+diQcB2QnGrGB43DT
+         U8Ug0+uYytu6ZeLrKkCVKvu9KJDOBXWNC4nvYiHZWJHu+M797RNVykdp8LMFz/Nkk1uT
+         2xG4nPxXSL/iQmVe9yDO3bAsHY3MH7/mks2xIQD1IfLHlRSjTs4brM/XFACZElUyU6bT
+         DSRw==
+X-Gm-Message-State: AOAM532//FzjWcZMWBEaHwPtvEYzuF0SjIoQkKEwy/svwuTgc/GgqNR5
+        pQxpbRrIaE9GrZ+vUgChRsLX4ZG4GhjPBzrUfcbAbST/6rik
+X-Google-Smtp-Source: ABdhPJyz8Nn/75pCswmwvFmWYk2DkjipATdABkX8lZ6OzsFgcoD88eXtLlBVd/11rki5AQYMU1AR/dFo/CswyF4RcOtkSl0zWmBL
 MIME-Version: 1.0
-X-Received: by 2002:a6b:7602:: with SMTP id g2mr24178579iom.37.1638609508327;
- Sat, 04 Dec 2021 01:18:28 -0800 (PST)
-Date:   Sat, 04 Dec 2021 01:18:28 -0800
+X-Received: by 2002:a92:d992:: with SMTP id r18mr23049436iln.224.1638609565033;
+ Sat, 04 Dec 2021 01:19:25 -0800 (PST)
+Date:   Sat, 04 Dec 2021 01:19:25 -0800
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000ab655805d24e814a@google.com>
-Subject: [syzbot] general protection fault in kernel_accept (3)
-From:   syzbot <syzbot+03655f787f231d1b7b6c@syzkaller.appspotmail.com>
-To:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, davem@davemloft.net,
-        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, yhs@fb.com
+Message-ID: <0000000000000ca79b05d24e85fd@google.com>
+Subject: [syzbot] WARNING: ODEBUG bug in cancel_delayed_work (2)
+From:   syzbot <syzbot+4b140c35e652626b77ba@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, johan.hedberg@gmail.com, kuba@kernel.org,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
+        luiz.dentz@gmail.com, marcel@holtmann.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -50,81 +48,100 @@ Hello,
 
 syzbot found the following issue on:
 
-HEAD commit:    d40ce48cb3a6 Merge branch 'af_unix-replace-unix_table_lock..
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=14b86465b00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=7cc851c2debde333
-dashboard link: https://syzkaller.appspot.com/bug?extid=03655f787f231d1b7b6c
+HEAD commit:    3498e7f2bb41 Merge tag '5.16-rc2-ksmbd-fixes' of git://git..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=14fcfb5eb00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=21797a5d93964cce
+dashboard link: https://syzkaller.appspot.com/bug?extid=4b140c35e652626b77ba
 compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+userspace arch: i386
 
 Unfortunately, I don't have any reproducer for this issue yet.
 
 IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+03655f787f231d1b7b6c@syzkaller.appspotmail.com
+Reported-by: syzbot+4b140c35e652626b77ba@syzkaller.appspotmail.com
 
-general protection fault, probably for non-canonical address 0xdffffc0000000072: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000390-0x0000000000000397]
-CPU: 0 PID: 15597 Comm: kworker/u4:6 Not tainted 5.16.0-rc2-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: tipc_rcv tipc_topsrv_accept
-RIP: 0010:kernel_accept+0x56/0x350 net/socket.c:3417
-Code: c1 ea 03 80 3c 02 00 0f 85 90 02 00 00 48 b8 00 00 00 00 00 fc ff df 4c 8b 65 18 49 8d bc 24 94 03 00 00 48 89 fa 48 c1 ea 03 <0f> b6 14 02 48 89 f8 83 e0 07 83 c0 01 38 d0 7c 08 84 d2 0f 85 50
-RSP: 0018:ffffc90002fdfc30 EFLAGS: 00010207
-RAX: dffffc0000000000 RBX: ffffc90002fdfca8 RCX: 0000000000000000
-RDX: 0000000000000072 RSI: ffffffff87211fca RDI: 0000000000000394
-RBP: ffff888035524800 R08: 0000000000000001 R09: ffffffff8ff7bb3f
-R10: 0000000000000001 R11: 0000000000000001 R12: 0000000000000000
-R13: 0000000000000800 R14: ffff88802668f770 R15: ffff88802668f2c0
-FS:  0000000000000000(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f41e78fc1b8 CR3: 0000000021d55000 CR4: 00000000003506f0
+WARNING: CPU: 2 PID: 13842 at lib/debugobjects.c:505 debug_print_object+0x16e/0x250 lib/debugobjects.c:505
+Modules linked in:
+CPU: 2 PID: 13842 Comm: syz-executor.1 Not tainted 5.16.0-rc2-syzkaller #0
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
+RIP: 0010:debug_print_object+0x16e/0x250 lib/debugobjects.c:505
+Code: ff df 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 af 00 00 00 48 8b 14 dd 40 29 05 8a 4c 89 ee 48 c7 c7 40 1d 05 8a e8 cc c1 21 05 <0f> 0b 83 05 55 a1 b2 09 01 48 83 c4 18 5b 5d 41 5c 41 5d 41 5e c3
+RSP: 0018:ffffc90007e9f710 EFLAGS: 00010086
+RAX: 0000000000000000 RBX: 0000000000000005 RCX: 0000000000000000
+RDX: 0000000000040000 RSI: ffffffff815f0c28 RDI: fffff52000fd3ed4
+RBP: 0000000000000001 R08: 0000000000000000 R09: 0000000000000000
+R10: ffffffff815ea9ce R11: 0000000000000000 R12: ffffffff89adf660
+R13: ffffffff8a0523c0 R14: ffffffff81660140 R15: 1ffff92000fd3eed
+FS:  0000000000000000(0000) GS:ffff88802cc00000(0063) knlGS:00000000f44efb40
+CS:  0010 DS: 002b ES: 002b CR0: 0000000080050033
+CR2: 00000000f7401004 CR3: 0000000062c7d000 CR4: 0000000000150ee0
 DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
 DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 Call Trace:
  <TASK>
- tipc_topsrv_accept+0x197/0x280 net/tipc/topsrv.c:460
- process_one_work+0x9b2/0x1690 kernel/workqueue.c:2298
- worker_thread+0x658/0x11f0 kernel/workqueue.c:2445
- kthread+0x405/0x4f0 kernel/kthread.c:327
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+ debug_object_assert_init lib/debugobjects.c:895 [inline]
+ debug_object_assert_init+0x1f4/0x2e0 lib/debugobjects.c:866
+ debug_timer_assert_init kernel/time/timer.c:739 [inline]
+ debug_assert_init kernel/time/timer.c:784 [inline]
+ del_timer+0x6d/0x110 kernel/time/timer.c:1204
+ try_to_grab_pending+0x6d/0xd0 kernel/workqueue.c:1271
+ __cancel_work kernel/workqueue.c:3259 [inline]
+ cancel_delayed_work+0x79/0x340 kernel/workqueue.c:3288
+ sco_sock_clear_timer+0x54/0xf0 net/bluetooth/sco.c:120
+ sco_conn_del+0x139/0x2c0 net/bluetooth/sco.c:198
+ sco_disconn_cfm+0x71/0xb0 net/bluetooth/sco.c:1374
+ hci_disconn_cfm include/net/bluetooth/hci_core.h:1543 [inline]
+ hci_conn_hash_flush+0x127/0x260 net/bluetooth/hci_conn.c:1742
+ hci_dev_do_close+0x57d/0x1150 net/bluetooth/hci_core.c:1672
+ hci_rfkill_set_block+0x19c/0x1d0 net/bluetooth/hci_core.c:2113
+ rfkill_set_block+0x1f9/0x540 net/rfkill/core.c:344
+ rfkill_fop_write+0x267/0x500 net/rfkill/core.c:1268
+ do_loop_readv_writev fs/read_write.c:749 [inline]
+ do_loop_readv_writev fs/read_write.c:733 [inline]
+ do_iter_write+0x4f8/0x710 fs/read_write.c:853
+ vfs_writev+0x1aa/0x630 fs/read_write.c:924
+ do_writev+0x27f/0x300 fs/read_write.c:967
+ do_syscall_32_irqs_on arch/x86/entry/common.c:112 [inline]
+ __do_fast_syscall_32+0x65/0xf0 arch/x86/entry/common.c:178
+ do_fast_syscall_32+0x2f/0x70 arch/x86/entry/common.c:203
+ entry_SYSENTER_compat_after_hwframe+0x4d/0x5c
+RIP: 0023:0xf6ef5549
+Code: 03 74 c0 01 10 05 03 74 b8 01 10 06 03 74 b4 01 10 07 03 74 b0 01 10 08 03 74 d8 01 00 00 00 00 00 51 52 55 89 e5 0f 34 cd 80 <5d> 5a 59 c3 90 90 90 90 8d b4 26 00 00 00 00 8d b4 26 00 00 00 00
+RSP: 002b:00000000f44ef5fc EFLAGS: 00000296 ORIG_RAX: 0000000000000092
+RAX: ffffffffffffffda RBX: 0000000000000004 RCX: 0000000020000000
+RDX: 0000000000000300 RSI: 0000000000000000 RDI: 0000000000000000
+RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
  </TASK>
-Modules linked in:
----[ end trace d8fc85c5be0bfa88 ]---
-RIP: 0010:kernel_accept+0x56/0x350 net/socket.c:3417
-Code: c1 ea 03 80 3c 02 00 0f 85 90 02 00 00 48 b8 00 00 00 00 00 fc ff df 4c 8b 65 18 49 8d bc 24 94 03 00 00 48 89 fa 48 c1 ea 03 <0f> b6 14 02 48 89 f8 83 e0 07 83 c0 01 38 d0 7c 08 84 d2 0f 85 50
-RSP: 0018:ffffc90002fdfc30 EFLAGS: 00010207
-RAX: dffffc0000000000 RBX: ffffc90002fdfca8 RCX: 0000000000000000
-RDX: 0000000000000072 RSI: ffffffff87211fca RDI: 0000000000000394
-RBP: ffff888035524800 R08: 0000000000000001 R09: ffffffff8ff7bb3f
-R10: 0000000000000001 R11: 0000000000000001 R12: 0000000000000000
-R13: 0000000000000800 R14: ffff88802668f770 R15: ffff88802668f2c0
-FS:  0000000000000000(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f93092d2000 CR3: 000000001bf56000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 ----------------
 Code disassembly (best guess):
-   0:	c1 ea 03             	shr    $0x3,%edx
-   3:	80 3c 02 00          	cmpb   $0x0,(%rdx,%rax,1)
-   7:	0f 85 90 02 00 00    	jne    0x29d
-   d:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
-  14:	fc ff df
-  17:	4c 8b 65 18          	mov    0x18(%rbp),%r12
-  1b:	49 8d bc 24 94 03 00 	lea    0x394(%r12),%rdi
-  22:	00
-  23:	48 89 fa             	mov    %rdi,%rdx
-  26:	48 c1 ea 03          	shr    $0x3,%rdx
-* 2a:	0f b6 14 02          	movzbl (%rdx,%rax,1),%edx <-- trapping instruction
-  2e:	48 89 f8             	mov    %rdi,%rax
-  31:	83 e0 07             	and    $0x7,%eax
-  34:	83 c0 01             	add    $0x1,%eax
-  37:	38 d0                	cmp    %dl,%al
-  39:	7c 08                	jl     0x43
-  3b:	84 d2                	test   %dl,%dl
-  3d:	0f                   	.byte 0xf
-  3e:	85                   	.byte 0x85
-  3f:	50                   	push   %rax
+   0:	03 74 c0 01          	add    0x1(%rax,%rax,8),%esi
+   4:	10 05 03 74 b8 01    	adc    %al,0x1b87403(%rip)        # 0x1b8740d
+   a:	10 06                	adc    %al,(%rsi)
+   c:	03 74 b4 01          	add    0x1(%rsp,%rsi,4),%esi
+  10:	10 07                	adc    %al,(%rdi)
+  12:	03 74 b0 01          	add    0x1(%rax,%rsi,4),%esi
+  16:	10 08                	adc    %cl,(%rax)
+  18:	03 74 d8 01          	add    0x1(%rax,%rbx,8),%esi
+  1c:	00 00                	add    %al,(%rax)
+  1e:	00 00                	add    %al,(%rax)
+  20:	00 51 52             	add    %dl,0x52(%rcx)
+  23:	55                   	push   %rbp
+  24:	89 e5                	mov    %esp,%ebp
+  26:	0f 34                	sysenter
+  28:	cd 80                	int    $0x80
+* 2a:	5d                   	pop    %rbp <-- trapping instruction
+  2b:	5a                   	pop    %rdx
+  2c:	59                   	pop    %rcx
+  2d:	c3                   	retq
+  2e:	90                   	nop
+  2f:	90                   	nop
+  30:	90                   	nop
+  31:	90                   	nop
+  32:	8d b4 26 00 00 00 00 	lea    0x0(%rsi,%riz,1),%esi
+  39:	8d b4 26 00 00 00 00 	lea    0x0(%rsi,%riz,1),%esi
 
 
 ---
