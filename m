@@ -2,90 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC56B468538
-	for <lists+netdev@lfdr.de>; Sat,  4 Dec 2021 15:00:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 063E146853B
+	for <lists+netdev@lfdr.de>; Sat,  4 Dec 2021 15:07:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385122AbhLDOES (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Dec 2021 09:04:18 -0500
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.85.151]:33757 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1385133AbhLDOER (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Dec 2021 09:04:17 -0500
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-74-Jq7wfLECMWWKK7IsXwOGnw-1; Sat, 04 Dec 2021 14:00:49 +0000
-X-MC-Unique: Jq7wfLECMWWKK7IsXwOGnw-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.26; Sat, 4 Dec 2021 14:00:48 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.026; Sat, 4 Dec 2021 14:00:48 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Eric Dumazet' <edumazet@google.com>,
-        kernel test robot <lkp@intel.com>
-CC:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "kbuild-all@lists.01.org" <kbuild-all@lists.01.org>,
-        netdev <netdev@vger.kernel.org>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        "David Lebrun" <dlebrun@google.com>
-Subject: RE: [PATCH net-next] net: fix recent csum changes
-Thread-Topic: [PATCH net-next] net: fix recent csum changes
-Thread-Index: AQHX6MkmGXqYzp04fka0oQkYu30MhawiV/GQ
-Date:   Sat, 4 Dec 2021 14:00:48 +0000
-Message-ID: <d85835b339f345c2b5acd67b71f4b435@AcuMS.aculab.com>
-References: <20211203185238.2011081-1-eric.dumazet@gmail.com>
- <202112041104.gPgP3Z6U-lkp@intel.com>
- <CANn89i+m2O9EQCZq5r39ZbnE2dO82pxnj-KshbfWjNH3a5zqWQ@mail.gmail.com>
-In-Reply-To: <CANn89i+m2O9EQCZq5r39ZbnE2dO82pxnj-KshbfWjNH3a5zqWQ@mail.gmail.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S1385146AbhLDOKb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Dec 2021 09:10:31 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:31917 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1385137AbhLDOKa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Dec 2021 09:10:30 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1638626824;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=cOdYTEZmaIlv5IppN0FZFDrUkHw6ggGqnaTF4PDq7Qg=;
+        b=IuzbuEdxlu74r4SLiOYknxYUjEg3f7jZuXSPutFiIJRHr3eEO0yzePoZktJQjsxv1/Kymi
+        XTJK0I5ky4gKwu2kXUoSx62+ZUX/vlCSArr3GsVNiRFdPVmKNla9q9IBtabYv1WU1TWEEk
+        BKPGsZlkTk63HIu7Tb67W1Vb7SwuMKU=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-267-9w2Tz3ByOeqyhCLte21oDg-1; Sat, 04 Dec 2021 09:07:03 -0500
+X-MC-Unique: 9w2Tz3ByOeqyhCLte21oDg-1
+Received: by mail-wm1-f69.google.com with SMTP id g81-20020a1c9d54000000b003330e488323so2416379wme.0
+        for <netdev@vger.kernel.org>; Sat, 04 Dec 2021 06:07:03 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=cOdYTEZmaIlv5IppN0FZFDrUkHw6ggGqnaTF4PDq7Qg=;
+        b=Kk+1YF/F6oQl429o701ApbZY70KZ4dfg+PHCh4rFuDUhUJRGFcMhIdvftNSXZjljLX
+         Xi364NR2Jj4+lDsdwvRe6FU1iTvIaiJSfeiloRWOwnLOGelonFAEHtmTB2poJsiK68vh
+         MDaJj5zmi1YVvXj5vR27BjMDK8x+g5IiI2wPDppQRHOzAqWwTiCLhwsNse+wDmdoDyyp
+         J9CwOWIDDoAj4/NiDW6IgZZ1ISm5pvg1SUpkiAw7xoa4G0y5qn2K5NDeF0dKMo0RLCxZ
+         E7xjaqTYraN30ZNXuiLKP32I8VlU4ycCFRMFt0HsIhLP/sSZ9m9OKeu8LGGRxIZcHOLV
+         rBbQ==
+X-Gm-Message-State: AOAM530H4fUoQfp64n39VfznTgbiPBGb3+xQGmAR+GfCRechKKQa7j7L
+        I72cx1Ql5fN+P9QO8SMCz2N0LptqRjvG1GhvHi+mQ+zkq5E1oOcz/FwZ4OI5ozu6Fl4DLw40WCD
+        FFhqj9ADvwxiqB6IW
+X-Received: by 2002:a5d:4989:: with SMTP id r9mr28514330wrq.14.1638626822106;
+        Sat, 04 Dec 2021 06:07:02 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzNKAK0HUtMITjRd+ZyXSm1XTXxwpkjejiQgvuHlN7hMdvUounBStqVDU/jkHmmtEsT4FnjJQ==
+X-Received: by 2002:a5d:4989:: with SMTP id r9mr28514305wrq.14.1638626821958;
+        Sat, 04 Dec 2021 06:07:01 -0800 (PST)
+Received: from krava.redhat.com (nat-pool-brq-u.redhat.com. [213.175.37.12])
+        by smtp.gmail.com with ESMTPSA id i17sm6359714wmq.48.2021.12.04.06.07.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 04 Dec 2021 06:07:01 -0800 (PST)
+From:   Jiri Olsa <jolsa@redhat.com>
+X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Subject: [PATCH bpf-next 0/3] bpf: Add helpers to access traced function arguments
+Date:   Sat,  4 Dec 2021 15:06:57 +0100
+Message-Id: <20211204140700.396138-1-jolsa@kernel.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogRXJpYyBEdW1hemV0DQo+IFNlbnQ6IDA0IERlY2VtYmVyIDIwMjEgMDQ6NDENCj4gDQo+
-IE9uIEZyaSwgRGVjIDMsIDIwMjEgYXQgNzozNCBQTSBrZXJuZWwgdGVzdCByb2JvdCA8bGtwQGlu
-dGVsLmNvbT4gd3JvdGU6DQo+ID4NCj4gPiBJIGxvdmUgeW91ciBwYXRjaCEgUGVyaGFwcyBzb21l
-dGhpbmcgdG8gaW1wcm92ZToNCi4uLg0KPiANCj4gWWVzLCBrZWVwaW5nIHNwYXJzZSBoYXBweSB3
-aXRoIHRoZXNlIGNoZWNrc3VtIGlzIG5vdCBlYXN5Lg0KPiANCj4gSSB3aWxsIGFkZCBhbmQgdXNl
-IHRoaXMgaGVscGVyLCB1bmxlc3Mgc29tZW9uZSBoYXMgYSBiZXR0ZXIgaWRlYS4NCj4gDQo+IGRp
-ZmYgLS1naXQgYS9pbmNsdWRlL25ldC9jaGVja3N1bS5oIGIvaW5jbHVkZS9uZXQvY2hlY2tzdW0u
-aA0KPiBpbmRleCA1Yjk2ZDViZDZlNTQ1MzJhN2E4MjUxMWZmNWQ3ZDRjNmYxODk4MmQ1Li41MjE4
-MDQxZTVjOGY5M2NkMzY5YTJhM2E0NmFkZDNlNmE1ZTQxYWY3DQo+IDEwMDY0NA0KPiAtLS0gYS9p
-bmNsdWRlL25ldC9jaGVja3N1bS5oDQo+ICsrKyBiL2luY2x1ZGUvbmV0L2NoZWNrc3VtLmgNCj4g
-QEAgLTE4MCw0ICsxODAsOCBAQCBzdGF0aWMgaW5saW5lIHZvaWQgcmVtY3N1bV91bmFkanVzdChf
-X3N1bTE2ICpwc3VtLA0KPiBfX3dzdW0gZGVsdGEpDQo+ICAgICAgICAgKnBzdW0gPSBjc3VtX2Zv
-bGQoY3N1bV9zdWIoZGVsdGEsIChfX2ZvcmNlIF9fd3N1bSkqcHN1bSkpOw0KPiAgfQ0KPiANCj4g
-K3N0YXRpYyBpbmxpbmUgX193c3VtIHdzdW1fbmVnYXRlKF9fd3N1bSB2YWwpDQo+ICt7DQo+ICsg
-ICAgICAgcmV0dXJuIChfX2ZvcmNlIF9fd3N1bSktKChfX2ZvcmNlIHUzMil2YWwpOw0KPiArfQ0K
-PiAgI2VuZGlmDQoNCkkgd2FzIHRoaW5raW5nIHRoYXQgdGhlIGV4cHJlc3Npb24gYWxzbyByZXF1
-aXJlcyBzb21lIGNvbW1lbnRzLg0KU28gbWF5YmUgcHV0IGEgI2RlZmluZSAvIHN0YXRpYyBpbmxp
-bmUgaW4gY2hlY2tzdW0uaCBsaWtlOg0KDQovKiBTdWJyYWN0IHRoZSBjaGVja3N1bSBvZiBhIGJ1
-ZmZlci4NCiAqIFRoZSBkb21haW4gaXMgX193c3VtIGlzIFsxLi5+MHVdIChpZSBleGNsdWRlcyB6
-ZXJvKQ0KICogc28gfmNzdW1fcGFydGlhbCgpIGNhbm5vdCBiZSB1c2VkLg0KICogVGhlIHR3bydz
-IGNvbXBsaW1lbnQgZ2l2ZXMgdGhlIHJpZ2h0IGFuc3dlciBwcm92aWRlZCB0aGUgb2xkICdjc3Vt
-Jw0KICogaXNuJ3QgemVybyAtIHdoaWNoIGl0IHNob3VsZG4ndCBiZS4gKi8NCiNkZWZpbmUgY3N1
-bV9wYXJ0aWFsX3N1YihidWYsIGxlbiwgY3N1bSkgKC1jc3VtX3BhcnRpYWwoYnVmLCBsZW4sIC0o
-Y3N1bSkpDQoNCmFuZCB0aGVuIGFkZCB0aGUgYW5ub3RhdGlvbnMgdGhlcmUgdG8ga2VlcCBzcGFy
-c2UgaGFwcHkgdGhlcmUuDQoNCndpbGwgc3BhcnNlIGFjY2VwdCAnMSArIH5jc3VtJyA/IFRoZSBj
-b21waWxlciBzaG91bGQgdXNlIG5lZ2F0ZSBmb3IgaXQuDQpJdCBhY3R1YWxseSBtYWtlcyBpdCBz
-bGlnaHRseSBtb3JlIG9idmlvdXMgd2h5IHRoZSBjb2RlIGlzIHJpZ2h0Lg0KDQoJRGF2aWQNCg0K
-LQ0KUmVnaXN0ZXJlZCBBZGRyZXNzIExha2VzaWRlLCBCcmFtbGV5IFJvYWQsIE1vdW50IEZhcm0s
-IE1pbHRvbiBLZXluZXMsIE1LMSAxUFQsIFVLDQpSZWdpc3RyYXRpb24gTm86IDEzOTczODYgKFdh
-bGVzKQ0K
+hi,
+adding new helpers to access traced function arguments that
+came out of the trampoline batch changes [1].
+
+  Get n-th argument of the traced function:
+    long bpf_get_func_arg(void *ctx, u32 n, u64 *value)
+  
+  Get return value of the traced function:
+    long bpf_get_func_ret(void *ctx, u64 *value)
+  
+  Get arguments count of the traced funtion:
+    long bpf_get_func_arg_cnt(void *ctx)
+
+changes from original post [1]:
+  - change helpers names to get_func_*
+  - change helpers to return error values instead of
+    direct values
+  - replaced stack_size usage with specific offset
+    variables in arch_prepare_bpf_trampoline
+  - add comment on stack layout
+  - add more tests
+  - allow bpf_get_func_ret in FENTRY programs
+  - use BPF_LSH instead of BPF_MUL
+
+thanks,
+jirka
+
+
+[1] https://lore.kernel.org/bpf/20211118112455.475349-1-jolsa@kernel.org/
+---
+Jiri Olsa (3):
+      bpf, x64: Replace some stack_size usage with offset variables
+      bpf: Add get_func_[arg|ret|arg_cnt] helpers
+      selftests/bpf: Add tests for get_func_[arg|ret|arg_cnt] helpers
+
+ arch/x86/net/bpf_jit_comp.c                                 |  55 +++++++++++++++++++++++++++++++++------------
+ include/uapi/linux/bpf.h                                    |  28 +++++++++++++++++++++++
+ kernel/bpf/verifier.c                                       |  73 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++--
+ kernel/trace/bpf_trace.c                                    |  58 ++++++++++++++++++++++++++++++++++++++++++++++-
+ tools/include/uapi/linux/bpf.h                              |  28 +++++++++++++++++++++++
+ tools/testing/selftests/bpf/prog_tests/get_func_args_test.c |  38 +++++++++++++++++++++++++++++++
+ tools/testing/selftests/bpf/progs/get_func_args_test.c      | 112 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 7 files changed, 375 insertions(+), 17 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/get_func_args_test.c
+ create mode 100644 tools/testing/selftests/bpf/progs/get_func_args_test.c
 
