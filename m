@@ -2,80 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EBBF8468192
-	for <lists+netdev@lfdr.de>; Sat,  4 Dec 2021 01:47:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E3449468191
+	for <lists+netdev@lfdr.de>; Sat,  4 Dec 2021 01:47:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383930AbhLDAvN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Dec 2021 19:51:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52912 "EHLO
+        id S1383924AbhLDAvM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Dec 2021 19:51:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383922AbhLDAvM (ORCPT
+        with ESMTP id S1354618AbhLDAvM (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 3 Dec 2021 19:51:12 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0828BC061751
-        for <netdev@vger.kernel.org>; Fri,  3 Dec 2021 16:47:48 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C2871B829C0
-        for <netdev@vger.kernel.org>; Sat,  4 Dec 2021 00:47:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48885C341C0;
-        Sat,  4 Dec 2021 00:47:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638578865;
-        bh=uOiMib5qNVizw93qq34cahEVzbzEkJTWW1/JcDbKZpc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=T/Xu2kRk0CRHHhngwGptVrr4RErEgnS0FIMyyofukNb8ZhZGFP8KrVgnjwKQ0M00H
-         4+lnH8iGuoJKmEhA1ynIVli6YG7z2iOHY4M2d+azDUMzckf2ORdT47h2QWLJFMfqUn
-         sfg3ir7CxZprz9zRuh12SnQtp7HPy4W87c8F2GInIoF3xty9UBYvCyBZ02juonqiPQ
-         FBYwzRimejdbuAzfE2UkPR1YBCX2OqY+pUUsvdQG9HVb0Tvi+YZ1ET2/fxc/MgdB+H
-         6lWc4kbdsE9yPEI3KUdnd3gFZP2wYYRjDTU9F1P2wxFZOwmdB5qnY+Qk8XIp6HGqfe
-         oHL1jpCsEJI7w==
-Date:   Fri, 3 Dec 2021 16:47:43 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>
-Subject: Re: [PATCH v2 net-next 00/23] net: add preliminary netdev refcount
- tracking
-Message-ID: <20211203164743.23de4a66@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211203024640.1180745-1-eric.dumazet@gmail.com>
-References: <20211203024640.1180745-1-eric.dumazet@gmail.com>
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC4BBC061751;
+        Fri,  3 Dec 2021 16:47:47 -0800 (PST)
+Received: by mail-pf1-x442.google.com with SMTP id r130so4465006pfc.1;
+        Fri, 03 Dec 2021 16:47:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=1NXW96FULaq9MCh+MikxqVORQr2ZBOfCRWVjuh1Jzis=;
+        b=Djbf+mJRsfMrGfOHRmNHs1aF9bv5dEmaVVNI8EEYjqDGWPfG+Jampf9GTMubipT3/z
+         sQBazHZTHH+9bifmmiQaeVtqA5TYAaNnLQQZvR/LQkmzyxx8Jwz5eTRYtrapJCBrUORB
+         TyWZ3D1800bAM3QaOF+Ip5Y808ZsGLdYI6JzTG5IBU/uzHYSRURLH5EtuCiZ0dgGEUpp
+         o1aXIhu4IzEeCo8GXMza+BI7WvvJwwFPVq8Xq7AdN9oT1iiee4EUiLdY6UOymks48qDp
+         f3kudYtZHxH7MIqWuWONqkciAhgWLpcvdWxzTDXjigfWme8quV3uRh5AFpSZme7PjUmz
+         6kGQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=1NXW96FULaq9MCh+MikxqVORQr2ZBOfCRWVjuh1Jzis=;
+        b=zHoeWmXwTsqx27ABB6QHIV0h3NHMEg+olGV+BbFS7iZ2uzSqQcaUX/RbAKqJbmapAp
+         YebFLmZLp8ShnB6GK1yiDGyF5s6eNL9W89dkfzEea53/B46x4pNzP+WG7WkZEmVU5Xu0
+         aShKYzw3i85zksq9q0Dcse9Vm+EPsvugSAWlP5ug5SDQm12Gei8wRC/PPDSRSWUaoyxv
+         ZXwWjDmR/tbrYRCuxSDAOC+dx1gQYLXHpFqfXXTEWsyhaLvUTcjRa5SZC2XVJoxoX4I+
+         GU/KKeJ/hgpSvmoYHT4SRd9CRz5xC1RPTsLB19hhq6a9Xy0E/Dr2vDPEIlDPlbNcfln+
+         OOlg==
+X-Gm-Message-State: AOAM533FXVYT1PLcyrQDaG0gURIWHv0MeOoAe7SBzfUqVYrJmNCkRSgl
+        cX7vwzGiWjCgg46TFy45iPY=
+X-Google-Smtp-Source: ABdhPJwsr7y5BMX5/TVxi4p7OUi6OqtQU4pwpl0F6RZSVT4tTF8u9D27X0kG2fXgW/DTbSlhh19OPw==
+X-Received: by 2002:a63:8bc7:: with SMTP id j190mr6955899pge.240.1638578867239;
+        Fri, 03 Dec 2021 16:47:47 -0800 (PST)
+Received: from localhost ([2405:201:6014:d064:502e:73f4:8af1:9522])
+        by smtp.gmail.com with ESMTPSA id t3sm4856500pfg.94.2021.12.03.16.47.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 03 Dec 2021 16:47:46 -0800 (PST)
+Date:   Sat, 4 Dec 2021 06:17:44 +0530
+From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
+Subject: Re: [PATCH bpf 2/2] samples: bpf: fix 'unknown warning group' build
+ warning on Clang
+Message-ID: <20211204004744.eqakjotrfu4ceksp@apollo.legion>
+References: <20211203195004.5803-1-alexandr.lobakin@intel.com>
+ <20211203195004.5803-3-alexandr.lobakin@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211203195004.5803-3-alexandr.lobakin@intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu,  2 Dec 2021 18:46:17 -0800 Eric Dumazet wrote:
-> Two first patches add a generic infrastructure, that will be used
-> to get tracking of refcount increments/decrements.
-> 
-> The general idea is to be able to precisely pair each decrement with
-> a corresponding prior increment. Both share a cookie, basically
-> a pointer to private data storing stack traces.
-> 
-> The third place adds dev_hold_track() and dev_put_track() helpers
-> (CONFIG_NET_DEV_REFCNT_TRACKER)
-> 
-> Then a series of 20 patches converts some dev_hold()/dev_put()
-> pairs to new hepers : dev_hold_track() and dev_put_track().
-> 
-> Hopefully this will be used by developpers and syzbot to
-> root cause bugs that cause netdevice dismantles freezes.
-> 
-> With CONFIG_PCPU_DEV_REFCNT=n option, we were able to detect
-> some class of bugs, but too late (when too many dev_put()
-> were happening).
+On Sat, Dec 04, 2021 at 01:20:04AM IST, Alexander Lobakin wrote:
+> Clang doesn't have 'stringop-truncation' group like GCC does, and
+> complains about it when building samples which use xdp_sample_user
+> infra:
+>
+>  samples/bpf/xdp_sample_user.h:48:32: warning: unknown warning group '-Wstringop-truncation', ignored [-Wunknown-warning-option]
+>  #pragma GCC diagnostic ignored "-Wstringop-truncation"
+>                                 ^
+> [ repeat ]
+>
+> Those are harmless, but avoidable when guarding it with ifdef.
+> I could guard push/pop as well, but this would require one more
+> ifdef cruft around a single line which I don't think is reasonable.
+>
+> Fixes: 156f886cf697 ("samples: bpf: Add basic infrastructure for XDP samples")
+> Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+> ---
 
-Hi Eric, there's a handful of kdoc warnings added here:
+Acked-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 
-include/linux/netdevice.h:2278: warning: Function parameter or member 'refcnt_tracker' not described in 'net_device'
-include/net/devlink.h:679: warning: Function parameter or member 'dev_tracker' not described in 'devlink_trap_metadata'
-include/linux/netdevice.h:2283: warning: Function parameter or member 'refcnt_tracker' not described in 'net_device'
-include/linux/mroute_base.h:40: warning: Function parameter or member 'dev_tracker' not described in 'vif_device'
+> [...]
 
-Would you mind following up? likely not worth re-spinning just for that.
+--
+Kartikeya
