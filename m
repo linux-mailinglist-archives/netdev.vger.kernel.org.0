@@ -2,250 +2,240 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 74121468541
-	for <lists+netdev@lfdr.de>; Sat,  4 Dec 2021 15:07:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 371374685B4
+	for <lists+netdev@lfdr.de>; Sat,  4 Dec 2021 15:42:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385154AbhLDOKt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Dec 2021 09:10:49 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:59290 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1385108AbhLDOKt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Dec 2021 09:10:49 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1638626843;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=xJf9C0dhuJV/fGk+WK+oK43/VAjCjanQdJUfa6jH1EQ=;
-        b=DBrWw/kszsYYuXDLgdyliEl5pSqbeNxMAnR8lMPGFOvClZbNV/C/givJgBBDPSCTVxg+hY
-        2el9AaweFuCOx4tmu9Gks3dw0PAqbLdJ8sHAlUkYb/syPmjKDb6zGEDy85ymnCZePVzZii
-        06Lyclh2s5Ag9vq0VbInPaksMEY7qTA=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-490-zTeqYRJQMpiaB76ZPCkmNg-1; Sat, 04 Dec 2021 09:07:22 -0500
-X-MC-Unique: zTeqYRJQMpiaB76ZPCkmNg-1
-Received: by mail-wm1-f70.google.com with SMTP id r129-20020a1c4487000000b00333629ed22dso5118763wma.6
-        for <netdev@vger.kernel.org>; Sat, 04 Dec 2021 06:07:22 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=xJf9C0dhuJV/fGk+WK+oK43/VAjCjanQdJUfa6jH1EQ=;
-        b=1aQjHcuyDU9Dn8fTnxa0oX1AGqCNzcOVMnEafNSXdo/+/q/T7K62t4hawhDScoeAm6
-         hkg1UsjGSbMIEhUv5PJ7+/9JSCpElgO+4KRvEfBRG8GhYvzooHiSaWAzBjFxnpqGZAOs
-         tbGyGGO3B0bAhWEvxHhR9TxTj7FqyI/DfSIE8d+tre0RXyYs/pqGzS+9A1uyuqwHqzph
-         fZfiFUYK2bHj3F8rto8+9jnebNuKPatICoWXGYDp4ZMNqyCcUQGtmQjnriXQkWyaoetc
-         6eVTcn/C0HEY9CCH6hX4Va0l4VrJOdV9YMEdrM3CiCESfx4Tk6m2HdTd4S9U/uTpc6Lb
-         H+WA==
-X-Gm-Message-State: AOAM532Ek8sDRGDax989rJ0hRTeYLH69NXkAgj4m81+0hryNSmEQi2+c
-        nmYkjkKgipPH6yBof2u27i1ug01oIONkQDDDPAvaZRuziS8D2qc+ncJhv1oCTc64hPTIyXEhcWJ
-        DCKNfPVRSDI7waOgF
-X-Received: by 2002:a5d:668d:: with SMTP id l13mr29008090wru.526.1638626841190;
-        Sat, 04 Dec 2021 06:07:21 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwFCANVYaPz6Xh18KXAWYo8vePvEtaC0QfF327uDX68NOoVG67qXW5ATetlU2gakUrOzc7tfg==
-X-Received: by 2002:a5d:668d:: with SMTP id l13mr29008065wru.526.1638626841023;
-        Sat, 04 Dec 2021 06:07:21 -0800 (PST)
-Received: from krava.redhat.com (nat-pool-brq-u.redhat.com. [213.175.37.12])
-        by smtp.gmail.com with ESMTPSA id d9sm5573503wre.52.2021.12.04.06.07.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 04 Dec 2021 06:07:20 -0800 (PST)
-From:   Jiri Olsa <jolsa@redhat.com>
-X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>
-Subject: [PATCH bpf-next 3/3] selftests/bpf: Add tests for get_func_[arg|ret|arg_cnt] helpers
-Date:   Sat,  4 Dec 2021 15:07:00 +0100
-Message-Id: <20211204140700.396138-4-jolsa@kernel.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20211204140700.396138-1-jolsa@kernel.org>
-References: <20211204140700.396138-1-jolsa@kernel.org>
+        id S233795AbhLDOqV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Dec 2021 09:46:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37128 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232056AbhLDOqU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Dec 2021 09:46:20 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C2BCC061751
+        for <netdev@vger.kernel.org>; Sat,  4 Dec 2021 06:42:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=bs2psogHgYpkReWj90tylFnAHnsy7Ee86MAwjjU6XRU=; b=IWYQnRh0eF+1I0t9WlnTF8W7Lr
+        CvVMeorCLlO/Wpz0eVbOla0KC84L6N7/Y0pKh0ne2XGe9FDvtJb5/N1CDXQXDEgjF0o8GxfRBgvm9
+        XYK80yLNUjGCDTU3VoKtrAzjbxAXjyHaoXZuadkKVAGQwtEUxzFrwFpUyo8Q73R6KeLyAtxPHLnhP
+        2smPTAys1yjY+sukNBKfE3aTIvC1HnYWNSbmPCXAcUYujLrYUxR/QE1HzB9LxQ36nqDEx2tEUyOOf
+        RF1mO+kGV4Irz91f/V2gz4TFrEBT3EAU54c4f4DG+y9qfRqGsmo3Y3bOsUmSYJwQQHUTm4iZR71JR
+        DaOpgrTQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:56060)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1mtWFP-0003LX-QB; Sat, 04 Dec 2021 14:42:43 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1mtWFM-0002V5-Kz; Sat, 04 Dec 2021 14:42:40 +0000
+Date:   Sat, 4 Dec 2021 14:42:40 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH RFC net-next 05/12] net: dsa: bcm_sf2: convert to
+ phylink_generic_validate()
+Message-ID: <Yat+YKhx9E5Xyad4@shell.armlinux.org.uk>
+References: <YZ56WapOaVpUbRuT@shell.armlinux.org.uk>
+ <E1mpwRs-00D8LK-N3@rmk-PC.armlinux.org.uk>
+ <6ef4f764-cd91-91bd-e921-407e9d198179@gmail.com>
+ <3b3fed98-0c82-99e9-dc72-09fe01c2bcf3@gmail.com>
+ <Yast4PrQGGLxDrCy@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yast4PrQGGLxDrCy@shell.armlinux.org.uk>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding tests for get_func_[arg|ret|arg_cnt] helpers.
-Using these helpers in fentry/fexit/fmod_ret programs.
+On Sat, Dec 04, 2021 at 08:59:12AM +0000, Russell King (Oracle) wrote:
+> On Fri, Dec 03, 2021 at 08:18:22PM -0800, Florian Fainelli wrote:
+> > On 12/3/21 12:03 PM, Florian Fainelli wrote:
+> > > On 11/24/21 9:52 AM, Russell King (Oracle) wrote:
+> > > > Populate the supported interfaces and MAC capabilities for the bcm_sf2
+> > > > DSA switch and remove the old validate implementation to allow DSA to
+> > > > use phylink_generic_validate() for this switch driver.
+> > > > 
+> > > > The exclusion of Gigabit linkmodes for MII and Reverse MII links is
+> > > > handled within phylink_generic_validate() in phylink, so there is no
+> > > > need to make them conditional on the interface mode in the driver.
+> > > > 
+> > > > Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+> > > 
+> > > Tested-by: Florian Fainelli <f.fainelli@gmail.com>
+> > > 
+> > > but it looks like the fixed link ports are reporting some pretty strange
+> > > advertisement values one of my two platforms running the same kernel image:
+> > 
+> > We would want to amend your patch with something that caters a bit more
+> > towards how the ports have been configured:
+> > 
+> > diff --git a/drivers/net/dsa/bcm_sf2.c b/drivers/net/dsa/bcm_sf2.c
+> > index d6ef0fb0d943..88933c3feddd 100644
+> > --- a/drivers/net/dsa/bcm_sf2.c
+> > +++ b/drivers/net/dsa/bcm_sf2.c
+> > @@ -675,12 +675,18 @@ static u32 bcm_sf2_sw_get_phy_flags(struct
+> > dsa_switch *ds, int port)
+> >  static void bcm_sf2_sw_get_caps(struct dsa_switch *ds, int port,
+> >                                 struct phylink_config *config)
+> >  {
+> > -       __set_bit(PHY_INTERFACE_MODE_MII, config->supported_interfaces);
+> > -       __set_bit(PHY_INTERFACE_MODE_REVMII, config->supported_interfaces);
+> > -       __set_bit(PHY_INTERFACE_MODE_GMII, config->supported_interfaces);
+> > -       __set_bit(PHY_INTERFACE_MODE_INTERNAL,
+> > config->supported_interfaces);
+> > -       __set_bit(PHY_INTERFACE_MODE_MOCA, config->supported_interfaces);
+> > -       phy_interface_set_rgmii(config->supported_interfaces);
+> > +       struct bcm_sf2_priv *priv = bcm_sf2_to_priv(ds);
+> > +
+> > +       if (priv->int_phy_mask & BIT(port))
+> > +               __set_bit(PHY_INTERFACE_MODE_INTERNAL,
+> > config->supported_interfaces);
+> > +       else if (priv->moca_port == port)
+> > +               __set_bit(PHY_INTERFACE_MODE_MOCA,
+> > config->supported_interfaces);
+> > +       else {
+> > +               __set_bit(PHY_INTERFACE_MODE_MII,
+> > config->supported_interfaces);
+> > +               __set_bit(PHY_INTERFACE_MODE_REVMII,
+> > config->supported_interfaces);
+> > +               __set_bit(PHY_INTERFACE_MODE_GMII,
+> > config->supported_interfaces);
+> > +               phy_interface_set_rgmii(config->supported_interfaces);
+> > +       }
+> > 
+> >         config->mac_capabilities = MAC_ASYM_PAUSE | MAC_SYM_PAUSE |
+> >                 MAC_10 | MAC_100 | MAC_1000;
+> 
+> That's fine, thanks for the update.
 
-Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+Here's the resulting updated patch. I've changed it slightly to avoid
+the wrapping, and updated the commit text - please let me know if you'd
+like any attributations added. Thanks!
+
+8<===
+From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+Subject: [PATCH RFC v2 net-next] net: dsa: bcm_sf2: convert to
+ phylink_generic_validate()
+
+Populate the supported interfaces and MAC capabilities for the bcm_sf2
+DSA switch and remove the old validate implementation to allow DSA to
+use phylink_generic_validate() for this switch driver.
+
+The exclusion of Gigabit linkmodes for MII and Reverse MII links is
+handled within phylink_generic_validate() in phylink, so there is no
+need to make them conditional on the interface mode in the driver.
+
+Thanks to Florian Fainelli for suggesting how to populate the supported
+interfaces.
+
+Link: https://lore.kernel.org/r/3b3fed98-0c82-99e9-dc72-09fe01c2bcf3@gmail.com
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 ---
- .../bpf/prog_tests/get_func_args_test.c       |  38 ++++++
- .../selftests/bpf/progs/get_func_args_test.c  | 112 ++++++++++++++++++
- 2 files changed, 150 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/get_func_args_test.c
- create mode 100644 tools/testing/selftests/bpf/progs/get_func_args_test.c
+ drivers/net/dsa/bcm_sf2.c | 54 +++++++++++----------------------------
+ 1 file changed, 15 insertions(+), 39 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/get_func_args_test.c b/tools/testing/selftests/bpf/prog_tests/get_func_args_test.c
-new file mode 100644
-index 000000000000..c24807ae4361
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/get_func_args_test.c
-@@ -0,0 +1,38 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <test_progs.h>
-+#include "get_func_args_test.skel.h"
-+
-+void test_get_func_args_test(void)
-+{
-+	struct get_func_args_test *skel = NULL;
-+	__u32 duration = 0, retval;
-+	int err, prog_fd;
-+
-+	skel = get_func_args_test__open_and_load();
-+	if (!ASSERT_OK_PTR(skel, "get_func_args_test__open_and_load"))
-+		return;
-+
-+	err = get_func_args_test__attach(skel);
-+	if (!ASSERT_OK(err, "get_func_args_test__attach"))
-+		goto cleanup;
-+
-+	prog_fd = bpf_program__fd(skel->progs.test1);
-+	err = bpf_prog_test_run(prog_fd, 1, NULL, 0,
-+				NULL, NULL, &retval, &duration);
-+	ASSERT_OK(err, "test_run");
-+	ASSERT_EQ(retval, 0, "test_run");
-+
-+	prog_fd = bpf_program__fd(skel->progs.fmod_ret_test);
-+	err = bpf_prog_test_run(prog_fd, 1, NULL, 0,
-+				NULL, NULL, &retval, &duration);
-+	ASSERT_OK(err, "test_run");
-+	ASSERT_EQ(retval, 1234, "test_run");
-+
-+	ASSERT_EQ(skel->bss->test1_result, 1, "test1_result");
-+	ASSERT_EQ(skel->bss->test2_result, 1, "test2_result");
-+	ASSERT_EQ(skel->bss->test3_result, 1, "test3_result");
-+	ASSERT_EQ(skel->bss->test4_result, 1, "test4_result");
-+
-+cleanup:
-+	get_func_args_test__destroy(skel);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/get_func_args_test.c b/tools/testing/selftests/bpf/progs/get_func_args_test.c
-new file mode 100644
-index 000000000000..0d0a67c849ae
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/get_func_args_test.c
-@@ -0,0 +1,112 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <linux/bpf.h>
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_tracing.h>
-+#include <errno.h>
-+
-+char _license[] SEC("license") = "GPL";
-+
-+__u64 test1_result = 0;
-+SEC("fentry/bpf_fentry_test1")
-+int BPF_PROG(test1)
-+{
-+	__u64 cnt = bpf_get_func_arg_cnt(ctx);
-+	__u64 a = 0, z = 0, ret = 0;
-+	__s64 err;
-+
-+	test1_result = cnt == 1;
-+
-+	/* valid arguments */
-+	err = bpf_get_func_arg(ctx, 0, &a);
-+	test1_result &= err == 0 && (int) a == 1;
-+
-+	/* not valid argument */
-+	err = bpf_get_func_arg(ctx, 1, &z);
-+	test1_result &= err == -EINVAL;
-+
-+	/* return value fails in fentry */
-+	err = bpf_get_func_ret(ctx, &ret);
-+	test1_result &= err == -EINVAL;
-+	return 0;
-+}
-+
-+__u64 test2_result = 0;
-+SEC("fexit/bpf_fentry_test2")
-+int BPF_PROG(test2)
-+{
-+	__u64 cnt = bpf_get_func_arg_cnt(ctx);
-+	__u64 a = 0, b = 0, z = 0, ret = 0;
-+	__s64 err;
-+
-+	test2_result = cnt == 2;
-+
-+	/* valid arguments */
-+	err = bpf_get_func_arg(ctx, 0, &a);
-+	test2_result &= err == 0 && (int) a == 2;
-+
-+	err = bpf_get_func_arg(ctx, 1, &b);
-+	test2_result &= err == 0 && b == 3;
-+
-+	/* not valid argument */
-+	err = bpf_get_func_arg(ctx, 2, &z);
-+	test2_result &= err == -EINVAL;
-+
-+	/* return value */
-+	err = bpf_get_func_ret(ctx, &ret);
-+	test2_result &= err == 0 && ret == 5;
-+	return 0;
-+}
-+
-+__u64 test3_result = 0;
-+SEC("fmod_ret/bpf_modify_return_test")
-+int BPF_PROG(fmod_ret_test, int _a, int *_b, int _ret)
-+{
-+	__u64 cnt = bpf_get_func_arg_cnt(ctx);
-+	__u64 a = 0, b = 0, z = 0, ret = 0;
-+	__s64 err;
-+
-+	test3_result = cnt == 2;
-+
-+	/* valid arguments */
-+	err = bpf_get_func_arg(ctx, 0, &a);
-+	test3_result &= err == 0 && (int) a == 1;
-+
-+	err = bpf_get_func_arg(ctx, 1, &b);
-+	test3_result &= err == 0;
-+
-+	/* not valid argument */
-+	err = bpf_get_func_arg(ctx, 2, &z);
-+	test3_result &= err == -EINVAL;
-+
-+	/* return value */
-+	err = bpf_get_func_ret(ctx, &ret);
-+	test3_result &= err == 0 && ret == 0;
-+	return 1234;
-+}
-+
-+__u64 test4_result = 0;
-+SEC("fexit/bpf_modify_return_test")
-+int BPF_PROG(fexit_test, int _a, __u64 _b, int _ret)
-+{
-+	__u64 cnt = bpf_get_func_arg_cnt(ctx);
-+	__u64 a = 0, b = 0, z = 0, ret = 0;
-+	__s64 err;
-+
-+	test4_result = cnt == 2;
-+
-+	/* valid arguments */
-+	err = bpf_get_func_arg(ctx, 0, &a);
-+	test4_result &= err == 0 && (int) a == 1;
-+
-+	err = bpf_get_func_arg(ctx, 1, &b);
-+	test4_result &= err == 0;
-+
-+	/* not valid argument */
-+	err = bpf_get_func_arg(ctx, 2, &z);
-+	test4_result &= err == -EINVAL;
-+
-+	/* return value */
-+	err = bpf_get_func_ret(ctx, &ret);
-+	test4_result &= err == 0 && ret == 1234;
-+	return 0;
-+}
+diff --git a/drivers/net/dsa/bcm_sf2.c b/drivers/net/dsa/bcm_sf2.c
+index 13aa43b5cffd..114d4ba7716f 100644
+--- a/drivers/net/dsa/bcm_sf2.c
++++ b/drivers/net/dsa/bcm_sf2.c
+@@ -672,49 +672,25 @@ static u32 bcm_sf2_sw_get_phy_flags(struct dsa_switch *ds, int port)
+ 		       PHY_BRCM_IDDQ_SUSPEND;
+ }
+ 
+-static void bcm_sf2_sw_validate(struct dsa_switch *ds, int port,
+-				unsigned long *supported,
+-				struct phylink_link_state *state)
++static void bcm_sf2_sw_get_caps(struct dsa_switch *ds, int port,
++				struct phylink_config *config)
+ {
++	unsigned long *interfaces = config->supported_interfaces;
+ 	struct bcm_sf2_priv *priv = bcm_sf2_to_priv(ds);
+-	__ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = { 0, };
+-
+-	if (!phy_interface_mode_is_rgmii(state->interface) &&
+-	    state->interface != PHY_INTERFACE_MODE_MII &&
+-	    state->interface != PHY_INTERFACE_MODE_REVMII &&
+-	    state->interface != PHY_INTERFACE_MODE_GMII &&
+-	    state->interface != PHY_INTERFACE_MODE_INTERNAL &&
+-	    state->interface != PHY_INTERFACE_MODE_MOCA) {
+-		linkmode_zero(supported);
+-		if (port != core_readl(priv, CORE_IMP0_PRT_ID))
+-			dev_err(ds->dev,
+-				"Unsupported interface: %d for port %d\n",
+-				state->interface, port);
+-		return;
+-	}
+-
+-	/* Allow all the expected bits */
+-	phylink_set(mask, Autoneg);
+-	phylink_set_port_modes(mask);
+-	phylink_set(mask, Pause);
+-	phylink_set(mask, Asym_Pause);
+ 
+-	/* With the exclusion of MII and Reverse MII, we support Gigabit,
+-	 * including Half duplex
+-	 */
+-	if (state->interface != PHY_INTERFACE_MODE_MII &&
+-	    state->interface != PHY_INTERFACE_MODE_REVMII) {
+-		phylink_set(mask, 1000baseT_Full);
+-		phylink_set(mask, 1000baseT_Half);
++	if (priv->int_phy_mask & BIT(port)) {
++		__set_bit(PHY_INTERFACE_MODE_INTERNAL, interfaces);
++	} else if (priv->moca_port == port) {
++		__set_bit(PHY_INTERFACE_MODE_MOCA, interfaces);
++	} else {
++		__set_bit(PHY_INTERFACE_MODE_MII, interfaces);
++		__set_bit(PHY_INTERFACE_MODE_REVMII, interfaces);
++		__set_bit(PHY_INTERFACE_MODE_GMII, interfaces);
++		phy_interface_set_rgmii(interfaces);
+ 	}
+ 
+-	phylink_set(mask, 10baseT_Half);
+-	phylink_set(mask, 10baseT_Full);
+-	phylink_set(mask, 100baseT_Half);
+-	phylink_set(mask, 100baseT_Full);
+-
+-	linkmode_and(supported, supported, mask);
+-	linkmode_and(state->advertising, state->advertising, mask);
++	config->mac_capabilities = MAC_ASYM_PAUSE | MAC_SYM_PAUSE |
++		MAC_10 | MAC_100 | MAC_1000;
+ }
+ 
+ static void bcm_sf2_sw_mac_config(struct dsa_switch *ds, int port,
+@@ -1181,7 +1157,7 @@ static const struct dsa_switch_ops bcm_sf2_ops = {
+ 	.get_sset_count		= bcm_sf2_sw_get_sset_count,
+ 	.get_ethtool_phy_stats	= b53_get_ethtool_phy_stats,
+ 	.get_phy_flags		= bcm_sf2_sw_get_phy_flags,
+-	.phylink_validate	= bcm_sf2_sw_validate,
++	.phylink_get_caps	= bcm_sf2_sw_get_caps,
+ 	.phylink_mac_config	= bcm_sf2_sw_mac_config,
+ 	.phylink_mac_link_down	= bcm_sf2_sw_mac_link_down,
+ 	.phylink_mac_link_up	= bcm_sf2_sw_mac_link_up,
 -- 
-2.33.1
+2.30.2
 
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
