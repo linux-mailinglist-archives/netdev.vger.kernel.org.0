@@ -2,76 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C9A504685D3
-	for <lists+netdev@lfdr.de>; Sat,  4 Dec 2021 16:01:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 61D474685D6
+	for <lists+netdev@lfdr.de>; Sat,  4 Dec 2021 16:08:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243774AbhLDPFT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Dec 2021 10:05:19 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:38756 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242924AbhLDPFS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 4 Dec 2021 10:05:18 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=KgcZSQrkUOjOdOqkhz9mxDbnBWTSOn3SBXI3R+M2YMU=; b=N3vpFzNcWBfXhw9IXnWMCkGotC
-        hqHTwsAkWW9bcy4okbbRKlKdq7eovq1VZxlE0uI+g5hTih3D7hsHuTRkMR1ZlO3Grt5DtvXziZb3A
-        qSr0pZQI+TO60Joys8lBWqfw2LpM3ZixGwoXRrlOaBGh80hQq5JG7bNAwSj4q6S/e+X4=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mtWXc-00FVgM-SP; Sat, 04 Dec 2021 16:01:32 +0100
-Date:   Sat, 4 Dec 2021 16:01:32 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH RFC net-next 05/12] net: dsa: bcm_sf2: convert to
- phylink_generic_validate()
-Message-ID: <YauCzEZPGMaRMKf6@lunn.ch>
-References: <YZ56WapOaVpUbRuT@shell.armlinux.org.uk>
- <E1mpwRs-00D8LK-N3@rmk-PC.armlinux.org.uk>
- <6ef4f764-cd91-91bd-e921-407e9d198179@gmail.com>
- <3b3fed98-0c82-99e9-dc72-09fe01c2bcf3@gmail.com>
- <Yast4PrQGGLxDrCy@shell.armlinux.org.uk>
- <YauArR7bd6Xh4ISt@shell.armlinux.org.uk>
+        id S244389AbhLDPL2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Dec 2021 10:11:28 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:58140 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241868AbhLDPL1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Dec 2021 10:11:27 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0300CB80CF8;
+        Sat,  4 Dec 2021 15:08:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9A84C341C5;
+        Sat,  4 Dec 2021 15:07:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1638630479;
+        bh=8DSniUTZJxl6IRNvVfvDMqEWm9tUkbvkoDNYA0T6EpY=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=Rdi9zV15VDKa0CMzmMin5J0Py7RWjF2z+N4pK2OlxL/xsHCcKCkt23Fk6ffMWDRNd
+         Hh9sYtPUOC0hJt7Ds0n+9SBlD5y73ffpOs0xKXriTxu71E20GdBMRL/vtwNbG3RbCF
+         LeUcIL7TkvvUOk/zOYb8aizCY5a4pwkMcCwmS4Hj2TDROOvO8j/Gu1VYoOSYPDIper
+         YuCb9s1hGk0jEByHQAMZYGjCiQHs6/iFx9tr8r8EKkJFI0cSaQ2AJYcWBU0TqvoDTh
+         q3b5y0BVO6dCO0evc39zg+L+F5HV2FW7jN2IGHI7HPvOduv9qP4HDZPbnMvd8QEkkv
+         7WiHscEqwvDUw==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 718625C1010; Sat,  4 Dec 2021 07:07:59 -0800 (PST)
+Date:   Sat, 4 Dec 2021 07:07:59 -0800
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Dmitry Vyukov <dvyukov@google.com>
+Cc:     syzbot <syzbot+fe9d8c955bd1d0f02dc1@syzkaller.appspotmail.com>,
+        bigeasy@linutronix.de, jgross@suse.com, jiangshanlai@gmail.com,
+        joel@joelfernandes.org, josh@joshtriplett.org,
+        linux-kernel@vger.kernel.org, mathieu.desnoyers@efficios.com,
+        mingo@kernel.org, namit@vmware.com, netdev@vger.kernel.org,
+        peterz@infradead.org, rcu@vger.kernel.org, rdunlap@infradead.org,
+        rostedt@goodmis.org, syzkaller-bugs@googlegroups.com
+Subject: Re: [syzbot] WARNING in trc_read_check_handler
+Message-ID: <20211204150759.GW641268@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <00000000000069924b05c8cc3b84@google.com>
+ <000000000000b7e3ee05d21bd19d@google.com>
+ <20211201210938.GL641268@paulmck-ThinkPad-P17-Gen-1>
+ <CACT4Y+bLs5ycD1khkbMFDW=5UxMqxmbkXQoskyEz74H-u98pDw@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YauArR7bd6Xh4ISt@shell.armlinux.org.uk>
+In-Reply-To: <CACT4Y+bLs5ycD1khkbMFDW=5UxMqxmbkXQoskyEz74H-u98pDw@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> The order of 1000baseKX/Full and 1000baseT/Full is such that we
-> prefer 1000baseKX/Full over 1000baseT/Full, but 1000baseKX/Full is
-> a lot rarer than 1000baseT/Full, and thus is much less likely to
-> be preferred.
+On Sat, Dec 04, 2021 at 10:50:47AM +0100, Dmitry Vyukov wrote:
+> On Wed, 1 Dec 2021 at 22:09, Paul E. McKenney <paulmck@kernel.org> wrote:
+> >
+> > On Wed, Dec 01, 2021 at 12:50:07PM -0800, syzbot wrote:
+> > > syzbot suspects this issue was fixed by commit:
+> > >
+> > > commit 96017bf9039763a2e02dcc6adaa18592cd73a39d
+> > > Author: Paul E. McKenney <paulmck@kernel.org>
+> > > Date:   Wed Jul 28 17:53:41 2021 +0000
+> > >
+> > >     rcu-tasks: Simplify trc_read_check_handler() atomic operations
+> > >
+> > > bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1281d89db00000
+> > > start commit:   5319255b8df9 selftests/bpf: Skip verifier tests that fail ..
+> > > git tree:       bpf-next
+> > > kernel config:  https://syzkaller.appspot.com/x/.config?x=9290a409049988d4
+> > > dashboard link: https://syzkaller.appspot.com/bug?extid=fe9d8c955bd1d0f02dc1
+> > > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14990477300000
+> > > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=105ebd84b00000
+> > >
+> > > If the result looks correct, please mark the issue as fixed by replying with:
+> >
+> > #syz fix: rcu-tasks: Simplify trc_read_check_handler() atomic operations
+> >
+> > > For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+> >
+> > Give or take.  There were quite a few related bugs, so some or all of
+> > the following commits might also have helped:
+> >
+> > cbe0d8d91415c rcu-tasks: Wait for trc_read_check_handler() IPIs
+> > 18f08e758f34e rcu-tasks: Add trc_inspect_reader() checks for exiting critical section
+> > 46aa886c483f5 rcu-tasks: Fix IPI failure handling in trc_wait_for_one_reader
 > 
-> This causes phylink problems - it means a fixed link specifying a
-> speed of 1G and full duplex gets an ethtool linkmode of 1000baseKX/Full
-> rather than 1000baseT/Full as would be expected - and since we offer
-> userspace a software emulation of a conventional copper PHY, we want
-> to offer copper modes in preference to anything else. However, we do
-> still want to allow the rarer modes as well.
+> Thanks for checking. If we don't have one exact fix, let's go with
+> what syzbot suggested. At this point it does not matter much since all
+> of them are in most trees I assume. We just need to close the bug with
+> something.
+> 
+> #syz fix: rcu-tasks: Simplify trc_read_check_handler() atomic operations
 
-2.5G already places T before X, so it makes it more uniform with that.
+Fair enough!
 
-For 10G, T comes last. Maybe we should also consider this case?  Do we
-see more 10G copper than fibre/backplane?
+> > Quibbles aside, it is nice to get an automated email about having fixed
+> > a bug as opposed to having added one.  ;-)
+> 
+> Yes, but one is not possible without the other :-)
 
-    Andrew
+But of course it is possible!  For example, syzkaller might find a bug
+that was already fixed, and then before notifying me about the bug, you
+see the fix.  For example, by failing to reproduce a mainline bug on -rcu.
+
+Not that I particularly want to be auto-spammed about bugs that I have
+already fixed, mind you!  ;-)
+
+							Thanx, Paul
