@@ -2,342 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CA0A468226
-	for <lists+netdev@lfdr.de>; Sat,  4 Dec 2021 04:35:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E5F3E46823B
+	for <lists+netdev@lfdr.de>; Sat,  4 Dec 2021 05:18:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354775AbhLDDh6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Dec 2021 22:37:58 -0500
-Received: from mga07.intel.com ([134.134.136.100]:61795 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1354735AbhLDDh6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 3 Dec 2021 22:37:58 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10187"; a="300477669"
-X-IronPort-AV: E=Sophos;i="5.87,286,1631602800"; 
-   d="scan'208";a="300477669"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Dec 2021 19:34:33 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.87,286,1631602800"; 
-   d="scan'208";a="460241962"
-Received: from lkp-server02.sh.intel.com (HELO 9e1e9f9b3bcb) ([10.239.97.151])
-  by orsmga003.jf.intel.com with ESMTP; 03 Dec 2021 19:34:30 -0800
-Received: from kbuild by 9e1e9f9b3bcb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1mtLoj-000IP3-Cs; Sat, 04 Dec 2021 03:34:29 +0000
-Date:   Sat, 4 Dec 2021 11:34:05 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     kbuild-all@lists.01.org, netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        David Laight <David.Laight@ACULAB.COM>,
-        David Lebrun <dlebrun@google.com>
-Subject: Re: [PATCH net-next] net: fix recent csum changes
-Message-ID: <202112041104.gPgP3Z6U-lkp@intel.com>
-References: <20211203185238.2011081-1-eric.dumazet@gmail.com>
+        id S234618AbhLDEVu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Dec 2021 23:21:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41974 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233132AbhLDEVu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Dec 2021 23:21:50 -0500
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5963EC061751
+        for <netdev@vger.kernel.org>; Fri,  3 Dec 2021 20:18:25 -0800 (PST)
+Received: by mail-pf1-x42a.google.com with SMTP id b68so4763649pfg.11
+        for <netdev@vger.kernel.org>; Fri, 03 Dec 2021 20:18:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:from:subject:to:cc
+         :references:content-language:in-reply-to:content-transfer-encoding;
+        bh=JnW+U71gVTXrF7bCS/o2U3OwcQLbkI8b1Za/NwRwDmo=;
+        b=bOjXUzQ8JALdQxyUkfO6mo2AEPk8fmvR7vCy6sEP9PnH0v9GJuyA/qZspzmiAa4JgW
+         tbBWV9r7WLmn+ZcdLg09FBogaWJBXnbNYG/fjMcp6OsPR9NwmhgAqqRRHJB/4RkpO4BO
+         AStkKRsZ8GnW60foniE8qUVkVIqygDLq6O8sCabPK3lVyYBPxdHEfOjAzd2kcKU4v19z
+         YxRRs+LIfTuAGhxId9mWEPhaxIsaeieyWTVPDeuXu3ex/izwQOllWDlFYbqmTOzSGRtJ
+         VmzGOFU9/IpwS71NuRX3xSfUkX9Dy9izyIShI+MBnrto+LEZWo64NI/Zow0qhlBlGdnY
+         EWkg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
+         :subject:to:cc:references:content-language:in-reply-to
+         :content-transfer-encoding;
+        bh=JnW+U71gVTXrF7bCS/o2U3OwcQLbkI8b1Za/NwRwDmo=;
+        b=7vAcvSo7UoZdpEH2Kx1Xcm7f6Y2/zlxZOnIhdBeKer8pK/9bRYknHuG0u9WzvlYEmT
+         2rCjYG+oIYMaXgXibj7PDMgGqYPkB4EzfaY1ucdKt5gI81n3pvYQemJek9qER8ZymUWz
+         Wz0bcu9SekX92uZWwDTOYqaSy3cWbIiGcLF6/a3iVJNCr7tPl/4al00RyrfHyAhA9E5V
+         VU23tdjhx2zuSG5Kkbu3Kh363lRw8CP+p8lRmuH9vrcHmdm8/2SD2EeGwE43IVCVFgIl
+         3w+2OFGurrUEYW+bFUwLr1koYwQzaZljufUpzkZoAOe69L8xRA2kQ9Nt2c4ENsWuR+ba
+         9lgA==
+X-Gm-Message-State: AOAM531NIVh0cKEzYDnJWDcbntPmXAtV75lfseHYJxBdwiAACd5QT15c
+        B+m8iJ+Cuz67koySaMb9k+E=
+X-Google-Smtp-Source: ABdhPJxMnwc04sePmrC0gwShoXLjRVfHCTG+iQc7H+iENwjpqyNS/f3Cyxnz/YdFlB3ER4jD4gDHHQ==
+X-Received: by 2002:aa7:8611:0:b0:49f:a5b3:14b4 with SMTP id p17-20020aa78611000000b0049fa5b314b4mr23523371pfn.30.1638591504596;
+        Fri, 03 Dec 2021 20:18:24 -0800 (PST)
+Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
+        by smtp.gmail.com with ESMTPSA id h2sm5103672pfc.190.2021.12.03.20.18.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 03 Dec 2021 20:18:24 -0800 (PST)
+Message-ID: <3b3fed98-0c82-99e9-dc72-09fe01c2bcf3@gmail.com>
+Date:   Fri, 3 Dec 2021 20:18:22 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211203185238.2011081-1-eric.dumazet@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.2
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Subject: Re: [PATCH RFC net-next 05/12] net: dsa: bcm_sf2: convert to
+ phylink_generic_validate()
+To:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Woojung Huh <woojung.huh@microchip.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        UNGLinuxDriver@microchip.com
+References: <YZ56WapOaVpUbRuT@shell.armlinux.org.uk>
+ <E1mpwRs-00D8LK-N3@rmk-PC.armlinux.org.uk>
+ <6ef4f764-cd91-91bd-e921-407e9d198179@gmail.com>
+Content-Language: en-US
+In-Reply-To: <6ef4f764-cd91-91bd-e921-407e9d198179@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Eric,
+On 12/3/21 12:03 PM, Florian Fainelli wrote:
+> On 11/24/21 9:52 AM, Russell King (Oracle) wrote:
+>> Populate the supported interfaces and MAC capabilities for the bcm_sf2
+>> DSA switch and remove the old validate implementation to allow DSA to
+>> use phylink_generic_validate() for this switch driver.
+>>
+>> The exclusion of Gigabit linkmodes for MII and Reverse MII links is
+>> handled within phylink_generic_validate() in phylink, so there is no
+>> need to make them conditional on the interface mode in the driver.
+>>
+>> Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+> 
+> Tested-by: Florian Fainelli <f.fainelli@gmail.com>
+> 
+> but it looks like the fixed link ports are reporting some pretty strange
+> advertisement values one of my two platforms running the same kernel image:
 
-I love your patch! Perhaps something to improve:
+We would want to amend your patch with something that caters a bit more
+towards how the ports have been configured:
 
-[auto build test WARNING on net-next/master]
+diff --git a/drivers/net/dsa/bcm_sf2.c b/drivers/net/dsa/bcm_sf2.c
+index d6ef0fb0d943..88933c3feddd 100644
+--- a/drivers/net/dsa/bcm_sf2.c
++++ b/drivers/net/dsa/bcm_sf2.c
+@@ -675,12 +675,18 @@ static u32 bcm_sf2_sw_get_phy_flags(struct
+dsa_switch *ds, int port)
+  static void bcm_sf2_sw_get_caps(struct dsa_switch *ds, int port,
+                                 struct phylink_config *config)
+  {
+-       __set_bit(PHY_INTERFACE_MODE_MII, config->supported_interfaces);
+-       __set_bit(PHY_INTERFACE_MODE_REVMII, config->supported_interfaces);
+-       __set_bit(PHY_INTERFACE_MODE_GMII, config->supported_interfaces);
+-       __set_bit(PHY_INTERFACE_MODE_INTERNAL,
+config->supported_interfaces);
+-       __set_bit(PHY_INTERFACE_MODE_MOCA, config->supported_interfaces);
+-       phy_interface_set_rgmii(config->supported_interfaces);
++       struct bcm_sf2_priv *priv = bcm_sf2_to_priv(ds);
++
++       if (priv->int_phy_mask & BIT(port))
++               __set_bit(PHY_INTERFACE_MODE_INTERNAL,
+config->supported_interfaces);
++       else if (priv->moca_port == port)
++               __set_bit(PHY_INTERFACE_MODE_MOCA,
+config->supported_interfaces);
++       else {
++               __set_bit(PHY_INTERFACE_MODE_MII,
+config->supported_interfaces);
++               __set_bit(PHY_INTERFACE_MODE_REVMII,
+config->supported_interfaces);
++               __set_bit(PHY_INTERFACE_MODE_GMII,
+config->supported_interfaces);
++               phy_interface_set_rgmii(config->supported_interfaces);
++       }
 
-url:    https://github.com/0day-ci/linux/commits/Eric-Dumazet/net-fix-recent-csum-changes/20211204-025401
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 43332cf97425a3e5508c827c82201ecc5ddd54e0
-config: parisc-randconfig-s031-20211203 (https://download.01.org/0day-ci/archive/20211204/202112041104.gPgP3Z6U-lkp@intel.com/config)
-compiler: hppa64-linux-gcc (GCC) 11.2.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://github.com/0day-ci/linux/commit/c13fbd113358fb59f76f76d25a1fdb57379c4b9c
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Eric-Dumazet/net-fix-recent-csum-changes/20211204-025401
-        git checkout c13fbd113358fb59f76f76d25a1fdb57379c4b9c
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=parisc SHELL=/bin/bash net/core/ net/ipv4/
+         config->mac_capabilities = MAC_ASYM_PAUSE | MAC_SYM_PAUSE |
+                 MAC_10 | MAC_100 | MAC_1000;
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Now, with respect to the fixed link ports reporting 1000baseKX/Full this 
+is introduced by switching to your patch, it works before and it 
+"breaks" after.
 
+The first part that is a bit weird is that we seem to be calling 
+phylink_generic_validate() twice in a row from the same call site.
 
-sparse warnings: (new ones prefixed by >>)
-   net/core/skbuff.c: note: in included file (through include/net/net_namespace.h, include/linux/inet.h):
->> include/linux/skbuff.h:3489:55: sparse: sparse: restricted __wsum degrades to integer
->> include/linux/skbuff.h:3489:55: sparse: sparse: incorrect type in argument 3 (different base types) @@     expected restricted __wsum [usertype] @@     got unsigned int @@
-   include/linux/skbuff.h:3489:55: sparse:     expected restricted __wsum [usertype]
-   include/linux/skbuff.h:3489:55: sparse:     got unsigned int
-   include/linux/skbuff.h:3489:29: sparse: sparse: restricted __wsum degrades to integer
->> include/linux/skbuff.h:3489:27: sparse: sparse: incorrect type in assignment (different base types) @@     expected restricted __wsum [usertype] csum @@     got unsigned int @@
-   include/linux/skbuff.h:3489:27: sparse:     expected restricted __wsum [usertype] csum
-   include/linux/skbuff.h:3489:27: sparse:     got unsigned int
->> include/linux/skbuff.h:3489:55: sparse: sparse: restricted __wsum degrades to integer
->> include/linux/skbuff.h:3489:55: sparse: sparse: incorrect type in argument 3 (different base types) @@     expected restricted __wsum [usertype] @@     got unsigned int @@
-   include/linux/skbuff.h:3489:55: sparse:     expected restricted __wsum [usertype]
-   include/linux/skbuff.h:3489:55: sparse:     got unsigned int
-   include/linux/skbuff.h:3489:29: sparse: sparse: restricted __wsum degrades to integer
->> include/linux/skbuff.h:3489:27: sparse: sparse: incorrect type in assignment (different base types) @@     expected restricted __wsum [usertype] csum @@     got unsigned int @@
-   include/linux/skbuff.h:3489:27: sparse:     expected restricted __wsum [usertype] csum
-   include/linux/skbuff.h:3489:27: sparse:     got unsigned int
->> include/linux/skbuff.h:3489:55: sparse: sparse: restricted __wsum degrades to integer
->> include/linux/skbuff.h:3489:55: sparse: sparse: incorrect type in argument 3 (different base types) @@     expected restricted __wsum [usertype] @@     got unsigned int @@
-   include/linux/skbuff.h:3489:55: sparse:     expected restricted __wsum [usertype]
-   include/linux/skbuff.h:3489:55: sparse:     got unsigned int
-   include/linux/skbuff.h:3489:29: sparse: sparse: restricted __wsum degrades to integer
->> include/linux/skbuff.h:3489:27: sparse: sparse: incorrect type in assignment (different base types) @@     expected restricted __wsum [usertype] csum @@     got unsigned int @@
-   include/linux/skbuff.h:3489:27: sparse:     expected restricted __wsum [usertype] csum
-   include/linux/skbuff.h:3489:27: sparse:     got unsigned int
---
-   net/core/filter.c:1411:39: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected struct sock_filter const *filter @@     got struct sock_filter [noderef] __user *filter @@
-   net/core/filter.c:1411:39: sparse:     expected struct sock_filter const *filter
-   net/core/filter.c:1411:39: sparse:     got struct sock_filter [noderef] __user *filter
-   net/core/filter.c:1489:39: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected struct sock_filter const *filter @@     got struct sock_filter [noderef] __user *filter @@
-   net/core/filter.c:1489:39: sparse:     expected struct sock_filter const *filter
-   net/core/filter.c:1489:39: sparse:     got struct sock_filter [noderef] __user *filter
-   net/core/filter.c:2296:45: sparse: sparse: incorrect type in argument 2 (different base types) @@     expected restricted __be32 [usertype] daddr @@     got unsigned int [usertype] ipv4_nh @@
-   net/core/filter.c:2296:45: sparse:     expected restricted __be32 [usertype] daddr
-   net/core/filter.c:2296:45: sparse:     got unsigned int [usertype] ipv4_nh
-   net/core/filter.c:10023:31: sparse: sparse: symbol 'cg_skb_verifier_ops' was not declared. Should it be static?
-   net/core/filter.c:10029:27: sparse: sparse: symbol 'cg_skb_prog_ops' was not declared. Should it be static?
-   net/core/filter.c:10074:31: sparse: sparse: symbol 'cg_sock_verifier_ops' was not declared. Should it be static?
-   net/core/filter.c:10080:27: sparse: sparse: symbol 'cg_sock_prog_ops' was not declared. Should it be static?
-   net/core/filter.c:10083:31: sparse: sparse: symbol 'cg_sock_addr_verifier_ops' was not declared. Should it be static?
-   net/core/filter.c:10089:27: sparse: sparse: symbol 'cg_sock_addr_prog_ops' was not declared. Should it be static?
-   net/core/filter.c:246:32: sparse: sparse: cast to restricted __be16
-   net/core/filter.c:273:32: sparse: sparse: cast to restricted __be32
-   net/core/filter.c:1910:43: sparse: sparse: incorrect type in argument 2 (different base types) @@     expected restricted __wsum [usertype] diff @@     got unsigned long long [usertype] to @@
-   net/core/filter.c:1910:43: sparse:     expected restricted __wsum [usertype] diff
-   net/core/filter.c:1910:43: sparse:     got unsigned long long [usertype] to
-   net/core/filter.c:1913:36: sparse: sparse: incorrect type in argument 2 (different base types) @@     expected restricted __be16 [usertype] old @@     got unsigned long long [usertype] from @@
-   net/core/filter.c:1913:36: sparse:     expected restricted __be16 [usertype] old
-   net/core/filter.c:1913:36: sparse:     got unsigned long long [usertype] from
-   net/core/filter.c:1913:42: sparse: sparse: incorrect type in argument 3 (different base types) @@     expected restricted __be16 [usertype] new @@     got unsigned long long [usertype] to @@
-   net/core/filter.c:1913:42: sparse:     expected restricted __be16 [usertype] new
-   net/core/filter.c:1913:42: sparse:     got unsigned long long [usertype] to
-   net/core/filter.c:1916:36: sparse: sparse: incorrect type in argument 2 (different base types) @@     expected restricted __be32 [usertype] from @@     got unsigned long long [usertype] from @@
-   net/core/filter.c:1916:36: sparse:     expected restricted __be32 [usertype] from
-   net/core/filter.c:1916:36: sparse:     got unsigned long long [usertype] from
-   net/core/filter.c:1916:42: sparse: sparse: incorrect type in argument 3 (different base types) @@     expected restricted __be32 [usertype] to @@     got unsigned long long [usertype] to @@
-   net/core/filter.c:1916:42: sparse:     expected restricted __be32 [usertype] to
-   net/core/filter.c:1916:42: sparse:     got unsigned long long [usertype] to
-   net/core/filter.c:1961:59: sparse: sparse: incorrect type in argument 3 (different base types) @@     expected restricted __wsum [usertype] diff @@     got unsigned long long [usertype] to @@
-   net/core/filter.c:1961:59: sparse:     expected restricted __wsum [usertype] diff
-   net/core/filter.c:1961:59: sparse:     got unsigned long long [usertype] to
-   net/core/filter.c:1964:52: sparse: sparse: incorrect type in argument 3 (different base types) @@     expected restricted __be16 [usertype] from @@     got unsigned long long [usertype] from @@
-   net/core/filter.c:1964:52: sparse:     expected restricted __be16 [usertype] from
-   net/core/filter.c:1964:52: sparse:     got unsigned long long [usertype] from
-   net/core/filter.c:1964:58: sparse: sparse: incorrect type in argument 4 (different base types) @@     expected restricted __be16 [usertype] to @@     got unsigned long long [usertype] to @@
-   net/core/filter.c:1964:58: sparse:     expected restricted __be16 [usertype] to
-   net/core/filter.c:1964:58: sparse:     got unsigned long long [usertype] to
-   net/core/filter.c:1967:52: sparse: sparse: incorrect type in argument 3 (different base types) @@     expected restricted __be32 [usertype] from @@     got unsigned long long [usertype] from @@
-   net/core/filter.c:1967:52: sparse:     expected restricted __be32 [usertype] from
-   net/core/filter.c:1967:52: sparse:     got unsigned long long [usertype] from
-   net/core/filter.c:1967:58: sparse: sparse: incorrect type in argument 4 (different base types) @@     expected restricted __be32 [usertype] to @@     got unsigned long long [usertype] to @@
-   net/core/filter.c:1967:58: sparse:     expected restricted __be32 [usertype] to
-   net/core/filter.c:1967:58: sparse:     got unsigned long long [usertype] to
-   net/core/filter.c:2013:28: sparse: sparse: incorrect type in return expression (different base types) @@     expected unsigned long long @@     got restricted __wsum @@
-   net/core/filter.c:2013:28: sparse:     expected unsigned long long
-   net/core/filter.c:2013:28: sparse:     got restricted __wsum
-   net/core/filter.c:2035:35: sparse: sparse: incorrect type in return expression (different base types) @@     expected unsigned long long @@     got restricted __wsum [usertype] csum @@
-   net/core/filter.c:2035:35: sparse:     expected unsigned long long
-   net/core/filter.c:2035:35: sparse:     got restricted __wsum [usertype] csum
-   net/core/filter.c:5333:17: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned int [usertype] spi @@     got restricted __be32 const [usertype] spi @@
-   net/core/filter.c:5333:17: sparse:     expected unsigned int [usertype] spi
-   net/core/filter.c:5333:17: sparse:     got restricted __be32 const [usertype] spi
-   net/core/filter.c:5341:33: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned int [usertype] remote_ipv4 @@     got restricted __be32 const [usertype] a4 @@
-   net/core/filter.c:5341:33: sparse:     expected unsigned int [usertype] remote_ipv4
-   net/core/filter.c:5341:33: sparse:     got restricted __be32 const [usertype] a4
-   net/core/filter.c: note: in included file (through include/linux/netlink.h, include/linux/sock_diag.h):
->> include/linux/skbuff.h:3489:55: sparse: sparse: restricted __wsum degrades to integer
->> include/linux/skbuff.h:3489:55: sparse: sparse: incorrect type in argument 3 (different base types) @@     expected restricted __wsum [usertype] @@     got unsigned int @@
-   include/linux/skbuff.h:3489:55: sparse:     expected restricted __wsum [usertype]
-   include/linux/skbuff.h:3489:55: sparse:     got unsigned int
-   include/linux/skbuff.h:3489:29: sparse: sparse: restricted __wsum degrades to integer
->> include/linux/skbuff.h:3489:27: sparse: sparse: incorrect type in assignment (different base types) @@     expected restricted __wsum [usertype] csum @@     got unsigned int @@
-   include/linux/skbuff.h:3489:27: sparse:     expected restricted __wsum [usertype] csum
-   include/linux/skbuff.h:3489:27: sparse:     got unsigned int
-   net/core/filter.c: note: in included file (through include/net/ip.h):
-   include/net/route.h:372:48: sparse: sparse: incorrect type in argument 2 (different base types) @@     expected unsigned int [usertype] key @@     got restricted __be32 [usertype] daddr @@
-   include/net/route.h:372:48: sparse:     expected unsigned int [usertype] key
-   include/net/route.h:372:48: sparse:     got restricted __be32 [usertype] daddr
-   include/net/route.h:372:48: sparse: sparse: incorrect type in argument 2 (different base types) @@     expected unsigned int [usertype] key @@     got restricted __be32 [usertype] daddr @@
-   include/net/route.h:372:48: sparse:     expected unsigned int [usertype] key
-   include/net/route.h:372:48: sparse:     got restricted __be32 [usertype] daddr
-   include/net/route.h:372:48: sparse: sparse: incorrect type in argument 2 (different base types) @@     expected unsigned int [usertype] key @@     got restricted __be32 [usertype] daddr @@
-   include/net/route.h:372:48: sparse:     expected unsigned int [usertype] key
-   include/net/route.h:372:48: sparse:     got restricted __be32 [usertype] daddr
-   net/core/filter.c: note: in included file (through include/linux/netlink.h, include/linux/sock_diag.h):
->> include/linux/skbuff.h:3489:55: sparse: sparse: restricted __wsum degrades to integer
->> include/linux/skbuff.h:3489:55: sparse: sparse: incorrect type in argument 3 (different base types) @@     expected restricted __wsum [usertype] @@     got unsigned int @@
-   include/linux/skbuff.h:3489:55: sparse:     expected restricted __wsum [usertype]
-   include/linux/skbuff.h:3489:55: sparse:     got unsigned int
-   include/linux/skbuff.h:3489:29: sparse: sparse: restricted __wsum degrades to integer
->> include/linux/skbuff.h:3489:27: sparse: sparse: incorrect type in assignment (different base types) @@     expected restricted __wsum [usertype] csum @@     got unsigned int @@
-   include/linux/skbuff.h:3489:27: sparse:     expected restricted __wsum [usertype] csum
-   include/linux/skbuff.h:3489:27: sparse:     got unsigned int
---
-   net/core/dev.c:3207:23: sparse: sparse: incorrect type in argument 4 (different base types) @@     expected restricted __wsum [usertype] csum @@     got unsigned int @@
-   net/core/dev.c:3207:23: sparse:     expected restricted __wsum [usertype] csum
-   net/core/dev.c:3207:23: sparse:     got unsigned int
-   net/core/dev.c:3207:23: sparse: sparse: cast from restricted __wsum
-   net/core/dev.c:3207:23: sparse: sparse: incorrect type in argument 4 (different base types) @@     expected restricted __wsum [usertype] csum @@     got unsigned int @@
-   net/core/dev.c:3207:23: sparse:     expected restricted __wsum [usertype] csum
-   net/core/dev.c:3207:23: sparse:     got unsigned int
-   net/core/dev.c:3207:23: sparse: sparse: incorrect type in argument 1 (different base types) @@     expected unsigned int [usertype] val @@     got restricted __wsum @@
-   net/core/dev.c:3207:23: sparse:     expected unsigned int [usertype] val
-   net/core/dev.c:3207:23: sparse:     got restricted __wsum
-   net/core/dev.c:3207:23: sparse: sparse: incorrect type in argument 4 (different base types) @@     expected restricted __wsum [usertype] csum @@     got unsigned int @@
-   net/core/dev.c:3207:23: sparse:     expected restricted __wsum [usertype] csum
-   net/core/dev.c:3207:23: sparse:     got unsigned int
-   net/core/dev.c:3207:23: sparse: sparse: cast from restricted __wsum
-   net/core/dev.c:3207:23: sparse: sparse: incorrect type in argument 4 (different base types) @@     expected restricted __wsum [usertype] csum @@     got unsigned int @@
-   net/core/dev.c:3207:23: sparse:     expected restricted __wsum [usertype] csum
-   net/core/dev.c:3207:23: sparse:     got unsigned int
-   net/core/dev.c:3207:23: sparse: sparse: cast from restricted __wsum
-   net/core/dev.c:3207:23: sparse: sparse: incorrect type in argument 4 (different base types) @@     expected restricted __wsum [usertype] csum @@     got unsigned int @@
-   net/core/dev.c:3207:23: sparse:     expected restricted __wsum [usertype] csum
-   net/core/dev.c:3207:23: sparse:     got unsigned int
-   net/core/dev.c:3207:23: sparse: sparse: cast from restricted __wsum
-   net/core/dev.c:3207:23: sparse: sparse: incorrect type in argument 4 (different base types) @@     expected restricted __wsum [usertype] csum @@     got unsigned int @@
-   net/core/dev.c:3207:23: sparse:     expected restricted __wsum [usertype] csum
-   net/core/dev.c:3207:23: sparse:     got unsigned int
-   net/core/dev.c:3207:23: sparse: sparse: cast from restricted __wsum
-   net/core/dev.c: note: in included file (through include/linux/if_ether.h):
->> include/linux/skbuff.h:3489:55: sparse: sparse: restricted __wsum degrades to integer
->> include/linux/skbuff.h:3489:55: sparse: sparse: incorrect type in argument 3 (different base types) @@     expected restricted __wsum [usertype] @@     got unsigned int @@
-   include/linux/skbuff.h:3489:55: sparse:     expected restricted __wsum [usertype]
-   include/linux/skbuff.h:3489:55: sparse:     got unsigned int
-   include/linux/skbuff.h:3489:29: sparse: sparse: restricted __wsum degrades to integer
->> include/linux/skbuff.h:3489:27: sparse: sparse: incorrect type in assignment (different base types) @@     expected restricted __wsum [usertype] csum @@     got unsigned int @@
-   include/linux/skbuff.h:3489:27: sparse:     expected restricted __wsum [usertype] csum
-   include/linux/skbuff.h:3489:27: sparse:     got unsigned int
-   net/core/dev.c:3712:17: sparse: sparse: context imbalance in '__dev_queue_xmit' - different lock contexts for basic block
-   net/core/dev.c:4918:17: sparse: sparse: context imbalance in 'net_tx_action' - different lock contexts for basic block
---
-   net/ipv4/udp_offload.c:139:60: sparse: sparse: incorrect type in argument 2 (different base types) @@     expected restricted __wsum [usertype] res @@     got fouled restricted __sum16 @@
-   net/ipv4/udp_offload.c:139:60: sparse:     expected restricted __wsum [usertype] res
-   net/ipv4/udp_offload.c:139:60: sparse:     got fouled restricted __sum16
-   net/ipv4/udp_offload.c:330:49: sparse: sparse: incorrect type in argument 2 (different base types) @@     expected restricted __wsum [usertype] res @@     got fouled restricted __sum16 @@
-   net/ipv4/udp_offload.c:330:49: sparse:     expected restricted __wsum [usertype] res
-   net/ipv4/udp_offload.c:330:49: sparse:     got fouled restricted __sum16
-   net/ipv4/udp_offload.c:332:60: sparse: sparse: incorrect type in argument 2 (different base types) @@     expected restricted __wsum [usertype] res @@     got fouled restricted __sum16 @@
-   net/ipv4/udp_offload.c:332:60: sparse:     expected restricted __wsum [usertype] res
-   net/ipv4/udp_offload.c:332:60: sparse:     got fouled restricted __sum16
-   net/ipv4/udp_offload.c:348:41: sparse: sparse: incorrect type in argument 2 (different base types) @@     expected restricted __wsum [usertype] res @@     got fouled restricted __sum16 @@
-   net/ipv4/udp_offload.c:348:41: sparse:     expected restricted __wsum [usertype] res
-   net/ipv4/udp_offload.c:348:41: sparse:     got fouled restricted __sum16
-   net/ipv4/udp_offload.c:350:52: sparse: sparse: incorrect type in argument 2 (different base types) @@     expected restricted __wsum [usertype] res @@     got fouled restricted __sum16 @@
-   net/ipv4/udp_offload.c:350:52: sparse:     expected restricted __wsum [usertype] res
-   net/ipv4/udp_offload.c:350:52: sparse:     got fouled restricted __sum16
-   net/ipv4/udp_offload.c: note: in included file:
->> include/net/gro.h:177:56: sparse: sparse: restricted __wsum degrades to integer
->> include/net/gro.h:177:56: sparse: sparse: incorrect type in argument 3 (different base types) @@     expected restricted __wsum [usertype] @@     got unsigned int @@
-   include/net/gro.h:177:56: sparse:     expected restricted __wsum [usertype]
-   include/net/gro.h:177:56: sparse:     got unsigned int
-   include/net/gro.h:176:42: sparse: sparse: restricted __wsum degrades to integer
->> include/net/gro.h:176:40: sparse: sparse: incorrect type in assignment (different base types) @@     expected restricted __wsum [usertype] csum @@     got unsigned int @@
-   include/net/gro.h:176:40: sparse:     expected restricted __wsum [usertype] csum
-   include/net/gro.h:176:40: sparse:     got unsigned int
->> include/net/gro.h:177:56: sparse: sparse: restricted __wsum degrades to integer
->> include/net/gro.h:177:56: sparse: sparse: incorrect type in argument 3 (different base types) @@     expected restricted __wsum [usertype] @@     got unsigned int @@
-   include/net/gro.h:177:56: sparse:     expected restricted __wsum [usertype]
-   include/net/gro.h:177:56: sparse:     got unsigned int
-   include/net/gro.h:176:42: sparse: sparse: restricted __wsum degrades to integer
->> include/net/gro.h:176:40: sparse: sparse: incorrect type in assignment (different base types) @@     expected restricted __wsum [usertype] csum @@     got unsigned int @@
-   include/net/gro.h:176:40: sparse:     expected restricted __wsum [usertype] csum
-   include/net/gro.h:176:40: sparse:     got unsigned int
---
-   net/ipv4/gre_offload.c: note: in included file:
->> include/net/gro.h:177:56: sparse: sparse: restricted __wsum degrades to integer
->> include/net/gro.h:177:56: sparse: sparse: incorrect type in argument 3 (different base types) @@     expected restricted __wsum [usertype] @@     got unsigned int @@
-   include/net/gro.h:177:56: sparse:     expected restricted __wsum [usertype]
-   include/net/gro.h:177:56: sparse:     got unsigned int
-   include/net/gro.h:176:42: sparse: sparse: restricted __wsum degrades to integer
->> include/net/gro.h:176:40: sparse: sparse: incorrect type in assignment (different base types) @@     expected restricted __wsum [usertype] csum @@     got unsigned int @@
-   include/net/gro.h:176:40: sparse:     expected restricted __wsum [usertype] csum
-   include/net/gro.h:176:40: sparse:     got unsigned int
---
-   net/ipv4/fou.c: note: in included file:
->> include/linux/skbuff.h:3489:55: sparse: sparse: restricted __wsum degrades to integer
->> include/linux/skbuff.h:3489:55: sparse: sparse: incorrect type in argument 3 (different base types) @@     expected restricted __wsum [usertype] @@     got unsigned int @@
-   include/linux/skbuff.h:3489:55: sparse:     expected restricted __wsum [usertype]
-   include/linux/skbuff.h:3489:55: sparse:     got unsigned int
-   include/linux/skbuff.h:3489:29: sparse: sparse: restricted __wsum degrades to integer
->> include/linux/skbuff.h:3489:27: sparse: sparse: incorrect type in assignment (different base types) @@     expected restricted __wsum [usertype] csum @@     got unsigned int @@
-   include/linux/skbuff.h:3489:27: sparse:     expected restricted __wsum [usertype] csum
-   include/linux/skbuff.h:3489:27: sparse:     got unsigned int
->> include/linux/skbuff.h:3489:55: sparse: sparse: restricted __wsum degrades to integer
->> include/linux/skbuff.h:3489:55: sparse: sparse: incorrect type in argument 3 (different base types) @@     expected restricted __wsum [usertype] @@     got unsigned int @@
-   include/linux/skbuff.h:3489:55: sparse:     expected restricted __wsum [usertype]
-   include/linux/skbuff.h:3489:55: sparse:     got unsigned int
-   include/linux/skbuff.h:3489:29: sparse: sparse: restricted __wsum degrades to integer
->> include/linux/skbuff.h:3489:27: sparse: sparse: incorrect type in assignment (different base types) @@     expected restricted __wsum [usertype] csum @@     got unsigned int @@
-   include/linux/skbuff.h:3489:27: sparse:     expected restricted __wsum [usertype] csum
-   include/linux/skbuff.h:3489:27: sparse:     got unsigned int
->> include/linux/skbuff.h:3489:55: sparse: sparse: restricted __wsum degrades to integer
->> include/linux/skbuff.h:3489:55: sparse: sparse: incorrect type in argument 3 (different base types) @@     expected restricted __wsum [usertype] @@     got unsigned int @@
-   include/linux/skbuff.h:3489:55: sparse:     expected restricted __wsum [usertype]
-   include/linux/skbuff.h:3489:55: sparse:     got unsigned int
-   include/linux/skbuff.h:3489:29: sparse: sparse: restricted __wsum degrades to integer
->> include/linux/skbuff.h:3489:27: sparse: sparse: incorrect type in assignment (different base types) @@     expected restricted __wsum [usertype] csum @@     got unsigned int @@
-   include/linux/skbuff.h:3489:27: sparse:     expected restricted __wsum [usertype] csum
-   include/linux/skbuff.h:3489:27: sparse:     got unsigned int
-   net/ipv4/fou.c: note: in included file:
->> include/net/gro.h:177:56: sparse: sparse: restricted __wsum degrades to integer
->> include/net/gro.h:177:56: sparse: sparse: incorrect type in argument 3 (different base types) @@     expected restricted __wsum [usertype] @@     got unsigned int @@
-   include/net/gro.h:177:56: sparse:     expected restricted __wsum [usertype]
-   include/net/gro.h:177:56: sparse:     got unsigned int
-   include/net/gro.h:176:42: sparse: sparse: restricted __wsum degrades to integer
->> include/net/gro.h:176:40: sparse: sparse: incorrect type in assignment (different base types) @@     expected restricted __wsum [usertype] csum @@     got unsigned int @@
-   include/net/gro.h:176:40: sparse:     expected restricted __wsum [usertype] csum
-   include/net/gro.h:176:40: sparse:     got unsigned int
---
-   net/ipv4/ip_tunnel.c: note: in included file:
->> include/linux/skbuff.h:3489:55: sparse: sparse: restricted __wsum degrades to integer
->> include/linux/skbuff.h:3489:55: sparse: sparse: incorrect type in argument 3 (different base types) @@     expected restricted __wsum [usertype] @@     got unsigned int @@
-   include/linux/skbuff.h:3489:55: sparse:     expected restricted __wsum [usertype]
-   include/linux/skbuff.h:3489:55: sparse:     got unsigned int
-   include/linux/skbuff.h:3489:29: sparse: sparse: restricted __wsum degrades to integer
->> include/linux/skbuff.h:3489:27: sparse: sparse: incorrect type in assignment (different base types) @@     expected restricted __wsum [usertype] csum @@     got unsigned int @@
-   include/linux/skbuff.h:3489:27: sparse:     expected restricted __wsum [usertype] csum
-   include/linux/skbuff.h:3489:27: sparse:     got unsigned int
+For fixed link ports, instead of masking with what the fixed link 
+actually supports, we seem to be using a supported mask which is all 1s 
+which seems a bit excessive for a fixed link.
 
-vim +3489 include/linux/skbuff.h
+This is an excerpt with the internal PHY:
 
-  3474	
-  3475	/**
-  3476	 *	skb_postpull_rcsum - update checksum for received skb after pull
-  3477	 *	@skb: buffer to update
-  3478	 *	@start: start of data before pull
-  3479	 *	@len: length of data pulled
-  3480	 *
-  3481	 *	After doing a pull on a received packet, you need to call this to
-  3482	 *	update the CHECKSUM_COMPLETE checksum, or set ip_summed to
-  3483	 *	CHECKSUM_NONE so that it can be recomputed from scratch.
-  3484	 */
-  3485	static inline void skb_postpull_rcsum(struct sk_buff *skb,
-  3486					      const void *start, unsigned int len)
-  3487	{
-  3488		if (skb->ip_summed == CHECKSUM_COMPLETE)
-> 3489			skb->csum = -csum_partial(start, len, -skb->csum);
-  3490		else if (skb->ip_summed == CHECKSUM_PARTIAL &&
-  3491			 skb_checksum_start_offset(skb) < 0)
-  3492			skb->ip_summed = CHECKSUM_NONE;
-  3493	}
-  3494	
+[    4.210890] brcm-sf2 f0b00000.ethernet_switch gphy (uninitialized): 
+Calling phylink_generic_validate
+[    4.220063] before phylink_get_linkmodes: 0000000,00000000,00010fc0
+[    4.226357] phylink_get_linkmodes: caps: 0xffffffff mac_capabilities: 
+0xff
+[    4.233258] after phylink_get_linkmodes: c000018,00000200,00036fff
+[    4.239463] before anding supported with mask: 0000000,00000000,000062ff
+[    4.246189] after anding supported with mask: 0000000,00000000,000062ff
+[    4.252829] before anding advertising with mask: 
+c000018,00000200,00036fff
+[    4.259729] after anding advertising with mask: c000018,00000200,00036fff
+[    4.266546] brcm-sf2 f0b00000.ethernet_switch gphy (uninitialized): 
+PHY [f0b403c0.mdio--1:05] driver [Broadcom BCM7445] (irq=POLL)
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+and this is what a fixed link port looks like:
+
+[    4.430765] brcm-sf2 f0b00000.ethernet_switch rgmii_2 
+(uninitialized): Calling phylink_generic_validate
+[    4.440205] before phylink_get_linkmodes: 0000000,00000000,00010fc0
+[    4.446500] phylink_get_linkmodes: caps: 0xff mac_capabilities: 0xff
+[    4.452880] after phylink_get_linkmodes: c000018,00000200,00036fff
+[    4.459085] before anding supported with mask: fffffff,ffffffff,ffffffff
+[    4.465811] after anding supported with mask: c000018,00000200,00036fff
+[    4.472450] before anding advertising with mask: 
+c000018,00000200,00036fff
+[    4.479349] after anding advertising with mask: c000018,00000200,00036fff
+
+or maybe the problem is with phylink_get_ksettings... ran out of time 
+tonight to look further into it.
+-- 
+Florian
