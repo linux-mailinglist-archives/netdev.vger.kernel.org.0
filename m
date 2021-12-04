@@ -2,911 +2,261 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FB6D468501
-	for <lists+netdev@lfdr.de>; Sat,  4 Dec 2021 14:18:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 29B12468518
+	for <lists+netdev@lfdr.de>; Sat,  4 Dec 2021 14:43:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385034AbhLDNVv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Dec 2021 08:21:51 -0500
-Received: from mout.kundenserver.de ([212.227.17.10]:39375 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241048AbhLDNVu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Dec 2021 08:21:50 -0500
-Received: from localhost.localdomain ([37.4.249.122]) by
- mrelayeu.kundenserver.de (mreue106 [212.227.15.183]) with ESMTPSA (Nemesis)
- id 1MGhds-1moWqx0tko-00DmMC; Sat, 04 Dec 2021 14:18:09 +0100
-From:   Stefan Wahren <stefan.wahren@i2se.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Rob Herring <robh+dt@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Michael Heimpold <michael.heimpold@in-tech.com>,
-        jimmy.shen@vertexcom.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        Stefan Wahren <stefan.wahren@i2se.com>
-Subject: [PATCH RFC V2 4/4] net: vertexcom: Add MSE102x SPI support
-Date:   Sat,  4 Dec 2021 14:17:51 +0100
-Message-Id: <1638623871-21805-5-git-send-email-stefan.wahren@i2se.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1638623871-21805-1-git-send-email-stefan.wahren@i2se.com>
-References: <1638623871-21805-1-git-send-email-stefan.wahren@i2se.com>
-X-Provags-ID: V03:K1:6htyUyXuvJl3Ba68mGFYOtO2ELIBlmPh5pBftft3GnHgSLK7hqE
- QIe5J8wNKvDraH9yTaWquyYFnQ6hNa/WZepy6ZnKsVBIHAjW/SeHuS/n/hIF1eAom12i2fz
- L7cjW7DYk6nRXnJiRXNH2in9La2Y4bqFOOXzYi9YrhuysETkYgQxSVpFQcpOUb3AODFbrQ4
- zvDYwRbFifgfWsdfxrdsA==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:Y3nuYvzshdE=:HANetDv+ScmjJ0DgnGiv52
- ZjBxxTLpw4Nts/dbupACeFbDw12btZm9xBJ28h9ZqAHkuqdtSiildzZxNAgreBmYhCVZFnIed
- WKKnelViK/1QdqIWXKsm8ltDcXyBGcLZSVYpxO9/9Ubi58+CPf8F3AAiTDIzxW16d/3vKZAjE
- CJALhvHOSoImYu/MixfG5a159X8y6mH6q4pWftpY/TC6903zOX9fR+gmrOBYIZ/jqdWGS4ZJP
- 5aGPTGxuWYSTQmavl8aXsl9HPgouFg0D8Ia6H1LpBSfdmJbJ+PWlzIPMVKRQG1Crsxbc+rZBN
- lLNSY8Xk5LxVKWz1Z5dIFhaG+8Q2lp3sGnwnx/Xn2yzRDp1H2ghm/MpXRBMiF3TIIQcAIfvs+
- nWZM0HYn4oplY6Rjl/yxxL65OzRdvGnsKLqhEvovNU7m3VA+zR0xG1yapAqI69CadtKwLUmbZ
- qHUfRjc42dqQTaGdPRzXj/3hdCyErL4UjMRFT3a1IWIbfqHtLGA3ixzXf7haNZSDj6D5H/JB4
- BW8yJQ14vELzuYe7/Xc8yJ5XFawiZxppjzS4a8K/uZokbzsctKmcpomYuVoyd7+4qMYDEtX7N
- +WEEq56HjwpDGpYsJxXH0wUwvTEKufT+kqccEMqyBTsubqx6kvphTU9nkE+FO77DE7c5Gu0Fv
- skz0B/JMqo3sHeWaZYmDKtam0yXgIaRK6I8Y60fWuoSyiqQ/nWeDkQUSaH6nxCW+oUmE3gxCB
- gVowJC/Fmp2nEqe8
+        id S1385056AbhLDNrN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Dec 2021 08:47:13 -0500
+Received: from mail-eopbgr20080.outbound.protection.outlook.com ([40.107.2.80]:25735
+        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229957AbhLDNrM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 4 Dec 2021 08:47:12 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=aZMcnFIQyWry6pJp/rUF/WlVK/J97qgf2FB+4njtbZXrtyxGzVxg5lMl94CoAsSuKQbOOMUCHLAtLQ4jDjC4AmU/kPvMbp6M6UjztEHzRAghJlR7V3oh/4lKREkG4tEPV1PQFB6mer9Rc/hRlNvOLdPo3Vk2TY+sXdtKenhvUPzJPMeuTkysC1Nfd0ElJ9iR5wWCHkx0m9MHCEtuoaRD/fqCTp/yAjt+e6WdtVZmdR5lywnS9Zb1sIkvEOOMgRsRaK81PMlgmOqq7/YSCMmR/ly2jKVPkh8fQoUnfDXvXZRTxVHTH8WyJp4i92TPUymKHabGbaH87CM9Sd1cZ6UjBw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=AcR4a9whu+6dIQr8snYao+yub52ejZAaCSQSrdSXR10=;
+ b=jjReajTEVhGUJ7Ly97rY0SQgIwq/jNHz8nMIDf0ycL3reGwNqZ/uYa+vJ5PDhlt6mNjxh4C1avWEgLJAQsRLmFgNCtSFI3J7uCeG/DI3LgwiSh7GKVNd2vsz9so//2M1mIPjI36OTsOASgm67ngdcxNynWvKSGJGY7df9eC8Jl4yfWN5Fwhosw0qgyY1O46JpFBi9TRbGrZtDUs7Yh9dwIgJwAtaRhPGgPVo+wWWe1pVxhVzH9ozBZH9FBLcq8HBd63O16txyBCRf+WWwnBYAk8kPzja8tTBkUqOQJYoYfMv7ITLy/+gy8nYDre3xhC3pRFbA8zE8EqKSxcTm1rX/g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AcR4a9whu+6dIQr8snYao+yub52ejZAaCSQSrdSXR10=;
+ b=ns/djWpUHki63rj4QeHsDjDDbU/bAqJV14CVGsW3cllhhm+vG2ymOZZaaQzmJmszPmcS0VPbVZDcfKXcrAx8boMf0tklqII7pX0P3qI1R1MBDbx6GZ+aRDVUHRGJFFkAeCtTYKJm2SuMIZadZZZYvHVOBXnv9jhw1FNlFvaf9nA=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by VI1PR04MB5501.eurprd04.prod.outlook.com (2603:10a6:803:d3::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4734.28; Sat, 4 Dec
+ 2021 13:43:44 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::796e:38c:5706:b802]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::796e:38c:5706:b802%3]) with mapi id 15.20.4755.020; Sat, 4 Dec 2021
+ 13:43:43 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     =?utf-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Denis Kirjanov <dkirjanov@suse.de>,
+        Julian Wiedmann <jwi@linux.ibm.com>
+Subject: Re: [PATCH net-next v4 4/4] net: ocelot: add FDMA support
+Thread-Topic: [PATCH net-next v4 4/4] net: ocelot: add FDMA support
+Thread-Index: AQHX6GoBQOKMK7t4rE2bRf8FEkqhQ6wiWRIA
+Date:   Sat, 4 Dec 2021 13:43:43 +0000
+Message-ID: <20211204134342.7mhznmfh3x36nlxj@skbuf>
+References: <20211203171916.378735-1-clement.leger@bootlin.com>
+ <20211203171916.378735-5-clement.leger@bootlin.com>
+In-Reply-To: <20211203171916.378735-5-clement.leger@bootlin.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 1bd493e9-fcc8-4f4d-6d7d-08d9b72c16c2
+x-ms-traffictypediagnostic: VI1PR04MB5501:
+x-microsoft-antispam-prvs: <VI1PR04MB5501B23970F3B76FBC834BA7E06B9@VI1PR04MB5501.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:5236;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 3pZK8DN166YX+TKZMipDSpgY9L4BPomabk70zA3zCj2L0Pot0JfdUv46/aEKeXM6b8vaD0fhuFiJPsGb/SX/Fw65ma3XoqSJqpFbgHgWjhLN2S+Wn8/wUWTlIGiRfValIqqTZwevWfW6URHfFZTwg/I/vZOc7gtTTUqc8GQyMDXLHTJIeClDaXuop2Vhz1sX+E3TTSerK+WOiQbtsaxAM0KohlfWK8kKk4n92MlYxeWjWtUILipYskDubn1QbwAKBp9uYSz10ab51TRcsZxuIrE5vXZ2ale7Vbe3idpFub/cLgSQ0GhcJcX7hW3LR2svnaAY1O8cM9vaZNNAu0ooXR0lmqfmyYR1ojNPFZb1sVjw69YD9sXuk4BGCMoEE5P0gDNhjypDMLkuih7oB3TDyGqClKJPyQZ7mu+GjkhkTl53nYxNsqnjS5v1pErV0112obBjFTrlA/QhuRnh0RXNx898JxDQzkC5sQkiajz7nHmsCNnZZu6We2tMF6S/KJ8RUBg2xDAa/CWZOBjfDVu/myanRibY2SFHeCOe6Vms36ORI2dsjnckkZAvgEM/nAhwY9wEcnVWbIqeTZeDjQDzszV6F2p6140dmgzbD2VK+UyGaIs7WTp33cjsjj21yMzVY/BLX3Z9tgUBoM2OIp+l1xNq0Gn6a73sTBohCvvGqXU98HYXaWFDQfB0/ekp59jdiokcxggqhf9A8Qcyv4XWiQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(366004)(66556008)(66446008)(316002)(38070700005)(33716001)(66476007)(38100700002)(86362001)(5660300002)(54906003)(2906002)(122000001)(8936002)(8676002)(66946007)(26005)(64756008)(71200400001)(508600001)(83380400001)(186003)(91956017)(76116006)(66574015)(7416002)(1076003)(44832011)(4326008)(6486002)(6512007)(6506007)(9686003)(6916009);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?TWFpaTl2cmpjUFVmekdaUHp0aEd3cC81bGd4TDhvenNEUFBsaCtxVWorU3ZC?=
+ =?utf-8?B?dFhoem5JdEs2OE1vNlpZZG9BQ3pYN29jbVJzWTRISlBLVlF6bU1WN1ZUWlk0?=
+ =?utf-8?B?V01zbmVSZlZRTTZuNk5oNUVhWlJZVG1Zc3h5dUJ6cXlnTWdEMjZBbFNuUGQ1?=
+ =?utf-8?B?UEhpdXR0NHFsTnkvMjY2NnlEekVFVS9mV0RGdHFFdVV5UFFpSk5DRXRSUEM4?=
+ =?utf-8?B?dTNLdEZMMnRhN2xVWDludDJqYmRLMkNPVUhha2JNc0pFNmgrWlVwaWxlbzVK?=
+ =?utf-8?B?SU80Nkx2TFdJSzF1cTRoc3RaS2t2VHJGWnZjRUpNZ1hJV1ZCajdkMUx0ZEpL?=
+ =?utf-8?B?K21DU0tuMjJPS0hNbU9IeU1GL2VrR0dvbmllWW9NVHZIeVVNbkgyakNOWXJq?=
+ =?utf-8?B?ZnVTU3FmRmhGVC9FYXZvMStWWFdYU09zL2pwZ1VXcm1sUHVHWnhJUFBVeEF4?=
+ =?utf-8?B?RU84S2FrNm9jZWxMUEd4RzRKb3lKU1Z4elFvQUtDUG1DM2k5RkpoOEE5b0VH?=
+ =?utf-8?B?eUMwM0F0bGlUTU1jcU9wUkY1RU1yckt0Sm1wRnhBQWEvb09ieFA2ZUljYzdW?=
+ =?utf-8?B?Ni9ZNTRXK1VIVEtmU2NGQ2JzdWhsOHhsYS96NVY1OGtFT3BZVW1Da3VVeUdR?=
+ =?utf-8?B?ZzdaS3U4SWpwUHFxTXZVNG5FRE1NaktQM2R0R0xFalB3VDNTaU1xR28ybHNI?=
+ =?utf-8?B?MjZSM3pJRVd3TnQ3VmJDRkxBdmNRVU9qMnZvdkNleXVyeHhxUkpOYmtOV0Np?=
+ =?utf-8?B?UmxsN2puU05FTzJ2cGdFcXFjTlVLWjRWM0g5b0REUDQxMVE1OVUwM0cwdGlE?=
+ =?utf-8?B?T2FmYVJBMExaYzlOSUE4eW1XQUVDMHF1ZXAwdU8vSkZaZHpsaXh6M1ZiTU9O?=
+ =?utf-8?B?RkNqTitHS3VXREl3Z3FzUE41ZExnMkhzdUY4b3pwMEk2WmYxZGRaWDkxNTVO?=
+ =?utf-8?B?MnUrUkx5dXUrMFdGNWM5Umxud3hUSUU1ZUx1THB2KzRGTGNrblI1K0lvVzIy?=
+ =?utf-8?B?ZU0xZjIzV3NFdTc4aXhhaDN2QlpqOEpOUEZ5TUNZNzEvTUJ3dFNodDRGWGMy?=
+ =?utf-8?B?ZDBkd0VhUjlFVzJZSlRiQVh4S3prTmZ5V2RPa3FqUllYcTRURXo0d3FoVC9Y?=
+ =?utf-8?B?UkVWNTEvZzNxbDljbjA0R2JSTnlqUkJFai9JaEdSOXF6SW41eUUxUE80SDRK?=
+ =?utf-8?B?K05SNWZmNFptK1ZqYmdFMVkvZ3lHbExvK3dtK1g1Ymd6TzZiMDFMVHRWUXRE?=
+ =?utf-8?B?Zkk2emFXb0NlMytsUy95dGNzUk9ZQit1cmJrVmJoKzZ3WTB1ME5mRmk0ZzE1?=
+ =?utf-8?B?U3QwNFVGSmR0SUd4Qmc1OHdLcXFWbUd3eTRoaCtkMGZPZWxRM2lEOFFJelM3?=
+ =?utf-8?B?MWV2WGtCM0JEMG1ybWhhZlVXbXEwSFBwdXBtS2FZbG1OeXpRaXlKbTNLaFoz?=
+ =?utf-8?B?TVRvL0htN2tabWM5VzJpUW0wQ2sySGN6d3BXTEFUdlVOUC93UWdYb0I4bndr?=
+ =?utf-8?B?a1UrQ21Hdmk5ZnVtTTZIZk9RMG1rM1BYMUhIdHZPZ3IzZ2hRZXRKTnF0eHZa?=
+ =?utf-8?B?N2N5aTVkWDkxQ1pSM1BQNWJ5MkxaclZVT1g0MEt0SnE0SU9WK2MxYWJCYkpj?=
+ =?utf-8?B?OG5idkw4ZkZpREgxUmZOS01TRTd2UE9rYWJYaHhSZjJmYlFldDQ4YnZOWU00?=
+ =?utf-8?B?YWZCYmdRZFFyN2I4S1plSU4vanZXU2hwSi92K0JhSXRGNGg2dDdCa2NoMlVq?=
+ =?utf-8?B?cDVPRWVkeEREejVrL0pNUHN4K0YzZDdoU3lrZGRRY0Z2SkJjQ2s3eHMxR3cr?=
+ =?utf-8?B?VDJpT1Rvb1kxWUFWbmw2cFZ4R29qYUdaN0xkeWlDNzhpSHIwUHBIaTZxZk56?=
+ =?utf-8?B?YjFRNm9OM0svVFl2cVRPSG9uM0JWTlIxVG9xTEhLME93d0htWDNWMkozdzdH?=
+ =?utf-8?B?SGU5WFd1d0hXYmJzRjNBNE9XamNUQ21Sa1FzWEh4ZWMxWVA1TnY1eitOaE85?=
+ =?utf-8?B?czdxVVNleVhqK2V1ZXZkVnN0UUl4SjhWLysxTFdGWVJNZ0pSWGJvaWlvaUVo?=
+ =?utf-8?B?SHFoUSszRDlMUzByamd1Vk9uSUtFd09wNHpzNXRmVnhwWnpyRmpHVTFadm82?=
+ =?utf-8?B?a2lTOWpPc1BNMW4xdElaUG1mUGttc3JMRHFmaElpcjA1Y3FlcUc1bjZFdnVM?=
+ =?utf-8?Q?/rGOnthKejImfJIfF6Tx2iw=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <620C077BAC0BCB49A5DAB53516FE7E68@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1bd493e9-fcc8-4f4d-6d7d-08d9b72c16c2
+X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Dec 2021 13:43:43.6514
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: pHKed44gykoTqP9NpDwq2bsp1FFgsPkJ26sIK+jJVdbF9Q5/NSX+mvtjqXDMV0nPsbXugkj+0useWw3FwOoZWg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5501
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This implements an SPI protocol driver for Vertexcom MSE102x
-Homeplug GreenPHY chip.
-
-Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
----
- drivers/net/ethernet/Kconfig             |   1 +
- drivers/net/ethernet/Makefile            |   1 +
- drivers/net/ethernet/vertexcom/Kconfig   |  25 +
- drivers/net/ethernet/vertexcom/Makefile  |   6 +
- drivers/net/ethernet/vertexcom/mse102x.c | 770 +++++++++++++++++++++++++++++++
- 5 files changed, 803 insertions(+)
- create mode 100644 drivers/net/ethernet/vertexcom/Kconfig
- create mode 100644 drivers/net/ethernet/vertexcom/Makefile
- create mode 100644 drivers/net/ethernet/vertexcom/mse102x.c
-
-diff --git a/drivers/net/ethernet/Kconfig b/drivers/net/ethernet/Kconfig
-index 027cbac..db3ec47 100644
---- a/drivers/net/ethernet/Kconfig
-+++ b/drivers/net/ethernet/Kconfig
-@@ -183,6 +183,7 @@ source "drivers/net/ethernet/tehuti/Kconfig"
- source "drivers/net/ethernet/ti/Kconfig"
- source "drivers/net/ethernet/toshiba/Kconfig"
- source "drivers/net/ethernet/tundra/Kconfig"
-+source "drivers/net/ethernet/vertexcom/Kconfig"
- source "drivers/net/ethernet/via/Kconfig"
- source "drivers/net/ethernet/wiznet/Kconfig"
- source "drivers/net/ethernet/xilinx/Kconfig"
-diff --git a/drivers/net/ethernet/Makefile b/drivers/net/ethernet/Makefile
-index 33d30b6..8a87c10 100644
---- a/drivers/net/ethernet/Makefile
-+++ b/drivers/net/ethernet/Makefile
-@@ -93,6 +93,7 @@ obj-$(CONFIG_NET_VENDOR_TEHUTI) += tehuti/
- obj-$(CONFIG_NET_VENDOR_TI) += ti/
- obj-$(CONFIG_NET_VENDOR_TOSHIBA) += toshiba/
- obj-$(CONFIG_NET_VENDOR_TUNDRA) += tundra/
-+obj-$(CONFIG_NET_VENDOR_VERTEXCOM) += vertexcom/
- obj-$(CONFIG_NET_VENDOR_VIA) += via/
- obj-$(CONFIG_NET_VENDOR_WIZNET) += wiznet/
- obj-$(CONFIG_NET_VENDOR_XILINX) += xilinx/
-diff --git a/drivers/net/ethernet/vertexcom/Kconfig b/drivers/net/ethernet/vertexcom/Kconfig
-new file mode 100644
-index 0000000..4184a63
---- /dev/null
-+++ b/drivers/net/ethernet/vertexcom/Kconfig
-@@ -0,0 +1,25 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+#
-+# Vertexcom network device configuration
-+#
-+
-+config NET_VENDOR_VERTEXCOM
-+	bool "Vertexcom devices"
-+	default y
-+	help
-+	  If you have a network (Ethernet) card belonging to this class, say Y.
-+
-+	  Note that the answer to this question doesn't directly affect the
-+	  kernel: saying N will just cause the configurator to skip all
-+	  the questions about Vertexcom cards. If you say Y, you will be asked
-+	  for your specific card in the following questions.
-+
-+if NET_VENDOR_VERTEXCOM
-+
-+config MSE102X
-+	tristate "Vertexcom MSE102x SPI"
-+	depends on SPI
-+	help
-+	  SPI driver for Vertexcom MSE102x SPI attached network chip.
-+
-+endif # NET_VENDOR_VERTEXCOM
-diff --git a/drivers/net/ethernet/vertexcom/Makefile b/drivers/net/ethernet/vertexcom/Makefile
-new file mode 100644
-index 0000000..f8b12e3
---- /dev/null
-+++ b/drivers/net/ethernet/vertexcom/Makefile
-@@ -0,0 +1,6 @@
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# Makefile for the Vertexcom network device drivers.
-+#
-+
-+obj-$(CONFIG_MSE102X) += mse102x.o
-diff --git a/drivers/net/ethernet/vertexcom/mse102x.c b/drivers/net/ethernet/vertexcom/mse102x.c
-new file mode 100644
-index 0000000..242fe85
---- /dev/null
-+++ b/drivers/net/ethernet/vertexcom/mse102x.c
-@@ -0,0 +1,770 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/* Copyright (C) 2021 in-tech smart charging GmbH
-+ *
-+ * driver is based on micrel/ks8851_spi.c
-+ */
-+
-+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
-+
-+#include <linux/interrupt.h>
-+#include <linux/module.h>
-+#include <linux/kernel.h>
-+#include <linux/netdevice.h>
-+#include <linux/etherdevice.h>
-+#include <linux/ethtool.h>
-+#include <linux/cache.h>
-+#include <linux/debugfs.h>
-+#include <linux/seq_file.h>
-+
-+#include <linux/spi/spi.h>
-+#include <linux/of_net.h>
-+
-+#define MSG_DEFAULT	(NETIF_MSG_DRV | NETIF_MSG_PROBE | NETIF_MSG_LINK | \
-+			 NETIF_MSG_TIMER)
-+
-+#define DRV_NAME	"mse102x"
-+
-+#define DET_CMD		0x0001
-+#define DET_SOF		0x0002
-+#define DET_DFT		0x55AA
-+
-+#define CMD_SHIFT	12
-+#define CMD_RTS		(0x1 << CMD_SHIFT)
-+#define CMD_CTR		(0x2 << CMD_SHIFT)
-+
-+#define CMD_MASK	GENMASK(15, CMD_SHIFT)
-+#define LEN_MASK	GENMASK(CMD_SHIFT - 1, 0)
-+
-+#define DET_CMD_LEN	4
-+#define DET_SOF_LEN	2
-+#define DET_DFT_LEN	2
-+
-+#define MIN_FREQ_HZ	6000000
-+#define MAX_FREQ_HZ	7142857
-+
-+struct mse102x_stats {
-+	u64 xfer_err;
-+	u64 invalid_cmd;
-+	u64 invalid_ctr;
-+	u64 invalid_dft;
-+	u64 invalid_len;
-+	u64 invalid_rts;
-+	u64 invalid_sof;
-+	u64 tx_timeout;
-+};
-+
-+static const char mse102x_gstrings_stats[][ETH_GSTRING_LEN] = {
-+	"SPI transfer errors",
-+	"Invalid command",
-+	"Invalid CTR",
-+	"Invalid DFT",
-+	"Invalid frame length",
-+	"Invalid RTS",
-+	"Invalid SOF",
-+	"TX timeout",
-+};
-+
-+struct mse102x_net {
-+	struct net_device	*ndev;
-+
-+	u8			rxd[8];
-+	u8			txd[8];
-+
-+	u32			msg_enable ____cacheline_aligned;
-+
-+	struct sk_buff_head	txq;
-+	struct mse102x_stats	stats;
-+};
-+
-+struct mse102x_net_spi {
-+	struct mse102x_net	mse102x;
-+	struct mutex		lock;		/* Protect SPI frame transfer */
-+	struct work_struct	tx_work;
-+	struct spi_device	*spidev;
-+	struct spi_message	spi_msg;
-+	struct spi_transfer	spi_xfer;
-+
-+#ifdef CONFIG_DEBUG_FS
-+	struct dentry		*device_root;
-+#endif
-+};
-+
-+#define to_mse102x_spi(mse) container_of((mse), struct mse102x_net_spi, mse102x)
-+
-+#ifdef CONFIG_DEBUG_FS
-+
-+static int mse102x_info_show(struct seq_file *s, void *what)
-+{
-+	struct mse102x_net_spi *mses = s->private;
-+
-+	seq_printf(s, "TX ring size        : %u\n",
-+		   skb_queue_len(&mses->mse102x.txq));
-+
-+	seq_printf(s, "IRQ                 : %d\n",
-+		   mses->spidev->irq);
-+
-+	seq_printf(s, "SPI effective speed : %lu\n",
-+		   (unsigned long)mses->spi_xfer.effective_speed_hz);
-+	seq_printf(s, "SPI mode            : %x\n",
-+		   mses->spidev->mode);
-+
-+	return 0;
-+}
-+DEFINE_SHOW_ATTRIBUTE(mse102x_info);
-+
-+static void mse102x_init_device_debugfs(struct mse102x_net_spi *mses)
-+{
-+	mses->device_root = debugfs_create_dir(dev_name(&mses->mse102x.ndev->dev),
-+					       NULL);
-+
-+	debugfs_create_file("info", S_IFREG | 0444, mses->device_root, mses,
-+			    &mse102x_info_fops);
-+}
-+
-+static void mse102x_remove_device_debugfs(struct mse102x_net_spi *mses)
-+{
-+	debugfs_remove_recursive(mses->device_root);
-+}
-+
-+#else /* CONFIG_DEBUG_FS */
-+
-+static void mse102x_init_device_debugfs(struct mse102x_net_spi *mses)
-+{
-+}
-+
-+static void mse102x_remove_device_debugfs(struct mse102x_net_spi *mses)
-+{
-+}
-+
-+#endif
-+
-+/* SPI register read/write calls.
-+ *
-+ * All these calls issue SPI transactions to access the chip's registers. They
-+ * all require that the necessary lock is held to prevent accesses when the
-+ * chip is busy transferring packet data.
-+ */
-+
-+static void mse102x_tx_cmd_spi(struct mse102x_net *mse, u16 cmd)
-+{
-+	struct mse102x_net_spi *mses = to_mse102x_spi(mse);
-+	struct spi_transfer *xfer = &mses->spi_xfer;
-+	struct spi_message *msg = &mses->spi_msg;
-+	__be16 txb[2];
-+	int ret;
-+
-+	txb[0] = cpu_to_be16(DET_CMD);
-+	txb[1] = cpu_to_be16(cmd);
-+
-+	xfer->tx_buf = txb;
-+	xfer->rx_buf = NULL;
-+	xfer->len = DET_CMD_LEN;
-+
-+	ret = spi_sync(mses->spidev, msg);
-+	if (ret < 0) {
-+		netdev_err(mse->ndev, "%s: spi_sync() failed: %d\n",
-+			   __func__, ret);
-+		mse->stats.xfer_err++;
-+	}
-+}
-+
-+static int mse102x_rx_cmd_spi(struct mse102x_net *mse, u8 *rxb)
-+{
-+	struct mse102x_net_spi *mses = to_mse102x_spi(mse);
-+	struct spi_transfer *xfer = &mses->spi_xfer;
-+	struct spi_message *msg = &mses->spi_msg;
-+	__be16 *txb = (__be16 *)mse->txd;
-+	__be16 *cmd = (__be16 *)mse->rxd;
-+	u8 *trx = mse->rxd;
-+	int ret;
-+
-+	txb[0] = 0;
-+	txb[1] = 0;
-+
-+	xfer->tx_buf = txb;
-+	xfer->rx_buf = trx;
-+	xfer->len = DET_CMD_LEN;
-+
-+	ret = spi_sync(mses->spidev, msg);
-+	if (ret < 0) {
-+		netdev_err(mse->ndev, "%s: spi_sync() failed: %d\n",
-+			   __func__, ret);
-+		mse->stats.xfer_err++;
-+	} else if (*cmd != cpu_to_be16(DET_CMD)) {
-+		net_dbg_ratelimited("%s: Unexpected response (0x%04x)\n",
-+				    __func__, *cmd);
-+		mse->stats.invalid_cmd++;
-+		ret = -EIO;
-+	} else {
-+		memcpy(rxb, trx + 2, 2);
-+	}
-+
-+	return ret;
-+}
-+
-+static inline void mse102x_push_header(struct sk_buff *skb)
-+{
-+	__be16 *header = skb_push(skb, DET_SOF_LEN);
-+
-+	*header = cpu_to_be16(DET_SOF);
-+}
-+
-+static inline void mse102x_put_footer(struct sk_buff *skb)
-+{
-+	__be16 *footer = skb_put(skb, DET_DFT_LEN);
-+
-+	*footer = cpu_to_be16(DET_DFT);
-+}
-+
-+static int mse102x_tx_frame_spi(struct mse102x_net *mse, struct sk_buff *txp,
-+				unsigned int pad)
-+{
-+	struct mse102x_net_spi *mses = to_mse102x_spi(mse);
-+	struct spi_transfer *xfer = &mses->spi_xfer;
-+	struct spi_message *msg = &mses->spi_msg;
-+	struct sk_buff *tskb;
-+	int ret;
-+
-+	netif_dbg(mse, tx_queued, mse->ndev, "%s: skb %p, %d@%p\n",
-+		  __func__, txp, txp->len, txp->data);
-+
-+	if ((skb_headroom(txp) < DET_SOF_LEN) ||
-+	    (skb_tailroom(txp) < DET_DFT_LEN + pad)) {
-+		tskb = skb_copy_expand(txp, DET_SOF_LEN, DET_DFT_LEN + pad,
-+				       GFP_KERNEL);
-+		if (!tskb)
-+			return -ENOMEM;
-+
-+		dev_kfree_skb(txp);
-+		txp = tskb;
-+	}
-+
-+	mse102x_push_header(txp);
-+
-+	if (pad)
-+		skb_put_zero(txp, pad);
-+
-+	mse102x_put_footer(txp);
-+
-+	xfer->tx_buf = txp->data;
-+	xfer->rx_buf = NULL;
-+	xfer->len = txp->len;
-+
-+	ret = spi_sync(mses->spidev, msg);
-+	if (ret < 0) {
-+		netdev_err(mse->ndev, "%s: spi_sync() failed: %d\n",
-+			   __func__, ret);
-+		mse->stats.xfer_err++;
-+	}
-+
-+	return ret;
-+}
-+
-+static int mse102x_rx_frame_spi(struct mse102x_net *mse, u8 *buff,
-+				unsigned int frame_len)
-+{
-+	struct mse102x_net_spi *mses = to_mse102x_spi(mse);
-+	struct spi_transfer *xfer = &mses->spi_xfer;
-+	struct spi_message *msg = &mses->spi_msg;
-+	__be16 *sof = (__be16 *)buff;
-+	__be16 *dft = (__be16 *)(buff + DET_SOF_LEN + frame_len);
-+	int ret;
-+
-+	xfer->rx_buf = buff;
-+	xfer->tx_buf = NULL;
-+	xfer->len = DET_SOF_LEN + frame_len + DET_DFT_LEN;
-+
-+	ret = spi_sync(mses->spidev, msg);
-+	if (ret < 0) {
-+		netdev_err(mse->ndev, "%s: spi_sync() failed: %d\n",
-+			   __func__, ret);
-+		mse->stats.xfer_err++;
-+	} else if (*sof != cpu_to_be16(DET_SOF)) {
-+		netdev_dbg(mse->ndev, "%s: SPI start of frame is invalid (0x%04x)\n",
-+			   __func__, *sof);
-+		mse->stats.invalid_sof++;
-+		ret = -EIO;
-+	} else if (*dft != cpu_to_be16(DET_DFT)) {
-+		netdev_dbg(mse->ndev, "%s: SPI frame tail is invalid (0x%04x)\n",
-+			   __func__, *dft);
-+		mse->stats.invalid_dft++;
-+		ret = -EIO;
-+	}
-+
-+	return ret;
-+}
-+
-+static void mse102x_dump_packet(const char *msg, int len, const char *data)
-+{
-+	printk(KERN_DEBUG ": %s - packet len:%d\n", msg, len);
-+	print_hex_dump(KERN_DEBUG, "pk data: ", DUMP_PREFIX_OFFSET, 16, 1,
-+		       data, len, true);
-+}
-+
-+static void mse102x_rx_pkt_spi(struct mse102x_net *mse)
-+{
-+	struct sk_buff *skb;
-+	unsigned int rxalign;
-+	unsigned int rxlen;
-+	__be16 rx = 0;
-+	u16 cmd_resp;
-+	u8 *rxpkt;
-+	int ret;
-+
-+	mse102x_tx_cmd_spi(mse, CMD_CTR);
-+	ret = mse102x_rx_cmd_spi(mse, (u8 *)&rx);
-+	cmd_resp = be16_to_cpu(rx);
-+
-+	if (ret || ((cmd_resp & CMD_MASK) != CMD_RTS)) {
-+		usleep_range(50, 100);
-+
-+		mse102x_tx_cmd_spi(mse, CMD_CTR);
-+		ret = mse102x_rx_cmd_spi(mse, (u8 *)&rx);
-+		if (ret)
-+			return;
-+
-+		cmd_resp = be16_to_cpu(rx);
-+		if ((cmd_resp & CMD_MASK) != CMD_RTS) {
-+			net_dbg_ratelimited("%s: Unexpected response (0x%04x)\n",
-+					    __func__, cmd_resp);
-+			mse->stats.invalid_rts++;
-+			return;
-+		}
-+
-+		net_dbg_ratelimited("%s: Unexpected response to first CMD\n",
-+				    __func__);
-+	}
-+
-+	rxlen = cmd_resp & LEN_MASK;
-+	if (!rxlen) {
-+		net_dbg_ratelimited("%s: No frame length defined\n", __func__);
-+		mse->stats.invalid_len++;
-+		return;
-+	}
-+
-+	rxalign = ALIGN(rxlen + DET_SOF_LEN + DET_DFT_LEN, 4);
-+	skb = netdev_alloc_skb_ip_align(mse->ndev, rxalign);
-+	if (!skb)
-+		return;
-+
-+	/* 2 bytes Start of frame (before ethernet header)
-+	 * 2 bytes Data frame tail (after ethernet frame)
-+	 * They are copied, but ignored.
-+	 */
-+	rxpkt = skb_put(skb, rxlen) - DET_SOF_LEN;
-+	if (mse102x_rx_frame_spi(mse, rxpkt, rxlen)) {
-+		mse->ndev->stats.rx_errors++;
-+		dev_kfree_skb(skb);
-+		return;
-+	}
-+
-+	if (netif_msg_pktdata(mse))
-+		mse102x_dump_packet(__func__, skb->len, skb->data);
-+
-+	skb->protocol = eth_type_trans(skb, mse->ndev);
-+	netif_rx_ni(skb);
-+
-+	mse->ndev->stats.rx_packets++;
-+	mse->ndev->stats.rx_bytes += rxlen;
-+}
-+
-+static int mse102x_tx_pkt_spi(struct mse102x_net *mse, struct sk_buff *txb,
-+			      unsigned long work_timeout)
-+{
-+	unsigned int pad = 0;
-+	__be16 rx = 0;
-+	u16 cmd_resp;
-+	int ret;
-+	bool first = true;
-+
-+	if (txb->len < 60)
-+		pad = 60 - txb->len;
-+
-+	while (1) {
-+		mse102x_tx_cmd_spi(mse, CMD_RTS | (txb->len + pad));
-+		ret = mse102x_rx_cmd_spi(mse, (u8 *)&rx);
-+		cmd_resp = be16_to_cpu(rx);
-+
-+		if (!ret) {
-+			/* ready to send frame ? */
-+			if (cmd_resp == CMD_CTR)
-+				break;
-+
-+			net_dbg_ratelimited("%s: Unexpected response (0x%04x)\n",
-+					    __func__, cmd_resp);
-+			mse->stats.invalid_ctr++;
-+		}
-+
-+		/* It's not predictable how long / many retries it takes to
-+		 * send at least one packet, so TX timeouts are possible.
-+		 * That's the reason why the netdev watchdog is not used here.
-+		 */
-+		if (time_after(jiffies, work_timeout))
-+			return -ETIMEDOUT;
-+
-+		if (first) {
-+			/* throttle at first issue */
-+			netif_stop_queue(mse->ndev);
-+			/* fast retry */
-+			usleep_range(50, 100);
-+			first = false;
-+		} else {
-+			msleep(20);
-+		}
-+	};
-+
-+	ret = mse102x_tx_frame_spi(mse, txb, pad);
-+	if (ret)
-+		net_dbg_ratelimited("%s: Failed to send (%d), drop frame\n",
-+				    __func__, ret);
-+
-+	return ret;
-+}
-+
-+#define TX_QUEUE_MAX 10
-+
-+static void mse102x_tx_work(struct work_struct *work)
-+{
-+	/* Make sure timeout is sufficient to transfer TX_QUEUE_MAX frames */
-+	unsigned long work_timeout = jiffies + msecs_to_jiffies(1000);
-+	struct mse102x_net_spi *mses;
-+	struct mse102x_net *mse;
-+	struct sk_buff *txb;
-+	int ret = 0;
-+
-+	mses = container_of(work, struct mse102x_net_spi, tx_work);
-+	mse = &mses->mse102x;
-+
-+	while ((txb = skb_dequeue(&mse->txq))) {
-+		mutex_lock(&mses->lock);
-+		ret = mse102x_tx_pkt_spi(mse, txb, work_timeout);
-+		mutex_unlock(&mses->lock);
-+		if (ret) {
-+			mse->ndev->stats.tx_dropped++;
-+		} else {
-+			mse->ndev->stats.tx_bytes += txb->len;
-+			mse->ndev->stats.tx_packets++;
-+		}
-+
-+		dev_kfree_skb(txb);
-+	}
-+
-+	if (ret == -ETIMEDOUT) {
-+		if (netif_msg_timer(mse))
-+			netdev_err(mse->ndev, "tx work timeout\n");
-+
-+		mse->stats.tx_timeout++;
-+	}
-+
-+	netif_wake_queue(mse->ndev);
-+}
-+
-+static netdev_tx_t mse102x_start_xmit_spi(struct sk_buff *skb,
-+					  struct net_device *ndev)
-+{
-+	struct mse102x_net *mse = netdev_priv(ndev);
-+	struct mse102x_net_spi *mses = to_mse102x_spi(mse);
-+
-+	netif_dbg(mse, tx_queued, ndev,
-+		  "%s: skb %p, %d@%p\n", __func__, skb, skb->len, skb->data);
-+
-+	skb_queue_tail(&mse->txq, skb);
-+
-+	if (skb_queue_len(&mse->txq) >= TX_QUEUE_MAX)
-+		netif_stop_queue(ndev);
-+
-+	schedule_work(&mses->tx_work);
-+
-+	return NETDEV_TX_OK;
-+}
-+
-+static void mse102x_init_mac(struct mse102x_net *mse, struct device_node *np)
-+{
-+	struct net_device *ndev = mse->ndev;
-+	int ret = of_get_ethdev_address(np, ndev);
-+
-+	if (ret) {
-+		eth_hw_addr_random(ndev);
-+		netdev_err(ndev, "Using random MAC address: %pM\n",
-+			   ndev->dev_addr);
-+	}
-+}
-+
-+/* Assumption: this is called for every incoming packet */
-+static irqreturn_t mse102x_irq(int irq, void *_mse)
-+{
-+	struct mse102x_net *mse = _mse;
-+	struct mse102x_net_spi *mses = to_mse102x_spi(mse);
-+
-+	mutex_lock(&mses->lock);
-+	mse102x_rx_pkt_spi(mse);
-+	mutex_unlock(&mses->lock);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static int mse102x_net_open(struct net_device *ndev)
-+{
-+	struct mse102x_net *mse = netdev_priv(ndev);
-+	int ret;
-+
-+	ret = request_threaded_irq(ndev->irq, NULL, mse102x_irq, IRQF_ONESHOT,
-+				   ndev->name, mse);
-+	if (ret < 0) {
-+		netdev_err(ndev, "Failed to get irq: %d\n", ret);
-+		return ret;
-+	}
-+
-+	netif_dbg(mse, ifup, ndev, "opening\n");
-+
-+	netif_start_queue(ndev);
-+
-+	netif_carrier_on(ndev);
-+
-+	netif_dbg(mse, ifup, ndev, "network device up\n");
-+
-+	return 0;
-+}
-+
-+static int mse102x_net_stop(struct net_device *ndev)
-+{
-+	struct mse102x_net *mse = netdev_priv(ndev);
-+	struct mse102x_net_spi *mses = to_mse102x_spi(mse);
-+
-+	netif_info(mse, ifdown, ndev, "shutting down\n");
-+
-+	netif_carrier_off(mse->ndev);
-+
-+	/* stop any outstanding work */
-+	flush_work(&mses->tx_work);
-+
-+	netif_stop_queue(ndev);
-+
-+	skb_queue_purge(&mse->txq);
-+
-+	free_irq(ndev->irq, mse);
-+
-+	return 0;
-+}
-+
-+static const struct net_device_ops mse102x_netdev_ops = {
-+	.ndo_open		= mse102x_net_open,
-+	.ndo_stop		= mse102x_net_stop,
-+	.ndo_start_xmit		= mse102x_start_xmit_spi,
-+	.ndo_set_mac_address	= eth_mac_addr,
-+	.ndo_validate_addr	= eth_validate_addr,
-+};
-+
-+/* ethtool support */
-+
-+static void mse102x_get_drvinfo(struct net_device *ndev,
-+				struct ethtool_drvinfo *di)
-+{
-+	strscpy(di->driver, DRV_NAME, sizeof(di->driver));
-+	strscpy(di->bus_info, dev_name(ndev->dev.parent), sizeof(di->bus_info));
-+}
-+
-+static u32 mse102x_get_msglevel(struct net_device *ndev)
-+{
-+	struct mse102x_net *mse = netdev_priv(ndev);
-+
-+	return mse->msg_enable;
-+}
-+
-+static void mse102x_set_msglevel(struct net_device *ndev, u32 to)
-+{
-+	struct mse102x_net *mse = netdev_priv(ndev);
-+
-+	mse->msg_enable = to;
-+}
-+
-+static void mse102x_get_ethtool_stats(struct net_device *ndev,
-+				      struct ethtool_stats *estats, u64 *data)
-+{
-+	struct mse102x_net *mse = netdev_priv(ndev);
-+	struct mse102x_stats *st = &mse->stats;
-+
-+	memcpy(data, st, ARRAY_SIZE(mse102x_gstrings_stats) * sizeof(u64));
-+}
-+
-+static void mse102x_get_strings(struct net_device *ndev, u32 stringset, u8 *buf)
-+{
-+	switch (stringset) {
-+	case ETH_SS_STATS:
-+		memcpy(buf, &mse102x_gstrings_stats,
-+		       sizeof(mse102x_gstrings_stats));
-+		break;
-+	default:
-+		WARN_ON(1);
-+		break;
-+	}
-+}
-+
-+static int mse102x_get_sset_count(struct net_device *ndev, int sset)
-+{
-+	switch (sset) {
-+	case ETH_SS_STATS:
-+		return ARRAY_SIZE(mse102x_gstrings_stats);
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static const struct ethtool_ops mse102x_ethtool_ops = {
-+	.get_drvinfo		= mse102x_get_drvinfo,
-+	.get_link		= ethtool_op_get_link,
-+	.get_msglevel		= mse102x_get_msglevel,
-+	.set_msglevel		= mse102x_set_msglevel,
-+	.get_ethtool_stats	= mse102x_get_ethtool_stats,
-+	.get_strings		= mse102x_get_strings,
-+	.get_sset_count		= mse102x_get_sset_count,
-+};
-+
-+/* driver bus management functions */
-+
-+#ifdef CONFIG_PM_SLEEP
-+
-+static int mse102x_suspend(struct device *dev)
-+{
-+	struct mse102x_net *mse = dev_get_drvdata(dev);
-+	struct net_device *ndev = mse->ndev;
-+
-+	if (netif_running(ndev)) {
-+		netif_device_detach(ndev);
-+		mse102x_net_stop(ndev);
-+	}
-+
-+	return 0;
-+}
-+
-+static int mse102x_resume(struct device *dev)
-+{
-+	struct mse102x_net *mse = dev_get_drvdata(dev);
-+	struct net_device *ndev = mse->ndev;
-+
-+	if (netif_running(ndev)) {
-+		mse102x_net_open(ndev);
-+		netif_device_attach(ndev);
-+	}
-+
-+	return 0;
-+}
-+#endif
-+
-+static SIMPLE_DEV_PM_OPS(mse102x_pm_ops, mse102x_suspend, mse102x_resume);
-+
-+static int mse102x_probe_spi(struct spi_device *spi)
-+{
-+	struct device *dev = &spi->dev;
-+	struct mse102x_net_spi *mses;
-+	struct net_device *ndev;
-+	struct mse102x_net *mse;
-+	int ret;
-+
-+	spi->bits_per_word = 8;
-+	spi->mode |= SPI_MODE_3;
-+	/* enforce minimum speed to ensure device functionality */
-+	spi->master->min_speed_hz = MIN_FREQ_HZ;
-+
-+	if (!spi->max_speed_hz)
-+		spi->max_speed_hz = MAX_FREQ_HZ;
-+
-+	if (spi->max_speed_hz < MIN_FREQ_HZ ||
-+	    spi->max_speed_hz > MAX_FREQ_HZ) {
-+		dev_err(&spi->dev, "SPI max frequency out of range (min: %u, max: %u)\n",
-+			MIN_FREQ_HZ, MAX_FREQ_HZ);
-+		return -EINVAL;
-+	}
-+
-+	ret = spi_setup(spi);
-+	if (ret < 0) {
-+		dev_err(&spi->dev, "Unable to setup SPI device: %d\n", ret);
-+		return ret;
-+	}
-+
-+	ndev = devm_alloc_etherdev(dev, sizeof(struct mse102x_net_spi));
-+	if (!ndev)
-+		return -ENOMEM;
-+
-+	ndev->needed_tailroom += ALIGN(DET_DFT_LEN, 4);
-+	ndev->needed_headroom += ALIGN(DET_SOF_LEN, 4);
-+	ndev->priv_flags &= ~IFF_TX_SKB_SHARING;
-+	ndev->tx_queue_len = 100;
-+
-+	mse = netdev_priv(ndev);
-+	mses = to_mse102x_spi(mse);
-+
-+	mses->spidev = spi;
-+	mutex_init(&mses->lock);
-+	INIT_WORK(&mses->tx_work, mse102x_tx_work);
-+
-+	/* initialise pre-made spi transfer messages */
-+	spi_message_init(&mses->spi_msg);
-+	spi_message_add_tail(&mses->spi_xfer, &mses->spi_msg);
-+
-+	ndev->irq = spi->irq;
-+	mse->ndev = ndev;
-+
-+	/* set the default message enable */
-+	mse->msg_enable = netif_msg_init(-1, MSG_DEFAULT);
-+
-+	skb_queue_head_init(&mse->txq);
-+
-+	SET_NETDEV_DEV(ndev, dev);
-+
-+	dev_set_drvdata(dev, mse);
-+
-+	netif_carrier_off(mse->ndev);
-+	ndev->if_port = IF_PORT_HOMEPLUG;
-+	ndev->netdev_ops = &mse102x_netdev_ops;
-+	ndev->ethtool_ops = &mse102x_ethtool_ops;
-+
-+	mse102x_init_mac(mse, dev->of_node);
-+
-+	ret = register_netdev(ndev);
-+	if (ret) {
-+		dev_err(dev, "failed to register network device: %d\n", ret);
-+		return ret;
-+	}
-+
-+	mse102x_init_device_debugfs(mses);
-+
-+	return 0;
-+}
-+
-+static int mse102x_remove_spi(struct spi_device *spi)
-+{
-+	struct mse102x_net *mse = dev_get_drvdata(&spi->dev);
-+	struct mse102x_net_spi *mses = to_mse102x_spi(mse);
-+
-+	if (netif_msg_drv(mse))
-+		dev_info(&spi->dev, "remove\n");
-+
-+	mse102x_remove_device_debugfs(mses);
-+	unregister_netdev(mse->ndev);
-+
-+	return 0;
-+}
-+
-+static const struct of_device_id mse102x_match_table[] = {
-+	{ .compatible = "vertexcom,mse1021" },
-+	{ .compatible = "vertexcom,mse1022" },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, mse102x_match_table);
-+
-+static struct spi_driver mse102x_driver = {
-+	.driver = {
-+		.name = DRV_NAME,
-+		.of_match_table = mse102x_match_table,
-+		.pm = &mse102x_pm_ops,
-+	},
-+	.probe = mse102x_probe_spi,
-+	.remove = mse102x_remove_spi,
-+};
-+module_spi_driver(mse102x_driver);
-+
-+MODULE_DESCRIPTION("MSE102x Network driver");
-+MODULE_AUTHOR("Stefan Wahren <stefan.wahren@in-tech.com>");
-+MODULE_LICENSE("GPL");
-+MODULE_ALIAS("spi:" DRV_NAME);
--- 
-2.7.4
-
+T24gRnJpLCBEZWMgMDMsIDIwMjEgYXQgMDY6MTk6MTZQTSArMDEwMCwgQ2zDqW1lbnQgTMOpZ2Vy
+IHdyb3RlOg0KPiBFdGhlcm5ldCBmcmFtZXMgY2FuIGJlIGV4dHJhY3RlZCBvciBpbmplY3RlZCBh
+dXRvbm9tb3VzbHkgdG8gb3IgZnJvbQ0KPiB0aGUgZGV2aWNl4oCZcyBERFIzL0REUjNMIG1lbW9y
+eSBhbmQvb3IgUENJZSBtZW1vcnkgc3BhY2UuIExpbmtlZCBsaXN0DQo+IGRhdGEgc3RydWN0dXJl
+cyBpbiBtZW1vcnkgYXJlIHVzZWQgZm9yIGluamVjdGluZyBvciBleHRyYWN0aW5nIEV0aGVybmV0
+DQo+IGZyYW1lcy4gVGhlIEZETUEgZ2VuZXJhdGVzIGludGVycnVwdHMgd2hlbiBmcmFtZSBleHRy
+YWN0aW9uIG9yDQo+IGluamVjdGlvbiBpcyBkb25lIGFuZCB3aGVuIHRoZSBsaW5rZWQgbGlzdHMg
+bmVlZCB1cGRhdGluZy4NCj4gDQo+IFRoZSBGRE1BIGlzIHNoYXJlZCBiZXR3ZWVuIGFsbCB0aGUg
+ZXRoZXJuZXQgcG9ydHMgb2YgdGhlIHN3aXRjaCBhbmQNCj4gdXNlcyBhIGxpbmtlZCBsaXN0IG9m
+IGRlc2NyaXB0b3JzIChEQ0IpIHRvIGluamVjdCBhbmQgZXh0cmFjdCBwYWNrZXRzLg0KPiBCZWZv
+cmUgYWRkaW5nIGRlc2NyaXB0b3JzLCB0aGUgRkRNQSBjaGFubmVscyBtdXN0IGJlIHN0b3BwZWQu
+IEl0IHdvdWxkDQo+IGJlIGluZWZmaWNpZW50IHRvIGRvIHRoYXQgZWFjaCB0aW1lIGEgZGVzY3Jp
+cHRvciB3b3VsZCBiZSBhZGRlZCBzbyB0aGUNCj4gY2hhbm5lbHMgYXJlIHJlc3RhcnRlZCBvbmx5
+IG9uY2UgdGhleSBzdG9wcGVkLg0KPiANCj4gQm90aCBjaGFubmVscyB1c2VzIHJpbmctbGlrZSBz
+dHJ1Y3R1cmUgdG8gZmVlZCB0aGUgRENCcyB0byB0aGUgRkRNQS4NCj4gaGVhZCBhbmQgdGFpbCBh
+cmUgbmV2ZXIgdG91Y2hlZCBieSBoYXJkd2FyZSBhbmQgYXJlIGNvbXBsZXRlbHkgaGFuZGxlZA0K
+PiBieSB0aGUgZHJpdmVyLiBPbiB0b3Agb2YgdGhhdCwgcGFnZSByZWN5Y2xpbmcgaGFzIGJlZW4g
+YWRkZWQgYW5kIGlzDQo+IG1vc3RseSB0YWtlbiBmcm9tIGdpYW5mYXIgZHJpdmVyLg0KPiANCj4g
+Q28tZGV2ZWxvcGVkLWJ5OiBBbGV4YW5kcmUgQmVsbG9uaSA8YWxleGFuZHJlLmJlbGxvbmlAYm9v
+dGxpbi5jb20+DQo+IFNpZ25lZC1vZmYtYnk6IEFsZXhhbmRyZSBCZWxsb25pIDxhbGV4YW5kcmUu
+YmVsbG9uaUBib290bGluLmNvbT4NCj4gU2lnbmVkLW9mZi1ieTogQ2zDqW1lbnQgTMOpZ2VyIDxj
+bGVtZW50LmxlZ2VyQGJvb3RsaW4uY29tPg0KPiAtLS0NCg0KRG9lc24ndCBsb29rIHRvbyBiYWQu
+IERpZCB0aGUgcGFnZSByZXVzZSBtYWtlIGFueSBkaWZmZXJlbmNlIHRvIHRoZQ0KdGhyb3VnaHB1
+dCwgb3IgaXMgdGhlIGludGVyYWN0aW9uIHdpdGggdGhlIEZETUEgZXh0cmFjdGlvbiBjaGFubmVs
+IHdoZXJlDQp0aGUgYm90dGxlbmVjayBpcz8NCg0KPiArc3RhdGljIGJvb2wgb2NlbG90X2ZkbWFf
+YWRkX3J4X2ZyYWcoc3RydWN0IG9jZWxvdF9mZG1hX3J4X2J1ZiAqcnhiLCB1MzIgc3RhdCwNCj4g
+KwkJCQkgICAgc3RydWN0IHNrX2J1ZmYgKnNrYiwgYm9vbCBmaXJzdCkNCj4gK3sNCj4gKwlpbnQg
+c2l6ZSA9IE1TQ0NfRkRNQV9EQ0JfU1RBVF9CTE9DS0woc3RhdCk7DQo+ICsJc3RydWN0IHBhZ2Ug
+KnBhZ2UgPSByeGItPnBhZ2U7DQo+ICsNCj4gKwlpZiAobGlrZWx5KGZpcnN0KSkgew0KPiArCQlz
+a2JfcHV0KHNrYiwgc2l6ZSk7DQo+ICsJfSBlbHNlIHsNCj4gKwkJc2tiX2FkZF9yeF9mcmFnKHNr
+Yiwgc2tiX3NoaW5mbyhza2IpLT5ucl9mcmFncywgcGFnZSwNCj4gKwkJCQlyeGItPnBhZ2Vfb2Zm
+c2V0LCBzaXplLCBPQ0VMT1RfRkRNQV9SWF9TSVpFKTsNCj4gKwl9DQo+ICsNCj4gKwkvKiBUcnkg
+dG8gcmV1c2UgcGFnZSAqLw0KPiArCWlmICh1bmxpa2VseShwYWdlX2NvdW50KHBhZ2UpICE9IDEg
+fHwgcGFnZV9pc19wZm1lbWFsbG9jKHBhZ2UpKSkNCg0KSSBkb24ndCB0aGluayB5b3UgbmVlZCB0
+byBnbyB0aHJvdWdoIGEgZm9saW8sIHlvdSBjYW4gdXNlDQpwYWdlX3JlZl9jb3VudCgpIGRpcmVj
+dGx5Lg0KDQo+ICsJCXJldHVybiBmYWxzZTsNCj4gKw0KPiArCS8qIENoYW5nZSBvZmZzZXQgdG8g
+dGhlIG90aGVyIGhhbGYgKi8NCj4gKwlyeGItPnBhZ2Vfb2Zmc2V0IF49IE9DRUxPVF9GRE1BX1JY
+X1NJWkU7DQo+ICsNCj4gKwlwYWdlX3JlZl9pbmMocGFnZSk7DQo+ICsNCj4gKwlyZXR1cm4gdHJ1
+ZTsNCj4gK30NCj4gKw0KPiArc3RhdGljIHZvaWQgb2NlbG90X2ZkbWFfc2VuZF9za2Ioc3RydWN0
+IG9jZWxvdCAqb2NlbG90LA0KPiArCQkJCSBzdHJ1Y3Qgb2NlbG90X2ZkbWEgKmZkbWEsIHN0cnVj
+dCBza19idWZmICpza2IpDQo+ICt7DQo+ICsJc3RydWN0IG9jZWxvdF9mZG1hX3R4X3JpbmcgKnR4
+X3JpbmcgPSAmZmRtYS0+dHhfcmluZzsNCj4gKwlzdHJ1Y3Qgb2NlbG90X2ZkbWFfdHhfYnVmICp0
+eF9idWY7DQo+ICsJc3RydWN0IG9jZWxvdF9mZG1hX2RjYiAqZGNiOw0KPiArCWRtYV9hZGRyX3Qg
+ZG1hOw0KPiArCXUxNiBuZXh0X2lkeDsNCj4gKw0KPiArCWRjYiA9ICZ0eF9yaW5nLT5kY2JzW3R4
+X3JpbmctPm5leHRfdG9fdXNlXTsNCj4gKwl0eF9idWYgPSAmdHhfcmluZy0+YnVmc1t0eF9yaW5n
+LT5uZXh0X3RvX3VzZV07DQo+ICsJaWYgKCFvY2Vsb3RfZmRtYV90eF9kY2Jfc2V0X3NrYihvY2Vs
+b3QsIHR4X2J1ZiwgZGNiLCBza2IpKSB7DQo+ICsJCWRldl9rZnJlZV9za2JfYW55KHNrYik7DQo+
+ICsJCXJldHVybjsNCj4gKwl9DQo+ICsNCj4gKwluZXh0X2lkeCA9IG9jZWxvdF9mZG1hX2lkeF9u
+ZXh0KHR4X3JpbmctPm5leHRfdG9fdXNlLA0KPiArCQkJCQlPQ0VMT1RfRkRNQV9UWF9SSU5HX1NJ
+WkUpOw0KPiArCS8qIElmIHRoZSBGRE1BIFRYIGNoYW4gaXMgZW1wdHksIHRoZW4gZW5xdWV1ZSB0
+aGUgRENCIGRpcmVjdGx5ICovDQo+ICsJaWYgKG9jZWxvdF9mZG1hX3R4X3JpbmdfZW1wdHkoZmRt
+YSkpIHsNCj4gKwkJZG1hID0gb2NlbG90X2ZkbWFfaWR4X2RtYSh0eF9yaW5nLT5kY2JzX2RtYSwg
+dHhfcmluZy0+bmV4dF90b191c2UpOw0KPiArCQlvY2Vsb3RfZmRtYV9hY3RpdmF0ZV9jaGFuKGZk
+bWEsIGRtYSwgTVNDQ19GRE1BX0lOSl9DSEFOKTsNCj4gKwl9IGVsc2Ugew0KPiArCQkvKiBDaGFp
+biB0aGUgRENCcyAqLw0KPiArCQlkY2ItPmxscCA9IG9jZWxvdF9mZG1hX2lkeF9kbWEodHhfcmlu
+Zy0+ZGNic19kbWEsIG5leHRfaWR4KTsNCj4gKwl9DQo+ICsNCj4gKwl0eF9yaW5nLT5uZXh0X3Rv
+X3VzZSA9IG5leHRfaWR4Ow0KPiArDQo+ICsJc2tiX3R4X3RpbWVzdGFtcChza2IpOw0KDQpJc24n
+dCBpdCBwcm9ibGVtYXRpYyB0byB1cGRhdGUgdHhfcmluZy0+bmV4dF90b191c2UgYW5kIHNrYl90
+eF90aW1lc3RhbXANCmFmdGVyIHlvdSd2ZSBhY3R1YWxseSBjYWxsZWQgb2NlbG90X2ZkbWFfYWN0
+aXZhdGVfY2hhbigpPyBUaGlzIHdpbGwgcmFjZQ0Kd2l0aCBvY2Vsb3RfZmRtYV90eF9jbGVhbnVw
+KCkuDQoNCj4gK30NCj4gK3ZvaWQgb2NlbG90X2ZkbWFfaW5pdChzdHJ1Y3QgcGxhdGZvcm1fZGV2
+aWNlICpwZGV2LCBzdHJ1Y3Qgb2NlbG90ICpvY2Vsb3QpDQo+ICt7DQo+ICsJc3RydWN0IGRldmlj
+ZSAqZGV2ID0gb2NlbG90LT5kZXY7DQo+ICsJc3RydWN0IG9jZWxvdF9mZG1hICpmZG1hOw0KPiAr
+CXZvaWQgX19pb21lbSAqcmVnczsNCj4gKwlpbnQgcmV0Ow0KPiArDQo+ICsJcmVncyA9IGRldm1f
+cGxhdGZvcm1faW9yZW1hcF9yZXNvdXJjZV9ieW5hbWUocGRldiwgImZkbWEiKTsNCj4gKwlpZiAo
+SVNfRVJSX09SX05VTEwocmVncykpDQo+ICsJCXJldHVybjsNCg0KU2hvdWxkbid0IHRoaXMgYmUg
+YW4gb3B0aW9uYWwgaW9fdGFyZ2V0IGluc2lkZSBtc2NjX29jZWxvdF9wcm9iZSwgbGlrZQ0KYWxs
+IHRoZSBvdGhlcnMgYXJlPw0KDQo+ICsNCj4gKwlmZG1hID0gZGV2bV9remFsbG9jKGRldiwgc2l6
+ZW9mKCpmZG1hKSwgR0ZQX0tFUk5FTCk7DQo+ICsJaWYgKCFmZG1hKQ0KPiArCQlnb3RvIGVycl9y
+ZWxlYXNlX3Jlc291cmNlOw0KPiArDQo+ICsJb2NlbG90LT5mZG1hID0gZmRtYTsNCj4gKwlvY2Vs
+b3QtPmRldi0+Y29oZXJlbnRfZG1hX21hc2sgPSBETUFfQklUX01BU0soMzIpOw0KPiArCWZkbWEt
+PnJlZ3MgPSByZWdzOw0KDQpUaGlzIGRvZXNuJ3QgbmVlZCB0byBiZSBrZXB0IGluc2lkZSBzdHJ1
+Y3Qgb2NlbG90X2ZkbWEsIGl0IGlzbid0IHVzZWQNCmFueXdoZXJlIGVsc2UuDQoNCj4gKwlmZG1h
+LT5yZWdtYXAgPSByZWdtYXBfaW5pdF9tbWlvKG9jZWxvdC0+ZGV2LCByZWdzLA0KPiArCQkJCQkm
+b2NlbG90X2ZkbWFfcmVnbWFwX2NvbmZpZyk7DQo+ICsJaWYgKElTX0VSUihmZG1hLT5yZWdtYXAp
+KQ0KPiArCQlnb3RvIGVycl9mcmVlX2ZkbWE7DQo+ICsNCj4gKwlvY2Vsb3RfZmRtYV93cml0ZWwo
+ZmRtYSwgTVNDQ19GRE1BX0lOVFJfRU5BLCAwKTsNCj4gKw0KPiArCWZkbWEtPmlycSA9IHBsYXRm
+b3JtX2dldF9pcnFfYnluYW1lKHBkZXYsICJmZG1hIik7DQo+ICsJcmV0ID0gZGV2bV9yZXF1ZXN0
+X2lycShkZXYsIGZkbWEtPmlycSwgb2NlbG90X2ZkbWFfaW50ZXJydXB0LCAwLA0KPiArCQkJICAg
+ICAgIGRldl9uYW1lKGRldiksIG9jZWxvdCk7DQo+ICsJaWYgKHJldCkNCj4gKwkJZ290byBlcnJf
+cmVnbWFwX2V4aXQ7DQo+ICsNCj4gKwlyZXQgPSBvY2Vsb3RfZmRtYV9yaW5nc19hbGxvYyhvY2Vs
+b3QpOw0KPiArCWlmIChyZXQpDQo+ICsJCWdvdG8gZXJyX2ZyZWVfaXJxOw0KPiArDQo+ICsJc3Rh
+dGljX2JyYW5jaF9lbmFibGUoJm9jZWxvdF9mZG1hX2VuYWJsZWQpOw0KPiArDQo+ICsJcmV0dXJu
+Ow0KPiArDQo+ICtlcnJfZnJlZV9pcnE6DQo+ICsJZGV2bV9mcmVlX2lycShkZXYsIGZkbWEtPmly
+cSwgZmRtYSk7DQo+ICtlcnJfcmVnbWFwX2V4aXQ6DQo+ICsJcmVnbWFwX2V4aXQoZmRtYS0+cmVn
+bWFwKTsNCj4gK2Vycl9mcmVlX2ZkbWE6DQo+ICsJZGV2bV9rZnJlZShkZXYsIGZkbWEpOw0KPiAr
+ZXJyX3JlbGVhc2VfcmVzb3VyY2U6DQo+ICsJZGV2bV9pb3VubWFwKGRldiwgcmVncyk7DQo+ICsN
+Cj4gKwlvY2Vsb3QtPmZkbWEgPSBOVUxMOw0KPiArfQ0KPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9u
+ZXQvZXRoZXJuZXQvbXNjYy9vY2Vsb3RfdnNjNzUxNC5jIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQv
+bXNjYy9vY2Vsb3RfdnNjNzUxNC5jDQo+IGluZGV4IDM4MTAzYjAyNTViMC4uZDczN2M2ODBiNDI0
+IDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9tc2NjL29jZWxvdF92c2M3NTE0
+LmMNCj4gKysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvbXNjYy9vY2Vsb3RfdnNjNzUxNC5jDQo+
+IEBAIC0xOCw2ICsxOCw3IEBADQo+ICANCj4gICNpbmNsdWRlIDxzb2MvbXNjYy9vY2Vsb3RfdmNh
+cC5oPg0KPiAgI2luY2x1ZGUgPHNvYy9tc2NjL29jZWxvdF9oc2lvLmg+DQo+ICsjaW5jbHVkZSAi
+b2NlbG90X2ZkbWEuaCINCj4gICNpbmNsdWRlICJvY2Vsb3QuaCINCj4gIA0KDQpQbGVhc2UgcmVi
+YXNlIGFsbCB5b3VyIHN1Ym1pc3Npb25zIHRvIHRoZSBjdXJyZW50IG5ldC1uZXh0L21hc3Rlciwg
+dGhlDQpmb2xsb3dpbmcgaGFzIGJlZW4gaW50cm9kdWNlZCBoZXJlIGluIHRoZSBtZWFudGltZSwg
+bWFraW5nIHRoaXMgcGF0Y2gNCmZhaWwgdG8gYXBwbHk6DQoNCiNkZWZpbmUgVlNDNzUxNF9WQ0FQ
+X1BPTElDRVJfQkFTRQkJCTEyOA0KI2RlZmluZSBWU0M3NTE0X1ZDQVBfUE9MSUNFUl9NQVgJCQkx
+OTENCg0KPiAgc3RhdGljIGNvbnN0IHUzMiBvY2Vsb3RfYW5hX3JlZ21hcFtdID0gew0KPiBAQCAt
+MTA4MCw2ICsxMDgxLDggQEAgc3RhdGljIGludCBtc2NjX29jZWxvdF9wcm9iZShzdHJ1Y3QgcGxh
+dGZvcm1fZGV2aWNlICpwZGV2KQ0KPiAgCQlvY2Vsb3QtPnRhcmdldHNbaW9fdGFyZ2V0W2ldLmlk
+XSA9IHRhcmdldDsNCj4gIAl9DQo+ICANCj4gKwlvY2Vsb3RfZmRtYV9pbml0KHBkZXYsIG9jZWxv
+dCk7DQo+ICsNCj4gIAloc2lvID0gc3lzY29uX3JlZ21hcF9sb29rdXBfYnlfY29tcGF0aWJsZSgi
+bXNjYyxvY2Vsb3QtaHNpbyIpOw0KPiAgCWlmIChJU19FUlIoaHNpbykpIHsNCj4gIAkJZGV2X2Vy
+cigmcGRldi0+ZGV2LCAibWlzc2luZyBoc2lvIHN5c2NvblxuIik7DQo+IEBAIC0xMTM5LDYgKzEx
+NDIsOSBAQCBzdGF0aWMgaW50IG1zY2Nfb2NlbG90X3Byb2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZp
+Y2UgKnBkZXYpDQo+ICAJaWYgKGVycikNCj4gIAkJZ290byBvdXRfb2NlbG90X2RldmxpbmtfdW5y
+ZWdpc3RlcjsNCj4gIA0KPiArCWlmIChvY2Vsb3QtPmZkbWEpDQo+ICsJCW9jZWxvdF9mZG1hX3N0
+YXJ0KG9jZWxvdCk7DQo+ICsNCj4gIAllcnIgPSBvY2Vsb3RfZGV2bGlua19zYl9yZWdpc3Rlcihv
+Y2Vsb3QpOw0KPiAgCWlmIChlcnIpDQo+ICAJCWdvdG8gb3V0X29jZWxvdF9yZWxlYXNlX3BvcnRz
+Ow0KPiBAQCAtMTE3OSw2ICsxMTg1LDggQEAgc3RhdGljIGludCBtc2NjX29jZWxvdF9yZW1vdmUo
+c3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRldikNCj4gIHsNCj4gIAlzdHJ1Y3Qgb2NlbG90ICpv
+Y2Vsb3QgPSBwbGF0Zm9ybV9nZXRfZHJ2ZGF0YShwZGV2KTsNCj4gIA0KPiArCWlmIChvY2Vsb3Qt
+PmZkbWEpDQo+ICsJCW9jZWxvdF9mZG1hX2RlaW5pdChvY2Vsb3QpOw0KPiAgCWRldmxpbmtfdW5y
+ZWdpc3RlcihvY2Vsb3QtPmRldmxpbmspOw0KPiAgCW9jZWxvdF9kZWluaXRfdGltZXN0YW1wKG9j
+ZWxvdCk7DQo+ICAJb2NlbG90X2Rldmxpbmtfc2JfdW5yZWdpc3RlcihvY2Vsb3QpOw0KPiBkaWZm
+IC0tZ2l0IGEvaW5jbHVkZS9zb2MvbXNjYy9vY2Vsb3QuaCBiL2luY2x1ZGUvc29jL21zY2Mvb2Nl
+bG90LmgNCj4gaW5kZXggMTFjOTlmY2ZkMzQxLi4yNjY3YTIwM2UxMGYgMTAwNjQ0DQo+IC0tLSBh
+L2luY2x1ZGUvc29jL21zY2Mvb2NlbG90LmgNCj4gKysrIGIvaW5jbHVkZS9zb2MvbXNjYy9vY2Vs
+b3QuaA0KPiBAQCAtNjkyLDYgKzY5MiwxMiBAQCBzdHJ1Y3Qgb2NlbG90IHsNCj4gIAkvKiBQcm90
+ZWN0cyB0aGUgUFRQIGNsb2NrICovDQo+ICAJc3BpbmxvY2tfdAkJCXB0cF9jbG9ja19sb2NrOw0K
+PiAgCXN0cnVjdCBwdHBfcGluX2Rlc2MJCXB0cF9waW5zW09DRUxPVF9QVFBfUElOU19OVU1dOw0K
+PiArDQo+ICsJc3RydWN0IG9jZWxvdF9mZG1hCQkqZmRtYTsNCj4gKwkvKiBOYXBpIGNvbnRleHQg
+dXNlZCBieSBGRE1BLiBOZWVkcyB0byBiZSBpbiBvY2Vsb3QgdG8gYXZvaWQgdXNpbmcgYQ0KPiAr
+CSAqIGJhY2twb2ludGVyIGluIG9jZWxvdF9mZG1hDQo+ICsJICovDQo+ICsJc3RydWN0IG5hcGlf
+c3RydWN0CQluYXBpOw0KDQpDYW4gaXQgYXQgbGVhc3QgYmUgZHluYW1pY2FsbHkgYWxsb2NhdGVk
+LCBhbmQga2VwdCBhcyBhIHBvaW50ZXIgaGVyZT8NCg0KPiAgfTsNCj4gIA0KPiAgc3RydWN0IG9j
+ZWxvdF9wb2xpY2VyIHsNCj4gLS0gDQo+IDIuMzQuMQ0KPg==
