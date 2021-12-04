@@ -2,75 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D6E304681FB
-	for <lists+netdev@lfdr.de>; Sat,  4 Dec 2021 03:30:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A6892468218
+	for <lists+netdev@lfdr.de>; Sat,  4 Dec 2021 04:13:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236044AbhLDCdf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Dec 2021 21:33:35 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:35946 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233766AbhLDCdf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Dec 2021 21:33:35 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 704FE62D9D
-        for <netdev@vger.kernel.org>; Sat,  4 Dec 2021 02:30:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D0BF3C341C1;
-        Sat,  4 Dec 2021 02:30:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638585009;
-        bh=idlWxmk8sO++cJF6wr7rgpBhPSMX7y72bSA8nm27X4k=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=i2MbljaPJalBYiV0/EDOhXd024KPiw16WnkmgpO/i9n8ERIraUbUmh4Yl5uaWcRby
-         EVqlL6fYsZoSvz256ygkcLHOPfARqxIdZbdDj7CZbuBnHsRXIf3PldnOqlMXvlVguT
-         99kbqWJ8d62Nmulwe6ajg5SBydDvdc7Zs28Vpx8ps/B8ekccjmhJGg4E7YUHQmkvZZ
-         U5upDQEoKVox/nsNyvhC2AYYXVD2vwkWSzzm8/zM1Qf5hPsLbeKnefOVlA9GfCT2e8
-         tVC7GzLuMVa1X4Yf7SJPS9pFaTMWS9BQCgKhXkhuxLpzdpH6FfCRVGHimVJU20PuYy
-         c+QUN0ickRqTw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id B380F60A88;
-        Sat,  4 Dec 2021 02:30:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S1345320AbhLDDQ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Dec 2021 22:16:56 -0500
+Received: from mga17.intel.com ([192.55.52.151]:57035 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S244657AbhLDDQ4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 3 Dec 2021 22:16:56 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10187"; a="217778396"
+X-IronPort-AV: E=Sophos;i="5.87,286,1631602800"; 
+   d="scan'208";a="217778396"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Dec 2021 19:13:31 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.87,286,1631602800"; 
+   d="scan'208";a="577743953"
+Received: from lkp-server02.sh.intel.com (HELO 9e1e9f9b3bcb) ([10.239.97.151])
+  by fmsmga004.fm.intel.com with ESMTP; 03 Dec 2021 19:13:29 -0800
+Received: from kbuild by 9e1e9f9b3bcb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1mtLUP-000INh-3b; Sat, 04 Dec 2021 03:13:29 +0000
+Date:   Sat, 4 Dec 2021 11:13:24 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     cgel.zte@gmail.com, davem@davemloft.net
+Cc:     kbuild-all@lists.01.org, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Zhang Yunkai <zhang.yunkai@zte.com.cn>
+Subject: Re: [PATCH linux-next] macvlan: judge ACCEPT_LOCAL before broadcast
+Message-ID: <202112041109.HnEJ2McL-lkp@intel.com>
+References: <20211203072515.345503-1-zhang.yunkai@zte.com.cn>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 net-next 0/2] qed*: enhancements
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163858500973.7831.11790019419849892928.git-patchwork-notify@kernel.org>
-Date:   Sat, 04 Dec 2021 02:30:09 +0000
-References: <20211202210157.25530-1-manishc@marvell.com>
-In-Reply-To: <20211202210157.25530-1-manishc@marvell.com>
-To:     Manish Chopra <manishc@marvell.com>
-Cc:     kuba@kernel.org, netdev@vger.kernel.org, aelior@marvell.com,
-        palok@marvell.com, pkushwaha@marvell.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211203072515.345503-1-zhang.yunkai@zte.com.cn>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Hi,
 
-This series was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+Thank you for the patch! Yet something to improve:
 
-On Thu, 2 Dec 2021 13:01:55 -0800 you wrote:
-> Hello Jakub,
-> 
-> This series adds below enhancements for qed/qede drivers
-> 
-> patch 1: Improves tx timeout debug data logs.
-> patch 2: Add ESL(Enhanced system lockdown) priv flag cap/status support.
-> 
-> [...]
+[auto build test ERROR on next-20211202]
 
-Here is the summary with links:
-  - [v2,net-next,1/2] qed*: enhance tx timeout debug info
-    https://git.kernel.org/netdev/net-next/c/0cc3a8017900
-  - [v2,net-next,2/2] qed*: esl priv flag support through ethtool
-    https://git.kernel.org/netdev/net-next/c/823163ba6e52
+url:    https://github.com/0day-ci/linux/commits/cgel-zte-gmail-com/macvlan-judge-ACCEPT_LOCAL-before-broadcast/20211203-152701
+base:    9606f9efb1cec7f8f5912326f182fbfbcad34382
+config: arm-randconfig-c002-20211203 (https://download.01.org/0day-ci/archive/20211204/202112041109.HnEJ2McL-lkp@intel.com/config)
+compiler: arm-linux-gnueabi-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/05cf69fa8abf1b7a7016dc8ee1adada1f80809b8
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review cgel-zte-gmail-com/macvlan-judge-ACCEPT_LOCAL-before-broadcast/20211203-152701
+        git checkout 05cf69fa8abf1b7a7016dc8ee1adada1f80809b8
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm SHELL=/bin/bash
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
+All errors (new ones prefixed by >>):
 
+   arm-linux-gnueabi-ld: drivers/net/macvlan.o: in function `macvlan_broadcast':
+>> macvlan.c:(.text+0x24a4): undefined reference to `in_dev_finish_destroy'
+>> arm-linux-gnueabi-ld: macvlan.c:(.text+0x2618): undefined reference to `in_dev_finish_destroy'
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
