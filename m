@@ -2,80 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 13A6C468628
-	for <lists+netdev@lfdr.de>; Sat,  4 Dec 2021 17:18:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BD8C546862B
+	for <lists+netdev@lfdr.de>; Sat,  4 Dec 2021 17:25:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345717AbhLDQWU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Dec 2021 11:22:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57908 "EHLO
+        id S1355231AbhLDQ2P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Dec 2021 11:28:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242107AbhLDQWT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Dec 2021 11:22:19 -0500
-Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF1E0C061751
-        for <netdev@vger.kernel.org>; Sat,  4 Dec 2021 08:18:53 -0800 (PST)
-Received: by mail-oi1-x22e.google.com with SMTP id 7so12301779oip.12
-        for <netdev@vger.kernel.org>; Sat, 04 Dec 2021 08:18:53 -0800 (PST)
+        with ESMTP id S237189AbhLDQ2O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Dec 2021 11:28:14 -0500
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7912C061751
+        for <netdev@vger.kernel.org>; Sat,  4 Dec 2021 08:24:48 -0800 (PST)
+Received: by mail-lf1-x136.google.com with SMTP id bu18so14411329lfb.0
+        for <netdev@vger.kernel.org>; Sat, 04 Dec 2021 08:24:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=uDr2cPa/l+QEOcb4YhZdgXpA/BqSWxcIfaqPcp93c1w=;
-        b=EXgItvrNoR3cUAUPHjMUpA78x2tMejDcYW1+iLycIgbP30e1DKCWhUIkVc1IsePKYm
-         9BtekP20LHMElJ1yDwng8FHzHLeYzdhMZykZElhSh83mTyv+WYPp0I7htLw5dC2YO2el
-         KJwuTMxx+neJoqk4k9UiD3EpqyHAP0h9vmvvR2uXrqUHDJ1YyxuZw9mY4yKGyCUMLBqa
-         sSZHw2DPQYZb4GUhlRODWgQ+FBVitad9x52q2tq4lwmS40hPIm0gY1b9vyNvMUvjQmzD
-         kyP8D3V/09eKeCBozfr575VYPbPnaQY31ReHM9PMZPzngfaneztaP8M7ePHcgCZrsTAD
-         dYWQ==
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=N5DhA+n6UJSAz6Ft1NTY91Ftj5wKhHYLdUBvUL+ORbE=;
+        b=gvU6amDzhFMlbzjUSIMu0Mj6C7u2Rj+zvOczjuIe8il2oRlUXtNTAqTomrp00OY9+A
+         g39h8iXsJPjoouFsNsRRZIvqml138nsJLy8U29bRRKDdM9LOxJBCQOSAf3eHvudYo1kO
+         PD9uo3jH/Tig9PZrC8qJh6zjGWl622mnXSVf67o53ingmcOlTIVPj1NqSz+RiRMYVMD+
+         BeF6y9KXjLbNu/hT2teiWB5VFlT3Uoas3/TCCAl4QoAmsDNP3HHeGlnmgC2JPwmOSJPb
+         wTkWYt/yLqZ38R4a2QSUv0JoVqVGzLtcvFs1dZcniKsZGBAchqzfXpnOyNvZVa6nd1z9
+         v0GA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=uDr2cPa/l+QEOcb4YhZdgXpA/BqSWxcIfaqPcp93c1w=;
-        b=Eutrkw5Qpg8ASwX5es/SNHAjyjE6LJKFW2+HUVpNKwFNIljaolz1f9IbJ8CwbVqI3N
-         jgFKFca40PyX8f1+ZAQj+2fnks1Avt0I6hD5Ng+8uNztve/f8ybUruqivi+tWqZcY1PK
-         Z+FmLrTlQn9x+IINGpJWdt3j5Zm9av/HpAVZxQpW4kSEBZo508h/kOAy5yn9+zReZjLN
-         3+kmHWTxPWVZovB2fMN7m2gsHExAy23qWkneh9udXlVSkM4G/anqKL3Lx3cEfNbelQaj
-         TRZeRoDI9pbspRKoE3NzNzC+x7KKK95E2rRAz5AkWwEEGQbkmdHzYadsDJDOUB+iaHuR
-         gFNg==
-X-Gm-Message-State: AOAM530DYoLpUKKadXJI2VmM+Ce0lsNM26DMLEkhUxRTkaWfz91P34+G
-        WDVPUTQ2UFMmmCLbFkKBVCU=
-X-Google-Smtp-Source: ABdhPJznpq7o2cp6O86XZDHYfL6EDlQRCw81sgch/n+InbZRj/P2M2/dsP0In6PvfQLMf89fAFcOKw==
-X-Received: by 2002:a05:6808:1894:: with SMTP id bi20mr15703243oib.151.1638634733304;
-        Sat, 04 Dec 2021 08:18:53 -0800 (PST)
-Received: from [172.16.0.2] ([8.48.134.30])
-        by smtp.googlemail.com with ESMTPSA id bl33sm1626998oib.47.2021.12.04.08.18.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 04 Dec 2021 08:18:52 -0800 (PST)
-Message-ID: <acf1de03-9b81-70f6-6e72-8267499ffe1f@gmail.com>
-Date:   Sat, 4 Dec 2021 09:18:51 -0700
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=N5DhA+n6UJSAz6Ft1NTY91Ftj5wKhHYLdUBvUL+ORbE=;
+        b=RYd2yz3sbrsnz/duSEjRDcSNNLinwAJHudLhHVY7dxxqg/kM7z2Uh1ebPEVB3wRq3z
+         STkFQjypCrUGJU6128nV2KcOvCepJyhpUleuG7n03/ACa8UneVLk6iYu9QV9Cys28zau
+         auZIiCUhktA1rkrseE/B2UOprGzD19fF3lVVTfymLhJ/7yRgw9reuvJzQF41CFtLCLXH
+         H5WkAbOkUuhxydpDq1pPFLVf4jqXgrMN7e9xA+iBoAVNEcnCPUen9b34ZIZW4ifgIzjS
+         xlMIFpUbHxviEFezaLK1v+LvraxpBQlpjtRFYPdNs193d6xOEsZPA3M2YBuCA7KvFbwq
+         GnXA==
+X-Gm-Message-State: AOAM530uRrIGklFS8W71mdPmacZ5rqlEjTuWZhRc1Gz9SXR3GHOUvcgx
+        7DJqi4dOFl9pNPh1462GpIW15TjeSCMsXypISqY=
+X-Google-Smtp-Source: ABdhPJwugh1f4iOiKFrKj+tg5CGAgQ5W2o/H0R3twutHZ7RNdCnZHG9Opgkv23W7yQ6irfGRlJ0FhdZjL/sjCwuAE+U=
+X-Received: by 2002:ac2:4c4e:: with SMTP id o14mr24757671lfk.148.1638635086664;
+ Sat, 04 Dec 2021 08:24:46 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.3.2
-Subject: Re: [PATCH net-next v4] rtnetlink: Support fine-grained netdevice
- bulk deletion
-Content-Language: en-US
-To:     Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Lahav Schlesinger <lschlesinger@drivenets.com>,
-        netdev@vger.kernel.org
-Cc:     kuba@kernel.org
-References: <20211202174502.28903-1-lschlesinger@drivenets.com>
- <9b8c306a-eea0-3d77-c4a3-3406e5954eaa@nvidia.com>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <9b8c306a-eea0-3d77-c4a3-3406e5954eaa@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Received: by 2002:a05:6512:1697:0:0:0:0 with HTTP; Sat, 4 Dec 2021 08:24:45
+ -0800 (PST)
+Reply-To: mohammedshamekh24@gmail.com
+From:   Mrmohammed shamekh <sheratonhotels01@gmail.com>
+Date:   Sat, 4 Dec 2021 08:24:45 -0800
+Message-ID: <CAGGx3m-dMUa7ngTABQG5pBsbHwxirGsT8nLEdebQJUdHeobXyA@mail.gmail.com>
+Subject: THE AMOUNT IS 27.5 MILLIOMS USD
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/4/21 3:15 AM, Nikolay Aleksandrov wrote:
-> 
-> I like the idea, but what happens if the same device is present twice or more times?
-> I mean are you sure it is safe to call dellink method of all device types multiple
-> times with the same device?
-> 
+Dear Friend,
 
-Very good point. Can't rely on dellink callbacks being able to handle
-multiple calls.
+Greetings.
+
+How are you doing today i hope fine?
+
+I came across your e-mail contact prior a private search while in need
+of your assistance. My name  Mr  mohammed   shamekh  =E2=80=99 I work with =
+the
+department of Audit and accounting manager here in UBA Bank of Africa,
+There is this fund that was keep in my custody years ago and I need
+your assistance for the transferring of this fund to your bank account
+for both of us benefit for life time investment and the amount is (US
+$27,500. Million Dollars).
+
+I have every inquiry details to make the bank believe you and release
+the fund to your bank account in within 7 banking working days with
+your full co-operation with me after success Note 50% for you while
+50% for me after success of the transfer of the funds to your bank
+account okay.
+
+WAITING TO HEAR FROM YOU.
+THANKS.
+
+ Mr  mohammed   shamekh ,
