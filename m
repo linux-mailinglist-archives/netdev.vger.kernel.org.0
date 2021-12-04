@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 069B046853E
-	for <lists+netdev@lfdr.de>; Sat,  4 Dec 2021 15:07:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 74121468541
+	for <lists+netdev@lfdr.de>; Sat,  4 Dec 2021 15:07:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385156AbhLDOKn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Dec 2021 09:10:43 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:59241 "EHLO
+        id S1385154AbhLDOKt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Dec 2021 09:10:49 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:59290 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1385141AbhLDOKn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Dec 2021 09:10:43 -0500
+        by vger.kernel.org with ESMTP id S1385108AbhLDOKt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Dec 2021 09:10:49 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1638626837;
+        s=mimecast20190719; t=1638626843;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=fy97f1CqrZ7QTLG50aGd3f39RUXo3RV1YxCemTb3pN4=;
-        b=ElokiwOFh/ZOHIA7KeqO1ORE+kYRjBwXmQw4ykOvCpPISufHpmo0T30iO1Qrx85OlyOphn
-        S8z7E83V8y6JKi88sI94nDROPHKdgN91MtrXjXADxolUmw/aW2HGgHqk7AYw2UdZ42VzrJ
-        7t5KtHu6lVdFTr8OcZwzvDXuImE7Rbg=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=xJf9C0dhuJV/fGk+WK+oK43/VAjCjanQdJUfa6jH1EQ=;
+        b=DBrWw/kszsYYuXDLgdyliEl5pSqbeNxMAnR8lMPGFOvClZbNV/C/givJgBBDPSCTVxg+hY
+        2el9AaweFuCOx4tmu9Gks3dw0PAqbLdJ8sHAlUkYb/syPmjKDb6zGEDy85ymnCZePVzZii
+        06Lyclh2s5Ag9vq0VbInPaksMEY7qTA=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-23-ci2bWTahNkKpH1Rd5Pvm_A-1; Sat, 04 Dec 2021 09:07:16 -0500
-X-MC-Unique: ci2bWTahNkKpH1Rd5Pvm_A-1
-Received: by mail-wm1-f69.google.com with SMTP id 205-20020a1c00d6000000b003335d1384f1so5132133wma.3
-        for <netdev@vger.kernel.org>; Sat, 04 Dec 2021 06:07:16 -0800 (PST)
+ us-mta-490-zTeqYRJQMpiaB76ZPCkmNg-1; Sat, 04 Dec 2021 09:07:22 -0500
+X-MC-Unique: zTeqYRJQMpiaB76ZPCkmNg-1
+Received: by mail-wm1-f70.google.com with SMTP id r129-20020a1c4487000000b00333629ed22dso5118763wma.6
+        for <netdev@vger.kernel.org>; Sat, 04 Dec 2021 06:07:22 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=fy97f1CqrZ7QTLG50aGd3f39RUXo3RV1YxCemTb3pN4=;
-        b=YWm2lPNTNtHBYe/CsJEUSZr2CQyuaKFmHfijviFfyOEdX7pcFdl/hKDiQdcH/mYi0X
-         erQas+DmpaYI2uEE7REyfXj4KvmrULi3HMzDBAmljP5NgV8Ufjdi0JVfvyH0JgQgrFgz
-         bZtCqybPyKaBfSCh/SK6dhmnondqCR2NFp/bgU024YLDn6KNANLzD4bNkH94l54UFkeg
-         Qv9AZCzVVD9ngCJHU0q+08QcZtLDO7zNWTFREfDwTCXIIpo5A818h/ih3yrWH7VzR53d
-         QM0CWGmz0DAXye4eTwEcLU1qzuKHScuFbYU+erDaOJaKOECvK5LZ0AqN8QfAvtG+cZKr
-         Ylkw==
-X-Gm-Message-State: AOAM533X/5FcvOTOQsCSca7AKaYET147UryuHrwlkeC4DDUze5Dv3jeH
-        yZgQ6fZUZALSbhwBUdFlHENiZ4GkvHBYvgYe8/HoBr4LO5crLzZBIaRy47qM/hiFFMKsEcVSzej
-        0MbueEIaEJaIg11g3
-X-Received: by 2002:a05:6000:18ac:: with SMTP id b12mr30073552wri.355.1638626834836;
-        Sat, 04 Dec 2021 06:07:14 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyMnHJ5sZbvEYHFxtaP5iF0ydF0lExxBQOALf68sq3yY5BGHYBFtT5R4i4Sax8amTxUdodfeA==
-X-Received: by 2002:a05:6000:18ac:: with SMTP id b12mr30073524wri.355.1638626834586;
-        Sat, 04 Dec 2021 06:07:14 -0800 (PST)
+        bh=xJf9C0dhuJV/fGk+WK+oK43/VAjCjanQdJUfa6jH1EQ=;
+        b=1aQjHcuyDU9Dn8fTnxa0oX1AGqCNzcOVMnEafNSXdo/+/q/T7K62t4hawhDScoeAm6
+         hkg1UsjGSbMIEhUv5PJ7+/9JSCpElgO+4KRvEfBRG8GhYvzooHiSaWAzBjFxnpqGZAOs
+         tbGyGGO3B0bAhWEvxHhR9TxTj7FqyI/DfSIE8d+tre0RXyYs/pqGzS+9A1uyuqwHqzph
+         fZfiFUYK2bHj3F8rto8+9jnebNuKPatICoWXGYDp4ZMNqyCcUQGtmQjnriXQkWyaoetc
+         6eVTcn/C0HEY9CCH6hX4Va0l4VrJOdV9YMEdrM3CiCESfx4Tk6m2HdTd4S9U/uTpc6Lb
+         H+WA==
+X-Gm-Message-State: AOAM532Ek8sDRGDax989rJ0hRTeYLH69NXkAgj4m81+0hryNSmEQi2+c
+        nmYkjkKgipPH6yBof2u27i1ug01oIONkQDDDPAvaZRuziS8D2qc+ncJhv1oCTc64hPTIyXEhcWJ
+        DCKNfPVRSDI7waOgF
+X-Received: by 2002:a5d:668d:: with SMTP id l13mr29008090wru.526.1638626841190;
+        Sat, 04 Dec 2021 06:07:21 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwFCANVYaPz6Xh18KXAWYo8vePvEtaC0QfF327uDX68NOoVG67qXW5ATetlU2gakUrOzc7tfg==
+X-Received: by 2002:a5d:668d:: with SMTP id l13mr29008065wru.526.1638626841023;
+        Sat, 04 Dec 2021 06:07:21 -0800 (PST)
 Received: from krava.redhat.com (nat-pool-brq-u.redhat.com. [213.175.37.12])
-        by smtp.gmail.com with ESMTPSA id i7sm5608803wro.58.2021.12.04.06.07.13
+        by smtp.gmail.com with ESMTPSA id d9sm5573503wre.52.2021.12.04.06.07.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 04 Dec 2021 06:07:14 -0800 (PST)
+        Sat, 04 Dec 2021 06:07:20 -0800 (PST)
 From:   Jiri Olsa <jolsa@redhat.com>
 X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
 To:     Alexei Starovoitov <ast@kernel.org>,
@@ -61,9 +61,9 @@ Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@chromium.org>
-Subject: [PATCH bpf-next 2/3] bpf: Add get_func_[arg|ret|arg_cnt] helpers
-Date:   Sat,  4 Dec 2021 15:06:59 +0100
-Message-Id: <20211204140700.396138-3-jolsa@kernel.org>
+Subject: [PATCH bpf-next 3/3] selftests/bpf: Add tests for get_func_[arg|ret|arg_cnt] helpers
+Date:   Sat,  4 Dec 2021 15:07:00 +0100
+Message-Id: <20211204140700.396138-4-jolsa@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211204140700.396138-1-jolsa@kernel.org>
 References: <20211204140700.396138-1-jolsa@kernel.org>
@@ -73,352 +73,179 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding following helpers for tracing programs:
-
-Get n-th argument of the traced function:
-  long bpf_get_func_arg(void *ctx, u32 n, u64 *value)
-
-Get return value of the traced function:
-  long bpf_get_func_ret(void *ctx, u64 *value)
-
-Get arguments count of the traced funtion:
-  long bpf_get_func_arg_cnt(void *ctx)
-
-The trampoline now stores number of arguments on ctx-8
-address, so it's easy to verify argument index and find
-return value argument's position.
-
-Moving function ip address on the trampoline stack behind
-the number of functions arguments, so it's now stored on
-ctx-16 address if it's needed.
-
-All helpers above are inlined by verifier.
+Adding tests for get_func_[arg|ret|arg_cnt] helpers.
+Using these helpers in fentry/fexit/fmod_ret programs.
 
 Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 ---
- arch/x86/net/bpf_jit_comp.c    | 15 ++++++-
- include/uapi/linux/bpf.h       | 28 +++++++++++++
- kernel/bpf/verifier.c          | 73 +++++++++++++++++++++++++++++++++-
- kernel/trace/bpf_trace.c       | 58 ++++++++++++++++++++++++++-
- tools/include/uapi/linux/bpf.h | 28 +++++++++++++
- 5 files changed, 198 insertions(+), 4 deletions(-)
+ .../bpf/prog_tests/get_func_args_test.c       |  38 ++++++
+ .../selftests/bpf/progs/get_func_args_test.c  | 112 ++++++++++++++++++
+ 2 files changed, 150 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/get_func_args_test.c
+ create mode 100644 tools/testing/selftests/bpf/progs/get_func_args_test.c
 
-diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
-index b106e80e8d9c..142e6b90fa52 100644
---- a/arch/x86/net/bpf_jit_comp.c
-+++ b/arch/x86/net/bpf_jit_comp.c
-@@ -1941,7 +1941,7 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
- 				void *orig_call)
- {
- 	int ret, i, nr_args = m->nr_args;
--	int regs_off, ip_off, stack_size = nr_args * 8;
-+	int regs_off, ip_off, args_off, stack_size = nr_args * 8;
- 	struct bpf_tramp_progs *fentry = &tprogs[BPF_TRAMP_FENTRY];
- 	struct bpf_tramp_progs *fexit = &tprogs[BPF_TRAMP_FEXIT];
- 	struct bpf_tramp_progs *fmod_ret = &tprogs[BPF_TRAMP_MODIFY_RETURN];
-@@ -1968,6 +1968,8 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
- 	 *                 [ ...             ]
- 	 * RBP - regs_off  [ reg_arg1        ]
- 	 *
-+	 * RBP - args_off  [ args count      ]  always
-+	 *
- 	 * RBP - ip_off    [ traced function ]  BPF_TRAMP_F_IP_ARG flag
- 	 */
- 
-@@ -1978,6 +1980,10 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
- 
- 	regs_off = stack_size;
- 
-+	/* args count  */
-+	stack_size += 8;
-+	args_off = stack_size;
+diff --git a/tools/testing/selftests/bpf/prog_tests/get_func_args_test.c b/tools/testing/selftests/bpf/prog_tests/get_func_args_test.c
+new file mode 100644
+index 000000000000..c24807ae4361
+--- /dev/null
++++ b/tools/testing/selftests/bpf/prog_tests/get_func_args_test.c
+@@ -0,0 +1,38 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <test_progs.h>
++#include "get_func_args_test.skel.h"
 +
- 	if (flags & BPF_TRAMP_F_IP_ARG)
- 		stack_size += 8; /* room for IP address argument */
- 
-@@ -1996,6 +2002,13 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
- 	EMIT4(0x48, 0x83, 0xEC, stack_size); /* sub rsp, stack_size */
- 	EMIT1(0x53);		 /* push rbx */
- 
-+	/* Store number of arguments of the traced function:
-+	 *   mov rax, nr_args
-+	 *   mov QWORD PTR [rbp - args_off], rax
-+	 */
-+	emit_mov_imm64(&prog, BPF_REG_0, 0, (u32) nr_args);
-+	emit_stx(&prog, BPF_DW, BPF_REG_FP, BPF_REG_0, -args_off);
-+
- 	if (flags & BPF_TRAMP_F_IP_ARG) {
- 		/* Store IP address of the traced function:
- 		 * mov rax, QWORD PTR [rbp + 8]
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index c26871263f1f..d5a3791071d6 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -4983,6 +4983,31 @@ union bpf_attr {
-  *	Return
-  *		The number of loops performed, **-EINVAL** for invalid **flags**,
-  *		**-E2BIG** if **nr_loops** exceeds the maximum number of loops.
-+ *
-+ * long bpf_get_func_arg(void *ctx, u32 n, u64 *value)
-+ *	Description
-+ *		Get **n**-th argument (zero based) of the traced function (for tracing programs)
-+ *		returned in **value**.
-+ *
-+ *	Return
-+ *		0 on success.
-+ *		**-EINVAL** if n >= arguments count of traced function.
-+ *
-+ * long bpf_get_func_ret(void *ctx, u64 *value)
-+ *	Description
-+ *		Get return value of the traced function (for tracing programs)
-+ *		in **value**.
-+ *
-+ *	Return
-+ *		0 on success.
-+ *		**-EINVAL** for tracing programs other than BPF_TRACE_FEXIT or BPF_MODIFY_RETURN.
-+ *
-+ * long bpf_get_func_arg_cnt(void *ctx)
-+ *	Description
-+ *		Get number of arguments of the traced function (for tracing programs).
-+ *
-+ *	Return
-+ *		The number of arguments of the traced function.
-  */
- #define __BPF_FUNC_MAPPER(FN)		\
- 	FN(unspec),			\
-@@ -5167,6 +5192,9 @@ union bpf_attr {
- 	FN(kallsyms_lookup_name),	\
- 	FN(find_vma),			\
- 	FN(loop),			\
-+	FN(get_func_arg),		\
-+	FN(get_func_ret),		\
-+	FN(get_func_arg_cnt),		\
- 	/* */
- 
- /* integer value in 'imm' field of BPF_CALL instruction selects which helper
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 6522ffdea487..cf6853d3a8e9 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -12974,6 +12974,7 @@ static int fixup_kfunc_call(struct bpf_verifier_env *env,
- static int do_misc_fixups(struct bpf_verifier_env *env)
- {
- 	struct bpf_prog *prog = env->prog;
-+	enum bpf_attach_type eatype = prog->expected_attach_type;
- 	bool expect_blinding = bpf_jit_blinding_enabled(prog);
- 	enum bpf_prog_type prog_type = resolve_prog_type(prog);
- 	struct bpf_insn *insn = prog->insnsi;
-@@ -13344,11 +13345,79 @@ static int do_misc_fixups(struct bpf_verifier_env *env)
- 			continue;
- 		}
- 
-+		/* Implement bpf_get_func_arg inline. */
-+		if (prog_type == BPF_PROG_TYPE_TRACING &&
-+		    insn->imm == BPF_FUNC_get_func_arg) {
-+			/* Load nr_args from ctx - 8 */
-+			insn_buf[0] = BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_1, -8);
-+			insn_buf[1] = BPF_JMP32_REG(BPF_JGE, BPF_REG_2, BPF_REG_0, 6);
-+			insn_buf[2] = BPF_ALU64_IMM(BPF_LSH, BPF_REG_2, 3);
-+			insn_buf[3] = BPF_ALU64_REG(BPF_ADD, BPF_REG_2, BPF_REG_1);
-+			insn_buf[4] = BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_2, 0);
-+			insn_buf[5] = BPF_STX_MEM(BPF_DW, BPF_REG_3, BPF_REG_0, 0);
-+			insn_buf[6] = BPF_MOV64_IMM(BPF_REG_0, 0);
-+			insn_buf[7] = BPF_JMP_A(1);
-+			insn_buf[8] = BPF_MOV64_IMM(BPF_REG_0, -EINVAL);
-+			cnt = 9;
-+
-+			new_prog = bpf_patch_insn_data(env, i + delta, insn_buf, cnt);
-+			if (!new_prog)
-+				return -ENOMEM;
-+
-+			delta    += cnt - 1;
-+			env->prog = prog = new_prog;
-+			insn      = new_prog->insnsi + i + delta;
-+			continue;
-+		}
-+
-+		/* Implement bpf_get_func_ret inline. */
-+		if (prog_type == BPF_PROG_TYPE_TRACING &&
-+		    insn->imm == BPF_FUNC_get_func_ret) {
-+			if (eatype == BPF_TRACE_FEXIT ||
-+			    eatype == BPF_MODIFY_RETURN) {
-+				/* Load nr_args from ctx - 8 */
-+				insn_buf[0] = BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_1, -8);
-+				insn_buf[1] = BPF_ALU64_IMM(BPF_LSH, BPF_REG_0, 3);
-+				insn_buf[2] = BPF_ALU64_REG(BPF_ADD, BPF_REG_0, BPF_REG_1);
-+				insn_buf[3] = BPF_LDX_MEM(BPF_DW, BPF_REG_3, BPF_REG_0, 0);
-+				insn_buf[4] = BPF_STX_MEM(BPF_DW, BPF_REG_2, BPF_REG_3, 0);
-+				insn_buf[5] = BPF_MOV64_IMM(BPF_REG_0, 0);
-+				cnt = 6;
-+			} else {
-+				insn_buf[0] = BPF_MOV64_IMM(BPF_REG_0, -EINVAL);
-+				cnt = 1;
-+			}
-+
-+			new_prog = bpf_patch_insn_data(env, i + delta, insn_buf, cnt);
-+			if (!new_prog)
-+				return -ENOMEM;
-+
-+			delta    += cnt - 1;
-+			env->prog = prog = new_prog;
-+			insn      = new_prog->insnsi + i + delta;
-+			continue;
-+		}
-+
-+		/* Implement get_func_arg_cnt inline. */
-+		if (prog_type == BPF_PROG_TYPE_TRACING &&
-+		    insn->imm == BPF_FUNC_get_func_arg_cnt) {
-+			/* Load nr_args from ctx - 8 */
-+			insn_buf[0] = BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_1, -8);
-+
-+			new_prog = bpf_patch_insn_data(env, i + delta, insn_buf, 1);
-+			if (!new_prog)
-+				return -ENOMEM;
-+
-+			env->prog = prog = new_prog;
-+			insn      = new_prog->insnsi + i + delta;
-+			continue;
-+		}
-+
- 		/* Implement bpf_get_func_ip inline. */
- 		if (prog_type == BPF_PROG_TYPE_TRACING &&
- 		    insn->imm == BPF_FUNC_get_func_ip) {
--			/* Load IP address from ctx - 8 */
--			insn_buf[0] = BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_1, -8);
-+			/* Load IP address from ctx - 16 */
-+			insn_buf[0] = BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_1, -16);
- 
- 			new_prog = bpf_patch_insn_data(env, i + delta, insn_buf, 1);
- 			if (!new_prog)
-diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-index 25ea521fb8f1..d1d4617c9fd5 100644
---- a/kernel/trace/bpf_trace.c
-+++ b/kernel/trace/bpf_trace.c
-@@ -1012,7 +1012,7 @@ const struct bpf_func_proto bpf_snprintf_btf_proto = {
- BPF_CALL_1(bpf_get_func_ip_tracing, void *, ctx)
- {
- 	/* This helper call is inlined by verifier. */
--	return ((u64 *)ctx)[-1];
-+	return ((u64 *)ctx)[-2];
- }
- 
- static const struct bpf_func_proto bpf_get_func_ip_proto_tracing = {
-@@ -1091,6 +1091,56 @@ static const struct bpf_func_proto bpf_get_branch_snapshot_proto = {
- 	.arg2_type	= ARG_CONST_SIZE_OR_ZERO,
- };
- 
-+BPF_CALL_3(get_func_arg, void *, ctx, u32, n, u64 *, value)
++void test_get_func_args_test(void)
 +{
-+	/* This helper call is inlined by verifier. */
-+	u64 nr_args = ((u64 *)ctx)[-1];
++	struct get_func_args_test *skel = NULL;
++	__u32 duration = 0, retval;
++	int err, prog_fd;
 +
-+	if ((u64) n >= nr_args)
-+		return -EINVAL;
-+	*value = ((u64 *)ctx)[n];
++	skel = get_func_args_test__open_and_load();
++	if (!ASSERT_OK_PTR(skel, "get_func_args_test__open_and_load"))
++		return;
++
++	err = get_func_args_test__attach(skel);
++	if (!ASSERT_OK(err, "get_func_args_test__attach"))
++		goto cleanup;
++
++	prog_fd = bpf_program__fd(skel->progs.test1);
++	err = bpf_prog_test_run(prog_fd, 1, NULL, 0,
++				NULL, NULL, &retval, &duration);
++	ASSERT_OK(err, "test_run");
++	ASSERT_EQ(retval, 0, "test_run");
++
++	prog_fd = bpf_program__fd(skel->progs.fmod_ret_test);
++	err = bpf_prog_test_run(prog_fd, 1, NULL, 0,
++				NULL, NULL, &retval, &duration);
++	ASSERT_OK(err, "test_run");
++	ASSERT_EQ(retval, 1234, "test_run");
++
++	ASSERT_EQ(skel->bss->test1_result, 1, "test1_result");
++	ASSERT_EQ(skel->bss->test2_result, 1, "test2_result");
++	ASSERT_EQ(skel->bss->test3_result, 1, "test3_result");
++	ASSERT_EQ(skel->bss->test4_result, 1, "test4_result");
++
++cleanup:
++	get_func_args_test__destroy(skel);
++}
+diff --git a/tools/testing/selftests/bpf/progs/get_func_args_test.c b/tools/testing/selftests/bpf/progs/get_func_args_test.c
+new file mode 100644
+index 000000000000..0d0a67c849ae
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/get_func_args_test.c
+@@ -0,0 +1,112 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <linux/bpf.h>
++#include <bpf/bpf_helpers.h>
++#include <bpf/bpf_tracing.h>
++#include <errno.h>
++
++char _license[] SEC("license") = "GPL";
++
++__u64 test1_result = 0;
++SEC("fentry/bpf_fentry_test1")
++int BPF_PROG(test1)
++{
++	__u64 cnt = bpf_get_func_arg_cnt(ctx);
++	__u64 a = 0, z = 0, ret = 0;
++	__s64 err;
++
++	test1_result = cnt == 1;
++
++	/* valid arguments */
++	err = bpf_get_func_arg(ctx, 0, &a);
++	test1_result &= err == 0 && (int) a == 1;
++
++	/* not valid argument */
++	err = bpf_get_func_arg(ctx, 1, &z);
++	test1_result &= err == -EINVAL;
++
++	/* return value fails in fentry */
++	err = bpf_get_func_ret(ctx, &ret);
++	test1_result &= err == -EINVAL;
 +	return 0;
 +}
 +
-+static const struct bpf_func_proto bpf_get_func_arg_proto = {
-+	.func		= get_func_arg,
-+	.gpl_only	= true,
-+	.ret_type	= RET_INTEGER,
-+	.arg1_type	= ARG_PTR_TO_CTX,
-+	.arg2_type	= ARG_ANYTHING,
-+	.arg3_type	= ARG_PTR_TO_LONG,
-+};
-+
-+BPF_CALL_2(get_func_ret, void *, ctx, u64 *, value)
++__u64 test2_result = 0;
++SEC("fexit/bpf_fentry_test2")
++int BPF_PROG(test2)
 +{
-+	/* This helper call is inlined by verifier. */
-+	u64 nr_args = ((u64 *)ctx)[-1];
++	__u64 cnt = bpf_get_func_arg_cnt(ctx);
++	__u64 a = 0, b = 0, z = 0, ret = 0;
++	__s64 err;
 +
-+	*value = ((u64 *)ctx)[nr_args];
++	test2_result = cnt == 2;
++
++	/* valid arguments */
++	err = bpf_get_func_arg(ctx, 0, &a);
++	test2_result &= err == 0 && (int) a == 2;
++
++	err = bpf_get_func_arg(ctx, 1, &b);
++	test2_result &= err == 0 && b == 3;
++
++	/* not valid argument */
++	err = bpf_get_func_arg(ctx, 2, &z);
++	test2_result &= err == -EINVAL;
++
++	/* return value */
++	err = bpf_get_func_ret(ctx, &ret);
++	test2_result &= err == 0 && ret == 5;
 +	return 0;
 +}
 +
-+static const struct bpf_func_proto bpf_get_func_ret_proto = {
-+	.func		= get_func_ret,
-+	.gpl_only	= true,
-+	.ret_type	= RET_INTEGER,
-+	.arg1_type	= ARG_PTR_TO_CTX,
-+	.arg2_type	= ARG_PTR_TO_LONG,
-+};
-+
-+BPF_CALL_1(get_func_arg_cnt, void *, ctx)
++__u64 test3_result = 0;
++SEC("fmod_ret/bpf_modify_return_test")
++int BPF_PROG(fmod_ret_test, int _a, int *_b, int _ret)
 +{
-+	/* This helper call is inlined by verifier. */
-+	return ((u64 *)ctx)[-1];
++	__u64 cnt = bpf_get_func_arg_cnt(ctx);
++	__u64 a = 0, b = 0, z = 0, ret = 0;
++	__s64 err;
++
++	test3_result = cnt == 2;
++
++	/* valid arguments */
++	err = bpf_get_func_arg(ctx, 0, &a);
++	test3_result &= err == 0 && (int) a == 1;
++
++	err = bpf_get_func_arg(ctx, 1, &b);
++	test3_result &= err == 0;
++
++	/* not valid argument */
++	err = bpf_get_func_arg(ctx, 2, &z);
++	test3_result &= err == -EINVAL;
++
++	/* return value */
++	err = bpf_get_func_ret(ctx, &ret);
++	test3_result &= err == 0 && ret == 0;
++	return 1234;
 +}
 +
-+static const struct bpf_func_proto bpf_get_func_arg_cnt_proto = {
-+	.func		= get_func_arg_cnt,
-+	.gpl_only	= true,
-+	.ret_type	= RET_INTEGER,
-+	.arg1_type	= ARG_PTR_TO_CTX,
-+};
++__u64 test4_result = 0;
++SEC("fexit/bpf_modify_return_test")
++int BPF_PROG(fexit_test, int _a, __u64 _b, int _ret)
++{
++	__u64 cnt = bpf_get_func_arg_cnt(ctx);
++	__u64 a = 0, b = 0, z = 0, ret = 0;
++	__s64 err;
 +
- static const struct bpf_func_proto *
- bpf_tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
- {
-@@ -1212,6 +1262,12 @@ bpf_tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
- 		return &bpf_find_vma_proto;
- 	case BPF_FUNC_trace_vprintk:
- 		return bpf_get_trace_vprintk_proto();
-+	case BPF_FUNC_get_func_arg:
-+		return &bpf_get_func_arg_proto;
-+	case BPF_FUNC_get_func_ret:
-+		return &bpf_get_func_ret_proto;
-+	case BPF_FUNC_get_func_arg_cnt:
-+		return &bpf_get_func_arg_cnt_proto;
- 	default:
- 		return bpf_base_func_proto(func_id);
- 	}
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index c26871263f1f..d5a3791071d6 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -4983,6 +4983,31 @@ union bpf_attr {
-  *	Return
-  *		The number of loops performed, **-EINVAL** for invalid **flags**,
-  *		**-E2BIG** if **nr_loops** exceeds the maximum number of loops.
-+ *
-+ * long bpf_get_func_arg(void *ctx, u32 n, u64 *value)
-+ *	Description
-+ *		Get **n**-th argument (zero based) of the traced function (for tracing programs)
-+ *		returned in **value**.
-+ *
-+ *	Return
-+ *		0 on success.
-+ *		**-EINVAL** if n >= arguments count of traced function.
-+ *
-+ * long bpf_get_func_ret(void *ctx, u64 *value)
-+ *	Description
-+ *		Get return value of the traced function (for tracing programs)
-+ *		in **value**.
-+ *
-+ *	Return
-+ *		0 on success.
-+ *		**-EINVAL** for tracing programs other than BPF_TRACE_FEXIT or BPF_MODIFY_RETURN.
-+ *
-+ * long bpf_get_func_arg_cnt(void *ctx)
-+ *	Description
-+ *		Get number of arguments of the traced function (for tracing programs).
-+ *
-+ *	Return
-+ *		The number of arguments of the traced function.
-  */
- #define __BPF_FUNC_MAPPER(FN)		\
- 	FN(unspec),			\
-@@ -5167,6 +5192,9 @@ union bpf_attr {
- 	FN(kallsyms_lookup_name),	\
- 	FN(find_vma),			\
- 	FN(loop),			\
-+	FN(get_func_arg),		\
-+	FN(get_func_ret),		\
-+	FN(get_func_arg_cnt),		\
- 	/* */
- 
- /* integer value in 'imm' field of BPF_CALL instruction selects which helper
++	test4_result = cnt == 2;
++
++	/* valid arguments */
++	err = bpf_get_func_arg(ctx, 0, &a);
++	test4_result &= err == 0 && (int) a == 1;
++
++	err = bpf_get_func_arg(ctx, 1, &b);
++	test4_result &= err == 0;
++
++	/* not valid argument */
++	err = bpf_get_func_arg(ctx, 2, &z);
++	test4_result &= err == -EINVAL;
++
++	/* return value */
++	err = bpf_get_func_ret(ctx, &ret);
++	test4_result &= err == 0 && ret == 1234;
++	return 0;
++}
 -- 
 2.33.1
 
