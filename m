@@ -2,66 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE6EC4681D9
-	for <lists+netdev@lfdr.de>; Sat,  4 Dec 2021 02:43:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 509424681DF
+	for <lists+netdev@lfdr.de>; Sat,  4 Dec 2021 02:52:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354602AbhLDBrB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Dec 2021 20:47:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36834 "EHLO
+        id S1384037AbhLDB4K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Dec 2021 20:56:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231452AbhLDBrA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Dec 2021 20:47:00 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E768C061751;
-        Fri,  3 Dec 2021 17:43:36 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7B8B162D86;
-        Sat,  4 Dec 2021 01:43:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66DD8C341C1;
-        Sat,  4 Dec 2021 01:43:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638582214;
-        bh=u56gr7zj5ULbDe9nL04VKFinW1g9P0pbmmGrQ/7dF20=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=VPFcuZv3RXZZYVOkfBw+JjB8YtFF4c7Mua6AAJCHo6l2ykzUqFhfafo7N624+t7u2
-         uc9YmbiN/9OSYFSt8RHAejkbl9P/fCI1BNuriM8MpFZ2nORmV/rkhgJfIYcBBoXhnE
-         JgTrBgYy69OwDfWu+jqbiZO7U27qCYOaz2s2R2XzZz3zNeDb8OtmIddkMc5JaMBzVu
-         kREmf2KChf3N+kxK5vjWJJ6VexGifG95Zml6oE6hcRs/cKV7nmtCBUTBk6+dwC5LGY
-         qxm1FouvyavOErOeROg77GDmV3iRWoOJtW0Gf2Y9GoEOCw1Pl1HdkXgjl81mvSKGaL
-         IoBhBFWg8GXJA==
-Date:   Fri, 3 Dec 2021 17:43:33 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Colin Foster <colin.foster@in-advantage.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Russell King <linux@armlinux.org.uk>,
-        kernel test robot <lkp@intel.com>
-Subject: Re: [PATCH v2 net-next 4/5] net: mscc: ocelot: split register
- definitions to a separate file
-Message-ID: <20211203174333.074d87b3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211204010050.1013718-5-colin.foster@in-advantage.com>
-References: <20211204010050.1013718-1-colin.foster@in-advantage.com>
-        <20211204010050.1013718-5-colin.foster@in-advantage.com>
+        with ESMTP id S231452AbhLDB4J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Dec 2021 20:56:09 -0500
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01215C061751
+        for <netdev@vger.kernel.org>; Fri,  3 Dec 2021 17:52:44 -0800 (PST)
+Received: by mail-pf1-x441.google.com with SMTP id p13so4577186pfw.2
+        for <netdev@vger.kernel.org>; Fri, 03 Dec 2021 17:52:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:sender:from:date:message-id:subject:to;
+        bh=sGzC16ildBUiCeAy4EW1K8Z5D3OZQgv5hVrXzFRnr0U=;
+        b=Q3xc0QtKv4g91kAapH1V2ciyXkmZE60gppPl3epeJQMaaIVo5EIdLu6gaL54lIBlyG
+         dnGv1xtnL/E6zZ3qfaLCsIEa6zjU9+NIEZn3vnBuSgyh5fj9xIybD9+Rx7fBmImRfiR/
+         dY6VkLpjzViqzL/AgbIIHJKxUfDXV14aWzGNzSCdp4kcKLpRPPmDzEHRyCoXf5/ommVC
+         dnRBQ+xwuh2lKPJSF4a//27jI74sDCzmqD7PEcGOivHNLB7I39Hqp7C940zeEsq0lQt9
+         3h5tB5VcleBTw5vsliNE7xhLPszH5THWVxCpazphY3NQUKXI6JDTZDRmiKFZOB4pHSDi
+         vDVQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to;
+        bh=sGzC16ildBUiCeAy4EW1K8Z5D3OZQgv5hVrXzFRnr0U=;
+        b=3m611iwMGynyN8CsOdrPRCNsY85c6Mncw+nhMmhHksMXY9K0fPhR8aS/DCdEfi23uy
+         ajoi1cfhpKcgVRa39kAiUIbdTu1x/TpCpRNJV9BopFS4vJ5DenCQls7xN+4y5TZip8T5
+         pZDC+r3+0WKJPdr8Lsy5e1XC1OFPZnQJ9N+PwWihnntmCEwvEzjKOmI6sGIC4oOqs0c/
+         lzBYTetktH0qQaDP196aUgiQmaWVaXr+zhte2GL3T4NpSiQf4Pb3xQMrAjpproS8NSdk
+         +wGPSLCUAzPvrrGwlPmP/X4BcFUOUj7wVQoDwvUg0leBXyg/rpalDRUJEX1xzqYXwV/8
+         +6dg==
+X-Gm-Message-State: AOAM531BtMBUqIwOBZmxwvsT5HezvjZuaF7Cl08BqG9DQx273QobMcJz
+        WIHPXoojz2vQPWeY75DuNu6vngeXzGOhm5Zx/Zc=
+X-Google-Smtp-Source: ABdhPJy0O8gTDBuq8jdPWVuUyfbUxLwrGbiELnvtE8hIGP2L2O6NWICKE7b4GNs7fPt+wwWsXgYkpzK43ZzxyXery44=
+X-Received: by 2002:a63:1e1e:: with SMTP id e30mr7366507pge.153.1638582764244;
+ Fri, 03 Dec 2021 17:52:44 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Sender: bra427679@gmail.com
+Received: by 2002:a05:6a11:385:0:0:0:0 with HTTP; Fri, 3 Dec 2021 17:52:43
+ -0800 (PST)
+From:   "Mrs. Rita Hassan" <ritahassan02@gmail.com>
+Date:   Sat, 4 Dec 2021 01:52:43 +0000
+X-Google-Sender-Auth: 41o2iNfc1Hl6oAXQzPFE8NUgGzY
+Message-ID: <CALJduGfCBqGvFzuv=X=WZSSdQo-rFXH25M+0o=V=Z-36shc1vA@mail.gmail.com>
+Subject: urgent respond.
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri,  3 Dec 2021 17:00:49 -0800 Colin Foster wrote:
-> +#include <soc/mscc/ocelot_vcap.h>
-> +#include "ocelot.h"
+Please I need your help,
 
-You need to include <soc/mscc/vsc7514_regs.h> here.
+My name is Mrs.Rita,I am a woman and also a cancer patient who has
+decided to donate what I have to you for God's works.I want to donate
+$5.5 million to you so that you will use 70% of this fund to help the
+poor ones,while you use the rest 30%  for your family.If you are
+interested,Respond now for more details on how to receive this fund.
 
-> +const u32 vsc7514_ana_regmap[] = {
+please contact me for more details on this email. ( ritahassan02@gmail.com )
 
+Yours Faithfully
+
+Mrs. Rita Hassan.
