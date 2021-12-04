@@ -2,74 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F1E374681A1
-	for <lists+netdev@lfdr.de>; Sat,  4 Dec 2021 02:00:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 947074681A2
+	for <lists+netdev@lfdr.de>; Sat,  4 Dec 2021 02:00:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383928AbhLDBDf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Dec 2021 20:03:35 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:35396 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344497AbhLDBDe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Dec 2021 20:03:34 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 29AC962D87
-        for <netdev@vger.kernel.org>; Sat,  4 Dec 2021 01:00:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 8455BC341C0;
-        Sat,  4 Dec 2021 01:00:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638579609;
-        bh=0k5lWC9al7vwaHQPBlrkD1L2QXFKTz5hoZQ/9gfsNwo=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=CRzaHq+xZki3MZDcdyXtzuAViMFlAEWZ31oLTivbMPp9GEBfSUjj37bwqCx/da67e
-         w8HEmnAlVN8SM295N+tZMMPUW4/mfKUUGb+WEy++uzGxrdeu0DCdCNLnFQiOzzQzbS
-         SurCqM/UD9rLFdc0+cAQxU+Qr5NckFS0i9bDa6nTwUcI5FPfezDqAO+1HX5PVEoLce
-         n7A84bDTTPZK71Qd5mAxRTLETJhKk2v9OjIM5BJfr5w9SbxKXOVRd7WbK4uFea7TVE
-         kL02QBxF2G6z8UMvxN98E6KMlU6Bokwrvwpuqm1C3MKBHGVHvUv//7qwSjtKRhXz+0
-         bZH8ZifxNT2XQ==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 5AFD960A90;
-        Sat,  4 Dec 2021 01:00:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S1383938AbhLDBDu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Dec 2021 20:03:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55626 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344497AbhLDBDs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Dec 2021 20:03:48 -0500
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C033CC061751
+        for <netdev@vger.kernel.org>; Fri,  3 Dec 2021 17:00:23 -0800 (PST)
+Received: by mail-yb1-xb2a.google.com with SMTP id d10so14269055ybe.3
+        for <netdev@vger.kernel.org>; Fri, 03 Dec 2021 17:00:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=+O7gKcbr2xtdbjYE1rvk3ZNjGwlHToJgyNYAZFaxexE=;
+        b=puvEoN91J4XcdWtf3vTnUoCBhCxHv6n1SaIF/S4BMcBuHXZfscjr6A/AQdUtDls0O7
+         clsSYzQN+vHyRup7OOxptKZIJfko4ecGX/ixa0zABmCfDRR8C5HZXrXKkflj8NRLqdIY
+         Sf3y/URDpyuEOP6wS3atGWv/2IrpmL3jzHW38xGqT/Cz0ZljJiS0o5Hkg/qyYE3PhCoI
+         Lf0p3k8FXXM6JEH+XK9O/66/KaSxCQKuqixziMdFuUzWY4mXByo9kieQ3CxKQbUoPSit
+         qSCtnGoupJa+EkuqLMF2ntLUlRl6ipQ+l1GZlkYUR8l1DBAAxbOCDHKZ4D2jpSsW9mC8
+         rg7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=+O7gKcbr2xtdbjYE1rvk3ZNjGwlHToJgyNYAZFaxexE=;
+        b=5eGoOgJqsvsrXZNF4AO7Zl1uOaRarjVugMlsTg3oW6iOVPmx4LjKesVM2wnihZI1ys
+         L0URCNclUHPp7MU6fu3Vv+ty8/A+1Gh6zMSdTh6GtLKdROtGmm+koJPwOiDAsMRZXsYi
+         317vQgQc4LIn0hM7dMgZ1A88x2H2Ijs4kfoJTMVIlblmVfPc5UozSLrCBtxOIY+E+eFQ
+         TeqaTkb+vjBNEFAY3O7sOJkU9K2w5ENR3NSP61+bm3SwjjjD03VP9V6njoNOgFUe7EAF
+         L/BCLrd2GYsoIGb+9ccvXr0NHHTMPaGFzBW9RSuQPfNhpx+EegLidcgrtDkJPhG/v0iI
+         B/eA==
+X-Gm-Message-State: AOAM5329J273GBOlXRuExW2H+SKmOP/V8AV+J8P+iuJNhlHWnWsybnIU
+        bEiYOQz5jr4YfqnKdxn4lBpbjYI4lUdNr+2fmblEhA==
+X-Google-Smtp-Source: ABdhPJxg5EZvcpPWmTWclb1eDJaL95YsLAzzk47/OfCWjEShTWh+yDYFQwNqRPO3qWLGVYSr6a5ZPv6bRV/n7p7G9UM=
+X-Received: by 2002:a25:df4f:: with SMTP id w76mr28506240ybg.711.1638579622596;
+ Fri, 03 Dec 2021 17:00:22 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 net] qede: validate non LSO skb length
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163857960936.5665.16947442289939867589.git-patchwork-notify@kernel.org>
-Date:   Sat, 04 Dec 2021 01:00:09 +0000
-References: <20211203174413.13090-1-manishc@marvell.com>
-In-Reply-To: <20211203174413.13090-1-manishc@marvell.com>
-To:     Manish Chopra <manishc@marvell.com>
-Cc:     kuba@kernel.org, netdev@vger.kernel.org, aelior@marvell.com,
-        palok@marvell.com, pkushwaha@marvell.com
+References: <20211203024640.1180745-1-eric.dumazet@gmail.com> <20211203164743.23de4a66@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211203164743.23de4a66@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 3 Dec 2021 17:00:11 -0800
+Message-ID: <CANn89iLK_XokM_zBz-xNvU36pOv_gH5uSvUBLNKpK3z4zOaQkg@mail.gmail.com>
+Subject: Re: [PATCH v2 net-next 00/23] net: add preliminary netdev refcount tracking
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Dmitry Vyukov <dvyukov@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Fri, Dec 3, 2021 at 4:47 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Thu,  2 Dec 2021 18:46:17 -0800 Eric Dumazet wrote:
+> > Two first patches add a generic infrastructure, that will be used
+> > to get tracking of refcount increments/decrements.
+> >
+> > The general idea is to be able to precisely pair each decrement with
+> > a corresponding prior increment. Both share a cookie, basically
+> > a pointer to private data storing stack traces.
+> >
+> > The third place adds dev_hold_track() and dev_put_track() helpers
+> > (CONFIG_NET_DEV_REFCNT_TRACKER)
+> >
+> > Then a series of 20 patches converts some dev_hold()/dev_put()
+> > pairs to new hepers : dev_hold_track() and dev_put_track().
+> >
+> > Hopefully this will be used by developpers and syzbot to
+> > root cause bugs that cause netdevice dismantles freezes.
+> >
+> > With CONFIG_PCPU_DEV_REFCNT=n option, we were able to detect
+> > some class of bugs, but too late (when too many dev_put()
+> > were happening).
+>
+> Hi Eric, there's a handful of kdoc warnings added here:
+>
+> include/linux/netdevice.h:2278: warning: Function parameter or member 'refcnt_tracker' not described in 'net_device'
+> include/net/devlink.h:679: warning: Function parameter or member 'dev_tracker' not described in 'devlink_trap_metadata'
+> include/linux/netdevice.h:2283: warning: Function parameter or member 'refcnt_tracker' not described in 'net_device'
+> include/linux/mroute_base.h:40: warning: Function parameter or member 'dev_tracker' not described in 'vif_device'
+>
+> Would you mind following up? likely not worth re-spinning just for that.
 
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+Sure thing, I will insert a patch to fix this in the next round.
 
-On Fri, 3 Dec 2021 09:44:13 -0800 you wrote:
-> Although it is unlikely that stack could transmit a non LSO
-> skb with length > MTU, however in some cases or environment such
-> occurrences actually resulted into firmware asserts due to packet
-> length being greater than the max supported by the device (~9700B).
-> 
-> This patch adds the safeguard for such odd cases to avoid firmware
-> asserts.
-> 
-> [...]
-
-Here is the summary with links:
-  - [v2,net] qede: validate non LSO skb length
-    https://git.kernel.org/netdev/net/c/8e227b198a55
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Thanks !
