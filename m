@@ -2,98 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E3449468191
-	for <lists+netdev@lfdr.de>; Sat,  4 Dec 2021 01:47:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7417A46819A
+	for <lists+netdev@lfdr.de>; Sat,  4 Dec 2021 01:57:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383924AbhLDAvM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Dec 2021 19:51:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52906 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354618AbhLDAvM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Dec 2021 19:51:12 -0500
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC4BBC061751;
-        Fri,  3 Dec 2021 16:47:47 -0800 (PST)
-Received: by mail-pf1-x442.google.com with SMTP id r130so4465006pfc.1;
-        Fri, 03 Dec 2021 16:47:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=1NXW96FULaq9MCh+MikxqVORQr2ZBOfCRWVjuh1Jzis=;
-        b=Djbf+mJRsfMrGfOHRmNHs1aF9bv5dEmaVVNI8EEYjqDGWPfG+Jampf9GTMubipT3/z
-         sQBazHZTHH+9bifmmiQaeVtqA5TYAaNnLQQZvR/LQkmzyxx8Jwz5eTRYtrapJCBrUORB
-         TyWZ3D1800bAM3QaOF+Ip5Y808ZsGLdYI6JzTG5IBU/uzHYSRURLH5EtuCiZ0dgGEUpp
-         o1aXIhu4IzEeCo8GXMza+BI7WvvJwwFPVq8Xq7AdN9oT1iiee4EUiLdY6UOymks48qDp
-         f3kudYtZHxH7MIqWuWONqkciAhgWLpcvdWxzTDXjigfWme8quV3uRh5AFpSZme7PjUmz
-         6kGQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=1NXW96FULaq9MCh+MikxqVORQr2ZBOfCRWVjuh1Jzis=;
-        b=zHoeWmXwTsqx27ABB6QHIV0h3NHMEg+olGV+BbFS7iZ2uzSqQcaUX/RbAKqJbmapAp
-         YebFLmZLp8ShnB6GK1yiDGyF5s6eNL9W89dkfzEea53/B46x4pNzP+WG7WkZEmVU5Xu0
-         aShKYzw3i85zksq9q0Dcse9Vm+EPsvugSAWlP5ug5SDQm12Gei8wRC/PPDSRSWUaoyxv
-         ZXwWjDmR/tbrYRCuxSDAOC+dx1gQYLXHpFqfXXTEWsyhaLvUTcjRa5SZC2XVJoxoX4I+
-         GU/KKeJ/hgpSvmoYHT4SRd9CRz5xC1RPTsLB19hhq6a9Xy0E/Dr2vDPEIlDPlbNcfln+
-         OOlg==
-X-Gm-Message-State: AOAM533FXVYT1PLcyrQDaG0gURIWHv0MeOoAe7SBzfUqVYrJmNCkRSgl
-        cX7vwzGiWjCgg46TFy45iPY=
-X-Google-Smtp-Source: ABdhPJwsr7y5BMX5/TVxi4p7OUi6OqtQU4pwpl0F6RZSVT4tTF8u9D27X0kG2fXgW/DTbSlhh19OPw==
-X-Received: by 2002:a63:8bc7:: with SMTP id j190mr6955899pge.240.1638578867239;
-        Fri, 03 Dec 2021 16:47:47 -0800 (PST)
-Received: from localhost ([2405:201:6014:d064:502e:73f4:8af1:9522])
-        by smtp.gmail.com with ESMTPSA id t3sm4856500pfg.94.2021.12.03.16.47.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 03 Dec 2021 16:47:46 -0800 (PST)
-Date:   Sat, 4 Dec 2021 06:17:44 +0530
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
-Subject: Re: [PATCH bpf 2/2] samples: bpf: fix 'unknown warning group' build
- warning on Clang
-Message-ID: <20211204004744.eqakjotrfu4ceksp@apollo.legion>
-References: <20211203195004.5803-1-alexandr.lobakin@intel.com>
- <20211203195004.5803-3-alexandr.lobakin@intel.com>
+        id S1383931AbhLDBBO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Dec 2021 20:01:14 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:34514 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1354600AbhLDBBO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Dec 2021 20:01:14 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 96A3D62C49;
+        Sat,  4 Dec 2021 00:57:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98653C341C1;
+        Sat,  4 Dec 2021 00:57:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1638579469;
+        bh=BO0A14QvdxOco1MToTU7UoxsRX6rp+stunCYa4CcvQs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=kG21PKb7tDDmzOv3CgyB7TtkPfefmCb2tTpnfKaYiOysQ/miDFq0sDlUHqqOfmj/Y
+         +1OVMAikrDmbgKmnhGS/SD54xjnFNXkMLkVfQ9jAthj8MYC3JV7jMMbs8KV6l+a+iC
+         DW4MdUmwbfxyo35AkYqtxvJ70yvd2eNxxjB3Zm8IA+tIqQ5EriYSJL8I0LrKPqAYut
+         OqrSnTdojANxf+YWwG3yMKyvlCcDsDeyUqeqxmUz610i7Slgidjs5K5tplipKr/SvX
+         2b3wFh50k9FmzaweHB1UlwC6ZtQlS4wfTW5NrKH0rwHdnhbCE0APT2qPZoHMtgeTeU
+         vUYtrtvhzZi6A==
+Date:   Fri, 3 Dec 2021 16:57:47 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     =?UTF-8?B?QmrDuHJu?= Mork <bjorn@mork.no>,
+        Lee Jones <lee.jones@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Oliver Neukum <oliver@neukum.org>,
+        "David S. Miller" <davem@davemloft.net>, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH 1/1] net: cdc_ncm: Allow for dwNtbOutMaxSize to be unset
+ or zero
+Message-ID: <20211203165747.7e1e7554@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <87wnklivun.fsf@miraculix.mork.no>
+References: <20211202143437.1411410-1-lee.jones@linaro.org>
+        <87wnklivun.fsf@miraculix.mork.no>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211203195004.5803-3-alexandr.lobakin@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Dec 04, 2021 at 01:20:04AM IST, Alexander Lobakin wrote:
-> Clang doesn't have 'stringop-truncation' group like GCC does, and
-> complains about it when building samples which use xdp_sample_user
-> infra:
->
->  samples/bpf/xdp_sample_user.h:48:32: warning: unknown warning group '-Wstringop-truncation', ignored [-Wunknown-warning-option]
->  #pragma GCC diagnostic ignored "-Wstringop-truncation"
->                                 ^
-> [ repeat ]
->
-> Those are harmless, but avoidable when guarding it with ifdef.
-> I could guard push/pop as well, but this would require one more
-> ifdef cruft around a single line which I don't think is reasonable.
->
-> Fixes: 156f886cf697 ("samples: bpf: Add basic infrastructure for XDP samples")
-> Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-> ---
+On Fri, 03 Dec 2021 15:52:48 +0100 Bj=C3=B8rn Mork wrote:
+> Lee Jones <lee.jones@linaro.org> writes:
+>=20
+> > diff --git a/drivers/net/usb/cdc_ncm.c b/drivers/net/usb/cdc_ncm.c
+> > index 24753a4da7e60..e303b522efb50 100644
+> > --- a/drivers/net/usb/cdc_ncm.c
+> > +++ b/drivers/net/usb/cdc_ncm.c
+> > @@ -181,6 +181,8 @@ static u32 cdc_ncm_check_tx_max(struct usbnet *dev,=
+ u32 new_tx)
+> >  		min =3D ctx->max_datagram_size + ctx->max_ndp_size + sizeof(struct u=
+sb_cdc_ncm_nth32);
+> > =20
+> >  	max =3D min_t(u32, CDC_NCM_NTB_MAX_SIZE_TX, le32_to_cpu(ctx->ncm_parm=
+.dwNtbOutMaxSize));
+> > +	if (max =3D=3D 0)
+> > +		max =3D CDC_NCM_NTB_MAX_SIZE_TX; /* dwNtbOutMaxSize not set */
+> > =20
+> >  	/* some devices set dwNtbOutMaxSize too low for the above default */
+> >  	min =3D min(min, max); =20
+>=20
+> I believe this is the best possible fix, considering the regressions
+> anything stricter might cause.
+>=20
+> We know of at least one MBIM device where dwNtbOutMaxSize is as low as
+> 2048.
+>=20
+> According to the MBIM spec, the minimum and default value for
+> wMaxSegmentSize is also 2048.  This implies that the calculated "min"
+> value is at least 2076, which is why we need that odd looking
+>=20
+>   min =3D min(min, max);
+>=20
+> So let's just fix this specific zero case without breaking the
+> non-conforming devices.
+>=20
+>=20
+> Reviewed-by: Bj=C3=B8rn Mork <bjorn@mork.no>
 
-Acked-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-
-> [...]
-
---
-Kartikeya
+Applied to net, thanks!
