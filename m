@@ -2,97 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 823D4468620
-	for <lists+netdev@lfdr.de>; Sat,  4 Dec 2021 17:16:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 13A6C468628
+	for <lists+netdev@lfdr.de>; Sat,  4 Dec 2021 17:18:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355179AbhLDQUU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Dec 2021 11:20:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57452 "EHLO
+        id S1345717AbhLDQWU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Dec 2021 11:22:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242107AbhLDQUU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Dec 2021 11:20:20 -0500
-Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66DCBC061751
-        for <netdev@vger.kernel.org>; Sat,  4 Dec 2021 08:16:54 -0800 (PST)
-Received: by mail-lj1-x244.google.com with SMTP id i63so12321124lji.3
-        for <netdev@vger.kernel.org>; Sat, 04 Dec 2021 08:16:54 -0800 (PST)
+        with ESMTP id S242107AbhLDQWT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Dec 2021 11:22:19 -0500
+Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF1E0C061751
+        for <netdev@vger.kernel.org>; Sat,  4 Dec 2021 08:18:53 -0800 (PST)
+Received: by mail-oi1-x22e.google.com with SMTP id 7so12301779oip.12
+        for <netdev@vger.kernel.org>; Sat, 04 Dec 2021 08:18:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=O/5DwbR3i07orri/qb4pLuqhVl3i0JLC32OKnCnU2So=;
-        b=Wx0tlp4o0ksaWtjxwJQuUMQ9ofQXPaxt+tGXdbfiw822d/mva8Dc4UHd9UMCIR2mN3
-         McttMBvXrnLLZHwx2Eyo2WReOAhPtt0O6as722ScTCHbqOZYAIsy6FY6SBe0ow9NWomq
-         tATDrU10iGToiRu3QRClad8CX54ATkvIDlmgTECeOWOwXU9CptbgWOJV65yIl9zRnCZ3
-         M0uv0BsoojmEhxBI1W3iWsWfObW4hosyCkVw+mQAaH7RfAixmv226akoTflJOEvLhE8D
-         vmv/bUq7CG+/W0KmdXXYTWQGsE9fFnUF2mZEJgd2+zZmIh18QTQVZfWPumvbj9I7dVyz
-         vIBw==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=uDr2cPa/l+QEOcb4YhZdgXpA/BqSWxcIfaqPcp93c1w=;
+        b=EXgItvrNoR3cUAUPHjMUpA78x2tMejDcYW1+iLycIgbP30e1DKCWhUIkVc1IsePKYm
+         9BtekP20LHMElJ1yDwng8FHzHLeYzdhMZykZElhSh83mTyv+WYPp0I7htLw5dC2YO2el
+         KJwuTMxx+neJoqk4k9UiD3EpqyHAP0h9vmvvR2uXrqUHDJ1YyxuZw9mY4yKGyCUMLBqa
+         sSZHw2DPQYZb4GUhlRODWgQ+FBVitad9x52q2tq4lwmS40hPIm0gY1b9vyNvMUvjQmzD
+         kyP8D3V/09eKeCBozfr575VYPbPnaQY31ReHM9PMZPzngfaneztaP8M7ePHcgCZrsTAD
+         dYWQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=O/5DwbR3i07orri/qb4pLuqhVl3i0JLC32OKnCnU2So=;
-        b=mV2nHuPn4e4gSTGOcjqvoA2irqXKCURWx2xGdOYcwcWWPoETSOeChIjdpTMPKtlgRN
-         Xm6clo13tbCG0u1M850J/9DiL/Zxe06dAobS5sqpa3vN67zA94L5868cdEhToCuqmcev
-         +yHiCGnq4NKM3iqKdKMk4ZvH4NTBPyXzdk4BwFoT7QwTFsiqXWA+tArpa5NutOkn/ueo
-         XpqwjfGR8YAEdRrTw41TJEVaq3RE8WxHaAoFOUsng0Y0zTswAkty4MnBTdfXdeRyOGiv
-         gCUNna9/4qjR61bUNMhlPCJUS9+WZRLhJ91QV28+n11rzDXQK1hcgNeivt3jyg5uFMsr
-         7mgA==
-X-Gm-Message-State: AOAM533RKnDs3h+wVmtTp1qs7fuCm2nW8f9tOXHtbkZJdQWdMD619T59
-        3gFxbnN3VsWaKgLYVOo7hOfIKTsgKHv/gWCussQ=
-X-Google-Smtp-Source: ABdhPJyuE1eLXsV1814Y6z+6TOuFVsmW28UMcapAnOR//JEeddtytCMAQ3iMOm7daO0vVT8PYhb7/03UVEH8FiUl85g=
-X-Received: by 2002:a2e:a593:: with SMTP id m19mr25986733ljp.407.1638634612524;
- Sat, 04 Dec 2021 08:16:52 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=uDr2cPa/l+QEOcb4YhZdgXpA/BqSWxcIfaqPcp93c1w=;
+        b=Eutrkw5Qpg8ASwX5es/SNHAjyjE6LJKFW2+HUVpNKwFNIljaolz1f9IbJ8CwbVqI3N
+         jgFKFca40PyX8f1+ZAQj+2fnks1Avt0I6hD5Ng+8uNztve/f8ybUruqivi+tWqZcY1PK
+         Z+FmLrTlQn9x+IINGpJWdt3j5Zm9av/HpAVZxQpW4kSEBZo508h/kOAy5yn9+zReZjLN
+         3+kmHWTxPWVZovB2fMN7m2gsHExAy23qWkneh9udXlVSkM4G/anqKL3Lx3cEfNbelQaj
+         TRZeRoDI9pbspRKoE3NzNzC+x7KKK95E2rRAz5AkWwEEGQbkmdHzYadsDJDOUB+iaHuR
+         gFNg==
+X-Gm-Message-State: AOAM530DYoLpUKKadXJI2VmM+Ce0lsNM26DMLEkhUxRTkaWfz91P34+G
+        WDVPUTQ2UFMmmCLbFkKBVCU=
+X-Google-Smtp-Source: ABdhPJznpq7o2cp6O86XZDHYfL6EDlQRCw81sgch/n+InbZRj/P2M2/dsP0In6PvfQLMf89fAFcOKw==
+X-Received: by 2002:a05:6808:1894:: with SMTP id bi20mr15703243oib.151.1638634733304;
+        Sat, 04 Dec 2021 08:18:53 -0800 (PST)
+Received: from [172.16.0.2] ([8.48.134.30])
+        by smtp.googlemail.com with ESMTPSA id bl33sm1626998oib.47.2021.12.04.08.18.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 04 Dec 2021 08:18:52 -0800 (PST)
+Message-ID: <acf1de03-9b81-70f6-6e72-8267499ffe1f@gmail.com>
+Date:   Sat, 4 Dec 2021 09:18:51 -0700
 MIME-Version: 1.0
-Received: by 2002:a05:6512:2604:0:0:0:0 with HTTP; Sat, 4 Dec 2021 08:16:52
- -0800 (PST)
-Reply-To: drabrarzebadiyah@gmail.com
-From:   "dr.Abrar Zebadiyah" <zahraasemotauyi@gmail.com>
-Date:   Sat, 4 Dec 2021 08:16:52 -0800
-Message-ID: <CAAeQ4C5aB63LRAhugGguXdwvSyV+uXuf1HYZzOxohD4xHGum2Q@mail.gmail.com>
-Subject: HELLO
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.3.2
+Subject: Re: [PATCH net-next v4] rtnetlink: Support fine-grained netdevice
+ bulk deletion
+Content-Language: en-US
+To:     Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Lahav Schlesinger <lschlesinger@drivenets.com>,
+        netdev@vger.kernel.org
+Cc:     kuba@kernel.org
+References: <20211202174502.28903-1-lschlesinger@drivenets.com>
+ <9b8c306a-eea0-3d77-c4a3-3406e5954eaa@nvidia.com>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <9b8c306a-eea0-3d77-c4a3-3406e5954eaa@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-My Dear Friend.
+On 12/4/21 3:15 AM, Nikolay Aleksandrov wrote:
+> 
+> I like the idea, but what happens if the same device is present twice or more times?
+> I mean are you sure it is safe to call dellink method of all device types multiple
+> times with the same device?
+> 
 
-How are you and your family Today? I hope all is well, and I am happy
-to share this transaction with you ,but you must keep everything as
-secret and very confidential.
-
-I have a very lucrative business transaction which requires your
-utmost discretion. Please understand that you and me, are to work as
-one team to inherit this fund, hence I am your insider in the bank as
-the transaction commence. I advise you to feel free with me for all is
-going to be well with us. This business is 100% risk free.
-
-Though, I know it would come to you at uttermost surprise unbelief
-because it is virtually impossible to know who is trustworthy and who
-to believed I am dr.Abrar Zebadiyah sum of $10.5 million is lying in
-our bank without claim i want you to help me to claim and receive it
-to your account in your country for our benefit.
-
-I am aware of the unsafe nature of the internet, and was compelled to
-use this medium due to the nature of this project.I have access to
-every vital information that can be used to transfer this huge amount
-of money, which may culminate into the investment of the said funds
-into your account or any lucrative company in your country.
-
-If you will like to assist me as a partner then indicate your
-interest, after which we shall both discuss the modalities and the
-sharing percentage. Upon receipt of your reply on your expression of
-interest, I will give you full details on how the business will be
-executed. I am open for negotiation,
-
-Thanks for your anticipated cooperation.Note you might receive this
-message in your inbox or spam folder, depends on your web host or
-server network
-
-Contact my private email only if you are interested (drabrarzebadiyah@gmail.com)
-
-Compliment of the day,
-Regards,
-
-dr.Abrar Zebadiyah
+Very good point. Can't rely on dellink callbacks being able to handle
+multiple calls.
