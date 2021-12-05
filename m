@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DFE5246890E
-	for <lists+netdev@lfdr.de>; Sun,  5 Dec 2021 05:22:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 07A6546890F
+	for <lists+netdev@lfdr.de>; Sun,  5 Dec 2021 05:22:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231398AbhLEE0A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Dec 2021 23:26:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45880 "EHLO
+        id S231410AbhLEE0D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Dec 2021 23:26:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231387AbhLEEZ7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Dec 2021 23:25:59 -0500
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C62C9C061751
-        for <netdev@vger.kernel.org>; Sat,  4 Dec 2021 20:22:32 -0800 (PST)
-Received: by mail-pg1-x535.google.com with SMTP id l190so7099432pge.7
-        for <netdev@vger.kernel.org>; Sat, 04 Dec 2021 20:22:32 -0800 (PST)
+        with ESMTP id S231387AbhLEE0C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Dec 2021 23:26:02 -0500
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 184F3C061751
+        for <netdev@vger.kernel.org>; Sat,  4 Dec 2021 20:22:36 -0800 (PST)
+Received: by mail-pj1-x102e.google.com with SMTP id np3so5258204pjb.4
+        for <netdev@vger.kernel.org>; Sat, 04 Dec 2021 20:22:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ioZfax4o8NEFrVaprs98vL6qqVVok1UqZSkuU+qDvLA=;
-        b=Dd1EeMBGfcOaeQL6c6Qrux5U+Cm9VTTrEXheMQHJsAEuSwvUoHVcRxlyhOqwoSzK8k
-         gkY5MXrGEKVh//9pzOPsqaTxDENgEAfeX9jbxjNq9jft91B3SX4t2gNRN0V7s3lY/PuP
-         rOxEva0P8nIIKp8rxIAJD42igDmJtr4m5gS5zde/MaKpNur77iUuqTgebtusQvWy5kPe
-         qW9znf6yTCFkKaT+ghwXSgEHWL4n8pUcCzcS6Gafma+2b6Mm0/w/5N7Op/1fpv3Qyms/
-         wtfyqZfijemW9BuzyOuWdLR9cXMEEo2/BcwNRT4eHs3pxwLwqVjvFI6PtzOg2G8KH0fn
-         GjBw==
+        bh=bYzAipWROA+AcebJbtrB31MReiZwS6nzh/y/yf0jbMQ=;
+        b=P8Muk312jT45TmKvqGVvLEXUzGewSo1EHCSvN8pSZxYJBgSsB5TFTyVrLEu7IRhG/K
+         ZON9WWLMeq4sM3fj1LpsDcyi84uQ/I6x0gHEXlTlyW88zUHl0f1gMsTaWEOYqduo4Zu2
+         +owul30aaIYfxbiuDleuGSiu3eVGiha30gL3cMvT2tCV81J5YBWIpFY5Uaap5Twf/bRd
+         Ac4tmoI16lTbztV9OlwwriMKvBuDdp8s/pAb1y/Ce3tahINSs6+NdU3YLV+lSuxtxJ1U
+         IbY2EKPvWJkgByoSj3cSvWmgGkrp+/Y6E2us6co5jE0Y/pVyCnk4rk+6ikDTFC9IUA7K
+         UEgQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ioZfax4o8NEFrVaprs98vL6qqVVok1UqZSkuU+qDvLA=;
-        b=ofHAHVCPewJ17PvArPyzxq1qwFs4k0jsZ5Kw4DdqSose29Jmg4dv0O0yKmifwLuywH
-         8e+sVa1od2EoQcogQ/CZIS5ni5iE+mVGEDNvziJrKv2PXPJ/4XiK4wEfnAx3JC28JFo/
-         BPie9RUDEhSnwLVLZLlvUzF5gKR1NMYyvyiDBPS43RX3i1lNM4q2O307TWiYayfPqhgj
-         YJ2MMpHCl4a6tZBhWXOqqECc/BdxSjNbKy77FLHXLMkThTTa3fvl9OWB2ejRnnI9sBFD
-         veMLm6pCn647qttizOJUHOX7rI4bRKyMl1JWdIaTUSIkYdxrwCEnAYxKbRki9yU1k1AH
-         LF7A==
-X-Gm-Message-State: AOAM531FFhOjrerPfEI5ZvuELqCfn1ruSUU5JVvDs86CRwCV9Whhk5Ca
-        h5y7pih4y4ABI7uAx389sFE=
-X-Google-Smtp-Source: ABdhPJyf+mqxwnD3xPXAbdJvOQNwOcziMoK20BPHKt+PGCaCTe80iW3Iwpx7h7EIc3BdjHggYqMOnw==
-X-Received: by 2002:a05:6a00:248f:b0:4a0:1e25:3155 with SMTP id c15-20020a056a00248f00b004a01e253155mr29343128pfv.21.1638678152145;
-        Sat, 04 Dec 2021 20:22:32 -0800 (PST)
+        bh=bYzAipWROA+AcebJbtrB31MReiZwS6nzh/y/yf0jbMQ=;
+        b=D7uU/cuBPmKGqfgSiQiqoMIR63o8STgYlXf9Svm8lTp8zuoZpnS45783OBN+7TR6jy
+         iU0A2TdsEvHMkHnxbLOXA1rrYUhvqMme2xQyqX9fZmNstiRlcwDuYaokX6DXm3En/n1S
+         1IN2uIIHw0dAyI7sRnhhzskdqPxth2gJbEU8YEAeius+4d74x7CylRTkB9UzOg6v5QbF
+         eKAmglmXrbYfvxaMbHxWSZ/3hGu3xBKIy9zEA9R+As/Pfu2eam1rmfMEuqU7ITkCL16L
+         crnMSkgVgsJkumQFmQAvy+LUtTRttp0HzjNZAbIOsy6r9hJDPpR9jlpAPVVb50sGF/FP
+         IP1w==
+X-Gm-Message-State: AOAM5333BxC5XVsKP8vh6/m3PB3ZhccjAb+wMWzR1ZqjOoBT4hQHjkYq
+        cUS/CZY6o5D/lWDWj7otUz1uk3QzT48=
+X-Google-Smtp-Source: ABdhPJzoqNOIFIXWv948FUdGZ0NHAn/TUZZHkfmY08MymIIkK48LkV3f3Zn28gRlyoUFarYQsqIUBg==
+X-Received: by 2002:a17:902:7d8b:b0:144:e29b:4f2b with SMTP id a11-20020a1709027d8b00b00144e29b4f2bmr34210710plm.57.1638678155556;
+        Sat, 04 Dec 2021 20:22:35 -0800 (PST)
 Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:ffa7:1c62:2d55:eac2])
-        by smtp.gmail.com with ESMTPSA id 17sm6027095pgw.1.2021.12.04.20.22.31
+        by smtp.gmail.com with ESMTPSA id 17sm6027095pgw.1.2021.12.04.20.22.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 04 Dec 2021 20:22:31 -0800 (PST)
+        Sat, 04 Dec 2021 20:22:35 -0800 (PST)
 From:   Eric Dumazet <eric.dumazet@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -54,9 +54,9 @@ Cc:     netdev <netdev@vger.kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         Eric Dumazet <eric.dumazet@gmail.com>,
         Dmitry Vyukov <dvyukov@google.com>
-Subject: [PATCH v3 net-next 02/23] lib: add tests for reference tracker
-Date:   Sat,  4 Dec 2021 20:21:56 -0800
-Message-Id: <20211205042217.982127-3-eric.dumazet@gmail.com>
+Subject: [PATCH v3 net-next 03/23] net: add net device refcount tracker infrastructure
+Date:   Sat,  4 Dec 2021 20:21:57 -0800
+Message-Id: <20211205042217.982127-4-eric.dumazet@gmail.com>
 X-Mailer: git-send-email 2.34.1.400.ga245620fadb-goog
 In-Reply-To: <20211205042217.982127-1-eric.dumazet@gmail.com>
 References: <20211205042217.982127-1-eric.dumazet@gmail.com>
@@ -68,302 +68,200 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Eric Dumazet <edumazet@google.com>
 
-This module uses reference tracker, forcing two issues.
+net device are refcounted. Over the years we had numerous bugs
+caused by imbalanced dev_hold() and dev_put() calls.
 
-1) Double free of a tracker
+The general idea is to be able to precisely pair each decrement with
+a corresponding prior increment. Both share a cookie, basically
+a pointer to private data storing stack traces.
 
-2) leak of two trackers, one being allocated from softirq context.
+This patch adds dev_hold_track() and dev_put_track().
 
-"modprobe test_ref_tracker" would emit the following traces.
-(Use scripts/decode_stacktrace.sh if necessary)
+To use these helpers, each data structure owning a refcount
+should also use a "netdevice_tracker" to pair the hold and put.
 
-[  171.648681] reference already released.
-[  171.653213] allocated in:
-[  171.656523]  alloctest_ref_tracker_alloc2+0x1c/0x20 [test_ref_tracker]
-[  171.656526]  init_module+0x86/0x1000 [test_ref_tracker]
-[  171.656528]  do_one_initcall+0x9c/0x220
-[  171.656532]  do_init_module+0x60/0x240
-[  171.656536]  load_module+0x32b5/0x3610
-[  171.656538]  __do_sys_init_module+0x148/0x1a0
-[  171.656540]  __x64_sys_init_module+0x1d/0x20
-[  171.656542]  do_syscall_64+0x4a/0xb0
-[  171.656546]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[  171.656549] freed in:
-[  171.659520]  alloctest_ref_tracker_free+0x13/0x20 [test_ref_tracker]
-[  171.659522]  init_module+0xec/0x1000 [test_ref_tracker]
-[  171.659523]  do_one_initcall+0x9c/0x220
-[  171.659525]  do_init_module+0x60/0x240
-[  171.659527]  load_module+0x32b5/0x3610
-[  171.659529]  __do_sys_init_module+0x148/0x1a0
-[  171.659532]  __x64_sys_init_module+0x1d/0x20
-[  171.659534]  do_syscall_64+0x4a/0xb0
-[  171.659536]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[  171.659575] ------------[ cut here ]------------
-[  171.659576] WARNING: CPU: 5 PID: 13016 at lib/ref_tracker.c:112 ref_tracker_free+0x224/0x270
-[  171.659581] Modules linked in: test_ref_tracker(+)
-[  171.659591] CPU: 5 PID: 13016 Comm: modprobe Tainted: G S                5.16.0-smp-DEV #290
-[  171.659595] RIP: 0010:ref_tracker_free+0x224/0x270
-[  171.659599] Code: 5e 41 5f 5d c3 48 c7 c7 04 9c 74 a6 31 c0 e8 62 ee 67 00 83 7b 14 00 75 1a 83 7b 18 00 75 30 4c 89 ff 4c 89 f6 e8 9c 00 69 00 <0f> 0b bb ea ff ff ff eb ae 48 c7 c7 3a 0a 77 a6 31 c0 e8 34 ee 67
-[  171.659601] RSP: 0018:ffff89058ba0bbd0 EFLAGS: 00010286
-[  171.659603] RAX: 0000000000000029 RBX: ffff890586b19780 RCX: 08895bff57c7d100
-[  171.659604] RDX: c0000000ffff7fff RSI: 0000000000000282 RDI: ffffffffc0407000
-[  171.659606] RBP: ffff89058ba0bc88 R08: 0000000000000000 R09: ffffffffa6f342e0
-[  171.659607] R10: 00000000ffff7fff R11: 0000000000000000 R12: 000000008f000000
-[  171.659608] R13: 0000000000000014 R14: 0000000000000282 R15: ffffffffc0407000
-[  171.659609] FS:  00007f97ea29d740(0000) GS:ffff8923ff940000(0000) knlGS:0000000000000000
-[  171.659611] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  171.659613] CR2: 00007f97ea299000 CR3: 0000000186b4a004 CR4: 00000000001706e0
-[  171.659614] Call Trace:
-[  171.659615]  <TASK>
-[  171.659631]  ? alloctest_ref_tracker_free+0x13/0x20 [test_ref_tracker]
-[  171.659633]  ? init_module+0x105/0x1000 [test_ref_tracker]
-[  171.659636]  ? do_one_initcall+0x9c/0x220
-[  171.659638]  ? do_init_module+0x60/0x240
-[  171.659641]  ? load_module+0x32b5/0x3610
-[  171.659644]  ? __do_sys_init_module+0x148/0x1a0
-[  171.659646]  ? __x64_sys_init_module+0x1d/0x20
-[  171.659649]  ? do_syscall_64+0x4a/0xb0
-[  171.659652]  ? entry_SYSCALL_64_after_hwframe+0x44/0xae
-[  171.659656]  ? 0xffffffffc040a000
-[  171.659658]  alloctest_ref_tracker_free+0x13/0x20 [test_ref_tracker]
-[  171.659660]  init_module+0x105/0x1000 [test_ref_tracker]
-[  171.659663]  do_one_initcall+0x9c/0x220
-[  171.659666]  do_init_module+0x60/0x240
-[  171.659669]  load_module+0x32b5/0x3610
-[  171.659672]  __do_sys_init_module+0x148/0x1a0
-[  171.659676]  __x64_sys_init_module+0x1d/0x20
-[  171.659678]  do_syscall_64+0x4a/0xb0
-[  171.659694]  ? exc_page_fault+0x6e/0x140
-[  171.659696]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[  171.659698] RIP: 0033:0x7f97ea3dbe7a
-[  171.659700] Code: 48 8b 0d 61 8d 06 00 f7 d8 64 89 01 48 83 c8 ff c3 cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc 49 89 ca b8 af 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 2e 8d 06 00 f7 d8 64 89 01 48
-[  171.659701] RSP: 002b:00007ffea67ce608 EFLAGS: 00000246 ORIG_RAX: 00000000000000af
-[  171.659703] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f97ea3dbe7a
-[  171.659704] RDX: 00000000013a0ba0 RSI: 0000000000002808 RDI: 00007f97ea299000
-[  171.659705] RBP: 00007ffea67ce670 R08: 0000000000000003 R09: 0000000000000000
-[  171.659706] R10: 0000000000000000 R11: 0000000000000246 R12: 00000000013a1048
-[  171.659707] R13: 00000000013a0ba0 R14: 0000000001399930 R15: 00000000013a1030
-[  171.659709]  </TASK>
-[  171.659710] ---[ end trace f5dbd6afa41e60a9 ]---
-[  171.659712] leaked reference.
-[  171.663393]  alloctest_ref_tracker_alloc0+0x1c/0x20 [test_ref_tracker]
-[  171.663395]  test_ref_tracker_timer_func+0x9/0x20 [test_ref_tracker]
-[  171.663397]  call_timer_fn+0x31/0x140
-[  171.663401]  expire_timers+0x46/0x110
-[  171.663403]  __run_timers+0x16f/0x1b0
-[  171.663404]  run_timer_softirq+0x1d/0x40
-[  171.663406]  __do_softirq+0x148/0x2d3
-[  171.663408] leaked reference.
-[  171.667101]  alloctest_ref_tracker_alloc1+0x1c/0x20 [test_ref_tracker]
-[  171.667103]  init_module+0x81/0x1000 [test_ref_tracker]
-[  171.667104]  do_one_initcall+0x9c/0x220
-[  171.667106]  do_init_module+0x60/0x240
-[  171.667108]  load_module+0x32b5/0x3610
-[  171.667111]  __do_sys_init_module+0x148/0x1a0
-[  171.667113]  __x64_sys_init_module+0x1d/0x20
-[  171.667115]  do_syscall_64+0x4a/0xb0
-[  171.667117]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[  171.667131] ------------[ cut here ]------------
-[  171.667132] WARNING: CPU: 5 PID: 13016 at lib/ref_tracker.c:30 ref_tracker_dir_exit+0x104/0x130
-[  171.667136] Modules linked in: test_ref_tracker(+)
-[  171.667144] CPU: 5 PID: 13016 Comm: modprobe Tainted: G S      W         5.16.0-smp-DEV #290
-[  171.667147] RIP: 0010:ref_tracker_dir_exit+0x104/0x130
-[  171.667150] Code: 01 00 00 00 00 ad de 48 89 03 4c 89 63 08 48 89 df e8 20 a0 d5 ff 4c 89 f3 4d 39 ee 75 a8 4c 89 ff 48 8b 75 d0 e8 7c 05 69 00 <0f> 0b eb 0c 4c 89 ff 48 8b 75 d0 e8 6c 05 69 00 41 8b 47 08 83 f8
-[  171.667151] RSP: 0018:ffff89058ba0bc68 EFLAGS: 00010286
-[  171.667154] RAX: 08895bff57c7d100 RBX: ffffffffc0407010 RCX: 000000000000003b
-[  171.667156] RDX: 000000000000003c RSI: 0000000000000282 RDI: ffffffffc0407000
-[  171.667157] RBP: ffff89058ba0bc98 R08: 0000000000000000 R09: ffffffffa6f342e0
-[  171.667159] R10: 00000000ffff7fff R11: 0000000000000000 R12: dead000000000122
-[  171.667160] R13: ffffffffc0407010 R14: ffffffffc0407010 R15: ffffffffc0407000
-[  171.667162] FS:  00007f97ea29d740(0000) GS:ffff8923ff940000(0000) knlGS:0000000000000000
-[  171.667164] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  171.667166] CR2: 00007f97ea299000 CR3: 0000000186b4a004 CR4: 00000000001706e0
-[  171.667169] Call Trace:
-[  171.667170]  <TASK>
-[  171.667171]  ? 0xffffffffc040a000
-[  171.667173]  init_module+0x126/0x1000 [test_ref_tracker]
-[  171.667175]  do_one_initcall+0x9c/0x220
-[  171.667179]  do_init_module+0x60/0x240
-[  171.667182]  load_module+0x32b5/0x3610
-[  171.667186]  __do_sys_init_module+0x148/0x1a0
-[  171.667189]  __x64_sys_init_module+0x1d/0x20
-[  171.667192]  do_syscall_64+0x4a/0xb0
-[  171.667194]  ? exc_page_fault+0x6e/0x140
-[  171.667196]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[  171.667199] RIP: 0033:0x7f97ea3dbe7a
-[  171.667200] Code: 48 8b 0d 61 8d 06 00 f7 d8 64 89 01 48 83 c8 ff c3 cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc 49 89 ca b8 af 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 2e 8d 06 00 f7 d8 64 89 01 48
-[  171.667201] RSP: 002b:00007ffea67ce608 EFLAGS: 00000246 ORIG_RAX: 00000000000000af
-[  171.667203] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f97ea3dbe7a
-[  171.667204] RDX: 00000000013a0ba0 RSI: 0000000000002808 RDI: 00007f97ea299000
-[  171.667205] RBP: 00007ffea67ce670 R08: 0000000000000003 R09: 0000000000000000
-[  171.667206] R10: 0000000000000000 R11: 0000000000000246 R12: 00000000013a1048
-[  171.667207] R13: 00000000013a0ba0 R14: 0000000001399930 R15: 00000000013a1030
-[  171.667209]  </TASK>
-[  171.667210] ---[ end trace f5dbd6afa41e60aa ]---
+netdevice_tracker dev_tracker;
+...
+dev_hold_track(dev, &dev_tracker, GFP_ATOMIC);
+...
+dev_put_track(dev, &dev_tracker);
+
+Whenever a leak happens, we will get precise stack traces
+of the point dev_hold_track() happened, at device dismantle phase.
+
+We will also get a stack trace if too many dev_put_track() for the same
+netdevice_tracker are attempted.
+
+This is guarded by CONFIG_NET_DEV_REFCNT_TRACKER option.
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- lib/Kconfig.debug      |  10 ++++
- lib/Makefile           |   2 +-
- lib/test_ref_tracker.c | 115 +++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 126 insertions(+), 1 deletion(-)
- create mode 100644 lib/test_ref_tracker.c
+ include/linux/netdevice.h | 45 +++++++++++++++++++++++++++++++++++++++
+ lib/Kconfig.debug         |  5 +++++
+ net/Kconfig.debug         | 11 ++++++++++
+ net/core/dev.c            |  3 +++
+ 4 files changed, 64 insertions(+)
+ create mode 100644 net/Kconfig.debug
 
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 65117f01d5f2a9c9e815b6c967d5e9e4c94af0ae..143d60ed004732e4a086e66fdcf7b3d362c1dc20 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -48,6 +48,7 @@
+ #include <uapi/linux/pkt_cls.h>
+ #include <linux/hashtable.h>
+ #include <linux/rbtree.h>
++#include <linux/ref_tracker.h>
+ 
+ struct netpoll_info;
+ struct device;
+@@ -300,6 +301,12 @@ enum netdev_state_t {
+ };
+ 
+ 
++#ifdef CONFIG_NET_DEV_REFCNT_TRACKER
++typedef struct ref_tracker *netdevice_tracker;
++#else
++typedef struct {} netdevice_tracker;
++#endif
++
+ struct gro_list {
+ 	struct list_head	list;
+ 	int			count;
+@@ -1865,6 +1872,7 @@ enum netdev_ml_priv_type {
+  *	@proto_down_reason:	reason a netdev interface is held down
+  *	@pcpu_refcnt:		Number of references to this device
+  *	@dev_refcnt:		Number of references to this device
++ *	@refcnt_tracker:	Tracker directory for tracked references to this device
+  *	@todo_list:		Delayed register/unregister
+  *	@link_watch_list:	XXX: need comments on this one
+  *
+@@ -2178,6 +2186,7 @@ struct net_device {
+ #else
+ 	refcount_t		dev_refcnt;
+ #endif
++	struct ref_tracker_dir	refcnt_tracker;
+ 
+ 	struct list_head	link_watch_list;
+ 
+@@ -3805,6 +3814,7 @@ void netdev_run_todo(void);
+  *	@dev: network device
+  *
+  * Release reference to device to allow it to be freed.
++ * Try using dev_put_track() instead.
+  */
+ static inline void dev_put(struct net_device *dev)
+ {
+@@ -3822,6 +3832,7 @@ static inline void dev_put(struct net_device *dev)
+  *	@dev: network device
+  *
+  * Hold reference to device to keep it from being freed.
++ * Try using dev_hold_track() instead.
+  */
+ static inline void dev_hold(struct net_device *dev)
+ {
+@@ -3834,6 +3845,40 @@ static inline void dev_hold(struct net_device *dev)
+ 	}
+ }
+ 
++static inline void netdev_tracker_alloc(struct net_device *dev,
++					netdevice_tracker *tracker, gfp_t gfp)
++{
++#ifdef CONFIG_NET_DEV_REFCNT_TRACKER
++	ref_tracker_alloc(&dev->refcnt_tracker, tracker, gfp);
++#endif
++}
++
++static inline void netdev_tracker_free(struct net_device *dev,
++				       netdevice_tracker *tracker)
++{
++#ifdef CONFIG_NET_DEV_REFCNT_TRACKER
++	ref_tracker_free(&dev->refcnt_tracker, tracker);
++#endif
++}
++
++static inline void dev_hold_track(struct net_device *dev,
++				  netdevice_tracker *tracker, gfp_t gfp)
++{
++	if (dev) {
++		dev_hold(dev);
++		netdev_tracker_alloc(dev, tracker, gfp);
++	}
++}
++
++static inline void dev_put_track(struct net_device *dev,
++				 netdevice_tracker *tracker)
++{
++	if (dev) {
++		netdev_tracker_free(dev, tracker);
++		dev_put(dev);
++	}
++}
++
+ /* Carrier loss detection, dial on demand. The functions netif_carrier_on
+  * and _off may be called from IRQ context, but it is caller
+  * who is responsible for serialization of these calls.
 diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
-index 5c12bde10996cf97b5f075d318089b1be73f71d7..633c2c5cb45bd435a7684dbe2f2eca477c871463 100644
+index 633c2c5cb45bd435a7684dbe2f2eca477c871463..6504b97f8dfd786b6a7b9cdb2c2eda5aaa2c2b03 100644
 --- a/lib/Kconfig.debug
 +++ b/lib/Kconfig.debug
-@@ -2106,6 +2106,16 @@ config BACKTRACE_SELF_TEST
+@@ -598,6 +598,11 @@ config DEBUG_MISC
+ 	  Say Y here if you need to enable miscellaneous debug code that should
+ 	  be under a more specific debug option but isn't.
  
- 	  Say N if you are unsure.
++menu "Networking Debugging"
++
++source "net/Kconfig.debug"
++
++endmenu # "Networking Debugging"
  
-+config TEST_REF_TRACKER
-+	tristate "Self test for reference tracker"
+ menu "Memory Debugging"
+ 
+diff --git a/net/Kconfig.debug b/net/Kconfig.debug
+new file mode 100644
+index 0000000000000000000000000000000000000000..ee8d67a784291fb126d95324db05183b5a78ab70
+--- /dev/null
++++ b/net/Kconfig.debug
+@@ -0,0 +1,11 @@
++# SPDX-License-Identifier: GPL-2.0-only
++
++config NET_DEV_REFCNT_TRACKER
++	bool "Enable net device refcount tracking"
 +	depends on DEBUG_KERNEL && STACKTRACE_SUPPORT
 +	select REF_TRACKER
++	default n
 +	help
-+	  This option provides a kernel module performing tests
-+	  using reference tracker infrastructure.
++	  Enable debugging feature to track device references.
++	  This adds memory and cpu costs.
 +
-+	  Say N if you are unsure.
-+
- config RBTREE_TEST
- 	tristate "Red-Black tree test"
- 	depends on DEBUG_KERNEL
-diff --git a/lib/Makefile b/lib/Makefile
-index c1fd9243ddb9cc1ac5252d7eb8009f9290782c4a..b213a7bbf3fda2eb9f234fb7473b8f1b617bed6b 100644
---- a/lib/Makefile
-+++ b/lib/Makefile
-@@ -101,7 +101,7 @@ obj-$(CONFIG_TEST_LOCKUP) += test_lockup.o
- obj-$(CONFIG_TEST_HMM) += test_hmm.o
- obj-$(CONFIG_TEST_FREE_PAGES) += test_free_pages.o
- obj-$(CONFIG_KPROBES_SANITY_TEST) += test_kprobes.o
--
-+obj-$(CONFIG_TEST_REF_TRACKER) += test_ref_tracker.o
- #
- # CFLAGS for compiling floating point code inside the kernel. x86/Makefile turns
- # off the generation of FPU/SSE* instructions for kernel proper but FPU_FLAGS
-diff --git a/lib/test_ref_tracker.c b/lib/test_ref_tracker.c
-new file mode 100644
-index 0000000000000000000000000000000000000000..19d7dec70cc62f0a7b274cd5ec8bf8cec62b0af3
---- /dev/null
-+++ b/lib/test_ref_tracker.c
-@@ -0,0 +1,115 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Referrence tracker self test.
-+ *
-+ * Copyright (c) 2021 Eric Dumazet <edumazet@google.com>
-+ */
-+#include <linux/init.h>
-+#include <linux/module.h>
-+#include <linux/delay.h>
-+#include <linux/ref_tracker.h>
-+#include <linux/slab.h>
-+#include <linux/timer.h>
-+
-+static struct ref_tracker_dir ref_dir;
-+static struct ref_tracker *tracker[20];
-+
-+#define TRT_ALLOC(X) static noinline void 				\
-+	alloctest_ref_tracker_alloc##X(struct ref_tracker_dir *dir, 	\
-+				    struct ref_tracker **trackerp)	\
-+	{								\
-+		ref_tracker_alloc(dir, trackerp, GFP_KERNEL);		\
-+	}
-+
-+TRT_ALLOC(1)
-+TRT_ALLOC(2)
-+TRT_ALLOC(3)
-+TRT_ALLOC(4)
-+TRT_ALLOC(5)
-+TRT_ALLOC(6)
-+TRT_ALLOC(7)
-+TRT_ALLOC(8)
-+TRT_ALLOC(9)
-+TRT_ALLOC(10)
-+TRT_ALLOC(11)
-+TRT_ALLOC(12)
-+TRT_ALLOC(13)
-+TRT_ALLOC(14)
-+TRT_ALLOC(15)
-+TRT_ALLOC(16)
-+TRT_ALLOC(17)
-+TRT_ALLOC(18)
-+TRT_ALLOC(19)
-+
-+#undef TRT_ALLOC
-+
-+static noinline void
-+alloctest_ref_tracker_free(struct ref_tracker_dir *dir,
-+			   struct ref_tracker **trackerp)
-+{
-+	ref_tracker_free(dir, trackerp);
-+}
-+
-+
-+static struct timer_list test_ref_tracker_timer;
-+static atomic_t test_ref_timer_done = ATOMIC_INIT(0);
-+
-+static void test_ref_tracker_timer_func(struct timer_list *t)
-+{
-+	ref_tracker_alloc(&ref_dir, &tracker[0], GFP_ATOMIC);
-+	atomic_set(&test_ref_timer_done, 1);
-+}
-+
-+static int __init test_ref_tracker_init(void)
-+{
-+	int i;
-+
-+	ref_tracker_dir_init(&ref_dir, 100);
-+
-+	timer_setup(&test_ref_tracker_timer, test_ref_tracker_timer_func, 0);
-+	mod_timer(&test_ref_tracker_timer, jiffies + 1);
-+
-+	alloctest_ref_tracker_alloc1(&ref_dir, &tracker[1]);
-+	alloctest_ref_tracker_alloc2(&ref_dir, &tracker[2]);
-+	alloctest_ref_tracker_alloc3(&ref_dir, &tracker[3]);
-+	alloctest_ref_tracker_alloc4(&ref_dir, &tracker[4]);
-+	alloctest_ref_tracker_alloc5(&ref_dir, &tracker[5]);
-+	alloctest_ref_tracker_alloc6(&ref_dir, &tracker[6]);
-+	alloctest_ref_tracker_alloc7(&ref_dir, &tracker[7]);
-+	alloctest_ref_tracker_alloc8(&ref_dir, &tracker[8]);
-+	alloctest_ref_tracker_alloc9(&ref_dir, &tracker[9]);
-+	alloctest_ref_tracker_alloc10(&ref_dir, &tracker[10]);
-+	alloctest_ref_tracker_alloc11(&ref_dir, &tracker[11]);
-+	alloctest_ref_tracker_alloc12(&ref_dir, &tracker[12]);
-+	alloctest_ref_tracker_alloc13(&ref_dir, &tracker[13]);
-+	alloctest_ref_tracker_alloc14(&ref_dir, &tracker[14]);
-+	alloctest_ref_tracker_alloc15(&ref_dir, &tracker[15]);
-+	alloctest_ref_tracker_alloc16(&ref_dir, &tracker[16]);
-+	alloctest_ref_tracker_alloc17(&ref_dir, &tracker[17]);
-+	alloctest_ref_tracker_alloc18(&ref_dir, &tracker[18]);
-+	alloctest_ref_tracker_alloc19(&ref_dir, &tracker[19]);
-+
-+	/* free all trackers but first 0 and 1. */
-+	for (i = 2; i < ARRAY_SIZE(tracker); i++)
-+		alloctest_ref_tracker_free(&ref_dir, &tracker[i]);
-+
-+	/* Attempt to free an already freed tracker. */
-+	alloctest_ref_tracker_free(&ref_dir, &tracker[2]);
-+
-+	while (!atomic_read(&test_ref_timer_done))
-+		msleep(1);
-+
-+	/* This should warn about tracker[0] & tracker[1] being not freed. */
-+	ref_tracker_dir_exit(&ref_dir);
-+
-+	return 0;
-+}
-+
-+static void __exit test_ref_tracker_exit(void)
-+{
-+}
-+
-+module_init(test_ref_tracker_init);
-+module_exit(test_ref_tracker_exit);
-+
-+MODULE_LICENSE("GPL v2");
+diff --git a/net/core/dev.c b/net/core/dev.c
+index aba8acc1238c2213b9fc0c47c93568f731f375e5..1740d6cfe86b58359cceaec7ee9cc015a3843723 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -9864,6 +9864,7 @@ static void netdev_wait_allrefs(struct net_device *dev)
+ 			       netdev_unregister_timeout_secs * HZ)) {
+ 			pr_emerg("unregister_netdevice: waiting for %s to become free. Usage count = %d\n",
+ 				 dev->name, refcnt);
++			ref_tracker_dir_print(&dev->refcnt_tracker, 10);
+ 			warning_time = jiffies;
+ 		}
+ 	}
+@@ -10154,6 +10155,7 @@ struct net_device *alloc_netdev_mqs(int sizeof_priv, const char *name,
+ 	dev = PTR_ALIGN(p, NETDEV_ALIGN);
+ 	dev->padded = (char *)dev - (char *)p;
+ 
++	ref_tracker_dir_init(&dev->refcnt_tracker, 128);
+ #ifdef CONFIG_PCPU_DEV_REFCNT
+ 	dev->pcpu_refcnt = alloc_percpu(int);
+ 	if (!dev->pcpu_refcnt)
+@@ -10270,6 +10272,7 @@ void free_netdev(struct net_device *dev)
+ 	list_for_each_entry_safe(p, n, &dev->napi_list, dev_list)
+ 		netif_napi_del(p);
+ 
++	ref_tracker_dir_exit(&dev->refcnt_tracker);
+ #ifdef CONFIG_PCPU_DEV_REFCNT
+ 	free_percpu(dev->pcpu_refcnt);
+ 	dev->pcpu_refcnt = NULL;
 -- 
 2.34.1.400.ga245620fadb-goog
 
