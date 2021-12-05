@@ -2,126 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A2C21468923
-	for <lists+netdev@lfdr.de>; Sun,  5 Dec 2021 05:24:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CE1946892B
+	for <lists+netdev@lfdr.de>; Sun,  5 Dec 2021 05:51:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231503AbhLEE2F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Dec 2021 23:28:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46370 "EHLO
+        id S231613AbhLEEyh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Dec 2021 23:54:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231547AbhLEE2B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Dec 2021 23:28:01 -0500
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B44C3C061751
-        for <netdev@vger.kernel.org>; Sat,  4 Dec 2021 20:24:34 -0800 (PST)
-Received: by mail-pg1-x52f.google.com with SMTP id m15so7092066pgu.11
-        for <netdev@vger.kernel.org>; Sat, 04 Dec 2021 20:24:34 -0800 (PST)
+        with ESMTP id S231550AbhLEEyh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Dec 2021 23:54:37 -0500
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F941C061751;
+        Sat,  4 Dec 2021 20:51:10 -0800 (PST)
+Received: by mail-pl1-x641.google.com with SMTP id y7so4913394plp.0;
+        Sat, 04 Dec 2021 20:51:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=0ueK711Sqj023gTBd/tQUmqv75JSIuZMHZ4ezZabzok=;
-        b=SBT6l/3tFHmolDc3o0BxpXtBEsiB9t42vAt4dFEqVZsef3peqQ8KtKRPhjyP0oKvvK
-         2mFCQ2fvggCEpPUaglHRWS5X8t7FvtgMkF0XDeKsh93/V8ann2jeFL8AaWDZ+nc2Ciu0
-         wQzSBMbYfUE62q6aggFLsOt7j9uKSMwFobIasWHIFcZNOdz+eVd6QwF5je340RaNQfz1
-         T/he6f3EifOxVQHtRMxoWLvI3oPod5YOp0NLbe84hWWndCL8LOmdOm+WnPNUE0JqNY7M
-         Ir8p+MaoCDUCaVgn/mRBjB27UuJFUQJnNcxLAIRMbOaZiQTfbeAsqwREJaG+lVNuzLFk
-         DWzA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=TIBsLuBe2Uw4GhA4NG4hs+lUD45TYma1E3udwdUPRts=;
+        b=bT/XDIRuZKP92ukFlMRwPi92FG5D08WZ+Fe4usE+t5FKFOSc5Ow0PyJwjyXfbIVLrH
+         FcRtwn7Nk/VM4Tg5mHU1eEiz7krf2kscUxWGd3B+G/Hpo+8euP6Npdy6oCBpT/PAfvmF
+         qECO8PmqDvcLRgUfxjDntEtymML+M0Y3NCWdE3OFUA/Mc/coAKZnQ4TSo+YDqzj/8Y4j
+         BhN8Um/WBSckqdwn1pVt58TQS7h7nWjAksLf2Kykhvw1Jf/LDR1CayeHkFCH1FgLaQFU
+         +NTLMdH7PAUTFKAOfgow5G3Eju4msIuDOp2xn4nbu5VDNbmO4pC9xO2LUVBKfT/kPq/y
+         AKBQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=0ueK711Sqj023gTBd/tQUmqv75JSIuZMHZ4ezZabzok=;
-        b=17hisdRiCkbB1PUyaGoXQ0GIt1QQrB9ZjDrzzpgtQjKv6RQ3LlgAjU5ihzL8f1+En6
-         eS/6u+Nq/okcZTtlcmCW5wIFYPDPUNnVVGHu7zX9Io9buWiMLLJcslLtQBMHZ6eyG555
-         aVTbUPp6KHjt68UUZ75ZiSb5DbmGbNTfThaON62fW/y17WZ6ZvLO01Whs9McGnb6QkjO
-         ZiTs267FW645Oz7ZUTTHowxhqAZZIQrgnZQEZSxiTy32SqlSLeHqcRNenLY736q619rQ
-         DxjRtud1hfN3CE5/BiwwJP8w1j40tsinOVEJ0dxKcA9R6QXCJz+gW5QcIYBfucue3x0B
-         27TA==
-X-Gm-Message-State: AOAM5308nJJ+u9x4J4MNp+godEm0xVB7cPkyBe4mX6DktyOlDHBp0LBP
-        eKvU72DiMZgd0M7A+/Gnv0xrycn4Z5Q=
-X-Google-Smtp-Source: ABdhPJzXadZKP4/0NAuzx7oYvY0Wcx7k0oDFxR9NoHS6zI0cEg84KoSkRYeMI7IFOttZk1c0M57jhA==
-X-Received: by 2002:a62:d44f:0:b0:4ad:999d:2306 with SMTP id u15-20020a62d44f000000b004ad999d2306mr176869pfl.19.1638678274288;
-        Sat, 04 Dec 2021 20:24:34 -0800 (PST)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:ffa7:1c62:2d55:eac2])
-        by smtp.gmail.com with ESMTPSA id 17sm6027095pgw.1.2021.12.04.20.24.33
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=TIBsLuBe2Uw4GhA4NG4hs+lUD45TYma1E3udwdUPRts=;
+        b=xPqowiO3fmsxLpSpQaAnT7ragClBXFIij1RV8/BpCezZ4TH7o6dslLRLJTsU3lEk+4
+         phfVC+BvVuTZEt11+8PLJJp4dvOQP7kH4NALoMiaPFJu7J3dqdGZ+qX9uOkJKabY3CTo
+         7jqhAnrtchNg9l9Na1VcIOidVe5wmoiFXbrKnMkdboeSJEotL7ppktcKMjb1rnzpWkOs
+         h2Tq3xjbzYbI9SInvo/2Zbmj9vll0nXms5lD/diBycVGNiZ9RXcW0sIdwdyW81vhVr8p
+         yCRfWt3CGlRUOJle0rpadh2jYo0rEJkPm+JCmkWsGMzfMa1cxqzhEtlp16QF/Ursm0Gl
+         pW2Q==
+X-Gm-Message-State: AOAM531VjI/WKWZCQO/G+3d//rQ5NGq/OQlJxr0Ki0edqeOPB+XtRabE
+        p6ACpWeJXjITu6ZJ/YUv1nKudGmNlYdBgQ==
+X-Google-Smtp-Source: ABdhPJy9sf/N2yXY9s21KBb3U1nM5gU0lmIkS2pD4d3RJDIiXVCy6lZYp6eLyx6gV7eon/bo4eUbgA==
+X-Received: by 2002:a17:90b:2409:: with SMTP id nr9mr26807369pjb.244.1638679870063;
+        Sat, 04 Dec 2021 20:51:10 -0800 (PST)
+Received: from localhost.localdomain ([139.155.25.230])
+        by smtp.gmail.com with ESMTPSA id d18sm305582pfv.0.2021.12.04.20.51.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 04 Dec 2021 20:24:33 -0800 (PST)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Dmitry Vyukov <dvyukov@google.com>
-Subject: [PATCH v3 net-next 23/23] netpoll: add net device refcount tracker to struct netpoll
-Date:   Sat,  4 Dec 2021 20:22:17 -0800
-Message-Id: <20211205042217.982127-24-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.34.1.400.ga245620fadb-goog
-In-Reply-To: <20211205042217.982127-1-eric.dumazet@gmail.com>
-References: <20211205042217.982127-1-eric.dumazet@gmail.com>
+        Sat, 04 Dec 2021 20:51:09 -0800 (PST)
+From:   menglong8.dong@gmail.com
+X-Google-Original-From: imagedong@tencent.com
+To:     ast@kernel.org
+Cc:     daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, quentin@isovalent.com, cong.wang@bytedance.com,
+        liujian56@huawei.com, davemarchevsky@fb.com, sdf@google.com,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Menglong Dong <imagedong@tencent.com>
+Subject: [PATCH] bpftool: add support of pin prog by name
+Date:   Sun,  5 Dec 2021 12:50:41 +0800
+Message-Id: <20211205045041.129716-1-imagedong@tencent.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Menglong Dong <imagedong@tencent.com>
 
-Signed-off-by: Eric Dumazet <edumazet@google.com>
+For now, the command 'bpftool prog loadall' use section name as the
+name of the pin file. However, once there are prog with the same
+section name in ELF file, this command will failed with the error
+'File Exist'.
+
+So, add the support of pin prog by function name with the 'pinbyname'
+argument.
+
+Signed-off-by: Menglong Dong <imagedong@tencent.com>
 ---
- drivers/net/netconsole.c | 2 +-
- include/linux/netpoll.h  | 1 +
- net/core/netpoll.c       | 4 ++--
- 3 files changed, 4 insertions(+), 3 deletions(-)
+ tools/bpf/bpftool/prog.c | 7 +++++++
+ tools/lib/bpf/libbpf.c   | 5 +++++
+ tools/lib/bpf/libbpf.h   | 2 ++
+ 3 files changed, 14 insertions(+)
 
-diff --git a/drivers/net/netconsole.c b/drivers/net/netconsole.c
-index ccecba908ded61370f8fc408ea53aa1ff305aca3..ab8cd555102083c2f0179898681489b987afe5b0 100644
---- a/drivers/net/netconsole.c
-+++ b/drivers/net/netconsole.c
-@@ -721,7 +721,7 @@ static int netconsole_netdev_event(struct notifier_block *this,
- 				__netpoll_cleanup(&nt->np);
+diff --git a/tools/bpf/bpftool/prog.c b/tools/bpf/bpftool/prog.c
+index e47e8b06cc3d..74e0aaebfefc 100644
+--- a/tools/bpf/bpftool/prog.c
++++ b/tools/bpf/bpftool/prog.c
+@@ -1471,6 +1471,7 @@ static int load_with_options(int argc, char **argv, bool first_prog_only)
+ 	unsigned int old_map_fds = 0;
+ 	const char *pinmaps = NULL;
+ 	struct bpf_object *obj;
++	bool pinbyname = false;
+ 	struct bpf_map *map;
+ 	const char *pinfile;
+ 	unsigned int i, j;
+@@ -1589,6 +1590,9 @@ static int load_with_options(int argc, char **argv, bool first_prog_only)
+ 				goto err_free_reuse_maps;
  
- 				spin_lock_irqsave(&target_list_lock, flags);
--				dev_put(nt->np.dev);
-+				dev_put_track(nt->np.dev, &nt->np.dev_tracker);
- 				nt->np.dev = NULL;
- 				nt->enabled = false;
- 				stopped = true;
-diff --git a/include/linux/netpoll.h b/include/linux/netpoll.h
-index e6a2d72e0dc7a6929d32a2e994f24719e073121e..bd19c4b91e31204e85d30884720b761116d5c036 100644
---- a/include/linux/netpoll.h
-+++ b/include/linux/netpoll.h
-@@ -24,6 +24,7 @@ union inet_addr {
+ 			pinmaps = GET_ARG();
++		} else if (is_prefix(*argv, "pinbyname")) {
++			pinbyname = true;
++			NEXT_ARG();
+ 		} else {
+ 			p_err("expected no more arguments, 'type', 'map' or 'dev', got: '%s'?",
+ 			      *argv);
+@@ -1616,6 +1620,9 @@ static int load_with_options(int argc, char **argv, bool first_prog_only)
+ 				goto err_close_obj;
+ 		}
  
- struct netpoll {
- 	struct net_device *dev;
-+	netdevice_tracker dev_tracker;
- 	char dev_name[IFNAMSIZ];
- 	const char *name;
++		if (pinbyname)
++			bpf_program__set_pinname(pos,
++						 (char *)bpf_program__name(pos));
+ 		bpf_program__set_ifindex(pos, ifindex);
+ 		bpf_program__set_type(pos, prog_type);
+ 		bpf_program__set_expected_attach_type(pos, expected_attach_type);
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index f6faa33c80fa..e8fc1d0fe16e 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -8119,6 +8119,11 @@ void bpf_program__set_ifindex(struct bpf_program *prog, __u32 ifindex)
+ 	prog->prog_ifindex = ifindex;
+ }
  
-diff --git a/net/core/netpoll.c b/net/core/netpoll.c
-index edfc0f8011f88a7d46d69e94c6343489369fa78c..db724463e7cd5089d85d8f75a77ad83bbece82dc 100644
---- a/net/core/netpoll.c
-+++ b/net/core/netpoll.c
-@@ -776,7 +776,7 @@ int netpoll_setup(struct netpoll *np)
- 	err = __netpoll_setup(np, ndev);
- 	if (err)
- 		goto put;
--
-+	netdev_tracker_alloc(ndev, &np->dev_tracker, GFP_KERNEL);
- 	rtnl_unlock();
- 	return 0;
++void bpf_program__set_pinname(struct bpf_program *prog, char *name)
++{
++	prog->pin_name = name;
++}
++
+ const char *bpf_program__name(const struct bpf_program *prog)
+ {
+ 	return prog->name;
+diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
+index 4ec69f224342..107cf736c2bb 100644
+--- a/tools/lib/bpf/libbpf.h
++++ b/tools/lib/bpf/libbpf.h
+@@ -216,6 +216,8 @@ LIBBPF_API int bpf_program__set_priv(struct bpf_program *prog, void *priv,
+ LIBBPF_API void *bpf_program__priv(const struct bpf_program *prog);
+ LIBBPF_API void bpf_program__set_ifindex(struct bpf_program *prog,
+ 					 __u32 ifindex);
++LIBBPF_API void bpf_program__set_pinname(struct bpf_program *prog,
++					 char *name);
  
-@@ -853,7 +853,7 @@ void netpoll_cleanup(struct netpoll *np)
- 	if (!np->dev)
- 		goto out;
- 	__netpoll_cleanup(np);
--	dev_put(np->dev);
-+	dev_put_track(np->dev, &np->dev_tracker);
- 	np->dev = NULL;
- out:
- 	rtnl_unlock();
+ LIBBPF_API const char *bpf_program__name(const struct bpf_program *prog);
+ LIBBPF_API const char *bpf_program__section_name(const struct bpf_program *prog);
 -- 
-2.34.1.400.ga245620fadb-goog
+2.30.2
 
