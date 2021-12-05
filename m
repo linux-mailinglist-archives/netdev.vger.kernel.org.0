@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 738834689C1
-	for <lists+netdev@lfdr.de>; Sun,  5 Dec 2021 07:47:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BD4C14689C2
+	for <lists+netdev@lfdr.de>; Sun,  5 Dec 2021 07:47:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231933AbhLEGvC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Dec 2021 01:51:02 -0500
+        id S231946AbhLEGvF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Dec 2021 01:51:05 -0500
 Received: from mga04.intel.com ([192.55.52.120]:27975 "EHLO mga04.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229700AbhLEGvB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 5 Dec 2021 01:51:01 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10188"; a="235902336"
+        id S229700AbhLEGvE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 5 Dec 2021 01:51:04 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10188"; a="235902337"
 X-IronPort-AV: E=Sophos;i="5.87,288,1631602800"; 
-   d="scan'208";a="235902336"
+   d="scan'208";a="235902337"
 Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Dec 2021 22:47:35 -0800
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Dec 2021 22:47:38 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.87,288,1631602800"; 
-   d="scan'208";a="514244048"
+   d="scan'208";a="514244056"
 Received: from ccgwwan-desktop15.iind.intel.com ([10.224.174.19])
-  by fmsmga007.fm.intel.com with ESMTP; 04 Dec 2021 22:47:32 -0800
+  by fmsmga007.fm.intel.com with ESMTP; 04 Dec 2021 22:47:35 -0800
 From:   M Chetan Kumar <m.chetan.kumar@linux.intel.com>
 To:     netdev@vger.kernel.org
 Cc:     kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
         ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
         krishna.c.sudi@intel.com, m.chetan.kumar@intel.com,
         m.chetan.kumar@linux.intel.com, linuxwwan@intel.com
-Subject: [PATCH net-next 1/7] net: wwan: iosm: stop sending unnecessary doorbell
-Date:   Sun,  5 Dec 2021 12:25:22 +0530
-Message-Id: <20211205065528.1613881-2-m.chetan.kumar@linux.intel.com>
+Subject: [PATCH net-next 2/7] net: wwan: iosm: set tx queue len
+Date:   Sun,  5 Dec 2021 12:25:23 +0530
+Message-Id: <20211205065528.1613881-3-m.chetan.kumar@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211205065528.1613881-1-m.chetan.kumar@linux.intel.com>
 References: <20211205065528.1613881-1-m.chetan.kumar@linux.intel.com>
@@ -39,62 +39,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In TX packet accumulation flow transport layer is
-giving a doorbell to device even though there is
-no pending control TX transfer that needs immediate
-attention.
-
-Introduced a new hpda_ctrl_pending variable to keep
-track of pending control TX transfer. If there is a
-pending control TX transfer which needs an immediate
-attention only then give a doorbell to device.
+Set wwan net dev tx queue len to 1000.
 
 Signed-off-by: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
 ---
- drivers/net/wwan/iosm/iosm_ipc_imem.c | 18 +++++++++++-------
- 1 file changed, 11 insertions(+), 7 deletions(-)
+ drivers/net/wwan/iosm/iosm_ipc_wwan.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wwan/iosm/iosm_ipc_imem.c b/drivers/net/wwan/iosm/iosm_ipc_imem.c
-index 1be07114c85d..644a871585ea 100644
---- a/drivers/net/wwan/iosm/iosm_ipc_imem.c
-+++ b/drivers/net/wwan/iosm/iosm_ipc_imem.c
-@@ -182,9 +182,9 @@ void ipc_imem_hrtimer_stop(struct hrtimer *hr_timer)
- bool ipc_imem_ul_write_td(struct iosm_imem *ipc_imem)
+diff --git a/drivers/net/wwan/iosm/iosm_ipc_wwan.c b/drivers/net/wwan/iosm/iosm_ipc_wwan.c
+index b571d9cedba4..e3fb926d2248 100644
+--- a/drivers/net/wwan/iosm/iosm_ipc_wwan.c
++++ b/drivers/net/wwan/iosm/iosm_ipc_wwan.c
+@@ -18,6 +18,7 @@
+ #define IOSM_IP_TYPE_IPV6 0x60
+ 
+ #define IOSM_IF_ID_PAYLOAD 2
++#define IOSM_QDISC_QUEUE_LEN 1000
+ 
+ /**
+  * struct iosm_netdev_priv - netdev WWAN driver specific private data
+@@ -159,7 +160,7 @@ static void ipc_wwan_setup(struct net_device *iosm_dev)
  {
- 	struct ipc_mem_channel *channel;
-+	bool hpda_ctrl_pending = false;
- 	struct sk_buff_head *ul_list;
- 	bool hpda_pending = false;
--	bool forced_hpdu = false;
- 	struct ipc_pipe *pipe;
- 	int i;
+ 	iosm_dev->header_ops = NULL;
+ 	iosm_dev->hard_header_len = 0;
+-	iosm_dev->priv_flags |= IFF_NO_QUEUE;
++	iosm_dev->tx_queue_len = IOSM_QDISC_QUEUE_LEN;
  
-@@ -201,15 +201,19 @@ bool ipc_imem_ul_write_td(struct iosm_imem *ipc_imem)
- 		ul_list = &channel->ul_list;
- 
- 		/* Fill the transfer descriptor with the uplink buffer info. */
--		hpda_pending |= ipc_protocol_ul_td_send(ipc_imem->ipc_protocol,
-+		if (!ipc_imem_check_wwan_ips(channel)) {
-+			hpda_ctrl_pending |=
-+				ipc_protocol_ul_td_send(ipc_imem->ipc_protocol,
- 							pipe, ul_list);
--
--		/* forced HP update needed for non data channels */
--		if (hpda_pending && !ipc_imem_check_wwan_ips(channel))
--			forced_hpdu = true;
-+		} else {
-+			hpda_pending |=
-+				ipc_protocol_ul_td_send(ipc_imem->ipc_protocol,
-+							pipe, ul_list);
-+		}
- 	}
- 
--	if (forced_hpdu) {
-+	/* forced HP update needed for non data channels */
-+	if (hpda_ctrl_pending) {
- 		hpda_pending = false;
- 		ipc_protocol_doorbell_trigger(ipc_imem->ipc_protocol,
- 					      IPC_HP_UL_WRITE_TD);
+ 	iosm_dev->type = ARPHRD_NONE;
+ 	iosm_dev->mtu = ETH_DATA_LEN;
 -- 
 2.25.1
 
