@@ -2,70 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D287468CF7
-	for <lists+netdev@lfdr.de>; Sun,  5 Dec 2021 20:27:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A8BE9468CFC
+	for <lists+netdev@lfdr.de>; Sun,  5 Dec 2021 20:28:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237892AbhLETbK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Dec 2021 14:31:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44098 "EHLO
+        id S238029AbhLETby (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Dec 2021 14:31:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232951AbhLETbJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Dec 2021 14:31:09 -0500
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58418C061714;
-        Sun,  5 Dec 2021 11:27:42 -0800 (PST)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@breakpoint.cc>)
-        id 1mtxAg-0004BD-L7; Sun, 05 Dec 2021 20:27:38 +0100
-From:   Florian Westphal <fw@strlen.de>
-To:     <mptcp@lists.linux.dev>
-Cc:     syzkaller-bugs@googlegroups.com, <netdev@vger.kernel.org>,
-        linux-kernel@vger.kernel.org, Florian Westphal <fw@strlen.de>,
-        syzbot+1fd9b69cde42967d1add@syzkaller.appspotmail.com
-Subject: [PATCH mptcp] mptcp: remove tcp ulp setsockopt support
-Date:   Sun,  5 Dec 2021 20:27:00 +0100
-Message-Id: <20211205192700.25396-1-fw@strlen.de>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <00000000000040972505d24e88e3@google.com>
-References: <00000000000040972505d24e88e3@google.com>
+        with ESMTP id S237946AbhLETby (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Dec 2021 14:31:54 -0500
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62A3EC061714
+        for <netdev@vger.kernel.org>; Sun,  5 Dec 2021 11:28:26 -0800 (PST)
+Received: by mail-pl1-x629.google.com with SMTP id o14so5685814plg.5
+        for <netdev@vger.kernel.org>; Sun, 05 Dec 2021 11:28:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=G8qM4hLYrduERjwSeQguYYpZCxFH9CSvxJihnHz1THc=;
+        b=BThkCyJCjcYDq2zVgo1ju1mvh3HB2T9rBDgVAR+c0GvSrgyN5slfa8ngEpmjXpmsqm
+         Qj8ncaxNlJWk0ndGY1/xRRqqQ/gA/oijUSINBPlwmmGNcJAWYxoSjyLp8EWl2I9igZ59
+         b80k+JiqOWZ/NCUPKPrVXqx+OySdzDiigU7kf6QcRwHg+tJwFaIBKR0jyt29K5yUKLrF
+         5WnKRJhmrlgy0UlLvpsaN9MIeGlxv/qDu3WkXO0qGQ4et4T8vF+7ESDJWfcRS9XH/jeU
+         lQz/+f+9Kvvn3eD1NW9OSoVYq8lKSICNJ3e3nC6WUGaE3Bpv7Fbjd9xAm5LIrfFJrrGY
+         zZgQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=G8qM4hLYrduERjwSeQguYYpZCxFH9CSvxJihnHz1THc=;
+        b=ErLzxqcDITZ0tffpZUnLCzppLHwok0O5SSH3znOSX5WwCn20u9x1CNECPJfBRy4de9
+         IW4S+AJD5dv/oBV+xdKxG1jmSPBJ5+J7eCxuP6hSt1r9L2XV3t+VPxacnqdZJbrkWToV
+         7EvlSrV7F5ifSaXt4hXwffbirOOZsLEZLkpu2ZwQJQMFJfYOqa5ORyk+p3QgMucBZcXl
+         PLqmDWovGCIPPg2AXdMSeRr/hor+2Np2++sdf8AzmdUB+Px0ra0eu4dZR9fHys1jhh2e
+         lxrtnIJuUo34bXePh8hyBxq98SOavCnuQ900+soEKRGZWWaue3H9/CsWi9nZAeVoe3ew
+         V3nw==
+X-Gm-Message-State: AOAM531UVvnC+yVnOH5uXiv28rHp6IqUvht3vpPp4HuJcxx9xVCAIEMO
+        Ti1kmab0lA1nkI6uXnUpt4s=
+X-Google-Smtp-Source: ABdhPJyGS6Rh+mWuTawLFAnKV8WQbl+90Fl0cDFpqGz/dhf6XQNEBd7iRA6EgRWqx8mbKLZpPgcIWg==
+X-Received: by 2002:a17:90b:190f:: with SMTP id mp15mr31455905pjb.210.1638732505845;
+        Sun, 05 Dec 2021 11:28:25 -0800 (PST)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:a314:9d83:ab71:fd64])
+        by smtp.gmail.com with ESMTPSA id t38sm9669465pfg.218.2021.12.05.11.28.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 05 Dec 2021 11:28:25 -0800 (PST)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Moshe Shemesh <moshe@mellanox.com>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Jiri Pirko <jiri@nvidia.com>
+Subject: [PATCH net] devlink: fix netns refcount leak in devlink_nl_cmd_reload()
+Date:   Sun,  5 Dec 2021 11:28:22 -0800
+Message-Id: <20211205192822.1741045-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.34.1.400.ga245620fadb-goog
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-TCP_ULP setsockopt cannot be used for mptcp because its already
-used internally to plumb subflow (tcp) sockets to the mptcp layer.
+From: Eric Dumazet <edumazet@google.com>
 
-syzbot managed to trigger a crash for mptcp connections that are
-in fallback mode:
+While preparing my patch series adding netns refcount tracking,
+I spotted bugs in devlink_nl_cmd_reload()
 
-KASAN: null-ptr-deref in range [0x0000000000000020-0x0000000000000027]
-CPU: 1 PID: 1083 Comm: syz-executor.3 Not tainted 5.16.0-rc2-syzkaller #0
-RIP: 0010:tls_build_proto net/tls/tls_main.c:776 [inline]
-[..]
- __tcp_set_ulp net/ipv4/tcp_ulp.c:139 [inline]
- tcp_set_ulp+0x428/0x4c0 net/ipv4/tcp_ulp.c:160
- do_tcp_setsockopt+0x455/0x37c0 net/ipv4/tcp.c:3391
- mptcp_setsockopt+0x1b47/0x2400 net/mptcp/sockopt.c:638
+Some error paths forgot to release a refcount on a netns.
 
-Remove support for TCP_ULP setsockopt.
+To fix this, we can reduce the scope of get_net()/put_net()
+section around the call to devlink_reload().
 
-Reported-by: syzbot+1fd9b69cde42967d1add@syzkaller.appspotmail.com
-Signed-off-by: Florian Westphal <fw@strlen.de>
+Fixes: ccdf07219da6 ("devlink: Add reload action option to devlink reload command")
+Fixes: dc64cc7c6310 ("devlink: Add devlink reload limit option")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Moshe Shemesh <moshe@mellanox.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Jacob Keller <jacob.e.keller@intel.com>
+Cc: Jiri Pirko <jiri@nvidia.com>
 ---
-diff --git a/net/mptcp/sockopt.c b/net/mptcp/sockopt.c
-index 3c3db22fd36a..aa3fcd86dbe2 100644
---- a/net/mptcp/sockopt.c
-+++ b/net/mptcp/sockopt.c
-@@ -543,7 +543,6 @@ static bool mptcp_supported_sockopt(int level, int optname)
- 		case TCP_NODELAY:
- 		case TCP_THIN_LINEAR_TIMEOUTS:
- 		case TCP_CONGESTION:
--		case TCP_ULP:
- 		case TCP_CORK:
- 		case TCP_KEEPIDLE:
- 		case TCP_KEEPINTVL:
+ net/core/devlink.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index 5ad72dbfcd0797ae045734b83fbbdc090ae3ff53..c06c9ba6e8c5ea00a3999700a6724a404c1f05f9 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -4110,14 +4110,6 @@ static int devlink_nl_cmd_reload(struct sk_buff *skb, struct genl_info *info)
+ 		return err;
+ 	}
+ 
+-	if (info->attrs[DEVLINK_ATTR_NETNS_PID] ||
+-	    info->attrs[DEVLINK_ATTR_NETNS_FD] ||
+-	    info->attrs[DEVLINK_ATTR_NETNS_ID]) {
+-		dest_net = devlink_netns_get(skb, info);
+-		if (IS_ERR(dest_net))
+-			return PTR_ERR(dest_net);
+-	}
+-
+ 	if (info->attrs[DEVLINK_ATTR_RELOAD_ACTION])
+ 		action = nla_get_u8(info->attrs[DEVLINK_ATTR_RELOAD_ACTION]);
+ 	else
+@@ -4160,6 +4152,14 @@ static int devlink_nl_cmd_reload(struct sk_buff *skb, struct genl_info *info)
+ 			return -EINVAL;
+ 		}
+ 	}
++	if (info->attrs[DEVLINK_ATTR_NETNS_PID] ||
++	    info->attrs[DEVLINK_ATTR_NETNS_FD] ||
++	    info->attrs[DEVLINK_ATTR_NETNS_ID]) {
++		dest_net = devlink_netns_get(skb, info);
++		if (IS_ERR(dest_net))
++			return PTR_ERR(dest_net);
++	}
++
+ 	err = devlink_reload(devlink, dest_net, action, limit, &actions_performed, info->extack);
+ 
+ 	if (dest_net)
 -- 
-2.32.0
+2.34.1.400.ga245620fadb-goog
 
