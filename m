@@ -2,152 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D4EE0468A47
-	for <lists+netdev@lfdr.de>; Sun,  5 Dec 2021 10:53:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CE31C468A49
+	for <lists+netdev@lfdr.de>; Sun,  5 Dec 2021 10:58:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232775AbhLEJ4f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Dec 2021 04:56:35 -0500
-Received: from wout3-smtp.messagingengine.com ([64.147.123.19]:44659 "EHLO
-        wout3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232727AbhLEJ4f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Dec 2021 04:56:35 -0500
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.west.internal (Postfix) with ESMTP id 8B5E73200A51;
-        Sun,  5 Dec 2021 04:53:07 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Sun, 05 Dec 2021 04:53:08 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=lAndXG
-        0tQJGAJ4uUceIro5KXDsyQfKo3MfK/sCuHGpo=; b=AoGERFS1PPef4UQ2o6RyaO
-        QRHuawQeZWrAiY+UM7dcrp9DEB1kKKcJ3qKA37hwO5p1s3zdnnl0WIp9GpTcrNVd
-        BusktJ+DSFKXPpPqY4G6GWMlEXtudK0D+48CpQ77AqX7exirgJQ8reDXdMwL3T6L
-        8yvzgVpw33n3nfQHnztR7tWazlgYo9Md/AXRQLy00TH3+ir1gNdCj60lAoD3x/0c
-        xMNcNvSWfbS+NDEuqbYegD+0uFOESZh3yNysmavfmuAcO/amJaoZ7KNzFhwkObzZ
-        xx0eo7bDZgIHSrkldz5ridP+mbhncCHuNH/j5a/Twg7F9tbEg4Uevm1TkKV92A8g
-        ==
-X-ME-Sender: <xms:AoysYRriaHCK1kx4DYMyxtKbuwRntrw07UfggV4D0yHun5Z0OZo1Gw>
-    <xme:AoysYTq9uVs7j2W-SWTXi0erwDv57HHoIFax8o2F2Wl7c0SoRqpf5VDJ1GbxbCYZ7
-    0GlVr28UXof-r4>
-X-ME-Received: <xmr:AoysYeMF8KLgF3yZ3qND_qs-MI4V5FkqmutGDMtRdxXSOENdzvs42dOiyMsP>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvuddrjedugddtkecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
-    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
-    hrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudehleet
-    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
-    hstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:AoysYc7fo5HJ-_FHX7Z54cEhd8eKGa_zDoOXmGXDD0-nXHeObi_7Tg>
-    <xmx:AoysYQ4jBXB4WL2VsfmwX0cTv9q77RHKQ6KZEDGVKCRFUQm4mongNQ>
-    <xmx:AoysYUgdfUVRhK4vjNFgBj5xkr_I233HHhe7Ldmu_1SM0G8z8HBgyQ>
-    <xmx:A4ysYeTWPfRhcwUG41snmRiy_W2rfyoPyc0rd5WgSkoykoiISn5Chw>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
- 5 Dec 2021 04:53:06 -0500 (EST)
-Date:   Sun, 5 Dec 2021 11:53:03 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Lahav Schlesinger <lschlesinger@drivenets.com>
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, dsahern@gmail.com
-Subject: Re: [PATCH net-next v4] rtnetlink: Support fine-grained netdevice
- bulk deletion
-Message-ID: <YayL/7d/hm3TYjtV@shredder>
-References: <20211202174502.28903-1-lschlesinger@drivenets.com>
+        id S232789AbhLEKCP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Dec 2021 05:02:15 -0500
+Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:44398
+        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232779AbhLEKCP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Dec 2021 05:02:15 -0500
+Received: from mail-pf1-f198.google.com (mail-pf1-f198.google.com [209.85.210.198])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id F0B0740013
+        for <netdev@vger.kernel.org>; Sun,  5 Dec 2021 09:58:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1638698325;
+        bh=w6+BoYvnmAnd+GSm1CSG2oy2MCenL4FLdq4APeVFVSU=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=YirH2heYguefpEbbKOSS7mRhsNhyxQaZmnwNUITgmKDkeVdBto3C9+1hlcAabfmyr
+         nqLsHGruIZ952H9mE3t1eIE2gXi6AVmsxqqk4syJmBwsbv/I54f96IjjHeduMV65E+
+         pwhLG/31g89jd3K0J5j46zwjfRqhN2ru4f25xkW1q6mpU19O5PXmbTDE2K8L7mIWvg
+         ihE561bLNaN8FLMPzhFhMCilDli1xSia6uaf7fzpFgToFH3RbVmZMV1KXhWXmpJUqp
+         MObMlbuXenTERKfVrxGjM+sTThMoULegZb5WvCjjRTBQCT+y/oCsHPR+AskxNiZQcT
+         kwiK2c8G6yRIg==
+Received: by mail-pf1-f198.google.com with SMTP id i26-20020aa7909a000000b004a4c417bfa8so4747648pfa.23
+        for <netdev@vger.kernel.org>; Sun, 05 Dec 2021 01:58:45 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=w6+BoYvnmAnd+GSm1CSG2oy2MCenL4FLdq4APeVFVSU=;
+        b=Z0jS7n5Nd5E82c4oA3lS/ME7nxWUpuw6MmqKEhhjU5z99gquymx6qgFNTmfbP9dhpV
+         FaaCvICKeQ7rBZsu2rFOkDBbUcJeqGHidZ4gtzIzYGj2lQF0Hwet0NUa5Y1uHOCWIZcQ
+         TiGRJwTfkmgOxd2L1jElk6/b9Yo/v+kCxbJpfnyB8B83pp9Fn8PsyRl5Y2l+ncAoxogm
+         jPce9OpDlioBCmaHORAlDCGYbdiwaOqeX1qHUOWNy7YqbpzU7pKVpknJ4Iphu3KDdFUg
+         B3D0muZ5SLxulhQn/8MKeNeJtq/GNNgNE/ykNl2aMh6ADoDzpPGi05BtLh8pbmnh1PMU
+         RWXQ==
+X-Gm-Message-State: AOAM531lCb6BJtJxyTQCEfrn5cIPLDWRR3avqzZSgJ7uUbXeWqOO9pvy
+        M3f7DRKDZDToZKYNT3ow2CJqHjP4Lq6sF0DVis0otohnaHPdT/xsS/kbwjMYqrV5tzOqMgYKMNg
+        hXszL54TaTvZnUsENHeHSIhKEXGhf6ndBMw==
+X-Received: by 2002:a17:90b:2309:: with SMTP id mt9mr28922900pjb.213.1638698324297;
+        Sun, 05 Dec 2021 01:58:44 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxrc9ZXCA/OWrksKqJj/Yc/lW+qDW0JLGL6vWbPZBjDotrMYhiJGa9oqA+YnQYbTSwbJxyfPg==
+X-Received: by 2002:a17:90b:2309:: with SMTP id mt9mr28922872pjb.213.1638698323970;
+        Sun, 05 Dec 2021 01:58:43 -0800 (PST)
+Received: from localhost.localdomain (2001-b011-3814-fb66-6609-6116-8fb8-c749.dynamic-ip6.hinet.net. [2001:b011:3814:fb66:6609:6116:8fb8:c749])
+        by smtp.gmail.com with ESMTPSA id n16sm7028882pja.46.2021.12.05.01.58.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 05 Dec 2021 01:58:43 -0800 (PST)
+From:   Chris Chiu <chris.chiu@canonical.com>
+To:     Jes.Sorensen@gmail.com, kvalo@codeaurora.org, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     code@reto-schneider.ch, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Chris Chiu <chris.chiu@canonical.com>
+Subject: [PATCH] rtl8xxxu: Improve the A-MPDU retransmission rate with RTS/CTS protection
+Date:   Sun,  5 Dec 2021 17:58:36 +0800
+Message-Id: <20211205095836.417258-1-chris.chiu@canonical.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211202174502.28903-1-lschlesinger@drivenets.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 02, 2021 at 07:45:02PM +0200, Lahav Schlesinger wrote:
-> Under large scale, some routers are required to support tens of thousands
-> of devices at once, both physical and virtual (e.g. loopbacks, tunnels,
-> vrfs, etc).
-> At times such routers are required to delete massive amounts of devices
-> at once, such as when a factory reset is performed on the router (causing
-> a deletion of all devices), or when a configuration is restored after an
-> upgrade, or as a request from an operator.
-> 
-> Currently there are 2 means of deleting devices using Netlink:
-> 1. Deleting a single device (either by ifindex using ifinfomsg::ifi_index,
-> or by name using IFLA_IFNAME)
-> 2. Delete all device that belong to a group (using IFLA_GROUP)
-> 
-> Deletion of devices one-by-one has poor performance on large scale of
-> devices compared to "group deletion":
-> After all device are handled, netdev_run_todo() is called which
-> calls rcu_barrier() to finish any outstanding RCU callbacks that were
-> registered during the deletion of the device, then wait until the
-> refcount of all the devices is 0, then perform final cleanups.
-> 
-> However, calling rcu_barrier() is a very costly operation, each call
-> taking in the order of 10s of milliseconds.
-> 
-> When deleting a large number of device one-by-one, rcu_barrier()
-> will be called for each device being deleted.
-> As an example, following benchmark deletes 10K loopback devices,
-> all of which are UP and with only IPv6 LLA being configured:
-> 
-> 1. Deleting one-by-one using 1 thread : 243 seconds
-> 2. Deleting one-by-one using 10 thread: 70 seconds
-> 3. Deleting one-by-one using 50 thread: 54 seconds
-> 4. Deleting all using "group deletion": 30 seconds
-> 
-> Note that even though the deletion logic takes place under the rtnl
-> lock, since the call to rcu_barrier() is outside the lock we gain
-> some improvements.
-> 
-> But, while "group deletion" is the fastest, it is not suited for
-> deleting large number of arbitrary devices which are unknown a head of
-> time. Furthermore, moving large number of devices to a group is also a
-> costly operation.
+The A-MPDU retransmission rate is always high (> 20%) even in a very
+clean environment. However, the vendor driver retransimission rate is
+< 10% in the same test bed. The different is the vendor driver starts
+the A-MPDU TXOP with initial RTS/CTS handshake which is observed in the
+air capture and the TX descriptor. Since there's no related field in
+TX descriptor to enable the L-SIG TXOP protection and the duration,
+applying the RTS/CTS protection instead helps to lower the retransmission
+rate from > 20% to ~12% in the same test setup.
 
-These are the number I get in a VM running on my laptop.
+Signed-off-by: Chris Chiu <chris.chiu@canonical.com>
+---
+ drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Moving 16k dummy netdevs to a group:
+diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
+index a42e2081b75f..06d59ffb7444 100644
+--- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
++++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
+@@ -4859,7 +4859,7 @@ rtl8xxxu_fill_txdesc_v1(struct ieee80211_hw *hw, struct ieee80211_hdr *hdr,
+ 	 * rts_rate is zero if RTS/CTS or CTS to SELF are not enabled
+ 	 */
+ 	tx_desc->txdw4 |= cpu_to_le32(rts_rate << TXDESC32_RTS_RATE_SHIFT);
+-	if (rate_flags & IEEE80211_TX_RC_USE_RTS_CTS) {
++	if (ampdu_enable || (rate_flags & IEEE80211_TX_RC_USE_RTS_CTS)) {
+ 		tx_desc->txdw4 |= cpu_to_le32(TXDESC32_RTS_CTS_ENABLE);
+ 		tx_desc->txdw4 |= cpu_to_le32(TXDESC32_HW_RTS_ENABLE);
+ 	} else if (rate_flags & IEEE80211_TX_RC_USE_CTS_PROTECT) {
+@@ -4930,7 +4930,7 @@ rtl8xxxu_fill_txdesc_v2(struct ieee80211_hw *hw, struct ieee80211_hdr *hdr,
+ 	/*
+ 	 * rts_rate is zero if RTS/CTS or CTS to SELF are not enabled
+ 	 */
+-	if (rate_flags & IEEE80211_TX_RC_USE_RTS_CTS) {
++	if (ampdu_enable || (rate_flags & IEEE80211_TX_RC_USE_RTS_CTS)) {
+ 		tx_desc40->txdw3 |= cpu_to_le32(TXDESC40_RTS_CTS_ENABLE);
+ 		tx_desc40->txdw3 |= cpu_to_le32(TXDESC40_HW_RTS_ENABLE);
+ 	} else if (rate_flags & IEEE80211_TX_RC_USE_CTS_PROTECT) {
+-- 
+2.25.1
 
-# time -p ip -b group.batch 
-real 1.91
-user 0.04
-sys 0.27
-
-Deleting the group:
-
-# time -p ip link del group 10
-real 6.15
-user 0.00
-sys 3.02
-
-IMO, these numbers do not justify a new API. Also, your user space can
-be taught to create all the netdevs in the same group to begin with:
-
-# ip link add name dummy1 group 10 type dummy
-# ip link show dev dummy1
-10: dummy1: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN mode DEFAULT group 10 qlen 1000
-    link/ether 12:b6:7d:ff:48:99 brd ff:ff:ff:ff:ff:ff
-
-Moreover, unlike the list API that is specific to deletion, the group
-API also lets you batch set operations:
-
-# ip link set group 10 mtu 2000
-# ip link show dev dummy1
-10: dummy1: <BROADCAST,NOARP> mtu 2000 qdisc noop state DOWN mode
-DEFAULT group 10 qlen 1000
-    link/ether 12:b6:7d:ff:48:99 brd ff:ff:ff:ff:ff:ff
-
-If you are using namespaces, then during "factory reset" you can delete
-the namespace which should trigger batch deletion of the netdevs inside
-it.
-
-> 
-> This patch adds support for passing an arbitrary list of ifindex of
-> devices to delete with a new IFLA_IFINDEX attribute. A single message
-> may contain multiple instances of this attribute).
-> This gives a more fine-grained control over which devices to delete,
-> while still resulting in rcu_barrier() being called only once.
-> Indeed, the timings of using this new API to delete 10K devices is
-> the same as using the existing "group" deletion.
-> 
-> Signed-off-by: Lahav Schlesinger <lschlesinger@drivenets.com>
