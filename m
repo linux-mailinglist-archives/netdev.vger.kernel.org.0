@@ -2,99 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E98EE468B83
-	for <lists+netdev@lfdr.de>; Sun,  5 Dec 2021 15:52:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C3D1468B85
+	for <lists+netdev@lfdr.de>; Sun,  5 Dec 2021 15:57:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235218AbhLEOz0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Dec 2021 09:55:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40296 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235230AbhLEOzN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Dec 2021 09:55:13 -0500
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7955CC061A83
-        for <netdev@vger.kernel.org>; Sun,  5 Dec 2021 06:51:45 -0800 (PST)
-Received: by mail-pg1-x52c.google.com with SMTP id 133so7962223pgc.12
-        for <netdev@vger.kernel.org>; Sun, 05 Dec 2021 06:51:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=WoYH3kUyU3rR597Qe29Tyg1cbdekiS3zv4yqA77Ra+o=;
-        b=PQrQcoOw1V9KP76uLbFLDEDyrU9vqBzJPlKj+pTPusgS4daHAq7p66wzfdvZqqIJc2
-         QRKtdzA1IbWpSH8mHpn027kXF9Mild4jnXfXrzwYxqZxzF9JDoK6kTv1YaFv05Il+rEv
-         lIvw4Xq6j53moojd4Yjl4KoUFlH9LWXrmjmmWREieVyxw8BExrw3buKuSVltSk3mNAaz
-         mh2fAPVWvCLZscc+IivAkObQD8K+H0FitLX6DJ4jpbHnoQAEwMEadj7f8xY8967azkF6
-         Q5w6kToRbIlON6L0NmISOYfuZ8vwO6RrksQaoigaYoCM56mEQPl8QUiaddf/27eSZl0n
-         V4MQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=WoYH3kUyU3rR597Qe29Tyg1cbdekiS3zv4yqA77Ra+o=;
-        b=k4kuLasNom7gWF2p00j4xnr+65ka9HIhm5WI7ZBOQ1r0+P8VZwLHI0JnNDeipQ8OVU
-         lKU/q8dd11QUAZhXYNCnDsRb3vD6aGUHyQxFCl6L2OqNMP0XjEcm/2vcROk49IeT7yH6
-         LMKPXX5K/MBXn4iF1TbvJrb4TQVi2eRBa4yT+QAxK7bAtV130+Uj8y7MQsr/pdr2iJjP
-         C/1Khu/WDTmvqEArylEouDVuG0bFaomELFGWkH1P04h/BanEBkjUoE9Js5vcvULK6gM/
-         a2V7UHai29PqoBv/woGu2TLgZEO4nZy4e5SPrCN78CTzS5lanlxXxjmxitzWsb4w27nm
-         EfKA==
-X-Gm-Message-State: AOAM5312b/SE1qPVAo1jBmKh9RMPwrLb6a5f8eidUzSoqjKfxR/bJVMG
-        cHH3LvkNp2OkwoZf6S2C2rICnA==
-X-Google-Smtp-Source: ABdhPJycmQqaqKyYV6rADGSOztK52rZFL5guaz/TJWi/jAvOjSlm3KATDKooWY63M7hIdTmll6FeGw==
-X-Received: by 2002:aa7:8d0a:0:b0:4a2:82d7:1695 with SMTP id j10-20020aa78d0a000000b004a282d71695mr31790299pfe.86.1638715904962;
-        Sun, 05 Dec 2021 06:51:44 -0800 (PST)
-Received: from localhost ([2602:feda:ddb:737a:816:168e:3e5a:d93])
-        by smtp.gmail.com with ESMTPSA id c3sm9960145pfv.67.2021.12.05.06.51.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 05 Dec 2021 06:51:44 -0800 (PST)
-From:   Leo Yan <leo.yan@linaro.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Mike Leach <mike.leach@linaro.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jan Harkes <jaharkes@cs.cmu.edu>, coda@cs.cmu.edu,
-        Paul Moore <paul@paul-moore.com>,
-        Eric Paris <eparis@redhat.com>,
-        Balbir Singh <bsingharora@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, coresight@lists.linaro.org,
-        linux-arm-kernel@lists.infradead.org, codalist@coda.cs.cmu.edu,
-        linux-audit@redhat.com
-Cc:     Leo Yan <leo.yan@linaro.org>
-Subject: [PATCH v1 7/7] taskstats: Use task_is_in_root_ns()
-Date:   Sun,  5 Dec 2021 22:51:05 +0800
-Message-Id: <20211205145105.57824-8-leo.yan@linaro.org>
+        id S234969AbhLEPA3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Dec 2021 10:00:29 -0500
+Received: from mga03.intel.com ([134.134.136.65]:20582 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234836AbhLEPA3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 5 Dec 2021 10:00:29 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10188"; a="237132477"
+X-IronPort-AV: E=Sophos;i="5.87,289,1631602800"; 
+   d="scan'208";a="237132477"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Dec 2021 06:57:01 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.87,289,1631602800"; 
+   d="scan'208";a="514507275"
+Received: from ccgwwan-desktop15.iind.intel.com ([10.224.174.19])
+  by fmsmga007.fm.intel.com with ESMTP; 05 Dec 2021 06:56:58 -0800
+From:   M Chetan Kumar <m.chetan.kumar@linux.intel.com>
+To:     netdev@vger.kernel.org
+Cc:     kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
+        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
+        krishna.c.sudi@intel.com, m.chetan.kumar@intel.com,
+        m.chetan.kumar@linux.intel.com, linuxwwan@intel.com
+Subject: [PATCH V2 net-next 0/7] net: wwan: iosm: Bug fixes
+Date:   Sun,  5 Dec 2021 20:34:48 +0530
+Message-Id: <20211205150455.1829929-1-m.chetan.kumar@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20211205145105.57824-1-leo.yan@linaro.org>
-References: <20211205145105.57824-1-leo.yan@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Replace open coded checking root PID namespace with
-task_is_in_root_ns().
+This patch series brings in IOSM driver bug fixes. Patch details
+are explained below.
 
-Signed-off-by: Leo Yan <leo.yan@linaro.org>
----
- kernel/taskstats.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+PATCH1:
+ * stop sending unnecessary doorbell in IP tx flow.
+PATCH2:
+ * set tx queue len.
+PATCH3:
+ * Restore the IP channel configuration after fw flash.
+PATCH4:
+ * Release data channel if there is no active IP session.
+PATCH5:
+ * Removes dead code.
+PATCH6:
+ * Removed the unnecessary check around control port TX transfer.
+PATCH7:
+ * Correct open parenthesis alignment to fix checkpatch warning.
 
-diff --git a/kernel/taskstats.c b/kernel/taskstats.c
-index 2b4898b4752e..c6a19d3911b3 100644
---- a/kernel/taskstats.c
-+++ b/kernel/taskstats.c
-@@ -284,7 +284,7 @@ static int add_del_listener(pid_t pid, const struct cpumask *mask, int isadd)
- 	if (current_user_ns() != &init_user_ns)
- 		return -EINVAL;
- 
--	if (task_active_pid_ns(current) != &init_pid_ns)
-+	if (!task_is_in_root_ns(current))
- 		return -EINVAL;
- 
- 	if (isadd == REGISTER) {
--- 
+Changes since v1:
+ * PATCH2:
+   - For tx queue length use the common DEFAULT_TX_QUEUE_LEN macro instead
+     of defining the new macro.
+ * PATCH4:
+   - Fix checkpath warning.
+
+M Chetan Kumar (7):
+  net: wwan: iosm: stop sending unnecessary doorbell
+  net: wwan: iosm: set tx queue len
+  net: wwan: iosm: wwan0 net interface nonfunctional after fw flash
+  net: wwan: iosm: release data channel in case no active IP session
+  net: wwan: iosm: removed unused function decl
+  net: wwan: iosm: AT port is not working while MBIM TX is ongoing
+  net: wwan: iosm: correct open parenthesis alignment
+
+ drivers/net/wwan/iosm/iosm_ipc_imem.c      | 27 +++++++++++++--------
+ drivers/net/wwan/iosm/iosm_ipc_imem.h      |  4 +---
+ drivers/net/wwan/iosm/iosm_ipc_imem_ops.c  |  7 +-----
+ drivers/net/wwan/iosm/iosm_ipc_mmio.c      |  2 +-
+ drivers/net/wwan/iosm/iosm_ipc_mux.c       | 28 ++++++++++++++--------
+ drivers/net/wwan/iosm/iosm_ipc_mux.h       |  1 -
+ drivers/net/wwan/iosm/iosm_ipc_mux_codec.c | 18 +++++++-------
+ drivers/net/wwan/iosm/iosm_ipc_wwan.c      |  3 ++-
+ drivers/net/wwan/iosm/iosm_ipc_wwan.h      | 10 --------
+ 9 files changed, 49 insertions(+), 51 deletions(-)
+
+--
 2.25.1
 
