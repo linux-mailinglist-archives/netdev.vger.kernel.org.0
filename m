@@ -2,42 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E8D1B468A12
-	for <lists+netdev@lfdr.de>; Sun,  5 Dec 2021 09:22:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E84B1468A15
+	for <lists+netdev@lfdr.de>; Sun,  5 Dec 2021 09:22:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232091AbhLEIZl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Dec 2021 03:25:41 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:56048 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229877AbhLEIZk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Dec 2021 03:25:40 -0500
+        id S232456AbhLEIZv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Dec 2021 03:25:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40652 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229877AbhLEIZt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Dec 2021 03:25:49 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2056C061751;
+        Sun,  5 Dec 2021 00:22:22 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A350160F90;
-        Sun,  5 Dec 2021 08:22:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42F07C341C4;
-        Sun,  5 Dec 2021 08:22:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6DE5A60F4C;
+        Sun,  5 Dec 2021 08:22:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FE08C341C1;
+        Sun,  5 Dec 2021 08:22:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638692533;
-        bh=WO5zoGfIv7L2ls4vdk54cbVg57AyTxML/w1CZKiJRcg=;
-        h=From:To:Cc:Subject:Date:From;
-        b=PQG5cgGHp7g8bTmizHvFVqCblEI4+zRd38+OebhsVHuJue2tQILMGFIRj0PajX4W4
-         /uJc0JdtAKJTiXltjK7PtSxPTZfBZrsR/pD9ZOUfUjGbdccaMeOkF7fBK+YsPgy+Bz
-         ymJOerrsPKhE8HT5pXdGbo/SVOJ8dcxL6Q2EOfDigaW+2sE+zxNJfwfAIegoX53LTs
-         2iQXT4DWSa8Wh36ALNbWJklz2yS947yJn1aknZFlDuQH3AX1CNKc7sUJm4zKdGc31v
-         P7iAg9sqEmbT5C0GYP+oRH0Q/SNEJs4MllWhgsConuS0Dfllr4xGGwQk7oNdKKMYFe
-         TY3pgUuZdswyQ==
+        s=k20201202; t=1638692541;
+        bh=ciKStScTKqhzFKEKOa4+CWfCFsDssmEW0cTT/bPmL4E=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Mm5mnlfsr39FLl/l8V2onh+glC0aAcgB1ljmxuoarhdLuNpsacsmIvhwrPYQ48G5s
+         pQIzOcHHVlnyFIzBH6d76SW4TDqrPLEhiZ31SrzLIxNqughykf6m6L+iYKvMAYvpSb
+         NhDuZlog5jETnzyYJIxazuYU2AqYn/C/U7Slvj+LAYYzEEtBiF+4txw6w+kZ+fHZf8
+         CsTln2ZKaLh60hTgBRcQApqrAJkQ+PkTwofJnPSGVyIVg5o5YZP67xmO2swvpMD1aF
+         nd6TxeQDALQ7DfuqlXzL6pMUvnP4ZffKKxNAJdZ7mOV3O+IJsuVlky1lNDRqecFOzT
+         Uf3a1h396fB2g==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     Leon Romanovsky <leonro@nvidia.com>,
         Ido Schimmel <idosch@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next 0/6] Allow parallel devlink execution
-Date:   Sun,  5 Dec 2021 10:22:00 +0200
-Message-Id: <cover.1638690564.git.leonro@nvidia.com>
+Subject: [PATCH net-next 1/6] devlink: Clean registration of devlink port
+Date:   Sun,  5 Dec 2021 10:22:01 +0200
+Message-Id: <f3ce2879f0f16dbbf9c320aa6c225e1a6a23d2c0.1638690564.git.leonro@nvidia.com>
 X-Mailer: git-send-email 2.33.1
+In-Reply-To: <cover.1638690564.git.leonro@nvidia.com>
+References: <cover.1638690564.git.leonro@nvidia.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -46,40 +51,71 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Leon Romanovsky <leonro@nvidia.com>
 
-Hi,
+devlink_port_register() is in-kernel API and as such can't really
+fail as long as driver author didn't make a mistake by providing
+already existing port index.
 
-This is final piece of devlink locking puzzle, where I remove global
-mutex lock (devlink_mutex), so we can run devlink commands in parallel.
+Instead of relying on various error prints from the driver, convert
+the existence check to be WARN_ON(), so such a mistake will be caught
+immediately.
 
-The series starts with addition of port_list_lock, which is needed to
-prevent locking dependency between netdevsim sysfs and devlink. It
-follows by the patch that adds context aware locking primitives. Such
-primitives allow us to make sure that devlink instance is locked and
-stays locked even during reload operation. The last patches opens
-devlink to parallel commands.
+Tested-by: Ido Schimmel <idosch@nvidia.com>
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+---
+ net/core/devlink.c | 23 ++++++++---------------
+ 1 file changed, 8 insertions(+), 15 deletions(-)
 
-It tested on mlx5, mlx4, mlxsw, netdevsim + Ido's syzkaller.
-
-BTW, in the future patches, we will clean devlink from over-engineered
-APIs and implementations. It will open a venue to revise all the places
-that hold devlink lock, if they really need to do it.
-
-Thanks
-
-[1] https://lore.kernel.org/netdev/cover.1636390483.git.leonro@nvidia.com/
-[2] https://lore.kernel.org/netdev/9716f9a13e217a0a163b745b6e92e02d40973d2c.1635701665.git.leonro@nvidia.com/
-
-Leon Romanovsky (6):
-  devlink: Clean registration of devlink port
-  devlink: Be explicit with devlink port protection
-  devlink: Add devlink nested locking primitive
-  devlink: Require devlink lock during device reload
-  devlink: Use xarray locking mechanism instead big devlink lock
-  devlink: Open devlink to parallel operations
-
- net/core/devlink.c | 432 ++++++++++++++++++++++++---------------------
- 1 file changed, 232 insertions(+), 200 deletions(-)
-
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index db3b52110cf2..34d0f623b2a9 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -268,12 +268,6 @@ static struct devlink_port *devlink_port_get_by_index(struct devlink *devlink,
+ 	return NULL;
+ }
+ 
+-static bool devlink_port_index_exists(struct devlink *devlink,
+-				      unsigned int port_index)
+-{
+-	return devlink_port_get_by_index(devlink, port_index);
+-}
+-
+ static struct devlink_port *devlink_port_get_from_attrs(struct devlink *devlink,
+ 							struct nlattr **attrs)
+ {
+@@ -9255,25 +9249,24 @@ int devlink_port_register(struct devlink *devlink,
+ 			  struct devlink_port *devlink_port,
+ 			  unsigned int port_index)
+ {
+-	mutex_lock(&devlink->lock);
+-	if (devlink_port_index_exists(devlink, port_index)) {
+-		mutex_unlock(&devlink->lock);
+-		return -EEXIST;
+-	}
+-
++	WARN_ON(devlink_port_get_by_index(devlink, port_index));
+ 	WARN_ON(devlink_port->devlink);
++
+ 	devlink_port->devlink = devlink;
+ 	devlink_port->index = port_index;
+ 	spin_lock_init(&devlink_port->type_lock);
+ 	INIT_LIST_HEAD(&devlink_port->reporter_list);
+ 	mutex_init(&devlink_port->reporters_lock);
+-	list_add_tail(&devlink_port->list, &devlink->port_list);
+ 	INIT_LIST_HEAD(&devlink_port->param_list);
+ 	INIT_LIST_HEAD(&devlink_port->region_list);
+-	mutex_unlock(&devlink->lock);
+ 	INIT_DELAYED_WORK(&devlink_port->type_warn_dw, &devlink_port_type_warn);
+-	devlink_port_type_warn_schedule(devlink_port);
++
++	mutex_lock(&devlink->lock);
++	list_add_tail(&devlink_port->list, &devlink->port_list);
++	mutex_unlock(&devlink->lock);
++
+ 	devlink_port_notify(devlink_port, DEVLINK_CMD_PORT_NEW);
++	devlink_port_type_warn_schedule(devlink_port);
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(devlink_port_register);
 -- 
 2.33.1
 
