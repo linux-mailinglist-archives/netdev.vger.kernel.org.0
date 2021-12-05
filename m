@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 35C96468B79
-	for <lists+netdev@lfdr.de>; Sun,  5 Dec 2021 15:51:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BC7E5468B7B
+	for <lists+netdev@lfdr.de>; Sun,  5 Dec 2021 15:51:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235067AbhLEOyv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Dec 2021 09:54:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40172 "EHLO
+        id S235063AbhLEOzB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Dec 2021 09:55:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235065AbhLEOyu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Dec 2021 09:54:50 -0500
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED49BC061751
-        for <netdev@vger.kernel.org>; Sun,  5 Dec 2021 06:51:22 -0800 (PST)
-Received: by mail-pj1-x102c.google.com with SMTP id p18-20020a17090ad31200b001a78bb52876so8842972pju.3
-        for <netdev@vger.kernel.org>; Sun, 05 Dec 2021 06:51:22 -0800 (PST)
+        with ESMTP id S235103AbhLEOyy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Dec 2021 09:54:54 -0500
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75FBDC061359
+        for <netdev@vger.kernel.org>; Sun,  5 Dec 2021 06:51:27 -0800 (PST)
+Received: by mail-pg1-x536.google.com with SMTP id j11so8017485pgs.2
+        for <netdev@vger.kernel.org>; Sun, 05 Dec 2021 06:51:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=TIZ1ekHamWsBpzx/c4rlzvRLrR0WcD4jTfep7Z0JpMg=;
-        b=QDKpb2AU6Lu0PXY1xs9kgtm19LM/i5PF/nec/ihFtCbDaXPEgScrYCRZXt4d6HdrD6
-         Cuwr62idNZcMkMKQFCPzSVHRKJx8PlTpFuxU10OMtShYcCiovPtC16YkFKOd2zoaI7Ea
-         rqiLZC1n08U4FoqhCzpsJ008nQOXyxuhgg2PKDm/ZJvRika6I+Q+TU/43dgLcLoEgmeV
-         861hb6jst0VVelVV4xipGCJ5uEb/tXF2OhLyPCqzEsWQwY86Q0BigMsr7fuIZT+xstw6
-         //ec5ZoaBVQNMHPu+/1mk6bK6x7JkErjVB0DxzPImdZ9taBfMUDnIAD20wFASG9UeJ1r
-         oZDg==
+        bh=r7FuDJBkqmbrNZ8AuyY2ToeqGTn3J1mJtK8z1ItIbdE=;
+        b=QHCE7EcZHC03zy6MaqNqCBN+Fpm5uAGmWmVntGtp7U5n/wHjBc1F3Kdy8R5DdkiE6C
+         CQQk3ZM5MTTKy0JcD6PEeBIml/H2OvjS1+XE7GeIX4nSPB+wH6DbJa5EN7/rSbhr8huE
+         UHqFfcSu5fcVNqcxHbhD+z4rM3rUqKWbdIkOskuZOwi/gIOTZiDI+kT+wSq+lTHFcfzd
+         1v2/rTkuvQ7MBlcI3hEeye+s911D7DZq8FWScsalbNbWTbefEE0ebKEpw22Vn0eYAE2S
+         jKIXPSXFADD5/RyLiApLFsI5CUfRYg7XX03NJYFL5WrukGmxvCtyU/83iSsJVFHH2siu
+         JfLg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=TIZ1ekHamWsBpzx/c4rlzvRLrR0WcD4jTfep7Z0JpMg=;
-        b=vSdxsh12ilb+zqGMGlIdvY4oca7j88XWfBg319p7g/MjeVaBg0m+MiUfC567ISWXL2
-         xNCuXdmAU59GbzMV4ilfr6SVicq7Ctifx/v6vIo3tcSCtsF3jMrqgUJIclLIwClBUDh3
-         qHmSOYrwSLG3N02M60xOiDqrKS9tMnjPrRR/cSzQuFJFmMIRpiLP48FJs6twJGAe8yrs
-         qEQ0eF4xTjkTVnY5bCkkkVqnlrkVA0AETuPa8YVAT98cONxpfi1/X/6RbkwppZxiS4mR
-         VjKahr2cKrS/jcG/pevIBworimCHBLDEz+afIbJNHfasOh3oq5MX7NAuA3ZBECYvXxWW
-         u8og==
-X-Gm-Message-State: AOAM532yifroaJBkOMyD+fLZkrwyeXzpytc0v2guknRxq91rp8FUX9zR
-        Cc8Yc1W1sqy1VzmhoX2xeoL48A==
-X-Google-Smtp-Source: ABdhPJwbtYvyednOqDHit4yIYRavSWV2oodDpZmOZnha4ZDGgas38FxP9ERRJu8LnK4qX8faP9/2ag==
-X-Received: by 2002:a17:902:b20b:b0:141:a92c:a958 with SMTP id t11-20020a170902b20b00b00141a92ca958mr37475204plr.24.1638715882411;
-        Sun, 05 Dec 2021 06:51:22 -0800 (PST)
-Received: from localhost ([2602:feda:ddb:5fe8:b1a8:1b20:fbe9:2696])
-        by smtp.gmail.com with ESMTPSA id y28sm9218195pfa.208.2021.12.05.06.51.21
+        bh=r7FuDJBkqmbrNZ8AuyY2ToeqGTn3J1mJtK8z1ItIbdE=;
+        b=KFaPIs8RZGX6dJ1qEInYpmK7V+fFtWawc0l9gKouCyxQMhyEyoGr5AsoesZ1BUM5pO
+         ZvBOKXMj7q1RHisTfrGrkZ5XccvNzXqM3r7W6CLQTfYhoqxXiD+21AZmai8EQp/HWW3E
+         dMj0+Czguw16FvoSgrIX0T4ASx3pYv33VhT0rS+EubLODApJa6JwGYRw7F3NF/pAUfGD
+         qQouQH5QkEiHsAzFmF5vwlEWxrznxcrQEy3raSsYpKSVap5ndQ5M50u92K1O2v7aH1+N
+         9hOFToVleleExlq0p7AiIUWwpb4CJpTTCKlkGSWYWwMQtKc6KgSwL+yH0cM2rCUGaDJL
+         4iZQ==
+X-Gm-Message-State: AOAM532gKDMfbENw/2KCqUukNBzkj1KggNxayEW+64/LKuDRy8cYuahl
+        KhKkrG309qAopAjBoYBWfdegkA==
+X-Google-Smtp-Source: ABdhPJzUBAAPjj8z3sKrvIM+BkzPaczsu+Op3D9PsW9q5fj4Q5p9j0lxy8voeiQ//58dzghyGllY9g==
+X-Received: by 2002:a05:6a00:124a:b0:4a4:cfd2:b40f with SMTP id u10-20020a056a00124a00b004a4cfd2b40fmr31149267pfi.57.1638715886771;
+        Sun, 05 Dec 2021 06:51:26 -0800 (PST)
+Received: from localhost ([2602:feda:dd5:6b5b:660b:141b:4f83:cd75])
+        by smtp.gmail.com with ESMTPSA id f5sm7548675pju.15.2021.12.05.06.51.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 05 Dec 2021 06:51:22 -0800 (PST)
+        Sun, 05 Dec 2021 06:51:26 -0800 (PST)
 From:   Leo Yan <leo.yan@linaro.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -62,9 +62,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
         linux-arm-kernel@lists.infradead.org, codalist@coda.cs.cmu.edu,
         linux-audit@redhat.com
 Cc:     Leo Yan <leo.yan@linaro.org>
-Subject: [PATCH v1 2/7] coresight: etm3x: Use task_is_in_root_ns() to check PID namespace
-Date:   Sun,  5 Dec 2021 22:51:00 +0800
-Message-Id: <20211205145105.57824-3-leo.yan@linaro.org>
+Subject: [PATCH v1 3/7] coresight: etm4x: Use task_is_in_root_ns() to check PID namespace
+Date:   Sun,  5 Dec 2021 22:51:01 +0800
+Message-Id: <20211205145105.57824-4-leo.yan@linaro.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211205145105.57824-1-leo.yan@linaro.org>
 References: <20211205145105.57824-1-leo.yan@linaro.org>
@@ -74,19 +74,19 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch uses helper task_is_in_root_ns() to replace open code for
-checking if a task is in root PID namespace.
+To avoid open code, this patch uses the helper task_is_in_root_ns() to
+check if a task is in root PID namespace.
 
 Signed-off-by: Leo Yan <leo.yan@linaro.org>
 ---
- drivers/hwtracing/coresight/coresight-etm3x-sysfs.c | 8 ++++----
+ drivers/hwtracing/coresight/coresight-etm4x-sysfs.c | 8 ++++----
  1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/hwtracing/coresight/coresight-etm3x-sysfs.c b/drivers/hwtracing/coresight/coresight-etm3x-sysfs.c
-index e8c7649f123e..baba16ad9bb1 100644
---- a/drivers/hwtracing/coresight/coresight-etm3x-sysfs.c
-+++ b/drivers/hwtracing/coresight/coresight-etm3x-sysfs.c
-@@ -1030,7 +1030,7 @@ static ssize_t ctxid_pid_show(struct device *dev,
+diff --git a/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c b/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
+index a0640fa5c55b..cd87ad8456d7 100644
+--- a/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
++++ b/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
+@@ -1890,7 +1890,7 @@ static ssize_t ctxid_pid_show(struct device *dev,
  	 * Don't use contextID tracing if coming from a PID namespace.  See
  	 * comment in ctxid_pid_store().
  	 */
@@ -95,7 +95,7 @@ index e8c7649f123e..baba16ad9bb1 100644
  		return -EINVAL;
  
  	spin_lock(&drvdata->spinlock);
-@@ -1058,7 +1058,7 @@ static ssize_t ctxid_pid_store(struct device *dev,
+@@ -1918,7 +1918,7 @@ static ssize_t ctxid_pid_store(struct device *dev,
  	 * As such refuse to use the feature if @current is not in the initial
  	 * PID namespace.
  	 */
@@ -103,8 +103,8 @@ index e8c7649f123e..baba16ad9bb1 100644
 +	if (!task_is_in_root_ns(current))
  		return -EINVAL;
  
- 	ret = kstrtoul(buf, 16, &pid);
-@@ -1084,7 +1084,7 @@ static ssize_t ctxid_mask_show(struct device *dev,
+ 	/*
+@@ -1951,7 +1951,7 @@ static ssize_t ctxid_masks_show(struct device *dev,
  	 * Don't use contextID tracing if coming from a PID namespace.  See
  	 * comment in ctxid_pid_store().
  	 */
@@ -112,8 +112,8 @@ index e8c7649f123e..baba16ad9bb1 100644
 +	if (!task_is_in_root_ns(current))
  		return -EINVAL;
  
- 	val = config->ctxid_mask;
-@@ -1104,7 +1104,7 @@ static ssize_t ctxid_mask_store(struct device *dev,
+ 	spin_lock(&drvdata->spinlock);
+@@ -1975,7 +1975,7 @@ static ssize_t ctxid_masks_store(struct device *dev,
  	 * Don't use contextID tracing if coming from a PID namespace.  See
  	 * comment in ctxid_pid_store().
  	 */
@@ -121,7 +121,7 @@ index e8c7649f123e..baba16ad9bb1 100644
 +	if (!task_is_in_root_ns(current))
  		return -EINVAL;
  
- 	ret = kstrtoul(buf, 16, &val);
+ 	/*
 -- 
 2.25.1
 
