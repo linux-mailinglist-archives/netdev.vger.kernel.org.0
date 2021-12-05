@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 71E124689C3
-	for <lists+netdev@lfdr.de>; Sun,  5 Dec 2021 07:47:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 406784689C4
+	for <lists+netdev@lfdr.de>; Sun,  5 Dec 2021 07:47:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231948AbhLEGvJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Dec 2021 01:51:09 -0500
+        id S231953AbhLEGvL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Dec 2021 01:51:11 -0500
 Received: from mga04.intel.com ([192.55.52.120]:27975 "EHLO mga04.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231951AbhLEGvH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 5 Dec 2021 01:51:07 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10188"; a="235902338"
+        id S231951AbhLEGvL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 5 Dec 2021 01:51:11 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10188"; a="235902340"
 X-IronPort-AV: E=Sophos;i="5.87,288,1631602800"; 
-   d="scan'208";a="235902338"
+   d="scan'208";a="235902340"
 Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Dec 2021 22:47:41 -0800
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Dec 2021 22:47:44 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.87,288,1631602800"; 
-   d="scan'208";a="514244061"
+   d="scan'208";a="514244069"
 Received: from ccgwwan-desktop15.iind.intel.com ([10.224.174.19])
-  by fmsmga007.fm.intel.com with ESMTP; 04 Dec 2021 22:47:38 -0800
+  by fmsmga007.fm.intel.com with ESMTP; 04 Dec 2021 22:47:41 -0800
 From:   M Chetan Kumar <m.chetan.kumar@linux.intel.com>
 To:     netdev@vger.kernel.org
 Cc:     kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
         ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
         krishna.c.sudi@intel.com, m.chetan.kumar@intel.com,
         m.chetan.kumar@linux.intel.com, linuxwwan@intel.com
-Subject: [PATCH net-next 3/7] net: wwan: iosm: wwan0 net interface nonfunctional after fw flash
-Date:   Sun,  5 Dec 2021 12:25:24 +0530
-Message-Id: <20211205065528.1613881-4-m.chetan.kumar@linux.intel.com>
+Subject: [PATCH net-next 4/7] net: wwan: iosm: release data channel in case no active IP session
+Date:   Sun,  5 Dec 2021 12:25:25 +0530
+Message-Id: <20211205065528.1613881-5-m.chetan.kumar@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211205065528.1613881-1-m.chetan.kumar@linux.intel.com>
 References: <20211205065528.1613881-1-m.chetan.kumar@linux.intel.com>
@@ -39,76 +39,232 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Devlink initialization flow was overwriting the IP traffic
-channel configuration. This was causing wwan0 network interface
-to be unusable after fw flash.
+If there is no active IP session (interface up & running) then
+release the data channel.
 
-When device boots to fully functional mode restore the IP channel
-configuration.
+Use nr_sessions variable to track current active IP sessions.
+If the count drops to 0, then send pipe close ctrl message to
+release the data channel.
 
 Signed-off-by: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
 ---
- drivers/net/wwan/iosm/iosm_ipc_imem.c     | 7 ++++++-
- drivers/net/wwan/iosm/iosm_ipc_imem.h     | 1 +
- drivers/net/wwan/iosm/iosm_ipc_imem_ops.c | 1 +
- 3 files changed, 8 insertions(+), 1 deletion(-)
+ drivers/net/wwan/iosm/iosm_ipc_imem.c      |  1 -
+ drivers/net/wwan/iosm/iosm_ipc_mux.c       | 27 ++++++++++++++--------
+ drivers/net/wwan/iosm/iosm_ipc_mux.h       |  1 -
+ drivers/net/wwan/iosm/iosm_ipc_mux_codec.c | 18 +++++++--------
+ 4 files changed, 26 insertions(+), 21 deletions(-)
 
 diff --git a/drivers/net/wwan/iosm/iosm_ipc_imem.c b/drivers/net/wwan/iosm/iosm_ipc_imem.c
-index 644a871585ea..ac36f9846731 100644
+index ac36f9846731..96dcd2445bce 100644
 --- a/drivers/net/wwan/iosm/iosm_ipc_imem.c
 +++ b/drivers/net/wwan/iosm/iosm_ipc_imem.c
-@@ -537,6 +537,9 @@ static void ipc_imem_run_state_worker(struct work_struct *instance)
+@@ -133,7 +133,6 @@ static int ipc_imem_setup_cp_mux_cap_init(struct iosm_imem *ipc_imem,
+ 	 * for channel alloc function.
+ 	 */
+ 	cfg->instance_id = IPC_MEM_MUX_IP_CH_IF_ID;
+-	cfg->nr_sessions = IPC_MEM_MUX_IP_SESSION_ENTRIES;
+ 
+ 	return 0;
+ }
+diff --git a/drivers/net/wwan/iosm/iosm_ipc_mux.c b/drivers/net/wwan/iosm/iosm_ipc_mux.c
+index c1c77ce699da..4df41e47e77e 100644
+--- a/drivers/net/wwan/iosm/iosm_ipc_mux.c
++++ b/drivers/net/wwan/iosm/iosm_ipc_mux.c
+@@ -97,7 +97,7 @@ static bool ipc_mux_session_open(struct iosm_mux *ipc_mux,
+ 
+ 	/* Search for a free session interface id. */
+ 	if_id = le32_to_cpu(session_open->if_id);
+-	if (if_id < 0 || if_id >= ipc_mux->nr_sessions) {
++	if (if_id < 0 || if_id >= IPC_MEM_MUX_IP_SESSION_ENTRIES) {
+ 		dev_err(ipc_mux->dev, "invalid interface id=%d", if_id);
+ 		return false;
+ 	}
+@@ -129,6 +129,7 @@ static bool ipc_mux_session_open(struct iosm_mux *ipc_mux,
+ 
+ 	/* Save and return the assigned if id. */
+ 	session_open->if_id = cpu_to_le32(if_id);
++	ipc_mux->nr_sessions++;
+ 
+ 	return true;
+ }
+@@ -151,7 +152,7 @@ static void ipc_mux_session_close(struct iosm_mux *ipc_mux,
+ 	/* Copy the session interface id. */
+ 	if_id = le32_to_cpu(msg->if_id);
+ 
+-	if (if_id < 0 || if_id >= ipc_mux->nr_sessions) {
++	if (if_id < 0 || if_id >= IPC_MEM_MUX_IP_SESSION_ENTRIES) {
+ 		dev_err(ipc_mux->dev, "invalid session id %d", if_id);
+ 		return;
+ 	}
+@@ -170,6 +171,7 @@ static void ipc_mux_session_close(struct iosm_mux *ipc_mux,
+ 	ipc_mux->session[if_id].flow_ctl_mask = 0;
+ 
+ 	ipc_mux_session_reset(ipc_mux, if_id);
++	ipc_mux->nr_sessions--;
+ }
+ 
+ static void ipc_mux_channel_close(struct iosm_mux *ipc_mux,
+@@ -178,7 +180,7 @@ static void ipc_mux_channel_close(struct iosm_mux *ipc_mux,
+ 	int i;
+ 
+ 	/* Free pending session UL packet. */
+-	for (i = 0; i < ipc_mux->nr_sessions; i++)
++	for (i = 0; i < IPC_MEM_MUX_IP_SESSION_ENTRIES; i++)
+ 		if (ipc_mux->session[i].wwan)
+ 			ipc_mux_session_reset(ipc_mux, i);
+ 
+@@ -244,6 +246,10 @@ static int ipc_mux_schedule(struct iosm_mux *ipc_mux, union mux_msg *msg)
+ 			/* Release an IP session. */
+ 			ipc_mux->event = MUX_E_MUX_SESSION_CLOSE;
+ 			ipc_mux_session_close(ipc_mux, &msg->session_close);
++			if (!ipc_mux->nr_sessions) {
++				ipc_mux->event = MUX_E_MUX_CHANNEL_CLOSE;
++				ipc_mux_channel_close(ipc_mux, &msg->channel_close);
++			}
+ 			ret = ipc_mux->channel_id;
+ 			goto out;
+ 
+@@ -281,7 +287,6 @@ struct iosm_mux *ipc_mux_init(struct ipc_mux_config *mux_cfg,
+ 
+ 	ipc_mux->protocol = mux_cfg->protocol;
+ 	ipc_mux->ul_flow = mux_cfg->ul_flow;
+-	ipc_mux->nr_sessions = mux_cfg->nr_sessions;
+ 	ipc_mux->instance_id = mux_cfg->instance_id;
+ 	ipc_mux->wwan_q_offset = 0;
+ 
+@@ -340,7 +345,7 @@ static void ipc_mux_restart_tx_for_all_sessions(struct iosm_mux *ipc_mux)
+ 	struct mux_session *session;
+ 	int idx;
+ 
+-	for (idx = 0; idx < ipc_mux->nr_sessions; idx++) {
++	for (idx = 0; idx < IPC_MEM_MUX_IP_SESSION_ENTRIES; idx++) {
+ 		session = &ipc_mux->session[idx];
+ 
+ 		if (!session->wwan)
+@@ -365,7 +370,7 @@ static void ipc_mux_stop_netif_for_all_sessions(struct iosm_mux *ipc_mux)
+ 	struct mux_session *session;
+ 	int idx;
+ 
+-	for (idx = 0; idx < ipc_mux->nr_sessions; idx++) {
++	for (idx = 0; idx < IPC_MEM_MUX_IP_SESSION_ENTRIES; idx++) {
+ 		session = &ipc_mux->session[idx];
+ 
+ 		if (!session->wwan)
+@@ -387,7 +392,7 @@ void ipc_mux_check_n_restart_tx(struct iosm_mux *ipc_mux)
+ 
+ int ipc_mux_get_max_sessions(struct iosm_mux *ipc_mux)
+ {
+-	return ipc_mux ? ipc_mux->nr_sessions : -EFAULT;
++	return ipc_mux ? IPC_MEM_MUX_IP_SESSION_ENTRIES : -EFAULT;
+ }
+ 
+ enum ipc_mux_protocol ipc_mux_get_active_protocol(struct iosm_mux *ipc_mux)
+@@ -435,9 +440,11 @@ void ipc_mux_deinit(struct iosm_mux *ipc_mux)
+ 		return;
+ 	ipc_mux_stop_netif_for_all_sessions(ipc_mux);
+ 
+-	channel_close = &mux_msg.channel_close;
+-	channel_close->event = MUX_E_MUX_CHANNEL_CLOSE;
+-	ipc_mux_schedule(ipc_mux, &mux_msg);
++	if (ipc_mux->state == MUX_S_ACTIVE) {
++		channel_close = &mux_msg.channel_close;
++		channel_close->event = MUX_E_MUX_CHANNEL_CLOSE;
++		ipc_mux_schedule(ipc_mux, &mux_msg);
++	}
+ 
+ 	/* Empty the ADB free list. */
+ 	free_list = &ipc_mux->ul_adb.free_list;
+diff --git a/drivers/net/wwan/iosm/iosm_ipc_mux.h b/drivers/net/wwan/iosm/iosm_ipc_mux.h
+index ddd2cd0bd911..88debaa1ed31 100644
+--- a/drivers/net/wwan/iosm/iosm_ipc_mux.h
++++ b/drivers/net/wwan/iosm/iosm_ipc_mux.h
+@@ -278,7 +278,6 @@ struct iosm_mux {
+ struct ipc_mux_config {
+ 	enum ipc_mux_protocol protocol;
+ 	enum ipc_mux_ul_flow ul_flow;
+-	int nr_sessions;
+ 	int instance_id;
+ };
+ 
+diff --git a/drivers/net/wwan/iosm/iosm_ipc_mux_codec.c b/drivers/net/wwan/iosm/iosm_ipc_mux_codec.c
+index bdb2d32cdb6d..40fb54a0513e 100644
+--- a/drivers/net/wwan/iosm/iosm_ipc_mux_codec.c
++++ b/drivers/net/wwan/iosm/iosm_ipc_mux_codec.c
+@@ -175,7 +175,7 @@ static int ipc_mux_dl_dlcmds_decode_process(struct iosm_mux *ipc_mux,
+ 	switch (le32_to_cpu(cmdh->command_type)) {
+ 	case MUX_LITE_CMD_FLOW_CTL:
+ 
+-		if (cmdh->if_id >= ipc_mux->nr_sessions) {
++		if (cmdh->if_id >= IPC_MEM_MUX_IP_SESSION_ENTRIES) {
+ 			dev_err(ipc_mux->dev, "if_id [%d] not valid",
+ 				cmdh->if_id);
+ 			return -EINVAL; /* No session interface id. */
+@@ -307,13 +307,13 @@ static void ipc_mux_dl_fcth_decode(struct iosm_mux *ipc_mux,
+ 	}
+ 
+ 	if_id = fct->if_id;
+-	if (if_id >= ipc_mux->nr_sessions) {
++	if (if_id >= IPC_MEM_MUX_IP_SESSION_ENTRIES) {
+ 		dev_err(ipc_mux->dev, "not supported if_id: %d", if_id);
  		return;
  	}
  
-+	if (test_and_clear_bit(IOSM_DEVLINK_INIT, &ipc_imem->flag))
-+		ipc_devlink_deinit(ipc_imem->ipc_devlink);
-+
- 	if (!ipc_imem_setup_cp_mux_cap_init(ipc_imem, &mux_cfg))
- 		ipc_imem->mux = ipc_mux_init(&mux_cfg, ipc_imem);
- 
-@@ -1184,7 +1187,7 @@ void ipc_imem_cleanup(struct iosm_imem *ipc_imem)
- 		ipc_port_deinit(ipc_imem->ipc_port);
+ 	/* Is the session active ? */
+-	if_id = array_index_nospec(if_id, ipc_mux->nr_sessions);
++	if_id = array_index_nospec(if_id, IPC_MEM_MUX_IP_SESSION_ENTRIES);
+ 	wwan = ipc_mux->session[if_id].wwan;
+ 	if (!wwan) {
+ 		dev_err(ipc_mux->dev, "session Net ID is NULL");
+@@ -355,13 +355,13 @@ static void ipc_mux_dl_adgh_decode(struct iosm_mux *ipc_mux,
  	}
  
--	if (ipc_imem->ipc_devlink)
-+	if (test_and_clear_bit(IOSM_DEVLINK_INIT, &ipc_imem->flag))
- 		ipc_devlink_deinit(ipc_imem->ipc_devlink);
- 
- 	ipc_imem_device_ipc_uninit(ipc_imem);
-@@ -1348,6 +1351,8 @@ struct iosm_imem *ipc_imem_init(struct iosm_pcie *pcie, unsigned int device_id,
- 
- 		if (ipc_flash_link_establish(ipc_imem))
- 			goto devlink_channel_fail;
-+
-+		set_bit(IOSM_DEVLINK_INIT, &ipc_imem->flag);
+ 	if_id = adgh->if_id;
+-	if (if_id >= ipc_mux->nr_sessions) {
++	if (if_id >= IPC_MEM_MUX_IP_SESSION_ENTRIES) {
+ 		dev_err(ipc_mux->dev, "invalid if_id while decoding %d", if_id);
+ 		return;
  	}
- 	return ipc_imem;
- devlink_channel_fail:
-diff --git a/drivers/net/wwan/iosm/iosm_ipc_imem.h b/drivers/net/wwan/iosm/iosm_ipc_imem.h
-index cec38009c44a..d220f2611621 100644
---- a/drivers/net/wwan/iosm/iosm_ipc_imem.h
-+++ b/drivers/net/wwan/iosm/iosm_ipc_imem.h
-@@ -101,6 +101,7 @@ struct ipc_chnl_cfg;
- #define IOSM_CHIP_INFO_SIZE_MAX 100
  
- #define FULLY_FUNCTIONAL 0
-+#define IOSM_DEVLINK_INIT 1
+ 	/* Is the session active ? */
+-	if_id = array_index_nospec(if_id, ipc_mux->nr_sessions);
++	if_id = array_index_nospec(if_id, IPC_MEM_MUX_IP_SESSION_ENTRIES);
+ 	wwan = ipc_mux->session[if_id].wwan;
+ 	if (!wwan) {
+ 		dev_err(ipc_mux->dev, "session Net ID is NULL");
+@@ -538,7 +538,7 @@ static void ipc_mux_stop_tx_for_all_sessions(struct iosm_mux *ipc_mux)
+ 	struct mux_session *session;
+ 	int idx;
  
- /* List of the supported UL/DL pipes. */
- enum ipc_mem_pipes {
-diff --git a/drivers/net/wwan/iosm/iosm_ipc_imem_ops.c b/drivers/net/wwan/iosm/iosm_ipc_imem_ops.c
-index 43f1796a8984..0757fd915437 100644
---- a/drivers/net/wwan/iosm/iosm_ipc_imem_ops.c
-+++ b/drivers/net/wwan/iosm/iosm_ipc_imem_ops.c
-@@ -471,6 +471,7 @@ void ipc_imem_sys_devlink_close(struct iosm_devlink *ipc_devlink)
- 	/* Release the pipe resources */
- 	ipc_imem_pipe_cleanup(ipc_imem, &channel->ul_pipe);
- 	ipc_imem_pipe_cleanup(ipc_imem, &channel->dl_pipe);
-+	ipc_imem->nr_of_channels--;
- }
+-	for (idx = 0; idx < ipc_mux->nr_sessions; idx++) {
++	for (idx = 0; idx < IPC_MEM_MUX_IP_SESSION_ENTRIES; idx++) {
+ 		session = &ipc_mux->session[idx];
  
- void ipc_imem_sys_devlink_notify_rx(struct iosm_devlink *ipc_devlink,
+ 		if (!session->wwan)
+@@ -563,7 +563,7 @@ static bool ipc_mux_lite_send_qlt(struct iosm_mux *ipc_mux)
+ 	qlt_size = offsetof(struct ipc_mem_lite_gen_tbl, vfl) +
+ 		   MUX_QUEUE_LEVEL * sizeof(struct mux_lite_vfl);
+ 
+-	for (i = 0; i < ipc_mux->nr_sessions; i++) {
++	for (i = 0; i < IPC_MEM_MUX_IP_SESSION_ENTRIES; i++) {
+ 		session = &ipc_mux->session[i];
+ 
+ 		if (!session->wwan || session->flow_ctl_mask)
+@@ -777,13 +777,13 @@ bool ipc_mux_ul_data_encode(struct iosm_mux *ipc_mux)
+ 
+ 	ipc_mux->adb_prep_ongoing = true;
+ 
+-	for (i = 0; i < ipc_mux->nr_sessions; i++) {
++	for (i = 0; i < IPC_MEM_MUX_IP_SESSION_ENTRIES; i++) {
+ 		session_id = ipc_mux->rr_next_session;
+ 		session = &ipc_mux->session[session_id];
+ 
+ 		/* Go to next handle rr_next_session overflow */
+ 		ipc_mux->rr_next_session++;
+-		if (ipc_mux->rr_next_session >= ipc_mux->nr_sessions)
++		if (ipc_mux->rr_next_session >= IPC_MEM_MUX_IP_SESSION_ENTRIES)
+ 			ipc_mux->rr_next_session = 0;
+ 
+ 		if (!session->wwan || session->flow_ctl_mask ||
 -- 
 2.25.1
 
