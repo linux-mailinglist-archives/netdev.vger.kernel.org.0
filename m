@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4963146933A
-	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 11:14:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 50F2546933C
+	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 11:14:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233595AbhLFKR1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Dec 2021 05:17:27 -0500
+        id S232885AbhLFKR3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Dec 2021 05:17:29 -0500
 Received: from mail-zr0che01on2133.outbound.protection.outlook.com ([40.107.24.133]:8033
         "EHLO CHE01-ZR0-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232885AbhLFKRY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 6 Dec 2021 05:17:24 -0500
+        id S233768AbhLFKR0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 6 Dec 2021 05:17:26 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nZ8ftWdIVu2ILCsULKYHkB9cFqk99MYZ+KjbiF24qz+br5ZGXRy4oEFoori4SLnGUzEdtH8x4lCuqr44MaFA8lvhLvc2BJLsSOVcVE2ktw97lxzUVRMrDw7U/BYOelUxCd1LnMJxUkcx46NheBsnRpPy7g2ZdPMUR6Nirze0QajB4mRwRHG/nijrzFzyOa75n0zYadXYgP7C4LhWo7IzLoHAOMegyJM32bUWF7uYmCa33ADlsF+Bpwvjq9I6VVR7IGCOgIDrrHJnJimbVar6i4bmNoSHnoQo9AOB1QkaSZZ13dLgJYSVk9fTaeSYv2NbbHrARodOEy1DA0GzJc0wfg==
+ b=jCRqYoA46B3XiVz4cziFx0IX0fsqMiUqMj30FPD+Qw7fTFVCzFtm8rCc75C7XUU3Kg/gXBBWXTMchumNKtk/CbNhJtMzHKcI88ZPes4oRkrjFZx9HDw2BLP/6KBjrn/4DVBr+AIhg3ssA1dc4WA9JJUQiEdCOe5+5zYlvh1yhr9mvYiFUmg4K/ltjTknAn7QSEDXqo7gHJR/qBgMqLJJ7q0Zj7H24+LzkH5wxiUFxifK72C20tK9syeJgwghtRGLEErxhGHg45u/Ik7zUPPZfYG/+GPJOIbpe6BzB/MhYsAyTY8kBjsFeVW1XMWhpzGF1DC5Ek9vq6LRqPNM5nl+5g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=z+irxxapgyAdUzTjT30xR4zk5SBor4MMHOghpyk5E3k=;
- b=D2FMzth3OnAw/l7Kpvx7u9J+poRReqkSBT5tYY8lz2103CuAsTFxgET2XEi28YiLxplBnYTd8pjFpx4Iurb6Ng2qFvv9LFYujYyE9Yq8rI77qNuzBB0l4PERNZ6Oo4PjUFwgfGyKh32eTkaimSXdEf/xJdrnz8J/p1tv1tPbz+FyoGDQypJJlDx2AC9YEMehJYsxStyqsF0W+1f7F8tAznhbS1JUGFiVzeDHoWAKOQizlqOyh6frpIxXVdr2Eo2QWEFpWUBEjtbBCxCrYn4lHjzFwVGWh15ZNk6yYOcSqCb1yu7mN3I1B0aGHNGLzdBVBiAl/HtbkoXOBn8e9Te+bQ==
+ bh=/gtuxkwCzUgyB89eyRvoAMss8BP+Rq2Eea01b4fnDQ4=;
+ b=KpM37L5DL4lNxtGtmWBz3HiYNoYMCf0nIBTBGd1k6CKe3aZhfTgByeN0w8ntvgvdl1m/sJnOmHu3eLxxZ8TnJrePeWZzxPZJ7wFG1J6Yt2rHOich7CysQdZ58flsQDfU6iyRnWoMUcxNAyoLlXnqur3764rbVozBd7jalDmRslnmdyEMuDlIyseOO7bnuIiPYPbwony9jh6Llpbqvho6lGKkRdGetXZjNEdGm+jRn/nDlyzA8lBjk/N6UQfqu51ph8C3dnl1HiE3fIKs+Gf3aB9Qc8dTB+7SPJMKzAN+y5d+FiQhdPSx5sXpNozUtrF3xQgRo6aTVcRc7VTy0VluZg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=toradex.com; dmarc=pass action=none header.from=toradex.com;
  dkim=pass header.d=toradex.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=toradex.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=z+irxxapgyAdUzTjT30xR4zk5SBor4MMHOghpyk5E3k=;
- b=r6LTDTYiz1a0TWkpmz/P25tw5pIqXAxIJ/sPoEHf/liK9+Yy4p1yJW5FtEUGiuJ9lwlhizhiRfF5UHtGPYD76Tz90VntvORhtpTc9/CgOSNRwDkH9hk4EYQSwtQrELrjlrfGf0+x7R0sTHUazc7K7+S6URCiHH6B936MfmqeVjg=
+ bh=/gtuxkwCzUgyB89eyRvoAMss8BP+Rq2Eea01b4fnDQ4=;
+ b=R3ebjC+tUKcFlItJ6zP64lzw9WIr5bRN7zVqZnDFaUx248EnxB1XHGyECDTgXlJ3d1L5k9S/14x7TAl5g1Kb6o7WhI1Py8esdNx9J7NZpYluH1wNp/MN90k9YMskk5Seo/Tb5zYT7cBIHmN0eqe95VTCHZGJne90mjRhUDyyRDk=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=toradex.com;
 Received: from ZR0P278MB0377.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:34::14)
@@ -47,9 +47,9 @@ To:     netdev@vger.kernel.org, Joakim Zhang <qiangqing.zhang@nxp.com>,
         Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>
 Cc:     Philippe Schenker <philippe.schenker@toradex.com>,
         linux-kernel@vger.kernel.org
-Subject: [RFC PATCH 1/2] net: fec: make fec_reset_phy not only usable once
-Date:   Mon,  6 Dec 2021 11:13:25 +0100
-Message-Id: <20211206101326.1022527-2-philippe.schenker@toradex.com>
+Subject: [RFC PATCH 2/2] net: fec: reset phy in resume if it was powered down
+Date:   Mon,  6 Dec 2021 11:13:26 +0100
+Message-Id: <20211206101326.1022527-3-philippe.schenker@toradex.com>
 X-Mailer: git-send-email 2.34.0
 In-Reply-To: <20211206101326.1022527-1-philippe.schenker@toradex.com>
 References: <20211206101326.1022527-1-philippe.schenker@toradex.com>
@@ -59,233 +59,89 @@ X-ClientProxiedBy: ZR0P278CA0183.CHEP278.PROD.OUTLOOK.COM
  (2603:10a6:910:44::13) To ZR0P278MB0377.CHEP278.PROD.OUTLOOK.COM
  (2603:10a6:910:34::14)
 MIME-Version: 1.0
-Received: from philippe-pc.toradex.int (31.10.206.124) by ZR0P278CA0183.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:44::13) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.17 via Frontend Transport; Mon, 6 Dec 2021 10:13:52 +0000
+Received: from philippe-pc.toradex.int (31.10.206.124) by ZR0P278CA0183.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:44::13) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.17 via Frontend Transport; Mon, 6 Dec 2021 10:13:53 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 437b888b-9efd-4a74-59d4-08d9b8a11abf
+X-MS-Office365-Filtering-Correlation-Id: 9123f02b-d50c-4281-83cf-08d9b8a11b13
 X-MS-TrafficTypeDiagnostic: ZRAP278MB0206:EE_
-X-Microsoft-Antispam-PRVS: <ZRAP278MB02068BAB1FDF00ABFF5BC98CF46D9@ZRAP278MB0206.CHEP278.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
+X-Microsoft-Antispam-PRVS: <ZRAP278MB02060DD2102DC6B8526A1D10F46D9@ZRAP278MB0206.CHEP278.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5236;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: WZjdJBLMBq0hwsAaHf83znpf+Mxr7E92G8vXN+z0aMvwTn1Zb4R/83BgV85WZibUyCroiJgIVnPHc5W+HW89PHfsX7Iiu8CHEL0ta3BH+ItTKY4xNFn3C4NWKUc0l2ZorqXM7bOgj1dq6W8vaUMAyzumNvY5LCQ/hp2L0FCJ1VpCgcojexuDANbGLkwXQBHzdI1KRmRLzarqp4bgJNjBMT8M5xGJMrCdRbkrhZ7ZLBbGkS2ndlHfUKPFs0xoGjubqear4Q6LJwK48m3yucezEdy75aSkfZkVE8AzmN8Jp5rs9SRnJlpy8dbbMFe1FRnQzIbKKRMVAoMRaSRlXymSM2Wf+hQg6TPgNGfH0FPRBssQdz/zrMyo+K7BFeu9T+L2ITPiMmnAWXmUWlHUvJw1UTGuNxw+YuNGKkIMNGB7VgvrvO1LrwM/D5s9rhGF2PYzARtJVTq8jVEN8f7Cxzluq5usbkNAFD+z+eLjtZqQu5RD0mDDJEmySSQv0MZFSSQ8DxUGpinEZBW4ClKJWXttJBZkcX12+8yGcZTdmwMD5ol/61sExBKgZ2JIZ8RynanuFCIDKXU2+o8U5IDfptXwsUzZ9tu9GBs68RPeUQMoV6a9F07UfCY1m1Qy9y8hRlN6veEzD88J/oFzxpewpcGShTzsbiImYk8Vf6VKhxKC648qacMwRp5mDv9JCk3qtoQzruSVcUF6kYvG7GczgsATDRjpl07MJpICeFs+fSylgAM=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:ZR0P278MB0377.CHEP278.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(4636009)(366004)(346002)(83380400001)(2616005)(66946007)(1076003)(86362001)(36756003)(2906002)(26005)(44832011)(956004)(6666004)(6512007)(66476007)(66556008)(4326008)(8676002)(6486002)(110136005)(508600001)(316002)(186003)(6506007)(5660300002)(38100700002)(8936002)(52116002)(38350700002)(16060500005);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: juZHUhCvcAX94biHx0bD4kx5oA+VMlNLlM4+kxV3oTqfYPufMjKtKLqZ83vbyKQRl87xkAZRuiWSKxT4GckJjP0B8JLpHxi7mXjTv49bsi/zy0Npl4xA6dH72B4ujS5BBDEGUzFAe/e60Yvcm626ozbpSl4i8yx8TljPebdhSDWG6Lh3CQ6VCyrccb87IWwrKpswIThfuu9ybZe0iq/sjvUYBTmwDVCRD2tnwKctQBtRbocMq21maLKZhyftWUyoQHb3l4WeFM/YLjU0ShkjPv9z9VtXMvFNiJ0YnRcTKZuJQGANLz6LYow2FEwO1qGBAnar+d9Fxjx2iZOwPPDETRFqIgjSUhxX2y03AO3oYw3hJuHbN10QyYai9KTaS3jvHttjLdMfRFNvFzHEUni1V3DgiBBoVKv2DpUpT8vGraCPPgS5a95B2oxEqLd4u9PMEnK9JHIUAqwizOjcK5mdNSAoOaAuvE/TMalobNIXOJEvRWwq14CQ8lGXdzTsqlHhIuo8QiYprHiF3fK+3zSehbkd8TDGIKeLTwN50AI27zQ3lAH3XfcM1pFMAsMqlBXu/jYfRlaXpqYwPMwkyljR8i99YdAkvffnf0hmQyN2jKjmzqhbcHow83b31oN6G3qAMfs3oe21l6Pq6CbBr8n7Cz3lu2LOYN0vccpD3OTJkpMwf+tUTzj5OndfWS5ph8j4yDpO2s9JTCU5Rc7aRJD6sOzB+H+qv9CdfHjV6m/su94=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:ZR0P278MB0377.CHEP278.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(4636009)(39850400004)(376002)(366004)(396003)(346002)(136003)(83380400001)(2616005)(66946007)(1076003)(86362001)(36756003)(2906002)(26005)(44832011)(956004)(6666004)(6512007)(66476007)(4744005)(66556008)(4326008)(8676002)(6486002)(110136005)(508600001)(316002)(186003)(6506007)(5660300002)(38100700002)(8936002)(52116002)(38350700002)(16060500005);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?g9olbxBYL3L/nLFnh9XXUHrwxkXLCkggstr8uGdxbII+o7oOKmM/zGlcah0t?=
- =?us-ascii?Q?RpVQDvlsIrrTXQC6E+zxcZTXGAxPY3FjJHgwNgejsPcRFyayMiCdexGNO99e?=
- =?us-ascii?Q?o4JwvM6WFebVuWjm1jaO8tdWPAOCHvFq5jG6iEZw5V7G3PccIwTxmwXSXzmy?=
- =?us-ascii?Q?kNeqnzD+WgWirI+i2qYwKth1kCkoavYapMqfYcIOAqwZx5IIivs1UoYlcCGO?=
- =?us-ascii?Q?OQakHyBGjTq5fLSVHLtWYlU5BaHH07kvJF98m31FkCD/sZVizZApA+MEVFo9?=
- =?us-ascii?Q?s7B/qBZoOoISqb/zKCSba59eLdnv/p/lyU3fSMRQUlkL4jVQ7B1CdFU9xQsC?=
- =?us-ascii?Q?+xH/Z8ROqoHFeDOGjK1iidETVn+eNwu1OYIbhyyN7r+tqvGujo8nW775R84M?=
- =?us-ascii?Q?Rwb8g2gAGf7Vv4/02H5cr/1AQDlGBNgaT2y9x6sNSm7gAYnhDNRpcw7GcmjV?=
- =?us-ascii?Q?U/uPKtHkwX9yVdfzNBVDPADX4+5tDh1bJkyoYSdFg6ue9MD/liIcWvLB39kE?=
- =?us-ascii?Q?8W0Pe+QQbaf+HRi/7GvDg/9QQV6lVdzP5CzaUpzkUVsQC2x/QjTsxd9tEmxD?=
- =?us-ascii?Q?mQmeO9kV7LlgfFxqXZVC5noivZOpqX+72n8GjBeM6qyUKqIC37kY2BS1KuNM?=
- =?us-ascii?Q?Ktkx29RUtNu37xzMPvm74FRHYA6O9IJdNS5cPSfCCunnfJ4PDqDH3B9ERHox?=
- =?us-ascii?Q?jzcj2ugE7wfIYWBabq2Wcuf/l5viJuoekv6Wcgu20od3+hURTc4O3fC8TP5n?=
- =?us-ascii?Q?DsLKhrfvZ6lJvC5DjuYhybGwQggm0UuHQZIjJwyHt1frs3Gy2v4lUOwXPito?=
- =?us-ascii?Q?5lPIXfwgk073s/5dzpCCLJOAQVxk0Hw84PEvHAtc1+bxf/cxa5A6zmFKhJdh?=
- =?us-ascii?Q?YaSus8LoPkamt4l3cyzZ481kHrFe3CpVFKNC+CWBvGDrrV+AoZvxBlhF5hKz?=
- =?us-ascii?Q?E4Vlo4S81WHSKVQ2C4Elo4ZWqRzArFvgtoNXr72ZaUnKeGn17CFV/L9hejN6?=
- =?us-ascii?Q?O7hJM5pAthPkHAWo6gfv79odN42eCKm8nZIV5jLOIYBOix0yHLTFPeZm4pGT?=
- =?us-ascii?Q?stVVkwmW8RFRTZVARUJDUD/wA7dpp2JjyOOMOaHetelkrR0uJFjKbeQ6HcsL?=
- =?us-ascii?Q?9u/FMU1ijYWwXirTlT+aUiziCWeXJvExn7xzqLA50Zh1MSPzr3V8eutfJtBy?=
- =?us-ascii?Q?QENbCcHlPPFzBHpd2T7ScS7vucN9pADK5v8kHh/hvpHYoKCrC7/f5H+wawUz?=
- =?us-ascii?Q?c9Flu39vCEu7mfheKUiF7cIepGWdyfRo6TUvW85RDZOeYaiD8q58XrV+U1Hp?=
- =?us-ascii?Q?oY9dwlA3fdzpDz5vUmT9DWjHzbMGBjYVxops5rYH1CwCdFjQL8kNeRXgZLvb?=
- =?us-ascii?Q?cpXdJrJ/fcwsRIiJ8RX/G4tVKsOTbyT3TqhJvLl9DTia1uioTeUN/lKnOwIE?=
- =?us-ascii?Q?M4OYAQkHL20mcPgHI8weeAEzsyybnmTSLa2J5S7G1710lNznLzgu7cfIOBF5?=
- =?us-ascii?Q?HM+xcn5QpSq7OU23kwbqT+DCXge9r4cC8lf6dsgDsvxqH6Jow5OXQIG2t2He?=
- =?us-ascii?Q?iDGPvcy8quw3rC0hq6ExNsESFebsOJ/f53Yx5mDUsfiRFcPCWaFNrdVpbAH/?=
- =?us-ascii?Q?TYKarBqP+e7fGrL4xabWKp0MxSLtWvvssrpPqLlNF7NMCy8DXWEe3/T54Eap?=
- =?us-ascii?Q?5KqBig=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Y+ONAH17lXQpkHywhNGMjhIZQRXm50+IBcBF75oNa+fNExUq7LT6T9/7GPR8?=
+ =?us-ascii?Q?CuXX/qQYHJp8OdtVQZkz/+McDRUGcaimXT2fxK3oioDUevGnBLtTi7vr4pei?=
+ =?us-ascii?Q?Ws6/DRx0altqFWGqBiISP3Y9eCXLKKTPuF/Ni35xNx5EmSHRyjZ1wf+BbCSG?=
+ =?us-ascii?Q?yXvplfDkQsoHIg56/jdVPNsTr/dDzZzmSQD8vI0fjTl4rl3KYbCvc8mPC/ne?=
+ =?us-ascii?Q?Jx+8sq3i6g8w6C2IEE8tCidgn9bUhV9h7SsTEyR4GkHdO0vgN3lJZrkxiptq?=
+ =?us-ascii?Q?UaaYHuhJq1rnwEbC5hj8gtbc4AMge8YHpOhhxNjFJ1nDpUxrbj4LjlwrpXe2?=
+ =?us-ascii?Q?PxGDR+5P0cAzgG5Miv6Cko6JUyZZAhquvuRMcSL+oWrJ5ypwaI/vEdcOT01U?=
+ =?us-ascii?Q?ngQz43O2hLaJcP8BDt9oGpyo/jo7f4h29z7FjLKq9+WM9A0xvtdTOCIjHoQL?=
+ =?us-ascii?Q?RL9QjcknQVqduLpm9iNV4fAgw6i/AJ1+nawUmKXkM+vGU3TjOGh+ehzsUuqj?=
+ =?us-ascii?Q?2zvwymvJDThhzDrWWSrQCofl8KD1uBLeCP+JrErZ+iFeY/t9UQYHYOG3bidU?=
+ =?us-ascii?Q?hznE0Pzcr2CHQ3gXhKUD4Z0Apxpi6V5js3wqIDztfBRkx12Ci7QU1/co+FGO?=
+ =?us-ascii?Q?6TIWK8XXgt7wtxPyIdMQXGIPxIezQuO+V7s2YFAyltxUghH58tiB2jAqH8fL?=
+ =?us-ascii?Q?OVLenrO/iIWCkcihZC95WhQhOR5vmgW4aCw29xlBh9T/PIXCL9p5WUr/5TCK?=
+ =?us-ascii?Q?YndLAXu2WngTB6vAWnvLOjsxT59uYtNBB6Pi+9SGuhPCbfdaOfaUvq70Jn0M?=
+ =?us-ascii?Q?mRCdD1uM6f+nfZ2OhXak+g3340mpUlrXGYLbP3mcBk6UEDRbCp2ZXU0aygn4?=
+ =?us-ascii?Q?Asa6yumWs+qctEwXEzfIle+r1/TmooxJfRzNQ5ekvgqwtqVolvoFr106OvlT?=
+ =?us-ascii?Q?5kGG1/eoUPI53A92Au5nV/ElmN6vLM+MNOd9UGgpXtreWd7AtKBpZQvSwOcx?=
+ =?us-ascii?Q?PxkQpcxT/BnY4M8Qeh0/04ohGiBItP6GpLv/34D9IbhoEb3lts1VxG+7wrdZ?=
+ =?us-ascii?Q?kwCHjWpPC91BFGEnarkwQhXAAt4a8mYzC/96/GwOggA5ZO7h31IjQyTgLYka?=
+ =?us-ascii?Q?woRKtGOZiGjMQbD/4lv9MmEcDbbSyeSq+BdWShxcCToQYh7LYxepWBH2HiMZ?=
+ =?us-ascii?Q?NhqpdH89RoKo15qsRyJ5o+TVSjoV0nvD3HDIvopxAyrWHHwQM0WKZAQx4A5u?=
+ =?us-ascii?Q?X+se56jfGJcWrvy6konnsaep2nQCqKIUtdnxyEWreUd9Gms5JJfhqvc7yH0T?=
+ =?us-ascii?Q?U5r33/KFkVDYZTCdAH2kxzOVxMKrSjJNC4DO895KDx5plIV9EU5uSeNbu7WK?=
+ =?us-ascii?Q?Z7aUHT7DDzvelpGUMibBPXv5vDFtqNYOIdu/kTV/dhXyxzI5+u7ztKjC6wT1?=
+ =?us-ascii?Q?QH1Eyztqy+FZlkBP0VRWDPRJychXQgKh/dcjwp3XkOQc5m8OGrXh8UjhUurf?=
+ =?us-ascii?Q?GS+hJM9ApuCbSXYLPlMdn31M8CJPqbsXNZ6+QGY4PPDubptq1CHdDvhnsYe5?=
+ =?us-ascii?Q?og7s/2lg4/4laVjblybuMxiqIYCK43KAvIX0cZkM/SUq977yUYJHtfVEiSoN?=
+ =?us-ascii?Q?Z/4CCgiNv9fBO8CGFyV/xHyFDjCZX6jIfikc/eOlHBEof46APirixDqru+8L?=
+ =?us-ascii?Q?aXb8VQ=3D=3D?=
 X-OriginatorOrg: toradex.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 437b888b-9efd-4a74-59d4-08d9b8a11abf
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9123f02b-d50c-4281-83cf-08d9b8a11b13
 X-MS-Exchange-CrossTenant-AuthSource: ZR0P278MB0377.CHEP278.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Dec 2021 10:13:52.9371
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Dec 2021 10:13:53.4250
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: d9995866-0d9b-4251-8315-093f062abab4
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 12Oivof6pY4Rh3GT9vUTl4azPOqTtfyu3wM7V8N8+WIxK/6MjyAij65HDwEPO43FFzllFgGTOIs5tcvsckBThZmVsFIPxGMf2ijBWtXSXPY=
+X-MS-Exchange-CrossTenant-UserPrincipalName: 8kNmt8sfp0pTjsqC1PuWUjPUMUNPLsrJdw4Cjij9ci2VAyqNUL5eWwNyYkQlC6WszeKVOMxxpZUbZJ/81ivjntfe/ZfzxxDf7nQVFo4swwc=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: ZRAP278MB0206
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-inside fec_reset_phy devm_gpio_request_once is called hence making
-the function only callable once as the gpio is not stored somewhere nor
-freed at the end.
+If a board solely rely on a GPIO to reset the PHY after power-up, the
+PHY won't work after a power-down where the power was cut.
 
-Create a new function to collect the data around phy-reset-gpio from
-devicetree and store it in fec_enet_private. Make fec_reset_phy use
-the data stored in fec_enet_private, so this function can be called
-multiple times.
+Reset the PHY after power-enable in fec_resume.
 
 Signed-off-by: Philippe Schenker <philippe.schenker@toradex.com>
+
 ---
 
- drivers/net/ethernet/freescale/fec.h      |  6 ++
- drivers/net/ethernet/freescale/fec_main.c | 94 +++++++++++++++--------
- 2 files changed, 69 insertions(+), 31 deletions(-)
+ drivers/net/ethernet/freescale/fec_main.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/net/ethernet/freescale/fec.h b/drivers/net/ethernet/freescale/fec.h
-index 7b4961daa254..466607bbf9cf 100644
---- a/drivers/net/ethernet/freescale/fec.h
-+++ b/drivers/net/ethernet/freescale/fec.h
-@@ -631,6 +631,12 @@ struct fec_enet_private {
- 	int pps_enable;
- 	unsigned int next_counter;
- 
-+	/* PHY reset signal */
-+	bool phy_reset_active_high;
-+	int phy_reset_duration;
-+	int phy_reset_gpio;
-+	int phy_reset_post_delay;
-+
- 	u64 ethtool_stats[];
- };
- 
 diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
-index bc418b910999..92840f18c48f 100644
+index 92840f18c48f..41c3825cd768 100644
 --- a/drivers/net/ethernet/freescale/fec_main.c
 +++ b/drivers/net/ethernet/freescale/fec_main.c
-@@ -3588,62 +3588,90 @@ static int fec_enet_init(struct net_device *ndev)
- }
- 
- #ifdef CONFIG_OF
--static int fec_reset_phy(struct platform_device *pdev)
-+static int fec_reset_phy_probe(struct platform_device *pdev,
-+			       struct net_device *ndev)
- {
--	int err, phy_reset;
--	bool active_high = false;
--	int msec = 1, phy_post_delay = 0;
- 	struct device_node *np = pdev->dev.of_node;
-+	struct fec_enet_private *fep = netdev_priv(ndev);
-+	int tmp, ret;
- 
- 	if (!np)
- 		return 0;
- 
--	err = of_property_read_u32(np, "phy-reset-duration", &msec);
-+	tmp = 1;
-+	ret = of_property_read_u32(np, "phy-reset-duration", &tmp);
- 	/* A sane reset duration should not be longer than 1s */
--	if (!err && msec > 1000)
--		msec = 1;
-+	if (!ret && tmp > 1000)
-+		tmp = 1;
+@@ -4118,6 +4118,10 @@ static int __maybe_unused fec_resume(struct device *dev)
+ 		ret = regulator_enable(fep->reg_phy);
+ 		if (ret)
+ 			return ret;
 +
-+	fep->phy_reset_duration = tmp;
- 
--	phy_reset = of_get_named_gpio(np, "phy-reset-gpios", 0);
--	if (phy_reset == -EPROBE_DEFER)
--		return phy_reset;
--	else if (!gpio_is_valid(phy_reset))
-+	tmp = of_get_named_gpio(np, "phy-reset-gpios", 0);
-+	if (tmp == -EPROBE_DEFER)
-+		return tmp;
-+	else if (!gpio_is_valid(tmp))
- 		return 0;
- 
--	err = of_property_read_u32(np, "phy-reset-post-delay", &phy_post_delay);
-+	fep->phy_reset_gpio = tmp;
-+
-+	tmp = 0;
-+	ret = of_property_read_u32(np, "phy-reset-post-delay", &tmp);
- 	/* valid reset duration should be less than 1s */
--	if (!err && phy_post_delay > 1000)
-+	if (!ret && tmp > 1000)
- 		return -EINVAL;
- 
--	active_high = of_property_read_bool(np, "phy-reset-active-high");
-+	fep->phy_reset_post_delay = tmp;
- 
--	err = devm_gpio_request_one(&pdev->dev, phy_reset,
--			active_high ? GPIOF_OUT_INIT_HIGH : GPIOF_OUT_INIT_LOW,
--			"phy-reset");
--	if (err) {
--		dev_err(&pdev->dev, "failed to get phy-reset-gpios: %d\n", err);
--		return err;
-+	fep->phy_reset_active_high =
-+		of_property_read_bool(np, "phy-reset-active-high");
-+
-+	ret = devm_gpio_request_one(&pdev->dev, fep->phy_reset_gpio,
-+				    fep->phy_reset_active_high ?
-+				    GPIOF_OUT_INIT_HIGH : GPIOF_OUT_INIT_LOW,
-+				    "phy-reset");
-+	if (ret) {
-+		dev_err(&pdev->dev, "failed to get phy-reset-gpios: %d\n", ret);
-+		return ret;
++		ret = fec_reset_phy(ndev);
++		if (ret)
++			return ret;
  	}
  
--	if (msec > 20)
--		msleep(msec);
-+	return 0;
-+}
-+
-+static int fec_reset_phy(struct net_device *ndev)
-+{
-+	struct fec_enet_private *fep = netdev_priv(ndev);
-+
-+	gpio_set_value_cansleep(fep->phy_reset_gpio,
-+				fep->phy_reset_active_high);
-+
-+	if (fep->phy_reset_duration > 20)
-+		msleep(fep->phy_reset_duration);
- 	else
--		usleep_range(msec * 1000, msec * 1000 + 1000);
-+		usleep_range(fep->phy_reset_duration * 1000,
-+			     fep->phy_reset_duration * 1000 + 1000);
- 
--	gpio_set_value_cansleep(phy_reset, !active_high);
-+	gpio_set_value_cansleep(fep->phy_reset_gpio,
-+				!fep->phy_reset_active_high);
- 
--	if (!phy_post_delay)
-+	if (!fep->phy_reset_post_delay)
- 		return 0;
- 
--	if (phy_post_delay > 20)
--		msleep(phy_post_delay);
-+	if (fep->phy_reset_post_delay > 20)
-+		msleep(fep->phy_reset_post_delay);
- 	else
--		usleep_range(phy_post_delay * 1000,
--			     phy_post_delay * 1000 + 1000);
-+		usleep_range(fep->phy_reset_post_delay * 1000,
-+			     fep->phy_reset_post_delay * 1000 + 1000);
- 
- 	return 0;
- }
- #else /* CONFIG_OF */
--static int fec_reset_phy(struct platform_device *pdev)
-+static int fec_reset_phy_probe(struct platform_device *pdev,
-+			       struct net_device *ndev)
-+{
-+	return 0;
-+}
-+
-+static int fec_reset_phy(struct net_device *ndev)
- {
- 	/*
- 	 * In case of platform probe, the reset has been done
-@@ -3918,7 +3946,11 @@ fec_probe(struct platform_device *pdev)
- 	pm_runtime_set_active(&pdev->dev);
- 	pm_runtime_enable(&pdev->dev);
- 
--	ret = fec_reset_phy(pdev);
-+	ret = fec_reset_phy_probe(pdev, ndev);
-+	if (ret)
-+		goto failed_reset;
-+
-+	ret = fec_reset_phy(ndev);
- 	if (ret)
- 		goto failed_reset;
- 
+ 	rtnl_lock();
 -- 
 2.34.0
 
