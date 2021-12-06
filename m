@@ -2,72 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 21F7746A5FA
-	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 20:49:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D45846A611
+	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 20:53:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348706AbhLFTxU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Dec 2021 14:53:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38620 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346214AbhLFTxU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 14:53:20 -0500
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C0FAC061746
-        for <netdev@vger.kernel.org>; Mon,  6 Dec 2021 11:49:51 -0800 (PST)
-Received: by mail-yb1-xb2b.google.com with SMTP id j2so34336329ybg.9
-        for <netdev@vger.kernel.org>; Mon, 06 Dec 2021 11:49:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=vZ2gwoV4XKJaAeZ6eTNGpFY/vqnDetYk/4eXucw/uUI=;
-        b=l6sQmO9SiZjQ+Zlbb550qq0gYFOwelpAr+MudumgPzEHYY3qVHs9H7AJ5XIJd27Jnd
-         0CT9fqTwHQ81cW2dAXNqEZO/0hyn4T0dnLka5UCnD6R53O4g8B/IpIWUledsPdqQ3jW4
-         b/IjOBw1yfjENSlOo9XpPAPIES0va1DnrYu00VNCkg9BaS7NY+ZlquBfQmMGAekiPXjs
-         jypcuzTdbjsccysT67P3ZG9DEz8WEiAmoOYmeinhw15JiLzvAHQo5mysYdNeQ3RZJOdH
-         TdOo4xPendgyVCQ4kQHOCwlPjxzjBBQhBXhAPedhdJD7xPvCLPqH/1GrXfjR5S+gAzsq
-         aGJg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=vZ2gwoV4XKJaAeZ6eTNGpFY/vqnDetYk/4eXucw/uUI=;
-        b=C100/Uo3UO0QTk9wuj61SHR7gPoYXl4BT6lBaAc5kTsERgExwRKTdFMF2EsD6oAHqZ
-         Bb4Jycq8jwdbsYdtVXQeLpfn+WGJkW3NtQJEWYjTsGhWk0yszJ+fWf39dyHAy7iSH8vY
-         OSnE1oYFh50wwUXMwO8TAa4S2aqNaVCMBSsP6jFIdlCKDJxSo2xLQi4HlS/njXSOmSRB
-         xT/MUwVRs+puFLuuj8loxSIHgiShRCizYWGgWlClbGhWiVXb1QOmyvtcnn9mpqD3lF1N
-         0XO7+ZGMrru7gv/EOEDeGbtMMRoPNfg+WQpFxvBrSGzGAiW+H6F1gRtCIbax7lQd2cq+
-         ki2w==
-X-Gm-Message-State: AOAM530splYrJ2fpi23s8xYvPh1U6bnNC+jI5AlIVSepZT5NLzOsUhXv
-        Gf+SozI82pIDGf3qPInK3L7fWafHru0eGULbl++h7M7p19x+eQ==
-X-Google-Smtp-Source: ABdhPJx0seH0Fl0zKbqwmKef3k8IZObZYSk9GyJcK5oItxaZDsElvcEaTxmusX69lhZVNrQ7pPC9UT/ZONRui5rbSc4=
-X-Received: by 2002:a25:9d82:: with SMTP id v2mr6148233ybp.383.1638820190101;
- Mon, 06 Dec 2021 11:49:50 -0800 (PST)
+        id S1348786AbhLFT5S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Dec 2021 14:57:18 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:41298 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1348710AbhLFT5R (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 6 Dec 2021 14:57:17 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
+        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
+        In-Reply-To:References; bh=oN+L5Wm3ItNttMBbh6PzcZw+glspAz/dwdZfwv5XL38=; b=Xs
+        0vaIr2cSSXsrHVSpI1V/klweJRH2repWRSAp5W4qVdgCJWoUUOajBmtZptOpnjL4uSedmEgWIhayF
+        1J0619Li/U/fwJHvI/btJ59W/HpPKyaaho/cUQVhFCczizC3dM3tv8sycNHPFeMqeN5thWEDdZg5s
+        fwk6He/cz3+IMSQ=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1muK3W-00FhKV-U9; Mon, 06 Dec 2021 20:53:46 +0100
+Date:   Mon, 6 Dec 2021 20:53:46 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Martyn Welch <martyn.welch@collabora.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, kernel@collabora.com,
+        Russell King <rmk+kernel@armlinux.org.uk>
+Subject: Re: mv88e6240 configuration broken for B850v3
+Message-ID: <Ya5qSoNhJRiSif/U@lunn.ch>
+References: <b98043f66e8c6f1fd75d11af7b28c55018c58d79.camel@collabora.com>
+ <YapE3I0K4s1Vzs3w@lunn.ch>
+ <b0643124f372db5e579b11237b65336430a71474.camel@collabora.com>
+ <fb6370266a71fdd855d6cf4d147780e0f9e1f5e4.camel@collabora.com>
+ <20211206183147.km7nxcsadtdenfnp@skbuf>
+ <339f76b66c063d5d3bed5c6827c44307da2e5b9f.camel@collabora.com>
+ <20211206185008.7ei67jborz7tx5va@skbuf>
+ <3d6c6226e47374cf92d604bc6c711e59d76e3175.camel@collabora.com>
+ <20211206193730.oubyveywniyvptfk@skbuf>
 MIME-Version: 1.0
-References: <20211025203521.13507-1-hmukos@yandex-team.ru> <20211206191111.14376-1-hmukos@yandex-team.ru>
- <20211206191111.14376-5-hmukos@yandex-team.ru>
-In-Reply-To: <20211206191111.14376-5-hmukos@yandex-team.ru>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 6 Dec 2021 11:49:39 -0800
-Message-ID: <CANn89iLMUqAuUprbNLUtXOcrbW6wvZytveb89S1T_7u_ZVS8GA@mail.gmail.com>
-Subject: Re: [RFC PATCH v3 net-next 4/4] tcp: change SYN ACK retransmit
- behaviour to account for rehash
-To:     Akhmat Karakotov <hmukos@yandex-team.ru>
-Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
-        mitradir@yandex-team.ru, tom@herbertland.com, zeil@yandex-team.ru
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20211206193730.oubyveywniyvptfk@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 6, 2021 at 11:11 AM Akhmat Karakotov <hmukos@yandex-team.ru> wrote:
->
-> Disabling rehash behavior did not affect SYN ACK retransmits because hash
-> was forcefully changed bypassing the sk_rethink_hash function. This patch
-> adds a condition which checks for rehash mode before resetting hash.
->
-> Signed-off-by: Akhmat Karakotov <hmukos@yandex-team.ru>
-> ---
->
+> > > Just out of curiosity, can you try this change? It looks like a
+> > > simple
+> > > case of mismatched conditions inside the mv88e6xxx driver between
+> > > what
+> > > is supposed to force the link down and what is supposed to force it
+> > > up:
+> > > 
+> > > diff --git a/net/dsa/port.c b/net/dsa/port.c
+> > > index 20f183213cbc..d235270babf7 100644
+> > > --- a/net/dsa/port.c
+> > > +++ b/net/dsa/port.c
+> > > @@ -1221,7 +1221,7 @@ int dsa_port_link_register_of(struct dsa_port
+> > > *dp)
+> > >                 if (of_phy_is_fixed_link(dp->dn) || phy_np) {
+> > >                         if (ds->ops->phylink_mac_link_down)
+> > >                                 ds->ops->phylink_mac_link_down(ds, port,
+> > > -                                       MLO_AN_FIXED, PHY_INTERFACE_MODE_NA);
+> > > +                                       MLO_AN_PHY, PHY_INTERFACE_MODE_NA);
+> > >                         return dsa_port_phylink_register(dp);
+> > >                 }
+> > >                 return 0;
+> > 
+> > Yes, that appears to also make it work.
+> > 
+> > Martyn
+> 
+> Well, I just pointed out what the problem is, I don't know how to solve
+> it, honest! :)
+> 
+> It's clear that the code is wrong, because it's in an "if" block that
+> checks for "of_phy_is_fixed_link(dp->dn) || phy_np" but then it omits
+> the "phy_np" part of it. On the other hand we can't just go ahead and
+> say "if (phy_np) mode = MLO_AN_PHY; else mode = MLO_AN_FIXED;" because
+> MLO_AN_INBAND is also a valid option that we may be omitting. So we'd
+> have to duplicate part of the logic from phylink_parse_mode(), which
+> does not appear ideal at all. What would be ideal is if this fabricated
+> phylink call would not be done at all, but I don't know enough about the
+> systems that need it, I expect Andrew knows more.
 
-Reviewed-by: Eric Dumazet <edumazet@google.com>
+phylink assumes interfaces start in the down state. It will then
+configure them and bring them up as needed. This is not always true
+with mv88e6xxx, the interface can already by up, and then the hardware
+and phylink have different state information. So this call was added
+to force the link down before phylink took control of it.
+
+So i suspect something is missing when phylink sometime later does
+bring the interface up. It is not fully undoing what this down
+does. Maybe enable the dev_dbg() in mv88e6xxx_port_set_link() and see
+what value it has in both the good and bad case?
+
+     Andrew
+
