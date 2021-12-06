@@ -2,118 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 613F1468F1C
-	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 03:27:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D2062468F81
+	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 04:07:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234179AbhLFCbA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Dec 2021 21:31:00 -0500
-Received: from mail.loongson.cn ([114.242.206.163]:37718 "EHLO loongson.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S233372AbhLFCa7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 5 Dec 2021 21:30:59 -0500
-Received: from [10.180.13.84] (unknown [10.180.13.84])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9DxP8sQda1hB2IDAA--.7780S2;
-        Mon, 06 Dec 2021 10:27:29 +0800 (CST)
-Subject: Re: [PATCH v2 1/2] modpost: file2alias: fixup mdio alias garbled code
- in modules.alias
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kbuild@vger.kernel.org, zhuyinbo@loongson.cn
-References: <1637919957-21635-1-git-send-email-zhuyinbo@loongson.cn>
- <c6d37ae0-9ccb-a527-4f55-e96972813a53@gmail.com>
- <YaYPMOJ/+OXIWcnj@shell.armlinux.org.uk> <YabEHd+Z5SPAhAT5@lunn.ch>
-From:   zhuyinbo <zhuyinbo@loongson.cn>
-Message-ID: <56f1d181-92a3-859e-9185-ed785ca1afa1@loongson.cn>
-Date:   Mon, 6 Dec 2021 10:27:27 +0800
-User-Agent: Mozilla/5.0 (X11; Linux mips64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
-MIME-Version: 1.0
-In-Reply-To: <YabEHd+Z5SPAhAT5@lunn.ch>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-CM-TRANSID: AQAAf9DxP8sQda1hB2IDAA--.7780S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7Zw4rWFyxXr15XF4UJFWrZrb_yoW8KFWUpa
-        y3ta9IkFZ8GF4xta1rZF47uFy8C3yvy3y3KF1rG39Ygwn8ZrySyw13Krn09a9rJr1fAr12
-        gayYvFykC3Z5XFJanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUU9C14x267AKxVWUJVW8JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26ryj6F1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4j
-        6r4UJwA2z4x0Y4vEx4A2jsIE14v26r4UJVWxJr1l84ACjcxK6I8E87Iv6xkF7I0E14v26F
-        4UJVW0owAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv
-        7VC0I7IYx2IY67AKxVWUGVWUXwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r
-        1j6r4UM4x0Y48IcVAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCYjI0SjxkI62AI1cAE
-        67vIY487MxkF7I0En4kS14v26r1q6r43MxkIecxEwVCm-wCF04k20xvY0x0EwIxGrwCFx2
-        IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v2
-        6r106r1rMI8E67AF67kF1VAFwI0_JF0_Jw1lIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67
-        AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IY
-        s7xG6rWUJVWrZr1UMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI
-        0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUdl19UUUUU=
-X-CM-SenderInfo: 52kx5xhqerqz5rrqw2lrqou0/
+        id S235571AbhLFDKd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Dec 2021 22:10:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60350 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235402AbhLFDKc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Dec 2021 22:10:32 -0500
+Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9664C0613F8;
+        Sun,  5 Dec 2021 19:07:04 -0800 (PST)
+Received: by mail-il1-x134.google.com with SMTP id m5so8801002ilh.11;
+        Sun, 05 Dec 2021 19:07:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=X55f6rIyxMAeTkg3TDveTFlB+gqqpA+K+Mun7+M717g=;
+        b=mknr1zSxDyDbvYIPNQQVYXP3WrHtVHy2+70P/ZIsDsoqtkDAtzuEYjDoIJkV1J73DA
+         bujhgI48w3dTh8yi+irxuVzCiJagWpFVlF5OTvv/VtpAw3q5ZDb7sD1bHZ32lJcqTMco
+         YzCbWSgJqs9x8KZoEk7jji2Z2XAZXoJj/Q1ph+x8111Oks0zvssR0NKQksxNGz8sDshX
+         i+FXsPAJUh6Yrc3md4//SS5wgd5h681kHo7d7leh9Pb4b4KZFvZQ4xt4f7Moku6lpv91
+         Sfzk/Vzt9wgyRm2SStVmIwUH4/XESnYm3ibbXN7kKTzkTP34xtIhBsZLHVEE7VkhYg3H
+         SVTg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=X55f6rIyxMAeTkg3TDveTFlB+gqqpA+K+Mun7+M717g=;
+        b=CKlqCDp4E1Gp9L6az6yBnm2kduM+9G37ahjfgKo5jciVf2BiOjQDnqZNcmzrme/UOX
+         JrvIQ+0Br+NUB84/crE4OkafPFDk0oDNfWlCym7kZ9wpWl0cvmohNdGtD5Nj9qDVKm7n
+         C5v8GBZAvey2vdWKduMJ8a5DCYS9wXgBOD0T6LJp2NEwPOp5jMMQGHomV5vdx3Gp9Ul4
+         2DO9eSkwpfnIbuTwObCVC1kM6LkCDYPtihWbtSudRfw94hKFt1ZkOMCORLVlD1ZaTMwq
+         Q5Y6XzZEfYM8eqSqUSwdqfV1Mee9xXCnCBozi1aeGI6OdmssxRz9ytwmxwMe8q21qute
+         PAaw==
+X-Gm-Message-State: AOAM533tbvapWJUK/cgS2tnMDy9vyF7tmzK/OSpqi5KQjtCVuKfD+EK9
+        UE2EJMP0EIce71u4HtkjL/4=
+X-Google-Smtp-Source: ABdhPJxO5BUmaKTFICc1LNTGkVxjmfBxmj4LMsA1F93TMnKyH6vkrW94naPxPSDTye2MBNxetH91Zg==
+X-Received: by 2002:a92:c248:: with SMTP id k8mr27590450ilo.297.1638760024085;
+        Sun, 05 Dec 2021 19:07:04 -0800 (PST)
+Received: from localhost ([172.243.151.11])
+        by smtp.gmail.com with ESMTPSA id l3sm7138439ilv.37.2021.12.05.19.07.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 05 Dec 2021 19:07:03 -0800 (PST)
+Date:   Sun, 05 Dec 2021 19:06:52 -0800
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, shayagr@amazon.com,
+        john.fastabend@gmail.com, dsahern@kernel.org, brouer@redhat.com,
+        echaudro@redhat.com, jasowang@redhat.com,
+        alexander.duyck@gmail.com, saeed@kernel.org,
+        maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
+        tirthendu.sarkar@intel.com, toke@redhat.com
+Message-ID: <61ad7e4cbc69d_444e20888@john.notmuch>
+In-Reply-To: <95151f4b8a25ce38243e82f0a82104d0f46fb33a.1638272238.git.lorenzo@kernel.org>
+References: <cover.1638272238.git.lorenzo@kernel.org>
+ <95151f4b8a25ce38243e82f0a82104d0f46fb33a.1638272238.git.lorenzo@kernel.org>
+Subject: RE: [PATCH v19 bpf-next 03/23] net: mvneta: update mb bit before
+ passing the xdp buffer to eBPF layer
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Lorenzo Bianconi wrote:
+> Update multi-buffer bit (mb) in xdp_buff to notify XDP/eBPF layer and
+> XDP remote drivers if this is a "non-linear" XDP buffer. Access
+> skb_shared_info only if xdp_buff mb is set in order to avoid possible
+> cache-misses.
+> 
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 
-在 2021/12/1 上午8:38, Andrew Lunn 写道:
->> However, this won't work for PHY devices created _before_ the kernel
->> has mounted the rootfs, whether or not they end up being used. So,
->> every PHY mentioned in DT will be created before the rootfs is mounted,
->> and none of these PHYs will have their modules loaded.
-> Hi Russell
->
-> I think what you are saying here is, if the MAC or MDIO bus driver is
-> built in, the PHY driver also needs to be built in?
->
-> If the MAC or MDIO bus driver is a module, it means the rootfs has
-> already been mounted in order to get these modules. And so the PHY
-> driver as a module will also work.
->
->> I believe this is the root cause of Yinbo Zhu's issue.
-> You are speculating that in Yinbo Zhu case, the MAC driver is built
-> in, the PHY is a module. The initial request for the firmware fails.
-> Yinbo Zhu would like udev to try again later when the modules are
-> available.
->
->> What we _could_ do is review all device trees and PHY drivers to see
->> whether DT modaliases are ever used for module loading. If they aren't,
->> then we _could_ make the modalias published by the kernel conditional
->> on the type of mdio device - continue with the DT approach for non-PHY
->> devices, and switch to the mdio: scheme for PHY devices. I repeat, this
->> can only happen if no PHY drivers match using the DT scheme, otherwise
->> making this change _will_ cause a regression.
-> Take a look at
-> drivers/net/mdio/of_mdio.c:whitelist_phys[] and the comment above it.
->
-> So there are some DT blobs out there with compatible strings for
-> PHYs. I've no idea if they actually load that way, or the standard PHY
-> mechanism is used.
->
-> 	Andrew
+[...]
 
-Hi Andrew, Russell King,
+> @@ -2320,8 +2325,12 @@ mvneta_swbm_build_skb(struct mvneta_port *pp, struct page_pool *pool,
+>  		      struct xdp_buff *xdp, u32 desc_status)
+>  {
+>  	struct skb_shared_info *sinfo = xdp_get_shared_info_from_buff(xdp);
+> -	int i, num_frags = sinfo->nr_frags;
+>  	struct sk_buff *skb;
+> +	u8 num_frags;
+> +	int i;
+> +
+> +	if (unlikely(xdp_buff_is_mb(xdp)))
+> +		num_frags = sinfo->nr_frags;
 
+Doesn't really need a respin IMO, but rather an observation. Its not
+obvious to me the unlikely/likely pair here is wanted. Seems it could
+be relatively common for some applications sending jumbo frames.
 
-mdio phy device use DT that it isn't appropriate, because phy device was 
-depend on mac and was set by mac use mdio.
+Maybe worth some experimenting in the future.
 
-even though, you use DT to descripte phy device and phy driver must use 
-"of" type export, and in mainstrem phy driver,
-
-most of phy driver was use "mdio",  not use DT, please you note! 
-perphaps you can learn about do_of_table, and the key
-
-point is that uevent wheter match alias configure for module auto load 
-issue.
-
-for more detailed information, please review v4 patch some explain:
-
-[v4,1/2] modpost: file2alias: make mdio alias configure match mdio uevent.
-
-https://patchwork.kernel.org/project/netdevbpf/patch/1638609208-10339-1-git-send-email-zhuyinbo@loongson.cn/
-
-
-BRs,
-
-Yinbo Zhu.
-
+>  
+>  	skb = build_skb(xdp->data_hard_start, PAGE_SIZE);
+>  	if (!skb)
+> @@ -2333,6 +2342,9 @@ mvneta_swbm_build_skb(struct mvneta_port *pp, struct page_pool *pool,
+>  	skb_put(skb, xdp->data_end - xdp->data);
+>  	skb->ip_summed = mvneta_rx_csum(pp, desc_status);
+>  
+> +	if (likely(!xdp_buff_is_mb(xdp)))
+> +		goto out;
+> +
+>  	for (i = 0; i < num_frags; i++) {
+>  		skb_frag_t *frag = &sinfo->frags[i];
