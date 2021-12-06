@@ -2,135 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB09E46AA9D
-	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 22:41:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F2C9246AAAC
+	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 22:44:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352269AbhLFVo5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Dec 2021 16:44:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37412 "EHLO
+        id S1352422AbhLFVsI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Dec 2021 16:48:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352228AbhLFVo4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 16:44:56 -0500
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5470C0613F8;
-        Mon,  6 Dec 2021 13:41:27 -0800 (PST)
-Received: by mail-yb1-xb36.google.com with SMTP id x32so35063202ybi.12;
-        Mon, 06 Dec 2021 13:41:27 -0800 (PST)
+        with ESMTP id S1352344AbhLFVsA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 16:48:00 -0500
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75D60C061359
+        for <netdev@vger.kernel.org>; Mon,  6 Dec 2021 13:44:31 -0800 (PST)
+Received: by mail-ed1-x536.google.com with SMTP id w1so48657634edc.6
+        for <netdev@vger.kernel.org>; Mon, 06 Dec 2021 13:44:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=OxZy0XR9HlJMLfuceIjDkbVn420DcQmmb11xM7v+pC4=;
-        b=Uy4wpl27CC6YUhcs4vMM8bzdvcMUN96yWwKoi6QIbs/0SRbl8kKo5Q0I1qsAzabDYa
-         ppqV7z4tTdnNTApPZZoy/OHbum0UqMV87y1+Y1VYbvI4uJjZE4LZgiADsi8qE8FhHHFe
-         age8I8KTGLWzwyq0IDoDwsM7Pd3QWiW6pN0f23SV5X2bhwZBnCyKKZ4t/RIfYpe/ojxC
-         9FM3s4MSJoZPnQpp/tFUGRx2jv7qX0bkbGVRThB3zqK6dsLz+slB2POKEhierLXgKFuU
-         wODBeF7sV3LX1hWu9JWwHSt7dhiauTrdSoJ1GxgklmKGoHI87FipafRGEzvXdx9dYwc3
-         ymhA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=BDuNr3Xl3cOM2Tr3+t/Ii0XwKeHElvWmUAMJAR9yWDM=;
+        b=EJ24oIt006Tvm+sSjuey01fN2AMCiDQ2E/oB4ZMQjf8N9XpM+mN+H2p1FzPHMcitB4
+         C4w3nUxBiDd7E3p7tguD4vWN/w4ceZ6L7n7pjgP0zxAmEeWqUbVxHYIBdjbSS0wjzHVI
+         I1a+++C7x8GQeBfDAQlRE+srv7sR5V3N9I0pD86hwpJhjprPw/pCwZlEs2yKHEpYP64Y
+         F67aWkBFUzOOV95Ckw6UxAKemUTipSSPLENht12dojRHdYtacFHr2Nr96dciOYL8UZZN
+         kTTvnDUDDTKvCONinD547Rv8PLxeca0uk3F+XQK24xBELQtD/VQXNG+llUAJzc4Bo5S7
+         2n1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=OxZy0XR9HlJMLfuceIjDkbVn420DcQmmb11xM7v+pC4=;
-        b=ezpySTiTRUqqYZ43IDV58fn9Thf06dUmWm5Uk4aq7IenmTQCIr/JDWfSsTN4soMW2f
-         EEetAql+5EhD7zCjz0auenUjc2tHYPUwgKqlQ2CRr9VvpHPtzcK3PVUnZ1YUrTsm7AhL
-         0a2rlP0nt3yU5wt5Amwm/UZ/ABEGBCobu1pGauqGzRPyEXPWJIDu4acM6mRrLoFV77id
-         ykLnEHJs4H+DQj0bMHySg1E6hcc4MSnxcE2LgQSukaFz/bWvqnXPErYfMKkytVVB1c3Z
-         i1vQqde35/71zZkhWnNUCTSu8I1hfYd+HlGeBxJ4l3Fgm+LoZh34nEvWcT/HzjSE+JsZ
-         KqCA==
-X-Gm-Message-State: AOAM531W4oPhXe3QbgDk9JRljuxrFaHhghB4c8qEXGiB8Z+iokBDcOak
-        dRv5yLp5ie0sgIwBpAAG5eGDhJn2B7+1d1s7QqI=
-X-Google-Smtp-Source: ABdhPJzu8GLPMPPYWZcNRWvmOS1fpwI+HDUJe9wRLBoKB0+NVeBf9dCRmjbImw/D/lmpwAul7tBD5ZUOwCTFnKu/pQs=
-X-Received: by 2002:a25:6d4:: with SMTP id 203mr45537909ybg.83.1638826886839;
- Mon, 06 Dec 2021 13:41:26 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=BDuNr3Xl3cOM2Tr3+t/Ii0XwKeHElvWmUAMJAR9yWDM=;
+        b=N+pPMi0+DVU1T/xPA6iJaewUUvtXQ8iLoWYNUekRvZKXO2tXmBc6hLhRlgipRehhio
+         st2pSfLTySeQJmkUtuVZdkxTmstzap/Rc2jGMBwEAlggpGLVeZEkRUXYzkLYGBdqw2V2
+         gcQKGzdkttD15vvSY2B/v9qFdqzhZAQwv9houCdDFSKiLlomKqsD/q/fb5xpqJnjZSyD
+         bphHfR8O/7TdkJNNR57M/FxyXxesfczdp11jfOrAD79xzBZEIVJOnA2S8KNFXbQaHPN6
+         CU5Zb4F8xePhXONvpnTd2Qyn1ZzIXm0Bc4U1SyONhVkNbwwFNvh/O56oT0QPPs4h9nvM
+         Z/mw==
+X-Gm-Message-State: AOAM530IJCiQ/KzazJQEUQBDxowmPePmqW/ffqaaCqcgVfwMNlsfNiRT
+        zuHQRJAs04RoXNF/CBFNx1M=
+X-Google-Smtp-Source: ABdhPJwsT4O2xjbBJ3Sqg2j/QNDCr9x63Bf4CCKuaxMILxDTufNyhD3NWS+nPAWhfweLg7vM4Zt6dA==
+X-Received: by 2002:a17:906:f856:: with SMTP id ks22mr47140228ejb.367.1638827069982;
+        Mon, 06 Dec 2021 13:44:29 -0800 (PST)
+Received: from skbuf ([188.25.173.50])
+        by smtp.gmail.com with ESMTPSA id hb10sm7526623ejc.9.2021.12.06.13.44.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Dec 2021 13:44:29 -0800 (PST)
+Date:   Mon, 6 Dec 2021 23:44:28 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Martyn Welch <martyn.welch@collabora.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, kernel@collabora.com
+Subject: Re: mv88e6240 configuration broken for B850v3
+Message-ID: <20211206214428.qaavetaml2thggqo@skbuf>
+References: <b0643124f372db5e579b11237b65336430a71474.camel@collabora.com>
+ <fb6370266a71fdd855d6cf4d147780e0f9e1f5e4.camel@collabora.com>
+ <20211206183147.km7nxcsadtdenfnp@skbuf>
+ <339f76b66c063d5d3bed5c6827c44307da2e5b9f.camel@collabora.com>
+ <20211206185008.7ei67jborz7tx5va@skbuf>
+ <3d6c6226e47374cf92d604bc6c711e59d76e3175.camel@collabora.com>
+ <20211206193730.oubyveywniyvptfk@skbuf>
+ <Ya5qSoNhJRiSif/U@lunn.ch>
+ <20211206200111.3n4mtfz25fglhw4y@skbuf>
+ <Ya5wFvijUQVwvat7@shell.armlinux.org.uk>
 MIME-Version: 1.0
-References: <20211204140700.396138-1-jolsa@kernel.org> <20211204140700.396138-2-jolsa@kernel.org>
-In-Reply-To: <20211204140700.396138-2-jolsa@kernel.org>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 6 Dec 2021 13:41:15 -0800
-Message-ID: <CAEf4BzYGKW1mJ28TtL3iD5-AcDb+Ua0aqPAdnPjtbneEZqyr2A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/3] bpf, x64: Replace some stack_size usage with
- offset variables
-To:     Jiri Olsa <jolsa@redhat.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Ya5wFvijUQVwvat7@shell.armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Dec 4, 2021 at 6:07 AM Jiri Olsa <jolsa@redhat.com> wrote:
->
-> As suggested by Andrii, adding variables for registers and ip
-> address offsets, which makes the code more clear, rather than
-> abusing single stack_size variable for everything.
->
-> Also describing the stack layout in the comment.
->
-> There is no function change.
->
-> Suggested-by: Andrii Nakryiko <andrii@kernel.org>
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> ---
->  arch/x86/net/bpf_jit_comp.c | 42 ++++++++++++++++++++++++-------------
->  1 file changed, 28 insertions(+), 14 deletions(-)
->
-> diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
-> index 1d7b0c69b644..b106e80e8d9c 100644
-> --- a/arch/x86/net/bpf_jit_comp.c
-> +++ b/arch/x86/net/bpf_jit_comp.c
-> @@ -1941,7 +1941,7 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
->                                 void *orig_call)
->  {
->         int ret, i, nr_args = m->nr_args;
-> -       int stack_size = nr_args * 8;
-> +       int regs_off, ip_off, stack_size = nr_args * 8;
->         struct bpf_tramp_progs *fentry = &tprogs[BPF_TRAMP_FENTRY];
->         struct bpf_tramp_progs *fexit = &tprogs[BPF_TRAMP_FEXIT];
->         struct bpf_tramp_progs *fmod_ret = &tprogs[BPF_TRAMP_MODIFY_RETURN];
-> @@ -1956,14 +1956,33 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
->         if (!is_valid_bpf_tramp_flags(flags))
->                 return -EINVAL;
->
-> +       /* Generated trampoline stack layout:
-> +        *
-> +        * RBP + 8         [ return address  ]
-> +        * RBP + 0         [ RBP             ]
-> +        *
-> +        * RBP - 8         [ return value    ]  BPF_TRAMP_F_CALL_ORIG or
-> +        *                                      BPF_TRAMP_F_RET_FENTRY_RET flags
-> +        *
-> +        *                 [ reg_argN        ]  always
-> +        *                 [ ...             ]
-> +        * RBP - regs_off  [ reg_arg1        ]
-> +        *
+On Mon, Dec 06, 2021 at 08:18:30PM +0000, Russell King (Oracle) wrote:
+> > If we're going to impersonate phylink we could at least provide the same
+> > arguments as phylink will.
+> 
+> What is going on here in terms of impersonation is entirely reasonable.
+> 
+> The only things in this respect that phylink guarantees are:
+> 
+> 1) The MAC/PCS configuration will not be substantially reconfigured
+>    unless a call to mac_link_down() was made if a call to mac_link_up()
+>    was previously made.
 
-I think it's also worth mentioning that context passed into
-fentry/fexit programs are pointing here (makes it a bit easier to
-track those ctx[-1] and ctx[-2] in the next patch.
+The wording here is unclear. Did you mean "When the MAC/PCS configuration
+is substantially reconfigured and the last call was a mac_link_up(), a
+follow-up call to mac_link_down() will also be made"?
 
+And what do you mean by "substantially reconfigured"?
+phylink_major_config called from the paths that aren't phylink_mac_initial_config
+(because that happens with no preceding call to either mac_link_down or
+mac_link_up), right?
 
-> +        * RBP - ip_off    [ traced function ]  BPF_TRAMP_F_IP_ARG flag
-> +        */
-> +
->         /* room for return value of orig_call or fentry prog */
->         save_ret = flags & (BPF_TRAMP_F_CALL_ORIG | BPF_TRAMP_F_RET_FENTRY_RET);
->         if (save_ret)
->                 stack_size += 8;
->
-> +       regs_off = stack_size;
-> +
->         if (flags & BPF_TRAMP_F_IP_ARG)
->                 stack_size += 8; /* room for IP address argument */
->
-> +       ip_off = stack_size;
-> +
+> 2) The arguments to mac_link_down() will be the same as the preceeding
+>    mac_link_up() call - in other words, the "mode" and "interface".
 
-[...]
+Does this imply that "there will always be a preceding mac_link_up to
+every mac_link_down call"? Because if it does imply that, DSA violates it.
+
+> Phylink does *not* guarantee that a call to mac_link_up() or
+> mac_config() will have the same "mode" as a preceeding call to
+> mac_link_down(), in the same way that "interface" is not guaranteed.
+> This has been true for as long as we've had SFPs that need to switch
+> between MLO_AN_INBAND and MLO_AN_PHY - e.g. because the PHY doesn't
+> supply in-band information.
+> 
+> So, this has uncovered a latent bug in the Marvell DSA code - and
+> that is that mac_config() needs to take care of the forcing state
+> after completing its configuration as I suggested in my previous
+> reply.
+> 
+> There is also the question whether the automatic fetching of PHY
+> status information by the hardware should be regarded as a form of
+> in-band by phylink, even though it isn't true in-band - but from
+> the software point of view, the PPU's automatic fetching is not
+> materially different from what happens with SGMII.
+> 
+> -- 
+> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+> FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
