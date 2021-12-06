@@ -2,230 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C7CC54691D4
-	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 09:55:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 53F7C4691F3
+	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 10:06:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229542AbhLFI66 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Dec 2021 03:58:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52182 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239749AbhLFI65 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 03:58:57 -0500
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21DF6C061354
-        for <netdev@vger.kernel.org>; Mon,  6 Dec 2021 00:55:29 -0800 (PST)
-Received: by mail-wr1-x433.google.com with SMTP id d24so21001024wra.0
-        for <netdev@vger.kernel.org>; Mon, 06 Dec 2021 00:55:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=STO5Jj3dQ1sXzYML+OEYKU3DftiKlpT/Vhi6uTR5tsw=;
-        b=WKb8gZZdVZzkeKXGZzLPX/fdigN1/PCfTTSLLiS672hWdi3ikas1tsV2H8JiVrUtpI
-         +PyZVZhzame2RZd280yDUJruRvVjzucgK4Cd6Imv3YCa0w1r7new7nepF6aiS6PK9K39
-         uYE5FXUzRmXkWdDkSnY045KmcgvFbyla5ve6ufYhN5mWPCRq5spBuTm1KYul275RV8kq
-         yqpHdyY0q6esFpDBt7A2fUmLb1byJVRlTuf/TWHeSYYIO/lj/gbxa1BlgDTQHgbsZhab
-         8oEziyGN8FeCilzG2/jGnUk+/H9dVz9GzjBHHfnyUs5On+n17AC72qG5/FYMpMK2xd5V
-         I+nQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=STO5Jj3dQ1sXzYML+OEYKU3DftiKlpT/Vhi6uTR5tsw=;
-        b=Ttk5CkE3XTSUjcrzEvKSok4EGaHerIYngtJ4OTzikNI1GQXQaKBM3uu6ufL0/kMi/2
-         ADXURq1iohjvqv2nTUsVVVigNh89HKW4p1bRDbTvpaw8VmwZYZ58jTc6SDl+yya9oBWM
-         hT4ErPBQj7fKu76UOsKMbPgyu4yFdQsk1xYKmx0mgsVRFm4z2Vdaw+O8WeQC20PmbGof
-         QM4WWYTKeDS7nABY8xmGQ5YSkSra3zbR43vgI3zlkX5g7tj5H3MvBqdWQvF9nxAXyIjj
-         ZKIArkHa+qqeG2IRid7vB+xLYJCsTX0OHR5LqVkqQ+3gX+v+RIHOA8OeURlMpf6PhGOH
-         bLaQ==
-X-Gm-Message-State: AOAM5339Xh5BJmGJPAcxmowJhRuIw9k35mNTmbLo9QH+Oacm4teG085h
-        vF2Jprvv7FrDIk7DxPcayg6Fj00L1Q1lUA==
-X-Google-Smtp-Source: ABdhPJwaIiJ3n8JFLStZ486JkHxVBTxr9uvbdyc+8Pot1eFpl+prjMp40JwvJBR3lMR8RxIWcl+NTQ==
-X-Received: by 2002:a5d:5588:: with SMTP id i8mr41456170wrv.552.1638780927546;
-        Mon, 06 Dec 2021 00:55:27 -0800 (PST)
-Received: from google.com ([2.31.167.18])
-        by smtp.gmail.com with ESMTPSA id g13sm14342509wrd.57.2021.12.06.00.55.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Dec 2021 00:55:27 -0800 (PST)
-Date:   Mon, 6 Dec 2021 08:55:25 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Colin Foster <colin.foster@in-advantage.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-gpio@vger.kernel.org,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        katie.morris@in-advantage.com
-Subject: Re: [RFC v1] mfd: pinctrl: RFC only: add and utilze mfd option in
- pinctrl-ocelot
-Message-ID: <Ya3P/Z3jbMpV1Fso@google.com>
-References: <20211203211611.946658-1-colin.foster@in-advantage.com>
+        id S239940AbhLFJJc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Dec 2021 04:09:32 -0500
+Received: from mail-eopbgr150085.outbound.protection.outlook.com ([40.107.15.85]:56194
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S239928AbhLFJJc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 6 Dec 2021 04:09:32 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=FbJ1a0CBDodo3KkIWT/v20ja0pKyLfxYqos3SeDHyaXI8pjHtZqSt7vJSrImDE6kZWB9rCrjJqc7vZWpZCubfx6dr3MztSA2kpa4/s5ACPwV72M0dXpX84AVG6Lo/1waS9yNSvP9h/TNYGML36zBOnlYRJJxQnsdkGq+W+XeYBEN0ZYJUuDkjtbHvi+clkTlSsf+soOCG0PRN4/M0bcGpMnABb0k7okALdK0uxZKJHOrFilbTaj2gV5N7nMOKNpVEJarYY0APVuLLPFS/wRQY4+efPdP23J3EZ1kwrBjMx617QdXqP1bBg3+DQsB9bKMS8TxxRKWi/hRgCCLAqzQnQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=4xtqTgBIq1cN/KwONR+DKFc694QaG+fI5GilpKBq/5w=;
+ b=AcDKfa5HpoFnD3tFOm380mxb+3NZ29OcSIeiyKctlP7NQp+sAiRaIXuqx6pH5HrPofoUYg04RAVR87fqIuOayP8+ETJzvndv2yhYfZz3IShxYBhHho8vKWzvDae81wRNQtF7B4S7xLAoo96eiBqUoLYzdGklw2kENDxcE+W1yakmlE3QbpW0Lkbk/kb9bf5SpqfdBilV0ETBlBsb93ZrSbC3ZeM+kwS+WUVSkbCHivKzd39yAmbmcfC9sWrbhn+zV5VOZQqZaRLy74c0fe7PUtVKGlTw0mdrIj3tZ8uExvi5X9wFJ1DU8uF8DrspztMjrZtONNzcy13/aJLN0WKl4Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=4xtqTgBIq1cN/KwONR+DKFc694QaG+fI5GilpKBq/5w=;
+ b=ZjKVBCDgQavjOdsKi8FI8NQIzoFSBODrxNi65do/bnVNi1zPUGxttIpcxm6QcMwC+cwohxyA/T1mKZI6kXIAWUAcNRLE6AI+cGMCvw09a2YEE9QQtNA/K26bqh5oHFS/VaeXvWnMXmR+EExDFbrA+4doXpFIdsEpsBDN5VFewsA=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
+ by DBBPR04MB7836.eurprd04.prod.outlook.com (2603:10a6:10:1f3::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.21; Mon, 6 Dec
+ 2021 09:05:50 +0000
+Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
+ ([fe80::c005:8cdc:9d35:4079]) by DB8PR04MB6795.eurprd04.prod.outlook.com
+ ([fe80::c005:8cdc:9d35:4079%5]) with mapi id 15.20.4755.021; Mon, 6 Dec 2021
+ 09:05:50 +0000
+From:   Joakim Zhang <qiangqing.zhang@nxp.com>
+To:     davem@davemloft.net, kuba@kernel.org, nicolas.diaz@nxp.com,
+        rmk+kernel@arm.linux.org.uk
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-imx@nxp.com, andrew@lunn.ch
+Subject: [PATCH] net: fec: only clear interrupt of handling queue in fec_enet_rx_queue()
+Date:   Mon,  6 Dec 2021 17:05:53 +0800
+Message-Id: <20211206090553.28615-1-qiangqing.zhang@nxp.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-ClientProxiedBy: SGAP274CA0013.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b6::25)
+ To DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20211203211611.946658-1-colin.foster@in-advantage.com>
+Received: from localhost.localdomain (119.31.174.71) by SGAP274CA0013.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b6::25) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.21 via Frontend Transport; Mon, 6 Dec 2021 09:05:47 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 8b0af4d4-7600-4e26-903c-08d9b897997e
+X-MS-TrafficTypeDiagnostic: DBBPR04MB7836:EE_
+X-Microsoft-Antispam-PRVS: <DBBPR04MB78367B83E26F242CD721BB3AE66D9@DBBPR04MB7836.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2201;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Yo7KkeFeUDI3Vl24e3TVP3+SD5Kfh3ARrBzwRASLKpsv3gD+4yaLYCikC+X8EVAaRHFdzQiYipstYAwZ5TYQqIpXZ6X8r7wlqbWei7ypnRvdKyRGf+/QfjYA0khdZFmJR2w1gXrwggx7r6txXE1WkMKEqmeDg9zUUQcUsCmj+8huA8Ibg7LmZ3d0G9+qwpy9EDj2KUzFljeuyeOYMe//q5WI9Prtfhcb6ILnAxQpyL0T/OnqT1WwMSq+ozPAA9mool8Wcksjg3saYFNZyL2pTH7/zeI4i2Of4ytZIB7ETRb57jZ9JEOO/qEZcoA/gY1ExBJ830Z61SR3uZK3njDLUmk2hj9Gga4QTLfO8Q9145f3JiRs6fv4fEU1NZiUkeCWzdiCETVzaezDhnaT7LRSD3V1Ml63AprmKZ4eHp2Mz/kHRr6i6dbMfBZjT4j6OlL1je9EfPcu0PA/kEw+8v1ROFI9/Fk/gdXl0/oDhLFSpSFAi73MpPePZnqdYK29xf+MS+uQhkSd/INEE29TaoYFqMueXK67g6Ybw2QOfARHZsJrj4mGgs4vlYBjeNEvKzbtWY5uwPd1DXVh0u2tRj2zfHZtPT2FhnC5yo7W7VYv7lwdI9x45fMcfO5ZXn8d8kf0zqv+Z0bMJXLgnUyHoTDs16DiUBL38JzDd9znU3E+EyDIVXX2oBYkmhlICmwTEQft8RwVdfoETHDPqJsmPtxOvw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(6512007)(5660300002)(186003)(508600001)(26005)(8676002)(36756003)(8936002)(2616005)(956004)(86362001)(316002)(6666004)(52116002)(2906002)(66556008)(66476007)(66946007)(6506007)(4744005)(1076003)(38100700002)(38350700002)(83380400001)(4326008)(6486002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?vyJgvx+AkscH2Brjs+q2oAr9WN26YK1PXfNUJU+SaQiGlW0NmSpp3FxEYZ+S?=
+ =?us-ascii?Q?dm9VzgBQtYH4DH5ijwxJp0TsTXwij6OPmPlZrybvVM7Q098gudMDgxX+I1+C?=
+ =?us-ascii?Q?zjx/4TFggBfNPM6HxofLxxed5mlLZ/LYPAPIdKIMFwSGYui9sA91HW5rnNqe?=
+ =?us-ascii?Q?xZjux+1KHJfHfufx1YDl4bm49BLKNM6M8x+mGWSXm6RREfqd57kjC0QX4sDn?=
+ =?us-ascii?Q?aSkFY2XcjL2tUHPE31EZyiJpT6ZiyBH/Ly/3JgvQY9zj+9PNNDoeyb8QtKo8?=
+ =?us-ascii?Q?RBh22xmbWl/FvY9AXqNulEVSXWvWQGrPC+Nr2z/08Z8FCPhHrk/L9/joe4zH?=
+ =?us-ascii?Q?5ddCtaVnW4g1jy3ayySf+MC/H2tYCI+QllVfM4IWLOkz3FHMrdpS1zYteVlS?=
+ =?us-ascii?Q?ZkuvX8ABms+4as9NM0ZRYsyd/h6MQwUDRtLmcWv6R7I96MJFFCwbGNp0IT5J?=
+ =?us-ascii?Q?2u85O5JEmxKsYngSKPWpTU37gMg0vKMzgw8pT6ghZF5/lO5lSv/Qe19wilse?=
+ =?us-ascii?Q?uat6Efbr+NWovlBoudLUdFU76RyPlhiBvygi8AwO6x0bFwe1yXjKlDND03LB?=
+ =?us-ascii?Q?LFdtpJmHEQMprmlhm5mwrEMXn1Bp3zi3UbC7qUKu4uTfyDPVujwF1bFlFoRF?=
+ =?us-ascii?Q?vcF9/KPgpEc6+MVfEArMne6fS/Es79XvqLCgcOyQx05WaRPpbbQjTK1wHdeW?=
+ =?us-ascii?Q?sAu6xwK7lvBBDY5mWlM2iFRPTJCBh86uZc3Zp5tAT20XOYP7eGWcyYLW6qGI?=
+ =?us-ascii?Q?0ML5rqdg4rb5svYy1crMznyPyapHyL7yUAIWImXw5hF+DPWuYkGem76NixNp?=
+ =?us-ascii?Q?ao8LfSjddwL4Qocb+hQRRjKVDYUjbArUG6IdYB2CVUVaw8BM1TdqZN6i/Try?=
+ =?us-ascii?Q?YwspWlyoY8EfOIeJCWbYTJXhZ9FBFeHZ3an4xxbEncah2dVZJ3y4jtvMgAq+?=
+ =?us-ascii?Q?X0r06t9WbVVSd5s9L9kdAQzo6o8VsyEmBeHKpVJEOWYxfyztKRV7KVfYcV01?=
+ =?us-ascii?Q?EJcLvbyvgQZcgIgVQBerzbPfPLFglbuh4ZMtbLURfmD6XD9Blpap4d+U2P6Z?=
+ =?us-ascii?Q?IJE30V1l3XKuVPmMftLEJZJZ1XXbyqTMAtQyiphDzwWq/c7pGdyuiQ70hfFr?=
+ =?us-ascii?Q?nX6JG5UqYKGDLXX0ObuaXJYo+sm071zo/ugHquHae+j5QKuWSTiJ5bq5HObI?=
+ =?us-ascii?Q?6wk7RzVuksdXKVtVwDXhQf62R/jvY0yNQRDju+b0N68oVGjkKC47RBZXtCP9?=
+ =?us-ascii?Q?b318Bszmt4HqHrr6Uuu2U0GyqhzHwEqLoruATLG1AaT8CgzZ3D0qLCaBx+P7?=
+ =?us-ascii?Q?wk2c2D3LaifNMypU5EhlwSkLOnxD+9bx+Nr0TDosN+6/hOU9OsQoZsPwl5zh?=
+ =?us-ascii?Q?duiVOp4t0vyiaJOW/rbho9jCGwX36Rp/ASsYjs1YFvCPOrbUxg9C8vK1/dIR?=
+ =?us-ascii?Q?6/KzPD1v38GFyc+bWpAE9FKbeOK7+QuN+X5rV0Vn4rQ1ijJKBnz3LHID1nEm?=
+ =?us-ascii?Q?GWutIFn49JkxT4LJpgqjgfc4xKp3f/t6ZwL5wjQ4seumc0ZAidReNEmGIC/k?=
+ =?us-ascii?Q?IXp1mAvFSmeL5F6SYDW3VtJKTPXHVVwZ+bnJz8jgzrsdfRuDOQxY6e7eMj7J?=
+ =?us-ascii?Q?CBDXQPPxWExTplZmfCQFuUs=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8b0af4d4-7600-4e26-903c-08d9b897997e
+X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Dec 2021 09:05:50.7453
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: tUtghgM0hQIyojs9CnikNouqVWQX9xSTJ/nzq17apo+JycJI8QFS/vXnu/uUY9PaP+ssRtEG3ubYIYX0BjpYHw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBBPR04MB7836
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 03 Dec 2021, Colin Foster wrote:
+Only clear interrupt of handling queue in fec_enet_rx_queue(), to avoid
+missing packets caused by clear interrupt of other queues.
 
-> This is a psuedo-commit, but one that tells the complete story of what I'm
-> looking at. During an actual submission this'll be broken up into two
-> commits, but I'd like to get some feedback on whether this is the correct
-> path for me to be going down.
-> 
-> Background:
-> 
-> Microchip has a family of chips - the VSC7511, 7512, 7513, and 7514. The
-> last two have an internal MIPS processor, which are supported by
-> drivers/net/ethernet/mscc/ocelot_*. The former two lack this processor.
-> 
-> All four chips can be configured externally via a number of interfaces:
-> SPI, I2C, PCIe... This is currently not supported and is my end goal.
-> 
-> The networking portion of these chips have been reused in other products as
-> well. These utilize the common code by way of mscc_ocelot_switch_lib and
-> net/dsa/ocelot/*. Specifically the "Felix" driver.
-> 
-> Current status:
-> 
-> I've put out a few RFCs on the "ocelot_spi" driver. It utilizes Felix and
-> invokes much of the network portion of the hardware (VSC7512). It works
-> great! Thanks community :)
-> 
-> There's more hardware that needs to get configured, however. Currently that
-> includes general pin configuration, and an optional serial GPIO expander.
-> The former is supported by drivers/pinctrl/pinctrl-ocelot.c and the latter
-> by drivers/pinctrl/pinctrl-microchip-sgpio.c.
-> 
-> These drivers have been updated to use regmap instead of iomem, but that
-> isn't the complete story. There are two options I know about, and maybe
-> others I don't.
-> 
-> Option 1 - directly hook into the driver:
-> 
-> This was the path that was done in
-> commit b99658452355 ("net: dsa: ocelot: felix: utilize shared mscc-miim
-> driver for indirect MDIO access").
-> This is in the net-next tree. In this case the Seville driver passes in its
-> regmap to the mscc_miim_setup function, which bypasses mscc_miim_probe but
-> allows the same driver to be used.
-> 
-> This was my initial implementation to hook into pinctrl-ocelot and
-> pinctrl-microchip-sgpio. The good thing about this implementation is I have
-> direct control over the order of things happening. For instance, pinctrl
-> might need to be configured before the MDIO bus gets probed.
-> 
-> The bad thing about this implementation is... it doesn't work yet. My
-> memory is fuzzy on this, but I recall noticing that the application of a
-> devicetree pinctrl function happens in the driver probe. I ventured down
-> this path of walking the devicetree, applying pincfg, etc. That was a path
-> to darkness that I have abandoned.
-> 
-> What is functioning is I have debugfs / sysfs control, so I do have the
-> ability to do some runtime testing and verification.
-> 
-> Option 2 - MFD (this "patch")
-> 
-> It really seems like anything in drivers/net/dsa/ should avoid
-> drivers/pinctl, and that MFD is the answer. This adds some complexity to
-> pinctrl-ocelot, and I'm not sure whether that breaks the concept of MFD. So
-> it seems like I'm either doing something unique, or I'm doing something
-> wrong.
-> 
-> I err on the assumption that I'm doing something wrong.
-> 
-> pinctrl-ocelot gets its resources the device tree by way of
-> platform_get_and_ioremap_resource. This driver has been updated to support
-> regmap in the pinctrl tree:
-> commit 076d9e71bcf8 ("pinctrl: ocelot: convert pinctrl to regmap")
-> 
-> The problem comes about when this driver is probed by way of
-> "mfd_add_devices". In an ideal world it seems like this would be handled by
-> resources. MFD adds resources to the device before it gets probed. The
-> probe happens and the driver is happy because platform_get_resource
-> succeeds.
-> 
-> In this scenario the device gets probed, but needs to know how to get its
-> regmap... not its resource. In the "I'm running from an internal chip"
-> scenario, the existing process of "devm_regmap_init_mmio" will suffice. But
-> in the "I'm running from an externally controlled setup via {SPI,I2C,PCIe}"
-> the process needs to be "get me this regmap from my parent". It seems like
-> dev_get_regmap is a perfect candidate for this.
-> 
-> Perhaps there is something I'm missing in the concept of resources /
-> regmaps. But it seems like pinctrl-ocelot needs to know whether it is in an
-> MFD scenario, and that concept didn't exist. Hence the addition of
-> device_is_mfd as part of this patch. Since "device_is_mfd" didn't exist, it
-> feels like I might be breaking the concept of MFD.
-> 
-> I think this would lend itself to a pretty elegant architecture for the
-> VSC751X externally controlled chips. In a manner similar to
-> drivers/mfd/madera* there would be small drivers handling the prococol
-> layers for SPI, I2C... A core driver would handle the register mappings,
-> and could be gotten by dev_get_regmap. Every sub-device (DSA, pinctrl,
-> other pinctrl, other things I haven't considered yet) could either rely on
-> dev->parent directly, or in this case adjust. I can't imagine a scenario
-> where someone would want pinctrl for the VSC7512 without the DSA side of
-> things... but that would be possible in this architecture that would
-> otherwise not.
-> 
-> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
-> ---
->  drivers/mfd/mfd-core.c           | 6 ++++++
->  drivers/pinctrl/pinctrl-ocelot.c | 7 ++++++-
->  include/linux/mfd/core.h         | 2 ++
->  3 files changed, 14 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/mfd/mfd-core.c b/drivers/mfd/mfd-core.c
-> index 684a011a6396..2ba6a692499b 100644
-> --- a/drivers/mfd/mfd-core.c
-> +++ b/drivers/mfd/mfd-core.c
-> @@ -33,6 +33,12 @@ static struct device_type mfd_dev_type = {
->  	.name	= "mfd_device",
->  };
->  
-> +int device_is_mfd(struct platform_device *pdev)
-> +{
-> +	return (!strcmp(pdev->dev.type->name, mfd_dev_type.name));
-> +}
-> +EXPORT_SYMBOL(device_is_mfd);
-> +
->  int mfd_cell_enable(struct platform_device *pdev)
->  {
->  	const struct mfd_cell *cell = mfd_get_cell(pdev);
-> diff --git a/drivers/pinctrl/pinctrl-ocelot.c b/drivers/pinctrl/pinctrl-ocelot.c
-> index 0a36ec8775a3..758fbc225244 100644
-> --- a/drivers/pinctrl/pinctrl-ocelot.c
-> +++ b/drivers/pinctrl/pinctrl-ocelot.c
-> @@ -10,6 +10,7 @@
->  #include <linux/gpio/driver.h>
->  #include <linux/interrupt.h>
->  #include <linux/io.h>
-> +#include <linux/mfd/core.h>
->  #include <linux/of_device.h>
->  #include <linux/of_irq.h>
->  #include <linux/of_platform.h>
-> @@ -1368,7 +1369,11 @@ static int ocelot_pinctrl_probe(struct platform_device *pdev)
->  
->  	regmap_config.max_register = OCELOT_GPIO_SD_MAP * info->stride + 15 * 4;
->  
-> -	info->map = devm_regmap_init_mmio(dev, base, &regmap_config);
-> +	if (device_is_mfd(pdev))
-> +		info->map = dev_get_regmap(dev->parent, "GCB");
-> +	else
-> +		info->map = devm_regmap_init_mmio(dev, base, &regmap_config);
+Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
+---
+ drivers/net/ethernet/freescale/fec_main.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-What happens if you were to call the wrong API in either scenario?
-
-If the answer is 'the call would fail', then why not call one and if
-it fails, call the other?  With provided commits describing the
-reason for the stacked calls of course.
-
+diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+index 09df434b2f87..eeefed3043ad 100644
+--- a/drivers/net/ethernet/freescale/fec_main.c
++++ b/drivers/net/ethernet/freescale/fec_main.c
+@@ -1506,7 +1506,12 @@ fec_enet_rx_queue(struct net_device *ndev, int budget, u16 queue_id)
+ 			break;
+ 		pkt_received++;
+ 
+-		writel(FEC_ENET_RXF, fep->hwp + FEC_IEVENT);
++		if (queue_id == 0)
++			writel(FEC_ENET_RXF_0, fep->hwp + FEC_IEVENT);
++		else if (queue_id == 1)
++			writel(FEC_ENET_RXF_1, fep->hwp + FEC_IEVENT);
++		else
++			writel(FEC_ENET_RXF_2, fep->hwp + FEC_IEVENT);
+ 
+ 		/* Check for errors. */
+ 		status ^= BD_ENET_RX_LAST;
 -- 
-Lee Jones [李琼斯]
-Senior Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+2.17.1
+
