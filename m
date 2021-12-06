@@ -2,389 +2,322 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 492B246A3ED
-	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 19:22:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FD1446A3FE
+	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 19:26:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346779AbhLFSZu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Dec 2021 13:25:50 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:26276 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1346777AbhLFSZt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 13:25:49 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1638814940;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=26c++pLtqvXVRNhT0zVgcuBwbntt8anqzxmdqAqLJnM=;
-        b=bwwGEeIkKfjVciv4nc9bAIv9WnbtsFcst2XRjJc8KTHOfUA4kK/+4foBcrF2azTZAZVuQk
-        z1TCdqkczwiK6eKa6GxyVmfCmUJFDXzQvJQuKHzMAVW1eAZKLVZxgiqqIgveNQyUtnh7+9
-        MYX3GcaVdagRYasfDFChjzAPXn0DZRQ=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-19-VBvHqVv4PEeZAwkn4-mWPA-1; Mon, 06 Dec 2021 13:22:19 -0500
-X-MC-Unique: VBvHqVv4PEeZAwkn4-mWPA-1
-Received: by mail-wm1-f70.google.com with SMTP id 69-20020a1c0148000000b0033214e5b021so6486031wmb.3
-        for <netdev@vger.kernel.org>; Mon, 06 Dec 2021 10:22:18 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=26c++pLtqvXVRNhT0zVgcuBwbntt8anqzxmdqAqLJnM=;
-        b=7H9avNHC4dkoN5jxeZYVallnMAcRrUU+XRydKDBQVi/WhF2fvvomtBnIb0aZjYAnIU
-         EncRfWBizFj777GHYn6AsOaMKmIzQmILrlSSzZv4gEcjcLsnTPmVFYUz6M7PHpOFx83V
-         EpXp7H2F1ZFBoJmH8c8zboOicFox662L1KjqddYnwuzKsHJE89LvH9N/Tz5+bozbRAKQ
-         KV7BV8BVGZnAPaE66PwjlRi5nIdAjO/BBzyle/94WCQDcKBU+U14VgfGq2jco59FGxyf
-         WtZ5VkSSJAgzjrJioOrwNlLTuQEZ+n3cLNU0f9NkTvbvrew2r8G9fdGst7Knww3TpdNL
-         yKzA==
-X-Gm-Message-State: AOAM533r9y1MTCWWGZKOzMnBdjS4L9VN+WsC3SMfRGuRylcJmXqMX4MY
-        QM5OAmtX+buJMTg7LcUAyy2QUPCaaB7unI0QUsdwxghO/dWVogv1esI0AOrn1HSXoQdekvgs3Ko
-        WZ9fkuOrAV4UiEjcL
-X-Received: by 2002:adf:e387:: with SMTP id e7mr43681555wrm.412.1638814937511;
-        Mon, 06 Dec 2021 10:22:17 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyZhLTOPYm0rqRbuEpFVVAEK7XAmD4GECFI95Hk+PskLQuW1ks7+2hL99YKwNgNoZOAoa2E4w==
-X-Received: by 2002:adf:e387:: with SMTP id e7mr43681525wrm.412.1638814937246;
-        Mon, 06 Dec 2021 10:22:17 -0800 (PST)
-Received: from pc-4.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
-        by smtp.gmail.com with ESMTPSA id b6sm98815wmq.45.2021.12.06.10.22.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Dec 2021 10:22:16 -0800 (PST)
-Date:   Mon, 6 Dec 2021 19:22:14 +0100
-From:   Guillaume Nault <gnault@redhat.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        Russell Strong <russell@strong.id.au>
-Subject: [PATCH net-next 4/4] ipv4: Use dscp_t in struct fib_alias
-Message-ID: <16e93e56a10ab541f5e84b954e15f9779f68ac8d.1638814614.git.gnault@redhat.com>
-References: <cover.1638814614.git.gnault@redhat.com>
+        id S1346954AbhLFS3l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Dec 2021 13:29:41 -0500
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:28986 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1346472AbhLFS3k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 13:29:40 -0500
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 1B6DvPWJ005343;
+        Mon, 6 Dec 2021 10:26:09 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=UakAwtcz7R2phh9Pl0OdaEaQ9u8B5/R5NQCJauwyXPg=;
+ b=H156CHb5tmvWxtARJXmYfn5GYekYHUUHtETS3zTL3rvl4sX4YyYfPUrwU2URfWbzGiEw
+ AkvIN/JXsE9ijkTkZZsYNib6rlSGvhutwzKjg+9QT/AqFM9CEEdv+LVHrP2mwMu9dA60
+ XFozipt1zqY5Pg9zdHpIw1IzmvR88PlaWcwSYZrpKhPO9EOyJBKMvom+Yy025rmRGD5L
+ 2lTz//iVJkkfOI70C/eOX+rfQSswfK+T7rYTc7EmuuO/1yZAFleS4pQwoigfAeaxsmOs
+ NEXR2DrAaWsCzhi7/mKYzL+12DTb2UATcTnWOW52KKbbHbe/8jVhQ1TD8dFIGWdwTJsY 5A== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3cskuw94ej-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Mon, 06 Dec 2021 10:26:09 -0800
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 6 Dec
+ 2021 10:26:07 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
+ Transport; Mon, 6 Dec 2021 10:26:07 -0800
+Received: from rchintakuntla-lnx3.caveonetworks.com (unknown [10.111.140.81])
+        by maili.marvell.com (Postfix) with ESMTP id 9FD6B3F704A;
+        Mon,  6 Dec 2021 10:26:07 -0800 (PST)
+From:   Radha Mohan Chintakuntla <radhac@marvell.com>
+To:     <netdev@vger.kernel.org>, <davem@davemloft.net>,
+        <sgoutham@marvell.com>, <linux-kernel@vger.kernel.org>
+CC:     Radha Mohan Chintakuntla <radhac@marvell.com>
+Subject: [PATCH v2] octeontx2-nicvf: Add netdev interface support for SDP VF devices
+Date:   Mon, 6 Dec 2021 10:26:05 -0800
+Message-ID: <20211206182605.31087-1-radhac@marvell.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1638814614.git.gnault@redhat.com>
+Content-Type: text/plain
+X-Proofpoint-GUID: hCQCQtwY3INSPNAs2UD_DCYGXEIGfFN8
+X-Proofpoint-ORIG-GUID: hCQCQtwY3INSPNAs2UD_DCYGXEIGfFN8
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2021-12-06_07,2021-12-06_02,2021-12-02_01
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the new dscp_t type to replace the fa_tos field of fib_alias. This
-ensures ECN bits are ignored and makes the field compatible with
-fc_dscp (struct fib_config).
+This patch adds netdev interface for SDP VFs. This interface can be used
+to communicate with a host over PCIe when OcteonTx is in PCIe Endpoint
+mode.
 
-Converting old *tos variables and fields to dscp_t, allows sparse to
-flag incorrect uses of DSCP and ECN bits.
-
-Signed-off-by: Guillaume Nault <gnault@redhat.com>
+Signed-off-by: Radha Mohan Chintakuntla <radhac@marvell.com>
 ---
- net/ipv4/fib_lookup.h    |  3 +-
- net/ipv4/fib_semantics.c | 14 ++++++----
- net/ipv4/fib_trie.c      | 59 ++++++++++++++++++++++------------------
- net/ipv4/route.c         |  3 +-
- 4 files changed, 45 insertions(+), 34 deletions(-)
+Changes from v1:
+- fixed formatting issues happened due to email client
 
-diff --git a/net/ipv4/fib_lookup.h b/net/ipv4/fib_lookup.h
-index e184bcb19943..a63014b54809 100644
---- a/net/ipv4/fib_lookup.h
-+++ b/net/ipv4/fib_lookup.h
-@@ -4,13 +4,14 @@
+ .../ethernet/marvell/octeontx2/nic/cn10k.c    |  4 +--
+ .../ethernet/marvell/octeontx2/nic/cn10k.h    |  2 +-
+ .../marvell/octeontx2/nic/otx2_common.c       | 32 +++++++++++++------
+ .../marvell/octeontx2/nic/otx2_common.h       | 14 ++++++--
+ .../ethernet/marvell/octeontx2/nic/otx2_reg.h |  1 +
+ .../ethernet/marvell/octeontx2/nic/otx2_vf.c  | 16 ++++++++--
+ 6 files changed, 51 insertions(+), 18 deletions(-)
+
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/cn10k.c b/drivers/net/ethernet/marvell/octeontx2/nic/cn10k.c
+index fd4f083c699e..2262d33a7f23 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/cn10k.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/cn10k.c
+@@ -72,7 +72,7 @@ int cn10k_lmtst_init(struct otx2_nic *pfvf)
+ }
+ EXPORT_SYMBOL(cn10k_lmtst_init);
  
- #include <linux/types.h>
- #include <linux/list.h>
-+#include <net/inet_dscp.h>
- #include <net/ip_fib.h>
- #include <net/nexthop.h>
+-int cn10k_sq_aq_init(void *dev, u16 qidx, u16 sqb_aura)
++int cn10k_sq_aq_init(void *dev, u16 qidx, u8 chan_offset, u16 sqb_aura)
+ {
+ 	struct nix_cn10k_aq_enq_req *aq;
+ 	struct otx2_nic *pfvf = dev;
+@@ -89,7 +89,7 @@ int cn10k_sq_aq_init(void *dev, u16 qidx, u16 sqb_aura)
+ 	/* Only one SMQ is allocated, map all SQ's to that SMQ  */
+ 	aq->sq.smq = pfvf->hw.txschq_list[NIX_TXSCH_LVL_SMQ][0];
+ 	aq->sq.smq_rr_weight = mtu_to_dwrr_weight(pfvf, pfvf->tx_max_pktlen);
+-	aq->sq.default_chan = pfvf->hw.tx_chan_base;
++	aq->sq.default_chan = pfvf->hw.tx_chan_base + chan_offset;
+ 	aq->sq.sqe_stype = NIX_STYPE_STF; /* Cache SQB */
+ 	aq->sq.sqb_aura = sqb_aura;
+ 	aq->sq.sq_int_ena = NIX_SQINT_BITS;
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/cn10k.h b/drivers/net/ethernet/marvell/octeontx2/nic/cn10k.h
+index 8ae96815865e..28b3b3275fe6 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/cn10k.h
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/cn10k.h
+@@ -26,7 +26,7 @@ static inline int mtu_to_dwrr_weight(struct otx2_nic *pfvf, int mtu)
  
- struct fib_alias {
- 	struct hlist_node	fa_list;
- 	struct fib_info		*fa_info;
--	u8			fa_tos;
-+	dscp_t			fa_dscp;
- 	u8			fa_type;
- 	u8			fa_state;
- 	u8			fa_slen;
-diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
-index fde7797b5806..872adeee9e5b 100644
---- a/net/ipv4/fib_semantics.c
-+++ b/net/ipv4/fib_semantics.c
-@@ -31,6 +31,7 @@
- #include <linux/netlink.h>
+ void cn10k_refill_pool_ptrs(void *dev, struct otx2_cq_queue *cq);
+ void cn10k_sqe_flush(void *dev, struct otx2_snd_queue *sq, int size, int qidx);
+-int cn10k_sq_aq_init(void *dev, u16 qidx, u16 sqb_aura);
++int cn10k_sq_aq_init(void *dev, u16 qidx, u8 chan_offset, u16 sqb_aura);
+ int cn10k_lmtst_init(struct otx2_nic *pfvf);
+ int cn10k_free_all_ipolicers(struct otx2_nic *pfvf);
+ int cn10k_alloc_matchall_ipolicer(struct otx2_nic *pfvf);
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+index 66da31f30d3e..e46c24171597 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+@@ -233,6 +233,9 @@ int otx2_hw_set_mtu(struct otx2_nic *pfvf, int mtu)
  
- #include <net/arp.h>
-+#include <net/inet_dscp.h>
- #include <net/ip.h>
- #include <net/protocol.h>
- #include <net/route.h>
-@@ -515,7 +516,7 @@ void rtmsg_fib(int event, __be32 key, struct fib_alias *fa,
- 	fri.tb_id = tb_id;
- 	fri.dst = key;
- 	fri.dst_len = dst_len;
--	fri.tos = fa->fa_tos;
-+	fri.tos = inet_dscp_to_dsfield(fa->fa_dscp);
- 	fri.type = fa->fa_type;
- 	fri.offload = fa->offload;
- 	fri.trap = fa->trap;
-@@ -2016,7 +2017,7 @@ static void fib_select_default(const struct flowi4 *flp, struct fib_result *res)
- 	int order = -1, last_idx = -1;
- 	struct fib_alias *fa, *fa1 = NULL;
- 	u32 last_prio = res->fi->fib_priority;
--	u8 last_tos = 0;
-+	dscp_t last_dscp = 0;
+ 	req->maxlen = pfvf->netdev->mtu + OTX2_ETH_HLEN + OTX2_HW_TIMESTAMP_LEN;
  
- 	hlist_for_each_entry_rcu(fa, fa_head, fa_list) {
- 		struct fib_info *next_fi = fa->fa_info;
-@@ -2024,19 +2025,20 @@ static void fib_select_default(const struct flowi4 *flp, struct fib_result *res)
++	if (is_otx2_sdpvf(pfvf->pdev))
++		req->sdp_link = true;
++
+ 	err = otx2_sync_mbox_msg(&pfvf->mbox);
+ 	mutex_unlock(&pfvf->mbox.lock);
+ 	return err;
+@@ -243,7 +246,7 @@ int otx2_config_pause_frm(struct otx2_nic *pfvf)
+ 	struct cgx_pause_frm_cfg *req;
+ 	int err;
  
- 		if (fa->fa_slen != slen)
- 			continue;
--		if (fa->fa_tos && fa->fa_tos != flp->flowi4_tos)
-+		if (fa->fa_dscp &&
-+		    fa->fa_dscp != inet_dsfield_to_dscp(flp->flowi4_tos))
- 			continue;
- 		if (fa->tb_id != tb->tb_id)
- 			continue;
- 		if (next_fi->fib_priority > last_prio &&
--		    fa->fa_tos == last_tos) {
--			if (last_tos)
-+		    fa->fa_dscp == last_dscp) {
-+			if (last_dscp)
- 				continue;
- 			break;
- 		}
- 		if (next_fi->fib_flags & RTNH_F_DEAD)
- 			continue;
--		last_tos = fa->fa_tos;
-+		last_dscp = fa->fa_dscp;
- 		last_prio = next_fi->fib_priority;
+-	if (is_otx2_lbkvf(pfvf->pdev))
++	if (is_otx2_lbkvf(pfvf->pdev) || is_otx2_sdpvf(pfvf->pdev))
+ 		return 0;
  
- 		if (next_fi->fib_scope != res->scope ||
-diff --git a/net/ipv4/fib_trie.c b/net/ipv4/fib_trie.c
-index d937eeebb812..eb8ce2cb8aa2 100644
---- a/net/ipv4/fib_trie.c
-+++ b/net/ipv4/fib_trie.c
-@@ -82,7 +82,7 @@ static int call_fib_entry_notifier(struct notifier_block *nb,
- 		.dst = dst,
- 		.dst_len = dst_len,
- 		.fi = fa->fa_info,
--		.tos = fa->fa_tos,
-+		.tos = inet_dscp_to_dsfield(fa->fa_dscp),
- 		.type = fa->fa_type,
- 		.tb_id = fa->tb_id,
- 	};
-@@ -99,7 +99,7 @@ static int call_fib_entry_notifiers(struct net *net,
- 		.dst = dst,
- 		.dst_len = dst_len,
- 		.fi = fa->fa_info,
--		.tos = fa->fa_tos,
-+		.tos = inet_dscp_to_dsfield(fa->fa_dscp),
- 		.type = fa->fa_type,
- 		.tb_id = fa->tb_id,
- 	};
-@@ -974,13 +974,13 @@ static struct key_vector *fib_find_node(struct trie *t,
- 	return n;
+ 	mutex_lock(&pfvf->mbox.lock);
+@@ -622,6 +625,11 @@ int otx2_txschq_config(struct otx2_nic *pfvf, int lvl)
+ 		req->num_regs++;
+ 		req->reg[1] = NIX_AF_TL4X_SCHEDULE(schq);
+ 		req->regval[1] = dwrr_val;
++		if (is_otx2_sdpvf(pfvf->pdev)) {
++			req->num_regs++;
++			req->reg[2] = NIX_AF_TL4X_SDP_LINK_CFG(schq);
++			req->regval[2] = BIT_ULL(12);
++		}
+ 	} else if (lvl == NIX_TXSCH_LVL_TL3) {
+ 		parent = hw->txschq_list[NIX_TXSCH_LVL_TL2][0];
+ 		req->reg[0] = NIX_AF_TL3X_PARENT(schq);
+@@ -638,11 +646,12 @@ int otx2_txschq_config(struct otx2_nic *pfvf, int lvl)
+ 		req->reg[1] = NIX_AF_TL2X_SCHEDULE(schq);
+ 		req->regval[1] = TXSCH_TL1_DFLT_RR_PRIO << 24 | dwrr_val;
+ 
+-		req->num_regs++;
+-		req->reg[2] = NIX_AF_TL3_TL2X_LINKX_CFG(schq, hw->tx_link);
+-		/* Enable this queue and backpressure */
+-		req->regval[2] = BIT_ULL(13) | BIT_ULL(12);
+-
++		if (!is_otx2_sdpvf(pfvf->pdev)) {
++			req->num_regs++;
++			req->reg[2] = NIX_AF_TL3_TL2X_LINKX_CFG(schq, hw->tx_link);
++			/* Enable this queue and backpressure */
++			req->regval[2] = BIT_ULL(13) | BIT_ULL(12);
++		}
+ 	} else if (lvl == NIX_TXSCH_LVL_TL1) {
+ 		/* Default config for TL1.
+ 		 * For VF this is always ignored.
+@@ -779,7 +788,7 @@ static int otx2_rq_init(struct otx2_nic *pfvf, u16 qidx, u16 lpb_aura)
+ 	return otx2_sync_mbox_msg(&pfvf->mbox);
  }
  
--/* Return the first fib alias matching TOS with
-+/* Return the first fib alias matching DSCP with
-  * priority less than or equal to PRIO.
-  * If 'find_first' is set, return the first matching
-- * fib alias, regardless of TOS and priority.
-+ * fib alias, regardless of DSCP and priority.
-  */
- static struct fib_alias *fib_find_alias(struct hlist_head *fah, u8 slen,
--					u8 tos, u32 prio, u32 tb_id,
-+					dscp_t dscp, u32 prio, u32 tb_id,
- 					bool find_first)
+-int otx2_sq_aq_init(void *dev, u16 qidx, u16 sqb_aura)
++int otx2_sq_aq_init(void *dev, u16 qidx, u8 chan_offset, u16 sqb_aura)
  {
- 	struct fib_alias *fa;
-@@ -989,6 +989,10 @@ static struct fib_alias *fib_find_alias(struct hlist_head *fah, u8 slen,
- 		return NULL;
- 
- 	hlist_for_each_entry(fa, fah, fa_list) {
-+		/* Avoid Sparse warning when using dscp_t in inequalities */
-+		u8 __fa_dscp = (__force u8)fa->fa_dscp;
-+		u8 __dscp = (__force u8)dscp;
-+
- 		if (fa->fa_slen < slen)
- 			continue;
- 		if (fa->fa_slen != slen)
-@@ -999,9 +1003,9 @@ static struct fib_alias *fib_find_alias(struct hlist_head *fah, u8 slen,
- 			break;
- 		if (find_first)
- 			return fa;
--		if (fa->fa_tos > tos)
-+		if (__fa_dscp > __dscp)
- 			continue;
--		if (fa->fa_info->fib_priority >= prio || fa->fa_tos < tos)
-+		if (fa->fa_info->fib_priority >= prio || __fa_dscp < __dscp)
- 			return fa;
- 	}
- 
-@@ -1028,8 +1032,8 @@ fib_find_matching_alias(struct net *net, const struct fib_rt_info *fri)
- 
- 	hlist_for_each_entry_rcu(fa, &l->leaf, fa_list) {
- 		if (fa->fa_slen == slen && fa->tb_id == fri->tb_id &&
--		    fa->fa_tos == fri->tos && fa->fa_info == fri->fi &&
--		    fa->fa_type == fri->type)
-+		    fa->fa_dscp == inet_dsfield_to_dscp(fri->tos) &&
-+		    fa->fa_info == fri->fi && fa->fa_type == fri->type)
- 			return fa;
- 	}
- 
-@@ -1211,9 +1215,9 @@ int fib_table_insert(struct net *net, struct fib_table *tb,
- 	struct fib_info *fi;
- 	u8 plen = cfg->fc_dst_len;
- 	u8 slen = KEYLENGTH - plen;
-+	dscp_t dscp;
- 	u32 key;
+ 	struct otx2_nic *pfvf = dev;
+ 	struct otx2_snd_queue *sq;
+@@ -799,7 +808,7 @@ int otx2_sq_aq_init(void *dev, u16 qidx, u16 sqb_aura)
+ 	/* Only one SMQ is allocated, map all SQ's to that SMQ  */
+ 	aq->sq.smq = pfvf->hw.txschq_list[NIX_TXSCH_LVL_SMQ][0];
+ 	aq->sq.smq_rr_quantum = mtu_to_dwrr_weight(pfvf, pfvf->tx_max_pktlen);
+-	aq->sq.default_chan = pfvf->hw.tx_chan_base;
++	aq->sq.default_chan = pfvf->hw.tx_chan_base + chan_offset;
+ 	aq->sq.sqe_stype = NIX_STYPE_STF; /* Cache SQB */
+ 	aq->sq.sqb_aura = sqb_aura;
+ 	aq->sq.sq_int_ena = NIX_SQINT_BITS;
+@@ -822,6 +831,7 @@ static int otx2_sq_init(struct otx2_nic *pfvf, u16 qidx, u16 sqb_aura)
+ 	struct otx2_qset *qset = &pfvf->qset;
+ 	struct otx2_snd_queue *sq;
+ 	struct otx2_pool *pool;
++	u8 chan_offset;
  	int err;
--	u8 tos;
  
- 	key = ntohl(cfg->fc_dst);
+ 	pool = &pfvf->qset.pool[sqb_aura];
+@@ -864,8 +874,8 @@ static int otx2_sq_init(struct otx2_nic *pfvf, u16 qidx, u16 sqb_aura)
+ 	sq->stats.bytes = 0;
+ 	sq->stats.pkts = 0;
  
-@@ -1228,13 +1232,13 @@ int fib_table_insert(struct net *net, struct fib_table *tb,
- 		goto err;
+-	return pfvf->hw_ops->sq_aq_init(pfvf, qidx, sqb_aura);
+-
++	chan_offset = qidx % pfvf->hw.tx_chan_cnt;
++	return pfvf->hw_ops->sq_aq_init(pfvf, qidx, chan_offset, sqb_aura);
+ }
+ 
+ static int otx2_cq_init(struct otx2_nic *pfvf, u16 qidx)
+@@ -1590,6 +1600,8 @@ void mbox_handler_nix_lf_alloc(struct otx2_nic *pfvf,
+ 	pfvf->hw.sqb_size = rsp->sqb_size;
+ 	pfvf->hw.rx_chan_base = rsp->rx_chan_base;
+ 	pfvf->hw.tx_chan_base = rsp->tx_chan_base;
++	pfvf->hw.rx_chan_cnt = rsp->rx_chan_cnt;
++	pfvf->hw.tx_chan_cnt = rsp->tx_chan_cnt;
+ 	pfvf->hw.lso_tsov4_idx = rsp->lso_tsov4_idx;
+ 	pfvf->hw.lso_tsov6_idx = rsp->lso_tsov6_idx;
+ 	pfvf->hw.cgx_links = rsp->cgx_links;
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+index 61e52812983f..386fd7f95944 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+@@ -28,6 +28,7 @@
+ /* PCI device IDs */
+ #define PCI_DEVID_OCTEONTX2_RVU_PF              0xA063
+ #define PCI_DEVID_OCTEONTX2_RVU_VF		0xA064
++#define PCI_DEVID_OCTEONTX2_SDP_VF		0xA0F7
+ #define PCI_DEVID_OCTEONTX2_RVU_AFVF		0xA0F8
+ 
+ #define PCI_SUBSYS_DEVID_96XX_RVU_PFVF		0xB200
+@@ -191,6 +192,8 @@ struct otx2_hw {
+ 	/* HW settings, coalescing etc */
+ 	u16			rx_chan_base;
+ 	u16			tx_chan_base;
++	u8			rx_chan_cnt;
++	u8			tx_chan_cnt;
+ 	u16			cq_qcount_wait;
+ 	u16			cq_ecount_wait;
+ 	u16			rq_skid;
+@@ -314,7 +317,7 @@ struct otx2_tc_info {
+ };
+ 
+ struct dev_hw_ops {
+-	int	(*sq_aq_init)(void *dev, u16 qidx, u16 sqb_aura);
++	int	(*sq_aq_init)(void *dev, u16 qidx, u8 chan_offset, u16 sqb_aura);
+ 	void	(*sqe_flush)(void *dev, struct otx2_snd_queue *sq,
+ 			     int size, int qidx);
+ 	void	(*refill_pool_ptrs)(void *dev, struct otx2_cq_queue *cq);
+@@ -403,6 +406,11 @@ static inline bool is_otx2_lbkvf(struct pci_dev *pdev)
+ 	return pdev->device == PCI_DEVID_OCTEONTX2_RVU_AFVF;
+ }
+ 
++static inline bool is_otx2_sdpvf(struct pci_dev *pdev)
++{
++	return pdev->device == PCI_DEVID_OCTEONTX2_SDP_VF;
++}
++
+ static inline bool is_96xx_A0(struct pci_dev *pdev)
+ {
+ 	return (pdev->revision == 0x00) &&
+@@ -794,8 +802,8 @@ void otx2_ctx_disable(struct mbox *mbox, int type, bool npa);
+ int otx2_nix_config_bp(struct otx2_nic *pfvf, bool enable);
+ void otx2_cleanup_rx_cqes(struct otx2_nic *pfvf, struct otx2_cq_queue *cq);
+ void otx2_cleanup_tx_cqes(struct otx2_nic *pfvf, struct otx2_cq_queue *cq);
+-int otx2_sq_aq_init(void *dev, u16 qidx, u16 sqb_aura);
+-int cn10k_sq_aq_init(void *dev, u16 qidx, u16 sqb_aura);
++int otx2_sq_aq_init(void *dev, u16 qidx, u8 chan_offset, u16 sqb_aura);
++int cn10k_sq_aq_init(void *dev, u16 qidx, u8 chan_offset, u16 sqb_aura);
+ int otx2_alloc_buffer(struct otx2_nic *pfvf, struct otx2_cq_queue *cq,
+ 		      dma_addr_t *dma);
+ 
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_reg.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_reg.h
+index 1b967eaf948b..6ef52051ab09 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_reg.h
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_reg.h
+@@ -140,6 +140,7 @@
+ 
+ /* NIX AF transmit scheduler registers */
+ #define NIX_AF_SMQX_CFG(a)		(0x700 | (a) << 16)
++#define NIX_AF_TL4X_SDP_LINK_CFG(a)	(0xB10 | (a) << 16)
+ #define NIX_AF_TL1X_SCHEDULE(a)		(0xC00 | (a) << 16)
+ #define NIX_AF_TL1X_CIR(a)		(0xC20 | (a) << 16)
+ #define NIX_AF_TL1X_TOPOLOGY(a)		(0xC80 | (a) << 16)
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
+index 254bebffe8c1..bc2566cb2ec1 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
+@@ -21,6 +21,7 @@
+ static const struct pci_device_id otx2_vf_id_table[] = {
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_CAVIUM, PCI_DEVID_OCTEONTX2_RVU_AFVF) },
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_CAVIUM, PCI_DEVID_OCTEONTX2_RVU_VF) },
++	{ PCI_DEVICE(PCI_VENDOR_ID_CAVIUM, PCI_DEVID_OCTEONTX2_SDP_VF) },
+ 	{ }
+ };
+ 
+@@ -361,7 +362,7 @@ static int otx2vf_open(struct net_device *netdev)
+ 
+ 	/* LBKs do not receive link events so tell everyone we are up here */
+ 	vf = netdev_priv(netdev);
+-	if (is_otx2_lbkvf(vf->pdev)) {
++	if (is_otx2_lbkvf(vf->pdev) || is_otx2_sdpvf(vf->pdev)) {
+ 		pr_info("%s NIC Link is UP\n", netdev->name);
+ 		netif_carrier_on(netdev);
+ 		netif_tx_start_all_queues(netdev);
+@@ -681,6 +682,16 @@ static int otx2vf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 		snprintf(netdev->name, sizeof(netdev->name), "lbk%d", n);
  	}
  
--	tos = inet_dscp_to_dsfield(cfg->fc_dscp);
-+	dscp = cfg->fc_dscp;
- 	l = fib_find_node(t, &tp, key);
--	fa = l ? fib_find_alias(&l->leaf, slen, tos, fi->fib_priority,
-+	fa = l ? fib_find_alias(&l->leaf, slen, dscp, fi->fib_priority,
- 				tb->tb_id, false) : NULL;
++	/* To distinguish, for SDP VFs set netdev name explicitly */
++	if (is_otx2_sdpvf(vf->pdev)) {
++		int n;
++
++		n = (vf->pcifunc >> RVU_PFVF_FUNC_SHIFT) & RVU_PFVF_FUNC_MASK;
++		/* Need to subtract 1 to get proper VF number */
++		n -= 1;
++		snprintf(netdev->name, sizeof(netdev->name), "sdp%d-%d", pdev->bus->number, n);
++	}
++
+ 	err = register_netdev(netdev);
+ 	if (err) {
+ 		dev_err(dev, "Failed to register netdevice\n");
+@@ -691,7 +702,8 @@ static int otx2vf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	if (err)
+ 		goto err_unreg_netdev;
  
- 	/* Now fa, if non-NULL, points to the first fib alias
--	 * with the same keys [prefix,tos,priority], if such key already
-+	 * with the same keys [prefix,dscp,priority], if such key already
- 	 * exists or to the node before which we will insert new one.
- 	 *
- 	 * If fa is NULL, we will need to allocate a new one and
-@@ -1242,7 +1246,7 @@ int fib_table_insert(struct net *net, struct fib_table *tb,
- 	 * of the new alias.
- 	 */
+-	otx2vf_set_ethtool_ops(netdev);
++	if (!is_otx2_sdpvf(vf->pdev))
++		otx2vf_set_ethtool_ops(netdev);
  
--	if (fa && fa->fa_tos == tos &&
-+	if (fa && fa->fa_dscp == dscp &&
- 	    fa->fa_info->fib_priority == fi->fib_priority) {
- 		struct fib_alias *fa_first, *fa_match;
- 
-@@ -1262,7 +1266,7 @@ int fib_table_insert(struct net *net, struct fib_table *tb,
- 		hlist_for_each_entry_from(fa, fa_list) {
- 			if ((fa->fa_slen != slen) ||
- 			    (fa->tb_id != tb->tb_id) ||
--			    (fa->fa_tos != tos))
-+			    (fa->fa_dscp != dscp))
- 				break;
- 			if (fa->fa_info->fib_priority != fi->fib_priority)
- 				break;
-@@ -1290,7 +1294,7 @@ int fib_table_insert(struct net *net, struct fib_table *tb,
- 				goto out;
- 
- 			fi_drop = fa->fa_info;
--			new_fa->fa_tos = fa->fa_tos;
-+			new_fa->fa_dscp = fa->fa_dscp;
- 			new_fa->fa_info = fi;
- 			new_fa->fa_type = cfg->fc_type;
- 			state = fa->fa_state;
-@@ -1353,7 +1357,7 @@ int fib_table_insert(struct net *net, struct fib_table *tb,
- 		goto out;
- 
- 	new_fa->fa_info = fi;
--	new_fa->fa_tos = tos;
-+	new_fa->fa_dscp = dscp;
- 	new_fa->fa_type = cfg->fc_type;
- 	new_fa->fa_state = 0;
- 	new_fa->fa_slen = slen;
-@@ -1569,7 +1573,8 @@ int fib_table_lookup(struct fib_table *tb, const struct flowi4 *flp,
- 			if (index >= (1ul << fa->fa_slen))
- 				continue;
- 		}
--		if (fa->fa_tos && fa->fa_tos != flp->flowi4_tos)
-+		if (fa->fa_dscp &&
-+		    inet_dscp_to_dsfield(fa->fa_dscp) != flp->flowi4_tos)
- 			continue;
- 		if (fi->fib_dead)
- 			continue;
-@@ -1705,8 +1710,8 @@ int fib_table_delete(struct net *net, struct fib_table *tb,
- 	struct key_vector *l, *tp;
- 	u8 plen = cfg->fc_dst_len;
- 	u8 slen = KEYLENGTH - plen;
-+	dscp_t dscp;
- 	u32 key;
--	u8 tos;
- 
- 	key = ntohl(cfg->fc_dst);
- 
-@@ -1717,12 +1722,13 @@ int fib_table_delete(struct net *net, struct fib_table *tb,
- 	if (!l)
- 		return -ESRCH;
- 
--	tos = inet_dscp_to_dsfield(cfg->fc_dscp);
--	fa = fib_find_alias(&l->leaf, slen, tos, 0, tb->tb_id, false);
-+	dscp = cfg->fc_dscp;
-+	fa = fib_find_alias(&l->leaf, slen, dscp, 0, tb->tb_id, false);
- 	if (!fa)
- 		return -ESRCH;
- 
--	pr_debug("Deleting %08x/%d tos=%d t=%p\n", key, plen, tos, t);
-+	pr_debug("Deleting %08x/%d dsfield=%u t=%p\n", key, plen,
-+		 inet_dscp_to_dsfield(dscp), t);
- 
- 	fa_to_delete = NULL;
- 	hlist_for_each_entry_from(fa, fa_list) {
-@@ -1730,7 +1736,7 @@ int fib_table_delete(struct net *net, struct fib_table *tb,
- 
- 		if ((fa->fa_slen != slen) ||
- 		    (fa->tb_id != tb->tb_id) ||
--		    (fa->fa_tos != tos))
-+		    (fa->fa_dscp != dscp))
- 			break;
- 
- 		if ((!cfg->fc_type || fa->fa_type == cfg->fc_type) &&
-@@ -2298,7 +2304,7 @@ static int fn_trie_dump_leaf(struct key_vector *l, struct fib_table *tb,
- 				fri.tb_id = tb->tb_id;
- 				fri.dst = xkey;
- 				fri.dst_len = KEYLENGTH - fa->fa_slen;
--				fri.tos = fa->fa_tos;
-+				fri.tos = inet_dscp_to_dsfield(fa->fa_dscp);
- 				fri.type = fa->fa_type;
- 				fri.offload = fa->offload;
- 				fri.trap = fa->trap;
-@@ -2810,8 +2816,9 @@ static int fib_trie_seq_show(struct seq_file *seq, void *v)
- 					     fa->fa_info->fib_scope),
- 				   rtn_type(buf2, sizeof(buf2),
- 					    fa->fa_type));
--			if (fa->fa_tos)
--				seq_printf(seq, " tos=%d", fa->fa_tos);
-+			if (fa->fa_dscp)
-+				seq_printf(seq, " tos=%u",
-+					   inet_dscp_to_dsfield(fa->fa_dscp));
- 			seq_putc(seq, '\n');
- 		}
- 	}
-diff --git a/net/ipv4/route.c b/net/ipv4/route.c
-index 243a0c52be42..8432bc066839 100644
---- a/net/ipv4/route.c
-+++ b/net/ipv4/route.c
-@@ -84,6 +84,7 @@
- #include <linux/jhash.h>
- #include <net/dst.h>
- #include <net/dst_metadata.h>
-+#include <net/inet_dscp.h>
- #include <net/net_namespace.h>
- #include <net/ip.h>
- #include <net/route.h>
-@@ -3390,7 +3391,7 @@ static int inet_rtm_getroute(struct sk_buff *in_skb, struct nlmsghdr *nlh,
- 
- 				if (fa->fa_slen == slen &&
- 				    fa->tb_id == fri.tb_id &&
--				    fa->fa_tos == fri.tos &&
-+				    fa->fa_dscp == inet_dsfield_to_dscp(fri.tos) &&
- 				    fa->fa_info == res.fi &&
- 				    fa->fa_type == fri.type) {
- 					fri.offload = fa->offload;
+ 	err = otx2vf_mcam_flow_init(vf);
+ 	if (err)
 -- 
-2.21.3
+2.17.1
 
