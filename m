@@ -2,47 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DECFC46AA42
-	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 22:20:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A72F546AA4A
+	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 22:21:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239091AbhLFVYN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Dec 2021 16:24:13 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:59774 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351493AbhLFVYE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 16:24:04 -0500
+        id S1351652AbhLFVY1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Dec 2021 16:24:27 -0500
+Received: from sin.source.kernel.org ([145.40.73.55]:50262 "EHLO
+        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1351597AbhLFVYQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 16:24:16 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 04492B81110;
-        Mon,  6 Dec 2021 21:20:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAA6FC341D7;
-        Mon,  6 Dec 2021 21:20:30 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id BF9C1CE185F;
+        Mon,  6 Dec 2021 21:20:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 391EEC341C1;
+        Mon,  6 Dec 2021 21:20:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638825632;
-        bh=JYrEXAsyHYXxPTqCgvNMYYxWY+HebU64cZPOq6OpLY0=;
+        s=k20201202; t=1638825644;
+        bh=4JqTxbKO/DQeX4y1sMZwWKxdauS4onY3+p+pEPUjIMw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d92rCrEolfc5z2hTTdzpEY9wQXhIwVrWd2PQjwptfebn6nb6787vAb60tWND2dRIv
-         MFYQh/+6q7sAuhE45GFzjzseRM6Xl8R0pSReIQMS91lHlPIC1TWGWYPlZRSn1wNpuI
-         iOS+p+NSHXuPU7lW0TaOZzMq4uZNnR1qw++p98HueWeqNfTZKBP6yEfIF8wC8yAYk8
-         ddokNuJDVtDKx9pwQL+npmCIzNkoA2ThrV5jQwALMpbso1rbIQoxMUYIobFgAWC5vD
-         /WKn5JprEF0lK+b0aCPILKc6T0KSkhmQz8qbQy/KUHU7btctBKduU3pnf7e9h1+vCs
-         aHfY72Xg9gETA==
+        b=kZfFaP9xjf5BzFjU2XKcPB/BWdmar0NKMUQlObP+MHrzJ004MB9rcgX2K+3liUuqG
+         Z75HCqe8UtqagOwuk7oOO+N5eaqllhvyGPMDt9kzgkmYdMt4sHvM8k4BVqOXAAAAos
+         JDM8cIXHQXG44Mfm7O3ovRHNcxGYPbudvjMU2CseJss81RGpIsGa3FUo8AU7CQknQX
+         FQtSLRTKXueYtZBvvAiSIqSR+hc2b9HGxOosEgey9doUcmoPF2Ywb5KzEGv99LibBS
+         3zuW83RikJafNR/UBji8Fj7D79HtjCFT85LLeIF7LGVGA+sccvBEEce2mDO1wWyNj5
+         DIQ0dqNF6Q/uA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>,
         syzkaller <syzkaller@googlegroups.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        yajun.deng@linux.dev, fw@strlen.de, dsahern@kernel.org,
-        johannes.berg@intel.com, aahringo@redhat.com, edumazet@google.com,
-        marcelo.leitner@gmail.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 4/5] net: netlink: af_netlink: Prevent empty skb by adding a check on len.
-Date:   Mon,  6 Dec 2021 16:20:20 -0500
-Message-Id: <20211206212021.1661517-4-sashal@kernel.org>
+        dsahern@kernel.org, yajun.deng@linux.dev, fw@strlen.de,
+        edumazet@google.com, marcelo.leitner@gmail.com,
+        johannes.berg@intel.com, aahringo@redhat.com,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.4 3/3] net: netlink: af_netlink: Prevent empty skb by adding a check on len.
+Date:   Mon,  6 Dec 2021 16:20:34 -0500
+Message-Id: <20211206212034.1661597-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20211206212021.1661517-1-sashal@kernel.org>
-References: <20211206212021.1661517-1-sashal@kernel.org>
+In-Reply-To: <20211206212034.1661597-1-sashal@kernel.org>
+References: <20211206212034.1661597-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -232,7 +233,7 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 5 insertions(+)
 
 diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
-index 1b70de5898c42..13d69cbd14c20 100644
+index 65cf129eaad33..2f23b7fef8ef7 100644
 --- a/net/netlink/af_netlink.c
 +++ b/net/netlink/af_netlink.c
 @@ -1804,6 +1804,11 @@ static int netlink_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
