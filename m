@@ -2,133 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8653A46A092
-	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 17:03:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A89C646A02C
+	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 16:56:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234430AbhLFQF5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Dec 2021 11:05:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37178 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381602AbhLFP7k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 10:59:40 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B9F8C08EB55;
-        Mon,  6 Dec 2021 07:43:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=MPeuvTxNc7e1r/s1dzAjdNjQbaM0LQOJRmSAdCiN7I4=; b=q07BlVPXYmGLZU+dKgzZJ0hiKT
-        JUrhQDg+pP5lG9oLUYCnZCHWrZnLfKLbg1+7hElhB9qbRGIylmzLvVKhVkVOSE114gPp7O+Kgn6qM
-        XQ35qg/+aEcMjank6MvVfYSt5tE2l364UAZI0FuGnqcS8+3vcnx2+ToMBXcm0nCDX15XTaUECX7F/
-        nr28FgBQeQYlLsfZZFxb4ivohfTzLrQEHYU2yg8OuixSDDOIJfSgyF/lMOrQfhOvIJcFHC0JPITjE
-        cD+3VG1/sIEG49N+bjV2sBSarVlBGseg6pmFkd6+gxAPZPk17OYN6JyvJlq6beuOTj0Fz1VXvz2G/
-        0UVjV9/Q==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:56100)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1muG8j-0004w7-OQ; Mon, 06 Dec 2021 15:42:53 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1muG8d-0004Sj-CM; Mon, 06 Dec 2021 15:42:47 +0000
-Date:   Mon, 6 Dec 2021 15:42:47 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Emmanuel Deloget <emmanuel.deloget@eho.link>
-Cc:     Louis Amas <louis.amas@eho.link>, andrii@kernel.org,
-        ast@kernel.org, bpf@vger.kernel.org, daniel@iogearbox.net,
-        davem@davemloft.net, hawk@kernel.org, john.fastabend@gmail.com,
-        kafai@fb.com, kpsingh@kernel.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, mw@semihalf.com,
-        netdev@vger.kernel.org, songliubraving@fb.com, yhs@fb.com
-Subject: Re: [PATCH 1/1] net: mvpp2: fix XDP rx queues registering
-Message-ID: <Ya4vd9+pBbVJML+K@shell.armlinux.org.uk>
-References: <DB9PR06MB8058D71218633CD7024976CAFA929@DB9PR06MB8058.eurprd06.prod.outlook.com>
- <20211110144104.241589-1-louis.amas@eho.link>
- <bdc1f03c-036f-ee29-e2a1-a80f640adcc4@eho.link>
+        id S1388142AbhLFP7G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Dec 2021 10:59:06 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:35804 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1385729AbhLFP45 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 10:56:57 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 755C9612D3;
+        Mon,  6 Dec 2021 15:53:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A441FC341F8;
+        Mon,  6 Dec 2021 15:53:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1638806006;
+        bh=LVzcOfoJv9Y3eoCAXke2gDeYUbUcFGp9/7s2MGxf4ec=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=gWOwEZOYaB1xlh+objmSG7XkvqGq938QSclF5vC7e0gdV+UhpsY9/U3J8aFXgMjUI
+         7FTtvxlVNuYwZ4kMx1xzZ5sELb646y/B6i2Iw/lXm64mrs93jguTUus2E5En3LZs86
+         k6+PAhcgSQGvlqDmvhYJQCi/Ld3EVQ2nbFBv7IiqvX14NE/QhlnlKjpVY0LwotOsjW
+         djk1o3bNN5R1AJ6+B7Kwyz23RZvpcSd8Oym2SyGWqVrmCemCwi7aScsjugYRdUgwi6
+         mpe3KxBipb6a1fZ0ihPEOb2R9xOnAZFOPjetslcONwW9JrzUpB0OpZ+mVGuUTc0YBQ
+         z7JEQF71JZfUg==
+Date:   Mon, 6 Dec 2021 07:53:26 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Florian Westphal <fw@strlen.de>
+Cc:     <mptcp@lists.linux.dev>, syzkaller-bugs@googlegroups.com,
+        <netdev@vger.kernel.org>, linux-kernel@vger.kernel.org,
+        syzbot+1fd9b69cde42967d1add@syzkaller.appspotmail.com
+Subject: Re: [PATCH mptcp] mptcp: remove tcp ulp setsockopt support
+Message-ID: <20211206075326.700f2078@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211205192700.25396-1-fw@strlen.de>
+References: <00000000000040972505d24e88e3@google.com>
+        <20211205192700.25396-1-fw@strlen.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <bdc1f03c-036f-ee29-e2a1-a80f640adcc4@eho.link>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 06, 2021 at 04:37:20PM +0100, Emmanuel Deloget wrote:
-> Hello,
+On Sun,  5 Dec 2021 20:27:00 +0100 Florian Westphal wrote:
+> TCP_ULP setsockopt cannot be used for mptcp because its already
+> used internally to plumb subflow (tcp) sockets to the mptcp layer.
 > 
-> On 10/11/2021 15:41, Louis Amas wrote:
-> > The registration of XDP queue information is incorrect because the
-> > RX queue id we use is invalid. When port->id == 0 it appears to works
-> > as expected yet it's no longer the case when port->id != 0.
-> > 
-> > When we register the XDP rx queue information (using
-> > xdp_rxq_info_reg() in function mvpp2_rxq_init()) we tell them to use
-> > rxq->id as the queue id. This value iscomputed as:
-> > rxq->id = port->id * max_rxq_count + queue_id
-> > 
-> > where max_rxq_count depends on the device version. In the MB case,
-> > this value is 32, meaning that rx queues on eth2 are numbered from
-> > 32 to 35 - there are four of them.
-> > 
-> > Clearly, this is not the per-port queue id that XDP is expecting:
-> > it wants a value in the range [0..3]. It shall directly use queue_id
-> > which is stored in rxq->logic_rxq -- so let's use that value instead.
-> > 
-> > This is consistent with the remaining part of the code in
-> > mvpp2_rxq_init().
-> > 
-> > Fixes: b27db2274ba8 ("mvpp2: use page_pool allocator")
-> > Signed-off-by: Louis Amas <louis.amas@eho.link>
-> > Signed-off-by: Emmanuel Deloget <emmanuel.deloget@eho.link>
-> > Reviewed-by: Marcin Wojtas <mw@semihalf.com>
-> > ---
-> > This is a repost of [1]. The patch itself is not changed, but the
-> > commit message has been enhanced using part of the explaination in
-> > order to make it clearer (hopefully) and to incorporate the
-> > reviewed-by tag from Marcin.
-> > 
-> > v1: original patch
-> > v2: revamped commit description (no change in the patch itself)
-> > 
-> > [1] https://lore.kernel.org/bpf/20211109103101.92382-1-louis.amas@eho.link/
-> > 
-> >   drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 4 ++--
-> >   1 file changed, 2 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> > index 587def69a6f7..f0ea377341c6 100644
-> > --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> > +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> > @@ -2959,11 +2959,11 @@ static int mvpp2_rxq_init(struct mvpp2_port *port,
-> >   	mvpp2_rxq_status_update(port, rxq->id, 0, rxq->size);
-> >   	if (priv->percpu_pools) {
-> > -		err = xdp_rxq_info_reg(&rxq->xdp_rxq_short, port->dev, rxq->id, 0);
-> > +		err = xdp_rxq_info_reg(&rxq->xdp_rxq_short, port->dev, rxq->logic_rxq, 0);
-> >   		if (err < 0)
-> >   			goto err_free_dma;
-> > -		err = xdp_rxq_info_reg(&rxq->xdp_rxq_long, port->dev, rxq->id, 0);
-> > +		err = xdp_rxq_info_reg(&rxq->xdp_rxq_long, port->dev, rxq->logic_rxq, 0);
-> >   		if (err < 0)
-> >   			goto err_unregister_rxq_short;
-> > 
+> syzbot managed to trigger a crash for mptcp connections that are
+> in fallback mode:
+
+Fallback mode meaning ops are NULL? I'm slightly confused by this
+report.
+
+> KASAN: null-ptr-deref in range [0x0000000000000020-0x0000000000000027]
+> CPU: 1 PID: 1083 Comm: syz-executor.3 Not tainted 5.16.0-rc2-syzkaller #0
+> RIP: 0010:tls_build_proto net/tls/tls_main.c:776 [inline]
+> [..]
+>  __tcp_set_ulp net/ipv4/tcp_ulp.c:139 [inline]
+>  tcp_set_ulp+0x428/0x4c0 net/ipv4/tcp_ulp.c:160
+>  do_tcp_setsockopt+0x455/0x37c0 net/ipv4/tcp.c:3391
+>  mptcp_setsockopt+0x1b47/0x2400 net/mptcp/sockopt.c:638
 > 
-> Is there any update on this patch ? Without it, XDP only partially work on a
-> MACCHIATOBin (read: it works on some ports, not on others, as described in
-> our analysis sent together with the original patch).
-
-Hi,
-
-I suspect if you *didn't* thread your updated patch to your previous
-submission, then it would end up with a separate entry in
-patchwork.kernel.org, and the netdev maintainers will notice that the
-patch is ready for inclusion, having been reviewed by Marcin.
-
-Thanks.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+> Remove support for TCP_ULP setsockopt.
+> 
+> Reported-by: syzbot+1fd9b69cde42967d1add@syzkaller.appspotmail.com
+> Signed-off-by: Florian Westphal <fw@strlen.de>
