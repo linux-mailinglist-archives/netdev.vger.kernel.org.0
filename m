@@ -2,135 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E563A469E58
-	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 16:36:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E449469F76
+	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 16:45:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356706AbhLFPiN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Dec 2021 10:38:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59804 "EHLO
+        id S1386168AbhLFPpE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Dec 2021 10:45:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388619AbhLFPeZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 10:34:25 -0500
-Received: from mail-ot1-x32f.google.com (mail-ot1-x32f.google.com [IPv6:2607:f8b0:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26438C08E887
-        for <netdev@vger.kernel.org>; Mon,  6 Dec 2021 07:20:12 -0800 (PST)
-Received: by mail-ot1-x32f.google.com with SMTP id i5-20020a05683033e500b0057a369ac614so14005581otu.10
-        for <netdev@vger.kernel.org>; Mon, 06 Dec 2021 07:20:12 -0800 (PST)
+        with ESMTP id S1357817AbhLFPgk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 10:36:40 -0500
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42AFAC09CE40
+        for <netdev@vger.kernel.org>; Mon,  6 Dec 2021 07:21:24 -0800 (PST)
+Received: by mail-lf1-x12a.google.com with SMTP id k37so26218943lfv.3
+        for <netdev@vger.kernel.org>; Mon, 06 Dec 2021 07:21:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=1MFs3OxsE2/CiZfsm5WkE1ZG4KsgbSlX5OMi4PmyJJE=;
-        b=GJa7Dcd8aQt6r87QALrKdMZeU9e0U6D0290YqkT/OawX7n5zty2NUXYVEhkSvj0/DO
-         kQFc78ov3pl6uUzCff2M8tlEa19n187jZJqx75Xtb2Srf+H3boLj68/mmGMLbz8CMN6K
-         Fd1Y+XrefRhm+Cq9W196NezczcBfId0qRisF0F8tYle8j7A0xui9ne4y50kPcuMr/g2c
-         IAlv8RgjPSikPhrzCitg7u0J6PsQ2SGBMZLMM0EbSAGDFtMvAoDyQhu4c0eZOhxqqqSa
-         tvDzbcpDSdxGwsSz4QfqW7FdpI54Cocgi8Q8AMGgpyNDn2iBIr7C5pX7z2cNdY3kBETg
-         4GgQ==
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=gziXnhcHCbRpEdv8VZ2t+6xlu2j9BNGY4yMdlHoXQBQ=;
+        b=UW0bWHYRfSw2tt6wCW4WfevNQERninMCWq8g5CQy5Qw22O4bYPEI5EkwpiYVydftdn
+         D6LtVMvwG8aZcFMUZyDg0Z51LW+IDdpUYPGNqSarecs/EP1TTTA+prhshE6+Lt+luNPP
+         mmog1gV1KJP/maArnQ11sCP3Rc9Q9VjctcK37qj4LZy1DPK1zJKQNgWQFKMbwPwokcMb
+         7+H2FNBgH4xSyaVFrkGBLc6bs9ZGpArSj3eBsbAe64xrWYQQ0kQpuybEvL8HCYDapjuR
+         FCPA64cKZ/EmX4dw+/srGxE3LiWDGnN5S70pkyn+IN6blm5PxqV7Z0XrmE/BvJ4+4iH8
+         C9Fg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=1MFs3OxsE2/CiZfsm5WkE1ZG4KsgbSlX5OMi4PmyJJE=;
-        b=FJR9BR0PPR0xslTU+5iy5Ywl0A+RPAiMJ1gUbe6//oRyrWieyf9g9ew+zWwqBpiU45
-         bH6fvfdYZ2q/47jQUITq6Xp1CD73Q7gQi3btwwCbTym8uDZgoaj37LsVvFJwIldGKqpo
-         aajU4+cWaL+K9ila1bfXA/+Ij5+mr/etQ33zsSJhIDAslJO3htsYt8lO446uYYI68b4B
-         XLeJ5qMcbQ6KFSGCb0T/ydP7eozerVUMqPJC1NDYP+TmxdTCpNdg73v1gx8Aqybin0se
-         EPqKtSLwk69GZuYoqPwms08dONHrNjzQ457c1Xj/+S8ritMum8KYdTWh2dZaO9BkOD2n
-         +y2g==
-X-Gm-Message-State: AOAM5330FrZobSlV705v/qDJgCwVBv2GU/SWJOxo4MTJYE73Lrid5RkX
-        2owr0j+3y3VU0HoKhCGB2DSDKEKHO4U=
-X-Google-Smtp-Source: ABdhPJxDgDcDytQSpHnng8Ci3VTzldmAzBY3VmvJFj3oL6JA8QXEne1HAL65OZfd/dfk8yjQVk7JNw==
-X-Received: by 2002:a9d:628f:: with SMTP id x15mr18952616otk.348.1638804011544;
-        Mon, 06 Dec 2021 07:20:11 -0800 (PST)
-Received: from [172.16.0.2] ([8.48.134.30])
-        by smtp.googlemail.com with ESMTPSA id f12sm2205103ote.75.2021.12.06.07.20.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 06 Dec 2021 07:20:11 -0800 (PST)
-Message-ID: <98c6884c-642b-66d3-10ad-a8f0afebf446@gmail.com>
-Date:   Mon, 6 Dec 2021 08:20:10 -0700
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=gziXnhcHCbRpEdv8VZ2t+6xlu2j9BNGY4yMdlHoXQBQ=;
+        b=lAGpDdBQT/gE4hOzR+5Tl/yQ/o65uheBmlZktmTECokNN3ttkgGsYSxcCIQrsQR7sf
+         UlpwUHGF1V0CI3GSHUy/N1+HFvcwlaoSMGXQZsGi//loCQrRHYqeePUbOc97ZmBtWO5k
+         XZ1dcXbosiCju9GfOjvsD213KzyZ0YEUKVnVPzEyP5i7k9jDFWr0OCCuriHvsFykcvvJ
+         sgwWMDSY6xVfI8ZaDPGy0cE7uaMN1Bzw+703Xjw2AA4+cMjwF+ycjYF0ZYtgycvshzz7
+         qPKEVvkNwpkzGzPvaymiJVIrp7leUEvS/YwticQWCWPKzVz46kgK8uZ4sLkf14YhM6Dr
+         ykOA==
+X-Gm-Message-State: AOAM532Z3o/jUN/Ok3F3gf0p/rRDdtqHyIMeZwGKdz+L4cbTfNGLvPaF
+        uWTcCmaMQ5jBaB4TefHDk5/rM1eCnkztbjbUQg==
+X-Google-Smtp-Source: ABdhPJxxpIBNrwktaNk89E6dzPPs/84XbKx5D5QHbMMn7ZVY0lgHgoFFE9/lCaCs9Ub1e/LTui6uAlLFNeN+l5FDyAs=
+X-Received: by 2002:a19:ca06:: with SMTP id a6mr8020365lfg.478.1638804081994;
+ Mon, 06 Dec 2021 07:21:21 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.3.2
-Subject: Re: [PATCH net-next v5] rtnetlink: Support fine-grained netdevice
- bulk deletion
-Content-Language: en-US
-To:     nicolas.dichtel@6wind.com,
-        Lahav Schlesinger <lschlesinger@drivenets.com>,
-        netdev@vger.kernel.org
-Cc:     kuba@kernel.org, nikolay@nvidia.com
-References: <20211205093658.37107-1-lschlesinger@drivenets.com>
- <84166fe9-37f1-2c99-2caf-c68dcc5a370c@6wind.com>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <84166fe9-37f1-2c99-2caf-c68dcc5a370c@6wind.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Received: by 2002:a2e:9189:0:0:0:0:0 with HTTP; Mon, 6 Dec 2021 07:21:21 -0800 (PST)
+Reply-To: mr.luisfernando5050@gmail.com
+From:   "Mr. Luis Fernando" <ellaemiantor2@gmail.com>
+Date:   Mon, 6 Dec 2021 07:21:21 -0800
+Message-ID: <CAHRdPM6ZhCOj=yorCDpSc3+KXm2iqu9A=Pw-Gb6xbQ==YOp2wQ@mail.gmail.com>
+Subject: THE AMOUNT IS 27.5 MILLIOMS USD
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/6/21 1:25 AM, Nicolas Dichtel wrote:
->> @@ -3050,6 +3052,78 @@ static int rtnl_group_dellink(const struct net *net, int group)
->>  	return 0;
->>  }
->>  
->> +static int dev_ifindex_cmp(const void *a, const void *b)
->> +{
->> +	struct net_device * const *dev1 = a, * const *dev2 = b;
->> +
->> +	return (*dev1)->ifindex - (*dev2)->ifindex;
->> +}
->> +
->> +static int rtnl_ifindex_dellink(struct net *net, struct nlattr *head, int len,
->> +				struct netlink_ext_ack *extack)
->> +{
->> +	int i = 0, num_devices = 0, rem;
->> +	struct net_device **dev_list;
->> +	const struct nlattr *nla;
->> +	LIST_HEAD(list_kill);
->> +	int ret;
->> +
->> +	nla_for_each_attr(nla, head, len, rem) {
->> +		if (nla_type(nla) == IFLA_IFINDEX)
->> +			num_devices++;
->> +	}
->> +
->> +	dev_list = kmalloc_array(num_devices, sizeof(*dev_list), GFP_KERNEL);
->> +	if (!dev_list)
->> +		return -ENOMEM;
->> +
->> +	nla_for_each_attr(nla, head, len, rem) {
->> +		const struct rtnl_link_ops *ops;
->> +		struct net_device *dev;
->> +		int ifindex;
->> +
->> +		if (nla_type(nla) != IFLA_IFINDEX)
->> +			continue;
->> +
->> +		ifindex = nla_get_s32(nla);
->> +		ret = -ENODEV;
->> +		dev = __dev_get_by_index(net, ifindex);
->> +		if (!dev) {
->> +			NL_SET_ERR_MSG_ATTR(extack, nla, "Unknown ifindex");
-> It would be nice to have the ifindex in the error message. This message does not
-> give more information than "ENODEV".
-
-extack infra does not allow dynamic messages. It does point to the
-location of the bad index, so userspace could figure it out.
-
-> 
->> +			goto out_free;
->> +		}
->> +
->> +		ret = -EOPNOTSUPP;
->> +		ops = dev->rtnl_link_ops;
->> +		if (!ops || !ops->dellink) {
->> +			NL_SET_ERR_MSG_ATTR(extack, nla, "Device cannot be deleted");
-> Same here.
-> 
-> 
-> Thank you,
-> Nicolas
-> 
-
+LS0gDQrmiJHmmK/ot6/mmJPmlq/Ct+i0ueWwlOWNl+WkmuWFiOeUnw0KDQrll6jvvIzmnIvlj4vv
+vIzmiJHlnKjluIPln7rnurPms5XntKLnmoTkuIDlrrbpnZ7mtLLpk7booYwgKEJPQSkg5bel5L2c
+DQoNCuaIkeaDs+mAmui/hyBBVE0gVklTQSBDQVJEIOWwhuS4gOeslOW6n+W8g+eahCAyNzUwIOS4
+h+e+juWFg+i9rOe7meaCqO+8jDAuNTAlIOWwhuaYr+e7meaCqOeahOOAgiDkuI3mtonlj4rpo47p
+manjgIINCg0KDQrorrjlpJrpnZ7mtLLmlL/lrqLliKnnlKggKEJPQSkg6ZO26KGM5bCG6LWE6YeR
+77yI5pS/5a6i5o6g5aS65LqG6LaF6L+HIDUwDQrkur/nvo7lhYPvvInovaznp7vliLDku5bku6zn
+moTlpJblm73otKbmiLfvvIzku5bku6zkuZ/mh5Llvpfnn6XpgZPovaznp7vkuoblpJrlsJHvvIzl
+m6DkuLrov5nkupvotYTph5HlsZ7kuo7igJzlm73lrrbigJ0NCuS4uuS7gOS5iOaIkei/mOWGs+Wu
+muaKiueOsOWcqOmVv+acn+S/neeuoeWcqOaIkeS7rOmTtuihjOeahDI3NTDkuIfnvo7lhYPliIbl
+vIDvvIENCg0KICDmiJHlv4Xpobvnu5nkvaDmiYDmnInlv4XopoHnmoTmjIflr7zmlrnpkojvvIzo
+v5nmoLfkvaDlsLHkuI3kvJrniq/ku7vkvZXplJnor6/jgIIg5aaC5p6c5oKo5pyJ6IO95Yqb5aSE
+55CG5Lqk5piT77yM6K+36IGU57O75oiR5LqG6Kej5pu05aSa6K+m5oOF44CCIOivt+WbnuWkjeaI
+keeahOWkh+eUqOeUteWtkOmCruS7tuWcsOWdgA0KKG1yLmx1aXNmZXJuYW5kbzUwNTBAZ21haWwu
+Y29tKSBNci5sdWlzIEZlcm5hbmRvDQoNCg0KDQoNCkkgYW0gTXIubHVpcyBmZXJuYW5kbw0KDQpI
+aSBGcmllbmQgSSB3b3JrIGluIGEgQmFuayBmb3IgQWZyaWNhIChCT0EpIGhlcmUgaW4gQlVSS0lO
+QSBGQVNPDQoNCkkgd2FudHMgdG8gdHJhbnNmZXIgYW4gYWJhbmRvbmVkIHN1bSBvZiAyNy41IG1p
+bGxpb25zIFVTRCB0byB5b3UNCnRocm91Z2ggQVRNIFZJU0EgQ0FSRCAuNTAlIHdpbGwgYmUgZm9y
+IHlvdS4gTm8gcmlzayBpbnZvbHZlZC4NCg0KDQpUaGUgKEJPQSkgYmFuayB3YXMgYmVpbmcgdXNl
+ZCBieSBtYW55IEFmcmljYW4gUG9saXRpY2lhbnMgdG8gZGl2ZXJ0DQpmdW5kcyAodGhlIFBvbGl0
+aWNpYW5zIGxvb3RlZCBvdmVyNWJpbGxpb24gVW5pdGVkIFN0YXRlcyBkb2xsYXJzKSB0bw0KdGhl
+aXIgZm9yZWlnbiBhY2NvdW50cyBhbmQgdGhleSBkaWQgTm90IGJvdGhlciB0byBrbm93IGhvdyBt
+dWNoIHdhcw0KdHJhbnNmZXJyZWQgYmVjYXVzZSB0aGUgZnVuZHMgYmVsb25nZWQgdG8gdGhlICdT
+dGF0ZScgdGhhdCBpcyB3aHkgSQ0KYWxzbyBkZWNpZGVkIHRvIHB1dCBhcGFydCB0aGUgc3VtIG9m
+ICAkMjcuNW1pbGxpb24gRG9sbGFycyB3aGljaCBpcw0Kc3RpbGwgaW4gb3VyIGJhbmsgdW5kZXIg
+bXkgY3VzdG9keSBmb3IgYSBsb25nIHBlcmlvZCBub3chDQoNCiBJIGhhdmUgdG8gZ2l2ZSB5b3Ug
+YWxsIHRoZSByZXF1aXJlZCBndWlkZWxpbmVzIHNvIHRoYXQgeW91IGRvIG5vdA0KbWFrZSBhbnkg
+bWlzdGFrZS4gSWYgeW91IGFyZSBjYXBhYmxlIHRvIGhhbmRsZSB0aGUgdHJhbnNhY3Rpb24gQ29u
+dGFjdA0KbWUgZm9yIG1vcmUgZGV0YWlscy4gS2luZGx5IHJlcGx5IG1lIGJhY2sgdG8gbXkgYWx0
+ZXJuYXRpdmUgZW1haWwNCmFkZHJlc3MgKG1yLmx1aXNmZXJuYW5kbzUwNTBAZ21haWwuY29tKSBN
+ci5sdWlzIEZlcm5hbmRvDQo=
