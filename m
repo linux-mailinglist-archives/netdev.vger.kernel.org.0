@@ -2,164 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D3B8046A5C7
-	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 20:37:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8867546A5CD
+	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 20:39:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348534AbhLFTlJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Dec 2021 14:41:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35704 "EHLO
+        id S1348602AbhLFTmk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Dec 2021 14:42:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345083AbhLFTlH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 14:41:07 -0500
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56BABC061746
-        for <netdev@vger.kernel.org>; Mon,  6 Dec 2021 11:37:38 -0800 (PST)
-Received: by mail-ed1-x529.google.com with SMTP id x15so47765019edv.1
-        for <netdev@vger.kernel.org>; Mon, 06 Dec 2021 11:37:38 -0800 (PST)
+        with ESMTP id S1346738AbhLFTmj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 14:42:39 -0500
+Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4908C061746;
+        Mon,  6 Dec 2021 11:39:10 -0800 (PST)
+Received: by mail-il1-x12e.google.com with SMTP id 15so11396505ilq.2;
+        Mon, 06 Dec 2021 11:39:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=ZKqS/TYWFupzMaTNEqu2d9uhoBRQjCPmHgBSBzbHV4A=;
-        b=MwTZtADmi0y2XAqqJI4RVs528xaMeDr70xp3gtAqvTQofKVoylzs3IPA/rNhGq8wUs
-         FcO7Jg33J9VNufcSEDG4Ho1RvzywuUowa/SA44Gb2w4a5YDB7JadxvZ4m1GmipP3aCDi
-         MS+1iEb1rdI9M8R6WETbOXdo2TD0wfTGX6GQ/YvF7G9LV8HJeZSkMBHo4C1NTVzCkplZ
-         Sb67rnFD34FJSNrIzJsXaCurhKSnKgUepLp/t/zuFqlWdVAMMbWlNQMZ79VUT9Ux9s3v
-         uhOMlIKiflWR1NoHyYuWbFE97OfS+aUr48E9x9ZJhazgG9JO59zoP9TlFXJl5vdfIALr
-         40Dg==
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=7MNTPaPMAIedAFVlet93iaHAUg9zOwM18moopl7g9lc=;
+        b=nYSPhhiPqu87OH4ju8JFgjZqWw8aeeGoO/7Fd8uMBxWyDyCu5UDbAF/WXAFAOP84ts
+         hqr01P/cLnktZDpdIyxc2m9YnD8uTPwHy/4B1OZFqsKE8PZTeCP6Xke9V4kMHk4EKRrb
+         PzfQnXAH1sdxUkuhp832s8B3iNi4nrGtYLmgSoD9clrjIAw3fODUKg9J+ph97kylCEeZ
+         ySkUeXk83jfZ+dVqV9Ryh3UDnk5rcBWW4Uats+RHapQeNHtO00oa6f9DEVfmByrImIrU
+         GpH5cdPRsrirOAd/3pohp6zAQs/dFQCWQylZWQUSQLhY+9Hqq12Yzv3h0dvllKbW1cnF
+         AFLg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=ZKqS/TYWFupzMaTNEqu2d9uhoBRQjCPmHgBSBzbHV4A=;
-        b=LC/ouAjaP5pSGOpZQ/XCyc1Lf8PIuctwW4Jy2bQlL1+uUkuNxpSsFzOC+9agP72ByB
-         uwuvG2P4ewQ+LCBrWPVrvEMpXQQEou8bQ4X7Roz5uERbCN1HPhXHyJGEcTlJAtZ/5mKD
-         IoOHqjCE4lJjAgmLPRvtjp9hyWmGMEueH782lLA0RnbQcQsucxVwOO4wweHWJwknHYqa
-         sd2gGiSkaXo1XhGjFU28aDTTVCA5RYIWEcSvzSwJVFFLmvo9tMVrggbNpXHozn2W2igT
-         uk77f8VeW8YfrvMo/AY+HHC5vNhnrHdFwMr0OUVfDhjOoFhM+O7ZkCKrt9+pvPR+NbQz
-         qkTQ==
-X-Gm-Message-State: AOAM531Lb4KnfgBwWUsplkjOhuqOYOtrklwlitFotx8QROh8HhxGWQr5
-        wodGX4vuIstNc3Vh31khKLXsjYZZW50=
-X-Google-Smtp-Source: ABdhPJwn6L3csz8f4Z6nBwzeOQA72CXHCAIWxkteqy/iJQ/vPxYR04DBIiyvsVIUj6EwqsuBcdZ7tw==
-X-Received: by 2002:a05:6402:2789:: with SMTP id b9mr1710384ede.28.1638819456937;
-        Mon, 06 Dec 2021 11:37:36 -0800 (PST)
-Received: from skbuf ([188.25.173.50])
-        by smtp.gmail.com with ESMTPSA id el20sm6958641ejc.40.2021.12.06.11.37.35
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=7MNTPaPMAIedAFVlet93iaHAUg9zOwM18moopl7g9lc=;
+        b=4wZG7yyTOLajfNNV+MBhccIGxuefvNQAQ61jtYbfTKWJYMJhC2maRXslJeqpm4PCxC
+         Tgbe0NE9X7c12cjlX71HTqhumPVS212rp/j3Mtw2eNThIVqN+VMR/K13Y8ggLzseQCL8
+         ubdcMQD2vRaNjMoL6+jOipimDduNgWAx/ln/lv35kmJHoF5LZCFDIcv/lw3D3f1uk4fr
+         tHGLan3gNEdcV0j6EFrpwcaaOXM8CxCe0PCSBCmHgmB6xUlsbXhlMN2MBXHrmLCHoFt3
+         xsxHquS63AJdNfq3BGOmnfbIGGsec5NTDu+/uBcAjuhqJARygxndkspMt8V6CVJbKz1S
+         Y17w==
+X-Gm-Message-State: AOAM530CLw/dL0sPvmPywKhZGM1pPyegn9fGpOjzbG4h3DfObp0dDh2f
+        WjKT6tb6D8jDi/bM8m5zE+o=
+X-Google-Smtp-Source: ABdhPJyRVJb3T7/GILgACoemPGx7tzN28cpjZuZ283HVngRGTjQRmxPE8AUYjRhe8LT1DQVv5NMl8A==
+X-Received: by 2002:a92:b112:: with SMTP id t18mr32550371ilh.301.1638819550000;
+        Mon, 06 Dec 2021 11:39:10 -0800 (PST)
+Received: from localhost ([172.243.151.11])
+        by smtp.gmail.com with ESMTPSA id s21sm7045509ioj.11.2021.12.06.11.39.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Dec 2021 11:37:36 -0800 (PST)
-Date:   Mon, 6 Dec 2021 21:37:30 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Martyn Welch <martyn.welch@collabora.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, kernel@collabora.com,
-        Russell King <rmk+kernel@armlinux.org.uk>
-Subject: Re: mv88e6240 configuration broken for B850v3
-Message-ID: <20211206193730.oubyveywniyvptfk@skbuf>
-References: <b98043f66e8c6f1fd75d11af7b28c55018c58d79.camel@collabora.com>
- <YapE3I0K4s1Vzs3w@lunn.ch>
- <b0643124f372db5e579b11237b65336430a71474.camel@collabora.com>
- <fb6370266a71fdd855d6cf4d147780e0f9e1f5e4.camel@collabora.com>
- <20211206183147.km7nxcsadtdenfnp@skbuf>
- <339f76b66c063d5d3bed5c6827c44307da2e5b9f.camel@collabora.com>
- <20211206185008.7ei67jborz7tx5va@skbuf>
- <3d6c6226e47374cf92d604bc6c711e59d76e3175.camel@collabora.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <3d6c6226e47374cf92d604bc6c711e59d76e3175.camel@collabora.com>
+        Mon, 06 Dec 2021 11:39:09 -0800 (PST)
+Date:   Mon, 06 Dec 2021 11:39:00 -0800
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Jiri Olsa <jolsa@redhat.com>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Message-ID: <61ae66d49f24f_c5bd208bf@john.notmuch>
+In-Reply-To: <20211204140700.396138-3-jolsa@kernel.org>
+References: <20211204140700.396138-1-jolsa@kernel.org>
+ <20211204140700.396138-3-jolsa@kernel.org>
+Subject: RE: [PATCH bpf-next 2/3] bpf: Add get_func_[arg|ret|arg_cnt] helpers
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 06, 2021 at 07:24:56PM +0000, Martyn Welch wrote:
-> On Mon, 2021-12-06 at 20:50 +0200, Vladimir Oltean wrote:
-> > On Mon, Dec 06, 2021 at 06:37:44PM +0000, Martyn Welch wrote:
-> > > On Mon, 2021-12-06 at 20:31 +0200, Vladimir Oltean wrote:
-> > > > On Mon, Dec 06, 2021 at 06:26:25PM +0000, Martyn Welch wrote:
-> > > > > On Mon, 2021-12-06 at 17:44 +0000, Martyn Welch wrote:
-> > > > > > On Fri, 2021-12-03 at 17:25 +0100, Andrew Lunn wrote:
-> > > > > > > > Hi Andrew,
-> > > > > > > 
-> > > > > > > Adding Russell to Cc:
-> > > > > > > 
-> > > > > > > > I'm currently in the process of updating the GE B850v3
-> > > > > > > > [1] to
-> > > > > > > > run
-> > > > > > > > a
-> > > > > > > > newer kernel than the one it's currently running. 
-> > > > > > > 
-> > > > > > > Which kernel exactly. We like bug reports against net-next,
-> > > > > > > or
-> > > > > > > at
-> > > > > > > least the last -rc.
-> > > > > > > 
-> > > > > > 
-> > > > > > I tested using v5.15-rc3 and that was also affected.
-> > > > > > 
-> > > > > 
-> > > > > I've just tested v5.16-rc4 (sorry - just realised I previously
-> > > > > wrote
-> > > > > v5.15-rc3, it was v5.16-rc3...) and that was exactly the same.
-> > > > 
-> > > > Just to clarify: you're saying that you're on v5.16-rc4 and that
-> > > > if
-> > > > you
-> > > > revert commit 3be98b2d5fbc ("net: dsa: Down cpu/dsa ports phylink
-> > > > will
-> > > > control"), the link works again?
-> > > > 
-> > > 
-> > > Correct
-> > > 
-> > > > It is a bit strange that the external ports negotiate at
-> > > > 10Mbps/Full,
-> > > > is that the link speed you intend the ports to work at?
-> > > 
-> > > Yes, that's 100% intentional due to what's connected to to those
-> > > ports
-> > > and the environment it works in.
-> > > 
-> > > Martyn
-> > 
-> > Just out of curiosity, can you try this change? It looks like a
-> > simple
-> > case of mismatched conditions inside the mv88e6xxx driver between
-> > what
-> > is supposed to force the link down and what is supposed to force it
-> > up:
-> > 
-> > diff --git a/net/dsa/port.c b/net/dsa/port.c
-> > index 20f183213cbc..d235270babf7 100644
-> > --- a/net/dsa/port.c
-> > +++ b/net/dsa/port.c
-> > @@ -1221,7 +1221,7 @@ int dsa_port_link_register_of(struct dsa_port
-> > *dp)
-> >                 if (of_phy_is_fixed_link(dp->dn) || phy_np) {
-> >                         if (ds->ops->phylink_mac_link_down)
-> >                                 ds->ops->phylink_mac_link_down(ds, port,
-> > -                                       MLO_AN_FIXED, PHY_INTERFACE_MODE_NA);
-> > +                                       MLO_AN_PHY, PHY_INTERFACE_MODE_NA);
-> >                         return dsa_port_phylink_register(dp);
-> >                 }
-> >                 return 0;
+Jiri Olsa wrote:
+> Adding following helpers for tracing programs:
 > 
-> Yes, that appears to also make it work.
+> Get n-th argument of the traced function:
+>   long bpf_get_func_arg(void *ctx, u32 n, u64 *value)
 > 
-> Martyn
+> Get return value of the traced function:
+>   long bpf_get_func_ret(void *ctx, u64 *value)
+> 
+> Get arguments count of the traced funtion:
+>   long bpf_get_func_arg_cnt(void *ctx)
+> 
+> The trampoline now stores number of arguments on ctx-8
+> address, so it's easy to verify argument index and find
+> return value argument's position.
+> 
+> Moving function ip address on the trampoline stack behind
+> the number of functions arguments, so it's now stored on
+> ctx-16 address if it's needed.
+> 
+> All helpers above are inlined by verifier.
+> 
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> ---
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index c26871263f1f..d5a3791071d6 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -4983,6 +4983,31 @@ union bpf_attr {
+>   *	Return
+>   *		The number of loops performed, **-EINVAL** for invalid **flags**,
+>   *		**-E2BIG** if **nr_loops** exceeds the maximum number of loops.
+> + *
+> + * long bpf_get_func_arg(void *ctx, u32 n, u64 *value)
+> + *	Description
+> + *		Get **n**-th argument (zero based) of the traced function (for tracing programs)
+> + *		returned in **value**.
+> + *
+> + *	Return
+> + *		0 on success.
+> + *		**-EINVAL** if n >= arguments count of traced function.
+> + *
+> + * long bpf_get_func_ret(void *ctx, u64 *value)
+> + *	Description
+> + *		Get return value of the traced function (for tracing programs)
+> + *		in **value**.
+> + *
+> + *	Return
+> + *		0 on success.
+> + *		**-EINVAL** for tracing programs other than BPF_TRACE_FEXIT or BPF_MODIFY_RETURN.
 
-Well, I just pointed out what the problem is, I don't know how to solve
-it, honest! :)
 
-It's clear that the code is wrong, because it's in an "if" block that
-checks for "of_phy_is_fixed_link(dp->dn) || phy_np" but then it omits
-the "phy_np" part of it. On the other hand we can't just go ahead and
-say "if (phy_np) mode = MLO_AN_PHY; else mode = MLO_AN_FIXED;" because
-MLO_AN_INBAND is also a valid option that we may be omitting. So we'd
-have to duplicate part of the logic from phylink_parse_mode(), which
-does not appear ideal at all. What would be ideal is if this fabricated
-phylink call would not be done at all, but I don't know enough about the
-systems that need it, I expect Andrew knows more.
+Can we just throw a verifier error if the program type doesn't support
+this? Then weget a void and ther is no error case.
+
+> + *
+> + * long bpf_get_func_arg_cnt(void *ctx)
+> + *	Description
+> + *		Get number of arguments of the traced function (for tracing programs).
+> + *
+> + *	Return
+> + *		The number of arguments of the traced function.
+>   */
+>  #define __BPF_FUNC_MAPPER(FN)		\
+>  	FN(unspec),			\
+> @@ -5167,6 +5192,9 @@ union bpf_attr {
+>  	FN(kallsyms_lookup_name),	\
+>  	FN(find_vma),			\
+>  	FN(loop),			\
+> +	FN(get_func_arg),		\
+> +	FN(get_func_ret),		\
+> +	FN(get_func_arg_cnt),		\
+>  	/* */
+>  
+>  /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> index 6522ffdea487..cf6853d3a8e9 100644
+> --- a/kernel/bpf/verifier.c
+> +++ b/kernel/bpf/verifier.c
+> @@ -12974,6 +12974,7 @@ static int fixup_kfunc_call(struct bpf_verifier_env *env,
+>  static int do_misc_fixups(struct bpf_verifier_env *env)
+>  {
+>  	struct bpf_prog *prog = env->prog;
+> +	enum bpf_attach_type eatype = prog->expected_attach_type;
+>  	bool expect_blinding = bpf_jit_blinding_enabled(prog);
+>  	enum bpf_prog_type prog_type = resolve_prog_type(prog);
+>  	struct bpf_insn *insn = prog->insnsi;
+> @@ -13344,11 +13345,79 @@ static int do_misc_fixups(struct bpf_verifier_env *env)
+>  			continue;
+>  		}
+>  
+
+[...]
+
+> +		/* Implement get_func_arg_cnt inline. */
+> +		if (prog_type == BPF_PROG_TYPE_TRACING &&
+> +		    insn->imm == BPF_FUNC_get_func_arg_cnt) {
+> +			/* Load nr_args from ctx - 8 */
+> +			insn_buf[0] = BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_1, -8);
+> +
+> +			new_prog = bpf_patch_insn_data(env, i + delta, insn_buf, 1);
+> +			if (!new_prog)
+> +				return -ENOMEM;
+
+How does this handle the !x86 case? The code above only touches the x86
+jit? Perhaps its obvious with some code digging, but its not to me from
+the patch description and code here.
+
+> +
+> +			env->prog = prog = new_prog;
+> +			insn      = new_prog->insnsi + i + delta;
+> +			continue;
+> +		}
+> +
