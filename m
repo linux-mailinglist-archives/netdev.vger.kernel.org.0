@@ -2,54 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E1BAD4690A0
-	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 08:04:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB54E4690AB
+	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 08:13:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238249AbhLFHHe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Dec 2021 02:07:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55386 "EHLO
+        id S238325AbhLFHQn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Dec 2021 02:16:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231437AbhLFHHe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 02:07:34 -0500
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ADABC0613F8
-        for <netdev@vger.kernel.org>; Sun,  5 Dec 2021 23:04:06 -0800 (PST)
-Received: by mail-pf1-x42d.google.com with SMTP id o4so9267007pfp.13
-        for <netdev@vger.kernel.org>; Sun, 05 Dec 2021 23:04:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=HXwTAzkvUDjhhLa3JIAth4980gr9mc2XPQgpC9SXV2k=;
-        b=EuuusfaKwDO78vIynmlmC+q9xyjLypNxyQP9l0ha5xjEPJsSBOFLbcyNcnc2GFaAKb
-         nw3aVtAe1i4K/Ug9czH/IwJ7C46wF9bdREs1z52JztxkMFUnRtt252UskxMlFZx6zBJo
-         tejOl1WwgLWCS/yEGnjSj+20CezTGG2hQ7QEJdRekC/DO1i/BjsC61LBTo65Pm+FIvK2
-         oeaKAgDINfVlfbM6hNMK5zibLodWrCPjuou+lCbBXibTJbYC+bYMFisqUE93N28THMR8
-         a3IyDuno6EUDuF06sT8VS83OlXcC4sdwuIm9rcVGyq/dji+tdR5Au/q16P2sD0LkDI0x
-         iYFw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=HXwTAzkvUDjhhLa3JIAth4980gr9mc2XPQgpC9SXV2k=;
-        b=H3Psd97OW2sx8hbnulhoD7r22TVmDMegwaG+yj2p4fb3wUgnScVtej4Q7hBiUuOiod
-         RaisNbmlVGCbdD82VZz7rACKpU4TI8UpF+8xy2N9EafwX8fjrsYYwZcn4MiO4pyzXUhp
-         XKO/HAL7gKboZBI5E+pIUJT97/e3SvAYhvdcfCo6EaGVQsIRM07yAgXBmcf53BmRwVtA
-         gNGyT63mssJZVcMo/THdoAen3CitSKaQezr8NkAAZYgMT7JEAG3xcs7NGxgIJCpAFyfd
-         yZHAYvZR8Pt9cZoGvcoQFCeGMIBbw9OmJgNIoeipoId+rYjmnw3YY0xp6kKfpPEUyinB
-         GlyA==
-X-Gm-Message-State: AOAM533WlYSDQnc4ckVEMdbNr/nnlJWx0bLHZba8ROrHJ1iwgnLw54eR
-        7UFrc/Tl2hi3cI2VleRs3iWA8Q==
-X-Google-Smtp-Source: ABdhPJzjLMthv5mO34i8EfRiYH7pph+S6Wp1Hk+X2XlKJmVy4wOGI/LF8C4azzeCKwWqapJQc8mjhQ==
-X-Received: by 2002:a63:8749:: with SMTP id i70mr17421400pge.511.1638774245629;
-        Sun, 05 Dec 2021 23:04:05 -0800 (PST)
-Received: from leoy-ThinkPad-X240s (104.225.157.100.16clouds.com. [104.225.157.100])
-        by smtp.gmail.com with ESMTPSA id nh21sm9357961pjb.30.2021.12.05.23.04.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 05 Dec 2021 23:04:05 -0800 (PST)
-Date:   Mon, 6 Dec 2021 15:03:58 +0800
-From:   Leo Yan <leo.yan@linaro.org>
-To:     Leon Romanovsky <leon@kernel.org>
+        with ESMTP id S238261AbhLFHQk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 02:16:40 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58A80C0613F8;
+        Sun,  5 Dec 2021 23:13:12 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 09BA561170;
+        Mon,  6 Dec 2021 07:13:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2F96C341C4;
+        Mon,  6 Dec 2021 07:13:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1638774790;
+        bh=RSgUA+v+bp+L38dAAFB/hBDb/dXcbT2mhCOpspbaGnY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=JQBKdVhg15n7HyItHcM093NDs+sQSHY/dxi+0pQy6yJ1VADqQCLwYNAh08nkjNbVH
+         N458Hf/XOKeT83zefnavdTzLG0c/07Ouy4F8YBjGUS45JvJSB6p27i36O+6wrZy5nu
+         JO43hauKfKbVspsI0ER5f4zA9uTD8ympqLnSqM9RlhT61R9gbCQCwIkhlCRT2EFfRG
+         UgWyQsdr0c2xAx4+I1dx8rf8NOO7x/vV6knAuzZ8ms02ZSqtyZDOwZ+vZR+S4f8KRt
+         eM0E78APA9fRMf1Brk+jYifnTF2YnRZzYHPQ6VWpxykCJrp1f0vCyuYqBrmh2BmatQ
+         mwwkOdu5ID3nA==
+Date:   Mon, 6 Dec 2021 09:13:06 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Leo Yan <leo.yan@linaro.org>
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Mathieu Poirier <mathieu.poirier@linaro.org>,
@@ -64,32 +48,37 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         linux-arm-kernel@lists.infradead.org, codalist@coda.cs.cmu.edu,
         linux-audit@redhat.com
 Subject: Re: [PATCH v1 1/7] pid: Introduce helper task_is_in_root_ns()
-Message-ID: <20211206070358.GC42658@leoy-ThinkPad-X240s>
+Message-ID: <Ya24AjNDpO+uuLMT@unreal>
 References: <20211205145105.57824-1-leo.yan@linaro.org>
  <20211205145105.57824-2-leo.yan@linaro.org>
  <Ya2yXZAn+36yhfdU@unreal>
+ <20211206070358.GC42658@leoy-ThinkPad-X240s>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Ya2yXZAn+36yhfdU@unreal>
+In-Reply-To: <20211206070358.GC42658@leoy-ThinkPad-X240s>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Leon,
-
-On Mon, Dec 06, 2021 at 08:49:01AM +0200, Leon Romanovsky wrote:
-> On Sun, Dec 05, 2021 at 10:50:59PM +0800, Leo Yan wrote:
-
-[...]
-
-> > +static inline bool task_is_in_root_ns(struct task_struct *tsk)
+On Mon, Dec 06, 2021 at 03:03:58PM +0800, Leo Yan wrote:
+> Hi Leon,
 > 
-> It is bad that this name doesn't reflect PID nature of this namespace.
-> Won't it better to name it task_is_in_init_pid_ns()?
+> On Mon, Dec 06, 2021 at 08:49:01AM +0200, Leon Romanovsky wrote:
+> > On Sun, Dec 05, 2021 at 10:50:59PM +0800, Leo Yan wrote:
+> 
+> [...]
+> 
+> > > +static inline bool task_is_in_root_ns(struct task_struct *tsk)
+> > 
+> > It is bad that this name doesn't reflect PID nature of this namespace.
+> > Won't it better to name it task_is_in_init_pid_ns()?
+> 
+> Yes, task_is_in_init_pid_ns() is more clear.
+> 
+> Will respin for this.  Thank you for suggestion!
 
-Yes, task_is_in_init_pid_ns() is more clear.
+Thanks
 
-Will respin for this.  Thank you for suggestion!
-
-Leo
+> 
+> Leo
