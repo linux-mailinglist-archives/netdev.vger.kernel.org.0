@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 50A5946A3BD
-	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 19:03:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A986646A3AC
+	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 19:01:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239979AbhLFSG4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Dec 2021 13:06:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41582 "EHLO
+        id S1346148AbhLFSFB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Dec 2021 13:05:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346790AbhLFSEj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 13:04:39 -0500
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6469EC0613F8;
-        Mon,  6 Dec 2021 10:01:01 -0800 (PST)
-Received: by mail-pg1-x536.google.com with SMTP id r5so11205007pgi.6;
-        Mon, 06 Dec 2021 10:01:01 -0800 (PST)
+        with ESMTP id S1346811AbhLFSEk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 13:04:40 -0500
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEBA1C0698C5;
+        Mon,  6 Dec 2021 10:01:02 -0800 (PST)
+Received: by mail-pg1-x52f.google.com with SMTP id s137so11227982pgs.5;
+        Mon, 06 Dec 2021 10:01:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=UVNTosnM4u/yIXEa/LyWVTOOCpFmbmo5mKS9SOh7Wz8=;
-        b=auz+ucFGlmqD2BqC9WFBo4dVqfETASPzVTRtljRXHuccp3+SZOgp7A6JaxTcyvG9eg
-         aODjdqLdH5zlEeXHjLYg9d6hPLCQQu8s3JhCz+MVZ4lTeYzTcWCw/hF9GUXBCnAGXW1K
-         pa+SziJt/63GqjdgQAAy90hqnZajQMMExqkWx2//32lIX/ihmzYDvbK31dOj/2O+Itz/
-         sGKjREjT7mFAfWrNVS7jT/b5hOIf7//c6c8wPpicq874iyttVoslnLuGpAtVrwM3Rimj
-         6o4Ul3y1W7mM6RikBalh77hzNrrv0qHHxryHx7XTDD9XEZnWsHptlLyFlj+lPvI+SK/I
-         L1Ug==
+        bh=bJLAlkJ/cxw+eyGZ9fDi2T+PE+wgI5zX9dIEMcgJMjY=;
+        b=Vsbea1qeX+VozmQU+9qsHXe41sBZrrJPx1VjDPnoXmM0p4Ji7o05DdpDm81w20UbIR
+         V2IccRSmPAAcWbtnDZhDfBhZk/LmIXgKLWHwIoA4+d5HFaexboja2HLhHzi5q4ceLmTg
+         EHSO9Bi6JKYzi8Be1m25k00al8rMKXQ0OlfUIxaPHO0bmZaPE4nTnHi5+n7n3Tdku45x
+         FT0+fYe78Vo7OxK6mxTRp6e4QsldZVZ2a37JamIs+dd2WXNK2qUcQn8/9ptji2y8jqhR
+         ZHJ2GPC3lvsTy32lFeaiipkM+psg36u/V1kYWMSU0RnN7eA8Z237KzHAGSeUlYA0rqmC
+         FLWA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=UVNTosnM4u/yIXEa/LyWVTOOCpFmbmo5mKS9SOh7Wz8=;
-        b=m3401MqBsJtRVbeefoxuY+zexT91bVCSYXpApZ1sY3n/vSJ+xSNTMn1hcAWKgMTB0L
-         EwXD7RV6fNr6vRfDPEwHcj2XsWUZ3zlr9/2v0GCIif83DR3Qph8YSzOV4lXiNzOIqUlp
-         rae8k/FnCRB9W4LPtKED78M6HJsBQtzzES934arLd5PJXsDnzP4H673U5DCnFS+1VVqU
-         2zPD9DPOQZSn4N2+HRmWxk+k1RHyrpkJgq//iW+brcujtJSsI3QvcN0BFoiu2t1eDA/Q
-         n+/8AM+cn/nYngAZEcV0FgsNSApFP9CAJJZD/PFurcEGUJl2z9bar271QOtb+SUkho6v
-         Ia7A==
-X-Gm-Message-State: AOAM531NFNoV3jIR2tb28W3R8VGAKmvYQMVfdb6nlvcZw1Eyun8G0epu
-        JGSjiTYb9vpwml0xUszRUwGL/bG428c=
-X-Google-Smtp-Source: ABdhPJwkDk7LSBP5K9dd33jL6DSQ4OmFu0cjiIYYOgCe8vQwrJFBKayhp10szOtUQzs1j5OnSFwMrw==
-X-Received: by 2002:a63:8f52:: with SMTP id r18mr19818348pgn.197.1638813660546;
-        Mon, 06 Dec 2021 10:01:00 -0800 (PST)
+        bh=bJLAlkJ/cxw+eyGZ9fDi2T+PE+wgI5zX9dIEMcgJMjY=;
+        b=hTHsbN265IlTLkcVjkzPmVJ5M6NE7CeHzRYqH+KmzyNKjeg+S8ZUPe0+0FuRk3YUaF
+         czWYlcTMlc1Poa/SerXTFd1a3GPeVRK6lUvpb+Tzlz344Vy/eb40fqD/dGQhqLYjgsfP
+         UOkHv3siBtXlQzU3MCQqxEI9wcmLOK2AugpbcUS47aQXnZQXO7H3SmpG4I0mWxLZ1z3L
+         zsLH2uQ1yhShLJuCAO7L9XBWfcLgIy7XT4J4UeyERV7hRgGVllkOdgkgB3KKncyFDRKN
+         SJi+RBZdmxY4yV8LxfBkiFihSj7agk+FJ0M1BDutp3u4Dn+LODOlQDUlHgY0S3Hjk0ap
+         EUkw==
+X-Gm-Message-State: AOAM530VU3isk8+P6+whWOQsWPkt2Vsl+Hd8bMDjwLJeIIt9oKBNOhHF
+        h3jfqLl26caSUg/GAKnnIapEnIKs+TI=
+X-Google-Smtp-Source: ABdhPJxa7mYehzO8+Juz3E+I0lmJ22iyBMG0h0pCrrhWf2iRDU31MS9gaVjwbeU/kbxUjZdIEfuzQg==
+X-Received: by 2002:a63:9144:: with SMTP id l65mr20158872pge.52.1638813661855;
+        Mon, 06 Dec 2021 10:01:01 -0800 (PST)
 Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id u11sm5444070pfg.120.2021.12.06.10.00.59
+        by smtp.gmail.com with ESMTPSA id u11sm5444070pfg.120.2021.12.06.10.01.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Dec 2021 10:01:00 -0800 (PST)
+        Mon, 06 Dec 2021 10:01:01 -0800 (PST)
 From:   Florian Fainelli <f.fainelli@gmail.com>
 To:     devicetree@vger.kernel.org
 Cc:     Florian Fainelli <f.fainelli@gmail.com>,
@@ -65,9 +65,9 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         linux-arm-kernel@lists.infradead.org (moderated list:BROADCOM IPROC ARM
         ARCHITECTURE),
         linux-phy@lists.infradead.org (open list:GENERIC PHY FRAMEWORK)
-Subject: [PATCH v3 6/8] dt-bindings: net: Convert SYSTEMPORT to YAML
-Date:   Mon,  6 Dec 2021 10:00:47 -0800
-Message-Id: <20211206180049.2086907-7-f.fainelli@gmail.com>
+Subject: [PATCH v3 7/8] dt-bindings: phy: Convert Northstar 2 PCIe PHY to YAML
+Date:   Mon,  6 Dec 2021 10:00:48 -0800
+Message-Id: <20211206180049.2086907-8-f.fainelli@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211206180049.2086907-1-f.fainelli@gmail.com>
 References: <20211206180049.2086907-1-f.fainelli@gmail.com>
@@ -77,162 +77,99 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Convert the Broadcom SYSTEMPORT Ethernet controller Device Tree binding
-to YAML.
+Convert the Broadcom Northstar 2 PCIe PHY Device Tree binding to YAML
+and rename it accordingly in the process since it had nothing to do with
+a MDIO mux on the PCI(e) bus. This is a pre-requisite to updating
+another binding file to YAML.
 
 Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- .../bindings/net/brcm,systemport.txt          | 38 ---------
- .../bindings/net/brcm,systemport.yaml         | 82 +++++++++++++++++++
- MAINTAINERS                                   |  1 +
- 3 files changed, 83 insertions(+), 38 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/net/brcm,systemport.txt
- create mode 100644 Documentation/devicetree/bindings/net/brcm,systemport.yaml
+ .../bindings/phy/brcm,mdio-mux-bus-pci.txt    | 27 ------------
+ .../bindings/phy/brcm,ns2-pcie-phy.yaml       | 41 +++++++++++++++++++
+ 2 files changed, 41 insertions(+), 27 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/phy/brcm,mdio-mux-bus-pci.txt
+ create mode 100644 Documentation/devicetree/bindings/phy/brcm,ns2-pcie-phy.yaml
 
-diff --git a/Documentation/devicetree/bindings/net/brcm,systemport.txt b/Documentation/devicetree/bindings/net/brcm,systemport.txt
+diff --git a/Documentation/devicetree/bindings/phy/brcm,mdio-mux-bus-pci.txt b/Documentation/devicetree/bindings/phy/brcm,mdio-mux-bus-pci.txt
 deleted file mode 100644
-index 75736739bfdd..000000000000
---- a/Documentation/devicetree/bindings/net/brcm,systemport.txt
+index 5b51007c6f24..000000000000
+--- a/Documentation/devicetree/bindings/phy/brcm,mdio-mux-bus-pci.txt
 +++ /dev/null
-@@ -1,38 +0,0 @@
--* Broadcom BCM7xxx Ethernet Systemport Controller (SYSTEMPORT)
+@@ -1,27 +0,0 @@
+-* Broadcom NS2 PCIe PHY binding document
 -
--Required properties:
--- compatible: should be one of:
--	      "brcm,systemport-v1.00"
--	      "brcm,systemportlite-v1.00" or
--	      "brcm,systemport"
--- reg: address and length of the register set for the device.
--- interrupts: interrupts for the device, first cell must be for the rx
--  interrupts, and the second cell should be for the transmit queues. An
--  optional third interrupt cell for Wake-on-LAN can be specified
--- local-mac-address: Ethernet MAC address (48 bits) of this adapter
--- phy-mode: Should be a string describing the PHY interface to the
--  Ethernet switch/PHY, see Documentation/devicetree/bindings/net/ethernet.txt
--- fixed-link: see Documentation/devicetree/bindings/net/fixed-link.txt for
--  the property specific details
+-Required bus properties:
+-- reg: MDIO Bus number for the MDIO interface
+-- #address-cells: must be 1
+-- #size-cells: must be 0
 -
--Optional properties:
--- systemport,num-tier2-arb: number of tier 2 arbiters, an integer
--- systemport,num-tier1-arb: number of tier 1 arbiters, an integer
--- systemport,num-txq: number of HW transmit queues, an integer
--- systemport,num-rxq: number of HW receive queues, an integer
--- clocks: When provided, must be two phandles to the functional clocks nodes of
--  the SYSTEMPORT block. The first phandle is the main SYSTEMPORT clock used
--  during normal operation, while the second phandle is the Wake-on-LAN clock.
--- clock-names: When provided, names of the functional clock phandles, first
--  name should be "sw_sysport" and second should be "sw_sysportwol".
+-Required PHY properties:
+-- compatible: should be "brcm,ns2-pcie-phy"
+-- reg: MDIO Phy ID for the MDIO interface
+-- #phy-cells: must be 0
+-
+-This is a child bus node of "brcm,mdio-mux-iproc" node.
 -
 -Example:
--ethernet@f04a0000 {
--	compatible = "brcm,systemport-v1.00";
--	reg = <0xf04a0000 0x4650>;
--	local-mac-address = [ 00 11 22 33 44 55 ];
--	fixed-link = <0 1 1000 0 0>;
--	phy-mode = "gmii";
--	interrupts = <0x0 0x16 0x0>,
--		<0x0 0x17 0x0>;
+-
+-mdio@0 {
+-	reg = <0x0>;
+-	#address-cells = <1>;
+-	#size-cells = <0>;
+-
+-	pci_phy0: pci-phy@0 {
+-		compatible = "brcm,ns2-pcie-phy";
+-		reg = <0x0>;
+-		#phy-cells = <0>;
+-	};
 -};
-diff --git a/Documentation/devicetree/bindings/net/brcm,systemport.yaml b/Documentation/devicetree/bindings/net/brcm,systemport.yaml
+diff --git a/Documentation/devicetree/bindings/phy/brcm,ns2-pcie-phy.yaml b/Documentation/devicetree/bindings/phy/brcm,ns2-pcie-phy.yaml
 new file mode 100644
-index 000000000000..44781027ed37
+index 000000000000..70eb48b391c9
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/net/brcm,systemport.yaml
-@@ -0,0 +1,82 @@
++++ b/Documentation/devicetree/bindings/phy/brcm,ns2-pcie-phy.yaml
+@@ -0,0 +1,41 @@
 +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
 +%YAML 1.2
 +---
-+$id: http://devicetree.org/schemas/net/brcm,systemport.yaml#
++$id: http://devicetree.org/schemas/phy/brcm,ns2-pcie-phy.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: Broadcom BCM7xxx Ethernet Systemport Controller (SYSTEMPORT)
++title: Broadcom NS2 PCIe PHY binding document
 +
 +maintainers:
-+  - Florian Fainelli <f.fainelli@gmail.com>
++  - Ray Jui <ray.jui@broadcom.com>
++  - Scott Branden <scott.branden@broadcom.com>
 +
 +properties:
 +  compatible:
-+    enum:
-+      - brcm,systemport-v1.00
-+      - brcm,systemportlite-v1.00
-+      - brcm,systemport
++    const: brcm,ns2-pcie-phy
 +
 +  reg:
 +    maxItems: 1
 +
-+  interrupts:
-+    minItems: 2
-+    items:
-+      - description: interrupt line for RX queues
-+      - description: interrupt line for TX queues
-+      - description: interrupt line for Wake-on-LAN
-+
-+  clocks:
-+    items:
-+      - description: main clock
-+      - description: Wake-on-LAN clock
-+
-+  clock-names:
-+    items:
-+      - const: sw_sysport
-+      - const: sw_sysportwol
-+
-+  "systemport,num-tier2-arb":
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description:
-+      Number of tier 2 arbiters
-+
-+  "systemport,num-tier1-arb":
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description:
-+      Number of tier 2 arbiters
-+
-+  "systemport,num-txq":
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description:
-+      Number of HW transmit queues
-+
-+  "systemport,num-rxq":
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description:
-+      Number of HW receive queues
++  "#phy-cells":
++    const: 0
 +
 +required:
++  - compatible
 +  - reg
-+  - interrupts
-+  - phy-mode
++  - "#phy-cells"
 +
-+allOf:
-+  - $ref: "ethernet-controller.yaml#"
-+
-+additionalProperties: true
++additionalProperties: false
 +
 +examples:
 +  - |
-+    ethernet@f04a0000 {
-+        compatible = "brcm,systemport-v1.00";
-+        reg = <0xf04a0000 0x4650>;
-+        local-mac-address = [ 00 11 22 33 44 55 ];
-+        phy-mode = "gmii";
-+        interrupts = <0x0 0x16 0x0>,
-+                     <0x0 0x17 0x0>;
-+        fixed-link {
-+            speed = <1000>;
-+            full-duplex;
-+        };
++    mdio {
++       #address-cells = <1>;
++       #size-cells = <0>;
++
++       pci-phy@0 {
++          compatible = "brcm,ns2-pcie-phy";
++          reg = <0x0>;
++          #phy-cells = <0>;
++       };
 +    };
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 404e76d625f1..ed8de605fe4b 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -3972,6 +3972,7 @@ L:	netdev@vger.kernel.org
- S:	Supported
- F:	drivers/net/ethernet/broadcom/bcmsysport.*
- F:	drivers/net/ethernet/broadcom/unimac.h
-+F:	Documentation/devicetree/bindings/net/brcm,systemport.yaml
- 
- BROADCOM TG3 GIGABIT ETHERNET DRIVER
- M:	Siva Reddy Kallam <siva.kallam@broadcom.com>
 -- 
 2.25.1
 
