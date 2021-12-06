@@ -2,163 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4451846AA57
-	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 22:22:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C49E46AA68
+	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 22:26:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351438AbhLFVZl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Dec 2021 16:25:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60940 "EHLO
+        id S1351665AbhLFVaW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Dec 2021 16:30:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356350AbhLFVZi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 16:25:38 -0500
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4184EC061746;
-        Mon,  6 Dec 2021 13:22:09 -0800 (PST)
-Received: by mail-yb1-xb2a.google.com with SMTP id f186so35051892ybg.2;
-        Mon, 06 Dec 2021 13:22:09 -0800 (PST)
+        with ESMTP id S236938AbhLFVaV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 16:30:21 -0500
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1158C061746;
+        Mon,  6 Dec 2021 13:26:52 -0800 (PST)
+Received: by mail-yb1-xb32.google.com with SMTP id f186so35081567ybg.2;
+        Mon, 06 Dec 2021 13:26:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=EyjTFg+m485wI5iCRdXWLc0w3JDR/ZMIRZ/MIBbHe0c=;
-        b=XGMOcjFpYg1sdhWs/2LsjTSp58ZwZ4kmtYd3Nkjv85dSEvO7u66J604Ij6g7QGZgmM
-         UCjNYSdbVpEGtsgTdNtd0nrXIg5oYqdPdfblG2broxawg8El9PaTBYp+shH94AlQzq96
-         2B7iBB871OkiXO2pWUilm5L7lwmWhQt50U5XTQBzwEoUq4cYhP9EZ+YCFL4LHxOjYX59
-         1JRCviDUF1LrGkxWm+4Lg7w6fF7N0Phmw3vJt/jE6smBltbxt08oGsI0XaWHML9MWQ7R
-         IGWrS1Q9TGpFw9AxfIaG5BkCuPMh0PZ0JPK+MAQLmmkm1fKlmUGM66Bgcqu2D0kOn3py
-         LH7A==
+        bh=+qd0RlontxaO6s33Aw+sFbxzkHeQiyT5wpIK2eDz8lA=;
+        b=a8fe4BCEiflaVndKh84ion0/MS0nvXEdB4lAvx+k5Xm/7eyXks0oCNCF7SmC5e5Me8
+         kwHVKUOWSplPHAvTKGp4yOV7JM9+XATBxf3PzUSWbz2vp3GB/AjKgYrcnX/7Q8iYis5J
+         8QMC8Ss+CAT0lKPGS5EG7o9lD76ESt/edE6haOicMFQeUOtr5WfZTOyQpNOSohnrDuyW
+         5qUTKiZyN+mPTwP0nPNVt/LIUiCfByHdPHP23kW7EjjrBZkNRzqCqHT9c1olm0AdJmVD
+         kRJ/OdmRLAV4hM1xdop+swb49tQsInx8XHEMQ8jg09rh1YqVcxtJ9e8NxxS1aVG+xyvR
+         oFPA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=EyjTFg+m485wI5iCRdXWLc0w3JDR/ZMIRZ/MIBbHe0c=;
-        b=Ulnop5yO6WiWecJ2q95cD8/KS+v1+/UIJsR1HpdXozu8Ev+0F2f0nBqVdOXzNUenWk
-         0eIxwNnJ0ofGj3BXH9COHIjWUetnwl55qwLRRHUpRsCJLf/IqOtCHFANWytWDS7FBxV9
-         pH8SEhQMh0dPTy0r0GQKaxhmR+4u4LkgmbdxoaaAc5pMEhMBbaURZeGAi2aOjjtcfBpk
-         UiO9yPgp2ChmLirRH7rS+E3DW7AMUdCW5MbuzfpYsM+I5m8TfeB/4mbJVShyiH8gyRwr
-         y10QnbMbyDES57i00iqr8cyd4X1jvZZRT/uoNCKlYaUdT7AUbgaIRurNq5aREEgrBaOp
-         jcbw==
-X-Gm-Message-State: AOAM532kIn5xeWzozo4QQvdEoFlu89yWNJtVZxMg3fI2pQfVOtKXxRkS
-        xYG2YtvHkUeNzNh0kmh7AOZ5tvArsj4jf3d7bEs=
-X-Google-Smtp-Source: ABdhPJxjZTZedEVmCrt95wMT7vKrEwEZl2arWVNbYnceKP0G1K3cCob88utjHVzJ8JD4R7B+ycOI1WIpmQd1cBfqhb0=
-X-Received: by 2002:a25:84c1:: with SMTP id x1mr46408796ybm.690.1638825727881;
- Mon, 06 Dec 2021 13:22:07 -0800 (PST)
+        bh=+qd0RlontxaO6s33Aw+sFbxzkHeQiyT5wpIK2eDz8lA=;
+        b=JcBfNQgAfee6dey7Oi9dXlp4TIaGA9BMAm1vA5+tkrGuYCYbhDonGTrPO0A0mEt3nF
+         R7+WM4+oEzCtSgayex2lOS6fDwjlDlPzSYbaCMU13VdscoiakgHCpTdWY11lQnsfRrIS
+         FKXsJwB1a0uBQBpGMibFaz8ippKIfbWgZ5IZMwiNjAPgvufSaNbKr9+57S2ngGLqzNXF
+         BgCJl674dUo6QU2VLWiWCzZzAuhH0wj7xYdEAGByhTAsr1UBMzpGyjk6djwCIgbRVa4Q
+         uDILLTd+TPBm4WXLPButscBvBYrWVep8Bpzr6caxNVmOO9Qr5q5SER13+SVbmTDD6id1
+         gFvg==
+X-Gm-Message-State: AOAM531N32SPo/yOND+ZirTI6OAqK2VrRxjpmafoM1SQCsbiMEyRbZbf
+        bB4enwJTH/pu5aFSiCsGihtYeQr8h13V5bn8l+Q=
+X-Google-Smtp-Source: ABdhPJwA16XyeYBD/g3WV2Q1LNeZ/Z0vAa2Ag6jE4/aE/ilQmOHHkClF9fOceKHyu+qrpD6VQ6ZU42gkX4ZbRabqvlQ=
+X-Received: by 2002:a25:abaa:: with SMTP id v39mr45762924ybi.367.1638826012000;
+ Mon, 06 Dec 2021 13:26:52 -0800 (PST)
 MIME-Version: 1.0
-References: <20211205045041.129716-1-imagedong@tencent.com>
-In-Reply-To: <20211205045041.129716-1-imagedong@tencent.com>
+References: <20211204140700.396138-1-jolsa@kernel.org> <20211204140700.396138-2-jolsa@kernel.org>
+In-Reply-To: <20211204140700.396138-2-jolsa@kernel.org>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 6 Dec 2021 13:21:56 -0800
-Message-ID: <CAEf4BzbqhccBOSiBRehnf6V35u48N+f67tmgYUR_EJhpv6HptA@mail.gmail.com>
-Subject: Re: [PATCH] bpftool: add support of pin prog by name
-To:     menglong8.dong@gmail.com, Stanislav Fomichev <sdf@google.com>
+Date:   Mon, 6 Dec 2021 13:26:41 -0800
+Message-ID: <CAEf4Bzb0FBh0cGecgQG8p53WH8tCoibWfp0wu9PPnT1MRMsWCw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/3] bpf, x64: Replace some stack_size usage with
+ offset variables
+To:     Jiri Olsa <jolsa@redhat.com>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Cong Wang <cong.wang@bytedance.com>, liujian56@huawei.com,
-        Dave Marchevsky <davemarchevsky@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
         Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Menglong Dong <imagedong@tencent.com>
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Dec 4, 2021 at 8:51 PM <menglong8.dong@gmail.com> wrote:
+On Sat, Dec 4, 2021 at 6:07 AM Jiri Olsa <jolsa@redhat.com> wrote:
 >
-> From: Menglong Dong <imagedong@tencent.com>
+> As suggested by Andrii, adding variables for registers and ip
+> address offsets, which makes the code more clear, rather than
+> abusing single stack_size variable for everything.
 >
-> For now, the command 'bpftool prog loadall' use section name as the
-> name of the pin file. However, once there are prog with the same
-> section name in ELF file, this command will failed with the error
-> 'File Exist'.
+> Also describing the stack layout in the comment.
 >
-> So, add the support of pin prog by function name with the 'pinbyname'
-> argument.
+> There is no function change.
 >
-> Signed-off-by: Menglong Dong <imagedong@tencent.com>
+> Suggested-by: Andrii Nakryiko <andrii@kernel.org>
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 > ---
 
-Doesn't [0] do that already?
+Thanks for the stack layout diagram!
 
-  [0] https://patchwork.kernel.org/project/netdevbpf/patch/20211021214814.1236114-2-sdf@google.com/
+Acked-by: Andrii Nakryiko <andrii@kernel.org>
 
->  tools/bpf/bpftool/prog.c | 7 +++++++
->  tools/lib/bpf/libbpf.c   | 5 +++++
->  tools/lib/bpf/libbpf.h   | 2 ++
->  3 files changed, 14 insertions(+)
+>  arch/x86/net/bpf_jit_comp.c | 42 ++++++++++++++++++++++++-------------
+>  1 file changed, 28 insertions(+), 14 deletions(-)
 >
-> diff --git a/tools/bpf/bpftool/prog.c b/tools/bpf/bpftool/prog.c
-> index e47e8b06cc3d..74e0aaebfefc 100644
-> --- a/tools/bpf/bpftool/prog.c
-> +++ b/tools/bpf/bpftool/prog.c
-> @@ -1471,6 +1471,7 @@ static int load_with_options(int argc, char **argv, bool first_prog_only)
->         unsigned int old_map_fds = 0;
->         const char *pinmaps = NULL;
->         struct bpf_object *obj;
-> +       bool pinbyname = false;
->         struct bpf_map *map;
->         const char *pinfile;
->         unsigned int i, j;
-> @@ -1589,6 +1590,9 @@ static int load_with_options(int argc, char **argv, bool first_prog_only)
->                                 goto err_free_reuse_maps;
->
->                         pinmaps = GET_ARG();
-> +               } else if (is_prefix(*argv, "pinbyname")) {
-> +                       pinbyname = true;
-> +                       NEXT_ARG();
->                 } else {
->                         p_err("expected no more arguments, 'type', 'map' or 'dev', got: '%s'?",
->                               *argv);
-> @@ -1616,6 +1620,9 @@ static int load_with_options(int argc, char **argv, bool first_prog_only)
->                                 goto err_close_obj;
->                 }
->
-> +               if (pinbyname)
-> +                       bpf_program__set_pinname(pos,
-> +                                                (char *)bpf_program__name(pos));
->                 bpf_program__set_ifindex(pos, ifindex);
->                 bpf_program__set_type(pos, prog_type);
->                 bpf_program__set_expected_attach_type(pos, expected_attach_type);
-> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> index f6faa33c80fa..e8fc1d0fe16e 100644
-> --- a/tools/lib/bpf/libbpf.c
-> +++ b/tools/lib/bpf/libbpf.c
-> @@ -8119,6 +8119,11 @@ void bpf_program__set_ifindex(struct bpf_program *prog, __u32 ifindex)
->         prog->prog_ifindex = ifindex;
->  }
->
-> +void bpf_program__set_pinname(struct bpf_program *prog, char *name)
-> +{
-> +       prog->pin_name = name;
 
-BPF maps have bpf_map__set_pin_path(), setting a full path is more
-flexible approach, I think, so if we had to do something here, it's
-better to add bpf_program__set_ping_path().
-
-
-> +}
-> +
->  const char *bpf_program__name(const struct bpf_program *prog)
->  {
->         return prog->name;
-> diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-> index 4ec69f224342..107cf736c2bb 100644
-> --- a/tools/lib/bpf/libbpf.h
-> +++ b/tools/lib/bpf/libbpf.h
-> @@ -216,6 +216,8 @@ LIBBPF_API int bpf_program__set_priv(struct bpf_program *prog, void *priv,
->  LIBBPF_API void *bpf_program__priv(const struct bpf_program *prog);
->  LIBBPF_API void bpf_program__set_ifindex(struct bpf_program *prog,
->                                          __u32 ifindex);
-> +LIBBPF_API void bpf_program__set_pinname(struct bpf_program *prog,
-> +                                        char *name);
->
->  LIBBPF_API const char *bpf_program__name(const struct bpf_program *prog);
->  LIBBPF_API const char *bpf_program__section_name(const struct bpf_program *prog);
-> --
-> 2.30.2
->
+[...]
