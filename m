@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AEB5146A205
-	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 18:04:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AF7C46A206
+	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 18:04:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233686AbhLFRIN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Dec 2021 12:08:13 -0500
-Received: from mail-eopbgr70045.outbound.protection.outlook.com ([40.107.7.45]:64823
+        id S236629AbhLFRIS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Dec 2021 12:08:18 -0500
+Received: from mail-eopbgr70042.outbound.protection.outlook.com ([40.107.7.42]:53123
         "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1348564AbhLFRB4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 6 Dec 2021 12:01:56 -0500
+        id S1348567AbhLFRB6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 6 Dec 2021 12:01:58 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QZVLECPM0uHwVPtL40g7Mh5eMVH6EBJr7JXa3YQWbv/MfKy7QYERFyyorlmGzAKIUdRZ8Pk+kz4r/i2/35kXy+DM/i8r8I6Hj7iK16HNv7LjMfagB1IbkgtkrCqBiHeRxwKB54015FVda39uMeVp+WcA0mhbz9AoAHVPldUOFw/MlaM4LGDzC+vNF1Hg1erPSzKNKZyauPl7Zq2OvvylA4x0gF2OTSPGaH8XnbOADpESXfnywhSDELtPeiEvNBCYWNjYoa7Py3ubeXbBaIlwV38ADveFjT9X5yCbE0Vo4LKsZF3ct95foGRcZx+BIKPc6/Un8MmD6rV7xYmBpODZ3g==
+ b=aR6uu6EjGTIa21CPj2++rFlasYOkh2G/GmHwCJjOOgvA8OapkbRzdqufR5K9YW4/W+fSj2/IX29e3svCudAHvygqvRhIQGn8Kf1j5lrSgX7rQ/uK3gXdaezipypxofrMsqpc+gmsoWD/8Zb/P3hIDqYD1SW2o8YXCRNS25k8JfuGB14vIkeagDI6kUoTZ9x3TEb6S/2+sA2LHQ/tT6HgloFlgWdv8vgSPvibi6+B1avQ/hXsCoG5iHk44twvTfdeG0dt2KWKHBWLzSlS5U82o84zKV2sxZaLElwwF61YOQF3tJfW+uHC/P48AOueeBCrtfJ5rIkkwBNuxQWP/9ij9g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5tn00FuUzqaPcJWEhk4QL/H157X2/cNtBrANMRcCWsQ=;
- b=ezH68lul8FrJa/waZh8ZLRY5UpBXVCaW7O+dak+Nd16PO0/01wcq7bDbdHImfMlW14Z2l1Nly9iMfCxcD0nurrk2P/g6XB5btcB4+6MvNck9qjO7pmejnE1TnJJI4dJnagsPuE+RP+wci3J36MBPk2QTobc0n96cmaSxhN3zrM7HV4e1p0K4mjaGCsWvpPVSBwXcEP0V0zQymKUMBj5cBaS9LFF0lXFptbUz+tH8ECh0ISACkdNm9Ealz5NPp4h4Ar4CxDzlrkVQiG2lz5M/4dG6CHIiaW4V+vwpKf1HssIsE+N/aMYjjqlzCZMSzqN+7LFsW7U2404W3qYGYKi+WA==
+ bh=s3E/PoHw3XrPj2iwtpRf17Zw2UvIi5vOe9tDG4ypudU=;
+ b=bjmNKnZTx10bJCtrGdfIvUmYeZ7DGDYT3KmVeFXLKelNJqZIJUNEE+kMpGBJejk9+onQRLoJr7dELqbVl9eFLZE7E+zjGmxYx99Aq7vJRJAWQxdY8Hd36h4UlTR0/VRPybNP0xrYeQ+P0f2r9FBO4h+TBHRKbduf9wbNl4IJ3y4ZtLwNQkYVGNE16a1j7bL32Uv4Q9Cy1l0gueYjvfoAO2bOLcxlmo5Ehv0j2kQAfWd4N7hNnoN/4CD4hdRxXzWHKbifzsqq7WQXoP3b7fy3mX5xetjdq8+YfKgtLHQecR3WgEM0aItvRaRGWjdEyUQCXmoo0/ZJGUYYYADgqcuGjg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5tn00FuUzqaPcJWEhk4QL/H157X2/cNtBrANMRcCWsQ=;
- b=slaD4nnglQndM6cOY7IKeGY/KGZ5anTG35+wGJQ8O1v7wUBy28YLt1Jxt/lvWApaqnenC4LOB5AgsrJLSQDFNr7K9hRxyoH6h+iC/w8bOLkVZbOtbUwQKu9zUac/nlThpLYlepQ2PpjE9gQpGN5PsOrWT32nzl0EDiRB1RoUpaU=
+ bh=s3E/PoHw3XrPj2iwtpRf17Zw2UvIi5vOe9tDG4ypudU=;
+ b=oMBBpHGQ3OvjcAaVaBGvYgx/MJngWGUtMNMyPoe21Otvr2QaJASS6E3oEyy1CKL4OpR6Ysl4x2zAJGpfg1Cxcdd8aBiXnK7aUNkLOsRPIUT2wuTwdWfrr9mdGmVjguStj5jcSyfLuT38NnLyvBMH683AhtP/fBd4ZN9l4fGbrbk=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by VI1PR04MB4912.eurprd04.prod.outlook.com (2603:10a6:803:5b::17) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.20; Mon, 6 Dec
- 2021 16:58:25 +0000
+ 2021 16:58:27 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::796e:38c:5706:b802]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::796e:38c:5706:b802%3]) with mapi id 15.20.4755.022; Mon, 6 Dec 2021
- 16:58:25 +0000
+ 16:58:27 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     Florian Fainelli <f.fainelli@gmail.com>,
@@ -55,9 +55,9 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
         Linus Walleij <linus.walleij@linaro.org>,
         George McCollister <george.mccollister@gmail.com>
-Subject: [PATCH v3 net-next 06/12] net: dsa: hide dp->bridge_dev and dp->bridge_num in the core behind helpers
-Date:   Mon,  6 Dec 2021 18:57:52 +0200
-Message-Id: <20211206165758.1553882-7-vladimir.oltean@nxp.com>
+Subject: [PATCH v3 net-next 07/12] net: dsa: hide dp->bridge_dev and dp->bridge_num in drivers behind helpers
+Date:   Mon,  6 Dec 2021 18:57:53 +0200
+Message-Id: <20211206165758.1553882-8-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211206165758.1553882-1-vladimir.oltean@nxp.com>
 References: <20211206165758.1553882-1-vladimir.oltean@nxp.com>
@@ -67,56 +67,56 @@ X-ClientProxiedBy: AM4PR0501CA0062.eurprd05.prod.outlook.com
  (2603:10a6:200:68::30) To VI1PR04MB5136.eurprd04.prod.outlook.com
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
-Received: from localhost.localdomain (188.25.173.50) by AM4PR0501CA0062.eurprd05.prod.outlook.com (2603:10a6:200:68::30) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.11 via Frontend Transport; Mon, 6 Dec 2021 16:58:24 +0000
+Received: from localhost.localdomain (188.25.173.50) by AM4PR0501CA0062.eurprd05.prod.outlook.com (2603:10a6:200:68::30) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.11 via Frontend Transport; Mon, 6 Dec 2021 16:58:25 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: c1c73a41-6951-411e-c8e2-08d9b8d99e51
+X-MS-Office365-Filtering-Correlation-Id: f744b92c-91f2-4692-422d-08d9b8d99f53
 X-MS-TrafficTypeDiagnostic: VI1PR04MB4912:EE_
-X-Microsoft-Antispam-PRVS: <VI1PR04MB491249749B214EBF83B4CBC3E06D9@VI1PR04MB4912.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-Microsoft-Antispam-PRVS: <VI1PR04MB49126008954E856C074B20EBE06D9@VI1PR04MB4912.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1169;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: YaEoQUzFBRrfkWo0YAYX8/6BzKAekibUUt9gdpus/Rgt2UaqHROXVexC2ktKHT6jts5QXAlBTIqWRFbjlHMfLGHlGaCcgjsAzAEkWYouH4dTw3OvWIpmd/B4NkpJ7k8v7LNlAnLmCxBc8s4E80ZkDMlerFzItvQ8tAw/lKbeFEhlKfy/Fh7ho+qFkhl2rqLBP3q7nia2LjqIeZubxGVthfroT+K3Xiqk9Dfk7aw6jZjjnyF4Xu+Q3mE5czzHX+SNbbdz+ThAZBa9KonjiiL5cVWRKNPVQSWm+jozOzbQSWHh2mMbiJF2FJm9T9ItY/t+iaHaklyMUTeeBbYQUiB/juaIeJJ0hLEEJTNxfcY7h5sNTZVelfbllm7p7H51TfYhkjymnjKTtK+v4lPRK/HG+LCN5uWBKfICxcpSfTFQLBx6wWLRhiKyUZ7vzZbkc6FhjPmIDX+qL48lQG2VfHwNfW/d+AYpBVKcB19J3l3+jcHAt/nPMuI7+eJqBcd7gl4jlNaPiLeT/fzD5W+d4heB7GyOeLZpckYfKvZSyQ6IhloK6EezGOAjfDHFcpbIx577aECZ0VaoUYxJp0vNNg8u4pX7sPSzMELquRX+p4kMg8TkquCys+/l3deaAoaWRkMVqFKHJ5tQsX11k4zDFbvsh87bIyEGWQGBI4knN7PvifZ1sR4XKwYepD4n/pQ3LUR9UEG5yuLgjSYAM4EieAaS3w==
+X-Microsoft-Antispam-Message-Info: 6xed70crC+zxIPxOI9H3IuBZku4mORAf2/bpnlwq7zthu6ByKqFBmByRIJLZG5xb/6bEsmZc67b1gk38EaATGNaXu1yWZPLp1E9OQH8txd1wdhA10zJz7joOuU8h9lkOFCGbEEZeWiPVT22pfuqJdVrAfixHQOwdAqVyoW/9MGIX0tt/ku840TC9hQ+akCiI3YW8MjbleUiIs40jNC7DslTMpV8iSjibkexEaXMCV6r1WObOvfloosd2XlnH1A97Ng5PHPA0mvbBGqCfdKNx01otK55ZH0NHD3cKcUdg4KifJDL4HTFas/8cUJuGOJ5lwIWdS+1HNITs6rKNLHnT5c3wDm4oheZj4/7ZWaukw2Q2C4w7EXFStEigyvhlptwbCrZXGHL1Dzkqe6EjMICDbpeohfe7dbnJDlQI5maXzOVq1U30gcFlqr9qKyNc3okiVcnaTOHN62ETmsIlyKogbxUp7sJ57dY7JkaGUDVGdR9RHEjA2JzJQcq5fdrP1gi0rDCe2i0lflIqbJiIne/RowSUP2BJLAvRZWmrt7gPc29ZqooYNk8gq19fGkSdYWqaKn0+R952O1q6YTUaQKfxL1BVFyQfksoTUcqb041IrFj5zlzXDnGBOaGkjMugIJB8nWaKUy6YlRQHkHijQsxAf6gUfuibgiK/Ap5q318WTtMEQe0OiSnz/hjbBumTYfPQ0hbx1v5hRYObpIh5hn6Wxg==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(66556008)(66476007)(6506007)(1076003)(54906003)(30864003)(66946007)(4326008)(6666004)(5660300002)(7416002)(508600001)(316002)(52116002)(6512007)(83380400001)(86362001)(2616005)(36756003)(26005)(6916009)(38350700002)(186003)(6486002)(2906002)(38100700002)(44832011)(8676002)(8936002)(956004);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?9V+Qg8LCb0DLVTNciPU3zdeV9wmrhgCpmw7OFRizwNF4w+MKLTdj7udGWYY9?=
- =?us-ascii?Q?h8AUf0/vMtZH/rscqw/GwruGgtevtqrw2b6d7Tl1/4ehcYKfg1wnvwnMhqzD?=
- =?us-ascii?Q?yAUPeEk+Ba+KUS0z87HiQkLxAjRCc/qA0OXC8+SikCmj+MS3Jp3sLosbHglw?=
- =?us-ascii?Q?KZEwHFgO/t5uyFTBMLPpOQUB/BmXBxQAKmf8igrQJW/yLPkRSDxOnKz2VB/E?=
- =?us-ascii?Q?n+2MRSt0jqenkL70Q44UpJX0EsYsuTW3YlD57lWzZrgbo7hVflnMNcA46MfQ?=
- =?us-ascii?Q?lI/JHvvlOnpqn9qjgSyIYzqDmvT8OhCYjrysygC5N/aNUWc9GpPAF0gwtJ/b?=
- =?us-ascii?Q?Gc1iRsjTVGvZu4M9mECZvNg908JKrJ92FkprkRCOxy15tD0GWIlyJfcZnHGJ?=
- =?us-ascii?Q?oqFw2Sy8iaD/DYvY4m/RFA1wNdsF/TQLpCr3qL9cnaiJpfU41lVjWz86GNgd?=
- =?us-ascii?Q?1+RXWWKFF8J4al5EAWd2OOidToBrZJaTVA1TebMuz1vZYc3AUtcWTLZ1xCyF?=
- =?us-ascii?Q?Va2hkMISFSF7260e14RDCjrOSFOh0zwwSan3QrHnshohPbsapRT69amyMLp5?=
- =?us-ascii?Q?NT6jDAeag/9u3o9VHj+dwpxmdHSzQtun9qIIu0P0+Ow5wT51Y6mjq+HMPYVC?=
- =?us-ascii?Q?PDv6auv7FTENfCYu4of8BjXQyt4iqUcIuT6n8Ma+vTDnJ/OuArfpR2GEEddW?=
- =?us-ascii?Q?yAEkXIa2U5RWBd2aJAbFJFvPKfv0eroA7OJpB4zLVkWavGLS8hSHvv6uYWZ4?=
- =?us-ascii?Q?meUvqrjtKOGASXQx3jekSvxJxIp65rhBz2DgM/Fo1N7M1HrEXNqjyNVnuxz0?=
- =?us-ascii?Q?4wPKHLDh9gG+y2eEu7R1kobIy8FjYhzSxmSUlckDg8WO9rPpO6T+sBsV7cJi?=
- =?us-ascii?Q?fayFXI6fK/xXJp6dQNj1yToGYh4KmCl34hQIM2RoIzQybgFtHjyvPk17Hi8H?=
- =?us-ascii?Q?qAzHzOXtsNGMncT/hxXvruzGnHwjc7Ssvlon9uFoDG3W6YQLBHefXZnonvtR?=
- =?us-ascii?Q?l7tqlulIm1vge90TC4ACOtgxpBSeeMoK/nuz4GrZ5kQBvD6LK1diUzT02cjY?=
- =?us-ascii?Q?l3qa8Naxes4Qhuv+5WInIVbJD4mw1wVZeNvRQYLUREKft8tq3dDuVc++Kucz?=
- =?us-ascii?Q?ZQUUeN2GxZXx3e0hgh16PyGSAxSlMDV4/QOwznXK5SliS/MHq1zj3VaLCGik?=
- =?us-ascii?Q?bw4uUBYpqiij680J6ZJbTyZIbg321B2psE0AaxoXfJzt3mtTZA1/dtZD//he?=
- =?us-ascii?Q?oqEdIEPODMj928D8HcAFoTxO3xoex238meNNJmY92G2nmDY4P/UQHVasDxWG?=
- =?us-ascii?Q?AZzRVr0CmffGextRC3YAEVGiBDojodTJArNlgdT36mif8cPHTRAAwkSZM2E9?=
- =?us-ascii?Q?lGT7dSGRUFtLNFxz8KTvbzXMvr9aJe8f9qxdNedEw5T8MuhzcxKjYQUn3fmK?=
- =?us-ascii?Q?6ULIL3u5Dku3OC3FMDyYE2w47hUBg6rqK5AH9rJz2KeaVJSMTWXPqXrJ0GdS?=
- =?us-ascii?Q?WMvSnQICCprn6UN4XzzZ678IWoUFZYYqPro6FS4YqEbholy3J35j53W6htRv?=
- =?us-ascii?Q?Hik0TdO3yDmx5giJDjr5EruHvlK7h0jiTquwQLe2Kmy8uRMFC8RixyALmtd0?=
- =?us-ascii?Q?bwibdiVS2brLQfBuAQgBbLQ=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?HEYG728q04JIl0yaA+K2HzxeRHfIaMTxJrli8hc9tyf7/DhxTD41slM9VQzf?=
+ =?us-ascii?Q?aB0wT3u9YJS+t4Zl3m2gepbVF7L5nEOI4VHqaWexC4NkJBtzgoJbtdPpMbz8?=
+ =?us-ascii?Q?4XYfmuba+mIqtyfQIk2IaWk1qdD1b+U1w4X71+qUjJ6Nqzh8anqeLNyxWMHg?=
+ =?us-ascii?Q?jH0raJqCqlQOudl02yvR7N9GlzaN7G1Vd/SCfYrYtJGfqW50My9r/dzg3TK7?=
+ =?us-ascii?Q?27b12y1bDmvftUBzaAscPk8CheDCemIcebcsO75yFPRecKtHoVylQzNobhQ7?=
+ =?us-ascii?Q?FC2ZhxJunyzFse2/tLHcGdrtLFjXYfD87jOS0tiZ4mLp24YOwc4zIkjgqfxS?=
+ =?us-ascii?Q?pR6WXaShj2o8n7Mqt2fLlnawFLhSDOAJ8to/kmWeX4fhhNEUNSazwHxJrkH2?=
+ =?us-ascii?Q?0lu9vc2GCjtRClDm+/6YaRL5KOSkOSFLOLBQKmV/wQNwef/LMvwLi0GHr6Mv?=
+ =?us-ascii?Q?gqbfabvWFTPbmnVvIE/sJL0kDokT7evDN2ep4jcZpknBLK6gYtx+0EirMKF/?=
+ =?us-ascii?Q?f1rUHT6j0dJC2jZEH49r/7UFAaiD3hDDBL4UQ3TGSYI8sJzDRMeIZ9KQzqJT?=
+ =?us-ascii?Q?0132IXj/ldz6inC0P2zTqazrohW/n50a6I8CQKgSeFSXAQlePB/Hz82SWFcM?=
+ =?us-ascii?Q?dfRAsG8zA244ZDTKnspAGx927DuaSQu4byU5wXsgRMybP5ProxJwuftSaoO4?=
+ =?us-ascii?Q?qSYZfftcI2ZkT3Kb+fx6v0bc1rw8nJSYHbj/PyisrADTD6UZjYEY0VIRWuTj?=
+ =?us-ascii?Q?6EpawjrYloJ2rs/Ak92g1Bt9g6ZzhB2nmE9vLY5k8lM6YDADUfzPU608iyBH?=
+ =?us-ascii?Q?lVCWWoYhpOPNi6IPWiqzjnyYSEU4mRsI5gYoFe5ZIf+Itlf9MKvdAv1l3CcC?=
+ =?us-ascii?Q?jKzRCTnJy0Z0u5ArXCVYYGeO8xmlbjDZexEwhTM6eTKe9PhJ4iNf8QKZmyAs?=
+ =?us-ascii?Q?NsPE/s7GkQfwVr1qOFlKtoSfyIHHyHVBBVMZLF77f9BD9Qb26+D78hi7yDhA?=
+ =?us-ascii?Q?ys1vPY9shSoQobdhrONJnzTfZnA0cJw7yrrlPopZGh9suypCzPcXdGv15ok/?=
+ =?us-ascii?Q?8E7LHkxsV8c1h97rHrc+cNJGRUt7B1wEqvc7d+uZsM68gSFEbLPToBaT/Qwo?=
+ =?us-ascii?Q?f879w7No0xf3kfWu5VJf+JewjUkRqgydm4XlgbyDNTBkent9YhnbMKimKlOh?=
+ =?us-ascii?Q?KKd3ya9AOIkTYflJw7b8ciNfiH/4UVfJx8j8vSOv2Phi/VyadQ8xvDWXcZ1V?=
+ =?us-ascii?Q?Y8q7igUEDuBY5tKyuHuGWEarS6qPL+9JzIQZhaAMUBJmJyhOXPGMCKaUQxWU?=
+ =?us-ascii?Q?2XwupyisL+VdtWwf+7EwlO8Xby6pV1SR+fzjevu1dU9giQ3dCeXYQb+C80Pe?=
+ =?us-ascii?Q?UOQOY3VztYD5cYqR4B3y/wV+e2Tj4m9IsUuzB43ToHnMwbuer3NyeoLvL65z?=
+ =?us-ascii?Q?3qxojrVtJUc7s7wb0C/kcsX1I2BkhYeUJsgri3PQLWFeSZm2yOn1tkxI8Q81?=
+ =?us-ascii?Q?qtmBIM2Y7dNLURIczP/Nw3vYhcAm0aveD1R19LSA72tlKeg74GkpqnLHubhO?=
+ =?us-ascii?Q?BBJbnWQrbRoFQ57mySU7nHM4U3cg4pehgXgEnTwJ6pG4faSKpnVbP80fUGs/?=
+ =?us-ascii?Q?YnzL4wgto/0GU6TUvLEk+9Q=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c1c73a41-6951-411e-c8e2-08d9b8d99e51
+X-MS-Exchange-CrossTenant-Network-Message-Id: f744b92c-91f2-4692-422d-08d9b8d99f53
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Dec 2021 16:58:25.5084
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Dec 2021 16:58:27.2114
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: w1fHtEFr61SLpKdAHZKXbTcGH2sJb/6X6QaLlZzxnpyo855h/KSYMDFgBXF5ggjAjYNo877K5gGsutoH5VZiNQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: AUv3pPpZVL39vHyYnB6LdoOHnEqzd+5oejcPJ03l7iLZQ+QHTu7AihxSopDynqhVgZ+FD419CmihNbwddk7tgA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4912
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -126,8 +126,8 @@ The location of the bridge device pointer and number is going to change.
 It is not going to be kept individually per port, but in a common
 structure allocated dynamically and which will have lockdep validation.
 
-Create helpers to access these elements so that we have a migration path
-to the new organization.
+Use the helpers to access these elements so that we have a migration
+path to the new organization.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
@@ -135,360 +135,339 @@ v2->v3:
 - removed as many non-trivial changes as possible (split into other
   changes)
 v1->v2:
-- make dsa_port_bridge_dev_get take const struct dsa_port * arguments.
-- make dsa_port_bridge_same return false for two standalone ports.
+- convert ksz_common.c too, after Oleksij's commit b3612ccdf284
+  ("net: dsa: microchip: implement multi-bridge support").
 
- include/net/dsa.h     | 21 +++++++++++++++++++++
- net/dsa/dsa_priv.h    |  4 ++--
- net/dsa/port.c        | 35 ++++++++++++++++++-----------------
- net/dsa/slave.c       | 13 +++++++------
- net/dsa/switch.c      |  6 ++----
- net/dsa/tag_8021q.c   |  2 +-
- net/dsa/tag_dsa.c     |  5 +++--
- net/dsa/tag_ocelot.c  |  2 +-
- net/dsa/tag_sja1105.c | 11 +++++++----
- 9 files changed, 62 insertions(+), 37 deletions(-)
+ drivers/net/dsa/b53/b53_common.c       |  4 ++--
+ drivers/net/dsa/lan9303-core.c         |  2 +-
+ drivers/net/dsa/lantiq_gswip.c         | 10 +++++-----
+ drivers/net/dsa/microchip/ksz_common.c |  2 +-
+ drivers/net/dsa/mt7530.c               |  6 +++---
+ drivers/net/dsa/mv88e6xxx/chip.c       | 25 +++++++++++++++----------
+ drivers/net/dsa/qca8k.c                |  4 ++--
+ drivers/net/dsa/rtl8366rb.c            |  4 ++--
+ drivers/net/dsa/sja1105/sja1105_main.c | 10 ++++++----
+ drivers/net/dsa/xrs700x/xrs700x.c      |  4 ++--
+ 10 files changed, 39 insertions(+), 32 deletions(-)
 
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index 00fbd87ae4ff..18bce0383267 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -599,6 +599,27 @@ struct net_device *dsa_port_to_bridge_port(const struct dsa_port *dp)
- 	return dp->slave;
- }
+diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
+index af4761968733..d5e78f51f42d 100644
+--- a/drivers/net/dsa/b53/b53_common.c
++++ b/drivers/net/dsa/b53/b53_common.c
+@@ -1887,7 +1887,7 @@ int b53_br_join(struct dsa_switch *ds, int port, struct net_device *br)
+ 	b53_read16(dev, B53_PVLAN_PAGE, B53_PVLAN_PORT_MASK(port), &pvlan);
  
-+static inline struct net_device *
-+dsa_port_bridge_dev_get(const struct dsa_port *dp)
-+{
-+	return dp->bridge_dev;
-+}
-+
-+static inline unsigned int dsa_port_bridge_num_get(struct dsa_port *dp)
-+{
-+	return dp->bridge_num;
-+}
-+
-+static inline bool dsa_port_bridge_same(const struct dsa_port *a,
-+					const struct dsa_port *b)
-+{
-+	struct net_device *br_a = dsa_port_bridge_dev_get(a);
-+	struct net_device *br_b = dsa_port_bridge_dev_get(b);
-+
-+	/* Standalone ports are not in the same bridge with one another */
-+	return (!br_a || !br_b) ? false : (br_a == br_b);
-+}
-+
- typedef int dsa_fdb_dump_cb_t(const unsigned char *addr, u16 vid,
- 			      bool is_static, void *data);
- struct dsa_switch_ops {
-diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
-index 70c4a5b36a8b..46a0adfb03cd 100644
---- a/net/dsa/dsa_priv.h
-+++ b/net/dsa/dsa_priv.h
-@@ -278,7 +278,7 @@ static inline bool dsa_port_offloads_bridge(struct dsa_port *dp,
- 	/* DSA ports connected to a bridge, and event was emitted
- 	 * for the bridge.
- 	 */
--	return dp->bridge_dev == bridge_dev;
-+	return dsa_port_bridge_dev_get(dp) == bridge_dev;
- }
- 
- /* Returns true if any port of this tree offloads the given net_device */
-@@ -345,7 +345,7 @@ dsa_slave_to_master(const struct net_device *dev)
- static inline struct sk_buff *dsa_untag_bridge_pvid(struct sk_buff *skb)
- {
- 	struct dsa_port *dp = dsa_slave_to_port(skb->dev);
--	struct net_device *br = dp->bridge_dev;
-+	struct net_device *br = dsa_port_bridge_dev_get(dp);
- 	struct net_device *dev = skb->dev;
- 	struct net_device *upper_dev;
- 	u16 vid, pvid, proto;
-diff --git a/net/dsa/port.c b/net/dsa/port.c
-index 199a56faf460..f6ea41cbcdd5 100644
---- a/net/dsa/port.c
-+++ b/net/dsa/port.c
-@@ -221,7 +221,7 @@ static int dsa_port_switchdev_sync_attrs(struct dsa_port *dp,
- 					 struct netlink_ext_ack *extack)
- {
- 	struct net_device *brport_dev = dsa_port_to_bridge_port(dp);
--	struct net_device *br = dp->bridge_dev;
-+	struct net_device *br = dsa_port_bridge_dev_get(dp);
- 	int err;
- 
- 	err = dsa_port_inherit_brport_flags(dp, extack);
-@@ -372,7 +372,7 @@ int dsa_port_bridge_join(struct dsa_port *dp, struct net_device *br,
- 		goto out_rollback;
- 
- 	tx_fwd_offload = dsa_port_bridge_tx_fwd_offload(dp, br,
--							dp->bridge_num);
-+							dsa_port_bridge_num_get(dp));
- 
- 	err = switchdev_bridge_port_offload(brport_dev, dev, dp,
- 					    &dsa_slave_switchdev_notifier,
-@@ -415,13 +415,13 @@ void dsa_port_pre_bridge_leave(struct dsa_port *dp, struct net_device *br)
- 
- void dsa_port_bridge_leave(struct dsa_port *dp, struct net_device *br)
- {
-+	unsigned int bridge_num = dsa_port_bridge_num_get(dp);
- 	struct dsa_notifier_bridge_info info = {
- 		.tree_index = dp->ds->dst->index,
- 		.sw_index = dp->ds->index,
- 		.port = dp->index,
- 		.br = br,
- 	};
--	int bridge_num = dp->bridge_num;
- 	int err;
- 
- 	/* Here the port is already unbridged. Reflect the current configuration
-@@ -507,12 +507,15 @@ int dsa_port_lag_join(struct dsa_port *dp, struct net_device *lag,
- 
- void dsa_port_pre_lag_leave(struct dsa_port *dp, struct net_device *lag)
- {
--	if (dp->bridge_dev)
--		dsa_port_pre_bridge_leave(dp, dp->bridge_dev);
-+	struct net_device *br = dsa_port_bridge_dev_get(dp);
-+
-+	if (br)
-+		dsa_port_pre_bridge_leave(dp, br);
- }
- 
- void dsa_port_lag_leave(struct dsa_port *dp, struct net_device *lag)
- {
-+	struct net_device *br = dsa_port_bridge_dev_get(dp);
- 	struct dsa_notifier_lag_info info = {
- 		.sw_index = dp->ds->index,
- 		.port = dp->index,
-@@ -526,8 +529,8 @@ void dsa_port_lag_leave(struct dsa_port *dp, struct net_device *lag)
- 	/* Port might have been part of a LAG that in turn was
- 	 * attached to a bridge.
- 	 */
--	if (dp->bridge_dev)
--		dsa_port_bridge_leave(dp, dp->bridge_dev);
-+	if (br)
-+		dsa_port_bridge_leave(dp, br);
- 
- 	dp->lag_tx_enabled = false;
- 	dp->lag_dev = NULL;
-@@ -556,8 +559,8 @@ static bool dsa_port_can_apply_vlan_filtering(struct dsa_port *dp,
- 	 * as long as we have 8021q uppers.
- 	 */
- 	if (vlan_filtering && dsa_port_is_user(dp)) {
-+		struct net_device *br = dsa_port_bridge_dev_get(dp);
- 		struct net_device *upper_dev, *slave = dp->slave;
--		struct net_device *br = dp->bridge_dev;
- 		struct list_head *iter;
- 
- 		netdev_for_each_upper_dev_rcu(slave, upper_dev, iter) {
-@@ -591,17 +594,15 @@ static bool dsa_port_can_apply_vlan_filtering(struct dsa_port *dp,
- 	 * different setting than what is being requested.
- 	 */
- 	dsa_switch_for_each_port(other_dp, ds) {
--		struct net_device *other_bridge;
-+		struct net_device *other_br = dsa_port_bridge_dev_get(other_dp);
- 
--		other_bridge = other_dp->bridge_dev;
--		if (!other_bridge)
--			continue;
- 		/* If it's the same bridge, it also has same
- 		 * vlan_filtering setting => no need to check
- 		 */
--		if (other_bridge == dp->bridge_dev)
-+		if (!other_br || other_br == dsa_port_bridge_dev_get(dp))
- 			continue;
--		if (br_vlan_enabled(other_bridge) != vlan_filtering) {
-+
-+		if (br_vlan_enabled(other_br) != vlan_filtering) {
- 			NL_SET_ERR_MSG_MOD(extack,
- 					   "VLAN filtering is a global setting");
- 			return false;
-@@ -685,13 +686,13 @@ int dsa_port_vlan_filtering(struct dsa_port *dp, bool vlan_filtering,
-  */
- bool dsa_port_skip_vlan_configuration(struct dsa_port *dp)
- {
-+	struct net_device *br = dsa_port_bridge_dev_get(dp);
- 	struct dsa_switch *ds = dp->ds;
- 
--	if (!dp->bridge_dev)
-+	if (!br)
- 		return false;
- 
--	return (!ds->configure_vlan_while_not_filtering &&
--		!br_vlan_enabled(dp->bridge_dev));
-+	return !ds->configure_vlan_while_not_filtering && !br_vlan_enabled(br);
- }
- 
- int dsa_port_ageing_time(struct dsa_port *dp, clock_t ageing_clock)
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index 33b54eadc641..99068ce21cfe 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -363,7 +363,7 @@ static int dsa_slave_vlan_add(struct net_device *dev,
- 	/* Deny adding a bridge VLAN when there is already an 802.1Q upper with
- 	 * the same VID.
- 	 */
--	if (br_vlan_enabled(dp->bridge_dev)) {
-+	if (br_vlan_enabled(dsa_port_bridge_dev_get(dp))) {
- 		rcu_read_lock();
- 		err = dsa_slave_vlan_check_for_8021q_uppers(dev, &vlan);
- 		rcu_read_unlock();
-@@ -1580,7 +1580,7 @@ static void dsa_bridge_mtu_normalization(struct dsa_port *dp)
- 			if (other_dp->type != DSA_PORT_TYPE_USER)
- 				continue;
- 
--			if (other_dp->bridge_dev != dp->bridge_dev)
-+			if (!dsa_port_bridge_same(dp, other_dp))
- 				continue;
- 
- 			if (!other_dp->ds->mtu_enforcement_ingress)
-@@ -2220,7 +2220,7 @@ dsa_prevent_bridging_8021q_upper(struct net_device *dev,
- 				 struct netdev_notifier_changeupper_info *info)
- {
- 	struct netlink_ext_ack *ext_ack;
--	struct net_device *slave;
-+	struct net_device *slave, *br;
- 	struct dsa_port *dp;
- 
- 	ext_ack = netdev_notifier_info_to_extack(&info->info);
-@@ -2233,11 +2233,12 @@ dsa_prevent_bridging_8021q_upper(struct net_device *dev,
- 		return NOTIFY_DONE;
- 
- 	dp = dsa_slave_to_port(slave);
--	if (!dp->bridge_dev)
-+	br = dsa_port_bridge_dev_get(dp);
-+	if (!br)
- 		return NOTIFY_DONE;
- 
- 	/* Deny enslaving a VLAN device into a VLAN-aware bridge */
--	if (br_vlan_enabled(dp->bridge_dev) &&
-+	if (br_vlan_enabled(br) &&
- 	    netif_is_bridge_master(info->upper_dev) && info->linking) {
- 		NL_SET_ERR_MSG_MOD(ext_ack,
- 				   "Cannot enslave VLAN device into VLAN aware bridge");
-@@ -2252,7 +2253,7 @@ dsa_slave_check_8021q_upper(struct net_device *dev,
- 			    struct netdev_notifier_changeupper_info *info)
- {
- 	struct dsa_port *dp = dsa_slave_to_port(dev);
--	struct net_device *br = dp->bridge_dev;
-+	struct net_device *br = dsa_port_bridge_dev_get(dp);
- 	struct bridge_vlan_info br_info;
- 	struct netlink_ext_ack *extack;
- 	int err = NOTIFY_DONE;
-diff --git a/net/dsa/switch.c b/net/dsa/switch.c
-index bb155a16d454..7993192fe769 100644
---- a/net/dsa/switch.c
-+++ b/net/dsa/switch.c
-@@ -151,11 +151,9 @@ static int dsa_switch_bridge_leave(struct dsa_switch *ds,
- 	 */
- 	if (change_vlan_filtering && ds->vlan_filtering_is_global) {
- 		dsa_switch_for_each_port(dp, ds) {
--			struct net_device *bridge_dev;
-+			struct net_device *br = dsa_port_bridge_dev_get(dp);
- 
--			bridge_dev = dp->bridge_dev;
--
--			if (bridge_dev && br_vlan_enabled(bridge_dev)) {
-+			if (br && br_vlan_enabled(br)) {
- 				change_vlan_filtering = false;
- 				break;
- 			}
-diff --git a/net/dsa/tag_8021q.c b/net/dsa/tag_8021q.c
-index df59f16436a5..e9d5e566973c 100644
---- a/net/dsa/tag_8021q.c
-+++ b/net/dsa/tag_8021q.c
-@@ -337,7 +337,7 @@ dsa_port_tag_8021q_bridge_match(struct dsa_port *dp,
- 		return false;
- 
- 	if (dsa_port_is_user(dp))
--		return dp->bridge_dev == info->br;
-+		return dsa_port_bridge_dev_get(dp) == info->br;
- 
- 	return false;
- }
-diff --git a/net/dsa/tag_dsa.c b/net/dsa/tag_dsa.c
-index a7d70ae7cc97..8abf39dcac64 100644
---- a/net/dsa/tag_dsa.c
-+++ b/net/dsa/tag_dsa.c
-@@ -132,6 +132,7 @@ static struct sk_buff *dsa_xmit_ll(struct sk_buff *skb, struct net_device *dev,
- 	u8 *dsa_header;
- 
- 	if (skb->offload_fwd_mark) {
-+		unsigned int bridge_num = dsa_port_bridge_num_get(dp);
- 		struct dsa_switch_tree *dst = dp->ds->dst;
- 
- 		cmd = DSA_CMD_FORWARD;
-@@ -140,7 +141,7 @@ static struct sk_buff *dsa_xmit_ll(struct sk_buff *skb, struct net_device *dev,
- 		 * packets on behalf of a virtual switch device with an index
- 		 * past the physical switches.
- 		 */
--		tag_dev = dst->last_switch + dp->bridge_num;
-+		tag_dev = dst->last_switch + bridge_num;
- 		tag_port = 0;
- 	} else {
- 		cmd = DSA_CMD_FROM_CPU;
-@@ -165,7 +166,7 @@ static struct sk_buff *dsa_xmit_ll(struct sk_buff *skb, struct net_device *dev,
- 			dsa_header[2] &= ~0x10;
- 		}
- 	} else {
--		struct net_device *br = dp->bridge_dev;
-+		struct net_device *br = dsa_port_bridge_dev_get(dp);
- 		u16 vid;
- 
- 		vid = br ? MV88E6XXX_VID_BRIDGED : MV88E6XXX_VID_STANDALONE;
-diff --git a/net/dsa/tag_ocelot.c b/net/dsa/tag_ocelot.c
-index de1c849a0a70..4ba460c5a880 100644
---- a/net/dsa/tag_ocelot.c
-+++ b/net/dsa/tag_ocelot.c
-@@ -12,7 +12,7 @@
- static void ocelot_xmit_get_vlan_info(struct sk_buff *skb, struct dsa_port *dp,
- 				      u64 *vlan_tci, u64 *tag_type)
- {
--	struct net_device *br = READ_ONCE(dp->bridge_dev);
-+	struct net_device *br = dsa_port_bridge_dev_get(dp);
- 	struct vlan_ethhdr *hdr;
- 	u16 proto, tci;
- 
-diff --git a/net/dsa/tag_sja1105.c b/net/dsa/tag_sja1105.c
-index 262c8833a910..6c293c2a3008 100644
---- a/net/dsa/tag_sja1105.c
-+++ b/net/dsa/tag_sja1105.c
-@@ -159,14 +159,16 @@ static u16 sja1105_xmit_tpid(struct dsa_port *dp)
- 	 * need to find it.
- 	 */
- 	dsa_switch_for_each_port(other_dp, ds) {
--		if (!other_dp->bridge_dev)
-+		struct net_device *br = dsa_port_bridge_dev_get(other_dp);
-+
-+		if (!br)
+ 	b53_for_each_port(dev, i) {
+-		if (dsa_to_port(ds, i)->bridge_dev != br)
++		if (dsa_port_bridge_dev_get(dsa_to_port(ds, i)) != br)
  			continue;
  
- 		/* Error is returned only if CONFIG_BRIDGE_VLAN_FILTERING,
- 		 * which seems pointless to handle, as our port cannot become
- 		 * VLAN-aware in that case.
- 		 */
--		br_vlan_get_proto(other_dp->bridge_dev, &proto);
-+		br_vlan_get_proto(br, &proto);
+ 		/* Add this local port to the remote port VLAN control
+@@ -1923,7 +1923,7 @@ void b53_br_leave(struct dsa_switch *ds, int port, struct net_device *br)
  
- 		return proto;
+ 	b53_for_each_port(dev, i) {
+ 		/* Don't touch the remaining ports */
+-		if (dsa_to_port(ds, i)->bridge_dev != br)
++		if (dsa_port_bridge_dev_get(dsa_to_port(ds, i)) != br)
+ 			continue;
+ 
+ 		b53_read16(dev, B53_PVLAN_PAGE, B53_PVLAN_PORT_MASK(i), &reg);
+diff --git a/drivers/net/dsa/lan9303-core.c b/drivers/net/dsa/lan9303-core.c
+index 89f920289ae2..1c2bdcde6979 100644
+--- a/drivers/net/dsa/lan9303-core.c
++++ b/drivers/net/dsa/lan9303-core.c
+@@ -1108,7 +1108,7 @@ static int lan9303_port_bridge_join(struct dsa_switch *ds, int port,
+ 	struct lan9303 *chip = ds->priv;
+ 
+ 	dev_dbg(chip->dev, "%s(port %d)\n", __func__, port);
+-	if (dsa_to_port(ds, 1)->bridge_dev == dsa_to_port(ds, 2)->bridge_dev) {
++	if (dsa_port_bridge_same(dsa_to_port(ds, 1), dsa_to_port(ds, 2))) {
+ 		lan9303_bridge_ports(chip);
+ 		chip->is_bridged = true;  /* unleash stp_state_set() */
  	}
-@@ -180,7 +182,8 @@ static struct sk_buff *sja1105_imprecise_xmit(struct sk_buff *skb,
- 					      struct net_device *netdev)
+diff --git a/drivers/net/dsa/lantiq_gswip.c b/drivers/net/dsa/lantiq_gswip.c
+index 583af774e1bd..6317d0ae42d0 100644
+--- a/drivers/net/dsa/lantiq_gswip.c
++++ b/drivers/net/dsa/lantiq_gswip.c
+@@ -759,7 +759,7 @@ static int gswip_port_vlan_filtering(struct dsa_switch *ds, int port,
+ 				     bool vlan_filtering,
+ 				     struct netlink_ext_ack *extack)
  {
- 	struct dsa_port *dp = dsa_slave_to_port(netdev);
--	struct net_device *br = dp->bridge_dev;
-+	unsigned int bridge_num = dsa_port_bridge_num_get(dp);
-+	struct net_device *br = dsa_port_bridge_dev_get(dp);
- 	u16 tx_vid;
+-	struct net_device *bridge = dsa_to_port(ds, port)->bridge_dev;
++	struct net_device *bridge = dsa_port_bridge_dev_get(dsa_to_port(ds, port));
+ 	struct gswip_priv *priv = ds->priv;
  
- 	/* If the port is under a VLAN-aware bridge, just slide the
-@@ -196,7 +199,7 @@ static struct sk_buff *sja1105_imprecise_xmit(struct sk_buff *skb,
- 	 * TX VLAN that targets the bridge's entire broadcast domain,
- 	 * instead of just the specific port.
+ 	/* Do not allow changing the VLAN filtering options while in bridge */
+@@ -1183,8 +1183,8 @@ static int gswip_port_vlan_prepare(struct dsa_switch *ds, int port,
+ 				   const struct switchdev_obj_port_vlan *vlan,
+ 				   struct netlink_ext_ack *extack)
+ {
++	struct net_device *bridge = dsa_port_bridge_dev_get(dsa_to_port(ds, port));
+ 	struct gswip_priv *priv = ds->priv;
+-	struct net_device *bridge = dsa_to_port(ds, port)->bridge_dev;
+ 	unsigned int max_ports = priv->hw_info->max_ports;
+ 	int pos = max_ports;
+ 	int i, idx = -1;
+@@ -1229,8 +1229,8 @@ static int gswip_port_vlan_add(struct dsa_switch *ds, int port,
+ 			       const struct switchdev_obj_port_vlan *vlan,
+ 			       struct netlink_ext_ack *extack)
+ {
++	struct net_device *bridge = dsa_port_bridge_dev_get(dsa_to_port(ds, port));
+ 	struct gswip_priv *priv = ds->priv;
+-	struct net_device *bridge = dsa_to_port(ds, port)->bridge_dev;
+ 	bool untagged = vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED;
+ 	bool pvid = vlan->flags & BRIDGE_VLAN_INFO_PVID;
+ 	int err;
+@@ -1254,8 +1254,8 @@ static int gswip_port_vlan_add(struct dsa_switch *ds, int port,
+ static int gswip_port_vlan_del(struct dsa_switch *ds, int port,
+ 			       const struct switchdev_obj_port_vlan *vlan)
+ {
++	struct net_device *bridge = dsa_port_bridge_dev_get(dsa_to_port(ds, port));
+ 	struct gswip_priv *priv = ds->priv;
+-	struct net_device *bridge = dsa_to_port(ds, port)->bridge_dev;
+ 	bool pvid = vlan->flags & BRIDGE_VLAN_INFO_PVID;
+ 
+ 	/* We have to receive all packets on the CPU port and should not
+@@ -1340,8 +1340,8 @@ static void gswip_port_stp_state_set(struct dsa_switch *ds, int port, u8 state)
+ static int gswip_port_fdb(struct dsa_switch *ds, int port,
+ 			  const unsigned char *addr, u16 vid, bool add)
+ {
++	struct net_device *bridge = dsa_port_bridge_dev_get(dsa_to_port(ds, port));
+ 	struct gswip_priv *priv = ds->priv;
+-	struct net_device *bridge = dsa_to_port(ds, port)->bridge_dev;
+ 	struct gswip_pce_table_entry mac_bridge = {0,};
+ 	unsigned int cpu_port = priv->hw_info->cpu_port;
+ 	int fid = -1;
+diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+index 8a04302018dc..cebcb73cda76 100644
+--- a/drivers/net/dsa/microchip/ksz_common.c
++++ b/drivers/net/dsa/microchip/ksz_common.c
+@@ -43,7 +43,7 @@ void ksz_update_port_member(struct ksz_device *dev, int port)
+ 			continue;
+ 		if (port == i)
+ 			continue;
+-		if (!dp->bridge_dev || dp->bridge_dev != other_dp->bridge_dev)
++		if (!dsa_port_bridge_same(dp, other_dp))
+ 			continue;
+ 
+ 		if (other_p->stp_state == BR_STATE_FORWARDING &&
+diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+index f7238f09d395..73c9f79f9e9f 100644
+--- a/drivers/net/dsa/mt7530.c
++++ b/drivers/net/dsa/mt7530.c
+@@ -1204,7 +1204,7 @@ mt7530_port_bridge_join(struct dsa_switch *ds, int port,
+ 		 * same bridge. If the port is disabled, port matrix is kept
+ 		 * and not being setup until the port becomes enabled.
+ 		 */
+-		if (other_dp->bridge_dev != bridge)
++		if (dsa_port_bridge_dev_get(other_dp) != bridge)
+ 			continue;
+ 
+ 		if (priv->ports[other_port].enable)
+@@ -1240,7 +1240,7 @@ mt7530_port_set_vlan_unaware(struct dsa_switch *ds, int port)
+ 	/* This is called after .port_bridge_leave when leaving a VLAN-aware
+ 	 * bridge. Don't set standalone ports to fallback mode.
  	 */
--	tx_vid = dsa_8021q_bridge_tx_fwd_offload_vid(dp->bridge_num);
-+	tx_vid = dsa_8021q_bridge_tx_fwd_offload_vid(bridge_num);
+-	if (dsa_to_port(ds, port)->bridge_dev)
++	if (dsa_port_bridge_dev_get(dsa_to_port(ds, port)))
+ 		mt7530_rmw(priv, MT7530_PCR_P(port), PCR_PORT_VLAN_MASK,
+ 			   MT7530_PORT_FALLBACK_MODE);
  
- 	return dsa_8021q_xmit(skb, netdev, sja1105_xmit_tpid(dp), tx_vid);
- }
+@@ -1320,7 +1320,7 @@ mt7530_port_bridge_leave(struct dsa_switch *ds, int port,
+ 		 * in the same bridge. If the port is disabled, port matrix
+ 		 * is kept and not being setup until the port becomes enabled.
+ 		 */
+-		if (other_dp->bridge_dev != bridge)
++		if (dsa_port_bridge_dev_get(other_dp) != bridge)
+ 			continue;
+ 
+ 		if (priv->ports[other_port].enable)
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index 341b62398d83..5afc7a1c0dbb 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -1247,10 +1247,12 @@ static u16 mv88e6xxx_port_vlan(struct mv88e6xxx_chip *chip, int dev, int port)
+ 	/* dev is a virtual bridge */
+ 	} else {
+ 		list_for_each_entry(dp, &dst->ports, list) {
+-			if (!dp->bridge_num)
++			unsigned int bridge_num = dsa_port_bridge_num_get(dp);
++
++			if (!bridge_num)
+ 				continue;
+ 
+-			if (dp->bridge_num + dst->last_switch != dev)
++			if (bridge_num + dst->last_switch != dev)
+ 				continue;
+ 
+ 			found = true;
+@@ -1274,7 +1276,7 @@ static u16 mv88e6xxx_port_vlan(struct mv88e6xxx_chip *chip, int dev, int port)
+ 	dsa_switch_for_each_port(other_dp, ds)
+ 		if (other_dp->type == DSA_PORT_TYPE_CPU ||
+ 		    other_dp->type == DSA_PORT_TYPE_DSA ||
+-		    (dp->bridge_dev && dp->bridge_dev == other_dp->bridge_dev))
++		    dsa_port_bridge_same(dp, other_dp))
+ 			pvlan |= BIT(other_dp->index);
+ 
+ 	return pvlan;
+@@ -1659,19 +1661,21 @@ static int mv88e6xxx_port_check_hw_vlan(struct dsa_switch *ds, int port,
+ 		return 0;
+ 
+ 	dsa_switch_for_each_user_port(other_dp, ds) {
++		struct net_device *other_br;
++
+ 		if (vlan.member[other_dp->index] ==
+ 		    MV88E6XXX_G1_VTU_DATA_MEMBER_TAG_NON_MEMBER)
+ 			continue;
+ 
+-		if (dp->bridge_dev == other_dp->bridge_dev)
++		if (dsa_port_bridge_same(dp, other_dp))
+ 			break; /* same bridge, check next VLAN */
+ 
+-		if (!other_dp->bridge_dev)
++		other_br = dsa_port_bridge_dev_get(other_dp);
++		if (!other_br)
+ 			continue;
+ 
+ 		dev_err(ds->dev, "p%d: hw VLAN %d already used by port %d in %s\n",
+-			port, vlan.vid, other_dp->index,
+-			netdev_name(other_dp->bridge_dev));
++			port, vlan.vid, other_dp->index, netdev_name(other_br));
+ 		return -EOPNOTSUPP;
+ 	}
+ 
+@@ -1681,13 +1685,14 @@ static int mv88e6xxx_port_check_hw_vlan(struct dsa_switch *ds, int port,
+ static int mv88e6xxx_port_commit_pvid(struct mv88e6xxx_chip *chip, int port)
+ {
+ 	struct dsa_port *dp = dsa_to_port(chip->ds, port);
++	struct net_device *br = dsa_port_bridge_dev_get(dp);
+ 	struct mv88e6xxx_port *p = &chip->ports[port];
+ 	u16 pvid = MV88E6XXX_VID_STANDALONE;
+ 	bool drop_untagged = false;
+ 	int err;
+ 
+-	if (dp->bridge_dev) {
+-		if (br_vlan_enabled(dp->bridge_dev)) {
++	if (br) {
++		if (br_vlan_enabled(br)) {
+ 			pvid = p->bridge_pvid.vid;
+ 			drop_untagged = !p->bridge_pvid.valid;
+ 		} else {
+@@ -2413,7 +2418,7 @@ static int mv88e6xxx_bridge_map(struct mv88e6xxx_chip *chip,
+ 	int err;
+ 
+ 	list_for_each_entry(dp, &dst->ports, list) {
+-		if (dp->bridge_dev == br) {
++		if (dsa_port_bridge_dev_get(dp) == br) {
+ 			if (dp->ds == ds) {
+ 				/* This is a local bridge group member,
+ 				 * remap its Port VLAN Map.
+diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
+index 96a7fbf8700c..7053a3510d71 100644
+--- a/drivers/net/dsa/qca8k.c
++++ b/drivers/net/dsa/qca8k.c
+@@ -1823,7 +1823,7 @@ qca8k_port_bridge_join(struct dsa_switch *ds, int port, struct net_device *br)
+ 	for (i = 0; i < QCA8K_NUM_PORTS; i++) {
+ 		if (dsa_is_cpu_port(ds, i))
+ 			continue;
+-		if (dsa_to_port(ds, i)->bridge_dev != br)
++		if (dsa_port_bridge_dev_get(dsa_to_port(ds, i)) != br)
+ 			continue;
+ 		/* Add this port to the portvlan mask of the other ports
+ 		 * in the bridge
+@@ -1855,7 +1855,7 @@ qca8k_port_bridge_leave(struct dsa_switch *ds, int port, struct net_device *br)
+ 	for (i = 0; i < QCA8K_NUM_PORTS; i++) {
+ 		if (dsa_is_cpu_port(ds, i))
+ 			continue;
+-		if (dsa_to_port(ds, i)->bridge_dev != br)
++		if (dsa_port_bridge_dev_get(dsa_to_port(ds, i)) != br)
+ 			continue;
+ 		/* Remove this port to the portvlan mask of the other ports
+ 		 * in the bridge
+diff --git a/drivers/net/dsa/rtl8366rb.c b/drivers/net/dsa/rtl8366rb.c
+index 03deacd83e61..b6f277a04989 100644
+--- a/drivers/net/dsa/rtl8366rb.c
++++ b/drivers/net/dsa/rtl8366rb.c
+@@ -1198,7 +1198,7 @@ rtl8366rb_port_bridge_join(struct dsa_switch *ds, int port,
+ 		if (i == port)
+ 			continue;
+ 		/* Not on this bridge */
+-		if (dsa_to_port(ds, i)->bridge_dev != bridge)
++		if (dsa_port_bridge_dev_get(dsa_to_port(ds, i)) != bridge)
+ 			continue;
+ 		/* Join this port to each other port on the bridge */
+ 		ret = regmap_update_bits(smi->map, RTL8366RB_PORT_ISO(i),
+@@ -1230,7 +1230,7 @@ rtl8366rb_port_bridge_leave(struct dsa_switch *ds, int port,
+ 		if (i == port)
+ 			continue;
+ 		/* Not on this bridge */
+-		if (dsa_to_port(ds, i)->bridge_dev != bridge)
++		if (dsa_port_bridge_dev_get(dsa_to_port(ds, i)) != bridge)
+ 			continue;
+ 		/* Remove this port from any other port on the bridge */
+ 		ret = regmap_update_bits(smi->map, RTL8366RB_PORT_ISO(i),
+diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
+index 355b56cf94d8..5e03eda4c16f 100644
+--- a/drivers/net/dsa/sja1105/sja1105_main.c
++++ b/drivers/net/dsa/sja1105/sja1105_main.c
+@@ -118,13 +118,14 @@ static int sja1105_pvid_apply(struct sja1105_private *priv, int port, u16 pvid)
+ static int sja1105_commit_pvid(struct dsa_switch *ds, int port)
+ {
+ 	struct dsa_port *dp = dsa_to_port(ds, port);
++	struct net_device *br = dsa_port_bridge_dev_get(dp);
+ 	struct sja1105_private *priv = ds->priv;
+ 	struct sja1105_vlan_lookup_entry *vlan;
+ 	bool drop_untagged = false;
+ 	int match, rc;
+ 	u16 pvid;
+ 
+-	if (dp->bridge_dev && br_vlan_enabled(dp->bridge_dev))
++	if (br && br_vlan_enabled(br))
+ 		pvid = priv->bridge_pvid[port];
+ 	else
+ 		pvid = priv->tag_8021q_pvid[port];
+@@ -2004,7 +2005,7 @@ static int sja1105_bridge_member(struct dsa_switch *ds, int port,
+ 		 */
+ 		if (i == port)
+ 			continue;
+-		if (dsa_to_port(ds, i)->bridge_dev != br)
++		if (dsa_port_bridge_dev_get(dsa_to_port(ds, i)) != br)
+ 			continue;
+ 		sja1105_port_allow_traffic(l2_fwd, i, port, member);
+ 		sja1105_port_allow_traffic(l2_fwd, port, i, member);
+@@ -2587,8 +2588,9 @@ static int sja1105_prechangeupper(struct dsa_switch *ds, int port,
+ 
+ 	if (netif_is_bridge_master(upper)) {
+ 		list_for_each_entry(dp, &dst->ports, list) {
+-			if (dp->bridge_dev && dp->bridge_dev != upper &&
+-			    br_vlan_enabled(dp->bridge_dev)) {
++			struct net_device *br = dsa_port_bridge_dev_get(dp);
++
++			if (br && br != upper && br_vlan_enabled(br)) {
+ 				NL_SET_ERR_MSG_MOD(extack,
+ 						   "Only one VLAN-aware bridge is supported");
+ 				return -EBUSY;
+diff --git a/drivers/net/dsa/xrs700x/xrs700x.c b/drivers/net/dsa/xrs700x/xrs700x.c
+index 910fcb3b252b..7c2b6c32242d 100644
+--- a/drivers/net/dsa/xrs700x/xrs700x.c
++++ b/drivers/net/dsa/xrs700x/xrs700x.c
+@@ -513,14 +513,14 @@ static int xrs700x_bridge_common(struct dsa_switch *ds, int port,
+ 
+ 		cpu_mask |= BIT(i);
+ 
+-		if (dsa_to_port(ds, i)->bridge_dev == bridge)
++		if (dsa_port_bridge_dev_get(dsa_to_port(ds, i)) == bridge)
+ 			continue;
+ 
+ 		mask |= BIT(i);
+ 	}
+ 
+ 	for (i = 0; i < ds->num_ports; i++) {
+-		if (dsa_to_port(ds, i)->bridge_dev != bridge)
++		if (dsa_port_bridge_dev_get(dsa_to_port(ds, i)) != bridge)
+ 			continue;
+ 
+ 		/* 1 = Disable forwarding to the port */
 -- 
 2.25.1
 
