@@ -2,128 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C2C62469D12
-	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 16:24:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 52C5B469D14
+	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 16:24:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356966AbhLFP2E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Dec 2021 10:28:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56998 "EHLO
+        id S245276AbhLFP2F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Dec 2021 10:28:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345674AbhLFPWY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 10:22:24 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24909C08EA47;
-        Mon,  6 Dec 2021 07:14:49 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id 265421F4488A
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=collabora.com; s=mail;
-        t=1638803687; bh=0wYI5HLADYAd4xSANRFLZ/t5SGL4HjQoUDDbtVZMntw=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=F3i+qP58ek+QIKjw1gTAd6rIjXU196UrMqKi+DJqxtwKT9teAAAKYDKlz5oFjx46y
-         FPqYUOo3CrAC3nuDPAyR2f16fDPcNAwAenlgSg0xB58532r5z07c3PBmgezyJ6ti6L
-         KebBY0RT6kj0OndKhn9btJ7CLlBQznplhoMfPx+oIn44P4Yp4uw0SnnewMaBvZ7IeD
-         KxkWDS4nJRLje/JEm0LgJyq17nuMAIFq11UWBpXnIAKA8FrW2f2CGgYXRyyVob+1Mx
-         FVg68HlMTJE1lQAItxtheu4WVmAArwN9qGVH7ibsCT2t5b0jghIuqZzlmT9nYhBXVH
-         FiDZ12bt+YGDw==
-Subject: Re: [PATCH v4 1/7] net-next: stmmac: dwmac-mediatek: add platform
- level clocks management
-To:     Biao Huang <biao.huang@mediatek.com>, davem@davemloft.net,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        srv_heupstream@mediatek.com, macpaul.lin@mediatek.com,
-        dkirjanov@suse.de
-References: <20211203063418.14892-1-biao.huang@mediatek.com>
- <20211203063418.14892-2-biao.huang@mediatek.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Message-ID: <9dc0cbc3-8de0-f1ed-cfc9-852b7e69ab3c@collabora.com>
-Date:   Mon, 6 Dec 2021 16:14:44 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        with ESMTP id S1376892AbhLFPX6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 10:23:58 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7D0BC08EB22
+        for <netdev@vger.kernel.org>; Mon,  6 Dec 2021 07:15:22 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B3485B81129
+        for <netdev@vger.kernel.org>; Mon,  6 Dec 2021 15:15:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 523CAC341C6;
+        Mon,  6 Dec 2021 15:15:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1638803720;
+        bh=BCtDFMcbFix1CA+CofnYaFWZXb9HT6RbKhP4wAC5iLs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=pUT5yUBDBENKvOCQ/uVfhJK+PUjQJvXJZdjIs1stvZ/jRtwq/a8WfogmY8/HnZ8Ye
+         B1QKUwbwbLn+O99cpOCo87AE/EcZ0X4vlnyLorXEwwXiyezsNufhHBjHuUEtxIdOjt
+         UhFqEykywhEWvdKojiDyhhYbF2XhbZYpIfFMZMLWvZ80wcqA0/ypKxqkoBwUIIkFbI
+         9v0lY2tRYLW0FBjQDGSFXquUo86ISUYBvuCipaf1tVpEXZACO9/e6GHhE/8jj3J3v6
+         bFFy8AKlhHJEk/mbRKKzCIx8aa862Dw+t2HKBURsOU8KfcrxWj0wobqJtflXNXO4nA
+         ft9xz2gnf+hnQ==
+Date:   Mon, 6 Dec 2021 07:15:20 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Julian Wiedmann <jwi@linux.ibm.com>
+Cc:     Antoine Tenart <atenart@kernel.org>, davem@davemloft.net,
+        alexander.duyck@gmail.com, mkubecek@suse.cz, netdev@vger.kernel.org
+Subject: Re: [PATCH net] ethtool: do not perform operations on net devices
+ being unregistered
+Message-ID: <20211206071520.1fe7e18b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <07f2df6c-d7e5-9781-dae4-b0c2411c946c@linux.ibm.com>
+References: <20211203101318.435618-1-atenart@kernel.org>
+        <07f2df6c-d7e5-9781-dae4-b0c2411c946c@linux.ibm.com>
 MIME-Version: 1.0
-In-Reply-To: <20211203063418.14892-2-biao.huang@mediatek.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Il 03/12/21 07:34, Biao Huang ha scritto:
-> This patch implements clks_config callback for dwmac-mediatek platform,
-> which could support platform level clocks management.
+On Mon, 6 Dec 2021 11:46:35 +0200 Julian Wiedmann wrote:
+> On 03.12.21 12:13, Antoine Tenart wrote:
+> > There is a short period between a net device starts to be unregistered
+> > and when it is actually gone. In that time frame ethtool operations
+> > could still be performed, which might end up in unwanted or undefined
+> > behaviours[1].
+> > 
+> > Do not allow ethtool operations after a net device starts its
+> > unregistration. This patch targets the netlink part as the ioctl one
+> > isn't affected: the reference to the net device is taken and the
+> > operation is executed within an rtnl lock section and the net device
+> > won't be found after unregister.
+> > [...]
+> > +++ b/net/ethtool/netlink.c
+> > @@ -40,7 +40,8 @@ int ethnl_ops_begin(struct net_device *dev)
+> >  	if (dev->dev.parent)
+> >  		pm_runtime_get_sync(dev->dev.parent);
+> >  
+> > -	if (!netif_device_present(dev)) {
+> > +	if (!netif_device_present(dev) ||
+> > +	    dev->reg_state == NETREG_UNREGISTERING) {
+> >  		ret = -ENODEV;
+> >  		goto err;
+> >  	}
+> >   
 > 
-> Signed-off-by: Biao Huang <biao.huang@mediatek.com>
-> ---
->   .../ethernet/stmicro/stmmac/dwmac-mediatek.c  | 24 ++++++++++++++-----
->   1 file changed, 18 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
-> index 58c0feaa8131..157ff655c85e 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
-> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
-> @@ -359,9 +359,6 @@ static int mediatek_dwmac_init(struct platform_device *pdev, void *priv)
->   		return ret;
->   	}
->   
-> -	pm_runtime_enable(&pdev->dev);
-> -	pm_runtime_get_sync(&pdev->dev);
-> -
->   	return 0;
->   }
->   
-> @@ -370,11 +367,25 @@ static void mediatek_dwmac_exit(struct platform_device *pdev, void *priv)
->   	struct mediatek_dwmac_plat_data *plat = priv;
->   
->   	clk_bulk_disable_unprepare(plat->num_clks_to_config, plat->clks);
-> -
-> -	pm_runtime_put_sync(&pdev->dev);
-> -	pm_runtime_disable(&pdev->dev);
->   }
->   
-> +static int mediatek_dwmac_clks_config(void *priv, bool enabled)
-> +{
-> +	struct mediatek_dwmac_plat_data *plat = priv;
-> +	int ret = 0;
-> +
-> +	if (enabled) {
-> +		ret = clk_bulk_prepare_enable(plat->num_clks_to_config, plat->clks);
-> +		if (ret) {
-> +			dev_err(plat->dev, "failed to enable clks, err = %d\n", ret);
-> +			return ret;
-> +		}
-> +	} else {
-> +		clk_bulk_disable_unprepare(plat->num_clks_to_config, plat->clks);
-> +	}
-> +
-> +	return ret;
-> +}
->   static int mediatek_dwmac_probe(struct platform_device *pdev)
->   {
->   	struct mediatek_dwmac_plat_data *priv_plat;
-> @@ -420,6 +431,7 @@ static int mediatek_dwmac_probe(struct platform_device *pdev)
->   	plat_dat->bsp_priv = priv_plat;
->   	plat_dat->init = mediatek_dwmac_init;
->   	plat_dat->exit = mediatek_dwmac_exit;
-> +	plat_dat->clks_config = mediatek_dwmac_clks_config;
->   	mediatek_dwmac_init(pdev, priv_plat);
->   
->   	ret = stmmac_dvr_probe(&pdev->dev, plat_dat, &stmmac_res);
-> 
+> Wondering if other places would also benefit from a netif_device_detach()
+> in the unregistration sequence ...
 
-Hello Biao,
-
-you're removing all calls to pm_runtime_* functions, so there is no more reason
-to include linux/pm_runtime.h in this file: please also remove the inclusion.
-
-Thanks!
+Sounds like a good idea but maybe as a follow up to net-next? 
+The likelihood of that breaking things is low, but non-zero.
