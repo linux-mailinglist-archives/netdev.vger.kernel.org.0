@@ -2,149 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 386E9469B7D
-	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 16:14:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C2C62469D12
+	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 16:24:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347146AbhLFPRk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Dec 2021 10:17:40 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:55863 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1347364AbhLFPOp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 10:14:45 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1638803471;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=I8YVfdsVmuWFyLTwXYbNGyLU3lEs0YzOVf+e12QlznI=;
-        b=Yg87Z3uCBWG42kdyedP07glpxn69W3QxdH47aHmQFQg4O1yERVxjFxsxthJYZxjue3Y4yE
-        xzbZlfxDV6Rniza4itRAc8wnYFSwdEsQjOVnxR/77jVeIwPj4H64NU0o9//aqA2ASI7L+P
-        lob3ry0Zirv0mEKfW+6+BJ7Km8vNlCo=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-122-LdTKNJNpMVaCeZD4WsAxMA-1; Mon, 06 Dec 2021 10:11:10 -0500
-X-MC-Unique: LdTKNJNpMVaCeZD4WsAxMA-1
-Received: by mail-wm1-f70.google.com with SMTP id m14-20020a05600c3b0e00b0033308dcc933so34075wms.7
-        for <netdev@vger.kernel.org>; Mon, 06 Dec 2021 07:11:09 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=I8YVfdsVmuWFyLTwXYbNGyLU3lEs0YzOVf+e12QlznI=;
-        b=BFSkponYWDvJ+UX3ns+dO+WuI+nZAIQBIXFUOU4W23LkIshGW3e2lxzN26Sx6X491f
-         65+9GtrjT6mPAECH2CDq6qRnnxDsTd5N8n2rTbqYiLtSmcIAQoFPWGIC+zcB85RloWeB
-         nZSlUTnZUD5v6l1jrD9rmb3BT0OdgUxlM02Ez/UZCd2e1eAYWN6vB7synLY4n2r/pLeN
-         xLeryARu21tFaP2uOmdosrKfSF0gdeICkcE7o3Q6ADngyH7pnkfYq6vw+TvB9aYmcON5
-         ZOyhQ27Rze1hv7Uyj0DsvuG4iN0YD1HwPDcmDQIaSZQSZ3HsP/ZO+IN3iPeXN7JoM2FH
-         Cyww==
-X-Gm-Message-State: AOAM532rEztwlqFlIF8pDLO76aiEOWZpsr5Nyr410OXrgyKco6NA624R
-        90jwOOX29TD9lG6FYuSfjS2kfZsg3xcaypfgh8Tjy8IA/Tc3GKGONEqkv4CR+SO40lH6NR3DQZh
-        ZARTI3puHIEeLV/G/
-X-Received: by 2002:a5d:4b06:: with SMTP id v6mr43958079wrq.194.1638803468850;
-        Mon, 06 Dec 2021 07:11:08 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxHmPtlb6i24RSULyO8F8snPKQnyrJ8mLFAu6nVynyOYjz4anUxoe3aA4azwqGWtWAr2wuDxA==
-X-Received: by 2002:a5d:4b06:: with SMTP id v6mr43958045wrq.194.1638803468689;
-        Mon, 06 Dec 2021 07:11:08 -0800 (PST)
-Received: from localhost (net-37-182-17-175.cust.vodafonedsl.it. [37.182.17.175])
-        by smtp.gmail.com with ESMTPSA id t11sm11906945wrz.97.2021.12.06.07.11.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Dec 2021 07:11:08 -0800 (PST)
-Date:   Mon, 6 Dec 2021 16:11:06 +0100
-From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, shayagr@amazon.com,
-        dsahern@kernel.org, brouer@redhat.com, echaudro@redhat.com,
-        jasowang@redhat.com, alexander.duyck@gmail.com, saeed@kernel.org,
-        maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
-        tirthendu.sarkar@intel.com, toke@redhat.com
-Subject: Re: [PATCH v19 bpf-next 03/23] net: mvneta: update mb bit before
- passing the xdp buffer to eBPF layer
-Message-ID: <Ya4oCkbOjBHFOHyS@lore-desk>
-References: <cover.1638272238.git.lorenzo@kernel.org>
- <95151f4b8a25ce38243e82f0a82104d0f46fb33a.1638272238.git.lorenzo@kernel.org>
- <61ad7e4cbc69d_444e20888@john.notmuch>
+        id S1356966AbhLFP2E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Dec 2021 10:28:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56998 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345674AbhLFPWY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 10:22:24 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24909C08EA47;
+        Mon,  6 Dec 2021 07:14:49 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 265421F4488A
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=collabora.com; s=mail;
+        t=1638803687; bh=0wYI5HLADYAd4xSANRFLZ/t5SGL4HjQoUDDbtVZMntw=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=F3i+qP58ek+QIKjw1gTAd6rIjXU196UrMqKi+DJqxtwKT9teAAAKYDKlz5oFjx46y
+         FPqYUOo3CrAC3nuDPAyR2f16fDPcNAwAenlgSg0xB58532r5z07c3PBmgezyJ6ti6L
+         KebBY0RT6kj0OndKhn9btJ7CLlBQznplhoMfPx+oIn44P4Yp4uw0SnnewMaBvZ7IeD
+         KxkWDS4nJRLje/JEm0LgJyq17nuMAIFq11UWBpXnIAKA8FrW2f2CGgYXRyyVob+1Mx
+         FVg68HlMTJE1lQAItxtheu4WVmAArwN9qGVH7ibsCT2t5b0jghIuqZzlmT9nYhBXVH
+         FiDZ12bt+YGDw==
+Subject: Re: [PATCH v4 1/7] net-next: stmmac: dwmac-mediatek: add platform
+ level clocks management
+To:     Biao Huang <biao.huang@mediatek.com>, davem@davemloft.net,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        srv_heupstream@mediatek.com, macpaul.lin@mediatek.com,
+        dkirjanov@suse.de
+References: <20211203063418.14892-1-biao.huang@mediatek.com>
+ <20211203063418.14892-2-biao.huang@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Message-ID: <9dc0cbc3-8de0-f1ed-cfc9-852b7e69ab3c@collabora.com>
+Date:   Mon, 6 Dec 2021 16:14:44 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="S7WehjOHIu6+ZNCa"
-Content-Disposition: inline
-In-Reply-To: <61ad7e4cbc69d_444e20888@john.notmuch>
+In-Reply-To: <20211203063418.14892-2-biao.huang@mediatek.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Il 03/12/21 07:34, Biao Huang ha scritto:
+> This patch implements clks_config callback for dwmac-mediatek platform,
+> which could support platform level clocks management.
+> 
+> Signed-off-by: Biao Huang <biao.huang@mediatek.com>
+> ---
+>   .../ethernet/stmicro/stmmac/dwmac-mediatek.c  | 24 ++++++++++++++-----
+>   1 file changed, 18 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
+> index 58c0feaa8131..157ff655c85e 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
+> @@ -359,9 +359,6 @@ static int mediatek_dwmac_init(struct platform_device *pdev, void *priv)
+>   		return ret;
+>   	}
+>   
+> -	pm_runtime_enable(&pdev->dev);
+> -	pm_runtime_get_sync(&pdev->dev);
+> -
+>   	return 0;
+>   }
+>   
+> @@ -370,11 +367,25 @@ static void mediatek_dwmac_exit(struct platform_device *pdev, void *priv)
+>   	struct mediatek_dwmac_plat_data *plat = priv;
+>   
+>   	clk_bulk_disable_unprepare(plat->num_clks_to_config, plat->clks);
+> -
+> -	pm_runtime_put_sync(&pdev->dev);
+> -	pm_runtime_disable(&pdev->dev);
+>   }
+>   
+> +static int mediatek_dwmac_clks_config(void *priv, bool enabled)
+> +{
+> +	struct mediatek_dwmac_plat_data *plat = priv;
+> +	int ret = 0;
+> +
+> +	if (enabled) {
+> +		ret = clk_bulk_prepare_enable(plat->num_clks_to_config, plat->clks);
+> +		if (ret) {
+> +			dev_err(plat->dev, "failed to enable clks, err = %d\n", ret);
+> +			return ret;
+> +		}
+> +	} else {
+> +		clk_bulk_disable_unprepare(plat->num_clks_to_config, plat->clks);
+> +	}
+> +
+> +	return ret;
+> +}
+>   static int mediatek_dwmac_probe(struct platform_device *pdev)
+>   {
+>   	struct mediatek_dwmac_plat_data *priv_plat;
+> @@ -420,6 +431,7 @@ static int mediatek_dwmac_probe(struct platform_device *pdev)
+>   	plat_dat->bsp_priv = priv_plat;
+>   	plat_dat->init = mediatek_dwmac_init;
+>   	plat_dat->exit = mediatek_dwmac_exit;
+> +	plat_dat->clks_config = mediatek_dwmac_clks_config;
+>   	mediatek_dwmac_init(pdev, priv_plat);
+>   
+>   	ret = stmmac_dvr_probe(&pdev->dev, plat_dat, &stmmac_res);
+> 
 
---S7WehjOHIu6+ZNCa
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Hello Biao,
 
-> Lorenzo Bianconi wrote:
-> > Update multi-buffer bit (mb) in xdp_buff to notify XDP/eBPF layer and
-> > XDP remote drivers if this is a "non-linear" XDP buffer. Access
-> > skb_shared_info only if xdp_buff mb is set in order to avoid possible
-> > cache-misses.
-> >=20
-> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
->=20
-> [...]
->=20
-> > @@ -2320,8 +2325,12 @@ mvneta_swbm_build_skb(struct mvneta_port *pp, st=
-ruct page_pool *pool,
-> >  		      struct xdp_buff *xdp, u32 desc_status)
-> >  {
-> >  	struct skb_shared_info *sinfo =3D xdp_get_shared_info_from_buff(xdp);
-> > -	int i, num_frags =3D sinfo->nr_frags;
-> >  	struct sk_buff *skb;
-> > +	u8 num_frags;
-> > +	int i;
-> > +
-> > +	if (unlikely(xdp_buff_is_mb(xdp)))
-> > +		num_frags =3D sinfo->nr_frags;
->=20
-> Doesn't really need a respin IMO, but rather an observation. Its not
-> obvious to me the unlikely/likely pair here is wanted. Seems it could
-> be relatively common for some applications sending jumbo frames.
->=20
-> Maybe worth some experimenting in the future.
+you're removing all calls to pm_runtime_* functions, so there is no more reason
+to include linux/pm_runtime.h in this file: please also remove the inclusion.
 
-Probably for mvneta it will not make any difference but in general I tried =
-to
-avoid possible cache-misses here (accessing sinfo pointers). I will carry o=
-ut
-some comparison to see if I can simplify the code.
-
-Regards,
-Lorenzo
-
->=20
-> > =20
-> >  	skb =3D build_skb(xdp->data_hard_start, PAGE_SIZE);
-> >  	if (!skb)
-> > @@ -2333,6 +2342,9 @@ mvneta_swbm_build_skb(struct mvneta_port *pp, str=
-uct page_pool *pool,
-> >  	skb_put(skb, xdp->data_end - xdp->data);
-> >  	skb->ip_summed =3D mvneta_rx_csum(pp, desc_status);
-> > =20
-> > +	if (likely(!xdp_buff_is_mb(xdp)))
-> > +		goto out;
-> > +
-> >  	for (i =3D 0; i < num_frags; i++) {
-> >  		skb_frag_t *frag =3D &sinfo->frags[i];
->=20
-
---S7WehjOHIu6+ZNCa
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYa4oCgAKCRA6cBh0uS2t
-rLqjAP9t3XmU/u/EawcvBisua/InTVuCECfa4euaDMInORkC9AEAh5gKETMpz8xF
-6x5+vxGNkdNsvJdJ0Zk3mr8KCcCOtQg=
-=Fm4y
------END PGP SIGNATURE-----
-
---S7WehjOHIu6+ZNCa--
-
+Thanks!
