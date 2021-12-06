@@ -2,149 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D0C504692E6
-	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 10:46:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 19281469338
+	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 11:13:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241407AbhLFJuP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Dec 2021 04:50:15 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:6814 "EHLO
-        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S241402AbhLFJuP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 04:50:15 -0500
-Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1B66lcLZ015338;
-        Mon, 6 Dec 2021 09:46:41 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=pEwvVsZEI5PP7nuXqgg30DhtejGlwW6V5MdC3Sk87+w=;
- b=DW2eWuIAQ74UIJOsdJOanNCgOiLMgJD+UgX4HE3f+hX7lnZWD317FrAr02sEPelZxn0o
- yDaLFbiGI+/IAmftELVms+a8uxnzc3ucfvA01riIro91OPDqxkpUMZtQ8lOj1nBFtop6
- zP7G9SsfyKjFnPgoCRvSxwz6t0kQ+Xgkpx2yklkWwWbzhq5mdYUytRePglMfx6xR3nf2
- oiC09w1tsM6gJ9tutm8//qrAJy5WBFYabpayn6bVSrJGbP5GRLW7lUT5QKlB4faJiwSJ
- hN6Bwy1uu1vrVsJDcu1dM7X6dStlu34O/fkN6Gcq7uTzWBKMBUknYQSkD3n+AI/YqDTp DQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3csdjdb348-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 06 Dec 2021 09:46:41 +0000
-Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 1B69kf1Q031792;
-        Mon, 6 Dec 2021 09:46:41 GMT
-Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3csdjdb33p-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 06 Dec 2021 09:46:41 +0000
-Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
-        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 1B69gdVV028507;
-        Mon, 6 Dec 2021 09:46:39 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma02fra.de.ibm.com with ESMTP id 3cqyy924vd-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 06 Dec 2021 09:46:39 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 1B69ka9a14680360
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 6 Dec 2021 09:46:37 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id D29A54C05A;
-        Mon,  6 Dec 2021 09:46:36 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 4BBB64C052;
-        Mon,  6 Dec 2021 09:46:36 +0000 (GMT)
-Received: from [9.171.70.142] (unknown [9.171.70.142])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon,  6 Dec 2021 09:46:36 +0000 (GMT)
-Message-ID: <07f2df6c-d7e5-9781-dae4-b0c2411c946c@linux.ibm.com>
-Date:   Mon, 6 Dec 2021 11:46:35 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH net] ethtool: do not perform operations on net devices
- being unregistered
-Content-Language: en-US
-To:     Antoine Tenart <atenart@kernel.org>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     alexander.duyck@gmail.com, mkubecek@suse.cz, netdev@vger.kernel.org
-References: <20211203101318.435618-1-atenart@kernel.org>
-From:   Julian Wiedmann <jwi@linux.ibm.com>
-In-Reply-To: <20211203101318.435618-1-atenart@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: on-rwg8D9kteUMdBcsl2hyml_idkVtu6
-X-Proofpoint-GUID: 2Hdhpaby81_nIWIcrclm6p9-uMXyvNlD
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        id S233044AbhLFKRY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Dec 2021 05:17:24 -0500
+Received: from mail-zr0che01on2133.outbound.protection.outlook.com ([40.107.24.133]:8033
+        "EHLO CHE01-ZR0-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229712AbhLFKRX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 6 Dec 2021 05:17:23 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=e8ea6gNE64/Ir7iv8XjaXu3PvQH0mu1GmHMJGKKn9Viu1TDSGKeSZ+SrpxGl6PzImPFP+DzafqnATV9BIRq0tHVBDVmADJujxVawnFEwM264rKbG44c1C6qmYejL9C5k53UelpBpyvkv9VLqhJhFOAPu7ntwKepFxukQXytA+ZoLD5gSEcosSohQCl8u98NRewhEtHfkG+pXbwLUQakxemmwiCHg739eIXewU+xoMudNtVSkfZ4KE3ga/dKe7c1f8Xi/s+L1xX9GeTb59L7fkzD/hVl0f3MX+XZbCgnm9xdYMrK855qaCbyD23eg0uYob6m4m6egt1skH9t01ix2qg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=B8s4gAHONKxMoldr5/NAPbR/ozmxdC6buEjMMXauXhM=;
+ b=nIdbBnlouWPcoajbQB8/4CHrhLqCWjc65MAb3Onob9gT9zYJxjeTAe0gb9NNBskZmZsJj2adOIoJYLtJdGs5tLlXJfWKDtD+grnoVa3LCaab6rqryR5hFs93vAxtTr+XSLqsOS8jjChWlhtoICkIaZkJze3jvucYCVIY65WCp0vqxXlk70vr+BwIQzz5No3eiHkg+HnCY+M/liOq6p20oPHtmP4t4kUX9VDxPY3iyzK8dRil2t3hEBYVe1mz4RTbgKdeGLvhmu8ekwhFaLSIzLDMHfEwn4DED8lq0l9vJyghtX4UBPB6iGAGuPeBa4ac5kDWPwne3sRsfQ9MVUqTZw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=toradex.com; dmarc=pass action=none header.from=toradex.com;
+ dkim=pass header.d=toradex.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=toradex.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=B8s4gAHONKxMoldr5/NAPbR/ozmxdC6buEjMMXauXhM=;
+ b=Ka5NjiTeCbl+u5vPbF7s0RE0bEXrSMYIPkBy0Hkt/qP47Q754r1GBO48fBnuwiIrKMHeSp5F/pyKzETZ8KicCD6fj2nRpSvvnQ2pMSxdyuJoCSRkPkW4EMAuZWJHRdmdgKzQT9RADZC0dgWRRVvK2jwlI/pWUb/IAWcl/hvZv8s=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=toradex.com;
+Received: from ZR0P278MB0377.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:34::14)
+ by ZRAP278MB0206.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:2e::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.16; Mon, 6 Dec
+ 2021 10:13:52 +0000
+Received: from ZR0P278MB0377.CHEP278.PROD.OUTLOOK.COM
+ ([fe80::e5c4:5c29:1958:fbea]) by ZR0P278MB0377.CHEP278.PROD.OUTLOOK.COM
+ ([fe80::e5c4:5c29:1958:fbea%9]) with mapi id 15.20.4755.022; Mon, 6 Dec 2021
+ 10:13:52 +0000
+From:   Philippe Schenker <philippe.schenker@toradex.com>
+To:     netdev@vger.kernel.org, Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        Fugang Duan <fugang.duan@nxp.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Russell King <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>
+Cc:     Philippe Schenker <philippe.schenker@toradex.com>,
+        linux-kernel@vger.kernel.org
+Subject: [RFC PATCH 0/2] Reset PHY in fec_resume if it got powered down
+Date:   Mon,  6 Dec 2021 11:13:24 +0100
+Message-Id: <20211206101326.1022527-1-philippe.schenker@toradex.com>
+X-Mailer: git-send-email 2.34.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: ZR0P278CA0183.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:910:44::13) To ZR0P278MB0377.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:910:34::14)
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2021-12-06_03,2021-12-06_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 lowpriorityscore=0
- malwarescore=0 clxscore=1011 phishscore=0 bulkscore=0 spamscore=0
- priorityscore=1501 suspectscore=0 impostorscore=0 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2110150000 definitions=main-2112060056
+Received: from philippe-pc.toradex.int (31.10.206.124) by ZR0P278CA0183.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:44::13) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.17 via Frontend Transport; Mon, 6 Dec 2021 10:13:52 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 45e87c8f-7fdd-42e6-19a4-08d9b8a11a78
+X-MS-TrafficTypeDiagnostic: ZRAP278MB0206:EE_
+X-Microsoft-Antispam-PRVS: <ZRAP278MB0206A533B0EA41FF5E0A044FF46D9@ZRAP278MB0206.CHEP278.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: UjHniDJP1WMQzlQXkXUuBXAfdkUohJ4LyEmJ3Pphj6Pg8qSzpYtj903XzxaKU/BdANUx9VkMQzkaAV3QHeSrCwc6DcHrk4c3FtHhsON2/VsrB+4A3T7nUsxBcPletI+dDLvObxxSH0zVjR60JOeHQN//ZhcdcsLraMgs+kgmQSdSwhszWUWR3Bx/g6Y2/6yMhn0zIoUuXv57ghgYKjTEFWwRCJoXZYw4kXPpYrmfmzZhTSu1B71rgqUjxjyBcs7ONf2ftPucPXdarB2mWwrzMMxHI/sXpfSn3vFEYhcmVjrg5J9VtGYKy3s+uii3Nctwu87xzPlPyaUPaI0EbgJTnKOoqYy9+IIaI8CZY/e/Iwv+KhPk1yk7bw0P8ORNBhw7v3l6xbZdG0KU46me3fSYIGuY1yCwszvz9/BE1kUix25C+LOEgUppOusjbVdwMQ+QqQOqxNeH7MvzaMrD/LuRQ93HqTQ1ltVW2iJR/gUQbQHCVoNYQKneGdW9opqLjbi+d1cWgUz6IDJO4GNqVz8tVjsCj6ogwVvKDaCVZSS9MAog5XaZ8DnILcyOtcAZxhRXIfJx/XRc1Wm/iww5wePzNUJlLApDXDZc6W38y7tkFYs0xeCWrKC/f/PyGq/4o82Sl7k5sALxEGCr7tW6zq58chJpbLPLQYPeaznrQyTryWeyqn4q4gRLj+tyehTYrN/QGs+My9z5S28+bunpCDwQhORtXCy3LFHPJHQWj7rzVX1jC3H8MYYmIeSRBj/3FIfxjRlvtI13vv5w1GFv0UQDeVoeMe8AIAfyOSKCMOekC2N0QWrCU7fD+AAF+49XYJxV
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:ZR0P278MB0377.CHEP278.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(4636009)(39850400004)(376002)(366004)(396003)(346002)(136003)(83380400001)(2616005)(66946007)(1076003)(86362001)(36756003)(2906002)(26005)(966005)(44832011)(956004)(6666004)(6512007)(66476007)(66556008)(4326008)(8676002)(6486002)(110136005)(508600001)(316002)(186003)(6506007)(5660300002)(38100700002)(8936002)(52116002)(38350700002)(16060500005);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?zEBc2wzvK5mJHa6gMmwqxpzYoQtRVl2wKDqOLBIuepsBkHYOFj5qoIniTcmX?=
+ =?us-ascii?Q?HyJWax2DKKtbxdrz565n660gDiV6ts4Fg4LFMGkufOlvYLW7jNLA/rg+QyNy?=
+ =?us-ascii?Q?pAuxSYqlKKCW98I2vcngkK2zQkHQ1uNuiU+iklj6wnvoOZvAoy72TBzaOtEy?=
+ =?us-ascii?Q?NyzqM9X813S6+G+DEUee6DP4AkWLIJRkTU/ak3Wj0oBGjjeY6jY+RgAi1eNP?=
+ =?us-ascii?Q?uDr3S+xIAfGoCjzRr1p8MPHnjsW6gu8bzB5R59fzfNcw4j4Ut8Xk+ATe7GS1?=
+ =?us-ascii?Q?j4Bp3H+0+pwj0s/6dqdLnEbrfJWvF16l84a45dFNjiki4FlqxfjOsZkyYroO?=
+ =?us-ascii?Q?ywsMXKDiG4MCm3BchoBMNzcwuTPgJiE2Bwn6G8y3qDG+HAr8LRtuMBrZVt9Y?=
+ =?us-ascii?Q?fwYjNLIXF2CLqaQz9jTEC09J+8PcZx1Zmzyql3TsaT0NceWO32ZvlxAGz5Ct?=
+ =?us-ascii?Q?hyjAHFTkmiQofcHtJhPUBQ/55+nIXC9M0KBoVfj9wjQjxS0y/ux52vUXTY10?=
+ =?us-ascii?Q?c8zvmiwDx5vJ0aYBemdLoJjRLtHKNDSBx93q/GXCkZawXyV3QYdBVkZcVQJW?=
+ =?us-ascii?Q?zCi5Rrfimr2aqkyCG6pfSo5QQjw34ArgqBUHb3vgq6eGykn3Pg+i64Y346OF?=
+ =?us-ascii?Q?yoEhSb1oxphCh9EyQ7q92Lh3gwbdpBsMZjVK0L5PmN+2g/HbHu+HKnr3S/sQ?=
+ =?us-ascii?Q?vi/SUF6tkb+ZZWb+sOpTdgSr3hZuBW3DYevQSktvgRgP/UbO0YnWVZTHjXSO?=
+ =?us-ascii?Q?GLyjlWBsAga7lofaaPHGNl6EEt0jQHilMtGLwKX+IDkkMZRoWg67x6M7tDtV?=
+ =?us-ascii?Q?wMUX431zOGyu5Ur7weHWu3aymMlYbyn9RzO2jmJQV/HsdnoMpUIkITEYHuQS?=
+ =?us-ascii?Q?ChzYmK5Gyx4csQR+D8JRBQd4sbmrLEXW9ErGFnAbeefh2mK20biZemIbMqC0?=
+ =?us-ascii?Q?MVza9pUs5pUJrYsRoVguKli3UV+UqOWYy8I2jRhgV1sAu/vTJNUFPZnAOnO6?=
+ =?us-ascii?Q?j373/9apK9V+14mzXb9iAXk1IJDcNbhhutKAJyfTDgy9mQStjBvN/nXRJ3Be?=
+ =?us-ascii?Q?qv5jw3BOZfT7+a9hen6bQZQ6PmjUfLcaJOGLG7OoRImwcTUmFCmQ/3W4y+Vg?=
+ =?us-ascii?Q?Gyg0iG4kXNbtMxwrRhzEO0cHVM54+RTiU1J5cJnPC5k30RyllYQCTEwc8iLA?=
+ =?us-ascii?Q?+gzpd6Imu9lwNYNywfD0xY5dfhUzZRDONAt5T3w7uZKYp91y4KtMejJIYnE3?=
+ =?us-ascii?Q?OYBnPKxUu0Og+HfGA++MfQBQbySkLXVmjaSXkKU1H5suQnLvtMkyaYFJzyly?=
+ =?us-ascii?Q?bJGJR981/fGd7Tf0rIpDXfF6W/RX5ITAf5Lcul4cb2uerfDO17Qt/bLP32Dk?=
+ =?us-ascii?Q?txh0pkJv/iXKVkdhAi96GLRmHWrs/5qKmIXfJUrKr3JQl7hLa8KRRg4sYvtb?=
+ =?us-ascii?Q?23QN16jtWnjJbKLlrIbm+wrAcFtfX6/xFFUrTS/WD5K7man8dOT20hR9+VIe?=
+ =?us-ascii?Q?cmsR6ZIJHnqOzU45bT0V+C75uL6h6ExAst5YKNkag8WgBOB9zpbhAkWMyxvz?=
+ =?us-ascii?Q?tKdhPoO5ImCVcONZqMSQiIC3UKDlgpguimEyc6fKIymk1QanmM26QHytUMKy?=
+ =?us-ascii?Q?7uXLrVTiZCSu8CZpR0Qkxv3aEjNnwVlSRvzLdLjtZz2wfZQKjDFiItamMOOV?=
+ =?us-ascii?Q?cw8LLQ=3D=3D?=
+X-OriginatorOrg: toradex.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 45e87c8f-7fdd-42e6-19a4-08d9b8a11a78
+X-MS-Exchange-CrossTenant-AuthSource: ZR0P278MB0377.CHEP278.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Dec 2021 10:13:52.3885
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: d9995866-0d9b-4251-8315-093f062abab4
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: yl4o9RyV6ObP60tSZUJqV1HFHUk4lVCpvf8cOKLUQsylJ/aUlvRpNRRU0/or207lfKAUiEPTZ2xX85Dc0vqjLhN4pmxYMz0Pt68SuA/k7p0=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: ZRAP278MB0206
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 03.12.21 12:13, Antoine Tenart wrote:
-> There is a short period between a net device starts to be unregistered
-> and when it is actually gone. In that time frame ethtool operations
-> could still be performed, which might end up in unwanted or undefined
-> behaviours[1].
-> 
-> Do not allow ethtool operations after a net device starts its
-> unregistration. This patch targets the netlink part as the ioctl one
-> isn't affected: the reference to the net device is taken and the
-> operation is executed within an rtnl lock section and the net device
-> won't be found after unregister.
-> 
-> [1] For example adding Tx queues after unregister ends up in NULL
->     pointer exceptions and UaFs, such as:
-> 
->       BUG: KASAN: use-after-free in kobject_get+0x14/0x90
->       Read of size 1 at addr ffff88801961248c by task ethtool/755
-> 
->       CPU: 0 PID: 755 Comm: ethtool Not tainted 5.15.0-rc6+ #778
->       Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-4.fc34 04/014
->       Call Trace:
->        dump_stack_lvl+0x57/0x72
->        print_address_description.constprop.0+0x1f/0x140
->        kasan_report.cold+0x7f/0x11b
->        kobject_get+0x14/0x90
->        kobject_add_internal+0x3d1/0x450
->        kobject_init_and_add+0xba/0xf0
->        netdev_queue_update_kobjects+0xcf/0x200
->        netif_set_real_num_tx_queues+0xb4/0x310
->        veth_set_channels+0x1c3/0x550
->        ethnl_set_channels+0x524/0x610
-> 
-> Fixes: 041b1c5d4a53 ("ethtool: helper functions for netlink interface")
-> Suggested-by: Jakub Kicinski <kuba@kernel.org>
-> Signed-off-by: Antoine Tenart <atenart@kernel.org>
-> ---
-> 
-> Following the discussions in those threads:
-> - https://lore.kernel.org/all/20211129154520.295823-1-atenart@kernel.org/T/
-> - https://lore.kernel.org/all/20211122162007.303623-1-atenart@kernel.org/T/
-> 
->  net/ethtool/netlink.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/net/ethtool/netlink.c b/net/ethtool/netlink.c
-> index 38b44c0291b1..96f4180aabd2 100644
-> --- a/net/ethtool/netlink.c
-> +++ b/net/ethtool/netlink.c
-> @@ -40,7 +40,8 @@ int ethnl_ops_begin(struct net_device *dev)
->  	if (dev->dev.parent)
->  		pm_runtime_get_sync(dev->dev.parent);
->  
-> -	if (!netif_device_present(dev)) {
-> +	if (!netif_device_present(dev) ||
-> +	    dev->reg_state == NETREG_UNREGISTERING) {
->  		ret = -ENODEV;
->  		goto err;
->  	}
-> 
 
-Wondering if other places would also benefit from a netif_device_detach()
-in the unregistration sequence ...
+If a hardware-design is able to control power to the Ethernet PHY and
+relying on software to do a reset, the PHY does no longer work after
+resuming from suspend, given the PHY does need a hardware-reset.
+The Freescale fec driver does currently control the reset-signal of a
+phy but does not issue a reset on resume.
+
+On Toradex Apalis iMX8 board we do have such a design where we also
+don't place the RC circuit to delay the reset-line by hardware. Hence
+we fully rely on software to do so.
+Since I didn't manage to get the needed parts of Apalis iMX8 working
+with mainline this patchset was only tested on the downstream kernel
+toradex_5.4-2.3.x-imx. [1]
+This kernel is based on NXP's release imx_5.4.70_2.3.0. [2]
+The affected code is still the same on mainline kernel, which would
+actually make me comfortable merging this patch, but due to this fact
+I'm sending this as RFC maybe someone else is able to test this code.
+
+This patchset aims to change the behavior by resetting the ethernet PHY
+in fec_resume. A short description of the patches can be found below,
+please find a detailed description in the commit-messages of the
+respective patches.
+
+[PATCH 2/2] net: fec: reset phy in resume if it was powered down
+
+This patch calls fec_reset_phy just after regulator enable in
+fec_resume, when the phy is resumed
+
+[PATCH 1/2] net: fec: make fec_reset_phy not only usable once
+
+This patch prepares the function fec_reset_phy to be called multiple
+times. It stores the data around the reset-gpio in fec_enet_private.
+This patch aims to do no functional changes.
+
+[1] http://git.toradex.com/cgit/linux-toradex.git/log/?h=toradex_5.4-2.3.x-imx
+[2] https://source.codeaurora.org/external/imx/linux-imx/log/?h=imx_5.4.70_2.3.0
+
+
+Philippe Schenker (2):
+  net: fec: make fec_reset_phy not only usable once
+  net: fec: reset phy in resume if it was powered down
+
+ drivers/net/ethernet/freescale/fec.h      |  6 ++
+ drivers/net/ethernet/freescale/fec_main.c | 98 ++++++++++++++++-------
+ 2 files changed, 73 insertions(+), 31 deletions(-)
+
+-- 
+2.34.0
+
