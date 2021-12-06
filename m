@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA65C468F8C
-	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 04:10:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C71FF468FAE
+	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 04:18:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235672AbhLFDNq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Dec 2021 22:13:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32830 "EHLO
+        id S236118AbhLFDVm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Dec 2021 22:21:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235402AbhLFDNq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Dec 2021 22:13:46 -0500
-Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42A27C0613F8;
-        Sun,  5 Dec 2021 19:10:18 -0800 (PST)
-Received: by mail-il1-x135.google.com with SMTP id a11so8875431ilj.6;
-        Sun, 05 Dec 2021 19:10:18 -0800 (PST)
+        with ESMTP id S230110AbhLFDVl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Dec 2021 22:21:41 -0500
+Received: from mail-il1-x12c.google.com (mail-il1-x12c.google.com [IPv6:2607:f8b0:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1D60C0613F8;
+        Sun,  5 Dec 2021 19:18:13 -0800 (PST)
+Received: by mail-il1-x12c.google.com with SMTP id i9so8901159ilu.1;
+        Sun, 05 Dec 2021 19:18:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:message-id:in-reply-to:references:subject
          :mime-version:content-transfer-encoding;
-        bh=TNk6I9zLVo4gBztAVUSoSqQRaZNVXPRbm1cPrqzCNcE=;
-        b=gKS7Me2zyUxCEkLoxN6L2OTjrROWV7bgDsI31yFmdOCjHKxKUSXLCq6PzVsZg3PtL7
-         k6IR23E8GlptIQ1vx+TGeqWB9xfcQHsu0a/MA/zgq4KS+rLzSCgXRJW1UWnBu6otWKNX
-         RsBP8r7W+csqGHxj4LCw5uekg0/Q88LMkUD/okB9U8tFo92m4PhQ0ezDF/pYtDKcK+Fy
-         UPzvVQBhS6WejBkXyAj+cSkhBjtH/KeHPCRlAEu/3NihlfV/u1WZyzj8JsNfcOA3nLxB
-         aTwxmD/UIaxgffoX3ViY4q+C2uQ41IIlONSx6TLWv+nds8o0uqVCUlkKr5c7OQg9LJCd
-         3o3g==
+        bh=HoPvzKKlsWLuEL2aHu1a2QCfAbDKSMZKrQKmcYXYMLM=;
+        b=GeI1DGdXssqYBgEGXPMXsEuCoeea32uaiKQt4Fy/u1moXPel4NHS2hlFFtHg3Lfx3q
+         Doq/c0wtlDTbisAk7S6bkdA17cc3NrtSxwRHCAVKDDhBCAdSxTpMtWKP6vwUkG3p4ddb
+         h0CzVpoq5ECF1Y2gRhZJR+eSHz/yo/7k07TdlmA34+WzFSjsZ7bD0N2NCWqvTM7MI9/z
+         hv8BHfG6K5lHLwGX7HVaQq/hmTZajvpQckjUq1zrhF73yma82/0bLFtze2jLBDxMsk25
+         Np2xhAO2/NVvUEAxLVetBjusHYQ2VgmUDYiEXET+GMIvzDskNkXLCUYXnUUls3pieFHQ
+         jd9w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
          :references:subject:mime-version:content-transfer-encoding;
-        bh=TNk6I9zLVo4gBztAVUSoSqQRaZNVXPRbm1cPrqzCNcE=;
-        b=FEpNzWlZJPqKpiMXfN2pmjXSwqPAnfsawNyP4Gojtn7jqrKJ+eFGWVvPqpc1anne8Y
-         xV3TbCjdJKnTFsjLixOwOTHl7HAw4XLxbi9GBRudX/69pF5KXTPSXZ4qKf+ZHfg6S4iG
-         awQJFpKGQ8nJN6Ky0ZwJ09mYLeqrcUFArCoaUjZTGyvxO5SXrVTuQ9oXYbXcr3ZBpBeZ
-         2Om4G3iA1LYnmpGj+lm9fWYTkCF4pkiN65oTvKuLnaFsCubaSPKGaozeScB0xlcVq55k
-         WP4Gmj11Co3o8k90bQ/ut/lKjhWTXODwBiX6G5Hfkc9guLO6sPCEKH8XxyCJ6o3ei+x7
-         SOMw==
-X-Gm-Message-State: AOAM532tNEx/ZZvjrY1WBjqwesMBuu7gwwkqoAN3rwzR3nAS2vhKR9jZ
-        geM1dXjSdPyvtV6kUWjlKn0biKQ6dl9fRQ==
-X-Google-Smtp-Source: ABdhPJxJ4h7D57ryc6e7j/o7CyWHEoaaAa5JG3uSqutercEV2sAD29B/yD74Qe86lqLa0B55499QIw==
-X-Received: by 2002:a05:6e02:1845:: with SMTP id b5mr29467386ilv.266.1638760217763;
-        Sun, 05 Dec 2021 19:10:17 -0800 (PST)
+        bh=HoPvzKKlsWLuEL2aHu1a2QCfAbDKSMZKrQKmcYXYMLM=;
+        b=YrQgSxBCYE+QDnOzwYcicc8AzJfoZpQ1MTC4xA+GuBU4iEhxNpczHFyMlA6G62gAWF
+         ujG10BdlLAJctJteBPMJxRIKA0i4+vRuCCj5Dn1LbACBsjWWbJktlOgTk/9TGUIDF+U9
+         NjosgCyAbqc1FrQtz0fT3dn3SV39Y+XTqqp7LV5rQi3F80e4wMxE+iRi0GxFqYiYuwwd
+         o9O9KfH8w4Zkj5VvuVJ6B471AblzVBXFNe6epLiKU/lVP2Nt6O2lir2supi0sqmzZpZ3
+         Y9XuOn4gSe8knj09uCxwvsDGzpveanPBCOMRAsgxZxR4KCV69wmv6uOEi426wT28zHD0
+         gyjg==
+X-Gm-Message-State: AOAM531K6lEbnKx6lhDk+gQO0HdZbJkUXbG23xTCw/6cdXbD9bSrr9qA
+        2F4r+cNDk7SvYXphn06pCbU=
+X-Google-Smtp-Source: ABdhPJzdmQJEfC8lO/gsx69d8tRIlOR8YExFA7jIhzrQF6Yv/YvRBhTZ8T2GY9I9Xtctasc3vgWRGA==
+X-Received: by 2002:a05:6e02:1b02:: with SMTP id i2mr29542677ilv.139.1638760693230;
+        Sun, 05 Dec 2021 19:18:13 -0800 (PST)
 Received: from localhost ([172.243.151.11])
-        by smtp.gmail.com with ESMTPSA id w2sm6854034ilv.31.2021.12.05.19.10.15
+        by smtp.gmail.com with ESMTPSA id y9sm3724405ill.78.2021.12.05.19.18.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 05 Dec 2021 19:10:17 -0800 (PST)
-Date:   Sun, 05 Dec 2021 19:10:09 -0800
+        Sun, 05 Dec 2021 19:18:12 -0800 (PST)
+Date:   Sun, 05 Dec 2021 19:18:03 -0800
 From:   John Fastabend <john.fastabend@gmail.com>
 To:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
         netdev@vger.kernel.org
@@ -58,12 +58,12 @@ Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
         alexander.duyck@gmail.com, saeed@kernel.org,
         maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
         tirthendu.sarkar@intel.com, toke@redhat.com
-Message-ID: <61ad7f11ecefd_444e2085d@john.notmuch>
-In-Reply-To: <910d9f4270cea155f6283a99b697f89cbc39009f.1638272238.git.lorenzo@kernel.org>
+Message-ID: <61ad80eb139f9_444e2082e@john.notmuch>
+In-Reply-To: <47932365c53acbf359c26944f0bec363928d342f.1638272238.git.lorenzo@kernel.org>
 References: <cover.1638272238.git.lorenzo@kernel.org>
- <910d9f4270cea155f6283a99b697f89cbc39009f.1638272238.git.lorenzo@kernel.org>
-Subject: RE: [PATCH v19 bpf-next 09/23] bpf: introduce BPF_F_XDP_MB flag in
- prog_flags loading the ebpf program
+ <47932365c53acbf359c26944f0bec363928d342f.1638272238.git.lorenzo@kernel.org>
+Subject: RE: [PATCH v19 bpf-next 10/23] net: mvneta: enable jumbo frames if
+ the loaded XDP program support mb
 Mime-Version: 1.0
 Content-Type: text/plain;
  charset=utf-8
@@ -73,12 +73,78 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Lorenzo Bianconi wrote:
-> Introduce BPF_F_XDP_MB and the related field in bpf_prog_aux in order to
-> notify the driver the loaded program support xdp multi-buffer.
+> Enable the capability to receive jumbo frames even if the interface is
+> running in XDP mode if the loaded program declare to properly support
+> xdp multi-buff. At same time reject a xdp program not supporting xdp
+> multi-buffer if the driver is running in xdp multi-buffer mode.
 > 
 > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 > ---
 
-Sounds like a good plan to me.
+Allow me to enumerate the cases as a sanity check.
+
+ mb prog on driver w/out mb support:
+
+    The program will never receive a non-linear buffer so no
+    trouble here. If user tries to configure MTU >1500 an error
+    will be thrown by driver same as always.
+  
+ !mb prog on driver w/out mb support.
+
+    This is the normal case, no change.
+
+ mb prog on driver with mb support.
+
+    Allowed and user may now set MTU >1500.    
+
+ !mb prog on driver with mb support
+
+    Allowed and now driver must throw an error on MTU >1500
+
+OK works for me. Thanks.
 
 Acked-by: John Fastabend <john.fastabend@gmail.com>
+
+>  drivers/net/ethernet/marvell/mvneta.c | 13 +++++++++----
+>  1 file changed, 9 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
+> index 332699960b53..98db3d03116a 100644
+> --- a/drivers/net/ethernet/marvell/mvneta.c
+> +++ b/drivers/net/ethernet/marvell/mvneta.c
+> @@ -3750,6 +3750,7 @@ static void mvneta_percpu_disable(void *arg)
+>  static int mvneta_change_mtu(struct net_device *dev, int mtu)
+>  {
+>  	struct mvneta_port *pp = netdev_priv(dev);
+> +	struct bpf_prog *prog = pp->xdp_prog;
+>  	int ret;
+>  
+>  	if (!IS_ALIGNED(MVNETA_RX_PKT_SIZE(mtu), 8)) {
+> @@ -3758,8 +3759,11 @@ static int mvneta_change_mtu(struct net_device *dev, int mtu)
+>  		mtu = ALIGN(MVNETA_RX_PKT_SIZE(mtu), 8);
+>  	}
+>  
+> -	if (pp->xdp_prog && mtu > MVNETA_MAX_RX_BUF_SIZE) {
+> -		netdev_info(dev, "Illegal MTU value %d for XDP mode\n", mtu);
+> +	if (prog && !prog->aux->xdp_mb && mtu > MVNETA_MAX_RX_BUF_SIZE) {
+> +		netdev_info(dev,
+> +			    "Illegal MTU %d for XDP prog without multi-buf\n",
+> +			    mtu);
+> +
+>  		return -EINVAL;
+>  	}
+>  
+> @@ -4428,8 +4432,9 @@ static int mvneta_xdp_setup(struct net_device *dev, struct bpf_prog *prog,
+>  	struct mvneta_port *pp = netdev_priv(dev);
+>  	struct bpf_prog *old_prog;
+>  
+> -	if (prog && dev->mtu > MVNETA_MAX_RX_BUF_SIZE) {
+> -		NL_SET_ERR_MSG_MOD(extack, "MTU too large for XDP");
+> +	if (prog && !prog->aux->xdp_mb && dev->mtu > MVNETA_MAX_RX_BUF_SIZE) {
+> +		NL_SET_ERR_MSG_MOD(extack,
+> +				   "prog does not support XDP multi-buff");
+>  		return -EOPNOTSUPP;
+>  	}
+>  
+> -- 
+> 2.31.1
