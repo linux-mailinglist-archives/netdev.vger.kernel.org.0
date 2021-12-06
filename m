@@ -2,40 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB0C246AA69
-	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 22:27:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E05046AA6A
+	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 22:27:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352625AbhLFVag (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Dec 2021 16:30:36 -0500
-Received: from serv108.segi.ulg.ac.be ([139.165.32.111]:52542 "EHLO
+        id S1352662AbhLFVai (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Dec 2021 16:30:38 -0500
+Received: from serv108.segi.ulg.ac.be ([139.165.32.111]:52544 "EHLO
         serv108.segi.ulg.ac.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351740AbhLFVag (ORCPT
+        with ESMTP id S236938AbhLFVag (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 16:30:36 -0500
+X-Greylist: delayed 530 seconds by postgrey-1.27 at vger.kernel.org; Mon, 06 Dec 2021 16:30:35 EST
 Received: from localhost.localdomain (148.24-240-81.adsl-dyn.isp.belgacom.be [81.240.24.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by serv108.segi.ulg.ac.be (Postfix) with ESMTPSA id 582DF200DB97;
+        by serv108.segi.ulg.ac.be (Postfix) with ESMTPSA id A035D200DFBE;
         Mon,  6 Dec 2021 22:18:15 +0100 (CET)
-DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be 582DF200DB97
+DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be A035D200DFBE
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uliege.be;
         s=ulg20190529; t=1638825495;
-        bh=hq+N8XP13+xww3ZKIXvs7H9qdg0Ckj8PhrXRfvMysA8=;
+        bh=rceATES+hMWzzH/m+Y09OeBkLR1NHaKyBcBmdhxje+E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tw5o7o+VXNEt5zN/8HvftT/1t0qbBODGBpqwtu5RE5S9vOwcax6wZFLm6PfoS0MZp
-         dVDsNuGLkc2jIBYEEp4Vu6g1PKkS80xuVZ7vWtoa0kpO/VlHLXCR1vYGDp6HyxMT49
-         lDH2vC8gcxXMytUbUsGKWtxiipW0e6b2ApzwEZzvcIgVfUCe6c4GGjvEVQBD76T4aA
-         zUG0NCO/QzI2UO4sPeLJ/kHcwuV+OF1dSvfqBCztEq0vy0MqtVEoidh57niTTf9O5o
-         dADJOfV6lTGMfFBX2gq5SZGOEAdogAP2eAM2ornJCpIoywN+9lzxpHOgM66mMGkBpY
-         Be4gT+A9Zmz8w==
+        b=JJv15rtxXxNeiA0A5Xc7LIJ0wXhQ+IKAfWfRVROSzTNijUokVb44zmmU1hKuHzI5x
+         urW5GoI0YBuC0p42vKhxZ609dH05meDltIBLw72v3ALWttqMFIiW64s8s8gO21XkQ6
+         We3NgQ/bi53xyAyCusJwpj2n8QkY8D7bkmb3kQSgGhsrk2VJne182n/qm13JVzNTtS
+         rz4Iciyjf00unKw2zVDSMHmeV7l3xrgEisSt6uQokkaYA29eP0p6Lg2gHx9Ppod0Kl
+         EGIDWa/90kfJ3N2WGtt8LN2iPwc+EzP7yA5YPQg8XAnYZQT5EzLAU8/489FFk4Wix0
+         M5Ncj9usnSFUQ==
 From:   Justin Iurman <justin.iurman@uliege.be>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, dsahern@kernel.org,
         yoshfuji@linux-ipv6.org, linux-mm@kvack.org, cl@linux.com,
         penberg@kernel.org, rientjes@google.com, iamjoonsoo.kim@lge.com,
         akpm@linux-foundation.org, vbabka@suse.cz, justin.iurman@uliege.be
-Subject: [RFC net-next 1/2] ipv6: ioam: Support for Queue depth data field
-Date:   Mon,  6 Dec 2021 22:17:57 +0100
-Message-Id: <20211206211758.19057-2-justin.iurman@uliege.be>
+Subject: [RFC net-next 2/2] ipv6: ioam: Support for Buffer occupancy data field
+Date:   Mon,  6 Dec 2021 22:17:58 +0100
+Message-Id: <20211206211758.19057-3-justin.iurman@uliege.be>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211206211758.19057-1-justin.iurman@uliege.be>
 References: <20211206211758.19057-1-justin.iurman@uliege.be>
@@ -45,70 +46,125 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch is an attempt to support the queue depth in IOAM trace data
-fields. Any feedback is appreciated, or any other idea if this one is
-not correct.
+This patch is an attempt to support the buffer occupancy in IOAM trace
+data fields. Any feedback is appreciated, or any other idea if this one
+is not correct.
 
 The draft [1] says the following:
 
-   The "queue depth" field is a 4-octet unsigned integer field.  This
-   field indicates the current length of the egress interface queue of
-   the interface from where the packet is forwarded out.  The queue
-   depth is expressed as the current amount of memory buffers used by
-   the queue (a packet could consume one or more memory buffers,
-   depending on its size).
+   The "buffer occupancy" field is a 4-octet unsigned integer field.
+   This field indicates the current status of the occupancy of the
+   common buffer pool used by a set of queues.  The units of this field
+   are implementation specific.  Hence, the units are interpreted within
+   the context of an IOAM-Namespace and/or node-id if used.  The authors
+   acknowledge that in some operational cases there is a need for the
+   units to be consistent across a packet path through the network,
+   hence it is recommended for implementations to use standard units
+   such as Bytes.
 
-An existing function (i.e., qdisc_qstats_qlen_backlog) is used to
-retrieve the current queue length without reinventing the wheel. Any
-comment on that?
+An existing function (i.e., get_slabinfo) is used to retrieve info about
+skbuff_head_cache. For that, both the prototype of get_slabinfo and
+struct definition of slabinfo were moved from mm/slab.h to
+include/linux/slab.h. Any objection on this?
 
-Right now, the number of skb's (qlen) is returned, which is not totally
-correct compared to what the draft says: "a packet could consume one or
-more memory buffers". Any idea on a solution to take this into account?
+The function kmem_cache_size is used to retrieve the size of a slab
+object. Note that it returns the "object_size" field, not the "size"
+field. If needed, a new function (e.g., kmem_cache_full_size) could be
+added to return the "size" field. To match the definition from the
+draft, the number of bytes is computed as follows:
 
-Note: it was tested and qlen is increasing when an artificial delay is
-added on the egress with tc.
+slabinfo.active_objs * size
 
-  [1] https://datatracker.ietf.org/doc/html/draft-ietf-ippm-ioam-data#section-5.4.2.7
+Thoughts?
+
+  [1] https://datatracker.ietf.org/doc/html/draft-ietf-ippm-ioam-data#section-5.4.2.12
 
 Signed-off-by: Justin Iurman <justin.iurman@uliege.be>
 ---
- net/ipv6/ioam6.c | 14 +++++++++++++-
- 1 file changed, 13 insertions(+), 1 deletion(-)
+ include/linux/slab.h | 15 +++++++++++++++
+ mm/slab.h            | 14 --------------
+ net/ipv6/ioam6.c     | 13 ++++++++++++-
+ 3 files changed, 27 insertions(+), 15 deletions(-)
 
+diff --git a/include/linux/slab.h b/include/linux/slab.h
+index 181045148b06..745790dbcbcb 100644
+--- a/include/linux/slab.h
++++ b/include/linux/slab.h
+@@ -19,6 +19,21 @@
+ #include <linux/percpu-refcount.h>
+ 
+ 
++struct slabinfo {
++	unsigned long active_objs;
++	unsigned long num_objs;
++	unsigned long active_slabs;
++	unsigned long num_slabs;
++	unsigned long shared_avail;
++	unsigned int limit;
++	unsigned int batchcount;
++	unsigned int shared;
++	unsigned int objects_per_slab;
++	unsigned int cache_order;
++};
++
++void get_slabinfo(struct kmem_cache *s, struct slabinfo *sinfo);
++
+ /*
+  * Flags to pass to kmem_cache_create().
+  * The ones marked DEBUG are only valid if CONFIG_DEBUG_SLAB is set.
+diff --git a/mm/slab.h b/mm/slab.h
+index 56ad7eea3ddf..cd6a8a2768e3 100644
+--- a/mm/slab.h
++++ b/mm/slab.h
+@@ -175,20 +175,6 @@ void slab_kmem_cache_release(struct kmem_cache *);
+ struct seq_file;
+ struct file;
+ 
+-struct slabinfo {
+-	unsigned long active_objs;
+-	unsigned long num_objs;
+-	unsigned long active_slabs;
+-	unsigned long num_slabs;
+-	unsigned long shared_avail;
+-	unsigned int limit;
+-	unsigned int batchcount;
+-	unsigned int shared;
+-	unsigned int objects_per_slab;
+-	unsigned int cache_order;
+-};
+-
+-void get_slabinfo(struct kmem_cache *s, struct slabinfo *sinfo);
+ void slabinfo_show_stats(struct seq_file *m, struct kmem_cache *s);
+ ssize_t slabinfo_write(struct file *file, const char __user *buffer,
+ 		       size_t count, loff_t *ppos);
 diff --git a/net/ipv6/ioam6.c b/net/ipv6/ioam6.c
-index 122a3d47424c..088eb2f877bc 100644
+index 088eb2f877bc..f0a44dc2a0df 100644
 --- a/net/ipv6/ioam6.c
 +++ b/net/ipv6/ioam6.c
-@@ -13,10 +13,12 @@
- #include <linux/ioam6.h>
+@@ -14,6 +14,8 @@
  #include <linux/ioam6_genl.h>
  #include <linux/rhashtable.h>
-+#include <linux/netdevice.h>
+ #include <linux/netdevice.h>
++#include <linux/slab.h>
++#include <linux/skbuff.h>
  
  #include <net/addrconf.h>
  #include <net/genetlink.h>
- #include <net/ioam6.h>
-+#include <net/sch_generic.h>
+@@ -778,7 +780,16 @@ static void __ioam6_fill_trace_data(struct sk_buff *skb,
  
- static void ioam6_ns_release(struct ioam6_namespace *ns)
- {
-@@ -717,7 +719,17 @@ static void __ioam6_fill_trace_data(struct sk_buff *skb,
- 
- 	/* queue depth */
- 	if (trace->type.bit6) {
+ 	/* buffer occupancy */
+ 	if (trace->type.bit11) {
 -		*(__be32 *)data = cpu_to_be32(IOAM6_U32_UNAVAILABLE);
-+		struct netdev_queue *queue;
-+		__u32 qlen, backlog;
++		struct slabinfo sinfo;
++		u32 size, bytes;
 +
-+		if (skb_dst(skb)->dev->flags & IFF_LOOPBACK) {
-+			*(__be32 *)data = cpu_to_be32(IOAM6_U32_UNAVAILABLE);
-+		} else {
-+			queue = skb_get_tx_queue(skb_dst(skb)->dev, skb);
-+			qdisc_qstats_qlen_backlog(queue->qdisc, &qlen, &backlog);
++		sinfo.active_objs = 0;
++		get_slabinfo(skbuff_head_cache, &sinfo);
++		size = kmem_cache_size(skbuff_head_cache);
 +
-+			*(__be32 *)data = cpu_to_be32(qlen);
-+		}
++		bytes = min(sinfo.active_objs * size, (unsigned long)(U32_MAX-1));
++
++		*(__be32 *)data = cpu_to_be32(bytes);
  		data += sizeof(__be32);
  	}
  
