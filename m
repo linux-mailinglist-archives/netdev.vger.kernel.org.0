@@ -2,125 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3985446A110
-	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 17:17:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 13DAB46A11C
+	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 17:18:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352343AbhLFQVH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Dec 2021 11:21:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42170 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352515AbhLFQTu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 11:19:50 -0500
-Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90B66C0698D6;
-        Mon,  6 Dec 2021 08:16:16 -0800 (PST)
-Received: by mail-io1-xd31.google.com with SMTP id y16so13565198ioc.8;
-        Mon, 06 Dec 2021 08:16:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=i/ZDF2XFTR41zF12EPAoQs5EFKTLrwQvmyNIdqJ10Ng=;
-        b=jjy6vu7x1/SheTJYzmrl2TkWwT8135gXiiNmNpL6SSWtaMgBsrfgqfK2i9gQfaulX2
-         650TXJmRKRrdbvPS3436wSCqai0iIlP58bwOatJ663z0E0gFcqc895ncXk03uKBTJyKd
-         a1vwlBzMpCb5pfx8Qo0w9UCfopaq1pIBowWEoRYuPQ5lHSAQoWJlTtpQFzcbC2hn2ahQ
-         od0URcHDKVEHUoLhFcdlP36IhTR8qsmSWobbxOUsSqhDvAA8CGWQq25kZykxbQVG8HIt
-         xACctvolBFQCQL22XYwhEK1ZmwydWIIXlDHq7h5N5BnTrY7G5IcQn1NNDXjqPlrQbuqH
-         3v+w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=i/ZDF2XFTR41zF12EPAoQs5EFKTLrwQvmyNIdqJ10Ng=;
-        b=Auo/ghqgD/Ki46S+NcIj7pQ/cO412pGo1X5a6ekKuDA+F8+QHFwv0YeqUhAsLiNLp/
-         tsJB5bmQ1ATa+QBzGacKM2VIfCgTwi3JEvBERDbhesThwicX+PlimXUzX/I8bdwRhuZl
-         HO57UUseHLLZ16uldxTSfoYxnPBZw8lHupuSwo6mfT5fmcVqKNSaOb9xA7ittJhCciEp
-         00YujSprf8z9uJvkCFSJ3bWsOpU4W4RBk1BBMS+XxxfXxCwOqx+SiWatDcfs+/qYEykj
-         WqPPN3AwM1yIQToXuNwzGmRXArfplOR+7C4/goxSvYbZ0U7IxXsIKaSC4KbpkTdJlAlh
-         Sv/g==
-X-Gm-Message-State: AOAM530yHW/sOXB62t8D/63tKeet4jetB0TnJkZshGCUhJsZkcbiri2o
-        aZSZMDZ2Fim7sdob3ZVcL18=
-X-Google-Smtp-Source: ABdhPJyNBjMvn2kT2R1mnC2z+6+U/NB1fwZilTOwBHu7tzgJD0W6yGja2MoQcni8CJixnQxBg4GY6w==
-X-Received: by 2002:a05:6638:2608:: with SMTP id m8mr43881290jat.57.1638807374571;
-        Mon, 06 Dec 2021 08:16:14 -0800 (PST)
-Received: from localhost ([172.243.151.11])
-        by smtp.gmail.com with ESMTPSA id x13sm6948578ilp.43.2021.12.06.08.16.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Dec 2021 08:16:14 -0800 (PST)
-Date:   Mon, 06 Dec 2021 08:16:06 -0800
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Emmanuel Deloget <emmanuel.deloget@eho.link>,
-        Louis Amas <louis.amas@eho.link>, andrii@kernel.org,
-        ast@kernel.org, bpf@vger.kernel.org, daniel@iogearbox.net,
-        davem@davemloft.net, hawk@kernel.org, john.fastabend@gmail.com,
-        kafai@fb.com, kpsingh@kernel.org, linux-kernel@vger.kernel.org,
-        mw@semihalf.com, netdev@vger.kernel.org, songliubraving@fb.com,
-        yhs@fb.com
-Message-ID: <61ae3746df2f9_88182085b@john.notmuch>
-In-Reply-To: <20211206080337.13fc9ae7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <DB9PR06MB8058D71218633CD7024976CAFA929@DB9PR06MB8058.eurprd06.prod.outlook.com>
- <20211110144104.241589-1-louis.amas@eho.link>
- <bdc1f03c-036f-ee29-e2a1-a80f640adcc4@eho.link>
- <Ya4vd9+pBbVJML+K@shell.armlinux.org.uk>
- <20211206080337.13fc9ae7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Subject: Re: [PATCH 1/1] net: mvpp2: fix XDP rx queues registering
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        id S1387046AbhLFQVu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Dec 2021 11:21:50 -0500
+Received: from mail-dm6nam12on2080.outbound.protection.outlook.com ([40.107.243.80]:35552
+        "EHLO NAM12-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1386830AbhLFQVi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 6 Dec 2021 11:21:38 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=aKUiV1suV9vyG59gry6ed3ESav3HwezCrIVlViKL5JCX9/QpgBtz590tPcwPBCDwNunxxKNNiKFzkA+EjAsdiqf4ika2bk1cx6879B7lOmEFbaYYHbeoPIEm0CnF40MAdVekrKbRvagJmli9V48Ws56+OeMUOWjp+sQYu+OGRHguy1mcIUO8L9xc6DOFeY3vAUi8pWfWmPEKPNiy795DvzO937cP+M3SRqafJQpFLoS5f07YaLZJ6tsjFVqlhKVcDX07WhrbYHEz16ysK2mZB3nfnkA9jigxoCiU+cu+OB/8GDCerapOrwI4aNKNPIRDx1uY3PNUDgjbfrz3kerB1g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=CVHNkE8zK7nRohdoRCL+ubgHqpmKumWFMyry4/hfg/0=;
+ b=lIKUAB1BN4EtYebTIEf4YdLahjPwRi79xDqgj1VR8vpYWPOzzdhONb5b1tn7KHCjErC4+wmuIshK1059+jKagR6QZ+Mo+GVI7Pag/BKwcOAz6/XjuHoj3veTchulTqwnzyo4as30RPmDJgHbXrHub7hfBLvdx7xlxFIpd8rS7u1qoLaxXsqqutg8KW4Bnbzhhmr8Ieqaj6QsTPU9klxY7RH6L3eboEUTH0fdYTeX5ucmwWg14U+jKPqWY31DIGDM0c8GOxenWrrTWQOJdQvobE1fv0wanh2fm1FMTdPZaapY2rWA8W2s1wVEXL61KBcJeQa0F3H9lCFg/mcXweGKHQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.112.32) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=nvidia.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=CVHNkE8zK7nRohdoRCL+ubgHqpmKumWFMyry4/hfg/0=;
+ b=j+CF7kjplXaoJA+ubHwIowUj6PCHGAdJi3+sEc5vDF/hxAF8ELYHXb0J0SdviWEgGgt2MR9cnKBcV9RyZ50WtfrOZ1IGKkSqq0MpdKiOWM5edMlOhBnkVItWpj6TILAiK2CoZAy91NRO8sLsGyMicPlWnvkxhNsbOiZ3RjCCkETBNwt6SJqulM95/0H1wfXfgOOqelWR71Kyr6EHwyijBfN+GniyAWd5cy8a6YjWHkBNv3s8n4lxFIqrXUBGolewZwfBNIOam8lUAHpuGGGcH69KThVqfV0EccVsgZkYtNRmi0XZCDUBtJUCXdUJGurwY7rtPcjA44PhfjtzrRk26g==
+Received: from DM6PR02CA0163.namprd02.prod.outlook.com (2603:10b6:5:332::30)
+ by MW3PR12MB4523.namprd12.prod.outlook.com (2603:10b6:303:5b::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.20; Mon, 6 Dec
+ 2021 16:18:07 +0000
+Received: from DM6NAM11FT066.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:332:cafe::73) by DM6PR02CA0163.outlook.office365.com
+ (2603:10b6:5:332::30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.17 via Frontend
+ Transport; Mon, 6 Dec 2021 16:18:06 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.32)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.112.32 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.32; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.32) by
+ DM6NAM11FT066.mail.protection.outlook.com (10.13.173.179) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4755.13 via Frontend Transport; Mon, 6 Dec 2021 16:18:06 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by HQMAIL109.nvidia.com
+ (172.20.187.15) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Mon, 6 Dec
+ 2021 08:18:05 -0800
+Received: from yaviefel.vdiclient.nvidia.com (172.20.187.6) by
+ rnnvmail201.nvidia.com (10.129.68.8) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.986.9;
+ Mon, 6 Dec 2021 08:18:03 -0800
+From:   Petr Machata <petrm@nvidia.com>
+To:     <netdev@vger.kernel.org>
+CC:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Petr Machata" <petrm@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: [PATCH net] MAINTAINERS: net: mlxsw: Remove Jiri as a maintainer, add myself
+Date:   Mon, 6 Dec 2021 17:17:23 +0100
+Message-ID: <45b54312cdebaf65c5d110b15a5dd2df795bf2be.1638807297.git.petrm@nvidia.com>
+X-Mailer: git-send-email 2.31.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [172.20.187.6]
+X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 74c36b82-05a6-4558-0663-08d9b8d3fcd0
+X-MS-TrafficTypeDiagnostic: MW3PR12MB4523:EE_
+X-Microsoft-Antispam-PRVS: <MW3PR12MB4523E46F8EE05D668040A5E1D66D9@MW3PR12MB4523.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1303;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: vgUPC3PfayG1kR8zJr6w8rWRZcKK8DS2pqVRH/emW9TgHU1S5Yp6bTIc/CABibkdJVN/r3oD370MVSR4W9iM2dpOwFofSRq27a6ONmMN1GElGl+NRNOJRqhMMg/pxXEcjs5pV+EXSRvMcU6auToQ7Zm+X03a953y/tlB52SYjRn6ACy4Fa07LKAAT3ioM265cq6qO6lOafKfLAZlyv7rvdtt9ElMgXcsecP3fKLf6FAMxsgcnJyvjQ6m7FV4HMOWCPD+OykoOdcJv5EL4PZpvGo3dnySPiuLu04m6BNUyfOshJ03JXpJ5086tE/5u0y9rNjAqQxG8i9NqxFa7dMnsf0DluKunXkuZFESWrToZNlV/rS9g/cKdYyxQNY7khFRxXj41JNMMSEjVm4tLHEyNT5fBkY96ntlKuvMmvk6GYux5o1Mj7QlFoUzMgDHkjVPMusxLUINFRYMgNszL8ezTC9xaTUicWOS7DUNGvMBPQX5x99ChY5iKmpueC/hCKP5G4oKCurk/EWYQ8r959yOu9oZRr15GQGxu1DNoH8pPANcLy5w4sdN0RXj5SCVLtNuSo2+zUYSGS6Im8BlqaAD9qNQid1p8ewovvYXg2I9IF2fSd0yqorEK0GqYXJD+ThNmOdKLft4Kd5KvozOXjlnba1TVdhtuCY0HOlgoZkbGC+MCkqFxyQUnQRmj9Ln/i70Vf48cv+gJL+INlA6/jDKNKd718R18n4SCBdI4kWVW/OdajodhPlrwoltD3n+kUPqZY+1X0fBgYBupzLgrXGcijoGkNztc3SlJ5CoPlmaZH9oFiZl9gFptkFc7vQp1kRsykKJgasZeWHjVLypbHe/afa8DX361ZVZc78K4j3KtBU=
+X-Forefront-Antispam-Report: CIP:216.228.112.32;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid01.nvidia.com;CAT:NONE;SFS:(4636009)(46966006)(36840700001)(40470700001)(36860700001)(83380400001)(336012)(54906003)(70586007)(2906002)(82310400004)(40460700001)(426003)(508600001)(4326008)(70206006)(966005)(4744005)(7636003)(26005)(47076005)(5660300002)(36756003)(2616005)(316002)(8676002)(86362001)(356005)(7696005)(8936002)(186003)(107886003)(6916009)(6666004)(16526019);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Dec 2021 16:18:06.7609
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 74c36b82-05a6-4558-0663-08d9b8d3fcd0
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.32];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT066.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR12MB4523
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Kicinski wrote:
-> On Mon, 6 Dec 2021 15:42:47 +0000 Russell King (Oracle) wrote:
-> > On Mon, Dec 06, 2021 at 04:37:20PM +0100, Emmanuel Deloget wrote:
-> > > On 10/11/2021 15:41, Louis Amas wrote:  
-> > > > The registration of XDP queue information is incorrect because the
-> > > > RX queue id we use is invalid. When port->id == 0 it appears to works
-> > > > as expected yet it's no longer the case when port->id != 0.
-> > > > 
-> > > > When we register the XDP rx queue information (using
-> > > > xdp_rxq_info_reg() in function mvpp2_rxq_init()) we tell them to use
-> > > > rxq->id as the queue id. This value iscomputed as:
-> > > > rxq->id = port->id * max_rxq_count + queue_id
-> > > > 
-> > > > where max_rxq_count depends on the device version. In the MB case,
-> > > > this value is 32, meaning that rx queues on eth2 are numbered from
-> > > > 32 to 35 - there are four of them.
-> > > > 
-> > > > Clearly, this is not the per-port queue id that XDP is expecting:
-> > > > it wants a value in the range [0..3]. It shall directly use queue_id
-> > > > which is stored in rxq->logic_rxq -- so let's use that value instead.
-> > > > 
-> > > > This is consistent with the remaining part of the code in
-> > > > mvpp2_rxq_init().
-> 
-> > > Is there any update on this patch ? Without it, XDP only partially work on a
-> > > MACCHIATOBin (read: it works on some ports, not on others, as described in
-> > > our analysis sent together with the original patch).  
-> > 
-> > I suspect if you *didn't* thread your updated patch to your previous
-> > submission, then it would end up with a separate entry in
-> > patchwork.kernel.org,
-> 
-> Indeed, it's easier to keep track of patches which weren't posted 
-> as a reply in a thread, at least for me.
-> 
-> > and the netdev maintainers will notice that the
-> > patch is ready for inclusion, having been reviewed by Marcin.
-> 
-> In this case I _think_ it was dropped because it didn't apply.
-> 
-> Please rebase on top of net/master and repost if the changes is still
-> needed.
+Jiri has moved on and will not carry out the mlxsw maintainership duty any
+longer. Add myself as a co-maintainer instead.
 
-Also I would add the detailed description to the actual commit not below
-the "--" lines. Capturing that in the log will be useful for future
-reference if we ever hit similar issue here or elsewhere.
+Signed-off-by: Petr Machata <petrm@nvidia.com>
+Acked-by: Jiri Pirko <jiri@nvidia.com>
+Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+---
+ MAINTAINERS | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Otherwise for patch,
+diff --git a/MAINTAINERS b/MAINTAINERS
+index eeb4c70b3d5b..aa096a91f979 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -11960,8 +11960,8 @@ F:	drivers/net/ethernet/mellanox/mlx5/core/fpga/*
+ F:	include/linux/mlx5/mlx5_ifc_fpga.h
+ 
+ MELLANOX ETHERNET SWITCH DRIVERS
+-M:	Jiri Pirko <jiri@nvidia.com>
+ M:	Ido Schimmel <idosch@nvidia.com>
++M:	Petr Machata <petrm@nvidia.com>
+ L:	netdev@vger.kernel.org
+ S:	Supported
+ W:	http://www.mellanox.com
+-- 
+2.31.1
 
-Acked-by: John Fastabend <john.fastabend@gmail.com>
