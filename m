@@ -2,111 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 583E7469353
-	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 11:20:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 300D74693FF
+	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 11:36:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236305AbhLFKXq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Dec 2021 05:23:46 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:48328 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232530AbhLFKXp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 05:23:45 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1638786017;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=skvl+6MlZe2GRtwWiKsWPPv+qj696SGkXDdPY29ZI68=;
-        b=PwGI0Gpu1MRlBizQ2/lSh7MsLRyrOsEerAqlxfuS/ymdLIize5abTNCL7K+nJAC9m+t8W4
-        +vAA5f+0blaXkPnnMixgHSxlSksG/vjkaxIXwKdHrJBj0DHbA4Q5HGc8bcQFh04U/sY5Mo
-        BeGWOVbl7IYP5j4XBgk5yeDd3J8D0/Q=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-164-B1kMtJS3MVOPtjtvjgFbUw-1; Mon, 06 Dec 2021 05:20:15 -0500
-X-MC-Unique: B1kMtJS3MVOPtjtvjgFbUw-1
-Received: by mail-wm1-f69.google.com with SMTP id z138-20020a1c7e90000000b003319c5f9164so7642818wmc.7
-        for <netdev@vger.kernel.org>; Mon, 06 Dec 2021 02:20:15 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=skvl+6MlZe2GRtwWiKsWPPv+qj696SGkXDdPY29ZI68=;
-        b=Anfu4XXvq7rSGKCSGZqrdbwGr/zNNoPmKxPbcW/sriBCYF2+n8ntuZXbep4HORwriT
-         hh8r0WvMgBTZCTqpBsxBsDHVYnWSzn2N2L5Vb8TSfa9g/sRCzrk1LjtxGtPO00lBiyoh
-         R8xotWttVpGwd8JPLmNy0Xfdf7d8uxsE1WCYGzKGEfvTLABpmH4U/eZS1CiT5KRgecow
-         puEe+HGFDnfcL8pIg8n9xiT0y7vzUv8vSnbjww2E5Sqm95rQoIaJod2jelV7e102Vg2u
-         7BDiUF5Yn8vZcnyGZesOZ04zYEgTBbV3PgPtV43KSY+8gU1DGpUXk5k0NTWxswjp0B1t
-         /jCg==
-X-Gm-Message-State: AOAM533R1fTiFKNAQjzW3NoQV8n/J2Y6xNecIxOLcaH+SG8lfFia0X+S
-        r84Rde7WVQ2kkGJfD9d3xuAs73+jaU28RBM3GJUqN3Rqqtb3QYKDn4rgdzbEViqV4Qji6I0HMrA
-        XYZhbv2iNhIzGSs0V
-X-Received: by 2002:adf:de0b:: with SMTP id b11mr43412668wrm.588.1638786014226;
-        Mon, 06 Dec 2021 02:20:14 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyJiuKvUp0ap6UDuQ+CQtsADuNwSK6Bhc9fw6BiPV+bnd3NHq2D/xUosreRUQdLxRNZrQsDIA==
-X-Received: by 2002:adf:de0b:: with SMTP id b11mr43412655wrm.588.1638786014048;
-        Mon, 06 Dec 2021 02:20:14 -0800 (PST)
-Received: from gerbillo.redhat.com (146-241-252-1.dyn.eolo.it. [146.241.252.1])
-        by smtp.gmail.com with ESMTPSA id h7sm10369117wrt.64.2021.12.06.02.20.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Dec 2021 02:20:13 -0800 (PST)
-Message-ID: <70c5f1a6ecdc67586d108ab5ebed4be6febf8423.camel@redhat.com>
-Subject: Re: [PATCH v3 net-next 2/2] bpf: let bpf_warn_invalid_xdp_action()
- report more info
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>, bpf@vger.kernel.org,
-        Toke =?ISO-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
-Date:   Mon, 06 Dec 2021 11:20:12 +0100
-In-Reply-To: <1ac2941f-b751-9cf0-f0e3-ea0f245b7503@iogearbox.net>
-References: <cover.1638189075.git.pabeni@redhat.com>
-         <ddb96bb975cbfddb1546cf5da60e77d5100b533c.1638189075.git.pabeni@redhat.com>
-         <1ac2941f-b751-9cf0-f0e3-ea0f245b7503@iogearbox.net>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.1 (3.42.1-1.fc35) 
+        id S236757AbhLFKj0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Dec 2021 05:39:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47102 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231678AbhLFKjZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 05:39:25 -0500
+Received: from canardo.mork.no (canardo.mork.no [IPv6:2001:4641::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39555C061746
+        for <netdev@vger.kernel.org>; Mon,  6 Dec 2021 02:35:57 -0800 (PST)
+Received: from miraculix.mork.no ([IPv6:2a01:799:c9f:8608:6e64:956a:daea:cf2f])
+        (authenticated bits=0)
+        by canardo.mork.no (8.15.2/8.15.2) with ESMTPSA id 1B6AZR87480876
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
+        Mon, 6 Dec 2021 11:35:30 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
+        t=1638786930; bh=tmKijsISZj/4sjDdB+Ye1BRz3YbHXowWmKY4ejs4dHw=;
+        h=From:To:Cc:Subject:References:Date:Message-ID:From;
+        b=V8l5LhNHWWr2YrkBsgWiXuOqES66QhuGnn7b+p4nuuKqwnQ778y3g3IbDXRogaDcw
+         V66dT/JR4WxAU1a9EeJ0/Rj5lIKHJX3P0cZP3gftmKpXZrJmmwH2wXJKBcMH86drl3
+         HGeeI2f4PmxCC0XdID4bRDI8TgW++dEyJMisN9XE=
+Received: from bjorn by miraculix.mork.no with local (Exim 4.94.2)
+        (envelope-from <bjorn@mork.no>)
+        id 1muBLD-001qpK-DC; Mon, 06 Dec 2021 11:35:27 +0100
+From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
+To:     =?utf-8?B?54Wn5bGx5ZGo5LiA6YOO?= <teruyama@springboard-inc.jp>
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        "Russell King (Oracle)" <linux@armlinux.org.uk>
+Subject: Re: [PATCH net,stable] phy: sfp: fix high power modules without
+ diag mode
+Organization: m
+References: <20211130073929.376942-1-bjorn@mork.no>
+        <20211202175843.0210476e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <YaoFkZ53m7cILdYu@shell.armlinux.org.uk>
+        <YaoUW9KHyEQOt46b@shell.armlinux.org.uk>
+        <877dclkd2y.fsf@miraculix.mork.no>
+        <YathNbNBob2kHxrH@shell.armlinux.org.uk>
+Date:   Mon, 06 Dec 2021 11:35:27 +0100
+In-Reply-To: <YathNbNBob2kHxrH@shell.armlinux.org.uk> (Russell King's message
+        of "Sat, 4 Dec 2021 12:38:13 +0000")
+Message-ID: <877dcif2c0.fsf@miraculix.mork.no>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Virus-Scanned: clamav-milter 0.103.3 at canardo
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2021-12-03 at 23:04 +0100, Daniel Borkmann wrote:
-> Hi Paolo,
-> 
-> Changes look good to me as well, we can route the series via bpf-next after tree
-> resync, or alternatively ask David/Jakub to take it directly into net-next with our
-> Ack given in bpf-next there is no drivers/net/ethernet/microsoft/mana/mana_bpf.c yet.
-> 
-> On 11/30/21 11:08 AM, Paolo Abeni wrote:
-> [...]> diff --git a/net/core/filter.c b/net/core/filter.c
-> > index 5631acf3f10c..392838fa7652 100644
-> > --- a/net/core/filter.c
-> > +++ b/net/core/filter.c
-> > @@ -8181,13 +8181,13 @@ static bool xdp_is_valid_access(int off, int size,
-> >   	return __is_valid_xdp_access(off, size);
-> >   }
-> >   
-> > -void bpf_warn_invalid_xdp_action(u32 act)
-> > +void bpf_warn_invalid_xdp_action(struct net_device *dev, struct bpf_prog *prog, u32 act)
-> >   {
-> >   	const u32 act_max = XDP_REDIRECT;
-> >   
-> > -	pr_warn_once("%s XDP return value %u, expect packet loss!\n",
-> > +	pr_warn_once("%s XDP return value %u on prog %s (id %d) dev %s, expect packet loss!\n",
-> >   		     act > act_max ? "Illegal" : "Driver unsupported",
-> > -		     act);
-> > +		     act, prog->aux->name, prog->aux->id, dev ? dev->name : "");
-> 
-> One tiny nit, but we could fix it up while applying I'd have is that for !dev case
-> we should probably dump a "<n/a>" or so just to avoid a kernel log message like
-> "dev , expect packet loss".
+"Russell King (Oracle)" <linux@armlinux.org.uk> writes:
+> On Fri, Dec 03, 2021 at 02:55:17PM +0100, Bj=C3=B8rn Mork wrote:
+>> "Russell King (Oracle)" <linux@armlinux.org.uk> writes:
+>>=20
+>> > Thinking a little more, how about this:
+>> >
+>> >  drivers/net/phy/sfp.c | 25 +++++++++++++++++++++----
+>> >  1 file changed, 21 insertions(+), 4 deletions(-)
+>> >
+>> > diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
+>> > index 51a1da50c608..4c900d063b19 100644
+>> > --- a/drivers/net/phy/sfp.c
+>> > +++ b/drivers/net/phy/sfp.c
+>> > @@ -1752,17 +1752,20 @@ static int sfp_sm_probe_for_phy(struct sfp *sf=
+p)
+>> >  static int sfp_module_parse_power(struct sfp *sfp)
+>> >  {
+>> >  	u32 power_mW =3D 1000;
+>> > +	bool supports_a2;
+>> >=20=20
+>> >  	if (sfp->id.ext.options & cpu_to_be16(SFP_OPTIONS_POWER_DECL))
+>> >  		power_mW =3D 1500;
+>> >  	if (sfp->id.ext.options & cpu_to_be16(SFP_OPTIONS_HIGH_POWER_LEVEL))
+>> >  		power_mW =3D 2000;
+>> >=20=20
+>> > +	supports_a2 =3D sfp->id.ext.sff8472_compliance !=3D
+>> > +				SFP_SFF8472_COMPLIANCE_NONE ||
+>> > +		      sfp->id.ext.diagmon & SFP_DIAGMON_DDM;
+>> > +
+>> >  	if (power_mW > sfp->max_power_mW) {
+>> >  		/* Module power specification exceeds the allowed maximum. */
+>> > -		if (sfp->id.ext.sff8472_compliance =3D=3D
+>> > -			SFP_SFF8472_COMPLIANCE_NONE &&
+>> > -		    !(sfp->id.ext.diagmon & SFP_DIAGMON_DDM)) {
+>> > +		if (!supports_a2) {
+>> >  			/* The module appears not to implement bus address
+>> >  			 * 0xa2, so assume that the module powers up in the
+>> >  			 * indicated mode.
+>> > @@ -1779,11 +1782,24 @@ static int sfp_module_parse_power(struct sfp *=
+sfp)
+>> >  		}
+>> >  	}
+>> >=20=20
+>> > +	if (power_mW <=3D 1000) {
+>> > +		/* Modules below 1W do not require a power change sequence */
+>> > +		return 0;
+>> > +	}
+>> > +
+>> > +	if (!supports_a2) {
+>> > +		/* The module power level is below the host maximum and the
+>> > +		 * module appears not to implement bus address 0xa2, so assume
+>> > +		 * that the module powers up in the indicated mode.
+>> > +		 */
+>> > +		return 0;
+>> > +	}
+>> > +
+>> >  	/* If the module requires a higher power mode, but also requires
+>> >  	 * an address change sequence, warn the user that the module may
+>> >  	 * not be functional.
+>> >  	 */
+>> > -	if (sfp->id.ext.diagmon & SFP_DIAGMON_ADDRMODE && power_mW > 1000) {
+>> > +	if (sfp->id.ext.diagmon & SFP_DIAGMON_ADDRMODE) {
+>> >  		dev_warn(sfp->dev,
+>> >  			 "Address Change Sequence not supported but module requires %u.%uW=
+, module may not be functional\n",
+>> >  			 power_mW / 1000, (power_mW / 100) % 10);
+>>=20
+>> Looks nice to me at least.  But I don't have the hardware to test it.
+>
+> I don't have the hardware either, so I can't test it - but it does need
+> testing. I assume as you've reported it and sent a patch, you know
+> someone who has run into this issue? It would be great if you could ask
+> them to test it and let us know if it solves the problem.
 
-Yep, that would probably be better. Pleas let me know it you prefer a
-formal new version for the patch.
+Hello Teruyama!
 
-Thanks!
-
-Paolo
+Any chance you can test this proposed fix from Russel?  I believe it
+should fix the issue with your NTT OCU SFP as well.
 
 
+Bj=C3=B8rn
