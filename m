@@ -2,34 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 28B7046A4BA
-	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 19:36:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 335F246A4BC
+	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 19:37:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245446AbhLFSj6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Dec 2021 13:39:58 -0500
+        id S1346620AbhLFSkB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Dec 2021 13:40:01 -0500
 Received: from mga05.intel.com ([192.55.52.43]:31032 "EHLO mga05.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243627AbhLFSj6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 6 Dec 2021 13:39:58 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10190"; a="323631992"
+        id S245266AbhLFSj7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 6 Dec 2021 13:39:59 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10190"; a="323631995"
 X-IronPort-AV: E=Sophos;i="5.87,292,1631602800"; 
-   d="scan'208";a="323631992"
+   d="scan'208";a="323631995"
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Dec 2021 10:36:23 -0800
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Dec 2021 10:36:24 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.87,292,1631602800"; 
-   d="scan'208";a="461943027"
+   d="scan'208";a="461943030"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by orsmga006.jf.intel.com with ESMTP; 06 Dec 2021 10:36:23 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Mitch Williams <mitch.a.williams@intel.com>,
+Cc:     Michal Maloszewski <michal.maloszewski@intel.com>,
         netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
         sassmann@redhat.com,
-        George Kuruvinakunnel <george.kuruvinakunnel@intel.com>
-Subject: [PATCH net v2 1/5] iavf: restore MSI state on reset
-Date:   Mon,  6 Dec 2021 10:35:15 -0800
-Message-Id: <20211206183519.2733180-2-anthony.l.nguyen@intel.com>
+        Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>,
+        Konrad Jankowski <konrad0.jankowski@intel.com>
+Subject: [PATCH net v2 2/5] iavf: Fix reporting when setting descriptor count
+Date:   Mon,  6 Dec 2021 10:35:16 -0800
+Message-Id: <20211206183519.2733180-3-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211206183519.2733180-1-anthony.l.nguyen@intel.com>
 References: <20211206183519.2733180-1-anthony.l.nguyen@intel.com>
@@ -39,37 +40,92 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Mitch Williams <mitch.a.williams@intel.com>
+From: Michal Maloszewski <michal.maloszewski@intel.com>
 
-If the PF experiences an FLR, the VF's MSI and MSI-X configuration will
-be conveniently and silently removed in the process. When this happens,
-reset recovery will appear to complete normally but no traffic will
-pass. The netdev watchdog will helpfully notify everyone of this issue.
+iavf_set_ringparams doesn't communicate to the user that
 
-To prevent such public embarrassment, restore MSI configuration at every
-reset. For normal resets, this will do no harm, but for VF resets
-resulting from a PF FLR, this will keep the VF working.
+1. The user requested descriptor count is out of range. Instead it
+   just quietly sets descriptors to the "clamped" value and calls it
+   done. This makes it look an invalid value was successfully set as
+   the descriptor count when this isn't actually true.
 
-Fixes: 5eae00c57f5e ("i40evf: main driver core")
-Signed-off-by: Mitch Williams <mitch.a.williams@intel.com>
-Tested-by: George Kuruvinakunnel <george.kuruvinakunnel@intel.com>
+2. The user provided descriptor count needs to be inflated for alignment
+   reasons.
+
+This behavior is confusing. The ice driver has already addressed this
+by rejecting invalid values for descriptor count and
+messaging for alignment adjustments.
+Do the same thing here by adding the error and info messages.
+
+Fixes: fbb7ddfef253 ("i40evf: core ethtool functionality")
+Signed-off-by: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
+Signed-off-by: Michal Maloszewski <michal.maloszewski@intel.com>
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/iavf/iavf_main.c | 1 +
- 1 file changed, 1 insertion(+)
+ .../net/ethernet/intel/iavf/iavf_ethtool.c    | 43 ++++++++++++++-----
+ 1 file changed, 32 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index 14934a7a13ef..cfdbf8c08d18 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -2248,6 +2248,7 @@ static void iavf_reset_task(struct work_struct *work)
- 	}
+diff --git a/drivers/net/ethernet/intel/iavf/iavf_ethtool.c b/drivers/net/ethernet/intel/iavf/iavf_ethtool.c
+index 0cecaff38d04..461f5237a2f8 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf_ethtool.c
++++ b/drivers/net/ethernet/intel/iavf/iavf_ethtool.c
+@@ -615,23 +615,44 @@ static int iavf_set_ringparam(struct net_device *netdev,
+ 	if ((ring->rx_mini_pending) || (ring->rx_jumbo_pending))
+ 		return -EINVAL;
  
- 	pci_set_master(adapter->pdev);
-+	pci_restore_msi_state(adapter->pdev);
+-	new_tx_count = clamp_t(u32, ring->tx_pending,
+-			       IAVF_MIN_TXD,
+-			       IAVF_MAX_TXD);
+-	new_tx_count = ALIGN(new_tx_count, IAVF_REQ_DESCRIPTOR_MULTIPLE);
++	if (ring->tx_pending > IAVF_MAX_TXD ||
++	    ring->tx_pending < IAVF_MIN_TXD ||
++	    ring->rx_pending > IAVF_MAX_RXD ||
++	    ring->rx_pending < IAVF_MIN_RXD) {
++		netdev_err(netdev, "Descriptors requested (Tx: %d / Rx: %d) out of range [%d-%d] (increment %d)\n",
++			   ring->tx_pending, ring->rx_pending, IAVF_MIN_TXD,
++			   IAVF_MAX_RXD, IAVF_REQ_DESCRIPTOR_MULTIPLE);
++		return -EINVAL;
++	}
  
- 	if (i == IAVF_RESET_WAIT_COMPLETE_COUNT) {
- 		dev_err(&adapter->pdev->dev, "Reset never finished (%x)\n",
+-	new_rx_count = clamp_t(u32, ring->rx_pending,
+-			       IAVF_MIN_RXD,
+-			       IAVF_MAX_RXD);
+-	new_rx_count = ALIGN(new_rx_count, IAVF_REQ_DESCRIPTOR_MULTIPLE);
++	new_tx_count = ALIGN(ring->tx_pending, IAVF_REQ_DESCRIPTOR_MULTIPLE);
++	if (new_tx_count != ring->tx_pending)
++		netdev_info(netdev, "Requested Tx descriptor count rounded up to %d\n",
++			    new_tx_count);
++
++	new_rx_count = ALIGN(ring->rx_pending, IAVF_REQ_DESCRIPTOR_MULTIPLE);
++	if (new_rx_count != ring->rx_pending)
++		netdev_info(netdev, "Requested Rx descriptor count rounded up to %d\n",
++			    new_rx_count);
+ 
+ 	/* if nothing to do return success */
+ 	if ((new_tx_count == adapter->tx_desc_count) &&
+-	    (new_rx_count == adapter->rx_desc_count))
++	    (new_rx_count == adapter->rx_desc_count)) {
++		netdev_dbg(netdev, "Nothing to change, descriptor count is same as requested\n");
+ 		return 0;
++	}
+ 
+-	adapter->tx_desc_count = new_tx_count;
+-	adapter->rx_desc_count = new_rx_count;
++	if (new_tx_count != adapter->tx_desc_count) {
++		netdev_dbg(netdev, "Changing Tx descriptor count from %d to %d\n",
++			   adapter->tx_desc_count, new_tx_count);
++		adapter->tx_desc_count = new_tx_count;
++	}
++
++	if (new_rx_count != adapter->rx_desc_count) {
++		netdev_dbg(netdev, "Changing Rx descriptor count from %d to %d\n",
++			   adapter->rx_desc_count, new_rx_count);
++		adapter->rx_desc_count = new_rx_count;
++	}
+ 
+ 	if (netif_running(netdev)) {
+ 		adapter->flags |= IAVF_FLAG_RESET_NEEDED;
 -- 
 2.31.1
 
