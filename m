@@ -2,138 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6ED7646AC05
-	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 23:30:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6775E46AC2B
+	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 23:32:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357509AbhLFWdt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Dec 2021 17:33:49 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:45182 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350813AbhLFWdb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 17:33:31 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 62C89B815B0;
-        Mon,  6 Dec 2021 22:30:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11B0DC341C6;
-        Mon,  6 Dec 2021 22:29:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638829799;
-        bh=vgWk4/IR5H2ScItocBPuRHtKGHNWxclK7Sm5296+FVE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=lpdEZswt+IEtrtDsgPcif0et8Ynxv3t+T7Uwy+41RPp+v3sdYGlT4Rculvi67tmPM
-         mEXiyKuXHDxg3cW8jSC8A3FWE2cpCRNsumMONIYuZDXlNeKzrSCtDNabgdSXygAFAG
-         axVerldOSWz7fyvJRLP4D071ZOtIlut5onz0ybqqRr6MBhAMXTNTJbJ9ro8L4fAfNc
-         2DD1Jm5LwxJxfCVsZwmrmMpFnDksAhJt70MJs9TZs9KIgbPngNdmlTXqA+a7LhMNXH
-         rJMg0LOxLaWClh4OAygqTB3i5qmhc1P5ayitkRNGhCpLYW5Gv+eMb7uTCKLeBl1ys8
-         TMliW57jI3IEw==
-Date:   Mon, 6 Dec 2021 23:29:53 +0100
-From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Ameer Hamza <amhamza.mgc@gmail.com>, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, olteanv@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: dsa: mv88e6xxx: initialize return variable on
- declaration
-Message-ID: <20211206232953.065c0dc9@thinkpad>
-In-Reply-To: <Ya4OP+jQYd/UwiQK@lunn.ch>
-References: <20211206113219.17640-1-amhamza.mgc@gmail.com>
-        <Ya4OP+jQYd/UwiQK@lunn.ch>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        id S1351081AbhLFWgA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Dec 2021 17:36:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49656 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241471AbhLFWgA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 17:36:00 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F03AC061746;
+        Mon,  6 Dec 2021 14:32:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=IKF1Yy9+H/v912cwn1CDM3PcR8oTVzSiOSHZuXDeCYk=; b=YpDwBCjWMOaBNCU4fA+JxLvAcz
+        ZHwDm0BUHOgCWIqK4LYFzubQ5VEwtIjCeAqiPpHfhdKaoO9eBmtsNHWTQQenB6wu8KigxI5zfF6tB
+        gnYUd/m/xa2xXh5qRtyqMKFCLWI4XaiXd9mgOWl1FBdwKtQ5MB4fmFQEMOBASJw0WvyNv4iiH4bZw
+        UZedv0TRC7Y7C+0RaIBj/tCQd2V2ZsAvgXXCgnAkbaVIMrbr6TM7tJnaI3frQxviq3E++u5bE4app
+        gubV4+/3FUc56yTnHnORg4kAJMRKxScyUhF4GK45JvEh4pxTy4M+R/qjjhb+3B9HT347RuF04OcA4
+        fqTg7xQg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:56128)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1muMWn-0005TN-VJ; Mon, 06 Dec 2021 22:32:10 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1muMWf-0004iR-J3; Mon, 06 Dec 2021 22:32:01 +0000
+Date:   Mon, 6 Dec 2021 22:32:01 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Emmanuel Deloget <emmanuel.deloget@eho.link>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Louis Amas <louis.amas@eho.link>,
+        Marcin Wojtas <mw@semihalf.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Matteo Croce <mcroce@microsoft.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH v3 net 1/1] net: mvpp2: fix XDP rx queues registering
+Message-ID: <Ya6PYeb4+Je+wXfD@shell.armlinux.org.uk>
+References: <20211206172220.602024-1-louis.amas@eho.link>
+ <20211206125513.5e835155@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <cfd7a6c3-dee9-e0ba-e332-46dc656ba531@eho.link>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cfd7a6c3-dee9-e0ba-e332-46dc656ba531@eho.link>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 6 Dec 2021 14:21:03 +0100
-Andrew Lunn <andrew@lunn.ch> wrote:
-
-> On Mon, Dec 06, 2021 at 04:32:19PM +0500, Ameer Hamza wrote:
-> > Uninitialized err variable defined in mv88e6393x_serdes_power
-> > function may cause undefined behaviour if it is called from
-> > mv88e6xxx_serdes_power_down context.
+On Mon, Dec 06, 2021 at 11:14:38PM +0100, Emmanuel Deloget wrote:
+> Hello,
+> 
+> On 06/12/2021 21:55, Jakub Kicinski wrote:
+> > On Mon,  6 Dec 2021 18:22:19 +0100 Louis Amas wrote:
+> > > The registration of XDP queue information is incorrect because the
+> > > RX queue id we use is invalid. When port->id == 0 it appears to works
+> > > as expected yet it's no longer the case when port->id != 0.
+> > > 
+> > > The problem arised while using a recent kernel version on the
+> > > MACCHIATOBin. This board has several ports:
+> > >   * eth0 and eth1 are 10Gbps interfaces ; both ports has port->id == 0;
+> > >   * eth2 is a 1Gbps interface with port->id != 0.
 > > 
-> > Addresses-Coverity: 1494644 ("Uninitialized scalar variable")
+> > Still doesn't apply to net/master [1]. Which tree is it based on?
+> > Perhaps you are sending this for the BPF tree? [2] Hm, doesn't apply
+> > there either...
 > > 
-> > Signed-off-by: Ameer Hamza <amhamza.mgc@gmail.com>
-> > ---
-> >  drivers/net/dsa/mv88e6xxx/serdes.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/net/dsa/mv88e6xxx/serdes.c b/drivers/net/dsa/mv88e6xxx/serdes.c
-> > index 55273013bfb5..33727439724a 100644
-> > --- a/drivers/net/dsa/mv88e6xxx/serdes.c
-> > +++ b/drivers/net/dsa/mv88e6xxx/serdes.c
-> > @@ -1507,7 +1507,7 @@ int mv88e6393x_serdes_power(struct mv88e6xxx_chip *chip, int port, int lane,
-> >  			    bool on)
-> >  {
-> >  	u8 cmode = chip->ports[port].cmode;
-> > -	int err;
-> > +	int err = 0;
-> >  
-> >  	if (port != 0 && port != 9 && port != 10)
-> >  		return -EOPNOTSUPP;  
+> > [1] https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/
+> > [2] https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git/
 > 
-> Hi Marek
+> Strange...
 > 
-> This warning likely comes from cmode not being a SERDES mode, and that
-> is not handles in the switch statementing. Do we want an
-> 
-> default:
-> 	err = EINVAL;
-> 
-> ?
-> 
-> 	Andrew
+> AFAIK the commit was added on top of net/master (as cloned at approximately
+> 17:30 CET). I'll check with Louis tomorrow morning. We may have messed-up
+> something.
 
-Hi Andrew,
+The reason it doesn't apply is because something is butchering the
+whitespace. Whatever it is, it thinks it knows better than you do,
+and is converting the tabs in the patch to a series of space
+characters. Your email also appears to be using quoted-printable
+encoding.
 
-currently all the .serdes_power() methods return 0 for non-serdes ports.
-This is because the way it is written, these methods are not called if
-there is not a serdes lane for a given port.
+It looks like you're using git-send-email - and that should be fine.
+It also looks like you're sending through a MS Exchange server...
+My suspicion would be that the MS Exchange server is re-encoding
+to quoted-printable and is butchering the white space, but that's
+just a guess. I've no idea what you can do about that.
 
-For this issue with err variable undefined, to fix it we should simply
-set int err=0 at the beginning of mv88e6393x_serdes_power(), to make it
-behave like other serdes_power() methods do in serdes.c.
-
-
-
-But a refactor may be needed for serdes_power() methods, at least
-because they are a little weird. But it should be unrelated to this fix.
-
-In serdes.h we have static inline functions
-  mv88e6xxx_serdes_power_up(chip, port, lane)
-  mv88e6xxx_serdes_power_down(chip, port, lane)
-
-  (These simply call the serdes_power() method of chip ops, with
-   additional boolean argument to specify powerup/powerdown.
-   Also for these we first need to determine lane for a port. If lane
-   does not exists, these should not be called.)
-
-In chip.c we have function
-  mv88e6xxx_serdes_power(chip, port, on)
-  
-  (This finds if the port has a lane, and if so, calls, if on=true
-   mv88e6xxx_serdes_power_up()
-     from serdes.h, and then
-   mv88e6xxx_serdes_irq_request()
-     also from serdes.h
-
-   and if on=false, calls _irq_free() & _serdes_power_down()
-  )
-
-So if I call
-  mv88e6xxx_serdes_power(chip, port, true)
-it goes
-    mv88e6xxx_serdes_power_up(chip, port, lane)
-      chip->info->ops->serdes_power(chip, port, lane, true)
-so the `on` argument is used in some places, but in other places there
-are two functions instead.
-
-Which I find a little weird.
-
-Marek
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
