@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C71FF468FAE
-	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 04:18:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FE91468FE0
+	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 05:44:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236118AbhLFDVm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Dec 2021 22:21:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34666 "EHLO
+        id S229841AbhLFEqS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Dec 2021 23:46:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230110AbhLFDVl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Dec 2021 22:21:41 -0500
-Received: from mail-il1-x12c.google.com (mail-il1-x12c.google.com [IPv6:2607:f8b0:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1D60C0613F8;
-        Sun,  5 Dec 2021 19:18:13 -0800 (PST)
-Received: by mail-il1-x12c.google.com with SMTP id i9so8901159ilu.1;
-        Sun, 05 Dec 2021 19:18:13 -0800 (PST)
+        with ESMTP id S229606AbhLFEqR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Dec 2021 23:46:17 -0500
+Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68393C0613F8;
+        Sun,  5 Dec 2021 20:42:49 -0800 (PST)
+Received: by mail-il1-x12b.google.com with SMTP id j7so8951189ilk.13;
+        Sun, 05 Dec 2021 20:42:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:message-id:in-reply-to:references:subject
          :mime-version:content-transfer-encoding;
-        bh=HoPvzKKlsWLuEL2aHu1a2QCfAbDKSMZKrQKmcYXYMLM=;
-        b=GeI1DGdXssqYBgEGXPMXsEuCoeea32uaiKQt4Fy/u1moXPel4NHS2hlFFtHg3Lfx3q
-         Doq/c0wtlDTbisAk7S6bkdA17cc3NrtSxwRHCAVKDDhBCAdSxTpMtWKP6vwUkG3p4ddb
-         h0CzVpoq5ECF1Y2gRhZJR+eSHz/yo/7k07TdlmA34+WzFSjsZ7bD0N2NCWqvTM7MI9/z
-         hv8BHfG6K5lHLwGX7HVaQq/hmTZajvpQckjUq1zrhF73yma82/0bLFtze2jLBDxMsk25
-         Np2xhAO2/NVvUEAxLVetBjusHYQ2VgmUDYiEXET+GMIvzDskNkXLCUYXnUUls3pieFHQ
-         jd9w==
+        bh=Xa9v0ejh68fPBoT5GfktnnRqee583EcLBsEsuZrCA+g=;
+        b=h1sfPDZyR+XUrmY3wFoYrLnvYHUmQIiUe1LtVZCSf4cVH6Mr3vNXTqOGyQV0Yy4UBl
+         fQrL0DgelOM7225UvXcupbbt5X+9VmlnkWJ/IAwynLe2aanEKosK92/BJa8zhKslNlWq
+         fjEklTKpCzFVEsmDjQ2nJ2/ToQa8VZe7noNgH8nHTL/te5+6cM7MkeGgXBFmnfVzHVA2
+         EoQ2XR+ZzHKriePghfKQIC86foWQfbXiDxEyMVJf2YYYSDwz8Utxp1u5swpGXomOFX1C
+         kP/oYOhggkM3RIZ5C5ul7zHvWNqSts2R60/Ww0Gl6Flb1NvA0RPCGK+zy+BfsyJ8s1+m
+         neyQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
          :references:subject:mime-version:content-transfer-encoding;
-        bh=HoPvzKKlsWLuEL2aHu1a2QCfAbDKSMZKrQKmcYXYMLM=;
-        b=YrQgSxBCYE+QDnOzwYcicc8AzJfoZpQ1MTC4xA+GuBU4iEhxNpczHFyMlA6G62gAWF
-         ujG10BdlLAJctJteBPMJxRIKA0i4+vRuCCj5Dn1LbACBsjWWbJktlOgTk/9TGUIDF+U9
-         NjosgCyAbqc1FrQtz0fT3dn3SV39Y+XTqqp7LV5rQi3F80e4wMxE+iRi0GxFqYiYuwwd
-         o9O9KfH8w4Zkj5VvuVJ6B471AblzVBXFNe6epLiKU/lVP2Nt6O2lir2supi0sqmzZpZ3
-         Y9XuOn4gSe8knj09uCxwvsDGzpveanPBCOMRAsgxZxR4KCV69wmv6uOEi426wT28zHD0
-         gyjg==
-X-Gm-Message-State: AOAM531K6lEbnKx6lhDk+gQO0HdZbJkUXbG23xTCw/6cdXbD9bSrr9qA
-        2F4r+cNDk7SvYXphn06pCbU=
-X-Google-Smtp-Source: ABdhPJzdmQJEfC8lO/gsx69d8tRIlOR8YExFA7jIhzrQF6Yv/YvRBhTZ8T2GY9I9Xtctasc3vgWRGA==
-X-Received: by 2002:a05:6e02:1b02:: with SMTP id i2mr29542677ilv.139.1638760693230;
-        Sun, 05 Dec 2021 19:18:13 -0800 (PST)
+        bh=Xa9v0ejh68fPBoT5GfktnnRqee583EcLBsEsuZrCA+g=;
+        b=ha7bI7rEaQch7tO0F3XTNLzwruFbcDfcy/oDeWPIy+er+KSHnKc2+7s1VI7sb+chUE
+         m7XcYvhG9HM8X7R/ncm7FK+LuGlqdaDCCPJ+lnkW+7n0mCo3qWmOvdRP1Etlbe7xJimm
+         qnCUfoyLnXbAcHHmxUehsOfFd+jWcnSEFWPWAECJQGYcHwgFevKjFfBufNhtVj/9ZfMy
+         8+A3RzweIOFG/gGHtWyWeoFmIh8BkS8xS8xQHxvz/+N5U3K7P840fRP1tBJeQ5nNhBEA
+         3ZDy64Z5Q1oU0PVHaJlEdvBH4jTI2Z6hvXWh064Qlmb4F3AJtrFuRemx6ih7iX0A8kUh
+         n+/g==
+X-Gm-Message-State: AOAM5339BNDMO7MrqUe3x8lJo1G2pzXxRteqIaC/zcbf8cYFUovs1YP9
+        pYp01rjUTE6yNp8A8GBANf0=
+X-Google-Smtp-Source: ABdhPJwA2NL8z4ue6nUUEjRV+9073uYEuibCm0+7GEGwp7kkQOMprDM7Om3EBzz/ubt7kyudYRXacQ==
+X-Received: by 2002:a92:cf0d:: with SMTP id c13mr29630912ilo.319.1638765767488;
+        Sun, 05 Dec 2021 20:42:47 -0800 (PST)
 Received: from localhost ([172.243.151.11])
-        by smtp.gmail.com with ESMTPSA id y9sm3724405ill.78.2021.12.05.19.18.11
+        by smtp.gmail.com with ESMTPSA id g15sm6605551ile.88.2021.12.05.20.42.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 05 Dec 2021 19:18:12 -0800 (PST)
-Date:   Sun, 05 Dec 2021 19:18:03 -0800
+        Sun, 05 Dec 2021 20:42:46 -0800 (PST)
+Date:   Sun, 05 Dec 2021 20:42:37 -0800
 From:   John Fastabend <john.fastabend@gmail.com>
 To:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
         netdev@vger.kernel.org
@@ -58,12 +58,12 @@ Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
         alexander.duyck@gmail.com, saeed@kernel.org,
         maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
         tirthendu.sarkar@intel.com, toke@redhat.com
-Message-ID: <61ad80eb139f9_444e2082e@john.notmuch>
-In-Reply-To: <47932365c53acbf359c26944f0bec363928d342f.1638272238.git.lorenzo@kernel.org>
+Message-ID: <61ad94bde1ea6_50c22081e@john.notmuch>
+In-Reply-To: <81319e52462c07361dbf99b9ec1748b41cdcf9fa.1638272238.git.lorenzo@kernel.org>
 References: <cover.1638272238.git.lorenzo@kernel.org>
- <47932365c53acbf359c26944f0bec363928d342f.1638272238.git.lorenzo@kernel.org>
-Subject: RE: [PATCH v19 bpf-next 10/23] net: mvneta: enable jumbo frames if
- the loaded XDP program support mb
+ <81319e52462c07361dbf99b9ec1748b41cdcf9fa.1638272238.git.lorenzo@kernel.org>
+Subject: RE: [PATCH v19 bpf-next 12/23] bpf: add multi-buff support to the
+ bpf_xdp_adjust_tail() API
 Mime-Version: 1.0
 Content-Type: text/plain;
  charset=utf-8
@@ -73,78 +73,143 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Lorenzo Bianconi wrote:
-> Enable the capability to receive jumbo frames even if the interface is
-> running in XDP mode if the loaded program declare to properly support
-> xdp multi-buff. At same time reject a xdp program not supporting xdp
-> multi-buffer if the driver is running in xdp multi-buffer mode.
+> From: Eelco Chaudron <echaudro@redhat.com>
 > 
+> This change adds support for tail growing and shrinking for XDP multi-buff.
+> 
+> When called on a multi-buffer packet with a grow request, it will work
+> on the last fragment of the packet. So the maximum grow size is the
+> last fragments tailroom, i.e. no new buffer will be allocated.
+> A XDP mb capable driver is expected to set frag_size in xdp_rxq_info data
+> structure to notify the XDP core the fragment size. frag_size set to 0 is
+> interpreted by the XDP core as tail growing is not allowed.
+> Introduce __xdp_rxq_info_reg utility routine to initialize frag_size field.
+> 
+> When shrinking, it will work from the last fragment, all the way down to
+> the base buffer depending on the shrinking size. It's important to mention
+> that once you shrink down the fragment(s) are freed, so you can not grow
+> again to the original size.
+> 
+> Acked-by: Jakub Kicinski <kuba@kernel.org>
+> Co-developed-by: Lorenzo Bianconi <lorenzo@kernel.org>
 > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
 > ---
+>  drivers/net/ethernet/marvell/mvneta.c |  3 +-
+>  include/net/xdp.h                     | 16 ++++++-
+>  net/core/filter.c                     | 67 +++++++++++++++++++++++++++
+>  net/core/xdp.c                        | 12 +++--
+>  4 files changed, 90 insertions(+), 8 deletions(-)
 
-Allow me to enumerate the cases as a sanity check.
+Some nits and one questiopn about offset > 0 on shrink.
 
- mb prog on driver w/out mb support:
-
-    The program will never receive a non-linear buffer so no
-    trouble here. If user tries to configure MTU >1500 an error
-    will be thrown by driver same as always.
-  
- !mb prog on driver w/out mb support.
-
-    This is the normal case, no change.
-
- mb prog on driver with mb support.
-
-    Allowed and user may now set MTU >1500.    
-
- !mb prog on driver with mb support
-
-    Allowed and now driver must throw an error on MTU >1500
-
-OK works for me. Thanks.
-
-Acked-by: John Fastabend <john.fastabend@gmail.com>
-
->  drivers/net/ethernet/marvell/mvneta.c | 13 +++++++++----
->  1 file changed, 9 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-> index 332699960b53..98db3d03116a 100644
-> --- a/drivers/net/ethernet/marvell/mvneta.c
-> +++ b/drivers/net/ethernet/marvell/mvneta.c
-> @@ -3750,6 +3750,7 @@ static void mvneta_percpu_disable(void *arg)
->  static int mvneta_change_mtu(struct net_device *dev, int mtu)
->  {
->  	struct mvneta_port *pp = netdev_priv(dev);
-> +	struct bpf_prog *prog = pp->xdp_prog;
->  	int ret;
+>  void xdp_rxq_info_unreg(struct xdp_rxq_info *xdp_rxq);
+>  void xdp_rxq_info_unused(struct xdp_rxq_info *xdp_rxq);
+>  bool xdp_rxq_info_is_reg(struct xdp_rxq_info *xdp_rxq);
+> diff --git a/net/core/filter.c b/net/core/filter.c
+> index b9bfe6fac6df..ace67957e685 100644
+> --- a/net/core/filter.c
+> +++ b/net/core/filter.c
+> @@ -3831,11 +3831,78 @@ static const struct bpf_func_proto bpf_xdp_adjust_head_proto = {
+>  	.arg2_type	= ARG_ANYTHING,
+>  };
 >  
->  	if (!IS_ALIGNED(MVNETA_RX_PKT_SIZE(mtu), 8)) {
-> @@ -3758,8 +3759,11 @@ static int mvneta_change_mtu(struct net_device *dev, int mtu)
->  		mtu = ALIGN(MVNETA_RX_PKT_SIZE(mtu), 8);
->  	}
->  
-> -	if (pp->xdp_prog && mtu > MVNETA_MAX_RX_BUF_SIZE) {
-> -		netdev_info(dev, "Illegal MTU value %d for XDP mode\n", mtu);
-> +	if (prog && !prog->aux->xdp_mb && mtu > MVNETA_MAX_RX_BUF_SIZE) {
-> +		netdev_info(dev,
-> +			    "Illegal MTU %d for XDP prog without multi-buf\n",
-> +			    mtu);
+> +static int bpf_xdp_mb_increase_tail(struct xdp_buff *xdp, int offset)
+> +{
+> +	struct skb_shared_info *sinfo = xdp_get_shared_info_from_buff(xdp);
+> +	skb_frag_t *frag = &sinfo->frags[sinfo->nr_frags - 1];
+> +	struct xdp_rxq_info *rxq = xdp->rxq;
+> +	int size, tailroom;
+
+These could be 'unsized int'.
+
 > +
+> +	if (!rxq->frag_size || rxq->frag_size > xdp->frame_sz)
+> +		return -EOPNOTSUPP;
+> +
+> +	tailroom = rxq->frag_size - skb_frag_size(frag) - skb_frag_off(frag);
+> +	if (unlikely(offset > tailroom))
+> +		return -EINVAL;
+> +
+> +	size = skb_frag_size(frag);
+> +	memset(skb_frag_address(frag) + size, 0, offset);
+> +	skb_frag_size_set(frag, size + offset);
+
+Could probably make this a helper skb_frag_grow() or something in
+skbuff.h we have sub, add, put_zero, etc. there.
+
+> +	sinfo->xdp_frags_size += offset;
+> +
+> +	return 0;
+> +}
+> +
+> +static int bpf_xdp_mb_shrink_tail(struct xdp_buff *xdp, int offset)
+> +{
+> +	struct skb_shared_info *sinfo = xdp_get_shared_info_from_buff(xdp);
+> +	int i, n_frags_free = 0, len_free = 0;
+> +
+> +	if (unlikely(offset > (int)xdp_get_buff_len(xdp) - ETH_HLEN))
+> +		return -EINVAL;
+> +
+> +	for (i = sinfo->nr_frags - 1; i >= 0 && offset > 0; i--) {
+> +		skb_frag_t *frag = &sinfo->frags[i];
+> +		int size = skb_frag_size(frag);
+> +		int shrink = min_t(int, offset, size);
+> +
+> +		len_free += shrink;
+> +		offset -= shrink;
+> +
+> +		if (unlikely(size == shrink)) {
+
+not so sure about the unlikely.
+
+> +			struct page *page = skb_frag_page(frag);
+> +
+> +			__xdp_return(page_address(page), &xdp->rxq->mem,
+> +				     false, NULL);
+> +			n_frags_free++;
+> +		} else {
+> +			skb_frag_size_set(frag, size - shrink);
+
+skb_frag_size_sub() maybe, but you need to pull out size anyways
+so its not a big deal to me.
+
+> +			break;
+> +		}
+> +	}
+> +	sinfo->nr_frags -= n_frags_free;
+> +	sinfo->xdp_frags_size -= len_free;
+> +
+> +	if (unlikely(offset > 0)) {
+
+hmm whats the case for offset to != 0? Seems with initial unlikely
+check and shrinking while walking backwards through the frags it
+should be zero? Maybe a comment would help?
+
+> +		xdp_buff_clear_mb(xdp);
+> +		xdp->data_end -= offset;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+>  BPF_CALL_2(bpf_xdp_adjust_tail, struct xdp_buff *, xdp, int, offset)
+>  {
+>  	void *data_hard_end = xdp_data_hard_end(xdp); /* use xdp->frame_sz */
+>  	void *data_end = xdp->data_end + offset;
+>  
+> +	if (unlikely(xdp_buff_is_mb(xdp))) { /* xdp multi-buffer */
+> +		if (offset < 0)
+> +			return bpf_xdp_mb_shrink_tail(xdp, -offset);
+> +
+> +		return bpf_xdp_mb_increase_tail(xdp, offset);
+> +	}
+> +
+>  	/* Notice that xdp_data_hard_end have reserved some tailroom */
+>  	if (unlikely(data_end > data_hard_end))
 >  		return -EINVAL;
->  	}
->  
-> @@ -4428,8 +4432,9 @@ static int mvneta_xdp_setup(struct net_device *dev, struct bpf_prog *prog,
->  	struct mvneta_port *pp = netdev_priv(dev);
->  	struct bpf_prog *old_prog;
->  
-> -	if (prog && dev->mtu > MVNETA_MAX_RX_BUF_SIZE) {
-> -		NL_SET_ERR_MSG_MOD(extack, "MTU too large for XDP");
-> +	if (prog && !prog->aux->xdp_mb && dev->mtu > MVNETA_MAX_RX_BUF_SIZE) {
-> +		NL_SET_ERR_MSG_MOD(extack,
-> +				   "prog does not support XDP multi-buff");
->  		return -EOPNOTSUPP;
->  	}
->  
-> -- 
-> 2.31.1
+
+[...]
+
+Thanks,
+John
