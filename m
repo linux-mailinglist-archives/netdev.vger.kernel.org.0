@@ -2,130 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 345C546A54E
-	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 20:02:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A9EE346A566
+	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 20:11:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348172AbhLFTGV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Dec 2021 14:06:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55996 "EHLO
+        id S1348285AbhLFTPQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Dec 2021 14:15:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232972AbhLFTGU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 14:06:20 -0500
-Received: from mail-il1-x131.google.com (mail-il1-x131.google.com [IPv6:2607:f8b0:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7170C061746;
-        Mon,  6 Dec 2021 11:02:51 -0800 (PST)
-Received: by mail-il1-x131.google.com with SMTP id t8so11274171ilu.8;
-        Mon, 06 Dec 2021 11:02:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:message-id:in-reply-to:references:subject:mime-version
-         :content-transfer-encoding;
-        bh=DGKaEcXL8IOy/SVzbuQAC3UpZ4Q1Y1ENlH6uq7i+0Hw=;
-        b=JdkupEYh9uGJbqMf0WCdukWqjLlIqPy3WUA3x8qfq0Jl3Dd2Q05Gsy0hAS5HhjbiLl
-         xHNpVRYYclUMPrcFDuFQKYAWoqxfrfMp1GLI+MxjrhFjGQuSMEkNmiU8ISvIvM2SGVCD
-         kSRqi0c6EZWSt0vAvbGjfDL1ouQHT8J92jw2n8nRb5h4LHxqXJA6qgIcZEsXnutZjpA7
-         HruZUMb+CWIv5qGMZDBBEJ0B9SqtmsLkdZYUhL9G6ngMKYY6O6cP/KhfrXtDcCwC1ndL
-         r6RUUqRMmyeSzq/1GHSgZvoJx5NyuI83y1TZV0VNE1Q5hbFSNsERiSYUWeMfMeGo6Nlo
-         yONQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:message-id:in-reply-to:references
-         :subject:mime-version:content-transfer-encoding;
-        bh=DGKaEcXL8IOy/SVzbuQAC3UpZ4Q1Y1ENlH6uq7i+0Hw=;
-        b=tuDoN1TJ/haPEzioeLCZSrvpLsspd3L/VO79dtHBcJj0nzYKUhzHoMik2h3/K8AopB
-         4UYNag88x9kjjZTXr+D1nH4yTNBGyZcq+baLU3paZRWVUw13BSgFw4AOJYXdsbmxWfOc
-         rkutxNH2MaztFUH8n5VARtQzdT/7+d1DvTyAU2VPm8qhpHGC6fKo2oI0iDDSFDXy4Uwh
-         vyXOjpR1YX8uFcw4lbOYAVlGK3aap1cY8xXKm8UCZdDoM8RCNknUltyBtLnZXqpmluVN
-         K8ehJ1OKzR+EA1V931aKxw8hxVffKmdDCRQZglHfnaGUQKqC+YkwkiQ7Hv/bVKvpGsyi
-         elZQ==
-X-Gm-Message-State: AOAM533PPwqUWcLfkGCYaxYHGKcQRjX7IO455I827dWH388qY8z2ocfV
-        eQmndMvOVwcuO9kHaF5ho5EaEqZ6tUZ3Lw==
-X-Google-Smtp-Source: ABdhPJzW8cN3NemLiQ02j3NaTMiMGE75FnmsuoXR5qLQCsVp0c1Y6d5j2G3ltIgD6TAWzL3Xr1G2EA==
-X-Received: by 2002:a05:6e02:12cb:: with SMTP id i11mr32239553ilm.12.1638817371156;
-        Mon, 06 Dec 2021 11:02:51 -0800 (PST)
-Received: from localhost ([172.243.151.11])
-        by smtp.gmail.com with ESMTPSA id r1sm4434540ilo.38.2021.12.06.11.02.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Dec 2021 11:02:50 -0800 (PST)
-Date:   Mon, 06 Dec 2021 11:02:42 -0800
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     syzbot <syzbot+5027de09e0964fd78ce1@syzkaller.appspotmail.com>,
-        andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, davem@davemloft.net, hawk@kernel.org,
-        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, yhs@fb.com
-Message-ID: <61ae5e52b9712_c5bd2082e@john.notmuch>
-In-Reply-To: <000000000000367c2205d2549cb9@google.com>
-References: <000000000000367c2205d2549cb9@google.com>
-Subject: RE: [syzbot] KASAN: vmalloc-out-of-bounds Read in __bpf_prog_put
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        with ESMTP id S1348277AbhLFTPO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 14:15:14 -0500
+Received: from forwardcorp1o.mail.yandex.net (forwardcorp1o.mail.yandex.net [IPv6:2a02:6b8:0:1a2d::193])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A26DEC0613F8
+        for <netdev@vger.kernel.org>; Mon,  6 Dec 2021 11:11:45 -0800 (PST)
+Received: from sas1-ec30c78b6c5b.qloud-c.yandex.net (sas1-ec30c78b6c5b.qloud-c.yandex.net [IPv6:2a02:6b8:c14:2704:0:640:ec30:c78b])
+        by forwardcorp1o.mail.yandex.net (Yandex) with ESMTP id 52CB22E0E4F;
+        Mon,  6 Dec 2021 22:11:42 +0300 (MSK)
+Received: from sas1-9d43635d01d6.qloud-c.yandex.net (sas1-9d43635d01d6.qloud-c.yandex.net [2a02:6b8:c08:793:0:640:9d43:635d])
+        by sas1-ec30c78b6c5b.qloud-c.yandex.net (mxbackcorp/Yandex) with ESMTP id YT8DExVFDd-BfNOPM7K;
+        Mon, 06 Dec 2021 22:11:42 +0300
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
+        t=1638817902; bh=KylOkFIS2//cBnk06itr2FjlCao9sKvnkGXCtCvFtxQ=;
+        h=References:Date:Subject:To:From:Message-Id:In-Reply-To:Cc;
+        b=EXFXh48ShN/CcE8hRcfKV1kblzarQ9GIawwOhDO7Gi6QHxOr3uIexn4U9QtEIdpxA
+         H132HRGu7XEOZMn1AJkPD8R4faUcbSjNSyct5pMMvhkj+hhYhTBnUc8ZQCHsABbk5W
+         jJzUUr2ZxWbTw67rqpnPGIhfjyr4xJTjpCvFd1bs=
+Authentication-Results: sas1-ec30c78b6c5b.qloud-c.yandex.net; dkim=pass header.i=@yandex-team.ru
+Received: from vmhmukos.sas.yp-c.yandex.net (vmhmukos.sas.yp-c.yandex.net [2a02:6b8:c07:895:0:696:abd4:0])
+        by sas1-9d43635d01d6.qloud-c.yandex.net (smtpcorp/Yandex) with ESMTPSA id U4ua9e2Xs9-BfPOtXMw;
+        Mon, 06 Dec 2021 22:11:41 +0300
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (Client certificate not present)
+X-Yandex-Fwd: 2
+From:   Akhmat Karakotov <hmukos@yandex-team.ru>
+To:     netdev@vger.kernel.org
+Cc:     hmukos@yandex-team.ru, edumazet@google.com, eric.dumazet@gmail.com,
+        mitradir@yandex-team.ru, tom@herbertland.com, zeil@yandex-team.ru
+Subject: [RFC PATCH v3 net-next 0/4] txhash: Make hash rethink configurable
+Date:   Mon,  6 Dec 2021 22:11:07 +0300
+Message-Id: <20211206191111.14376-1-hmukos@yandex-team.ru>
+In-Reply-To: <20211025203521.13507-1-hmukos@yandex-team.ru>
+References: <20211025203521.13507-1-hmukos@yandex-team.ru>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot wrote:
-> Hello,
-> 
-> syzbot found the following issue on:
-> 
-> HEAD commit:    ce83278f313c Merge branch 'qed-enhancements'
-> git tree:       net-next
-> console output: https://syzkaller.appspot.com/x/log.txt?x=11c8ce3ab00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=b5949d4891208a1b
-> dashboard link: https://syzkaller.appspot.com/bug?extid=5027de09e0964fd78ce1
-> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> 
-> Unfortunately, I don't have any reproducer for this issue yet.
-> 
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+5027de09e0964fd78ce1@syzkaller.appspotmail.com
-> 
-> ==================================================================
-> BUG: KASAN: vmalloc-out-of-bounds in __bpf_prog_put.constprop.0+0x1dd/0x220 kernel/bpf/syscall.c:1812
-> Read of size 8 at addr ffffc90000cf2038 by task kworker/0:24/16179
-> 
-> CPU: 0 PID: 16179 Comm: kworker/0:24 Not tainted 5.16.0-rc3-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> Workqueue: events sk_psock_destroy
-> Call Trace:
->  <TASK>
->  __dump_stack lib/dump_stack.c:88 [inline]
->  dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
->  print_address_description.constprop.0.cold+0xf/0x320 mm/kasan/report.c:247
->  __kasan_report mm/kasan/report.c:433 [inline]
->  kasan_report.cold+0x83/0xdf mm/kasan/report.c:450
->  __bpf_prog_put.constprop.0+0x1dd/0x220 kernel/bpf/syscall.c:1812
->  psock_set_prog include/linux/skmsg.h:477 [inline]
->  psock_progs_drop include/linux/skmsg.h:495 [inline]
->  sk_psock_destroy+0xad/0x620 net/core/skmsg.c:804
->  process_one_work+0x9b2/0x1690 kernel/workqueue.c:2298
->  worker_thread+0x658/0x11f0 kernel/workqueue.c:2445
->  kthread+0x405/0x4f0 kernel/kthread.c:327
->  ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
->  </TASK>
-> 
-> 
-> Memory state around the buggy address:
->  ffffc90000cf1f00: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
->  ffffc90000cf1f80: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
-> >ffffc90000cf2000: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
->                                         ^
->  ffffc90000cf2080: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
->  ffffc90000cf2100: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
-> ==================================================================
-> 
-> 
-> ---
-> This report is generated by a bot. It may contain errors.
-> See https://goo.gl/tpsmEJ for more information about syzbot.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
-> 
-> syzbot will keep track of this issue. See:
-> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+As it was shown in the report by Alexander Azimov, hash rethink at the
+client-side may lead to connection timeout toward stateful anycast
+services. Tom Herbert created a patchset to address this issue by applying
+hash rethink only after a negative routing event (3RTOs) [1]. This change
+also affects server-side behavior, which we found undesirable. This
+patchset changes defaults in a way to make them safe: hash rethink at the
+client-side is disabled and enabled at the server-side upon each RTO
+event or in case of duplicate acknowledgments.
 
-I'll take look some psock issue here.
+This patchset provides two options to change default behaviour. The hash
+rethink may be disabled at the server-side by the new sysctl option.
+Changes in the sysctl option don't affect default behavior at the
+client-side.
+
+Hash rethink can also be enabled/disabled with socket option or bpf
+syscalls which ovewrite both default and sysctl settings. This socket
+option is available on both client and server-side. This should provide
+mechanics to enable hash rethink inside administrative domain, such as DC,
+where hash rethink at the client-side can be desirable.
+
+[1] https://lore.kernel.org/netdev/20210809185314.38187-1-tom@herbertland.com/
+
+v2:
+	- Changed sysctl default to ENABLED in all patches. Reduced sysctl
+	  and socket option size to u8. Fixed netns bug reported by kernel
+	  test robot.
+
+v3:
+	- Fixed bug with bad u8 comparison. Moved sk->txrehash to use less
+	  bytes in struct. Added WRITE_ONCE() in setsockopt in and
+	  READ_ONCE() in tcp_rtx_synack.
+
+Akhmat Karakotov (4):
+  txhash: Make rethinking txhash behavior configurable via sysctl
+  txhash: Add socket option to control TX hash rethink behavior
+  bpf: Add SO_TXREHASH setsockopt
+  tcp: change SYN ACK retransmit behaviour to account for rehash
+
+ arch/alpha/include/uapi/asm/socket.h  |  2 ++
+ arch/mips/include/uapi/asm/socket.h   |  2 ++
+ arch/parisc/include/uapi/asm/socket.h |  2 ++
+ arch/sparc/include/uapi/asm/socket.h  |  2 ++
+ include/net/netns/core.h              |  1 +
+ include/net/sock.h                    | 28 ++++++++++++++-------------
+ include/uapi/asm-generic/socket.h     |  2 ++
+ include/uapi/linux/socket.h           |  4 ++++
+ net/core/filter.c                     | 10 ++++++++++
+ net/core/net_namespace.c              |  2 ++
+ net/core/sock.c                       | 14 ++++++++++++++
+ net/core/sysctl_net_core.c            | 14 ++++++++++++--
+ net/ipv4/inet_connection_sock.c       |  3 +++
+ net/ipv4/tcp_output.c                 |  4 +++-
+ 14 files changed, 74 insertions(+), 16 deletions(-)
+
+-- 
+2.17.1
+
