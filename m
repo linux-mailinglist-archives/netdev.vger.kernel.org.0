@@ -2,134 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 42FF3469889
-	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 15:19:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B0C974698C4
+	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 15:24:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343912AbhLFOXC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Dec 2021 09:23:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42646 "EHLO
+        id S1344173AbhLFO1d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Dec 2021 09:27:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343892AbhLFOXB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 09:23:01 -0500
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67FE7C061354;
-        Mon,  6 Dec 2021 06:19:33 -0800 (PST)
-Received: by mail-pj1-x1036.google.com with SMTP id np3so7866857pjb.4;
-        Mon, 06 Dec 2021 06:19:33 -0800 (PST)
+        with ESMTP id S1344187AbhLFO1b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 09:27:31 -0500
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3555C061746;
+        Mon,  6 Dec 2021 06:24:02 -0800 (PST)
+Received: by mail-wr1-x430.google.com with SMTP id q3so22776337wru.5;
+        Mon, 06 Dec 2021 06:24:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=7+TjBg26qYjN6N7+9VcAF9zyslm2ABiWax4bLutA+tA=;
-        b=f9M5JLJRG6hZFPCcZ1VGBj6dk4h92i9GiiVgKsNNUQFiDTSIXmaER9IaQWziUfrQ/0
-         qa3GNaf/njTkL1uJ81a318oppGqxeZ4BbcT9GGYMjs1cw8PHMlBEDdFp5Gu7W2ZYhqeP
-         DQ0dE5SsoRhc/sIPqjG5IRHWnrHc+0w5hEjT3ppnETiBZyKvJyuh5hygqrwyVBhoEnmJ
-         IwRmbyJ5sNomLrxjpRo1y9wtWt2MJXEM2X247X8t1UvJ2rV20IbyXdb2S1lE9i34MGPO
-         C7yQKcwPzpoDJz5kk+NMg8L4gzvSsI27nnr11s1xyG3B7cafIHH1YyJFJ5x78gBD3amG
-         bCXA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=hCJ8tZmZjGJuO1Z9w5NQSatzAirMVyzvfUd8Ef5O3JM=;
+        b=YO+5wbYJte23YOyBURdCM1INLLe+qrJ+EHmwzPZ5zkyUY1sGpnuPkBMWR5r5VrYDfa
+         M6J8dBbeGKsFBaBtLDb6JKLZeWcWHic4Bo4P6YwAQq8oBXx8gMd35Xqt6n7VT0bTlP4c
+         TskAAvtt7aaGUOFk4jE80D3ig9BJFsf4YWObyiBBG1P0ZzQefomDpTOdUWmorR/gwQNf
+         drpDRmJjgEYPdAkifcf/LDMoETKwMl+yGQqgsIjavKqi0VJaU6+s4GlpqFhsH0MPN4if
+         W+IMj5zj8w55kC6fOinn0RyowFT0Imo/ilsu4DBvb0Z68HPGhuLXGB3UxbDeDZ4ebr9G
+         9E4A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=7+TjBg26qYjN6N7+9VcAF9zyslm2ABiWax4bLutA+tA=;
-        b=UvlXzEXsd3R7DYnp24g12FIxKHRqf3uACVzaNWIxuF/Rm1HM9VYnvDYSkum0zbjTfH
-         bvfDK9J+RbDP3fccdPb4DqZU0m+H4ee2CG+RYQw9SZqQuebuv71BPRnb+dnCvamYg0t3
-         kSHWnxIpfIqGCDbCOWK0rrGFNXqz8Sq0tzZ9l4bSNuIz+YzbJ+MvYtXR5u97dCj5oAV4
-         wxSDrNGtgSBnAqDxetZjh732Qnnae5H6/RHYZGH7oWcHiocovqvmfsLXdAaI6/hQhQtg
-         HEs8tFOATeg7vTzEb+W9AFQaEBhZKjQtX+/xd7mbV/7RdnUojGn65JCEbO+MuJy3/Iqp
-         4rJA==
-X-Gm-Message-State: AOAM533wUm/y5Fvsmg7Hn4FuUXY9kAUcngliIFhkx08PzWCqic65Y5bb
-        ZkWdTPzgZOKDyg7I5VW0IWg=
-X-Google-Smtp-Source: ABdhPJw5eBcqMnlmCu3VP7SDK7JlPHBF3sS/6sU5CfZhorAn8F+Tm/Z37W+b1RJF7S8Gmv/jOQFzmw==
-X-Received: by 2002:a17:90b:4b51:: with SMTP id mi17mr37838716pjb.48.1638800372941;
-        Mon, 06 Dec 2021 06:19:32 -0800 (PST)
-Received: from ?IPV6:2404:f801:0:5:8000::50b? ([2404:f801:9000:1a:efea::50b])
-        by smtp.gmail.com with ESMTPSA id h1sm3517800pfh.219.2021.12.06.06.19.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 06 Dec 2021 06:19:32 -0800 (PST)
-Message-ID: <581569ce-b166-1cad-2624-66de319cc2b9@gmail.com>
-Date:   Mon, 6 Dec 2021 22:19:21 +0800
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=hCJ8tZmZjGJuO1Z9w5NQSatzAirMVyzvfUd8Ef5O3JM=;
+        b=ipMnd/AvkTrMHkJ4fv+2cW4JrUEuAY0VZdJ8VusMFzVWlWL1Y/7HbXzSI/RthlVMFx
+         SHCFchhk1lCTNW0nFpn6C6xwPAXrxoDk9+q7My8resvjx+7WdI1CpI8DgPj8GX4aTTLH
+         vq2NPUg81upenXGZ4ZxJ7witSAH0Ka2T/89BWSpR/HhyrqYnaiSPDzySADhVX8AzUSuz
+         XYIF0KjHTRgRs06+wejt98Uw5nF0QI+a+5kHRcDWDtFcWAjhjM8742qUHSphXlDeYOhs
+         qxIVzqYkO8Vq8ZkS7plyeSgdNP/5lGevBP3lIQq4WJwWTCBaX9Wn4u9tuc+kJuE4gzOK
+         7o4A==
+X-Gm-Message-State: AOAM531m3yiuS/Iw6jWEQaRxkg2QCxRaW1USvwRXRM0iVNWVw01n0RJ1
+        spQRTL2oMvCO6fbXLZwkvXo=
+X-Google-Smtp-Source: ABdhPJwAvBQpbdwnhQHtQ7Jq9mPqsIOVzD8q9i4e+RpvxETTS3aho5s8Iyfy3JjVJZrnsmHAspLokQ==
+X-Received: by 2002:adf:9e4b:: with SMTP id v11mr44522421wre.531.1638800641261;
+        Mon, 06 Dec 2021 06:24:01 -0800 (PST)
+Received: from localhost.localdomain ([39.48.147.147])
+        by smtp.gmail.com with ESMTPSA id y15sm13939293wry.72.2021.12.06.06.23.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Dec 2021 06:24:00 -0800 (PST)
+From:   Ameer Hamza <amhamza.mgc@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, mcoquelin.stm32@gmail.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     amhamza.mgc@gmail.com, h.assmann@pengutronix.de
+Subject: [PATCH v2] net: stmmac: Fix possible division by zero
+Date:   Mon,  6 Dec 2021 19:23:37 +0500
+Message-Id: <20211206142337.28602-1-amhamza.mgc@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20211203173708.7fdbed06@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20211203173708.7fdbed06@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.2
-Subject: Re: [PATCH V4 3/5] hyperv/IOMMU: Enable swiotlb bounce buffer for
- Isolation VM
-Content-Language: en-US
-To:     Juergen Gross <jgross@suse.com>, kys@microsoft.com,
-        haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
-        decui@microsoft.com, tglx@linutronix.de, mingo@redhat.com,
-        bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
-        hpa@zytor.com, sstabellini@kernel.org, boris.ostrovsky@oracle.com,
-        joro@8bytes.org, will@kernel.org, davem@davemloft.net,
-        kuba@kernel.org, jejb@linux.ibm.com, martin.petersen@oracle.com,
-        arnd@arndb.de, hch@infradead.org, m.szyprowski@samsung.com,
-        robin.murphy@arm.com, thomas.lendacky@amd.com,
-        Tianyu.Lan@microsoft.com, xen-devel@lists.xenproject.org,
-        michael.h.kelley@microsoft.com
-Cc:     iommu@lists.linux-foundation.org, linux-arch@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
-        vkuznets@redhat.com, brijesh.singh@amd.com, konrad.wilk@oracle.com,
-        hch@lst.de, parri.andrea@gmail.com, dave.hansen@intel.com
-References: <20211205081815.129276-1-ltykernel@gmail.com>
- <20211205081815.129276-4-ltykernel@gmail.com>
- <a5943893-510a-3fc8-cbb7-8742369bf36b@suse.com>
- <125ffb7d-958c-e77a-243b-4cf38f690396@gmail.com>
- <ed9aa3d5-9ac8-2195-e617-85599ffd7864@suse.com>
-From:   Tianyu Lan <ltykernel@gmail.com>
-In-Reply-To: <ed9aa3d5-9ac8-2195-e617-85599ffd7864@suse.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+In stmmac_init_tstamp_counter() routine, there is a possiblity of division
+by zero. If priv->plat->clk_ptp_rate becomes greater than 1 GHz,
+config_sub_second_increment() subroutine may calculate sec_inc as zero
+depending upon the PTP_TCR_TSCFUPDT register value, which will cause
+divide by zero exception.
 
+Fixes: a6da2bbb0005e ("net: stmmac: retain PTP clock time during SIOCSHWTSTAMP ioctls")
+Addresses-Coverity: 1494557 ("Division or modulo by zero")
+Signed-off-by: Ameer Hamza <amhamza.mgc@gmail.com>
 
-On 12/5/2021 6:31 PM, Juergen Gross wrote:
-> On 05.12.21 09:48, Tianyu Lan wrote:
->>
->>
->> On 12/5/2021 4:34 PM, Juergen Gross wrote:
->>> On 05.12.21 09:18, Tianyu Lan wrote:
->>>> From: Tianyu Lan <Tianyu.Lan@microsoft.com>
->>>>
->>>> hyperv Isolation VM requires bounce buffer support to copy
->>>> data from/to encrypted memory and so enable swiotlb force
->>>> mode to use swiotlb bounce buffer for DMA transaction.
->>>>
->>>> In Isolation VM with AMD SEV, the bounce buffer needs to be
->>>> accessed via extra address space which is above shared_gpa_boundary
->>>> (E.G 39 bit address line) reported by Hyper-V CPUID ISOLATION_CONFIG.
->>>> The access physical address will be original physical address +
->>>> shared_gpa_boundary. The shared_gpa_boundary in the AMD SEV SNP
->>>> spec is called virtual top of memory(vTOM). Memory addresses below
->>>> vTOM are automatically treated as private while memory above
->>>> vTOM is treated as shared.
->>>>
->>>> Hyper-V initalizes swiotlb bounce buffer and default swiotlb
->>>> needs to be disabled. pci_swiotlb_detect_override() and
->>>> pci_swiotlb_detect_4gb() enable the default one. To override
->>>> the setting, hyperv_swiotlb_detect() needs to run before
->>>> these detect functions which depends on the pci_xen_swiotlb_
->>>> init(). Make pci_xen_swiotlb_init() depends on the hyperv_swiotlb
->>>> _detect() to keep the order.
->>>
->>> Why? Does Hyper-V plan to support Xen PV guests? If not, I don't see
->>> the need for adding this change.
->>>
->>
->> This is to keep detect function calling order that Hyper-V detect 
->> callback needs to call before pci_swiotlb_detect_override() and 
->> pci_swiotlb_detect_4gb(). This is the same for why
->> pci_swiotlb_detect_override() needs to depend on the 
->> pci_xen_swiotlb_detect(). Hyper-V also has such request and so make 
->> xen detect callback depends on Hyper-V one.
-> 
-> And does this even work without CONFIG_SWIOTLB_XEN, i.e. without
-> pci_xen_swiotlb_detect() being in the system?
-> 
-Hi Juergen:
-	Thanks for your review. This is a issue and I just sent out a v5 which 
-decouples the dependency between xen and hyperv.
+---
+Changes in v2:
+Added fix tag, bug justification, and commit author.
+---
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index da8306f60730..f44400323407 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -863,7 +863,7 @@ int stmmac_init_tstamp_counter(struct stmmac_priv *priv, u32 systime_flags)
+ 	stmmac_config_sub_second_increment(priv, priv->ptpaddr,
+ 					   priv->plat->clk_ptp_rate,
+ 					   xmac, &sec_inc);
+-	temp = div_u64(1000000000ULL, sec_inc);
++	temp = div_u64(1000000000ULL, (sec_inc > 0) ? sec_inc : 1);
+ 
+ 	/* Store sub second increment for later use */
+ 	priv->sub_second_inc = sec_inc;
+-- 
+2.25.1
+
