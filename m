@@ -2,97 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1980E46A4A6
-	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 19:31:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3313946A4B1
+	for <lists+netdev@lfdr.de>; Mon,  6 Dec 2021 19:35:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234846AbhLFSfU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Dec 2021 13:35:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48740 "EHLO
+        id S241820AbhLFSie (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Dec 2021 13:38:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233544AbhLFSfU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 13:35:20 -0500
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5F0AC061746
-        for <netdev@vger.kernel.org>; Mon,  6 Dec 2021 10:31:50 -0800 (PST)
-Received: by mail-ed1-x532.google.com with SMTP id l25so46576566eda.11
-        for <netdev@vger.kernel.org>; Mon, 06 Dec 2021 10:31:50 -0800 (PST)
+        with ESMTP id S240707AbhLFSib (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 13:38:31 -0500
+Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52B15C061746;
+        Mon,  6 Dec 2021 10:35:02 -0800 (PST)
+Received: by mail-il1-x12e.google.com with SMTP id h16so11216390ila.4;
+        Mon, 06 Dec 2021 10:35:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=A4et8p40H6Zf4KYzWkDn8PJl/oJNlm4nqaGwsmGSsdY=;
-        b=gngB4SKUe9aFybsD7rXyy2feRq2+OS1ISkvw7y7IPZyLdxxIJ9MqJnBCDyPVE3Ddi3
-         adFcmeQN71XO6CGUynAeQhy7d1Og1wvWzyMj5+VFBP3TOAgIb5lXHhbj6wD5C/OPLl9w
-         AaSyN1Tp3WdoeIMautH64Z6fA54bptd2kKEQTDwI7Cnx/5d9v+Wwin2guCIiqAii2KQ/
-         605YUCXpXi0OhFKNHZAKOrhqKIzEbpViph3hYHxNRkGGP2MmD8+Cp0XhHq7gMgy8joxZ
-         PeEHJhbowyvPWJHgYqAIbuj1hrQLj3Ngi9JReKZBWs5vfHTxEBTmsezA38aMEfgIq6Qk
-         emoA==
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=RAb96UCiaXw6MtSUrhTS6T7fSHFOHo/BOxPMDP2JWfc=;
+        b=SQL4tepQawv0TamQBhHwckCu9lzXyTwWDJLk2VGYh4HhvhC26U8tUaaLO2ag02I1vn
+         R37BG6W0xCkZMQr+0z+4H3qDrHJYokVL5X1r0z7qGWYXSl0RlTBSx92LOSvVg/1WtRAk
+         xbC7OweT8dW/v1nyekrJnR9Agyth4/2iqUbts2RrmCqs+YaNPYGjmh5UssotdbA6myf6
+         T06KQI8TbPowcCWSTTLuWeD8AXsHmFBAkUyhZc1kGwvI92GDvwdDk0CkWm9qbClWdTzm
+         pt6lUQq9pB1jKWO5DEKAq9E/jZRqPqsW8dkT7Va/vuAFDM8XcGkEoCDeMp2i2/BYBpP0
+         06Bg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=A4et8p40H6Zf4KYzWkDn8PJl/oJNlm4nqaGwsmGSsdY=;
-        b=tdvW4AQ5d31aeNADvZOEPyD2fHTx890nLoZ+K++29XkVb0RfED+p93HdKGjYFnKqor
-         LO5fIwF2zyDIFX0B0GgBQdMQCW+eSA5j86q+j3Gu3tJKHZ/NqEhTKrAl6iarpS9Unf4m
-         OpGqH5mSBr/V0b6xCx4tc3vMgqpLbbZSdz/pbrgcF8fW1BQxwWlJ0yzd7JWHL5ADgm+S
-         R1cuXiv0AotBYnqdsVxcBiu1vsaCPkbam6M9a4YkTLWfR6cPbMjglUMrcXBG5uWgz0ar
-         w2d7DpEEWhaESrGHJLam61uLW+brOgQj/6o8T80ORei5iuvj2G2GW0TUCyfZa69RrYeC
-         24yg==
-X-Gm-Message-State: AOAM531ypI8Jiv6MfgJC40SUCurXY1bkwTw4Lj9KQPVVLsbu0Yfu+apV
-        k7nmDdC13fD2eLXorIyv0oM=
-X-Google-Smtp-Source: ABdhPJwybZpZl7M4k2F/y1dX9/4RcmzHHQltTJVhDINxtwUIB4K22TEH35PUgPhcs8+l/GfuqAolJA==
-X-Received: by 2002:a17:907:a0d4:: with SMTP id hw20mr47836252ejc.16.1638815509353;
-        Mon, 06 Dec 2021 10:31:49 -0800 (PST)
-Received: from skbuf ([188.25.173.50])
-        by smtp.gmail.com with ESMTPSA id dp16sm8178131ejc.34.2021.12.06.10.31.48
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=RAb96UCiaXw6MtSUrhTS6T7fSHFOHo/BOxPMDP2JWfc=;
+        b=MM3Irj+ear6+IcAnRyY9T1NOC5rmTj/cpP+lvvlRr3+lwpZgjWw+gzs5oCWJM/mYJm
+         jNRAdLTreiPwTMuXUgnVQrCGK/p9b5pGABcFBPJfLC9G4ZCM4XGhTCYnuj/ffY5Q25Jl
+         fGEs9n0OzYBu98MsCzq4UFCDkjlhS9ZP6T/1E4RyqAzmhyk9YmB+rrfRZrLrjdOCx9Z3
+         91meGWABEvYNe8cj0d79IJSvylQs0xCLGM+8T0pgor8i2AHPM5h8uXuA28e5sftxC1Bc
+         pURu40pbVsD+YPeuNaK/9dMD3Yl6KNhIk3fKyzQWVpFkmtKD4xD/KMonLaJ/W+zjCUXA
+         GFXA==
+X-Gm-Message-State: AOAM530TrC8J6UIT4pQONNCY1eapGanzjAuGGQF4veF9mPHLnyogfOYI
+        pJ+F+YnLKy8TQbnOM503VSlts0DmNtDdxw==
+X-Google-Smtp-Source: ABdhPJx/M5U81lqSD1KKvUxNn50uIqEQCXiibFuwGeeQ7jYU06FcYTDArqSycPYL0szRMsd7bTCJTg==
+X-Received: by 2002:a05:6e02:931:: with SMTP id o17mr31776472ilt.174.1638815701798;
+        Mon, 06 Dec 2021 10:35:01 -0800 (PST)
+Received: from localhost ([172.243.151.11])
+        by smtp.gmail.com with ESMTPSA id p14sm5071457ilo.11.2021.12.06.10.35.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Dec 2021 10:31:48 -0800 (PST)
-Date:   Mon, 6 Dec 2021 20:31:47 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Martyn Welch <martyn.welch@collabora.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, kernel@collabora.com,
-        Russell King <rmk+kernel@armlinux.org.uk>
-Subject: Re: mv88e6240 configuration broken for B850v3
-Message-ID: <20211206183147.km7nxcsadtdenfnp@skbuf>
-References: <b98043f66e8c6f1fd75d11af7b28c55018c58d79.camel@collabora.com>
- <YapE3I0K4s1Vzs3w@lunn.ch>
- <b0643124f372db5e579b11237b65336430a71474.camel@collabora.com>
- <fb6370266a71fdd855d6cf4d147780e0f9e1f5e4.camel@collabora.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <fb6370266a71fdd855d6cf4d147780e0f9e1f5e4.camel@collabora.com>
+        Mon, 06 Dec 2021 10:35:01 -0800 (PST)
+Date:   Mon, 06 Dec 2021 10:34:54 -0800
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, shayagr@amazon.com,
+        john.fastabend@gmail.com, dsahern@kernel.org, brouer@redhat.com,
+        echaudro@redhat.com, jasowang@redhat.com,
+        alexander.duyck@gmail.com, saeed@kernel.org,
+        maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
+        tirthendu.sarkar@intel.com, toke@redhat.com
+Message-ID: <61ae57ce93424_8818208f2@john.notmuch>
+In-Reply-To: <f29bf20c59ebecb3b49785b4eea36d5910146e5b.1638272239.git.lorenzo@kernel.org>
+References: <cover.1638272238.git.lorenzo@kernel.org>
+ <f29bf20c59ebecb3b49785b4eea36d5910146e5b.1638272239.git.lorenzo@kernel.org>
+Subject: RE: [PATCH v19 bpf-next 20/23] net: xdp: introduce bpf_xdp_pointer
+ utility routine
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 06, 2021 at 06:26:25PM +0000, Martyn Welch wrote:
-> On Mon, 2021-12-06 at 17:44 +0000, Martyn Welch wrote:
-> > On Fri, 2021-12-03 at 17:25 +0100, Andrew Lunn wrote:
-> > > > Hi Andrew,
-> > > 
-> > > Adding Russell to Cc:
-> > > 
-> > > > I'm currently in the process of updating the GE B850v3 [1] to run
-> > > > a
-> > > > newer kernel than the one it's currently running. 
-> > > 
-> > > Which kernel exactly. We like bug reports against net-next, or at
-> > > least the last -rc.
-> > > 
-> > 
-> > I tested using v5.15-rc3 and that was also affected.
-> > 
+Lorenzo Bianconi wrote:
+> Similar to skb_header_pointer, introduce bpf_xdp_pointer utility routine
+> to return a pointer to a given position in the xdp_buff if the requested
+> area (offset + len) is contained in a contiguous memory area otherwise it
+> will be copied in a bounce buffer provided by the caller.
+> Similar to the tc counterpart, introduce the two following xdp helpers:
+> - bpf_xdp_load_bytes
+> - bpf_xdp_store_bytes
 > 
-> I've just tested v5.16-rc4 (sorry - just realised I previously wrote
-> v5.15-rc3, it was v5.16-rc3...) and that was exactly the same.
+> Reviewed-by: Eelco Chaudron <echaudro@redhat.com>
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> ---
 
-Just to clarify: you're saying that you're on v5.16-rc4 and that if you
-revert commit 3be98b2d5fbc ("net: dsa: Down cpu/dsa ports phylink will
-control"), the link works again?
+Nice. Thanks for working on this.
 
-It is a bit strange that the external ports negotiate at 10Mbps/Full,
-is that the link speed you intend the ports to work at?
+Acked-by: John Fastabend <john.fastabend@gmail.com>
