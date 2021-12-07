@@ -2,75 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 09FC446B8A1
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 11:16:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EFC746B8B0
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 11:19:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234907AbhLGKTu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 05:19:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41660 "EHLO
+        id S234816AbhLGKW5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 05:22:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229574AbhLGKTt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 05:19:49 -0500
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DF6EC061574;
-        Tue,  7 Dec 2021 02:16:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
-        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
-        Resent-Cc:Resent-Message-ID; bh=IcqXxtNVsaj3hjwuuMq/DQ1XtggkrgP1L9GHFlTa330=;
-        t=1638872179; x=1640081779; b=npWwC2njL4318rEmntMaZX+oOVSBPFDMKSF/FQcuRtnF5CY
-        VI8E5SWZg+8ugLdZwA2Sojn2DcihFM+zfaBx+LlI0PlLsUTCYjA3Nyfr3FKhntme24nNviZzG0xue
-        8yqEN3Zps8mjNkxd6eBTs4hz0Y+uFFHpi+6WaFD6VNA648EHogKg4cSEanzldibN/h17B52HrN8z0
-        BP/OZmqNL9ZQPR3OfwwG57aDAlK8XZixkfAN5X6qyfedHEOWSMpbn2WODzPGt/FqvXSr4YUgUKlIP
-        MHH+tDtxzNwjmR2mGswsPxclB9YyRWJdc0K753T7VUPlORZrNMFOfs82mTgKdujw==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.95)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1muXW4-0088sO-KB;
-        Tue, 07 Dec 2021 11:16:08 +0100
-Message-ID: <fd1f5c0f0a9a6b3f59ed0d03e963f87bf745705f.camel@sipsolutions.net>
-Subject: Re: [PATCH 1/3] iwlwifi: fix LED dependencies
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Arnd Bergmann <arnd@kernel.org>, Stanislaw Gruszka <stf_xl@wp.pl>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Luca Coelho <luciano.coelho@intel.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Ayala Beker <ayala.beker@intel.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Tue, 07 Dec 2021 11:16:07 +0100
-In-Reply-To: <c9acebcef9504ac6889de25d528c3ea0c590b1c1.camel@sipsolutions.net>
-References: <20211204173848.873293-1-arnd@kernel.org>
-         <c9acebcef9504ac6889de25d528c3ea0c590b1c1.camel@sipsolutions.net>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.1 (3.42.1-1.fc35) 
+        with ESMTP id S229758AbhLGKW5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 05:22:57 -0500
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A933C061574
+        for <netdev@vger.kernel.org>; Tue,  7 Dec 2021 02:19:27 -0800 (PST)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1muXZA-0008Uj-5U; Tue, 07 Dec 2021 11:19:20 +0100
+Date:   Tue, 7 Dec 2021 11:19:20 +0100
+From:   Florian Westphal <fw@strlen.de>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        netdev@vger.kernel.org, Maxim Galaganov <max@internet.ru>,
+        davem@davemloft.net, matthieu.baerts@tessares.net,
+        mptcp@lists.linux.dev, Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH net-next 10/10] mptcp: support TCP_CORK and TCP_NODELAY
+Message-ID: <20211207101920.GB30918@breakpoint.cc>
+References: <20211203223541.69364-1-mathew.j.martineau@linux.intel.com>
+ <20211203223541.69364-11-mathew.j.martineau@linux.intel.com>
+ <20211206173023.72aca8f9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-malware-bazaar: not-scanned
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211206173023.72aca8f9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2021-12-07 at 11:14 +0100, Johannes Berg wrote:
-> On Sat, 2021-12-04 at 18:38 +0100, Arnd Bergmann wrote:
-> >  
-> >  config IWLWIFI_LEDS
-> >  	bool
-> > -	depends on LEDS_CLASS=y || LEDS_CLASS=IWLWIFI
-> > +	depends on LEDS_CLASS=y || LEDS_CLASS=MAC80211
-> > 
+Jakub Kicinski <kuba@kernel.org> wrote:
+> On Fri,  3 Dec 2021 14:35:41 -0800 Mat Martineau wrote:
+> > +static int mptcp_setsockopt_sol_tcp_nodelay(struct mptcp_sock *msk, sockptr_t optval,
+> > +					    unsigned int optlen)
+> > +{
+> > +	struct mptcp_subflow_context *subflow;
+> > +	struct sock *sk = (struct sock *)msk;
+> > +	int val;
+> > +
+> > +	if (optlen < sizeof(int))
+> > +		return -EINVAL;
+> > +
+> > +	if (copy_from_sockptr(&val, optval, sizeof(val)))
+> > +		return -EFAULT;
 > 
-> Hm. Can we really not have this if LEDS_CLASS=n?
-> 
+> Should we check that optval is not larger than sizeof(int) or if it is
+> that the rest of the buffer is zero? Or for the old school options we
+> should stick to the old school behavior?
 
-Well, umm. That wouldn't make sense for IWLWIFI_LEDS, sorry.
-
-Might be simpler to express this as "depends on MAC80211_LEDS" which has
-the same condition, and it feels like that makes more sense than
-referencing MAC80211 here?
-
-johannes
+My intent was to stick to tcp behaviour, i.e. no check on > sizeof(int)
+or on "extra buffer" content.
