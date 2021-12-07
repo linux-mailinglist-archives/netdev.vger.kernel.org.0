@@ -2,149 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A66246B934
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 11:32:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D34C46B941
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 11:37:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235145AbhLGKgU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 05:36:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45722 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230057AbhLGKgT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 05:36:19 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6E03C061746
-        for <netdev@vger.kernel.org>; Tue,  7 Dec 2021 02:32:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
-        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
-        Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=IqdQ4JP3leIVHmOLMYIh3Tg0CREuovVWZSJL6ac6s5g=; b=RLioOIvIVqw/XwvqjiRKUyVVFt
-        wVDw95RdhIeZKM8Z7dvFGW1GAQF1e/gkWaqiN04siJrewIjEL17jAvj9+96Pp5IELdg8da7G5XKez
-        YAxE96FhZItjAR8VEz/cC0K4bIJRv2Qh7VzSWF0RftgspB8KCz/bL+CQoiC+43fB+Tlfb0uHZAd8y
-        XX8T+9Ul9z6S1WvjmcjJ3vRfgv+QiWFQEdqo0mkGd10H4et6nnSi2RVqiqWszxXar+hWPnho2MhXq
-        YAXxCaWJ9ZM7azWypZK3GkxKQlNd/Iud9ljpiNwfvKyTMX2MJ/78u+Xyr9Bz1AATKrfXHATQ3qJUa
-        Q1xL4Puw==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:54590 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1muXm7-00062A-LF; Tue, 07 Dec 2021 10:32:43 +0000
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1muXm7-00EwJB-7n; Tue, 07 Dec 2021 10:32:43 +0000
-From:   "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-To:     Maarten Zanders <maarten.zanders@mind.be>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        netdev@vger.kernel.org
-Subject: [PATCH net] net: dsa: mv88e6xxx: fix "don't use PHY_DETECT on
- internal PHY's"
+        id S235306AbhLGKlM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 05:41:12 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:55013 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235304AbhLGKlL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 05:41:11 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1638873461;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=XYkWzI+3FSXQs0k8qhpF37IxYya5/46ROXwJdyQMpEk=;
+        b=fL+J9YfHicPXXxdjXSsKLMJqes/4Cv0l+226mWIItdDM06SZECHCgKjKROle9Wt3UcztIJ
+        HT3qJq7irlQ+PhpUccu1V2Rj/7X4tuaieekWflultg0YzZUwHZ29xa5pkxrhUF8WihYqKC
+        J2XKafVZ4H4rkh5c0qo2aHlpkxl0n94=
+Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
+ [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-386-D9hPEweVNo2ww_PnfRZj-Q-1; Tue, 07 Dec 2021 05:37:40 -0500
+X-MC-Unique: D9hPEweVNo2ww_PnfRZj-Q-1
+Received: by mail-qt1-f198.google.com with SMTP id a26-20020ac8001a000000b002b6596897dcso7396535qtg.19
+        for <netdev@vger.kernel.org>; Tue, 07 Dec 2021 02:37:40 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=XYkWzI+3FSXQs0k8qhpF37IxYya5/46ROXwJdyQMpEk=;
+        b=n93ikkutJBoqYsIE4iHO1MoC1IZ0mVMpdmuRUGJTFHg0oHxOHkh2xbVBCQGkWyFTc0
+         CRZ3lKs/5Avob3mGFOesOtV5XK2DULrWen6dS13dLJV+83ZdeGWr5TqWeVqgIvJgzZ/Q
+         96gPfQt+npRouRgFKdGsx3CT29HLOWW54jLJs27lSCyuj9ytbCVsKom3A93+ydvpaKuj
+         KYqh1q2LzNFaqqwy70rsCGH4ZoE1JRn9MQpiwEwVfIK7AR3Pw/qxp4TexycaM7bP6vYY
+         Wo8WgfN+9mjXa0fk3XeugfSjCz9fYAtkLfKTWP9me7e14WGHA+k/2B77CeRDSqeWLU28
+         qMeA==
+X-Gm-Message-State: AOAM532W5981QrTcruHQ2hB5jMjZCIMoV6AW2d3vT+o1mcqbXHzk1SGA
+        YF9g+YDIfgT2u9iWTb2TiEJo5oHZsfJdXm7wgfhHj0fAb1L1j6eUMfG2qsItsioAzo5Ndg/09FE
+        QnNRKUzZOZtApxy7R
+X-Received: by 2002:a05:620a:1a8d:: with SMTP id bl13mr40261752qkb.130.1638873459737;
+        Tue, 07 Dec 2021 02:37:39 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwWRUwvSkSp4JTwVmjhW73VL002Z4WK6fbM3JdMrFypwYBcX2WehwnIuvlqEAXIJwtGJNuusQ==
+X-Received: by 2002:a05:620a:1a8d:: with SMTP id bl13mr40261729qkb.130.1638873459554;
+        Tue, 07 Dec 2021 02:37:39 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-252-1.dyn.eolo.it. [146.241.252.1])
+        by smtp.gmail.com with ESMTPSA id i16sm9088514qtx.57.2021.12.07.02.37.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Dec 2021 02:37:39 -0800 (PST)
+Message-ID: <82d10189f1ca99ccba4c161884d446cbb3246ce9.camel@redhat.com>
+Subject: Re: [PATCH net-next 10/10] mptcp: support TCP_CORK and TCP_NODELAY
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>
+Cc:     netdev@vger.kernel.org, Maxim Galaganov <max@internet.ru>,
+        davem@davemloft.net, matthieu.baerts@tessares.net,
+        mptcp@lists.linux.dev
+Date:   Tue, 07 Dec 2021 11:37:35 +0100
+In-Reply-To: <20211206173023.72aca8f9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20211203223541.69364-1-mathew.j.martineau@linux.intel.com>
+         <20211203223541.69364-11-mathew.j.martineau@linux.intel.com>
+         <20211206173023.72aca8f9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.1 (3.42.1-1.fc35) 
 MIME-Version: 1.0
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1muXm7-00EwJB-7n@rmk-PC.armlinux.org.uk>
-Sender: Russell King <rmk@armlinux.org.uk>
-Date:   Tue, 07 Dec 2021 10:32:43 +0000
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit fixes a misunderstanding in commit 4a3e0aeddf09 ("net: dsa:
-mv88e6xxx: don't use PHY_DETECT on internal PHY's").
+On Mon, 2021-12-06 at 17:30 -0800, Jakub Kicinski wrote:
+> On Fri,  3 Dec 2021 14:35:41 -0800 Mat Martineau wrote:
+> > +static int mptcp_setsockopt_sol_tcp_nodelay(struct mptcp_sock *msk, sockptr_t optval,
+> > +					    unsigned int optlen)
+> > +{
+> > +	struct mptcp_subflow_context *subflow;
+> > +	struct sock *sk = (struct sock *)msk;
+> > +	int val;
+> > +
+> > +	if (optlen < sizeof(int))
+> > +		return -EINVAL;
+> > +
+> > +	if (copy_from_sockptr(&val, optval, sizeof(val)))
+> > +		return -EFAULT;
+> 
+> Should we check that optval is not larger than sizeof(int) or if it is
+> that the rest of the buffer is zero? Or for the old school options we
+> should stick to the old school behavior?
 
-For Marvell DSA switches with the PHY_DETECT bit (for non-6250 family
-devices), controls whether the PPU polls the PHY to retrieve the link,
-speed, duplex and pause status to update the port configuration. This
-applies for both internal and external PHYs.
+I think it's useful if we keep the MPTCP socket options binary API as
+close as possible to the plain TCP ones: that allows for seamless
+switching existing TCP application to MPTCP with no code changes.
 
-For some switches such as 88E6352 and 88E6390X, PHY_DETECT has an
-additional function of enabling auto-media mode between the internal
-PHY and SERDES blocks depending on which first gains link.
+Old school, please ;)
 
-The original intention of commit 5d5b231da7ac (net: dsa: mv88e6xxx: use
-PHY_DETECT in mac_link_up/mac_link_down) was to allow this bit to be
-used to detect when this propagation is enabled, and allow software to
-update the port configuration. This has found to be necessary for some
-switches which do not automatically propagate status from the SERDES to
-the port, which includes the 88E6390. However, commit 4a3e0aeddf09
-("net: dsa: mv88e6xxx: don't use PHY_DETECT on internal PHY's") breaks
-this assumption.
+Cheers,
 
-Maarten Zanders has confirmed that the issue he was addressing was for
-an 88E6250 switch, which does not have a PHY_DETECT bit in bit 12, but
-instead a link status bit. Therefore, mv88e6xxx_port_ppu_updates() does
-not report correctly.
-
-This patch resolves the above issues by reverting Maarten's change and
-instead making mv88e6xxx_port_ppu_updates() indicate whether the port
-is internal for the 88E6250 family of switches.
-
-  Yes, you're right, I'm targeting the 6250 family. And yes, your
-  suggestion would solve my case and is a better implementation for
-  the other devices (as far as I can see).
-
-Fixes: 4a3e0aeddf09 ("net: dsa: mv88e6xxx: don't use PHY_DETECT on internal PHY's")
-Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
----
- drivers/net/dsa/mv88e6xxx/chip.c | 21 +++++++++++++--------
- 1 file changed, 13 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index f00cbf5753b9..9f675464efc3 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -471,6 +471,12 @@ static int mv88e6xxx_port_ppu_updates(struct mv88e6xxx_chip *chip, int port)
- 	u16 reg;
- 	int err;
- 
-+	/* The 88e6250 family does not have the PHY detect bit. Instead,
-+	 * report whether the port is internal.
-+	 */
-+	if (chip->info->family == MV88E6XXX_FAMILY_6250)
-+		return port < chip->info->num_internal_phys;
-+
- 	err = mv88e6xxx_port_read(chip, port, MV88E6XXX_PORT_STS, &reg);
- 	if (err) {
- 		dev_err(chip->dev,
-@@ -752,11 +758,10 @@ static void mv88e6xxx_mac_link_down(struct dsa_switch *ds, int port,
- 	ops = chip->info->ops;
- 
- 	mv88e6xxx_reg_lock(chip);
--	/* Internal PHYs propagate their configuration directly to the MAC.
--	 * External PHYs depend on whether the PPU is enabled for this port.
-+	/* Force the link down if we know the port may not be automatically
-+	 * updated by the switch or if we are using fixed-link mode.
- 	 */
--	if (((!mv88e6xxx_phy_is_internal(ds, port) &&
--	      !mv88e6xxx_port_ppu_updates(chip, port)) ||
-+	if ((!mv88e6xxx_port_ppu_updates(chip, port) ||
- 	     mode == MLO_AN_FIXED) && ops->port_sync_link)
- 		err = ops->port_sync_link(chip, port, mode, false);
- 	mv88e6xxx_reg_unlock(chip);
-@@ -779,11 +784,11 @@ static void mv88e6xxx_mac_link_up(struct dsa_switch *ds, int port,
- 	ops = chip->info->ops;
- 
- 	mv88e6xxx_reg_lock(chip);
--	/* Internal PHYs propagate their configuration directly to the MAC.
--	 * External PHYs depend on whether the PPU is enabled for this port.
-+	/* Configure and force the link up if we know that the port may not
-+	 * automatically updated by the switch or if we are using fixed-link
-+	 * mode.
- 	 */
--	if ((!mv88e6xxx_phy_is_internal(ds, port) &&
--	     !mv88e6xxx_port_ppu_updates(chip, port)) ||
-+	if (!mv88e6xxx_port_ppu_updates(chip, port) ||
- 	    mode == MLO_AN_FIXED) {
- 		/* FIXME: for an automedia port, should we force the link
- 		 * down here - what if the link comes up due to "other" media
--- 
-2.30.2
+Paolo 
 
