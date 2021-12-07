@@ -2,71 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F079446BE4C
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 15:54:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C32646BE53
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 15:57:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238287AbhLGO6P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 09:58:15 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:43156 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238280AbhLGO6O (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 7 Dec 2021 09:58:14 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=R7Zy+G5BNkhmg8pTkxz2jbI8Dzkz/8n9OJfehLSB/mE=; b=oxUdiMqZSBNR/x7hMaxIa1EX5s
-        CIbArZClK1XXLYr0DbtOcdsE+VrS4Ze5Y0FG2aaKlCVDKxOGuh0jQIrbCjZtoYFq9muyqVokCXXLc
-        1QdXPcDD3NsTX3KXUn48QKX1HklxcPwIvM1OmVwXniG8CRYryLSq4l7U9qr8XyAeEXL0=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mubrZ-00Fmbe-4M; Tue, 07 Dec 2021 15:54:37 +0100
-Date:   Tue, 7 Dec 2021 15:54:37 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-Cc:     Martyn Welch <martyn.welch@collabora.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: Re: [PATCH RFC net] net: dsa: mv88e6xxx: allow use of PHYs on CPU
- and DSA ports
-Message-ID: <Ya91rX5acIKQk7W0@lunn.ch>
-References: <E1muYBr-00EwOF-9C@rmk-PC.armlinux.org.uk>
+        id S238298AbhLGPAs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 10:00:48 -0500
+Received: from sin.source.kernel.org ([145.40.73.55]:52632 "EHLO
+        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232266AbhLGPAs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 10:00:48 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 371C6CE1B23;
+        Tue,  7 Dec 2021 14:57:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63C34C341C5;
+        Tue,  7 Dec 2021 14:57:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1638889034;
+        bh=8X9IIQ927yf7quFBclyWEsUDPFz0AyOg8V9PcZ9FaD8=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=OZSEJZn1JvoXxSpJOeq99WP/AU27anuWoXH+2t907gzrQA7eqb0gV6AJaXZ+mSzZi
+         rxJH1Zv1JoKlb+vbbE+J7YRmNbKOak82743q0ACp7chsQF6LQ8HCEFGj++Ki1X/w8z
+         3lcj3ZY2paTD9NHgqJDTh1HWhyVPnexyE5z8c4lD0N+x/Nym2BfIGn69tWG9lJ37qS
+         O4e7JQdZS7dM1E4SxuRM7fAbS/mQOnhj7mppeWU6zQvpe2qQhgcUQ9i/yOZhE8jwlw
+         JpyvsZhkFPMtY6J9kipTdfKjgIjVgZncsNdrYuipehgf+XTKD1vwyYW1jjw0sffJhY
+         SFuf1uVee8Efg==
+Received: by mail-wr1-f53.google.com with SMTP id c4so30010062wrd.9;
+        Tue, 07 Dec 2021 06:57:14 -0800 (PST)
+X-Gm-Message-State: AOAM533n4n5O3v3lzU7eTJJaodyTyG+8ahPDZ48hmCawy38fPJn61+zk
+        jRSXv3IZcR+Et60+8KyRFw4uAkwSWsnuXpooxAk=
+X-Google-Smtp-Source: ABdhPJy9YhTP+B4BabbmAtiU6wefpmhItbH/apCdy3BE5pONXd1pMcTyA/0MoUkyyXEOz0BrdrzNxTWp1Ycm2Wq5rdc=
+X-Received: by 2002:adf:d091:: with SMTP id y17mr54628673wrh.418.1638889032670;
+ Tue, 07 Dec 2021 06:57:12 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <E1muYBr-00EwOF-9C@rmk-PC.armlinux.org.uk>
+References: <20211207125430.2423871-1-arnd@kernel.org> <SA1PR11MB58258D60F7C1334471E2F434F26E9@SA1PR11MB5825.namprd11.prod.outlook.com>
+ <CAK8P3a35HHPs2sMsfQ_SrX4DTKmzidFUOczu8khzwJJTAy++yw@mail.gmail.com> <5ed6ad0f5d4fed1cb0a49ecfd7f6b35dbe0f0803.camel@sipsolutions.net>
+In-Reply-To: <5ed6ad0f5d4fed1cb0a49ecfd7f6b35dbe0f0803.camel@sipsolutions.net>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Tue, 7 Dec 2021 15:56:56 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a0dPZDSN_C9-J4k0oFFh4z+XSa64D_R0EhYwBBFQLV8vg@mail.gmail.com>
+Message-ID: <CAK8P3a0dPZDSN_C9-J4k0oFFh4z+XSa64D_R0EhYwBBFQLV8vg@mail.gmail.com>
+Subject: Re: [PATCH] iwlwifi: work around reverse dependency on MEI
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     "Grumbach, Emmanuel" <emmanuel.grumbach@intel.com>,
+        "Coelho, Luciano" <luciano.coelho@intel.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Beker, Ayala" <ayala.beker@intel.com>,
+        "Korenblit, Miriam Rachel" <miriam.rachel.korenblit@intel.com>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 07, 2021 at 10:59:19AM +0000, Russell King (Oracle) wrote:
-> Martyn Welch reports that his CPU port is unable to link where it has
-> been necessary to use one of the switch ports with an internal PHY for
-> the CPU port. The reason behind this is the port control register is
-> left forcing the link down, preventing traffic flow.
-> 
-> This occurs because during initialisation, phylink expects the link to
-> be down, and DSA forces the link down by synthesising a call to the
-> DSA drivers phylink_mac_link_down() method, but we don't touch the
-> forced-link state when we later reconfigure the port.
-> 
-> Resolve this by also unforcing the link state when we are operating in
-> PHY mode and the PPU is set to poll the PHY to retrieve link status
-> information.
-> 
-> Reported-by: Martyn Welch <martyn.welch@collabora.com>
-> Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+On Tue, Dec 7, 2021 at 3:40 PM Johannes Berg <johannes@sipsolutions.net> wrote:
+>
+> On Tue, 2021-12-07 at 14:25 +0100, Arnd Bergmann wrote:
+>
+> > > >  config IWLMEI
+> > > > -     tristate "Intel Management Engine communication over WLAN"
+> > > > -     depends on INTEL_MEI
+> > > > +     bool "Intel Management Engine communication over WLAN"
+> > > > +     depends on INTEL_MEI=y || INTEL_MEI=IWLMVM
+> > > > +     depends on IWLMVM=y || IWLWIFI=m
+> > > >       depends on PM
+> > > > -     depends on IWLMVM
+> > > >       help
+> > > >         Enables the iwlmei kernel module.
+> > >
+> > > Johannes suggested to make IWLMVM depend on IWLMEI || !IWLMEI
+> > > That worked as well, I just had issues with this in our internal backport based tree.
+> > > I need to spend a bit more time on this, but I admit my total ignorance in Kconfig's dialect.
+> >
+> > It's still not enough, the dependency is in iwlwifi, not in iwlmvm, so it
+> > would remain broken for IWLWIFI=y IWLMVM=m IWLMEI=m.
+> >
+>
+> I missed the pcie/trans.c dependency, and the others are (I think) in
+> mvm...
+>
+> but then we can do
+>
+> config IWLWIFI
+>         ...
+>         depends on IWLMEI || !IWLMEI
+>         ...
+>
+> no? That way, we exclude IWLWIFI=y && IWLMEI=m, which I believe causes
+> the issue? And IWLMVM already depends on IWLWIFI (via the if clause), so
+> that
 
-Hi Russell
+Right, that should work. Testing with that version now.
 
-It would be good to have a Fixes: tag here, to help with back porting.
-
-The concept looks good, and i see you now have a Tested-by:, so with
-the fixup applied i think you are good to go. Please add my
-Reviewed-by: to the next version.
-
-   Andrew
+         Arnd
