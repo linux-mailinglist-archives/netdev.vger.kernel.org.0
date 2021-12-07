@@ -2,218 +2,215 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 59C5A46B0EB
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 03:49:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B045B46B11A
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 03:54:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233742AbhLGCwe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Dec 2021 21:52:34 -0500
-Received: from mga07.intel.com ([134.134.136.100]:27268 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232237AbhLGCv5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 6 Dec 2021 21:51:57 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10190"; a="300860603"
-X-IronPort-AV: E=Sophos;i="5.87,293,1631602800"; 
-   d="scan'208";a="300860603"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Dec 2021 18:47:52 -0800
-X-IronPort-AV: E=Sophos;i="5.87,293,1631602800"; 
-   d="scan'208";a="748524189"
-Received: from rmarti10-desk.jf.intel.com ([134.134.150.146])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Dec 2021 18:47:52 -0800
-From:   Ricardo Martinez <ricardo.martinez@linux.intel.com>
-To:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
-Cc:     kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
-        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
-        m.chetan.kumar@intel.com, chandrashekar.devegowda@intel.com,
-        linuxwwan@intel.com, chiranjeevi.rapolu@linux.intel.com,
-        haijun.liu@mediatek.com, amir.hanania@intel.com,
-        andriy.shevchenko@linux.intel.com, dinesh.sharma@intel.com,
-        eliot.lee@intel.com, mika.westerberg@linux.intel.com,
-        moises.veleta@intel.com, pierre-louis.bossart@intel.com,
-        muralidharan.sethuraman@intel.com, Soumya.Prakash.Mishra@intel.com,
-        sreehari.kancharla@intel.com, suresh.nagaraj@intel.com,
-        Ricardo Martinez <ricardo.martinez@linux.intel.com>
-Subject: [PATCH net-next v3 12/12] net: wwan: t7xx: Add maintainers and documentation
-Date:   Mon,  6 Dec 2021 19:47:11 -0700
-Message-Id: <20211207024711.2765-13-ricardo.martinez@linux.intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20211207024711.2765-1-ricardo.martinez@linux.intel.com>
-References: <20211207024711.2765-1-ricardo.martinez@linux.intel.com>
+        id S232159AbhLGC6C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Dec 2021 21:58:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52800 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230374AbhLGC6B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 21:58:01 -0500
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57F7CC061746
+        for <netdev@vger.kernel.org>; Mon,  6 Dec 2021 18:54:32 -0800 (PST)
+Received: by mail-pf1-x432.google.com with SMTP id u80so12017534pfc.9
+        for <netdev@vger.kernel.org>; Mon, 06 Dec 2021 18:54:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=gnyvU6aQ6cmCKxvU8HYEIJ+gYj3b+e+4xn0kCc3JbyQ=;
+        b=Y61mHEre39uukCq3k5ck7FoZ58bVuOu1h2gezHbztizXgKxe4suicjcdnZrq1mdQgc
+         7JDzF6hE2Bjq/UyqRscml09/jP8OQYMI1Dvz5r5yYwXxLMy5wwC/e8E+1JBQJsbnP7w3
+         Kfbb3Yd12iy6jeDLW3un4mkyv9kXFNfyMALEuIYTT6khXLeIqAN5pYUKTOVtG/z1g3Qn
+         kmYuq954bmSwtzI3JVegNBNJ3LNCjUqXRAnlK7HM9GSS42Ow4CXJ7+3zPg5kqZw1UCzY
+         f/zf5Y1wg2H0PuBOvO6f6B/QRZ8MnzAKvasiCZexs6XmApDj9FiO0UX3OK3BhHT/ibDe
+         Ku6g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=gnyvU6aQ6cmCKxvU8HYEIJ+gYj3b+e+4xn0kCc3JbyQ=;
+        b=CaurWzwzP332R/R7OEZng52wM3YbtdIpIINMxPAM/pOVlbYCm6JpnUtEjcs+UUq5cf
+         x8Vvk6Yws9PYuGyti6MGFqhcyfI7hqtcs6kxz1Fezcu9RmiiqyEd/NWBxQuZDLbk9wcv
+         Tjdg9f21zyJAyeAM4aOO/+7+gJmKthzoF9ieZSvkGUnNpJWdWi0Du6ZGtl9m7fcUz3fq
+         r0EByGSdICbgWZlrovjGfZTeo19MTnWJHqyZTztb682cVMXiuv9wcjSN/oW8tOVUm+pU
+         aC9DpGrG20wq3FV8HfPBWlf6ZbJZZ10bpQKGwxD8bbP/5djtyfGqJKKGEiNdHRL5f4Ng
+         0iXQ==
+X-Gm-Message-State: AOAM530t1OIbNu0AZGv3uW3vUfIOwEbPuqlK6BvopRRLtQidr31qW53v
+        rrLKJ+DM7j4RB7CltbiWHX0=
+X-Google-Smtp-Source: ABdhPJyQPGeJzo1slV1gU6cbWx35uO5G2CAk30fZySXEUS9I412ZlzIGGtjV37NHOuX7RrwFyeW2xA==
+X-Received: by 2002:aa7:9dcd:0:b0:494:658c:3943 with SMTP id g13-20020aa79dcd000000b00494658c3943mr40073696pfq.19.1638845671882;
+        Mon, 06 Dec 2021 18:54:31 -0800 (PST)
+Received: from Laptop-X1.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id d17sm13323990pfj.124.2021.12.06.18.54.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Dec 2021 18:54:31 -0800 (PST)
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     wireguard@lists.zx2c4.com
+Cc:     netdev@vger.kernel.org, "Jason A . Donenfeld" <Jason@zx2c4.com>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Hangbin Liu <liuhangbin@gmail.com>
+Subject: [PATCH wireguard] wireguard: remove redundancy include files
+Date:   Tue,  7 Dec 2021 10:54:21 +0800
+Message-Id: <20211207025421.1903782-1-liuhangbin@gmail.com>
+X-Mailer: git-send-email 2.31.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adds maintainers and documentation for MediaTek t7xx 5G WWAN modem
-device driver.
+Remove redundancy include files based on tool include-what-you-use
+result. The tool will suggest using direct include headers and removing
+some big headers. e.g. it will suggests to use linux/spinlock_types.h
+for spinlock_t. But actually, we only need to include linux/spinlock.h
+directly. So I just take the result as a reference and remove the include
+files I do not find related structure/functions.
 
-Signed-off-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
+Tested with gcc-8.5.0 and the compilation passed.
+
+Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
 ---
- .../networking/device_drivers/wwan/index.rst  |   1 +
- .../networking/device_drivers/wwan/t7xx.rst   | 120 ++++++++++++++++++
- MAINTAINERS                                   |  11 ++
- 3 files changed, 132 insertions(+)
- create mode 100644 Documentation/networking/device_drivers/wwan/t7xx.rst
+ drivers/net/wireguard/device.c   | 1 -
+ drivers/net/wireguard/device.h   | 1 -
+ drivers/net/wireguard/noise.c    | 4 ----
+ drivers/net/wireguard/noise.h    | 1 -
+ drivers/net/wireguard/peer.h     | 1 -
+ drivers/net/wireguard/queueing.h | 2 --
+ drivers/net/wireguard/send.c     | 5 -----
+ drivers/net/wireguard/socket.c   | 2 --
+ drivers/net/wireguard/socket.h   | 5 -----
+ 9 files changed, 22 deletions(-)
 
-diff --git a/Documentation/networking/device_drivers/wwan/index.rst b/Documentation/networking/device_drivers/wwan/index.rst
-index 1cb8c7371401..370d8264d5dc 100644
---- a/Documentation/networking/device_drivers/wwan/index.rst
-+++ b/Documentation/networking/device_drivers/wwan/index.rst
-@@ -9,6 +9,7 @@ Contents:
-    :maxdepth: 2
+diff --git a/drivers/net/wireguard/device.c b/drivers/net/wireguard/device.c
+index a46067c38bf5..06b74da2133f 100644
+--- a/drivers/net/wireguard/device.c
++++ b/drivers/net/wireguard/device.c
+@@ -11,7 +11,6 @@
+ #include "peer.h"
+ #include "messages.h"
  
-    iosm
-+   t7xx
+-#include <linux/module.h>
+ #include <linux/rtnetlink.h>
+ #include <linux/inet.h>
+ #include <linux/netdevice.h>
+diff --git a/drivers/net/wireguard/device.h b/drivers/net/wireguard/device.h
+index 43c7cebbf50b..0782dcef9fc1 100644
+--- a/drivers/net/wireguard/device.h
++++ b/drivers/net/wireguard/device.h
+@@ -8,7 +8,6 @@
  
- .. only::  subproject and html
+ #include "noise.h"
+ #include "allowedips.h"
+-#include "peerlookup.h"
+ #include "cookie.h"
  
-diff --git a/Documentation/networking/device_drivers/wwan/t7xx.rst b/Documentation/networking/device_drivers/wwan/t7xx.rst
-new file mode 100644
-index 000000000000..dd5b731957ca
---- /dev/null
-+++ b/Documentation/networking/device_drivers/wwan/t7xx.rst
-@@ -0,0 +1,120 @@
-+.. SPDX-License-Identifier: GPL-2.0-only
-+
-+.. Copyright (C) 2020-21 Intel Corporation
-+
-+.. _t7xx_driver_doc:
-+
-+============================================
-+t7xx driver for MTK PCIe based T700 5G modem
-+============================================
-+The t7xx driver is a WWAN PCIe host driver developed for linux or Chrome OS platforms
-+for data exchange over PCIe interface between Host platform & MediaTek's T700 5G modem.
-+The driver exposes an interface conforming to the MBIM protocol [1]. Any front end
-+application (e.g. Modem Manager) could easily manage the MBIM interface to enable
-+data communication towards WWAN. The driver also provides an interface to interact
-+with the MediaTek's modem via AT commands.
-+
-+Basic usage
-+===========
-+MBIM & AT functions are inactive when unmanaged. The t7xx driver provides
-+WWAN port userspace interfaces representing MBIM & AT control channels and does
-+not play any role in managing their functionality. It is the job of a userspace
-+application to detect port enumeration and enable MBIM & AT functionalities.
-+
-+Examples of few such userspace applications are:
-+
-+- mbimcli (included with the libmbim [2] library), and
-+- Modem Manager [3]
-+
-+Management Applications to carry out below required actions for establishing
-+MBIM IP session:
-+
-+- open the MBIM control channel
-+- configure network connection settings
-+- connect to network
-+- configure IP network interface
-+
-+Management Applications to carry out below required actions for send an AT
-+command and receive response:
-+
-+- open the AT control channel using a UART tool or a special user tool
-+
-+Management application development
-+==================================
-+The driver and userspace interfaces are described below. The MBIM protocol is
-+described in [1] Mobile Broadband Interface Model v1.0 Errata-1.
-+
-+MBIM control channel userspace ABI
-+----------------------------------
-+
-+/dev/wwan0mbim0 character device
-+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-+The driver exposes an MBIM interface to the MBIM function by implementing
-+MBIM WWAN Port. The userspace end of the control channel pipe is a
-+/dev/wwan0mbim0 character device. Application shall use this interface for
-+MBIM protocol communication.
-+
-+Fragmentation
-+~~~~~~~~~~~~~
-+The userspace application is responsible for all control message fragmentation
-+and defragmentation as per MBIM specification.
-+
-+/dev/wwan0mbim0 write()
-+~~~~~~~~~~~~~~~~~~~~~~~
-+The MBIM control messages from the management application must not exceed the
-+negotiated control message size.
-+
-+/dev/wwan0mbim0 read()
-+~~~~~~~~~~~~~~~~~~~~~~
-+The management application must accept control messages of up the negotiated
-+control message size.
-+
-+MBIM data channel userspace ABI
-+-------------------------------
-+
-+wwan0-X network device
-+~~~~~~~~~~~~~~~~~~~~~~
-+The t7xx driver exposes IP link interface "wwan0-X" of type "wwan" for IP
-+traffic. Iproute network utility is used for creating "wwan0-X" network
-+interface and for associating it with MBIM IP session.
-+
-+The userspace management application is responsible for creating new IP link
-+prior to establishing MBIM IP session where the SessionId is greater than 0.
-+
-+For example, creating new IP link for a MBIM IP session with SessionId 1:
-+
-+  ip link add dev wwan0-1 parentdev wwan0 type wwan linkid 1
-+
-+The driver will automatically map the "wwan0-1" network device to MBIM IP
-+session 1.
-+
-+AT port userspace ABI
-+----------------------------------
-+
-+/dev/wwan0at0 character device
-+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-+The driver exposes an AT port by implementing AT WWAN Port.
-+The userspace end of the control port is a /dev/wwan0at0 character
-+device. Application shall use this interface to issue AT commands.
-+
-+The MediaTek's T700 modem supports the 3GPP TS 27.007 [4] specification.
-+
-+References
-+==========
-+[1] *MBIM (Mobile Broadband Interface Model) Errata-1*
-+
-+- https://www.usb.org/document-library/
-+
-+[2] *libmbim "a glib-based library for talking to WWAN modems and devices which
-+speak the Mobile Interface Broadband Model (MBIM) protocol"*
-+
-+- http://www.freedesktop.org/wiki/Software/libmbim/
-+
-+[3] *Modem Manager "a DBus-activated daemon which controls mobile broadband
-+(2G/3G/4G/5G) devices and connections"*
-+
-+- http://www.freedesktop.org/wiki/Software/ModemManager/
-+
-+[4] *Specification # 27.007 - 3GPP*
-+
-+- https://www.3gpp.org/DynaReport/27007.htm
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 79ef55bf2ca7..a1dfc9beaf7a 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -12156,6 +12156,17 @@ S:	Maintained
- F:	drivers/net/dsa/mt7530.*
- F:	net/dsa/tag_mtk.c
+ #include <linux/types.h>
+diff --git a/drivers/net/wireguard/noise.c b/drivers/net/wireguard/noise.c
+index c0cfd9b36c0b..59be94077767 100644
+--- a/drivers/net/wireguard/noise.c
++++ b/drivers/net/wireguard/noise.c
+@@ -7,14 +7,10 @@
+ #include "device.h"
+ #include "peer.h"
+ #include "messages.h"
+-#include "queueing.h"
+ #include "peerlookup.h"
  
-+MEDIATEK T7XX 5G WWAN MODEM DRIVER
-+M:	Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>
-+M:	Intel Corporation <linuxwwan@intel.com>
-+R:	Chiranjeevi Rapolu <chiranjeevi.rapolu@linux.intel.com>
-+R:	Liu Haijun <haijun.liu@mediatek.com>
-+R:	M Chetan Kumar <m.chetan.kumar@linux.intel.com>
-+R:	Ricardo Martinez <ricardo.martinez@linux.intel.com>
-+L:	netdev@vger.kernel.org
-+S:	Supported
-+F:	drivers/net/wwan/t7xx/
-+
- MEDIATEK USB3 DRD IP DRIVER
- M:	Chunfeng Yun <chunfeng.yun@mediatek.com>
- L:	linux-usb@vger.kernel.org
+ #include <linux/rcupdate.h>
+ #include <linux/slab.h>
+-#include <linux/bitmap.h>
+-#include <linux/scatterlist.h>
+-#include <linux/highmem.h>
+ #include <crypto/algapi.h>
+ 
+ /* This implements Noise_IKpsk2:
+diff --git a/drivers/net/wireguard/noise.h b/drivers/net/wireguard/noise.h
+index c527253dba80..75b8f0d50084 100644
+--- a/drivers/net/wireguard/noise.h
++++ b/drivers/net/wireguard/noise.h
+@@ -12,7 +12,6 @@
+ #include <linux/spinlock.h>
+ #include <linux/atomic.h>
+ #include <linux/rwsem.h>
+-#include <linux/mutex.h>
+ #include <linux/kref.h>
+ 
+ struct noise_replay_counter {
+diff --git a/drivers/net/wireguard/peer.h b/drivers/net/wireguard/peer.h
+index 76e4d3128ad4..05af76b62583 100644
+--- a/drivers/net/wireguard/peer.h
++++ b/drivers/net/wireguard/peer.h
+@@ -11,7 +11,6 @@
+ #include "cookie.h"
+ 
+ #include <linux/types.h>
+-#include <linux/netfilter.h>
+ #include <linux/spinlock.h>
+ #include <linux/kref.h>
+ #include <net/dst_cache.h>
+diff --git a/drivers/net/wireguard/queueing.h b/drivers/net/wireguard/queueing.h
+index e2388107f7fd..bd54373b4485 100644
+--- a/drivers/net/wireguard/queueing.h
++++ b/drivers/net/wireguard/queueing.h
+@@ -9,8 +9,6 @@
+ #include "peer.h"
+ #include <linux/types.h>
+ #include <linux/skbuff.h>
+-#include <linux/ip.h>
+-#include <linux/ipv6.h>
+ #include <net/ip_tunnels.h>
+ 
+ struct wg_device;
+diff --git a/drivers/net/wireguard/send.c b/drivers/net/wireguard/send.c
+index 5368f7c35b4b..f5b25f6fc55b 100644
+--- a/drivers/net/wireguard/send.c
++++ b/drivers/net/wireguard/send.c
+@@ -11,12 +11,7 @@
+ #include "messages.h"
+ #include "cookie.h"
+ 
+-#include <linux/uio.h>
+-#include <linux/inetdevice.h>
+-#include <linux/socket.h>
+ #include <net/ip_tunnels.h>
+-#include <net/udp.h>
+-#include <net/sock.h>
+ 
+ static void wg_packet_send_handshake_initiation(struct wg_peer *peer)
+ {
+diff --git a/drivers/net/wireguard/socket.c b/drivers/net/wireguard/socket.c
+index 6f07b949cb81..0d645613349a 100644
+--- a/drivers/net/wireguard/socket.c
++++ b/drivers/net/wireguard/socket.c
+@@ -9,9 +9,7 @@
+ #include "queueing.h"
+ #include "messages.h"
+ 
+-#include <linux/ctype.h>
+ #include <linux/net.h>
+-#include <linux/if_vlan.h>
+ #include <linux/if_ether.h>
+ #include <linux/inetdevice.h>
+ #include <net/udp_tunnel.h>
+diff --git a/drivers/net/wireguard/socket.h b/drivers/net/wireguard/socket.h
+index bab5848efbcd..d69c84f12e66 100644
+--- a/drivers/net/wireguard/socket.h
++++ b/drivers/net/wireguard/socket.h
+@@ -6,11 +6,6 @@
+ #ifndef _WG_SOCKET_H
+ #define _WG_SOCKET_H
+ 
+-#include <linux/netdevice.h>
+-#include <linux/udp.h>
+-#include <linux/if_vlan.h>
+-#include <linux/if_ether.h>
+-
+ int wg_socket_init(struct wg_device *wg, u16 port);
+ void wg_socket_reinit(struct wg_device *wg, struct sock *new4,
+ 		      struct sock *new6);
 -- 
-2.17.1
+2.31.1
 
