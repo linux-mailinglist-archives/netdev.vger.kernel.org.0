@@ -2,79 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D516E46BDFA
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 15:40:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CB0B746BDFE
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 15:42:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238032AbhLGOoX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 09:44:23 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:44040 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233796AbhLGOoW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 09:44:22 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4CF75B817EC
-        for <netdev@vger.kernel.org>; Tue,  7 Dec 2021 14:40:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D29C8C341C1;
-        Tue,  7 Dec 2021 14:40:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638888050;
-        bh=LBcpkO4darT6CUC6id3955z+gtHxBOCI6hwwpvaWfXs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=MNVrRBpnb09wiG5C0/UP4g87LyR/N8O58v/3RV5eZSLySBApy4f8ZbQjnT/rzoy1X
-         zbqUxiqd1tq0RKnSx7un1Z5QRqhH4ishE2nnb+6dvbLrTBjnX9+vWucwwZ5zP2AbVA
-         dAXBH1kWV8fUodMcr/uva9W+71qOSqvlhl7B9aPwbBXVM5DdQZnyjYxVVgACaZkky9
-         bqk5LDYusffo2AZ4XajQ9kFDXbUmHcb912DOBmjUU6vDcn7UU8Sv0uCjHw2CqCs5Hj
-         l7dDAAESONvD0smpLXtPrrPmlOfdCIpKh9fhc+3i5Rd51r27AVd0wfP7YS004yZdOo
-         3zeK8VRXpjYdA==
-Date:   Tue, 7 Dec 2021 06:40:48 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>
-Subject: Re: [PATCH net-next 15/17] audit: add netns refcount tracker to
- struct audit_net
-Message-ID: <20211207064048.363f22ee@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211207005142.1688204-16-eric.dumazet@gmail.com>
-References: <20211207005142.1688204-1-eric.dumazet@gmail.com>
-        <20211207005142.1688204-16-eric.dumazet@gmail.com>
+        id S233824AbhLGOp1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 09:45:27 -0500
+Received: from mga09.intel.com ([134.134.136.24]:33340 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233705AbhLGOp0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 7 Dec 2021 09:45:26 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10190"; a="237394146"
+X-IronPort-AV: E=Sophos;i="5.87,293,1631602800"; 
+   d="scan'208";a="237394146"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Dec 2021 06:41:55 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.87,293,1631602800"; 
+   d="scan'208";a="542817050"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by orsmga001.jf.intel.com with ESMTP; 07 Dec 2021 06:41:53 -0800
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 1B7Efpn0027212;
+        Tue, 7 Dec 2021 14:41:51 GMT
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Guo Zhengkui <guozhengkui@vivo.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel@vivo.com
+Subject: Re: [PATCH] net: gro: use IS_ERR before PTR_ERR
+Date:   Tue,  7 Dec 2021 15:41:37 +0100
+Message-Id: <20211207144137.22454-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.33.1
+In-Reply-To: <20211207073116.3856-1-guozhengkui@vivo.com>
+References: <20211207073116.3856-1-guozhengkui@vivo.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon,  6 Dec 2021 16:51:40 -0800 Eric Dumazet wrote:
-> From: Eric Dumazet <edumazet@google.com>
+From: Guo Zhengkui <guozhengkui@vivo.com>
+Date: Tue,  7 Dec 2021 15:31:09 +0800
+
+Hi, thanks for your patch.
+
+> fix following cocci warning:
+> ./net/core/gro.c:493:5-12: ERROR: PTR_ERR applied after initialization to constant on line 441
 > 
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Signed-off-by: Guo Zhengkui <guozhengkui@vivo.com>
 > ---
->  kernel/audit.c | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
+>  net/core/gro.c | 8 +++++---
+>  1 file changed, 5 insertions(+), 3 deletions(-)
 > 
-> diff --git a/kernel/audit.c b/kernel/audit.c
-> index 121d37e700a62b53854c06199d9a89850ec39dd4..27013414847678af4283484feab2461e3d9c67ed 100644
-> --- a/kernel/audit.c
-> +++ b/kernel/audit.c
-> @@ -96,6 +96,7 @@ struct audit_net {
->   * @pid: auditd PID
->   * @portid: netlink portid
->   * @net: the associated network namespace
-> + * ns_tracker: tracker for @net reference
+> diff --git a/net/core/gro.c b/net/core/gro.c
+> index 8ec8b44596da..ee08f7b23793 100644
+> --- a/net/core/gro.c
+> +++ b/net/core/gro.c
+> @@ -490,9 +490,11 @@ static enum gro_result dev_gro_receive(struct napi_struct *napi, struct sk_buff
+>  	if (&ptype->list == head)
+>  		goto normal;
+>  
+> -	if (PTR_ERR(pp) == -EINPROGRESS) {
+> -		ret = GRO_CONSUMED;
+> -		goto ok;
+> +	if (IS_ERR(pp)) {
+> +		if (PTR_ERR(pp) == -EINPROGRESS) {
+> +			ret = GRO_CONSUMED;
+> +			goto ok;
+> +		}
+>  	}
 
-You need the '@' sign. I'll add it when applying.
+`if (PTR_ERR(ptr) == -ERRNO)` itself is correct without a check for
+IS_ERR(). The former basically is a more precise test comparing to
+the latter.
+Not sure if compilers can get it well, but in ideal case the first
+will be omitted from the object code at all, and so do we.
 
->   * @rcu: RCU head
->   *
->   * Description:
-> @@ -106,6 +107,7 @@ struct auditd_connection {
->  	struct pid *pid;
->  	u32 portid;
->  	struct net *net;
-> +	netns_tracker ns_tracker;
->  	struct rcu_head rcu;
->  };
->  static struct auditd_connection __rcu *auditd_conn;
+In case I'm wrong and this is a correct fix, it at least shouldn't
+increase the indentation by one, these two conditions can be placed
+into one `if` statement.
+
+NAK.
+
+>  
+>  	same_flow = NAPI_GRO_CB(skb)->same_flow;
+> -- 
+> 2.20.1
+
+Al
