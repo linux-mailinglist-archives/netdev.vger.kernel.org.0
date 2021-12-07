@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 680B746AFD5
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 02:33:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 041B646AFD7
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 02:33:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351756AbhLGBfG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Dec 2021 20:35:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33834 "EHLO
+        id S1351758AbhLGBfH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Dec 2021 20:35:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351679AbhLGBem (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 20:34:42 -0500
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53CD7C061746
-        for <netdev@vger.kernel.org>; Mon,  6 Dec 2021 17:31:13 -0800 (PST)
-Received: by mail-pj1-x102f.google.com with SMTP id w33-20020a17090a6ba400b001a722a06212so992757pjj.0
-        for <netdev@vger.kernel.org>; Mon, 06 Dec 2021 17:31:13 -0800 (PST)
+        with ESMTP id S245391AbhLGBeo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 20:34:44 -0500
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14B48C061746
+        for <netdev@vger.kernel.org>; Mon,  6 Dec 2021 17:31:15 -0800 (PST)
+Received: by mail-pg1-x52d.google.com with SMTP id 133so12129612pgc.12
+        for <netdev@vger.kernel.org>; Mon, 06 Dec 2021 17:31:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=tFp3iCnBAeqbp2p9+t6Hx+bNUCDIXLv2nivTrYVAbTY=;
-        b=ihzBWGfF68dd+iFvYKzUnaPPwCWl2nosR/jldU2BXnkMDLQifdn33ty67cBPeaFVF3
-         p6VJuXnPuDaHVy2Vd9GRiIiHgxUnVlTXqn5bXQAidW46waMSb5tJE1eWz5ISsp6TAHeO
-         lWAJQoPknmaA/uYzizIYxRTmzmWEk6WS4mLMYTkqay1JM5SIKLa8hgn6PrRaTpmJjowj
-         /SsOAWaCX2sWLzbPI71Ht5yfgd74G9RSvlyaeloPXr31v4DYcwWRFD/mhLz+uHMI2yAi
-         c7J1HsT/jB3FILcQF3j1C2IMLXqJTk4luuD/3VjsbtUIoiDczwrTDZgLilyp1EPDDDZi
-         Kj/A==
+        bh=YH+RsSde1TM6CkclceNFxgy6FRympODJPqt8rGVl5oo=;
+        b=puR/+F8cssQG6twcVT5xwXfnE/j7VmHNgD+oNllHia38ilSEpogJnCg7/BA/InwriR
+         OQTg4avqPN5qo3rtWUt4ytWgYt4XWldX8D6/7tZ02/pDeoWICay2inNwcUxCdIf1q9iO
+         l1wucbGOIpbOihvhkIouBEtVy1TzRXf+W6Hf6C6e8i8lWd5xQRDrDK6p+l3PPyHLPiDe
+         UmnSr7Jd63IFQKRreSKpUKjAUeVL4aFta3xjHpEH1/6tNELhAmm9OvVMRMnRWgasYMsy
+         pShVknbRehVEprgBSTsfpV1GMJ2ofy0CZNwILw9jrplqGpN6ZSevFRGMOhQuPWsVt/4L
+         xKdA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=tFp3iCnBAeqbp2p9+t6Hx+bNUCDIXLv2nivTrYVAbTY=;
-        b=rRkVl2nOYnZkUhcB4aoEFaxF0KW0AY5iUXbuaNipyJ3GqyAP37zLWDnUYEG2v5XJiB
-         UxjRHPjDKYYFdhy9H7HFqD7CpsUdLu0Cj4nrsEBmv1CQKWof/7rCpWOZbaA/Gb3oWF4T
-         sR+i2EPciSJDrLtYM+mu60E1BdlFY5DJfecKACqe5uaZBikaWiwiIMUE2t8T15Ov3fLr
-         WxiCTZosNXeL/mx2cjzEpkDfyNs0VUivch2qymmFHr2+Qcxtliy69h84+HEJNOKv+FGo
-         Rx5yprIcx8ISjlhlO9DU59URsR1rneiqzUnx3QDwZtVfMaGcolnEfrRNnEmZhoUYql84
-         bl8Q==
-X-Gm-Message-State: AOAM532kUV3PaKGKPKsoc4JQ+mWVpi/C2LY+QjmjSZu8PYBlhkUVmJcb
-        00KIK9T85w3PWlpO5fI5woo=
-X-Google-Smtp-Source: ABdhPJwvL1C5DecBSByU8PSJu4ctRb1ikHLkuIk+7kHR50TAi5a8cd7c6TmcVA0PohbOH6IfflNSxQ==
-X-Received: by 2002:a17:90b:4b0e:: with SMTP id lx14mr2842643pjb.160.1638840672987;
-        Mon, 06 Dec 2021 17:31:12 -0800 (PST)
+        bh=YH+RsSde1TM6CkclceNFxgy6FRympODJPqt8rGVl5oo=;
+        b=2ccvQOOQjjITaIVwmmqftkoUur2X/xgj7EN3wAAQRTcRVq/7QcbD32wVj7tYGQlmj+
+         /vbwOVVbI+jLuzkixZ20KdanSLfrrB5S+Uhlav3IiYWsQzFqlMl7wDLllNPC1IAhH11b
+         qWzkWjEkAF9791Hgif0IrvXsaTAUYas96KSL66YA7MzTXzLqvp7/LEpEc1CQ9o/UuXvk
+         yYpvs7VDhNfHqSV8MtDgjMi1fpsNRNWu71XjY6cbBeBODqTYua4cjLr1aB/BXjz15qC9
+         SMgKCM5RDNg2DMA41uTORz8VzomnvfJq0Cour7gb2dRjY0LKNpkLkU6T8ItD0zhNgM/D
+         Hbaw==
+X-Gm-Message-State: AOAM533ICNQ0olNnVhK12wX4i1aeXvAavHhJCb1FJh4xX4vqkXx2WjXI
+        1WnO7nOZfohfY+KGngxkS4I=
+X-Google-Smtp-Source: ABdhPJwql0TauuR5Dfgq384FQJ+BdAuHem6NPrXDnnSimrTfSFXeUex2DCKdWROTNO4GSpRdF/YMjQ==
+X-Received: by 2002:a63:33c3:: with SMTP id z186mr13298419pgz.67.1638840674682;
+        Mon, 06 Dec 2021 17:31:14 -0800 (PST)
 Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:518c:39bf:c3e8:ffe2])
-        by smtp.gmail.com with ESMTPSA id u6sm13342907pfg.157.2021.12.06.17.31.12
+        by smtp.gmail.com with ESMTPSA id u6sm13342907pfg.157.2021.12.06.17.31.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Dec 2021 17:31:12 -0800 (PST)
+        Mon, 06 Dec 2021 17:31:14 -0800 (PST)
 From:   Eric Dumazet <eric.dumazet@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev <netdev@vger.kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH net-next 08/13] llc: add net device refcount tracker
-Date:   Mon,  6 Dec 2021 17:30:34 -0800
-Message-Id: <20211207013039.1868645-9-eric.dumazet@gmail.com>
+Subject: [PATCH net-next 09/13] pktgen add net device refcount tracker
+Date:   Mon,  6 Dec 2021 17:30:35 -0800
+Message-Id: <20211207013039.1868645-10-eric.dumazet@gmail.com>
 X-Mailer: git-send-email 2.34.1.400.ga245620fadb-goog
 In-Reply-To: <20211207013039.1868645-1-eric.dumazet@gmail.com>
 References: <20211207013039.1868645-1-eric.dumazet@gmail.com>
@@ -69,52 +69,56 @@ From: Eric Dumazet <edumazet@google.com>
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- include/net/llc_conn.h | 1 +
- net/llc/af_llc.c       | 5 +++--
- 2 files changed, 4 insertions(+), 2 deletions(-)
+ net/core/pktgen.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/include/net/llc_conn.h b/include/net/llc_conn.h
-index ea985aa7a6c5e64b6802c2399ad47db23fdbd9bf..2c1ea3414640523a3efc20ad626ae9896a418d1b 100644
---- a/include/net/llc_conn.h
-+++ b/include/net/llc_conn.h
-@@ -38,6 +38,7 @@ struct llc_sock {
- 	struct llc_addr	    laddr;		/* lsap/mac pair */
- 	struct llc_addr	    daddr;		/* dsap/mac pair */
- 	struct net_device   *dev;		/* device to send to remote */
-+	netdevice_tracker   dev_tracker;
- 	u32		    copied_seq;		/* head of yet unread data */
- 	u8		    retry_count;	/* number of retries */
- 	u8		    ack_must_be_send;
-diff --git a/net/llc/af_llc.c b/net/llc/af_llc.c
-index 3086f4a6ae683f1119d4813648bf9fd9ba215436..26c00ebf4fbae4d7dc1c27d180385470fa252be0 100644
---- a/net/llc/af_llc.c
-+++ b/net/llc/af_llc.c
-@@ -224,7 +224,7 @@ static int llc_ui_release(struct socket *sock)
- 	} else {
- 		release_sock(sk);
+diff --git a/net/core/pktgen.c b/net/core/pktgen.c
+index a3d74e2704c42e3bec1aa502b911c1b952a56cf1..560a5e712dc32fe4aa2cfaa751c3fe1e462c614f 100644
+--- a/net/core/pktgen.c
++++ b/net/core/pktgen.c
+@@ -410,6 +410,7 @@ struct pktgen_dev {
+ 				  * device name (not when the inject is
+ 				  * started as it used to do.)
+ 				  */
++	netdevice_tracker dev_tracker;
+ 	char odevname[32];
+ 	struct flow_state *flows;
+ 	unsigned int cflows;	/* Concurrent flows (config) */
+@@ -2099,7 +2100,7 @@ static int pktgen_setup_dev(const struct pktgen_net *pn,
+ 
+ 	/* Clean old setups */
+ 	if (pkt_dev->odev) {
+-		dev_put(pkt_dev->odev);
++		dev_put_track(pkt_dev->odev, &pkt_dev->dev_tracker);
+ 		pkt_dev->odev = NULL;
  	}
--	dev_put(llc->dev);
-+	dev_put_track(llc->dev, &llc->dev_tracker);
- 	sock_put(sk);
- 	llc_sk_free(sk);
- out:
-@@ -295,6 +295,7 @@ static int llc_ui_autobind(struct socket *sock, struct sockaddr_llc *addr)
- 		llc->dev = dev_getfirstbyhwtype(&init_net, addr->sllc_arphrd);
- 	if (!llc->dev)
- 		goto out;
-+	netdev_tracker_alloc(llc->dev, &llc->dev_tracker, GFP_KERNEL);
- 	rc = -EUSERS;
- 	llc->laddr.lsap = llc_ui_autoport();
- 	if (!llc->laddr.lsap)
-@@ -362,7 +363,7 @@ static int llc_ui_bind(struct socket *sock, struct sockaddr *uaddr, int addrlen)
- 	} else
- 		llc->dev = dev_getbyhwaddr_rcu(&init_net, addr->sllc_arphrd,
- 					   addr->sllc_mac);
--	dev_hold(llc->dev);
-+	dev_hold_track(llc->dev, &llc->dev_tracker, GFP_ATOMIC);
- 	rcu_read_unlock();
- 	if (!llc->dev)
- 		goto out;
+ 
+@@ -2117,6 +2118,7 @@ static int pktgen_setup_dev(const struct pktgen_net *pn,
+ 		err = -ENETDOWN;
+ 	} else {
+ 		pkt_dev->odev = odev;
++		netdev_tracker_alloc(odev, &pkt_dev->dev_tracker, GFP_KERNEL);
+ 		return 0;
+ 	}
+ 
+@@ -3805,7 +3807,7 @@ static int pktgen_add_device(struct pktgen_thread *t, const char *ifname)
+ 
+ 	return add_dev_to_thread(t, pkt_dev);
+ out2:
+-	dev_put(pkt_dev->odev);
++	dev_put_track(pkt_dev->odev, &pkt_dev->dev_tracker);
+ out1:
+ #ifdef CONFIG_XFRM
+ 	free_SAs(pkt_dev);
+@@ -3899,7 +3901,7 @@ static int pktgen_remove_device(struct pktgen_thread *t,
+ 	/* Dis-associate from the interface */
+ 
+ 	if (pkt_dev->odev) {
+-		dev_put(pkt_dev->odev);
++		dev_put_track(pkt_dev->odev, &pkt_dev->dev_tracker);
+ 		pkt_dev->odev = NULL;
+ 	}
+ 
 -- 
 2.34.1.400.ga245620fadb-goog
 
