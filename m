@@ -2,78 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 24E0346C31D
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 19:50:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F63146C32B
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 19:53:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240738AbhLGSxr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 13:53:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51494 "EHLO
+        id S236181AbhLGS5S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 13:57:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240730AbhLGSxn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 13:53:43 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 995B1C061748
-        for <netdev@vger.kernel.org>; Tue,  7 Dec 2021 10:50:12 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id DCB2ECE1DCA
-        for <netdev@vger.kernel.org>; Tue,  7 Dec 2021 18:50:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 13DE0C341CD;
-        Tue,  7 Dec 2021 18:50:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638903009;
-        bh=SAPHEg+pMrvHXjutpEiIC6bsgmppRZPlwyv4b/RsruE=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=J1t5XIrGKBZeCpzCjS6MNDmXPv9lZTwPVG3f1ptaUoQVfhVZCaBtsxGSPC6XvQCvl
-         dhroEKuI4YmsYKXcG7MsrAgbyjA+Xkngl1te3RhY/b9mxC9N788Yf9rjiZPepSHii1
-         0GtD11uUXjxHuSLTEyERumDMcFsxJG6MgbPSSjvGWO5MnurBUJHNZXVZ09DPFgCd43
-         2Vo1QIwTMg0H72jUNG7gwppLtLUR7rBAgg7uPihUTT11X4wwELiB8vfYjvoaTbdA92
-         zsxZ+QqqekwN8tINYo4ZMEaogtLcKkQcLB/5lLeyx49+JQnxzV0moA2cMiU41lFKjs
-         vreSVgt/3jBow==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 01F3060973;
-        Tue,  7 Dec 2021 18:50:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S231778AbhLGS5R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 13:57:17 -0500
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAAD1C061574;
+        Tue,  7 Dec 2021 10:53:46 -0800 (PST)
+Received: by mail-ed1-x534.google.com with SMTP id w1so60648866edc.6;
+        Tue, 07 Dec 2021 10:53:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=fUlY4LTKHwXbxbYcpl4JSEaEiScO6d6eYAb4xAw34iQ=;
+        b=oCGB3vLyLBqgQ6j5jmoCZ5acU0AYWQ8OHaTFP9sJ5p3TpK2x5KFbH2sfjCy+QgHlda
+         cVdeSM8MW0Zh8joch1QozcclebVkHnbW14qDSv3eFWvoZw+JH9IFo6ecllIFeoLCdsuK
+         7w6i8xDj1+SYlilCXkRNMK+VqKUU0RseZcNkblemogSSTAOMg+sPRrCAsagDX2h02lp3
+         QIX8oAhfl9r/06f4fJlNOA9vFsMoDOg4BOsvmhnbKB9xgrGwSkA5pThxBVzFv/9By7wW
+         Yj6A7iRX4GpcusMHQ00bwox5USh0EAU/qlGR7GX47MgI740mp6cz98SGjlgczNpio+Ah
+         hxDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=fUlY4LTKHwXbxbYcpl4JSEaEiScO6d6eYAb4xAw34iQ=;
+        b=TUxgjz6M/ejtIzDxZq7bl/AN9fT2C+Xrb9tC9V1i1lKvmqn6E5k4j+La5LxV0tnf/5
+         1WYIPmWbHrJLCPO5XbJ1YQnUxHoGf56x9cRJvuqimsBGJqrxvAvixS643UaxZZ+I2UIQ
+         MSh8Koz3d0xiLr1yeXhVuKaN4JySAEZQiatM1znnxTEpwIHqbirWY4pMLHYn9rvEVyDW
+         wR/rK510v+9MnD3Jr5FhuIfZQ7GkhH9Q62XO6TjouG9vgc6gxiWHtLkziAEVgIIq7pCO
+         XP/y4IABvndoPBp7pRqauLaJYBO7SeAusNrICCvE8nUPsQpeVu3CBB+RoPt4d4CCB4qT
+         CGHg==
+X-Gm-Message-State: AOAM532IWL58bM21239ujF2wAFCTH8p4lJm5iCWW6FjtZiKPzf3l4iB2
+        QB9+qA9x56JklRlmcLlLeWA=
+X-Google-Smtp-Source: ABdhPJwNQAcKlRruoBZ9uvD3AcJo37DxxZDZVQ/J/370BZxibOdllX0sCAYxLwy1la5Md9YtGc4SfA==
+X-Received: by 2002:a17:907:8a20:: with SMTP id sc32mr1359019ejc.65.1638903225261;
+        Tue, 07 Dec 2021 10:53:45 -0800 (PST)
+Received: from Ansuel-xps. (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
+        by smtp.gmail.com with ESMTPSA id t5sm404482edd.68.2021.12.07.10.53.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Dec 2021 10:53:45 -0800 (PST)
+Message-ID: <61afadb9.1c69fb81.7dfad.19b1@mx.google.com>
+X-Google-Original-Message-ID: <Ya+tt/I+gFi95GI6@Ansuel-xps.>
+Date:   Tue, 7 Dec 2021 19:53:43 +0100
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [net-next RFC PATCH 0/6] Add support for qca8k mdio rw in
+ Ethernet packet
+References: <20211207145942.7444-1-ansuelsmth@gmail.com>
+ <Ya+q02HlWsHMYyAe@lunn.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] vrf: use dev_replace_track() for better tracking
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163890300900.2839.12838248750139664703.git-patchwork-notify@kernel.org>
-Date:   Tue, 07 Dec 2021 18:50:09 +0000
-References: <20211207055603.1926372-1-eric.dumazet@gmail.com>
-In-Reply-To: <20211207055603.1926372-1-eric.dumazet@gmail.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        edumazet@google.com, dsahern@kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Ya+q02HlWsHMYyAe@lunn.ch>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Mon,  6 Dec 2021 21:56:03 -0800 you wrote:
-> From: Eric Dumazet <edumazet@google.com>
+On Tue, Dec 07, 2021 at 07:41:23PM +0100, Andrew Lunn wrote:
+> > I still have to find a solution to a slowdown problem and this is where
+> > I would love to get some hint.
+> > Currently I still didn't find a good way to understand when the tagger
+> > starts to accept packets and because of this the initial setup is slow
+> > as every completion timeouts. Am I missing something or is there a way
+> > to check for this?
 > 
-> vrf_rt6_release() and vrf_rtable_release() changes dst->dev
+> I've not looked at this particular driver, i just know the general
+> architecture.
 > 
-> Instead of
+> The MDIO bus driver probes first, maybe as part of the Ethernet
+> driver, maybe as a standalone MDIO driver. The switch is found in DT
+> and the driver code will at some point later probe the switch driver.
 > 
-> dev_hold(ndev);
-> dev_put(odev);
+> The switch driver has working MDIO at this point. It should use MDIO
+> to talk to the switch, make sure it is there, maybe do some initial
+> configuration. Once it is happy, it registers the switch with the DSA
+> core using dsa_register_switch().
 > 
-> [...]
+> If this is a single switch, the DSA core will then start setting
+> things up. As part of dsa_switch_setup() it will call the switch
+> drivers setup() method. It then figures out what tag driver to use, by
+> calling dsa_switch_setup_tag_protocol(). However, the tag driver
+> itself is not inserted into the chain yet. That happens later.  Once
+> the switch is setup, dsa_tree_setup_master() is called which does
+> dsa_master_setup() and in the middle there is:
+> 
+> 	/* If we use a tagging format that doesn't have an ethertype
+> 	 * field, make sure that all packets from this point on get
+> 	 * sent to the tag format's receive function.
+> 	 */
+> 	wmb();
+> 
+> 	dev->dsa_ptr = cpu_dp;
+> 
+> This is the magic to actually enable the tagger receiving frames.
+> 
 
-Here is the summary with links:
-  - [net-next] vrf: use dev_replace_track() for better tracking
-    https://git.kernel.org/netdev/net-next/c/c0e5e11af12b
+Will check if using this is the correct way to prevent use of this
+alternative way before it's available.
 
-You are awesome, thank you!
+> I need to look at your patches, but why is the tagger involved?  At
+> least for the Marvell switch, you send a pretty normal looking
+> Ethernet frame to a specific MAC address, and the switch replies using
+> that MAC address. And it has an Ether Type specific to switch
+> control. Since this is all normal looking, there are hooks in the
+> network stack which can be used to get these frames.
+>
+
+The qca tag header provide a TYPE value that refer to a big list of
+Frame type. In all of this at value 2 we have the type that tells us
+that is a READ_WRITE_REG_ACK (aka a mdio rw Ethernet packet)
+
+The idea of using the tagger is to skip parsing the packet 2 times
+considering the qca tag header is present at the same place in both
+normal packet and mdio rw Ethernet packet.
+
+Your idea would be hook this before the tagger and parse it?
+I assume that is the only way if this has to be generilized. But I
+wonder if this would create some overhead by the double parsing.
+
+> 	Andrew
+> 
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+	Ansuel
