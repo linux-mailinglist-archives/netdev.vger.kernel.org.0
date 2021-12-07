@@ -2,279 +2,251 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C8E246C7CE
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 23:54:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E6F846C7DA
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 23:58:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238034AbhLGW6Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 17:58:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53668 "EHLO
+        id S242314AbhLGXBx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 18:01:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229790AbhLGW6Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 17:58:16 -0500
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ED88C061574;
-        Tue,  7 Dec 2021 14:54:45 -0800 (PST)
-Received: by mail-yb1-xb2d.google.com with SMTP id f9so1479226ybq.10;
-        Tue, 07 Dec 2021 14:54:45 -0800 (PST)
+        with ESMTP id S229963AbhLGXBx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 18:01:53 -0500
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56057C061574;
+        Tue,  7 Dec 2021 14:58:22 -0800 (PST)
+Received: by mail-ed1-x52a.google.com with SMTP id y13so1767989edd.13;
+        Tue, 07 Dec 2021 14:58:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=KIUT20NJGyEzKpPlf+Kj5bOvgKjOQpWqtgUjoQeoVpY=;
-        b=bCl5TPUDim/CaOSCDir1lhcVCnE+UMPLzZV+nHMXhJMMTZJiZme6nKV3cL1cRZ12vl
-         hWxWcCe9VUP25J7DPFwcuZTeV8MGECaj8BKZYlOKy+wFFZAc6QklxbPNbBnycMfurCQJ
-         MTqXW7BPtMIX+6C8erBWSfZ4oCnRq3cnpJceUujixR3llVpg4Ww81483gN2xLaz2M++s
-         p1nO/Uly7SzfDm2NlfeH2aOPQlUcylCdQq1viaCedZ1DrjmbxVafQQoAvjcjTSCJROuV
-         8y6VBtOPXUijFlKDdxnV1gkwl4JyBCBXjHQ8bEuDd+27UtsrfrYHUFEAy2izPmPidYk9
-         6Ifw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=DR+C0VgKU3YiSLjKaSxBhVacM0Ha9yIihcP8AimqUpo=;
+        b=p9GZzhM0S5JIOsTAevdhn/R90s+xP55dPIjZ4GLtILt3rsjPTNQtmc8veeZD0poyYn
+         D5rEOSfd4GRFv7xXFuva6nwaOrhNNckItcGFLR4HTNISPQPjk6GXPKxxmI1E2f6L0G1j
+         Dgru18Y6qwzAPb/UaZvDujxcUjPHFMjDntUzq5EOJWa/tS1Fs+r7cUXT6i2OqhMoBqy4
+         VCd62mP5XWnsoMfjLyM+9eUPoQMlf97jMVtEbKTh+unjR5mCywbNOYyRrIKEY39WBaLB
+         F6CHRBXt497cz0mTQHVDr+iBL80vwru0sPuOb97BwztileVnN1WembNuMkdBQWK9O/Jb
+         hckg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=KIUT20NJGyEzKpPlf+Kj5bOvgKjOQpWqtgUjoQeoVpY=;
-        b=Uj3HuvPx+z+E+lbyl+I6Zs3metlTzC8lQdnqrByWgzzTuJMVPS1EDR4JORpiK2BM0Q
-         4/7fhG6BBk6A2pxH3Rg8Uq9lWzvXXe3b3Ru+x5FpwCInTi5hqKqKh6+QydCAeRf4pGcz
-         2OPNH4F2XNXxm8WcnwdLLpSg329BMy+4QVjTUONARnadK0AbcwCpUistXjJcOEq3XQpq
-         ysryg3AdsVdYJcoJuXekMgZfNqK3O5U9xnWEeeRzKPl9jbvdGicB9NVObeYweF+j5bir
-         mo+tpMItF4zZslpcCnSwltJHD53VHnkap3DrKYFJnJoL075zbo5B67H74I9nyrtboixq
-         pu/w==
-X-Gm-Message-State: AOAM532SvG2rMDeS21h8pL0nYTAE6Y1emoC9BqdLXcfpKQ7qOIlRWI92
-        8fwdaIeQE2xWlnEas2WZXVgbdbMqSggumkcKlM8=
-X-Google-Smtp-Source: ABdhPJzg3gooPAKHVdMOpJLG8/YYxFysuOPPxmJz4m5qhFLTw4VSIN50Bc5gVLRQBVninGN35SeahmfG/tMjR7MRxpQ=
-X-Received: by 2002:a25:e406:: with SMTP id b6mr55301906ybh.529.1638917684832;
- Tue, 07 Dec 2021 14:54:44 -0800 (PST)
-MIME-Version: 1.0
-References: <20211204140700.396138-1-jolsa@kernel.org> <20211204140700.396138-4-jolsa@kernel.org>
- <7df54ca3-1bae-4d54-e30f-c2474c48ede0@fb.com> <Ya+kg3SPcBU4loIz@krava>
-In-Reply-To: <Ya+kg3SPcBU4loIz@krava>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 7 Dec 2021 14:54:33 -0800
-Message-ID: <CAEf4BzbAVO-SGub8+haDayhnL_VLyYAof8eUB_d6Qp18yC2Adw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 3/3] selftests/bpf: Add tests for
- get_func_[arg|ret|arg_cnt] helpers
-To:     Jiri Olsa <jolsa@redhat.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=DR+C0VgKU3YiSLjKaSxBhVacM0Ha9yIihcP8AimqUpo=;
+        b=Nec8LTY75Q4oHuZ9RsMNgzx8feVHaJQMvQWFg3Xn7Oh/ujk26wV7tgaYDjkaq8HAEz
+         uAJAgl1Mdaszgd5u/LbHuFQjH9i/Ijd6qq43SnPti7Z9YiNxX2cqqOYb5HRnFAsd6ROP
+         sQe0AgRykn1UqfmPPxqFPaAKQ0t7a3c6QRfZwcbsPC5TKlE4GTJMo/GPSs/hPQwdKSYe
+         0q1G0z66RW3v0Z9s9VnAQvv0sIZvcEGS2BU4QdehT1rwidlUQdsSjDFqJTbVWYCvYgTp
+         hAyI2M67cMHc4+a5GF+mhV9p23F1F8cb6qvw2bpXRWnb3KDA/BSOkZe0E1bzU9dsjVIH
+         THAw==
+X-Gm-Message-State: AOAM531dwDaTvych3/HzN02hBCcbHTokEFygXtgp2MIL9X5h6pfIAnFu
+        CT577R2PusakU/xIyfblj2CfpUkO+EipGg==
+X-Google-Smtp-Source: ABdhPJwKIERTWec748bK/0dJb4oHmiOOktmqcnckHV6uYoZV6x6vnXbiPRuZ0mRVqAbwfAkoZUwJ6g==
+X-Received: by 2002:a17:907:1c0a:: with SMTP id nc10mr2823981ejc.211.1638917900548;
+        Tue, 07 Dec 2021 14:58:20 -0800 (PST)
+Received: from localhost.localdomain ([2a02:a03f:c062:a800:5f01:482d:95e2:b968])
+        by smtp.gmail.com with ESMTPSA id q17sm763554edd.10.2021.12.07.14.58.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Dec 2021 14:58:19 -0800 (PST)
+From:   Mathieu Jadin <mathjadin@gmail.com>
+To:     bpf@vger.kernel.org
+Cc:     Mathieu Jadin <mathjadin@gmail.com>, KP Singh <kpsingh@kernel.org>,
+        netdev@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Andrii Nakryiko <andrii@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Jakub Kicinski <kuba@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Joe Stringer <joe@cilium.io>, David Ahern <dsahern@kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+Subject: [PATCH bpf-next v2 1/3] net: Parse IPv6 ext headers from TCP sock_ops
+Date:   Tue,  7 Dec 2021 23:56:33 +0100
+Message-Id: <20211207225635.113904-1-mathjadin@gmail.com>
+X-Mailer: git-send-email 2.31.1
+MIME-Version: 1.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1638916136; l=6400; s=20211207; h=from:subject; bh=O3IKAtE92hFjtYfj793ecpJ7UeU50Fv21BEpunzo1Hc=; b=j/SFdPM3itqZL7RdC7lzly11AUIcv4RKjdSGRarnR5Bp1iVOPS3jUvr7o4TbRE0PdZuZCPhE385i 0AF5A3oMDEo1lMzcv+m7D0EYNwHi1cfOj2I/bDWqiiupOozgdvUn
+X-Developer-Key: i=mathjadin@gmail.com; a=ed25519; pk=LX0wKHMKZralQziQacrPu4w5BceQsC7CocWV714TPRU=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 7, 2021 at 10:14 AM Jiri Olsa <jolsa@redhat.com> wrote:
->
-> On Mon, Dec 06, 2021 at 02:03:54PM -0800, Andrii Nakryiko wrote:
-> >
-> > On 12/4/21 6:07 AM, Jiri Olsa wrote:
-> > > Adding tests for get_func_[arg|ret|arg_cnt] helpers.
-> > > Using these helpers in fentry/fexit/fmod_ret programs.
-> > >
-> > > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> > > ---
-> > >   .../bpf/prog_tests/get_func_args_test.c       |  38 ++++++
-> > >   .../selftests/bpf/progs/get_func_args_test.c  | 112 ++++++++++++++++++
-> > >   2 files changed, 150 insertions(+)
-> > >   create mode 100644 tools/testing/selftests/bpf/prog_tests/get_func_args_test.c
-> > >   create mode 100644 tools/testing/selftests/bpf/progs/get_func_args_test.c
-> > >
-> > > diff --git a/tools/testing/selftests/bpf/prog_tests/get_func_args_test.c b/tools/testing/selftests/bpf/prog_tests/get_func_args_test.c
-> > > new file mode 100644
-> > > index 000000000000..c24807ae4361
-> > > --- /dev/null
-> > > +++ b/tools/testing/selftests/bpf/prog_tests/get_func_args_test.c
-> > > @@ -0,0 +1,38 @@
-> > > +// SPDX-License-Identifier: GPL-2.0
-> > > +#include <test_progs.h>
-> > > +#include "get_func_args_test.skel.h"
-> > > +
-> > > +void test_get_func_args_test(void)
-> > > +{
-> > > +   struct get_func_args_test *skel = NULL;
-> > > +   __u32 duration = 0, retval;
-> > > +   int err, prog_fd;
-> > > +
-> > > +   skel = get_func_args_test__open_and_load();
-> > > +   if (!ASSERT_OK_PTR(skel, "get_func_args_test__open_and_load"))
-> > > +           return;
-> > > +
-> > > +   err = get_func_args_test__attach(skel);
-> > > +   if (!ASSERT_OK(err, "get_func_args_test__attach"))
-> > > +           goto cleanup;
-> > > +
-> > > +   prog_fd = bpf_program__fd(skel->progs.test1);
-> > > +   err = bpf_prog_test_run(prog_fd, 1, NULL, 0,
-> > > +                           NULL, NULL, &retval, &duration);
-> > > +   ASSERT_OK(err, "test_run");
-> > > +   ASSERT_EQ(retval, 0, "test_run");
-> > > +
-> > > +   prog_fd = bpf_program__fd(skel->progs.fmod_ret_test);
-> > > +   err = bpf_prog_test_run(prog_fd, 1, NULL, 0,
-> > > +                           NULL, NULL, &retval, &duration);
-> > > +   ASSERT_OK(err, "test_run");
-> > > +   ASSERT_EQ(retval, 1234, "test_run");
-> >
-> >
-> > are the other two programs executed implicitly during one of those test
-> > runs? Can you please leave a small comment somewhere here if that's true?
->
-> test1 triggers all the bpf_fentry_test* fentry/fexits
-> fmod_ret_test triggers the rest, I'll put it in comment
->
-> >
-> >
-> > > +
-> > > +   ASSERT_EQ(skel->bss->test1_result, 1, "test1_result");
-> > > +   ASSERT_EQ(skel->bss->test2_result, 1, "test2_result");
-> > > +   ASSERT_EQ(skel->bss->test3_result, 1, "test3_result");
-> > > +   ASSERT_EQ(skel->bss->test4_result, 1, "test4_result");
-> > > +
-> > > +cleanup:
-> > > +   get_func_args_test__destroy(skel);
-> > > +}
-> > > diff --git a/tools/testing/selftests/bpf/progs/get_func_args_test.c b/tools/testing/selftests/bpf/progs/get_func_args_test.c
-> > > new file mode 100644
-> > > index 000000000000..0d0a67c849ae
-> > > --- /dev/null
-> > > +++ b/tools/testing/selftests/bpf/progs/get_func_args_test.c
-> > > @@ -0,0 +1,112 @@
-> > > +// SPDX-License-Identifier: GPL-2.0
-> > > +#include <linux/bpf.h>
-> > > +#include <bpf/bpf_helpers.h>
-> > > +#include <bpf/bpf_tracing.h>
-> > > +#include <errno.h>
-> > > +
-> > > +char _license[] SEC("license") = "GPL";
-> > > +
-> > > +__u64 test1_result = 0;
-> > > +SEC("fentry/bpf_fentry_test1")
-> > > +int BPF_PROG(test1)
-> > > +{
-> > > +   __u64 cnt = bpf_get_func_arg_cnt(ctx);
-> > > +   __u64 a = 0, z = 0, ret = 0;
-> > > +   __s64 err;
-> > > +
-> > > +   test1_result = cnt == 1;
-> > > +
-> > > +   /* valid arguments */
-> > > +   err = bpf_get_func_arg(ctx, 0, &a);
-> > > +   test1_result &= err == 0 && (int) a == 1;
-> >
-> >
-> > int cast unnecessary? but some ()'s wouldn't hurt...
->
-> it is, 'a' is int and trampoline saves it with 32-bit register like:
->
->   mov    %edi,-0x8(%rbp)
->
-> so the upper 4 bytes are not zeroed
+Add a flag that, if set, triggers the call of eBPF program for each
+packet holding an IPv6 extension header. Also add a sock_ops operator
+that identifies such call.
 
-oh, this is definitely worth a comment, it's quite a big gotcha we'll
-need to remember
+This change uses skb_data and skb_data_end introduced for TCP options'
+parsing but these pointer cover the IPv6 header and its extension
+headers.
 
+For instance, this change allows to read an eBPF sock_ops program to
+read complex Segment Routing Headers carrying complex messages in TLV or
+observing its intermediate segments as soon as they are received.
 
->
-> >
-> >
-> > > +
-> > > +   /* not valid argument */
-> > > +   err = bpf_get_func_arg(ctx, 1, &z);
-> > > +   test1_result &= err == -EINVAL;
-> > > +
-> > > +   /* return value fails in fentry */
-> > > +   err = bpf_get_func_ret(ctx, &ret);
-> > > +   test1_result &= err == -EINVAL;
-> > > +   return 0;
-> > > +}
-> > > +
-> > > +__u64 test2_result = 0;
-> > > +SEC("fexit/bpf_fentry_test2")
-> > > +int BPF_PROG(test2)
-> > > +{
-> > > +   __u64 cnt = bpf_get_func_arg_cnt(ctx);
-> > > +   __u64 a = 0, b = 0, z = 0, ret = 0;
-> > > +   __s64 err;
-> > > +
-> > > +   test2_result = cnt == 2;
-> > > +
-> > > +   /* valid arguments */
-> > > +   err = bpf_get_func_arg(ctx, 0, &a);
-> > > +   test2_result &= err == 0 && (int) a == 2;
-> > > +
-> > > +   err = bpf_get_func_arg(ctx, 1, &b);
-> > > +   test2_result &= err == 0 && b == 3;
-> > > +
-> > > +   /* not valid argument */
-> > > +   err = bpf_get_func_arg(ctx, 2, &z);
-> > > +   test2_result &= err == -EINVAL;
-> > > +
-> > > +   /* return value */
-> > > +   err = bpf_get_func_ret(ctx, &ret);
-> > > +   test2_result &= err == 0 && ret == 5;
-> > > +   return 0;
-> > > +}
-> > > +
-> > > +__u64 test3_result = 0;
-> > > +SEC("fmod_ret/bpf_modify_return_test")
-> > > +int BPF_PROG(fmod_ret_test, int _a, int *_b, int _ret)
-> > > +{
-> > > +   __u64 cnt = bpf_get_func_arg_cnt(ctx);
-> > > +   __u64 a = 0, b = 0, z = 0, ret = 0;
-> > > +   __s64 err;
-> > > +
-> > > +   test3_result = cnt == 2;
-> > > +
-> > > +   /* valid arguments */
-> > > +   err = bpf_get_func_arg(ctx, 0, &a);
-> > > +   test3_result &= err == 0 && (int) a == 1;
-> > > +
-> > > +   err = bpf_get_func_arg(ctx, 1, &b);
-> > > +   test3_result &= err == 0;
-> >
-> >
-> > why no checking of b value here?
->
-> right, ok
->
-> >
-> > > +
-> > > +   /* not valid argument */
-> > > +   err = bpf_get_func_arg(ctx, 2, &z);
-> > > +   test3_result &= err == -EINVAL;
-> > > +
-> > > +   /* return value */
-> > > +   err = bpf_get_func_ret(ctx, &ret);
-> > > +   test3_result &= err == 0 && ret == 0;
-> > > +   return 1234;
-> > > +}
-> > > +
-> > > +__u64 test4_result = 0;
-> > > +SEC("fexit/bpf_modify_return_test")
-> > > +int BPF_PROG(fexit_test, int _a, __u64 _b, int _ret)
-> > > +{
-> > > +   __u64 cnt = bpf_get_func_arg_cnt(ctx);
-> > > +   __u64 a = 0, b = 0, z = 0, ret = 0;
-> > > +   __s64 err;
-> > > +
-> > > +   test4_result = cnt == 2;
-> > > +
-> > > +   /* valid arguments */
-> > > +   err = bpf_get_func_arg(ctx, 0, &a);
-> > > +   test4_result &= err == 0 && (int) a == 1;
-> > > +
-> > > +   err = bpf_get_func_arg(ctx, 1, &b);
-> > > +   test4_result &= err == 0;
-> >
-> >
-> > same, for consistency, b should have been checked, no?
->
-> ok
->
-> thanks,
-> jirka
->
+Signed-off-by: Mathieu Jadin <mathjadin@gmail.com>
+---
+ include/uapi/linux/bpf.h       | 26 +++++++++++++++++++++++++-
+ net/ipv6/tcp_ipv6.c            | 26 ++++++++++++++++++++++++--
+ tools/include/uapi/linux/bpf.h | 26 +++++++++++++++++++++++++-
+ 3 files changed, 74 insertions(+), 4 deletions(-)
+
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index c26871263f1f..34e48f5727a4 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -5849,6 +5849,10 @@ struct bpf_sock_ops {
+ 	 *					the 3WHS.
+ 	 *
+ 	 * bpf_load_hdr_opt() can also be used to read a particular option.
++	 *
++	 * Under sock_ops->op ==  BPF_SOCK_OPS_PARSE_IP6_HDR_CB,
++	 * [skb_data, skb_data_end] covers the whole IPv6 header
++	 * with its extension headers.
+ 	 */
+ 	__bpf_md_ptr(void *, skb_data);
+ 	__bpf_md_ptr(void *, skb_data_end);
+@@ -5917,8 +5921,15 @@ enum {
+ 	 * options first before the BPF program does.
+ 	 */
+ 	BPF_SOCK_OPS_WRITE_HDR_OPT_CB_FLAG = (1<<6),
++	/* Call bpf for all received IPv6 extension headers.  The bpf prog will
++	 * be called under sock_ops->op == BPF_SOCK_OPS_PARSE_IPV6_HDR_CB and
++	 * will be able to parse the IPv6 header and its extension headers.
++	 *
++	 * The bpf prog will usually turn this off in the common cases.
++	 */
++	BPF_SOCK_OPS_PARSE_IPV6_HDR_CB_FLAG = (1<<7),
+ /* Mask of all currently supported cb flags */
+-	BPF_SOCK_OPS_ALL_CB_FLAGS       = 0x7F,
++	BPF_SOCK_OPS_ALL_CB_FLAGS       = 0xFF,
+ };
+ 
+ /* List of known BPF sock_ops operators.
+@@ -6031,6 +6042,19 @@ enum {
+ 					 * by the kernel or the
+ 					 * earlier bpf-progs.
+ 					 */
++	BPF_SOCK_OPS_PARSE_IPV6_HDR_CB,	/* Parse the IPv6 extension
++					 * header option.
++					 * It will be called to handle
++					 * the packets received at
++					 * an already established
++					 * connection with an extension
++					 * header.
++					 *
++					 * sock_ops->skb_data:
++					 * Referring to the received skb.
++					 * It covers the IPv6 header and
++					 * its extension headers only.
++					 */
+ };
+ 
+ /* List of TCP states. There is a build check in net/ipv4/tcp.c to detect
+diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
+index 551fce49841d..6b47c973f776 100644
+--- a/net/ipv6/tcp_ipv6.c
++++ b/net/ipv6/tcp_ipv6.c
+@@ -1470,7 +1470,7 @@ static int tcp_v6_do_rcv(struct sock *sk, struct sk_buff *skb)
+ {
+ 	struct ipv6_pinfo *np = tcp_inet6_sk(sk);
+ 	struct sk_buff *opt_skb = NULL;
+-	struct tcp_sock *tp;
++	struct tcp_sock *tp = tcp_sk(sk);
+ 
+ 	/* Imagine: socket is IPv6. IPv4 packet arrives,
+ 	   goes to IPv4 receive handler and backlogged.
+@@ -1518,6 +1518,29 @@ static int tcp_v6_do_rcv(struct sock *sk, struct sk_buff *skb)
+ 			}
+ 		}
+ 
++		/* Call ebpf on packets with extension headers */
++		if (BPF_SOCK_OPS_TEST_FLAG(tp, BPF_SOCK_OPS_PARSE_IPV6_HDR_CB_FLAG) &&
++		    ipv6_hdr(skb)->nexthdr != IPPROTO_TCP) {
++			struct bpf_sock_ops_kern sock_ops;
++			void *old_data_ptr;
++
++			memset(&sock_ops, 0,
++			       offsetof(struct bpf_sock_ops_kern, temp));
++			if (sk_fullsock(sk)) {
++				sock_ops.is_fullsock = 1;
++				sock_owned_by_me(sk);
++			}
++			sock_ops.op = BPF_SOCK_OPS_PARSE_IPV6_HDR_CB;
++			sock_ops.sk = sk;
++			sock_ops.skb = skb;
++			/* Temporary use the network header as skb data */
++			sock_ops.skb_data_end = skb_transport_header(skb);
++			old_data_ptr = skb->data;
++			skb->data = skb_network_header(skb);
++			BPF_CGROUP_RUN_PROG_SOCK_OPS(&sock_ops);
++			skb->data = old_data_ptr;
++		}
++
+ 		tcp_rcv_established(sk, skb);
+ 		if (opt_skb)
+ 			goto ipv6_pktoptions;
+@@ -1571,7 +1594,6 @@ static int tcp_v6_do_rcv(struct sock *sk, struct sk_buff *skb)
+ 	   3. socket is not in passive state.
+ 	   4. Finally, it really contains options, which user wants to receive.
+ 	 */
+-	tp = tcp_sk(sk);
+ 	if (TCP_SKB_CB(opt_skb)->end_seq == tp->rcv_nxt &&
+ 	    !((1 << sk->sk_state) & (TCPF_CLOSE | TCPF_LISTEN))) {
+ 		if (np->rxopt.bits.rxinfo || np->rxopt.bits.rxoinfo)
+diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+index c26871263f1f..34e48f5727a4 100644
+--- a/tools/include/uapi/linux/bpf.h
++++ b/tools/include/uapi/linux/bpf.h
+@@ -5849,6 +5849,10 @@ struct bpf_sock_ops {
+ 	 *					the 3WHS.
+ 	 *
+ 	 * bpf_load_hdr_opt() can also be used to read a particular option.
++	 *
++	 * Under sock_ops->op ==  BPF_SOCK_OPS_PARSE_IP6_HDR_CB,
++	 * [skb_data, skb_data_end] covers the whole IPv6 header
++	 * with its extension headers.
+ 	 */
+ 	__bpf_md_ptr(void *, skb_data);
+ 	__bpf_md_ptr(void *, skb_data_end);
+@@ -5917,8 +5921,15 @@ enum {
+ 	 * options first before the BPF program does.
+ 	 */
+ 	BPF_SOCK_OPS_WRITE_HDR_OPT_CB_FLAG = (1<<6),
++	/* Call bpf for all received IPv6 extension headers.  The bpf prog will
++	 * be called under sock_ops->op == BPF_SOCK_OPS_PARSE_IPV6_HDR_CB and
++	 * will be able to parse the IPv6 header and its extension headers.
++	 *
++	 * The bpf prog will usually turn this off in the common cases.
++	 */
++	BPF_SOCK_OPS_PARSE_IPV6_HDR_CB_FLAG = (1<<7),
+ /* Mask of all currently supported cb flags */
+-	BPF_SOCK_OPS_ALL_CB_FLAGS       = 0x7F,
++	BPF_SOCK_OPS_ALL_CB_FLAGS       = 0xFF,
+ };
+ 
+ /* List of known BPF sock_ops operators.
+@@ -6031,6 +6042,19 @@ enum {
+ 					 * by the kernel or the
+ 					 * earlier bpf-progs.
+ 					 */
++	BPF_SOCK_OPS_PARSE_IPV6_HDR_CB,	/* Parse the IPv6 extension
++					 * header option.
++					 * It will be called to handle
++					 * the packets received at
++					 * an already established
++					 * connection with an extension
++					 * header.
++					 *
++					 * sock_ops->skb_data:
++					 * Referring to the received skb.
++					 * It covers the IPv6 header and
++					 * its extension headers only.
++					 */
+ };
+ 
+ /* List of TCP states. There is a build check in net/ipv4/tcp.c to detect
+-- 
+2.32.0
+
