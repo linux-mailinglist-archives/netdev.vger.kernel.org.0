@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E3DD946B0DE
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 03:48:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C97946B0E3
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 03:48:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231552AbhLGCvs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Dec 2021 21:51:48 -0500
-Received: from mga07.intel.com ([134.134.136.100]:27273 "EHLO mga07.intel.com"
+        id S231809AbhLGCvu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Dec 2021 21:51:50 -0500
+Received: from mga07.intel.com ([134.134.136.100]:27266 "EHLO mga07.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230319AbhLGCvm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 6 Dec 2021 21:51:42 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10190"; a="300860567"
+        id S230378AbhLGCvn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 6 Dec 2021 21:51:43 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10190"; a="300860569"
 X-IronPort-AV: E=Sophos;i="5.87,293,1631602800"; 
-   d="scan'208";a="300860567"
+   d="scan'208";a="300860569"
 Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Dec 2021 18:47:47 -0800
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Dec 2021 18:47:48 -0800
 X-IronPort-AV: E=Sophos;i="5.87,293,1631602800"; 
-   d="scan'208";a="748524151"
+   d="scan'208";a="748524157"
 Received: from rmarti10-desk.jf.intel.com ([134.134.150.146])
   by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Dec 2021 18:47:47 -0800
 From:   Ricardo Martinez <ricardo.martinez@linux.intel.com>
@@ -33,9 +33,9 @@ Cc:     kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
         muralidharan.sethuraman@intel.com, Soumya.Prakash.Mishra@intel.com,
         sreehari.kancharla@intel.com, suresh.nagaraj@intel.com,
         Ricardo Martinez <ricardo.martinez@linux.intel.com>
-Subject: [PATCH net-next v3 05/12] net: wwan: t7xx: Add AT and MBIM WWAN ports
-Date:   Mon,  6 Dec 2021 19:47:04 -0700
-Message-Id: <20211207024711.2765-6-ricardo.martinez@linux.intel.com>
+Subject: [PATCH net-next v3 06/12] net: wwan: t7xx: Data path HW layer
+Date:   Mon,  6 Dec 2021 19:47:05 -0700
+Message-Id: <20211207024711.2765-7-ricardo.martinez@linux.intel.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20211207024711.2765-1-ricardo.martinez@linux.intel.com>
 References: <20211207024711.2765-1-ricardo.martinez@linux.intel.com>
@@ -43,86 +43,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>
+From: Haijun Liu <haijun.liu@mediatek.com>
 
-Adds AT and MBIM ports to the port proxy infrastructure.
-The initialization method is responsible for creating the corresponding
-ports using the WWAN framework infrastructure. The implemented WWAN port
-operations are start, stop, and TX.
+Data Path Modem AP Interface (DPMAIF) HW layer provides HW abstraction
+for the upper layer (DPMAIF HIF). It implements functions to do the HW
+configuration, TX/RX control and interrupt handling.
 
+Signed-off-by: Haijun Liu <haijun.liu@mediatek.com>
 Signed-off-by: Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>
 Co-developed-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
 Signed-off-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
 ---
- drivers/net/wwan/t7xx/Makefile          |   1 +
- drivers/net/wwan/t7xx/t7xx_port_proxy.c |  24 +++
- drivers/net/wwan/t7xx/t7xx_port_proxy.h |   1 +
- drivers/net/wwan/t7xx/t7xx_port_wwan.c  | 258 ++++++++++++++++++++++++
- 4 files changed, 284 insertions(+)
- create mode 100644 drivers/net/wwan/t7xx/t7xx_port_wwan.c
+ drivers/net/wwan/t7xx/t7xx_dpmaif.c | 1424 +++++++++++++++++++++++++++
+ drivers/net/wwan/t7xx/t7xx_dpmaif.h |  146 +++
+ 2 files changed, 1570 insertions(+)
+ create mode 100644 drivers/net/wwan/t7xx/t7xx_dpmaif.c
+ create mode 100644 drivers/net/wwan/t7xx/t7xx_dpmaif.h
 
-diff --git a/drivers/net/wwan/t7xx/Makefile b/drivers/net/wwan/t7xx/Makefile
-index 63e1c67b82b5..9eec2e2472fb 100644
---- a/drivers/net/wwan/t7xx/Makefile
-+++ b/drivers/net/wwan/t7xx/Makefile
-@@ -12,3 +12,4 @@ mtk_t7xx-y:=	t7xx_pci.o \
- 		t7xx_hif_cldma.o  \
- 		t7xx_port_proxy.o  \
- 		t7xx_port_ctrl_msg.o \
-+		t7xx_port_wwan.o \
-diff --git a/drivers/net/wwan/t7xx/t7xx_port_proxy.c b/drivers/net/wwan/t7xx/t7xx_port_proxy.c
-index 67219319e9f7..4c6f255c4d2f 100644
---- a/drivers/net/wwan/t7xx/t7xx_port_proxy.c
-+++ b/drivers/net/wwan/t7xx/t7xx_port_proxy.c
-@@ -51,6 +51,30 @@
- 
- static struct t7xx_port_static t7xx_md_ports[] = {
- 	{
-+		.tx_ch = PORT_CH_UART2_TX,
-+		.rx_ch = PORT_CH_UART2_RX,
-+		.txq_index = Q_IDX_AT_CMD,
-+		.rxq_index = Q_IDX_AT_CMD,
-+		.txq_exp_index = 0xff,
-+		.rxq_exp_index = 0xff,
-+		.path_id = ID_CLDMA1,
-+		.flags = PORT_F_RX_CHAR_NODE,
-+		.ops = &wwan_sub_port_ops,
-+		.name = "AT",
-+		.port_type = WWAN_PORT_AT,
-+	}, {
-+		.tx_ch = PORT_CH_MBIM_TX,
-+		.rx_ch = PORT_CH_MBIM_RX,
-+		.txq_index = Q_IDX_MBIM,
-+		.rxq_index = Q_IDX_MBIM,
-+		.txq_exp_index = 0,
-+		.rxq_exp_index = 0,
-+		.path_id = ID_CLDMA1,
-+		.flags = PORT_F_RX_CHAR_NODE,
-+		.ops = &wwan_sub_port_ops,
-+		.name = "MBIM",
-+		.port_type = WWAN_PORT_MBIM,
-+	}, {
- 		.tx_ch = PORT_CH_CONTROL_TX,
- 		.rx_ch = PORT_CH_CONTROL_RX,
- 		.txq_index = Q_IDX_CTRL,
-diff --git a/drivers/net/wwan/t7xx/t7xx_port_proxy.h b/drivers/net/wwan/t7xx/t7xx_port_proxy.h
-index 06ccda839445..1f49d1ef6bad 100644
---- a/drivers/net/wwan/t7xx/t7xx_port_proxy.h
-+++ b/drivers/net/wwan/t7xx/t7xx_port_proxy.h
-@@ -67,6 +67,7 @@ struct port_msg {
- #define PORT_ENUM_VER_MISMATCH	0x00657272
- 
- /* Port operations mapping */
-+extern struct port_ops wwan_sub_port_ops;
- extern struct port_ops ctl_port_ops;
- 
- int t7xx_port_proxy_send_skb(struct t7xx_port *port, struct sk_buff *skb);
-diff --git a/drivers/net/wwan/t7xx/t7xx_port_wwan.c b/drivers/net/wwan/t7xx/t7xx_port_wwan.c
+diff --git a/drivers/net/wwan/t7xx/t7xx_dpmaif.c b/drivers/net/wwan/t7xx/t7xx_dpmaif.c
 new file mode 100644
-index 000000000000..79831291e490
+index 000000000000..e98f2a0d2e7c
 --- /dev/null
-+++ b/drivers/net/wwan/t7xx/t7xx_port_wwan.c
-@@ -0,0 +1,258 @@
++++ b/drivers/net/wwan/t7xx/t7xx_dpmaif.c
+@@ -0,0 +1,1424 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
 + * Copyright (c) 2021, MediaTek Inc.
@@ -130,7 +73,6 @@ index 000000000000..79831291e490
 + *
 + * Authors:
 + *  Amir Hanania <amir.hanania@intel.com>
-+ *  Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>
 + *  Haijun Liu <haijun.liu@mediatek.com>
 + *  Moises Veleta <moises.veleta@intel.com>
 + *  Ricardo Martinez<ricardo.martinez@linux.intel.com>
@@ -142,245 +84,1564 @@ index 000000000000..79831291e490
 + *  Sreehari Kancharla <sreehari.kancharla@intel.com>
 + */
 +
-+#include <linux/atomic.h>
++#include <linux/bits.h>
 +#include <linux/bitfield.h>
++#include <linux/bitops.h>
++#include <linux/delay.h>
 +#include <linux/dev_printk.h>
-+#include <linux/err.h>
-+#include <linux/gfp.h>
-+#include <linux/minmax.h>
-+#include <linux/netdevice.h>
-+#include <linux/skbuff.h>
-+#include <linux/spinlock.h>
-+#include <linux/string.h>
-+#include <linux/wwan.h>
++#include <linux/io.h>
++#include <linux/iopoll.h>
++#include <linux/types.h>
 +
-+#include "t7xx_common.h"
-+#include "t7xx_port.h"
-+#include "t7xx_port_proxy.h"
-+#include "t7xx_state_monitor.h"
++#include "t7xx_dpmaif.h"
++#include "t7xx_hif_dpmaif.h"
++#include "t7xx_reg.h"
 +
-+static int t7xx_port_ctrl_start(struct wwan_port *port)
++static int t7xx_dpmaif_init_intr(struct dpmaif_hw_info *hw_info)
 +{
-+	struct t7xx_port *port_mtk = wwan_port_get_drvdata(port);
++	struct dpmaif_isr_en_mask *isr_en_msk = &hw_info->isr_en_mask;
++	u32 value, ul_intr_enable, dl_intr_enable;
++	int ret;
 +
-+	if (atomic_read(&port_mtk->usage_cnt))
-+		return -EBUSY;
++	ul_intr_enable = DP_UL_INT_ERR_MSK | DP_UL_INT_QDONE_MSK;
++	isr_en_msk->ap_ul_l2intr_en_msk = ul_intr_enable;
++	iowrite32(DPMAIF_AP_ALL_L2TISAR0_MASK, hw_info->pcie_base + DPMAIF_AP_L2TISAR0);
 +
-+	atomic_inc(&port_mtk->usage_cnt);
++	/* Set interrupt enable mask */
++	iowrite32(ul_intr_enable, hw_info->pcie_base + DPMAIF_AO_UL_AP_L2TIMCR0);
++	iowrite32(~ul_intr_enable, hw_info->pcie_base + DPMAIF_AO_UL_AP_L2TIMSR0);
++
++	/* Check mask status */
++	ret = readx_poll_timeout_atomic(ioread32, hw_info->pcie_base + DPMAIF_AO_UL_AP_L2TIMR0,
++					value, (value & ul_intr_enable) != ul_intr_enable, 0,
++					DPMAIF_CHECK_INIT_TIMEOUT_US);
++	if (ret)
++		return ret;
++
++	dl_intr_enable = DP_DL_INT_PITCNT_LEN_ERR | DP_DL_INT_BATCNT_LEN_ERR;
++	isr_en_msk->ap_dl_l2intr_err_en_msk = dl_intr_enable;
++	ul_intr_enable = DPMAIF_DL_INT_DLQ0_QDONE | DPMAIF_DL_INT_DLQ0_PITCNT_LEN |
++		    DPMAIF_DL_INT_DLQ1_QDONE | DPMAIF_DL_INT_DLQ1_PITCNT_LEN;
++	isr_en_msk->ap_ul_l2intr_en_msk = ul_intr_enable;
++	iowrite32(DPMAIF_AP_APDL_ALL_L2TISAR0_MASK, hw_info->pcie_base + DPMAIF_AP_APDL_L2TISAR0);
++
++	/* Set DL ISR PD enable mask */
++	iowrite32(~ul_intr_enable, hw_info->pcie_base + DPMAIF_AO_UL_APDL_L2TIMSR0);
++	ret = readx_poll_timeout_atomic(ioread32, hw_info->pcie_base + DPMAIF_AO_UL_APDL_L2TIMR0,
++					value, (value & ul_intr_enable) != ul_intr_enable, 0,
++					DPMAIF_CHECK_INIT_TIMEOUT_US);
++	if (ret)
++		return ret;
++
++	isr_en_msk->ap_udl_ip_busy_en_msk = DPMAIF_UDL_IP_BUSY;
++	iowrite32(DPMAIF_AP_IP_BUSY_MASK, hw_info->pcie_base + DPMAIF_AP_IP_BUSY);
++	iowrite32(isr_en_msk->ap_udl_ip_busy_en_msk,
++		  hw_info->pcie_base + DPMAIF_AO_AP_DLUL_IP_BUSY_MASK);
++	value = ioread32(hw_info->pcie_base + DPMAIF_AO_UL_AP_L1TIMR0);
++	value |= DPMAIF_DL_INT_Q2APTOP | DPMAIF_DL_INT_Q2TOQ1;
++	iowrite32(value, hw_info->pcie_base + DPMAIF_AO_UL_AP_L1TIMR0);
++	iowrite32(DPMA_HPC_ALL_INT_MASK, hw_info->pcie_base + DPMAIF_HPC_INTR_MASK);
++
 +	return 0;
 +}
 +
-+static void t7xx_port_ctrl_stop(struct wwan_port *port)
++static void t7xx_dpmaif_mask_ulq_interrupt(struct dpmaif_ctrl *dpmaif_ctrl, unsigned int q_num)
 +{
-+	struct t7xx_port *port_mtk = wwan_port_get_drvdata(port);
++	struct dpmaif_hw_info *hw_info = &dpmaif_ctrl->hif_hw_info;
++	struct dpmaif_isr_en_mask *isr_en_msk;
++	u32 value, ul_int_que_done;
++	int ret;
 +
-+	atomic_dec(&port_mtk->usage_cnt);
++	isr_en_msk = &hw_info->isr_en_mask;
++	ul_int_que_done = BIT(q_num + DP_UL_INT_DONE_OFFSET) & DP_UL_INT_QDONE_MSK;
++	isr_en_msk->ap_ul_l2intr_en_msk &= ~ul_int_que_done;
++	iowrite32(ul_int_que_done, hw_info->pcie_base + DPMAIF_AO_UL_AP_L2TIMSR0);
++
++	ret = readx_poll_timeout_atomic(ioread32, hw_info->pcie_base + DPMAIF_AO_UL_AP_L2TIMR0,
++					value, (value & ul_int_que_done) == ul_int_que_done, 0,
++					DPMAIF_CHECK_TIMEOUT_US);
++	if (ret)
++		dev_err(dpmaif_ctrl->dev,
++			"Could not mask the UL interrupt. DPMAIF_AO_UL_AP_L2TIMR0 is 0x%x\n",
++			value);
 +}
 +
-+static inline bool t7xx_port_wwan_multipkt_capable(struct t7xx_port_static *port)
++void t7xx_dpmaif_unmask_ulq_intr(struct dpmaif_ctrl *dpmaif_ctrl, unsigned int q_num)
 +{
-+	return port->tx_ch == PORT_CH_MBIM_TX ||
-+		(port->tx_ch >= PORT_CH_DSS0_TX && port->tx_ch <= PORT_CH_DSS7_TX);
++	struct dpmaif_hw_info *hw_info = &dpmaif_ctrl->hif_hw_info;
++	struct dpmaif_isr_en_mask *isr_en_msk;
++	u32 value, ul_int_que_done;
++	int ret;
++
++	isr_en_msk = &hw_info->isr_en_mask;
++	ul_int_que_done = BIT(q_num + DP_UL_INT_DONE_OFFSET) & DP_UL_INT_QDONE_MSK;
++	isr_en_msk->ap_ul_l2intr_en_msk |= ul_int_que_done;
++	iowrite32(ul_int_que_done, hw_info->pcie_base + DPMAIF_AO_UL_AP_L2TIMCR0);
++
++	ret = readx_poll_timeout_atomic(ioread32, hw_info->pcie_base + DPMAIF_AO_UL_AP_L2TIMR0,
++					value, (value & ul_int_que_done) != ul_int_que_done, 0,
++					DPMAIF_CHECK_TIMEOUT_US);
++	if (ret)
++		dev_err(dpmaif_ctrl->dev,
++			"Could not unmask the UL interrupt. DPMAIF_AO_UL_AP_L2TIMR0 is 0x%x\n",
++			value);
 +}
 +
-+static int t7xx_port_ctrl_tx(struct wwan_port *port, struct sk_buff *skb)
++static void t7xx_dpmaif_dl_mask_batcnt_len_err_intr(struct dpmaif_hw_info *hw_info)
 +{
-+	struct t7xx_port *port_private = wwan_port_get_drvdata(port);
-+	size_t actual_count = 0, alloc_size = 0, txq_mtu = 0;
-+	struct t7xx_port_static *port_static;
-+	int i, multi_packet = 1, ret = 0;
-+	struct sk_buff *skb_ccci = NULL;
-+	struct t7xx_fsm_ctl *ctl;
-+	enum md_state md_state;
-+	unsigned int count;
-+	bool port_multi;
++	hw_info->isr_en_mask.ap_dl_l2intr_en_msk &= ~DP_DL_INT_BATCNT_LEN_ERR;
++	iowrite32(DP_DL_INT_BATCNT_LEN_ERR, hw_info->pcie_base + DPMAIF_AO_UL_APDL_L2TIMSR0);
++}
 +
-+	count = skb->len;
-+	if (!count)
-+		return -EINVAL;
++void t7xx_dpmaif_dl_unmask_batcnt_len_err_intr(struct dpmaif_hw_info *hw_info)
++{
++	hw_info->isr_en_mask.ap_dl_l2intr_en_msk |= DP_DL_INT_BATCNT_LEN_ERR;
++	iowrite32(DP_DL_INT_BATCNT_LEN_ERR, hw_info->pcie_base + DPMAIF_AO_UL_APDL_L2TIMCR0);
++}
 +
-+	port_static = port_private->port_static;
-+	ctl = port_private->t7xx_dev->md->fsm_ctl;
-+	md_state = t7xx_fsm_get_md_state(ctl);
-+	if (md_state == MD_STATE_WAITING_FOR_HS1 || md_state == MD_STATE_WAITING_FOR_HS2) {
-+		dev_warn(port_private->dev, "Cannot write to %s port when md_state=%d\n",
-+			 port_static->name, md_state);
-+		return -ENODEV;
++static void t7xx_dpmaif_dl_mask_pitcnt_len_err_intr(struct dpmaif_hw_info *hw_info)
++{
++	hw_info->isr_en_mask.ap_dl_l2intr_en_msk &= ~DP_DL_INT_PITCNT_LEN_ERR;
++	iowrite32(DP_DL_INT_PITCNT_LEN_ERR, hw_info->pcie_base + DPMAIF_AO_UL_APDL_L2TIMSR0);
++}
++
++void t7xx_dpmaif_dl_unmask_pitcnt_len_err_intr(struct dpmaif_hw_info *hw_info)
++{
++	hw_info->isr_en_mask.ap_dl_l2intr_en_msk |= DP_DL_INT_PITCNT_LEN_ERR;
++	iowrite32(DP_DL_INT_PITCNT_LEN_ERR, hw_info->pcie_base + DPMAIF_AO_UL_APDL_L2TIMCR0);
++}
++
++static u32 t7xx_update_dlq_interrupt(struct dpmaif_hw_info *hw_info, u32 q_done)
++{
++	u32 value;
++
++	value = ioread32(hw_info->pcie_base + DPMAIF_AO_UL_AP_L2TIMR0);
++	iowrite32(q_done, hw_info->pcie_base + DPMAIF_AO_UL_APDL_L2TIMSR0);
++	return value;
++}
++
++static int t7xx_mask_dlq_interrupt(struct dpmaif_ctrl *dpmaif_ctrl, unsigned char qno)
++{
++	struct dpmaif_hw_info *hw_info = &dpmaif_ctrl->hif_hw_info;
++	u32 value, q_done;
++	int ret;
++
++	q_done = (qno == DPF_RX_QNO0) ? DPMAIF_DL_INT_DLQ0_QDONE : DPMAIF_DL_INT_DLQ1_QDONE;
++	iowrite32(q_done, hw_info->pcie_base + DPMAIF_AO_UL_APDL_L2TIMSR0);
++
++	ret = read_poll_timeout_atomic(t7xx_update_dlq_interrupt, value, value & q_done,
++				       0, DPMAIF_CHECK_TIMEOUT_US, false, hw_info, q_done);
++	if (ret) {
++		dev_err(dpmaif_ctrl->dev,
++			"Could not mask the DL interrupt. DPMAIF_AO_UL_AP_L2TIMR0 is 0x%x\n",
++			value);
++		return -ETIMEDOUT;
 +	}
 +
-+	txq_mtu = CLDMA_TXQ_MTU;
++	hw_info->isr_en_mask.ap_dl_l2intr_en_msk &= ~q_done;
++	return 0;
++}
 +
-+	if (port_private->flags & PORT_F_USER_HEADER) {
-+		if (port_private->flags & PORT_F_USER_HEADER && count > txq_mtu) {
-+			dev_err(port_private->dev, "Packet %u larger than MTU on %s port\n",
-+				count, port_static->name);
-+			return -ENOMEM;
++void t7xx_dpmaif_dlq_unmask_rx_done(struct dpmaif_hw_info *hw_info, unsigned char qno)
++{
++	u32 mask;
++
++	mask = (qno == DPF_RX_QNO0) ? DPMAIF_DL_INT_DLQ0_QDONE : DPMAIF_DL_INT_DLQ1_QDONE;
++	iowrite32(mask, hw_info->pcie_base + DPMAIF_AO_UL_APDL_L2TIMCR0);
++	hw_info->isr_en_mask.ap_dl_l2intr_en_msk |= mask;
++}
++
++void t7xx_dpmaif_clr_ip_busy_sts(struct dpmaif_hw_info *hw_info)
++{
++	u32 ip_busy_sts;
++
++	ip_busy_sts = ioread32(hw_info->pcie_base + DPMAIF_AP_IP_BUSY);
++	iowrite32(ip_busy_sts, hw_info->pcie_base + DPMAIF_AP_IP_BUSY);
++}
++
++static void t7xx_dpmaif_dlq_mask_rx_pitcnt_len_err_intr(struct dpmaif_hw_info *hw_info,
++							unsigned char qno)
++{
++	if (qno == DPF_RX_QNO0)
++		iowrite32(DPMAIF_DL_INT_DLQ0_PITCNT_LEN,
++			  hw_info->pcie_base + DPMAIF_AO_UL_APDL_L2TIMSR0);
++	else
++		iowrite32(DPMAIF_DL_INT_DLQ1_PITCNT_LEN,
++			  hw_info->pcie_base + DPMAIF_AO_UL_APDL_L2TIMSR0);
++}
++
++void t7xx_dpmaif_dlq_unmask_pitcnt_len_err_intr(struct dpmaif_hw_info *hw_info,
++						unsigned char qno)
++{
++	if (qno == DPF_RX_QNO0)
++		iowrite32(DPMAIF_DL_INT_DLQ0_PITCNT_LEN,
++			  hw_info->pcie_base + DPMAIF_AO_UL_APDL_L2TIMCR0);
++	else
++		iowrite32(DPMAIF_DL_INT_DLQ1_PITCNT_LEN,
++			  hw_info->pcie_base + DPMAIF_AO_UL_APDL_L2TIMCR0);
++}
++
++void t7xx_dpmaif_ul_clr_all_intr(struct dpmaif_hw_info *hw_info)
++{
++	iowrite32(DPMAIF_AP_ALL_L2TISAR0_MASK, hw_info->pcie_base + DPMAIF_AP_L2TISAR0);
++}
++
++void t7xx_dpmaif_dl_clr_all_intr(struct dpmaif_hw_info *hw_info)
++{
++	iowrite32(DPMAIF_AP_APDL_ALL_L2TISAR0_MASK, hw_info->pcie_base + DPMAIF_AP_APDL_L2TISAR0);
++}
++
++/* The para->intr_cnt counter is set to zero before this function is called.
++ * It does not check for overflow as there is no risk of overflowing intr_types or intr_queues.
++ */
++static void t7xx_dpmaif_hw_check_tx_interrupt(struct dpmaif_ctrl *dpmaif_ctrl,
++					      unsigned int l2_txisar0,
++					      struct dpmaif_hw_intr_st_para *para)
++{
++	unsigned long value;
++
++	value = FIELD_GET(DP_UL_INT_QDONE_MSK, l2_txisar0);
++	if (value) {
++		unsigned int index;
++
++		para->intr_types[para->intr_cnt] = DPF_INTR_UL_DONE;
++		para->intr_queues[para->intr_cnt] = value;
++		para->intr_cnt++;
++
++		for_each_set_bit(index, &value, DPMAIF_TXQ_NUM)
++			t7xx_dpmaif_mask_ulq_interrupt(dpmaif_ctrl, index);
++	}
++
++	value = FIELD_GET(DP_UL_INT_EMPTY_MSK, l2_txisar0);
++	if (value) {
++		para->intr_types[para->intr_cnt] = DPF_INTR_UL_DRB_EMPTY;
++		para->intr_queues[para->intr_cnt] = value;
++		para->intr_cnt++;
++	}
++
++	value = FIELD_GET(DP_UL_INT_MD_NOTREADY_MSK, l2_txisar0);
++	if (value) {
++		para->intr_types[para->intr_cnt] = DPF_INTR_UL_MD_NOTREADY;
++		para->intr_queues[para->intr_cnt] = value;
++		para->intr_cnt++;
++	}
++
++	value = FIELD_GET(DP_UL_INT_MD_PWR_NOTREADY_MSK, l2_txisar0);
++	if (value) {
++		para->intr_types[para->intr_cnt] = DPF_INTR_UL_MD_PWR_NOTREADY;
++		para->intr_queues[para->intr_cnt] = value;
++		para->intr_cnt++;
++	}
++
++	value = FIELD_GET(DP_UL_INT_ERR_MSK, l2_txisar0);
++	if (value) {
++		para->intr_types[para->intr_cnt] = DPF_INTR_UL_LEN_ERR;
++		para->intr_queues[para->intr_cnt] = value;
++		para->intr_cnt++;
++	}
++}
++
++/* The para->intr_cnt counter is set to zero before this function is called.
++ * It does not check for overflow as there is no risk of overflowing intr_types or intr_queues.
++ */
++static void t7xx_dpmaif_hw_check_rx_interrupt(struct dpmaif_ctrl *dpmaif_ctrl,
++					      unsigned int *pl2_rxisar0,
++					      struct dpmaif_hw_intr_st_para *para, int qno)
++{
++	struct dpmaif_hw_info *hw_info = &dpmaif_ctrl->hif_hw_info;
++	unsigned int l2_rxisar0 = *pl2_rxisar0;
++	unsigned int value;
++
++	if (qno == DPF_RX_QNO_DFT) {
++		value = l2_rxisar0 & DP_DL_INT_SKB_LEN_ERR;
++		if (value) {
++			para->intr_types[para->intr_cnt] = DPF_INTR_DL_SKB_LEN_ERR;
++			para->intr_queues[para->intr_cnt] = DPF_RX_QNO_DFT;
++			para->intr_cnt++;
 +		}
 +
-+		alloc_size = min_t(size_t, txq_mtu, count);
-+		actual_count = alloc_size;
++		value = l2_rxisar0 & DP_DL_INT_BATCNT_LEN_ERR;
++		if (value) {
++			para->intr_types[para->intr_cnt] = DPF_INTR_DL_BATCNT_LEN_ERR;
++			para->intr_queues[para->intr_cnt] = DPF_RX_QNO_DFT;
++			para->intr_cnt++;
++			t7xx_dpmaif_dl_mask_batcnt_len_err_intr(hw_info);
++		}
++
++		value = l2_rxisar0 & DP_DL_INT_PITCNT_LEN_ERR;
++		if (value) {
++			para->intr_types[para->intr_cnt] = DPF_INTR_DL_PITCNT_LEN_ERR;
++			para->intr_queues[para->intr_cnt] = DPF_RX_QNO_DFT;
++			para->intr_cnt++;
++			t7xx_dpmaif_dl_mask_pitcnt_len_err_intr(hw_info);
++		}
++
++		value = l2_rxisar0 & DP_DL_INT_PKT_EMPTY_MSK;
++		if (value) {
++			para->intr_types[para->intr_cnt] = DPF_INTR_DL_PKT_EMPTY_SET;
++			para->intr_queues[para->intr_cnt] = DPF_RX_QNO_DFT;
++			para->intr_cnt++;
++		}
++
++		value = l2_rxisar0 & DP_DL_INT_FRG_EMPTY_MSK;
++		if (value) {
++			para->intr_types[para->intr_cnt] = DPF_INTR_DL_FRG_EMPTY_SET;
++			para->intr_queues[para->intr_cnt] = DPF_RX_QNO_DFT;
++			para->intr_cnt++;
++		}
++
++		value = l2_rxisar0 & DP_DL_INT_MTU_ERR_MSK;
++		if (value) {
++			para->intr_types[para->intr_cnt] = DPF_INTR_DL_MTU_ERR;
++			para->intr_queues[para->intr_cnt] = DPF_RX_QNO_DFT;
++			para->intr_cnt++;
++		}
++
++		value = l2_rxisar0 & DP_DL_INT_FRG_LENERR_MSK;
++		if (value) {
++			para->intr_types[para->intr_cnt] = DPF_INTR_DL_FRGCNT_LEN_ERR;
++			para->intr_queues[para->intr_cnt] = DPF_RX_QNO_DFT;
++			para->intr_cnt++;
++		}
++
++		value = l2_rxisar0 & DP_DL_INT_Q0_PITCNT_LEN_ERR;
++		if (value) {
++			para->intr_types[para->intr_cnt] = DPF_INTR_DL_Q0_PITCNT_LEN_ERR;
++			para->intr_queues[para->intr_cnt] = BIT(qno);
++			para->intr_cnt++;
++			t7xx_dpmaif_dlq_mask_rx_pitcnt_len_err_intr(hw_info, qno);
++		}
++
++		value = l2_rxisar0 & DP_DL_INT_HPC_ENT_TYPE_ERR;
++		if (value) {
++			para->intr_types[para->intr_cnt] = DPF_INTR_DL_HPC_ENT_TYPE_ERR;
++			para->intr_queues[para->intr_cnt] = DPF_RX_QNO_DFT;
++			para->intr_cnt++;
++		}
++
++		value = l2_rxisar0 & DP_DL_INT_Q0_DONE;
++		if (value) {
++			/* Mask RX done interrupt immediately after it occurs */
++			if (!t7xx_mask_dlq_interrupt(dpmaif_ctrl, qno)) {
++				para->intr_types[para->intr_cnt] = DPF_INTR_DL_Q0_DONE;
++				para->intr_queues[para->intr_cnt] = BIT(qno);
++				para->intr_cnt++;
++			} else {
++				/* Unable to clear the interrupt, try again on the next one
++				 * device entered low power mode or suffer exception
++				 */
++				*pl2_rxisar0 = l2_rxisar0 & ~DP_DL_INT_Q0_DONE;
++			}
++		}
 +	} else {
-+		alloc_size = min_t(size_t, txq_mtu, count + CCCI_H_ELEN);
-+		actual_count = alloc_size - CCCI_H_ELEN;
-+		port_multi = t7xx_port_wwan_multipkt_capable(port_static);
-+		if ((count + CCCI_H_ELEN > txq_mtu) && port_multi)
-+			multi_packet = DIV_ROUND_UP(count, txq_mtu - CCCI_H_ELEN);
-+	}
-+
-+	for (i = 0; i < multi_packet; i++) {
-+		struct ccci_header *ccci_h = NULL;
-+
-+		if (multi_packet > 1 && multi_packet == i + 1) {
-+			actual_count = count % (txq_mtu - CCCI_H_ELEN);
-+			alloc_size = actual_count + CCCI_H_ELEN;
++		value = l2_rxisar0 & DP_DL_INT_Q1_PITCNT_LEN_ERR;
++		if (value) {
++			para->intr_types[para->intr_cnt] = DPF_INTR_DL_Q1_PITCNT_LEN_ERR;
++			para->intr_queues[para->intr_cnt] = BIT(qno);
++			para->intr_cnt++;
++			t7xx_dpmaif_dlq_mask_rx_pitcnt_len_err_intr(hw_info, qno);
 +		}
 +
-+		skb_ccci = __dev_alloc_skb(alloc_size, GFP_KERNEL);
-+		if (!skb_ccci)
-+			return -ENOMEM;
++		value = l2_rxisar0 & DP_DL_INT_Q1_DONE;
++		if (value) {
++			if (!t7xx_mask_dlq_interrupt(dpmaif_ctrl, qno)) {
++				para->intr_types[para->intr_cnt] = DPF_INTR_DL_Q1_DONE;
++				para->intr_queues[para->intr_cnt] = BIT(qno);
++				para->intr_cnt++;
++			} else {
++				*pl2_rxisar0 = l2_rxisar0 & ~DP_DL_INT_Q1_DONE;
++			}
++		}
++	}
++}
 +
-+		ccci_h = skb_put(skb_ccci, CCCI_H_LEN);
-+		ccci_h->packet_header = 0;
-+		ccci_h->packet_len = cpu_to_le32(actual_count + CCCI_H_LEN);
-+		ccci_h->status &= cpu_to_le32(~HDR_FLD_CHN);
-+		ccci_h->status |= cpu_to_le32(FIELD_PREP(HDR_FLD_CHN, port_static->tx_ch));
-+		ccci_h->ex_msg = 0;
++/**
++ * t7xx_dpmaif_hw_get_intr_cnt() - Reads interrupt status and count from HW.
++ * @dpmaif_ctrl: Pointer to struct dpmaif_ctrl.
++ * @para: Pointer to struct dpmaif_hw_intr_st_para.
++ * @qno: Queue number.
++ *
++ * Reads RX/TX interrupt status from HW and clears UL/DL status as needed.
++ *
++ * Return: Interrupt count.
++ */
++int t7xx_dpmaif_hw_get_intr_cnt(struct dpmaif_ctrl *dpmaif_ctrl,
++				struct dpmaif_hw_intr_st_para *para, int qno)
++{
++	struct dpmaif_hw_info *hw_info = &dpmaif_ctrl->hif_hw_info;
++	u32 rx_intr_status, tx_intr_status = 0;
++	u32 rx_intr_qdone, tx_intr_qdone = 0;
 +
-+		memcpy(skb_put(skb_ccci, actual_count), skb->data + i * (txq_mtu - CCCI_H_ELEN),
-+		       actual_count);
++	rx_intr_status = ioread32(hw_info->pcie_base + DPMAIF_AP_APDL_L2TISAR0);
++	rx_intr_qdone = ioread32(hw_info->pcie_base + DPMAIF_AO_UL_APDL_L2TIMR0);
 +
-+		t7xx_port_proxy_set_seq_num(port_private, ccci_h);
-+
-+		ret = t7xx_port_send_skb_to_md(port_private, skb_ccci, true);
-+		if (ret)
-+			goto err_free_skb;
-+
-+		port_private->seq_nums[MTK_TX]++;
-+
-+		if (multi_packet == 1)
-+			return actual_count;
-+		else if (multi_packet == i + 1)
-+			return count;
++	/* TX interrupt status */
++	if (qno == DPF_RX_QNO_DFT) {
++		/* All ULQ and DLQ0 interrupts use the same source no need to check ULQ interrupts
++		 * when a DLQ1 interrupt has occurred.
++		 */
++		tx_intr_status = ioread32(hw_info->pcie_base + DPMAIF_AP_L2TISAR0);
++		tx_intr_qdone = ioread32(hw_info->pcie_base + DPMAIF_AO_UL_AP_L2TIMR0);
 +	}
 +
-+err_free_skb:
-+	if (ret != -ENOMEM) {
-+		dev_err(port_private->dev, "Write error on %s port, %d\n", port_static->name, ret);
-+		dev_kfree_skb_any(skb_ccci);
++	t7xx_dpmaif_clr_ip_busy_sts(hw_info);
++
++	if (qno == DPF_RX_QNO_DFT) {
++		/* Do not schedule bottom half again or clear UL interrupt status when we
++		 * have already masked it.
++		 */
++		tx_intr_status &= ~tx_intr_qdone;
++		if (tx_intr_status) {
++			t7xx_dpmaif_hw_check_tx_interrupt(dpmaif_ctrl, tx_intr_status, para);
++			/* Clear interrupt status */
++			iowrite32(tx_intr_status, hw_info->pcie_base + DPMAIF_AP_L2TISAR0);
++		}
 +	}
++
++	if (rx_intr_status) {
++		if (qno == DPF_RX_QNO0) {
++			rx_intr_status &= DP_DL_Q0_STATUS_MASK;
++			if (rx_intr_qdone & DPMAIF_DL_INT_DLQ0_QDONE)
++				/* Do not schedule bottom half again or clear DL
++				 * queue done interrupt status when we have already masked it.
++				 */
++				rx_intr_status &= ~DP_DL_INT_Q0_DONE;
++		} else {
++			rx_intr_status &= DP_DL_Q1_STATUS_MASK;
++			if (rx_intr_qdone & DPMAIF_DL_INT_DLQ1_QDONE)
++				rx_intr_status &= ~DP_DL_INT_Q1_DONE;
++		}
++
++		if (rx_intr_status) {
++			t7xx_dpmaif_hw_check_rx_interrupt(dpmaif_ctrl, &rx_intr_status, para, qno);
++			rx_intr_status |= DP_DL_INT_BATCNT_LEN_ERR;
++			/* Clear interrupt status */
++			iowrite32(rx_intr_status, hw_info->pcie_base + DPMAIF_AP_APDL_L2TISAR0);
++		}
++	}
++
++	return para->intr_cnt;
++}
++
++static int t7xx_dpmaif_sram_init(struct dpmaif_hw_info *hw_info)
++{
++	u32 value;
++
++	value = ioread32(hw_info->pcie_base + DPMAIF_AP_MEM_CLR);
++	value |= DPMAIF_MEM_CLR;
++	iowrite32(value, hw_info->pcie_base + DPMAIF_AP_MEM_CLR);
++
++	return readx_poll_timeout_atomic(ioread32, hw_info->pcie_base + DPMAIF_AP_MEM_CLR,
++					value, !(value & DPMAIF_MEM_CLR), 0,
++					DPMAIF_CHECK_INIT_TIMEOUT_US);
++}
++
++static void t7xx_dpmaif_hw_reset(struct dpmaif_hw_info *hw_info)
++{
++	iowrite32(DPMAIF_AP_AO_RST_BIT, hw_info->pcie_base + DPMAIF_AP_AO_RGU_ASSERT);
++	udelay(2);
++	iowrite32(DPMAIF_AP_RST_BIT, hw_info->pcie_base + DPMAIF_AP_RGU_ASSERT);
++	udelay(2);
++	iowrite32(DPMAIF_AP_AO_RST_BIT, hw_info->pcie_base + DPMAIF_AP_AO_RGU_DEASSERT);
++	udelay(2);
++	iowrite32(DPMAIF_AP_RST_BIT, hw_info->pcie_base + DPMAIF_AP_RGU_DEASSERT);
++	udelay(2);
++}
++
++static int t7xx_dpmaif_hw_config(struct dpmaif_hw_info *hw_info)
++{
++	u32 ap_port_mode;
++	int ret;
++
++	t7xx_dpmaif_hw_reset(hw_info);
++
++	ret = t7xx_dpmaif_sram_init(hw_info);
++	if (ret)
++		return ret;
++
++	ap_port_mode = ioread32(hw_info->pcie_base + DPMAIF_AO_DL_RDY_CHK_THRES);
++	ap_port_mode |= DPMAIF_PORT_MODE_PCIE;
++	iowrite32(ap_port_mode, hw_info->pcie_base + DPMAIF_AO_DL_RDY_CHK_THRES);
++	iowrite32(DPMAIF_CG_EN, hw_info->pcie_base + DPMAIF_AP_CG_EN);
++	return 0;
++}
++
++static inline void t7xx_dpmaif_pcie_dpmaif_sign(struct dpmaif_hw_info *hw_info)
++{
++	iowrite32(DPMAIF_PCIE_MODE_SET_VALUE, hw_info->pcie_base + DPMAIF_UL_RESERVE_AO_RW);
++}
++
++static void t7xx_dpmaif_dl_performance(struct dpmaif_hw_info *hw_info)
++{
++	u32 enable_bat_cache, enable_pit_burst;
++
++	enable_bat_cache = ioread32(hw_info->pcie_base + DPMAIF_DL_BAT_INIT_CON1);
++	enable_bat_cache |= DPMAIF_DL_BAT_CACHE_PRI;
++	iowrite32(enable_bat_cache, hw_info->pcie_base + DPMAIF_DL_BAT_INIT_CON1);
++
++	enable_pit_burst = ioread32(hw_info->pcie_base + DPMAIF_AO_DL_RDY_CHK_THRES);
++	enable_pit_burst |= DPMAIF_DL_BURST_PIT_EN;
++	iowrite32(enable_pit_burst, hw_info->pcie_base + DPMAIF_AO_DL_RDY_CHK_THRES);
++}
++
++static void t7xx_dpmaif_common_hw_init(struct dpmaif_hw_info *hw_info)
++{
++	t7xx_dpmaif_pcie_dpmaif_sign(hw_info);
++	t7xx_dpmaif_dl_performance(hw_info);
++}
++
++ /* DPMAIF DL DLQ part HW setting */
++
++static inline void t7xx_dpmaif_hw_hpc_cntl_set(struct dpmaif_hw_info *hw_info)
++{
++	unsigned int value;
++
++	value = DPMAIF_HPC_DLQ_PATH_MODE | DPMAIF_HPC_ADD_MODE_DF << 2;
++	value |= DPMAIF_HASH_PRIME_DF << 4;
++	value |= DPMAIF_HPC_TOTAL_NUM << 8;
++	iowrite32(value, hw_info->pcie_base + DPMAIF_AO_DL_HPC_CNTL);
++}
++
++static inline void t7xx_dpmaif_hw_agg_cfg_set(struct dpmaif_hw_info *hw_info)
++{
++	unsigned int value;
++
++	value = DPMAIF_AGG_MAX_LEN_DF | DPMAIF_AGG_TBL_ENT_NUM_DF << 16;
++	iowrite32(value, hw_info->pcie_base + DPMAIF_AO_DL_DLQ_AGG_CFG);
++}
++
++static inline void t7xx_dpmaif_hw_hash_bit_choose_set(struct dpmaif_hw_info *hw_info)
++{
++	iowrite32(DPMAIF_DLQ_HASH_BIT_CHOOSE_DF,
++		  hw_info->pcie_base + DPMAIF_AO_DL_DLQPIT_INIT_CON5);
++}
++
++static inline void t7xx_dpmaif_hw_mid_pit_timeout_thres_set(struct dpmaif_hw_info *hw_info)
++{
++	iowrite32(DPMAIF_MID_TIMEOUT_THRES_DF, hw_info->pcie_base + DPMAIF_AO_DL_DLQPIT_TIMEOUT0);
++}
++
++static void t7xx_dpmaif_hw_dlq_timeout_thres_set(struct dpmaif_hw_info *hw_info)
++{
++	unsigned int value, i;
++
++	/* Each register holds two DLQ threshold timeout values */
++	for (i = 0; i < DPMAIF_HPC_MAX_TOTAL_NUM / 2; i++) {
++		value = FIELD_PREP(DPMAIF_DLQ_LOW_TIMEOUT_THRES_MKS, DPMAIF_DLQ_TIMEOUT_THRES_DF);
++		value |= FIELD_PREP(DPMAIF_DLQ_HIGH_TIMEOUT_THRES_MSK,
++				    DPMAIF_DLQ_TIMEOUT_THRES_DF);
++		iowrite32(value,
++			  hw_info->pcie_base + DPMAIF_AO_DL_DLQPIT_TIMEOUT1 + sizeof(u32) * i);
++	}
++}
++
++static inline void t7xx_dpmaif_hw_dlq_start_prs_thres_set(struct dpmaif_hw_info *hw_info)
++{
++	iowrite32(DPMAIF_DLQ_PRS_THRES_DF, hw_info->pcie_base + DPMAIF_AO_DL_DLQPIT_TRIG_THRES);
++}
++
++static void t7xx_dpmaif_dl_dlq_hpc_hw_init(struct dpmaif_hw_info *hw_info)
++{
++	t7xx_dpmaif_hw_hpc_cntl_set(hw_info);
++	t7xx_dpmaif_hw_agg_cfg_set(hw_info);
++	t7xx_dpmaif_hw_hash_bit_choose_set(hw_info);
++	t7xx_dpmaif_hw_mid_pit_timeout_thres_set(hw_info);
++	t7xx_dpmaif_hw_dlq_timeout_thres_set(hw_info);
++	t7xx_dpmaif_hw_dlq_start_prs_thres_set(hw_info);
++}
++
++static int t7xx_dpmaif_dl_bat_init_done(struct dpmaif_ctrl *dpmaif_ctrl,
++					unsigned char q_num, bool frg_en)
++{
++	struct dpmaif_hw_info *hw_info = &dpmaif_ctrl->hif_hw_info;
++	u32 value, dl_bat_init = 0;
++	int ret;
++
++	if (frg_en)
++		dl_bat_init = DPMAIF_DL_BAT_FRG_INIT;
++
++	dl_bat_init |= DPMAIF_DL_BAT_INIT_ALLSET;
++	dl_bat_init |= DPMAIF_DL_BAT_INIT_EN;
++
++	ret = readx_poll_timeout_atomic(ioread32, hw_info->pcie_base + DPMAIF_DL_BAT_INIT,
++					value, !(value & DPMAIF_DL_BAT_INIT_NOT_READY), 0,
++					DPMAIF_CHECK_INIT_TIMEOUT_US);
++	if (ret) {
++		dev_err(dpmaif_ctrl->dev, "Data plane modem DL BAT is not ready\n");
++		return ret;
++	}
++
++	iowrite32(dl_bat_init, hw_info->pcie_base + DPMAIF_DL_BAT_INIT);
++
++	ret = readx_poll_timeout_atomic(ioread32, hw_info->pcie_base + DPMAIF_DL_BAT_INIT,
++					value, !(value & DPMAIF_DL_BAT_INIT_NOT_READY), 0,
++					DPMAIF_CHECK_INIT_TIMEOUT_US);
++	if (ret)
++		dev_err(dpmaif_ctrl->dev, "Data plane modem DL BAT initialization failed\n");
 +
 +	return ret;
 +}
 +
-+static const struct wwan_port_ops wwan_ops = {
-+	.start = t7xx_port_ctrl_start,
-+	.stop = t7xx_port_ctrl_stop,
-+	.tx = t7xx_port_ctrl_tx,
-+};
-+
-+static int t7xx_port_wwan_init(struct t7xx_port *port)
++static void t7xx_dpmaif_dl_set_bat_base_addr(struct dpmaif_hw_info *hw_info,
++					     unsigned char q_num, dma_addr_t addr)
 +{
-+	struct t7xx_port_static *port_static = port->port_static;
++	iowrite32(lower_32_bits(addr), hw_info->pcie_base + DPMAIF_DL_BAT_INIT_CON0);
++	iowrite32(upper_32_bits(addr), hw_info->pcie_base + DPMAIF_DL_BAT_INIT_CON3);
++}
 +
-+	port->rx_length_th = MAX_RX_QUEUE_LENGTH;
-+	port->flags |= PORT_F_RX_ADJUST_HEADER;
++static void t7xx_dpmaif_dl_set_bat_size(struct dpmaif_hw_info *hw_info,
++					unsigned char q_num, unsigned int size)
++{
++	unsigned int value;
 +
-+	if (port_static->rx_ch == PORT_CH_UART2_RX)
-+		port->flags |= PORT_F_RX_CH_TRAFFIC;
++	value = ioread32(hw_info->pcie_base + DPMAIF_DL_BAT_INIT_CON1);
++	value &= ~DPMAIF_BAT_SIZE_MSK;
++	value |= size & DPMAIF_BAT_SIZE_MSK;
++	iowrite32(value, hw_info->pcie_base + DPMAIF_DL_BAT_INIT_CON1);
++}
 +
-+	if (port_static->port_type != WWAN_PORT_UNKNOWN) {
-+		port->wwan_port = wwan_create_port(port->dev, port_static->port_type,
-+						   &wwan_ops, port);
-+		if (IS_ERR(port->wwan_port))
-+			return PTR_ERR(port->wwan_port);
-+	} else {
-+		port->wwan_port = NULL;
++static void t7xx_dpmaif_dl_bat_en(struct dpmaif_hw_info *hw_info, unsigned char q_num, bool enable)
++{
++	unsigned int value;
++
++	value = ioread32(hw_info->pcie_base + DPMAIF_DL_BAT_INIT_CON1);
++
++	if (enable)
++		value |= DPMAIF_BAT_EN_MSK;
++	else
++		value &= ~DPMAIF_BAT_EN_MSK;
++
++	iowrite32(value, hw_info->pcie_base + DPMAIF_DL_BAT_INIT_CON1);
++}
++
++static void t7xx_dpmaif_dl_set_ao_bid_maxcnt(struct dpmaif_hw_info *hw_info,
++					     unsigned char q_num, unsigned int cnt)
++{
++	unsigned int value;
++
++	value = ioread32(hw_info->pcie_base + DPMAIF_AO_DL_PKTINFO_CON0);
++	value &= ~DPMAIF_BAT_BID_MAXCNT_MSK;
++	value |= FIELD_PREP(DPMAIF_BAT_BID_MAXCNT_MSK, cnt);
++	iowrite32(value, hw_info->pcie_base + DPMAIF_AO_DL_PKTINFO_CON0);
++}
++
++static inline void t7xx_dpmaif_dl_set_ao_mtu(struct dpmaif_hw_info *hw_info, unsigned int mtu_sz)
++{
++	iowrite32(mtu_sz, hw_info->pcie_base + DPMAIF_AO_DL_PKTINFO_CON1);
++}
++
++static void t7xx_dpmaif_dl_set_ao_pit_chknum(struct dpmaif_hw_info *hw_info, unsigned char q_num,
++					     unsigned int number)
++{
++	unsigned int value;
++
++	value = ioread32(hw_info->pcie_base + DPMAIF_AO_DL_PKTINFO_CON2);
++	value &= ~DPMAIF_PIT_CHK_NUM_MSK;
++	value |= FIELD_PREP(DPMAIF_PIT_CHK_NUM_MSK, number);
++	iowrite32(value, hw_info->pcie_base + DPMAIF_AO_DL_PKTINFO_CON2);
++}
++
++static void t7xx_dpmaif_dl_set_ao_remain_minsz(struct dpmaif_hw_info *hw_info, unsigned char q_num,
++					       size_t min_sz)
++{
++	unsigned int value;
++
++	value = ioread32(hw_info->pcie_base + DPMAIF_AO_DL_PKTINFO_CON0);
++	value &= ~DPMAIF_BAT_REMAIN_MINSZ_MSK;
++	value |= FIELD_PREP(DPMAIF_BAT_REMAIN_MINSZ_MSK, min_sz / DPMAIF_BAT_REMAIN_SZ_BASE);
++	iowrite32(value, hw_info->pcie_base + DPMAIF_AO_DL_PKTINFO_CON0);
++}
++
++static void t7xx_dpmaif_dl_set_ao_bat_bufsz(struct dpmaif_hw_info *hw_info,
++					    unsigned char q_num, size_t buf_sz)
++{
++	unsigned int value;
++
++	value = ioread32(hw_info->pcie_base + DPMAIF_AO_DL_PKTINFO_CON2);
++	value &= ~DPMAIF_BAT_BUF_SZ_MSK;
++	value |= FIELD_PREP(DPMAIF_BAT_BUF_SZ_MSK, buf_sz / DPMAIF_BAT_BUFFER_SZ_BASE);
++	iowrite32(value, hw_info->pcie_base + DPMAIF_AO_DL_PKTINFO_CON2);
++}
++
++static void t7xx_dpmaif_dl_set_ao_bat_rsv_length(struct dpmaif_hw_info *hw_info,
++						 unsigned char q_num, unsigned int length)
++{
++	unsigned int value;
++
++	value = ioread32(hw_info->pcie_base + DPMAIF_AO_DL_PKTINFO_CON2);
++	value &= ~DPMAIF_BAT_RSV_LEN_MSK;
++	value |= length & DPMAIF_BAT_RSV_LEN_MSK;
++	iowrite32(value, hw_info->pcie_base + DPMAIF_AO_DL_PKTINFO_CON2);
++}
++
++static void t7xx_dpmaif_dl_set_pkt_alignment(struct dpmaif_hw_info *hw_info, unsigned char q_num,
++					     bool enable, unsigned int mode)
++{
++	unsigned int value;
++
++	value = ioread32(hw_info->pcie_base + DPMAIF_AO_DL_RDY_CHK_THRES);
++	value &= ~DPMAIF_PKT_ALIGN_MSK;
++
++	if (enable) {
++		value |= DPMAIF_PKT_ALIGN_EN;
++		value |= FIELD_PREP(DPMAIF_PKT_ALIGN_MSK, mode);
 +	}
 +
++	iowrite32(value, hw_info->pcie_base + DPMAIF_AO_DL_RDY_CHK_THRES);
++}
++
++static void t7xx_dpmaif_dl_set_pkt_checksum(struct dpmaif_hw_info *hw_info)
++{
++	unsigned int value;
++
++	value = ioread32(hw_info->pcie_base + DPMAIF_AO_DL_RDY_CHK_THRES);
++	value |= DPMAIF_DL_PKT_CHECKSUM_EN;
++	iowrite32(value, hw_info->pcie_base + DPMAIF_AO_DL_RDY_CHK_THRES);
++}
++
++static void t7xx_dpmaif_dl_set_ao_frg_check_thres(struct dpmaif_hw_info *hw_info,
++						  unsigned char q_num, unsigned int size)
++{
++	unsigned int value;
++
++	value = ioread32(hw_info->pcie_base + DPMAIF_AO_DL_RDY_CHK_FRG_THRES);
++	value &= ~DPMAIF_FRG_CHECK_THRES_MSK;
++	value |= (size & DPMAIF_FRG_CHECK_THRES_MSK);
++	iowrite32(value, hw_info->pcie_base + DPMAIF_AO_DL_RDY_CHK_FRG_THRES);
++}
++
++static void t7xx_dpmaif_dl_set_ao_frg_bufsz(struct dpmaif_hw_info *hw_info,
++					    unsigned char q_num, unsigned int buf_sz)
++{
++	unsigned int value;
++
++	value = ioread32(hw_info->pcie_base + DPMAIF_AO_DL_RDY_CHK_FRG_THRES);
++	value &= ~DPMAIF_FRG_BUF_SZ_MSK;
++	value |= FIELD_PREP(DPMAIF_FRG_BUF_SZ_MSK, buf_sz / DPMAIF_FRG_BUFFER_SZ_BASE);
++	iowrite32(value, hw_info->pcie_base + DPMAIF_AO_DL_RDY_CHK_FRG_THRES);
++}
++
++static void t7xx_dpmaif_dl_frg_ao_en(struct dpmaif_hw_info *hw_info, unsigned char q_num,
++				     bool enable)
++{
++	unsigned int value;
++
++	value = ioread32(hw_info->pcie_base + DPMAIF_AO_DL_RDY_CHK_FRG_THRES);
++
++	if (enable)
++		value |= DPMAIF_FRG_EN_MSK;
++	else
++		value &= ~DPMAIF_FRG_EN_MSK;
++
++	iowrite32(value, hw_info->pcie_base + DPMAIF_AO_DL_RDY_CHK_FRG_THRES);
++}
++
++static void t7xx_dpmaif_dl_set_ao_bat_check_thres(struct dpmaif_hw_info *hw_info,
++						  unsigned char q_num, unsigned int size)
++{
++	unsigned int value;
++
++	value = ioread32(hw_info->pcie_base + DPMAIF_AO_DL_RDY_CHK_THRES);
++	value &= ~DPMAIF_BAT_CHECK_THRES_MSK;
++	value |= FIELD_PREP(DPMAIF_BAT_CHECK_THRES_MSK, size);
++	iowrite32(value, hw_info->pcie_base + DPMAIF_AO_DL_RDY_CHK_THRES);
++}
++
++static void t7xx_dpmaif_dl_set_pit_seqnum(struct dpmaif_hw_info *hw_info,
++					  unsigned char q_num, unsigned int seq)
++{
++	unsigned int value;
++
++	value = ioread32(hw_info->pcie_base + DPMAIF_AO_DL_PIT_SEQ_END);
++	value &= ~DPMAIF_DL_PIT_SEQ_MSK;
++	value |= seq & DPMAIF_DL_PIT_SEQ_MSK;
++	iowrite32(value, hw_info->pcie_base + DPMAIF_AO_DL_PIT_SEQ_END);
++}
++
++static void t7xx_dpmaif_dl_set_dlq_pit_base_addr(struct dpmaif_hw_info *hw_info,
++						 unsigned char q_num, dma_addr_t addr)
++{
++	iowrite32(lower_32_bits(addr), hw_info->pcie_base + DPMAIF_DL_DLQPIT_INIT_CON0);
++	iowrite32(upper_32_bits(addr), hw_info->pcie_base + DPMAIF_DL_DLQPIT_INIT_CON4);
++}
++
++static void t7xx_dpmaif_dl_set_dlq_pit_size(struct dpmaif_hw_info *hw_info,
++					    unsigned char q_num, unsigned int size)
++{
++	unsigned int value;
++
++	value = ioread32(hw_info->pcie_base + DPMAIF_DL_DLQPIT_INIT_CON1);
++	value &= ~DPMAIF_PIT_SIZE_MSK;
++	value |= size & DPMAIF_PIT_SIZE_MSK;
++	iowrite32(value, hw_info->pcie_base + DPMAIF_DL_DLQPIT_INIT_CON1);
++	iowrite32(0, hw_info->pcie_base + DPMAIF_DL_DLQPIT_INIT_CON2);
++	iowrite32(0, hw_info->pcie_base + DPMAIF_DL_DLQPIT_INIT_CON3);
++	iowrite32(0, hw_info->pcie_base + DPMAIF_DL_DLQPIT_INIT_CON5);
++	iowrite32(0, hw_info->pcie_base + DPMAIF_DL_DLQPIT_INIT_CON6);
++}
++
++static void t7xx_dpmaif_dl_dlq_pit_en(struct dpmaif_hw_info *hw_info, unsigned char q_num,
++				      bool enable)
++{
++	unsigned int value;
++
++	value = ioread32(hw_info->pcie_base + DPMAIF_DL_DLQPIT_INIT_CON3);
++
++	if (enable)
++		value |= DPMAIF_DLQPIT_EN_MSK;
++	else
++		value &= ~DPMAIF_DLQPIT_EN_MSK;
++
++	iowrite32(value, hw_info->pcie_base + DPMAIF_DL_DLQPIT_INIT_CON3);
++}
++
++static void t7xx_dpmaif_dl_dlq_pit_init_done(struct dpmaif_ctrl *dpmaif_ctrl,
++					     unsigned char q_num, unsigned int pit_idx)
++{
++	struct dpmaif_hw_info *hw_info = &dpmaif_ctrl->hif_hw_info;
++	unsigned int dl_pit_init;
++	int timeout;
++	u32 value;
++
++	dl_pit_init = DPMAIF_DL_PIT_INIT_ALLSET;
++	dl_pit_init |= (pit_idx << DPMAIF_DLQPIT_CHAN_OFS);
++	dl_pit_init |= DPMAIF_DL_PIT_INIT_EN;
++
++	timeout = readx_poll_timeout_atomic(ioread32, hw_info->pcie_base + DPMAIF_DL_DLQPIT_INIT,
++					    value, !(value & DPMAIF_DL_PIT_INIT_NOT_READY),
++					    DPMAIF_CHECK_DELAY_US, DPMAIF_CHECK_INIT_TIMEOUT_US);
++	if (timeout) {
++		dev_err(dpmaif_ctrl->dev, "Data plane modem DL PIT is not ready\n");
++		return;
++	}
++
++	iowrite32(dl_pit_init, hw_info->pcie_base + DPMAIF_DL_DLQPIT_INIT);
++	timeout = readx_poll_timeout_atomic(ioread32, hw_info->pcie_base + DPMAIF_DL_DLQPIT_INIT,
++					    value, !(value & DPMAIF_DL_PIT_INIT_NOT_READY),
++					    DPMAIF_CHECK_DELAY_US, DPMAIF_CHECK_INIT_TIMEOUT_US);
++	if (timeout)
++		dev_err(dpmaif_ctrl->dev, "Data plane modem DL PIT initialization failed\n");
++}
++
++static void t7xx_dpmaif_config_dlq_pit_hw(struct dpmaif_ctrl *dpmaif_ctrl, unsigned char q_num,
++					  struct dpmaif_dl *dl_que)
++{
++	struct dpmaif_hw_info *hw_info = &dpmaif_ctrl->hif_hw_info;
++	unsigned int pit_idx = q_num;
++
++	t7xx_dpmaif_dl_set_dlq_pit_base_addr(hw_info, q_num, dl_que->pit_base);
++	t7xx_dpmaif_dl_set_dlq_pit_size(hw_info, q_num, dl_que->pit_size_cnt);
++	t7xx_dpmaif_dl_dlq_pit_en(hw_info, q_num, true);
++	t7xx_dpmaif_dl_dlq_pit_init_done(dpmaif_ctrl, q_num, pit_idx);
++}
++
++static void t7xx_dpmaif_config_all_dlq_hw(struct dpmaif_ctrl *dpmaif_ctrl)
++{
++	struct dpmaif_hw_info *hw_info = &dpmaif_ctrl->hif_hw_info;
++	int i;
++
++	for (i = 0; i < DPMAIF_RXQ_NUM; i++)
++		t7xx_dpmaif_config_dlq_pit_hw(dpmaif_ctrl, i, &hw_info->dl_que[i]);
++}
++
++static void t7xx_dpmaif_dl_all_queue_en(struct dpmaif_ctrl *dpmaif_ctrl, bool enable)
++{
++	struct dpmaif_hw_info *hw_info = &dpmaif_ctrl->hif_hw_info;
++	u32 dl_bat_init, value;
++	int timeout;
++
++	value = ioread32(hw_info->pcie_base + DPMAIF_DL_BAT_INIT_CON1);
++
++	if (enable)
++		value |= DPMAIF_BAT_EN_MSK;
++	else
++		value &= ~DPMAIF_BAT_EN_MSK;
++
++	iowrite32(value, hw_info->pcie_base + DPMAIF_DL_BAT_INIT_CON1);
++	dl_bat_init = DPMAIF_DL_BAT_INIT_ONLY_ENABLE_BIT;
++	dl_bat_init |= DPMAIF_DL_BAT_INIT_EN;
++
++	timeout = readx_poll_timeout_atomic(ioread32, hw_info->pcie_base + DPMAIF_DL_BAT_INIT,
++					    value, !(value & DPMAIF_DL_BAT_INIT_NOT_READY),
++					    0, DPMAIF_CHECK_TIMEOUT_US);
++	if (timeout)
++		dev_err(dpmaif_ctrl->dev, "Timeout updating BAT setting to HW\n");
++
++	iowrite32(dl_bat_init, hw_info->pcie_base + DPMAIF_DL_BAT_INIT);
++	timeout = readx_poll_timeout_atomic(ioread32, hw_info->pcie_base + DPMAIF_DL_BAT_INIT,
++					    value, !(value & DPMAIF_DL_BAT_INIT_NOT_READY),
++					    0, DPMAIF_CHECK_TIMEOUT_US);
++	if (timeout)
++		dev_err(dpmaif_ctrl->dev, "Data plane modem DL BAT is not ready\n");
++}
++
++static int t7xx_dpmaif_config_dlq_hw(struct dpmaif_ctrl *dpmaif_ctrl)
++{
++	struct dpmaif_hw_info *hw_info = &dpmaif_ctrl->hif_hw_info;
++	struct dpmaif_dl_hwq *dl_hw;
++	struct dpmaif_dl *dl_que;
++	unsigned int queue = 0; /* All queues share one BAT/frag BAT table */
++	int ret;
++
++	t7xx_dpmaif_dl_dlq_hpc_hw_init(hw_info);
++	dl_hw = &hw_info->dl_que_hw[queue];
++
++	dl_que = &hw_info->dl_que[queue];
++	if (!dl_que->que_started)
++		return -EBUSY;
++
++	t7xx_dpmaif_dl_set_ao_remain_minsz(hw_info, queue, dl_hw->bat_remain_size);
++	t7xx_dpmaif_dl_set_ao_bat_bufsz(hw_info, queue, dl_hw->bat_pkt_bufsz);
++	t7xx_dpmaif_dl_set_ao_frg_bufsz(hw_info, queue, dl_hw->frg_pkt_bufsz);
++	t7xx_dpmaif_dl_set_ao_bat_rsv_length(hw_info, queue, dl_hw->bat_rsv_length);
++	t7xx_dpmaif_dl_set_ao_bid_maxcnt(hw_info, queue, dl_hw->pkt_bid_max_cnt);
++
++	if (dl_hw->pkt_alignment == 64)
++		t7xx_dpmaif_dl_set_pkt_alignment(hw_info, queue, true, DPMAIF_PKT_ALIGN64_MODE);
++	else if (dl_hw->pkt_alignment == 128)
++		t7xx_dpmaif_dl_set_pkt_alignment(hw_info, queue, true, DPMAIF_PKT_ALIGN128_MODE);
++	else
++		t7xx_dpmaif_dl_set_pkt_alignment(hw_info, queue, false, 0);
++
++	t7xx_dpmaif_dl_set_pit_seqnum(hw_info, queue, DPMAIF_DL_PIT_SEQ_VALUE);
++	t7xx_dpmaif_dl_set_ao_mtu(hw_info, dl_hw->mtu_size);
++	t7xx_dpmaif_dl_set_ao_pit_chknum(hw_info, queue, dl_hw->chk_pit_num);
++	t7xx_dpmaif_dl_set_ao_bat_check_thres(hw_info, queue, dl_hw->chk_bat_num);
++	t7xx_dpmaif_dl_set_ao_frg_check_thres(hw_info, queue, dl_hw->chk_frg_num);
++	t7xx_dpmaif_dl_frg_ao_en(hw_info, queue, true);
++
++	t7xx_dpmaif_dl_set_bat_base_addr(hw_info, queue, dl_que->frg_base);
++	t7xx_dpmaif_dl_set_bat_size(hw_info, queue, dl_que->frg_size_cnt);
++	t7xx_dpmaif_dl_bat_en(hw_info, queue, true);
++
++	ret = t7xx_dpmaif_dl_bat_init_done(dpmaif_ctrl, queue, true);
++	if (ret)
++		return ret;
++
++	t7xx_dpmaif_dl_set_bat_base_addr(hw_info, queue, dl_que->bat_base);
++	t7xx_dpmaif_dl_set_bat_size(hw_info, queue, dl_que->bat_size_cnt);
++	t7xx_dpmaif_dl_bat_en(hw_info, queue, false);
++
++	ret = t7xx_dpmaif_dl_bat_init_done(dpmaif_ctrl, queue, false);
++	if (ret)
++		return ret;
++
++	/* Init PIT (two PIT table) */
++	t7xx_dpmaif_config_all_dlq_hw(dpmaif_ctrl);
++	t7xx_dpmaif_dl_all_queue_en(dpmaif_ctrl, true);
++	t7xx_dpmaif_dl_set_pkt_checksum(hw_info);
 +	return 0;
 +}
 +
-+static void t7xx_port_wwan_uninit(struct t7xx_port *port)
++static void t7xx_dpmaif_ul_update_drb_size(struct dpmaif_hw_info *hw_info,
++					   unsigned char q_num, unsigned int size)
 +{
-+	if (port->wwan_port) {
-+		if (port->chn_crt_stat) {
-+			spin_lock(&port->port_update_lock);
-+			port->chn_crt_stat = false;
-+			spin_unlock(&port->port_update_lock);
-+		}
++	unsigned int value;
 +
-+		wwan_remove_port(port->wwan_port);
-+		port->wwan_port = NULL;
-+	}
++	value = ioread32(hw_info->pcie_base + DPMAIF_UL_DRBSIZE_ADDRH_n(q_num));
++	value &= ~DPMAIF_DRB_SIZE_MSK;
++	value |= size & DPMAIF_DRB_SIZE_MSK;
++	iowrite32(value, hw_info->pcie_base + DPMAIF_UL_DRBSIZE_ADDRH_n(q_num));
 +}
 +
-+static int t7xx_port_wwan_recv_skb(struct t7xx_port *port, struct sk_buff *skb)
++static void t7xx_dpmaif_ul_update_drb_base_addr(struct dpmaif_hw_info *hw_info,
++						unsigned char q_num, dma_addr_t addr)
 +{
-+	struct t7xx_port_static *port_static = port->port_static;
-+
-+	if (port->flags & PORT_F_RX_CHAR_NODE) {
-+		if (!atomic_read(&port->usage_cnt)) {
-+			dev_err_ratelimited(port->dev, "Port %s is not opened, drop packets\n",
-+					    port_static->name);
-+			return -ENETDOWN;
-+		}
-+	}
-+
-+	return t7xx_port_recv_skb(port, skb);
++	iowrite32(lower_32_bits(addr), hw_info->pcie_base + DPMAIF_ULQSAR_n(q_num));
++	iowrite32(upper_32_bits(addr), hw_info->pcie_base + DPMAIF_UL_DRB_ADDRH_n(q_num));
 +}
 +
-+static void port_status_update(struct t7xx_port *port)
++static void t7xx_dpmaif_ul_rdy_en(struct dpmaif_hw_info *hw_info,
++				  unsigned char q_num, bool ready)
 +{
-+	if (port->flags & PORT_F_RX_CHAR_NODE) {
-+		if (port->chan_enable) {
-+			port->flags &= ~PORT_F_RX_ALLOW_DROP;
++	u32 value;
++
++	value = ioread32(hw_info->pcie_base + DPMAIF_AO_UL_CHNL_ARB0);
++
++	if (ready)
++		value |= BIT(q_num);
++	else
++		value &= ~BIT(q_num);
++
++	iowrite32(value, hw_info->pcie_base + DPMAIF_AO_UL_CHNL_ARB0);
++}
++
++static void t7xx_dpmaif_ul_arb_en(struct dpmaif_hw_info *hw_info,
++				  unsigned char q_num, bool enable)
++{
++	u32 value;
++
++	value = ioread32(hw_info->pcie_base + DPMAIF_AO_UL_CHNL_ARB0);
++
++	if (enable)
++		value |= BIT(q_num + 8);
++	else
++		value &= ~BIT(q_num + 8);
++
++	iowrite32(value, hw_info->pcie_base + DPMAIF_AO_UL_CHNL_ARB0);
++}
++
++static void t7xx_dpmaif_config_ulq_hw(struct dpmaif_hw_info *hw_info)
++{
++	struct dpmaif_ul *ul_que;
++	int i;
++
++	for (i = 0; i < DPMAIF_TXQ_NUM; i++) {
++		ul_que = &hw_info->ul_que[i];
++		if (ul_que->que_started) {
++			t7xx_dpmaif_ul_update_drb_size(hw_info, i, ul_que->drb_size_cnt *
++						       DPMAIF_UL_DRB_ENTRY_WORD);
++			t7xx_dpmaif_ul_update_drb_base_addr(hw_info, i, ul_que->drb_base);
++			t7xx_dpmaif_ul_rdy_en(hw_info, i, true);
++			t7xx_dpmaif_ul_arb_en(hw_info, i, true);
 +		} else {
-+			port->flags |= PORT_F_RX_ALLOW_DROP;
-+			spin_lock(&port->port_update_lock);
-+			port->chn_crt_stat = false;
-+			spin_unlock(&port->port_update_lock);
++			t7xx_dpmaif_ul_arb_en(hw_info, i, false);
 +		}
 +	}
 +}
 +
-+static int t7xx_port_wwan_enable_chl(struct t7xx_port *port)
++static int t7xx_dpmaif_hw_init_done(struct dpmaif_hw_info *hw_info)
 +{
-+	spin_lock(&port->port_update_lock);
-+	port->chan_enable = true;
-+	spin_unlock(&port->port_update_lock);
++	u32 ap_cfg;
++	int ret;
 +
-+	if (port->chn_crt_stat != port->chan_enable)
-+		port_status_update(port);
++	ap_cfg = ioread32(hw_info->pcie_base + DPMAIF_AP_OVERWRITE_CFG);
++	ap_cfg |= DPMAIF_SRAM_SYNC;
++	iowrite32(ap_cfg, hw_info->pcie_base + DPMAIF_AP_OVERWRITE_CFG);
++
++	ret = readx_poll_timeout_atomic(ioread32, hw_info->pcie_base + DPMAIF_AP_OVERWRITE_CFG,
++					ap_cfg, !(ap_cfg & DPMAIF_SRAM_SYNC),
++					0, DPMAIF_CHECK_TIMEOUT_US);
++	if (ret)
++		return ret;
++
++	iowrite32(DPMAIF_UL_INIT_DONE, hw_info->pcie_base + DPMAIF_AO_UL_INIT_SET);
++	iowrite32(DPMAIF_DL_INIT_DONE, hw_info->pcie_base + DPMAIF_AO_DL_INIT_SET);
++	return 0;
++}
++
++static int t7xx_dpmaif_config_que_hw(struct dpmaif_ctrl *dpmaif_ctrl)
++{
++	struct dpmaif_hw_info *hw_info = &dpmaif_ctrl->hif_hw_info;
++	int ret;
++
++	t7xx_dpmaif_common_hw_init(hw_info);
++
++	ret = t7xx_dpmaif_config_dlq_hw(dpmaif_ctrl);
++	if (ret)
++		return ret;
++
++	t7xx_dpmaif_config_ulq_hw(hw_info);
++	return t7xx_dpmaif_hw_init_done(hw_info);
++}
++
++static inline bool t7xx_dpmaif_dl_idle_check(struct dpmaif_hw_info *hw_info)
++{
++	u32 dpmaif_dl_is_busy = ioread32(hw_info->pcie_base + DPMAIF_DL_CHK_BUSY);
++
++	return !(dpmaif_dl_is_busy & DPMAIF_DL_IDLE_STS);
++}
++
++static void t7xx_dpmaif_ul_all_queue_en(struct dpmaif_hw_info *hw_info, bool enable)
++{
++	u32 ul_arb_en = ioread32(hw_info->pcie_base + DPMAIF_AO_UL_CHNL_ARB0);
++
++	if (enable)
++		ul_arb_en |= DPMAIF_UL_ALL_QUE_ARB_EN;
++	else
++		ul_arb_en &= ~DPMAIF_UL_ALL_QUE_ARB_EN;
++
++	iowrite32(ul_arb_en, hw_info->pcie_base + DPMAIF_AO_UL_CHNL_ARB0);
++}
++
++static inline bool t7xx_dpmaif_ul_idle_check(struct dpmaif_hw_info *hw_info)
++{
++	u32 dpmaif_ul_is_busy = ioread32(hw_info->pcie_base + DPMAIF_UL_CHK_BUSY);
++
++	return !(dpmaif_ul_is_busy & DPMAIF_UL_IDLE_STS);
++}
++
++ /* DPMAIF UL Part HW setting */
++
++int t7xx_dpmaif_ul_update_hw_drb_cnt(struct dpmaif_ctrl *dpmaif_ctrl, unsigned char q_num,
++				     unsigned int drb_entry_cnt)
++{
++	struct dpmaif_hw_info *hw_info = &dpmaif_ctrl->hif_hw_info;
++	u32 ul_update, value;
++	int ret;
++
++	ul_update = drb_entry_cnt & DPMAIF_UL_ADD_COUNT_MASK;
++	ul_update |= DPMAIF_UL_ADD_UPDATE;
++
++	ret = readx_poll_timeout_atomic(ioread32,
++					hw_info->pcie_base + DPMAIF_ULQ_ADD_DESC_CH_n(q_num),
++					value, !(value & DPMAIF_UL_ADD_NOT_READY),
++					     0, DPMAIF_CHECK_TIMEOUT_US);
++	if (ret) {
++		dev_err(dpmaif_ctrl->dev, "UL add is not ready\n");
++		return ret;
++	}
++
++	iowrite32(ul_update, hw_info->pcie_base + DPMAIF_ULQ_ADD_DESC_CH_n(q_num));
++
++	ret = readx_poll_timeout_atomic(ioread32,
++					hw_info->pcie_base + DPMAIF_ULQ_ADD_DESC_CH_n(q_num),
++					value, !(value & DPMAIF_UL_ADD_NOT_READY),
++					0, DPMAIF_CHECK_TIMEOUT_US);
++	if (ret) {
++		dev_err(dpmaif_ctrl->dev, "Timeout updating UL add\n");
++		return ret;
++	}
 +
 +	return 0;
 +}
 +
-+static int t7xx_port_wwan_disable_chl(struct t7xx_port *port)
++unsigned int t7xx_dpmaif_ul_get_ridx(struct dpmaif_hw_info *hw_info, unsigned char q_num)
 +{
-+	spin_lock(&port->port_update_lock);
-+	port->chan_enable = false;
-+	spin_unlock(&port->port_update_lock);
++	unsigned int value = ioread32(hw_info->pcie_base + DPMAIF_ULQ_STA0_n(q_num));
 +
-+	if (port->chn_crt_stat != port->chan_enable)
-+		port_status_update(port);
++	return value >> DPMAIF_UL_DRB_RIDX_OFFSET;
++}
++
++int t7xx_dpmaif_dlq_add_pit_remain_cnt(struct dpmaif_ctrl *dpmaif_ctrl, unsigned int dlq_pit_idx,
++				       unsigned int pit_remain_cnt)
++{
++	struct dpmaif_hw_info *hw_info = &dpmaif_ctrl->hif_hw_info;
++	u32 dl_update, value;
++	int ret;
++
++	dl_update = pit_remain_cnt & DPMAIF_PIT_REM_CNT_MSK;
++	dl_update |= DPMAIF_DL_ADD_UPDATE | (dlq_pit_idx << DPMAIF_ADD_DLQ_PIT_CHAN_OFS);
++
++	ret = readx_poll_timeout_atomic(ioread32, hw_info->pcie_base + DPMAIF_DL_DLQPIT_ADD,
++					value, !(value & DPMAIF_DL_ADD_NOT_READY),
++					0, DPMAIF_CHECK_TIMEOUT_US);
++	if (ret) {
++		dev_err(dpmaif_ctrl->dev, "Data plane modem is not ready to add dlq\n");
++		return ret;
++	}
++
++	iowrite32(dl_update, hw_info->pcie_base + DPMAIF_DL_DLQPIT_ADD);
++
++	ret = readx_poll_timeout_atomic(ioread32, hw_info->pcie_base + DPMAIF_DL_DLQPIT_ADD,
++					value, !(value & DPMAIF_DL_ADD_NOT_READY),
++					0, DPMAIF_CHECK_TIMEOUT_US);
++	if (ret) {
++		dev_err(dpmaif_ctrl->dev, "Data plane modem add dlq failed\n");
++		return ret;
++	}
 +
 +	return 0;
 +}
 +
-+static void t7xx_port_wwan_md_state_notify(struct t7xx_port *port, unsigned int state)
++unsigned int t7xx_dpmaif_dl_dlq_pit_get_wridx(struct dpmaif_hw_info *hw_info,
++					      unsigned int dlq_pit_idx)
 +{
-+	if (state == MD_STATE_READY)
-+		port_status_update(port);
++	u32 value;
++
++	value = ioread32(hw_info->pcie_base + DPMAIF_AO_DL_DLQ_WRIDX +
++			 dlq_pit_idx * DLQ_PIT_IDX_SIZE);
++	return value & DPMAIF_DL_PIT_WRIDX_MSK;
 +}
 +
-+struct port_ops wwan_sub_port_ops = {
-+	.init = &t7xx_port_wwan_init,
-+	.recv_skb = &t7xx_port_wwan_recv_skb,
-+	.uninit = &t7xx_port_wwan_uninit,
-+	.enable_chl = &t7xx_port_wwan_enable_chl,
-+	.disable_chl = &t7xx_port_wwan_disable_chl,
-+	.md_state_notify = &t7xx_port_wwan_md_state_notify,
++static bool t7xx_dl_add_timedout(struct dpmaif_hw_info *hw_info)
++{
++	u32 value;
++	int ret;
++
++	ret = readx_poll_timeout_atomic(ioread32, hw_info->pcie_base + DPMAIF_DL_BAT_ADD,
++					value, !(value & DPMAIF_DL_ADD_NOT_READY),
++					0, DPMAIF_CHECK_TIMEOUT_US);
++	return !!ret;
++}
++
++int t7xx_dpmaif_dl_snd_hw_bat_cnt(struct dpmaif_ctrl *dpmaif_ctrl, unsigned int bat_entry_cnt)
++{
++	struct dpmaif_hw_info *hw_info = &dpmaif_ctrl->hif_hw_info;
++	unsigned int value;
++
++	if (t7xx_dl_add_timedout(hw_info)) {
++		dev_err(dpmaif_ctrl->dev, "DL add BAT not ready\n");
++		return -EBUSY;
++	}
++
++	value = bat_entry_cnt & DPMAIF_DL_ADD_COUNT_MASK;
++	value |= DPMAIF_DL_ADD_UPDATE;
++	iowrite32(value, hw_info->pcie_base + DPMAIF_DL_BAT_ADD);
++
++	if (t7xx_dl_add_timedout(hw_info)) {
++		dev_err(dpmaif_ctrl->dev, "DL add BAT timeout\n");
++		return -EBUSY;
++	}
++
++	return 0;
++}
++
++unsigned int t7xx_dpmaif_dl_get_bat_ridx(struct dpmaif_hw_info *hw_info, unsigned char q_num)
++{
++	u32 value;
++
++	value = ioread32(hw_info->pcie_base + DPMAIF_AO_DL_BAT_RIDX);
++	return value & DPMAIF_DL_BAT_WRIDX_MSK;
++}
++
++unsigned int t7xx_dpmaif_dl_get_bat_wridx(struct dpmaif_hw_info *hw_info, unsigned char q_num)
++{
++	u32 value;
++
++	value = ioread32(hw_info->pcie_base + DPMAIF_AO_DL_BAT_WRIDX);
++	return value & DPMAIF_DL_BAT_WRIDX_MSK;
++}
++
++int t7xx_dpmaif_dl_snd_hw_frg_cnt(struct dpmaif_ctrl *dpmaif_ctrl, unsigned int frg_entry_cnt)
++{
++	struct dpmaif_hw_info *hw_info = &dpmaif_ctrl->hif_hw_info;
++	unsigned int value;
++
++	if (t7xx_dl_add_timedout(hw_info)) {
++		dev_err(dpmaif_ctrl->dev, "Data plane modem is not ready to add frag DLQ\n");
++		return -EBUSY;
++	}
++
++	value = frg_entry_cnt & DPMAIF_DL_ADD_COUNT_MASK;
++	value |= DPMAIF_DL_FRG_ADD_UPDATE | DPMAIF_DL_ADD_UPDATE;
++	iowrite32(value, hw_info->pcie_base + DPMAIF_DL_BAT_ADD);
++
++	if (t7xx_dl_add_timedout(hw_info)) {
++		dev_err(dpmaif_ctrl->dev, "Data plane modem add frag DLQ failed");
++		return -EBUSY;
++	}
++
++	return 0;
++}
++
++unsigned int t7xx_dpmaif_dl_get_frg_ridx(struct dpmaif_hw_info *hw_info, unsigned char q_num)
++{
++	u32 value;
++
++	value = ioread32(hw_info->pcie_base + DPMAIF_AO_DL_FRGBAT_WRIDX);
++	return value & DPMAIF_DL_FRG_WRIDX_MSK;
++}
++
++static void t7xx_dpmaif_set_queue_property(struct dpmaif_hw_info *hw_info,
++					   struct dpmaif_hw_params *init_para)
++{
++	struct dpmaif_dl_hwq *dl_hwq;
++	struct dpmaif_dl *dl_que;
++	struct dpmaif_ul *ul_que;
++	int i;
++
++	for (i = 0; i < DPMAIF_RXQ_NUM; i++) {
++		dl_hwq = &hw_info->dl_que_hw[i];
++		dl_hwq->bat_remain_size = DPMAIF_HW_BAT_REMAIN;
++		dl_hwq->bat_pkt_bufsz = DPMAIF_HW_BAT_PKTBUF;
++		dl_hwq->frg_pkt_bufsz = DPMAIF_HW_FRG_PKTBUF;
++		dl_hwq->bat_rsv_length = DPMAIF_HW_BAT_RSVLEN;
++		dl_hwq->pkt_bid_max_cnt = DPMAIF_HW_PKT_BIDCNT;
++		dl_hwq->pkt_alignment = DPMAIF_HW_PKT_ALIGN;
++		dl_hwq->mtu_size = DPMAIF_HW_MTU_SIZE;
++		dl_hwq->chk_bat_num = DPMAIF_HW_CHK_BAT_NUM;
++		dl_hwq->chk_frg_num = DPMAIF_HW_CHK_FRG_NUM;
++		dl_hwq->chk_pit_num = DPMAIF_HW_CHK_PIT_NUM;
++
++		dl_que = &hw_info->dl_que[i];
++		dl_que->bat_base = init_para->pkt_bat_base_addr[i];
++		dl_que->bat_size_cnt = init_para->pkt_bat_size_cnt[i];
++		dl_que->pit_base = init_para->pit_base_addr[i];
++		dl_que->pit_size_cnt = init_para->pit_size_cnt[i];
++		dl_que->frg_base = init_para->frg_bat_base_addr[i];
++		dl_que->frg_size_cnt = init_para->frg_bat_size_cnt[i];
++		dl_que->que_started = true;
++	}
++
++	for (i = 0; i < DPMAIF_TXQ_NUM; i++) {
++		ul_que = &hw_info->ul_que[i];
++		ul_que->drb_base = init_para->drb_base_addr[i];
++		ul_que->drb_size_cnt = init_para->drb_size_cnt[i];
++		ul_que->que_started = true;
++	}
++}
++
++/**
++ * t7xx_dpmaif_hw_stop_tx_queue() - Stop all TX queues.
++ * @dpmaif_ctrl: Pointer to struct dpmaif_ctrl.
++ *
++ * Disable HW UL queues. Checks busy UL queues to go to idle
++ * with an attempt count of 1000000.
++ *
++ * Return:
++ * * 0			- Success
++ * * -ETIMEDOUT		- Timed out checking busy queues
++ */
++int t7xx_dpmaif_hw_stop_tx_queue(struct dpmaif_ctrl *dpmaif_ctrl)
++{
++	struct dpmaif_hw_info *hw_info = &dpmaif_ctrl->hif_hw_info;
++	int count = 0;
++
++	t7xx_dpmaif_ul_all_queue_en(hw_info, false);
++	while (t7xx_dpmaif_ul_idle_check(hw_info)) {
++		if (++count >= DPMAIF_MAX_CHECK_COUNT) {
++			dev_err(dpmaif_ctrl->dev, "Failed to stop TX, status: 0x%x\n",
++				ioread32(hw_info->pcie_base + DPMAIF_UL_CHK_BUSY));
++			return -ETIMEDOUT;
++		}
++	}
++
++	return 0;
++}
++
++/**
++ * t7xx_dpmaif_hw_stop_rx_queue() - Stop all RX queues.
++ * @dpmaif_ctrl: Pointer to struct dpmaif_ctrl.
++ *
++ * Disable HW DL queue. Checks busy UL queues to go to idle
++ * with an attempt count of 1000000.
++ * Check that HW PIT write index equals read index with the same
++ * attempt count.
++ *
++ * Return:
++ * * 0			- Success.
++ * * -ETIMEDOUT		- Timed out checking busy queues.
++ */
++int t7xx_dpmaif_hw_stop_rx_queue(struct dpmaif_ctrl *dpmaif_ctrl)
++{
++	struct dpmaif_hw_info *hw_info = &dpmaif_ctrl->hif_hw_info;
++	unsigned int wridx, ridx;
++	int count = 0;
++
++	t7xx_dpmaif_dl_all_queue_en(dpmaif_ctrl, false);
++	while (t7xx_dpmaif_dl_idle_check(hw_info)) {
++		if (++count >= DPMAIF_MAX_CHECK_COUNT) {
++			dev_err(dpmaif_ctrl->dev, "Failed to stop RX, status: 0x%x\n",
++				ioread32(hw_info->pcie_base + DPMAIF_DL_CHK_BUSY));
++			return -ETIMEDOUT;
++		}
++	}
++
++	/* Check middle PIT sync done */
++	count = 0;
++	do {
++		wridx = ioread32(hw_info->pcie_base + DPMAIF_AO_DL_PIT_WRIDX);
++		wridx &= DPMAIF_DL_PIT_WRIDX_MSK;
++		ridx = ioread32(hw_info->pcie_base + DPMAIF_AO_DL_PIT_RIDX);
++		ridx &= DPMAIF_DL_PIT_WRIDX_MSK;
++
++		if (wridx == ridx)
++			return 0;
++	} while (++count < DPMAIF_MAX_CHECK_COUNT);
++
++	dev_err(dpmaif_ctrl->dev, "Check middle PIT sync fail\n");
++	return -ETIMEDOUT;
++}
++
++void t7xx_dpmaif_start_hw(struct dpmaif_ctrl *dpmaif_ctrl)
++{
++	t7xx_dpmaif_ul_all_queue_en(&dpmaif_ctrl->hif_hw_info, true);
++	t7xx_dpmaif_dl_all_queue_en(dpmaif_ctrl, true);
++}
++
++/**
++ * t7xx_dpmaif_hw_init() - Initialize HW data path API.
++ * @dpmaif_ctrl: Pointer to struct dpmaif_ctrl.
++ * @init_param: Pointer to struct dpmaif_hw_params.
++ *
++ * Configures port mode, clock config, HW interrupt initialization, and HW queue.
++ *
++ * Return:
++ * * 0		- Success.
++ * * -ERROR	- Error code from failure sub-initializations.
++ */
++int t7xx_dpmaif_hw_init(struct dpmaif_ctrl *dpmaif_ctrl, struct dpmaif_hw_params *init_param)
++{
++	struct dpmaif_hw_info *hw_info = &dpmaif_ctrl->hif_hw_info;
++	int ret;
++
++	ret = t7xx_dpmaif_hw_config(hw_info);
++	if (ret) {
++		dev_err(dpmaif_ctrl->dev, "DPMAIF HW config failed\n");
++		return ret;
++	}
++
++	ret = t7xx_dpmaif_init_intr(hw_info);
++	if (ret) {
++		dev_err(dpmaif_ctrl->dev, "DPMAIF HW interrupts init failed\n");
++		return ret;
++	}
++
++	t7xx_dpmaif_set_queue_property(hw_info, init_param);
++
++	ret = t7xx_dpmaif_config_que_hw(dpmaif_ctrl);
++	if (ret)
++		dev_err(dpmaif_ctrl->dev, "DPMAIF HW queue init failed\n");
++
++	return ret;
++}
++
++bool t7xx_dpmaif_ul_clr_done(struct dpmaif_hw_info *hw_info, unsigned char qno)
++{
++	u32 intr_status;
++
++	intr_status = ioread32(hw_info->pcie_base + DPMAIF_AP_L2TISAR0);
++	intr_status &= BIT(DP_UL_INT_DONE_OFFSET + qno);
++	if (intr_status) {
++		iowrite32(intr_status, hw_info->pcie_base + DPMAIF_AP_L2TISAR0);
++		return true;
++	}
++
++	return false;
++}
+diff --git a/drivers/net/wwan/t7xx/t7xx_dpmaif.h b/drivers/net/wwan/t7xx/t7xx_dpmaif.h
+new file mode 100644
+index 000000000000..787b79ec2f26
+--- /dev/null
++++ b/drivers/net/wwan/t7xx/t7xx_dpmaif.h
+@@ -0,0 +1,146 @@
++/* SPDX-License-Identifier: GPL-2.0-only
++ *
++ * Copyright (c) 2021, MediaTek Inc.
++ * Copyright (c) 2021, Intel Corporation.
++ *
++ * Authors:
++ *  Amir Hanania <amir.hanania@intel.com>
++ *  Haijun Liu <haijun.liu@mediatek.com>
++ *  Moises Veleta <moises.veleta@intel.com>
++ *  Ricardo Martinez<ricardo.martinez@linux.intel.com>
++ *
++ * Contributors:
++ *  Chiranjeevi Rapolu <chiranjeevi.rapolu@intel.com>
++ *  Eliot Lee <eliot.lee@intel.com>
++ *  Sreehari Kancharla <sreehari.kancharla@intel.com>
++ */
++
++#ifndef __T7XX_DPMAIF_H__
++#define __T7XX_DPMAIF_H__
++
++#include <linux/bits.h>
++#include <linux/types.h>
++
++#include "t7xx_hif_dpmaif.h"
++
++#define DPMAIF_DL_PIT_SEQ_VALUE		251
++#define DPMAIF_UL_DRB_BYTE_SIZE		16
++#define DPMAIF_UL_DRB_ENTRY_WORD	(DPMAIF_UL_DRB_BYTE_SIZE >> 2)
++
++#define DPMAIF_MAX_CHECK_COUNT		1000000
++#define DPMAIF_CHECK_TIMEOUT_US		10000
++#define DPMAIF_CHECK_INIT_TIMEOUT_US	100000
++#define DPMAIF_CHECK_DELAY_US		10
++
++/* DPMAIF HW Initialization parameter structure */
++struct dpmaif_hw_params {
++	/* UL part */
++	dma_addr_t			drb_base_addr[DPMAIF_TXQ_NUM];
++	unsigned int			drb_size_cnt[DPMAIF_TXQ_NUM];
++	/* DL part */
++	dma_addr_t			pkt_bat_base_addr[DPMAIF_RXQ_NUM];
++	unsigned int			pkt_bat_size_cnt[DPMAIF_RXQ_NUM];
++	dma_addr_t			frg_bat_base_addr[DPMAIF_RXQ_NUM];
++	unsigned int			frg_bat_size_cnt[DPMAIF_RXQ_NUM];
++	dma_addr_t			pit_base_addr[DPMAIF_RXQ_NUM];
++	unsigned int			pit_size_cnt[DPMAIF_RXQ_NUM];
 +};
++
++enum dpmaif_hw_intr_type {
++	DPF_INTR_INVALID_MIN,
++	DPF_INTR_UL_DONE,
++	DPF_INTR_UL_DRB_EMPTY,
++	DPF_INTR_UL_MD_NOTREADY,
++	DPF_INTR_UL_MD_PWR_NOTREADY,
++	DPF_INTR_UL_LEN_ERR,
++	DPF_INTR_DL_DONE,
++	DPF_INTR_DL_SKB_LEN_ERR,
++	DPF_INTR_DL_BATCNT_LEN_ERR,
++	DPF_INTR_DL_PITCNT_LEN_ERR,
++	DPF_INTR_DL_PKT_EMPTY_SET,
++	DPF_INTR_DL_FRG_EMPTY_SET,
++	DPF_INTR_DL_MTU_ERR,
++	DPF_INTR_DL_FRGCNT_LEN_ERR,
++	DPF_INTR_DL_Q0_PITCNT_LEN_ERR,
++	DPF_INTR_DL_Q1_PITCNT_LEN_ERR,
++	DPF_INTR_DL_HPC_ENT_TYPE_ERR,
++	DPF_INTR_DL_Q0_DONE,
++	DPF_INTR_DL_Q1_DONE,
++	DPF_INTR_INVALID_MAX
++};
++
++#define DPF_RX_QNO0			0
++#define DPF_RX_QNO1			1
++#define DPF_RX_QNO_DFT			DPF_RX_QNO0
++
++struct dpmaif_hw_intr_st_para {
++	unsigned int intr_cnt;
++	enum dpmaif_hw_intr_type intr_types[DPF_INTR_INVALID_MAX - 1];
++	unsigned int intr_queues[DPF_INTR_INVALID_MAX - 1];
++};
++
++#define DPMAIF_HW_BAT_REMAIN		64
++#define DPMAIF_HW_BAT_PKTBUF		(128 * 28)
++#define DPMAIF_HW_FRG_PKTBUF		128
++#define DPMAIF_HW_BAT_RSVLEN		64
++#define DPMAIF_HW_PKT_BIDCNT		1
++#define DPMAIF_HW_PKT_ALIGN		64
++#define DPMAIF_HW_MTU_SIZE		(3 * 1024 + 8)
++#define DPMAIF_HW_CHK_BAT_NUM		62
++#define DPMAIF_HW_CHK_FRG_NUM		3
++#define DPMAIF_HW_CHK_PIT_NUM		(2 * DPMAIF_HW_CHK_BAT_NUM)
++
++#define DP_UL_INT_DONE_OFFSET		0
++#define DP_UL_INT_QDONE_MSK		GENMASK(4, 0)
++#define DP_UL_INT_EMPTY_MSK		GENMASK(9, 5)
++#define DP_UL_INT_MD_NOTREADY_MSK	GENMASK(14, 10)
++#define DP_UL_INT_MD_PWR_NOTREADY_MSK	GENMASK(19, 15)
++#define DP_UL_INT_ERR_MSK		GENMASK(24, 20)
++
++#define DP_DL_INT_QDONE_MSK		BIT(0)
++#define DP_DL_INT_SKB_LEN_ERR		BIT(1)
++#define DP_DL_INT_BATCNT_LEN_ERR	BIT(2)
++#define DP_DL_INT_PITCNT_LEN_ERR	BIT(3)
++#define DP_DL_INT_PKT_EMPTY_MSK		BIT(4)
++#define DP_DL_INT_FRG_EMPTY_MSK		BIT(5)
++#define DP_DL_INT_MTU_ERR_MSK		BIT(6)
++#define DP_DL_INT_FRG_LENERR_MSK	BIT(7)
++#define DP_DL_INT_Q0_PITCNT_LEN_ERR	BIT(8)
++#define DP_DL_INT_Q1_PITCNT_LEN_ERR	BIT(9)
++#define DP_DL_INT_HPC_ENT_TYPE_ERR	BIT(10)
++#define DP_DL_INT_Q0_DONE		BIT(13)
++#define DP_DL_INT_Q1_DONE		BIT(14)
++
++#define DP_DL_Q0_STATUS_MASK		(DP_DL_INT_Q0_PITCNT_LEN_ERR | DP_DL_INT_Q0_DONE)
++#define DP_DL_Q1_STATUS_MASK		(DP_DL_INT_Q1_PITCNT_LEN_ERR | DP_DL_INT_Q1_DONE)
++
++int t7xx_dpmaif_hw_init(struct dpmaif_ctrl *dpmaif_ctrl, struct dpmaif_hw_params *init_param);
++int t7xx_dpmaif_hw_stop_tx_queue(struct dpmaif_ctrl *dpmaif_ctrl);
++int t7xx_dpmaif_hw_stop_rx_queue(struct dpmaif_ctrl *dpmaif_ctrl);
++void t7xx_dpmaif_start_hw(struct dpmaif_ctrl *dpmaif_ctrl);
++int t7xx_dpmaif_hw_get_intr_cnt(struct dpmaif_ctrl *dpmaif_ctrl,
++				struct dpmaif_hw_intr_st_para *para, int qno);
++void t7xx_dpmaif_unmask_ulq_intr(struct dpmaif_ctrl *dpmaif_ctrl, unsigned int q_num);
++int t7xx_dpmaif_ul_update_hw_drb_cnt(struct dpmaif_ctrl *dpmaif_ctrl, unsigned char q_num,
++				     unsigned int drb_entry_cnt);
++int t7xx_dpmaif_dl_snd_hw_bat_cnt(struct dpmaif_ctrl *dpmaif_ctrl, unsigned int bat_entry_cnt);
++int t7xx_dpmaif_dl_snd_hw_frg_cnt(struct dpmaif_ctrl *dpmaif_ctrl, unsigned int frg_entry_cnt);
++int t7xx_dpmaif_dlq_add_pit_remain_cnt(struct dpmaif_ctrl *dpmaif_ctrl, unsigned int dlq_pit_idx,
++				       unsigned int pit_remain_cnt);
++void t7xx_dpmaif_dlq_unmask_pitcnt_len_err_intr(struct dpmaif_hw_info *hw_info,
++						unsigned char qno);
++void t7xx_dpmaif_dlq_unmask_rx_done(struct dpmaif_hw_info *hw_info, unsigned char qno);
++bool t7xx_dpmaif_ul_clr_done(struct dpmaif_hw_info *hw_info, unsigned char qno);
++unsigned int t7xx_dpmaif_ul_get_ridx(struct dpmaif_hw_info *hw_info, unsigned char q_num);
++void t7xx_dpmaif_ul_clr_all_intr(struct dpmaif_hw_info *hw_info);
++void t7xx_dpmaif_dl_clr_all_intr(struct dpmaif_hw_info *hw_info);
++void t7xx_dpmaif_clr_ip_busy_sts(struct dpmaif_hw_info *hw_info);
++void t7xx_dpmaif_dl_unmask_batcnt_len_err_intr(struct dpmaif_hw_info *hw_info);
++void t7xx_dpmaif_dl_unmask_pitcnt_len_err_intr(struct dpmaif_hw_info *hw_info);
++unsigned int t7xx_dpmaif_dl_get_bat_ridx(struct dpmaif_hw_info *hw_info, unsigned char q_num);
++unsigned int t7xx_dpmaif_dl_get_bat_wridx(struct dpmaif_hw_info *hw_info, unsigned char q_num);
++unsigned int t7xx_dpmaif_dl_get_frg_ridx(struct dpmaif_hw_info *hw_info, unsigned char q_num);
++unsigned int t7xx_dpmaif_dl_dlq_pit_get_wridx(struct dpmaif_hw_info *hw_info,
++					      unsigned int dlq_pit_idx);
++
++#endif /* __T7XX_DPMAIF_H__ */
 -- 
 2.17.1
 
