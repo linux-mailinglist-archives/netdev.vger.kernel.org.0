@@ -2,119 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D49946B668
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 09:49:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E0EC246B69A
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 10:05:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233319AbhLGIwt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 03:52:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49030 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233315AbhLGIwr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 03:52:47 -0500
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C14CFC061746;
-        Tue,  7 Dec 2021 00:49:17 -0800 (PST)
-Received: by mail-wm1-x330.google.com with SMTP id g191-20020a1c9dc8000000b0032fbf912885so1650445wme.4;
-        Tue, 07 Dec 2021 00:49:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=WR3XNH9hoK8ZtVWQA595RwwDV0SffmRjU6r2kR8gbWM=;
-        b=kQebnwCH7l24ETjQEWS6ETLaiVltMx/2xrD+Hd5TCVjrdzPZLbQacQMzFxTU6ojtsO
-         lFvYp96ic7EK6fe7pbLupFdLT1krMVhF2W8GBuFUz+fsuMlsoPQfpWsTDM4VGEC5A5yl
-         DMBRu2d+vMFjz3wDBXT3BrF4bn7ig25xi/iwM5dwjhfA3YsTdosM/hBaljc+hrl29QH+
-         rT6vN5+q2xp+UC1amlpQr54yIGx5hYRMFHHKGgDNpDGffIG7+3+iIigsYR2fPNCDECiK
-         t3nQUDCsk6iCNACR56Ri/C/BzdFFtA5RtOxsmGrzqw/WgXdBPEOfPt7c23l5Hp1fJ/p0
-         FGgA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=WR3XNH9hoK8ZtVWQA595RwwDV0SffmRjU6r2kR8gbWM=;
-        b=FCVmAMlJkzM71vhgeQWXb7y33MtJzgIDWTAr3NJEONg5f8w4By7wZvYKjZGOv95x3a
-         GEo4fDQHeosQmiTsRYbotYZlQ8C17IOH+mz6ahQfw6o2jBnYUwC/bXHCLIjEQ0E7tVRd
-         VIslRW9QfBEHpGt6w8SSm5mQ9SpNMJudlWa84d4cu9xrRqK8h2zvlI5XBEV1ao28ggSt
-         K+43NolsJuT3KMgcqLkDKciPd6rn5o39RevEYcgVJSHHKi6uqr28GPySpcqLcOt9b+4W
-         tgfx/4x5vUQKYvSrwrGclXRS+E9QroZTpjAvrMxwYhS7Ikb4AMjfIN+WQ8Dk/MlOki2h
-         xhLQ==
-X-Gm-Message-State: AOAM533wq+Epq6ou4CrEDNas8P4vEoVwMF3lLL/Ap5RaExODtpeZwrL1
-        fxOSBO03PfJUin9AgIy7Hau/HjVjAnT8hRKZJE+xWCM9tSw=
-X-Google-Smtp-Source: ABdhPJwve9J1pQZGydGBAGL8WOj+b4TYduyJ0O1EmFrjdQKnY9LXuWq+0YuwBGI9qH/lmSFUDjqp/sFsPGPZ49vn0ZE=
-X-Received: by 2002:a1c:7f43:: with SMTP id a64mr5329973wmd.133.1638866956371;
- Tue, 07 Dec 2021 00:49:16 -0800 (PST)
+        id S233451AbhLGJI5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 04:08:57 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:7254 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S233444AbhLGJIx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 04:08:53 -0500
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1B77GgwY021919;
+        Tue, 7 Dec 2021 09:05:14 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=w95JY3a0CWtzfwtZh6Iq4UdGzJ9F26M9G2wG6rW1RXw=;
+ b=LH0PiMZl0hIeG+oshQ1UyAKdeVtomZhHJzt3yt/mjLV2aT0FSX+oYhV7vsGqwWNp63cs
+ ebu4H0yEdGND09G4LToe9dPDATykvCSz9HSGYRYHuJ13XnmMrnbn4P+L5QIs5vNYMJ1V
+ 7BPVzS9DEJ3OuF+Dndp3Ozf2ciEcFBWu3lXzANJmivb5R0GMz+NsiIA1O2GuJbD+pzO/
+ W4PzjU2azROAFPKObiXwIXoKE3lpjCRju2EGrNzrrcpYNLiszAqdf02Vbvz3fHPlUsBr
+ LxFc3ZJNl9eYnWPgjvaqh+6R80BUurSFh3RnYEVOAEVZoFBMMZ5R7Y/0B9KrWgqj4bHZ FA== 
+Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3ct334t3mf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 07 Dec 2021 09:05:13 +0000
+Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
+        by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 1B793k61007461;
+        Tue, 7 Dec 2021 09:05:12 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma05fra.de.ibm.com with ESMTP id 3cqyy9beer-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 07 Dec 2021 09:05:12 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 1B7958Vx12779802
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 7 Dec 2021 09:05:08 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id CE5124204F;
+        Tue,  7 Dec 2021 09:05:08 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id BCD9642049;
+        Tue,  7 Dec 2021 09:05:08 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
+        Tue,  7 Dec 2021 09:05:08 +0000 (GMT)
+Received: by tuxmaker.boeblingen.de.ibm.com (Postfix, from userid 55271)
+        id 6F651E0792; Tue,  7 Dec 2021 10:05:08 +0100 (CET)
+From:   Alexandra Winter <wintera@linux.ibm.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Julian Wiedmann <jwi@linux.ibm.com>,
+        Alexandra Winter <wintera@linux.ibm.com>
+Subject: [PATCH net-next 0/5] s390/net: updates 2021-12-06
+Date:   Tue,  7 Dec 2021 10:04:47 +0100
+Message-Id: <20211207090452.1155688-1-wintera@linux.ibm.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-References: <000000000000a3571605d27817b5@google.com>
-In-Reply-To: <000000000000a3571605d27817b5@google.com>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Tue, 7 Dec 2021 09:49:04 +0100
-Message-ID: <CAJ+HfNhyfsT5cS_U9EC213ducHs9k9zNxX9+abqC0kTrPbQ0gg@mail.gmail.com>
-Subject: Re: [syzbot] WARNING: kmalloc bug in xdp_umem_create (2)
-To:     syzbot <syzbot+11421fbbff99b989670e@syzkaller.appspotmail.com>
-Cc:     Andrii Nakryiko <andrii@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        Netdev <netdev@vger.kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        syzkaller-bugs@googlegroups.com, Yonghong Song <yhs@fb.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: ZCMfmYfnS8mq6sEXDlmFqzteq3aA1C4g
+X-Proofpoint-ORIG-GUID: ZCMfmYfnS8mq6sEXDlmFqzteq3aA1C4g
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2021-12-07_03,2021-12-06_02,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ adultscore=0 mlxscore=0 malwarescore=0 lowpriorityscore=0 bulkscore=0
+ suspectscore=0 phishscore=0 mlxlogscore=999 impostorscore=0 clxscore=1011
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2110150000 definitions=main-2112070054
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 6 Dec 2021 at 11:55, syzbot
-<syzbot+11421fbbff99b989670e@syzkaller.appspotmail.com> wrote:
->
-> Hello,
->
-> syzbot found the following issue on:
->
-> HEAD commit:    a51e3ac43ddb Merge tag 'net-5.16-rc4' of git://git.kernel=
-...
-> git tree:       net
-> console output: https://syzkaller.appspot.com/x/log.txt?x=3D17f04ebeb0000=
-0
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=3D5b0eee8ab3ea1=
-839
-> dashboard link: https://syzkaller.appspot.com/bug?extid=3D11421fbbff99b98=
-9670e
-> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binuti=
-ls for Debian) 2.35.2
->
-> Unfortunately, I don't have any reproducer for this issue yet.
->
-> IMPORTANT: if you fix the issue, please add the following tag to the comm=
-it:
-> Reported-by: syzbot+11421fbbff99b989670e@syzkaller.appspotmail.com
->
+Please apply the following patches to netdev's net-next tree.
 
-This warning stems from mm/utils.c:
-    /* Don't even allow crazy sizes */
-    if (WARN_ON_ONCE(size > INT_MAX))
-        return NULL;
+This brings some maintenance improvements and removes some
+unnecessary code checks.
 
-The structure that is being allocated is the page-pinning accounting.
-AF_XDP has an internal limit of U32_MAX pages, which is *a lot*, but
-still fewer than what memcg allows (PAGE_COUNTER_MAX is a
-LONG_MAX/PAGE_SIZE on 64b systems).
+Julian Wiedmann (5):
+  s390/qeth: simplify qeth_receive_skb()
+  s390/qeth: split up L2 netdev_ops
+  s390/qeth: don't offer .ndo_bridge_* ops for OSA devices
+  s390/qeth: fine-tune .ndo_select_queue()
+  s390/qeth: remove check for packing mode in
+    qeth_check_outbound_queue()
 
-The (imo hacky) workaround to silence the warning is to decrease the
-U32_MAX limit to something that is less than "sizeof householding
-struct".
+ drivers/s390/net/qeth_core.h      |  4 +--
+ drivers/s390/net/qeth_core_main.c | 54 +++++++++++++++----------------
+ drivers/s390/net/qeth_l2_main.c   | 52 ++++++++++++++++++-----------
+ drivers/s390/net/qeth_l3_main.c   | 13 +-------
+ 4 files changed, 62 insertions(+), 61 deletions(-)
 
-Note that this is a warning, and not an oops/bug.
+-- 
+2.32.0
 
-Thoughts?
-
-
-Bj=C3=B6rn
