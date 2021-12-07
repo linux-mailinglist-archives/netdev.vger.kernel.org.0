@@ -2,225 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6644546B2F5
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 07:34:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CB4F346B2FA
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 07:35:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236887AbhLGGhs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 01:37:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45028 "EHLO
+        id S236918AbhLGGjK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 01:39:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236878AbhLGGhr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 01:37:47 -0500
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FD11C061359
-        for <netdev@vger.kernel.org>; Mon,  6 Dec 2021 22:34:17 -0800 (PST)
-Received: by mail-pl1-x629.google.com with SMTP id b11so8703575pld.12
-        for <netdev@vger.kernel.org>; Mon, 06 Dec 2021 22:34:17 -0800 (PST)
+        with ESMTP id S236881AbhLGGjK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 01:39:10 -0500
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85C5AC0611F7
+        for <netdev@vger.kernel.org>; Mon,  6 Dec 2021 22:35:40 -0800 (PST)
+Received: by mail-pg1-x52f.google.com with SMTP id m24so1271062pgn.7
+        for <netdev@vger.kernel.org>; Mon, 06 Dec 2021 22:35:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=Emt2JkswUzgDqf8sxIuCj+2Zu8uEYoGq5UFr0+ay5HA=;
-        b=WbU7Bo1bBi+0M30NcQocYYFYvWJbyD2SKlgPg8opHPZE5xdf8ckwrc923/DyVSkxxz
-         wiHVA7Rl9qycdT4RA/ky6RYmzL57DkvsCI5LZjz5hs/uVFs2gDhpQo6KrhmTjozicHLe
-         iVaL/a87TfTZhcO+uoawWSqHwz0nXd84ny6wQ=
+        bh=DOVDJjmjj4hLTjat7OUu9/MMuAZJaeKFjI5VvP80Sr0=;
+        b=Kbe1be42VDtOUWuyAxH9naNFdn22bhb0PWWRnKlhU4LRtbk5C3qQ1yWv5O8Tf1xaYm
+         oHi75nahMVk+pBVru/TX8Evu++VydsdeYq4KncKE32NwgMXW7KZEu/m12afu5PmFMK5V
+         z++MP4jZY3iPRd8TfjF6XCTaajLbIfaaPW3Ns=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=Emt2JkswUzgDqf8sxIuCj+2Zu8uEYoGq5UFr0+ay5HA=;
-        b=N9L8wRSvtqyO6OZWg/DEKyUY52NrdUaC/Fwqfviej4RbUMFT5cUdCyf/NOBCA/GNxw
-         Zf+mm/QENwMLjsVvJ6q4Qzpe4MZofui1F7ekwSL27soK4cxPlVkuv9zyt4JRWwoIlN+d
-         rsa57QGdOkWRl7yi9GwvYsiKonY6wjJPxpQJeV4Sgsv06FOoOMhssx/sDkFT1mr8Qx6D
-         xZ6ru922C7QxWpdAIVc8qPYXoc7JfRsdHKfH5hVyLqwIdxXXWNV6UUuiB7CmQqGauPAE
-         arbO/f6ou9KwwBVAUwOJquBPHEjSZHFAHBjXgGbGIdeatcrF+Pcru/ULzZqSJO+dQ4r5
-         Hh6w==
-X-Gm-Message-State: AOAM532Rq/Hg5XzF+Fm4masUPDsXNfKhk6qSqNC551L+Ke3Wfv6wnEgN
-        xiuyMvQMWz+XO8Gx0y9BdnjnXQ==
-X-Google-Smtp-Source: ABdhPJyiiwA2wiGhlQqwZM26X0WYC07uDsFWVWP0yM+rE9SWJ4ijWo4/kPswqvZNJ0M70dYFiLBURQ==
-X-Received: by 2002:a17:903:11cd:b0:143:d220:fdd8 with SMTP id q13-20020a17090311cd00b00143d220fdd8mr48711514plh.79.1638858856978;
-        Mon, 06 Dec 2021 22:34:16 -0800 (PST)
+        bh=DOVDJjmjj4hLTjat7OUu9/MMuAZJaeKFjI5VvP80Sr0=;
+        b=gn4QaJjkitvjCP2rEF+y5if8xLnLnoYajRrUQuz30mqy2HcuxkNQDmNIbPm0lsxGxa
+         XF2W07SdLWOli1BR9wVX0+nvf+JwHgD12zeKKLMjTyHpPvQRZcpS60AePj4w5QdhmcIc
+         5UxupwveEst0cIiu/wX9RvTyVXZrQ4cj4ld222f+N33N/2JK6Y6rzkUv9V+wYX1zIka2
+         LRltG6YASrpuP27z+4+PBMZ4UJbPqFZaOiwa9diJHk+c6DRy7YpWxgOk0Ee/dD6ct0Ie
+         OTj1NACi48xElYfyR3jioUf4FZfhaY95ZE2VEuxYd6gdm6Hr/rEHFACNU6uYPicUlzG9
+         48FQ==
+X-Gm-Message-State: AOAM532vXa3pFWIhC/DpAKxYdy08wtM6N8n0O8kusZpSY7w7rS2/15my
+        c+jWOlXx+LbdfAjmkR3Ywa5zUA==
+X-Google-Smtp-Source: ABdhPJw4OdnTlYTah6sMJYxRBKcOVLvja72f+MUSEBWLwv5PThpZtJKcMzEeXc4VyCMZMsdCKAQGDQ==
+X-Received: by 2002:a05:6a00:cc4:b0:4a0:e97:fe97 with SMTP id b4-20020a056a000cc400b004a00e97fe97mr41656686pfv.74.1638858940040;
+        Mon, 06 Dec 2021 22:35:40 -0800 (PST)
 Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id e7sm9120984pfv.156.2021.12.06.22.34.16
+        by smtp.gmail.com with ESMTPSA id b19sm14938169pfv.63.2021.12.06.22.35.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Dec 2021 22:34:16 -0800 (PST)
+        Mon, 06 Dec 2021 22:35:39 -0800 (PST)
 From:   Kees Cook <keescook@chromium.org>
-To:     Andreas Noever <andreas.noever@gmail.com>
+To:     Kalle Valo <kvalo@codeaurora.org>
 Cc:     Kees Cook <keescook@chromium.org>,
-        Michael Jamet <michael.jamet@intel.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Yehezkel Bernat <YehezkelShB@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-hardening@vger.kernel.org
-Subject: [PATCH] thunderbolt: xdomain: Avoid potential stack OOB read
-Date:   Mon,  6 Dec 2021 22:34:13 -0800
-Message-Id: <20211207063413.2698788-1-keescook@chromium.org>
+Subject: [PATCH] ath6kl: Use struct_group() to avoid size-mismatched casting
+Date:   Mon,  6 Dec 2021 22:35:38 -0800
+Message-Id: <20211207063538.2767954-1-keescook@chromium.org>
 X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=4387; h=from:subject; bh=BIm58zF4mV3fKF2Ss4EiT2c/TJ3cCjC0s1vkTlp0s78=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBhrwBl6bk7nUxAvxrQ05Ute7jLqPxYkReEtXtbE01y yQr7vwuJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYa8AZQAKCRCJcvTf3G3AJt85EA CZ6aWdb8Vi5rtu0wU4tbc5S5o1pxM40CH1bQQPMrwCGjpjH0T5QJRr2+YdSlOKFsbPWtbPA9ZCEiH0 rL0iuv6zLHJP+5C0HBDpd7PCM44cgKJ5/lzldXijI1gPJLfsJT0LLhFgnG7sdQG7XmyW+fxagC2ang Jd4Gu379X/vg5xDc6Mw3cbSKOYF7yA16LFAujWo2oBwGyYZV3g2iH1U2cW7Y9pfom+iVNyDpTG9fRr O1/mY2kPNh2qPrTtDkP5boz1L8AvwRpIs00yDdj2iKRGYb/etDreuuJetitWWsMGaPyaOdenaet4SC qZWxzWMe7nvxk/OUdkRwFpPUCCnxpO+RtE+EsI9K4fMHASEBnAo0cTbTfW2UxjhUkpKCBTgA2oYNBq vDsCY9x2SHZvtIjsUkZ05CEWysReRqtx2m/uI1xlkALWvtQ5nIra2aQuG2Lzgd01rFyBt1T9aQ+kud QHaZqP9torrBTIoOKsAH58k6ogl9HYd30p7Cu1B37ez6V+CXg32yEQV8Rhe+jATuXI+tEwnSQTvuLy jCZqnisF/79yqyTCLU8eWPbDaPsCaK2YlvmZmXynyb1VBu0x11KnHCwFjsaEoKIh7IadY6ibTQc06C TTniJcFECZx+greYyKuAgR1QVjHEozYUPdt9geTnc2cy8VJG+JvSTeEUt1Lg==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3525; h=from:subject; bh=gMIiB4KaTnR35ffD7gt6zl0cwWYPiUE9+pb15EV8f5A=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBhrwC5FoqRGEH5aDrVc1O409fT3C87dkmvAVyNkfWg ZVhquVyJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYa8AuQAKCRCJcvTf3G3AJnR+EA CkJOBiiicx3wiHCrpJQgpwZg2CYcsFxGkaBGzqJj9pwuDubqibmw8T03RfGOjv8cthmZC2VnZP/s+E +ocDnRJgesw6aS9nRoiASGvg+/LjOPt6HUjSYywpy9oyWtBU6/pBAIOxa8Q3PKb6DBgL0+xobEL8k1 m5kJ1MEBDp1dZLVI/cvi8HKamvKUErNmHpaSCmi3mFlz+JNING9jMIWBXcyc26N5DC+mGxXheinDQi 5YSi/t1iWcVLP6IEsVgD3bH2ycFQbaNk5ZNKpxWGr6sitiMKZHR2D63a64TaOPCt03pJx6VGDrbilj 52XKn9NvCJ/+k8431PPZUOJHVZPOGnPr9gV0arRLbqjrmbBHBYIRjUd6p9ewMz/TeKhjKt0HFQntSE IZsOsix+AgMKLct3z/HpB1X4svJt6Lpn0y8auu1KCCkuNrCA4Ou99KgK/0KJPqTEMHuVlRqocjvup7 J/0FwBIsAvUhAzUmhdj59DqS5XlwvgNfpEQP+PWWyM44v/Bv912v0SiwJio6wmX3OZ716n7keVdIpX vo4lIosDNj7bfx23VkByP8CxQDUxScCxZkfzOxrnPtW41VVLn/RYBJQorUGS/f0nW0+vYGraGCsE56 1Kwv5JnFhQDBZ6QkJmUCzwtQE4f5so0PBFIU9oRZ8c2grEJZOC5eGgbVRzTQ==
 X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-tb_xdp_properties_changed_request() was calling tb_xdp_handle_error() with
-a struct tb_xdp_properties_changed_response on the stack, which does not
-have the "error" field present when cast to struct tb_xdp_error_response.
-This was detected when building with -Warray-bounds:
+In builds with -Warray-bounds, casts from smaller objects to larger
+objects will produce warnings. These can be overly conservative, but since
+-Warray-bounds has been finding legitimate bugs, it is desirable to turn
+it on globally. Instead of casting a u32 to a larger object, redefine
+the u32 portion of the header to a separate struct that can be used for
+both u32 operations and the distinct header fields. Silences this warning:
 
-drivers/thunderbolt/xdomain.c: In function 'tb_xdomain_properties_changed':
-drivers/thunderbolt/xdomain.c:226:22: error: array subscript 'const struct tb_xdp_error_response[0]' is partly outside array bounds of 'struct tb_xdp_properties_changed_response[1]' [-Werror=array-bounds]
-  226 |         switch (error->error) {
-      |                 ~~~~~^~~~~~~
-drivers/thunderbolt/xdomain.c:448:51: note: while referencing 'res'
-  448 |         struct tb_xdp_properties_changed_response res;
-      |                                                   ^~~
+drivers/net/wireless/ath/ath6kl/htc_mbox.c: In function 'htc_wait_for_ctrl_msg':
+drivers/net/wireless/ath/ath6kl/htc_mbox.c:2275:20: error: array subscript 'struct htc_frame_hdr[0]' is partly outside array bounds of 'u32[1]' {aka 'unsigned int[1]'} [-Werror=array-bounds]
+ 2275 |         if (htc_hdr->eid != ENDPOINT_0)
+      |                    ^~
+drivers/net/wireless/ath/ath6kl/htc_mbox.c:2264:13: note: while referencing 'look_ahead'
+ 2264 |         u32 look_ahead;
+      |             ^~~~~~~~~~
 
-Add union containing struct tb_xdp_error_response to structures passed
-to tb_xdp_handle_error(), so that the "error" field will be present.
+This change results in no executable instruction differences.
 
 Signed-off-by: Kees Cook <keescook@chromium.org>
 ---
- drivers/thunderbolt/tb_msgs.h | 47 ++++++++++++++++++++++-------------
- drivers/thunderbolt/xdomain.c | 16 +++++-------
- 2 files changed, 36 insertions(+), 27 deletions(-)
+ drivers/net/wireless/ath/ath6kl/htc.h      | 19 +++++++++++++------
+ drivers/net/wireless/ath/ath6kl/htc_mbox.c | 15 ++++++---------
+ 2 files changed, 19 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/thunderbolt/tb_msgs.h b/drivers/thunderbolt/tb_msgs.h
-index bcabfcb2fd03..fe1afa44c56d 100644
---- a/drivers/thunderbolt/tb_msgs.h
-+++ b/drivers/thunderbolt/tb_msgs.h
-@@ -535,15 +535,25 @@ struct tb_xdp_header {
- 	u32 type;
- };
- 
-+struct tb_xdp_error_response {
-+	struct tb_xdp_header hdr;
-+	u32 error;
-+};
+diff --git a/drivers/net/wireless/ath/ath6kl/htc.h b/drivers/net/wireless/ath/ath6kl/htc.h
+index 112d8a9b8d43..d3534a29c4f0 100644
+--- a/drivers/net/wireless/ath/ath6kl/htc.h
++++ b/drivers/net/wireless/ath/ath6kl/htc.h
+@@ -153,12 +153,19 @@
+  * implementations.
+  */
+ struct htc_frame_hdr {
+-	u8 eid;
+-	u8 flags;
+-
+-	/* length of data (including trailer) that follows the header */
+-	__le16 payld_len;
+-
++	struct_group_tagged(htc_frame_look_ahead, header,
++		union {
++			struct {
++				u8 eid;
++				u8 flags;
 +
- struct tb_xdp_uuid {
- 	struct tb_xdp_header hdr;
- };
- 
- struct tb_xdp_uuid_response {
--	struct tb_xdp_header hdr;
--	uuid_t src_uuid;
--	u32 src_route_hi;
--	u32 src_route_lo;
-+	union {
-+		struct tb_xdp_error_response err;
-+		struct {
-+			struct tb_xdp_header hdr;
-+			uuid_t src_uuid;
-+			u32 src_route_hi;
-+			u32 src_route_lo;
++				/* length of data (including trailer) that follows the header */
++				__le16 payld_len;
++
++			};
++			u32 word;
 +		};
-+	};
- };
++	);
+ 	/* end of 4-byte lookahead */
  
- struct tb_xdp_properties {
-@@ -555,13 +565,18 @@ struct tb_xdp_properties {
- };
- 
- struct tb_xdp_properties_response {
--	struct tb_xdp_header hdr;
--	uuid_t src_uuid;
--	uuid_t dst_uuid;
--	u16 offset;
--	u16 data_length;
--	u32 generation;
--	u32 data[0];
-+	union {
-+		struct tb_xdp_error_response err;
-+		struct {
-+			struct tb_xdp_header hdr;
-+			uuid_t src_uuid;
-+			uuid_t dst_uuid;
-+			u16 offset;
-+			u16 data_length;
-+			u32 generation;
-+			u32 data[];
-+		};
-+	};
- };
- 
- /*
-@@ -580,7 +595,10 @@ struct tb_xdp_properties_changed {
- };
- 
- struct tb_xdp_properties_changed_response {
--	struct tb_xdp_header hdr;
-+	union {
-+		struct tb_xdp_error_response err;
-+		struct tb_xdp_header hdr;
-+	};
- };
- 
- enum tb_xdp_error {
-@@ -591,9 +609,4 @@ enum tb_xdp_error {
- 	ERROR_NOT_READY,
- };
- 
--struct tb_xdp_error_response {
--	struct tb_xdp_header hdr;
--	u32 error;
--};
--
- #endif
-diff --git a/drivers/thunderbolt/xdomain.c b/drivers/thunderbolt/xdomain.c
-index eff32499610f..01d6b724ca51 100644
---- a/drivers/thunderbolt/xdomain.c
-+++ b/drivers/thunderbolt/xdomain.c
-@@ -214,16 +214,12 @@ static inline void tb_xdp_fill_header(struct tb_xdp_header *hdr, u64 route,
- 	memcpy(&hdr->uuid, &tb_xdp_uuid, sizeof(tb_xdp_uuid));
- }
- 
--static int tb_xdp_handle_error(const struct tb_xdp_header *hdr)
-+static int tb_xdp_handle_error(const struct tb_xdp_error_response *res)
+ 	u8 ctrl[2];
+diff --git a/drivers/net/wireless/ath/ath6kl/htc_mbox.c b/drivers/net/wireless/ath/ath6kl/htc_mbox.c
+index 998947ef63b6..e3874421c4c0 100644
+--- a/drivers/net/wireless/ath/ath6kl/htc_mbox.c
++++ b/drivers/net/wireless/ath/ath6kl/htc_mbox.c
+@@ -2260,19 +2260,16 @@ int ath6kl_htc_rxmsg_pending_handler(struct htc_target *target,
+ static struct htc_packet *htc_wait_for_ctrl_msg(struct htc_target *target)
  {
--	const struct tb_xdp_error_response *error;
+ 	struct htc_packet *packet = NULL;
+-	struct htc_frame_hdr *htc_hdr;
+-	u32 look_ahead;
++	struct htc_frame_look_ahead look_ahead;
+ 
+-	if (ath6kl_hif_poll_mboxmsg_rx(target->dev, &look_ahead,
++	if (ath6kl_hif_poll_mboxmsg_rx(target->dev, &look_ahead.word,
+ 				       HTC_TARGET_RESPONSE_TIMEOUT))
+ 		return NULL;
+ 
+ 	ath6kl_dbg(ATH6KL_DBG_HTC,
+-		   "htc rx wait ctrl look_ahead 0x%X\n", look_ahead);
 -
--	if (hdr->type != ERROR_RESPONSE)
-+	if (res->hdr.type != ERROR_RESPONSE)
- 		return 0;
+-	htc_hdr = (struct htc_frame_hdr *)&look_ahead;
++		   "htc rx wait ctrl look_ahead 0x%X\n", look_ahead.word);
  
--	error = (const struct tb_xdp_error_response *)hdr;
--
--	switch (error->error) {
-+	switch (res->error) {
- 	case ERROR_UNKNOWN_PACKET:
- 	case ERROR_UNKNOWN_DOMAIN:
- 		return -EIO;
-@@ -257,7 +253,7 @@ static int tb_xdp_uuid_request(struct tb_ctl *ctl, u64 route, int retry,
- 	if (ret)
- 		return ret;
+-	if (htc_hdr->eid != ENDPOINT_0)
++	if (look_ahead.eid != ENDPOINT_0)
+ 		return NULL;
  
--	ret = tb_xdp_handle_error(&res.hdr);
-+	ret = tb_xdp_handle_error(&res.err);
- 	if (ret)
- 		return ret;
+ 	packet = htc_get_control_buf(target, false);
+@@ -2281,8 +2278,8 @@ static struct htc_packet *htc_wait_for_ctrl_msg(struct htc_target *target)
+ 		return NULL;
  
-@@ -329,7 +325,7 @@ static int tb_xdp_properties_request(struct tb_ctl *ctl, u64 route,
- 		if (ret)
- 			goto err;
+ 	packet->info.rx.rx_flags = 0;
+-	packet->info.rx.exp_hdr = look_ahead;
+-	packet->act_len = le16_to_cpu(htc_hdr->payld_len) + HTC_HDR_LENGTH;
++	packet->info.rx.exp_hdr = look_ahead.word;
++	packet->act_len = le16_to_cpu(look_ahead.payld_len) + HTC_HDR_LENGTH;
  
--		ret = tb_xdp_handle_error(&res->hdr);
-+		ret = tb_xdp_handle_error(&res->err);
- 		if (ret)
- 			goto err;
- 
-@@ -462,7 +458,7 @@ static int tb_xdp_properties_changed_request(struct tb_ctl *ctl, u64 route,
- 	if (ret)
- 		return ret;
- 
--	return tb_xdp_handle_error(&res.hdr);
-+	return tb_xdp_handle_error(&res.err);
- }
- 
- static int
+ 	if (packet->act_len > packet->buf_len)
+ 		goto fail_ctrl_rx;
 -- 
 2.30.2
 
