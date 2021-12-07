@@ -2,79 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6498746B339
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 07:53:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DEB2546B357
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 08:05:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236440AbhLGG4k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 01:56:40 -0500
-Received: from rtits2.realtek.com ([211.75.126.72]:60514 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229693AbhLGG4k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 01:56:40 -0500
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 1B76r7GV1026987, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 1B76r7GV1026987
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 7 Dec 2021 14:53:07 +0800
-Received: from RTEXDAG01.realtek.com.tw (172.21.6.100) by
- RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 7 Dec 2021 14:53:07 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXDAG01.realtek.com.tw (172.21.6.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Mon, 6 Dec 2021 22:53:06 -0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::65a3:1e23:d911:4b01]) by
- RTEXMBS04.realtek.com.tw ([fe80::65a3:1e23:d911:4b01%5]) with mapi id
- 15.01.2308.020; Tue, 7 Dec 2021 14:53:06 +0800
-From:   Hayes Wang <hayeswang@realtek.com>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        nic_swsd <nic_swsd@realtek.com>
-Subject: RE: [RFC PATCH 4/4] r8169: add sysfs for dash
-Thread-Topic: [RFC PATCH 4/4] r8169: add sysfs for dash
-Thread-Index: AQHX5QnG3ZOFVvcQLEy4F0RtCKXQd6wgYQSAgAY/IQA=
-Date:   Tue, 7 Dec 2021 06:53:06 +0000
-Message-ID: <2f5c720b6f3b46648678bee05eb23787@realtek.com>
-References: <20211129101315.16372-381-nic_swsd@realtek.com>
- <20211129101315.16372-385-nic_swsd@realtek.com>
- <b36df085-8f4e-790b-0b9e-1096047680f3@gmail.com>
-In-Reply-To: <b36df085-8f4e-790b-0b9e-1096047680f3@gmail.com>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.177.203]
-x-kse-serverinfo: RTEXDAG01.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIxLzEyLzcg5LiK5Y2IIDA1OjE5OjAw?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S229905AbhLGHIf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 02:08:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52044 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229551AbhLGHIf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 02:08:35 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55284C061746;
+        Mon,  6 Dec 2021 23:05:05 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DB6C2B812A7;
+        Tue,  7 Dec 2021 07:05:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0391EC341C3;
+        Tue,  7 Dec 2021 07:04:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1638860702;
+        bh=yWzt1aeH4MsSwkVPM8nWDF34gvx3pob6VEdOOSFPds8=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=YZeC7ZwcgZB7JAui1TaysBm8KP7oTxOJsIWO7AtwiVlgdXWdD/3LG/U28Es8vyDLn
+         Sk3Vk2DZ0QR9Q7UfQKsXffIYv1/Ksy9MvjH1Pb8HrCf1SvdKDCeiChQcPeQf2Uty4G
+         OfYrebBOT747Clx5eiOscyAQ2ACzjiKwGEg1+tMCf2+eDWk9BKG1MPK2OwgVyF4xja
+         B9OwXkLSfSO4Ib6m+trpA3HqEXv4Ug7ee91cFX/B49hh4jX1cR7oXAmkCNaUb+GjwC
+         xwvAYOdb2YrcnErfFCcdgH//Gna9w3JzxKWStmD4TCOendMEyD6MMIyZcDNIVssdTH
+         KzYCsjPWyyd/w==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     Stanislaw Gruszka <stf_xl@wp.pl>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Ayala Beker <ayala.beker@intel.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/3] iwlwifi: fix LED dependencies
+References: <20211204173848.873293-1-arnd@kernel.org>
+Date:   Tue, 07 Dec 2021 09:04:56 +0200
+In-Reply-To: <20211204173848.873293-1-arnd@kernel.org> (Arnd Bergmann's
+        message of "Sat, 4 Dec 2021 18:38:33 +0100")
+Message-ID: <87ilw0uc87.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGVpbmVyIEthbGx3ZWl0IDxoa2FsbHdlaXQxQGdtYWlsLmNvbT4NCj4gU2VudDogRnJpZGF5LCBE
-ZWNlbWJlciAzLCAyMDIxIDExOjE1IFBNDQpbLi4uXQ0KPiBXaXRoIHJlZ2FyZCB0byBzeXNmcyB1
-c2FnZToNCj4gLSBhdHRyaWJ1dGVzIHNob3VsZCBiZSBkb2N1bWVudGVkIHVuZGVyIC9Eb2N1bWVu
-dGF0aW9uL0FCSS90ZXN0aW5nDQo+IC0gYXR0cmlidXRlcyBzaG91bGQgYmUgZGVmaW5lZCBzdGF0
-aWNhbGx5IChkcml2ZXIuZGV2X2dyb3VwcyBpbnN0ZWFkDQo+ICAgb2Ygc3lzZnNfY3JlYXRlX2dy
-b3VwKQ0KPiAtIGZvciBwcmludGluZyBpbmZvIHRoZXJlJ3Mgc3lzZnNfZW1pdCgpDQo+IC0gaXMg
-cmVhbGx5IFJUTkwgbmVlZGVkPyBPciB3b3VsZCBhIGxpZ2h0ZXIgbXV0ZXggZG8/DQoNCkluIGFk
-ZGl0aW9uIHRvIHByb3RlY3QgdGhlIGNyaXRpY2FsIHNlY3Rpb24sIFJUTkwgaXMgdXNlZCB0byBh
-dm9pZA0KY2FsbGluZyBjbG9zZSgpIGJlZm9yZSBDTUFDIGlzIGZpbmlzaGVkLiBUaGUgdHJhbnNm
-ZXIgb2YgQ01BQw0KbWF5IGNvbnRhaW4gc2V2ZXJhbCBzdGVwcy4gQW5kIGNsb3NlKCkgd291bGQg
-ZGlzYWJsZSBDTUFDLg0KSSBkb24ndCB3aXNoIHRoZSBDTUFDIHN0YXlzIGF0IHN0cmFuZ2Ugc3Rh
-dGUuIEl0IG1heSBpbmZsdWVuY2UNCnRoZSBmaXJtd2FyZSBvciBoYXJkd2FyZS4gQmVzaWRlcywg
-SSBmaW5kIHRoZSBvcmlnaW5hbCBkcml2ZXIgb25seQ0KdXNlIFJUTkwgdG8gcHJvdGVjdCBjcml0
-aWNhbCBzZWN0aW9uLiBJcyB0aGVyZSBhIGJldHRlciB3YXkgZm9yIGl0Pw0KDQpCZXN0IFJlZ2Fy
-ZHMsDQpIYXllcw0KDQo=
+Arnd Bergmann <arnd@kernel.org> writes:
+
+> From: Arnd Bergmann <arnd@arndb.de>
+>
+> The dependencies for LED configuration are highly inconsistent and too
+> complicated at the moment. One of the results is a randconfig failure I
+> get very rarely when LEDS_CLASS is in a loadable module, but the wireless
+> core is built-in:
+>
+> WARNING: unmet direct dependencies detected for MAC80211_LEDS
+>   Depends on [n]: NET [=y] && WIRELESS [=y] && MAC80211 [=y] && (LEDS_CLASS [=m]=y || LEDS_CLASS [=m]=MAC80211 [=y])
+>   Selected by [m]:
+>   - IWLEGACY [=m] && NETDEVICES [=y] && WLAN [=y] && WLAN_VENDOR_INTEL [=y]
+>   - IWLWIFI_LEDS [=y] && NETDEVICES [=y] && WLAN [=y] && WLAN_VENDOR_INTEL [=y] && IWLWIFI [=m] && (LEDS_CLASS [=m]=y || LEDS_CLASS [=m]=IWLWIFI [=m]) && (IWLMVM [=m] || IWLDVM [=m])
+>
+> aarch64-linux-ld: drivers/net/wireless/ath/ath5k/led.o: in function `ath5k_register_led':
+> led.c:(.text+0x60): undefined reference to `led_classdev_register_ext'
+> aarch64-linux-ld: drivers/net/wireless/ath/ath5k/led.o: in function `ath5k_unregister_leds':
+> led.c:(.text+0x200): undefined reference to `led_classdev_unregister'
+>
+> For iwlwifi, the dependency is wrong, since this config prevents the
+> MAC80211_LEDS code from being part of a built-in MAC80211 driver.
+>
+> For iwlegacy, this is worse because the driver tries to force-enable
+> the other subsystems, which is both a layering violation and a bug
+> because it will still fail with MAC80211=y and IWLEGACY=m, leading
+> to LEDS_CLASS being a module as well.
+>
+> The actual link failure in the ath5k driver is a result of MAC80211_LEDS
+> being enabled but not usable. With the Kconfig logic fixed in the
+> Intel drivers, the ath5k driver works as expected again.
+>
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+
+Luca, I would like to take this to wireless-drivers. Ack?
+
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
