@@ -2,340 +2,256 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5385746C7FD
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 00:06:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D653E46C807
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 00:11:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242452AbhLGXJh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 18:09:37 -0500
-Received: from www62.your-server.de ([213.133.104.62]:37262 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233295AbhLGXJh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 18:09:37 -0500
-Received: from sslproxy03.your-server.de ([88.198.220.132])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1mujXA-0005Cv-2n; Wed, 08 Dec 2021 00:06:04 +0100
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1mujX9-000OZA-Re; Wed, 08 Dec 2021 00:06:03 +0100
-Subject: Re: [RFC PATCH net-next 2/2] net: Reset forwarded skb->tstamp before
- delivering to user space
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>
-Cc:     netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, kernel-team@fb.com
-References: <20211207020102.3690724-1-kafai@fb.com>
- <20211207020108.3691229-1-kafai@fb.com>
- <CA+FuTScQigv7xR5COSFXAic11mwaEsFXVvV7EmSf-3OkvdUXcg@mail.gmail.com>
- <83ff2f64-42b8-60ed-965a-810b4ec69f8d@iogearbox.net>
-Message-ID: <039e954b-dba5-9548-44d2-51fc5432173c@iogearbox.net>
-Date:   Wed, 8 Dec 2021 00:06:03 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
-MIME-Version: 1.0
-In-Reply-To: <83ff2f64-42b8-60ed-965a-810b4ec69f8d@iogearbox.net>
-Content-Type: text/plain; charset=utf-8; format=flowed
+        id S238110AbhLGXOj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 18:14:39 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:27908 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S238125AbhLGXOj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 18:14:39 -0500
+Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1B7JECth021497;
+        Tue, 7 Dec 2021 15:11:08 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=IWKic/9bS+gTqaautHZPb7r6EeWvNQUI46zstZZxDeI=;
+ b=BLqv70LfRw17zr2HC4qIzi190E+jaC9httvoIFcfESztiuu1co/P5piOrZ0ekrT1LWyb
+ Zrm53LujtFfko3We7444WVKRBIIxqUtPNnxWEriTxvDvdzMFZy2OmfQbhYhGiyOPUKt/
+ Py091gYMg6aWZ17SA0ribev3RLDkbYvKZgA= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 3ct4p85b6f-3
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 07 Dec 2021 15:11:08 -0800
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.35.173) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Tue, 7 Dec 2021 15:10:38 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=PZxtdM0pTngNhsUUjLSfvTm5FuaaOgcwbgBnaC9cQ1qZLI54dAaSY3FlNqRh7lYXYamrSdp7oS3Z81r6l1oi513VziLP7jGGzbNvJK5+1EcwwrfECHgBsjnLBb/mog7spbXb7C8rXlPtTd260Rw8WdZeiC/pz/zPSonkX6uLpe+8vsKQjLmkQZofZzU2bGxLNCdhnEz7FdDtkmtM0EAGc/wANEmdRZeMWg4zc/4jgKN2E0CLNXpSackmmnvfOQyE+VnrmNy+9Y+pu/1Vi7W0v8ESkKVtJgrZigM3Oe4aH/3p5pR4lZ7juori6XbyyDk30sqqfqZYrU7iZLA7XRNkBw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=IWKic/9bS+gTqaautHZPb7r6EeWvNQUI46zstZZxDeI=;
+ b=cuZ/cPvG0Txfn4F0OfrrPntikI9gD5iBm6tRZL/FijijIyhtrTZCglHEAtslYCh4dbdxpl7gA+Jlr26Nibb0CvumBQNUzD/WRV5tvqbTM97jX0FP5aaVPaZUXjWvS/t5m5sfVJb6vInaL9oM+SY5q+z3EdFKHdoqpSMSe7b8ze53px1bMbGNJeQs4Y6WuXDVTdWVB680k5oxSuGgA1SfEH/3UhDNGM68Xs9pGTor/uyMiyVr99C2mo9U5AN7nQIZggnCOpAaYW7v1zAqUkuoVvzjkYkgsuVRwbutQuRDrLA5VCopqpb+6XxWpOk9PGcpenKde1jjII6N3GVSnw+XaQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Received: from SA1PR15MB5109.namprd15.prod.outlook.com (2603:10b6:806:1dc::10)
+ by SA1PR15MB5283.namprd15.prod.outlook.com (2603:10b6:806:23b::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.21; Tue, 7 Dec
+ 2021 23:10:36 +0000
+Received: from SA1PR15MB5109.namprd15.prod.outlook.com
+ ([fe80::f826:e515:ee1a:a33]) by SA1PR15MB5109.namprd15.prod.outlook.com
+ ([fe80::f826:e515:ee1a:a33%4]) with mapi id 15.20.4755.022; Tue, 7 Dec 2021
+ 23:10:36 +0000
+From:   Song Liu <songliubraving@fb.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+CC:     Song Liu <song@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        "Daniel Borkmann" <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        "Kernel Team" <Kernel-team@fb.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: Re: [PATCH bpf-next] perf/bpf_counter: use bpf_map_create instead of
+ bpf_create_map
+Thread-Topic: [PATCH bpf-next] perf/bpf_counter: use bpf_map_create instead of
+ bpf_create_map
+Thread-Index: AQHX6vYzhWKFIoT0wkePQg16MtlXfawmUPOAgAAf5QCAAAuIAIAAFYSAgAEVKwCAAAJMgA==
+Date:   Tue, 7 Dec 2021 23:10:36 +0000
+Message-ID: <1D69F857-BCD9-40C1-87CA-90C55B42984D@fb.com>
+References: <20211206230811.4131230-1-song@kernel.org>
+ <CAEf4BzbaBcySm3bVumBTrkHMmVDWEVxckdVKvUk=4j9HhSsmBA@mail.gmail.com>
+ <3221CDA7-F2EF-404A-9289-14F9DF6D01DA@fb.com>
+ <CAEf4BzbN17eviD18-_C2UN+P5gMm4vFXVrdLd9UHx0ev+gJsjw@mail.gmail.com>
+ <08EB4596-7788-4570-B0B0-DE3B710BBDD8@fb.com>
+ <CAEf4BzaCioWRGktgk1TvdyaB-zF_6Hyj+67j7DzPzTLGqkigYg@mail.gmail.com>
+In-Reply-To: <CAEf4BzaCioWRGktgk1TvdyaB-zF_6Hyj+67j7DzPzTLGqkigYg@mail.gmail.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.3/26376/Tue Dec  7 10:34:24 2021)
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Apple Mail (2.3693.20.0.1.32)
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 45abb8cc-7dd9-4318-274d-08d9b9d6c73b
+x-ms-traffictypediagnostic: SA1PR15MB5283:EE_
+x-microsoft-antispam-prvs: <SA1PR15MB52832862FE3850EE2B020650B36E9@SA1PR15MB5283.namprd15.prod.outlook.com>
+x-fb-source: Internal
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 7r3SjVJFYqKOZ1FJtZzLKsvQmnDLY2olGjUYENlcUoyRJg13sDQi61hA1iQEE9+em//Q9jCLhuV7aTN3nR6d/9kpQOXXmXcg236pzPpmQtRLFDt+a4i3e4GcASn/1hdrGNeIcCMXgFoEqf6hNgOMewQOZP5xIMO0zb04lbqOt+thwlo2X+VBG404/jO93Xqp6H2knuGSyAbvZJ4Dy8g7PnwqA4d8vrek5/noMABh7bOrYaOHFj0IOK+1jtywV+OlqjMH2u7L78syPsIKovcsLpbDPgMVrgJo9JhbqOQeQqQdsuXlAq0bMTx0SKXKZGjoTmXE0ZqA7IDLpP3n4/Wru9bI31t7F//fvIMb3Z7z1pntuOPfBxaRIjqOjI/emdyBx741RWD8r2Q4ELxTWj/7LF7CBwEwhhdfu0dIJ1IIOS4KONxEVl7p7l9s34BG6WZva9WnhtVcgZkqeUCafCvQJcnghvCBKgXimITK/ZbDvH2VvDFFQxaVyEuv7FU1P4JDz/muqj8UV14BzRJmoMObQggfKDr3XLST+0yjfxHm6QN6uPxGsvirJ99ic5nnphqNm0K693sG3DvQzf5+87HxjiFD4tQM8A98x8mh97RO1uEezoLa5elrSjckOMPKBnbV5lTKGwPNByDir2K/syOYnw5U07atVX0b6DjmncYQqZoPujs5Y9crccdIU1w6+Y8UcHHW0gY6BVbmr2N7T0MZE/ZXXZypUlt+XWntB6Yk5CcRZoV8OHZSwpTCOi+T+CUeLWyBNkBRaH/ya25TANKeZTBOILK30M7evlXrq3r+oX0dIcjhd7fRM+gGQAgjP/lnB5X2wYLBRt7KFgO/d07SVg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR15MB5109.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(64756008)(6486002)(38070700005)(5660300002)(83380400001)(6916009)(316002)(508600001)(66446008)(54906003)(966005)(6506007)(4326008)(122000001)(6512007)(33656002)(66556008)(2906002)(36756003)(186003)(71200400001)(86362001)(8676002)(8936002)(91956017)(66946007)(76116006)(66476007)(2616005)(53546011)(38100700002)(45980500001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?YSs5eU5JY2VDcjFJR25PRzZuVEFaMTVQOER4OWY1andPNFpUa2tWUHVXN3V5?=
+ =?utf-8?B?SWVnS2dHd2FhT1lCUEdKL3l2T3FNQ3VkV2YxYldKTGVSbEVlRWFxNUFUSUFR?=
+ =?utf-8?B?WEdXZlFxOElPaFFCbEdsclhLajlsS2FaZ29EMmhKdkJ0MTBGT2JBS01ZL0di?=
+ =?utf-8?B?YTJXWjQ5RUZRTkRNUjRiTWplSm0xT3R3ckRNUGVjbHY3ZG15M1MwTGZTL0V3?=
+ =?utf-8?B?cWJvRWc3WjV5UFFJMHY1ZjJ2VEdoTHppdGZCK0lhQmdkYU5pNjlWbC9BTnNN?=
+ =?utf-8?B?dGVwWkVLajNROGxlamRSaTBLSHYrMDJMNzBkd1BWVWVsRDQ4bmdnYm00dW9s?=
+ =?utf-8?B?dVBFdmxHWXcyVTVHQVFiVUc3a0ZGQjF4ejJRU1VlRFQzVm5WOGRnVHRWNVNo?=
+ =?utf-8?B?dkZDQjB6RnJHT3pFak1BZGlVNTUvUm9PTVFpNHdJSUE4aUo5Ym0yTis2YURQ?=
+ =?utf-8?B?bHFUSmI2ays3cTRwZEZMS0oxcW51SmJ4TkRJNWN6QTZWRDROWmp3N2lmajVl?=
+ =?utf-8?B?MEllZVNUTHhFekNXMzNqQkdKeXQ2aUx2V3QvT3Y1S0RqSFc0cHExSHFlSit0?=
+ =?utf-8?B?SmV0ZTg1N05VdkxEV0k2Ukk4S2pqMWtzM1o1NUpYcTB0T2tIbUlFWS9UV1BF?=
+ =?utf-8?B?ekF1ZzhMWEk4ODM5c084Ym9pdTNoa2Nyd2ZRMytCRjUwRm1jdDJEWDFLZ0tC?=
+ =?utf-8?B?V2xITzJuZUJTS3NjTk5RVUdQa0ppVDBrUXVMTzduTE91MTRCUVU4VHJnMDY5?=
+ =?utf-8?B?YldqSEl3aXdLOXF6Q2hCWmF0dDJ5dDEvQVY3ZVF4aFhiN2RJbDMwZFhmZW1Z?=
+ =?utf-8?B?eml2eEVvZVBySUFMQnFNODRhWSt4OXBDYjN0eVB2cThLZjR4STJpYnZ0ekpx?=
+ =?utf-8?B?MndtMWY3WjhqcWFEM3R5K01HNWZ3STVscW02Ym0rVkpCUkQ2bkhueEZFVjZF?=
+ =?utf-8?B?S3NxRXdqU1NEUzQwOFE2KzhVaVBGcW5LdGIrYk9aMVh4cDJSZnR0ZXhIbUxV?=
+ =?utf-8?B?amkzcDJmcnNZbzc0U05yWURhQWFGMk85d0oxYWJ5bW1meHNPRk1iMDQ4UStZ?=
+ =?utf-8?B?UzlNcmpZcFROWUUyRXFFRDY4bDFHeEo2WjFsekdkYXhBY1ErQlYrTmlBRTJM?=
+ =?utf-8?B?QldoOEJlUHlrZ1VkSzl1QWxQRnMzSUFPY01PVmRvNE9TKzJYdnVzWWIxdE8v?=
+ =?utf-8?B?aW9mMEJqalhSOVNHK3NId1hkRWs2Sk5aa00vR1ArUzMzUDBGVlJoVnRLMFJI?=
+ =?utf-8?B?Z1VEN2lpVzR1cFpVQ3NKYTNycktBZ3RuTDAvdWdlNmEyM0lNbDlGSXdha2Js?=
+ =?utf-8?B?TzJ4aDFETjhCVmd0RWhRSDNIZTQ2ZGZrQ2YxS1ljYysxdFpRRUd1Vy9hVW1s?=
+ =?utf-8?B?TStrRFBoTUJxSkVWV1NTN0xnakgxWmtudkNQN0docHVFbmJCTTdtbENkV0pU?=
+ =?utf-8?B?OXA1ellQOE1NemczcTR1WC81UTJjd20wYkNqSG5wWmx2QWdnUndMalZoZnVn?=
+ =?utf-8?B?M3M0dFBjWDdpOGtKa3k4Zi9OcjZKWnhNcnB5ZDh4L2NuT1NmQklQSTZ4K3FS?=
+ =?utf-8?B?b2o2QUszUGxTa1h2K0o0am5WYTVSU2lmZm1WWndEMjU5RENhMFdtY0RybDlT?=
+ =?utf-8?B?MzNTTHhsenB4SmR0VklIL2pnR0Rwdy9CQi84VnArRzJpZ1I4Si9rQStiVXA0?=
+ =?utf-8?B?blNvZEZWQ3dsa0NMNzFGSHM0YjZTOFpzTjJMWnlxUytITU54aHFXR2tvRkxV?=
+ =?utf-8?B?RzZhUDJHc0hyODRtODRpcEMzd3l0L3czZXplSHJkT3VQMWZ6TkI3V2tCQkto?=
+ =?utf-8?B?S0c2Q3FTSEpYZ1NwdG9ZUURaamZSM0lieUN2YWxGMElHZGdBSnRTNWhFSE0r?=
+ =?utf-8?B?YXc2NVhxRnpMZVRrQTJHWVQ5bzkrZlpBQkFvZjdBSWlOY3pMNkxCRGhZcWQz?=
+ =?utf-8?B?bVVxRHNYWlJEWkxoeFU1L0l6bHJqZCs4TlNHVndpb1I5YVdLUEM3c29TQ3lO?=
+ =?utf-8?B?QVhKSmFTc2tyQnRpM3V4dzJCS1RkNmZNVllTVGRqa1VZT0RrclljRXhVMmlN?=
+ =?utf-8?B?RUlkVHNaV3FBbXhOV3Y0U2t5VmNHM0pVUkhUenNHM25BNXdETjNYSS9mcGpZ?=
+ =?utf-8?B?S1d0WSt2U1p3ZnZFN1B0VnlJWjBDT2V5cGJwam4zeDQwbDMyajIrR2Z5UExG?=
+ =?utf-8?B?MGt5S3doaWs0dnN0ZjBuZlExajVETUVvZ3F3ajl2dHNhUVNOUUMzVUZBeFZV?=
+ =?utf-8?B?RGNZVkMxYXZGME54SXV2Smt4YjlnPT0=?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <7F9F40E62E1A464D86194A78382CD8E9@namprd15.prod.outlook.com>
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SA1PR15MB5109.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 45abb8cc-7dd9-4318-274d-08d9b9d6c73b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Dec 2021 23:10:36.5173
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: S079kBQ//nD6zwgzT0QpBDMUwr9k5y4FflRXAbaOe9nC/lDTkSTw6HU1rI/JEYWUpH5cS0FWPdoCyddJsp30DA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR15MB5283
+X-OriginatorOrg: fb.com
+X-Proofpoint-ORIG-GUID: uCvauWSwJTmt9ThPWDSo2oNwbOlwE_rM
+X-Proofpoint-GUID: uCvauWSwJTmt9ThPWDSo2oNwbOlwE_rM
+Content-Transfer-Encoding: base64
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+MIME-Version: 1.0
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2021-12-07_09,2021-12-06_02,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 impostorscore=0
+ mlxlogscore=999 priorityscore=1501 phishscore=0 mlxscore=0 adultscore=0
+ malwarescore=0 bulkscore=0 suspectscore=0 lowpriorityscore=0 clxscore=1015
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2110150000 definitions=main-2112070141
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/7/21 10:48 PM, Daniel Borkmann wrote:
-> On 12/7/21 3:27 PM, Willem de Bruijn wrote:
->> On Mon, Dec 6, 2021 at 9:01 PM Martin KaFai Lau <kafai@fb.com> wrote:
->>>
->>> The skb->tstamp may be set by a local sk (as a sender in tcp) which then
->>> forwarded and delivered to another sk (as a receiver).
->>>
->>> An example:
->>>      sender-sk => veth@netns =====> veth@host => receiver-sk
->>>                               ^^^
->>>                          __dev_forward_skb
->>>
->>> The skb->tstamp is marked with a future TX time.  This future
->>> skb->tstamp will confuse the receiver-sk.
->>>
->>> This patch marks the skb if the skb->tstamp is forwarded.
->>> Before using the skb->tstamp as a rx timestamp, it needs
->>> to be re-stamped to avoid getting a future time.  It is
->>> done in the RX timestamp reading helper skb_get_ktime().
->>>
->>> Signed-off-by: Martin KaFai Lau <kafai@fb.com>
->>> ---
->>>   include/linux/skbuff.h | 14 +++++++++-----
->>>   net/core/dev.c         |  4 +++-
->>>   net/core/skbuff.c      |  6 +++++-
->>>   3 files changed, 17 insertions(+), 7 deletions(-)
->>>
->>> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
->>> index b609bdc5398b..bc4ae34c4e22 100644
->>> --- a/include/linux/skbuff.h
->>> +++ b/include/linux/skbuff.h
->>> @@ -867,6 +867,7 @@ struct sk_buff {
->>>          __u8                    decrypted:1;
->>>   #endif
->>>          __u8                    slow_gro:1;
->>> +       __u8                    fwd_tstamp:1;
->>>
->>>   #ifdef CONFIG_NET_SCHED
->>>          __u16                   tc_index;       /* traffic control index */
->>> @@ -3806,9 +3807,12 @@ static inline void skb_copy_to_linear_data_offset(struct sk_buff *skb,
->>>   }
->>>
->>>   void skb_init(void);
->>> +void net_timestamp_set(struct sk_buff *skb);
->>>
->>> -static inline ktime_t skb_get_ktime(const struct sk_buff *skb)
->>> +static inline ktime_t skb_get_ktime(struct sk_buff *skb)
->>>   {
->>> +       if (unlikely(skb->fwd_tstamp))
->>> +               net_timestamp_set(skb);
->>>          return ktime_mono_to_real_cond(skb->tstamp);
->>
->> This changes timestamp behavior for existing applications, probably
->> worth mentioning in the commit message if nothing else. A timestamp
->> taking at the time of the recv syscall is not very useful.
->>
->> If a forwarded timestamp is not a future delivery time (as those are
->> scrubbed), is it not correct to just deliver the original timestamp?
->> It probably was taken at some earlier __netif_receive_skb_core.
->>
->>>   }
->>>
->>> -static inline void net_timestamp_set(struct sk_buff *skb)
->>> +void net_timestamp_set(struct sk_buff *skb)
->>>   {
->>>          skb->tstamp = 0;
->>> +       skb->fwd_tstamp = 0;
->>>          if (static_branch_unlikely(&netstamp_needed_key))
->>>                  __net_timestamp(skb);
->>>   }
->>> +EXPORT_SYMBOL(net_timestamp_set);
->>>
->>>   #define net_timestamp_check(COND, SKB)                         \
->>>          if (static_branch_unlikely(&netstamp_needed_key)) {     \
->>> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
->>> index f091c7807a9e..181ddc989ead 100644
->>> --- a/net/core/skbuff.c
->>> +++ b/net/core/skbuff.c
->>> @@ -5295,8 +5295,12 @@ void skb_scrub_tstamp(struct sk_buff *skb)
->>>   {
->>>          struct sock *sk = skb->sk;
->>>
->>> -       if (sk && sk_fullsock(sk) && sock_flag(sk, SOCK_TXTIME))
->>> +       if (sk && sk_fullsock(sk) && sock_flag(sk, SOCK_TXTIME)) {
->>
->> There is a slight race here with the socket flipping the feature on/off.
->>
->>>                  skb->tstamp = 0;
->>> +               skb->fwd_tstamp = 0;
->>> +       } else if (skb->tstamp) {
->>> +               skb->fwd_tstamp = 1;
->>> +       }
->>
->> SO_TXTIME future delivery times are scrubbed, but TCP future delivery
->> times are not?
->>
->> If adding a bit, might it be simpler to add a bit tstamp_is_edt, and
->> scrub based on that. That is also not open to the above race.
-> 
-> One other thing I wonder, BPF progs at host-facing veth's tc ingress which
-> are not aware of skb->tstamp will then see a tstamp from future given we
-> intentionally bypass the net_timestamp_check() and might get confused (or
-> would confuse higher-layer application logic)? Not quite sure yet if they
-> would be the only affected user.
-
-Untested (& unoptimized wrt netdev cachelines), but worst case maybe something
-like this could work ... not generic, but smaller risk wrt timestamp behavior
-changes for applications when pushing up the stack (?).
-
-Meaning, the attribute would be set for host-facing veths and the phys dev with
-sch_fq. Not generic unfortunately given this would require the coorperation from
-BPF side on tc ingress of the host veths, meaning, given the net_timestamp_check()
-is skipped, the prog would have to call net_timestamp_set() via BPF helper if it
-decides to return with TC_ACT_OK. (So orchestrator would opt-in(/out) to set the
-devs it manages to xnet_flush_tstamp to 0 and to update tstamp via helper.. hm)
-
-  include/linux/netdevice.h |  4 +++-
-  include/linux/skbuff.h    |  6 +++++-
-  net/core/dev.c            |  1 +
-  net/core/filter.c         |  9 ++++++---
-  net/core/net-sysfs.c      | 18 ++++++++++++++++++
-  net/core/skbuff.c         | 15 +++++++++------
-  6 files changed, 42 insertions(+), 11 deletions(-)
-
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 3ec42495a43a..df9141f92bbf 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -2172,6 +2172,7 @@ struct net_device {
-  	struct timer_list	watchdog_timer;
-  	int			watchdog_timeo;
-
-+	u32			xnet_flush_tstamp;
-  	u32                     proto_down_reason;
-
-  	struct list_head	todo_list;
-@@ -4137,7 +4138,8 @@ static __always_inline int ____dev_forward_skb(struct net_device *dev,
-  		return NET_RX_DROP;
-  	}
-
--	skb_scrub_packet(skb, !net_eq(dev_net(dev), dev_net(skb->dev)));
-+	__skb_scrub_packet(skb, !net_eq(dev_net(dev), dev_net(skb->dev)),
-+			   READ_ONCE(dev->xnet_flush_tstamp));
-  	skb->priority = 0;
-  	return 0;
-  }
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 686a666d073d..09b670bcd7fd 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -3688,7 +3688,11 @@ int skb_zerocopy(struct sk_buff *to, struct sk_buff *from,
-  		 int len, int hlen);
-  void skb_split(struct sk_buff *skb, struct sk_buff *skb1, const u32 len);
-  int skb_shift(struct sk_buff *tgt, struct sk_buff *skb, int shiftlen);
--void skb_scrub_packet(struct sk_buff *skb, bool xnet);
-+void __skb_scrub_packet(struct sk_buff *skb, bool xnet, bool tstamp);
-+static __always_inline void skb_scrub_packet(struct sk_buff *skb, bool xnet)
-+{
-+	__skb_scrub_packet(skb, xnet, true);
-+}
-  bool skb_gso_validate_network_len(const struct sk_buff *skb, unsigned int mtu);
-  bool skb_gso_validate_mac_len(const struct sk_buff *skb, unsigned int len);
-  struct sk_buff *skb_segment(struct sk_buff *skb, netdev_features_t features);
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 15ac064b5562..1678032bd5a3 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -10853,6 +10853,7 @@ struct net_device *alloc_netdev_mqs(int sizeof_priv, const char *name,
-  	dev->gso_max_segs = GSO_MAX_SEGS;
-  	dev->upper_level = 1;
-  	dev->lower_level = 1;
-+	dev->xnet_flush_tstamp = 1;
-  #ifdef CONFIG_LOCKDEP
-  	dev->nested_level = 0;
-  	INIT_LIST_HEAD(&dev->unlink_list);
-diff --git a/net/core/filter.c b/net/core/filter.c
-index fe27c91e3758..69366af42141 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -2107,7 +2107,8 @@ static inline int __bpf_tx_skb(struct net_device *dev, struct sk_buff *skb)
-  	}
-
-  	skb->dev = dev;
--	skb->tstamp = 0;
-+	if (READ_ONCE(dev->xnet_flush_tstamp))
-+		skb->tstamp = 0;
-
-  	dev_xmit_recursion_inc();
-  	ret = dev_queue_xmit(skb);
-@@ -2176,7 +2177,8 @@ static int bpf_out_neigh_v6(struct net *net, struct sk_buff *skb,
-  	}
-
-  	skb->dev = dev;
--	skb->tstamp = 0;
-+	if (READ_ONCE(dev->xnet_flush_tstamp))
-+		skb->tstamp = 0;
-
-  	if (unlikely(skb_headroom(skb) < hh_len && dev->header_ops)) {
-  		skb = skb_expand_head(skb, hh_len);
-@@ -2274,7 +2276,8 @@ static int bpf_out_neigh_v4(struct net *net, struct sk_buff *skb,
-  	}
-
-  	skb->dev = dev;
--	skb->tstamp = 0;
-+	if (READ_ONCE(dev->xnet_flush_tstamp))
-+		skb->tstamp = 0;
-
-  	if (unlikely(skb_headroom(skb) < hh_len && dev->header_ops)) {
-  		skb = skb_expand_head(skb, hh_len);
-diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
-index 9c01c642cf9e..d8ad9dbbbf55 100644
---- a/net/core/net-sysfs.c
-+++ b/net/core/net-sysfs.c
-@@ -403,6 +403,23 @@ static ssize_t gro_flush_timeout_store(struct device *dev,
-  }
-  NETDEVICE_SHOW_RW(gro_flush_timeout, fmt_ulong);
-
-+static int change_xnet_flush_tstamp(struct net_device *dev, unsigned long val)
-+{
-+	WRITE_ONCE(dev->xnet_flush_tstamp, val);
-+	return 0;
-+}
-+
-+static ssize_t xnet_flush_tstamp_store(struct device *dev,
-+				      struct device_attribute *attr,
-+				      const char *buf, size_t len)
-+{
-+	if (!capable(CAP_NET_ADMIN))
-+		return -EPERM;
-+
-+	return netdev_store(dev, attr, buf, len, change_xnet_flush_tstamp);
-+}
-+NETDEVICE_SHOW_RW(xnet_flush_tstamp, fmt_dec);
-+
-  static int change_napi_defer_hard_irqs(struct net_device *dev, unsigned long val)
-  {
-  	WRITE_ONCE(dev->napi_defer_hard_irqs, val);
-@@ -651,6 +668,7 @@ static struct attribute *net_class_attrs[] __ro_after_init = {
-  	&dev_attr_flags.attr,
-  	&dev_attr_tx_queue_len.attr,
-  	&dev_attr_gro_flush_timeout.attr,
-+	&dev_attr_xnet_flush_tstamp.attr,
-  	&dev_attr_napi_defer_hard_irqs.attr,
-  	&dev_attr_phys_port_id.attr,
-  	&dev_attr_phys_port_name.attr,
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index ba2f38246f07..b0f6b96c7b2a 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -5440,19 +5440,21 @@ bool skb_try_coalesce(struct sk_buff *to, struct sk_buff *from,
-  EXPORT_SYMBOL(skb_try_coalesce);
-
-  /**
-- * skb_scrub_packet - scrub an skb
-+ * __skb_scrub_packet - scrub an skb
-   *
-   * @skb: buffer to clean
-   * @xnet: packet is crossing netns
-+ * @tstamp: timestamp needs scrubbing
-   *
-- * skb_scrub_packet can be used after encapsulating or decapsulting a packet
-+ * __skb_scrub_packet can be used after encapsulating or decapsulting a packet
-   * into/from a tunnel. Some information have to be cleared during these
-   * operations.
-- * skb_scrub_packet can also be used to clean a skb before injecting it in
-+ *
-+ * __skb_scrub_packet can also be used to clean a skb before injecting it in
-   * another namespace (@xnet == true). We have to clear all information in the
-   * skb that could impact namespace isolation.
-   */
--void skb_scrub_packet(struct sk_buff *skb, bool xnet)
-+void __skb_scrub_packet(struct sk_buff *skb, bool xnet, bool tstamp)
-  {
-  	skb->pkt_type = PACKET_HOST;
-  	skb->skb_iif = 0;
-@@ -5472,9 +5474,10 @@ void skb_scrub_packet(struct sk_buff *skb, bool xnet)
-
-  	ipvs_reset(skb);
-  	skb->mark = 0;
--	skb->tstamp = 0;
-+	if (tstamp)
-+		skb->tstamp = 0;
-  }
--EXPORT_SYMBOL_GPL(skb_scrub_packet);
-+EXPORT_SYMBOL_GPL(__skb_scrub_packet);
-
-  /**
-   * skb_gso_transport_seglen - Return length of individual segments of a gso packet
--- 
-2.21.0
+DQoNCj4gT24gRGVjIDcsIDIwMjEsIGF0IDM6MDIgUE0sIEFuZHJpaSBOYWtyeWlrbyA8YW5kcmlp
+Lm5ha3J5aWtvQGdtYWlsLmNvbT4gd3JvdGU6DQo+IA0KPiBPbiBNb24sIERlYyA2LCAyMDIxIGF0
+IDEwOjMwIFBNIFNvbmcgTGl1IDxzb25nbGl1YnJhdmluZ0BmYi5jb20+IHdyb3RlOg0KPj4gDQo+
+PiANCj4+IA0KPj4+IE9uIERlYyA2LCAyMDIxLCBhdCA5OjEzIFBNLCBBbmRyaWkgTmFrcnlpa28g
+PGFuZHJpaS5uYWtyeWlrb0BnbWFpbC5jb20+IHdyb3RlOg0KPj4+IA0KPj4+IE9uIE1vbiwgRGVj
+IDYsIDIwMjEgYXQgODozMiBQTSBTb25nIExpdSA8c29uZ2xpdWJyYXZpbmdAZmIuY29tPiB3cm90
+ZToNCj4+Pj4gDQo+Pj4+IA0KPj4+PiANCj4+Pj4+IE9uIERlYyA2LCAyMDIxLCBhdCA2OjM3IFBN
+LCBBbmRyaWkgTmFrcnlpa28gPGFuZHJpaS5uYWtyeWlrb0BnbWFpbC5jb20+IHdyb3RlOg0KPj4+
+Pj4gDQo+Pj4+PiBPbiBNb24sIERlYyA2LCAyMDIxIGF0IDM6MDggUE0gU29uZyBMaXUgPHNvbmdA
+a2VybmVsLm9yZz4gd3JvdGU6DQo+Pj4+Pj4gDQo+Pj4+Pj4gYnBmX2NyZWF0ZV9tYXAgaXMgZGVw
+cmVjYXRlZC4gUmVwbGFjZSBpdCB3aXRoIGJwZl9tYXBfY3JlYXRlLg0KPj4+Pj4+IA0KPj4+Pj4+
+IEZpeGVzOiA5OTJjNDIyNTQxOWEgKCJsaWJicGY6IFVuaWZ5IGxvdy1sZXZlbCBtYXAgY3JlYXRp
+b24gQVBJcyB3LyBuZXcgYnBmX21hcF9jcmVhdGUoKSIpDQo+Pj4+PiANCj4+Pj4+IFRoaXMgaXMg
+bm90IGEgYnVnIGZpeCwgaXQncyBhbiBpbXByb3ZlbWVudC4gU28gSSBkb24ndCB0aGluayAiRml4
+ZXM6ICINCj4+Pj4+IGlzIHdhcnJhbnRlZCBoZXJlLCB0YmguDQo+Pj4+IA0KPj4+PiBJIGdvdCBj
+b21waWxhdGlvbiBlcnJvcnMgYmVmb3JlIHRoaXMgY2hhbmdlLCBsaWtlDQo+Pj4+IA0KPj4+PiB1
+dGlsL2JwZl9jb3VudGVyLmM6IEluIGZ1bmN0aW9uIOKAmGJwZXJmX2xvY2tfYXR0cl9tYXDigJk6
+DQo+Pj4+IHV0aWwvYnBmX2NvdW50ZXIuYzozMjM6MzogZXJyb3I6IOKAmGJwZl9jcmVhdGVfbWFw
+4oCZIGlzIGRlcHJlY2F0ZWQ6IGxpYmJwZiB2MC43KzogdXNlIGJwZl9tYXBfY3JlYXRlKCkgaW5z
+dGVhZCBbLVdlcnJvcj1kZXByZWNhdGVkLWRlY2xhcmF0aW9uc10NCj4+Pj4gIG1hcF9mZCA9IGJw
+Zl9jcmVhdGVfbWFwKEJQRl9NQVBfVFlQRV9IQVNILA0KPj4+PiAgXn5+fn5+DQo+Pj4+IEluIGZp
+bGUgaW5jbHVkZWQgZnJvbSB1dGlsL2JwZl9jb3VudGVyLmg6NywNCj4+Pj4gICAgICAgICAgICAg
+ICAgZnJvbSB1dGlsL2JwZl9jb3VudGVyLmM6MTU6DQo+Pj4+IC9kYXRhL3VzZXJzL3NvbmdsaXVi
+cmF2aW5nL2tlcm5lbC9saW51eC1naXQvdG9vbHMvbGliL2JwZi9icGYuaDo5MToxNjogbm90ZTog
+ZGVjbGFyZWQgaGVyZQ0KPj4+PiBMSUJCUEZfQVBJIGludCBicGZfY3JlYXRlX21hcChlbnVtIGJw
+Zl9tYXBfdHlwZSBtYXBfdHlwZSwgaW50IGtleV9zaXplLA0KPj4+PiAgICAgICAgICAgICAgIF5+
+fn5+fn5+fn5+fn5+DQo+Pj4+IGNjMTogYWxsIHdhcm5pbmdzIGJlaW5nIHRyZWF0ZWQgYXMgZXJy
+b3JzDQo+Pj4+IG1ha2VbNF06ICoqKiBbL2RhdGEvdXNlcnMvc29uZ2xpdWJyYXZpbmcva2VybmVs
+L2xpbnV4LWdpdC90b29scy9idWlsZC9NYWtlZmlsZS5idWlsZDo5NjogdXRpbC9icGZfY291bnRl
+ci5vXSBFcnJvciAxDQo+Pj4+IG1ha2VbNF06ICoqKiBXYWl0aW5nIGZvciB1bmZpbmlzaGVkIGpv
+YnMuLi4uDQo+Pj4+IG1ha2VbM106ICoqKiBbL2RhdGEvdXNlcnMvc29uZ2xpdWJyYXZpbmcva2Vy
+bmVsL2xpbnV4LWdpdC90b29scy9idWlsZC9NYWtlZmlsZS5idWlsZDoxMzk6IHV0aWxdIEVycm9y
+IDINCj4+Pj4gbWFrZVsyXTogKioqIFtNYWtlZmlsZS5wZXJmOjY2NTogcGVyZi1pbi5vXSBFcnJv
+ciAyDQo+Pj4+IG1ha2VbMV06ICoqKiBbTWFrZWZpbGUucGVyZjoyNDA6IHN1Yi1tYWtlXSBFcnJv
+ciAyDQo+Pj4+IG1ha2U6ICoqKiBbTWFrZWZpbGU6NzA6IGFsbF0gRXJyb3IgMg0KPj4+PiANCj4+
+PiANCj4+PiBIbW0uLiBpcyB1dGlsL2JwZl9jb3VudGVyLmggZ3VhcmRlZCBiZWhpbmQgc29tZSBN
+YWtlZmlsZSBhcmd1bWVudHM/DQo+Pj4gSSd2ZSBzZW50ICNwcmFnbWEgdGVtcG9yYXJ5IHdvcmth
+cm91bmRzIGp1c3QgYSBmZXcgZGF5cyBhZ28gKFswXSksIGJ1dA0KPj4+IHRoaXMgb25lIGRpZG4n
+dCBjb21lIHVwIGR1cmluZyB0aGUgYnVpbGQuDQo+Pj4gDQo+Pj4gWzBdIGh0dHBzOi8vcGF0Y2h3
+b3JrLmtlcm5lbC5vcmcvcHJvamVjdC9uZXRkZXZicGYvcGF0Y2gvMjAyMTEyMDMwMDQ2NDAuMjQ1
+NTcxNy0xLWFuZHJpaUBrZXJuZWwub3JnLw0KPj4gDQo+PiBJIGd1ZXNzIHRoZSBkZWZhdWx0IGJ1
+aWxkIHRlc3QgZG9lc24ndCBlbmFibGUgQlVJTERfQlBGX1NLRUw/DQo+IA0KPiBJIHNlZSwgcmln
+aHQsIEkgdGhpbmsgSSBhbHJlYWR5IGFza2VkIGFib3V0IHRoYXQgYmVmb3JlIDooIElzIGl0DQo+
+IHBvc3NpYmxlIHRvIHNldCBNYWtlZmlsZSBzdWNoIHRoYXQgaXQgd2lsbCBkbyBCVUlMRF9CUEZf
+U0tFTD0xIGlmDQo+IENsYW5nIHZlcnNpb24gaXMgcmVjZW50IGVub3VnaCBhbmQgb3RoZXIgY29u
+ZGl0aW9ucyBhcmUgc2F0aXNmaWVkDQo+ICh1bmxlc3Mgb3ZlcnJpZGRlbiBvciBzb21ldGhpbmcp
+Pw0KDQpBcm5hbGRvIGlzIHdvcmtpbmcgb24gdGhpcy4gSSBndWVzcyB3ZSBjYW4gZmxpcCB0aGUg
+ZGVmYXVsdCBzb29uLiANCg0KPiANCj4+IA0KPj4+IA0KPj4+PiBEbyB3ZSBwbGFuIHRvIHJlbW92
+ZSBicGZfY3JlYXRlX21hcCBpbiB0aGUgZnV0dXJlPyBJZiBub3QsIHdlIGNhbiBwcm9iYWJseSBq
+dXN0DQo+Pj4+IGFkZCAnI3ByYWdtYSBHQ0MgZGlhZ25vc3RpYyBpZ25vcmVkICItV2RlcHJlY2F0
+ZWQtZGVjbGFyYXRpb25zIicgY2FuIGNhbGwgaXQgZG9uZT8NCj4+PiANCj4+PiBZZXMsIGl0IHdp
+bGwgYmUgcmVtb3ZlZCBpbiBhIGZldyBsaWJicGYgcmVsZWFzZXMgd2hlbiB3ZSBzd2l0Y2ggdG8g
+dGhlDQo+Pj4gMS4wIHZlcnNpb24uIFNvIHN1cHByZXNzaW5nIGEgd2FybmluZyBpcyBhIHRlbXBv
+cmFyeSB3b3JrLWFyb3VuZC4NCj4+PiANCj4+Pj4gDQo+Pj4+PiANCj4+Pj4+PiBTaWduZWQtb2Zm
+LWJ5OiBTb25nIExpdSA8c29uZ0BrZXJuZWwub3JnPg0KPj4+Pj4+IC0tLQ0KPj4+Pj4+IHRvb2xz
+L3BlcmYvdXRpbC9icGZfY291bnRlci5jIHwgNCArKy0tDQo+Pj4+Pj4gMSBmaWxlIGNoYW5nZWQs
+IDIgaW5zZXJ0aW9ucygrKSwgMiBkZWxldGlvbnMoLSkNCj4+Pj4+PiANCj4+Pj4+PiBkaWZmIC0t
+Z2l0IGEvdG9vbHMvcGVyZi91dGlsL2JwZl9jb3VudGVyLmMgYi90b29scy9wZXJmL3V0aWwvYnBm
+X2NvdW50ZXIuYw0KPj4+Pj4+IGluZGV4IGMxN2Q0YTQzY2UwNjUuLmVkMTUwYTliM2EwYzAgMTAw
+NjQ0DQo+Pj4+Pj4gLS0tIGEvdG9vbHMvcGVyZi91dGlsL2JwZl9jb3VudGVyLmMNCj4+Pj4+PiAr
+KysgYi90b29scy9wZXJmL3V0aWwvYnBmX2NvdW50ZXIuYw0KPj4+Pj4+IEBAIC0zMjAsMTAgKzMy
+MCwxMCBAQCBzdGF0aWMgaW50IGJwZXJmX2xvY2tfYXR0cl9tYXAoc3RydWN0IHRhcmdldCAqdGFy
+Z2V0KQ0KPj4+Pj4+ICAgICAgfQ0KPj4+Pj4+IA0KPj4+Pj4+ICAgICAgaWYgKGFjY2VzcyhwYXRo
+LCBGX09LKSkgew0KPj4+Pj4+IC0gICAgICAgICAgICAgICBtYXBfZmQgPSBicGZfY3JlYXRlX21h
+cChCUEZfTUFQX1RZUEVfSEFTSCwNCj4+Pj4+PiArICAgICAgICAgICAgICAgbWFwX2ZkID0gYnBm
+X21hcF9jcmVhdGUoQlBGX01BUF9UWVBFX0hBU0gsIE5VTEwsDQo+Pj4+PiANCj4+Pj4+IEkgdGhp
+bmsgcGVyZiBpcyB0cnlpbmcgdG8gYmUgbGlua2FibGUgd2l0aCBsaWJicGYgYXMgYSBzaGFyZWQg
+bGlicmFyeSwNCj4+Pj4+IHNvIG9uIHNvbWUgb2xkZXIgdmVyc2lvbnMgb2YgbGliYnBmIGJwZl9t
+YXBfY3JlYXRlKCkgd29uJ3QgYmUgKHlldCkNCj4+Pj4+IGF2YWlsYWJsZS4gU28gdG8gbWFrZSB0
+aGlzIHdvcmssIEkgdGhpbmsgeW91J2xsIG5lZWQgdG8gZGVmaW5lIHlvdXINCj4+Pj4+IG93biB3
+ZWFrIGJwZl9tYXBfY3JlYXRlIGZ1bmN0aW9uIHRoYXQgd2lsbCB1c2UgYnBmX2NyZWF0ZV9tYXAo
+KS4NCj4+Pj4gDQo+Pj4+IEhtbS4uLiBJIGRpZG4ndCBrbm93IHRoZSBwbGFuIHRvIGxpbmsgbGli
+YnBmIGFzIHNoYXJlZCBsaWJyYXJ5LiBJbiB0aGlzIGNhc2UsDQo+Pj4+IG1heWJlIHRoZSAjcHJh
+Z21hIHNvbHV0aW9uIGlzIHByZWZlcnJlZD8NCj4+PiANCj4+PiBTZWUgInBlcmYgdG9vbHM6IEFk
+ZCBtb3JlIHdlYWsgbGliYnBmIGZ1bmN0aW9ucyIgc2VudCBieSBKaXJpIG5vdCBzbw0KPj4+IGxv
+bmcgYWdvIGFib3V0IHdoYXQgdGhleSBkaWQgd2l0aCBzb21lIG90aGVyIHVzZWQgQVBJcyB0aGF0
+IGFyZSBub3cNCj4+PiBtYXJrZWQgZGVwcmVjYXRlZC4NCj4+IA0KPj4gRG8geW91IG1lYW4gc29t
+ZXRoaW5nIGxpa2UgdGhpcz8NCj4+IA0KPj4gaW50IF9fd2Vhaw0KPj4gYnBmX21hcF9jcmVhdGUo
+ZW51bSBicGZfbWFwX3R5cGUgbWFwX3R5cGUsDQo+PiAgICAgICAgICAgICAgIGNvbnN0IGNoYXIg
+Km1hcF9uYW1lIF9fbWF5YmVfdW51c2VkLA0KPj4gICAgICAgICAgICAgICBfX3UzMiBrZXlfc2l6
+ZSwNCj4+ICAgICAgICAgICAgICAgX191MzIgdmFsdWVfc2l6ZSwNCj4+ICAgICAgICAgICAgICAg
+X191MzIgbWF4X2VudHJpZXMsDQo+PiAgICAgICAgICAgICAgIGNvbnN0IHN0cnVjdCBicGZfbWFw
+X2NyZWF0ZV9vcHRzICpvcHRzIF9fbWF5YmVfdW51c2VkKQ0KPj4gew0KPj4gI3ByYWdtYSBHQ0Mg
+ZGlhZ25vc3RpYyBwdXNoDQo+PiAjcHJhZ21hIEdDQyBkaWFnbm9zdGljIGlnbm9yZWQgIi1XZGVw
+cmVjYXRlZC1kZWNsYXJhdGlvbnMiDQo+PiAgICAgICAgcmV0dXJuIGJwZl9jcmVhdGVfbWFwKG1h
+cF90eXBlLCBrZXlfc2l6ZSwgdmFsdWVfc2l6ZSwgbWF4X2VudHJpZXMsIDApOw0KPj4gI3ByYWdt
+YSBHQ0MgZGlhZ25vc3RpYyBwb3ANCj4+IH0NCj4+IA0KPj4gSSBndWVzcyB0aGlzIHdvbid0IHdv
+cmsgd2hlbiBicGZfY3JlYXRlX21hcCgpIGlzIGV2ZW50dWFsbHkgcmVtb3ZlZCwgYXMNCj4+IF9f
+d2VhayBmdW5jdGlvbiBhcmUgc3RpbGwgY29tcGlsZWQsIG5vPw0KPiANCj4gWWVzIGFuZCB5ZXMu
+IEknbSBub3Qgc3VyZSB3aGF0IHdvdWxkIGJlIHBlcmYncyBwbGFuIHcuci50LiBsaWJicGYgMS4w
+LA0KPiB3ZSdsbCBuZWVkIHRvIHdvcmsgdG9nZXRoZXIgdG8gZmlndXJlIHRoaXMgb3V0LiBBdCBz
+b21lIHBvaW50IHBlcmYNCj4gd2lsbCBuZWVkIHRvIHNheSB0aGF0IHRoZSBtaW5pbXVtIHZlcnNp
+b24gb2Ygc3VwcG9ydGVkIGxpYmJwZiBpcyB2MC42DQo+IG9yIHNvbWV0aGluZyBhbmQganVzdCBh
+c3N1bWUgYWxsIHRob3NlIG5ld2VyIEFQSXMgYXJlIHRoZXJlIChubyBuZWVkDQo+IHRvIGJ1bXAg
+aXQgYWxsIHRoZSB3YXkgdG8gbGliYnBmIDEuMCwgYnR3KS4NCg0KT0suIEkgd2lsbCBzZW5kIHRo
+aXMgdmVyc2lvbi4gQW5kIHdlIGNhbiBkZWNpZGUgdGhlIG5leHQgc3RlcCB3aGVuIHdlDQpyZW1v
+dmUgYnBmX2NyZWF0ZV9tYXAoKS4gDQoNClRoYW5rcywNClNvbmcNCg0K
