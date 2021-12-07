@@ -2,100 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A214046C7E5
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 23:58:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2631E46C7F0
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 00:02:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242437AbhLGXC2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 18:02:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54630 "EHLO
+        id S236960AbhLGXGF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 18:06:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242420AbhLGXC1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 18:02:27 -0500
-Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D28DEC061574
-        for <netdev@vger.kernel.org>; Tue,  7 Dec 2021 14:58:56 -0800 (PST)
-Received: by mail-io1-xd2b.google.com with SMTP id p23so846166iod.7
-        for <netdev@vger.kernel.org>; Tue, 07 Dec 2021 14:58:56 -0800 (PST)
+        with ESMTP id S229605AbhLGXGE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 18:06:04 -0500
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F582C061574;
+        Tue,  7 Dec 2021 15:02:34 -0800 (PST)
+Received: by mail-yb1-xb2f.google.com with SMTP id y68so1652353ybe.1;
+        Tue, 07 Dec 2021 15:02:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=egauge.net; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=xoJVffz/EBLfg8RUsf3/oH2B3NCc3grVj9ESSLdCq3o=;
-        b=G491kuqnmMDgCzq6gPw3dXp4ko7NOMRnCBQ2Z7mEzL7a/JP10imNSDI2JUSIQFCsv+
-         ou+CRKmOxER61wW/kfm9f8fGcyASrZQteJAliI/fODPrqk5LbCNEiDKMC7T5EFTq1cVl
-         9AvylVHTlWwo/WA1MQOhq5jgo5PhGDwvaHAiRvkp7GczyYUbOoyXuRhFepygUYRgcmJn
-         do1Kuv4/qr32TZyYK2SF+u3BjqNPVI4yZobvw7aWeY4Q8WvJxxZ1HSvgPX9Goa+pfWMQ
-         zQAgXgvj2cR9BIiimq72vYbxpisuvgdaRxB5Vs2HWUanCDy6tXRjr80RG9+jtPmCLhZy
-         ejVg==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=E0MROj/9M0lfA9s5iqecs5qJKTZZYi5IBbURyWPvtBM=;
+        b=LGiR/HaB6a1dkNBiopBrQ4JQoq0w1FCORUly0Pf2aKTzymuHeosbkilTpVx97r01uZ
+         7vt35dzMqANkiDomRDYNSS9sVb0+6WgjTyX+59T1RJiZecq79pjYhnFfmIbLn3BjeI5k
+         ZV7glV/Q79jeD3vbEJXSWkgIod8X+g2FIW063kZh6ytE1E0wz4O82hLqabnECQOdLydY
+         QjqBkqiajiP9/5N6I7YuxtCAB0JAP0z7YZ7qiAIbYdeuzZEl+PWtrkieNMrFwhbyXrqO
+         QNUr+BsNSspk/3NFW3P9nO9cVEy4x0AQAI/+UL+Ynd3z5l08ime4AkTe1a5JWYEFuOHp
+         +9HQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=xoJVffz/EBLfg8RUsf3/oH2B3NCc3grVj9ESSLdCq3o=;
-        b=s+7wzg/2dQnmOw4B0IKUTW8HNPerU+YU0pcFugH0ZKzgz50dyzu88LFoYs5/I1+Nc0
-         ZpkxPV/F80emanmQJF5ziD4Wfk7+kVYJ9ampkoy1mAz5/E9PdlpiNXueZzPVD019srN3
-         CRSq1Vuy0P5beKfVFYRMqEefUzzdS3ZzCEpB1/m8zRF1PoPCv2BM6ar14kgYxDwtEzLD
-         4MzGpEtPo8RY2TQXdSq1PqioLB/pxPScS+BnYzxP3L0JCL39xEN5WrsiTi6SaGqQQhzS
-         8bp7BhCXvGBh0vbqyuMX97BUHX8vZBAQ4hK5rTlM8QSdHGTxxFvx5K6B2GmxB9fALlSD
-         OSzA==
-X-Gm-Message-State: AOAM532V5FI+gO09Jb0xzmA55YyTe/sjMkYXE3ZWtNtS5JUF6AXSqd0C
-        79znvll/UVOxgHYBhm32o7Ox
-X-Google-Smtp-Source: ABdhPJw41J0k7nJiq0Bk5nISbbtSZf25niGbUgkszqGDzCVtLAM+K/V9aTLiGqOulI83KB7Ogz9XGw==
-X-Received: by 2002:a5d:9053:: with SMTP id v19mr2885668ioq.39.1638917936189;
-        Tue, 07 Dec 2021 14:58:56 -0800 (PST)
-Received: from [10.1.100.16] (c-73-181-115-211.hsd1.co.comcast.net. [73.181.115.211])
-        by smtp.gmail.com with ESMTPSA id u4sm789933ilv.66.2021.12.07.14.58.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Dec 2021 14:58:55 -0800 (PST)
-Subject: Re: [PATCH 2/2] wilc1000: Fix missing newline in error message
-To:     Joe Perches <joe@perches.com>,
-        Ajay Singh <ajay.kathat@microchip.com>
-Cc:     Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20211206232709.3192856-1-davidm@egauge.net>
- <20211206232709.3192856-3-davidm@egauge.net>
- <4687b01640eaaba01b3db455a7951a534572ee31.camel@perches.com>
-From:   David Mosberger-Tang <davidm@egauge.net>
-Message-ID: <00d44cb3-3b38-7bb6-474f-c819c2403b6a@egauge.net>
-Date:   Tue, 7 Dec 2021 15:58:53 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=E0MROj/9M0lfA9s5iqecs5qJKTZZYi5IBbURyWPvtBM=;
+        b=vv8YvROkfjiUiy8QsI//lBFZqCpSc+MTs5M0UVc61PNY5VhKqxRBc7FjiNxLIUprkT
+         ru4CV9lgsvue/Xf93JOhBZG1f65K2P3yv8v0klAT7UtvwinOzEmQHmmmZPv4i6eXFo8R
+         5cgUi7GkieFqzIe+jX/a0jxDnUrH3QTx1D/twnUKmSMPnfw89isz0tD5WkkeeCD59X7B
+         DLNpTOjoMuxZgJo4UPllYD35UBxeeYVNLqM1JSy6AZva0sQF9PV4bfUM+OLymYatI6f5
+         q/FAurarv4AycLWtkm8w/PUDTolNWRuLLY1mloFGJ5wQCHVkhDr0dnzBVqPXztEBeg+a
+         HiYA==
+X-Gm-Message-State: AOAM530q9E/XLAQP0glSif3Xt/1RXZryKYT4GRQqZM0SlMB5vESh6Ejq
+        9E5iSOfRVPRzviOEkyCD7kl8Uco3UPfnEWiJSvc=
+X-Google-Smtp-Source: ABdhPJxFnyDhYRww4PqXmIvKNIJ9jGbDyovlVBchrpMM3GHvMiKtrfysuuE7sXvwdLVIlh86u5etyR5MsoCyxL0dGjk=
+X-Received: by 2002:a25:cf46:: with SMTP id f67mr52509020ybg.362.1638918153258;
+ Tue, 07 Dec 2021 15:02:33 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <4687b01640eaaba01b3db455a7951a534572ee31.camel@perches.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+References: <20211206230811.4131230-1-song@kernel.org> <CAEf4BzbaBcySm3bVumBTrkHMmVDWEVxckdVKvUk=4j9HhSsmBA@mail.gmail.com>
+ <3221CDA7-F2EF-404A-9289-14F9DF6D01DA@fb.com> <CAEf4BzbN17eviD18-_C2UN+P5gMm4vFXVrdLd9UHx0ev+gJsjw@mail.gmail.com>
+ <08EB4596-7788-4570-B0B0-DE3B710BBDD8@fb.com>
+In-Reply-To: <08EB4596-7788-4570-B0B0-DE3B710BBDD8@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 7 Dec 2021 15:02:22 -0800
+Message-ID: <CAEf4BzaCioWRGktgk1TvdyaB-zF_6Hyj+67j7DzPzTLGqkigYg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] perf/bpf_counter: use bpf_map_create instead of bpf_create_map
+To:     Song Liu <songliubraving@fb.com>
+Cc:     Song Liu <song@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Kernel Team <Kernel-team@fb.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/6/21 6:33 PM, Joe Perches wrote:
-
-> On Mon, 2021-12-06 at 23:27 +0000, David Mosberger-Tang wrote:
->> Add missing newline in pr_err() message.
-> []
->> diff --git a/drivers/net/wireless/microchip/wilc1000/netdev.c b/drivers/net/wireless/microchip/wilc1000/netdev.c
-> []
->> @@ -27,7 +27,7 @@ static irqreturn_t isr_uh_routine(int irq, void *user_data)
->>   	struct wilc *wilc = user_data;
->>   
->>   	if (wilc->close) {
->> -		pr_err("Can't handle UH interrupt");
->> +		pr_err("Can't handle UH interrupt\n");
-> Ideally this would use wiphy_<level>:
+On Mon, Dec 6, 2021 at 10:30 PM Song Liu <songliubraving@fb.com> wrote:
 >
-> 		wiphy_err(wilc->wiphy, "Can't handle UH interrupt\n");
+>
+>
+> > On Dec 6, 2021, at 9:13 PM, Andrii Nakryiko <andrii.nakryiko@gmail.com>=
+ wrote:
+> >
+> > On Mon, Dec 6, 2021 at 8:32 PM Song Liu <songliubraving@fb.com> wrote:
+> >>
+> >>
+> >>
+> >>> On Dec 6, 2021, at 6:37 PM, Andrii Nakryiko <andrii.nakryiko@gmail.co=
+m> wrote:
+> >>>
+> >>> On Mon, Dec 6, 2021 at 3:08 PM Song Liu <song@kernel.org> wrote:
+> >>>>
+> >>>> bpf_create_map is deprecated. Replace it with bpf_map_create.
+> >>>>
+> >>>> Fixes: 992c4225419a ("libbpf: Unify low-level map creation APIs w/ n=
+ew bpf_map_create()")
+> >>>
+> >>> This is not a bug fix, it's an improvement. So I don't think "Fixes: =
+"
+> >>> is warranted here, tbh.
+> >>
+> >> I got compilation errors before this change, like
+> >>
+> >> util/bpf_counter.c: In function =E2=80=98bperf_lock_attr_map=E2=80=99:
+> >> util/bpf_counter.c:323:3: error: =E2=80=98bpf_create_map=E2=80=99 is d=
+eprecated: libbpf v0.7+: use bpf_map_create() instead [-Werror=3Ddeprecated=
+-declarations]
+> >>   map_fd =3D bpf_create_map(BPF_MAP_TYPE_HASH,
+> >>   ^~~~~~
+> >> In file included from util/bpf_counter.h:7,
+> >>                 from util/bpf_counter.c:15:
+> >> /data/users/songliubraving/kernel/linux-git/tools/lib/bpf/bpf.h:91:16:=
+ note: declared here
+> >> LIBBPF_API int bpf_create_map(enum bpf_map_type map_type, int key_size=
+,
+> >>                ^~~~~~~~~~~~~~
+> >> cc1: all warnings being treated as errors
+> >> make[4]: *** [/data/users/songliubraving/kernel/linux-git/tools/build/=
+Makefile.build:96: util/bpf_counter.o] Error 1
+> >> make[4]: *** Waiting for unfinished jobs....
+> >> make[3]: *** [/data/users/songliubraving/kernel/linux-git/tools/build/=
+Makefile.build:139: util] Error 2
+> >> make[2]: *** [Makefile.perf:665: perf-in.o] Error 2
+> >> make[1]: *** [Makefile.perf:240: sub-make] Error 2
+> >> make: *** [Makefile:70: all] Error 2
+> >>
+> >
+> > Hmm.. is util/bpf_counter.h guarded behind some Makefile arguments?
+> > I've sent #pragma temporary workarounds just a few days ago ([0]), but
+> > this one didn't come up during the build.
+> >
+> >  [0] https://patchwork.kernel.org/project/netdevbpf/patch/2021120300464=
+0.2455717-1-andrii@kernel.org/
+>
+> I guess the default build test doesn't enable BUILD_BPF_SKEL?
 
-Sure, but that's orthogonal to this bug fix.  I do have a "cleanups" 
-branch with various cleanups of this sort.  I'll look into fixing pr_*() 
-calls in the cleanups branch (there are several of them, unsurprisingly).
+I see, right, I think I already asked about that before :( Is it
+possible to set Makefile such that it will do BUILD_BPF_SKEL=3D1 if
+Clang version is recent enough and other conditions are satisfied
+(unless overridden or something)?
 
+>
+> >
+> >> Do we plan to remove bpf_create_map in the future? If not, we can prob=
+ably just
+> >> add '#pragma GCC diagnostic ignored "-Wdeprecated-declarations"' can c=
+all it done?
+> >
+> > Yes, it will be removed in a few libbpf releases when we switch to the
+> > 1.0 version. So suppressing a warning is a temporary work-around.
+> >
+> >>
+> >>>
+> >>>> Signed-off-by: Song Liu <song@kernel.org>
+> >>>> ---
+> >>>> tools/perf/util/bpf_counter.c | 4 ++--
+> >>>> 1 file changed, 2 insertions(+), 2 deletions(-)
+> >>>>
+> >>>> diff --git a/tools/perf/util/bpf_counter.c b/tools/perf/util/bpf_cou=
+nter.c
+> >>>> index c17d4a43ce065..ed150a9b3a0c0 100644
+> >>>> --- a/tools/perf/util/bpf_counter.c
+> >>>> +++ b/tools/perf/util/bpf_counter.c
+> >>>> @@ -320,10 +320,10 @@ static int bperf_lock_attr_map(struct target *=
+target)
+> >>>>       }
+> >>>>
+> >>>>       if (access(path, F_OK)) {
+> >>>> -               map_fd =3D bpf_create_map(BPF_MAP_TYPE_HASH,
+> >>>> +               map_fd =3D bpf_map_create(BPF_MAP_TYPE_HASH, NULL,
+> >>>
+> >>> I think perf is trying to be linkable with libbpf as a shared library=
+,
+> >>> so on some older versions of libbpf bpf_map_create() won't be (yet)
+> >>> available. So to make this work, I think you'll need to define your
+> >>> own weak bpf_map_create function that will use bpf_create_map().
+> >>
+> >> Hmm... I didn't know the plan to link libbpf as shared library. In thi=
+s case,
+> >> maybe the #pragma solution is preferred?
+> >
+> > See "perf tools: Add more weak libbpf functions" sent by Jiri not so
+> > long ago about what they did with some other used APIs that are now
+> > marked deprecated.
+>
+> Do you mean something like this?
+>
+> int __weak
+> bpf_map_create(enum bpf_map_type map_type,
+>                const char *map_name __maybe_unused,
+>                __u32 key_size,
+>                __u32 value_size,
+>                __u32 max_entries,
+>                const struct bpf_map_create_opts *opts __maybe_unused)
+> {
+> #pragma GCC diagnostic push
+> #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+>         return bpf_create_map(map_type, key_size, value_size, max_entries=
+, 0);
+> #pragma GCC diagnostic pop
+> }
+>
+> I guess this won't work when bpf_create_map() is eventually removed, as
+> __weak function are still compiled, no?
 
-   --david
+Yes and yes. I'm not sure what would be perf's plan w.r.t. libbpf 1.0,
+we'll need to work together to figure this out. At some point perf
+will need to say that the minimum version of supported libbpf is v0.6
+or something and just assume all those newer APIs are there (no need
+to bump it all the way to libbpf 1.0, btw).
 
-
+>
+> Thanks,
+> Song
