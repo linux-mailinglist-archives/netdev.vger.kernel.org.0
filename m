@@ -2,239 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A56D46B39A
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 08:19:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C6E7D46B3BA
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 08:20:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229772AbhLGHXP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 02:23:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55460 "EHLO
+        id S229914AbhLGHXn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 02:23:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229743AbhLGHXP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 02:23:15 -0500
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F9C8C061748
-        for <netdev@vger.kernel.org>; Mon,  6 Dec 2021 23:19:45 -0800 (PST)
-Received: by mail-pg1-x52d.google.com with SMTP id j11so12985140pgs.2
-        for <netdev@vger.kernel.org>; Mon, 06 Dec 2021 23:19:45 -0800 (PST)
+        with ESMTP id S229873AbhLGHXd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 02:23:33 -0500
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3344C061746;
+        Mon,  6 Dec 2021 23:20:02 -0800 (PST)
+Received: by mail-pj1-x102e.google.com with SMTP id w33-20020a17090a6ba400b001a722a06212so1503001pjj.0;
+        Mon, 06 Dec 2021 23:20:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=VBXYXdcNSoi4oovOiOJni8HEnnLiZv+XYDZaS8oPm9M=;
-        b=c6pgdzfTzVcSyAKJU0NbrT+Ee69L3HPWmg6rqUlGcQgJTqJzyTiNgBxpQEEpp7BNMv
-         /wKGPkAYBzeKev7DRoQTetclwtBf2BKzJYjpjGauNq93kbNw1jKLNjVJ001QBfCGK5qp
-         NW6TCygb12dsuIxH37MV1hlcQcoBQq1lJufce4CokLr4YUsXrTcGANWQiVf073zKBtIF
-         Cx64/oTRgxnGCxsf8AcHcVbizlp5cgGNKpQqgRs5rexY+7Yw4QLOJ54VNFgavZz4l6qi
-         tn7RUw3Y1W20+qcJaso1ckP7adZM39PUg64Deox+IRVaENpz6wMmNF0FrqK5PYu+L/Fq
-         jhLw==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=FlswnO/0tf48MZik9N6nEWD7pUN7KQPdPDwLH82NPGY=;
+        b=ZUYxHapqYileQn8hhOCFMMj8QIp8KEPV0W94icQthoyQDxFqF2qi4eBhQEenSAEKx9
+         nSqb0koAGw4UhwV3u/7y07bqwmrRM252LdPQcz9KZwirKEBoaYyEa58bv60s7M5ds/tp
+         LTSsetYg+OqKw1rK5UbBOQBOSB1pUrvgtc0OIhxDcrG/hRKnynLMCh0yillC8dXJIjkW
+         lCLMr4yuctx+hNoB+GkZX7lipWQNoK6cULVzuVBng4x/3Voa/rk+7hj0S+ZPjOqk1zNN
+         rF8sPEWmJFGduIuU0Ye47YSLyJXgP+6QGRv8pObOM59fRIJW/XwHapgqHFcjlRQGHcCV
+         x5WA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=VBXYXdcNSoi4oovOiOJni8HEnnLiZv+XYDZaS8oPm9M=;
-        b=JzlZgmVJOr/c2NBCTy/B2sy56KRhNDdSQm6pDhjhupYdgEobw/GnGnOmj4m1IGxYSp
-         CaW+Ns3EIuNWuwLCiBdyvRNKVNBrn4NvJMKjRvrQLZ8KzQPd5ZSZpPmhxc2Orz1ISNDa
-         Suz2GBJuatdUqsRPd6iL0/V3caTIRdR7lSy82etjf0asfh3gIwvhqwmzbcvnUaudT921
-         fpoPmctl9B5FIJs57tqCi8R3k/Hx35GN4qK+GpXkejtvpjfJCybGingRUviCZgOy5JIo
-         d5Ko1n2jee/xqJnd+fLnemw6jropxqPcY6xNMDvmnlPDcKS/j5doATQ4AzKt/vGAVQjj
-         aY6w==
-X-Gm-Message-State: AOAM530Wg2G1tSIyR6RSf1DLXiFnBs9lO/Vq1zQBdvKxJUYnDKnUcrZf
-        asQemyauG9H7LQvWTTuCOk13
-X-Google-Smtp-Source: ABdhPJyOMcTFetuTPuK3UqpbjSb/IE1zndgABUHYOmHAjEfIRbFiEVXCAyDY5HRWiPRui+HTOqDEPw==
-X-Received: by 2002:a65:6702:: with SMTP id u2mr23097825pgf.24.1638861584883;
-        Mon, 06 Dec 2021 23:19:44 -0800 (PST)
-Received: from thinkpad ([117.217.176.38])
-        by smtp.gmail.com with ESMTPSA id d9sm7964508pfu.144.2021.12.06.23.19.41
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=FlswnO/0tf48MZik9N6nEWD7pUN7KQPdPDwLH82NPGY=;
+        b=C5CMoYhHm+0T2cNtMQ4RxNTAnlox+IqQqXShNGQh3Ljm0VMunA1fUAkrU5OaFMcv/G
+         391YWujvkoWDIt4Eum1hHrIbKSUDIYSdeCml2B70W25GXI0gFN9BZZ5MIcaiwHIo5VQh
+         jd7zykxdpMw8rIGXo/mu/YgFZOw7850Ha0ocSRQLGq+P3R59ppVnCUp37ySoGjtPo27H
+         w0E8d3IywjYbFHZfskRxL6QvyhMWlwCTLniSGhLb+6Udi4ZGK92VWz99UKY38jfjq6+e
+         kechirS1m4x9yGI8g/fzv/CrhovRksIByQ6eL8ck6SwKy5XuJ3q6feW76gZLMMnk1vLk
+         2SsA==
+X-Gm-Message-State: AOAM531zgEeXi3wlu6UVaDAnAmYkjyqclt9U7efH09jJgEhs7dc38QHU
+        AsNTgFMpIW2gLoGit0mGdsA=
+X-Google-Smtp-Source: ABdhPJyxALWG+b3iVsK0XjKaOBmbsY6naSRBitlf7O2DVQnd9Z1TiWI+zVWBxsqqAUm436USe9HW6w==
+X-Received: by 2002:a17:90a:6e41:: with SMTP id s1mr4515958pjm.166.1638861602466;
+        Mon, 06 Dec 2021 23:20:02 -0800 (PST)
+Received: from ubuntu-Virtual-Machine.corp.microsoft.com ([2001:4898:80e8:38:e747:5b78:1904:a4ed])
+        by smtp.gmail.com with ESMTPSA id u12sm2081789pfk.71.2021.12.06.23.20.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Dec 2021 23:19:44 -0800 (PST)
-Date:   Tue, 7 Dec 2021 12:49:39 +0530
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     loic.poulain@linaro.org, hemantk@codeaurora.org,
-        bbhatt@codeaurora.org, linux-arm-msm@vger.kernel.org,
-        netdev@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        mhi@lists.linux.dev
-Subject: Re: [PATCH v2] bus: mhi: core: Add an API for auto queueing buffers
- for DL channel
-Message-ID: <20211207071939.GA70121@thinkpad>
-References: <20211207071339.123794-1-manivannan.sadhasivam@linaro.org>
+        Mon, 06 Dec 2021 23:20:02 -0800 (PST)
+From:   Tianyu Lan <ltykernel@gmail.com>
+To:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+        wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org, hpa@zytor.com, davem@davemloft.net,
+        kuba@kernel.org, jejb@linux.ibm.com, martin.petersen@oracle.com,
+        arnd@arndb.de, hch@infradead.org, m.szyprowski@samsung.com,
+        robin.murphy@arm.com, Tianyu.Lan@microsoft.com,
+        thomas.lendacky@amd.com, michael.h.kelley@microsoft.com
+Cc:     iommu@lists.linux-foundation.org, linux-arch@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
+        vkuznets@redhat.com, brijesh.singh@amd.com, konrad.wilk@oracle.com,
+        hch@lst.de, joro@8bytes.org, parri.andrea@gmail.com,
+        dave.hansen@intel.com
+Subject: [PATCH V6 3/5] hyper-v: Enable swiotlb bounce buffer for Isolation VM
+Date:   Tue,  7 Dec 2021 02:19:39 -0500
+Message-Id: <20211207071942.472442-4-ltykernel@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20211207071942.472442-1-ltykernel@gmail.com>
+References: <20211207071942.472442-1-ltykernel@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211207071339.123794-1-manivannan.sadhasivam@linaro.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 07, 2021 at 12:43:39PM +0530, Manivannan Sadhasivam wrote:
-> Add a new API "mhi_prepare_for_transfer_autoqueue" for using with client
-> drivers like QRTR to request MHI core to autoqueue buffers for the DL
-> channel along with starting both UL and DL channels.
-> 
-> So far, the "auto_queue" flag specified by the controller drivers in
-> channel definition served this purpose but this will be removed at some
-> point in future.
-> 
-> Cc: netdev@vger.kernel.org
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: David S. Miller <davem@davemloft.net>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Co-developed-by: Loic Poulain <loic.poulain@linaro.org>
-> Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
-> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-> ---
-> 
-> Changes in v2:
-> 
-> * Rebased on top of 5.16-rc1
-> * Fixed an issue reported by kernel test bot
-> * CCed netdev folks and Greg
+From: Tianyu Lan <Tianyu.Lan@microsoft.com>
 
-Dave, Jakub, this patch should go through the MHI tree. Since it touches the
-QRTR driver, can you please give an ACK?
+hyperv Isolation VM requires bounce buffer support to copy
+data from/to encrypted memory and so enable swiotlb force
+mode to use swiotlb bounce buffer for DMA transaction.
 
-Thanks,
-Mani
+In Isolation VM with AMD SEV, the bounce buffer needs to be
+accessed via extra address space which is above shared_gpa_boundary
+(E.G 39 bit address line) reported by Hyper-V CPUID ISOLATION_CONFIG.
+The access physical address will be original physical address +
+shared_gpa_boundary. The shared_gpa_boundary in the AMD SEV SNP
+spec is called virtual top of memory(vTOM). Memory addresses below
+vTOM are automatically treated as private while memory above
+vTOM is treated as shared.
 
-> * Slight change to the commit subject for reflecting "core" sub-directory
-> 
->  drivers/bus/mhi/core/internal.h |  6 +++++-
->  drivers/bus/mhi/core/main.c     | 21 +++++++++++++++++----
->  include/linux/mhi.h             | 21 ++++++++++++++++-----
->  net/qrtr/mhi.c                  |  2 +-
->  4 files changed, 39 insertions(+), 11 deletions(-)
-> 
-> diff --git a/drivers/bus/mhi/core/internal.h b/drivers/bus/mhi/core/internal.h
-> index 9d72b1d1e986..e2e10474a9d9 100644
-> --- a/drivers/bus/mhi/core/internal.h
-> +++ b/drivers/bus/mhi/core/internal.h
-> @@ -682,8 +682,12 @@ void mhi_deinit_free_irq(struct mhi_controller *mhi_cntrl);
->  void mhi_rddm_prepare(struct mhi_controller *mhi_cntrl,
->  		      struct image_info *img_info);
->  void mhi_fw_load_handler(struct mhi_controller *mhi_cntrl);
-> +
-> +/* Automatically allocate and queue inbound buffers */
-> +#define MHI_CH_INBOUND_ALLOC_BUFS BIT(0)
->  int mhi_prepare_channel(struct mhi_controller *mhi_cntrl,
-> -			struct mhi_chan *mhi_chan);
-> +			struct mhi_chan *mhi_chan, unsigned int flags);
-> +
->  int mhi_init_chan_ctxt(struct mhi_controller *mhi_cntrl,
->  		       struct mhi_chan *mhi_chan);
->  void mhi_deinit_chan_ctxt(struct mhi_controller *mhi_cntrl,
-> diff --git a/drivers/bus/mhi/core/main.c b/drivers/bus/mhi/core/main.c
-> index 930aba666b67..ffde617f93a3 100644
-> --- a/drivers/bus/mhi/core/main.c
-> +++ b/drivers/bus/mhi/core/main.c
-> @@ -1430,7 +1430,7 @@ static void mhi_unprepare_channel(struct mhi_controller *mhi_cntrl,
->  }
->  
->  int mhi_prepare_channel(struct mhi_controller *mhi_cntrl,
-> -			struct mhi_chan *mhi_chan)
-> +			struct mhi_chan *mhi_chan, unsigned int flags)
->  {
->  	int ret = 0;
->  	struct device *dev = &mhi_chan->mhi_dev->dev;
-> @@ -1455,6 +1455,9 @@ int mhi_prepare_channel(struct mhi_controller *mhi_cntrl,
->  	if (ret)
->  		goto error_pm_state;
->  
-> +	if (mhi_chan->dir == DMA_FROM_DEVICE)
-> +		mhi_chan->pre_alloc = !!(flags & MHI_CH_INBOUND_ALLOC_BUFS);
-> +
->  	/* Pre-allocate buffer for xfer ring */
->  	if (mhi_chan->pre_alloc) {
->  		int nr_el = get_nr_avail_ring_elements(mhi_cntrl,
-> @@ -1610,8 +1613,7 @@ void mhi_reset_chan(struct mhi_controller *mhi_cntrl, struct mhi_chan *mhi_chan)
->  	read_unlock_bh(&mhi_cntrl->pm_lock);
->  }
->  
-> -/* Move channel to start state */
-> -int mhi_prepare_for_transfer(struct mhi_device *mhi_dev)
-> +static int __mhi_prepare_for_transfer(struct mhi_device *mhi_dev, unsigned int flags)
->  {
->  	int ret, dir;
->  	struct mhi_controller *mhi_cntrl = mhi_dev->mhi_cntrl;
-> @@ -1622,7 +1624,7 @@ int mhi_prepare_for_transfer(struct mhi_device *mhi_dev)
->  		if (!mhi_chan)
->  			continue;
->  
-> -		ret = mhi_prepare_channel(mhi_cntrl, mhi_chan);
-> +		ret = mhi_prepare_channel(mhi_cntrl, mhi_chan, flags);
->  		if (ret)
->  			goto error_open_chan;
->  	}
-> @@ -1640,8 +1642,19 @@ int mhi_prepare_for_transfer(struct mhi_device *mhi_dev)
->  
->  	return ret;
->  }
-> +
-> +int mhi_prepare_for_transfer(struct mhi_device *mhi_dev)
-> +{
-> +	return __mhi_prepare_for_transfer(mhi_dev, 0);
-> +}
->  EXPORT_SYMBOL_GPL(mhi_prepare_for_transfer);
->  
-> +int mhi_prepare_for_transfer_autoqueue(struct mhi_device *mhi_dev)
-> +{
-> +	return __mhi_prepare_for_transfer(mhi_dev, MHI_CH_INBOUND_ALLOC_BUFS);
-> +}
-> +EXPORT_SYMBOL_GPL(mhi_prepare_for_transfer_autoqueue);
-> +
->  void mhi_unprepare_from_transfer(struct mhi_device *mhi_dev)
->  {
->  	struct mhi_controller *mhi_cntrl = mhi_dev->mhi_cntrl;
-> diff --git a/include/linux/mhi.h b/include/linux/mhi.h
-> index 723985879035..271db1d6da85 100644
-> --- a/include/linux/mhi.h
-> +++ b/include/linux/mhi.h
-> @@ -717,15 +717,26 @@ void mhi_device_put(struct mhi_device *mhi_dev);
->  
->  /**
->   * mhi_prepare_for_transfer - Setup UL and DL channels for data transfer.
-> - *                            Allocate and initialize the channel context and
-> - *                            also issue the START channel command to both
-> - *                            channels. Channels can be started only if both
-> - *                            host and device execution environments match and
-> - *                            channels are in a DISABLED state.
->   * @mhi_dev: Device associated with the channels
-> + *
-> + * Allocate and initialize the channel context and also issue the START channel
-> + * command to both channels. Channels can be started only if both host and
-> + * device execution environments match and channels are in a DISABLED state.
->   */
->  int mhi_prepare_for_transfer(struct mhi_device *mhi_dev);
->  
-> +/**
-> + * mhi_prepare_for_transfer_autoqueue - Setup UL and DL channels with auto queue
-> + *                                      buffers for DL traffic
-> + * @mhi_dev: Device associated with the channels
-> + *
-> + * Allocate and initialize the channel context and also issue the START channel
-> + * command to both channels. Channels can be started only if both host and
-> + * device execution environments match and channels are in a DISABLED state.
-> + * The MHI core will automatically allocate and queue buffers for the DL traffic.
-> + */
-> +int mhi_prepare_for_transfer_autoqueue(struct mhi_device *mhi_dev);
-> +
->  /**
->   * mhi_unprepare_from_transfer - Reset UL and DL channels for data transfer.
->   *                               Issue the RESET channel command and let the
-> diff --git a/net/qrtr/mhi.c b/net/qrtr/mhi.c
-> index fa611678af05..18196e1c8c2f 100644
-> --- a/net/qrtr/mhi.c
-> +++ b/net/qrtr/mhi.c
-> @@ -79,7 +79,7 @@ static int qcom_mhi_qrtr_probe(struct mhi_device *mhi_dev,
->  	int rc;
->  
->  	/* start channels */
-> -	rc = mhi_prepare_for_transfer(mhi_dev);
-> +	rc = mhi_prepare_for_transfer_autoqueue(mhi_dev);
->  	if (rc)
->  		return rc;
->  
-> -- 
-> 2.25.1
-> 
+Swiotlb bounce buffer code calls set_memory_decrypted()
+to mark bounce buffer visible to host and map it in extra
+address space via memremap. Populate the shared_gpa_boundary
+(vTOM) via swiotlb_unencrypted_base variable.
+
+The map function memremap() can't work in the early place
+(e.g ms_hyperv_init_platform()) and so call swiotlb_update_mem_
+attributes() in the hyperv_init().
+
+Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
+---
+Change since v4:
+	* Remove Hyper-V IOMMU IOMMU_INIT_FINISH related functions
+	  and set SWIOTLB_FORCE and swiotlb_unencrypted_base in the
+	  ms_hyperv_init_platform(). Call swiotlb_update_mem_attributes()
+	  in the hyperv_init().
+
+Change since v3:
+	* Add comment in pci-swiotlb-xen.c to explain why add
+	  dependency between hyperv_swiotlb_detect() and pci_
+	  xen_swiotlb_detect().
+	* Return directly when fails to allocate Hyper-V swiotlb
+	  buffer in the hyperv_iommu_swiotlb_init().
+---
+ arch/x86/hyperv/hv_init.c      | 10 ++++++++++
+ arch/x86/kernel/cpu/mshyperv.c | 11 ++++++++++-
+ include/linux/hyperv.h         |  8 ++++++++
+ 3 files changed, 28 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/hyperv/hv_init.c b/arch/x86/hyperv/hv_init.c
+index 24f4a06ac46a..9e18a280f89d 100644
+--- a/arch/x86/hyperv/hv_init.c
++++ b/arch/x86/hyperv/hv_init.c
+@@ -28,6 +28,7 @@
+ #include <linux/syscore_ops.h>
+ #include <clocksource/hyperv_timer.h>
+ #include <linux/highmem.h>
++#include <linux/swiotlb.h>
+ 
+ int hyperv_init_cpuhp;
+ u64 hv_current_partition_id = ~0ull;
+@@ -502,6 +503,15 @@ void __init hyperv_init(void)
+ 
+ 	/* Query the VMs extended capability once, so that it can be cached. */
+ 	hv_query_ext_cap(0);
++
++	/*
++	 * Swiotlb bounce buffer needs to be mapped in extra address
++	 * space. Map function doesn't work in the early place and so
++	 * call swiotlb_update_mem_attributes() here.
++	 */
++	if (hv_is_isolation_supported())
++		swiotlb_update_mem_attributes();
++
+ 	return;
+ 
+ clean_guest_os_id:
+diff --git a/arch/x86/kernel/cpu/mshyperv.c b/arch/x86/kernel/cpu/mshyperv.c
+index 4794b716ec79..baf3a0873552 100644
+--- a/arch/x86/kernel/cpu/mshyperv.c
++++ b/arch/x86/kernel/cpu/mshyperv.c
+@@ -18,6 +18,7 @@
+ #include <linux/kexec.h>
+ #include <linux/i8253.h>
+ #include <linux/random.h>
++#include <linux/swiotlb.h>
+ #include <asm/processor.h>
+ #include <asm/hypervisor.h>
+ #include <asm/hyperv-tlfs.h>
+@@ -319,8 +320,16 @@ static void __init ms_hyperv_init_platform(void)
+ 		pr_info("Hyper-V: Isolation Config: Group A 0x%x, Group B 0x%x\n",
+ 			ms_hyperv.isolation_config_a, ms_hyperv.isolation_config_b);
+ 
+-		if (hv_get_isolation_type() == HV_ISOLATION_TYPE_SNP)
++		if (hv_get_isolation_type() == HV_ISOLATION_TYPE_SNP) {
+ 			static_branch_enable(&isolation_type_snp);
++			swiotlb_unencrypted_base = ms_hyperv.shared_gpa_boundary;
++		}
++
++		/*
++		 * Enable swiotlb force mode in Isolation VM to
++		 * use swiotlb bounce buffer for dma transaction.
++		 */
++		swiotlb_force = SWIOTLB_FORCE;
+ 	}
+ 
+ 	if (hv_max_functions_eax >= HYPERV_CPUID_NESTED_FEATURES) {
+diff --git a/include/linux/hyperv.h b/include/linux/hyperv.h
+index b823311eac79..1f037e114dc8 100644
+--- a/include/linux/hyperv.h
++++ b/include/linux/hyperv.h
+@@ -1726,6 +1726,14 @@ int hyperv_write_cfg_blk(struct pci_dev *dev, void *buf, unsigned int len,
+ int hyperv_reg_block_invalidate(struct pci_dev *dev, void *context,
+ 				void (*block_invalidate)(void *context,
+ 							 u64 block_mask));
++#if IS_ENABLED(CONFIG_HYPERV)
++int __init hyperv_swiotlb_detect(void);
++#else
++static inline int __init hyperv_swiotlb_detect(void)
++{
++	return 0;
++}
++#endif
+ 
+ struct hyperv_pci_block_ops {
+ 	int (*read_block)(struct pci_dev *dev, void *buf, unsigned int buf_len,
+-- 
+2.25.1
+
