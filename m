@@ -2,90 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F13EA46BFE3
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 16:50:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DCE4846BFE4
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 16:51:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239100AbhLGPyM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 10:54:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36448 "EHLO
+        id S234340AbhLGPyq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 10:54:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234367AbhLGPyL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 10:54:11 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58D64C061574
-        for <netdev@vger.kernel.org>; Tue,  7 Dec 2021 07:50:41 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0DD0DB81858
-        for <netdev@vger.kernel.org>; Tue,  7 Dec 2021 15:50:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E036C341C1;
-        Tue,  7 Dec 2021 15:50:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638892238;
-        bh=vv7gsTKN6ixW9H1cANn0Y9rohZru9cc1fkVEMi05VTk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=N8XB4Wm4ecqjVwJU7U4Z8SthwWspUtqyWWyYU3q5YWZtBvctstN8z2KZkNWZdcWql
-         tbS82IUxDfhzXg699V1ZoI+gELAc7xQOTVmI6Afijt+WTtRCfanGuLEms9VL7x843B
-         BSZr6rhEhDVIMIJtIkYKdkNbs8Rl4ppw7je4m8tHB6MUusNhxUOofEaVDyd3G52gAC
-         WzbzzcUGaJck/o/YvbXWzh7k/9Tyd+/kFJJ2HX3enV3qq/GfLYygrjYB/WZS/wjKhf
-         rM2JwxvAKIi7da08dv3RuYEuGum7dGeFi2ec8wdO1/3kg9JI3aLAwUTaXh6ZTDUqNT
-         5fLNgdx+VOcyA==
-Date:   Tue, 7 Dec 2021 07:50:37 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Justin Iurman <justin.iurman@uliege.be>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, dsahern@kernel.org,
-        yoshfuji@linux-ipv6.org, linux-mm@kvack.org, cl@linux.com,
-        penberg@kernel.org, rientjes@google.com,
-        iamjoonsoo kim <iamjoonsoo.kim@lge.com>,
-        akpm@linux-foundation.org, vbabka@suse.cz
-Subject: Re: [RFC net-next 2/2] ipv6: ioam: Support for Buffer occupancy
- data field
-Message-ID: <20211207075037.6cda8832@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <262812089.220024115.1638878044162.JavaMail.zimbra@uliege.be>
-References: <20211206211758.19057-1-justin.iurman@uliege.be>
-        <20211206211758.19057-3-justin.iurman@uliege.be>
-        <20211206161625.55a112bb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <262812089.220024115.1638878044162.JavaMail.zimbra@uliege.be>
+        with ESMTP id S229630AbhLGPyp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 10:54:45 -0500
+Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87196C061574;
+        Tue,  7 Dec 2021 07:51:15 -0800 (PST)
+Received: by mail-oi1-x229.google.com with SMTP id s139so28383239oie.13;
+        Tue, 07 Dec 2021 07:51:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=5RC0SUNNieJVoq7OOLew5g5YdYByS++3ZIz6kV69YtQ=;
+        b=c5KSMg8fdndhy8/ZJbbRl1gXY8zK3b8+050UzizWqxoynp0tTaaqLp7Txia8kIAY00
+         +uv0Pl1mFQVCrYOZNAOaYwAn91E4+aN2EORBn0eFF1KGouZiKJmRIBeStDWKoT7Yqh03
+         uWt1yMtlf71SJSMG+WLSQAKg0peL0ru0V/PK1nffAzOgjhMSMMnpHKpl/1rw+tyUg04H
+         nA4rI76QyoS4LC5T6h6a2zm3koDmRuJoo/XBjtOX3CN5HUvZXwRIptjuz5XzFyjbikyz
+         IKAq/0A5p8kkWHCtEYjKdTAkSrpDnAfJRKXtHzVXgFBG/6JuYdxrRwIgQtsNeaJ1HW68
+         4PIQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=5RC0SUNNieJVoq7OOLew5g5YdYByS++3ZIz6kV69YtQ=;
+        b=rqPeSlTdQwMq7MZwejDs2WsFQWmkQ64UztvphGdQGTOytO6GB4VJ7P8LY3OCsFpGTD
+         nWFDYq6uQFxTFpe0f5pTl11yK4g7RvPItBr7cXkENecEDCvfpODyOgcDd5oQGbN4BrJg
+         GXeDAOTUd2YRavsSW8guStW9uHbe4W4+PH50fD27Ua3zT9imGqoyZpOAjPsh8NFa4MjH
+         +1bNn9vmO27NmiyxS8L+rkx4VzA+TklVKsdTk/kgdYFniTvPk97jKRicdkYsGqjzm5NB
+         nlqaZxmzrJ2cZ6v0Q+N+nXZCE5OmnounbrrGf/1hCZ57Sk+gGTayJfwJmAnHqOLnQ/Sg
+         iakA==
+X-Gm-Message-State: AOAM532CSA2LAxIZwUBgZCY+EMKRGvjCEie68tTLyCCInnxDJafNQFAD
+        dzVtavL96IzNDqA1YvnwUEY7ljUwj60=
+X-Google-Smtp-Source: ABdhPJynmIO1zPK9Vosfp27CV7cVpHn4IpltNd/HrRpwB+O970MfkN9rcEfWEIv+zkn5la5oCRhJhA==
+X-Received: by 2002:a54:4494:: with SMTP id v20mr5949442oiv.95.1638892274935;
+        Tue, 07 Dec 2021 07:51:14 -0800 (PST)
+Received: from [172.16.0.2] ([8.48.134.30])
+        by smtp.googlemail.com with ESMTPSA id b17sm3082436ots.66.2021.12.07.07.51.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 07 Dec 2021 07:51:14 -0800 (PST)
+Message-ID: <cfedb3e3-746a-d052-b3f1-09e4b20ad061@gmail.com>
+Date:   Tue, 7 Dec 2021 08:51:13 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.3.2
+Subject: Re: [PATCH] ipv6: fix NULL pointer dereference in ip6_output()
+Content-Language: en-US
+To:     Andrea Righi <andrea.righi@canonical.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Ahmed Abdelsalam <ahabdels@gmail.com>,
+        Andrea Mayer <andrea.mayer@uniroma2.it>
+References: <20211206163447.991402-1-andrea.righi@canonical.com>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <20211206163447.991402-1-andrea.righi@canonical.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 7 Dec 2021 12:54:04 +0100 (CET) Justin Iurman wrote:
-> >> The function kmem_cache_size is used to retrieve the size of a slab
-> >> object. Note that it returns the "object_size" field, not the "size"
-> >> field. If needed, a new function (e.g., kmem_cache_full_size) could be
-> >> added to return the "size" field. To match the definition from the
-> >> draft, the number of bytes is computed as follows:
-> >> 
-> >> slabinfo.active_objs * size
-> > 
-> > Implementing the standard is one thing but how useful is this
-> > in practice?  
-> 
-> IMHO, very useful. To be honest, if I were to implement only a few data
-> fields, these two would be both included. Take the example of CLT [1]
-> where the queue length data field is used to detect low-level issues
-> from inside a L5-7 distributed tracing tool. And this is just one
-> example among many others. The queue length data field is very specific
-> to TX queues, but we could also use the buffer occupancy data field to
-> detect more global loads on a node. Actually, the goal for operators
-> running their IOAM domain is to quickly detect a problem along a path
-> and react accordingly (human or automatic action). For example, if you
-> monitor TX queues along a path and detect an increasing queue on a
-> router, you could choose to, e.g.,  rebalance its queues. With the
-> buffer occupancy, you could detect high-loaded nodes in general and,
-> e.g., rebalance traffic to another branch. Again, this is just one
-> example among others. Apart from more accurate ECMPs, you could for
-> instance deploy a smart (micro)service selection based on different
-> metrics, etc.
-> 
->   [1] https://github.com/Advanced-Observability/cross-layer-telemetry
+[ cc a few SR6 folks ]
 
-Ack, my question was more about whether the metric as implemented
-provides the best signal. Since the slab cache scales dynamically
-(AFAIU) it's not really a big deal if it's full as long as there's
-memory available on the system.
+On 12/6/21 9:34 AM, Andrea Righi wrote:
+> It is possible to trigger a NULL pointer dereference by running the srv6
+> net kselftest (tools/testing/selftests/net/srv6_end_dt46_l3vpn_test.sh):
+> 
+> [  249.051216] BUG: kernel NULL pointer dereference, address: 0000000000000378
+> [  249.052331] #PF: supervisor read access in kernel mode
+> [  249.053137] #PF: error_code(0x0000) - not-present page
+> [  249.053960] PGD 0 P4D 0
+> [  249.054376] Oops: 0000 [#1] PREEMPT SMP NOPTI
+> [  249.055083] CPU: 1 PID: 21 Comm: ksoftirqd/1 Tainted: G            E     5.16.0-rc4 #2
+> [  249.056328] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-2 04/01/2014
+> [  249.057632] RIP: 0010:ip6_forward+0x53c/0xab0
+> [  249.058354] Code: 49 c7 44 24 20 00 00 00 00 48 83 e0 fe 48 8b 40 30 48 3d 70 b2 b5 81 0f 85 b5 04 00 00 e8 7c f2 ff ff 41 89 c5 e9 17 01 00 00 <44> 8b 93 78 03 00 00 45 85 d2 0f 85 92 fb ff ff 49 8b 54 24 10 48
+> [  249.061274] RSP: 0018:ffffc900000cbb30 EFLAGS: 00010246
+> [  249.062042] RAX: 0000000000000000 RBX: 0000000000000000 RCX: ffff8881051d3400
+> [  249.063141] RDX: ffff888104bda000 RSI: 00000000000002c0 RDI: 0000000000000000
+> [  249.064264] RBP: ffffc900000cbbc8 R08: 0000000000000000 R09: 0000000000000000
+> [  249.065376] R10: 0000000000000040 R11: 0000000000000000 R12: ffff888103409800
+> [  249.066498] R13: ffff8881051d3410 R14: ffff888102725280 R15: ffff888103525000
+> [  249.067619] FS:  0000000000000000(0000) GS:ffff88813bc80000(0000) knlGS:0000000000000000
+> [  249.068881] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [  249.069777] CR2: 0000000000000378 CR3: 0000000104980000 CR4: 0000000000750ee0
+> [  249.070907] PKRU: 55555554
+> [  249.071337] Call Trace:
+> [  249.071730]  <TASK>
+> [  249.072070]  ? debug_smp_processor_id+0x17/0x20
+> [  249.072807]  seg6_input_core+0x2bb/0x2d0
+> [  249.073436]  ? _raw_spin_unlock_irqrestore+0x29/0x40
+> [  249.074225]  seg6_input+0x3b/0x130
+> [  249.074768]  lwtunnel_input+0x5e/0xa0
+> [  249.075357]  ip_rcv+0x17b/0x190
+> [  249.075867]  ? update_load_avg+0x82/0x600
+> [  249.076514]  __netif_receive_skb_one_core+0x86/0xa0
+> [  249.077231]  __netif_receive_skb+0x15/0x60
+> [  249.077843]  process_backlog+0x97/0x160
+> [  249.078389]  __napi_poll+0x31/0x170
+> [  249.078912]  net_rx_action+0x229/0x270
+> [  249.079506]  __do_softirq+0xef/0x2ed
+> [  249.080085]  run_ksoftirqd+0x37/0x50
+> [  249.080663]  smpboot_thread_fn+0x193/0x230
+> [  249.081312]  kthread+0x17a/0x1a0
+> [  249.081847]  ? smpboot_register_percpu_thread+0xe0/0xe0
+> [  249.082677]  ? set_kthread_struct+0x50/0x50
+> [  249.083340]  ret_from_fork+0x22/0x30
+> [  249.083926]  </TASK>
+> [  249.090295] ---[ end trace 1998d7ba5965a365 ]---
+> 
+> It looks like commit 0857d6f8c759 ("ipv6: When forwarding count rx stats
+> on the orig netdev") tries to determine the right netdev to account the
+> rx stats, but in this particular case it's failing and the netdev is
+> NULL.
+> 
+> Fallback to the previous method of determining the netdev interface (via
+> skb->dev) to account the rx stats when the orig netdev can't be
+> determined.
+> 
+> Fixes: 0857d6f8c759 ("ipv6: When forwarding count rx stats on the orig netdev")
+> Signed-off-by: Andrea Righi <andrea.righi@canonical.com>
+> ---
+>  net/ipv6/ip6_output.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
+> index ff4e83e2a506..7ca4719ff34c 100644
+> --- a/net/ipv6/ip6_output.c
+> +++ b/net/ipv6/ip6_output.c
+> @@ -472,6 +472,9 @@ int ip6_forward(struct sk_buff *skb)
+>  	u32 mtu;
+>  
+>  	idev = __in6_dev_get_safely(dev_get_by_index_rcu(net, IP6CB(skb)->iif));
+> +	if (unlikely(!idev))
+> +		idev = __in6_dev_get_safely(skb->dev);
+> +
+
+We need to understand why iif is not set - or set to an invalid value.
+
+
+>  	if (net->ipv6.devconf_all->forwarding == 0)
+>  		goto error;
+>  
+> 
+
