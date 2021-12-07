@@ -2,166 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6130146C665
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 22:10:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EE6746C6ED
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 22:48:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235079AbhLGVNx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 16:13:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57306 "EHLO
+        id S236852AbhLGVvv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 16:51:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230374AbhLGVNw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 16:13:52 -0500
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9111FC061574;
-        Tue,  7 Dec 2021 13:10:21 -0800 (PST)
-Received: by mail-ed1-x533.google.com with SMTP id x6so1069544edr.5;
-        Tue, 07 Dec 2021 13:10:21 -0800 (PST)
+        with ESMTP id S233118AbhLGVvv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 16:51:51 -0500
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DB09C061574;
+        Tue,  7 Dec 2021 13:48:20 -0800 (PST)
+Received: by mail-wr1-x433.google.com with SMTP id t9so518841wrx.7;
+        Tue, 07 Dec 2021 13:48:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
+        h=message-id:date:from:to:cc:subject:references:mime-version
          :content-disposition:in-reply-to;
-        bh=lNyqGYp+8MURh7GGGLFcbdIhzRc6e9BqDyhcuibFU64=;
-        b=NngUPNdCBmjC1732LN4AUvtL65nNs04u5pXY45ElQrPkbMRyJs7Gl6NV0q/v0IqlaR
-         CpQqyLFvG/oHo33ilNX8EBatJzGw+E//YKRpadStavG9Vqa8YcHlv8uRQOlNcnDh7RlG
-         k0RdxPUVI/9e2yPdcuqLwtv5JgJSFrzzMZAaxwSJweM+dTCjlT1DhmwjS5Ms7sHxFI8e
-         NLNZZ014W8euCjClQiRNVqwdHVfRjfFTRy2pIr7nA3bIOW9FcAmK6xv1mAXJOK4fTWtm
-         7jNiqHDV/5kL5L3pvj2XMdcTAnV5882v1IA3p2RCTyzGqJYm9WGfZ7SAmcVq+V5ZXsF9
-         b9FQ==
+        bh=gbLwQ0m8b0pppBXMby0Mo4xSpgaAii9KJ/opI9GkC9c=;
+        b=n1GpJ7iAY54wtv/TbHHSyzyg3nQUTOGAW1XsM2eHEJid9WFuM6LW4W/ZCsVrYRzo2/
+         5lF4dJKn7k9/XwY4knC+9A69MGniwgAAqfuWox59oqoY4R1QJhpWekSUM+4I6u+fw7Cb
+         3Q/Lvevls0aS1GOUueAKkjjlSEo827fDmL0BUPZS/j4A6MCxLHzxoJMdODJkWLxD5xkd
+         G/rArx0ex5yqNNm+mXx9KdcgQGU5C6mih0FBi8myP73GX7BUnRUPZGCIsOhhxP1c4mGt
+         ZNsJTjbRrJ8vf0Ccc96ofEapaGmWnAanw0jUkiSLtoF7dvLTTcF9DHruYy0mM9NjHEaj
+         EHtA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
          :mime-version:content-disposition:in-reply-to;
-        bh=lNyqGYp+8MURh7GGGLFcbdIhzRc6e9BqDyhcuibFU64=;
-        b=XNuLClen7NM7OxLWDw+XYX6gun4fA9c2fjLzcyYBu1VKA0GLybXPkDUpCgE1SmbJ+G
-         Fcv741f0ZxHiFi3XgmSiC/IfHRZxoDYjrD5UlaMeAv6Y5PWv2zD1yocNoaGDAmlfQlnh
-         I858b6i4Te4cedRKmg+00lFdC38Sh2EPqdTY5l7YUPxP90Mn1L/No070ANsrJcGY8AWX
-         +Dgf/i9xd2TgX2VuPKTAkIg2mwHByraBlCu7I1apBtAZLDT0TFyFrOYCRV4ow1osTphT
-         sIwCQuk9RRA6XPal8PWHzvZ+xThMbRcrwM3ibm1XzdQrUN2SIaV7hOKCC8SRIkIuvugw
-         cWlA==
-X-Gm-Message-State: AOAM531DUF7GoT/FzYvnhOjH9WHHbGIilSQJQvWToW/0hYHq6xN1WPn2
-        GdnknTkVF8eK1ZzOUsQof+oerRYyo9k=
-X-Google-Smtp-Source: ABdhPJzVHpq/PrfFH9Gj9DJdnTnh373/XyCblBXCY4MvmSlsZO8adJo6MGxo20/Yl8lSkBuLf5iZDA==
-X-Received: by 2002:a17:906:15d0:: with SMTP id l16mr2192486ejd.462.1638911419957;
-        Tue, 07 Dec 2021 13:10:19 -0800 (PST)
-Received: from skbuf ([188.25.173.50])
-        by smtp.gmail.com with ESMTPSA id co10sm575191edb.83.2021.12.07.13.10.19
+        bh=gbLwQ0m8b0pppBXMby0Mo4xSpgaAii9KJ/opI9GkC9c=;
+        b=BazUtyadY7gMGI6Q+XAYKFmlOwpMKfDUafZ7K/h+86/jiiYa2tImgnphlI3qsZd2dM
+         CwcMRVg+/eQfnL7TExJc739JOPjGrq4zrcktLhgG+T4PKpJlr7G0juVo2xHa7RevRigg
+         XieTZYFZTextX7upuTyBZHBnq9ozuyqu3UZLmbLQDKEQ3NpVxZvFrWP5NUwMhvetkSQ5
+         aAioYsPaupQJCgMdlhyC1Oz8wTqdNuwXNhQ6eH/fp1BjDy2QI7omlUtr7yh4QSZZPgQ+
+         4543US3TB2J/XOE04/rqNCmEvxUM1XWS9aEfmQ+F4RE9ZldpeAgkjhxlGS7WFRofvdT+
+         aasw==
+X-Gm-Message-State: AOAM531HjGFLxusSQfoclPGLHa3Beg9ACHFfIzircaa1MPyxSHXl1uOU
+        20vDM1bROmC39AKlX3DECP6Jl65UgMI=
+X-Google-Smtp-Source: ABdhPJxZPMRmyJXA2g80H3/RYM7JYFhMCa25iKrnzVF1RQ9yS9E2eJgYl4U8eZUGCX9xY5JgKT4MTw==
+X-Received: by 2002:adf:b35d:: with SMTP id k29mr51986234wrd.466.1638913698308;
+        Tue, 07 Dec 2021 13:48:18 -0800 (PST)
+Received: from Ansuel-xps. (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
+        by smtp.gmail.com with ESMTPSA id f15sm965373wmg.30.2021.12.07.13.48.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Dec 2021 13:10:19 -0800 (PST)
-Date:   Tue, 7 Dec 2021 23:10:18 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Ansuel Smith <ansuelsmth@gmail.com>,
+        Tue, 07 Dec 2021 13:48:17 -0800 (PST)
+Message-ID: <61afd6a1.1c69fb81.3281e.5fff@mx.google.com>
+X-Google-Original-Message-ID: <Ya/Wj2lJLGOO4nly@Ansuel-xps.>
+Date:   Tue, 7 Dec 2021 22:47:59 +0100
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org
 Subject: Re: [net-next RFC PATCH 0/6] Add support for qca8k mdio rw in
  Ethernet packet
-Message-ID: <20211207211018.cljhqkjyyychisl5@skbuf>
 References: <20211207145942.7444-1-ansuelsmth@gmail.com>
- <Ya96pwC1KKZDO9et@lunn.ch>
- <77203cb2-ba90-ff01-5940-2e9b599f648f@gmail.com>
+ <Ya+q02HlWsHMYyAe@lunn.ch>
+ <61afadb9.1c69fb81.7dfad.19b1@mx.google.com>
+ <Ya+yzNDMorw4X9CT@lunn.ch>
+ <61afb452.1c69fb81.18c6f.242e@mx.google.com>
+ <20211207205219.4eoygea6gey4iurp@skbuf>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <77203cb2-ba90-ff01-5940-2e9b599f648f@gmail.com>
+In-Reply-To: <20211207205219.4eoygea6gey4iurp@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 07, 2021 at 10:49:43AM -0800, Florian Fainelli wrote:
-> On 12/7/21 7:15 AM, Andrew Lunn wrote:
-> > On Tue, Dec 07, 2021 at 03:59:36PM +0100, Ansuel Smith wrote:
-> >> Hi, this is still WIP and currently has some problem but I would love if
-> >> someone can give this a superficial review and answer to some problem
-> >> with this.
-> >>
-> >> The main reason for this is that we notice some routing problem in the
-> >> switch and it seems assisted learning is needed. Considering mdio is
-> >> quite slow due to the indirect write using this Ethernet alternative way
-> >> seems to be quicker.
-> >>
-> >> The qca8k switch supports a special way to pass mdio read/write request
-> >> using specially crafted Ethernet packet.
+On Tue, Dec 07, 2021 at 10:52:19PM +0200, Vladimir Oltean wrote:
+> On Tue, Dec 07, 2021 at 08:21:52PM +0100, Ansuel Smith wrote:
+> > On Tue, Dec 07, 2021 at 08:15:24PM +0100, Andrew Lunn wrote:
+> > > > The qca tag header provide a TYPE value that refer to a big list of
+> > > > Frame type. In all of this at value 2 we have the type that tells us
+> > > > that is a READ_WRITE_REG_ACK (aka a mdio rw Ethernet packet)
+> > > > 
+> > > > The idea of using the tagger is to skip parsing the packet 2 times
+> > > > considering the qca tag header is present at the same place in both
+> > > > normal packet and mdio rw Ethernet packet.
+> > > > 
+> > > > Your idea would be hook this before the tagger and parse it?
+> > > > I assume that is the only way if this has to be generilized. But I
+> > > > wonder if this would create some overhead by the double parsing.
+> > > 
+> > > So it seems i remembered this incorrectly. Marvell call this Remote
+> > > Management Unit, RMU. And RMU makes use of bits inside the Marvell
+> > > Tag. I was thinking it was outside of the tag.
+> > > 
+> > > So, yes, the tagger does need to be involved in this.
+> > > 
+> > > The initial design of DSA was that the tagger and main driver were
+> > > kept separate. This has been causing us problems recently, we have use
+> > > cases where we need to share information between the tagger and the
+> > > driver. This looks like it is going to be another case of that.
+> > > 
+> > > 	Andrew
 > > 
-> > Oh! Cool! Marvell has this as well, and i suspect a few others. It is
-> > something i've wanted to work on for a long long time, but never had
-> > the opportunity.
+> > I mean if you check the code this is still somewhat ""separate"".
+> > I ""abuse"" the dsa port priv to share the required data.
+> > (I allocate a different struct... i put it in qca8k_priv and i set every
+> > port priv to this struct)
 > > 
-> > This also means that, even if you are focusing on qca8k, please try to
-> > think what could be generic, and what should specific to the
-> > qca8k. The idea of sending an Ethernet frame and sometime later
-> > receiving a reply should be generic and usable for other DSA
-> > drivers. The contents of those frames needs to be driver specific.
-> > How we hook this into MDIO might also be generic, maybe.
-> > 
-> > I will look at your questions later, but soon.
+> > Wonder if we can add something to share data between the driver and the
+> > port so the access that from the tagger. (something that doesn't use the
+> > port priv)
 > 
-> There was a priori attempt from Vivien to add support for mv88e6xxx over
-> RMU frames:
+> The one problem relevant to this submission among those referenced by
+> Andrew is that dp->priv needs to be allocated by the Ethernet switch
+> driver, although it is used by the tagging protocol driver. So they
+> aren't really 'separate', nor can they be, the way dp->priv is currently
+> designed, it can only be "abused", not really "used".
 > 
-> https://www.mail-archive.com/netdev@vger.kernel.org/msg298317.html
+> The DSA design allows in principle for any switch driver to return any
+> protocol it desires in ->get_tag_protocol(). I occasionally test various
+> tagger submissions by hacking dsa_loop to do just that. But your
+> tag_qca.c driver would have a pretty unpleasant surprise if it was to be
+> paired to any other switch driver than qca8k, because that other driver
+> would either not allocate memory for dp->priv, or (worse) allocate some
+> other type of structure, expected to be used differently etc.
+>
+> An even bigger complication is created by the fact that we can
+> dynamically change tagging protocols in certain cases (dsa <-> edsa,
+> ocelot <-> ocelot-8021q), and the current design doesn't really scale:
+> if any tagging protocol required its own dp->priv format, we may end up
+> with bugs such as the driver not freeing the old dp->priv and setting up
+> the new one, when the tagging protocol changes. These mistakes are all
+> too easy to make currently.
 > 
-> This gets interesting because the switch's control path moves from MDIO
-> to Ethernet and there is not really an "ethernet bus" though we could
-> certainly come up with one. We have mdio-i2c, so maybe we should have
-> mdio-ethernet?
+> Another potential issue, which I don't see present here, but still
+> worth watching out for, is that the tagger cannot use symbols exported
+> by the switch, and vice versa. Otherwise the tagger cannot be inserted
+> into the kernel when built as module, due to missing symbols provided by
+> the switch. And the switch will not probe until it has a tagger.
+> 
+> I'm afraid we need to make a decision now whether we keep supporting the
+> separation between taggers and switch drivers, especially since the
+> tagger could become a bus provider for the switch driver. We need to
+> weigh the pros and cons.
+> 
+> I thought about what would be needed and I think we'd need tagger-owned
+> per-switch-tree private data. But this implies that there needs to be a
+> hook in the tagging protocol driver that notifies it when a certain
+> struct dsa_switch_tree *dst binds and unbinds to a certain tagger.
+> Then it could pick and choose the ports that need dp->priv configured in
+> a certain way: some taggers need the dp->priv of user ports to hold
+> something per port, others need the dp->priv of _all_ user ports to
+> point to something shared, others (like yours) apparently need the
+> dp->priv of the CPU port to hold something. This would become something
+> handled and owned exclusively by the tagger.
+> 
+> Ansuel, would something like this help you in any way?
 
-This raises interesting questions. I see two distinct cases:
+I agree on all the concern you pointed out. IMHO, current implementation
+of the dsa port priv is a bit confusing and someone can really do bad
+things with it. (like it's done in this implementation)
 
-1. "dual I/O": the switch probes initially over a standard bus (MDIO,
-   SPI, I2C) then at some point transitions towards I/O through the
-   tagger.  This would be the case when there is some preparation work
-   to be done (maybe the CPU port needs to be brought up, maybe there is
-   a firmware to be uploaded to the switch's embedded microcontroller
-   such that the expected remote management protocol is supported, etc).
-   It would also be the case when multiple CPU ports are supported (and
-   changing between CPU ports), because we could end up bringing a
-   certain CPU port down, and the register I/O would need to be
-   temporarily done over MDIO before bringing the other CPU port up.
+The main problem here is that we really need a way to have shared data
+between tagger and dsa driver. I also think that it would be limiting
+using this only for mdio. For example qca8k can autocast mib with
+Ethernet port and that would be another feature that the tagger would
+handle.
 
-2. "single I/O": the switch needs no such configuration, and in this
-    case, it could in principle probe over an "Ethernet bus" rather than
-    a standard bus as mentioned above.
+I like the idea of tagger-owend per-switch-tree private data.
+Do we really need to hook logic?
+Wonder if something like that would work:
+1. Each tagger declare size of his private data (if any).
+2. Change tag dsa helper make sure the privata data in dst gets
+   allocated and freed.
+3. We create some helper to get the tagger private data pointer that
+   dsa driver will use. (an error is returned if no data is present)
+4. Tagger will use the dst to access his own data.
 
-I don't know which case is going to be more common, honestly. The
-difference between the two is that the former would work using the
-existing infrastructure (bus types) we have today, whereas the latter
-would (maybe) need an "Ethernet bus" as mentioned by Vivien and Florian.
+In theory that way we should be able to make a ""connection"" between
+dsa driver and the tagger and prevent any sort of strange stuff that
+could result in bug/kernel panic.
 
-I'm not completely convinced, though. The argument for an "Ethernet bus"
-seems to be that any Ethernet controller may need to set up such a
-thing, independently of being a DSA master. In Vivien's link, an example
-is given where we have "Control path via port 1, Data path via port port 3".
-But I don't know, this separation seems pretty artificial and ultimately
-boils down to configuration. Like it or not, in that particular example,
-both ports 1 and 3 are CPU ports, and both eth1 and eth0 are DSA masters.
-The fact that they are used asymmetrically should pretty much not matter.
+I mean for the current task (mdio in ethernet packet) we just need to
+put data, send the skb and wait for a response (and after parsing) get
+the data from a response skb.
 
-I think a fair simplifying assumption is that switch management
-protocols will never be spoken through interfaces that aren't DSA
-masters (because being a DSA master _implies_ having a physical link to
-a DSA switch). And if we have this simplifying factor, we could consider
-moving dsa_tree_setup_master() somewhere earlier in the DSA probe path,
-and just make "type 2" / "single I/O" switches be platform devices, with
-a more-or-less empty probe function (just calls dsa_register_switch),
-and do their hardware init in ->setup, which is _after_
-dsa_tree_setup_master and therefore after the tagging protocol has bound
-to the DSA switch tree and is prepared to handle I/O. So no bus really
-needed.
-
-Although I have to point this out. An "Ethernet bus" would be one of the
-most unreliable buses out there. Consider that the user may run "ip link
-set eth0 down" at any given time. What do you do, as a switch driver on
-an Ethernet bus, when your DSA master goes down? Postpone all your I/O?
-Error out on I/O? Unbind?
-
-Even moreso, there are currently code paths in DSA that can only be done
-while the DSA master is down (changing the tagging protocol comes to
-mind). So does this mean that those code paths are simply not available
-when the I/O is over Ethernet? Or does it mean that Ethernet cannot be
-the sole I/O method of any switch driver, due to it being unreliable?
-And if the latter, this is yet another argument against "Ethernet as bus".
-A bus is basically only there for probing purposes, but if you need to
-have a primary I/O method beside Ethernet, you already have a bus and
-don't need another.
+-- 
+	Ansuel
