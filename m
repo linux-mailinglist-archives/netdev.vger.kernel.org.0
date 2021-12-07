@@ -2,100 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 577ED46BA62
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 12:49:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A640B46BA73
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 12:54:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235869AbhLGLwc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 06:52:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34994 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231392AbhLGLwc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 06:52:32 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 462EBC061574;
-        Tue,  7 Dec 2021 03:49:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=80kReiUlwekNbojqIZKz80Q8wRHoH2sdw+ED92mwvfs=; b=aJKv259UGKNYmARmx6J1Mfsp1O
-        l32NaB4CHTd81W2usVx5wD5sqbeFGlQzqdu4fEYj0g1lT1uWMzqf6Bq5Z7sC1B+nrXNO2IEEmMlsU
-        0RQQhWC3uYYxQW6hSQ91/ftqFS5sViIWZAhjJLM0jmnyl1B8okT4f5YeKio/uJz4TeCOb7K1oTDUZ
-        yhnhlM/vAuNfgb14x1AeMH7Gc1coo4CqjgXuqNeV4WjTxSll+dG+mJupWlOugYTvlvdz6zNy5RB+I
-        agupslukVpNtAgTBBwtiOFjWlELUk2tUPIc/k/L02krNZtSdEnr2QfEQsHnMplMN8qYtMftY97Fl3
-        q71jRTAg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:56144)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1muYxt-00066Q-OO; Tue, 07 Dec 2021 11:48:57 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1muYxo-0005IY-Uo; Tue, 07 Dec 2021 11:48:52 +0000
-Date:   Tue, 7 Dec 2021 11:48:52 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+        id S235596AbhLGL5h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 06:57:37 -0500
+Received: from serv108.segi.ulg.ac.be ([139.165.32.111]:39722 "EHLO
+        serv108.segi.ulg.ac.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230001AbhLGL5g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 06:57:36 -0500
+Received: from mbx12-zne.ulg.ac.be (serv470.segi.ulg.ac.be [139.165.32.199])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by serv108.segi.ulg.ac.be (Postfix) with ESMTPS id 73CEF2011FC5;
+        Tue,  7 Dec 2021 12:54:04 +0100 (CET)
+DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be 73CEF2011FC5
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uliege.be;
+        s=ulg20190529; t=1638878044;
+        bh=h0esAj2xKshe76Bcdcb7j84+3ZjwY3yEI4Sjor/fygY=;
+        h=Date:From:Reply-To:To:Cc:In-Reply-To:References:Subject:From;
+        b=NIGDNM4Fl3gIhz9ZecMtgDv0BvV1HlVcFlmdf/vbiO7CoQ4yeftfbRTW4+sf/Zx50
+         9yB2QnrOt+5XIcVfgcy5ua1EJwnhLPfwtD5RzG5GM7UHBJFvAAqoSdTSIeaDRRfNlE
+         fL9U3v7gvRRTvZm0b9IGBYIW0Mhm/W8AoC2pFeskWlbqn88JE7vyo//yuuSRmDQoX2
+         JfLHYf4NcxTes+0OhxGa7vScLp72cPoRdSOnalcC41O/jjw5948p//0cbBYvsH4Y4Y
+         V4H8RF2uKhM4zqWIepWyIGaUMzamiJNgmPEf5jOR9kAr2/KPTI8Dl2Satd8y99I8xE
+         6Dnu/u2L9fGRg==
+Received: from localhost (localhost [127.0.0.1])
+        by mbx12-zne.ulg.ac.be (Postfix) with ESMTP id 6645F6016F3FB;
+        Tue,  7 Dec 2021 12:54:04 +0100 (CET)
+Received: from mbx12-zne.ulg.ac.be ([127.0.0.1])
+        by localhost (mbx12-zne.ulg.ac.be [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id F8dmo4N07pEJ; Tue,  7 Dec 2021 12:54:04 +0100 (CET)
+Received: from mbx12-zne.ulg.ac.be (mbx12-zne.ulg.ac.be [139.165.32.199])
+        by mbx12-zne.ulg.ac.be (Postfix) with ESMTP id 438536008D432;
+        Tue,  7 Dec 2021 12:54:04 +0100 (CET)
+Date:   Tue, 7 Dec 2021 12:54:04 +0100 (CET)
+From:   Justin Iurman <justin.iurman@uliege.be>
+Reply-To: Justin Iurman <justin.iurman@uliege.be>
 To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Colin Foster <colin.foster@in-advantage.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH v4 net-next 5/5] net: mscc: ocelot: expose ocelot wm
- functions
-Message-ID: <Ya9KJAYEypSs6+dO@shell.armlinux.org.uk>
-References: <20211204182858.1052710-1-colin.foster@in-advantage.com>
- <20211204182858.1052710-6-colin.foster@in-advantage.com>
- <20211206180922.1efe4e51@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, dsahern@kernel.org,
+        yoshfuji@linux-ipv6.org, linux-mm@kvack.org, cl@linux.com,
+        penberg@kernel.org, rientjes@google.com,
+        iamjoonsoo kim <iamjoonsoo.kim@lge.com>,
+        akpm@linux-foundation.org, vbabka@suse.cz
+Message-ID: <262812089.220024115.1638878044162.JavaMail.zimbra@uliege.be>
+In-Reply-To: <20211206161625.55a112bb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20211206211758.19057-1-justin.iurman@uliege.be> <20211206211758.19057-3-justin.iurman@uliege.be> <20211206161625.55a112bb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Subject: Re: [RFC net-next 2/2] ipv6: ioam: Support for Buffer occupancy
+ data field
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211206180922.1efe4e51@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [81.240.24.148]
+X-Mailer: Zimbra 8.8.15_GA_4018 (ZimbraWebClient - FF94 (Linux)/8.8.15_GA_4026)
+Thread-Topic: ipv6: ioam: Support for Buffer occupancy data field
+Thread-Index: YNRqiUsLNmHepOUpxfeZtjCAUfYBYQ==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 06, 2021 at 06:09:22PM -0800, Jakub Kicinski wrote:
-> On Sat,  4 Dec 2021 10:28:58 -0800 Colin Foster wrote:
-> > Expose ocelot_wm functions so they can be shared with other drivers.
-> > 
-> > Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
-> > Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Hi Jakub,
+
+>> [...]
+>>
+>> The function kmem_cache_size is used to retrieve the size of a slab
+>> object. Note that it returns the "object_size" field, not the "size"
+>> field. If needed, a new function (e.g., kmem_cache_full_size) could be
+>> added to return the "size" field. To match the definition from the
+>> draft, the number of bytes is computed as follows:
+>> 
+>> slabinfo.active_objs * size
+>> 
+>> Thoughts?
 > 
-> Yeah.. but there are no in-tree users of these. What's the story?
-> 
-> I see Vladimir reviewed this so presumably we trust that the users 
-> will materialize rather quickly?
+> Implementing the standard is one thing but how useful is this
+> in practice?
 
-Thank you for highlighting this.
+IMHO, very useful. To be honest, if I were to implement only a few data
+fields, these two would be both included. Take the example of CLT [1]
+where the queue length data field is used to detect low-level issues
+from inside a L5-7 distributed tracing tool. And this is just one
+example among many others. The queue length data field is very specific
+to TX queues, but we could also use the buffer occupancy data field to
+detect more global loads on a node. Actually, the goal for operators
+running their IOAM domain is to quickly detect a problem along a path
+and react accordingly (human or automatic action). For example, if you
+monitor TX queues along a path and detect an increasing queue on a
+router, you could choose to, e.g.,  rebalance its queues. With the
+buffer occupancy, you could detect high-loaded nodes in general and,
+e.g., rebalance traffic to another branch. Again, this is just one
+example among others. Apart from more accurate ECMPs, you could for
+instance deploy a smart (micro)service selection based on different
+metrics, etc.
 
-Vladimir told me recently over the phylink get_interfaces vs get_caps
-change for DSA, and I quote:
-
-  David who applied your patch can correct me, but my understanding from
-  the little time I've spent on netdev is that dead code isn't a candidate
-  for getting accepted into the tree, even more so in the last few days
-  before the merge window, from where it got into v5.16-rc1.
-  ...
-  So yes, I take issue with that as a matter of principle, I very much
-  expect that a kernel developer of your experience does not set a
-  precedent and a pretext for people who submit various shady stuff to the
-  kernel just to make their downstream life easier.
-
-This sounds very much like double-standards, especially as Vladimir
-reviewed this.
-
-I'm not going to be spiteful NAK these patches, because we all need to
-get along with each other. I realise that it is sometimes useful to get
-code merged that facilitates or aids further development - provided
-that development is submitted in a timely manner.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+  [1] https://github.com/Advanced-Observability/cross-layer-telemetry
