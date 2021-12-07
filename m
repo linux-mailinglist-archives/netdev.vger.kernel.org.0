@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 024EB46AFCA
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 02:31:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A8F9146AFD3
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 02:33:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232745AbhLGBeu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Dec 2021 20:34:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33822 "EHLO
+        id S1351750AbhLGBfG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Dec 2021 20:35:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231773AbhLGBej (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 20:34:39 -0500
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBF92C061746
-        for <netdev@vger.kernel.org>; Mon,  6 Dec 2021 17:31:09 -0800 (PST)
-Received: by mail-pl1-x62d.google.com with SMTP id u11so8302574plf.3
-        for <netdev@vger.kernel.org>; Mon, 06 Dec 2021 17:31:09 -0800 (PST)
+        with ESMTP id S242801AbhLGBel (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 20:34:41 -0500
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5650C061746
+        for <netdev@vger.kernel.org>; Mon,  6 Dec 2021 17:31:11 -0800 (PST)
+Received: by mail-pl1-x636.google.com with SMTP id y8so8309103plg.1
+        for <netdev@vger.kernel.org>; Mon, 06 Dec 2021 17:31:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=GzhZ/fGH2RAlWayhRGzZ0dPR1g0dvGblYFvD22Lbl/U=;
-        b=qGzsf/ZKI60LV3A8/zyiTwCtYJUk5AlY75z15BQPScnwTKhOCsnCy16vTePjnAsAY9
-         UsEPrfSKsZW7qC5/owZyQrodVkhHvRw25ZF+YZPwwhoJZAOiG3z9AGu18jafGeZSP2vL
-         JmX6pqNWyOmY6QvCskYg8DIQGePeksOIzwTK5Uxtyu78qtxNT5UjppU3rdelHsXG13Ie
-         qee/sgiW1xrpOUcHZhNhwUz0fGPNaOwQekQzENXYtuFcef4Gk1Y5q67R1PxfonvzcqSA
-         EnQzIGdToKnqop0D3fMGnqxIVk+i+L9hzfFEakFAcJcpRjMw57NqnbFEyyxxVx/Q2N7v
-         4GaA==
+        bh=KEBzCxUZxGrDGVJ+OdYncdD+kJPJ8PS+fS3F1qSzyJk=;
+        b=eD1wOfeAp5vkKpeD//I1d1bwdtZhvn7wPrqj4cR+jCwLGNSgF7EcshaBxCt/EC0ANw
+         5oWRy02ulueRZJDcMuW9K/MSYuA4/Rm9n4S8dL0sbdZOCGnJIlHoYwNr+oK3OCNsax4Y
+         tNBFydNGn+XpRtM3i4sP7pT3FfVfMLwSOgE2gYXhLa9Fe4Z86T3ZMJNBTFf1vjuScRos
+         +YSubI1mETx12sec7rhPfq0AYNJ2OWgl9EmZiEvEViZ6LH+T84RQrkOlwf0jOtDxq3Ns
+         MCzmS3sbMnO2DHjFNfndy/06DW4TwNXOUclfbLaxjpYAaQ8mdLa8eyaF+n6ovTdrX6g7
+         oDWg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=GzhZ/fGH2RAlWayhRGzZ0dPR1g0dvGblYFvD22Lbl/U=;
-        b=sNZGsWiPdCckcGzkqsMgvS2fb9NCj6/MbBtOzexXlScnaKD4sepvVikppVSSP6+lP/
-         6FY+Ypm1HXtTveHpQX89Q026/IJsGl94NyFqL2sdeQqGsPTldMaAhsCQaWyhxq92KtZL
-         57FvfOZVvJhw199hYYCWsHX3DeSUZbBWSi77vt/SLCRYYqkdPH11BOldbhBFdojr0Uml
-         BKNlAmkoPaO71DQ2ObyvO9NYDeu2y/A7V9msSz6e7L141hVOSQI1Vc3JaJEcz3yEIuE0
-         COZtnNsO93wrF0D9J5CH369T27yEBTEOWi638yvY7QK/p+4EZewXpyu3jMLG9MTj0GXU
-         4H7w==
-X-Gm-Message-State: AOAM531KAva1joGmjypsFUWmGlHx6NW9Q3nhte3B7lIQcGvh7/VmvS/N
-        PNDOurWq/ncg/4qdbrCt16U=
-X-Google-Smtp-Source: ABdhPJwszoQJ1zP/3kWJ+w56PiRb5NXlmXmfvqHFHvLt6Bz10ztPGnbuUt/9B+1AGZDZrY4hm1XNEg==
-X-Received: by 2002:a17:90a:b382:: with SMTP id e2mr2727133pjr.181.1638840669509;
-        Mon, 06 Dec 2021 17:31:09 -0800 (PST)
+        bh=KEBzCxUZxGrDGVJ+OdYncdD+kJPJ8PS+fS3F1qSzyJk=;
+        b=XpWHPUbIoVR14n7Dzap5guFf/yThH10vtIvqEe8M1BTnx2lHkc7rIGnEYM9vIFf+RK
+         YUD0pXjnvnfVNUEs1rvnf3BSUFUCO9fAymKpGFjYJOaVhqKbwkCn38jVdgDha0FEjpXs
+         A1wnC+SW3Zymr+dMqAct4b/lpueejPJaiy21mM7SBqN3buIpbsvSifTjxOuKU4VICqor
+         I9VEdmdctb025JxthtRrhx0BQGBgMwlb5eL9jZnY9407ql8J9faL6muxl9d5o2sIPO9D
+         nfC+0za0t5yI1Ig6IWX3n+qD7WynFWP4j03R9Ov7YONDky9PrsMfAId2AU9LLs7RvHUF
+         o2YA==
+X-Gm-Message-State: AOAM531QsnN2zyuWQMvC6eDwu6xC0ZjDc0uB4F1nZlH0F7mkeHe++uwR
+        lpqLsRvzqRcS0urZOJe+vJw=
+X-Google-Smtp-Source: ABdhPJw3BVbpamXAzsE/F59Wno145dup+eCWdgm85Qyk1LrANjQmUP/z/tGl9BLX6YSZlz10du+i+g==
+X-Received: by 2002:a17:90b:2290:: with SMTP id kx16mr2743228pjb.193.1638840671306;
+        Mon, 06 Dec 2021 17:31:11 -0800 (PST)
 Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:518c:39bf:c3e8:ffe2])
-        by smtp.gmail.com with ESMTPSA id u6sm13342907pfg.157.2021.12.06.17.31.08
+        by smtp.gmail.com with ESMTPSA id u6sm13342907pfg.157.2021.12.06.17.31.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Dec 2021 17:31:08 -0800 (PST)
+        Mon, 06 Dec 2021 17:31:10 -0800 (PST)
 From:   Eric Dumazet <eric.dumazet@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev <netdev@vger.kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH net-next 06/13] inet: add net device refcount tracker to struct fib_nh_common
-Date:   Mon,  6 Dec 2021 17:30:32 -0800
-Message-Id: <20211207013039.1868645-7-eric.dumazet@gmail.com>
+Subject: [PATCH net-next 07/13] ax25: add net device refcount tracker
+Date:   Mon,  6 Dec 2021 17:30:33 -0800
+Message-Id: <20211207013039.1868645-8-eric.dumazet@gmail.com>
 X-Mailer: git-send-email 2.34.1.400.ga245620fadb-goog
 In-Reply-To: <20211207013039.1868645-1-eric.dumazet@gmail.com>
 References: <20211207013039.1868645-1-eric.dumazet@gmail.com>
@@ -69,102 +69,65 @@ From: Eric Dumazet <edumazet@google.com>
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- include/net/ip_fib.h     |  2 ++
- net/ipv4/fib_semantics.c | 12 +++++++-----
- net/ipv6/route.c         |  2 ++
- 3 files changed, 11 insertions(+), 5 deletions(-)
+ include/net/ax25.h  | 3 +++
+ net/ax25/ax25_dev.c | 8 ++++----
+ 2 files changed, 7 insertions(+), 4 deletions(-)
 
-diff --git a/include/net/ip_fib.h b/include/net/ip_fib.h
-index 3417ba2d27ad6a1b5612a8855d2788f10d9fdf25..c4297704bbcbaac0ad5da1675ae47dee1e133df4 100644
---- a/include/net/ip_fib.h
-+++ b/include/net/ip_fib.h
-@@ -79,6 +79,7 @@ struct fnhe_hash_bucket {
+diff --git a/include/net/ax25.h b/include/net/ax25.h
+index 03d409de61ad0e7d37ba0e805a07475e40bab478..526e49589197909b459de068222c4a9cf76050ba 100644
+--- a/include/net/ax25.h
++++ b/include/net/ax25.h
+@@ -229,7 +229,10 @@ struct ctl_table;
  
- struct fib_nh_common {
- 	struct net_device	*nhc_dev;
-+	netdevice_tracker	nhc_dev_tracker;
- 	int			nhc_oif;
- 	unsigned char		nhc_scope;
- 	u8			nhc_family;
-@@ -111,6 +112,7 @@ struct fib_nh {
- 	int			nh_saddr_genid;
- #define fib_nh_family		nh_common.nhc_family
- #define fib_nh_dev		nh_common.nhc_dev
-+#define fib_nh_dev_tracker	nh_common.nhc_dev_tracker
- #define fib_nh_oif		nh_common.nhc_oif
- #define fib_nh_flags		nh_common.nhc_flags
- #define fib_nh_lws		nh_common.nhc_lwtstate
-diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
-index fde7797b580694bb3924c5c6e9560cf04fd67387..3cad543dc7477aa94140d240ecd2014093befddd 100644
---- a/net/ipv4/fib_semantics.c
-+++ b/net/ipv4/fib_semantics.c
-@@ -208,7 +208,7 @@ static void rt_fibinfo_free_cpus(struct rtable __rcu * __percpu *rtp)
- 
- void fib_nh_common_release(struct fib_nh_common *nhc)
- {
--	dev_put(nhc->nhc_dev);
-+	dev_put_track(nhc->nhc_dev, &nhc->nhc_dev_tracker);
- 	lwtstate_put(nhc->nhc_lwtstate);
- 	rt_fibinfo_free_cpus(nhc->nhc_pcpu_rth_output);
- 	rt_fibinfo_free(&nhc->nhc_rth_input);
-@@ -1006,7 +1006,7 @@ static int fib_check_nh_v6_gw(struct net *net, struct fib_nh *nh,
- 	err = ipv6_stub->fib6_nh_init(net, &fib6_nh, &cfg, GFP_KERNEL, extack);
- 	if (!err) {
- 		nh->fib_nh_dev = fib6_nh.fib_nh_dev;
--		dev_hold(nh->fib_nh_dev);
-+		dev_hold_track(nh->fib_nh_dev, &nh->fib_nh_dev_tracker, GFP_KERNEL);
- 		nh->fib_nh_oif = nh->fib_nh_dev->ifindex;
- 		nh->fib_nh_scope = RT_SCOPE_LINK;
- 
-@@ -1090,7 +1090,7 @@ static int fib_check_nh_v4_gw(struct net *net, struct fib_nh *nh, u32 table,
- 		if (!netif_carrier_ok(dev))
- 			nh->fib_nh_flags |= RTNH_F_LINKDOWN;
- 		nh->fib_nh_dev = dev;
--		dev_hold(dev);
-+		dev_hold_track(dev, &nh->fib_nh_dev_tracker, GFP_ATOMIC);
- 		nh->fib_nh_scope = RT_SCOPE_LINK;
- 		return 0;
- 	}
-@@ -1144,7 +1144,7 @@ static int fib_check_nh_v4_gw(struct net *net, struct fib_nh *nh, u32 table,
- 			       "No egress device for nexthop gateway");
- 		goto out;
- 	}
--	dev_hold(dev);
-+	dev_hold_track(dev, &nh->fib_nh_dev_tracker, GFP_ATOMIC);
- 	if (!netif_carrier_ok(dev))
- 		nh->fib_nh_flags |= RTNH_F_LINKDOWN;
- 	err = (dev->flags & IFF_UP) ? 0 : -ENETDOWN;
-@@ -1178,7 +1178,7 @@ static int fib_check_nh_nongw(struct net *net, struct fib_nh *nh,
- 	}
- 
- 	nh->fib_nh_dev = in_dev->dev;
--	dev_hold(nh->fib_nh_dev);
-+	dev_hold_track(nh->fib_nh_dev, &nh->fib_nh_dev_tracker, GFP_ATOMIC);
- 	nh->fib_nh_scope = RT_SCOPE_HOST;
- 	if (!netif_carrier_ok(nh->fib_nh_dev))
- 		nh->fib_nh_flags |= RTNH_F_LINKDOWN;
-@@ -1508,6 +1508,8 @@ struct fib_info *fib_create_info(struct fib_config *cfg,
- 		err = -ENODEV;
- 		if (!nh->fib_nh_dev)
- 			goto failure;
-+		netdev_tracker_alloc(nh->fib_nh_dev, &nh->fib_nh_dev_tracker,
-+				     GFP_KERNEL);
- 	} else {
- 		int linkdown = 0;
- 
-diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index 8d834f901b483edf75c493620d38f979a4bcbf69..4d02a329ab6004169ebd31c5474ce8be5553d569 100644
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -3628,6 +3628,8 @@ int fib6_nh_init(struct net *net, struct fib6_nh *fib6_nh,
- 	}
- 
- 	fib6_nh->fib_nh_dev = dev;
-+	netdev_tracker_alloc(dev, &fib6_nh->fib_nh_dev_tracker, gfp_flags);
+ typedef struct ax25_dev {
+ 	struct ax25_dev		*next;
 +
- 	fib6_nh->fib_nh_oif = dev->ifindex;
- 	err = 0;
- out:
+ 	struct net_device	*dev;
++	netdevice_tracker	dev_tracker;
++
+ 	struct net_device	*forward;
+ 	struct ctl_table_header *sysheader;
+ 	int			values[AX25_MAX_VALUES];
+diff --git a/net/ax25/ax25_dev.c b/net/ax25/ax25_dev.c
+index d0a043a51848b3141a6e1f2a7b1ed53a51931ae3..256fadb94df3125ddc2f5ed5f8b1c91d6e243546 100644
+--- a/net/ax25/ax25_dev.c
++++ b/net/ax25/ax25_dev.c
+@@ -58,7 +58,7 @@ void ax25_dev_device_up(struct net_device *dev)
+ 
+ 	dev->ax25_ptr     = ax25_dev;
+ 	ax25_dev->dev     = dev;
+-	dev_hold(dev);
++	dev_hold_track(dev, &ax25_dev->dev_tracker, GFP_ATOMIC);
+ 	ax25_dev->forward = NULL;
+ 
+ 	ax25_dev->values[AX25_VALUES_IPDEFMODE] = AX25_DEF_IPDEFMODE;
+@@ -114,7 +114,7 @@ void ax25_dev_device_down(struct net_device *dev)
+ 		ax25_dev_list = s->next;
+ 		spin_unlock_bh(&ax25_dev_lock);
+ 		dev->ax25_ptr = NULL;
+-		dev_put(dev);
++		dev_put_track(dev, &ax25_dev->dev_tracker);
+ 		kfree(ax25_dev);
+ 		return;
+ 	}
+@@ -124,7 +124,7 @@ void ax25_dev_device_down(struct net_device *dev)
+ 			s->next = ax25_dev->next;
+ 			spin_unlock_bh(&ax25_dev_lock);
+ 			dev->ax25_ptr = NULL;
+-			dev_put(dev);
++			dev_put_track(dev, &ax25_dev->dev_tracker);
+ 			kfree(ax25_dev);
+ 			return;
+ 		}
+@@ -188,7 +188,7 @@ void __exit ax25_dev_free(void)
+ 	ax25_dev = ax25_dev_list;
+ 	while (ax25_dev != NULL) {
+ 		s        = ax25_dev;
+-		dev_put(ax25_dev->dev);
++		dev_put_track(ax25_dev->dev, &ax25_dev->dev_tracker);
+ 		ax25_dev = ax25_dev->next;
+ 		kfree(s);
+ 	}
 -- 
 2.34.1.400.ga245620fadb-goog
 
