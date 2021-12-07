@@ -2,69 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4192B46C012
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 16:56:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ECE4746C01F
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 16:58:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239267AbhLGP74 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 10:59:56 -0500
-Received: from sin.source.kernel.org ([145.40.73.55]:46220 "EHLO
+        id S239338AbhLGQBo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 11:01:44 -0500
+Received: from sin.source.kernel.org ([145.40.73.55]:46814 "EHLO
         sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239259AbhLGP74 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 10:59:56 -0500
+        with ESMTP id S239332AbhLGQBn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 11:01:43 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 7E274CE1B7E;
-        Tue,  7 Dec 2021 15:56:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACD3DC341C5;
-        Tue,  7 Dec 2021 15:56:22 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 50485CE1B7E;
+        Tue,  7 Dec 2021 15:58:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 268D8C341C1;
+        Tue,  7 Dec 2021 15:58:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638892582;
-        bh=zx5Bp47NIplgZcX8mw3eO5PeUIZ35w6aj5Z66F7rxEo=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=fqwQfKSMV+BCeDf6sqyKqtAqrbOQeyxYmhbDy1BdCgftBtoACKnYfriILebBbpMyJ
-         uMs+AUVuMfMD0qcGv2zNKskkVNIGmDcIwBAG52W0xeEOBVFjBYLZu268sniTzkJaZP
-         MK1FYd0f6cra5IJqGFYlPULAVgahCOnuDcQB5d26F+AXvJxBgrmYrbxa10bLtfB7oO
-         ESiTGBw1Ir2WqUkCbKiLbKEVkmHTuZsYQcPZ5+qCewHRq5coHBV3jddQZjzwaKNesu
-         yrMaKjEhgg70Yn1oD4gyh3WrqOVP6OkcWhQ/9Zrap1NTNmeV7GOjvcLBOzIL1W+PZ2
-         AhziOT9XcTZsQ==
-Received: by mail-ed1-f53.google.com with SMTP id x15so59015123edv.1;
-        Tue, 07 Dec 2021 07:56:22 -0800 (PST)
-X-Gm-Message-State: AOAM531i6Y9QfXuAELCsRxbvajzYHGiEQIipU+Sk6qtoL8j4O1p38HfL
-        DCgl7p71pAUecsKhfkJ457KJMQfRTgc5/nY7iQ==
-X-Google-Smtp-Source: ABdhPJw3sCqVBRhAv5mF8iejFN8VmxMNg6xNXZ9928w9hDdmncG+yAoaCf8vnR1I+geWFuqcKh0hLsUzPO2F6JSGeO8=
-X-Received: by 2002:aa7:dc07:: with SMTP id b7mr10086778edu.327.1638892581030;
- Tue, 07 Dec 2021 07:56:21 -0800 (PST)
+        s=k20201202; t=1638892689;
+        bh=2ryqHWEwM1f2X3lf6mB2G1XPeM+9sGpcyawrhEeaL6Q=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=RzEXQD5lHf9f0BLEtHnIx0PuMXQtITX/Q+hPmdI+C0iiSlC7YS+rR8puoUr5b3EVp
+         d+nOEjcF5Tvk5lTBkyKgSR74Au4hVX4yB7zf9Oczz9UwvjHxveqUzKv/XvOawNheqj
+         tiG2OOGpG53zlvjJLbvUQuL2qxG0sDN6WNnrbNK0Q3Fm/4knD2ba5CKmFAFvhMuajS
+         CaQqW7iIZob7ILJLwyZhH5b31nk3jFWTYlC0WzymECVQd1LcV7Wo9+3uV4UEUNeoZM
+         SAOf+II9IDhdEkKafJ4yCpZyZHvCLrwzSw1//8COdo5PXsIBZsdjrahUx+7wUDh7wh
+         S961JTDhJTUlw==
+Date:   Tue, 7 Dec 2021 07:58:08 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     "lizhijian@fujitsu.com" <lizhijian@fujitsu.com>,
+        David Ahern <dsahern@gmail.com>
+Cc:     "Zhou, Jie2X" <jie2x.zhou@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "shuah@kernel.org" <shuah@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Li, Philip" <philip.li@intel.com>, lkp <lkp@intel.com>,
+        "Ma, XinjianX" <xinjianx.ma@intel.com>,
+        "Li, ZhijianX" <zhijianx.li@intel.com>
+Subject: Re: selftests/net/fcnal-test.sh: ipv6_ping test failed
+Message-ID: <20211207075808.456e5b4f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <PH0PR11MB4792DFC72C7F7489F22B26E5C56E9@PH0PR11MB4792.namprd11.prod.outlook.com>
+References: <PH0PR11MB4792DFC72C7F7489F22B26E5C56E9@PH0PR11MB4792.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-References: <20211206174139.2296497-1-robh@kernel.org> <20211206125753.6a5e837c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211206125753.6a5e837c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Rob Herring <robh@kernel.org>
-Date:   Tue, 7 Dec 2021 09:56:09 -0600
-X-Gmail-Original-Message-ID: <CAL_Jsq+ncb5MzObpPRtFEqLYaG2mKxXAPhe-5ben9DcSea--5Q@mail.gmail.com>
-Message-ID: <CAL_Jsq+ncb5MzObpPRtFEqLYaG2mKxXAPhe-5ben9DcSea--5Q@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: net: mdio: Allow any child node name
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        devicetree@vger.kernel.org,
-        Thierry Reding <thierry.reding@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 6, 2021 at 2:57 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Mon,  6 Dec 2021 11:41:39 -0600 Rob Herring wrote:
-> > An MDIO bus can have devices other than ethernet PHYs on it, so it
-> > should allow for any node name rather than just 'ethernet-phy'.
->
-> Hi Rob, what's your preference for merging these?
+Adding David and Zhijian.
 
-I can take them.
-
-Rob
+On Tue, 7 Dec 2021 07:07:40 +0000 Zhou, Jie2X wrote:
+> hi,
+> 
+>   I test ipv6_ping by "./fcnal-test.sh -v -t ipv6_ping".
+>   There are two tests failed.
+> 
+>    TEST: ping out, VRF bind - ns-B IPv6 LLA                                      [FAIL]
+>    TEST: ping out, VRF bind - multicast IP                                       [FAIL]
+> 
+>    While in fcnal-test.sh the expected command result is 2, the result is 1, so the test failed.
+>    ipv6_ping_vrf()
+>    {
+>     ......
+>         for a in ${NSB_LINKIP6}%${VRF} ${MCAST}%${VRF}
+>         do
+>                 log_start
+>                 show_hint "Fails since VRF device does not support linklocal or multicast"
+>                 run_cmd ${ping6} -c1 -w1 ${a}
+>                 log_test_addr ${a} $? 2 "ping out, VRF bind"
+>         done
+> 
+>     The ipv6_ping test output is attached.
+>     Did I set something wrong result that these tests failed?
+> 
+> best regards,
