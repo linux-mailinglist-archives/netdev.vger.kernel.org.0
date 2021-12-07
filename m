@@ -2,97 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5906A46C1EA
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 18:36:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DEFA346C213
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 18:47:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240062AbhLGRkA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 12:40:00 -0500
-Received: from mail-il1-f200.google.com ([209.85.166.200]:46665 "EHLO
-        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240058AbhLGRkA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 12:40:00 -0500
-Received: by mail-il1-f200.google.com with SMTP id j15-20020a056e02218f00b0029e3db8d6dfso12538433ila.13
-        for <netdev@vger.kernel.org>; Tue, 07 Dec 2021 09:36:29 -0800 (PST)
+        id S235485AbhLGRua (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 12:50:30 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:32077 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235418AbhLGRu3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 12:50:29 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1638899219;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Nc7TBIyvl0E52gatV94RLe7VkQplS01YlcBXFvUb8pY=;
+        b=hqRWEYnRQ1vAgiEqajNJHOTwix4VVCiZvsqzBYu/MFkKRh8rdkEt39uHNpXSqumCcxOsmY
+        RPcNxzGzE0GTRh3ilywUmuCcAJdMs6jiiHEgmeiUoVigXsgf+yo2CnxwkWV0J6kihTmfeU
+        22+unYyHCQl0Q4N3E0YwPodf3V0IvW0=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-372-UhQnrwSyMqWd4FDUQhRhNw-1; Tue, 07 Dec 2021 12:46:57 -0500
+X-MC-Unique: UhQnrwSyMqWd4FDUQhRhNw-1
+Received: by mail-ed1-f72.google.com with SMTP id k7-20020aa7c387000000b003e7ed87fb31so12212659edq.3
+        for <netdev@vger.kernel.org>; Tue, 07 Dec 2021 09:46:57 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=1dQvezvp3iGWZ0YIb75qsQGcY3DEG/a8kpN3taG3XIQ=;
-        b=RnKisshrMbmc1ozWLm60rxQfFnDl2Gj87lfO5IayypxJ9aDFZJPOmwh+2GSBenwt0b
-         zj/qVapwg2O61pZNU89Huk9DJVYO3ds1U8OdgYWwaA94ve7+dPf7CtCaM42SBZex5qTw
-         J1sRY+GSg91hVKjpan5uMmGzLfbPz6TfDCmN0owk6bhgGxZwqIhwwE71ZKY3+M8Da9fM
-         bkxW74n/E/zIhRKZXqi3tmGOF7gWcyAUwGpjSeTONUHbYzLhpP8F8PWYmIwzrvlbC1fn
-         Q65419BhhWVxwSngzXl9+YbOy31Lhq91Pb8NOf4ijS3P8j27zAaZCRogOY4d1xK6dQg/
-         UOTA==
-X-Gm-Message-State: AOAM53361OZYZhX8hH+rUldYcFrKs9p3QYn/qUqm1L1xDHWQI1OKsrzu
-        Lpl3TwcizFbNiyTs1lqnuwlKZctv/Vo8mWNAeoscUSEIuv8C
-X-Google-Smtp-Source: ABdhPJxrY5ezv1MAc4b3hmpC2DiyVCa1ZBCuumVI4l2wVqyLJVseDqkqWYesgOImWu3+rPfrjLJrTeEt9WFpybMUWdvQ/3svPH4Z
+        h=x-gm-message-state:from:to:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=Nc7TBIyvl0E52gatV94RLe7VkQplS01YlcBXFvUb8pY=;
+        b=rN4Vdp2DLM3VoPidAhLy5TRsEMBgep55nIewZiF1A/DFG32s4+p2k/pwOw8prGYus5
+         O32lELgLoEQQnBDXhPhPNkBqEIzXVdgBVYUOfJaZDcRvHrNqBUll63Bq2Vi9oWSnC1yc
+         1oH6jty7emOWY/dlD3dMKUKSyWOZT/dK1u2afukJE72eTfgvaz4Pn9LaHCF0dZiLIp0B
+         4vsXv5mS+m3cOp+qMIzP05y3euPGQnOhxgW1bRQ0rdPAE/Ok8/tbBylrsGIr/gYWykju
+         RBeYFfeAhTbUURJLMuMmS9BbXhpRf6m4ndcPkiOnoKLXf01usub8ygeegNIpO2rZYbre
+         i1CQ==
+X-Gm-Message-State: AOAM533TQ3CgPsg3AomlRaxl97qYx3jnq/n+h6sY/J93t9diynEJFx7w
+        4PVfJ7L+GKd7AVKkxEmgvu47NH+/1DBnK3/JL6uKvep38f2m5P8jEED7RKVjCrQJe150V5KZe7W
+        tadYOlyNoXczFmSwL
+X-Received: by 2002:a05:6402:2792:: with SMTP id b18mr11116251ede.329.1638899216202;
+        Tue, 07 Dec 2021 09:46:56 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxZ2ZBeERXcKFGiVR8nFXYcIVoorrdcRFYqZq0nwabrOQN8RK1Ih1HtrfB3Tr2MMMsEhI6AaA==
+X-Received: by 2002:a05:6402:2792:: with SMTP id b18mr11116206ede.329.1638899215852;
+        Tue, 07 Dec 2021 09:46:55 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id sh30sm122171ejc.117.2021.12.07.09.46.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Dec 2021 09:46:54 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 157C5180441; Tue,  7 Dec 2021 18:46:54 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH iproute2-next] tc: Add support for
+ ce_threshold_value/mask in fq_codel
+In-Reply-To: <74649aca-b760-2e8d-2a9c-6cdf937592a5@gmail.com>
+References: <20211123201327.86219-1-toke@redhat.com>
+ <765eb3d8-7dfa-2b28-e276-fac88453bc72@gmail.com> <87bl1u4sl9.fsf@toke.dk>
+ <74649aca-b760-2e8d-2a9c-6cdf937592a5@gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Tue, 07 Dec 2021 18:46:54 +0100
+Message-ID: <871r2oz4s1.fsf@toke.dk>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:16ca:: with SMTP id 10mr721658ilx.274.1638898589332;
- Tue, 07 Dec 2021 09:36:29 -0800 (PST)
-Date:   Tue, 07 Dec 2021 09:36:29 -0800
-In-Reply-To: <000000000000367c2205d2549cb9@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000003d78f805d291d061@google.com>
-Subject: Re: [syzbot] KASAN: vmalloc-out-of-bounds Read in __bpf_prog_put
-From:   syzbot <syzbot+5027de09e0964fd78ce1@syzkaller.appspotmail.com>
-To:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, davem@davemloft.net, hawk@kernel.org,
-        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following issue on:
+David Ahern <dsahern@gmail.com> writes:
 
-HEAD commit:    1c5526968e27 net/smc: Clear memory when release and reuse ..
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=13a9eabdb00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=2b8e24e3a80e3875
-dashboard link: https://syzkaller.appspot.com/bug?extid=5027de09e0964fd78ce1
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12b749a9b00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=170d7519b00000
+> [ vger seems to be having problems; just received this ]
+>
+> On 12/5/21 3:03 PM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+>> David Ahern <dsahern@gmail.com> writes:
+>>=20
+>>> On 11/23/21 1:13 PM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+>>>> Commit dfcb63ce1de6 ("fq_codel: generalise ce_threshold marking for su=
+bset
+>>>> of traffic") added support in fq_codel for setting a value and mask th=
+at
+>>>> will be applied to the diffserv/ECN byte to turn on the ce_threshold
+>>>> feature for a subset of traffic.
+>>>>
+>>>> This adds support to tc for setting these values. The parameter is
+>>>> called ce_threshold_selector and takes a value followed by a
+>>>> slash-separated mask. Some examples:
+>>>>
+>>>>  # apply ce_threshold to ECT(1) traffic
+>>>>  tc qdisc replace dev eth0 root fq_codel ce_threshold 1ms ce_threshold=
+_selector 0x1/0x3
+>>>>
+>>>>  # apply ce_threshold to ECN-capable traffic marked as diffserv AF22
+>>>>  tc qdisc replace dev eth0 root fq_codel ce_threshold 1ms ce_threshold=
+_selector 0x50/0xfc
+>>>>
+>>>> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+>>>> ---
+>>>>  tc/q_fq_codel.c | 40 ++++++++++++++++++++++++++++++++++++++++
+>>>>  1 file changed, 40 insertions(+)
+>>>
+>>> please re-send with an update to
+>>=20
+>> With an update to? :)
+>>=20
+>
+> ... man page.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+5027de09e0964fd78ce1@syzkaller.appspotmail.com
+Ah yes, of course; will do!
 
-==================================================================
-BUG: KASAN: vmalloc-out-of-bounds in __bpf_prog_put.constprop.0+0x1dd/0x220 kernel/bpf/syscall.c:1812
-Read of size 8 at addr ffffc90001a16038 by task kworker/0:3/2934
-
-CPU: 0 PID: 2934 Comm: kworker/0:3 Not tainted 5.16.0-rc3-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: events sk_psock_destroy
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- print_address_description.constprop.0.cold+0xf/0x320 mm/kasan/report.c:247
- __kasan_report mm/kasan/report.c:433 [inline]
- kasan_report.cold+0x83/0xdf mm/kasan/report.c:450
- __bpf_prog_put.constprop.0+0x1dd/0x220 kernel/bpf/syscall.c:1812
- psock_set_prog include/linux/skmsg.h:477 [inline]
- psock_progs_drop include/linux/skmsg.h:495 [inline]
- sk_psock_destroy+0xad/0x620 net/core/skmsg.c:804
- process_one_work+0x9b2/0x1690 kernel/workqueue.c:2298
- worker_thread+0x658/0x11f0 kernel/workqueue.c:2445
- kthread+0x405/0x4f0 kernel/kthread.c:327
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
- </TASK>
-
-
-Memory state around the buggy address:
- ffffc90001a15f00: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
- ffffc90001a15f80: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
->ffffc90001a16000: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
-                                        ^
- ffffc90001a16080: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
- ffffc90001a16100: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
-==================================================================
+-Toke
 
