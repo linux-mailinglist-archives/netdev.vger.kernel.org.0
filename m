@@ -2,113 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CAA7D46B764
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 10:35:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 31CDE46B7B2
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 10:42:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234299AbhLGJi2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 04:38:28 -0500
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:48787 "EHLO
-        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234259AbhLGJiQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 04:38:16 -0500
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
-        by mailout.nyi.internal (Postfix) with ESMTP id D5A595C025B;
-        Tue,  7 Dec 2021 04:34:45 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute6.internal (MEProxy); Tue, 07 Dec 2021 04:34:45 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=zq8/4jCwf7+7JHJx8ljVMlaBUmWZXGFgi4+dtfPVQY8=; b=Ua92MmwL
-        MjTXH5ysfqIk9CT6ax2ciJ4klW7vzkeLjRRW+Zw7UPM7b1A2KkJ4ycMpnhoC/9ER
-        gmCWPRTn0hI/HsjlAARCNb2KVH28rOjtRx3leBUfVEWB9MelIaHUv1y56wGGNsyq
-        VuUa1cKQLF4SZyKAd2DD9+scet7/PtiAOKRo0WnZqPxDhW+I6eadHDoi4w4OTK34
-        Doqfe57dH71UVmeMy1/FmLpkMM3RgG8X2yDcKXoWAmIHe9eMYHKQRO7kk9ROLA7L
-        fpGrdyc2BTKJ2V+SkVeNYd1NEQbOOmcUYBi0zqKJHsgLyw3oqi7F7lYyUXTBKMGF
-        68BXRR1/MirFdA==
-X-ME-Sender: <xms:tSqvYcSJwzbUi569Iej_JBCsxcY-eWxFtjU0IjNB2y2r93w2OFTSVQ>
-    <xme:tSqvYZzcrT-NAyVkkEl2EegYqhwKD1p04I7wm-bty-QXBEYZPgRsNkzKgw3qNxIPi
-    I2DF6A2_LHPJ_Y>
-X-ME-Received: <xmr:tSqvYZ1ua_DciUIwFNyeVE4yZNJVH2fV3M2Hhoigw-i-YkvLfTbmQxxGAdkJAqygx8xzOBUDivjp-Q8Hh8MmYYz0Gtcj3iXdYw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvuddrjeehgddtiecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
-    ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
-    tghhrdhorhhgqeenucggtffrrghtthgvrhhnpeduteeiveffffevleekleejffekhfekhe
-    fgtdfftefhledvjefggfehgfevjeekhfenucevlhhushhtvghrufhiiigvpedtnecurfgr
-    rhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:tSqvYQCTvkb6mB8ZN71Ks15WwkTGC1ti6aDI_iWKPJaQdJAVfxDldA>
-    <xmx:tSqvYVhbehew1G8O-xvCgkvJHWzrl8V5Uvb5XDVu11GAMYUpIJZoWg>
-    <xmx:tSqvYcqQMPMdvfrEC43VlabRROXQAfsCUHQYl8jnetrIhC4z_hUnLw>
-    <xmx:tSqvYYt7BJ6VVlqSCUPIlZTMKlJxjQqXgAUQWkUQ-G_JfRJS24EtOQ>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 7 Dec 2021 04:34:44 -0500 (EST)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     mkubecek@suse.cz, vadimp@nvidia.com, mlxsw@nvidia.com,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH ethtool-next 3/3] ethtool: Add transceiver module extended state
-Date:   Tue,  7 Dec 2021 11:33:59 +0200
-Message-Id: <20211207093359.69974-4-idosch@idosch.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20211207093359.69974-1-idosch@idosch.org>
-References: <20211207093359.69974-1-idosch@idosch.org>
+        id S234168AbhLGJpm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 04:45:42 -0500
+Received: from mail.loongson.cn ([114.242.206.163]:54216 "EHLO loongson.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229799AbhLGJpl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 7 Dec 2021 04:45:41 -0500
+Received: from [10.180.13.84] (unknown [10.180.13.84])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Dxv8pfLK9hyDoEAA--.9364S2;
+        Tue, 07 Dec 2021 17:41:52 +0800 (CST)
+Subject: Re: [PATCH v2 1/2] modpost: file2alias: fixup mdio alias garbled code
+ in modules.alias
+To:     Andrew Lunn <andrew@lunn.ch>,
+        "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
+        zhuyinbo@loongson.cn, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kbuild@vger.kernel.org
+References: <1637919957-21635-1-git-send-email-zhuyinbo@loongson.cn>
+ <c6d37ae0-9ccb-a527-4f55-e96972813a53@gmail.com>
+ <YaYPMOJ/+OXIWcnj@shell.armlinux.org.uk> <YabEHd+Z5SPAhAT5@lunn.ch>
+From:   zhuyinbo <zhuyinbo@loongson.cn>
+Message-ID: <f91f4fff-8bdf-663b-68f5-b8ccbd0c187a@loongson.cn>
+Date:   Tue, 7 Dec 2021 17:41:51 +0800
+User-Agent: Mozilla/5.0 (X11; Linux mips64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
+In-Reply-To: <YabEHd+Z5SPAhAT5@lunn.ch>
+Content-Type: text/plain; charset=gbk; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: AQAAf9Dxv8pfLK9hyDoEAA--.9364S2
+X-Coremail-Antispam: 1UD129KBjvJXoWxArWrAF1UCF1UJr1fJr17GFg_yoWrAw45pF
+        WqkFWa9rs5AFs5CF18Jr1UXFWUC3yDX3y3GF1rK3yxua4DJr9Fyr47Gr43JrW7Xw48AF10
+        g3ZrXFykCrWxZFJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUU9C14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26ryj6F1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4j
+        6r4UJwA2z4x0Y4vEx4A2jsIE14v26F4UJVW0owA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
+        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
+        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
+        W8JwACjcxG0xvEwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lFIxGxcIEc7CjxVA2Y2ka
+        0xkIwI1lc7I2V7IY0VAS07AlzVAYIcxG8wCY02Avz4vE-syl42xK82IYc2Ij64vIr41l4I
+        8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AK
+        xVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcV
+        AFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8I
+        cIk0rVWrZr1j6s0DMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI
+        0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUdHUDUUUUU=
+X-CM-SenderInfo: 52kx5xhqerqz5rrqw2lrqou0/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@nvidia.com>
 
-Add support for an extended state and an extended sub-state to describe
-link issues related to transceiver modules.
 
-In case "CMIS transceiver module is not in ModuleReady state" and the
-module is in ModuleFault state, it is possible to read the fault reason
-from the EEPROM dump.
+ÔÚ 2021/12/1 ÉÏÎç8:38, Andrew Lunn Ð´µÀ:
+>> However, this won't work for PHY devices created _before_ the kernel
+>> has mounted the rootfs, whether or not they end up being used. So,
+>> every PHY mentioned in DT will be created before the rootfs is mounted,
+>> and none of these PHYs will have their modules loaded.
+> 
+> Hi Russell
+> 
+> I think what you are saying here is, if the MAC or MDIO bus driver is
+> built in, the PHY driver also needs to be built in?
+> 
+> If the MAC or MDIO bus driver is a module, it means the rootfs has
+> already been mounted in order to get these modules. And so the PHY
+> driver as a module will also work.
+> 
+>> I believe this is the root cause of Yinbo Zhu's issue.
 
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
----
- netlink/settings.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+I think you should be right and I had did lots of test but use 
+rquest_module it doesn't load marvell module, and dts does't include any 
+phy node. even though I was use "marvell" as input's args of request_module.
+> 
+> You are speculating that in Yinbo Zhu case, the MAC driver is built
+> in, the PHY is a module. The initial request for the firmware fails.
+> Yinbo Zhu would like udev to try again later when the modules are
+> available.
+> 
+>> What we _could_ do is review all device trees and PHY drivers to see
+>> whether DT modaliases are ever used for module loading. If they aren't,
+>> then we _could_ make the modalias published by the kernel conditional
+>> on the type of mdio device - continue with the DT approach for non-PHY
+>> devices, and switch to the mdio: scheme for PHY devices. I repeat, this
+>> can only happen if no PHY drivers match using the DT scheme, otherwise
+>> making this change _will_ cause a regression.
+> 
 
-diff --git a/netlink/settings.c b/netlink/settings.c
-index ff1e783d099c..3cf816f06299 100644
---- a/netlink/settings.c
-+++ b/netlink/settings.c
-@@ -593,6 +593,7 @@ static const char *const names_link_ext_state[] = {
- 	[ETHTOOL_LINK_EXT_STATE_CALIBRATION_FAILURE]	= "Calibration failure",
- 	[ETHTOOL_LINK_EXT_STATE_POWER_BUDGET_EXCEEDED]	= "Power budget exceeded",
- 	[ETHTOOL_LINK_EXT_STATE_OVERHEAT]		= "Overheat",
-+	[ETHTOOL_LINK_EXT_STATE_MODULE]			= "Module",
- };
- 
- static const char *const names_autoneg_link_ext_substate[] = {
-@@ -652,6 +653,11 @@ static const char *const names_cable_issue_link_ext_substate[] = {
- 		"Cable test failure",
- };
- 
-+static const char *const names_module_link_ext_substate[] = {
-+	[ETHTOOL_LINK_EXT_SUBSTATE_MODULE_CMIS_NOT_READY]	=
-+		"CMIS module is not in ModuleReady state",
-+};
-+
- static const char *link_ext_substate_get(uint8_t link_ext_state_val, uint8_t link_ext_substate_val)
- {
- 	switch (link_ext_state_val) {
-@@ -675,6 +681,10 @@ static const char *link_ext_substate_get(uint8_t link_ext_state_val, uint8_t lin
- 		return get_enum_string(names_cable_issue_link_ext_substate,
- 				       ARRAY_SIZE(names_cable_issue_link_ext_substate),
- 				       link_ext_substate_val);
-+	case ETHTOOL_LINK_EXT_STATE_MODULE:
-+		return get_enum_string(names_module_link_ext_substate,
-+				       ARRAY_SIZE(names_module_link_ext_substate),
-+				       link_ext_substate_val);
- 	default:
- 		return NULL;
- 	}
--- 
-2.31.1
+> Take a look at
+> drivers/net/mdio/of_mdio.c:whitelist_phys[] and the comment above it.
+> 
+> So there are some DT blobs out there with compatible strings for
+> PHYs. I've no idea if they actually load that way, or the standard PHY
+> mechanism is used.
+> 
+> 	Andrew
+> 
+
+
+ > That is not true universally for all MDIO though - as
+ > xilinx_gmii2rgmii.c clearly shows. That is a MDIO driver which uses DT
+ > the compatible string to do the module load. So, we have proof there
+ > that Yinbo Zhu's change will definitely cause a regression which we
+ > can not allow.
+
+I don't understand that what you said about regression.  My patch 
+doesn't cause  xilinx_gmii2rgmii.c driver load fail, in this time that 
+do_of_table and platform_uevent will be responsible "of" type driver 
+auto load and my patch was responsible for "mdio" type driver auto load,
+In default code. There are request_module to load phy driver, but as 
+Russell King said that request_module doesn't garantee auto load will 
+always work well, but udev mechanism can garantee it. and udev mechaism 
+is more mainstream, otherwise mdio_uevent is useless. if use udev 
+mechanism that my patch was needed. and if apply my patch it doesn't 
+cause request_module mechaism work bad because I will add following change:
+
+
+
+-       ret = request_module(MDIO_MODULE_PREFIX MDIO_ID_FMT,
+-                            MDIO_ID_ARGS(phy_id));
++       ret = request_module(MDIO_MODULE_PREFIX MDIO_ID_FMT, phy_id);
+         /* We only check for failures in executing the usermode binary,
+          * not whether a PHY driver module exists for the PHY ID.
+          * Accept -ENOENT because this may occur in case no initramfs 
+exists,
+diff --git a/include/linux/mod_devicetable.h 
+b/include/linux/mod_devicetable.h
+index 7bd23bf..bc6ea0d 100644
+--- a/include/linux/mod_devicetable.h
++++ b/include/linux/mod_devicetable.h
+@@ -600,16 +600,7 @@ struct platform_device_id {
+  #define MDIO_NAME_SIZE         32
+  #define MDIO_MODULE_PREFIX     "mdio:"
+
+-#define MDIO_ID_FMT 
+"%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u"
+-#define MDIO_ID_ARGS(_id) \
+-       ((_id)>>31) & 1, ((_id)>>30) & 1, ((_id)>>29) & 1, ((_id)>>28) & 
+1, \
+-       ((_id)>>27) & 1, ((_id)>>26) & 1, ((_id)>>25) & 1, ((_id)>>24) & 
+1, \
+-       ((_id)>>23) & 1, ((_id)>>22) & 1, ((_id)>>21) & 1, ((_id)>>20) & 
+1, \
+-       ((_id)>>19) & 1, ((_id)>>18) & 1, ((_id)>>17) & 1, ((_id)>>16) & 
+1, \
+-       ((_id)>>15) & 1, ((_id)>>14) & 1, ((_id)>>13) & 1, ((_id)>>12) & 
+1, \
+-       ((_id)>>11) & 1, ((_id)>>10) & 1, ((_id)>>9) & 1, ((_id)>>8) & 1, \
+-       ((_id)>>7) & 1, ((_id)>>6) & 1, ((_id)>>5) & 1, ((_id)>>4) & 1, \
+-       ((_id)>>3) & 1, ((_id)>>2) & 1, ((_id)>>1) & 1, (_id) & 1
++#define MDIO_ID_FMT "p%08x"
+
+
 
