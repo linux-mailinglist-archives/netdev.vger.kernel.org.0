@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C70546B0D8
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 03:48:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B1EF46B0DD
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 03:48:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230389AbhLGCvn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Dec 2021 21:51:43 -0500
+        id S231386AbhLGCvr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Dec 2021 21:51:47 -0500
 Received: from mga07.intel.com ([134.134.136.100]:27266 "EHLO mga07.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229588AbhLGCvm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S229500AbhLGCvm (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 6 Dec 2021 21:51:42 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10190"; a="300860561"
+X-IronPort-AV: E=McAfee;i="6200,9189,10190"; a="300860564"
 X-IronPort-AV: E=Sophos;i="5.87,293,1631602800"; 
-   d="scan'208";a="300860561"
+   d="scan'208";a="300860564"
 Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Dec 2021 18:47:46 -0800
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Dec 2021 18:47:47 -0800
 X-IronPort-AV: E=Sophos;i="5.87,293,1631602800"; 
-   d="scan'208";a="748524139"
+   d="scan'208";a="748524144"
 Received: from rmarti10-desk.jf.intel.com ([134.134.150.146])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Dec 2021 18:47:45 -0800
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Dec 2021 18:47:46 -0800
 From:   Ricardo Martinez <ricardo.martinez@linux.intel.com>
 To:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
 Cc:     kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
@@ -33,9 +33,9 @@ Cc:     kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
         muralidharan.sethuraman@intel.com, Soumya.Prakash.Mishra@intel.com,
         sreehari.kancharla@intel.com, suresh.nagaraj@intel.com,
         Ricardo Martinez <ricardo.martinez@linux.intel.com>
-Subject: [PATCH net-next v3 03/12] net: wwan: t7xx: Add port proxy infrastructure
-Date:   Mon,  6 Dec 2021 19:47:02 -0700
-Message-Id: <20211207024711.2765-4-ricardo.martinez@linux.intel.com>
+Subject: [PATCH net-next v3 04/12] net: wwan: t7xx: Add control port
+Date:   Mon,  6 Dec 2021 19:47:03 -0700
+Message-Id: <20211207024711.2765-5-ricardo.martinez@linux.intel.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20211207024711.2765-1-ricardo.martinez@linux.intel.com>
 References: <20211207024711.2765-1-ricardo.martinez@linux.intel.com>
@@ -45,945 +45,703 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Haijun Liu <haijun.liu@mediatek.com>
 
-Port-proxy provides a common interface to interact with different types
-of ports. Ports export their configuration via `struct t7xx_port` and
-operate as defined by `struct port_ops`.
+Control Port implements driver control messages such as modem-host
+handshaking, controls port enumeration, and handles exception messages.
+
+The handshaking process between the driver and the modem happens during
+the init sequence. The process involves the exchange of a list of
+supported runtime features to make sure that modem and host are ready
+to provide proper feature lists including port enumeration. Further
+features can be enabled and controlled in this handshaking process.
 
 Signed-off-by: Haijun Liu <haijun.liu@mediatek.com>
-Co-developed-by: Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>
 Signed-off-by: Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>
 Co-developed-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
 Signed-off-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
 ---
  drivers/net/wwan/t7xx/Makefile             |   1 +
- drivers/net/wwan/t7xx/t7xx_modem_ops.c     |  12 +
- drivers/net/wwan/t7xx/t7xx_port.h          | 153 ++++++
- drivers/net/wwan/t7xx/t7xx_port_proxy.c    | 590 +++++++++++++++++++++
- drivers/net/wwan/t7xx/t7xx_port_proxy.h    |  71 +++
- drivers/net/wwan/t7xx/t7xx_state_monitor.c |   4 +
- 6 files changed, 831 insertions(+)
- create mode 100644 drivers/net/wwan/t7xx/t7xx_port.h
- create mode 100644 drivers/net/wwan/t7xx/t7xx_port_proxy.c
- create mode 100644 drivers/net/wwan/t7xx/t7xx_port_proxy.h
+ drivers/net/wwan/t7xx/t7xx_modem_ops.c     | 263 ++++++++++++++++++++-
+ drivers/net/wwan/t7xx/t7xx_modem_ops.h     |   3 +
+ drivers/net/wwan/t7xx/t7xx_port_ctrl_msg.c | 161 +++++++++++++
+ drivers/net/wwan/t7xx/t7xx_port_proxy.c    |  65 ++++-
+ drivers/net/wwan/t7xx/t7xx_port_proxy.h    |  11 +
+ drivers/net/wwan/t7xx/t7xx_state_monitor.c |   3 +
+ drivers/net/wwan/t7xx/t7xx_state_monitor.h |   3 +
+ 8 files changed, 507 insertions(+), 3 deletions(-)
+ create mode 100644 drivers/net/wwan/t7xx/t7xx_port_ctrl_msg.c
 
 diff --git a/drivers/net/wwan/t7xx/Makefile b/drivers/net/wwan/t7xx/Makefile
-index 6a49013bc343..99f9ca3b4b51 100644
+index 99f9ca3b4b51..63e1c67b82b5 100644
 --- a/drivers/net/wwan/t7xx/Makefile
 +++ b/drivers/net/wwan/t7xx/Makefile
-@@ -10,3 +10,4 @@ mtk_t7xx-y:=	t7xx_pci.o \
- 		t7xx_modem_ops.o \
+@@ -11,3 +11,4 @@ mtk_t7xx-y:=	t7xx_pci.o \
  		t7xx_cldma.o \
  		t7xx_hif_cldma.o  \
-+		t7xx_port_proxy.o  \
+ 		t7xx_port_proxy.o  \
++		t7xx_port_ctrl_msg.o \
 diff --git a/drivers/net/wwan/t7xx/t7xx_modem_ops.c b/drivers/net/wwan/t7xx/t7xx_modem_ops.c
-index 53ab88d33b56..304b096366a6 100644
+index 304b096366a6..3db5e86c23e5 100644
 --- a/drivers/net/wwan/t7xx/t7xx_modem_ops.c
 +++ b/drivers/net/wwan/t7xx/t7xx_modem_ops.c
-@@ -34,6 +34,8 @@
- #include "t7xx_modem_ops.h"
- #include "t7xx_pci.h"
- #include "t7xx_pcie_mac.h"
-+#include "t7xx_port.h"
-+#include "t7xx_port_proxy.h"
+@@ -16,6 +16,8 @@
+  */
+ 
+ #include <linux/acpi.h>
++#include <linux/bits.h>
++#include <linux/bitfield.h>
+ #include <linux/dev_printk.h>
+ #include <linux/device.h>
+ #include <linux/delay.h>
+@@ -27,6 +29,7 @@
+ #include <linux/spinlock.h>
+ #include <linux/string.h>
+ #include <linux/types.h>
++#include <linux/wait.h>
+ #include <linux/workqueue.h>
+ 
+ #include "t7xx_hif_cldma.h"
+@@ -39,11 +42,24 @@
  #include "t7xx_reg.h"
  #include "t7xx_state_monitor.h"
  
-@@ -212,6 +214,7 @@ static void t7xx_md_exception(struct t7xx_modem *md, enum hif_ex_stage stage)
- 	if (stage == HIF_EX_CLEARQ_DONE) {
- 		/* Give DHL time to flush data */
- 		msleep(PORT_RESET_DELAY_MS);
-+		t7xx_port_proxy_reset(md->port_prox);
- 	}
++#define RT_ID_MD_PORT_ENUM	0
++/* Modem feature query identification code - "ICCC" */
++#define MD_FEATURE_QUERY_ID	0x49434343
++
++#define FEATURE_VER		GENMASK(7, 4)
++#define FEATURE_MSK		GENMASK(3, 0)
++
+ #define RGU_RESET_DELAY_MS	10
+ #define PORT_RESET_DELAY_MS	2000
+ #define EX_HS_TIMEOUT_MS	5000
+ #define EX_HS_POLL_DELAY_MS	10
  
- 	t7xx_cldma_exception(md->md_ctrl[ID_CLDMA1], stage);
-@@ -369,6 +372,7 @@ void t7xx_md_reset(struct t7xx_pci_dev *t7xx_dev)
- 	spin_lock_init(&md->exp_lock);
- 	t7xx_fsm_reset(md);
- 	t7xx_cldma_reset(md->md_ctrl[ID_CLDMA1]);
-+	t7xx_port_proxy_reset(md->port_prox);
- 	md->md_init_finish = true;
++enum mtk_feature_support_type {
++	MTK_FEATURE_DOES_NOT_EXIST,
++	MTK_FEATURE_NOT_SUPPORTED,
++	MTK_FEATURE_MUST_BE_SUPPORTED,
++};
++
+ static inline unsigned int t7xx_get_interrupt_status(struct t7xx_pci_dev *t7xx_dev)
+ {
+ 	return t7xx_mhccif_read_sw_int_sts(t7xx_dev) & D2H_SW_INT_MASK;
+@@ -254,16 +270,254 @@ static void t7xx_md_sys_sw_init(struct t7xx_pci_dev *t7xx_dev)
+ 	t7xx_pcie_register_rgu_isr(t7xx_dev);
  }
  
-@@ -404,11 +408,18 @@ int t7xx_md_init(struct t7xx_pci_dev *t7xx_dev)
- 	if (ret)
- 		goto err_uninit_fsm;
- 
-+	ret = t7xx_port_proxy_init(md);
-+	if (ret)
-+		goto err_uninit_cldma;
++struct feature_query {
++	__le32 head_pattern;
++	u8 feature_set[FEATURE_COUNT];
++	__le32 tail_pattern;
++};
 +
- 	t7xx_fsm_append_cmd(md->fsm_ctl, FSM_CMD_START, 0);
- 	t7xx_md_sys_sw_init(t7xx_dev);
++static void t7xx_prepare_host_rt_data_query(struct t7xx_sys_info *core)
++{
++	struct t7xx_port_static *port_static = core->ctl_port->port_static;
++	struct ctrl_msg_header *ctrl_msg_h;
++	struct feature_query *ft_query;
++	struct ccci_header *ccci_h;
++	struct sk_buff *skb;
++	size_t packet_size;
++
++	packet_size = sizeof(*ccci_h) + sizeof(*ctrl_msg_h) + sizeof(*ft_query);
++	skb = __dev_alloc_skb(packet_size, GFP_KERNEL);
++	if (!skb)
++		return;
++
++	skb_put(skb, packet_size);
++
++	ccci_h = (struct ccci_header *)skb->data;
++	ccci_h->packet_header = 0;
++	ccci_h->packet_len = cpu_to_le32(packet_size);
++	ccci_h->status &= cpu_to_le32(~HDR_FLD_CHN);
++	ccci_h->status |= cpu_to_le32(FIELD_PREP(HDR_FLD_CHN, port_static->tx_ch));
++	ccci_h->status &= cpu_to_le32(~HDR_FLD_SEQ);
++	ccci_h->ex_msg = 0;
++
++	ctrl_msg_h = (struct ctrl_msg_header *)(skb->data + sizeof(*ccci_h));
++	ctrl_msg_h->ctrl_msg_id = cpu_to_le32(CTL_ID_HS1_MSG);
++	ctrl_msg_h->ex_msg = 0;
++	ctrl_msg_h->data_length = cpu_to_le32(sizeof(*ft_query));
++
++	ft_query = (struct feature_query *)(skb->data + sizeof(*ccci_h) + sizeof(*ctrl_msg_h));
++	ft_query->head_pattern = cpu_to_le32(MD_FEATURE_QUERY_ID);
++	memcpy(ft_query->feature_set, core->feature_set, FEATURE_COUNT);
++	ft_query->tail_pattern = cpu_to_le32(MD_FEATURE_QUERY_ID);
++
++	/* Send HS1 message to device */
++	t7xx_port_proxy_send_skb(core->ctl_port, skb);
++}
++
++static int t7xx_prepare_device_rt_data(struct t7xx_sys_info *core, struct device *dev,
++				       void *data, int data_length)
++{
++	struct t7xx_port_static *port_static = core->ctl_port->port_static;
++	struct mtk_runtime_feature rt_feature;
++	struct ctrl_msg_header *ctrl_msg_h;
++	struct feature_query *md_feature;
++	unsigned int total_data_len;
++	struct ccci_header *ccci_h;
++	size_t packet_size = 0;
++	struct sk_buff *skb;
++	char *rt_data;
++	int i;
++
++	skb = __dev_alloc_skb(MTK_SKB_4K, GFP_KERNEL);
++	if (!skb)
++		return -EFAULT;
++
++	ccci_h = (struct ccci_header *)skb->data;
++	ccci_h->packet_header = 0;
++	ccci_h->status &= cpu_to_le32(~HDR_FLD_CHN);
++	ccci_h->status |= cpu_to_le32(FIELD_PREP(HDR_FLD_CHN, port_static->tx_ch));
++	ccci_h->status &= cpu_to_le32(~HDR_FLD_SEQ);
++	ccci_h->ex_msg = 0;
++
++	ctrl_msg_h = (struct ctrl_msg_header *)(skb->data + sizeof(*ccci_h));
++	ctrl_msg_h->ctrl_msg_id = cpu_to_le32(CTL_ID_HS3_MSG);
++	ctrl_msg_h->ex_msg = 0;
++	rt_data = skb->data + sizeof(*ccci_h) + sizeof(*ctrl_msg_h);
++
++	/* Parse MD runtime data query */
++	md_feature = data;
++	if (le32_to_cpu(md_feature->head_pattern) != MD_FEATURE_QUERY_ID ||
++	    le32_to_cpu(md_feature->tail_pattern) != MD_FEATURE_QUERY_ID) {
++		dev_err(dev, "Invalid feature pattern: head 0x%x, tail 0x%x\n",
++			le32_to_cpu(md_feature->head_pattern),
++			le32_to_cpu(md_feature->tail_pattern));
++		return -EINVAL;
++	}
++
++	/* Fill runtime feature */
++	for (i = 0; i < FEATURE_COUNT; i++) {
++		u8 md_feature_mask = FIELD_GET(FEATURE_MSK, md_feature->feature_set[i]);
++
++		memset(&rt_feature, 0, sizeof(rt_feature));
++		rt_feature.feature_id = i;
++
++		switch (md_feature_mask) {
++		case MTK_FEATURE_DOES_NOT_EXIST:
++		case MTK_FEATURE_MUST_BE_SUPPORTED:
++			rt_feature.support_info = md_feature->feature_set[i];
++			break;
++
++		default:
++			break;
++		}
++
++		if (FIELD_GET(FEATURE_MSK, rt_feature.support_info) !=
++		    MTK_FEATURE_MUST_BE_SUPPORTED) {
++			memcpy(rt_data, &rt_feature, sizeof(rt_feature));
++			rt_data += sizeof(rt_feature);
++		}
++
++		packet_size += sizeof(struct mtk_runtime_feature);
++	}
++
++	ctrl_msg_h->data_length = cpu_to_le32(packet_size);
++	total_data_len = packet_size + sizeof(*ctrl_msg_h) + sizeof(*ccci_h);
++	ccci_h->packet_len = cpu_to_le32(total_data_len);
++	skb_put(skb, total_data_len);
++
++	/* Send HS3 message to device */
++	t7xx_port_proxy_send_skb(core->ctl_port, skb);
++	return 0;
++}
++
++static int t7xx_parse_host_rt_data(struct t7xx_fsm_ctl *ctl, struct t7xx_sys_info *core,
++				   struct device *dev, void *data, int data_length)
++{
++	enum mtk_feature_support_type ft_spt_st, ft_spt_cfg;
++	struct mtk_runtime_feature *rt_feature;
++	int i, offset;
++
++	offset = sizeof(struct feature_query);
++	for (i = 0; i < FEATURE_COUNT && offset < data_length; i++) {
++		rt_feature = data + offset;
++		ft_spt_st = FIELD_GET(FEATURE_MSK, rt_feature->support_info);
++		offset += sizeof(*rt_feature) + le32_to_cpu(rt_feature->data_len);
++
++		ft_spt_cfg = FIELD_GET(FEATURE_MSK, core->feature_set[i]);
++		if (ft_spt_cfg != MTK_FEATURE_MUST_BE_SUPPORTED)
++			continue;
++
++		if (ft_spt_st != MTK_FEATURE_MUST_BE_SUPPORTED)
++			return -EINVAL;
++
++		if (i == RT_ID_MD_PORT_ENUM) {
++			struct port_msg *p_msg = (void *)rt_feature + sizeof(*rt_feature);
++
++			t7xx_port_proxy_node_control(ctl->md, p_msg);
++		}
++	}
++
++	return 0;
++}
++
++static void t7xx_core_reset(struct t7xx_modem *md)
++{
++	struct t7xx_fsm_ctl *ctl = md->fsm_ctl;
++
++	md->core_md.ready = false;
++
++	if (!ctl) {
++		struct device *dev = &md->t7xx_dev->pdev->dev;
++
++		dev_err(dev, "FSM is not initialized\n");
++		return;
++	}
++
++	if (md->core_md.handshake_ongoing)
++		t7xx_fsm_append_event(ctl, FSM_EVENT_MD_HS2_EXIT, NULL, 0);
++
++	md->core_md.handshake_ongoing = false;
++}
++
++static void t7xx_core_hk_handler(struct t7xx_modem *md, struct t7xx_fsm_ctl *ctl,
++				 enum t7xx_fsm_event_state event_id,
++				 enum t7xx_fsm_event_state err_detect)
++{
++	struct t7xx_sys_info *core_info = &md->core_md;
++	struct device *dev = &md->t7xx_dev->pdev->dev;
++	struct t7xx_fsm_event *event, *event_next;
++	unsigned long flags;
++	void *event_data;
++	int ret;
++
++	t7xx_prepare_host_rt_data_query(core_info);
++
++	while (!kthread_should_stop()) {
++		bool event_received = false;
++
++		spin_lock_irqsave(&ctl->event_lock, flags);
++		list_for_each_entry_safe(event, event_next, &ctl->event_queue, entry) {
++			if (event->event_id == err_detect) {
++				list_del(&event->entry);
++				spin_unlock_irqrestore(&ctl->event_lock, flags);
++				dev_err(dev, "Core handshake error event received\n");
++				goto err_free_event;
++			} else if (event->event_id == event_id) {
++				list_del(&event->entry);
++				event_received = true;
++				break;
++			}
++		}
++
++		spin_unlock_irqrestore(&ctl->event_lock, flags);
++
++		if (event_received)
++			break;
++
++		wait_event_interruptible(ctl->event_wq, !list_empty(&ctl->event_queue) ||
++					 kthread_should_stop());
++		if (kthread_should_stop())
++			goto err_free_event;
++	}
++
++	if (ctl->exp_flg)
++		goto err_free_event;
++
++	event_data = (void *)event + sizeof(*event);
++	ret = t7xx_parse_host_rt_data(ctl, core_info, dev, event_data, event->length);
++	if (ret) {
++		dev_err(dev, "Host failure parsing runtime data: %d\n", ret);
++		goto err_free_event;
++	}
++
++	if (ctl->exp_flg)
++		goto err_free_event;
++
++	ret = t7xx_prepare_device_rt_data(core_info, dev, event_data, event->length);
++	if (ret) {
++		dev_err(dev, "Device failure parsing runtime data: %d", ret);
++		goto err_free_event;
++	}
++
++	core_info->ready = true;
++	core_info->handshake_ongoing = false;
++	wake_up(&ctl->async_hk_wq);
++err_free_event:
++	kfree(event);
++}
++
+ static void t7xx_md_hk_wq(struct work_struct *work)
+ {
+ 	struct t7xx_modem *md = container_of(work, struct t7xx_modem, handshake_work);
+ 	struct t7xx_fsm_ctl *ctl = md->fsm_ctl;
+ 
++	/* Clear the HS2 EXIT event appended in core_reset() */
++	t7xx_fsm_clr_event(ctl, FSM_EVENT_MD_HS2_EXIT);
+ 	t7xx_cldma_switch_cfg(md->md_ctrl[ID_CLDMA1]);
+ 	t7xx_cldma_start(md->md_ctrl[ID_CLDMA1]);
+ 	t7xx_fsm_broadcast_state(ctl, MD_STATE_WAITING_FOR_HS2);
+-	md->core_md.ready = true;
+-	wake_up(&ctl->async_hk_wq);
++	md->core_md.handshake_ongoing = true;
++	t7xx_core_hk_handler(md, ctl, FSM_EVENT_MD_HS2, FSM_EVENT_MD_HS2_EXIT);
+ }
+ 
+ void t7xx_md_event_notify(struct t7xx_modem *md, enum md_event_id evt_id)
+@@ -353,6 +607,7 @@ static struct t7xx_modem *t7xx_md_alloc(struct t7xx_pci_dev *t7xx_dev)
+ 	md->t7xx_dev = t7xx_dev;
+ 	t7xx_dev->md = md;
+ 	md->core_md.ready = false;
++	md->core_md.handshake_ongoing = false;
+ 	spin_lock_init(&md->exp_lock);
+ 	md->handshake_wq = alloc_workqueue("%s", WQ_UNBOUND | WQ_MEM_RECLAIM | WQ_HIGHPRI,
+ 					   0, "md_hk_wq");
+@@ -360,6 +615,9 @@ static struct t7xx_modem *t7xx_md_alloc(struct t7xx_pci_dev *t7xx_dev)
+ 		return NULL;
+ 
+ 	INIT_WORK(&md->handshake_work, t7xx_md_hk_wq);
++	md->core_md.feature_set[RT_ID_MD_PORT_ENUM] &= ~FEATURE_MSK;
++	md->core_md.feature_set[RT_ID_MD_PORT_ENUM] |=
++		FIELD_PREP(FEATURE_MSK, MTK_FEATURE_MUST_BE_SUPPORTED);
+ 	return md;
+ }
+ 
+@@ -374,6 +632,7 @@ void t7xx_md_reset(struct t7xx_pci_dev *t7xx_dev)
+ 	t7xx_cldma_reset(md->md_ctrl[ID_CLDMA1]);
+ 	t7xx_port_proxy_reset(md->port_prox);
  	md->md_init_finish = true;
- 	return 0;
++	t7xx_core_reset(md);
+ }
  
-+err_uninit_cldma:
-+	t7xx_cldma_exit(md->md_ctrl[ID_CLDMA1]);
-+
- err_uninit_fsm:
- 	t7xx_fsm_uninit(md);
+ /**
+diff --git a/drivers/net/wwan/t7xx/t7xx_modem_ops.h b/drivers/net/wwan/t7xx/t7xx_modem_ops.h
+index 24d2ee5bfbda..842def631b21 100644
+--- a/drivers/net/wwan/t7xx/t7xx_modem_ops.h
++++ b/drivers/net/wwan/t7xx/t7xx_modem_ops.h
+@@ -56,6 +56,9 @@ enum md_event_id {
  
-@@ -428,6 +439,7 @@ void t7xx_md_exit(struct t7xx_pci_dev *t7xx_dev)
- 		return;
+ struct t7xx_sys_info {
+ 	bool				ready;
++	bool				handshake_ongoing;
++	u8				feature_set[FEATURE_COUNT];
++	struct t7xx_port		*ctl_port;
+ };
  
- 	t7xx_fsm_append_cmd(md->fsm_ctl, FSM_CMD_PRE_STOP, FSM_CMD_FLAG_WAIT_FOR_COMPLETION);
-+	t7xx_port_proxy_uninit(md->port_prox);
- 	t7xx_cldma_exit(md->md_ctrl[ID_CLDMA1]);
- 	t7xx_fsm_uninit(md);
- 	destroy_workqueue(md->handshake_wq);
-diff --git a/drivers/net/wwan/t7xx/t7xx_port.h b/drivers/net/wwan/t7xx/t7xx_port.h
+ struct t7xx_modem {
+diff --git a/drivers/net/wwan/t7xx/t7xx_port_ctrl_msg.c b/drivers/net/wwan/t7xx/t7xx_port_ctrl_msg.c
 new file mode 100644
-index 000000000000..b51e579b2f1a
+index 000000000000..24ab0607e8ba
 --- /dev/null
-+++ b/drivers/net/wwan/t7xx/t7xx_port.h
-@@ -0,0 +1,153 @@
-+/* SPDX-License-Identifier: GPL-2.0-only
-+ *
-+ * Copyright (c) 2021, MediaTek Inc.
-+ * Copyright (c) 2021, Intel Corporation.
-+ *
-+ * Authors:
-+ *  Haijun Liu <haijun.liu@mediatek.com>
-+ *  Moises Veleta <moises.veleta@intel.com>
-+ *  Ricardo Martinez<ricardo.martinez@linux.intel.com>
-+ *
-+ * Contributors:
-+ *  Amir Hanania <amir.hanania@intel.com>
-+ *  Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-+ *  Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>
-+ *  Eliot Lee <eliot.lee@intel.com>
-+ */
-+
-+#ifndef __T7XX_PORT_H__
-+#define __T7XX_PORT_H__
-+
-+#include <linux/bits.h>
-+#include <linux/device.h>
-+#include <linux/mutex.h>
-+#include <linux/sched.h>
-+#include <linux/skbuff.h>
-+#include <linux/spinlock.h>
-+#include <linux/types.h>
-+#include <linux/wait.h>
-+#include <linux/wwan.h>
-+
-+#include "t7xx_hif_cldma.h"
-+#include "t7xx_pci.h"
-+
-+#define PORT_F_RX_ALLOW_DROP	BIT(0)	/* Packet will be dropped if port's RX buffer full */
-+#define PORT_F_RX_FULLED	BIT(1)	/* RX buffer has been detected to be full */
-+#define PORT_F_USER_HEADER	BIT(2)	/* CCCI header will be provided by user, but not by CCCI */
-+#define PORT_F_RX_EXCLUSIVE	BIT(3)	/* RX queue only has this one port */
-+#define PORT_F_RX_ADJUST_HEADER	BIT(4)	/* Check whether need remove CCCI header while recv skb */
-+#define PORT_F_RX_CH_TRAFFIC	BIT(5)	/* Enable port channel traffic */
-+#define PORT_F_RX_CHAR_NODE	BIT(7)	/* Requires exporting char dev node to userspace */
-+#define PORT_F_CHAR_NODE_SHOW	BIT(10)	/* The char dev node is shown to userspace by default */
-+
-+/* Reused for net TX, Data queue, same bit as RX_FULLED */
-+#define PORT_F_TX_DATA_FULLED	BIT(1)
-+#define PORT_F_TX_ACK_FULLED	BIT(8)
-+
-+#define PORT_CH_ID_MASK		GENMASK(7, 0)
-+#define	PORT_INVALID_CH_ID	GENMASK(15, 0)
-+
-+/* Channel ID and Message ID definitions.
-+ * The channel number consists of peer_id(15:12) , channel_id(11:0)
-+ * peer_id:
-+ * 0:reserved, 1: to sAP, 2: to MD
-+ */
-+enum port_ch {
-+	/* to MD */
-+	PORT_CH_CONTROL_RX = 0x2000,
-+	PORT_CH_CONTROL_TX = 0x2001,
-+	PORT_CH_UART1_RX = 0x2006,	/* META */
-+	PORT_CH_UART1_TX = 0x2008,
-+	PORT_CH_UART2_RX = 0x200a,	/* AT */
-+	PORT_CH_UART2_TX = 0x200c,
-+	PORT_CH_MD_LOG_RX = 0x202a,	/* MD logging */
-+	PORT_CH_MD_LOG_TX = 0x202b,
-+	PORT_CH_LB_IT_RX = 0x203e,	/* Loop back test */
-+	PORT_CH_LB_IT_TX = 0x203f,
-+	PORT_CH_STATUS_RX = 0x2043,	/* Status polling */
-+	PORT_CH_MIPC_RX = 0x20ce,	/* MIPC */
-+	PORT_CH_MIPC_TX = 0x20cf,
-+	PORT_CH_MBIM_RX = 0x20d0,
-+	PORT_CH_MBIM_TX = 0x20d1,
-+	PORT_CH_DSS0_RX = 0x20d2,
-+	PORT_CH_DSS0_TX = 0x20d3,
-+	PORT_CH_DSS1_RX = 0x20d4,
-+	PORT_CH_DSS1_TX = 0x20d5,
-+	PORT_CH_DSS2_RX = 0x20d6,
-+	PORT_CH_DSS2_TX = 0x20d7,
-+	PORT_CH_DSS3_RX = 0x20d8,
-+	PORT_CH_DSS3_TX = 0x20d9,
-+	PORT_CH_DSS4_RX = 0x20da,
-+	PORT_CH_DSS4_TX = 0x20db,
-+	PORT_CH_DSS5_RX = 0x20dc,
-+	PORT_CH_DSS5_TX = 0x20dd,
-+	PORT_CH_DSS6_RX = 0x20de,
-+	PORT_CH_DSS6_TX = 0x20df,
-+	PORT_CH_DSS7_RX = 0x20e0,
-+	PORT_CH_DSS7_TX = 0x20e1,
-+};
-+
-+struct t7xx_port;
-+struct port_ops {
-+	int (*init)(struct t7xx_port *port);
-+	int (*recv_skb)(struct t7xx_port *port, struct sk_buff *skb);
-+	void (*md_state_notify)(struct t7xx_port *port, unsigned int md_state);
-+	void (*uninit)(struct t7xx_port *port);
-+	int (*enable_chl)(struct t7xx_port *port);
-+	int (*disable_chl)(struct t7xx_port *port);
-+};
-+
-+typedef void (*port_skb_handler)(struct t7xx_port *port, struct sk_buff *skb);
-+
-+struct t7xx_port_static {
-+	enum port_ch		tx_ch;
-+	enum port_ch		rx_ch;
-+	unsigned char		txq_index;
-+	unsigned char		rxq_index;
-+	unsigned char		txq_exp_index;
-+	unsigned char		rxq_exp_index;
-+	enum cldma_id		path_id;
-+	unsigned int		flags;
-+	struct port_ops		*ops;
-+	char			*name;
-+	enum wwan_port_type	port_type;
-+};
-+
-+struct t7xx_port {
-+	/* Members not initialized in definition */
-+	struct t7xx_port_static *port_static;
-+	struct wwan_port	*wwan_port;
-+	struct t7xx_pci_dev	*t7xx_dev;
-+	struct device		*dev;
-+	short			seq_nums[2];
-+	atomic_t		usage_cnt;
-+	struct			list_head entry;
-+	struct			list_head queue_entry;
-+	/* TX and RX flows are asymmetric since ports are multiplexed on
-+	 * queues.
-+	 *
-+	 * TX: data blocks are sent directly to a queue. Each port
-+	 * does not maintain a TX list; instead, they only provide
-+	 * a wait_queue_head for blocking writes.
-+	 *
-+	 * RX: Each port uses a RX list to hold packets,
-+	 * allowing the modem to dispatch RX packet as quickly as possible.
-+	 */
-+	struct sk_buff_head	rx_skb_list;
-+	spinlock_t		port_update_lock; /* Protects port configuration */
-+	wait_queue_head_t	rx_wq;
-+	int			rx_length_th;
-+	port_skb_handler	skb_handler;
-+	bool			chan_enable;
-+	bool			chn_crt_stat;
-+	struct task_struct	*thread;
-+	struct mutex		tx_mutex_lock; /* Protects the seq number operation */
-+	unsigned int		flags;
-+};
-+
-+int t7xx_port_kthread_handler(void *arg);
-+int t7xx_port_recv_skb(struct t7xx_port *port, struct sk_buff *skb);
-+int t7xx_port_write_room_to_md(struct t7xx_port *port);
-+int t7xx_port_send_skb_to_md(struct t7xx_port *port, struct sk_buff *skb, bool blocking);
-+
-+#endif /* __T7XX_PORT_H__ */
-diff --git a/drivers/net/wwan/t7xx/t7xx_port_proxy.c b/drivers/net/wwan/t7xx/t7xx_port_proxy.c
-new file mode 100644
-index 000000000000..4885c6791c2b
---- /dev/null
-+++ b/drivers/net/wwan/t7xx/t7xx_port_proxy.c
-@@ -0,0 +1,590 @@
++++ b/drivers/net/wwan/t7xx/t7xx_port_ctrl_msg.c
+@@ -0,0 +1,161 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
 + * Copyright (c) 2021, MediaTek Inc.
 + * Copyright (c) 2021, Intel Corporation.
 + *
 + * Authors:
-+ *  Amir Hanania <amir.hanania@intel.com>
 + *  Haijun Liu <haijun.liu@mediatek.com>
-+ *  Moises Veleta <moises.veleta@intel.com>
 + *  Ricardo Martinez<ricardo.martinez@linux.intel.com>
++ *  Moises Veleta <moises.veleta@intel.com>
 + *
 + * Contributors:
-+ *  Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-+ *  Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>
++ *  Amir Hanania <amir.hanania@intel.com>
 + *  Chiranjeevi Rapolu <chiranjeevi.rapolu@intel.com>
 + *  Eliot Lee <eliot.lee@intel.com>
 + *  Sreehari Kancharla <sreehari.kancharla@intel.com>
 + */
 +
-+#include <linux/bits.h>
-+#include <linux/bitfield.h>
 +#include <linux/dev_printk.h>
 +#include <linux/device.h>
-+#include <linux/gfp.h>
-+#include <linux/kernel.h>
++#include <linux/err.h>
 +#include <linux/kthread.h>
-+#include <linux/list.h>
-+#include <linux/mutex.h>
 +#include <linux/netdevice.h>
 +#include <linux/skbuff.h>
 +#include <linux/spinlock.h>
-+#include <linux/wait.h>
-+#include <linux/wwan.h>
 +
 +#include "t7xx_common.h"
-+#include "t7xx_hif_cldma.h"
-+#include "t7xx_modem_ops.h"
 +#include "t7xx_port.h"
 +#include "t7xx_port_proxy.h"
 +#include "t7xx_state_monitor.h"
 +
-+#define CHECK_RX_SEQ_MASK		GENMASK(14, 0)
-+#define Q_IDX_CTRL			0
-+#define Q_IDX_MBIM			2
-+#define Q_IDX_AT_CMD			5
-+
-+#define for_each_proxy_port(i, p, proxy)	\
-+	for (i = 0, (p) = &(proxy)->ports_private[i];	\
-+	     i < (proxy)->port_number;		\
-+	     i++, (p) = &(proxy)->ports_private[i])
-+
-+static struct t7xx_port_static t7xx_md_ports[1];
-+
-+static struct t7xx_port *t7xx_proxy_get_port_by_ch(struct port_proxy *port_prox, enum port_ch ch)
++static void fsm_ee_message_handler(struct t7xx_fsm_ctl *ctl, struct sk_buff *skb)
 +{
-+	struct t7xx_port_static *port_static;
-+	struct t7xx_port *port;
-+	int i;
-+
-+	for_each_proxy_port(i, port, port_prox) {
-+		port_static = port->port_static;
-+		if (port_static->rx_ch == ch || port_static->tx_ch == ch)
-+			return port;
-+	}
-+
-+	return NULL;
-+}
-+
-+/* Sequence numbering to track for lost packets */
-+void t7xx_port_proxy_set_seq_num(struct t7xx_port *port, struct ccci_header *ccci_h)
-+{
-+	if (ccci_h && port) {
-+		ccci_h->status &= cpu_to_le32(~HDR_FLD_SEQ);
-+		ccci_h->status |= cpu_to_le32(FIELD_PREP(HDR_FLD_SEQ, port->seq_nums[MTK_TX]));
-+		ccci_h->status &= cpu_to_le32(~HDR_FLD_AST);
-+		ccci_h->status |= cpu_to_le32(FIELD_PREP(HDR_FLD_AST, 1));
-+	}
-+}
-+
-+static u16 t7xx_port_check_rx_seq_num(struct t7xx_port *port, struct ccci_header *ccci_h)
-+{
-+	u16 seq_num, assert_bit;
-+
-+	seq_num = FIELD_GET(HDR_FLD_SEQ, le32_to_cpu(ccci_h->status));
-+	assert_bit = FIELD_GET(HDR_FLD_AST, le32_to_cpu(ccci_h->status));
-+	if (assert_bit && port->seq_nums[MTK_RX] &&
-+	    ((seq_num - port->seq_nums[MTK_RX]) & CHECK_RX_SEQ_MASK) != 1) {
-+		dev_warn_ratelimited(port->dev,
-+				     "seq num out-of-order %d->%d (header %X, len %X)\n",
-+				     seq_num, port->seq_nums[MTK_RX],
-+				     le32_to_cpu(ccci_h->packet_header),
-+				     le32_to_cpu(ccci_h->packet_len));
-+	}
-+
-+	return seq_num;
-+}
-+
-+void t7xx_port_proxy_reset(struct port_proxy *port_prox)
-+{
-+	struct t7xx_port *port;
-+	int i;
-+
-+	for_each_proxy_port(i, port, port_prox) {
-+		port->seq_nums[MTK_RX] = -1;
-+		port->seq_nums[MTK_TX] = 0;
-+	}
-+}
-+
-+static inline int t7xx_port_get_queue_no(struct t7xx_port *port)
-+{
-+	struct t7xx_port_static *port_static = port->port_static;
-+	struct t7xx_fsm_ctl *ctl = port->t7xx_dev->md->fsm_ctl;
-+
-+	return t7xx_fsm_get_md_state(ctl) == MD_STATE_EXCEPTION ?
-+		port_static->txq_exp_index : port_static->txq_index;
-+}
-+
-+static inline void t7xx_port_struct_init(struct t7xx_port *port)
-+{
-+	INIT_LIST_HEAD(&port->entry);
-+	INIT_LIST_HEAD(&port->queue_entry);
-+	skb_queue_head_init(&port->rx_skb_list);
-+	init_waitqueue_head(&port->rx_wq);
-+	port->seq_nums[MTK_RX] = -1;
-+	port->seq_nums[MTK_TX] = 0;
-+	atomic_set(&port->usage_cnt, 0);
-+}
-+
-+static void t7xx_port_adjust_skb(struct t7xx_port *port, struct sk_buff *skb)
-+{
-+	struct ccci_header *ccci_h = (struct ccci_header *)skb->data;
-+	struct t7xx_port_static *port_static = port->port_static;
-+
-+	if (port->flags & PORT_F_USER_HEADER) {
-+		if (le32_to_cpu(ccci_h->packet_header) == CCCI_HEADER_NO_DATA) {
-+			if (skb->len > sizeof(*ccci_h)) {
-+				dev_err_ratelimited(port->dev,
-+						    "Recv unexpected data for %s, skb->len=%d\n",
-+						    port_static->name, skb->len);
-+				skb_trim(skb, sizeof(*ccci_h));
-+			}
-+		}
-+	} else {
-+		skb_pull(skb, sizeof(*ccci_h));
-+	}
-+}
-+
-+/**
-+ * t7xx_port_recv_skb() - receive skb from modem or HIF.
-+ * @port: port to use.
-+ * @skb: skb to use.
-+ *
-+ * Used to receive native HIF RX data, which has same the RX receive flow.
-+ *
-+ * Return:
-+ * * 0		- Success.
-+ * * -ENOBUFS	- Not enough queue length.
-+ */
-+int t7xx_port_recv_skb(struct t7xx_port *port, struct sk_buff *skb)
-+{
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&port->rx_wq.lock, flags);
-+	if (port->rx_skb_list.qlen < port->rx_length_th) {
-+		struct ccci_header *ccci_h = (struct ccci_header *)skb->data;
-+		u32 status;
-+
-+		port->flags &= ~PORT_F_RX_FULLED;
-+		if (port->flags & PORT_F_RX_ADJUST_HEADER)
-+			t7xx_port_adjust_skb(port, skb);
-+
-+		status = FIELD_GET(HDR_FLD_CHN, le32_to_cpu(ccci_h->status));
-+		if (status == PORT_CH_STATUS_RX) {
-+			port->skb_handler(port, skb);
-+		} else {
-+			if (port->wwan_port)
-+				wwan_port_rx(port->wwan_port, skb);
-+			else
-+				__skb_queue_tail(&port->rx_skb_list, skb);
-+		}
-+
-+		spin_unlock_irqrestore(&port->rx_wq.lock, flags);
-+		wake_up_all(&port->rx_wq);
-+		return 0;
-+	}
-+
-+	port->flags |= PORT_F_RX_FULLED;
-+	spin_unlock_irqrestore(&port->rx_wq.lock, flags);
-+	return -ENOBUFS;
-+}
-+
-+/**
-+ * t7xx_port_kthread_handler() - Kthread handler for specific port.
-+ * @arg: Port pointer.
-+ *
-+ * Receive native HIF RX data, which have same RX receive flow.
-+ *
-+ * Return: Always 0 to kthread_run.
-+ */
-+int t7xx_port_kthread_handler(void *arg)
-+{
-+	while (!kthread_should_stop()) {
-+		struct t7xx_port *port = arg;
-+		struct sk_buff *skb;
-+		unsigned long flags;
-+
-+		spin_lock_irqsave(&port->rx_wq.lock, flags);
-+		if (skb_queue_empty(&port->rx_skb_list) &&
-+		    wait_event_interruptible_locked_irq(port->rx_wq,
-+							!skb_queue_empty(&port->rx_skb_list) ||
-+							kthread_should_stop())) {
-+			spin_unlock_irqrestore(&port->rx_wq.lock, flags);
-+			continue;
-+		} else if (kthread_should_stop()) {
-+			spin_unlock_irqrestore(&port->rx_wq.lock, flags);
-+			break;
-+		}
-+
-+		skb = __skb_dequeue(&port->rx_skb_list);
-+		spin_unlock_irqrestore(&port->rx_wq.lock, flags);
-+
-+		if (port->skb_handler)
-+			port->skb_handler(port, skb);
-+	}
-+
-+	return 0;
-+}
-+
-+static inline struct cldma_ctrl *get_md_ctrl(struct t7xx_port *port)
-+{
-+	enum cldma_id id = port->port_static->path_id;
-+
-+	return port->t7xx_dev->md->md_ctrl[id];
-+}
-+
-+int t7xx_port_write_room_to_md(struct t7xx_port *port)
-+{
-+	struct cldma_ctrl *md_ctrl = get_md_ctrl(port);
-+
-+	return t7xx_cldma_write_room(md_ctrl, t7xx_port_get_queue_no(port));
-+}
-+
-+int t7xx_port_proxy_send_skb(struct t7xx_port *port, struct sk_buff *skb)
-+{
-+	struct ccci_header *ccci_h = (struct ccci_header *)(skb->data);
-+	struct cldma_ctrl *md_ctrl;
-+	unsigned char tx_qno;
-+	int ret;
-+
-+	tx_qno = t7xx_port_get_queue_no(port);
-+	t7xx_port_proxy_set_seq_num(port, ccci_h);
-+
-+	md_ctrl = get_md_ctrl(port);
-+	ret = t7xx_cldma_send_skb(md_ctrl, tx_qno, skb, true);
-+	if (ret) {
-+		dev_err(port->dev, "Failed to send skb: %d\n", ret);
-+		return ret;
-+	}
-+
-+	/* Record the port seq_num after the data is sent to HIF.
-+	 * Only bits 0-14 are used, thus negating overflow.
-+	 */
-+	port->seq_nums[MTK_TX]++;
-+
-+	return 0;
-+}
-+
-+int t7xx_port_send_skb_to_md(struct t7xx_port *port, struct sk_buff *skb, bool blocking)
-+{
-+	struct t7xx_port_static *port_static = port->port_static;
-+	struct t7xx_fsm_ctl *ctl = port->t7xx_dev->md->fsm_ctl;
-+	struct cldma_ctrl *md_ctrl;
++	struct ctrl_msg_header *ctrl_msg_h = (struct ctrl_msg_header *)skb->data;
++	struct device *dev = &ctl->md->t7xx_dev->pdev->dev;
++	struct port_proxy *port_prox = ctl->md->port_prox;
 +	enum md_state md_state;
-+	unsigned int fsm_state;
 +
 +	md_state = t7xx_fsm_get_md_state(ctl);
-+
-+	fsm_state = t7xx_fsm_get_ctl_state(ctl);
-+	if (fsm_state != FSM_STATE_PRE_START) {
-+		if (md_state == MD_STATE_WAITING_FOR_HS1 || md_state == MD_STATE_WAITING_FOR_HS2)
-+			return -ENODEV;
-+
-+		if (md_state == MD_STATE_EXCEPTION && port_static->tx_ch != PORT_CH_MD_LOG_TX &&
-+		    port_static->tx_ch != PORT_CH_UART1_TX)
-+			return -ETXTBSY;
-+
-+		if (md_state == MD_STATE_STOPPED || md_state == MD_STATE_WAITING_TO_STOP ||
-+		    md_state == MD_STATE_INVALID)
-+			return -ENODEV;
++	if (md_state != MD_STATE_EXCEPTION) {
++		dev_err(dev, "Receive invalid MD_EX %x when MD state is %d\n",
++			ctrl_msg_h->ex_msg, md_state);
++		return;
 +	}
 +
-+	md_ctrl = get_md_ctrl(port);
-+	return t7xx_cldma_send_skb(md_ctrl, t7xx_port_get_queue_no(port), skb, blocking);
-+}
-+
-+static void t7xx_proxy_setup_ch_mapping(struct port_proxy *port_prox)
-+{
-+	struct t7xx_port *port;
-+
-+	int i, j;
-+
-+	for (i = 0; i < ARRAY_SIZE(port_prox->rx_ch_ports); i++)
-+		INIT_LIST_HEAD(&port_prox->rx_ch_ports[i]);
-+
-+	for (j = 0; j < ARRAY_SIZE(port_prox->queue_ports); j++) {
-+		for (i = 0; i < ARRAY_SIZE(port_prox->queue_ports[j]); i++)
-+			INIT_LIST_HEAD(&port_prox->queue_ports[j][i]);
-+	}
-+
-+	for_each_proxy_port(i, port, port_prox) {
-+		struct t7xx_port_static *port_static = port->port_static;
-+		enum cldma_id path_id = port_static->path_id;
-+		u8 ch_id;
-+
-+		ch_id = FIELD_GET(PORT_CH_ID_MASK, port_static->rx_ch);
-+		list_add_tail(&port->entry, &port_prox->rx_ch_ports[ch_id]);
-+		list_add_tail(&port->queue_entry,
-+			      &port_prox->queue_ports[path_id][port_static->rxq_index]);
-+	}
-+}
-+
-+/**
-+ * t7xx_port_proxy_dispatch_recv_skb() - Dispatch received skb.
-+ * @queue: CLDMA queue.
-+ * @skb: Socket buffer.
-+ * @drop_skb_on_err: Return value that indicates in case of an error that the skb should be dropped.
-+ *
-+ * If recv_skb return with 0 or drop_skb_on_err is true, then it's the port's duty
-+ * to free the request and the caller should no longer reference the request.
-+ * If recv_skb returns any other error, caller should free the request.
-+ *
-+ * Return:
-+ ** 0		- Success.
-+ ** -EINVAL	- Failed to get skb, channel out-of-range, or invalid MD state.
-+ ** -ENETDOWN	- Network time out.
-+ */
-+static int t7xx_port_proxy_dispatch_recv_skb(struct cldma_queue *queue, struct sk_buff *skb,
-+					     bool *drop_skb_on_err)
-+{
-+	struct ccci_header *ccci_h = (struct ccci_header *)skb->data;
-+	struct port_proxy *port_prox = queue->md->port_prox;
-+	struct t7xx_fsm_ctl *ctl = queue->md->fsm_ctl;
-+	struct list_head *port_list;
-+	struct t7xx_port *port;
-+	u16 seq_num, channel;
-+	int ret = 0;
-+	u8 ch_id;
-+
-+	channel = FIELD_GET(HDR_FLD_CHN, le32_to_cpu(ccci_h->status));
-+	ch_id = FIELD_GET(PORT_CH_ID_MASK, channel);
-+
-+	if (t7xx_fsm_get_md_state(ctl) == MD_STATE_INVALID) {
-+		*drop_skb_on_err = true;
-+		return -EINVAL;
-+	}
-+
-+	port_list = &port_prox->rx_ch_ports[ch_id];
-+	list_for_each_entry(port, port_list, entry) {
-+		struct t7xx_port_static *port_static = port->port_static;
-+
-+		if (queue->md_ctrl->hif_id != port_static->path_id || channel !=
-+		    port_static->rx_ch)
-+			continue;
-+
-+		/* Multi-cast is not supported, because one port may be freed and can modify
-+		 * this request before another port can process it.
-+		 * However we still can use req->state to do some kind of multi-cast if needed.
-+		 */
-+		if (port_static->ops->recv_skb) {
-+			seq_num = t7xx_port_check_rx_seq_num(port, ccci_h);
-+			ret = port_static->ops->recv_skb(port, skb);
-+			/* If the packet is stored to RX buffer successfully or dropped,
-+			 * the sequence number will be updated.
-+			 */
-+			if (ret == -ENETDOWN || (ret < 0 && port->flags & PORT_F_RX_ALLOW_DROP)) {
-+				*drop_skb_on_err = true;
-+				dev_err_ratelimited(port->dev,
-+						    "port %s RX full, drop packet\n",
-+						    port_static->name);
-+			}
-+
-+			if (!ret || drop_skb_on_err)
-+				port->seq_nums[MTK_RX] = seq_num;
++	switch (le32_to_cpu(ctrl_msg_h->ctrl_msg_id)) {
++	case CTL_ID_MD_EX:
++		if (le32_to_cpu(ctrl_msg_h->ex_msg) != MD_EX_CHK_ID) {
++			dev_err(dev, "Receive invalid MD_EX %x\n", ctrl_msg_h->ex_msg);
++		} else {
++			t7xx_port_proxy_send_msg_to_md(port_prox, PORT_CH_CONTROL_TX, CTL_ID_MD_EX,
++						       MD_EX_CHK_ID);
++			t7xx_fsm_append_event(ctl, FSM_EVENT_MD_EX, NULL, 0);
 +		}
 +
 +		break;
-+	}
 +
-+	return ret;
-+}
-+
-+static int t7xx_port_proxy_recv_skb(struct cldma_queue *queue, struct sk_buff *skb)
-+{
-+	bool drop_skb_on_err = false;
-+	int ret;
-+
-+	if (!skb)
-+		return -EINVAL;
-+
-+	ret = t7xx_port_proxy_dispatch_recv_skb(queue, skb, &drop_skb_on_err);
-+	if (ret < 0 && drop_skb_on_err) {
-+		dev_kfree_skb_any(skb);
-+		return 0;
-+	}
-+
-+	return ret;
-+}
-+
-+/**
-+ * t7xx_port_proxy_md_status_notify() - Notify all ports of state.
-+ *@port_prox: The port_proxy pointer.
-+ *@state: State.
-+ *
-+ * Called by t7xx_fsm. Used to dispatch modem status for all ports,
-+ * which want to know MD state transition.
-+ */
-+void t7xx_port_proxy_md_status_notify(struct port_proxy *port_prox, unsigned int state)
-+{
-+	struct t7xx_port *port;
-+	int i;
-+
-+	for_each_proxy_port(i, port, port_prox) {
-+		struct t7xx_port_static *port_static = port->port_static;
-+
-+		if (port_static->ops->md_state_notify)
-+			port_static->ops->md_state_notify(port, state);
-+	}
-+}
-+
-+static void t7xx_proxy_init_all_ports(struct t7xx_modem *md)
-+{
-+	struct port_proxy *port_prox = md->port_prox;
-+	struct t7xx_port *port;
-+	int i;
-+
-+	for_each_proxy_port(i, port, port_prox) {
-+		struct t7xx_port_static *port_static = port->port_static;
-+
-+		t7xx_port_struct_init(port);
-+
-+		port->t7xx_dev = md->t7xx_dev;
-+		port->dev = &md->t7xx_dev->pdev->dev;
-+		spin_lock_init(&port->port_update_lock);
-+		spin_lock(&port->port_update_lock);
-+		mutex_init(&port->tx_mutex_lock);
-+
-+		if (port->flags & PORT_F_CHAR_NODE_SHOW)
-+			port->chan_enable = true;
++	case CTL_ID_MD_EX_ACK:
++		if (le32_to_cpu(ctrl_msg_h->ex_msg) != MD_EX_CHK_ACK_ID)
++			dev_err(dev, "Receive invalid MD_EX_ACK %x\n", ctrl_msg_h->ex_msg);
 +		else
-+			port->chan_enable = false;
++			t7xx_fsm_append_event(ctl, FSM_EVENT_MD_EX_REC_OK, NULL, 0);
 +
-+		port->chn_crt_stat = false;
-+		spin_unlock(&port->port_update_lock);
++		break;
 +
-+		if (port_static->ops->init)
-+			port_static->ops->init(port);
++	case CTL_ID_MD_EX_PASS:
++		t7xx_fsm_append_event(ctl, FSM_EVENT_MD_EX_PASS, NULL, 0);
++		break;
++
++	case CTL_ID_DRV_VER_ERROR:
++		dev_err(dev, "AP/MD driver version mismatch\n");
 +	}
-+
-+	t7xx_proxy_setup_ch_mapping(port_prox);
 +}
 +
-+static int t7xx_proxy_alloc(struct t7xx_modem *md)
++static void control_msg_handler(struct t7xx_port *port, struct sk_buff *skb)
 +{
-+	unsigned int port_number = ARRAY_SIZE(t7xx_md_ports);
-+	struct device *dev = &md->t7xx_dev->pdev->dev;
-+	struct t7xx_port *ports_private;
-+	struct port_proxy *port_prox;
-+	int i;
++	struct t7xx_port_static *port_static = port->port_static;
++	struct t7xx_fsm_ctl *ctl = port->t7xx_dev->md->fsm_ctl;
++	struct port_proxy *port_prox = ctl->md->port_prox;
++	struct ctrl_msg_header *ctrl_msg_h;
++	int ret = 0;
 +
-+	port_prox = devm_kzalloc(dev, sizeof(*port_prox), GFP_KERNEL);
-+	if (!port_prox)
-+		return -ENOMEM;
++	skb_pull(skb, sizeof(struct ccci_header));
 +
-+	md->port_prox = port_prox;
-+	port_prox->dev = dev;
-+	port_prox->ports_shared = t7xx_md_ports;
++	ctrl_msg_h = (struct ctrl_msg_header *)skb->data;
++	switch (le32_to_cpu(ctrl_msg_h->ctrl_msg_id)) {
++	case CTL_ID_HS2_MSG:
++		skb_pull(skb, sizeof(*ctrl_msg_h));
 +
-+	ports_private = devm_kzalloc(dev, sizeof(*ports_private) * port_number, GFP_KERNEL);
-+	if (!ports_private)
-+		return -ENOMEM;
++		if (port_static->rx_ch == PORT_CH_CONTROL_RX)
++			t7xx_fsm_append_event(ctl, FSM_EVENT_MD_HS2,
++					      skb->data, le32_to_cpu(ctrl_msg_h->data_length));
 +
-+	for (i = 0; i < port_number; i++) {
-+		ports_private[i].port_static = &port_prox->ports_shared[i];
-+		ports_private[i].flags = port_prox->ports_shared[i].flags;
++		dev_kfree_skb_any(skb);
++		break;
++
++	case CTL_ID_MD_EX:
++	case CTL_ID_MD_EX_ACK:
++	case CTL_ID_MD_EX_PASS:
++	case CTL_ID_DRV_VER_ERROR:
++		fsm_ee_message_handler(ctl, skb);
++		dev_kfree_skb_any(skb);
++		break;
++
++	case CTL_ID_PORT_ENUM:
++		skb_pull(skb, sizeof(*ctrl_msg_h));
++		ret = t7xx_port_proxy_node_control(ctl->md, (struct port_msg *)skb->data);
++		if (!ret)
++			t7xx_port_proxy_send_msg_to_md(port_prox, PORT_CH_CONTROL_TX,
++						       CTL_ID_PORT_ENUM, 0);
++		else
++			t7xx_port_proxy_send_msg_to_md(port_prox, PORT_CH_CONTROL_TX,
++						       CTL_ID_PORT_ENUM, PORT_ENUM_VER_MISMATCH);
++
++		break;
++
++	default:
++		dev_err(port->dev, "Unknown control message ID to FSM %x\n",
++			le32_to_cpu(ctrl_msg_h->ctrl_msg_id));
++		break;
 +	}
 +
-+	port_prox->ports_private = ports_private;
-+	port_prox->port_number = port_number;
-+	t7xx_proxy_init_all_ports(md);
-+	return 0;
-+};
++	if (ret)
++		dev_err(port->dev, "%s control message handle error: %d\n", port_static->name,
++			ret);
++}
 +
-+/**
-+ * t7xx_port_proxy_init() - Initialize ports.
-+ * @md: Modem.
-+ *
-+ * Create all port instances.
-+ *
-+ * Return:
-+ * * 0		- Success.
-+ * * -ERROR	- Error code from failure sub-initializations.
-+ */
-+int t7xx_port_proxy_init(struct t7xx_modem *md)
++static int port_ctl_init(struct t7xx_port *port)
 +{
++	struct t7xx_port_static *port_static = port->port_static;
++
++	port->skb_handler = &control_msg_handler;
++	port->thread = kthread_run(t7xx_port_kthread_handler, port, "%s", port_static->name);
++	if (IS_ERR(port->thread)) {
++		dev_err(port->dev, "Failed to start port control thread\n");
++		return PTR_ERR(port->thread);
++	}
++
++	port->rx_length_th = MAX_CTRL_QUEUE_LENGTH;
++	return 0;
++}
++
++static void port_ctl_uninit(struct t7xx_port *port)
++{
++	unsigned long flags;
++	struct sk_buff *skb;
++
++	if (port->thread)
++		kthread_stop(port->thread);
++
++	spin_lock_irqsave(&port->rx_wq.lock, flags);
++	while ((skb = __skb_dequeue(&port->rx_skb_list)) != NULL)
++		dev_kfree_skb_any(skb);
++
++	spin_unlock_irqrestore(&port->rx_wq.lock, flags);
++}
++
++struct port_ops ctl_port_ops = {
++	.init = &port_ctl_init,
++	.recv_skb = &t7xx_port_recv_skb,
++	.uninit = &port_ctl_uninit,
++};
+diff --git a/drivers/net/wwan/t7xx/t7xx_port_proxy.c b/drivers/net/wwan/t7xx/t7xx_port_proxy.c
+index 4885c6791c2b..67219319e9f7 100644
+--- a/drivers/net/wwan/t7xx/t7xx_port_proxy.c
++++ b/drivers/net/wwan/t7xx/t7xx_port_proxy.c
+@@ -49,7 +49,20 @@
+ 	     i < (proxy)->port_number;		\
+ 	     i++, (p) = &(proxy)->ports_private[i])
+ 
+-static struct t7xx_port_static t7xx_md_ports[1];
++static struct t7xx_port_static t7xx_md_ports[] = {
++	{
++		.tx_ch = PORT_CH_CONTROL_TX,
++		.rx_ch = PORT_CH_CONTROL_RX,
++		.txq_index = Q_IDX_CTRL,
++		.rxq_index = Q_IDX_CTRL,
++		.txq_exp_index = 0,
++		.rxq_exp_index = 0,
++		.path_id = ID_CLDMA1,
++		.flags = 0,
++		.ops = &ctl_port_ops,
++		.name = "t7xx_ctrl",
++	},
++};
+ 
+ static struct t7xx_port *t7xx_proxy_get_port_by_ch(struct port_proxy *port_prox, enum port_ch ch)
+ {
+@@ -319,6 +332,53 @@ static void t7xx_proxy_setup_ch_mapping(struct port_proxy *port_prox)
+ 	}
+ }
+ 
++void t7xx_port_proxy_send_msg_to_md(struct port_proxy *port_prox, enum port_ch ch,
++				    unsigned int msg, unsigned int ex_msg)
++{
++	struct ctrl_msg_header *ctrl_msg_h;
++	struct ccci_header *ccci_h;
++	struct t7xx_port *port;
++	struct sk_buff *skb;
 +	int ret;
 +
-+	ret = t7xx_proxy_alloc(md);
-+	if (ret)
-+		return ret;
++	port = t7xx_proxy_get_port_by_ch(port_prox, ch);
++	if (!port)
++		return;
 +
-+	t7xx_cldma_set_recv_skb(md->md_ctrl[ID_CLDMA1], t7xx_port_proxy_recv_skb);
-+	return 0;
-+}
++	skb = __dev_alloc_skb(sizeof(*ccci_h), GFP_KERNEL);
++	if (!skb)
++		return;
 +
-+void t7xx_port_proxy_uninit(struct port_proxy *port_prox)
-+{
-+	struct t7xx_port *port;
-+	int i;
++	if (ch == PORT_CH_CONTROL_TX) {
++		ccci_h = (struct ccci_header *)(skb->data);
++		ccci_h->packet_header = cpu_to_le32(CCCI_HEADER_NO_DATA);
++		ccci_h->packet_len = cpu_to_le32(sizeof(*ctrl_msg_h) + CCCI_H_LEN);
++		ccci_h->status &= cpu_to_le32(~HDR_FLD_CHN);
++		ccci_h->status |= cpu_to_le32(FIELD_PREP(HDR_FLD_CHN, ch));
++		ccci_h->ex_msg = 0;
++		ctrl_msg_h = (struct ctrl_msg_header *)(skb->data + CCCI_H_LEN);
++		ctrl_msg_h->data_length = 0;
++		ctrl_msg_h->ex_msg = cpu_to_le32(ex_msg);
++		ctrl_msg_h->ctrl_msg_id = cpu_to_le32(msg);
++		skb_put(skb, CCCI_H_LEN + sizeof(*ctrl_msg_h));
++	} else {
++		ccci_h = skb_put(skb, sizeof(*ccci_h));
++		ccci_h->packet_header = cpu_to_le32(CCCI_HEADER_NO_DATA);
++		ccci_h->packet_len = cpu_to_le32(msg);
++		ccci_h->status &= cpu_to_le32(~HDR_FLD_CHN);
++		ccci_h->status |= cpu_to_le32(FIELD_PREP(HDR_FLD_CHN, ch));
++		ccci_h->ex_msg = cpu_to_le32(ex_msg);
++	}
 +
-+	for_each_proxy_port(i, port, port_prox) {
++	ret = t7xx_port_proxy_send_skb(port, skb);
++	if (ret) {
 +		struct t7xx_port_static *port_static = port->port_static;
 +
-+		if (port_static->ops->uninit)
-+			port_static->ops->uninit(port);
++		dev_err(port->dev, "port%s send to MD fail\n", port_static->name);
++		dev_kfree_skb_any(skb);
 +	}
 +}
 +
-+/**
-+ * t7xx_port_proxy_node_control() - Create/remove node.
-+ * @md: Modem.
-+ * @port_msg: Message.
-+ *
-+ * Used to control create/remove device node.
-+ *
-+ * Return:
-+ * * 0		- Success.
-+ * * -EFAULT	- Message check failure.
-+ */
-+int t7xx_port_proxy_node_control(struct t7xx_modem *md, struct port_msg *port_msg)
-+{
-+	u32 *port_info_base = (void *)port_msg + sizeof(*port_msg);
-+	struct device *dev = &md->t7xx_dev->pdev->dev;
-+	unsigned int ports, i;
-+	unsigned int version;
+ /**
+  * t7xx_port_proxy_dispatch_recv_skb() - Dispatch received skb.
+  * @queue: CLDMA queue.
+@@ -438,6 +498,9 @@ static void t7xx_proxy_init_all_ports(struct t7xx_modem *md)
+ 
+ 		t7xx_port_struct_init(port);
+ 
++		if (port_static->tx_ch == PORT_CH_CONTROL_TX)
++			md->core_md.ctl_port = port;
 +
-+	version = FIELD_GET(PORT_MSG_VERSION, le32_to_cpu(port_msg->info));
-+	if (version != PORT_ENUM_VER ||
-+	    le32_to_cpu(port_msg->head_pattern) != PORT_ENUM_HEAD_PATTERN ||
-+	    le32_to_cpu(port_msg->tail_pattern) != PORT_ENUM_TAIL_PATTERN) {
-+		dev_err(dev, "Port message enumeration invalid %x:%x:%x\n",
-+			version, le32_to_cpu(port_msg->head_pattern),
-+			le32_to_cpu(port_msg->tail_pattern));
-+		return -EFAULT;
-+	}
-+
-+	ports = FIELD_GET(PORT_MSG_PRT_CNT, le32_to_cpu(port_msg->info));
-+
-+	for (i = 0; i < ports; i++) {
-+		struct t7xx_port_static *port_static;
-+		u32 *port_info = port_info_base + i;
-+		struct t7xx_port *port;
-+		unsigned int ch_id;
-+		bool en_flag;
-+
-+		ch_id = FIELD_GET(PORT_INFO_CH_ID, *port_info);
-+		port = t7xx_proxy_get_port_by_ch(md->port_prox, ch_id);
-+		if (!port) {
-+			dev_warn(dev, "Port:%x not found\n", ch_id);
-+			continue;
-+		}
-+
-+		en_flag = !!FIELD_GET(PORT_INFO_ENFLG, *port_info);
-+
-+		if (t7xx_fsm_get_md_state(md->fsm_ctl) == MD_STATE_READY) {
-+			port_static = port->port_static;
-+
-+			if (en_flag) {
-+				if (port_static->ops->enable_chl)
-+					port_static->ops->enable_chl(port);
-+			} else {
-+				if (port_static->ops->disable_chl)
-+					port_static->ops->disable_chl(port);
-+			}
-+		} else {
-+			port->chan_enable = en_flag;
-+		}
-+	}
-+
-+	return 0;
-+}
+ 		port->t7xx_dev = md->t7xx_dev;
+ 		port->dev = &md->t7xx_dev->pdev->dev;
+ 		spin_lock_init(&port->port_update_lock);
 diff --git a/drivers/net/wwan/t7xx/t7xx_port_proxy.h b/drivers/net/wwan/t7xx/t7xx_port_proxy.h
-new file mode 100644
-index 000000000000..de7ba70bd471
---- /dev/null
+index de7ba70bd471..06ccda839445 100644
+--- a/drivers/net/wwan/t7xx/t7xx_port_proxy.h
 +++ b/drivers/net/wwan/t7xx/t7xx_port_proxy.h
-@@ -0,0 +1,71 @@
-+/* SPDX-License-Identifier: GPL-2.0-only
-+ *
-+ * Copyright (c) 2021, MediaTek Inc.
-+ * Copyright (c) 2021, Intel Corporation.
-+ *
-+ * Authors:
-+ *  Amir Hanania <amir.hanania@intel.com>
-+ *  Haijun Liu <haijun.liu@mediatek.com>
-+ *  Moises Veleta <moises.veleta@intel.com>
-+ *  Ricardo Martinez<ricardo.martinez@linux.intel.com>
-+ *
-+ * Contributors:
-+ *  Chiranjeevi Rapolu <chiranjeevi.rapolu@intel.com>
-+ *  Eliot Lee <eliot.lee@intel.com>
-+ *  Sreehari Kancharla <sreehari.kancharla@intel.com>
-+ */
-+
-+#ifndef __T7XX_PORT_PROXY_H__
-+#define __T7XX_PORT_PROXY_H__
-+
-+#include <linux/bits.h>
-+#include <linux/device.h>
-+#include <linux/skbuff.h>
-+#include <linux/types.h>
-+
-+#include "t7xx_common.h"
-+#include "t7xx_modem_ops.h"
-+#include "t7xx_port.h"
-+
-+#define MTK_MAX_QUEUE_NUM	16
-+#define MAX_RX_QUEUE_LENGTH	32
-+#define MAX_CTRL_QUEUE_LENGTH	16
-+
-+#define CLDMA_TXQ_MTU		MTK_SKB_4K
-+
-+struct port_proxy {
-+	int				port_number;
-+	struct t7xx_port_static		*ports_shared;
-+	struct t7xx_port		*ports_private;
-+	struct list_head		rx_ch_ports[PORT_CH_ID_MASK];
-+	struct list_head		queue_ports[CLDMA_NUM][MTK_MAX_QUEUE_NUM];
-+	struct device			*dev;
+@@ -42,6 +42,12 @@ struct port_proxy {
+ 	struct device			*dev;
+ };
+ 
++struct ctrl_msg_header {
++	__le32	ctrl_msg_id;
++	__le32	ex_msg;
++	__le32	data_length;
 +};
 +
-+struct port_msg {
-+	__le32	head_pattern;
-+	__le32	info;
-+	__le32	tail_pattern;
-+};
+ struct port_msg {
+ 	__le32	head_pattern;
+ 	__le32	info;
+@@ -60,10 +66,15 @@ struct port_msg {
+ #define PORT_ENUM_TAIL_PATTERN	0xa5a5a5a5
+ #define PORT_ENUM_VER_MISMATCH	0x00657272
+ 
++/* Port operations mapping */
++extern struct port_ops ctl_port_ops;
 +
-+#define PORT_INFO_RSRVD		GENMASK(31, 16)
-+#define PORT_INFO_ENFLG		GENMASK(15, 15)
-+#define PORT_INFO_CH_ID		GENMASK(14, 0)
-+
-+#define PORT_MSG_VERSION	GENMASK(31, 16)
-+#define PORT_MSG_PRT_CNT	GENMASK(15, 0)
-+
-+#define PORT_ENUM_VER		0
-+#define PORT_ENUM_HEAD_PATTERN	0x5a5a5a5a
-+#define PORT_ENUM_TAIL_PATTERN	0xa5a5a5a5
-+#define PORT_ENUM_VER_MISMATCH	0x00657272
-+
-+int t7xx_port_proxy_send_skb(struct t7xx_port *port, struct sk_buff *skb);
-+void t7xx_port_proxy_set_seq_num(struct t7xx_port *port, struct ccci_header *ccci_h);
-+int t7xx_port_proxy_node_control(struct t7xx_modem *md, struct port_msg *port_msg);
-+void t7xx_port_proxy_reset(struct port_proxy *port_prox);
-+void t7xx_port_proxy_uninit(struct port_proxy *port_prox);
-+int t7xx_port_proxy_init(struct t7xx_modem *md);
-+void t7xx_port_proxy_md_status_notify(struct port_proxy *port_prox, unsigned int state);
-+
-+#endif /* __T7XX_PORT_PROXY_H__ */
+ int t7xx_port_proxy_send_skb(struct t7xx_port *port, struct sk_buff *skb);
+ void t7xx_port_proxy_set_seq_num(struct t7xx_port *port, struct ccci_header *ccci_h);
+ int t7xx_port_proxy_node_control(struct t7xx_modem *md, struct port_msg *port_msg);
+ void t7xx_port_proxy_reset(struct port_proxy *port_prox);
++void t7xx_port_proxy_send_msg_to_md(struct port_proxy *port_prox, enum port_ch ch,
++				    unsigned int msg, unsigned int ex_msg);
+ void t7xx_port_proxy_uninit(struct port_proxy *port_prox);
+ int t7xx_port_proxy_init(struct t7xx_modem *md);
+ void t7xx_port_proxy_md_status_notify(struct port_proxy *port_prox, unsigned int state);
 diff --git a/drivers/net/wwan/t7xx/t7xx_state_monitor.c b/drivers/net/wwan/t7xx/t7xx_state_monitor.c
-index cfd4e4b1a8df..a436e1450af6 100644
+index a436e1450af6..d09a64518b8b 100644
 --- a/drivers/net/wwan/t7xx/t7xx_state_monitor.c
 +++ b/drivers/net/wwan/t7xx/t7xx_state_monitor.c
-@@ -38,6 +38,7 @@
- #include "t7xx_modem_ops.h"
- #include "t7xx_pci.h"
- #include "t7xx_pcie_mac.h"
-+#include "t7xx_port_proxy.h"
- #include "t7xx_reg.h"
- #include "t7xx_state_monitor.h"
+@@ -315,6 +315,9 @@ static void fsm_routine_starting(struct t7xx_fsm_ctl *ctl)
  
-@@ -97,6 +98,9 @@ void t7xx_fsm_broadcast_state(struct t7xx_fsm_ctl *ctl, enum md_state state)
- 
- 	ctl->md_state = state;
- 
-+	/* Update to port first, otherwise sending message on HS2 may fail */
-+	t7xx_port_proxy_md_status_notify(ctl->md->port_prox, state);
+ 	if (!md->core_md.ready) {
+ 		dev_err(dev, "MD handshake timeout\n");
++		if (md->core_md.handshake_ongoing)
++			t7xx_fsm_append_event(ctl, FSM_EVENT_MD_HS2_EXIT, NULL, 0);
 +
- 	fsm_state_notify(ctl->md, state);
- }
+ 		fsm_routine_exception(ctl, NULL, EXCEPTION_HS_TIMEOUT);
+ 	} else {
+ 		fsm_routine_ready(ctl);
+diff --git a/drivers/net/wwan/t7xx/t7xx_state_monitor.h b/drivers/net/wwan/t7xx/t7xx_state_monitor.h
+index f1e0b1a3f8de..e00aae054d4d 100644
+--- a/drivers/net/wwan/t7xx/t7xx_state_monitor.h
++++ b/drivers/net/wwan/t7xx/t7xx_state_monitor.h
+@@ -38,9 +38,12 @@ enum t7xx_fsm_state {
+ 
+ enum t7xx_fsm_event_state {
+ 	FSM_EVENT_INVALID,
++	FSM_EVENT_MD_HS2,
+ 	FSM_EVENT_MD_EX,
+ 	FSM_EVENT_MD_EX_REC_OK,
+ 	FSM_EVENT_MD_EX_PASS,
++	FSM_EVENT_MD_HS2_EXIT,
++	FSM_EVENT_AP_HS2_EXIT,
+ 	FSM_EVENT_MAX
+ };
  
 -- 
 2.17.1
