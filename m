@@ -2,104 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 96B8646B0BE
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 03:38:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EB5D46B0C1
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 03:38:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229522AbhLGClh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Dec 2021 21:41:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49194 "EHLO
+        id S229504AbhLGCm1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Dec 2021 21:42:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229504AbhLGClh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 21:41:37 -0500
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C636BC061746;
-        Mon,  6 Dec 2021 18:38:07 -0800 (PST)
-Received: by mail-yb1-xb35.google.com with SMTP id g17so36662586ybe.13;
-        Mon, 06 Dec 2021 18:38:07 -0800 (PST)
+        with ESMTP id S229449AbhLGCm0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 21:42:26 -0500
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 559D4C061746
+        for <netdev@vger.kernel.org>; Mon,  6 Dec 2021 18:38:57 -0800 (PST)
+Received: by mail-yb1-xb2f.google.com with SMTP id g17so36668026ybe.13
+        for <netdev@vger.kernel.org>; Mon, 06 Dec 2021 18:38:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=INMJW+5EYKlIRvkqknDrxt9nVIm+nRcqXViKKvXHHy0=;
-        b=iZzFCdGqM3+ohqSYSSs6CbLiqcsUr7PZ89YdoEnq5mhtjykLt1cfpXk+ORWPHjkDvb
-         UK5lP8iUwrUZzCkpLHFhR4x3C9NeSecw0tNvvOFE7hkI/8y5dxeX677KQYWJ5s8Kc8mV
-         AfCflEiu+6G33fv9XDE5eELpISQ3EHyjteMhbepkDILrwvwVTaHncib+SQxpGuxWJ4Z0
-         eD7oNhixpiVth3Ndxle/LgFlw6Uc0F7ITGTZAxX6mSIzKU//8bybkkFSwiO/u8OP8eSu
-         tKbprr2njLcs5k9VRP1/puLnTQrm6z9Lfs/BLVaW9xxYM1ESt5Tw7eJ7VeaBVXya81ro
-         VaNA==
+         :cc:content-transfer-encoding;
+        bh=S+DKigwGp6Dozfddy+ComH3k1nine6YyOJOFswg5zk0=;
+        b=QqyaQoepN3IRPINl0f/Rju/GoHo5x064iTI4DhSacwwKhFfZl+lKy4Z0Wp+ElzMh7f
+         AAeNiugPaIUxnrLdoKF4mwJcCSTysOo+KINvKGe5Z3sVT5GZQPvbROsMvxI1uh8UHmlY
+         WCC7camjuRlRTjNfEul8yWR+tDwu8voapOnIncFa0YsFuAUyeVXXlcpFSOxWrrypm2OV
+         bjSrWRYy9RsQHPGvhNq/jCb3Z4QpgwwpXUBStM8kxGYGXhRT3gfOPdwIDa07Pj4ylFq3
+         Cn48RwngK4OuaDyPg6bBv48BmhG0LMOKtnx5R6JP6NdOpZ0at08B8kC39MG4+hBMglk8
+         NXyg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=INMJW+5EYKlIRvkqknDrxt9nVIm+nRcqXViKKvXHHy0=;
-        b=75iD1kYQ0o5t1lJTQ9JcnQhYQ0Kp+zEkwtFFLtKnbwEZ7jAaf/uHdV4FpL4pqwA1/S
-         z+57mxnCF3MbWqzzlPzZ/JL+JJW/huHbPrmSFALWlFAzpiP8vVKpKWQ9aIh289G8SHyq
-         LnIcon7eWVui4yLbokuWiBwUKXXFCtKvAO7iBGuK4eSLy2tUyXh6Q9zUfpoSOipZ77QD
-         1Fyo9qkiMQ2X3i0wdqN1vzoNqQz0QQd8c4ccYMezuKNfoiMiwTCROMW+DdY9MfHhI5gB
-         rhQUyOHdRj79APIMxd9qAhLOckK6rNHBs/oe9u1I4PGuCJEkEmivuHiuRxhLTMSur4IN
-         qdeA==
-X-Gm-Message-State: AOAM533F9ykBAQwDcf/J97ZoCSmG5Kr41iShKXkEJ+TJsHJFYaw81y+g
-        hoSafhXdnAWq5ovy5wrsjqLk9RTmJHh8dZT6QSc=
-X-Google-Smtp-Source: ABdhPJw26c8algIvgbQt6qRYPX2JmMn1/lWiequpmBsc7tfjt0NtbJMg9juL0kpEE2v55wYoE9xiwDZm+uFZ44Qhu0o=
-X-Received: by 2002:a25:b204:: with SMTP id i4mr45855083ybj.263.1638844687043;
- Mon, 06 Dec 2021 18:38:07 -0800 (PST)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=S+DKigwGp6Dozfddy+ComH3k1nine6YyOJOFswg5zk0=;
+        b=YkjjTVksIEIYNaP3cTX6cE/kxtMmtSGqDlYQgkFqCCIWnNi3Px5ftq3PfGRM6epdWM
+         VxzFdJ9j53kd2tww6vdK8f/y2DAz5US+siMSq6rAHLVyup4N1J91Tf5koOC/33tzFfry
+         4QS2QdyIEY4LDYomBaDTCPjnrwN96/M73CAseOx6gBPxBWiV53eowt88XfYQXsTRbMUH
+         6zljOy8V0TVknNB1eqFhSg6LARGl1L23ex+fLxL7KEYkpK0cvmplCD2kR5rcc/sigWlo
+         /25zgbeIVbzd0CRlu8LMh+F9UZs4Ra6xpYUGQD2pqCrJHq/596nhls1DisWhsptH0Jwg
+         D4HQ==
+X-Gm-Message-State: AOAM531/v8pG028rjBcU4q5YAWUfjRw7EOE/eRK/BsgJt6/X92n07m9k
+        rrBxNtzbnX3qA5laYXc3hValxF+L4I91cKYtQfm7JhVkjwg=
+X-Google-Smtp-Source: ABdhPJw3tqwgOH5uVd0mbTcBwZboxSrW0VPaLfyDEYfSYehxWoVyS1H5Q49Qrjnp3WH3agzzT6AHb408rvflo8+FPGE=
+X-Received: by 2002:a5b:5c3:: with SMTP id w3mr28318817ybp.293.1638844735907;
+ Mon, 06 Dec 2021 18:38:55 -0800 (PST)
 MIME-Version: 1.0
-References: <20211206230811.4131230-1-song@kernel.org>
-In-Reply-To: <20211206230811.4131230-1-song@kernel.org>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 6 Dec 2021 18:37:55 -0800
-Message-ID: <CAEf4BzbaBcySm3bVumBTrkHMmVDWEVxckdVKvUk=4j9HhSsmBA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] perf/bpf_counter: use bpf_map_create instead of bpf_create_map
-To:     Song Liu <song@kernel.org>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+References: <20211202024723.76257-1-xiangxia.m.yue@gmail.com>
+ <20211202024723.76257-3-xiangxia.m.yue@gmail.com> <518bd06a-490c-47f0-652a-756805496063@iogearbox.net>
+ <CAMDZJNUGyipTQgDv+M8_kiOEZwXJnivZo6KCwgYy_BoMOiEZew@mail.gmail.com> <CAMDZJNWx=MzSxB19JG_gmffmJrdLQ_cBzJhVYtor1EMb-DujXw@mail.gmail.com>
+In-Reply-To: <CAMDZJNWx=MzSxB19JG_gmffmJrdLQ_cBzJhVYtor1EMb-DujXw@mail.gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 6 Dec 2021 18:38:44 -0800
+Message-ID: <CANn89iJVReHeT2y+QAOGh1mJ64PG-8QH_FoL5moY634jJpZVvQ@mail.gmail.com>
+Subject: Re: [net v4 2/3] net: sched: add check tc_skip_classify in sch egress
+To:     Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
-        Kernel Team <kernel-team@fb.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Antoine Tenart <atenart@kernel.org>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Wei Wang <weiwan@google.com>, Arnd Bergmann <arnd@arndb.de>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 6, 2021 at 3:08 PM Song Liu <song@kernel.org> wrote:
+On Mon, Dec 6, 2021 at 6:17 PM Tonghao Zhang <xiangxia.m.yue@gmail.com> wro=
+te:
 >
-> bpf_create_map is deprecated. Replace it with bpf_map_create.
->
-> Fixes: 992c4225419a ("libbpf: Unify low-level map creation APIs w/ new bpf_map_create()")
+> On Sat, Dec 4, 2021 at 9:42 AM Tonghao Zhang <xiangxia.m.yue@gmail.com> w=
+rote:
+> >
+> > On Sat, Dec 4, 2021 at 5:35 AM Daniel Borkmann <daniel@iogearbox.net> w=
+rote:
+> > >
+> > > On 12/2/21 3:47 AM, xiangxia.m.yue@gmail.com wrote:
+> > > > From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> > > >
+> > > > Try to resolve the issues as below:
+> > > > * We look up and then check tc_skip_classify flag in net
+> > > >    sched layer, even though skb don't want to be classified.
+> > > >    That case may consume a lot of cpu cycles.
+> > > >
+> > > >    Install the rules as below:
+> > > >    $ for id in $(seq 1 10000); do
+> > > >    $       tc filter add ... egress prio $id ... action mirred egre=
+ss redirect dev ifb0
+> > > >    $ done
+> > > >
+> > > >    netperf:
+> > > >    $ taskset -c 1 netperf -t TCP_RR -H ip -- -r 32,32
+> > > >    $ taskset -c 1 netperf -t TCP_STREAM -H ip -- -m 32
+> > > >
+> > > >    Before: 152.04 tps, 0.58 Mbit/s
+> > > >    After:  303.07 tps, 1.51 Mbit/s
+> > > >    For TCP_RR, there are 99.3% improvement, TCP_STREAM 160.3%.
+> > >
+> > > As it was pointed out earlier by Eric in v3, these numbers are moot s=
+ince noone
+> > > is realistically running such a setup in practice with 10k linear rul=
+es.
+> > Yes. As I said in v1, in production, we use the 5+ prio. With this
+> > patch, little improvements, 1.x%
+> >
+> > This patch also fixes the packets loopback, if we use the bpf_redirect
+> > to ifb in egress path.
+> Hi Daniel, Eric
+> What should I do next=EF=BC=9FThis patch try to fix the bug, and improve =
+the
+> performance(~1% in production).
+> Should I update the commit message and send v5?
 
-This is not a bug fix, it's an improvement. So I don't think "Fixes: "
-is warranted here, tbh.
 
-> Signed-off-by: Song Liu <song@kernel.org>
-> ---
->  tools/perf/util/bpf_counter.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/tools/perf/util/bpf_counter.c b/tools/perf/util/bpf_counter.c
-> index c17d4a43ce065..ed150a9b3a0c0 100644
-> --- a/tools/perf/util/bpf_counter.c
-> +++ b/tools/perf/util/bpf_counter.c
-> @@ -320,10 +320,10 @@ static int bperf_lock_attr_map(struct target *target)
->         }
->
->         if (access(path, F_OK)) {
-> -               map_fd = bpf_create_map(BPF_MAP_TYPE_HASH,
-> +               map_fd = bpf_map_create(BPF_MAP_TYPE_HASH, NULL,
+This is adding yet another bit in skb :/
 
-I think perf is trying to be linkable with libbpf as a shared library,
-so on some older versions of libbpf bpf_map_create() won't be (yet)
-available. So to make this work, I think you'll need to define your
-own weak bpf_map_create function that will use bpf_create_map().
+We also have another patch series today adding one bit in skb.
+For me, this is really an issue. This should be a last resort.
 
->                                         sizeof(struct perf_event_attr),
->                                         sizeof(struct perf_event_attr_map_entry),
-> -                                       ATTR_MAP_SIZE, 0);
-> +                                       ATTR_MAP_SIZE, NULL);
->                 if (map_fd < 0)
->                         return -1;
->
-> --
-> 2.30.2
->
+For example xmit_more is no longer a field in skb.
+Why, because most probably this property  does not need to stick to
+skb, but the context of execution.
+
+Also this is not clear how stacked devices will be handled
+(bonding/team/tunnels)
