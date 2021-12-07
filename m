@@ -2,67 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E0C346BD29
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 15:03:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 90AC346BD47
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 15:09:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237501AbhLGOGa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 09:06:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38192 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233013AbhLGOG3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 09:06:29 -0500
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1125C061574
-        for <netdev@vger.kernel.org>; Tue,  7 Dec 2021 06:02:59 -0800 (PST)
-Received: by mail-pg1-x530.google.com with SMTP id g16so5509993pgi.1
-        for <netdev@vger.kernel.org>; Tue, 07 Dec 2021 06:02:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=xUPcqgjRdW5D3SdORCfEGopu6HaBk3UXxPJAuoxbjuI=;
-        b=ZUrdWZeBElCAPsQJyzd3aKSr0DNb/SaerKym0udNbqLOTqsc77y/DzZhZce74mbNMP
-         9nxBHuuGXDFEBJR0Dw7dIS4cg/+o8q4AYAKW4xyKTDIaD4pElb9Yx2ZVIJaJJiBaggAW
-         rLDdLebU3+dWgQnt8ePYueXfIkpqty6wtdbsG/syegVatOMGV+IOmO4uqjcLAlDBQdCm
-         Olrtd8ZXF4WRFRflUYY/FrF9IKOA6BHnYGVmGckaxEl63E9quP86GtOuAhT3dfxT3z9s
-         Ugw+IfNLCZe+XGaxGXGOTll6vjxLOVk3Dt+JR4fPeBcLK88C9yNBXz044QWi54C71qy5
-         kwNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=xUPcqgjRdW5D3SdORCfEGopu6HaBk3UXxPJAuoxbjuI=;
-        b=DlXfQ0TfpRYb23QWsmEoUGViF2opyMjTm/0i3ZEHBjEBz4ZN0NtZN9phECEDgsilC9
-         VNOjmQvvKFQJgt7ayfD8rtj29EdtMRQ4c5T2HXz1D0/vgciU41n67FDOlsF7StMRsuk7
-         rK8L7+QCwJc/zSkP0fepXK45kEoTaOjl4+FAPuihMeskyqIzWSIUsqmzI87qJDhL3/g0
-         cpTuVYtslVXhSi6DeZMNczBZsXNso/Z6PcRVcOJzoRyo6OUpPvTVFIIMZ7LYSLBBqMOF
-         qdC7LR+4+VEb6tB4I3ZUveHgqqVR6736KM2Fi+OAHp9hn2+OkXvM9D8qYE83yiEhgB0E
-         vQ2g==
-X-Gm-Message-State: AOAM533AKQ/DtUF/RTByEkoqSqsOtcKcI8XLagQ4Ta3M+4Y1JbxspFD8
-        qAUO8tobDfxSX+AD/V5zjwWxZrXHFBHBbcBHUQ4=
-X-Google-Smtp-Source: ABdhPJz1jGMS4pBPE6mGbi+wlYJ8VROYC2HRvm5wzHgrV5HicsYkUlPNX5sEmGlZXIJ8d4oEd01+iUURnyMKN7mkJpw=
-X-Received: by 2002:a63:4559:: with SMTP id u25mr23849091pgk.15.1638885779352;
- Tue, 07 Dec 2021 06:02:59 -0800 (PST)
+        id S237556AbhLGONV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 09:13:21 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:43048 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232979AbhLGONU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 7 Dec 2021 09:13:20 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=XJLMIZF/rhpchhkDaHehbpxMlR0BGIKndD60C61Fc54=; b=2U0sVlMC746/CgWFPj+Rp9Upc0
+        I0PFNPEPnBnOvdydbJSWnQS09KteKOIMPGn3rVyYmlVlKCaK22ziFX5nLjBV5ymZx2JEwrX8OYWqw
+        7egTLeD0GOzMVWovm78xy0gTLxKiWv9luH0mO5LV2juogDvJfqjxCmxfkIZlT7sGuOVo=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mubAA-00FmMX-7K; Tue, 07 Dec 2021 15:09:46 +0100
+Date:   Tue, 7 Dec 2021 15:09:46 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
+        Martyn Welch <martyn.welch@collabora.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, kernel@collabora.com
+Subject: Re: mv88e6240 configuration broken for B850v3
+Message-ID: <Ya9rKuAZTCzru9xz@lunn.ch>
+References: <fb6370266a71fdd855d6cf4d147780e0f9e1f5e4.camel@collabora.com>
+ <20211206183147.km7nxcsadtdenfnp@skbuf>
+ <339f76b66c063d5d3bed5c6827c44307da2e5b9f.camel@collabora.com>
+ <20211206185008.7ei67jborz7tx5va@skbuf>
+ <3d6c6226e47374cf92d604bc6c711e59d76e3175.camel@collabora.com>
+ <20211206193730.oubyveywniyvptfk@skbuf>
+ <Ya5qSoNhJRiSif/U@lunn.ch>
+ <20211206200111.3n4mtfz25fglhw4y@skbuf>
+ <Ya5wFvijUQVwvat7@shell.armlinux.org.uk>
+ <20211206202902.u4h6gn7epjysd7re@skbuf>
 MIME-Version: 1.0
-Received: by 2002:a17:90b:3ec7:0:0:0:0 with HTTP; Tue, 7 Dec 2021 06:02:59
- -0800 (PST)
-Reply-To: jeanmustapha596@gmail.com
-From:   Jean Mustapha <arafaeloxford@gmail.com>
-Date:   Tue, 7 Dec 2021 06:02:59 -0800
-Message-ID: <CAM=40B+YsNSY1muZMjkCDRpU02xmv9N7HBHUsTispH4Cfa1ADw@mail.gmail.com>
-Subject: 
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211206202902.u4h6gn7epjysd7re@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
+> I can understand between MLO_AN_INBAND and MLO_AN_PHY, but isn't it
+> reasonable that a "fixed" link is "fixed" and doesn't change?
 
-Hello,
+Actually, it can. You can register a callback with
+fixed_phy_set_link_update() and it gets called on each mdio read. It
+is mainly there to change the link up/down status, but you can also
+change the speed.
 
- Good morning, My name is Jean Mustapha, I am a Gas Engineer and I
-work in the Oil Field as an Independent Oil contractor. I want to
-travel to your country for vacation. I am contacting you so that you
-can help me find an apartment or villa for rent or for sale in your
-country where I will spend my vacation, I am willing to pay for your
-services if you can assist me.
+       Andrew
