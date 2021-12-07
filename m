@@ -2,94 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EDEAD46C2FC
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 19:40:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 21E4246C301
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 19:41:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240604AbhLGSnq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 13:43:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49150 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231241AbhLGSnp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 13:43:45 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9B9AC061574;
-        Tue,  7 Dec 2021 10:40:14 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 006C7CE1D8F;
-        Tue,  7 Dec 2021 18:40:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E7E5AC341C7;
-        Tue,  7 Dec 2021 18:40:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638902411;
-        bh=ILmDEX7ThAV4WS/jNr/jBBecP8tMHp+dApEK+/6VC8Y=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=D806Oot+ukqAe2IOOu/ymmRPC5f8qmg0736iQbtTQjlCRNKCLI7GyD2agVcBFjQH8
-         44SNDgxSXkltVzgGR/CDGB7c3F7S+9MlboSbX9J2KK5H7XAeoTaH3i7wImVodj8CYJ
-         fChei1+kXe94q44uxVbzUM8KF3h7HlCCNJXAmSECJe+MVxBm6JAP+JZHgSMugi/kiQ
-         PHC15RK+aEMJ0d6i9puiZYaGa73LZLsQh2EhnKGwRli0wzIP6LjH0J//JDopMFrbek
-         UjfFdt8Vu4oKUa9MqoBOcBJozqMfOM+tLipViATF3/a/8FvUE2qUmyJVlwMEVCub3f
-         XMudnn/hcWHRw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id BEFF3609D8;
-        Tue,  7 Dec 2021 18:40:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S240633AbhLGSpA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 13:45:00 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:43688 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S240627AbhLGSo7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 7 Dec 2021 13:44:59 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=VAh0IEb1mDATF+5DEmm633lm7F5fbYCo8vWsPxSIIv8=; b=tBvrOdE1UlvHYq3Gmc04jj0VQx
+        ifgibcTWkH1La3xcmrBH7GQWXRh0PdbP1QYyZC2UzFL4KYyugyWDAJjBKGS7R7cPM+qYxhMko0yKg
+        IFXQPyZDEAiMhFFAQxISj4s41AWmVC8AvZhuKuaqcZjo/1g+AQZbg/Qeo9gvb+zDJdqo=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mufP1-00Fnv0-RS; Tue, 07 Dec 2021 19:41:23 +0100
+Date:   Tue, 7 Dec 2021 19:41:23 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [net-next RFC PATCH 0/6] Add support for qca8k mdio rw in
+ Ethernet packet
+Message-ID: <Ya+q02HlWsHMYyAe@lunn.ch>
+References: <20211207145942.7444-1-ansuelsmth@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 1/9] can: pch_can: pch_can_rx_normal: fix use after free
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163890241077.29949.3491385738739624114.git-patchwork-notify@kernel.org>
-Date:   Tue, 07 Dec 2021 18:40:10 +0000
-References: <20211207102420.120131-2-mkl@pengutronix.de>
-In-Reply-To: <20211207102420.120131-2-mkl@pengutronix.de>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        linux-can@vger.kernel.org, kernel@pengutronix.de,
-        mailhol.vincent@wanadoo.fr, stable@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211207145942.7444-1-ansuelsmth@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+> I still have to find a solution to a slowdown problem and this is where
+> I would love to get some hint.
+> Currently I still didn't find a good way to understand when the tagger
+> starts to accept packets and because of this the initial setup is slow
+> as every completion timeouts. Am I missing something or is there a way
+> to check for this?
 
-This series was applied to netdev/net.git (master)
-by Marc Kleine-Budde <mkl@pengutronix.de>:
+I've not looked at this particular driver, i just know the general
+architecture.
 
-On Tue,  7 Dec 2021 11:24:12 +0100 you wrote:
-> From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-> 
-> After calling netif_receive_skb(skb), dereferencing skb is unsafe.
-> Especially, the can_frame cf which aliases skb memory is dereferenced
-> just after the call netif_receive_skb(skb).
-> 
-> Reordering the lines solves the issue.
-> 
-> [...]
+The MDIO bus driver probes first, maybe as part of the Ethernet
+driver, maybe as a standalone MDIO driver. The switch is found in DT
+and the driver code will at some point later probe the switch driver.
 
-Here is the summary with links:
-  - [net,1/9] can: pch_can: pch_can_rx_normal: fix use after free
-    https://git.kernel.org/netdev/net/c/94cddf1e9227
-  - [net,2/9] can: sja1000: fix use after free in ems_pcmcia_add_card()
-    https://git.kernel.org/netdev/net/c/3ec6ca6b1a8e
-  - [net,3/9] can: m_can: Disable and ignore ELO interrupt
-    https://git.kernel.org/netdev/net/c/f58ac1adc76b
-  - [net,4/9] can: m_can: m_can_read_fifo: fix memory leak in error branch
-    https://git.kernel.org/netdev/net/c/31cb32a590d6
-  - [net,5/9] can: m_can: pci: fix iomap_read_fifo() and iomap_write_fifo()
-    https://git.kernel.org/netdev/net/c/d737de2d7cc3
-  - [net,6/9] can: m_can: pci: fix incorrect reference clock rate
-    https://git.kernel.org/netdev/net/c/8c03b8bff765
-  - [net,7/9] Revert "can: m_can: remove support for custom bit timing"
-    https://git.kernel.org/netdev/net/c/ea768b2ffec6
-  - [net,8/9] can: m_can: make custom bittiming fields const
-    https://git.kernel.org/netdev/net/c/ea22ba40debe
-  - [net,9/9] can: m_can: pci: use custom bit timings for Elkhart Lake
-    https://git.kernel.org/netdev/net/c/ea4c1787685d
+The switch driver has working MDIO at this point. It should use MDIO
+to talk to the switch, make sure it is there, maybe do some initial
+configuration. Once it is happy, it registers the switch with the DSA
+core using dsa_register_switch().
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+If this is a single switch, the DSA core will then start setting
+things up. As part of dsa_switch_setup() it will call the switch
+drivers setup() method. It then figures out what tag driver to use, by
+calling dsa_switch_setup_tag_protocol(). However, the tag driver
+itself is not inserted into the chain yet. That happens later.  Once
+the switch is setup, dsa_tree_setup_master() is called which does
+dsa_master_setup() and in the middle there is:
 
+	/* If we use a tagging format that doesn't have an ethertype
+	 * field, make sure that all packets from this point on get
+	 * sent to the tag format's receive function.
+	 */
+	wmb();
+
+	dev->dsa_ptr = cpu_dp;
+
+This is the magic to actually enable the tagger receiving frames.
+
+I need to look at your patches, but why is the tagger involved?  At
+least for the Marvell switch, you send a pretty normal looking
+Ethernet frame to a specific MAC address, and the switch replies using
+that MAC address. And it has an Ether Type specific to switch
+control. Since this is all normal looking, there are hooks in the
+network stack which can be used to get these frames.
+
+	Andrew
 
