@@ -2,79 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6565A46BE58
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 15:57:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EF3DC46BE61
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 15:59:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238315AbhLGPBI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 10:01:08 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:55604 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238310AbhLGPBI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 10:01:08 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1AC43B817EE
-        for <netdev@vger.kernel.org>; Tue,  7 Dec 2021 14:57:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 290ABC341C1;
-        Tue,  7 Dec 2021 14:57:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638889055;
-        bh=16Flt33efDjvoT5248LZ4hJJ36k614a6c89HvrrFups=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VSWNIVXMn/pdqpVa7T+X4rpnBVBYCkVy3lxoMRIonn2YhN5l/kxD0+HzJFhYMz+xA
-         6CBKpBFK4/PVuZVzChHWm/weMOg7waTO1V+sgwaTSU+zOcKLp3fHZ8WY58867MyTBD
-         PUHc/E/az7IK2alIbRqn3XkM7QQwfV5MBBC9bxIm9npMZszYoJVh+XbFm8kUWwZuF+
-         nnaaVY7OiklBVfzXNE6/G4xiYmnVY76BmBxjYC543ibe60JY5btI7/l4TRdKp4qrFU
-         RP642BifSUzy5zf4LjQ9E19uY2Y0F2Y/XjdOB1z/TX3R3FZBPGFy69YdfV6hw0nTyY
-         oTSryttsaWA6g==
-From:   Antoine Tenart <atenart@kernel.org>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Antoine Tenart <atenart@kernel.org>, alexander.duyck@gmail.com,
-        netdev@vger.kernel.org
-Subject: [PATCH net-next 2/2] net-sysfs: warn if new queue objects are being created during device unregistration
-Date:   Tue,  7 Dec 2021 15:57:25 +0100
-Message-Id: <20211207145725.352657-3-atenart@kernel.org>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20211207145725.352657-1-atenart@kernel.org>
-References: <20211207145725.352657-1-atenart@kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S238343AbhLGPBs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 10:01:48 -0500
+Received: from mail-ot1-f52.google.com ([209.85.210.52]:35822 "EHLO
+        mail-ot1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238310AbhLGPBp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 10:01:45 -0500
+Received: by mail-ot1-f52.google.com with SMTP id x43-20020a056830246b00b00570d09d34ebso18409426otr.2;
+        Tue, 07 Dec 2021 06:58:15 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=ISwB/Cqr0g2fR9Rv1ZPSZGA/iwpQtfwdBswG+ia19pY=;
+        b=gfnfWPUM61NcILbw+nBDwkoPkHatfY9B7MidFAhE4r3zvq8itm/tlsegbnxNHjwS51
+         U7xNNJ8P37Ur9Xzz3F4SkNbCweSnfMhjxIm8mvn1l9QaJm5sXUankOuzJ72QNNOAdzWY
+         +LykeUpkLEvmrA6Dl2BXh+N736fWjd8LohvLjfj56EzncDeDwPBXKAIbbZ1fcaouOFiS
+         PeY9y/KVDMbZMgmImgN6LV8TRk87GBShZYVJHXe14aMoBCEGnhYwAMTrJL7Pjs+D02Ir
+         iOzFNSxGUIh2ztZmIfe+TRf3qcW4i4ijy9fuz6g51elQ3222jStGt569xEi4coaK7bl1
+         Uzsw==
+X-Gm-Message-State: AOAM532KDc+a/Dv4n4cMvEU/2/0tfE8gNngimVILWp6CMYxgOltD19mq
+        y0cWQCjpDT43D1s+A/JwJw==
+X-Google-Smtp-Source: ABdhPJzWbIjQ5ndnddb4GSl+z61bTtoUDb/1KYBoxAMiY033kVvOuMdyLuS3XWH3MrvukZoClyRG5g==
+X-Received: by 2002:a05:6830:2643:: with SMTP id f3mr35971443otu.187.1638889094869;
+        Tue, 07 Dec 2021 06:58:14 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id g4sm2719201oof.40.2021.12.07.06.58.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Dec 2021 06:58:13 -0800 (PST)
+Received: (nullmailer pid 5806 invoked by uid 1000);
+        Tue, 07 Dec 2021 14:58:10 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Biao Huang <biao.huang@mediatek.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        linux-stm32@st-md-mailman.stormreply.com, davem@davemloft.net,
+        netdev@vger.kernel.org, dkirjanov@suse.de,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        srv_heupstream@mediatek.com, linux-mediatek@lists.infradead.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        angelogioacchino.delregno@collabora.com,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        macpaul.lin@mediatek.com
+In-Reply-To: <20211207015505.16746-5-biao.huang@mediatek.com>
+References: <20211207015505.16746-1-biao.huang@mediatek.com> <20211207015505.16746-5-biao.huang@mediatek.com>
+Subject: Re: [PATCH v5 4/7] net-next: dt-bindings: dwmac: Convert mediatek-dwmac to DT schema
+Date:   Tue, 07 Dec 2021 08:58:10 -0600
+Message-Id: <1638889090.734543.5805.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Calling netdev_queue_update_kobjects is allowed during device
-unregistration since commit 5c56580b74e5 ("net: Adjust TX queue kobjects
-if number of queues changes during unregister"). But this is solely to
-allow queue unregistrations. Any path attempting to add new queues after
-a device started its unregistration should be fixed.
+On Tue, 07 Dec 2021 09:55:02 +0800, Biao Huang wrote:
+> Convert mediatek-dwmac to DT schema, and delete old mediatek-dwmac.txt.
+> And there are some changes in .yaml than .txt, others almost keep the same:
+>   1. compatible "const: snps,dwmac-4.20".
+>   2. delete "snps,reset-active-low;" in example, since driver remove this
+>      property long ago.
+>   3. add "snps,reset-delay-us = <0 10000 10000>" in example.
+>   4. the example is for rgmii interface, keep related properties only.
+> 
+> Signed-off-by: Biao Huang <biao.huang@mediatek.com>
+> ---
+>  .../bindings/net/mediatek-dwmac.txt           |  91 ----------
+>  .../bindings/net/mediatek-dwmac.yaml          | 156 ++++++++++++++++++
+>  2 files changed, 156 insertions(+), 91 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/net/mediatek-dwmac.txt
+>  create mode 100644 Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
+> 
 
-This patch adds a warning to detect such illegal use.
+Running 'make dtbs_check' with the schema in this patch gives the
+following warnings. Consider if they are expected or the schema is
+incorrect. These may not be new warnings.
 
-Signed-off-by: Antoine Tenart <atenart@kernel.org>
----
- net/core/net-sysfs.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+Note that it is not yet a requirement to have 0 warnings for dtbs_check.
+This will change in the future.
 
-diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
-index 33f408c24205..53ea262ecafd 100644
---- a/net/core/net-sysfs.c
-+++ b/net/core/net-sysfs.c
-@@ -1694,6 +1694,13 @@ netdev_queue_update_kobjects(struct net_device *dev, int old_num, int new_num)
- 	int i;
- 	int error = 0;
- 
-+	/* Tx queue kobjects are allowed to be updated when a device is being
-+	 * unregistered, but solely to remove queues from qdiscs. Any path
-+	 * adding queues should be fixed.
-+	 */
-+	WARN(dev->reg_state == NETREG_UNREGISTERING && new_num > old_num,
-+	     "New queues can't be registered after device unregistration.");
-+
- 	for (i = old_num; i < new_num; i++) {
- 		error = netdev_queue_add_kobject(dev, i);
- 		if (error) {
--- 
-2.33.1
+Full log is available here: https://patchwork.ozlabs.org/patch/1564459
+
+
+ethernet@1101c000: clock-names: ['axi', 'apb', 'mac_main', 'ptp_ref'] is too short
+	arch/arm64/boot/dts/mediatek/mt2712-evb.dt.yaml
+
+ethernet@1101c000: clocks: [[27, 34], [27, 37], [6, 154], [6, 155]] is too short
+	arch/arm64/boot/dts/mediatek/mt2712-evb.dt.yaml
+
+ethernet@1101c000: compatible: ['mediatek,mt2712-gmac'] does not contain items matching the given schema
+	arch/arm64/boot/dts/mediatek/mt2712-evb.dt.yaml
+
+ethernet@1101c000: compatible: 'oneOf' conditional failed, one must be fixed:
+	arch/arm64/boot/dts/mediatek/mt2712-evb.dt.yaml
+
+ethernet@1101c000: Unevaluated properties are not allowed ('compatible', 'reg', 'interrupts', 'interrupt-names', 'mac-address', 'clock-names', 'clocks', 'power-domains', 'snps,axi-config', 'snps,mtl-rx-config', 'snps,mtl-tx-config', 'snps,txpbl', 'snps,rxpbl', 'clk_csr', 'phy-mode', 'phy-handle', 'snps,reset-gpio', 'mdio' were unexpected)
+	arch/arm64/boot/dts/mediatek/mt2712-evb.dt.yaml
 
