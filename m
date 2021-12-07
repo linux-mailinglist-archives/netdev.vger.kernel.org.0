@@ -2,129 +2,283 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C88B346C3B8
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 20:32:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 663AD46C427
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 21:05:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235677AbhLGTfj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 14:35:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33324 "EHLO
+        id S241072AbhLGUJQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 15:09:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235638AbhLGTfh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 14:35:37 -0500
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69BA2C061574
-        for <netdev@vger.kernel.org>; Tue,  7 Dec 2021 11:32:07 -0800 (PST)
-Received: by mail-pj1-x102f.google.com with SMTP id k6-20020a17090a7f0600b001ad9d73b20bso254427pjl.3
-        for <netdev@vger.kernel.org>; Tue, 07 Dec 2021 11:32:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=j2D/6ZjxS8l0T6vGxlryRAPT5kM3gSJLzys2PNellyY=;
-        b=M9PWQztRJ4PlVm0cykhO+r/D3epx433R73tfEolB5NuSkd9or0CIJ4yxF6YBSgC8GZ
-         s22yhuQXM2cL/6ix0/YfqYgybMyihaW34Z3KSbLBOlq02U5EoP7JTp7R2/FL29jWRISs
-         iYEN+4yR+H2fyo9biXg+UOT4TIVYelH+dg1xoQkVdjnue+H+zLM1/U75Zg6ir4L71rY7
-         Aculwg67NSVcJQhojSLxpxBK4ShVQK847yi/kfcTOWtwEB9759xm5suwLYI4+e+mEGcG
-         4Io0S3PbPviZWnh/Nad19fAKqpJwMOGzsb4TP6K5LI04sxnxn1MXqm9NlCAxntbWtzYB
-         gu5A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=j2D/6ZjxS8l0T6vGxlryRAPT5kM3gSJLzys2PNellyY=;
-        b=w2S9YCVWPiZGnc/W8BVzC9EJABDLDUffp6eg+251EGxVyqjZaj4I+Tpr624OwXRDcc
-         i+BhLt+leAbdtDO7PK5R752Gwk0zPL+lmYxVpiQVumAiPe12B+IvcJRxq9YwEH5VFDEN
-         uXpxY21Qr089UsNhM1vOwbZipiwwwZ1fzjV41BzVFbncDqB7qLxkJS/6jOX7cZCScLQr
-         HIWGvQucYuEgirCcZOV9w1cyzgcJp3GGWUXFjV1YR8kaUfcC1AJnyIyrKgNMhdKCk26t
-         C3aW4WX5A22cIiijm2hps0tRvEIIkM8kE7VhMU7FCBI59XxZuPK9sPATwUmz2fSP7sua
-         iAkw==
-X-Gm-Message-State: AOAM530B+ruwUmkUrD1zhuobqXayWMHNNUvayQKIfqaf/3YGJQMQFEta
-        ImfdqYbFPpNWuRVsmOwayh8=
-X-Google-Smtp-Source: ABdhPJwBGcPBULx9nU3RqJFqPDuz0ZS9rhCDqcI707nWDiBxf7bWslLqbk001VlorGjIblQ0c19yeg==
-X-Received: by 2002:a17:902:f24a:b0:141:c6fc:2e18 with SMTP id j10-20020a170902f24a00b00141c6fc2e18mr54011500plc.55.1638905526905;
-        Tue, 07 Dec 2021 11:32:06 -0800 (PST)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:387:45f:971d:350a])
-        by smtp.gmail.com with ESMTPSA id e35sm267420pgm.92.2021.12.07.11.32.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Dec 2021 11:32:06 -0800 (PST)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Cong Wang <amwang@redhat.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>
-Subject: [PATCH net-next] xfrm: use net device refcount tracker helpers
-Date:   Tue,  7 Dec 2021 11:32:03 -0800
-Message-Id: <20211207193203.2706158-1-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.34.1.400.ga245620fadb-goog
+        with ESMTP id S241060AbhLGUJO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 15:09:14 -0500
+X-Greylist: delayed 2016 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 07 Dec 2021 12:05:44 PST
+Received: from wp003.webpack.hosteurope.de (wp003.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:840a::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 466A1C061574
+        for <netdev@vger.kernel.org>; Tue,  7 Dec 2021 12:05:44 -0800 (PST)
+Received: from p200300c1f71f606b4ad6389e11a5521d.dip0.t-ipconnect.de ([2003:c1:f71f:606b:4ad6:389e:11a5:521d] helo=kmk0); authenticated
+        by wp003.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        id 1mugC6-0007yA-Ba; Tue, 07 Dec 2021 20:32:06 +0100
+From:   Kurt Kanzenbach <kurt@kmk-computers.de>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Richard Cochran <richardcochran@gmail.com>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org
+Subject: mv88e6341: PTP Boundary Clock
+Date:   Tue, 07 Dec 2021 20:32:05 +0100
+Message-ID: <875ys02oui.fsf@kmk-computers.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-bounce-key: webpack.hosteurope.de;kurt@kmk-computers.de;1638907544;9afec9b8;
+X-HE-SMSGID: 1mugC6-0007yA-Ba
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+Hi Andrew, Richard,
 
-xfrm4_fill_dst() and xfrm6_fill_dst() build dst,
-getting a device reference that will likely be released
-by standard dst_release() code.
+I'm using a PTP Boundary Clock on top of a Marvell Topaz (6341)
+switch. PTP tends to work in general. However, as soon as multiple end
+devices are connected, it doesn't. It seems like PTP messages are
+forwarded between switch ports. In my understanding these messages
+should be destined for the CPU port only, so that the PTP stack (ptp4l)
+can process them accordingly.
 
-We have to track these references or risk a warning if
-CONFIG_NET_DEV_REFCNT_TRACKER=y
+Sample patch below which solves the problem for me. Not sure whether
+that's the correct approach though.
 
-Note to XFRM maintainers :
+Thanks,
+Kurt
 
-Error path in xfrm6_fill_dst() releases the reference,
-but does not clear xdst->u.dst.dev, so I wonder
-if this could lead to double dev_put() in some cases,
-where a dst_release() _is_ called by the callers in their
-error path.
-
-This extra dev_put() was added in commit 84c4a9dfbf430 ("xfrm6:
-release dev before returning error")
-
-Fixes: 9038c320001d ("net: dst: add net device refcount tracking to dst_entry")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Cong Wang <amwang@redhat.com>
-Cc: Steffen Klassert <steffen.klassert@secunet.com>
----
- net/ipv4/xfrm4_policy.c | 2 +-
- net/ipv6/xfrm6_policy.c | 4 ++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/net/ipv4/xfrm4_policy.c b/net/ipv4/xfrm4_policy.c
-index 9ebd54752e03b81a01f6c53cc17cebbccd928137..9e83bcb6bc99dd8cb7e71c9f1dbb5b7ae5570626 100644
---- a/net/ipv4/xfrm4_policy.c
-+++ b/net/ipv4/xfrm4_policy.c
-@@ -77,7 +77,7 @@ static int xfrm4_fill_dst(struct xfrm_dst *xdst, struct net_device *dev,
- 	xdst->u.rt.rt_iif = fl4->flowi4_iif;
- 
- 	xdst->u.dst.dev = dev;
--	dev_hold(dev);
-+	dev_hold_track(dev, &xdst->u.dst.dev_tracker, GFP_ATOMIC);
- 
- 	/* Sheit... I remember I did this right. Apparently,
- 	 * it was magically lost, so this code needs audit */
-diff --git a/net/ipv6/xfrm6_policy.c b/net/ipv6/xfrm6_policy.c
-index af7a4b8b1e9c4a46a0b0cf4245a981efa24b9152..fad687ee6dd81af9ee3591eb2333cfed8ceae8ce 100644
---- a/net/ipv6/xfrm6_policy.c
-+++ b/net/ipv6/xfrm6_policy.c
-@@ -74,11 +74,11 @@ static int xfrm6_fill_dst(struct xfrm_dst *xdst, struct net_device *dev,
- 	struct rt6_info *rt = (struct rt6_info *)xdst->route;
- 
- 	xdst->u.dst.dev = dev;
--	dev_hold(dev);
-+	dev_hold_track(dev, &xdst->u.dst.dev_tracker, GFP_ATOMIC);
- 
- 	xdst->u.rt6.rt6i_idev = in6_dev_get(dev);
- 	if (!xdst->u.rt6.rt6i_idev) {
--		dev_put(dev);
-+		dev_put_track(dev, &xdst->u.dst.dev_tracker);
- 		return -ENODEV;
- 	}
- 
--- 
-2.34.1.400.ga245620fadb-goog
-
+|From bfab19327b88220d322d04360715c048aa5bc55b Mon Sep 17 00:00:00 2001
+|From: Kurt Kanzenbach <kurt@kmk-computers.de>
+|Date: Sun, 5 Dec 2021 10:36:47 +0100
+|Subject: [PATCH] net: dsa: mv88e6xxx: Trap PTP traffic
+|
+|A time aware switch should trap PTP traffic to the management CPU. User space
+|daemons such as ptp4l will process these messages to implement Boundary (or
+|Transparent) Clocks.
+|
+|At the moment the mv88e6xxx driver doesn't trap these messages which leads to
+|confusion when multiple end devices are connected to the switch. Therefore,
+|setup PTP traps. Leverage the already implemented policy mechanism based on
+|destination addresses. Configure the traps only if timestamping is enabled so
+|that non time aware use case is still functioning.
+|
+|Tested on Marvell Topaz (mv88e6341) switch with multiple end devices connected
+|like this:
+|
+||# DSA setup
+||$ ip link set eth0 up
+||$ ip link set lan0 up
+||$ ip link set lan1 up
+||$ ip link set lan2 up
+||$ ip link add name br0 type bridge
+||$ ip link set dev lan0 master br0
+||$ ip link set dev lan1 master br0
+||$ ip link set dev lan2 master br0
+||$ ip link set lan0 up
+||$ ip link set lan1 up
+||$ ip link set lan2 up
+||$ ip link set br0 up
+||$ dhclient br0
+||# Configure bridge routing
+||$ ebtables --table broute --append BROUTING --protocol 0x88F7 --jump DROP
+||# Start linuxptp
+||$ ptp4l -H -2 -i lan0 -i lan1 -i lan2 --tx_timestamp_timeout=40 -m
+|
+|Verified added policies with mv88e6xxx_dump.
+|
+|Signed-off-by: Kurt Kanzenbach <kurt@kmk-computers.de>
+|---
+| drivers/net/dsa/mv88e6xxx/chip.c     | 12 +++---
+| drivers/net/dsa/mv88e6xxx/chip.h     |  5 +++
+| drivers/net/dsa/mv88e6xxx/hwtstamp.c |  7 ++++
+| drivers/net/dsa/mv88e6xxx/ptp.c      | 59 ++++++++++++++++++++++++++++
+| drivers/net/dsa/mv88e6xxx/ptp.h      |  2 +
+| 5 files changed, 80 insertions(+), 5 deletions(-)
+|
+|diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+|index f00cbf5753b9..5698ef9ac891 100644
+|--- a/drivers/net/dsa/mv88e6xxx/chip.c
+|+++ b/drivers/net/dsa/mv88e6xxx/chip.c
+|@@ -1822,8 +1822,8 @@ static int mv88e6xxx_port_db_load_purge(struct mv88e6xxx_chip *chip, int port,
+| 	return mv88e6xxx_g1_atu_loadpurge(chip, fid, &entry);
+| }
+| 
+|-static int mv88e6xxx_policy_apply(struct mv88e6xxx_chip *chip, int port,
+|-				  const struct mv88e6xxx_policy *policy)
+|+int mv88e6xxx_policy_apply(struct mv88e6xxx_chip *chip, int port,
+|+			   const struct mv88e6xxx_policy *policy)
+| {
+| 	enum mv88e6xxx_policy_mapping mapping = policy->mapping;
+| 	enum mv88e6xxx_policy_action action = policy->action;
+|@@ -1841,10 +1841,12 @@ static int mv88e6xxx_policy_apply(struct mv88e6xxx_chip *chip, int port,
+| 	case MV88E6XXX_POLICY_MAPPING_SA:
+| 		if (action == MV88E6XXX_POLICY_ACTION_NORMAL)
+| 			state = 0; /* Dissociate the port and address */
+|-		else if (action == MV88E6XXX_POLICY_ACTION_DISCARD &&
+|+		else if ((action == MV88E6XXX_POLICY_ACTION_DISCARD ||
+|+			  action == MV88E6XXX_POLICY_ACTION_TRAP) &&
+| 			 is_multicast_ether_addr(addr))
+| 			state = MV88E6XXX_G1_ATU_DATA_STATE_MC_STATIC_POLICY;
+|-		else if (action == MV88E6XXX_POLICY_ACTION_DISCARD &&
+|+		else if ((action == MV88E6XXX_POLICY_ACTION_DISCARD ||
+|+			  action == MV88E6XXX_POLICY_ACTION_TRAP) &&
+| 			 is_unicast_ether_addr(addr))
+| 			state = MV88E6XXX_G1_ATU_DATA_STATE_UC_STATIC_POLICY;
+| 		else
+|@@ -4607,7 +4609,7 @@ static const struct mv88e6xxx_ops mv88e6341_ops = {
+| 	.serdes_irq_status = mv88e6390_serdes_irq_status,
+| 	.gpio_ops = &mv88e6352_gpio_ops,
+| 	.avb_ops = &mv88e6390_avb_ops,
+|-	.ptp_ops = &mv88e6352_ptp_ops,
+|+	.ptp_ops = &mv88e6341_ptp_ops,
+| 	.serdes_get_sset_count = mv88e6390_serdes_get_sset_count,
+| 	.serdes_get_strings = mv88e6390_serdes_get_strings,
+| 	.serdes_get_stats = mv88e6390_serdes_get_stats,
+|diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
+|index 8271b8aa7b71..795ae5a56834 100644
+|--- a/drivers/net/dsa/mv88e6xxx/chip.h
+|+++ b/drivers/net/dsa/mv88e6xxx/chip.h
+|@@ -673,6 +673,8 @@ struct mv88e6xxx_ptp_ops {
+| 	int (*port_disable)(struct mv88e6xxx_chip *chip, int port);
+| 	int (*global_enable)(struct mv88e6xxx_chip *chip);
+| 	int (*global_disable)(struct mv88e6xxx_chip *chip);
+|+	int (*setup_ptp_traps)(struct mv88e6xxx_chip *chip, int port,
+|+			       bool enable);
+| 	int n_ext_ts;
+| 	int arr0_sts_reg;
+| 	int arr1_sts_reg;
+|@@ -760,4 +762,7 @@ static inline void mv88e6xxx_reg_unlock(struct mv88e6xxx_chip *chip)
+| 
+| int mv88e6xxx_fid_map(struct mv88e6xxx_chip *chip, unsigned long *bitmap);
+| 
+|+int mv88e6xxx_policy_apply(struct mv88e6xxx_chip *chip, int port,
+|+			   const struct mv88e6xxx_policy *policy);
+|+
+| #endif /* _MV88E6XXX_CHIP_H */
+|diff --git a/drivers/net/dsa/mv88e6xxx/hwtstamp.c b/drivers/net/dsa/mv88e6xxx/hwtstamp.c
+|index 8f74ffc7a279..617aeb6cbaac 100644
+|--- a/drivers/net/dsa/mv88e6xxx/hwtstamp.c
+|+++ b/drivers/net/dsa/mv88e6xxx/hwtstamp.c
+|@@ -94,6 +94,7 @@ static int mv88e6xxx_set_hwtstamp_config(struct mv88e6xxx_chip *chip, int port,
+| 	const struct mv88e6xxx_ptp_ops *ptp_ops = chip->info->ops->ptp_ops;
+| 	struct mv88e6xxx_port_hwtstamp *ps = &chip->port_hwtstamp[port];
+| 	bool tstamp_enable = false;
+|+	int ret;
+| 
+| 	/* Prevent the TX/RX paths from trying to interact with the
+| 	 * timestamp hardware while we reconfigure it.
+|@@ -161,6 +162,12 @@ static int mv88e6xxx_set_hwtstamp_config(struct mv88e6xxx_chip *chip, int port,
+| 		if (chip->enable_count == 0 && ptp_ops->global_disable)
+| 			ptp_ops->global_disable(chip);
+| 	}
+|+
+|+	if (ptp_ops->setup_ptp_traps) {
+|+		ret = ptp_ops->setup_ptp_traps(chip, port, tstamp_enable);
+|+		if (tstamp_enable && ret)
+|+			dev_warn(chip->dev, "Failed to setup PTP traps. PTP might not work as desired!\n");
+|+	}
+| 	mv88e6xxx_reg_unlock(chip);
+| 
+| 	/* Once hardware has been configured, enable timestamp checks
+|diff --git a/drivers/net/dsa/mv88e6xxx/ptp.c b/drivers/net/dsa/mv88e6xxx/ptp.c
+|index d838c174dc0d..8d6ff03d37c8 100644
+|--- a/drivers/net/dsa/mv88e6xxx/ptp.c
+|+++ b/drivers/net/dsa/mv88e6xxx/ptp.c
+|@@ -345,6 +345,37 @@ static int mv88e6352_ptp_verify(struct ptp_clock_info *ptp, unsigned int pin,
+| 	return 0;
+| }
+| 
+|+static int mv88e6341_setup_ptp_traps(struct mv88e6xxx_chip *chip, int port,
+|+				     bool enable)
+|+{
+|+	static const u8 ptp_destinations[][ETH_ALEN] = {
+|+		{ 0x01, 0x1b, 0x19, 0x00, 0x00, 0x00 }, /* L2 PTP */
+|+		{ 0x01, 0x80, 0xc2, 0x00, 0x00, 0x0e }, /* L2 P2P */
+|+		{ 0x01, 0x00, 0x5e, 0x00, 0x01, 0x81 }, /* IPv4 PTP */
+|+		{ 0x01, 0x00, 0x5e, 0x00, 0x00, 0x6b }, /* IPv4 P2P */
+|+		{ 0x33, 0x33, 0x00, 0x00, 0x01, 0x81 }, /* IPv6 PTP */
+|+		{ 0x33, 0x33, 0x00, 0x00, 0x00, 0x6b }, /* IPv6 P2P */
+|+	};
+|+	int ret, i;
+|+
+|+	for (i = 0; i < ARRAY_SIZE(ptp_destinations); ++i) {
+|+		struct mv88e6xxx_policy policy = { };
+|+
+|+		policy.mapping	= MV88E6XXX_POLICY_MAPPING_DA;
+|+		policy.action	= enable ? MV88E6XXX_POLICY_ACTION_TRAP :
+|+			MV88E6XXX_POLICY_ACTION_NORMAL;
+|+		policy.port	= port;
+|+		policy.vid	= 0;
+|+		ether_addr_copy(policy.addr, ptp_destinations[i]);
+|+
+|+		ret = mv88e6xxx_policy_apply(chip, port, &policy);
+|+		if (ret)
+|+			return ret;
+|+	}
+|+
+|+	return 0;
+|+}
+|+
+| const struct mv88e6xxx_ptp_ops mv88e6165_ptp_ops = {
+| 	.clock_read = mv88e6165_ptp_clock_read,
+| 	.global_enable = mv88e6165_global_enable,
+|@@ -419,6 +450,34 @@ const struct mv88e6xxx_ptp_ops mv88e6352_ptp_ops = {
+| 	.cc_mult_dem = MV88E6XXX_CC_MULT_DEM,
+| };
+| 
+|+const struct mv88e6xxx_ptp_ops mv88e6341_ptp_ops = {
+|+	.clock_read = mv88e6352_ptp_clock_read,
+|+	.ptp_enable = mv88e6352_ptp_enable,
+|+	.ptp_verify = mv88e6352_ptp_verify,
+|+	.event_work = mv88e6352_tai_event_work,
+|+	.port_enable = mv88e6352_hwtstamp_port_enable,
+|+	.port_disable = mv88e6352_hwtstamp_port_disable,
+|+	.setup_ptp_traps = mv88e6341_setup_ptp_traps,
+|+	.n_ext_ts = 1,
+|+	.arr0_sts_reg = MV88E6XXX_PORT_PTP_ARR0_STS,
+|+	.arr1_sts_reg = MV88E6XXX_PORT_PTP_ARR1_STS,
+|+	.dep_sts_reg = MV88E6XXX_PORT_PTP_DEP_STS,
+|+	.rx_filters = (1 << HWTSTAMP_FILTER_NONE) |
+|+		(1 << HWTSTAMP_FILTER_PTP_V2_L4_EVENT) |
+|+		(1 << HWTSTAMP_FILTER_PTP_V2_L4_SYNC) |
+|+		(1 << HWTSTAMP_FILTER_PTP_V2_L4_DELAY_REQ) |
+|+		(1 << HWTSTAMP_FILTER_PTP_V2_L2_EVENT) |
+|+		(1 << HWTSTAMP_FILTER_PTP_V2_L2_SYNC) |
+|+		(1 << HWTSTAMP_FILTER_PTP_V2_L2_DELAY_REQ) |
+|+		(1 << HWTSTAMP_FILTER_PTP_V2_EVENT) |
+|+		(1 << HWTSTAMP_FILTER_PTP_V2_SYNC) |
+|+		(1 << HWTSTAMP_FILTER_PTP_V2_DELAY_REQ),
+|+	.cc_shift = MV88E6XXX_CC_SHIFT,
+|+	.cc_mult = MV88E6XXX_CC_MULT,
+|+	.cc_mult_num = MV88E6XXX_CC_MULT_NUM,
+|+	.cc_mult_dem = MV88E6XXX_CC_MULT_DEM,
+|+};
+|+
+| static u64 mv88e6xxx_ptp_clock_read(const struct cyclecounter *cc)
+| {
+| 	struct mv88e6xxx_chip *chip = cc_to_chip(cc);
+|diff --git a/drivers/net/dsa/mv88e6xxx/ptp.h b/drivers/net/dsa/mv88e6xxx/ptp.h
+|index 269d5d16a466..badcb72d10a6 100644
+|--- a/drivers/net/dsa/mv88e6xxx/ptp.h
+|+++ b/drivers/net/dsa/mv88e6xxx/ptp.h
+|@@ -151,6 +151,7 @@ void mv88e6xxx_ptp_free(struct mv88e6xxx_chip *chip);
+| extern const struct mv88e6xxx_ptp_ops mv88e6165_ptp_ops;
+| extern const struct mv88e6xxx_ptp_ops mv88e6250_ptp_ops;
+| extern const struct mv88e6xxx_ptp_ops mv88e6352_ptp_ops;
+|+extern const struct mv88e6xxx_ptp_ops mv88e6341_ptp_ops;
+| 
+| #else /* !CONFIG_NET_DSA_MV88E6XXX_PTP */
+| 
+|@@ -171,6 +172,7 @@ static inline void mv88e6xxx_ptp_free(struct mv88e6xxx_chip *chip)
+| static const struct mv88e6xxx_ptp_ops mv88e6165_ptp_ops = {};
+| static const struct mv88e6xxx_ptp_ops mv88e6250_ptp_ops = {};
+| static const struct mv88e6xxx_ptp_ops mv88e6352_ptp_ops = {};
+|+static const struct mv88e6xxx_ptp_ops mv88e6341_ptp_ops = {};
+| 
+| #endif /* CONFIG_NET_DSA_MV88E6XXX_PTP */
+| 
+|-- 
+|2.34.1
