@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A9F146AF6B
+	by mail.lfdr.de (Postfix) with ESMTP id C9CB646AF6C
 	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 01:52:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378748AbhLGAz2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Dec 2021 19:55:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53348 "EHLO
+        id S1378753AbhLGAz3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Dec 2021 19:55:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378742AbhLGAz1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 19:55:27 -0500
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BE0DC061746
-        for <netdev@vger.kernel.org>; Mon,  6 Dec 2021 16:51:58 -0800 (PST)
-Received: by mail-pl1-x62f.google.com with SMTP id u17so8233149plg.9
-        for <netdev@vger.kernel.org>; Mon, 06 Dec 2021 16:51:58 -0800 (PST)
+        with ESMTP id S1378742AbhLGAz3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 19:55:29 -0500
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 057D4C061746
+        for <netdev@vger.kernel.org>; Mon,  6 Dec 2021 16:52:00 -0800 (PST)
+Received: by mail-pj1-x1035.google.com with SMTP id f18-20020a17090aa79200b001ad9cb23022so1250753pjq.4
+        for <netdev@vger.kernel.org>; Mon, 06 Dec 2021 16:52:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=POVsHtE5goGeXMDmUT4eCInTWhGc9g0JPMiRMUW/pEs=;
-        b=iPDo0iNyT0phH4vtrt0xm9FE3B5Fl9+9UGZbrh65DNgfmxwLSIPJoX17GkLbOvQLVG
-         Hn6E2hO2fWc9Vt9iP+S0mA6lIWq1gkilvYj1zilJkSYYotbDpq4VtJOQ7hS0wyJrv9Do
-         DEZqhRnb2HA4oXMHgJ7TpOw6YowVYhLZq110TZvi6FrzFcTUpqVrWiR7Ka0phyKyOPFi
-         uIPE6buDCdKWfVWgtjPMnq4xom36gWfA8Sb1nAYDJPx7ercdeNdIQ8deoo39iBgKz1Sr
-         SGzPQTNVBmJ/qH1K34y+y4+oV847gSMVBr79EUug28Xz5vISCBKObXtCUiAQKdMz70z3
-         jF5A==
+        bh=QHc+3KMzO/IXeML/pk2azuwtgD5APwxFUb3/0O1vz9Y=;
+        b=QiJeyyxP9Ne/LFm7t+mDBvArEbmGWkiB2JvdAASpAjUMpsqFKjA/nDmJcMNlaWu0MT
+         pP7tRJ2n51LuqpOuWDq6E/JLwcJb7fHlX4WpLoOUaxMuPIfEe4uCQUZraaTT8Bwpsz4r
+         hxgZSHTaWXmiqY9s0NBIk8vUarcOx96z0yUpxe+Wd313z4oLRbbTwi8JBPvHbXQxR2fT
+         86QMRrthfcreTdI5UdPnhuBt+K8AgnQ6zYCR7zUL4A6klz21S2HhzPx1+7CWU7jSfytm
+         KCEwodxPAjZCoyApJzgsgXl3gv1KYWbj1S5BemwKGaCxLfHL6h+rDQtf9H68r7Doj1aV
+         yKrw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=POVsHtE5goGeXMDmUT4eCInTWhGc9g0JPMiRMUW/pEs=;
-        b=UDbMvJHQwHrf5oGMSf+omwrmve79YZMr1nzi4J5DnfPtWfvOroOnf1uzLnwccRLCSA
-         clZqJi8kz9LKlVAyGr//Kk40Sp4+/MuMevjlvbb7TyrSjbA3fjglt2JF+9N1YJljlmm6
-         LQ3h5KkWm1bvP+TXHPTqxqj5j7LRRjVIqsHp2mtvd0J4oBeMFVicH7W1txyc4Iwc1cs5
-         J5bQPs+MnGTgUBHoUtRmf8Z0kOX2zAN8/OOARTBSwA9kbvOxybUiVAGIKhZP7CzczWwI
-         QSgZ3BQt16duOXsQoUElRcU3mi6oroUFU4+e3AhRxxUn1io+Ny04u9zPQzgQ6ND2UViM
-         JP/g==
-X-Gm-Message-State: AOAM533C2TWsZpCydFa4FDpQgINiseXM2N2yhsSS/qgDxuOdmaKQQK/D
-        XSIwxVDW+ayPyWhKAiWXC+k=
-X-Google-Smtp-Source: ABdhPJxMaWPNId/XUHtvwHWlB1YZIqt203RpzSslR0l3StolvOAXq/49aba2ub4V1DVzoQ/xCBfF4Q==
-X-Received: by 2002:a17:90b:4c44:: with SMTP id np4mr2543243pjb.195.1638838317636;
-        Mon, 06 Dec 2021 16:51:57 -0800 (PST)
+        bh=QHc+3KMzO/IXeML/pk2azuwtgD5APwxFUb3/0O1vz9Y=;
+        b=zfyIaf7N/lYvLH9OEVH928rZ8sajrfnDAYgK0P03UCPnC4NiloATPAjD24l8Qilzz7
+         sym0ASShoyeDkpeaT/mrnbCcs0pr/GyuaJbYMqBK90blfMWsNIfiDI7fcN2O6QdReDDB
+         b6JdM7ti6tdKf/7/gVx6me3fV9Po9cSZmIxrS5wvFsVUfIj2UD3+t3VKarIAzCjpsTnN
+         tuWkKu9+Tu5mvNY1PcNi1LmY2RidraBhncXxOA8rCG/pTuKIvdoeWYAfd+zJ8dHylmJu
+         m9yMsMm1tUyvoRPPGaCyMfAxt84U3k6Fg+E5AOXX89YaRLZly/dg7bpuej2FAGdcK9fK
+         GUgw==
+X-Gm-Message-State: AOAM5319TyUAner2v+qQx6dhqJHrJ9inpBh4u8o+AURS9Ohv33pdat5Z
+        759jZPCaWIpQxXMyEs5Yspc=
+X-Google-Smtp-Source: ABdhPJxUuVm09oHzBm7SR4GJdk6E7iUX8wvO9atBDF8r+eBBVGs48eexFy6jHkSZHt2ffKGZO8qf2A==
+X-Received: by 2002:a17:902:dacc:b0:142:12bd:c5b9 with SMTP id q12-20020a170902dacc00b0014212bdc5b9mr48169818plx.74.1638838319623;
+        Mon, 06 Dec 2021 16:51:59 -0800 (PST)
 Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:518c:39bf:c3e8:ffe2])
-        by smtp.gmail.com with ESMTPSA id l13sm14239618pfu.149.2021.12.06.16.51.57
+        by smtp.gmail.com with ESMTPSA id l13sm14239618pfu.149.2021.12.06.16.51.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Dec 2021 16:51:57 -0800 (PST)
+        Mon, 06 Dec 2021 16:51:59 -0800 (PST)
 From:   Eric Dumazet <eric.dumazet@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev <netdev@vger.kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH net-next 05/17] netfilter: nfnetlink: add netns refcount tracker to struct nfulnl_instance
-Date:   Mon,  6 Dec 2021 16:51:30 -0800
-Message-Id: <20211207005142.1688204-6-eric.dumazet@gmail.com>
+Subject: [PATCH net-next 06/17] l2tp: add netns refcount tracker to l2tp_dfs_seq_data
+Date:   Mon,  6 Dec 2021 16:51:31 -0800
+Message-Id: <20211207005142.1688204-7-eric.dumazet@gmail.com>
 X-Mailer: git-send-email 2.34.1.400.ga245620fadb-goog
 In-Reply-To: <20211207005142.1688204-1-eric.dumazet@gmail.com>
 References: <20211207005142.1688204-1-eric.dumazet@gmail.com>
@@ -69,39 +69,50 @@ From: Eric Dumazet <edumazet@google.com>
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- net/netfilter/nfnetlink_log.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ net/l2tp/l2tp_debugfs.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/net/netfilter/nfnetlink_log.c b/net/netfilter/nfnetlink_log.c
-index 691ef4cffdd907cf09d3a7e680ebe83ea5562ee0..7a3a91fc7ffaaf7c632692949a990f5867173e5c 100644
---- a/net/netfilter/nfnetlink_log.c
-+++ b/net/netfilter/nfnetlink_log.c
-@@ -66,6 +66,7 @@ struct nfulnl_instance {
- 	struct sk_buff *skb;		/* pre-allocatd skb */
- 	struct timer_list timer;
- 	struct net *net;
-+	netns_tracker ns_tracker;
- 	struct user_namespace *peer_user_ns;	/* User namespace of the peer process */
- 	u32 peer_portid;		/* PORTID of the peer process */
+diff --git a/net/l2tp/l2tp_debugfs.c b/net/l2tp/l2tp_debugfs.c
+index acf6e1343b88e070004f422e00d8fc697b4e4130..9d1aafe75f92dd7643c6908b83f4eb60ea79b025 100644
+--- a/net/l2tp/l2tp_debugfs.c
++++ b/net/l2tp/l2tp_debugfs.c
+@@ -32,7 +32,8 @@
+ static struct dentry *rootdir;
  
-@@ -140,7 +141,7 @@ static void nfulnl_instance_free_rcu(struct rcu_head *head)
- 	struct nfulnl_instance *inst =
- 		container_of(head, struct nfulnl_instance, rcu);
+ struct l2tp_dfs_seq_data {
+-	struct net *net;
++	struct net	*net;
++	netns_tracker	ns_tracker;
+ 	int tunnel_idx;			/* current tunnel */
+ 	int session_idx;		/* index of session within current tunnel */
+ 	struct l2tp_tunnel *tunnel;
+@@ -281,7 +282,7 @@ static int l2tp_dfs_seq_open(struct inode *inode, struct file *file)
+ 		rc = PTR_ERR(pd->net);
+ 		goto err_free_pd;
+ 	}
+-
++	netns_tracker_alloc(pd->net, &pd->ns_tracker, GFP_KERNEL);
+ 	rc = seq_open(file, &l2tp_dfs_seq_ops);
+ 	if (rc)
+ 		goto err_free_net;
+@@ -293,7 +294,7 @@ static int l2tp_dfs_seq_open(struct inode *inode, struct file *file)
+ 	return rc;
  
--	put_net(inst->net);
-+	put_net_track(inst->net, &inst->ns_tracker);
- 	kfree(inst);
- 	module_put(THIS_MODULE);
- }
-@@ -187,7 +188,7 @@ instance_create(struct net *net, u_int16_t group_num,
+ err_free_net:
+-	put_net(pd->net);
++	put_net_track(pd->net, &pd->ns_tracker);
+ err_free_pd:
+ 	kfree(pd);
+ 	goto out;
+@@ -307,7 +308,7 @@ static int l2tp_dfs_seq_release(struct inode *inode, struct file *file)
+ 	seq = file->private_data;
+ 	pd = seq->private;
+ 	if (pd->net)
+-		put_net(pd->net);
++		put_net_track(pd->net, &pd->ns_tracker);
+ 	kfree(pd);
+ 	seq_release(inode, file);
  
- 	timer_setup(&inst->timer, nfulnl_timer, 0);
- 
--	inst->net = get_net(net);
-+	inst->net = get_net_track(net, &inst->ns_tracker, GFP_ATOMIC);
- 	inst->peer_user_ns = user_ns;
- 	inst->peer_portid = portid;
- 	inst->group_num = group_num;
 -- 
 2.34.1.400.ga245620fadb-goog
 
