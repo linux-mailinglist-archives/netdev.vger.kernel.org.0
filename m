@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 22A8046AF6D
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 01:52:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 79CC646AF6E
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 01:52:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378758AbhLGAzb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Dec 2021 19:55:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53368 "EHLO
+        id S1378791AbhLGAzd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Dec 2021 19:55:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378755AbhLGAzb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 19:55:31 -0500
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A88D5C061746
-        for <netdev@vger.kernel.org>; Mon,  6 Dec 2021 16:52:01 -0800 (PST)
-Received: by mail-pj1-x102f.google.com with SMTP id fv9-20020a17090b0e8900b001a6a5ab1392so1257290pjb.1
-        for <netdev@vger.kernel.org>; Mon, 06 Dec 2021 16:52:01 -0800 (PST)
+        with ESMTP id S1378742AbhLGAzc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 19:55:32 -0500
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 677B7C061746
+        for <netdev@vger.kernel.org>; Mon,  6 Dec 2021 16:52:03 -0800 (PST)
+Received: by mail-pj1-x1035.google.com with SMTP id np3so9031032pjb.4
+        for <netdev@vger.kernel.org>; Mon, 06 Dec 2021 16:52:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=uESlj0SebAtKU58T3/hnoy0rgiCsLFjX0HarrZvJTjA=;
-        b=haFKdNKhWZ7RDgW2RRvl9yFR8dDodOEaL6bjjQOBnrpxqr9NjszWNCjW7ANYvOhZlt
-         43OWPwnz6asXKb69WA361zSxbJlwHCiI2kJhw0U/4uO4C98c4mC1WacNV3Ayel1JcYxR
-         wV2DFL5ChInIqsrhE/94UGjIxf1pRpfaimImIB21x1noQWS2vrKSMgEyY7pF31meIFyu
-         hFtsyjX8J+osbGNXI+fWbBpk7lf0+1UNjlUJ9BBMVzHBUwolmAwEh3AoWjF5TH2pjcR2
-         Tq3qCUyW3hnvW+6OwpMqxdMnhM0HCYRbAvCFCx6B+OmhCsHEEBlxXi10tw+eSysHfp9Q
-         cGKQ==
+        bh=/d8nwCdhAWoeqFwhelhs0ajxIL9Dr7l9LAWxv+OUSP4=;
+        b=oa+1fme953nX69A5u7mCAggq3t8kuFqiOfOOb+FOXPJojAZ8TaTCY8VSPNsKTi3gyw
+         7FmIpfHrEiJZouWSv7z4k9yr++vL2+nrgTKib1diyo877Cp/l7xuBLvpBY26Wjjs/qk3
+         9GIZ9bDy5yMUoGbnowxzTqqKWShtBzdC4lMV7OLYNRRnwETWS3syMgT/fABtn2CV9A4V
+         wrEsVK4ukj/RLHSS2ylSZVt1CFO1UbP63GcN+ekk9I03+fTmRGZVd5m7PBnDrUxarmuw
+         w/AZPJ7uvBAoCvgMCujO2n+1nu6N1fx+54I9dNdhh0T6uzkl2RfobOioRG9LsQYe0w91
+         PTRQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=uESlj0SebAtKU58T3/hnoy0rgiCsLFjX0HarrZvJTjA=;
-        b=eD36uxJR/g8GPsOGLGBF5wTjUG1hWEMN1gl1+EnjvWjX//l27E5coeOsNhBCWIaiyP
-         amrn+Zg9P74BOzTdg7M9TV55nnokhTd/SEGfWRvxb2nLBfEmb6rakeU7nIiM10OU0KvO
-         sEIKt2PYpct3ia93ZzmoIvILRkJTjCEnw1oNPZNWA+yLUGoBdc5UdkbdmujTam9JOR3T
-         QkpTOsuHQHyRrbxNK+LOi35o+bNNkglbUmGNx5U9poc0JnkDqUewwMUBwYgqwUJFXE2S
-         g9UTQ2WB02N7h7zjAEBuwKHcntD2x4MfGyFUQAJEdYk3NmGIF5VeKKpHnfrf02ls5swE
-         +NWw==
-X-Gm-Message-State: AOAM530zGmeFp7//HM13GroLMFOHx0bIJ3u3gmYwx5TdxRr5r1wk6U2u
-        uGfSHvTvlEP6DbK+iF2KCj3OG5OWDxg=
-X-Google-Smtp-Source: ABdhPJzyjt0421vYQqqxvbnO2ypT/fAwqKUObJqA53kvOV0QTDCqzZFXqR05UAr5355OOEioGDJ6Og==
-X-Received: by 2002:a17:902:ba84:b0:142:5514:8dd7 with SMTP id k4-20020a170902ba8400b0014255148dd7mr47877218pls.87.1638838321229;
-        Mon, 06 Dec 2021 16:52:01 -0800 (PST)
+        bh=/d8nwCdhAWoeqFwhelhs0ajxIL9Dr7l9LAWxv+OUSP4=;
+        b=uK0M3jH6/BZ+ZoBhOsXmWp0HGL5qhmZjM+DGM8u7f8pLG6zTUeVyqmPy/UhbvIOWX1
+         ie6PBZcQYCA+isYtqE9ifACwxPxYm+89AR7meedVcT7U80unIelk7v5CltJ590UiSAI3
+         NaTx0EC/61lM24qugsmYJl1wEYmAybX4pw9ay0QZQqWJtdSk0xyzI0zaH6XCCiPMDU4n
+         wMsQydsr3xzGzdnurCY+DIqz2QirK42SuKipaZaTnUZO9q/v3XPGLGCam+SBiEB76b+b
+         Vr55/EqKrRCdjREzNlkpxwdNPt/WWWhyQ42M4wAnm4zvl7F3LBCToWsybXhzoGNGIPR1
+         VAwQ==
+X-Gm-Message-State: AOAM530jB+M8XlIsw1KX1ZzZHTSnTlMZDiOqV+ml/t2qLR8d7IVurJPJ
+        WolLvhDy6BDjAih2abuT9ck=
+X-Google-Smtp-Source: ABdhPJwaYFLsdZDULH9fxCHZfE/TLbs1qmVhSjJeNrhU3OpDPAHnh2Hkqc4YHyp44c0d2kwxPxWKZg==
+X-Received: by 2002:a17:90b:1a87:: with SMTP id ng7mr2590278pjb.230.1638838323018;
+        Mon, 06 Dec 2021 16:52:03 -0800 (PST)
 Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:518c:39bf:c3e8:ffe2])
-        by smtp.gmail.com with ESMTPSA id l13sm14239618pfu.149.2021.12.06.16.52.00
+        by smtp.gmail.com with ESMTPSA id l13sm14239618pfu.149.2021.12.06.16.52.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Dec 2021 16:52:00 -0800 (PST)
+        Mon, 06 Dec 2021 16:52:02 -0800 (PST)
 From:   Eric Dumazet <eric.dumazet@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev <netdev@vger.kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH net-next 07/17] ppp: add netns refcount tracker
-Date:   Mon,  6 Dec 2021 16:51:32 -0800
-Message-Id: <20211207005142.1688204-8-eric.dumazet@gmail.com>
+Subject: [PATCH net-next 08/17] netfilter: nf_nat_masquerade: add netns refcount tracker to masq_dev_work
+Date:   Mon,  6 Dec 2021 16:51:33 -0800
+Message-Id: <20211207005142.1688204-9-eric.dumazet@gmail.com>
 X-Mailer: git-send-email 2.34.1.400.ga245620fadb-goog
 In-Reply-To: <20211207005142.1688204-1-eric.dumazet@gmail.com>
 References: <20211207005142.1688204-1-eric.dumazet@gmail.com>
@@ -69,39 +69,38 @@ From: Eric Dumazet <edumazet@google.com>
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- drivers/net/ppp/ppp_generic.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ net/netfilter/nf_nat_masquerade.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ppp/ppp_generic.c b/drivers/net/ppp/ppp_generic.c
-index 1180a0e2445fbfb3204fea785f1c1cf48bc77141..9e52c5d2d77fce39b230605ec96fed9798858a13 100644
---- a/drivers/net/ppp/ppp_generic.c
-+++ b/drivers/net/ppp/ppp_generic.c
-@@ -173,6 +173,7 @@ struct channel {
- 	spinlock_t	downl;		/* protects `chan', file.xq dequeue */
- 	struct ppp	*ppp;		/* ppp unit we're connected to */
- 	struct net	*chan_net;	/* the net channel belongs to */
-+	netns_tracker	ns_tracker;
- 	struct list_head clist;		/* link in list of channels per unit */
- 	rwlock_t	upl;		/* protects `ppp' and 'bridge' */
- 	struct channel __rcu *bridge;	/* "bridged" ppp channel */
-@@ -2879,7 +2880,7 @@ int ppp_register_net_channel(struct net *net, struct ppp_channel *chan)
+diff --git a/net/netfilter/nf_nat_masquerade.c b/net/netfilter/nf_nat_masquerade.c
+index acd73f717a0883d791fc351851a98bac4144705f..e32fac374608576d6237f80b1bff558e9453585a 100644
+--- a/net/netfilter/nf_nat_masquerade.c
++++ b/net/netfilter/nf_nat_masquerade.c
+@@ -12,6 +12,7 @@
+ struct masq_dev_work {
+ 	struct work_struct work;
+ 	struct net *net;
++	netns_tracker ns_tracker;
+ 	union nf_inet_addr addr;
+ 	int ifindex;
+ 	int (*iter)(struct nf_conn *i, void *data);
+@@ -82,7 +83,7 @@ static void iterate_cleanup_work(struct work_struct *work)
  
- 	pch->ppp = NULL;
- 	pch->chan = chan;
--	pch->chan_net = get_net(net);
-+	pch->chan_net = get_net_track(net, &pch->ns_tracker, GFP_KERNEL);
- 	chan->ppp = pch;
- 	init_ppp_file(&pch->file, CHANNEL);
- 	pch->file.hdrlen = chan->hdrlen;
-@@ -3519,7 +3520,7 @@ ppp_disconnect_channel(struct channel *pch)
-  */
- static void ppp_destroy_channel(struct channel *pch)
- {
--	put_net(pch->chan_net);
-+	put_net_track(pch->chan_net, &pch->ns_tracker);
- 	pch->chan_net = NULL;
+ 	nf_ct_iterate_cleanup_net(w->net, w->iter, (void *)w, 0, 0);
  
- 	atomic_dec(&channel_count);
+-	put_net(w->net);
++	put_net_track(w->net, &w->ns_tracker);
+ 	kfree(w);
+ 	atomic_dec(&masq_worker_count);
+ 	module_put(THIS_MODULE);
+@@ -119,6 +120,7 @@ static void nf_nat_masq_schedule(struct net *net, union nf_inet_addr *addr,
+ 		INIT_WORK(&w->work, iterate_cleanup_work);
+ 		w->ifindex = ifindex;
+ 		w->net = net;
++		netns_tracker_alloc(net, &w->ns_tracker, gfp_flags);
+ 		w->iter = iter;
+ 		if (addr)
+ 			w->addr = *addr;
 -- 
 2.34.1.400.ga245620fadb-goog
 
