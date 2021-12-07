@@ -2,74 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C411B46AF8E
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 02:10:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C24AA46AF91
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 02:14:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357084AbhLGBNl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Dec 2021 20:13:41 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:49136 "EHLO
+        id S233624AbhLGBRi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Dec 2021 20:17:38 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:50848 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243579AbhLGBNl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 20:13:41 -0500
+        with ESMTP id S233203AbhLGBRi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 20:17:38 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B4DC8B81648;
-        Tue,  7 Dec 2021 01:10:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 7F717C341CD;
-        Tue,  7 Dec 2021 01:10:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1FE8EB8164D
+        for <netdev@vger.kernel.org>; Tue,  7 Dec 2021 01:14:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89992C004DD;
+        Tue,  7 Dec 2021 01:14:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638839409;
-        bh=PuIqe6GW2pYb2QfLQkfJepAKx7llRzTMxpRR9uA3xmw=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=uaG/lDdgKbtKU3PMTeXNUKNAXEjExgETEYhWrra7nodnygbgzCuVcRh0ODyMVk0iS
-         epz2KkT8IfyA73mDMZ3P0pZxUs4rxz/TdCaujfO959jKm8NwzjIHtavILCUVhosslO
-         qACbQYNsng7d/HmmHA7HtdRpQA6SlXs9z9Tqj5WPZuE3JSoMDCMlfHBZCMRSDv61g+
-         UaKAujhzMA0mRy5vFV0wgFAy2LOlbKLQr36LbVVRnlHLCvWCs3yJa1l00oiLeZ9HtJ
-         lSAB1JKd8RwSg2lkt9RkaPQ3jzJmbFCraAmQHPrFY4W/6/PKoo1Spt1SZq1toXCPlC
-         P+HBcYAw4SHtg==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 6AEB760A4D;
-        Tue,  7 Dec 2021 01:10:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1638839646;
+        bh=4nqdqLzwhhwdn/ctmdUn4lWjyicymIrwQj/UrheMHFo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=j1KiI28La9BZ2LkmsvPTZbwp3o2TkQM/YYMb6SBzGhyx3iQyaQEsiEG5q70r8pkuX
+         Q4b6pLR7ikIBz7wPMCpVlE3OXTZ10Js+irrnhWG11W6w7HZR2QVJAHPoD8PcH/2b6/
+         ZNZfjDij+DJdO1lJ63I1/92hzd4CQZZ0N7PGX1l0/9D3eCUeZTRj5sQBZf6L7sL7Tj
+         H2QYcQfeY/qeEDMY3Gdx/Sb3IAMu1rJoCzOqxZ6dykZ25eH3OjylHezApwVl14tkUF
+         1/Zw7yPZ5AhpPbOy7aAPcwSwBxFPmcyQvy4IHK1MC5A9tCo/uxuBcoGPA7xomwqEhL
+         pt8oNMiQIlqwg==
+Date:   Mon, 6 Dec 2021 17:14:05 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Mat Martineau <mathew.j.martineau@linux.intel.com>
+Cc:     netdev@vger.kernel.org, Florian Westphal <fw@strlen.de>,
+        davem@davemloft.net, matthieu.baerts@tessares.net,
+        mptcp@lists.linux.dev
+Subject: Re: [PATCH net-next 01/10] mptcp: add TCP_INQ cmsg support
+Message-ID: <20211206171405.13e9f9ee@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211203223541.69364-2-mathew.j.martineau@linux.intel.com>
+References: <20211203223541.69364-1-mathew.j.martineau@linux.intel.com>
+        <20211203223541.69364-2-mathew.j.martineau@linux.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net/smc: Clear memory when release and reuse buffer
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163883940943.24390.11317200690336644085.git-patchwork-notify@kernel.org>
-Date:   Tue, 07 Dec 2021 01:10:09 +0000
-References: <20211203113331.2818873-1-kgraul@linux.ibm.com>
-In-Reply-To: <20211203113331.2818873-1-kgraul@linux.ibm.com>
-To:     Karsten Graul <kgraul@linux.ibm.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, hca@linux.ibm.com,
-        tonylu@linux.alibaba.com, guwen@linux.alibaba.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Fri,  3 Dec 2021 14:35:32 -0800 Mat Martineau wrote:
+> +static int mptcp_put_int_option(struct mptcp_sock *msk, char __user *optval,
+> +				int __user *optlen, int val)
+> +{
+> +	int len;
+> +
+> +	if (get_user(len, optlen))
+> +		return -EFAULT;
+> +
+> +	len = min_t(unsigned int, len, sizeof(int));
+> +	if (len < 0)
+> +		return -EINVAL;
 
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+TCP has the same statement but surely it's dead code?
 
-On Fri,  3 Dec 2021 12:33:31 +0100 you wrote:
-> From: Tony Lu <tonylu@linux.alibaba.com>
-> 
-> Currently, buffers are cleared when smc connections are created and
-> buffers are reused. This slows down the speed of establishing new
-> connections. In most cases, the applications want to establish
-> connections as quickly as possible.
-> 
-> [...]
+min_t(unsigned, .., 4)
 
-Here is the summary with links:
-  - [net-next] net/smc: Clear memory when release and reuse buffer
-    https://git.kernel.org/netdev/net-next/c/1c5526968e27
+cannot return anything outside of the range from 0 to 4.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+> +	if (put_user(len, optlen))
+> +		return -EFAULT;
+> +	if (copy_to_user(optval, &val, len))
+> +		return -EFAULT;
+> +
+> +	return 0;
