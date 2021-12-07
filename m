@@ -2,72 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 703C846AF31
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 01:34:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 296D946AF4D
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 01:40:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353037AbhLGAh4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Dec 2021 19:37:56 -0500
-Received: from sin.source.kernel.org ([145.40.73.55]:42250 "EHLO
-        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350868AbhLGAh4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 19:37:56 -0500
+        id S1378629AbhLGAnq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Dec 2021 19:43:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50684 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1378612AbhLGAnn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 19:43:43 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3841CC0613F8
+        for <netdev@vger.kernel.org>; Mon,  6 Dec 2021 16:40:14 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 95854CE13D5;
-        Tue,  7 Dec 2021 00:34:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61F1FC004DD;
-        Tue,  7 Dec 2021 00:34:23 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id D4F09CE194B
+        for <netdev@vger.kernel.org>; Tue,  7 Dec 2021 00:40:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id CFD1BC341CB;
+        Tue,  7 Dec 2021 00:40:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638837263;
-        bh=6KaqsLuA41Mjwg/PBX0JoT9b+z2vvF7u56roR3Ghygg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=XW583nLgiCSys6GPPOI94PCd7KOpeEpo4KlFMvQicSwlM8q60KENMRef+HW2EFAIx
-         /GZQUp0bkqoLmqnUFI/qHAYtZAvIRrH+xHAlawqK0mYD2SAIBuLu8sh9vz56+pEjLu
-         jj1fbwJ7CBeGdqDF3adfFHCmrpWt78eYHJMh0jKbGi/o2HSDMYh3/E39YeFFNexBCn
-         kX5mY6iR7YggtSJSKr+1avSvv+pXZBnBLDc/VrnmBld+rUs+BcA0fzXyb8mbqXee60
-         iPqMl3N9GH39iNCbMmYsa8w7kZRQP6ThYYwq9E9lLkEpFATlLz9ANOqbVepOj49YyR
-         VkJn5wRMAW/2g==
-Date:   Mon, 6 Dec 2021 16:34:22 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Leon Romanovsky <leonro@nvidia.com>,
-        Guangbin Huang <huangguangbin2@huawei.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>
-Subject: Re: [PATCH net-next] Revert "net: hns3: add void before function
- which don't receive ret"
-Message-ID: <20211206163422.0055f67b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <YayuDSbYTEdLdeMG@unreal>
-References: <ec8b4004475049060d03fd71b916cbf32858559d.1638705082.git.leonro@nvidia.com>
-        <YayuDSbYTEdLdeMG@unreal>
+        s=k20201202; t=1638837609;
+        bh=49RQQoceVLaeZk1kiDZ9ZmyEJ7q87iCUvRq7UQ9b1lI=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=RWSyDDMGtVt1OVKob65TSU2lfAhCLFVHSk4gAB0IA6n1oW5E8RlxznEBtyQrq+xiE
+         Gk2JPw8/WdWgL9GAOgpvO6zev26YRto//ivPN6U/tUjduKDeAPOXVV5rfLVB9EPO+0
+         LFythp9CVr6QEo1yBx3qAEsyeQ6xFkAdJrYuvTwBdd21Egdl9nbSquNEvaFxZ2wcK8
+         yDUAfVFA8+AUuA0nSSrS8hJMRefvhhwQDLwMQK7m+0Z0cdmaOzooY3RbDqMdujkwko
+         cfT9qDsgk2I63svmPfraze9d4eTrtoOUZzcsUNQqksB1ShiG1HEK3jLDm1OSveXAre
+         v8DGoPaDPEt8Q==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id AF67A60A7C;
+        Tue,  7 Dec 2021 00:40:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2 net-next] net: fix recent csum changes
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163883760971.11691.16842940852777036427.git-patchwork-notify@kernel.org>
+Date:   Tue, 07 Dec 2021 00:40:09 +0000
+References: <20211204045356.3659278-1-eric.dumazet@gmail.com>
+In-Reply-To: <20211204045356.3659278-1-eric.dumazet@gmail.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        edumazet@google.com, vladimir.oltean@nxp.com,
+        David.Laight@ACULAB.COM, dlebrun@google.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 5 Dec 2021 14:18:21 +0200 Leon Romanovsky wrote:
-> On Sun, Dec 05, 2021 at 01:51:37PM +0200, Leon Romanovsky wrote:
-> > From: Leon Romanovsky <leonro@nvidia.com>
-> > 
-> > There are two issues with this patch:
-> > 1. devlink_register() doesn't return any value. It is already void.
-> > 2. It is not kernel coding at all to cast return type to void.
-> > 
-> > This reverts commit 5ac4f180bd07116c1e57858bc3f6741adbca3eb6.
-> > 
-> > Link: https://lore.kernel.org/all/Yan8VDXC0BtBRVGz@unreal
-> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> > ---
-> >  drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_devlink.c   | 2 +-
-> >  drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_devlink.c | 2 +-
-> >  2 files changed, 2 insertions(+), 2 deletions(-)  
-> 
-> It was already sent, but not merged yet.
-> https://lore.kernel.org/all/20211204012448.51360-1-huangguangbin2@huawei.com
+Hello:
 
-Indeed, Guangbin in the future please make sure to CC the person whose
-feedback the patches are based on.
+This patch was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Fri,  3 Dec 2021 20:53:56 -0800 you wrote:
+> From: Eric Dumazet <edumazet@google.com>
+> 
+> Vladimir reported csum issues after my recent change in skb_postpull_rcsum()
+> 
+> Issue here is the following:
+> 
+> initial skb->csum is the csum of
+> 
+> [...]
+
+Here is the summary with links:
+  - [v2,net-next] net: fix recent csum changes
+    https://git.kernel.org/netdev/net-next/c/45cac6754529
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
