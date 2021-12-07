@@ -2,257 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B264646C1AD
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 18:23:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5906A46C1EA
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 18:36:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240028AbhLGR0z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 12:26:55 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:25009 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S240004AbhLGR0x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 12:26:53 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1638897802;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=tyZEAPx8uEp6BqLobkY95n81q55nTjqsaRONsnhv2WI=;
-        b=UZxbzt7Y7MzcGWvmpfRm7b6LrUS06YK9o7x8B1CwcCSHjLX2FB3L2gI62GStnGC4KTrQvn
-        jtQk5M6Tzh/eieQDu+ip+DxDkoxZSJ7wlzxjnQsmpIz094dy8bKee2BoUdWRXZQCOr/RW8
-        ub7BmA6v6fT3XhMIBZCmR41nu6ySqkU=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-559-dbun5ikcMySVpVzEiVMOeQ-1; Tue, 07 Dec 2021 12:23:21 -0500
-X-MC-Unique: dbun5ikcMySVpVzEiVMOeQ-1
-Received: by mail-wr1-f72.google.com with SMTP id o4-20020adfca04000000b0018f07ad171aso3202994wrh.20
-        for <netdev@vger.kernel.org>; Tue, 07 Dec 2021 09:23:21 -0800 (PST)
+        id S240062AbhLGRkA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 12:40:00 -0500
+Received: from mail-il1-f200.google.com ([209.85.166.200]:46665 "EHLO
+        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240058AbhLGRkA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 12:40:00 -0500
+Received: by mail-il1-f200.google.com with SMTP id j15-20020a056e02218f00b0029e3db8d6dfso12538433ila.13
+        for <netdev@vger.kernel.org>; Tue, 07 Dec 2021 09:36:29 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=tyZEAPx8uEp6BqLobkY95n81q55nTjqsaRONsnhv2WI=;
-        b=nPLKAAt9DVQE1Wh6V4SBRN5Ki6ZmPhDDEeI0j1VCrEyle6E0oyDj25m59UGFDbrjUI
-         Xsjx5kNqx1ojy+GL/1sfDrvytLaoewoY+lcgeestMJVJO+tYnbn3M6d/hJuspN8FsCme
-         g3fbR1ceC3NH+9YZ00pw/niLs4dfDWWYLPlO6CejU2J5rkHoguhMZbD8nh+Cj+45UHFf
-         I0Nlw590H3jNIG7hRm7Tioj3VxEPzV7GMCrIG6xJgZikCqSg6pG1LFbV3BUxDYIum1+8
-         OziTRi+cN+n7cO2qzvlOow/wpmdkAnXGb3Tht417kDmRCGMVNuedMIx99w5lbm9NaH+A
-         dFAQ==
-X-Gm-Message-State: AOAM5303lBObNDrEwM1KVo/iTRRGFIM3fGXkmJLFJ/9lmzzDF+I0p6Vo
-        caXdKwvZS9NHxu6aH6PstRq6Wm79xi4OF1L7ZbGpvu4jgPxn8BwjJWawP8QOSRXVM9W+44jLoPy
-        bRCpFHayfJxIwhOrY
-X-Received: by 2002:a5d:6d0b:: with SMTP id e11mr53460656wrq.16.1638897799913;
-        Tue, 07 Dec 2021 09:23:19 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJx2rWeOH7vHLSEtjqmJ7mx9kmtIWVUH9NqDQT3V9aQwFBWLJKXWEJeqFdInYPBG9EwhxYRkEQ==
-X-Received: by 2002:a5d:6d0b:: with SMTP id e11mr53460630wrq.16.1638897799701;
-        Tue, 07 Dec 2021 09:23:19 -0800 (PST)
-Received: from krava (nat-pool-brq-u.redhat.com. [213.175.37.12])
-        by smtp.gmail.com with ESMTPSA id b197sm199745wmb.24.2021.12.07.09.23.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Dec 2021 09:23:18 -0800 (PST)
-Date:   Tue, 7 Dec 2021 18:23:12 +0100
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>
-Subject: Re: [PATCH bpf-next 2/3] bpf: Add get_func_[arg|ret|arg_cnt] helpers
-Message-ID: <Ya+YgJta0JYBvxrB@krava>
-References: <20211204140700.396138-1-jolsa@kernel.org>
- <20211204140700.396138-3-jolsa@kernel.org>
- <f1cf12b9-01f5-f980-a349-1cbcd1124409@fb.com>
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=1dQvezvp3iGWZ0YIb75qsQGcY3DEG/a8kpN3taG3XIQ=;
+        b=RnKisshrMbmc1ozWLm60rxQfFnDl2Gj87lfO5IayypxJ9aDFZJPOmwh+2GSBenwt0b
+         zj/qVapwg2O61pZNU89Huk9DJVYO3ds1U8OdgYWwaA94ve7+dPf7CtCaM42SBZex5qTw
+         J1sRY+GSg91hVKjpan5uMmGzLfbPz6TfDCmN0owk6bhgGxZwqIhwwE71ZKY3+M8Da9fM
+         bkxW74n/E/zIhRKZXqi3tmGOF7gWcyAUwGpjSeTONUHbYzLhpP8F8PWYmIwzrvlbC1fn
+         Q65419BhhWVxwSngzXl9+YbOy31Lhq91Pb8NOf4ijS3P8j27zAaZCRogOY4d1xK6dQg/
+         UOTA==
+X-Gm-Message-State: AOAM53361OZYZhX8hH+rUldYcFrKs9p3QYn/qUqm1L1xDHWQI1OKsrzu
+        Lpl3TwcizFbNiyTs1lqnuwlKZctv/Vo8mWNAeoscUSEIuv8C
+X-Google-Smtp-Source: ABdhPJxrY5ezv1MAc4b3hmpC2DiyVCa1ZBCuumVI4l2wVqyLJVseDqkqWYesgOImWu3+rPfrjLJrTeEt9WFpybMUWdvQ/3svPH4Z
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f1cf12b9-01f5-f980-a349-1cbcd1124409@fb.com>
+X-Received: by 2002:a05:6e02:16ca:: with SMTP id 10mr721658ilx.274.1638898589332;
+ Tue, 07 Dec 2021 09:36:29 -0800 (PST)
+Date:   Tue, 07 Dec 2021 09:36:29 -0800
+In-Reply-To: <000000000000367c2205d2549cb9@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000003d78f805d291d061@google.com>
+Subject: Re: [syzbot] KASAN: vmalloc-out-of-bounds Read in __bpf_prog_put
+From:   syzbot <syzbot+5027de09e0964fd78ce1@syzkaller.appspotmail.com>
+To:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, davem@davemloft.net, hawk@kernel.org,
+        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 06, 2021 at 01:54:53PM -0800, Andrii Nakryiko wrote:
-> 
-> On 12/4/21 6:06 AM, Jiri Olsa wrote:
-> > Adding following helpers for tracing programs:
-> > 
-> > Get n-th argument of the traced function:
-> >    long bpf_get_func_arg(void *ctx, u32 n, u64 *value)
-> > 
-> > Get return value of the traced function:
-> >    long bpf_get_func_ret(void *ctx, u64 *value)
-> > 
-> > Get arguments count of the traced funtion:
-> >    long bpf_get_func_arg_cnt(void *ctx)
-> > 
-> > The trampoline now stores number of arguments on ctx-8
-> > address, so it's easy to verify argument index and find
-> > return value argument's position.
-> > 
-> > Moving function ip address on the trampoline stack behind
-> > the number of functions arguments, so it's now stored on
-> > ctx-16 address if it's needed.
-> > 
-> > All helpers above are inlined by verifier.
-> > 
-> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> > ---
-> 
-> 
-> Please cc me at andrii@kernel.org email for future emails, you'll save a lot
-> of trouble with replying to your emails :) Thanks!
+syzbot has found a reproducer for the following issue on:
 
-ugh, updated
+HEAD commit:    1c5526968e27 net/smc: Clear memory when release and reuse ..
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=13a9eabdb00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=2b8e24e3a80e3875
+dashboard link: https://syzkaller.appspot.com/bug?extid=5027de09e0964fd78ce1
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12b749a9b00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=170d7519b00000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+5027de09e0964fd78ce1@syzkaller.appspotmail.com
+
+==================================================================
+BUG: KASAN: vmalloc-out-of-bounds in __bpf_prog_put.constprop.0+0x1dd/0x220 kernel/bpf/syscall.c:1812
+Read of size 8 at addr ffffc90001a16038 by task kworker/0:3/2934
+
+CPU: 0 PID: 2934 Comm: kworker/0:3 Not tainted 5.16.0-rc3-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: events sk_psock_destroy
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_address_description.constprop.0.cold+0xf/0x320 mm/kasan/report.c:247
+ __kasan_report mm/kasan/report.c:433 [inline]
+ kasan_report.cold+0x83/0xdf mm/kasan/report.c:450
+ __bpf_prog_put.constprop.0+0x1dd/0x220 kernel/bpf/syscall.c:1812
+ psock_set_prog include/linux/skmsg.h:477 [inline]
+ psock_progs_drop include/linux/skmsg.h:495 [inline]
+ sk_psock_destroy+0xad/0x620 net/core/skmsg.c:804
+ process_one_work+0x9b2/0x1690 kernel/workqueue.c:2298
+ worker_thread+0x658/0x11f0 kernel/workqueue.c:2445
+ kthread+0x405/0x4f0 kernel/kthread.c:327
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+ </TASK>
 
 
-SNIP
- 
-> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> > index c26871263f1f..d5a3791071d6 100644
-> > --- a/include/uapi/linux/bpf.h
-> > +++ b/include/uapi/linux/bpf.h
-> > @@ -4983,6 +4983,31 @@ union bpf_attr {
-> >    *	Return
-> >    *		The number of loops performed, **-EINVAL** for invalid **flags**,
-> >    *		**-E2BIG** if **nr_loops** exceeds the maximum number of loops.
-> > + *
-> > + * long bpf_get_func_arg(void *ctx, u32 n, u64 *value)
-> > + *	Description
-> > + *		Get **n**-th argument (zero based) of the traced function (for tracing programs)
-> > + *		returned in **value**.
-> > + *
-> > + *	Return
-> > + *		0 on success.
-> > + *		**-EINVAL** if n >= arguments count of traced function.
-> > + *
-> > + * long bpf_get_func_ret(void *ctx, u64 *value)
-> > + *	Description
-> > + *		Get return value of the traced function (for tracing programs)
-> > + *		in **value**.
-> > + *
-> > + *	Return
-> > + *		0 on success.
-> > + *		**-EINVAL** for tracing programs other than BPF_TRACE_FEXIT or BPF_MODIFY_RETURN.
-> 
-> 
-> -EOPNOTSUPP maybe?
-
-ok
-
-> 
-> 
-> > + *
-> > + * long bpf_get_func_arg_cnt(void *ctx)
-> > + *	Description
-> > + *		Get number of arguments of the traced function (for tracing programs).
-> > + *
-> > + *	Return
-> > + *		The number of arguments of the traced function.
-> >    */
-> >   #define __BPF_FUNC_MAPPER(FN)		\
-> >   	FN(unspec),			\
-> > @@ -5167,6 +5192,9 @@ union bpf_attr {
-> >   	FN(kallsyms_lookup_name),	\
-> >   	FN(find_vma),			\
-> >   	FN(loop),			\
-> > +	FN(get_func_arg),		\
-> > +	FN(get_func_ret),		\
-> > +	FN(get_func_arg_cnt),		\
-> >   	/* */
-> >   /* integer value in 'imm' field of BPF_CALL instruction selects which helper
-> > diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> > index 6522ffdea487..cf6853d3a8e9 100644
-> > --- a/kernel/bpf/verifier.c
-> > +++ b/kernel/bpf/verifier.c
-> > @@ -12974,6 +12974,7 @@ static int fixup_kfunc_call(struct bpf_verifier_env *env,
-> >   static int do_misc_fixups(struct bpf_verifier_env *env)
-> >   {
-> >   	struct bpf_prog *prog = env->prog;
-> > +	enum bpf_attach_type eatype = prog->expected_attach_type;
-> >   	bool expect_blinding = bpf_jit_blinding_enabled(prog);
-> >   	enum bpf_prog_type prog_type = resolve_prog_type(prog);
-> >   	struct bpf_insn *insn = prog->insnsi;
-> > @@ -13344,11 +13345,79 @@ static int do_misc_fixups(struct bpf_verifier_env *env)
-> >   			continue;
-> >   		}
-> > +		/* Implement bpf_get_func_arg inline. */
-> > +		if (prog_type == BPF_PROG_TYPE_TRACING &&
-> > +		    insn->imm == BPF_FUNC_get_func_arg) {
-> > +			/* Load nr_args from ctx - 8 */
-> > +			insn_buf[0] = BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_1, -8);
-> > +			insn_buf[1] = BPF_JMP32_REG(BPF_JGE, BPF_REG_2, BPF_REG_0, 6);
-> > +			insn_buf[2] = BPF_ALU64_IMM(BPF_LSH, BPF_REG_2, 3);
-> > +			insn_buf[3] = BPF_ALU64_REG(BPF_ADD, BPF_REG_2, BPF_REG_1);
-> > +			insn_buf[4] = BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_2, 0);
-> > +			insn_buf[5] = BPF_STX_MEM(BPF_DW, BPF_REG_3, BPF_REG_0, 0);
-> > +			insn_buf[6] = BPF_MOV64_IMM(BPF_REG_0, 0);
-> > +			insn_buf[7] = BPF_JMP_A(1);
-> > +			insn_buf[8] = BPF_MOV64_IMM(BPF_REG_0, -EINVAL);
-> > +			cnt = 9;
-> > +
-> > +			new_prog = bpf_patch_insn_data(env, i + delta, insn_buf, cnt);
-> > +			if (!new_prog)
-> > +				return -ENOMEM;
-> > +
-> > +			delta    += cnt - 1;
-> > +			env->prog = prog = new_prog;
-> > +			insn      = new_prog->insnsi + i + delta;
-> > +			continue;
-> > +		}
-> > +
-> > +		/* Implement bpf_get_func_ret inline. */
-> > +		if (prog_type == BPF_PROG_TYPE_TRACING &&
-> > +		    insn->imm == BPF_FUNC_get_func_ret) {
-> > +			if (eatype == BPF_TRACE_FEXIT ||
-> > +			    eatype == BPF_MODIFY_RETURN) {
-> > +				/* Load nr_args from ctx - 8 */
-> > +				insn_buf[0] = BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_1, -8);
-> > +				insn_buf[1] = BPF_ALU64_IMM(BPF_LSH, BPF_REG_0, 3);
-> > +				insn_buf[2] = BPF_ALU64_REG(BPF_ADD, BPF_REG_0, BPF_REG_1);
-> > +				insn_buf[3] = BPF_LDX_MEM(BPF_DW, BPF_REG_3, BPF_REG_0, 0);
-> > +				insn_buf[4] = BPF_STX_MEM(BPF_DW, BPF_REG_2, BPF_REG_3, 0);
-> > +				insn_buf[5] = BPF_MOV64_IMM(BPF_REG_0, 0);
-> > +				cnt = 6;
-> > +			} else {
-> > +				insn_buf[0] = BPF_MOV64_IMM(BPF_REG_0, -EINVAL);
-> > +				cnt = 1;
-> > +			}
-> > +
-> > +			new_prog = bpf_patch_insn_data(env, i + delta, insn_buf, cnt);
-> > +			if (!new_prog)
-> > +				return -ENOMEM;
-> > +
-> > +			delta    += cnt - 1;
-> > +			env->prog = prog = new_prog;
-> > +			insn      = new_prog->insnsi + i + delta;
-> > +			continue;
-> > +		}
-> > +
-> > +		/* Implement get_func_arg_cnt inline. */
-> > +		if (prog_type == BPF_PROG_TYPE_TRACING &&
-> > +		    insn->imm == BPF_FUNC_get_func_arg_cnt) {
-> > +			/* Load nr_args from ctx - 8 */
-> > +			insn_buf[0] = BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_1, -8);
-> > +
-> > +			new_prog = bpf_patch_insn_data(env, i + delta, insn_buf, 1);
-> > +			if (!new_prog)
-> > +				return -ENOMEM;
-> > +
-> > +			env->prog = prog = new_prog;
-> > +			insn      = new_prog->insnsi + i + delta;
-> > +			continue;
-> > +		}
-> 
-> 
-> To be entirely honest, I'm not even sure we need to inline them. In programs
-> that care about performance they will be called at most once. In others it
-> doesn't matter. But even if they weren't, is the function call really such a
-> big overhead for tracing cases? I don't mind it either, I just can hardly
-> follow it.
-
-maybe just inline get_func_arg_cnt, because it's just one instruction,
-the other 2 I don't skipping the inline
-
-jirka
+Memory state around the buggy address:
+ ffffc90001a15f00: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
+ ffffc90001a15f80: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
+>ffffc90001a16000: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
+                                        ^
+ ffffc90001a16080: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
+ ffffc90001a16100: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
+==================================================================
 
