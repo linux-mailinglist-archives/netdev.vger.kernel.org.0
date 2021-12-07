@@ -2,95 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D460446B177
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 04:23:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C6A646B183
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 04:35:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234057AbhLGD0j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Dec 2021 22:26:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59246 "EHLO
+        id S234224AbhLGDjC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Dec 2021 22:39:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233915AbhLGD0j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 22:26:39 -0500
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9F84C061746;
-        Mon,  6 Dec 2021 19:23:09 -0800 (PST)
-Received: by mail-yb1-xb29.google.com with SMTP id f186so37051186ybg.2;
-        Mon, 06 Dec 2021 19:23:09 -0800 (PST)
+        with ESMTP id S231591AbhLGDjB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 22:39:01 -0500
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D30FC061746;
+        Mon,  6 Dec 2021 19:35:32 -0800 (PST)
+Received: by mail-yb1-xb2f.google.com with SMTP id d10so37206653ybe.3;
+        Mon, 06 Dec 2021 19:35:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=MW07K0MrFAu2xQfDoW0bQgBPKA2ToS58ph8BV+OA0js=;
-        b=fqTDqw8WQYbT/xGm7g48YauGBVFiUdsVqnt6pfOV3d2dvIXHKjBOuRpWKewZtWoSWP
-         S5iPCkfMjN4CMXSA31GYUSde7rnihTwKcbxEQxVbZFMndOaGy73CAmWkSu1mQkfkXAIl
-         c+GRD2r3/5FWP2JLqW7iD0TXkX3dcFiQvexhlC6PIGjr4cRC6bCbhw1WeRAWyO9+a4Ql
-         ViPf2f9vR58J5b9zaFRqcX1AXgxphd9Cj/Itf5Jj4ax97O6oKY9bll0RueDE575VbGzl
-         aVzA3m4DDVCoOiTpNJxNAZ6log+MthWS3RNnNLnndOIecdQTEmA6PAUkr+hdjWQNy642
-         U5Fg==
+        bh=VhnVwEWLdblOjr90EMEMGhUapGYQEMmVHRRWBGP+yjw=;
+        b=KOwS4EtQuhp4PrM6HVNezG+TT+Q7knK5h5qA8nxKdQhj06qYbByS10l4IPBnwjo7N5
+         h4UUzStinEkO6vAssGrKkDO3/PMGKcYJx3M+8lKnR9PwpyuJjOkiBQNEGJhsAh5rvvVH
+         i7DHd3dBpTLNwLcJTi32jDw/4iycLdQh+Vzc0+eNvqCCcIFx7IM2NuWAUlgrJ3NPwpMc
+         KA5qlBJtwsRvyxQZXB3x3XXaLXEvQgfyQCqm+FbNJOglEkMvjVI+zmQD4Qcmt4Z3I20j
+         3rivXIFNbdxxdZcF27goiZk89ezC0WTkdhwsIZSDzqWCq6BB0K+FN5ALDNxN7Ln77BWe
+         rzjA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=MW07K0MrFAu2xQfDoW0bQgBPKA2ToS58ph8BV+OA0js=;
-        b=5J15V5LhoEUOm6tQ9KDbazLmLWhWLzwBYt4X8JLjae8dvSmFVH6HLXqhS+oovB0IHs
-         vynUQ1tuXaDJBRiF0uaEMnemEOijkKNYjDl5WbOq4ROxLba3n9b0aVCTuJPBfOl49EbN
-         +0YcvRxYGfoul0+9//rGsMQ8pnfdK9mx03uqOuW1cv70TYAtNzBqyXQGyD47IrsK6sFu
-         eAh7gidtCThQ2iXS0/HjoZTZ3HfMmkOpE2hD4k0k9Um0WR/N2ScLCfQskgrtmqb2xFSf
-         /25F5MRVKZKcQgxHrKnUSvqbT14IyR57d2PHxfsABBWZlXyMEk5nBBi4xGTnhAKjgwIf
-         u7Nw==
-X-Gm-Message-State: AOAM533adS3pM/DiE13i7HbHnnd0g7jj6O7DhAv1VljLBd0RtOgc40JG
-        LKsfDvcWnhZTo2N1uT+LB4ccV80opX06BQNZWi4=
-X-Google-Smtp-Source: ABdhPJycHxvJtKMzj7FhQDNdExGHKoDBkSNC85yJuGrUBZACR3dT6+M2BSA9iN+WDbkAIwOrxM1suydz9DwJDfMkqOM=
-X-Received: by 2002:a25:abaa:: with SMTP id v39mr47466264ybi.367.1638847389122;
- Mon, 06 Dec 2021 19:23:09 -0800 (PST)
+        bh=VhnVwEWLdblOjr90EMEMGhUapGYQEMmVHRRWBGP+yjw=;
+        b=p4LbUmX3yeHoO04SWmG4TaJ7Oi5etchiGrvpVwC5frihNQCBeDvvEnTpihuVgJL9WP
+         oCABwKBrRXe/biZjlw3OikiYGwZcoluNvJ/us509QQ9UzyBSKNm1mSE1/5PJtTJ6NjMx
+         GgQJ2w8FglkmhRuIh3ShW4enmWxyd9pe7q5upEGzQ2y3JScElnVebwFJEQlGodeXfDcB
+         Vz5WEqJw+zOyX70/R/oc6X9Q5/ZAhLvdYFLKbE2B1i1OP0b7uyzi4SMVxmQ4BBs7vMVw
+         vg98WZQQAmQ9aYjYuLFX8gWy3llAgoSK0LCNe+Xc1uNXKbcoiSXVXJvKIrymMRvJxmsy
+         iwiw==
+X-Gm-Message-State: AOAM531yU5BXubfC/Y/qImLnsgfcS7P31sxPk/EVPy8cle1f4hsojwPX
+        ZfBPluaIc796saDel8aVZAZaS0DWRxgqYfol/9g=
+X-Google-Smtp-Source: ABdhPJynZCr7m7alFn9eEw0KlD0b7XnSu9eeqFbyzTLyGtGWoaVXfKduwnIJx828coovBV12MA4M5c6d7qqK6rXsO1o=
+X-Received: by 2002:a25:84c1:: with SMTP id x1mr48226892ybm.690.1638848131288;
+ Mon, 06 Dec 2021 19:35:31 -0800 (PST)
 MIME-Version: 1.0
-References: <20211206105530.0cd0a147@canb.auug.org.au> <20211206114348.37971224@canb.auug.org.au>
-In-Reply-To: <20211206114348.37971224@canb.auug.org.au>
+References: <20211203195004.5803-1-alexandr.lobakin@intel.com>
+In-Reply-To: <20211203195004.5803-1-alexandr.lobakin@intel.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 6 Dec 2021 19:22:58 -0800
-Message-ID: <CAEf4BzbiXhNk5xVQnZy11R697jmZEEQePwpSSNu+00x8hZ+Z1g@mail.gmail.com>
-Subject: Re: linux-next: build warning after merge of the bpf-next tree
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
+Date:   Mon, 6 Dec 2021 19:35:20 -0800
+Message-ID: <CAEf4BzZLt_ojTAf-=1nO2R7F8ROUwBdUsfp_W9NaAk-XSNEYmA@mail.gmail.com>
+Subject: Re: [PATCH bpf 0/2] samples: bpf: fix build issues with Clang/LLVM
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>, llvm@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Dec 5, 2021 at 4:44 PM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+On Fri, Dec 3, 2021 at 11:55 AM Alexander Lobakin
+<alexandr.lobakin@intel.com> wrote:
 >
-> Hi all,
+> Samples, at least XDP ones, can be built only with the compiler used
+> to build the kernel itself.
+> However, XDP sample infra introduced in Aug'21 was probably tested
+> with GCC/Binutils only as it's not really compilable for now with
+> Clang/LLVM.
+> These two are trivial fixes addressing this.
 >
-> On Mon, 6 Dec 2021 10:55:30 +1100 Stephen Rothwell <sfr@canb.auug.org.au> wrote:
-> >
-> > After merging the bpf-next tree, today's linux-next build (powerpc
-> > ppc64_defconfig) produced this warning:
-> >
-> > kernel/bpf/btf.c:6588:13: warning: 'purge_cand_cache' defined but not used [-Wunused-function]
-> >  6588 | static void purge_cand_cache(struct btf *btf)
-> >       |             ^~~~~~~~~~~~~~~~
-> >
-> > Introduced by commit
-> >
-> >   1e89106da253 ("bpf: Add bpf_core_add_cands() and wire it into bpf_core_apply_relo_insn().")
+> Alexander Lobakin (2):
+>   samples: bpf: fix xdp_sample_user.o linking with Clang
+>   samples: bpf: fix 'unknown warning group' build warning on Clang
 >
-> And this is a build failure for my x86_64 allmodconfig build.  So I
-> have used the bpf-next tree from next-20211202 again.
 
-This should be fixed by [0] which I just applied to bpf-next, thanks
-for letting us know! The reason you noticed this and we didn't is
-because your version of pahole is probably older than what we use
-typically and doesn't yet support kernel module BTFs.
+There were conflicts when applying, but luckily I was the one who
+caused this conflict in XDP_SAMPLE_CFLAGS, so I just fixed it up
+locally and pushed to bpf-next. Thanks.
 
-  [0] https://patchwork.kernel.org/project/netdevbpf/patch/20211207014839.6976-1-alexei.starovoitov@gmail.com/
-
-
+>  samples/bpf/Makefile          | 5 +++++
+>  samples/bpf/Makefile.target   | 2 +-
+>  samples/bpf/xdp_sample_user.h | 2 ++
+>  3 files changed, 8 insertions(+), 1 deletion(-)
 >
 > --
-> Cheers,
-> Stephen Rothwell
+> 2.33.1
+>
