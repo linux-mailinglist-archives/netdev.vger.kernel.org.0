@@ -2,189 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BCB9046B1B5
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 05:02:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A63146B1BF
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 05:13:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234695AbhLGEFt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Dec 2021 23:05:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39632 "EHLO
+        id S234798AbhLGEQF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Dec 2021 23:16:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234689AbhLGEFq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 23:05:46 -0500
-Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B990C061A83
-        for <netdev@vger.kernel.org>; Mon,  6 Dec 2021 20:02:16 -0800 (PST)
-Received: by mail-qt1-x831.google.com with SMTP id m25so13057747qtq.13
-        for <netdev@vger.kernel.org>; Mon, 06 Dec 2021 20:02:16 -0800 (PST)
+        with ESMTP id S229817AbhLGEQE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 23:16:04 -0500
+Received: from mail-ot1-x330.google.com (mail-ot1-x330.google.com [IPv6:2607:f8b0:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 115FBC061746
+        for <netdev@vger.kernel.org>; Mon,  6 Dec 2021 20:12:35 -0800 (PST)
+Received: by mail-ot1-x330.google.com with SMTP id u18-20020a9d7212000000b00560cb1dc10bso16426717otj.11
+        for <netdev@vger.kernel.org>; Mon, 06 Dec 2021 20:12:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=KKIA9qDj8FQn55+aSvd8YOlaLj0ctyi5Ud6rJva2cPo=;
-        b=omCi8t53spfqpIA6MrSYwRhm7ziHeeokGLK6byYkxqVvzkonGA4qlwg6d96ioyo0D+
-         7W7LSo1Y90tpu91lladJLkXakH3HzQAIYkHjOzcOwcIY5boMOn66kYdR7vQaE/zPgmLT
-         owZO9cVngbxbeqz1IinUecn7nSwO6bf7F6QLMQn3Pg/nR9d1UmaA60ByQqvUlYngkK2T
-         IoeAtych2vtvEng1IwNjAPz82iPQdQ/yo8I0JVKIZDEABRqwyE/rUt6K88xQ5AgJhzTo
-         lHjQH+6jolhlG1jykSWs1UMy2k55Es1xdpWevZaDHtq5rTEB9p4FFyL+sg5LSV/Z4boJ
-         pzJg==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=rcYcVIAVKU7s2pRadPqnQu1dTYSXxdzVcLZvqzF6IuY=;
+        b=Nw/qGzp39wAxAvZ4jxMYqQM+uM/nCdqkP57woESzTkfbQhjLbEVlV6gLva3MQyTwhL
+         kKgdOnWeTDuh+iZFGC19G3PsLF+IEhqPKgB+OXhqJxa3Lokq4E9mmD+nIhJuZth7sBJp
+         wc3mktoTo0uyOe3xPF/R+MrFRDIMjg/VGXeTtYmHTFCIqxbYCr6apzxfGJyaRFPdSGFc
+         h2HFA6XzeEgTx6YwI0sMD6sTd1Ki8ark+C9ya8EJP4OwcMg2klo4p3QqogkF0IjKoo9l
+         vw7uAcQSWQ54bxgZ8rB4/BZTqnNQo3AwD6HsquD4MqhvP/5PILcBwo2qreBeHLGjJL6A
+         7NNg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=KKIA9qDj8FQn55+aSvd8YOlaLj0ctyi5Ud6rJva2cPo=;
-        b=QrKx1Au1mJ3Vh6Kpy9wZ5xd0gmh2OH9Gl0QMqKooLch6Z6OAeRyPcAtANJRV55mFc7
-         W3x/I6bpS53mRTooxhObcPcphV57P7N8dwudAaubwZjBOIV+g7fcHWE/ScXiHaZeUb13
-         HYWHk/tgYHP+MNvcVbOOl9O51kOVc/aAuhLiEy0hobef+f4KBNYqt6F7hyAjtlmCUzuR
-         TCeUN3EBZ4yu+K9IDb0qghVIK2/YzN0v2aB5vHyUaweyqBRAwBFRXDbwpTZcabGxNIjD
-         N70hkxoPAgd2qWq3jwVKnFWYq2t4lp0PzBtP6SnKvuPlxguASVaZkjooPm2aCTeFvqFG
-         QzvQ==
-X-Gm-Message-State: AOAM530UWpD3KqSiDJxxGwAzVgMypD0PSIFFYfogveQOkXEylBtHbcTx
-        b6OJZyV2oU8f/fzASCME9JBgNU36gJYtsA==
-X-Google-Smtp-Source: ABdhPJz5ZSL/KG2mBV5yAklPTEqtwqvjRo4CCLuKSueZ0ZobFDSRHeWv2NipKpyuPTMp89tWHabQ1A==
-X-Received: by 2002:ac8:5e13:: with SMTP id h19mr44926589qtx.413.1638849735470;
-        Mon, 06 Dec 2021 20:02:15 -0800 (PST)
-Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id 14sm8526393qtx.84.2021.12.06.20.02.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Dec 2021 20:02:14 -0800 (PST)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     network dev <netdev@vger.kernel.org>
-Cc:     Eric Dumazet <edumazet@google.com>, davem@davemloft.net,
-        kuba@kernel.org,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Davide Caratti <dcaratti@redhat.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH net-next 5/5] net: track xfrm_state refcnt with obj_cnt
-Date:   Mon,  6 Dec 2021 23:02:08 -0500
-Message-Id: <4f368b30a1dd6434a7cbe473c6b8d5a50565e3ad.1638849511.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <cover.1638849511.git.lucien.xin@gmail.com>
-References: <cover.1638849511.git.lucien.xin@gmail.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=rcYcVIAVKU7s2pRadPqnQu1dTYSXxdzVcLZvqzF6IuY=;
+        b=lhDsTuvYgXy0zpgJ7ucjlhBJqBNUX0nGjvoi6brCd9cf7eiYB08bmZoQ3rph0TP2fQ
+         ZtB9XUYpsJt1rN3ergOd0OpTHj9JFQMgF5Nk3kwWszT6IW1w7g2OpZXzTYGZTdEUgFPz
+         ALlHqpHbzhIKuiSFXf1ijrcKyJLTyu+LlSgYfxGut5YTKoFgK3c9uueWMQKnN4azmhcB
+         yDzaUFNO/w5I5jF8/oXlUtti69q4U3ht8dT/6QO7/0coRT/JnyjN5HdsokwsoSPVwujO
+         jbNzF5ou1TDDr/k7dnOabfP1zNYFxb+QLwfWUlO/10QNynXC3RqVLO4mOlDmNgasJC6k
+         rpWg==
+X-Gm-Message-State: AOAM5336JHQXL+aM9li8J6n85sq5Vm5NddkvGXx8TyziY5A6fMfycy4a
+        FWyUxVlPNDMih6KaZmWGOWA=
+X-Google-Smtp-Source: ABdhPJw4BZYQWAhGBOuKZ0trwbucxCeMsg8Mi4OZ+VqAjWwCaDUP+3uYULvLOBj78tsG8C/+indYUQ==
+X-Received: by 2002:a9d:433:: with SMTP id 48mr33450678otc.360.1638850354397;
+        Mon, 06 Dec 2021 20:12:34 -0800 (PST)
+Received: from [172.16.0.2] ([8.48.134.30])
+        by smtp.googlemail.com with ESMTPSA id l23sm2642560oti.16.2021.12.06.20.12.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 06 Dec 2021 20:12:34 -0800 (PST)
+Message-ID: <e5d8a127-fc98-4b3d-7887-a5398951a9a0@gmail.com>
+Date:   Mon, 6 Dec 2021 21:12:33 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.3.2
+Subject: Re: [PATCH net-next v5] rtnetlink: Support fine-grained netdevice
+ bulk deletion
+Content-Language: en-US
+To:     Lahav Schlesinger <lschlesinger@drivenets.com>,
+        netdev@vger.kernel.org
+Cc:     kuba@kernel.org, nikolay@nvidia.com
+References: <20211205093658.37107-1-lschlesinger@drivenets.com>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <20211205093658.37107-1-lschlesinger@drivenets.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Two types are added into obj_cnt to count xfrm_state_hold and
-xfrm_state_put*, and all it does is put obj_cnt_track_by_index()
-into these two functions.
+On 12/5/21 2:36 AM, Lahav Schlesinger wrote:
+> diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+> index fd030e02f16d..5165cc699d97 100644
+> --- a/net/core/rtnetlink.c
+> +++ b/net/core/rtnetlink.c
+> @@ -37,6 +37,7 @@
+>  #include <linux/pci.h>
+>  #include <linux/etherdevice.h>
+>  #include <linux/bpf.h>
+> +#include <linux/sort.h>
+>  
+>  #include <linux/uaccess.h>
+>  
+> @@ -1880,6 +1881,7 @@ static const struct nla_policy ifla_policy[IFLA_MAX+1] = {
+>  	[IFLA_PROTO_DOWN_REASON] = { .type = NLA_NESTED },
+>  	[IFLA_NEW_IFINDEX]	= NLA_POLICY_MIN(NLA_S32, 1),
+>  	[IFLA_PARENT_DEV_NAME]	= { .type = NLA_NUL_STRING },
+> +	[IFLA_IFINDEX]		= { .type = NLA_S32 },
 
-Here is a example to track the refcnt of a xfrm_state whose spi
-is 0x100:
+you need to make sure this new attribute can not be used in setlink
+requests or getlink.
 
-  # sysctl -w obj_cnt.control="clear" # clear the old result
+>  };
+>  
+>  static const struct nla_policy ifla_info_policy[IFLA_INFO_MAX+1] = {
+> @@ -3050,6 +3052,78 @@ static int rtnl_group_dellink(const struct net *net, int group)
+>  	return 0;
+>  }
+>  
+> +static int dev_ifindex_cmp(const void *a, const void *b)
+> +{
+> +	struct net_device * const *dev1 = a, * const *dev2 = b;
 
-  # sysctl -w obj_cnt.type=0xc0    # enable xfrm_state_hold/put track
-  # sysctl -w obj_cnt.index=0x100  # count xfrm_state_hold/put(state)
-  # sysctl -w obj_cnt.nr_entries=4 # save 4 frames' call trace
+const struct net_device *dev1 = 1, *dev2 = b;
 
-  # ip link add dummy0 type dummy
-  # ip link set dummy0 up
-  # ip addr add 1.1.1.1/24 dev dummy0
-  # ip xfrm state add src 1.1.1.1 dst 1.1.1.2 spi 0x100 proto esp enc aes \
-    0x0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f \
-    mode tunnel sel src 1.1.1.1 dst 1.1.1.2
-  # ip xfrm policy add dir out src 1.1.1.1 dst 1.1.1.2 tmpl src 1.1.1.1 \
-    dst 1.1.1.2 proto esp mode tunnel
-  # ping 1.1.1.2 -c 1
-  # ip link set dummy0 down
-  # ip link del dummy0
+> +
+> +	return (*dev1)->ifindex - (*dev2)->ifindex;
+> +}
+> +
+> +static int rtnl_ifindex_dellink(struct net *net, struct nlattr *head, int len,
+> +				struct netlink_ext_ack *extack)
+> +{
+> +	int i = 0, num_devices = 0, rem;
+> +	struct net_device **dev_list;
+> +	const struct nlattr *nla;
+> +	LIST_HEAD(list_kill);
+> +	int ret;
+> +
+> +	nla_for_each_attr(nla, head, len, rem) {
+> +		if (nla_type(nla) == IFLA_IFINDEX)
+> +			num_devices++;
+> +	}
 
-  # sysctl -w obj_cnt.control="scan"  # print the new result
-  # dmesg
-  OBJ_CNT: obj_cnt_dump: obj: ffff8ca629cb0f00, type: xfrm_state_hold, cnt: 1,:
-       xfrm_add_sa+0x476/0x5f0
-       xfrm_user_rcv_msg+0x13c/0x250
-       netlink_rcv_skb+0x50/0x100
-       xfrm_netlink_rcv+0x30/0x40
-  OBJ_CNT: obj_cnt_dump: obj: ffff8ca629cb0f00, type: xfrm_state_put, cnt: 2,:
-       xfrm4_dst_destroy+0x110/0x130
-       dst_destroy+0x37/0xe0
-       rcu_do_batch+0x164/0x4b0
-       rcu_core+0x249/0x350
-  OBJ_CNT: obj_cnt_dump: obj: ffff8ca629cb0f00, type: xfrm_state_put, cnt: 1,:
-       xfrm_add_sa+0x497/0x5f0
-       xfrm_user_rcv_msg+0x13c/0x250
-       netlink_rcv_skb+0x50/0x100
-       xfrm_netlink_rcv+0x30/0x40
 
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
----
- include/linux/obj_cnt.h |  2 ++
- include/net/xfrm.h      | 11 +++++++++++
- lib/obj_cnt.c           |  4 +++-
- 3 files changed, 16 insertions(+), 1 deletion(-)
+The need to walk the list twice (3 really with the sort) to means the
+array solution is better.
 
-diff --git a/include/linux/obj_cnt.h b/include/linux/obj_cnt.h
-index f014b2e613d9..42611aa321c7 100644
---- a/include/linux/obj_cnt.h
-+++ b/include/linux/obj_cnt.h
-@@ -9,6 +9,8 @@ enum {
- 	OBJ_CNT_DST_PUT,
- 	OBJ_CNT_IN6_DEV_HOLD,
- 	OBJ_CNT_IN6_DEV_PUT,
-+	OBJ_CNT_XFRM_STATE_HOLD,
-+	OBJ_CNT_XFRM_STATE_PUT,
- 	OBJ_CNT_TYPE_MAX
- };
- 
-diff --git a/include/net/xfrm.h b/include/net/xfrm.h
-index 2308210793a0..543840fba068 100644
---- a/include/net/xfrm.h
-+++ b/include/net/xfrm.h
-@@ -772,25 +772,36 @@ static inline void xfrm_pols_put(struct xfrm_policy **pols, int npols)
- 
- void __xfrm_state_destroy(struct xfrm_state *, bool);
- 
-+static inline void obj_cnt_track_by_index(void *obj, int index, int type)
-+{
-+#ifdef CONFIG_OBJ_CNT
-+	obj_cnt_track(type, index, NULL, obj);
-+#endif
-+}
-+
- static inline void __xfrm_state_put(struct xfrm_state *x)
- {
-+	obj_cnt_track_by_index(x, ntohl(x->id.spi), OBJ_CNT_XFRM_STATE_PUT);
- 	refcount_dec(&x->refcnt);
- }
- 
- static inline void xfrm_state_put(struct xfrm_state *x)
- {
-+	obj_cnt_track_by_index(x, ntohl(x->id.spi), OBJ_CNT_XFRM_STATE_PUT);
- 	if (refcount_dec_and_test(&x->refcnt))
- 		__xfrm_state_destroy(x, false);
- }
- 
- static inline void xfrm_state_put_sync(struct xfrm_state *x)
- {
-+	obj_cnt_track_by_index(x, ntohl(x->id.spi), OBJ_CNT_XFRM_STATE_PUT);
- 	if (refcount_dec_and_test(&x->refcnt))
- 		__xfrm_state_destroy(x, true);
- }
- 
- static inline void xfrm_state_hold(struct xfrm_state *x)
- {
-+	obj_cnt_track_by_index(x, ntohl(x->id.spi), OBJ_CNT_XFRM_STATE_HOLD);
- 	refcount_inc(&x->refcnt);
- }
- 
-diff --git a/lib/obj_cnt.c b/lib/obj_cnt.c
-index 8756efc005ed..f054455abe8d 100644
---- a/lib/obj_cnt.c
-+++ b/lib/obj_cnt.c
-@@ -20,7 +20,9 @@ static char *obj_cnt_str[OBJ_CNT_TYPE_MAX] = {
- 	"dst_hold",
- 	"dst_put",
- 	"in6_dev_hold",
--	"in6_dev_put"
-+	"in6_dev_put",
-+	"xfrm_state_hold",
-+	"xfrm_state_put"
- };
- 
- struct obj_cnt {
--- 
-2.27.0
+> +
+> +	dev_list = kmalloc_array(num_devices, sizeof(*dev_list), GFP_KERNEL);
+> +	if (!dev_list)
+> +		return -ENOMEM;
+> +
+> +	nla_for_each_attr(nla, head, len, rem) {
+> +		const struct rtnl_link_ops *ops;
+> +		struct net_device *dev;
+> +		int ifindex;
+> +
+> +		if (nla_type(nla) != IFLA_IFINDEX)
+> +			continue;
 
+and this business too. We have arrays in other places
+(net/ipv4/nexthop.c), so this is not the first.
+
+
+> +
+> +		ifindex = nla_get_s32(nla);
+> +		ret = -ENODEV;
+> +		dev = __dev_get_by_index(net, ifindex);
+> +		if (!dev) {
+> +			NL_SET_ERR_MSG_ATTR(extack, nla, "Unknown ifindex");
+> +			goto out_free;
+> +		}
+> +
+> +		ret = -EOPNOTSUPP;
+> +		ops = dev->rtnl_link_ops;
+> +		if (!ops || !ops->dellink) {
+> +			NL_SET_ERR_MSG_ATTR(extack, nla, "Device cannot be deleted");
+> +			goto out_free;
+> +		}
+> +
+> +		dev_list[i++] = dev;
+> +	}
+> +
+> +	/* Sort devices, so we could skip duplicates */
+> +	sort(dev_list, num_devices, sizeof(*dev_list), dev_ifindex_cmp, NULL);
+
+how did this sort change the results? 10k compares and re-order has to
+add some overhead.
+
+> +
+> +	for (i = 0; i < num_devices; i++) {
+> +		struct net_device *dev = dev_list[i];
+> +
+> +		if (i != 0 && dev_list[i - 1]->ifindex == dev->ifindex)
+
+		if (i && ...)
+
+
+I liked the array variant better. Jakub?
