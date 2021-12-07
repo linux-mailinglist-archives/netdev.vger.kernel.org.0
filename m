@@ -2,122 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F145446B085
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 03:17:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A8B6A46B08F
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 03:25:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240154AbhLGCUy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Dec 2021 21:20:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44432 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238230AbhLGCUx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 21:20:53 -0500
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3032C061746
-        for <netdev@vger.kernel.org>; Mon,  6 Dec 2021 18:17:23 -0800 (PST)
-Received: by mail-ed1-x534.google.com with SMTP id x15so51081715edv.1
-        for <netdev@vger.kernel.org>; Mon, 06 Dec 2021 18:17:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=VffKsRiIsMsg462/uxEVFJk9Zzwb5ztfVAwjZJXN+g4=;
-        b=cLzOFm+/r55T8LatvKnVm6ViAsMzBJoH2ErVHWTODk5XQ+Krobf8lh5uze7LHmWYLG
-         zaBkis2vD+oomfj1wpcKX5WL2WBDVm5r2RfCdjgMRTVCcoWyPVKJlOWoYT0f1s6pZy8i
-         FgFsvKg/BvMN1VLw+pyIC35bO8gGdE6fxg2wsOpDxhMHITQ872otTc/fTcYjur4X989I
-         ohoZ6LeRhi0homA2k9xFDSMIAv/bVoXeZyztln7pCmREP4ZCWjESQmwBYlzXBOf8DaA8
-         5HyMyHVWaA/MyLHM4BYOyfkz+FUDsOWYOQFj80MyMaPDR+bF7KJo2SRacyocmPtaMtcx
-         uM2A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=VffKsRiIsMsg462/uxEVFJk9Zzwb5ztfVAwjZJXN+g4=;
-        b=fA4v3O6WNA13WdiTRyQ/6gJkB9j8rrU69WNtCFwIfNCYLjukdMnwR0VP42JSByhRMj
-         cTA4qRSqxisETqiwWZI75ZoPiVYSLZ/woe7693w5mqpPR42Csd43c/fAXKMwh3Os3sXV
-         krRhVTexVPwUIvrBB4JCATsduBmZyOJJSzB/7ogp7U96n4XTGIsRP+7IPOhSIO8jJ+Ke
-         jD/QZdpmjclZpfXKqPfH1rsWp34+FdeSvhHFCCLbEeihBxcL21BcxFqz7r63fMMSr/R3
-         mSYfkU9QNzn3zyNsuMozTv+ULh2fpuv+8Vme57wDdKayHpSSWq0DlA9ft5I9yZvequTB
-         XpCw==
-X-Gm-Message-State: AOAM533uNlfKoGgVSFkL78pqTmBRCl6bW/tp+BJvmH1VxQtEEVC6wvZv
-        L/t+W8qeX7925CDBych7MUNlQHZEHNc6y7/3e48=
-X-Google-Smtp-Source: ABdhPJyCSOVBbL8B8D0YH6Z6XLxTisB6X1VC4/vLPX80r6qccPWVkk5ny4FeKAirJaIVV6qrCQhExTu1uXk2vuRmhZ4=
-X-Received: by 2002:a05:6402:4407:: with SMTP id y7mr4505038eda.140.1638843442294;
- Mon, 06 Dec 2021 18:17:22 -0800 (PST)
+        id S241562AbhLGC2a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Dec 2021 21:28:30 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:59584 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241497AbhLGC23 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 21:28:29 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 31A9DB81611;
+        Tue,  7 Dec 2021 02:24:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA889C004DD;
+        Tue,  7 Dec 2021 02:24:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1638843898;
+        bh=je9VRaZCoX11UWGvRaPQFHeg/OsHxIwbxim2ugr49vo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Afb4fAcK8BGPwbBVQGdcOzaZNRy39zXYamRkFLCFP65Jdfk7Psl1hWLpCU6vdrp0M
+         iHifziGQyr/oT6+xq8DIGNu/2iHGUxMjk7xdjAnw6H7vn2VgIurCfzIvUw6bn8IoaL
+         /Wx6Z5Q11xdbiVIDHY7IaMUDaujGs2iqgAFNchBy1rbV7rsa2na3n9Jmu3t1udp8Hf
+         82rzTFTk6y2DUpeJ0Ti8SXEJ2s3vSM9oboa8zRXKPioyF75n5nNbrTQYZuiH+u5Otj
+         ciuGJlRCfcTOZ50zX9CFdISA3h5daYpi95pmd5mtwuiLrsHY1oX74CcPLDkdOyrZSB
+         RhMlBhzee0Vbw==
+Date:   Mon, 6 Dec 2021 18:24:56 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     <davem@davemloft.net>, <robh+dt@kernel.org>,
+        <UNGLinuxDriver@microchip.com>, <linux@armlinux.org.uk>,
+        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next 3/6] net: lan966x: add support for interrupts
+ from analyzer
+Message-ID: <20211206182456.4494c5f6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211203104645.1476704-4-horatiu.vultur@microchip.com>
+References: <20211203104645.1476704-1-horatiu.vultur@microchip.com>
+        <20211203104645.1476704-4-horatiu.vultur@microchip.com>
 MIME-Version: 1.0
-References: <20211202024723.76257-1-xiangxia.m.yue@gmail.com>
- <20211202024723.76257-3-xiangxia.m.yue@gmail.com> <518bd06a-490c-47f0-652a-756805496063@iogearbox.net>
- <CAMDZJNUGyipTQgDv+M8_kiOEZwXJnivZo6KCwgYy_BoMOiEZew@mail.gmail.com>
-In-Reply-To: <CAMDZJNUGyipTQgDv+M8_kiOEZwXJnivZo6KCwgYy_BoMOiEZew@mail.gmail.com>
-From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Date:   Tue, 7 Dec 2021 10:16:44 +0800
-Message-ID: <CAMDZJNWx=MzSxB19JG_gmffmJrdLQ_cBzJhVYtor1EMb-DujXw@mail.gmail.com>
-Subject: Re: [net v4 2/3] net: sched: add check tc_skip_classify in sch egress
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Antoine Tenart <atenart@kernel.org>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Wei Wang <weiwan@google.com>, Arnd Bergmann <arnd@arndb.de>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Dec 4, 2021 at 9:42 AM Tonghao Zhang <xiangxia.m.yue@gmail.com> wro=
-te:
->
-> On Sat, Dec 4, 2021 at 5:35 AM Daniel Borkmann <daniel@iogearbox.net> wro=
-te:
-> >
-> > On 12/2/21 3:47 AM, xiangxia.m.yue@gmail.com wrote:
-> > > From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
-> > >
-> > > Try to resolve the issues as below:
-> > > * We look up and then check tc_skip_classify flag in net
-> > >    sched layer, even though skb don't want to be classified.
-> > >    That case may consume a lot of cpu cycles.
-> > >
-> > >    Install the rules as below:
-> > >    $ for id in $(seq 1 10000); do
-> > >    $       tc filter add ... egress prio $id ... action mirred egress=
- redirect dev ifb0
-> > >    $ done
-> > >
-> > >    netperf:
-> > >    $ taskset -c 1 netperf -t TCP_RR -H ip -- -r 32,32
-> > >    $ taskset -c 1 netperf -t TCP_STREAM -H ip -- -m 32
-> > >
-> > >    Before: 152.04 tps, 0.58 Mbit/s
-> > >    After:  303.07 tps, 1.51 Mbit/s
-> > >    For TCP_RR, there are 99.3% improvement, TCP_STREAM 160.3%.
-> >
-> > As it was pointed out earlier by Eric in v3, these numbers are moot sin=
-ce noone
-> > is realistically running such a setup in practice with 10k linear rules=
-.
-> Yes. As I said in v1, in production, we use the 5+ prio. With this
-> patch, little improvements, 1.x%
->
-> This patch also fixes the packets loopback, if we use the bpf_redirect
-> to ifb in egress path.
-Hi Daniel, Eric
-What should I do next=EF=BC=9FThis patch try to fix the bug, and improve th=
-e
-performance(~1% in production).
-Should I update the commit message and send v5?
-> --
-> Best regards, Tonghao
+On Fri, 3 Dec 2021 11:46:42 +0100 Horatiu Vultur wrote:
+> This patch adds support for handling the interrupts generated by the
+> analyzer. Currently, only the MAC table generates these interrupts.
+> The MAC table will generate an interrupt whenever it learns or forgets
+> an entry in the table. It is the SW responsibility figure out which
+> entries were added/removed.
+> 
+> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 
+> +static struct lan966x_mac_entry *lan966x_mac_alloc_entry(struct lan966x *lan966x,
+> +							 const unsigned char *mac,
+> +							 u16 vid, u16 port_index)
+> +{
+> +	struct lan966x_mac_entry *mac_entry;
+> +
+> +	mac_entry = devm_kzalloc(lan966x->dev,
+> +				 sizeof(*mac_entry), GFP_ATOMIC);
 
+Is it really necessary to use devm_ allocation for the mac entries?
+It's 2x memory overhead.
 
---=20
-Best regards, Tonghao
+Also why GFP_ATOMIC? Memory allocations are _a lot_ less likely with
+GFP_KERNEL.
+
+> +	if (!mac_entry)
+> +		return NULL;
+> +
+> +	memcpy(mac_entry->mac, mac, ETH_ALEN);
+> +	mac_entry->vid = vid;
+> +	mac_entry->port_index = port_index;
+> +	mac_entry->row = LAN966X_MAC_INVALID_ROW;
+> +	return mac_entry;
+> +}
+
+> +static void lan966x_mac_process_raw_entry(struct lan966x_mac_raw_entry *raw_entry,
+> +					  u8 *mac, u16 *vid, u32 *dest_idx)
+> +{
+> +	mac[0] = (raw_entry->mach >> 8)  & 0xff;
+> +	mac[1] = (raw_entry->mach >> 0)  & 0xff;
+> +	mac[2] = (raw_entry->macl >> 24) & 0xff;
+> +	mac[3] = (raw_entry->macl >> 16) & 0xff;
+> +	mac[4] = (raw_entry->macl >> 8)  & 0xff;
+> +	mac[5] = (raw_entry->macl >> 0)  & 0xff;
+> +
+> +	*vid = (raw_entry->mach >> 16) & 0xfff;
+> +	*dest_idx  = ANA_MACACCESS_DEST_IDX_GET(raw_entry->maca);
+
+Double space before =
+
+> +}
+> +
+> +static void lan966x_mac_irq_process(struct lan966x *lan966x, u32 row,
+> +				    struct lan966x_mac_raw_entry *raw_entries)
+> +{
+> +	struct lan966x_mac_entry *mac_entry, *tmp;
+> +	unsigned long flags;
+> +	char mac[ETH_ALEN];
+> +	u32 dest_idx;
+> +	u32 column;
+> +	u16 vid;
+> +
+> +	spin_lock_irqsave(&lan966x->mac_lock, flags);
+> +	list_for_each_entry_safe(mac_entry, tmp, &lan966x->mac_entries, list) {
+> +		bool founded = false;
+
+s/founded/found/
+
+> +		if (mac_entry->row != row)
+> +			continue;
+> +
+> +		for (column = 0; column < LAN966X_MAC_COLUMNS; ++column) {
+> +			/* All the valid entries are at the start of the row,
+> +			 * so when get one invalid entry it can just skip the
+> +			 * rest of the columns
+> +			 */
+> +			if (!ANA_MACACCESS_VALID_GET(raw_entries[column].maca))
+> +				break;
+> +
+> +			lan966x_mac_process_raw_entry(&raw_entries[column],
+> +						      mac, &vid, &dest_idx);
+> +			WARN_ON(dest_idx > lan966x->num_phys_ports);
+> +
+> +			/* If the entry in SW is found, then there is nothing
+> +			 * to do
+> +			 */
+> +			if (mac_entry->vid == vid &&
+> +			    ether_addr_equal(mac_entry->mac, mac) &&
+
+You need to add __aligned(2) to mac, ether_addr_equal() needs aligned
+arguments.
+
+> +			    mac_entry->port_index == dest_idx) {
+> +				raw_entries[column].process = true;
+> +				founded = true;
+> +				break;
+> +			}
+> +		}
