@@ -2,283 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 663AD46C427
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 21:05:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A79A46C3E0
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 20:44:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241072AbhLGUJQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 15:09:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40992 "EHLO
+        id S236417AbhLGTsK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 14:48:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241060AbhLGUJO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 15:09:14 -0500
-X-Greylist: delayed 2016 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 07 Dec 2021 12:05:44 PST
-Received: from wp003.webpack.hosteurope.de (wp003.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:840a::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 466A1C061574
-        for <netdev@vger.kernel.org>; Tue,  7 Dec 2021 12:05:44 -0800 (PST)
-Received: from p200300c1f71f606b4ad6389e11a5521d.dip0.t-ipconnect.de ([2003:c1:f71f:606b:4ad6:389e:11a5:521d] helo=kmk0); authenticated
-        by wp003.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        id 1mugC6-0007yA-Ba; Tue, 07 Dec 2021 20:32:06 +0100
-From:   Kurt Kanzenbach <kurt@kmk-computers.de>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Richard Cochran <richardcochran@gmail.com>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org
-Subject: mv88e6341: PTP Boundary Clock
-Date:   Tue, 07 Dec 2021 20:32:05 +0100
-Message-ID: <875ys02oui.fsf@kmk-computers.de>
+        with ESMTP id S229505AbhLGTsH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 14:48:07 -0500
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C977BC061574;
+        Tue,  7 Dec 2021 11:44:36 -0800 (PST)
+Received: by mail-ed1-x52d.google.com with SMTP id v1so319661edx.2;
+        Tue, 07 Dec 2021 11:44:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Zq+yuFXqBJlvxepwYYo56GAdIfTptGEXaFm/n42pn8I=;
+        b=WEK9i3bpZ/09USMxoUrHk/BjgYrKvAkCaLdu3AqUuTNEhXctqHdWLE9pQB3viOJLVJ
+         3vD0Oa1O3UsjScKragWu9/TvDvA53Qj5kw9G9uMw2DpFIuF26Lj/IEkPlKq3+SjU7o40
+         mgSPeyxPoHa+MMYDw/LNwl8eGPH+ISCt2HLCn3CxeXHZT9KfWehdLLEEquMRJZzS8f1W
+         moi+r/X+NBHWJBJNQot5rxh/d37cES5yvpXRf/VFcQxdXbIz0/Vre9N5mh8NmOcjbEmh
+         FCgtRxAIeAgQS+c71pw8QPml3BB62Fgo8S0mEXIg7wExcMxKIBMjWyx6isSrDgQek1n1
+         v5rw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Zq+yuFXqBJlvxepwYYo56GAdIfTptGEXaFm/n42pn8I=;
+        b=oko9pTQT5Tu1gY7lPriGet5/1Fh4xnUK46AbSFYvqQVMWH5Dj0skFFtQ/rpad/5Tkq
+         J8sthvPpFyB4hDuQoTOtEiXASbnq/K/C5aFMp2KbIS1YIeKVJQAblSj2MSo3ytxrwVaU
+         XifWPMpkCNqtpHP51mj0JoVILf59EO0P757rZ7LePKfucWDLNemkdUMdpwo5rYw6WeiE
+         E/sHsR9+gk7cgXviAqLnAMXtOyTpt9S0c7zf862KwOG2agbxGKcOPksxRhbOjiZ+AMmk
+         L3Xu0DHHcuhHbi0+N+ST7YamETforVTBiXtaN7X/MuOvpg/Sp5g3tqnXCcf+4hJXSDiu
+         sUKg==
+X-Gm-Message-State: AOAM531fFRhxIUFvEGEoyM+1S9vUc+M2gefSNR5NLrNGMbc1KvwWMCQK
+        4s/08NRh4LEf4XRGzxnOl5c=
+X-Google-Smtp-Source: ABdhPJwolB7x9GJ7FBrEtYLJhh9UWKwDgDYpPDHNrbkX+WX123qoEEgijRamE5Uu/MLqNEjUixEQTA==
+X-Received: by 2002:aa7:dd56:: with SMTP id o22mr12170424edw.73.1638906275189;
+        Tue, 07 Dec 2021 11:44:35 -0800 (PST)
+Received: from Ansuel-xps. (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
+        by smtp.gmail.com with ESMTPSA id 29sm477879edw.42.2021.12.07.11.44.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Dec 2021 11:44:34 -0800 (PST)
+Message-ID: <61afb9a2.1c69fb81.9a5d0.1f85@mx.google.com>
+X-Google-Original-Message-ID: <Ya+5ofCDyUR6Szf7@Ansuel-xps.>
+Date:   Tue, 7 Dec 2021 20:44:33 +0100
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [net-next RFC PATCH 0/6] Add support for qca8k mdio rw in
+ Ethernet packet
+References: <20211207145942.7444-1-ansuelsmth@gmail.com>
+ <Ya96pwC1KKZDO9et@lunn.ch>
+ <77203cb2-ba90-ff01-5940-2e9b599f648f@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-bounce-key: webpack.hosteurope.de;kurt@kmk-computers.de;1638907544;9afec9b8;
-X-HE-SMSGID: 1mugC6-0007yA-Ba
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <77203cb2-ba90-ff01-5940-2e9b599f648f@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew, Richard,
+On Tue, Dec 07, 2021 at 10:49:43AM -0800, Florian Fainelli wrote:
+> On 12/7/21 7:15 AM, Andrew Lunn wrote:
+> > On Tue, Dec 07, 2021 at 03:59:36PM +0100, Ansuel Smith wrote:
+> >> Hi, this is still WIP and currently has some problem but I would love if
+> >> someone can give this a superficial review and answer to some problem
+> >> with this.
+> >>
+> >> The main reason for this is that we notice some routing problem in the
+> >> switch and it seems assisted learning is needed. Considering mdio is
+> >> quite slow due to the indirect write using this Ethernet alternative way
+> >> seems to be quicker.
+> >>
+> >> The qca8k switch supports a special way to pass mdio read/write request
+> >> using specially crafted Ethernet packet.
+> > 
+> > Oh! Cool! Marvell has this as well, and i suspect a few others. It is
+> > something i've wanted to work on for a long long time, but never had
+> > the opportunity.
+> > 
+> > This also means that, even if you are focusing on qca8k, please try to
+> > think what could be generic, and what should specific to the
+> > qca8k. The idea of sending an Ethernet frame and sometime later
+> > receiving a reply should be generic and usable for other DSA
+> > drivers. The contents of those frames needs to be driver specific.
+> > How we hook this into MDIO might also be generic, maybe.
+> > 
+> > I will look at your questions later, but soon.
+> 
+> There was a priori attempt from Vivien to add support for mv88e6xxx over
+> RMU frames:
+> 
+> https://www.mail-archive.com/netdev@vger.kernel.org/msg298317.html
+> 
+> This gets interesting because the switch's control path moves from MDIO
+> to Ethernet and there is not really an "ethernet bus" though we could
+> certainly come up with one. We have mdio-i2c, so maybe we should have
+> mdio-ethernet?
+> -- 
+> Florian
 
-I'm using a PTP Boundary Clock on top of a Marvell Topaz (6341)
-switch. PTP tends to work in general. However, as soon as multiple end
-devices are connected, it doesn't. It seems like PTP messages are
-forwarded between switch ports. In my understanding these messages
-should be destined for the CPU port only, so that the PTP stack (ptp4l)
-can process them accordingly.
+I checked that series and I notice that the proposed implementation used
+a workqueue. The current implementation here use completion and mutex so
+the transaction is really one command at time and wait for response.
+Considering most of the time we do read and write operation is seems a
+bit overkill to use a queue... Also to track the response.
+Using a single queue simplify the implementation and should be just
+good. (btw qca8k supports a way to queue packet using a seq int but we
+don't use it to keep things simple)
 
-Sample patch below which solves the problem for me. Not sure whether
-that's the correct approach though.
+Is that acceptable? Also I notice in that series mru have some
+limitation and can be used only for some kind of data...
+Should we add a way to blacklist some particular reg and use the legacy
+mdio way?
 
-Thanks,
-Kurt
-
-|From bfab19327b88220d322d04360715c048aa5bc55b Mon Sep 17 00:00:00 2001
-|From: Kurt Kanzenbach <kurt@kmk-computers.de>
-|Date: Sun, 5 Dec 2021 10:36:47 +0100
-|Subject: [PATCH] net: dsa: mv88e6xxx: Trap PTP traffic
-|
-|A time aware switch should trap PTP traffic to the management CPU. User space
-|daemons such as ptp4l will process these messages to implement Boundary (or
-|Transparent) Clocks.
-|
-|At the moment the mv88e6xxx driver doesn't trap these messages which leads to
-|confusion when multiple end devices are connected to the switch. Therefore,
-|setup PTP traps. Leverage the already implemented policy mechanism based on
-|destination addresses. Configure the traps only if timestamping is enabled so
-|that non time aware use case is still functioning.
-|
-|Tested on Marvell Topaz (mv88e6341) switch with multiple end devices connected
-|like this:
-|
-||# DSA setup
-||$ ip link set eth0 up
-||$ ip link set lan0 up
-||$ ip link set lan1 up
-||$ ip link set lan2 up
-||$ ip link add name br0 type bridge
-||$ ip link set dev lan0 master br0
-||$ ip link set dev lan1 master br0
-||$ ip link set dev lan2 master br0
-||$ ip link set lan0 up
-||$ ip link set lan1 up
-||$ ip link set lan2 up
-||$ ip link set br0 up
-||$ dhclient br0
-||# Configure bridge routing
-||$ ebtables --table broute --append BROUTING --protocol 0x88F7 --jump DROP
-||# Start linuxptp
-||$ ptp4l -H -2 -i lan0 -i lan1 -i lan2 --tx_timestamp_timeout=40 -m
-|
-|Verified added policies with mv88e6xxx_dump.
-|
-|Signed-off-by: Kurt Kanzenbach <kurt@kmk-computers.de>
-|---
-| drivers/net/dsa/mv88e6xxx/chip.c     | 12 +++---
-| drivers/net/dsa/mv88e6xxx/chip.h     |  5 +++
-| drivers/net/dsa/mv88e6xxx/hwtstamp.c |  7 ++++
-| drivers/net/dsa/mv88e6xxx/ptp.c      | 59 ++++++++++++++++++++++++++++
-| drivers/net/dsa/mv88e6xxx/ptp.h      |  2 +
-| 5 files changed, 80 insertions(+), 5 deletions(-)
-|
-|diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-|index f00cbf5753b9..5698ef9ac891 100644
-|--- a/drivers/net/dsa/mv88e6xxx/chip.c
-|+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-|@@ -1822,8 +1822,8 @@ static int mv88e6xxx_port_db_load_purge(struct mv88e6xxx_chip *chip, int port,
-| 	return mv88e6xxx_g1_atu_loadpurge(chip, fid, &entry);
-| }
-| 
-|-static int mv88e6xxx_policy_apply(struct mv88e6xxx_chip *chip, int port,
-|-				  const struct mv88e6xxx_policy *policy)
-|+int mv88e6xxx_policy_apply(struct mv88e6xxx_chip *chip, int port,
-|+			   const struct mv88e6xxx_policy *policy)
-| {
-| 	enum mv88e6xxx_policy_mapping mapping = policy->mapping;
-| 	enum mv88e6xxx_policy_action action = policy->action;
-|@@ -1841,10 +1841,12 @@ static int mv88e6xxx_policy_apply(struct mv88e6xxx_chip *chip, int port,
-| 	case MV88E6XXX_POLICY_MAPPING_SA:
-| 		if (action == MV88E6XXX_POLICY_ACTION_NORMAL)
-| 			state = 0; /* Dissociate the port and address */
-|-		else if (action == MV88E6XXX_POLICY_ACTION_DISCARD &&
-|+		else if ((action == MV88E6XXX_POLICY_ACTION_DISCARD ||
-|+			  action == MV88E6XXX_POLICY_ACTION_TRAP) &&
-| 			 is_multicast_ether_addr(addr))
-| 			state = MV88E6XXX_G1_ATU_DATA_STATE_MC_STATIC_POLICY;
-|-		else if (action == MV88E6XXX_POLICY_ACTION_DISCARD &&
-|+		else if ((action == MV88E6XXX_POLICY_ACTION_DISCARD ||
-|+			  action == MV88E6XXX_POLICY_ACTION_TRAP) &&
-| 			 is_unicast_ether_addr(addr))
-| 			state = MV88E6XXX_G1_ATU_DATA_STATE_UC_STATIC_POLICY;
-| 		else
-|@@ -4607,7 +4609,7 @@ static const struct mv88e6xxx_ops mv88e6341_ops = {
-| 	.serdes_irq_status = mv88e6390_serdes_irq_status,
-| 	.gpio_ops = &mv88e6352_gpio_ops,
-| 	.avb_ops = &mv88e6390_avb_ops,
-|-	.ptp_ops = &mv88e6352_ptp_ops,
-|+	.ptp_ops = &mv88e6341_ptp_ops,
-| 	.serdes_get_sset_count = mv88e6390_serdes_get_sset_count,
-| 	.serdes_get_strings = mv88e6390_serdes_get_strings,
-| 	.serdes_get_stats = mv88e6390_serdes_get_stats,
-|diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
-|index 8271b8aa7b71..795ae5a56834 100644
-|--- a/drivers/net/dsa/mv88e6xxx/chip.h
-|+++ b/drivers/net/dsa/mv88e6xxx/chip.h
-|@@ -673,6 +673,8 @@ struct mv88e6xxx_ptp_ops {
-| 	int (*port_disable)(struct mv88e6xxx_chip *chip, int port);
-| 	int (*global_enable)(struct mv88e6xxx_chip *chip);
-| 	int (*global_disable)(struct mv88e6xxx_chip *chip);
-|+	int (*setup_ptp_traps)(struct mv88e6xxx_chip *chip, int port,
-|+			       bool enable);
-| 	int n_ext_ts;
-| 	int arr0_sts_reg;
-| 	int arr1_sts_reg;
-|@@ -760,4 +762,7 @@ static inline void mv88e6xxx_reg_unlock(struct mv88e6xxx_chip *chip)
-| 
-| int mv88e6xxx_fid_map(struct mv88e6xxx_chip *chip, unsigned long *bitmap);
-| 
-|+int mv88e6xxx_policy_apply(struct mv88e6xxx_chip *chip, int port,
-|+			   const struct mv88e6xxx_policy *policy);
-|+
-| #endif /* _MV88E6XXX_CHIP_H */
-|diff --git a/drivers/net/dsa/mv88e6xxx/hwtstamp.c b/drivers/net/dsa/mv88e6xxx/hwtstamp.c
-|index 8f74ffc7a279..617aeb6cbaac 100644
-|--- a/drivers/net/dsa/mv88e6xxx/hwtstamp.c
-|+++ b/drivers/net/dsa/mv88e6xxx/hwtstamp.c
-|@@ -94,6 +94,7 @@ static int mv88e6xxx_set_hwtstamp_config(struct mv88e6xxx_chip *chip, int port,
-| 	const struct mv88e6xxx_ptp_ops *ptp_ops = chip->info->ops->ptp_ops;
-| 	struct mv88e6xxx_port_hwtstamp *ps = &chip->port_hwtstamp[port];
-| 	bool tstamp_enable = false;
-|+	int ret;
-| 
-| 	/* Prevent the TX/RX paths from trying to interact with the
-| 	 * timestamp hardware while we reconfigure it.
-|@@ -161,6 +162,12 @@ static int mv88e6xxx_set_hwtstamp_config(struct mv88e6xxx_chip *chip, int port,
-| 		if (chip->enable_count == 0 && ptp_ops->global_disable)
-| 			ptp_ops->global_disable(chip);
-| 	}
-|+
-|+	if (ptp_ops->setup_ptp_traps) {
-|+		ret = ptp_ops->setup_ptp_traps(chip, port, tstamp_enable);
-|+		if (tstamp_enable && ret)
-|+			dev_warn(chip->dev, "Failed to setup PTP traps. PTP might not work as desired!\n");
-|+	}
-| 	mv88e6xxx_reg_unlock(chip);
-| 
-| 	/* Once hardware has been configured, enable timestamp checks
-|diff --git a/drivers/net/dsa/mv88e6xxx/ptp.c b/drivers/net/dsa/mv88e6xxx/ptp.c
-|index d838c174dc0d..8d6ff03d37c8 100644
-|--- a/drivers/net/dsa/mv88e6xxx/ptp.c
-|+++ b/drivers/net/dsa/mv88e6xxx/ptp.c
-|@@ -345,6 +345,37 @@ static int mv88e6352_ptp_verify(struct ptp_clock_info *ptp, unsigned int pin,
-| 	return 0;
-| }
-| 
-|+static int mv88e6341_setup_ptp_traps(struct mv88e6xxx_chip *chip, int port,
-|+				     bool enable)
-|+{
-|+	static const u8 ptp_destinations[][ETH_ALEN] = {
-|+		{ 0x01, 0x1b, 0x19, 0x00, 0x00, 0x00 }, /* L2 PTP */
-|+		{ 0x01, 0x80, 0xc2, 0x00, 0x00, 0x0e }, /* L2 P2P */
-|+		{ 0x01, 0x00, 0x5e, 0x00, 0x01, 0x81 }, /* IPv4 PTP */
-|+		{ 0x01, 0x00, 0x5e, 0x00, 0x00, 0x6b }, /* IPv4 P2P */
-|+		{ 0x33, 0x33, 0x00, 0x00, 0x01, 0x81 }, /* IPv6 PTP */
-|+		{ 0x33, 0x33, 0x00, 0x00, 0x00, 0x6b }, /* IPv6 P2P */
-|+	};
-|+	int ret, i;
-|+
-|+	for (i = 0; i < ARRAY_SIZE(ptp_destinations); ++i) {
-|+		struct mv88e6xxx_policy policy = { };
-|+
-|+		policy.mapping	= MV88E6XXX_POLICY_MAPPING_DA;
-|+		policy.action	= enable ? MV88E6XXX_POLICY_ACTION_TRAP :
-|+			MV88E6XXX_POLICY_ACTION_NORMAL;
-|+		policy.port	= port;
-|+		policy.vid	= 0;
-|+		ether_addr_copy(policy.addr, ptp_destinations[i]);
-|+
-|+		ret = mv88e6xxx_policy_apply(chip, port, &policy);
-|+		if (ret)
-|+			return ret;
-|+	}
-|+
-|+	return 0;
-|+}
-|+
-| const struct mv88e6xxx_ptp_ops mv88e6165_ptp_ops = {
-| 	.clock_read = mv88e6165_ptp_clock_read,
-| 	.global_enable = mv88e6165_global_enable,
-|@@ -419,6 +450,34 @@ const struct mv88e6xxx_ptp_ops mv88e6352_ptp_ops = {
-| 	.cc_mult_dem = MV88E6XXX_CC_MULT_DEM,
-| };
-| 
-|+const struct mv88e6xxx_ptp_ops mv88e6341_ptp_ops = {
-|+	.clock_read = mv88e6352_ptp_clock_read,
-|+	.ptp_enable = mv88e6352_ptp_enable,
-|+	.ptp_verify = mv88e6352_ptp_verify,
-|+	.event_work = mv88e6352_tai_event_work,
-|+	.port_enable = mv88e6352_hwtstamp_port_enable,
-|+	.port_disable = mv88e6352_hwtstamp_port_disable,
-|+	.setup_ptp_traps = mv88e6341_setup_ptp_traps,
-|+	.n_ext_ts = 1,
-|+	.arr0_sts_reg = MV88E6XXX_PORT_PTP_ARR0_STS,
-|+	.arr1_sts_reg = MV88E6XXX_PORT_PTP_ARR1_STS,
-|+	.dep_sts_reg = MV88E6XXX_PORT_PTP_DEP_STS,
-|+	.rx_filters = (1 << HWTSTAMP_FILTER_NONE) |
-|+		(1 << HWTSTAMP_FILTER_PTP_V2_L4_EVENT) |
-|+		(1 << HWTSTAMP_FILTER_PTP_V2_L4_SYNC) |
-|+		(1 << HWTSTAMP_FILTER_PTP_V2_L4_DELAY_REQ) |
-|+		(1 << HWTSTAMP_FILTER_PTP_V2_L2_EVENT) |
-|+		(1 << HWTSTAMP_FILTER_PTP_V2_L2_SYNC) |
-|+		(1 << HWTSTAMP_FILTER_PTP_V2_L2_DELAY_REQ) |
-|+		(1 << HWTSTAMP_FILTER_PTP_V2_EVENT) |
-|+		(1 << HWTSTAMP_FILTER_PTP_V2_SYNC) |
-|+		(1 << HWTSTAMP_FILTER_PTP_V2_DELAY_REQ),
-|+	.cc_shift = MV88E6XXX_CC_SHIFT,
-|+	.cc_mult = MV88E6XXX_CC_MULT,
-|+	.cc_mult_num = MV88E6XXX_CC_MULT_NUM,
-|+	.cc_mult_dem = MV88E6XXX_CC_MULT_DEM,
-|+};
-|+
-| static u64 mv88e6xxx_ptp_clock_read(const struct cyclecounter *cc)
-| {
-| 	struct mv88e6xxx_chip *chip = cc_to_chip(cc);
-|diff --git a/drivers/net/dsa/mv88e6xxx/ptp.h b/drivers/net/dsa/mv88e6xxx/ptp.h
-|index 269d5d16a466..badcb72d10a6 100644
-|--- a/drivers/net/dsa/mv88e6xxx/ptp.h
-|+++ b/drivers/net/dsa/mv88e6xxx/ptp.h
-|@@ -151,6 +151,7 @@ void mv88e6xxx_ptp_free(struct mv88e6xxx_chip *chip);
-| extern const struct mv88e6xxx_ptp_ops mv88e6165_ptp_ops;
-| extern const struct mv88e6xxx_ptp_ops mv88e6250_ptp_ops;
-| extern const struct mv88e6xxx_ptp_ops mv88e6352_ptp_ops;
-|+extern const struct mv88e6xxx_ptp_ops mv88e6341_ptp_ops;
-| 
-| #else /* !CONFIG_NET_DSA_MV88E6XXX_PTP */
-| 
-|@@ -171,6 +172,7 @@ static inline void mv88e6xxx_ptp_free(struct mv88e6xxx_chip *chip)
-| static const struct mv88e6xxx_ptp_ops mv88e6165_ptp_ops = {};
-| static const struct mv88e6xxx_ptp_ops mv88e6250_ptp_ops = {};
-| static const struct mv88e6xxx_ptp_ops mv88e6352_ptp_ops = {};
-|+static const struct mv88e6xxx_ptp_ops mv88e6341_ptp_ops = {};
-| 
-| #endif /* CONFIG_NET_DSA_MV88E6XXX_PTP */
-| 
-|-- 
-|2.34.1
+-- 
+	Ansuel
