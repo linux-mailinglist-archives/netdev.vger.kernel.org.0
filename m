@@ -2,370 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 128F046B6F5
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 10:22:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 526DB46B6FB
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 10:22:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233794AbhLGJZ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 04:25:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56692 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233792AbhLGJZ0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 04:25:26 -0500
-Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3C48C061354
-        for <netdev@vger.kernel.org>; Tue,  7 Dec 2021 01:21:55 -0800 (PST)
-Received: by mail-lj1-x231.google.com with SMTP id 13so26125284ljj.11
-        for <netdev@vger.kernel.org>; Tue, 07 Dec 2021 01:21:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=iywjxGwUAAy9vBVrbH3dHVmYDYL7gPNuXg7HnA5ET3Q=;
-        b=DOaFS3JlcG1DrlgsxOY+5Or1aSG0csEB9Q5NlCTfevjqcXbtnJTdBULiz/ZCK0+d4t
-         BMOGQ01argGHm31lv81FZaO/D38TzZs0cdh1zGbMZSVYMNmOTP7NypRLLgcrbxpbjvBe
-         7wddH4e15R2a67e8Qvt6Jw1Ay/7ImhkeB3LK0GYoZ7zYaZ/mz3S4bRvB3ojMLtOlwv6L
-         Orpwlymjo4V2Xz5LfDXbo0k3ZKVBR26GXHy2kAdJUKxpROYagcHT94RCFYs6GQ7P26S3
-         aVeFvT9NLGG0hWTd9SR9x8DsC2GhErFePtp4DJ80qAFQKVvXrGb6OHbUJ1dtYZy+CmXR
-         m9qQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=iywjxGwUAAy9vBVrbH3dHVmYDYL7gPNuXg7HnA5ET3Q=;
-        b=3nAB5EST0V541H0Grl6XAWrdtOIIw0rGwuKSFaiwTPAJlICWufzfhMu6y4wly0gtn0
-         KDq9vs1D8sak7XlIqNk21tVXCaB8DLCUz2jfE05JOGCARuAvN0NgfCk2KTQbPtH/wfFB
-         ad1Bt2lGgGoyAhdXogEw64Av4jAeS8LGuqWUuRMSjjiO9sbo/NWGCd5LqgQKBkcw9CVT
-         Mg7CDXEu/rO7zcQLQnId7apgOrG0nQDrLSjZ2N67jGcDxuKyJCqbAv0bDEPOd44ZfkNW
-         M9yvwnN5+HVUsV0Mpv+gJlVCOyf8lLM9A+e8x/+kiLIho/b4Ti1rwqnfgtIt1kcaWsUS
-         UXdw==
-X-Gm-Message-State: AOAM530eYQTGUjjOi7d2sdyTohyufWsd+EsJI9nUC0Oowl8VtE7AQ3nZ
-        dXoRyUq14pKlpOaRf/Jsch4=
-X-Google-Smtp-Source: ABdhPJzP4HVER4Q3eyQqOzDzucB5XAJKwCbZ9ZvR1fQvx5dUzpmAwE+7q6++uu2/GBZfwy4Mtum17Q==
-X-Received: by 2002:a2e:809a:: with SMTP id i26mr43705390ljg.416.1638868914166;
-        Tue, 07 Dec 2021 01:21:54 -0800 (PST)
-Received: from rsa-laptop.internal.lan ([217.25.229.52])
-        by smtp.gmail.com with ESMTPSA id k11sm1620497lfo.111.2021.12.07.01.21.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Dec 2021 01:21:53 -0800 (PST)
-From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, M Chetan Kumar <m.chetan.kumar@intel.com>,
-        Intel Corporation <linuxwwan@intel.com>,
-        Loic Poulain <loic.poulain@linaro.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Leon Romanovsky <leon@kernel.org>,
-        Leon Romanovsky <leonro@nvidia.com>
-Subject: [PATCH RESEND net-next v2 4/4] net: wwan: make debugfs optional
-Date:   Tue,  7 Dec 2021 12:21:40 +0300
-Message-Id: <20211207092140.19142-5-ryazanov.s.a@gmail.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20211207092140.19142-1-ryazanov.s.a@gmail.com>
-References: <20211207092140.19142-1-ryazanov.s.a@gmail.com>
+        id S233831AbhLGJ0P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 04:26:15 -0500
+Received: from mout.kundenserver.de ([212.227.17.24]:44171 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233790AbhLGJ0P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 04:26:15 -0500
+Received: from mail-wr1-f45.google.com ([209.85.221.45]) by
+ mrelayeu.kundenserver.de (mreue108 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1N9doJ-1mXKrO27rJ-015e11; Tue, 07 Dec 2021 10:22:43 +0100
+Received: by mail-wr1-f45.google.com with SMTP id v11so28044462wrw.10;
+        Tue, 07 Dec 2021 01:22:43 -0800 (PST)
+X-Gm-Message-State: AOAM5306SeU6qiheeq6yxl6RKXrkZGMdI/FbbgMfFTZ0bdOI+MC/6x5X
+        mdodgmf8mqSy2LcDUbFo1ZE5QgvInK7abOOZ/co=
+X-Google-Smtp-Source: ABdhPJzV1ByiFHkEomNrzG+dViLV6kQhgqFfDnCiG93kDJclmvg9u/J3q1Wu4f9334LGE8w+/60/oM4cRW6zP0PSpN4=
+X-Received: by 2002:a5d:6886:: with SMTP id h6mr51154859wru.287.1638868960284;
+ Tue, 07 Dec 2021 01:22:40 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20211207002102.26414-1-paul@crapouillou.net>
+In-Reply-To: <20211207002102.26414-1-paul@crapouillou.net>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Tue, 7 Dec 2021 10:22:24 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a3xfuFN+0Gb694R_W2tpC7PfFEFcpsAyPdanqZ6FpVoxQ@mail.gmail.com>
+Message-ID: <CAK8P3a3xfuFN+0Gb694R_W2tpC7PfFEFcpsAyPdanqZ6FpVoxQ@mail.gmail.com>
+Subject: Re: [PATCH 0/5] Rework pm_ptr() and *_PM_OPS macros
+To:     Paul Cercueil <paul@crapouillou.net>
+Cc:     "Rafael J . Wysocki" <rafael@kernel.org>,
+        Pavel Machek <pavel@ucw.cz>, Len Brown <len.brown@intel.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Jonathan Cameron <jic23@kernel.org>, list@opendingux.net,
+        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
+        linux-mmc <linux-mmc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Linux PM list <linux-pm@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:cfp/lIhgcg8Nc10PzPxe9y+GLo3DlVN017YeecLWApZEsbHXxjx
+ chyiiC1hoc6hkh5kGFw+aQltHQUN2vXcuzSpO9/RNHNVw1UkGJXUOpCNkCZkWLaiVp1gL4B
+ O7XSBfcMOk535RfnJdmGgcFYD6WTXUg9h6RXfx7xZLGDU/uFQqdNToLSGmRfD3kUmW2Ppr6
+ KdHbWGBToShqX8YHrbOWQ==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:EPuPo0WTmX4=:MtufB+ftb5kSGyLZJVFBs9
+ tYCCl8wuAvQYOUz7pwvRNvwGWWzky7TyXnOu912ML2FDleUUUV+PZOqr7xwRFsW6Yf5RByhIv
+ 5mCODGlusXEWdekTPaA7H1oi/8AXDR5KmwR6J3kOIS7pkEqYOGB/Swe73RsJwFhQHFzbvVgoo
+ SW0u7lOR2wEGPynWymi3x/+Izusv0c5zpCDc4DDvb508mUF+7znbwUJOSGCI1zCPaQnKi4lnZ
+ hbwjuxTcT/2HGhVs3MfWIdA2+tmUkrji0WgSPEX6gHAyTrOYIgEj5B4reS7vCHnJFpm0NuLkL
+ NecdXshLyhYCuJhsZux1D18LwphgdqTby+bGFWVq71L6XlnZpHkYcNkakoJaxtYZzZqcv2Ifq
+ tzTDETT71wUBiy57kRYYOf0APKUCAcztsCftpmt+4In16YPCF40o7+wQGNdRSuWEyIRx7BT9B
+ 7QbrCmJrjaz9vJHr9XHm1NpJCEbmTRop2Ez8VI+YmeFCtcGydToleOUXn9wEf2ksfYmZH1gXZ
+ ldtFU5ci/pHw13xln04KWzMZpZd7lgO9BckkVRmthy/IxFRw/2OwZY5Fmadw+eflsxsBSRRxt
+ yqRzrkuV4O0ZXz10faItknrWJQ2tTRaHvVBz6VRt2o5xEKuy3cNDUPJimZsRqJOB7krsxHiKJ
+ ecbRGpM+k3tLuL8VHad/kcr+/fGyIxiqdCjeSQGdqAtcgW0bFaG/xCWG0DkEUXkxndnIIJXhd
+ bN0b/w6YKe50ACHafOmJTCydphGyKbd7sVbPv489kldJRp8SDNvswGgTBpzwfCciYmG6iXwzx
+ kL5gj63WiiOwsOTirax75+kV/+b6WmyDFRdw2hemcByEVpwS1Y=
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Debugfs interface is optional for the regular modem use. Some distros
-and users will want to disable this feature for security or kernel
-size reasons. So add a configuration option that allows to completely
-disable the debugfs interface of the WWAN devices.
+On Tue, Dec 7, 2021 at 1:20 AM Paul Cercueil <paul@crapouillou.net> wrote:
+>
+> This patchset reworks the pm_ptr() macro I introduced a few versions
+> ago, so that it is not conditionally defined.
+>
+> It applies the same treatment to the *_PM_OPS macros. Instead of
+> modifying the existing ones, which would mean a 2000+ patch bomb, this
+> patchset introduce two new macros to replace the now deprecated
+> UNIVERSAL_DEV_PM_OPS() and SIMPLE_DEV_PM_OPS().
+>
+> The point of all of this, is to progressively switch from a code model
+> where PM callbacks are all protected behind CONFIG_PM guards, to a code
+> model where PM callbacks are always seen by the compiler, but discarded
+> if not used.
+>
+> Patch [4/5] and [5/5] are just examples to illustrate the use of the new
+> macros. As such they don't really have to be merged at the same time as
+> the rest and can be delayed until a subsystem-wide patchset is proposed.
+>
+> - Patch [4/5] modifies a driver that already used the pm_ptr() macro,
+>   but had to use the __maybe_unused flag to avoid compiler warnings;
+> - Patch [5/5] modifies a driver that used a #ifdef CONFIG_PM guard
+>   around its suspend/resume functions.
 
-A primary considered use case for this option was embedded firmwares.
-For example, in OpenWrt, you can not completely disable debugfs, as a
-lot of wireless stuff can only be configured and monitored with the
-debugfs knobs. At the same time, reducing the size of a kernel and
-modules is an essential task in the world of embedded software.
-Disabling the WWAN and IOSM debugfs interfaces allows us to save 50K
-(x86-64 build) of space for module storage. Not much, but already
-considerable when you only have 16MB of storage.
+This is fantastic, I love the new naming and it should provide a great path
+towards converting all drivers eventually. I've added the patches to
+my randconfig test build box to see if something breaks, but otherwise
+I think these are ready to get into linux-next, at least patches 1-3,
+so subsystem
+maintainers can start queuing up the conversion patches once the
+initial set is merged.
 
-So it is hard to just disable whole debugfs. Users need some fine
-grained set of options to control which debugfs interface is important
-and should be available and which is not.
-
-The new configuration symbol is enabled by default and is hidden under
-the EXPERT option. So a regular user would not be bothered by another
-one configuration question. While an embedded distro maintainer will be
-able to a little more reduce the final image size.
-
-Signed-off-by: Sergey Ryazanov <ryazanov.s.a@gmail.com>
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
----
-Changes since v1:
-* this is a merge of 4th and 5th patches
-* drop the IOSM specific configuration option and use the common WWAN
-  option to control the IOSM debugfs interface build, thanks to Johannes
-  and Leon for their recomendations
-* make WWAN debugfs enabled by default and hide it under EXPERT as
-  suggested by Johannes
-* add  a detailed rationale to the patch description to show why we need
-  the ability to disable debugfs
-* return ERR_PTR(-ENODEV) instead of NULL if WWAN debugfs was disabled,
-  thanks to Johannes for spotting this
-* fix unused 'wwandev_name' variable warning
-* expand the new configuration symbold description
-
- drivers/net/wwan/Kconfig                 | 13 ++++++++++++-
- drivers/net/wwan/iosm/Makefile           |  4 +++-
- drivers/net/wwan/iosm/iosm_ipc_debugfs.h |  5 +++++
- drivers/net/wwan/iosm/iosm_ipc_imem.c    |  2 +-
- drivers/net/wwan/iosm/iosm_ipc_imem.h    |  4 ++++
- drivers/net/wwan/iosm/iosm_ipc_trace.c   |  6 ++++--
- drivers/net/wwan/iosm/iosm_ipc_trace.h   | 20 +++++++++++++++++++-
- drivers/net/wwan/wwan_core.c             | 17 +++++++++++++----
- include/linux/wwan.h                     |  7 +++++++
- 9 files changed, 68 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/net/wwan/Kconfig b/drivers/net/wwan/Kconfig
-index 9f5111a77da9..609fd4a2c865 100644
---- a/drivers/net/wwan/Kconfig
-+++ b/drivers/net/wwan/Kconfig
-@@ -16,6 +16,17 @@ config WWAN
- 
- if WWAN
- 
-+config WWAN_DEBUGFS
-+	bool "WWAN devices debugfs interface" if EXPERT
-+	depends on DEBUG_FS
-+	default y
-+	help
-+	  Enables debugfs infrastructure for the WWAN core and device drivers.
-+
-+	  If this option is selected, then you can find the debug interface
-+	  elements for each WWAN device in a directory that is corresponding to
-+	  the device name: debugfs/wwan/wwanX.
-+
- config WWAN_HWSIM
- 	tristate "Simulated WWAN device"
- 	help
-@@ -85,7 +96,7 @@ config IOSM
- 	tristate "IOSM Driver for Intel M.2 WWAN Device"
- 	depends on INTEL_IOMMU
- 	select NET_DEVLINK
--	select RELAY
-+	select RELAY if WWAN_DEBUGFS
- 	help
- 	  This driver enables Intel M.2 WWAN Device communication.
- 
-diff --git a/drivers/net/wwan/iosm/Makefile b/drivers/net/wwan/iosm/Makefile
-index 5091f664af0d..fa8d6afd18e1 100644
---- a/drivers/net/wwan/iosm/Makefile
-+++ b/drivers/net/wwan/iosm/Makefile
-@@ -21,7 +21,9 @@ iosm-y = \
- 	iosm_ipc_mux_codec.o		\
- 	iosm_ipc_devlink.o		\
- 	iosm_ipc_flash.o		\
--	iosm_ipc_coredump.o		\
-+	iosm_ipc_coredump.o
-+
-+iosm-$(CONFIG_WWAN_DEBUGFS) += \
- 	iosm_ipc_debugfs.o		\
- 	iosm_ipc_trace.o
- 
-diff --git a/drivers/net/wwan/iosm/iosm_ipc_debugfs.h b/drivers/net/wwan/iosm/iosm_ipc_debugfs.h
-index 35788039f13f..8a84bfa2c14a 100644
---- a/drivers/net/wwan/iosm/iosm_ipc_debugfs.h
-+++ b/drivers/net/wwan/iosm/iosm_ipc_debugfs.h
-@@ -6,7 +6,12 @@
- #ifndef IOSM_IPC_DEBUGFS_H
- #define IOSM_IPC_DEBUGFS_H
- 
-+#ifdef CONFIG_WWAN_DEBUGFS
- void ipc_debugfs_init(struct iosm_imem *ipc_imem);
- void ipc_debugfs_deinit(struct iosm_imem *ipc_imem);
-+#else
-+static inline void ipc_debugfs_init(struct iosm_imem *ipc_imem) {}
-+static inline void ipc_debugfs_deinit(struct iosm_imem *ipc_imem) {}
-+#endif
- 
- #endif
-diff --git a/drivers/net/wwan/iosm/iosm_ipc_imem.c b/drivers/net/wwan/iosm/iosm_ipc_imem.c
-index 25b889922912..2a6ddd7c6c88 100644
---- a/drivers/net/wwan/iosm/iosm_ipc_imem.c
-+++ b/drivers/net/wwan/iosm/iosm_ipc_imem.c
-@@ -274,7 +274,7 @@ static void ipc_imem_dl_skb_process(struct iosm_imem *ipc_imem,
- 			ipc_imem_sys_devlink_notify_rx(ipc_imem->ipc_devlink,
- 						       skb);
- 		else if (ipc_is_trace_channel(ipc_imem, port_id))
--			ipc_trace_port_rx(ipc_imem->trace, skb);
-+			ipc_trace_port_rx(ipc_imem, skb);
- 		else
- 			wwan_port_rx(ipc_imem->ipc_port[port_id]->iosm_port,
- 				     skb);
-diff --git a/drivers/net/wwan/iosm/iosm_ipc_imem.h b/drivers/net/wwan/iosm/iosm_ipc_imem.h
-index 1b8c7b8959c6..86a1ffe61729 100644
---- a/drivers/net/wwan/iosm/iosm_ipc_imem.h
-+++ b/drivers/net/wwan/iosm/iosm_ipc_imem.h
-@@ -351,7 +351,9 @@ struct iosm_imem {
- 	struct iosm_mux *mux;
- 	struct iosm_cdev *ipc_port[IPC_MEM_MAX_CHANNELS];
- 	struct iosm_pcie *pcie;
-+#ifdef CONFIG_WWAN_DEBUGFS
- 	struct iosm_trace *trace;
-+#endif
- 	struct device *dev;
- 	enum ipc_mem_device_ipc_state ipc_requested_state;
- 	struct ipc_mem_channel channels[IPC_MEM_MAX_CHANNELS];
-@@ -381,7 +383,9 @@ struct iosm_imem {
- 	   ev_mux_net_transmit_pending:1,
- 	   reset_det_n:1,
- 	   pcie_wake_n:1;
-+#ifdef CONFIG_WWAN_DEBUGFS
- 	struct dentry *debugfs_dir;
-+#endif
- };
- 
- /**
-diff --git a/drivers/net/wwan/iosm/iosm_ipc_trace.c b/drivers/net/wwan/iosm/iosm_ipc_trace.c
-index 5243ead90b5f..eeecfa3d10c5 100644
---- a/drivers/net/wwan/iosm/iosm_ipc_trace.c
-+++ b/drivers/net/wwan/iosm/iosm_ipc_trace.c
-@@ -17,11 +17,13 @@
- 
- /**
-  * ipc_trace_port_rx - Receive trace packet from cp and write to relay buffer
-- * @ipc_trace:  Pointer to the ipc trace data-struct
-+ * @ipc_imem:   Pointer to iosm_imem structure
-  * @skb:        Pointer to struct sk_buff
-  */
--void ipc_trace_port_rx(struct iosm_trace *ipc_trace, struct sk_buff *skb)
-+void ipc_trace_port_rx(struct iosm_imem *ipc_imem, struct sk_buff *skb)
- {
-+	struct iosm_trace *ipc_trace = ipc_imem->trace;
-+
- 	if (ipc_trace->ipc_rchan)
- 		relay_write(ipc_trace->ipc_rchan, skb->data, skb->len);
- 
-diff --git a/drivers/net/wwan/iosm/iosm_ipc_trace.h b/drivers/net/wwan/iosm/iosm_ipc_trace.h
-index 419540c91219..5ebe7790585c 100644
---- a/drivers/net/wwan/iosm/iosm_ipc_trace.h
-+++ b/drivers/net/wwan/iosm/iosm_ipc_trace.h
-@@ -45,6 +45,8 @@ struct iosm_trace {
- 	enum trace_ctrl_mode mode;
- };
- 
-+#ifdef CONFIG_WWAN_DEBUGFS
-+
- static inline bool ipc_is_trace_channel(struct iosm_imem *ipc_mem, u16 chl_id)
- {
- 	return ipc_mem->trace && ipc_mem->trace->chl_id == chl_id;
-@@ -52,5 +54,21 @@ static inline bool ipc_is_trace_channel(struct iosm_imem *ipc_mem, u16 chl_id)
- 
- struct iosm_trace *ipc_trace_init(struct iosm_imem *ipc_imem);
- void ipc_trace_deinit(struct iosm_trace *ipc_trace);
--void ipc_trace_port_rx(struct iosm_trace *ipc_trace, struct sk_buff *skb);
-+void ipc_trace_port_rx(struct iosm_imem *ipc_imem, struct sk_buff *skb);
-+
-+#else
-+
-+static inline bool ipc_is_trace_channel(struct iosm_imem *ipc_mem, u16 chl_id)
-+{
-+	return false;
-+}
-+
-+static inline void ipc_trace_port_rx(struct iosm_imem *ipc_imem,
-+				     struct sk_buff *skb)
-+{
-+	dev_kfree_skb(skb);
-+}
-+
-+#endif
-+
- #endif
-diff --git a/drivers/net/wwan/wwan_core.c b/drivers/net/wwan/wwan_core.c
-index 5bf62dc35ac7..1508dc2a497b 100644
---- a/drivers/net/wwan/wwan_core.c
-+++ b/drivers/net/wwan/wwan_core.c
-@@ -50,7 +50,9 @@ struct wwan_device {
- 	atomic_t port_id;
- 	const struct wwan_ops *ops;
- 	void *ops_ctxt;
-+#ifdef CONFIG_WWAN_DEBUGFS
- 	struct dentry *debugfs_dir;
-+#endif
- };
- 
- /**
-@@ -146,6 +148,7 @@ static struct wwan_device *wwan_dev_get_by_name(const char *name)
- 	return to_wwan_dev(dev);
- }
- 
-+#ifdef CONFIG_WWAN_DEBUGFS
- struct dentry *wwan_get_debugfs_dir(struct device *parent)
- {
- 	struct wwan_device *wwandev;
-@@ -157,6 +160,7 @@ struct dentry *wwan_get_debugfs_dir(struct device *parent)
- 	return wwandev->debugfs_dir;
- }
- EXPORT_SYMBOL_GPL(wwan_get_debugfs_dir);
-+#endif
- 
- /* This function allocates and registers a new WWAN device OR if a WWAN device
-  * already exist for the given parent, it gets a reference and return it.
-@@ -166,7 +170,6 @@ EXPORT_SYMBOL_GPL(wwan_get_debugfs_dir);
- static struct wwan_device *wwan_create_dev(struct device *parent)
- {
- 	struct wwan_device *wwandev;
--	const char *wwandev_name;
- 	int err, id;
- 
- 	/* The 'find-alloc-register' operation must be protected against
-@@ -206,9 +209,11 @@ static struct wwan_device *wwan_create_dev(struct device *parent)
- 		goto done_unlock;
- 	}
- 
--	wwandev_name = kobject_name(&wwandev->dev.kobj);
--	wwandev->debugfs_dir = debugfs_create_dir(wwandev_name,
--						  wwan_debugfs_dir);
-+#ifdef CONFIG_WWAN_DEBUGFS
-+	wwandev->debugfs_dir =
-+			debugfs_create_dir(kobject_name(&wwandev->dev.kobj),
-+					   wwan_debugfs_dir);
-+#endif
- 
- done_unlock:
- 	mutex_unlock(&wwan_register_lock);
-@@ -240,7 +245,9 @@ static void wwan_remove_dev(struct wwan_device *wwandev)
- 		ret = device_for_each_child(&wwandev->dev, NULL, is_wwan_child);
- 
- 	if (!ret) {
-+#ifdef CONFIG_WWAN_DEBUGFS
- 		debugfs_remove_recursive(wwandev->debugfs_dir);
-+#endif
- 		device_unregister(&wwandev->dev);
- 	} else {
- 		put_device(&wwandev->dev);
-@@ -1140,7 +1147,9 @@ static int __init wwan_init(void)
- 		goto destroy;
- 	}
- 
-+#ifdef CONFIG_WWAN_DEBUGFS
- 	wwan_debugfs_dir = debugfs_create_dir("wwan", NULL);
-+#endif
- 
- 	return 0;
- 
-diff --git a/include/linux/wwan.h b/include/linux/wwan.h
-index 1646aa3e6779..e143c88bf4b0 100644
---- a/include/linux/wwan.h
-+++ b/include/linux/wwan.h
-@@ -171,6 +171,13 @@ int wwan_register_ops(struct device *parent, const struct wwan_ops *ops,
- 
- void wwan_unregister_ops(struct device *parent);
- 
-+#ifdef CONFIG_WWAN_DEBUGFS
- struct dentry *wwan_get_debugfs_dir(struct device *parent);
-+#else
-+static inline struct dentry *wwan_get_debugfs_dir(struct device *parent)
-+{
-+	return ERR_PTR(-ENODEV);
-+}
-+#endif
- 
- #endif /* __WWAN_H */
--- 
-2.32.0
-
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
