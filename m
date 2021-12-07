@@ -2,183 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC3A146BF52
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 16:30:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 845B946BF5B
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 16:31:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238747AbhLGPds (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 10:33:48 -0500
-Received: from mail-eopbgr50062.outbound.protection.outlook.com ([40.107.5.62]:43488
-        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S238634AbhLGPdr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 7 Dec 2021 10:33:47 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=J+TQ3w190mQKUmaFSD0d38C+O6Z73c1LCgX/w0NcvukiKOG7yui0Zyl9SFLvfrQ8GduqdPFq/E4xZuTSa++Anzt+rw3G17ZXJmsMqH/ZLJRUDY6Ii2OoKTap33HQjXCnH7oO4uIh4ZufdZHCAp2hqy4zBRa+vtc3WxZ/Q5ELBnj5joPDeoJeshh3NSoaAx8Nt5GE+z3c2+ijODGKjkrq0xRHkThJ6NdWSND1zyHqJzjOhszBhz/473Dney0983wt8AHHG6gTsErAFquxSl7zVsMVyyUJyqZhHx965CyVGB0fZN1SxYShIKHDpEyqBL1kGfiFIHhTmwEOBrnYwlAQwQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=krMzLzGsAid8ND5eTI+enGOuizFP9w8kKkR8V5gIsfM=;
- b=GncwONzo/T8ayZk0M/Gi3yRwBWcDJk9PmH5l7TOA6pIdR01Rob8VCGPPl2r70ly3rwGia145aGd0S3QHprc6KaXOZdQKkaRvai4V19NwaAh5MClu9JAn96D78WvGS8+z9N6neRn3gTyaDEgzRWD8nqIKMhKb3tyKFYQaGfg8Av95WEhTO3UTVrjHMepV/61Qkt1ts110jESCYmGAMQnxLtIRB3wKrmx1JIDUr/waKi4yPQ/RW5yhGEdsg+HQA2ub7a+2L/+GCkmNrtmrNGE8mRQ+IWl7LxxaPHqZvabB1AKBPFcbVdAn+PV7/38NtXUNagVLFdXvmJEU5njtn4xtXw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=krMzLzGsAid8ND5eTI+enGOuizFP9w8kKkR8V5gIsfM=;
- b=Ck14i9nqal1KIsY+jzDucnQO4NChcyhk9Ck5IE/fmJrzmSIM+PkQLNVsSp6pasSX2kWHEtKQK4RPz1pqsG7t3NcFIPPZl4hDeH7ycILPZvyNDBsSZuvtdhBL25hKzMd8bmOz0n9wznN5OcIZdZQxMboTtugszJp8PCkKaJw5WWY=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VI1PR04MB6013.eurprd04.prod.outlook.com (2603:10a6:803:cb::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.21; Tue, 7 Dec
- 2021 15:30:12 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::796e:38c:5706:b802]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::796e:38c:5706:b802%3]) with mapi id 15.20.4755.022; Tue, 7 Dec 2021
- 15:30:12 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
-        Colin Foster <colin.foster@in-advantage.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        id S238804AbhLGPfG convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 7 Dec 2021 10:35:06 -0500
+Received: from relay9-d.mail.gandi.net ([217.70.183.199]:40869 "EHLO
+        relay9-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231377AbhLGPfF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 10:35:05 -0500
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by relay9-d.mail.gandi.net (Postfix) with ESMTPSA id 191CCFF802;
+        Tue,  7 Dec 2021 15:31:30 +0000 (UTC)
+Date:   Tue, 7 Dec 2021 16:31:08 +0100
+From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     "richardcochran@gmail.com" <richardcochran@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
         Claudiu Manoil <claudiu.manoil@nxp.com>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
         "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
         Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH v4 net-next 5/5] net: mscc: ocelot: expose ocelot wm
- functions
-Thread-Topic: [PATCH v4 net-next 5/5] net: mscc: ocelot: expose ocelot wm
- functions
-Thread-Index: AQHX6TzcVrh3MXhiPEioPLXtrf7S+6wmTGwAgACh6QCAAAZIgIAANqEAgAAA7YA=
-Date:   Tue, 7 Dec 2021 15:30:12 +0000
-Message-ID: <20211207153011.xs5k3ir4jzftbxct@skbuf>
-References: <20211204182858.1052710-1-colin.foster@in-advantage.com>
- <20211204182858.1052710-6-colin.foster@in-advantage.com>
- <20211206180922.1efe4e51@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <Ya9KJAYEypSs6+dO@shell.armlinux.org.uk>
- <20211207121121.baoi23nxiitfshdk@skbuf>
- <20211207072652.36827870@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211207072652.36827870@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 12933778-2415-4b1e-3824-08d9b99675fb
-x-ms-traffictypediagnostic: VI1PR04MB6013:EE_
-x-microsoft-antispam-prvs: <VI1PR04MB60130DFA013FE1F89653F139E06E9@VI1PR04MB6013.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: DeAgGyPib4TKhxcYOnf0goawkFBVH4mkgMGcXp7Ao1aG0CSLZFpSnxUkOf4WJPvtDk3xoYTHASuNXk7RSp0xELyJ1RZIh47AR9rhg18Bk/2oTf73grSiIrBSDV2ET84V8Bdn3NaMZ2ofWeECGzN6VLVm+vLlKgiuGLU2VBI9bXJ3NLSdMU2L3Uu8ILmUhJ9sTaWRH9ZzCq54r/LUqQh9aINNu6GPrXJ8xuGSDFs13Ksx+HtGi1/Z7dgtnYREWkxMjNkdNKdcerbCIRImLPH7xpQwSWv519yutg9mgv8NzxGILoeqp4lP4HLch9KsUzgW67dSARCvVmuJgMTfj5Yu6ngn4hC2rQLdvfLo9bZUUtNW8iA1Rugd5Jh+unhJpuWXIyjL2RqjyQvVz7Jy4/wpo5khGDSCYcY8SjRB9leYVSBv0tPNgimvTA8iA8V+UrW2yNFz45cVoAzRI7PniuFJlXZ21EAkBdTqE6PacDy9kLHsn5rDoY7EKGZaCjyTq86Gtz36Uk/QgfLkQUBktmR7BYsW/O94V/8+n6/tl9em2Zn1mJmrE/RIC7sJ20ca9J192BBgMgV9OkEtgwkjpPomyW+AYGBWKiuSyhTs1RUts8AZdc0V5egnAM7FHdlrAl8c0gxMmdifeNwUJq3yaA19DphuM295fduiC1E0y6lXykGHm3RwPdSSoeNSv4o99c/O89bCCp+nDJdRI+B5ZT8CxKik9D0DszaDNvszNRHErRP3Ur4j5Mn1BucU9XFcYrZUZLG/T9ZKNvTn5E8ArTWyGMONp9gcZGilJnTP66S4VHQ=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(366004)(66446008)(66556008)(71200400001)(64756008)(66476007)(66946007)(2906002)(7416002)(83380400001)(91956017)(76116006)(86362001)(38070700005)(8676002)(6506007)(508600001)(44832011)(26005)(186003)(122000001)(5660300002)(54906003)(33716001)(4326008)(6486002)(966005)(6512007)(9686003)(8936002)(1076003)(6916009)(316002)(38100700002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?JhiUvyrgTblxGRnF6TjCcXktkHI6BS94J4fdSb6nYTw6vVUTrwhDXytDOlvh?=
- =?us-ascii?Q?1aJJ33CJLPrhW9DrCbr5HyPcAwlNWdZejvg66DqTWNq9poGiVjQe5mJ4wmH8?=
- =?us-ascii?Q?nfvdHksyGJRQJKGt1jQMhJc30ImS225jUJ/8/jWWsBf5QI+p3Io+NUwzdqrx?=
- =?us-ascii?Q?Rg+E3L3Iu0n/Fv97sHIpXOKPub0hJkvZhNoyEJ9jYJ5lZz5yyb4Xvekzx5CQ?=
- =?us-ascii?Q?dBdOormP4SrgdCpOuvZ2e+2wCAZnMqoeucZPX16PlFKmRtRKGC9Io1VJYi+5?=
- =?us-ascii?Q?rjBMAumvRPxQIjMlWexutxEqjdAK6U17FI4RPeWyHqwqSnLuVBdNm5L3jApV?=
- =?us-ascii?Q?USkCYKcsn/sdQhdvYOsg5ogitDXKErNX6kqOUkTdBmy1kCoTVQqcOE8/mMOn?=
- =?us-ascii?Q?vTwica3/NIjx2uOYB3liE/fR78GCETYCnL0t9Cyfda49680nrnVTzAtu+87Y?=
- =?us-ascii?Q?KDHT581zqQk8J9cG9P5Ps2QOBOhe9BOyRAJSOssV7FUYQlXuFrOBX80fvN+4?=
- =?us-ascii?Q?tAF+DWqJdhpVAEq1n80CKO/TotgBRkqOZsz9tbllSXy/IgGqmGzCRqvBn2yl?=
- =?us-ascii?Q?iP+igFYf0I4EWEVKZJIKl7YsfgGl0CQAD8ebM26rI2cMOy0/pA1NSrJEEMeE?=
- =?us-ascii?Q?zZwFzRdOfyeOF7hr+1f0V6/tNbXqBUfi40aO5wqi9nNeBBSDRnl2eERMb6Ij?=
- =?us-ascii?Q?Gz7d80wC9VyDk+obNrj4NxKF6dTeGY2a2Jhdie2DHq4kRgpYCGWWY3yb6Sxj?=
- =?us-ascii?Q?zzPt74/xOft/NB6RIeiVN6mPtFPj3zRGrLHEdY2f7DgDd8vQb1Cn68EhT2jA?=
- =?us-ascii?Q?AMW3C6bSZjoK+npGUzknYKA2IRLMbWSI5XmFWkek5auoxVqrYrVqQaesousg?=
- =?us-ascii?Q?XVFX3LBdQ8v1bcMONV2b0HNSAZVLeBToHt2sQ684Md8EkhwLH1bFXBvAT3ZP?=
- =?us-ascii?Q?JvsM0ZHmjHBdQpCPEUkOksMgTRXX4Bghggsa7byt6NF0F3pg6zMFU+O0AntN?=
- =?us-ascii?Q?ogxEchcyoD7rZjBGp89Wey8uQwC9zMI+tac63YbTZX/NoX3+VSVhRGPt8sfH?=
- =?us-ascii?Q?ZVv7TRCWv6YXLpYVsFEW14N9wt3SeU9/Usid3dGVq6MUP+iItK7Bvy+Nw8SJ?=
- =?us-ascii?Q?bK+0dn84PQNj+ASpeb59lHO9zyL+A3VQxnL8rY5im4q9mIlSND2H4X8jeoJY?=
- =?us-ascii?Q?/OY5tlyqD1Tc4DNc4V2VMtarShxfEf7RCXEba90p6XJ7yZhAEZy4tvzpY5ua?=
- =?us-ascii?Q?/4ZJ1YUamKy/5d+N9SKnIY/FmjWEEzpMjbk7QujPARBNMUcsJ1vo0mG/KMPk?=
- =?us-ascii?Q?T8Bf1IFs9f8JcOqXa/ZS8Ds+nAnLza/x4dr8n38Aadc6CO4tRNZXIGnSipyK?=
- =?us-ascii?Q?9uA5Fcoo1REIlG3EC5ZpyPNKnKXugui2o2te8PGqW7QPIWyuFJmVoLXVF2mp?=
- =?us-ascii?Q?U8VsHRSwAiYbTE9abhAU5etSUYSf20VRucLlr/cCf2xgsODTUMcqkFErxSpZ?=
- =?us-ascii?Q?AheRTu+B9ecbWA58CGOQxu+Yqe4QurtO85XsvwMssLvL1B4iLd6J0WSRrdim?=
- =?us-ascii?Q?ZxP+cE64mH/+aV23OrOvYAyz8Mdlx+eYSQ0JHXsAj8IUCtpE1+Tyapoh3nqc?=
- =?us-ascii?Q?fx870zhDKRp66O8QgvDRJAE=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <4DAFE18A51540241A32A572988E7C9AD@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Denis Kirjanov <dkirjanov@suse.de>,
+        Julian Wiedmann <jwi@linux.ibm.com>
+Subject: Re: [PATCH net-next v5 4/4] net: ocelot: add FDMA support
+Message-ID: <20211207163108.3a264f81@fixe.home>
+In-Reply-To: <20211207152347.hnlhja52qeolq7pt@skbuf>
+References: <20211207090853.308328-1-clement.leger@bootlin.com>
+        <20211207090853.308328-5-clement.leger@bootlin.com>
+        <20211207135200.qvjaw6vkazfcmuvk@skbuf>
+        <20211207161624.39565296@fixe.home>
+        <20211207152347.hnlhja52qeolq7pt@skbuf>
+Organization: Bootlin
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 12933778-2415-4b1e-3824-08d9b99675fb
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Dec 2021 15:30:12.4329
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: DV0ps1MZ+/qsb97KuU1RtHBj78Fo//qHY/4tqRVONuEOlIjlUsHxivLjhkmwMUgDiasd/qbdV96Cb2TCffjAlA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB6013
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 07, 2021 at 07:26:52AM -0800, Jakub Kicinski wrote:
-> On Tue, 7 Dec 2021 12:11:22 +0000 Vladimir Oltean wrote:
-> > On Tue, Dec 07, 2021 at 11:48:52AM +0000, Russell King (Oracle) wrote:
-> > > Thank you for highlighting this.
-> > >
-> > > Vladimir told me recently over the phylink get_interfaces vs get_caps
-> > > change for DSA, and I quote:
-> > >
-> > >   David who applied your patch can correct me, but my understanding f=
-rom
-> > >   the little time I've spent on netdev is that dead code isn't a cand=
-idate
-> > >   for getting accepted into the tree, even more so in the last few da=
-ys
-> > >   before the merge window, from where it got into v5.16-rc1.
-> > >   ...
-> > >   So yes, I take issue with that as a matter of principle, I very muc=
-h
-> > >   expect that a kernel developer of your experience does not set a
-> > >   precedent and a pretext for people who submit various shady stuff t=
-o the
-> > >   kernel just to make their downstream life easier.
-> > >
-> > > This sounds very much like double-standards, especially as Vladimir
-> > > reviewed this.
-> > >
-> > > I'm not going to be spiteful NAK these patches, because we all need t=
-o
-> > > get along with each other. I realise that it is sometimes useful to g=
-et
-> > > code merged that facilitates or aids further development - provided
-> > > that development is submitted in a timely manner.
-> >
-> > I'm not taking this as a spiteful comment either, it is a very fair poi=
-nt.
-> > Colin had previously submitted this as part of a 23-patch series and it
-> > was me who suggested that this change could go in as part of preparatio=
-n
-> > work right away:
-> > https://patchwork.kernel.org/project/netdevbpf/cover/20211116062328.194=
-9151-1-colin.foster@in-advantage.com/#24596529
-> > I didn't realize that in doing so with this particular change, we would
-> > end up having some symbols exported by the ocelot switch lib that aren'=
-t
-> > yet in use by other drivers. So yes, this would have to go in at the
-> > same time as the driver submission itself.
->
-> I don't know the dependencies here (there are also pinctrl patches
-> in the linked series) so I'll defer to you, if there is a reason to
-> merge the unused symbols it needs to be spelled out, otherwise let's
-> drop the last patch for now.
+Le Tue, 7 Dec 2021 15:23:48 +0000,
+Vladimir Oltean <vladimir.oltean@nxp.com> a écrit :
 
-I don't think there's any problem with dropping the last patch for now,
-as that's the safer thing to do (Colin?), but just let us know whether
-you prefer Colin to resend a 4-patch series, or you can pick this series
-up without the last one.=
+> On Tue, Dec 07, 2021 at 04:16:24PM +0100, Clément Léger wrote:
+> > Le Tue, 7 Dec 2021 13:52:01 +0000,
+> > Vladimir Oltean <vladimir.oltean@nxp.com> a écrit :
+> >   
+> > > On Tue, Dec 07, 2021 at 10:08:53AM +0100, Clément Léger wrote:  
+> > > > Ethernet frames can be extracted or injected autonomously to or from
+> > > > the device’s DDR3/DDR3L memory and/or PCIe memory space. Linked list
+> > > > data structures in memory are used for injecting or extracting Ethernet
+> > > > frames. The FDMA generates interrupts when frame extraction or
+> > > > injection is done and when the linked lists need updating.
+> > > >
+> > > > The FDMA is shared between all the ethernet ports of the switch and
+> > > > uses a linked list of descriptors (DCB) to inject and extract packets.
+> > > > Before adding descriptors, the FDMA channels must be stopped. It would
+> > > > be inefficient to do that each time a descriptor would be added so the
+> > > > channels are restarted only once they stopped.
+> > > >
+> > > > Both channels uses ring-like structure to feed the DCBs to the FDMA.
+> > > > head and tail are never touched by hardware and are completely handled
+> > > > by the driver. On top of that, page recycling has been added and is
+> > > > mostly taken from gianfar driver.
+> > > >
+> > > > Co-developed-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+> > > > Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+> > > > Signed-off-by: Clément Léger <clement.leger@bootlin.com>
+> > > > ---    
+> > >   
+> > > > +static void ocelot_fdma_send_skb(struct ocelot *ocelot,
+> > > > +				 struct ocelot_fdma *fdma, struct sk_buff *skb)
+> > > > +{
+> > > > +	struct ocelot_fdma_tx_ring *tx_ring = &fdma->tx_ring;
+> > > > +	struct ocelot_fdma_tx_buf *tx_buf;
+> > > > +	struct ocelot_fdma_dcb *dcb;
+> > > > +	dma_addr_t dma;
+> > > > +	u16 next_idx;
+> > > > +
+> > > > +	dcb = &tx_ring->dcbs[tx_ring->next_to_use];
+> > > > +	tx_buf = &tx_ring->bufs[tx_ring->next_to_use];
+> > > > +	if (!ocelot_fdma_tx_dcb_set_skb(ocelot, tx_buf, dcb, skb)) {
+> > > > +		dev_kfree_skb_any(skb);
+> > > > +		return;
+> > > > +	}
+> > > > +
+> > > > +	next_idx = ocelot_fdma_idx_next(tx_ring->next_to_use,
+> > > > +					OCELOT_FDMA_TX_RING_SIZE);
+> > > > +	/* If the FDMA TX chan is empty, then enqueue the DCB directly */
+> > > > +	if (ocelot_fdma_tx_ring_empty(fdma)) {
+> > > > +		dma = ocelot_fdma_idx_dma(tx_ring->dcbs_dma, tx_ring->next_to_use);
+> > > > +		ocelot_fdma_activate_chan(ocelot, dma, MSCC_FDMA_INJ_CHAN);
+> > > > +	} else {
+> > > > +		/* Chain the DCBs */
+> > > > +		dcb->llp = ocelot_fdma_idx_dma(tx_ring->dcbs_dma, next_idx);
+> > > > +	}
+> > > > +	skb_tx_timestamp(skb);
+> > > > +
+> > > > +	tx_ring->next_to_use = next_idx;    
+> > > 
+> > > You've decided against moving these before ocelot_fdma_activate_chan?
+> > > The skb may be freed by ocelot_fdma_tx_cleanup() before
+> > > skb_tx_timestamp() has a chance to run, is this not true?  
+> > 
+> > Since tx_ring->next_to_use is updated after calling skb_tx_timestamp,
+> > fdma_tx_cleanup will not free it. However, I'm not sure if the
+> > timestamping should be done before being sent by the hardware (ie, does
+> > the timestamping function modifies the SKB inplace). If not, then the
+> > current code is ok. By looking at ocelot_port_inject_frame, the
+> > timestamping is done after sending the frame.  
+> 
+> It looks like we may need Richard for an expert opinon.
+> Documentation/networking/timestamping.rst only says:
+> 
+> | Driver should call skb_tx_timestamp() as close to passing sk_buff to hardware
+> | as possible.
+> 
+> not whether it must be done before or it can be done after too;
+> but my intuition says that is also needs to be strictly _before_ the
+> hardware xmit, otherwise it also races with the hardware TX timestamping
+> path and that may lead to issues of its own (the logic whether to
+> deliver a software and/or a hardware timestamp to the socket is not
+> trivial at all).
+
+Ok, I will move it before sending since it since it is cleaner anyway.
+And probably submit a fix for the register-based injection path later.
+
+-- 
+Clément Léger,
+Embedded Linux and Kernel engineer at Bootlin
+https://bootlin.com
