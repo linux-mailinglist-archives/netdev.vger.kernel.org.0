@@ -2,95 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 068E046BDF5
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 15:40:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D516E46BDFA
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 15:40:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233711AbhLGOoH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 09:44:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47528 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233408AbhLGOoH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 09:44:07 -0500
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F150BC061746;
-        Tue,  7 Dec 2021 06:40:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
-        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
-        Resent-Cc:Resent-Message-ID; bh=5WChx4umjJB+KsV4D80qywndcGXTe8bk6l5sBo3k6PE=;
-        t=1638888037; x=1640097637; b=M6M7X55ZhWyvA50C25g31S/zqP1SzxZET3vDJv5hwdsaX3h
-        9G+PL9A7fkwmlf1XkpGTAVYiBteZ5wvkomQG86yfjPcHCJX9Oq77XyEYy8rFdG9GoTlQLcAhACkTl
-        KoD7w5F55TioZH8V2AI8VDEguecgn2RPTwuxr79Fd1lzrZtJJFgknjdm4nG16khLJkZwtfF9XL+3U
-        EeSo2tkewleQjo+x6k5ok1oZ9025eLxzZgiYImd1bG4T/cNPOd8ZLrjT+BoGUQUf0EAKVFawEKhme
-        lp9xCUB7aWSHJKr6iBQIZh2bRiNRHVxfuNoWrMfxNAhFnBMARnh+d47FEfP4xEmw==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.95)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1mubdr-008EHP-0X;
-        Tue, 07 Dec 2021 15:40:27 +0100
-Message-ID: <5ed6ad0f5d4fed1cb0a49ecfd7f6b35dbe0f0803.camel@sipsolutions.net>
-Subject: Re: [PATCH] iwlwifi: work around reverse dependency on MEI
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Arnd Bergmann <arnd@kernel.org>,
-        "Grumbach, Emmanuel" <emmanuel.grumbach@intel.com>
-Cc:     "Coelho, Luciano" <luciano.coelho@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Beker, Ayala" <ayala.beker@intel.com>,
-        "Korenblit, Miriam Rachel" <miriam.rachel.korenblit@intel.com>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Date:   Tue, 07 Dec 2021 15:40:25 +0100
-In-Reply-To: <CAK8P3a35HHPs2sMsfQ_SrX4DTKmzidFUOczu8khzwJJTAy++yw@mail.gmail.com>
-References: <20211207125430.2423871-1-arnd@kernel.org>
-         <SA1PR11MB58258D60F7C1334471E2F434F26E9@SA1PR11MB5825.namprd11.prod.outlook.com>
-         <CAK8P3a35HHPs2sMsfQ_SrX4DTKmzidFUOczu8khzwJJTAy++yw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.1 (3.42.1-1.fc35) 
+        id S238032AbhLGOoX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 09:44:23 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:44040 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233796AbhLGOoW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 09:44:22 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4CF75B817EC
+        for <netdev@vger.kernel.org>; Tue,  7 Dec 2021 14:40:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D29C8C341C1;
+        Tue,  7 Dec 2021 14:40:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1638888050;
+        bh=LBcpkO4darT6CUC6id3955z+gtHxBOCI6hwwpvaWfXs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=MNVrRBpnb09wiG5C0/UP4g87LyR/N8O58v/3RV5eZSLySBApy4f8ZbQjnT/rzoy1X
+         zbqUxiqd1tq0RKnSx7un1Z5QRqhH4ishE2nnb+6dvbLrTBjnX9+vWucwwZ5zP2AbVA
+         dAXBH1kWV8fUodMcr/uva9W+71qOSqvlhl7B9aPwbBXVM5DdQZnyjYxVVgACaZkky9
+         bqk5LDYusffo2AZ4XajQ9kFDXbUmHcb912DOBmjUU6vDcn7UU8Sv0uCjHw2CqCs5Hj
+         l7dDAAESONvD0smpLXtPrrPmlOfdCIpKh9fhc+3i5Rd51r27AVd0wfP7YS004yZdOo
+         3zeK8VRXpjYdA==
+Date:   Tue, 7 Dec 2021 06:40:48 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>
+Subject: Re: [PATCH net-next 15/17] audit: add netns refcount tracker to
+ struct audit_net
+Message-ID: <20211207064048.363f22ee@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211207005142.1688204-16-eric.dumazet@gmail.com>
+References: <20211207005142.1688204-1-eric.dumazet@gmail.com>
+        <20211207005142.1688204-16-eric.dumazet@gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-malware-bazaar: not-scanned
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2021-12-07 at 14:25 +0100, Arnd Bergmann wrote:
-
-> > >  config IWLMEI
-> > > -     tristate "Intel Management Engine communication over WLAN"
-> > > -     depends on INTEL_MEI
-> > > +     bool "Intel Management Engine communication over WLAN"
-> > > +     depends on INTEL_MEI=y || INTEL_MEI=IWLMVM
-> > > +     depends on IWLMVM=y || IWLWIFI=m
-> > >       depends on PM
-> > > -     depends on IWLMVM
-> > >       help
-> > >         Enables the iwlmei kernel module.
-> > 
-> > Johannes suggested to make IWLMVM depend on IWLMEI || !IWLMEI
-> > That worked as well, I just had issues with this in our internal backport based tree.
-> > I need to spend a bit more time on this, but I admit my total ignorance in Kconfig's dialect.
+On Mon,  6 Dec 2021 16:51:40 -0800 Eric Dumazet wrote:
+> From: Eric Dumazet <edumazet@google.com>
 > 
-> It's still not enough, the dependency is in iwlwifi, not in iwlmvm, so it
-> would remain broken for IWLWIFI=y IWLMVM=m IWLMEI=m.
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> ---
+>  kernel/audit.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
 > 
+> diff --git a/kernel/audit.c b/kernel/audit.c
+> index 121d37e700a62b53854c06199d9a89850ec39dd4..27013414847678af4283484feab2461e3d9c67ed 100644
+> --- a/kernel/audit.c
+> +++ b/kernel/audit.c
+> @@ -96,6 +96,7 @@ struct audit_net {
+>   * @pid: auditd PID
+>   * @portid: netlink portid
+>   * @net: the associated network namespace
+> + * ns_tracker: tracker for @net reference
 
-I missed the pcie/trans.c dependency, and the others are (I think) in
-mvm...
+You need the '@' sign. I'll add it when applying.
 
-but then we can do
-
-config IWLWIFI
-	...
-	depends on IWLMEI || !IWLMEI
-	...
-
-no? That way, we exclude IWLWIFI=y && IWLMEI=m, which I believe causes
-the issue? And IWLMVM already depends on IWLWIFI (via the if clause), so
-that 
-
-johannes
+>   * @rcu: RCU head
+>   *
+>   * Description:
+> @@ -106,6 +107,7 @@ struct auditd_connection {
+>  	struct pid *pid;
+>  	u32 portid;
+>  	struct net *net;
+> +	netns_tracker ns_tracker;
+>  	struct rcu_head rcu;
+>  };
+>  static struct auditd_connection __rcu *auditd_conn;
