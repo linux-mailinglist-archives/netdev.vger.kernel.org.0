@@ -2,110 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ADC0946C377
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 20:21:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A33D146C39E
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 20:27:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232295AbhLGTZ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 14:25:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59086 "EHLO
+        id S231209AbhLGTbN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 14:31:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232172AbhLGTZ1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 14:25:27 -0500
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D315C061746;
-        Tue,  7 Dec 2021 11:21:56 -0800 (PST)
-Received: by mail-ed1-x52c.google.com with SMTP id z5so76094edd.3;
-        Tue, 07 Dec 2021 11:21:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Y2zqgm+cpzAYaAtUUhdDUsPRmz5CsDUtCPkTvBobe8c=;
-        b=L6e3NiApXs4b0TErmLD/NuIY74ISQYuBbeP4zSlrdfVOqprkxhCtU+458mGYNG2niP
-         k+JGXB4vzrr1/Wnxu2x+Ty072DigFAAeoLylZOMtj+dZXCt95NKKrmIQuoy0Oh75A729
-         3t5c4uVFl5gLqpkrurJQYQ8SzXk+vlq5SLWkzGeeTiibcmPJK6LZ0Hi/g7KYmp9EkyWR
-         JQ4PlYP+SilC5GH0YBj3/rBfUcIdB9nxEV0TnvNsj5ERPcIqU9N6EHjL5bApIx+5FMbE
-         UIZ4I2WSEsGARIkZVgSU9R/fRpsAXVyGKfdHJt5QeVw3rCi/ausl2zBNnPBoHadXR/Os
-         8zHQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Y2zqgm+cpzAYaAtUUhdDUsPRmz5CsDUtCPkTvBobe8c=;
-        b=b3eOE/qcd+gBAicm73APlsXXVvbf/TPUlZ1Zvwf8QBrjy+6wLx73K44wbyu57j/ici
-         Aqi6DXN05z/kyd1JbRT9+siUgBCiAHjtn2BQOAwpxYHhYa1mb12k/qqnqxpK8RNV5dk1
-         2ZTzO02E8BkE4nUnyl9TAOlVozRn/w7qhrciGw12t1Y1RTSDvcFP8GVN1Nq14hsJCfkr
-         QBf8lVvhXR4ChN0WMojZmw/6fwikOPt/FE1FLXFCrkmSWzDwtayC1PieN0+URqmPYItB
-         jDv33jrXa+rDZEiG+tM0RSVs7SQCTcpURPpmYNVQgshvBsXl3yixhDMZt4Ye451q11br
-         gxRA==
-X-Gm-Message-State: AOAM533lM3bWqsYbVMfIdoIWK9h1x5bwU+6iEc9D4fH/z7b6Fq1vvHi1
-        pffZ3PkqpBDHnIcJymr5Qzg=
-X-Google-Smtp-Source: ABdhPJwu6lbxGTt3wsEP3O3G8F1f2+k5AH9HtvZd6cPAyhfYnHdxXpstdJVwAsBMSodbFUDiuOmlGw==
-X-Received: by 2002:a17:906:5d09:: with SMTP id g9mr1628012ejt.3.1638904914849;
-        Tue, 07 Dec 2021 11:21:54 -0800 (PST)
-Received: from Ansuel-xps. (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.gmail.com with ESMTPSA id i8sm566278edc.12.2021.12.07.11.21.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Dec 2021 11:21:54 -0800 (PST)
-Message-ID: <61afb452.1c69fb81.18c6f.242e@mx.google.com>
-X-Google-Original-Message-ID: <Ya+0UKxWaw/LYrS+@Ansuel-xps.>
-Date:   Tue, 7 Dec 2021 20:21:52 +0100
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [net-next RFC PATCH 0/6] Add support for qca8k mdio rw in
- Ethernet packet
-References: <20211207145942.7444-1-ansuelsmth@gmail.com>
- <Ya+q02HlWsHMYyAe@lunn.ch>
- <61afadb9.1c69fb81.7dfad.19b1@mx.google.com>
- <Ya+yzNDMorw4X9CT@lunn.ch>
+        with ESMTP id S229953AbhLGTbN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 14:31:13 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE613C061574
+        for <netdev@vger.kernel.org>; Tue,  7 Dec 2021 11:27:42 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 56BDCCE1B8B
+        for <netdev@vger.kernel.org>; Tue,  7 Dec 2021 19:27:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E03EC341C3;
+        Tue,  7 Dec 2021 19:27:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1638905258;
+        bh=q9A1mg6NXYBeu6gzXlhPTl6VrlE0d9NlhaNb0JTmOus=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=LAPb6tBuN9bOMr12xXdaFCMzX7iBCU9Qnf0/AtYKt04KA2ifUBenIXHARewa38xux
+         QNyhYZl9zQWj7vZJej9Hmqq9S0wLY+jvO71RGKNHrP/Rf+gMmz62jeIMgjT8osW+Jv
+         R3kR1oZKishOdd8wtmonSLnICpcoUBTLws1lxCeOHeh95YEyW67fZ5s0ulaI2JdOxt
+         f1+f2Q3TRrWrGKoVrjc6CxGMgSZSsPnoi2xCwYL9JGDiE7iuRuoicanm4Sfa8gTnzs
+         88h0iB7PRZOQQAGG7x82grZI3vPiN/tPY0HIjt9gGBpq8NNgiAxfmiq3MJ5jJPnMg5
+         dBp8DObebQMgw==
+Date:   Tue, 7 Dec 2021 20:27:33 +0100
+From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
+To:     Holger Brunck <holger.brunck@hitachienergy.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [v3 2/2] dsa: mv88e6xxx: make serdes SGMII/Fiber output
+ amplitude configurable
+Message-ID: <20211207202733.56a0cf15@thinkpad>
+In-Reply-To: <20211207190730.3076-2-holger.brunck@hitachienergy.com>
+References: <20211207190730.3076-1-holger.brunck@hitachienergy.com>
+        <20211207190730.3076-2-holger.brunck@hitachienergy.com>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Ya+yzNDMorw4X9CT@lunn.ch>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 07, 2021 at 08:15:24PM +0100, Andrew Lunn wrote:
-> > The qca tag header provide a TYPE value that refer to a big list of
-> > Frame type. In all of this at value 2 we have the type that tells us
-> > that is a READ_WRITE_REG_ACK (aka a mdio rw Ethernet packet)
-> > 
-> > The idea of using the tagger is to skip parsing the packet 2 times
-> > considering the qca tag header is present at the same place in both
-> > normal packet and mdio rw Ethernet packet.
-> > 
-> > Your idea would be hook this before the tagger and parse it?
-> > I assume that is the only way if this has to be generilized. But I
-> > wonder if this would create some overhead by the double parsing.
-> 
-> So it seems i remembered this incorrectly. Marvell call this Remote
-> Management Unit, RMU. And RMU makes use of bits inside the Marvell
-> Tag. I was thinking it was outside of the tag.
-> 
-> So, yes, the tagger does need to be involved in this.
-> 
-> The initial design of DSA was that the tagger and main driver were
-> kept separate. This has been causing us problems recently, we have use
-> cases where we need to share information between the tagger and the
-> driver. This looks like it is going to be another case of that.
-> 
-> 	Andrew
+On Tue,  7 Dec 2021 20:07:30 +0100
+Holger Brunck <holger.brunck@hitachienergy.com> wrote:
 
-I mean if you check the code this is still somewhat ""separate"".
-I ""abuse"" the dsa port priv to share the required data.
-(I allocate a different struct... i put it in qca8k_priv and i set every
-port priv to this struct)
+> The mv88e6352, mv88e6240 and mv88e6176  have a serdes interface. This pat=
+ch
+> allows to configure the output swing to a desired value in the
+> devicetree node of the port. As the chips only supports eight dedicated
+> values we return EINVAL if the value in the DTS does not match.
+>=20
+> CC: Andrew Lunn <andrew@lunn.ch>
+> CC: Jakub Kicinski <kuba@kernel.org>
+> CC: Marek Beh=C3=BAn <kabel@kernel.org>
+> Signed-off-by: Holger Brunck <holger.brunck@hitachienergy.com>
 
-Wonder if we can add something to share data between the driver and the
-port so the access that from the tagger. (something that doesn't use the
-port priv)
+Holger, Andrew,
 
--- 
-	Ansuel
+there is another issue with this, which I only realized yesterday. What
+if the different amplitude needs to be set only for certain SerDes
+modes?
+
+I am bringing this up because I discovered that on Turris Mox we need
+to increase SerDes output amplitude when A3720 SOC is connected
+directly to 88E6141 switch, but only for 2500base-x mode. For
+1000base-x, the default amplitude is okay. (Also when the SOC is
+connected to 88E6190, the amplitude does not need to be changed at all.)
+
+I plan to solve this in the comphy driver, not in device-tree.
+
+But if the solution is to be done in DTS, shouldn't there be a
+possibility to define the amplitude for a specific serdes mode only?
+
+For example
+  serdes-2500base-x-tx-amplitude-millivolt
+or
+  serdes-tx-amplitude-millivolt-2500base-x
+or
+  serdes-tx-amplitude-millivolt,2500base-x
+?
+
+What do you think?
+
+Marek
