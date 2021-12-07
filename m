@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD77346C139
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 18:00:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C0D0E46C13B
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 18:00:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239681AbhLGREW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 12:04:22 -0500
+        id S239738AbhLGREX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 12:04:23 -0500
 Received: from mail-bn8nam08on2122.outbound.protection.outlook.com ([40.107.100.122]:58464
         "EHLO NAM04-BN8-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S239713AbhLGREU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 7 Dec 2021 12:04:20 -0500
+        id S239721AbhLGREV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 7 Dec 2021 12:04:21 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QctDoBNS3rXIZOf4EhF/hbbJCdYGRtfuagqk6Aef3A8axvrnCNelT08kkwnThmgNg0yb5iYfMCA3V1g/NhOGCRLdwvYitb8rYFkSDYOo1MK3RQNxP7yslMqOMWU28Hh8UrIPO0pNIQkHE6w3qSPqKlLsEMMHN6FmhQDxyE/CjgZbUBbDZ0C0qxLzb5ljAYC7xk7eNbJe9E9evWO19K1SntpavwnVWhqO+4NEXvb3BGuxTkpDuAiK8ouUVyAWc12F/Mg+TkzDGQTDQwiKrx72APOwx98cdsFj2gIhfBEkr5Y3ihgUeITeFdhk4j82Foho2dFMCYVYImHzHN18PhHP0g==
+ b=lMTl5+n3ee93HtaUocHy7ucxhiB7MnWAtma8iPO91/LVWdkGm3xrF/nnrJzdeir3HYqNI919PFeZsaeMiHzshMHcm588BGG7GnXz8bKcs50B2F5IWjlOpSMXuGzI6z0wqErNx63JMtl4utkkEUrNOeVHNjEujvY4br3OVWwGOFLqgkFho/r0OjdwqLnTwfeuzUYGwSkQPfPmrCxNGLGUk01RxEKnk/ozwK9XWLin4f5pRYU/QSzWwVUDhiGuUl9KclmhMsVTtyaWybhvWFO94mo44x/2rEKsg9kffiRF2Zp8uVvddMQvwacCfB8jB38s/3xQSRti0oGuqbEsNVXtqQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=tKsV0+aJT13foVJqdh7fX35si6lg1Y4VnWIc0IliEVY=;
- b=N7ZI89AAT3sWSSzRsx+tq1RxV+YlxkGfbDVLpTqtFOOooOcgZLokfYe+efkUQb+QU/9osZkSjv/s21IL3pVKTl9PO24HCWMoho3wePHtQNsIWaGj2N3ei9Z1b6fQBueZsKGI/cGS7MsedGXirNbiXP/QL0mUDAXt5VEeQJagnGtobrc3Wv2tiuY042YZAcxnB4CyjSe0b6ReNEM1SxsYpbdOKBe5r1zzeD/2NipvotXCxmh4Ejhkic6wsfVoy1c9zQ4cZTQI66rtMTL9l4i0Czje/HT3OMKBO7dK2VnLVsgjv9a2c025V+pPPsM+Y1MDcht9iPDT3Sm8IIhenhyDNQ==
+ bh=ibSsOb4aFZAQqj1Jzp8YMDI5QUfwKz1JZyiUeLTy0Og=;
+ b=GH6w778jDQ3MM00Z2nfVL45GDCr49zA7SEZ+Y9r+q5Gph3pfTfnX4feVdqcFZAQ7bJfkwMHLy/cbptzaCXeYhhbKYMrqi/Fq7RqjszfRHuVrbxJ2mbXicE5psOkq8aXC7une7aZV8RMGvbmi6i8qLOXmIo3YaOMKGuZhOMTM7hncGQPEL9XKn0HrjCNW/MTsGWGiZak0SRfC1vaSIb3Y4ttXKoBLFMHcr6ESd+OpNn/Xubq+BBnsU14MUpiopdeUIhfRUeI6Iy3DoE6s90i5mUEWEBInyHt9Gy7yJUH+Ne+OLK3D9ilcd3KkORbXyeTU+x8iW2gOOoTG1qLZMJLTFQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=in-advantage.com; dmarc=pass action=none
  header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tKsV0+aJT13foVJqdh7fX35si6lg1Y4VnWIc0IliEVY=;
- b=S+OVnPgrfRTbcta7wmkBN5y4NYOQBdh6Un943KE5uYn7ePASPBPD1sZexocxmzKfVp5kUtWISA+wK/PXMrwMHzcL5aK/kp/ubeVetqqhwa8c/0IJOiMWT+Ez7eY8VsFY5d4dVnfMPhyyOeFN9+LYmvhHqYHrrZBVJELmz7jMkfw=
+ bh=ibSsOb4aFZAQqj1Jzp8YMDI5QUfwKz1JZyiUeLTy0Og=;
+ b=cETHRcjJnoSlmb//iDI594QfzOSVaXBhYPdgDS0KxK2PKvpBWcqWbMOTqNGCJ/zDJD6GCjHl02N2EO1y/imBCI0GKWV8U5diPrhigMFGEIjnvMwXa41SWvmn9qtM9mlr5vqJ2fPaMk+ekndjZBv8L0ZtH2UZAWrhkXAJoeALo5w=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=in-advantage.com;
 Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
  (2603:10b6:301:35::37) by CO6PR10MB5441.namprd10.prod.outlook.com
  (2603:10b6:5:35a::8) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.22; Tue, 7 Dec
- 2021 17:00:43 +0000
+ 2021 17:00:44 +0000
 Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
  ([fe80::6430:b20:8805:cd9f]) by MWHPR1001MB2351.namprd10.prod.outlook.com
  ([fe80::6430:b20:8805:cd9f%5]) with mapi id 15.20.4755.022; Tue, 7 Dec 2021
- 17:00:43 +0000
+ 17:00:44 +0000
 From:   Colin Foster <colin.foster@in-advantage.com>
 To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
 Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
@@ -49,9 +49,9 @@ Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Russell King <linux@armlinux.org.uk>
-Subject: [PATCH v5 net-next 3/4] net: dsa: ocelot: felix: add interface for custom regmaps
-Date:   Tue,  7 Dec 2021 09:00:29 -0800
-Message-Id: <20211207170030.1406601-4-colin.foster@in-advantage.com>
+Subject: [PATCH v5 net-next 4/4] net: mscc: ocelot: split register definitions to a separate file
+Date:   Tue,  7 Dec 2021 09:00:30 -0800
+Message-Id: <20211207170030.1406601-5-colin.foster@in-advantage.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211207170030.1406601-1-colin.foster@in-advantage.com>
 References: <20211207170030.1406601-1-colin.foster@in-advantage.com>
@@ -61,132 +61,1196 @@ X-ClientProxiedBy: MW2PR16CA0059.namprd16.prod.outlook.com
  (2603:10b6:907:1::36) To MWHPR1001MB2351.namprd10.prod.outlook.com
  (2603:10b6:301:35::37)
 MIME-Version: 1.0
-Received: from localhost.localdomain (67.185.175.147) by MW2PR16CA0059.namprd16.prod.outlook.com (2603:10b6:907:1::36) with Microsoft SMTP Server (version=TLS1_2, cipher=) via Frontend Transport; Tue, 7 Dec 2021 17:00:42 +0000
+Received: from localhost.localdomain (67.185.175.147) by MW2PR16CA0059.namprd16.prod.outlook.com (2603:10b6:907:1::36) with Microsoft SMTP Server (version=TLS1_2, cipher=) via Frontend Transport; Tue, 7 Dec 2021 17:00:43 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3c4d5235-7d82-4b85-6d31-08d9b9a31aa5
+X-MS-Office365-Filtering-Correlation-Id: 8192bc35-7f16-4daa-0461-08d9b9a31b2b
 X-MS-TrafficTypeDiagnostic: CO6PR10MB5441:EE_
-X-Microsoft-Antispam-PRVS: <CO6PR10MB544167C07C8B4E5C9ED0F012A46E9@CO6PR10MB5441.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2150;
+X-Microsoft-Antispam-PRVS: <CO6PR10MB5441AAF52292261831C2B852A46E9@CO6PR10MB5441.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:556;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: MaAcdAXAzP2/GjjDSUJh1qorzAvRKeGLGSWqobvfkpus4rx5WPfhvXv+z0lTSoJfN4lqgMue6cvMQe2NQeMw6BQnNOgDtOpmcW/pe5AiAd+dSVMtBYXTxnUpKhbZi1dXn+n0cxxOEACGAfOB2SjB1xTxf5Uh/YQFayqA11hGeI13SRSUv1Q+QyyE44K+KvHwtk6zoO5f8rCzjR0M5dea2dJpD2rQUspXmELacw+FmGaVLf/0jbTX7Obo8BO+riVVurKCJElw/xg0QXhUagwo/ElyhFnMii7mo5r+HfdRwL3TmqVj3yZ2g1ClzkhwIK6T7vgY/DuTs4voolbDbo2DaVd7V4eWR+NzBmYD75aWEImXz/vtNG/Gl1ze9hmpJDSOW3rKxwfnJMLd6mvBM7D3Qg0xruG4wCKjqGm+5K0AAqsh2thZvLoRltLt931Vgq2J3qXG9QK9Z8qBI/q1cWjiB6BARRW7mSVEgb0hJOU/5fQ68vFsqbY53QVO4CxSUIVqKk7oLoihQLn24yiIwuCh/2cdoxCOb1K9aIOaVTCyqIPNdpc11yvP3GPceJvsen03gw9+iBgNLhdYiO7Rf7n5rgRwgTqsidvocrxQ+z2Yx7yR4prXZ+I4P2sf0u78voPchYNiSWjSEMvLhu/XUfvud1pRbzo+HuNmSCCR9KlDeP0R5T2lsBaXMB0sMu2JJAVtqPbUh9wzknK4XX47D4uHvg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(396003)(346002)(136003)(366004)(39830400003)(376002)(508600001)(316002)(7416002)(5660300002)(8936002)(8676002)(83380400001)(1076003)(54906003)(186003)(4326008)(66556008)(6512007)(66476007)(66946007)(6666004)(86362001)(36756003)(6486002)(26005)(2906002)(52116002)(44832011)(6506007)(2616005)(38350700002)(38100700002)(956004);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: n+/wCFx1bsWciOqC1m2gLu6TiLCGk0YZWMPM2afpZ739SGSgvIBT2xkEKUJLPq7ozNkhq8x5us4UZ+/SQrETOClPyKnbjiDXHtGMhEqqap2h5GmonYk4s/PF6P/wCRbzeeFb9ap6zCZeCCy3UNoZYniIUJ/ZFihzvnjLufoRx4jv1qFWbU8pHjvgwP++vsyA8CEX0V0bFkaEtQav601+YpTIdw4tUAUogX1FTLo+rXa7iU9ITBBrPZEt9yz1Vp5XnTm70OQqacfhwsXf/b/K6s5daEGHSlShB9FFxdXz5mF3GIksqrPtFpS8cYbr7/omyCkn0Y80jWOXle4xtdH/0qwCL2hfwpdtGwlNRTnY6pMxkHKNsOYcCSz/RQMRsU+bBKhCvOiA8XNuRqa5SHMpurfwV9ozUNVKIJhFmpuA8lrdLaddGqgZG2RpRP5rdJwPxzOChaGH9rnDSSRmviCqRr+qmZ83JViQraMZzzJTtiHx7lNOGcjME0BYLFdrcOzxfDgi3PF0imJBuB6hot7lW0/o0wz6erzacQLUEA1yip3U5zXnBh1i/P631yukutVg3Al1yA3Q/A2h3s8OAUSsj39XtUDG4GWWkFSaua8ViuoJ5n5b5N2CsyMftIq+MaInoJOqPJL4wwPHM/08rGDMOwhPhtg8An6TD6+0guD0ocx/jPGuehXxqup6cyv3Edw3pWaD1US077AXtEqAQ8YySQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(396003)(346002)(136003)(366004)(39830400003)(376002)(508600001)(316002)(30864003)(7416002)(5660300002)(8936002)(8676002)(83380400001)(1076003)(54906003)(186003)(4326008)(66556008)(6512007)(66476007)(66946007)(6666004)(86362001)(36756003)(6486002)(26005)(2906002)(52116002)(44832011)(6506007)(2616005)(38350700002)(38100700002)(956004)(579004);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?vsp+XF4KFxQzXaTSdoRUuQZm3ZZ57x03j7kzAo9ibEzHBRXBzVCb5L9hgFTX?=
- =?us-ascii?Q?86blA3e3NxQC59Z47SJ9mad72HMCOz9u1aI6N2Tor57/IIqrH8ncmHFeq+HL?=
- =?us-ascii?Q?tLcc7q495buKpNC4BndkElKX9Lgh1Zk4ScTrLeZFCttpdD1HiiuBEF1BawDq?=
- =?us-ascii?Q?0QGH23/JC+VJk3stWCAnVaQQgN3nboG9GfojfIxQgf0OC+a1vObwshGeewqH?=
- =?us-ascii?Q?P86E0wWWMrS8u1MQU1JwpHuTi4/kUJSF6Hg2rzEymjan/3LT1PyZsHMuzmmn?=
- =?us-ascii?Q?Xs9B12aBoG5N1IqHBolwC3ga5FKXxXP4f1TcKtFkE3MltuUvD5hWOAQNRCXO?=
- =?us-ascii?Q?YM/AzoSVdUS8cq+7PKMFbnaYXVb3syWXFA5Gm6/l0usYag/acTBTUaNbvWep?=
- =?us-ascii?Q?IOsmLkE3B66HYmrYpLa+wRNBBMzvOJkqQeVcZtth4p80kamO06lLgjkgbBBF?=
- =?us-ascii?Q?3WY0g/lzgZvTupBwB08hJVmPxvifQe9J0V2Qh8oXHn8GJXZQG2QD/xAqi6PS?=
- =?us-ascii?Q?vd3yux3WEYU9ch55nnU45SilAODhPheih8/zFD1lZa12nL2+Z/asdrJQj9z3?=
- =?us-ascii?Q?UQsetQZ3Hcsglv7FYcA6WFzQyIpISZoNnQWFXKVsZGUzTcFSqFzgFiIZw27j?=
- =?us-ascii?Q?6zmRL5Xwm0dU6I7sLcGRLSeDlYDBgEYsGzCt43oepNBYZH8JRAouDuBr80ES?=
- =?us-ascii?Q?yRzewAgYqoQqXeZXmAYWb3P07xbBOuU3Yg2k41VePJVlFZJ/WTMhke566T4+?=
- =?us-ascii?Q?zgrFdmmCPVBdw8CjdjrxhaBxYN22nHWOUiX9bcRt//tMBiMVZMGvtUjvmdgB?=
- =?us-ascii?Q?JN88BOz8YNEX8TVsSoVJlxe3QBddpJEFSYdYONfQSfBiwk56BXSvLJ5hTkle?=
- =?us-ascii?Q?nVoGzim3B+4quQhfsH0GRwOxVg2Qm7LZ91+JVsTjPkwePbvieK59hh8wXIG7?=
- =?us-ascii?Q?WmF4ayBsK6N0C+pqMK/DkF8L7rxB+C4RtNef2oyY4GkkpGdXgWmfpC+kp38M?=
- =?us-ascii?Q?cJ2NJ5jsW+KamV8V94t1iwzQf9pdOaCTHFZQPeEJgdKvAM0VfS06aTuw2QYY?=
- =?us-ascii?Q?y9dxZloqZ7XVMnFP8S9qJcgYIhO/edcYPf4z0qkw8/79IHaI0cfw7GCtEx1H?=
- =?us-ascii?Q?fMIzI6uOqNAA0ELEQQlvfIQUpqPmuuZJi6l2DOTwcdVyLdoZDa/9ZEG3Il3X?=
- =?us-ascii?Q?0qZe0UJ4I6FDr6wd48ZEQJa5wGQLdVgoWG+ckUibiL8cjRl/EaqHJZJ4cESj?=
- =?us-ascii?Q?2apt0ZREXaYzcYOreKuk8Cq9rtkNQruyFykksHGzK6BfTaDoKZvUqwxsl+92?=
- =?us-ascii?Q?HkpElKwsDep4EYN6q/ygRSKw6CrWlSoC0YR7A2bDKojHzl68V/mzOmot0aoP?=
- =?us-ascii?Q?jTXz6fO1OFZdroasFXLiS10P9W4c5bWZUcYQusRjJwNYv/V/uodU0a91JCKv?=
- =?us-ascii?Q?1wAK8MiLgtmAbeh7tCRaK1RrvV9PnwEJTTr6z7w83se2pr3Mm74IQGpU3YoL?=
- =?us-ascii?Q?/vYnAn8UZ0zKNdeo0Dl8QnFOKSoFbu2LxK3YNH9FyCD1LB4czuxKIlvVsdkw?=
- =?us-ascii?Q?/gt7dn0NV+dZ/qhrltD03Ie4XySNdK6eK1RHyDLiEEX1Ge51BVP20lHTZWpe?=
- =?us-ascii?Q?CrUIngDCVSIwnYrOB9WQyoryg9j/TNv3NLx9jxbvGIFFPkjiT3YRKlkWrFtq?=
- =?us-ascii?Q?eIxzMg=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?MXlaJTjv6ffbwdp+ir7aevAo14+FcFsIQv8/JOOAZZu7pqeGMCEYioDKvdqu?=
+ =?us-ascii?Q?94MqZEAyaktfFypLMsaACBffqk5j0vKHD5MhlJsrDevsO8TWFFj9hfRCelPF?=
+ =?us-ascii?Q?JpmIQbh/6CIOyVtzCIpG8l3XpLPbRO0allbmUM8eUvojqNVDi0SosMe1z0u1?=
+ =?us-ascii?Q?4dlSViVB/lRn+Evw5iE9fvBaZmGg8NYTDFl1cAoCIjI+nP09cVGWqq5qH3OX?=
+ =?us-ascii?Q?Ej+sR+vEPv23G1J9sDGB1PtaPpRPrI38LuRjZ5qu0PKJGzb10LEdeFgQT+oK?=
+ =?us-ascii?Q?uQNf1VlBEsV/yJPpyPzeh3IWQ3cSqvEDQhfNDN/ZfK0Fn4Pw+dQpnBmM7E33?=
+ =?us-ascii?Q?a8Tofa/lw2Wrn5MAXTPTyDWVRW75ZVjBAtihbwPYZBIwhSZgOK9px8kJTZaF?=
+ =?us-ascii?Q?RldeeN/m3z8nrlxoJmT8qwdW3PDDqaBdI80P4+aqtTWx2MkncMbEFG75EUpW?=
+ =?us-ascii?Q?u4xBiwJn1EetdvPcR75YIddLmp1QIY9gY/Cy8nnazXvLzyLmdKVLly/JH11s?=
+ =?us-ascii?Q?0bmbKkQ0fZWFVQE50BqKAAG7jSml9jNBKwjt+QCBfNy9H6sT/UVP7GqSPW+7?=
+ =?us-ascii?Q?aCspwwkrSiCWoew3D0g0WiJKEWHDG67ZtrRPIIT5OShxSG9Canw1jVWQm3QV?=
+ =?us-ascii?Q?rlDpOBoqup2QM1x7t//giETQiC/cldqnI7d5z72UqFiPd4YNHsJfz/MrZ8i0?=
+ =?us-ascii?Q?WLiTN2yFDwVqgZ5wUP39H/4ry7JavIj91Gfciopw3/EL+JrkJmV1wKT9L831?=
+ =?us-ascii?Q?kLvjwhI7qq4x1EdOjiaoLLTHPCIgcwrlO3ARwdo5RpWXAolSyC3xg1XdRL78?=
+ =?us-ascii?Q?taBcrGXbjzIJEMJJlSAuCcbE1yvhXKk/3FT9RBctfQZQz7y4oL0mTuvjUbQe?=
+ =?us-ascii?Q?L3gumtMMqPYDVbktboa3KihdIqbYJFM+DM85TwdZxQdQpPV1zDH9CqhCHyEN?=
+ =?us-ascii?Q?YQyEfoK1yLTsUoklr5OpZi1//G1lak4MYpzRVImX/0RYOSR18K1YKHutz65M?=
+ =?us-ascii?Q?tmwSNAmmujftL3UckPl+JsKnQ4myVIXH2EL/QA11N5kr83ZEGItYB8oGCeuv?=
+ =?us-ascii?Q?MxpVIve2M7hWlASisdK3o/Qrepmh0wNVu7zhZcwbMx+Jilsb4Q3YhspzxmPm?=
+ =?us-ascii?Q?jYZSFEz6NjZBW+JftYjjkYByMWwxlDUOdpQcBwPdqWnCQZSLYIiDXyt7ns4c?=
+ =?us-ascii?Q?b+z/EmFaSthTS2WrwmKW9U5DhZ66+3JnjR+UH/m6plWEhpaK0qItySz/5LPr?=
+ =?us-ascii?Q?LYaFew/Oq5mzzxMOraOj4JDnZgK3GhCQoUtH7c3NKgFVOk5Ezyz26p+koS9Q?=
+ =?us-ascii?Q?NXjBjKc4VFoetRfMz1s/4/5LFmq6/7v1aRc8467ks/Zuucd4BoxO3lH4EWYL?=
+ =?us-ascii?Q?OAvIgEz9orYercwt9VsiVD9tB71KkL+Wlc9pYUn1tB27hBiIJOySZ4ayIWrX?=
+ =?us-ascii?Q?A+r7wdBPSJhPEFpbsARp8eGubPyHyV3z7n6+skuTGkEGPK+aLTOpwCqGHrzH?=
+ =?us-ascii?Q?OOSMv+yEVwpM3sF9hxqMaU5aY/J9Qg8B8nygjA2/v/G6gNq8UO7fgcMBhU3S?=
+ =?us-ascii?Q?/EEvusGQ72KnaFrjGXnkxTXYpydyo5WnGGUokF/yfLzusmZddyo0UlY71Uww?=
+ =?us-ascii?Q?X0w5WKuduR4xV0SqZnI1g7OuG005KHPrffVym7zTTw9xwLOz5sdWtm8s2Glh?=
+ =?us-ascii?Q?xLnncQ=3D=3D?=
 X-OriginatorOrg: in-advantage.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3c4d5235-7d82-4b85-6d31-08d9b9a31aa5
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8192bc35-7f16-4daa-0461-08d9b9a31b2b
 X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Dec 2021 17:00:43.0001
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Dec 2021 17:00:43.8456
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 2klX07eMrAVIn5L1zUOWcXAIKjFg1RLYSGpl03HRw871dM9ytG7dZDGYE+9k4g8ocUVefmc1FVJox5sarxRtExTJ/9yzC1+7wtAkVsamJ4g=
+X-MS-Exchange-CrossTenant-UserPrincipalName: mcd0CuZRbf9MB8+HCjxpbbFvgKrTtp3LP44r1bPJDhcteQXk7wjO601ztgSIFUrCxADX4hx/H/VWw/5MOY++magRQCC0z3lzHt2sKcexjqo=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO6PR10MB5441
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add an interface so that non-mmio regmaps can be used
+Move these to a separate file will allow them to be shared to other
+drivers.
 
 Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
 Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/dsa/ocelot/felix.c           | 4 ++--
- drivers/net/dsa/ocelot/felix.h           | 2 ++
- drivers/net/dsa/ocelot/felix_vsc9959.c   | 1 +
- drivers/net/dsa/ocelot/seville_vsc9953.c | 1 +
- 4 files changed, 6 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/mscc/Makefile         |   3 +-
+ drivers/net/ethernet/mscc/ocelot_vsc7514.c | 520 +-------------------
+ drivers/net/ethernet/mscc/vsc7514_regs.c   | 523 +++++++++++++++++++++
+ include/soc/mscc/vsc7514_regs.h            |  27 ++
+ 4 files changed, 563 insertions(+), 510 deletions(-)
+ create mode 100644 drivers/net/ethernet/mscc/vsc7514_regs.c
+ create mode 100644 include/soc/mscc/vsc7514_regs.h
 
-diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-index 4ead3ebe947b..57beab3d3ff3 100644
---- a/drivers/net/dsa/ocelot/felix.c
-+++ b/drivers/net/dsa/ocelot/felix.c
-@@ -1028,7 +1028,7 @@ static int felix_init_structs(struct felix *felix, int num_phys_ports)
- 		res.start += felix->switch_base;
- 		res.end += felix->switch_base;
+diff --git a/drivers/net/ethernet/mscc/Makefile b/drivers/net/ethernet/mscc/Makefile
+index 722c27694b21..dfa939376d6c 100644
+--- a/drivers/net/ethernet/mscc/Makefile
++++ b/drivers/net/ethernet/mscc/Makefile
+@@ -7,7 +7,8 @@ mscc_ocelot_switch_lib-y := \
+ 	ocelot_vcap.o \
+ 	ocelot_flower.o \
+ 	ocelot_ptp.o \
+-	ocelot_devlink.o
++	ocelot_devlink.o \
++	vsc7514_regs.o
+ mscc_ocelot_switch_lib-$(CONFIG_BRIDGE_MRP) += ocelot_mrp.o
+ obj-$(CONFIG_MSCC_OCELOT_SWITCH) += mscc_ocelot.o
+ mscc_ocelot-y := \
+diff --git a/drivers/net/ethernet/mscc/ocelot_vsc7514.c b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
+index cd3eb101f159..2db59060f5ab 100644
+--- a/drivers/net/ethernet/mscc/ocelot_vsc7514.c
++++ b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
+@@ -18,316 +18,23 @@
  
--		target = ocelot_regmap_init(ocelot, &res);
-+		target = felix->info->init_regmap(ocelot, &res);
- 		if (IS_ERR(target)) {
- 			dev_err(ocelot->dev,
- 				"Failed to map device memory space\n");
-@@ -1065,7 +1065,7 @@ static int felix_init_structs(struct felix *felix, int num_phys_ports)
- 		res.start += felix->switch_base;
- 		res.end += felix->switch_base;
+ #include <soc/mscc/ocelot_vcap.h>
+ #include <soc/mscc/ocelot_hsio.h>
++#include <soc/mscc/vsc7514_regs.h>
+ #include "ocelot.h"
  
--		target = ocelot_regmap_init(ocelot, &res);
-+		target = felix->info->init_regmap(ocelot, &res);
- 		if (IS_ERR(target)) {
- 			dev_err(ocelot->dev,
- 				"Failed to map memory space for port %d\n",
-diff --git a/drivers/net/dsa/ocelot/felix.h b/drivers/net/dsa/ocelot/felix.h
-index 183dbf832db9..515bddc012c0 100644
---- a/drivers/net/dsa/ocelot/felix.h
-+++ b/drivers/net/dsa/ocelot/felix.h
-@@ -50,6 +50,8 @@ struct felix_info {
- 				 enum tc_setup_type type, void *type_data);
- 	void	(*port_sched_speed_set)(struct ocelot *ocelot, int port,
- 					u32 speed);
-+	struct regmap *(*init_regmap)(struct ocelot *ocelot,
-+				      struct resource *res);
+ #define VSC7514_VCAP_POLICER_BASE			128
+ #define VSC7514_VCAP_POLICER_MAX			191
+ 
+-static const u32 ocelot_ana_regmap[] = {
+-	REG(ANA_ADVLEARN,				0x009000),
+-	REG(ANA_VLANMASK,				0x009004),
+-	REG(ANA_PORT_B_DOMAIN,				0x009008),
+-	REG(ANA_ANAGEFIL,				0x00900c),
+-	REG(ANA_ANEVENTS,				0x009010),
+-	REG(ANA_STORMLIMIT_BURST,			0x009014),
+-	REG(ANA_STORMLIMIT_CFG,				0x009018),
+-	REG(ANA_ISOLATED_PORTS,				0x009028),
+-	REG(ANA_COMMUNITY_PORTS,			0x00902c),
+-	REG(ANA_AUTOAGE,				0x009030),
+-	REG(ANA_MACTOPTIONS,				0x009034),
+-	REG(ANA_LEARNDISC,				0x009038),
+-	REG(ANA_AGENCTRL,				0x00903c),
+-	REG(ANA_MIRRORPORTS,				0x009040),
+-	REG(ANA_EMIRRORPORTS,				0x009044),
+-	REG(ANA_FLOODING,				0x009048),
+-	REG(ANA_FLOODING_IPMC,				0x00904c),
+-	REG(ANA_SFLOW_CFG,				0x009050),
+-	REG(ANA_PORT_MODE,				0x009080),
+-	REG(ANA_PGID_PGID,				0x008c00),
+-	REG(ANA_TABLES_ANMOVED,				0x008b30),
+-	REG(ANA_TABLES_MACHDATA,			0x008b34),
+-	REG(ANA_TABLES_MACLDATA,			0x008b38),
+-	REG(ANA_TABLES_MACACCESS,			0x008b3c),
+-	REG(ANA_TABLES_MACTINDX,			0x008b40),
+-	REG(ANA_TABLES_VLANACCESS,			0x008b44),
+-	REG(ANA_TABLES_VLANTIDX,			0x008b48),
+-	REG(ANA_TABLES_ISDXACCESS,			0x008b4c),
+-	REG(ANA_TABLES_ISDXTIDX,			0x008b50),
+-	REG(ANA_TABLES_ENTRYLIM,			0x008b00),
+-	REG(ANA_TABLES_PTP_ID_HIGH,			0x008b54),
+-	REG(ANA_TABLES_PTP_ID_LOW,			0x008b58),
+-	REG(ANA_MSTI_STATE,				0x008e00),
+-	REG(ANA_PORT_VLAN_CFG,				0x007000),
+-	REG(ANA_PORT_DROP_CFG,				0x007004),
+-	REG(ANA_PORT_QOS_CFG,				0x007008),
+-	REG(ANA_PORT_VCAP_CFG,				0x00700c),
+-	REG(ANA_PORT_VCAP_S1_KEY_CFG,			0x007010),
+-	REG(ANA_PORT_VCAP_S2_CFG,			0x00701c),
+-	REG(ANA_PORT_PCP_DEI_MAP,			0x007020),
+-	REG(ANA_PORT_CPU_FWD_CFG,			0x007060),
+-	REG(ANA_PORT_CPU_FWD_BPDU_CFG,			0x007064),
+-	REG(ANA_PORT_CPU_FWD_GARP_CFG,			0x007068),
+-	REG(ANA_PORT_CPU_FWD_CCM_CFG,			0x00706c),
+-	REG(ANA_PORT_PORT_CFG,				0x007070),
+-	REG(ANA_PORT_POL_CFG,				0x007074),
+-	REG(ANA_PORT_PTP_CFG,				0x007078),
+-	REG(ANA_PORT_PTP_DLY1_CFG,			0x00707c),
+-	REG(ANA_OAM_UPM_LM_CNT,				0x007c00),
+-	REG(ANA_PORT_PTP_DLY2_CFG,			0x007080),
+-	REG(ANA_PFC_PFC_CFG,				0x008800),
+-	REG(ANA_PFC_PFC_TIMER,				0x008804),
+-	REG(ANA_IPT_OAM_MEP_CFG,			0x008000),
+-	REG(ANA_IPT_IPT,				0x008004),
+-	REG(ANA_PPT_PPT,				0x008ac0),
+-	REG(ANA_FID_MAP_FID_MAP,			0x000000),
+-	REG(ANA_AGGR_CFG,				0x0090b4),
+-	REG(ANA_CPUQ_CFG,				0x0090b8),
+-	REG(ANA_CPUQ_CFG2,				0x0090bc),
+-	REG(ANA_CPUQ_8021_CFG,				0x0090c0),
+-	REG(ANA_DSCP_CFG,				0x009100),
+-	REG(ANA_DSCP_REWR_CFG,				0x009200),
+-	REG(ANA_VCAP_RNG_TYPE_CFG,			0x009240),
+-	REG(ANA_VCAP_RNG_VAL_CFG,			0x009260),
+-	REG(ANA_VRAP_CFG,				0x009280),
+-	REG(ANA_VRAP_HDR_DATA,				0x009284),
+-	REG(ANA_VRAP_HDR_MASK,				0x009288),
+-	REG(ANA_DISCARD_CFG,				0x00928c),
+-	REG(ANA_FID_CFG,				0x009290),
+-	REG(ANA_POL_PIR_CFG,				0x004000),
+-	REG(ANA_POL_CIR_CFG,				0x004004),
+-	REG(ANA_POL_MODE_CFG,				0x004008),
+-	REG(ANA_POL_PIR_STATE,				0x00400c),
+-	REG(ANA_POL_CIR_STATE,				0x004010),
+-	REG(ANA_POL_STATE,				0x004014),
+-	REG(ANA_POL_FLOWC,				0x008b80),
+-	REG(ANA_POL_HYST,				0x008bec),
+-	REG(ANA_POL_MISC_CFG,				0x008bf0),
+-};
+-
+-static const u32 ocelot_qs_regmap[] = {
+-	REG(QS_XTR_GRP_CFG,				0x000000),
+-	REG(QS_XTR_RD,					0x000008),
+-	REG(QS_XTR_FRM_PRUNING,				0x000010),
+-	REG(QS_XTR_FLUSH,				0x000018),
+-	REG(QS_XTR_DATA_PRESENT,			0x00001c),
+-	REG(QS_XTR_CFG,					0x000020),
+-	REG(QS_INJ_GRP_CFG,				0x000024),
+-	REG(QS_INJ_WR,					0x00002c),
+-	REG(QS_INJ_CTRL,				0x000034),
+-	REG(QS_INJ_STATUS,				0x00003c),
+-	REG(QS_INJ_ERR,					0x000040),
+-	REG(QS_INH_DBG,					0x000048),
+-};
+-
+-static const u32 ocelot_qsys_regmap[] = {
+-	REG(QSYS_PORT_MODE,				0x011200),
+-	REG(QSYS_SWITCH_PORT_MODE,			0x011234),
+-	REG(QSYS_STAT_CNT_CFG,				0x011264),
+-	REG(QSYS_EEE_CFG,				0x011268),
+-	REG(QSYS_EEE_THRES,				0x011294),
+-	REG(QSYS_IGR_NO_SHARING,			0x011298),
+-	REG(QSYS_EGR_NO_SHARING,			0x01129c),
+-	REG(QSYS_SW_STATUS,				0x0112a0),
+-	REG(QSYS_EXT_CPU_CFG,				0x0112d0),
+-	REG(QSYS_PAD_CFG,				0x0112d4),
+-	REG(QSYS_CPU_GROUP_MAP,				0x0112d8),
+-	REG(QSYS_QMAP,					0x0112dc),
+-	REG(QSYS_ISDX_SGRP,				0x011400),
+-	REG(QSYS_TIMED_FRAME_ENTRY,			0x014000),
+-	REG(QSYS_TFRM_MISC,				0x011310),
+-	REG(QSYS_TFRM_PORT_DLY,				0x011314),
+-	REG(QSYS_TFRM_TIMER_CFG_1,			0x011318),
+-	REG(QSYS_TFRM_TIMER_CFG_2,			0x01131c),
+-	REG(QSYS_TFRM_TIMER_CFG_3,			0x011320),
+-	REG(QSYS_TFRM_TIMER_CFG_4,			0x011324),
+-	REG(QSYS_TFRM_TIMER_CFG_5,			0x011328),
+-	REG(QSYS_TFRM_TIMER_CFG_6,			0x01132c),
+-	REG(QSYS_TFRM_TIMER_CFG_7,			0x011330),
+-	REG(QSYS_TFRM_TIMER_CFG_8,			0x011334),
+-	REG(QSYS_RED_PROFILE,				0x011338),
+-	REG(QSYS_RES_QOS_MODE,				0x011378),
+-	REG(QSYS_RES_CFG,				0x012000),
+-	REG(QSYS_RES_STAT,				0x012004),
+-	REG(QSYS_EGR_DROP_MODE,				0x01137c),
+-	REG(QSYS_EQ_CTRL,				0x011380),
+-	REG(QSYS_EVENTS_CORE,				0x011384),
+-	REG(QSYS_CIR_CFG,				0x000000),
+-	REG(QSYS_EIR_CFG,				0x000004),
+-	REG(QSYS_SE_CFG,				0x000008),
+-	REG(QSYS_SE_DWRR_CFG,				0x00000c),
+-	REG(QSYS_SE_CONNECT,				0x00003c),
+-	REG(QSYS_SE_DLB_SENSE,				0x000040),
+-	REG(QSYS_CIR_STATE,				0x000044),
+-	REG(QSYS_EIR_STATE,				0x000048),
+-	REG(QSYS_SE_STATE,				0x00004c),
+-	REG(QSYS_HSCH_MISC_CFG,				0x011388),
+-};
+-
+-static const u32 ocelot_rew_regmap[] = {
+-	REG(REW_PORT_VLAN_CFG,				0x000000),
+-	REG(REW_TAG_CFG,				0x000004),
+-	REG(REW_PORT_CFG,				0x000008),
+-	REG(REW_DSCP_CFG,				0x00000c),
+-	REG(REW_PCP_DEI_QOS_MAP_CFG,			0x000010),
+-	REG(REW_PTP_CFG,				0x000050),
+-	REG(REW_PTP_DLY1_CFG,				0x000054),
+-	REG(REW_DSCP_REMAP_DP1_CFG,			0x000690),
+-	REG(REW_DSCP_REMAP_CFG,				0x000790),
+-	REG(REW_STAT_CFG,				0x000890),
+-	REG(REW_PPT,					0x000680),
+-};
+-
+-static const u32 ocelot_sys_regmap[] = {
+-	REG(SYS_COUNT_RX_OCTETS,			0x000000),
+-	REG(SYS_COUNT_RX_UNICAST,			0x000004),
+-	REG(SYS_COUNT_RX_MULTICAST,			0x000008),
+-	REG(SYS_COUNT_RX_BROADCAST,			0x00000c),
+-	REG(SYS_COUNT_RX_SHORTS,			0x000010),
+-	REG(SYS_COUNT_RX_FRAGMENTS,			0x000014),
+-	REG(SYS_COUNT_RX_JABBERS,			0x000018),
+-	REG(SYS_COUNT_RX_CRC_ALIGN_ERRS,		0x00001c),
+-	REG(SYS_COUNT_RX_SYM_ERRS,			0x000020),
+-	REG(SYS_COUNT_RX_64,				0x000024),
+-	REG(SYS_COUNT_RX_65_127,			0x000028),
+-	REG(SYS_COUNT_RX_128_255,			0x00002c),
+-	REG(SYS_COUNT_RX_256_1023,			0x000030),
+-	REG(SYS_COUNT_RX_1024_1526,			0x000034),
+-	REG(SYS_COUNT_RX_1527_MAX,			0x000038),
+-	REG(SYS_COUNT_RX_PAUSE,				0x00003c),
+-	REG(SYS_COUNT_RX_CONTROL,			0x000040),
+-	REG(SYS_COUNT_RX_LONGS,				0x000044),
+-	REG(SYS_COUNT_RX_CLASSIFIED_DROPS,		0x000048),
+-	REG(SYS_COUNT_TX_OCTETS,			0x000100),
+-	REG(SYS_COUNT_TX_UNICAST,			0x000104),
+-	REG(SYS_COUNT_TX_MULTICAST,			0x000108),
+-	REG(SYS_COUNT_TX_BROADCAST,			0x00010c),
+-	REG(SYS_COUNT_TX_COLLISION,			0x000110),
+-	REG(SYS_COUNT_TX_DROPS,				0x000114),
+-	REG(SYS_COUNT_TX_PAUSE,				0x000118),
+-	REG(SYS_COUNT_TX_64,				0x00011c),
+-	REG(SYS_COUNT_TX_65_127,			0x000120),
+-	REG(SYS_COUNT_TX_128_511,			0x000124),
+-	REG(SYS_COUNT_TX_512_1023,			0x000128),
+-	REG(SYS_COUNT_TX_1024_1526,			0x00012c),
+-	REG(SYS_COUNT_TX_1527_MAX,			0x000130),
+-	REG(SYS_COUNT_TX_AGING,				0x000170),
+-	REG(SYS_RESET_CFG,				0x000508),
+-	REG(SYS_CMID,					0x00050c),
+-	REG(SYS_VLAN_ETYPE_CFG,				0x000510),
+-	REG(SYS_PORT_MODE,				0x000514),
+-	REG(SYS_FRONT_PORT_MODE,			0x000548),
+-	REG(SYS_FRM_AGING,				0x000574),
+-	REG(SYS_STAT_CFG,				0x000578),
+-	REG(SYS_SW_STATUS,				0x00057c),
+-	REG(SYS_MISC_CFG,				0x0005ac),
+-	REG(SYS_REW_MAC_HIGH_CFG,			0x0005b0),
+-	REG(SYS_REW_MAC_LOW_CFG,			0x0005dc),
+-	REG(SYS_CM_ADDR,				0x000500),
+-	REG(SYS_CM_DATA,				0x000504),
+-	REG(SYS_PAUSE_CFG,				0x000608),
+-	REG(SYS_PAUSE_TOT_CFG,				0x000638),
+-	REG(SYS_ATOP,					0x00063c),
+-	REG(SYS_ATOP_TOT_CFG,				0x00066c),
+-	REG(SYS_MAC_FC_CFG,				0x000670),
+-	REG(SYS_MMGT,					0x00069c),
+-	REG(SYS_MMGT_FAST,				0x0006a0),
+-	REG(SYS_EVENTS_DIF,				0x0006a4),
+-	REG(SYS_EVENTS_CORE,				0x0006b4),
+-	REG(SYS_CNT,					0x000000),
+-	REG(SYS_PTP_STATUS,				0x0006b8),
+-	REG(SYS_PTP_TXSTAMP,				0x0006bc),
+-	REG(SYS_PTP_NXT,				0x0006c0),
+-	REG(SYS_PTP_CFG,				0x0006c4),
+-};
+-
+-static const u32 ocelot_vcap_regmap[] = {
+-	/* VCAP_CORE_CFG */
+-	REG(VCAP_CORE_UPDATE_CTRL,			0x000000),
+-	REG(VCAP_CORE_MV_CFG,				0x000004),
+-	/* VCAP_CORE_CACHE */
+-	REG(VCAP_CACHE_ENTRY_DAT,			0x000008),
+-	REG(VCAP_CACHE_MASK_DAT,			0x000108),
+-	REG(VCAP_CACHE_ACTION_DAT,			0x000208),
+-	REG(VCAP_CACHE_CNT_DAT,				0x000308),
+-	REG(VCAP_CACHE_TG_DAT,				0x000388),
+-	/* VCAP_CONST */
+-	REG(VCAP_CONST_VCAP_VER,			0x000398),
+-	REG(VCAP_CONST_ENTRY_WIDTH,			0x00039c),
+-	REG(VCAP_CONST_ENTRY_CNT,			0x0003a0),
+-	REG(VCAP_CONST_ENTRY_SWCNT,			0x0003a4),
+-	REG(VCAP_CONST_ENTRY_TG_WIDTH,			0x0003a8),
+-	REG(VCAP_CONST_ACTION_DEF_CNT,			0x0003ac),
+-	REG(VCAP_CONST_ACTION_WIDTH,			0x0003b0),
+-	REG(VCAP_CONST_CNT_WIDTH,			0x0003b4),
+-	REG(VCAP_CONST_CORE_CNT,			0x0003b8),
+-	REG(VCAP_CONST_IF_CNT,				0x0003bc),
+-};
+-
+-static const u32 ocelot_ptp_regmap[] = {
+-	REG(PTP_PIN_CFG,				0x000000),
+-	REG(PTP_PIN_TOD_SEC_MSB,			0x000004),
+-	REG(PTP_PIN_TOD_SEC_LSB,			0x000008),
+-	REG(PTP_PIN_TOD_NSEC,				0x00000c),
+-	REG(PTP_PIN_WF_HIGH_PERIOD,			0x000014),
+-	REG(PTP_PIN_WF_LOW_PERIOD,			0x000018),
+-	REG(PTP_CFG_MISC,				0x0000a0),
+-	REG(PTP_CLK_CFG_ADJ_CFG,			0x0000a4),
+-	REG(PTP_CLK_CFG_ADJ_FREQ,			0x0000a8),
+-};
+-
+-static const u32 ocelot_dev_gmii_regmap[] = {
+-	REG(DEV_CLOCK_CFG,				0x0),
+-	REG(DEV_PORT_MISC,				0x4),
+-	REG(DEV_EVENTS,					0x8),
+-	REG(DEV_EEE_CFG,				0xc),
+-	REG(DEV_RX_PATH_DELAY,				0x10),
+-	REG(DEV_TX_PATH_DELAY,				0x14),
+-	REG(DEV_PTP_PREDICT_CFG,			0x18),
+-	REG(DEV_MAC_ENA_CFG,				0x1c),
+-	REG(DEV_MAC_MODE_CFG,				0x20),
+-	REG(DEV_MAC_MAXLEN_CFG,				0x24),
+-	REG(DEV_MAC_TAGS_CFG,				0x28),
+-	REG(DEV_MAC_ADV_CHK_CFG,			0x2c),
+-	REG(DEV_MAC_IFG_CFG,				0x30),
+-	REG(DEV_MAC_HDX_CFG,				0x34),
+-	REG(DEV_MAC_DBG_CFG,				0x38),
+-	REG(DEV_MAC_FC_MAC_LOW_CFG,			0x3c),
+-	REG(DEV_MAC_FC_MAC_HIGH_CFG,			0x40),
+-	REG(DEV_MAC_STICKY,				0x44),
+-	REG(PCS1G_CFG,					0x48),
+-	REG(PCS1G_MODE_CFG,				0x4c),
+-	REG(PCS1G_SD_CFG,				0x50),
+-	REG(PCS1G_ANEG_CFG,				0x54),
+-	REG(PCS1G_ANEG_NP_CFG,				0x58),
+-	REG(PCS1G_LB_CFG,				0x5c),
+-	REG(PCS1G_DBG_CFG,				0x60),
+-	REG(PCS1G_CDET_CFG,				0x64),
+-	REG(PCS1G_ANEG_STATUS,				0x68),
+-	REG(PCS1G_ANEG_NP_STATUS,			0x6c),
+-	REG(PCS1G_LINK_STATUS,				0x70),
+-	REG(PCS1G_LINK_DOWN_CNT,			0x74),
+-	REG(PCS1G_STICKY,				0x78),
+-	REG(PCS1G_DEBUG_STATUS,				0x7c),
+-	REG(PCS1G_LPI_CFG,				0x80),
+-	REG(PCS1G_LPI_WAKE_ERROR_CNT,			0x84),
+-	REG(PCS1G_LPI_STATUS,				0x88),
+-	REG(PCS1G_TSTPAT_MODE_CFG,			0x8c),
+-	REG(PCS1G_TSTPAT_STATUS,			0x90),
+-	REG(DEV_PCS_FX100_CFG,				0x94),
+-	REG(DEV_PCS_FX100_STATUS,			0x98),
+-};
+-
+ static const u32 *ocelot_regmap[TARGET_MAX] = {
+-	[ANA] = ocelot_ana_regmap,
+-	[QS] = ocelot_qs_regmap,
+-	[QSYS] = ocelot_qsys_regmap,
+-	[REW] = ocelot_rew_regmap,
+-	[SYS] = ocelot_sys_regmap,
+-	[S0] = ocelot_vcap_regmap,
+-	[S1] = ocelot_vcap_regmap,
+-	[S2] = ocelot_vcap_regmap,
+-	[PTP] = ocelot_ptp_regmap,
+-	[DEV_GMII] = ocelot_dev_gmii_regmap,
++	[ANA] = vsc7514_ana_regmap,
++	[QS] = vsc7514_qs_regmap,
++	[QSYS] = vsc7514_qsys_regmap,
++	[REW] = vsc7514_rew_regmap,
++	[SYS] = vsc7514_sys_regmap,
++	[S0] = vsc7514_vcap_regmap,
++	[S1] = vsc7514_vcap_regmap,
++	[S2] = vsc7514_vcap_regmap,
++	[PTP] = vsc7514_ptp_regmap,
++	[DEV_GMII] = vsc7514_dev_gmii_regmap,
  };
  
- extern const struct dsa_switch_ops felix_switch_ops;
-diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
-index 0676e204c804..74c5c8cd664a 100644
---- a/drivers/net/dsa/ocelot/felix_vsc9959.c
-+++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
-@@ -2240,6 +2240,7 @@ static const struct felix_info felix_info_vsc9959 = {
- 	.prevalidate_phy_mode	= vsc9959_prevalidate_phy_mode,
- 	.port_setup_tc		= vsc9959_port_setup_tc,
- 	.port_sched_speed_set	= vsc9959_sched_speed_set,
-+	.init_regmap		= ocelot_regmap_init,
+ static const struct reg_field ocelot_regfields[REGFIELD_MAX] = {
+@@ -636,211 +343,6 @@ static const struct ocelot_ops ocelot_ops = {
+ 	.netdev_to_port		= ocelot_netdev_to_port,
  };
  
- static irqreturn_t felix_irq_handler(int irq, void *data)
-diff --git a/drivers/net/dsa/ocelot/seville_vsc9953.c b/drivers/net/dsa/ocelot/seville_vsc9953.c
-index b9be889016ce..e110550e3507 100644
---- a/drivers/net/dsa/ocelot/seville_vsc9953.c
-+++ b/drivers/net/dsa/ocelot/seville_vsc9953.c
-@@ -1104,6 +1104,7 @@ static const struct felix_info seville_info_vsc9953 = {
- 	.mdio_bus_free		= vsc9953_mdio_bus_free,
- 	.phylink_validate	= vsc9953_phylink_validate,
- 	.prevalidate_phy_mode	= vsc9953_prevalidate_phy_mode,
-+	.init_regmap		= ocelot_regmap_init,
- };
- 
- static int seville_probe(struct platform_device *pdev)
+-static const struct vcap_field vsc7514_vcap_es0_keys[] = {
+-	[VCAP_ES0_EGR_PORT]			= {  0,  4},
+-	[VCAP_ES0_IGR_PORT]			= {  4,  4},
+-	[VCAP_ES0_RSV]				= {  8,  2},
+-	[VCAP_ES0_L2_MC]			= { 10,  1},
+-	[VCAP_ES0_L2_BC]			= { 11,  1},
+-	[VCAP_ES0_VID]				= { 12, 12},
+-	[VCAP_ES0_DP]				= { 24,  1},
+-	[VCAP_ES0_PCP]				= { 25,  3},
+-};
+-
+-static const struct vcap_field vsc7514_vcap_es0_actions[] = {
+-	[VCAP_ES0_ACT_PUSH_OUTER_TAG]		= {  0,  2},
+-	[VCAP_ES0_ACT_PUSH_INNER_TAG]		= {  2,  1},
+-	[VCAP_ES0_ACT_TAG_A_TPID_SEL]		= {  3,  2},
+-	[VCAP_ES0_ACT_TAG_A_VID_SEL]		= {  5,  1},
+-	[VCAP_ES0_ACT_TAG_A_PCP_SEL]		= {  6,  2},
+-	[VCAP_ES0_ACT_TAG_A_DEI_SEL]		= {  8,  2},
+-	[VCAP_ES0_ACT_TAG_B_TPID_SEL]		= { 10,  2},
+-	[VCAP_ES0_ACT_TAG_B_VID_SEL]		= { 12,  1},
+-	[VCAP_ES0_ACT_TAG_B_PCP_SEL]		= { 13,  2},
+-	[VCAP_ES0_ACT_TAG_B_DEI_SEL]		= { 15,  2},
+-	[VCAP_ES0_ACT_VID_A_VAL]		= { 17, 12},
+-	[VCAP_ES0_ACT_PCP_A_VAL]		= { 29,  3},
+-	[VCAP_ES0_ACT_DEI_A_VAL]		= { 32,  1},
+-	[VCAP_ES0_ACT_VID_B_VAL]		= { 33, 12},
+-	[VCAP_ES0_ACT_PCP_B_VAL]		= { 45,  3},
+-	[VCAP_ES0_ACT_DEI_B_VAL]		= { 48,  1},
+-	[VCAP_ES0_ACT_RSV]			= { 49, 24},
+-	[VCAP_ES0_ACT_HIT_STICKY]		= { 73,  1},
+-};
+-
+-static const struct vcap_field vsc7514_vcap_is1_keys[] = {
+-	[VCAP_IS1_HK_TYPE]			= {  0,   1},
+-	[VCAP_IS1_HK_LOOKUP]			= {  1,   2},
+-	[VCAP_IS1_HK_IGR_PORT_MASK]		= {  3,  12},
+-	[VCAP_IS1_HK_RSV]			= { 15,   9},
+-	[VCAP_IS1_HK_OAM_Y1731]			= { 24,   1},
+-	[VCAP_IS1_HK_L2_MC]			= { 25,   1},
+-	[VCAP_IS1_HK_L2_BC]			= { 26,   1},
+-	[VCAP_IS1_HK_IP_MC]			= { 27,   1},
+-	[VCAP_IS1_HK_VLAN_TAGGED]		= { 28,   1},
+-	[VCAP_IS1_HK_VLAN_DBL_TAGGED]		= { 29,   1},
+-	[VCAP_IS1_HK_TPID]			= { 30,   1},
+-	[VCAP_IS1_HK_VID]			= { 31,  12},
+-	[VCAP_IS1_HK_DEI]			= { 43,   1},
+-	[VCAP_IS1_HK_PCP]			= { 44,   3},
+-	/* Specific Fields for IS1 Half Key S1_NORMAL */
+-	[VCAP_IS1_HK_L2_SMAC]			= { 47,  48},
+-	[VCAP_IS1_HK_ETYPE_LEN]			= { 95,   1},
+-	[VCAP_IS1_HK_ETYPE]			= { 96,  16},
+-	[VCAP_IS1_HK_IP_SNAP]			= {112,   1},
+-	[VCAP_IS1_HK_IP4]			= {113,   1},
+-	/* Layer-3 Information */
+-	[VCAP_IS1_HK_L3_FRAGMENT]		= {114,   1},
+-	[VCAP_IS1_HK_L3_FRAG_OFS_GT0]		= {115,   1},
+-	[VCAP_IS1_HK_L3_OPTIONS]		= {116,   1},
+-	[VCAP_IS1_HK_L3_DSCP]			= {117,   6},
+-	[VCAP_IS1_HK_L3_IP4_SIP]		= {123,  32},
+-	/* Layer-4 Information */
+-	[VCAP_IS1_HK_TCP_UDP]			= {155,   1},
+-	[VCAP_IS1_HK_TCP]			= {156,   1},
+-	[VCAP_IS1_HK_L4_SPORT]			= {157,  16},
+-	[VCAP_IS1_HK_L4_RNG]			= {173,   8},
+-	/* Specific Fields for IS1 Half Key S1_5TUPLE_IP4 */
+-	[VCAP_IS1_HK_IP4_INNER_TPID]            = { 47,   1},
+-	[VCAP_IS1_HK_IP4_INNER_VID]		= { 48,  12},
+-	[VCAP_IS1_HK_IP4_INNER_DEI]		= { 60,   1},
+-	[VCAP_IS1_HK_IP4_INNER_PCP]		= { 61,   3},
+-	[VCAP_IS1_HK_IP4_IP4]			= { 64,   1},
+-	[VCAP_IS1_HK_IP4_L3_FRAGMENT]		= { 65,   1},
+-	[VCAP_IS1_HK_IP4_L3_FRAG_OFS_GT0]	= { 66,   1},
+-	[VCAP_IS1_HK_IP4_L3_OPTIONS]		= { 67,   1},
+-	[VCAP_IS1_HK_IP4_L3_DSCP]		= { 68,   6},
+-	[VCAP_IS1_HK_IP4_L3_IP4_DIP]		= { 74,  32},
+-	[VCAP_IS1_HK_IP4_L3_IP4_SIP]		= {106,  32},
+-	[VCAP_IS1_HK_IP4_L3_PROTO]		= {138,   8},
+-	[VCAP_IS1_HK_IP4_TCP_UDP]		= {146,   1},
+-	[VCAP_IS1_HK_IP4_TCP]			= {147,   1},
+-	[VCAP_IS1_HK_IP4_L4_RNG]		= {148,   8},
+-	[VCAP_IS1_HK_IP4_IP_PAYLOAD_S1_5TUPLE]	= {156,  32},
+-};
+-
+-static const struct vcap_field vsc7514_vcap_is1_actions[] = {
+-	[VCAP_IS1_ACT_DSCP_ENA]			= {  0,  1},
+-	[VCAP_IS1_ACT_DSCP_VAL]			= {  1,  6},
+-	[VCAP_IS1_ACT_QOS_ENA]			= {  7,  1},
+-	[VCAP_IS1_ACT_QOS_VAL]			= {  8,  3},
+-	[VCAP_IS1_ACT_DP_ENA]			= { 11,  1},
+-	[VCAP_IS1_ACT_DP_VAL]			= { 12,  1},
+-	[VCAP_IS1_ACT_PAG_OVERRIDE_MASK]	= { 13,  8},
+-	[VCAP_IS1_ACT_PAG_VAL]			= { 21,  8},
+-	[VCAP_IS1_ACT_RSV]			= { 29,  9},
+-	/* The fields below are incorrectly shifted by 2 in the manual */
+-	[VCAP_IS1_ACT_VID_REPLACE_ENA]		= { 38,  1},
+-	[VCAP_IS1_ACT_VID_ADD_VAL]		= { 39, 12},
+-	[VCAP_IS1_ACT_FID_SEL]			= { 51,  2},
+-	[VCAP_IS1_ACT_FID_VAL]			= { 53, 13},
+-	[VCAP_IS1_ACT_PCP_DEI_ENA]		= { 66,  1},
+-	[VCAP_IS1_ACT_PCP_VAL]			= { 67,  3},
+-	[VCAP_IS1_ACT_DEI_VAL]			= { 70,  1},
+-	[VCAP_IS1_ACT_VLAN_POP_CNT_ENA]		= { 71,  1},
+-	[VCAP_IS1_ACT_VLAN_POP_CNT]		= { 72,  2},
+-	[VCAP_IS1_ACT_CUSTOM_ACE_TYPE_ENA]	= { 74,  4},
+-	[VCAP_IS1_ACT_HIT_STICKY]		= { 78,  1},
+-};
+-
+-static const struct vcap_field vsc7514_vcap_is2_keys[] = {
+-	/* Common: 46 bits */
+-	[VCAP_IS2_TYPE]				= {  0,   4},
+-	[VCAP_IS2_HK_FIRST]			= {  4,   1},
+-	[VCAP_IS2_HK_PAG]			= {  5,   8},
+-	[VCAP_IS2_HK_IGR_PORT_MASK]		= { 13,  12},
+-	[VCAP_IS2_HK_RSV2]			= { 25,   1},
+-	[VCAP_IS2_HK_HOST_MATCH]		= { 26,   1},
+-	[VCAP_IS2_HK_L2_MC]			= { 27,   1},
+-	[VCAP_IS2_HK_L2_BC]			= { 28,   1},
+-	[VCAP_IS2_HK_VLAN_TAGGED]		= { 29,   1},
+-	[VCAP_IS2_HK_VID]			= { 30,  12},
+-	[VCAP_IS2_HK_DEI]			= { 42,   1},
+-	[VCAP_IS2_HK_PCP]			= { 43,   3},
+-	/* MAC_ETYPE / MAC_LLC / MAC_SNAP / OAM common */
+-	[VCAP_IS2_HK_L2_DMAC]			= { 46,  48},
+-	[VCAP_IS2_HK_L2_SMAC]			= { 94,  48},
+-	/* MAC_ETYPE (TYPE=000) */
+-	[VCAP_IS2_HK_MAC_ETYPE_ETYPE]		= {142,  16},
+-	[VCAP_IS2_HK_MAC_ETYPE_L2_PAYLOAD0]	= {158,  16},
+-	[VCAP_IS2_HK_MAC_ETYPE_L2_PAYLOAD1]	= {174,   8},
+-	[VCAP_IS2_HK_MAC_ETYPE_L2_PAYLOAD2]	= {182,   3},
+-	/* MAC_LLC (TYPE=001) */
+-	[VCAP_IS2_HK_MAC_LLC_L2_LLC]		= {142,  40},
+-	/* MAC_SNAP (TYPE=010) */
+-	[VCAP_IS2_HK_MAC_SNAP_L2_SNAP]		= {142,  40},
+-	/* MAC_ARP (TYPE=011) */
+-	[VCAP_IS2_HK_MAC_ARP_SMAC]		= { 46,  48},
+-	[VCAP_IS2_HK_MAC_ARP_ADDR_SPACE_OK]	= { 94,   1},
+-	[VCAP_IS2_HK_MAC_ARP_PROTO_SPACE_OK]	= { 95,   1},
+-	[VCAP_IS2_HK_MAC_ARP_LEN_OK]		= { 96,   1},
+-	[VCAP_IS2_HK_MAC_ARP_TARGET_MATCH]	= { 97,   1},
+-	[VCAP_IS2_HK_MAC_ARP_SENDER_MATCH]	= { 98,   1},
+-	[VCAP_IS2_HK_MAC_ARP_OPCODE_UNKNOWN]	= { 99,   1},
+-	[VCAP_IS2_HK_MAC_ARP_OPCODE]		= {100,   2},
+-	[VCAP_IS2_HK_MAC_ARP_L3_IP4_DIP]	= {102,  32},
+-	[VCAP_IS2_HK_MAC_ARP_L3_IP4_SIP]	= {134,  32},
+-	[VCAP_IS2_HK_MAC_ARP_DIP_EQ_SIP]	= {166,   1},
+-	/* IP4_TCP_UDP / IP4_OTHER common */
+-	[VCAP_IS2_HK_IP4]			= { 46,   1},
+-	[VCAP_IS2_HK_L3_FRAGMENT]		= { 47,   1},
+-	[VCAP_IS2_HK_L3_FRAG_OFS_GT0]		= { 48,   1},
+-	[VCAP_IS2_HK_L3_OPTIONS]		= { 49,   1},
+-	[VCAP_IS2_HK_IP4_L3_TTL_GT0]		= { 50,   1},
+-	[VCAP_IS2_HK_L3_TOS]			= { 51,   8},
+-	[VCAP_IS2_HK_L3_IP4_DIP]		= { 59,  32},
+-	[VCAP_IS2_HK_L3_IP4_SIP]		= { 91,  32},
+-	[VCAP_IS2_HK_DIP_EQ_SIP]		= {123,   1},
+-	/* IP4_TCP_UDP (TYPE=100) */
+-	[VCAP_IS2_HK_TCP]			= {124,   1},
+-	[VCAP_IS2_HK_L4_DPORT]			= {125,  16},
+-	[VCAP_IS2_HK_L4_SPORT]			= {141,  16},
+-	[VCAP_IS2_HK_L4_RNG]			= {157,   8},
+-	[VCAP_IS2_HK_L4_SPORT_EQ_DPORT]		= {165,   1},
+-	[VCAP_IS2_HK_L4_SEQUENCE_EQ0]		= {166,   1},
+-	[VCAP_IS2_HK_L4_FIN]			= {167,   1},
+-	[VCAP_IS2_HK_L4_SYN]			= {168,   1},
+-	[VCAP_IS2_HK_L4_RST]			= {169,   1},
+-	[VCAP_IS2_HK_L4_PSH]			= {170,   1},
+-	[VCAP_IS2_HK_L4_ACK]			= {171,   1},
+-	[VCAP_IS2_HK_L4_URG]			= {172,   1},
+-	[VCAP_IS2_HK_L4_1588_DOM]		= {173,   8},
+-	[VCAP_IS2_HK_L4_1588_VER]		= {181,   4},
+-	/* IP4_OTHER (TYPE=101) */
+-	[VCAP_IS2_HK_IP4_L3_PROTO]		= {124,   8},
+-	[VCAP_IS2_HK_L3_PAYLOAD]		= {132,  56},
+-	/* IP6_STD (TYPE=110) */
+-	[VCAP_IS2_HK_IP6_L3_TTL_GT0]		= { 46,   1},
+-	[VCAP_IS2_HK_L3_IP6_SIP]		= { 47, 128},
+-	[VCAP_IS2_HK_IP6_L3_PROTO]		= {175,   8},
+-	/* OAM (TYPE=111) */
+-	[VCAP_IS2_HK_OAM_MEL_FLAGS]		= {142,   7},
+-	[VCAP_IS2_HK_OAM_VER]			= {149,   5},
+-	[VCAP_IS2_HK_OAM_OPCODE]		= {154,   8},
+-	[VCAP_IS2_HK_OAM_FLAGS]			= {162,   8},
+-	[VCAP_IS2_HK_OAM_MEPID]			= {170,  16},
+-	[VCAP_IS2_HK_OAM_CCM_CNTS_EQ0]		= {186,   1},
+-	[VCAP_IS2_HK_OAM_IS_Y1731]		= {187,   1},
+-};
+-
+-static const struct vcap_field vsc7514_vcap_is2_actions[] = {
+-	[VCAP_IS2_ACT_HIT_ME_ONCE]		= {  0,  1},
+-	[VCAP_IS2_ACT_CPU_COPY_ENA]		= {  1,  1},
+-	[VCAP_IS2_ACT_CPU_QU_NUM]		= {  2,  3},
+-	[VCAP_IS2_ACT_MASK_MODE]		= {  5,  2},
+-	[VCAP_IS2_ACT_MIRROR_ENA]		= {  7,  1},
+-	[VCAP_IS2_ACT_LRN_DIS]			= {  8,  1},
+-	[VCAP_IS2_ACT_POLICE_ENA]		= {  9,  1},
+-	[VCAP_IS2_ACT_POLICE_IDX]		= { 10,  9},
+-	[VCAP_IS2_ACT_POLICE_VCAP_ONLY]		= { 19,  1},
+-	[VCAP_IS2_ACT_PORT_MASK]		= { 20, 11},
+-	[VCAP_IS2_ACT_REW_OP]			= { 31,  9},
+-	[VCAP_IS2_ACT_SMAC_REPLACE_ENA]		= { 40,  1},
+-	[VCAP_IS2_ACT_RSV]			= { 41,  2},
+-	[VCAP_IS2_ACT_ACL_ID]			= { 43,  6},
+-	[VCAP_IS2_ACT_HIT_CNT]			= { 49, 32},
+-};
+-
+ static struct vcap_props vsc7514_vcap_props[] = {
+ 	[VCAP_ES0] = {
+ 		.action_type_width = 0,
+diff --git a/drivers/net/ethernet/mscc/vsc7514_regs.c b/drivers/net/ethernet/mscc/vsc7514_regs.c
+new file mode 100644
+index 000000000000..c2af4eb8ca5d
+--- /dev/null
++++ b/drivers/net/ethernet/mscc/vsc7514_regs.c
+@@ -0,0 +1,523 @@
++// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/*
++ * Microsemi Ocelot Switch driver
++ *
++ * Copyright (c) 2017 Microsemi Corporation
++ * Copyright (c) 2021 Innovative Advantage
++ */
++#include <soc/mscc/ocelot_vcap.h>
++#include <soc/mscc/vsc7514_regs.h>
++#include "ocelot.h"
++
++const u32 vsc7514_ana_regmap[] = {
++	REG(ANA_ADVLEARN,				0x009000),
++	REG(ANA_VLANMASK,				0x009004),
++	REG(ANA_PORT_B_DOMAIN,				0x009008),
++	REG(ANA_ANAGEFIL,				0x00900c),
++	REG(ANA_ANEVENTS,				0x009010),
++	REG(ANA_STORMLIMIT_BURST,			0x009014),
++	REG(ANA_STORMLIMIT_CFG,				0x009018),
++	REG(ANA_ISOLATED_PORTS,				0x009028),
++	REG(ANA_COMMUNITY_PORTS,			0x00902c),
++	REG(ANA_AUTOAGE,				0x009030),
++	REG(ANA_MACTOPTIONS,				0x009034),
++	REG(ANA_LEARNDISC,				0x009038),
++	REG(ANA_AGENCTRL,				0x00903c),
++	REG(ANA_MIRRORPORTS,				0x009040),
++	REG(ANA_EMIRRORPORTS,				0x009044),
++	REG(ANA_FLOODING,				0x009048),
++	REG(ANA_FLOODING_IPMC,				0x00904c),
++	REG(ANA_SFLOW_CFG,				0x009050),
++	REG(ANA_PORT_MODE,				0x009080),
++	REG(ANA_PGID_PGID,				0x008c00),
++	REG(ANA_TABLES_ANMOVED,				0x008b30),
++	REG(ANA_TABLES_MACHDATA,			0x008b34),
++	REG(ANA_TABLES_MACLDATA,			0x008b38),
++	REG(ANA_TABLES_MACACCESS,			0x008b3c),
++	REG(ANA_TABLES_MACTINDX,			0x008b40),
++	REG(ANA_TABLES_VLANACCESS,			0x008b44),
++	REG(ANA_TABLES_VLANTIDX,			0x008b48),
++	REG(ANA_TABLES_ISDXACCESS,			0x008b4c),
++	REG(ANA_TABLES_ISDXTIDX,			0x008b50),
++	REG(ANA_TABLES_ENTRYLIM,			0x008b00),
++	REG(ANA_TABLES_PTP_ID_HIGH,			0x008b54),
++	REG(ANA_TABLES_PTP_ID_LOW,			0x008b58),
++	REG(ANA_MSTI_STATE,				0x008e00),
++	REG(ANA_PORT_VLAN_CFG,				0x007000),
++	REG(ANA_PORT_DROP_CFG,				0x007004),
++	REG(ANA_PORT_QOS_CFG,				0x007008),
++	REG(ANA_PORT_VCAP_CFG,				0x00700c),
++	REG(ANA_PORT_VCAP_S1_KEY_CFG,			0x007010),
++	REG(ANA_PORT_VCAP_S2_CFG,			0x00701c),
++	REG(ANA_PORT_PCP_DEI_MAP,			0x007020),
++	REG(ANA_PORT_CPU_FWD_CFG,			0x007060),
++	REG(ANA_PORT_CPU_FWD_BPDU_CFG,			0x007064),
++	REG(ANA_PORT_CPU_FWD_GARP_CFG,			0x007068),
++	REG(ANA_PORT_CPU_FWD_CCM_CFG,			0x00706c),
++	REG(ANA_PORT_PORT_CFG,				0x007070),
++	REG(ANA_PORT_POL_CFG,				0x007074),
++	REG(ANA_PORT_PTP_CFG,				0x007078),
++	REG(ANA_PORT_PTP_DLY1_CFG,			0x00707c),
++	REG(ANA_OAM_UPM_LM_CNT,				0x007c00),
++	REG(ANA_PORT_PTP_DLY2_CFG,			0x007080),
++	REG(ANA_PFC_PFC_CFG,				0x008800),
++	REG(ANA_PFC_PFC_TIMER,				0x008804),
++	REG(ANA_IPT_OAM_MEP_CFG,			0x008000),
++	REG(ANA_IPT_IPT,				0x008004),
++	REG(ANA_PPT_PPT,				0x008ac0),
++	REG(ANA_FID_MAP_FID_MAP,			0x000000),
++	REG(ANA_AGGR_CFG,				0x0090b4),
++	REG(ANA_CPUQ_CFG,				0x0090b8),
++	REG(ANA_CPUQ_CFG2,				0x0090bc),
++	REG(ANA_CPUQ_8021_CFG,				0x0090c0),
++	REG(ANA_DSCP_CFG,				0x009100),
++	REG(ANA_DSCP_REWR_CFG,				0x009200),
++	REG(ANA_VCAP_RNG_TYPE_CFG,			0x009240),
++	REG(ANA_VCAP_RNG_VAL_CFG,			0x009260),
++	REG(ANA_VRAP_CFG,				0x009280),
++	REG(ANA_VRAP_HDR_DATA,				0x009284),
++	REG(ANA_VRAP_HDR_MASK,				0x009288),
++	REG(ANA_DISCARD_CFG,				0x00928c),
++	REG(ANA_FID_CFG,				0x009290),
++	REG(ANA_POL_PIR_CFG,				0x004000),
++	REG(ANA_POL_CIR_CFG,				0x004004),
++	REG(ANA_POL_MODE_CFG,				0x004008),
++	REG(ANA_POL_PIR_STATE,				0x00400c),
++	REG(ANA_POL_CIR_STATE,				0x004010),
++	REG(ANA_POL_STATE,				0x004014),
++	REG(ANA_POL_FLOWC,				0x008b80),
++	REG(ANA_POL_HYST,				0x008bec),
++	REG(ANA_POL_MISC_CFG,				0x008bf0),
++};
++EXPORT_SYMBOL(vsc7514_ana_regmap);
++
++const u32 vsc7514_qs_regmap[] = {
++	REG(QS_XTR_GRP_CFG,				0x000000),
++	REG(QS_XTR_RD,					0x000008),
++	REG(QS_XTR_FRM_PRUNING,				0x000010),
++	REG(QS_XTR_FLUSH,				0x000018),
++	REG(QS_XTR_DATA_PRESENT,			0x00001c),
++	REG(QS_XTR_CFG,					0x000020),
++	REG(QS_INJ_GRP_CFG,				0x000024),
++	REG(QS_INJ_WR,					0x00002c),
++	REG(QS_INJ_CTRL,				0x000034),
++	REG(QS_INJ_STATUS,				0x00003c),
++	REG(QS_INJ_ERR,					0x000040),
++	REG(QS_INH_DBG,					0x000048),
++};
++EXPORT_SYMBOL(vsc7514_qs_regmap);
++
++const u32 vsc7514_qsys_regmap[] = {
++	REG(QSYS_PORT_MODE,				0x011200),
++	REG(QSYS_SWITCH_PORT_MODE,			0x011234),
++	REG(QSYS_STAT_CNT_CFG,				0x011264),
++	REG(QSYS_EEE_CFG,				0x011268),
++	REG(QSYS_EEE_THRES,				0x011294),
++	REG(QSYS_IGR_NO_SHARING,			0x011298),
++	REG(QSYS_EGR_NO_SHARING,			0x01129c),
++	REG(QSYS_SW_STATUS,				0x0112a0),
++	REG(QSYS_EXT_CPU_CFG,				0x0112d0),
++	REG(QSYS_PAD_CFG,				0x0112d4),
++	REG(QSYS_CPU_GROUP_MAP,				0x0112d8),
++	REG(QSYS_QMAP,					0x0112dc),
++	REG(QSYS_ISDX_SGRP,				0x011400),
++	REG(QSYS_TIMED_FRAME_ENTRY,			0x014000),
++	REG(QSYS_TFRM_MISC,				0x011310),
++	REG(QSYS_TFRM_PORT_DLY,				0x011314),
++	REG(QSYS_TFRM_TIMER_CFG_1,			0x011318),
++	REG(QSYS_TFRM_TIMER_CFG_2,			0x01131c),
++	REG(QSYS_TFRM_TIMER_CFG_3,			0x011320),
++	REG(QSYS_TFRM_TIMER_CFG_4,			0x011324),
++	REG(QSYS_TFRM_TIMER_CFG_5,			0x011328),
++	REG(QSYS_TFRM_TIMER_CFG_6,			0x01132c),
++	REG(QSYS_TFRM_TIMER_CFG_7,			0x011330),
++	REG(QSYS_TFRM_TIMER_CFG_8,			0x011334),
++	REG(QSYS_RED_PROFILE,				0x011338),
++	REG(QSYS_RES_QOS_MODE,				0x011378),
++	REG(QSYS_RES_CFG,				0x012000),
++	REG(QSYS_RES_STAT,				0x012004),
++	REG(QSYS_EGR_DROP_MODE,				0x01137c),
++	REG(QSYS_EQ_CTRL,				0x011380),
++	REG(QSYS_EVENTS_CORE,				0x011384),
++	REG(QSYS_CIR_CFG,				0x000000),
++	REG(QSYS_EIR_CFG,				0x000004),
++	REG(QSYS_SE_CFG,				0x000008),
++	REG(QSYS_SE_DWRR_CFG,				0x00000c),
++	REG(QSYS_SE_CONNECT,				0x00003c),
++	REG(QSYS_SE_DLB_SENSE,				0x000040),
++	REG(QSYS_CIR_STATE,				0x000044),
++	REG(QSYS_EIR_STATE,				0x000048),
++	REG(QSYS_SE_STATE,				0x00004c),
++	REG(QSYS_HSCH_MISC_CFG,				0x011388),
++};
++EXPORT_SYMBOL(vsc7514_qsys_regmap);
++
++const u32 vsc7514_rew_regmap[] = {
++	REG(REW_PORT_VLAN_CFG,				0x000000),
++	REG(REW_TAG_CFG,				0x000004),
++	REG(REW_PORT_CFG,				0x000008),
++	REG(REW_DSCP_CFG,				0x00000c),
++	REG(REW_PCP_DEI_QOS_MAP_CFG,			0x000010),
++	REG(REW_PTP_CFG,				0x000050),
++	REG(REW_PTP_DLY1_CFG,				0x000054),
++	REG(REW_DSCP_REMAP_DP1_CFG,			0x000690),
++	REG(REW_DSCP_REMAP_CFG,				0x000790),
++	REG(REW_STAT_CFG,				0x000890),
++	REG(REW_PPT,					0x000680),
++};
++EXPORT_SYMBOL(vsc7514_rew_regmap);
++
++const u32 vsc7514_sys_regmap[] = {
++	REG(SYS_COUNT_RX_OCTETS,			0x000000),
++	REG(SYS_COUNT_RX_UNICAST,			0x000004),
++	REG(SYS_COUNT_RX_MULTICAST,			0x000008),
++	REG(SYS_COUNT_RX_BROADCAST,			0x00000c),
++	REG(SYS_COUNT_RX_SHORTS,			0x000010),
++	REG(SYS_COUNT_RX_FRAGMENTS,			0x000014),
++	REG(SYS_COUNT_RX_JABBERS,			0x000018),
++	REG(SYS_COUNT_RX_CRC_ALIGN_ERRS,		0x00001c),
++	REG(SYS_COUNT_RX_SYM_ERRS,			0x000020),
++	REG(SYS_COUNT_RX_64,				0x000024),
++	REG(SYS_COUNT_RX_65_127,			0x000028),
++	REG(SYS_COUNT_RX_128_255,			0x00002c),
++	REG(SYS_COUNT_RX_256_1023,			0x000030),
++	REG(SYS_COUNT_RX_1024_1526,			0x000034),
++	REG(SYS_COUNT_RX_1527_MAX,			0x000038),
++	REG(SYS_COUNT_RX_PAUSE,				0x00003c),
++	REG(SYS_COUNT_RX_CONTROL,			0x000040),
++	REG(SYS_COUNT_RX_LONGS,				0x000044),
++	REG(SYS_COUNT_RX_CLASSIFIED_DROPS,		0x000048),
++	REG(SYS_COUNT_TX_OCTETS,			0x000100),
++	REG(SYS_COUNT_TX_UNICAST,			0x000104),
++	REG(SYS_COUNT_TX_MULTICAST,			0x000108),
++	REG(SYS_COUNT_TX_BROADCAST,			0x00010c),
++	REG(SYS_COUNT_TX_COLLISION,			0x000110),
++	REG(SYS_COUNT_TX_DROPS,				0x000114),
++	REG(SYS_COUNT_TX_PAUSE,				0x000118),
++	REG(SYS_COUNT_TX_64,				0x00011c),
++	REG(SYS_COUNT_TX_65_127,			0x000120),
++	REG(SYS_COUNT_TX_128_511,			0x000124),
++	REG(SYS_COUNT_TX_512_1023,			0x000128),
++	REG(SYS_COUNT_TX_1024_1526,			0x00012c),
++	REG(SYS_COUNT_TX_1527_MAX,			0x000130),
++	REG(SYS_COUNT_TX_AGING,				0x000170),
++	REG(SYS_RESET_CFG,				0x000508),
++	REG(SYS_CMID,					0x00050c),
++	REG(SYS_VLAN_ETYPE_CFG,				0x000510),
++	REG(SYS_PORT_MODE,				0x000514),
++	REG(SYS_FRONT_PORT_MODE,			0x000548),
++	REG(SYS_FRM_AGING,				0x000574),
++	REG(SYS_STAT_CFG,				0x000578),
++	REG(SYS_SW_STATUS,				0x00057c),
++	REG(SYS_MISC_CFG,				0x0005ac),
++	REG(SYS_REW_MAC_HIGH_CFG,			0x0005b0),
++	REG(SYS_REW_MAC_LOW_CFG,			0x0005dc),
++	REG(SYS_CM_ADDR,				0x000500),
++	REG(SYS_CM_DATA,				0x000504),
++	REG(SYS_PAUSE_CFG,				0x000608),
++	REG(SYS_PAUSE_TOT_CFG,				0x000638),
++	REG(SYS_ATOP,					0x00063c),
++	REG(SYS_ATOP_TOT_CFG,				0x00066c),
++	REG(SYS_MAC_FC_CFG,				0x000670),
++	REG(SYS_MMGT,					0x00069c),
++	REG(SYS_MMGT_FAST,				0x0006a0),
++	REG(SYS_EVENTS_DIF,				0x0006a4),
++	REG(SYS_EVENTS_CORE,				0x0006b4),
++	REG(SYS_CNT,					0x000000),
++	REG(SYS_PTP_STATUS,				0x0006b8),
++	REG(SYS_PTP_TXSTAMP,				0x0006bc),
++	REG(SYS_PTP_NXT,				0x0006c0),
++	REG(SYS_PTP_CFG,				0x0006c4),
++};
++EXPORT_SYMBOL(vsc7514_sys_regmap);
++
++const u32 vsc7514_vcap_regmap[] = {
++	/* VCAP_CORE_CFG */
++	REG(VCAP_CORE_UPDATE_CTRL,			0x000000),
++	REG(VCAP_CORE_MV_CFG,				0x000004),
++	/* VCAP_CORE_CACHE */
++	REG(VCAP_CACHE_ENTRY_DAT,			0x000008),
++	REG(VCAP_CACHE_MASK_DAT,			0x000108),
++	REG(VCAP_CACHE_ACTION_DAT,			0x000208),
++	REG(VCAP_CACHE_CNT_DAT,				0x000308),
++	REG(VCAP_CACHE_TG_DAT,				0x000388),
++	/* VCAP_CONST */
++	REG(VCAP_CONST_VCAP_VER,			0x000398),
++	REG(VCAP_CONST_ENTRY_WIDTH,			0x00039c),
++	REG(VCAP_CONST_ENTRY_CNT,			0x0003a0),
++	REG(VCAP_CONST_ENTRY_SWCNT,			0x0003a4),
++	REG(VCAP_CONST_ENTRY_TG_WIDTH,			0x0003a8),
++	REG(VCAP_CONST_ACTION_DEF_CNT,			0x0003ac),
++	REG(VCAP_CONST_ACTION_WIDTH,			0x0003b0),
++	REG(VCAP_CONST_CNT_WIDTH,			0x0003b4),
++	REG(VCAP_CONST_CORE_CNT,			0x0003b8),
++	REG(VCAP_CONST_IF_CNT,				0x0003bc),
++};
++EXPORT_SYMBOL(vsc7514_vcap_regmap);
++
++const u32 vsc7514_ptp_regmap[] = {
++	REG(PTP_PIN_CFG,				0x000000),
++	REG(PTP_PIN_TOD_SEC_MSB,			0x000004),
++	REG(PTP_PIN_TOD_SEC_LSB,			0x000008),
++	REG(PTP_PIN_TOD_NSEC,				0x00000c),
++	REG(PTP_PIN_WF_HIGH_PERIOD,			0x000014),
++	REG(PTP_PIN_WF_LOW_PERIOD,			0x000018),
++	REG(PTP_CFG_MISC,				0x0000a0),
++	REG(PTP_CLK_CFG_ADJ_CFG,			0x0000a4),
++	REG(PTP_CLK_CFG_ADJ_FREQ,			0x0000a8),
++};
++EXPORT_SYMBOL(vsc7514_ptp_regmap);
++
++const u32 vsc7514_dev_gmii_regmap[] = {
++	REG(DEV_CLOCK_CFG,				0x0),
++	REG(DEV_PORT_MISC,				0x4),
++	REG(DEV_EVENTS,					0x8),
++	REG(DEV_EEE_CFG,				0xc),
++	REG(DEV_RX_PATH_DELAY,				0x10),
++	REG(DEV_TX_PATH_DELAY,				0x14),
++	REG(DEV_PTP_PREDICT_CFG,			0x18),
++	REG(DEV_MAC_ENA_CFG,				0x1c),
++	REG(DEV_MAC_MODE_CFG,				0x20),
++	REG(DEV_MAC_MAXLEN_CFG,				0x24),
++	REG(DEV_MAC_TAGS_CFG,				0x28),
++	REG(DEV_MAC_ADV_CHK_CFG,			0x2c),
++	REG(DEV_MAC_IFG_CFG,				0x30),
++	REG(DEV_MAC_HDX_CFG,				0x34),
++	REG(DEV_MAC_DBG_CFG,				0x38),
++	REG(DEV_MAC_FC_MAC_LOW_CFG,			0x3c),
++	REG(DEV_MAC_FC_MAC_HIGH_CFG,			0x40),
++	REG(DEV_MAC_STICKY,				0x44),
++	REG(PCS1G_CFG,					0x48),
++	REG(PCS1G_MODE_CFG,				0x4c),
++	REG(PCS1G_SD_CFG,				0x50),
++	REG(PCS1G_ANEG_CFG,				0x54),
++	REG(PCS1G_ANEG_NP_CFG,				0x58),
++	REG(PCS1G_LB_CFG,				0x5c),
++	REG(PCS1G_DBG_CFG,				0x60),
++	REG(PCS1G_CDET_CFG,				0x64),
++	REG(PCS1G_ANEG_STATUS,				0x68),
++	REG(PCS1G_ANEG_NP_STATUS,			0x6c),
++	REG(PCS1G_LINK_STATUS,				0x70),
++	REG(PCS1G_LINK_DOWN_CNT,			0x74),
++	REG(PCS1G_STICKY,				0x78),
++	REG(PCS1G_DEBUG_STATUS,				0x7c),
++	REG(PCS1G_LPI_CFG,				0x80),
++	REG(PCS1G_LPI_WAKE_ERROR_CNT,			0x84),
++	REG(PCS1G_LPI_STATUS,				0x88),
++	REG(PCS1G_TSTPAT_MODE_CFG,			0x8c),
++	REG(PCS1G_TSTPAT_STATUS,			0x90),
++	REG(DEV_PCS_FX100_CFG,				0x94),
++	REG(DEV_PCS_FX100_STATUS,			0x98),
++};
++EXPORT_SYMBOL(vsc7514_dev_gmii_regmap);
++
++const struct vcap_field vsc7514_vcap_es0_keys[] = {
++	[VCAP_ES0_EGR_PORT]			= { 0,   4 },
++	[VCAP_ES0_IGR_PORT]			= { 4,   4 },
++	[VCAP_ES0_RSV]				= { 8,   2 },
++	[VCAP_ES0_L2_MC]			= { 10,  1 },
++	[VCAP_ES0_L2_BC]			= { 11,  1 },
++	[VCAP_ES0_VID]				= { 12, 12 },
++	[VCAP_ES0_DP]				= { 24,  1 },
++	[VCAP_ES0_PCP]				= { 25,  3 },
++};
++EXPORT_SYMBOL(vsc7514_vcap_es0_keys);
++
++const struct vcap_field vsc7514_vcap_es0_actions[]   = {
++	[VCAP_ES0_ACT_PUSH_OUTER_TAG]		= { 0,   2 },
++	[VCAP_ES0_ACT_PUSH_INNER_TAG]		= { 2,   1 },
++	[VCAP_ES0_ACT_TAG_A_TPID_SEL]		= { 3,   2 },
++	[VCAP_ES0_ACT_TAG_A_VID_SEL]		= { 5,   1 },
++	[VCAP_ES0_ACT_TAG_A_PCP_SEL]		= { 6,   2 },
++	[VCAP_ES0_ACT_TAG_A_DEI_SEL]		= { 8,   2 },
++	[VCAP_ES0_ACT_TAG_B_TPID_SEL]		= { 10,  2 },
++	[VCAP_ES0_ACT_TAG_B_VID_SEL]		= { 12,  1 },
++	[VCAP_ES0_ACT_TAG_B_PCP_SEL]		= { 13,  2 },
++	[VCAP_ES0_ACT_TAG_B_DEI_SEL]		= { 15,  2 },
++	[VCAP_ES0_ACT_VID_A_VAL]		= { 17, 12 },
++	[VCAP_ES0_ACT_PCP_A_VAL]		= { 29,  3 },
++	[VCAP_ES0_ACT_DEI_A_VAL]		= { 32,  1 },
++	[VCAP_ES0_ACT_VID_B_VAL]		= { 33, 12 },
++	[VCAP_ES0_ACT_PCP_B_VAL]		= { 45,  3 },
++	[VCAP_ES0_ACT_DEI_B_VAL]		= { 48,  1 },
++	[VCAP_ES0_ACT_RSV]			= { 49, 24 },
++	[VCAP_ES0_ACT_HIT_STICKY]		= { 73,  1 },
++};
++EXPORT_SYMBOL(vsc7514_vcap_es0_actions);
++
++const struct vcap_field vsc7514_vcap_is1_keys[] = {
++	[VCAP_IS1_HK_TYPE]			= { 0,    1 },
++	[VCAP_IS1_HK_LOOKUP]			= { 1,    2 },
++	[VCAP_IS1_HK_IGR_PORT_MASK]		= { 3,   12 },
++	[VCAP_IS1_HK_RSV]			= { 15,   9 },
++	[VCAP_IS1_HK_OAM_Y1731]			= { 24,   1 },
++	[VCAP_IS1_HK_L2_MC]			= { 25,   1 },
++	[VCAP_IS1_HK_L2_BC]			= { 26,   1 },
++	[VCAP_IS1_HK_IP_MC]			= { 27,   1 },
++	[VCAP_IS1_HK_VLAN_TAGGED]		= { 28,   1 },
++	[VCAP_IS1_HK_VLAN_DBL_TAGGED]		= { 29,   1 },
++	[VCAP_IS1_HK_TPID]			= { 30,   1 },
++	[VCAP_IS1_HK_VID]			= { 31,  12 },
++	[VCAP_IS1_HK_DEI]			= { 43,   1 },
++	[VCAP_IS1_HK_PCP]			= { 44,   3 },
++	/* Specific Fields for IS1 Half Key S1_NORMAL */
++	[VCAP_IS1_HK_L2_SMAC]			= { 47,  48 },
++	[VCAP_IS1_HK_ETYPE_LEN]			= { 95,   1 },
++	[VCAP_IS1_HK_ETYPE]			= { 96,  16 },
++	[VCAP_IS1_HK_IP_SNAP]			= { 112,  1 },
++	[VCAP_IS1_HK_IP4]			= { 113,  1 },
++	/* Layer-3 Information */
++	[VCAP_IS1_HK_L3_FRAGMENT]		= { 114,  1 },
++	[VCAP_IS1_HK_L3_FRAG_OFS_GT0]		= { 115,  1 },
++	[VCAP_IS1_HK_L3_OPTIONS]		= { 116,  1 },
++	[VCAP_IS1_HK_L3_DSCP]			= { 117,  6 },
++	[VCAP_IS1_HK_L3_IP4_SIP]		= { 123, 32 },
++	/* Layer-4 Information */
++	[VCAP_IS1_HK_TCP_UDP]			= { 155,  1 },
++	[VCAP_IS1_HK_TCP]			= { 156,  1 },
++	[VCAP_IS1_HK_L4_SPORT]			= { 157, 16 },
++	[VCAP_IS1_HK_L4_RNG]			= { 173,  8 },
++	/* Specific Fields for IS1 Half Key S1_5TUPLE_IP4 */
++	[VCAP_IS1_HK_IP4_INNER_TPID]		= { 47,   1 },
++	[VCAP_IS1_HK_IP4_INNER_VID]		= { 48,  12 },
++	[VCAP_IS1_HK_IP4_INNER_DEI]		= { 60,   1 },
++	[VCAP_IS1_HK_IP4_INNER_PCP]		= { 61,   3 },
++	[VCAP_IS1_HK_IP4_IP4]			= { 64,   1 },
++	[VCAP_IS1_HK_IP4_L3_FRAGMENT]		= { 65,   1 },
++	[VCAP_IS1_HK_IP4_L3_FRAG_OFS_GT0]	= { 66,   1 },
++	[VCAP_IS1_HK_IP4_L3_OPTIONS]		= { 67,   1 },
++	[VCAP_IS1_HK_IP4_L3_DSCP]		= { 68,   6 },
++	[VCAP_IS1_HK_IP4_L3_IP4_DIP]		= { 74,  32 },
++	[VCAP_IS1_HK_IP4_L3_IP4_SIP]		= { 106, 32 },
++	[VCAP_IS1_HK_IP4_L3_PROTO]		= { 138,  8 },
++	[VCAP_IS1_HK_IP4_TCP_UDP]		= { 146,  1 },
++	[VCAP_IS1_HK_IP4_TCP]			= { 147,  1 },
++	[VCAP_IS1_HK_IP4_L4_RNG]		= { 148,  8 },
++	[VCAP_IS1_HK_IP4_IP_PAYLOAD_S1_5TUPLE]	= { 156, 32 },
++};
++EXPORT_SYMBOL(vsc7514_vcap_is1_keys);
++
++const struct vcap_field vsc7514_vcap_is1_actions[] = {
++	[VCAP_IS1_ACT_DSCP_ENA]			= { 0,   1 },
++	[VCAP_IS1_ACT_DSCP_VAL]			= { 1,   6 },
++	[VCAP_IS1_ACT_QOS_ENA]			= { 7,   1 },
++	[VCAP_IS1_ACT_QOS_VAL]			= { 8,   3 },
++	[VCAP_IS1_ACT_DP_ENA]			= { 11,  1 },
++	[VCAP_IS1_ACT_DP_VAL]			= { 12,  1 },
++	[VCAP_IS1_ACT_PAG_OVERRIDE_MASK]	= { 13,  8 },
++	[VCAP_IS1_ACT_PAG_VAL]			= { 21,  8 },
++	[VCAP_IS1_ACT_RSV]			= { 29,  9 },
++	/* The fields below are incorrectly shifted by 2 in the manual */
++	[VCAP_IS1_ACT_VID_REPLACE_ENA]		= { 38,  1 },
++	[VCAP_IS1_ACT_VID_ADD_VAL]		= { 39, 12 },
++	[VCAP_IS1_ACT_FID_SEL]			= { 51,  2 },
++	[VCAP_IS1_ACT_FID_VAL]			= { 53, 13 },
++	[VCAP_IS1_ACT_PCP_DEI_ENA]		= { 66,  1 },
++	[VCAP_IS1_ACT_PCP_VAL]			= { 67,  3 },
++	[VCAP_IS1_ACT_DEI_VAL]			= { 70,  1 },
++	[VCAP_IS1_ACT_VLAN_POP_CNT_ENA]		= { 71,  1 },
++	[VCAP_IS1_ACT_VLAN_POP_CNT]		= { 72,  2 },
++	[VCAP_IS1_ACT_CUSTOM_ACE_TYPE_ENA]	= { 74,  4 },
++	[VCAP_IS1_ACT_HIT_STICKY]		= { 78,  1 },
++};
++EXPORT_SYMBOL(vsc7514_vcap_is1_actions);
++
++const struct vcap_field vsc7514_vcap_is2_keys[] = {
++	/* Common: 46 bits */
++	[VCAP_IS2_TYPE]				= { 0,    4 },
++	[VCAP_IS2_HK_FIRST]			= { 4,    1 },
++	[VCAP_IS2_HK_PAG]			= { 5,    8 },
++	[VCAP_IS2_HK_IGR_PORT_MASK]		= { 13,  12 },
++	[VCAP_IS2_HK_RSV2]			= { 25,   1 },
++	[VCAP_IS2_HK_HOST_MATCH]		= { 26,   1 },
++	[VCAP_IS2_HK_L2_MC]			= { 27,   1 },
++	[VCAP_IS2_HK_L2_BC]			= { 28,   1 },
++	[VCAP_IS2_HK_VLAN_TAGGED]		= { 29,   1 },
++	[VCAP_IS2_HK_VID]			= { 30,  12 },
++	[VCAP_IS2_HK_DEI]			= { 42,   1 },
++	[VCAP_IS2_HK_PCP]			= { 43,   3 },
++	/* MAC_ETYPE / MAC_LLC / MAC_SNAP / OAM common */
++	[VCAP_IS2_HK_L2_DMAC]			= { 46,  48 },
++	[VCAP_IS2_HK_L2_SMAC]			= { 94,  48 },
++	/* MAC_ETYPE (TYPE=000) */
++	[VCAP_IS2_HK_MAC_ETYPE_ETYPE]		= { 142, 16 },
++	[VCAP_IS2_HK_MAC_ETYPE_L2_PAYLOAD0]	= { 158, 16 },
++	[VCAP_IS2_HK_MAC_ETYPE_L2_PAYLOAD1]	= { 174,  8 },
++	[VCAP_IS2_HK_MAC_ETYPE_L2_PAYLOAD2]	= { 182,  3 },
++	/* MAC_LLC (TYPE=001) */
++	[VCAP_IS2_HK_MAC_LLC_L2_LLC]		= { 142, 40 },
++	/* MAC_SNAP (TYPE=010) */
++	[VCAP_IS2_HK_MAC_SNAP_L2_SNAP]		= { 142, 40 },
++	/* MAC_ARP (TYPE=011) */
++	[VCAP_IS2_HK_MAC_ARP_SMAC]		= { 46,  48 },
++	[VCAP_IS2_HK_MAC_ARP_ADDR_SPACE_OK]	= { 94,   1 },
++	[VCAP_IS2_HK_MAC_ARP_PROTO_SPACE_OK]	= { 95,   1 },
++	[VCAP_IS2_HK_MAC_ARP_LEN_OK]		= { 96,   1 },
++	[VCAP_IS2_HK_MAC_ARP_TARGET_MATCH]	= { 97,   1 },
++	[VCAP_IS2_HK_MAC_ARP_SENDER_MATCH]	= { 98,   1 },
++	[VCAP_IS2_HK_MAC_ARP_OPCODE_UNKNOWN]	= { 99,   1 },
++	[VCAP_IS2_HK_MAC_ARP_OPCODE]		= { 100,  2 },
++	[VCAP_IS2_HK_MAC_ARP_L3_IP4_DIP]	= { 102, 32 },
++	[VCAP_IS2_HK_MAC_ARP_L3_IP4_SIP]	= { 134, 32 },
++	[VCAP_IS2_HK_MAC_ARP_DIP_EQ_SIP]	= { 166,  1 },
++	/* IP4_TCP_UDP / IP4_OTHER common */
++	[VCAP_IS2_HK_IP4]			= { 46,   1 },
++	[VCAP_IS2_HK_L3_FRAGMENT]		= { 47,   1 },
++	[VCAP_IS2_HK_L3_FRAG_OFS_GT0]		= { 48,   1 },
++	[VCAP_IS2_HK_L3_OPTIONS]		= { 49,   1 },
++	[VCAP_IS2_HK_IP4_L3_TTL_GT0]		= { 50,   1 },
++	[VCAP_IS2_HK_L3_TOS]			= { 51,   8 },
++	[VCAP_IS2_HK_L3_IP4_DIP]		= { 59,  32 },
++	[VCAP_IS2_HK_L3_IP4_SIP]		= { 91,  32 },
++	[VCAP_IS2_HK_DIP_EQ_SIP]		= { 123,  1 },
++	/* IP4_TCP_UDP (TYPE=100) */
++	[VCAP_IS2_HK_TCP]			= { 124,  1 },
++	[VCAP_IS2_HK_L4_DPORT]			= { 125, 16 },
++	[VCAP_IS2_HK_L4_SPORT]			= { 141, 16 },
++	[VCAP_IS2_HK_L4_RNG]			= { 157,  8 },
++	[VCAP_IS2_HK_L4_SPORT_EQ_DPORT]		= { 165,  1 },
++	[VCAP_IS2_HK_L4_SEQUENCE_EQ0]		= { 166,  1 },
++	[VCAP_IS2_HK_L4_FIN]			= { 167,  1 },
++	[VCAP_IS2_HK_L4_SYN]			= { 168,  1 },
++	[VCAP_IS2_HK_L4_RST]			= { 169,  1 },
++	[VCAP_IS2_HK_L4_PSH]			= { 170,  1 },
++	[VCAP_IS2_HK_L4_ACK]			= { 171,  1 },
++	[VCAP_IS2_HK_L4_URG]			= { 172,  1 },
++	[VCAP_IS2_HK_L4_1588_DOM]		= { 173,  8 },
++	[VCAP_IS2_HK_L4_1588_VER]		= { 181,  4 },
++	/* IP4_OTHER (TYPE=101) */
++	[VCAP_IS2_HK_IP4_L3_PROTO]		= { 124,  8 },
++	[VCAP_IS2_HK_L3_PAYLOAD]		= { 132, 56 },
++	/* IP6_STD (TYPE=110) */
++	[VCAP_IS2_HK_IP6_L3_TTL_GT0]		= { 46,   1 },
++	[VCAP_IS2_HK_L3_IP6_SIP]		= { 47, 128 },
++	[VCAP_IS2_HK_IP6_L3_PROTO]		= { 175,  8 },
++	/* OAM (TYPE=111) */
++	[VCAP_IS2_HK_OAM_MEL_FLAGS]		= { 142,  7 },
++	[VCAP_IS2_HK_OAM_VER]			= { 149,  5 },
++	[VCAP_IS2_HK_OAM_OPCODE]		= { 154,  8 },
++	[VCAP_IS2_HK_OAM_FLAGS]			= { 162,  8 },
++	[VCAP_IS2_HK_OAM_MEPID]			= { 170, 16 },
++	[VCAP_IS2_HK_OAM_CCM_CNTS_EQ0]		= { 186,  1 },
++	[VCAP_IS2_HK_OAM_IS_Y1731]		= { 187,  1 },
++};
++EXPORT_SYMBOL(vsc7514_vcap_is2_keys);
++
++const struct vcap_field vsc7514_vcap_is2_actions[] = {
++	[VCAP_IS2_ACT_HIT_ME_ONCE]		= { 0,   1 },
++	[VCAP_IS2_ACT_CPU_COPY_ENA]		= { 1,   1 },
++	[VCAP_IS2_ACT_CPU_QU_NUM]		= { 2,   3 },
++	[VCAP_IS2_ACT_MASK_MODE]		= { 5,   2 },
++	[VCAP_IS2_ACT_MIRROR_ENA]		= { 7,   1 },
++	[VCAP_IS2_ACT_LRN_DIS]			= { 8,   1 },
++	[VCAP_IS2_ACT_POLICE_ENA]		= { 9,   1 },
++	[VCAP_IS2_ACT_POLICE_IDX]		= { 10,  9 },
++	[VCAP_IS2_ACT_POLICE_VCAP_ONLY]		= { 19,  1 },
++	[VCAP_IS2_ACT_PORT_MASK]		= { 20, 11 },
++	[VCAP_IS2_ACT_REW_OP]			= { 31,  9 },
++	[VCAP_IS2_ACT_SMAC_REPLACE_ENA]		= { 40,  1 },
++	[VCAP_IS2_ACT_RSV]			= { 41,  2 },
++	[VCAP_IS2_ACT_ACL_ID]			= { 43,  6 },
++	[VCAP_IS2_ACT_HIT_CNT]			= { 49, 32 },
++};
++EXPORT_SYMBOL(vsc7514_vcap_is2_actions);
+diff --git a/include/soc/mscc/vsc7514_regs.h b/include/soc/mscc/vsc7514_regs.h
+new file mode 100644
+index 000000000000..98743e252012
+--- /dev/null
++++ b/include/soc/mscc/vsc7514_regs.h
+@@ -0,0 +1,27 @@
++/* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
++/*
++ * Microsemi Ocelot Switch driver
++ *
++ * Copyright (c) 2021 Innovative Advantage Inc.
++ */
++
++#ifndef VSC7514_REGS_H
++#define VSC7514_REGS_H
++
++extern const u32 vsc7514_ana_regmap[];
++extern const u32 vsc7514_qs_regmap[];
++extern const u32 vsc7514_qsys_regmap[];
++extern const u32 vsc7514_rew_regmap[];
++extern const u32 vsc7514_sys_regmap[];
++extern const u32 vsc7514_vcap_regmap[];
++extern const u32 vsc7514_ptp_regmap[];
++extern const u32 vsc7514_dev_gmii_regmap[];
++
++extern const struct vcap_field vsc7514_vcap_es0_keys[];
++extern const struct vcap_field vsc7514_vcap_es0_actions[];
++extern const struct vcap_field vsc7514_vcap_is1_keys[];
++extern const struct vcap_field vsc7514_vcap_is1_actions[];
++extern const struct vcap_field vsc7514_vcap_is2_keys[];
++extern const struct vcap_field vsc7514_vcap_is2_actions[];
++
++#endif
 -- 
 2.25.1
 
