@@ -2,138 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F63146C32B
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 19:53:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 48B1B46C33B
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 19:58:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236181AbhLGS5S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 13:57:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52366 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231778AbhLGS5R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 13:57:17 -0500
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAAD1C061574;
-        Tue,  7 Dec 2021 10:53:46 -0800 (PST)
-Received: by mail-ed1-x534.google.com with SMTP id w1so60648866edc.6;
-        Tue, 07 Dec 2021 10:53:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=fUlY4LTKHwXbxbYcpl4JSEaEiScO6d6eYAb4xAw34iQ=;
-        b=oCGB3vLyLBqgQ6j5jmoCZ5acU0AYWQ8OHaTFP9sJ5p3TpK2x5KFbH2sfjCy+QgHlda
-         cVdeSM8MW0Zh8joch1QozcclebVkHnbW14qDSv3eFWvoZw+JH9IFo6ecllIFeoLCdsuK
-         7w6i8xDj1+SYlilCXkRNMK+VqKUU0RseZcNkblemogSSTAOMg+sPRrCAsagDX2h02lp3
-         QIX8oAhfl9r/06f4fJlNOA9vFsMoDOg4BOsvmhnbKB9xgrGwSkA5pThxBVzFv/9By7wW
-         Yj6A7iRX4GpcusMHQ00bwox5USh0EAU/qlGR7GX47MgI740mp6cz98SGjlgczNpio+Ah
-         hxDQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=fUlY4LTKHwXbxbYcpl4JSEaEiScO6d6eYAb4xAw34iQ=;
-        b=TUxgjz6M/ejtIzDxZq7bl/AN9fT2C+Xrb9tC9V1i1lKvmqn6E5k4j+La5LxV0tnf/5
-         1WYIPmWbHrJLCPO5XbJ1YQnUxHoGf56x9cRJvuqimsBGJqrxvAvixS643UaxZZ+I2UIQ
-         MSh8Koz3d0xiLr1yeXhVuKaN4JySAEZQiatM1znnxTEpwIHqbirWY4pMLHYn9rvEVyDW
-         wR/rK510v+9MnD3Jr5FhuIfZQ7GkhH9Q62XO6TjouG9vgc6gxiWHtLkziAEVgIIq7pCO
-         XP/y4IABvndoPBp7pRqauLaJYBO7SeAusNrICCvE8nUPsQpeVu3CBB+RoPt4d4CCB4qT
-         CGHg==
-X-Gm-Message-State: AOAM532IWL58bM21239ujF2wAFCTH8p4lJm5iCWW6FjtZiKPzf3l4iB2
-        QB9+qA9x56JklRlmcLlLeWA=
-X-Google-Smtp-Source: ABdhPJwNQAcKlRruoBZ9uvD3AcJo37DxxZDZVQ/J/370BZxibOdllX0sCAYxLwy1la5Md9YtGc4SfA==
-X-Received: by 2002:a17:907:8a20:: with SMTP id sc32mr1359019ejc.65.1638903225261;
-        Tue, 07 Dec 2021 10:53:45 -0800 (PST)
-Received: from Ansuel-xps. (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.gmail.com with ESMTPSA id t5sm404482edd.68.2021.12.07.10.53.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Dec 2021 10:53:45 -0800 (PST)
-Message-ID: <61afadb9.1c69fb81.7dfad.19b1@mx.google.com>
-X-Google-Original-Message-ID: <Ya+tt/I+gFi95GI6@Ansuel-xps.>
-Date:   Tue, 7 Dec 2021 19:53:43 +0100
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [net-next RFC PATCH 0/6] Add support for qca8k mdio rw in
- Ethernet packet
-References: <20211207145942.7444-1-ansuelsmth@gmail.com>
- <Ya+q02HlWsHMYyAe@lunn.ch>
-MIME-Version: 1.0
+        id S240791AbhLGTCZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 14:02:25 -0500
+Received: from mail-dm6nam11on2056.outbound.protection.outlook.com ([40.107.223.56]:34113
+        "EHLO NAM11-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S231778AbhLGTCY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 7 Dec 2021 14:02:24 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UvciYHvRPGNz0Cj2A7ZE6v50mo8APivk61WO0sZCKR0nRikUQ+wZCH/X+8b2d2RdF7bEt5qedSdbSFaTPAHJ3K5qpNZxbp0fPEpNf2n76Ab7GdPJcXZXu7RguJNBYazFTWfzYOjqL5oEkyJdCSHl6isqleBErWZvsVmHbR4Bu+s90uc1wKPwim7WPSaAmvHJtlTnvlByQAclhD0c3OREB3BrCzGXM467rhZfSaS6L4IVi44Trjjv1EbqwlwMuuCaOyIOypiDvgq3UCeU2Vm9zHxX6DpC7DNZqsiOXAQF6H+8hzWmzRqOuFPRcQRLiVlbtheh/II8Sh888FPYZZX4Rw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=D1xDlLn7OtbxWiFLhytif42tAWtAwrHyXlvYPL5Mugw=;
+ b=ErJVwgMkhOkoa6rU6iLxLT+vc3E77buqXgIt6apFYR3rzQt9AdFEHbzw2Qgsaqs9gQ4btdJBAD4qeF/kyg2FzRGjaAkIX2mJgMufLSQ3VENZ/ETsN/wUomO3pfokIpac2qB2MnnwyItFrxJ6IPTa/WJe7A3imqfo9ZCDUXBmirbdvYa/i4tLWTy0Uo7uzxOppTbZ49u0Ez0Z1R7R9vPuq5AT9aitoAEh18LzLEB5C3jr29DMy1f2FkqaWw4a8oebOnoUoJv7RvvKMycJZiuWxSSgx2mWFjmFLEWZ9SVLzLDy7NkGb1TYtyQVYRe2gLB+dd3LnntPWsTYWJ3G9VE8Iw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=D1xDlLn7OtbxWiFLhytif42tAWtAwrHyXlvYPL5Mugw=;
+ b=i2rn/Oe1yIO0Mx/v1S/PWz7GnwueL+CHGiuCF/AVSce8/cQhsfF998wjXML1CKEMb/FKJiUn9zr2JKp0W95Uj6lDXe+4AFVPOIeG/0TwU2v4WKHHGpcwkYs2Z/Qm6iuOUYbYhIhLKWyXpRN/U01+X+eV2GyRqQkRO+N8S5ypLCFhxFIYbQqAFp2iMn4t0TqBxT8SQow35pAHCiS1RlWgmrqjNQ6LAVHprDUpDYVOvrYy+PcNWwvzx3v9DhQmec5URByYAC12ByYcvQH7fD5469rvAXxSqv+Pm6JQ/avL/0/19DBJH/RrAliekreg0GWL6BQwJ4deeW1EzmP1PRjxPQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
+ by BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.15; Tue, 7 Dec
+ 2021 18:58:52 +0000
+Received: from BL0PR12MB5506.namprd12.prod.outlook.com
+ ([fe80::d8be:e4e4:ce53:6d11]) by BL0PR12MB5506.namprd12.prod.outlook.com
+ ([fe80::d8be:e4e4:ce53:6d11%5]) with mapi id 15.20.4755.022; Tue, 7 Dec 2021
+ 18:58:52 +0000
+Date:   Tue, 7 Dec 2021 14:58:49 -0400
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org
+Subject: Re: [PATCH mlx5-next 0/4] Add support to multiple RDMA priorities
+ for FDB rules
+Message-ID: <20211207185849.GA119105@nvidia.com>
+References: <20211201193621.9129-1-saeed@kernel.org>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Ya+q02HlWsHMYyAe@lunn.ch>
+In-Reply-To: <20211201193621.9129-1-saeed@kernel.org>
+X-ClientProxiedBy: SJ0PR03CA0207.namprd03.prod.outlook.com
+ (2603:10b6:a03:2ef::32) To BL0PR12MB5506.namprd12.prod.outlook.com
+ (2603:10b6:208:1cb::22)
+MIME-Version: 1.0
+Received: from mlx.ziepe.ca (206.223.160.26) by SJ0PR03CA0207.namprd03.prod.outlook.com (2603:10b6:a03:2ef::32) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.20 via Frontend Transport; Tue, 7 Dec 2021 18:58:52 +0000
+Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1mufft-000V02-7Z; Tue, 07 Dec 2021 14:58:49 -0400
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: bc3953cb-48f1-4dc2-4434-08d9b9b39c39
+X-MS-TrafficTypeDiagnostic: BL0PR12MB5506:EE_
+X-Microsoft-Antispam-PRVS: <BL0PR12MB5506015AD152848B575B6B99C26E9@BL0PR12MB5506.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: P5/Weedv1nv/W+0mAP65NirwBa+wFlZV6iS/ASUYLlSw/4f4c/ry0WFx7s3cGrHNuAVWxySwpN0az2CbXhIdZQozAi7rrq+6XzJChApiRKq1umR2ilVmqwwwj3mu60sfg/1il85iaD+rw9GUifAQmiLTVL5rfOcJA8ru5t4jqi39hDA150fMv10s66lR3KLTiOWxeZ/B4WptXNwjoE3lMRMBOPt0ygkRSPxEY9hHJJqS4nJMSOigbxBJ8l419ErK5TN0CArOkUVlodhacF0PPwoWRncS+fN6NzgobVkuLiSVughg/0NQt1aOL8YbRCnQPu29U1G0c4ai7+CsTtosIj9IP2Xop6TP1YtbrEppprPTiDg4M6COhb5WPVYjGzVT68A3h04WgV1oU1XJ2zsaRJNjUxga4K9ObvjS0VDjUVwXm+QkPh8Nkmd6nJJMsguhm8z5H4P6yn6+0viRQjhjW+g+MfQbYyTbbSelqnswNbjVkYcVYmdM9ywdwGm6rY0aB5DvlxfSFqxRNdT9486vDVnU6UYKqvQ9E5VVUSTfOGmQaUHFcmQYrkBJ4TzxBREHKo9QtubFcC38TAG7G2CC7KJ3qQrna0w30+DhMreJSThbCXTRLnISvQ4BuTKpWpMTClW3PtVrgHJs6lqmyN/6Q4TEyhF57jMqdSTeiZ53seRHVoeeliV9iFl1DRTZKSvyTjD7uMx50A66wy+OChDNbA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL0PR12MB5506.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(83380400001)(4744005)(4326008)(426003)(33656002)(1076003)(6916009)(26005)(9786002)(36756003)(9746002)(66556008)(186003)(66946007)(66476007)(38100700002)(316002)(508600001)(5660300002)(8676002)(54906003)(2906002)(2616005)(8936002)(86362001)(27376004);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?NEJduoSYaVJbLaEaCH0XMmSTw6q1G1SpljUypyuOK55KBIB0a3VxojR79dxo?=
+ =?us-ascii?Q?lPgb24Jwte7Qi+Q2aDaGeAqKO/DKkagx1OR8JlNPQsqf59mbOxwqkSEs/cUw?=
+ =?us-ascii?Q?moXeMKMYIb0ve22W7+5CGfnZQaAVGT3O0NYN8gNuqK2vWjbl1NP9U3Vm1p7e?=
+ =?us-ascii?Q?pEz/2ubHhmuskQZXy6zDnlhM9J3EppoUyEFvz8JpVeVtxv8tU1I8lAcgEQdH?=
+ =?us-ascii?Q?nUjxTki/BFKfYABYIUX79+ztufdlsgx33SlZ97XSNGcgL7a+WnfGvl3upJdi?=
+ =?us-ascii?Q?lMhIOt0wImbagU8h2oaqgycRUke8XHza+21Z29T4w/Gc3wINc7CBzz6F+7mS?=
+ =?us-ascii?Q?sgUNCleMipzOZiirQrxRhIXxa0gKpoZSGVaOWzJUPh8l0Ir04H1GyNVubejY?=
+ =?us-ascii?Q?4bHlFcwMOsFg4MFh9XlYHCKrnIrYUnRgYOZqqDwS4WetAyd8LXzB/Yf2D8GV?=
+ =?us-ascii?Q?zjSzQxjJdOkZANvY9jsU02XCS57AUQ6qG6SAs8c4CwBAg/IOicve+GSH07lm?=
+ =?us-ascii?Q?Nfkiu3ucQXBCjYImfJ84xdHJN31n+/RvTLTBIG7VvegicFZV9/XdtVO0o2Tj?=
+ =?us-ascii?Q?KXgMmg/jlXdC0n7Ivl8M48dXPypXM9pmznTezV3qPsmrbBZBmO8bjlRU5f2r?=
+ =?us-ascii?Q?VNR2pndolkcgJfMnZLaReSdym5Dc6gehSZzqPXUzsNYZsT4377U3iNSi5xm4?=
+ =?us-ascii?Q?zwqAlVTkfzTA78JZLKlZPKYOZbVQ3GsKgGH59tiGnZnZeQ3p5fKmsTVEFPZN?=
+ =?us-ascii?Q?WuCOvbuq+NaUp0w6cA1ITddASDr9jeFo/yBlKfaPVqx2R8c3eIXIXGLQAJ0b?=
+ =?us-ascii?Q?zXHnRrt6aXY7R9SZPK+92iETGeeMqiX4bAWhtYb08Bko/0ccysaCe+PQFjRb?=
+ =?us-ascii?Q?fAQBmHENmPo8kMlOjm5OFvD6NApoeu0X9wBVL++xzGaE5u/ay9u9CSauOQ6e?=
+ =?us-ascii?Q?AR/X8XIED07f5KBnmasdZnupzoBRUoPOsJz89t6SUtVZCveYYY3Xj5+0blPE?=
+ =?us-ascii?Q?lOwUv2JqRAWxQumRCCU17ZuPHIxC6jM9fG/IkE548umYQPt9F9NUoAtIVMzB?=
+ =?us-ascii?Q?7vgpJWEr6KgvwCfCYsi7t52RAq5kZq4JCL1vT1bDA8wsVLTePH6yYYqBi8NJ?=
+ =?us-ascii?Q?g0DG3NA6oKnuk03Au0nKkBe/iL8DC4uQd0jckB1BbLoad3SVqB8drxj+QLIe?=
+ =?us-ascii?Q?7o3jFxeWdDlNfrXs1Bhedmkrr+sSmnpcPn506RzCb5zEn98FZTkoq5E302EN?=
+ =?us-ascii?Q?/3hdyycXPJSlHjM0G4j9RY0qkzkDEIfyNQlNmflJhT8yAHfe5VWyf7gNvgNf?=
+ =?us-ascii?Q?/CcFtdcHN4iSbpzl4nS5WSrJUDCeFjQk9FjYdEhsr8+jZDXAYbsdJf5i0l+F?=
+ =?us-ascii?Q?RIV0qGy836RUq4NuynSiOkqyJlsDg/yCppGpBf3kV2OfZai7bubfB9T9iH/I?=
+ =?us-ascii?Q?legEyuFDzP/ZU+FTmycyb7yfB5XQE3Xzb9SX9iR08wAGpZOkk1cY/C8gw6cS?=
+ =?us-ascii?Q?J+ejkOLRVItM+HoX35FNFi6A3yIyH12XLzAdkF9qu7tCOmOhROW4dAyCsBM9?=
+ =?us-ascii?Q?9E519OueLVpUu3etdnA=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: bc3953cb-48f1-4dc2-4434-08d9b9b39c39
+X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Dec 2021 18:58:52.3106
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6l+BQ+yq5uxF8YMeFI2ELtLAv47emLTjUKVJ4H0/dc2p1carw43n6VzUWogE5WiK
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR12MB5506
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 07, 2021 at 07:41:23PM +0100, Andrew Lunn wrote:
-> > I still have to find a solution to a slowdown problem and this is where
-> > I would love to get some hint.
-> > Currently I still didn't find a good way to understand when the tagger
-> > starts to accept packets and because of this the initial setup is slow
-> > as every completion timeouts. Am I missing something or is there a way
-> > to check for this?
+On Wed, Dec 01, 2021 at 11:36:17AM -0800, Saeed Mahameed wrote:
+> From: Saeed Mahameed <saeedm@nvidia.com>
 > 
-> I've not looked at this particular driver, i just know the general
-> architecture.
+> Currently, the driver ignores the user's priority for flow steering
+> rules in FDB namespace. Change it and create the rule in the right
+> priority.
 > 
-> The MDIO bus driver probes first, maybe as part of the Ethernet
-> driver, maybe as a standalone MDIO driver. The switch is found in DT
-> and the driver code will at some point later probe the switch driver.
+> It will allow to create FDB steering rules in up to 16 different
+> priorities.
 > 
-> The switch driver has working MDIO at this point. It should use MDIO
-> to talk to the switch, make sure it is there, maybe do some initial
-> configuration. Once it is happy, it registers the switch with the DSA
-> core using dsa_register_switch().
+> Maor Gottlieb (4):
+>   net/mlx5: Separate FDB namespace
+>   net/mlx5: Refactor mlx5_get_flow_namespace
+>   net/mlx5: Create more priorities for FDB bypass namespace
+>   RDMA/mlx5: Add support to multiple priorities for FDB rules
 > 
-> If this is a single switch, the DSA core will then start setting
-> things up. As part of dsa_switch_setup() it will call the switch
-> drivers setup() method. It then figures out what tag driver to use, by
-> calling dsa_switch_setup_tag_protocol(). However, the tag driver
-> itself is not inserted into the chain yet. That happens later.  Once
-> the switch is setup, dsa_tree_setup_master() is called which does
-> dsa_master_setup() and in the middle there is:
-> 
-> 	/* If we use a tagging format that doesn't have an ethertype
-> 	 * field, make sure that all packets from this point on get
-> 	 * sent to the tag format's receive function.
-> 	 */
-> 	wmb();
-> 
-> 	dev->dsa_ptr = cpu_dp;
-> 
-> This is the magic to actually enable the tagger receiving frames.
-> 
+>  drivers/infiniband/hw/mlx5/fs.c               | 18 ++---
+>  drivers/infiniband/hw/mlx5/mlx5_ib.h          |  3 +-
+>  .../net/ethernet/mellanox/mlx5/core/fs_cmd.c  |  4 +-
+>  .../net/ethernet/mellanox/mlx5/core/fs_core.c | 76 +++++++++++++++----
+>  include/linux/mlx5/fs.h                       |  1 +
+>  5 files changed, 75 insertions(+), 27 deletions(-)
 
-Will check if using this is the correct way to prevent use of this
-alternative way before it's available.
+Did you want this to go to the rdma tree? If so it seems fine, please
+update the shared branch
 
-> I need to look at your patches, but why is the tagger involved?  At
-> least for the Marvell switch, you send a pretty normal looking
-> Ethernet frame to a specific MAC address, and the switch replies using
-> that MAC address. And it has an Ether Type specific to switch
-> control. Since this is all normal looking, there are hooks in the
-> network stack which can be used to get these frames.
->
-
-The qca tag header provide a TYPE value that refer to a big list of
-Frame type. In all of this at value 2 we have the type that tells us
-that is a READ_WRITE_REG_ACK (aka a mdio rw Ethernet packet)
-
-The idea of using the tagger is to skip parsing the packet 2 times
-considering the qca tag header is present at the same place in both
-normal packet and mdio rw Ethernet packet.
-
-Your idea would be hook this before the tagger and parse it?
-I assume that is the only way if this has to be generilized. But I
-wonder if this would create some overhead by the double parsing.
-
-> 	Andrew
-> 
-
--- 
-	Ansuel
+Thanks,
+Jason
