@@ -2,238 +2,340 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B814046C7FB
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 00:05:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5385746C7FD
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 00:06:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238180AbhLGXIq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 18:08:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56102 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238150AbhLGXIq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 18:08:46 -0500
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CA1FC061574;
-        Tue,  7 Dec 2021 15:05:15 -0800 (PST)
-Received: by mail-wm1-x334.google.com with SMTP id j140-20020a1c2392000000b003399ae48f58so2890865wmj.5;
-        Tue, 07 Dec 2021 15:05:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=daT0BRDRC5WhA1yaih6/jyrYlJJtWyQd9d5tZI5Lpqw=;
-        b=Cc51MmOVkKzHPu9rIIIy3/afv7cjzxca/DoylPsojJhjV4aySiPob3b/5VG53IvAfC
-         0wjxbr9Q+XmCE+YrxChrbRNZF7VjXqINbyepW4CVCmS6+kO3RxltC/VFDvTq3BIXVPPz
-         SQBljUdc0ZTihmXPVC4M10IJuWXGV2pgrlRURPMGkD3+la7DlhBVBhhkL5eGaDktPwwZ
-         BnMrnNLD+c+j0+HHQUilz67vIqP5iRhQZ22or7L90wu/fQ956Ulmlt0CLi/tJitExtip
-         IdVs4AsU3+lkhF6Hmn6+NWrYz7oyb7wpR9sFZiZVGIi05N5r0GEYmY9Hm30Y/Or2I3Aw
-         WhdQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=daT0BRDRC5WhA1yaih6/jyrYlJJtWyQd9d5tZI5Lpqw=;
-        b=hdhlyD1TOBH7N1gL1b4RirlDtZqZU7Rd77/Nf/30ijZuB0BhjarM7CkwCbURoBllXl
-         K8cYZhz+Dple+mhfpX0MjDur56AHTSdKYdyg7xmjTw2BGb0aIVnNF2nALY2KaMPusbC8
-         UDZn2qkwilttd/bwFqQWWCs1ir73jEsem7v2yslU1rQHlTt8SrD995Y9BLHE6zZhUv0J
-         Xe9NiOLKbJnc2KaoBwG4N8Ux1axBNSmeMOFyaHV6UUzB8YcwDCg67uYsuJ0lcdPA+TtB
-         R263LQPJTQH1iTRxy50xz0oEuY44Pt8uko8aKr5/IqRilDVx2Y5tQR3dJtshFTZToL0J
-         Sw0w==
-X-Gm-Message-State: AOAM530dHxu/sRZyxV8J8LbUbO7ipGUc/5lEZLVliOPsxXw8E65DtjdD
-        lxEpCJ7wG+oFVbsCks9nhew=
-X-Google-Smtp-Source: ABdhPJwfTn93GsBbFV3BLkJZQcqdTUsCQqfv72kAbzwTlGAYD1nR7qwL4CKjDIh4RTVPyhX/4JulUA==
-X-Received: by 2002:a1c:1bd8:: with SMTP id b207mr10934553wmb.114.1638918313387;
-        Tue, 07 Dec 2021 15:05:13 -0800 (PST)
-Received: from Ansuel-xps. (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.gmail.com with ESMTPSA id l11sm985336wrp.61.2021.12.07.15.05.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Dec 2021 15:05:13 -0800 (PST)
-Message-ID: <61afe8a9.1c69fb81.897ba.6022@mx.google.com>
-X-Google-Original-Message-ID: <Ya/op2cIvOZaLYFN@Ansuel-xps.>
-Date:   Wed, 8 Dec 2021 00:05:11 +0100
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [net-next RFC PATCH 0/6] Add support for qca8k mdio rw in
- Ethernet packet
-References: <20211207145942.7444-1-ansuelsmth@gmail.com>
- <Ya+q02HlWsHMYyAe@lunn.ch>
- <61afadb9.1c69fb81.7dfad.19b1@mx.google.com>
- <Ya+yzNDMorw4X9CT@lunn.ch>
- <61afb452.1c69fb81.18c6f.242e@mx.google.com>
- <20211207205219.4eoygea6gey4iurp@skbuf>
- <61afd6a1.1c69fb81.3281e.5fff@mx.google.com>
- <20211207224525.ckdn66tpfba5gm5z@skbuf>
+        id S242452AbhLGXJh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 18:09:37 -0500
+Received: from www62.your-server.de ([213.133.104.62]:37262 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233295AbhLGXJh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 18:09:37 -0500
+Received: from sslproxy03.your-server.de ([88.198.220.132])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1mujXA-0005Cv-2n; Wed, 08 Dec 2021 00:06:04 +0100
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1mujX9-000OZA-Re; Wed, 08 Dec 2021 00:06:03 +0100
+Subject: Re: [RFC PATCH net-next 2/2] net: Reset forwarded skb->tstamp before
+ delivering to user space
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>
+Cc:     netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, kernel-team@fb.com
+References: <20211207020102.3690724-1-kafai@fb.com>
+ <20211207020108.3691229-1-kafai@fb.com>
+ <CA+FuTScQigv7xR5COSFXAic11mwaEsFXVvV7EmSf-3OkvdUXcg@mail.gmail.com>
+ <83ff2f64-42b8-60ed-965a-810b4ec69f8d@iogearbox.net>
+Message-ID: <039e954b-dba5-9548-44d2-51fc5432173c@iogearbox.net>
+Date:   Wed, 8 Dec 2021 00:06:03 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211207224525.ckdn66tpfba5gm5z@skbuf>
+In-Reply-To: <83ff2f64-42b8-60ed-965a-810b4ec69f8d@iogearbox.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.3/26376/Tue Dec  7 10:34:24 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 08, 2021 at 12:45:25AM +0200, Vladimir Oltean wrote:
-> On Tue, Dec 07, 2021 at 10:47:59PM +0100, Ansuel Smith wrote:
-> > The main problem here is that we really need a way to have shared data
-> > between tagger and dsa driver. I also think that it would be limiting
-> > using this only for mdio. For example qca8k can autocast mib with
-> > Ethernet port and that would be another feature that the tagger would
-> > handle.
+On 12/7/21 10:48 PM, Daniel Borkmann wrote:
+> On 12/7/21 3:27 PM, Willem de Bruijn wrote:
+>> On Mon, Dec 6, 2021 at 9:01 PM Martin KaFai Lau <kafai@fb.com> wrote:
+>>>
+>>> The skb->tstamp may be set by a local sk (as a sender in tcp) which then
+>>> forwarded and delivered to another sk (as a receiver).
+>>>
+>>> An example:
+>>>      sender-sk => veth@netns =====> veth@host => receiver-sk
+>>>                               ^^^
+>>>                          __dev_forward_skb
+>>>
+>>> The skb->tstamp is marked with a future TX time.  This future
+>>> skb->tstamp will confuse the receiver-sk.
+>>>
+>>> This patch marks the skb if the skb->tstamp is forwarded.
+>>> Before using the skb->tstamp as a rx timestamp, it needs
+>>> to be re-stamped to avoid getting a future time.  It is
+>>> done in the RX timestamp reading helper skb_get_ktime().
+>>>
+>>> Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+>>> ---
+>>>   include/linux/skbuff.h | 14 +++++++++-----
+>>>   net/core/dev.c         |  4 +++-
+>>>   net/core/skbuff.c      |  6 +++++-
+>>>   3 files changed, 17 insertions(+), 7 deletions(-)
+>>>
+>>> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+>>> index b609bdc5398b..bc4ae34c4e22 100644
+>>> --- a/include/linux/skbuff.h
+>>> +++ b/include/linux/skbuff.h
+>>> @@ -867,6 +867,7 @@ struct sk_buff {
+>>>          __u8                    decrypted:1;
+>>>   #endif
+>>>          __u8                    slow_gro:1;
+>>> +       __u8                    fwd_tstamp:1;
+>>>
+>>>   #ifdef CONFIG_NET_SCHED
+>>>          __u16                   tc_index;       /* traffic control index */
+>>> @@ -3806,9 +3807,12 @@ static inline void skb_copy_to_linear_data_offset(struct sk_buff *skb,
+>>>   }
+>>>
+>>>   void skb_init(void);
+>>> +void net_timestamp_set(struct sk_buff *skb);
+>>>
+>>> -static inline ktime_t skb_get_ktime(const struct sk_buff *skb)
+>>> +static inline ktime_t skb_get_ktime(struct sk_buff *skb)
+>>>   {
+>>> +       if (unlikely(skb->fwd_tstamp))
+>>> +               net_timestamp_set(skb);
+>>>          return ktime_mono_to_real_cond(skb->tstamp);
+>>
+>> This changes timestamp behavior for existing applications, probably
+>> worth mentioning in the commit message if nothing else. A timestamp
+>> taking at the time of the recv syscall is not very useful.
+>>
+>> If a forwarded timestamp is not a future delivery time (as those are
+>> scrubbed), is it not correct to just deliver the original timestamp?
+>> It probably was taken at some earlier __netif_receive_skb_core.
+>>
+>>>   }
+>>>
+>>> -static inline void net_timestamp_set(struct sk_buff *skb)
+>>> +void net_timestamp_set(struct sk_buff *skb)
+>>>   {
+>>>          skb->tstamp = 0;
+>>> +       skb->fwd_tstamp = 0;
+>>>          if (static_branch_unlikely(&netstamp_needed_key))
+>>>                  __net_timestamp(skb);
+>>>   }
+>>> +EXPORT_SYMBOL(net_timestamp_set);
+>>>
+>>>   #define net_timestamp_check(COND, SKB)                         \
+>>>          if (static_branch_unlikely(&netstamp_needed_key)) {     \
+>>> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+>>> index f091c7807a9e..181ddc989ead 100644
+>>> --- a/net/core/skbuff.c
+>>> +++ b/net/core/skbuff.c
+>>> @@ -5295,8 +5295,12 @@ void skb_scrub_tstamp(struct sk_buff *skb)
+>>>   {
+>>>          struct sock *sk = skb->sk;
+>>>
+>>> -       if (sk && sk_fullsock(sk) && sock_flag(sk, SOCK_TXTIME))
+>>> +       if (sk && sk_fullsock(sk) && sock_flag(sk, SOCK_TXTIME)) {
+>>
+>> There is a slight race here with the socket flipping the feature on/off.
+>>
+>>>                  skb->tstamp = 0;
+>>> +               skb->fwd_tstamp = 0;
+>>> +       } else if (skb->tstamp) {
+>>> +               skb->fwd_tstamp = 1;
+>>> +       }
+>>
+>> SO_TXTIME future delivery times are scrubbed, but TCP future delivery
+>> times are not?
+>>
+>> If adding a bit, might it be simpler to add a bit tstamp_is_edt, and
+>> scrub based on that. That is also not open to the above race.
 > 
-> This is cool. I suppose this is what QCA_HDR_RECV_TYPE_MIB is for.
+> One other thing I wonder, BPF progs at host-facing veth's tc ingress which
+> are not aware of skb->tstamp will then see a tstamp from future given we
+> intentionally bypass the net_timestamp_check() and might get confused (or
+> would confuse higher-layer application logic)? Not quite sure yet if they
+> would be the only affected user.
 
-Exactly that.
+Untested (& unoptimized wrt netdev cachelines), but worst case maybe something
+like this could work ... not generic, but smaller risk wrt timestamp behavior
+changes for applications when pushing up the stack (?).
 
-> But it wouldn't work with your design because the tagger doesn't hold
-> any queues, it is basically a request/response which is always initiated
-> by the switch driver. The hardware can't automatically push anything to
-> software on its own. Maybe if the tagger wouldn't be stateless, that
-> would be better? What if the qca8k switch driver would just provide some
-> function pointers to the switch driver (these would be protocol
-> sub-handlers for QCA_HDR_RECV_TYPE_MIB, QCA_HDR_RECV_TYPE_RW_REG_ACK
-> etc), and your completion structure would be both initialized, as well
-> as finalized, all from within the switch driver itself?
-> 
+Meaning, the attribute would be set for host-facing veths and the phys dev with
+sch_fq. Not generic unfortunately given this would require the coorperation from
+BPF side on tc ingress of the host veths, meaning, given the net_timestamp_check()
+is skipped, the prog would have to call net_timestamp_set() via BPF helper if it
+decides to return with TC_ACT_OK. (So orchestrator would opt-in(/out) to set the
+devs it manages to xnet_flush_tstamp to 0 and to update tstamp via helper.. hm)
 
-Hm. Interesting idea. So qca8k would provide the way to parse the packet
-and made the request. The tagger would just detect the packet and
-execute the dedicated function.
-About mib considering the driver autocast counter for every port and
-every packet have the relevant port to it (set in the qca tag), the
-idea was to put a big array and directly write the data. The ethtool
-function will then just read the data and report it. (or even work
-directly on the ethtool data array).
+  include/linux/netdevice.h |  4 +++-
+  include/linux/skbuff.h    |  6 +++++-
+  net/core/dev.c            |  1 +
+  net/core/filter.c         |  9 ++++++---
+  net/core/net-sysfs.c      | 18 ++++++++++++++++++
+  net/core/skbuff.c         | 15 +++++++++------
+  6 files changed, 42 insertions(+), 11 deletions(-)
 
-> > I like the idea of tagger-owend per-switch-tree private data.
-> > Do we really need to hook logic?
-> > Wonder if something like that would work:
-> > 1. Each tagger declare size of his private data (if any).
-> > 2. Change tag dsa helper make sure the privata data in dst gets
-> >    allocated and freed.
-> > 3. We create some helper to get the tagger private data pointer that
-> >    dsa driver will use. (an error is returned if no data is present)
-> > 4. Tagger will use the dst to access his own data.
-> 
-> I considered a simplified form like this, but I think the tagger private
-> data will still stay in dp->priv, only its ownership will change.
-> It is less flexible to just have an autoalloc size. Ok, you allocate a
-> structure the size you need, but which dp->priv gets to have it?
-> Maybe a certain tagging protocol will need dp1->priv == dp2->priv ==
-> dp3->priv == ..., whereas a different tagging protocol will need unique
-> different structures for each dp.
-> 
-> > 
-> > In theory that way we should be able to make a ""connection"" between
-> > dsa driver and the tagger and prevent any sort of strange stuff that
-> > could result in bug/kernel panic.
-> > 
-> > I mean for the current task (mdio in ethernet packet) we just need to
-> > put data, send the skb and wait for a response (and after parsing) get
-> > the data from a response skb.
-> 
-> It would be a huge win IMO if we could avoid managing the lifetime of
-> dp->priv _directly_. I'm thinking something along the lines of:
-> 
-> - every time we make the "dst->tag_ops = tag_ops;" assignment (see dsa2.c)
->   there is a connection event between the switch tree and the tagging
->   protocol (and also a disconnection event, if dst->tag_ops wasn't
->   previously NULL).
-> 
-> - we could add a new tag_ops->connect(dst) and tag_ops->disconnect(dst)
->   and call them. These could allocate/free the dp->priv memory for each
->   dp in &dst->ports.
-> 
-> - _after_ the tag_ops->connect() has been called (this makes sure that
->   the tagger memory has been allocated) we could also emit a cross-chip
->   notifier event:
-> 
-> 	/* DSA_NOTIFIER_TAG_PROTO_CONNECT */
-> 	struct dsa_notifier_tag_proto_connect_info {
-> 		const struct dsa_device_ops *tag_ops;
-> 	};
-> 
-> 	struct dsa_notifier_tag_proto_connect_info info;
-> 
-> 	dsa_tree_notify(dst, DSA_NOTIFIER_TAG_PROTO, &info);
-> 
->   The role of a cross-chip notifier is to fan-out a call exactly once to
->   every switch within a tree. This particular cross-chip notifier could
->   end up with an implementation in switch.c that lands with a call to:
-> 
->   ds->ops->tag_proto_connect(ds, tag_ops);
-> 
->   At this point, I'm a bit fuzzy on the details. I'm thinking of
->   something like this:
-> 
-> 	struct qca8k_tagger_private {
-> 		void (*rw_reg_ack_handler)(struct dsa_port *dp, void *buf);
-> 		void (*mib_autocast_handler)(struct dsa_port *dp, void *buf);
-> 	};
-> 
-> 	static void qca8k_rw_reg_ack_handler(struct dsa_port *dp, void *buf)
-> 	{
-> 		... (code moved from tagger)
-> 	}
-> 
-> 	static void qca8k_mib_autocast_handler(struct dsa_port *dp, void *buf)
-> 	{
-> 		... (code moved from tagger)
-> 	}
-> 
-> 	static int qca8k_tag_proto_connect(struct dsa_switch *ds,
-> 					   const struct dsa_device_ops *tag_ops)
-> 	{
-> 		switch (tag_ops->proto) {
-> 		case DSA_TAG_PROTO_QCA:
-> 			struct dsa_port *dp;
-> 
-> 			dsa_switch_for_each_port(dp, ds) {
-> 				struct qca8k_tagger_private *priv = dp->priv;
-> 
-> 				priv->rw_reg_ack_handler = qca8k_rw_reg_ack_handler;
-> 				priv->mib_autocast_handler = qca8k_mib_autocast_handler;
-> 			}
-> 
-> 			break;
-> 		default:
-> 			return -EOPNOTSUPP;
-> 		}
-> 	}
-> 
-> 	static const struct dsa_switch_ops qca8k_switch_ops = {
-> 		...
-> 		.tag_proto_connect	= qca8k_tag_proto_connect,
-> 	};
-> 
->   My current idea is maybe not ideal and a bit fuzzy, because the switch
->   driver would need to be aware of the fact that the tagger private data
->   is in dp->priv, and some code in one folder needs to be in sync with
->   some code in another folder. But at least it should be safer this way,
->   because we are in more control over the exact connection that's being
->   made.
-> 
-> - to avoid leaking memory, we also need to patch dsa_tree_put() to issue
->   a disconnect event on unbind.
-> 
-> - the tagging protocol driver would always need to NULL-check the
->   function pointer before dereferencing it, because it may connect to a
->   switch driver that doesn't set them up (dsa_loop):
-> 
-> 	struct qca8k_tagger_private *priv = dp->priv;
-> 
-> 	if (priv->rw_reg_ack_handler)
-> 		priv->rw_reg_ack_handler(dp, skb_mac_header(skb));
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 3ec42495a43a..df9141f92bbf 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -2172,6 +2172,7 @@ struct net_device {
+  	struct timer_list	watchdog_timer;
+  	int			watchdog_timeo;
 
-Ok so your idea is to make the driver the one controlling ""everything""
-and keep the tagger as dummy as possible. That would also remove all the
-need to put stuff in the global include dir. Looks complex but handy. We
-still need to understand the state part. Any hint about that?
++	u32			xnet_flush_tstamp;
+  	u32                     proto_down_reason;
 
-In the mean time I will try implement this.
+  	struct list_head	todo_list;
+@@ -4137,7 +4138,8 @@ static __always_inline int ____dev_forward_skb(struct net_device *dev,
+  		return NET_RX_DROP;
+  	}
 
+-	skb_scrub_packet(skb, !net_eq(dev_net(dev), dev_net(skb->dev)));
++	__skb_scrub_packet(skb, !net_eq(dev_net(dev), dev_net(skb->dev)),
++			   READ_ONCE(dev->xnet_flush_tstamp));
+  	skb->priority = 0;
+  	return 0;
+  }
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index 686a666d073d..09b670bcd7fd 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -3688,7 +3688,11 @@ int skb_zerocopy(struct sk_buff *to, struct sk_buff *from,
+  		 int len, int hlen);
+  void skb_split(struct sk_buff *skb, struct sk_buff *skb1, const u32 len);
+  int skb_shift(struct sk_buff *tgt, struct sk_buff *skb, int shiftlen);
+-void skb_scrub_packet(struct sk_buff *skb, bool xnet);
++void __skb_scrub_packet(struct sk_buff *skb, bool xnet, bool tstamp);
++static __always_inline void skb_scrub_packet(struct sk_buff *skb, bool xnet)
++{
++	__skb_scrub_packet(skb, xnet, true);
++}
+  bool skb_gso_validate_network_len(const struct sk_buff *skb, unsigned int mtu);
+  bool skb_gso_validate_mac_len(const struct sk_buff *skb, unsigned int len);
+  struct sk_buff *skb_segment(struct sk_buff *skb, netdev_features_t features);
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 15ac064b5562..1678032bd5a3 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -10853,6 +10853,7 @@ struct net_device *alloc_netdev_mqs(int sizeof_priv, const char *name,
+  	dev->gso_max_segs = GSO_MAX_SEGS;
+  	dev->upper_level = 1;
+  	dev->lower_level = 1;
++	dev->xnet_flush_tstamp = 1;
+  #ifdef CONFIG_LOCKDEP
+  	dev->nested_level = 0;
+  	INIT_LIST_HEAD(&dev->unlink_list);
+diff --git a/net/core/filter.c b/net/core/filter.c
+index fe27c91e3758..69366af42141 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -2107,7 +2107,8 @@ static inline int __bpf_tx_skb(struct net_device *dev, struct sk_buff *skb)
+  	}
+
+  	skb->dev = dev;
+-	skb->tstamp = 0;
++	if (READ_ONCE(dev->xnet_flush_tstamp))
++		skb->tstamp = 0;
+
+  	dev_xmit_recursion_inc();
+  	ret = dev_queue_xmit(skb);
+@@ -2176,7 +2177,8 @@ static int bpf_out_neigh_v6(struct net *net, struct sk_buff *skb,
+  	}
+
+  	skb->dev = dev;
+-	skb->tstamp = 0;
++	if (READ_ONCE(dev->xnet_flush_tstamp))
++		skb->tstamp = 0;
+
+  	if (unlikely(skb_headroom(skb) < hh_len && dev->header_ops)) {
+  		skb = skb_expand_head(skb, hh_len);
+@@ -2274,7 +2276,8 @@ static int bpf_out_neigh_v4(struct net *net, struct sk_buff *skb,
+  	}
+
+  	skb->dev = dev;
+-	skb->tstamp = 0;
++	if (READ_ONCE(dev->xnet_flush_tstamp))
++		skb->tstamp = 0;
+
+  	if (unlikely(skb_headroom(skb) < hh_len && dev->header_ops)) {
+  		skb = skb_expand_head(skb, hh_len);
+diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
+index 9c01c642cf9e..d8ad9dbbbf55 100644
+--- a/net/core/net-sysfs.c
++++ b/net/core/net-sysfs.c
+@@ -403,6 +403,23 @@ static ssize_t gro_flush_timeout_store(struct device *dev,
+  }
+  NETDEVICE_SHOW_RW(gro_flush_timeout, fmt_ulong);
+
++static int change_xnet_flush_tstamp(struct net_device *dev, unsigned long val)
++{
++	WRITE_ONCE(dev->xnet_flush_tstamp, val);
++	return 0;
++}
++
++static ssize_t xnet_flush_tstamp_store(struct device *dev,
++				      struct device_attribute *attr,
++				      const char *buf, size_t len)
++{
++	if (!capable(CAP_NET_ADMIN))
++		return -EPERM;
++
++	return netdev_store(dev, attr, buf, len, change_xnet_flush_tstamp);
++}
++NETDEVICE_SHOW_RW(xnet_flush_tstamp, fmt_dec);
++
+  static int change_napi_defer_hard_irqs(struct net_device *dev, unsigned long val)
+  {
+  	WRITE_ONCE(dev->napi_defer_hard_irqs, val);
+@@ -651,6 +668,7 @@ static struct attribute *net_class_attrs[] __ro_after_init = {
+  	&dev_attr_flags.attr,
+  	&dev_attr_tx_queue_len.attr,
+  	&dev_attr_gro_flush_timeout.attr,
++	&dev_attr_xnet_flush_tstamp.attr,
+  	&dev_attr_napi_defer_hard_irqs.attr,
+  	&dev_attr_phys_port_id.attr,
+  	&dev_attr_phys_port_name.attr,
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index ba2f38246f07..b0f6b96c7b2a 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -5440,19 +5440,21 @@ bool skb_try_coalesce(struct sk_buff *to, struct sk_buff *from,
+  EXPORT_SYMBOL(skb_try_coalesce);
+
+  /**
+- * skb_scrub_packet - scrub an skb
++ * __skb_scrub_packet - scrub an skb
+   *
+   * @skb: buffer to clean
+   * @xnet: packet is crossing netns
++ * @tstamp: timestamp needs scrubbing
+   *
+- * skb_scrub_packet can be used after encapsulating or decapsulting a packet
++ * __skb_scrub_packet can be used after encapsulating or decapsulting a packet
+   * into/from a tunnel. Some information have to be cleared during these
+   * operations.
+- * skb_scrub_packet can also be used to clean a skb before injecting it in
++ *
++ * __skb_scrub_packet can also be used to clean a skb before injecting it in
+   * another namespace (@xnet == true). We have to clear all information in the
+   * skb that could impact namespace isolation.
+   */
+-void skb_scrub_packet(struct sk_buff *skb, bool xnet)
++void __skb_scrub_packet(struct sk_buff *skb, bool xnet, bool tstamp)
+  {
+  	skb->pkt_type = PACKET_HOST;
+  	skb->skb_iif = 0;
+@@ -5472,9 +5474,10 @@ void skb_scrub_packet(struct sk_buff *skb, bool xnet)
+
+  	ipvs_reset(skb);
+  	skb->mark = 0;
+-	skb->tstamp = 0;
++	if (tstamp)
++		skb->tstamp = 0;
+  }
+-EXPORT_SYMBOL_GPL(skb_scrub_packet);
++EXPORT_SYMBOL_GPL(__skb_scrub_packet);
+
+  /**
+   * skb_gso_transport_seglen - Return length of individual segments of a gso packet
 -- 
-	Ansuel
+2.21.0
