@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E3B846BE90
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 16:01:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D42146BE92
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 16:01:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238479AbhLGPDj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 10:03:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52132 "EHLO
+        id S233834AbhLGPDl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 10:03:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238469AbhLGPDd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 10:03:33 -0500
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA94DC061756;
-        Tue,  7 Dec 2021 07:00:02 -0800 (PST)
-Received: by mail-ed1-x529.google.com with SMTP id g14so57486451edb.8;
-        Tue, 07 Dec 2021 07:00:02 -0800 (PST)
+        with ESMTP id S238483AbhLGPDe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 10:03:34 -0500
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F163C0617A1;
+        Tue,  7 Dec 2021 07:00:04 -0800 (PST)
+Received: by mail-ed1-x52b.google.com with SMTP id r11so57794206edd.9;
+        Tue, 07 Dec 2021 07:00:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Lrxvm/YMo9RPdu6lnz1JYsvuKaJkhSXAhimn2KvvSNE=;
-        b=A3xxPF0iZCNCbaeoPtdqsCawsu9ftiBeBje3yNelyrean30f6F/gm7GaBnJMo2qIFe
-         +nrpOorA0wJY5HZA6hyyo/WbEC9fTwForw7CctkdyKYVhOzsIJw15wafSx8k3LeY/FhC
-         xaNHuGueUtPKOzgpfUt99i/S6U/TcwBXQQKBjrnxwB3uOeNz2U02fCp+x3S/TrL+HJhD
-         700Jg7PDpryVy2gtf8sX/9QCtWfOz5rAawrGuM4/tsweq2DpB609NGpPEEGfrp21NHEC
-         zAbhZfwD8yhU6ZqNi+t+lw4y75TnzFKcrw+nyAS3TvhEBmXgSgvtnJXjpIYmFdl/jqvM
-         t46w==
+        bh=Fn8KnA/llYwqXsiL6Q1/l2Tp5yDFYZmOjaTdrAUpvsE=;
+        b=J+3jyvCHsVTRr7ZIFrgRwip1RSFWK6pkFaX4vjByn38jDh0H6PxKl2t53lvpcNyplB
+         H9BHqDehFuZTk1kqZ1XdEfBQJ/ftge1K8imp6zCXIC4zXWKbFvmGNbILMekyls1+bfF9
+         wLoEOXzQgEJ7G3j/7accaC078p9Sx4DVMtUGsLA9prwJ6JyEUimIFDgt392Z7HPD2jAt
+         kt65lINWKJXuJypQzohGV0KY9ya9WzrBbvrPxT+NPcm7rnEEKww4va86RGZRLn4zo9PQ
+         bfq6ZM5JjsEjaEPKtpfup9NA1+ftaj41RXR/J6JmYW+LfJV22QFTdSrgw/0EFEGZhsDf
+         aXxg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Lrxvm/YMo9RPdu6lnz1JYsvuKaJkhSXAhimn2KvvSNE=;
-        b=o2e+YO60WlEKjvPzuYUo2LcrXP7UEQLPxS7/Z2fqhSGu7Z6+v5maMIgSOYRaEvPF1F
-         IBObyuN7QvmpAIeyZSPkIzWc3ABb/RlqFx54uHwPzamEL7IADY+DI+KSJ7xgR3AwtI0q
-         YCxjqmqugebdi8troy60cU/HEAWoUxrPL5+LixTZzG0zu7Xazu3MyMPjc/pH8i1USO6T
-         0DDNF0+cmHPBbSoW41UguBad+HqPuqH8W8ahtj6fwiU0j5YlFs8uH/I+Z/fe9TcDFiLG
-         Q0ZEBIgTmAg/uYN9XiBorpTlhV0nIVIk7mSzVYurihSQklWdVXVkgGFs1zLG9pE+fDc3
-         VBww==
-X-Gm-Message-State: AOAM533XuwEvYE4rF7UG4cTeqw5mmjkMH7Taw0XMCZCRyeF1sHdRbptB
-        O+IaNpzreGiy0xm1+TRQa8U=
-X-Google-Smtp-Source: ABdhPJxEf5Q9HuIEZLWJBodwMvNtMLhHbXscoQymwT5I7jYmKbD1cc0/ZpdbK2Eb2Yu9ZQtGbXQ7XQ==
-X-Received: by 2002:a17:907:1689:: with SMTP id hc9mr52133341ejc.445.1638889201162;
-        Tue, 07 Dec 2021 07:00:01 -0800 (PST)
+        bh=Fn8KnA/llYwqXsiL6Q1/l2Tp5yDFYZmOjaTdrAUpvsE=;
+        b=7mMtoJMNukxG95gCRIIgHkiVcdw7glFIBaXs1thL0dOFUC1JVxUJEHFpiCuMg2zAXZ
+         duIkc5lb5wSvJ11fPbkTxqWe/PsJx5PLlWhA497JVBNFHnagmH5cfapQU0lAQOgm2Xsl
+         6XF9GTsX4gLbvXghSWX+bcrVIm79ovnTOpbgcxfYqtoE0z9m5/qtd9CtqXlND46cp4i5
+         nOvOhdZHGUuikltQuVbNhIs0pkIXpVr3PQups6KuSyGZj3XX6jJcJ7FTkIAqLsovTAFF
+         7lo2GDpL6jBAc08qEJ6jMFlriN5HCOSK8OapRv0SWDIgY46rBADLEW95nS1e9crHCIeg
+         NaYA==
+X-Gm-Message-State: AOAM530F6xC0+R4bo/UNXCy+9G1y/nxxJ9/hqZhlap4YSmJT1vgrf+uU
+        QC6MJeYBmtKNYQEa5IMUm0Y=
+X-Google-Smtp-Source: ABdhPJzkRqh4jR7yH+Nb3fvZhcu+e27U/39w6GmoxNOm6L6ZJJl5irOJZqafS9C79RJq7AgnZHbRWg==
+X-Received: by 2002:a17:906:168e:: with SMTP id s14mr52618218ejd.340.1638889202045;
+        Tue, 07 Dec 2021 07:00:02 -0800 (PST)
 Received: from localhost.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.googlemail.com with ESMTPSA id i10sm9131821ejw.48.2021.12.07.07.00.00
+        by smtp.googlemail.com with ESMTPSA id i10sm9131821ejw.48.2021.12.07.07.00.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Dec 2021 07:00:00 -0800 (PST)
+        Tue, 07 Dec 2021 07:00:01 -0800 (PST)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -56,9 +56,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org
 Cc:     Ansuel Smith <ansuelsmth@gmail.com>
-Subject: [net-next RFC PATCH 5/6] net: dsa: tag_qca: Add support for handling mdio read/write packet
-Date:   Tue,  7 Dec 2021 15:59:41 +0100
-Message-Id: <20211207145942.7444-6-ansuelsmth@gmail.com>
+Subject: [net-next RFC PATCH 6/6] net: dsa: qca8k: cache lo and hi for mdio write
+Date:   Tue,  7 Dec 2021 15:59:42 +0100
+Message-Id: <20211207145942.7444-7-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20211207145942.7444-1-ansuelsmth@gmail.com>
 References: <20211207145942.7444-1-ansuelsmth@gmail.com>
@@ -68,70 +68,83 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Handle mdio read/write Ethernet packet.
-When a packet is received, these operation are done:
-1. Qca HDR is checked.
-2. Packet type is checked.
-3. If the type is an mdio read/write packet is parsed.
-4. The header data is parsed and put in the generic mdio struct.
-5. The rest of the data is copied to the data mdio struct.
-6. The seq number is checked and copared with the one in the mdio struct
-7. The ack is set to true to set a correct read/write operation
-8. The completion is complete
-9. The packet is dropped.
+From Documentation, we can cache lo and hi the same way we do with the
+page. This massively reduce the mdio write as 3/4 of the time we only
+require to write the lo or hi part for a mdio write.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- net/dsa/tag_qca.c | 28 +++++++++++++++++++++++++++-
- 1 file changed, 27 insertions(+), 1 deletion(-)
+ drivers/net/dsa/qca8k.c | 49 ++++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 44 insertions(+), 5 deletions(-)
 
-diff --git a/net/dsa/tag_qca.c b/net/dsa/tag_qca.c
-index b8b05d54a74c..1d2c4f519c99 100644
---- a/net/dsa/tag_qca.c
-+++ b/net/dsa/tag_qca.c
-@@ -9,6 +9,30 @@
+diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
+index d2c6139be9ac..64643f1e2f16 100644
+--- a/drivers/net/dsa/qca8k.c
++++ b/drivers/net/dsa/qca8k.c
+@@ -94,6 +94,48 @@ qca8k_split_addr(u32 regaddr, u16 *r1, u16 *r2, u16 *page)
+ 	*page = regaddr & 0x3ff;
+ }
  
- #include "dsa_priv.h"
- 
-+static void qca_tag_handle_mdio_packet(struct sk_buff *skb,
-+				       struct net_device *dev)
++static u16 qca8k_current_lo = 0xffff;
++
++static int
++qca8k_set_lo(struct mii_bus *bus, int phy_id, u32 regnum, u16 lo)
 +{
-+	struct mdio_ethhdr *mdio_ethhdr;
-+	struct qca8k_port_tag *header;
-+	struct dsa_port *cpu_dp;
++	int ret;
 +
-+	cpu_dp = dev->dsa_ptr;
-+	header = cpu_dp->priv;
++	if (lo == qca8k_current_lo) {
++		// pr_info("SAME LOW");
++		return 0;
++	}
 +
-+	mdio_ethhdr = (struct mdio_ethhdr *)skb_mac_header(skb);
++	ret = bus->write(bus, phy_id, regnum, lo);
++	if (ret < 0)
++		dev_err_ratelimited(&bus->dev,
++				    "failed to write qca8k 32bit lo register\n");
 +
-+	header->data[0] = mdio_ethhdr->mdio_data;
-+
-+	/* Get the rest of the 12 byte of data */
-+	memcpy(header->data + 1, skb->data, QCA_HDR_MDIO_DATA2_LEN);
-+
-+	/* Make sure the seq match the requested packet */
-+	if (mdio_ethhdr->seq == header->seq)
-+		header->ack = true;
-+
-+	complete(&header->rw_done);
++	qca8k_current_lo = lo;
++	return 0;
 +}
 +
- static struct sk_buff *qca_tag_xmit(struct sk_buff *skb, struct net_device *dev)
- {
- 	struct dsa_port *dp = dsa_slave_to_port(dev);
-@@ -52,8 +76,10 @@ static struct sk_buff *qca_tag_rcv(struct sk_buff *skb, struct net_device *dev)
- 	pk_type = FIELD_GET(QCA_HDR_RECV_TYPE, hdr);
- 
- 	/* MDIO read/write packet */
--	if (pk_type == QCA_HDR_RECV_TYPE_RW_REG_ACK)
-+	if (pk_type == QCA_HDR_RECV_TYPE_RW_REG_ACK) {
-+		qca_tag_handle_mdio_packet(skb, dev);
- 		return NULL;
++static u16 qca8k_current_hi = 0xffff;
++
++static int
++qca8k_set_hi(struct mii_bus *bus, int phy_id, u32 regnum, u16 hi)
++{
++	int ret;
++
++	if (hi == qca8k_current_hi) {
++		// pr_info("SAME HI");
++		return 0;
 +	}
++
++	ret = bus->write(bus, phy_id, regnum, hi);
++	if (ret < 0)
++		dev_err_ratelimited(&bus->dev,
++				    "failed to write qca8k 32bit hi register\n");
++
++	qca8k_current_hi = hi;
++	return 0;
++}
++
+ static int
+ qca8k_mii_read32(struct mii_bus *bus, int phy_id, u32 regnum, u32 *val)
+ {
+@@ -125,12 +167,9 @@ qca8k_mii_write32(struct mii_bus *bus, int phy_id, u32 regnum, u32 val)
+ 	lo = val & 0xffff;
+ 	hi = (u16)(val >> 16);
  
- 	/* Remove QCA tag and recalculate checksum */
- 	skb_pull_rcsum(skb, QCA_HDR_LEN);
+-	ret = bus->write(bus, phy_id, regnum, lo);
++	ret = qca8k_set_lo(bus, phy_id, regnum, lo);
+ 	if (ret >= 0)
+-		ret = bus->write(bus, phy_id, regnum + 1, hi);
+-	if (ret < 0)
+-		dev_err_ratelimited(&bus->dev,
+-				    "failed to write qca8k 32bit register\n");
++		ret = qca8k_set_hi(bus, phy_id, regnum + 1, hi);
+ }
+ 
+ static int
 -- 
 2.32.0
 
