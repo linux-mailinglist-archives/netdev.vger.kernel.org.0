@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EBC346B6F3
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 10:21:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BD07746B6F4
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 10:22:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233786AbhLGJZY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 04:25:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56676 "EHLO
+        id S233787AbhLGJZ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 04:25:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233408AbhLGJZX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 04:25:23 -0500
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85CEAC061574
-        for <netdev@vger.kernel.org>; Tue,  7 Dec 2021 01:21:53 -0800 (PST)
-Received: by mail-lf1-x12d.google.com with SMTP id z7so32012767lfi.11
-        for <netdev@vger.kernel.org>; Tue, 07 Dec 2021 01:21:53 -0800 (PST)
+        with ESMTP id S233408AbhLGJZY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 04:25:24 -0500
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99716C061574
+        for <netdev@vger.kernel.org>; Tue,  7 Dec 2021 01:21:54 -0800 (PST)
+Received: by mail-lf1-x12e.google.com with SMTP id m27so31942466lfj.12
+        for <netdev@vger.kernel.org>; Tue, 07 Dec 2021 01:21:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=oO56SM3oh1knOlpotzxBsJ7mXWks8VAcbwQwZRXYLnU=;
-        b=hZRH6u6s301DV5JBklIswKkq17UW4OLwWo9rWUfqGVkk43Cdm27HK+JsSyd+phDTHF
-         78emQ1Z0KXBrnilqqQmm1iIZbO0FS4i7Xbb75udhy3mT3yfiL+a4/vfwvZ15q92/duDb
-         F86VP+BQAPMlqEbXUxX7O4uQ/f/YGHO4tO5vAVn3+FGK3IVPKNfidJ7764cCuFBJotoD
-         jXTXyiTNHtCi11Kc4tTyfOh/bm1Vn7lcsf3TTMoZ936rwe3idOzxEFcQZw00dRMf623z
-         ARC0LKOy6BTFhbsZr1b0e1iyTpwBm+y0qN8OoY6YTtZlYEkjkpSfudzyZCQkuukCBqZ8
-         8/VQ==
+        bh=dfSeAedh+6z3xPMXJEbK39zxUF9RksqGn+LD5Z11VAk=;
+        b=VmHrWJTCfe6oi5Ze0d+iDL7ipcbSU1QZOuddPUj1C8K++5vAnxdKYM7RFQb6X3ySzp
+         iiDrfbwyEsSRsxvW3fsItxrr5+Sqd1f7lb4YQgyAmj+uDtYEB/wITbvlHywjF71r0DPc
+         A/1NSsrUrYvWNc8lGbBD3I6WcxB+qkjUwpa3X2Nl2m34yO2W8EH4t4/32n2OtvxZbnMC
+         3FeLoigZygyRU5rkntBQQ28CsXw/GPq5+cshu/bbJAKimi2MyutLqYFw75vJNUIU7Gnj
+         LEta/CG7k3uQZk3T0v+aVsAhR39yxTeMs9Zag9jFE+TUCs53CRl5thfAaTpaUlTDXT04
+         dVwg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=oO56SM3oh1knOlpotzxBsJ7mXWks8VAcbwQwZRXYLnU=;
-        b=XU8FQ9vslOrQnLxT+/lvRx7Ts1c233tSjFkp/wh3U5odGfNCq8EdaRWMbp8yG59DbF
-         j0HvNbqCtCWC2djUtoDWR5h7VYeixqYgH8gkDx2Srw/D8Sewv+pz3yBQfb7cPxlEPhhh
-         tKKOQEy0C0c/yq+YOhn+OGbokz3wrmQkhBRVcCKO9NTz5LcF61yVoJWTlfOrA64Q1uXy
-         KAoIWDa2uDRgaGzzBVQ9df+KSYCyjTNbPyEl7xOjHn8AX2bLUjw2K6bwpiac7Rek6CyO
-         O0q2sNIO6k04NwRy80RcAF9NDdgpcnho+oboMOm95X3qg0r3QCqJBMClPFJU9vhANxy/
-         VInA==
-X-Gm-Message-State: AOAM5301oyK3g/cSOYGaISahHJ/qrMjv+fFCxDraN5UEcSsL3/l7iQow
-        osZCc2j2ki7FxKTmSRJNLSp36cucV9Z/UQ==
-X-Google-Smtp-Source: ABdhPJyKulzWcdADDLek5em4cKl1W96CmJRB8ol66p347xoNX6rHRawPgnB/h/c4FKFSfl/qWC//fA==
-X-Received: by 2002:ac2:4568:: with SMTP id k8mr39741220lfm.80.1638868911874;
-        Tue, 07 Dec 2021 01:21:51 -0800 (PST)
+        bh=dfSeAedh+6z3xPMXJEbK39zxUF9RksqGn+LD5Z11VAk=;
+        b=4JbeZp8jX85HYsJbYa5pASbXi3FWvQahYkYcPtW9DqIjuHM8K4JCpOH/I7nl2rEZ8m
+         Zz5ZhRhqZroKTpOVA3dGw/fxp1gKrNZ+dnRJsazRXtAIPQ71e0ynbV310Qx4M71a+uuQ
+         PXUGbipsvuhCKE8YseRiIZrd9yxpLHhw0v2mjch0kSiMXgPUQazTo3pMag39eXnOHYf4
+         p8J3LZ2OjTQjwD5VX3F69jrxPlaZidcRQQPMG5K3/XuZ+qLrsKfdscwvSpkCkFi4K87+
+         52GET4QunpjsPrVFZvO5dXHUtbSWPmBMJ/JwnkvV/uKhIEEvbsOhi4Jy2re1RqEiBaEP
+         Pe5Q==
+X-Gm-Message-State: AOAM531bEgvOfbGh4RSKDDuESYrez3U1+tCfEo5CZf2wocI7Aqau2PCm
+        CFtamyIzTeK1tQEXvPO2Vsch/ePZSJnxrw==
+X-Google-Smtp-Source: ABdhPJzU9SyLwF2s46djexfqoxUqRH2HMw2JlptuYgYP3n08N0RI98m1iqXsb/yp9Nzu225IrPgm0w==
+X-Received: by 2002:a05:6512:251f:: with SMTP id be31mr12011079lfb.193.1638868912884;
+        Tue, 07 Dec 2021 01:21:52 -0800 (PST)
 Received: from rsa-laptop.internal.lan ([217.25.229.52])
-        by smtp.gmail.com with ESMTPSA id k11sm1620497lfo.111.2021.12.07.01.21.50
+        by smtp.gmail.com with ESMTPSA id k11sm1620497lfo.111.2021.12.07.01.21.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Dec 2021 01:21:51 -0800 (PST)
+        Tue, 07 Dec 2021 01:21:52 -0800 (PST)
 From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -55,9 +55,9 @@ Cc:     netdev@vger.kernel.org, M Chetan Kumar <m.chetan.kumar@intel.com>,
         Loic Poulain <loic.poulain@linaro.org>,
         Johannes Berg <johannes@sipsolutions.net>,
         Leon Romanovsky <leon@kernel.org>
-Subject: [PATCH RESEND net-next v2 2/4] net: wwan: iosm: allow trace port be uninitialized
-Date:   Tue,  7 Dec 2021 12:21:38 +0300
-Message-Id: <20211207092140.19142-3-ryazanov.s.a@gmail.com>
+Subject: [PATCH RESEND net-next v2 3/4] net: wwan: iosm: move debugfs knobs into a subdir
+Date:   Tue,  7 Dec 2021 12:21:39 +0300
+Message-Id: <20211207092140.19142-4-ryazanov.s.a@gmail.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20211207092140.19142-1-ryazanov.s.a@gmail.com>
 References: <20211207092140.19142-1-ryazanov.s.a@gmail.com>
@@ -67,83 +67,172 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Collecting modem firmware traces is optional for the regular modem use.
-There are not many reasons for aborting device initialization due to an
-inability to initialize the trace port and (or) its debugfs interface.
-So, demote the initialization failure erro message into a warning and do
-not break the initialization sequence in this case. Rework packet
-processing and deinitialization so that they do not crash in case of
-uninitialized trace port.
-
-This change is mainly a preparation for an upcoming configuration option
-introduction that will help disable driver debugfs functionality.
+The modem traces collection is a device (and so driver) specific option.
+Therefore, move the related debugfs files into a driver-specific
+subdirectory under the common per WWAN device directory.
 
 Signed-off-by: Sergey Ryazanov <ryazanov.s.a@gmail.com>
 ---
 Changes since v1:
-* no changes
+* add missed description for a new structure field 'debugfs_dir'
 
- drivers/net/wwan/iosm/iosm_ipc_imem.c  | 8 +++-----
- drivers/net/wwan/iosm/iosm_ipc_trace.c | 3 +++
- drivers/net/wwan/iosm/iosm_ipc_trace.h | 5 +++++
- 3 files changed, 11 insertions(+), 5 deletions(-)
+ drivers/net/wwan/iosm/Makefile           |  1 +
+ drivers/net/wwan/iosm/iosm_ipc_debugfs.c | 29 ++++++++++++++++++++++++
+ drivers/net/wwan/iosm/iosm_ipc_debugfs.h | 12 ++++++++++
+ drivers/net/wwan/iosm/iosm_ipc_imem.c    |  7 +++---
+ drivers/net/wwan/iosm/iosm_ipc_imem.h    |  2 ++
+ drivers/net/wwan/iosm/iosm_ipc_trace.c   |  6 ++---
+ 6 files changed, 49 insertions(+), 8 deletions(-)
+ create mode 100644 drivers/net/wwan/iosm/iosm_ipc_debugfs.c
+ create mode 100644 drivers/net/wwan/iosm/iosm_ipc_debugfs.h
 
-diff --git a/drivers/net/wwan/iosm/iosm_ipc_imem.c b/drivers/net/wwan/iosm/iosm_ipc_imem.c
-index 49bdadb855e5..a60b93cefd2e 100644
---- a/drivers/net/wwan/iosm/iosm_ipc_imem.c
-+++ b/drivers/net/wwan/iosm/iosm_ipc_imem.c
-@@ -272,7 +272,7 @@ static void ipc_imem_dl_skb_process(struct iosm_imem *ipc_imem,
- 		if (port_id == IPC_MEM_CTRL_CHL_ID_7)
- 			ipc_imem_sys_devlink_notify_rx(ipc_imem->ipc_devlink,
- 						       skb);
--		else if (port_id == ipc_imem->trace->chl_id)
-+		else if (ipc_is_trace_channel(ipc_imem, port_id))
- 			ipc_trace_port_rx(ipc_imem->trace, skb);
- 		else
- 			wwan_port_rx(ipc_imem->ipc_port[port_id]->iosm_port,
-@@ -555,10 +555,8 @@ static void ipc_imem_run_state_worker(struct work_struct *instance)
- 	}
+diff --git a/drivers/net/wwan/iosm/Makefile b/drivers/net/wwan/iosm/Makefile
+index 5c2528beca2a..5091f664af0d 100644
+--- a/drivers/net/wwan/iosm/Makefile
++++ b/drivers/net/wwan/iosm/Makefile
+@@ -22,6 +22,7 @@ iosm-y = \
+ 	iosm_ipc_devlink.o		\
+ 	iosm_ipc_flash.o		\
+ 	iosm_ipc_coredump.o		\
++	iosm_ipc_debugfs.o		\
+ 	iosm_ipc_trace.o
  
- 	ipc_imem->trace = ipc_trace_init(ipc_imem);
--	if (!ipc_imem->trace) {
--		dev_err(ipc_imem->dev, "trace channel init failed");
--		return;
--	}
+ obj-$(CONFIG_IOSM) := iosm.o
+diff --git a/drivers/net/wwan/iosm/iosm_ipc_debugfs.c b/drivers/net/wwan/iosm/iosm_ipc_debugfs.c
+new file mode 100644
+index 000000000000..f2f57751a7d2
+--- /dev/null
++++ b/drivers/net/wwan/iosm/iosm_ipc_debugfs.c
+@@ -0,0 +1,29 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Copyright (C) 2020-2021 Intel Corporation.
++ */
++
++#include <linux/debugfs.h>
++#include <linux/wwan.h>
++
++#include "iosm_ipc_imem.h"
++#include "iosm_ipc_trace.h"
++#include "iosm_ipc_debugfs.h"
++
++void ipc_debugfs_init(struct iosm_imem *ipc_imem)
++{
++	struct dentry *debugfs_pdev = wwan_get_debugfs_dir(ipc_imem->dev);
++
++	ipc_imem->debugfs_dir = debugfs_create_dir(KBUILD_MODNAME,
++						   debugfs_pdev);
++
++	ipc_imem->trace = ipc_trace_init(ipc_imem);
 +	if (!ipc_imem->trace)
 +		dev_warn(ipc_imem->dev, "trace channel init failed");
++}
++
++void ipc_debugfs_deinit(struct iosm_imem *ipc_imem)
++{
++	ipc_trace_deinit(ipc_imem->trace);
++	debugfs_remove_recursive(ipc_imem->debugfs_dir);
++}
+diff --git a/drivers/net/wwan/iosm/iosm_ipc_debugfs.h b/drivers/net/wwan/iosm/iosm_ipc_debugfs.h
+new file mode 100644
+index 000000000000..35788039f13f
+--- /dev/null
++++ b/drivers/net/wwan/iosm/iosm_ipc_debugfs.h
+@@ -0,0 +1,12 @@
++/* SPDX-License-Identifier: GPL-2.0-only
++ *
++ * Copyright (C) 2020-2021 Intel Corporation.
++ */
++
++#ifndef IOSM_IPC_DEBUGFS_H
++#define IOSM_IPC_DEBUGFS_H
++
++void ipc_debugfs_init(struct iosm_imem *ipc_imem);
++void ipc_debugfs_deinit(struct iosm_imem *ipc_imem);
++
++#endif
+diff --git a/drivers/net/wwan/iosm/iosm_ipc_imem.c b/drivers/net/wwan/iosm/iosm_ipc_imem.c
+index a60b93cefd2e..25b889922912 100644
+--- a/drivers/net/wwan/iosm/iosm_ipc_imem.c
++++ b/drivers/net/wwan/iosm/iosm_ipc_imem.c
+@@ -11,6 +11,7 @@
+ #include "iosm_ipc_imem.h"
+ #include "iosm_ipc_port.h"
+ #include "iosm_ipc_trace.h"
++#include "iosm_ipc_debugfs.h"
+ 
+ /* Check the wwan ips if it is valid with Channel as input. */
+ static int ipc_imem_check_wwan_ips(struct ipc_mem_channel *chnl)
+@@ -554,9 +555,7 @@ static void ipc_imem_run_state_worker(struct work_struct *instance)
+ 		ctrl_chl_idx++;
+ 	}
+ 
+-	ipc_imem->trace = ipc_trace_init(ipc_imem);
+-	if (!ipc_imem->trace)
+-		dev_warn(ipc_imem->dev, "trace channel init failed");
++	ipc_debugfs_init(ipc_imem);
  
  	ipc_task_queue_send_task(ipc_imem, ipc_imem_send_mdm_rdy_cb, 0, NULL, 0,
  				 false);
-diff --git a/drivers/net/wwan/iosm/iosm_ipc_trace.c b/drivers/net/wwan/iosm/iosm_ipc_trace.c
-index 5f5cfd39bede..c588a394cd94 100644
---- a/drivers/net/wwan/iosm/iosm_ipc_trace.c
-+++ b/drivers/net/wwan/iosm/iosm_ipc_trace.c
-@@ -172,6 +172,9 @@ struct iosm_trace *ipc_trace_init(struct iosm_imem *ipc_imem)
+@@ -1173,7 +1172,7 @@ void ipc_imem_cleanup(struct iosm_imem *ipc_imem)
+ 
+ 	if (test_and_clear_bit(FULLY_FUNCTIONAL, &ipc_imem->flag)) {
+ 		ipc_mux_deinit(ipc_imem->mux);
+-		ipc_trace_deinit(ipc_imem->trace);
++		ipc_debugfs_deinit(ipc_imem);
+ 		ipc_wwan_deinit(ipc_imem->wwan);
+ 		ipc_port_deinit(ipc_imem->ipc_port);
+ 	}
+diff --git a/drivers/net/wwan/iosm/iosm_ipc_imem.h b/drivers/net/wwan/iosm/iosm_ipc_imem.h
+index cec38009c44a..1b8c7b8959c6 100644
+--- a/drivers/net/wwan/iosm/iosm_ipc_imem.h
++++ b/drivers/net/wwan/iosm/iosm_ipc_imem.h
+@@ -341,6 +341,7 @@ enum ipc_phase {
+  * @ev_mux_net_transmit_pending:0 means inform the IPC tasklet to pass
+  * @reset_det_n:		Reset detect flag
+  * @pcie_wake_n:		Pcie wake flag
++ * @debugfs_dir:		Debug FS directory for driver-specific entries
   */
- void ipc_trace_deinit(struct iosm_trace *ipc_trace)
- {
-+	if (!ipc_trace)
-+		return;
-+
- 	debugfs_remove(ipc_trace->ctrl_file);
- 	relay_close(ipc_trace->ipc_rchan);
- 	mutex_destroy(&ipc_trace->trc_mutex);
-diff --git a/drivers/net/wwan/iosm/iosm_ipc_trace.h b/drivers/net/wwan/iosm/iosm_ipc_trace.h
-index 53346183af9c..419540c91219 100644
---- a/drivers/net/wwan/iosm/iosm_ipc_trace.h
-+++ b/drivers/net/wwan/iosm/iosm_ipc_trace.h
-@@ -45,6 +45,11 @@ struct iosm_trace {
- 	enum trace_ctrl_mode mode;
+ struct iosm_imem {
+ 	struct iosm_mmio *mmio;
+@@ -380,6 +381,7 @@ struct iosm_imem {
+ 	   ev_mux_net_transmit_pending:1,
+ 	   reset_det_n:1,
+ 	   pcie_wake_n:1;
++	struct dentry *debugfs_dir;
  };
  
-+static inline bool ipc_is_trace_channel(struct iosm_imem *ipc_mem, u16 chl_id)
-+{
-+	return ipc_mem->trace && ipc_mem->trace->chl_id == chl_id;
-+}
-+
- struct iosm_trace *ipc_trace_init(struct iosm_imem *ipc_imem);
- void ipc_trace_deinit(struct iosm_trace *ipc_trace);
- void ipc_trace_port_rx(struct iosm_trace *ipc_trace, struct sk_buff *skb);
+ /**
+diff --git a/drivers/net/wwan/iosm/iosm_ipc_trace.c b/drivers/net/wwan/iosm/iosm_ipc_trace.c
+index c588a394cd94..5243ead90b5f 100644
+--- a/drivers/net/wwan/iosm/iosm_ipc_trace.c
++++ b/drivers/net/wwan/iosm/iosm_ipc_trace.c
+@@ -134,7 +134,6 @@ struct iosm_trace *ipc_trace_init(struct iosm_imem *ipc_imem)
+ {
+ 	struct ipc_chnl_cfg chnl_cfg = { 0 };
+ 	struct iosm_trace *ipc_trace;
+-	struct dentry *debugfs_pdev;
+ 
+ 	ipc_chnl_cfg_get(&chnl_cfg, IPC_MEM_CTRL_CHL_ID_3);
+ 	ipc_imem_channel_init(ipc_imem, IPC_CTYPE_CTRL, chnl_cfg,
+@@ -150,15 +149,14 @@ struct iosm_trace *ipc_trace_init(struct iosm_imem *ipc_imem)
+ 	ipc_trace->chl_id = IPC_MEM_CTRL_CHL_ID_3;
+ 
+ 	mutex_init(&ipc_trace->trc_mutex);
+-	debugfs_pdev = wwan_get_debugfs_dir(ipc_imem->dev);
+ 
+ 	ipc_trace->ctrl_file = debugfs_create_file(IOSM_TRC_DEBUGFS_TRACE_CTRL,
+ 						   IOSM_TRC_FILE_PERM,
+-						   debugfs_pdev,
++						   ipc_imem->debugfs_dir,
+ 						   ipc_trace, &ipc_trace_fops);
+ 
+ 	ipc_trace->ipc_rchan = relay_open(IOSM_TRC_DEBUGFS_TRACE,
+-					  debugfs_pdev,
++					  ipc_imem->debugfs_dir,
+ 					  IOSM_TRC_SUB_BUFF_SIZE,
+ 					  IOSM_TRC_N_SUB_BUFF,
+ 					  &relay_callbacks, NULL);
 -- 
 2.32.0
 
