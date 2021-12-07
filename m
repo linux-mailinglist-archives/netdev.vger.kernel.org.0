@@ -2,109 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A42746B606
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 09:32:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EC5046B596
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 09:20:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232977AbhLGIgQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 03:36:16 -0500
-Received: from ex13-edg-ou-002.vmware.com ([208.91.0.190]:20448 "EHLO
-        EX13-EDG-OU-002.vmware.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232964AbhLGIgP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 03:36:15 -0500
-X-Greylist: delayed 905 seconds by postgrey-1.27 at vger.kernel.org; Tue, 07 Dec 2021 03:36:15 EST
-Received: from sc9-mailhost1.vmware.com (10.113.161.71) by
- EX13-EDG-OU-002.vmware.com (10.113.208.156) with Microsoft SMTP Server id
- 15.0.1156.6; Tue, 7 Dec 2021 00:17:38 -0800
-Received: from htb-1n-eng-dhcp122.eng.vmware.com (unknown [10.20.114.216])
-        by sc9-mailhost1.vmware.com (Postfix) with ESMTP id 51C6620397;
-        Tue,  7 Dec 2021 00:17:40 -0800 (PST)
-Received: by htb-1n-eng-dhcp122.eng.vmware.com (Postfix, from userid 0)
-        id 4A548AA1DC; Tue,  7 Dec 2021 00:17:40 -0800 (PST)
-From:   Ronak Doshi <doshir@vmware.com>
-To:     <netdev@vger.kernel.org>
-CC:     Ronak Doshi <doshir@vmware.com>,
-        "maintainer:VMWARE VMXNET3 ETHERNET DRIVER" <pv-drivers@vmware.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Guolin Yang <gyang@vmware.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: [PATCH net-next] vmxnet3: fix minimum vectors alloc issue
-Date:   Tue, 7 Dec 2021 00:17:37 -0800
-Message-ID: <20211207081737.14000-1-doshir@vmware.com>
-X-Mailer: git-send-email 2.11.0
+        id S231614AbhLGIXj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 03:23:39 -0500
+Received: from rtits2.realtek.com ([211.75.126.72]:40777 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230021AbhLGIXi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 03:23:38 -0500
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 1B78K6iE4012929, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
+        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 1B78K6iE4012929
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 7 Dec 2021 16:20:06 +0800
+Received: from RTEXMBS01.realtek.com.tw (172.21.6.94) by
+ RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Tue, 7 Dec 2021 16:20:05 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS01.realtek.com.tw (172.21.6.94) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.15; Tue, 7 Dec 2021 16:20:05 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::65a3:1e23:d911:4b01]) by
+ RTEXMBS04.realtek.com.tw ([fe80::65a3:1e23:d911:4b01%5]) with mapi id
+ 15.01.2308.020; Tue, 7 Dec 2021 16:20:05 +0800
+From:   Hayes Wang <hayeswang@realtek.com>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        nic_swsd <nic_swsd@realtek.com>
+Subject: RE: [RFC PATCH 4/4] r8169: add sysfs for dash
+Thread-Topic: [RFC PATCH 4/4] r8169: add sysfs for dash
+Thread-Index: AQHX5QnG3ZOFVvcQLEy4F0RtCKXQd6wgYQSAgAY/IQD//4ptgIAAj7fA
+Date:   Tue, 7 Dec 2021 08:20:05 +0000
+Message-ID: <aaf3a1e00fca472292446aa97ae36c0a@realtek.com>
+References: <20211129101315.16372-381-nic_swsd@realtek.com>
+ <20211129101315.16372-385-nic_swsd@realtek.com>
+ <b36df085-8f4e-790b-0b9e-1096047680f3@gmail.com>
+ <2f5c720b6f3b46648678bee05eb23787@realtek.com>
+ <d93143c8-5fda-70e1-8dd9-8350c6820e56@gmail.com>
+In-Reply-To: <d93143c8-5fda-70e1-8dd9-8350c6820e56@gmail.com>
+Accept-Language: zh-TW, en-US
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.177.203]
+x-kse-serverinfo: RTEXMBS01.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIxLzEyLzcg5LiK5Y2IIDA3OjExOjAw?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain
-Received-SPF: None (EX13-EDG-OU-002.vmware.com: doshir@vmware.com does not
- designate permitted sender hosts)
+X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-'Commit 39f9895a00f4 ("vmxnet3: add support for 32 Tx/Rx queues")'
-added support for 32Tx/Rx queues. Within that patch, value of
-VMXNET3_LINUX_MIN_MSIX_VECT was updated.
-
-However, there is a case (numvcpus = 2) which actually requires 3
-intrs which matches VMXNET3_LINUX_MIN_MSIX_VECT which then is
-treated as failure by stack to allocate more vectors. This patch
-fixes this issue.
-
-Fixes: 39f9895a00f4 ("vmxnet3: add support for 32 Tx/Rx queues")
-Signed-off-by: Ronak Doshi <doshir@vmware.com>
-Acked-by: Guolin Yang <gyang@vmware.com>
----
- drivers/net/vmxnet3/vmxnet3_drv.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
-index 14fae317bc70..fd407c0e2856 100644
---- a/drivers/net/vmxnet3/vmxnet3_drv.c
-+++ b/drivers/net/vmxnet3/vmxnet3_drv.c
-@@ -3261,7 +3261,7 @@ vmxnet3_alloc_intr_resources(struct vmxnet3_adapter *adapter)
- 
- #ifdef CONFIG_PCI_MSI
- 	if (adapter->intr.type == VMXNET3_IT_MSIX) {
--		int i, nvec;
-+		int i, nvec, nvec_allocated;
- 
- 		nvec  = adapter->share_intr == VMXNET3_INTR_TXSHARE ?
- 			1 : adapter->num_tx_queues;
-@@ -3274,14 +3274,15 @@ vmxnet3_alloc_intr_resources(struct vmxnet3_adapter *adapter)
- 		for (i = 0; i < nvec; i++)
- 			adapter->intr.msix_entries[i].entry = i;
- 
--		nvec = vmxnet3_acquire_msix_vectors(adapter, nvec);
--		if (nvec < 0)
-+		nvec_allocated = vmxnet3_acquire_msix_vectors(adapter, nvec);
-+		if (nvec_allocated < 0)
- 			goto msix_err;
- 
- 		/* If we cannot allocate one MSIx vector per queue
- 		 * then limit the number of rx queues to 1
- 		 */
--		if (nvec == VMXNET3_LINUX_MIN_MSIX_VECT) {
-+		if (nvec_allocated == VMXNET3_LINUX_MIN_MSIX_VECT &&
-+		    nvec != VMXNET3_LINUX_MIN_MSIX_VECT) {
- 			if (adapter->share_intr != VMXNET3_INTR_BUDDYSHARE
- 			    || adapter->num_rx_queues != 1) {
- 				adapter->share_intr = VMXNET3_INTR_TXSHARE;
-@@ -3291,14 +3292,14 @@ vmxnet3_alloc_intr_resources(struct vmxnet3_adapter *adapter)
- 			}
- 		}
- 
--		adapter->intr.num_intrs = nvec;
-+		adapter->intr.num_intrs = nvec_allocated;
- 		return;
- 
- msix_err:
- 		/* If we cannot allocate MSIx vectors use only one rx queue */
- 		dev_info(&adapter->pdev->dev,
- 			 "Failed to enable MSI-X, error %d. "
--			 "Limiting #rx queues to 1, try MSI.\n", nvec);
-+			 "Limiting #rx queues to 1, try MSI.\n", nvec_allocated);
- 
- 		adapter->intr.type = VMXNET3_IT_MSI;
- 	}
--- 
-2.11.0
-
+SGVpbmVyIEthbGx3ZWl0IDxoa2FsbHdlaXQxQGdtYWlsLmNvbT4NCj4gU2VudDogVHVlc2RheSwg
+RGVjZW1iZXIgNywgMjAyMSAzOjM4IFBNDQpbLi4uXQ0KPiA+IEluIGFkZGl0aW9uIHRvIHByb3Rl
+Y3QgdGhlIGNyaXRpY2FsIHNlY3Rpb24sIFJUTkwgaXMgdXNlZCB0byBhdm9pZA0KPiA+IGNhbGxp
+bmcgY2xvc2UoKSBiZWZvcmUgQ01BQyBpcyBmaW5pc2hlZC4gVGhlIHRyYW5zZmVyIG9mIENNQUMN
+Cj4gPiBtYXkgY29udGFpbiBzZXZlcmFsIHN0ZXBzLiBBbmQgY2xvc2UoKSB3b3VsZCBkaXNhYmxl
+IENNQUMuDQo+ID4gSSBkb24ndCB3aXNoIHRoZSBDTUFDIHN0YXlzIGF0IHN0cmFuZ2Ugc3RhdGUu
+IEl0IG1heSBpbmZsdWVuY2UNCj4gPiB0aGUgZmlybXdhcmUgb3IgaGFyZHdhcmUuIEJlc2lkZXMs
+IEkgZmluZCB0aGUgb3JpZ2luYWwgZHJpdmVyIG9ubHkNCj4gPiB1c2UgUlROTCB0byBwcm90ZWN0
+IGNyaXRpY2FsIHNlY3Rpb24uIElzIHRoZXJlIGEgYmV0dGVyIHdheSBmb3IgaXQ/DQo+ID4NCj4g
+DQo+IFRoZSBtYWluIGlzc3VlIEkgc2VlIGlzIHRoYXQgeW91IGNhbGwgcnRsX2Rhc2hfZnJvbV9m
+dygpIHVuZGVyIFJUTkwsDQo+IGFuZCB0aGlzIGZ1bmN0aW9uIG1heSBzbGVlcCB1cCB0byA1cy4g
+SG9sZGluZyBhIHN5c3RlbS13aWRlIG11dGV4DQo+IGZvciB0aGF0IGxvbmcgaXNuJ3QgdG9vIG5p
+Y2UuDQoNCkkgd291bGQgdGhpbmsgaWYgdGhlcmUgaXMgYSBiZXR0ZXIgd2F5IHRvIHJlcGxhY2Ug
+Y3VycmVudCBvbmUuDQpUaGFua3MuDQoNCj4gSW4gcnRsX2Rhc2hfaW5mbygpIHlvdSBqdXN0IHBy
+aW50IEZXIHZlcnNpb24gYW5kIGJ1aWxkIG51bWJlci4NCj4gV291bGRuJ3QgaXQgYmUgc3VmZmlj
+aWVudCB0byBwcmludCB0aGlzIGluZm8gb25jZSB0byBzeXNsb2cNCj4gaW5zdGVhZCBvZiBleHBv
+cnRpbmcgaXQgdmlhIHN5c2ZzPw0KDQpJdCBpcyB0aGUgaW5mb3JtYXRpb24gd2hpY2ggb3VyIHVz
+ZXIgc3BhY2UgdG9vbCBuZWVkLg0KSSB0aGluayBpdCB3b3VsZCBiZSByZXBsYWNlZCB3aXRoIGRl
+dmxpbmsgcGFyYW0uDQoNCkJlc3QgUmVnYXJkcywNCkhheWVzDQoNCg0K
