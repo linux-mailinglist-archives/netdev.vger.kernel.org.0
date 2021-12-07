@@ -2,125 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9305E46AF77
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 01:52:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0749C46AF7D
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 01:54:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378823AbhLGAzs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Dec 2021 19:55:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53452 "EHLO
+        id S1378866AbhLGA5x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Dec 2021 19:57:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378808AbhLGAzr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 19:55:47 -0500
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C7BAC061746
-        for <netdev@vger.kernel.org>; Mon,  6 Dec 2021 16:52:18 -0800 (PST)
-Received: by mail-pl1-x634.google.com with SMTP id b11so8211359pld.12
-        for <netdev@vger.kernel.org>; Mon, 06 Dec 2021 16:52:18 -0800 (PST)
+        with ESMTP id S233971AbhLGA5K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 19:57:10 -0500
+Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BAA1C061746
+        for <netdev@vger.kernel.org>; Mon,  6 Dec 2021 16:53:41 -0800 (PST)
+Received: by mail-yb1-xb31.google.com with SMTP id d10so36311551ybe.3
+        for <netdev@vger.kernel.org>; Mon, 06 Dec 2021 16:53:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=2fENHn91gxqW1qNG15mioT3jCj/d4w48+WpCz+57dP4=;
-        b=St1uFNUD0HumITr2pW1Dltzkb8/RrHIWw6vhcD+XdfD3zLy6MrTYUvRDMBUb/E0j1E
-         RlF4ZbXwiyG35+bWx/9cHz99QsKMjCCifop6kGrQLzQTZKeC9Na/C2pSGQAq2QqAAYy8
-         /gde1IjHs0eDZ/c65cJwMkvxZ67C8eICAFyJQ1T/gRAThN8T6RTUciQm0JUjbM5D4Kf+
-         DQ5A25nlQYOdIlxHlScIinBSGw0QtUX64MbvFr8MBwb6sL/XCWefu4RPG9EuQLN0zCxM
-         m9eblEb0ZF2K8K1FaB0QtOj2b7kLBCWOJqY0Z3cvt6f93uaILDBf/PN/x55nU51e5xd1
-         +z4w==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=0B7ZKpCk1NTmxp/DdqW9UJ5jkqZ/rgSsXW0hdVLOXvQ=;
+        b=kKXSI2zOAdqPyJ/tGMELHhQ45xYVBtGf3ztpzWafK4eEBvKF382XhfP2AaJplu1ZIZ
+         a7+B5UULTcUfbZWlQKGOhFCmzwosYZeAFMfzXPB1vDhI8BXdGNwuoPhE1VHyME59iCnB
+         fI5OKLPxiWHdMRMte1CUsVc6hLfm8QraXSykywsAhuLoE2dnnKsCnfAGF9yHOilJvE7y
+         ln1+XtrbXgSuSbMdMbAKLW6bdmxrG11Uf5KqA+pOQFfG+EzXMaScOWpnrO1GFIVj8dYj
+         p2RVSzTccZk0oJo7skc90Mtl3DH2j1mvH07N9ij6upd3DVshKqXLbaK/YIFWT+duV21y
+         42Fw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=2fENHn91gxqW1qNG15mioT3jCj/d4w48+WpCz+57dP4=;
-        b=6ukFYyowOKP3fo1XZm5EUvlupje9+KmxxBcLtwlcLWV13Yvbp1ijinI7PmRStSPj7s
-         OON3GHRc3Af8HaurcQTSHao9Ztiv22t87vF3ziO8FnCeHDq0qWphIXLSQvurW0u7yZ88
-         ZlFJPrC8axOpnphLBENW4t+vU5a+sCXTLc8hjZjUi6u5RfYZen2WzlgxTKuVcHhiMIZs
-         LtYPoujS00mb2hYmZWryVidNqkFmBObA9NrAdS3WWMSH1toWQwf2t+y0gQQdUlO1v5S8
-         gTKHY+Sxc27LgYTZc4MYEpYsMjvKYtx7hnAdwjHFMzp3b1TMYdvcYW9CxzeA+6ip7pMS
-         PzOA==
-X-Gm-Message-State: AOAM5312EU+c+ojYORWa3BmmMqGdh+ch2L+PaBRa0XIzxV4nlWFLnNoN
-        WVqpkIql8IuYpEM3Om/FEJ0=
-X-Google-Smtp-Source: ABdhPJyLH4nEoja8HUwFyKOZnVD/RepyeAu4Qs5vZn6KA2Hd/ojEH+NusTjc1pMXPjyDQDHqvrRpsw==
-X-Received: by 2002:a17:90a:5901:: with SMTP id k1mr2584388pji.76.1638838338166;
-        Mon, 06 Dec 2021 16:52:18 -0800 (PST)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:518c:39bf:c3e8:ffe2])
-        by smtp.gmail.com with ESMTPSA id l13sm14239618pfu.149.2021.12.06.16.52.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Dec 2021 16:52:17 -0800 (PST)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH net-next 17/17] audit: add netns refcount tracker to struct audit_netlink_list
-Date:   Mon,  6 Dec 2021 16:51:42 -0800
-Message-Id: <20211207005142.1688204-18-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.34.1.400.ga245620fadb-goog
-In-Reply-To: <20211207005142.1688204-1-eric.dumazet@gmail.com>
-References: <20211207005142.1688204-1-eric.dumazet@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0B7ZKpCk1NTmxp/DdqW9UJ5jkqZ/rgSsXW0hdVLOXvQ=;
+        b=vmv+pR7xCJqo3d2sSDTzLXRbEq7T0kQpMv2TfC13bD7pegLRJeAK5ZIbbjmfawvBPs
+         B/8lMYc4pBnc3NnBskbo8t2/Bro5QSgcUX6BEp3k9wLVv+L02jI2SHIY5SymHbaqsYt3
+         3TRrPKrHqiwQMjjjSdVQjBSUKTvQLvv9ghW0rKoFVWXiy/+Rck8NZKTP/VSjhsyQxA6d
+         sGItzsv2dCufOw4+FPHkOgLDfFjuycBaoRfPyGVubnmtyU2HNTFlg3PJxkGngEqrmg+Y
+         OgRdFo79dy/DutW+Qdo8DGpILttB6HigBD2GtVTrna/UWcv9vcvPxU0wbzZ3WCx/siP8
+         0QeQ==
+X-Gm-Message-State: AOAM533eMvKmpAnm5wnzzioVC5egXmDV6q/0Z6I3SnhnBD8gXfiWyZbn
+        bB5l7Zr5G5eb7Bs/RUZ5j+Pov9KIH+PWpJymqTKFKjMriCM=
+X-Google-Smtp-Source: ABdhPJwimCYcDhbXFBi5D8te983YTYNvJ3NcfmMhumRmY+oIKLvTaax+J3y8cCJJ3cO7Vuk+4p69cZ/w+KY1q360FmU=
+X-Received: by 2002:a25:6c6:: with SMTP id 189mr46830755ybg.753.1638838420139;
+ Mon, 06 Dec 2021 16:53:40 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20211205042217.982127-1-eric.dumazet@gmail.com>
+ <Ya6bj2nplJ57JPml@lunn.ch> <CANn89iLPSianJ7TjzrpOw+a0PTgX_rpQmiNYbgxbn2K-PNouFg@mail.gmail.com>
+ <Ya6kJhUtJt5c8tEk@lunn.ch> <CANn89iL4nVf+N1R=XV5VRSm4193CcU1N8XTNZzpBV9-mS3vxig@mail.gmail.com>
+ <Ya6m1kIqVo52FkLV@lunn.ch> <CANn89i+b_6R820Om9ZjK-E5DyvnNUKXxYODpmt1B6UHM1q7eoQ@mail.gmail.com>
+ <Ya6qewYtxoRn7BTo@lunn.ch>
+In-Reply-To: <Ya6qewYtxoRn7BTo@lunn.ch>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 6 Dec 2021 16:53:28 -0800
+Message-ID: <CANn89iKbAr2aqiOLWuyYADW7b4fc3fy=DFRJ5dUG7F=BPiWKZQ@mail.gmail.com>
+Subject: Re: [PATCH v3 net-next 00/23] net: add preliminary netdev refcount tracking
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Dmitry Vyukov <dvyukov@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+On Mon, Dec 6, 2021 at 4:27 PM Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> On Mon, Dec 06, 2021 at 04:17:11PM -0800, Eric Dumazet wrote:
+> > On Mon, Dec 6, 2021 at 4:12 PM Andrew Lunn <andrew@lunn.ch> wrote:
+> > >
+> > >
+> > > Hard to say. It looks like some sort of race condition. Sometimes when
+> > > i shut down the GNS3 simulation, i get the issues, sometimes not. I
+> > > don't have a good enough feeling to say either way, is it an existing
+> > > problem, or it is my code which is triggering it.
+> >
+> > OK got it.
+> >
+> > I think it might be premature to use ref_tracker yet, until we also
+> > have the netns one.
+>
+> There is a lot of netns going on with GNS3. So it does sound too
+> early.
+>
+> Could i get access to the full set of patches and try them out?
+>
+> Thanks
+>         Andrew
 
-Signed-off-by: Eric Dumazet <edumazet@google.com>
----
- kernel/audit.c       | 2 +-
- kernel/audit.h       | 2 ++
- kernel/auditfilter.c | 3 ++-
- 3 files changed, 5 insertions(+), 2 deletions(-)
+I just sent the netns tracker series.
 
-diff --git a/kernel/audit.c b/kernel/audit.c
-index 493365899d205c12338323b5a6ca6a30609a3d6a..a5b360ecb379426bbfc743f13beeb6cddc96f068 100644
---- a/kernel/audit.c
-+++ b/kernel/audit.c
-@@ -901,7 +901,7 @@ int audit_send_list_thread(void *_dest)
- 	while ((skb = __skb_dequeue(&dest->q)) != NULL)
- 		netlink_unicast(sk, skb, dest->portid, 0);
- 
--	put_net(dest->net);
-+	put_net_track(dest->net, &dest->ns_tracker);
- 	kfree(dest);
- 
- 	return 0;
-diff --git a/kernel/audit.h b/kernel/audit.h
-index c4498090a5bd66e5c620368381c89d4dda14d851..ffa8b18d84ad170f8c76a213dba610b0e4986319 100644
---- a/kernel/audit.h
-+++ b/kernel/audit.h
-@@ -15,6 +15,7 @@
- #include <uapi/linux/mqueue.h>
- #include <linux/tty.h>
- #include <uapi/linux/openat2.h> // struct open_how
-+#include <net/net_trackers.h>
- 
- /* AUDIT_NAMES is the number of slots we reserve in the audit_context
-  * for saving names from getname().  If we get more names we will allocate
-@@ -236,6 +237,7 @@ extern void		    audit_panic(const char *message);
- struct audit_netlink_list {
- 	__u32 portid;
- 	struct net *net;
-+	netns_tracker ns_tracker;
- 	struct sk_buff_head q;
- };
- 
-diff --git a/kernel/auditfilter.c b/kernel/auditfilter.c
-index d75acb014ccdcba2a0bed0646323f5427757e493..2ea0c2ea9b7272a8abcd4c36a4d35f17e75e92e3 100644
---- a/kernel/auditfilter.c
-+++ b/kernel/auditfilter.c
-@@ -1182,7 +1182,8 @@ int audit_list_rules_send(struct sk_buff *request_skb, int seq)
- 	dest = kmalloc(sizeof(*dest), GFP_KERNEL);
- 	if (!dest)
- 		return -ENOMEM;
--	dest->net = get_net(sock_net(NETLINK_CB(request_skb).sk));
-+	dest->net = get_net_track(sock_net(NETLINK_CB(request_skb).sk),
-+				  &dest->ns_tracker, GFP_KERNEL);
- 	dest->portid = NETLINK_CB(request_skb).portid;
- 	skb_queue_head_init(&dest->q);
- 
--- 
-2.34.1.400.ga245620fadb-goog
-
+I will shortly send the remainder of netdev tracking patches.
