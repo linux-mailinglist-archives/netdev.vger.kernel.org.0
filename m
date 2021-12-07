@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C12CA46AF74
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 01:52:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0167F46AF75
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 01:52:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378801AbhLGAzn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Dec 2021 19:55:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53432 "EHLO
+        id S1378803AbhLGAzq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Dec 2021 19:55:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378815AbhLGAzm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 19:55:42 -0500
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DEBFC0613F8
-        for <netdev@vger.kernel.org>; Mon,  6 Dec 2021 16:52:13 -0800 (PST)
-Received: by mail-pl1-x62c.google.com with SMTP id u11so8247718plf.3
-        for <netdev@vger.kernel.org>; Mon, 06 Dec 2021 16:52:13 -0800 (PST)
+        with ESMTP id S1378805AbhLGAzo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 19:55:44 -0500
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E937C061746
+        for <netdev@vger.kernel.org>; Mon,  6 Dec 2021 16:52:15 -0800 (PST)
+Received: by mail-pl1-x630.google.com with SMTP id q17so8223074plr.11
+        for <netdev@vger.kernel.org>; Mon, 06 Dec 2021 16:52:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=hWumiZx7P2cYyxkqj8MeKD2gSwwFhLpbzMigSDdLAyw=;
-        b=moo9wzjl00VOCwaEwN9wJOSA+vB3ZCq2I656FFCrBoLAS2AO24ikK8qZi1TTZneQWw
-         zHuhrVe9TK0A9Bu9WJZ51TuaqeNUdlHAY24Mk4ncnFDy3jlGfyIJMHzw7MfNL2gER7Al
-         TYkcTqh/oFRbWYFg34DLX8eq/4WWcaek/yHPXXP+XURNsE0Bydx/3AIwhxpuec/UZgsh
-         iveqvLB/JmYATnRe65O86tkdmBi1/tKKZxkEZCdAYxtd8CL3TTi4WT95zd/8fO7zxcGh
-         UwBJlRr9dvuM8ZP1nbe4N6lciMhgOjHokrzr/Fy9GvBArx1yltLB9/9lxACBcayIwONQ
-         d/dA==
+        bh=UdPDwq8o61e7G20ZR30qlNL+N7paQ2mCgzDyN9fgfok=;
+        b=Vnf9Ic7ou7Ywh4dPcqA1fCTw3cAYcQ5drF9YAHkZn/+uI2x9G/waXB1TBHmEbJofAF
+         REclTMdcWcqiG7pIV6tsWioUOV+eU/f8DbZXQSCDcBlsaEY+VYqrQf/3QejwdQhCYgjv
+         kMHSvJ/5W6WeYxtEF/IZ2NqOr2B5M7bPUy785BlqDeyZo5wRB6bxGs/aHbuaWVpUoVtA
+         CxF9m5HPbTWHMKqjIoRacYDTQrGgTW6niM1hCA/j1RgV6YlhkNkktg7zIZ/J74J7BhMw
+         X5iYZ1X9uXNiYEj7j9nuLXQ+1y5wwULdKvkkDL/mfc7cbAHrF0bk7VDG1BLy06GXhjB6
+         9kvQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=hWumiZx7P2cYyxkqj8MeKD2gSwwFhLpbzMigSDdLAyw=;
-        b=fR/y/rtSRS9+KkhYBtyem7tOe+7jzl+UwGAHBQcveL+hr4XBaUg6pq2VztOWo5Sj6p
-         Cm3OxhdclGrP6wdWwSh1L04yMQwZsT735J9o31x7wYugzn4pAI99+9py8pEs6UQ64uW3
-         aecqzjaQx32aXfYc864izHITka/MoBClqiwk93amM7HAZGN7NyyEx/v9EzkdIfBCwlxx
-         KDAKxFbb8tICne7SvwEI5cHeFS6XzA4YIEhq7ByL2IxmK0/TqT0QxzMxsjVgHz/kfk4B
-         uvev8C0zSdc1zcWieoe3dJ4mnC28k/74Zyi8R2+TOT3xT5f8Xil6XSOvOgZidmFtrAUO
-         +MNg==
-X-Gm-Message-State: AOAM532wdUGmqOr65oNb3kPpEcyaFyuJrm29ggL0ZkE7RIPV5MBnbK8m
-        PtPU6zFJZ6SyFG3d+kpSXmA=
-X-Google-Smtp-Source: ABdhPJwwHarcRg8pnworbQq/bPnuJyJcNNruRMSySxBrWQ9XTyCSrh8mde0khlyVFhwwoJ+DOHDPsg==
-X-Received: by 2002:a17:90a:e7d0:: with SMTP id kb16mr2600241pjb.22.1638838333178;
-        Mon, 06 Dec 2021 16:52:13 -0800 (PST)
+        bh=UdPDwq8o61e7G20ZR30qlNL+N7paQ2mCgzDyN9fgfok=;
+        b=2WVjrWxWLgdQSDDfCv/9fNIAdRKwzAEgzRY6bYmsmxfLCG4k7U2DAcY/mD8529ePgt
+         qPpfyNFPyC8wkXjW4mecQuOXK4Bza8LywjXG7nB9f31tEsF0IV88XoM0w8c2Be9n4HDb
+         Me18OqvBJBkIpI2FeQNmq5ypJBXOdyLhCmLnXgu6OWViouO9enJ7jhrkLnGIJucWXIAX
+         0yuELvRM4AR3VMQd7emTdjrh1Dt/dEM3TDlfb7bzSLHkESS0j2x5ZVdCXVzYc0DalNbA
+         vL1QHP1SJ2wYFnLYhJCINoC5x8Kg+UsAGI8OtdMXrnkgM+j15pkFvjF5bkEgLAe/C3Kq
+         lRXg==
+X-Gm-Message-State: AOAM530SJBseO54HceWxBxszQMAKlMzzMAHN7z50qah2UaRVluH0qUdG
+        Lzi5gztIOLkus7tp9BwfFbQ=
+X-Google-Smtp-Source: ABdhPJwutXFl+VfpKFht4WNUYX7JtfH+QbJ+H/40E2b7xxflacFMKn8FSEZ/aXoc4hMCpEMdYIsMVQ==
+X-Received: by 2002:a17:90a:8c0a:: with SMTP id a10mr2589485pjo.58.1638838334913;
+        Mon, 06 Dec 2021 16:52:14 -0800 (PST)
 Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:518c:39bf:c3e8:ffe2])
-        by smtp.gmail.com with ESMTPSA id l13sm14239618pfu.149.2021.12.06.16.52.12
+        by smtp.gmail.com with ESMTPSA id l13sm14239618pfu.149.2021.12.06.16.52.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Dec 2021 16:52:12 -0800 (PST)
+        Mon, 06 Dec 2021 16:52:14 -0800 (PST)
 From:   Eric Dumazet <eric.dumazet@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev <netdev@vger.kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH net-next 14/17] vfs: add netns refcount tracker to struct fs_context
-Date:   Mon,  6 Dec 2021 16:51:39 -0800
-Message-Id: <20211207005142.1688204-15-eric.dumazet@gmail.com>
+Subject: [PATCH net-next 15/17] audit: add netns refcount tracker to struct audit_net
+Date:   Mon,  6 Dec 2021 16:51:40 -0800
+Message-Id: <20211207005142.1688204-16-eric.dumazet@gmail.com>
 X-Mailer: git-send-email 2.34.1.400.ga245620fadb-goog
 In-Reply-To: <20211207005142.1688204-1-eric.dumazet@gmail.com>
 References: <20211207005142.1688204-1-eric.dumazet@gmail.com>
@@ -69,113 +69,47 @@ From: Eric Dumazet <edumazet@google.com>
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- fs/afs/mntpt.c             | 5 +++--
- fs/fs_context.c            | 7 ++++---
- fs/nfs/fs_context.c        | 5 +++--
- fs/nfs/namespace.c         | 5 +++--
- include/linux/fs_context.h | 2 ++
- 5 files changed, 15 insertions(+), 9 deletions(-)
+ kernel/audit.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/fs/afs/mntpt.c b/fs/afs/mntpt.c
-index bbb2c210d139d9033e83e39f0c4778de83afc694..c67474607604cc8096cfe343893994fe4153ffb4 100644
---- a/fs/afs/mntpt.c
-+++ b/fs/afs/mntpt.c
-@@ -78,8 +78,9 @@ static int afs_mntpt_set_params(struct fs_context *fc, struct dentry *mntpt)
- 	int ret;
+diff --git a/kernel/audit.c b/kernel/audit.c
+index 121d37e700a62b53854c06199d9a89850ec39dd4..27013414847678af4283484feab2461e3d9c67ed 100644
+--- a/kernel/audit.c
++++ b/kernel/audit.c
+@@ -96,6 +96,7 @@ struct audit_net {
+  * @pid: auditd PID
+  * @portid: netlink portid
+  * @net: the associated network namespace
++ * ns_tracker: tracker for @net reference
+  * @rcu: RCU head
+  *
+  * Description:
+@@ -106,6 +107,7 @@ struct auditd_connection {
+ 	struct pid *pid;
+ 	u32 portid;
+ 	struct net *net;
++	netns_tracker ns_tracker;
+ 	struct rcu_head rcu;
+ };
+ static struct auditd_connection __rcu *auditd_conn;
+@@ -481,7 +483,7 @@ static void auditd_conn_free(struct rcu_head *rcu)
  
- 	if (fc->net_ns != src_as->net_ns) {
--		put_net(fc->net_ns);
--		fc->net_ns = get_net(src_as->net_ns);
-+		put_net_track(fc->net_ns, &fc->ns_tracker);
-+		fc->net_ns = get_net_track(src_as->net_ns, &fc->ns_tracker,
-+					   GFP_KERNEL);
- 	}
+ 	ac = container_of(rcu, struct auditd_connection, rcu);
+ 	put_pid(ac->pid);
+-	put_net(ac->net);
++	put_net_track(ac->net, &ac->ns_tracker);
+ 	kfree(ac);
+ }
  
- 	if (src_as->volume && src_as->volume->type == AFSVL_RWVOL) {
-diff --git a/fs/fs_context.c b/fs/fs_context.c
-index b7e43a780a625bca1b0faeba53e2702463ad0496..06ece7c4b4c295cd1d918378597a23ac3a3cb13e 100644
---- a/fs/fs_context.c
-+++ b/fs/fs_context.c
-@@ -263,7 +263,8 @@ static struct fs_context *alloc_fs_context(struct file_system_type *fs_type,
- 	fc->sb_flags_mask = sb_flags_mask;
- 	fc->fs_type	= get_filesystem(fs_type);
- 	fc->cred	= get_current_cred();
--	fc->net_ns	= get_net(current->nsproxy->net_ns);
-+	fc->net_ns	= get_net_track(current->nsproxy->net_ns,
-+					&fc->ns_tracker, GFP_KERNEL);
- 	fc->log.prefix	= fs_type->name;
+@@ -508,7 +510,7 @@ static int auditd_set(struct pid *pid, u32 portid, struct net *net)
+ 		return -ENOMEM;
+ 	ac_new->pid = get_pid(pid);
+ 	ac_new->portid = portid;
+-	ac_new->net = get_net(net);
++	ac_new->net = get_net_track(net, &ac_new->ns_tracker, GFP_KERNEL);
  
- 	mutex_init(&fc->uapi_mutex);
-@@ -355,7 +356,7 @@ struct fs_context *vfs_dup_fs_context(struct fs_context *src_fc)
- 	fc->source	= NULL;
- 	fc->security	= NULL;
- 	get_filesystem(fc->fs_type);
--	get_net(fc->net_ns);
-+	get_net_track(fc->net_ns, &fc->ns_tracker, GFP_KERNEL);
- 	get_user_ns(fc->user_ns);
- 	get_cred(fc->cred);
- 	if (fc->log.log)
-@@ -469,7 +470,7 @@ void put_fs_context(struct fs_context *fc)
- 		fc->ops->free(fc);
- 
- 	security_free_mnt_opts(&fc->security);
--	put_net(fc->net_ns);
-+	put_net_track(fc->net_ns, &fc->ns_tracker);
- 	put_user_ns(fc->user_ns);
- 	put_cred(fc->cred);
- 	put_fc_log(fc);
-diff --git a/fs/nfs/fs_context.c b/fs/nfs/fs_context.c
-index 0d444a90f513a9fa6d2cef1748a7218575a38d84..ea0bd82a29ecb498d995ef74b1a4c0fc1832116d 100644
---- a/fs/nfs/fs_context.c
-+++ b/fs/nfs/fs_context.c
-@@ -1531,8 +1531,9 @@ static int nfs_init_fs_context(struct fs_context *fc)
- 			ctx->nfs_server.addrlen);
- 
- 		if (fc->net_ns != net) {
--			put_net(fc->net_ns);
--			fc->net_ns = get_net(net);
-+			put_net_track(fc->net_ns, &fc->ns_tracker);
-+			fc->net_ns = get_net_track(net, &fc->ns_tracker,
-+						   GFP_KERNEL);
- 		}
- 
- 		ctx->nfs_mod = nfss->nfs_client->cl_nfs_mod;
-diff --git a/fs/nfs/namespace.c b/fs/nfs/namespace.c
-index 3295af4110f1b1c5890f110c3d49424a3d19406f..8c630907d1eff2f7199d32d6becee4c10259473d 100644
---- a/fs/nfs/namespace.c
-+++ b/fs/nfs/namespace.c
-@@ -170,8 +170,9 @@ struct vfsmount *nfs_d_automount(struct path *path)
- 		goto out_fc;
- 
- 	if (fc->net_ns != client->cl_net) {
--		put_net(fc->net_ns);
--		fc->net_ns = get_net(client->cl_net);
-+		put_net_track(fc->net_ns, &fc->ns_tracker);
-+		fc->net_ns = get_net_track(client->cl_net,
-+					   &fc->ns_tracker, GFP_KERNEL);
- 	}
- 
- 	/* for submounts we want the same server; referrals will reassign */
-diff --git a/include/linux/fs_context.h b/include/linux/fs_context.h
-index 6b54982fc5f378ec704f56def2fdb299e7d8b42d..9099bf7769c6db04b649d319502aec1b17d3d236 100644
---- a/include/linux/fs_context.h
-+++ b/include/linux/fs_context.h
-@@ -13,6 +13,7 @@
- #include <linux/errno.h>
- #include <linux/security.h>
- #include <linux/mutex.h>
-+#include <net/net_trackers.h>
- 
- struct cred;
- struct dentry;
-@@ -96,6 +97,7 @@ struct fs_context {
- 	struct dentry		*root;		/* The root and superblock */
- 	struct user_namespace	*user_ns;	/* The user namespace for this mount */
- 	struct net		*net_ns;	/* The network namespace for this mount */
-+	netns_tracker		ns_tracker;	/* Tracker for @net_ns reference */
- 	const struct cred	*cred;		/* The mounter's credentials */
- 	struct p_log		log;		/* Logging buffer */
- 	const char		*source;	/* The source name (eg. dev path) */
+ 	spin_lock_irqsave(&auditd_conn_lock, flags);
+ 	ac_old = rcu_dereference_protected(auditd_conn,
 -- 
 2.34.1.400.ga245620fadb-goog
 
