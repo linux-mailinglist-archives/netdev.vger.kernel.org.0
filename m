@@ -2,90 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 21E4246C301
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 19:41:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E13F46C318
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 19:49:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240633AbhLGSpA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 13:45:00 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:43688 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240627AbhLGSo7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 7 Dec 2021 13:44:59 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=VAh0IEb1mDATF+5DEmm633lm7F5fbYCo8vWsPxSIIv8=; b=tBvrOdE1UlvHYq3Gmc04jj0VQx
-        ifgibcTWkH1La3xcmrBH7GQWXRh0PdbP1QYyZC2UzFL4KYyugyWDAJjBKGS7R7cPM+qYxhMko0yKg
-        IFXQPyZDEAiMhFFAQxISj4s41AWmVC8AvZhuKuaqcZjo/1g+AQZbg/Qeo9gvb+zDJdqo=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mufP1-00Fnv0-RS; Tue, 07 Dec 2021 19:41:23 +0100
-Date:   Tue, 7 Dec 2021 19:41:23 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Ansuel Smith <ansuelsmth@gmail.com>
+        id S240710AbhLGSxR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 13:53:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51386 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231469AbhLGSxQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 13:53:16 -0500
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E175C061574;
+        Tue,  7 Dec 2021 10:49:46 -0800 (PST)
+Received: by mail-pj1-x102a.google.com with SMTP id f18-20020a17090aa79200b001ad9cb23022so167558pjq.4;
+        Tue, 07 Dec 2021 10:49:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=F/yQUYPsKD97ChDwdkNkfz44U9dpuQ4WBjbleQG98/E=;
+        b=LbVbUXWsfZvhqVEzvwIL8AWfCXH2pgPaxusH5esX0jmp/82r2m+yzmdaIk1+Hdfc+h
+         T41Q3xVWc6syDwemIOY/DrCInlH+IH7fXpeKjC78UM6qrXb/uXTGs2GzuAvoWJfDhPSc
+         bcYh/CjCp3FND+D5m9tweZGsb51oYkaVRkPdsSd/1WXjX+LREJvpHkP0rOkNbiAuhQk1
+         z+ekQNw8pNDYUAANOHQNabow/Wk7FTjvdHSJiUm6rI5r2lTMDTFX7dsDKaQ2K9LqHsX9
+         Z5dCqSyXoSFhQdZfq6CnzLjXV5RalxhJzdhQAh0AOYPV/XH9UEv8MWY5Sy1quaH2m0ra
+         8CxQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=F/yQUYPsKD97ChDwdkNkfz44U9dpuQ4WBjbleQG98/E=;
+        b=2Wx2xYEX3tA8KJxuZISxJssL7UTGJu9xv9Gs+Czvr93j562wnuNztCcPr70PbwAK5F
+         71QOLUYw6IvT975jRgMxQtBDM4KP+86nMv+4ETWlNeOlZKQpdYuqo8osaCnyC1nuBFa4
+         RPWXL01c8WdCdUBCMAp1DyJ24jzvj7VWdM3xpLvZRQTR33Kvo5EyjnSL2RmJy52x4EEL
+         CM1p1Zpd5vO21iyvGAQ9lXPSKcfZ/X+2UrhI84Ghuo7Y5iBHpVKilNFCVe3Pg0vElYkN
+         C2Wsk7giP5S5rSxWEy+PGR5IhtRf84IJiA7PrLiTwX4qPcf6M/Duny+0bP9mIsu8GcoG
+         UVHQ==
+X-Gm-Message-State: AOAM531nUg3TJ2kAUdD3dfeLAs6lbyylNcD/MELnvXV2n7Rz7Au19J8i
+        T92ys9vKTz/LRcvkaZtL4I8fk9S1HSo=
+X-Google-Smtp-Source: ABdhPJztD0YkRSk81b4tQ6fGccnYyGJuM/brVDyBXBGHtfsn0/bm1lFXxsNpHyPtDzIPqs7ECB2tNw==
+X-Received: by 2002:a17:90b:1e4e:: with SMTP id pi14mr978686pjb.161.1638902985031;
+        Tue, 07 Dec 2021 10:49:45 -0800 (PST)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id 38sm220370pgl.73.2021.12.07.10.49.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 07 Dec 2021 10:49:44 -0800 (PST)
+Subject: Re: [net-next RFC PATCH 0/6] Add support for qca8k mdio rw in
+ Ethernet packet
+To:     Andrew Lunn <andrew@lunn.ch>, Ansuel Smith <ansuelsmth@gmail.com>
 Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
         Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: Re: [net-next RFC PATCH 0/6] Add support for qca8k mdio rw in
- Ethernet packet
-Message-ID: <Ya+q02HlWsHMYyAe@lunn.ch>
 References: <20211207145942.7444-1-ansuelsmth@gmail.com>
+ <Ya96pwC1KKZDO9et@lunn.ch>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <77203cb2-ba90-ff01-5940-2e9b599f648f@gmail.com>
+Date:   Tue, 7 Dec 2021 10:49:43 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211207145942.7444-1-ansuelsmth@gmail.com>
+In-Reply-To: <Ya96pwC1KKZDO9et@lunn.ch>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> I still have to find a solution to a slowdown problem and this is where
-> I would love to get some hint.
-> Currently I still didn't find a good way to understand when the tagger
-> starts to accept packets and because of this the initial setup is slow
-> as every completion timeouts. Am I missing something or is there a way
-> to check for this?
+On 12/7/21 7:15 AM, Andrew Lunn wrote:
+> On Tue, Dec 07, 2021 at 03:59:36PM +0100, Ansuel Smith wrote:
+>> Hi, this is still WIP and currently has some problem but I would love if
+>> someone can give this a superficial review and answer to some problem
+>> with this.
+>>
+>> The main reason for this is that we notice some routing problem in the
+>> switch and it seems assisted learning is needed. Considering mdio is
+>> quite slow due to the indirect write using this Ethernet alternative way
+>> seems to be quicker.
+>>
+>> The qca8k switch supports a special way to pass mdio read/write request
+>> using specially crafted Ethernet packet.
+> 
+> Oh! Cool! Marvell has this as well, and i suspect a few others. It is
+> something i've wanted to work on for a long long time, but never had
+> the opportunity.
+> 
+> This also means that, even if you are focusing on qca8k, please try to
+> think what could be generic, and what should specific to the
+> qca8k. The idea of sending an Ethernet frame and sometime later
+> receiving a reply should be generic and usable for other DSA
+> drivers. The contents of those frames needs to be driver specific.
+> How we hook this into MDIO might also be generic, maybe.
+> 
+> I will look at your questions later, but soon.
 
-I've not looked at this particular driver, i just know the general
-architecture.
+There was a priori attempt from Vivien to add support for mv88e6xxx over
+RMU frames:
 
-The MDIO bus driver probes first, maybe as part of the Ethernet
-driver, maybe as a standalone MDIO driver. The switch is found in DT
-and the driver code will at some point later probe the switch driver.
+https://www.mail-archive.com/netdev@vger.kernel.org/msg298317.html
 
-The switch driver has working MDIO at this point. It should use MDIO
-to talk to the switch, make sure it is there, maybe do some initial
-configuration. Once it is happy, it registers the switch with the DSA
-core using dsa_register_switch().
-
-If this is a single switch, the DSA core will then start setting
-things up. As part of dsa_switch_setup() it will call the switch
-drivers setup() method. It then figures out what tag driver to use, by
-calling dsa_switch_setup_tag_protocol(). However, the tag driver
-itself is not inserted into the chain yet. That happens later.  Once
-the switch is setup, dsa_tree_setup_master() is called which does
-dsa_master_setup() and in the middle there is:
-
-	/* If we use a tagging format that doesn't have an ethertype
-	 * field, make sure that all packets from this point on get
-	 * sent to the tag format's receive function.
-	 */
-	wmb();
-
-	dev->dsa_ptr = cpu_dp;
-
-This is the magic to actually enable the tagger receiving frames.
-
-I need to look at your patches, but why is the tagger involved?  At
-least for the Marvell switch, you send a pretty normal looking
-Ethernet frame to a specific MAC address, and the switch replies using
-that MAC address. And it has an Ether Type specific to switch
-control. Since this is all normal looking, there are hooks in the
-network stack which can be used to get these frames.
-
-	Andrew
-
+This gets interesting because the switch's control path moves from MDIO
+to Ethernet and there is not really an "ethernet bus" though we could
+certainly come up with one. We have mdio-i2c, so maybe we should have
+mdio-ethernet?
+-- 
+Florian
