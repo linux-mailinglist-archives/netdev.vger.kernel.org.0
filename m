@@ -2,36 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F4BE46BE08
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 15:43:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B259446BE13
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 15:46:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238153AbhLGOrV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 09:47:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48284 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231565AbhLGOrU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 09:47:20 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1187C061574;
-        Tue,  7 Dec 2021 06:43:49 -0800 (PST)
+        id S238186AbhLGOuC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 09:50:02 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:47642 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238192AbhLGOuB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 09:50:01 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 19EF4CE1B19;
-        Tue,  7 Dec 2021 14:43:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1E8CC341C1;
-        Tue,  7 Dec 2021 14:43:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0DAA6B817EB;
+        Tue,  7 Dec 2021 14:46:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5D30C341C8;
+        Tue,  7 Dec 2021 14:46:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638888226;
-        bh=5MrplqICp5ANCWUEGpUqpG9gDk7l+o1aiuGOgg7OwLM=;
+        s=k20201202; t=1638888388;
+        bh=/HDJF3gWZSfW6o+OZuu99jpPVn8cK4i2nf6FoOUbTxM=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=MNgEtovjWw1rD8htPyN6EHRDRcWb11cI/DCkMpYfFiiMgpppPLre1wTb0FR4a9rAh
-         QPgPplm1d1YAA9ZSspKTf3WI5aNuBmqMz5fZK2WsUgqMqNUPWz4vnX2CveZMDQzP0K
-         ZjeA72R/viKPgd7+kTan4fK0xUQfR1rG4QxY0zGKFJKeZzqaPV22qaElgEemaEjqv1
-         OaZIzech2Ujzn6pEuR0EwSDcjobwOWJkiIYskAZm0YpWsZyzcntB1xJgiwfg2nA0Wh
-         WHiIyqnsY+ODFMdJ7cazVOG4hQY6gkYTEm9t6jYXHRIf5rhXfujWbzD9kKUHlMyEO4
-         Nnonhwe4p1bSQ==
-Date:   Tue, 7 Dec 2021 06:43:45 -0800
+        b=EeusCp48Gk375XhLK6HOShNAaNpMwlDhUQp7iOCwJIgCPcXVI5mENIdcbolrKwDYk
+         9fE79z0n9kC5vVZKp+zf+iDOwuNpvj1cktBeNQw+fyZxjDksmWKFDXI5N9rAr2NGpy
+         za+5qz+/5ejxtvP3teSw4pDtMFH8xng4Q7eO0ziFXwHZtB9oYZMTCZq7fCMIeEyieo
+         Wvf9W+UD06uCq12MtQXzr/M6XPJS7DY+DUBYZm2NiVlwW4xVou8VbJNXxWjMeoZvSd
+         DzUp1G2/WTqd15GTDwK/vX/23ak+3UjdopLvGFYJ+Y/Tt4n3bA9E1hGMG2b+IZwFcE
+         /WDS9J+blHjtw==
+Date:   Tue, 7 Dec 2021 06:46:27 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Biao Huang <biao.huang@mediatek.com>
 Cc:     <davem@davemloft.net>, Rob Herring <robh+dt@kernel.org>,
@@ -48,9 +45,10 @@ Cc:     <davem@davemloft.net>, Rob Herring <robh+dt@kernel.org>,
         <srv_heupstream@mediatek.com>, <macpaul.lin@mediatek.com>,
         <angelogioacchino.delregno@collabora.com>, <dkirjanov@suse.de>
 Subject: Re: [PATCH v5 0/7] MediaTek Ethernet Patches on MT8195
-Message-ID: <20211207064345.2c6427a1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211207015505.16746-1-biao.huang@mediatek.com>
+Message-ID: <20211207064627.5623f3bf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211207064345.2c6427a1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 References: <20211207015505.16746-1-biao.huang@mediatek.com>
+        <20211207064345.2c6427a1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -58,17 +56,21 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 7 Dec 2021 09:54:58 +0800 Biao Huang wrote:
-> Changes in v5:
-> 1. remove useless inclusion in dwmac-mediatek.c as Angelo's comments.
-> 2. add acked-by in "net-next: stmmac: dwmac-mediatek: add support for
->    mt8195" patch
+On Tue, 7 Dec 2021 06:43:45 -0800 Jakub Kicinski wrote:
+> On Tue, 7 Dec 2021 09:54:58 +0800 Biao Huang wrote:
+> > Changes in v5:
+> > 1. remove useless inclusion in dwmac-mediatek.c as Angelo's comments.
+> > 2. add acked-by in "net-next: stmmac: dwmac-mediatek: add support for
+> >    mt8195" patch  
+> 
+> Which tree is this series based on? It doesn't seem to apply to
+> net-next. Also the net-next in the subjects is misplaced. If the series
+> is supposed to be merged to net-next the subject should be like:
+> 
+> [PATCH net-next v5 1/7] stmmac: dwmac-mediatek: add platform level clocks management
+> 
+> You can use --subject-prefix="PATCH net-next v6" in git-format-patch to
+> add the prefix.
 
-Which tree is this series based on? It doesn't seem to apply to
-net-next. Also the net-next in the subjects is misplaced. If the series
-is supposed to be merged to net-next the subject should be like:
-
-[PATCH net-next v5 1/7] stmmac: dwmac-mediatek: add platform level clocks management
-
-You can use --subject-prefix="PATCH net-next v6" in git-format-patch to
-add the prefix.
+FWIW patch 6 is the one with the conflict: "arm64: dts: mt8195: add
+ethernet device node"
