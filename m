@@ -2,278 +2,205 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE63C46C280
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 19:14:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A598946C289
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 19:17:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235002AbhLGSSD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 13:18:03 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:38669 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230257AbhLGSSD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 13:18:03 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1638900872;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=RtlB+q2yXh5ebvFEGBR9G9xtBgb8a+zDj7VKXAAjuUU=;
-        b=W5G9pViddUlOB1n4MJO+Y81C9STZRjWbGnwlUumYEGxYZQv0/lafdCVz1tZGvQxRn6b22n
-        O6+9l1wKGjchyXxixAHNeixaj0sPKwjK9zI0w2z3PrEvEYwMo0qHWKcuUoJij81NWLrCzs
-        94QfvoQ2qo4c2GRbrznKG5jv5nIYpF4=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-402-FkHlfwPzOzSTsiJZBXX3TQ-1; Tue, 07 Dec 2021 13:14:30 -0500
-X-MC-Unique: FkHlfwPzOzSTsiJZBXX3TQ-1
-Received: by mail-ed1-f69.google.com with SMTP id c1-20020aa7c741000000b003e7bf1da4bcso12086863eds.21
-        for <netdev@vger.kernel.org>; Tue, 07 Dec 2021 10:14:30 -0800 (PST)
+        id S235978AbhLGSVN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 13:21:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43784 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230257AbhLGSVN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 13:21:13 -0500
+Received: from mail-ot1-x335.google.com (mail-ot1-x335.google.com [IPv6:2607:f8b0:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF927C061574
+        for <netdev@vger.kernel.org>; Tue,  7 Dec 2021 10:17:42 -0800 (PST)
+Received: by mail-ot1-x335.google.com with SMTP id n17-20020a9d64d1000000b00579cf677301so19141778otl.8
+        for <netdev@vger.kernel.org>; Tue, 07 Dec 2021 10:17:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=goWJzo72h9TSpuyvB/8iyuCpoF68ya6syYVsWpB80wQ=;
+        b=Z57GYRmBvIHCEd7tIUWqOIww3vXYd4p8BIyZp8lnA6V6bEoziceDCeZgCIjsyj08wO
+         R9guwSHPcB4jrzGYeHdeLe4dUs2TRtaTO63ienoY9tN4XdsapZd2yLo1YebxF/3fOIHN
+         kG+TJJ/0jo/11HKiCAkYZQXYo7P2fZJ1+P31dAqpiJ9np3QPJ7CGbU5/SqbzZeF8Pl5Y
+         y02aXBKbxGL9/QqW9jM+dN4WLAxIEd0oH//pmzVb6NPkXpJTfvKz4+fS9fqD4o59ddyY
+         sUMFH0kQXPi5za58IpGUzOenra/E/OU47HtzXj6rZvpm8ni64ixngOLj6wQVuYe+1bNS
+         +dJw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=RtlB+q2yXh5ebvFEGBR9G9xtBgb8a+zDj7VKXAAjuUU=;
-        b=MvDn/sD54XjLX5K1Jr0FPYOoxJ0SExqTTP6pc+eapv7nXkc0yA99Alw+AX0prGJV9l
-         o2JLooxnY4GYdfy/Say5dYBCjzUGXTkrHhArhH0YbRpJuTpt6uQtglaCVruAUlY0kh+b
-         WZ/AwcxPdBy/nDYydK3+NzH23f6taKoki8w5726qbCUqim2ZpaGHwzO/uqZ3Csw4HHHY
-         qmtjpeyCo3qA0p/t82R2H6ixgD2oqyuSf6vyDQm5Mglevm5guDfHKBx7CzngGNvcKOs1
-         M1k4YcP5PxeVZj4pQm9ds0KCHEeFK9eGvud768dPYcFXNaJaAK++48Gwqz6JU4oPql4V
-         mqGg==
-X-Gm-Message-State: AOAM533GS2+lyWZ+pW6nLHKrDngyeVKEu0SMLblfUd1GqVAUskwyes3B
-        JvaLFzMTdK9Rv05CiedD7aXqO18PEUfLTlek5IGwhmP0MnF9dPGMLHWkIqj948jeuxaKZVyER3r
-        +YY4rK+mpjL2nojds
-X-Received: by 2002:a05:6402:50c6:: with SMTP id h6mr11090588edb.228.1638900869699;
-        Tue, 07 Dec 2021 10:14:29 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJztv0/R/GP2WdIu+4Ybks24SMSx8TdzLXm/jkvJgv6Vbx5rweFpsJt5IDCgQjGCe9yB8U9hVg==
-X-Received: by 2002:a05:6402:50c6:: with SMTP id h6mr11090558edb.228.1638900869444;
-        Tue, 07 Dec 2021 10:14:29 -0800 (PST)
-Received: from krava (nat-pool-brq-u.redhat.com. [213.175.37.12])
-        by smtp.gmail.com with ESMTPSA id r13sm315655edo.71.2021.12.07.10.14.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Dec 2021 10:14:29 -0800 (PST)
-Date:   Tue, 7 Dec 2021 19:14:27 +0100
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, andrii@kernel.org
-Subject: Re: [PATCH bpf-next 3/3] selftests/bpf: Add tests for
- get_func_[arg|ret|arg_cnt] helpers
-Message-ID: <Ya+kg3SPcBU4loIz@krava>
-References: <20211204140700.396138-1-jolsa@kernel.org>
- <20211204140700.396138-4-jolsa@kernel.org>
- <7df54ca3-1bae-4d54-e30f-c2474c48ede0@fb.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=goWJzo72h9TSpuyvB/8iyuCpoF68ya6syYVsWpB80wQ=;
+        b=GLtS7hKRVJKH5iEPGVJWYzXZ194ekD01EOL/MDWM4AgFpldBJpn7uRjoxy3oASji3U
+         O8xBLMtLJfv0i15B3Th1z9Ee91QEPmVdCd3DgfMJA0hYedJDPCDmyEAsG0IvcdsF6Cjb
+         U07QYeOQ+Hbxgp65S+b5vjbS9TDevkxejjUz782h4T7wnGlUDj8G1pcl0O/uSlkr2ZMx
+         sCGLCRtgiNgKPyeqA6mYq1q7OczE5wiWDRAsserP3NKEhXby8oZBe51zEdaG+1PdfNsl
+         l7hq43rRFl5Ct6qZOMxKhXpjJnP0Urx3pDVJg3Vxi4PcaI7a8yL+fLLI5OGz7EbNNl1m
+         9Btg==
+X-Gm-Message-State: AOAM530j6BTjSshXKnV2QjZM1FSE8EvR7EQOh/KtnVNIM3CBAlfWMK2/
+        fFXHEt/LjGtYb4Q9T8/F/1ArKUavY4/+P+O+1tU=
+X-Google-Smtp-Source: ABdhPJwlVf9QnEx3AI71YJEReube1FRAf7wGmVgVWtMBowq5fgVWEXSUtqRcZVtcVPNLRPNItUni/FvzybhW4OlnZZ0=
+X-Received: by 2002:a9d:2ae:: with SMTP id 43mr38484194otl.289.1638901062120;
+ Tue, 07 Dec 2021 10:17:42 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7df54ca3-1bae-4d54-e30f-c2474c48ede0@fb.com>
+References: <cover.1638849511.git.lucien.xin@gmail.com> <CANn89iJyiDbGdvm-oNKBBk5r3-0+3h+3ui1pL3rOTrz2BOztmA@mail.gmail.com>
+In-Reply-To: <CANn89iJyiDbGdvm-oNKBBk5r3-0+3h+3ui1pL3rOTrz2BOztmA@mail.gmail.com>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Tue, 7 Dec 2021 13:17:31 -0500
+Message-ID: <CADvbK_c-SpsVDgOgUO2YqcT3qS4c9BL=qHYnrEgp2S3tqvR-Zw@mail.gmail.com>
+Subject: Re: [PATCH net-next 0/5] net: add refcnt tracking for some common objects
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     network dev <netdev@vger.kernel.org>, davem <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Davide Caratti <dcaratti@redhat.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 06, 2021 at 02:03:54PM -0800, Andrii Nakryiko wrote:
-> 
-> On 12/4/21 6:07 AM, Jiri Olsa wrote:
-> > Adding tests for get_func_[arg|ret|arg_cnt] helpers.
-> > Using these helpers in fentry/fexit/fmod_ret programs.
-> > 
-> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> > ---
-> >   .../bpf/prog_tests/get_func_args_test.c       |  38 ++++++
-> >   .../selftests/bpf/progs/get_func_args_test.c  | 112 ++++++++++++++++++
-> >   2 files changed, 150 insertions(+)
-> >   create mode 100644 tools/testing/selftests/bpf/prog_tests/get_func_args_test.c
-> >   create mode 100644 tools/testing/selftests/bpf/progs/get_func_args_test.c
-> > 
-> > diff --git a/tools/testing/selftests/bpf/prog_tests/get_func_args_test.c b/tools/testing/selftests/bpf/prog_tests/get_func_args_test.c
-> > new file mode 100644
-> > index 000000000000..c24807ae4361
-> > --- /dev/null
-> > +++ b/tools/testing/selftests/bpf/prog_tests/get_func_args_test.c
-> > @@ -0,0 +1,38 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +#include <test_progs.h>
-> > +#include "get_func_args_test.skel.h"
-> > +
-> > +void test_get_func_args_test(void)
-> > +{
-> > +	struct get_func_args_test *skel = NULL;
-> > +	__u32 duration = 0, retval;
-> > +	int err, prog_fd;
-> > +
-> > +	skel = get_func_args_test__open_and_load();
-> > +	if (!ASSERT_OK_PTR(skel, "get_func_args_test__open_and_load"))
-> > +		return;
-> > +
-> > +	err = get_func_args_test__attach(skel);
-> > +	if (!ASSERT_OK(err, "get_func_args_test__attach"))
-> > +		goto cleanup;
-> > +
-> > +	prog_fd = bpf_program__fd(skel->progs.test1);
-> > +	err = bpf_prog_test_run(prog_fd, 1, NULL, 0,
-> > +				NULL, NULL, &retval, &duration);
-> > +	ASSERT_OK(err, "test_run");
-> > +	ASSERT_EQ(retval, 0, "test_run");
-> > +
-> > +	prog_fd = bpf_program__fd(skel->progs.fmod_ret_test);
-> > +	err = bpf_prog_test_run(prog_fd, 1, NULL, 0,
-> > +				NULL, NULL, &retval, &duration);
-> > +	ASSERT_OK(err, "test_run");
-> > +	ASSERT_EQ(retval, 1234, "test_run");
-> 
-> 
-> are the other two programs executed implicitly during one of those test
-> runs? Can you please leave a small comment somewhere here if that's true?
+On Mon, Dec 6, 2021 at 11:41 PM Eric Dumazet <edumazet@google.com> wrote:
+>
+> On Mon, Dec 6, 2021 at 8:02 PM Xin Long <lucien.xin@gmail.com> wrote:
+> >
+> > This patchset provides a simple lib(obj_cnt) to count the operatings on any
+> > objects, and saves them into a gobal hashtable. Each node in this hashtable
+> > can be identified with a calltrace and an object pointer. A calltrace could
+> > be a function called from somewhere, like dev_hold() called by:
+> >
+> >     inetdev_init+0xff/0x1c0
+> >     inetdev_event+0x4b7/0x600
+> >     raw_notifier_call_chain+0x41/0x50
+> >     register_netdevice+0x481/0x580
+> >
+> > and an object pointer would be the dev that this function is accessing:
+> >
+> >     dev_hold(dev).
+> >
+> > When this call comes to this object, a node including calltrace + object +
+> > counter will be created if it doesn't exist, and the counter in this node
+> > will increment if it already exists. Pretty simple.
+> >
+> > So naturally this lib can be used to track the refcnt of any objects, all
+> > it has to do is put obj_cnt_track() to the place where this object is
+> > held or put. It will count how many times this call has operated this
+> > object after checking if this object and this type(hold/put) accessing
+> > are being tracked.
+> >
+> > After the 1st lib patch, the other patches add the refcnt tracking for
+> > netdev, dst, in6_dev and xfrm_state, and each has example how to use
+> > in the changelog. The common use is:
+> >
+> >     # sysctl -w obj_cnt.control="clear" # clear the old result
+> >
+> >     # sysctl -w obj_cnt.type=0x1     # track type 0x1 operating
+> >     # sysctl -w obj_cnt.name=test    # match name == test or
+> >     # sysctl -w obj_cnt.index=1      # match index == 1
+> >     # sysctl -w obj_cnt.nr_entries=4 # save 4 frames' calltrace
+> >
+> >     ... (reproduce the issue)
+> >
+> >     # sysctl -w obj_cnt.control="scan"  # print the new result
+> >
+> > Note that after seeing Eric's another patchset for refcnt tracking I
+> > decided to post this patchset. As in this implemenation, it has some
+> > benefits which I think worth sharing:
+> >
+>
+> How can your code coexist with ref_tracker ?
+Hi, Eric, Thanks for your checking
 
-test1 triggers all the bpf_fentry_test* fentry/fexits
-fmod_ret_test triggers the rest, I'll put it in comment
+It won't affect ref_tracker, one can even use both at the same time.
 
-> 
-> 
-> > +
-> > +	ASSERT_EQ(skel->bss->test1_result, 1, "test1_result");
-> > +	ASSERT_EQ(skel->bss->test2_result, 1, "test2_result");
-> > +	ASSERT_EQ(skel->bss->test3_result, 1, "test3_result");
-> > +	ASSERT_EQ(skel->bss->test4_result, 1, "test4_result");
-> > +
-> > +cleanup:
-> > +	get_func_args_test__destroy(skel);
-> > +}
-> > diff --git a/tools/testing/selftests/bpf/progs/get_func_args_test.c b/tools/testing/selftests/bpf/progs/get_func_args_test.c
-> > new file mode 100644
-> > index 000000000000..0d0a67c849ae
-> > --- /dev/null
-> > +++ b/tools/testing/selftests/bpf/progs/get_func_args_test.c
-> > @@ -0,0 +1,112 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +#include <linux/bpf.h>
-> > +#include <bpf/bpf_helpers.h>
-> > +#include <bpf/bpf_tracing.h>
-> > +#include <errno.h>
-> > +
-> > +char _license[] SEC("license") = "GPL";
-> > +
-> > +__u64 test1_result = 0;
-> > +SEC("fentry/bpf_fentry_test1")
-> > +int BPF_PROG(test1)
-> > +{
-> > +	__u64 cnt = bpf_get_func_arg_cnt(ctx);
-> > +	__u64 a = 0, z = 0, ret = 0;
-> > +	__s64 err;
-> > +
-> > +	test1_result = cnt == 1;
-> > +
-> > +	/* valid arguments */
-> > +	err = bpf_get_func_arg(ctx, 0, &a);
-> > +	test1_result &= err == 0 && (int) a == 1;
-> 
-> 
-> int cast unnecessary? but some ()'s wouldn't hurt...
+>
+> >   - it runs fast:
+> >     1. it doesn't create nodes for the repeatitive calls to the same
+> >        objects, and it saves memory and time.
+> >     2. the depth of the calltrace to record is configurable, at most
+> >        time small calltrace also saves memory and time, but will not
+> >        affect the analysis.
+> >     3. kmem_cache used also contributes to the performance.
+>
+> Points 2/3 can be implemented right away in the ref_tracker infra,
+> please send patches.
+>
+> Quite frankly using a global hash table seems wrong, stack_depot
+> already has this logic, why reimplement it ?
+> stack_depot is damn fast (no spinlock in fast path)
+What this patchset is trying to add is a calltrace+object counter.
+I was looking at stack_depot after seeing you patch, stack_depot saves
+calltrace only, no object(I guess this is okay, I can save object to
+to entries[0] if I want to use it), but also it's not a counter.
 
-it is, 'a' is int and trampoline saves it with 32-bit register like:
+I'm not sure if it's allowed to do some change and add a counter to
+the node of stack_depot, like when it's found in saving, the counter
+increments. That will be perfect for this patchset.
 
-  mov    %edi,-0x8(%rbp)
+This global spinlock will eventually be used only to protect the new
+node's insertion. For the fast path (lookup), rcu_read_lock() will take
+care of it. I haven't got time to add it. but this won't be a problem.
 
-so the upper 4 bytes are not zeroed
+>
+> Seeing that your patches add chunks in lib/obj_cnt.c, I do not see how
+> you can claim this is generic code.
+I planned it as a obj operating counter, it can be used for counting any
+operatings, not just for the refcnt tracker which is only _put and _hold
+operatings.
 
-> 
-> 
-> > +
-> > +	/* not valid argument */
-> > +	err = bpf_get_func_arg(ctx, 1, &z);
-> > +	test1_result &= err == -EINVAL;
-> > +
-> > +	/* return value fails in fentry */
-> > +	err = bpf_get_func_ret(ctx, &ret);
-> > +	test1_result &= err == -EINVAL;
-> > +	return 0;
-> > +}
-> > +
-> > +__u64 test2_result = 0;
-> > +SEC("fexit/bpf_fentry_test2")
-> > +int BPF_PROG(test2)
-> > +{
-> > +	__u64 cnt = bpf_get_func_arg_cnt(ctx);
-> > +	__u64 a = 0, b = 0, z = 0, ret = 0;
-> > +	__s64 err;
-> > +
-> > +	test2_result = cnt == 2;
-> > +
-> > +	/* valid arguments */
-> > +	err = bpf_get_func_arg(ctx, 0, &a);
-> > +	test2_result &= err == 0 && (int) a == 2;
-> > +
-> > +	err = bpf_get_func_arg(ctx, 1, &b);
-> > +	test2_result &= err == 0 && b == 3;
-> > +
-> > +	/* not valid argument */
-> > +	err = bpf_get_func_arg(ctx, 2, &z);
-> > +	test2_result &= err == -EINVAL;
-> > +
-> > +	/* return value */
-> > +	err = bpf_get_func_ret(ctx, &ret);
-> > +	test2_result &= err == 0 && ret == 5;
-> > +	return 0;
-> > +}
-> > +
-> > +__u64 test3_result = 0;
-> > +SEC("fmod_ret/bpf_modify_return_test")
-> > +int BPF_PROG(fmod_ret_test, int _a, int *_b, int _ret)
-> > +{
-> > +	__u64 cnt = bpf_get_func_arg_cnt(ctx);
-> > +	__u64 a = 0, b = 0, z = 0, ret = 0;
-> > +	__s64 err;
-> > +
-> > +	test3_result = cnt == 2;
-> > +
-> > +	/* valid arguments */
-> > +	err = bpf_get_func_arg(ctx, 0, &a);
-> > +	test3_result &= err == 0 && (int) a == 1;
-> > +
-> > +	err = bpf_get_func_arg(ctx, 1, &b);
-> > +	test3_result &= err == 0;
-> 
-> 
-> why no checking of b value here?
+>
+> I don't know, it seems very strange to send this patch series now I
+> have done about 60 patches on these issues.
+This patch is not to do exactly the same things as your patchset, I think your
+patch saves more information into the objects in the kernel memory, it will
+be useful for vmcore analysis.
 
-right, ok
+This patchset is working in a different way, it's going to target a
+specific object with index or name or pointer matched and some types
+of function calls to it, we have to plan in advance after we know
+which object (like it's name, index or string to match) is leaked.
 
-> 
-> > +
-> > +	/* not valid argument */
-> > +	err = bpf_get_func_arg(ctx, 2, &z);
-> > +	test3_result &= err == -EINVAL;
-> > +
-> > +	/* return value */
-> > +	err = bpf_get_func_ret(ctx, &ret);
-> > +	test3_result &= err == 0 && ret == 0;
-> > +	return 1234;
-> > +}
-> > +
-> > +__u64 test4_result = 0;
-> > +SEC("fexit/bpf_modify_return_test")
-> > +int BPF_PROG(fexit_test, int _a, __u64 _b, int _ret)
-> > +{
-> > +	__u64 cnt = bpf_get_func_arg_cnt(ctx);
-> > +	__u64 a = 0, b = 0, z = 0, ret = 0;
-> > +	__s64 err;
-> > +
-> > +	test4_result = cnt == 2;
-> > +
-> > +	/* valid arguments */
-> > +	err = bpf_get_func_arg(ctx, 0, &a);
-> > +	test4_result &= err == 0 && (int) a == 1;
-> > +
-> > +	err = bpf_get_func_arg(ctx, 1, &b);
-> > +	test4_result &= err == 0;
-> 
-> 
-> same, for consistency, b should have been checked, no?
+>
+> And by doing this work, I found already two bugs in our stack.
+Great effects!
+I can see that you must go over all networking stack for dev operations.
 
-ok
+>
+> You can be sure syzbot will send us many reports, most syzbot repros
+> use a very limited number of objects.
+>
+> About performance : You use a single spinlock to protect your hash table.
+> In my implementation, there is a spinlock per 'directory (eg one
+> spinlock per struct net_device, one spinlock per struct net), it is
+> more scalable.
+I used per net spinlock at first, but I want to make the code more generic,
+and not only for the network, then I decided to make it not related to net.
 
-thanks,
-jirka
+After using rcu_lock in the fast path, I think this single spinlock won't
+affect much, besides, this single lock can be replaced by a per hlist lock
+on each hlist_head, it will also save some.
 
+>
+> My tests have not shown a significant cost of the ref_tracker
+> (the major cost comes from stack_trace_save() which you also use)
+I added "run fast" in cover, mostly because it won't create many nodes
+if dev_hold/put are called many times, it only increments the count if it's
+the same call to the same object already existing in the hashtable.
+
+dev could be fine, thinking about tracking dst, when sending packets, dst
+can be hold/put too many times, creating nodes for each call is not a good
+idea, especially for some leak only occurs once for few months which I've
+seen quite a few times in our customer envs.
+
+
+Other things are:
+most net_dev leaks I've met are actually dst leak, some are in6_dev leak,
+only tracking net_dev is not enough to address it, do you have plans to
+add dst track for dst too? That may be a lot of changes too?
+
+I think adding new members into core structures only for debugging
+may not be a good choice, as it will bring troubles to downstream for
+the backport because of kABI.
+
+Thanks.
