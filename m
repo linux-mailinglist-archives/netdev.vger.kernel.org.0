@@ -2,145 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D0B4346BEFF
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 16:15:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A0DD046BF03
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 16:16:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234297AbhLGPSh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 10:18:37 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:38506 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229818AbhLGPSg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 10:18:36 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CB8FBB80782;
-        Tue,  7 Dec 2021 15:15:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51959C341C1;
-        Tue,  7 Dec 2021 15:15:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638890103;
-        bh=xxF6Nm2aBsMxEff2TkdoXeMHocqjOshQ8GbBna8ovUY=;
-        h=From:To:Cc:Subject:Date:From;
-        b=qXQflwPi4XW0XAwlgafUg1Sq0TeYe27GgLJm4wNYJUfUK2N6ICN8hq8sD2/ZcRg/v
-         WHTDBsSH4zvlUICZVXLzlbimjg9keWa2yEL4mg85vLh3arSz/H7lL653jE5VjZPX9c
-         7W5gIRRYGy/QHfpjvmR1r9hFYJns7QDIqs/85W3p5JWtCZRci9pYBvdc2IGX7zgTYN
-         hOqzwtIyR1G12qXRAj0DQfU+lioEyDfywNxbqJL5vQVFxDRO3PBy3jfVR1osUdkSN/
-         OnTK/fmIhg5qr8UWZpTisuPccqRnmmiQzDbToQOwtrIPMO70C9/BctFD29orWb+x9g
-         amxcPAh1WLV3A==
-From:   Arnd Bergmann <arnd@kernel.org>
-To:     Luca Coelho <luciano.coelho@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
+        id S234377AbhLGPT0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 10:19:26 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:43258 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229818AbhLGPT0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 7 Dec 2021 10:19:26 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=qP8+O/gRwcoIWKNvm0K0i0AMA/UfbiCfK7Wrt+s47ko=; b=GC0Tpen6RVJp3cdWwNMGKrCUsZ
+        HW0pB8fGH1RY0+5kdBHDrJxkJA8iX7aacTtLij7owxX/0ptDWlz8AcEoXxlo6bI95Qq7XdjjmvEn3
+        XMJu7eolUgQDgzigUQuv6ILG7wo5WXPIFrf0y9AdTASg+jB69zDJZbZQQmXJOs+nkp2k=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mucC7-00FmoY-W7; Tue, 07 Dec 2021 16:15:51 +0100
+Date:   Tue, 7 Dec 2021 16:15:51 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ayala Beker <ayala.beker@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] [v2] iwlwifi: work around reverse dependency on MEI
-Date:   Tue,  7 Dec 2021 16:14:36 +0100
-Message-Id: <20211207151447.3338818-1-arnd@kernel.org>
-X-Mailer: git-send-email 2.29.2
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [net-next RFC PATCH 0/6] Add support for qca8k mdio rw in
+ Ethernet packet
+Message-ID: <Ya96pwC1KKZDO9et@lunn.ch>
+References: <20211207145942.7444-1-ansuelsmth@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211207145942.7444-1-ansuelsmth@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+On Tue, Dec 07, 2021 at 03:59:36PM +0100, Ansuel Smith wrote:
+> Hi, this is still WIP and currently has some problem but I would love if
+> someone can give this a superficial review and answer to some problem
+> with this.
+> 
+> The main reason for this is that we notice some routing problem in the
+> switch and it seems assisted learning is needed. Considering mdio is
+> quite slow due to the indirect write using this Ethernet alternative way
+> seems to be quicker.
+> 
+> The qca8k switch supports a special way to pass mdio read/write request
+> using specially crafted Ethernet packet.
 
-If the iwlmei code is a loadable module, the main iwlwifi driver
-cannot be built-in:
+Oh! Cool! Marvell has this as well, and i suspect a few others. It is
+something i've wanted to work on for a long long time, but never had
+the opportunity.
 
-x86_64-linux-ld: drivers/net/wireless/intel/iwlwifi/pcie/trans.o: in function `iwl_pcie_prepare_card_hw':
-trans.c:(.text+0x4158): undefined reference to `iwl_mei_is_connected'
+This also means that, even if you are focusing on qca8k, please try to
+think what could be generic, and what should specific to the
+qca8k. The idea of sending an Ethernet frame and sometime later
+receiving a reply should be generic and usable for other DSA
+drivers. The contents of those frames needs to be driver specific.
+How we hook this into MDIO might also be generic, maybe.
 
-Unfortunately, Kconfig enforces the opposite, forcing the MEI driver to
-not be built-in if iwlwifi is a module.
+I will look at your questions later, but soon.
 
-To work around this, decouple iwlmei from iwlwifi and add the
-dependency in the other direction.
-
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- drivers/net/wireless/intel/iwlwifi/Kconfig | 52 +++++++++++-----------
- 1 file changed, 26 insertions(+), 26 deletions(-)
-
-diff --git a/drivers/net/wireless/intel/iwlwifi/Kconfig b/drivers/net/wireless/intel/iwlwifi/Kconfig
-index cf1125d84929..c21c0c68849a 100644
---- a/drivers/net/wireless/intel/iwlwifi/Kconfig
-+++ b/drivers/net/wireless/intel/iwlwifi/Kconfig
-@@ -2,6 +2,7 @@
- config IWLWIFI
- 	tristate "Intel Wireless WiFi Next Gen AGN - Wireless-N/Advanced-N/Ultimate-N (iwlwifi) "
- 	depends on PCI && HAS_IOMEM && CFG80211
-+	depends on IWLMEI || !IWLMEI
- 	select FW_LOADER
- 	help
- 	  Select to build the driver supporting the:
-@@ -92,32 +93,6 @@ config IWLWIFI_BCAST_FILTERING
- 	  If unsure, don't enable this option, as some programs might
- 	  expect incoming broadcasts for their normal operations.
- 
--config IWLMEI
--	tristate "Intel Management Engine communication over WLAN"
--	depends on INTEL_MEI
--	depends on PM
--	depends on IWLMVM
--	help
--	  Enables the iwlmei kernel module.
--
--	  CSME stands for Converged Security and Management Engine. It is a CPU
--	  on the chipset and runs a dedicated firmware. AMT (Active Management
--	  Technology) is one of the applications that run on that CPU. AMT
--	  allows to control the platform remotely.
--
--	  This kernel module allows to communicate with the Intel Management
--	  Engine over Wifi. This is supported starting from Tiger Lake
--	  platforms and has been tested on 9260 devices only.
--	  If AMT is configured not to use the wireless device, this module is
--	  harmless (and useless).
--	  Enabling this option on a platform that has a different device and
--	  has Wireless enabled on AMT can prevent WiFi from working correctly.
--
--	  For more information see
--	  <https://software.intel.com/en-us/manageability/>
--
--	  If unsure, say N.
--
- menu "Debugging Options"
- 
- config IWLWIFI_DEBUG
-@@ -172,3 +147,28 @@ config IWLWIFI_DEVICE_TRACING
- endmenu
- 
- endif
-+
-+config IWLMEI
-+	tristate "Intel Management Engine communication over WLAN"
-+	depends on INTEL_MEI
-+	depends on PM
-+	help
-+	  Enables the iwlmei kernel module.
-+
-+	  CSME stands for Converged Security and Management Engine. It is a CPU
-+	  on the chipset and runs a dedicated firmware. AMT (Active Management
-+	  Technology) is one of the applications that run on that CPU. AMT
-+	  allows to control the platform remotely.
-+
-+	  This kernel module allows to communicate with the Intel Management
-+	  Engine over Wifi. This is supported starting from Tiger Lake
-+	  platforms and has been tested on 9260 devices only.
-+	  If AMT is configured not to use the wireless device, this module is
-+	  harmless (and useless).
-+	  Enabling this option on a platform that has a different device and
-+	  has Wireless enabled on AMT can prevent WiFi from working correctly.
-+
-+	  For more information see
-+	  <https://software.intel.com/en-us/manageability/>
-+
-+	  If unsure, say N.
--- 
-2.29.2
-
+  Andrew
