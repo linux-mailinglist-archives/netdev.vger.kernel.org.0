@@ -2,139 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BFE5646BD11
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 14:58:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E941046BD19
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 14:59:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237456AbhLGOCA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 09:02:00 -0500
-Received: from mail-il1-f199.google.com ([209.85.166.199]:51736 "EHLO
-        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237442AbhLGOB7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 09:01:59 -0500
-Received: by mail-il1-f199.google.com with SMTP id l2-20020a056e021aa200b002a281027bb8so11917298ilv.18
-        for <netdev@vger.kernel.org>; Tue, 07 Dec 2021 05:58:29 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=vyYT5lQSN9Sd07tZWpU3Ums+gflAZlF8eMmG8VRlrwU=;
-        b=6b6V8JrJ/0s3VXXS3G0YBB8zd0fCjeunZp7juuiiAOhOHlP8IQiyhOtiV9ZjBWvDV9
-         8jIAVppF07Ndm0cRbszJ3FPtKeksTAijuYVG3h0Eft+GpQSyj9kEX9SL/CaK4t8WqOdT
-         P0ryHM4CJqfk8FhcjsT9xFFM+ZQ6SHd7e8GlNKGSwkGpsj/X/EXx3v89SCNNXNC7yp5b
-         usfRZ8IXyRUTFFaSzdPV8q992IqYUQkw5RNPXfp5rol4fGB2Q8S9i9OhTQ8kT4bGrriD
-         SvUxZ7NHXfTt35OvhttchpSBW+w+NEC5SZ8agAcOkz6DXOGbgiBbN/abR9f6awW/KbV7
-         fnKA==
-X-Gm-Message-State: AOAM5321p3djHMgPAEzu5X2UmRIBaQMhIxJETgCw6gUILJ5JhDMKJkDP
-        xXjR/DrYUPdkrMe+uOeMcP/s1kqf2iKx2VTi2Mv0+HyY+zXu
-X-Google-Smtp-Source: ABdhPJwq6tpUBzOzsC5a8oLyelPmZ6yFy3KVG3mvshYWc3YUKRwnnyTlzhpa2+wW3ND6VGNGDJPe8XwqgB4tgTAHpvLHTFdRoIES
+        id S237502AbhLGOCs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 09:02:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37274 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237454AbhLGOCh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 09:02:37 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC83AC061746
+        for <netdev@vger.kernel.org>; Tue,  7 Dec 2021 05:59:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=Zo4BPMaA/ZlGhiH0IM/2Qmxe/LcYL5fG7NI/MtiDFQ0=; b=BprXsUXL8FSRsCL+kKQK09blmK
+        qOpvehWKpLiJyy7JCS25CuRXzfMq93p7Mqn2YRpI1laZ7TWWzmFJlHD15xI127ucWTFTv/tcV6EQO
+        pbkrIf8JKWjrdQeQ+yrPItu3Su60qW9GyrGx9aiXoqo6ef4nVlKiDIpc8Go8vyqpei7l8mVp83Rv1
+        b3GcgbFHk1tr+/7bSoNJnbz5Q9qZ6sksgRtVP7pkkUMZ1D+XAsa4tCUayeqC26iaDFbiebmghdC9R
+        icvoB34MNvgCVm5XoEWbvQlwA+acBhy+4atJhfZGTP0HWYo+bvF8uVVLcOwi7dZ/lIvd8mKPsoIJb
+        ygxa/l2w==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:56156)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1muazo-0006GF-1c; Tue, 07 Dec 2021 13:59:04 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1muazn-0005Nj-2X; Tue, 07 Dec 2021 13:59:03 +0000
+Date:   Tue, 7 Dec 2021 13:59:03 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Martyn Welch <martyn.welch@collabora.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, kernel@collabora.com
+Subject: Re: mv88e6240 configuration broken for B850v3
+Message-ID: <Ya9op2QJwWRyqmDY@shell.armlinux.org.uk>
+References: <20211206193730.oubyveywniyvptfk@skbuf>
+ <Ya5tkXU3AXalFRg2@shell.armlinux.org.uk>
+ <20211206202308.xoutfymjozfyhhkl@skbuf>
+ <Ya53vXp7Wz5YPf7Y@shell.armlinux.org.uk>
+ <20211206211341.ppllxa7ve2jdyzt4@skbuf>
+ <Ya6ARQBGl2C4Z3il@shell.armlinux.org.uk>
+ <Ya6FcTIbyO+zXj7V@shell.armlinux.org.uk>
+ <20211206232735.vvjgm664y67nggmm@skbuf>
+ <Ya6xrNbwZUxCbH3X@shell.armlinux.org.uk>
+ <20211207132413.f4av4d3expfzhnwl@skbuf>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:484:: with SMTP id b4mr39006206ils.173.1638885509424;
- Tue, 07 Dec 2021 05:58:29 -0800 (PST)
-Date:   Tue, 07 Dec 2021 05:58:29 -0800
-In-Reply-To: <000000000000a636fc05cee1e95b@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000009dee1a05d28ec4a1@google.com>
-Subject: Re: [syzbot] INFO: rcu detected stall in sys_bpf (5)
-From:   syzbot <syzbot+7caa651776c38f7fed6c@syzkaller.appspotmail.com>
-To:     fweisbec@gmail.com, linux-kernel@vger.kernel.org, mingo@kernel.org,
-        mingo@redhat.com, netdev@vger.kernel.org, rostedt@goodmis.org,
-        syzkaller-bugs@googlegroups.com, tglx@linutronix.de
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211207132413.f4av4d3expfzhnwl@skbuf>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following issue on:
+On Tue, Dec 07, 2021 at 03:24:13PM +0200, Vladimir Oltean wrote:
+> On Tue, Dec 07, 2021 at 12:58:20AM +0000, Russell King (Oracle) wrote:
+> > > Anyway, so be it. Essentially, what is the most frustrating is that I
+> > > haven't been doing anything else for the past 4 hours, and I still
+> > > haven't understood enough of what you're saying to even understand why
+> > > it is _relevant_ to Martyn's report. All I understand is that you're
+> > > also looking in that area of the code for a completely unrelated reason
+> > > which you've found adequate to mention here and now.
+> > 
+> > I hope you realise that _your_ attitude here is frustrating and
+> > inflamatory. This is _not_ a "completely unrelated reason" - this
+> > is about getting the right solution to Martyn's problem. I thought
+> > about doing another detailed reply, but when I got to the part
+> > about you wanting to check 6390X, I discarded that reply and
+> > wrote this one instead. You clearly have a total distrust for
+> > everything that I write in any email, so I just won't bother.
+> 
+> I think getting the right solution to Martyn's problem is the most
+> important part. I'd be very happy if I understood it too, although that
+> isn't mandatory, since it may be beyond me but still correct, and I hope
+> I'm not standing in the way if that is the case.
+> I've explained my current state of understanding, which is that I saw in
+> the manual for 6097 that forcing the link is unnecessary for internal
+> PHY ports regardless of whether the PPU is enabled or not. Yet, DSA will
+> still force these ports down with your proposed change (because DSA lies
+> that it is a MLO_AN_FIXED mode despite what's in the device tree), and
+> it relies on unforcing them in mv88e6xxx_mac_config(), which in itself
+> makes sense considering the other discussion about kexec and such. But
+> it appears that it may not unforce them again - because that condition
+> depends on mv88e6xxx_port_ppu_updates() which may be false. So if it is
+> false, things are still broken.
+> It isn't a matter of distrust and I'm sorry that you take it personal,
+> but your proposed solution doesn't appear to me to have a clear
+> correlation to the patch that introduced a regression.
 
-HEAD commit:    d5284dedccdb libbpf: Add doc comments in libbpf.h
-git tree:       bpf-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=157d0e55b00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=a262045c4c15a9e0
-dashboard link: https://syzkaller.appspot.com/bug?extid=7caa651776c38f7fed6c
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=132f9da9b00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11e749a9b00000
+The change that I have proposed is based on two patches:
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+7caa651776c38f7fed6c@syzkaller.appspotmail.com
+1) Change mv88e6xxx_port_ppu_updates() to behave sensibly for the 6250
+   family of DSA switches.
 
-hrtimer: interrupt took 34034 ns
-rcu: INFO: rcu_preempt self-detected stall on CPU
-rcu: 	0-....: (11003 ticks this GP) idle=21b/1/0x4000000000000000 softirq=8763/8765 fqs=5250 
-	(t=10502 jiffies g=11285 q=14)
-NMI backtrace for cpu 0
-CPU: 0 PID: 6526 Comm: syz-executor734 Not tainted 5.15.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- <IRQ>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- nmi_cpu_backtrace.cold+0x47/0x144 lib/nmi_backtrace.c:105
- nmi_trigger_cpumask_backtrace+0x1ae/0x220 lib/nmi_backtrace.c:62
- trigger_single_cpu_backtrace include/linux/nmi.h:164 [inline]
- rcu_dump_cpu_stacks+0x25e/0x3f0 kernel/rcu/tree_stall.h:343
- print_cpu_stall kernel/rcu/tree_stall.h:627 [inline]
- check_cpu_stall kernel/rcu/tree_stall.h:711 [inline]
- rcu_pending kernel/rcu/tree.c:3878 [inline]
- rcu_sched_clock_irq.cold+0x9d/0x746 kernel/rcu/tree.c:2597
- update_process_times+0x16d/0x200 kernel/time/timer.c:1785
- tick_sched_handle+0x9b/0x180 kernel/time/tick-sched.c:226
- tick_sched_timer+0x1b0/0x2d0 kernel/time/tick-sched.c:1421
- __run_hrtimer kernel/time/hrtimer.c:1685 [inline]
- __hrtimer_run_queues+0x1c0/0xe50 kernel/time/hrtimer.c:1749
- hrtimer_interrupt+0x31c/0x790 kernel/time/hrtimer.c:1811
- local_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1086 [inline]
- __sysvec_apic_timer_interrupt+0x146/0x530 arch/x86/kernel/apic/apic.c:1103
- sysvec_apic_timer_interrupt+0x8e/0xc0 arch/x86/kernel/apic/apic.c:1097
- </IRQ>
- <TASK>
- asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:638
-RIP: 0010:htab_unlock_bucket kernel/bpf/hashtab.c:192 [inline]
-RIP: 0010:htab_lru_map_update_elem+0x463/0x8c0 kernel/bpf/hashtab.c:1178
-Code: 04 00 00 49 89 6d 08 e8 6b 8b ea ff 48 8b 74 24 28 48 b8 22 01 00 00 00 00 ad de 48 8b 7c 24 10 49 89 44 24 08 e8 2d f3 b0 07 <48> c7 c7 20 d4 93 89 e8 e1 23 ae 07 48 8b 54 24 18 48 b8 00 00 00
-RSP: 0018:ffffc90000cd7a88 EFLAGS: 00000246
-RAX: 0000000000000000 RBX: ffff88807efdc800 RCX: 0000000000000000
-RDX: 0000000000000001 RSI: 0000000000000001 RDI: 0000000000000001
-RBP: ffff8880218f2c00 R08: 0000000000000001 R09: 0000000000000001
-R10: ffffffff817e0a58 R11: 0000000000000000 R12: ffff8880218f2c40
-R13: 000000000000000b R14: 0000000000000005 R15: 0000000000000001
- bpf_map_update_value.isra.0+0x2e8/0x910 kernel/bpf/syscall.c:207
- generic_map_update_batch+0x3f2/0x5b0 kernel/bpf/syscall.c:1396
- bpf_map_do_batch+0x3d5/0x510 kernel/bpf/syscall.c:4207
- __sys_bpf+0x2761/0x5f10 kernel/bpf/syscall.c:4682
- __do_sys_bpf kernel/bpf/syscall.c:4722 [inline]
- __se_sys_bpf kernel/bpf/syscall.c:4720 [inline]
- __x64_sys_bpf+0x75/0xb0 kernel/bpf/syscall.c:4720
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7fa79bb49f29
-Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 b1 14 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffdbbb21d88 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007fa79bb49f29
-RDX: 0000000000000038 RSI: 0000000020000480 RDI: 000000000000001a
-RBP: 0000000000000000 R08: 00007ffdbbb21f28 R09: 00007ffdbbb21f28
-R10: 00007ffdbbb21f28 R11: 0000000000000246 R12: 00007fa79bb0d7b0
-R13: 431bde82d7b634db R14: 0000000000000000 R15: 0000000000000000
- </TASK>
-----------------
-Code disassembly (best guess):
-   0:	04 00                	add    $0x0,%al
-   2:	00 49 89             	add    %cl,-0x77(%rcx)
-   5:	6d                   	insl   (%dx),%es:(%rdi)
-   6:	08 e8                	or     %ch,%al
-   8:	6b 8b ea ff 48 8b 74 	imul   $0x74,-0x74b70016(%rbx),%ecx
-   f:	24 28                	and    $0x28,%al
-  11:	48 b8 22 01 00 00 00 	movabs $0xdead000000000122,%rax
-  18:	00 ad de
-  1b:	48 8b 7c 24 10       	mov    0x10(%rsp),%rdi
-  20:	49 89 44 24 08       	mov    %rax,0x8(%r12)
-  25:	e8 2d f3 b0 07       	callq  0x7b0f357
-* 2a:	48 c7 c7 20 d4 93 89 	mov    $0xffffffff8993d420,%rdi <-- trapping instruction
-  31:	e8 e1 23 ae 07       	callq  0x7ae2417
-  36:	48 8b 54 24 18       	mov    0x18(%rsp),%rdx
-  3b:	48                   	rex.W
-  3c:	b8                   	.byte 0xb8
-  3d:	00 00                	add    %al,(%rax)
+2) Un-force the link-down in mv88e6xxx_mac_config()
 
+This gives us more consistency. The checks become:
+
+a) mac_link_down():
+
+        if ((!mv88e6xxx_port_ppu_updates(chip, port) ||
+             mode == MLO_AN_FIXED) && ops->port_sync_link)
+                err = ops->port_sync_link(chip, port, mode, false);
+
+b) mac_link_up():
+
+        if (!mv88e6xxx_port_ppu_updates(chip, port) ||
+            mode == MLO_AN_FIXED) {
+...
+                if (ops->port_sync_link)
+                        err = ops->port_sync_link(chip, port, mode, true);
+        }
+
+c) mac_config():
+
+        if (chip->info->ops->port_set_link &&
+            ((mode == MLO_AN_INBAND && p->interface != state->interface) ||
+             (mode == MLO_AN_PHY && mv88e6xxx_port_ppu_updates(chip, port))))
+                chip->info->ops->port_set_link(chip, port, LINK_UNFORCED);
+
+The "(mode == MLO_AN_INBAND && p->interface != state->interface)"
+expression comes from the existing code, so isn't something that
+needs discussion.
+
+We want to preserve the state of the link-force for MLO_AN_FIXED,
+so the only case for discussion is the new MLO_AN_PHY. It can be
+seen that all three methods above end up using the same decision,
+and essentially if mv88e6xxx_port_ppu_updates() is true, meaning
+there is a non-software method to handle the status updates, then
+we (a) don't do any forcing in the mac_link_*() methods and turn
+off the forcing in mac_config().
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
