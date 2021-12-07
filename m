@@ -2,161 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E63446B21F
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 06:13:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 037D746B2AF
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 06:56:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231796AbhLGFRE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 00:17:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55292 "EHLO
+        id S231805AbhLGF7h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 00:59:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231685AbhLGFRC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 00:17:02 -0500
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 114DFC061746;
-        Mon,  6 Dec 2021 21:13:33 -0800 (PST)
-Received: by mail-yb1-xb2d.google.com with SMTP id y68so37739779ybe.1;
-        Mon, 06 Dec 2021 21:13:32 -0800 (PST)
+        with ESMTP id S230394AbhLGF7g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 00:59:36 -0500
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E01AC061746
+        for <netdev@vger.kernel.org>; Mon,  6 Dec 2021 21:56:07 -0800 (PST)
+Received: by mail-pf1-x42c.google.com with SMTP id g19so12406109pfb.8
+        for <netdev@vger.kernel.org>; Mon, 06 Dec 2021 21:56:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=Kql1bBy1EgzVpsU/JwDkrMwOYaTG3KOCNskyPvT29v0=;
-        b=aLFhZdnZO5XIQF+AKgvGJSAmziQaa34WBCy3z5C/gPlNAgn4VyUP07KrdzczsfP0Nb
-         Y4c2ZU7udNStoUAcRg8sWUfWicbnOZkXD1aA6pZvK7d+aTq9uHLDoIKS+Uh4OzrK/zRX
-         BnIzYnZNVYsJMLU7z+8sKH87qfm9R7ubFPk+oGjL/Liirl5y9j/mVxRM5e0vhWPnFUly
-         3Rko9KL4E0FUTyP1VA9LGHVUcigBdBLiLkW5x1TaHGa8Vuail7+K6Core0odCdAp/rOv
-         8KOFSHw5P/xY7xNYbxeqDSmSBdM6lnZFrBG+kptH3OTIKWO/Y0ekg2Fzr/eT5Y9QV0G+
-         qqyA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZA+NL37GyPQjL7oCpSdAjYngjOuaMcnsL8S7ue8D880=;
+        b=N3HPvML/gPfT9irppJnPzkv+NW+OqxxljNeW/RwRAutErdScBEGXM5KdZFXgn/m9WO
+         GGhY6PTsOtYBsMY7o40uGNqiqwH2U5bAuolXbIGRn8whS81ky6RX3oYdzJda5bmG/bG9
+         VRIZ/JZrvLQMpcU45N4+QlvbATHbdvE0MSZqRJl+GfmfMPs9fjk5ENrRjCm+8XJv9hnH
+         /isBGasnJWMsGrhLnZ9Mx0HfYP1NiWO75ba8hYksR0JVN/RcN4RieUotF+3PG60ccl0I
+         0JrzKxsXpUShyrF1HaIrK3PwNqrbXg/N+7CccV3dObNzkbC4s7Tw33YdhcOv9ETB7kqC
+         zQtA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Kql1bBy1EgzVpsU/JwDkrMwOYaTG3KOCNskyPvT29v0=;
-        b=yl0Zdgi/vFqjXnrNyyL1iixJhLXxSLR0W0GblZPH9GO3nxGJiCV/HZaq2HsiOHTZVT
-         bpD9BGFuVJtfs5k5A2yN19pZket2GH51s/jWOKEGsBHzIB3DK6gPiiJfid8aV2Kd//+S
-         apr6FUXgbH4ZJiuT5GSUS9rT2dp1zb2HyEzCZT3y2DWznX1QDhyIcn8jZmBauSi7unMH
-         ezgIq9eZQ9GGztyYDQKxHGYJR7n1/jVr0DcBb7PfX9PD4dWqZBlLN6LDQM/qAMkKTgFW
-         EsZCnJxiKlVbWb1xRoMCIDyEQ8KrUHQzyvOX84oCA+VPzRpymfKkrLuXCC27KTzYTHL+
-         /9mQ==
-X-Gm-Message-State: AOAM5308+DWAR4WtUKRtcnBCgLiE+sjCIYNVA8h/+6NO1ipCc/hfzImw
-        DsadtC+dIRDRFCdHeyDsCI3ScKs7MlcVQZBF68whKrTKgwZdbQ==
-X-Google-Smtp-Source: ABdhPJxrmSbihGZEgETtrdNrlJPNMgiScKrO2WuWpaF7Tq412qlyNjHI4iy6tXltxxIDfGFmp6QGXK2A5udNOYx6DYM=
-X-Received: by 2002:a25:abaa:: with SMTP id v39mr47903087ybi.367.1638854011809;
- Mon, 06 Dec 2021 21:13:31 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZA+NL37GyPQjL7oCpSdAjYngjOuaMcnsL8S7ue8D880=;
+        b=bVApgvwCTywSsWey65v0eBjoaEFMV7iRreFEBtjhzXvEOsFLixZ//ZtWLQwhlKGw2C
+         fszca6z6jmcYWdA0if7TyVNQU+bBt4yNhwYQ75lZHlZuHtcolY2SHs5MoHIbZvdEjgi1
+         ECi12gOoWw0JcFZPehTsfY1LUVTCEnn2c1SYACa22gIiBHSGN5fnmAnMYGp5l+5Sseyf
+         PQyfp5e3nXPRSaJUlur3q/f0m+Lx8qRr7pEM9t2OJoEXbDIM8QzbqD6p4bTtJ3K4+uNm
+         j4Y8CEs6GA4gi2u44O1qG9JLyi5E8spSJSSuojMU8H7kTpI5ErBLdiwDdlUiMPUI+3dM
+         m3pQ==
+X-Gm-Message-State: AOAM530qWE4itCij3kGN9kwWNjzOugcZVgREVsFfK8ytazmO9/0XSEag
+        91lbX9EQROAvBjh1rjQLKsk=
+X-Google-Smtp-Source: ABdhPJxzWQkYpBzV5zossfl5+XMHH67QDpjpcZY9z3xNmRoKhvjRWQ1/bV4P7FHvFr42ZGobny3nIw==
+X-Received: by 2002:a63:f654:: with SMTP id u20mr22907365pgj.233.1638856566984;
+        Mon, 06 Dec 2021 21:56:06 -0800 (PST)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:518c:39bf:c3e8:ffe2])
+        by smtp.gmail.com with ESMTPSA id s14sm14453288pfk.73.2021.12.06.21.56.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Dec 2021 21:56:06 -0800 (PST)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        David Ahern <dsahern@kernel.org>
+Subject: [PATCH net-next] vrf: use dev_replace_track() for better tracking
+Date:   Mon,  6 Dec 2021 21:56:03 -0800
+Message-Id: <20211207055603.1926372-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.34.1.400.ga245620fadb-goog
 MIME-Version: 1.0
-References: <20211206230811.4131230-1-song@kernel.org> <CAEf4BzbaBcySm3bVumBTrkHMmVDWEVxckdVKvUk=4j9HhSsmBA@mail.gmail.com>
- <3221CDA7-F2EF-404A-9289-14F9DF6D01DA@fb.com>
-In-Reply-To: <3221CDA7-F2EF-404A-9289-14F9DF6D01DA@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 6 Dec 2021 21:13:20 -0800
-Message-ID: <CAEf4BzbN17eviD18-_C2UN+P5gMm4vFXVrdLd9UHx0ev+gJsjw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] perf/bpf_counter: use bpf_map_create instead of bpf_create_map
-To:     Song Liu <songliubraving@fb.com>
-Cc:     Song Liu <song@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Kernel Team <Kernel-team@fb.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 6, 2021 at 8:32 PM Song Liu <songliubraving@fb.com> wrote:
->
->
->
-> > On Dec 6, 2021, at 6:37 PM, Andrii Nakryiko <andrii.nakryiko@gmail.com>=
- wrote:
-> >
-> > On Mon, Dec 6, 2021 at 3:08 PM Song Liu <song@kernel.org> wrote:
-> >>
-> >> bpf_create_map is deprecated. Replace it with bpf_map_create.
-> >>
-> >> Fixes: 992c4225419a ("libbpf: Unify low-level map creation APIs w/ new=
- bpf_map_create()")
-> >
-> > This is not a bug fix, it's an improvement. So I don't think "Fixes: "
-> > is warranted here, tbh.
->
-> I got compilation errors before this change, like
->
-> util/bpf_counter.c: In function =E2=80=98bperf_lock_attr_map=E2=80=99:
-> util/bpf_counter.c:323:3: error: =E2=80=98bpf_create_map=E2=80=99 is depr=
-ecated: libbpf v0.7+: use bpf_map_create() instead [-Werror=3Ddeprecated-de=
-clarations]
->    map_fd =3D bpf_create_map(BPF_MAP_TYPE_HASH,
->    ^~~~~~
-> In file included from util/bpf_counter.h:7,
->                  from util/bpf_counter.c:15:
-> /data/users/songliubraving/kernel/linux-git/tools/lib/bpf/bpf.h:91:16: no=
-te: declared here
->  LIBBPF_API int bpf_create_map(enum bpf_map_type map_type, int key_size,
->                 ^~~~~~~~~~~~~~
-> cc1: all warnings being treated as errors
-> make[4]: *** [/data/users/songliubraving/kernel/linux-git/tools/build/Mak=
-efile.build:96: util/bpf_counter.o] Error 1
-> make[4]: *** Waiting for unfinished jobs....
-> make[3]: *** [/data/users/songliubraving/kernel/linux-git/tools/build/Mak=
-efile.build:139: util] Error 2
-> make[2]: *** [Makefile.perf:665: perf-in.o] Error 2
-> make[1]: *** [Makefile.perf:240: sub-make] Error 2
-> make: *** [Makefile:70: all] Error 2
->
+From: Eric Dumazet <edumazet@google.com>
 
-Hmm.. is util/bpf_counter.h guarded behind some Makefile arguments?
-I've sent #pragma temporary workarounds just a few days ago ([0]), but
-this one didn't come up during the build.
+vrf_rt6_release() and vrf_rtable_release() changes dst->dev
 
-  [0] https://patchwork.kernel.org/project/netdevbpf/patch/20211203004640.2=
-455717-1-andrii@kernel.org/
+Instead of
 
-> Do we plan to remove bpf_create_map in the future? If not, we can probabl=
-y just
-> add '#pragma GCC diagnostic ignored "-Wdeprecated-declarations"' can call=
- it done?
+dev_hold(ndev);
+dev_put(odev);
 
-Yes, it will be removed in a few libbpf releases when we switch to the
-1.0 version. So suppressing a warning is a temporary work-around.
+We should use
 
->
-> >
-> >> Signed-off-by: Song Liu <song@kernel.org>
-> >> ---
-> >> tools/perf/util/bpf_counter.c | 4 ++--
-> >> 1 file changed, 2 insertions(+), 2 deletions(-)
-> >>
-> >> diff --git a/tools/perf/util/bpf_counter.c b/tools/perf/util/bpf_count=
-er.c
-> >> index c17d4a43ce065..ed150a9b3a0c0 100644
-> >> --- a/tools/perf/util/bpf_counter.c
-> >> +++ b/tools/perf/util/bpf_counter.c
-> >> @@ -320,10 +320,10 @@ static int bperf_lock_attr_map(struct target *ta=
-rget)
-> >>        }
-> >>
-> >>        if (access(path, F_OK)) {
-> >> -               map_fd =3D bpf_create_map(BPF_MAP_TYPE_HASH,
-> >> +               map_fd =3D bpf_map_create(BPF_MAP_TYPE_HASH, NULL,
-> >
-> > I think perf is trying to be linkable with libbpf as a shared library,
-> > so on some older versions of libbpf bpf_map_create() won't be (yet)
-> > available. So to make this work, I think you'll need to define your
-> > own weak bpf_map_create function that will use bpf_create_map().
->
-> Hmm... I didn't know the plan to link libbpf as shared library. In this c=
-ase,
-> maybe the #pragma solution is preferred?
+dev_replace_track(odev, ndev, &dst->dev_tracker, GFP_KERNEL);
 
-See "perf tools: Add more weak libbpf functions" sent by Jiri not so
-long ago about what they did with some other used APIs that are now
-marked deprecated.
+If we do not transfer dst->dev_tracker to the new device,
+we will get warnings from ref_tracker_dir_exit() when odev
+is finally dismantled.
 
->
-> Thanks,
-> Song
->
+Fixes: 9038c320001d ("net: dst: add net device refcount tracking to dst_entry")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+---
+ drivers/net/vrf.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/vrf.c b/drivers/net/vrf.c
+index 131c745dc7010b1653b937e87c7f7f5a67e3460d..dbfa124d1c1c03c768ddeae6f2fc7a06166a20d4 100644
+--- a/drivers/net/vrf.c
++++ b/drivers/net/vrf.c
+@@ -814,9 +814,9 @@ static void vrf_rt6_release(struct net_device *dev, struct net_vrf *vrf)
+ 	 */
+ 	if (rt6) {
+ 		dst = &rt6->dst;
+-		dev_put(dst->dev);
++		dev_replace_track(dst->dev, net->loopback_dev,
++				  &dst->dev_tracker, GFP_KERNEL);
+ 		dst->dev = net->loopback_dev;
+-		dev_hold(dst->dev);
+ 		dst_release(dst);
+ 	}
+ }
+@@ -1061,9 +1061,9 @@ static void vrf_rtable_release(struct net_device *dev, struct net_vrf *vrf)
+ 	 */
+ 	if (rth) {
+ 		dst = &rth->dst;
+-		dev_put(dst->dev);
++		dev_replace_track(dst->dev, net->loopback_dev,
++				  &dst->dev_tracker, GFP_KERNEL);
+ 		dst->dev = net->loopback_dev;
+-		dev_hold(dst->dev);
+ 		dst_release(dst);
+ 	}
+ }
+-- 
+2.34.1.400.ga245620fadb-goog
+
