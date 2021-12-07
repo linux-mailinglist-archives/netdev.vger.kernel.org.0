@@ -2,97 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 526DB46B6FB
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 10:22:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AFA5D46B761
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 10:35:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233831AbhLGJ0P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 04:26:15 -0500
-Received: from mout.kundenserver.de ([212.227.17.24]:44171 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233790AbhLGJ0P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 04:26:15 -0500
-Received: from mail-wr1-f45.google.com ([209.85.221.45]) by
- mrelayeu.kundenserver.de (mreue108 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1N9doJ-1mXKrO27rJ-015e11; Tue, 07 Dec 2021 10:22:43 +0100
-Received: by mail-wr1-f45.google.com with SMTP id v11so28044462wrw.10;
-        Tue, 07 Dec 2021 01:22:43 -0800 (PST)
-X-Gm-Message-State: AOAM5306SeU6qiheeq6yxl6RKXrkZGMdI/FbbgMfFTZ0bdOI+MC/6x5X
-        mdodgmf8mqSy2LcDUbFo1ZE5QgvInK7abOOZ/co=
-X-Google-Smtp-Source: ABdhPJzV1ByiFHkEomNrzG+dViLV6kQhgqFfDnCiG93kDJclmvg9u/J3q1Wu4f9334LGE8w+/60/oM4cRW6zP0PSpN4=
-X-Received: by 2002:a5d:6886:: with SMTP id h6mr51154859wru.287.1638868960284;
- Tue, 07 Dec 2021 01:22:40 -0800 (PST)
+        id S234276AbhLGJi1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 04:38:27 -0500
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:33561 "EHLO
+        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234184AbhLGJiM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 04:38:12 -0500
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailout.nyi.internal (Postfix) with ESMTP id E22295C0240;
+        Tue,  7 Dec 2021 04:34:39 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute1.internal (MEProxy); Tue, 07 Dec 2021 04:34:39 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=361/qsKpxmkTKadI9
+        zDiEmGWveoXfbrdfXhy8qfaj7I=; b=YOzijgQIfI/tz5YR2H7lcL+tTaxAuLZL8
+        E3Xlz0YkcJJgp7bIkT+o0c/j2272bDRP+E9SbcO18rMN6SA2mtAO1fw6PDkTXnAi
+        CLJ+N3lqLlALAFDcywV3JTgU28/Y6tI0jUwrXLJQho4737sSlZ5CavPcXaJD1f+2
+        dDDIO4hF7cf8Hp/4Y75NtuYoCBIsY9b9qOpPHx+4oK7QPu+Xs+Q9Aeg5yri8qSN6
+        nyT0WPapG6J+9d1+A+NWXVKDZ3SYxAHT/GSHMtSZHFq3cph7llLGuNZ+F6wevzQL
+        sNv7quKEGkHwWDPDnR1lTjuanl1pVoHjTjnU+T0oghPHICQcPyDGw==
+X-ME-Sender: <xms:ryqvYR7b0dFBOl5oszdpwiE_jS-2lXc4BuyieHOEa1uG9-qHgfW8vw>
+    <xme:ryqvYe5b1SzyKo6Mc05c6Tr49lCgr6Yhlemk7VCIcKX_4DLXp-iixSyoNfZZxeBo5
+    Vh5L1GFcyfajNA>
+X-ME-Received: <xmr:ryqvYYdQOOIw7cwsIB8tbGcm5aiPpcJ3U8qC01Ud-w1Oc2zG7_mCsydU6PNLXJlG6pnFGsd5vlAHjlMd78laxYZH-P6VPhEO0g>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvuddrjeehgddtiecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffoggfgsedtkeertdertd
+    dtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghh
+    rdhorhhgqeenucggtffrrghtthgvrhhnpeetveeghfevgffgffekueffuedvhfeuheehte
+    ffieekgeehveefvdegledvffduhfenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgr
+    mhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:ryqvYaL_qn3ZsvYmMc1z3IlTv3SABkl-CMFUvbiPyYfWB2GbRcf9Hg>
+    <xmx:ryqvYVIoFoXLsyXdDupdM7Pkj9fKz89UArD49ECBgINUIuDqTDOfyw>
+    <xmx:ryqvYTxzJ1seW-Un-yo1hVAkFI7bw6mjf2674wliE0XSKxw7czDRwg>
+    <xmx:ryqvYcUti2n7kJPDUhCmNFf6l8v1f7ib1BdgmVXdTWOCtaFD58YYjg>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 7 Dec 2021 04:34:38 -0500 (EST)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     mkubecek@suse.cz, vadimp@nvidia.com, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: [PATCH ethtool-next 0/3] ethtool: Add ability to control transceiver modules' power mode
+Date:   Tue,  7 Dec 2021 11:33:56 +0200
+Message-Id: <20211207093359.69974-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-References: <20211207002102.26414-1-paul@crapouillou.net>
-In-Reply-To: <20211207002102.26414-1-paul@crapouillou.net>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Tue, 7 Dec 2021 10:22:24 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a3xfuFN+0Gb694R_W2tpC7PfFEFcpsAyPdanqZ6FpVoxQ@mail.gmail.com>
-Message-ID: <CAK8P3a3xfuFN+0Gb694R_W2tpC7PfFEFcpsAyPdanqZ6FpVoxQ@mail.gmail.com>
-Subject: Re: [PATCH 0/5] Rework pm_ptr() and *_PM_OPS macros
-To:     Paul Cercueil <paul@crapouillou.net>
-Cc:     "Rafael J . Wysocki" <rafael@kernel.org>,
-        Pavel Machek <pavel@ucw.cz>, Len Brown <len.brown@intel.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Jonathan Cameron <jic23@kernel.org>, list@opendingux.net,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        linux-mmc <linux-mmc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Linux PM list <linux-pm@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:cfp/lIhgcg8Nc10PzPxe9y+GLo3DlVN017YeecLWApZEsbHXxjx
- chyiiC1hoc6hkh5kGFw+aQltHQUN2vXcuzSpO9/RNHNVw1UkGJXUOpCNkCZkWLaiVp1gL4B
- O7XSBfcMOk535RfnJdmGgcFYD6WTXUg9h6RXfx7xZLGDU/uFQqdNToLSGmRfD3kUmW2Ppr6
- KdHbWGBToShqX8YHrbOWQ==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:EPuPo0WTmX4=:MtufB+ftb5kSGyLZJVFBs9
- tYCCl8wuAvQYOUz7pwvRNvwGWWzky7TyXnOu912ML2FDleUUUV+PZOqr7xwRFsW6Yf5RByhIv
- 5mCODGlusXEWdekTPaA7H1oi/8AXDR5KmwR6J3kOIS7pkEqYOGB/Swe73RsJwFhQHFzbvVgoo
- SW0u7lOR2wEGPynWymi3x/+Izusv0c5zpCDc4DDvb508mUF+7znbwUJOSGCI1zCPaQnKi4lnZ
- hbwjuxTcT/2HGhVs3MfWIdA2+tmUkrji0WgSPEX6gHAyTrOYIgEj5B4reS7vCHnJFpm0NuLkL
- NecdXshLyhYCuJhsZux1D18LwphgdqTby+bGFWVq71L6XlnZpHkYcNkakoJaxtYZzZqcv2Ifq
- tzTDETT71wUBiy57kRYYOf0APKUCAcztsCftpmt+4In16YPCF40o7+wQGNdRSuWEyIRx7BT9B
- 7QbrCmJrjaz9vJHr9XHm1NpJCEbmTRop2Ez8VI+YmeFCtcGydToleOUXn9wEf2ksfYmZH1gXZ
- ldtFU5ci/pHw13xln04KWzMZpZd7lgO9BckkVRmthy/IxFRw/2OwZY5Fmadw+eflsxsBSRRxt
- yqRzrkuV4O0ZXz10faItknrWJQ2tTRaHvVBz6VRt2o5xEKuy3cNDUPJimZsRqJOB7krsxHiKJ
- ecbRGpM+k3tLuL8VHad/kcr+/fGyIxiqdCjeSQGdqAtcgW0bFaG/xCWG0DkEUXkxndnIIJXhd
- bN0b/w6YKe50ACHafOmJTCydphGyKbd7sVbPv489kldJRp8SDNvswGgTBpzwfCciYmG6iXwzx
- kL5gj63WiiOwsOTirax75+kV/+b6WmyDFRdw2hemcByEVpwS1Y=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 7, 2021 at 1:20 AM Paul Cercueil <paul@crapouillou.net> wrote:
->
-> This patchset reworks the pm_ptr() macro I introduced a few versions
-> ago, so that it is not conditionally defined.
->
-> It applies the same treatment to the *_PM_OPS macros. Instead of
-> modifying the existing ones, which would mean a 2000+ patch bomb, this
-> patchset introduce two new macros to replace the now deprecated
-> UNIVERSAL_DEV_PM_OPS() and SIMPLE_DEV_PM_OPS().
->
-> The point of all of this, is to progressively switch from a code model
-> where PM callbacks are all protected behind CONFIG_PM guards, to a code
-> model where PM callbacks are always seen by the compiler, but discarded
-> if not used.
->
-> Patch [4/5] and [5/5] are just examples to illustrate the use of the new
-> macros. As such they don't really have to be merged at the same time as
-> the rest and can be delayed until a subsystem-wide patchset is proposed.
->
-> - Patch [4/5] modifies a driver that already used the pm_ptr() macro,
->   but had to use the __maybe_unused flag to avoid compiler warnings;
-> - Patch [5/5] modifies a driver that used a #ifdef CONFIG_PM guard
->   around its suspend/resume functions.
+From: Ido Schimmel <idosch@nvidia.com>
 
-This is fantastic, I love the new naming and it should provide a great path
-towards converting all drivers eventually. I've added the patches to
-my randconfig test build box to see if something breaks, but otherwise
-I think these are ready to get into linux-next, at least patches 1-3,
-so subsystem
-maintainers can start queuing up the conversion patches once the
-initial set is merged.
+Patch #1 updates the UAPI headers.
 
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+Patch #2 adds the actual implementation that allows user space to
+control transceiver modules' power mode. See the commit message for
+example output.
+
+Patch #3 adds support for a new module extended state to allow user
+space to troubleshoot link down issues related to transceiver modules.
+
+Ido Schimmel (3):
+  Update UAPI header copies
+  ethtool: Add ability to control transceiver modules' power mode
+  ethtool: Add transceiver module extended state
+
+ Makefile.am                   |   2 +-
+ ethtool.8.in                  |  25 +++++
+ ethtool.c                     |  12 +++
+ netlink/desc-ethtool.c        |  11 +++
+ netlink/extapi.h              |   4 +
+ netlink/module.c              | 179 ++++++++++++++++++++++++++++++++++
+ netlink/monitor.c             |   4 +
+ netlink/netlink.h             |   1 +
+ netlink/settings.c            |  10 ++
+ shell-completion/bash/ethtool |  23 +++++
+ uapi/linux/ethtool.h          |  30 ++++++
+ uapi/linux/ethtool_netlink.h  |  22 ++++-
+ uapi/linux/if_link.h          |   1 +
+ 13 files changed, 322 insertions(+), 2 deletions(-)
+ create mode 100644 netlink/module.c
+
+-- 
+2.31.1
+
