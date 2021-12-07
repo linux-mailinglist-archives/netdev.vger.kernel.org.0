@@ -2,91 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A2ED46B3DD
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 08:28:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B5C546B3DF
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 08:29:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230105AbhLGHbw convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 7 Dec 2021 02:31:52 -0500
-Received: from rtits2.realtek.com ([211.75.126.72]:36072 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230057AbhLGHbv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 02:31:51 -0500
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 1B77S31r8002938, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36504.realtek.com.tw[172.21.6.27])
-        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 1B77S31r8002938
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 7 Dec 2021 15:28:03 +0800
-Received: from RTEXMBS01.realtek.com.tw (172.21.6.94) by
- RTEXH36504.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Tue, 7 Dec 2021 15:28:02 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS01.realtek.com.tw (172.21.6.94) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.15; Tue, 7 Dec 2021 15:28:02 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::65a3:1e23:d911:4b01]) by
- RTEXMBS04.realtek.com.tw ([fe80::65a3:1e23:d911:4b01%5]) with mapi id
- 15.01.2308.020; Tue, 7 Dec 2021 15:28:02 +0800
-From:   Hayes Wang <hayeswang@realtek.com>
+        id S230334AbhLGHck (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 02:32:40 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:37296 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230327AbhLGHck (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 02:32:40 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 58E25B80DCB;
+        Tue,  7 Dec 2021 07:29:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E674C341C3;
+        Tue,  7 Dec 2021 07:29:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1638862148;
+        bh=5Dq/7jLxcO2UFh4QvOiytWk2dl7v7XkLRY05FxFYRqo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=YG6cDvRY/296PCdJ1xhJlyEaGHix7q7ygi4kq76xEErjx2iLH1gQRje/NH8btMrsl
+         076PcMMIMt7N/Ku0WxlNaHfJUSJvgsT73sC/3TDkBy4q3g36+XSbGjtufJX3IQJYgN
+         ZXpLhW77S1GCMQ+zWHHjpuh6DQ4EO58XqiXsdUoNFTIBsWOd2K8z8mRtGcOayz7GAF
+         pl7j34I69Y4J1sxLx1AVeApxMwpz3JYdFrELoI3NOwu85zgpxw2KXHND2exLrp5ROM
+         8nmNumt/j19kXx3UZkU9aeOU+OpdHG09OrAT47zF/0CigiN6V5pbt3Wc1/Ekku2cpS
+         PB0VHMTt6UhzA==
+Date:   Tue, 7 Dec 2021 09:29:03 +0200
+From:   Leon Romanovsky <leon@kernel.org>
 To:     Jakub Kicinski <kuba@kernel.org>
-CC:     "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        nic_swsd <nic_swsd@realtek.com>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
-Subject: RE: [RFC PATCH 0/4] r8169: support dash
-Thread-Topic: [RFC PATCH 0/4] r8169: support dash
-Thread-Index: AQHX5QnDLn6ABzzmpEe3dMh4ox9UtKwaRZuAgAKrunD//4AsAIAD8ppQ///5wgCABkeCEA==
-Date:   Tue, 7 Dec 2021 07:28:02 +0000
-Message-ID: <e2fd429a489545e7a521283600cb7caa@realtek.com>
-References: <20211129101315.16372-381-nic_swsd@realtek.com>
-        <20211129095947.547a765f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <918d75ea873a453ab2ba588a35d66ab6@realtek.com>
-        <20211130190926.7c1d735d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <d3a1e1c469844aa697d6d315c9549eda@realtek.com>
- <20211203070410.1b4abc4d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211203070410.1b4abc4d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.177.203]
-x-kse-serverinfo: RTEXMBS01.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2021/12/7_=3F=3F_05:19:00?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Ido Schimmel <idosch@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 0/6] Allow parallel devlink execution
+Message-ID: <Ya8NPxxn8/OAF4cR@unreal>
+References: <cover.1638690564.git.leonro@nvidia.com>
+ <20211206180027.3700d357@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36504.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211206180027.3700d357@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Kicinski <kuba@kernel.org>
-> Sent: Friday, December 3, 2021 11:04 PM
-[...]
-> Ah, I've only spotted the enable/disable knob in the patch.
-> If you're exchanging arbitrary binary data with the FW we
-> can't help you. It's not going to fly upstream. 
+On Mon, Dec 06, 2021 at 06:00:27PM -0800, Jakub Kicinski wrote:
+> On Sun,  5 Dec 2021 10:22:00 +0200 Leon Romanovsky wrote:
+> > This is final piece of devlink locking puzzle, where I remove global
+> > mutex lock (devlink_mutex), so we can run devlink commands in parallel.
+> > 
+> > The series starts with addition of port_list_lock, which is needed to
+> > prevent locking dependency between netdevsim sysfs and devlink. It
+> > follows by the patch that adds context aware locking primitives. Such
+> > primitives allow us to make sure that devlink instance is locked and
+> > stays locked even during reload operation. The last patches opens
+> > devlink to parallel commands.
+> 
+> I'm not okay with assuming that all sub-objects are added when devlink
+> is not registered.
 
-How is it that we only provide certain basic settings,
-such as IPv4 address, IPv6 address, and so on? Then,
-they are not the arbitrary binary data.
+But none of the patches in this series assume that.
 
-Could devlink param be used for more than 4 bytes settings?
-At least the IPv6 address is longer.
+In devlink_nested_lock() patch [1], I added new marker just to make sure
+that we don't lock if this specific command is called in locked context.
 
-Besides, we need the information of SMBIOS which could
-be 4K ~ 8K bytes data. Is there any way we could transmit
-it to firmware?
++#define DEVLINK_NESTED_LOCK XA_MARK_2
 
-Best Regards,
-Hayes
-
-
+[1] https://lore.kernel.org/all/2b64a2a81995b56fec0231751ff6075020058584.1638690564.git.leonro@nvidia.com/
