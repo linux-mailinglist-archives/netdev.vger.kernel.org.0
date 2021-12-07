@@ -2,176 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C20D46C0B9
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 17:29:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A15D346C0D1
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 17:35:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238172AbhLGQdI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 11:33:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45884 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234951AbhLGQdI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 11:33:08 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4897C061746;
-        Tue,  7 Dec 2021 08:29:37 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        id S233781AbhLGQj0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 11:39:26 -0500
+Received: from serv108.segi.ulg.ac.be ([139.165.32.111]:53530 "EHLO
+        serv108.segi.ulg.ac.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229709AbhLGQjW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 11:39:22 -0500
+Received: from mbx12-zne.ulg.ac.be (serv470.segi.ulg.ac.be [139.165.32.199])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2E9FBB81CF5;
-        Tue,  7 Dec 2021 16:29:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFBCEC341C8;
-        Tue,  7 Dec 2021 16:29:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638894574;
-        bh=EhrcWI9mWDI5wSadeNb9DYuTlUXsfjqAGucxFodehUM=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=sQiCDWKiLCt0NYliDY3ZjcINoLTG/4QT0oVjoabAyZ+yDpwc0LjgCzZ+QYjIKNofo
-         W8U0FzINZwNMBUYC+/3guo1B+Q1s97eIGgwBYFh35WC4I09oNJa+al4875PoPPdm/A
-         nsuuPnN+W+AGfVRzlWZSi/l8DyHgMLVpiyLG3Sokl+kaABQq8T9rjWSHn+l4OyYx+U
-         yQsERvQsP4mMZ592gPkb+am1UBSEm4PZdHlO7978P2Iy6rbSzaTCFnGQwkxJJ0oIk3
-         OZLU+MXeRKy4684n4eCl6Bw9FkJCY9yVpYKf57y1YBEShZrkVBoBPHcoDaOySDvz6b
-         trvI76qcWbeZQ==
-Received: by mail-ed1-f47.google.com with SMTP id g14so58582781edb.8;
-        Tue, 07 Dec 2021 08:29:34 -0800 (PST)
-X-Gm-Message-State: AOAM532f2W9ZreoQH9VcOnFC/ifB5eVRJCe17HoxaICUtglcqoNo6f8m
-        mX43EIyA+RbtmUWESsQQE92lFP4/0AtpMTzo/w==
-X-Google-Smtp-Source: ABdhPJz98fbAnvVe1AhaSmP08wxHXrR8BpSqIXazh8lXQCVGqRo0DowpOQD1f/F8ykH7vGksg5xQxq1VgImntCBby0Y=
-X-Received: by 2002:a05:6402:84f:: with SMTP id b15mr5840714edz.342.1638894573258;
- Tue, 07 Dec 2021 08:29:33 -0800 (PST)
+        by serv108.segi.ulg.ac.be (Postfix) with ESMTPS id 92BFB200F81B;
+        Tue,  7 Dec 2021 17:35:49 +0100 (CET)
+DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be 92BFB200F81B
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uliege.be;
+        s=ulg20190529; t=1638894949;
+        bh=kCTMHmqBI/ompkL5Jcr5fy8SFmAAf7AcqDUt71hh6iI=;
+        h=Date:From:Reply-To:To:Cc:In-Reply-To:References:Subject:From;
+        b=QUcrWDBRVdeof0Tamz/6wWdRNkuTRM+2DV/WAYNedOIXmSo79HDP/JPcfchkIR7nH
+         ZI/h4Zss710v8QwUCcq7XKzntGrurML9s5akt6k0eBR1qa6r/eJl0MWk1zNo9N7hl4
+         kgJnhHDKeiSExcM5AXRgsGMveB6cS5kAnbtHOoXEkU8pq/25Ab277MmwLfDTKodPy8
+         KNe5oDgRQqo06gfyuTf+bjYZuVTTSqxAtT4c9Bc01zTV9l5mTy25J34SR9aQGWlwhZ
+         u7F0FLeq3MJWiRqH4hOT6q522Euxy2BMtIQACHUzQlhTju/Od+J66YROlmFtqlNYXi
+         BPAXeZzpRHS5Q==
+Received: from localhost (localhost [127.0.0.1])
+        by mbx12-zne.ulg.ac.be (Postfix) with ESMTP id 858C260225373;
+        Tue,  7 Dec 2021 17:35:49 +0100 (CET)
+Received: from mbx12-zne.ulg.ac.be ([127.0.0.1])
+        by localhost (mbx12-zne.ulg.ac.be [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id yUnivlg35vCE; Tue,  7 Dec 2021 17:35:49 +0100 (CET)
+Received: from mbx12-zne.ulg.ac.be (mbx12-zne.ulg.ac.be [139.165.32.199])
+        by mbx12-zne.ulg.ac.be (Postfix) with ESMTP id 688BF6008D79D;
+        Tue,  7 Dec 2021 17:35:49 +0100 (CET)
+Date:   Tue, 7 Dec 2021 17:35:49 +0100 (CET)
+From:   Justin Iurman <justin.iurman@uliege.be>
+Reply-To: Justin Iurman <justin.iurman@uliege.be>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, dsahern@kernel.org,
+        yoshfuji@linux-ipv6.org, linux-mm@kvack.org, cl@linux.com,
+        penberg@kernel.org, rientjes@google.com,
+        iamjoonsoo kim <iamjoonsoo.kim@lge.com>,
+        akpm@linux-foundation.org, vbabka@suse.cz
+Message-ID: <1045511371.220520131.1638894949373.JavaMail.zimbra@uliege.be>
+In-Reply-To: <20211207075037.6cda8832@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20211206211758.19057-1-justin.iurman@uliege.be> <20211206211758.19057-3-justin.iurman@uliege.be> <20211206161625.55a112bb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <262812089.220024115.1638878044162.JavaMail.zimbra@uliege.be> <20211207075037.6cda8832@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Subject: Re: [RFC net-next 2/2] ipv6: ioam: Support for Buffer occupancy
+ data field
 MIME-Version: 1.0
-References: <20211206174153.2296977-1-robh@kernel.org> <Ya8cZ69WGfeh0G4I@orome.fritz.box>
-In-Reply-To: <Ya8cZ69WGfeh0G4I@orome.fritz.box>
-From:   Rob Herring <robh@kernel.org>
-Date:   Tue, 7 Dec 2021 10:29:21 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqLmeLKeORpPtUFAZc9Uy7uFc0DnVQuczkkEvDq8CyQN1w@mail.gmail.com>
-Message-ID: <CAL_JsqLmeLKeORpPtUFAZc9Uy7uFc0DnVQuczkkEvDq8CyQN1w@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: net: Add missing properties used in examples
-To:     Thierry Reding <thierry.reding@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        Cristian Ciocaltea <cristian.ciocaltea@gmail.com>,
-        "G. Jaya Kumaran" <vineetha.g.jaya.kumaran@intel.com>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Christophe Roullier <christophe.roullier@foss.st.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-actions@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [81.240.24.148]
+X-Mailer: Zimbra 8.8.15_GA_4018 (ZimbraWebClient - FF94 (Linux)/8.8.15_GA_4026)
+Thread-Topic: ipv6: ioam: Support for Buffer occupancy data field
+Thread-Index: Avbm4/re1gCK09gzGU7eD5s9hVgDug==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 7, 2021 at 2:33 AM Thierry Reding <thierry.reding@gmail.com> wr=
-ote:
->
-> On Mon, Dec 06, 2021 at 11:41:52AM -0600, Rob Herring wrote:
-> > With 'unevaluatedProperties' support implemented, the following warning=
-s
-> > are generated in the net bindings:
-> >
-> > Documentation/devicetree/bindings/net/actions,owl-emac.example.dt.yaml:=
- ethernet@b0310000: Unevaluated properties are not allowed ('mdio' was unex=
-pected)
-> > Documentation/devicetree/bindings/net/intel,dwmac-plat.example.dt.yaml:=
- ethernet@3a000000: Unevaluated properties are not allowed ('snps,pbl', 'md=
-io0' were unexpected)
-> > Documentation/devicetree/bindings/net/qca,ar71xx.example.dt.yaml: ether=
-net@19000000: Unevaluated properties are not allowed ('qca,ethcfg' was unex=
-pected)
-> > Documentation/devicetree/bindings/net/qca,ar71xx.example.dt.yaml: ether=
-net@1a000000: Unevaluated properties are not allowed ('mdio' was unexpected=
-)
-> > Documentation/devicetree/bindings/net/stm32-dwmac.example.dt.yaml: ethe=
-rnet@40028000: Unevaluated properties are not allowed ('reg-names', 'snps,p=
-bl' were unexpected)
-> > Documentation/devicetree/bindings/net/ti,cpsw-switch.example.dt.yaml: m=
-dio@1000: Unevaluated properties are not allowed ('clocks', 'clock-names' w=
-ere unexpected)
-> > Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.example.dt.=
-yaml: mdio@f00: Unevaluated properties are not allowed ('clocks', 'clock-na=
-mes' were unexpected)
-> >
-> > Add the missing properties/nodes as necessary.
-> >
-> > Cc: "David S. Miller" <davem@davemloft.net>
-> > Cc: Jakub Kicinski <kuba@kernel.org>
-> > Cc: "Andreas F=C3=A4rber" <afaerber@suse.de>
-> > Cc: Manivannan Sadhasivam <mani@kernel.org>
-> > Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-> > Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
-> > Cc: Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-> > Cc: Cristian Ciocaltea <cristian.ciocaltea@gmail.com>
-> > Cc: "G. Jaya Kumaran" <vineetha.g.jaya.kumaran@intel.com>
-> > Cc: Oleksij Rempel <o.rempel@pengutronix.de>
-> > Cc: Christophe Roullier <christophe.roullier@foss.st.com>
-> > Cc: Grygorii Strashko <grygorii.strashko@ti.com>
-> > Cc: netdev@vger.kernel.org
-> > Cc: linux-arm-kernel@lists.infradead.org
-> > Cc: linux-actions@lists.infradead.org
-> > Cc: linux-stm32@st-md-mailman.stormreply.com
-> > Signed-off-by: Rob Herring <robh@kernel.org>
-> > ---
-> >  .../devicetree/bindings/net/actions,owl-emac.yaml          | 3 +++
-> >  .../devicetree/bindings/net/intel,dwmac-plat.yaml          | 2 +-
-> >  Documentation/devicetree/bindings/net/qca,ar71xx.yaml      | 5 ++++-
-> >  Documentation/devicetree/bindings/net/stm32-dwmac.yaml     | 6 ++++++
-> >  Documentation/devicetree/bindings/net/ti,davinci-mdio.yaml | 7 +++++++
-> >  .../devicetree/bindings/net/toshiba,visconti-dwmac.yaml    | 5 ++++-
-> >  6 files changed, 25 insertions(+), 3 deletions(-)
-> >
-> > diff --git a/Documentation/devicetree/bindings/net/actions,owl-emac.yam=
-l b/Documentation/devicetree/bindings/net/actions,owl-emac.yaml
-> > index 1626e0a821b0..e9c0d6360e74 100644
-> > --- a/Documentation/devicetree/bindings/net/actions,owl-emac.yaml
-> > +++ b/Documentation/devicetree/bindings/net/actions,owl-emac.yaml
-> > @@ -51,6 +51,9 @@ properties:
-> >      description:
-> >        Phandle to the device containing custom config.
-> >
-> > +  mdio:
-> > +    type: object
->
-> In one of the conversions I've been working on, I've used this construct
-> for the mdio node:
->
->         mdio:
->           $ref: mdio.yaml
->
-> In the cases here this may not be necessary because we could also match
-> on the compatible string, but for the example that I've been working on
-> there is no compatible string for the MDIO bus, so that's not an option.
+On Dec 7, 2021, at 4:50 PM, Jakub Kicinski kuba@kernel.org wrote:
+> On Tue, 7 Dec 2021 12:54:04 +0100 (CET) Justin Iurman wrote:
+>> >> The function kmem_cache_size is used to retrieve the size of a slab
+>> >> object. Note that it returns the "object_size" field, not the "size"
+>> >> field. If needed, a new function (e.g., kmem_cache_full_size) could be
+>> >> added to return the "size" field. To match the definition from the
+>> >> draft, the number of bytes is computed as follows:
+>> >> 
+>> >> slabinfo.active_objs * size
+>> > 
+>> > Implementing the standard is one thing but how useful is this
+>> > in practice?
+>> 
+>> IMHO, very useful. To be honest, if I were to implement only a few data
+>> fields, these two would be both included. Take the example of CLT [1]
+>> where the queue length data field is used to detect low-level issues
+>> from inside a L5-7 distributed tracing tool. And this is just one
+>> example among many others. The queue length data field is very specific
+>> to TX queues, but we could also use the buffer occupancy data field to
+>> detect more global loads on a node. Actually, the goal for operators
+>> running their IOAM domain is to quickly detect a problem along a path
+>> and react accordingly (human or automatic action). For example, if you
+>> monitor TX queues along a path and detect an increasing queue on a
+>> router, you could choose to, e.g.,  rebalance its queues. With the
+>> buffer occupancy, you could detect high-loaded nodes in general and,
+>> e.g., rebalance traffic to another branch. Again, this is just one
+>> example among others. Apart from more accurate ECMPs, you could for
+>> instance deploy a smart (micro)service selection based on different
+>> metrics, etc.
+>> 
+>>   [1] https://github.com/Advanced-Observability/cross-layer-telemetry
+> 
+> Ack, my question was more about whether the metric as implemented
 
-$nodename is also used to match if there's no compatible, so the above
-is somewhat redundant (the schema will be applied twice). Matching on
-the node name is useful where we don't have a specific schema in place
-or if you want to validate DT files with just that schema, but that's
-becoming less useful as we get schemas for everything.
+Oh, sorry about that.
 
-Thinking about this some more, what we need for these is:
+> provides the best signal. Since the slab cache scales dynamically
+> (AFAIU) it's not really a big deal if it's full as long as there's
+> memory available on the system.
 
-mdio:
-  $ref: mdio.yaml
-  unevaluatedProperties: false
+Well, I got the same understanding as you. However, we do not provide a
+value meaning "X percent used" just because it wouldn't make much sense,
+as you pointed out. So I think it is sound to have the current value,
+even if it's a quite dynamic one. Indeed, what's important here is to
+know how many bytes are used and this is exactly what it does. If a node
+is under heavy load, the value would be hell high. The operator could
+define a threshold for each node resp. and detect abnormal values.
 
-Because mdio.yaml on its own is incomplete and allows for additional
-properties. That ensures all the properties are documented and no
-extra properties are present.
-
-> On the other hand, it looks like the snps,dwmac-mdio that the examples
-> here use don't end up including mdio.yaml, so no validation (or rather
-> only very limited validation) will be performed on their properties and
-> children.
-
-There is more validation than you were thinking, but it also needs the
-above added.
-
-Rob
+We probably want the metadata included for accuracy as well (e.g.,
+kmem_cache_size vs new function kmem_cache_full_size).
