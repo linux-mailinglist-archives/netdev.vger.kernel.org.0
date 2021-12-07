@@ -2,176 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C560446BA96
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 13:01:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 15A3446BA9F
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 13:03:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236009AbhLGMEl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 07:04:41 -0500
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:57214 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230444AbhLGMEi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 07:04:38 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1638878468; x=1670414468;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=R4oNkyXHoIArR8CahcGG7a0KgMyQw239IP2710b1DoQ=;
-  b=Q1EDsc/+dqKzBPxHkO6YAKLhmMMVguoVwPQJwWLDYl5WZ2Zx+FuNF4Zo
-   fH5y7tgRi/7TAXuNfGBQQ/99CIS2DCRDGz9XY/Bie/WtYz5IzCtjikXx/
-   k0Cjn8N/1sac+RBmTYVJnWB1DDHSykj5ML2fZl0b0E/s/epfc5mjKjZY5
-   PRn4o+WlazvefPxrpaZ6jo0eMICWLMAQD3E5WoT3YAxU+pv+q7zO8a9VT
-   Gg0TjxWdh00Ge0aQz+cYXhfe8ZuovvopgUAQbBvCmT1rYSPgt81oNh0kl
-   ZZ96MIDs/x00XmNyCT8IoWPVIMAsJOlSnCs3fxbGnW8FESm95A7pHyVRr
-   g==;
-IronPort-SDR: +4OBppKR0MVRMNiqXr7QfLHFNcuaZ5Ut5RRC7yBandQmsoAxU1I3P1a9J1SJg3FdCzIxpCAjCl
- i/HjpEI4RtvamtrlbN/rI17tLvqetkTw1E0TqzBGNKPKMdT+4azGs7hgNYYkynfck8Wp50k/GV
- wWqPeoF8RPUgbyG1jlNnW5Xt7DoQPeTbmoHm0kkvqpc3YkiDYxQTf1DYiyQivnlQMHs3PWOMs5
- 9OUy967MtoZezxx+flO3WfWuFRMakjodQJWb+Av/k5PBdVbREZ00SpCKjX3S12YT1yORM6ejyl
- 5CqGx/viqkfRevfX6qRrZPjS
-X-IronPort-AV: E=Sophos;i="5.87,293,1631602800"; 
-   d="scan'208";a="146370055"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Dec 2021 05:01:08 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Tue, 7 Dec 2021 05:01:08 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
- (10.10.85.144) with Microsoft SMTP Server id 15.1.2176.14 via Frontend
- Transport; Tue, 7 Dec 2021 05:01:07 -0700
-Date:   Tue, 7 Dec 2021 13:03:05 +0100
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <davem@davemloft.net>, <robh+dt@kernel.org>,
-        <UNGLinuxDriver@microchip.com>, <linux@armlinux.org.uk>,
-        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next 3/6] net: lan966x: add support for interrupts
- from analyzer
-Message-ID: <20211207120305.atm3xhyhz4xl7vqw@soft-dev3-1.localhost>
-References: <20211203104645.1476704-1-horatiu.vultur@microchip.com>
- <20211203104645.1476704-4-horatiu.vultur@microchip.com>
- <20211206182456.4494c5f6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S236074AbhLGMHI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 07:07:08 -0500
+Received: from mail-wr1-f52.google.com ([209.85.221.52]:33599 "EHLO
+        mail-wr1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236069AbhLGMHH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 07:07:07 -0500
+Received: by mail-wr1-f52.google.com with SMTP id d24so29148554wra.0;
+        Tue, 07 Dec 2021 04:03:36 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=WOUkRvk8md0qXXeJWUBaI3pWBezAEcrjYlSaZ1Cva6A=;
+        b=IJ9JvEIdZjVPaXmiQuBDDuypRCU4M2pzREewawCznlMR3VhnKVBatXB+JIpXdWhLut
+         bb/HyAWzYmyqMu2f2KHjcQ6XjsUJS2i8nHQtj6ANFnM9n4Y3WREEUPAyUbxkIW6mVxbc
+         c/gceWEczq2UAWCVKnLuUT5cC12BZ6Qfk7AobzIFfWQ4FRJvZrb5eADBskSsMnj6Qkbc
+         PkEDgiLYEHG1atWkVjU21I8mQ3D7sUgzKpyAxfQ7CpEoU+04rDgRCzXn0QhR4A4u7bnd
+         o39UjtaQ9yNbX9w0RfRUGmIl094cdnMpRf+TJMUXPPoDBVEtMOjk+1pmmhPRbRNKcBsn
+         OruA==
+X-Gm-Message-State: AOAM532BY5WO1fwZxye7Ju0Dn8FYaqz4GwgCQHmC71IZVDiCzeAPCp4O
+        Xj+DVfjYVxeWGxwLTMYzhts=
+X-Google-Smtp-Source: ABdhPJzMzHrPwjx1q6wcjSgllaGFav30b9QtgoVVc3D8PMFLIs2P8l6Us9wMV4IxRbCko1NRKBiujw==
+X-Received: by 2002:adf:f947:: with SMTP id q7mr50874696wrr.260.1638878616067;
+        Tue, 07 Dec 2021 04:03:36 -0800 (PST)
+Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
+        by smtp.gmail.com with ESMTPSA id g18sm3074323wmq.4.2021.12.07.04.03.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Dec 2021 04:03:34 -0800 (PST)
+Date:   Tue, 7 Dec 2021 12:03:33 +0000
+From:   Wei Liu <wei.liu@kernel.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-hyperv@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-hardening@vger.kernel.org
+Subject: Re: [PATCH] hv_sock: Extract hvs_send_data() helper that takes only
+ header
+Message-ID: <20211207120333.rmq3mmla5js7kpuj@liuwe-devbox-debian-v2>
+References: <20211207063217.2591451-1-keescook@chromium.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211206182456.4494c5f6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211207063217.2591451-1-keescook@chromium.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 12/06/2021 18:24, Jakub Kicinski wrote:
+On Mon, Dec 06, 2021 at 10:32:17PM -0800, Kees Cook wrote:
+> When building under -Warray-bounds, the compiler is especially
+> conservative when faced with casts from a smaller object to a larger
+> object. While this has found many real bugs, there are some cases that
+> are currently false positives (like here). With this as one of the last
+> few instances of the warning in the kernel before -Warray-bounds can be
+> enabled globally, rearrange the functions so that there is a header-only
+> version of hvs_send_data(). Silences this warning:
+> 
+> net/vmw_vsock/hyperv_transport.c: In function 'hvs_shutdown_lock_held.constprop':
+> net/vmw_vsock/hyperv_transport.c:231:32: warning: array subscript 'struct hvs_send_buf[0]' is partly outside array bounds of 'struct vmpipe_proto_header[1]' [-Warray-bounds]
+>   231 |         send_buf->hdr.pkt_type = 1;
+>       |         ~~~~~~~~~~~~~~~~~~~~~~~^~~
+> net/vmw_vsock/hyperv_transport.c:465:36: note: while referencing 'hdr'
+>   465 |         struct vmpipe_proto_header hdr;
+>       |                                    ^~~
+> 
+> This change results in no executable instruction differences.
+> 
+> Signed-off-by: Kees Cook <keescook@chromium.org>
 
-Hi Jakub,
-
-> 
-> On Fri, 3 Dec 2021 11:46:42 +0100 Horatiu Vultur wrote:
-> > This patch adds support for handling the interrupts generated by the
-> > analyzer. Currently, only the MAC table generates these interrupts.
-> > The MAC table will generate an interrupt whenever it learns or forgets
-> > an entry in the table. It is the SW responsibility figure out which
-> > entries were added/removed.
-> >
-> > Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-> 
-> > +static struct lan966x_mac_entry *lan966x_mac_alloc_entry(struct lan966x *lan966x,
-> > +                                                      const unsigned char *mac,
-> > +                                                      u16 vid, u16 port_index)
-> > +{
-> > +     struct lan966x_mac_entry *mac_entry;
-> > +
-> > +     mac_entry = devm_kzalloc(lan966x->dev,
-> > +                              sizeof(*mac_entry), GFP_ATOMIC);
-> 
-> Is it really necessary to use devm_ allocation for the mac entries?
-> It's 2x memory overhead.
-
-It is not necessary.
-
-> 
-> Also why GFP_ATOMIC? Memory allocations are _a lot_ less likely with
-> GFP_KERNEL.
-
-Initially I thought this is called also in some context where it
-couldn't sleep. But I was wrong.
-
-I will change these in the next version.
-
-> 
-> > +     if (!mac_entry)
-> > +             return NULL;
-> > +
-> > +     memcpy(mac_entry->mac, mac, ETH_ALEN);
-> > +     mac_entry->vid = vid;
-> > +     mac_entry->port_index = port_index;
-> > +     mac_entry->row = LAN966X_MAC_INVALID_ROW;
-> > +     return mac_entry;
-> > +}
-> 
-> > +static void lan966x_mac_process_raw_entry(struct lan966x_mac_raw_entry *raw_entry,
-> > +                                       u8 *mac, u16 *vid, u32 *dest_idx)
-> > +{
-> > +     mac[0] = (raw_entry->mach >> 8)  & 0xff;
-> > +     mac[1] = (raw_entry->mach >> 0)  & 0xff;
-> > +     mac[2] = (raw_entry->macl >> 24) & 0xff;
-> > +     mac[3] = (raw_entry->macl >> 16) & 0xff;
-> > +     mac[4] = (raw_entry->macl >> 8)  & 0xff;
-> > +     mac[5] = (raw_entry->macl >> 0)  & 0xff;
-> > +
-> > +     *vid = (raw_entry->mach >> 16) & 0xfff;
-> > +     *dest_idx  = ANA_MACACCESS_DEST_IDX_GET(raw_entry->maca);
-> 
-> Double space before =
-> 
-> > +}
-> > +
-> > +static void lan966x_mac_irq_process(struct lan966x *lan966x, u32 row,
-> > +                                 struct lan966x_mac_raw_entry *raw_entries)
-> > +{
-> > +     struct lan966x_mac_entry *mac_entry, *tmp;
-> > +     unsigned long flags;
-> > +     char mac[ETH_ALEN];
-> > +     u32 dest_idx;
-> > +     u32 column;
-> > +     u16 vid;
-> > +
-> > +     spin_lock_irqsave(&lan966x->mac_lock, flags);
-> > +     list_for_each_entry_safe(mac_entry, tmp, &lan966x->mac_entries, list) {
-> > +             bool founded = false;
-> 
-> s/founded/found/
-> 
-> > +             if (mac_entry->row != row)
-> > +                     continue;
-> > +
-> > +             for (column = 0; column < LAN966X_MAC_COLUMNS; ++column) {
-> > +                     /* All the valid entries are at the start of the row,
-> > +                      * so when get one invalid entry it can just skip the
-> > +                      * rest of the columns
-> > +                      */
-> > +                     if (!ANA_MACACCESS_VALID_GET(raw_entries[column].maca))
-> > +                             break;
-> > +
-> > +                     lan966x_mac_process_raw_entry(&raw_entries[column],
-> > +                                                   mac, &vid, &dest_idx);
-> > +                     WARN_ON(dest_idx > lan966x->num_phys_ports);
-> > +
-> > +                     /* If the entry in SW is found, then there is nothing
-> > +                      * to do
-> > +                      */
-> > +                     if (mac_entry->vid == vid &&
-> > +                         ether_addr_equal(mac_entry->mac, mac) &&
-> 
-> You need to add __aligned(2) to mac, ether_addr_equal() needs aligned
-> arguments.
-> 
-> > +                         mac_entry->port_index == dest_idx) {
-> > +                             raw_entries[column].process = true;
-> > +                             founded = true;
-> > +                             break;
-> > +                     }
-> > +             }
-
--- 
-/Horatiu
+Acked-by: Wei Liu <wei.liu@kernel.org>
