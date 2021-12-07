@@ -2,143 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B1E0646B1F8
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 05:41:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E63446B21F
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 06:13:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236237AbhLGEpB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Dec 2021 23:45:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48286 "EHLO
+        id S231796AbhLGFRE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 00:17:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236121AbhLGEpA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 23:45:00 -0500
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3539CC061746
-        for <netdev@vger.kernel.org>; Mon,  6 Dec 2021 20:41:31 -0800 (PST)
-Received: by mail-yb1-xb31.google.com with SMTP id v203so37441680ybe.6
-        for <netdev@vger.kernel.org>; Mon, 06 Dec 2021 20:41:31 -0800 (PST)
+        with ESMTP id S231685AbhLGFRC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 00:17:02 -0500
+Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 114DFC061746;
+        Mon,  6 Dec 2021 21:13:33 -0800 (PST)
+Received: by mail-yb1-xb2d.google.com with SMTP id y68so37739779ybe.1;
+        Mon, 06 Dec 2021 21:13:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=gQmS1eZXMjFXQ6CRp24Vvh1/l5Pgkji8KwOC/o5Ish0=;
-        b=QFnWlF6VB5Ml8jvWN2Q2x4ccDws39CVa9cX6KtOO+DpU52rmSozjk9sKppgK1o7ZyR
-         5Avl2WxOs39ZQozFwc+Z20b5TSIuFczjCeaZ+Ms5wFenPsHPL607p8N4c4DCvIACg5Od
-         azm/vexT1UfXMSPrSYi041nKNd+ohG5UrrDpal4G1z5g+NtQLkylwLKDN0ZaKTCmmQM6
-         syol8Cv/v7NROQ+GeOQOtCrZkK8v326qxdL9dCd/z+oO0X6/8/Lwf/yI3OcwypHFNK4D
-         GFf6Bb/g5QXy+ZoQxPR2TTa3ewhTHsmqFF/VW+xTyHs6U+ArF3g4jJOmUhnBegLGhOnO
-         w2hA==
+         :cc:content-transfer-encoding;
+        bh=Kql1bBy1EgzVpsU/JwDkrMwOYaTG3KOCNskyPvT29v0=;
+        b=aLFhZdnZO5XIQF+AKgvGJSAmziQaa34WBCy3z5C/gPlNAgn4VyUP07KrdzczsfP0Nb
+         Y4c2ZU7udNStoUAcRg8sWUfWicbnOZkXD1aA6pZvK7d+aTq9uHLDoIKS+Uh4OzrK/zRX
+         BnIzYnZNVYsJMLU7z+8sKH87qfm9R7ubFPk+oGjL/Liirl5y9j/mVxRM5e0vhWPnFUly
+         3Rko9KL4E0FUTyP1VA9LGHVUcigBdBLiLkW5x1TaHGa8Vuail7+K6Core0odCdAp/rOv
+         8KOFSHw5P/xY7xNYbxeqDSmSBdM6lnZFrBG+kptH3OTIKWO/Y0ekg2Fzr/eT5Y9QV0G+
+         qqyA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=gQmS1eZXMjFXQ6CRp24Vvh1/l5Pgkji8KwOC/o5Ish0=;
-        b=7lT3GkcukR48/tJ90o0KK/JCwfE4qEGEVr798zPAuVadaaVWmDLrC9u9L5/j/WoS3y
-         FsKk3YXNMl+/o9fSLSyEg3iHztykupcpPoHZKtQO4HmgLVsAmDmuR2f5+MqB6+5di2Bh
-         8yb3TZ6nObmtP0nGrRqfCzqR6WOxNm+dMs4Uqe1u4Kpti8i93uN/q8Be+qxIlv5sczJ1
-         7qojx/kwq90zK8dpUuKEnvNIt0kSYpP+5rBSIhKnIm3NnFmTpwAAF2w1hcS3yKRsGttl
-         70KPfbix/dt2mgcNez7hJ4HsQIV9piytLJMN5KkFaf3I44fs+n9Eh3e0kMYY7sOfxr8w
-         o60A==
-X-Gm-Message-State: AOAM532Th5z2SqLqWskZnUWikjbdUKG1Tl6XBOdrwNZlD888b5QVBpBI
-        jwmoYJdvgwux0PuPLsnwGoaMQx9TxVszOsg5M+RqzBV0bs0hXw==
-X-Google-Smtp-Source: ABdhPJyml5B5lQI5oOqGpORBjyAehSlWSqR0NaFNADztHOwuK1NV2AAoyJ7E3cuTvFrERnLIrjBts+heIv+Bl7+DQCk=
-X-Received: by 2002:a5b:5c3:: with SMTP id w3mr28812154ybp.293.1638852089522;
- Mon, 06 Dec 2021 20:41:29 -0800 (PST)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Kql1bBy1EgzVpsU/JwDkrMwOYaTG3KOCNskyPvT29v0=;
+        b=yl0Zdgi/vFqjXnrNyyL1iixJhLXxSLR0W0GblZPH9GO3nxGJiCV/HZaq2HsiOHTZVT
+         bpD9BGFuVJtfs5k5A2yN19pZket2GH51s/jWOKEGsBHzIB3DK6gPiiJfid8aV2Kd//+S
+         apr6FUXgbH4ZJiuT5GSUS9rT2dp1zb2HyEzCZT3y2DWznX1QDhyIcn8jZmBauSi7unMH
+         ezgIq9eZQ9GGztyYDQKxHGYJR7n1/jVr0DcBb7PfX9PD4dWqZBlLN6LDQM/qAMkKTgFW
+         EsZCnJxiKlVbWb1xRoMCIDyEQ8KrUHQzyvOX84oCA+VPzRpymfKkrLuXCC27KTzYTHL+
+         /9mQ==
+X-Gm-Message-State: AOAM5308+DWAR4WtUKRtcnBCgLiE+sjCIYNVA8h/+6NO1ipCc/hfzImw
+        DsadtC+dIRDRFCdHeyDsCI3ScKs7MlcVQZBF68whKrTKgwZdbQ==
+X-Google-Smtp-Source: ABdhPJxrmSbihGZEgETtrdNrlJPNMgiScKrO2WuWpaF7Tq412qlyNjHI4iy6tXltxxIDfGFmp6QGXK2A5udNOYx6DYM=
+X-Received: by 2002:a25:abaa:: with SMTP id v39mr47903087ybi.367.1638854011809;
+ Mon, 06 Dec 2021 21:13:31 -0800 (PST)
 MIME-Version: 1.0
-References: <cover.1638849511.git.lucien.xin@gmail.com>
-In-Reply-To: <cover.1638849511.git.lucien.xin@gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 6 Dec 2021 20:41:18 -0800
-Message-ID: <CANn89iJyiDbGdvm-oNKBBk5r3-0+3h+3ui1pL3rOTrz2BOztmA@mail.gmail.com>
-Subject: Re: [PATCH net-next 0/5] net: add refcnt tracking for some common objects
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>, davem@davemloft.net,
-        kuba@kernel.org,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Davide Caratti <dcaratti@redhat.com>,
-        Paolo Abeni <pabeni@redhat.com>
+References: <20211206230811.4131230-1-song@kernel.org> <CAEf4BzbaBcySm3bVumBTrkHMmVDWEVxckdVKvUk=4j9HhSsmBA@mail.gmail.com>
+ <3221CDA7-F2EF-404A-9289-14F9DF6D01DA@fb.com>
+In-Reply-To: <3221CDA7-F2EF-404A-9289-14F9DF6D01DA@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 6 Dec 2021 21:13:20 -0800
+Message-ID: <CAEf4BzbN17eviD18-_C2UN+P5gMm4vFXVrdLd9UHx0ev+gJsjw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] perf/bpf_counter: use bpf_map_create instead of bpf_create_map
+To:     Song Liu <songliubraving@fb.com>
+Cc:     Song Liu <song@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Kernel Team <Kernel-team@fb.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 6, 2021 at 8:02 PM Xin Long <lucien.xin@gmail.com> wrote:
+On Mon, Dec 6, 2021 at 8:32 PM Song Liu <songliubraving@fb.com> wrote:
 >
-> This patchset provides a simple lib(obj_cnt) to count the operatings on any
-> objects, and saves them into a gobal hashtable. Each node in this hashtable
-> can be identified with a calltrace and an object pointer. A calltrace could
-> be a function called from somewhere, like dev_hold() called by:
 >
->     inetdev_init+0xff/0x1c0
->     inetdev_event+0x4b7/0x600
->     raw_notifier_call_chain+0x41/0x50
->     register_netdevice+0x481/0x580
 >
-> and an object pointer would be the dev that this function is accessing:
+> > On Dec 6, 2021, at 6:37 PM, Andrii Nakryiko <andrii.nakryiko@gmail.com>=
+ wrote:
+> >
+> > On Mon, Dec 6, 2021 at 3:08 PM Song Liu <song@kernel.org> wrote:
+> >>
+> >> bpf_create_map is deprecated. Replace it with bpf_map_create.
+> >>
+> >> Fixes: 992c4225419a ("libbpf: Unify low-level map creation APIs w/ new=
+ bpf_map_create()")
+> >
+> > This is not a bug fix, it's an improvement. So I don't think "Fixes: "
+> > is warranted here, tbh.
 >
->     dev_hold(dev).
+> I got compilation errors before this change, like
 >
-> When this call comes to this object, a node including calltrace + object +
-> counter will be created if it doesn't exist, and the counter in this node
-> will increment if it already exists. Pretty simple.
->
-> So naturally this lib can be used to track the refcnt of any objects, all
-> it has to do is put obj_cnt_track() to the place where this object is
-> held or put. It will count how many times this call has operated this
-> object after checking if this object and this type(hold/put) accessing
-> are being tracked.
->
-> After the 1st lib patch, the other patches add the refcnt tracking for
-> netdev, dst, in6_dev and xfrm_state, and each has example how to use
-> in the changelog. The common use is:
->
->     # sysctl -w obj_cnt.control="clear" # clear the old result
->
->     # sysctl -w obj_cnt.type=0x1     # track type 0x1 operating
->     # sysctl -w obj_cnt.name=test    # match name == test or
->     # sysctl -w obj_cnt.index=1      # match index == 1
->     # sysctl -w obj_cnt.nr_entries=4 # save 4 frames' calltrace
->
->     ... (reproduce the issue)
->
->     # sysctl -w obj_cnt.control="scan"  # print the new result
->
-> Note that after seeing Eric's another patchset for refcnt tracking I
-> decided to post this patchset. As in this implemenation, it has some
-> benefits which I think worth sharing:
+> util/bpf_counter.c: In function =E2=80=98bperf_lock_attr_map=E2=80=99:
+> util/bpf_counter.c:323:3: error: =E2=80=98bpf_create_map=E2=80=99 is depr=
+ecated: libbpf v0.7+: use bpf_map_create() instead [-Werror=3Ddeprecated-de=
+clarations]
+>    map_fd =3D bpf_create_map(BPF_MAP_TYPE_HASH,
+>    ^~~~~~
+> In file included from util/bpf_counter.h:7,
+>                  from util/bpf_counter.c:15:
+> /data/users/songliubraving/kernel/linux-git/tools/lib/bpf/bpf.h:91:16: no=
+te: declared here
+>  LIBBPF_API int bpf_create_map(enum bpf_map_type map_type, int key_size,
+>                 ^~~~~~~~~~~~~~
+> cc1: all warnings being treated as errors
+> make[4]: *** [/data/users/songliubraving/kernel/linux-git/tools/build/Mak=
+efile.build:96: util/bpf_counter.o] Error 1
+> make[4]: *** Waiting for unfinished jobs....
+> make[3]: *** [/data/users/songliubraving/kernel/linux-git/tools/build/Mak=
+efile.build:139: util] Error 2
+> make[2]: *** [Makefile.perf:665: perf-in.o] Error 2
+> make[1]: *** [Makefile.perf:240: sub-make] Error 2
+> make: *** [Makefile:70: all] Error 2
 >
 
-How can your code coexist with ref_tracker ?
+Hmm.. is util/bpf_counter.h guarded behind some Makefile arguments?
+I've sent #pragma temporary workarounds just a few days ago ([0]), but
+this one didn't come up during the build.
 
->   - it runs fast:
->     1. it doesn't create nodes for the repeatitive calls to the same
->        objects, and it saves memory and time.
->     2. the depth of the calltrace to record is configurable, at most
->        time small calltrace also saves memory and time, but will not
->        affect the analysis.
->     3. kmem_cache used also contributes to the performance.
+  [0] https://patchwork.kernel.org/project/netdevbpf/patch/20211203004640.2=
+455717-1-andrii@kernel.org/
 
-Points 2/3 can be implemented right away in the ref_tracker infra,
-please send patches.
+> Do we plan to remove bpf_create_map in the future? If not, we can probabl=
+y just
+> add '#pragma GCC diagnostic ignored "-Wdeprecated-declarations"' can call=
+ it done?
 
-Quite frankly using a global hash table seems wrong, stack_depot
-already has this logic, why reimplement it ?
-stack_depot is damn fast (no spinlock in fast path)
+Yes, it will be removed in a few libbpf releases when we switch to the
+1.0 version. So suppressing a warning is a temporary work-around.
 
-Seeing that your patches add chunks in lib/obj_cnt.c, I do not see how
-you can claim this is generic code.
+>
+> >
+> >> Signed-off-by: Song Liu <song@kernel.org>
+> >> ---
+> >> tools/perf/util/bpf_counter.c | 4 ++--
+> >> 1 file changed, 2 insertions(+), 2 deletions(-)
+> >>
+> >> diff --git a/tools/perf/util/bpf_counter.c b/tools/perf/util/bpf_count=
+er.c
+> >> index c17d4a43ce065..ed150a9b3a0c0 100644
+> >> --- a/tools/perf/util/bpf_counter.c
+> >> +++ b/tools/perf/util/bpf_counter.c
+> >> @@ -320,10 +320,10 @@ static int bperf_lock_attr_map(struct target *ta=
+rget)
+> >>        }
+> >>
+> >>        if (access(path, F_OK)) {
+> >> -               map_fd =3D bpf_create_map(BPF_MAP_TYPE_HASH,
+> >> +               map_fd =3D bpf_map_create(BPF_MAP_TYPE_HASH, NULL,
+> >
+> > I think perf is trying to be linkable with libbpf as a shared library,
+> > so on some older versions of libbpf bpf_map_create() won't be (yet)
+> > available. So to make this work, I think you'll need to define your
+> > own weak bpf_map_create function that will use bpf_create_map().
+>
+> Hmm... I didn't know the plan to link libbpf as shared library. In this c=
+ase,
+> maybe the #pragma solution is preferred?
 
-I don't know, it seems very strange to send this patch series now I
-have done about 60 patches on these issues.
+See "perf tools: Add more weak libbpf functions" sent by Jiri not so
+long ago about what they did with some other used APIs that are now
+marked deprecated.
 
-And by doing this work, I found already two bugs in our stack.
-
-You can be sure syzbot will send us many reports, most syzbot repros
-use a very limited number of objects.
-
-About performance : You use a single spinlock to protect your hash table.
-In my implementation, there is a spinlock per 'directory (eg one
-spinlock per struct net_device, one spinlock per struct net), it is
-more scalable.
-
-My tests have not shown a significant cost of the ref_tracker
-(the major cost comes from stack_trace_save() which you also use)
+>
+> Thanks,
+> Song
+>
