@@ -2,209 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 402B646C355
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 20:08:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AD6946C36C
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 20:15:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240852AbhLGTLc convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 7 Dec 2021 14:11:32 -0500
-Received: from spf.hitachienergy.com ([138.225.1.74]:53656 "EHLO
-        inet10.abb.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231668AbhLGTLb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 7 Dec 2021 14:11:31 -0500
-Received: from gitsiv.ch.abb.com (gitsiv.keymile.net [10.41.156.251])
-        by inet10.abb.com (8.14.7/8.14.7) with SMTP id 1B7J7jgk023127;
-        Tue, 7 Dec 2021 20:07:45 +0100
-Received: from ch10641.keymile.net.net (ch10641.keymile.net [172.31.40.7])
-        by gitsiv.ch.abb.com (Postfix) with ESMTP id 5137E65A5AE5;
-        Tue,  7 Dec 2021 20:07:45 +0100 (CET)
-From:   Holger Brunck <holger.brunck@hitachienergy.com>
-To:     netdev@vger.kernel.org
-Cc:     Holger Brunck <holger.brunck@hitachienergy.com>,
-        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-Subject: [v3 2/2] dsa: mv88e6xxx: make serdes SGMII/Fiber output amplitude configurable
-Date:   Tue,  7 Dec 2021 20:07:30 +0100
-Message-Id: <20211207190730.3076-2-holger.brunck@hitachienergy.com>
-X-Mailer: git-send-email 2.34.0
-In-Reply-To: <20211207190730.3076-1-holger.brunck@hitachienergy.com>
-References: <20211207190730.3076-1-holger.brunck@hitachienergy.com>
+        id S240905AbhLGTS7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 14:18:59 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:43744 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S240849AbhLGTS6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 7 Dec 2021 14:18:58 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=haCxayBggHq3rUzu/zZKh9ckK+z7U1nSBhgcWt3JX7Y=; b=V5aWZzQ6UbVqkuq/hNJ2bDfwK5
+        ySiTS4hxpMZmHJ65feJJSseHGxnVK6tvP6ah6ebjqRu+3nGjUkEUM+v4FRsodNhFvLJe/9o2X+KuB
+        YUWb9VPwJxcEwlfTEgAAEmBpaUX8V3g6fnKFEI+37nnrkMBQh/TriyoJFbRDj2dfUsQQ=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mufvw-00Fo4D-DF; Tue, 07 Dec 2021 20:15:24 +0100
+Date:   Tue, 7 Dec 2021 20:15:24 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [net-next RFC PATCH 0/6] Add support for qca8k mdio rw in
+ Ethernet packet
+Message-ID: <Ya+yzNDMorw4X9CT@lunn.ch>
+References: <20211207145942.7444-1-ansuelsmth@gmail.com>
+ <Ya+q02HlWsHMYyAe@lunn.ch>
+ <61afadb9.1c69fb81.7dfad.19b1@mx.google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <61afadb9.1c69fb81.7dfad.19b1@mx.google.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The mv88e6352, mv88e6240 and mv88e6176  have a serdes interface. This patch
-allows to configure the output swing to a desired value in the
-devicetree node of the port. As the chips only supports eight dedicated
-values we return EINVAL if the value in the DTS does not match.
+> The qca tag header provide a TYPE value that refer to a big list of
+> Frame type. In all of this at value 2 we have the type that tells us
+> that is a READ_WRITE_REG_ACK (aka a mdio rw Ethernet packet)
+> 
+> The idea of using the tagger is to skip parsing the packet 2 times
+> considering the qca tag header is present at the same place in both
+> normal packet and mdio rw Ethernet packet.
+> 
+> Your idea would be hook this before the tagger and parse it?
+> I assume that is the only way if this has to be generilized. But I
+> wonder if this would create some overhead by the double parsing.
 
-CC: Andrew Lunn <andrew@lunn.ch>
-CC: Jakub Kicinski <kuba@kernel.org>
-CC: Marek Behún <kabel@kernel.org>
-Signed-off-by: Holger Brunck <holger.brunck@hitachienergy.com>
----
- drivers/net/dsa/mv88e6xxx/chip.c   | 18 ++++++++++++++
- drivers/net/dsa/mv88e6xxx/chip.h   |  4 ++++
- drivers/net/dsa/mv88e6xxx/serdes.c | 48 ++++++++++++++++++++++++++++++++++++++
- drivers/net/dsa/mv88e6xxx/serdes.h |  5 ++++
- 4 files changed, 75 insertions(+)
+So it seems i remembered this incorrectly. Marvell call this Remote
+Management Unit, RMU. And RMU makes use of bits inside the Marvell
+Tag. I was thinking it was outside of the tag.
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index f00cbf5..1d337dd8 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -2861,6 +2861,8 @@ static int mv88e6xxx_setup_upstream_port(struct mv88e6xxx_chip *chip, int port)
- static int mv88e6xxx_setup_port(struct mv88e6xxx_chip *chip, int port)
- {
- 	struct dsa_switch *ds = chip->ds;
-+	struct dsa_port *dp;
-+	int tx_amp;
- 	int err;
- 	u16 reg;
- 
-@@ -3014,6 +3016,19 @@ static int mv88e6xxx_setup_port(struct mv88e6xxx_chip *chip, int port)
- 			return err;
- 	}
- 
-+	if (chip->info->ops->serdes_set_tx_amplitude) {
-+		dp = dsa_to_port(ds, port);
-+		if (dp &&
-+		    !of_property_read_u32(dp->dn,
-+					  "serdes-tx-amplitude-millivolt",
-+					  &tx_amp)) {
-+			err = mv88e6352_serdes_set_tx_amplitude(chip, port,
-+								tx_amp);
-+			if (err)
-+				return err;
-+		}
-+	}
-+
- 	/* Port based VLAN map: give each port the same default address
- 	 * database, and allow bidirectional communication between the
- 	 * CPU and DSA port(s), and the other ports.
-@@ -4076,6 +4091,7 @@ static int mv88e6xxx_set_eeprom(struct dsa_switch *ds,
- 	.serdes_irq_status = mv88e6352_serdes_irq_status,
- 	.serdes_get_regs_len = mv88e6352_serdes_get_regs_len,
- 	.serdes_get_regs = mv88e6352_serdes_get_regs,
-+	.serdes_set_tx_amplitude = mv88e6352_serdes_set_tx_amplitude,
- 	.gpio_ops = &mv88e6352_gpio_ops,
- 	.phylink_validate = mv88e6352_phylink_validate,
- };
-@@ -4356,6 +4372,7 @@ static int mv88e6xxx_set_eeprom(struct dsa_switch *ds,
- 	.serdes_irq_status = mv88e6352_serdes_irq_status,
- 	.serdes_get_regs_len = mv88e6352_serdes_get_regs_len,
- 	.serdes_get_regs = mv88e6352_serdes_get_regs,
-+	.serdes_set_tx_amplitude = mv88e6352_serdes_set_tx_amplitude,
- 	.gpio_ops = &mv88e6352_gpio_ops,
- 	.avb_ops = &mv88e6352_avb_ops,
- 	.ptp_ops = &mv88e6352_ptp_ops,
-@@ -4762,6 +4779,7 @@ static int mv88e6xxx_set_eeprom(struct dsa_switch *ds,
- 	.serdes_get_stats = mv88e6352_serdes_get_stats,
- 	.serdes_get_regs_len = mv88e6352_serdes_get_regs_len,
- 	.serdes_get_regs = mv88e6352_serdes_get_regs,
-+	.serdes_set_tx_amplitude = mv88e6352_serdes_set_tx_amplitude,
- 	.phylink_validate = mv88e6352_phylink_validate,
- };
- 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
-index 8271b8a..ef5fc26 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.h
-+++ b/drivers/net/dsa/mv88e6xxx/chip.h
-@@ -586,6 +586,10 @@ struct mv88e6xxx_ops {
- 	void (*serdes_get_regs)(struct mv88e6xxx_chip *chip, int port,
- 				void *_p);
- 
-+	/* SERDES SGMII/Fiber Output Amplitude */
-+	int (*serdes_set_tx_amplitude)(struct mv88e6xxx_chip *chip, int port,
-+				       int val);
-+
- 	/* Address Translation Unit operations */
- 	int (*atu_get_hash)(struct mv88e6xxx_chip *chip, u8 *hash);
- 	int (*atu_set_hash)(struct mv88e6xxx_chip *chip, u8 hash);
-diff --git a/drivers/net/dsa/mv88e6xxx/serdes.c b/drivers/net/dsa/mv88e6xxx/serdes.c
-index 5527301..448535c 100644
---- a/drivers/net/dsa/mv88e6xxx/serdes.c
-+++ b/drivers/net/dsa/mv88e6xxx/serdes.c
-@@ -1307,6 +1307,54 @@ void mv88e6390_serdes_get_regs(struct mv88e6xxx_chip *chip, int port, void *_p)
- 	}
- }
- 
-+struct mv88e6352_serdes_amp_to_val {
-+	int mv;
-+	u16 regval;
-+};
-+
-+static struct mv88e6352_serdes_amp_to_val mv88e6352_serdes_amp_to_val[] = {
-+	/* Mapping of configurable millivolt values to the register value */
-+	{ 14, 0},
-+	{ 112, 1},
-+	{ 210, 2},
-+	{ 308, 3},
-+	{ 406, 4},
-+	{ 504, 5},
-+	{ 602, 6},
-+	{ 700, 7},
-+};
-+
-+int mv88e6352_serdes_set_tx_amplitude(struct mv88e6xxx_chip *chip, int port,
-+				      int val)
-+{
-+	bool found = false;
-+	u16 reg;
-+	int err;
-+	int i;
-+
-+	if (!mv88e6352_port_has_serdes(chip, port))
-+		return -EOPNOTSUPP;
-+
-+	for (i = 0; i < ARRAY_SIZE(mv88e6352_serdes_amp_to_val); ++i) {
-+		if (mv88e6352_serdes_amp_to_val[i].mv == val) {
-+			reg = mv88e6352_serdes_amp_to_val[i].regval;
-+			found = true;
-+			break;
-+		}
-+	}
-+
-+	if (!found)
-+		return -EINVAL;
-+
-+	err = mv88e6352_serdes_read(chip, MV88E6352_SERDES_SPEC_CTRL2, &reg);
-+	if (err)
-+		return err;
-+
-+	reg = (reg & MV88E6352_SERDES_OUT_AMP_MASK) | val;
-+
-+	return mv88e6352_serdes_write(chip, MV88E6352_SERDES_SPEC_CTRL2, reg);
-+}
-+
- static int mv88e6393x_serdes_power_lane(struct mv88e6xxx_chip *chip, int lane,
- 					bool on)
- {
-diff --git a/drivers/net/dsa/mv88e6xxx/serdes.h b/drivers/net/dsa/mv88e6xxx/serdes.h
-index 8dd8ed2..526139c 100644
---- a/drivers/net/dsa/mv88e6xxx/serdes.h
-+++ b/drivers/net/dsa/mv88e6xxx/serdes.h
-@@ -27,6 +27,8 @@
- #define MV88E6352_SERDES_INT_FIBRE_ENERGY	BIT(4)
- #define MV88E6352_SERDES_INT_STATUS	0x13
- 
-+#define MV88E6352_SERDES_SPEC_CTRL2	0x1a
-+#define MV88E6352_SERDES_OUT_AMP_MASK		0xfffc
- 
- #define MV88E6341_PORT5_LANE		0x15
- 
-@@ -176,6 +178,9 @@ int mv88e6390_serdes_get_stats(struct mv88e6xxx_chip *chip, int port,
- int mv88e6390_serdes_get_regs_len(struct mv88e6xxx_chip *chip, int port);
- void mv88e6390_serdes_get_regs(struct mv88e6xxx_chip *chip, int port, void *_p);
- 
-+int mv88e6352_serdes_set_tx_amplitude(struct mv88e6xxx_chip *chip, int port,
-+				      int val);
-+
- /* Return the (first) SERDES lane address a port is using, -errno otherwise. */
- static inline int mv88e6xxx_serdes_get_lane(struct mv88e6xxx_chip *chip,
- 					    int port)
--- 
-1.8.3.1
+So, yes, the tagger does need to be involved in this.
 
+The initial design of DSA was that the tagger and main driver were
+kept separate. This has been causing us problems recently, we have use
+cases where we need to share information between the tagger and the
+driver. This looks like it is going to be another case of that.
+
+	Andrew
