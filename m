@@ -2,151 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0057246BD90
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 15:25:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7454A46BDAB
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 15:29:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237756AbhLGO2j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 09:28:39 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:48523 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233302AbhLGO2i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 09:28:38 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1638887108;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=tO2ffYJaUFeq9MC5LppQwfM85DTINtXQ1WDdDxd5NeE=;
-        b=IKyGHrOJ/YzjcGL/K8JLrcHWhPpwk4p/+HgOKd60c06aQ2Z4Mw6vStkD7NUiFCTXQVp+PS
-        yd9WGQz3g5b6PB1jO4usDRzBEgRKXDlUqXCcbwngPaoW0oepe1yuS5HKT2UcBDCalN3P8c
-        7+qh4/GOjVtN08/TMtvPe1IbYBtQkSM=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-404-OHqR_ojfPMqoV5caS8b9sA-1; Tue, 07 Dec 2021 09:25:07 -0500
-X-MC-Unique: OHqR_ojfPMqoV5caS8b9sA-1
-Received: by mail-ed1-f69.google.com with SMTP id p4-20020aa7d304000000b003e7ef120a37so11485774edq.16
-        for <netdev@vger.kernel.org>; Tue, 07 Dec 2021 06:25:06 -0800 (PST)
+        id S237839AbhLGOc2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 09:32:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44246 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237898AbhLGOcF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 09:32:05 -0500
+Received: from mail-ua1-x92a.google.com (mail-ua1-x92a.google.com [IPv6:2607:f8b0:4864:20::92a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4700FC061748
+        for <netdev@vger.kernel.org>; Tue,  7 Dec 2021 06:28:34 -0800 (PST)
+Received: by mail-ua1-x92a.google.com with SMTP id r15so26940609uao.3
+        for <netdev@vger.kernel.org>; Tue, 07 Dec 2021 06:28:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=e+pTq/rNRb0GVVWsWFqooCtbaZQV3QoTUSDWZ/1ESNo=;
+        b=iMF1KwZbiDUEssdyUY1GU5d4NT6EKJXVavUG68A3NKd4pA8WtCwY4EfUNA29xnzfBv
+         t3W8eoUiyOvMNLfbplaBM4QioXPpoEKtNIww0hEqIi+4gHQdwIagcYhxFUap18lo2zWb
+         xIQ1qBfco/VdfdF1FkvN3Fqx5dP3bQaIdS078mUsprDw7ZESXsil7ZbXbZLP98UBMyWP
+         oE6L9dfEZhKLY4i2NI7kySGfOl7c3JWc9wlbKYTtTntm7fEcBf0fRxzYQmRADVhQkz8W
+         dTBPNlJIgXWPjPo+J64VNbO4XjWaRre6skfpdvSsHuUdpdjfmYRdVXhUXx53Rvfwi3uf
+         ljuA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=tO2ffYJaUFeq9MC5LppQwfM85DTINtXQ1WDdDxd5NeE=;
-        b=ZLpqn1awmwrOkHEdnekEwVzh8opll7hNFTxzdmkINJyj6KtVhPWh1aSZi5/MX16dcV
-         /i9p6EUwtqonDkL+m4oBibnm9lmjycwrS/aWn/Wv4pmKLiwET9nWH0sIeIBajIIDgpQP
-         ZLg4gmWWrAISWTz6IqBzv7vjpaEDFMsONjwtT+P2Eb4N9MWP6iv0tRQGp3Tjv2Rop7QE
-         fb2b4TcHcKidx+gRm17DaeKQ7Z5Ou/p/hHgjJtZ0+oVm7YvgfxVVoIzoQTN6ZG22Vg2L
-         oyBUe2yvoSL7iWjtYaOTFy5LgJWspJkn1ZmW0Pos461CmqHp+9ffOjwWyUjtGTSOKDtt
-         1g7g==
-X-Gm-Message-State: AOAM530Kjeq8N9VZPrJq0FrFhCuv5yXGdS70rQI432+soamli0witRbY
-        PxTZU/Xb52+mLPSAU2mrG3aPkTk92nC3iKorWtp97RU/6P8AQtdQPDsoyIrmDq0kCYk+e7xZPwp
-        u2+Z4pcMsqYmIHjzZ
-X-Received: by 2002:a17:907:2a09:: with SMTP id fd9mr52795515ejc.550.1638887105948;
-        Tue, 07 Dec 2021 06:25:05 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzV+XBimS/bnrGku4z7Sy6kKdEbHEuYfeNNEEF4JPPRNMFzspjOkHRMu6Awy8HXuHYHgvBIXg==
-X-Received: by 2002:a17:907:2a09:: with SMTP id fd9mr52795495ejc.550.1638887105747;
-        Tue, 07 Dec 2021 06:25:05 -0800 (PST)
-Received: from krava ([83.240.60.218])
-        by smtp.gmail.com with ESMTPSA id z6sm11072424edc.76.2021.12.07.06.25.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Dec 2021 06:25:05 -0800 (PST)
-Date:   Tue, 7 Dec 2021 15:25:03 +0100
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>
-Subject: Re: [PATCH bpf-next 1/3] bpf, x64: Replace some stack_size usage
- with offset variables
-Message-ID: <Ya9uv+KdwKiTXt6/@krava>
-References: <20211204140700.396138-1-jolsa@kernel.org>
- <20211204140700.396138-2-jolsa@kernel.org>
- <CAEf4BzYGKW1mJ28TtL3iD5-AcDb+Ua0aqPAdnPjtbneEZqyr2A@mail.gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=e+pTq/rNRb0GVVWsWFqooCtbaZQV3QoTUSDWZ/1ESNo=;
+        b=g8zG5anJHdbvjKFOeU/ficdhoVvt5HCFNoEDp3gg65rTVr4hp+o4MY+gi7kllEZUjZ
+         FEATqeVJ9PtW1+Ocmx0BoLOqRfZaY12+K+GiA8+3VsQkYLhC2rT+mhuvy5f89S1DvBK8
+         3kgnUCrOZq1QA5HjQYoYOtd3mgm4J+5MXmR7IsGz3hOc3Y8nmUhFh/p01dQ576USEArc
+         2t5DXY9ZHR/Zhbd2plyCETfxTe3OQhZyxaXd384xYUvT374FGNfjZM+IzgTSjTpLhNNa
+         arIyc8yuUOuYqOpmFUt7s88Z5US+WD39keFTtJ0bgwZ3Kwa7SshI0eycym4FlfDb0BN1
+         Nqkg==
+X-Gm-Message-State: AOAM532ycNkt+F3hJDrBtzstCAhcaqP5ZJGWKVhqFOyIueauEvs/BNE8
+        jrsFZyxoTHY8EoKCkyuU3cJ4hSJl+7M=
+X-Google-Smtp-Source: ABdhPJxOfXbdDwM2Eza4pdXiDc7Nqfq3yH4a52krROdjQqgHWOqpWtCp6bfllbcqroflcDtaAW3WDA==
+X-Received: by 2002:a05:6102:38c7:: with SMTP id k7mr45389512vst.45.1638887313404;
+        Tue, 07 Dec 2021 06:28:33 -0800 (PST)
+Received: from mail-vk1-f182.google.com (mail-vk1-f182.google.com. [209.85.221.182])
+        by smtp.gmail.com with ESMTPSA id w17sm6509596uar.18.2021.12.07.06.28.32
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 07 Dec 2021 06:28:33 -0800 (PST)
+Received: by mail-vk1-f182.google.com with SMTP id b192so9402266vkf.3
+        for <netdev@vger.kernel.org>; Tue, 07 Dec 2021 06:28:32 -0800 (PST)
+X-Received: by 2002:a1f:c9c2:: with SMTP id z185mr52743193vkf.26.1638887312607;
+ Tue, 07 Dec 2021 06:28:32 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzYGKW1mJ28TtL3iD5-AcDb+Ua0aqPAdnPjtbneEZqyr2A@mail.gmail.com>
+References: <20211207020102.3690724-1-kafai@fb.com> <20211207020108.3691229-1-kafai@fb.com>
+In-Reply-To: <20211207020108.3691229-1-kafai@fb.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Tue, 7 Dec 2021 09:27:55 -0500
+X-Gmail-Original-Message-ID: <CA+FuTScQigv7xR5COSFXAic11mwaEsFXVvV7EmSf-3OkvdUXcg@mail.gmail.com>
+Message-ID: <CA+FuTScQigv7xR5COSFXAic11mwaEsFXVvV7EmSf-3OkvdUXcg@mail.gmail.com>
+Subject: Re: [RFC PATCH net-next 2/2] net: Reset forwarded skb->tstamp before
+ delivering to user space
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, kernel-team@fb.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 06, 2021 at 01:41:15PM -0800, Andrii Nakryiko wrote:
-> On Sat, Dec 4, 2021 at 6:07 AM Jiri Olsa <jolsa@redhat.com> wrote:
-> >
-> > As suggested by Andrii, adding variables for registers and ip
-> > address offsets, which makes the code more clear, rather than
-> > abusing single stack_size variable for everything.
-> >
-> > Also describing the stack layout in the comment.
-> >
-> > There is no function change.
-> >
-> > Suggested-by: Andrii Nakryiko <andrii@kernel.org>
-> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> > ---
-> >  arch/x86/net/bpf_jit_comp.c | 42 ++++++++++++++++++++++++-------------
-> >  1 file changed, 28 insertions(+), 14 deletions(-)
-> >
-> > diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
-> > index 1d7b0c69b644..b106e80e8d9c 100644
-> > --- a/arch/x86/net/bpf_jit_comp.c
-> > +++ b/arch/x86/net/bpf_jit_comp.c
-> > @@ -1941,7 +1941,7 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
-> >                                 void *orig_call)
-> >  {
-> >         int ret, i, nr_args = m->nr_args;
-> > -       int stack_size = nr_args * 8;
-> > +       int regs_off, ip_off, stack_size = nr_args * 8;
-> >         struct bpf_tramp_progs *fentry = &tprogs[BPF_TRAMP_FENTRY];
-> >         struct bpf_tramp_progs *fexit = &tprogs[BPF_TRAMP_FEXIT];
-> >         struct bpf_tramp_progs *fmod_ret = &tprogs[BPF_TRAMP_MODIFY_RETURN];
-> > @@ -1956,14 +1956,33 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
-> >         if (!is_valid_bpf_tramp_flags(flags))
-> >                 return -EINVAL;
-> >
-> > +       /* Generated trampoline stack layout:
-> > +        *
-> > +        * RBP + 8         [ return address  ]
-> > +        * RBP + 0         [ RBP             ]
-> > +        *
-> > +        * RBP - 8         [ return value    ]  BPF_TRAMP_F_CALL_ORIG or
-> > +        *                                      BPF_TRAMP_F_RET_FENTRY_RET flags
-> > +        *
-> > +        *                 [ reg_argN        ]  always
-> > +        *                 [ ...             ]
-> > +        * RBP - regs_off  [ reg_arg1        ]
-> > +        *
-> 
-> I think it's also worth mentioning that context passed into
-> fentry/fexit programs are pointing here (makes it a bit easier to
-> track those ctx[-1] and ctx[-2] in the next patch.
+On Mon, Dec 6, 2021 at 9:01 PM Martin KaFai Lau <kafai@fb.com> wrote:
+>
+> The skb->tstamp may be set by a local sk (as a sender in tcp) which then
+> forwarded and delivered to another sk (as a receiver).
+>
+> An example:
+>     sender-sk => veth@netns =====> veth@host => receiver-sk
+>                              ^^^
+>                         __dev_forward_skb
+>
+> The skb->tstamp is marked with a future TX time.  This future
+> skb->tstamp will confuse the receiver-sk.
+>
+> This patch marks the skb if the skb->tstamp is forwarded.
+> Before using the skb->tstamp as a rx timestamp, it needs
+> to be re-stamped to avoid getting a future time.  It is
+> done in the RX timestamp reading helper skb_get_ktime().
+>
+> Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+> ---
+>  include/linux/skbuff.h | 14 +++++++++-----
+>  net/core/dev.c         |  4 +++-
+>  net/core/skbuff.c      |  6 +++++-
+>  3 files changed, 17 insertions(+), 7 deletions(-)
+>
+> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+> index b609bdc5398b..bc4ae34c4e22 100644
+> --- a/include/linux/skbuff.h
+> +++ b/include/linux/skbuff.h
+> @@ -867,6 +867,7 @@ struct sk_buff {
+>         __u8                    decrypted:1;
+>  #endif
+>         __u8                    slow_gro:1;
+> +       __u8                    fwd_tstamp:1;
+>
+>  #ifdef CONFIG_NET_SCHED
+>         __u16                   tc_index;       /* traffic control index */
+> @@ -3806,9 +3807,12 @@ static inline void skb_copy_to_linear_data_offset(struct sk_buff *skb,
+>  }
+>
+>  void skb_init(void);
+> +void net_timestamp_set(struct sk_buff *skb);
+>
+> -static inline ktime_t skb_get_ktime(const struct sk_buff *skb)
+> +static inline ktime_t skb_get_ktime(struct sk_buff *skb)
+>  {
+> +       if (unlikely(skb->fwd_tstamp))
+> +               net_timestamp_set(skb);
+>         return ktime_mono_to_real_cond(skb->tstamp);
 
-ok, jirka
+This changes timestamp behavior for existing applications, probably
+worth mentioning in the commit message if nothing else. A timestamp
+taking at the time of the recv syscall is not very useful.
 
-> 
-> 
-> > +        * RBP - ip_off    [ traced function ]  BPF_TRAMP_F_IP_ARG flag
-> > +        */
-> > +
-> >         /* room for return value of orig_call or fentry prog */
-> >         save_ret = flags & (BPF_TRAMP_F_CALL_ORIG | BPF_TRAMP_F_RET_FENTRY_RET);
-> >         if (save_ret)
-> >                 stack_size += 8;
-> >
-> > +       regs_off = stack_size;
-> > +
-> >         if (flags & BPF_TRAMP_F_IP_ARG)
-> >                 stack_size += 8; /* room for IP address argument */
-> >
-> > +       ip_off = stack_size;
-> > +
-> 
-> [...]
-> 
+If a forwarded timestamp is not a future delivery time (as those are
+scrubbed), is it not correct to just deliver the original timestamp?
+It probably was taken at some earlier __netif_receive_skb_core.
 
+>  }
+>
+> -static inline void net_timestamp_set(struct sk_buff *skb)
+> +void net_timestamp_set(struct sk_buff *skb)
+>  {
+>         skb->tstamp = 0;
+> +       skb->fwd_tstamp = 0;
+>         if (static_branch_unlikely(&netstamp_needed_key))
+>                 __net_timestamp(skb);
+>  }
+> +EXPORT_SYMBOL(net_timestamp_set);
+>
+>  #define net_timestamp_check(COND, SKB)                         \
+>         if (static_branch_unlikely(&netstamp_needed_key)) {     \
+> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> index f091c7807a9e..181ddc989ead 100644
+> --- a/net/core/skbuff.c
+> +++ b/net/core/skbuff.c
+> @@ -5295,8 +5295,12 @@ void skb_scrub_tstamp(struct sk_buff *skb)
+>  {
+>         struct sock *sk = skb->sk;
+>
+> -       if (sk && sk_fullsock(sk) && sock_flag(sk, SOCK_TXTIME))
+> +       if (sk && sk_fullsock(sk) && sock_flag(sk, SOCK_TXTIME)) {
+
+There is a slight race here with the socket flipping the feature on/off.
+
+>
+>                 skb->tstamp = 0;
+> +               skb->fwd_tstamp = 0;
+> +       } else if (skb->tstamp) {
+> +               skb->fwd_tstamp = 1;
+> +       }
+
+SO_TXTIME future delivery times are scrubbed, but TCP future delivery
+times are not?
+
+If adding a bit, might it be simpler to add a bit tstamp_is_edt, and
+scrub based on that. That is also not open to the above race.
