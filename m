@@ -2,79 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FFEF46C761
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 23:22:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ADEFE46C76A
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 23:26:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238024AbhLGW0T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 17:26:19 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:43970 "EHLO vps0.lunn.ch"
+        id S242156AbhLGWaS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 17:30:18 -0500
+Received: from mga09.intel.com ([134.134.136.24]:6596 "EHLO mga09.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233310AbhLGW0S (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 7 Dec 2021 17:26:18 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=Vw5BOFkSJ3OQNTdGVx0WTiEgvdw+Ohj/vP1ysKtmUI4=; b=iFwtJcMYJ0oIOtuiqMWS+tzZM7
-        Ku+fAUqqiWIloVgV3bonCGDS4Lgloj+U65C5OGfQWBWTDgWAzHFxUoBw3KVAn83UFrLZMCsR4AYWj
-        7rIFRyKKD/NiZMxG0p+l7xtG+zZYR+hQrMFGVQuk0iO2zfAo5pIDQitqyqs6oVhcKqoc=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1muirB-00FonC-ON; Tue, 07 Dec 2021 23:22:41 +0100
-Date:   Tue, 7 Dec 2021 23:22:41 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Ansuel Smith <ansuelsmth@gmail.com>
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [net-next RFC PATCH 0/6] Add support for qca8k mdio rw in
- Ethernet packet
-Message-ID: <Ya/esX+GTet9PM+D@lunn.ch>
-References: <20211207145942.7444-1-ansuelsmth@gmail.com>
- <Ya+q02HlWsHMYyAe@lunn.ch>
- <61afadb9.1c69fb81.7dfad.19b1@mx.google.com>
- <Ya+yzNDMorw4X9CT@lunn.ch>
- <61afb452.1c69fb81.18c6f.242e@mx.google.com>
- <20211207205219.4eoygea6gey4iurp@skbuf>
- <61afd6a1.1c69fb81.3281e.5fff@mx.google.com>
+        id S242147AbhLGWaR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 7 Dec 2021 17:30:17 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10191"; a="237508425"
+X-IronPort-AV: E=Sophos;i="5.87,295,1631602800"; 
+   d="scan'208";a="237508425"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Dec 2021 14:26:46 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.87,295,1631602800"; 
+   d="scan'208";a="605889069"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by fmsmga002.fm.intel.com with ESMTP; 07 Dec 2021 14:26:46 -0800
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org
+Subject: [PATCH net 0/7][pull request] Intel Wired LAN Driver Updates 2021-12-07
+Date:   Tue,  7 Dec 2021 14:25:37 -0800
+Message-Id: <20211207222544.977843-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <61afd6a1.1c69fb81.3281e.5fff@mx.google.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> The main problem here is that we really need a way to have shared data
-> between tagger and dsa driver. I also think that it would be limiting
-> using this only for mdio. For example qca8k can autocast mib with
-> Ethernet port and that would be another feature that the tagger would
-> handle.
+This series contains updates to ice driver only.
 
-The Marvell switches also have an efficient way to get the whole MIB
-table. So this is something i would also want.
+Yahui adds re-initialization of Flow Director for VF reset.
 
-> I like the idea of tagger-owend per-switch-tree private data.
-> Do we really need to hook logic?
+Paul restores interrupts when enabling VFs.
 
-We have two different things here.
+Dave re-adds bandwidth check for DCBNL and moves DSCP mode check
+earlier in the function.
 
-1) The tagger needs somewhere to store its own private data.
-2) The tagger needs to share state with the switch driver.
+Jesse prevents reporting of dropped packets that occur during
+initialization and fixes reporting of statistics which could occur with
+frequent reads.
 
-We can probably have the DSA core provide 1). Add the size to
-dsa_device_ops structure, and provide helpers to go from either a
-master or a slave netdev to the private data.
+Michal corrects setting of protocol type for UDP header and fixes lack
+of differentiation when adding filters for tunnels.
 
-2) is harder. But as far as i know, we have an 1:N setup.  One switch
-driver can use N tag drivers. So we need the switch driver to be sure
-the tag driver is what it expects. We keep the shared state in the tag
-driver, so it always has valid data, but when the switch driver wants
-to get a pointer to it, it needs to pass a enum dsa_tag_protocol and
-if it does not match, the core should return -EINVAL or similar.
+The following are changes since commit d17b9737c2bc09b4ac6caf469826e5a7ce3ffab7:
+  net/qla3xxx: fix an error code in ql_adapter_up()
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue 100GbE
 
-   Andrew
+Dave Ertman (1):
+  ice: Fix problems with DSCP QoS implementation
+
+Jesse Brandeburg (2):
+  ice: ignore dropped packets during init
+  ice: safer stats processing
+
+Michal Swiatkowski (2):
+  ice: fix choosing UDP header type
+  ice: fix adding different tunnels
+
+Paul Greenwalt (1):
+  ice: rearm other interrupt cause register after enabling VFs
+
+Yahui Cao (1):
+  ice: fix FDIR init missing when reset VF
+
+ drivers/net/ethernet/intel/ice/ice_dcb_nl.c   | 18 ++++++----
+ .../net/ethernet/intel/ice/ice_ethtool_fdir.c |  4 +--
+ drivers/net/ethernet/intel/ice/ice_fdir.c     |  2 +-
+ .../net/ethernet/intel/ice/ice_flex_pipe.c    |  7 ++--
+ .../net/ethernet/intel/ice/ice_flex_pipe.h    |  3 +-
+ drivers/net/ethernet/intel/ice/ice_main.c     | 34 +++++++++++++------
+ drivers/net/ethernet/intel/ice/ice_switch.c   | 19 +++++++----
+ drivers/net/ethernet/intel/ice/ice_tc_lib.c   | 30 +++++++---------
+ .../net/ethernet/intel/ice/ice_virtchnl_pf.c  |  6 ++++
+ 9 files changed, 76 insertions(+), 47 deletions(-)
+
+-- 
+2.31.1
+
