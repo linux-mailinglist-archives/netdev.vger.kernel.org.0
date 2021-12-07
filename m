@@ -2,81 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 15A3446BA9F
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 13:03:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C0FF746BAAD
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 13:05:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236074AbhLGMHI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 07:07:08 -0500
-Received: from mail-wr1-f52.google.com ([209.85.221.52]:33599 "EHLO
-        mail-wr1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236069AbhLGMHH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 07:07:07 -0500
-Received: by mail-wr1-f52.google.com with SMTP id d24so29148554wra.0;
-        Tue, 07 Dec 2021 04:03:36 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=WOUkRvk8md0qXXeJWUBaI3pWBezAEcrjYlSaZ1Cva6A=;
-        b=IJ9JvEIdZjVPaXmiQuBDDuypRCU4M2pzREewawCznlMR3VhnKVBatXB+JIpXdWhLut
-         bb/HyAWzYmyqMu2f2KHjcQ6XjsUJS2i8nHQtj6ANFnM9n4Y3WREEUPAyUbxkIW6mVxbc
-         c/gceWEczq2UAWCVKnLuUT5cC12BZ6Qfk7AobzIFfWQ4FRJvZrb5eADBskSsMnj6Qkbc
-         PkEDgiLYEHG1atWkVjU21I8mQ3D7sUgzKpyAxfQ7CpEoU+04rDgRCzXn0QhR4A4u7bnd
-         o39UjtaQ9yNbX9w0RfRUGmIl094cdnMpRf+TJMUXPPoDBVEtMOjk+1pmmhPRbRNKcBsn
-         OruA==
-X-Gm-Message-State: AOAM532BY5WO1fwZxye7Ju0Dn8FYaqz4GwgCQHmC71IZVDiCzeAPCp4O
-        Xj+DVfjYVxeWGxwLTMYzhts=
-X-Google-Smtp-Source: ABdhPJzMzHrPwjx1q6wcjSgllaGFav30b9QtgoVVc3D8PMFLIs2P8l6Us9wMV4IxRbCko1NRKBiujw==
-X-Received: by 2002:adf:f947:: with SMTP id q7mr50874696wrr.260.1638878616067;
-        Tue, 07 Dec 2021 04:03:36 -0800 (PST)
-Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
-        by smtp.gmail.com with ESMTPSA id g18sm3074323wmq.4.2021.12.07.04.03.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Dec 2021 04:03:34 -0800 (PST)
-Date:   Tue, 7 Dec 2021 12:03:33 +0000
-From:   Wei Liu <wei.liu@kernel.org>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-hyperv@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-hardening@vger.kernel.org
-Subject: Re: [PATCH] hv_sock: Extract hvs_send_data() helper that takes only
- header
-Message-ID: <20211207120333.rmq3mmla5js7kpuj@liuwe-devbox-debian-v2>
-References: <20211207063217.2591451-1-keescook@chromium.org>
+        id S236050AbhLGMJJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 07:09:09 -0500
+Received: from mga12.intel.com ([192.55.52.136]:5772 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231589AbhLGMJJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 7 Dec 2021 07:09:09 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10190"; a="217586290"
+X-IronPort-AV: E=Sophos;i="5.87,293,1631602800"; 
+   d="scan'208";a="217586290"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Dec 2021 04:05:38 -0800
+X-IronPort-AV: E=Sophos;i="5.87,293,1631602800"; 
+   d="scan'208";a="542777202"
+Received: from smile.fi.intel.com ([10.237.72.184])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Dec 2021 04:05:32 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1muZCx-003DR0-Va;
+        Tue, 07 Dec 2021 14:04:31 +0200
+Date:   Tue, 7 Dec 2021 14:04:31 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Ricardo Martinez <ricardo.martinez@linux.intel.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Matt Wagantall <mattw@codeaurora.org>,
+        Mitchel Humpherys <mitchelh@codeaurora.org>
+Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
+        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
+        m.chetan.kumar@intel.com, chandrashekar.devegowda@intel.com,
+        linuxwwan@intel.com, chiranjeevi.rapolu@linux.intel.com,
+        haijun.liu@mediatek.com, amir.hanania@intel.com,
+        dinesh.sharma@intel.com, eliot.lee@intel.com,
+        mika.westerberg@linux.intel.com, moises.veleta@intel.com,
+        pierre-louis.bossart@intel.com, muralidharan.sethuraman@intel.com,
+        Soumya.Prakash.Mishra@intel.com, sreehari.kancharla@intel.com,
+        suresh.nagaraj@intel.com
+Subject: Re: [PATCH net-next v3 06/12] net: wwan: t7xx: Data path HW layer
+Message-ID: <Ya9Nz8U+i3r56H5h@smile.fi.intel.com>
+References: <20211207024711.2765-1-ricardo.martinez@linux.intel.com>
+ <20211207024711.2765-7-ricardo.martinez@linux.intel.com>
+ <Ya9MlTpZ8Var/JMy@smile.fi.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211207063217.2591451-1-keescook@chromium.org>
+In-Reply-To: <Ya9MlTpZ8Var/JMy@smile.fi.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 06, 2021 at 10:32:17PM -0800, Kees Cook wrote:
-> When building under -Warray-bounds, the compiler is especially
-> conservative when faced with casts from a smaller object to a larger
-> object. While this has found many real bugs, there are some cases that
-> are currently false positives (like here). With this as one of the last
-> few instances of the warning in the kernel before -Warray-bounds can be
-> enabled globally, rearrange the functions so that there is a header-only
-> version of hvs_send_data(). Silences this warning:
-> 
-> net/vmw_vsock/hyperv_transport.c: In function 'hvs_shutdown_lock_held.constprop':
-> net/vmw_vsock/hyperv_transport.c:231:32: warning: array subscript 'struct hvs_send_buf[0]' is partly outside array bounds of 'struct vmpipe_proto_header[1]' [-Warray-bounds]
->   231 |         send_buf->hdr.pkt_type = 1;
->       |         ~~~~~~~~~~~~~~~~~~~~~~~^~~
-> net/vmw_vsock/hyperv_transport.c:465:36: note: while referencing 'hdr'
->   465 |         struct vmpipe_proto_header hdr;
->       |                                    ^~~
-> 
-> This change results in no executable instruction differences.
-> 
-> Signed-off-by: Kees Cook <keescook@chromium.org>
++Cc: people from "[PATCH v7 1/2] iopoll: Introduce memory-mapped IO polling macros"
 
-Acked-by: Wei Liu <wei.liu@kernel.org>
+Any idea why ioreadXX() doomed between v7 and v10 of that series?
+Any further work is going on?
+
+On Tue, Dec 07, 2021 at 01:59:18PM +0200, Andy Shevchenko wrote:
+> On Mon, Dec 06, 2021 at 07:47:05PM -0700, Ricardo Martinez wrote:
+> > From: Haijun Liu <haijun.liu@mediatek.com>
+> > 
+> > Data Path Modem AP Interface (DPMAIF) HW layer provides HW abstraction
+> > for the upper layer (DPMAIF HIF). It implements functions to do the HW
+> > configuration, TX/RX control and interrupt handling.
+> 
+> ...
+> 
+> > +	ret = readx_poll_timeout_atomic(ioread32, hw_info->pcie_base + DPMAIF_AO_UL_AP_L2TIMR0,
+> > +					value, (value & ul_intr_enable) != ul_intr_enable, 0,
+> > +					DPMAIF_CHECK_INIT_TIMEOUT_US);
+> > +	if (ret)
+> > +		return ret;
+> 
+> ...
+> 
+> > +	ret = readx_poll_timeout_atomic(ioread32, hw_info->pcie_base + DPMAIF_AO_UL_APDL_L2TIMR0,
+> > +					value, (value & ul_intr_enable) != ul_intr_enable, 0,
+> > +					DPMAIF_CHECK_INIT_TIMEOUT_US);
+> > +	if (ret)
+> > +		return ret;
+> 
+> ...
+> 
+> > +	ret = readx_poll_timeout_atomic(ioread32, hw_info->pcie_base + DPMAIF_AO_UL_AP_L2TIMR0,
+> > +					value, (value & ul_int_que_done) == ul_int_que_done, 0,
+> > +					DPMAIF_CHECK_TIMEOUT_US);
+> > +	if (ret)
+> > +		dev_err(dpmaif_ctrl->dev,
+> > +			"Could not mask the UL interrupt. DPMAIF_AO_UL_AP_L2TIMR0 is 0x%x\n",
+> > +			value);
+> 
+> I would recommend to add a small patch that extends iopoll.h by ioreadXX() variants.
+> 
+> Or as alternative just define it here at the top of the file (or in one of the
+> header if it's used more than in one module) so we may move it to the iopoll.h
+> in the future:
+> 
+> 
+> #define ioread32_poll_timeout_atomic(addr, val, cond, delay_us, timeout_us) \
+> 	readx_poll_timeout_atomic(ioread32, addr, val, cond, delay_us, timeout_us)
+> 
+> 
+> -- 
+> With Best Regards,
+> Andy Shevchenko
+> 
+> 
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
