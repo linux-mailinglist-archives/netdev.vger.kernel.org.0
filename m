@@ -2,149 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CBC3E46B14E
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 04:16:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EBE5346B174
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 04:23:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233670AbhLGDTn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Dec 2021 22:19:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57636 "EHLO
+        id S234043AbhLGD0h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Dec 2021 22:26:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229653AbhLGDTk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 22:19:40 -0500
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE104C061746;
-        Mon,  6 Dec 2021 19:16:10 -0800 (PST)
-Received: by mail-yb1-xb2a.google.com with SMTP id y68so37117715ybe.1;
-        Mon, 06 Dec 2021 19:16:10 -0800 (PST)
+        with ESMTP id S233915AbhLGD0h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Dec 2021 22:26:37 -0500
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4DB5C061746
+        for <netdev@vger.kernel.org>; Mon,  6 Dec 2021 19:23:07 -0800 (PST)
+Received: by mail-ed1-x531.google.com with SMTP id y12so51005151eda.12
+        for <netdev@vger.kernel.org>; Mon, 06 Dec 2021 19:23:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=LNIl78nckWjbXlFhMvmgIRUvjw5KLk7k5w+8AsbkB/Q=;
-        b=pkjjpbSJYrSJIT1vUnWcBPWxYHNh5AFQzR6BgYygbMumqzzt0bk1i5HUQoiFYFymCJ
-         4zQZuIbaqtYAz2/XG4Me5IpxpSMww147GWlV3VjbaEu1TrNqaYn+8Q7a/vtY95Enmhoo
-         nUars06ljDV9ZOsY4qhrG9r4Oe7EZMRemIeWC9Usoars4OtU9V77b90fqNwq+ASG4UaC
-         m0+Dfwa5YSt7MOA0mC/8ikgzb4OjLnMSUTO1EjtIMF7/ME3ZU2ACAU0a07iZ/KErZ1OD
-         AKNidnW/vQKhpsd+9FfHUmVkdCFdAlT+4peqFGB4pVXxij/EuNKA+W63baNVFoXGYng5
-         xfzQ==
+        bh=knslmANvZrVffQMufdYJiKZFqv0/JY/mnlrHYX6OLO0=;
+        b=MRPUC8AGEvSDFoHPuLLJrLe+fbCW2HkReygH9dQLJkGhSKhKETXy52AmGViu3XSNmM
+         zU6BMYqajtPiqDis1Kf12RlkfojbnL48tDnetWmfaSoNTEe6IHwbUVkBCKdOb5Ys4uNp
+         H32tsFWA9O0TIA2tYXQSpPQ7U/BguVe+A9YMg6y3KJjqu7h8vqrphQJHlYoq8XTQzOLh
+         ysmSpMGqGI9lSZNU4Qou3H3FGZ0Xpleb8DFC/9RQ7oMBrUbjtyBRZHfl5oQKw4Aey9Wv
+         OTAxX4anZEukyUdKIm6gRx7Q4PgwdEZ2vDgnkB+cgqeKuickarRHJl9EY3LKHcWzHOEw
+         rSsw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=LNIl78nckWjbXlFhMvmgIRUvjw5KLk7k5w+8AsbkB/Q=;
-        b=CWv+0IzKnkVOcLtgwc97FGgmx7tVa5C2dVabsiUBeK5E82CLJUCzkRplauXwYpM3BB
-         SE5l7v7/eHFM4YK9hSk8yeweq0P6Wu4xRoMobQVtCY9B8I3c1/W2CbXBojX2pjKuRp7L
-         kEhQHJSmdoCCsCkcOanK48C3lMvhgvnpOa9s5VJEmiDINztGD9hhkPmnoz9tu8tHV4rw
-         HLP5SFOKKovdaZ5mQOPRgh2lyD/s+0syvpz+1KT/a3arBAHa+TeblVZxTkUk2OrKpS2x
-         UWIDVBl/GG+OE/lh7q/svZe7tV63974JbPXeTzZxk9/wN2l7kYjWtToxrXdSe938malg
-         dOog==
-X-Gm-Message-State: AOAM532dsWXGsZo/0RpHFvGIQFQPeGaa4Sdih/zSLwJOxwNvYPXZ891b
-        3Yx7ut4kUP9vaSG/ObLY0iuDuB+NpNJPhuA6Veo=
-X-Google-Smtp-Source: ABdhPJwT8QjQbugo9c7+SC0qEVR104ES+uIjUurEnscVlr2lktlzSaC4XbZwxfkDp+yhckp2grsrS4MciWEAHIzy9kk=
-X-Received: by 2002:a25:abaa:: with SMTP id v39mr47437825ybi.367.1638846970036;
- Mon, 06 Dec 2021 19:16:10 -0800 (PST)
+        bh=knslmANvZrVffQMufdYJiKZFqv0/JY/mnlrHYX6OLO0=;
+        b=L2mZh/E+nRm/+WI+8N6wpQexfeebziUhz5VOwab5ilUr7R4Y6NhP6tMqeYwsH6Kt57
+         13wosER7AUOLvaJy2qjezI9nLt+ra+Ov4U+BXqBQXJ0ZswfJxyfePPBeeCAsvHPWt90N
+         UcwGVKGNUypG7ePmrw4D4KWkXiK0LiMxvGmcp2B514RZwq8GnhyQEKYc8zqW7sEwDGLB
+         vQFUnYhPQhCer+iGj8dgk94aSRJx2J6TuO5HJoBekmJ9fgRy6HW68dWuoNNe4eMAiEyW
+         WyHRq5C4521vSW3AAsmp9q6UPZ9T0AA5QTWWfyEloNb3fDyWari4x5l+VESkJcpP6e02
+         vCcg==
+X-Gm-Message-State: AOAM533ZM37e6/7Lt2FvOY6qTZFziPqe4kYSMDqy4wOFydodALip7Sc0
+        g3d3wHW9XAC+sjTdBDxnLtxOu+MZ0MhnT7RUQjg/FnAwuh2J9A==
+X-Google-Smtp-Source: ABdhPJyDK1aR3/m+kqQkvmZapX+onCNNf5w1fYxaH/0PH/i36vJ7rZ7FOTLA0Moz5hJ5OyzVzZAcP/X/hEkgXeg8jWY=
+X-Received: by 2002:a17:907:3f19:: with SMTP id hq25mr48183532ejc.225.1638847386382;
+ Mon, 06 Dec 2021 19:23:06 -0800 (PST)
 MIME-Version: 1.0
-References: <20211124084119.260239-1-jolsa@kernel.org> <20211124084119.260239-2-jolsa@kernel.org>
- <CAEf4Bzb5wyW=62fr-BzQsuFL+mt5s=+jGcdxKwZK0+AW18uD_Q@mail.gmail.com> <Yafp193RdskXofbH@krava>
-In-Reply-To: <Yafp193RdskXofbH@krava>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 6 Dec 2021 19:15:58 -0800
-Message-ID: <CAEf4BzbmKffmcM3WhCthrgfbWZBZj52hGH0Ju0itXyJ=yD01NA@mail.gmail.com>
-Subject: Re: [PATCH 1/8] perf/kprobe: Add support to create multiple probes
-To:     Jiri Olsa <jolsa@redhat.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Peter Zijlstra <a.p.zijlstra@chello.nl>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Ravi Bangoria <ravi.bangoria@amd.com>
+References: <20211206080512.36610-1-xiangxia.m.yue@gmail.com>
+ <20211206080512.36610-2-xiangxia.m.yue@gmail.com> <20211206124001.5a264583@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAMDZJNVnvAXfqFSah4wgXri1c3jnQhxCdBVo41uP37e0L3BUAg@mail.gmail.com> <20211206183301.50e44a41@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211206183301.50e44a41@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Date:   Tue, 7 Dec 2021 11:22:28 +0800
+Message-ID: <CAMDZJNUwWnq9+d_2a3UatfxKz3+gjDo3GLftgOE9-=3-smA8BQ@mail.gmail.com>
+Subject: Re: [net-next v1 1/2] net: sched: use queue_mapping to pick tx queue
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Talal Ahmad <talalahmad@google.com>,
+        Kevin Hao <haokexin@gmail.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Kees Cook <keescook@chromium.org>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Wei Wang <weiwan@google.com>, Arnd Bergmann <arnd@arndb.de>,
+        Alexander Duyck <alexander.duyck@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 1, 2021 at 1:32 PM Jiri Olsa <jolsa@redhat.com> wrote:
+On Tue, Dec 7, 2021 at 10:33 AM Jakub Kicinski <kuba@kernel.org> wrote:
 >
-> On Tue, Nov 30, 2021 at 10:53:58PM -0800, Andrii Nakryiko wrote:
-> > On Wed, Nov 24, 2021 at 12:41 AM Jiri Olsa <jolsa@redhat.com> wrote:
-> > >
-> > > Adding support to create multiple probes within single perf event.
-> > > This way we can associate single bpf program with multiple kprobes,
-> > > because bpf program gets associated with the perf event.
-> > >
-> > > The perf_event_attr is not extended, current fields for kprobe
-> > > attachment are used for multi attachment.
-> >
-> > I'm a bit concerned with complicating perf_event_attr further to
-> > support this multi-attach. For BPF, at least, we now have
-> > bpf_perf_link and corresponding BPF_LINK_CREATE command in bpf()
-> > syscall which allows much simpler and cleaner API to do this. Libbpf
-> > will actually pick bpf_link-based attachment if kernel supports it. I
-> > think we should better do bpf_link-based approach from the get go.
-> >
-> > Another thing I'd like you to keep in mind and think about is BPF
-> > cookie. Currently kprobe/uprobe/tracepoint allow to associate
-> > arbitrary user-provided u64 value which will be accessible from BPF
-> > program with bpf_get_attach_cookie(). With multi-attach kprobes this
-> > because extremely crucial feature to support, otherwise it's both
-> > expensive, inconvenient and complicated to be able to distinguish
-> > between different instances of the same multi-attach kprobe
-> > invocation. So with that, what would be the interface to specify these
-> > BPF cookies for this multi-attach kprobe, if we are going through
-> > perf_event_attr. Probably picking yet another unused field and
-> > union-izing it with a pointer. It will work, but makes the interface
-> > even more overloaded. While for LINK_CREATE we can just add another
-> > pointer to a u64[] with the same size as number of kfunc names and
-> > offsets.
+> On Tue, 7 Dec 2021 10:10:22 +0800 Tonghao Zhang wrote:
+> > > In general recording the decision in the skb seems a little heavy
+> > > handed. We just need to carry the information from the egress hook
+> > > to the queue selection a few lines below. Or in fact maybe egress
+> > Yes, we can refactor netdev_core_pick_tx to
+> > 1. select queue_index and invoke skb_set_queue_mapping, but don't
+> > return the txq.
+> > 2. after egress hook, use skb_get_queue_mapping/netdev_get_tx_queue to get txq.
 >
-> I'm not sure we could bypass perf event easily.. perhaps introduce
-> BPF_PROG_TYPE_RAW_KPROBE as we did for tracepoints or just new
-> type for multi kprobe attachment like BPF_PROG_TYPE_MULTI_KPROBE
-> that might be that way we'd have full control over the API
+> I'm not sure that's what I meant, I meant the information you need to
+> store does not need to be stored in the skb, you can pass a pointer to
+> a stack variable to both egress handling and pick_tx.
+Thanks, I got it. I think we store the txq index in skb->queue_mapping
+better. because in egress hook,
+act_skbedit/act_bpf can change the skb queue_mapping. Then we can
+pick_tx depending on queue_mapping.
 
-Sure, new type works.
+> > > hook shouldn't be used for this in the first place, and we need
+> > > a more appropriate root qdisc than simple mq?
+> > I have no idea about mq, I think clsact may make the things more flexible.
+> > and act_bpf can also support to change sk queue_mapping. queue_mapping
+> > was included in __sk_buff.
+>
+> Qdiscs can run a classifier to select a sub-queue. The advantage of
+> the classifier run by the Qdisc is that it runs after pick_tx.
+Yes, we should consider the qdisc lock too. Qdisc lock may affect
+performance and latency when running a classifier in Qdisc
+and clsact is outside of qdisc.
 
->
-> >
-> > But other than that, I'm super happy that you are working on these
-> > complicated multi-attach capabilities! It would be great to benchmark
-> > one-by-one attachment vs multi-attach to the same set of kprobes once
-> > you arrive at the final implementation.
->
-> I have the change for bpftrace to use this and even though there's
-> some speed up, it's not as substantial as for trampolines
->
-> looks like we 'only' got rid of the multiple perf syscall overheads,
-> compared to rcu syncs timeouts like we eliminated for trampolines
 
-if it's just eliminating a pretty small overhead of multiple syscalls,
-then it would be quite disappointing to add a bunch of complexity just
-for that. Are there any reasons we can't use the same low-level ftrace
-batch attach API to speed this up considerably? I assume it's only
-possible if kprobe is attached at the beginning of the function (not
-sure how kretprobe is treated here), so we can either say that this
-new kprobe prog type can only be attached at the beginning of each
-function and enforce that (probably would be totally reasonable
-assumption as that's what's happening most frequently in practice).
-Worst case, should be possible to split all requested attach targets
-into two groups, one fast at function entry and all the rest.
-
-Am I too far off on this one? There might be some more complications
-that I don't see.
-
->
-> I'll make full benchmarks once we have some final solution
->
-> jirka
->
+-- 
+Best regards, Tonghao
