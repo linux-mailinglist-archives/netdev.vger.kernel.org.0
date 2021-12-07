@@ -2,101 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F2F2B46BFB5
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 16:45:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F12C246BFCF
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 16:49:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233865AbhLGPsd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 10:48:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35036 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233215AbhLGPsd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 10:48:33 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98F0FC061574
-        for <netdev@vger.kernel.org>; Tue,  7 Dec 2021 07:45:02 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 91937CE1B19
-        for <netdev@vger.kernel.org>; Tue,  7 Dec 2021 15:45:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F14DCC341C5;
-        Tue,  7 Dec 2021 15:44:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638891898;
-        bh=Zi+/SlHTByUpXQtd+xamp5ixbNT8p88NSknq2jwLqUE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=FUiVPYFt8n9qqApeHX6Z3a3OZqj95Hcq77Gj7FsS/OzlNsD9ABdESiuGNSQzbiuQq
-         pJFRBPQlzu8sT+R+8vHV/44M9hSn1sh+aIQ9zXOS5amSmkvup6BQ6ZFbkAN0w04gMp
-         5Wv/qPtGAiWBnY/N8TOba2BdP4xo98SIx4rjlZNmPxD4loxWfU364RuAxcrIHhf8EY
-         MaL0hmLnbp+/S3cWXq67YWBGHMjx0yzhMe4kW3GP4R05pAj+GgoFxpVoEmzHcHhx/3
-         263Gjlvh53ysmDh2xe5WJgN68eCdLXJbAcFYpSQMLl2KBy6SH40WrzzNwIYF3eqOol
-         p4kN0oV8SRAHQ==
-Date:   Tue, 7 Dec 2021 07:44:57 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Talal Ahmad <talalahmad@google.com>,
-        Kevin Hao <haokexin@gmail.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Kees Cook <keescook@chromium.org>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        Wei Wang <weiwan@google.com>, Arnd Bergmann <arnd@arndb.de>,
-        Alexander Duyck <alexander.duyck@gmail.com>
-Subject: Re: [net-next v1 1/2] net: sched: use queue_mapping to pick tx
- queue
-Message-ID: <20211207074457.605dad52@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CAMDZJNUwWnq9+d_2a3UatfxKz3+gjDo3GLftgOE9-=3-smA8BQ@mail.gmail.com>
-References: <20211206080512.36610-1-xiangxia.m.yue@gmail.com>
-        <20211206080512.36610-2-xiangxia.m.yue@gmail.com>
-        <20211206124001.5a264583@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CAMDZJNVnvAXfqFSah4wgXri1c3jnQhxCdBVo41uP37e0L3BUAg@mail.gmail.com>
-        <20211206183301.50e44a41@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CAMDZJNUwWnq9+d_2a3UatfxKz3+gjDo3GLftgOE9-=3-smA8BQ@mail.gmail.com>
+        id S239045AbhLGPxM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 10:53:12 -0500
+Received: from relay3-d.mail.gandi.net ([217.70.183.195]:38881 "EHLO
+        relay3-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230518AbhLGPxM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 10:53:12 -0500
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by relay3-d.mail.gandi.net (Postfix) with ESMTPSA id 527FF60015;
+        Tue,  7 Dec 2021 15:49:38 +0000 (UTC)
+From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>
+Cc:     =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Denis Kirjanov <dkirjanov@suse.de>,
+        Julian Wiedmann <jwi@linux.ibm.com>
+Subject: [PATCH net-next v6 0/4] Add FDMA support on ocelot switch driver
+Date:   Tue,  7 Dec 2021 16:48:35 +0100
+Message-Id: <20211207154839.1864114-1-clement.leger@bootlin.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 7 Dec 2021 11:22:28 +0800 Tonghao Zhang wrote:
-> On Tue, Dec 7, 2021 at 10:33 AM Jakub Kicinski <kuba@kernel.org> wrote:
-> > On Tue, 7 Dec 2021 10:10:22 +0800 Tonghao Zhang wrote:  
-> > > Yes, we can refactor netdev_core_pick_tx to
-> > > 1. select queue_index and invoke skb_set_queue_mapping, but don't
-> > > return the txq.
-> > > 2. after egress hook, use skb_get_queue_mapping/netdev_get_tx_queue to get txq.  
-> >
-> > I'm not sure that's what I meant, I meant the information you need to
-> > store does not need to be stored in the skb, you can pass a pointer to
-> > a stack variable to both egress handling and pick_tx.  
-> Thanks, I got it. I think we store the txq index in skb->queue_mapping
-> better. because in egress hook,
-> act_skbedit/act_bpf can change the skb queue_mapping. Then we can
-> pick_tx depending on queue_mapping.
+This series adds support for the Frame DMA present on the VSC7514
+switch. The FDMA is able to extract and inject packets on the various
+ethernet interfaces present on the switch.
 
-Actually Eric pointed out in another thread that xmit_more() is now
-done via a per-CPU variable, you can try that instead of plumbing a
-variable all the way into actions and back out to pick_tx().
+------------------
+Changes in V6:
+  - Remove dead code added in ocelot_vsc7514
+  - Remove useless include added in mscc/ocelot.h
+  - Remove trailing whitespace
+  - Move skb_tx_timestamp before sending the skb
+  - Fix a few long lines
 
-Please make sure to include the analysis of the performance impact 
-when the feature is _not_ used in the next version.
+Changes in V5:
+  - Add skb freeing for TX and fix RX ring skb not being freed
+  - Fix napi init in case of netdev registration failure
+  - Reorganize FDMA register definitions
+  - Used regmap targets from ocelot structure to get fdma pointer
+  - s/page_count/page_ref_count
+  - Move napi back in struct ocelot_fdma
 
-> > > I have no idea about mq, I think clsact may make the things more flexible.
-> > > and act_bpf can also support to change sk queue_mapping. queue_mapping
-> > > was included in __sk_buff.  
-> >
-> > Qdiscs can run a classifier to select a sub-queue. The advantage of
-> > the classifier run by the Qdisc is that it runs after pick_tx.  
-> Yes, we should consider the qdisc lock too. Qdisc lock may affect
-> performance and latency when running a classifier in Qdisc
-> and clsact is outside of qdisc.
+Changes in V4:
+  - Use regmap for register access
+  - Removed yaml bindings convertion as well as mac address from dt
+  - Removed pre-computed IFH for the moment
+  - Fixed timestamp reading for PTP in FDMA
+  - Fixed wrong exit path for fdma netdev init
+  - Removed spinlock from TX cleanup
+  - Add asynchronous RX chan stop before refilling
+  - Reduce CH_SAFE wait time to 10us
+  - Reduce waiting time for channel to be safe
+  - Completely rework rx to use page recycling (code from gianfar)
+  - Reenable MTU change support since FDMA now supports it transparently
+  - Split TX and RX ring size
+  - Larger RX size to lower page allocation rate
+  - Add static key to check for FDMA to be enabled in fast path
+
+Changes in V3:
+  - Add timeouts for hardware registers read
+  - Add cleanup path in fdma_init
+  - Rework injection and extraction to used ring like structure
+  - Added PTP support to FDMA
+  - Use pskb_expand_head instead of skb_copy_expand in xmit
+  - Drop jumbo support
+  - Use of_get_ethdev_address
+  - Add ocelot_fdma_netdev_init/deinit
+
+Changes in V2:
+  - Read MAC for each port and not as switch base MAC address
+  - Add missing static for some functions in ocelot_fdma.c
+  - Split change_mtu from fdma commit
+  - Add jumbo support for register based xmit
+  - Move precomputed header into ocelot_port struct
+  - Remove use of QUIRK_ENDIAN_LITTLE due to misconfiguration for tests
+  - Remove fragmented packet sending which has not been tested
+
+Clément Léger (4):
+  net: ocelot: export ocelot_ifh_port_set() to setup IFH
+  net: ocelot: add and export ocelot_ptp_rx_timestamp()
+  net: ocelot: add support for ndo_change_mtu
+  net: ocelot: add FDMA support
+
+ drivers/net/ethernet/mscc/Makefile         |   1 +
+ drivers/net/ethernet/mscc/ocelot.c         |  59 +-
+ drivers/net/ethernet/mscc/ocelot.h         |   2 +
+ drivers/net/ethernet/mscc/ocelot_fdma.c    | 894 +++++++++++++++++++++
+ drivers/net/ethernet/mscc/ocelot_fdma.h    | 166 ++++
+ drivers/net/ethernet/mscc/ocelot_net.c     |  39 +-
+ drivers/net/ethernet/mscc/ocelot_vsc7514.c |  10 +
+ include/soc/mscc/ocelot.h                  |   6 +
+ 8 files changed, 1151 insertions(+), 26 deletions(-)
+ create mode 100644 drivers/net/ethernet/mscc/ocelot_fdma.c
+ create mode 100644 drivers/net/ethernet/mscc/ocelot_fdma.h
+
+-- 
+2.34.1
+
