@@ -2,140 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 845B946BF5B
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 16:31:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 32C1946BF65
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 16:34:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238804AbhLGPfG convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 7 Dec 2021 10:35:06 -0500
-Received: from relay9-d.mail.gandi.net ([217.70.183.199]:40869 "EHLO
-        relay9-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231377AbhLGPfF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 10:35:05 -0500
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by relay9-d.mail.gandi.net (Postfix) with ESMTPSA id 191CCFF802;
-        Tue,  7 Dec 2021 15:31:30 +0000 (UTC)
-Date:   Tue, 7 Dec 2021 16:31:08 +0100
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     "richardcochran@gmail.com" <richardcochran@gmail.com>,
+        id S238654AbhLGPhc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 10:37:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60598 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229563AbhLGPhc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 10:37:32 -0500
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BEC3C061574;
+        Tue,  7 Dec 2021 07:34:01 -0800 (PST)
+Received: by mail-ed1-x52a.google.com with SMTP id x6so58391630edr.5;
+        Tue, 07 Dec 2021 07:34:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=77FvMUeT/QXm1MM7jzidpCG1GqvPRk7vjmcCy3A7YMg=;
+        b=o/34asWcopDwR1Xwxbt9pgrwwDd6RevowQ6RMRjsBqY0UN7OnGpVcDi05AxQSsdDUX
+         3SUzXm9n0nOZ2fCdU67tSJixvpDa9iXA1mAs/gfH4iASxU4mDhRnthPhRjSx0IYuqA56
+         2lfo+xujN/aU3vtoKKwHwYSNH+pXBTDPCeJXxUPVEMVg+B7VGUIp5tZQC9hkXgC4kpCo
+         vXMokbvNQ2GDOvuUGnrrK2H9FrUB70Hqj/hxthyUIJz8ByXDTx3Qna7zU91IClQW3uil
+         MLXUTVMLN1l1L5JfTSCNZA3R6yQ0RPwRQllrkDlQ6jGvs1iAQr3nb1Nev6p5ES4YEaED
+         Bjng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=77FvMUeT/QXm1MM7jzidpCG1GqvPRk7vjmcCy3A7YMg=;
+        b=Mur+aYnl3JoJVi+kf9XKjyvJhpRql709pZ+HgA0eeJp7+sHKLsls2BHv7ewhq+uvIN
+         7myQaTbQO8D7JO3kihSmdKKzkfx4gFBbInHWjBqTVgmp5xLEgybc622z/KNiNYMupOp6
+         +vCM5ar3NhpsoLIRFDCLhVbHY9DeUmX61aZFnmIbktKvCxnGaEQrAyiEx1qmgMLenfTc
+         2ku/Fz1OBcXLWQa45DVLsb/BMibROejKLVyb4bFAMGT2bQOjp3u522Dk/Pv+W383RTCU
+         Pxk110aQBQgHb+LjMX18nhftqnjizsUTWVMEEnyknq08bh6m+15vgbS/uG73BY8tQOgv
+         Q3/w==
+X-Gm-Message-State: AOAM530s6Mfo5lawMh8GaBKPby7QtAvBIwLJ2h06UJrOsKt7yUVTdhEt
+        GYhHOCgSZmlI+mO0NOdNQeM=
+X-Google-Smtp-Source: ABdhPJxCa2V5Le7pncAArCi+CYBaA/Ap02r+c6AuuFP0eyy38pty4gzgj/BXQhdZuRqFaR69oZWLTA==
+X-Received: by 2002:a17:906:8256:: with SMTP id f22mr104522ejx.207.1638891239986;
+        Tue, 07 Dec 2021 07:33:59 -0800 (PST)
+Received: from Ansuel-xps. (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
+        by smtp.gmail.com with ESMTPSA id ho17sm8884053ejc.111.2021.12.07.07.33.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Dec 2021 07:33:59 -0800 (PST)
+Message-ID: <61af7ee7.1c69fb81.2b3ba.d48b@mx.google.com>
+X-Google-Original-Message-ID: <Ya9+5TXcyqkf+M1g@Ansuel-xps.>
+Date:   Tue, 7 Dec 2021 16:33:57 +0100
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Denis Kirjanov <dkirjanov@suse.de>,
-        Julian Wiedmann <jwi@linux.ibm.com>
-Subject: Re: [PATCH net-next v5 4/4] net: ocelot: add FDMA support
-Message-ID: <20211207163108.3a264f81@fixe.home>
-In-Reply-To: <20211207152347.hnlhja52qeolq7pt@skbuf>
-References: <20211207090853.308328-1-clement.leger@bootlin.com>
-        <20211207090853.308328-5-clement.leger@bootlin.com>
-        <20211207135200.qvjaw6vkazfcmuvk@skbuf>
-        <20211207161624.39565296@fixe.home>
-        <20211207152347.hnlhja52qeolq7pt@skbuf>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [net-next RFC PATCH 0/6] Add support for qca8k mdio rw in
+ Ethernet packet
+References: <20211207145942.7444-1-ansuelsmth@gmail.com>
+ <Ya96pwC1KKZDO9et@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Ya96pwC1KKZDO9et@lunn.ch>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le Tue, 7 Dec 2021 15:23:48 +0000,
-Vladimir Oltean <vladimir.oltean@nxp.com> a écrit :
-
-> On Tue, Dec 07, 2021 at 04:16:24PM +0100, Clément Léger wrote:
-> > Le Tue, 7 Dec 2021 13:52:01 +0000,
-> > Vladimir Oltean <vladimir.oltean@nxp.com> a écrit :
-> >   
-> > > On Tue, Dec 07, 2021 at 10:08:53AM +0100, Clément Léger wrote:  
-> > > > Ethernet frames can be extracted or injected autonomously to or from
-> > > > the device’s DDR3/DDR3L memory and/or PCIe memory space. Linked list
-> > > > data structures in memory are used for injecting or extracting Ethernet
-> > > > frames. The FDMA generates interrupts when frame extraction or
-> > > > injection is done and when the linked lists need updating.
-> > > >
-> > > > The FDMA is shared between all the ethernet ports of the switch and
-> > > > uses a linked list of descriptors (DCB) to inject and extract packets.
-> > > > Before adding descriptors, the FDMA channels must be stopped. It would
-> > > > be inefficient to do that each time a descriptor would be added so the
-> > > > channels are restarted only once they stopped.
-> > > >
-> > > > Both channels uses ring-like structure to feed the DCBs to the FDMA.
-> > > > head and tail are never touched by hardware and are completely handled
-> > > > by the driver. On top of that, page recycling has been added and is
-> > > > mostly taken from gianfar driver.
-> > > >
-> > > > Co-developed-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-> > > > Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-> > > > Signed-off-by: Clément Léger <clement.leger@bootlin.com>
-> > > > ---    
-> > >   
-> > > > +static void ocelot_fdma_send_skb(struct ocelot *ocelot,
-> > > > +				 struct ocelot_fdma *fdma, struct sk_buff *skb)
-> > > > +{
-> > > > +	struct ocelot_fdma_tx_ring *tx_ring = &fdma->tx_ring;
-> > > > +	struct ocelot_fdma_tx_buf *tx_buf;
-> > > > +	struct ocelot_fdma_dcb *dcb;
-> > > > +	dma_addr_t dma;
-> > > > +	u16 next_idx;
-> > > > +
-> > > > +	dcb = &tx_ring->dcbs[tx_ring->next_to_use];
-> > > > +	tx_buf = &tx_ring->bufs[tx_ring->next_to_use];
-> > > > +	if (!ocelot_fdma_tx_dcb_set_skb(ocelot, tx_buf, dcb, skb)) {
-> > > > +		dev_kfree_skb_any(skb);
-> > > > +		return;
-> > > > +	}
-> > > > +
-> > > > +	next_idx = ocelot_fdma_idx_next(tx_ring->next_to_use,
-> > > > +					OCELOT_FDMA_TX_RING_SIZE);
-> > > > +	/* If the FDMA TX chan is empty, then enqueue the DCB directly */
-> > > > +	if (ocelot_fdma_tx_ring_empty(fdma)) {
-> > > > +		dma = ocelot_fdma_idx_dma(tx_ring->dcbs_dma, tx_ring->next_to_use);
-> > > > +		ocelot_fdma_activate_chan(ocelot, dma, MSCC_FDMA_INJ_CHAN);
-> > > > +	} else {
-> > > > +		/* Chain the DCBs */
-> > > > +		dcb->llp = ocelot_fdma_idx_dma(tx_ring->dcbs_dma, next_idx);
-> > > > +	}
-> > > > +	skb_tx_timestamp(skb);
-> > > > +
-> > > > +	tx_ring->next_to_use = next_idx;    
-> > > 
-> > > You've decided against moving these before ocelot_fdma_activate_chan?
-> > > The skb may be freed by ocelot_fdma_tx_cleanup() before
-> > > skb_tx_timestamp() has a chance to run, is this not true?  
+On Tue, Dec 07, 2021 at 04:15:51PM +0100, Andrew Lunn wrote:
+> On Tue, Dec 07, 2021 at 03:59:36PM +0100, Ansuel Smith wrote:
+> > Hi, this is still WIP and currently has some problem but I would love if
+> > someone can give this a superficial review and answer to some problem
+> > with this.
 > > 
-> > Since tx_ring->next_to_use is updated after calling skb_tx_timestamp,
-> > fdma_tx_cleanup will not free it. However, I'm not sure if the
-> > timestamping should be done before being sent by the hardware (ie, does
-> > the timestamping function modifies the SKB inplace). If not, then the
-> > current code is ok. By looking at ocelot_port_inject_frame, the
-> > timestamping is done after sending the frame.  
+> > The main reason for this is that we notice some routing problem in the
+> > switch and it seems assisted learning is needed. Considering mdio is
+> > quite slow due to the indirect write using this Ethernet alternative way
+> > seems to be quicker.
+> > 
+> > The qca8k switch supports a special way to pass mdio read/write request
+> > using specially crafted Ethernet packet.
 > 
-> It looks like we may need Richard for an expert opinon.
-> Documentation/networking/timestamping.rst only says:
-> 
-> | Driver should call skb_tx_timestamp() as close to passing sk_buff to hardware
-> | as possible.
-> 
-> not whether it must be done before or it can be done after too;
-> but my intuition says that is also needs to be strictly _before_ the
-> hardware xmit, otherwise it also races with the hardware TX timestamping
-> path and that may lead to issues of its own (the logic whether to
-> deliver a software and/or a hardware timestamp to the socket is not
-> trivial at all).
+> Oh! Cool! Marvell has this as well, and i suspect a few others. It is
+> something i've wanted to work on for a long long time, but never had
+> the opportunity.
+>
 
-Ok, I will move it before sending since it since it is cleaner anyway.
-And probably submit a fix for the register-based injection path later.
+Really? I tought this was very specific to qca8k.
+
+> This also means that, even if you are focusing on qca8k, please try to
+> think what could be generic, and what should specific to the
+> qca8k. The idea of sending an Ethernet frame and sometime later
+> receiving a reply should be generic and usable for other DSA
+> drivers. The contents of those frames needs to be driver specific.
+> How we hook this into MDIO might also be generic, maybe.
+
+A generic implementation of this would be add an ops to the dsa generic
+struct that driver can implement and find a clean way to use this
+alternative way instead of normal mdio. (Implement something like
+eth_mdio_read/write ops and the driver will decide when to use them?
+The dsa then will correctly understand when the driver is ready to
+accept packet and send the skb, in all the other case just send an error
+and the driver will use normal mdio?)
+
+I think the tagger require some modification anyway as it's the one that
+receive packet and parse them. (I assume also other switch will use the
+tagger to understand that the packet is used for mdio)
+(A bool to declare that the tagger can correctly parse this kind of
+stuff and complete the completion?)
+
+> 
+> I will look at your questions later, but soon.
+> 
+
+Thanks a lot for the quick response. I'm more than happy to generalize
+this and find the a correct way.
+
+>   Andrew
 
 -- 
-Clément Léger,
-Embedded Linux and Kernel engineer at Bootlin
-https://bootlin.com
+	Ansuel
