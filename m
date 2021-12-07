@@ -2,109 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EFFA646C82B
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 00:23:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 227D246C82D
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 00:24:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238415AbhLGX1Z convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 7 Dec 2021 18:27:25 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:2832 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238289AbhLGX1Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 18:27:25 -0500
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1B7L8bAJ017840
-        for <netdev@vger.kernel.org>; Tue, 7 Dec 2021 15:23:54 -0800
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 3ctf8vgtd7-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 07 Dec 2021 15:23:54 -0800
-Received: from intmgw001.25.frc3.facebook.com (2620:10d:c085:208::f) by
- mail.thefacebook.com (2620:10d:c085:11d::4) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Tue, 7 Dec 2021 15:23:53 -0800
-Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
-        id E88DE24A7149D; Tue,  7 Dec 2021 15:23:47 -0800 (PST)
-From:   Song Liu <song@kernel.org>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
-        <kernel-team@fb.com>, <acme@kernel.org>, <acme@redhat.com>,
-        Song Liu <song@kernel.org>
-Subject: [PATCH v2 bpf-next] perf/bpf_counter: use bpf_map_create instead of bpf_create_map
-Date:   Tue, 7 Dec 2021 15:23:40 -0800
-Message-ID: <20211207232340.2561471-1-song@kernel.org>
-X-Mailer: git-send-email 2.30.2
+        id S238428AbhLGX1x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 18:27:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60442 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238332AbhLGX1w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 18:27:52 -0500
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3459C061574;
+        Tue,  7 Dec 2021 15:24:21 -0800 (PST)
+Received: by mail-wr1-x436.google.com with SMTP id d9so894435wrw.4;
+        Tue, 07 Dec 2021 15:24:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Ky6lSfjPQirRU1cm8nyx2Yxc3fG4emfY9Mw77avulUI=;
+        b=qrbWWK7V+3hP1q0w89qUG58E+8iQ1IL2KdVcHKKzCooV29dw2GJ07PrJfyRDTRKhpl
+         c2f0oKcLBgbat9JK7KaQksgc6weepdG5JYCBpGDNlQf6vP/W5NR84vs3FVc/N/Ze5S6H
+         wbaN+eTIbZ+New7KE2q4scLBn8K7hHhLVpL95D5D4WtycET0b1IEzL7N32m5xI+1ojdr
+         VnyPhQakeKBCG4NUh91DgHLQkHHfQJFCv1EksHgGdEzs0GAoji0OygdvIxAaLHwuJqSw
+         JiDTVixkJtN5D/x0/x/S7TT7KLvffZMzFzWYE8W66vft2u5YfKm4lM1GFWevb9che7yE
+         F6GA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Ky6lSfjPQirRU1cm8nyx2Yxc3fG4emfY9Mw77avulUI=;
+        b=jR3EArzrEOkSYUGgaAFUwo/PaTmekwURCkYgGnYIJVnaJLlD3dhE6Cuse7N7jb0h3Y
+         gcJhpWuHu+tb96lxUdrQaSq6D9lwPHY6J8JeLs4Kno0rUU1M9or72K40ICoNVRnocThj
+         06Zmg9RcJLy4EDkA0k/PQZfkiAyBNn+jRLiTb7QJvZCMWvfgCAObhMS3gLaZB235QyTc
+         bJZGVRSjasVbHrL2m8Jq+d79oCe7ttq/pCKMRLTk9ch+4Ml+u5sJbtUR9181Ng8gS6Kp
+         o5rV+L/tHK4tUoJ9YclQJV6On18L8BlYn4K/6K6g1h2OgH/75ZxF3sN39ukrgR242PSQ
+         OefA==
+X-Gm-Message-State: AOAM532LOLnjzuTOsBPJrOxVlrJM/NBTD6+czDIkzmaEdsSKfhh1VSfl
+        QcTF9qacon9Q7lJ+8JR1I1sdGuunuGs=
+X-Google-Smtp-Source: ABdhPJxUZT4T3BISJQJ2NGIEB2/Fb3P9MfXajF2aR8eizgSj7dTr12+IiJh/k8o5swI4viBI3e3yMg==
+X-Received: by 2002:adf:d202:: with SMTP id j2mr54157559wrh.271.1638919460145;
+        Tue, 07 Dec 2021 15:24:20 -0800 (PST)
+Received: from Ansuel-xps. (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
+        by smtp.gmail.com with ESMTPSA id u23sm1159754wru.21.2021.12.07.15.24.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Dec 2021 15:24:19 -0800 (PST)
+Message-ID: <61afed23.1c69fb81.99660.7328@mx.google.com>
+X-Google-Original-Message-ID: <Ya/tIUlv3RbweLON@Ansuel-xps.>
+Date:   Wed, 8 Dec 2021 00:24:17 +0100
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [net-next RFC PATCH 0/6] Add support for qca8k mdio rw in
+ Ethernet packet
+References: <20211207145942.7444-1-ansuelsmth@gmail.com>
+ <Ya+q02HlWsHMYyAe@lunn.ch>
+ <61afadb9.1c69fb81.7dfad.19b1@mx.google.com>
+ <Ya+yzNDMorw4X9CT@lunn.ch>
+ <61afb452.1c69fb81.18c6f.242e@mx.google.com>
+ <20211207205219.4eoygea6gey4iurp@skbuf>
+ <61afd6a1.1c69fb81.3281e.5fff@mx.google.com>
+ <20211207224525.ckdn66tpfba5gm5z@skbuf>
+ <61afe8a9.1c69fb81.897ba.6022@mx.google.com>
+ <20211207232020.ckdc6polqat4aefo@skbuf>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-FB-Source: Intern
-X-Proofpoint-ORIG-GUID: XsAWtn_sZirSO4dSGeUV7YxwmaFScgS3
-X-Proofpoint-GUID: XsAWtn_sZirSO4dSGeUV7YxwmaFScgS3
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2021-12-07_09,2021-12-06_02,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 suspectscore=0
- lowpriorityscore=0 bulkscore=0 phishscore=0 adultscore=0 spamscore=0
- mlxlogscore=999 mlxscore=0 impostorscore=0 clxscore=1034
- priorityscore=1501 malwarescore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2110150000 definitions=main-2112070143
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211207232020.ckdc6polqat4aefo@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-bpf_create_map is deprecated. Replace it with bpf_map_create. Also add a
-__weak bpf_map_create() so that when older version of libbpf is linked as
-a shared library, it falls back to bpf_create_map().
+On Wed, Dec 08, 2021 at 01:20:20AM +0200, Vladimir Oltean wrote:
+> On Wed, Dec 08, 2021 at 12:05:11AM +0100, Ansuel Smith wrote:
+> > Hm. Interesting idea. So qca8k would provide the way to parse the packet
+> > and made the request. The tagger would just detect the packet and
+> > execute the dedicated function.
+> > About mib considering the driver autocast counter for every port and
+> > every packet have the relevant port to it (set in the qca tag), the
+> > idea was to put a big array and directly write the data. The ethtool
+> > function will then just read the data and report it. (or even work
+> > directly on the ethtool data array).
+> 
+> Apart from the fact that you'd be running inside the priv->rw_reg_ack_handler()
+> which runs in softirq context (so you need spinlocks to serialize with
+> the code that runs in process and/or workqueue context), you have access
+> to all the data structures from the switch driver that you're used to.
+> So you could copy from the void *buf into something owned by struct
+> qca8k_priv *priv, sure.
+> 
+> > >   My current idea is maybe not ideal and a bit fuzzy, because the switch
+> > >   driver would need to be aware of the fact that the tagger private data
+> > >   is in dp->priv, and some code in one folder needs to be in sync with
+> > >   some code in another folder. But at least it should be safer this way,
+> > >   because we are in more control over the exact connection that's being
+> > >   made.
+> > > 
+> > > - to avoid leaking memory, we also need to patch dsa_tree_put() to issue
+> > >   a disconnect event on unbind.
+> > > 
+> > > - the tagging protocol driver would always need to NULL-check the
+> > >   function pointer before dereferencing it, because it may connect to a
+> > >   switch driver that doesn't set them up (dsa_loop):
+> > > 
+> > > 	struct qca8k_tagger_private *priv = dp->priv;
+> > > 
+> > > 	if (priv->rw_reg_ack_handler)
+> > > 		priv->rw_reg_ack_handler(dp, skb_mac_header(skb));
+> > 
+> > Ok so your idea is to make the driver the one controlling ""everything""
+> > and keep the tagger as dummy as possible. That would also remove all the
+> > need to put stuff in the global include dir. Looks complex but handy. We
+> > still need to understand the state part. Any hint about that?
+> > 
+> > In the mean time I will try implement this.
+> 
+> What do you mean exactly by understanding the state?
 
-Fixes: 992c4225419a ("libbpf: Unify low-level map creation APIs w/ new bpf_map_create()")
-Signed-off-by: Song Liu <song@kernel.org>
+I was referring to the "shared state" problem but you already answer
+that in the prev email.
 
----
-Changes v1 => v2:
-1. Add weak bpf_map_create(). (Andrii)
----
- tools/perf/util/bpf_counter.c | 18 ++++++++++++++++--
- 1 file changed, 16 insertions(+), 2 deletions(-)
-
-diff --git a/tools/perf/util/bpf_counter.c b/tools/perf/util/bpf_counter.c
-index c17d4a43ce06..5a97fd7d0a71 100644
---- a/tools/perf/util/bpf_counter.c
-+++ b/tools/perf/util/bpf_counter.c
-@@ -307,6 +307,20 @@ static bool bperf_attr_map_compatible(int attr_map_fd)
- 		(map_info.value_size == sizeof(struct perf_event_attr_map_entry));
- }
- 
-+int __weak
-+bpf_map_create(enum bpf_map_type map_type,
-+	       const char *map_name __maybe_unused,
-+	       __u32 key_size,
-+	       __u32 value_size,
-+	       __u32 max_entries,
-+	       const struct bpf_map_create_opts *opts __maybe_unused)
-+{
-+#pragma GCC diagnostic push
-+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-+	return bpf_create_map(map_type, key_size, value_size, max_entries, 0);
-+#pragma GCC diagnostic pop
-+}
-+
- static int bperf_lock_attr_map(struct target *target)
- {
- 	char path[PATH_MAX];
-@@ -320,10 +334,10 @@ static int bperf_lock_attr_map(struct target *target)
- 	}
- 
- 	if (access(path, F_OK)) {
--		map_fd = bpf_create_map(BPF_MAP_TYPE_HASH,
-+		map_fd = bpf_map_create(BPF_MAP_TYPE_HASH, NULL,
- 					sizeof(struct perf_event_attr),
- 					sizeof(struct perf_event_attr_map_entry),
--					ATTR_MAP_SIZE, 0);
-+					ATTR_MAP_SIZE, NULL);
- 		if (map_fd < 0)
- 			return -1;
- 
 -- 
-2.30.2
-
+	Ansuel
