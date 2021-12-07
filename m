@@ -2,133 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AED546B9F4
-	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 12:18:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 577ED46BA62
+	for <lists+netdev@lfdr.de>; Tue,  7 Dec 2021 12:49:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235662AbhLGLW1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 06:22:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56366 "EHLO
+        id S235869AbhLGLwc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 06:52:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230523AbhLGLW0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 06:22:26 -0500
+        with ESMTP id S231392AbhLGLwc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 06:52:32 -0500
 Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63AD9C061574;
-        Tue,  7 Dec 2021 03:18:56 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 462EBC061574;
+        Tue,  7 Dec 2021 03:49:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
         Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
         List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=puXO/URYZZV0HEmNm8bcF52r22t9X05W7Zkze/s7HN0=; b=fxqH8h8L+SjiPLy3Y5uaD61+q2
-        yBlqSZLmsUzV4TaPX9cARVKB/9Tu03LLgflqgAD+N3+ofLbX/wkDDemVAjstezyjItKBGvmp0GCJi
-        u9h/hhyDfH4aADQasZTuy+RGfYFJkSh36hpyrPB6wlysCBdWDkEcM3Ie1R91N25tfIyO/IPJJOyq5
-        cGt74hXz5dOwDQiFdgI4bE4DwYfQbvOmp+DdX2/Ma6VFhmrbRu3Rt3kwBdRBA7yRw/RbIc4xd3BFW
-        yPAhuRmMqno7Fg71f6EaCeUjVXch5X6rJ7b/TN3sfyN0ZW6nF7ZWtgk5ETHXPjFCH+FsBYekYlu6C
-        4Te5fW8Q==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:56142)
+        bh=80kReiUlwekNbojqIZKz80Q8wRHoH2sdw+ED92mwvfs=; b=aJKv259UGKNYmARmx6J1Mfsp1O
+        l32NaB4CHTd81W2usVx5wD5sqbeFGlQzqdu4fEYj0g1lT1uWMzqf6Bq5Z7sC1B+nrXNO2IEEmMlsU
+        0RQQhWC3uYYxQW6hSQ91/ftqFS5sViIWZAhjJLM0jmnyl1B8okT4f5YeKio/uJz4TeCOb7K1oTDUZ
+        yhnhlM/vAuNfgb14x1AeMH7Gc1coo4CqjgXuqNeV4WjTxSll+dG+mJupWlOugYTvlvdz6zNy5RB+I
+        agupslukVpNtAgTBBwtiOFjWlELUk2tUPIc/k/L02krNZtSdEnr2QfEQsHnMplMN8qYtMftY97Fl3
+        q71jRTAg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:56144)
         by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <linux@armlinux.org.uk>)
-        id 1muYUm-00065O-DO; Tue, 07 Dec 2021 11:18:52 +0000
+        id 1muYxt-00066Q-OO; Tue, 07 Dec 2021 11:48:57 +0000
 Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
         (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1muYUj-0005HR-Mo; Tue, 07 Dec 2021 11:18:49 +0000
-Date:   Tue, 7 Dec 2021 11:18:49 +0000
+        id 1muYxo-0005IY-Uo; Tue, 07 Dec 2021 11:48:52 +0000
+Date:   Tue, 7 Dec 2021 11:48:52 +0000
 From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     zhuyinbo <zhuyinbo@loongson.cn>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Subject: Re: [PATCH v2 1/2] modpost: file2alias: fixup mdio alias garbled
- code in modules.alias
-Message-ID: <Ya9DGWhJBJA1zRZ5@shell.armlinux.org.uk>
-References: <1637919957-21635-1-git-send-email-zhuyinbo@loongson.cn>
- <c6d37ae0-9ccb-a527-4f55-e96972813a53@gmail.com>
- <YaYPMOJ/+OXIWcnj@shell.armlinux.org.uk>
- <YabEHd+Z5SPAhAT5@lunn.ch>
- <f91f4fff-8bdf-663b-68f5-b8ccbd0c187a@loongson.cn>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Colin Foster <colin.foster@in-advantage.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH v4 net-next 5/5] net: mscc: ocelot: expose ocelot wm
+ functions
+Message-ID: <Ya9KJAYEypSs6+dO@shell.armlinux.org.uk>
+References: <20211204182858.1052710-1-colin.foster@in-advantage.com>
+ <20211204182858.1052710-6-colin.foster@in-advantage.com>
+ <20211206180922.1efe4e51@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <f91f4fff-8bdf-663b-68f5-b8ccbd0c187a@loongson.cn>
+In-Reply-To: <20211206180922.1efe4e51@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 07, 2021 at 05:41:51PM +0800, zhuyinbo wrote:
-> 在 2021/12/1 上午8:38, Andrew Lunn 写道:
-> > > However, this won't work for PHY devices created _before_ the kernel
-> > > has mounted the rootfs, whether or not they end up being used. So,
-> > > every PHY mentioned in DT will be created before the rootfs is mounted,
-> > > and none of these PHYs will have their modules loaded.
+On Mon, Dec 06, 2021 at 06:09:22PM -0800, Jakub Kicinski wrote:
+> On Sat,  4 Dec 2021 10:28:58 -0800 Colin Foster wrote:
+> > Expose ocelot_wm functions so they can be shared with other drivers.
 > > 
-> > Hi Russell
-> > 
-> > I think what you are saying here is, if the MAC or MDIO bus driver is
-> > built in, the PHY driver also needs to be built in?
-> > 
-> > If the MAC or MDIO bus driver is a module, it means the rootfs has
-> > already been mounted in order to get these modules. And so the PHY
-> > driver as a module will also work.
-> > 
-> > > I believe this is the root cause of Yinbo Zhu's issue.
+> > Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+> > Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> I think you should be right and I had did lots of test but use rquest_module
-> it doesn't load marvell module, and dts does't include any phy node. even
-> though I was use "marvell" as input's args of request_module.
-
-Please can you report the contents of /proc/sys/kernel/modprobe, and
-the kernel configuration of CONFIG_MODPROBE_PATH. I wonder if your
-userspace has that module loading mechanism disabled, or your kernel
-has CONFIG_MODPROBE_PATH as an empty string.
-
-If the module is not present by the time this call is made, then
-even if you load the appropriate driver module later, that module
-will not be used - the PHY will end up being driven by the generic
-clause 22 driver.
-
-> > That is not true universally for all MDIO though - as
-> > xilinx_gmii2rgmii.c clearly shows. That is a MDIO driver which uses DT
-> > the compatible string to do the module load. So, we have proof there
-> > that Yinbo Zhu's change will definitely cause a regression which we
-> > can not allow.
+> Yeah.. but there are no in-tree users of these. What's the story?
 > 
-> I don't understand that what you said about regression.  My patch doesn't
-> cause  xilinx_gmii2rgmii.c driver load fail, in this time that do_of_table
-> and platform_uevent will be responsible "of" type driver auto load and my
-> patch was responsible for "mdio" type driver auto load,
+> I see Vladimir reviewed this so presumably we trust that the users 
+> will materialize rather quickly?
 
-xilinx_gmii2rgmii is not a platform driver. It is a mdio driver:
+Thank you for highlighting this.
 
-static struct mdio_driver xgmiitorgmii_driver = {
-              ^^^^^^^^^^^
+Vladimir told me recently over the phylink get_interfaces vs get_caps
+change for DSA, and I quote:
 
-Therefore, platform_uevent() is irrelevant since this will never match
-a platform device. It will only match mdio devices, and the uevent
-generation for that is via mdio_uevent() which is the function you
-are changing.
+  David who applied your patch can correct me, but my understanding from
+  the little time I've spent on netdev is that dead code isn't a candidate
+  for getting accepted into the tree, even more so in the last few days
+  before the merge window, from where it got into v5.16-rc1.
+  ...
+  So yes, I take issue with that as a matter of principle, I very much
+  expect that a kernel developer of your experience does not set a
+  precedent and a pretext for people who submit various shady stuff to the
+  kernel just to make their downstream life easier.
 
-> In default code. There are request_module to load phy driver, but as Russell
-> King said that request_module doesn't garantee auto load will always work
-> well, but udev mechanism can garantee it. and udev mechaism is more
-> mainstream, otherwise mdio_uevent is useless. if use udev mechanism that my
-> patch was needed. and if apply my patch it doesn't cause request_module
-> mechaism work bad because I will add following change:
+This sounds very much like double-standards, especially as Vladimir
+reviewed this.
 
-Please report back what the following command produces on your
-problem system:
-
-/sbin/modprobe -vn mdio:00000001010000010000110111010001
-
-Thanks.
+I'm not going to be spiteful NAK these patches, because we all need to
+get along with each other. I realise that it is sometimes useful to get
+code merged that facilitates or aids further development - provided
+that development is submitted in a timely manner.
 
 -- 
 RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
