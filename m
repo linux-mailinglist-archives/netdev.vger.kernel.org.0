@@ -2,182 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E9A046D4CE
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 14:50:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B646846D4D1
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 14:50:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234347AbhLHNxr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 08:53:47 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:51318 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232918AbhLHNxq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 08:53:46 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1638971414;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ngC/o95nfjZsAGmMOXEbHrk4Lzl1lpLSiLYQBabrEsE=;
-        b=LTlkIN+6UnfaIKpYvT7rYan0Uozzx660QDTU84+aJY332AqPDHCFZsEoVOIHRyEUIGN5D2
-        E0chyWEJUT21P7mm/MEeUjwbOD906Y573gcyMyzgdBvxWaxF6B4LfiALNzPBhiCyIoSfBW
-        +d9nMbSxOTqT7VDSD9qu7mWCWs3OP98=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-43-0fppwEX-OAGUBc1QHOqldA-1; Wed, 08 Dec 2021 08:50:13 -0500
-X-MC-Unique: 0fppwEX-OAGUBc1QHOqldA-1
-Received: by mail-ed1-f70.google.com with SMTP id bx28-20020a0564020b5c00b003e7c42443dbso2138070edb.15
-        for <netdev@vger.kernel.org>; Wed, 08 Dec 2021 05:50:12 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ngC/o95nfjZsAGmMOXEbHrk4Lzl1lpLSiLYQBabrEsE=;
-        b=rFvL+OnFHtE1sPpAUj4jt4PDXde1mvRPRKU6HKkNMPJ2D3kyIbMjBdWEP5K00Q+xoj
-         9n08K6G4jAsVcjcipyFSJ6VFaYh6KRH/kUZQdi1jFUD5nn/8UklPaNYcUl7WuxlUWSUL
-         y+ODf39E5vXJYKtgzDC1nGxUy4x3hfAuCcECO3BGif8jbMoxU6Miw9gHVQyY7NTWD08d
-         VlMOfd8B0UFIXUme7VlxzLox2BnfQUjMZMfCNn+ZrolTvEkq17EYq8GF5+4/0oNYTMxL
-         AQVSRhH279jooI5BHnIWhj8cqs+hSSkpC5CENgosU95ITlf5bYb49YR/X54v2vSACOTi
-         pmfg==
-X-Gm-Message-State: AOAM5317dKS9vmjRyAaEuz87AEd6T0FjMYUfu73s37WyfoiTrwMB1/Rp
-        4Bq8DMb3I6DurLtuHOdhC4qNs9l/ORsOjsXYl597s9FeyXBWSsPDJLMWdzybqH3Y0un6SZ3rnul
-        Ket6vFuczvHwJAD5E
-X-Received: by 2002:a17:907:2da5:: with SMTP id gt37mr7755218ejc.316.1638971411357;
-        Wed, 08 Dec 2021 05:50:11 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwLIOJXmw7FUtxfVB4W3JHtw41/6aeGGOGQ7t2H5HibrEe+DPzyGZu1rT2o5RzvOo5xplrq+A==
-X-Received: by 2002:a17:907:2da5:: with SMTP id gt37mr7755187ejc.316.1638971411154;
-        Wed, 08 Dec 2021 05:50:11 -0800 (PST)
-Received: from krava ([83.240.60.218])
-        by smtp.gmail.com with ESMTPSA id e1sm1528572ejy.82.2021.12.08.05.50.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Dec 2021 05:50:10 -0800 (PST)
-Date:   Wed, 8 Dec 2021 14:50:09 +0100
-From:   Jiri Olsa <jolsa@redhat.com>
+        id S234403AbhLHNyU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 08:54:20 -0500
+Received: from szxga02-in.huawei.com ([45.249.212.188]:28289 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232916AbhLHNyS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 08:54:18 -0500
+Received: from dggpeml500025.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4J8JTN75KGzbjNx;
+        Wed,  8 Dec 2021 21:50:32 +0800 (CST)
+Received: from [10.174.176.117] (10.174.176.117) by
+ dggpeml500025.china.huawei.com (7.185.36.35) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Wed, 8 Dec 2021 21:50:45 +0800
+Subject: Re: [PATCH bpf-next 5/5] selftests/bpf: add test cases for
+ bpf_strncmp()
 To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Peter Zijlstra <a.p.zijlstra@chello.nl>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Ravi Bangoria <ravi.bangoria@amd.com>
-Subject: Re: [PATCH 1/8] perf/kprobe: Add support to create multiple probes
-Message-ID: <YbC4EXS3pyCbh7/i@krava>
-References: <20211124084119.260239-1-jolsa@kernel.org>
- <20211124084119.260239-2-jolsa@kernel.org>
- <CAEf4Bzb5wyW=62fr-BzQsuFL+mt5s=+jGcdxKwZK0+AW18uD_Q@mail.gmail.com>
- <Yafp193RdskXofbH@krava>
- <CAEf4BzbmKffmcM3WhCthrgfbWZBZj52hGH0Ju0itXyJ=yD01NA@mail.gmail.com>
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+References: <20211130142215.1237217-1-houtao1@huawei.com>
+ <20211130142215.1237217-6-houtao1@huawei.com>
+ <CAEf4BzaZR84VXUSh-SkA32yTYXhz5vUxK7ysoGMgWsa0+d54vQ@mail.gmail.com>
+From:   Hou Tao <houtao1@huawei.com>
+Message-ID: <f39b4017-8f7e-474c-6497-7f6448c44911@huawei.com>
+Date:   Wed, 8 Dec 2021 21:50:45 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzbmKffmcM3WhCthrgfbWZBZj52hGH0Ju0itXyJ=yD01NA@mail.gmail.com>
+In-Reply-To: <CAEf4BzaZR84VXUSh-SkA32yTYXhz5vUxK7ysoGMgWsa0+d54vQ@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [10.174.176.117]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpeml500025.china.huawei.com (7.185.36.35)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 06, 2021 at 07:15:58PM -0800, Andrii Nakryiko wrote:
-> On Wed, Dec 1, 2021 at 1:32 PM Jiri Olsa <jolsa@redhat.com> wrote:
-> >
-> > On Tue, Nov 30, 2021 at 10:53:58PM -0800, Andrii Nakryiko wrote:
-> > > On Wed, Nov 24, 2021 at 12:41 AM Jiri Olsa <jolsa@redhat.com> wrote:
-> > > >
-> > > > Adding support to create multiple probes within single perf event.
-> > > > This way we can associate single bpf program with multiple kprobes,
-> > > > because bpf program gets associated with the perf event.
-> > > >
-> > > > The perf_event_attr is not extended, current fields for kprobe
-> > > > attachment are used for multi attachment.
-> > >
-> > > I'm a bit concerned with complicating perf_event_attr further to
-> > > support this multi-attach. For BPF, at least, we now have
-> > > bpf_perf_link and corresponding BPF_LINK_CREATE command in bpf()
-> > > syscall which allows much simpler and cleaner API to do this. Libbpf
-> > > will actually pick bpf_link-based attachment if kernel supports it. I
-> > > think we should better do bpf_link-based approach from the get go.
-> > >
-> > > Another thing I'd like you to keep in mind and think about is BPF
-> > > cookie. Currently kprobe/uprobe/tracepoint allow to associate
-> > > arbitrary user-provided u64 value which will be accessible from BPF
-> > > program with bpf_get_attach_cookie(). With multi-attach kprobes this
-> > > because extremely crucial feature to support, otherwise it's both
-> > > expensive, inconvenient and complicated to be able to distinguish
-> > > between different instances of the same multi-attach kprobe
-> > > invocation. So with that, what would be the interface to specify these
-> > > BPF cookies for this multi-attach kprobe, if we are going through
-> > > perf_event_attr. Probably picking yet another unused field and
-> > > union-izing it with a pointer. It will work, but makes the interface
-> > > even more overloaded. While for LINK_CREATE we can just add another
-> > > pointer to a u64[] with the same size as number of kfunc names and
-> > > offsets.
-> >
-> > I'm not sure we could bypass perf event easily.. perhaps introduce
-> > BPF_PROG_TYPE_RAW_KPROBE as we did for tracepoints or just new
-> > type for multi kprobe attachment like BPF_PROG_TYPE_MULTI_KPROBE
-> > that might be that way we'd have full control over the API
-> 
-> Sure, new type works.
-> 
-> >
-> > >
-> > > But other than that, I'm super happy that you are working on these
-> > > complicated multi-attach capabilities! It would be great to benchmark
-> > > one-by-one attachment vs multi-attach to the same set of kprobes once
-> > > you arrive at the final implementation.
-> >
-> > I have the change for bpftrace to use this and even though there's
-> > some speed up, it's not as substantial as for trampolines
-> >
-> > looks like we 'only' got rid of the multiple perf syscall overheads,
-> > compared to rcu syncs timeouts like we eliminated for trampolines
-> 
-> if it's just eliminating a pretty small overhead of multiple syscalls,
-> then it would be quite disappointing to add a bunch of complexity just
-> for that.
+Hi,
+On 12/7/2021 11:09 AM, Andrii Nakryiko wrote:
+>> +static struct strncmp_test *strncmp_test_open_and_disable_autoload(void)
+>> +{
+>> +       struct strncmp_test *skel;
+>> +       struct bpf_program *prog;
+>> +
+>> +       skel = strncmp_test__open();
+>> +       if (libbpf_get_error(skel))
+>> +               return skel;
+>> +
+>> +       bpf_object__for_each_program(prog, skel->obj)
+>> +               bpf_program__set_autoload(prog, false);
+> I think this is a wrong "code economy". You save few lines of code,
+> but make tests harder to follow. Just do 4 lines of code for each
+> subtest:
+>
+> skel = strncmp_test__open();
+> if (!ASSERT_OK_PTR(skel, "skel_open"))
+>     return;
+>
+> bpf_object__for_each_program(prog, skel->obj)
+>     bpf_program__set_autoload(prog, false);
+>
+>
+> It makes tests more self-contained and easier to follow. Also if some
+> tests need to do something slightly different it's easier to modify
+> them, as they are not coupled to some common helper. DRY is good where
+> it makes sense, but it also increases code coupling and more "jumping
+> around" in code, so it shouldn't be applied blindly.
+Thanks for your suggestion on DRY topic. Will do in v2.
+> +
+> +static int trigger_strncmp(const struct strncmp_test *skel)
+> +{
+> +       struct timespec wait = {.tv_sec = 0, .tv_nsec = 1};
+> +
+> +       nanosleep(&wait, NULL);
+> all the other tests are just doing usleep(1), why using this more verbose way?
+Will do in v2.
+>> +
+>> +static __always_inline bool called_by_target_pid(void)
+>> +{
+>> +       __u32 pid = bpf_get_current_pid_tgid() >> 32;
+>> +
+>> +       return pid == target_pid;
+>> +}
+> again, what's the point of this helper? it's used once and you'd
+> actually save the code by doing the following inline:
+>
+> if ((bpf_get_current_pid_tgid() >> 32) != target_pid)
+>     return 0;
+Will do in v2.
+>> +
+>> +SEC("tp/syscalls/sys_enter_nanosleep")
+>> +int do_strncmp(void *ctx)
+>> +{
+>> +       if (!called_by_target_pid())
+>> +               return 0;
+>> +
+>> +       cmp_ret = bpf_strncmp(str, STRNCMP_STR_SZ, target);
+>> +
+>> +       return 0;
+>> +}
+>> +
+>> +SEC("tp/syscalls/sys_enter_nanosleep")
+>> +int strncmp_bad_not_const_str_size(void *ctx)
+>> +{
+> probably worth leaving a short comment explaining that this program
+> should fail because ...
+OK. Will do in v2.
 
-I meant it's not as huge save as for trampolines, but I expect some
-noticeable speedup, I'll make more becnhmarks with current patchset
-
-> Are there any reasons we can't use the same low-level ftrace
-> batch attach API to speed this up considerably? I assume it's only
-> possible if kprobe is attached at the beginning of the function (not
-> sure how kretprobe is treated here), so we can either say that this
-> new kprobe prog type can only be attached at the beginning of each
-> function and enforce that (probably would be totally reasonable
-> assumption as that's what's happening most frequently in practice).
-> Worst case, should be possible to split all requested attach targets
-> into two groups, one fast at function entry and all the rest.
-> 
-> Am I too far off on this one? There might be some more complications
-> that I don't see.
-
-I'd need to check more on kprobes internals, but.. ;-)
-
-the new ftrace interface is special for 'direct' trampolines and
-I think that although kprobes can use ftrace for attaching, they
-use it in a different way
-
-also this current 'multi attach' approach is on top of current kprobe
-interface, if we wanted to use the new ftrace API we'd need to add new
-kprobe interface and change the kprobe attaching to use it (for cases
-it's attached at the function entry)
-
-jirka
-
-> 
-> >
-> > I'll make full benchmarks once we have some final solution
-> >
-> > jirka
-> >
-> 
-
+Regards,
+Tao
