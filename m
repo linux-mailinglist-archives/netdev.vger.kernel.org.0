@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B800946CBA2
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 04:41:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 59FF346CBA4
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 04:41:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243976AbhLHDo0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 22:44:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33864 "EHLO
+        id S243983AbhLHDo1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 22:44:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243958AbhLHDoY (ORCPT
+        with ESMTP id S243965AbhLHDoY (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 22:44:24 -0500
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1CD5C061574;
-        Tue,  7 Dec 2021 19:40:52 -0800 (PST)
-Received: by mail-wr1-x430.google.com with SMTP id d24so1752731wra.0;
-        Tue, 07 Dec 2021 19:40:52 -0800 (PST)
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CDDAC061574;
+        Tue,  7 Dec 2021 19:40:53 -0800 (PST)
+Received: by mail-wm1-x330.google.com with SMTP id n33-20020a05600c502100b0032fb900951eso3206046wmr.4;
+        Tue, 07 Dec 2021 19:40:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=b8cn7oQwZOY1NLkt25YqaD0FKEKyzuARcsLHWsRjgEo=;
-        b=MmDMDZMsqdLewA86WPcz1XxzZJW1lP3wOKUziduIDxy2kqrJEw76FlrpE/lVxP8jHS
-         ocuDVvquEw2x78cWkMNOQQ3uxosvk7nN0VtRnf+2JFMPYN29LDN661Rc7bxnXWPPtVj7
-         BHhYzMWbFx+MigBd9AyQ37gDP8MLKWmvY1vBFrrandoQTjuv+SV4DWnVVp2JdIBSqQEV
-         Ls6nrdfR4RvAkKPFGGzEhUyQZ/D7E42GiPr7ooTJKC7EuKV/G8XxRGcWIaVfv07fIb2Y
-         wwijI6GEJlUYEeuPv9Xgd7HJXauPaNS6Gru9gGZT/KKIO54DfZaIT5BwdNf9Q3nsNyMB
-         IqGg==
+        bh=vnLY6KdcrRoSIU2HsNb3g6e/hZnKqFQfK2cCOCiEGu8=;
+        b=SOtgRQvlrP1vPc2TPR1lkGEeowOWEg8F2f7YhTGV0JvWHF/RIrzU3I84CY+shVmwon
+         hT+QjOFVDOjID3Uv56/uikdsXO+9d9YnzqpOapsIIJ/y7FKxgj6bJB6ihmxSNaVnlm+Z
+         +c4bj9jrXT6scGHuumjX5O1RJE9H0/vI/vyYcnOcYEXtlOaMItbtz/V6VRHVwkT0krDN
+         8WcXLeUtfRl/VUXk7AiIP6mpx+FrqRKlWEWRLPKbzkj7UgfKFkke+g/aNqO4g7QXVCZn
+         A+G+5PC4steu2HBqTzPjmEqmsCdoUUvISBro1J8FoeGQ9SYwAwKAzgHY/yQnheIlfl5u
+         df9Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=b8cn7oQwZOY1NLkt25YqaD0FKEKyzuARcsLHWsRjgEo=;
-        b=ROnMPg/F6K1Jq8IARBd5J+xutQlS3gZQNJoIR5jYCHojoI6aAqJ8wBm5YZCDRl9IAY
-         rLVveJoJbaM1mXURXv/w1OQikz24vYgQv0X9OrtSC7lM6lNRqfv48mr8GDw8pKwPWWl6
-         z2pigyA+e3KTMR7ZkJRdSPqKEK0LZgH+7wvwJyUaCZtqC7qTEcwHh5epcqFSKT9Hm50I
-         txEU2gAP1yD4jld8RpSppxsRhkLfrYawVn1b9sfOd2pDkxxkkrDpTi/z5VEr7yG9X75x
-         1EpvchWtnzhhmQ0pUjGotPVYXZozcoozDKT56ZqQhabanHZtX6ry5v4XOXq6DEFxzN5u
-         YIRg==
-X-Gm-Message-State: AOAM533q46AUZe6K8rKrzrzDDy+4Pgef1U+OJdIUmOWubaJSm+fzZXKZ
-        DesdOq8g/9q1i3UoLg5CLMU=
-X-Google-Smtp-Source: ABdhPJyddnvaX3XjQm113X/2y4yE2khZIiCfsCx+WQB0lCJP9Bic6W16tNRsH1Pen0lGxzf1cCo/cw==
-X-Received: by 2002:adf:dd0d:: with SMTP id a13mr57377871wrm.259.1638934851243;
-        Tue, 07 Dec 2021 19:40:51 -0800 (PST)
+        bh=vnLY6KdcrRoSIU2HsNb3g6e/hZnKqFQfK2cCOCiEGu8=;
+        b=ucKw+fzQgE+yMdoq8Bz59Lbtykf7F1YReuo+OgEzaWVN1mm5ZEExBb/HEfgi8zLxis
+         GH4VRKJhmbVokI3Z+aLpqH7++8SO2xgCcZLV+wH2CUa42wq5MX1nPMqOBj61wXZnmGD3
+         JZgvQ3AkBth9UeaVhtZ7bQwKHwf0mart7oof6zbnLJfg24jEL9uROaEZfHlD22cSPwfS
+         RFreaN/jCYo50EbdAJF9Ld626SVV4Ws3kw7PkwDZpEq5tfzmrHOZ3tb4F1WBbDp8K4YT
+         UIodhOdylbm4h94mxhM5gYB+w/aq3MbP8nNIc1iE1ieu0QhnCtZ1v+RHHzDWDVugpMKu
+         anTQ==
+X-Gm-Message-State: AOAM533b9nxbPMvOa9PlCp2w1/P7MAvAZUNn6nTkO8LgMqrfr+NbXa9M
+        b0RiEgFlGlnH2hWmETaU5ww=
+X-Google-Smtp-Source: ABdhPJw41WF7xu0uKK5Sp+w77e2Eppz/AeVtQhOWVxnrcyZLsb0aV1agT3by3+6bcZWZWfEZMPBJ+Q==
+X-Received: by 2002:a05:600c:190e:: with SMTP id j14mr12263595wmq.75.1638934852090;
+        Tue, 07 Dec 2021 19:40:52 -0800 (PST)
 Received: from localhost.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.googlemail.com with ESMTPSA id v6sm4488944wmh.8.2021.12.07.19.40.50
+        by smtp.googlemail.com with ESMTPSA id v6sm4488944wmh.8.2021.12.07.19.40.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Tue, 07 Dec 2021 19:40:51 -0800 (PST)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
@@ -56,9 +56,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org
 Cc:     Ansuel Smith <ansuelsmth@gmail.com>
-Subject: [net-next RFC PATCH v2 2/8] net: dsa: Permit dsa driver to configure additional tagger data
-Date:   Wed,  8 Dec 2021 04:40:34 +0100
-Message-Id: <20211208034040.14457-3-ansuelsmth@gmail.com>
+Subject: [net-next RFC PATCH v2 3/8] net: dsa: tag_qca: convert to FIELD macro
+Date:   Wed,  8 Dec 2021 04:40:35 +0100
+Message-Id: <20211208034040.14457-4-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20211208034040.14457-1-ansuelsmth@gmail.com>
 References: <20211208034040.14457-1-ansuelsmth@gmail.com>
@@ -68,124 +68,87 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Permit a dsa driver to configure additional tagger data for the current
-active tagger. A new ops is introduced tag_proto_connect() that will be
-called on every tagger bind event using the
-DSA_NOTIFIER_TAG_PROTO_CONNECT event.
-
-This is used if the driver require to set additional driver or some
-handler that the tagger should use to handle special packet.
-
-The dsa driver require to provide explicit support for the current
-tagger and to understand the current private data set in the dsa ports.
-
-tag_proto_connect() should parse the tagger proto, check if it does
-support it and do the required task to each ports.
-
-An example of this is a dsa driver that supports Ethernet mdio and
-require to provide to the tagger a handler function to parse these
-packets.
+Convert driver to FIELD macro to drop redundant define.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- include/net/dsa.h  |  8 ++++++++
- net/dsa/dsa2.c     | 11 +++++++++++
- net/dsa/dsa_priv.h |  1 +
- net/dsa/switch.c   | 14 ++++++++++++++
- 4 files changed, 34 insertions(+)
+ net/dsa/tag_qca.c | 34 +++++++++++++++-------------------
+ 1 file changed, 15 insertions(+), 19 deletions(-)
 
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index 33391d74be5c..3af8720e0caf 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -946,6 +946,14 @@ struct dsa_switch_ops {
- 	int	(*tag_8021q_vlan_add)(struct dsa_switch *ds, int port, u16 vid,
- 				      u16 flags);
- 	int	(*tag_8021q_vlan_del)(struct dsa_switch *ds, int port, u16 vid);
-+
-+	/*
-+	 * Tagger connect operations. Use this to set special data/handler
-+	 * for the current tagger set. The function require to provide explicit
-+	 * support for the current tagger.
-+	 */
-+	int	(*tag_proto_connect)(struct dsa_switch *ds,
-+				     const struct dsa_device_ops *tag_ops);
- };
+diff --git a/net/dsa/tag_qca.c b/net/dsa/tag_qca.c
+index 1ea9401b8ace..55fa6b96b4eb 100644
+--- a/net/dsa/tag_qca.c
++++ b/net/dsa/tag_qca.c
+@@ -4,29 +4,24 @@
+  */
  
- #define DSA_DEVLINK_PARAM_DRIVER(_id, _name, _type, _cmodes)		\
-diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index 15566c5ae8ae..15d6c52dbf53 100644
---- a/net/dsa/dsa2.c
-+++ b/net/dsa/dsa2.c
-@@ -1046,6 +1046,7 @@ static void dsa_tree_teardown_lags(struct dsa_switch_tree *dst)
- static int dsa_tree_bind_tag_proto(struct dsa_switch_tree *dst)
+ #include <linux/etherdevice.h>
++#include <linux/bitfield.h>
+ 
+ #include "dsa_priv.h"
+ 
+ #define QCA_HDR_LEN	2
+ #define QCA_HDR_VERSION	0x2
+ 
+-#define QCA_HDR_RECV_VERSION_MASK	GENMASK(15, 14)
+-#define QCA_HDR_RECV_VERSION_S		14
+-#define QCA_HDR_RECV_PRIORITY_MASK	GENMASK(13, 11)
+-#define QCA_HDR_RECV_PRIORITY_S		11
+-#define QCA_HDR_RECV_TYPE_MASK		GENMASK(10, 6)
+-#define QCA_HDR_RECV_TYPE_S		6
++#define QCA_HDR_RECV_VERSION		GENMASK(15, 14)
++#define QCA_HDR_RECV_PRIORITY		GENMASK(13, 11)
++#define QCA_HDR_RECV_TYPE		GENMASK(10, 6)
+ #define QCA_HDR_RECV_FRAME_IS_TAGGED	BIT(3)
+-#define QCA_HDR_RECV_SOURCE_PORT_MASK	GENMASK(2, 0)
+-
+-#define QCA_HDR_XMIT_VERSION_MASK	GENMASK(15, 14)
+-#define QCA_HDR_XMIT_VERSION_S		14
+-#define QCA_HDR_XMIT_PRIORITY_MASK	GENMASK(13, 11)
+-#define QCA_HDR_XMIT_PRIORITY_S		11
+-#define QCA_HDR_XMIT_CONTROL_MASK	GENMASK(10, 8)
+-#define QCA_HDR_XMIT_CONTROL_S		8
++#define QCA_HDR_RECV_SOURCE_PORT	GENMASK(2, 0)
++
++#define QCA_HDR_XMIT_VERSION		GENMASK(15, 14)
++#define QCA_HDR_XMIT_PRIORITY		GENMASK(13, 11)
++#define QCA_HDR_XMIT_CONTROL		GENMASK(10, 8)
+ #define QCA_HDR_XMIT_FROM_CPU		BIT(7)
+-#define QCA_HDR_XMIT_DP_BIT_MASK	GENMASK(6, 0)
++#define QCA_HDR_XMIT_DP_BIT		GENMASK(6, 0)
+ 
+ static struct sk_buff *qca_tag_xmit(struct sk_buff *skb, struct net_device *dev)
  {
- 	const struct dsa_device_ops *tag_ops = dst->tag_ops;
-+	struct dsa_notifier_tag_proto_info info;
- 	int err;
+@@ -40,8 +35,9 @@ static struct sk_buff *qca_tag_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	phdr = dsa_etype_header_pos_tx(skb);
  
- 	if (tag_ops->connect) {
-@@ -1054,6 +1055,16 @@ static int dsa_tree_bind_tag_proto(struct dsa_switch_tree *dst)
- 			return err;
- 	}
+ 	/* Set the version field, and set destination port information */
+-	hdr = QCA_HDR_VERSION << QCA_HDR_XMIT_VERSION_S |
+-		QCA_HDR_XMIT_FROM_CPU | BIT(dp->index);
++	hdr = FIELD_PREP(QCA_HDR_XMIT_VERSION, QCA_HDR_VERSION);
++	hdr |= QCA_HDR_XMIT_FROM_CPU;
++	hdr |= FIELD_PREP(QCA_HDR_XMIT_DP_BIT, BIT(dp->index));
  
-+	info.tag_ops = tag_ops;
-+	err = dsa_tree_notify(dst, DSA_NOTIFIER_TAG_PROTO_CONNECT, &info);
-+	if (err && err != -EOPNOTSUPP)
-+		goto out_disconnect;
-+
-+	return 0;
-+out_disconnect:
-+	if (tag_ops->disconnect)
-+		tag_ops->disconnect(dst);
-+
- 	return 0;
- }
+ 	*phdr = htons(hdr);
  
-diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
-index 3fb2c37c9b88..e69843c4aa6d 100644
---- a/net/dsa/dsa_priv.h
-+++ b/net/dsa/dsa_priv.h
-@@ -37,6 +37,7 @@ enum {
- 	DSA_NOTIFIER_VLAN_DEL,
- 	DSA_NOTIFIER_MTU,
- 	DSA_NOTIFIER_TAG_PROTO,
-+	DSA_NOTIFIER_TAG_PROTO_CONNECT,
- 	DSA_NOTIFIER_MRP_ADD,
- 	DSA_NOTIFIER_MRP_DEL,
- 	DSA_NOTIFIER_MRP_ADD_RING_ROLE,
-diff --git a/net/dsa/switch.c b/net/dsa/switch.c
-index bb155a16d454..4b7434d709fb 100644
---- a/net/dsa/switch.c
-+++ b/net/dsa/switch.c
-@@ -647,6 +647,17 @@ static int dsa_switch_change_tag_proto(struct dsa_switch *ds,
- 	return 0;
- }
+@@ -62,7 +58,7 @@ static struct sk_buff *qca_tag_rcv(struct sk_buff *skb, struct net_device *dev)
+ 	hdr = ntohs(*phdr);
  
-+static int dsa_switch_connect_tag_proto(struct dsa_switch *ds,
-+					struct dsa_notifier_tag_proto_info *info)
-+{
-+	const struct dsa_device_ops *tag_ops = info->tag_ops;
-+
-+	if (!ds->ops->tag_proto_connect)
-+		return -EOPNOTSUPP;
-+
-+	return ds->ops->tag_proto_connect(ds, tag_ops);
-+}
-+
- static int dsa_switch_mrp_add(struct dsa_switch *ds,
- 			      struct dsa_notifier_mrp_info *info)
- {
-@@ -766,6 +777,9 @@ static int dsa_switch_event(struct notifier_block *nb,
- 	case DSA_NOTIFIER_TAG_PROTO:
- 		err = dsa_switch_change_tag_proto(ds, info);
- 		break;
-+	case DSA_NOTIFIER_TAG_PROTO_CONNECT:
-+		err = dsa_switch_connect_tag_proto(ds, info);
-+		break;
- 	case DSA_NOTIFIER_MRP_ADD:
- 		err = dsa_switch_mrp_add(ds, info);
- 		break;
+ 	/* Make sure the version is correct */
+-	ver = (hdr & QCA_HDR_RECV_VERSION_MASK) >> QCA_HDR_RECV_VERSION_S;
++	ver = FIELD_GET(QCA_HDR_RECV_VERSION, hdr);
+ 	if (unlikely(ver != QCA_HDR_VERSION))
+ 		return NULL;
+ 
+@@ -71,7 +67,7 @@ static struct sk_buff *qca_tag_rcv(struct sk_buff *skb, struct net_device *dev)
+ 	dsa_strip_etype_header(skb, QCA_HDR_LEN);
+ 
+ 	/* Get source port information */
+-	port = (hdr & QCA_HDR_RECV_SOURCE_PORT_MASK);
++	port = FIELD_GET(QCA_HDR_RECV_SOURCE_PORT, hdr);
+ 
+ 	skb->dev = dsa_master_find_slave(dev, 0, port);
+ 	if (!skb->dev)
 -- 
 2.32.0
 
