@@ -2,92 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 23DC046DF0F
-	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 00:43:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6874D46DF16
+	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 00:45:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241226AbhLHXrF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 18:47:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56990 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241220AbhLHXrD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 18:47:03 -0500
-Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81078C0617A1
-        for <netdev@vger.kernel.org>; Wed,  8 Dec 2021 15:43:30 -0800 (PST)
-Received: by mail-oi1-x230.google.com with SMTP id 7so6259724oip.12
-        for <netdev@vger.kernel.org>; Wed, 08 Dec 2021 15:43:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=C/FUweGTnMQwWIn7JKGm+0zszytVnZ+/olqck51xvNA=;
-        b=k6vJ2U7U4FAPNSa118eENI0y6aGULCssXPpQKUEcSjfOSySCbS/s8q++eDzfMoDhLs
-         Ap1sKnw3ts608ZDwfIsi5M0JGDauDTodMBNl9dbqZnvGwgSTN1t0+4TydT0WLM5LSToY
-         Ef0HWxJs5cO9Y6QgNt0jmX425YlJHy6zSqGQCY0SiV+V3q6LRP4EHoPBvk1AGJLwEiJH
-         At76iRmE9pbeUjnGpEOxflNhDekyVl580IAiCQSgoCVL9XQHALHhmzDEkp76JqNmvt/j
-         yYxOTNe0X0QfAqjyLLA+Xw/CjbyWl5yVYpSiGzSdmstidq+C5tKWVyXBcdbOlAW9Md6R
-         LGog==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=C/FUweGTnMQwWIn7JKGm+0zszytVnZ+/olqck51xvNA=;
-        b=LpyB3US6g113XaEy0cJYbxfIfp5pbeU/JsLgkuwLVBq1Av1If6MhOUDhtb6PWTFqYk
-         g9UJHqOeEpaacViMU+rkuxIunlS0eTdEXt2vhr2KlryoLByRHAklm2StPSMj8N/ErKss
-         pIQwszaEqzNGwfbCg92/lajcIkJw6QRZuNMzPY+3vOp+oMlxL/s7r5O/aepnoixJUOsq
-         h3PFPRvdvba6zwvzfKzOdXo4pzisR7JBQBRlSKNX5tFamGt+C4ycXVtRvVJolHBrUHKr
-         EuQdBi2jvYMHq1OvpydGnLv/6ECAm9J6CiHHJiQAM6WFgDaKiVvMzOwsJhJDvQingkbM
-         1EoA==
-X-Gm-Message-State: AOAM530UjavobWe+rXoPMkr36RFUbjC+pLFH8l5VyZHmdZyGcW98J+nS
-        RLB3V6oB9se8l6tQAh8RZsw=
-X-Google-Smtp-Source: ABdhPJy1fCLFhqt98BbSVkvjRSFtSXFdTayncOIR4N1aTCnBgyDzlj60bpZKIrGPrPc+KUx1HpoYDQ==
-X-Received: by 2002:a05:6808:210c:: with SMTP id r12mr2630317oiw.104.1639007009920;
-        Wed, 08 Dec 2021 15:43:29 -0800 (PST)
-Received: from [172.16.0.2] ([8.48.134.30])
-        by smtp.googlemail.com with ESMTPSA id x17sm727661oot.30.2021.12.08.15.43.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 08 Dec 2021 15:43:29 -0800 (PST)
-Message-ID: <05fe0ea9-56ba-9248-fa05-b359d6166c9f@gmail.com>
-Date:   Wed, 8 Dec 2021 16:43:28 -0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.3.2
-Subject: Re: [PATCH net-next v5] rtnetlink: Support fine-grained netdevice
- bulk deletion
-Content-Language: en-US
-To:     Lahav Schlesinger <lschlesinger@drivenets.com>
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, nikolay@nvidia.com
-References: <20211205093658.37107-1-lschlesinger@drivenets.com>
- <e5d8a127-fc98-4b3d-7887-a5398951a9a0@gmail.com>
- <20211208214711.zr4ljxqpb5u7z3op@kgollan-pc>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <20211208214711.zr4ljxqpb5u7z3op@kgollan-pc>
+        id S241252AbhLHXsQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 18:48:16 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:45636 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238277AbhLHXsP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 18:48:15 -0500
+Received: from mail.kernel.org (unknown [198.145.29.99])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EA711B82312;
+        Wed,  8 Dec 2021 23:44:41 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id CF5CE603E4;
+        Wed,  8 Dec 2021 23:44:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1639007080;
+        bh=UkQani6FEO+P7NP71yI3ezLyKvLVm8th0l7ERr+VtXM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=EUwAtzZ4il4NboJbOfflvB9STYCCGKnPsyM1Kx+UZicRJY2jIlEX+pWzbzZKA7rJg
+         5mXivCSeUyD9QvoEO6vhhT9wtSX3TvfYHC7X1hg6aO5TIsoZ7QMOgG+bNdm1NckAN/
+         xJBrUVFEic3wFBBoBYWBQkLpBP+Y7AUWHE3mhLm4=
+Date:   Wed, 8 Dec 2021 15:44:37 -0800
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     xiujianfeng <xiujianfeng@huawei.com>
+Cc:     <keescook@chromium.org>, <laniel_francis@privacyrequired.com>,
+        <andriy.shevchenko@linux.intel.com>, <adobriyan@gmail.com>,
+        <linux@roeck-us.net>, <andreyknvl@gmail.com>, <dja@axtens.net>,
+        <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <kafai@fb.com>, <songliubraving@fb.com>, <yhs@fb.com>,
+        <john.fastabend@gmail.com>, <kpsingh@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>
+Subject: Re: [PATCH -next 1/2] string.h: Introduce memset_range() for wiping
+ members
+Message-Id: <20211208154437.01441d2dcf4cd812a9c58a7d@linux-foundation.org>
+In-Reply-To: <e2d5936d-8490-5871-b3d4-b286d256832a@huawei.com>
+References: <20211208030451.219751-1-xiujianfeng@huawei.com>
+        <20211208030451.219751-2-xiujianfeng@huawei.com>
+        <20211207202829.48d15f0ffa006e3656811784@linux-foundation.org>
+        <e2d5936d-8490-5871-b3d4-b286d256832a@huawei.com>
+X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.31; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/8/21 2:47 PM, Lahav Schlesinger wrote:
-> No visible changes from what I saw, this API is as fast as group
-> deletion. Maybe a few tens of milliseconds slower, but it's lost in the
-> noise.
-> I'll run more thorough benchmarks to get to a more conclusive conclusion.
+On Wed, 8 Dec 2021 18:30:26 +0800 xiujianfeng <xiujianfeng@huawei.com> wrote:
+
 > 
-> Also just pointing out that the sort will be needed even if we pass an
-> array (IFLA_IFINDEX_LIST) instead.
-> Feels like CS 101, but do you have a better approach for detecting
-> duplicates in an array? I imagine a hash table will be slower as it will
-> need to allocate a node object for each device (assuming we don't want
-> to add a new hlist_node to 'struct net_device' just for this)
+> 在 2021/12/8 12:28, Andrew Morton 写道:
+> > On Wed, 8 Dec 2021 11:04:50 +0800 Xiu Jianfeng <xiujianfeng@huawei.com> wrote:
+> >
+> >> Motivated by memset_after() and memset_startat(), introduce a new helper,
+> >> memset_range() that takes the target struct instance, the byte to write,
+> >> and two member names where zeroing should start and end.
+> > Is this likely to have more than a single call site?
+> There maybe more call site for this function, but I just use bpf as an 
+> example.
+> >
+> >> ...
+> >>
+> >> --- a/include/linux/string.h
+> >> +++ b/include/linux/string.h
+> >> @@ -291,6 +291,26 @@ void memcpy_and_pad(void *dest, size_t dest_len, const void *src, size_t count,
+> >>   	       sizeof(*(obj)) - offsetof(typeof(*(obj)), member));	\
+> >>   })
+> >>   
+> >> +/**
+> >> + * memset_range - Set a value ranging from member1 to member2, boundary included.
+> > I'm not sure what "boundary included" means.
+> I mean zeroing from member1 to member2(including position indicated by 
+> member1 and member2)
+> >
+> >> + *
+> >> + * @obj: Address of target struct instance
+> >> + * @v: Byte value to repeatedly write
+> >> + * @member1: struct member to start writing at
+> >> + * @member2: struct member where writing should stop
+> > Perhaps "struct member before which writing should stop"?
+> memset_range should include position indicated by member2 as well
 
-I think marking the dev's and then using a delete loop is going to be
-the better approach - avoid the sort and duplicate problem. I use that
-approach for nexthop deletes:
+In that case we could say "struct member where writing should stop
+(inclusive)", to make it very clear.
 
-https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/tree/net/ipv4/nexthop.c#n1849
+> >
+> >> + *
+> >> + */
+> >> +#define memset_range(obj, v, member_1, member_2)			\
+> >> +({									\
+> >> +	u8 *__ptr = (u8 *)(obj);					\
+> >> +	typeof(v) __val = (v);						\
+> >> +	BUILD_BUG_ON(offsetof(typeof(*(obj)), member_1) >		\
+> >> +		     offsetof(typeof(*(obj)), member_2));		\
+> >> +	memset(__ptr + offsetof(typeof(*(obj)), member_1), __val,	\
+> >> +	       offsetofend(typeof(*(obj)), member_2) -			\
+> >> +	       offsetof(typeof(*(obj)), member_1));			\
+> >> +})
+> > struct a {
+> > 	int b;
+> > 	int c;
+> > 	int d;
+> > };
+> >
+> > How do I zero out `c' and `d'?
+> if you want to zero out 'c' and 'd', you can use it like 
+> memset_range(a_ptr, c, d);
 
-Find a hole in net_device struct in an area used only for control path
-and add 'bool grp_delete' (or a 1-bit hole). Mark the devices on pass
-and delete them on another.
+But I don't think that's what the code does!
+
+it expands to
+
+	memset(__ptr + offsetof(typeof(*(a)), c), __val,
+	       offsetofend(typeof(*(a)), d) -
+	       offsetof(typeof(*(a)), c));
+
+which expands to
+
+	memset(__ptr + 4, __val,
+	       8 -
+	       4);
+
+and `d' will not be written to.
