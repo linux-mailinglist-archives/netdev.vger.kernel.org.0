@@ -2,117 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 72BD246D774
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 16:54:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A69946D792
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 16:58:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236396AbhLHP5c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 10:57:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33308 "EHLO
+        id S236426AbhLHQBv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 11:01:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229497AbhLHP5c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 10:57:32 -0500
-Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34608C0617A1
-        for <netdev@vger.kernel.org>; Wed,  8 Dec 2021 07:54:00 -0800 (PST)
-Received: by mail-oi1-x234.google.com with SMTP id t19so4706231oij.1
-        for <netdev@vger.kernel.org>; Wed, 08 Dec 2021 07:54:00 -0800 (PST)
+        with ESMTP id S236421AbhLHQBu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 11:01:50 -0500
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C9F9C061746;
+        Wed,  8 Dec 2021 07:58:18 -0800 (PST)
+Received: by mail-wr1-x42d.google.com with SMTP id t9so4866532wrx.7;
+        Wed, 08 Dec 2021 07:58:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=4tDzHMwyFwNkytGlATdsqcpRw1WvysTioxOljYkdZmk=;
-        b=bjRdHV/k0XGU9gxDfTzUWwp14PauEwc6AJxflD8UG3grB44dgKak70uDK5hjesBzus
-         vr6ljJg4JBPqUDxuAezSqQqPNZuENv/zCXaqjeiUYWRZSWC43cG8APBi5XntNxHRoJ5b
-         FdNt6VwDubd04pZahfBB9LULeN0VnqLgnEIw+OzdkMyp82PmCPZvPAym9gdfpIDxmsMg
-         illOaWRLi7axODpRJ41Htu02eW8XykqJSx7RG7Y1Isbsj/uD3/RunWmdm6lBHQJu4unw
-         hzmFi9UxsNJtHKc+OAHGLbroFBoZ4dWjLPYF1N8d+Xc6AylkL/lUW4chZwZhl9dK/s12
-         Fqsw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=+N+ZhzioiS3izYxHmaIXp7iNQEt/WMrjS1HOXzMIJfs=;
+        b=Hz+ii3ihM256S8XIu1YCfKwR2X3Q5f3baEXbZP/bUNkz9NEJRJZLpbMoF59h8cic7Q
+         npk6z0yoAFixqtHEZx9BpRa0BM4AYPhcWLl0eNUlCR6sGVz31ttv04WaVKKv0cPGOWFH
+         3gJJezm67kqQh/wC/VoDvUAoS4MeFCFWOAVJkTmiJcp/yw9hh/ln7u9s03DKdJQy2AQZ
+         WMtXU/jmMYk5kmBjwky0rZhojuZrfvyM88ogXESADYxwc1geiez+6HhfjFBzppevPOjK
+         I4nkgJnlQWAVK4bdrl7+bvLCNF9SIkl2ScWsXRLqCWxVEtvGbj6G4TKFw5MUccHbwAJI
+         /5LA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=4tDzHMwyFwNkytGlATdsqcpRw1WvysTioxOljYkdZmk=;
-        b=tleXEXrVwuD5aB3aeFM9HvN5nNH3HTJtgjLLGCIyQL0esclk11/pObOGQtimR2LeLS
-         mG6sUT1EyB0YLecPC+MSope1mnsjOFOUu5Z64LT/OTOcpG4BQf6QojtUtS/B0XX1oFjR
-         eey20WMkv2ebSflBXfGEQUjLNAEoPJceVeBtk27Ontrj3wUHjuJckgBjbzFNY/734V5p
-         ma9d55yIMHxWRW+/uSLtK80Ns+TuxoipViVk1mE3GSeSYGQdLNJfdbKK2AP9saBmszJD
-         BpptoiMdV7K9v4jf3+3XkY0Tlg7nAk6Ne8sW7Hksa5bGWeDAWrdbJTbjNhTExIbN1qyF
-         GwLA==
-X-Gm-Message-State: AOAM530ennavknxNc4FEkDazogrA6po+ebEn0Zbd9eF8FMf41tNBOUwD
-        ueXvEOjH/vErldKmVgk6nRU=
-X-Google-Smtp-Source: ABdhPJz68FQD1NAmC5CiC78pge2pYzeJnegzqsy/FWFYL2fenerPfhEV1G6xAa8HlSXkNMNy121dpQ==
-X-Received: by 2002:a05:6808:1315:: with SMTP id y21mr301519oiv.103.1638978839589;
-        Wed, 08 Dec 2021 07:53:59 -0800 (PST)
-Received: from [172.16.0.2] ([8.48.134.30])
-        by smtp.googlemail.com with ESMTPSA id u136sm655063oie.13.2021.12.08.07.53.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 08 Dec 2021 07:53:59 -0800 (PST)
-Message-ID: <ded3d280-efcd-810e-c29c-7296f97cb181@gmail.com>
-Date:   Wed, 8 Dec 2021 08:53:57 -0700
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=+N+ZhzioiS3izYxHmaIXp7iNQEt/WMrjS1HOXzMIJfs=;
+        b=zW+r0Sb60Is2sSIZ9NiERHvm0wAuqGOwVXXFy42W6eM1203rBI9rgEo9/89O+cRch2
+         f2VNdTsyEO2S+BKu+Dq/oPaw6RJv6SoBpbf5nc4CUN4Ps8nE5spsTsRZ+xecHEKH9Olo
+         c/HXmW2U/WId9rQayMzw3EVbmTMwUC48C554rxm8k38/SDT8YwHEL92GI+y03jkoDLUH
+         hjoUgikE0DEqOxN2JF5vDwpmWMIWBFdoaUJ5CvVqpP/5xXuAkKr+T5puiNl9aOWtlEx7
+         CFh2hKxRSCj3yaDH6Bt27CfG4+S+caKI5/Shj78xc5m1qfTg4eV7ftfeejgira0jDF7l
+         N4qg==
+X-Gm-Message-State: AOAM532wA0MyVTZCHeZoDUG6sIZtJkZsHoCwyOapa5jLY7Sd4f+Kt2kI
+        FqRUly2qZLemro3tEPVqHclNDraETXGbf/G5
+X-Google-Smtp-Source: ABdhPJwgE9kUeBKXRJA/vEiuwgFWzZT1E7fe81W2gYNBWO9X8sdrlB0Qy31XpmRVu5TSiXCeemI1PQ==
+X-Received: by 2002:a5d:4343:: with SMTP id u3mr61256334wrr.450.1638979096934;
+        Wed, 08 Dec 2021 07:58:16 -0800 (PST)
+Received: from localhost.localdomain ([39.48.199.136])
+        by smtp.gmail.com with ESMTPSA id r83sm6276856wma.22.2021.12.08.07.58.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Dec 2021 07:58:16 -0800 (PST)
+From:   Ameer Hamza <amhamza.mgc@gmail.com>
+To:     kabel@kernel.org, kuba@kernel.org, andrew@lunn.ch
+Cc:     vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, amhamza.mgc@gmail.com
+Subject: [PATCH v3] net: dsa: mv88e6xxx: error handling for serdes_power functions
+Date:   Wed,  8 Dec 2021 20:58:09 +0500
+Message-Id: <20211208155809.103089-1-amhamza.mgc@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20211208164042.6fbcddb1@thinkpad>
+References: <20211208164042.6fbcddb1@thinkpad>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.3.2
-Subject: Re: [PATCH net] net, neigh: clear whole pneigh_entry at alloc time
-Content-Language: en-US
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Roopa Prabhu <roopa@nvidia.com>
-References: <20211206165329.1049835-1-eric.dumazet@gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <20211206165329.1049835-1-eric.dumazet@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/6/21 9:53 AM, Eric Dumazet wrote:
-> From: Eric Dumazet <edumazet@google.com>
-> 
-> Commit 2c611ad97a82 ("net, neigh: Extend neigh->flags to 32 bit
-> to allow for extensions") enables a new KMSAM warning [1]
-> 
-> I think the bug is actually older, because the following intruction
-> only occurred if ndm->ndm_flags had NTF_PROXY set.
-> 
-> 	pn->flags = ndm->ndm_flags;
-> 
-> Let's clear all pneigh_entry fields at alloc time.
-> 
+Added default case to handle undefined cmode scenario in
+mv88e6393x_serdes_power() and mv88e6393x_serdes_power() methods.
 
-All of the fields - except the new flags field - are initialized after
-the alloc. Why do you think the bug is older?
+Signed-off-by: Ameer Hamza <amhamza.mgc@gmail.com>
+---
+Changes in v3:
+make err = -EINVAL instead of direct return, so that we can
+check in the code after and handle the error case.
+---
+ drivers/net/dsa/mv88e6xxx/serdes.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-...
+diff --git a/drivers/net/dsa/mv88e6xxx/serdes.c b/drivers/net/dsa/mv88e6xxx/serdes.c
+index 33727439724a..2b05ead515cd 100644
+--- a/drivers/net/dsa/mv88e6xxx/serdes.c
++++ b/drivers/net/dsa/mv88e6xxx/serdes.c
+@@ -830,7 +830,7 @@ int mv88e6390_serdes_power(struct mv88e6xxx_chip *chip, int port, int lane,
+ 			   bool up)
+ {
+ 	u8 cmode = chip->ports[port].cmode;
+-	int err = 0;
++	int err;
+ 
+ 	switch (cmode) {
+ 	case MV88E6XXX_PORT_STS_CMODE_SGMII:
+@@ -842,6 +842,9 @@ int mv88e6390_serdes_power(struct mv88e6xxx_chip *chip, int port, int lane,
+ 	case MV88E6XXX_PORT_STS_CMODE_RXAUI:
+ 		err = mv88e6390_serdes_power_10g(chip, lane, up);
+ 		break;
++	default:
++		err = -EINVAL;
++		break;
+ 	}
+ 
+ 	if (!err && up)
+@@ -1507,7 +1510,7 @@ int mv88e6393x_serdes_power(struct mv88e6xxx_chip *chip, int port, int lane,
+ 			    bool on)
+ {
+ 	u8 cmode = chip->ports[port].cmode;
+-	int err = 0;
++	int err;
+ 
+ 	if (port != 0 && port != 9 && port != 10)
+ 		return -EOPNOTSUPP;
+@@ -1541,6 +1544,9 @@ int mv88e6393x_serdes_power(struct mv88e6xxx_chip *chip, int port, int lane,
+ 	case MV88E6393X_PORT_STS_CMODE_10GBASER:
+ 		err = mv88e6390_serdes_power_10g(chip, lane, on);
+ 		break;
++	default:
++		err = -EINVAL;
++		break;
+ 	}
+ 
+ 	if (err)
+-- 
+2.25.1
 
-> Fixes: 62dd93181aaa ("[IPV6] NDISC: Set per-entry is_router flag in Proxy NA.")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Cc: Roopa Prabhu <roopa@nvidia.com>
-> ---
->  net/core/neighbour.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
-> 
-> diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-> index 72ba027c34cfea6f38a9e78927c35048ebfe7a7f..dda12fbd177ba6ad2798ea2b07733fa3f03441ab 100644
-> --- a/net/core/neighbour.c
-> +++ b/net/core/neighbour.c
-> @@ -763,11 +763,10 @@ struct pneigh_entry * pneigh_lookup(struct neigh_table *tbl,
->  
->  	ASSERT_RTNL();
->  
-> -	n = kmalloc(sizeof(*n) + key_len, GFP_KERNEL);
-> +	n = kzalloc(sizeof(*n) + key_len, GFP_KERNEL);
->  	if (!n)
->  		goto out;
->  
-> -	n->protocol = 0;
->  	write_pnet(&n->net, net);
->  	memcpy(n->key, pkey, key_len);
->  	n->dev = dev;
-> 
-
-Reviewed-by: David Ahern <dsahern@kernel.org>
