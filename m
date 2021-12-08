@@ -2,110 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8186D46CB3E
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 04:01:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 788CE46CB44
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 04:04:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243379AbhLHDE5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 22:04:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53344 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234660AbhLHDEz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 22:04:55 -0500
-Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73A62C061574;
-        Tue,  7 Dec 2021 19:01:24 -0800 (PST)
-Received: by mail-oi1-x22a.google.com with SMTP id t19so2217965oij.1;
-        Tue, 07 Dec 2021 19:01:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=aESiVO6Qu9V5g79b5unLwF9L8lrVbWO7t1bif/3ir2s=;
-        b=Hz9suid567cwCYwBsKaZLSbD+BMALATLBVyWF47Fsd3eMgwTn38thpNpqhKrKULavK
-         YMYvVeXHrrbd85OuR/j/VmSmOFEw/sl0cnx49dtuOVN/Mcw4kRsCVUBzwOVdBKBWxI2A
-         MaQeUEoBvDWcTu5HNoOvRLg++U+UeA8aiqKvRwJIOmHiJBGaJF9zTGwaNCvY/mAGse7W
-         vgz7zhbUvS1BEapdSYoumC2/b+lziL0G7A0++qcDofEOKm2TC4du3m1rh+1k8zYLgt/o
-         QzTqxrxawp8AoVEoPEa2IyzDEfFsHSs176eAJa0dZZQ8fLccodQ48n2bJJYVdRSGvH9H
-         zp4A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=aESiVO6Qu9V5g79b5unLwF9L8lrVbWO7t1bif/3ir2s=;
-        b=yOe48JMulPozu7xnhZSInW3durMhV2g4zD4Zd378FTFzbaQ+DufQNSS37KCPT6keLL
-         vAK+uDFVemMfFoWnwf8eTZmSr2y1xUxsaY7gyCqWomveEAyVM2z+btEgDEVXPuOK9fA5
-         U+6IyzoZRdK7e0BBcVW988nJATY4jXfoKaoBLr6feV2iM6sXgflU0ANgokwHok6OFEy7
-         /uHGpgWo8AApm3Je7BnLJp4q1JMjqkLu6Ws+UvUmrAarb+7UdldaI2rabQvOZGkjO9cX
-         kAyGauRgm5ZitoCZuzw8VDHdgqncq7PvqxlFQo2ml6lLCn8GKsOL1D7pgsaHltnYq+yF
-         dFtw==
-X-Gm-Message-State: AOAM5315y3CNq1uRO/xfYewpUem5zFUeKCG28sFLyEH49+Gfu/KxvcKN
-        tjMwb9jQ6x9/cWzJkO0h1QQ=
-X-Google-Smtp-Source: ABdhPJwOKuKpAVys+s2DOgsy0wllei85Qsz4kDWl8z9giZhoWunNCSTpc/K6TL2MuE3Mm6+KS/oD6A==
-X-Received: by 2002:a54:4f94:: with SMTP id g20mr9133464oiy.10.1638932479416;
-        Tue, 07 Dec 2021 19:01:19 -0800 (PST)
-Received: from [172.16.0.2] ([8.48.134.30])
-        by smtp.googlemail.com with ESMTPSA id e21sm279660ote.72.2021.12.07.19.01.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Dec 2021 19:01:18 -0800 (PST)
-Message-ID: <230a5b4f-2cbf-4911-5231-b05bf6a44571@gmail.com>
-Date:   Tue, 7 Dec 2021 20:01:16 -0700
+        id S243644AbhLHDHg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 22:07:36 -0500
+Received: from mailgw01.mediatek.com ([60.244.123.138]:34280 "EHLO
+        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S234660AbhLHDHg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 22:07:36 -0500
+X-UUID: ca472f1d17ca4b6dbdb6fc7c94ba8cf1-20211208
+X-UUID: ca472f1d17ca4b6dbdb6fc7c94ba8cf1-20211208
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
+        (envelope-from <biao.huang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 498581839; Wed, 08 Dec 2021 11:04:02 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Wed, 8 Dec 2021 11:04:02 +0800
+Received: from mhfsdcap04.gcn.mediatek.inc (10.17.3.154) by
+ mtkcas10.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.0.1497.2 via Frontend Transport; Wed, 8 Dec 2021 11:04:01 +0800
+From:   Biao Huang <biao.huang@mediatek.com>
+To:     <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>
+CC:     Matthias Brugger <matthias.bgg@gmail.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Biao Huang <biao.huang@mediatek.com>, <netdev@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <srv_heupstream@mediatek.com>, <macpaul.lin@mediatek.com>,
+        <angelogioacchino.delregno@collabora.com>, <dkirjanov@suse.de>
+Subject: [PATCH net-next v6 0/6] MediaTek Ethernet Patches on MT8195
+Date:   Wed, 8 Dec 2021 11:03:48 +0800
+Message-ID: <20211208030354.31877-1-biao.huang@mediatek.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.3.2
-Subject: Re: [PATCH v2] selftests: net: Correct case name
-Content-Language: en-US
-To:     "lizhijian@fujitsu.com" <lizhijian@fujitsu.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "shuah@kernel.org" <shuah@kernel.org>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Jie2x Zhou <jie2x.zhou@intel.com>,
-        "Li Zhijian(intel)" <zhijianx.li@intel.com>
-References: <20211202022841.23248-1-lizhijian@cn.fujitsu.com>
- <bbb91e78-018f-c09c-47db-119010c810c2@fujitsu.com>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <bbb91e78-018f-c09c-47db-119010c810c2@fujitsu.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-MTK:  N
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/6/21 11:05 PM, lizhijian@fujitsu.com wrote:
->> #################################################################
->> With VRF
->>
->> TEST: Raw socket bind to local address - ns-A IP                              [ OK ]
->> TEST: Raw socket bind to local address after device bind - ns-A IP            [ OK ]
->> TEST: Raw socket bind to local address after VRF bind - ns-A IP               [ OK ]
->> TEST: Raw socket bind to local address - VRF IP                               [FAIL]
->>
-> 
-> i found that above case failed with "server: error binding socket: 99: Cannot assign requested address"
-> i have manually check it with below command after setup(), same errors:
-> 
-> # ip netns exec ns-A nettest -s -R -P icmp -l 172.16.3.1 -b
-> 05:55:11 server: error binding socket: 99: Cannot assign requested address
-> 
-> But when i specified specific network interface, it works
-> # ip netns exec ns-A nettest -s -R -P icmp -l 172.16.3.1 -b -I red
-> # echo $?
-> 0
-> # ip netns exec ns-A nettest -s -R -P icmp -l 172.16.3.1 -b
-> 06:01:55 server: error binding socket: 99: Cannot assign requested address
-> # echo $?
-> 1
-> 
-> 
-> So i wonder if i missed something ?
-> 
+Changes in v6:
+1. update commit message as Jacub's comments.
+2. split mt8195 eth dts patch("arm64: dts: mt8195: add ethernet device
+   node") from this series, since mt8195 dtsi/dts basic patches is still
+   under reviewing.
+   https://patchwork.kernel.org/project/linux-mediatek/list/?series=579071
+   we'll resend mt8195 eth dts patch once all the dependent patches are
+   accepted.
 
-That test should be a negative test as is the first one in that group -
-in both cases the address bind should fail since the socket is not in
-the VRF but the address is. The first on currently shows "OK" but that
-is because of 5cad8bce26e01 that made changes to the config to validate
-MD5 changes. Will send a patch to fix.
+Changes in v5:
+1. remove useless inclusion in dwmac-mediatek.c as Angelo's comments.
+2. add acked-by in "net-next: stmmac: dwmac-mediatek: add support for
+   mt8195" patch
+
+Changes in v4:
+1. add changes in commit message in "net-next: dt-bindings: dwmac:
+   Convert mediatek-dwmac to DT schema" patch.
+2. remove ethernet-controller.yaml since snps,dwmac.yaml already include it.
+
+Changes in v3:
+1. Add prefix "net-next" to support new IC as Denis's suggestion.
+2. Split dt-bindings to two patches, one for conversion, and the other for
+   new IC.
+3. add a new patch to update device node in mt2712-evb.dts to accommodate to
+   changes in driver.
+4. remove unnecessary wrapper as Angelo's suggestion.
+5. Add acked-by in "net-next: stmmac: dwmac-mediatek: Reuse more common
+   features" patch.
+
+Changes in v2:
+1. fix errors/warnings in mediatek-dwmac.yaml with upgraded dtschema tools
+
+This series include 5 patches:
+1. add platform level clocks management for dwmac-mediatek
+2. resue more common features defined in stmmac_platform.c
+3. add ethernet entry for mt8195
+4. convert mediatek-dwmac.txt to mediatek-dwmac.yaml
+
+
+Biao Huang (6):
+  stmmac: dwmac-mediatek: add platform level clocks management
+  stmmac: dwmac-mediatek: Reuse more common features
+  arm64: dts: mt2712: update ethernet device node
+  net: dt-bindings: dwmac: Convert mediatek-dwmac to DT schema
+  stmmac: dwmac-mediatek: add support for mt8195
+  net: dt-bindings: dwmac: add support for mt8195
+
+ .../bindings/net/mediatek-dwmac.txt           |  91 ------
+ .../bindings/net/mediatek-dwmac.yaml          | 210 ++++++++++++
+ arch/arm64/boot/dts/mediatek/mt2712-evb.dts   |   1 +
+ arch/arm64/boot/dts/mediatek/mt2712e.dtsi     |  14 +-
+ .../ethernet/stmicro/stmmac/dwmac-mediatek.c  | 306 ++++++++++++++++--
+ 5 files changed, 503 insertions(+), 119 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/net/mediatek-dwmac.txt
+ create mode 100644 Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
+
+--
+2.18.0
+
 
