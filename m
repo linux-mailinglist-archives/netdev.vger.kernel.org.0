@@ -2,133 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 334DC46CF87
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 09:54:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9504546CF9B
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 09:59:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229932AbhLHI6W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 03:58:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47940 "EHLO
+        id S230095AbhLHJC4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 04:02:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229901AbhLHI6W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 03:58:22 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFD47C061746
-        for <netdev@vger.kernel.org>; Wed,  8 Dec 2021 00:54:50 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1musit-0000Ex-Vq; Wed, 08 Dec 2021 09:54:48 +0100
-Received: from pengutronix.de (2a03-f580-87bc-d400-e45e-c028-b01c-c307.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:e45e:c028:b01c:c307])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id B614C6BF96B;
-        Wed,  8 Dec 2021 08:54:45 +0000 (UTC)
-Date:   Wed, 8 Dec 2021 09:54:44 +0100
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     "Modilaynen, Pavel" <pavel.modilaynen@volvocars.com>
-Cc:     "drew@beagleboard.org" <drew@beagleboard.org>,
-        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
-        "menschel.p@posteo.de" <menschel.p@posteo.de>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "will@macchina.cc" <will@macchina.cc>
-Subject: Re: [net-next 6/6] can: mcp251xfd: mcp251xfd_regmap_crc_read(): work
- around broken CRC on TBC register
-Message-ID: <20211208085444.j47kse2b7vnde2xd@pengutronix.de>
-References: <20210510074334.el2yxp3oy2pmbs7d@pengutronix.de>
- <PR3P174MB0112D073D0E5E080FAAE8510846E9@PR3P174MB0112.EURP174.PROD.OUTLOOK.COM>
+        with ESMTP id S229648AbhLHJCy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 04:02:54 -0500
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80F25C0617A1;
+        Wed,  8 Dec 2021 00:59:21 -0800 (PST)
+Received: by mail-pl1-x62e.google.com with SMTP id y8so1129751plg.1;
+        Wed, 08 Dec 2021 00:59:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3rKzjENNvAvq/epFlb0+479WQyvQ4+o/61h3HZ+3R9s=;
+        b=EG1iybwtQUPhwcFP1tTo7TaWi/COvGXEZtWpjfXDWq8Q6zC/4y7YHUVKVrT7m95+1a
+         Bw291CSUa2CYaQ+v46GR6ALBPxjkssBVQre11ddk4otRfd2V+E+t3hXSo2XvceOC+7aZ
+         LAbS5pUv/QI0gmIkxKc6CSDnz1Yd6RzuU7zBs0bsU8zpo7FBhvMvjV7SyKSstmMqY13t
+         ZYOqpS62PSKMK2rNuGNILcrTSDLA1IGwqu3YjvChLs3LLnhVsqfk4E5cCrxL0jdvxvni
+         fS4OQwAGjNLJoA7xLp1OiT4TvVYWALjKNraDgHFkPSKwi+EAZxeMOZ3QQC4qWhJLc3Ud
+         +TmA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3rKzjENNvAvq/epFlb0+479WQyvQ4+o/61h3HZ+3R9s=;
+        b=AXuThxPuA5+iEVIno5XW+jdwVfFd9sYXK1j5f1OZZz+XLEAfp1aC+NjyBjq915UBnH
+         HTGq4R57OTjXCk9dTwskTCA6rWWuWLVyizmgtTLQkX0mvEq+0wx5+njmZbwgREsRQKSY
+         rMlId5VD5szVp5o5EmunraNKTllUCBR9qCAfZxBzRQgQi0hfF9CPUwSGkWUwT1LN3+Ei
+         TkwPrrlCvDh+LCYVKBVR+D0g3g4MKuh9uglGzwd3eyHoBVl3gNj9edWcdU+UpO2tb5VC
+         M3Rl1JMrYI+ZiTyBnVwbjtuxNnJUmT0uJKDr05OAhlbFoL0Zlw+XnD5g1iUKAmv1IoRx
+         UNxw==
+X-Gm-Message-State: AOAM5337j9gWxvfDkwIl/Q2QnpxdYrkF0P4GTX5gKZVnFVhfVD5ibsWY
+        0w2tD2eISrzwbMb8lSWVe3Y=
+X-Google-Smtp-Source: ABdhPJyrgYKY+o8ohzs5QG9Z3kRFA/6+qVMfeWexlWx9K8I9W7B3rd0Zcmu1aZZvJR7b2WAPusV+Pw==
+X-Received: by 2002:a17:90a:af97:: with SMTP id w23mr5593738pjq.128.1638953961134;
+        Wed, 08 Dec 2021 00:59:21 -0800 (PST)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id oj11sm302557pjb.46.2021.12.08.00.59.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Dec 2021 00:59:20 -0800 (PST)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: xu.xin16@zte.com.cn
+To:     davem@davemloft.net
+Cc:     kuba@kernel.org, ebiederm@xmission.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        daniel@iogearbox.net, xu xin <xu.xin16@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH net-next] net: Enable neighbor sysctls that is save for userns root
+Date:   Wed,  8 Dec 2021 08:58:44 +0000
+Message-Id: <20211208085844.405570-1-xu.xin16@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="4lwcklrvy4hwyxiu"
-Content-Disposition: inline
-In-Reply-To: <PR3P174MB0112D073D0E5E080FAAE8510846E9@PR3P174MB0112.EURP174.PROD.OUTLOOK.COM>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: xu xin <xu.xin16@zte.com.cn>
 
---4lwcklrvy4hwyxiu
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Inside netns owned by non-init userns, sysctls about ARP/neighbor is
+currently not visible and configurable.
 
-On 07.12.2021 16:53:12, Modilaynen, Pavel wrote:
-> Hello Marc,
->=20
-> We observe the very similar issue with MCP2517FD.
->=20
-> >The CRC errors the patch works around are CRC errors introduced by a
-> >chip erratum, not by electromagnetic interference. In my observation
->=20
-> Are you referring this errata doc
-> https://datasheet.octopart.com/MCP2517FD-H-JHA-Microchip-datasheet-136609=
-045.pdf ?
+For the attributes these sysctls correspond to, any modifications make
+effects on the performance of networking(ARP, especilly) only in the
+scope of netns, which does not affect other netns.
 
-ACK - although there are newer versions available. The newest erratum
-for the mcp2517fd is the "C" issue:
+Actually, some tools via netlink can modify these attribute. iproute2 is
+an example. see as follows:
 
-| https://ww1.microchip.com/downloads/en/DeviceDoc/MCP2517FD-Silicon-Errata=
--and-Data-Sheet-Clarification-DS80000792C.pdf
+$ unshare -ur -n
+$ cat /proc/sys/net/ipv4/neigh/lo/retrans_time
+cat: can't open '/proc/sys/net/ipv4/neigh/lo/retrans_time': No such file
+or directory
+$ ip ntable show dev lo
+inet arp_cache
+    dev lo
+    refcnt 1 reachable 19494 base_reachable 30000 retrans 1000
+    gc_stale 60000 delay_probe 5000 queue 101
+    app_probes 0 ucast_probes 3 mcast_probes 3
+    anycast_delay 1000 proxy_delay 800 proxy_queue 64 locktime 1000
 
-The mpc2518fd can be downloaded here:
+inet6 ndisc_cache
+    dev lo
+    refcnt 1 reachable 42394 base_reachable 30000 retrans 1000
+    gc_stale 60000 delay_probe 5000 queue 101
+    app_probes 0 ucast_probes 3 mcast_probes 3
+    anycast_delay 1000 proxy_delay 800 proxy_queue 64 locktime 0
+$ ip ntable change name arp_cache dev <if> retrans 2000
+inet arp_cache
+    dev lo
+    refcnt 1 reachable 22917 base_reachable 30000 retrans 2000
+    gc_stale 60000 delay_probe 5000 queue 101
+    app_probes 0 ucast_probes 3 mcast_probes 3
+    anycast_delay 1000 proxy_delay 800 proxy_queue 64 locktime 1000
 
-| https://ww1.microchip.com/downloads/en/DeviceDoc/MCP2518FD-Silicon-Errata=
--and-Data-Sheet-Clarification-DS80000789C.pdf
+inet6 ndisc_cache
+    dev lo
+    refcnt 1 reachable 35524 base_reachable 30000 retrans 1000
+    gc_stale 60000 delay_probe 5000 queue 101
+    app_probes 0 ucast_probes 3 mcast_probes 3
+    anycast_delay 1000 proxy_delay 800 proxy_queue 64 locktime 0
 
-> We have the similar CRC read errors but
-> the lowest byte is not 0x00 and 0x80, it's actually 0x0x or 0x8x, e.g.
->=20
-> mcp251xfd spi0.0 can0: CRC read error at address 0x0010 (length=3D4, data=
-=3D82 d1 fa 6c, CRC=3D0xd9c2) retrying.
->=20
-> 0xb0 0x10 0x04 0x82 0xd1 0xfa 0x6c =3D> 0x59FD (not matching)
->=20
-> but if I flip the first received bit  (highest bit in the lowest byte):
-> 0xb0 0x10 0x04 0x02 0xd1 0xfa 0x6c =3D> 0xD9C2 (matching!)
->=20
-> So, your fix covers only the case of 0x00 and 0x80,=20
-> do you think that the workaround should be extended so check
->      (buf_rx->data[0] =3D=3D 0x0 || buf_rx->data[0] =3D=3D 0x80)) {
-> turns into=20
->      ((buf_rx->data[0] & 0xf0) =3D=3D 0x0 || (buf_rx->data[0] & 0xf0) =3D=
-=3D 0x80)) {
->=20
-> Errata, actually says
-> "Only bits 7/15/23/31 of the following registers can be affected:"
->=20
-> So, we could basically, in simplest case flip bit 31 and re-check CRC
-> without any check of rx->data[0]....
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: xu xin <xu.xin16@zte.com.cn>
+---
+ net/core/neighbour.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
-Can you send a patch that updates the workaround and description.
+diff --git a/net/core/neighbour.c b/net/core/neighbour.c
+index 0cdd4d9ad942..44d90cc341ea 100644
+--- a/net/core/neighbour.c
++++ b/net/core/neighbour.c
+@@ -3771,10 +3771,6 @@ int neigh_sysctl_register(struct net_device *dev, struct neigh_parms *p,
+ 			neigh_proc_base_reachable_time;
+ 	}
+ 
+-	/* Don't export sysctls to unprivileged users */
+-	if (neigh_parms_net(p)->user_ns != &init_user_ns)
+-		t->neigh_vars[0].procname = NULL;
+-
+ 	switch (neigh_parms_family(p)) {
+ 	case AF_INET:
+ 	      p_name = "ipv4";
+-- 
+2.25.1
 
-regards,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---4lwcklrvy4hwyxiu
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmGwctIACgkQqclaivrt
-76nEaAgAsPQpUDk019EElxIJvT/tejKNWXdP1as3EyE/qpEQZLZ9gIvnQCEFKA64
-ndw02h69iFMZwWbSdqL7Q+jjTHCBjb21dADY0z90zY5P9p3A2hSWtJPu8WWwUZER
-fGfiBmUqJ+0hfajoToFTeaxvSHDHsdjs7Lg3fW+oG2Yw9g5EK4m9AEYilQVNuq+B
-P3JZZmujeqB/uLL5FHmyEHKl0QJRzWflgSpJ4D0T+9yLFavr8KEHAmqNS+3mShwG
-s0SJoa9ou9emt3nCxiyzjcNlzdtMU2rRSZ+5KDUq3nFSbHADqgi04o9yJH45JTzN
-eBrkCY/KT7kQIvY2mLIiXa9MyPw7YQ==
-=qSKS
------END PGP SIGNATURE-----
-
---4lwcklrvy4hwyxiu--
