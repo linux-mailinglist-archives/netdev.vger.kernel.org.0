@@ -2,95 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A54D46DD96
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 22:25:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EF1446DD97
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 22:25:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237200AbhLHV2l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 16:28:41 -0500
-Received: from a.mx.secunet.com ([62.96.220.36]:55686 "EHLO a.mx.secunet.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234732AbhLHV2k (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 Dec 2021 16:28:40 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 0FA4F2049A;
-        Wed,  8 Dec 2021 22:25:06 +0100 (CET)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id CG7zuaS0F1iI; Wed,  8 Dec 2021 22:25:05 +0100 (CET)
-Received: from mailout2.secunet.com (mailout2.secunet.com [62.96.220.49])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 73FC62035C;
-        Wed,  8 Dec 2021 22:25:05 +0100 (CET)
-Received: from cas-essen-02.secunet.de (unknown [10.53.40.202])
-        by mailout2.secunet.com (Postfix) with ESMTP id 6763680004A;
-        Wed,  8 Dec 2021 22:25:05 +0100 (CET)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- cas-essen-02.secunet.de (10.53.40.202) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Wed, 8 Dec 2021 22:25:05 +0100
-Received: from moon.secunet.de (172.18.26.122) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.14; Wed, 8 Dec
- 2021 22:25:04 +0100
-Date:   Wed, 8 Dec 2021 22:24:41 +0100
-From:   Antony Antony <antony.antony@secunet.com>
-To:     Steffen Klassert <steffen.klassert@secunet.com>
-CC:     Antony Antony <antony.antony@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Jakub Kicinski" <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        Tobias Brunner <tobias@strongswan.org>
-Subject: [PATCH RFC ipsec-next] xfrm: update SA curlft.use_time
-Message-ID: <804cfcc194d3ae3d4a871d42f749cc2356da5881.1638998514.git.antony.antony@secunet.com>
-Reply-To: <antony.antony@secunet.com>
-References: <YanYgmJwrC3REnKc@AntonyAntony.local>
+        id S237390AbhLHV3I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 16:29:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54390 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234732AbhLHV3I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 16:29:08 -0500
+Received: from mail-ua1-x933.google.com (mail-ua1-x933.google.com [IPv6:2607:f8b0:4864:20::933])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8B04C061746
+        for <netdev@vger.kernel.org>; Wed,  8 Dec 2021 13:25:35 -0800 (PST)
+Received: by mail-ua1-x933.google.com with SMTP id j14so7113168uan.10
+        for <netdev@vger.kernel.org>; Wed, 08 Dec 2021 13:25:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=qPeI5/clEODT582hPwenfvQnW3rNylut+fUamnF5AN8=;
+        b=IFAwnTdEMdmlYbwYPRrBmKAeR4hIOeWN/xarpuaFzwG4gOGWi9df2vWAZ3J+3ufX3A
+         q+rBb+2oRce1mlEkcm/SX6rllkcJ/2Xo2pD9OZQD4Mg3WrV1jalIm9+ITT17HZ36dxGI
+         ERvz3ardX0xu3fVr8BOm5c9MjQkmIYdcE/c7DVmXO/4MGNmZXcEC/bvrSK1dGW4dUo5S
+         l8fc/CyofTqQi9E6XflNiRUtXL7aav/1gU0muwlU3sH5pNQjjDS8MwasHzG7CCsiajmy
+         tmAFVGK7YQGgOLn0y02nCA8i6WWXIkp/mSJqyBDByVnTA80qvUFdn9zvoQUayFnfZXGL
+         woVw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qPeI5/clEODT582hPwenfvQnW3rNylut+fUamnF5AN8=;
+        b=1fTzf5FfjoOigBZA1R3mEtuflDtx7Ji1N1TMoWxJaWnBi39rwU9o41KAF9xbCYQW7V
+         TCI1YMv4i8WwQo2yUSxBVuLrTw7iS62XO5jKa/lTivSPZBEyJ+jvFngH7c0tzGbju5+c
+         kVq+ei4R8z2KwgEqZJZzY4C5JRe/4+HJSoVGI7KEd1tswDtK0fTB+YgkHZoyj5nnk4Zh
+         XG+rZsIO8OWN0Iz+E6f50NEUsEsGPrWo1BDqNN2fJEHjJomSwAnx0f4seS4IECEgNHgT
+         TyqOEKT6d4izvatGM+pLL2mWbiybL3u4Kk+yAewgKCvS6m+cGLNSTHe0vUywcP99OloS
+         A4PA==
+X-Gm-Message-State: AOAM533o/hKJowzaIBf4KawHyWB/MJ7+hxpGSSSgZ9v4RysToM+oqhlM
+        P6HsJTzTt6ZSsg8MPFhZ4M6N1fnbrDw=
+X-Google-Smtp-Source: ABdhPJzb5TWmD5vfPxkzWRUgFJFH04aoBcDQfMtE1yH+bAHXaW8W25swIu5cB9aE3OoNYSLpKUKk2Q==
+X-Received: by 2002:a67:6684:: with SMTP id a126mr1544401vsc.22.1638998734969;
+        Wed, 08 Dec 2021 13:25:34 -0800 (PST)
+Received: from mail-ua1-f41.google.com (mail-ua1-f41.google.com. [209.85.222.41])
+        by smtp.gmail.com with ESMTPSA id a4sm2503608vkm.46.2021.12.08.13.25.33
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 08 Dec 2021 13:25:34 -0800 (PST)
+Received: by mail-ua1-f41.google.com with SMTP id n6so7216887uak.1
+        for <netdev@vger.kernel.org>; Wed, 08 Dec 2021 13:25:33 -0800 (PST)
+X-Received: by 2002:a05:6102:3053:: with SMTP id w19mr1488312vsa.60.1638998733270;
+ Wed, 08 Dec 2021 13:25:33 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <YanYgmJwrC3REnKc@AntonyAntony.local>
-Organization: secunet
-X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+References: <20211208173831.3791157-1-andrew@lunn.ch> <20211208173831.3791157-3-andrew@lunn.ch>
+In-Reply-To: <20211208173831.3791157-3-andrew@lunn.ch>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Wed, 8 Dec 2021 16:24:56 -0500
+X-Gmail-Original-Message-ID: <CA+FuTScGS_s=PCYnXzJbkABOQ7nirg4aa-HwzHjk4crp9vic1w@mail.gmail.com>
+Message-ID: <CA+FuTScGS_s=PCYnXzJbkABOQ7nirg4aa-HwzHjk4crp9vic1w@mail.gmail.com>
+Subject: Re: [PATCH net-next v4 1/3] seg6: export get_srh() for ICMP handling
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        James Prestwood <prestwoj@gmail.com>,
+        Justin Iurman <justin.iurman@uliege.be>,
+        Praveen Chaudhary <praveen5582@gmail.com>,
+        "Jason A . Donenfeld" <Jason@zx2c4.com>,
+        Eric Dumazet <edumazet@google.com>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SA use_time was only updated once, for the first packet.
-with this fix update the use_time for every packet.
+On Wed, Dec 8, 2021 at 12:38 PM Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> From 387a5e9d6b2749d0457ccc760a5b785c2df8f799 Mon Sep 17 00:00:00 2001
+> From: Andrew Lunn <andrew@lunn.ch>
+> Date: Sat, 20 Nov 2021 12:51:07 -0600
+> Subject: [PATCH net-next v4 2/3] icmp: ICMPV6: Examine invoking packet for
+>  Segment Route Headers.
 
-Signed-off-by: Antony Antony <antony.antony@secunet.com>
----
- net/xfrm/xfrm_input.c  | 1 +
- net/xfrm/xfrm_output.c | 1 +
- 2 files changed, 2 insertions(+)
+Something went wrong when sending this patch series.
 
-diff --git a/net/xfrm/xfrm_input.c b/net/xfrm/xfrm_input.c
-index 70a8c36f0ba6..144238a50f3d 100644
---- a/net/xfrm/xfrm_input.c
-+++ b/net/xfrm/xfrm_input.c
-@@ -669,6 +669,7 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
+The above header is part of the commit message, and this patch is
+marked as 1/3. See also in
+https://patchwork.kernel.org/project/netdevbpf
 
- 		x->curlft.bytes += skb->len;
- 		x->curlft.packets++;
-+		x->curlft.use_time = ktime_get_real_seconds();
-
- 		spin_unlock(&x->lock);
-
-diff --git a/net/xfrm/xfrm_output.c b/net/xfrm/xfrm_output.c
-index f165ffc77078..38f62f5c69d8 100644
---- a/net/xfrm/xfrm_output.c
-+++ b/net/xfrm/xfrm_output.c
-@@ -536,6 +536,7 @@ static int xfrm_output_one(struct sk_buff *skb, int err)
-
- 		x->curlft.bytes += skb->len;
- 		x->curlft.packets++;
-+		x->curlft.use_time = ktime_get_real_seconds();
-
- 		spin_unlock_bh(&x->lock);
-
---
-2.30.2
-
+Otherwise the code looks good to me.
