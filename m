@@ -2,139 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC25A46D920
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 18:02:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A10DB46D926
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 18:02:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237469AbhLHRFt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 12:05:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49400 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232702AbhLHRFs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 12:05:48 -0500
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A479AC0617A1
-        for <netdev@vger.kernel.org>; Wed,  8 Dec 2021 09:02:16 -0800 (PST)
-Received: by mail-wm1-x334.google.com with SMTP id o19-20020a1c7513000000b0033a93202467so2229474wmc.2
-        for <netdev@vger.kernel.org>; Wed, 08 Dec 2021 09:02:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=wmv1cfuLhmgRmmPI+EDJKcsb0BGLqxffNGOauuSWXFY=;
-        b=NsHNZgygY8lIlXgFS8Pr4iEQQ2fGfU+ToPLIjG35El2o8GjZpM0Ii73xAju1KJziUn
-         Ll4FJjaUgy6dQUnvEb/0cl0gCQjXK8T7iiSs3pHb/UGiA1sUxn7aO8loyLhk4RVryaQi
-         TU6Kx5CN+ooYYzzqt58Y9c0o1aDGttWDmq8QQE+4vbXzCzPlpQk5/FY9oNkPXxt3RXdG
-         K40wf8yln6wYgOpzmSbVNo8WE78y85C8oTy31N4EBngJqUI7J8Uh0JwCemb68zphgu0g
-         0Y4/frrZ1iZ+6ctsfhhtgTd8rEFNc2u/R8EsLjXRJiLLYD5bJHYN3bz4cCJn8mqXRvI0
-         JQpg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=wmv1cfuLhmgRmmPI+EDJKcsb0BGLqxffNGOauuSWXFY=;
-        b=CjN9GV/PZJ1DJwag917XYXY+zXZcrBLBLroZ13s82lWO/Icc360CSubRWlWxIaOQrM
-         EJlYtPemQUAj5yYsRJY9x+bdY2ttDTEZSjF2ObDGCU+iH39MmwVLyZ2vi/gEoJci8Fby
-         nE476ijlnTf5/fABJhpmeDYNPB/Rod2ak9j8yADzJKXAWSrTVfbMhrQyau8VrJI2QCwz
-         Ey9Lj1zZXKWs6TDAxPiKz6h0QbbRl5+NMC7XU2J6VUGV4Z1r35HmEDkS6D9G/3adJgaJ
-         0LIcdCr88WHXJ/SNO6LsHTtBM8E9NNe511orPDodp9TH0ywKbxTr+6zjpvvBAn+vZ4wW
-         +kyg==
-X-Gm-Message-State: AOAM531n2Pm4LVgA2wblYDkaMgslC28qONuVJbL2f4iAHEOG+l4E82Fh
-        VeHQQdHbW9HSafGbEEtYMBxn8Q==
-X-Google-Smtp-Source: ABdhPJyC11uszuyYfzMN3TAwMjyQ8BY70HPd6Np8MU6PRZChh8NmSre1RuxvP/QVGMYWVLQUSizKUQ==
-X-Received: by 2002:a05:600c:4f8a:: with SMTP id n10mr17120991wmq.54.1638982934887;
-        Wed, 08 Dec 2021 09:02:14 -0800 (PST)
-Received: from google.com ([2.31.167.18])
-        by smtp.gmail.com with ESMTPSA id l2sm6844928wmq.42.2021.12.08.09.02.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Dec 2021 09:02:14 -0800 (PST)
-Date:   Wed, 8 Dec 2021 17:02:12 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     linux-kernel@vger.kernel.org, Vlad Yasevich <vyasevich@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        lksctp developers <linux-sctp@vger.kernel.org>,
-        "H.P. Yarroll" <piggy@acm.org>,
-        Karl Knutson <karl@athena.chicago.il.us>,
-        Jon Grimm <jgrimm@us.ibm.com>,
-        Xingang Guo <xingang.guo@intel.com>,
-        Hui Huang <hui.huang@nokia.com>,
-        Sridhar Samudrala <sri@us.ibm.com>,
-        Daisy Chang <daisyc@us.ibm.com>,
-        Ryan Layer <rmlayer@us.ibm.com>,
-        Kevin Gao <kevin.gao@intel.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH 1/1] sctp: Protect cached endpoints to prevent possible
- UAF
-Message-ID: <YbDlFFVPm/MYEoOQ@google.com>
-References: <20211208165434.2962062-1-lee.jones@linaro.org>
+        id S237501AbhLHRG3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 12:06:29 -0500
+Received: from mail-bn8nam12on2060.outbound.protection.outlook.com ([40.107.237.60]:32161
+        "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S234434AbhLHRG2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 8 Dec 2021 12:06:28 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=g7dzPiG3At28ySE14YWgnAWxx+FaQhcxtGS3k0aKSMuEwgzu/YIz9I/vvLHjX0IIMPbgiPXvw/Q796hMsm4Rieu7l1lC66oAyjgwvpF0wmOc97bxlWtAMhb9ZjZUuuoJuxEamcNOWhCYSDgrlKMVzKk46BBUc4UQqFbpnKWFCvE49XLLHBn95enLFQzJvob3/oFZK9tHWTdOzmhfiiFPolRe/zeYLawKfqoPLi5f/TxGkkBUN0FFz09jgdDqZOVFTnb4omSm8xl3HxbMUNL2CGb5NAhCVviWvixFk3CCU9mePdfcOuNVLx/SK9kDxeE42HkXSy+qNbaVEndH8OCTDg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ucmqPWNTtPyWHfovV/ZBIfn8tb+EI4ycl9cQCgUSeSg=;
+ b=hG6UzJg5zosCC5L1GnmlcnZ4pwCOUsGcXJGRcC5IIz3VxlDKIj246d1auI/FAQepxBIwb7FAFxwfrsrqStk/rGxbuaAf30jyteuiJ/CwWNQQjOVTxhaZboAbLo0ty4AB0aYQzbZSrfa9FjV28mC8ayeRYbVY9pUh5GIIuyyDDr0oWIPHZC2s4w6U0CXICcaOUfvMa8P0bMmF+mzksRck+cJa7RS2Hk5EflNH5Cf7yNW6Nbco3+kjh/fHT3e1ArXrN7iMEAS2p0E5MvJ+2SdU63L40VrxSfJMZ7v5gEHpg5rZpclN5kld3rmhAjhubT/ne5LTX5UM7t1Tjp7iPCfnHQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 203.18.50.13) smtp.rcpttodomain=openvswitch.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=nvidia.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ucmqPWNTtPyWHfovV/ZBIfn8tb+EI4ycl9cQCgUSeSg=;
+ b=V+560bsDvKb5P5w7ydtVRIo5zE23F9AQ9MVfZCPr1fxYnES/vS+jZyL+BwwWaFv7goKefKwzA/+YWx5vs96bDw0MsN90wDe7V8mnb4CRS7dZmjfBB5GbMmttmdx1ujSi65ZkUf2UWJJSZAbiQM34LMugWiVFK2JYxVgMtHvo8DVm3ZwwAviJPoJfbFtpbPZLcU9cOEeKzUkQWfDaSyBTuq16j4ZCAtOr5oON2ZuZFJMXjrzh2A6ryUuZeXT3GyeGZlnRIXuThTqTLK3/fCk9HMZnw98VqvceXlisazZP+QbczE98XzmxY9V1JHzVdilM5ExDjpqyf1GpwP1KnPnc9g==
+Received: from MW4PR03CA0120.namprd03.prod.outlook.com (2603:10b6:303:b7::35)
+ by BY5PR12MB4243.namprd12.prod.outlook.com (2603:10b6:a03:20f::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4778.11; Wed, 8 Dec
+ 2021 17:02:54 +0000
+Received: from CO1NAM11FT005.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:b7:cafe::7f) by MW4PR03CA0120.outlook.office365.com
+ (2603:10b6:303:b7::35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.19 via Frontend
+ Transport; Wed, 8 Dec 2021 17:02:54 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 203.18.50.13)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 203.18.50.13 as permitted sender) receiver=protection.outlook.com;
+ client-ip=203.18.50.13; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (203.18.50.13) by
+ CO1NAM11FT005.mail.protection.outlook.com (10.13.174.147) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4755.13 via Frontend Transport; Wed, 8 Dec 2021 17:02:53 +0000
+Received: from HQMAIL109.nvidia.com (172.20.187.15) by HKMAIL102.nvidia.com
+ (10.18.16.11) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 8 Dec
+ 2021 17:02:52 +0000
+Received: from HQMAIL101.nvidia.com (172.20.187.10) by HQMAIL109.nvidia.com
+ (172.20.187.15) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 8 Dec
+ 2021 09:02:50 -0800
+Received: from reg-r-vrt-019-180.mtr.labs.mlnx (172.20.187.6) by
+ mail.nvidia.com (172.20.187.10) with Microsoft SMTP Server id 15.0.1497.18
+ via Frontend Transport; Wed, 8 Dec 2021 17:02:48 +0000
+From:   Paul Blakey <paulb@nvidia.com>
+To:     Paul Blakey <paulb@nvidia.com>, <dev@openvswitch.org>,
+        <netdev@vger.kernel.org>, Saeed Mahameed <saeedm@nvidia.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        "Pravin B Shelar" <pshelar@ovn.org>, <davem@davemloft.net>,
+        Jiri Pirko <jiri@nvidia.com>
+CC:     Oz Shlomo <ozsh@nvidia.com>, Vlad Buslov <vladbu@nvidia.com>,
+        Roi Dayan <roid@nvidia.com>
+Subject: [PATCH net 0/3] net/sched: Fix ct zone matching for invalid conntrack state
+Date:   Wed, 8 Dec 2021 19:02:37 +0200
+Message-ID: <20211208170240.13458-1-paulb@nvidia.com>
+X-Mailer: git-send-email 2.30.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20211208165434.2962062-1-lee.jones@linaro.org>
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d8b6b0bd-a988-4778-822a-08d9ba6c933e
+X-MS-TrafficTypeDiagnostic: BY5PR12MB4243:EE_
+X-Microsoft-Antispam-PRVS: <BY5PR12MB42436F8F37F5ACF719B39535C26F9@BY5PR12MB4243.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: RtW6B2g6CnWIpenBZcRwF2j8DxhXM7gpuZpUb7OL0fEaSbdCZNDY8o4YSTsJCowVgTOeD+Io2SOGFSkEP0x2aptp2Wgo9QtG1vWPsOdf3RPZF4FKy3fpzbpVprQ52fxA5WWBEcfVFJ+Gbvn50fM8BKdNiamWNowbbStMSqZx1PYRtJlCjw8hnEZ2uWkiNAaJ3PQ6pbyhALF4O9iblgPGQSS9tznpQT7TI8fdVRy5AtjG2wspHNPGptkqTlq6xtj2FAWESwHs4WfZ/tG+QIsNBnwbD6tG2G8vd2S1o7A0bM1/aVi5gG6fZZSEt+WqSTTCTR9Dj8LR8DOW1knRqkwRyYQcj2GTBUxAKwDEYobLfUBbYqd6Y6WvpdwHZZwjfNgebMJZzryOIoumIl2j+Ns+Imb/ZajM7MBIOWz3UOYoJ2vuNGvFxxeOFYRedUUQP9HBQZJXjYYabuSe+QG7GCT23C5vuSlTIArKsmvDrTRKSveb5QWORbc2QFdHtQn2waULy0lGkj6JdnzYST6WYDr0RlPUMCe1a5Vre51mK0ThHGKFWElWWE7v7gFcpc/MS1J/iVpoeMAbAWl3Qx6tiYgUsZ0+F9HbRtTmLAQUiZSubodpEunoAFLcAXACKI0fwHJFC/2/0q20V/sr4UtgEj+MV9WGMwqZUT8hCldsq06ztPPheDp6AqbRh4oqrl0jC/caYPwzK7rql32drNG66K7ZeNrmkc/tmYOfdQPPzSUIonlA/b8tiWfVSRElpSmc0aOKrx6BUWFtkVHkp7ZRPZTss8IdlTOdzRvVKMDhBFbnlHQ=
+X-Forefront-Antispam-Report: CIP:203.18.50.13;CTRY:HK;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:hkhybrid02.nvidia.com;CAT:NONE;SFS:(4636009)(36840700001)(46966006)(40470700001)(316002)(34070700002)(54906003)(83380400001)(8936002)(356005)(86362001)(4326008)(107886003)(110136005)(36756003)(7636003)(36860700001)(6666004)(8676002)(70206006)(2906002)(336012)(426003)(40460700001)(2616005)(508600001)(6636002)(47076005)(82310400004)(186003)(26005)(5660300002)(1076003)(70586007);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Dec 2021 17:02:53.5155
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: d8b6b0bd-a988-4778-822a-08d9ba6c933e
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[203.18.50.13];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT005.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4243
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 08 Dec 2021, Lee Jones wrote:
+Hi,
 
-> The cause of the resultant dump_stack() reported below is a
-> dereference of a freed pointer to 'struct sctp_endpoint' in
-> sctp_sock_dump().
-> 
-> This race condition occurs when a transport is cached into its
-> associated hash table then freed prior to its subsequent use in
-> sctp_diag_dump() which uses sctp_for_each_transport() to walk the
-> (now out of date) hash table calling into sctp_sock_dump() where the
-> dereference occurs.
-> 
-> To prevent this from happening we need to take a reference on the
-> to-be-used/dereferenced 'struct sctp_endpoint' until such a time when
-> we know it can be safely released.
-> 
-> When KASAN is not enabled, a similar, but slightly different NULL
-> pointer derefernce crash occurs later along the thread of execution in
-> inet_sctp_diag_fill() this time.
-> 
->   BUG: KASAN: use-after-free in sctp_sock_dump+0xa8/0x438 [sctp_diag]
->   Call trace:
->    dump_backtrace+0x0/0x2dc
->    show_stack+0x20/0x2c
->    dump_stack+0x120/0x144
->    print_address_description+0x80/0x2f4
->    __kasan_report+0x174/0x194
->    kasan_report+0x10/0x18
->    __asan_load8+0x84/0x8c
->    sctp_sock_dump+0xa8/0x438 [sctp_diag]
->    sctp_for_each_transport+0x1e0/0x26c [sctp]
->    sctp_diag_dump+0x180/0x1f0 [sctp_diag]
->    inet_diag_dump+0x12c/0x168
->    netlink_dump+0x24c/0x5b8
->    __netlink_dump_start+0x274/0x2a8
->    inet_diag_handler_cmd+0x224/0x274
->    sock_diag_rcv_msg+0x21c/0x230
->    netlink_rcv_skb+0xe0/0x1bc
->    sock_diag_rcv+0x34/0x48
->    netlink_unicast+0x3b4/0x430
->    netlink_sendmsg+0x4f0/0x574
->    sock_write_iter+0x18c/0x1f0
->    do_iter_readv_writev+0x230/0x2a8
->    do_iter_write+0xc8/0x2b4
->    vfs_writev+0xf8/0x184
->    do_writev+0xb0/0x1a8
->    __arm64_sys_writev+0x4c/0x5c
->    el0_svc_common+0x118/0x250
->    el0_svc_handler+0x3c/0x9c
->    el0_svc+0x8/0xc
+Currently, when a packet is marked as invalid conntrack_in in act_ct,
+post_ct will be set, and connection info (nf_conn) will be removed
+from the skb. Later openvswitch and flower matching will parse this
+as ct_state=+trk+inv. But because the connection info is missing,
+there is also no zone info to match against even though the packet
+is tracked.
 
-This looks related (reported 3 years ago!)
+This series fixes that, by passing the last executed zone by act_ct.
+The zone info is passed along from act_ct to the ct flow dissector
+(used by flower to extract zone info) and to ovs, the same way as post_ct
+is passed, via qdisc layer skb cb to dissector, and via skb extension
+to OVS.
 
-  https://lore.kernel.org/all/20181122131344.GD31918@localhost.localdomain/
+Since there was no more for BPF skb cb to extend the qdisc skb cb,
+tc info on the qdisc skb cb is moved to a tc specific cb that extend it
+instead of within it (same as BPF).
+
+Paul Blakey (3):
+  net/sched: Extend qdisc control block with tc control block
+  net/sched: flow_dissector: Fix matching on zone id for invalid conns
+  net: openvswitch: Fix matching zone id for invalid conns arriving from tc
+
+ include/linux/skbuff.h    |  4 ++--
+ include/net/pkt_sched.h   | 16 ++++++++++++++++
+ include/net/sch_generic.h |  2 --
+ net/core/dev.c            |  8 ++++----
+ net/core/flow_dissector.c |  6 +++++-
+ net/openvswitch/flow.c    |  8 +++++++-
+ net/sched/act_ct.c        | 15 ++++++++-------
+ net/sched/cls_api.c       |  7 +++++--
+ net/sched/cls_flower.c    |  6 +++---
+ net/sched/sch_frag.c      |  3 ++-
+ 10 files changed, 52 insertions(+), 23 deletions(-)
 
 -- 
-Lee Jones [李琼斯]
-Senior Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+2.30.1
+
