@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BE3046DB47
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 19:38:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F31346DB4B
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 19:38:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239093AbhLHSlh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 13:41:37 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:59654 "EHLO
+        id S235445AbhLHSm0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 13:42:26 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:60208 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239090AbhLHSlg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 13:41:36 -0500
+        with ESMTP id S230040AbhLHSm0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 13:42:26 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 75737B82271;
-        Wed,  8 Dec 2021 18:38:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87D7FC00446;
-        Wed,  8 Dec 2021 18:37:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D9253B82249;
+        Wed,  8 Dec 2021 18:38:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E22E2C00446;
+        Wed,  8 Dec 2021 18:38:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638988682;
-        bh=VyvanOBEDqhQ9lyooUotjFOxttsGX4L26/hbjx4fvZ0=;
+        s=k20201202; t=1638988731;
+        bh=e74LIxMWq2izW3ew6ITjk9h0G9320RPT2aDHAhH5/c0=;
         h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=aWL/KyP7zMrXnhcAzBO7oXMAFkKtlhtIvQqEgeb1BcCrkPMb6UFraWxOuXaRZiPpP
-         A6I44ihaeZ8nGv9H+GseeyR1N/R7xesk4c/Dmm7H7J6C9HDSvi00we2MqQz/9S2S7Q
-         uRlTWC1OzknaPv9KtQ9692V2Us7k5FOpuUOGEiIxJ2Um2L8q8xa1al/Z6s14XBRU3I
-         xpi0S31lF79v6fOsMA6IAR0TReL2jkrk68YkvzNr0kvQ7De+qcxZ26gEcAK71CxhxZ
-         WtzuTOAgyFfnaf9fkQB7CIma5N9uZ9h/k+aV4RQXY8Fh/bx3ynP792/JMH8V5cEDMi
-         kUq6G4gY1Hx9Q==
+        b=ANO8jL7E4oBiKF3IHwFtlzH7jJ25cp3nJmJywJtyFMtiHhrkALQM1HjcaQWm8/o2t
+         EQcDZZNm2J9cEQgyyx7Vc7/ZyC3+iiODDWC/pty6j8JWovOVVPuJqA2M1MfY16iizX
+         VGN6omPg1xqrJYR7Ruyx7XUNbNWy/r7AVGO5owtRMOJRRwwADsUraYrfF+zUxnB1RB
+         fCwVEtIkSmHO2qHgr2FUVonF9DOZSKXyarYZLnfTJJGmIzXuiC2imq0A2nTNHyZqE/
+         7UHGUz6oZW63j8H+4epbQKUResELenJr2us9+D+eqp0XT4Oea4zxltHXDoe+/ISyxw
+         2vztR/vYQDsgw==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] mwifiex: Fix possible ABBA deadlock
+Subject: Re: mwifiex: Fix possible ABBA deadlock
 From:   Kalle Valo <kvalo@kernel.org>
 In-Reply-To: <YaV0pllJ5p/EuUat@google.com>
 References: <YaV0pllJ5p/EuUat@google.com>
@@ -44,8 +44,8 @@ Cc:     Jia-Ju Bai <baijiaju1990@gmail.com>, amitkarwar@gmail.com,
         linux-kernel <linux-kernel@vger.kernel.org>,
         Doug Anderson <dianders@chromium.org>
 User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <163898867631.25635.4428090129876791219.kvalo@kernel.org>
-Date:   Wed,  8 Dec 2021 18:37:59 +0000 (UTC)
+Message-ID: <163898872691.25635.1629545558418383431.kvalo@kernel.org>
+Date:   Wed,  8 Dec 2021 18:38:48 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -76,18 +76,16 @@ Brian Norris <briannorris@chromium.org> wrote:
 > mwifiex_dequeue_tx_packet()) via the main loop (mwifiex_main_process()).
 > But it's good not to leave this potential issue lurking.
 > 
-> Fixes: ("f0f7c2275fb9 mwifiex: minor cleanups w/ sta_list_spinlock in cfg80211.c")
+> Fixes: f0f7c2275fb9 ("mwifiex: minor cleanups w/ sta_list_spinlock in cfg80211.c")
 > Cc: Douglas Anderson <dianders@chromium.org>
 > Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
 > Link: https://lore.kernel.org/linux-wireless/0e495b14-efbb-e0da-37bd-af6bd677ee2c@gmail.com/
 > Signed-off-by: Brian Norris <briannorris@chromium.org>
 > Reviewed-by: Douglas Anderson <dianders@chromium.org>
 
-Fixes tag is in wrong format, should be:
+Patch applied to wireless-drivers-next.git, thanks.
 
-Fixes: f0f7c2275fb9 ("mwifiex: minor cleanups w/ sta_list_spinlock in cfg80211.c")
-
-I'll fix it during commit.
+1b8bb8919ef8 mwifiex: Fix possible ABBA deadlock
 
 -- 
 https://patchwork.kernel.org/project/linux-wireless/patch/YaV0pllJ5p/EuUat@google.com/
