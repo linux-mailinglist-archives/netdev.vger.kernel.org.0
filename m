@@ -2,122 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A69946D792
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 16:58:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B4CB746D7EC
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 17:17:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236426AbhLHQBv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 11:01:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34290 "EHLO
+        id S232656AbhLHQVB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 11:21:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236421AbhLHQBu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 11:01:50 -0500
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C9F9C061746;
-        Wed,  8 Dec 2021 07:58:18 -0800 (PST)
-Received: by mail-wr1-x42d.google.com with SMTP id t9so4866532wrx.7;
-        Wed, 08 Dec 2021 07:58:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=+N+ZhzioiS3izYxHmaIXp7iNQEt/WMrjS1HOXzMIJfs=;
-        b=Hz+ii3ihM256S8XIu1YCfKwR2X3Q5f3baEXbZP/bUNkz9NEJRJZLpbMoF59h8cic7Q
-         npk6z0yoAFixqtHEZx9BpRa0BM4AYPhcWLl0eNUlCR6sGVz31ttv04WaVKKv0cPGOWFH
-         3gJJezm67kqQh/wC/VoDvUAoS4MeFCFWOAVJkTmiJcp/yw9hh/ln7u9s03DKdJQy2AQZ
-         WMtXU/jmMYk5kmBjwky0rZhojuZrfvyM88ogXESADYxwc1geiez+6HhfjFBzppevPOjK
-         I4nkgJnlQWAVK4bdrl7+bvLCNF9SIkl2ScWsXRLqCWxVEtvGbj6G4TKFw5MUccHbwAJI
-         /5LA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=+N+ZhzioiS3izYxHmaIXp7iNQEt/WMrjS1HOXzMIJfs=;
-        b=zW+r0Sb60Is2sSIZ9NiERHvm0wAuqGOwVXXFy42W6eM1203rBI9rgEo9/89O+cRch2
-         f2VNdTsyEO2S+BKu+Dq/oPaw6RJv6SoBpbf5nc4CUN4Ps8nE5spsTsRZ+xecHEKH9Olo
-         c/HXmW2U/WId9rQayMzw3EVbmTMwUC48C554rxm8k38/SDT8YwHEL92GI+y03jkoDLUH
-         hjoUgikE0DEqOxN2JF5vDwpmWMIWBFdoaUJ5CvVqpP/5xXuAkKr+T5puiNl9aOWtlEx7
-         CFh2hKxRSCj3yaDH6Bt27CfG4+S+caKI5/Shj78xc5m1qfTg4eV7ftfeejgira0jDF7l
-         N4qg==
-X-Gm-Message-State: AOAM532wA0MyVTZCHeZoDUG6sIZtJkZsHoCwyOapa5jLY7Sd4f+Kt2kI
-        FqRUly2qZLemro3tEPVqHclNDraETXGbf/G5
-X-Google-Smtp-Source: ABdhPJwgE9kUeBKXRJA/vEiuwgFWzZT1E7fe81W2gYNBWO9X8sdrlB0Qy31XpmRVu5TSiXCeemI1PQ==
-X-Received: by 2002:a5d:4343:: with SMTP id u3mr61256334wrr.450.1638979096934;
-        Wed, 08 Dec 2021 07:58:16 -0800 (PST)
-Received: from localhost.localdomain ([39.48.199.136])
-        by smtp.gmail.com with ESMTPSA id r83sm6276856wma.22.2021.12.08.07.58.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Dec 2021 07:58:16 -0800 (PST)
-From:   Ameer Hamza <amhamza.mgc@gmail.com>
-To:     kabel@kernel.org, kuba@kernel.org, andrew@lunn.ch
-Cc:     vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, amhamza.mgc@gmail.com
-Subject: [PATCH v3] net: dsa: mv88e6xxx: error handling for serdes_power functions
-Date:   Wed,  8 Dec 2021 20:58:09 +0500
-Message-Id: <20211208155809.103089-1-amhamza.mgc@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20211208164042.6fbcddb1@thinkpad>
-References: <20211208164042.6fbcddb1@thinkpad>
+        with ESMTP id S232235AbhLHQVB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 11:21:01 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA908C061746
+        for <netdev@vger.kernel.org>; Wed,  8 Dec 2021 08:17:28 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CA8F2B8218C
+        for <netdev@vger.kernel.org>; Wed,  8 Dec 2021 16:17:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44B39C00446;
+        Wed,  8 Dec 2021 16:17:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1638980245;
+        bh=eViC3B78JHun2RQMy32ZFK/nNAiKnsAlDh4iFoa2Hxo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=HhYd0LaCT2RMJq6p1Bx4UEuqnqsre8r5zpHFzz0IHL4wqtuzQF6Kqosg1VEh+S3RR
+         k7zYGQ2SnY6rnXUo4VgfSJpdwOwlTNWbEMyWq0XHr/0WvVDTJA3OceM05L99xdfUtp
+         SE2w15219twESW20TXXz51RGznTZ97FHtdRWrvej1vEjDE4uGIZZan18p8r5o8JfzD
+         2JV5e2i9awCliwqE2NexBysHVjvKK+J05EuNyaBK0ubNvu+8xdvBCcPzWJ0RUQal3W
+         Q9cqFS9m4eQ4871uWAzObDsUJjpyL7I7MR0UscEagJ7PglmML7dj8EpkffzuvFj/4x
+         jQKmZbc6gzG6g==
+Date:   Wed, 8 Dec 2021 17:17:20 +0100
+From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
+To:     Holger Brunck <holger.brunck@hitachienergy.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>
+Subject: Re: [v3 2/2] dsa: mv88e6xxx: make serdes SGMII/Fiber output
+ amplitude configurable
+Message-ID: <20211208171720.6a297011@thinkpad>
+In-Reply-To: <AM6PR0602MB36717361A85C1B0CA8FE94D0F76F9@AM6PR0602MB3671.eurprd06.prod.outlook.com>
+References: <20211207190730.3076-1-holger.brunck@hitachienergy.com>
+        <20211207190730.3076-2-holger.brunck@hitachienergy.com>
+        <20211207202733.56a0cf15@thinkpad>
+        <AM6PR0602MB3671CC1FE1D6685FE2A503A6F76F9@AM6PR0602MB3671.eurprd06.prod.outlook.com>
+        <20211208162852.4d7361af@thinkpad>
+        <AM6PR0602MB36717361A85C1B0CA8FE94D0F76F9@AM6PR0602MB3671.eurprd06.prod.outlook.com>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Added default case to handle undefined cmode scenario in
-mv88e6393x_serdes_power() and mv88e6393x_serdes_power() methods.
+On Wed, 8 Dec 2021 15:49:19 +0000
+Holger Brunck <holger.brunck@hitachienergy.com> wrote:
 
-Signed-off-by: Ameer Hamza <amhamza.mgc@gmail.com>
----
-Changes in v3:
-make err = -EINVAL instead of direct return, so that we can
-check in the code after and handle the error case.
----
- drivers/net/dsa/mv88e6xxx/serdes.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+> > > =20
+> > > > > The mv88e6352, mv88e6240 and mv88e6176  have a serdes interface.
+> > > > > This patch allows to configure the output swing to a desired value
+> > > > > in the devicetree node of the port. As the chips only supports
+> > > > > eight dedicated values we return EINVAL if the value in the DTS d=
+oes not =20
+> > match. =20
+> > > > >
+> > > > > CC: Andrew Lunn <andrew@lunn.ch>
+> > > > > CC: Jakub Kicinski <kuba@kernel.org>
+> > > > > CC: Marek Beh=C3=BAn <kabel@kernel.org>
+> > > > > Signed-off-by: Holger Brunck <holger.brunck@hitachienergy.com> =20
+> > > >
+> > > > Holger, Andrew,
+> > > >
+> > > > there is another issue with this, which I only realized yesterday.
+> > > > What if the different amplitude needs to be set only for certain Se=
+rDes =20
+> > modes? =20
+> > > >
+> > > > I am bringing this up because I discovered that on Turris Mox we
+> > > > need to increase SerDes output amplitude when A3720 SOC is connected
+> > > > directly to
+> > > > 88E6141 switch, but only for 2500base-x mode. For 1000base-x, the
+> > > > default amplitude is okay. (Also when the SOC is connected to
+> > > > 88E6190, the amplitude does not need to be changed at all.)
+> > > > =20
+> > >
+> > > on my board I have a fixed link connected with SGMII and there is no
+> > > dedicated value given in the manual.
+> > > =20
+> > > > I plan to solve this in the comphy driver, not in device-tree.
+> > > >
+> > > > But if the solution is to be done in DTS, shouldn't there be a
+> > > > possibility to define the amplitude for a specific serdes mode only?
+> > > >
+> > > > For example
+> > > >   serdes-2500base-x-tx-amplitude-millivolt
+> > > > or
+> > > >   serdes-tx-amplitude-millivolt-2500base-x
+> > > > or
+> > > >   serdes-tx-amplitude-millivolt,2500base-x
+> > > > ?
+> > > >
+> > > > What do you think?
+> > > > =20
+> > >
+> > > in the data sheet for the MV6352 I am using there are no dedicated
+> > > values stated for different modes at all, they can be chosen
+> > > arbitrary. So in my case I think it makes sense to keep it as it is
+> > > for now. Other driver may have other needs and may enhance this later=
+ on. =20
+> >=20
+> > Hi Holger,
+> >=20
+> > but the mv88e6xxx driver also drives switches that allow changing serdes
+> > modes. There does not need be dedicated TX amplitude register for each =
+serdes
+> > mode, the point is that we may want to declare different amplitudes for
+> > different modes.
+> >=20
+> > So the question is: if we go with your binding proposal for the whole m=
+v88e6xxx
+> > driver, and in the future someone will want to declare different amplit=
+udes for
+> > different modes on another model, would he need to deprecate your bindi=
+ng or
+> > would it be easy to extend?
+> >  =20
+>=20
+> ok I see. So if I follow your proposal in my case it would be something l=
+ike:
+> serdes-sgmii-tx-amplitude-millivolt to start with ?=20
+>=20
+> I can do that. Andrew what do you think?
 
-diff --git a/drivers/net/dsa/mv88e6xxx/serdes.c b/drivers/net/dsa/mv88e6xxx/serdes.c
-index 33727439724a..2b05ead515cd 100644
---- a/drivers/net/dsa/mv88e6xxx/serdes.c
-+++ b/drivers/net/dsa/mv88e6xxx/serdes.c
-@@ -830,7 +830,7 @@ int mv88e6390_serdes_power(struct mv88e6xxx_chip *chip, int port, int lane,
- 			   bool up)
- {
- 	u8 cmode = chip->ports[port].cmode;
--	int err = 0;
-+	int err;
- 
- 	switch (cmode) {
- 	case MV88E6XXX_PORT_STS_CMODE_SGMII:
-@@ -842,6 +842,9 @@ int mv88e6390_serdes_power(struct mv88e6xxx_chip *chip, int port, int lane,
- 	case MV88E6XXX_PORT_STS_CMODE_RXAUI:
- 		err = mv88e6390_serdes_power_10g(chip, lane, up);
- 		break;
-+	default:
-+		err = -EINVAL;
-+		break;
- 	}
- 
- 	if (!err && up)
-@@ -1507,7 +1510,7 @@ int mv88e6393x_serdes_power(struct mv88e6xxx_chip *chip, int port, int lane,
- 			    bool on)
- {
- 	u8 cmode = chip->ports[port].cmode;
--	int err = 0;
-+	int err;
- 
- 	if (port != 0 && port != 9 && port != 10)
- 		return -EOPNOTSUPP;
-@@ -1541,6 +1544,9 @@ int mv88e6393x_serdes_power(struct mv88e6xxx_chip *chip, int port, int lane,
- 	case MV88E6393X_PORT_STS_CMODE_10GBASER:
- 		err = mv88e6390_serdes_power_10g(chip, lane, on);
- 		break;
-+	default:
-+		err = -EINVAL;
-+		break;
- 	}
- 
- 	if (err)
--- 
-2.25.1
+Or maybe two properties:
+  serdes-tx-amplitude-millivolt =3D <700 1000 1100>;
+  serdes-tx-amplitude-modes =3D "sgmii", "2500base-x", "10gbase-r";
+?
 
+If
+  serdes-tx-amplitude-modes
+is omitted, then
+  serdes-tx-amplitude-millivolt
+should only contain one value, and this is used for all serdes modes.
+
+This would be compatible with your change. You only need to define the
+bidning for now, your code can stay the same - you don't need to add
+support for multiple values or for the second property now, it can be
+done later when needed. But the binding should be defined to support
+those different modes.
+
+Marek
