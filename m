@@ -2,77 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EF2C46CD7D
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 07:10:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9520246CD93
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 07:16:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237451AbhLHGNs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 01:13:48 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:44200 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237138AbhLHGNn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 01:13:43 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 11BD4B81FBB;
-        Wed,  8 Dec 2021 06:10:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D21ECC00446;
-        Wed,  8 Dec 2021 06:10:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638943809;
-        bh=e2il+u5Jy2tg096aExSNPImViF/HrItOqVHEpRseGj8=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=VW+uydl99T5M8SOuNCyol7Rb7sJ8/5tertmz+OdqZbJrSgRP80jLlBoGebmQPSThF
-         HZpYDJgN2FC2sOBo/lRoTGyl7fEx7u7nT4GursgJk9XjoLzzOZ4oMe/GpefKQMNiG2
-         Gy21fMHrmc8uYaRSNkUCWc+iQJ4JZ9jeMHVS8c7bHCQh4AQ77CJv8lLrcf8XYz0viN
-         FsegCwstlonf7vSFFSjnP7P4joLVlaXAw0/TAJB/KGvk6qdjohOSauLYRI5AHjhEWc
-         63KUygbHQi1Bpn7OZZafOivusGL6Cdw/jxhtJxNNK6ZDItdcBPtGJz466Ga9byrYd8
-         KQPFummE7kRMw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id B537260A53;
-        Wed,  8 Dec 2021 06:10:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S237762AbhLHGT5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 01:19:57 -0500
+Received: from mga17.intel.com ([192.55.52.151]:61251 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237627AbhLHGT4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 8 Dec 2021 01:19:56 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10191"; a="218448458"
+X-IronPort-AV: E=Sophos;i="5.87,296,1631602800"; 
+   d="scan'208";a="218448458"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Dec 2021 22:16:24 -0800
+X-IronPort-AV: E=Sophos;i="5.87,296,1631602800"; 
+   d="scan'208";a="462645326"
+Received: from cxia1-mobl.ccr.corp.intel.com (HELO lkp-zhoujie.ccr.corp.intel.com) ([10.255.28.13])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Dec 2021 22:16:20 -0800
+From:   Jie2x Zhou <jie2x.zhou@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org, shuah@kernel.org,
+        dsahern@gmail.com
+Cc:     netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org, lkp@intel.com, xinjianx.ma@intel.com,
+        zhijianx.li@intel.com, Philip Li <philip.li@intel.com>,
+        zhoujie <zhoujie2011@fujitsu.com>,
+        Jie2x Zhou <jie2x.zhou@intel.com>
+Subject: [PATCH] selftests: net: Correct ping6 expected rc from 2 to 1
+Date:   Wed,  8 Dec 2021 14:15:18 +0800
+Message-Id: <20211208061518.61668-1-jie2x.zhou@intel.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: dsa: felix: use kmemdup() to replace kmalloc + memcpy
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163894380973.19666.10049198307333506096.git-patchwork-notify@kernel.org>
-Date:   Wed, 08 Dec 2021 06:10:09 +0000
-References: <20211207064419.38632-1-hanyihao@vivo.com>
-In-Reply-To: <20211207064419.38632-1-hanyihao@vivo.com>
-To:     Yihao Han <hanyihao@vivo.com>
-Cc:     vladimir.oltean@nxp.com, claudiu.manoil@nxp.com,
-        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
-        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel@vivo.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+From: zhoujie <zhoujie2011@fujitsu.com>
 
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+./fcnal-test.sh -v -t ipv6_ping
+TEST: ping out, VRF bind - ns-B IPv6 LLA                                      [FAIL]
+TEST: ping out, VRF bind - multicast IP                                       [FAIL]
 
-On Mon,  6 Dec 2021 22:44:18 -0800 you wrote:
-> Fix following coccicheck warning:
-> /drivers/net/dsa/ocelot/felix_vsc9959.c:1627:13-20:
-> WARNING opportunity for kmemdup
-> /drivers/net/dsa/ocelot/felix_vsc9959.c:1506:16-23:
-> WARNING opportunity for kmemdup
-> 
-> Signed-off-by: Yihao Han <hanyihao@vivo.com>
-> 
-> [...]
+ping6 is failing as it should.
+COMMAND: ip netns exec ns-A /bin/ping6 -c1 -w1 fe80::7c4c:bcff:fe66:a63a%red
+strace of ping6 shows it is failing with '1',
+so change the expected rc from 2 to 1.
 
-Here is the summary with links:
-  - net: dsa: felix: use kmemdup() to replace kmalloc + memcpy
-    https://git.kernel.org/netdev/net-next/c/e44aecc709ad
+Fixes: c0644e71df33 ("selftests: Add ipv6 ping tests to fcnal-test")
+Reported-by: kernel test robot <lkp@intel.com>
+Suggested-by: David Ahern <dsahern@gmail.com>
+Signed-off-by: Jie2x Zhou <jie2x.zhou@intel.com>
+---
+ tools/testing/selftests/net/fcnal-test.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-You are awesome, thank you!
+diff --git a/tools/testing/selftests/net/fcnal-test.sh b/tools/testing/selftests/net/fcnal-test.sh
+index 7f5b265fcb90..966787c2f9f0 100755
+--- a/tools/testing/selftests/net/fcnal-test.sh
++++ b/tools/testing/selftests/net/fcnal-test.sh
+@@ -2191,7 +2191,7 @@ ipv6_ping_vrf()
+ 		log_start
+ 		show_hint "Fails since VRF device does not support linklocal or multicast"
+ 		run_cmd ${ping6} -c1 -w1 ${a}
+-		log_test_addr ${a} $? 2 "ping out, VRF bind"
++		log_test_addr ${a} $? 1 "ping out, VRF bind"
+ 	done
+ 
+ 	for a in ${NSB_IP6} ${NSB_LO_IP6} ${NSB_LINKIP6}%${NSA_DEV} ${MCAST}%${NSA_DEV}
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.31.1
 
