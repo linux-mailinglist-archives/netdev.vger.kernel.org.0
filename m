@@ -2,110 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B3B146D619
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 15:50:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D90E46D620
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 15:51:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235464AbhLHOyB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 09:54:01 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:50388 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235460AbhLHOyA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 09:54:00 -0500
+        id S235510AbhLHOyo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 09:54:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46664 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235471AbhLHOyo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 09:54:44 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CA00C061746;
+        Wed,  8 Dec 2021 06:51:12 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1CE71B81CF1;
-        Wed,  8 Dec 2021 14:50:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8A4AC00446;
-        Wed,  8 Dec 2021 14:50:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EF5B1B8212D;
+        Wed,  8 Dec 2021 14:51:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A8A4C00446;
+        Wed,  8 Dec 2021 14:51:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638975026;
-        bh=xCd+Ek+0L9WQ4tTA1dWnfyB0nv+bIPj5lTDb8/UQHLw=;
+        s=k20201202; t=1638975069;
+        bh=yGjzonjEv/so3t2HT7veoFlNxdzM4AIgobZRia0+8Sc=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=PElFEWn144eCM/ziMqXPbYVOGAZHWOC8+swB4dzmCTx6vwqY0ePpOCCz1VsSlgO8V
-         Rg3gZxSknogfu0aMEQEXzACQAl2Of1sTvEpFUK7rx0nvsSwfCa+PbigRv+l9h8GyVz
-         HvC5ugHOFXjXfzGQ5LgHO8XM7LtBxJVdRXHHbDizJCAfPhpJ7m3Oss5Z0lZQf9wYvq
-         bzBeOwFRsWyLAm3RU940O78nDtz5quHOEIRCIb/DFb0jUZRoJikOzCvHgoRmukQKBL
-         eBwbZuZuPxPfEkJfjo7r1+zmiFGhndNKlZ7uQX/mIUcNzEg0xcvPdMj9776wpe4NWR
-         PRA/gP8mWv4HA==
-Date:   Wed, 8 Dec 2021 06:50:25 -0800
+        b=SaI+ztZkpI1ebk9ZRj7Dsd8J038h00I02vrcqTsq/qZIWKsOnX7pr2a/VBb9k56OS
+         6KAW3YB6jYlry/hpF/8lmLwbPmSyX+GUon9bYf2TZhLk3TAeHsIxX+FudMv/LxiTiM
+         kVfenrfDavWWBro0la9B/lpWJA/ENAOm0rp17n4N0AzzSjO4ELIO49nBoSU5o97DT8
+         +AKEt8ZEfNJF5R6b14Cm2F7HgWtaPIH9bnd/Isiru6mo5BX4kj5pJ4snR4A2T7Afoy
+         3af4tttNQsvo+O7YRy/wpE4tWvUlCO9xsub5p6terbp4+UNRhRsuGxfujy2FCb6Fqy
+         r5N2DSbUWSkSg==
+Date:   Wed, 8 Dec 2021 06:51:08 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Kalle Valo <kvalo@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
-Subject: Re: pull-request: wireless-drivers-next-2021-12-07
-Message-ID: <20211208065025.7060225d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <87tufjfrw0.fsf@codeaurora.org>
-References: <20211207144211.A9949C341C1@smtp.kernel.org>
-        <20211207211412.13c78ace@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <87tufjfrw0.fsf@codeaurora.org>
+To:     =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Denis Kirjanov <dkirjanov@suse.de>,
+        Julian Wiedmann <jwi@linux.ibm.com>
+Subject: Re: [PATCH net-next v6 4/4] net: ocelot: add FDMA support
+Message-ID: <20211208065108.27a2a3eb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211208085814.19e4ec71@fixe.home>
+References: <20211207154839.1864114-1-clement.leger@bootlin.com>
+        <20211207154839.1864114-5-clement.leger@bootlin.com>
+        <20211207194514.32218911@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20211208085814.19e4ec71@fixe.home>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 08 Dec 2021 10:00:15 +0200 Kalle Valo wrote:
-> Jakub Kicinski <kuba@kernel.org> writes:
-> 
-> > On Tue,  7 Dec 2021 14:42:11 +0000 (UTC) Kalle Valo wrote:  
-> >> here's a pull request to net-next tree, more info below. Please let me know if
-> >> there are any problems.  
-> >
-> > Pulled, thanks! Could you chase the appropriate people so that the new
-> > W=1 C=1 warnings get resolved before the merge window's here?
-> >
-> > https://patchwork.kernel.org/project/netdevbpf/patch/20211207144211.A9949C341C1@smtp.kernel.org/  
-> 
-> Just so that I understand right, you are referring to this patchwork
-> test:
-> 
->   Errors and warnings before: 111 this patch: 115
-> 
->   https://patchwork.hopto.org/static/nipa/591659/12662005/build_32bit/
-> 
-> And you want the four new warnings to be fixed? That can be quite time
-> consuming, to be honest I would rather revert the commits than using a
-> lot of my time trying to get people fix the warnings. Is there an easy
-> way to find what are the new warnings?
+On Wed, 8 Dec 2021 08:58:14 +0100 Cl=C3=A9ment L=C3=A9ger wrote:
+> > drivers/net/ethernet/mscc/ocelot_fdma.h:156: warning: Function paramete=
+r or member 'napi' not described in 'ocelot_fdma' =20
+>=20
+> And base does not exists anymore. I will also reorder the members in
+> the doc to match the struct.
 
-Yeah, scroll down, there is a diff of the old warnings vs new ones, and
-a summary of which files have changed their warning count:
-
-+      2 ../drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
-+      3 ../drivers/net/wireless/intel/iwlwifi/mei/main.c
--      1 ../drivers/net/wireless/intel/iwlwifi/mvm/ops.c
-+      2 ../drivers/net/wireless/intel/iwlwifi/mvm/ops.c
--      2 ../drivers/net/wireless/microchip/wilc1000/wlan.c
-
-So presumably these are the warnings that were added:
-
-drivers/net/wireless/intel/iwlwifi/mei/main.c:193: warning: cannot understand function prototype: 'struct '
-drivers/net/wireless/intel/iwlwifi/mei/main.c:1784: warning: Function parameter or member 'cldev' not described in 'iwl_mei_probe'
-drivers/net/wireless/intel/iwlwifi/mei/main.c:1784: warning: Function parameter or member 'id' not described in 'iwl_mei_probe'
-
-drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c:3911:28: warning: incorrect type in assignment (different base types)
-drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c:3911:28:    expected restricted __le32 [assigned] [usertype] period_msec
-drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c:3911:28:    got restricted __le16 [usertype]
-drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c:3913:30: warning: incorrect type in assignment (different base types)
-drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c:3913:30:    expected unsigned char [assigned] [usertype] keep_alive_id
-drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c:3913:30:    got restricted __le16 [usertype]
-
-drivers/net/wireless/intel/iwlwifi/mvm/ops.c:684:12: warning: context imbalance in 'iwl_mvm_start_get_nvm' - wrong count at exit
-
-> But in the big picture are you saying the net trees now have a rule that
-> no new W=1 and C=1 warnings are allowed? I do test ath10k and ath11k
-> drivers for W=1 and C=1 warnings, but all other drivers are on their own
-> in this regard. At the moment I have no tooling in place to check all
-> wireless drivers.
-
-For the code we merge directly we try to make sure there are no new
-warnings. I realize it's quite a bit of work for larger trees unless 
-you have the infra so not a hard requirement (for you).
-
-FWIW the build bot we wrote is available on GH:
-
-https://github.com/kuba-moo/nipa
-
-But it currently hard codes tree matching logic for bpf and netdev,
-so would probably take a few hours to adopt it.
+Hah, curious that the kdoc script did not catch that.
