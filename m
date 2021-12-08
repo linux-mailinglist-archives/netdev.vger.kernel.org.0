@@ -2,60 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 04D8346CE3C
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 08:20:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BE3446CE3E
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 08:20:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244479AbhLHHYE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 02:24:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54784 "EHLO
+        id S244483AbhLHHYI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 02:24:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236023AbhLHHYD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 02:24:03 -0500
+        with ESMTP id S236023AbhLHHYH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 02:24:07 -0500
 Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6401AC061574;
-        Tue,  7 Dec 2021 23:20:32 -0800 (PST)
-Received: by mail-ed1-x534.google.com with SMTP id r25so5151032edq.7;
-        Tue, 07 Dec 2021 23:20:32 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DE67C061574;
+        Tue,  7 Dec 2021 23:20:36 -0800 (PST)
+Received: by mail-ed1-x534.google.com with SMTP id y13so5036272edd.13;
+        Tue, 07 Dec 2021 23:20:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=W9TCKJjdcDwhOK3FQzFGUkG2xpUReurMabSg9HD7/JE=;
-        b=EoUEiWQ4wE3l9p2dmaEbEuNRzbe5YfmD4IH+Y76naydoZtE4CHrjKVCFuryTsZT9Gl
-         KoGXFs8VDW9u7H/DHlJZwBBdUa8bQJJHneyhxnXpAvVG6feYYLuXk2GwcBMB6AoPmQTI
-         LjvEvME1t8Zi7WjJjpAoq/Mx+qJVdmuJe6GQMUv3DJ/wGMHnNE7Izm37qD1lnCGDS4e/
-         pXQ2so8d5UC9AhGKYYEWkCTWXYT1SnFSsjEk4vW98AeLBDYh0zQDbDknh2fP5w6eebO+
-         jj3cMmwN7/KGMWtjlwKT7Z3IUoHcvWbV/UG/EABbuXN0C8EKuxBRXXBqWcxss5zSN/7y
-         hmKg==
+        bh=OBpAD7jEKe2G1MwcYvVjyMRGls4uJp0G38l20vYCwQM=;
+        b=jHNy8ht5kF9gCRcKBtKsIxfTb+5iUV5iKKUIhfEVuUyylOFHOTkfClS6zLm4dve3qn
+         QkvOo0XrEx4GWI8hqHja9ruRmvxpf/QdzfgNs4LMpCAPUDOdnZy4NHKMLIerLYtSlgzf
+         yNQ3dMmBy87ynqJOTYZWeqbTrGL7hSiRLYR+hqZRr0+u/WT+ZorEp4bq/DjLT0BLCoym
+         M7wcct3LvGsKcbiWcq9dzBPv88t2AEgLrzkbqXN6U9EtuuUdLdGGmqxHD19hrZHwgRx1
+         kYey89TxHwoGL59SeGLgCYDE6mnbtfbjFJUwJsU/wigKNIPa7hmvUh7v/7yRac/xp87j
+         bgbQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=W9TCKJjdcDwhOK3FQzFGUkG2xpUReurMabSg9HD7/JE=;
-        b=4i1Laij9dTPoT/KFczXFQgaVltcvvUrl4hEKDiZ4ePKk0Dq6zxXGEfOy+yU570DLl1
-         FBM8myQK0qY5xtCqhARsr/W0x66Z76mF3qv/YDSFBOIPDTz/7/Uy0qKIVPI3RLJjwW2v
-         5CRVPzGxmGpt365Er7Ms1ggFT/uvII27iMr7fYnE/gI8DGxlOBDwXN3qB36lJetDnsP0
-         kbnlUsyRJcLCS0VZaQxiBarm/iUfzmQbq6HKjJl/Fv8cXmLxMuiE7SoN9toH5L9Ri+iO
-         f5XZjiEsvv0aOpdzphbRGXI4HucvwtJuQlaxJcNULpORl6h0SkVDhcaf0PTpQMfsh6NL
-         egvw==
-X-Gm-Message-State: AOAM533SakHJypeVDXrHZ62PNig0Ha9bJ88EjwIj7eFy+PdtzL7CMwP1
-        4M6oQq3TnKjqiY0XSCboqDY=
-X-Google-Smtp-Source: ABdhPJwSaxUqB0ULcm1tLk8RWeNHwf+5izxvRkppUK5/0ksnP7L0uDdiHM2oW937rINk87q9JcFkxg==
-X-Received: by 2002:a05:6402:1450:: with SMTP id d16mr16937872edx.144.1638948031042;
-        Tue, 07 Dec 2021 23:20:31 -0800 (PST)
+        bh=OBpAD7jEKe2G1MwcYvVjyMRGls4uJp0G38l20vYCwQM=;
+        b=dhaCq9BlIjQfldCXedupIxdUJuVaanpbBi5oDjxeY4XmiU7E0rmDp33pyb1zDs92eL
+         EioAoQhPCmSN2ckhSXLPUGsgJt2hpuJWPwmF4oUTdza5Oc77/MfVtjdk8QtdhlFPo9zc
+         BdQIBf/ZAQSiv24oJyPtsdAMl04ZtZ9hSdWivui7kHdZvm6Bj7l7wYjw7/0WjSVS1RNg
+         sxuZ6GRjcgyGbR2HUZcajlnwpjj6G/9Ex1ruvdNouz01Ymue1Rrm9ML7WUO8pYDQd5o3
+         fDEo+lvPGON6hPvSniCzlXHVQIkKxSG4rCPdA+um7FCF/+KJTzF5N8MlOjPrrkZCs+CW
+         N7WA==
+X-Gm-Message-State: AOAM531j90ASrzBenNhim1xEmAD1LR3tXf8/8kglr6uMy3ga7rZ7Tj3E
+        TDG9Qn/xVeIeDRxDWPwOoF4=
+X-Google-Smtp-Source: ABdhPJxE2CzsVTyETJoEw9wE4Xxk+c3JantvsBlgR3t3ak9VleOm98XWgOLVci7maV45EzUfaCqDgQ==
+X-Received: by 2002:a05:6402:3551:: with SMTP id f17mr16341832edd.129.1638948034949;
+        Tue, 07 Dec 2021 23:20:34 -0800 (PST)
 Received: from localhost ([81.17.18.62])
-        by smtp.gmail.com with ESMTPSA id u16sm1361426edr.43.2021.12.07.23.20.29
+        by smtp.gmail.com with ESMTPSA id he14sm969306ejc.55.2021.12.07.23.20.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Dec 2021 23:20:30 -0800 (PST)
+        Tue, 07 Dec 2021 23:20:34 -0800 (PST)
 From:   =?UTF-8?q?J=CE=B5an=20Sacren?= <sakiwit@gmail.com>
-To:     pablo@netfilter.org, kadlec@netfilter.org, fw@strlen.de,
-        roopa@nvidia.com, nikolay@nvidia.com, davem@davemloft.net,
-        kuba@kernel.org, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org, bridge@lists.linux-foundation.org,
+To:     bfields@fieldses.org, chuck.lever@oracle.com,
+        trond.myklebust@hammerspace.com, anna.schumaker@netapp.com,
+        davem@davemloft.net, kuba@kernel.org, linux-nfs@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [PATCH net-next] net: bridge: netfilter: fix code indentation
-Date:   Wed,  8 Dec 2021 00:20:21 -0700
-Message-Id: <20211208024732.142541-1-sakiwit@gmail.com>
+Subject: [PATCH net-next] net: sunrpc: fix code indentation
+Date:   Wed,  8 Dec 2021 00:20:22 -0700
+Message-Id: <20211208024732.142541-2-sakiwit@gmail.com>
 X-Mailer: git-send-email 2.32.0
 X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
@@ -66,23 +65,23 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jean Sacren <sakiwit@gmail.com>
 
-Remove the extra space to the left of assignment statement.
+Remove the extra space to the left of if branch.
 
 Signed-off-by: Jean Sacren <sakiwit@gmail.com>
 ---
- net/bridge/netfilter/nf_conntrack_bridge.c | 2 +-
+ net/sunrpc/xprtsock.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/bridge/netfilter/nf_conntrack_bridge.c b/net/bridge/netfilter/nf_conntrack_bridge.c
-index fdbed3158555..4a79d25c6391 100644
---- a/net/bridge/netfilter/nf_conntrack_bridge.c
-+++ b/net/bridge/netfilter/nf_conntrack_bridge.c
-@@ -380,7 +380,7 @@ static unsigned int nf_ct_bridge_confirm(struct sk_buff *skb)
- 		protoff = skb_network_offset(skb) + ip_hdrlen(skb);
- 		break;
- 	case htons(ETH_P_IPV6): {
--		 unsigned char pnum = ipv6_hdr(skb)->nexthdr;
-+		unsigned char pnum = ipv6_hdr(skb)->nexthdr;
- 		__be16 frag_off;
+diff --git a/net/sunrpc/xprtsock.c b/net/sunrpc/xprtsock.c
+index d8ee06a9650a..69b6ee5a5fd1 100644
+--- a/net/sunrpc/xprtsock.c
++++ b/net/sunrpc/xprtsock.c
+@@ -1910,7 +1910,7 @@ static void xs_local_connect(struct rpc_xprt *xprt, struct rpc_task *task)
+ 	struct sock_xprt *transport = container_of(xprt, struct sock_xprt, xprt);
+ 	int ret;
  
- 		protoff = ipv6_skip_exthdr(skb, sizeof(struct ipv6hdr), &pnum,
+-	 if (RPC_IS_ASYNC(task)) {
++	if (RPC_IS_ASYNC(task)) {
+ 		/*
+ 		 * We want the AF_LOCAL connect to be resolved in the
+ 		 * filesystem namespace of the process making the rpc
