@@ -2,112 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EFE746CE78
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 08:44:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C355246CEB3
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 09:11:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236272AbhLHHrm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 02:47:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59984 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231739AbhLHHrl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 02:47:41 -0500
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0E98C061574
-        for <netdev@vger.kernel.org>; Tue,  7 Dec 2021 23:44:09 -0800 (PST)
-Received: by mail-wr1-x435.google.com with SMTP id t18so2426048wrg.11
-        for <netdev@vger.kernel.org>; Tue, 07 Dec 2021 23:44:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=6wind.com; s=google;
-        h=reply-to:subject:to:cc:references:from:organization:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=jPmDFgfOqPwd3O8DAmAOI8ZrCYRkJbAVcPPzPlyA62c=;
-        b=Pz7Fj5iDNqiFRi5lVMMOGgvDpyD24yydURRId1qw5+2pybSiBXjD+/NPx1mjRcIW6A
-         uOWiSlwt95+GwtTTVM7NJJFQo6PhHHES9HA/iR6B4c2L954v8IxMsoM9ul+KrE0xZqPr
-         9GisLD2voNMa363IuaLx5Gp3iiiZamu8gPARYP6cXx0FgONVcftMx7KktWuc+zgAYmf0
-         ioJRZJ5ZzKoIwX9wFMU3HGWZ+U+h5s1YG/KLO3HMPUvRKPPPBYxK/b+qBdqcoBqvhP5o
-         ctyEHsZLuQz+ROBWUzRx6lbhOtWSONk9BsZ74s3xH2JSr8IfQY/4BWEdZrBz5QBX6qqE
-         3Mvw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:subject:to:cc:references:from
-         :organization:message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=jPmDFgfOqPwd3O8DAmAOI8ZrCYRkJbAVcPPzPlyA62c=;
-        b=0zhRGJq+MDmaIvsN1n+JA82RV/N3K0spLrLuOtOwPorYve5Y0aCrMXH12vWtDtiB9W
-         rOoY56Nz1Tr2+mVNtRY45/yDCdhYsa+ucC6ypr/WFTgUFBdq7FaSiKHlZ+hnCtMZvTi5
-         5ywyxPA+5TKMuSIa9jN5i3r8GxtUgoIK1r5eGmWr6B+hO3EzTM0R7MD1+qkCtM77V0/k
-         AYCBT9Sc2nRAiZw2dLwrHlf8Do5Xc3Hifc5n4MPhVJGGkCPug948wplI82FU6X4MGxyZ
-         lxRGHI9EzDD1f0XKQI1ey+g92uyO1gqpv+fJkdDoQEWUEJZGBE3FN0SjC+C7M+1bjOyT
-         aCrA==
-X-Gm-Message-State: AOAM531Sjh+MKf59nV1octi5jWHfib6QBUp7EcVj09jqaE0sEb2Lgdxr
-        si67ZzFVodSY7ZO1Ww3uINwAYA==
-X-Google-Smtp-Source: ABdhPJzpui5U3KZ0N1HblTgb/jCsoGu7DYjdJNtuqiAhOdHKoB43GciTCF38i8ldHHgwBOgtsZZBgQ==
-X-Received: by 2002:adf:b34f:: with SMTP id k15mr59880773wrd.125.1638949448360;
-        Tue, 07 Dec 2021 23:44:08 -0800 (PST)
-Received: from ?IPv6:2a01:e0a:b41:c160:f40f:c5d1:958:e84f? ([2a01:e0a:b41:c160:f40f:c5d1:958:e84f])
-        by smtp.gmail.com with ESMTPSA id u23sm2093080wru.21.2021.12.07.23.44.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Dec 2021 23:44:07 -0800 (PST)
-Reply-To: nicolas.dichtel@6wind.com
-Subject: Re: [PATCH net-next v5] rtnetlink: Support fine-grained netdevice
- bulk deletion
-To:     Lahav Schlesinger <lschlesinger@drivenets.com>
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, dsahern@gmail.com,
-        nikolay@nvidia.com
-References: <20211205093658.37107-1-lschlesinger@drivenets.com>
- <84166fe9-37f1-2c99-2caf-c68dcc5a370c@6wind.com>
- <20211207124858.3tpsojcamyxldjb4@kgollan-pc>
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Organization: 6WIND
-Message-ID: <3ab0e65d-5628-567f-cf17-5a717e8ad7f8@6wind.com>
-Date:   Wed, 8 Dec 2021 08:44:07 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        id S244673AbhLHIOo convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 8 Dec 2021 03:14:44 -0500
+Received: from mxout70.expurgate.net ([91.198.224.70]:3350 "EHLO
+        mxout70.expurgate.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235521AbhLHIOo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 03:14:44 -0500
+X-Greylist: delayed 1186 seconds by postgrey-1.27 at vger.kernel.org; Wed, 08 Dec 2021 03:14:43 EST
+Received: from [127.0.0.1] (helo=localhost)
+        by relay.expurgate.net with smtp (Exim 4.92)
+        (envelope-from <ms@dev.tdt.de>)
+        id 1murjT-000NdV-52; Wed, 08 Dec 2021 08:51:19 +0100
+Received: from [195.243.126.94] (helo=securemail.tdt.de)
+        by relay.expurgate.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ms@dev.tdt.de>)
+        id 1murjS-000Tbw-B7; Wed, 08 Dec 2021 08:51:18 +0100
+Received: from securemail.tdt.de (localhost [127.0.0.1])
+        by securemail.tdt.de (Postfix) with ESMTP id 1D6CA240041;
+        Wed,  8 Dec 2021 08:51:18 +0100 (CET)
+Received: from mail.dev.tdt.de (unknown [10.2.4.42])
+        by securemail.tdt.de (Postfix) with ESMTP id A977B240040;
+        Wed,  8 Dec 2021 08:51:17 +0100 (CET)
+Received: from mail.dev.tdt.de (localhost [IPv6:::1])
+        by mail.dev.tdt.de (Postfix) with ESMTP id 433E22030A;
+        Wed,  8 Dec 2021 08:51:17 +0100 (CET)
 MIME-Version: 1.0
-In-Reply-To: <20211207124858.3tpsojcamyxldjb4@kgollan-pc>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Date:   Wed, 08 Dec 2021 08:51:17 +0100
+From:   Martin Schiller <ms@dev.tdt.de>
+To:     =?UTF-8?Q?J=CE=B5an_Sacren?= <sakiwit@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-x25@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] net: x25: drop harmless check of !more
+Organization: TDT AG
+In-Reply-To: <20211208024732.142541-5-sakiwit@gmail.com>
+References: <20211208024732.142541-5-sakiwit@gmail.com>
+Message-ID: <591bfc0470ca596995e13337460f99d0@dev.tdt.de>
+X-Sender: ms@dev.tdt.de
+User-Agent: Roundcube Webmail/1.3.17
+X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,URIBL_BLOCKED
+        autolearn=ham autolearn_force=no version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
+Content-Transfer-Encoding: 8BIT
+X-purgate: clean
+X-purgate-ID: 151534::1638949878-000118D4-7626970E/0/0
+X-purgate-type: clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le 07/12/2021 à 13:48, Lahav Schlesinger a écrit :
-> On Mon, Dec 06, 2021 at 09:25:17AM +0100, Nicolas Dichtel wrote:
->> CAUTION: External E-Mail - Use caution with links and attachments
->>
->>
->> Le 05/12/2021 à 10:36, Lahav Schlesinger a écrit :
->> Some comments below, but please, keep the people who replied to previous
->> versions of this patch in cc.
->>
->> [snip]
->>
->>> diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
->>> index eebd3894fe89..68fcde9c0c5e 100644
->>> --- a/include/uapi/linux/if_link.h
->>> +++ b/include/uapi/linux/if_link.h
->>> @@ -348,6 +348,7 @@ enum {
->>>       IFLA_PARENT_DEV_NAME,
->>>       IFLA_PARENT_DEV_BUS_NAME,
->>>
->>> +     IFLA_IFINDEX,
->> nit: maybe the previous blank line sit better after this new attribute (and
->> before __IFLA_MAX)?
+On 2021-12-08 08:20, Jεan Sacren wrote:
+> From: Jean Sacren <sakiwit@gmail.com>
 > 
-> Due to the comment above the previous 2 attributes, I think that by
-> removing this empty line it can be accidentally thought as if the new
-> attribute is part of this "block".
-> As for adding a new line before __IFLA_MAX, I wanted to preserve the
-> appearance we had before the IFLA_PARENT_DEV_xxx attributes where added,
-> where there was no empty line before __IFLA_MAX.
-Good point.
-
+> 'more' is checked first.  When !more is checked immediately after that,
+> it is always true.  We should drop this check.
 > 
-> I don't mind either way though, whatever looks better to you.
-Ok, forget my comment.
+> Signed-off-by: Jean Sacren <sakiwit@gmail.com>
+> ---
+>  net/x25/x25_in.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/net/x25/x25_in.c b/net/x25/x25_in.c
+> index e1c4197af468..b981a4828d08 100644
+> --- a/net/x25/x25_in.c
+> +++ b/net/x25/x25_in.c
+> @@ -41,7 +41,7 @@ static int x25_queue_rx_frame(struct sock *sk,
+> struct sk_buff *skb, int more)
+>  		return 0;
+>  	}
+> 
+> -	if (!more && x25->fraglen > 0) {	/* End of fragment */
+> +	if (x25->fraglen > 0) {	/* End of fragment */
+>  		int len = x25->fraglen + skb->len;
+> 
+>  		if ((skbn = alloc_skb(len, GFP_ATOMIC)) == NULL){
 
-
-Regards,
-Nicolas
+Acked-by: Martin Schiller <ms@dev.tdt.de>
