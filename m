@@ -2,144 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EAE446CF51
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 09:44:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 334DC46CF87
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 09:54:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229577AbhLHIrc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 03:47:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45446 "EHLO
+        id S229932AbhLHI6W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 03:58:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229550AbhLHIrb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 03:47:31 -0500
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7A57C061574
-        for <netdev@vger.kernel.org>; Wed,  8 Dec 2021 00:43:59 -0800 (PST)
-Received: by mail-ed1-x533.google.com with SMTP id l25so5748561eda.11
-        for <netdev@vger.kernel.org>; Wed, 08 Dec 2021 00:43:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=MHRdV/n7ZNhpIRjNRLtEErUQNiFQssJXqEFUzgk7Vxc=;
-        b=qXhE/1Y+LCgOH7m0jy2P+VYemRpPHl74NzF59/uHj3WElZfVGD0GzBdr86e6GzLs8v
-         rgPyIpPxARGLhF1XHUMCqwqHU92qA4tKXuWU5xrvab1rlKAfxSFe3PLbIqXI28VlbKFb
-         adSMCWTECg1ho3UTKFyUE65/BcnLrxkT5y2VhtmWPU+++ev/IMopygNI45DvhisjXZZx
-         ZHDMsNPsRfZBN2fmEqsL2lE2fWDZaTAKZOIT7QJd/1PMdYFslZGZxfkKwTSSgkHwizaw
-         ChXkj/nXB/O6/ASnJDxJl40iPuCo+IFve5SBNhxbbvtTUUZpeTwP99I1OdUrZJkvsPVP
-         WKVA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=MHRdV/n7ZNhpIRjNRLtEErUQNiFQssJXqEFUzgk7Vxc=;
-        b=TxX+FJhWQTbR9jwiz10w2yc46LZ5ORZ/oOHV+6pdvssdMqcurK7FJPVHsXX8irDQ2X
-         E20XqMdA8NuFnH1vMrTwSfpbQ0MPm4yxky+l00njkoW+X2SavVDx7Wggk5/7X/ouGrna
-         HSXFG8D/+SbPDc9gzL0IY6fP3gANZTB26HP8FGPGFW10h5qpMH8pfjkQb9PWMR6p0TfZ
-         fYjjrgHmt5sZ0uwelnAXSS/l4oS3oAhQhkKz04rZxEgNEXj/hc8c0aJm6mrgfzk34JJQ
-         z51LuZFl3EpszzQUZcRN/mv3Z6F/RGmkLCjWavsq+FuhmDjMb6yHjPOdkEgX8ygVzrKm
-         DLwg==
-X-Gm-Message-State: AOAM531OeDoz6kGa/W99gI8eiDWGi8SdVGZH+PoOBd8Nyb92jnCCksE3
-        CXqmaF2qnODopbGfqf8xrjnVIw==
-X-Google-Smtp-Source: ABdhPJxxUorbWcPYmJ7REYy3pVVDwvJxoaNH3KHAFRqt9w8nDDvoDGgB+bnyyKCkPtGomBbC5wLYug==
-X-Received: by 2002:a17:907:7805:: with SMTP id la5mr5842317ejc.188.1638953038538;
-        Wed, 08 Dec 2021 00:43:58 -0800 (PST)
-Received: from localhost (mail.chocen-mesto.cz. [85.163.43.2])
-        by smtp.gmail.com with ESMTPSA id z8sm1585993edb.5.2021.12.08.00.43.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Dec 2021 00:43:58 -0800 (PST)
-Date:   Wed, 8 Dec 2021 09:43:56 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Shay Drory <shayd@nvidia.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, jiri@nvidia.com,
-        saeedm@nvidia.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Moshe Shemesh <moshe@nvidia.com>
-Subject: Re: [PATCH net-next v2 1/6] devlink: Add new "io_eq_size" generic
- device param
-Message-ID: <YbBwTNwmuZNwjVZU@nanopsycho>
-References: <20211208070006.13100-1-shayd@nvidia.com>
- <20211208070006.13100-2-shayd@nvidia.com>
+        with ESMTP id S229901AbhLHI6W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 03:58:22 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFD47C061746
+        for <netdev@vger.kernel.org>; Wed,  8 Dec 2021 00:54:50 -0800 (PST)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1musit-0000Ex-Vq; Wed, 08 Dec 2021 09:54:48 +0100
+Received: from pengutronix.de (2a03-f580-87bc-d400-e45e-c028-b01c-c307.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:e45e:c028:b01c:c307])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id B614C6BF96B;
+        Wed,  8 Dec 2021 08:54:45 +0000 (UTC)
+Date:   Wed, 8 Dec 2021 09:54:44 +0100
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     "Modilaynen, Pavel" <pavel.modilaynen@volvocars.com>
+Cc:     "drew@beagleboard.org" <drew@beagleboard.org>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
+        "menschel.p@posteo.de" <menschel.p@posteo.de>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "will@macchina.cc" <will@macchina.cc>
+Subject: Re: [net-next 6/6] can: mcp251xfd: mcp251xfd_regmap_crc_read(): work
+ around broken CRC on TBC register
+Message-ID: <20211208085444.j47kse2b7vnde2xd@pengutronix.de>
+References: <20210510074334.el2yxp3oy2pmbs7d@pengutronix.de>
+ <PR3P174MB0112D073D0E5E080FAAE8510846E9@PR3P174MB0112.EURP174.PROD.OUTLOOK.COM>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="4lwcklrvy4hwyxiu"
 Content-Disposition: inline
-In-Reply-To: <20211208070006.13100-2-shayd@nvidia.com>
+In-Reply-To: <PR3P174MB0112D073D0E5E080FAAE8510846E9@PR3P174MB0112.EURP174.PROD.OUTLOOK.COM>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Dec 08, 2021 at 08:00:01AM CET, shayd@nvidia.com wrote:
->Add new device generic parameter to determine the size of the
->I/O completion EQs.
->
->For example, to reduce I/O EQ size to 64, execute:
->$ devlink dev param set pci/0000:06:00.0 \
->              name io_eq_size value 64 cmode driverinit
->$ devlink dev reload pci/0000:06:00.0
->
->Signed-off-by: Shay Drory <shayd@nvidia.com>
->Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
->---
-> Documentation/networking/devlink/devlink-params.rst | 3 +++
-> include/net/devlink.h                               | 4 ++++
-> net/core/devlink.c                                  | 5 +++++
-> 3 files changed, 12 insertions(+)
->
->diff --git a/Documentation/networking/devlink/devlink-params.rst b/Documentation/networking/devlink/devlink-params.rst
->index b7dfe693a332..cd9342305a13 100644
->--- a/Documentation/networking/devlink/devlink-params.rst
->+++ b/Documentation/networking/devlink/devlink-params.rst
->@@ -129,3 +129,6 @@ own name.
->        will NACK any attempt of other host to reset the device. This parameter
->        is useful for setups where a device is shared by different hosts, such
->        as multi-host setup.
->+   * - ``io_eq_size``
->+     - u16
 
-Hmm, I wonder if this wouldn't be better to have it 32bits which might
-be future safe.
+--4lwcklrvy4hwyxiu
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Otherwise, this looks fine.
+On 07.12.2021 16:53:12, Modilaynen, Pavel wrote:
+> Hello Marc,
+>=20
+> We observe the very similar issue with MCP2517FD.
+>=20
+> >The CRC errors the patch works around are CRC errors introduced by a
+> >chip erratum, not by electromagnetic interference. In my observation
+>=20
+> Are you referring this errata doc
+> https://datasheet.octopart.com/MCP2517FD-H-JHA-Microchip-datasheet-136609=
+045.pdf ?
 
+ACK - although there are newer versions available. The newest erratum
+for the mcp2517fd is the "C" issue:
 
->+     - Control the size of I/O completion EQs.
->diff --git a/include/net/devlink.h b/include/net/devlink.h
->index 3276a29f2b81..61efa45b8786 100644
->--- a/include/net/devlink.h
->+++ b/include/net/devlink.h
->@@ -459,6 +459,7 @@ enum devlink_param_generic_id {
-> 	DEVLINK_PARAM_GENERIC_ID_ENABLE_RDMA,
-> 	DEVLINK_PARAM_GENERIC_ID_ENABLE_VNET,
-> 	DEVLINK_PARAM_GENERIC_ID_ENABLE_IWARP,
->+	DEVLINK_PARAM_GENERIC_ID_IO_EQ_SIZE,
-> 
-> 	/* add new param generic ids above here*/
-> 	__DEVLINK_PARAM_GENERIC_ID_MAX,
->@@ -511,6 +512,9 @@ enum devlink_param_generic_id {
-> #define DEVLINK_PARAM_GENERIC_ENABLE_IWARP_NAME "enable_iwarp"
-> #define DEVLINK_PARAM_GENERIC_ENABLE_IWARP_TYPE DEVLINK_PARAM_TYPE_BOOL
-> 
->+#define DEVLINK_PARAM_GENERIC_IO_EQ_SIZE_NAME "io_eq_size"
->+#define DEVLINK_PARAM_GENERIC_IO_EQ_SIZE_TYPE DEVLINK_PARAM_TYPE_U16
->+
-> #define DEVLINK_PARAM_GENERIC(_id, _cmodes, _get, _set, _validate)	\
-> {									\
-> 	.id = DEVLINK_PARAM_GENERIC_ID_##_id,				\
->diff --git a/net/core/devlink.c b/net/core/devlink.c
->index db3b52110cf2..0d4e63d11585 100644
->--- a/net/core/devlink.c
->+++ b/net/core/devlink.c
->@@ -4466,6 +4466,11 @@ static const struct devlink_param devlink_param_generic[] = {
-> 		.name = DEVLINK_PARAM_GENERIC_ENABLE_IWARP_NAME,
-> 		.type = DEVLINK_PARAM_GENERIC_ENABLE_IWARP_TYPE,
-> 	},
->+	{
->+		.id = DEVLINK_PARAM_GENERIC_ID_IO_EQ_SIZE,
->+		.name = DEVLINK_PARAM_GENERIC_IO_EQ_SIZE_NAME,
->+		.type = DEVLINK_PARAM_GENERIC_IO_EQ_SIZE_TYPE,
->+	},
-> };
-> 
-> static int devlink_param_generic_verify(const struct devlink_param *param)
->-- 
->2.21.3
->
+| https://ww1.microchip.com/downloads/en/DeviceDoc/MCP2517FD-Silicon-Errata=
+-and-Data-Sheet-Clarification-DS80000792C.pdf
+
+The mpc2518fd can be downloaded here:
+
+| https://ww1.microchip.com/downloads/en/DeviceDoc/MCP2518FD-Silicon-Errata=
+-and-Data-Sheet-Clarification-DS80000789C.pdf
+
+> We have the similar CRC read errors but
+> the lowest byte is not 0x00 and 0x80, it's actually 0x0x or 0x8x, e.g.
+>=20
+> mcp251xfd spi0.0 can0: CRC read error at address 0x0010 (length=3D4, data=
+=3D82 d1 fa 6c, CRC=3D0xd9c2) retrying.
+>=20
+> 0xb0 0x10 0x04 0x82 0xd1 0xfa 0x6c =3D> 0x59FD (not matching)
+>=20
+> but if I flip the first received bit  (highest bit in the lowest byte):
+> 0xb0 0x10 0x04 0x02 0xd1 0xfa 0x6c =3D> 0xD9C2 (matching!)
+>=20
+> So, your fix covers only the case of 0x00 and 0x80,=20
+> do you think that the workaround should be extended so check
+>      (buf_rx->data[0] =3D=3D 0x0 || buf_rx->data[0] =3D=3D 0x80)) {
+> turns into=20
+>      ((buf_rx->data[0] & 0xf0) =3D=3D 0x0 || (buf_rx->data[0] & 0xf0) =3D=
+=3D 0x80)) {
+>=20
+> Errata, actually says
+> "Only bits 7/15/23/31 of the following registers can be affected:"
+>=20
+> So, we could basically, in simplest case flip bit 31 and re-check CRC
+> without any check of rx->data[0]....
+
+Can you send a patch that updates the workaround and description.
+
+regards,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--4lwcklrvy4hwyxiu
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmGwctIACgkQqclaivrt
+76nEaAgAsPQpUDk019EElxIJvT/tejKNWXdP1as3EyE/qpEQZLZ9gIvnQCEFKA64
+ndw02h69iFMZwWbSdqL7Q+jjTHCBjb21dADY0z90zY5P9p3A2hSWtJPu8WWwUZER
+fGfiBmUqJ+0hfajoToFTeaxvSHDHsdjs7Lg3fW+oG2Yw9g5EK4m9AEYilQVNuq+B
+P3JZZmujeqB/uLL5FHmyEHKl0QJRzWflgSpJ4D0T+9yLFavr8KEHAmqNS+3mShwG
+s0SJoa9ou9emt3nCxiyzjcNlzdtMU2rRSZ+5KDUq3nFSbHADqgi04o9yJH45JTzN
+eBrkCY/KT7kQIvY2mLIiXa9MyPw7YQ==
+=qSKS
+-----END PGP SIGNATURE-----
+
+--4lwcklrvy4hwyxiu--
