@@ -2,86 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BCC2246CC9E
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 05:38:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 145A146CCA0
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 05:38:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244244AbhLHEli (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 23:41:38 -0500
-Received: from 113.196.136.146.ll.static.sparqnet.net ([113.196.136.146]:57098
-        "EHLO mg.sunplus.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S240064AbhLHElh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 23:41:37 -0500
-X-MailGates: (flag:3,DYNAMIC,RELAY,NOHOST:PASS)(compute_score:DELIVER,40
-        ,3)
-Received: from 172.17.9.202
-        by mg02.sunplus.com with MailGates ESMTP Server V5.0(31386:0:AUTH_RELAY)
-        (envelope-from <wells.lu@sunplus.com>); Wed, 08 Dec 2021 12:38:00 +0800 (CST)
-Received: from sphcmbx02.sunplus.com.tw (172.17.9.112) by
- sphcmbx01.sunplus.com.tw (172.17.9.202) with Microsoft SMTP Server (TLS) id
- 15.0.1497.23; Wed, 8 Dec 2021 12:37:59 +0800
-Received: from sphcmbx02.sunplus.com.tw ([::1]) by sphcmbx02.sunplus.com.tw
- ([fe80::f8bb:bd77:a854:5b9e%14]) with mapi id 15.00.1497.023; Wed, 8 Dec 2021
- 12:37:59 +0800
-From:   =?big5?B?V2VsbHMgTHUgp2aq2sTL?= <wells.lu@sunplus.com>
-To:     Jakub Kicinski <kuba@kernel.org>, Wells Lu <wellslutw@gmail.com>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
-        =?big5?B?VmluY2VudCBTaGloIKxJwEPCRQ==?= <vincent.shih@sunplus.com>
-Subject: RE: [PATCH net-next v4 2/2] net: ethernet: Add driver for Sunplus
- SP7021
-Thread-Topic: [PATCH net-next v4 2/2] net: ethernet: Add driver for Sunplus
- SP7021
-Thread-Index: AQHX60F8YLhxpbct+0aHjLW9kGkiW6wm7LuAgAEXAgA=
-Date:   Wed, 8 Dec 2021 04:37:59 +0000
-Message-ID: <ba5fe14be8d2434793713bd13abccb28@sphcmbx02.sunplus.com.tw>
-References: <1638864419-17501-1-git-send-email-wellslutw@gmail.com>
-        <1638864419-17501-3-git-send-email-wellslutw@gmail.com>
- <20211207115735.4d665759@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211207115735.4d665759@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [172.25.108.39]
-Content-Type: text/plain; charset="big5"
-Content-Transfer-Encoding: base64
+        id S244257AbhLHEln (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 23:41:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47116 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244255AbhLHEln (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 23:41:43 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0F67C061574
+        for <netdev@vger.kernel.org>; Tue,  7 Dec 2021 20:38:11 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 04487CE1F98
+        for <netdev@vger.kernel.org>; Wed,  8 Dec 2021 04:38:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE2CCC00446;
+        Wed,  8 Dec 2021 04:38:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1638938288;
+        bh=Qds3XxTlhzSOuGvCRODUZJWIAez9ysr8b+sya6f0P9o=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=KswvwFNKWqpcGN+C8cDhw/tZL4gh9uTjIG1QB0ynV4NdEHnC2e4BtBwMABTEHinxn
+         xiYvMEqOoQtYYUl+oMVW8bQk63Z1Vez1Fru9dRnAE7PHm4+PjrD08tXAcM5deZUz2C
+         VYnlHL3W20ELhWi2I0pev5ED/MHoc56t1l8MC4RFogx9PnHIm+6z3RhH168coj2vZ0
+         vfcO6W5s0tSeo6gAE78l4xdJL+GLRtov82P6eCJjHZk0QUeg2+tBexZy46XOHrAjM6
+         +UouSfCos+97x7LIh8gHIMgA6a9T3HwvAjsgUudXokbsmZa4vmsSuEYxFl9Ytp7hL8
+         usWOcziuwLAuw==
+Date:   Tue, 7 Dec 2021 20:38:06 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Petr Machata <petrm@nvidia.com>
+Cc:     <netdev@vger.kernel.org>, David Miller <davem@davemloft.net>,
+        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [PATCH net] MAINTAINERS: net: mlxsw: Remove Jiri as a
+ maintainer, add myself
+Message-ID: <20211207203806.3b2b9ccb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <45b54312cdebaf65c5d110b15a5dd2df795bf2be.1638807297.git.petrm@nvidia.com>
+References: <45b54312cdebaf65c5d110b15a5dd2df795bf2be.1638807297.git.petrm@nvidia.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgSmFrdWIsDQoNClRoYW5rIHlvdSBmb3IgcmV2aWV3Lg0KDQpJJ2xsIGZpeCB0aGUgd2Fybmlu
-Z3MgcmVwb3J0ZWQgZnJvbSBjbGFuZyBuZXh0IHBhdGNoLg0KDQoNCkJlc3QgcmVnYXJkcywNCldl
-bGxzIEx1DQoNCg0KPiBPbiBUdWUsICA3IERlYyAyMDIxIDE2OjA2OjU5ICswODAwIFdlbGxzIEx1
-IHdyb3RlOg0KPiA+IEFkZCBkcml2ZXIgZm9yIFN1bnBsdXMgU1A3MDIxIFNvQy4NCj4gPg0KPiA+
-IFNpZ25lZC1vZmYtYnk6IFdlbGxzIEx1IDx3ZWxsc2x1dHdAZ21haWwuY29tPg0KPiANCj4gY2xh
-bmcgcG9pbnRzIG91dDoNCj4gDQo+IGRyaXZlcnMvbmV0L2V0aGVybmV0L3N1bnBsdXMvc3BsMnN3
-X2RyaXZlci5jOjIyMzo2NTogd2FybmluZzogcmVzdWx0IG9mIGNvbXBhcmlzb24gb2YNCj4gY29u
-c3RhbnQgMTg4IHdpdGggZXhwcmVzc2lvbiBvZiB0eXBlICdjaGFyJyBpcyBhbHdheXMgdHJ1ZQ0K
-PiBbLVd0YXV0b2xvZ2ljYWwtY29uc3RhbnQtb3V0LW9mLXJhbmdlLWNvbXBhcmVdDQo+ICAgICAg
-ICAgICAgIChtYWNfYWRkclswXSAhPSAweEZDIHx8IG1hY19hZGRyWzFdICE9IDB4NEIgfHwgbWFj
-X2FkZHJbMl0gIT0gMHhCQykpIHsNCj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICB+fn5+fn5+fn5+fiBeICB+fn5+DQo+IGRyaXZlcnMv
-bmV0L2V0aGVybmV0L3N1bnBsdXMvc3BsMnN3X2RyaXZlci5jOjIyMzoxOTogd2FybmluZzogcmVz
-dWx0IG9mIGNvbXBhcmlzb24gb2YNCj4gY29uc3RhbnQgMjUyIHdpdGggZXhwcmVzc2lvbiBvZiB0
-eXBlICdjaGFyJyBpcyBhbHdheXMgdHJ1ZQ0KPiBbLVd0YXV0b2xvZ2ljYWwtY29uc3RhbnQtb3V0
-LW9mLXJhbmdlLWNvbXBhcmVdDQo+ICAgICAgICAgICAgIChtYWNfYWRkclswXSAhPSAweEZDIHx8
-IG1hY19hZGRyWzFdICE9IDB4NEIgfHwgbWFjX2FkZHJbMl0gIT0gMHhCQykpIHsNCj4gICAgICAg
-ICAgICAgIH5+fn5+fn5+fn5+IF4gIH5+fn4NCj4gZHJpdmVycy9uZXQvZXRoZXJuZXQvc3VucGx1
-cy9zcGwyc3dfZHJpdmVyLmM6MjIyOjY0OiB3YXJuaW5nOiByZXN1bHQgb2YgY29tcGFyaXNvbiBv
-Zg0KPiBjb25zdGFudCAxODggd2l0aCBleHByZXNzaW9uIG9mIHR5cGUgJ2NoYXInIGlzIGFsd2F5
-cyBmYWxzZQ0KPiBbLVd0YXV0b2xvZ2ljYWwtY29uc3RhbnQtb3V0LW9mLXJhbmdlLWNvbXBhcmVd
-DQo+ICAgICAgICAgaWYgKG1hY19hZGRyWzVdID09IDB4RkMgJiYgbWFjX2FkZHJbNF0gPT0gMHg0
-QiAmJiBtYWNfYWRkclszXSA9PSAweEJDICYmDQo+ICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB+fn5+fn5+fn5+fiBeICB+fn5+DQo+IGRy
-aXZlcnMvbmV0L2V0aGVybmV0L3N1bnBsdXMvc3BsMnN3X2RyaXZlci5jOjIyMjoxODogd2Fybmlu
-ZzogcmVzdWx0IG9mIGNvbXBhcmlzb24gb2YNCj4gY29uc3RhbnQgMjUyIHdpdGggZXhwcmVzc2lv
-biBvZiB0eXBlICdjaGFyJyBpcyBhbHdheXMgZmFsc2UNCj4gWy1XdGF1dG9sb2dpY2FsLWNvbnN0
-YW50LW91dC1vZi1yYW5nZS1jb21wYXJlXQ0KPiAgICAgICAgIGlmIChtYWNfYWRkcls1XSA9PSAw
-eEZDICYmIG1hY19hZGRyWzRdID09IDB4NEIgJiYgbWFjX2FkZHJbM10gPT0gMHhCQyAmJg0KPiAg
-ICAgICAgICAgICB+fn5+fn5+fn5+fiBeICB+fn5+DQo=
+On Mon, 6 Dec 2021 17:17:23 +0100 Petr Machata wrote:
+> Jiri has moved on and will not carry out the mlxsw maintainership duty any
+> longer. Add myself as a co-maintainer instead.
+> 
+> Signed-off-by: Petr Machata <petrm@nvidia.com>
+> Acked-by: Jiri Pirko <jiri@nvidia.com>
+> Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+
+Hat tip to Jiri. Applied, thanks!
