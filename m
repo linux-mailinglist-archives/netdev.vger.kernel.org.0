@@ -2,119 +2,374 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B08D546C991
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 01:50:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 661AF46C9CE
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 02:11:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238619AbhLHAyM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 19:54:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51914 "EHLO
+        id S232002AbhLHBNX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 20:13:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234092AbhLHAyM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 19:54:12 -0500
-Received: from mail-ot1-x333.google.com (mail-ot1-x333.google.com [IPv6:2607:f8b0:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D802C061574;
-        Tue,  7 Dec 2021 16:50:41 -0800 (PST)
-Received: by mail-ot1-x333.google.com with SMTP id x3-20020a05683000c300b0057a5318c517so1006191oto.13;
-        Tue, 07 Dec 2021 16:50:41 -0800 (PST)
+        with ESMTP id S229531AbhLHBNV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 20:13:21 -0500
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93A7CC061574;
+        Tue,  7 Dec 2021 17:09:50 -0800 (PST)
+Received: by mail-ed1-x52f.google.com with SMTP id t5so3014725edd.0;
+        Tue, 07 Dec 2021 17:09:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=3tPnK3d3TA2CMj3BoxOzetsFBp/Dz0sQTXsIcpvPpG4=;
-        b=EoMDhFxqY4OjSHEjcUpXF79Gmg+W2ps1jsbAJ6lrGPn6BSnk4RRqAwGcIk8cA0080z
-         unvoUn9afVlLIIeKtYweAkWdcP38p+YBY0cW4IzMsiy3GmrVcx0ldH31FZ542yeR83ij
-         xw9w1axnKJR4M826INMNQrjhNP8lLDMmYRyeQv2h19jLgtH6+g5A6BHuFJ8kXaT/LCfn
-         ApD+XjnEEZSueuRnNMGU9r6tL9bOEnriHr9tQ4uvWLRen2BpOubxrqNAGvOuTLAEGMY9
-         0IlyjSub8c2DzC1eWP92IS7mp6JZTTpPdYfu1j+XVtZiay/WKsna9P8L4EZzGroeLGVw
-         DYhg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Z1+epDInUpw6uw4Yfe1YAG+ZZf41RDJpnhPSfszDPQk=;
+        b=otfkZkbugHYSqtCvK4PJ/SwoB7mFvZWdILKH8Aw+xycFfURNyoqQJGY0wJGFw+fm2g
+         0xbbfKj+031I88pWqNGe3GeYJH04+pjpsvoY4ysVN9MvDDniyQ/JYaKoCDnUkZVwgiNN
+         e1cduZDWKkKjSWb+fjKOo5wwBIgC8AJDCUwEYO6zIGXXmn5gBgJOJSF5po3lbpCbl/7z
+         Z961vU7ckIpvt+FPoIeAiqEQBYFdoGH87YAu60CcbbPiKCZxvk5A3q39fARugeKZRq6z
+         TSn+iWypsFM3IMp6RAcWEn8CI30oVDAYOu7wtBc0nwzbTY+Xrqp5HD+IcTsg11BVZwZl
+         74MQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=3tPnK3d3TA2CMj3BoxOzetsFBp/Dz0sQTXsIcpvPpG4=;
-        b=CtToTFT+sGOXbY5Ue9YifuhJ0KVcbb3zSDrnDFNuFEWte08Tq1/MaPLAdgIwlBqZII
-         pcxhr0UB/VrBMV5OPhWa5h1tHEYaLcPr0BQ5vr/02PHKTpDHkdgDSdFAQEgD2+wB6dc6
-         M3VBNY/rC18/DruISansKwVSlnW39M6PDXwVkG0Iki8wDFAANOdVTHIzsoh2QU0uFkaw
-         fDoVJYX1qHpvBqzH83Rys/YvHHmJhrK/Ao2a9wHd2BZ26cTSOYEd7MN9ek/w/f5nWn+V
-         DTRlxqDGjvyKz252os0KspaninqWTKJRqdBrC8CY7dcnOhi2qGd1b3d3FAFk5jdFJLeT
-         IJ6Q==
-X-Gm-Message-State: AOAM533fFgIWpVvEeJG/HxBiOhd4xcblqU/cYNQkRCYF3GXBrTJdP1aQ
-        rldFb8kg3wjQ62AWZLm7eTk=
-X-Google-Smtp-Source: ABdhPJxAns2SEfQ9R6eWDSIFjygsW5HwgR23q7PVAjq8bKHsYjGm21S82UGr+mqSmE9qoPjbt63VSQ==
-X-Received: by 2002:a9d:734d:: with SMTP id l13mr38197062otk.292.1638924640606;
-        Tue, 07 Dec 2021 16:50:40 -0800 (PST)
-Received: from [172.16.0.2] ([8.48.134.30])
-        by smtp.googlemail.com with ESMTPSA id x16sm241113otq.47.2021.12.07.16.50.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Dec 2021 16:50:40 -0800 (PST)
-Message-ID: <a20d6c2f-f64f-b432-f214-c1f2b64fdf81@gmail.com>
-Date:   Tue, 7 Dec 2021 17:50:38 -0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.3.2
-Subject: Re: [PATCH] ipv6: fix NULL pointer dereference in ip6_output()
-Content-Language: en-US
-To:     Andrea Mayer <andrea.mayer@uniroma2.it>
-Cc:     Andrea Righi <andrea.righi@canonical.com>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Z1+epDInUpw6uw4Yfe1YAG+ZZf41RDJpnhPSfszDPQk=;
+        b=ou+PsifrXkmYC15IzzzMvaW39/Bk6wDCZUHDDZrhlNiJWxSiP1/+EZvKAqAZ3E5lni
+         xmkmYSvABd8UoGzrO99PdO+a5Rxk24hmm2VUDJfCR58BCmyX848VbfcHCzTlngTNWoFo
+         NiYlLcrTFDfMWAcjqq4vu/kXINRVUa3PFFEHe8DHsAYdZm0Yyv9Paw6BJNytgzn/4iBL
+         aZYPCd9z47IQ5J2jGkl4lVQK9dRVISdGhfZk5IFeBVycriwGopEIqyIsBu9tZ0Cou0Or
+         HWsfeT7kpwNv0gyYI3EqgdfFHjNIco6+5h0VghLp3uKUh1O55vBfxHYx/9zkKmMBLti+
+         PypA==
+X-Gm-Message-State: AOAM530IfYPYBBJv74rL63dVKJmP01l6bUvQ0mJqF/8Q1n3p07Jwa4lH
+        olSiRzDvZaU3a+q3UVReHYQ=
+X-Google-Smtp-Source: ABdhPJz4sKRpY6EsOfcmMHNQYzL4CmA/bl7YFmxV2vQvSlaEY7t/BDPeitYs7yQ8aYi4+NTN8xA72A==
+X-Received: by 2002:a17:906:af1a:: with SMTP id lx26mr3631450ejb.44.1638925788954;
+        Tue, 07 Dec 2021 17:09:48 -0800 (PST)
+Received: from skbuf ([188.25.173.50])
+        by smtp.gmail.com with ESMTPSA id l16sm913162edb.59.2021.12.07.17.09.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Dec 2021 17:09:48 -0800 (PST)
+Date:   Wed, 8 Dec 2021 03:09:47 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Ahmed Abdelsalam <ahabdels@gmail.com>,
-        Paolo Lungaroni <paolo.lungaroni@uniroma2.it>,
-        Stefano Salsano <stefano.salsano@uniroma2.it>
-References: <20211206163447.991402-1-andrea.righi@canonical.com>
- <cfedb3e3-746a-d052-b3f1-09e4b20ad061@gmail.com>
- <20211208012102.844ec898c10339e99a69db5f@uniroma2.it>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <20211208012102.844ec898c10339e99a69db5f@uniroma2.it>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [net-next RFC PATCH 0/6] Add support for qca8k mdio rw in
+ Ethernet packet
+Message-ID: <20211208010947.xavzcnih3xx4dxxs@skbuf>
+References: <61afadb9.1c69fb81.7dfad.19b1@mx.google.com>
+ <Ya+yzNDMorw4X9CT@lunn.ch>
+ <61afb452.1c69fb81.18c6f.242e@mx.google.com>
+ <20211207205219.4eoygea6gey4iurp@skbuf>
+ <61afd6a1.1c69fb81.3281e.5fff@mx.google.com>
+ <Ya/esX+GTet9PM+D@lunn.ch>
+ <20211207234736.vpqurmattqx4a76h@skbuf>
+ <20211208000432.5nq47bjz3aqjvilp@skbuf>
+ <20211208004051.bx5u7rnpxxt2yqwc@skbuf>
+ <61afff9e.1c69fb81.92f07.6e7d@mx.google.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <61afff9e.1c69fb81.92f07.6e7d@mx.google.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/7/21 5:21 PM, Andrea Mayer wrote:
+On Wed, Dec 08, 2021 at 01:42:59AM +0100, Ansuel Smith wrote:
+> On Wed, Dec 08, 2021 at 02:40:51AM +0200, Vladimir Oltean wrote:
+> > On Wed, Dec 08, 2021 at 02:04:32AM +0200, Vladimir Oltean wrote:
+> > > On Wed, Dec 08, 2021 at 01:47:36AM +0200, Vladimir Oltean wrote:
+> > > > > 2) is harder. But as far as i know, we have an 1:N setup.  One switch
+> > > > > driver can use N tag drivers. So we need the switch driver to be sure
+> > > > > the tag driver is what it expects. We keep the shared state in the tag
+> > > > > driver, so it always has valid data, but when the switch driver wants
+> > > > > to get a pointer to it, it needs to pass a enum dsa_tag_protocol and
+> > > > > if it does not match, the core should return -EINVAL or similar.
+> > > > 
+> > > > In my proposal, the tagger will allocate the memory from its side of the
+> > > > ->connect() call. So regardless of whether the switch driver side
+> > > > connects or not, the memory inside dp->priv is there for the tagger to
+> > > > use. The switch can access it or it can ignore it.
+> > > 
+> > > I don't think I actually said something useful here.
+> > > 
+> > > The goal would be to minimize use of dp->priv inside the switch driver,
+> > > outside of the actual ->connect() / ->disconnect() calls.
+> > > For example, in the felix driver which supports two tagging protocol
+> > > drivers, I think these two methods would be enough, and they would
+> > > replace the current felix_port_setup_tagger_data() and
+> > > felix_port_teardown_tagger_data() calls.
+> > > 
+> > > An additional benefit would be that in ->connect() and ->disconnect() we
+> > > get the actual tagging protocol in use. Currently the felix driver lacks
+> > > there, because felix_port_setup_tagger_data() just sets dp->priv up
+> > > unconditionally for the ocelot-8021q tagging protocol (luckily the
+> > > normal ocelot tagger doesn't need dp->priv).
+> > > 
+> > > In sja1105 the story is a bit longer, but I believe that can also be
+> > > cleaned up to stay within the confines of ->connect()/->disconnect().
+> > > 
+> > > So I guess we just need to be careful and push back against dubious use
+> > > during review.
+> > 
+> > I've started working on a prototype for converting sja1105 to this model.
+> > It should be clearer to me by tomorrow whether there is anything missing
+> > from this proposal.
 > 
-> When an IPv4 packet is received, the ip_rcv_core(...) sets the receiving
-> interface index into the IPv4 socket control block (v5.16-rc4,
-> net/ipv4/ip_input.c line 510):
->     IPCB(skb)->iif = skb->skb_iif;
-> 
-> If that IPv4 packet is meant to be encapsulated in an outer IPv6+SRH header,
-> the seg6_do_srh_encap(...) performs the required encapsulation. 
-> In this case, the seg6_do_srh_encap function clears the IPv6 socket control
-> block (v5.16-rc4 net/ipv6/seg6_iptunnel.c line 163):
->     memset(IP6CB(skb), 0, sizeof(*IP6CB(skb)));
-> 
-> The memset(...) was introduced in commit ef489749aae5 ("ipv6: sr: clear
-> IP6CB(skb) on SRH ip4ip6 encapsulation") a long time ago (2019-01-29).
-> 
-> Since the IPv6 socket control block and the IPv4 socket control block share the
-> same memory area (skb->cb), the receiving interface index info is lost
-> (IP6CB(skb)->iif is set to zero).
-> 
-> As a side effect, that condition triggers a NULL pointer dereference if patch
-> 0857d6f8c759 ("ipv6: When forwarding count rx stats on the orig netdev") is
-> applied.
-> 
-> To fix that, I can send a patch where we set the IP6CB(skb)->iif to the
-> index of the receiving interface, i.e.:
-> 
-> int seg6_do_srh_encap(struct sk_buff *skb, struct ipv6_sr_hdr *osrh, int proto)
->          [...]
->          ip6_flow_hdr(hdr, 0, flowlabel);
->          hdr->hop_limit = ip6_dst_hoplimit(skb_dst(skb));
-> 
->          memset(IP6CB(skb), 0, sizeof(*IP6CB(skb)));
-> +        IP6CB(skb)->iif = skb->skb_iif;
->          [...]
-> 
-> What do you think?
-> 
+> I'm working on your suggestion and I should be able to post another RFC
+> this night if all works correctly with my switch.
 
-I like that approach over the need for a fall back in core ipv6 code.
-Make sure the above analysis is in the commit message. Thanks for the
-quick response,
+Ok. The key point with my progress so far is that Andrew may be right
+and we might need separate tagger priv pointers per port and per switch.
+At least for the cleanliness of implementation. In the end I plan to
+remove dp->priv and stay with dp->tagger_priv and ds->tagger_priv.
+
+Here's what I have so far. I have more changes locally, but the rest it
+isn't ready and overall also a bit irrelevant for the discussion.
+I'm going to sleep now.
+
+diff --git a/include/net/dsa.h b/include/net/dsa.h
+index bdf308a5c55e..f0f702774c8d 100644
+--- a/include/net/dsa.h
++++ b/include/net/dsa.h
+@@ -82,12 +82,15 @@ enum dsa_tag_protocol {
+ };
+ 
+ struct dsa_switch;
++struct dsa_switch_tree;
+ 
+ struct dsa_device_ops {
+ 	struct sk_buff *(*xmit)(struct sk_buff *skb, struct net_device *dev);
+ 	struct sk_buff *(*rcv)(struct sk_buff *skb, struct net_device *dev);
+ 	void (*flow_dissect)(const struct sk_buff *skb, __be16 *proto,
+ 			     int *offset);
++	int (*connect)(struct dsa_switch_tree *dst);
++	void (*disconnect)(struct dsa_switch_tree *dst);
+ 	unsigned int needed_headroom;
+ 	unsigned int needed_tailroom;
+ 	const char *name;
+@@ -279,6 +282,8 @@ struct dsa_port {
+ 	 */
+ 	void *priv;
+ 
++	void *tagger_priv;
++
+ 	/*
+ 	 * Original copy of the master netdev ethtool_ops
+ 	 */
+@@ -337,6 +342,8 @@ struct dsa_switch {
+ 	 */
+ 	void *priv;
+ 
++	void *tagger_priv;
++
+ 	/*
+ 	 * Configuration data for this switch.
+ 	 */
+@@ -689,6 +696,8 @@ struct dsa_switch_ops {
+ 						  enum dsa_tag_protocol mprot);
+ 	int	(*change_tag_protocol)(struct dsa_switch *ds, int port,
+ 				       enum dsa_tag_protocol proto);
++	int	(*connect_tag_protocol)(struct dsa_switch *ds,
++					enum dsa_tag_protocol proto);
+ 
+ 	/* Optional switch-wide initialization and destruction methods */
+ 	int	(*setup)(struct dsa_switch *ds);
+diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
+index 8814fa0e44c8..3787cbce1175 100644
+--- a/net/dsa/dsa2.c
++++ b/net/dsa/dsa2.c
+@@ -248,8 +248,12 @@ static struct dsa_switch_tree *dsa_tree_alloc(int index)
+ 
+ static void dsa_tree_free(struct dsa_switch_tree *dst)
+ {
+-	if (dst->tag_ops)
++	if (dst->tag_ops) {
++		if (dst->tag_ops->disconnect)
++			dst->tag_ops->disconnect(dst);
++
+ 		dsa_tag_driver_put(dst->tag_ops);
++	}
+ 	list_del(&dst->list);
+ 	kfree(dst);
+ }
+@@ -1136,6 +1140,36 @@ static void dsa_tree_teardown(struct dsa_switch_tree *dst)
+ 	dst->setup = false;
+ }
+ 
++static int dsa_tree_bind_tag_proto(struct dsa_switch_tree *dst,
++				   const struct dsa_device_ops *tag_ops)
++{
++	struct dsa_notifier_tag_proto_info info;
++	int err;
++
++	if (dst->tag_ops && dst->tag_ops->disconnect)
++		dst->tag_ops->disconnect(dst);
++
++	if (tag_ops->connect) {
++		err = tag_ops->connect(dst);
++		if (err)
++			return err;
++	}
++
++	info.tag_ops = tag_ops;
++	err = dsa_tree_notify(dst, DSA_NOTIFIER_TAG_PROTO_CONNECT, &info);
++	if (err && err != -EOPNOTSUPP)
++		goto out_disconnect;
++
++	dst->tag_ops = tag_ops;
++
++	return 0;
++
++out_disconnect:
++	if (tag_ops->disconnect)
++		tag_ops->disconnect(dst);
++	return err;
++}
++
+ /* Since the dsa/tagging sysfs device attribute is per master, the assumption
+  * is that all DSA switches within a tree share the same tagger, otherwise
+  * they would have formed disjoint trees (different "dsa,member" values).
+@@ -1173,7 +1207,9 @@ int dsa_tree_change_tag_proto(struct dsa_switch_tree *dst,
+ 	if (err)
+ 		goto out_unwind_tagger;
+ 
+-	dst->tag_ops = tag_ops;
++	err = dsa_tree_bind_tag_proto(dst, tag_ops);
++	if (err)
++		goto out_unwind_tagger;
+ 
+ 	rtnl_unlock();
+ 
+@@ -1307,7 +1343,9 @@ static int dsa_port_parse_cpu(struct dsa_port *dp, struct net_device *master,
+ 		 */
+ 		dsa_tag_driver_put(tag_ops);
+ 	} else {
+-		dst->tag_ops = tag_ops;
++		err = dsa_tree_bind_tag_proto(dst, tag_ops);
++		if (err)
++			return err;
+ 	}
+ 
+ 	dp->master = master;
+diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
+index 38ce5129a33d..0db2b26b0c83 100644
+--- a/net/dsa/dsa_priv.h
++++ b/net/dsa/dsa_priv.h
+@@ -37,6 +37,7 @@ enum {
+ 	DSA_NOTIFIER_VLAN_DEL,
+ 	DSA_NOTIFIER_MTU,
+ 	DSA_NOTIFIER_TAG_PROTO,
++	DSA_NOTIFIER_TAG_PROTO_CONNECT,
+ 	DSA_NOTIFIER_MRP_ADD,
+ 	DSA_NOTIFIER_MRP_DEL,
+ 	DSA_NOTIFIER_MRP_ADD_RING_ROLE,
+diff --git a/net/dsa/switch.c b/net/dsa/switch.c
+index 9c92edd96961..06948f536829 100644
+--- a/net/dsa/switch.c
++++ b/net/dsa/switch.c
+@@ -647,6 +647,17 @@ static int dsa_switch_change_tag_proto(struct dsa_switch *ds,
+ 	return 0;
+ }
+ 
++static int dsa_switch_connect_tag_proto(struct dsa_switch *ds,
++					struct dsa_notifier_tag_proto_info *info)
++{
++	const struct dsa_device_ops *tag_ops = info->tag_ops;
++
++	if (!ds->ops->connect_tag_protocol)
++		return -EOPNOTSUPP;
++
++	return ds->ops->connect_tag_protocol(ds, tag_ops->proto);
++}
++
+ static int dsa_switch_mrp_add(struct dsa_switch *ds,
+ 			      struct dsa_notifier_mrp_info *info)
+ {
+@@ -766,6 +777,9 @@ static int dsa_switch_event(struct notifier_block *nb,
+ 	case DSA_NOTIFIER_TAG_PROTO:
+ 		err = dsa_switch_change_tag_proto(ds, info);
+ 		break;
++	case DSA_NOTIFIER_TAG_PROTO_CONNECT:
++		err = dsa_switch_connect_tag_proto(ds, info);
++		break;
+ 	case DSA_NOTIFIER_MRP_ADD:
+ 		err = dsa_switch_mrp_add(ds, info);
+ 		break;
+diff --git a/net/dsa/tag_sja1105.c b/net/dsa/tag_sja1105.c
+index 6c293c2a3008..53362a0f0aab 100644
+--- a/net/dsa/tag_sja1105.c
++++ b/net/dsa/tag_sja1105.c
+@@ -722,11 +722,59 @@ static void sja1110_flow_dissect(const struct sk_buff *skb, __be16 *proto,
+ 	*proto = ((__be16 *)skb->data)[(VLAN_HLEN / 2) - 1];
+ }
+ 
++static void sja1105_disconnect(struct dsa_switch_tree *dst)
++{
++	struct dsa_port *dp;
++
++	dsa_tree_for_each_user_port(dp, dst) {
++		if (dp->tagger_priv) {
++			kfree(dp->tagger_priv);
++			dp->tagger_priv = NULL;
++		}
++
++		if (dp->ds->tagger_priv) {
++			kfree(dp->ds->tagger_priv);
++			dp->ds->tagger_priv = NULL;
++		}
++	}
++}
++
++static int sja1105_connect(struct dsa_switch_tree *dst)
++{
++	struct sja1105_tagger_data *data;
++	struct sja1105_port *sp;
++	struct dsa_port *dp;
++
++	dsa_tree_for_each_user_port(dp, dst) {
++		if (!dp->ds->tagger_priv) {
++			data = kzalloc(sizeof(*data), GFP_KERNEL);
++			if (!data)
++				goto out;
++
++			dp->ds->tagger_priv = data;
++		}
++
++		sp = kzalloc(sizeof(*sp), GFP_KERNEL);
++		if (!sp)
++			goto out;
++
++		dp->tagger_priv = sp;
++	}
++
++	return 0;
++
++out:
++	sja1105_disconnect(dst);
++	return -ENOMEM;
++}
++
+ static const struct dsa_device_ops sja1105_netdev_ops = {
+ 	.name = "sja1105",
+ 	.proto = DSA_TAG_PROTO_SJA1105,
+ 	.xmit = sja1105_xmit,
+ 	.rcv = sja1105_rcv,
++	.connect = sja1105_connect,
++	.disconnect = sja1105_disconnect,
+ 	.needed_headroom = VLAN_HLEN,
+ 	.flow_dissect = sja1105_flow_dissect,
+ 	.promisc_on_master = true,
+@@ -740,6 +788,8 @@ static const struct dsa_device_ops sja1110_netdev_ops = {
+ 	.proto = DSA_TAG_PROTO_SJA1110,
+ 	.xmit = sja1110_xmit,
+ 	.rcv = sja1110_rcv,
++	.connect = sja1105_connect,
++	.disconnect = sja1105_disconnect,
+ 	.flow_dissect = sja1110_flow_dissect,
+ 	.needed_headroom = SJA1110_HEADER_LEN + VLAN_HLEN,
+ 	.needed_tailroom = SJA1110_RX_TRAILER_LEN + SJA1110_MAX_PADDING_LEN,
+-- 
+2.25.1
