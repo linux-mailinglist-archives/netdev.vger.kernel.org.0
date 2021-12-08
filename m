@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D48546CF0D
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 09:33:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B211746CF0F
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 09:33:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240575AbhLHIg7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 03:36:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42868 "EHLO
+        id S240822AbhLHIhC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 03:37:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230001AbhLHIg6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 03:36:58 -0500
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC05CC061746
-        for <netdev@vger.kernel.org>; Wed,  8 Dec 2021 00:33:26 -0800 (PST)
-Received: by mail-ed1-x52e.google.com with SMTP id w1so5752920edc.6
-        for <netdev@vger.kernel.org>; Wed, 08 Dec 2021 00:33:26 -0800 (PST)
+        with ESMTP id S240716AbhLHIhB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 03:37:01 -0500
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF906C061746
+        for <netdev@vger.kernel.org>; Wed,  8 Dec 2021 00:33:29 -0800 (PST)
+Received: by mail-ed1-x52a.google.com with SMTP id v1so5841429edx.2
+        for <netdev@vger.kernel.org>; Wed, 08 Dec 2021 00:33:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ezHbFwEHOgtVXrEPyC2/Vvb45wpR1NFY6XpUn36BJXE=;
-        b=Oaf+owd/RxE7FUplEWeI5CqQzsjKbRXuQa43xyIk8paq/kW39V2Jk0nlY1ZWyhxpzU
-         X+N7Df1mmj2hufjljaOYnx6hIp5QRnh87y5eornCGGFjBBGRy+28h36VkFJBkOLHAIn0
-         tP4YpbDPUYZNhTcWm7KU3yIvoj6iSxSMmyAepmyNHhV38hpTgWKrg9ic9zKd9uOxTAMR
-         Ig9dgtPY0sOotTxVnxNOvU8F+wcYjME6qhBsYZAjLi568fI6/TBQTAaVRtg3oolVohXr
-         AToDvZFgbftWn0HolfqaZyNLXnSZwSbZ1HBfyMnqcJv3yyJR4VduqbXUBvD4tfZkn7Kw
-         43ww==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=HhbhdM+UVkV69ylyGAUrfry6xL5WJfe10RQ3MgDri3E=;
+        b=eaX02OEPSS+RjOClG9DGc+v6cgQ88a34E72u12SEvVTKae7LfSyBfOb82cG4ik+ihQ
+         vMC/UinqwVByxQYNyaTphU4u1cPFoa3FXqjaXb9X9cmergltDcgJY6geO6dTNjMs/2Cr
+         2ckYlk3wDqtGK3dMjrahko4FFZAV2ZLENLDoRtZJulXk1fVkjlKnE9ISE0Zkh/Lv5x6d
+         3WHnHmdLbdozO2mDzEn3AK9XR42fFN9yqUlC6TVJAjiG2+oVvxbL3wlzbFnUlZMr9iVU
+         YwDGI5KC09SF8tOHXYvP5dtqvieq6x4p02D04zO16Lh/5pIAR3UtwpUgEBbKD8H37KIh
+         9+ZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ezHbFwEHOgtVXrEPyC2/Vvb45wpR1NFY6XpUn36BJXE=;
-        b=s24JW/dIHKhZVJakHbPEAvLBs7ZnNAytQ9WoIp35uTZkAwTVVyQvwK+MDHrvFb+a0Q
-         VZfZGM9+fTo4aPlFUQbf4HYJDkZzyhyVAF1a0K6K8DjAh0mbupSHNGa/6SFmV3zgz7nr
-         zATpimH1NFiuJRQAysOyCqDMEHV8py8mmrD5ZBh2+npTn0DWFHsNXYT6edeFclqnUE5M
-         kJhJDqnJfKMKOmASzy4fZhzbVj87/zsVq6olkxD1rhfrHqIJVGMVNJM/DaQpRty19MAH
-         J0ziYtJl/XF6tEy3n0cJC3AU02aBJQylm9b+a8ExkXZhOgaxcxsWe5j9oYYl9UhsHA+x
-         vWrQ==
-X-Gm-Message-State: AOAM530ltTVIUZjWBwUvw0AKXhFrf0tgpxDwZZ+x07L1bOB+8EYVUwco
-        pajoL1fEC0TE1rUaU4W7u3mcMIGLXUw5aAjy2TY=
-X-Google-Smtp-Source: ABdhPJxHqGG5uVa6peGzKP9j9aIy5j3Okpl/7+N6i/8RUzX2jx1jDDBoDhwrbHIhuMk49gm26vKjEw==
-X-Received: by 2002:a17:906:580a:: with SMTP id m10mr6157826ejq.213.1638952405323;
-        Wed, 08 Dec 2021 00:33:25 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=HhbhdM+UVkV69ylyGAUrfry6xL5WJfe10RQ3MgDri3E=;
+        b=1faTSww1SXfTFoHgswk8f5zssi5xiwHla2JF4pOgV9G/lD0bYFKoiwKV+aqPdUB7pB
+         KHdVkrFXWnSWuAj9luHVZEoQTz7ROhar51D/Cx2+Qlq5zbgwswz2apAX7Z+m5xaLVOiu
+         TelcsqzH20NkougsCd72kgGdHUwIra+7E87/WeOSDwfBeFjP7HygmOUwJnFz0TdFq7y2
+         e2qY3M/doXcnhNS/p2lLNID2X6vkvuvdDQUHyKKf8o6rZhYssxUWT4xBAMix2wa+u5/o
+         T9Yo1JfiJxcGTxoh1/xhDX0OJxDR1vhRgtlTX0YSeVL46bs8v9WKucNPIt8KcDGAKT7j
+         TSzA==
+X-Gm-Message-State: AOAM5338NOUkTw2InLPAI/RjPOyAyXnNP1+sqnGxSetrjddNOSuB5Xr+
+        hIvj5E5vbtu/TQUA/jPJL8JYSQ==
+X-Google-Smtp-Source: ABdhPJz/Aub/CN7cwflA5aTaNqCW0zeff09QK+an5jfSI+P/yEVmx3XrZ525aOOBfp2sz8qeApVlag==
+X-Received: by 2002:a17:906:40c4:: with SMTP id a4mr5430305ejk.185.1638952407946;
+        Wed, 08 Dec 2021 00:33:27 -0800 (PST)
 Received: from localhost ([104.245.96.202])
-        by smtp.gmail.com with ESMTPSA id f17sm1493865edq.39.2021.12.08.00.33.24
+        by smtp.gmail.com with ESMTPSA id z22sm1716370edd.78.2021.12.08.00.33.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Dec 2021 00:33:24 -0800 (PST)
+        Wed, 08 Dec 2021 00:33:27 -0800 (PST)
 From:   Leo Yan <leo.yan@linaro.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -63,50 +63,48 @@ To:     "David S. Miller" <davem@davemloft.net>,
         linux-arm-kernel@lists.infradead.org, codalist@coda.cs.cmu.edu,
         linux-audit@redhat.com
 Cc:     Leo Yan <leo.yan@linaro.org>
-Subject: [PATCH v2 0/7] pid: Introduce helper task_is_in_root_ns()
-Date:   Wed,  8 Dec 2021 16:33:13 +0800
-Message-Id: <20211208083320.472503-1-leo.yan@linaro.org>
+Subject: [PATCH v2 1/7] pid: Introduce helper task_is_in_init_pid_ns()
+Date:   Wed,  8 Dec 2021 16:33:14 +0800
+Message-Id: <20211208083320.472503-2-leo.yan@linaro.org>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20211208083320.472503-1-leo.yan@linaro.org>
+References: <20211208083320.472503-1-leo.yan@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The kernel uses open code to check if a process is in root PID namespace
-or not in several places.
+Currently the kernel uses open code in multiple places to check if a
+task is in the root PID namespace with the kind of format:
 
-Suggested by Suzuki, this patch set is to create a helper function
-task_is_in_init_pid_ns() to replace open code.
+  if (task_active_pid_ns(current) == &init_pid_ns)
+      do_something();
 
-This patch set has been applied on the mainline kernel and built for
-Arm64 kernel with enabling all relevant modules.
+This patch creates a new helper function, task_is_in_init_pid_ns(), it
+returns true if a passed task is in the root PID namespace, otherwise
+returns false.  So it will be used to replace open codes.
 
-Changes from v1:
-* Renamed helper function from task_is_in_root_ns() to
-  task_is_in_init_pid_ns(). (Leon Romanovsky)
-* Improved patches' commit logs for more neat.
+Suggested-by: Suzuki K Poulose <suzuki.poulose@arm.com>
+Signed-off-by: Leo Yan <leo.yan@linaro.org>
+---
+ include/linux/pid_namespace.h | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-
-Leo Yan (7):
-  pid: Introduce helper task_is_in_init_pid_ns()
-  coresight: etm3x: Use task_is_in_init_pid_ns()
-  coresight: etm4x: Use task_is_in_init_pid_ns()
-  connector/cn_proc: Use task_is_in_init_pid_ns()
-  coda: Use task_is_in_init_pid_ns()
-  audit: Use task_is_in_init_pid_ns()
-  taskstats: Use task_is_in_init_pid_ns()
-
- drivers/connector/cn_proc.c                         | 2 +-
- drivers/hwtracing/coresight/coresight-etm3x-sysfs.c | 8 ++++----
- drivers/hwtracing/coresight/coresight-etm4x-sysfs.c | 8 ++++----
- fs/coda/inode.c                                     | 2 +-
- fs/coda/psdev.c                                     | 2 +-
- include/linux/pid_namespace.h                       | 5 +++++
- kernel/audit.c                                      | 2 +-
- kernel/taskstats.c                                  | 2 +-
- 8 files changed, 18 insertions(+), 13 deletions(-)
-
+diff --git a/include/linux/pid_namespace.h b/include/linux/pid_namespace.h
+index 7c7e627503d2..07481bb87d4e 100644
+--- a/include/linux/pid_namespace.h
++++ b/include/linux/pid_namespace.h
+@@ -86,4 +86,9 @@ extern struct pid_namespace *task_active_pid_ns(struct task_struct *tsk);
+ void pidhash_init(void);
+ void pid_idr_init(void);
+ 
++static inline bool task_is_in_init_pid_ns(struct task_struct *tsk)
++{
++	return task_active_pid_ns(tsk) == &init_pid_ns;
++}
++
+ #endif /* _LINUX_PID_NS_H */
 -- 
 2.25.1
 
