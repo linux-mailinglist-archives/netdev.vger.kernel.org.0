@@ -2,119 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6102F46DE51
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 23:22:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B68B46DE63
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 23:30:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235079AbhLHW0U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 17:26:20 -0500
-Received: from mga14.intel.com ([192.55.52.115]:60695 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241202AbhLHWZf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 Dec 2021 17:25:35 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10192"; a="238192458"
-X-IronPort-AV: E=Sophos;i="5.88,190,1635231600"; 
-   d="scan'208";a="238192458"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Dec 2021 14:22:03 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,190,1635231600"; 
-   d="scan'208";a="543370327"
-Received: from lkp-server02.sh.intel.com (HELO 9e1e9f9b3bcb) ([10.239.97.151])
-  by orsmga001.jf.intel.com with ESMTP; 08 Dec 2021 14:21:59 -0800
-Received: from kbuild by 9e1e9f9b3bcb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1mv5K2-000188-Hs; Wed, 08 Dec 2021 22:21:58 +0000
-Date:   Thu, 9 Dec 2021 06:21:48 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     xiangxia.m.yue@gmail.com, netdev@vger.kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Tonghao Zhang <xiangxia.m.yue@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
+        id S237299AbhLHWdu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 17:33:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40716 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229533AbhLHWdu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 17:33:50 -0500
+Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7235C061746;
+        Wed,  8 Dec 2021 14:30:17 -0800 (PST)
+Received: by mail-io1-xd2f.google.com with SMTP id p65so4557915iof.3;
+        Wed, 08 Dec 2021 14:30:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=bt66uEPCpvhO5xlEsJtnZpSsKpGJ2P3rR4vXY0f1XcI=;
+        b=ALHjq71IP6TXcZLoPBmrtr0EwP0Ym0AgJYegmrJtRINWvx2OQeXAxmGvSDi6GB+vnQ
+         hylKvpvYKxXF3AGbuzxaAF7jt6DaNRksqmWLDsVE21BINIoCgrpry+hGfEKmfMNXqoS6
+         fl2+amE80tPE9oeASAmBpck3flRiMCegRfkjREW1ZYhkM1YOHPEoAzw+uJigqFq7v5/V
+         Y5p5muppeaQH8YcuqLBvMvHzfOA1bTJThweFCdSqTYEqct5Oy79j8IM+S9uKLSiNqrMz
+         MaQj5e9hnUO4PWNyDu63z96cLMG/aPqBxNX2ftLLoy3+KErk9L2fTlEY90G0IUf0fCv8
+         g9qQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=bt66uEPCpvhO5xlEsJtnZpSsKpGJ2P3rR4vXY0f1XcI=;
+        b=PIOgXhxKujPpIcmATTxuOExEQ5uo1r5AoITAI4evTIizfLg5z9wthF7TR3JMiS/wIV
+         eUJjpuEpe6hMspl17v3Yt2ZX9Mk8BrMDUEUMqUbjzpkG5Iy+MvBN9jKbW0eO5spewMYh
+         LxGH+KcCRVjjnyTBPmxZsRkyMsEjSvSrqazrde5eqXdOMYqd/VpWGTEnhtgU8pmbAG0N
+         nIk5mCTqs1GY2n/0ssG9yht5GrdicFgMxdvMkOal7Gd1vIrrBnM9of8VogVxZbLj9fNM
+         D+9kEHPAjdMYfwLlaBHmzvfjcgQqFOZcSNbuVNGH4/sX8UyBCIYj+XDQtvuCnADn5bEj
+         OAuA==
+X-Gm-Message-State: AOAM531VdSvwIpL25qTrfv8i2bXaf3OQ5rA0cTT/jyiXYNNu2MmU2iXG
+        rwMEL8FotNizcFyokMqJ/kw=
+X-Google-Smtp-Source: ABdhPJxiLmRQRqhhJ7IWtUnhaPcwSLmdXq8iZ2i1cSkS3wkTJV3M55IDMDim9rXzMYNPfdfqlqtODg==
+X-Received: by 2002:a05:6638:24c6:: with SMTP id y6mr3630866jat.98.1639002617312;
+        Wed, 08 Dec 2021 14:30:17 -0800 (PST)
+Received: from localhost ([172.243.151.11])
+        by smtp.gmail.com with ESMTPSA id x15sm2465642iob.8.2021.12.08.14.30.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Dec 2021 14:30:16 -0800 (PST)
+Date:   Wed, 08 Dec 2021 14:30:08 -0800
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [net-next v2 2/2] net: sched: support hash/classid selecting tx
- queue
-Message-ID: <202112090603.PxlqXFRw-lkp@intel.com>
-References: <20211208143408.7047-3-xiangxia.m.yue@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211208143408.7047-3-xiangxia.m.yue@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>
+Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Message-ID: <61b131f0a4c18_97957208ad@john.notmuch>
+In-Reply-To: <20211202000232.380824-2-toke@redhat.com>
+References: <20211202000232.380824-1-toke@redhat.com>
+ <20211202000232.380824-2-toke@redhat.com>
+Subject: RE: [PATCH bpf-next 1/8] page_pool: Add callback to init pages when
+ they are allocated
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+> Add a new callback function to page_pool that, if set, will be called e=
+very
+> time a new page is allocated. This will be used from bpf_test_run() to
+> initialise the page data with the data provided by userspace when runni=
+ng
+> XDP programs with redirect turned on.
+> =
 
-Thank you for the patch! Perhaps something to improve:
+> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> ---
 
-[auto build test WARNING on net-next/master]
+LGTM.
 
-url:    https://github.com/0day-ci/linux/commits/xiangxia-m-yue-gmail-com/net-sched-allow-user-to-select-txqueue/20211208-223656
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 1fe5b01262844be03de98afdd56d1d393df04d7e
-config: i386-randconfig-r023-20211207 (https://download.01.org/0day-ci/archive/20211209/202112090603.PxlqXFRw-lkp@intel.com/config)
-compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 097a1cb1d5ebb3a0ec4bcaed8ba3ff6a8e33c00a)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/522fbcfdde012bc46d29aa216bdfa73f512adcbd
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review xiangxia-m-yue-gmail-com/net-sched-allow-user-to-select-txqueue/20211208-223656
-        git checkout 522fbcfdde012bc46d29aa216bdfa73f512adcbd
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash mm/ net/sched/
+Acked-by: John Fastabend <john.fastabend@gmail.com>
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+>  include/net/page_pool.h | 2 ++
+>  net/core/page_pool.c    | 2 ++
+>  2 files changed, 4 insertions(+)
+> =
 
-All warnings (new ones prefixed by >>):
+> diff --git a/include/net/page_pool.h b/include/net/page_pool.h
+> index 3855f069627f..a71201854c41 100644
+> --- a/include/net/page_pool.h
+> +++ b/include/net/page_pool.h
+> @@ -80,6 +80,8 @@ struct page_pool_params {
+>  	enum dma_data_direction dma_dir; /* DMA mapping direction */
+>  	unsigned int	max_len; /* max DMA sync memory size */
+>  	unsigned int	offset;  /* DMA addr offset */
+> +	void (*init_callback)(struct page *page, void *arg);
+> +	void *init_arg;
+>  };
+>  =
 
->> net/sched/act_skbedit.c:39:11: warning: variable 'hash' is used uninitialized whenever 'if' condition is false [-Wsometimes-uninitialized]
-           else if (params->flags & SKBEDIT_F_QUEUE_MAPPING_HASH)
-                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   net/sched/act_skbedit.c:42:34: note: uninitialized use occurs here
-           queue_mapping = queue_mapping + hash % mapping_mod;
-                                           ^~~~
-   net/sched/act_skbedit.c:39:7: note: remove the 'if' if its condition is always true
-           else if (params->flags & SKBEDIT_F_QUEUE_MAPPING_HASH)
-                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   net/sched/act_skbedit.c:32:10: note: initialize the variable 'hash' to silence this warning
-           u32 hash;
-                   ^
-                    = 0
-   1 warning generated.
+>  struct page_pool {
+> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+> index 9b60e4301a44..fb5a90b9d574 100644
+> --- a/net/core/page_pool.c
+> +++ b/net/core/page_pool.c
+> @@ -219,6 +219,8 @@ static void page_pool_set_pp_info(struct page_pool =
+*pool,
+>  {
+>  	page->pp =3D pool;
+>  	page->pp_magic |=3D PP_SIGNATURE;
+> +	if (unlikely(pool->p.init_callback))
+> +		pool->p.init_callback(page, pool->p.init_arg);
+
+already in slow path right? So unlikely in a slow path should not
+have any impact on performance is my reading.
+
+>  }
+>  =
+
+>  static void page_pool_clear_pp_info(struct page *page)
+> -- =
+
+> 2.34.0
+> =
 
 
-vim +39 net/sched/act_skbedit.c
 
-    26	
-    27	static u16 tcf_skbedit_hash(struct tcf_skbedit_params *params,
-    28				    struct sk_buff *skb)
-    29	{
-    30		u16 queue_mapping = params->queue_mapping;
-    31		u16 mapping_mod = params->mapping_mod;
-    32		u32 hash;
-    33	
-    34		if (!(params->flags & SKBEDIT_F_QUEUE_MAPPING_HASH_MASK))
-    35			return netdev_cap_txqueue(skb->dev, queue_mapping);
-    36	
-    37		if (params->flags & SKBEDIT_F_QUEUE_MAPPING_CLASSID)
-    38			hash = jhash_1word(task_get_classid(skb), 0);
-  > 39		else if (params->flags & SKBEDIT_F_QUEUE_MAPPING_HASH)
-    40			hash = skb_get_hash(skb);
-    41	
-    42		queue_mapping = queue_mapping + hash % mapping_mod;
-    43		return netdev_cap_txqueue(skb->dev, queue_mapping);
-    44	}
-    45	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
