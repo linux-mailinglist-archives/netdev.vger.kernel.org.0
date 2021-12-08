@@ -2,44 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 56D7A46D3B0
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 13:51:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F71046D3B3
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 13:51:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233805AbhLHMyj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 07:54:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46408 "EHLO
+        id S233821AbhLHMyl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 07:54:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233787AbhLHMyi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 07:54:38 -0500
+        with ESMTP id S233793AbhLHMyk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 07:54:40 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C464BC0617A1
-        for <netdev@vger.kernel.org>; Wed,  8 Dec 2021 04:51:06 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F8C9C061746
+        for <netdev@vger.kernel.org>; Wed,  8 Dec 2021 04:51:08 -0800 (PST)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1muwPZ-0003Fw-3D
-        for netdev@vger.kernel.org; Wed, 08 Dec 2021 13:51:05 +0100
+        id 1muwPa-0003Io-V5
+        for netdev@vger.kernel.org; Wed, 08 Dec 2021 13:51:07 +0100
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id EC3CC6BFBF7
-        for <netdev@vger.kernel.org>; Wed,  8 Dec 2021 12:51:00 +0000 (UTC)
+        by bjornoya.blackshift.org (Postfix) with SMTP id C8E396BFC03
+        for <netdev@vger.kernel.org>; Wed,  8 Dec 2021 12:51:01 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id 879D66BFBCF;
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id A47806BFBD1;
         Wed,  8 Dec 2021 12:50:58 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id ec803ce5;
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 317b77d9;
         Wed, 8 Dec 2021 12:50:57 +0000 (UTC)
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de, Evgeny Boger <boger@wirenboard.com>,
+        kernel@pengutronix.de,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH net-next 4/8] ARM: dts: sun8i: r40: add node for CAN controller
-Date:   Wed,  8 Dec 2021 13:50:51 +0100
-Message-Id: <20211208125055.223141-5-mkl@pengutronix.de>
+Subject: [PATCH net-next 5/8] can: hi311x: hi3110_can_probe(): use devm_clk_get_optional() to get the input clock
+Date:   Wed,  8 Dec 2021 13:50:52 +0100
+Message-Id: <20211208125055.223141-6-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211208125055.223141-1-mkl@pengutronix.de>
 References: <20211208125055.223141-1-mkl@pengutronix.de>
@@ -53,58 +54,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Evgeny Boger <boger@wirenboard.com>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-Allwinner R40 (also known as A40i, T3, V40) has a CAN controller. The
-controller is the same as in earlier A10 and A20 SoCs, but needs reset
-line to be deasserted before use.
+It's not clear what was the intention of redundant usage of IS_ERR()
+around the clock pointer since with the error check of devm_clk_get()
+followed by bailout it can't be invalid,
 
-This patch adds a CAN node and the corresponding pinctrl descriptions.
+Simplify the code which fetches the input clock by using
+devm_clk_get_optional(). It will allow to switch to device properties
+approach in the future.
 
-Link: https://lore.kernel.org/all/20211122104616.537156-4-boger@wirenboard.com
-Signed-off-by: Evgeny Boger <boger@wirenboard.com>
+Link: https://lore.kernel.org/all/20211206165542.69887-1-andriy.shevchenko@linux.intel.com
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- arch/arm/boot/dts/sun8i-r40.dtsi | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
+ drivers/net/can/spi/hi311x.c | 16 ++++++----------
+ 1 file changed, 6 insertions(+), 10 deletions(-)
 
-diff --git a/arch/arm/boot/dts/sun8i-r40.dtsi b/arch/arm/boot/dts/sun8i-r40.dtsi
-index 1d87fc0c24ee..c99c92f008a0 100644
---- a/arch/arm/boot/dts/sun8i-r40.dtsi
-+++ b/arch/arm/boot/dts/sun8i-r40.dtsi
-@@ -511,6 +511,16 @@ pio: pinctrl@1c20800 {
- 			#interrupt-cells = <3>;
- 			#gpio-cells = <3>;
+diff --git a/drivers/net/can/spi/hi311x.c b/drivers/net/can/spi/hi311x.c
+index 89d9c986a229..13fb979645cf 100644
+--- a/drivers/net/can/spi/hi311x.c
++++ b/drivers/net/can/spi/hi311x.c
+@@ -835,7 +835,7 @@ static int hi3110_can_probe(struct spi_device *spi)
+ 	struct clk *clk;
+ 	int freq, ret;
  
-+			can_ph_pins: can-ph-pins {
-+				pins = "PH20", "PH21";
-+				function = "can";
-+			};
-+
-+			can_pa_pins: can-pa-pins {
-+				pins = "PA16", "PA17";
-+				function = "can";
-+			};
-+
- 			clk_out_a_pin: clk-out-a-pin {
- 				pins = "PI12";
- 				function = "clk_out_a";
-@@ -926,6 +936,15 @@ i2c3: i2c@1c2b800 {
- 			#size-cells = <0>;
- 		};
+-	clk = devm_clk_get(&spi->dev, NULL);
++	clk = devm_clk_get_optional(&spi->dev, NULL);
+ 	if (IS_ERR(clk)) {
+ 		dev_err(&spi->dev, "no CAN clock source defined\n");
+ 		return PTR_ERR(clk);
+@@ -851,11 +851,9 @@ static int hi3110_can_probe(struct spi_device *spi)
+ 	if (!net)
+ 		return -ENOMEM;
  
-+		can0: can@1c2bc00 {
-+			compatible = "allwinner,sun8i-r40-can";
-+			reg = <0x01c2bc00 0x400>;
-+			interrupts = <GIC_SPI 26 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&ccu CLK_BUS_CAN>;
-+			resets = <&ccu RST_BUS_CAN>;
-+			status = "disabled";
-+		};
-+
- 		i2c4: i2c@1c2c000 {
- 			compatible = "allwinner,sun6i-a31-i2c";
- 			reg = <0x01c2c000 0x400>;
+-	if (!IS_ERR(clk)) {
+-		ret = clk_prepare_enable(clk);
+-		if (ret)
+-			goto out_free;
+-	}
++	ret = clk_prepare_enable(clk);
++	if (ret)
++		goto out_free;
+ 
+ 	net->netdev_ops = &hi3110_netdev_ops;
+ 	net->flags |= IFF_ECHO;
+@@ -938,8 +936,7 @@ static int hi3110_can_probe(struct spi_device *spi)
+ 	hi3110_power_enable(priv->power, 0);
+ 
+  out_clk:
+-	if (!IS_ERR(clk))
+-		clk_disable_unprepare(clk);
++	clk_disable_unprepare(clk);
+ 
+  out_free:
+ 	free_candev(net);
+@@ -957,8 +954,7 @@ static int hi3110_can_remove(struct spi_device *spi)
+ 
+ 	hi3110_power_enable(priv->power, 0);
+ 
+-	if (!IS_ERR(priv->clk))
+-		clk_disable_unprepare(priv->clk);
++	clk_disable_unprepare(priv->clk);
+ 
+ 	free_candev(net);
+ 
 -- 
 2.33.0
 
