@@ -2,115 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BD9E46DADA
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 19:16:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7103C46DAE2
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 19:17:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238741AbhLHSTe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 13:19:34 -0500
-Received: from sin.source.kernel.org ([145.40.73.55]:38598 "EHLO
+        id S238770AbhLHSVT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 13:21:19 -0500
+Received: from sin.source.kernel.org ([145.40.73.55]:39196 "EHLO
         sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238716AbhLHSTd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 13:19:33 -0500
+        with ESMTP id S238761AbhLHSVT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 13:21:19 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 737BDCE22FC
-        for <netdev@vger.kernel.org>; Wed,  8 Dec 2021 18:16:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E86AC00446;
-        Wed,  8 Dec 2021 18:15:57 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 9D054CE22FD;
+        Wed,  8 Dec 2021 18:17:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38865C00446;
+        Wed,  8 Dec 2021 18:17:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638987358;
-        bh=DxXp9TNtsh/+7SU7F3+djzl1vTNmrpXi3EUFDNy8eoE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=cYYxHIAtXrU84LNJcUlQ3TnhBg1RGYL+5RMwEMzReeFs52AaP3N2Pd/z6gBgC/hfU
-         7db7X05jsr8KZ3KUHWusIRMGpmrswB5lWgGDeAmAYhtAupd8V1JESD3VW06OcLPeL5
-         HPODarsZxdj/QIirjr/go9zQMjrQDxdJOgyhWOqvXk/em6XS/buN60CE1V9gWSeXna
-         ki8X8K14AvBqfALPWfeLbks0+yakmZ2GEUJUaEjqqsmRyo86H81pXCbRkkc7iIioAx
-         VN2WH2uQIH4s73+QathiIhzTBlJdS1F/wVD5qL2D064vwSAwg8qC1wZPYKGguMqyCB
-         brkIoO64/gDGw==
-Date:   Wed, 8 Dec 2021 19:15:54 +0100
-From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        Holger Brunck <holger.brunck@hitachienergy.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [v3 2/2] dsa: mv88e6xxx: make serdes SGMII/Fiber output
- amplitude configurable
-Message-ID: <20211208191554.3ac7fd0b@thinkpad>
-In-Reply-To: <YbDxpJH3GgPDge+O@lunn.ch>
-References: <AM6PR0602MB3671CC1FE1D6685FE2A503A6F76F9@AM6PR0602MB3671.eurprd06.prod.outlook.com>
-        <20211208162852.4d7361af@thinkpad>
-        <AM6PR0602MB36717361A85C1B0CA8FE94D0F76F9@AM6PR0602MB3671.eurprd06.prod.outlook.com>
-        <20211208171720.6a297011@thinkpad>
-        <20211208172104.75e32a6b@thinkpad>
-        <20211208164131.fy2h652sgyvhm7jx@skbuf>
-        <20211208164932.6ojxt64j3v34477k@skbuf>
-        <20211208180057.7fb10a17@thinkpad>
-        <20211208171909.3hvre5blb734ueyu@skbuf>
-        <20211208183626.4e475b0d@thinkpad>
-        <YbDxpJH3GgPDge+O@lunn.ch>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        s=k20201202; t=1638987463;
+        bh=GphJXWtAKWGWnOk8D6UZiXQve1MESdZihzekQ7unsk0=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=SpvAIRytYXwboKBCw9ipE8oSVGSrLvBIJxSyBqINpd1yXx9EpeB6LHtQSI6hLXtpo
+         Il053Of0TtKOnoGCITUC3cT/X0C8WtDr1BC2/iVXdDiaU+xkXbV6fEruevK9cgvshR
+         J2oU9uheW/UfJxiNcl4h1HS5quJOTdImEDTyOFLwehJCIMQ3CjbuvT0oydLrPxzxjw
+         7UI8p5whAPWU+YTGA/yi+1PSSfP/VWJUKqvHBR0d7EspJcb7++HjfDXvSerPaXQBst
+         k0nY077C4OEnp07k3Mo2yWtYq4ke6xgZlb0KjRlYq9H+ZQhwzKsVjccuXR3UvykbL1
+         N9lomo+I+3jFg==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH 1/3] iwlwifi: fix LED dependencies
+From:   Kalle Valo <kvalo@kernel.org>
+In-Reply-To: <20211204173848.873293-1-arnd@kernel.org>
+References: <20211204173848.873293-1-arnd@kernel.org>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     Stanislaw Gruszka <stf_xl@wp.pl>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Ayala Beker <ayala.beker@intel.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-ID: <163898745953.8681.9953401691821732230.kvalo@kernel.org>
+Date:   Wed,  8 Dec 2021 18:17:41 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 8 Dec 2021 18:55:48 +0100
-Andrew Lunn <andrew@lunn.ch> wrote:
+Arnd Bergmann <arnd@kernel.org> wrote:
 
-> On Wed, Dec 08, 2021 at 06:36:26PM +0100, Marek Beh=C3=BAn wrote:
-> > On Wed, 8 Dec 2021 19:19:09 +0200
-> > Vladimir Oltean <olteanv@gmail.com> wrote:
-> >  =20
-> > > On Wed, Dec 08, 2021 at 06:00:57PM +0100, Marek Beh=C3=BAn wrote: =20
-> > > > > Also, maybe drop the "serdes-" prefix? The property will sit unde=
-r a
-> > > > > SERDES lane node, so it would be a bit redundant?   =20
-> > > >=20
-> > > > Hmm. Holger's proposal adds the property into the port node, not Se=
-rDes
-> > > > lane node. mv88e6xxx does not define bindings for SerDes lane nodes
-> > > > (yet).   =20
-> > >=20
-> > > We need to be careful about that. You're saying that there chances of
-> > > there being a separate SERDES driver for mv88e6xxx in the future? =20
-> >=20
-> > I don't think so. Although Russell is working on rewriting the SerDes
-> > code to new Phylink API, the SerDes code will always be a part of
-> > mv88e6xxx driver, I think. =20
->=20
-> In theory, the 6352 family uses standard c22 layout for its SERDES. It
-> might be possible to use generic code for that. But given the
-> architecture, i expect such a change would have the mv88e6xxx
-> instantiate such generic code, not use an external device.
->=20
-> For the 6390 family the SERDES and the MAC are pretty intertwined, and
-> it is not a 1:1 mapping. It might be possible to make use of shared
-> code, but i've much doubt it will be a separate device.
->=20
-> I would put the properties in the port nodes, next to phy-mode,
-> phy-handle, etc.
->=20
-> Where it might get interesting is the 10G modes, where there are 4
-> lanes. Is it possible to configure the voltage for each lane? Or is it
-> one setting for all 4 lanes? I've not looked at the data sheet, so i
-> cannot answer this.
-> y
->     Andrew
+> From: Arnd Bergmann <arnd@arndb.de>
+> 
+> The dependencies for LED configuration are highly inconsistent and too
+> complicated at the moment. One of the results is a randconfig failure I
+> get very rarely when LEDS_CLASS is in a loadable module, but the wireless
+> core is built-in:
+> 
+> WARNING: unmet direct dependencies detected for MAC80211_LEDS
+>   Depends on [n]: NET [=y] && WIRELESS [=y] && MAC80211 [=y] && (LEDS_CLASS [=m]=y || LEDS_CLASS [=m]=MAC80211 [=y])
+>   Selected by [m]:
+>   - IWLEGACY [=m] && NETDEVICES [=y] && WLAN [=y] && WLAN_VENDOR_INTEL [=y]
+>   - IWLWIFI_LEDS [=y] && NETDEVICES [=y] && WLAN [=y] && WLAN_VENDOR_INTEL [=y] && IWLWIFI [=m] && (LEDS_CLASS [=m]=y || LEDS_CLASS [=m]=IWLWIFI [=m]) && (IWLMVM [=m] || IWLDVM [=m])
+> 
+> aarch64-linux-ld: drivers/net/wireless/ath/ath5k/led.o: in function `ath5k_register_led':
+> led.c:(.text+0x60): undefined reference to `led_classdev_register_ext'
+> aarch64-linux-ld: drivers/net/wireless/ath/ath5k/led.o: in function `ath5k_unregister_leds':
+> led.c:(.text+0x200): undefined reference to `led_classdev_unregister'
+> 
+> For iwlwifi, the dependency is wrong, since this config prevents the
+> MAC80211_LEDS code from being part of a built-in MAC80211 driver.
+> 
+> For iwlegacy, this is worse because the driver tries to force-enable
+> the other subsystems, which is both a layering violation and a bug
+> because it will still fail with MAC80211=y and IWLEGACY=m, leading
+> to LEDS_CLASS being a module as well.
+> 
+> The actual link failure in the ath5k driver is a result of MAC80211_LEDS
+> being enabled but not usable. With the Kconfig logic fixed in the
+> Intel drivers, the ath5k driver works as expected again.
+> 
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> Acked-by: Luca Coelho <luciano.coelho@intel.com>
 
-The FS for PHY and Serdes for 6390X does not document TX amplitude
-registers. Release notes document some additional registers, or mention
-how to change frequency, but do not document the registers explicitly.
+3 patches applied to wireless-drivers.git, thanks.
 
-So we don't know currently how to change TX amplitude on those
-switches. But I guess I could find out the same way I found out about
-88E6393X frequency change from undocumented register. Or if some vendor
-needs it, they can ask Marvell which registers they should use to
-change TX amplitude.
+efdbfa0ad03e iwlwifi: fix LED dependencies
+c68115fc5375 brcmsmac: rework LED dependencies
+f7d55d2e439f mt76: mt7921: fix build regression
 
-I personally don't have any device with these switches though.
+-- 
+https://patchwork.kernel.org/project/linux-wireless/patch/20211204173848.873293-1-arnd@kernel.org/
 
-Marek
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
