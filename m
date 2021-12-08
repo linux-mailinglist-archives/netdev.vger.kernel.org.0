@@ -2,58 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A4A246CE45
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 08:20:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AA81046CE47
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 08:20:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244499AbhLHHYP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 02:24:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54832 "EHLO
+        id S244502AbhLHHYY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 02:24:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244493AbhLHHYP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 02:24:15 -0500
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1ACBC061574;
-        Tue,  7 Dec 2021 23:20:43 -0800 (PST)
-Received: by mail-ed1-x536.google.com with SMTP id r11so5109509edd.9;
-        Tue, 07 Dec 2021 23:20:43 -0800 (PST)
+        with ESMTP id S244506AbhLHHYS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 02:24:18 -0500
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20F49C061574;
+        Tue,  7 Dec 2021 23:20:47 -0800 (PST)
+Received: by mail-ed1-x52d.google.com with SMTP id y13so5037552edd.13;
+        Tue, 07 Dec 2021 23:20:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=ZiQZUZ4Jp9rh3Rck4fCei07yCzSzqa5hdHX2zLrQJwY=;
-        b=kCEcjy+tbsyg22IbRbPqIl1LwBtIa1X3q+YMPu/jhnYMqakPqvm+mm6b3pld52mJkX
-         qKsJm4TDfh1a9BFl+zcBYuxPs9bcozWh3BKtrKsOi94t7PHFeVhitzk2hNsbZlQbWEr+
-         4nF54YOOiQanFiNnVgscU9dGEIZW/wZolos0iBE+wW9hn5fNreNgdcdj/oYlHHVYv83P
-         /ihu7kg5Uo60rWClETe3MkNJxGlc/CTu4oCrkqdCyQZLwJlJX9nfwkBq57+/RWUv3L4P
-         DVCwQLvIcEF5PjZhDoWKQ3xwZBHnuh1KUN6mdo6yvqpjMTbeiM8HY9M5/lIQFrlXYg5V
-         RJBQ==
+        bh=7BIJQrNbvC3Sfrj3cs08TIKsWWE8pnsGwEpOQkIeNTQ=;
+        b=iNgLrgO2lyyj6vxqeTpSAwlpYCUYwSlSjSTZS7GHEDo68M2k5PavylSd/HFXX+Z8Wi
+         iNKzzTHmYo3QuUR5t1FkZD+SujxkppOIrWYv4L+MdrFekZvh6zMbiDqzmYsBqvV/yMFE
+         LUw48epfCfSoRz3wPIs93n9PEigtayN4QoPHu5HBw/vS2hR5p3+DZE45wHhIuyHfK3+2
+         wPhQOH3c42Qk+LxRQCfdpA+CW2uhkCll4xNy+2tXRyMdOTlMIdxnEzwyvdCzs9Yequud
+         TmH0UcrcaXpPG/Z3vAN+N4DqLEkyPvkJL3NBDjndTnaB1gR9svnomEH9lRfQg8sxQUfc
+         RhuA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=ZiQZUZ4Jp9rh3Rck4fCei07yCzSzqa5hdHX2zLrQJwY=;
-        b=wO1PiSBqfuTxF0EJ9JrWu+qG2ua8WI0MkNpPik/jQ0XitDB0k9nBMxnNkHHjpyCSDU
-         ta4J3dZb6tWKk18aHf9l3hXXqFa5aGTvmGBI/j7SNzg3hQjRJV6/B6igGpBBKaHisdFb
-         6EjQfd01vIWGAwmk/8NMfY97AzXdpheTylApmE3BZxo9yjokfVErth+zn8V772+WqTRb
-         /1BL7W9Ki0mxFkb3hJwLaiahbsH/ujvlD6IdypLruzZiLrZ/ieGvTdRosTPwMOl/9dQu
-         4zHiBuvYQIsvpyxHF19o0rnDAHdbPzl7VVU1vOntOobnnAVhF9OqkKsD0Eli1CIwKheI
-         Ddqw==
-X-Gm-Message-State: AOAM531QJw0QA1fPqZziHjw2Nt/Plfrt55i0NsbClM7uIsdlqeoi/MDu
-        Ger3CUoQQGw1JbwYueao2SvK+xZLwJKYMQ==
-X-Google-Smtp-Source: ABdhPJxpyHAt6KP4n1940eTrjggh4myqcf6FdPfXNmSYSCvNa+tANrPtaaEcuF2LoOH5pZdlwmgvZg==
-X-Received: by 2002:a17:907:94c6:: with SMTP id dn6mr5313796ejc.490.1638948042155;
-        Tue, 07 Dec 2021 23:20:42 -0800 (PST)
+        bh=7BIJQrNbvC3Sfrj3cs08TIKsWWE8pnsGwEpOQkIeNTQ=;
+        b=F8vbuh3dLJeTfmdaesx4Q8WJRjgLqmsegsBRwzeInQAR6qcLwxzAtlDGnQcx3p/QkD
+         FkClLhPggpQ+Z8vfaOQz49hyuz0izRzT47Fh2QSbrqcY5l2Kvh+EKj3UbD6ZvTa/RUpl
+         /mWW3gzd1SgJJX7elOH2VBx7qyrwpOO+Fn6mKjsPnwKPWm1Q2jBEIrRTd9niS69uGfkO
+         VT2JhKxm4Ovd0QOcJb8Zm2PtmLkrfhZ8yFBiw/poR8j4YaG5FRfICqhIRCxXre6bb62i
+         s7vwjsE173BlVe9H9bQ3uXV05dD1bHth5JZWqbo2LV/815Jo28wXMrw75U6rZxEBPDpI
+         8yZA==
+X-Gm-Message-State: AOAM532h+lXUXPu6yiFuvDMpKbL1Kc+i8IoTHCrUrY69o+TmmtAIVwiU
+        exGQrS/LEWEmkbzPBEcIoGxRjdOBfmvJGg==
+X-Google-Smtp-Source: ABdhPJxiwIWly/70RIrm2aHCk0z5clhMwpQt58wbrMPOxfwbm/6LcBBbKdD57wNoL0q9qLnPOA0euw==
+X-Received: by 2002:a17:907:1b11:: with SMTP id mp17mr5290024ejc.374.1638948045764;
+        Tue, 07 Dec 2021 23:20:45 -0800 (PST)
 Received: from localhost ([81.17.18.62])
-        by smtp.gmail.com with ESMTPSA id a68sm1297305edf.41.2021.12.07.23.20.41
+        by smtp.gmail.com with ESMTPSA id e1sm964969ejy.82.2021.12.07.23.20.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Dec 2021 23:20:41 -0800 (PST)
+        Tue, 07 Dec 2021 23:20:45 -0800 (PST)
 From:   =?UTF-8?q?J=CE=B5an=20Sacren?= <sakiwit@gmail.com>
-To:     marcel@holtmann.org, johan.hedberg@gmail.com, luiz.dentz@gmail.com,
-        davem@davemloft.net, kuba@kernel.org,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next] net: bluetooth: clean up harmless false expression
-Date:   Wed,  8 Dec 2021 00:20:24 -0700
-Message-Id: <20211208024732.142541-4-sakiwit@gmail.com>
+To:     ms@dev.tdt.de, davem@davemloft.net, kuba@kernel.org,
+        linux-x25@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH net-next] net: x25: drop harmless check of !more
+Date:   Wed,  8 Dec 2021 00:20:25 -0700
+Message-Id: <20211208024732.142541-5-sakiwit@gmail.com>
 X-Mailer: git-send-email 2.32.0
 X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
@@ -64,24 +63,24 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jean Sacren <sakiwit@gmail.com>
 
-scid is u16 with a range from 0x0000 to 0xffff.  L2CAP_CID_DYN_END is
-0xffff.  We should drop the false check of (scid > L2CAP_CID_DYN_END).
+'more' is checked first.  When !more is checked immediately after that,
+it is always true.  We should drop this check.
 
 Signed-off-by: Jean Sacren <sakiwit@gmail.com>
 ---
- net/bluetooth/l2cap_core.c | 2 +-
+ net/x25/x25_in.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
-index 4f8f37599962..fe5f455646f6 100644
---- a/net/bluetooth/l2cap_core.c
-+++ b/net/bluetooth/l2cap_core.c
-@@ -4118,7 +4118,7 @@ static struct l2cap_chan *l2cap_connect(struct l2cap_conn *conn,
- 	result = L2CAP_CR_NO_MEM;
- 
- 	/* Check for valid dynamic CID range (as per Erratum 3253) */
--	if (scid < L2CAP_CID_DYN_START || scid > L2CAP_CID_DYN_END) {
-+	if (scid < L2CAP_CID_DYN_START) {
- 		result = L2CAP_CR_INVALID_SCID;
- 		goto response;
+diff --git a/net/x25/x25_in.c b/net/x25/x25_in.c
+index e1c4197af468..b981a4828d08 100644
+--- a/net/x25/x25_in.c
++++ b/net/x25/x25_in.c
+@@ -41,7 +41,7 @@ static int x25_queue_rx_frame(struct sock *sk, struct sk_buff *skb, int more)
+ 		return 0;
  	}
+ 
+-	if (!more && x25->fraglen > 0) {	/* End of fragment */
++	if (x25->fraglen > 0) {	/* End of fragment */
+ 		int len = x25->fraglen + skb->len;
+ 
+ 		if ((skbn = alloc_skb(len, GFP_ATOMIC)) == NULL){
