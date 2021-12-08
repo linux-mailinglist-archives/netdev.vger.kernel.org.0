@@ -2,79 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EB0C46C9D9
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 02:20:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F21346C9ED
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 02:27:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236618AbhLHBYV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 20:24:21 -0500
-Received: from mailgw01.mediatek.com ([60.244.123.138]:42978 "EHLO
-        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S231966AbhLHBYU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 20:24:20 -0500
-X-UUID: 7fbad56d52224e3d8cb0af2aa1b7785d-20211208
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=8MEfUWmmn3GyKsBzKhZSTZEmNpkk6avA7qVgY8BtriE=;
-        b=bufZfLL/YW1OXhgCj+OVYknySZMrucfJ73JZdVMLJuvr6GbYOsYUVD2bzTLq9ypD4jcBb7QeISOFvLzW0Bpc+5mmfh2Jxu9+SlyxaOJAOkfY+OeQFGv4azNGjfs6ej4QwmdioYCQmiWUsLGAqO1zijOm1Fd5APfQWPlEP9EaaEg=;
-X-UUID: 7fbad56d52224e3d8cb0af2aa1b7785d-20211208
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
-        (envelope-from <biao.huang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 465109991; Wed, 08 Dec 2021 09:20:45 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Wed, 8 Dec 2021 09:20:44 +0800
-Received: from mhfsdcap04 (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 8 Dec 2021 09:20:43 +0800
-Message-ID: <25e2a50392beeb3e7c7428f53fac617a5a5b30f9.camel@mediatek.com>
-Subject: Re: [PATCH v5 0/7] MediaTek Ethernet Patches on MT8195
-From:   Biao Huang <biao.huang@mediatek.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <davem@davemloft.net>, Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <srv_heupstream@mediatek.com>, <macpaul.lin@mediatek.com>,
-        <angelogioacchino.delregno@collabora.com>, <dkirjanov@suse.de>
-Date:   Wed, 8 Dec 2021 09:20:38 +0800
-In-Reply-To: <20211207064627.5623f3bf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20211207015505.16746-1-biao.huang@mediatek.com>
-         <20211207064345.2c6427a1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-         <20211207064627.5623f3bf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        id S239127AbhLHBbK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 20:31:10 -0500
+Received: from szxga02-in.huawei.com ([45.249.212.188]:16343 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234157AbhLHBbK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 20:31:10 -0500
+Received: from dggpeml500023.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4J7zzR4hvwz91bv;
+        Wed,  8 Dec 2021 09:26:59 +0800 (CST)
+Received: from [10.67.77.175] (10.67.77.175) by dggpeml500023.china.huawei.com
+ (7.185.36.114) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.20; Wed, 8 Dec
+ 2021 09:27:37 +0800
+Subject: Re: [PATCH] net/mlx5: Remove the repeated declaration
+To:     Leon Romanovsky <leon@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+References: <20211207123515.61295-1-zhangshaokun@hisilicon.com>
+ <Ya9WMysibKB7e5CF@unreal>
+From:   Shaokun Zhang <zhangshaokun@hisilicon.com>
+Message-ID: <83cb3b17-09a7-fefe-6310-8ec5b992a6a7@hisilicon.com>
+Date:   Wed, 8 Dec 2021 09:27:37 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-X-MTK:  N
-Content-Transfer-Encoding: base64
+In-Reply-To: <Ya9WMysibKB7e5CF@unreal>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.77.175]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpeml500023.china.huawei.com (7.185.36.114)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RGVhciBKYWt1YiwNCglUaGFua3MgZm9yIHlvdXIgY29tbWVudHN+DQpPbiBUdWUsIDIwMjEtMTIt
-MDcgYXQgMDY6NDYgLTA4MDAsIEpha3ViIEtpY2luc2tpIHdyb3RlOg0KPiBPbiBUdWUsIDcgRGVj
-IDIwMjEgMDY6NDM6NDUgLTA4MDAgSmFrdWIgS2ljaW5za2kgd3JvdGU6DQo+ID4gT24gVHVlLCA3
-IERlYyAyMDIxIDA5OjU0OjU4ICswODAwIEJpYW8gSHVhbmcgd3JvdGU6DQo+ID4gPiBDaGFuZ2Vz
-IGluIHY1Og0KPiA+ID4gMS4gcmVtb3ZlIHVzZWxlc3MgaW5jbHVzaW9uIGluIGR3bWFjLW1lZGlh
-dGVrLmMgYXMgQW5nZWxvJ3MNCj4gPiA+IGNvbW1lbnRzLg0KPiA+ID4gMi4gYWRkIGFja2VkLWJ5
-IGluICJuZXQtbmV4dDogc3RtbWFjOiBkd21hYy1tZWRpYXRlazogYWRkIHN1cHBvcnQNCj4gPiA+
-IGZvcg0KPiA+ID4gICAgbXQ4MTk1IiBwYXRjaCAgDQo+ID4gDQo+ID4gV2hpY2ggdHJlZSBpcyB0
-aGlzIHNlcmllcyBiYXNlZCBvbj8gSXQgZG9lc24ndCBzZWVtIHRvIGFwcGx5IHRvDQo+ID4gbmV0
-LW5leHQuIEFsc28gdGhlIG5ldC1uZXh0IGluIHRoZSBzdWJqZWN0cyBpcyBtaXNwbGFjZWQuIElm
-IHRoZQ0KPiA+IHNlcmllcw0KPiA+IGlzIHN1cHBvc2VkIHRvIGJlIG1lcmdlZCB0byBuZXQtbmV4
-dCB0aGUgc3ViamVjdCBzaG91bGQgYmUgbGlrZToNCj4gPiANCj4gPiBbUEFUQ0ggbmV0LW5leHQg
-djUgMS83XSBzdG1tYWM6IGR3bWFjLW1lZGlhdGVrOiBhZGQgcGxhdGZvcm0gbGV2ZWwNCj4gPiBj
-bG9ja3MgbWFuYWdlbWVudA0KPiA+IA0KPiA+IFlvdSBjYW4gdXNlIC0tc3ViamVjdC1wcmVmaXg9
-IlBBVENIIG5ldC1uZXh0IHY2IiBpbiBnaXQtZm9ybWF0LQ0KPiA+IHBhdGNoIHRvDQo+ID4gYWRk
-IHRoZSBwcmVmaXguDQo+IA0KPiBGV0lXIHBhdGNoIDYgaXMgdGhlIG9uZSB3aXRoIHRoZSBjb25m
-bGljdDogImFybTY0OiBkdHM6IG10ODE5NTogYWRkDQo+IGV0aGVybmV0IGRldmljZSBub2RlIg0K
-SSdsbCByZWJhc2UgdG8gdGhlIGxhdGVzdCBuZXQtbmV4dCB0cmVlLCBhbmQgZml4IHRoZXNlIGlz
-c3VlcyBpbiBuZXh0DQpzZW5kDQo=
+Hi Leon,
 
+On 2021/12/7 20:40, Leon Romanovsky wrote:
+> On Tue, Dec 07, 2021 at 08:35:15PM +0800, Shaokun Zhang wrote:
+>> Function 'mlx5_esw_vport_match_metadata_supported' and
+>> 'mlx5_esw_offloads_vport_metadata_set' are declared twice, so remove
+>> the repeated declaration and blank line.
+>>
+>> Cc: Saeed Mahameed <saeedm@nvidia.com>
+>> Cc: Leon Romanovsky <leon@kernel.org>
+>> Cc: "David S. Miller" <davem@davemloft.net>
+>> Cc: Jakub Kicinski <kuba@kernel.org>
+>> Signed-off-by: Shaokun Zhang <zhangshaokun@hisilicon.com>
+>> ---
+>>  drivers/net/ethernet/mellanox/mlx5/core/eswitch.h | 3 ---
+>>  1 file changed, 3 deletions(-)
+>>
+> 
+> Fixes: 4f4edcc2b84f ("net/mlx5: E-Switch, Add ovs internal port mapping to metadata support")
+> 
+
+Shall we need this tag since it is trivial cleanup patch?
+
+> Thanks,
+> Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+
+Thanks your reply.
+
+> .
+> 
