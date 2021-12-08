@@ -2,119 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ACC5A46DB13
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 19:28:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E04D46DB0D
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 19:28:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238893AbhLHScZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 13:32:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41810 "EHLO
+        id S238885AbhLHSbg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 13:31:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238889AbhLHScW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 13:32:22 -0500
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A284EC061A72
-        for <netdev@vger.kernel.org>; Wed,  8 Dec 2021 10:28:50 -0800 (PST)
-Received: by mail-pl1-x62a.google.com with SMTP id u11so2098150plf.3
-        for <netdev@vger.kernel.org>; Wed, 08 Dec 2021 10:28:50 -0800 (PST)
+        with ESMTP id S234072AbhLHSbf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 13:31:35 -0500
+Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78E52C061746
+        for <netdev@vger.kernel.org>; Wed,  8 Dec 2021 10:28:03 -0800 (PST)
+Received: by mail-yb1-xb2b.google.com with SMTP id x32so7954204ybi.12
+        for <netdev@vger.kernel.org>; Wed, 08 Dec 2021 10:28:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=RAHYsn80W/cLHnf6ht51GzLoiJp0ynFyHN6zfSS2Mg4=;
-        b=XeYENC/ehYAImGZe9+myaSRhkNfR5/LdUowH0QRQqKPyZ4ON15sfaRbnWo5OzZIHP2
-         iNsFftUGHV6REbBEv2aWABqJ6HptiZMyvi1188f12mslhlx4cPs/qqBauRtFCeOLyn6q
-         4aUWyp5qQgAELffNcQEbgXsI0jXYa2Eh3l5nBQc/CU2NgoAJox3zn2MSd0tg2ZCK9BL/
-         zHBk640JfuIP9SRPB5Izr5U2G7k6sKjCdLGpqjZdhSZQ7ruNNQLAcpVrPKW06kRQunSC
-         lvtB44PTRvZnfkpfFES0zEdQUgBp5xmmEVZpNwg+qRpYvFCX+ciIS/y8dqaDlUiw4qgP
-         QwWw==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=MAnOimVYjfL0e9dMhmolD95QLJSvSzLjH/SXXaFwDMc=;
+        b=nIu4GcMNlQyvdhFEKXXWfbFmGo15f3OgU/AVDkXaQIJ0liB/ypEnaIUySZL1JbuxS/
+         fMFlq1kezTFgG8nnpfD/qndrWn8Wees/iscaXSYa9462rhFXhYnNeR+cOGy4F8mXxIjG
+         el9+F+4guHyPNx6vEAnp8KH0jZOyPzxYyc5w1hP8LqqWyQ3cUZCJAHqAcZ9iUw9IVWbd
+         vMl7IQ8Rw3A7Fcps5Md6GpszA4gSUQ2AQeJD/QD7QxX8m81xw38Xyp9bKlxtquq36/Kk
+         OQ7pkYSSzVMxuXuYVFmOfI417f+WO7uBnqw+1xDUU3sQ82bwe/5JAXZFLzHe0y3oBe95
+         gH+A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=RAHYsn80W/cLHnf6ht51GzLoiJp0ynFyHN6zfSS2Mg4=;
-        b=53MD7mW4orU9s6R6WDT2f9ZgQOBG3cytSkrcdyFWE4lF5vLMeuWxbNDjSEWVWD+t9d
-         ExvL7YGBvqAbby6peYwKjnf+s3DADUXcQcyVlyl+HF7b0XBOF+RJpID+Hq5lYcRhPDOO
-         UrvWVev6rOE2i5GiF4jkg/pKxN3IQvt7EwOl4ZhbVnmsQmhqXV832Dq6opI7UgOdfquD
-         liVzRYDhryENGOaf7NjfJ64DOEKDVWTAVwp4EhOAa582u3xkQbX1BRp+U3OcSViKxk4y
-         oRThph7cQusbeOyB6AP6nSalJXdm4sEP5m7rvFjNbj0bfllMAkYmNTRLSCjf2gdFm3tB
-         LnBw==
-X-Gm-Message-State: AOAM533ue5OiUuitEjl4gsEjPDU2SldlHqDAJZdRFzi6kxqsntsxlOX1
-        eLdz/zEjsKxfspnm7YFhle55lxQVlrLbzA==
-X-Google-Smtp-Source: ABdhPJwe4TPTy0GHNA6JeJJcGjVeT51U8qxGCLZLydC+k2fTYOqDNPP1iZn5EFgq7tG8Ucv1WR5lvw==
-X-Received: by 2002:a17:90a:db89:: with SMTP id h9mr9223384pjv.71.1638988130016;
-        Wed, 08 Dec 2021 10:28:50 -0800 (PST)
-Received: from localhost.localdomain ([50.39.160.154])
-        by smtp.gmail.com with ESMTPSA id l1sm3178185pgl.61.2021.12.08.10.28.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Dec 2021 10:28:49 -0800 (PST)
-From:   Tadeusz Struk <tadeusz.struk@linaro.org>
-To:     netdev@vger.kernel.org
-Cc:     Tadeusz Struk <tadeusz.struk@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, stable@vger.kernel.org,
-        syzbot+f9f76f4a0766420b4a02@syzkaller.appspotmail.com
-Subject: [PATCH] nfc: fix segfault in nfc_genl_dump_devices_done
-Date:   Wed,  8 Dec 2021 10:27:42 -0800
-Message-Id: <20211208182742.340542-1-tadeusz.struk@linaro.org>
-X-Mailer: git-send-email 2.33.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=MAnOimVYjfL0e9dMhmolD95QLJSvSzLjH/SXXaFwDMc=;
+        b=kKp6quzCtLHnFqz0b5XE7NCFTWBmIcJM2wmjFwfY/t35LKoC8/JqLXPbRQAXvMfk/e
+         oTnW/88240iuCTzbZYpoEYxq61LVggXfWTMWOdrLnV8daeawQzO0u+21AW5KEIUP6xZn
+         dP4wPFuTjXj1RBnpf0setoHrpjmyjtYOvv5XgSC1UZZ9gTUt6xI7JDc9t3d0l9hn8r/G
+         rSkD7E0VVswT+DoVaTc0y23TpD2WsPFKRC2LJ6iHBhk9V3QnLWsFOiUTJcVRTwMEsrE5
+         1IlIMp1LhHOA1qVnvweLjuWLAB9RFsBGRwRVbhADMbLcZi4yUP4MkGeD9oKS8jBJ1pc7
+         rOLg==
+X-Gm-Message-State: AOAM532hT/6eE04FQh4gfb5VgFYftx7NfZZiA4KtjVEuqjYTSX54xfpJ
+        EORy3Q2zdQLzk7kKtOLFpHU90M4EYALLq5gJ1ACa0w==
+X-Google-Smtp-Source: ABdhPJy1Hq8s+Bo6Fi/hQqAo1KB9HYOWcPXrr9Sg6Ve6MuiCo9m5hdgbw34mUH2qYyYNPdM1vwiapiErcjZRbrS/KJg=
+X-Received: by 2002:a25:760d:: with SMTP id r13mr492620ybc.296.1638988082353;
+ Wed, 08 Dec 2021 10:28:02 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20211207020102.3690724-1-kafai@fb.com> <20211207020108.3691229-1-kafai@fb.com>
+ <CA+FuTScQigv7xR5COSFXAic11mwaEsFXVvV7EmSf-3OkvdUXcg@mail.gmail.com>
+ <83ff2f64-42b8-60ed-965a-810b4ec69f8d@iogearbox.net> <20211208081842.p46p5ye2lecgqvd2@kafai-mbp.dhcp.thefacebook.com>
+ <20211208083013.zqeipdfprcdr3ntn@kafai-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20211208083013.zqeipdfprcdr3ntn@kafai-mbp.dhcp.thefacebook.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 8 Dec 2021 10:27:51 -0800
+Message-ID: <CANn89iLXjnDZunHx04UUGQFLxWhq52HhdhcPiKiJW4mkLaLbOA@mail.gmail.com>
+Subject: Re: [RFC PATCH net-next 2/2] net: Reset forwarded skb->tstamp before
+ delivering to user space
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Kernel-team@fb.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When kmalloc in nfc_genl_dump_devices() fails then
-nfc_genl_dump_devices_done() segfaults as below
+On Wed, Dec 8, 2021 at 12:30 AM Martin KaFai Lau <kafai@fb.com> wrote:
 
-KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f]
-CPU: 0 PID: 25 Comm: kworker/0:1 Not tainted 5.16.0-rc4-01180-g2a987e65025e-dirty #5
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-6.fc35 04/01/2014
-Workqueue: events netlink_sock_destruct_work
-RIP: 0010:klist_iter_exit+0x26/0x80
-Call Trace:
-<TASK>
-class_dev_iter_exit+0x15/0x20
-nfc_genl_dump_devices_done+0x3b/0x50
-genl_lock_done+0x84/0xd0
-netlink_sock_destruct+0x8f/0x270
-__sk_destruct+0x64/0x3b0
-sk_destruct+0xa8/0xd0
-__sk_free+0x2e8/0x3d0
-sk_free+0x51/0x90
-netlink_sock_destruct_work+0x1c/0x20
-process_one_work+0x411/0x710
-worker_thread+0x6fd/0xa80
+> For non bpf ingress, hmmm.... yeah, not sure if it is indeed an issue :/
+> may be save the tx tstamp first and then temporarily restamp with __net_timestamp()
 
-Link: https://syzkaller.appspot.com/bug?id=fc0fa5a53db9edd261d56e74325419faf18bd0df
-Cc: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: netdev@vger.kernel.org
-Cc: stable@vger.kernel.org
-Reported-by: syzbot+f9f76f4a0766420b4a02@syzkaller.appspotmail.com
-Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
----
- net/nfc/netlink.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+Martin, have you looked at time namespaces (CLONE_NEWTIME) ?
 
-diff --git a/net/nfc/netlink.c b/net/nfc/netlink.c
-index 334f63c9529e..0b4fae183a4b 100644
---- a/net/nfc/netlink.c
-+++ b/net/nfc/netlink.c
-@@ -636,8 +636,10 @@ static int nfc_genl_dump_devices_done(struct netlink_callback *cb)
- {
- 	struct class_dev_iter *iter = (struct class_dev_iter *) cb->args[0];
- 
--	nfc_device_iter_exit(iter);
--	kfree(iter);
-+	if (iter) {
-+		nfc_device_iter_exit(iter);
-+		kfree(iter);
-+	}
- 
- 	return 0;
- }
--- 
-2.33.1
-
+Perhaps we need to have more than one bit to describe time bases.
