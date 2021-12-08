@@ -2,109 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A535646DE77
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 23:37:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C1A7046DE73
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 23:37:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237544AbhLHWlS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 17:41:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42326 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236539AbhLHWlS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 17:41:18 -0500
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC8F7C061746;
-        Wed,  8 Dec 2021 14:37:45 -0800 (PST)
-Received: by mail-wr1-x435.google.com with SMTP id t9so6632128wrx.7;
-        Wed, 08 Dec 2021 14:37:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ltEh61NUR5opsmEls4nl8qwF170eYcG3QnbnvsYmLkc=;
-        b=Vv1SnbI3Hnmh/yVAYnhqqnaCYZW/MWbUHZQ574aDiL95EWaS9us80hpNVP57iFaGSm
-         331JvFk7M8N0PL1+E3v1P0NRDUsDEWGWqoUttdDvUJtD9zVPm0D6J9juH6yLmNYDVpr2
-         Uos/3n84IFMmegHCsQQx3NzhrLTTnhLKoWRGa8IZsGZlA16khSgixXfW5qALU7s0QFjw
-         1AIGn69RFK+U1rVSib/xnGAaF7wYj1kj2lwZrUgVwuFnDcWtZF6ulKibSybipdjo8e+w
-         qXHC7sYYsd5kV+kFkU9xOrVvLMVRIcBLmGVQCKl4v3vrkIfUxhrJs5iVQB8riA5ejioJ
-         QKlg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ltEh61NUR5opsmEls4nl8qwF170eYcG3QnbnvsYmLkc=;
-        b=u40gJFakYa9mJeM0S0jMhqBHp2ZPryxNZWJWJKA5JIaJAINqhN+aV8PeV7qX03cGbX
-         hQiDlX5C3A7dZryscv6/YAmbyvgqA8Mszvt//rudfgShVLtrv0jMwdrKZmjRfQ3ft/Qj
-         GzYikPqh6dyWW+hOVVAbg+ylsbWdtinADOtmoULdeH2EUHFfsRCIDYO1ovl9rLOTR8uv
-         qOLFm9ytvfubqX0+aevYwCipTfXl8dZDZ85m0fgISBg6oqiZAOdEGEFJo6B+eLWuH5hK
-         LSLYbF/fKSn0posNmgE9fO/gJAFZ4EW1XyHaz2Xbljbf5Mmp30dY8qmMdCFPMNVaz9fQ
-         1GUw==
-X-Gm-Message-State: AOAM530OHhQp6mBnRomNRc9ZpRnd6KXC3Yhb205gFSNnY/KsqHMb6W/R
-        guAlA1DcmRH7AicpSSALgio=
-X-Google-Smtp-Source: ABdhPJw14QKUmBDLUvt7AbHOxb6KmnlLuia4Ejrt7gieEu7zj7nD8l/9Pf/+40qNSkKWuBwex673fg==
-X-Received: by 2002:adf:dc12:: with SMTP id t18mr1808383wri.566.1639003064320;
-        Wed, 08 Dec 2021 14:37:44 -0800 (PST)
-Received: from localhost.localdomain ([217.113.240.86])
-        by smtp.gmail.com with ESMTPSA id n184sm6957308wme.2.2021.12.08.14.37.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Dec 2021 14:37:43 -0800 (PST)
-From:   =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
-To:     kys@microsoft.com
-Cc:     haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
-        decui@microsoft.com, davem@davemloft.net, sumit.semwal@linaro.org,
-        christian.koenig@amd.com, linux-hyperv@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linaro-mm-sig@lists.linaro.org,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
-Subject: [PATCH] net: mana: Fix memory leak in mana_hwc_create_wq
-Date:   Wed,  8 Dec 2021 23:37:23 +0100
-Message-Id: <20211208223723.18520-1-jose.exposito89@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S230480AbhLHWlI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 17:41:08 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:46514 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229533AbhLHWlH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 8 Dec 2021 17:41:07 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=T4PJVH5Vd9hIKMEs7WOAN0OlJlipSh2EUPvNoIpwRkM=; b=PRNoo4xbyPMm1hUFE6GtEY9hLA
+        1PPWIRoFLbopD5u9VrVrUr+bLeoFVu1u7uuaDol1SibY5r6geEavRhzHuFNzWeER+8P7L9aewte65
+        8rfMATTEsyD48eIeaORnEuGJWl2pe4jbNUYUtIUoJMGVZEiWKz5GBuQiSMstwysFIi58=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mv5Yz-00FvWD-8f; Wed, 08 Dec 2021 23:37:25 +0100
+Date:   Wed, 8 Dec 2021 23:37:25 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        James Prestwood <prestwoj@gmail.com>,
+        Justin Iurman <justin.iurman@uliege.be>,
+        Praveen Chaudhary <praveen5582@gmail.com>,
+        "Jason A . Donenfeld" <Jason@zx2c4.com>,
+        Eric Dumazet <edumazet@google.com>,
+        netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next v4 1/3] seg6: export get_srh() for ICMP handling
+Message-ID: <YbEzpTFGl06FXGAS@lunn.ch>
+References: <20211208173831.3791157-1-andrew@lunn.ch>
+ <20211208173831.3791157-3-andrew@lunn.ch>
+ <CA+FuTScGS_s=PCYnXzJbkABOQ7nirg4aa-HwzHjk4crp9vic1w@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+FuTScGS_s=PCYnXzJbkABOQ7nirg4aa-HwzHjk4crp9vic1w@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If allocating the DMA buffer fails, mana_hwc_destroy_wq was called
-without previously storing the pointer to the queue.
+On Wed, Dec 08, 2021 at 04:24:56PM -0500, Willem de Bruijn wrote:
+> On Wed, Dec 8, 2021 at 12:38 PM Andrew Lunn <andrew@lunn.ch> wrote:
+> >
+> > From 387a5e9d6b2749d0457ccc760a5b785c2df8f799 Mon Sep 17 00:00:00 2001
+> > From: Andrew Lunn <andrew@lunn.ch>
+> > Date: Sat, 20 Nov 2021 12:51:07 -0600
+> > Subject: [PATCH net-next v4 2/3] icmp: ICMPV6: Examine invoking packet for
+> >  Segment Route Headers.
+> 
+> Something went wrong when sending this patch series.
+> 
+> The above header is part of the commit message, and this patch is
+> marked as 1/3. See also in
+> https://patchwork.kernel.org/project/netdevbpf
 
-In order to avoid leaking the pointer to the queue, store it as soon as
-it is allocated.
+Now that is odd. I just did the usual git format-patch ; git
+send-email.
 
-Addresses-Coverity-ID: 1484720 ("Resource leak")
-Signed-off-by: José Expósito <jose.exposito89@gmail.com>
----
- drivers/net/ethernet/microsoft/mana/hw_channel.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+I will try out v5 sending it just to myself first.
 
-diff --git a/drivers/net/ethernet/microsoft/mana/hw_channel.c b/drivers/net/ethernet/microsoft/mana/hw_channel.c
-index 34b971ff8ef8..078d6a5a0768 100644
---- a/drivers/net/ethernet/microsoft/mana/hw_channel.c
-+++ b/drivers/net/ethernet/microsoft/mana/hw_channel.c
-@@ -480,16 +480,16 @@ static int mana_hwc_create_wq(struct hw_channel_context *hwc,
- 	if (err)
- 		goto out;
- 
--	err = mana_hwc_alloc_dma_buf(hwc, q_depth, max_msg_size,
--				     &hwc_wq->msg_buf);
--	if (err)
--		goto out;
--
- 	hwc_wq->hwc = hwc;
- 	hwc_wq->gdma_wq = queue;
- 	hwc_wq->queue_depth = q_depth;
- 	hwc_wq->hwc_cq = hwc_cq;
- 
-+	err = mana_hwc_alloc_dma_buf(hwc, q_depth, max_msg_size,
-+				     &hwc_wq->msg_buf);
-+	if (err)
-+		goto out;
-+
- 	*hwc_wq_ptr = hwc_wq;
- 	return 0;
- out:
--- 
-2.25.1
-
+Thanks
+	Andrew
