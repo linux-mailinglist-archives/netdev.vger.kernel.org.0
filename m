@@ -2,165 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 521E046D7FD
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 17:21:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E69A446D7FE
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 17:21:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236769AbhLHQYo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 11:24:44 -0500
-Received: from sin.source.kernel.org ([145.40.73.55]:48254 "EHLO
-        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232356AbhLHQYo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 11:24:44 -0500
+        id S236773AbhLHQYr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 11:24:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39654 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236771AbhLHQYr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 11:24:47 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6004EC061746;
+        Wed,  8 Dec 2021 08:21:15 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 31732CE2213
-        for <netdev@vger.kernel.org>; Wed,  8 Dec 2021 16:21:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E23E5C00446;
-        Wed,  8 Dec 2021 16:21:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2929CB82153;
+        Wed,  8 Dec 2021 16:21:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92062C00446;
+        Wed,  8 Dec 2021 16:21:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638980469;
-        bh=02TTfDdqs8VJlW8PzcMJ0Re8XG1aUbrstMB8WO/xV8o=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=mKo60F+AK9byw6b6DlFxjZUkdYW/Wku25E2cmP7jnv9JKphSdoqM8hptytJhgny44
-         Fwhrg6JwlA9h2Gd6DwnFFYO0hxjc0lfrWPUnqo8BXtimV93WVdCse0WjqOlWG55yVF
-         un9q8TjuytQhQKyO4fUi75XgzVy1ac6vHbqxrdhJLWfs0n5GUCkqHrGMaG8v0MBAGe
-         AQqUz7vwTGWLUzmUqiC4M1b5t74EGn7P/xzL9Lxz1MyWvZm/djgpg4rko8PMVt33Cm
-         aaAP/QPIYWAErldK79ew3KCVdf23WnbQn/BWI/n8UiU51BdakW+NCP5ADBuvif2RWS
-         9jUy8157T9vOQ==
-Date:   Wed, 8 Dec 2021 17:21:04 +0100
-From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Holger Brunck <holger.brunck@hitachienergy.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>
-Subject: Re: [v3 2/2] dsa: mv88e6xxx: make serdes SGMII/Fiber output
- amplitude configurable
-Message-ID: <20211208172104.75e32a6b@thinkpad>
-In-Reply-To: <20211208171720.6a297011@thinkpad>
-References: <20211207190730.3076-1-holger.brunck@hitachienergy.com>
-        <20211207190730.3076-2-holger.brunck@hitachienergy.com>
-        <20211207202733.56a0cf15@thinkpad>
-        <AM6PR0602MB3671CC1FE1D6685FE2A503A6F76F9@AM6PR0602MB3671.eurprd06.prod.outlook.com>
-        <20211208162852.4d7361af@thinkpad>
-        <AM6PR0602MB36717361A85C1B0CA8FE94D0F76F9@AM6PR0602MB3671.eurprd06.prod.outlook.com>
-        <20211208171720.6a297011@thinkpad>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        s=k20201202; t=1638980472;
+        bh=dfh/isS6FteIY4Nj5z9+E+uCSpH23ToHoVeBIB0Zvwk=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=QhUz1oe536YSYlnMHxj5kzSRB63xQ/nkllgH9tCKK957q1zMROrlzCaEnCTVz/4ES
+         eJbUNsmwXve2Pm/7fVSx2LTuz6/GZon9iaHbYL/SWREOFns0okovw72FkNCY7s4IA/
+         /ZxMKZBH0NtXnZQ8mBbdev4C3E3SEVMaadwPSiUkUmQaRadN58ROnCCtjB2u3W/HEx
+         c19O592oQX65OB2xqcnm+bokt4uDWCMdHMh+D/bUeUv2NnzPINnIS37hK6xPCNLOeF
+         tMljbzZzaXIHhDNkweJITeD2AUp6EM5nyrA0N4nPrJjmKg6PBNERVE/mPhmm9knUzy
+         Ab581l/Y3udJA==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        Luciano Coelho <luca@coelho.fi>,
+        Loic Poulain <loic.poulain@linaro.org>
+Subject: Re: pull-request: wireless-drivers-next-2021-12-07
+References: <20211207144211.A9949C341C1@smtp.kernel.org>
+        <20211207211412.13c78ace@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <87tufjfrw0.fsf@codeaurora.org>
+        <20211208065025.7060225d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Date:   Wed, 08 Dec 2021 18:21:08 +0200
+In-Reply-To: <20211208065025.7060225d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        (Jakub Kicinski's message of "Wed, 8 Dec 2021 06:50:25 -0800")
+Message-ID: <87zgpb83uz.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Vladimir,
+Jakub Kicinski <kuba@kernel.org> writes:
 
-On Wed, 8 Dec 2021 17:17:20 +0100
-Marek Beh=C3=BAn <kabel@kernel.org> wrote:
+> On Wed, 08 Dec 2021 10:00:15 +0200 Kalle Valo wrote:
+>> Jakub Kicinski <kuba@kernel.org> writes:
+>> 
+>> > On Tue,  7 Dec 2021 14:42:11 +0000 (UTC) Kalle Valo wrote:  
+>> >> here's a pull request to net-next tree, more info below. Please let me know if
+>> >> there are any problems.  
+>> >
+>> > Pulled, thanks! Could you chase the appropriate people so that the new
+>> > W=1 C=1 warnings get resolved before the merge window's here?
+>> >
+>> > https://patchwork.kernel.org/project/netdevbpf/patch/20211207144211.A9949C341C1@smtp.kernel.org/
+>> 
+>> Just so that I understand right, you are referring to this patchwork
+>> test:
+>> 
+>>   Errors and warnings before: 111 this patch: 115
+>> 
+>>   https://patchwork.hopto.org/static/nipa/591659/12662005/build_32bit/
+>> 
+>> And you want the four new warnings to be fixed? That can be quite time
+>> consuming, to be honest I would rather revert the commits than using a
+>> lot of my time trying to get people fix the warnings. Is there an easy
+>> way to find what are the new warnings?
+>
+> Yeah, scroll down, there is a diff of the old warnings vs new ones, and
+> a summary of which files have changed their warning count:
+>
+> +      2 ../drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
+> +      3 ../drivers/net/wireless/intel/iwlwifi/mei/main.c
+> -      1 ../drivers/net/wireless/intel/iwlwifi/mvm/ops.c
+> +      2 ../drivers/net/wireless/intel/iwlwifi/mvm/ops.c
+> -      2 ../drivers/net/wireless/microchip/wilc1000/wlan.c
 
-> On Wed, 8 Dec 2021 15:49:19 +0000
-> Holger Brunck <holger.brunck@hitachienergy.com> wrote:
->=20
-> > > >   =20
-> > > > > > The mv88e6352, mv88e6240 and mv88e6176  have a serdes interface.
-> > > > > > This patch allows to configure the output swing to a desired va=
-lue
-> > > > > > in the devicetree node of the port. As the chips only supports
-> > > > > > eight dedicated values we return EINVAL if the value in the DTS=
- does not   =20
-> > > match.   =20
-> > > > > >
-> > > > > > CC: Andrew Lunn <andrew@lunn.ch>
-> > > > > > CC: Jakub Kicinski <kuba@kernel.org>
-> > > > > > CC: Marek Beh=C3=BAn <kabel@kernel.org>
-> > > > > > Signed-off-by: Holger Brunck <holger.brunck@hitachienergy.com> =
-  =20
-> > > > >
-> > > > > Holger, Andrew,
-> > > > >
-> > > > > there is another issue with this, which I only realized yesterday.
-> > > > > What if the different amplitude needs to be set only for certain =
-SerDes   =20
-> > > modes?   =20
-> > > > >
-> > > > > I am bringing this up because I discovered that on Turris Mox we
-> > > > > need to increase SerDes output amplitude when A3720 SOC is connec=
-ted
-> > > > > directly to
-> > > > > 88E6141 switch, but only for 2500base-x mode. For 1000base-x, the
-> > > > > default amplitude is okay. (Also when the SOC is connected to
-> > > > > 88E6190, the amplitude does not need to be changed at all.)
-> > > > >   =20
-> > > >
-> > > > on my board I have a fixed link connected with SGMII and there is no
-> > > > dedicated value given in the manual.
-> > > >   =20
-> > > > > I plan to solve this in the comphy driver, not in device-tree.
-> > > > >
-> > > > > But if the solution is to be done in DTS, shouldn't there be a
-> > > > > possibility to define the amplitude for a specific serdes mode on=
-ly?
-> > > > >
-> > > > > For example
-> > > > >   serdes-2500base-x-tx-amplitude-millivolt
-> > > > > or
-> > > > >   serdes-tx-amplitude-millivolt-2500base-x
-> > > > > or
-> > > > >   serdes-tx-amplitude-millivolt,2500base-x
-> > > > > ?
-> > > > >
-> > > > > What do you think?
-> > > > >   =20
-> > > >
-> > > > in the data sheet for the MV6352 I am using there are no dedicated
-> > > > values stated for different modes at all, they can be chosen
-> > > > arbitrary. So in my case I think it makes sense to keep it as it is
-> > > > for now. Other driver may have other needs and may enhance this lat=
-er on.   =20
-> > >=20
-> > > Hi Holger,
-> > >=20
-> > > but the mv88e6xxx driver also drives switches that allow changing ser=
-des
-> > > modes. There does not need be dedicated TX amplitude register for eac=
-h serdes
-> > > mode, the point is that we may want to declare different amplitudes f=
-or
-> > > different modes.
-> > >=20
-> > > So the question is: if we go with your binding proposal for the whole=
- mv88e6xxx
-> > > driver, and in the future someone will want to declare different ampl=
-itudes for
-> > > different modes on another model, would he need to deprecate your bin=
-ding or
-> > > would it be easy to extend?
-> > >    =20
-> >=20
-> > ok I see. So if I follow your proposal in my case it would be something=
- like:
-> > serdes-sgmii-tx-amplitude-millivolt to start with ?=20
-> >=20
-> > I can do that. Andrew what do you think? =20
->=20
-> Or maybe two properties:
->   serdes-tx-amplitude-millivolt =3D <700 1000 1100>;
->   serdes-tx-amplitude-modes =3D "sgmii", "2500base-x", "10gbase-r";
-> ?
->=20
-> If
->   serdes-tx-amplitude-modes
-> is omitted, then
->   serdes-tx-amplitude-millivolt
-> should only contain one value, and this is used for all serdes modes.
->=20
-> This would be compatible with your change. You only need to define the
-> bidning for now, your code can stay the same - you don't need to add
-> support for multiple values or for the second property now, it can be
-> done later when needed. But the binding should be defined to support
-> those different modes.
+Ah, that makes it easier.
 
-Vladimir, can you send your thoughts about this proposal? We are trying
-to propose binding for defining serdes TX amplitude.
+> So presumably these are the warnings that were added:
+>
+> drivers/net/wireless/intel/iwlwifi/mei/main.c:193: warning: cannot
+> understand function prototype: 'struct '
+> drivers/net/wireless/intel/iwlwifi/mei/main.c:1784: warning: Function
+> parameter or member 'cldev' not described in 'iwl_mei_probe'
+> drivers/net/wireless/intel/iwlwifi/mei/main.c:1784: warning: Function
+> parameter or member 'id' not described in 'iwl_mei_probe'
 
-Marek
+Luca, please take a look and send a patch. I'll then apply it directly
+to wireless-drivers-next.
+
+> drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c:3911:28:
+> warning: incorrect type in assignment (different base types)
+> drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c:3911:28:
+> expected restricted __le32 [assigned] [usertype] period_msec
+> drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c:3911:28:
+> got restricted __le16 [usertype]
+> drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c:3913:30:
+> warning: incorrect type in assignment (different base types)
+> drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c:3913:30:
+> expected unsigned char [assigned] [usertype] keep_alive_id
+> drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c:3913:30:
+> got restricted __le16 [usertype]
+
+Loic, your patch should fix these, right?
+
+https://patchwork.kernel.org/project/linux-wireless/patch/1638953708-29192-1-git-send-email-loic.poulain@linaro.org/
+
+> drivers/net/wireless/intel/iwlwifi/mvm/ops.c:684:12: warning: context
+> imbalance in 'iwl_mvm_start_get_nvm' - wrong count at exit
+
+Luca, please also take a look at this.
+
+>> But in the big picture are you saying the net trees now have a rule that
+>> no new W=1 and C=1 warnings are allowed? I do test ath10k and ath11k
+>> drivers for W=1 and C=1 warnings, but all other drivers are on their own
+>> in this regard. At the moment I have no tooling in place to check all
+>> wireless drivers.
+>
+> For the code we merge directly we try to make sure there are no new
+> warnings. I realize it's quite a bit of work for larger trees unless 
+> you have the infra so not a hard requirement (for you).
+
+Yeah, at the moment I really would not be able to catch W=1 or sparse
+warnings :/ And fixing them afterwards is just too slow. But if we would
+be able to fix all the warnings in drivers/net/wireless then it would be
+easy for me to enable W=1 and C=1 in my own build tests.
+
+> FWIW the build bot we wrote is available on GH:
+>
+> https://github.com/kuba-moo/nipa
+>
+> But it currently hard codes tree matching logic for bpf and netdev,
+> so would probably take a few hours to adopt it.
+
+Thanks, it would good to have a similar system for wireless trees.
+Anyone want to help? :)
+
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
