@@ -2,74 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9520246CD93
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 07:16:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DF4846CD84
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 07:15:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237762AbhLHGT5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 01:19:57 -0500
-Received: from mga17.intel.com ([192.55.52.151]:61251 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237627AbhLHGT4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 Dec 2021 01:19:56 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10191"; a="218448458"
-X-IronPort-AV: E=Sophos;i="5.87,296,1631602800"; 
-   d="scan'208";a="218448458"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Dec 2021 22:16:24 -0800
-X-IronPort-AV: E=Sophos;i="5.87,296,1631602800"; 
-   d="scan'208";a="462645326"
-Received: from cxia1-mobl.ccr.corp.intel.com (HELO lkp-zhoujie.ccr.corp.intel.com) ([10.255.28.13])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Dec 2021 22:16:20 -0800
-From:   Jie2x Zhou <jie2x.zhou@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org, shuah@kernel.org,
-        dsahern@gmail.com
-Cc:     netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org, lkp@intel.com, xinjianx.ma@intel.com,
-        zhijianx.li@intel.com, Philip Li <philip.li@intel.com>,
-        zhoujie <zhoujie2011@fujitsu.com>,
-        Jie2x Zhou <jie2x.zhou@intel.com>
-Subject: [PATCH] selftests: net: Correct ping6 expected rc from 2 to 1
-Date:   Wed,  8 Dec 2021 14:15:18 +0800
-Message-Id: <20211208061518.61668-1-jie2x.zhou@intel.com>
-X-Mailer: git-send-email 2.20.1
+        id S235080AbhLHGTF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 01:19:05 -0500
+Received: from smtp-fw-6001.amazon.com ([52.95.48.154]:33076 "EHLO
+        smtp-fw-6001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230139AbhLHGTF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 01:19:05 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
+  s=amazon201209; t=1638944134; x=1670480134;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=4bBNMA4zrzd/r+j2zL5V/dFuqq9hRegHNbwW08julC4=;
+  b=mbLUb2tkofYbATIrT6VqKHQ5L1Dbcvaj5CiWjNMS9CviDN9akeSJm3jd
+   8I6ECyKS4l6kUsbRQ7DPYC/VvRa33g6pINwGJTLsuJiUJpjdRH6Imwf16
+   AeXoTc794KmRp4gquY4eh7zRiD05g+Th6ceTAmPhgW9VlyiScTpOy9uCp
+   M=;
+X-IronPort-AV: E=Sophos;i="5.87,296,1631577600"; 
+   d="scan'208";a="162012690"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-pdx-2c-34cb9e7b.us-west-2.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-6001.iad6.amazon.com with ESMTP; 08 Dec 2021 06:15:33 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
+        by email-inbound-relay-pdx-2c-34cb9e7b.us-west-2.amazon.com (Postfix) with ESMTPS id B13714181E;
+        Wed,  8 Dec 2021 06:15:32 +0000 (UTC)
+Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.26; Wed, 8 Dec 2021 06:15:31 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.162.159) by
+ EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.26; Wed, 8 Dec 2021 06:15:29 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+To:     <kuba@kernel.org>
+CC:     <benh@amazon.com>, <davem@davemloft.net>, <kuni1840@gmail.com>,
+        <kuniyu@amazon.co.jp>, <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next] sock: Use sock_owned_by_user_nocheck() instead of sk_lock.owned.
+Date:   Wed, 8 Dec 2021 15:15:25 +0900
+Message-ID: <20211208061525.53519-1-kuniyu@amazon.co.jp>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20211207220531.48a78cc0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20211207220531.48a78cc0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.162.159]
+X-ClientProxiedBy: EX13D04UWA002.ant.amazon.com (10.43.160.31) To
+ EX13D04ANC001.ant.amazon.com (10.43.157.89)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: zhoujie <zhoujie2011@fujitsu.com>
+From:   Jakub Kicinski <kuba@kernel.org>
+Date:   Tue, 7 Dec 2021 22:05:31 -0800
+> On Wed, 8 Dec 2021 14:39:24 +0900 Kuniyuki Iwashima wrote:
+> >  static inline void sock_release_ownership(struct sock *sk)
+> >  {
+> > -	if (sk->sk_lock.owned) {
+> > +	if (sock_owned_by_user_nocheck(sk) {
+> 
+> ENOTBUILT
 
-./fcnal-test.sh -v -t ipv6_ping
-TEST: ping out, VRF bind - ns-B IPv6 LLA                                      [FAIL]
-TEST: ping out, VRF bind - multicast IP                                       [FAIL]
-
-ping6 is failing as it should.
-COMMAND: ip netns exec ns-A /bin/ping6 -c1 -w1 fe80::7c4c:bcff:fe66:a63a%red
-strace of ping6 shows it is failing with '1',
-so change the expected rc from 2 to 1.
-
-Fixes: c0644e71df33 ("selftests: Add ipv6 ping tests to fcnal-test")
-Reported-by: kernel test robot <lkp@intel.com>
-Suggested-by: David Ahern <dsahern@gmail.com>
-Signed-off-by: Jie2x Zhou <jie2x.zhou@intel.com>
----
- tools/testing/selftests/net/fcnal-test.sh | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/tools/testing/selftests/net/fcnal-test.sh b/tools/testing/selftests/net/fcnal-test.sh
-index 7f5b265fcb90..966787c2f9f0 100755
---- a/tools/testing/selftests/net/fcnal-test.sh
-+++ b/tools/testing/selftests/net/fcnal-test.sh
-@@ -2191,7 +2191,7 @@ ipv6_ping_vrf()
- 		log_start
- 		show_hint "Fails since VRF device does not support linklocal or multicast"
- 		run_cmd ${ping6} -c1 -w1 ${a}
--		log_test_addr ${a} $? 2 "ping out, VRF bind"
-+		log_test_addr ${a} $? 1 "ping out, VRF bind"
- 	done
- 
- 	for a in ${NSB_IP6} ${NSB_LO_IP6} ${NSB_LINKIP6}%${NSA_DEV} ${MCAST}%${NSA_DEV}
--- 
-2.31.1
-
+Oops, will move sock_release_ownership() down in v2.
+Thank you!
