@@ -2,149 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DF52846D765
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 16:51:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D96E046D775
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 16:54:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236337AbhLHPzB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 10:55:01 -0500
-Received: from www62.your-server.de ([213.133.104.62]:34728 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236327AbhLHPy7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 10:54:59 -0500
-Received: from 226.206.1.85.dynamic.wline.res.cust.swisscom.ch ([85.1.206.226] helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1muzE5-000GnB-SM; Wed, 08 Dec 2021 16:51:26 +0100
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     davem@davemloft.net
-Cc:     kuba@kernel.org, daniel@iogearbox.net, ast@kernel.org,
-        andrii@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: pull-request: bpf 2021-12-08
-Date:   Wed,  8 Dec 2021 16:51:25 +0100
-Message-Id: <20211208155125.11826-1-daniel@iogearbox.net>
-X-Mailer: git-send-email 2.21.0
+        id S236399AbhLHP5f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 10:57:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33318 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236409AbhLHP5d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 10:57:33 -0500
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33DE9C061A72;
+        Wed,  8 Dec 2021 07:54:01 -0800 (PST)
+Received: by mail-ed1-x536.google.com with SMTP id l25so9774277eda.11;
+        Wed, 08 Dec 2021 07:54:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=iuVlLOimjUDYe52DFCRXFDhm8yvjQ5B0hyH2staIQaA=;
+        b=VCRuCkYplEh5TlfUaN+OY8wsufmwjzgQHxxMEXuWiZhe7N0DSuq/A9Bs63gxyonBO9
+         eKjYMO1q2NGlA4LXPqQQlEsxPd9XB9DXHWqF6spbmtqJbGp9YXRlHp6sQ97tf0iFmodG
+         9uokRvhrDosHJlZek64TJ8XDZ3tjDp8SCPEl+YPRTymevgxfaKSDPoYSI4G4HfANmSSf
+         INxEpfKIAbOF9piVbaJQ/XLnaQmQ9v112YmrfumCEuG44Uy0213F/1hXyxxb0tfZONQ9
+         jqv6DuGSDnUMgazFSa4WRMJljFqcQ1SaVysGM6Slx87I4iUAjloPOhm3OUVQWuEIo9yA
+         /aag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=iuVlLOimjUDYe52DFCRXFDhm8yvjQ5B0hyH2staIQaA=;
+        b=X7e2uYOXLoOSS4HuXaESNnAwQ2OKE8ShqSavLV5Uv+0vkxQlAtKOg0siW1oJThkHKo
+         izOu9Vv2wXclo6x8mSxuYLMMK1EF9BQbMUKNDCaRm0PZVqBleQwZSJyRB2gelsn7INTG
+         4zMoHvGJZhozQLirqTSLvsxIwmVuS8Sx/J8D/9U0+7H1C2F1C0Cj1Z/ljKytcbyHT5Qc
+         whUaRqWDOdLt8nF/8Xv3mL266+YtAdmRV96bv8E3wFfNISiWeM1V+zxOf3zVvNdSAM12
+         eRs7WWOZgDzZsjLCoXm8Kh7hhPcOBMjaRhqYdizHqsS15PJedyrZZhpEGAjAMQiFCDir
+         ZhbQ==
+X-Gm-Message-State: AOAM533H7ZofCTiHmQ5HxsAz+8obfGHEnubus2zeoEUvvloGznhfFLq7
+        NWmzni7mqzludDQro6IPAZ4KUCq5QrZO/mUsrxE=
+X-Google-Smtp-Source: ABdhPJzeMpa8KjL88qDlFeKIlxkmly/y0k5kIgIkI4OBoza4mev2afueIns08liQLw3kilIWm+6m8lp8u1E1ZENixJQ=
+X-Received: by 2002:a17:906:c155:: with SMTP id dp21mr8377352ejc.450.1638978839532;
+ Wed, 08 Dec 2021 07:53:59 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.3/26377/Wed Dec  8 10:23:25 2021)
+References: <20211208145459.9590-1-xiangxia.m.yue@gmail.com> <20211208154145.647078-1-alexandr.lobakin@intel.com>
+In-Reply-To: <20211208154145.647078-1-alexandr.lobakin@intel.com>
+From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Date:   Wed, 8 Dec 2021 23:53:23 +0800
+Message-ID: <CAMDZJNV2s1jjPB6uw262H9_TRCbNK732Q=RfA3aP7k3onMLjmg@mail.gmail.com>
+Subject: Re: [net v5 0/3] fix bpf_redirect to ifb netdev
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Wei Wang <weiwan@google.com>, Arnd Bergmann <arnd@arndb.de>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David, hi Jakub,
+On Wed, Dec 8, 2021 at 11:42 PM Alexander Lobakin
+<alexandr.lobakin@intel.com> wrote:
+>
+> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> Date: Wed,  8 Dec 2021 22:54:56 +0800
+>
+> > From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> >
+> > This patchset try to fix bpf_redirect to ifb netdev.
+> > Prevent packets loopback and perfromance drop, add check
+> > in sch egress.
+>
+> Please provide a changelog in the cover letter. With the links to
+> your previous versions ideally.
+> Otherwise it becomes difficult to understand what are the changes
+> between them.
+Hi Alexander
+This version of patchset, 2/3 only updates the commit message. because the
+example in the commit message is not a usual case.
+There are no  comments, so I sent them again.
+I will provide a changelog in the next version or resend this version
+again.  Thanks.
 
-The following pull-request contains BPF updates for your *net* tree.
+> >
+> > Tonghao Zhang (3):
+> >   net: core: set skb useful vars in __bpf_tx_skb
+> >   net: sched: add check tc_skip_classify in sch egress
+> >   selftests: bpf: add bpf_redirect to ifb
+> >
+> >  net/core/dev.c                                |  3 +
+> >  net/core/filter.c                             | 12 ++-
+> >  tools/testing/selftests/bpf/Makefile          |  1 +
+> >  .../bpf/progs/test_bpf_redirect_ifb.c         | 13 ++++
+> >  .../selftests/bpf/test_bpf_redirect_ifb.sh    | 73 +++++++++++++++++++
+> >  5 files changed, 101 insertions(+), 1 deletion(-)
+> >  create mode 100644 tools/testing/selftests/bpf/progs/test_bpf_redirect_ifb.c
+> >  create mode 100755 tools/testing/selftests/bpf/test_bpf_redirect_ifb.sh
+> >
+> > --
+> > Cc: "David S. Miller" <davem@davemloft.net>
+> > Cc: Jakub Kicinski <kuba@kernel.org>
+> > Cc: Alexei Starovoitov <ast@kernel.org>
+> > Cc: Daniel Borkmann <daniel@iogearbox.net>
+> > Cc: Andrii Nakryiko <andrii@kernel.org>
+> > Cc: Martin KaFai Lau <kafai@fb.com>
+> > Cc: Song Liu <songliubraving@fb.com>
+> > Cc: Yonghong Song <yhs@fb.com>
+> > Cc: John Fastabend <john.fastabend@gmail.com>
+> > Cc: KP Singh <kpsingh@kernel.org>
+> > Cc: Eric Dumazet <edumazet@google.com>
+> > Cc: Antoine Tenart <atenart@kernel.org>
+> > Cc: Alexander Lobakin <alexandr.lobakin@intel.com>
+> > Cc: Wei Wang <weiwan@google.com>
+> > Cc: Arnd Bergmann <arnd@arndb.de>
+> > --
+> > 2.27.0
+>
+> Al
 
-We've added 12 non-merge commits during the last 22 day(s) which contain
-a total of 29 files changed, 659 insertions(+), 80 deletions(-).
 
-The main changes are:
 
-1) Fix an off-by-two error in packet range markings and also add a batch of
-   new tests for coverage of these corner cases, from Maxim Mikityanskiy.
-
-2) Fix a compilation issue on MIPS JIT for R10000 CPUs, from Johan Almbladh.
-
-3) Fix two functional regressions and a build warning related to BTF kfunc
-   for modules, from Kumar Kartikeya Dwivedi.
-
-4) Fix outdated code and docs regarding BPF's migrate_disable() use on non-
-   PREEMPT_RT kernels, from Sebastian Andrzej Siewior.
-
-5) Add missing includes in order to be able to detangle cgroup vs bpf header
-   dependencies, from Jakub Kicinski.
-
-6) Fix regression in BPF sockmap tests caused by missing detachment of progs
-   from sockets when they are removed from the map, from John Fastabend.
-
-7) Fix a missing "no previous prototype" warning in x86 JIT caused by BPF
-   dispatcher, from Björn Töpel.
-
-Please consider pulling these changes from:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
-
-Thanks a lot!
-
-Also thanks to reporters, reviewers and testers of commits in this pull-request:
-
-Christoph Hellwig, Greg Kroah-Hartman, Jani Nikula, kernel test robot, 
-Krzysztof Wilczyński, Lukas Bulwahn, Pavel Skripkin, Peter Chen, 
-SeongJae Park, Song Liu, Vinicius Costa Gomes
-
-----------------------------------------------------------------
-
-The following changes since commit 3751c3d34cd5a750c86d1c8eaf217d8faf7f9325:
-
-  net: stmmac: Fix signed/unsigned wreckage (2021-11-16 19:49:55 -0800)
-
-are available in the Git repository at:
-
-  https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git 
-
-for you to fetch changes up to b560b21f71eb4ef9dfc7c8ec1d0e4d7f9aa54b51:
-
-  bpf: Add selftests to cover packet access corner cases (2021-12-08 15:42:26 +0100)
-
-----------------------------------------------------------------
-Andrii Nakryiko (1):
-      Merge branch 'Fixes for kfunc-mod regressions and warnings'
-
-Björn Töpel (1):
-      bpf, x86: Fix "no previous prototype" warning
-
-Jakub Kicinski (1):
-      treewide: Add missing includes masked by cgroup -> bpf dependency
-
-Johan Almbladh (1):
-      mips, bpf: Fix reference to non-existing Kconfig symbol
-
-John Fastabend (2):
-      bpf, sockmap: Attach map progs to psock early for feature probes
-      bpf, sockmap: Re-evaluate proto ops when psock is removed from sockmap
-
-Kumar Kartikeya Dwivedi (3):
-      bpf: Make CONFIG_DEBUG_INFO_BTF depend upon CONFIG_BPF_SYSCALL
-      bpf: Fix bpf_check_mod_kfunc_call for built-in modules
-      tools/resolve_btfids: Skip unresolved symbol warning for empty BTF sets
-
-Maxim Mikityanskiy (2):
-      bpf: Fix the off-by-two error in range markings
-      bpf: Add selftests to cover packet access corner cases
-
-Sebastian Andrzej Siewior (2):
-      Documentation/locking/locktypes: Update migrate_disable() bits.
-      bpf: Make sure bpf_disable_instrumentation() is safe vs preemption.
-
- Documentation/locking/locktypes.rst                |   9 +-
- arch/mips/net/bpf_jit_comp.h                       |   2 +-
- block/fops.c                                       |   1 +
- drivers/gpu/drm/drm_gem_shmem_helper.c             |   1 +
- drivers/gpu/drm/i915/gt/intel_gtt.c                |   1 +
- drivers/gpu/drm/i915/i915_request.c                |   1 +
- drivers/gpu/drm/lima/lima_device.c                 |   1 +
- drivers/gpu/drm/msm/msm_gem_shrinker.c             |   1 +
- drivers/gpu/drm/ttm/ttm_tt.c                       |   1 +
- drivers/net/ethernet/huawei/hinic/hinic_sriov.c    |   1 +
- .../net/ethernet/marvell/octeontx2/nic/otx2_ptp.c  |   2 +
- drivers/pci/controller/dwc/pci-exynos.c            |   1 +
- drivers/pci/controller/dwc/pcie-qcom-ep.c          |   1 +
- drivers/usb/cdns3/host.c                           |   1 +
- include/linux/bpf.h                                |  17 +-
- include/linux/btf.h                                |  14 +-
- include/linux/cacheinfo.h                          |   1 -
- include/linux/device/driver.h                      |   1 +
- include/linux/filter.h                             |   5 +-
- kernel/bpf/btf.c                                   |  11 +-
- kernel/bpf/verifier.c                              |   2 +-
- lib/Kconfig.debug                                  |   1 +
- mm/damon/vaddr.c                                   |   1 +
- mm/memory_hotplug.c                                |   1 +
- mm/swap_slots.c                                    |   1 +
- net/core/skmsg.c                                   |   5 +
- net/core/sock_map.c                                |  15 +-
- tools/bpf/resolve_btfids/main.c                    |   8 +-
- .../bpf/verifier/xdp_direct_packet_access.c        | 632 +++++++++++++++++++--
- 29 files changed, 659 insertions(+), 80 deletions(-)
+-- 
+Best regards, Tonghao
