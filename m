@@ -2,196 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5030946D063
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 10:55:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D770746D0CC
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 11:17:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230493AbhLHJ6l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 04:58:41 -0500
-Received: from inva020.nxp.com ([92.121.34.13]:42628 "EHLO inva020.nxp.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230129AbhLHJ6l (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 Dec 2021 04:58:41 -0500
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id B39191A05C1;
-        Wed,  8 Dec 2021 10:55:08 +0100 (CET)
-Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 50C9A1A05A5;
-        Wed,  8 Dec 2021 10:55:08 +0100 (CET)
-Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 332CE183AC4E;
-        Wed,  8 Dec 2021 17:55:06 +0800 (+08)
-From:   Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
-To:     davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     kuba@kernel.org, qiangqing.zhang@nxp.com, peppe.cavallaro@st.com,
-        alexandre.torgue@foss.st.com, joabreu@synopsys.com,
-        yannick.vignon@nxp.com, boon.leong.ong@intel.com,
-        Jose.Abreu@synopsys.com, mst@redhat.com, sonic.zhang@analog.com,
-        Joao.Pinto@synopsys.com, mingkai.hu@nxp.com, leoyang.li@nxp.com,
-        xiaoliang.yang_1@nxp.com
-Subject: [PATCH net-next] net: stmmac: bump tc when get underflow error from DMA descriptor
-Date:   Wed,  8 Dec 2021 18:06:51 +0800
-Message-Id: <20211208100651.19369-1-xiaoliang.yang_1@nxp.com>
-X-Mailer: git-send-email 2.17.1
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S231425AbhLHKVN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 05:21:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38636 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231423AbhLHKVM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 05:21:12 -0500
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3BFDC061746
+        for <netdev@vger.kernel.org>; Wed,  8 Dec 2021 02:17:40 -0800 (PST)
+Received: by mail-ed1-x530.google.com with SMTP id x6so6685674edr.5
+        for <netdev@vger.kernel.org>; Wed, 08 Dec 2021 02:17:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=tessares-net.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:cc:from:in-reply-to:content-transfer-encoding;
+        bh=0LeQHXIMph+BYd4ryWmOykUMfJm5Zi1BU3mfux9e5e8=;
+        b=3o+3QemkSEstT07cGczLZLqYjvuloOZPMyuFNKqF18ESm4okdC9McP2oQGJCVkhyxv
+         zpo1t8I4+5tviiDgEcVXuldCt7JUbNGFSZkKmb9G4pqnZYVYs6M3a5n04B1wy//Uk4p8
+         zWZEKgmWOQ1CIwhQjQGe0HZqhtLYlEy+LbVqUiEBSaR4WJf3U4N3gW+cO1yP++xmk8Ss
+         5eBPvohBuUaEKliQrNzV+tyNDlzFHC/iKgWAH5vVdIbRSzfPs5cLmhyWPWcuJJpyOvbE
+         yx90Wr+xI4yE55PX7cTTdOXMCAPXcYarDCuVFvsaeMqV+Cngp6iLgg3xuGQ30jxvjeBj
+         7jNg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:cc:from:in-reply-to
+         :content-transfer-encoding;
+        bh=0LeQHXIMph+BYd4ryWmOykUMfJm5Zi1BU3mfux9e5e8=;
+        b=eQPQ+PxlS0ceQt/TzyI2RKLJW07F3AaiThD7vDGZl3oiU5UIzwbehF1v1vF2o9/q1i
+         cun0CKlihiYDN1v96dfaL02kyXnrWzz+V+pwB8+YBj8RhNJgBFdYlToxDRDd8ZlT15vJ
+         DYVfalty3h8ODg2JiRSjAMkWyMuN3BUBmkOKs26Dz+nwVS+TJ+/re97EjHhAV+/SJ9zE
+         BWUcLkfxHXCqLZ9vculy1mMxeMTtn/Ls2fAVezTUvzVo4vCUxWgjXhpfa3HTQhJJkGh3
+         8O0mvxrDCq3bVTXHtCFpPLAREvFYcixP3givwzl+UM8vFCLbvW5qLrvgiUt7RQTwKcYM
+         hJ8g==
+X-Gm-Message-State: AOAM532kH+q/UKEgbhx1NznSSDH7793OWVg8q4Lz8UX8oJzkScGrG8As
+        Oj45989kYZ7w3hOnrTRQHO5IsA==
+X-Google-Smtp-Source: ABdhPJzvwnne79blJ3+kreFpK3H1zg+SEkdFn6pCYIlvxQCZ2XqXZTnGTr/R7lAMVHU0AZN0pKWtQg==
+X-Received: by 2002:a05:6402:50cf:: with SMTP id h15mr18197283edb.90.1638958659393;
+        Wed, 08 Dec 2021 02:17:39 -0800 (PST)
+Received: from ?IPV6:2a02:578:8593:1200:9dd5:a52b:99d6:b584? ([2a02:578:8593:1200:9dd5:a52b:99d6:b584])
+        by smtp.gmail.com with ESMTPSA id ga37sm1224349ejc.65.2021.12.08.02.17.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 08 Dec 2021 02:17:39 -0800 (PST)
+Message-ID: <130b7af7-41fb-74dc-e6a2-7e223f062676@tessares.net>
+Date:   Wed, 8 Dec 2021 11:17:38 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH net-next] net: mptcp: clean up harmless false expressions
+Content-Language: en-GB
+To:     =?UTF-8?Q?J=ce=b5an_Sacren?= <sakiwit@gmail.com>,
+        mathew.j.martineau@linux.intel.com
+References: <20211208024732.142541-6-sakiwit@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        mptcp@lists.linux.dev
+From:   Matthieu Baerts <matthieu.baerts@tessares.net>
+In-Reply-To: <20211208024732.142541-6-sakiwit@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In DMA threshold mode, frame underflow errors may sometimes occur when
-the TC(threshold control) value is not enough. The TC value need to be
-bumped up in this case.
+Hi Jean,
 
-There is no underflow interrupt bit on DMA_CH(#i)_Status of dwmac4, so
-the DMA threshold cannot be bumped up in stmmac_dma_interrupt(). The
-i.mx8mp board observed an underflow error while running NFS boot, the
-NFS rootfs could not be mounted.
+On 08/12/2021 08:20, Jεan Sacren wrote:
+> From: Jean Sacren <sakiwit@gmail.com>
+> 
+> entry->addr.id is u8 with a range from 0 to 255 and MAX_ADDR_ID is 255.
+> We should drop both false expressions of (entry->addr.id > MAX_ADDR_ID).
 
-The underflow error can be got from the DMA descriptor TDES3 on dwmac4.
-This patch bump up tc value once underflow error is got from TDES3.
+Good catch!
 
-Signed-off-by: Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
----
- drivers/net/ethernet/stmicro/stmmac/common.h  |  1 +
- .../ethernet/stmicro/stmmac/dwmac4_descs.c    |  8 +--
- .../net/ethernet/stmicro/stmmac/stmmac_main.c | 51 ++++++++-----------
- 3 files changed, 27 insertions(+), 33 deletions(-)
+I wonder if we should not define MAX_ADDR_ID to UINT8_MAX then, ideally
+with an extra comment saying it is linked to mptcp_addr_info's id field.
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/common.h b/drivers/net/ethernet/stmicro/stmmac/common.h
-index 9160f9ed363a..6b5d96bced47 100644
---- a/drivers/net/ethernet/stmicro/stmmac/common.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/common.h
-@@ -317,6 +317,7 @@ enum tx_frame_status {
- 	tx_not_ls = 0x1,
- 	tx_err = 0x2,
- 	tx_dma_own = 0x4,
-+	tx_err_bump_tc = 0x8,
- };
- 
- enum dma_irq_status {
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c
-index cbf4429fb1d2..d3b4765c1a5b 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c
-@@ -32,6 +32,8 @@ static int dwmac4_wrback_get_tx_status(void *data, struct stmmac_extra_stats *x,
- 		return tx_not_ls;
- 
- 	if (unlikely(tdes3 & TDES3_ERROR_SUMMARY)) {
-+		ret = tx_err;
-+
- 		if (unlikely(tdes3 & TDES3_JABBER_TIMEOUT))
- 			x->tx_jabber++;
- 		if (unlikely(tdes3 & TDES3_PACKET_FLUSHED))
-@@ -53,16 +55,16 @@ static int dwmac4_wrback_get_tx_status(void *data, struct stmmac_extra_stats *x,
- 		if (unlikely(tdes3 & TDES3_EXCESSIVE_DEFERRAL))
- 			x->tx_deferred++;
- 
--		if (unlikely(tdes3 & TDES3_UNDERFLOW_ERROR))
-+		if (unlikely(tdes3 & TDES3_UNDERFLOW_ERROR)) {
- 			x->tx_underflow++;
-+			ret |= tx_err_bump_tc;
-+		}
- 
- 		if (unlikely(tdes3 & TDES3_IP_HDR_ERROR))
- 			x->tx_ip_header_error++;
- 
- 		if (unlikely(tdes3 & TDES3_PAYLOAD_ERROR))
- 			x->tx_payload_error++;
--
--		ret = tx_err;
- 	}
- 
- 	if (unlikely(tdes3 & TDES3_DEFERRED))
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 4e05c1d92935..7e3e1bc0f61d 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -132,6 +132,8 @@ static irqreturn_t stmmac_msi_intr_tx(int irq, void *data);
- static irqreturn_t stmmac_msi_intr_rx(int irq, void *data);
- static void stmmac_tx_timer_arm(struct stmmac_priv *priv, u32 queue);
- static void stmmac_flush_tx_descriptors(struct stmmac_priv *priv, int queue);
-+static void stmmac_set_dma_operation_mode(struct stmmac_priv *priv, u32 txmode,
-+					  u32 rxmode, u32 chan);
- 
- #ifdef CONFIG_DEBUG_FS
- static const struct net_device_ops stmmac_netdev_ops;
-@@ -2466,6 +2468,21 @@ static bool stmmac_xdp_xmit_zc(struct stmmac_priv *priv, u32 queue, u32 budget)
- 	return !!budget && work_done;
- }
- 
-+static void stmmac_bump_dma_threshold(struct stmmac_priv *priv, u32 chan)
-+{
-+	if (unlikely(priv->xstats.threshold != SF_DMA_MODE) && tc <= 256) {
-+		tc += 64;
-+
-+		if (priv->plat->force_thresh_dma_mode)
-+			stmmac_set_dma_operation_mode(priv, tc, tc, chan);
-+		else
-+			stmmac_set_dma_operation_mode(priv, tc, SF_DMA_MODE,
-+						      chan);
-+
-+		priv->xstats.threshold = tc;
-+	}
-+}
-+
- /**
-  * stmmac_tx_clean - to manage the transmission completion
-  * @priv: driver private structure
-@@ -2531,6 +2548,8 @@ static int stmmac_tx_clean(struct stmmac_priv *priv, int budget, u32 queue)
- 			/* ... verify the status error condition */
- 			if (unlikely(status & tx_err)) {
- 				priv->dev->stats.tx_errors++;
-+				if (unlikely(status & tx_err_bump_tc))
-+					stmmac_bump_dma_threshold(priv, queue);
- 			} else {
- 				priv->dev->stats.tx_packets++;
- 				priv->xstats.tx_pkt_n++;
-@@ -2781,21 +2800,7 @@ static void stmmac_dma_interrupt(struct stmmac_priv *priv)
- 	for (chan = 0; chan < tx_channel_count; chan++) {
- 		if (unlikely(status[chan] & tx_hard_error_bump_tc)) {
- 			/* Try to bump up the dma threshold on this failure */
--			if (unlikely(priv->xstats.threshold != SF_DMA_MODE) &&
--			    (tc <= 256)) {
--				tc += 64;
--				if (priv->plat->force_thresh_dma_mode)
--					stmmac_set_dma_operation_mode(priv,
--								      tc,
--								      tc,
--								      chan);
--				else
--					stmmac_set_dma_operation_mode(priv,
--								    tc,
--								    SF_DMA_MODE,
--								    chan);
--				priv->xstats.threshold = tc;
--			}
-+			stmmac_bump_dma_threshold(priv, chan);
- 		} else if (unlikely(status[chan] == tx_hard_error)) {
- 			stmmac_tx_err(priv, chan);
- 		}
-@@ -5745,21 +5750,7 @@ static irqreturn_t stmmac_msi_intr_tx(int irq, void *data)
- 
- 	if (unlikely(status & tx_hard_error_bump_tc)) {
- 		/* Try to bump up the dma threshold on this failure */
--		if (unlikely(priv->xstats.threshold != SF_DMA_MODE) &&
--		    tc <= 256) {
--			tc += 64;
--			if (priv->plat->force_thresh_dma_mode)
--				stmmac_set_dma_operation_mode(priv,
--							      tc,
--							      tc,
--							      chan);
--			else
--				stmmac_set_dma_operation_mode(priv,
--							      tc,
--							      SF_DMA_MODE,
--							      chan);
--			priv->xstats.threshold = tc;
--		}
-+		stmmac_bump_dma_threshold(priv, chan);
- 	} else if (unlikely(status == tx_hard_error)) {
- 		stmmac_tx_err(priv, chan);
- 	}
+It would make it less like: by "coincidence", addr.id has a max value of
+255 which is the same as MAX_ADDR_ID. WDYT?
+
+If you are OK with the suggestion, please send this v2 to MPTCP's ML
+only so we can validate and apply it in our tree. Then we will take care
+of sending it to Netdev ML.
+
+Cheers,
+Matt
 -- 
-2.17.1
-
+Tessares | Belgium | Hybrid Access Solutions
+www.tessares.net
