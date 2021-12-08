@@ -2,178 +2,202 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 355A746D8FE
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 17:54:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B6F346D902
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 17:55:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237400AbhLHQ6Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 11:58:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47660 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237395AbhLHQ6P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 11:58:15 -0500
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD047C0617A2
-        for <netdev@vger.kernel.org>; Wed,  8 Dec 2021 08:54:43 -0800 (PST)
-Received: by mail-wr1-x436.google.com with SMTP id v11so5121196wrw.10
-        for <netdev@vger.kernel.org>; Wed, 08 Dec 2021 08:54:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=YN7SopJ792rYSyvS/k6+6PuXkEaW1GUeMvGKCe7x+ik=;
-        b=J+TbOkyt82nIoJaFvHEWgDDTEY6jM1fG04zXfRHK4uHp2LoCSuRsMIvzHPOloJPfsz
-         VaZ1RcPw20Qi/PxMrsxj6bgcTp87z/4dTXl2iA4FcKzjjbgaxslIvg9sdW3R6lTmb4Qy
-         JVx6pAoQfeFiVVqQQc2Paml9c7cm6lLVlywQCauLw8o6e/3gchFs23/TPwxT82ak6mWH
-         /3Hvg6pk8zCXVq+PaJHgcCWiDkz19z9r35eC4ltmWmrBjGCBRQlKs8S96fu7JIEWVitP
-         ypmTeAf6FN8NZyySe4lTY1919vCTLZ39MyJwHM8iKCFaNzMUX06r7RXtEnuHhog3ukVi
-         c2uA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=YN7SopJ792rYSyvS/k6+6PuXkEaW1GUeMvGKCe7x+ik=;
-        b=jf51zN66rj9wcUIwRzodqP2+TBacKrjHJyg54ZRfxzyQpaGFSWRWAXadDCqIAUULeX
-         s1zH0RC7UuFEfkOMDydTF2Z82sW+Fz1zYhl7nZvF3yhdRQsZCmJUByBS4txvCrxDSwWx
-         mZqlepvkZ3f2sGv4DJdEhjhvYJjweJCTo9L9H+6DRDCQphLfO0OrS7UftXtJ7L+M17UA
-         DXtiu2g1IU3cPy/ZSlhbrMmq/EbiDOnRJIU+4VAlUmjtA+pW2UIAev9n9teYHw/PlqGi
-         VHJc9DyT3qa4yx3OJPrnj+SCI+UTWIAS3WPvnr8/o0K2kvEoDNw2c0+qPv1mIeK+DoPE
-         B37g==
-X-Gm-Message-State: AOAM530KllYa/lEqqftmGSvZBX2eHPzS9gUGIdbtnAVryeetl7yf3Cto
-        ymcSCCRc9g6ucBrbvAkaoUwDag==
-X-Google-Smtp-Source: ABdhPJyCsxaHwjoJGpb1kpKdErG9QngK0st0jPwjBrFDcGdCXFGG2d4SLrzhQROA3gmmJTUxyr0unw==
-X-Received: by 2002:a5d:64a2:: with SMTP id m2mr61750734wrp.248.1638982482311;
-        Wed, 08 Dec 2021 08:54:42 -0800 (PST)
-Received: from joneslee.c.googlers.com.com (205.215.190.35.bc.googleusercontent.com. [35.190.215.205])
-        by smtp.gmail.com with ESMTPSA id y15sm4375735wry.72.2021.12.08.08.54.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Dec 2021 08:54:41 -0800 (PST)
-From:   Lee Jones <lee.jones@linaro.org>
-To:     lee.jones@linaro.org
-Cc:     linux-kernel@vger.kernel.org, Vlad Yasevich <vyasevich@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        lksctp developers <linux-sctp@vger.kernel.org>,
-        "H.P. Yarroll" <piggy@acm.org>,
-        Karl Knutson <karl@athena.chicago.il.us>,
-        Jon Grimm <jgrimm@us.ibm.com>,
-        Xingang Guo <xingang.guo@intel.com>,
-        Hui Huang <hui.huang@nokia.com>,
-        Sridhar Samudrala <sri@us.ibm.com>,
-        Daisy Chang <daisyc@us.ibm.com>,
-        Ryan Layer <rmlayer@us.ibm.com>,
-        Kevin Gao <kevin.gao@intel.com>, netdev@vger.kernel.org
-Subject: [PATCH 1/1] sctp: Protect cached endpoints to prevent possible UAF
-Date:   Wed,  8 Dec 2021 16:54:34 +0000
-Message-Id: <20211208165434.2962062-1-lee.jones@linaro.org>
-X-Mailer: git-send-email 2.34.1.400.ga245620fadb-goog
+        id S230186AbhLHQ7L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 11:59:11 -0500
+Received: from mout.kundenserver.de ([217.72.192.75]:51019 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230137AbhLHQ7L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 11:59:11 -0500
+Received: from [192.168.1.107] ([37.4.249.122]) by mrelayeu.kundenserver.de
+ (mreue108 [212.227.15.183]) with ESMTPSA (Nemesis) id
+ 1M6UVr-1mt6PU1EnB-006tqg; Wed, 08 Dec 2021 17:55:17 +0100
+Subject: Re: [PATCH RFC V2 3/4] net: introduce media selection
+ IF_PORT_HOMEPLUG
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Michael Heimpold <michael.heimpold@in-tech.com>,
+        jimmy.shen@vertexcom.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+References: <1638623871-21805-1-git-send-email-stefan.wahren@i2se.com>
+ <1638623871-21805-4-git-send-email-stefan.wahren@i2se.com>
+ <20211206112955.285b26b2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Stefan Wahren <stefan.wahren@i2se.com>
+Autocrypt: addr=stefan.wahren@i2se.com; keydata=
+ LS0tLS1CRUdJTiBQR1AgUFVCTElDIEtFWSBCTE9DSy0tLS0tClZlcnNpb246IEdudVBHIHYy
+ CgptUUlOQkZ0NmdCTUJFQUN1Yi9wQmV2SHhidkplZnlaRzMySklObW4yYnNFUFgyNVY2ZmVq
+ bXlZd21DR0tqRnRMCi9Eb1VNRVZIRHhDSjQ3Qk1YbzM0NGZIVjFDM0FudWRnTjFCZWhMb0J0
+ TEh4bW5lQ3pnSDNLY1B0V1c3cHRqNEcKdEp2OUNRRFp5MjdTS29FUHh5YUk4Q0YweWdSeEpj
+ NzJNOUk5d21zUFo1YlVIc0x1WVdNcVE3SmNSbVBzNkQ4ZwpCa2srOC95bmdFeU5FeHd4SnBS
+ MXlsajVianhXREh5WVF2dUo1THpaS3VPOUxCM2xYVnNjNGJxWEVqYzZWRnVaCkZDQ2svc3lp
+ by9ZaHNlOE4rUXN4N01RYWd6NHdLVWtRUWJmWGcxVnFrVG5BaXZYczQyVm5Ja211NWd6SXcv
+ MHQKUkp2NTBGUmhIaHhweUtBSThCOG5oTjhRdng3TVZrUGM1dkRmZDN1R1lXNDdKUGhWUUJj
+ VXdKd05rLzQ5RjllQQp2ZzJtdE1QRm5GT1JrV1VSdlArRzZGSmZtNitDdk92N1lmUDF1ZXdB
+ aTRsbitKTzFnK2dqVklXbC9XSnB5MG5UCmlwZGZlSDlkSGtnU2lmUXVuWWN1Y2lzTXlvUmJG
+ OTU1dENna0VZOUVNRWRZMXQ4aUdEaUNnWDZzNTBMSGJpM2sKNDUzdWFjcHhmUVhTYUF3UGtz
+ bDhNa0NPc3YyZUVyNElOQ0hZUUR5WmljbEJ1dUNnOEVOYlI2QUdWdFpTUGNRYgplbnpTektS
+ Wm9POUNhcUlEK2ZhdkxpQi9kaHptSEErOWJnSWhtWGZ2WFJMRFp6ZThwbzFkeXQzRTFzaFhp
+ ZGRaClBBOE51SlZ6RUl0MmxtSTZWOHBaRHBuMjIxcmZLaml2UlFpYW9zNTRUZ1pqak1ZSTdu
+ bko3ZTZ4endBUkFRQUIKdENCVGRHVm1ZVzRnVjJGb2NtVnVJRHgzWVdoeVpXNXpkRUJuYlhn
+ dWJtVjBQb2tDTndRVEFRZ0FJUVVDWElkYwo0Z0liQXdVTENRZ0hBZ1lWQ0FrS0N3SUVGZ0lE
+ QVFJZUFRSVhnQUFLQ1JDVWdld1BFWkR5MjFPVEQvOUdpWkxkCnRSWWNteVJKZ2x0aVFRekFp
+ UWRjSUQ3OGxHb1dwL3grci92Y1U2YjZqdVl1ZVR3Z1Iwclc3djdsMklSQnlEN24KSEp4YSt0
+ SVNvUVpCZ2hvbE1JZmI5TXRoR09KTENZNzdrL1FoQWhuMzJOR1prZWp3OXR6a3MvNDBtclpT
+ VVQ4NApaeWJzUVhyTE0vSFI2VElJL0RlUEIwbktEM0ppcHBzMlVIUUQ5cUQySWpFd1NRUGxI
+ akNPckVaaDQ1UFo3bTkrClo5M0x6aVRlc1dabFlRdUxpSndzNHJLcHRIVzFkL3dSZWxzaG1t
+ NlFxY0wybDRDL2U0MGVEQjlncTRkU1poOVgKUEVZbGxpeU5RaDdhMkxTZHVtRTFyK2NTd0lq
+ RS91ZHRSdmRPOWFLb0psT2JVSzVkTmpTUEg3d0tUYndkWGRZRApHUHdEaFhkNThOQXdyK1BY
+ QmxQajB0STFMQ3ErTEJ4ZUt6aFdYK0dWcTlEb2pWanlVREV4Rk5Ga1h1b0M3ZzhtClY5VDB0
+ ZUJpdVpSbm91WEt3VjJGcHRaT0hIN0JVRVd0a0t0aGgxZXRmT1dwaWdCemtVN2JQc2ZJWVQr
+ cnk5dGIKMW9KK3Y0MVBOYXFaRW1QVXBKeHZmek5UN3Ayd01lRDdaajlmMHJ1YlJQdExBSjJR
+ R2pyRkhzdVh3QU9xcHl6ZQoxOEVidHNZazBOMHp1SEVoY2orUEJJQmZoMFlJWWQ1MW9mNkdJ
+ aU95UjlxMFhYdHBsVUo3VDIvSDF1UXFrWGxwCitnVzRWa2lmc2NJckl1eWZueFpXMTJlSXZq
+ NnlicVdMN2FZS0dZbVQ2aUxDUGJIWXlZY2F5bDRFa0ZjckNGN0UKZTBXVC9zY1ZNaE8vNVgv
+ SGFOQTVIQngvcjUycGdMY3Y0aTlNeExRbVUzUmxabUZ1SUZkaGFISmxiaUE4YzNSbApabUZ1
+ TG5kaGFISmxia0JwTW5ObExtTnZiVDZKQWpnRUV3RUNBQ0lGQWx0NmdCTUNHd01HQ3drSUJ3
+ TUNCaFVJCkFna0tDd1FXQWdNQkFoNEJBaGVBQUFvSkVKU0I3QThSa1BMYmpic1AvamdqYVNz
+ NUh0bGtBSXZXUytGcm15N2MKaG5jT0F4TFRWL0Q2UkV3SU95R0poRkt3d29pck55UTJnOXZV
+ YTNZQ1lDZjFmSjh3RWhhS09COWQwTHBNUm5MNApkRVQ4ZDgyMzhFL3BLK0hxTktpSXNKaHM2
+ SnNLOFpnalZRR3JtbWZua0dyWisxdjBIQnV4ZGljZ0duUC9XdHVBClVsOGw2Mi9BTGJheXlq
+ KzYxQ2xyc0V0UklhcU82N0xJWXdQaVBEUkkrWGlNek5pR3pIRi8xUTZHUjAyUkg2YTMKRjg5
+ ejhhUHhjSGkxWnZDdDJ5a3o2VUVjaHpQMHI1Z3FGSisvTC9VcHU4ME1YaVk0djVlSWFCNTJn
+ VlBnaXlNQQpsTDJkRHMxbUladm5yUkxSWTJ0YjNtQVlOa1Y1QjVJRFQzcGtXeTZrS281T0Nn
+ SytZZFlPUjhGTloyb04ydDhPCnJLK1ZudGFLN01NU0tIbG1ZL3NPd3RSbEVoMU9CbXJjQ3dH
+ d21wLzA1R2tSNDZmL0lzaFJWZUZPUmF3K0dBcXQKUDIrQ0ZhMkNOQS9JSG5aTm95aWtsRHpQ
+ UUhVVUdzck5wcERyaFg5Sm1oQm1nMXYyeXdIMU5YdTFpRGZQMUJBdwpLZ29rdDVmNVVhUkY5
+ c0FBNTN2V0V2YlVVTjllZXNGR0x6UFdkSkdRNWhwZC9WSDVJUXk5U0JyaC93SWNla3E1Cm4w
+ a042cGJUSHhHRTUyU2kvTVZJa05UdURaM2FwbjJqbERaNHBPdHBCWEkydlAzYlBPK05pcUJa
+ anNVM3R4TGkKV2R2MkZqeXp6NlhMUndlV1JZVkw1SGE2TER0eG9yMnZ1NlVQMDdwOXh6MXhS
+ WmFPRFczb1lsSEZ6WXBhNFc1ZwpMSGIybEVrSXVVZlNjaWNHYmpqQXRDbFRkR1ZtWVc0Z1Yy
+ Rm9jbVZ1SUR4emRHVm1ZVzR1ZDJGb2NtVnVRR2x1CkxYUmxZMmd1WTI5dFBva0NOd1FUQVFn
+ QUlRVUNYSWRlaHdJYkF3VUxDUWdIQWdZVkNBa0tDd0lFRmdJREFRSWUKQVFJWGdBQUtDUkNV
+ Z2V3UEVaRHkyeUhURC85VUY3UWxEa0d4elE3QWFDSTZOOTVpUWY4LzFvU1VhRE51Mlk2SQpL
+ K0R6UXBiMVRiVE9yM1ZKd3dZOGEzT1d6NU5MU09MTVdlVnh0K29zTW1sUUlHdWJEM09EWko4
+ aXpQbEcvSnJOCnQ1elNkbU41SUE1ZjNlc1dXUVZLdmdoWkFnVERxZHB2K1pIVzJFbXhuQUox
+ dUxGWFhlUWQzVVpjQzVyMy9nL3YKU2FNbzl4ZWszSjVtTnVEbTcxbEVXc0FzL0JBY0ZjK3lu
+ TGh4d0JXQld3c3Z3UjhiSHRKNURPTVd2YUt1RHNrcApJR0ZVZS9LYjJCK2pyYXZRM1RuNnMv
+ SHFKTTBjZXhTSHo1cGUrMHNHdlArdDlKNzIzNEJGUXdlRkV4cmlleThVCkl4T3I0WEFiYWFi
+ U3J5WW5VL3pWSDlVMWkyQUlRWk1XSkFldkN2VmdRL1UrTmVSaFh1ZGU5WVVtRE1EbzJzQjIK
+ VkFGRUFxaUYyUVVIUEEybThhN0VPM3lmTDRyTWswaUh6TElLdmg2L3JIOFFDWThpM1h4VE5M
+ OWlDTHpCV3UvTgpPbkNBYlMremx2TFphaVNNaDVFZnV4VHR2NFBsVmRFamY2MlArWkhJRDE2
+ Z1VEd0VtYXpMQU1yeDY2NmpINWt1ClVDVFZ5bWJMMFR2Qis2TDZBUmw4QU55TTRBRG1rV2tw
+ eU0yMmtDdUlTWUFFZlFSM3VXWFo5WWd4YVBNcWJWK3cKQnJoSmc0SGFONkM2eFRxR3YzcjRC
+ MmFxYjc3L0NWb1JKMVo5Y3BIQ3dpT3pJYUFtdnl6UFU2TXhDRFhaOEZnWQpsVDR2MjNHNWlt
+ SlAyemdYNXMrRjZBQ1VKOVVRUEQwdVRmK0o5RGEycitza2gvc1dPbloreWNvSE5CUXZvY1pF
+ Ck5BSFFmN2tDRFFSYmVvQVRBUkFBMkhkMGZzRFZLNzJSTFNESGJ5ME9oZ0RjRGxWQk0yTSto
+ WVlwTzNmWDFyKysKc2hpcVBLQ0hWQXNRNWJ4ZTdIbUppbUhhNEtLWXMya3YvbWx0L0NhdUNK
+ Ly9wbWN5Y0JNN0d2d25Lem11WHp1QQpHbVZUWkM2V1I1TGtha0ZydEhPelZtc0VHcE52NVJj
+ OWw2SFlGcExrYlNrVmk1U1BRWkp5K0VNZ01DRmdqclpmClZGNnlvdHdFMWFmN0hOdE1oTlBh
+ TEROMW9VS0Y1aitSeVJnNWl3SnVDRGtuSGp3QlFWNHBndzIvNXZTOEE3WlEKdjJNYlcvVExF
+ eXBLWGlmNzhJaGdBelh0RTJYck0xbi9vNlpINzFvUkZGS096NDJsRmR6ZHJTWDBZc3FYZ0hD
+ WAo1Z0l0TGZxemoxcHNNYTlvMWVpTlRFbTFkVlFyVHFueXMwbDE4b2FsUk5zd1lsUW1uWUJ3
+ cHdDa2FUSExNSHdLCmZHQmJvNWRMUEVzaHRWb3dJNm5zZ3FMVHlRSG1xSFlxVVpZSXBpZ21t
+ QzNTd0JXWTFWNmZmVUVta3FwQUFDRW4KTDQvZ1Vnbjd5US81ZDBzZXFuQXEycFNCSE1VVW9D
+ Y1R6RVFVV1ZraUR2M1JrN2hURm1oVHNNcTc4eHYyWFJzWApNUjZ5UWhTVFBGWkNZRFVFeEVs
+ RXNTbzlGV0hXcjZ6SHlZY2M4cURMRnZHOUZQaG1RdVQyczlCbHg2Z0kzMjNHCm5FcTFsd1dQ
+ SlZ6UDRqUWtKS0lBWHdGcHYrVzhDV0xxekRXT3ZkbHJEYVRhVk1zY0ZUZUg1VzZVcHJsNjVq
+ cUYKUUdNcGNSR0NzOEdDVVcxM0gwSXlPdFF0d1dYQTRueStTTDgxcHZpQW1hU1hVOGxhS2FS
+ dTkxVk9WYUY5ZjRzQQpFUUVBQVlrQ0h3UVlBUUlBQ1FVQ1czcUFFd0liREFBS0NSQ1VnZXdQ
+ RVpEeTIrb1hELzljSEhSa0JaT2ZrbVNxCjE0U3Z4MDYyUHRVMEtWNDcwVFNucC9qV29ZSm5L
+ SXczRzBtWElSZ3J0SDJkUHdwSWdWanNZeVJTVk1LbVNwdDUKWnJEZjlOdFRiTldnazhWb0xl
+ WnpZRW8rSjNvUHFGclRNczNhWVl2N2U0K0pLNjk1WW5tUSttT0Q5bmlhOTE1dApyNUFaajk1
+ VWZTVGx5VW15aWMxZDhvdnNmMWZQN1hDVVZSRmNSamZOZkRGMW9ML3BEZ01QNUdaMk93YVRl
+ am15CkN1SGpNOElSMUNpYXZCcFlEbUJuVFlrN1B0aHk2YXRXdllsMGZ5L0NxYWpUS3N4Nytw
+ OXh6aXU4WmZWWCtpS0IKQ2MrSGUrRURFZEdJRGh2TlovSVFIZk9CMlBVWFdHUytzOUZOVHhy
+ L0E2bkxHWG5BOVk2dzkzaVBkWUl3eFM3SwpYTG9LSmVlMTBEamx6c1lzUmZsRk9XMFpPaVNp
+ aElDWGlRVjF1cU02dHpGRzlndFJjaXVzNVVBdGhXYU8xT3dVClNDUW1mQ09tNGZ2TUlKSUE5
+ cnh0b1M2T3FSUWNpRjNjcm1vMHJKQ3ROMmF3WmZnaThYRWlmN2Q2aGp2MEVLTTkKWFpvaUFa
+ WVpEKy9pTG01VGFLV042b0dJdGkwVmpKdjhaWk9aT2ZDYjZ2cUZJa0pXK2FPdTRvclRMRk16
+ MjhhbwpVM1F5V3BOQzhGRm1kWXNWdWE4czZnTjFOSWE2eTNxYS9aQjhiQS9pa3k1OUFFejRp
+ RElScmdVek1FZzhBazdUCmZtMUtpWWVpVHRCRENvMjVCdlhqYnFzeXhrUUQxbmtSbTZGQVZ6
+ RXVPUEllOEp1cVcyeEQ5aXhHWXZqVTVoa1IKZ0pwM2dQNWIrY25HM0xQcXF1UTJFNmdvS1VN
+ TEFia0NEUVJiZmw5REFSQUFzRExjYStMbFAydm5mdEVHaHBjQQpCR1ZOUUVGbkdQckNhdVU2
+ SGhOODA1V3RQVHRtc1JPdUp6cWdVVDBtcHFXSWZacTZzTXd5dkhLOVRzL0tIM0paClVWYlJD
+ M3oyaDNLZmhIL0RhZjk1cGQ2bVBjL2g5dkYvT3kzK2VUV2hnR25QNmNBNWtsUitmTzFXaEc4
+ VnJpWHYKck5lUkcyMHN6emplSG9jblNJY1Q1WHVaUjB1REhPaUd4T2l6MXNNUkZUR3h6R095
+ MTlSOXJ2dTYzdGlJM2Q3dgpnYzc1T0NBZGtlQi9TZUNFbGFSdzBUZjdMWmJQampzRjI2M0JZ
+ bk1mNGtrTkVLdnFXY1UyaWNNcCtxZXpqeW5CCnB2ZXVlMHJDVFFCWUFRbG9GQ1ZUR0hyV1dB
+ NkQ0VzVPMkFmSWRJYzF1MUpDWnAyZjVMV1ZvVUZUVklyUW5RUVUKU0hDaWZyOU1aeExUdFBK
+ ZFU1Mm9TUHczZGs0aExQOGlKSUx1dnYvYXZhakNzUVlIRXR3WXNiZUZaeGl1TGdscApBN1lj
+ Sk5ObXBnQ3BNRDR3VWh2bEN0QUtOQlFXeXIyOTc2OThFUVRuNDZlQmVVNkttMkNpaFhrZ3dD
+ eWY4ZXlLCkxFM3NYZXdhcTVrZ1pXdk5xNml1NXFZSVJCOXl3K2NYYzYwZE9aRE9scTkzWDVT
+ QVJZemFvZXBrSHo0cmtMa1AKUG8rdENIeUhRUHNHblBYYzlXVDgwREM5Tm5KR2R2VWx5NXJk
+ TUk0eHBaeWdlb2tqd293VlFsUFV1Y1M2TXluNwpmOHc4Y2dmQjdDMklBSWNEeDJwUC9IendY
+ dmtDT1FOQTdtVjFsTTA4bitnVmtUcnpweGlwNURicTRDSW9ZeDJNCkpaVDhiR1JINlhqY1VE
+ S2EwOVFoeVpzQUVRRUFBWWtFUkFRWUFRZ0FEd1VDVzM1ZlF3SWJBZ1VKQThKbkFBSXAKQ1JD
+ VWdld1BFWkR5MjhGZElBUVpBUWdBQmdVQ1czNWZRd0FLQ1JCVnhETFBjVk1NamNkc0QvMFJo
+ QXN1UVlPeQpyMTNCbDNOaFhrWUFaR3AyWkZER3VrZTdPU2tWOG9qT09UZFR5ei9jT1JHQ2J5
+ ZEQrRGd2cUZ5VmRuT1hLZ08wCmxKbUd3ckdlTGRnZ0F2aDBpaHJwNU8wWVVKOWJCU1htR01t
+ UVRZSC9BbUxUR2FkYnVqQ1dqNWZGVWtDeXd4aW0KSHV5MFBiMjRwelR2UzUwR1k1WStxSDBG
+ SE5haWdka2tpV04zcnVnN0haRXUvQ3lsUFpqT1h6K0QxUVBNckV4dwo3ZC9NS2FiVis5YU5i
+ UVlabGRJajk4UXd2VUYxS1N6YThqbFVJdnBoUnEyN0FUOGZER1lHUGZERU1nMmNCT2FlCkty
+ N29uUXM0YjdhV082aWZEbHhRVHB6c3pvK0FuODA3Tk1TdFZFRmYrczNBaFZEM2U3bmY4SkJh
+ dmJWckFlMGsKb20yNm96elBubnh6K2xxVlZ0dzZVazRYTUl6dGl4L0h3SFl3dUNuY1VYWndL
+ MEkzeUFKd2pZd29vck9DaEozUwpFVWJKUVB0R3NneFJERXhWQkZlNk5MUC82MnhQOU82dGFj
+ d09kYjBNbVAxYjM5cFJBVEM3YmdkMWxkVUxpNzVaCmxKckowL1NpVkVyb3FOWXk3OXRmbWdB
+ WjJVeFptczlTckV5Nm85UVNmc24xYVh2K01QTDlKYUNHbWtQNnpiTFEKTm5kajBKY2FRbmtD
+ MHZneWRPMUJtNk11OTZQOXVmbEtaY0FTNndtTE01SWRIT3lqTDg4d0h3anVjakFPQnRjdwpw
+ MG9HVG5WT25Sc05ZU084VzhZWi9LZGJ1Nzg1ZGF6TXFKMmlOakFEdUJiZG02TjRqNUVkTW5r
+ TG4wQklmUEpwCmRnbTR2bDJVcExqd1JHci9NM3dtbTVwdnMrNnVCN2hrL0ZKaUQvNGxsRU5Q
+ NGVNMWg3U200aitWcTZOMSt6VEIKSVhKQWViSXFhc0RwNXlaUzdYcnk0STM2bjg1WEVZZkcw
+ MWx0QXlob05WMkRPOFNJUlFwdWkydHErOVJQM1JLMQpKREJ4eEVKWTJFTzVKWjhNeGFQSFEw
+ RFQwNWxSRmpLMkFsaGRFSXRqTGpwSjNmVW05c3FMeE1XeHpQNlV6M2lpCjJ1YTR1bnJ0Nk9D
+ VHFRd2lqRi8zYlRXaXd2VkFBSG5NRlVpb1hzaEhhb2hWRGNWZm5lSU1mVjBiUUNYWWkzTnAK
+ WTB2MFp3Y2lGSCtnU0M3cUQ2WE51aHBWR1NMNElpbGlGeS9TemNhSkV6QUhlTERTaFpQMkNX
+ ZG5DNHZnbDM3dApocHg4aDU1WWhKbjZIU3VVelBnaGFLdFZCMmsrajdaZXlaK1NGeHA3SXVi
+ SEN3TEhsUWhUNzVSd1EzaUF4S242CjBxajUxY1lUbnF4ZFpYVzZmSDNQa3VNellVNUdwcVIv
+ MU9sNWMvd2ZJNmc2QW04eUtXLzBFVUx0K0tuNExGc1MKbTdZM201SDV2MTJVNkpCWXZWK3Ix
+ M2paaW9zNEVFREU5M0Q1c05IMk1JeVJ6Q0RxMXpkZHQ0WHV5S0ZqUEtXMQo5aWJaRGZGVjdL
+ dUNzdnVMMjNzQmMxc0NNb3ArRTFtVC9ReE9JQTZvRFQxTVFzdHdPVnVReURDdi9PdktTZ2Z6
+ CjhGWEdMNkFQY2xqQ3FqOEFKaHhReXN4ZG9pUVA4bS92dStialdHR3Z4dzVzMWxncGlSRFRS
+ VVBnY0pKTmFHWTIKVklEclpRaTROU2lOUTBOSWkrZGp1NGZOTW1DcFFxZzh0YkMzY0FhNnl3
+ bTZvUUIxU0JobURYMmUxMWdSbGx1SQpPblRHUEUwSFRvM2w3MmxoYmc9PQo9cVpNVgotLS0t
+ LUVORCBQR1AgUFVCTElDIEtFWSBCTE9DSy0tLS0tCg==
+Message-ID: <9b5ff966-3cee-3c1c-128f-79a086181566@i2se.com>
+Date:   Wed, 8 Dec 2021 17:55:13 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20211206112955.285b26b2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Provags-ID: V03:K1:iZ4Bc7RGeqMnU3tObKGTSCobNCcAD09WDQir8BMC7cqlSVrCUl1
+ sjTL7IQU+lFrzL75SxEWRJd0YPwJi9AtIp87/ZoDr9w+g5RHdJoVq89kEHjMQ3CrMJaKkz7
+ BeKSdn0FWN5J6kSbc9Y8GYFetGxoU+0wgy2zpZ+FxHNHQ5aUVm/X6D8Fa76Zna8hKs7jNzE
+ lk07/M1zTZn1/XQ4T7tbg==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:41yAoQ5w9VE=:4WppS/TCB+oPK31p+ASe+2
+ sZmKU1UvYuPvI/j7eDYa316RoJzJfVyuolAZ6L7KhfaEKbGCU0j6QYRDwB0hXT9dvJ3vpxRlj
+ 3KpbJHdKqivOjgUxeieu1hSXai+xIGw9prD9l2P/Slq6mKOs17z0I8CmOBgoIaCXA919hZEML
+ Kwyn9r4/qmZZaaKrmhh3GZqBSmnFev0J0WMMVslLwbMuK7xzEi2ovMd09dgOqdU5cYBqv/6Hs
+ t62K9P1Xfjm339/TeokEkkXSgkhWaxYab/3tSETboOyHj4tCiRJLAR9fR2Za8G7YPNo66k6+b
+ AQhsxKbdaUoCH1ICaSr/O1K42HtOEMdBzq/8Wm61uF/UZVC5CtUMWE9ywgI6A8AinWQpST3yK
+ mI0vjRL69so9hRkJZJTUU9AV37/Q1+9L+Ny/+V1a1x5H5vBxLunCaNSruxXZuQ3+LbyR3GKOz
+ uFiOLYNCyoz8g+MmKtox0ws38cESY6rLL63IaWFCQxFQuemWKhx5DHyg0ZesvXBUA66fXcGGO
+ JgqgyPmvuEEqtgGscs2bX/xlNv6Ye90TfIQdc6S1XQTd0Cc2Iy+cO/653sCaaVZ6+YFYHXqjw
+ 1EKqPp4/+xYwQ0oYf5Ay6gwK0QkKKo9gVaJkPRNvo0K7QacutcCx1IKX7soOjZK7dnw+7QNa6
+ vZzgsLUfEFuX+YjSeF20uytKUYyY312v+DxtNQ+R5JhA2DWWTddSHJ6Uf5P2ortLs3BRidQxX
+ 4tOv3Vy/yi3GePth
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The cause of the resultant dump_stack() reported below is a
-dereference of a freed pointer to 'struct sctp_endpoint' in
-sctp_sock_dump().
-
-This race condition occurs when a transport is cached into its
-associated hash table then freed prior to its subsequent use in
-sctp_diag_dump() which uses sctp_for_each_transport() to walk the
-(now out of date) hash table calling into sctp_sock_dump() where the
-dereference occurs.
-
-To prevent this from happening we need to take a reference on the
-to-be-used/dereferenced 'struct sctp_endpoint' until such a time when
-we know it can be safely released.
-
-When KASAN is not enabled, a similar, but slightly different NULL
-pointer derefernce crash occurs later along the thread of execution in
-inet_sctp_diag_fill() this time.
-
-  BUG: KASAN: use-after-free in sctp_sock_dump+0xa8/0x438 [sctp_diag]
-  Call trace:
-   dump_backtrace+0x0/0x2dc
-   show_stack+0x20/0x2c
-   dump_stack+0x120/0x144
-   print_address_description+0x80/0x2f4
-   __kasan_report+0x174/0x194
-   kasan_report+0x10/0x18
-   __asan_load8+0x84/0x8c
-   sctp_sock_dump+0xa8/0x438 [sctp_diag]
-   sctp_for_each_transport+0x1e0/0x26c [sctp]
-   sctp_diag_dump+0x180/0x1f0 [sctp_diag]
-   inet_diag_dump+0x12c/0x168
-   netlink_dump+0x24c/0x5b8
-   __netlink_dump_start+0x274/0x2a8
-   inet_diag_handler_cmd+0x224/0x274
-   sock_diag_rcv_msg+0x21c/0x230
-   netlink_rcv_skb+0xe0/0x1bc
-   sock_diag_rcv+0x34/0x48
-   netlink_unicast+0x3b4/0x430
-   netlink_sendmsg+0x4f0/0x574
-   sock_write_iter+0x18c/0x1f0
-   do_iter_readv_writev+0x230/0x2a8
-   do_iter_write+0xc8/0x2b4
-   vfs_writev+0xf8/0x184
-   do_writev+0xb0/0x1a8
-   __arm64_sys_writev+0x4c/0x5c
-   el0_svc_common+0x118/0x250
-   el0_svc_handler+0x3c/0x9c
-   el0_svc+0x8/0xc
-
-Cc: Vlad Yasevich <vyasevich@gmail.com>
-Cc: Neil Horman <nhorman@tuxdriver.com>
-Cc: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: lksctp developers <linux-sctp@vger.kernel.org>
-Cc: "H.P. Yarroll" <piggy@acm.org>
-Cc: Karl Knutson <karl@athena.chicago.il.us>
-Cc: Jon Grimm <jgrimm@us.ibm.com>
-Cc: Xingang Guo <xingang.guo@intel.com>
-Cc: Hui Huang <hui.huang@nokia.com>
-Cc: Sridhar Samudrala <sri@us.ibm.com>
-Cc: Daisy Chang <daisyc@us.ibm.com>
-Cc: Ryan Layer <rmlayer@us.ibm.com>
-Cc: Kevin Gao <kevin.gao@intel.com>
-Cc: linux-sctp@vger.kernel.org
-Cc: netdev@vger.kernel.org
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
----
- net/sctp/associola.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/net/sctp/associola.c b/net/sctp/associola.c
-index be29da09cc7ab..df171a297d095 100644
---- a/net/sctp/associola.c
-+++ b/net/sctp/associola.c
-@@ -499,8 +499,9 @@ void sctp_assoc_rm_peer(struct sctp_association *asoc,
- 
- 	/* Remove this peer from the list. */
- 	list_del_rcu(&peer->transports);
--	/* Remove this peer from the transport hashtable */
-+	/* Remove this peer from the transport hashtable and remove its reference */
- 	sctp_unhash_transport(peer);
-+	sctp_endpoint_put(asoc->ep);
- 
- 	/* Get the first transport of asoc. */
- 	pos = asoc->peer.transport_addr_list.next;
-@@ -710,11 +711,12 @@ struct sctp_transport *sctp_assoc_add_peer(struct sctp_association *asoc,
- 	/* Set the peer's active state. */
- 	peer->state = peer_state;
- 
--	/* Add this peer into the transport hashtable */
-+	/* Add this peer into the transport hashtable and take a reference */
- 	if (sctp_hash_transport(peer)) {
- 		sctp_transport_free(peer);
- 		return NULL;
- 	}
-+	sctp_endpoint_hold(asoc->ep);
- 
- 	sctp_transport_pl_reset(peer);
- 
--- 
-2.34.1.400.ga245620fadb-goog
-
+Am 06.12.21 um 20:29 schrieb Jakub Kicinski:
+> On Sat,  4 Dec 2021 14:17:50 +0100 Stefan Wahren wrote:
+>> Introduce a new media selection dedicated for HomePlug powerline
+>> communication. This allows us to use the proper if_port setting in
+>> HomePlug drivers.
+>>
+>> Suggested-by: Andrew Lunn <andrew@lunn.ch>
+>> Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+> I _think_ the IF_PORT API is an very ancient (Linux 2.2) way of
+> switching ports on early Ethernet cards. Isn't it? It predates
+> ethtool and all the modern interfaces. Quick grep seems to indicate
+> it's accessed only for old HW as well.
+>
+> Do you have a use case for setting it?
+Actually not, i will drop it from the patchset.
