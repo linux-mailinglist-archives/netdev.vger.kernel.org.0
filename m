@@ -2,110 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5403846D3B8
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 13:51:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D03146D3F6
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 14:04:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233845AbhLHMyo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 07:54:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46438 "EHLO
+        id S232257AbhLHNIV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 08:08:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233816AbhLHMyl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 07:54:41 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26636C0617A1
-        for <netdev@vger.kernel.org>; Wed,  8 Dec 2021 04:51:09 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1muwPb-0003LB-Fj
-        for netdev@vger.kernel.org; Wed, 08 Dec 2021 13:51:07 +0100
-Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id 8F2F06BFC0F
-        for <netdev@vger.kernel.org>; Wed,  8 Dec 2021 12:51:02 +0000 (UTC)
-Received: from hardanger.blackshift.org (unknown [172.20.34.65])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id 067CE6BFBD8;
-        Wed,  8 Dec 2021 12:50:59 +0000 (UTC)
-Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 77bc2b52;
-        Wed, 8 Dec 2021 12:50:57 +0000 (UTC)
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH net-next 8/8] can: hi311x: hi3110_can_probe(): convert to use dev_err_probe()
-Date:   Wed,  8 Dec 2021 13:50:55 +0100
-Message-Id: <20211208125055.223141-9-mkl@pengutronix.de>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20211208125055.223141-1-mkl@pengutronix.de>
-References: <20211208125055.223141-1-mkl@pengutronix.de>
+        with ESMTP id S229757AbhLHNIV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 08:08:21 -0500
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98824C061746
+        for <netdev@vger.kernel.org>; Wed,  8 Dec 2021 05:04:49 -0800 (PST)
+Received: by mail-pl1-x629.google.com with SMTP id b11so1472856pld.12
+        for <netdev@vger.kernel.org>; Wed, 08 Dec 2021 05:04:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:sender:from:date:message-id:subject:to;
+        bh=hPHkMFJOgPMD67Pkz3i0Kw9vG6WN/QNrOsYjIUAJ+qs=;
+        b=HKTgTigXidfVBF8AidFFXLYnWa0/qoKo5JlBCmb/aYVZPIfPOLc1FuO7/rUm3Ahbxr
+         3ILG099lqVeik8AlTW0M/PgdJGxr7KMKvEHaa2F5SqXbxhZmHBOjRpyw/wRhHyj6cuUq
+         v17V3oKp5HiHqtExY3j5bXqebIbXyLjF0TgEYlDKQy+SOUwM2Z5WaAexJY1qZoqtA+5E
+         qXT0KzHRSC+6ieSIGii4+JkqZMbHO9erDwlXafkZzD2mW5EPlUR9ZcINxeTcu1WyTLzp
+         4YlEtnlPEnhAUEwak9hAkZdaKblsXT65cISJZUcx81ptsrYSrZgzgwvmgNcpkAcUbCHS
+         eZCg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:sender:from:date
+         :message-id:subject:to;
+        bh=hPHkMFJOgPMD67Pkz3i0Kw9vG6WN/QNrOsYjIUAJ+qs=;
+        b=JOvI8OuRgayPZqGJgoS3/1Dbp3N3BuPPGnnSi6cZOTOTHGZdoASEWNnRu1fQwVTknu
+         8qeCm2f+q33fFps2pgZupBbbXVXlrorIdPjuosjGuzIun5DWxRr0VUixwTrNHdppHi/s
+         WRe19cETdGOHvaRWw3iU+k2ntvvz/r/030paOWKBEEzyPT44ZnKx3aZZYvYuVKYtNxcM
+         hP2C401Pqkves3v3F6wdzHZZL/QE8Pzd1RIXQsXr6z/511oMnURMs25U/oDDkpPO6zha
+         pP451FrwVIV9csFBuh+31VUte0OQRatffjtO08nu7sy913Rx8Qi0EFU2OAbYcRhn7eUB
+         OzYg==
+X-Gm-Message-State: AOAM533UiyoP+8Xod3CJrsx5g4AxpiA+Ro49uSfgasqjs4anBKZnFBj5
+        7KGVgquoqmTnpJ/NeUJXgF2qtxhezvmeK/8hme0=
+X-Google-Smtp-Source: ABdhPJyt/OjqO0q5Ic2CDkHJOc/al8hfUYXInqCmuPGT/7aiGUuYKk2ALtlj/dXsDoYSTPi+W+qZI8DljczyiYZQnho=
+X-Received: by 2002:a17:90a:28c4:: with SMTP id f62mr6978161pjd.207.1638968689143;
+ Wed, 08 Dec 2021 05:04:49 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Reply-To: mrscarolinemanon9@gmail.com
+Sender: officefilelee@gmail.com
+Received: by 2002:a05:6a10:3a5:0:0:0:0 with HTTP; Wed, 8 Dec 2021 05:04:48
+ -0800 (PST)
+From:   "Mrs. Caroline Manon" <mrscarolinemanonn@gmail.com>
+Date:   Wed, 8 Dec 2021 14:04:48 +0100
+X-Google-Sender-Auth: eldXgffcmLlR_iOUa5WZYLjLtLI
+Message-ID: <CAPpwXDzCL9=pxqEQRVRSQ+x0cRbJfVj=AbejxjwrHxggY=fzqg@mail.gmail.com>
+Subject: Greetings from Mrs. Caroline Manon.
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Dear Friend,
 
-When deferred the reason is saved for further debugging. Besides that,
-it's fine to call dev_err_probe() in ->probe() when error code is
-known. Convert the driver to use dev_err_probe().
+I know that this mail will come to you as a surprise as we have never
+met before, but need not to worry as I am contacting you independently
+of my investigation and no one is informed of this communication. I
+need your urgent assistance in transferring the sum of U$10.5 million
+immediately to your private account, The money has been here in our
+Bank lying dormant for years now without anybody coming for the claim
+of it.
 
-Link: https://lore.kernel.org/all/20211206165542.69887-4-andriy.shevchenko@linux.intel.com
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
----
- drivers/net/can/spi/hi311x.c | 13 ++++---------
- 1 file changed, 4 insertions(+), 9 deletions(-)
+I want the money to be release to you as the relative to our deceased
+customer (the account owner) who died a long with his supposed Next Of
+Kin since 16th October 2005. The Banking laws here does not allow such
+money to stay more than 17 years, because the money will be recalled
+to the Bank treasury account as unclaimed fund.
 
-diff --git a/drivers/net/can/spi/hi311x.c b/drivers/net/can/spi/hi311x.c
-index 78044ec24575..a17641d36468 100644
---- a/drivers/net/can/spi/hi311x.c
-+++ b/drivers/net/can/spi/hi311x.c
-@@ -837,10 +837,8 @@ static int hi3110_can_probe(struct spi_device *spi)
- 	int ret;
- 
- 	clk = devm_clk_get_optional(&spi->dev, NULL);
--	if (IS_ERR(clk)) {
--		dev_err(&spi->dev, "no CAN clock source defined\n");
--		return PTR_ERR(clk);
--	}
-+	if (IS_ERR(clk))
-+		return dev_err_probe(dev, PTR_ERR(clk), "no CAN clock source defined\n");
- 
- 	if (clk) {
- 		freq = clk_get_rate(clk);
-@@ -925,9 +923,7 @@ static int hi3110_can_probe(struct spi_device *spi)
- 
- 	ret = hi3110_hw_probe(spi);
- 	if (ret) {
--		if (ret == -ENODEV)
--			dev_err(&spi->dev, "Cannot initialize %x. Wrong wiring?\n",
--				priv->model);
-+		dev_err_probe(dev, ret, "Cannot initialize %x. Wrong wiring?\n", priv->model);
- 		goto error_probe;
- 	}
- 	hi3110_hw_sleep(spi);
-@@ -950,8 +946,7 @@ static int hi3110_can_probe(struct spi_device *spi)
-  out_free:
- 	free_candev(net);
- 
--	dev_err(&spi->dev, "Probe failed, err=%d\n", -ret);
--	return ret;
-+	return dev_err_probe(dev, ret, "Probe failed\n");
- }
- 
- static int hi3110_can_remove(struct spi_device *spi)
--- 
-2.33.0
+By indicating your interest I will send you the full details on how
+the business will be executed.
 
+Please respond urgently and delete if you are not interested.
 
+Best Regards,
+Mrs. Caroline Manon.
