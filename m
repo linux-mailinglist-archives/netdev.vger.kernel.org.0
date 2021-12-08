@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D98D346D2A2
+	by mail.lfdr.de (Postfix) with ESMTP id 41ECA46D2A0
 	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 12:40:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233217AbhLHLnw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 06:43:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57666 "EHLO
+        id S233185AbhLHLnt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 06:43:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232744AbhLHLnA (ORCPT
+        with ESMTP id S232775AbhLHLnA (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 06:43:00 -0500
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1242BC079797;
-        Wed,  8 Dec 2021 03:38:31 -0800 (PST)
-Received: by mail-ed1-x531.google.com with SMTP id y12so7244707eda.12;
-        Wed, 08 Dec 2021 03:38:31 -0800 (PST)
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94B8FC07E5C1;
+        Wed,  8 Dec 2021 03:38:32 -0800 (PST)
+Received: by mail-ed1-x536.google.com with SMTP id v1so7467204edx.2;
+        Wed, 08 Dec 2021 03:38:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Z/6Jjle9VKxjdiEALibfU5pwCYQ5kKTnkqqezPzIfas=;
-        b=oEVk5ce3KTsWNzZoP2/t13G0CqrChIjN7ryG0tRwI5Na5Qn0xlGfQVcV3IlNmpu6lx
-         R+7+UbOY0MeF+56z6qYRPqtR3HrOE4r50Xe8zgKPBGEjQi8k8nzNO5ii22DzATz2e4Gq
-         PTANAuLNeq3S264H6R8FyKXh43pS5+yyLhYp7GAOLH/bxFYmRbmHzmLl4h+p8PI8gjiT
-         zIpHg+bsFHk5zYkmgB7/CXMc7UcKoHimrx+GQpTR/+DBvjQODxM1pK3B9FiXEtY+0AuF
-         AJ7mcjkg/8ln765BJhbsCZANfFO4jjGCh23AHGZqnnYHYUwEJXP+uzm4wR2fazR6MqOq
-         17tw==
+        bh=va63/N8CYQSmLkQGhzY2hoE/p0MPavl2wkjpqBvYrRY=;
+        b=kF7IgW785YxstHwbtnA4dOEnEW+K1MbxCrRk2Ns4UpyCKrb79XmMuE1MGl5tThmKUA
+         XHKqLJuXWRXRd0rXTWLzvxveIm0aS5priRIDBLlzuNgxrsh+nbYArkRH8hSzJaHMrfWE
+         S0ORT/OsOQBYleoOWw2G4QhKB2YhcPIHj+bDpX+PFmjiEZQYEOqwu2i37A6HoO5l7Bb+
+         h3T41E05a+QbEsI7Lt6HeoptD1JdSekDBYwD2FvuwIEOdYj2CeYDdl4DXD4dZ/GtGZTA
+         5R7bS44cEzNBALrgcg6zjAAKAHYjOc5pIjW9e5WQPpRKMjbFaWlT3AoYHBkS2Tni/ALC
+         B/oA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Z/6Jjle9VKxjdiEALibfU5pwCYQ5kKTnkqqezPzIfas=;
-        b=Vdyrgeaai+/C6TC+eTYJNajQWSDE91gRLjWrlVhGilLdcCWJJRPcdF+trvHqW70aEt
-         fO++pg9D/TBFmuF7m3vjJ5pPESCPFWdWPhmSo1gPubVpucsy7fO/QuEwORmlcwvb2o0m
-         40MHBcRuxb3Trdjb5QqfuaJPHCq+UUV040o8AYnEm/82sgmipb4Qx4SAr1Ur2Cu7J0I8
-         2XWRfMLl/3gQ9/fKb4NRu4cFjLZxmgW3/YSXBPzKVJakQdzhf1FyTi8Uh2VgVAGou+TT
-         CgnRQSz+j/ieh997S8JWqVQJjK7YnvCOrQYFq4MNB/96xujY3WWmFUO1XogcwaBLZpAW
-         bw6w==
-X-Gm-Message-State: AOAM533d60QLJyT5QNG/c55EfHXn8++1DhSE9P1HdlRIX56NM/saP/xn
-        7s0Std4FdBWM7HEwjiNi++c=
-X-Google-Smtp-Source: ABdhPJzShdk89Bpgr3WBylG4KP/u+N9tcr8eFK4X0GXimP0LdeTKQ+zQz3vV+Z2I58gtecGwvgdOqA==
-X-Received: by 2002:a17:906:4bcf:: with SMTP id x15mr6937221ejv.273.1638963506144;
-        Wed, 08 Dec 2021 03:38:26 -0800 (PST)
+        bh=va63/N8CYQSmLkQGhzY2hoE/p0MPavl2wkjpqBvYrRY=;
+        b=F3nJUAD3Pi2Xz4HpY36oBPjNq5Ay39xk47m9OKtXralO2E+psxzn1/74VUt80LIMu/
+         eigOL36Jz0PjsulVR/0Vwz0zu5ZW0ydUgV5goDLIVeJO8M0JzvZ00NdrP/tNlux3Tlf5
+         ZQK8ElEOeiJEqxCgW8koCAdWCqpFPAeb1Xwb5CdJmWfCx3oynk+y6A7gZ5D9R2vhxDTS
+         mTT2gkzY8pu4qGqtxlpcLw4PfjSKuO4CZBr8o88TdOYTLzNl7K2opDtjqpFYw8qd0q1a
+         5gdfp90W423vLpjVvF9Nx2GV2YU/68O2PwJqTG2spNalh7cGAXEGeb9xWnSsnMk2L5D9
+         exQg==
+X-Gm-Message-State: AOAM530PW/zAilEE1XNSOciIZgUeQ3ToKLWBxExBM0cCfnSnxdayVchL
+        bGg5fGXm5XHPHaaqvYTW754=
+X-Google-Smtp-Source: ABdhPJx6aJZmM5GWY1yC6x8dDsBuVJ4QfZjtgxxoq88csbSXQgRn0a/SGf90hhYU9RvGN5DI8MWuUQ==
+X-Received: by 2002:a17:907:2d0e:: with SMTP id gs14mr6831555ejc.249.1638963511090;
+        Wed, 08 Dec 2021 03:38:31 -0800 (PST)
 Received: from ponky.lan ([2a04:241e:501:3870:3c9f:e05b:4dff:43ba])
-        by smtp.gmail.com with ESMTPSA id g11sm1883810edz.53.2021.12.08.03.38.24
+        by smtp.gmail.com with ESMTPSA id g11sm1883810edz.53.2021.12.08.03.38.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Dec 2021 03:38:25 -0800 (PST)
+        Wed, 08 Dec 2021 03:38:30 -0800 (PST)
 From:   Leonard Crestez <cdleonard@gmail.com>
 To:     David Ahern <dsahern@kernel.org>,
         Dmitry Safonov <0x7f454c46@gmail.com>,
@@ -65,9 +65,9 @@ Cc:     Francesco Ruggeri <fruggeri@arista.com>,
         Priyaranjan Jha <priyarjha@google.com>, netdev@vger.kernel.org,
         linux-crypto@vger.kernel.org, linux-kselftest@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v3 17/18] selftests: nettest: Initial tcp_authopt support
-Date:   Wed,  8 Dec 2021 13:37:32 +0200
-Message-Id: <cebc0cb03459482c111dd6d529cdcef34523d153.1638962992.git.cdleonard@gmail.com>
+Subject: [PATCH v3 18/18] selftests: net/fcnal: Initial tcp_authopt support
+Date:   Wed,  8 Dec 2021 13:37:33 +0200
+Message-Id: <718934913b81a01d2d2a9479ea4eb645234d7697.1638962992.git.cdleonard@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1638962992.git.cdleonard@gmail.com>
 References: <cover.1638962992.git.cdleonard@gmail.com>
@@ -77,183 +77,386 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for configuring TCP Authentication Option. Only a single key
-is supported with default options.
+Tests are mostly copied from tcp_md5 with minor changes.
 
-Reviewed-by: David Ahern <dsahern@kernel.org>
+It covers VRF support but only based on binding multiple servers: not
+multiple keys bound to different interfaces.
+
+Also add a specific -t tcp_authopt to run only these tests specifically.
+
 Signed-off-by: Leonard Crestez <cdleonard@gmail.com>
 ---
- tools/testing/selftests/net/nettest.c | 75 ++++++++++++++++++++++++---
- 1 file changed, 69 insertions(+), 6 deletions(-)
+ tools/testing/selftests/net/fcnal-test.sh | 298 ++++++++++++++++++++++
+ 1 file changed, 298 insertions(+)
 
-diff --git a/tools/testing/selftests/net/nettest.c b/tools/testing/selftests/net/nettest.c
-index 3841e5fec7c7..5fe7354c40cf 100644
---- a/tools/testing/selftests/net/nettest.c
-+++ b/tools/testing/selftests/net/nettest.c
-@@ -104,10 +104,12 @@ struct sock_args {
- 	} key_addr;
- 	unsigned int key_addr_prefix_len;
- 	/* 0: default, -1: force off, +1: force on */
- 	int bind_key_ifindex;
- 
-+	const char *authopt_password;
-+
- 	/* expected addresses and device index for connection */
- 	const char *expected_dev;
- 	const char *expected_server_dev;
- 	int expected_ifindex;
- 
-@@ -254,10 +256,54 @@ static int switch_ns(const char *ns)
- 	close(fd);
- 
- 	return ret;
+diff --git a/tools/testing/selftests/net/fcnal-test.sh b/tools/testing/selftests/net/fcnal-test.sh
+index 32d5f7bc588e..e99b44f0ae5a 100755
+--- a/tools/testing/selftests/net/fcnal-test.sh
++++ b/tools/testing/selftests/net/fcnal-test.sh
+@@ -807,10 +807,301 @@ ipv4_ping()
  }
  
-+static int tcp_set_authopt(int sd, struct sock_args *args)
+ ################################################################################
+ # IPv4 TCP
+ 
++#
++# TCP Authentication Option Tests
++#
++
++# try to enable tcp_authopt sysctl
++enable_tcp_authopt()
 +{
-+	struct tcp_authopt_key key;
-+	int rc;
-+
-+	memset(&key, 0, sizeof(key));
-+	strcpy((char *)key.key, args->authopt_password);
-+	key.keylen = strlen(args->authopt_password);
-+	key.alg = TCP_AUTHOPT_ALG_HMAC_SHA_1_96;
-+
-+	if (args->key_addr_prefix_str) {
-+		key.flags |= TCP_AUTHOPT_KEY_ADDR_BIND;
-+		switch (args->version) {
-+		case AF_INET:
-+			memcpy(&key.addr, &args->key_addr.v4, sizeof(args->key_addr.v4));
-+			break;
-+		case AF_INET6:
-+			memcpy(&key.addr, &args->key_addr.v6, sizeof(args->key_addr.v6));
-+			break;
-+		default:
-+			log_error("unknown address family\n");
-+			exit(1);
-+		}
-+		if (args->key_addr_prefix_len) {
-+			key.flags |= TCP_AUTHOPT_KEY_PREFIXLEN;
-+			key.prefixlen = args->key_addr_prefix_len;
-+		}
-+	}
-+
-+	if ((args->ifindex && args->bind_key_ifindex >= 0) || args->bind_key_ifindex >= 1) {
-+		key.flags |= TCP_AUTHOPT_KEY_IFINDEX;
-+		key.ifindex = args->ifindex;
-+		log_msg("TCP_AUTHOPT_KEY_IFINDEX set ifindex=%d\n", key.ifindex);
-+	} else {
-+		log_msg("TCP_AUTHOPT_KEY_IFINDEX off\n", key.ifindex);
-+	}
-+
-+	rc = setsockopt(sd, IPPROTO_TCP, TCP_AUTHOPT_KEY, &key, sizeof(key));
-+	if (rc < 0)
-+		log_err_errno("setsockopt(TCP_AUTHOPT_KEY)");
-+
-+	return rc;
++	if [[ -e /proc/sys/net/ipv4/tcp_authopt ]]; then
++		sysctl -w net.ipv4.tcp_authopt=1
++	fi
 +}
 +
- static int tcp_md5sig(int sd, void *addr, socklen_t alen, struct sock_args *args)
++# check if tcp_authopt is compiled with a client-side bind test
++has_tcp_authopt()
++{
++	run_cmd_nsb nettest -b -A ${MD5_PW} -r ${NSA_IP}
++}
++
++ipv4_tcp_authopt_novrf()
++{
++	enable_tcp_authopt
++	if ! has_tcp_authopt; then
++		echo "TCP-AO appears to be missing, skip"
++		return 0
++	fi
++
++	log_start
++	run_cmd nettest -s -A ${MD5_PW} -m ${NSB_IP} &
++	sleep 1
++	run_cmd_nsb nettest -r ${NSA_IP} -A ${MD5_PW}
++	log_test $? 0 "AO: Single address config"
++
++	log_start
++	run_cmd nettest -s  &
++	sleep 1
++	run_cmd_nsb nettest -r ${NSA_IP} -A ${MD5_PW}
++	log_test $? 2 "AO: Server no config, client uses password"
++
++	log_start
++	run_cmd nettest -s -A ${MD5_PW} -m ${NSB_IP} &
++	sleep 1
++	run_cmd_nsb nettest -r ${NSA_IP} -A ${MD5_WRONG_PW}
++	log_test $? 2 "AO: Client uses wrong password"
++
++	log_start
++	run_cmd nettest -s -A ${MD5_PW} -m ${NSB_LO_IP} &
++	sleep 1
++	run_cmd_nsb nettest -r ${NSA_IP} -A ${MD5_PW}
++	log_test $? 2 "AO: Client address does not match address configured on server"
++
++	# client in prefix
++	log_start
++	run_cmd nettest -s -A ${MD5_PW} -m ${NS_NET} &
++	sleep 1
++	run_cmd_nsb nettest -r ${NSA_IP} -A ${MD5_PW}
++	log_test $? 0 "AO: Prefix config"
++
++	# client in prefix, wrong password
++	log_start
++	show_hint "Should timeout since client uses wrong password"
++	run_cmd nettest -s -A ${MD5_PW} -m ${NS_NET} &
++	sleep 1
++	run_cmd_nsb nettest -r ${NSA_IP} -A ${MD5_WRONG_PW}
++	log_test $? 2 "AO: Prefix config, client uses wrong password"
++
++	# client outside of prefix
++	log_start
++	show_hint "Should timeout due to MD5 mismatch"
++	run_cmd nettest -s -A ${MD5_PW} -m ${NS_NET} &
++	sleep 1
++	run_cmd_nsb nettest -c ${NSB_LO_IP} -r ${NSA_IP} -A ${MD5_PW}
++	log_test $? 2 "AO: Prefix config, client address not in configured prefix"
++}
++
++ipv6_tcp_authopt_novrf()
++{
++	enable_tcp_authopt
++	if ! has_tcp_authopt; then
++		echo "TCP-AO appears to be missing, skip"
++		return 0
++	fi
++
++	log_start
++	run_cmd nettest -6 -s -A ${MD5_PW} &
++	sleep 1
++	run_cmd_nsb nettest -6 -r ${NSA_IP6} -A ${MD5_PW}
++	log_test $? 0 "AO: Simple correct config"
++
++	log_start
++	run_cmd nettest -6 -s
++	sleep 1
++	run_cmd_nsb nettest -6 -r ${NSA_IP6} -A ${MD5_PW}
++	log_test $? 2 "AO: Server no config, client uses password"
++
++	log_start
++	run_cmd nettest -6 -s -A ${MD5_PW} -m ${NSB_IP6} &
++	sleep 1
++	run_cmd_nsb nettest -6 -r ${NSA_IP6} -A ${MD5_WRONG_PW}
++	log_test $? 2 "AO: Client uses wrong password"
++
++	log_start
++	run_cmd nettest -6 -s -A ${MD5_PW} -m ${NSB_LO_IP6} &
++	sleep 1
++	run_cmd_nsb nettest -6 -r ${NSA_IP6} -A ${MD5_PW}
++	log_test $? 2 "AO: Client address does not match address configured on server"
++}
++
++ipv4_tcp_authopt_vrf()
++{
++	enable_tcp_authopt
++	if ! has_tcp_authopt; then
++		echo "TCP-AO appears to be missing, skip"
++		return 0
++	fi
++
++	log_start
++	run_cmd nettest -s -I ${VRF} -A ${MD5_PW} &
++	sleep 1
++	run_cmd_nsb nettest -r ${NSA_IP} -A ${MD5_PW}
++	log_test $? 0 "AO: VRF: Simple config"
++
++	#
++	# duplicate config between default VRF and a VRF
++	#
++
++	log_start
++	run_cmd nettest -s -I ${VRF} -A ${MD5_PW} -m ${NSB_IP} &
++	run_cmd nettest -s -A ${MD5_WRONG_PW} -m ${NSB_IP} &
++	sleep 1
++	run_cmd_nsb nettest -r ${NSA_IP} -A ${MD5_PW}
++	log_test $? 0 "AO: VRF: Servers in default-VRF and VRF, client in VRF"
++
++	log_start
++	run_cmd nettest -s -I ${VRF} -A ${MD5_PW} -m ${NSB_IP} &
++	run_cmd nettest -s -A ${MD5_WRONG_PW} -m ${NSB_IP} &
++	sleep 1
++	run_cmd_nsc nettest -r ${NSA_IP} -A ${MD5_WRONG_PW}
++	log_test $? 0 "AO: VRF: Servers in default-VRF and VRF, client in default-VRF"
++
++	log_start
++	show_hint "Should timeout since client in default VRF uses VRF password"
++	run_cmd nettest -s -I ${VRF} -A ${MD5_PW} -m ${NSB_IP} &
++	run_cmd nettest -s -A ${MD5_WRONG_PW} -m ${NSB_IP} &
++	sleep 1
++	run_cmd_nsc nettest -r ${NSA_IP} -A ${MD5_PW}
++	log_test $? 2 "AO: VRF: Servers in default VRF and VRF, conn in default-VRF with VRF pw"
++
++	log_start
++	show_hint "Should timeout since client in VRF uses default VRF password"
++	run_cmd nettest -s -I ${VRF} -A ${MD5_PW} -m ${NSB_IP} &
++	run_cmd nettest -s -A ${MD5_WRONG_PW} -m ${NSB_IP} &
++	sleep 1
++	run_cmd_nsb nettest -r ${NSA_IP} -A ${MD5_WRONG_PW}
++	log_test $? 2 "AO: VRF: Servers in default VRF and VRF, conn in VRF with default-VRF pw"
++
++	test_ipv4_tcp_authopt_vrf__global_server__bind_ifindex0
++}
++
++test_ipv4_tcp_authopt_vrf__global_server__bind_ifindex0()
++{
++	# This particular test needs tcp_l3mdev_accept=1 for Global server to accept VRF connections
++	local old_tcp_l3mdev_accept
++	old_tcp_l3mdev_accept=$(get_sysctl net.ipv4.tcp_l3mdev_accept)
++	set_sysctl net.ipv4.tcp_l3mdev_accept=1
++
++	log_start
++	run_cmd nettest -s -A ${MD5_PW} --force-bind-key-ifindex &
++	sleep 1
++	run_cmd_nsb nettest -r ${NSA_IP} -A ${MD5_PW}
++	log_test $? 2 "AO: VRF: Global server, Key bound to ifindex=0 rejects VRF connection"
++
++	log_start
++	run_cmd nettest -s -A ${MD5_PW} --force-bind-key-ifindex &
++	sleep 1
++	run_cmd_nsc nettest -r ${NSA_IP} -A ${MD5_PW}
++	log_test $? 0 "AO: VRF: Global server, key bound to ifindex=0 accepts non-VRF connection"
++	log_start
++
++	run_cmd nettest -s -A ${MD5_PW} --no-bind-key-ifindex &
++	sleep 1
++	run_cmd_nsb nettest -r ${NSA_IP} -A ${MD5_PW}
++	log_test $? 0 "AO: VRF: Global server, key not bound to ifindex accepts VRF connection"
++
++	log_start
++	run_cmd nettest -s -A ${MD5_PW} --no-bind-key-ifindex &
++	sleep 1
++	run_cmd_nsc nettest -r ${NSA_IP} -A ${MD5_PW}
++	log_test $? 0 "AO: VRF: Global server, key not bound to ifindex accepts non-VRF connection"
++
++	# restore value
++	set_sysctl net.ipv4.tcp_l3mdev_accept="$old_tcp_l3mdev_accept"
++}
++
++ipv6_tcp_authopt_vrf()
++{
++	enable_tcp_authopt
++	if ! has_tcp_authopt; then
++		echo "TCP-AO appears to be missing, skip"
++		return 0
++	fi
++
++	log_start
++	run_cmd nettest -6 -s -I ${VRF} -A ${MD5_PW} &
++	sleep 1
++	run_cmd_nsb nettest -6 -r ${NSA_IP6} -A ${MD5_PW}
++	log_test $? 0 "AO: VRF: Simple config"
++
++	#
++	# duplicate config between default VRF and a VRF
++	#
++
++	log_start
++	run_cmd nettest -6 -s -I ${VRF} -A ${MD5_PW} -m ${NSB_IP6} &
++	run_cmd nettest -6 -s -A ${MD5_WRONG_PW} -m ${NSB_IP6} &
++	sleep 1
++	run_cmd_nsb nettest -6 -r ${NSA_IP6} -A ${MD5_PW}
++	log_test $? 0 "AO: VRF: Servers in default-VRF and VRF, client in VRF"
++
++	log_start
++	run_cmd nettest -6 -s -I ${VRF} -A ${MD5_PW} -m ${NSB_IP6} &
++	run_cmd nettest -6 -s -A ${MD5_WRONG_PW} -m ${NSB_IP6} &
++	sleep 1
++	run_cmd_nsc nettest -6 -r ${NSA_IP6} -A ${MD5_WRONG_PW}
++	log_test $? 0 "AO: VRF: Servers in default-VRF and VRF, client in default-VRF"
++
++	log_start
++	show_hint "Should timeout since client in default VRF uses VRF password"
++	run_cmd nettest -6 -s -I ${VRF} -A ${MD5_PW} -m ${NSB_IP6} &
++	run_cmd nettest -6 -s -A ${MD5_WRONG_PW} -m ${NSB_IP6} &
++	sleep 1
++	run_cmd_nsc nettest -6 -r ${NSA_IP6} -A ${MD5_PW}
++	log_test $? 2 "AO: VRF: Servers in default VRF and VRF, conn in default-VRF with VRF pw"
++
++	log_start
++	show_hint "Should timeout since client in VRF uses default VRF password"
++	run_cmd nettest -6 -s -I ${VRF} -A ${MD5_PW} -m ${NSB_IP6} &
++	run_cmd nettest -6 -s -A ${MD5_WRONG_PW} -m ${NSB_IP6} &
++	sleep 1
++	run_cmd_nsb nettest -6 -r ${NSA_IP6} -A ${MD5_WRONG_PW}
++	log_test $? 2 "AO: VRF: Servers in default VRF and VRF, conn in VRF with default-VRF pw"
++
++	log_start
++	run_cmd nettest -6 -s -I ${VRF} -A ${MD5_PW} -m ${NS_NET6} &
++	run_cmd nettest -6 -s -A ${MD5_WRONG_PW} -m ${NS_NET6} &
++	sleep 1
++	run_cmd_nsb nettest -6 -r ${NSA_IP6} -A ${MD5_PW}
++	log_test $? 0 "AO: VRF: Prefix config in default VRF and VRF, conn in VRF"
++
++	log_start
++	run_cmd nettest -6 -s -I ${VRF} -A ${MD5_PW} -m ${NS_NET6} &
++	run_cmd nettest -6 -s -A ${MD5_WRONG_PW} -m ${NS_NET6} &
++	sleep 1
++	run_cmd_nsc nettest -6 -r ${NSA_IP6} -A ${MD5_WRONG_PW}
++	log_test $? 0 "AO: VRF: Prefix config in default VRF and VRF, conn in default VRF"
++
++	log_start
++	show_hint "Should timeout since client in default VRF uses VRF password"
++	run_cmd nettest -6 -s -I ${VRF} -A ${MD5_PW} -m ${NS_NET6} &
++	run_cmd nettest -6 -s -A ${MD5_WRONG_PW} -m ${NS_NET6} &
++	sleep 1
++	run_cmd_nsc nettest -6 -r ${NSA_IP6} -A ${MD5_PW}
++	log_test $? 2 "AO: VRF: Prefix config in def VRF and VRF, conn in def VRF with VRF pw"
++
++	log_start
++	show_hint "Should timeout since client in VRF uses default VRF password"
++	run_cmd nettest -6 -s -I ${VRF} -A ${MD5_PW} -m ${NS_NET6} &
++	run_cmd nettest -6 -s -A ${MD5_WRONG_PW} -m ${NS_NET6} &
++	sleep 1
++	run_cmd_nsb nettest -6 -r ${NSA_IP6} -A ${MD5_WRONG_PW}
++	log_test $? 2 "AO: VRF: Prefix config in dev VRF and VRF, conn in VRF with def VRF pw"
++}
++
++only_tcp_authopt()
++{
++	log_section "TCP Authentication Option"
++
++	setup
++	set_sysctl net.ipv4.tcp_l3mdev_accept=0
++	log_subsection "TCP-AO IPv4 no VRF"
++	ipv4_tcp_authopt_novrf
++	log_subsection "TCP-AO IPv6 no VRF"
++	ipv6_tcp_authopt_novrf
++
++	setup "yes"
++	set_sysctl net.ipv4.tcp_l3mdev_accept=0
++	log_subsection "TCP-AO IPv4 VRF"
++	ipv4_tcp_authopt_vrf
++	log_subsection "TCP-AO IPv6 VRF"
++	ipv6_tcp_authopt_vrf
++}
++
+ #
+ # MD5 tests without VRF
+ #
+ ipv4_tcp_md5_novrf()
  {
- 	int keylen = strlen(args->password);
- 	struct tcp_md5sig md5sig = {};
- 	int opt = TCP_MD5SIG;
-@@ -1541,10 +1587,15 @@ static int do_server(struct sock_args *args, int ipc_fd)
- 	if (args->password && tcp_md5_remote(lsd, args)) {
- 		close(lsd);
- 		goto err_exit;
- 	}
+@@ -1192,10 +1483,11 @@ ipv4_tcp_novrf()
+ 	show_hint "Should fail 'Connection refused'"
+ 	run_cmd nettest -d ${NSA_DEV} -r ${a}
+ 	log_test_addr ${a} $? 1 "No server, device client, local conn"
  
-+	if (args->authopt_password && tcp_set_authopt(lsd, args)) {
-+		close(lsd);
-+		goto err_exit;
-+	}
-+
- 	ipc_write(ipc_fd, 1);
- 	while (1) {
- 		log_msg("waiting for client connection.\n");
- 		FD_ZERO(&rfds);
- 		FD_SET(lsd, &rfds);
-@@ -1663,10 +1714,13 @@ static int connectsock(void *addr, socklen_t alen, struct sock_args *args)
- 		goto out;
- 
- 	if (args->password && tcp_md5sig(sd, addr, alen, args))
- 		goto err;
- 
-+	if (args->authopt_password && tcp_set_authopt(sd, args))
-+		goto err;
-+
- 	if (args->bind_test_only)
- 		goto out;
- 
- 	if (connect(sd, addr, alen) < 0) {
- 		if (errno != EINPROGRESS) {
-@@ -1852,11 +1906,11 @@ static int ipc_parent(int cpid, int fd, struct sock_args *args)
- 
- 	wait(&status);
- 	return client_status;
+ 	ipv4_tcp_md5_novrf
++	ipv4_tcp_authopt_novrf
  }
  
--#define GETOPT_STR  "sr:l:c:p:t:g:P:DRn:M:X:m:d:I:BN:O:SCi6xL:0:1:2:3:Fbqf"
-+#define GETOPT_STR  "sr:l:c:p:t:g:P:DRn:M:X:m:A:d:I:BN:O:SCi6xL:0:1:2:3:Fbqf"
- #define OPT_FORCE_BIND_KEY_IFINDEX 1001
- #define OPT_NO_BIND_KEY_IFINDEX 1002
+ ipv4_tcp_vrf()
+ {
+ 	local a
+@@ -1246,10 +1538,12 @@ ipv4_tcp_vrf()
+ 	run_cmd nettest -r ${a} -d ${NSA_DEV}
+ 	log_test_addr ${a} $? 1 "Global server, local connection"
  
- static struct option long_opts[] = {
- 	{"force-bind-key-ifindex", 0, 0, OPT_FORCE_BIND_KEY_IFINDEX},
-@@ -1897,14 +1951,15 @@ static void print_usage(char *prog)
- 	"    -L len        send random message of given length\n"
- 	"    -n num        number of times to send message\n"
- 	"\n"
- 	"    -M password   use MD5 sum protection\n"
- 	"    -X password   MD5 password for client mode\n"
--	"    -m prefix/len prefix and length to use for MD5 key\n"
--	"    --no-bind-key-ifindex: Force TCP_MD5SIG_FLAG_IFINDEX off\n"
--	"    --force-bind-key-ifindex: Force TCP_MD5SIG_FLAG_IFINDEX on\n"
-+	"    -m prefix/len prefix and length to use for MD5/AO key\n"
-+	"    --no-bind-key-ifindex: Force disable binding key to ifindex\n"
-+	"    --force-bind-key-ifindex: Force enable binding key to ifindex\n"
- 	"        (default: only if -I is passed)\n"
-+	"    -A password   use RFC5925 TCP Authentication Option with password\n"
- 	"\n"
- 	"    -g grp        multicast group (e.g., 239.1.1.1)\n"
- 	"    -i            interactive mode (default is echo and terminate)\n"
- 	"\n"
- 	"    -0 addr       Expected local address\n"
-@@ -2022,10 +2077,13 @@ int main(int argc, char *argv[])
- 			args.client_pw = optarg;
- 			break;
- 		case 'm':
- 			args.key_addr_prefix_str = optarg;
- 			break;
-+		case 'A':
-+			args.authopt_password = optarg;
-+			break;
- 		case 'S':
- 			args.use_setsockopt = 1;
- 			break;
- 		case 'f':
- 			args.use_freebind = 1;
-@@ -2085,12 +2143,17 @@ int main(int argc, char *argv[])
- 	      args.type != SOCK_STREAM)) {
- 		log_error("MD5 passwords apply to TCP only and require a remote ip for the password\n");
- 		return 1;
- 	}
+ 	# run MD5 tests
+ 	ipv4_tcp_md5
++	# run AO tests
++	ipv6_tcp_md5_vrf
  
--	if (args.key_addr_prefix_str && !args.password) {
--		log_error("Prefix range for MD5 protection specified without a password\n");
-+	if (args.key_addr_prefix_str && !args.password && !args.authopt_password) {
-+		log_error("Prefix range for authentication requires -M or -A\n");
-+		return 1;
-+	}
-+
-+	if (args.key_addr_prefix_len && args.authopt_password) {
-+		log_error("TCP-AO does not support prefix match, only full address\n");
- 		return 1;
- 	}
+ 	#
+ 	# enable VRF global server
+ 	#
+ 	log_subsection "VRF Global server enabled"
+@@ -2672,10 +2966,11 @@ ipv6_tcp_novrf()
+ 		run_cmd nettest -6 -d ${NSA_DEV} -r ${a}
+ 		log_test_addr ${a} $? 1 "No server, device client, local conn"
+ 	done
  
- 	if (iter == 0) {
- 		fprintf(stderr, "Invalid number of messages to send\n");
+ 	ipv6_tcp_md5_novrf
++	ipv6_tcp_authopt_novrf
+ }
+ 
+ ipv6_tcp_vrf()
+ {
+ 	local a
+@@ -2742,10 +3037,12 @@ ipv6_tcp_vrf()
+ 	run_cmd nettest -6 -r ${a} -d ${NSA_DEV}
+ 	log_test_addr ${a} $? 1 "Global server, local connection"
+ 
+ 	# run MD5 tests
+ 	ipv6_tcp_md5
++	# run AO tests
++	ipv6_tcp_authopt_vrf
+ 
+ 	#
+ 	# enable VRF global server
+ 	#
+ 	log_subsection "VRF Global server enabled"
+@@ -4102,10 +4399,11 @@ do
+ 	ipv6_bind|bind6) ipv6_addr_bind;;
+ 	ipv6_runtime)    ipv6_runtime;;
+ 	ipv6_netfilter)  ipv6_netfilter;;
+ 
+ 	use_cases)       use_cases;;
++	tcp_authopt)     only_tcp_authopt;;
+ 
+ 	# setup namespaces and config, but do not run any tests
+ 	setup)		 setup; exit 0;;
+ 	vrf_setup)	 setup "yes"; exit 0;;
+ 	esac
 -- 
 2.25.1
 
