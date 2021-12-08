@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 264C046DCA5
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 21:06:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7590D46DCA9
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 21:06:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239991AbhLHUJh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 15:09:37 -0500
+        id S240003AbhLHUJk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 15:09:40 -0500
 Received: from mail-am6eur05on2088.outbound.protection.outlook.com ([40.107.22.88]:43105
         "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S239976AbhLHUJ3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 Dec 2021 15:09:29 -0500
+        id S239986AbhLHUJh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 8 Dec 2021 15:09:37 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=l4PLEpho/DI87FVnBcFe+FfhuMUlO29a7OEy16MIoU3i8SKMcDJ1FVcDi2JThzfABsiAJfqQDE0MJhavJDdWJg6EV2sg4LuxU1dh04lZUA9s2TLZ/ph22rIg02AzUHgGfWiG4ZUsYGE6cIxh9c5o/gWSEspdmBepRMmTcW/5ZVaBS20xGPiyU6hdoP7SFm2MdiKBbzey9jIe4eY/03awqfkOiIx4ahL8S1+On3yjFC+XHwsGJh6KfBpxJApmf54SsevOCVTs2PTNYpPxTMLDvat23eQiqzgRpkPekWbaAdOQPR6qeKx6ZG4Ot4zx2clklMEK/5k7QcoXVXHyq0yGwA==
+ b=T6965I/lWcvsIKvwfVkCKjYF6HrE9FrrGuekyWkKh6BXIAxNeWF7H2ive3nGyDHERCo2+83wNZSuqiTBgwblXnRLhERgS2bUpJyRaAt19+WvfU4Zzy6qAmVKDqj+N8UDZnr78u1vEjTL9v9ky0YWDkUqvxPUyqsBJVN61nxxIXHkZA/jMNID8J/CyPOF3PtnV/8ZYx0Mbfh93djY19Qwdb83YBzy4cJSD94EBILDogq99acbU+6ih+27ZnFII1vP36orXrFMm8cvWxLWbc8rNRSE3Ci7CCFVwrti+lksR6B/M9L0o37Dho14Q0RfeJbiJYhniCuCxl9WayMfb6wm8g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=9vfKic7cF2g/1o65f2+5Lrn6MwGHz6mBjTwCxcLxeTw=;
- b=YGL09krGVuBT6DxzYhsqrSoz01Z2YOuYcUckuvXR+AioMX1UrxVMGRsV/RqVRBmkXBQuxthAwlgHQ6ObowbSojOgM3msz/fKPGAANiMhlPX679RNMJheBFI33jM5Q5IA5SWWl/Ej6g2SYCgER/+P60o1guIvC7PkgZ0LyCcq9Bqm/b7Mw9GbQgeTDyn+4um8I8oEMZDdO8zPgK1xx1wVinYcvKePKp75CilbcZ8ZnR0A8t/pI9I2I9xMX3mO9jFm5p4/pkvCyb7cYlOtti91PSrRmsgeCOrdI/IR/uTbuLgW9Idsw0uUvhO1H5lYUjodUSugZkMQaUz+sxIKfkVSmQ==
+ bh=Tn8ar9DkveiGJVE8ZRMIH6ECd6ylDIQFSa0UZcwEAOg=;
+ b=VZwdG43vnPXFDx75dA1MixPZs/q3B8sokrl7b1FaDb2mrkRkDsq3+EtX6uExEjyRIzCQUtURYoSV2mH9iyRjpgQiZbEG2NsZMlj7CpNjHwWz3Q/PUiEkHHNunW11hD4exTgZAn1PMGa4bthMPxqq9cG78CIOyUNDr1WFpbD8I1rP4rWDuN8Etr++0Jc0thBsNqFnoTon9dqtHXaPo/7IQnKQ6/XvDGN4JB9HTX44djD8Srbp50lU/dP72Dbtkptaqx7vu2+8JBgvGtgSGeH2pjFYT4MG59mTO/BONMSKshbS0m1QYwTDZzO+u5bXgO/p5VhjqrlYeZM/FOn05Kh3DQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9vfKic7cF2g/1o65f2+5Lrn6MwGHz6mBjTwCxcLxeTw=;
- b=VT7X8FEyqkLh+IfGDQlZQuHkTT+z+qSFSxJtcVXYCYUMDHI8dloJxlb+RNTbhLSFMsNNm9jQwqAacRaRr/jQ3+dRN5e7maY3vbbFxwYwXmC56bbONh/arkv1PoWRB7kGt+YcqeBbqp+fVGw4J2OTGxvVpkoeAmpL+KDpZ5UMjmY=
+ bh=Tn8ar9DkveiGJVE8ZRMIH6ECd6ylDIQFSa0UZcwEAOg=;
+ b=MAaCeT0lqTKT+zwGT9YagKP2KowLC4zD5XTfFu0LbKr56nu5PmcB37Y1Jiaenhyn/OGyoH67Bflf/yKWhK41XMJr0OZztimTyUG0eJ+qes0OMKBD8sHNN9PA+wZm+zdtIc9h9Arr70HYduTe/8Owm9HfCc5nAjCOWw/d9fJihno=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by VE1PR04MB6638.eurprd04.prod.outlook.com (2603:10a6:803:119::15) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.21; Wed, 8 Dec
- 2021 20:05:49 +0000
+ 2021 20:05:50 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::796e:38c:5706:b802]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::796e:38c:5706:b802%3]) with mapi id 15.20.4755.024; Wed, 8 Dec 2021
- 20:05:49 +0000
+ 20:05:50 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -47,9 +47,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Kurt Kanzenbach <kurt@linutronix.de>,
         Ansuel Smith <ansuelsmth@gmail.com>,
         Tobias Waldekranz <tobias@waldekranz.com>
-Subject: [PATCH net-next 03/11] net: dsa: sja1105: let deferred packets time out when sent to ports going down
-Date:   Wed,  8 Dec 2021 22:04:56 +0200
-Message-Id: <20211208200504.3136642-4-vladimir.oltean@nxp.com>
+Subject: [PATCH net-next 04/11] net: dsa: sja1105: bring in line deferred xmit implementation with ocelot-8021q
+Date:   Wed,  8 Dec 2021 22:04:57 +0200
+Message-Id: <20211208200504.3136642-5-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211208200504.3136642-1-vladimir.oltean@nxp.com>
 References: <20211208200504.3136642-1-vladimir.oltean@nxp.com>
@@ -59,104 +59,303 @@ X-ClientProxiedBy: AM8P189CA0011.EURP189.PROD.OUTLOOK.COM
  (2603:10a6:20b:218::16) To VI1PR04MB5136.eurprd04.prod.outlook.com
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
-Received: from localhost.localdomain (188.25.173.50) by AM8P189CA0011.EURP189.PROD.OUTLOOK.COM (2603:10a6:20b:218::16) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.17 via Frontend Transport; Wed, 8 Dec 2021 20:05:48 +0000
+Received: from localhost.localdomain (188.25.173.50) by AM8P189CA0011.EURP189.PROD.OUTLOOK.COM (2603:10a6:20b:218::16) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.17 via Frontend Transport; Wed, 8 Dec 2021 20:05:49 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: cdbd7c10-0ea0-48d2-4e7e-08d9ba8620f6
+X-MS-Office365-Filtering-Correlation-Id: 97d3f1e2-77f4-4fe0-924a-08d9ba86219f
 X-MS-TrafficTypeDiagnostic: VE1PR04MB6638:EE_
 X-LD-Processed: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635,ExtAddr
-X-Microsoft-Antispam-PRVS: <VE1PR04MB6638313A3720A185E7366F17E06F9@VE1PR04MB6638.eurprd04.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <VE1PR04MB6638CAFFE877F6928AA93434E06F9@VE1PR04MB6638.eurprd04.prod.outlook.com>
 X-MS-Oob-TLC-OOBClassifiers: OLM:4303;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: AX4yADT2/8G3Up6ri85MsXa0wgfhIAc4mIXWTtZ/pRNrn3xpBJH3ZmgrVV0tA2AkdfO6UQJf5qnOOv3Vxq4Vqy1uQQv6ZuU1KYHPst5qH7f01YzFIqGd9ovXeIk9Qk6Xn7w3Nl+gzOLWp9FCEv55WhqQAj/aMmTBmC68WvT1lcQNWyrdeMpHNtih06bQhHpakqf+zKlWYyESvCQmpPfcWmHHMRWCUA37a+/BDsPr1xeMvgey1IPG2Sa+8QBZ6ECzWQclFcbVcFO7/UszP6SvxS4pM1Qytw0GjLxLBLLPxShqO7J9DNcHMNDnexXoiZgJWZwB7m/7RrYBmrUGugRVkoPs5jBIovLshv5L9JEMp4zLeNb6q1FBUXQShHGdNZ5Juz3Slef1bRMUl1PYhghfv5zKj1qEpbIFQ3NZfgDeOpIbKWPCloj/g+P4Uhr0VPOCHs9XcZdwbvBl3VKa6qbVZhynP2Rx3PaMWKrXtCCmK0Q805loTklFM/LwV2CjS/iAhNC96+Ho9cou7U/loDkUxaZxu9sL6CwuhZQLa5iVn89lPXgF2PdZOZuRrOTO5z2tinO71CulupVzVcdgzv9Hk8oaaYrRwsZ5AhXDjU/ipfyYdw7b663gopig32ZVLsvgf5iINtQUEEcoDetI0xNIuE9EcJ6iAhckCtEdADqnBknPj+Kn0NkeM/p4bSKh9aBCcmv8zY/qkUw+qz+bWHoA2w==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(26005)(316002)(5660300002)(508600001)(7416002)(54906003)(8676002)(2616005)(44832011)(4326008)(956004)(52116002)(6916009)(8936002)(38100700002)(38350700002)(6486002)(6512007)(6506007)(66946007)(186003)(6666004)(36756003)(2906002)(86362001)(83380400001)(1076003)(66556008)(66476007);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: qmfd/PhqOhdoTc0FvlzPLg698v93hBTY9+dYRO55jGRzRdSg9iASc/8QpnRpi1eRRjH6AyykQT4Ihw66qyUa3V4vr3XkJH7b8jT1tKuSxy2F8PlzISQX+c60ubcrGJsr2LlHFfONx6+P1qwI1je2P8Fdssq2TBlG4qloY8FIgIKHoxcA2SEMPfTOW+H52uKpBYY7WW/rkxVcBhov0p2XDiSv02k4GB1eTuJxTqqz5vpH/KYyrpzQ/48ln++hvhnfUepwblBJKTmciABzWOa4r2tYrc0fZZyKeXqRaOsNzglSF56aasbXd/pU9ckXDmIt7PumlfKM/NuMd5po4+bSQ02CiMdWIjkJ7UhRRLFMsEnbGDm7yoTckd2RTraqOTzT0ZTbCFoDdBeK+fexSav1InBoQOzdZY9qYYFCCPCy9+JSnKo0Zhj6RswXQsurPAb9fybXQGZkrXG/2gL6LmzMMN0QmYO8KKT5ZqGur4aMxP/C1mFEKaEoAITJ1S1q0ePrG13mwoH3kWMTNNZYOLvvtguNXbdSoscscUtxjwbZcfukGFuEyH4eKsmUXORSZbrZAVIAZEFqCsbwEad8BQgMLX+XKajstIk+PfG5rXKy7so6TohrQRtoV3EfHuNAJDntxvGDxA9tCfc880CrRbS1QQmxFK+Gj8iP2lxNTEB/otLN8MKU536sArzqzHltmtqwutd58AiPZacpssGvnFjdgqtTXpue2Pmp5kqxiXldGQI=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(26005)(316002)(5660300002)(508600001)(7416002)(54906003)(8676002)(2616005)(44832011)(4326008)(956004)(52116002)(6916009)(8936002)(38100700002)(38350700002)(6486002)(6512007)(6506007)(66946007)(186003)(6666004)(36756003)(2906002)(86362001)(83380400001)(1076003)(66556008)(66476007)(309714004);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?EouxPUo1RLNdZXurZcoyIrJXynDy451Rub7DOPiInvyxIf52sf1P32WwI2sg?=
- =?us-ascii?Q?6JrgD7Fp6WF6JJVPYNDpUzvTiw+AtaHU+OlVFjIAQZnnuzut5qnwnHwGjwVw?=
- =?us-ascii?Q?hv3qawOQY66N3KPnmPt5H4SdmzSJp4nRj5PmAKpmAX6ucIis3N+fa5PdJeR+?=
- =?us-ascii?Q?+xJyBR0R9vuzgI4BpQ/WYAyGswliToVmSRxJ0E3xaUs5j6lovzE3kmyUPqGD?=
- =?us-ascii?Q?aii1EfXfA9gXrRY1i2RwosptYP4kvwRHdhH07/kyJN/7E9SGHdVfQX7VqN/7?=
- =?us-ascii?Q?l4+bAfq+unx0DEDAZmlQlwXgqnk6B1TxC2mah5WHM1B5zmmnbZus8leH2+D1?=
- =?us-ascii?Q?qtLrGg1Lbm8rHiZ3zmdjyBVFbVBhQUVgs0wA/kyLCQvJ9YuEWUIuBnX8Hxj/?=
- =?us-ascii?Q?i8SEq+4yr2sfDjiVg8oz3s32pujhzpxY8XqL9//ZjX/nQagogaUia0QE78Sx?=
- =?us-ascii?Q?8Sq7/TtD/NsP3KdQ/tdgWIUfyM9Q3nxk8gFpJlxEyfpnxk43tpHb/pN37ylM?=
- =?us-ascii?Q?aX9YQyHAI3oFWs7m8Vq4wuL4vwptcs3z0BuoVDYtKmoSiosyz/wHhqEcdogY?=
- =?us-ascii?Q?2XksABVQlT974kpxhoxqUFpqQOCMKLv+SECITGdY70GMRTfRmUrnNbzDg+zC?=
- =?us-ascii?Q?xUVmPxjcuO4Foqm7T5dSoX5XK4M9bFH5zjt0Kr7390mO8FU2+9i+qMruxh6j?=
- =?us-ascii?Q?DurpQwjMhpuZakW3KWTcQV8crLPreD0B1z+7El+1ot+MMdGt2JJTz/4XeMJf?=
- =?us-ascii?Q?f8a+l0D3YPyC+qyCr7CvcMQW0dXlUNBq3SCZZhZSOcN4JD83U2dZZMravZpW?=
- =?us-ascii?Q?5QcoaMg+W8u2wlXP5ha5LhUC/x9y/nX2APGWquJ+FGI3ve8b2m+SzowSm3q/?=
- =?us-ascii?Q?fluTxpUc14IctdOBDOqBg+z+dj48ZLc7USQywuXDjPCsXnaASZQAphDxwa2u?=
- =?us-ascii?Q?iRMFM/PsL1fjx13eE/Tq5xNwhcp5iFxQ3Hned83nNgRwEPizqZmQOcv922Ia?=
- =?us-ascii?Q?8nGlG8Y+eGa+c39O1cr7tBlleaPYtrwNeJzikIaG481lKKCHTJPimxjBig5r?=
- =?us-ascii?Q?8aUYyYDWHU2QbMfiZIGlxxm6RpnMyIg303zRF2Fb1TWLpXxkvVdYFfV8KVB1?=
- =?us-ascii?Q?t3nXKyYrQbV+B1Lg+Jflg8O40HdRPTNOETqz+roVghOUQGV5S19iCPPYhEAS?=
- =?us-ascii?Q?IFspu+JMauIABLhaX5M/GtHNQA4opT7EMnNVoonh1vWlWlnjG+0kJ5IJwmPY?=
- =?us-ascii?Q?v6Ik9TYPnFaXJT+lU70h3IvLfP/LyzinvFNyzptQpPDrari6H9aQYTtBFE+C?=
- =?us-ascii?Q?71WCZOZ+9fXRTZQEwhN6X7VziFF64KZBUskcpuOrg5wVK1jOu8ME8xsVGk5Q?=
- =?us-ascii?Q?NxPJKGBP/ZjebNo/ckbY2xvxnkLq36Vp8dXsVG+TfuKPHPuiaN0g83HaKGLY?=
- =?us-ascii?Q?QbwkJk95v42+wiICCqBGh+G+5lbJUSotYn/aDLypcFvPyW+3lQJQ2/asdPRp?=
- =?us-ascii?Q?M01fVFF5Gp+PHo6Hc5pQryisL/7nfY6H3Ynh2NN+Fq/oBAbM8tFYPyAkQ+vw?=
- =?us-ascii?Q?KcJQdJpZmR4LDQNE7BD3mGluzZdqqYPVpzrhTboYuTUI9Bpvtx9MAN4ns0qE?=
- =?us-ascii?Q?H1/6/y2tWpD46stIRB11NuA=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?36zMTkBZ8rdMdTlYyf8iDyAUwH29yW0w8ivjv2TnaH0J+bg7HJCU503aqoTh?=
+ =?us-ascii?Q?0o/Ao5JrPHdeTIEh8u8ZYl8yegoyY9mLQUbpHWDMX6VXjAQ0hacNLx9TouAC?=
+ =?us-ascii?Q?so2+mD+Pk4TuInNxvcLz577pv/AZ434Ur+2BjdAbSXWWMy9+JEjjsi9ClQmI?=
+ =?us-ascii?Q?kpt66qk/dHSzdd1jH0kj3/O3/Hbj6rNGmQoiptx9bn49TiYKLzMeLFxA11Iv?=
+ =?us-ascii?Q?zxQnI0FQjsehGP7uOGAL/HWUlszAoOc32O1Cxb+LSHpWX1h+Do3g+zRGo55M?=
+ =?us-ascii?Q?jzVfiMg8i2eEgIz7Yjw5tTBe2pOiLV/CU00JWKvW1/SZlDrAtbvVZFqn5cFw?=
+ =?us-ascii?Q?kTgInRa4ttiudH93vVs7wIcxVag8JLlxsKcYqOtSyH6AdaghMmSFf2No6oCU?=
+ =?us-ascii?Q?QN6FO1CufhN09c2om4Ry0seqW54RdyTQ6UlHOZN6t6GHEM/rY5/J5d6CtJFM?=
+ =?us-ascii?Q?lCe6sCiRsOAaZ72Ppi4DOUJ4NKlWEbv4TeZSr0YR5vJBsH6WV1/7NW8TLK79?=
+ =?us-ascii?Q?+lPJdQM4o3Rqm3ZQMCGMj1BCUkz/c7DAdeNIYNpS3kXd8LwJnkYVYVjqoqC0?=
+ =?us-ascii?Q?58mGllVd6xQAxh7EoqMWiGHkxSE0yMr/lSpknUNy0jPKuPQ8VC1GYk8CCzDN?=
+ =?us-ascii?Q?+kF7euPPPvSoGpo3oiTX5qDfqSRYmay5mCrH0cTlX/GfvgZiuECPGZeXtQmv?=
+ =?us-ascii?Q?lzCsvoamxf8wqr+0sZhQRAKkf6cVotvS1tk4DnuWMpt/t0DmJczGHFahPhGC?=
+ =?us-ascii?Q?/ljZf6F0iaj1/pCpIPi9jGyeQASXT+AfZZdBPFY5UuHmhEY2fvU7lZeBqn34?=
+ =?us-ascii?Q?5iiGWQVi+PCuDua5miXt49BrCUV/vFjOuZZ2fiUzhTZJuAA3zMnzn52++Z3g?=
+ =?us-ascii?Q?v0o19/gPbTmZ1kO94UDFlXHakjkxtRI4lsOOp/AD0aT3Ed1IoWcD7oJHPoiy?=
+ =?us-ascii?Q?XjiHJwxgp009aE/qWr7Kw1dUey35nT1B7M/dBfFahoj1rHyg7DDboHHL4HzB?=
+ =?us-ascii?Q?FjF1ooUa8geAfStGQ1S6bla4RW/oOIacIqhtHLW9Gn7ajhowssRLdAkGy5YH?=
+ =?us-ascii?Q?IIvyPka44YjWi/91NdMEk79U5GmAK/gmzg/O0vOxLbC7MCrvW9rjIoBX0cKp?=
+ =?us-ascii?Q?GqXfbTSS0pmJ6cor6TPXLwdnyEIIdBgZWzuYY4GoUgAdwU+P8qMQoiFXy7b0?=
+ =?us-ascii?Q?+LWTKfDHtlIxgVyT7LKGRBEWDKedg/OupwAcogRZlwBtbsxuXF6UHSS5BaCP?=
+ =?us-ascii?Q?UjEDQAKMNCqehyyoqBEVb5WyK0YEdBICoXLZuxQXTqOtNlOwF8TpLLtoih/z?=
+ =?us-ascii?Q?LPMwls2cYExomjMyDTYC9D9PvtmAz2RTw9xBBXeYsuyhLpOk0ytK5Xwg49aA?=
+ =?us-ascii?Q?nJMG11Xm1pqVcQCKSr26CGRmChVOVsj+D9ieqz5fwH7fH95ohEOONHYu1Lq+?=
+ =?us-ascii?Q?mM9P+YvDOGnOMBlMIE31gN33vmNXtrq3vYTLpKNJULUiSjRIv4+V9OwahT6A?=
+ =?us-ascii?Q?igJGMzShgdygOER2lvAx0fuYddIW0HZS8lkJmoohWzd3f3QFUwZBFrdRQBKK?=
+ =?us-ascii?Q?i4yCkwI2XPqvTyhwEqP0m/QX19t4c7zi+o+p0XOtj81Si9t9W6e3/QjsbsY+?=
+ =?us-ascii?Q?B8vd17yDOmWeLoWtqz0Auq8=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cdbd7c10-0ea0-48d2-4e7e-08d9ba8620f6
+X-MS-Exchange-CrossTenant-Network-Message-Id: 97d3f1e2-77f4-4fe0-924a-08d9ba86219f
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Dec 2021 20:05:49.2595
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Dec 2021 20:05:50.4156
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: KEIf2JV97GapvnWjYIMETOPCfSy8/UGttc9K7wyJNQCj412xkwBW9+JKsmOEJJZ8lLXPo9ZfmZTqpZQih2aOmg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: kgwPq3YUj3fmMfgHk44nUTKWPUDPG2bdXRSYHXGMau9JYpUKqB1dPVj3XvBdieEZ1m8Vzminlh962kpNCedR5w==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB6638
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This code is not necessary and complicates the conversion of this driver
-to tagger-owned memory. If there is a PTP packet that is sent
-concurrently with the port getting disabled, the deferred xmit mechanism
-is robust enough to time out when it sees that it hasn't been delivered,
-and recovers.
+When the ocelot-8021q driver was converted to deferred xmit as part of
+commit 8d5f7954b7c8 ("net: dsa: felix: break at first CPU port during
+init and teardown"), the deferred implementation was deliberately made
+subtly different from what sja1105 has.
+
+The implementation differences lied on the following observations:
+
+- There might be a race between these two lines in tag_sja1105.c:
+
+       skb_queue_tail(&sp->xmit_queue, skb_get(skb));
+       kthread_queue_work(sp->xmit_worker, &sp->xmit_work);
+
+  and the skb dequeue logic in sja1105_port_deferred_xmit(). For
+  example, the xmit_work might be already queued, however the work item
+  has just finished walking through the skb queue. Because we don't
+  check the return code from kthread_queue_work, we don't do anything if
+  the work item is already queued.
+
+  However, nobody will take that skb and send it, at least until the
+  next timestampable skb is sent. This creates additional (and
+  avoidable) TX timestamping latency.
+
+  To close that race, what the ocelot-8021q driver does is it doesn't
+  keep a single work item per port, and a skb timestamping queue, but
+  rather dynamically allocates a work item per packet.
+
+- It is also unnecessary to have more than one kthread that does the
+  work. So delete the per-port kthread allocations and replace them with
+  a single kthread which is global to the switch.
+
+This change brings the two implementations in line by applying those
+observations to the sja1105 driver as well.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/dsa/sja1105/sja1105_main.c | 13 -------------
- 1 file changed, 13 deletions(-)
+ drivers/net/dsa/sja1105/sja1105_main.c | 75 +++++++++++---------------
+ include/linux/dsa/sja1105.h            | 11 ++--
+ net/dsa/tag_sja1105.c                  | 21 ++++++--
+ 3 files changed, 56 insertions(+), 51 deletions(-)
 
 diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index cefde41ce8d6..f7c88da377e4 100644
+index f7c88da377e4..5c486bd2bc61 100644
 --- a/drivers/net/dsa/sja1105/sja1105_main.c
 +++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -2617,18 +2617,6 @@ static int sja1105_prechangeupper(struct dsa_switch *ds, int port,
- 	return 0;
+@@ -2675,10 +2675,8 @@ static int sja1105_mgmt_xmit(struct dsa_switch *ds, int port, int slot,
+ 	return NETDEV_TX_OK;
  }
  
--static void sja1105_port_disable(struct dsa_switch *ds, int port)
--{
--	struct sja1105_private *priv = ds->priv;
--	struct sja1105_port *sp = &priv->ports[port];
--
--	if (!dsa_is_user_port(ds, port))
--		return;
--
--	kthread_cancel_work_sync(&sp->xmit_work);
--	skb_queue_purge(&sp->xmit_queue);
--}
--
- static int sja1105_mgmt_xmit(struct dsa_switch *ds, int port, int slot,
- 			     struct sk_buff *skb, bool takets)
+-#define work_to_port(work) \
+-		container_of((work), struct sja1105_port, xmit_work)
+-#define tagger_to_sja1105(t) \
+-		container_of((t), struct sja1105_private, tagger_data)
++#define work_to_xmit_work(w) \
++		container_of((w), struct sja1105_deferred_xmit_work, work)
+ 
+ /* Deferred work is unfortunately necessary because setting up the management
+  * route cannot be done from atomit context (SPI transfer takes a sleepable
+@@ -2686,25 +2684,25 @@ static int sja1105_mgmt_xmit(struct dsa_switch *ds, int port, int slot,
+  */
+ static void sja1105_port_deferred_xmit(struct kthread_work *work)
  {
-@@ -3215,7 +3203,6 @@ static const struct dsa_switch_ops sja1105_switch_ops = {
- 	.get_ethtool_stats	= sja1105_get_ethtool_stats,
- 	.get_sset_count		= sja1105_get_sset_count,
- 	.get_ts_info		= sja1105_get_ts_info,
--	.port_disable		= sja1105_port_disable,
- 	.port_fdb_dump		= sja1105_fdb_dump,
- 	.port_fdb_add		= sja1105_fdb_add,
- 	.port_fdb_del		= sja1105_fdb_del,
+-	struct sja1105_port *sp = work_to_port(work);
+-	struct sja1105_tagger_data *tagger_data = sp->data;
+-	struct sja1105_private *priv = tagger_to_sja1105(tagger_data);
+-	int port = sp - priv->ports;
+-	struct sk_buff *skb;
++	struct sja1105_deferred_xmit_work *xmit_work = work_to_xmit_work(work);
++	struct sk_buff *clone, *skb = xmit_work->skb;
++	struct dsa_switch *ds = xmit_work->dp->ds;
++	struct sja1105_private *priv = ds->priv;
++	int port = xmit_work->dp->index;
+ 
+-	while ((skb = skb_dequeue(&sp->xmit_queue)) != NULL) {
+-		struct sk_buff *clone = SJA1105_SKB_CB(skb)->clone;
++	clone = SJA1105_SKB_CB(skb)->clone;
+ 
+-		mutex_lock(&priv->mgmt_lock);
++	mutex_lock(&priv->mgmt_lock);
+ 
+-		sja1105_mgmt_xmit(priv->ds, port, 0, skb, !!clone);
++	sja1105_mgmt_xmit(ds, port, 0, skb, !!clone);
+ 
+-		/* The clone, if there, was made by dsa_skb_tx_timestamp */
+-		if (clone)
+-			sja1105_ptp_txtstamp_skb(priv->ds, port, clone);
++	/* The clone, if there, was made by dsa_skb_tx_timestamp */
++	if (clone)
++		sja1105_ptp_txtstamp_skb(ds, port, clone);
+ 
+-		mutex_unlock(&priv->mgmt_lock);
+-	}
++	mutex_unlock(&priv->mgmt_lock);
++
++	kfree(xmit_work);
+ }
+ 
+ /* The MAXAGE setting belongs to the L2 Forwarding Parameters table,
+@@ -3009,54 +3007,43 @@ static int sja1105_port_bridge_flags(struct dsa_switch *ds, int port,
+ 
+ static void sja1105_teardown_ports(struct sja1105_private *priv)
+ {
+-	struct dsa_switch *ds = priv->ds;
+-	int port;
+-
+-	for (port = 0; port < ds->num_ports; port++) {
+-		struct sja1105_port *sp = &priv->ports[port];
++	struct sja1105_tagger_data *tagger_data = &priv->tagger_data;
+ 
+-		if (sp->xmit_worker)
+-			kthread_destroy_worker(sp->xmit_worker);
+-	}
++	kthread_destroy_worker(tagger_data->xmit_worker);
+ }
+ 
+ static int sja1105_setup_ports(struct sja1105_private *priv)
+ {
+ 	struct sja1105_tagger_data *tagger_data = &priv->tagger_data;
+ 	struct dsa_switch *ds = priv->ds;
++	struct kthread_worker *worker;
+ 	int port, rc;
+ 
++	worker = kthread_create_worker(0, "dsa%d:%d_xmit", ds->dst->index,
++				       ds->index);
++	if (IS_ERR(worker)) {
++		dev_err(ds->dev,
++			"failed to create deferred xmit thread: %d\n",
++			rc);
++		return PTR_ERR(worker);
++	}
++
++	tagger_data->xmit_worker = worker;
++	tagger_data->xmit_work_fn = sja1105_port_deferred_xmit;
++
+ 	/* Connections between dsa_port and sja1105_port */
+ 	for (port = 0; port < ds->num_ports; port++) {
+ 		struct sja1105_port *sp = &priv->ports[port];
+ 		struct dsa_port *dp = dsa_to_port(ds, port);
+-		struct kthread_worker *worker;
+-		struct net_device *slave;
+ 
+ 		if (!dsa_port_is_user(dp))
+ 			continue;
+ 
+ 		dp->priv = sp;
+ 		sp->data = tagger_data;
+-		slave = dp->slave;
+-		kthread_init_work(&sp->xmit_work, sja1105_port_deferred_xmit);
+-		worker = kthread_create_worker(0, "%s_xmit", slave->name);
+-		if (IS_ERR(worker)) {
+-			rc = PTR_ERR(worker);
+-			dev_err(ds->dev,
+-				"failed to create deferred xmit thread: %d\n",
+-				rc);
+-			goto out_destroy_workers;
+-		}
+-		sp->xmit_worker = worker;
+-		skb_queue_head_init(&sp->xmit_queue);
+ 	}
+ 
+ 	return 0;
+-
+-out_destroy_workers:
+-	sja1105_teardown_ports(priv);
+-	return rc;
+ }
+ 
+ /* The programming model for the SJA1105 switch is "all-at-once" via static
+diff --git a/include/linux/dsa/sja1105.h b/include/linux/dsa/sja1105.h
+index e6c78be40bde..acd9d2afccab 100644
+--- a/include/linux/dsa/sja1105.h
++++ b/include/linux/dsa/sja1105.h
+@@ -37,6 +37,12 @@
+ 
+ #define SJA1105_HWTS_RX_EN			0
+ 
++struct sja1105_deferred_xmit_work {
++	struct dsa_port *dp;
++	struct sk_buff *skb;
++	struct kthread_work work;
++};
++
+ /* Global tagger data: each struct sja1105_port has a reference to
+  * the structure defined in struct sja1105_private.
+  */
+@@ -52,6 +58,8 @@ struct sja1105_tagger_data {
+ 	 * 2-step TX timestamps
+ 	 */
+ 	struct sk_buff_head skb_txtstamp_queue;
++	struct kthread_worker *xmit_worker;
++	void (*xmit_work_fn)(struct kthread_work *work);
+ };
+ 
+ struct sja1105_skb_cb {
+@@ -65,9 +73,6 @@ struct sja1105_skb_cb {
+ 	((struct sja1105_skb_cb *)((skb)->cb))
+ 
+ struct sja1105_port {
+-	struct kthread_worker *xmit_worker;
+-	struct kthread_work xmit_work;
+-	struct sk_buff_head xmit_queue;
+ 	struct sja1105_tagger_data *data;
+ 	bool hwts_tx_en;
+ };
+diff --git a/net/dsa/tag_sja1105.c b/net/dsa/tag_sja1105.c
+index 6c293c2a3008..7008952b6c1d 100644
+--- a/net/dsa/tag_sja1105.c
++++ b/net/dsa/tag_sja1105.c
+@@ -125,16 +125,29 @@ static inline bool sja1105_is_meta_frame(const struct sk_buff *skb)
+ static struct sk_buff *sja1105_defer_xmit(struct dsa_port *dp,
+ 					  struct sk_buff *skb)
+ {
++	void (*xmit_work_fn)(struct kthread_work *work);
++	struct sja1105_deferred_xmit_work *xmit_work;
+ 	struct sja1105_port *sp = dp->priv;
++	struct kthread_worker *xmit_worker;
+ 
+-	if (!dsa_port_is_sja1105(dp))
+-		return skb;
++	xmit_work_fn = sp->data->xmit_work_fn;
++	xmit_worker = sp->data->xmit_worker;
++
++	if (!xmit_work_fn || !xmit_worker)
++		return NULL;
+ 
++	xmit_work = kzalloc(sizeof(*xmit_work), GFP_ATOMIC);
++	if (!xmit_work)
++		return NULL;
++
++	kthread_init_work(&xmit_work->work, xmit_work_fn);
+ 	/* Increase refcount so the kfree_skb in dsa_slave_xmit
+ 	 * won't really free the packet.
+ 	 */
+-	skb_queue_tail(&sp->xmit_queue, skb_get(skb));
+-	kthread_queue_work(sp->xmit_worker, &sp->xmit_work);
++	xmit_work->dp = dp;
++	xmit_work->skb = skb_get(skb);
++
++	kthread_queue_work(xmit_worker, &xmit_work->work);
+ 
+ 	return NULL;
+ }
 -- 
 2.25.1
 
