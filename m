@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CC1446CF15
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 09:33:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 438E746CF16
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 09:33:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244958AbhLHIhO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 03:37:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42936 "EHLO
+        id S244948AbhLHIhQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 03:37:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244929AbhLHIhJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 03:37:09 -0500
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4598C0617A1
-        for <netdev@vger.kernel.org>; Wed,  8 Dec 2021 00:33:37 -0800 (PST)
-Received: by mail-ed1-x536.google.com with SMTP id r11so5689984edd.9
-        for <netdev@vger.kernel.org>; Wed, 08 Dec 2021 00:33:37 -0800 (PST)
+        with ESMTP id S244917AbhLHIhN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 03:37:13 -0500
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2B30C061D5F
+        for <netdev@vger.kernel.org>; Wed,  8 Dec 2021 00:33:40 -0800 (PST)
+Received: by mail-ed1-x52a.google.com with SMTP id x15so5868694edv.1
+        for <netdev@vger.kernel.org>; Wed, 08 Dec 2021 00:33:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=hWyoQ03AyiBHBWIuTqdgSeOsB5qpmILnrb6mYHioPfI=;
-        b=GK/tVEYgxyUvQFbH1SFaI008Q6trqxRp+nDnHpWJh12YtgZvbGJk7hLGvDKtbMk0zL
-         xwxFOvtPy5Xws67MVe0W3I1aNVjzUyGZyPf3+O1fQL3ZgDQjB7hbdqzibnwyeKrAcu0N
-         cSC1DwRNG2Bi/kRBZPruIAUWTmK9G9R9L61HhNugyhWORaHFD6KuBK2n54VgavYyRtWX
-         xWjRuUE9N4UFyNalIs+WgArU0ULJWBg5CFsNz+up0sQflSRhtjbfTo3eED7zMHqY7CCh
-         TxoVqGs1HEsiyMx/GajB/vBzL9/2K0vzgb4+KGOfFP61CG2M2VeinnQQud5jG93QQ3vr
-         XM4g==
+        bh=kWkrWIVd0/tR6K54G/x68wI67h0lySobA9zdXOmvIu4=;
+        b=defM02iiv0IuxmhLtI7Q91bOiZbH9EqLeP10tH5ALqWf7R+haF+jgmUJ9uAyaKbBQK
+         k3h8RCQOzjyxiA2Nt9jTqv9wJow4oQK1mOTwjiankLQ+2J92Ml5eYsOmSKs9HLE0TGhK
+         nlz7h+3ca/HKUfg723Vt0Bal0l19de2P1lx1goPBgFEVtxjaSWVsvLWEHSWTXeYQNs0s
+         C/V1RAckrBlIKHtfpw3tlSk4ncANDAe+YfGbE98zhwCu9y5wUNNORJyNtXRZr6DNPysi
+         YQfk/eqDVG94A41nzcjytS3Go9SvHW+T/dD70WTpUSNgtWIgl/jKmiaK428o8YJ7V7YD
+         Z9vQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=hWyoQ03AyiBHBWIuTqdgSeOsB5qpmILnrb6mYHioPfI=;
-        b=nQ2tMaNACMob2MFjirKodzqQFv7EhZ//O95RFUTURUVPwvx7WpyIkGX3OjagwYTO3L
-         R1hAEARu4yNrl99bruBwcXI63xUlz1/F9+WtWliUJYiOyXCWPwOIILL9FcliTM2S4VGC
-         B2oDGK8XHHcTQABmiNlfw+zNl1TG7quFSf9cIqSDtvrdNiuI+50ZLQb7fMjUKiy1WbtV
-         KK0uT71qZIQGbx3jYGYpPwTe+um3MOcpPSHBge5wfLjKD44KR5cHo0tqC5Dgu5Kxr1E5
-         EDzgf3lnE0DOawky6tA2KLvStqB3byYPH3xNnlA9DpqpQ55adjOtD6jCzI2pvjbu/Zeg
-         spUg==
-X-Gm-Message-State: AOAM532nklqpsk4sPVsvjhlV0DlkaAy29P4aZi17ZE+2K9kyaGeyY4e5
-        Db34HlJKVbWjP3WVYBu22yZKGw==
-X-Google-Smtp-Source: ABdhPJxuBtI+/+kQ5BUm3igh6ZDVewoV1vYV0z/0/tl6BZ5inncH5WbsQjgaDaLRdh5hJdL1dj1EgA==
-X-Received: by 2002:a17:906:7b53:: with SMTP id n19mr5897162ejo.538.1638952416319;
-        Wed, 08 Dec 2021 00:33:36 -0800 (PST)
+        bh=kWkrWIVd0/tR6K54G/x68wI67h0lySobA9zdXOmvIu4=;
+        b=lShhasdDYvXiEP/dzio7LxrUuuYMbHJ9hq6U/vX0d/GFkQmVyeT8t38uLYrIWzpiPY
+         uAroKjvJ3wRNH8BjheSYbShflSOWnHVD472LspoM2oro4A07Yx9WU112IpWoWJ7Ilq7h
+         4Bh7oG60I+ZllYY1xzLxO/R52x57EulbrzbcnaWPW25MtgOwlXMJ6Zw0+1+2DkVO6ujo
+         1xvnqjB7WRWo+PCTidZ+hznyRfLe1zKQmxMLSmj0B7oCJk6uLvpSklLXhglQZ0NniIHi
+         3ANex+ZMp/CXmsLb/4nO2mcrfWecVtx3avD2dWNdsH2pnuJG96h3hiODW3i47mBYg5Im
+         4+Tg==
+X-Gm-Message-State: AOAM530t+OGpV5aDmKDM9OAyYcUX076NtCGAZHUnwXMvFldsgZ4s4edj
+        uYD614sc1uyhg7FMBIRJVP5WhQ==
+X-Google-Smtp-Source: ABdhPJz4wjRib7Te/OFIfhE1RhBahkANQSzD5tFXSlekwOc7sbVMSqZYx/8aXbTYVdMw6+UCNgG39g==
+X-Received: by 2002:a50:fd16:: with SMTP id i22mr17261360eds.224.1638952418992;
+        Wed, 08 Dec 2021 00:33:38 -0800 (PST)
 Received: from localhost ([104.245.96.202])
-        by smtp.gmail.com with ESMTPSA id t5sm1564891edd.68.2021.12.08.00.33.35
+        by smtp.gmail.com with ESMTPSA id f7sm1491975edw.44.2021.12.08.00.33.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Dec 2021 00:33:36 -0800 (PST)
+        Wed, 08 Dec 2021 00:33:38 -0800 (PST)
 From:   Leo Yan <leo.yan@linaro.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -63,9 +63,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
         linux-arm-kernel@lists.infradead.org, codalist@coda.cs.cmu.edu,
         linux-audit@redhat.com
 Cc:     Leo Yan <leo.yan@linaro.org>
-Subject: [PATCH v2 4/7] connector/cn_proc: Use task_is_in_init_pid_ns()
-Date:   Wed,  8 Dec 2021 16:33:17 +0800
-Message-Id: <20211208083320.472503-5-leo.yan@linaro.org>
+Subject: [PATCH v2 5/7] coda: Use task_is_in_init_pid_ns()
+Date:   Wed,  8 Dec 2021 16:33:18 +0800
+Message-Id: <20211208083320.472503-6-leo.yan@linaro.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211208083320.472503-1-leo.yan@linaro.org>
 References: <20211208083320.472503-1-leo.yan@linaro.org>
@@ -75,27 +75,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch replaces open code with task_is_in_init_pid_ns() to check if
-a task is in root PID namespace.
+Replace open code with task_is_in_init_pid_ns() for checking root PID
+namespace.
 
 Signed-off-by: Leo Yan <leo.yan@linaro.org>
 ---
- drivers/connector/cn_proc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/coda/inode.c | 2 +-
+ fs/coda/psdev.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/connector/cn_proc.c b/drivers/connector/cn_proc.c
-index 646ad385e490..ccac1c453080 100644
---- a/drivers/connector/cn_proc.c
-+++ b/drivers/connector/cn_proc.c
-@@ -358,7 +358,7 @@ static void cn_proc_mcast_ctl(struct cn_msg *msg,
- 	 * other namespaces.
- 	 */
- 	if ((current_user_ns() != &init_user_ns) ||
--	    (task_active_pid_ns(current) != &init_pid_ns))
-+	    !task_is_in_init_pid_ns(current))
- 		return;
+diff --git a/fs/coda/inode.c b/fs/coda/inode.c
+index d9f1bd7153df..931f4560fdd0 100644
+--- a/fs/coda/inode.c
++++ b/fs/coda/inode.c
+@@ -152,7 +152,7 @@ static int coda_fill_super(struct super_block *sb, void *data, int silent)
+ 	int error;
+ 	int idx;
  
- 	/* Can only change if privileged. */
+-	if (task_active_pid_ns(current) != &init_pid_ns)
++	if (!task_is_in_init_pid_ns(current))
+ 		return -EINVAL;
+ 
+ 	idx = get_device_index((struct coda_mount_data *) data);
+diff --git a/fs/coda/psdev.c b/fs/coda/psdev.c
+index b39580ad4ce5..73457661fbe8 100644
+--- a/fs/coda/psdev.c
++++ b/fs/coda/psdev.c
+@@ -270,7 +270,7 @@ static int coda_psdev_open(struct inode * inode, struct file * file)
+ 	struct venus_comm *vcp;
+ 	int idx, err;
+ 
+-	if (task_active_pid_ns(current) != &init_pid_ns)
++	if (!task_is_in_init_pid_ns(current))
+ 		return -EINVAL;
+ 
+ 	if (current_user_ns() != &init_user_ns)
 -- 
 2.25.1
 
