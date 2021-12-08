@@ -2,41 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 52B4746DC6E
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 20:46:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 410BD46DC72
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 20:48:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239746AbhLHTuS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 14:50:18 -0500
-Received: from mail-oo1-f44.google.com ([209.85.161.44]:46687 "EHLO
-        mail-oo1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233931AbhLHTuS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 14:50:18 -0500
-Received: by mail-oo1-f44.google.com with SMTP id p2-20020a4adfc2000000b002c2676904fdso1148349ood.13;
-        Wed, 08 Dec 2021 11:46:46 -0800 (PST)
+        id S239759AbhLHTwD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 14:52:03 -0500
+Received: from mail-oi1-f171.google.com ([209.85.167.171]:35537 "EHLO
+        mail-oi1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229731AbhLHTwD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 14:52:03 -0500
+Received: by mail-oi1-f171.google.com with SMTP id m6so5574570oim.2;
+        Wed, 08 Dec 2021 11:48:31 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=0mIPL/+jUI9AdMmYMLz/l/bjBsOiazs5hLLhbsFkikU=;
-        b=reDLv6f8IVreq9j2N5bxLiKhD6zsV/h2GutBNYgieziZoFLWzuoTaABBYXiCcZXzz+
-         zWNd7A2yHjZeXAvI3ckQg4CFETSIuQUtgZcpshXOwQFW+8rrZC9mfi361Grp+XdcruPt
-         73U1mGS7b4Ic9qnhVIfd+IwegHw0dfThdCswDyPfq89tC9pWXqxE9Wa7HdPyvC3Omtp7
-         LCGuqXwJv1BtKfPQFQpIS5cwNI1xZ+fVdF2V000mt/ThXr47fYhwjvBi1bUSnEOkMmy4
-         hp/JZvJn8ujAIMih7U8iyMCDpT92SXu4khZT6J8Au3tcf4bVtHJAH3+2u0L6TDwXa8ZO
-         GNeA==
-X-Gm-Message-State: AOAM532wwEh7ErwIcTEvH1ZAv3BsndE5NiAalS9WgAVVePVrZiGpzRRh
-        CPdWI/gXX823BJ78ENFw5w==
-X-Google-Smtp-Source: ABdhPJzteVYfoBLxE3bMuh9WmQQ2c9OPUSwkjEWjuIuhBxHa0QCNvx80ga7y5eiFEbhKeKD0K5P8AA==
-X-Received: by 2002:a4a:ae0a:: with SMTP id z10mr1002444oom.34.1638992804224;
-        Wed, 08 Dec 2021 11:46:44 -0800 (PST)
+         :mime-version:content-disposition:in-reply-to;
+        bh=Nfn9Bm+LZepNTex7K/9pLhuPzvoyMVzxxUgpPvMegPY=;
+        b=pHBjDorw3b0endR1RXjlZIb39s0dLH1OFu4VL5H3xI7Fy8MiY3Q28W0GBjnj5yyeHn
+         or8C5m8E7fxB8uw1ZOro6RaKfNFQmH1n0FaEXriFpjE561m/mS61u1rImvPhApI0CRH0
+         tV/glQnYxG1ypcI+fEdyvhKJCNXzPq9nrqlNm/jQVtRhh1KFR+r3BaUF6dFkgOofO7lT
+         Vi0Ibb0+JM9WZKojJTlw7XpU821298SbAKp6566LLGnd5j3PiiSUqN+EYJJGsWib9/gk
+         dg/sE4UAe3vWgQy9D2M0rbaFwooFJgdSyCe49J/VwZQ4xdTP2VeyzlrCZ53ePHU+cLhH
+         UQLQ==
+X-Gm-Message-State: AOAM532bKESVl8eh3cYtZRbO8bMoryaY9asoj1kAcn6ZS6EZANU8cVay
+        xAS7+9vLNSSmOVNuQViW+w==
+X-Google-Smtp-Source: ABdhPJwsN0EDUdKKA5+iVLdkwdpccAxhZRZyjWfXJTeD6J+w0CfrOWZ0AWaF6l/tViI29y2gyucL7A==
+X-Received: by 2002:a05:6808:23cb:: with SMTP id bq11mr1501873oib.2.1638992910659;
+        Wed, 08 Dec 2021 11:48:30 -0800 (PST)
 Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id j20sm598095ota.76.2021.12.08.11.46.42
+        by smtp.gmail.com with ESMTPSA id z2sm609182oto.38.2021.12.08.11.48.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Dec 2021 11:46:43 -0800 (PST)
-Received: (nullmailer pid 252850 invoked by uid 1000);
-        Wed, 08 Dec 2021 19:46:42 -0000
-Date:   Wed, 8 Dec 2021 13:46:42 -0600
+        Wed, 08 Dec 2021 11:48:30 -0800 (PST)
+Received: (nullmailer pid 255448 invoked by uid 1000);
+        Wed, 08 Dec 2021 19:48:28 -0000
+Date:   Wed, 8 Dec 2021 13:48:28 -0600
 From:   Rob Herring <robh@kernel.org>
 To:     Florian Fainelli <f.fainelli@gmail.com>
 Cc:     devicetree@vger.kernel.org,
@@ -54,180 +53,184 @@ Cc:     devicetree@vger.kernel.org,
         "moderated list:BROADCOM IPROC ARM ARCHITECTURE" 
         <linux-arm-kernel@lists.infradead.org>,
         "open list:GENERIC PHY FRAMEWORK" <linux-phy@lists.infradead.org>
-Subject: Re: [PATCH v3 5/8] dt-bindings: net: Convert AMAC to YAML
-Message-ID: <YbELog9TiauuK3fE@robh.at.kernel.org>
+Subject: Re: [PATCH v3 6/8] dt-bindings: net: Convert SYSTEMPORT to YAML
+Message-ID: <YbEMDIhKZEzpeKQR@robh.at.kernel.org>
 References: <20211206180049.2086907-1-f.fainelli@gmail.com>
- <20211206180049.2086907-6-f.fainelli@gmail.com>
+ <20211206180049.2086907-7-f.fainelli@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20211206180049.2086907-6-f.fainelli@gmail.com>
+In-Reply-To: <20211206180049.2086907-7-f.fainelli@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 06, 2021 at 10:00:46AM -0800, Florian Fainelli wrote:
-> Convert the Broadcom AMAC Device Tree binding to YAML to help with
-> schema and dtbs checking.
+On Mon, Dec 06, 2021 at 10:00:47AM -0800, Florian Fainelli wrote:
+> Convert the Broadcom SYSTEMPORT Ethernet controller Device Tree binding
+> to YAML.
 > 
 > Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 > ---
->  .../devicetree/bindings/net/brcm,amac.txt     | 30 -------
->  .../devicetree/bindings/net/brcm,amac.yaml    | 88 +++++++++++++++++++
->  MAINTAINERS                                   |  2 +-
->  3 files changed, 89 insertions(+), 31 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/net/brcm,amac.txt
->  create mode 100644 Documentation/devicetree/bindings/net/brcm,amac.yaml
+>  .../bindings/net/brcm,systemport.txt          | 38 ---------
+>  .../bindings/net/brcm,systemport.yaml         | 82 +++++++++++++++++++
+>  MAINTAINERS                                   |  1 +
+>  3 files changed, 83 insertions(+), 38 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/net/brcm,systemport.txt
+>  create mode 100644 Documentation/devicetree/bindings/net/brcm,systemport.yaml
 > 
-> diff --git a/Documentation/devicetree/bindings/net/brcm,amac.txt b/Documentation/devicetree/bindings/net/brcm,amac.txt
+> diff --git a/Documentation/devicetree/bindings/net/brcm,systemport.txt b/Documentation/devicetree/bindings/net/brcm,systemport.txt
 > deleted file mode 100644
-> index 0120ebe93262..000000000000
-> --- a/Documentation/devicetree/bindings/net/brcm,amac.txt
+> index 75736739bfdd..000000000000
+> --- a/Documentation/devicetree/bindings/net/brcm,systemport.txt
 > +++ /dev/null
-> @@ -1,30 +0,0 @@
-> -Broadcom AMAC Ethernet Controller Device Tree Bindings
-> --------------------------------------------------------------
+> @@ -1,38 +0,0 @@
+> -* Broadcom BCM7xxx Ethernet Systemport Controller (SYSTEMPORT)
 > -
 > -Required properties:
-> - - compatible:	"brcm,amac"
-> -		"brcm,nsp-amac"
-> -		"brcm,ns2-amac"
-> - - reg:		Address and length of the register set for the device. It
-> -		contains the information of registers in the same order as
-> -		described by reg-names
-> - - reg-names:	Names of the registers.
-> -		"amac_base":	Address and length of the GMAC registers
-> -		"idm_base":	Address and length of the GMAC IDM registers
-> -				(required for NSP and Northstar2)
-> -		"nicpm_base":	Address and length of the NIC Port Manager
-> -				registers (required for Northstar2)
-> - - interrupts:	Interrupt number
+> -- compatible: should be one of:
+> -	      "brcm,systemport-v1.00"
+> -	      "brcm,systemportlite-v1.00" or
+> -	      "brcm,systemport"
+> -- reg: address and length of the register set for the device.
+> -- interrupts: interrupts for the device, first cell must be for the rx
+> -  interrupts, and the second cell should be for the transmit queues. An
+> -  optional third interrupt cell for Wake-on-LAN can be specified
+> -- local-mac-address: Ethernet MAC address (48 bits) of this adapter
+> -- phy-mode: Should be a string describing the PHY interface to the
+> -  Ethernet switch/PHY, see Documentation/devicetree/bindings/net/ethernet.txt
+> -- fixed-link: see Documentation/devicetree/bindings/net/fixed-link.txt for
+> -  the property specific details
 > -
-> -The MAC address will be determined using the optional properties
-> -defined in ethernet.txt.
+> -Optional properties:
+> -- systemport,num-tier2-arb: number of tier 2 arbiters, an integer
+> -- systemport,num-tier1-arb: number of tier 1 arbiters, an integer
+> -- systemport,num-txq: number of HW transmit queues, an integer
+> -- systemport,num-rxq: number of HW receive queues, an integer
+> -- clocks: When provided, must be two phandles to the functional clocks nodes of
+> -  the SYSTEMPORT block. The first phandle is the main SYSTEMPORT clock used
+> -  during normal operation, while the second phandle is the Wake-on-LAN clock.
+> -- clock-names: When provided, names of the functional clock phandles, first
+> -  name should be "sw_sysport" and second should be "sw_sysportwol".
 > -
-> -Examples:
-> -
-> -amac0: ethernet@18022000 {
-> -	compatible = "brcm,nsp-amac";
-> -	reg = <0x18022000 0x1000>,
-> -	      <0x18110000 0x1000>;
-> -	reg-names = "amac_base", "idm_base";
-> -	interrupts = <GIC_SPI 147 IRQ_TYPE_LEVEL_HIGH>;
+> -Example:
+> -ethernet@f04a0000 {
+> -	compatible = "brcm,systemport-v1.00";
+> -	reg = <0xf04a0000 0x4650>;
+> -	local-mac-address = [ 00 11 22 33 44 55 ];
+> -	fixed-link = <0 1 1000 0 0>;
+> -	phy-mode = "gmii";
+> -	interrupts = <0x0 0x16 0x0>,
+> -		<0x0 0x17 0x0>;
 > -};
-> diff --git a/Documentation/devicetree/bindings/net/brcm,amac.yaml b/Documentation/devicetree/bindings/net/brcm,amac.yaml
+> diff --git a/Documentation/devicetree/bindings/net/brcm,systemport.yaml b/Documentation/devicetree/bindings/net/brcm,systemport.yaml
 > new file mode 100644
-> index 000000000000..d9de68aba7d3
+> index 000000000000..44781027ed37
 > --- /dev/null
-> +++ b/Documentation/devicetree/bindings/net/brcm,amac.yaml
-> @@ -0,0 +1,88 @@
+> +++ b/Documentation/devicetree/bindings/net/brcm,systemport.yaml
+> @@ -0,0 +1,82 @@
 > +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
 > +%YAML 1.2
 > +---
-> +$id: http://devicetree.org/schemas/net/brcm,amac.yaml#
+> +$id: http://devicetree.org/schemas/net/brcm,systemport.yaml#
 > +$schema: http://devicetree.org/meta-schemas/core.yaml#
 > +
-> +title: Broadcom AMAC Ethernet Controller Device Tree Bindings
+> +title: Broadcom BCM7xxx Ethernet Systemport Controller (SYSTEMPORT)
 > +
 > +maintainers:
 > +  - Florian Fainelli <f.fainelli@gmail.com>
 > +
-> +allOf:
-> +  - $ref: "ethernet-controller.yaml#"
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            enum:
-> +              - brcm,amac
-> +    then:
-> +      properties:
-> +        reg:
-> +          minItems: 1
-> +          maxItems: 2
-> +        reg-names:
-> +          minItems: 1
-> +          maxItems: 2
-> +          items:
-> +            - const: amac_base
-> +            - const: idm_base
-> +
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            enum:
-> +              - brcm,nsp-amac
-> +    then:
-> +      properties:
-> +        reg:
-> +          minItems: 2
-> +          maxItems: 2
-> +        reg-names:
-> +          items:
-> +            - const: amac_base
-> +            - const: idm_base
-> +
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            enum:
-> +              - brcm,ns2-amac
-> +    then:
-> +      properties:
-
-> +        reg:
-> +          minItems: 3
-> +          maxItems: 3
-> +        reg-names:
-> +          items:
-> +            - const: amac_base
-> +            - const: idm_base
-> +            - const: nicpm_base
-
-Move this to the main section so that the names are only defined once. 
-Then here you can just set the number of items.
-
-> +
 > +properties:
 > +  compatible:
 > +    enum:
-> +      - brcm,amac
-> +      - brcm,nsp-amac
-> +      - brcm,ns2-amac
+> +      - brcm,systemport-v1.00
+> +      - brcm,systemportlite-v1.00
+> +      - brcm,systemport
 > +
-> +  interrupts:
+> +  reg:
 > +    maxItems: 1
 > +
+> +  interrupts:
+> +    minItems: 2
+> +    items:
+> +      - description: interrupt line for RX queues
+> +      - description: interrupt line for TX queues
+> +      - description: interrupt line for Wake-on-LAN
 > +
-> +unevaluatedProperties: false
+> +  clocks:
+> +    items:
+> +      - description: main clock
+> +      - description: Wake-on-LAN clock
+> +
+> +  clock-names:
+> +    items:
+> +      - const: sw_sysport
+> +      - const: sw_sysportwol
+> +
+> +  "systemport,num-tier2-arb":
+
+Don't need quotes.
+
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    description:
+> +      Number of tier 2 arbiters
+> +
+> +  "systemport,num-tier1-arb":
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    description:
+> +      Number of tier 2 arbiters
+> +
+> +  "systemport,num-txq":
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    description:
+> +      Number of HW transmit queues
+> +
+> +  "systemport,num-rxq":
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    description:
+> +      Number of HW receive queues
+
+No constraints for any of these?
+
+> +
+> +required:
+> +  - reg
+> +  - interrupts
+> +  - phy-mode
+> +
+> +allOf:
+> +  - $ref: "ethernet-controller.yaml#"
+> +
+> +additionalProperties: true
+
+unevaluatedProperties: false
+
 > +
 > +examples:
 > +  - |
-> +   #include <dt-bindings/interrupt-controller/arm-gic.h>
-> +
-> +   amac0: ethernet@18022000 {
-> +      compatible = "brcm,nsp-amac";
-> +      reg = <0x18022000 0x1000>,
-> +            <0x18110000 0x1000>;
-> +      reg-names = "amac_base", "idm_base";
-> +      interrupts = <GIC_SPI 147 IRQ_TYPE_LEVEL_HIGH>;
-> +   };
+> +    ethernet@f04a0000 {
+> +        compatible = "brcm,systemport-v1.00";
+> +        reg = <0xf04a0000 0x4650>;
+> +        local-mac-address = [ 00 11 22 33 44 55 ];
+> +        phy-mode = "gmii";
+> +        interrupts = <0x0 0x16 0x0>,
+> +                     <0x0 0x17 0x0>;
+> +        fixed-link {
+> +            speed = <1000>;
+> +            full-duplex;
+> +        };
+> +    };
 > diff --git a/MAINTAINERS b/MAINTAINERS
-> index 5e1064c23f41..404e76d625f1 100644
+> index 404e76d625f1..ed8de605fe4b 100644
 > --- a/MAINTAINERS
 > +++ b/MAINTAINERS
-> @@ -3861,7 +3861,7 @@ M:	Rafał Miłecki <rafal@milecki.pl>
->  M:	bcm-kernel-feedback-list@broadcom.com
->  L:	netdev@vger.kernel.org
->  S:	Maintained
-> -F:	Documentation/devicetree/bindings/net/brcm,amac.txt
-> +F:	Documentation/devicetree/bindings/net/brcm,amac.yaml
->  F:	drivers/net/ethernet/broadcom/bgmac*
+> @@ -3972,6 +3972,7 @@ L:	netdev@vger.kernel.org
+>  S:	Supported
+>  F:	drivers/net/ethernet/broadcom/bcmsysport.*
 >  F:	drivers/net/ethernet/broadcom/unimac.h
+> +F:	Documentation/devicetree/bindings/net/brcm,systemport.yaml
 >  
+>  BROADCOM TG3 GIGABIT ETHERNET DRIVER
+>  M:	Siva Reddy Kallam <siva.kallam@broadcom.com>
 > -- 
 > 2.25.1
 > 
