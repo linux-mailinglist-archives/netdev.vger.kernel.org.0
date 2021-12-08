@@ -2,236 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B85D546DD12
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 21:28:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3728146DD33
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 21:36:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240358AbhLHUbr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 15:31:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41508 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240340AbhLHUbo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 15:31:44 -0500
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62E62C061746;
-        Wed,  8 Dec 2021 12:28:12 -0800 (PST)
-Received: by mail-pg1-x534.google.com with SMTP id 71so3054796pgb.4;
-        Wed, 08 Dec 2021 12:28:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ZcrOsR/AQ+n4Uph7jneW3qXk8Qg6SVv8+RA/13LAwKg=;
-        b=XR9RIssxdowvw1Brc6a2iaFxNo8BlqDdECpczFShju1RkPXqB8qVOZc0+jwTL0lDiO
-         3sSkFIIxk7yGIX8rWmA9Dqh7ttmiTGsSatsuQx6xROETW39UW7aH0rThL72bxqdcNleC
-         Z2/NmRUuJy3gIGvIroOPF3UAOmeVWlOrQmZ979L664ALfxGiai0fDlP6vnYjpNtO0hpc
-         qKsbK7NOUxrN2nTIQN1VvMKIuXSx+7UBwaARxmu8gO0CBWjFN44PD14Hf2D5BTlCDaGU
-         HovHCNg/PFJTVhrL3h1EoBlEqmCyHQHyVt5mcCbHM7YAonji+v0hFkwsezXw3lAEJxjt
-         EqrA==
+        id S237004AbhLHUkF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 15:40:05 -0500
+Received: from mail-io1-f72.google.com ([209.85.166.72]:37661 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240647AbhLHUju (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 15:39:50 -0500
+Received: by mail-io1-f72.google.com with SMTP id m127-20020a6b3f85000000b005f045ba51f9so4619735ioa.4
+        for <netdev@vger.kernel.org>; Wed, 08 Dec 2021 12:36:18 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ZcrOsR/AQ+n4Uph7jneW3qXk8Qg6SVv8+RA/13LAwKg=;
-        b=A/wimQZR9Y+M5G6SEXZeHjqv8sR95Tcnz1Xzv9VvMGqwzutQQ1+KHlllaSiQubzjDP
-         CVBZ4eSWtaNs1BeEvxwRaUPUeWtG085Zm3qRcBKAAeGSkop2XSN9O7rnyIHdRatxvwQv
-         GmvnJthSCGs3inSMoTi0YJ2w+ZIhg4UbBU8VvocZd81zW0ypaLwt3xj/QcFFK2xmtGdT
-         9JpZNNS+/8x0lhjqt9k4LbxmXfZ0aoKJTwojWMYYKdeZBGjyUndzHCZP/ZifmK0a2ErS
-         TcKDBnM0kmYtLLAEzE8qWJHOWfovYPsRky4v6WLFNOQSSgQkeF1QaRw38bs0UVvsCwDA
-         Z6PA==
-X-Gm-Message-State: AOAM532D/b4bld9xKz2Gj7pgOtcvWgLieZeCeWlB6w1VK8zQ0zKpSU63
-        Oq4B77r9DgfaiInJGmYFOn4dd8Qyhs8=
-X-Google-Smtp-Source: ABdhPJx6YEUJyLQk6gVDNPe8cz+qQRT4nfTKGx8C6oAIc/ISeR0uMN9dl5PyL28q+nQZoCsqeumgKQ==
-X-Received: by 2002:a05:6a00:1145:b0:4a2:6a03:c592 with SMTP id b5-20020a056a00114500b004a26a03c592mr7490936pfm.65.1638995291503;
-        Wed, 08 Dec 2021 12:28:11 -0800 (PST)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id d17sm4592291pfj.124.2021.12.08.12.28.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Dec 2021 12:28:11 -0800 (PST)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     devicetree@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
-        bcm-kernel-feedback-list@broadcom.com (maintainer:BROADCOM IPROC GBIT
-        ETHERNET DRIVER),
-        netdev@vger.kernel.org (open list:NETWORKING DRIVERS),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH v4 2/2] dt-bindings: net: Convert SYSTEMPORT to YAML
-Date:   Wed,  8 Dec 2021 12:28:01 -0800
-Message-Id: <20211208202801.3706929-3-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20211208202801.3706929-1-f.fainelli@gmail.com>
-References: <20211208202801.3706929-1-f.fainelli@gmail.com>
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=1eMzVkjs4ptAGWAHJG5P5ADuL3kIbtQVEk8LuTc0n6o=;
+        b=nFRIPBJx4kXG6ssrYXkNFpCGbBizhO05t/nguz+6H/SLN5QnEhC4XA1q0yAktAnWW7
+         hftOre5AzojOCN0JxaQnkrs0SNSSm6RICYeGAvSrjfIfre4o5Ww7PdGiO70pmRK8/Pio
+         xru3qWRSLq09RRIPOul5KaIRXOLuA5xgpJSIvW3HLQmD5NBnOIsU1G2yyVAsz4tWRzwr
+         tTpaQ37gzRNWuT1A12IOvPHzDA2lwPnTwre3tJ1vxdLem0kCnUwvw8FgOQSUyR3GPJE1
+         LnKC5blpf96lX5OvKpM7c0wgWXODqiVmpU4mHW1wmBrfBEPEyJF9QZIrM2TqfDEiBYno
+         pedA==
+X-Gm-Message-State: AOAM530o4AMRvP3hAp9st+h/rf4nEi3Vki6jqJkN9FcQ5LPpepQjmAnJ
+        nEZW13LXS3lePpxFrEO3eKuxAmLMaYxyd6+TTgYK0XMv0+gg
+X-Google-Smtp-Source: ABdhPJzII9D2sRys1tjUCkp39Gl6tn1SQHF7nbIqdPSjVsrn3IO1kL/8JicHBhWDnGUs5dIfcLJ0lRYt33ehF6XzPlCKqSaxQbhK
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a92:8751:: with SMTP id d17mr10582237ilm.148.1638995778462;
+ Wed, 08 Dec 2021 12:36:18 -0800 (PST)
+Date:   Wed, 08 Dec 2021 12:36:18 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000029e89205d2a8718d@google.com>
+Subject: [syzbot] BUG: sleeping function called from invalid context in hci_cmd_sync_cancel
+From:   syzbot <syzbot+485cc00ea7cf41dfdbf1@syzkaller.appspotmail.com>
+To:     changbin.du@intel.com, christian.brauner@ubuntu.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, yajun.deng@linux.dev
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Convert the Broadcom SYSTEMPORT Ethernet controller Device Tree binding
-to YAML.
+Hello,
 
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+syzbot found the following issue on:
+
+HEAD commit:    4eee8d0b64ec Add linux-next specific files for 20211208
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=13d1329db00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=20b74d9da4ce1ef1
+dashboard link: https://syzkaller.appspot.com/bug?extid=485cc00ea7cf41dfdbf1
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13e7e955b00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10ed3641b00000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+485cc00ea7cf41dfdbf1@syzkaller.appspotmail.com
+
+BUG: sleeping function called from invalid context at kernel/workqueue.c:3039
+in_atomic(): 1, irqs_disabled(): 1, non_block: 0, pid: 8, name: kworker/u4:0
+preempt_count: 101, expected: 0
+RCU nest depth: 0, expected: 0
+5 locks held by kworker/u4:0/8:
+ #0: ffff8880155d9938 ((wq_completion)netns){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
+ #0: ffff8880155d9938 ((wq_completion)netns){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
+ #0: ffff8880155d9938 ((wq_completion)netns){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
+ #0: ffff8880155d9938 ((wq_completion)netns){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:635 [inline]
+ #0: ffff8880155d9938 ((wq_completion)netns){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:662 [inline]
+ #0: ffff8880155d9938 ((wq_completion)netns){+.+.}-{0:0}, at: process_one_work+0x896/0x1690 kernel/workqueue.c:2289
+ #1: ffffc90000cd7db0 (net_cleanup_work){+.+.}-{0:0}, at: process_one_work+0x8ca/0x1690 kernel/workqueue.c:2293
+ #2: ffffffff8d308150 (pernet_ops_rwsem){++++}-{3:3}, at: cleanup_net+0x9b/0xb00 net/core/net_namespace.c:555
+ #3: ffff88806f0ab8f0 (&ent->pde_unload_lock){+.+.}-{2:2}, at: spin_lock include/linux/spinlock.h:354 [inline]
+ #3: ffff88806f0ab8f0 (&ent->pde_unload_lock){+.+.}-{2:2}, at: proc_entry_rundown+0xe7/0x1d0 fs/proc/inode.c:266
+ #4: ffffc90000dc0d70 ((&dum_hcd->timer)){+.-.}-{0:0}, at: lockdep_copy_map include/linux/lockdep.h:35 [inline]
+ #4: ffffc90000dc0d70 ((&dum_hcd->timer)){+.-.}-{0:0}, at: call_timer_fn+0xd5/0x6b0 kernel/time/timer.c:1411
+irq event stamp: 268125
+hardirqs last  enabled at (268124): [<ffffffff8956ab6f>] __raw_spin_unlock_irq include/linux/spinlock_api_smp.h:159 [inline]
+hardirqs last  enabled at (268124): [<ffffffff8956ab6f>] _raw_spin_unlock_irq+0x1f/0x40 kernel/locking/spinlock.c:202
+hardirqs last disabled at (268125): [<ffffffff8956a99e>] __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:108 [inline]
+hardirqs last disabled at (268125): [<ffffffff8956a99e>] _raw_spin_lock_irqsave+0x4e/0x50 kernel/locking/spinlock.c:162
+softirqs last  enabled at (268062): [<ffffffff885ab700>] spin_unlock_bh include/linux/spinlock.h:399 [inline]
+softirqs last  enabled at (268062): [<ffffffff885ab700>] rxrpc_release_sock net/rxrpc/af_rxrpc.c:876 [inline]
+softirqs last  enabled at (268062): [<ffffffff885ab700>] rxrpc_release+0x1f0/0x5a0 net/rxrpc/af_rxrpc.c:917
+softirqs last disabled at (268119): [<ffffffff8146b723>] invoke_softirq kernel/softirq.c:432 [inline]
+softirqs last disabled at (268119): [<ffffffff8146b723>] __irq_exit_rcu+0x123/0x180 kernel/softirq.c:637
+Preemption disabled at:
+[<0000000000000000>] 0x0
+CPU: 1 PID: 8 Comm: kworker/u4:0 Not tainted 5.16.0-rc4-next-20211208-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: netns cleanup_net
+Call Trace:
+ <IRQ>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ __might_resched.cold+0x222/0x26b kernel/sched/core.c:9583
+ start_flush_work kernel/workqueue.c:3039 [inline]
+ __flush_work+0x109/0xb10 kernel/workqueue.c:3103
+ __cancel_work_timer+0x3f9/0x570 kernel/workqueue.c:3191
+ hci_cmd_sync_cancel net/bluetooth/hci_sync.c:346 [inline]
+ hci_cmd_sync_cancel+0xe1/0x170 net/bluetooth/hci_sync.c:338
+ btusb_intr_complete+0x3d3/0x4a0 drivers/bluetooth/btusb.c:969
+ __usb_hcd_giveback_urb+0x2b0/0x5c0 drivers/usb/core/hcd.c:1656
+ usb_hcd_giveback_urb+0x367/0x410 drivers/usb/core/hcd.c:1726
+ dummy_timer+0x11f9/0x32b0 drivers/usb/gadget/udc/dummy_hcd.c:1987
+ call_timer_fn+0x1a5/0x6b0 kernel/time/timer.c:1421
+ expire_timers kernel/time/timer.c:1466 [inline]
+ __run_timers.part.0+0x675/0xa20 kernel/time/timer.c:1734
+ __run_timers kernel/time/timer.c:1715 [inline]
+ run_timer_softirq+0xb3/0x1d0 kernel/time/timer.c:1747
+ __do_softirq+0x29b/0x9c2 kernel/softirq.c:558
+ invoke_softirq kernel/softirq.c:432 [inline]
+ __irq_exit_rcu+0x123/0x180 kernel/softirq.c:637
+ irq_exit_rcu+0x5/0x20 kernel/softirq.c:649
+ sysvec_apic_timer_interrupt+0x93/0xc0 arch/x86/kernel/apic/apic.c:1097
+ </IRQ>
+ <TASK>
+ asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:638
+RIP: 0010:lock_acquire+0x1ef/0x510 kernel/locking/lockdep.c:5607
+Code: 9d a5 7e 83 f8 01 0f 85 b4 02 00 00 9c 58 f6 c4 02 0f 85 9f 02 00 00 48 83 7c 24 08 00 74 01 fb 48 b8 00 00 00 00 00 fc ff df <48> 01 c3 48 c7 03 00 00 00 00 48 c7 43 08 00 00 00 00 48 8b 84 24
+RSP: 0000:ffffc90000cd7928 EFLAGS: 00000206
+RAX: dffffc0000000000 RBX: 1ffff9200019af27 RCX: 0000000000000001
+RDX: 1ffff110021cfc44 RSI: 0000000000000001 RDI: 0000000000000000
+RBP: 0000000000000001 R08: 00000000000c1948 R09: 0000000000000001
+R10: fffffbfff2024ea1 R11: 1ffffffff1ee5241 R12: 0000000000000000
+R13: 0000000000000000 R14: ffff88806f0ab8f0 R15: 0000000000000000
+ __raw_spin_lock include/linux/spinlock_api_smp.h:133 [inline]
+ _raw_spin_lock+0x2a/0x40 kernel/locking/spinlock.c:154
+ spin_lock include/linux/spinlock.h:354 [inline]
+ proc_entry_rundown+0xe7/0x1d0 fs/proc/inode.c:266
+ remove_proc_subtree+0x25c/0x500 fs/proc/generic.c:767
+ proc_remove fs/proc/generic.c:790 [inline]
+ proc_remove+0x66/0x90 fs/proc/generic.c:787
+ afs_proc_cleanup+0x34/0x70 fs/afs/proc.c:703
+ afs_net_exit+0x17d/0x320 fs/afs/main.c:159
+ ops_exit_list+0xb0/0x160 net/core/net_namespace.c:168
+ cleanup_net+0x4ea/0xb00 net/core/net_namespace.c:593
+ process_one_work+0x9b2/0x1690 kernel/workqueue.c:2318
+ worker_thread+0x658/0x11f0 kernel/workqueue.c:2465
+ kthread+0x405/0x4f0 kernel/kthread.c:345
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+ </TASK>
+----------------
+Code disassembly (best guess):
+   0:	9d                   	popfq
+   1:	a5                   	movsl  %ds:(%rsi),%es:(%rdi)
+   2:	7e 83                	jle    0xffffff87
+   4:	f8                   	clc
+   5:	01 0f                	add    %ecx,(%rdi)
+   7:	85 b4 02 00 00 9c 58 	test   %esi,0x589c0000(%rdx,%rax,1)
+   e:	f6 c4 02             	test   $0x2,%ah
+  11:	0f 85 9f 02 00 00    	jne    0x2b6
+  17:	48 83 7c 24 08 00    	cmpq   $0x0,0x8(%rsp)
+  1d:	74 01                	je     0x20
+  1f:	fb                   	sti
+  20:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
+  27:	fc ff df
+* 2a:	48 01 c3             	add    %rax,%rbx <-- trapping instruction
+  2d:	48 c7 03 00 00 00 00 	movq   $0x0,(%rbx)
+  34:	48 c7 43 08 00 00 00 	movq   $0x0,0x8(%rbx)
+  3b:	00
+  3c:	48                   	rex.W
+  3d:	8b                   	.byte 0x8b
+  3e:	84                   	.byte 0x84
+  3f:	24                   	.byte 0x24
+
+
 ---
- .../bindings/net/brcm,systemport.txt          | 38 --------
- .../bindings/net/brcm,systemport.yaml         | 88 +++++++++++++++++++
- MAINTAINERS                                   |  1 +
- 3 files changed, 89 insertions(+), 38 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/net/brcm,systemport.txt
- create mode 100644 Documentation/devicetree/bindings/net/brcm,systemport.yaml
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/Documentation/devicetree/bindings/net/brcm,systemport.txt b/Documentation/devicetree/bindings/net/brcm,systemport.txt
-deleted file mode 100644
-index 75736739bfdd..000000000000
---- a/Documentation/devicetree/bindings/net/brcm,systemport.txt
-+++ /dev/null
-@@ -1,38 +0,0 @@
--* Broadcom BCM7xxx Ethernet Systemport Controller (SYSTEMPORT)
--
--Required properties:
--- compatible: should be one of:
--	      "brcm,systemport-v1.00"
--	      "brcm,systemportlite-v1.00" or
--	      "brcm,systemport"
--- reg: address and length of the register set for the device.
--- interrupts: interrupts for the device, first cell must be for the rx
--  interrupts, and the second cell should be for the transmit queues. An
--  optional third interrupt cell for Wake-on-LAN can be specified
--- local-mac-address: Ethernet MAC address (48 bits) of this adapter
--- phy-mode: Should be a string describing the PHY interface to the
--  Ethernet switch/PHY, see Documentation/devicetree/bindings/net/ethernet.txt
--- fixed-link: see Documentation/devicetree/bindings/net/fixed-link.txt for
--  the property specific details
--
--Optional properties:
--- systemport,num-tier2-arb: number of tier 2 arbiters, an integer
--- systemport,num-tier1-arb: number of tier 1 arbiters, an integer
--- systemport,num-txq: number of HW transmit queues, an integer
--- systemport,num-rxq: number of HW receive queues, an integer
--- clocks: When provided, must be two phandles to the functional clocks nodes of
--  the SYSTEMPORT block. The first phandle is the main SYSTEMPORT clock used
--  during normal operation, while the second phandle is the Wake-on-LAN clock.
--- clock-names: When provided, names of the functional clock phandles, first
--  name should be "sw_sysport" and second should be "sw_sysportwol".
--
--Example:
--ethernet@f04a0000 {
--	compatible = "brcm,systemport-v1.00";
--	reg = <0xf04a0000 0x4650>;
--	local-mac-address = [ 00 11 22 33 44 55 ];
--	fixed-link = <0 1 1000 0 0>;
--	phy-mode = "gmii";
--	interrupts = <0x0 0x16 0x0>,
--		<0x0 0x17 0x0>;
--};
-diff --git a/Documentation/devicetree/bindings/net/brcm,systemport.yaml b/Documentation/devicetree/bindings/net/brcm,systemport.yaml
-new file mode 100644
-index 000000000000..53ecec8c864e
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/brcm,systemport.yaml
-@@ -0,0 +1,88 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/net/brcm,systemport.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Broadcom BCM7xxx Ethernet Systemport Controller (SYSTEMPORT)
-+
-+maintainers:
-+  - Florian Fainelli <f.fainelli@gmail.com>
-+
-+properties:
-+  compatible:
-+    enum:
-+      - brcm,systemport-v1.00
-+      - brcm,systemportlite-v1.00
-+      - brcm,systemport
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    minItems: 2
-+    items:
-+      - description: interrupt line for RX queues
-+      - description: interrupt line for TX queues
-+      - description: interrupt line for Wake-on-LAN
-+
-+  clocks:
-+    items:
-+      - description: main clock
-+      - description: Wake-on-LAN clock
-+
-+  clock-names:
-+    items:
-+      - const: sw_sysport
-+      - const: sw_sysportwol
-+
-+  systemport,num-tier2-arb:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description:
-+      Number of tier 2 arbiters
-+
-+  systemport,num-tier1-arb:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description:
-+      Number of tier 2 arbiters
-+
-+  systemport,num-txq:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    items:
-+      - minimum: 1
-+      - maximum: 32
-+    description:
-+      Number of HW transmit queues
-+
-+  systemport,num-rxq:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    items:
-+      - minimum: 1
-+      - maximum: 32
-+    description:
-+      Number of HW receive queues
-+
-+required:
-+  - reg
-+  - interrupts
-+  - phy-mode
-+
-+allOf:
-+  - $ref: "ethernet-controller.yaml#"
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    ethernet@f04a0000 {
-+        compatible = "brcm,systemport-v1.00";
-+        reg = <0xf04a0000 0x4650>;
-+        local-mac-address = [ 00 11 22 33 44 55 ];
-+        phy-mode = "gmii";
-+        interrupts = <0x0 0x16 0x0>,
-+                     <0x0 0x17 0x0>;
-+        fixed-link {
-+            speed = <1000>;
-+            full-duplex;
-+        };
-+    };
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 404e76d625f1..ed8de605fe4b 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -3972,6 +3972,7 @@ L:	netdev@vger.kernel.org
- S:	Supported
- F:	drivers/net/ethernet/broadcom/bcmsysport.*
- F:	drivers/net/ethernet/broadcom/unimac.h
-+F:	Documentation/devicetree/bindings/net/brcm,systemport.yaml
- 
- BROADCOM TG3 GIGABIT ETHERNET DRIVER
- M:	Siva Reddy Kallam <siva.kallam@broadcom.com>
--- 
-2.25.1
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
