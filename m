@@ -2,84 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C355246CEB3
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 09:11:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3845746CE8B
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 08:53:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244673AbhLHIOo convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 8 Dec 2021 03:14:44 -0500
-Received: from mxout70.expurgate.net ([91.198.224.70]:3350 "EHLO
-        mxout70.expurgate.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235521AbhLHIOo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 03:14:44 -0500
-X-Greylist: delayed 1186 seconds by postgrey-1.27 at vger.kernel.org; Wed, 08 Dec 2021 03:14:43 EST
-Received: from [127.0.0.1] (helo=localhost)
-        by relay.expurgate.net with smtp (Exim 4.92)
-        (envelope-from <ms@dev.tdt.de>)
-        id 1murjT-000NdV-52; Wed, 08 Dec 2021 08:51:19 +0100
-Received: from [195.243.126.94] (helo=securemail.tdt.de)
-        by relay.expurgate.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ms@dev.tdt.de>)
-        id 1murjS-000Tbw-B7; Wed, 08 Dec 2021 08:51:18 +0100
-Received: from securemail.tdt.de (localhost [127.0.0.1])
-        by securemail.tdt.de (Postfix) with ESMTP id 1D6CA240041;
-        Wed,  8 Dec 2021 08:51:18 +0100 (CET)
-Received: from mail.dev.tdt.de (unknown [10.2.4.42])
-        by securemail.tdt.de (Postfix) with ESMTP id A977B240040;
-        Wed,  8 Dec 2021 08:51:17 +0100 (CET)
-Received: from mail.dev.tdt.de (localhost [IPv6:::1])
-        by mail.dev.tdt.de (Postfix) with ESMTP id 433E22030A;
-        Wed,  8 Dec 2021 08:51:17 +0100 (CET)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Date:   Wed, 08 Dec 2021 08:51:17 +0100
-From:   Martin Schiller <ms@dev.tdt.de>
-To:     =?UTF-8?Q?J=CE=B5an_Sacren?= <sakiwit@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-x25@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] net: x25: drop harmless check of !more
-Organization: TDT AG
-In-Reply-To: <20211208024732.142541-5-sakiwit@gmail.com>
-References: <20211208024732.142541-5-sakiwit@gmail.com>
-Message-ID: <591bfc0470ca596995e13337460f99d0@dev.tdt.de>
-X-Sender: ms@dev.tdt.de
-User-Agent: Roundcube Webmail/1.3.17
-X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,URIBL_BLOCKED
-        autolearn=ham autolearn_force=no version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
+        id S240897AbhLHH5V convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 8 Dec 2021 02:57:21 -0500
+Received: from rtits2.realtek.com ([211.75.126.72]:44054 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231634AbhLHH5U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 02:57:20 -0500
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 1B87rTS21030330, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
+        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 1B87rTS21030330
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 8 Dec 2021 15:53:29 +0800
+Received: from RTEXMBS02.realtek.com.tw (172.21.6.95) by
+ RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Wed, 8 Dec 2021 15:53:29 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS02.realtek.com.tw (172.21.6.95) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.15; Wed, 8 Dec 2021 15:53:28 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::65a3:1e23:d911:4b01]) by
+ RTEXMBS04.realtek.com.tw ([fe80::65a3:1e23:d911:4b01%5]) with mapi id
+ 15.01.2308.020; Wed, 8 Dec 2021 15:53:28 +0800
+From:   Hayes Wang <hayeswang@realtek.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        nic_swsd <nic_swsd@realtek.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
+Subject: RE: [RFC PATCH 0/4] r8169: support dash
+Thread-Topic: [RFC PATCH 0/4] r8169: support dash
+Thread-Index: AQHX5QnDLn6ABzzmpEe3dMh4ox9UtKwaRZuAgAKrunD//4AsAIAD8ppQ///5wgCABkeCEIAA4HSAgADAA+A=
+Date:   Wed, 8 Dec 2021 07:53:28 +0000
+Message-ID: <67d7f6f7b6e84af692bc0a7c4c48bb84@realtek.com>
+References: <20211129101315.16372-381-nic_swsd@realtek.com>
+        <20211129095947.547a765f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <918d75ea873a453ab2ba588a35d66ab6@realtek.com>
+        <20211130190926.7c1d735d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <d3a1e1c469844aa697d6d315c9549eda@realtek.com>
+        <20211203070410.1b4abc4d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <e2fd429a489545e7a521283600cb7caa@realtek.com>
+ <20211207202101.3a3a93b0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211207202101.3a3a93b0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Accept-Language: zh-TW, en-US
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.177.203]
+x-kse-serverinfo: RTEXMBS02.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2021/12/8_=3F=3F_06:28:00?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 8BIT
-X-purgate: clean
-X-purgate-ID: 151534::1638949878-000118D4-7626970E/0/0
-X-purgate-type: clean
+MIME-Version: 1.0
+X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-12-08 08:20, Jεan Sacren wrote:
-> From: Jean Sacren <sakiwit@gmail.com>
+Jakub Kicinski <kuba@kernel.org>
+> Sent: Wednesday, December 8, 2021 12:21 PM
+[...]
+> > Could devlink param be used for more than 4 bytes settings?
+> > At least the IPv6 address is longer.
 > 
-> 'more' is checked first.  When !more is checked immediately after that,
-> it is always true.  We should drop this check.
-> 
-> Signed-off-by: Jean Sacren <sakiwit@gmail.com>
-> ---
->  net/x25/x25_in.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/net/x25/x25_in.c b/net/x25/x25_in.c
-> index e1c4197af468..b981a4828d08 100644
-> --- a/net/x25/x25_in.c
-> +++ b/net/x25/x25_in.c
-> @@ -41,7 +41,7 @@ static int x25_queue_rx_frame(struct sock *sk,
-> struct sk_buff *skb, int more)
->  		return 0;
->  	}
-> 
-> -	if (!more && x25->fraglen > 0) {	/* End of fragment */
-> +	if (x25->fraglen > 0) {	/* End of fragment */
->  		int len = x25->fraglen + skb->len;
-> 
->  		if ((skbn = alloc_skb(len, GFP_ATOMIC)) == NULL){
+> We can add a new devlink sub-command and driver callback in that case.
 
-Acked-by: Martin Schiller <ms@dev.tdt.de>
+Excuse me. Do you mean someone will add it? Then, I could use it.
+Or, I have to add it.
+
+> > Besides, we need the information of SMBIOS which could
+> > be 4K ~ 8K bytes data. Is there any way we could transmit
+> > it to firmware?
+> 
+> Is structure of that data defined by some DMTF standard?
+Yes.
+
+Best Regards,
+Hayes
+
