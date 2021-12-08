@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E7F2246D57C
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 15:17:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3455246D57F
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 15:17:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234973AbhLHOVV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 09:21:21 -0500
-Received: from mail-bn8nam12on2050.outbound.protection.outlook.com ([40.107.237.50]:36577
-        "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
+        id S234854AbhLHOVZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 09:21:25 -0500
+Received: from mail-dm6nam12on2053.outbound.protection.outlook.com ([40.107.243.53]:49696
+        "EHLO NAM12-DM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S234948AbhLHOVU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 Dec 2021 09:21:20 -0500
+        id S234950AbhLHOVW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 8 Dec 2021 09:21:22 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KlHecI+K68/ZO+nAMG9awYibI+jP5/YGqiBYVEV8ds4glYYBzm2mnhSsQsI2Xz7V5hEIprgmEWUI2bSB96cowyNsDuODdyC4qkGcMndi39QdYfNKw1F4o9X8ZfGUdtXgqlxb++frTwjo0oqQjFnkk/h/NgVzwXXMII6ktCQISD12vjn8dxkK013bLWkBloR/3MEE+KcCoJRFc946hVYcQjxAQJGc7W4VEoPGrF/OdbIweYzMRS9NpK4fDv3cUYCGCG+3N8pNLp/3A8f0u7tfYvmULOr1K4TLQasECWRUcRrYmc62/1OAjhgUIHHDjfIsFuDwIPGmAZO6RW42As/Stg==
+ b=SZpZAcpxMzF/tHX4R6+Qg1X2JF9Eq7CRrd8kor8eUckM6ORdF3qlPOrN3cc3W+129p/NcPiWrumD/KdPRMStDlX00z5SYmzlxdTRK81RRk7TDUg2azlMLEviWWVe1R1nn2CYkNmf0Yxy7mjoVRVk1mIKFTBHg8fcIaWzOM1qig6ajw3WGe9Kx84WncPtSpmwhF+ItzGoECddcIQu7xrvCIIJ8llf44KtTHqLSX2apVAQBM1jB1kzBfvaHsadyFwnlwgqytJIjTy4bQWpg1S7v4vCI+xhdAfzeWVFkAuexrVZMwWh7eJat2PFSSORTB+3fMFb5uogx13PPYu33BSxGg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=c4+owX/Kc51f2qGuomXT+bTD7rCJeOcYuODtOJgND6c=;
- b=UTjUvN3aD5EjPqmrut8dL57LgfgpkVmvTaND1XIiZ67GSc63scTtY2bcZ7OEUOWcYw8FlrvnB9JN0aXG6wJrcBHvhG/ePwXG9kIMQTZ9U5TiPufI7K0Mai/q/7VTWIwPrT5XQwhglyJFVBxVNQ2JN8SOqPQxNlYOev2dfvNxtfGpdDg02nB8TNWrhgP+B56/zUcehnwHoFfbm0SLSK3NVKwF8+/UVrE+ulnMlQm5ih1HEkxsfKzi4yggpmkpFhr7UUd1t+NFmZ4go35TY0XjcE54OZg1vT+y/jm6JfneiskzU2wcoWnP6AGGvoK2jRVB2mmrU/SDXdx1OsltX+XGmA==
+ bh=fBlgrDTQ7dqnqNMoSVQAssmI+LEq8AF4WB5QjgpPCN0=;
+ b=MhPL2SAEPSlU2244wJinyVqva8PHHF3JzFkbYetGjgqKqFlbXS8ZTOKog5wHuOpc+tkb/EW+fIhh2m6lsjC+idTXgKlteDzZYaRPoNxh6q4RhVPLgjJqwzXdkgA2OrrTyeyKVzHUmpTwRH8l+ZoicjBmnH9rhfB79NmfReQfl1DM7/ss7BsnOm5Q5DpSU9sTJzAoeJjQG/CcRBDGBXXPGHU9UAwc459aqr90I3vDRiWW4jfsCZNEsIOr6ev4+m2//Yns+cSw8lKuB/lIsKuYea180WXvoJTdIDZdztuNOoeLpexxBJ+CXe82z4/skyw36FSgr6jjFVjAA9NJ46kk1A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=c4+owX/Kc51f2qGuomXT+bTD7rCJeOcYuODtOJgND6c=;
- b=ahuGm1G2uWaaz1qIlgx7raggw3bMgLWonoX5hMbgueSKlBhaSCMpLo5CozzpHcE199mLjPJyDEyZWK2NAPs4rTORaHfG1YjokmwhkYPP0EcP+0nnHMTp4M80etWfV5drv/Qh7Q98mC3P1Wc8FkjeuCKJeX+6ydfiaQi2hmGnQQRdsxW9mhFtM6j+xppL1MWbsHgRhvfdzqDyj+Gcg7tSaE0OZPfuxyB2p2gBHLnBUzn0T7YoBBmw9xd96fLsSFQZh4r5gh6SvbP0Ns7Rv8NKZh2Yh+zP8tSbNkagOmw9fPLCSbzE+Y5aeMY2EM2sYttilvnEHkdpWUgC4pC8/cS1OQ==
+ bh=fBlgrDTQ7dqnqNMoSVQAssmI+LEq8AF4WB5QjgpPCN0=;
+ b=VnRdjyAlny1M3iQrWSGdQFoA1hZbuhAGOX3vfnRVbQm8twyZzYOIpSMBVmDKBNoAyhKZaMz2bgaWq50rewZ4FKec/Hy6ViZt0Aj0preByVKk2vDS1Nqc4PtaUndY7wIaLXWijfbKZfvTkiRX+Zkf4BJavhrx+6vkobCueKkCOBXoHaVU4DxVXAhOQ1AZdBIbMQyahkfSsBv2R7Pl8xANdMnm5ZEiw0S8wZOIeUoSf7olkXik0tyfFQhUdMP77VGNgPWUTROJS4cd2Zs1Ew9hcH3ka0HHDkmJekRes8bS9W4ilmAnkUXV4Iye1PiuB4iYd6j58F7H6kKVjCDO677HAQ==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from DM4PR12MB5373.namprd12.prod.outlook.com (2603:10b6:5:39a::17)
- by DM4PR12MB5117.namprd12.prod.outlook.com (2603:10b6:5:390::15) with
+ by DM6PR12MB5568.namprd12.prod.outlook.com (2603:10b6:5:20c::8) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4778.12; Wed, 8 Dec
- 2021 14:17:47 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.21; Wed, 8 Dec
+ 2021 14:17:49 +0000
 Received: from DM4PR12MB5373.namprd12.prod.outlook.com
  ([fe80::10d0:8c16:3110:f8ac]) by DM4PR12MB5373.namprd12.prod.outlook.com
  ([fe80::10d0:8c16:3110:f8ac%7]) with mapi id 15.20.4755.022; Wed, 8 Dec 2021
- 14:17:47 +0000
+ 14:17:49 +0000
 From:   Shay Drory <shayd@nvidia.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     jiri@nvidia.com, saeedm@nvidia.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Shay Drory <shayd@nvidia.com>,
         Moshe Shemesh <moshe@nvidia.com>
-Subject: [PATCH net-next v3 2/7] devlink: Add new "io_eq_size" generic device param
-Date:   Wed,  8 Dec 2021 16:17:17 +0200
-Message-Id: <20211208141722.13646-3-shayd@nvidia.com>
+Subject: [PATCH net-next v3 3/7] net/mlx5: Let user configure io_eq_size param
+Date:   Wed,  8 Dec 2021 16:17:18 +0200
+Message-Id: <20211208141722.13646-4-shayd@nvidia.com>
 X-Mailer: git-send-email 2.21.3
 In-Reply-To: <20211208141722.13646-1-shayd@nvidia.com>
 References: <20211208141722.13646-1-shayd@nvidia.com>
@@ -56,126 +56,177 @@ X-ClientProxiedBy: AM5PR0502CA0011.eurprd05.prod.outlook.com
  (2603:10a6:203:91::21) To DM4PR12MB5373.namprd12.prod.outlook.com
  (2603:10b6:5:39a::17)
 MIME-Version: 1.0
-Received: from nps-server-23.mtl.labs.mlnx (94.188.199.18) by AM5PR0502CA0011.eurprd05.prod.outlook.com (2603:10a6:203:91::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.17 via Frontend Transport; Wed, 8 Dec 2021 14:17:44 +0000
+Received: from nps-server-23.mtl.labs.mlnx (94.188.199.18) by AM5PR0502CA0011.eurprd05.prod.outlook.com (2603:10a6:203:91::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.17 via Frontend Transport; Wed, 8 Dec 2021 14:17:47 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f95fac76-55e6-4028-2d1c-08d9ba558216
-X-MS-TrafficTypeDiagnostic: DM4PR12MB5117:EE_
-X-Microsoft-Antispam-PRVS: <DM4PR12MB5117129C2DF5BE079957DCCACF6F9@DM4PR12MB5117.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
+X-MS-Office365-Filtering-Correlation-Id: 557733f0-1508-400e-fce5-08d9ba55837e
+X-MS-TrafficTypeDiagnostic: DM6PR12MB5568:EE_
+X-Microsoft-Antispam-PRVS: <DM6PR12MB5568794DF751B78B40200195CF6F9@DM6PR12MB5568.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2399;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: hYDeVFzCc8MY81IxHPvoaxyB/WnI2T7E4GrDN8L1notn3Xg6Fl96gNTvqmh7yUaFF/oXV/eJlQ9c8rqn9WZDwugaOrq6bB9NWdbWe7pEKG9EkJ7YjEhH7vGmU7jCNA6LSEcUwkFiGyxmRdT9hQB1Hn44qZBkoC8aozmr7OJ0E0SUFvyQbnOyXe4GbTMhibdpkqEQT+hBlDIDJXkSlWCLorZ4RLP49onMFYBw1mEsZH/vJ6z8FqmRgrQay8aiiYCxMwLWWFSsSZCtWKAELm4LxJo84yRHwrlSOWfYDV2t0xF/hFaNHRDZprsamONnF78qB1kbJpo/3j5aWNdZ58fB313oKyqK3mQyUxnOvytRjGcH6tJt5IpfXYQN3jhioTvf0IA5pOzpCWGTnI2BlxtWQBx60rdYQqZ62zTf7rF0Rs9IG4wRH9Fo4uTJsE9VvYJHoTTf2fnfd7NpSMnGBIi18i0w60cVa8yj9+yG35/W/k2ZhvMV4jlmvDsPrYAZv8gTcHQ60aoFw124C5Dt7TSU8Jq0m+o4/M1NeFdgiuHT8MUO+//4sRxdPn5WzwH+YLa1QXbXZZgVsqc+1LTjLwQR081OQITJ9wRDLy/UIH83CGYNjwzGHuLFe08s82mQMrb8V2kXBaDC5RRFInDFBgn7gFdbc7qUW5bFA2fGo1HvYpywE0V7Z1E4SbbiljrwVIcNgIe9FpJUBu7Cb2823Cy0t0IOCVNeRIDu2Dv3Ia1CDk4=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5373.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(5660300002)(316002)(83380400001)(52116002)(4326008)(107886003)(86362001)(54906003)(6486002)(110136005)(6506007)(26005)(66946007)(66476007)(66556008)(6666004)(186003)(36756003)(8676002)(6512007)(8936002)(508600001)(1076003)(2906002)(2616005)(956004)(38100700002)(38350700002)(41533002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: fcUe571HiJyu7U/m6dDemyS1/FQcfxgpVYJE4ZyhhJaD8tv/KVITAKVp+ThRnTmG+KEBvGpcyfKLOZaYFt1nxxge3B2WjLcaBvxQhQZn3CmL9Fg0W+9LBk6O2GvuAe3cW62Uz5tC03xJTBIGV1rSb9awMPebPxaXGHeCcTgUIklXNOa5FWUnvVkDkvtRL7gp8PFTmLPciobC23h/uatxO++2Siy6E26J9lO1erJ6RH1jN2Qvua34vxgyMKQNxfBCiRGmn/DoW5Q8T/gcDQdwqg1H3CjqhPTQTckAXszKtbHjV4TLX0iMemQRoCeemKD7nHbFc8wEv48yAcKOVgKoS377tlN1L5YNic1zEkdniu8DZpP//xJayMDPRTjTuSvxt1PnVyhsCJG//OlBCv2NFUJALvsjq0SjX4455ZdCG054565DA0V+DaYpeB+ITO2JiXQ12PcNg883VpjBejSJmTu7jx1RsMNeuQCcE8Z1JcLV7L5PS3KFcve3vN+gnFacl+HLskuSt1do3fH8K0WHZQpilZpoCkUeCN5IlE0GU9+Oa1Lyo6mckG6BBLa2yuSb4WCNkdHUjouPlGlQOPzV2jrAB0zUaOXZy4Q+LmUjKfBRArv2ht8sDZc9bsMroHZzlgRogMRVzg2U7xdqlHTjTQTuD5BMkI12+GXkeeUGfslFXwr+o347D0JzcV+4fC/4UChHa/Pvu5f4UmoIU8QIGQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5373.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(86362001)(66476007)(66556008)(1076003)(26005)(6512007)(52116002)(6666004)(107886003)(66946007)(6486002)(508600001)(2906002)(5660300002)(4326008)(8936002)(6506007)(36756003)(54906003)(186003)(956004)(38350700002)(8676002)(110136005)(2616005)(83380400001)(38100700002)(316002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?/5E1EhE5rHu2zdvf8OwH0rzQPK9cFGIY3KSwLpKmWTejw48i1OzCacil0kLL?=
- =?us-ascii?Q?xjML/n4n2Wj99RhyleaEdvcmEf4l2/qqNFZu55GMnHg9OHp1NSLuZxPhYaCz?=
- =?us-ascii?Q?IRO1+GQhqVplny8IRVKTRtiHqpczr7r58UpL010e3Z85TPECJoffONkUHPhp?=
- =?us-ascii?Q?tXPk+SI+hOXDiAR8ScufDyGCI+fBHi52ef+lItHNFxZI0F56MdW2o7mfdSHT?=
- =?us-ascii?Q?4/keprOIkZh4sKx/MeOZkYkd6JWgRWenvHFo2m6g1l3Je9dvzdkiQSZ2t5WH?=
- =?us-ascii?Q?4TulRfxpFAiwvUHOvxi3kZKD2gBIeUpGsVZZZhxVmVK7zmdEwqiq/L1bftq+?=
- =?us-ascii?Q?kN/A9J0PkvqW/AGIh74Uxg9GLiZiX7yezQXI2+fnwy2nLt90TGfvHyB4us0m?=
- =?us-ascii?Q?iysQ4NEn67SU6yuEgQkvLpx2XWsKquUEy0FCnrmgFUcMeKSXq8Ti6vr4byNH?=
- =?us-ascii?Q?9TKxqMevbdwhuOx7ea4NXUs7w6JW/2s5IDpGdHRDW4r3s5IxZ0KJu6nonfdf?=
- =?us-ascii?Q?CCEL4uzPyu6v5MlWoyIAVGpyNXGyurrp5cplWPMCKfkmpNAuGWl9DGGodHw4?=
- =?us-ascii?Q?MYsCp9/zZKJhRNtmvAvgnJGlmGhXjBI5iJ49cQqyAmptx5+FSu3Ee3C3YtWm?=
- =?us-ascii?Q?17LlVJ8fnHwjAJPEohpyWp9xWmCGiba2/nedV2o4BSif0Jj54Nlq56/COf4z?=
- =?us-ascii?Q?5o+BJWZh3sX5gzM6S1IngXWrE2tIie1hPdgi+rCVnHiYG7esTEYjQs8uKES5?=
- =?us-ascii?Q?0mTYXhdbkzoFwX77UcIXHXA/Yp6BAlW5GDV9YImBIVtG+xSfkaGEs11+Ausx?=
- =?us-ascii?Q?EPLmxdGPYFZGhTq+rle+7TUzGHkjsDGqCHoEdnWfat2dCz7IzjGRp/9mubKy?=
- =?us-ascii?Q?5WU2N7Ki64ece8mPWwKIIYMrqVskgW/YUBpsGuCH610n7sZnq5FWtwRBXbt0?=
- =?us-ascii?Q?R+HDhq9rByqqtjizOwASov5OAdR2SqfirsUleRQ5CiBN/vBQ78cNrly07G3r?=
- =?us-ascii?Q?TwFTRjtyKPGJUQRxFdZ9WqKiopFuCWROFm4A321V5yDvAuMan3cU+D5TBtWB?=
- =?us-ascii?Q?Lzgq2lRlYE1V73/1oNDIpc/pRQNwSzG0TzKt/BLFAPCPrA44RcYvCWyeShUb?=
- =?us-ascii?Q?YhZ2yIJ+wrVuj46fRTqOOe15y0yWPy8+LTDwnWnOEUQxKXQyJoiburoXSTf8?=
- =?us-ascii?Q?ADZMdDUHyRvKb/NibBZwRpOk0Eu+LN8j4wiKAacSehKkofsLz6RXoruN//IU?=
- =?us-ascii?Q?pZoAh0t4GeAwdlhJUuBZPmU5fMKZBA+WJXohGcOgnvj54z3e1TQjgrUUCcYE?=
- =?us-ascii?Q?oRXspC/hNSzEQ48KQORFFLZgBb/6D3xtr7YwGP1nFfHWrsOczOs0pkAiWB/R?=
- =?us-ascii?Q?ruiWuIBQi3J6fhQEkgjHHDg6U1TWEMcc043nU611S9BwmJ3jLXxG26jlENJv?=
- =?us-ascii?Q?9EE0LyxyC8WfV8aFNMVmdtIRniy3QRckkeiuckScXnlHyy7uyQujwF15/FEo?=
- =?us-ascii?Q?0gyTri5bEoJGnh7fJnp10eizjZbd1HcNBp2OEl9SmlT2hGGoU0cPY5e5DEji?=
- =?us-ascii?Q?1B1W26vvBo7xEpHH+d0Ody2e8yq5kOJ477pSkSmhBoHIaNhNFdw/NhwJqhhl?=
- =?us-ascii?Q?gk4l7mbwRVyjvd7zN12orF4=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ge2BZknIGBcj6F3bZ+m7/wSJmSwiKCZmSK7PwMnByCSf25Ki+mQ+YygESiBp?=
+ =?us-ascii?Q?n1HOe+zHj1wXmwfR9jCUCgM7z1YiJeOGnLqXPNgQH/fS2wvlAzD2bzKDdWDg?=
+ =?us-ascii?Q?yA8l5/HerPspg3MgTPsJr7zgNpkrkO5+7T69SHKozpnuRMi7m3wY8tBGUMSK?=
+ =?us-ascii?Q?x4G2Z1xET2YgQbJGxiLn0eglFA6NFYawzjkvOAzK/v1PCSmjg8WtJ5yGPvjj?=
+ =?us-ascii?Q?SfdHuLx3hhOf6M4W708JOeRaFQuENQ4HOj092RlsgHp+RsA44C+LnUtileyB?=
+ =?us-ascii?Q?9VRgl1vTouL1eUvtZe3BVk+fwzyCX23UyseJGJ4GyFF2It0oGXwgSbH1h1Z9?=
+ =?us-ascii?Q?6+a474c1sMAUxbIOI057SUmCuZBa0bsHF2BkM43JLDy9hMPox4GbIs0+9q4v?=
+ =?us-ascii?Q?oCdpJGKf6H0DY6pzTVVKaLiBq53gkAZoAW3c3NgKfjGAWcwe5DKu1GmzpGr6?=
+ =?us-ascii?Q?+KrCxAKpG7fbO65xbFwWh8Bj6wmsnHHbr+QnURP7wp1FG4umtsiD/3Hwh/zx?=
+ =?us-ascii?Q?TDtnWfAt7s41fmp01iJPJWQAUN3wCp8wgyt1BdvlkT+DjfLGpwo/+4m//+Pk?=
+ =?us-ascii?Q?gUhIIQybWL9eUTnnjDVWPzBmnNv/yf0Fkimi8Lywl8fl7IoDe/49O7Xm+etS?=
+ =?us-ascii?Q?2UDFy83ezNlJVbRnKWvVMEtYBOu2qNbT+nMenIrGiAWHf/p2URIH5BWOn89+?=
+ =?us-ascii?Q?XqDAjLZDm9efPdvapBi5hreLIC9tR74mXlz9zUOZtmwXGoSadRWtEh+687UC?=
+ =?us-ascii?Q?2dULA0Rvgks8K17wNwyZ9lf2NRZZHqxghChKqcP6lKZUA2hwMKd/0J0BybdC?=
+ =?us-ascii?Q?lfPtFn2GfKmuQCvSi47Z0eqF2kozvVt+P05Rz8OrBY2ACD2/5qDWJKlPMX40?=
+ =?us-ascii?Q?grVfXdupl+jJ5sk/y6Lo0qozfqrxaxt9uR2pjDdm02wtjXqatY/6axk/THJe?=
+ =?us-ascii?Q?fQrVqpG4JNYFb9/Yvyx5b2vtpAdEvHYGaZPhu8y1VzKKsfxzIZt48dvqcaMW?=
+ =?us-ascii?Q?YD8k2C9ryigI3w8r9rcCWZ+ehKHQKoWcScjIZjWFF6NQ8i7momXbch2ECiR9?=
+ =?us-ascii?Q?it/isBXmtkePetOluEfHSLSGoSo0Grbwcwa9SQN226J/T07xHddBzZOb2GJ9?=
+ =?us-ascii?Q?JC+2z4Q9SY90q9PFi53VOGQKiIQAMhQ7E0dljPjUMX6yxDJtCcR+MaMGdOyE?=
+ =?us-ascii?Q?s/vXKwGSUphnN9GHgH1mXeIznj1KP8dPtcKWt4t/CULuK3oIvHH+4GpqACUb?=
+ =?us-ascii?Q?L8q9edJ4BRjVoVE5tsY0RwW5yWs1rlgHoPISAY3f33l/o6xqSbNwBo23ZQiD?=
+ =?us-ascii?Q?h/oSb0ILHaUDiObTg1Yv0ZZ8wBFl5Mtqtcd397snQ6nQgaXwjD4bElZ4qCh0?=
+ =?us-ascii?Q?/YV4CFKubIsjE6H0qyuIbUkUR7/oTkf/1ieK/bE+vmoLHFdCFUgfLAYl0pRn?=
+ =?us-ascii?Q?ZiUGy4fPD97GTyWwVunY/20uB6S1b/tXOv8hF7BD8XvhfVpHX/E4thnECWwV?=
+ =?us-ascii?Q?nAU0ycxbTmnyHyTb0+WOyDAkso5wOKH/Koa3rsSbLnjQal6LNwFv2Ga9jOjA?=
+ =?us-ascii?Q?yD2r5iXIo6g3brZk2MmdWKtAe0RH3D7iIOTycEK8SrVbZBXL+Tj6RW6qy4KO?=
+ =?us-ascii?Q?vUBmszm9JiL5bLbNas/9kqo=3D?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f95fac76-55e6-4028-2d1c-08d9ba558216
+X-MS-Exchange-CrossTenant-Network-Message-Id: 557733f0-1508-400e-fce5-08d9ba55837e
 X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5373.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Dec 2021 14:17:46.9672
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Dec 2021 14:17:49.2771
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: UnQomFMaWNuJS1FQD15lF0y7yguC4sEoYupelqBfsq+gDGqoPFVrlNw3r1BprdQhjF+B1Xz4yColU8mDE77/xg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5117
+X-MS-Exchange-CrossTenant-UserPrincipalName: 4qvhjJ4XIREMztv7ECtWRlqv9CvqYCabj8zFaG4kdRiyVsQj7z79dv3KnGjvwvYdBXJARpGXcBlWnrwVjUOvRA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB5568
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add new device generic parameter to determine the size of the
-I/O completion EQs.
+Currently, each I/O EQ is taking 128KB of memory. This size
+is not needed in all use cases, and is critical with large scale.
+Hence, allow user to configure the size of I/O EQs.
 
 For example, to reduce I/O EQ size to 64, execute:
-$ devlink dev param set pci/0000:06:00.0 \
-              name io_eq_size value 64 cmode driverinit
-$ devlink dev reload pci/0000:06:00.0
+$ devlink dev param set pci/0000:00:0b.0 name io_eq_size value 64 \
+              cmode driverinit
+$ devlink dev reload pci/0000:00:0b.0
 
 Signed-off-by: Shay Drory <shayd@nvidia.com>
 Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
 ---
- Documentation/networking/devlink/devlink-params.rst | 3 +++
- include/net/devlink.h                               | 4 ++++
- net/core/devlink.c                                  | 5 +++++
- 3 files changed, 12 insertions(+)
+ Documentation/networking/devlink/mlx5.rst      |  4 ++++
+ .../net/ethernet/mellanox/mlx5/core/devlink.c  | 14 ++++++++++++++
+ drivers/net/ethernet/mellanox/mlx5/core/eq.c   | 18 +++++++++++++++++-
+ 3 files changed, 35 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/networking/devlink/devlink-params.rst b/Documentation/networking/devlink/devlink-params.rst
-index b7dfe693a332..cd9342305a13 100644
---- a/Documentation/networking/devlink/devlink-params.rst
-+++ b/Documentation/networking/devlink/devlink-params.rst
-@@ -129,3 +129,6 @@ own name.
-        will NACK any attempt of other host to reset the device. This parameter
-        is useful for setups where a device is shared by different hosts, such
-        as multi-host setup.
+diff --git a/Documentation/networking/devlink/mlx5.rst b/Documentation/networking/devlink/mlx5.rst
+index 4e4b97f7971a..291e7f63af73 100644
+--- a/Documentation/networking/devlink/mlx5.rst
++++ b/Documentation/networking/devlink/mlx5.rst
+@@ -14,8 +14,12 @@ Parameters
+ 
+    * - Name
+      - Mode
++     - Validation
+    * - ``enable_roce``
+      - driverinit
 +   * - ``io_eq_size``
-+     - u16
-+     - Control the size of I/O completion EQs.
-diff --git a/include/net/devlink.h b/include/net/devlink.h
-index 3276a29f2b81..b5f4acd0e0cd 100644
---- a/include/net/devlink.h
-+++ b/include/net/devlink.h
-@@ -459,6 +459,7 @@ enum devlink_param_generic_id {
- 	DEVLINK_PARAM_GENERIC_ID_ENABLE_RDMA,
- 	DEVLINK_PARAM_GENERIC_ID_ENABLE_VNET,
- 	DEVLINK_PARAM_GENERIC_ID_ENABLE_IWARP,
-+	DEVLINK_PARAM_GENERIC_ID_IO_EQ_SIZE,
++     - driverinit
++     - The range is between 64 and 4096.
  
- 	/* add new param generic ids above here*/
- 	__DEVLINK_PARAM_GENERIC_ID_MAX,
-@@ -511,6 +512,9 @@ enum devlink_param_generic_id {
- #define DEVLINK_PARAM_GENERIC_ENABLE_IWARP_NAME "enable_iwarp"
- #define DEVLINK_PARAM_GENERIC_ENABLE_IWARP_TYPE DEVLINK_PARAM_TYPE_BOOL
+ The ``mlx5`` driver also implements the following driver-specific
+ parameters.
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
+index 1c98652b244a..177c6e9159f8 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
+@@ -546,6 +546,13 @@ static int mlx5_devlink_enable_remote_dev_reset_get(struct devlink *devlink, u32
+ 	return 0;
+ }
  
-+#define DEVLINK_PARAM_GENERIC_IO_EQ_SIZE_NAME "io_eq_size"
-+#define DEVLINK_PARAM_GENERIC_IO_EQ_SIZE_TYPE DEVLINK_PARAM_TYPE_U32
++static int mlx5_devlink_eq_depth_validate(struct devlink *devlink, u32 id,
++					  union devlink_param_value val,
++					  struct netlink_ext_ack *extack)
++{
++	return (val.vu16 >= 64 && val.vu16 <= 4096) ? 0 : -EINVAL;
++}
 +
- #define DEVLINK_PARAM_GENERIC(_id, _cmodes, _get, _set, _validate)	\
- {									\
- 	.id = DEVLINK_PARAM_GENERIC_ID_##_id,				\
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index db3b52110cf2..0d4e63d11585 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -4466,6 +4466,11 @@ static const struct devlink_param devlink_param_generic[] = {
- 		.name = DEVLINK_PARAM_GENERIC_ENABLE_IWARP_NAME,
- 		.type = DEVLINK_PARAM_GENERIC_ENABLE_IWARP_TYPE,
- 	},
-+	{
-+		.id = DEVLINK_PARAM_GENERIC_ID_IO_EQ_SIZE,
-+		.name = DEVLINK_PARAM_GENERIC_IO_EQ_SIZE_NAME,
-+		.type = DEVLINK_PARAM_GENERIC_IO_EQ_SIZE_TYPE,
-+	},
+ static const struct devlink_param mlx5_devlink_params[] = {
+ 	DEVLINK_PARAM_DRIVER(MLX5_DEVLINK_PARAM_ID_FLOW_STEERING_MODE,
+ 			     "flow_steering_mode", DEVLINK_PARAM_TYPE_STRING,
+@@ -570,6 +577,8 @@ static const struct devlink_param mlx5_devlink_params[] = {
+ 	DEVLINK_PARAM_GENERIC(ENABLE_REMOTE_DEV_RESET, BIT(DEVLINK_PARAM_CMODE_RUNTIME),
+ 			      mlx5_devlink_enable_remote_dev_reset_get,
+ 			      mlx5_devlink_enable_remote_dev_reset_set, NULL),
++	DEVLINK_PARAM_GENERIC(IO_EQ_SIZE, BIT(DEVLINK_PARAM_CMODE_DRIVERINIT),
++			      NULL, NULL, mlx5_devlink_eq_depth_validate),
  };
  
- static int devlink_param_generic_verify(const struct devlink_param *param)
+ static void mlx5_devlink_set_params_init_values(struct devlink *devlink)
+@@ -608,6 +617,11 @@ static void mlx5_devlink_set_params_init_values(struct devlink *devlink)
+ 						   value);
+ 	}
+ #endif
++
++	value.vu32 = MLX5_COMP_EQ_SIZE;
++	devlink_param_driverinit_value_set(devlink,
++					   DEVLINK_PARAM_GENERIC_ID_IO_EQ_SIZE,
++					   value);
+ }
+ 
+ static const struct devlink_param enable_eth_param =
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eq.c b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
+index 792e0d6aa861..7686d7c9c824 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eq.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
+@@ -19,6 +19,7 @@
+ #include "lib/clock.h"
+ #include "diag/fw_tracer.h"
+ #include "mlx5_irq.h"
++#include "devlink.h"
+ 
+ enum {
+ 	MLX5_EQE_OWNER_INIT_VAL	= 0x1,
+@@ -796,6 +797,21 @@ static void destroy_comp_eqs(struct mlx5_core_dev *dev)
+ 	}
+ }
+ 
++static u16 comp_eq_depth_devlink_param_get(struct mlx5_core_dev *dev)
++{
++	struct devlink *devlink = priv_to_devlink(dev);
++	union devlink_param_value val;
++	int err;
++
++	err = devlink_param_driverinit_value_get(devlink,
++						 DEVLINK_PARAM_GENERIC_ID_IO_EQ_SIZE,
++						 &val);
++	if (!err)
++		return val.vu32;
++	mlx5_core_dbg(dev, "Failed to get param. using default. err = %d\n", err);
++	return MLX5_COMP_EQ_SIZE;
++}
++
+ static int create_comp_eqs(struct mlx5_core_dev *dev)
+ {
+ 	struct mlx5_eq_table *table = dev->priv.eq_table;
+@@ -807,7 +823,7 @@ static int create_comp_eqs(struct mlx5_core_dev *dev)
+ 
+ 	INIT_LIST_HEAD(&table->comp_eqs_list);
+ 	ncomp_eqs = table->num_comp_eqs;
+-	nent = MLX5_COMP_EQ_SIZE;
++	nent = comp_eq_depth_devlink_param_get(dev);
+ 	for (i = 0; i < ncomp_eqs; i++) {
+ 		struct mlx5_eq_param param = {};
+ 		int vecidx = i;
 -- 
 2.21.3
 
