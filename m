@@ -2,102 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A555D46CC8C
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 05:28:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5498146CC8E
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 05:30:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240384AbhLHEcH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 23:32:07 -0500
-Received: from sin.source.kernel.org ([145.40.73.55]:34912 "EHLO
-        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233519AbhLHEcG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 23:32:06 -0500
-Received: from mail.kernel.org (unknown [198.145.29.99])
+        id S235096AbhLHEdo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 23:33:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45366 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233519AbhLHEdm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 23:33:42 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5AD7C061574
+        for <netdev@vger.kernel.org>; Tue,  7 Dec 2021 20:30:11 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 2B393CE1FAC;
-        Wed,  8 Dec 2021 04:28:33 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPSA id EB9526052B;
-        Wed,  8 Dec 2021 04:28:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1638937711;
-        bh=y2aFHRT3xbJ/MoeEYqljar7awQKq44QJXZDHZuqCzPg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=o18aB1wlNWXcDx4GIxajZ91AO4rjNAkU75DEEEu2gYbj6NDddyNQy9+4K7fw1L2l2
-         PWfzlf/kBF48gLIUWMO8oOeZgbBw/mdMpWQCdOQR/CgUtf3Ox+3/f9hfdTrPAx0Wf6
-         8VVQBio4EFIvmW75zH6vYLNknDsu3cfdA0wUvg3Y=
-Date:   Tue, 7 Dec 2021 20:28:29 -0800
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     Xiu Jianfeng <xiujianfeng@huawei.com>
-Cc:     <keescook@chromium.org>, <laniel_francis@privacyrequired.com>,
-        <andriy.shevchenko@linux.intel.com>, <adobriyan@gmail.com>,
-        <linux@roeck-us.net>, <andreyknvl@gmail.com>, <dja@axtens.net>,
-        <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
-        <kafai@fb.com>, <songliubraving@fb.com>, <yhs@fb.com>,
-        <john.fastabend@gmail.com>, <kpsingh@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>
-Subject: Re: [PATCH -next 1/2] string.h: Introduce memset_range() for wiping
- members
-Message-Id: <20211207202829.48d15f0ffa006e3656811784@linux-foundation.org>
-In-Reply-To: <20211208030451.219751-2-xiujianfeng@huawei.com>
-References: <20211208030451.219751-1-xiujianfeng@huawei.com>
-        <20211208030451.219751-2-xiujianfeng@huawei.com>
-X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.31; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        by ams.source.kernel.org (Postfix) with ESMTPS id 83DEAB81113
+        for <netdev@vger.kernel.org>; Wed,  8 Dec 2021 04:30:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 5B6D4C341C3;
+        Wed,  8 Dec 2021 04:30:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1638937809;
+        bh=5urQPmie4gtGbM6qSFFIW86LLvBbl1EOyNjtY1GZO9k=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=OL/HN+mXj4K0CecGJRVb0nacdY1lPML5IadWQrxgTexPL45VL1y5Bb+eevtxsvouh
+         TDjJr0cQgJBCg6mg0yKQlHHcUicy3bYyr8Lhfb3cszf/f3T4rIAMMEiIsT6TQ7PU+l
+         RePNxZW7Njsf73Jwat9wBa8GPEBwJlYLiG0H2tdu0hCixhXl9yngp7QHc1EDWr1ZD3
+         /h8vKTVgZihVKvsxlJA9i20ouupQZmYaMZcZWpqEloEnVtPGgZ6LltHt9+Ayqz5xW1
+         t6FSJY5Ypj0tdULGgsXKb8vRCQpWHiPHe2VOFTZ4e6mUlHywDLZbKAQg4hC0Gqn8D/
+         i7nRTp0sxrGYA==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 3B15460A36;
+        Wed,  8 Dec 2021 04:30:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net 0/2] net: tls: cover all ciphers with tests 
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163893780923.13298.8296705027712028051.git-patchwork-notify@kernel.org>
+Date:   Wed, 08 Dec 2021 04:30:09 +0000
+References: <20211206213932.7508-1-vfedorenko@novek.ru>
+In-Reply-To: <20211206213932.7508-1-vfedorenko@novek.ru>
+To:     Vadim Fedorenko <vfedorenko@novek.ru>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 8 Dec 2021 11:04:50 +0800 Xiu Jianfeng <xiujianfeng@huawei.com> wrote:
+Hello:
 
-> Motivated by memset_after() and memset_startat(), introduce a new helper,
-> memset_range() that takes the target struct instance, the byte to write,
-> and two member names where zeroing should start and end.
+This series was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-Is this likely to have more than a single call site?
+On Tue,  7 Dec 2021 00:39:30 +0300 you wrote:
+> Recent patches to Kernel TLS showed that some ciphers are not covered
+> with tests. Let's cover missed.
+> 
+> Vadim Fedorenko (2):
+>   selftests: tls: add missing AES-CCM cipher tests
+>   selftests: tls: add missing AES256-GCM cipher
+> 
+> [...]
 
-> ...
->
-> --- a/include/linux/string.h
-> +++ b/include/linux/string.h
-> @@ -291,6 +291,26 @@ void memcpy_and_pad(void *dest, size_t dest_len, const void *src, size_t count,
->  	       sizeof(*(obj)) - offsetof(typeof(*(obj)), member));	\
->  })
->  
-> +/**
-> + * memset_range - Set a value ranging from member1 to member2, boundary included.
+Here is the summary with links:
+  - [net,1/2] selftests: tls: add missing AES-CCM cipher tests
+    https://git.kernel.org/netdev/net/c/d76c51f976ed
+  - [net,2/2] selftests: tls: add missing AES256-GCM cipher
+    https://git.kernel.org/netdev/net/c/13bf99ab2130
 
-I'm not sure what "boundary included" means.
-
-> + *
-> + * @obj: Address of target struct instance
-> + * @v: Byte value to repeatedly write
-> + * @member1: struct member to start writing at
-> + * @member2: struct member where writing should stop
-
-Perhaps "struct member before which writing should stop"?
-
-> + *
-> + */
-> +#define memset_range(obj, v, member_1, member_2)			\
-> +({									\
-> +	u8 *__ptr = (u8 *)(obj);					\
-> +	typeof(v) __val = (v);						\
-> +	BUILD_BUG_ON(offsetof(typeof(*(obj)), member_1) >		\
-> +		     offsetof(typeof(*(obj)), member_2));		\
-> +	memset(__ptr + offsetof(typeof(*(obj)), member_1), __val,	\
-> +	       offsetofend(typeof(*(obj)), member_2) -			\
-> +	       offsetof(typeof(*(obj)), member_1));			\
-> +})
-
-struct a {
-	int b;
-	int c;
-	int d;
-};
-
-How do I zero out `c' and `d'?
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
