@@ -2,50 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5212E46D586
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 15:18:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 89DDF46D587
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 15:18:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235014AbhLHOVo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 09:21:44 -0500
+        id S235110AbhLHOV6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 09:21:58 -0500
 Received: from mail-dm6nam12on2063.outbound.protection.outlook.com ([40.107.243.63]:3361
         "EHLO NAM12-DM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S235061AbhLHOVb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 Dec 2021 09:21:31 -0500
+        id S235154AbhLHOVo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 8 Dec 2021 09:21:44 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=F17f7j5HQVqX/h9DuMvFepaSpIGvzIbWWF0w029Hi8jnhmrFSW21T4GGVtuMPV4rz4FgabXwc7Wn+CrTenrs+7Fw+Yp8CzD4QSlvrPDJf4Ex/FKmtMJeigaiIW+acC6fa46aFYpNqgAbO2rM6exqVQGaiKF/3EVBowK0Yp29PtztZMcA2gzqbdbB/pFpUQzxUjYO+ji0ArmjIzW7PSjavFbtRoBC4XfgpIJKO6j5u52QuHwTt6gn5d0R2/m3gS4Gf2rbwUuTGmHLR77CVgg5z4b8Eupzztpxc1ZPk684rgOh6I91a/BAgbqx4YP0WDX18wKO0j6xub/H8q7lB61QbA==
+ b=n2HqXSVPYYZK4TPExI+M1D4iFsMxG/FBk6TTpO7lvCiNAShyzkbLf2KBkwYqeX/sjRrxGOm9N24XC6/EkMDixu8zZsDe8KHA/dq/iAMOFFPcs41f6M4wG5yOc3KNhOZVd0N90L1rjI9kXYqVHHPx40OSX+rKj2d2g3Sh0SEUlGx5eJT7SFyxYgC6IbS/rggt/dFvYPZME1ApJyAxbOe0N4cKOibf6Eof3DUM0gK+AHNGP84sHT1vAw5uYljdxt2m/zFZnkt+zN8lXmJLNcDj8kbvdm05Phxu6XHCMpbfych6HFsldLj+s2BxzNcQmaIUfRvNdIwADslKFOvnxRkfVw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=1LSE8cjKCVgUDXkmMRZbIiGt3SQSFpFkZLawUh3kQdc=;
- b=b1jNhtYrIEsHghzos0UHHzEjtuq2CYdaSSLYFLjvBYoLLZTGXaROUgaT3wde/cALNFjQ7oPFvqJjrwgAkI+PX6hWvJ+tWYvPSBH2jkFTwbWeiyTVvbhqm0aw9BrXtyzgsiJ63Epdy7JXr4iYDxd+sKd+7hRV2g6DifF33NPWWe+kwxZ4WUVzxOYJ35gr+idX+pplCho5xsTpien/HjLfyQgpC69GO1z9YB2KstFj560rDZK5SNgMYllmAkbETdtEempK4/aPvPMY3Ey7hekVrQdB69y3xvbfqo9jxFci0Hw5NTXKwQfUzlVdUfOsK15JZXk1mx9SKE5Q80Qf5KXIsA==
+ bh=c8d0TGroU7tkaElytOMwuSVvj7oxDRdutempO4+6cGY=;
+ b=CJdkcWVLbOo4PCiGK68xq5lW3iImaAdpWgGNowYeAy/6LrVmkvmZ8CT0R80auXJ1aCYK1dAV34UgFxfQ6J923K0e14xArcQvBTCuSE1kfSPLIbrnTYRJ+Iu5xZEvXs9eeRo/Qbfz2JzQMV7D+ordFsZGe8TfEx+taUUd8fBFg82KpreYMlB6Dj34Jzd17qs3g6iX0317GKwxc9wDaN23xU6DNB4Q1HRh0gjBrdhMVvOOH5t1uki33seJMFIZ+oF2KwTdlxxhBHPv2ZpcQA7kJELtG7vZHsITx5fVJS/aVdz6tKbllxBgbQYNFjUAFxPIHp0cvxUeUg+4Eanm/SqVuQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1LSE8cjKCVgUDXkmMRZbIiGt3SQSFpFkZLawUh3kQdc=;
- b=X1tTFdgsN42m8hTWcdA5mwoWZ4sdrxGvGdapkL/XPJol8v9jp8ar6zXTG+q5xULJ84j10quAWKp8mLvUYd5f7dnw4aQU1eihO84ntWRkzRQcfhNH099djg+iZBrU7Gm2ALrkFn0ePcOaWWtKUwyjJ7gu+aSuwbBMMDokLUDpdQLQnjORh/PVN70YT/ca3/sel+qFYJOT2odqrsWMRxDGJvTsU+iyhY8uZjJSUQAC9Or46Pg86oNzdiX/hLddS6n5Pvri0GgnSnUgWlGe3ob97QcMrApefZ18Va2H2g7hjErmge3D4hD52dnzcTLlzYzdbnf2h7T4nQWiEbNtu1FhLA==
+ bh=c8d0TGroU7tkaElytOMwuSVvj7oxDRdutempO4+6cGY=;
+ b=ut5xY7P4tOV2XbCfB/aWXEL18vDSyhVLb7Am0ZYcBQGgMoBX2m+Qt/b1LaviJMQEh0gwspbYWxsEqpD36Ji0hHDfa4iv3FggnS7oL6vgLnm8ZEV45O1irUkN9HSQB/uiJntdaQpzQEozktst6wt6TAbGhdipCQ8j0Q9+bw9TaCBSr3NAU4GTkayr10289BqPIBlX9mtYarUKtAezEO0hBljfSOuA85kO1XilmIOFSuXAtwzRM8pOQjlo56ymiOe0PNeuNjMeuSWvjHzEJXrnGVcEOIXIZWLikd3Eu5ftmivoV8LT1d+2DmdB63mESrFayxsFwlpnoj7ViyAFoiH3Lg==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from DM4PR12MB5373.namprd12.prod.outlook.com (2603:10b6:5:39a::17)
  by DM6PR12MB5568.namprd12.prod.outlook.com (2603:10b6:5:20c::8) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.21; Wed, 8 Dec
- 2021 14:17:56 +0000
+ 2021 14:17:58 +0000
 Received: from DM4PR12MB5373.namprd12.prod.outlook.com
  ([fe80::10d0:8c16:3110:f8ac]) by DM4PR12MB5373.namprd12.prod.outlook.com
  ([fe80::10d0:8c16:3110:f8ac%7]) with mapi id 15.20.4755.022; Wed, 8 Dec 2021
- 14:17:56 +0000
+ 14:17:58 +0000
 From:   Shay Drory <shayd@nvidia.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     jiri@nvidia.com, saeedm@nvidia.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Shay Drory <shayd@nvidia.com>
-Subject: [PATCH net-next v3 6/7] devlink: Clarifies max_macs generic devlink param
-Date:   Wed,  8 Dec 2021 16:17:21 +0200
-Message-Id: <20211208141722.13646-7-shayd@nvidia.com>
+        linux-kernel@vger.kernel.org, Shay Drory <shayd@nvidia.com>,
+        Moshe Shemesh <moshe@nvidia.com>,
+        Parav Pandit <parav@nvidia.com>
+Subject: [PATCH net-next v3 7/7] net/mlx5: Let user configure max_macs generic param
+Date:   Wed,  8 Dec 2021 16:17:22 +0200
+Message-Id: <20211208141722.13646-8-shayd@nvidia.com>
 X-Mailer: git-send-email 2.21.3
 In-Reply-To: <20211208141722.13646-1-shayd@nvidia.com>
 References: <20211208141722.13646-1-shayd@nvidia.com>
@@ -55,87 +57,235 @@ X-ClientProxiedBy: AM5PR0502CA0011.eurprd05.prod.outlook.com
  (2603:10a6:203:91::21) To DM4PR12MB5373.namprd12.prod.outlook.com
  (2603:10b6:5:39a::17)
 MIME-Version: 1.0
-Received: from nps-server-23.mtl.labs.mlnx (94.188.199.18) by AM5PR0502CA0011.eurprd05.prod.outlook.com (2603:10a6:203:91::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.17 via Frontend Transport; Wed, 8 Dec 2021 14:17:54 +0000
+Received: from nps-server-23.mtl.labs.mlnx (94.188.199.18) by AM5PR0502CA0011.eurprd05.prod.outlook.com (2603:10a6:203:91::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.17 via Frontend Transport; Wed, 8 Dec 2021 14:17:56 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 39b04edc-5f1d-44d9-335b-08d9ba558788
+X-MS-Office365-Filtering-Correlation-Id: 80a01573-d14a-48ec-f0cf-08d9ba55890e
 X-MS-TrafficTypeDiagnostic: DM6PR12MB5568:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR12MB55687B6F01F1B653DB554836CF6F9@DM6PR12MB5568.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:5797;
+X-Microsoft-Antispam-PRVS: <DM6PR12MB5568AD466D43B92D41500497CF6F9@DM6PR12MB5568.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: owztJhh9UKfYTPXaAF/gVvsoQyawcIgK00wBGAg4jgWTmV0B1+MwTZhxPjH3OQNB+xG16Sf57/5CfwjIc8cnauhvepX8vcdp/qOQLqo1ia/ARro4v61CGA7W1QaCnAaePonhpxYOFr5JM17FnyT18DV3XGr3uOazAlY7c/YPLYfbSNM8j/T6yS+lQKmlD2DCbnTgZqEBfLtjTxwFf+xz4hQ4jKqE/Dm54b/tgy+g9iuKCKIVcd6nXa6p/KihS/vG2fq2PtJvKpKc2PsYcKIC5hQLlmCk4ytmOmFuf5evuuApTu2mhR8SXxYdx0Tjm/kM1MTHfP0ZtcYBTef4TimUObd7wtOUI2oZ6qMTYscuS3cTQbsQJ3CHiDHb3Cek8g6sFcSjRvZaoScRVLhm6D572lT6JiKYhSzMvBwFCzKS5ahXRFOZ/lnxX8Vh54Nxjha3OfZt1lkXahusctvxJASJoyfB9esp04pg0kGBBmE5OIirIMUuzvXGyDwweEBIVSQhbo3cr3UTUwk7m6G/uouLqrcJZu56r6xtM8wZgk+AogkrwiXS2FeZY14CIRcHfquOWvKftRodfJEpaIQuBjCNVDTmD27Nvsr6LMiX0PyJigYG6VQURKDlNcc/N8b5Ur1ACmfK+3gcsSrhajJ4Lv2466P+uNJKztmFJVd2efK7t8Sr60i89Mal+TtwgJe7vJc/un4rY3Zx08A0x8Tt8YS+J0jckblvtNTy3+LuXU+sRg4=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5373.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(86362001)(66476007)(66556008)(1076003)(26005)(6512007)(52116002)(6666004)(107886003)(66946007)(6486002)(508600001)(2906002)(5660300002)(4326008)(8936002)(6506007)(36756003)(186003)(956004)(38350700002)(8676002)(110136005)(2616005)(83380400001)(38100700002)(316002)(41533002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: AJxR9I14HzjYmucE2NaSqqUfNnazZ2NUSqKuBiSt0vUVskS6h5atC4qYwZfaPf/gZrem273a8BtVKswND1Hxe3SMIm7z34kp0TXSmo/e32lZ8EcDCUYlfAQcRdjjHtA8QugWn9MrxSWxqG7JiYRJ+rhYe2rB2+2oLm+Gvl7JteYweiRJnEUbnR5ygDF5H1PCpCCHd8j5X/SCbUaABvsbSmXRRacH/7uzN2po7s/OZjVlTtC9Ng8fZaDNDKtlWngrM+jTMHlxS/6yEGzDxoBGW1uBmhlDnFKCtR/gpY1MScUZvdOaNxVcy5OCuTvph3Dmrn8MhNgQncAEa9cp169Sk3p+zAvnWtvNVzLKmFFiaPObROVN40QA1hBP0RIx7XJuPCqAsUWmI2BuZoiLwna9bNdaz9P5fK+b2iQdmcmY/pPERxsEolWf6otIUMxA+LVeKEOHeCw0IezcF0IEVFHaKjW6TBTLGJEnrYN5uY1Gg+cYoKrkY3jJUZur1FrCiTUQJq43Vi7xs5TeTEHjFe8UnMN9jORhVhcgmZlrABcMxeF5fJEC/xECYdKXgbgCjzLQ/tceKr1g4KWCoyZ7WAuVxyouKcW/LdEUkJO9UV5dHFmR4R8NVSss7p2mF3Rq+HJ/lmXhj3fXIupMU0pUT7d/cdRYz+lMlciVliNjmMn58lI3hZBMfg1bEFVAQvwyVFRoeRoaHRmdHKxmSNoZnrHizcAY4O4DdiAEgM06h0FP0uM=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5373.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(86362001)(66476007)(66556008)(1076003)(26005)(6512007)(52116002)(6666004)(107886003)(66946007)(6486002)(508600001)(2906002)(5660300002)(4326008)(8936002)(6506007)(36756003)(54906003)(186003)(956004)(38350700002)(8676002)(110136005)(2616005)(83380400001)(38100700002)(316002)(41533002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?OTywo5120e8jptQZStttY2AtkkXSIuZGTGFIVeOQMSGYbaezhpCGcRd0vPO/?=
- =?us-ascii?Q?xIlhiyqUjFqSzR/VVqoo5PUYnkJ36dq0Ezg030AATRIeTMXWyXzFxX1SFZa4?=
- =?us-ascii?Q?pNgE3R6I4MSl0Id1t+Pq2vCnNvNUpGXYm/Y6FOgRjUoHvD0vUMKwq6KOZNUL?=
- =?us-ascii?Q?Wu8DtSOpt1M5olDSc9QXn5VQJc1jc3WNHrEwjgkTuGg2C/q+DA2ELaO/vUUG?=
- =?us-ascii?Q?xoRsXfv47h2dTWxD/MvvedBHlDuSg9vgQynfPdLZbFoRvm0E2afMxB6YozMy?=
- =?us-ascii?Q?a7fSGpOKI7A8wU+Jf9GsplOresnhp2i/NDS1/UHXUm25pRLellS79MxjKqoq?=
- =?us-ascii?Q?dXJwPMIvLCyQRBpYWPGDFcAqSknIR+eSSNY2WZE9SynDwxa/xPWPkzVEXATe?=
- =?us-ascii?Q?FHIcinCGiUoGJVKCqtyTQsm39Yv3qP8v/2gI/aT6FjmAmX1uiE5n45drTTpT?=
- =?us-ascii?Q?3tZdWyblpYen+Evv9kBV5uMBLGkNjT2VVTOL+NlHVwlx5v0KthAp/gJpQqHG?=
- =?us-ascii?Q?QZh6OEUFcn+73YtNlN5/98QbB1ZlfnxUXzLTR9L9ojSuiFQSfF7dt4zlkO4+?=
- =?us-ascii?Q?DttCu+l71c0/WEBPttLkV83vLy3iIlLetR/RmyK0QJQdLEdDaCiW5FalyXgC?=
- =?us-ascii?Q?CVDBwNdGFD0OQZll7YKYNBC47WwVEMX0uwpQp7ugc/9TN1Et70BT70nqlprL?=
- =?us-ascii?Q?PJs5g0U2CrIyWI1bLg6aeedyN71M/eQCNUxvRYYrzGuvE4oOPFPQsu/vkwez?=
- =?us-ascii?Q?nOQzTQQ4sm2pA+uJoHHpeHEt3fX2RC/Ni7nVdBsCdEa0TVLiPuxuktgYtFHp?=
- =?us-ascii?Q?daZIN5IiyjaTmuE2inZTf49nRRex/TGx4lJ+NUvPBab5MULwxn4u/LURyAx4?=
- =?us-ascii?Q?kxqiCiHiTIApxGqRU4S7ccneNpyGSEz2nJwODZZVPL8PtAKc5vwyOuuFS/nX?=
- =?us-ascii?Q?nKa/qu8lJCdn6UTBiU+G3D0lqqo2pRRfMpCKtzvDfqcfk6uw+B6knzryam2z?=
- =?us-ascii?Q?KSRTX4IZJ6bSTRK26MMalWvlR9SJBG9SAbd8aHt5dAB21Yhk1wCmEzNDqhRF?=
- =?us-ascii?Q?ZujXW48bk3aJaM3XUxnDkvdZgvPE34TD39hMGS90cY0gVnPCo5R1EeEvnpXt?=
- =?us-ascii?Q?Ry47OPxknvmtlQoKvhUVpXZJ6OrRfIXcgPOjDkN1QscGJ5Lu6XPCuBavGGrr?=
- =?us-ascii?Q?VcL8V36efnDWIcq3wDXSKQsBX2kxBC5/iRBXNhITpZX1XWKVGmIZnBQDmug1?=
- =?us-ascii?Q?cT0woxhbvKkVau0GYPijqmirUoaMfP3bTjhEW8hOBnIqmWOue79Ss0BG67pC?=
- =?us-ascii?Q?p/G5Elq4PoG7uu2O5YUL8cPn0cQ9ci/dwmFwhZKWETBSaYpxvKYRjVIMNMMM?=
- =?us-ascii?Q?BqyhqEtl2FTPaAW6Ln/033BVKWBqPUBzcBDE9lOkFoHLgotZ4eIUDQ+n1Nnp?=
- =?us-ascii?Q?1EwdZlQF/oVwCjoNg41yhDKBZOGvxa7PV127zGc1Y/46kxlL/sZxNngAXtom?=
- =?us-ascii?Q?bJ3rPIupbwGDo8uZaJjTV+RNLfe8PI8b4ynOf3JlUH74Y+RuztjABNUBVGxw?=
- =?us-ascii?Q?rAqhRF4IK+PD5199momC6cN7rykbKo8yGVwZeM0iguA7TfgApovLN3ClmIJ+?=
- =?us-ascii?Q?vbjr05nwHRBvrCbP0hrrU80=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?X1R71b6gNuOFxy4SF08zMSGqfN/U0VSL4bDvYLVLSosBmYPO15odHjCdGBgY?=
+ =?us-ascii?Q?jwd8CdyQv+52XmoqQanxZHHC6TAg4T4LHyn7IgaCBUfx7bkRIqykJyS18J3M?=
+ =?us-ascii?Q?HjsPVO5VVp/PMywTKPzquVigGfQbbOlutqghSDlO0Ps+blldDPHIGCsU25mY?=
+ =?us-ascii?Q?ONIzCQq2KgPTi/VwzNbNxVumHWz1Z/w7kRZ7G9Z1X8OvycxEV7uD3srw0mGB?=
+ =?us-ascii?Q?wqPmtUoQHikgcMl1miEhT51j6IZjJSjJj9FIBU2nZxBzrd6kXtchXg6nx+dv?=
+ =?us-ascii?Q?M5Mvwq765JslCtKCTpkV+b4I2pzCMo6gwW2sVS8MLdGnKsna/xqLMg7oe3Ax?=
+ =?us-ascii?Q?9Mll1r3AGunK2tI34M0xiX1hh+Rh+LKVqfIuURX/f8351cmyLrPxQbClRKxB?=
+ =?us-ascii?Q?xTGl1FhcYW9LkejZ/zjmOAz2/T1ktibxoPFEHBrEinSgGEsxQk9cjIZXCzCt?=
+ =?us-ascii?Q?N5wykpmInfHruD3zeR7Nrx0jeTQkKLn0mggQcHuNHpbyeqNTfGBaulY892Q3?=
+ =?us-ascii?Q?EWBbU0PMpInFRzWIDbTbGQIzn6Zdaa16Bfr1x2PyS/JSqC4uBDdjpN6LEbkH?=
+ =?us-ascii?Q?96SsSos5Pjc/+CM6sMd6VUItza/IakR/PeAwRYPwxmUgwckRbCTtezxHUhRF?=
+ =?us-ascii?Q?3EDIShhGBoV5DrfNHs2UwUXLanhQYTnLZy7xPK+D4pc44nxV2jiv92fpTKQY?=
+ =?us-ascii?Q?4tK6/cTFcbNMEYFr6zLceMEf4cCDK+8Fnmdfl+N2qwzC2lZcLi5ipdAVoqUm?=
+ =?us-ascii?Q?aE4ZhNJljsxTCSOL6GXM+75x3hu6VP4+S55yCbqul0LjSKD4VCqUTrWja+Bc?=
+ =?us-ascii?Q?p5MnZpHOBBd/WWlbh7FW/k9kRG4IC/O++0kQq5J7khynTS8hQLd/XKQe0jMU?=
+ =?us-ascii?Q?rUAA3XeMpedXGE7ukd67ck5UVVVMEJakbyNErSgsTQQuYXgnLeyY6nGe4T+G?=
+ =?us-ascii?Q?f0W6XrM4wxfSySkTo8zZrpB//6BuZdCEOAKshzt7FDAWM3w1GbIM/ykXOXzX?=
+ =?us-ascii?Q?Abupdz972oEVnqeYhXYvMrvDs6AQuXP3dSqgwtiiNuI9VZ2/U7X0cEr7Z6pc?=
+ =?us-ascii?Q?hheqUEf/ssjxaJHHEY7HiJZmZNJp/gDA/CFyFnVu8H3DsbfwbVW+r4pkurpN?=
+ =?us-ascii?Q?TLjS7Nt/DfGazsb+ZYmLM43QSyldSgDWh+7OkRdYZcGX08wRbPUqNhSmXh7m?=
+ =?us-ascii?Q?HcOQvVoq6sqE8N2rUGF3bE/Z7VvSxvLMuw+bC4k3NCOY1qx2LuSUnSdurVNp?=
+ =?us-ascii?Q?/YdK3R8iHgIP6vGRlXN+A9j1nJcGznLkX3SfyqQvmPRoHucjl6GMBkla+XIh?=
+ =?us-ascii?Q?TJ2rA4qcXgm/RCsAwaYysuf6zRaWlDmalSPQJ3V0cw+3ASSJzfE/pCCGxwi/?=
+ =?us-ascii?Q?pLrYQZUXuf0Qc7A3wUZjIZ+n6hy92DyjymaqukjR7j/ixGA7FxfBvEox7Dn7?=
+ =?us-ascii?Q?bNb3T1dSRMTsn8aLcZg7eyB4SoigFGMbpo7O9DhpinYvH48nr3jWswQNC9HO?=
+ =?us-ascii?Q?d/SBraVUbPS/6XNWZsf2yt7OaQckxVzu767aHYW/OXo366zJhic94y9nzsfp?=
+ =?us-ascii?Q?z+CyQCDw5K1yVNe3LS4mxuJ/6uJY32ZgJn5ywf1IJmVTWO2Lk0/3JrFQgspl?=
+ =?us-ascii?Q?64lufhLymunzW0ObHRJHH+A=3D?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 39b04edc-5f1d-44d9-335b-08d9ba558788
+X-MS-Exchange-CrossTenant-Network-Message-Id: 80a01573-d14a-48ec-f0cf-08d9ba55890e
 X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5373.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Dec 2021 14:17:56.1250
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Dec 2021 14:17:58.6041
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: hrJU5mhQ0KN9hprYBC5OAt9evq02mT/6GafUYE7Ydd1jKsZW2G319/rA4VX06osuX+qgkq0y/CGeGz/NMGwfBg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: pUnjnUg5tJixRJ7Qxh/n+sDVgvo83UDmY31jvVA+uwz8LoRwuzEZB1KSE+Z7IcBTPDvSjP9mVxf5CNNjx34Rdw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB5568
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The generic param max_macs documentation isn't clear.
-Replace it with a more descriptive documentation
+Currently, max_macs is taking 70Kbytes of memory per function. This
+size is not needed in all use cases, and is critical with large scale.
+Hence, allow user to configure the number of max_macs.
+
+For example, to reduce the number of max_macs to 1, execute::
+$ devlink dev param set pci/0000:00:0b.0 name max_macs value 1 \
+              cmode driverinit
+$ devlink dev reload pci/0000:00:0b.0
 
 Signed-off-by: Shay Drory <shayd@nvidia.com>
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
+Reviewed-by: Parav Pandit <parav@nvidia.com>
 ---
- Documentation/networking/devlink/devlink-params.rst | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ Documentation/networking/devlink/mlx5.rst     |  3 +
+ .../net/ethernet/mellanox/mlx5/core/devlink.c | 67 +++++++++++++++++++
+ .../net/ethernet/mellanox/mlx5/core/main.c    | 21 ++++++
+ 3 files changed, 91 insertions(+)
 
-diff --git a/Documentation/networking/devlink/devlink-params.rst b/Documentation/networking/devlink/devlink-params.rst
-index 0eddee6e66f3..2cbdce4e6a1f 100644
---- a/Documentation/networking/devlink/devlink-params.rst
-+++ b/Documentation/networking/devlink/devlink-params.rst
-@@ -118,8 +118,10 @@ own name.
-        errors.
-    * - ``max_macs``
-      - u32
--     - Specifies the maximum number of MAC addresses per ethernet port of
--       this device.
-+     - Typically macvlan, vlan net devices mac are also programmed in their
-+       parent netdevice's Function rx filter. This parameter limit the
-+       maximum number of unicast mac address filters to receive traffic from
-+       per ethernet port of this device.
-    * - ``region_snapshot_enable``
-      - Boolean
-      - Enable capture of ``devlink-region`` snapshots.
+diff --git a/Documentation/networking/devlink/mlx5.rst b/Documentation/networking/devlink/mlx5.rst
+index 38089f0aefcf..38e94ed65936 100644
+--- a/Documentation/networking/devlink/mlx5.rst
++++ b/Documentation/networking/devlink/mlx5.rst
+@@ -23,6 +23,9 @@ Parameters
+    * - ``event_eq_size``
+      - driverinit
+      - The range is between 64 and 4096.
++   * - ``max_macs``
++     - driverinit
++     - The range is between 1 and 2^31. Only power of 2 values are supported.
+ 
+ The ``mlx5`` driver also implements the following driver-specific
+ parameters.
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
+index 37b7600c5545..d1093bb2d436 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
+@@ -773,6 +773,66 @@ static void mlx5_devlink_auxdev_params_unregister(struct devlink *devlink)
+ 	mlx5_devlink_eth_param_unregister(devlink);
+ }
+ 
++static int mlx5_devlink_max_uc_list_validate(struct devlink *devlink, u32 id,
++					     union devlink_param_value val,
++					     struct netlink_ext_ack *extack)
++{
++	struct mlx5_core_dev *dev = devlink_priv(devlink);
++
++	if (val.vu32 == 0) {
++		NL_SET_ERR_MSG_MOD(extack, "max_macs value must be greater than 0");
++		return -EINVAL;
++	}
++
++	if (!is_power_of_2(val.vu32)) {
++		NL_SET_ERR_MSG_MOD(extack, "Only power of 2 values are supported for max_macs");
++		return -EINVAL;
++	}
++
++	if (ilog2(val.vu32) >
++	    MLX5_CAP_GEN_MAX(dev, log_max_current_uc_list)) {
++		NL_SET_ERR_MSG_MOD(extack, "max_macs value is out of the supported range");
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
++static const struct devlink_param max_uc_list_param =
++	DEVLINK_PARAM_GENERIC(MAX_MACS, BIT(DEVLINK_PARAM_CMODE_DRIVERINIT),
++			      NULL, NULL, mlx5_devlink_max_uc_list_validate);
++
++static int mlx5_devlink_max_uc_list_param_register(struct devlink *devlink)
++{
++	struct mlx5_core_dev *dev = devlink_priv(devlink);
++	union devlink_param_value value;
++	int err;
++
++	if (!MLX5_CAP_GEN_MAX(dev, log_max_current_uc_list_wr_supported))
++		return 0;
++
++	err = devlink_param_register(devlink, &max_uc_list_param);
++	if (err)
++		return err;
++
++	value.vu32 = 1 << MLX5_CAP_GEN(dev, log_max_current_uc_list);
++	devlink_param_driverinit_value_set(devlink,
++					   DEVLINK_PARAM_GENERIC_ID_MAX_MACS,
++					   value);
++	return 0;
++}
++
++static void
++mlx5_devlink_max_uc_list_param_unregister(struct devlink *devlink)
++{
++	struct mlx5_core_dev *dev = devlink_priv(devlink);
++
++	if (!MLX5_CAP_GEN_MAX(dev, log_max_current_uc_list_wr_supported))
++		return;
++
++	devlink_param_unregister(devlink, &max_uc_list_param);
++}
++
+ #define MLX5_TRAP_DROP(_id, _group_id)					\
+ 	DEVLINK_TRAP_GENERIC(DROP, DROP, _id,				\
+ 			     DEVLINK_TRAP_GROUP_GENERIC_ID_##_group_id, \
+@@ -832,6 +892,10 @@ int mlx5_devlink_register(struct devlink *devlink)
+ 	if (err)
+ 		goto auxdev_reg_err;
+ 
++	err = mlx5_devlink_max_uc_list_param_register(devlink);
++	if (err)
++		goto max_uc_list_err;
++
+ 	err = mlx5_devlink_traps_register(devlink);
+ 	if (err)
+ 		goto traps_reg_err;
+@@ -842,6 +906,8 @@ int mlx5_devlink_register(struct devlink *devlink)
+ 	return 0;
+ 
+ traps_reg_err:
++	mlx5_devlink_max_uc_list_param_unregister(devlink);
++max_uc_list_err:
+ 	mlx5_devlink_auxdev_params_unregister(devlink);
+ auxdev_reg_err:
+ 	devlink_params_unregister(devlink, mlx5_devlink_params,
+@@ -852,6 +918,7 @@ int mlx5_devlink_register(struct devlink *devlink)
+ void mlx5_devlink_unregister(struct devlink *devlink)
+ {
+ 	mlx5_devlink_traps_unregister(devlink);
++	mlx5_devlink_max_uc_list_param_unregister(devlink);
+ 	mlx5_devlink_auxdev_params_unregister(devlink);
+ 	devlink_params_unregister(devlink, mlx5_devlink_params,
+ 				  ARRAY_SIZE(mlx5_devlink_params));
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+index d97c9e86d7b3..b1a82226623c 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+@@ -484,10 +484,26 @@ static int handle_hca_cap_odp(struct mlx5_core_dev *dev, void *set_ctx)
+ 	return set_caps(dev, set_ctx, MLX5_SET_HCA_CAP_OP_MOD_ODP);
+ }
+ 
++static int max_uc_list_get_devlink_param(struct mlx5_core_dev *dev)
++{
++	struct devlink *devlink = priv_to_devlink(dev);
++	union devlink_param_value val;
++	int err;
++
++	err = devlink_param_driverinit_value_get(devlink,
++						 DEVLINK_PARAM_GENERIC_ID_MAX_MACS,
++						 &val);
++	if (!err)
++		return val.vu32;
++	mlx5_core_dbg(dev, "Failed to get param. err = %d\n", err);
++	return err;
++}
++
+ static int handle_hca_cap(struct mlx5_core_dev *dev, void *set_ctx)
+ {
+ 	struct mlx5_profile *prof = &dev->profile;
+ 	void *set_hca_cap;
++	int max_uc_list;
+ 	int err;
+ 
+ 	err = mlx5_core_get_caps(dev, MLX5_CAP_GENERAL);
+@@ -561,6 +577,11 @@ static int handle_hca_cap(struct mlx5_core_dev *dev, void *set_ctx)
+ 	if (MLX5_CAP_GEN(dev, roce_rw_supported))
+ 		MLX5_SET(cmd_hca_cap, set_hca_cap, roce, mlx5_is_roce_init_enabled(dev));
+ 
++	max_uc_list = max_uc_list_get_devlink_param(dev);
++	if (max_uc_list > 0)
++		MLX5_SET(cmd_hca_cap, set_hca_cap, log_max_current_uc_list,
++			 ilog2(max_uc_list));
++
+ 	return set_caps(dev, set_ctx, MLX5_SET_HCA_CAP_OP_MOD_GENERAL_DEVICE);
+ }
+ 
 -- 
 2.21.3
 
