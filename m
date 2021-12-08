@@ -2,86 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E6D046C976
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 01:42:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9607446C978
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 01:43:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231616AbhLHAqW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 19:46:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50070 "EHLO
+        id S234092AbhLHAqn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 19:46:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229630AbhLHAqV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 19:46:21 -0500
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B96C4C061574;
-        Tue,  7 Dec 2021 16:42:50 -0800 (PST)
-Received: by mail-pj1-x102f.google.com with SMTP id p18-20020a17090ad31200b001a78bb52876so3145359pju.3;
-        Tue, 07 Dec 2021 16:42:50 -0800 (PST)
+        with ESMTP id S229630AbhLHAqn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 19:46:43 -0500
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44222C061574;
+        Tue,  7 Dec 2021 16:43:12 -0800 (PST)
+Received: by mail-wr1-x429.google.com with SMTP id d9so1142152wrw.4;
+        Tue, 07 Dec 2021 16:43:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=kXyvNxG4ME9II82+J6dZQTX1M1MTFkk+jTmDSFC36eQ=;
-        b=UsPwPXBrJaD5aTIzNRzDghnSST4UPCLI8zpSv+Fm6j9KaJz5IF+a6kIEEXynlj6neb
-         WU9m8O9+H5QP5bDzQhU3AQSdPBSbdiEWXUE4QQDnzesDKZko1FO0RxzzTa78oJ5vv2Do
-         eS+8SSYtc/0PygPidGUJW7h+CQHt3uhE5CBRwDbuzM+NVewa3h5rydkPZZV0F/VtktX7
-         ANWny89lF/ATt0QjrEXnaMmLEJeAdoJ6XlDdnc88pW0Xz4zBy750OWpXChqWCIJgxSeF
-         XeHWG7FMhmaHFrvq6sGu5zWgt42wxoVhqSD0KC1cXMWYu1luabBHV97nyjP6evvWkD7P
-         Nhyg==
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=rNVsWOs9u9ywd9rpfX+xxCh7W3ttJ/TcFfD+ZIoOpHk=;
+        b=qwTpv2akm4lVbsEdLpK/gYppyWuUY6ur5FoWBswrI3F9J59H92DsV4UHdiwXP+K5Aj
+         +u0sx0QMLfHgcsCiqotPZwV41mzgcKTan92grdMAiRZV0iHroVktNMqU2kE45pUIdg++
+         l9WVKJLrIiv+HxeMWv5Mwu9FQpi1w57VzgPRcgjTiP/Qpk4E5Hk8S38HhEHQok9ADWS/
+         HQLTlLJYKZyhFoxdV2webn4u298AjgY95drVo4zs5SjWGsOmPnFC47npdSY1PO2mMLp8
+         vT+DKHLi0WDLiQ7On+/rMOwHoFC4mmzoXC5XBa9qSxyY+/fECrA4DpcJcwyO7Mvhj/z6
+         FQxQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=kXyvNxG4ME9II82+J6dZQTX1M1MTFkk+jTmDSFC36eQ=;
-        b=ZDuoMu5umT4JNyU9IzTZ3FkFIkWhUpdpSD4KricYwkYvDXWG1Ia6C0ew7zRQu+dxKa
-         AEkIqKs6gnAkgpRWsibWXDCumVtPyB7crGNkCx9+TuTx3h3TLGzr9LcRO+Vtk+JRIgQX
-         yQu5pCNRIwiBJpYgWqCMs95sfsMmsQw0hhr3bgQyoMS3itiCRdlW+6fDiHRSxadKVoNZ
-         nmNn7AQi9gCLjPienDbUYu89UfLDs9y0DD1DlTiRDUafFJnA7XhBaLx+aYZf2O4lHQrT
-         bF5GMZva4IE1tfgAKIPKRaJdSOdf7Y1pONU3qk93LniRJFl5XrGff7KmS0eYcWdRWOz6
-         iTgw==
-X-Gm-Message-State: AOAM530Fhb/qynh+0I1yjAvc1I5Q3nCTzst5LH3nykC2d1MTW7pFSy5l
-        I8Bv8BbnrZQaBvQWTu1VidA=
-X-Google-Smtp-Source: ABdhPJxkeQXXTIq8UQndjfKpbPsMMQg+ZgdS0gr94eBvNKqKIEfhewWQHWYbUlUryVZiHSg9HJcGqg==
-X-Received: by 2002:a17:902:db12:b0:142:3ac:7ec3 with SMTP id m18-20020a170902db1200b0014203ac7ec3mr54911942plx.2.1638924170287;
-        Tue, 07 Dec 2021 16:42:50 -0800 (PST)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id q10sm3469947pjd.0.2021.12.07.16.42.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Dec 2021 16:42:49 -0800 (PST)
-Subject: Re: [PATCH v5 net-next 3/4] net: dsa: ocelot: felix: add interface
- for custom regmaps
-To:     Colin Foster <colin.foster@in-advantage.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=rNVsWOs9u9ywd9rpfX+xxCh7W3ttJ/TcFfD+ZIoOpHk=;
+        b=6xqm9htfWMTvarjwkjxJubFd2OlXRjWE2COdsmMZyaoL1To92T4wFS8cynMGTAnUuc
+         jVIK+oZmXW8a8wqhoCldhbZmpoksUWnEK+Fj0xMOIJkuV7kwFNzVGlSStczt5fpUDvDH
+         rAYl36NX/sq6AGUULbzxj9YuQefyncxlyRajVVheGn9VRuO9H5m4dwc20COR04bt73vq
+         u5g1CJ9brSNdt9uEyTRiyUK/JNiXjHY2P5waPC6sHLPI/TLKxRP0HlFceGBfP1dtkaaN
+         QPMAHFrCwqth4ts+lu8glWXXmqUGWYwP1RVd8tLVYo3eCLFF1flJswglHa4aIHKDa6mQ
+         saiA==
+X-Gm-Message-State: AOAM531T5I2PBxQGiju/kLhxj9wHb+ntbFHbvQtBd+bGevKw9glvyq9Q
+        p3L1zmCkI7vQhVqI/T1Ip0Q=
+X-Google-Smtp-Source: ABdhPJyGQvsdmG/3JfatcpWn9T4XwA0kxyf/jM+I293ioERC+FPeSNEsc6JSm7VAVtRqKfDtaKqK0A==
+X-Received: by 2002:a5d:53c9:: with SMTP id a9mr53037241wrw.119.1638924190622;
+        Tue, 07 Dec 2021 16:43:10 -0800 (PST)
+Received: from Ansuel-xps. (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
+        by smtp.gmail.com with ESMTPSA id q4sm1156123wrs.56.2021.12.07.16.43.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Dec 2021 16:43:10 -0800 (PST)
+Message-ID: <61afff9e.1c69fb81.92f07.6e7d@mx.google.com>
+X-Google-Original-Message-ID: <Ya//k194fhulC57w@Ansuel-xps.>
+Date:   Wed, 8 Dec 2021 01:42:59 +0100
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>
-References: <20211207170030.1406601-1-colin.foster@in-advantage.com>
- <20211207170030.1406601-4-colin.foster@in-advantage.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <e6113c1a-dfe7-b3fa-259f-42b3a172d37a@gmail.com>
-Date:   Tue, 7 Dec 2021 16:42:48 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [net-next RFC PATCH 0/6] Add support for qca8k mdio rw in
+ Ethernet packet
+References: <Ya+q02HlWsHMYyAe@lunn.ch>
+ <61afadb9.1c69fb81.7dfad.19b1@mx.google.com>
+ <Ya+yzNDMorw4X9CT@lunn.ch>
+ <61afb452.1c69fb81.18c6f.242e@mx.google.com>
+ <20211207205219.4eoygea6gey4iurp@skbuf>
+ <61afd6a1.1c69fb81.3281e.5fff@mx.google.com>
+ <Ya/esX+GTet9PM+D@lunn.ch>
+ <20211207234736.vpqurmattqx4a76h@skbuf>
+ <20211208000432.5nq47bjz3aqjvilp@skbuf>
+ <20211208004051.bx5u7rnpxxt2yqwc@skbuf>
 MIME-Version: 1.0
-In-Reply-To: <20211207170030.1406601-4-colin.foster@in-advantage.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211208004051.bx5u7rnpxxt2yqwc@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/7/21 9:00 AM, Colin Foster wrote:
-> Add an interface so that non-mmio regmaps can be used
+On Wed, Dec 08, 2021 at 02:40:51AM +0200, Vladimir Oltean wrote:
+> On Wed, Dec 08, 2021 at 02:04:32AM +0200, Vladimir Oltean wrote:
+> > On Wed, Dec 08, 2021 at 01:47:36AM +0200, Vladimir Oltean wrote:
+> > > > 2) is harder. But as far as i know, we have an 1:N setup.  One switch
+> > > > driver can use N tag drivers. So we need the switch driver to be sure
+> > > > the tag driver is what it expects. We keep the shared state in the tag
+> > > > driver, so it always has valid data, but when the switch driver wants
+> > > > to get a pointer to it, it needs to pass a enum dsa_tag_protocol and
+> > > > if it does not match, the core should return -EINVAL or similar.
+> > > 
+> > > In my proposal, the tagger will allocate the memory from its side of the
+> > > ->connect() call. So regardless of whether the switch driver side
+> > > connects or not, the memory inside dp->priv is there for the tagger to
+> > > use. The switch can access it or it can ignore it.
+> > 
+> > I don't think I actually said something useful here.
+> > 
+> > The goal would be to minimize use of dp->priv inside the switch driver,
+> > outside of the actual ->connect() / ->disconnect() calls.
+> > For example, in the felix driver which supports two tagging protocol
+> > drivers, I think these two methods would be enough, and they would
+> > replace the current felix_port_setup_tagger_data() and
+> > felix_port_teardown_tagger_data() calls.
+> > 
+> > An additional benefit would be that in ->connect() and ->disconnect() we
+> > get the actual tagging protocol in use. Currently the felix driver lacks
+> > there, because felix_port_setup_tagger_data() just sets dp->priv up
+> > unconditionally for the ocelot-8021q tagging protocol (luckily the
+> > normal ocelot tagger doesn't need dp->priv).
+> > 
+> > In sja1105 the story is a bit longer, but I believe that can also be
+> > cleaned up to stay within the confines of ->connect()/->disconnect().
+> > 
+> > So I guess we just need to be careful and push back against dubious use
+> > during review.
 > 
-> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
-> Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> I've started working on a prototype for converting sja1105 to this model.
+> It should be clearer to me by tomorrow whether there is anything missing
+> from this proposal.
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+I'm working on your suggestion and I should be able to post another RFC
+this night if all works correctly with my switch.
+
 -- 
-Florian
+	Ansuel
