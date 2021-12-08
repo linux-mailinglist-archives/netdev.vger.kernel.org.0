@@ -2,78 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B05A46CCD5
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 06:10:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EF1AF46CCD9
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 06:14:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230511AbhLHFNn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 00:13:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54250 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230316AbhLHFNm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 00:13:42 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69F60C061574;
-        Tue,  7 Dec 2021 21:10:11 -0800 (PST)
+        id S231220AbhLHFRs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 00:17:48 -0500
+Received: from sin.source.kernel.org ([145.40.73.55]:52848 "EHLO
+        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230316AbhLHFRs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 00:17:48 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 17DBFB81F77;
-        Wed,  8 Dec 2021 05:10:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id BC600C00446;
-        Wed,  8 Dec 2021 05:10:08 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 6991CCE1FAC;
+        Wed,  8 Dec 2021 05:14:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 659FAC00446;
+        Wed,  8 Dec 2021 05:14:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638940208;
-        bh=xST+sHP1UDvvtYZEnXeAwVG5Pu5fxpKjXr0ifZOX9qM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=h/tnU65s0BdafBVI9+vquWn3RquNsTDSEsys9Vt/J0V5gP1spnhqcpz/QLjEWP0/o
-         tPpHm2R6r/R4cL8TaSPzWh4seK2ZRUMoSa0c5SZNtI3H2LsQHT9a66NlyMC1W1XAIZ
-         aF9Scc4d/tMUaQEow6yCMDJ+BbHmcjGr5D+ojVOl7zG9pLZJ4gszvR8G1LBVm3rXov
-         ID3bV7upzOJfy9dPyRIT1YR/Jy2kNZwY5eNdzhdDHkH/403+Ys+JLGdBicmdA1Y3EV
-         lBTlhmTGA0SWEejQH71jQQ9GxqoF3ttsn2tamLRwsxgyOdhsXymTiIU0XoRIbPER23
-         NTRmettfusnGg==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 997AF60A53;
-        Wed,  8 Dec 2021 05:10:08 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1638940453;
+        bh=IGUxtBlsOfhCTSD6x5jyNgTkYX51+25bV8oON+CM/l4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=gG2+aDCRZcdSKZks0sHV9VrZnxhwog/t1xdwT0qQMyK3O5CeWKrQEIwXjzMBeQQ1J
+         I7T3p4bFlLR7/zLgRBtwntL4bsftSPHazEoMWGg18nPCOSxs7lmx4R0aw/7LuGnLl1
+         LJhBMgCFTRWqp8N3LyUgMNKQYZC9xJrdMxhVbnWSh9yV6Idlmu9dgpfeJCMwOdqZLq
+         P8DYgDTh5/XN7TFCQ01INBcxoABNEW41H/fLflhkKcC+cwEc8EvTzTqWE8LExgSDbI
+         n8Muh7q/TQ9qLzxz+rlBtlaU3z3QlmQEdfCB1XOLaKMuKuNolIN49db5sQuOl85DNp
+         ChOWpJ40+ViaA==
+Date:   Tue, 7 Dec 2021 21:14:12 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Kalle Valo <kvalo@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
+Subject: Re: pull-request: wireless-drivers-next-2021-12-07
+Message-ID: <20211207211412.13c78ace@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211207144211.A9949C341C1@smtp.kernel.org>
+References: <20211207144211.A9949C341C1@smtp.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2] gve: fix for null pointer dereference.
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163894020862.28255.17651952704191745484.git-patchwork-notify@kernel.org>
-Date:   Wed, 08 Dec 2021 05:10:08 +0000
-References: <20211205183810.8299-1-amhamza.mgc@gmail.com>
-In-Reply-To: <20211205183810.8299-1-amhamza.mgc@gmail.com>
-To:     Ameer Hamza <amhamza.mgc@gmail.com>
-Cc:     jeroendb@google.com, csully@google.com, awogbemila@google.com,
-        davem@davemloft.net, kuba@kernel.org, bcf@google.com,
-        willemb@google.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Tue,  7 Dec 2021 14:42:11 +0000 (UTC) Kalle Valo wrote:
+> here's a pull request to net-next tree, more info below. Please let me know if
+> there are any problems.
 
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+Pulled, thanks! Could you chase the appropriate people so that the new
+W=1 C=1 warnings get resolved before the merge window's here?
 
-On Sun,  5 Dec 2021 23:38:10 +0500 you wrote:
-> Avoid passing NULL skb to __skb_put() function call if
-> napi_alloc_skb() returns NULL.
-> 
-> Addresses-Coverity: 1494144 (Dereference NULL return value)
-> 
-> Signed-off-by: Ameer Hamza <amhamza.mgc@gmail.com>
-> 
-> [...]
-
-Here is the summary with links:
-  - [v2] gve: fix for null pointer dereference.
-    https://git.kernel.org/netdev/net/c/e6f60c51f043
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+https://patchwork.kernel.org/project/netdevbpf/patch/20211207144211.A9949C341C1@smtp.kernel.org/
