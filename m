@@ -2,55 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B05C146CD7F
+	by mail.lfdr.de (Postfix) with ESMTP id 1EF2C46CD7D
 	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 07:10:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237466AbhLHGNu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 01:13:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39142 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237259AbhLHGNn (ORCPT
+        id S237451AbhLHGNs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 01:13:48 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:44200 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237138AbhLHGNn (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 01:13:43 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4613EC061574;
-        Tue,  7 Dec 2021 22:10:12 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0FF05B81FBA;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 11BD4B81FBB;
         Wed,  8 Dec 2021 06:10:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id C9101C341CB;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D21ECC00446;
         Wed,  8 Dec 2021 06:10:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1638943809;
-        bh=INhacVaG4P5HzQ777ODVJupf9ZDf/A1ZZhWB3yOJM8E=;
+        bh=e2il+u5Jy2tg096aExSNPImViF/HrItOqVHEpRseGj8=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=RZFN26Hk+TjOeGuMOaIydIfybrrvGDeBnyvTCE/oOyXmCiDhjp/NvrvqlHDFm/mb9
-         pNh6xV7utvhGUQknLe/bHCcHbBwDOh3vhgH7mzzDZU9FnVwVZpjtN2QWL5MIyiJ+ia
-         /2qvD309mO+c+F33ggk0FNLqbRGBOPYxW/7B6ITlVRMO5+PnaZor+VLBd6nxZJUJlr
-         04TzZI4AySNj0cTDtHagMgXq254LESHrLU4PafWQEbPHKLYKy+EXrG8PHiEmRBdfZI
-         w5s7ySIxJMl5nkLkF1RKc0wW8h9T4pPNstMgys1TTSA7+U2CQYk4rHrVyzC7WrxHsd
-         gGi/NGg15C9GQ==
+        b=VW+uydl99T5M8SOuNCyol7Rb7sJ8/5tertmz+OdqZbJrSgRP80jLlBoGebmQPSThF
+         HZpYDJgN2FC2sOBo/lRoTGyl7fEx7u7nT4GursgJk9XjoLzzOZ4oMe/GpefKQMNiG2
+         Gy21fMHrmc8uYaRSNkUCWc+iQJ4JZ9jeMHVS8c7bHCQh4AQ77CJv8lLrcf8XYz0viN
+         FsegCwstlonf7vSFFSjnP7P4joLVlaXAw0/TAJB/KGvk6qdjohOSauLYRI5AHjhEWc
+         63KUygbHQi1Bpn7OZZafOivusGL6Cdw/jxhtJxNNK6ZDItdcBPtGJz466Ga9byrYd8
+         KQPFummE7kRMw==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id A9B3C60BCF;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id B537260A53;
         Wed,  8 Dec 2021 06:10:09 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] hv_sock: Extract hvs_send_data() helper that takes only
- header
+Subject: Re: [PATCH] net: dsa: felix: use kmemdup() to replace kmalloc + memcpy
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163894380969.19666.8744296090351862087.git-patchwork-notify@kernel.org>
+Message-Id: <163894380973.19666.10049198307333506096.git-patchwork-notify@kernel.org>
 Date:   Wed, 08 Dec 2021 06:10:09 +0000
-References: <20211207063217.2591451-1-keescook@chromium.org>
-In-Reply-To: <20211207063217.2591451-1-keescook@chromium.org>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org, decui@microsoft.com, sgarzare@redhat.com,
-        davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux-hyperv@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-hardening@vger.kernel.org
+References: <20211207064419.38632-1-hanyihao@vivo.com>
+In-Reply-To: <20211207064419.38632-1-hanyihao@vivo.com>
+To:     Yihao Han <hanyihao@vivo.com>
+Cc:     vladimir.oltean@nxp.com, claudiu.manoil@nxp.com,
+        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
+        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel@vivo.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -60,20 +55,20 @@ Hello:
 This patch was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Mon,  6 Dec 2021 22:32:17 -0800 you wrote:
-> When building under -Warray-bounds, the compiler is especially
-> conservative when faced with casts from a smaller object to a larger
-> object. While this has found many real bugs, there are some cases that
-> are currently false positives (like here). With this as one of the last
-> few instances of the warning in the kernel before -Warray-bounds can be
-> enabled globally, rearrange the functions so that there is a header-only
-> version of hvs_send_data(). Silences this warning:
+On Mon,  6 Dec 2021 22:44:18 -0800 you wrote:
+> Fix following coccicheck warning:
+> /drivers/net/dsa/ocelot/felix_vsc9959.c:1627:13-20:
+> WARNING opportunity for kmemdup
+> /drivers/net/dsa/ocelot/felix_vsc9959.c:1506:16-23:
+> WARNING opportunity for kmemdup
+> 
+> Signed-off-by: Yihao Han <hanyihao@vivo.com>
 > 
 > [...]
 
 Here is the summary with links:
-  - hv_sock: Extract hvs_send_data() helper that takes only header
-    https://git.kernel.org/netdev/net-next/c/c0e084e342a8
+  - net: dsa: felix: use kmemdup() to replace kmalloc + memcpy
+    https://git.kernel.org/netdev/net-next/c/e44aecc709ad
 
 You are awesome, thank you!
 -- 
