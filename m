@@ -2,91 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5157146CA17
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 02:35:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5107D46CAC0
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 03:19:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242476AbhLHBjK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 20:39:10 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:44246 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234326AbhLHBjK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 7 Dec 2021 20:39:10 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=oGqvZL2bCZkbyBRTHXbtR3qrLS4yqTi1pyKcjkCRtPw=; b=KylLcYPqSxpG0OHphp2+AODqfl
-        ISTVV+pr5DuEniJr4NE39ZJbTxZCD9VfxBQRoOOi22qr2OKiOHc4ZwnNDBQ/ViffoELnQsk/QJLLM
-        fOILvzz1fcdaZC+J0vzdE3RfcAmu1X250IRGRU3hMjFsiaC6K8KWrmJHBsXOaFDG1jVM=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mulrq-00FpaB-Vl; Wed, 08 Dec 2021 02:35:34 +0100
-Date:   Wed, 8 Dec 2021 02:35:34 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Ansuel Smith <ansuelsmth@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        id S239061AbhLHCWl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 21:22:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43904 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235106AbhLHCWi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 21:22:38 -0500
+Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53DF8C061746
+        for <netdev@vger.kernel.org>; Tue,  7 Dec 2021 18:19:07 -0800 (PST)
+Received: by mail-il1-x132.google.com with SMTP id 15so910971ilq.2
+        for <netdev@vger.kernel.org>; Tue, 07 Dec 2021 18:19:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=egauge.net; s=google;
+        h=message-id:subject:from:to:cc:date:in-reply-to:references
+         :organization:user-agent:mime-version:content-transfer-encoding;
+        bh=r+WvBmZpS0dwMmf0DqvGpLxh7nbMO6CLLW18P2NNE9w=;
+        b=YbXcK3PL90cxzRUAgazB7/ojV4aWjHBPd43EFmoKOLAEVrelKo6Qvp/YgkpNOvzQOP
+         W9ftiXyet8eI6Axv2qE7oCZv2APaphv3otsV+BF+g8fQr6fPqLG0TRch3W3OsTJLJtiY
+         B0nt/AgS3RreLW2ZZS+jPdyC6za4G+SyQEeQb6scaSoQVlM16QiUFhmQiRvTSHoYI4bR
+         ITLfBFl/ZgBpmkDOVLY6fuxK53/aEaK2hc2OJi/kvDF/bp3NmxO7Mrq77bkc3TC5x1fZ
+         BjSKrdMJCg8vuK0u8+by6AGOD8mXgd/jvMRtetBRyrZlqWdlWdPlKTNevo73gE2EN6r7
+         EvlA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:organization:user-agent:mime-version
+         :content-transfer-encoding;
+        bh=r+WvBmZpS0dwMmf0DqvGpLxh7nbMO6CLLW18P2NNE9w=;
+        b=o9gp/jDacwnx4dA09Ju0oDM/KzwedS/cLlG5B34ftlOvakCVUZcaCSAP2elirm9NAm
+         E3UPi92zYATOTCX1pFdFd3W9nTkRudnQiqKgWhY+Z2HL+Q3CwURF93ZMTOHGetwMuPyG
+         RIhRZdbdK7WtuV0N1JskEw8eu4UOCFPgs60PhU2XbUb3cRTPG9b17+jBUdyKzrKgFPvm
+         ZaSSf0cPP1Rip2hBQoJMjQi7TNCSa7mqtoBqyOjL6Qj5jdUFU9/fq7l4uEpcdr2cPMRR
+         Vqv4HmsYzIU40un2k3DwwxA5pZ62uar1emec+vMqdejy2M1+c+b3+NriUcgeBdOFt3DP
+         Llgw==
+X-Gm-Message-State: AOAM532b3xJauw3zBzgaPBe+um6cq7EN+okTgHGvAMbXiMslowYjY0Hg
+        3/7n6HgbAqOju3K4JodD7dms
+X-Google-Smtp-Source: ABdhPJxrGMMmzBgFck0ZVIBYgJkKyLzNMZXkfRw9YcDo7Qq+p6xvwogBPjRvN1CyCWrX69eSNnrbuw==
+X-Received: by 2002:a05:6e02:20c9:: with SMTP id 9mr2950559ilq.245.1638929946606;
+        Tue, 07 Dec 2021 18:19:06 -0800 (PST)
+Received: from ?IPv6:2601:281:8300:4e0:2ba9:697d:eeec:13b? ([2601:281:8300:4e0:2ba9:697d:eeec:13b])
+        by smtp.gmail.com with ESMTPSA id s20sm983283iog.25.2021.12.07.18.19.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Dec 2021 18:19:06 -0800 (PST)
+Message-ID: <6da1f2cc0ffc2c0106412c5aff52700edd183c6d.camel@egauge.net>
+Subject: Re: [PATCH 2/2] wilc1000: Fix missing newline in error message
+From:   David Mosberger-Tang <davidm@egauge.net>
+To:     Joe Perches <joe@perches.com>,
+        Ajay Singh <ajay.kathat@microchip.com>
+Cc:     Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [net-next RFC PATCH 0/6] Add support for qca8k mdio rw in
- Ethernet packet
-Message-ID: <YbAL5pP6IrN1ey5e@lunn.ch>
-References: <20211207145942.7444-1-ansuelsmth@gmail.com>
- <Ya+q02HlWsHMYyAe@lunn.ch>
- <61afadb9.1c69fb81.7dfad.19b1@mx.google.com>
- <Ya+yzNDMorw4X9CT@lunn.ch>
- <61afb452.1c69fb81.18c6f.242e@mx.google.com>
- <20211207205219.4eoygea6gey4iurp@skbuf>
- <61afd6a1.1c69fb81.3281e.5fff@mx.google.com>
- <20211207224525.ckdn66tpfba5gm5z@skbuf>
- <Ya/mD/KUYDLb7qed@lunn.ch>
- <20211207231449.bk5mxg3z2o7mmtzg@skbuf>
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Tue, 07 Dec 2021 19:19:05 -0700
+In-Reply-To: <5b44cebddcda765942aa118d25740a074137d0f8.camel@perches.com>
+References: <20211206232709.3192856-1-davidm@egauge.net>
+         <20211206232709.3192856-3-davidm@egauge.net>
+         <4687b01640eaaba01b3db455a7951a534572ee31.camel@perches.com>
+         <00d44cb3-3b38-7bb6-474f-c819c2403b6a@egauge.net>
+         <5b44cebddcda765942aa118d25740a074137d0f8.camel@perches.com>
+Organization: eGauge Systems LLC
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5-0ubuntu1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211207231449.bk5mxg3z2o7mmtzg@skbuf>
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 08, 2021 at 01:14:49AM +0200, Vladimir Oltean wrote:
-> On Tue, Dec 07, 2021 at 11:54:07PM +0100, Andrew Lunn wrote:
-> > > I considered a simplified form like this, but I think the tagger private
-> > > data will still stay in dp->priv, only its ownership will change.
+On Tue, 2021-12-07 at 16:23 -0800, Joe Perches wrote:
+> On Tue, 2021-12-07 at 15:58 -0700, David Mosberger-Tang wrote:
+> > On 12/6/21 6:33 PM, Joe Perches wrote:
 > > 
-> > Isn't dp a port structure. So there is one per port?
+> > > On Mon, 2021-12-06 at 23:27 +0000, David Mosberger-Tang wrote:
+> > > > Add missing newline in pr_err() message.
+> > > []
+> > > > diff --git a/drivers/net/wireless/microchip/wilc1000/netdev.c b/drivers/net/wireless/microchip/wilc1000/netdev.c
+> > > []
+> > > > @@ -27,7 +27,7 @@ static irqreturn_t isr_uh_routine(int irq, void *user_data)
+> > > >   	struct wilc *wilc = user_data;
+> > > >   
+> > > >   	if (wilc->close) {
+> > > > -		pr_err("Can't handle UH interrupt");
+> > > > +		pr_err("Can't handle UH interrupt\n");
+> > > Ideally this would use wiphy_<level>:
+> > > 
+> > > 		wiphy_err(wilc->wiphy, "Can't handle UH interrupt\n");
+> > 
+> > Sure, but that's orthogonal to this bug fix.
 > 
-> Yes, but dp->priv is a pointer. The thing it points to may not
-> necessarily be per port.
+> Of course.
 > 
-> > This is where i think we need to separate shared state from tagger
-> > private data. Probably tagger private data is not per port. Shared
-> > state between the switch driver and the tagger maybe is per port?
+> >  I do have a "cleanups" 
+> > branch with various cleanups of this sort.  I'll look into fixing pr_*() 
+> > calls in the cleanups branch (there are several of them, unsurprisingly).
 > 
-> I don't know whether there's such a big difference between
-> "shared state" vs "private data"?
+> netdev_<level> -> wiphy_<level> conversions too where feasible please.
 
-The difference is to do with stopping the kernel exploding when the
-switch driver is not using the tagger it expects.
+OK, I made a note for that, too, thanks.
 
-Anything which is private to the tagger is not a problem. Only the
-tagger uses it, so it cannot be wrong.
+  --david
 
-Anything which is shared between the tagger and the switch driver we
-have to be careful about. We are just passing void * pointers
-about. There is no type checking. If i'm correct about the 1:N
-relationship, we can store shared state in the tagger. The tagger
-should be O.K, because it only ever needs to deal with one format of
-shared state. The switch driver needs to handle N different formats of
-shared state, depending on which of the N different taggers are in
-operation. Ideally, when it asks for the void * pointer for shared
-information, some sort of checking is performed to ensure the void *
-is what the switch driver actually expects. Maybe it needs to pass the
-tag driver it thinks it is talking to, or as well as getting the void
-* back, it also gets the tag enum and it verifies it actually knows
-about that tag driver.
 
-     Andrew
