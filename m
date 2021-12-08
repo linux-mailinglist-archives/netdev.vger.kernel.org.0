@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 27CB446D261
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 12:38:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FD2546D260
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 12:38:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232685AbhLHLlq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 06:41:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57458 "EHLO
+        id S232664AbhLHLlp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 06:41:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232545AbhLHLlh (ORCPT
+        with ESMTP id S232603AbhLHLlh (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 06:41:37 -0500
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 132ADC0617A1;
-        Wed,  8 Dec 2021 03:38:04 -0800 (PST)
-Received: by mail-ed1-x52c.google.com with SMTP id o20so7315617eds.10;
-        Wed, 08 Dec 2021 03:38:04 -0800 (PST)
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA278C061D5F;
+        Wed,  8 Dec 2021 03:38:05 -0800 (PST)
+Received: by mail-ed1-x532.google.com with SMTP id x6so7417574edr.5;
+        Wed, 08 Dec 2021 03:38:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=RFw2RQjkTFDoBaa82P8+bnSrEcpG6WIvemEsOajZP3k=;
-        b=ltCI6OHobpahrmB4ku0odAN9yfTkO6TRmS9ckIjlouMrngD+IFhrOqQHj9pOF66QME
-         MnVi9Pfjzws308bxGaIeFsqpzMUxGxduOVpK4TZ7sKHCXNuhtrdJqEUQSoMAyYanEz/y
-         elxHTunZwMER1AO2y0+LmZRooY2rEBzGpvuwYghY85YDZ50/dsb94dyjqxrW1r531UV/
-         zY92pxoYvRJRficWSIDliFJq5cf3P0Bq1Uxgt3pVg5o7BZDEOHab8Ra6N2VMrpO97ICd
-         pbAHSw7Ox17ofKN3kH6jyFKk1BSgptczH5OcBAM07Cr1SWRXLksQoNC1JLERvODnsFP3
-         obSg==
+        bh=Zwg/3jXbHrDqLr7GxjKESPVOjZiPbN+/TXSEuiw/m4o=;
+        b=DRIfx9VyPx3PPierHsehZT72JONUdDPL6xMnNNdoxd8QZrsg4nggfqYrqmXierk5Sw
+         wOw2DrrpTnEUr+368nYhKM1RADiZxeZBF/ieodEcdPoxyixBjGt6SRdJfIWcU3bC4SgZ
+         bJk39M3qfeeArcHKHr+J4kITgLieRgEKi/4aPhWkinDjvlrzJWvmcpRgA2VBK26chgHS
+         8RTq3nr1IKEsN5jACdGOxvCHwaOFkQudxIbcJDkJC0G/3NqPFzAUUsT2AaGdY12cBUO9
+         s4WqiseykcNSV3+jHkhFRAd1rUrN7H1Fnprk8eZf2m3ZfWmMB3pPtbE9UrZ/Vg7CgJ9H
+         zK6A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=RFw2RQjkTFDoBaa82P8+bnSrEcpG6WIvemEsOajZP3k=;
-        b=ZTdZqFbaz+dsQmiC46QSzgyawuD/tVeezyfPaFwVw50J3VWxnVPsvUbfbDH6kkLamI
-         yNUmjagB6co/vWIL/SPFyyf3kZvXHMhVHQK8531nz++byFErvzdeusw/HGMGaSXgFwbP
-         pU5qK8BOSvrqvhEa5sxixHTjkFhs/0/N078eH5dYJv6D6OxA0Z5Qu//SBJMAPP0CUpKh
-         lgBc4W3XsaPn/lTlf+ly9bz6dyioqYP49SRfpzOJjN0sPVbbqeSNBfXX8IN4S+rbkoLD
-         t/2NuVaB2GUqTv62GgJS2PLAP48Yp3pck9hToty6Ij2qPjZ7MWHK6uswCkbVFrRuYYXi
-         A+5w==
-X-Gm-Message-State: AOAM530r00CFLnqUjrDre6RLwpA+czrifH2mzWnmj4jUtHZk9YtcW6wl
-        QJ4arXSOMTy3Bnc6KVUUPBs=
-X-Google-Smtp-Source: ABdhPJxHW9Mg1vngFawSOz3rnVyHEg/j9692rU0zHHAA9zds/d001sGEVDA9cGAXFKzI9s6a5YSF7g==
-X-Received: by 2002:a05:6402:3481:: with SMTP id v1mr19060285edc.337.1638963482620;
-        Wed, 08 Dec 2021 03:38:02 -0800 (PST)
+        bh=Zwg/3jXbHrDqLr7GxjKESPVOjZiPbN+/TXSEuiw/m4o=;
+        b=IlDk5x7hmx9w3PLskPG3YU3gurP+70a219v8LwvK3BT+ATEIVOmnQRNHjWHusBNoub
+         WNQgbE3VsmShJ+Wx5VZVlPGX6iSipHr81cmdyqP5s70qLsNq+h7Kiy4WqB1dV9vg8dL8
+         LU1qkzSVIkZ0sUjomTUTEwm7ACoGldILUpiJFb2bXPm+r7lc4AY1cn2TTld/L6/4Z37S
+         1uwBGZIZeJD74N/crTZQqlcPFvz3LuP/TUghaPzGkVa1VTxBE0+/5nrWWgRe5bERldtF
+         HkknQJ4CHS4CeIf2SUvq/eKVRiRYi6QfaE11rtc3Mw4OGyTMpvZ9FxTVbQQ8ZyXA2LjE
+         bLtw==
+X-Gm-Message-State: AOAM532tkfIAjFXO0jualC6vlhfO6yf3MiQty/gzNzKhkt0W0U1L+BJV
+        VpA0/0ZqdCAq1RbwN//5t4Q=
+X-Google-Smtp-Source: ABdhPJwt63BDI/tVWBgZiJuF8Ge5LwXsx0bVbHMtuJ4w0nreBd7GDWTDG/6V0lSNlXAsX/p8KnUUHQ==
+X-Received: by 2002:a05:6402:2026:: with SMTP id ay6mr18499488edb.202.1638963484371;
+        Wed, 08 Dec 2021 03:38:04 -0800 (PST)
 Received: from ponky.lan ([2a04:241e:501:3870:3c9f:e05b:4dff:43ba])
-        by smtp.gmail.com with ESMTPSA id g11sm1883810edz.53.2021.12.08.03.38.01
+        by smtp.gmail.com with ESMTPSA id g11sm1883810edz.53.2021.12.08.03.38.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Dec 2021 03:38:02 -0800 (PST)
+        Wed, 08 Dec 2021 03:38:03 -0800 (PST)
 From:   Leonard Crestez <cdleonard@gmail.com>
 To:     David Ahern <dsahern@kernel.org>,
         Dmitry Safonov <0x7f454c46@gmail.com>,
@@ -65,9 +65,9 @@ Cc:     Francesco Ruggeri <fruggeri@arista.com>,
         Priyaranjan Jha <priyarjha@google.com>, netdev@vger.kernel.org,
         linux-crypto@vger.kernel.org, linux-kselftest@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v3 03/18] tcp: authopt: Add crypto initialization
-Date:   Wed,  8 Dec 2021 13:37:18 +0200
-Message-Id: <4b46ef74e1504c2377e9d7c22b2882e3424dfbd8.1638962992.git.cdleonard@gmail.com>
+Subject: [PATCH v3 04/18] tcp: md5: Refactor tcp_sig_hash_skb_data for AO
+Date:   Wed,  8 Dec 2021 13:37:19 +0200
+Message-Id: <b0abffd47667dd777738929505019a67779edb8b.1638962992.git.cdleonard@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1638962992.git.cdleonard@gmail.com>
 References: <cover.1638962992.git.cdleonard@gmail.com>
@@ -77,282 +77,141 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The crypto_shash API is used in order to compute packet signatures. The
-API comes with several unfortunate limitations:
-
-1) Allocating a crypto_shash can sleep and must be done in user context.
-2) Packet signatures must be computed in softirq context
-3) Packet signatures use dynamic "traffic keys" which require exclusive
-access to crypto_shash for crypto_setkey.
-
-The solution is to allocate one crypto_shash for each possible cpu for
-each algorithm at setsockopt time. The per-cpu tfm is then borrowed from
-softirq context, signatures are computed and the tfm is returned.
-
-The pool for each algorithm is allocated on first use.
+This chunk of code is identical between the implementation of TCP-MD5
+and TCP-AO so rename and refactor
 
 Signed-off-by: Leonard Crestez <cdleonard@gmail.com>
 ---
- include/net/tcp_authopt.h |  16 ++++
- net/ipv4/tcp_authopt.c    | 166 ++++++++++++++++++++++++++++++++++++++
- 2 files changed, 182 insertions(+)
+ include/net/tcp.h   |  2 +-
+ net/ipv4/tcp.c      | 38 ++++++++++++++++++++------------------
+ net/ipv4/tcp_ipv4.c |  2 +-
+ net/ipv6/tcp_ipv6.c |  2 +-
+ 4 files changed, 23 insertions(+), 21 deletions(-)
 
-diff --git a/include/net/tcp_authopt.h b/include/net/tcp_authopt.h
-index 42ad764e98c2..5217b6c7c900 100644
---- a/include/net/tcp_authopt.h
-+++ b/include/net/tcp_authopt.h
-@@ -2,10 +2,24 @@
- #ifndef _LINUX_TCP_AUTHOPT_H
- #define _LINUX_TCP_AUTHOPT_H
- 
- #include <uapi/linux/tcp.h>
- 
-+/* According to RFC5925 the length of the authentication option varies based on
-+ * the signature algorithm. Linux only implements the algorithms defined in
-+ * RFC5926 which have a constant length of 16.
-+ *
-+ * This is used in stack allocation of tcp option buffers for output. It is
-+ * shorter than the length of the MD5 option.
-+ *
-+ * Input packets can have authentication options of different lengths but they
-+ * will always be flagged as invalid (since no such algorithms are supported).
-+ */
-+#define TCPOLEN_AUTHOPT_OUTPUT	16
-+
-+struct tcp_authopt_alg_imp;
-+
- /**
-  * struct tcp_authopt_key_info - Representation of a Master Key Tuple as per RFC5925
-  *
-  * Key structure lifetime is only protected by RCU so readers needs to hold a
-  * single rcu_read_lock until they're done with the key.
-@@ -27,10 +41,12 @@ struct tcp_authopt_key_info {
- 	u8 keylen;
- 	/** @key: Same as &tcp_authopt_key.key */
- 	u8 key[TCP_AUTHOPT_MAXKEYLEN];
- 	/** @addr: Same as &tcp_authopt_key.addr */
- 	struct sockaddr_storage addr;
-+	/** @alg: Algorithm implementation matching alg_id */
-+	struct tcp_authopt_alg_imp *alg;
- };
- 
- /**
-  * struct tcp_authopt_info - Per-socket information regarding tcp_authopt
-  *
-diff --git a/net/ipv4/tcp_authopt.c b/net/ipv4/tcp_authopt.c
-index e6740ef29a84..478969d53094 100644
---- a/net/ipv4/tcp_authopt.c
-+++ b/net/ipv4/tcp_authopt.c
-@@ -3,10 +3,164 @@
- #include <linux/kernel.h>
- #include <net/tcp.h>
- #include <net/tcp_authopt.h>
- #include <crypto/hash.h>
- 
-+/* All current algorithms have a mac length of 12 but crypto API digestsize can be larger */
-+#define TCP_AUTHOPT_MAXMACBUF			20
-+#define TCP_AUTHOPT_MAX_TRAFFIC_KEY_LEN		20
-+#define TCP_AUTHOPT_MACLEN			12
-+
-+/* Constant data with per-algorithm information from RFC5926
-+ * The "KDF" and "MAC" happen to be the same for both algorithms.
-+ */
-+struct tcp_authopt_alg_imp {
-+	/* Name of algorithm in crypto-api */
-+	const char *alg_name;
-+	/* One of the TCP_AUTHOPT_ALG_* constants from uapi */
-+	u8 alg_id;
-+	/* Length of traffic key */
-+	u8 traffic_key_len;
-+
-+	/* shared crypto_shash */
-+	struct mutex init_mutex;
-+	bool init_done;
-+	struct crypto_shash * __percpu *tfms;
-+};
-+
-+static struct tcp_authopt_alg_imp tcp_authopt_alg_list[] = {
-+	{
-+		.alg_id = TCP_AUTHOPT_ALG_HMAC_SHA_1_96,
-+		.alg_name = "hmac(sha1)",
-+		.traffic_key_len = 20,
-+		.init_mutex = __MUTEX_INITIALIZER(tcp_authopt_alg_list[0].init_mutex),
-+	},
-+	{
-+		.alg_id = TCP_AUTHOPT_ALG_AES_128_CMAC_96,
-+		.alg_name = "cmac(aes)",
-+		.traffic_key_len = 16,
-+		.init_mutex = __MUTEX_INITIALIZER(tcp_authopt_alg_list[1].init_mutex),
-+	},
-+};
-+
-+/* get a pointer to the tcp_authopt_alg instance or NULL if id invalid */
-+static inline struct tcp_authopt_alg_imp *tcp_authopt_alg_get(int alg_num)
-+{
-+	if (alg_num <= 0 || alg_num > 2)
-+		return NULL;
-+	return &tcp_authopt_alg_list[alg_num - 1];
-+}
-+
-+static void __tcp_authopt_alg_free(struct tcp_authopt_alg_imp *alg)
-+{
-+	int cpu;
-+	struct crypto_shash *tfm;
-+
-+	if (!alg->tfms)
-+		return;
-+	for_each_possible_cpu(cpu) {
-+		tfm = *per_cpu_ptr(alg->tfms, cpu);
-+		if (tfm) {
-+			crypto_free_shash(tfm);
-+			*per_cpu_ptr(alg->tfms, cpu) = NULL;
-+		}
-+	}
-+	free_percpu(alg->tfms);
-+	alg->tfms = NULL;
-+}
-+
-+static int __tcp_authopt_alg_init(struct tcp_authopt_alg_imp *alg)
-+{
-+	struct crypto_shash *tfm;
-+	int cpu;
-+	int err;
-+
-+	BUILD_BUG_ON(TCP_AUTHOPT_MAXMACBUF < TCPOLEN_AUTHOPT_OUTPUT);
-+	if (WARN_ON_ONCE(alg->traffic_key_len > TCP_AUTHOPT_MAX_TRAFFIC_KEY_LEN))
-+		return -ENOBUFS;
-+
-+	alg->tfms = alloc_percpu(struct crypto_shash *);
-+	if (!alg->tfms)
-+		return -ENOMEM;
-+	for_each_possible_cpu(cpu) {
-+		tfm = crypto_alloc_shash(alg->alg_name, 0, 0);
-+		if (IS_ERR(tfm)) {
-+			err = PTR_ERR(tfm);
-+			goto out_err;
-+		}
-+
-+		/* sanity checks: */
-+		if (WARN_ON_ONCE(crypto_shash_digestsize(tfm) != alg->traffic_key_len)) {
-+			err = -EINVAL;
-+			goto out_err;
-+		}
-+		if (WARN_ON_ONCE(crypto_shash_digestsize(tfm) > TCP_AUTHOPT_MAXMACBUF)) {
-+			err = -EINVAL;
-+			goto out_err;
-+		}
-+
-+		*per_cpu_ptr(alg->tfms, cpu) = tfm;
-+	}
-+	return 0;
-+
-+out_err:
-+	__tcp_authopt_alg_free(alg);
-+	return err;
-+}
-+
-+static int tcp_authopt_alg_require(struct tcp_authopt_alg_imp *alg)
-+{
-+	int err = 0;
-+
-+	mutex_lock(&alg->init_mutex);
-+	if (alg->init_done)
-+		goto out;
-+	err = __tcp_authopt_alg_init(alg);
-+	if (err)
-+		goto out;
-+	pr_info("initialized tcp-ao algorithm %s", alg->alg_name);
-+	alg->init_done = true;
-+
-+out:
-+	mutex_unlock(&alg->init_mutex);
-+	return err;
-+}
-+
-+static struct crypto_shash *tcp_authopt_alg_get_tfm(struct tcp_authopt_alg_imp *alg)
-+{
-+	local_bh_disable();
-+	return *this_cpu_ptr(alg->tfms);
-+}
-+
-+static void tcp_authopt_alg_put_tfm(struct tcp_authopt_alg_imp *alg, struct crypto_shash *tfm)
-+{
-+	WARN_ON(tfm != *this_cpu_ptr(alg->tfms));
-+	local_bh_enable();
-+}
-+
-+static struct crypto_shash *tcp_authopt_get_kdf_shash(struct tcp_authopt_key_info *key)
-+{
-+	return tcp_authopt_alg_get_tfm(key->alg);
-+}
-+
-+static void tcp_authopt_put_kdf_shash(struct tcp_authopt_key_info *key,
-+				      struct crypto_shash *tfm)
-+{
-+	return tcp_authopt_alg_put_tfm(key->alg, tfm);
-+}
-+
-+static struct crypto_shash *tcp_authopt_get_mac_shash(struct tcp_authopt_key_info *key)
-+{
-+	return tcp_authopt_alg_get_tfm(key->alg);
-+}
-+
-+static void tcp_authopt_put_mac_shash(struct tcp_authopt_key_info *key,
-+				      struct crypto_shash *tfm)
-+{
-+	return tcp_authopt_alg_put_tfm(key->alg, tfm);
-+}
-+
- /* checks that ipv4 or ipv6 addr matches. */
- static bool ipvx_addr_match(struct sockaddr_storage *a1,
- 			    struct sockaddr_storage *a2)
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index 6cc2eeb45deb..1a0513b0ead0 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -1688,11 +1688,11 @@ struct tcp_md5sig_pool *tcp_get_md5sig_pool(void);
+ static inline void tcp_put_md5sig_pool(void)
  {
- 	if (a1->ss_family != a2->ss_family)
-@@ -202,10 +356,11 @@ void tcp_authopt_clear(struct sock *sk)
- int tcp_set_authopt_key(struct sock *sk, sockptr_t optval, unsigned int optlen)
- {
- 	struct tcp_authopt_key opt;
- 	struct tcp_authopt_info *info;
- 	struct tcp_authopt_key_info *key_info, *old_key_info;
-+	struct tcp_authopt_alg_imp *alg;
- 	int err;
+ 	local_bh_enable();
+ }
  
- 	sock_owned_by_me(sk);
+-int tcp_md5_hash_skb_data(struct tcp_md5sig_pool *, const struct sk_buff *,
++int tcp_sig_hash_skb_data(struct ahash_request *, const struct sk_buff *,
+ 			  unsigned int header_len);
+ int tcp_md5_hash_key(struct tcp_md5sig_pool *hp,
+ 		     const struct tcp_md5sig_key *key);
  
- 	err = _copy_from_sockptr_tolerant((u8 *)&opt, sizeof(opt), optval, optlen);
-@@ -239,10 +394,20 @@ int tcp_set_authopt_key(struct sock *sk, sockptr_t optval, unsigned int optlen)
- 	/* Initialize tcp_authopt_info if not already set */
- 	info = __tcp_authopt_info_get_or_create(sk);
- 	if (IS_ERR(info))
- 		return PTR_ERR(info);
+ /* From tcp_fastopen.c */
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 022811dd705d..8e6cbb5a1da7 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -4400,16 +4400,31 @@ struct tcp_md5sig_pool *tcp_get_md5sig_pool(void)
+ 	local_bh_enable();
+ 	return NULL;
+ }
+ EXPORT_SYMBOL(tcp_get_md5sig_pool);
  
-+	/* check the algorithm */
-+	alg = tcp_authopt_alg_get(opt.alg);
-+	if (!alg)
-+		return -EINVAL;
-+	if (WARN_ON_ONCE(alg->alg_id != opt.alg))
-+		return -EINVAL;
-+	err = tcp_authopt_alg_require(alg);
-+	if (err)
-+		return err;
+-int tcp_md5_hash_skb_data(struct tcp_md5sig_pool *hp,
++int tcp_md5_hash_key(struct tcp_md5sig_pool *hp, const struct tcp_md5sig_key *key)
++{
++	u8 keylen = READ_ONCE(key->keylen); /* paired with WRITE_ONCE() in tcp_md5_do_add */
++	struct scatterlist sg;
 +
- 	key_info = sock_kmalloc(sk, sizeof(*key_info), GFP_KERNEL | __GFP_ZERO);
- 	if (!key_info)
- 		return -ENOMEM;
- 	/* If an old key exists with exact ID then remove and replace.
- 	 * RCU-protected readers might observe both and pick any.
-@@ -252,10 +417,11 @@ int tcp_set_authopt_key(struct sock *sk, sockptr_t optval, unsigned int optlen)
- 		tcp_authopt_key_del(sk, info, old_key_info);
- 	key_info->flags = opt.flags & TCP_AUTHOPT_KEY_KNOWN_FLAGS;
- 	key_info->send_id = opt.send_id;
- 	key_info->recv_id = opt.recv_id;
- 	key_info->alg_id = opt.alg;
-+	key_info->alg = alg;
- 	key_info->keylen = opt.keylen;
- 	memcpy(key_info->key, opt.key, opt.keylen);
- 	memcpy(&key_info->addr, &opt.addr, sizeof(key_info->addr));
- 	hlist_add_head_rcu(&key_info->node, &info->head);
++	sg_init_one(&sg, key->key, keylen);
++	ahash_request_set_crypt(hp->md5_req, &sg, NULL, keylen);
++
++	/* We use data_race() because tcp_md5_do_add() might change key->key under us */
++	return data_race(crypto_ahash_update(hp->md5_req));
++}
++EXPORT_SYMBOL(tcp_md5_hash_key);
++#endif /* CONFIG_TCP_MD5SIG */
++
++#if defined(CONFIG_TCP_MD5SIG) || defined(CONFIG_TCP_AUTHOPT)
++
++int tcp_sig_hash_skb_data(struct ahash_request *req,
+ 			  const struct sk_buff *skb, unsigned int header_len)
+ {
+ 	struct scatterlist sg;
+ 	const struct tcphdr *tp = tcp_hdr(skb);
+-	struct ahash_request *req = hp->md5_req;
+ 	unsigned int i;
+ 	const unsigned int head_data_len = skb_headlen(skb) > header_len ?
+ 					   skb_headlen(skb) - header_len : 0;
+ 	const struct skb_shared_info *shi = skb_shinfo(skb);
+ 	struct sk_buff *frag_iter;
+@@ -4432,31 +4447,18 @@ int tcp_md5_hash_skb_data(struct tcp_md5sig_pool *hp,
+ 		if (crypto_ahash_update(req))
+ 			return 1;
+ 	}
  
+ 	skb_walk_frags(skb, frag_iter)
+-		if (tcp_md5_hash_skb_data(hp, frag_iter, 0))
++		if (tcp_sig_hash_skb_data(req, frag_iter, 0))
+ 			return 1;
+ 
+ 	return 0;
+ }
+-EXPORT_SYMBOL(tcp_md5_hash_skb_data);
++EXPORT_SYMBOL(tcp_sig_hash_skb_data);
+ 
+-int tcp_md5_hash_key(struct tcp_md5sig_pool *hp, const struct tcp_md5sig_key *key)
+-{
+-	u8 keylen = READ_ONCE(key->keylen); /* paired with WRITE_ONCE() in tcp_md5_do_add */
+-	struct scatterlist sg;
+-
+-	sg_init_one(&sg, key->key, keylen);
+-	ahash_request_set_crypt(hp->md5_req, &sg, NULL, keylen);
+-
+-	/* We use data_race() because tcp_md5_do_add() might change key->key under us */
+-	return data_race(crypto_ahash_update(hp->md5_req));
+-}
+-EXPORT_SYMBOL(tcp_md5_hash_key);
+-
+-#endif
++#endif /* defined(CONFIG_TCP_MD5SIG) || defined(CONFIG_TCP_AUTHOPT) */
+ 
+ void tcp_done(struct sock *sk)
+ {
+ 	struct request_sock *req;
+ 
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index 0aa5122b29e0..91cad11db32e 100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -1381,11 +1381,11 @@ int tcp_v4_md5_hash_skb(char *md5_hash, const struct tcp_md5sig_key *key,
+ 	if (crypto_ahash_init(req))
+ 		goto clear_hash;
+ 
+ 	if (tcp_v4_md5_hash_headers(hp, daddr, saddr, th, skb->len))
+ 		goto clear_hash;
+-	if (tcp_md5_hash_skb_data(hp, skb, th->doff << 2))
++	if (tcp_sig_hash_skb_data(hp->md5_req, skb, th->doff << 2))
+ 		goto clear_hash;
+ 	if (tcp_md5_hash_key(hp, key))
+ 		goto clear_hash;
+ 	ahash_request_set_crypt(req, NULL, md5_hash, 0);
+ 	if (crypto_ahash_final(req))
+diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
+index 3b7d6ede1364..e98fc6f12c61 100644
+--- a/net/ipv6/tcp_ipv6.c
++++ b/net/ipv6/tcp_ipv6.c
+@@ -750,11 +750,11 @@ static int tcp_v6_md5_hash_skb(char *md5_hash,
+ 	if (crypto_ahash_init(req))
+ 		goto clear_hash;
+ 
+ 	if (tcp_v6_md5_hash_headers(hp, daddr, saddr, th, skb->len))
+ 		goto clear_hash;
+-	if (tcp_md5_hash_skb_data(hp, skb, th->doff << 2))
++	if (tcp_sig_hash_skb_data(hp->md5_req, skb, th->doff << 2))
+ 		goto clear_hash;
+ 	if (tcp_md5_hash_key(hp, key))
+ 		goto clear_hash;
+ 	ahash_request_set_crypt(req, NULL, md5_hash, 0);
+ 	if (crypto_ahash_final(req))
 -- 
 2.25.1
 
