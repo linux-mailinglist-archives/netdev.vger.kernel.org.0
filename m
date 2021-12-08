@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6875E46D57B
+	by mail.lfdr.de (Postfix) with ESMTP id E7F2246D57C
 	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 15:17:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234953AbhLHOVU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 09:21:20 -0500
+        id S234973AbhLHOVV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 09:21:21 -0500
 Received: from mail-bn8nam12on2050.outbound.protection.outlook.com ([40.107.237.50]:36577
         "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S234854AbhLHOVS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 Dec 2021 09:21:18 -0500
+        id S234948AbhLHOVU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 8 Dec 2021 09:21:20 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VvI9EzDtsmSWrdVVyHhOny55Bc8nQQ8dkeWATgrbj9jOJ9Oimi79riT3ANPHIfwBXVx2bjHN+n51AjO+w5FA7oCGNmd5x224Eqf0OOaWy+WllzfM2QxrIo/xiCN6xQtXW7LmWOtjMgZiohI9iSmv8deILcLS9Dyr8KyldvRdC6ggKLAc935LyKM7ygXJ4vAJ/m30T8pi/n+l6okp/OOjNQBc3EZubBMP7mnPS3I2qxKMkAqQ6prkI0Qb1KZ4vvYHds0db5VuD79BkkNHfLKE1mC23ABWW8JssyGBjCk0TauwCTtX+XwFSLbyAqXt36EoK1buKsiRVL6x7tnmilvwOg==
+ b=KlHecI+K68/ZO+nAMG9awYibI+jP5/YGqiBYVEV8ds4glYYBzm2mnhSsQsI2Xz7V5hEIprgmEWUI2bSB96cowyNsDuODdyC4qkGcMndi39QdYfNKw1F4o9X8ZfGUdtXgqlxb++frTwjo0oqQjFnkk/h/NgVzwXXMII6ktCQISD12vjn8dxkK013bLWkBloR/3MEE+KcCoJRFc946hVYcQjxAQJGc7W4VEoPGrF/OdbIweYzMRS9NpK4fDv3cUYCGCG+3N8pNLp/3A8f0u7tfYvmULOr1K4TLQasECWRUcRrYmc62/1OAjhgUIHHDjfIsFuDwIPGmAZO6RW42As/Stg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=90aVpqkTbFJMsC31yGZI3UUVH9eqJVH5bfuuBYGoWGw=;
- b=oGQ5idlqJPRD2IEGvdsJoVBRvVreWtjEweSdatj1duK6nB0QW1Q0FtqR9aQ4h14ovtRk58A96ePLQg+iG+C7+SuqqdjyhjHlFC2zF8RJNtaXhn5xYxgStRQnkncOWQXLzpgbmjHJ2eOKdl30DOe3LXQUVPtchHOjGBfPmwkagcxQ2fJyCMsvtYTnDqvZudc8APjbbQvXtS5qu8EChfi6xWRUBUH5AkfNYHzhn7I3E8wIZa7cf8PeRFthManpV4NYFW2LzzYkE2Bl4AEpDvs8N73UNvlG5hanAMfg5loN9tKqFog5kIK1eHz0shjpQw0/KETSkjBQU1M/PxOhXH3miw==
+ bh=c4+owX/Kc51f2qGuomXT+bTD7rCJeOcYuODtOJgND6c=;
+ b=UTjUvN3aD5EjPqmrut8dL57LgfgpkVmvTaND1XIiZ67GSc63scTtY2bcZ7OEUOWcYw8FlrvnB9JN0aXG6wJrcBHvhG/ePwXG9kIMQTZ9U5TiPufI7K0Mai/q/7VTWIwPrT5XQwhglyJFVBxVNQ2JN8SOqPQxNlYOev2dfvNxtfGpdDg02nB8TNWrhgP+B56/zUcehnwHoFfbm0SLSK3NVKwF8+/UVrE+ulnMlQm5ih1HEkxsfKzi4yggpmkpFhr7UUd1t+NFmZ4go35TY0XjcE54OZg1vT+y/jm6JfneiskzU2wcoWnP6AGGvoK2jRVB2mmrU/SDXdx1OsltX+XGmA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=90aVpqkTbFJMsC31yGZI3UUVH9eqJVH5bfuuBYGoWGw=;
- b=SAjspHmfk/XRzotFjHHE1NLJ7c+ngY8PcJ2bAdNS7+DRLcoidDnEELJ7SYC1G6ZDZaQON/lJAOjNTy0innn+LECP+U4GcVtex8Gd5hfGUq/1xQgKL/rzzFlli+iinr7M21UIYB2prrkiHkFjHV1h75JYlB2rxum5YMrKW8T8hTGceBfQXCeXl/Dgm1yY/5yvgrWgWM9VPMwRNYq7zI1GdJmlnXlL9GU+JdRECt4x+DiGsRW4ZoPUPsoarj8tkXuaNMZ/+AIHbQ1jBnPO4psn/3Wf7U/05Cqbz2ojkZfwGOcl9U3F4mOGv/hNPzD5nFEM4Uk3mO2J4uqa4+kyHZe+jg==
+ bh=c4+owX/Kc51f2qGuomXT+bTD7rCJeOcYuODtOJgND6c=;
+ b=ahuGm1G2uWaaz1qIlgx7raggw3bMgLWonoX5hMbgueSKlBhaSCMpLo5CozzpHcE199mLjPJyDEyZWK2NAPs4rTORaHfG1YjokmwhkYPP0EcP+0nnHMTp4M80etWfV5drv/Qh7Q98mC3P1Wc8FkjeuCKJeX+6ydfiaQi2hmGnQQRdsxW9mhFtM6j+xppL1MWbsHgRhvfdzqDyj+Gcg7tSaE0OZPfuxyB2p2gBHLnBUzn0T7YoBBmw9xd96fLsSFQZh4r5gh6SvbP0Ns7Rv8NKZh2Yh+zP8tSbNkagOmw9fPLCSbzE+Y5aeMY2EM2sYttilvnEHkdpWUgC4pC8/cS1OQ==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from DM4PR12MB5373.namprd12.prod.outlook.com (2603:10b6:5:39a::17)
  by DM4PR12MB5117.namprd12.prod.outlook.com (2603:10b6:5:390::15) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4778.12; Wed, 8 Dec
- 2021 14:17:44 +0000
+ 2021 14:17:47 +0000
 Received: from DM4PR12MB5373.namprd12.prod.outlook.com
  ([fe80::10d0:8c16:3110:f8ac]) by DM4PR12MB5373.namprd12.prod.outlook.com
  ([fe80::10d0:8c16:3110:f8ac%7]) with mapi id 15.20.4755.022; Wed, 8 Dec 2021
- 14:17:44 +0000
+ 14:17:47 +0000
 From:   Shay Drory <shayd@nvidia.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     jiri@nvidia.com, saeedm@nvidia.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Shay Drory <shayd@nvidia.com>,
         Moshe Shemesh <moshe@nvidia.com>
-Subject: [PATCH net-next v3 1/7] net/mlx5: Introduce log_max_current_uc_list_wr_supported bit
-Date:   Wed,  8 Dec 2021 16:17:16 +0200
-Message-Id: <20211208141722.13646-2-shayd@nvidia.com>
+Subject: [PATCH net-next v3 2/7] devlink: Add new "io_eq_size" generic device param
+Date:   Wed,  8 Dec 2021 16:17:17 +0200
+Message-Id: <20211208141722.13646-3-shayd@nvidia.com>
 X-Mailer: git-send-email 2.21.3
 In-Reply-To: <20211208141722.13646-1-shayd@nvidia.com>
 References: <20211208141722.13646-1-shayd@nvidia.com>
@@ -56,83 +56,126 @@ X-ClientProxiedBy: AM5PR0502CA0011.eurprd05.prod.outlook.com
  (2603:10a6:203:91::21) To DM4PR12MB5373.namprd12.prod.outlook.com
  (2603:10b6:5:39a::17)
 MIME-Version: 1.0
-Received: from nps-server-23.mtl.labs.mlnx (94.188.199.18) by AM5PR0502CA0011.eurprd05.prod.outlook.com (2603:10a6:203:91::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.17 via Frontend Transport; Wed, 8 Dec 2021 14:17:42 +0000
+Received: from nps-server-23.mtl.labs.mlnx (94.188.199.18) by AM5PR0502CA0011.eurprd05.prod.outlook.com (2603:10a6:203:91::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.17 via Frontend Transport; Wed, 8 Dec 2021 14:17:44 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 7130b6b7-cb5a-49f4-8aa5-08d9ba5580ab
+X-MS-Office365-Filtering-Correlation-Id: f95fac76-55e6-4028-2d1c-08d9ba558216
 X-MS-TrafficTypeDiagnostic: DM4PR12MB5117:EE_
-X-Microsoft-Antispam-PRVS: <DM4PR12MB5117267BA61B17BBB8B7F866CF6F9@DM4PR12MB5117.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:5236;
+X-Microsoft-Antispam-PRVS: <DM4PR12MB5117129C2DF5BE079957DCCACF6F9@DM4PR12MB5117.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 1LO/lY2joI6EtwirwzR1W2Sx4qjB2ARPYGtm1ouXSRe/jzWI34jE17L2ENNBOJtqTiwv4huK1CKzck8JrUbiozpQSgMJ6sWguo9XhEWXce8cesjb3oCYCFSMet5s0EttldCtNorjAPINpSEhmpSH3DBruh8KsuG56PTzh0VotUEB+JtvulW2SZyNCI+jmZustGuMWPwanN1+sv7IW2G0NGhXTXdwUdkjrAMZNINfsakvYZsscB2Kf5JgDBG/VxkPozprOr87EcBpIgEnW9LnnDtPoyAXmGlP+1puWLardxQ5VRWPRghIEs7w93e5lchIWsGjJ5euzsgIBZchC38y07uvCxstPwGn+z0JGGGGaRsQyjausaoPqSmClg3Zn+BSMTvz57/e52McuBzMyu8TWgNFGyZO8IJ2PpbpcgUAEQmUSZD+zXgOR6P4ejJS52yaP9a0Tb4Mu2KmlhGmNt9wQROthGpY05ctw+XMqYsn4OXr3R669WCCD4kCqmDuhFmGNl0483+HNdYRR2KEU9mlrR4q0f5bv5A0hu1A5B4FExAY+T3cPmw0v5DegS7UG2UJU0p4GCjwC8HPvM3YU6RqjkQCIluzN/hKEsxgvdP8GiPc85IYT7XUlZiP/Vg97HJtLUB5D8fLJAB6LZ7+9CBU0O/h9Cu9yEFUc26PTLKUhJNi3LFqwTagz/t4oIpYdguzU9qqI+Ldznlp7i66S79iYw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5373.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(5660300002)(316002)(83380400001)(52116002)(4326008)(107886003)(86362001)(54906003)(6486002)(110136005)(6506007)(26005)(66946007)(66476007)(66556008)(4744005)(6666004)(186003)(36756003)(8676002)(6512007)(8936002)(508600001)(1076003)(2906002)(2616005)(956004)(38100700002)(38350700002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: hYDeVFzCc8MY81IxHPvoaxyB/WnI2T7E4GrDN8L1notn3Xg6Fl96gNTvqmh7yUaFF/oXV/eJlQ9c8rqn9WZDwugaOrq6bB9NWdbWe7pEKG9EkJ7YjEhH7vGmU7jCNA6LSEcUwkFiGyxmRdT9hQB1Hn44qZBkoC8aozmr7OJ0E0SUFvyQbnOyXe4GbTMhibdpkqEQT+hBlDIDJXkSlWCLorZ4RLP49onMFYBw1mEsZH/vJ6z8FqmRgrQay8aiiYCxMwLWWFSsSZCtWKAELm4LxJo84yRHwrlSOWfYDV2t0xF/hFaNHRDZprsamONnF78qB1kbJpo/3j5aWNdZ58fB313oKyqK3mQyUxnOvytRjGcH6tJt5IpfXYQN3jhioTvf0IA5pOzpCWGTnI2BlxtWQBx60rdYQqZ62zTf7rF0Rs9IG4wRH9Fo4uTJsE9VvYJHoTTf2fnfd7NpSMnGBIi18i0w60cVa8yj9+yG35/W/k2ZhvMV4jlmvDsPrYAZv8gTcHQ60aoFw124C5Dt7TSU8Jq0m+o4/M1NeFdgiuHT8MUO+//4sRxdPn5WzwH+YLa1QXbXZZgVsqc+1LTjLwQR081OQITJ9wRDLy/UIH83CGYNjwzGHuLFe08s82mQMrb8V2kXBaDC5RRFInDFBgn7gFdbc7qUW5bFA2fGo1HvYpywE0V7Z1E4SbbiljrwVIcNgIe9FpJUBu7Cb2823Cy0t0IOCVNeRIDu2Dv3Ia1CDk4=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5373.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(5660300002)(316002)(83380400001)(52116002)(4326008)(107886003)(86362001)(54906003)(6486002)(110136005)(6506007)(26005)(66946007)(66476007)(66556008)(6666004)(186003)(36756003)(8676002)(6512007)(8936002)(508600001)(1076003)(2906002)(2616005)(956004)(38100700002)(38350700002)(41533002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?PE49YcUKzsCEL7WAqneSrjonRQE1JRYORadr4JB0GrMLa6P/rPRHYYj8BKUR?=
- =?us-ascii?Q?ev6SwXILqbIGvXUZ5kUlKhhdzGXjStpN14Cvm4LozVBldbdxkO071Qeo5+0z?=
- =?us-ascii?Q?YKAoaDP0DL13eR/Tdx0v1E7CIi5z/TO27aIDg8BT1C5V+ZAH8cr+poY8uYhD?=
- =?us-ascii?Q?dnQY049mHPSt7tpKkPJquryX5oNzdqVdfoYvtm6Tbz6A4Fs3QvTlA9shjRUh?=
- =?us-ascii?Q?XCcgFGP56v7OFovLNvyLlHDYfIff7f2HE3B/oXrAUZ30gz6AkkdDpmdPYnbu?=
- =?us-ascii?Q?psBGw4rPDOCzVozf81gAy197+KvMRI7819X/LI1Q6djHoQOpWQr5/L4ukGIy?=
- =?us-ascii?Q?n22KlRl19xuQXk1N2Pp6IAkdJFXeUBwWzVSiZvVQWcWSotNKGG0JRGjQ4RBM?=
- =?us-ascii?Q?JztQn1XnEcZnMG3Dl4zhKqsNoy3fVXD4q9KUkEWMYtbc0EZxq6RSDZ0MbV2r?=
- =?us-ascii?Q?nm/0E5dtWlwyFG9kU7bAStYHKl3gDW8pSBvQb/5o9Ma9RE3QYmIJfiPcouT2?=
- =?us-ascii?Q?BYHgXynh/vu0wgpqAlWPGNadjJ/pV5o8y0h3XgYI641D/yCoXEZEfurgjgK4?=
- =?us-ascii?Q?Eti0BqAjzW756S9Qin63FBO3me9e71S/mn0RvSqV4365Z14t96t4vVXzM+d7?=
- =?us-ascii?Q?F/LRevewIA9OhG81+83ibvZ10G06Bl+OsVjCAV7Yn8yYMi1fr4XNCCpGWFZ5?=
- =?us-ascii?Q?R7IL7lZd3PkIi/UVSX+RsRbYWbL7JZXnOXEfbtRAfiULsZzdEgtARlrR+h31?=
- =?us-ascii?Q?rCWUdaRIe/bSgpZYnC3bQT8cvQbxbdfVr9KCr2WXVChRTEvSNiPuxPaVomIi?=
- =?us-ascii?Q?qzCayG8Zw/vD/iKTEapknmVhbOn6t+4RDf9VZFSdgqOteVk0qVn/TTobXR0+?=
- =?us-ascii?Q?/kmxXkz7kv91mwNHBUksEQMWHx5ZD4NhSQk1F5z63lnxcnPGG7DS5TWpMLN1?=
- =?us-ascii?Q?52W+pwbGE2KKhFezH9v9TS4rw0ec6B5u7UFL2DWZuR3LYL0owk21KbaU1D3Q?=
- =?us-ascii?Q?C9PLQULYi9gzwOUH8xni/cu585ITQ8gkYShfDYex5ejv2Ezkyg17Y9m3WAYZ?=
- =?us-ascii?Q?EQVbsOEqlgENQM9uvBTEtQQmXHuh2vTnrSbxIopdIoE8nQJR8Ww0zE9ObTMF?=
- =?us-ascii?Q?/vVlRHrN6DG1Kkz4QKGGfPOabN6eyqFyvhELp6FetiFEJNUVeEMgUmUJboEc?=
- =?us-ascii?Q?tyJ9o7xVXQhQhfDjeM0PCQLHiFrYFBBBfUTsQf1pLr7Anmi3cceeFo7+Ub6Z?=
- =?us-ascii?Q?PmDsOxHOgO68C3VlsgFTCjLFxo/P9ChwDWXN6Z2O56QPdBwi2TB933sMtmaE?=
- =?us-ascii?Q?AjCqv6CGpX7TKbrgbq4zV+uPPHk1y4SWH0DylOwJoWiu5IRfJ5dmNQQSNzLl?=
- =?us-ascii?Q?yzRkVf2jJi+2/edLEQjNz2UULyZ+5bsqAN0+dRDiUEUbiVSTb+93SaHupZiu?=
- =?us-ascii?Q?XkIFhMjTOmrYrzpQOdKNpvIxq4q3Rwj9tbTkXnTMbJNRj3IePHf+P7EkRILf?=
- =?us-ascii?Q?Jii8Uw9V7MbOLFlobtQuEMVNOejoW1FFO91r4btGaDibrcn/y/qYMnxJtqBU?=
- =?us-ascii?Q?taFbcdd4W4FGucdWu9lnxLTWCtkAa5ImVDvse4Otm2xZixtBhbl8dr0CYbec?=
- =?us-ascii?Q?Y0fdFF27wAeLTXxGcREJrFM=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?/5E1EhE5rHu2zdvf8OwH0rzQPK9cFGIY3KSwLpKmWTejw48i1OzCacil0kLL?=
+ =?us-ascii?Q?xjML/n4n2Wj99RhyleaEdvcmEf4l2/qqNFZu55GMnHg9OHp1NSLuZxPhYaCz?=
+ =?us-ascii?Q?IRO1+GQhqVplny8IRVKTRtiHqpczr7r58UpL010e3Z85TPECJoffONkUHPhp?=
+ =?us-ascii?Q?tXPk+SI+hOXDiAR8ScufDyGCI+fBHi52ef+lItHNFxZI0F56MdW2o7mfdSHT?=
+ =?us-ascii?Q?4/keprOIkZh4sKx/MeOZkYkd6JWgRWenvHFo2m6g1l3Je9dvzdkiQSZ2t5WH?=
+ =?us-ascii?Q?4TulRfxpFAiwvUHOvxi3kZKD2gBIeUpGsVZZZhxVmVK7zmdEwqiq/L1bftq+?=
+ =?us-ascii?Q?kN/A9J0PkvqW/AGIh74Uxg9GLiZiX7yezQXI2+fnwy2nLt90TGfvHyB4us0m?=
+ =?us-ascii?Q?iysQ4NEn67SU6yuEgQkvLpx2XWsKquUEy0FCnrmgFUcMeKSXq8Ti6vr4byNH?=
+ =?us-ascii?Q?9TKxqMevbdwhuOx7ea4NXUs7w6JW/2s5IDpGdHRDW4r3s5IxZ0KJu6nonfdf?=
+ =?us-ascii?Q?CCEL4uzPyu6v5MlWoyIAVGpyNXGyurrp5cplWPMCKfkmpNAuGWl9DGGodHw4?=
+ =?us-ascii?Q?MYsCp9/zZKJhRNtmvAvgnJGlmGhXjBI5iJ49cQqyAmptx5+FSu3Ee3C3YtWm?=
+ =?us-ascii?Q?17LlVJ8fnHwjAJPEohpyWp9xWmCGiba2/nedV2o4BSif0Jj54Nlq56/COf4z?=
+ =?us-ascii?Q?5o+BJWZh3sX5gzM6S1IngXWrE2tIie1hPdgi+rCVnHiYG7esTEYjQs8uKES5?=
+ =?us-ascii?Q?0mTYXhdbkzoFwX77UcIXHXA/Yp6BAlW5GDV9YImBIVtG+xSfkaGEs11+Ausx?=
+ =?us-ascii?Q?EPLmxdGPYFZGhTq+rle+7TUzGHkjsDGqCHoEdnWfat2dCz7IzjGRp/9mubKy?=
+ =?us-ascii?Q?5WU2N7Ki64ece8mPWwKIIYMrqVskgW/YUBpsGuCH610n7sZnq5FWtwRBXbt0?=
+ =?us-ascii?Q?R+HDhq9rByqqtjizOwASov5OAdR2SqfirsUleRQ5CiBN/vBQ78cNrly07G3r?=
+ =?us-ascii?Q?TwFTRjtyKPGJUQRxFdZ9WqKiopFuCWROFm4A321V5yDvAuMan3cU+D5TBtWB?=
+ =?us-ascii?Q?Lzgq2lRlYE1V73/1oNDIpc/pRQNwSzG0TzKt/BLFAPCPrA44RcYvCWyeShUb?=
+ =?us-ascii?Q?YhZ2yIJ+wrVuj46fRTqOOe15y0yWPy8+LTDwnWnOEUQxKXQyJoiburoXSTf8?=
+ =?us-ascii?Q?ADZMdDUHyRvKb/NibBZwRpOk0Eu+LN8j4wiKAacSehKkofsLz6RXoruN//IU?=
+ =?us-ascii?Q?pZoAh0t4GeAwdlhJUuBZPmU5fMKZBA+WJXohGcOgnvj54z3e1TQjgrUUCcYE?=
+ =?us-ascii?Q?oRXspC/hNSzEQ48KQORFFLZgBb/6D3xtr7YwGP1nFfHWrsOczOs0pkAiWB/R?=
+ =?us-ascii?Q?ruiWuIBQi3J6fhQEkgjHHDg6U1TWEMcc043nU611S9BwmJ3jLXxG26jlENJv?=
+ =?us-ascii?Q?9EE0LyxyC8WfV8aFNMVmdtIRniy3QRckkeiuckScXnlHyy7uyQujwF15/FEo?=
+ =?us-ascii?Q?0gyTri5bEoJGnh7fJnp10eizjZbd1HcNBp2OEl9SmlT2hGGoU0cPY5e5DEji?=
+ =?us-ascii?Q?1B1W26vvBo7xEpHH+d0Ody2e8yq5kOJ477pSkSmhBoHIaNhNFdw/NhwJqhhl?=
+ =?us-ascii?Q?gk4l7mbwRVyjvd7zN12orF4=3D?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7130b6b7-cb5a-49f4-8aa5-08d9ba5580ab
+X-MS-Exchange-CrossTenant-Network-Message-Id: f95fac76-55e6-4028-2d1c-08d9ba558216
 X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5373.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Dec 2021 14:17:44.5996
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Dec 2021 14:17:46.9672
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: aIgPDjJm1tXeE52jYSQA936yKYsTPEFPjh83Q8K3iE2xG+ehOPxdm5rvqIMCCe1QLMUMpD+Q7/EkAFYGTzBZQA==
+X-MS-Exchange-CrossTenant-UserPrincipalName: UnQomFMaWNuJS1FQD15lF0y7yguC4sEoYupelqBfsq+gDGqoPFVrlNw3r1BprdQhjF+B1Xz4yColU8mDE77/xg==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5117
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Downstream patch will use this bit in order to know whether the device
-supports changing of max_uc_list.
+Add new device generic parameter to determine the size of the
+I/O completion EQs.
+
+For example, to reduce I/O EQ size to 64, execute:
+$ devlink dev param set pci/0000:06:00.0 \
+              name io_eq_size value 64 cmode driverinit
+$ devlink dev reload pci/0000:06:00.0
 
 Signed-off-by: Shay Drory <shayd@nvidia.com>
 Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
 ---
- include/linux/mlx5/mlx5_ifc.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Documentation/networking/devlink/devlink-params.rst | 3 +++
+ include/net/devlink.h                               | 4 ++++
+ net/core/devlink.c                                  | 5 +++++
+ 3 files changed, 12 insertions(+)
 
-diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
-index fbaab440a484..e9db12aae8f9 100644
---- a/include/linux/mlx5/mlx5_ifc.h
-+++ b/include/linux/mlx5/mlx5_ifc.h
-@@ -1621,7 +1621,7 @@ struct mlx5_ifc_cmd_hca_cap_bits {
+diff --git a/Documentation/networking/devlink/devlink-params.rst b/Documentation/networking/devlink/devlink-params.rst
+index b7dfe693a332..cd9342305a13 100644
+--- a/Documentation/networking/devlink/devlink-params.rst
++++ b/Documentation/networking/devlink/devlink-params.rst
+@@ -129,3 +129,6 @@ own name.
+        will NACK any attempt of other host to reset the device. This parameter
+        is useful for setups where a device is shared by different hosts, such
+        as multi-host setup.
++   * - ``io_eq_size``
++     - u16
++     - Control the size of I/O completion EQs.
+diff --git a/include/net/devlink.h b/include/net/devlink.h
+index 3276a29f2b81..b5f4acd0e0cd 100644
+--- a/include/net/devlink.h
++++ b/include/net/devlink.h
+@@ -459,6 +459,7 @@ enum devlink_param_generic_id {
+ 	DEVLINK_PARAM_GENERIC_ID_ENABLE_RDMA,
+ 	DEVLINK_PARAM_GENERIC_ID_ENABLE_VNET,
+ 	DEVLINK_PARAM_GENERIC_ID_ENABLE_IWARP,
++	DEVLINK_PARAM_GENERIC_ID_IO_EQ_SIZE,
  
- 	u8         ext_stride_num_range[0x1];
- 	u8         roce_rw_supported[0x1];
--	u8         reserved_at_3a2[0x1];
-+	u8         log_max_current_uc_list_wr_supported[0x1];
- 	u8         log_max_stride_sz_rq[0x5];
- 	u8         reserved_at_3a8[0x3];
- 	u8         log_min_stride_sz_rq[0x5];
+ 	/* add new param generic ids above here*/
+ 	__DEVLINK_PARAM_GENERIC_ID_MAX,
+@@ -511,6 +512,9 @@ enum devlink_param_generic_id {
+ #define DEVLINK_PARAM_GENERIC_ENABLE_IWARP_NAME "enable_iwarp"
+ #define DEVLINK_PARAM_GENERIC_ENABLE_IWARP_TYPE DEVLINK_PARAM_TYPE_BOOL
+ 
++#define DEVLINK_PARAM_GENERIC_IO_EQ_SIZE_NAME "io_eq_size"
++#define DEVLINK_PARAM_GENERIC_IO_EQ_SIZE_TYPE DEVLINK_PARAM_TYPE_U32
++
+ #define DEVLINK_PARAM_GENERIC(_id, _cmodes, _get, _set, _validate)	\
+ {									\
+ 	.id = DEVLINK_PARAM_GENERIC_ID_##_id,				\
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index db3b52110cf2..0d4e63d11585 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -4466,6 +4466,11 @@ static const struct devlink_param devlink_param_generic[] = {
+ 		.name = DEVLINK_PARAM_GENERIC_ENABLE_IWARP_NAME,
+ 		.type = DEVLINK_PARAM_GENERIC_ENABLE_IWARP_TYPE,
+ 	},
++	{
++		.id = DEVLINK_PARAM_GENERIC_ID_IO_EQ_SIZE,
++		.name = DEVLINK_PARAM_GENERIC_IO_EQ_SIZE_NAME,
++		.type = DEVLINK_PARAM_GENERIC_IO_EQ_SIZE_TYPE,
++	},
+ };
+ 
+ static int devlink_param_generic_verify(const struct devlink_param *param)
 -- 
 2.21.3
 
