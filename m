@@ -2,67 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A15E146D109
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 11:30:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D1C046D144
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 11:46:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231685AbhLHKeK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 05:34:10 -0500
-Received: from szxga08-in.huawei.com ([45.249.212.255]:29102 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231696AbhLHKeF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 05:34:05 -0500
-Received: from dggpeml500023.china.huawei.com (unknown [172.30.72.53])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4J8CzK3BD0z1DJKQ;
-        Wed,  8 Dec 2021 18:27:41 +0800 (CST)
-Received: from [10.67.110.112] (10.67.110.112) by
- dggpeml500023.china.huawei.com (7.185.36.114) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Wed, 8 Dec 2021 18:30:31 +0800
-Subject: Re: [PATCH -next 0/2] Introduce memset_range() helper for wiping
- members
-To:     Kees Cook <keescook@chromium.org>
-CC:     <akpm@linux-foundation.org>, <laniel_francis@privacyrequired.com>,
-        <andriy.shevchenko@linux.intel.com>, <adobriyan@gmail.com>,
-        <linux@roeck-us.net>, <andreyknvl@gmail.com>, <dja@axtens.net>,
-        <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
-        <kafai@fb.com>, <songliubraving@fb.com>, <yhs@fb.com>,
-        <john.fastabend@gmail.com>, <kpsingh@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>
-References: <20211208030451.219751-1-xiujianfeng@huawei.com>
- <202112072125.AC79323201@keescook>
-From:   xiujianfeng <xiujianfeng@huawei.com>
-Message-ID: <85904fc5-0c1b-7410-b818-7d0b959ce7af@huawei.com>
-Date:   Wed, 8 Dec 2021 18:30:31 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.9.1
+        id S229448AbhLHKt3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 05:49:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45188 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229834AbhLHKt3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 05:49:29 -0500
+Received: from xavier.telenet-ops.be (xavier.telenet-ops.be [IPv6:2a02:1800:120:4::f00:14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31E6DC061A72
+        for <netdev@vger.kernel.org>; Wed,  8 Dec 2021 02:45:56 -0800 (PST)
+Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed10:a0bd:6217:e9a0:bd39])
+        by xavier.telenet-ops.be with bizsmtp
+        id Tmlt260072LoXaB01mltK0; Wed, 08 Dec 2021 11:45:53 +0100
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1muuSO-003dvS-Uq; Wed, 08 Dec 2021 11:45:52 +0100
+Received: from geert by rox.of.borg with local (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1muuF5-00BVl0-Vp; Wed, 08 Dec 2021 11:32:08 +0100
+From:   Geert Uytterhoeven <geert+renesas@glider.be>
+To:     Sergey Shtylyov <s.shtylyov@omp.ru>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH] sh_eth: Use dev_err_probe() helper
+Date:   Wed,  8 Dec 2021 11:32:07 +0100
+Message-Id: <2576cc15bdbb5be636640f491bcc087a334e2c02.1638959463.git.geert+renesas@glider.be>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <202112072125.AC79323201@keescook>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.67.110.112]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpeml500023.china.huawei.com (7.185.36.114)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Use the dev_err_probe() helper, instead of open-coding the same
+operation.
 
-在 2021/12/8 13:27, Kees Cook 写道:
-> On Wed, Dec 08, 2021 at 11:04:49AM +0800, Xiu Jianfeng wrote:
->> Xiu Jianfeng (2):
->>    string.h: Introduce memset_range() for wiping members
-> For doing a memset range, the preferred method is to use
-> a struct_group in the structure itself. This makes the range
-> self-documenting, and allows the compile to validate the exact size,
-> makes it addressable, etc. The other memset helpers are for "everything
-> to the end", which doesn't usually benefit from the struct_group style
-> of range declaration.
-Do you mean there is no need to introduce this helper,  but to use 
-struct_group in the struct directly?
->
->>    bpf: use memset_range helper in __mark_reg_known
-> I never saw this patch arrive on the list?
-I have send this patch as well, can you please check again?
->
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
+ drivers/net/ethernet/renesas/sh_eth.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/renesas/sh_eth.c b/drivers/net/ethernet/renesas/sh_eth.c
+index 223626290ce0e278..d947a628e1663009 100644
+--- a/drivers/net/ethernet/renesas/sh_eth.c
++++ b/drivers/net/ethernet/renesas/sh_eth.c
+@@ -3368,8 +3368,7 @@ static int sh_eth_drv_probe(struct platform_device *pdev)
+ 	/* MDIO bus init */
+ 	ret = sh_mdio_init(mdp, pd);
+ 	if (ret) {
+-		if (ret != -EPROBE_DEFER)
+-			dev_err(&pdev->dev, "MDIO init failed: %d\n", ret);
++		dev_err_probe(&pdev->dev, ret, "MDIO init failed\n");
+ 		goto out_release;
+ 	}
+ 
+-- 
+2.25.1
+
