@@ -2,120 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 19D1746D5F3
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 15:42:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CCC1346D5F6
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 15:42:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235316AbhLHOqV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 09:46:21 -0500
-Received: from mga07.intel.com ([134.134.136.100]:16609 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229611AbhLHOqU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 Dec 2021 09:46:20 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10191"; a="301223952"
-X-IronPort-AV: E=Sophos;i="5.88,189,1635231600"; 
-   d="scan'208";a="301223952"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Dec 2021 06:42:48 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,189,1635231600"; 
-   d="scan'208";a="612108832"
-Received: from lkp-server02.sh.intel.com (HELO 9e1e9f9b3bcb) ([10.239.97.151])
-  by orsmga004.jf.intel.com with ESMTP; 08 Dec 2021 06:42:46 -0800
-Received: from kbuild by 9e1e9f9b3bcb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1muy9d-0000gf-OI; Wed, 08 Dec 2021 14:42:45 +0000
-Date:   Wed, 8 Dec 2021 22:41:45 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Joseph CHANG <josright123@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] net: Add DM9051 driver
-Message-ID: <202112082228.stoSxUom-lkp@intel.com>
-References: <20211202204656.4411-3-josright123@gmail.com>
+        id S235345AbhLHOqa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 09:46:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44608 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235334AbhLHOq3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 09:46:29 -0500
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A857C061746;
+        Wed,  8 Dec 2021 06:42:57 -0800 (PST)
+Received: by mail-ed1-x529.google.com with SMTP id y13so8987131edd.13;
+        Wed, 08 Dec 2021 06:42:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=52QE56s4fsZrosTAFipj2Y1uY3A08fcUY1wjgKokxbw=;
+        b=YvJmD0dlJtAnKpHk1Bkoo7I2csLtwhYEeLHcv39OxAym4U1chhsXNMqmqJEUIIbz8c
+         JOT/22Jl6X/CZ0i25qWVFgJpsYNOVcgP148FSLX9psK7iZkHW5oYj9UPBXzQ7Q/42Gui
+         ubSBOnIyegYiQUpBoiI3bBGWEBFEerC1zHCCYvILv4Ykz4AZhtDpXSE0J8N/07YGC9O+
+         A8aEA6BuL2fXlH0oQPL7WXBDoHkLyDsJyJ7gjYNCOIuqZLgFRaUNW4lrTSD1M+N7GsIx
+         symUUrnE42wOGTHmHFFrTwWPyT2zJhxjqpokKdRQinzh7DgcNyq+Of66XWTa+X4jeQ+I
+         +7zw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=52QE56s4fsZrosTAFipj2Y1uY3A08fcUY1wjgKokxbw=;
+        b=bWwEt0YYKaG0dM8w8J11KooX1xPW81JOKp6kuFpFp3NX+D/E4EQbGOdwYbOjgRMrY6
+         E/GfecSbgo9pRZrk8d3AzJImdG2YCd3M3DQNlI77F7KRrkveC5iGYR4tTvaDwApWkm7b
+         LQfSYeZGJCUgIjGGGI3TNC+2F0oQxo6GX0tj8UGyszuyq7UfGNx0x/NldX028YFxWxpD
+         wANWBGRe5exgmAVEYD4XPLkY+og1I6booJYyaxqEU6Vey4K8+dKWwKQnwVbTtvUOolYy
+         +si8jwwfiI/saiHNozRos3Lc0xNvfDctWFQjtmPYkK9ZWxqjXT2Z70Khz376YAgUTuJS
+         ilDw==
+X-Gm-Message-State: AOAM532nZdKLnAbutUc36+lo1OFSVpBqS38Cpj02uMq0yZBWaeNsobuJ
+        XtDy5uVVpKP9fmxf2YYtpG0=
+X-Google-Smtp-Source: ABdhPJwEuuCIuc0HRRKNwOY/xQ1YGn1SQ10/EHvHdRbDnqD5w9GfmMA+pAg1uy54qEs0+/fF/hPcmQ==
+X-Received: by 2002:a05:6402:5158:: with SMTP id n24mr19812370edd.230.1638974575926;
+        Wed, 08 Dec 2021 06:42:55 -0800 (PST)
+Received: from skbuf ([188.25.173.50])
+        by smtp.gmail.com with ESMTPSA id i8sm2540725edc.12.2021.12.08.06.42.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Dec 2021 06:42:55 -0800 (PST)
+Date:   Wed, 8 Dec 2021 16:42:54 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [net-next RFC PATCH v2 7/8] net: dsa: qca8k: Add support for
+ mdio read/write in Ethernet packet
+Message-ID: <20211208144254.sisj4sglcpzmkwz5@skbuf>
+References: <20211208034040.14457-1-ansuelsmth@gmail.com>
+ <20211208034040.14457-8-ansuelsmth@gmail.com>
+ <20211208121850.b2khmvkqpygctaad@skbuf>
+ <61b0bf59.1c69fb81.9d656.8423@mx.google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211202204656.4411-3-josright123@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <61b0bf59.1c69fb81.9d656.8423@mx.google.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Joseph,
+On Wed, Dec 08, 2021 at 03:21:11PM +0100, Ansuel Smith wrote:
+> > None of these structures need to stay in the data structure shared with
+> > the tagger. They can be in qca8k_priv. The tagger should only see the
+> > function pointers. It doesn't care what is done with the packets.
+> > 
+> > >  };
+> 
+> Ok so the handler should access these data by reaching the qca8k_priv
+> from the dsa port. Correct?
 
-Thank you for the patch! Perhaps something to improve:
-
-[auto build test WARNING on ce83278f313ce65a9bbd780a3e07fa3f62d82525]
-
-url:    https://github.com/0day-ci/linux/commits/Joseph-CHANG/ADD-DM9051-NET-DEVICE/20211208-193833
-base:   ce83278f313ce65a9bbd780a3e07fa3f62d82525
-config: arc-allyesconfig (https://download.01.org/0day-ci/archive/20211208/202112082228.stoSxUom-lkp@intel.com/config)
-compiler: arceb-elf-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/9ee7a9a16698431c764b4b21a0839e87f3692078
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Joseph-CHANG/ADD-DM9051-NET-DEVICE/20211208-193833
-        git checkout 9ee7a9a16698431c764b4b21a0839e87f3692078
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arc SHELL=/bin/bash drivers/net/ethernet/davicom/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   drivers/net/ethernet/davicom/dm9051.c: In function 'dm9051_read_mac_to_dev':
-   drivers/net/ethernet/davicom/dm9051.c:255:35: error: assignment of read-only location '*(ndev->dev_addr + (sizetype)i)'
-     255 |                 ndev->dev_addr[i] = ior(db, DM9051_PAR + i);
-         |                                   ^
-   drivers/net/ethernet/davicom/dm9051.c:260:43: error: assignment of read-only location '*(ndev->dev_addr + (sizetype)i)'
-     260 |                         ndev->dev_addr[i] = ior(db, DM9051_PAR + i);
-         |                                           ^
-   drivers/net/ethernet/davicom/dm9051.c: In function 'dm_set_mac_lock':
->> drivers/net/ethernet/davicom/dm9051.c:341:57: warning: passing argument 3 of 'dm_write_eeprom_func' discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
-     341 |                         dm_write_eeprom_func(db, i / 2, &ndev->dev_addr[i]);
-         |                                                         ^~~~~~~~~~~~~~~~~~
-   drivers/net/ethernet/davicom/dm9051.c:156:73: note: expected 'u8 *' {aka 'unsigned char *'} but argument is of type 'const unsigned char *'
-     156 | static void dm_write_eeprom_func(struct board_info *db, int offset, u8 *data)
-         |                                                                     ~~~~^~~~
-
-
-vim +341 drivers/net/ethernet/davicom/dm9051.c
-
-   318	
-   319	/* set mac permanently
-   320	 */
-   321	static void dm_set_mac_lock(struct board_info *db)
-   322	{
-   323		struct net_device *ndev = db->ndev;
-   324	
-   325		if (db->enter_setmac) {
-   326			int i, oft;
-   327	
-   328			db->enter_setmac = 0;
-   329			netdev_info(ndev, "set_mac_address %02x %02x %02x  %02x %02x %02x\n",
-   330				    ndev->dev_addr[0], ndev->dev_addr[1], ndev->dev_addr[2],
-   331				    ndev->dev_addr[3], ndev->dev_addr[4], ndev->dev_addr[5]);
-   332	
-   333			/* write to net device and chip */
-   334			ADDR_LOCK_HEAD_ESSENTIAL(db); //mutex_lock
-   335			for (i = 0, oft = DM9051_PAR; i < ETH_ALEN; i++, oft++)
-   336				iow(db, oft, ndev->dev_addr[i]);
-   337			ADDR_LOCK_TAIL_ESSENTIAL(db); //mutex_unlock
-   338	
-   339			/* write to EEPROM */
-   340			for (i = 0; i < ETH_ALEN; i += 2)
- > 341				dm_write_eeprom_func(db, i / 2, &ndev->dev_addr[i]);
-   342		}
-   343	}
-   344	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Yes, this is exactly what I think, the tagger should be stateless with
+regard to the completion, if it can be stateless. Only with stuff
+related to the tagging protocol itself it can be stateful, things like
+sequence numbers if you need them, etc. But the MDIO access is payload
+as far as the tagger is concerned.
