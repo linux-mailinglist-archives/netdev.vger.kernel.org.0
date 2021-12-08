@@ -2,116 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D53FA46D4FE
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 15:04:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A1F4346D517
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 15:07:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234587AbhLHOHx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 09:07:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35378 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234586AbhLHOHx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 09:07:53 -0500
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50156C061746;
-        Wed,  8 Dec 2021 06:04:21 -0800 (PST)
-Received: by mail-wr1-x429.google.com with SMTP id i5so4292113wrb.2;
-        Wed, 08 Dec 2021 06:04:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=X401kasTb6VMtJyNy7oiEKvBwtdJJLLJKiE0jpdRtfQ=;
-        b=CAIB/pGzC2fZpQGKOIU1mHnokYsRef9f31jdFZNfqbg+O3p0oLfxmqz1AXLI0BroWC
-         xS6/Q9+HE004+EMRo6uPpzPFfzBFsEX43OaS90N4tTurqnOl2y/tt1fIyN2Mcxv4nS7b
-         Lad13gDmwJ2eYJRo7H6FGDJRkF8TpXvseEpJLRNLOIt4Sqeuyd7+ZyTmFPxi1LSO+rG8
-         MSBPyI2UAGUDOQqDKJ+xh2frfmqX09JpYX6dYw/mgavZA52Aq/KFGJ+7WgeYAOuq1kWr
-         KJVvr5ljaUn/qF9xInQAmsmA1L+1x2TkVx1shLiKQIY7BzMH1q2qkV1Sz/2H8GXhPd39
-         smCA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=X401kasTb6VMtJyNy7oiEKvBwtdJJLLJKiE0jpdRtfQ=;
-        b=RG4hH1MuZau38aC3pdji8OX1gubb7L6goleUtoh2m0jbTKcbSwQsuefU2LxD5KXbjL
-         mxm9EjXvyjVUfgQxBY5x4QQ3GlFLaFXKaK0XnAsMWnkXa+McNE2kn5/Dt5F6DkrsBmw3
-         OnorxexW7ZFD1xZXA/pn7lgS4JJlcOhABSQNDlDw5rhdhA801GVy1KyPwwUZWB4sEQEY
-         GYT5mhJ9ZAQ7Xr3/fB0Da+ruJu75/9iw2r4h8TzgP7yBzWIlv+g//Ykcyi5WriyD0Dam
-         NCo1ZrhUiiTT2sXy2DB7dec39OLVPcb+mAFJDEB7d09kKAEmZR0qz5Z0jk8aa/F/fgrt
-         g8nA==
-X-Gm-Message-State: AOAM532TfM2StGHBudNVKcbRwBSKC5Zgll1d2NUy5rwqwuMlXhtVq2SE
-        IE5TBx6afMqvPLOhbfkUU0zLrW1ohQ5Z/va+
-X-Google-Smtp-Source: ABdhPJyeeLAQhv3ZV7tGd7lU8VyDL2XSLtQ8vVCXx7iVsrMHo0Js7PDq2aQorMGYCFld0TkZzbYjXA==
-X-Received: by 2002:a05:6000:248:: with SMTP id m8mr61973793wrz.404.1638972259852;
-        Wed, 08 Dec 2021 06:04:19 -0800 (PST)
-Received: from localhost.localdomain ([39.48.199.136])
-        by smtp.gmail.com with ESMTPSA id r83sm5994726wma.22.2021.12.08.06.04.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Dec 2021 06:04:19 -0800 (PST)
-From:   Ameer Hamza <amhamza.mgc@gmail.com>
-To:     kabel@kernel.org, kuba@kernel.org, andrew@lunn.ch
-Cc:     vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, amhamza.mgc@gmail.com
-Subject: [PATCH v2] net: dsa: mv88e6xxx: error handling for serdes_power functions
-Date:   Wed,  8 Dec 2021 19:04:13 +0500
-Message-Id: <20211208140413.96856-1-amhamza.mgc@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20211207140647.6926a3e7@thinkpad>
-References: <20211207140647.6926a3e7@thinkpad>
+        id S234753AbhLHOLG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 09:11:06 -0500
+Received: from mga04.intel.com ([192.55.52.120]:20809 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231363AbhLHOLF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 8 Dec 2021 09:11:05 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10191"; a="236574216"
+X-IronPort-AV: E=Sophos;i="5.88,189,1635231600"; 
+   d="scan'208";a="236574216"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Dec 2021 06:07:33 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,189,1635231600"; 
+   d="scan'208";a="479908986"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by orsmga002.jf.intel.com with ESMTP; 08 Dec 2021 06:07:28 -0800
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 1B8E7Quc009548;
+        Wed, 8 Dec 2021 14:07:26 GMT
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     intel-wired-lan@lists.osuosl.org
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
+        Jithu Joseph <jithu.joseph@intel.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        KP Singh <kpsingh@kernel.org>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH v4 net-next 0/9] net: intel: napi_alloc_skb() vs metadata
+Date:   Wed,  8 Dec 2021 15:06:53 +0100
+Message-Id: <20211208140702.642741-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-mv88e6390_serdes_power() and mv88e6393x_serdes_power() should return
-with EINVAL error if cmode is undefined.
+This is an interpolation of [0] to other Intel Ethernet drivers
+(and is (re)based on its code).
+The main aim is to keep XDP metadata not only in case with
+build_skb(), but also when we do napi_alloc_skb() + memcpy().
 
-Signed-off-by: Ameer Hamza <amhamza.mgc@gmail.com>
----
- drivers/net/dsa/mv88e6xxx/serdes.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+All Intel drivers suffers from the same here:
+ - metadata gets lost on XDP_PASS in legacy-rx;
+ - excessive headroom allocation on XSK Rx to skbs;
+ - metadata gets lost on XSK Rx to skbs.
 
-diff --git a/drivers/net/dsa/mv88e6xxx/serdes.c b/drivers/net/dsa/mv88e6xxx/serdes.c
-index 33727439724a..f3dc1865f291 100644
---- a/drivers/net/dsa/mv88e6xxx/serdes.c
-+++ b/drivers/net/dsa/mv88e6xxx/serdes.c
-@@ -830,7 +830,7 @@ int mv88e6390_serdes_power(struct mv88e6xxx_chip *chip, int port, int lane,
- 			   bool up)
- {
- 	u8 cmode = chip->ports[port].cmode;
--	int err = 0;
-+	int err;
- 
- 	switch (cmode) {
- 	case MV88E6XXX_PORT_STS_CMODE_SGMII:
-@@ -842,6 +842,8 @@ int mv88e6390_serdes_power(struct mv88e6xxx_chip *chip, int port, int lane,
- 	case MV88E6XXX_PORT_STS_CMODE_RXAUI:
- 		err = mv88e6390_serdes_power_10g(chip, lane, up);
- 		break;
-+	default:
-+		return -EINVAL;
- 	}
- 
- 	if (!err && up)
-@@ -1507,7 +1509,7 @@ int mv88e6393x_serdes_power(struct mv88e6xxx_chip *chip, int port, int lane,
- 			    bool on)
- {
- 	u8 cmode = chip->ports[port].cmode;
--	int err = 0;
-+	int err;
- 
- 	if (port != 0 && port != 9 && port != 10)
- 		return -EOPNOTSUPP;
-@@ -1541,6 +1543,8 @@ int mv88e6393x_serdes_power(struct mv88e6xxx_chip *chip, int port, int lane,
- 	case MV88E6393X_PORT_STS_CMODE_10GBASER:
- 		err = mv88e6390_serdes_power_10g(chip, lane, on);
- 		break;
-+	default:
-+		return -EINVAL;
- 	}
- 
- 	if (err)
+Those get especially actual in XDP Hints upcoming.
+I couldn't have addressed the first one for all Intel drivers due to
+that they don't reserve any headroom for now in legacy-rx mode even
+with XDP enabled. This is hugely wrong, but requires quite a bunch
+of work and a separate series. Luckily, ice doesn't suffer from
+that.
+igc has 1 and 3 already fixed in [0].
+
+From v3 ([1]):
+ - fix driver name and ixgbe_construct_skb() function name in the
+   commit message of #9 (Jesper);
+ - no functional changes.
+
+From v2 (unreleased upstream):
+ - tweaked 007 to pass bi->xdp directly and simplify code (Maciej);
+ - picked Michal's Reviewed-by.
+
+From v1 (unreleased upstream):
+ - drop "fixes" of legacy-rx for i40e, igb and ixgbe since they have
+   another flaw regarding headroom (see above);
+ - drop igc cosmetic fixes since they landed upstream incorporated
+   into Jesper's commits;
+ - picked one Acked-by from Maciej.
+
+[0] https://lore.kernel.org/netdev/163700856423.565980.10162564921347693758.stgit@firesoul
+[1] https://lore.kernel.org/netdev/20211207205536.563550-1-alexandr.lobakin@intel.com
+
+Alexander Lobakin (9):
+  i40e: don't reserve excessive XDP_PACKET_HEADROOM on XSK Rx to skb
+  i40e: respect metadata on XSK Rx to skb
+  ice: respect metadata in legacy-rx/ice_construct_skb()
+  ice: don't reserve excessive XDP_PACKET_HEADROOM on XSK Rx to skb
+  ice: respect metadata on XSK Rx to skb
+  igc: don't reserve excessive XDP_PACKET_HEADROOM on XSK Rx to skb
+  ixgbe: pass bi->xdp to ixgbe_construct_skb_zc() directly
+  ixgbe: don't reserve excessive XDP_PACKET_HEADROOM on XSK Rx to skb
+  ixgbe: respect metadata on XSK Rx to skb
+
+ drivers/net/ethernet/intel/i40e/i40e_xsk.c   | 16 +++++++-----
+ drivers/net/ethernet/intel/ice/ice_txrx.c    | 15 ++++++++---
+ drivers/net/ethernet/intel/ice/ice_xsk.c     | 16 +++++++-----
+ drivers/net/ethernet/intel/igc/igc_main.c    | 13 +++++-----
+ drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c | 27 ++++++++++++--------
+ 5 files changed, 54 insertions(+), 33 deletions(-)
+
 -- 
-2.25.1
+Testing hints:
+
+Setup an XDP and AF_XDP program which will prepend metadata at the
+front of the frames and return XDP_PASS, then check that metadata
+is present after frames reach kernel network stack.
+--
+2.33.1
 
