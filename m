@@ -2,178 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3728146DD33
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 21:36:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 762F546DD45
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 21:48:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237004AbhLHUkF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 15:40:05 -0500
-Received: from mail-io1-f72.google.com ([209.85.166.72]:37661 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240647AbhLHUju (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 15:39:50 -0500
-Received: by mail-io1-f72.google.com with SMTP id m127-20020a6b3f85000000b005f045ba51f9so4619735ioa.4
-        for <netdev@vger.kernel.org>; Wed, 08 Dec 2021 12:36:18 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=1eMzVkjs4ptAGWAHJG5P5ADuL3kIbtQVEk8LuTc0n6o=;
-        b=nFRIPBJx4kXG6ssrYXkNFpCGbBizhO05t/nguz+6H/SLN5QnEhC4XA1q0yAktAnWW7
-         hftOre5AzojOCN0JxaQnkrs0SNSSm6RICYeGAvSrjfIfre4o5Ww7PdGiO70pmRK8/Pio
-         xru3qWRSLq09RRIPOul5KaIRXOLuA5xgpJSIvW3HLQmD5NBnOIsU1G2yyVAsz4tWRzwr
-         tTpaQ37gzRNWuT1A12IOvPHzDA2lwPnTwre3tJ1vxdLem0kCnUwvw8FgOQSUyR3GPJE1
-         LnKC5blpf96lX5OvKpM7c0wgWXODqiVmpU4mHW1wmBrfBEPEyJF9QZIrM2TqfDEiBYno
-         pedA==
-X-Gm-Message-State: AOAM530o4AMRvP3hAp9st+h/rf4nEi3Vki6jqJkN9FcQ5LPpepQjmAnJ
-        nEZW13LXS3lePpxFrEO3eKuxAmLMaYxyd6+TTgYK0XMv0+gg
-X-Google-Smtp-Source: ABdhPJzII9D2sRys1tjUCkp39Gl6tn1SQHF7nbIqdPSjVsrn3IO1kL/8JicHBhWDnGUs5dIfcLJ0lRYt33ehF6XzPlCKqSaxQbhK
+        id S234599AbhLHUwM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 15:52:12 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:5890 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S232827AbhLHUwL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 15:52:11 -0500
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.16.1.2/8.16.1.2) with SMTP id 1B8GegZR030658;
+        Wed, 8 Dec 2021 12:48:23 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=DM9VSO/qcOi3lN1QT1rYuFI5TOfqIcCPGW4AMEwmRK0=;
+ b=EMuaMofr5I8Tij4/9Bv9QhpQBogG8iWASc/pnAoOz957jDZNtzfHjbGFGdXkEAHYlr02
+ gaXNqgUYbFVNrv5Tt5zqQKUB9c1rB9Qrln92iORQG/1EseOPKCH+x4JBKP7csExhveZr
+ s1lcEjP7FEwj0xqhaJr7ktpPQILk2Pb//Tw= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by m0001303.ppops.net with ESMTP id 3cu0ed1q02-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 08 Dec 2021 12:48:23 -0800
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.231) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Wed, 8 Dec 2021 12:48:21 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hm9Z0tg+qBLapOQ6uPBqE/Fj5dy/xcGY2Ibj8px2PufmZORd0Fy49pE5ZI2G5mIZpi2ZLjn7ZYo87y5Mb+JG/hlEUjNL14HFnl1ioNM5FBrvvJhZUrnH9I9yS4eAaK3xDc6DkNluObVd+h/inv/AiSuY1pwok0iXKSC63z4ptu125hrHPOTbgp6scsyCRfkjYQ/AARVHy6hW3OTCxGFCH65WBHedUBKjjzoTzsGGH66jrGYzxRbpYCTeluBHullW/za6a9jxEK7KcJiIGGduIHv+I+d8ltfw9vPJ840HFglewaf4zTReDrAzv/m4SnvIJifRXyAaHmgXtzx77IO1bw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=DM9VSO/qcOi3lN1QT1rYuFI5TOfqIcCPGW4AMEwmRK0=;
+ b=Iob5+liTzlsi4xA5TZ+7R+YZEcjc7nP96kPWjSp8wochZBIZGY1rFjbbGgjBEcsXubOEydVo+PzJ4l9hy90er8niNqZHBKtooSYMIKqHdhpCPrPXWON8busUSkMOzjlSan9vo76CYEgUSwwPmAgGaBGJjgVjebrNe7f0fElbG+GZcaY0fX037p2Dzlii3Va7zrox3W6XE1L9PFEQpjmwxYzYspXCHjCPYpQF+yZjOtB0rIhTh/u09StLspI2JnQ2jWiIwuQ3NUpOWHrysgPEjJEy5TzulfUOQ//Oo5vgYcxY7MpJjzjoNZz+3883dtB5q1tISYalM2m+9zfxY4CyNw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Received: from SA1PR15MB5016.namprd15.prod.outlook.com (2603:10b6:806:1db::19)
+ by SA1PR15MB4370.namprd15.prod.outlook.com (2603:10b6:806:191::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4734.23; Wed, 8 Dec
+ 2021 20:48:20 +0000
+Received: from SA1PR15MB5016.namprd15.prod.outlook.com
+ ([fe80::e589:cc2c:1c9c:8010]) by SA1PR15MB5016.namprd15.prod.outlook.com
+ ([fe80::e589:cc2c:1c9c:8010%7]) with mapi id 15.20.4755.022; Wed, 8 Dec 2021
+ 20:48:20 +0000
+Date:   Wed, 8 Dec 2021 12:48:16 -0800
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     Eric Dumazet <edumazet@google.com>
+CC:     Daniel Borkmann <daniel@iogearbox.net>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        <netdev@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, <Kernel-team@fb.com>
+Subject: Re: [RFC PATCH net-next 2/2] net: Reset forwarded skb->tstamp before
+ delivering to user space
+Message-ID: <20211208204816.tvwckytomjuei2fz@kafai-mbp.dhcp.thefacebook.com>
+References: <20211207020102.3690724-1-kafai@fb.com>
+ <20211207020108.3691229-1-kafai@fb.com>
+ <CA+FuTScQigv7xR5COSFXAic11mwaEsFXVvV7EmSf-3OkvdUXcg@mail.gmail.com>
+ <83ff2f64-42b8-60ed-965a-810b4ec69f8d@iogearbox.net>
+ <20211208081842.p46p5ye2lecgqvd2@kafai-mbp.dhcp.thefacebook.com>
+ <20211208083013.zqeipdfprcdr3ntn@kafai-mbp.dhcp.thefacebook.com>
+ <CANn89iLXjnDZunHx04UUGQFLxWhq52HhdhcPiKiJW4mkLaLbOA@mail.gmail.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <CANn89iLXjnDZunHx04UUGQFLxWhq52HhdhcPiKiJW4mkLaLbOA@mail.gmail.com>
+X-ClientProxiedBy: CO2PR04CA0135.namprd04.prod.outlook.com (2603:10b6:104::13)
+ To SA1PR15MB5016.namprd15.prod.outlook.com (2603:10b6:806:1db::19)
 MIME-Version: 1.0
-X-Received: by 2002:a92:8751:: with SMTP id d17mr10582237ilm.148.1638995778462;
- Wed, 08 Dec 2021 12:36:18 -0800 (PST)
-Date:   Wed, 08 Dec 2021 12:36:18 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000029e89205d2a8718d@google.com>
-Subject: [syzbot] BUG: sleeping function called from invalid context in hci_cmd_sync_cancel
-From:   syzbot <syzbot+485cc00ea7cf41dfdbf1@syzkaller.appspotmail.com>
-To:     changbin.du@intel.com, christian.brauner@ubuntu.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, yajun.deng@linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:5f6e) by CO2PR04CA0135.namprd04.prod.outlook.com (2603:10b6:104::13) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.19 via Frontend Transport; Wed, 8 Dec 2021 20:48:19 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 8793d554-2e2c-4b38-a462-08d9ba8c11a1
+X-MS-TrafficTypeDiagnostic: SA1PR15MB4370:EE_
+X-Microsoft-Antispam-PRVS: <SA1PR15MB4370A9BADAC420DD9C06DCEDD56F9@SA1PR15MB4370.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:5516;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: gdU+Lrs+bJo/YCXpmz4Wdb4n7khW11Nw+7eU//m4Z6i65zGOQEyvCtH+yvqTJgaRqmhyoQTgoHQpacxO0ukH/GMOgh0L7v3v7oN9lXymNvAoOLQ8mP34zXF53NCEJtuTGBLniJbgG2qutT/jRnmagkrTiDmyVEAhi2bIKSPHJr99jIExKYWc3NmLqIyltEP5mg4qNSjsMo/3HD9VTp+PwKR0xUxBqDhK8LOhMXLc/WOuxfvWsQYwqc1EJhXeZVi0rgzOHuz2ChDZW55Q19bqz4wBMtFegho3PDsoEWkjhObWSFvnYwXG1izrO8PlaAvTeO8+6mO+NXdkRRpP824reYtwfbM4uFnNNNzFzpskJfL0TYAOVrILxuWW+Lt5symx6p8hlZPI85Jkqe03ZEYj3uT/sv1kJr0zzqzcu+T5VZSdrxtvg0D9d0rjM1oQRsFpTaQjmA8rnhex8Q+qt3SFxzBydhQe07R3lO3K32IdUBMXvTFP+eEYQL8mW59pJYN1JMvSwPcqtTOPMsJ8Ot142KB8gPogGTYZj0Y1FKpqJhJAkS8lkWtlaCZly2hvSflMsX1goL4eyGSK5r0g0NbmDdNg6w/ICRx3xRIl/YtTKNj1k1yLKjFq4Sj5rNE4ixF25oY8gO84mSLCMqYD2/K6WQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR15MB5016.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(5660300002)(508600001)(2906002)(38100700002)(9686003)(54906003)(86362001)(8676002)(4744005)(6666004)(316002)(8936002)(1076003)(66946007)(7696005)(6916009)(53546011)(6506007)(66476007)(66556008)(52116002)(4326008)(55016003)(186003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Z032JTeFRqM5Hw+HskjO0C+Z2bSX6u0vtEohLTt+dJ50H5JlWtSNRwCXUpfS?=
+ =?us-ascii?Q?gWB77hVcFaL/hp3MgpUHki8RPRkwgbShosjndPGw6rjRd2GJRzoICG7rhcVf?=
+ =?us-ascii?Q?Zih/WAT1Mk2PZf7cFnN5unj9RyODgTa730FyIqTwupExobyRym8P1f+bogFp?=
+ =?us-ascii?Q?pm7X0MvMP4QAqCuA8FeNaSYT1fEmzi0qXckOYl6O272i1UIiI+nA8030NtXq?=
+ =?us-ascii?Q?GNBsu86zyFz/fiIwgtYhWmwzThD3RUGnRtLpdPPQv6hRBa7QXs/877VuQvh6?=
+ =?us-ascii?Q?oCme+ivIiAJukfMiuEboO3BTmXJtajAIJNTZ05sfeZSP8Jx+xtUoKIg2Bw3/?=
+ =?us-ascii?Q?WardW0U3oUnFzfxFZyFDB6l+nIF283ZdmMKEVhmv91wkIqkjPYDnvk/b3GXU?=
+ =?us-ascii?Q?SZHCyRfr1CdSnjibn+MAvvIFQkpB1kc4oFBvLs8lmoEURCE6EKmijwWRXQJG?=
+ =?us-ascii?Q?lbfEJYqG5mowghHHo2lhbAFhLDRay28jmlIT4WlGyzqTwhaIWaJyOzcV+x7f?=
+ =?us-ascii?Q?AH4fazM0Usgk6kmfNj7QS9rWz2R4KRs/QFvgKn7H5mOvqwU259sAcdGe2qFN?=
+ =?us-ascii?Q?U/q4kFwoFvrtOh/mCb06FRdf2ooXHdlgPNn4Zj+6nBKiHLX6kmZAn+j2EggR?=
+ =?us-ascii?Q?gnC/vfLsaQYcmDwtwBoPZp0OCr3h1bqB5jLskYPLb0bbJ8Vb/Vu0jSHojrna?=
+ =?us-ascii?Q?3i2TPktUJx0XzvkR21TU088g//NLYmwVZCJVTHnJlaI1fAQNoWzJv+xpib2K?=
+ =?us-ascii?Q?t9+nIv170W7yxUsp64Ur9e8+K5Wx2T26Nkxi4hN9bh6GUH1AEZ20J+mlczQS?=
+ =?us-ascii?Q?Zpn26B0fjNNxoivaxMV4FqJ/HAToVm9HS7ezUL/W+AIs+yf5/x7Rvvt2RIip?=
+ =?us-ascii?Q?3yg1m0Uda9tu5DR+mYLqjkiOq3lBtrsOUoDXK01oudprIvPb/wqQTTUqhiIv?=
+ =?us-ascii?Q?4Ft8vsDpWWDpdJwEoYmQ1D4ek2+lX8rq02zsS48wDUSeEcxHfd93r53BnPCo?=
+ =?us-ascii?Q?mNAVbdGNNKI7R5wYekQdKx2ZEXRix1S982SuaEasPi8Dqg2DibhC/dhEty26?=
+ =?us-ascii?Q?FXtoqoLAZVsXHRvMlhgSWeLIWe7kFUJu3JTINPJXQaNHWhefTe0egnwOgKlf?=
+ =?us-ascii?Q?GFqQ/SVIe3yPedKpiRcUnd7MnJeHGJ79S0VJNobdZe1Y7ppUoQa8d3CS4FEY?=
+ =?us-ascii?Q?hsRCBj6sldVn4rW5sk+aCx8ckEcW7IVmpxGzreDy65s7DfCJptJj/ZheiClK?=
+ =?us-ascii?Q?5RnCzHHmB//8CXADjynSITvFFeJ6m90FzlmPyLZ3KidmtAwvcZyPcGoRCttF?=
+ =?us-ascii?Q?GR4++oNSVkO8OtTXAvGwaX8S8d2sOHz54Ab9FJmbxTP+vjkodv+bHLU8o3o5?=
+ =?us-ascii?Q?atAxIkmPx+JHB1tg8nY3NOwjVc/FepzN+ZnxbXwwBXf1SIMkCa/6MbPUBJpi?=
+ =?us-ascii?Q?1XT2w1GaqY9RCDW+ix2W3URiojbtMzxYrUX/uYaFjRF74+BLgeyGI+tsdIYn?=
+ =?us-ascii?Q?xc7FYCQYoHo8ucbyPDBqoZBP8DDxECwEtnOe7Nv3PL3hJ+CwtCeurx7MPxGZ?=
+ =?us-ascii?Q?rxkKApT80676arC8aoVHwG4zpyhAXzr5rYkxbYz5?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8793d554-2e2c-4b38-a462-08d9ba8c11a1
+X-MS-Exchange-CrossTenant-AuthSource: SA1PR15MB5016.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Dec 2021 20:48:20.7851
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: M+700g/wsk6Pa82Ut1D2lAT3AOBQzkPEAR4bqMNTiVGxf8IFLw+0xcxEz/rMXhgx
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR15MB4370
+X-OriginatorOrg: fb.com
+X-Proofpoint-ORIG-GUID: yUnXy1kJZK0ozs8ox7SeUJzf8Fz1B3Bm
+X-Proofpoint-GUID: yUnXy1kJZK0ozs8ox7SeUJzf8Fz1B3Bm
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2021-12-08_08,2021-12-08_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 clxscore=1015
+ mlxscore=0 bulkscore=0 suspectscore=0 adultscore=0 phishscore=0
+ impostorscore=0 lowpriorityscore=0 malwarescore=0 mlxlogscore=378
+ priorityscore=1501 spamscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2110150000 definitions=main-2112080113
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-
-syzbot found the following issue on:
-
-HEAD commit:    4eee8d0b64ec Add linux-next specific files for 20211208
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=13d1329db00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=20b74d9da4ce1ef1
-dashboard link: https://syzkaller.appspot.com/bug?extid=485cc00ea7cf41dfdbf1
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13e7e955b00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10ed3641b00000
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+485cc00ea7cf41dfdbf1@syzkaller.appspotmail.com
-
-BUG: sleeping function called from invalid context at kernel/workqueue.c:3039
-in_atomic(): 1, irqs_disabled(): 1, non_block: 0, pid: 8, name: kworker/u4:0
-preempt_count: 101, expected: 0
-RCU nest depth: 0, expected: 0
-5 locks held by kworker/u4:0/8:
- #0: ffff8880155d9938 ((wq_completion)netns){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff8880155d9938 ((wq_completion)netns){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff8880155d9938 ((wq_completion)netns){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
- #0: ffff8880155d9938 ((wq_completion)netns){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:635 [inline]
- #0: ffff8880155d9938 ((wq_completion)netns){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:662 [inline]
- #0: ffff8880155d9938 ((wq_completion)netns){+.+.}-{0:0}, at: process_one_work+0x896/0x1690 kernel/workqueue.c:2289
- #1: ffffc90000cd7db0 (net_cleanup_work){+.+.}-{0:0}, at: process_one_work+0x8ca/0x1690 kernel/workqueue.c:2293
- #2: ffffffff8d308150 (pernet_ops_rwsem){++++}-{3:3}, at: cleanup_net+0x9b/0xb00 net/core/net_namespace.c:555
- #3: ffff88806f0ab8f0 (&ent->pde_unload_lock){+.+.}-{2:2}, at: spin_lock include/linux/spinlock.h:354 [inline]
- #3: ffff88806f0ab8f0 (&ent->pde_unload_lock){+.+.}-{2:2}, at: proc_entry_rundown+0xe7/0x1d0 fs/proc/inode.c:266
- #4: ffffc90000dc0d70 ((&dum_hcd->timer)){+.-.}-{0:0}, at: lockdep_copy_map include/linux/lockdep.h:35 [inline]
- #4: ffffc90000dc0d70 ((&dum_hcd->timer)){+.-.}-{0:0}, at: call_timer_fn+0xd5/0x6b0 kernel/time/timer.c:1411
-irq event stamp: 268125
-hardirqs last  enabled at (268124): [<ffffffff8956ab6f>] __raw_spin_unlock_irq include/linux/spinlock_api_smp.h:159 [inline]
-hardirqs last  enabled at (268124): [<ffffffff8956ab6f>] _raw_spin_unlock_irq+0x1f/0x40 kernel/locking/spinlock.c:202
-hardirqs last disabled at (268125): [<ffffffff8956a99e>] __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:108 [inline]
-hardirqs last disabled at (268125): [<ffffffff8956a99e>] _raw_spin_lock_irqsave+0x4e/0x50 kernel/locking/spinlock.c:162
-softirqs last  enabled at (268062): [<ffffffff885ab700>] spin_unlock_bh include/linux/spinlock.h:399 [inline]
-softirqs last  enabled at (268062): [<ffffffff885ab700>] rxrpc_release_sock net/rxrpc/af_rxrpc.c:876 [inline]
-softirqs last  enabled at (268062): [<ffffffff885ab700>] rxrpc_release+0x1f0/0x5a0 net/rxrpc/af_rxrpc.c:917
-softirqs last disabled at (268119): [<ffffffff8146b723>] invoke_softirq kernel/softirq.c:432 [inline]
-softirqs last disabled at (268119): [<ffffffff8146b723>] __irq_exit_rcu+0x123/0x180 kernel/softirq.c:637
-Preemption disabled at:
-[<0000000000000000>] 0x0
-CPU: 1 PID: 8 Comm: kworker/u4:0 Not tainted 5.16.0-rc4-next-20211208-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: netns cleanup_net
-Call Trace:
- <IRQ>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- __might_resched.cold+0x222/0x26b kernel/sched/core.c:9583
- start_flush_work kernel/workqueue.c:3039 [inline]
- __flush_work+0x109/0xb10 kernel/workqueue.c:3103
- __cancel_work_timer+0x3f9/0x570 kernel/workqueue.c:3191
- hci_cmd_sync_cancel net/bluetooth/hci_sync.c:346 [inline]
- hci_cmd_sync_cancel+0xe1/0x170 net/bluetooth/hci_sync.c:338
- btusb_intr_complete+0x3d3/0x4a0 drivers/bluetooth/btusb.c:969
- __usb_hcd_giveback_urb+0x2b0/0x5c0 drivers/usb/core/hcd.c:1656
- usb_hcd_giveback_urb+0x367/0x410 drivers/usb/core/hcd.c:1726
- dummy_timer+0x11f9/0x32b0 drivers/usb/gadget/udc/dummy_hcd.c:1987
- call_timer_fn+0x1a5/0x6b0 kernel/time/timer.c:1421
- expire_timers kernel/time/timer.c:1466 [inline]
- __run_timers.part.0+0x675/0xa20 kernel/time/timer.c:1734
- __run_timers kernel/time/timer.c:1715 [inline]
- run_timer_softirq+0xb3/0x1d0 kernel/time/timer.c:1747
- __do_softirq+0x29b/0x9c2 kernel/softirq.c:558
- invoke_softirq kernel/softirq.c:432 [inline]
- __irq_exit_rcu+0x123/0x180 kernel/softirq.c:637
- irq_exit_rcu+0x5/0x20 kernel/softirq.c:649
- sysvec_apic_timer_interrupt+0x93/0xc0 arch/x86/kernel/apic/apic.c:1097
- </IRQ>
- <TASK>
- asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:638
-RIP: 0010:lock_acquire+0x1ef/0x510 kernel/locking/lockdep.c:5607
-Code: 9d a5 7e 83 f8 01 0f 85 b4 02 00 00 9c 58 f6 c4 02 0f 85 9f 02 00 00 48 83 7c 24 08 00 74 01 fb 48 b8 00 00 00 00 00 fc ff df <48> 01 c3 48 c7 03 00 00 00 00 48 c7 43 08 00 00 00 00 48 8b 84 24
-RSP: 0000:ffffc90000cd7928 EFLAGS: 00000206
-RAX: dffffc0000000000 RBX: 1ffff9200019af27 RCX: 0000000000000001
-RDX: 1ffff110021cfc44 RSI: 0000000000000001 RDI: 0000000000000000
-RBP: 0000000000000001 R08: 00000000000c1948 R09: 0000000000000001
-R10: fffffbfff2024ea1 R11: 1ffffffff1ee5241 R12: 0000000000000000
-R13: 0000000000000000 R14: ffff88806f0ab8f0 R15: 0000000000000000
- __raw_spin_lock include/linux/spinlock_api_smp.h:133 [inline]
- _raw_spin_lock+0x2a/0x40 kernel/locking/spinlock.c:154
- spin_lock include/linux/spinlock.h:354 [inline]
- proc_entry_rundown+0xe7/0x1d0 fs/proc/inode.c:266
- remove_proc_subtree+0x25c/0x500 fs/proc/generic.c:767
- proc_remove fs/proc/generic.c:790 [inline]
- proc_remove+0x66/0x90 fs/proc/generic.c:787
- afs_proc_cleanup+0x34/0x70 fs/afs/proc.c:703
- afs_net_exit+0x17d/0x320 fs/afs/main.c:159
- ops_exit_list+0xb0/0x160 net/core/net_namespace.c:168
- cleanup_net+0x4ea/0xb00 net/core/net_namespace.c:593
- process_one_work+0x9b2/0x1690 kernel/workqueue.c:2318
- worker_thread+0x658/0x11f0 kernel/workqueue.c:2465
- kthread+0x405/0x4f0 kernel/kthread.c:345
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
- </TASK>
-----------------
-Code disassembly (best guess):
-   0:	9d                   	popfq
-   1:	a5                   	movsl  %ds:(%rsi),%es:(%rdi)
-   2:	7e 83                	jle    0xffffff87
-   4:	f8                   	clc
-   5:	01 0f                	add    %ecx,(%rdi)
-   7:	85 b4 02 00 00 9c 58 	test   %esi,0x589c0000(%rdx,%rax,1)
-   e:	f6 c4 02             	test   $0x2,%ah
-  11:	0f 85 9f 02 00 00    	jne    0x2b6
-  17:	48 83 7c 24 08 00    	cmpq   $0x0,0x8(%rsp)
-  1d:	74 01                	je     0x20
-  1f:	fb                   	sti
-  20:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
-  27:	fc ff df
-* 2a:	48 01 c3             	add    %rax,%rbx <-- trapping instruction
-  2d:	48 c7 03 00 00 00 00 	movq   $0x0,(%rbx)
-  34:	48 c7 43 08 00 00 00 	movq   $0x0,0x8(%rbx)
-  3b:	00
-  3c:	48                   	rex.W
-  3d:	8b                   	.byte 0x8b
-  3e:	84                   	.byte 0x84
-  3f:	24                   	.byte 0x24
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+On Wed, Dec 08, 2021 at 10:27:51AM -0800, Eric Dumazet wrote:
+> On Wed, Dec 8, 2021 at 12:30 AM Martin KaFai Lau <kafai@fb.com> wrote:
+> 
+> > For non bpf ingress, hmmm.... yeah, not sure if it is indeed an issue :/
+> > may be save the tx tstamp first and then temporarily restamp with __net_timestamp()
+> 
+> Martin, have you looked at time namespaces (CLONE_NEWTIME) ?
+> 
+> Perhaps we need to have more than one bit to describe time bases.
+My noob understanding is it only affects the time returning
+to the user in the syscall.  Could you explain how that
+may affect the time in skb->tstamp?
