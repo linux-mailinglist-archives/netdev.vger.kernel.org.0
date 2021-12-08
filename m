@@ -2,382 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 389A846DC41
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 20:32:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5433046DC44
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 20:32:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239587AbhLHTfw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 14:35:52 -0500
-Received: from mail-ot1-f44.google.com ([209.85.210.44]:38653 "EHLO
-        mail-ot1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232942AbhLHTfv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 14:35:51 -0500
-Received: by mail-ot1-f44.google.com with SMTP id n104-20020a9d2071000000b005799790cf0bso3806771ota.5;
-        Wed, 08 Dec 2021 11:32:19 -0800 (PST)
+        id S239597AbhLHTg1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 14:36:27 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:36500 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S239595AbhLHTgZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 14:36:25 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1638991972;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=rfKb97MY2LoauqiuW+A+PPQUdGoftCNQSgBEkDbYCMw=;
+        b=cVa7FPO/FM/YQTHcUrWEQZRmxOEntPIDj+eUkPjDU6wmKtfUiKT9MDl/yJDXHvGmvdLibi
+        ARIBrCtN0nYZtiATlCnrw8KNY3fnbbSqAbQz/iuSdsJPBkGD70OCF1zbE0mFv1PKZtzOqU
+        JLpLsZiTrwCmGlAnY26z+nRWY5ZCsl4=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-290-kVZymXnGMcaG04Pvjf9bGw-1; Wed, 08 Dec 2021 14:32:49 -0500
+X-MC-Unique: kVZymXnGMcaG04Pvjf9bGw-1
+Received: by mail-wm1-f69.google.com with SMTP id 69-20020a1c0148000000b0033214e5b021so1804953wmb.3
+        for <netdev@vger.kernel.org>; Wed, 08 Dec 2021 11:32:49 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=8nxUtG+5JYlvW5SguB6Kw4ZUS6/ARKAi5lTA7ymRi4U=;
-        b=dtd5LadR8d9Vz0r9k4fnEEc4PCqx8TN0vb1IvLF+gcy406ZaLdu3oSiSs6SRdHyriU
-         XSb7TZqPXOG7yhLdMU1bOPTLsje2IX/BGLOO+iE+4Gt+v86IviKdvsBojY1AOS7M1jrW
-         GoxTI1Rf82C1oEzextO84NuKPGd18cfYS6P5hzrbjI1EyEdTZfjLrnyeo9nd3NN0PX86
-         b6AvN5xawDl7ezpy+KxpGQtIjjWd/RfkI/I7HdyPPcFymN2X8EMvWomE/vl9c30YY656
-         4ziH9KJiyaKjQqotmS9M62Kw+34Mj5AhzQ0EhSsrRrb7Ydi+9styaqMU2JUYW5XIxB1A
-         qkrA==
-X-Gm-Message-State: AOAM531MIfYa1z+GiUFd1LiIWv1yne15MPBFEiiBC1L1Iw8Rf6UpGjvU
-        Y7tOT/dB6kVoOHiQ04VkTQ==
-X-Google-Smtp-Source: ABdhPJyzyO/Bn97Z2SbyHrMUw2BYtmH+nBP1gAtBUQYhquxascjBes0YKkNNS7jVMf4cz9jkJPf5tQ==
-X-Received: by 2002:a9d:24c3:: with SMTP id z61mr1369551ota.100.1638991938803;
-        Wed, 08 Dec 2021 11:32:18 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id g7sm642073oon.27.2021.12.08.11.32.17
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rfKb97MY2LoauqiuW+A+PPQUdGoftCNQSgBEkDbYCMw=;
+        b=00w1r1j+HGfL8jl1r8DxQqN9JJVghkyl+42M4y8jbj0iMBQADpTvkbgmBxBIMmYRX+
+         /leAnoO+kdojaNx0beC9Y1gjxWvRuCcN98pGT4SEfXGt9C1DDWMe85OTOjA8ROmd0/jP
+         30FgbJEjs19qgAlVolFs/1mX5ME3+cVFzFtnnukUchWkCq+GUJPqrdkvzEoBJwhaXIXv
+         9Uj5yX6lQWrrovYrbxEbT8bO67DqD/1gr48WJolB5LWMJXygJyJfIkWP4J7+4aXbDFVw
+         DM7okjaLB9AYshr1X+oNxwduTd4mcnOThd118SIaeeMUCnVbyUpdmNdUwXRtHY0HZITl
+         XubQ==
+X-Gm-Message-State: AOAM533TK4nqKtBTo6Zmtchy4uGiqfnEtO0Qh7N4MSBZ8/huvPoUHbTe
+        6bsFXMJ3gAgTH9cCqXWZkd2wDA8Ycrt3BBhrjw4f/XUZjyHcrVTUGcGpQ821PCyd1WySx5Xsyc4
+        LkkYwgl4w4RG9VB2U
+X-Received: by 2002:a5d:6d09:: with SMTP id e9mr797295wrq.17.1638991968112;
+        Wed, 08 Dec 2021 11:32:48 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyWkUS4YGY+iAOqtR1FNKCFzOtgPbiRNgPR3VxzgMbBbCLFD5TvRrjwaUmrgdDG4ZeMj5Og4Q==
+X-Received: by 2002:a5d:6d09:: with SMTP id e9mr797261wrq.17.1638991967827;
+        Wed, 08 Dec 2021 11:32:47 -0800 (PST)
+Received: from krava.redhat.com (nat-pool-brq-u.redhat.com. [213.175.37.12])
+        by smtp.gmail.com with ESMTPSA id m21sm3472125wrb.2.2021.12.08.11.32.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Dec 2021 11:32:17 -0800 (PST)
-Received: (nullmailer pid 198024 invoked by uid 1000);
-        Wed, 08 Dec 2021 19:32:16 -0000
-Date:   Wed, 8 Dec 2021 13:32:16 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     devicetree@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
-        "maintainer:BROADCOM IPROC GBIT ETHERNET DRIVER" 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Doug Berger <opendmb@gmail.com>, Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "moderated list:BROADCOM IPROC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "open list:GENERIC PHY FRAMEWORK" <linux-phy@lists.infradead.org>
-Subject: Re: [PATCH v3 4/8] dt-bindings: net: Convert GENET binding to YAML
-Message-ID: <YbEIQNoSRR8II7fF@robh.at.kernel.org>
-References: <20211206180049.2086907-1-f.fainelli@gmail.com>
- <20211206180049.2086907-5-f.fainelli@gmail.com>
+        Wed, 08 Dec 2021 11:32:47 -0800 (PST)
+From:   Jiri Olsa <jolsa@redhat.com>
+X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Subject: [PATCHv2 bpf-next 0/5] bpf: Add helpers to access traced function arguments
+Date:   Wed,  8 Dec 2021 20:32:40 +0100
+Message-Id: <20211208193245.172141-1-jolsa@kernel.org>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211206180049.2086907-5-f.fainelli@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 06, 2021 at 10:00:45AM -0800, Florian Fainelli wrote:
-> Convert the GENET binding to YAML, leveraging brcm,unimac-mdio.yaml and
-> the standard ethernet-controller.yaml files.
-> 
-> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-> ---
->  .../devicetree/bindings/net/brcm,bcmgenet.txt | 125 ---------------
->  .../bindings/net/brcm,bcmgenet.yaml           | 145 ++++++++++++++++++
->  MAINTAINERS                                   |   2 +-
->  3 files changed, 146 insertions(+), 126 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/net/brcm,bcmgenet.txt
->  create mode 100644 Documentation/devicetree/bindings/net/brcm,bcmgenet.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/net/brcm,bcmgenet.txt b/Documentation/devicetree/bindings/net/brcm,bcmgenet.txt
-> deleted file mode 100644
-> index 0b5994fba35f..000000000000
-> --- a/Documentation/devicetree/bindings/net/brcm,bcmgenet.txt
-> +++ /dev/null
-> @@ -1,125 +0,0 @@
-> -* Broadcom BCM7xxx Ethernet Controller (GENET)
-> -
-> -Required properties:
-> -- compatible: should contain one of "brcm,genet-v1", "brcm,genet-v2",
-> -  "brcm,genet-v3", "brcm,genet-v4", "brcm,genet-v5", "brcm,bcm2711-genet-v5" or
-> -  "brcm,bcm7712-genet-v5".
-> -- reg: address and length of the register set for the device
-> -- interrupts and/or interrupts-extended: must be two cells, the first cell
-> -  is the general purpose interrupt line, while the second cell is the
-> -  interrupt for the ring RX and TX queues operating in ring mode.  An
-> -  optional third interrupt cell for Wake-on-LAN can be specified.
-> -  See Documentation/devicetree/bindings/interrupt-controller/interrupts.txt
-> -  for information on the property specifics.
-> -- phy-mode: see ethernet.txt file in the same directory
-> -- #address-cells: should be 1
-> -- #size-cells: should be 1
-> -
-> -Optional properties:
-> -- clocks: When provided, must be two phandles to the functional clocks nodes
-> -  of the GENET block. The first phandle is the main GENET clock used during
-> -  normal operation, while the second phandle is the Wake-on-LAN clock.
-> -- clock-names: When provided, names of the functional clock phandles, first
-> -  name should be "enet" and second should be "enet-wol".
-> -
-> -- phy-handle: See ethernet.txt file in the same directory; used to describe
-> -  configurations where a PHY (internal or external) is used.
-> -
-> -- fixed-link: When the GENET interface is connected to a MoCA hardware block or
-> -  when operating in a RGMII to RGMII type of connection, or when the MDIO bus is
-> -  voluntarily disabled, this property should be used to describe the "fixed link".
-> -  See Documentation/devicetree/bindings/net/fixed-link.txt for information on
-> -  the property specifics
-> -
-> -Required child nodes:
-> -
-> -- mdio bus node: this node should always be present regardless of the PHY
-> -  configuration of the GENET instance
-> -
-> -MDIO bus node required properties:
-> -
-> -- compatible: should contain one of "brcm,genet-mdio-v1", "brcm,genet-mdio-v2"
-> -  "brcm,genet-mdio-v3", "brcm,genet-mdio-v4", "brcm,genet-mdio-v5", the version
-> -  has to match the parent node compatible property (e.g: brcm,genet-v4 pairs
-> -  with brcm,genet-mdio-v4)
-> -- reg: address and length relative to the parent node base register address
-> -- #address-cells: address cell for MDIO bus addressing, should be 1
-> -- #size-cells: size of the cells for MDIO bus addressing, should be 0
-> -
-> -Ethernet PHY node properties:
-> -
-> -See Documentation/devicetree/bindings/net/phy.txt for the list of required and
-> -optional properties.
-> -
-> -Internal Gigabit PHY example:
-> -
-> -ethernet@f0b60000 {
-> -	phy-mode = "internal";
-> -	phy-handle = <&phy1>;
-> -	mac-address = [ 00 10 18 36 23 1a ];
-> -	compatible = "brcm,genet-v4";
-> -	#address-cells = <0x1>;
-> -	#size-cells = <0x1>;
-> -	reg = <0xf0b60000 0xfc4c>;
-> -	interrupts = <0x0 0x14 0x0>, <0x0 0x15 0x0>;
-> -
-> -	mdio@e14 {
-> -		compatible = "brcm,genet-mdio-v4";
-> -		#address-cells = <0x1>;
-> -		#size-cells = <0x0>;
-> -		reg = <0xe14 0x8>;
-> -
-> -		phy1: ethernet-phy@1 {
-> -			max-speed = <1000>;
-> -			reg = <0x1>;
-> -			compatible = "ethernet-phy-ieee802.3-c22";
-> -		};
-> -	};
-> -};
-> -
-> -MoCA interface / MAC to MAC example:
-> -
-> -ethernet@f0b80000 {
-> -	phy-mode = "moca";
-> -	fixed-link = <1 0 1000 0 0>;
-> -	mac-address = [ 00 10 18 36 24 1a ];
-> -	compatible = "brcm,genet-v4";
-> -	#address-cells = <0x1>;
-> -	#size-cells = <0x1>;
-> -	reg = <0xf0b80000 0xfc4c>;
-> -	interrupts = <0x0 0x16 0x0>, <0x0 0x17 0x0>;
-> -
-> -	mdio@e14 {
-> -		compatible = "brcm,genet-mdio-v4";
-> -		#address-cells = <0x1>;
-> -		#size-cells = <0x0>;
-> -		reg = <0xe14 0x8>;
-> -	};
-> -};
-> -
-> -
-> -External MDIO-connected Gigabit PHY/switch:
-> -
-> -ethernet@f0ba0000 {
-> -	phy-mode = "rgmii";
-> -	phy-handle = <&phy0>;
-> -	mac-address = [ 00 10 18 36 26 1a ];
-> -	compatible = "brcm,genet-v4";
-> -	#address-cells = <0x1>;
-> -	#size-cells = <0x1>;
-> -	reg = <0xf0ba0000 0xfc4c>;
-> -	interrupts = <0x0 0x18 0x0>, <0x0 0x19 0x0>;
-> -
-> -	mdio@e14 {
-> -		compatible = "brcm,genet-mdio-v4";
-> -		#address-cells = <0x1>;
-> -		#size-cells = <0x0>;
-> -		reg = <0xe14 0x8>;
-> -
-> -		phy0: ethernet-phy@0 {
-> -			max-speed = <1000>;
-> -			reg = <0x0>;
-> -			compatible = "ethernet-phy-ieee802.3-c22";
-> -		};
-> -	};
-> -};
-> diff --git a/Documentation/devicetree/bindings/net/brcm,bcmgenet.yaml b/Documentation/devicetree/bindings/net/brcm,bcmgenet.yaml
-> new file mode 100644
-> index 000000000000..ba9a6d156815
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/net/brcm,bcmgenet.yaml
-> @@ -0,0 +1,145 @@
-> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/net/brcm,bcmgenet.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Broadcom BCM7xxx Ethernet Controller (GENET) binding
-> +
-> +maintainers:
-> +  - Doug Berger <opendmb@gmail.com>
-> +  - Florian Fainelli <f.fainelli@gmail.com>
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - brcm,genet-v1
-> +      - brcm,genet-v2
-> +      - brcm,genet-v3
-> +      - brcm,genet-v4
-> +      - brcm,genet-v5
-> +      - brcm,bcm2711-genet-v5
-> +      - brcm,bcm7712-genet-v5
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    minItems: 2
-> +    items:
-> +      - description: general purpose interrupt line
-> +      - description: RX and TX rings interrupt line
-> +      - description: Wake-on-LAN interrupt line
-> +
-> +
-> +  clocks:
-> +    minItems: 1
-> +    items:
-> +      - description: main clock
-> +      - description: EEE clock
-> +      - description: Wake-on-LAN clock
-> +
-> +  clock-names:
-> +    minItems: 1
-> +    items:
-> +      - const: enet
-> +      - const: enet-eee
-> +      - const: enet-wol
-> +
-> +  "#address-cells":
-> +    const: 1
-> +
-> +  "#size-cells":
-> +    const: 1
-> +
-> +patternProperties:
-> +  "^mdio@[0-9a-f]+$":
-> +    type: object
-> +    $ref: "brcm,unimac-mdio.yaml"
-> +
-> +    description:
-> +      GENET internal UniMAC MDIO bus
-> +
-> +required:
-> +  - reg
-> +  - interrupts
-> +  - phy-mode
-> +  - "#address-cells"
-> +  - "#size-cells"
-> +
-> +allOf:
-> +  - $ref: ethernet-controller.yaml
-> +
-> +additionalProperties: true
+hi,
+adding new helpers to access traced function arguments that
+came out of the trampoline batch changes [1].
 
-This should be 'unevaluatedProperties: false'. I'll fixup while 
-applying.
+  Get n-th argument of the traced function:
+    long bpf_get_func_arg(void *ctx, u32 n, u64 *value)
+  
+  Get return value of the traced function:
+    long bpf_get_func_ret(void *ctx, u64 *value)
+  
+  Get arguments count of the traced funtion:
+    long bpf_get_func_arg_cnt(void *ctx)
 
-> +
-> +examples:
-> +  #include <dt-bindings/interrupt-controller/arm-gic.h>
-> +
-> +  - |
-> +    ethernet@f0b60000 {
-> +        phy-mode = "internal";
-> +        phy-handle = <&phy1>;
-> +        mac-address = [ 00 10 18 36 23 1a ];
-> +        compatible = "brcm,genet-v4";
-> +        reg = <0xf0b60000 0xfc4c>;
-> +        interrupts = <0x0 0x14 0x0>, <0x0 0x15 0x0>;
-> +        #address-cells = <1>;
-> +        #size-cells = <1>;
-> +
-> +        mdio0: mdio@e14 {
-> +           compatible = "brcm,genet-mdio-v4";
-> +           #address-cells = <1>;
-> +           #size-cells = <0>;
-> +           reg = <0xe14 0x8>;
-> +
-> +           phy1: ethernet-phy@1 {
-> +                max-speed = <1000>;
-> +                reg = <1>;
-> +                compatible = "ethernet-phy-ieee802.3-c22";
-> +           };
-> +        };
-> +    };
-> +
-> +  - |
-> +    ethernet@f0b80000 {
-> +        phy-mode = "moca";
-> +        fixed-link = <1 0 1000 0 0>;
-> +        mac-address = [ 00 10 18 36 24 1a ];
-> +        compatible = "brcm,genet-v4";
-> +        #address-cells = <1>;
-> +        #size-cells = <1>;
-> +        reg = <0xf0b80000 0xfc4c>;
-> +        interrupts = <0x0 0x16 0x0>, <0x0 0x17 0x0>;
-> +
-> +        mdio1: mdio@e14 {
-> +           compatible = "brcm,genet-mdio-v4";
-> +           #address-cells = <1>;
-> +           #size-cells = <0>;
-> +           reg = <0xe14 0x8>;
-> +        };
-> +    };
-> +
-> +  - |
-> +    ethernet@f0ba0000 {
-> +        phy-mode = "rgmii";
-> +        phy-handle = <&phy0>;
-> +        mac-address = [ 00 10 18 36 26 1a ];
-> +        compatible = "brcm,genet-v4";
-> +        #address-cells = <1>;
-> +        #size-cells = <1>;
-> +        reg = <0xf0ba0000 0xfc4c>;
-> +        interrupts = <0x0 0x18 0x0>, <0x0 0x19 0x0>;
-> +
-> +        mdio2: mdio@e14 {
-> +           compatible = "brcm,genet-mdio-v4";
-> +           #address-cells = <1>;
-> +           #size-cells = <0>;
-> +           reg = <0xe14 0x8>;
-> +
-> +           phy0: ethernet-phy@0 {
-> +                max-speed = <1000>;
-> +                reg = <0>;
-> +                compatible = "ethernet-phy-ieee802.3-c22";
-> +           };
-> +        };
-> +    };
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 7a2345ce8521..5e1064c23f41 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -3819,7 +3819,7 @@ M:	Florian Fainelli <f.fainelli@gmail.com>
->  L:	bcm-kernel-feedback-list@broadcom.com
->  L:	netdev@vger.kernel.org
->  S:	Supported
-> -F:	Documentation/devicetree/bindings/net/brcm,bcmgenet.txt
-> +F:	Documentation/devicetree/bindings/net/brcm,bcmgenet.yaml
->  F:	Documentation/devicetree/bindings/net/brcm,unimac-mdio.yaml
->  F:	drivers/net/ethernet/broadcom/genet/
->  F:	drivers/net/ethernet/broadcom/unimac.h
-> -- 
-> 2.25.1
-> 
-> 
+v2 changes:
+  - added acks
+  - updated stack diagram
+  - return -EOPNOTSUPP instead of -EINVAL in bpf_get_func_ret
+  - removed gpl_only for all helpers
+  - added verifier fix to allow proper arguments checks,
+    Andrii asked for checking also 'int *b' argument in
+    bpf_modify_return_test programs and it turned out that it's currently
+    not supported by verifier - we can't read argument that is int pointer,
+    so I had to add verifier change to allow that + adding verifier selftest
+  - checking all arguments in bpf_modify_return_test test programs
+  - moved helpers proto gets in tracing_prog_func_proto with attach type check
+
+thanks,
+jirka
+
+
+[1] https://lore.kernel.org/bpf/20211118112455.475349-1-jolsa@kernel.org/
+---
+Jiri Olsa (5):
+      bpf: Allow access to int pointer arguments in tracing programs
+      selftests/bpf: Add test to access int ptr argument in tracing program
+      bpf, x64: Replace some stack_size usage with offset variables
+      bpf: Add get_func_[arg|ret|arg_cnt] helpers
+      selftests/bpf: Add tests for get_func_[arg|ret|arg_cnt] helpers
+
+ arch/x86/net/bpf_jit_comp.c                                 |  55 ++++++++++++++++++++++++++++++-----------
+ include/linux/bpf.h                                         |   5 ++++
+ include/uapi/linux/bpf.h                                    |  28 +++++++++++++++++++++
+ kernel/bpf/btf.c                                            |   7 +++---
+ kernel/bpf/trampoline.c                                     |   8 ++++++
+ kernel/bpf/verifier.c                                       |  77 +++++++++++++++++++++++++++++++++++++++++++++++++++++----
+ kernel/trace/bpf_trace.c                                    |  55 ++++++++++++++++++++++++++++++++++++++++-
+ tools/include/uapi/linux/bpf.h                              |  28 +++++++++++++++++++++
+ tools/testing/selftests/bpf/prog_tests/get_func_args_test.c |  44 +++++++++++++++++++++++++++++++++
+ tools/testing/selftests/bpf/progs/get_func_args_test.c      | 123 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ tools/testing/selftests/bpf/verifier/btf_ctx_access.c       |  12 +++++++++
+ 11 files changed, 418 insertions(+), 24 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/get_func_args_test.c
+ create mode 100644 tools/testing/selftests/bpf/progs/get_func_args_test.c
+ create mode 100644 tools/testing/selftests/bpf/verifier/btf_ctx_access.c
+
