@@ -2,194 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C588E46CD5D
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 06:48:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 252BD46CD61
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 06:49:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237051AbhLHFvR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 00:51:17 -0500
-Received: from mailgw02.mediatek.com ([210.61.82.184]:55912 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S236334AbhLHFvK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 00:51:10 -0500
-X-UUID: dff4018382af4a58a86d2e74ec6a8378-20211208
-X-UUID: dff4018382af4a58a86d2e74ec6a8378-20211208
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
-        (envelope-from <biao.huang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 62367869; Wed, 08 Dec 2021 13:47:35 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Wed, 8 Dec 2021 13:47:33 +0800
-Received: from mhfsdcap04.gcn.mediatek.inc (10.17.3.154) by
- mtkcas10.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.0.1497.2 via Frontend Transport; Wed, 8 Dec 2021 13:47:32 +0800
-From:   Biao Huang <biao.huang@mediatek.com>
-To:     <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
-CC:     Matthias Brugger <matthias.bgg@gmail.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Biao Huang <biao.huang@mediatek.com>, <netdev@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <srv_heupstream@mediatek.com>, <macpaul.lin@mediatek.com>,
-        <angelogioacchino.delregno@collabora.com>, <dkirjanov@suse.de>
-Subject: [PATCH net-next v7 6/6] net: dt-bindings: dwmac: add support for mt8195
-Date:   Wed, 8 Dec 2021 13:47:16 +0800
-Message-ID: <20211208054716.603-7-biao.huang@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20211208054716.603-1-biao.huang@mediatek.com>
-References: <20211208054716.603-1-biao.huang@mediatek.com>
+        id S236230AbhLHFwk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 00:52:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34574 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235019AbhLHFwj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 00:52:39 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 683ACC061574
+        for <netdev@vger.kernel.org>; Tue,  7 Dec 2021 21:49:08 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id B1DA6CE1FE7
+        for <netdev@vger.kernel.org>; Wed,  8 Dec 2021 05:49:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2445C341CA;
+        Wed,  8 Dec 2021 05:49:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1638942544;
+        bh=Dq8KQ7rK1zuJhXdskfqJIGg9ka0fpuWqxFIbnv7gPWU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=C82bxN54zOO1Bd6SG65zfxMpwXICQiVcTjhHKBzBBksn8npLoJMM99BoJ7KBM4jyH
+         BiltbmvkfKbqubHZ6BlU6Fp3r6s/5okV0+xCMWP1UTT+uHoNz4WrvZnGx9UsXoM2PX
+         tRWE+WAFf6JaHfBSDaQjJucvCdHoCtBuLgfurCAH/apjoKFlZ8nujdPT75JxTRNeK5
+         csXBvlJbHSvZ+zFvH0xy4qNY1ppSCP4okxLk8B/3jpTaR8oQYDFDEeJlccBDhh1Dm6
+         aLafB+rVuigbW0SmIRl4hyoneUxRwzO1w1qY+ZYEgt+yeMiOROQEUTV93xr1aFGWDg
+         X3EytA6BRsmtg==
+Date:   Tue, 7 Dec 2021 21:49:03 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     <netdev@vger.kernel.org>
+Cc:     Joanne Koong <joannekoong@fb.com>, <davem@davemloft.net>,
+        <kafai@fb.com>, <Kernel-team@fb.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>
+Subject: Re: [PATCH net-next] net: Enable unix sysctls to be configurable by
+ non-init user namespaces
+Message-ID: <20211207214903.7a900743@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211207202101.2457994-1-joannekoong@fb.com>
+References: <20211207202101.2457994-1-joannekoong@fb.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add binding document for the ethernet on mt8195.
+CC: Eric B
 
-Signed-off-by: Biao Huang <biao.huang@mediatek.com>
----
- .../bindings/net/mediatek-dwmac.yaml          | 86 +++++++++++++++----
- 1 file changed, 70 insertions(+), 16 deletions(-)
-
-diff --git a/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml b/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
-index 9207266a6e69..fb04166404d8 100644
---- a/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
-+++ b/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
-@@ -19,11 +19,67 @@ select:
-       contains:
-         enum:
-           - mediatek,mt2712-gmac
-+          - mediatek,mt8195-gmac
-   required:
-     - compatible
- 
- allOf:
-   - $ref: "snps,dwmac.yaml#"
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - mediatek,mt2712-gmac
-+
-+    then:
-+      properties:
-+        clocks:
-+          minItems: 5
-+          items:
-+            - description: AXI clock
-+            - description: APB clock
-+            - description: MAC Main clock
-+            - description: PTP clock
-+            - description: RMII reference clock provided by MAC
-+
-+        clock-names:
-+          minItems: 5
-+          items:
-+            - const: axi
-+            - const: apb
-+            - const: mac_main
-+            - const: ptp_ref
-+            - const: rmii_internal
-+
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - mediatek,mt8195-gmac
-+
-+    then:
-+      properties:
-+        clocks:
-+          minItems: 6
-+          items:
-+            - description: AXI clock
-+            - description: APB clock
-+            - description: MAC clock gate
-+            - description: MAC Main clock
-+            - description: PTP clock
-+            - description: RMII reference clock provided by MAC
-+
-+        clock-names:
-+          minItems: 6
-+          items:
-+            - const: axi
-+            - const: apb
-+            - const: mac_cg
-+            - const: mac_main
-+            - const: ptp_ref
-+            - const: rmii_internal
- 
- properties:
-   compatible:
-@@ -32,22 +88,10 @@ properties:
-           - enum:
-               - mediatek,mt2712-gmac
-           - const: snps,dwmac-4.20a
--
--  clocks:
--    items:
--      - description: AXI clock
--      - description: APB clock
--      - description: MAC Main clock
--      - description: PTP clock
--      - description: RMII reference clock provided by MAC
--
--  clock-names:
--    items:
--      - const: axi
--      - const: apb
--      - const: mac_main
--      - const: ptp_ref
--      - const: rmii_internal
-+      - items:
-+          - enum:
-+              - mediatek,mt8195-gmac
-+          - const: snps,dwmac-5.10a
- 
-   mediatek,pericfg:
-     $ref: /schemas/types.yaml#/definitions/phandle
-@@ -62,6 +106,8 @@ properties:
-       or will round down. Range 0~31*170.
-       For MT2712 RMII/MII interface, Allowed value need to be a multiple of 550,
-       or will round down. Range 0~31*550.
-+      For MT8195 RGMII/RMII/MII interface, Allowed value need to be a multiple of 290,
-+      or will round down. Range 0~31*290.
- 
-   mediatek,rx-delay-ps:
-     description:
-@@ -70,6 +116,8 @@ properties:
-       or will round down. Range 0~31*170.
-       For MT2712 RMII/MII interface, Allowed value need to be a multiple of 550,
-       or will round down. Range 0~31*550.
-+      For MT8195 RGMII/RMII/MII interface, Allowed value need to be a multiple
-+      of 290, or will round down. Range 0~31*290.
- 
-   mediatek,rmii-rxc:
-     type: boolean
-@@ -103,6 +151,12 @@ properties:
-       3. the inside clock, which be sent to MAC, will be inversed in RMII case when
-          the reference clock is from MAC.
- 
-+  mediatek,mac-wol:
-+    type: boolean
-+    description:
-+      If present, indicates that MAC supports WOL(Wake-On-LAN), and MAC WOL will be enabled.
-+      Otherwise, PHY WOL is perferred.
-+
- required:
-   - compatible
-   - reg
--- 
-2.25.1
+On Tue, 7 Dec 2021 12:21:01 -0800 Joanne Koong wrote:
+> Currently, when a networking namespace is initialized, its unix sysctls
+> are exposed only if the user namespace that "owns" it is the init user
+> namespace.
+> 
+> If there is a non-init user namespace that "owns" a networking
+> namespace (for example, in the case after we call clone() with both
+> CLONE_NEWUSER and CLONE_NEWNET set), the sysctls are hidden from view
+> and not configurable.
+> 
+> This patch enables the unix networking sysctls (there is currently only
+> 1, "sysctl_max_dgram_qlen", which is used as the default
+> "sk_max_ack_backlog" value when a unix socket is created) to be exposed
+> to non-init user namespaces.
+> 
+> This is safe because any changes made to these sysctls will be limited
+> in scope to the networking namespace the non-init user namespace "owns"
+> and has privileges over.
+> 
+> Signed-off-by: Joanne Koong <joannekoong@fb.com>
+> ---
+>  net/unix/sysctl_net_unix.c | 4 ----
+>  1 file changed, 4 deletions(-)
+> 
+> diff --git a/net/unix/sysctl_net_unix.c b/net/unix/sysctl_net_unix.c
+> index c09bea89151b..01d44e2598e2 100644
+> --- a/net/unix/sysctl_net_unix.c
+> +++ b/net/unix/sysctl_net_unix.c
+> @@ -30,10 +30,6 @@ int __net_init unix_sysctl_register(struct net *net)
+>  	if (table == NULL)
+>  		goto err_alloc;
+>  
+> -	/* Don't export sysctls to unprivileged users */
+> -	if (net->user_ns != &init_user_ns)
+> -		table[0].procname = NULL;
+> -
+>  	table[0].data = &net->unx.sysctl_max_dgram_qlen;
+>  	net->unx.ctl = register_net_sysctl(net, "net/unix", table);
+>  	if (net->unx.ctl == NULL)
 
