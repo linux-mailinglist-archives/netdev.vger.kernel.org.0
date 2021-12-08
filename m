@@ -2,57 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA81046CE47
+	by mail.lfdr.de (Postfix) with ESMTP id E99E246CE48
 	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 08:20:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244502AbhLHHYY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 02:24:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54848 "EHLO
+        id S244505AbhLHHY0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 02:24:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244506AbhLHHYS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 02:24:18 -0500
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20F49C061574;
-        Tue,  7 Dec 2021 23:20:47 -0800 (PST)
-Received: by mail-ed1-x52d.google.com with SMTP id y13so5037552edd.13;
-        Tue, 07 Dec 2021 23:20:47 -0800 (PST)
+        with ESMTP id S244514AbhLHHYW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 02:24:22 -0500
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92D92C0617A1
+        for <netdev@vger.kernel.org>; Tue,  7 Dec 2021 23:20:50 -0800 (PST)
+Received: by mail-ed1-x534.google.com with SMTP id w1so5172080edc.6
+        for <netdev@vger.kernel.org>; Tue, 07 Dec 2021 23:20:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=7BIJQrNbvC3Sfrj3cs08TIKsWWE8pnsGwEpOQkIeNTQ=;
-        b=iNgLrgO2lyyj6vxqeTpSAwlpYCUYwSlSjSTZS7GHEDo68M2k5PavylSd/HFXX+Z8Wi
-         iNKzzTHmYo3QuUR5t1FkZD+SujxkppOIrWYv4L+MdrFekZvh6zMbiDqzmYsBqvV/yMFE
-         LUw48epfCfSoRz3wPIs93n9PEigtayN4QoPHu5HBw/vS2hR5p3+DZE45wHhIuyHfK3+2
-         wPhQOH3c42Qk+LxRQCfdpA+CW2uhkCll4xNy+2tXRyMdOTlMIdxnEzwyvdCzs9Yequud
-         TmH0UcrcaXpPG/Z3vAN+N4DqLEkyPvkJL3NBDjndTnaB1gR9svnomEH9lRfQg8sxQUfc
-         RhuA==
+        bh=a0xkDw0dcv6id1j2wFN3KzJ6+k6a8lx4Bs8T1tPQCKU=;
+        b=cBNxoN2+BKp1rFC0aC8cv5kLVodNkISgN/yofI4xuAAkuac8C4jgKOglOf10Y+PAsw
+         EpYXITwB+eVWnssobfT/c0q+lfle+NH+j7fZtsc/2eL8kGiHztbJ2ZlDwHjRSVA6vd00
+         oh29QMA6hTznuO+o3hEIvgIJ86g03xB2rXcquiPZBm9OTztFzS6aYTQiUa+8PXAZPkOI
+         FSuQ3iKlpi/IR6OLxQfIb09rWYPwCZIACCdwfwkBQrqgaRu+zNbP0bfUXpfCFT7tuSnu
+         b9fDIVGo27uzg8UXc7z6F/rul9BOt9KykB/vrawsKdxJdg2xxDselzci0hSjAAFoRpuG
+         2H6g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=7BIJQrNbvC3Sfrj3cs08TIKsWWE8pnsGwEpOQkIeNTQ=;
-        b=F8vbuh3dLJeTfmdaesx4Q8WJRjgLqmsegsBRwzeInQAR6qcLwxzAtlDGnQcx3p/QkD
-         FkClLhPggpQ+Z8vfaOQz49hyuz0izRzT47Fh2QSbrqcY5l2Kvh+EKj3UbD6ZvTa/RUpl
-         /mWW3gzd1SgJJX7elOH2VBx7qyrwpOO+Fn6mKjsPnwKPWm1Q2jBEIrRTd9niS69uGfkO
-         VT2JhKxm4Ovd0QOcJb8Zm2PtmLkrfhZ8yFBiw/poR8j4YaG5FRfICqhIRCxXre6bb62i
-         s7vwjsE173BlVe9H9bQ3uXV05dD1bHth5JZWqbo2LV/815Jo28wXMrw75U6rZxEBPDpI
-         8yZA==
-X-Gm-Message-State: AOAM532h+lXUXPu6yiFuvDMpKbL1Kc+i8IoTHCrUrY69o+TmmtAIVwiU
-        exGQrS/LEWEmkbzPBEcIoGxRjdOBfmvJGg==
-X-Google-Smtp-Source: ABdhPJxiwIWly/70RIrm2aHCk0z5clhMwpQt58wbrMPOxfwbm/6LcBBbKdD57wNoL0q9qLnPOA0euw==
-X-Received: by 2002:a17:907:1b11:: with SMTP id mp17mr5290024ejc.374.1638948045764;
-        Tue, 07 Dec 2021 23:20:45 -0800 (PST)
+        bh=a0xkDw0dcv6id1j2wFN3KzJ6+k6a8lx4Bs8T1tPQCKU=;
+        b=MvNUUQKBLW9A8VTE8TlwyNWKU5vgipAPsUqyFtVQTjpvABbZKylup6Zf2Ted+lMXlU
+         F3zlJ4P2FF0TMGP9fuPt4jRfXlJXAOlkbUXo96GjqtJBdAt7ufw2qA4c1Xrv164iHOlh
+         mKxi6g8jQsEXckYwgsMY4982Cf888ZxkNGXvdrDqmIBvaJz0pphbqUqHsBlHHgL46owa
+         d4ETqFG03DRCIcjGL0O8y8qXonv5j1L6olWIINpR63+ETwY3Xp4nZwgj5jhYohMr2pwf
+         KnwnA/vpMa8EjXdjj5+X1s5V96sm1kZoR20CfWGWILpXdJ26m84H3RYACfgJg2/NOnCy
+         Splw==
+X-Gm-Message-State: AOAM533Mo7olBXtgIT6bMEiubl2TKhzKvIoNxO4z2cQzc0MGYLXLEGTi
+        ZYIqvnlCo/iVKQ7+AuOioxFBhBKl9wwC9Q==
+X-Google-Smtp-Source: ABdhPJwZzBlaldhKP6DS6zlA+Ax1zCHOxJbjKQsUR09ZiL9DXsZFCp0+/8yhQvnRI9CQctQPMD9dig==
+X-Received: by 2002:a05:6402:2744:: with SMTP id z4mr17166380edd.310.1638948049093;
+        Tue, 07 Dec 2021 23:20:49 -0800 (PST)
 Received: from localhost ([81.17.18.62])
-        by smtp.gmail.com with ESMTPSA id e1sm964969ejy.82.2021.12.07.23.20.45
+        by smtp.gmail.com with ESMTPSA id g15sm974193ejt.10.2021.12.07.23.20.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Dec 2021 23:20:45 -0800 (PST)
+        Tue, 07 Dec 2021 23:20:48 -0800 (PST)
 From:   =?UTF-8?q?J=CE=B5an=20Sacren?= <sakiwit@gmail.com>
-To:     ms@dev.tdt.de, davem@davemloft.net, kuba@kernel.org,
-        linux-x25@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next] net: x25: drop harmless check of !more
-Date:   Wed,  8 Dec 2021 00:20:25 -0700
-Message-Id: <20211208024732.142541-5-sakiwit@gmail.com>
+To:     mathew.j.martineau@linux.intel.com, matthieu.baerts@tessares.net,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        mptcp@lists.linux.dev
+Subject: [PATCH net-next] net: mptcp: clean up harmless false expressions
+Date:   Wed,  8 Dec 2021 00:20:26 -0700
+Message-Id: <20211208024732.142541-6-sakiwit@gmail.com>
 X-Mailer: git-send-email 2.32.0
 X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
@@ -63,24 +64,34 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jean Sacren <sakiwit@gmail.com>
 
-'more' is checked first.  When !more is checked immediately after that,
-it is always true.  We should drop this check.
+entry->addr.id is u8 with a range from 0 to 255 and MAX_ADDR_ID is 255.
+We should drop both false expressions of (entry->addr.id > MAX_ADDR_ID).
+
+We should also remove the obsolete parentheses in the first if branch.
 
 Signed-off-by: Jean Sacren <sakiwit@gmail.com>
 ---
- net/x25/x25_in.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/mptcp/pm_netlink.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/net/x25/x25_in.c b/net/x25/x25_in.c
-index e1c4197af468..b981a4828d08 100644
---- a/net/x25/x25_in.c
-+++ b/net/x25/x25_in.c
-@@ -41,7 +41,7 @@ static int x25_queue_rx_frame(struct sock *sk, struct sk_buff *skb, int more)
- 		return 0;
+diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
+index 4ff8d55cbe82..233d4002c634 100644
+--- a/net/mptcp/pm_netlink.c
++++ b/net/mptcp/pm_netlink.c
+@@ -822,14 +822,13 @@ static int mptcp_pm_nl_append_new_local_addr(struct pm_nl_pernet *pernet,
+ 		entry->addr.id = find_next_zero_bit(pernet->id_bitmap,
+ 						    MAX_ADDR_ID + 1,
+ 						    pernet->next_id);
+-		if ((!entry->addr.id || entry->addr.id > MAX_ADDR_ID) &&
+-		    pernet->next_id != 1) {
++		if (!entry->addr.id && pernet->next_id != 1) {
+ 			pernet->next_id = 1;
+ 			goto find_next;
+ 		}
  	}
  
--	if (!more && x25->fraglen > 0) {	/* End of fragment */
-+	if (x25->fraglen > 0) {	/* End of fragment */
- 		int len = x25->fraglen + skb->len;
+-	if (!entry->addr.id || entry->addr.id > MAX_ADDR_ID)
++	if (!entry->addr.id)
+ 		goto out;
  
- 		if ((skbn = alloc_skb(len, GFP_ATOMIC)) == NULL){
+ 	__set_bit(entry->addr.id, pernet->id_bitmap);
