@@ -2,75 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 54E1046CCEC
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 06:22:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D0E446CCF3
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 06:24:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232080AbhLHFZh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 00:25:37 -0500
-Received: from sin.source.kernel.org ([145.40.73.55]:55712 "EHLO
-        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231827AbhLHFZg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 00:25:36 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id AAE3ECE1FCB
-        for <netdev@vger.kernel.org>; Wed,  8 Dec 2021 05:22:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 723A1C00446;
-        Wed,  8 Dec 2021 05:22:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638940921;
-        bh=pMfsfIa76BPcL/XolVcayyRysR1JcgQh1NXGvqmG3Cg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=KleslGBABR6df58Ht16YhqYYnrH8aQAHEMnJEtVGCuEvA9mXZtv/q24vC0tVThL24
-         sDQinEDWMDOv89RGM5wBQHOY16j7Ooy/Tvr8WLGUafQFSDdhhXs6gvAPvZsbxZEtv7
-         4Ftj7aKdrf2HEMJnDr1uk6kdNsLiSzUKTFbxIpX5ivGaHw6wG+vCQspqL4+6V8mJsM
-         g4z15wc7DoRDomMvvI0TDm1q1cBkPLXb0UelOyio6BWAbXUn2nXDGLmsil18PLNfwl
-         NFUzgwjJz8Xv48CBxoRxmmoTLUDLZes8WPHWJkhZ11ms3kVJ5lJq6DE27qnde0EUoj
-         U4jkCRajr1YhQ==
-Date:   Tue, 7 Dec 2021 21:22:00 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     M Chetan Kumar <m.chetan.kumar@linux.intel.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        johannes@sipsolutions.net, ryazanov.s.a@gmail.com,
-        loic.poulain@linaro.org, krishna.c.sudi@intel.com,
-        m.chetan.kumar@intel.com, linuxwwan@intel.com
-Subject: Re: [PATCH V2 net-next 0/7] net: wwan: iosm: Bug fixes
-Message-ID: <20211207212200.507260b1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211205150455.1829929-1-m.chetan.kumar@linux.intel.com>
-References: <20211205150455.1829929-1-m.chetan.kumar@linux.intel.com>
+        id S232695AbhLHF1l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 00:27:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57272 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232636AbhLHF1k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 00:27:40 -0500
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EE8FC061756
+        for <netdev@vger.kernel.org>; Tue,  7 Dec 2021 21:24:09 -0800 (PST)
+Received: by mail-pg1-x530.google.com with SMTP id r5so1098215pgi.6
+        for <netdev@vger.kernel.org>; Tue, 07 Dec 2021 21:24:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=jN21r6OJSTFsgj9r64Hh1jCiMPIix6wU4qgpRwHwfG8=;
+        b=hMsTpPd8gWi3Ujy3PvMKm2AhRb2ML1jyzMuE/erpda/1/AF+rUNIald/GfGViq/tLd
+         o2y4W8cc2ICUanBvcqepDNezWtTFgQCoX+Qfcc5GqmL6Bn1U9t7Lny66rM704bugnGTq
+         9X3HvHzswrV2tjhfCa9a4cA09icmI/vCPfxNg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=jN21r6OJSTFsgj9r64Hh1jCiMPIix6wU4qgpRwHwfG8=;
+        b=N0Yo9T/gCdkIgcDwTUBq7Y9l0qyUE8Sf+BBQaJ9ECn8ad/jWtGqhcG60c/hY3nAiXQ
+         VN0FvPl5pu5gAZren+tJctbnVSVFvaJM5U/7Epy8d4ND+2fucoDLrNuoa9aYLk15A0WR
+         FpgTDiAQS/sd1Hb9hYJLRQldMIBY45Zz61CFTQiaavZuojguGEf83E3dGkXyi/EfuXyD
+         Cfu7WTFzyaaG3KCVS5947sECBV0v8Y3TRrG1tUcD4thUJEeG914RzVB11UvkgZsaQ+QR
+         BzaNAJx3G6VfoNV5osGvvUMLbqGqFMLmOARaw2Y+c5TUaoSBPLaKmUilaP46LX2W4tYn
+         8xiQ==
+X-Gm-Message-State: AOAM533UMVEndAhapKE/sVAyUV1I1HqlRMsIBgL+BY0z5JWK7eps7x2K
+        VIsdxuKdxgOsjoluD+XysGFWEivsVOr5zA==
+X-Google-Smtp-Source: ABdhPJzlHAKuLFlj8TFLJdbJpyf/D+l9/UBbiFuXowho3aLkJt0awiY6BtPP69mJOwjO/M528bBz0w==
+X-Received: by 2002:a63:8148:: with SMTP id t69mr28164809pgd.79.1638941048615;
+        Tue, 07 Dec 2021 21:24:08 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id md6sm1202665pjb.22.2021.12.07.21.24.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Dec 2021 21:24:08 -0800 (PST)
+Date:   Tue, 7 Dec 2021 21:24:07 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: Re: [PATCH][next] net: huawei: hinic: Use devm_kcalloc() instead of
+ devm_kzalloc()
+Message-ID: <202112072124.16F7CD13@keescook>
+References: <20211208040311.GA169838@embeddedor>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211208040311.GA169838@embeddedor>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun,  5 Dec 2021 20:34:48 +0530 M Chetan Kumar wrote:
-> This patch series brings in IOSM driver bug fixes. Patch details
-> are explained below.
+On Tue, Dec 07, 2021 at 10:03:11PM -0600, Gustavo A. R. Silva wrote:
+> Use 2-factor multiplication argument form devm_kcalloc() instead
+> of devm_kzalloc().
 > 
-> PATCH1:
->  * stop sending unnecessary doorbell in IP tx flow.
-> PATCH2:
->  * set tx queue len.
-> PATCH3:
->  * Restore the IP channel configuration after fw flash.
-> PATCH4:
->  * Release data channel if there is no active IP session.
-> PATCH5:
->  * Removes dead code.
-> PATCH6:
->  * Removed the unnecessary check around control port TX transfer.
-> PATCH7:
->  * Correct open parenthesis alignment to fix checkpatch warning.
+> Link: https://github.com/KSPP/linux/issues/162
+> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 
-Are any of these fixing functional bugs which users may encounter?
+Reviewed-by: Kees Cook <keescook@chromium.org>
 
-Looks like at least patches 1, 3, and 6 may be?
-
-All the fixes for bugs should have Fixes tags and be posted against 
-the netdev/net tree with [PATCH net] in the subject (meaning a separate
-series). If there are dependencies between cleanups and fixes - you'll
-need to defer the cleanups for a few days, until net is merged into
-net-next. It usually happens every Thursday.
+-- 
+Kees Cook
