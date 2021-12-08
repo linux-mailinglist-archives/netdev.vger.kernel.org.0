@@ -2,77 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 83F3E46DC59
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 20:33:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5369146DC63
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 20:38:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239634AbhLHThD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 14:37:03 -0500
-Received: from mail-oi1-f174.google.com ([209.85.167.174]:45925 "EHLO
-        mail-oi1-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239624AbhLHTg5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 14:36:57 -0500
-Received: by mail-oi1-f174.google.com with SMTP id 7so5419591oip.12;
-        Wed, 08 Dec 2021 11:33:24 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=gEr7R7LXCR74CnNVPji4NeZtbokuYpc7aLJyE/t7JUE=;
-        b=Sihy26lWIBM3Ch1QcNfSPGW0eGVs229TXJqesLzbInZx2jS1p/dsRpBN5VpsVRyo5N
-         VokSQZI8BXeJX9Ae0E2idDpa5STmi6TYRibQFOnjZO1y742q21HxRfCrJaMvJealFX6Z
-         Hxbmjp2/lEmQhd/ffUuKKrIzZEB+V6KZrpa/jTxh+8rVHdQn70MKseNUwn8dJJelmciJ
-         zIQsv9lJTG8A0oCQ2DPi6vyVqwawuhUv6UEpc3P6yK8gpON1+WDWDhXDPYHyfOOHnWOq
-         pZqZjeFFau83mH/8qNoy9HvpiYCdGBKVF1PwLOauZzS9LnPZjgFN5Y4D3yMLajgBiuyA
-         b+mA==
-X-Gm-Message-State: AOAM533fFGBUMxs0omxFdni3HrJBdbIa4Mn2tTiHXisVzUT6ftEmuzkx
-        X1xAK0t+cJxq8+N08p7Z+w==
-X-Google-Smtp-Source: ABdhPJyeAyWxo9NKTy8y/nPZqMar6/k2i8dk3QurnUQY2Bp7EVojfeoc1ke0WPcKclsD7zxFzVY7dw==
-X-Received: by 2002:aca:2115:: with SMTP id 21mr1368511oiz.25.1638992004407;
-        Wed, 08 Dec 2021 11:33:24 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id y12sm936202oiv.49.2021.12.08.11.33.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Dec 2021 11:33:23 -0800 (PST)
-Received: (nullmailer pid 199354 invoked by uid 1000);
-        Wed, 08 Dec 2021 19:33:22 -0000
-Date:   Wed, 8 Dec 2021 13:33:22 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        linux-arm-kernel@lists.infradead.org,
-        "David S. Miller" <davem@davemloft.net>,
-        bcm-kernel-feedback-list@broadcom.com,
-        Doug Berger <opendmb@gmail.com>, Vinod Koul <vkoul@kernel.org>,
-        netdev@vger.kernel.org, linux-phy@lists.infradead.org,
-        Ray Jui <rjui@broadcom.com>, linux-kernel@vger.kernel.org,
-        Scott Branden <sbranden@broadcom.com>,
-        Jakub Kicinski <kuba@kernel.org>, devicetree@vger.kernel.org
-Subject: Re: [PATCH v3 4/8] dt-bindings: net: Convert GENET binding to YAML
-Message-ID: <YbEIgtfBXJoiWOdV@robh.at.kernel.org>
-References: <20211206180049.2086907-1-f.fainelli@gmail.com>
- <20211206180049.2086907-5-f.fainelli@gmail.com>
+        id S239685AbhLHTm2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 14:42:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58410 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229759AbhLHTm1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 14:42:27 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EF08C061746;
+        Wed,  8 Dec 2021 11:38:55 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 9A427CE2336;
+        Wed,  8 Dec 2021 19:38:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F030CC00446;
+        Wed,  8 Dec 2021 19:38:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1638992331;
+        bh=iQD2LmaURq74thhhqRVHYwJAb7u1xwzJM7hKiFMtjkg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=LMs2Kg/wotTWI7fk7wzoCCABu7E42/VCXi/Q80WLal+ZUHjOcV+wjlISjbB84QQiu
+         XC0MbyOJcAKzHIW39jrWvSWna/4PRyDDWdckXdkmUxuXmJWi8qcEsxq9QG7t3OVkds
+         nLdigtu1Y5JovlBfWNTyCMMrnjmHVsQi9cyklk7Fz8xKeSsQaZPoRsmO6oKqMK+MC7
+         u3ZzroAfX/V0GEsDm7xXJlB1lMGLWP0Q+s/d2URPc6GfLjQQeWT3aeYBdAG7TfpKR2
+         DQd5DqGef0ImRl+M88bEOw25TZ2r1zfqcLqtjROUZhlaqPu5pkyrC9Yzde2OBlWFG6
+         beHOfBaQe7Jdg==
+Date:   Wed, 8 Dec 2021 21:38:46 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Ido Schimmel <idosch@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 0/6] Allow parallel devlink execution
+Message-ID: <YbEJxjicbaIVni9J@unreal>
+References: <cover.1638690564.git.leonro@nvidia.com>
+ <20211206180027.3700d357@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <Ya8NPxxn8/OAF4cR@unreal>
+ <20211207202114.5ce27b2b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <YbBkzy+I1Buxp286@unreal>
+ <20211208071507.2ba46b0c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211206180049.2086907-5-f.fainelli@gmail.com>
+In-Reply-To: <20211208071507.2ba46b0c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 06 Dec 2021 10:00:45 -0800, Florian Fainelli wrote:
-> Convert the GENET binding to YAML, leveraging brcm,unimac-mdio.yaml and
-> the standard ethernet-controller.yaml files.
-> 
-> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-> ---
->  .../devicetree/bindings/net/brcm,bcmgenet.txt | 125 ---------------
->  .../bindings/net/brcm,bcmgenet.yaml           | 145 ++++++++++++++++++
->  MAINTAINERS                                   |   2 +-
->  3 files changed, 146 insertions(+), 126 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/net/brcm,bcmgenet.txt
->  create mode 100644 Documentation/devicetree/bindings/net/brcm,bcmgenet.yaml
-> 
+On Wed, Dec 08, 2021 at 07:15:07AM -0800, Jakub Kicinski wrote:
 
-Applied, thanks!
+<...>
+
+> I do appreciate your work, but we disagree on how the API should look.
+
+No problem, I'll send different proposal.
+
+Thanks
