@@ -2,92 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D67A46CC2F
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 05:13:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8AEDB46CC4D
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 05:21:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235261AbhLHERS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Dec 2021 23:17:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41590 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238360AbhLHERR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 23:17:17 -0500
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D274EC0617A1
-        for <netdev@vger.kernel.org>; Tue,  7 Dec 2021 20:13:46 -0800 (PST)
-Received: by mail-pg1-x542.google.com with SMTP id 137so982638pgg.3
-        for <netdev@vger.kernel.org>; Tue, 07 Dec 2021 20:13:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=w0n14T57zPuvlg1YaFYy3gRfrUPFN1bDHGIrct+fXgc=;
-        b=cGWxDwe8B66FlIrZtrergIqE5+JvdqJ48sEvPTrvhBJ9xEqZLGyWZmuSPdCEFce/7D
-         /sVR44uqtlb2dmBH+iwgt0kboAu4/HTy3OZt9J6nwOu1H5twbKwVBnMykOKrBLHcBBEb
-         cgMJ7/59oMUtMggaQ9x/N1xe+U0YzN1k+xfCXkO5L7YIW30RFDnvCB0PrD7sMExliX7S
-         joeNtgfdJmxv3l42BA4cQp1HveXj/LpauGoYMsZKrrlYurvW6FC9Nrn9v/z7yklCLUv+
-         2uZJGSHlx+O0Rg+LxyFVcXJ8erZC2O96QnEFLkA1QmSl94RBUxOevwSkF8rG8CDqN06m
-         KdcQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=w0n14T57zPuvlg1YaFYy3gRfrUPFN1bDHGIrct+fXgc=;
-        b=rSJMMClhNqgMoxK5NDjlK/B3j0YTXdU488pMHNgxgRSoN4fzk0x4alOaDNw52K41CU
-         2XXDjpF0Vpimtzbjbo4pxODnitvaVvNaCnHKvaJeFzQInN2Auv4ctKsQGdbYH6rzp0ZO
-         R6j1YXxAvbbvzNu5M4D2nbO297ILBtnzxXA+C1NH1IIKDa+ikTAWvg8HV3a97y6ztMvS
-         l4SYvEYCZOEC9ikEOlBazlLJ2OsBsH2hIrrH65RvXbCt0uusileHukleO1yYGWTuYDEz
-         bKC2ERHddCsnyytRzXWEvXQ9YLcVIKTMhEFDB9+Ps5w8f1o5uk53uV8eQ9kFj37GzROT
-         TQaA==
-X-Gm-Message-State: AOAM530xfw8kcHmZ3P1vhaCGJ/sZhoT6Js0PvNf5wUzrbpgI8FbmG0CV
-        iC47tMHECQNdJv1DffEAjnpxxgcNh9u//k5x6ulgEDkuHXPibw==
-X-Google-Smtp-Source: ABdhPJx498jQ3rDCAEAukf875uPMCUUvAAHHJyp/169nhahBv8dg1ZTt80/LmlBc7j967yPpWx87fZn4PQyrL4JX27A=
-X-Received: by 2002:a92:600f:: with SMTP id u15mr3954317ilb.292.1638936815828;
- Tue, 07 Dec 2021 20:13:35 -0800 (PST)
+        id S235312AbhLHEYi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Dec 2021 23:24:38 -0500
+Received: from sin.source.kernel.org ([145.40.73.55]:60428 "EHLO
+        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234363AbhLHEYh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Dec 2021 23:24:37 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 6417ECE1F98
+        for <netdev@vger.kernel.org>; Wed,  8 Dec 2021 04:21:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58EB2C00446;
+        Wed,  8 Dec 2021 04:21:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1638937263;
+        bh=cQVgvHDHPYJ56anN/8+yMuzVmF9obIn6/LddtUoqZX0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=DBlhztBI3vRhDIAIIYVEhesl9bCL1Pr1/phh7U07zOPv8knMr8TMCAVPztIfJtPys
+         2D9ubWrx10u8w4Z7neWobqDbFkvrhTBxnMXJCNI6ZJbrRvhV46a29GYF7gXkEpXv0s
+         QQKO4A5Xl4qkKWXA5Qm7eSeH77HjU9dzA3uZy5v7LH9UnYib/9eEYpzns9j//tcWCC
+         IY0vXYJhrTumz+0Qmr5C/oAVZYm0XxUSKb/LfsoKJdzl3+HwrrGWdfFIhxOAgzc7CU
+         cc54ATSj1PyOIUwWzZchl99WKt3Qy5YCJGUe4ACd7El5JTzlZR/oqXxC91AYWFeDPl
+         Md80L5T32cmNA==
+Date:   Tue, 7 Dec 2021 20:21:01 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Hayes Wang <hayeswang@realtek.com>
+Cc:     "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        nic_swsd <nic_swsd@realtek.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
+Subject: Re: [RFC PATCH 0/4] r8169: support dash
+Message-ID: <20211207202101.3a3a93b0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <e2fd429a489545e7a521283600cb7caa@realtek.com>
+References: <20211129101315.16372-381-nic_swsd@realtek.com>
+        <20211129095947.547a765f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <918d75ea873a453ab2ba588a35d66ab6@realtek.com>
+        <20211130190926.7c1d735d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <d3a1e1c469844aa697d6d315c9549eda@realtek.com>
+        <20211203070410.1b4abc4d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <e2fd429a489545e7a521283600cb7caa@realtek.com>
 MIME-Version: 1.0
-Received: by 2002:a05:6e02:1a07:0:0:0:0 with HTTP; Tue, 7 Dec 2021 20:13:35
- -0800 (PST)
-Reply-To: dj0015639@gmail.com
-From:   David Jackson <enkenpaul@gmail.com>
-Date:   Wed, 8 Dec 2021 05:13:35 +0100
-Message-ID: <CAG7-cQ_JEx-8fDdxn0Ex314ViSE32kaUjoR=sUvV7wmCUiKRGw@mail.gmail.com>
-Subject: FEDERAL BUREAU OF INVESTIGATION
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Our Ref: RTB /SNT/STB
-To: Beneficiary
+On Tue, 7 Dec 2021 07:28:02 +0000 Hayes Wang wrote:
+> Jakub Kicinski <kuba@kernel.org>
+> > Ah, I've only spotted the enable/disable knob in the patch.
+> > If you're exchanging arbitrary binary data with the FW we
+> > can't help you. It's not going to fly upstream.   
+> 
+> How is it that we only provide certain basic settings,
+> such as IPv4 address, IPv6 address, and so on? Then,
+> they are not the arbitrary binary data.
+> 
+> Could devlink param be used for more than 4 bytes settings?
+> At least the IPv6 address is longer.
 
-This is FBI special agents, David Jackson. I was delegated along side
-others by the United Nations to investigate scammers who has been in
-the business of swindling foreigners especially those that has one
-form of transaction/contracts and another. Please be informed that in
-the course of our investigation, we detected that your name and
-details in our Scammed Monitoring Network. We also found out that you
-were scammed of a huge sum of money by scammers via Western union and
-MoneyGram. Be informed here that in a bid to alleviate the suffering
-of scammed victims, the United Nations initiated this compensation
-program and therefore, you are entitled to the sum of Five Million Two
-Hundred Thousand United States Dollars ($5,200,000.00 USD) for being a
-victim.
+We can add a new devlink sub-command and driver callback in that case.
 
-Note that the said fund will be transfer to you via the Citibank being
-the paying bank mandated by the United Nations officials.
+> Besides, we need the information of SMBIOS which could
+> be 4K ~ 8K bytes data. Is there any way we could transmit
+> it to firmware?
 
-However, we have to inform you that we have been able to arrest some
-of the swindlers who has been in this illicit business and will all be
-prosecuted accordingly. Be informed as well that we have limited time
-to stay back here, so we will advice that you urgently respond to this
-message ASAP. And do not inform any of the people that collected money
-from you before now about this new development to avoid jeopardizing
-our investigation. All you need to do is to follow our instruction and
-receive your compensation accordingly as directed by the United
-Nations.
-
-We urgently wait to receive your response.
-
-Regards,
-DAVID JACKSON
-FEDERAL BUREAU OF INVESTIGATION
-INVESTIGATION ON ALL ONLINE WIRE TRANSFER
+Is structure of that data defined by some DMTF standard?
