@@ -2,64 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EF1446DD97
-	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 22:25:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EBD9A46DD99
+	for <lists+netdev@lfdr.de>; Wed,  8 Dec 2021 22:26:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237390AbhLHV3I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 16:29:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54390 "EHLO
+        id S234732AbhLHVaU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 16:30:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234732AbhLHV3I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 16:29:08 -0500
-Received: from mail-ua1-x933.google.com (mail-ua1-x933.google.com [IPv6:2607:f8b0:4864:20::933])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8B04C061746
-        for <netdev@vger.kernel.org>; Wed,  8 Dec 2021 13:25:35 -0800 (PST)
-Received: by mail-ua1-x933.google.com with SMTP id j14so7113168uan.10
-        for <netdev@vger.kernel.org>; Wed, 08 Dec 2021 13:25:35 -0800 (PST)
+        with ESMTP id S233054AbhLHVaT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 16:30:19 -0500
+Received: from mail-ua1-x92c.google.com (mail-ua1-x92c.google.com [IPv6:2607:f8b0:4864:20::92c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E31BC061746
+        for <netdev@vger.kernel.org>; Wed,  8 Dec 2021 13:26:47 -0800 (PST)
+Received: by mail-ua1-x92c.google.com with SMTP id 30so7118692uag.13
+        for <netdev@vger.kernel.org>; Wed, 08 Dec 2021 13:26:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=qPeI5/clEODT582hPwenfvQnW3rNylut+fUamnF5AN8=;
-        b=IFAwnTdEMdmlYbwYPRrBmKAeR4hIOeWN/xarpuaFzwG4gOGWi9df2vWAZ3J+3ufX3A
-         q+rBb+2oRce1mlEkcm/SX6rllkcJ/2Xo2pD9OZQD4Mg3WrV1jalIm9+ITT17HZ36dxGI
-         ERvz3ardX0xu3fVr8BOm5c9MjQkmIYdcE/c7DVmXO/4MGNmZXcEC/bvrSK1dGW4dUo5S
-         l8fc/CyofTqQi9E6XflNiRUtXL7aav/1gU0muwlU3sH5pNQjjDS8MwasHzG7CCsiajmy
-         tmAFVGK7YQGgOLn0y02nCA8i6WWXIkp/mSJqyBDByVnTA80qvUFdn9zvoQUayFnfZXGL
-         woVw==
+        bh=uXfGwhRkuDJiwWJax5kqTEWYX/aEQTyPk8a4mbZs718=;
+        b=jqSkA+jtMSB9h0rJA3bWs31k6yfdpUoTIizbOWuqEwRfP39z8DPivnxOm0Dq3TpOPp
+         0SR0RXlge+6vOrfccJQUwf/iausJ2WoWohsueDDSGRDgfxP0cT5WTSbGv5QoncknRTTo
+         EqLcgXPnwj3xplF6TNo4/Kgs6JUTUX8GakUzxBLknN7NkCzs+GxGk9rYB+UGIpSWmwKc
+         VrfDDUDn8o83HKdyLyFyQ5rH+SSxl/NnaE1SyhChlR9MWi1qumJhMHN3enr7LgfOu4ge
+         jHSDmwWZeHQp264FBleCFqeo6uuWcKiBsVWUwlzSVVfVKcRLhqZd2GHkFhE6RX92AKdg
+         Vwsg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=qPeI5/clEODT582hPwenfvQnW3rNylut+fUamnF5AN8=;
-        b=1fTzf5FfjoOigBZA1R3mEtuflDtx7Ji1N1TMoWxJaWnBi39rwU9o41KAF9xbCYQW7V
-         TCI1YMv4i8WwQo2yUSxBVuLrTw7iS62XO5jKa/lTivSPZBEyJ+jvFngH7c0tzGbju5+c
-         kVq+ei4R8z2KwgEqZJZzY4C5JRe/4+HJSoVGI7KEd1tswDtK0fTB+YgkHZoyj5nnk4Zh
-         XG+rZsIO8OWN0Iz+E6f50NEUsEsGPrWo1BDqNN2fJEHjJomSwAnx0f4seS4IECEgNHgT
-         TyqOEKT6d4izvatGM+pLL2mWbiybL3u4Kk+yAewgKCvS6m+cGLNSTHe0vUywcP99OloS
-         A4PA==
-X-Gm-Message-State: AOAM533o/hKJowzaIBf4KawHyWB/MJ7+hxpGSSSgZ9v4RysToM+oqhlM
-        P6HsJTzTt6ZSsg8MPFhZ4M6N1fnbrDw=
-X-Google-Smtp-Source: ABdhPJzb5TWmD5vfPxkzWRUgFJFH04aoBcDQfMtE1yH+bAHXaW8W25swIu5cB9aE3OoNYSLpKUKk2Q==
-X-Received: by 2002:a67:6684:: with SMTP id a126mr1544401vsc.22.1638998734969;
-        Wed, 08 Dec 2021 13:25:34 -0800 (PST)
-Received: from mail-ua1-f41.google.com (mail-ua1-f41.google.com. [209.85.222.41])
-        by smtp.gmail.com with ESMTPSA id a4sm2503608vkm.46.2021.12.08.13.25.33
+        bh=uXfGwhRkuDJiwWJax5kqTEWYX/aEQTyPk8a4mbZs718=;
+        b=JvlcFdQd1DCs5m4mw/G8pwucKVKYcKv5+goIZR47viX9jgNLT/iBsBYxW+iXqChDNi
+         EflnX8y3ZOswTAXyp/s+8W9OmEhKaVssC5IaljeZIs8EzAur7ntDP5b06VvUl4Ipwc//
+         Gl/XFS+4cZ/TWzDHzi2I68gAJR6hqUckTlhDyFftzaEe3KgTUoNNz76WD0OdlpjgMMFN
+         HNBCTz3YY+4XDhpiLZW+kFroiDTSzhPcIr3/M1/zIz69eYijrMCCbo4NuIpbKu0CAd48
+         H367xD8UKsAtZ1CizkveKXyJbjJvLjL5zqLDNBGAJ3TuSFBCwA5tD2Oqke+8eM5pr34q
+         N7eA==
+X-Gm-Message-State: AOAM531De9ViP7XWFqnCK6PkRE18MYXtGUQTZqQHenjIka6jygo8ucX9
+        8zqINX9q0Bcnzhli6azyuVffWylWSj8=
+X-Google-Smtp-Source: ABdhPJw51Wu9YKQcol2jqNFsZjUmGwy0IvpnrEZTuJspq5jtWn8fkEEbgZd9v/eGL9mCkv5eHlygSw==
+X-Received: by 2002:ab0:22d6:: with SMTP id z22mr11703037uam.65.1638998806206;
+        Wed, 08 Dec 2021 13:26:46 -0800 (PST)
+Received: from mail-ua1-f50.google.com (mail-ua1-f50.google.com. [209.85.222.50])
+        by smtp.gmail.com with ESMTPSA id i56sm2580971vkr.25.2021.12.08.13.26.45
         for <netdev@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 08 Dec 2021 13:25:34 -0800 (PST)
-Received: by mail-ua1-f41.google.com with SMTP id n6so7216887uak.1
-        for <netdev@vger.kernel.org>; Wed, 08 Dec 2021 13:25:33 -0800 (PST)
-X-Received: by 2002:a05:6102:3053:: with SMTP id w19mr1488312vsa.60.1638998733270;
- Wed, 08 Dec 2021 13:25:33 -0800 (PST)
+        Wed, 08 Dec 2021 13:26:45 -0800 (PST)
+Received: by mail-ua1-f50.google.com with SMTP id t13so7160096uad.9
+        for <netdev@vger.kernel.org>; Wed, 08 Dec 2021 13:26:45 -0800 (PST)
+X-Received: by 2002:a67:3093:: with SMTP id w141mr1617426vsw.24.1638998805265;
+ Wed, 08 Dec 2021 13:26:45 -0800 (PST)
 MIME-Version: 1.0
-References: <20211208173831.3791157-1-andrew@lunn.ch> <20211208173831.3791157-3-andrew@lunn.ch>
-In-Reply-To: <20211208173831.3791157-3-andrew@lunn.ch>
+References: <20211208173831.3791157-1-andrew@lunn.ch> <20211208173831.3791157-4-andrew@lunn.ch>
+In-Reply-To: <20211208173831.3791157-4-andrew@lunn.ch>
 From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Wed, 8 Dec 2021 16:24:56 -0500
-X-Gmail-Original-Message-ID: <CA+FuTScGS_s=PCYnXzJbkABOQ7nirg4aa-HwzHjk4crp9vic1w@mail.gmail.com>
-Message-ID: <CA+FuTScGS_s=PCYnXzJbkABOQ7nirg4aa-HwzHjk4crp9vic1w@mail.gmail.com>
-Subject: Re: [PATCH net-next v4 1/3] seg6: export get_srh() for ICMP handling
+Date:   Wed, 8 Dec 2021 16:26:05 -0500
+X-Gmail-Original-Message-ID: <CA+FuTScYqNfFmuYXJZHi24gs-Vyx8AJW8tPuehW75wdO4arPgw@mail.gmail.com>
+Message-ID: <CA+FuTScYqNfFmuYXJZHi24gs-Vyx8AJW8tPuehW75wdO4arPgw@mail.gmail.com>
+Subject: Re: [PATCH net-next v4 3/3] udp6: Use Segment Routing Header for dest
+ address if present
 To:     Andrew Lunn <andrew@lunn.ch>
 Cc:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -78,16 +79,73 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Wed, Dec 8, 2021 at 12:38 PM Andrew Lunn <andrew@lunn.ch> wrote:
 >
-> From 387a5e9d6b2749d0457ccc760a5b785c2df8f799 Mon Sep 17 00:00:00 2001
-> From: Andrew Lunn <andrew@lunn.ch>
-> Date: Sat, 20 Nov 2021 12:51:07 -0600
-> Subject: [PATCH net-next v4 2/3] icmp: ICMPV6: Examine invoking packet for
->  Segment Route Headers.
+> When finding the socket to report an error on, if the invoking packet
+> is using Segment Routing, the IPv6 destination address is that of an
+> intermediate router, not the end destination. Extract the ultimate
+> destination address from the segment address.
+>
+> This change allows traceroute to function in the presence of Segment
+> Routing.
+>
+> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+> ---
+>  include/net/seg6.h | 19 +++++++++++++++++++
+>  net/ipv6/udp.c     |  3 ++-
+>  2 files changed, 21 insertions(+), 1 deletion(-)
+>
+> diff --git a/include/net/seg6.h b/include/net/seg6.h
+> index 02b0cd305787..af668f17b398 100644
+> --- a/include/net/seg6.h
+> +++ b/include/net/seg6.h
+> @@ -65,4 +65,23 @@ extern int seg6_do_srh_encap(struct sk_buff *skb, struct ipv6_sr_hdr *osrh,
+>  extern int seg6_do_srh_inline(struct sk_buff *skb, struct ipv6_sr_hdr *osrh);
+>  extern int seg6_lookup_nexthop(struct sk_buff *skb, struct in6_addr *nhaddr,
+>                                u32 tbl_id);
+> +
+> +/* If the packet which invoked an ICMP error contains an SRH return
+> + * the true destination address from within the SRH, otherwise use the
+> + * destination address in the IP header.
+> + */
 
-Something went wrong when sending this patch series.
+nit: the above describes the behavior of the caller, not the function.
+The function returns NULL if no SRH is found.
 
-The above header is part of the commit message, and this patch is
-marked as 1/3. See also in
-https://patchwork.kernel.org/project/netdevbpf
-
-Otherwise the code looks good to me.
+> +static inline const struct in6_addr *seg6_get_daddr(struct sk_buff *skb,
+> +                                                   struct inet6_skb_parm *opt)
+> +{
+> +       struct ipv6_sr_hdr *srh;
+> +
+> +       if (opt->flags & IP6SKB_SEG6) {
+> +               srh = (struct ipv6_sr_hdr *)(skb->data + opt->srhoff);
+> +               return  &srh->segments[0];
+> +       }
+> +
+> +       return NULL;
+> +}
+> +
+> +
+>  #endif
+> diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
+> index 6a0e569f0bb8..a14375e3f923 100644
+> --- a/net/ipv6/udp.c
+> +++ b/net/ipv6/udp.c
+> @@ -40,6 +40,7 @@
+>  #include <net/transp_v6.h>
+>  #include <net/ip6_route.h>
+>  #include <net/raw.h>
+> +#include <net/seg6.h>
+>  #include <net/tcp_states.h>
+>  #include <net/ip6_checksum.h>
+>  #include <net/ip6_tunnel.h>
+> @@ -561,7 +562,7 @@ int __udp6_lib_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
+>         struct ipv6_pinfo *np;
+>         const struct ipv6hdr *hdr = (const struct ipv6hdr *)skb->data;
+>         const struct in6_addr *saddr = &hdr->saddr;
+> -       const struct in6_addr *daddr = &hdr->daddr;
+> +       const struct in6_addr *daddr = seg6_get_daddr(skb, opt) ? : &hdr->daddr;
+>         struct udphdr *uh = (struct udphdr *)(skb->data+offset);
+>         bool tunnel = false;
+>         struct sock *sk;
+> --
+> 2.33.1
+>
