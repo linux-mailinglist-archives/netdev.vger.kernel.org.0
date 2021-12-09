@@ -2,99 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5643546E83C
-	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 13:17:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AC8846E85E
+	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 13:22:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237278AbhLIMU2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Dec 2021 07:20:28 -0500
-Received: from smtp-fw-9102.amazon.com ([207.171.184.29]:6971 "EHLO
-        smtp-fw-9102.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237258AbhLIMU2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 07:20:28 -0500
+        id S237334AbhLIMZb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Dec 2021 07:25:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60740 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229990AbhLIMZa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 07:25:30 -0500
+Received: from mail-vk1-xa31.google.com (mail-vk1-xa31.google.com [IPv6:2607:f8b0:4864:20::a31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77D75C061746;
+        Thu,  9 Dec 2021 04:21:57 -0800 (PST)
+Received: by mail-vk1-xa31.google.com with SMTP id q21so3647016vkn.2;
+        Thu, 09 Dec 2021 04:21:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1639052216; x=1670588216;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=RWlbifQ9a9AiycMGPMulphDDQPX16BnMiBreU0jK2tU=;
-  b=c48OOC3Qdh5JoU9fjEa02xyaEBXzN9OGSCjvJqVHbiWuVxRixNoTgvb1
-   isVg93co0kO5t7/LHVgh1ZEz/khX6wnyYXDBo+Un7vCcO4PWPOXBLHuhL
-   v3d0Om2Lrs5xHs3hVDw45MXz6YjzTqkE+YwwM8MuKqupaeX7Rw7lM9xBJ
-   A=;
-X-IronPort-AV: E=Sophos;i="5.88,192,1635206400"; 
-   d="scan'208";a="179641552"
-Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-iad-1a-8691d7ea.us-east-1.amazon.com) ([10.25.36.214])
-  by smtp-border-fw-9102.sea19.amazon.com with ESMTP; 09 Dec 2021 12:16:54 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
-        by email-inbound-relay-iad-1a-8691d7ea.us-east-1.amazon.com (Postfix) with ESMTPS id 620F3C0971;
-        Thu,  9 Dec 2021 12:16:52 +0000 (UTC)
-Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.26; Thu, 9 Dec 2021 12:16:51 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.161.223) by
- EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.26; Thu, 9 Dec 2021 12:16:48 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-To:     <pabeni@redhat.com>
-CC:     <benh@amazon.com>, <davem@davemloft.net>, <edumazet@google.com>,
-        <kuba@kernel.org>, <kuni1840@gmail.com>, <kuniyu@amazon.co.jp>,
-        <netdev@vger.kernel.org>
-Subject: Re: [PATCH v2 net-next] tcp: Warn if sock_owned_by_user() is true in tcp_child_process().
-Date:   Thu, 9 Dec 2021 21:16:44 +0900
-Message-ID: <20211209121644.96758-1-kuniyu@amazon.co.jp>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <bd537766c4b70da71153a9972e6f6ee12e92ff92.camel@redhat.com>
-References: <bd537766c4b70da71153a9972e6f6ee12e92ff92.camel@redhat.com>
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=w3ReoaqnPEHjdJMe05z68xUf6XudxSIjb7gmP09rJQc=;
+        b=qAXe/PUEjSWPGwo4b8gou+dvBHVqhIAIgQxrvG4FTud65PvHoO/e55K661EV3H/B7p
+         F1xAxQHtey8CwpR7QFO7JohxqAzuvbmJiq/mZAqAcHTN9cFWocuXT5TwL9/0W3Hz2sDG
+         YfMP4QsUAohnNc8LNTza+91rJepm4DX0ikuTuZSGAg0Ecz/yuNkkS8KLdfGQOlmW5RSp
+         AUkFG3E+drqcU6ODhkf19gb7AjduYsSv51huT9XT4yCyPxi4WHJw5ywl9glFwtJV42Jm
+         GJYSap6GBjQGN0ITA23LEeDWnykD2FllYj4Ai0leFxYP4/rB+OA2FXen3wu57KLbA4f6
+         nQaQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=w3ReoaqnPEHjdJMe05z68xUf6XudxSIjb7gmP09rJQc=;
+        b=ROlKWS/Fdd9K93Oabvzg1rsQMtdXAaU8t3GSD6USvE3+7KEMu/uvRv3Ae0dwYx0Idd
+         LFzjJON5F6tKPe8GCermJgPSoRQH4KjE9pMF5ZXY4avG5zo+Pd2pyueJ3+KlKwAmKOpC
+         hSb2x/Jcx49P1N7BeCGarBnntWza7CyamJPeIlxFEOsjUeAvUvnygIq94y22fhLS06Nh
+         gcTRVaMVoYOKvxN8MktLFCjeVjBg4iVHjXeT40FtFfFTtJyu1hya0NNo7fi5uoKPDE0t
+         eQhjzC2Ly6PSCK1LZiK8ymtt9C2rNL2GbLcElhkGoTHWSTb59j2xPww94rXCK2bv8028
+         EtOg==
+X-Gm-Message-State: AOAM532g9UUZQXWUSKjjrZD0JW6XIBcqJEhiFU8SKS7RHijr/qoBzS7O
+        orWfDYk++5KtXUpiP81EsuM=
+X-Google-Smtp-Source: ABdhPJziCTAr2E8Bs/ThL9oUGU3K0fyG3S9LlyLkquPvm2rZNuin3u/ToaT22Fm2JY8wZ/2q2NO5EA==
+X-Received: by 2002:a05:6122:988:: with SMTP id g8mr8851565vkd.2.1639052516572;
+        Thu, 09 Dec 2021 04:21:56 -0800 (PST)
+Received: from t14s.localdomain ([177.220.172.101])
+        by smtp.gmail.com with ESMTPSA id e13sm3673249vkd.21.2021.12.09.04.21.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Dec 2021 04:21:56 -0800 (PST)
+Received: by t14s.localdomain (Postfix, from userid 1000)
+        id 5C510ECD30; Thu,  9 Dec 2021 09:21:54 -0300 (-03)
+Date:   Thu, 9 Dec 2021 09:21:54 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Lee Jones <lee.jones@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, Vlad Yasevich <vyasevich@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        lksctp developers <linux-sctp@vger.kernel.org>,
+        "H.P. Yarroll" <piggy@acm.org>,
+        Karl Knutson <karl@athena.chicago.il.us>,
+        Jon Grimm <jgrimm@us.ibm.com>,
+        Xingang Guo <xingang.guo@intel.com>,
+        Hui Huang <hui.huang@nokia.com>,
+        Sridhar Samudrala <sri@us.ibm.com>,
+        Daisy Chang <daisyc@us.ibm.com>,
+        Ryan Layer <rmlayer@us.ibm.com>,
+        Kevin Gao <kevin.gao@intel.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH 1/1] sctp: Protect cached endpoints to prevent possible
+ UAF
+Message-ID: <YbH04oUdLf2XML23@t14s.localdomain>
+References: <20211208165434.2962062-1-lee.jones@linaro.org>
+ <YbDlFFVPm/MYEoOQ@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.161.223]
-X-ClientProxiedBy: EX13D02UWC001.ant.amazon.com (10.43.162.243) To
- EX13D04ANC001.ant.amazon.com (10.43.157.89)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YbDlFFVPm/MYEoOQ@google.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Paolo Abeni <pabeni@redhat.com>
-Date:   Thu, 09 Dec 2021 12:59:21 +0100
-> On Thu, 2021-12-09 at 20:07 +0900, Kuniyuki Iwashima wrote:
->> From:   Eric Dumazet <edumazet@google.com>
->> Date:   Thu, 9 Dec 2021 00:00:35 -0800
->>> On Wed, Dec 8, 2021 at 5:33 PM Kuniyuki Iwashima <kuniyu@amazon.co.jp> wrote:
->>>> 
->>>> While creating a child socket from ACK (not TCP Fast Open case), before
->>>> v2.3.41, we used to call bh_lock_sock() later than now; it was called just
->>>> before tcp_rcv_state_process().  The full socket was put into an accept
->>>> queue and exposed to other CPUs before bh_lock_sock() so that process
->>>> context might have acquired the lock by then.  Thus, we had to check if any
->>>> process context was accessing the socket before tcp_rcv_state_process().
->>>> 
->>> 
->>> I think you misunderstood me.
->>> 
->>> I think this code is not dead yet, so I would :
->>> 
->>> Not include a Fixes: tag to avoid unnecessary backports (of a patch
->>> and its revert)
->>> 
->>> If you want to get syzbot coverage for few releases, especially with
->>> MPTCP and synflood,
->>> you  can then submit a patch like the following.
->> 
->> Sorry, I got on the same page.
->> Let me take a look at MPTCP, then if I still think it is dead code, I will
->> submit the patch.
+On Wed, Dec 08, 2021 at 05:02:12PM +0000, Lee Jones wrote:
+> On Wed, 08 Dec 2021, Lee Jones wrote:
 > 
-> For the records, I think the 'else' branch should be reachble with
-> MPTCP in some non trivial scenario, e.g. MPJ subflows 3WHS racing with
-> setsockopt on the main MPTCP socket. I'm unsure if syzbot could catch
-> that, as it needs mptcp endpoints configuration.
-
-Ah, I was wrong.
-Thanks for explaining!
-
-
+> > The cause of the resultant dump_stack() reported below is a
+> > dereference of a freed pointer to 'struct sctp_endpoint' in
+> > sctp_sock_dump().
+> > 
+> > This race condition occurs when a transport is cached into its
+> > associated hash table then freed prior to its subsequent use in
+> > sctp_diag_dump() which uses sctp_for_each_transport() to walk the
+> > (now out of date) hash table calling into sctp_sock_dump() where the
+> > dereference occurs.
+> > 
+> > To prevent this from happening we need to take a reference on the
+> > to-be-used/dereferenced 'struct sctp_endpoint' until such a time when
+> > we know it can be safely released.
+> > 
+> > When KASAN is not enabled, a similar, but slightly different NULL
+> > pointer derefernce crash occurs later along the thread of execution in
+> > inet_sctp_diag_fill() this time.
+> > 
+> >   BUG: KASAN: use-after-free in sctp_sock_dump+0xa8/0x438 [sctp_diag]
+> >   Call trace:
+> >    dump_backtrace+0x0/0x2dc
+> >    show_stack+0x20/0x2c
+> >    dump_stack+0x120/0x144
+> >    print_address_description+0x80/0x2f4
+> >    __kasan_report+0x174/0x194
+> >    kasan_report+0x10/0x18
+> >    __asan_load8+0x84/0x8c
+> >    sctp_sock_dump+0xa8/0x438 [sctp_diag]
+> >    sctp_for_each_transport+0x1e0/0x26c [sctp]
+> >    sctp_diag_dump+0x180/0x1f0 [sctp_diag]
+> >    inet_diag_dump+0x12c/0x168
+> >    netlink_dump+0x24c/0x5b8
+> >    __netlink_dump_start+0x274/0x2a8
+> >    inet_diag_handler_cmd+0x224/0x274
+> >    sock_diag_rcv_msg+0x21c/0x230
+> >    netlink_rcv_skb+0xe0/0x1bc
+> >    sock_diag_rcv+0x34/0x48
+> >    netlink_unicast+0x3b4/0x430
+> >    netlink_sendmsg+0x4f0/0x574
+> >    sock_write_iter+0x18c/0x1f0
+> >    do_iter_readv_writev+0x230/0x2a8
+> >    do_iter_write+0xc8/0x2b4
+> >    vfs_writev+0xf8/0x184
+> >    do_writev+0xb0/0x1a8
+> >    __arm64_sys_writev+0x4c/0x5c
+> >    el0_svc_common+0x118/0x250
+> >    el0_svc_handler+0x3c/0x9c
+> >    el0_svc+0x8/0xc
 > 
-> Cheers,
+> This looks related (reported 3 years ago!)
 > 
-> Paolo
+>   https://lore.kernel.org/all/20181122131344.GD31918@localhost.localdomain/
+
+Agree, seems related. Thanks for root causing it.
