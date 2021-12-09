@@ -2,67 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 098B646E66F
-	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 11:15:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A57646E649
+	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 11:08:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233877AbhLIKTC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Dec 2021 05:19:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59228 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233849AbhLIKTB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 05:19:01 -0500
-Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81BFCC0617A2
-        for <netdev@vger.kernel.org>; Thu,  9 Dec 2021 02:15:28 -0800 (PST)
-Received: by mail-oi1-x234.google.com with SMTP id r26so8029446oiw.5
-        for <netdev@vger.kernel.org>; Thu, 09 Dec 2021 02:15:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=R/BOP82n3PpwaxS9e3PhWIXwVb+WhETjPqbh/ElKWwY=;
-        b=CNF8tbASy0zrz6X5qbkoxR1ITIz5LBWBuKzadPimXinHjrLbBBKYliYWgXTcpGXEYq
-         JYk08IU2GkEW2LHZDeNwToXwzi/f8BiFlhx5sQ03k7bB+PdFl9Q20iBMtPl0gY+hU5TS
-         tGqpP0cNbjCZ4fq7tggorUOuJ8ti2f5gQr872HXlKPqmm1eePeN2CWhl9xNzfDc7KWKE
-         B9CnobPiZdqh2fnAWbK/DsHMsjeL7uLEi6IJSnVbJBKh7D1P65FJAhJQev6Zy06KSziX
-         rpH4+necA9q3d5hv5dMMK/r3bOGP9GmmeIfuAXpIkPDl4yPuKNwlmqHND1H/2oyErXcT
-         QGQg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=R/BOP82n3PpwaxS9e3PhWIXwVb+WhETjPqbh/ElKWwY=;
-        b=691oaJwNL0CwOPl6fkM1CwJ4k2iWLdImribbEXa5uNUbX/10DGgYGb/YDCJ1F5uTmP
-         JYbNoH5zo19Navcr9SDKaqZuarDaILef4CQFhN2sa03MV/zSdM1kr4mlkBm2S/aqMVfW
-         vROdf9U4WNBjzKHjY9NBrCr12jBNf7gSeGjV01GjzXHmlebK2a1IJV+byZtzKUCGQYBT
-         +xnRz1IxjRFz7kmHDc3ifsBzt4ytgog8LHNKA+M9Mp3Y0mZRYxNDtP+NcEsdGMefQLkA
-         QhHCyHWUf6cX/jgdY+xmKmJBegmEmS4rHNwzZkTJEaNpRjoay2dpZm0rsUsZIKVzR06m
-         Caug==
-X-Gm-Message-State: AOAM5314iPqX7yxbLqaQQuaQeGtvxPDNgtIK48bdDv55hHGS0bQf44GC
-        mU/NT12TEv+hS90KROJo6VYIEBDQwST0yO+6bT8=
-X-Google-Smtp-Source: ABdhPJzceSoeuDHa2AaBqacH7F9TVmbC4DlIyGzhgX2Gb1lLi8Opq2i+9rdF6zA0Ps6wlxBWxP96SejEG0GZS3B3T1E=
-X-Received: by 2002:a05:6808:1984:: with SMTP id bj4mr4846815oib.165.1639044927770;
- Thu, 09 Dec 2021 02:15:27 -0800 (PST)
+        id S232856AbhLIKMM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Dec 2021 05:12:12 -0500
+Received: from mga18.intel.com ([134.134.136.126]:6778 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233004AbhLIKMK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Dec 2021 05:12:10 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10192"; a="224933548"
+X-IronPort-AV: E=Sophos;i="5.88,192,1635231600"; 
+   d="scan'208";a="224933548"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Dec 2021 02:08:37 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,192,1635231600"; 
+   d="scan'208";a="516236592"
+Received: from ccgwwan-desktop15.iind.intel.com ([10.224.174.19])
+  by orsmga008.jf.intel.com with ESMTP; 09 Dec 2021 02:08:34 -0800
+From:   M Chetan Kumar <m.chetan.kumar@linux.intel.com>
+To:     netdev@vger.kernel.org
+Cc:     kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
+        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
+        krishna.c.sudi@intel.com, m.chetan.kumar@intel.com,
+        m.chetan.kumar@linux.intel.com, linuxwwan@intel.com
+Subject: [PATCH net 0/3] net: wwan: iosm: bug fixes
+Date:   Thu,  9 Dec 2021 15:46:26 +0530
+Message-Id: <20211209101629.2940877-1-m.chetan.kumar@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Received: by 2002:a05:6838:6c1d:0:0:0:0 with HTTP; Thu, 9 Dec 2021 02:15:27
- -0800 (PST)
-Reply-To: mrsbillchantallawrence2@gmail.com
-From:   MRS BILL CHANTAL LAWRANCE <mrs.billchantal278@gmail.com>
-Date:   Thu, 9 Dec 2021 02:15:27 -0800
-Message-ID: <CANBp4KUj4fMn=5C6XXY0d9TdKAnXsG06x2Z=bK3usbL1c3=RDA@mail.gmail.com>
-Subject: DEAR FRIEND
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
-dear
+This patch series brings in IOSM driver bug fixes. Patch details are
+explained below.
 
-You have been compensated with the sum of 5.1 million dollars in this
-united nation the payment will be Issue into ATM visa card and send to you
-from the Santander bank of Spain we need your address passport and your
-whatsapp number.
-Thanks
+PATCH1:
+ * stop sending unnecessary doorbell in IP tx flow.
+PATCH2:
+ * Restore the IP channel configuration after fw flash.
+PATCH3:
+ * Removed the unnecessary check around control port TX transfer.
 
-Mrs. bill Chantal
+M Chetan Kumar (3):
+  net: wwan: iosm: fixes unnecessary doorbell send
+  net: wwan: iosm: fixes net interface nonfunctional after fw flash
+  net: wwan: iosm: fixes unable to send AT command during mbim tx
+
+ drivers/net/wwan/iosm/iosm_ipc_imem.c     | 26 +++++++++++++++--------
+ drivers/net/wwan/iosm/iosm_ipc_imem.h     |  4 +---
+ drivers/net/wwan/iosm/iosm_ipc_imem_ops.c |  7 +-----
+ 3 files changed, 19 insertions(+), 18 deletions(-)
+
+--
+2.25.1
+
