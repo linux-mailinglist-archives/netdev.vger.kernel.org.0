@@ -2,77 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 730C146EC41
-	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 16:50:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 41C6146EC3D
+	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 16:50:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240563AbhLIPxy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Dec 2021 10:53:54 -0500
-Received: from sin.source.kernel.org ([145.40.73.55]:47834 "EHLO
-        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240537AbhLIPxs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 10:53:48 -0500
+        id S240536AbhLIPxu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Dec 2021 10:53:50 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:52086 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240513AbhLIPxp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 10:53:45 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 6DABACE2691;
-        Thu,  9 Dec 2021 15:50:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 88C0FC341C3;
+        by ams.source.kernel.org (Postfix) with ESMTPS id ED3ACB8252A;
+        Thu,  9 Dec 2021 15:50:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 88CA0C341C7;
         Thu,  9 Dec 2021 15:50:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1639065009;
-        bh=iKFw1SkivAtXoMkDv6HCrejky4o84z5oL0fXbqmawRc=;
+        bh=tZ2ZAb/cPyN7CaJfQInb7ZtSfx6eVNe0/0YWt9bYZho=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=fqmouS3VQyKPqn4eWQVxGUxlWSYENSw6LeIQDqI6W2GvHyhtrJVdQFzPqkf62Ts8c
-         NKWvAVK+JChsx+gyRfWwldLIjwoB3uEQ3lcKb4Sj3w/TCEHPpzNqyMSyNT8sN0pULL
-         Twzhht7f8Q7Bb3AyY9sgkhR4CdMix1IndsnNGwRqbl9z/3se1k9AY+kkMvkYiRDUg3
-         xV76NgCb9GYVkZTHVRQLTCT7GnH+i7X9CmH64OYSAKeTHHTQpCpXmFHBzSXQCk93Ql
-         ZgOs+8hh1MKXdT/Ydux+7LZx9sOq6nEEFychNsfHE68ZMzgfE/Fdd+P8eGhF7djItH
-         QUBANA1UoGRxA==
+        b=q+BojNGGjWbOmhGfCQBOTxjat5KUorhtSxP4hIwxcwWMbcmUbjGNvpnhyDv4DbqrE
+         pbIsvifWOU2/7DDWZcQAvbzerL/XHUCQ/pf920urBrcem+fJDNity1VP77oY5AvgOw
+         6lnijGXQOsBE59WlQslJsz/9RuA/5qBtNJesXaAy7D/JQss/w6LPI4/B5/fV6p+SxO
+         JS0Na+eICx5KNH6pQxg8lLWR2MLDZn6qLDDgsnyJyFhUsTNosfCkr75iAxUPvz4KCa
+         MAP0Vggs/+QxDufie5QikcsLshYbtr+uJHSSU9wpw6silgMme5BODedv3TIVorday/
+         k3gt+dNWMGATQ==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 64EA0609D7;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 559AD60A3C;
         Thu,  9 Dec 2021 15:50:09 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 1/2] can: kvaser_pciefd: kvaser_pciefd_rx_error_frame():
- increase correct stats->{rx,tx}_errors counter
+Subject: Re: [PATCH v4] net: dsa: mv88e6xxx: error handling for serdes_power
+ functions
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163906500940.10006.10267892818348895466.git-patchwork-notify@kernel.org>
+Message-Id: <163906500934.10006.3830083843668512578.git-patchwork-notify@kernel.org>
 Date:   Thu, 09 Dec 2021 15:50:09 +0000
-References: <20211209081312.301036-2-mkl@pengutronix.de>
-In-Reply-To: <20211209081312.301036-2-mkl@pengutronix.de>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        linux-can@vger.kernel.org, kernel@pengutronix.de, extja@kvaser.com,
-        stable@vger.kernel.org
+References: <20211209041552.9810-1-amhamza.mgc@gmail.com>
+In-Reply-To: <20211209041552.9810-1-amhamza.mgc@gmail.com>
+To:     Ameer Hamza <amhamza.mgc@gmail.com>
+Cc:     kabel@kernel.org, kuba@kernel.org, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net.git (master)
-by Marc Kleine-Budde <mkl@pengutronix.de>:
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-On Thu,  9 Dec 2021 09:13:11 +0100 you wrote:
-> From: Jimmy Assarsson <extja@kvaser.com>
+On Thu,  9 Dec 2021 09:15:52 +0500 you wrote:
+> Added default case to handle undefined cmode scenario in
+> mv88e6393x_serdes_power() and mv88e6393x_serdes_power() methods.
 > 
-> Check the direction bit in the error frame packet (EPACK) to determine
-> which net_device_stats {rx,tx}_errors counter to increase.
-> 
-> Fixes: 26ad340e582d ("can: kvaser_pciefd: Add driver for Kvaser PCIEcan devices")
-> Link: https://lore.kernel.org/all/20211208152122.250852-1-extja@kvaser.com
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Jimmy Assarsson <extja@kvaser.com>
-> Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+> Addresses-Coverity: 1494644 ("Uninitialized scalar variable")
+> Fixes: 21635d9203e1c (net: dsa: mv88e6xxx: Fix application of erratum 4.8 for 88E6393X)
+> Reviewed-by: Marek Behún <kabel@kernel.org>
+> Signed-off-by: Ameer Hamza <amhamza.mgc@gmail.com>
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,1/2] can: kvaser_pciefd: kvaser_pciefd_rx_error_frame(): increase correct stats->{rx,tx}_errors counter
-    https://git.kernel.org/netdev/net/c/36aea60fc892
-  - [net,2/2] can: kvaser_usb: get CAN clock frequency from device
-    https://git.kernel.org/netdev/net/c/fb12797ab1fe
+  - [v4] net: dsa: mv88e6xxx: error handling for serdes_power functions
+    https://git.kernel.org/netdev/net/c/0416e7af2369
 
 You are awesome, thank you!
 -- 
