@@ -2,106 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D213546EC10
-	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 16:45:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 485E046EC2D
+	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 16:49:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240197AbhLIPsr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Dec 2021 10:48:47 -0500
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:12979 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240158AbhLIPsq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 10:48:46 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1639064714; x=1670600714;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=DKnB0fVSUxTvsZxpzsFNlUGooXd/ZY3HpAGAz8EIxNw=;
-  b=royqvuq+ZzRBjbnxkctjXLNmn1Bjs2p7+ndyAo/jeSLk/Pe0nHgjA193
-   n0rWZnHowiGR3O5z0Y7fgBKG0LzNFyPIbKf0CIctjy8NTU70LeDz3g/Gg
-   F3GCNtWG81UTGk/2ZWAumOChXuH+I7UkL5dpm+RJE5iTzR2pVJRyjzKs/
-   B9K1JEiXTN7m7RYw/0gj50jEim670A4kDwpo/4a21LqnQ2qw10Pxin5fI
-   5Z+1p1RMQF7CilQgktbnvbE9YTZTcrorCnm0kYc5myP+CJp3pgVD7xJ5V
-   nixaiHc2wJrgtYkKDFOrMZLf3W0TDTikqLG6ViOh6/cTODWq2QR+b3b3B
-   Q==;
-IronPort-SDR: qjX5i9owNzNmWTfAJ52bzCNypao1pQ9pMJ9XqxA8mG9lbBT9f3w5pK2MXisbB8L4tB718dJTNo
- sd4Mqt6TWmbwW90jvraL3Y8F/HZEkj/QeG4G87ZDaiMJ+X+r8l/rg22yMR1Cg6Ys6DimjctjgN
- BmF+jjQoPkFXr5joJvL37HuYt5/NdgvTIAy0yYuSCNvVCHPuAmCoewM5CAFvjtcYj4z/HSI3lA
- iAiG+uSZfo34TaxmlwjS0HJBzge/+pzPzViCBGx6IRNqBmefAp7z+rz0VL8DgTIT9CemmLeOFm
- QVI8QDD6AnpSU/toO15/fXTA
-X-IronPort-AV: E=Sophos;i="5.88,192,1635231600"; 
-   d="scan'208";a="146103217"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Dec 2021 08:45:13 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Thu, 9 Dec 2021 08:45:10 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
- (10.10.85.144) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Thu, 9 Dec 2021 08:45:10 -0700
-Date:   Thu, 9 Dec 2021 16:47:09 +0100
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>
-Subject: Re: [PATCH net-next v3 5/6] net: lan966x: Add vlan support
-Message-ID: <20211209154709.huq27gxgaqxgixku@soft-dev3-1.localhost>
-References: <20211209094615.329379-1-horatiu.vultur@microchip.com>
- <20211209094615.329379-6-horatiu.vultur@microchip.com>
- <20211209135928.25myffd3xzcnmndl@skbuf>
+        id S240374AbhLIPxY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Dec 2021 10:53:24 -0500
+Received: from relay4-d.mail.gandi.net ([217.70.183.196]:36719 "EHLO
+        relay4-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234325AbhLIPxX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 10:53:23 -0500
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by relay4-d.mail.gandi.net (Postfix) with ESMTPSA id AF93EE0006;
+        Thu,  9 Dec 2021 15:49:46 +0000 (UTC)
+From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Russell King <linux@armlinux.org.uk>
+Cc:     =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Denis Kirjanov <dkirjanov@suse.de>,
+        Julian Wiedmann <jwi@linux.ibm.com>
+Subject: [PATCH net-next v8 0/4] Add FDMA support on ocelot switch driver
+Date:   Thu,  9 Dec 2021 16:49:07 +0100
+Message-Id: <20211209154911.3152830-1-clement.leger@bootlin.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <20211209135928.25myffd3xzcnmndl@skbuf>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 12/09/2021 13:59, Vladimir Oltean wrote:
-> 
-> On Thu, Dec 09, 2021 at 10:46:14AM +0100, Horatiu Vultur wrote:
-> > +int lan966x_vlan_port_set_vid(struct lan966x_port *port, u16 vid,
-> > +                           bool pvid, bool untagged)
-> > +{
-> > +     struct lan966x *lan966x = port->lan966x;
-> > +
-> > +     /* Egress vlan classification */
-> > +     if (untagged && port->vid != vid) {
-> > +             if (port->vid) {
-> > +                     dev_err(lan966x->dev,
-> > +                             "Port already has a native VLAN: %d\n",
-> > +                             port->vid);
-> > +                     return -EBUSY;
-> 
-> Are you interested in supporting the use case from 0da1a1c48911 ("net:
-> mscc: ocelot: allow a config where all bridge VLANs are egress-untagged")?
-> Because it would be good if the driver was structured that way from the
-> get-go instead of patching it later.
+This series adds support for the Frame DMA present on the VSC7514
+switch. The FDMA is able to extract and inject packets on the various
+ethernet interfaces present on the switch.
 
-Currently not, but I don't know what will happen in 1 month or 6
-months.
+------------------
+Changes in V8:
+  - Rebase on net-next/master
 
-> 
-> > +             }
-> > +             port->vid = vid;
-> > +     }
-> > +
-> > +     /* Default ingress vlan classification */
-> > +     if (pvid)
-> > +             port->pvid = vid;
-> > +
-> > +     return 0;
-> > +}
+Changes in V7:
+  - Fix kernel doc for fdma struct
+
+Changes in V6:
+  - Remove dead code added in ocelot_vsc7514
+  - Remove useless include added in mscc/ocelot.h
+  - Remove trailing whitespace
+  - Move skb_tx_timestamp before sending the skb
+  - Fix a few long lines
+
+Changes in V5:
+  - Add skb freeing for TX and fix RX ring skb not being freed
+  - Fix napi init in case of netdev registration failure
+  - Reorganize FDMA register definitions
+  - Used regmap targets from ocelot structure to get fdma pointer
+  - s/page_count/page_ref_count
+  - Move napi back in struct ocelot_fdma
+
+Changes in V4:
+  - Use regmap for register access
+  - Removed yaml bindings convertion as well as mac address from dt
+  - Removed pre-computed IFH for the moment
+  - Fixed timestamp reading for PTP in FDMA
+  - Fixed wrong exit path for fdma netdev init
+  - Removed spinlock from TX cleanup
+  - Add asynchronous RX chan stop before refilling
+  - Reduce CH_SAFE wait time to 10us
+  - Reduce waiting time for channel to be safe
+  - Completely rework rx to use page recycling (code from gianfar)
+  - Reenable MTU change support since FDMA now supports it transparently
+  - Split TX and RX ring size
+  - Larger RX size to lower page allocation rate
+  - Add static key to check for FDMA to be enabled in fast path
+
+Changes in V3:
+  - Add timeouts for hardware registers read
+  - Add cleanup path in fdma_init
+  - Rework injection and extraction to used ring like structure
+  - Added PTP support to FDMA
+  - Use pskb_expand_head instead of skb_copy_expand in xmit
+  - Drop jumbo support
+  - Use of_get_ethdev_address
+  - Add ocelot_fdma_netdev_init/deinit
+
+Changes in V2:
+  - Read MAC for each port and not as switch base MAC address
+  - Add missing static for some functions in ocelot_fdma.c
+  - Split change_mtu from fdma commit
+  - Add jumbo support for register based xmit
+  - Move precomputed header into ocelot_port struct
+  - Remove use of QUIRK_ENDIAN_LITTLE due to misconfiguration for tests
+  - Remove fragmented packet sending which has not been tested
+
+Clément Léger (4):
+  net: ocelot: export ocelot_ifh_port_set() to setup IFH
+  net: ocelot: add and export ocelot_ptp_rx_timestamp()
+  net: ocelot: add support for ndo_change_mtu
+  net: ocelot: add FDMA support
+
+ drivers/net/ethernet/mscc/Makefile         |   1 +
+ drivers/net/ethernet/mscc/ocelot.c         |  59 +-
+ drivers/net/ethernet/mscc/ocelot.h         |   2 +
+ drivers/net/ethernet/mscc/ocelot_fdma.c    | 894 +++++++++++++++++++++
+ drivers/net/ethernet/mscc/ocelot_fdma.h    | 166 ++++
+ drivers/net/ethernet/mscc/ocelot_net.c     |  39 +-
+ drivers/net/ethernet/mscc/ocelot_vsc7514.c |  10 +
+ include/soc/mscc/ocelot.h                  |   6 +
+ 8 files changed, 1151 insertions(+), 26 deletions(-)
+ create mode 100644 drivers/net/ethernet/mscc/ocelot_fdma.c
+ create mode 100644 drivers/net/ethernet/mscc/ocelot_fdma.h
 
 -- 
-/Horatiu
+2.34.1
+
