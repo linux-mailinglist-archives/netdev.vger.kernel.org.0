@@ -2,96 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F65346E02C
-	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 02:20:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 607C246E038
+	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 02:23:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231181AbhLIBXx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 20:23:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50558 "EHLO
+        id S231181AbhLIB0m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 20:26:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231267AbhLIBXs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 20:23:48 -0500
+        with ESMTP id S229520AbhLIB0m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 20:26:42 -0500
 Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D1B7C061746;
-        Wed,  8 Dec 2021 17:20:14 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 720D7C061746;
+        Wed,  8 Dec 2021 17:23:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id B1F5ACE2455;
-        Thu,  9 Dec 2021 01:20:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id ABFDCC341C6;
-        Thu,  9 Dec 2021 01:20:10 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id BCB4ACE2331;
+        Thu,  9 Dec 2021 01:23:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E04AC00446;
+        Thu,  9 Dec 2021 01:23:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1639012810;
-        bh=U9piRp9VUHkIbNUEo20jl2DvHVU93YxLKpaQkRbT0Og=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Sp0u/obZkb9zzBOKLxuBCwiaDDTCPN7ikpa5pzd4knsu8iqw6ql0iqszuV2QLo4mw
-         5CGpD7Gxr7aw25VedwZfSM0gy7l7EO8INjDTsu4WmUJcm8J2+ECq1bDA3wK1g4hR+7
-         0U2nX9a9mZSxtcC0KOzTOExVpnb+LbDYTODyP+hKwNSq/ifV8TlpFcHX7cUByXZCIv
-         jO+zUyzbupkuBl2TtpMN4DVShSNSnDokpRsIHj+NmbtMnDxfdf+Dh5CjeXUrJKZW3v
-         5pnuDWYlz0DBlCtPWg5CoxAXSGRMw/CJgBwmoLWGcLWFBWiL6Ht/d+rVEWA96jrqvf
-         kC7Ro/UEPwbwg==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 8CFBF60966;
-        Thu,  9 Dec 2021 01:20:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1639012985;
+        bh=EGS1FaDteRYlhuhWyVYrG25WcZzElFOzCSjsr/Y8ipE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=qFW65xA2LuO0ZVGFZstwcZRcKox4eimF8P7HV2lstZUnhhrAuV/ln4zVBCadRemKY
+         ojtY3yBMct6lTugdFczFvaKTLim4eNQbOcRmy48MAks4ZRN69UqpGTkJkTsX1nN04z
+         j8HtYZ/RsPK7xrCVr4nqfTy1mWto+/TzYjQEOJIVMkwU2Q0uYnyqu41d0Pfgccno0W
+         2djurTPGytNfutBbKFcWVAkuR1s0gfz0vaVqBvT4MoLpL+OTkGxwuaHdnZJc2N6TeK
+         DJyk+obaAfwEkRuRYPSrRnI/H40gyNodXqSVP1UB8l3zOhw24onFRR7L/ASoH88P+S
+         eTHYoJN484Vng==
+Date:   Wed, 8 Dec 2021 17:23:03 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jie2x Zhou <jie2x.zhou@intel.com>
+Cc:     davem@davemloft.net, shuah@kernel.org, dsahern@gmail.com,
+        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org, lkp@intel.com, xinjianx.ma@intel.com,
+        zhijianx.li@intel.com, Philip Li <philip.li@intel.com>,
+        zhoujie <zhoujie2011@fujitsu.com>
+Subject: Re: [PATCH] selftests: net: Correct ping6 expected rc from 2 to 1
+Message-ID: <20211208172303.58ca2706@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211208061518.61668-1-jie2x.zhou@intel.com>
+References: <20211208061518.61668-1-jie2x.zhou@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 1/8] can: bittiming: replace CAN units with the
- generic ones from linux/units.h
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163901281057.2174.17545511832440179871.git-patchwork-notify@kernel.org>
-Date:   Thu, 09 Dec 2021 01:20:10 +0000
-References: <20211208125055.223141-2-mkl@pengutronix.de>
-In-Reply-To: <20211208125055.223141-2-mkl@pengutronix.de>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        linux-can@vger.kernel.org, kernel@pengutronix.de,
-        mailhol.vincent@wanadoo.fr, extja@kvaser.com,
-        socketcan@hartkopp.net
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Wed,  8 Dec 2021 14:15:18 +0800 Jie2x Zhou wrote:
+> From: zhoujie <zhoujie2011@fujitsu.com>
 
-This series was applied to netdev/net-next.git (master)
-by Marc Kleine-Budde <mkl@pengutronix.de>:
+> Signed-off-by: Jie2x Zhou <jie2x.zhou@intel.com>
 
-On Wed,  8 Dec 2021 13:50:48 +0100 you wrote:
-> From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-> 
-> In [1], we introduced a set of units in linux/can/bittiming.h. Since
-> then, generic SI prefixes were added to linux/units.h in [2]. Those
-> new prefixes can perfectly replace CAN specific ones.
-> 
-> This patch replaces all occurrences of the CAN units with their
-> corresponding prefix (from linux/units) and the unit (as a comment)
-> according to below table.
-> 
-> [...]
+Ah, so you are the same person, I was wondering :)
 
-Here is the summary with links:
-  - [net-next,1/8] can: bittiming: replace CAN units with the generic ones from linux/units.h
-    https://git.kernel.org/netdev/net-next/c/330c6d3bfa26
-  - [net-next,2/8] dt-bindings: net: can: add support for Allwinner R40 CAN controller
-    https://git.kernel.org/netdev/net-next/c/d0342ceb78ed
-  - [net-next,3/8] can: sun4i_can: add support for R40 CAN controller
-    https://git.kernel.org/netdev/net-next/c/2c2fd0e68d9e
-  - [net-next,4/8] ARM: dts: sun8i: r40: add node for CAN controller
-    https://git.kernel.org/netdev/net-next/c/671f852c1bee
-  - [net-next,5/8] can: hi311x: hi3110_can_probe(): use devm_clk_get_optional() to get the input clock
-    https://git.kernel.org/netdev/net-next/c/369cf4e6ac53
-  - [net-next,6/8] can: hi311x: hi3110_can_probe(): try to get crystal clock rate from property
-    https://git.kernel.org/netdev/net-next/c/3a1ae63a4d21
-  - [net-next,7/8] can: hi311x: hi3110_can_probe(): make use of device property API
-    https://git.kernel.org/netdev/net-next/c/dc64d98aae75
-  - [net-next,8/8] can: hi311x: hi3110_can_probe(): convert to use dev_err_probe()
-    https://git.kernel.org/netdev/net-next/c/6a93ea382177
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+You need to either drop the From: with the fujitsu address (git commit
+--amend --reset-autor) or sign off the patch with the Intel address.
+Right now both your name is spelled differently and the address is
+different so the patch will trigger warnings.
