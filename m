@@ -2,53 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B84E46ECCF
-	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 17:10:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CF8146ECCE
+	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 17:10:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236840AbhLIQNs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Dec 2021 11:13:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58200 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235508AbhLIQNq (ORCPT
+        id S236009AbhLIQNq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Dec 2021 11:13:46 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:34880 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233676AbhLIQNq (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 11:13:46 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D4BDC061746
-        for <netdev@vger.kernel.org>; Thu,  9 Dec 2021 08:10:12 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3E570B8254A
-        for <netdev@vger.kernel.org>; Thu,  9 Dec 2021 16:10:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E2C68C341C3;
-        Thu,  9 Dec 2021 16:10:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 55DB7B82550;
+        Thu,  9 Dec 2021 16:10:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 06E19C341D0;
+        Thu,  9 Dec 2021 16:10:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1639066209;
-        bh=yYR01Dzwy+wYFJD3ccjvLFi4o5/SPTETdVfYd/DouaM=;
+        s=k20201202; t=1639066210;
+        bh=zXPRW+vBKvZ6RvimQyuamzBt3dWqn9UHC6LIrTaukrs=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=hfI56gjjKImndf6iHpJz0uWcVaOm/ipeqr+rVyTuVmAUDwg3M5nRWLr5IH42TGzhV
-         vySzuAbcpEZd60LZzqZNWyx2MkYaIrbjFD8vzG14zVT2D2qRvKSl1iQdBz7TRdAyG4
-         fYl26zBUyXyk3G5JakF2Tr+dG67QCUVZUo3UEGEBSg/ufZkXSfmhFjN7axTVi5S1fr
-         mDFRokHkdWhLHBs98wt0zlu8a+vJfGyi+u/hz5CMEKlGPq09/nCTuqzRIBXyB2aDkH
-         r6C7YznxGp31paPtWLZM7jK27saNTW/FS4whmggNXZmvexQhffFOU5OvaEDESkb7uU
-         txcrEBmkB0VgQ==
+        b=XxQcIzkEADviCjv+oUBm3rcJMNLeStm0f5LC9AZxOHwQQt/d8gNOQkoZfQMEDmhOv
+         FyWuXMho1L03eNNSzsZ/TuEcjlOA81tDXVKRGS69PIGum/g9xfeQlsxmGqwmZRE3nI
+         K0ybR/6YS0oT2JEzWqIcMZwREmQZfMar12rFw7z9CELIbxaowCSq4JNDjbCdOQ91Hs
+         8+vH8jNbUi7U/RN2HCUR6eCWm+ZLcu/hvHuqAonz4B62oPVfEyp/cTKBSte3VD1jUC
+         yvgLbqufra1rKld43e5TMgwqX2maBOEUtv8jEKJK94TUMDjn7xtq5J1Va+WqeI4RiZ
+         viNhcIkpTpEDw==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id C94C860A3C;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id D7EB560BE3;
         Thu,  9 Dec 2021 16:10:09 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net/sched: fq_pie: prevent dismantle issue
+Subject: Re: [PATCH] net: mana: Fix memory leak in mana_hwc_create_wq
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163906620982.18129.4750753893395522768.git-patchwork-notify@kernel.org>
+Message-Id: <163906620987.18129.15445565524915485016.git-patchwork-notify@kernel.org>
 Date:   Thu, 09 Dec 2021 16:10:09 +0000
-References: <20211209084937.3500020-1-eric.dumazet@gmail.com>
-In-Reply-To: <20211209084937.3500020-1-eric.dumazet@gmail.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        edumazet@google.com, syzkaller@googlegroups.com,
-        tahiliani@nitk.edu.in, sdp.sachin@gmail.com,
-        vsaicharan1998@gmail.com, mohitbhasi1998@gmail.com,
-        lesliemonis@gmail.com, gautamramk@gmail.com
+References: <20211208223723.18520-1-jose.exposito89@gmail.com>
+In-Reply-To: <20211208223723.18520-1-jose.exposito89@gmail.com>
+To:     =?utf-8?b?Sm9zw6kgRXhww7NzaXRvIDxqb3NlLmV4cG9zaXRvODlAZ21haWwuY29tPg==?=@ci.codeaurora.org
+Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+        wei.liu@kernel.org, decui@microsoft.com, davem@davemloft.net,
+        sumit.semwal@linaro.org, christian.koenig@amd.com,
+        linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -58,21 +56,21 @@ Hello:
 This patch was applied to netdev/net.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Thu,  9 Dec 2021 00:49:37 -0800 you wrote:
-> From: Eric Dumazet <edumazet@google.com>
+On Wed,  8 Dec 2021 23:37:23 +0100 you wrote:
+> If allocating the DMA buffer fails, mana_hwc_destroy_wq was called
+> without previously storing the pointer to the queue.
 > 
-> For some reason, fq_pie_destroy() did not copy
-> working code from pie_destroy() and other qdiscs,
-> thus causing elusive bug.
+> In order to avoid leaking the pointer to the queue, store it as soon as
+> it is allocated.
 > 
-> Before calling del_timer_sync(&q->adapt_timer),
-> we need to ensure timer will not rearm itself.
+> Addresses-Coverity-ID: 1484720 ("Resource leak")
+> Signed-off-by: José Expósito <jose.exposito89@gmail.com>
 > 
 > [...]
 
 Here is the summary with links:
-  - [net] net/sched: fq_pie: prevent dismantle issue
-    https://git.kernel.org/netdev/net/c/61c2402665f1
+  - net: mana: Fix memory leak in mana_hwc_create_wq
+    https://git.kernel.org/netdev/net/c/9acfc57fa2b8
 
 You are awesome, thank you!
 -- 
