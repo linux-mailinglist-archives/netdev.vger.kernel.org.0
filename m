@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B08046DF3F
-	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 01:09:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B042246DF38
+	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 01:09:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241346AbhLIAMe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 19:12:34 -0500
-Received: from mail.netfilter.org ([217.70.188.207]:41748 "EHLO
+        id S241337AbhLIAMc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 19:12:32 -0500
+Received: from mail.netfilter.org ([217.70.188.207]:41742 "EHLO
         mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241335AbhLIAMc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 19:12:32 -0500
+        with ESMTP id S241319AbhLIAMb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 19:12:31 -0500
 Received: from localhost.localdomain (unknown [78.30.32.163])
-        by mail.netfilter.org (Postfix) with ESMTPSA id 2F275605BA;
+        by mail.netfilter.org (Postfix) with ESMTPSA id ABB54605BD;
         Thu,  9 Dec 2021 01:06:35 +0100 (CET)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net 3/7] nft_set_pipapo: Fix bucket load in AVX2 lookup routine for six 8-bit groups
-Date:   Thu,  9 Dec 2021 01:08:43 +0100
-Message-Id: <20211209000847.102598-4-pablo@netfilter.org>
+Subject: [PATCH net 4/7] selftests: netfilter: Add correctness test for mac,net set type
+Date:   Thu,  9 Dec 2021 01:08:44 +0100
+Message-Id: <20211209000847.102598-5-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20211209000847.102598-1-pablo@netfilter.org>
 References: <20211209000847.102598-1-pablo@netfilter.org>
@@ -31,37 +31,70 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Stefano Brivio <sbrivio@redhat.com>
 
-The sixth byte of packet data has to be looked up in the sixth group,
-not in the seventh one, even if we load the bucket data into ymm6
-(and not ymm5, for convenience of tracking stalls).
+The existing net,mac test didn't cover the issue recently reported
+by Nikita Yushchenko, where MAC addresses wouldn't match if given
+as first field of a concatenated set with AVX2 and 8-bit groups,
+because there's a different code path covering the lookup of six
+8-bit groups (MAC addresses) if that's the first field.
 
-Without this fix, matching on a MAC address as first field of a set,
-if 8-bit groups are selected (due to a small set size) would fail,
-that is, the given MAC address would never match.
+Add a similar mac,net test, with MAC address and IPv4 address
+swapped in the set specification.
 
-Reported-by: Nikita Yushchenko <nikita.yushchenko@virtuozzo.com>
-Cc: <stable@vger.kernel.org> # 5.6.x
-Fixes: 7400b063969b ("nft_set_pipapo: Introduce AVX2-based lookup implementation")
 Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
-Tested-By: Nikita Yushchenko <nikita.yushchenko@virtuozzo.com>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- net/netfilter/nft_set_pipapo_avx2.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../selftests/netfilter/nft_concat_range.sh   | 24 ++++++++++++++++---
+ 1 file changed, 21 insertions(+), 3 deletions(-)
 
-diff --git a/net/netfilter/nft_set_pipapo_avx2.c b/net/netfilter/nft_set_pipapo_avx2.c
-index e517663e0cd1..6f4116e72958 100644
---- a/net/netfilter/nft_set_pipapo_avx2.c
-+++ b/net/netfilter/nft_set_pipapo_avx2.c
-@@ -886,7 +886,7 @@ static int nft_pipapo_avx2_lookup_8b_6(unsigned long *map, unsigned long *fill,
- 			NFT_PIPAPO_AVX2_BUCKET_LOAD8(4,  lt, 4, pkt[4], bsize);
+diff --git a/tools/testing/selftests/netfilter/nft_concat_range.sh b/tools/testing/selftests/netfilter/nft_concat_range.sh
+index 5a4938d6dcf2..ed61f6cab60f 100755
+--- a/tools/testing/selftests/netfilter/nft_concat_range.sh
++++ b/tools/testing/selftests/netfilter/nft_concat_range.sh
+@@ -23,8 +23,8 @@ TESTS="reported_issues correctness concurrency timeout"
  
- 			NFT_PIPAPO_AVX2_AND(5, 0, 1);
--			NFT_PIPAPO_AVX2_BUCKET_LOAD8(6,  lt, 6, pkt[5], bsize);
-+			NFT_PIPAPO_AVX2_BUCKET_LOAD8(6,  lt, 5, pkt[5], bsize);
- 			NFT_PIPAPO_AVX2_AND(7, 2, 3);
+ # Set types, defined by TYPE_ variables below
+ TYPES="net_port port_net net6_port port_proto net6_port_mac net6_port_mac_proto
+-       net_port_net net_mac net_mac_icmp net6_mac_icmp net6_port_net6_port
+-       net_port_mac_proto_net"
++       net_port_net net_mac mac_net net_mac_icmp net6_mac_icmp
++       net6_port_net6_port net_port_mac_proto_net"
  
- 			/* Stall */
+ # Reported bugs, also described by TYPE_ variables below
+ BUGS="flush_remove_add"
+@@ -277,6 +277,23 @@ perf_entries	1000
+ perf_proto	ipv4
+ "
+ 
++TYPE_mac_net="
++display		mac,net
++type_spec	ether_addr . ipv4_addr
++chain_spec	ether saddr . ip saddr
++dst		 
++src		mac addr4
++start		1
++count		5
++src_delta	2000
++tools		sendip nc bash
++proto		udp
++
++race_repeat	0
++
++perf_duration	0
++"
++
+ TYPE_net_mac_icmp="
+ display		net,mac - ICMP
+ type_spec	ipv4_addr . ether_addr
+@@ -984,7 +1001,8 @@ format() {
+ 		fi
+ 	done
+ 	for f in ${src}; do
+-		__expr="${__expr} . "
++		[ "${__expr}" != "{ " ] && __expr="${__expr} . "
++
+ 		__start="$(eval format_"${f}" "${srcstart}")"
+ 		__end="$(eval format_"${f}" "${srcend}")"
+ 
 -- 
 2.30.2
 
