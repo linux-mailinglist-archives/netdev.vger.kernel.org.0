@@ -2,71 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B34346E0EE
-	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 03:36:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3555146E0F9
+	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 03:40:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230249AbhLICjq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 21:39:46 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:35540 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230183AbhLICjp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 21:39:45 -0500
+        id S230344AbhLICnp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 21:43:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40332 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230007AbhLICnp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 21:43:45 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A70E5C061746;
+        Wed,  8 Dec 2021 18:40:12 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 80585B823AA;
-        Thu,  9 Dec 2021 02:36:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E977BC00446;
-        Thu,  9 Dec 2021 02:36:09 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 917EBCE24BB;
+        Thu,  9 Dec 2021 02:40:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id B591CC00446;
+        Thu,  9 Dec 2021 02:40:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1639017370;
-        bh=45tMk4F/MluMy76hTixev2X+GL6EAl4gWxHrb+ZdNe8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=IPm4tzh/h6ly2iJXwyIIwuAwzpO5H8pJWvgFsKuISBuP2VrGstxL1rcZttgYHX7Lm
-         hq8y29fyUPOfzZszSmil/Qz0CRnnNvDL0Z+qvtFwgbWRwOWJs0TLFMUrQS4BsGJBsf
-         mYXo9ZuwtYOYkiK35nwu5jI1Sc1o/T61hUp3R6y9ygE6jmzWoXTJd0jvcktA2Jm9/J
-         EhZuz/g7M9/GWpSeL9n34i47RAfBfsz+ZdT8S53sBMY3NnlXRu1xZ2P2IrjG7hU+1z
-         NX6BDLgPfuqHA3+7FGJ9N/GP13Y9GtVkCrcCVGEpJWNT0x+urxLz3/LMsdGC/oBa6h
-         46iqAXfk+mjIA==
-Date:   Wed, 8 Dec 2021 18:36:08 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: sched: gred: potential dereference of null pointer
-Message-ID: <20211208183608.27852c15@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211209021346.2004600-1-jiasheng@iscas.ac.cn>
-References: <20211209021346.2004600-1-jiasheng@iscas.ac.cn>
+        s=k20201202; t=1639017608;
+        bh=F5gwZkpKQ0e3/OpRF6BpfUQQwwIuQH/TApGn7kHWp3E=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=jxoHB653VwuEV4TUAb6PGXXlWbGj7BJJ0IFFAEhKJY1i9usNSgd8MRlF7S9Jjn825
+         dA/LrO8p+a2OOD99jGzD4A/2qaHVmRG620BZb58xWphPzwpjpcGbemWg+1DYNNhkY0
+         RT4NHJbAhheBxAnaCcVGw0nyczId/ITW1W5CEqSQBgXOLIehb/u59zlES6CqZj/ZHM
+         gd2iDOvrh0nUMnxLevCVFb2BWwD/Mh56zjQ8df6nh1JqiX8Aq2/yXOUS5upDUMbxql
+         kOQA+j0/5rEcaVDeIWvcXRQ4PzXX7vbd6T+TO1YVTQvjSLxFMfvE86cMR0PA/ZxQOY
+         xcR1jb7LWrsFQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 8F99660A39;
+        Thu,  9 Dec 2021 02:40:08 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v5 net 1/1] net: mvpp2: fix XDP rx queues registering
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163901760858.2130.12295890768510315552.git-patchwork-notify@kernel.org>
+Date:   Thu, 09 Dec 2021 02:40:08 +0000
+References: <20211207143423.916334-1-louis.amas@eho.link>
+In-Reply-To: <20211207143423.916334-1-louis.amas@eho.link>
+To:     Louis Amas <louis.amas@eho.link>
+Cc:     mw@semihalf.com, linux@armlinux.org.uk, davem@davemloft.net,
+        kuba@kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        hawk@kernel.org, john.fastabend@gmail.com, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        kpsingh@kernel.org, mcroce@microsoft.com,
+        emmanuel.deloget@eho.link, brouer@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu,  9 Dec 2021 10:13:46 +0800 Jiasheng Jiang wrote:
-> The return value of kzalloc() needs to be checked.
-> To avoid use of null pointer in gred_change_vq() in case
-> of the failure of alloc.
+Hello:
+
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Tue,  7 Dec 2021 15:34:22 +0100 you wrote:
+> The registration of XDP queue information is incorrect because the
+> RX queue id we use is invalid. When port->id == 0 it appears to works
+> as expected yet it's no longer the case when port->id != 0.
 > 
-> Fixes: 869aa41044b0 ("sch_gred: prefer GFP_KERNEL allocations")
-> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+> The problem arised while using a recent kernel version on the
+> MACCHIATOBin. This board has several ports:
+>  * eth0 and eth1 are 10Gbps interfaces ; both ports has port->id == 0;
+>  * eth2 is a 1Gbps interface with port->id != 0.
+> 
+> [...]
 
-I don't see how. Please explain in more detail. gred_change_vq() gets 
-a pointer to a pointer and checks if its values is NULL.
+Here is the summary with links:
+  - [v5,net,1/1] net: mvpp2: fix XDP rx queues registering
+    https://git.kernel.org/netdev/net/c/a50e659b2a1b
 
-> diff --git a/net/sched/sch_gred.c b/net/sched/sch_gred.c
-> index f4132dc25ac0..c0d355281baf 100644
-> --- a/net/sched/sch_gred.c
-> +++ b/net/sched/sch_gred.c
-> @@ -697,6 +697,8 @@ static int gred_change(struct Qdisc *sch, struct nlattr *opt,
->  	}
->  
->  	prealloc = kzalloc(sizeof(*prealloc), GFP_KERNEL);
-> +	if (!prealloc)
-> +		return -ENOMEM;
->  	sch_tree_lock(sch);
->  
->  	err = gred_change_vq(sch, ctl->DP, ctl, prio, stab, max_P, &prealloc,
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
