@@ -2,89 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D1C246EC6E
-	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 17:00:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8877646EC73
+	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 17:01:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239905AbhLIQDq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Dec 2021 11:03:46 -0500
-Received: from sin.source.kernel.org ([145.40.73.55]:51674 "EHLO
-        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235371AbhLIQDq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 11:03:46 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 5B79CCE26C5;
-        Thu,  9 Dec 2021 16:00:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 861F2C004DD;
-        Thu,  9 Dec 2021 16:00:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1639065609;
-        bh=b2oJrwonEquCfIzXhozEbw55cqkLK2BkARfn7t/jLGs=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Q7OmcZsAKmTZrQA11oPIbHVB3Y7ftoIjrrW/J5trKZ9+xrmBDHvl1/oZn65a6Pw7A
-         IjylmQW0R8TcTWwrNNA3cc90rrzXANF6ulpoalA/hOqXzOaop272DagU9f7E5F6M3N
-         Z9yOu32l8/cjb9MIJ5MAa5+Ht5BRoaczRuOkqzM2iv2nodSiI72QGeHHgV/L7vaks1
-         A53Lvw4pPQDaLo8TjEaqR9ON1cgxBF9Ib8tonyo47JsqXQ2C80ZLTqVG/nezixDm1U
-         nbbIuouvQhlkMsNBBrYLQxFRnnQizrv1Tz/AlOBu/PR3b9Y/FxDgjobwO6bSHcg2B1
-         K8kxZQ96RCCgQ==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 717EF60A54;
-        Thu,  9 Dec 2021 16:00:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S235428AbhLIQFY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Dec 2021 11:05:24 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:49974 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233176AbhLIQFY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 11:05:24 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1639065710;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=DMOLQnLQOQwX+LhsWwxzYnmW04C3MxXMPmF4Qj3Bnm4=;
+        b=Si4ps0WFk9zKj2f494fUqIURMPUXUHrwgyznICYSsc7pBgYVTnb0m/bSsuqqbgI4nEgCuq
+        dZtdocF1CchfjJ/QPDmYd84vwX3KaYrPpUTUjLxa2OYz+4Rcf715cu6GqgaR4nP4ZWmbaG
+        6H2IJiR0G/OD8pbIKTqFFjUdxLCKa4s=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-270-iHUpWXrYPiahRUHtN23qZA-1; Thu, 09 Dec 2021 11:01:48 -0500
+X-MC-Unique: iHUpWXrYPiahRUHtN23qZA-1
+Received: by mail-ed1-f70.google.com with SMTP id v22-20020a50a456000000b003e7cbfe3dfeso5658242edb.11
+        for <netdev@vger.kernel.org>; Thu, 09 Dec 2021 08:01:45 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=DMOLQnLQOQwX+LhsWwxzYnmW04C3MxXMPmF4Qj3Bnm4=;
+        b=e0QBRAMLyJcXWWnEUI1UjG6w4nxlTwiDGy0Yx7Pxa8TLAT4BeFGPn5x8ONzhn4IqnM
+         vNyZlI3FsfOgXa+DeteTYbtdsSKDOqeX9AVTXuFupgVpf0eKUTyxXBKHsdEnpfMxw9Wl
+         IKog6D490cpUQLRami//xSoY8oO02AspImDwcSc1UaMy2ONKFiOQi8Py+BGpDZ2YKqQ1
+         NCcIXEW2KdKevLXJwPXDfh6HZX7gqAtJuVKEuRnu4xfNGKL4PJgRFGg7Pt+oyf8xvECa
+         joXwzTjMyLK3EFtaeBUwuhazhKJMtZ/GhuXrc9bBwTuRVPYtSJi6Uep8xxzuA35ozAWR
+         uysQ==
+X-Gm-Message-State: AOAM5302T5KPEhfIdztjxmgR7HdAOlCs4q43Mcjrju0jWKMyaFvmmW48
+        JYaQLoQCL8LNSxJlvGyM4+8Mtn2mOPTrrAKsxb9nAa06GHg8rsNxmA7fIMQpe/4SyFlAvjG0hKb
+        BVtfiYToWJmI+qC4X
+X-Received: by 2002:a50:d543:: with SMTP id f3mr29416768edj.56.1639065704839;
+        Thu, 09 Dec 2021 08:01:44 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwylutzyFvKj5zJNOCt6IH1BS0Ay01kR/7iIdF3/D51uHG8DQC8wvoSNftLuhffs4oCBeqY+w==
+X-Received: by 2002:a50:d543:: with SMTP id f3mr29416705edj.56.1639065704434;
+        Thu, 09 Dec 2021 08:01:44 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id dp16sm184689ejc.34.2021.12.09.08.01.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Dec 2021 08:01:43 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 0A822180471; Thu,  9 Dec 2021 17:01:42 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     John Fastabend <john.fastabend@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: RE: [PATCH bpf-next 0/8] Add support for transmitting packets using
+ XDP in bpf_prog_run()
+In-Reply-To: <61b153ad856bb_9795720857@john.notmuch>
+References: <20211202000232.380824-1-toke@redhat.com>
+ <61b153ad856bb_9795720857@john.notmuch>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Thu, 09 Dec 2021 17:01:41 +0100
+Message-ID: <871r2lydga.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] nfc: fix segfault in nfc_genl_dump_devices_done
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163906560946.14007.9068116924167275493.git-patchwork-notify@kernel.org>
-Date:   Thu, 09 Dec 2021 16:00:09 +0000
-References: <20211208182742.340542-1-tadeusz.struk@linaro.org>
-In-Reply-To: <20211208182742.340542-1-tadeusz.struk@linaro.org>
-To:     Tadeusz Struk <tadeusz.struk@linaro.org>
-Cc:     netdev@vger.kernel.org, krzysztof.kozlowski@canonical.com,
-        davem@davemloft.net, kuba@kernel.org, stable@vger.kernel.org,
-        syzbot+f9f76f4a0766420b4a02@syzkaller.appspotmail.com
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+John Fastabend <john.fastabend@gmail.com> writes:
 
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+> Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+>> This series adds support for transmitting packets using XDP in
+>> bpf_prog_run(), by enabling the xdp_do_redirect() callback so XDP progra=
+ms
+>> can perform "real" redirects to devices or maps, using an opt-in flag wh=
+en
+>> executing the program.
+>>=20
+>> The primary use case for this is testing the redirect map types and the
+>> ndo_xdp_xmit driver operation without generating external traffic. But it
+>> turns out to also be useful for creating a programmable traffic generato=
+r.
+>> The last patch adds a sample traffic generator to bpf/samples, which
+>> can transmit up to 11.5 Mpps/core on my test machine.
+>>=20
+>> To transmit the frames, the new mode instantiates a page_pool structure =
+in
+>> bpf_prog_run() and initialises the pages with the data passed in by
+>> userspace. These pages can then be redirected using the normal redirecti=
+on
+>> mechanism, and the existing page_pool code takes care of returning and
+>> recycling them. The setup is optimised for high performance with a high
+>> number of repetitions to support stress testing and the traffic generator
+>> use case; see patch 6 for details.
+>>=20
+>> The series is structured as follows: Patches 1-2 adds a few features to
+>> page_pool that are needed for the usage in bpf_prog_run(). Similarly,
+>> patches 3-5 performs a couple of preparatory refactorings of the XDP
+>> redirect and memory management code. Patch 6 adds the support to
+>> bpf_prog_run() itself, patch 7 adds a selftest, and patch 8 adds the
+>> traffic generator example to samples/bpf.
+>
+> Overall looks pretty good. Couple questions in the series though.
 
-On Wed,  8 Dec 2021 10:27:42 -0800 you wrote:
-> When kmalloc in nfc_genl_dump_devices() fails then
-> nfc_genl_dump_devices_done() segfaults as below
-> 
-> KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f]
-> CPU: 0 PID: 25 Comm: kworker/0:1 Not tainted 5.16.0-rc4-01180-g2a987e65025e-dirty #5
-> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-6.fc35 04/01/2014
-> Workqueue: events netlink_sock_destruct_work
-> RIP: 0010:klist_iter_exit+0x26/0x80
-> Call Trace:
-> <TASK>
-> class_dev_iter_exit+0x15/0x20
-> nfc_genl_dump_devices_done+0x3b/0x50
-> genl_lock_done+0x84/0xd0
-> netlink_sock_destruct+0x8f/0x270
-> __sk_destruct+0x64/0x3b0
-> sk_destruct+0xa8/0xd0
-> __sk_free+0x2e8/0x3d0
-> sk_free+0x51/0x90
-> netlink_sock_destruct_work+0x1c/0x20
-> process_one_work+0x411/0x710
-> worker_thread+0x6fd/0xa80
-> 
-> [...]
+Yay! Thank you for the review! Will reply to each of those...
 
-Here is the summary with links:
-  - nfc: fix segfault in nfc_genl_dump_devices_done
-    https://git.kernel.org/netdev/net/c/fd79a0cbf0b2
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+-Toke
 
