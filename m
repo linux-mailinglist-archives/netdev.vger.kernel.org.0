@@ -2,104 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EFC2A46DF5B
-	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 01:18:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FF6E46DF5F
+	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 01:21:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241444AbhLIAW1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 19:22:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36760 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238337AbhLIAWX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 19:22:23 -0500
-Received: from mail-ot1-x331.google.com (mail-ot1-x331.google.com [IPv6:2607:f8b0:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC7F2C061746
-        for <netdev@vger.kernel.org>; Wed,  8 Dec 2021 16:18:50 -0800 (PST)
-Received: by mail-ot1-x331.google.com with SMTP id i5-20020a05683033e500b0057a369ac614so4486652otu.10
-        for <netdev@vger.kernel.org>; Wed, 08 Dec 2021 16:18:50 -0800 (PST)
+        id S241457AbhLIAZY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 19:25:24 -0500
+Received: from smtp-fw-80006.amazon.com ([99.78.197.217]:15482 "EHLO
+        smtp-fw-80006.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238328AbhLIAZY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 19:25:24 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=vx8Ci18Bq6F4v668u+ZjVgV2godlqkz2vFb6FDo/wlo=;
-        b=Jg0M8owlwRhSYrROnN7NUDMr/KUUiXQilO6dp8Zp0pm+VtX8lwhTXVusq0ZiX9tMc3
-         lFUIbH8pWV37oariZEJ+fHPQcnhv0gMz5NLOYJ+CMwXX9i2C/G4zO7/Uttp9w9d8wJO7
-         f4HSVTt2VG8Bw/FADlYXgDKwVsejB2r7ZVjwpU8Ry+HMLCXHSxXR+9qwsdP3bDsQ/i9c
-         5gO/4EPiwTvgH9ke6k3VbUyZ1nN93XhxyEbMfh+Za8cj+W5UXSyquHR63nOa2EaT1j8h
-         /5JGmnSi8c5m6J1s3ICm+8Lxe46ajXi8STTVCkTyCIGH+DzWXB5i3vpFyAYqW26Uv3xm
-         Xevw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=vx8Ci18Bq6F4v668u+ZjVgV2godlqkz2vFb6FDo/wlo=;
-        b=qri2GOc7yAcCcTcJPyA38NeR340p9JrkWzkTj0lcbHVpwBWM1x98M76/ZV+XK51Wxt
-         Tv1nzZgSb3LsUfngLy8uo14m1ySaTFAv3OSuetyQCc/5+CMCjwWKjAt33RKv2arMmZhi
-         djc4BXvAM1M7tyB2G52Lq8/SCrwdx1NjdyBWL7r6L2IsB30Pw32GK+Iv1bAmtwTcCj5+
-         tk2NFr1tlyt15XbZNckm6DGbbXty//yOoB84cTjydcFLmGw+YC1TyaL+ElQssupXNMcp
-         gko4FBuZWHrkDZOZiu+o6F+ooCzc0nvBlwgEP3JM4/6jaxofalhw+5T8MLpyLBhxBNAd
-         TvAw==
-X-Gm-Message-State: AOAM533nvd84gGumlvC74JgVG9YhXeE52MdpvrKwwSdgK54edEdBW4r4
-        Ql9D/PZwQe45ZH0gLncuBEk=
-X-Google-Smtp-Source: ABdhPJysfVgX/vcuqSSkZcMlxTls6cJHAXA29w9rXzhtlKi4Vul0mINIftWa3FXZKfnbyl5qRmHGsQ==
-X-Received: by 2002:a9d:868:: with SMTP id 95mr2537887oty.211.1639009130232;
-        Wed, 08 Dec 2021 16:18:50 -0800 (PST)
-Received: from [172.16.0.2] ([8.48.134.30])
-        by smtp.googlemail.com with ESMTPSA id v19sm757591ott.13.2021.12.08.16.18.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 08 Dec 2021 16:18:50 -0800 (PST)
-Message-ID: <7ae281fa-3d05-542f-941c-ba86bd35c31e@gmail.com>
-Date:   Wed, 8 Dec 2021 17:18:48 -0700
+  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
+  s=amazon201209; t=1639009312; x=1670545312;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=2CMQQwpaopL/QR91Ql7V7wxFbW/DinxEIM0seiMu5Js=;
+  b=AthLZON/xxuq0ORLm5gvoqm3lT0yHj5u1wTqP1hbQ+OgJuhRCR6YDGoD
+   aXJB2wO4aWFSb89iTShqaKmRprFDO8144MmTrTpHFH2IMyJSgDnIiRQl3
+   V+aoYCLObMeT2yTPMDVcYBXI+RxIeOloAZ5meFBL0YRwQMp3hyg7PXrYP
+   E=;
+X-IronPort-AV: E=Sophos;i="5.88,190,1635206400"; 
+   d="scan'208";a="47197496"
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-iad-1d-8ac79c09.us-east-1.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-80006.pdx80.corp.amazon.com with ESMTP; 09 Dec 2021 00:21:51 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-iad-1d-8ac79c09.us-east-1.amazon.com (Postfix) with ESMTPS id F01758143C;
+        Thu,  9 Dec 2021 00:21:49 +0000 (UTC)
+Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.26; Thu, 9 Dec 2021 00:21:48 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.161.183) by
+ EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.26; Thu, 9 Dec 2021 00:21:45 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+To:     <edumazet@google.com>
+CC:     <benh@amazon.com>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <kuni1840@gmail.com>, <kuniyu@amazon.co.jp>,
+        <netdev@vger.kernel.org>
+Subject: Re: [PATCH net] tcp: Remove sock_owned_by_user() test in tcp_child_process().
+Date:   Thu, 9 Dec 2021 09:21:42 +0900
+Message-ID: <20211209002142.36995-1-kuniyu@amazon.co.jp>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <CANn89iL+YWbQDCTQU-D1nU4EePv07EyHvMPjFPkpH1ELyzg5MA@mail.gmail.com>
+References: <CANn89iL+YWbQDCTQU-D1nU4EePv07EyHvMPjFPkpH1ELyzg5MA@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.3.2
-Subject: Re: [PATCH net-next v5] rtnetlink: Support fine-grained netdevice
- bulk deletion
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Lahav Schlesinger <lschlesinger@drivenets.com>,
-        netdev@vger.kernel.org, nikolay@nvidia.com
-References: <20211205093658.37107-1-lschlesinger@drivenets.com>
- <e5d8a127-fc98-4b3d-7887-a5398951a9a0@gmail.com>
- <20211208214711.zr4ljxqpb5u7z3op@kgollan-pc>
- <05fe0ea9-56ba-9248-fa05-b359d6166c9f@gmail.com>
- <20211208160405.18c7d30f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <20211208160405.18c7d30f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.161.183]
+X-ClientProxiedBy: EX13D03UWC001.ant.amazon.com (10.43.162.136) To
+ EX13D04ANC001.ant.amazon.com (10.43.157.89)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/8/21 5:04 PM, Jakub Kicinski wrote:
-> On Wed, 8 Dec 2021 16:43:28 -0700 David Ahern wrote:
->> On 12/8/21 2:47 PM, Lahav Schlesinger wrote:
->>> No visible changes from what I saw, this API is as fast as group
->>> deletion. Maybe a few tens of milliseconds slower, but it's lost in the
->>> noise.
->>> I'll run more thorough benchmarks to get to a more conclusive conclusion.
->>>
->>> Also just pointing out that the sort will be needed even if we pass an
->>> array (IFLA_IFINDEX_LIST) instead.
->>> Feels like CS 101, but do you have a better approach for detecting
->>> duplicates in an array? I imagine a hash table will be slower as it will
->>> need to allocate a node object for each device (assuming we don't want
->>> to add a new hlist_node to 'struct net_device' just for this)  
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 8 Dec 2021 10:30:49 -0800
+> On Tue, Dec 7, 2021 at 9:16 PM Kuniyuki Iwashima <kuniyu@amazon.co.jp> wrote:
 >>
->> I think marking the dev's and then using a delete loop is going to be
->> the better approach - avoid the sort and duplicate problem. I use that
->> approach for nexthop deletes:
+>> While creating a child socket, before v2.3.41, we used to call
+>> bh_lock_sock() later than now; it was called just before
+>> tcp_rcv_state_process().  The full socket was put into an accept queue
+>> and exposed to other CPUs before bh_lock_sock() so that process context
+>> might have acquired the lock by then.  Thus, we had to check if any
+>> process context was accessing the socket before tcp_rcv_state_process().
 >>
->> https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/tree/net/ipv4/nexthop.c#n1849
+>> We can see this code in tcp_v4_do_rcv() of v2.3.14. [0]
 >>
->> Find a hole in net_device struct in an area used only for control path
->> and add 'bool grp_delete' (or a 1-bit hole). Mark the devices on pass
->> and delete them on another.
+>>         if (sk->state == TCP_LISTEN) {
+>>                 struct sock *nsk;
+>>
+>>                 nsk = tcp_v4_hnd_req(sk, skb);
+>>                 ...
+>>                 if (nsk != sk) {
+>>                         bh_lock_sock(nsk);
+>>                         if (nsk->lock.users != 0) {
+>>                                 ...
+>>                                 sk_add_backlog(nsk, skb);
+>>                                 bh_unlock_sock(nsk);
+>>                                 return 0;
+>>                         }
+>>                         ...
+>>                 }
+>>         }
+>>
+>>         if (tcp_rcv_state_process(sk, skb, skb->h.th, skb->len))
+>>                 goto reset;
+>>
+>> However, in 2.3.15, this lock.users test was replaced with BUG_TRAP() by
+>> mistake. [1]
+>>
+>>                 if (nsk != sk) {
+>>                         ...
+>>                         BUG_TRAP(nsk->lock.users == 0);
+>>                         ...
+>>                         ret = tcp_rcv_state_process(nsk, skb, skb->h.th, skb->len);
+>>                         ...
+>>                         bh_unlock_sock(nsk);
+>>                         ...
+>>                         return 0;
+>>                 }
+>>
+>> Fortunately, the test was back in 2.3.41. [2]  Then, related code was
+>> packed into tcp_child_process() with comments, which remains until now.
+>>
+>> What is interesting in v2.3.41 is that the bh_lock_sock() was moved to
+>> tcp_create_openreq_child() and placed just after sock_lock_init().
+>> Thus, the lock is never acquired until tcp_rcv_state_process() by process
+>> contexts.  The bh_lock_sock() is now in sk_clone_lock() and the rule does
+>> not change.
+>>
+>> As of now, alas, it is not possible to reach the commented path by the
+>> change.  Let's remove the remnant of the old days.
+>>
+>> [0]: https://cdn.kernel.org/pub/linux/kernel/v2.3/linux-2.3.14.tar.gz
+>> [1]: https://cdn.kernel.org/pub/linux/kernel/v2.3/patch-2.3.15.gz
+>> [2]: https://cdn.kernel.org/pub/linux/kernel/v2.3/patch-2.3.41.gz
+>>
+>> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
 > 
-> If we want to keep state in the netdev itself we can probably piggy
-> back on dev->unreg_list. It should be initialized to empty and not
-> touched unless device goes thru unregister.
+> I do not think this patch qualifies as a stable candidate.
 > 
+> At best this is a cleanup.
+> 
+> At worst this could add a bug.
+> 
+> I would advise adding a WARN_ON_ONCE() there for at least one release
+> so that syzbot can validate for you if this is dead code or not.
 
-isn't that used when the delink function calls unregister_netdevice_queue?
+Thanks for review.
+I will add a WARN_ON_ONCE() and respin for net-next.
+
+> 
+> TCP_SYN_RECV is not TCP_NEW_SYN_RECV
+
+Right, TCP_SYN_RECV is not the case.
+"While creating a child socket," was a bit misleading.
+I will clarify that is for TCP_NEW_SYN_RECV case and SYN cookie case.
+
+
+> 
+> Thanks.
+> 
+>> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+>> ---
+>>  net/ipv4/tcp_minisocks.c | 18 ++++++------------
+>>  1 file changed, 6 insertions(+), 12 deletions(-)
+>>
+>> diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
+>> index 7c2d3ac2363a..b4a1f8728093 100644
+>> --- a/net/ipv4/tcp_minisocks.c
+>> +++ b/net/ipv4/tcp_minisocks.c
+>> @@ -833,18 +833,12 @@ int tcp_child_process(struct sock *parent, struct sock *child,
+>>         sk_mark_napi_id_set(child, skb);
+>>
+>>         tcp_segs_in(tcp_sk(child), skb);
+>> -       if (!sock_owned_by_user(child)) {
+>> -               ret = tcp_rcv_state_process(child, skb);
+>> -               /* Wakeup parent, send SIGIO */
+>> -               if (state == TCP_SYN_RECV && child->sk_state != state)
+>> -                       parent->sk_data_ready(parent);
+>> -       } else {
+>> -               /* Alas, it is possible again, because we do lookup
+>> -                * in main socket hash table and lock on listening
+>> -                * socket does not protect us more.
+>> -                */
+>> -               __sk_add_backlog(child, skb);
+>> -       }
+>> +
+>> +       ret = tcp_rcv_state_process(child, skb);
+>> +
+>> +       /* Wakeup parent, send SIGIO */
+>> +       if (state == TCP_SYN_RECV && child->sk_state != state)
+>> +               parent->sk_data_ready(parent);
+>>
+>>         bh_unlock_sock(child);
+>>         sock_put(child);
+>> --
+>> 2.30.2
+>>
