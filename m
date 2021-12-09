@@ -2,70 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C287546F57D
-	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 22:00:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 818FC46F5D6
+	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 22:23:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232319AbhLIVEK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Dec 2021 16:04:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43686 "EHLO
+        id S231853AbhLIV0g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Dec 2021 16:26:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231410AbhLIVEJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 16:04:09 -0500
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF758C061746
-        for <netdev@vger.kernel.org>; Thu,  9 Dec 2021 13:00:35 -0800 (PST)
-Received: by mail-pj1-x102b.google.com with SMTP id v23so5342932pjr.5
-        for <netdev@vger.kernel.org>; Thu, 09 Dec 2021 13:00:35 -0800 (PST)
+        with ESMTP id S229446AbhLIV0g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 16:26:36 -0500
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B011C061746
+        for <netdev@vger.kernel.org>; Thu,  9 Dec 2021 13:23:02 -0800 (PST)
+Received: by mail-pl1-x62c.google.com with SMTP id z6so4860202plk.6
+        for <netdev@vger.kernel.org>; Thu, 09 Dec 2021 13:23:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=BJPWo58tKlQXm4vRD5vnXhZrKIbn/SXsA1N14vuJVFE=;
-        b=ZSHRIG9jIa1i4tDYilvjhtcmiT/VpRWrRgHhBsks7KqkFvsQ6/QoFNtCkyeA++sW+t
-         gsBbCavOOY+ENcNZguK2UxV7kRkoYxU+JDCBbtYzB4tEhgvoAruYQsgm36t0TsLn197q
-         2fqxOb3TlahnC2J0cji5v6ahF3/q8jo6ZL6pxNPfWSV0XS/hMdpjy1ZnonVkcZkLoczu
-         PNpQOGEGznn6zuhBXhSTOYPEf2oTzKRhND89XE0TgoMs4vaHjY1pQv+qwUr2qGRyihJb
-         F8UYyKmKamqCdonKYh0pPciiwTvaQjk+7gsl+LpOX7/1xdcdkIjrypPOXm/2f60bfYy8
-         deFw==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=sibIdkupC+dr/2zVEuRruDt5lqH4tvD0m4FeVXUv6os=;
+        b=J5rYdCvYu00w3ocZGut2XFpRjMKmYZUfGu7yRwTFT9nKiyXY4VvFjNNp+bqkItJRLF
+         SORNNYh6B67zVb1BFLO74xz27ChrFmEhUVL4Q0Abu/kKtzDOUuRJOV3fqkF566pFBtNj
+         h8nIfgDj8yIBv/vhAzZRSrJLtRfBjoobq3sbIn+orjVfTKETGJk1pHFE/vyGjLZJLnHC
+         nUaU4HAEqUeK9RpJa46LJDIPOxE7eUWWC85ymy3qducTzqWeC0VmiGSndKsPG+cNa8Ni
+         a7wm1iB91sbe5Lmpz7cvJsY+JWpC2/9A4GA4Uk4CaB8bgvf7vuyiBtJUuoCzrXfPur6W
+         lNoQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=BJPWo58tKlQXm4vRD5vnXhZrKIbn/SXsA1N14vuJVFE=;
-        b=OtlzGZnCAAROUmONWoJZk+WhUJjpnsBg1SMTPSP4DF6uFGZ4T0/asXsM6GWGToKUkp
-         oQHHO8ad4mhWk4RmuZf6cBdJA7roATXoT8oI15HYiJ5yHSgjoX7y0cfU2TwSRKnlapT8
-         Ei7HMbh0pSQ0t8h+0CFEd+SbbkT+oeR71hWlBvQCOgM44J25cb+ifkK9zLK6bZQVsiww
-         d5erovYT8BsPnLXOhKaMECfPLdIackYx4glG3HX1UxcnnjwefsniK2/3S8e+7BlCMRr2
-         AdYDr6eslMbOWm3LhTUopSoB/NGrhzcRDumdDAh8cQA7EeuB6Ey9U3MjjrbolH35Nyzd
-         o/Sw==
-X-Gm-Message-State: AOAM531KSQPix1KxWUqXs74NO9jB1mSu1IMlN1dXYbQJJc81KvHBYbJV
-        KgRJ2fzRSwCFtU/THnCiQytb4ZuocEh7kOTtY24=
-X-Google-Smtp-Source: ABdhPJyje60I796R713ql3aIO4gj+2J9U2/DuDeOIBoH0ZCDJSEwQEhc0r9S5slIvJ3OGYL54ycwREBiSp4EQ2OGd60=
-X-Received: by 2002:a17:902:ab8d:b0:143:8d6f:2b52 with SMTP id
- f13-20020a170902ab8d00b001438d6f2b52mr69815406plr.78.1639083635332; Thu, 09
- Dec 2021 13:00:35 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=sibIdkupC+dr/2zVEuRruDt5lqH4tvD0m4FeVXUv6os=;
+        b=5xSaFJytGLaxIY2KU5t1NC87kos+6jD1omvU1ZvKFWSeQpxB96SYep6WBddQl7tixD
+         jbHyN+TSou9/eEN2AAFwZnabYrz9uM7okgtpUXqz/33XfpYx8Aj0jvrUAA4ejDNEYISn
+         rCEzpiNBQfyVZii3FiQMIQMEOS38dTpQS0LjeFYMyyYXLYeuaOYiGPKa1ADk7KQDF86p
+         x4dZA53b4qiHQC9joIm+dItegwDVSBAGgiD+FyGOI4lNXor1TV2QxbcWX9pKFJVAyYRd
+         OxuqJzX/V+KE8jF7gWKF6LIU+t4nOupSgdXD8cg8IrE0cMyvdifwjZaFt2w6RmAAQdqH
+         ruHg==
+X-Gm-Message-State: AOAM532QJ5UocWVSqsbLX3PhhSIvWlQIPk19tK7wQslk041N+XKjHcrk
+        kC+OGixqFK4r5Naxtxjcks+MPS8Snh8=
+X-Google-Smtp-Source: ABdhPJxgxCu8cpsv2LqL9rerFMlWyJ7v/EbJp0ThTMikGYD1VJ+8+XeSdEUsRZXhpp5ckvH+sRr9RQ==
+X-Received: by 2002:a17:90b:4b01:: with SMTP id lx1mr18929493pjb.38.1639084981809;
+        Thu, 09 Dec 2021 13:23:01 -0800 (PST)
+Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id f4sm605660pfg.34.2021.12.09.13.23.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Dec 2021 13:23:01 -0800 (PST)
+Date:   Thu, 9 Dec 2021 13:22:58 -0800
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     netdev@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH net-next 1/2] net_tstamp: add new flag
+ HWTSTAMP_FLAGS_UNSTABLE_PHC
+Message-ID: <20211209212258.GB21819@hoboy.vegasvil.org>
+References: <20211208044224.1950323-1-liuhangbin@gmail.com>
+ <20211208044224.1950323-2-liuhangbin@gmail.com>
+ <20211208152022.GB18344@hoboy.vegasvil.org>
+ <YbGGosXXCvBAJEx4@Laptop-X1>
 MIME-Version: 1.0
-Received: by 2002:a05:6a20:7d8b:b0:5d:5c22:870b with HTTP; Thu, 9 Dec 2021
- 13:00:34 -0800 (PST)
-Reply-To: clmloans9@gmail.com
-From:   MR ANTHONY EDWARD <debraalessii@gmail.com>
-Date:   Thu, 9 Dec 2021 22:00:34 +0100
-Message-ID: <CAM30LitAvZMEeh_7N7cJUpBV-LNwvMrR+G96id-BfacJRzA02A@mail.gmail.com>
-Subject: DARLEHEN ZU 2% BEANTRAGEN
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YbGGosXXCvBAJEx4@Laptop-X1>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=20
-Ben=C3=B6tigen Sie einen Gesch=C3=A4ftskredit oder einen Kredit jeglicher A=
-rt?
-Wenn ja, kontaktieren Sie uns
+On Thu, Dec 09, 2021 at 12:31:30PM +0800, Hangbin Liu wrote:
+> On Wed, Dec 08, 2021 at 07:20:22AM -0800, Richard Cochran wrote:
+> > I guess that the original intent of hwtstamp_config.flags was for user
+> > space to SET flags that it wanted. 
+> > Now this has become a place for drivers to return values back.
+> 
+> I think it's a flag that when uses want phc index of bond.
+> There is no affect for other drivers. It only affect bond interfaces.
+> When this flag set, it means users want to get the info from bond.
+> 
+> Do I missed something?
 
-*Vollst=C3=A4ndiger Name:
-*Ben=C3=B6tigte Menge:
-*Darlehensdauer:
-*Handy:
-*Land:
+No, I simply mean that the input/output direction of the bit in the
+flags should be clear.
+
+- User space will not set this bit, only read it.
+- Drivers may set this bit, but if user sets it, it is an error.
+
+Thanks,
+Richard
