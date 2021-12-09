@@ -2,102 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 55F9C46F3F9
-	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 20:31:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5445A46F40A
+	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 20:35:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230237AbhLITfZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Dec 2021 14:35:25 -0500
-Received: from wout2-smtp.messagingengine.com ([64.147.123.25]:43389 "EHLO
-        wout2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229710AbhLITfY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 14:35:24 -0500
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.west.internal (Postfix) with ESMTP id D36ED3201D29;
-        Thu,  9 Dec 2021 14:31:49 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Thu, 09 Dec 2021 14:31:50 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=+NI5GP
-        6UkM5zGu2Ef2fmeetuNAEpLvERTiKS5bvhQ3M=; b=bSiwuJAjh1Rzw/ExEhzqDW
-        p3SqH12mR7i/ss8eXJN2OQuCQdRPK7jRAb9tlmiD/dpEQcOa31Bn2hMlTOXZzO/D
-        RHah+1y3o6LD+c84ru0r/MAaNTe85PoIHcrIDEIzPkktD1hjYiAHpPcooJVK/70P
-        otcZkOFvAFuG6us2siU6IO+7gSWg69shkQxfMeaJrqdPezW6NfKWRJDhRxsCvUaj
-        +ASh7XZzTNSVLrRk5SUDdPkDg5NrBYS9hhF4TJUs5OrKvx2xDyBlfe0ptepbtH1W
-        t9aSly5c7UbTCEEXbHDFqF7UuonUxuLwkZbCEN453JLG+Vz0zlyZW5A1KTgxv1HA
-        ==
-X-ME-Sender: <xms:pFmyYaNGj_j8L1XX8l_doXIgCNAmAEMaPZHl-fNcm3Wmd-TILuupHQ>
-    <xme:pFmyYY-hsU5_NBfnlMpkUOvt6ZIHKHjUXdH_BRGIduHEBn4dsOnd13YQWY4-wwiJ7
-    7AP-LhDAZzb8Ik>
-X-ME-Received: <xmr:pFmyYRSc_AFTHoJSVJE5A7NhcOHmQ2WtkaewRYk1qinqYstX21H62xlTcUZVdJT8gm9FsAiC_9AmC0bw3P7iifDFCHqopQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvuddrkedtgdduvdehucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
-    gvrhhnpefgvefgveeuudeuffeiffehieffgfejleevtdetueetueffkeevgffgtddugfek
-    veenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivgeptd
-    enucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:pFmyYavYG0xGiZRCmRmiAQy_SQqCoTHRoN1Nky2AYVkkDx6bt2cxbQ>
-    <xmx:pFmyYSenbLCS2oXM3-_s7idSjLMkokapMnQep44J_eW0J3ayXYwt-g>
-    <xmx:pFmyYe3RSieqYXFf0uNrwHsiK0Uv5XHw9_oWr6phKGMJ33_kBjwzTg>
-    <xmx:pVmyYR6PjPyXgp5OgMeABLcD_g_d7a948Nrn7nTAyJlA4oJAILgN2Q>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 9 Dec 2021 14:31:48 -0500 (EST)
-Date:   Thu, 9 Dec 2021 21:31:44 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
-        bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] bpf: return EOPNOTSUPP when JIT is needed and not
- possible
-Message-ID: <YbJZoK+qBEiLAxxM@shredder>
-References: <20211209134038.41388-1-cascardo@canonical.com>
- <61b2536e5161d_6bfb2089@john.notmuch>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <61b2536e5161d_6bfb2089@john.notmuch>
+        id S230506AbhLITjZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Dec 2021 14:39:25 -0500
+Received: from sin.source.kernel.org ([145.40.73.55]:47408 "EHLO
+        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229590AbhLITjX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 14:39:23 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 9D144CE27F4;
+        Thu,  9 Dec 2021 19:35:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 113F7C341CB;
+        Thu,  9 Dec 2021 19:35:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1639078546;
+        bh=3Y6sSFhQC6zE/Ent9Dbju/+ZfZjUqmHxioM8+U3W42U=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=f2WlktgMywCTKzyIIcW2CS6FmU8GJMWn1v1ZLvvhkjI8+QgyuBd+KRy2Pc3F/5FSU
+         dRijOqESZz/F08TOgFMipp3kAFFMq6y6boMXd56AqpEgY2595LvI7JrhVEB/DrlWEE
+         5vNKcdWo5BkI6qDzBtAMcgMMID3FmW47fVWjgfhkTz1uHhDFwtqcQowYUqb4sSIgy/
+         PzreDnftvNnvoUVnvFcet9IJeo5JrXb8QYDIihyEtPwMmJqz7PhK+K9QLmbmXsT3zO
+         dR+B3vTc+atkmj3lIb2Lkl7WqFIBRJNqI1oNniHeaHDUVdOCctfJeHIS2ZcR60iPnS
+         BJdDJtbAHMA3Q==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id EDAEB60A37;
+        Thu,  9 Dec 2021 19:35:45 +0000 (UTC)
+Subject: Re: [GIT PULL] Networking for 5.16-rc5
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20211209172032.610738-1-kuba@kernel.org>
+References: <20211209172032.610738-1-kuba@kernel.org>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20211209172032.610738-1-kuba@kernel.org>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.16-rc5
+X-PR-Tracked-Commit-Id: 04ec4e6250e5f58b525b08f3dca45c7d7427620e
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: ded746bfc94398d2ee9de315a187677b207b2004
+Message-Id: <163907854596.11961.15478565326988801668.pr-tracker-bot@kernel.org>
+Date:   Thu, 09 Dec 2021 19:35:45 +0000
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     torvalds@linux-foundation.org, kuba@kernel.org,
+        davem@davemloft.net, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        linux-can@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 09, 2021 at 11:05:18AM -0800, John Fastabend wrote:
-> Thadeu Lima de Souza Cascardo wrote:
-> > When a CBPF program is JITed and CONFIG_BPF_JIT_ALWAYS_ON is enabled, and
-> > the JIT fails, it would return ENOTSUPP, which is not a valid userspace
-> > error code.  Instead, EOPNOTSUPP should be returned.
-> > 
-> > Fixes: 290af86629b2 ("bpf: introduce BPF_JIT_ALWAYS_ON config")
-> > Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-> > ---
-> >  kernel/bpf/core.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-> > index de3e5bc6781f..5c89bae0d6f9 100644
-> > --- a/kernel/bpf/core.c
-> > +++ b/kernel/bpf/core.c
-> > @@ -1931,7 +1931,7 @@ struct bpf_prog *bpf_prog_select_runtime(struct bpf_prog *fp, int *err)
-> >  		fp = bpf_int_jit_compile(fp);
-> >  		bpf_prog_jit_attempt_done(fp);
-> >  		if (!fp->jited && jit_needed) {
-> > -			*err = -ENOTSUPP;
-> > +			*err = -EOPNOTSUPP;
-> >  			return fp;
-> >  		}
-> >  	} else {
-> > -- 
-> > 2.32.0
-> > 
-> 
-> It seems BPF subsys returns ENOTSUPP in multiple places. This fixes one
-> paticular case and is user facing. Not sure we want to one-off fix them
-> here creating user facing changes over multiple kernel versions. On the
-> fence with this one curious to see what others think. Haven't apps
-> already adapted to the current convention or they don't care?
+The pull request you sent on Thu,  9 Dec 2021 09:20:32 -0800:
 
-Similar issue was discussed in the past. See:
-https://lore.kernel.org/netdev/20191204.125135.750458923752225025.davem@davemloft.net/
+> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.16-rc5
+
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/ded746bfc94398d2ee9de315a187677b207b2004
+
+Thank you!
+
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
