@@ -2,121 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BA8446DFD3
-	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 01:55:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 81E3246DFF3
+	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 02:00:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234196AbhLIA6w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 19:58:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44588 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241817AbhLIA5p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 19:57:45 -0500
-Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA088C061746;
-        Wed,  8 Dec 2021 16:54:12 -0800 (PST)
-Received: by mail-il1-x12e.google.com with SMTP id r2so3857867ilb.10;
-        Wed, 08 Dec 2021 16:54:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=LCcCVooHzvscTtO3fZNQNWs4LX1PgNMEkiJ+TaezqAk=;
-        b=n0o8l0lg6bHBZ0eND2jTi8Vwxke6VYM6+gUIxkephnlFc4WhqrNIX53TURLkwqnyH1
-         w4i9vMzOvFu8SJVDJwBvdd1baoUZu29bCS5Z6Sv+MWVOl11iNV4mhYg7I22N3O0jcF5t
-         M/CoY/twzrnLSfH4tbirp2CeeaioeV1ihqp8ZeacgDVVpNe1Ud3W7K9LI0hUPqPQpbTA
-         PwA/Te39MbwNGXNMd4QLhVpEGpgXvN5LWJ5ysnp6C+GrhvCmdCVQ+Jo9yWXH0vOl22kq
-         BKDFBvoF7ZsovO+lbPkq9EqSyZIZyLfjZyUztR/9UvJQHXmld5ud/dib3ti427a8KF3u
-         U4jg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=LCcCVooHzvscTtO3fZNQNWs4LX1PgNMEkiJ+TaezqAk=;
-        b=yc16lG7d5EGcFYnIJdna7MXX1uT0ZLynsCLp3afaQxQ8LvmA7bUoy+NDD2VqsSlMRl
-         TNdOIGBDesu7r3hndG7m1/E7+JAtuPClpQnNsfjDrW8zvAb8C5I5VAQK5TLyVzXvZoR8
-         pWDWs0P5cXN4hFuJjkRuXR6FQnwtL5FEWbVSVh9Anu6cJOEaTV6IQF72BVjheApit5ul
-         QdEvNqNbVFivzlAe7dXE8eBfItkNoAARpCSJOI/59Gj+64N6AZXcURyRLHWkIpaOM00y
-         Uv/huyVZ5CUp/a6qmYP3Ni4MyoY1YWT/ZZa9ANi/d7tcSA+v/dzKSjBOcFZ3DMa9yzZa
-         b6xw==
-X-Gm-Message-State: AOAM5312II2gZHPt8063Kg9N8T1fP+OS/EJXQcm+gzF8JziQml3BrvZw
-        MBnRjmGHqSsYhqYb/IlXLy0=
-X-Google-Smtp-Source: ABdhPJwpoxkY7Z2mj90VgxwytJ8Y1o6D0NLHc6XLQJJwJOv4bkZYmsVbP4tHDg0aNrQmXaNUGMzxEg==
-X-Received: by 2002:a05:6e02:4c7:: with SMTP id f7mr10956083ils.232.1639011252230;
-        Wed, 08 Dec 2021 16:54:12 -0800 (PST)
-Received: from localhost ([172.243.151.11])
-        by smtp.gmail.com with ESMTPSA id ay13sm3432440iob.37.2021.12.08.16.54.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Dec 2021 16:54:11 -0800 (PST)
-Date:   Wed, 08 Dec 2021 16:54:05 -0800
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Message-ID: <61b153ad856bb_9795720857@john.notmuch>
-In-Reply-To: <20211202000232.380824-1-toke@redhat.com>
-References: <20211202000232.380824-1-toke@redhat.com>
-Subject: RE: [PATCH bpf-next 0/8] Add support for transmitting packets using
- XDP in bpf_prog_run()
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+        id S238300AbhLIBDp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 20:03:45 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:45286 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233885AbhLIBDp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 20:03:45 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E7834B82269
+        for <netdev@vger.kernel.org>; Thu,  9 Dec 2021 01:00:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id A3DE5C341C6;
+        Thu,  9 Dec 2021 01:00:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1639011610;
+        bh=xuUgdui0BmIA+2o8pnH/1KPNJSqyGxL7cVmEgNN/NnY=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Yiyl18PwBSDvCMrZAZI9UWqkd+DYp14cE83bJ8tBIlRX4p+/hiUSmEPZ+qgkdlchw
+         rq/uifBK5X177DSVlH19CnTXQ9314Z3pE9GRk3QKcCwjzU0gpHtHwWl5tzklZNNls7
+         0UmlQH80/NIZ3lf0NCt+yeYE4ZU7pO7I8dUVp1Fi7DFHb0yzV42a/vhFHKjBZpiAcP
+         lphgrhpNL+Kh0Fx4HSkNm80y0szrrLJ6pYQiEPqdaIudy7dzOKfFeXZicTe79YKdvs
+         7lHk/2ME1KL3Rc9G76vIZqBA+8lCL4V5QIl2rpcMZhs4q6noKzEqexkTjnTt1K0SSm
+         Ap6LNBkk5K7Wg==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 8D9AB609D7;
+        Thu,  9 Dec 2021 01:00:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net v2 0/7][pull request] Intel Wired LAN Driver Updates
+ 2021-12-08
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163901161057.25580.18235231892141104375.git-patchwork-notify@kernel.org>
+Date:   Thu, 09 Dec 2021 01:00:10 +0000
+References: <20211208211144.2629867-1-anthony.l.nguyen@intel.com>
+In-Reply-To: <20211208211144.2629867-1-anthony.l.nguyen@intel.com>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Toke H=C3=B8iland-J=C3=B8rgensen wrote:
-> This series adds support for transmitting packets using XDP in
-> bpf_prog_run(), by enabling the xdp_do_redirect() callback so XDP progr=
-ams
-> can perform "real" redirects to devices or maps, using an opt-in flag w=
-hen
-> executing the program.
-> =
+Hello:
 
-> The primary use case for this is testing the redirect map types and the=
+This series was applied to netdev/net.git (master)
+by Tony Nguyen <anthony.l.nguyen@intel.com>:
 
-> ndo_xdp_xmit driver operation without generating external traffic. But =
-it
-> turns out to also be useful for creating a programmable traffic generat=
-or.
-> The last patch adds a sample traffic generator to bpf/samples, which
-> can transmit up to 11.5 Mpps/core on my test machine.
-> =
+On Wed,  8 Dec 2021 13:11:37 -0800 you wrote:
+> This series contains updates to ice driver only.
+> 
+> Yahui adds re-initialization of Flow Director for VF reset.
+> 
+> Paul restores interrupts when enabling VFs.
+> 
+> Dave re-adds bandwidth check for DCBNL and moves DSCP mode check
+> earlier in the function.
+> 
+> [...]
 
-> To transmit the frames, the new mode instantiates a page_pool structure=
- in
-> bpf_prog_run() and initialises the pages with the data passed in by
-> userspace. These pages can then be redirected using the normal redirect=
-ion
-> mechanism, and the existing page_pool code takes care of returning and
-> recycling them. The setup is optimised for high performance with a high=
+Here is the summary with links:
+  - [net,v2,1/7] ice: fix FDIR init missing when reset VF
+    https://git.kernel.org/netdev/net/c/f23ab04dd6f7
+  - [net,v2,2/7] ice: rearm other interrupt cause register after enabling VFs
+    https://git.kernel.org/netdev/net/c/2657e16d8c52
+  - [net,v2,3/7] ice: Fix problems with DSCP QoS implementation
+    https://git.kernel.org/netdev/net/c/6d39ea19b0fb
+  - [net,v2,4/7] ice: ignore dropped packets during init
+    https://git.kernel.org/netdev/net/c/28dc1b86f8ea
+  - [net,v2,5/7] ice: fix choosing UDP header type
+    https://git.kernel.org/netdev/net/c/0e32ff024035
+  - [net,v2,6/7] ice: fix adding different tunnels
+    https://git.kernel.org/netdev/net/c/de6acd1cdd4d
+  - [net,v2,7/7] ice: safer stats processing
+    https://git.kernel.org/netdev/net/c/1a0f25a52e08
 
-> number of repetitions to support stress testing and the traffic generat=
-or
-> use case; see patch 6 for details.
-> =
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-> The series is structured as follows: Patches 1-2 adds a few features to=
 
-> page_pool that are needed for the usage in bpf_prog_run(). Similarly,
-> patches 3-5 performs a couple of preparatory refactorings of the XDP
-> redirect and memory management code. Patch 6 adds the support to
-> bpf_prog_run() itself, patch 7 adds a selftest, and patch 8 adds the
-> traffic generator example to samples/bpf.
-
-Overall looks pretty good. Couple questions in the series though.
-
-Thanks!
-John=
