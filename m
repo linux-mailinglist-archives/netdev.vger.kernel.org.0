@@ -2,47 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 607C246E038
-	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 02:23:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DFC846E03D
+	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 02:28:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231181AbhLIB0m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 20:26:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51260 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229520AbhLIB0m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 20:26:42 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 720D7C061746;
-        Wed,  8 Dec 2021 17:23:09 -0800 (PST)
+        id S231181AbhLIBb6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 20:31:58 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:38748 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235075AbhLIBb5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 20:31:57 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id BCB4ACE2331;
-        Thu,  9 Dec 2021 01:23:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E04AC00446;
-        Thu,  9 Dec 2021 01:23:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8593AB82317;
+        Thu,  9 Dec 2021 01:28:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDEA8C00446;
+        Thu,  9 Dec 2021 01:28:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1639012985;
-        bh=EGS1FaDteRYlhuhWyVYrG25WcZzElFOzCSjsr/Y8ipE=;
+        s=k20201202; t=1639013302;
+        bh=/FtNUG/WWkxltTH8Nk4Hg0EZ5zdeoQUehhw/YuKjDe8=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=qFW65xA2LuO0ZVGFZstwcZRcKox4eimF8P7HV2lstZUnhhrAuV/ln4zVBCadRemKY
-         ojtY3yBMct6lTugdFczFvaKTLim4eNQbOcRmy48MAks4ZRN69UqpGTkJkTsX1nN04z
-         j8HtYZ/RsPK7xrCVr4nqfTy1mWto+/TzYjQEOJIVMkwU2Q0uYnyqu41d0Pfgccno0W
-         2djurTPGytNfutBbKFcWVAkuR1s0gfz0vaVqBvT4MoLpL+OTkGxwuaHdnZJc2N6TeK
-         DJyk+obaAfwEkRuRYPSrRnI/H40gyNodXqSVP1UB8l3zOhw24onFRR7L/ASoH88P+S
-         eTHYoJN484Vng==
-Date:   Wed, 8 Dec 2021 17:23:03 -0800
+        b=meHP4qR7eJ1h2pUXGK66UVw7o8IEZjcQaCNbqcMYxHGWb9oO3MLUR3tLkAoQV6Gua
+         052V6VDPtFTeIxSeKP9Npe/hrcI5q8wO4r33Ec/k0s8k+Q3PpfbwpViZzmcDRknRsH
+         kQJQkhlMAMHrWRVa4QSFneOxmedcRSIH6D760sZXzJJR6pj3eC0IRO5q1Zc6Akm8gY
+         g6p1A0Z6OnR5P1rmazA/oZEukZtVA6ovrlkucMwiK9qEv/fIDLTJz0FAUliNIrOHJv
+         0fGB+0fELbtYaammYbUV3R+Q8v4eaG1tuxQGYFzxuulU1oMVZrAMP8CWbq2gbAKP+I
+         h9axFJBcB3/kQ==
+Date:   Wed, 8 Dec 2021 17:28:20 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jie2x Zhou <jie2x.zhou@intel.com>
-Cc:     davem@davemloft.net, shuah@kernel.org, dsahern@gmail.com,
-        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org, lkp@intel.com, xinjianx.ma@intel.com,
-        zhijianx.li@intel.com, Philip Li <philip.li@intel.com>,
-        zhoujie <zhoujie2011@fujitsu.com>
-Subject: Re: [PATCH] selftests: net: Correct ping6 expected rc from 2 to 1
-Message-ID: <20211208172303.58ca2706@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211208061518.61668-1-jie2x.zhou@intel.com>
-References: <20211208061518.61668-1-jie2x.zhou@intel.com>
+To:     Ameer Hamza <amhamza.mgc@gmail.com>
+Cc:     kabel@kernel.org, andrew@lunn.ch, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, olteanv@gmail.com, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] net: dsa: mv88e6xxx: error handling for serdes_power
+ functions
+Message-ID: <20211208172820.1f273b3e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211208155809.103089-1-amhamza.mgc@gmail.com>
+References: <20211208164042.6fbcddb1@thinkpad>
+        <20211208155809.103089-1-amhamza.mgc@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -50,14 +47,17 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed,  8 Dec 2021 14:15:18 +0800 Jie2x Zhou wrote:
-> From: zhoujie <zhoujie2011@fujitsu.com>
+On Wed,  8 Dec 2021 20:58:09 +0500 Ameer Hamza wrote:
+> @@ -1507,7 +1510,7 @@ int mv88e6393x_serdes_power(struct mv88e6xxx_chip *chip, int port, int lane,
+>  			    bool on)
+>  {
+>  	u8 cmode = chip->ports[port].cmode;
+> -	int err = 0;
+> +	int err;
+>  
+>  	if (port != 0 && port != 9 && port != 10)
+>  		return -EOPNOTSUPP;
 
-> Signed-off-by: Jie2x Zhou <jie2x.zhou@intel.com>
+This is on top of v1? It doesn't seem to apply, v1 was not merged.
 
-Ah, so you are the same person, I was wondering :)
-
-You need to either drop the From: with the fujitsu address (git commit
---amend --reset-autor) or sign off the patch with the Intel address.
-Right now both your name is spelled differently and the address is
-different so the patch will trigger warnings.
+Also can you please add Fixes tags?
