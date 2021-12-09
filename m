@@ -2,71 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9694646F47A
-	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 21:00:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A1B646F47B
+	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 21:00:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231387AbhLIUDs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Dec 2021 15:03:48 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:42166 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231334AbhLIUDr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 15:03:47 -0500
+        id S231390AbhLIUDt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Dec 2021 15:03:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57926 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231334AbhLIUDt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 15:03:49 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01CC8C061746
+        for <netdev@vger.kernel.org>; Thu,  9 Dec 2021 12:00:15 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E1A1CB8264D
-        for <netdev@vger.kernel.org>; Thu,  9 Dec 2021 20:00:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 91BDBC341CA;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 573BBCE2832
+        for <netdev@vger.kernel.org>; Thu,  9 Dec 2021 20:00:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 7B9C3C341C6;
         Thu,  9 Dec 2021 20:00:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1639080011;
-        bh=k4e5vaMY3Akx9DBxzZH6dqi3LVi0C955ThA3wRlNuRE=;
+        bh=YnNs7az/qTTbTLdtsHA8c/HDbey3m6k2oXgBT+NTBFw=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=spUSXhwda0lPJIn2HK2hx0ChqTnDNgyUFwIxuIqEY00qNFxH3NsGnGAPToGQGXPkm
-         uCKTFMnfyRbSO0wNlpoDT1WNlq+zbxSP7WZWsIXtf4CDXjeHW/onPkhEa9LOnPAg3k
-         v6DGW7pbKlFWRGcW3zLz7t1QS/hNdnMj1l8Bm9CKY2E3HDerz3Ue+itUdbLTOgb4ts
-         fstebIgDiLtSyl8QP53FB8yiTVPKgPUg2+fNfO1eV0mh0VJpbNoKd320zX7GNTanLN
-         eMPD9On68by/kiCzwliq5rbhCN/u+kBKlu4DDZnMuPhgMaBtnyN0h8P8j5R8bFdRtL
-         2u5FJUg1KwrmA==
+        b=oEA35apeb4ygwrav4LktCYXYpdLrcRQuszi7HvgSlZdrgPdftOEJ5lJsGsd68cWz9
+         ofWOMOv9qLH7AllRNig+azGSa9oeNMy8rNk8H+922MbbkQvT7m//GtGRF3VV1VdPDb
+         gjZClzsfppPYtkfOoiuXdAjduGbFp1YZK+MBaCYnyPXaD05BS4YiV2o7XrTYbkQDlE
+         0otExP+lEsis0qap8T++LseXMRVDLyQxqQL3qIb+jK6Y2ngx2GvV2m6MvjfzVJ8wxN
+         pymkW82fut+HUW/nk04JfF34pnZeJjys/Qe5WIHiZ9lZ2qMGEaiZyc6FN9yJYm09yR
+         l8QG9bC9jj5jA==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 6595060BE3;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 466E960A37;
         Thu,  9 Dec 2021 20:00:11 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: phy: prefer 1000baseT over 1000baseKX
+Subject: Re: [PATCH net-next 1/5] net: phylink: add legacy_pre_march2020 indicator
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163908001141.24516.17236728183167042807.git-patchwork-notify@kernel.org>
+Message-Id: <163908001128.24516.3335515439099109879.git-patchwork-notify@kernel.org>
 Date:   Thu, 09 Dec 2021 20:00:11 +0000
-References: <E1muvFO-00F6jY-1K@rmk-PC.armlinux.org.uk>
-In-Reply-To: <E1muvFO-00F6jY-1K@rmk-PC.armlinux.org.uk>
+References: <E1mucmf-00EyCl-KA@rmk-PC.armlinux.org.uk>
+In-Reply-To: <E1mucmf-00EyCl-KA@rmk-PC.armlinux.org.uk>
 To:     Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Cc:     andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
-        netdev@vger.kernel.org, kuba@kernel.org
+Cc:     chris.snook@gmail.com, nbd@nbd.name, f.fainelli@gmail.com,
+        john@phrozen.org, Mark-MC.Lee@mediatek.com, matthias.bgg@gmail.com,
+        sean.wang@mediatek.com, vivien.didelot@gmail.com,
+        olteanv@gmail.com, andrew@lunn.ch, hkallweit1@gmail.com,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (master)
+This series was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Wed, 08 Dec 2021 11:36:30 +0000 you wrote:
-> The PHY settings table is supposed to be sorted by descending match
-> priority - in other words, earlier entries are preferred over later
-> entries.
+On Tue, 07 Dec 2021 15:53:37 +0000 you wrote:
+> Add a boolean to phylink_config to indicate whether a driver has not
+> been updated for the changes in commit 7cceb599d15d ("net: phylink:
+> avoid mac_config calls"), and thus are reliant on the old behaviour.
 > 
-> The order of 1000baseKX/Full and 1000baseT/Full is such that we
-> prefer 1000baseKX/Full over 1000baseT/Full, but 1000baseKX/Full is
-> a lot rarer than 1000baseT/Full, and thus is much less likely to
-> be preferred.
+> We were currently keying the phylink behaviour on the presence of a
+> PCS, but this is sub-optimal for modern drivers that may not have a
+> PCS.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next] net: phy: prefer 1000baseT over 1000baseKX
-    https://git.kernel.org/netdev/net-next/c/f20f94f7f52c
+  - [net-next,1/5] net: phylink: add legacy_pre_march2020 indicator
+    https://git.kernel.org/netdev/net-next/c/3e5b1feccea7
+  - [net-next,2/5] net: dsa: mark DSA phylink as legacy_pre_march2020
+    https://git.kernel.org/netdev/net-next/c/0a9f0794d9bd
+  - [net-next,3/5] net: mtk_eth_soc: mark as a legacy_pre_march2020 driver
+    https://git.kernel.org/netdev/net-next/c/b06515367fac
+  - [net-next,4/5] net: phylink: use legacy_pre_march2020
+    https://git.kernel.org/netdev/net-next/c/001f4261fe4d
+  - [net-next,5/5] net: ag71xx: remove unnecessary legacy methods
+    https://git.kernel.org/netdev/net-next/c/11053047a4af
 
 You are awesome, thank you!
 -- 
