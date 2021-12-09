@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE51F46DF3B
-	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 01:09:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B08046DF3F
+	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 01:09:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241329AbhLIAMc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 19:12:32 -0500
-Received: from mail.netfilter.org ([217.70.188.207]:41744 "EHLO
+        id S241346AbhLIAMe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 19:12:34 -0500
+Received: from mail.netfilter.org ([217.70.188.207]:41748 "EHLO
         mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241327AbhLIAMb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 19:12:31 -0500
+        with ESMTP id S241335AbhLIAMc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 19:12:32 -0500
 Received: from localhost.localdomain (unknown [78.30.32.163])
-        by mail.netfilter.org (Postfix) with ESMTPSA id 9C68F607C3;
-        Thu,  9 Dec 2021 01:06:34 +0100 (CET)
+        by mail.netfilter.org (Postfix) with ESMTPSA id 2F275605BA;
+        Thu,  9 Dec 2021 01:06:35 +0100 (CET)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net 2/7] vrf: don't run conntrack on vrf with !dflt qdisc
-Date:   Thu,  9 Dec 2021 01:08:42 +0100
-Message-Id: <20211209000847.102598-3-pablo@netfilter.org>
+Subject: [PATCH net 3/7] nft_set_pipapo: Fix bucket load in AVX2 lookup routine for six 8-bit groups
+Date:   Thu,  9 Dec 2021 01:08:43 +0100
+Message-Id: <20211209000847.102598-4-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20211209000847.102598-1-pablo@netfilter.org>
 References: <20211209000847.102598-1-pablo@netfilter.org>
@@ -29,135 +29,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+From: Stefano Brivio <sbrivio@redhat.com>
 
-After the below patch, the conntrack attached to skb is set to "notrack" in
-the context of vrf device, for locally generated packets.
-But this is true only when the default qdisc is set to the vrf device. When
-changing the qdisc, notrack is not set anymore.
-In fact, there is a shortcut in the vrf driver, when the default qdisc is
-set, see commit dcdd43c41e60 ("net: vrf: performance improvements for
-IPv4") for more details.
+The sixth byte of packet data has to be looked up in the sixth group,
+not in the seventh one, even if we load the bucket data into ymm6
+(and not ymm5, for convenience of tracking stalls).
 
-This patch ensures that the behavior is always the same, whatever the qdisc
-is.
+Without this fix, matching on a MAC address as first field of a set,
+if 8-bit groups are selected (due to a small set size) would fail,
+that is, the given MAC address would never match.
 
-To demonstrate the difference, a new test is added in conntrack_vrf.sh.
-
-Fixes: 8c9c296adfae ("vrf: run conntrack only in context of lower/physdev for locally generated packets")
-Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Acked-by: Florian Westphal <fw@strlen.de>
-Reviewed-by: David Ahern <dsahern@kernel.org>
+Reported-by: Nikita Yushchenko <nikita.yushchenko@virtuozzo.com>
+Cc: <stable@vger.kernel.org> # 5.6.x
+Fixes: 7400b063969b ("nft_set_pipapo: Introduce AVX2-based lookup implementation")
+Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
+Tested-By: Nikita Yushchenko <nikita.yushchenko@virtuozzo.com>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- drivers/net/vrf.c                             |  8 ++---
- .../selftests/netfilter/conntrack_vrf.sh      | 30 ++++++++++++++++---
- 2 files changed, 30 insertions(+), 8 deletions(-)
+ net/netfilter/nft_set_pipapo_avx2.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/vrf.c b/drivers/net/vrf.c
-index ccf677015d5b..38c2f0dbe795 100644
---- a/drivers/net/vrf.c
-+++ b/drivers/net/vrf.c
-@@ -768,8 +768,6 @@ static struct sk_buff *vrf_ip6_out_direct(struct net_device *vrf_dev,
+diff --git a/net/netfilter/nft_set_pipapo_avx2.c b/net/netfilter/nft_set_pipapo_avx2.c
+index e517663e0cd1..6f4116e72958 100644
+--- a/net/netfilter/nft_set_pipapo_avx2.c
++++ b/net/netfilter/nft_set_pipapo_avx2.c
+@@ -886,7 +886,7 @@ static int nft_pipapo_avx2_lookup_8b_6(unsigned long *map, unsigned long *fill,
+ 			NFT_PIPAPO_AVX2_BUCKET_LOAD8(4,  lt, 4, pkt[4], bsize);
  
- 	skb->dev = vrf_dev;
+ 			NFT_PIPAPO_AVX2_AND(5, 0, 1);
+-			NFT_PIPAPO_AVX2_BUCKET_LOAD8(6,  lt, 6, pkt[5], bsize);
++			NFT_PIPAPO_AVX2_BUCKET_LOAD8(6,  lt, 5, pkt[5], bsize);
+ 			NFT_PIPAPO_AVX2_AND(7, 2, 3);
  
--	vrf_nf_set_untracked(skb);
--
- 	err = nf_hook(NFPROTO_IPV6, NF_INET_LOCAL_OUT, net, sk,
- 		      skb, NULL, vrf_dev, vrf_ip6_out_direct_finish);
- 
-@@ -790,6 +788,8 @@ static struct sk_buff *vrf_ip6_out(struct net_device *vrf_dev,
- 	if (rt6_need_strict(&ipv6_hdr(skb)->daddr))
- 		return skb;
- 
-+	vrf_nf_set_untracked(skb);
-+
- 	if (qdisc_tx_is_default(vrf_dev) ||
- 	    IP6CB(skb)->flags & IP6SKB_XFRM_TRANSFORMED)
- 		return vrf_ip6_out_direct(vrf_dev, sk, skb);
-@@ -998,8 +998,6 @@ static struct sk_buff *vrf_ip_out_direct(struct net_device *vrf_dev,
- 
- 	skb->dev = vrf_dev;
- 
--	vrf_nf_set_untracked(skb);
--
- 	err = nf_hook(NFPROTO_IPV4, NF_INET_LOCAL_OUT, net, sk,
- 		      skb, NULL, vrf_dev, vrf_ip_out_direct_finish);
- 
-@@ -1021,6 +1019,8 @@ static struct sk_buff *vrf_ip_out(struct net_device *vrf_dev,
- 	    ipv4_is_lbcast(ip_hdr(skb)->daddr))
- 		return skb;
- 
-+	vrf_nf_set_untracked(skb);
-+
- 	if (qdisc_tx_is_default(vrf_dev) ||
- 	    IPCB(skb)->flags & IPSKB_XFRM_TRANSFORMED)
- 		return vrf_ip_out_direct(vrf_dev, sk, skb);
-diff --git a/tools/testing/selftests/netfilter/conntrack_vrf.sh b/tools/testing/selftests/netfilter/conntrack_vrf.sh
-index 91f3ef0f1192..8b5ea9234588 100755
---- a/tools/testing/selftests/netfilter/conntrack_vrf.sh
-+++ b/tools/testing/selftests/netfilter/conntrack_vrf.sh
-@@ -150,11 +150,27 @@ EOF
- # oifname is the vrf device.
- test_masquerade_vrf()
- {
-+	local qdisc=$1
-+
-+	if [ "$qdisc" != "default" ]; then
-+		tc -net $ns0 qdisc add dev tvrf root $qdisc
-+	fi
-+
- 	ip netns exec $ns0 conntrack -F 2>/dev/null
- 
- ip netns exec $ns0 nft -f - <<EOF
- flush ruleset
- table ip nat {
-+	chain rawout {
-+		type filter hook output priority raw;
-+
-+		oif tvrf ct state untracked counter
-+	}
-+	chain postrouting2 {
-+		type filter hook postrouting priority mangle;
-+
-+		oif tvrf ct state untracked counter
-+	}
- 	chain postrouting {
- 		type nat hook postrouting priority 0;
- 		# NB: masquerade should always be combined with 'oif(name) bla',
-@@ -171,13 +187,18 @@ EOF
- 	fi
- 
- 	# must also check that nat table was evaluated on second (lower device) iteration.
--	ip netns exec $ns0 nft list table ip nat |grep -q 'counter packets 2'
-+	ip netns exec $ns0 nft list table ip nat |grep -q 'counter packets 2' &&
-+	ip netns exec $ns0 nft list table ip nat |grep -q 'untracked counter packets [1-9]'
- 	if [ $? -eq 0 ]; then
--		echo "PASS: iperf3 connect with masquerade + sport rewrite on vrf device"
-+		echo "PASS: iperf3 connect with masquerade + sport rewrite on vrf device ($qdisc qdisc)"
- 	else
--		echo "FAIL: vrf masq rule has unexpected counter value"
-+		echo "FAIL: vrf rules have unexpected counter value"
- 		ret=1
- 	fi
-+
-+	if [ "$qdisc" != "default" ]; then
-+		tc -net $ns0 qdisc del dev tvrf root
-+	fi
- }
- 
- # add masq rule that gets evaluated w. outif set to veth device.
-@@ -213,7 +234,8 @@ EOF
- }
- 
- test_ct_zone_in
--test_masquerade_vrf
-+test_masquerade_vrf "default"
-+test_masquerade_vrf "pfifo"
- test_masquerade_veth
- 
- exit $ret
+ 			/* Stall */
 -- 
 2.30.2
 
