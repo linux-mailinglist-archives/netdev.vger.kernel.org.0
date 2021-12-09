@@ -2,111 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B02446E0E0
-	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 03:29:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 86F1546E0EA
+	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 03:35:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230120AbhLICd0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 21:33:26 -0500
-Received: from sin.source.kernel.org ([145.40.73.55]:47020 "EHLO
-        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229909AbhLICd0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 21:33:26 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id A5EFACE24A0
-        for <netdev@vger.kernel.org>; Thu,  9 Dec 2021 02:29:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66B5CC00446;
-        Thu,  9 Dec 2021 02:29:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1639016990;
-        bh=ZYIL0348x5kQmaFciKewnc3I03qyTv6OH3VskqIYo9c=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=DKX4+RO9ey2i9xRnWmF759pMrczaUtjrfnmZVI7xLf2LBu9nh0sJOIbSNHVRR6RXN
-         e3creelXasLppEjXtNkyfF0CVfhslmXEurZ4BaGa5W9K3KykvzlIfo3/IAc4d390g5
-         NHXZu5BzUVydDZXmhLanXltY1K4YbGL/yB/AmEzE8OSuRW4ry6Lvec3/QTD3Ed5NBb
-         gwdSeYko3A4DHdn/qRUU4RuXg/HaSuyDKQtP3rYQCNeqiS2u87CNeznL2FVICzYT0q
-         g7w1g5oSA1PTYIymihCdTOMTh0/XSCXXSwck5cF6ay5szHOgfDUvZoLVJ9KuwQZrSN
-         o63xT/xqKEI3A==
-Date:   Wed, 8 Dec 2021 18:29:49 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Qing Wang <wangqing@vivo.com>
-Cc:     Madalin Bucur <madalin.bucur@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH] ethernet: fman: add missing put_device() call in
- mac_probe()
-Message-ID: <20211208182949.69733b8b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <1638881761-3262-1-git-send-email-wangqing@vivo.com>
-References: <1638881761-3262-1-git-send-email-wangqing@vivo.com>
+        id S230221AbhLICjI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 21:39:08 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:46762 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230183AbhLICjI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 8 Dec 2021 21:39:08 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=xvjfcGkDo5VKLzCtT1tmROpEHad8dy2GmeskSllniN4=; b=gW4WZIqWMbpj955cV83NA8iEfR
+        7T2MZwvT6IeoEzguqVxPY5YjN/oznYmJtOzS2f4ZGDmAVdtOWxVF5xKc3801GsN2gO63idHkcW7KG
+        mrhlE+eXWj0liULRX2xxlzxmcEFuKUY8uVDEBAr4SYsmPcZzT9FrG59JO+m+LWNrMQ2c=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mv9HO-00FwZI-GN; Thu, 09 Dec 2021 03:35:30 +0100
+Date:   Thu, 9 Dec 2021 03:35:30 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Wells Lu <wellslutw@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, p.zabel@pengutronix.de,
+        wells.lu@sunplus.com, vincent.shih@sunplus.com
+Subject: Re: [PATCH net-next v4 2/2] net: ethernet: Add driver for Sunplus
+ SP7021
+Message-ID: <YbFrcjO8p5ii1zCG@lunn.ch>
+References: <1638864419-17501-1-git-send-email-wellslutw@gmail.com>
+ <1638864419-17501-3-git-send-email-wellslutw@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1638864419-17501-3-git-send-email-wellslutw@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue,  7 Dec 2021 04:56:00 -0800 Qing Wang wrote:
-> From: Wang Qing <wangqing@vivo.com>
-> 
-> of_find_device_by_node() takes a reference to the embedded struct device 
-> which needs to be dropped when error return.
-> 
-> Add a jump target to fix the exception handling for this 
-> function implementation.
-> 
-> Signed-off-by: Wang Qing <wangqing@vivo.com>
+On Tue, Dec 07, 2021 at 04:06:59PM +0800, Wells Lu wrote:
+> Add driver for Sunplus SP7021 SoC.
 
-The entire mac_dev->port[] handling seems entirely pointless and leaky. 
-Nothing ever reads the mac_dev->port array. We should remove it
-completely.
+I reviewed phy, mdio, ethtool. That all looks good.
 
-> diff --git a/drivers/net/ethernet/freescale/fman/mac.c b/drivers/net/ethernet/freescale/fman/mac.c
-> index d9fc5c4..5180121
-> --- a/drivers/net/ethernet/freescale/fman/mac.c
-> +++ b/drivers/net/ethernet/freescale/fman/mac.c
-> @@ -668,7 +668,7 @@ static int mac_probe(struct platform_device *_of_dev)
->  	if (err) {
->  		dev_err(dev, "failed to read cell-index for %pOF\n", dev_node);
->  		err = -EINVAL;
-> -		goto _return_of_node_put;
-> +		goto _return_of_put_device;
->  	}
->  	/* cell-index 0 => FMan id 1 */
->  	fman_id = (u8)(val + 1);
-> @@ -677,7 +677,7 @@ static int mac_probe(struct platform_device *_of_dev)
->  	if (!priv->fman) {
->  		dev_err(dev, "fman_bind(%pOF) failed\n", dev_node);
->  		err = -ENODEV;
-> -		goto _return_of_node_put;
-> +		goto _return_of_put_device;
->  	}
->  
->  	of_node_put(dev_node);
-> @@ -758,7 +758,7 @@ static int mac_probe(struct platform_device *_of_dev)
->  			dev_err(dev, "of_find_device_by_node(%pOF) failed\n",
->  				dev_node);
->  			err = -EINVAL;
-> -			goto _return_of_node_put;
-> +			goto _return_of_put_device;
->  		}
->  
->  		mac_dev->port[i] = fman_port_bind(&of_dev->dev);
-> @@ -766,7 +766,7 @@ static int mac_probe(struct platform_device *_of_dev)
->  			dev_err(dev, "dev_get_drvdata(%pOF) failed\n",
->  				dev_node);
->  			err = -EINVAL;
-> -			goto _return_of_node_put;
-> +			goto _return_of_put_device;
->  		}
->  		of_node_put(dev_node);
->  	}
-> @@ -863,6 +863,8 @@ static int mac_probe(struct platform_device *_of_dev)
->  
->  	goto _return;
->  
-> +_return_of_put_device:
-> +	put_device(&of_dev->dev);
->  _return_of_node_put:
->  	of_node_put(dev_node);
->  _return_of_get_parent:
+I did not look at any of the packet transfer etc.
 
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+
+    Andrew
