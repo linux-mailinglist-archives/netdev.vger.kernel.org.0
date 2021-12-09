@@ -2,59 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 497B546E074
-	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 02:51:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2003146E07D
+	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 02:53:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237906AbhLIBzU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 20:55:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57630 "EHLO
+        id S238307AbhLIB5J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 20:57:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233346AbhLIBzT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 20:55:19 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 020F3C061746;
-        Wed,  8 Dec 2021 17:51:46 -0800 (PST)
+        with ESMTP id S235054AbhLIB5I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 20:57:08 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 372B6C061746;
+        Wed,  8 Dec 2021 17:53:36 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 74FD8B8236F;
-        Thu,  9 Dec 2021 01:51:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75921C00446;
-        Thu,  9 Dec 2021 01:51:43 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 7185ACE246D;
+        Thu,  9 Dec 2021 01:53:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 284F0C00446;
+        Thu,  9 Dec 2021 01:53:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1639014704;
-        bh=5T0ucDpr39HCf8PypsCLt5HtRmXScmsEPR83rW4e950=;
+        s=k20201202; t=1639014812;
+        bh=eoHKcQX1NP6K4IqIO6Yqp2zmup/tdKRc0vyIl/OQ5rQ=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=RYzHYbDzTs3jYNk+W5eTmiXbOhiozCA41/Erv8HRyDqrnhFPKC9OEd4iZWnpYJUNO
-         pS5lFHtiuHzaxlMwk/1CQfsb6etPcxjqmpqZWs1VXWXxSFncbYzNqaMAiTj+oyVo2k
-         i/Ou7QVxMlbBC7bhxogc21fbJr/e8QJcuoS30iz/+wD0XbJwo9LL6EnGVtd2p0GEzj
-         6hLKL27k+MshR0bsUZjU8orNwQ3rmfrqqw4DFSSBW+Ies3IKq4aIW5qBPf+kVKiGTW
-         W2Jj5UjhNGScILNtxukzyKWA0mBs4OUvTPkNzYK+nTD5R8Sg8yaCnEJcGccy1ECuC9
-         j+uHFjmarYwHA==
-Date:   Wed, 8 Dec 2021 17:51:42 -0800
+        b=FW/gO/NSXfvkWote6KMkZFkMzKqEB3ouMK8MIYfZv/l2Xmj6GZZabyjC6oVyVLHlp
+         iwjFZvK4hhkl51S3/mGrE1UAA8cWwXyZI9hqQQNQN3QAz9MjBL8rUYfiSMuFo9vCUd
+         Q1QJBRQOO5bX6SCRfuvIMST5GTPyUOp1WQWbFPJ0b8Zg4WJx3xB4ZfGr5Zl9x5b5Ns
+         X20y5ctg5RQdc+sp3jypE9HpeTO36/tGnd+wAUyGri4KnDX2sHH998Ez8WMl8GCT1b
+         yGavDdvqGDJzkqQRXZOM3K2IgUFSjEUELvPX5e7DSjysRVUV1J21aIukHVHjvjg2bl
+         m4tzEVs7Dh2QA==
+Date:   Wed, 8 Dec 2021 17:53:31 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Biao Huang <biao.huang@mediatek.com>
-Cc:     <davem@davemloft.net>, Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <srv_heupstream@mediatek.com>, <macpaul.lin@mediatek.com>,
-        <angelogioacchino.delregno@collabora.com>, <dkirjanov@suse.de>
-Subject: Re: [PATCH net-next v7 5/6] stmmac: dwmac-mediatek: add support for
- mt8195
-Message-ID: <20211208175142.1b63afea@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <39aa23e1a48bc36a631b3074af2abfd5d1e2256d.camel@mediatek.com>
-References: <20211208054716.603-1-biao.huang@mediatek.com>
-        <20211208054716.603-6-biao.huang@mediatek.com>
-        <20211208063820.264df62d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <39aa23e1a48bc36a631b3074af2abfd5d1e2256d.camel@mediatek.com>
+To:     <xiayu.zhang@mediatek.com>
+Cc:     <loic.poulain@linaro.org>, <ryazanov.s.a@gmail.com>,
+        <davem@davemloft.net>, <johannes@sipsolutions.net>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <haijun.liu@mediatek.com>, <zhaoping.shu@mediatek.com>,
+        <hw.he@mediatek.com>, <srv_heupstream@mediatek.com>
+Subject: Re: [PATCH] Add Multiple TX/RX Queues Support for WWAN Network
+ Device
+Message-ID: <20211208175331.35661ccd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211208040414.151960-1-xiayu.zhang@mediatek.com>
+References: <20211208040414.151960-1-xiayu.zhang@mediatek.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -62,33 +51,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 9 Dec 2021 09:48:25 +0800 Biao Huang wrote:
-> Sorry for some typo in previous reply, fix it here.
+On Wed, 8 Dec 2021 12:04:14 +0800 xiayu.zhang@mediatek.com wrote:
+> From: Xiayu Zhang <Xiayu.Zhang@mediatek.com>
 > 
-> All these warning lines share a similar semantics:
-> delay_val |= FIELD_PREP(xxx, !!val);
+> This patch adds 2 callback functions get_num_tx_queues() and
+> get_num_rx_queues() to let WWAN network device driver customize its own
+> TX and RX queue numbers. It gives WWAN driver a chance to implement its
+> own software strategies, such as TX Qos.
 > 
-> and, should come from the expansion of FIELD_PREP in
-> include/linux/bitfiled.h:
+> Currently, if WWAN device driver creates default bearer interface when
+> calling wwan_register_ops(), there will be only 1 TX queue and 1 RX queue
+> for the WWAN network device. In this case, driver is not able to enlarge
+> the queue numbers by calling netif_set_real_num_tx_queues() or
+> netif_set_real_num_rx_queues() to take advantage of the network device's
+> capability of supporting multiple TX/RX queues.
 > 
->   FIELD _PREP --> __BF_FILED_CHECK --> "~((_mask) >> __bf_shf(_mask)) &
-> (_val) : 0,"
+> As for additional interfaces of secondary bearers, if userspace service
+> doesn't specify the num_tx_queues or num_rx_queues in netlink message or
+> iproute2 command, there also will be only 1 TX queue and 1 RX queue for
+> each additional interface. If userspace service specifies the num_tx_queues
+> and num_rx_queues, however, these numbers could be not able to match the
+> capabilities of network device.
 > 
-> ===============================================================
-> __BF_FILED_CHECK {
-> ...
->   BUILD_BUG_ON_MSG(__builtin_constant_p(_val) ?           \
->                    ~((_mask) >> __bf_shf(_mask)) & (_val) : 0, \
->                    _pfx "value too large for the field"); \ ...
-> ===============================================================
+> Besides, userspace service is hard to learn every WWAN network device's
+> TX/RX queue numbers.
 > 
-> Should I fix it by converting
->   delay_val |= FIELD_PREP(ETH_DLY_TXC_ENABLE, !!mac_delay->tx_delay);
-> to
->   en_val = !!mac_delay->tx_delay;
->   delay_val |= FIELD_PREP(ETH_DLY_TXC_ENABLE, en_val);
+> In order to let WWAN driver determine the queue numbers, this patch adds
+> below callback functions in wwan_ops:
+>     struct wwan_ops {
+>         unsigned int priv_size;
+>         ...
+>         unsigned int (*get_num_tx_queues)(unsigned int hint_num);
+>         unsigned int (*get_num_rx_queues)(unsigned int hint_num);
+>     };
 > 
-> or other suggestions for these warnings?
+> WWAN subsystem uses the input parameters num_tx_queues and num_rx_queues of
+> wwan_rtnl_alloc() as hint values, and passes the 2 values to the two
+> callback functions. WWAN device driver should determine the actual numbers
+> of network device's TX and RX queues according to the hint value and
+> device's capabilities.
 
-I see, thanks for explaining. The code is fine, we can simply ignore
-this warning IMHO.
+I'll mark it as an RFC in patchwork, there needs to be an in-tree user
+for this code to be merged.
