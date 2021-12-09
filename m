@@ -2,53 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 86F1546E0EA
-	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 03:35:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B34346E0EE
+	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 03:36:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230221AbhLICjI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 21:39:08 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:46762 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230183AbhLICjI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 Dec 2021 21:39:08 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=xvjfcGkDo5VKLzCtT1tmROpEHad8dy2GmeskSllniN4=; b=gW4WZIqWMbpj955cV83NA8iEfR
-        7T2MZwvT6IeoEzguqVxPY5YjN/oznYmJtOzS2f4ZGDmAVdtOWxVF5xKc3801GsN2gO63idHkcW7KG
-        mrhlE+eXWj0liULRX2xxlzxmcEFuKUY8uVDEBAr4SYsmPcZzT9FrG59JO+m+LWNrMQ2c=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mv9HO-00FwZI-GN; Thu, 09 Dec 2021 03:35:30 +0100
-Date:   Thu, 9 Dec 2021 03:35:30 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Wells Lu <wellslutw@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, p.zabel@pengutronix.de,
-        wells.lu@sunplus.com, vincent.shih@sunplus.com
-Subject: Re: [PATCH net-next v4 2/2] net: ethernet: Add driver for Sunplus
- SP7021
-Message-ID: <YbFrcjO8p5ii1zCG@lunn.ch>
-References: <1638864419-17501-1-git-send-email-wellslutw@gmail.com>
- <1638864419-17501-3-git-send-email-wellslutw@gmail.com>
+        id S230249AbhLICjq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 21:39:46 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:35540 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230183AbhLICjp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 21:39:45 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 80585B823AA;
+        Thu,  9 Dec 2021 02:36:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E977BC00446;
+        Thu,  9 Dec 2021 02:36:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1639017370;
+        bh=45tMk4F/MluMy76hTixev2X+GL6EAl4gWxHrb+ZdNe8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=IPm4tzh/h6ly2iJXwyIIwuAwzpO5H8pJWvgFsKuISBuP2VrGstxL1rcZttgYHX7Lm
+         hq8y29fyUPOfzZszSmil/Qz0CRnnNvDL0Z+qvtFwgbWRwOWJs0TLFMUrQS4BsGJBsf
+         mYXo9ZuwtYOYkiK35nwu5jI1Sc1o/T61hUp3R6y9ygE6jmzWoXTJd0jvcktA2Jm9/J
+         EhZuz/g7M9/GWpSeL9n34i47RAfBfsz+ZdT8S53sBMY3NnlXRu1xZ2P2IrjG7hU+1z
+         NX6BDLgPfuqHA3+7FGJ9N/GP13Y9GtVkCrcCVGEpJWNT0x+urxLz3/LMsdGC/oBa6h
+         46iqAXfk+mjIA==
+Date:   Wed, 8 Dec 2021 18:36:08 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: sched: gred: potential dereference of null pointer
+Message-ID: <20211208183608.27852c15@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211209021346.2004600-1-jiasheng@iscas.ac.cn>
+References: <20211209021346.2004600-1-jiasheng@iscas.ac.cn>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1638864419-17501-3-git-send-email-wellslutw@gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 07, 2021 at 04:06:59PM +0800, Wells Lu wrote:
-> Add driver for Sunplus SP7021 SoC.
+On Thu,  9 Dec 2021 10:13:46 +0800 Jiasheng Jiang wrote:
+> The return value of kzalloc() needs to be checked.
+> To avoid use of null pointer in gred_change_vq() in case
+> of the failure of alloc.
+> 
+> Fixes: 869aa41044b0 ("sch_gred: prefer GFP_KERNEL allocations")
+> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-I reviewed phy, mdio, ethtool. That all looks good.
+I don't see how. Please explain in more detail. gred_change_vq() gets 
+a pointer to a pointer and checks if its values is NULL.
 
-I did not look at any of the packet transfer etc.
+> diff --git a/net/sched/sch_gred.c b/net/sched/sch_gred.c
+> index f4132dc25ac0..c0d355281baf 100644
+> --- a/net/sched/sch_gred.c
+> +++ b/net/sched/sch_gred.c
+> @@ -697,6 +697,8 @@ static int gred_change(struct Qdisc *sch, struct nlattr *opt,
+>  	}
+>  
+>  	prealloc = kzalloc(sizeof(*prealloc), GFP_KERNEL);
+> +	if (!prealloc)
+> +		return -ENOMEM;
+>  	sch_tree_lock(sch);
+>  
+>  	err = gred_change_vq(sch, ctl->DP, ctl, prio, stab, max_P, &prealloc,
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-
-    Andrew
