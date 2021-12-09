@@ -2,86 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 797F046E307
-	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 08:14:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BFD9946E315
+	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 08:20:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233594AbhLIHSa convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 9 Dec 2021 02:18:30 -0500
-Received: from rtits2.realtek.com ([211.75.126.72]:57082 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233592AbhLIHS3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 02:18:29 -0500
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 1B97Ehf66021297, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 1B97Ehf66021297
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 9 Dec 2021 15:14:43 +0800
-Received: from RTEXMBS06.realtek.com.tw (172.21.6.99) by
- RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 9 Dec 2021 15:14:42 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS06.realtek.com.tw (172.21.6.99) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Thu, 9 Dec 2021 15:14:42 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::65a3:1e23:d911:4b01]) by
- RTEXMBS04.realtek.com.tw ([fe80::65a3:1e23:d911:4b01%5]) with mapi id
- 15.01.2308.020; Thu, 9 Dec 2021 15:14:42 +0800
-From:   Hayes Wang <hayeswang@realtek.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        nic_swsd <nic_swsd@realtek.com>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
-Subject: RE: [RFC PATCH 0/4] r8169: support dash
-Thread-Topic: [RFC PATCH 0/4] r8169: support dash
-Thread-Index: AQHX5QnDLn6ABzzmpEe3dMh4ox9UtKwaRZuAgAKrunD//4AsAIAD8ppQ///5wgCABkeCEIAA4HSAgADAA+CAAGGxAIABJvBw
-Date:   Thu, 9 Dec 2021 07:14:42 +0000
-Message-ID: <d130312aed444d9f8a9058f3695dc1ea@realtek.com>
-References: <20211129101315.16372-381-nic_swsd@realtek.com>
-        <20211129095947.547a765f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <918d75ea873a453ab2ba588a35d66ab6@realtek.com>
-        <20211130190926.7c1d735d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <d3a1e1c469844aa697d6d315c9549eda@realtek.com>
-        <20211203070410.1b4abc4d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <e2fd429a489545e7a521283600cb7caa@realtek.com>
-        <20211207202101.3a3a93b0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <67d7f6f7b6e84af692bc0a7c4c48bb84@realtek.com>
- <20211208133754.3809bb5e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211208133754.3809bb5e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.177.203]
-x-kse-serverinfo: RTEXMBS06.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2021/12/9_=3F=3F_06:00:00?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S233671AbhLIHXq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Dec 2021 02:23:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46378 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233625AbhLIHXp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 02:23:45 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA715C061746;
+        Wed,  8 Dec 2021 23:20:12 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 03289CE24E6;
+        Thu,  9 Dec 2021 07:20:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 2E30CC341CA;
+        Thu,  9 Dec 2021 07:20:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1639034409;
+        bh=6/kEL/vxLq6HMreH4kJ6g4q4mgZ6JNAdEloe850tIfM=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=RwdkY9DKRqBHqV260LPI0X89FxrcMs4ulmEviSejHxM5ctCvgEWXiQ71BHm2xsRYQ
+         JSdgEzYDTuZoFyBKHNhRKz75p5UbZf8s0KT2e+4pat1PhBX1JeRtZTwE3kwWoBUSWr
+         FR62dXxOueJA+pJWzmeopBttm+3CEk7nrHoPSSlk8kTt4zJ7hZHe0gVLgBmCGfn4VH
+         dUhuG89xKynA/TzJpQhpDePe3896oQauTkKBEPJEWsYI/Slao2kho3Jiuz5+9TNijG
+         iPRj/fdT4FCFEoCpeSiB0CQLpSLk09U5SwonsNYGD1vDxBTiyHU64WkFh6n1vUF4A9
+         KAtnP+Gpby65A==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 1529C60A4D;
+        Thu,  9 Dec 2021 07:20:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] bpf: remove redundant assignment to pointer t
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163903440908.13982.14751517115928786084.git-patchwork-notify@kernel.org>
+Date:   Thu, 09 Dec 2021 07:20:09 +0000
+References: <20211207224718.59593-1-colin.i.king@gmail.com>
+In-Reply-To: <20211207224718.59593-1-colin.i.king@gmail.com>
+To:     Colin Ian King <colin.i.king@gmail.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Kicinski <kuba@kernel.org>
-> Sent: Thursday, December 9, 2021 5:38 AM
-[...]
-> > Excuse me. Do you mean someone will add it? Then, I could use it.
-> > Or, I have to add it.
-> 
-> You'd need to write all the code.
-I need more time to think how to do.
-Thanks.
+Hello:
 
-Best Regards,
-Hayes
+This patch was applied to bpf/bpf-next.git (master)
+by Andrii Nakryiko <andrii@kernel.org>:
+
+On Tue,  7 Dec 2021 22:47:18 +0000 you wrote:
+> The pointer t is being initialized with a value that is never read. The
+> pointer is re-assigned a value a littler later on, hence the initialization
+> is redundant and can be removed.
+> 
+> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+> ---
+>  kernel/bpf/btf.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+
+Here is the summary with links:
+  - bpf: remove redundant assignment to pointer t
+    https://git.kernel.org/bpf/bpf-next/c/73b6eae583f4
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
