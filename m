@@ -2,178 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2DAAE46E1CD
-	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 06:17:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD22D46E205
+	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 06:35:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230330AbhLIFVU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Dec 2021 00:21:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47204 "EHLO
+        id S229854AbhLIFhi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Dec 2021 00:37:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229555AbhLIFVT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 00:21:19 -0500
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8C0CC061746
-        for <netdev@vger.kernel.org>; Wed,  8 Dec 2021 21:17:46 -0800 (PST)
-Received: by mail-pj1-x1030.google.com with SMTP id gx15-20020a17090b124f00b001a695f3734aso3965427pjb.0
-        for <netdev@vger.kernel.org>; Wed, 08 Dec 2021 21:17:46 -0800 (PST)
+        with ESMTP id S232165AbhLIFhh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 00:37:37 -0500
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28E11C0617A1
+        for <netdev@vger.kernel.org>; Wed,  8 Dec 2021 21:34:05 -0800 (PST)
+Received: by mail-pg1-x52a.google.com with SMTP id r5so4097507pgi.6
+        for <netdev@vger.kernel.org>; Wed, 08 Dec 2021 21:34:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=4Isb6RngWyyYYY0h5iwHxhT4CUuYmE9K4Ijbwpppe/0=;
-        b=IL5y49lFnodstx6ZHbCevJ2A0UtuFWSB7P+SVQoyXjyMOzs1+g2szBeI+DT2GHyuoB
-         sxNW5XztebuX6XDOecmzcRc98qhQeVA6Jv41IJr50YrobsFlg7pt9tO9z0JIf3CgAlKI
-         y96bx9wMK/hD4Em4Kg1dEg6fBo5nVFa6NuJOg=
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=TEdQ7xqbUh9nZ2fpYSrjLmJge99wiwbPJrNcrQ2+9GU=;
+        b=Cglcz+jiZOL3ZlvU9ShHERJBngWOh7gT0onZCe3CJOPB9uQwomxgEX9LHHDI66XdQ6
+         Z83lfA5VDywJFMjFW6ydMk9qeYoNg6DIKR2fAgpK4IOJVILBxPeivDAYcrPonbr3gqou
+         kGI3TbT/w9Y9ERpoCZdXvmAHkpaHSiYjr8n2I=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=4Isb6RngWyyYYY0h5iwHxhT4CUuYmE9K4Ijbwpppe/0=;
-        b=MK/gk/ZPCWXA4WXSsDKk95vhpX7UDbI2uUExCDp5QKbpNTGKPT2290J6r/t5ZIj2KN
-         /ie2LcfidsKuKQKleSu1NntLnUDUJgPvUO6+h5xZ647HgelkB4aJcg5K9oRiS4EY15pM
-         xUS9+1EN0gjNfPO05H5486MpnyovewxBGwT4Ixi26UA3qe/K2vKbvI2TySJKMIo8JAQ3
-         jefrngBppxQ5S9nn3oI+a8tPb6pOHa0njT87CIPFgM1Wjbs55NfNFT9dhjSsbQoFV1Ro
-         9WSBzNGkxO62XRxUSg+hkR1bNYDHyewZGWtW37HTk4QhJ6VK98kZ8xKoIKu7l0WAb/Ha
-         sbyA==
-X-Gm-Message-State: AOAM533V11oobxB9ZYshNZs7kp06H0dYbbsvSYR1LKKK8S/N2t9JoKYO
-        CKfcFcsOOcf0yrPcKvBaOb74Kw==
-X-Google-Smtp-Source: ABdhPJxeNFepnXXB/34L76N4vdRimSjaTfTVdfxtfwCC2tAYfw81FunJcFYhweowBzFuUyDf4LbXkA==
-X-Received: by 2002:a17:902:e5c9:b0:142:53c4:478d with SMTP id u9-20020a170902e5c900b0014253c4478dmr63375010plf.33.1639027066307;
-        Wed, 08 Dec 2021 21:17:46 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=TEdQ7xqbUh9nZ2fpYSrjLmJge99wiwbPJrNcrQ2+9GU=;
+        b=vEAM0a9ilnrz+IWYJc3UGoY3SoXna55R+1cMj62/AeltMfzU8ZU5qzc4SOT037ZRZd
+         fTGbuXUhmzjUZZwEg++RIbney/lUd6KcmqvjEQvyfdU7RHCaZRNHcq2ov+Usw+mrIA5T
+         X6ax+gW0uq8xbTFL9bP8rq5LjpiwjD+Vl/RX7EFGIKpQ5eF297IkkBvh3ZGzol/W3F0q
+         8/vyNboxuT87LjI7LhzJxosk153dHKMecTaEoNHOyX+Z+Vbz1EI38JqAUO+yripjKGPl
+         ihyXkcYPIhzCqh3R3BVxxsAtNzEyePpZtCTwltNkk3FIgNgEXUgPBO+6LGePt9FfHkun
+         MrPg==
+X-Gm-Message-State: AOAM532Hu2t9yd5xRLa3Gais5Sr8URRyMsFuq4RKAiwyvX20hsxU4z3o
+        UPK5kb+24xR19s58LWsWCnB/Fg==
+X-Google-Smtp-Source: ABdhPJy/gv/9wFDJIqnWANj9Of3Dd3TIdKAwJAzw7FVWsOpzpQGelsoyMuALbUiFVB/qX9tASwUQUw==
+X-Received: by 2002:a05:6a00:2349:b0:4a8:d87:e8ad with SMTP id j9-20020a056a00234900b004a80d87e8admr9860982pfj.15.1639028044328;
+        Wed, 08 Dec 2021 21:34:04 -0800 (PST)
 Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id 66sm4266192pgg.63.2021.12.08.21.17.45
+        by smtp.gmail.com with ESMTPSA id g7sm5447044pfv.159.2021.12.08.21.34.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Dec 2021 21:17:45 -0800 (PST)
-Date:   Wed, 8 Dec 2021 21:17:44 -0800
+        Wed, 08 Dec 2021 21:34:03 -0800 (PST)
 From:   Kees Cook <keescook@chromium.org>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     xiujianfeng <xiujianfeng@huawei.com>,
-        laniel_francis@privacyrequired.com,
-        andriy.shevchenko@linux.intel.com, adobriyan@gmail.com,
-        linux@roeck-us.net, andreyknvl@gmail.com, dja@axtens.net,
-        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH -next 1/2] string.h: Introduce memset_range() for wiping
- members
-Message-ID: <202112082111.14E796A23@keescook>
-References: <20211208030451.219751-1-xiujianfeng@huawei.com>
- <20211208030451.219751-2-xiujianfeng@huawei.com>
- <20211207202829.48d15f0ffa006e3656811784@linux-foundation.org>
- <e2d5936d-8490-5871-b3d4-b286d256832a@huawei.com>
- <20211208154437.01441d2dcf4cd812a9c58a7d@linux-foundation.org>
+To:     Saeed Mahameed <saeedm@nvidia.com>
+Cc:     Kees Cook <keescook@chromium.org>,
+        Leon Romanovsky <leon@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH v2] net/mlx5e: Avoid field-overflowing memcpy()
+Date:   Wed,  8 Dec 2021 21:34:02 -0800
+Message-Id: <20211209053402.2202206-1-keescook@chromium.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+X-Developer-Signature: v=1; a=openpgp-sha256; l=6133; h=from:subject; bh=bv/kclJVqFfpYqF/u9SUVEA+zaU84TcD4WE+rVi9g7I=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBhsZVJjU+25rXmRi5WzcuerZqRLJN3iCPc/8qQNiPO Nprb0GeJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYbGVSQAKCRCJcvTf3G3AJrCfEA CRXNU40blLLe6OTK0SA98KhXyyxeBIQuxWn0vrx/6plzA5pkFJU01hiWbzFzzrK44fIJx9ojwbWob/ 1PvJtG9DRazZ+DH/Tf1UsB1K9ok18bNmsgtep7WCRG3yDXzDX4Pa0u7GCeOm609BmybNZ2Atut04i/ YUVJiAXy4XeFqOYV95lmdprWo1SHHOdggJsYCYqGyvuB195O9jSugqNJc3nHrWcXJ2CWsp4MGPiqrM fd65E6vDnZbFB+pi69pum2aWs7poTUv/BwzBibVQoGlmsOHAyAs3LGEWX/5o/9waEp8UuLfIdC1xq6 jXouklbBXMHT+oIvzXDxFWmOhA/geM7gRNcIG3FAbtOdrpzKw3ztMYcYttAsqtjEEYgBUXgUSldLdR JH80zRFweQQJjOEwyBo33h+UiL8yGslJtqQIEm1c4XgGPg+AxpAivsqIwt+VTyy8GEXvlXrd2yjNpq t0ZMYnSc7obDLnCqETUtrRIDMHB+gSY9HmjGw262XlyT0R0HXTVo2k1j8KrTkykE+B5CWT02V3ZQSX /y3Sdb4trXXDZIioacxpz64YsJDPa9eyrl7xZSrrvJ9YXYEhiVi2t+MZFhKqLDYUQsihqI/pL7QAIm LC/BeDATgM79wa4G5wB9FVkpCMC5Xbue/KLqgoKOvH89a7ngoA72lHt7/JPg==
+X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20211208154437.01441d2dcf4cd812a9c58a7d@linux-foundation.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 08, 2021 at 03:44:37PM -0800, Andrew Morton wrote:
-> On Wed, 8 Dec 2021 18:30:26 +0800 xiujianfeng <xiujianfeng@huawei.com> wrote:
-> 
-> > 
-> > 在 2021/12/8 12:28, Andrew Morton 写道:
-> > > On Wed, 8 Dec 2021 11:04:50 +0800 Xiu Jianfeng <xiujianfeng@huawei.com> wrote:
-> > >
-> > >> Motivated by memset_after() and memset_startat(), introduce a new helper,
-> > >> memset_range() that takes the target struct instance, the byte to write,
-> > >> and two member names where zeroing should start and end.
-> > > Is this likely to have more than a single call site?
-> > There maybe more call site for this function, but I just use bpf as an 
-> > example.
-> > >
-> > >> ...
-> > >>
-> > >> --- a/include/linux/string.h
-> > >> +++ b/include/linux/string.h
-> > >> @@ -291,6 +291,26 @@ void memcpy_and_pad(void *dest, size_t dest_len, const void *src, size_t count,
-> > >>   	       sizeof(*(obj)) - offsetof(typeof(*(obj)), member));	\
-> > >>   })
-> > >>   
-> > >> +/**
-> > >> + * memset_range - Set a value ranging from member1 to member2, boundary included.
-> > > I'm not sure what "boundary included" means.
-> > I mean zeroing from member1 to member2(including position indicated by 
-> > member1 and member2)
-> > >
-> > >> + *
-> > >> + * @obj: Address of target struct instance
-> > >> + * @v: Byte value to repeatedly write
-> > >> + * @member1: struct member to start writing at
-> > >> + * @member2: struct member where writing should stop
-> > > Perhaps "struct member before which writing should stop"?
-> > memset_range should include position indicated by member2 as well
-> 
-> In that case we could say "struct member where writing should stop
-> (inclusive)", to make it very clear.
-> 
-> > >
-> > >> + *
-> > >> + */
-> > >> +#define memset_range(obj, v, member_1, member_2)			\
-> > >> +({									\
-> > >> +	u8 *__ptr = (u8 *)(obj);					\
-> > >> +	typeof(v) __val = (v);						\
-> > >> +	BUILD_BUG_ON(offsetof(typeof(*(obj)), member_1) >		\
-> > >> +		     offsetof(typeof(*(obj)), member_2));		\
-> > >> +	memset(__ptr + offsetof(typeof(*(obj)), member_1), __val,	\
-> > >> +	       offsetofend(typeof(*(obj)), member_2) -			\
-> > >> +	       offsetof(typeof(*(obj)), member_1));			\
-> > >> +})
-> > > struct a {
-> > > 	int b;
-> > > 	int c;
-> > > 	int d;
-> > > };
-> > >
-> > > How do I zero out `c' and `d'?
-> > if you want to zero out 'c' and 'd', you can use it like 
-> > memset_range(a_ptr, c, d);
-> 
-> But I don't think that's what the code does!
-> 
-> it expands to
-> 
-> 	memset(__ptr + offsetof(typeof(*(a)), c), __val,
-> 	       offsetofend(typeof(*(a)), d) -
-> 	       offsetof(typeof(*(a)), c));
-> 
-> which expands to
-> 
-> 	memset(__ptr + 4, __val,
-> 	       8 -
-> 	       4);
-> 
-> and `d' will not be written to.
+In preparation for FORTIFY_SOURCE performing compile-time and run-time
+field bounds checking for memcpy(), memmove(), and memset(), avoid
+intentionally writing across neighboring fields.
 
-Please don't add memset_range(): just use a struct_group() to capture
-the range and use memset() against the new substruct. This will allow
-for the range to be documented where it is defined in the struct (rather
-than deep in some code), keep any changes centralized instead of spread
-around in memset_range() calls, protect against accidental struct member
-reordering breaking things, and lets the compiler be able to examine
-the range explicitly and do all the correct bounds checking:
+Use flexible arrays instead of zero-element arrays (which look like they
+are always overflowing) and split the cross-field memcpy() into two halves
+that can be appropriately bounds-checked by the compiler.
 
-struct a {
-	int b;
-	struct_group(range,
-		int c;
-		int d;
-	);
-	int e;
+We were doing:
+
+	#define ETH_HLEN  14
+	#define VLAN_HLEN  4
+	...
+	#define MLX5E_XDP_MIN_INLINE (ETH_HLEN + VLAN_HLEN)
+	...
+        struct mlx5e_tx_wqe      *wqe  = mlx5_wq_cyc_get_wqe(wq, pi);
+	...
+        struct mlx5_wqe_eth_seg  *eseg = &wqe->eth;
+        struct mlx5_wqe_data_seg *dseg = wqe->data;
+	...
+	memcpy(eseg->inline_hdr.start, xdptxd->data, MLX5E_XDP_MIN_INLINE);
+
+target is wqe->eth.inline_hdr.start (which the compiler sees as being
+2 bytes in size), but copying 18, intending to write across start
+(really vlan_tci, 2 bytes). The remaining 16 bytes get written into
+wqe->data[0], covering byte_count (4 bytes), lkey (4 bytes), and addr
+(8 bytes).
+
+struct mlx5e_tx_wqe {
+        struct mlx5_wqe_ctrl_seg   ctrl;                 /*     0    16 */
+        struct mlx5_wqe_eth_seg    eth;                  /*    16    16 */
+        struct mlx5_wqe_data_seg   data[];               /*    32     0 */
+
+        /* size: 32, cachelines: 1, members: 3 */
+        /* last cacheline: 32 bytes */
 };
 
-memset(&instance->range, 0, sizeof(instance->range));
+struct mlx5_wqe_eth_seg {
+        u8                         swp_outer_l4_offset;  /*     0     1 */
+        u8                         swp_outer_l3_offset;  /*     1     1 */
+        u8                         swp_inner_l4_offset;  /*     2     1 */
+        u8                         swp_inner_l3_offset;  /*     3     1 */
+        u8                         cs_flags;             /*     4     1 */
+        u8                         swp_flags;            /*     5     1 */
+        __be16                     mss;                  /*     6     2 */
+        __be32                     flow_table_metadata;  /*     8     4 */
+        union {
+                struct {
+                        __be16     sz;                   /*    12     2 */
+                        u8         start[2];             /*    14     2 */
+                } inline_hdr;                            /*    12     4 */
+                struct {
+                        __be16     type;                 /*    12     2 */
+                        __be16     vlan_tci;             /*    14     2 */
+                } insert;                                /*    12     4 */
+                __be32             trailer;              /*    12     4 */
+        };                                               /*    12     4 */
 
-memset_from/after() were added because of the very common case of "wipe
-from here to end", which stays tied to a single member, and addressed
-cases where struct_group() couldn't help (e.g. trailing padding).
+        /* size: 16, cachelines: 1, members: 9 */
+        /* last cacheline: 16 bytes */
+};
 
+struct mlx5_wqe_data_seg {
+        __be32                     byte_count;           /*     0     4 */
+        __be32                     lkey;                 /*     4     4 */
+        __be64                     addr;                 /*     8     8 */
+
+        /* size: 16, cachelines: 1, members: 3 */
+        /* last cacheline: 16 bytes */
+};
+
+So, split the memcpy() so the compiler can reason about the buffer
+sizes.
+
+"pahole" shows no size nor member offset changes to struct mlx5e_tx_wqe
+nor struct mlx5e_umr_wqe. "objdump -d" shows no meaningful object
+code changes (i.e. only source line number induced differences and
+optimizations).
+
+Signed-off-by: Kees Cook <keescook@chromium.org>
+---
+Hi, this is a rebase, and I can now address questions from
+https://lore.kernel.org/lkml/b5f1c558fef468fe8550ebb5e77d36bf1d0971a7.camel@kernel.org/
+
+- performance change? none: there is no executable code differences
+  except that the compiler chooses different temporary registers.
+
+- why aren't the other cases a problem? The others are dynamically sized
+  copies, and the first phase of the memcpy tightening is only handling
+  the constant expression sizes. The runtime size checking will come next,
+  where those other cases will need to be handled as well. But one thing
+  at a time. :)
+
+---
+ drivers/net/ethernet/mellanox/mlx5/core/en.h     | 6 +++---
+ drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c | 4 +++-
+ 2 files changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
+index e77c4159713f..5d8e0a712313 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
+@@ -225,7 +225,7 @@ static inline int mlx5e_get_max_num_channels(struct mlx5_core_dev *mdev)
+ struct mlx5e_tx_wqe {
+ 	struct mlx5_wqe_ctrl_seg ctrl;
+ 	struct mlx5_wqe_eth_seg  eth;
+-	struct mlx5_wqe_data_seg data[0];
++	struct mlx5_wqe_data_seg data[];
+ };
+ 
+ struct mlx5e_rx_wqe_ll {
+@@ -242,8 +242,8 @@ struct mlx5e_umr_wqe {
+ 	struct mlx5_wqe_umr_ctrl_seg   uctrl;
+ 	struct mlx5_mkey_seg           mkc;
+ 	union {
+-		struct mlx5_mtt inline_mtts[0];
+-		struct mlx5_klm inline_klms[0];
++		DECLARE_FLEX_ARRAY(struct mlx5_mtt, inline_mtts);
++		DECLARE_FLEX_ARRAY(struct mlx5_klm, inline_klms);
+ 	};
+ };
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
+index 2f0df5cc1a2d..efae2444c26f 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
+@@ -341,8 +341,10 @@ mlx5e_xmit_xdp_frame(struct mlx5e_xdpsq *sq, struct mlx5e_xmit_data *xdptxd,
+ 
+ 	/* copy the inline part if required */
+ 	if (sq->min_inline_mode != MLX5_INLINE_MODE_NONE) {
+-		memcpy(eseg->inline_hdr.start, xdptxd->data, MLX5E_XDP_MIN_INLINE);
++		memcpy(eseg->inline_hdr.start, xdptxd->data, sizeof(eseg->inline_hdr.start));
+ 		eseg->inline_hdr.sz = cpu_to_be16(MLX5E_XDP_MIN_INLINE);
++		memcpy(dseg, xdptxd->data + sizeof(eseg->inline_hdr.start),
++		       MLX5E_XDP_MIN_INLINE - sizeof(eseg->inline_hdr.start));
+ 		dma_len  -= MLX5E_XDP_MIN_INLINE;
+ 		dma_addr += MLX5E_XDP_MIN_INLINE;
+ 		dseg++;
 -- 
-Kees Cook
+2.30.2
+
