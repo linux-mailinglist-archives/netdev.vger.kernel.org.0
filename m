@@ -2,90 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C7C0E46F478
-	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 21:00:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A5DF46F48B
+	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 21:03:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231379AbhLIUDs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Dec 2021 15:03:48 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:42160 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231315AbhLIUDr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 15:03:47 -0500
+        id S231444AbhLIUHV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Dec 2021 15:07:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58738 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231438AbhLIUHU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 15:07:20 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9007C061746
+        for <netdev@vger.kernel.org>; Thu,  9 Dec 2021 12:03:46 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CE6E2B82567
-        for <netdev@vger.kernel.org>; Thu,  9 Dec 2021 20:00:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 82D2AC341C7;
-        Thu,  9 Dec 2021 20:00:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A4F7CB82453
+        for <netdev@vger.kernel.org>; Thu,  9 Dec 2021 20:03:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 496D0C004DD;
+        Thu,  9 Dec 2021 20:03:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1639080011;
-        bh=CC42lOz3dSjTXthF3XhDSnDdabQHMrBqGRB87P6fUIc=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=GcqepBvWSYgQRwwc01jCgG1YpR8Ii02T8OjNpznu1O35UlIaqKeSvdOTkZnZsgwdA
-         ao9/Qj1DXD641dIUnkS7jzp2oOqy/CMbjF9vcm/xciTJ0vANbM6UNnRNyhGiICpRKb
-         mS304U9aFMhmvFyP5JQeRb4hTy2iFC2kLMgSBJH2CZr2RDxdCoKNaBX8M9m9gm8mMA
-         rmVeZ8GWhUZlxpr4wsrjSDsNA1l8FiiTU4O4SDxbCbWWooQFhzAo9NL12OlW2KIM/i
-         SP2RxtmoC+mytLsGZB1/drXKklBGYmuD6T12O+MyyCGAfk1U18UXO7O1O47wv+jr8D
-         4ru5w0pNFCujg==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 510AB60A54;
-        Thu,  9 Dec 2021 20:00:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1639080224;
+        bh=6MM+katv4ZfyakREWs/UkHP5p9bja+zcqwSg/Bit0tA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Abw5es0OcBkAemjtYOweI4P8eFMBzqS7UBHVmTHAFB6MkO6ERn9MxBfPiIVvRyZnG
+         7tUe0iOx3W9xOwnfNMnsGiOSTnhZQpPPQGKIWoiJNKvayoLqHgt72V9yRclURvn8yA
+         rcviEDS6ZnF3e2/HfYY/yM6ueAxqewWTTx6H+LSp9uSxfWxmkJDHQKWcx926wnBPLQ
+         Ob96XJPlhm6E/1vtL0iA0AEN3Jd61+Jy7wLAXihdjX7pRpNbICLr965XNTI3lEIDm6
+         vAcXbKU7efqP06CGCHhBtrK7HGt2SoAkiBzZGdMBr++MhZ+vcNYRCugkDVgxj2LBpV
+         ocAl+lrSValXQ==
+Date:   Thu, 9 Dec 2021 12:03:43 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>
+Subject: Re: [PATCH net-next 00/17] net: netns refcount tracking series
+Message-ID: <20211209120343.3a6de4f5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211207005142.1688204-1-eric.dumazet@gmail.com>
+References: <20211207005142.1688204-1-eric.dumazet@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/5] net: phylink: introduce legacy mode flag
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163908001132.24516.13773473862700421452.git-patchwork-notify@kernel.org>
-Date:   Thu, 09 Dec 2021 20:00:11 +0000
-References: <Ya+DGaGmGgWrlVkW@shell.armlinux.org.uk>
-In-Reply-To: <Ya+DGaGmGgWrlVkW@shell.armlinux.org.uk>
-To:     Russell King (Oracle) <linux@armlinux.org.uk>
-Cc:     chris.snook@gmail.com, nbd@nbd.name, f.fainelli@gmail.com,
-        john@phrozen.org, Mark-MC.Lee@mediatek.com, matthias.bgg@gmail.com,
-        sean.wang@mediatek.com, vivien.didelot@gmail.com,
-        olteanv@gmail.com, andrew@lunn.ch, davem@davemloft.net,
-        hkallweit1@gmail.com, kuba@kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Tue, 7 Dec 2021 15:51:53 +0000 you wrote:
-> Hi all,
+On Mon,  6 Dec 2021 16:51:25 -0800 Eric Dumazet wrote:
+> We have 100+ syzbot reports about netns being dismantled too soon,
+> still unresolved as of today.
 > 
-> In March 2020, phylink gained support to split the PCS support out of
-> the MAC callbacks. By doing so, a slight behavioural difference was
-> introduced when a PCS is present, specifically:
+> We think a missing get_net() or an extra put_net() is the root cause.
 > 
-> 1) the call to mac_config() when the link comes up or advertisement
->    changes were eliminated
-> 2) mac_an_restart() will never be called
-> 3) mac_pcs_get_state() will never be called
+> In order to find the bug(s), and be able to spot future ones,
+> this patch adds CONFIG_NET_NS_REFCNT_TRACKER and new helpers
+> to precisely pair all put_net() with corresponding get_net().
 > 
-> [...]
+> To use these helpers, each data structure owning a refcount
+> should also use a "netns_tracker" to pair the get() and put().
+> 
+> Small sections of codes where the get()/put() are in sight
+> do not need to have a tracker, because they are short lived,
+> but in theory it is also possible to declare an on-stack tracker.
 
-Here is the summary with links:
-  - [net-next,1/5] net: phylink: add legacy_pre_march2020 indicator
-    https://git.kernel.org/netdev/net-next/c/3e5b1feccea7
-  - [net-next,2/5] net: dsa: mark DSA phylink as legacy_pre_march2020
-    https://git.kernel.org/netdev/net-next/c/0a9f0794d9bd
-  - [net-next,3/5] net: mtk_eth_soc: mark as a legacy_pre_march2020 driver
-    https://git.kernel.org/netdev/net-next/c/b06515367fac
-  - [net-next,4/5] net: phylink: use legacy_pre_march2020
-    https://git.kernel.org/netdev/net-next/c/001f4261fe4d
-  - [net-next,5/5] net: ag71xx: remove unnecessary legacy methods
-    https://git.kernel.org/netdev/net-next/c/11053047a4af
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Ugh, I realized after a week of waiting that vfs / sunrpc / audit folks
+are not even CCed here. I think we should give them the courtesy of
+being able to ack the patches.. Can you split out 1-4,6,7 for immediate
+merging and repost the rest with the right CCs?
