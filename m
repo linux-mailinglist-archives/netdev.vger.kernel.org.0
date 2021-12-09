@@ -2,85 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5624C46E0BD
-	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 03:10:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A74746E0C7
+	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 03:14:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229937AbhLICNt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 21:13:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33718 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229930AbhLICNr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 21:13:47 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47395C061746
-        for <netdev@vger.kernel.org>; Wed,  8 Dec 2021 18:10:14 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 861B4CE2473
-        for <netdev@vger.kernel.org>; Thu,  9 Dec 2021 02:10:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id AE70CC341CE;
-        Thu,  9 Dec 2021 02:10:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1639015810;
-        bh=krOSCiNn85mh7S9xU43MhWd2PW7E8k1810WGngvp2Mk=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Y1m+nqkzP4BHB+3s9uxiHaLki6uDl0a4KeNq/854tFd1WVd+YGb1NwKG0Gcrwq2Xz
-         MSc+p4d7uYB9AYym6aUhcY3sPoVrxp9kTspX1MJxJOlJrdE2jtTyxsO1NX2kotyfHX
-         5mPiYVvCtg6gxnZrp9EcI883b2HQMYUI5w6F2R9J3unltajnPRxvGDisIYPfF4R+Gz
-         d1Xx5ik8cnRDz9H7dkAhvi/U+83BW/LFf5mMRRaiKeJB80pOhyis+pioqNj59W0w5x
-         dEoEB71rpWY4yJT/DRojGIeDKdGW1I1Jh0+spokI/bJVyDaoYGaYRwpCD/IclJqKxY
-         plx6jf1p2RmNQ==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 9C8F760A36;
-        Thu,  9 Dec 2021 02:10:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S229967AbhLICRz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 21:17:55 -0500
+Received: from smtp21.cstnet.cn ([159.226.251.21]:60668 "EHLO cstnet.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229909AbhLICRy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 8 Dec 2021 21:17:54 -0500
+Received: from localhost.localdomain (unknown [124.16.138.128])
+        by APP-01 (Coremail) with SMTP id qwCowAA3PZ1hZrFhOcjlAQ--.27202S2;
+        Thu, 09 Dec 2021 10:13:55 +0800 (CST)
+From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
+To:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Subject: [PATCH] net: sched: gred: potential dereference of null pointer
+Date:   Thu,  9 Dec 2021 10:13:46 +0800
+Message-Id: <20211209021346.2004600-1-jiasheng@iscas.ac.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH RESEND net-next v2 0/4] WWAN debugfs tweaks
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163901581063.22374.5474223279474124190.git-patchwork-notify@kernel.org>
-Date:   Thu, 09 Dec 2021 02:10:10 +0000
-References: <20211207092140.19142-1-ryazanov.s.a@gmail.com>
-In-Reply-To: <20211207092140.19142-1-ryazanov.s.a@gmail.com>
-To:     Sergey Ryazanov <ryazanov.s.a@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        m.chetan.kumar@intel.com, linuxwwan@intel.com,
-        loic.poulain@linaro.org, johannes@sipsolutions.net, leon@kernel.org
+X-CM-TRANSID: qwCowAA3PZ1hZrFhOcjlAQ--.27202S2
+X-Coremail-Antispam: 1UD129KBjvdXoWrtw4xtryfXF18GrWxXrWfGrg_yoW3AFcEgw
+        4rKr1kAr97JF1rZrWUAr48Gr9a9F1DWw4v9r9xKrZ3tayUJF93W3y7Crs3Aryxur47CryD
+        ArZFqFy5Jw1akjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUb48FF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Cr0_
+        Gr1UM28EF7xvwVC2z280aVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gr
+        1j6F4UJwAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv
+        7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r
+        1j6r4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY02Avz4vE14v_
+        Gr1l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxV
+        WUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI
+        7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r
+        1j6r4UMIIF0xvE42xK8VAvwI8IcIk0rVWrZr1j6s0DMIIF0xvEx4A2jsIE14v26r1j6r4U
+        MIIF0xvEx4A2jsIEc7CjxVAFwI0_Jr0_GrUvcSsGvfC2KfnxnUUI43ZEXa7VUbpwZ7UUUU
+        U==
+X-Originating-IP: [124.16.138.128]
+X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+The return value of kzalloc() needs to be checked.
+To avoid use of null pointer in gred_change_vq() in case
+of the failure of alloc.
 
-This series was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+Fixes: 869aa41044b0 ("sch_gred: prefer GFP_KERNEL allocations")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+---
+ net/sched/sch_gred.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-On Tue,  7 Dec 2021 12:21:36 +0300 you wrote:
-> Resent after dependency [2] was merged to the net-next tree. Added
-> Leon's reviewed-by tag from the first V2 submission.
-> 
-> This is a follow-up series to just applied IOSM (and WWAN) debugfs
-> interface support [1]. The series has two main goals:
-> 1. move the driver-specific debugfs knobs to a subdirectory;
-> 2. make the debugfs interface optional for both IOSM and for the WWAN
->    core.
-> 
-> [...]
-
-Here is the summary with links:
-  - [RESEND,net-next,v2,1/4] net: wwan: iosm: consolidate trace port init code
-    https://git.kernel.org/netdev/net-next/c/e9877d4ef856
-  - [RESEND,net-next,v2,2/4] net: wwan: iosm: allow trace port be uninitialized
-    https://git.kernel.org/netdev/net-next/c/13b94fbaa28c
-  - [RESEND,net-next,v2,3/4] net: wwan: iosm: move debugfs knobs into a subdir
-    https://git.kernel.org/netdev/net-next/c/cf90098dbb1f
-  - [RESEND,net-next,v2,4/4] net: wwan: make debugfs optional
-    https://git.kernel.org/netdev/net-next/c/283e6f5a8166
-
-You are awesome, thank you!
+diff --git a/net/sched/sch_gred.c b/net/sched/sch_gred.c
+index f4132dc25ac0..c0d355281baf 100644
+--- a/net/sched/sch_gred.c
++++ b/net/sched/sch_gred.c
+@@ -697,6 +697,8 @@ static int gred_change(struct Qdisc *sch, struct nlattr *opt,
+ 	}
+ 
+ 	prealloc = kzalloc(sizeof(*prealloc), GFP_KERNEL);
++	if (!prealloc)
++		return -ENOMEM;
+ 	sch_tree_lock(sch);
+ 
+ 	err = gred_change_vq(sch, ctl->DP, ctl, prio, stab, max_P, &prealloc,
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.25.1
 
