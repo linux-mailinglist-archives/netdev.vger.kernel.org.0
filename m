@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F161046E58A
-	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 10:28:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6AA7446E58B
+	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 10:28:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236158AbhLIJcG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S236163AbhLIJcG (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Thu, 9 Dec 2021 04:32:06 -0500
-Received: from mail-mw2nam12on2093.outbound.protection.outlook.com ([40.107.244.93]:1376
-        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
+Received: from mail-dm6nam10on2106.outbound.protection.outlook.com ([40.107.93.106]:50465
+        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S236225AbhLIJcA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Dec 2021 04:32:00 -0500
+        id S236292AbhLIJcC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Dec 2021 04:32:02 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=T+YdS6ry2BsHFUOrKEFBq2tnTRjYaSu5VBrABgIGTQXQk9gknfNo4VF6N7fWxKFSD7NZGX2W+xAu4sG52JkXrFACz/PoagSotmo60JyWCMNPRrfm1Js0/VAWZxzQqujbmPi38MoYWhhJ3ixbstvj5iJjugldE1VSa21Vut6UfHLbYhYNgQhOtkflgAbPRssh+GVEduNTmd/0HSgvxjBtl3kzUiwR0i7YwcY4gXfKHGk2RRr22bL4RF1OJr2ImCt7ARACvapIgeYY90vXMznGKnCad9ffGMHNEXG/DEe/v3j6lHNG/64mR/MsPUmciVtS5qwI5JpB0cbrNIkmvr3Fag==
+ b=GxkgP5x1gC6FQapnO5t8xG0XEVOZ8oOASS6vv74ydJZ2BjUI24JtWzQqQoQCVlZSICjgqHg4c5zDhL6Eb5wzyD4+L3ouFyvzTpLFjsEFFkBB7L7eUrDkKljYQ0qq2N7jgC22lnJLW013Cbw9JLm0uu0N0dFK7P6VuScjrNtAnC13+c8E7dONxaaD8dFSbUAEZg1s4A9Kuoh6yqru3rCYNzaRtP1DnzzYmI5GDh3s8mt7z7qYl+Ou6PhM5cdIcMpQneMrWEQMaAfqRcop2eyQKRabRbgaUF///ZK9tTo/fACggHY4ZhvIvGqt57+ku9NhJdrhUKfr4hXS+tbEPKPeJA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=tAp+mgbOPK8CgdVso16MTWQ9zDFodhYvRH0QJ5SbPRY=;
- b=cwq3UAv7WwBDCKioL3U+wnYnI+fOqXzOIo7PtgLfz96vf2McyadiY0e12+PbpGdv1PghbxgBQFCXXzKPTZvTYgkirqbeFxg3MUAoQdXKiRIkcpxYCE9RpUr7VEF1TCpRGw9Mgw4SDG9tv3RBD4/hi4fYttv6N3GYlXAR/Gbjq3oYwOdlhPB2OK05FeiD2qQ9e+7UoW3B87XW1iLIq9Gc9bOInc0EcxYF/iJqq7lDeoIO7LqrAGGUSGzdE2Ww5xmwwbhTG8147caUg9KF0FWH/oYcRMjf6xgcmaRSXXj7frBJD84GHPbkqktuCXj7MfZKJHfi3DEaXZrLMev9aCPwZg==
+ bh=sRp1HCPVPqPJU3OHFquMchwhifHi9LhY7LZW7gk03f4=;
+ b=TaoxnMEKmn5xpdBPLWGb6INb0FgMm0pJOzPVELN2yjT1v81EqRBN7s/QRgJGKLaRSyKwnxLzQRfask5SWAdntOTlR2sA9ZLyFGrZuV+cSRoywxGr0nnmeQ4CfNKQP97Rswh2kOxk0ERK/VoV2qnCgttmUmvOZ636i9lWze/2StkVAsn1L/stIJDFb297vbcrFlmoD95ljwE8Ci9XSaXnQhW/vWUFul/2mRmFLedlesIA2Wrh7WrBbQ6NsN8hjNtBJez6M5bbg4DB9Gq13MRi/DkKquarIQHt9pGmv0w8FGIhuZ93K17Hgkyd19c28hD5ionbGofo+aGzS/UVAgPgvA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
  dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tAp+mgbOPK8CgdVso16MTWQ9zDFodhYvRH0QJ5SbPRY=;
- b=c6Ex8wHfXx0EHSqxjYS6JaXscpea1JR0KKhnKSJdEnmLvV/Z+65mUVqOfIfOhzH7ROGC3TWImIZC68lAb0j2em9MtRrXLGkQzYXzowhsJ1OmM0ZAEw1Ji/4PWdszO0fasSDb2gXmFd1fByC17cF69CmOvrOBlq2z1xohxJb/k8g=
+ bh=sRp1HCPVPqPJU3OHFquMchwhifHi9LhY7LZW7gk03f4=;
+ b=tptWxbGx6Ok3CErA8f7qAC+Bjgz8pnDtb2WqMaBZYTnTRzp1QEI7HHGqPYyit2Kn3cgTlfzNIyGs3QDe2wcLDMnZ88zyPSy8vGRlKJ2hMOAGvWM/NmB3BAOj6rloKaO2mIUdzzDzatKiXi7IuYDVVeFKvnevEeZYk7iMHdETdEo=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=corigine.com;
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
  by PH0PR13MB4796.namprd13.prod.outlook.com (2603:10b6:510:99::11) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4778.10; Thu, 9 Dec
- 2021 09:28:25 +0000
+ 2021 09:28:28 +0000
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::a01a:4940:c69a:e04c]) by PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::a01a:4940:c69a:e04c%9]) with mapi id 15.20.4778.012; Thu, 9 Dec 2021
- 09:28:25 +0000
+ 09:28:28 +0000
 From:   Simon Horman <simon.horman@corigine.com>
 To:     netdev@vger.kernel.org
 Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
@@ -49,10 +49,12 @@ Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
         Baowen Zheng <baowen.zheng@corigine.com>,
         Louis Peens <louis.peens@corigine.com>,
         oss-drivers@corigine.com, Simon Horman <simon.horman@corigine.com>
-Subject: [PATCH v6 net-next 00/12] allow user to offload tc action to net device
-Date:   Thu,  9 Dec 2021 10:27:54 +0100
-Message-Id: <20211209092806.12336-1-simon.horman@corigine.com>
+Subject: [PATCH v6 net-next 01/12] flow_offload: fill flags to action structure
+Date:   Thu,  9 Dec 2021 10:27:55 +0100
+Message-Id: <20211209092806.12336-2-simon.horman@corigine.com>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20211209092806.12336-1-simon.horman@corigine.com>
+References: <20211209092806.12336-1-simon.horman@corigine.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: AM3PR03CA0068.eurprd03.prod.outlook.com
@@ -60,267 +62,268 @@ X-ClientProxiedBy: AM3PR03CA0068.eurprd03.prod.outlook.com
  (2603:10b6:510:78::6)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: cf11329b-e344-473b-33c3-08d9baf6401a
+X-MS-Office365-Filtering-Correlation-Id: 27590a60-0fcb-42e1-e77f-08d9baf641f8
 X-MS-TrafficTypeDiagnostic: PH0PR13MB4796:EE_
-X-Microsoft-Antispam-PRVS: <PH0PR13MB47964E7C33C97D063B121077E8709@PH0PR13MB4796.namprd13.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3044;
+X-Microsoft-Antispam-PRVS: <PH0PR13MB479660A5DC0F7A0D56EB9169E8709@PH0PR13MB4796.namprd13.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:179;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: poI7qUiMdwhtHReqBEjKf3Gra3WbRTfHi6TrUkCHYJ/Z7Hsd+LySzaANuqAcDhE33/rfnTYl1qMIDk9p71tZTcQPxtICgRvbX078T5SznMnz8ip98TGyrYJfNPLU+aPvNY/L8ZJQRHcojGAXDleZjpxXEaKfRIHdZXhZxsui8fCtzHOkeqMjW2bzqoigSRoa49QYIuau41jC5tlDejGg6+Ckm4I4u/3Bi1hvFofccq992MRVmVDnLHoJzlvem6rGUA7uZd1pzt1OQLJVth2Q/9hUrT3RdS+PYtEPodu+t7N9Y9yLjG35Q/iuzouuf/HMZEPzcFuSPbUV62fmHpJGN1xfM3hbhyfYxdR8JTQ213zmZRHHYfsR5NVlHC9iWYbWxupNFwnREYqlqy+H4BAOgX+QkItkDKbKoZ7EbeliimsxrATpc6Pk268TIIXpRjJBj1lfOR30AV0dH3bY/isjFuv5iCbg6yVBz8BdkOrc4tbarx9TqI66ks0afkUsIuI+N3gfm6llNEqvguuCUo+1TM/sg+zOvAIxmJrOFo7M89NdWPxXxSGbHT/J7zIiJ1la0+xvuSZwCEv1zmehP5gCSs6g+E9ZGShv8Ek5lLSnIO8iwB28z4RPLSx3Y4KZcw9Vkrl7+1Zv958eTcoVMmTzNtkla55+zhjffDYiJRba7eTaNJIfekUbMJ1GKL8LkC9l
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(396003)(136003)(39830400003)(346002)(376002)(366004)(6486002)(2616005)(6512007)(6506007)(8936002)(508600001)(44832011)(66556008)(38100700002)(1076003)(36756003)(107886003)(66476007)(6666004)(66946007)(6916009)(8676002)(2906002)(316002)(83380400001)(52116002)(4326008)(86362001)(5660300002)(186003)(54906003);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: cWni6bv/46YZaDqTK+z4FJm4tcGd1EOu4eMVBr+d6oyccdwYs88g1KJmXj0c2uA3caUH5dYOrfZZAYQo1zE/jeCaMp7JyyM5orC+Bkynl2xcXtINgUA49DxVMMw5Xkc2PH0QmxFTCrIEPmjLKOLp2ynt2GAgzRlDYwMxZ3o+UjZgzzPePPL7LDjw443UVSC7s6F66Bqy5xHn3bcrZkXPF5DKL1UWFdu2jDaXkzSey2NTHYafGiuyHvYgu1AJ0il+3z1q/aOa6Ndq+nzHry2/OKm0Wlko9g5ZGByZ9qnDra7DxRqVh00AezVFaNAmloj55N0WGvlbZFMV7cJc+HXZcdcwmlJ8RGMnO4mydyI6anEMsqDVm7bboxQ0LOXvBi1s0ztvKfgq0VNxPOU/adzoPsfooWsEr3tA9YFZO6bqe45k+v6oMTXqC8SSUKZ87DHpQuu+ZNkx/NGPkdxsTnjjbIbpUp5n8Z4wfxZqlyT5HgaCMGWRLjxyCxs3BkBTXrqUnecjx9b4BYQwHgSVvQZhFq4b1MvhGU/StIi3Jw/Uwwg+Imu5xcy/a/NeMUa9yea+lyoEz3Tp1ZFRTubLY0chs8mwjEGVERhAs9myQfYh9JSJh81+CpBWTMNecZz0IIaIDjEphnpmt0E30Y+7aZCi5uFDuGr38LOx6YHftz1ieV2Fv3wNS0H3qOodOIfmQi95
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(346002)(366004)(376002)(136003)(396003)(39830400003)(83380400001)(52116002)(8676002)(2906002)(316002)(4326008)(86362001)(5660300002)(54906003)(186003)(508600001)(6506007)(8936002)(44832011)(6486002)(2616005)(6512007)(6916009)(66946007)(36756003)(107886003)(66476007)(66556008)(38100700002)(1076003)(6666004);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?G3dXWz7EpL6eKE9d93NmX4eEANngoj7V0J43OGBoH40NSpx7CMxGqoarQKzw?=
- =?us-ascii?Q?siA7VsagacOAuypbIWlgvVSy36yi0LyUYPEf0y57NwLasOa0KMK7FNStNo8K?=
- =?us-ascii?Q?njX9OOsC/s0xRS8FmKp9TAa/kbTOcnlTTUkiz/OYmcV1oxESHTdkrl77bnyn?=
- =?us-ascii?Q?oqpTh94qoPY6il0UDAyYELiaHLMevCP+hb5M+3G0uhNRYFkPQYnsdIU/AdFq?=
- =?us-ascii?Q?u1JDlGfmNxPfRBibIxqkpVSdHK8MfmQu+QW/LrTMUISsTBZTFQjCGdDWE6Wn?=
- =?us-ascii?Q?kPW8OmGNCTATIb4Dkduy4VOYnRnfLhvbHf6IQFHIZx8fgEZJquUbpPfyHKt7?=
- =?us-ascii?Q?MW74cfp923PxfjrHpAnxQiwd+MTsbdDT3at5bLL8AW7NqMTPBDZ75Agj9lu+?=
- =?us-ascii?Q?O66+r4aOEAwLbtLuY5/jHchBgpcRsvtqdpdf4aMmrepjbRYwG3Y/ZJ3umxDp?=
- =?us-ascii?Q?s45kz+1BD8ZSX58W5Fsube+e/SoZj9mcXAn99XZjRYblZ24+ywDlRMnahmve?=
- =?us-ascii?Q?6/cZrIgSuUm7v+jfAoC5lfaEropXJFrTF+CK6MiTyU5NNunJ9rdP9JG8y/qW?=
- =?us-ascii?Q?7xBVPRz8e9BWL+9CRPpjtHngOAJDqa5K//w+ZRjqKIGIbsOpdHe4evDINrAh?=
- =?us-ascii?Q?fE8WpcvH+iqzeI58mMp2X/LBRCaCLF8q788wHtBM+Zmjx2RWBlyflRQXjtfr?=
- =?us-ascii?Q?vvQOfZokXwGsgTRS9SXxiNLve6G6XdVoLniKferv2pOvIpoh4JtCFkYttzXB?=
- =?us-ascii?Q?Ro4E6fLGF7N9s0oPwwbSNNsVGWDshKr9ypotNFiI8fsLPLFul3UXi+BAhUSt?=
- =?us-ascii?Q?e36jSgc61AH50FKJzvjtEDH4cEYv68ZfS1o/Q9GkUZQqpMyUSlQDnCqLPJYS?=
- =?us-ascii?Q?JyBdBqHB06aR7LdDb0KKhsfjzKS4wlCo42lF1zyQHNQnVdeS7/PtVaoWPUGw?=
- =?us-ascii?Q?WBJIhxW4PrAIakKZhZg/BQr0TA2otphu2Pb4xhsaMtvJQOqLo2KzsrhpSah1?=
- =?us-ascii?Q?GmBShjbsMUNQMgyEADSET1YRS7geRKLCvcu8jdkkKVgWn/UdS+VvP9uYxTvw?=
- =?us-ascii?Q?kcTsKVzT8ewYTIr54PHQfTGVv1QCINzUtn+EOtqpDHlVDi93IqN7Tc/j72p2?=
- =?us-ascii?Q?bT22KphF3iqqwtSx0XmjIWQktjImYDEUls+2QiTvKU24STk1metShK/x+zks?=
- =?us-ascii?Q?gZb5QOKTk6MooJKEQ8Bnsjs/Fyapb549BJdWDBTnGDdCuct5zpfHl4jYXVt8?=
- =?us-ascii?Q?3Fn43rLzWM0XU/AalgUOMpwy7keQvZ2m40Ca3hnbv2mbkE8QC/SEvbXmbyIW?=
- =?us-ascii?Q?LXrt34qztNo/zAqt7eWmXFb6I4iWSHEFUqDmdouNfyfn/PLhD0D3g0L8SSVr?=
- =?us-ascii?Q?Cac2d3rNxbnvbOjw2W30vif4+StXgYbFV1MgMa/Pwk3HwqEgU6PIzoRzV7kL?=
- =?us-ascii?Q?wdtwXYOSwD7g4TwfGXQeVQ+wnETEyAvgE56yDXC8wa3smxyA2L8aHN7KCt9y?=
- =?us-ascii?Q?OdeVYEs1jHK1uFGynqH4Ub9qHbY7A1cN2ecv3NczrS1yzwEmjgclB0QJxqVM?=
- =?us-ascii?Q?DWOb/sm7d7X8ZC0zQXD7d2F62HJBsDlpgSRmNrZxehas9KeqJ3RdBn1W7Heb?=
- =?us-ascii?Q?i8Y/p/zqEOSusccnTJvitK3wUjz6ldKZ7W3YyxwTIxpeqX/tof/Bv4KN8xIC?=
- =?us-ascii?Q?44gHjBcgSOGJWdUabTwOiH/NRhqwAECheSul+5Lw+v3s0I/ly+rzAuR+2j9R?=
- =?us-ascii?Q?lL6LHXtJeU2/zM81jRGhxjsSHac4+Q0=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?YY7AbYlIMazxtApg0GxzF/TTR+7i/765Cmx7pOOfg+/Pn9I6rC43QocFGBBQ?=
+ =?us-ascii?Q?Dh8wloE42BNmhe5ZjNku//tKjmyZ1BXMRVtmhiyXi+fcmfE4m8NoojOPzBNT?=
+ =?us-ascii?Q?30ipZoxpxgQgcGlmN8iBD0eITEzSmXff4XylKLTSj3Z26xenl/+3o/f9slqv?=
+ =?us-ascii?Q?aDWvHHwRflDevQMPbdSxzPdcLkgoQmWn8FfJhrQkS34Alu3RCDYK6BySlUdf?=
+ =?us-ascii?Q?bDOu6FAKZ2Vmn85hqu+k5vSaRm10439O7dx4drZBdt5XYQe6GLOUrLi7GFkO?=
+ =?us-ascii?Q?2DvzVijZreN2NB4xoW/sIwkCr89dgMAGXvL5AB0bmPhlbZr+5bvHBcUuVxJo?=
+ =?us-ascii?Q?g+orecO8aRFZWbsFShUrNBU9zz/5vzoFc/o80W1Fd3zOGqYYOKFiP594Ij8v?=
+ =?us-ascii?Q?AU4y7eJ0H3A1X6VGAUPQT2sN//VKiZZDC/duSU4krVoSMilaE2LP1FqYXz/K?=
+ =?us-ascii?Q?R/KEfPK5RrabIOqPdsoyZIGlliR+/0E4p7Ca3qeGUw4/ShPWZTjCFg6l/ozw?=
+ =?us-ascii?Q?hfzUeSZpwhh0EwbT/dlXkhG0jAQEPpstAeqcyvAoWPOJD8TE4NsvlQJexuLY?=
+ =?us-ascii?Q?TNvsx6yZAcevpdIhaNHC2lTQG2IRm4dAkwv0cImRR32Wy3MKQqfYDg5JbSHG?=
+ =?us-ascii?Q?THfElRrLQfyiG8lY1+GilQv2rENex9LX1kUle8fROkAk/YBmLy1Ul15QtIlk?=
+ =?us-ascii?Q?fNfXNdgD9KvQSBlCYCfAlE6u6pa74c+Gjzqv3KyFEAu+NyTzJPdSoCQSQiT4?=
+ =?us-ascii?Q?oblAJjluQ9sOLxCuRTlqY8KwDwfTIoxgedaPehCKJd/4+8+yDislMTKFTM6e?=
+ =?us-ascii?Q?l1mIFMejQoHDitqdg6i0gkgD0OaRIha7oFfDU8JeZ+TW/PUNYc7KFB2qB/hp?=
+ =?us-ascii?Q?002ybxCVjU6KAVmcStGEVq2hB9+gMP75Nb7bVRSpqjijQaP8rx0wd90/iUoG?=
+ =?us-ascii?Q?wuSYLHPlqgYXFY+JfBLZNSEPjYiwJ5infStVaj/DJAD3wUbkXZzUprH/STDz?=
+ =?us-ascii?Q?sltgYjm93HfXTes+Z43Vk8HwxyHWuxqlGMolvWxTyhcMYIbkUpD/qqRMGveM?=
+ =?us-ascii?Q?13aOAUL+59xkDaZe2nCnfC9YA/5MEo0J2RlvYTxa96D69+H/cBNmt5ZZNrbE?=
+ =?us-ascii?Q?hyr+5VzhF5r231ogSiExmTuY9r0og88YqaKnItEtEF1+atf94/ConHegdBre?=
+ =?us-ascii?Q?ODsCAr3LKkRMeY9veyzneWTGUyoMiYGJ6nTvzvzk97Vj4ni2QIRLfI/J3ECK?=
+ =?us-ascii?Q?+bcxlhWJX8/IGwXZVuftifm0MeFYqGfgIZf4pQ0O6enU/+nvKMcAGRIo4pp4?=
+ =?us-ascii?Q?gJL86LXCoP+vVFZlCxpxsy5fQ+g2nZm9ZpvDlSLuvtfVQPb4hKvkSdUpb2YB?=
+ =?us-ascii?Q?K9TgSUPURlXqLIEPx6AHo6lh1vKrg/YCUwmwwsE0iake9oKnopPEK7pE/ULh?=
+ =?us-ascii?Q?eTHkQhdzsu2cRbIeQlo0ysegAO2hxz9UBaLRUKSg2GkXzrMDlI8Q9kH47/kZ?=
+ =?us-ascii?Q?k0rro5npVLv0UPvtRUDBC1GB0RPeMJmYrI0Ygu7ysQd3mCLzOptdkoEtM92S?=
+ =?us-ascii?Q?jRIoFybLbB3pwYTL0Zv7rfeMDBTfX5dOZW2lmxtS88KoYB19JpyJtgJ6AX8a?=
+ =?us-ascii?Q?elycJOQTEZGgIKUYoRAgnmoS070z4mRZjFP2VkRievB4pSqKYNlYgrd0szes?=
+ =?us-ascii?Q?gDOfrSQwUzg8D574oCk5Y5Rs4Moh4cfoO60BSyFMWFop+bXtGsmE5qdjzsao?=
+ =?us-ascii?Q?HTgpzVPCA4wPYM7wKuDWvrTvpflL4Nc=3D?=
 X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cf11329b-e344-473b-33c3-08d9baf6401a
+X-MS-Exchange-CrossTenant-Network-Message-Id: 27590a60-0fcb-42e1-e77f-08d9baf641f8
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Dec 2021 09:28:25.2982
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Dec 2021 09:28:28.3826
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: jBVGBNa2hLrT9duqKkJ3XVUxAmuGgqNtd+jYOFY/9X1Xu4qgmHaSiYhyVExL15MW0AQfcaE0/e1j0pWuiev+AjAqGW5FQGO7ZIFw/zxMdnE=
+X-MS-Exchange-CrossTenant-UserPrincipalName: t7uKaLKQXcWe4MfpNkeMgwkI3IDdzDUK7UAKjm+u4hsW5/WeDu1SFjSC3GpAtBMEx6j3fFNxOidyXKSgmAcf+KK2FaYgeZ3t6z9C1rvv0Jo=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR13MB4796
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Baowen Zheng says:
+From: Baowen Zheng <baowen.zheng@corigine.com>
 
-Allow use of flow_indr_dev_register/flow_indr_dev_setup_offload to offload
-tc actions independent of flows.
+Fill flags to action structure to allow user control if
+the action should be offloaded to hardware or not.
 
-The motivation for this work is to prepare for using TC police action
-instances to provide hardware offload of OVS metering feature - which calls
-for policers that may be used by multiple flows and whose lifecycle is
-independent of any flows that use them.
+Signed-off-by: Baowen Zheng <baowen.zheng@corigine.com>
+Signed-off-by: Louis Peens <louis.peens@corigine.com>
+Signed-off-by: Simon Horman <simon.horman@corigine.com>
+---
+ net/sched/act_bpf.c      | 2 +-
+ net/sched/act_connmark.c | 2 +-
+ net/sched/act_ctinfo.c   | 2 +-
+ net/sched/act_gate.c     | 2 +-
+ net/sched/act_ife.c      | 2 +-
+ net/sched/act_ipt.c      | 2 +-
+ net/sched/act_mpls.c     | 2 +-
+ net/sched/act_nat.c      | 2 +-
+ net/sched/act_pedit.c    | 2 +-
+ net/sched/act_police.c   | 2 +-
+ net/sched/act_sample.c   | 2 +-
+ net/sched/act_simple.c   | 2 +-
+ net/sched/act_skbedit.c  | 2 +-
+ net/sched/act_skbmod.c   | 2 +-
+ 14 files changed, 14 insertions(+), 14 deletions(-)
 
-This patch includes basic changes to offload drivers to return EOPNOTSUPP
-if this feature is used - it is not yet supported by any driver.
-
-Tc cli command to offload and quote an action:
-
- # tc qdisc del dev $DEV ingress && sleep 1 || true
- # tc actions delete action police index 200 || true
-
- # tc qdisc add dev $DEV ingress
- # tc qdisc show dev $DEV ingress
-
- # tc actions add action police rate 100mbit burst 10000k index 200 skip_sw
- # tc -s -d actions list action police
- total acts 1
-
-         action order 0:  police 0xc8 rate 100Mbit burst 10000Kb mtu 2Kb action reclassify 
-         overhead 0b linklayer ethernet
-         ref 1 bind 0  installed 142 sec used 0 sec
-         Action statistics:
-         Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
-         backlog 0b 0p requeues 0
-         skip_sw in_hw in_hw_count 1
-         used_hw_stats delayed
-
- # tc filter add dev $DEV protocol ip parent ffff: \
-         flower skip_sw ip_proto tcp action police index 200
- # tc -s -d filter show dev $DEV protocol ip parent ffff:
- filter pref 49152 flower chain 0
- filter pref 49152 flower chain 0 handle 0x1
-   eth_type ipv4
-   ip_proto tcp
-   skip_sw
-   in_hw in_hw_count 1
-         action order 1:  police 0xc8 rate 100Mbit burst 10000Kb mtu 2Kb action 
-         reclassify overhead 0b linklayer ethernet
-         ref 2 bind 1  installed 300 sec used 0 sec
-         Action statistics:
-         Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
-         backlog 0b 0p requeues 0
-         skip_sw in_hw in_hw_count 1
-         used_hw_stats delayed
-
- # tc filter add dev $DEV protocol ipv6 parent ffff: \
-         flower skip_sw ip_proto tcp action police index 200
- # tc -s -d filter show dev $DEV protocol ipv6 parent ffff:
-   filter pref 49151 flower chain 0
-   filter pref 49151 flower chain 0 handle 0x1
-   eth_type ipv6
-   ip_proto tcp
-   skip_sw
-   in_hw in_hw_count 1
-         action order 1:  police 0xc8 rate 100Mbit burst 10000Kb mtu 2Kb action 
-         reclassify overhead 0b linklayer ethernet
-         ref 3 bind 2  installed 761 sec used 0 sec
-         Action statistics:
-         Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
-         backlog 0b 0p requeues 0
-         skip_sw in_hw in_hw_count 1
-         used_hw_stats delayed
-
- # tc -s -d actions list action police
- total acts 1
-
-          action order 0:  police 0xc8 rate 100Mbit burst 10000Kb mtu 2Kb action reclassify overhead 0b linklayer ethernet
-          ref 3 bind 2  installed 917 sec used 0 sec
-          Action statistics:
-          Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
-          backlog 0b 0p requeues 0
-          skip_sw in_hw in_hw_count 1
-         used_hw_stats delayed
-
-Changes compared to v5 patches:
-* Fix issue reported by Dan Carpenter found using Smatch.
-
-Baowen Zheng (12):
-  flow_offload: fill flags to action structure
-  flow_offload: reject to offload tc actions in offload drivers
-  flow_offload: add index to flow_action_entry structure
-  flow_offload: return EOPNOTSUPP for the unsupported mpls action type
-  flow_offload: add ops to tc_action_ops for flow action setup
-  flow_offload: allow user to offload tc action to net device
-  flow_offload: add skip_hw and skip_sw to control if offload the action
-  flow_offload: add process to update action stats from hardware
-  net: sched: save full flags for tc action
-  flow_offload: add reoffload process to update hw_count
-  flow_offload: validate flags of filter and actions
-  selftests: tc-testing: add action offload selftest for action and
-    filter
-
- drivers/net/dsa/ocelot/felix_vsc9959.c        |   4 +-
- drivers/net/dsa/sja1105/sja1105_flower.c      |   2 +-
- drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c  |   2 +-
- .../net/ethernet/freescale/enetc/enetc_qos.c  |   6 +-
- .../ethernet/mellanox/mlx5/core/en/rep/tc.c   |   3 +
- .../ethernet/mellanox/mlxsw/spectrum_flower.c |   2 +-
- drivers/net/ethernet/mscc/ocelot_flower.c     |   2 +-
- .../ethernet/netronome/nfp/flower/offload.c   |   3 +
- include/linux/netdevice.h                     |   1 +
- include/net/act_api.h                         |  27 +-
- include/net/flow_offload.h                    |  20 +-
- include/net/pkt_cls.h                         |  27 +-
- include/net/tc_act/tc_gate.h                  |   5 -
- include/uapi/linux/pkt_cls.h                  |   9 +-
- net/core/flow_offload.c                       |  46 +-
- net/sched/act_api.c                           | 450 +++++++++++++++++-
- net/sched/act_bpf.c                           |   2 +-
- net/sched/act_connmark.c                      |   2 +-
- net/sched/act_csum.c                          |  19 +
- net/sched/act_ct.c                            |  21 +
- net/sched/act_ctinfo.c                        |   2 +-
- net/sched/act_gact.c                          |  38 ++
- net/sched/act_gate.c                          |  51 +-
- net/sched/act_ife.c                           |   2 +-
- net/sched/act_ipt.c                           |   2 +-
- net/sched/act_mirred.c                        |  50 ++
- net/sched/act_mpls.c                          |  54 ++-
- net/sched/act_nat.c                           |   2 +-
- net/sched/act_pedit.c                         |  36 +-
- net/sched/act_police.c                        |  27 +-
- net/sched/act_sample.c                        |  32 +-
- net/sched/act_simple.c                        |   2 +-
- net/sched/act_skbedit.c                       |  38 +-
- net/sched/act_skbmod.c                        |   2 +-
- net/sched/act_tunnel_key.c                    |  54 +++
- net/sched/act_vlan.c                          |  48 ++
- net/sched/cls_api.c                           | 263 ++--------
- net/sched/cls_flower.c                        |   9 +-
- net/sched/cls_matchall.c                      |   9 +-
- net/sched/cls_u32.c                           |  12 +-
- .../tc-testing/tc-tests/actions/police.json   |  24 +
- .../tc-testing/tc-tests/filters/matchall.json |  24 +
- 42 files changed, 1144 insertions(+), 290 deletions(-)
-
--- 
-2.20.1
-
-
-Baowen Zheng (12):
-  flow_offload: fill flags to action structure
-  flow_offload: reject to offload tc actions in offload drivers
-  flow_offload: add index to flow_action_entry structure
-  flow_offload: return EOPNOTSUPP for the unsupported mpls action type
-  flow_offload: add ops to tc_action_ops for flow action setup
-  flow_offload: allow user to offload tc action to net device
-  flow_offload: add skip_hw and skip_sw to control if offload the action
-  flow_offload: add process to update action stats from hardware
-  net: sched: save full flags for tc action
-  flow_offload: add reoffload process to update hw_count
-  flow_offload: validate flags of filter and actions
-  selftests: tc-testing: add action offload selftest for action and
-    filter
-
- drivers/net/dsa/ocelot/felix_vsc9959.c        |   4 +-
- drivers/net/dsa/sja1105/sja1105_flower.c      |   2 +-
- drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c  |   2 +-
- .../net/ethernet/freescale/enetc/enetc_qos.c  |   6 +-
- .../ethernet/mellanox/mlx5/core/en/rep/tc.c   |   3 +
- .../ethernet/mellanox/mlxsw/spectrum_flower.c |   2 +-
- drivers/net/ethernet/mscc/ocelot_flower.c     |   2 +-
- .../ethernet/netronome/nfp/flower/offload.c   |   3 +
- include/linux/netdevice.h                     |   1 +
- include/net/act_api.h                         |  27 +-
- include/net/flow_offload.h                    |  20 +-
- include/net/pkt_cls.h                         |  27 +-
- include/net/tc_act/tc_gate.h                  |   5 -
- include/uapi/linux/pkt_cls.h                  |   9 +-
- net/core/flow_offload.c                       |  46 +-
- net/sched/act_api.c                           | 451 +++++++++++++++++-
- net/sched/act_bpf.c                           |   2 +-
- net/sched/act_connmark.c                      |   2 +-
- net/sched/act_csum.c                          |  19 +
- net/sched/act_ct.c                            |  21 +
- net/sched/act_ctinfo.c                        |   2 +-
- net/sched/act_gact.c                          |  38 ++
- net/sched/act_gate.c                          |  51 +-
- net/sched/act_ife.c                           |   2 +-
- net/sched/act_ipt.c                           |   2 +-
- net/sched/act_mirred.c                        |  50 ++
- net/sched/act_mpls.c                          |  54 ++-
- net/sched/act_nat.c                           |   2 +-
- net/sched/act_pedit.c                         |  36 +-
- net/sched/act_police.c                        |  27 +-
- net/sched/act_sample.c                        |  32 +-
- net/sched/act_simple.c                        |   2 +-
- net/sched/act_skbedit.c                       |  38 +-
- net/sched/act_skbmod.c                        |   2 +-
- net/sched/act_tunnel_key.c                    |  54 +++
- net/sched/act_vlan.c                          |  48 ++
- net/sched/cls_api.c                           | 263 ++--------
- net/sched/cls_flower.c                        |   9 +-
- net/sched/cls_matchall.c                      |   9 +-
- net/sched/cls_u32.c                           |  12 +-
- .../tc-testing/tc-tests/actions/police.json   |  24 +
- .../tc-testing/tc-tests/filters/matchall.json |  24 +
- 42 files changed, 1145 insertions(+), 290 deletions(-)
-
+diff --git a/net/sched/act_bpf.c b/net/sched/act_bpf.c
+index f2bf896331a5..a77d8908e737 100644
+--- a/net/sched/act_bpf.c
++++ b/net/sched/act_bpf.c
+@@ -305,7 +305,7 @@ static int tcf_bpf_init(struct net *net, struct nlattr *nla,
+ 	ret = tcf_idr_check_alloc(tn, &index, act, bind);
+ 	if (!ret) {
+ 		ret = tcf_idr_create(tn, index, est, act,
+-				     &act_bpf_ops, bind, true, 0);
++				     &act_bpf_ops, bind, true, flags);
+ 		if (ret < 0) {
+ 			tcf_idr_cleanup(tn, index);
+ 			return ret;
+diff --git a/net/sched/act_connmark.c b/net/sched/act_connmark.c
+index 94e78ac7a748..09e2aafc8943 100644
+--- a/net/sched/act_connmark.c
++++ b/net/sched/act_connmark.c
+@@ -124,7 +124,7 @@ static int tcf_connmark_init(struct net *net, struct nlattr *nla,
+ 	ret = tcf_idr_check_alloc(tn, &index, a, bind);
+ 	if (!ret) {
+ 		ret = tcf_idr_create(tn, index, est, a,
+-				     &act_connmark_ops, bind, false, 0);
++				     &act_connmark_ops, bind, false, flags);
+ 		if (ret) {
+ 			tcf_idr_cleanup(tn, index);
+ 			return ret;
+diff --git a/net/sched/act_ctinfo.c b/net/sched/act_ctinfo.c
+index 549374a2d008..0281e45987a4 100644
+--- a/net/sched/act_ctinfo.c
++++ b/net/sched/act_ctinfo.c
+@@ -212,7 +212,7 @@ static int tcf_ctinfo_init(struct net *net, struct nlattr *nla,
+ 	err = tcf_idr_check_alloc(tn, &index, a, bind);
+ 	if (!err) {
+ 		ret = tcf_idr_create(tn, index, est, a,
+-				     &act_ctinfo_ops, bind, false, 0);
++				     &act_ctinfo_ops, bind, false, flags);
+ 		if (ret) {
+ 			tcf_idr_cleanup(tn, index);
+ 			return ret;
+diff --git a/net/sched/act_gate.c b/net/sched/act_gate.c
+index 7df72a4197a3..ac985c53ebaf 100644
+--- a/net/sched/act_gate.c
++++ b/net/sched/act_gate.c
+@@ -357,7 +357,7 @@ static int tcf_gate_init(struct net *net, struct nlattr *nla,
+ 
+ 	if (!err) {
+ 		ret = tcf_idr_create(tn, index, est, a,
+-				     &act_gate_ops, bind, false, 0);
++				     &act_gate_ops, bind, false, flags);
+ 		if (ret) {
+ 			tcf_idr_cleanup(tn, index);
+ 			return ret;
+diff --git a/net/sched/act_ife.c b/net/sched/act_ife.c
+index b757f90a2d58..41ba55e60b1b 100644
+--- a/net/sched/act_ife.c
++++ b/net/sched/act_ife.c
+@@ -553,7 +553,7 @@ static int tcf_ife_init(struct net *net, struct nlattr *nla,
+ 
+ 	if (!exists) {
+ 		ret = tcf_idr_create(tn, index, est, a, &act_ife_ops,
+-				     bind, true, 0);
++				     bind, true, flags);
+ 		if (ret) {
+ 			tcf_idr_cleanup(tn, index);
+ 			kfree(p);
+diff --git a/net/sched/act_ipt.c b/net/sched/act_ipt.c
+index 265b1443e252..2f3d507c24a1 100644
+--- a/net/sched/act_ipt.c
++++ b/net/sched/act_ipt.c
+@@ -145,7 +145,7 @@ static int __tcf_ipt_init(struct net *net, unsigned int id, struct nlattr *nla,
+ 
+ 	if (!exists) {
+ 		ret = tcf_idr_create(tn, index, est, a, ops, bind,
+-				     false, 0);
++				     false, flags);
+ 		if (ret) {
+ 			tcf_idr_cleanup(tn, index);
+ 			return ret;
+diff --git a/net/sched/act_mpls.c b/net/sched/act_mpls.c
+index 8faa4c58305e..2b30dc562743 100644
+--- a/net/sched/act_mpls.c
++++ b/net/sched/act_mpls.c
+@@ -248,7 +248,7 @@ static int tcf_mpls_init(struct net *net, struct nlattr *nla,
+ 
+ 	if (!exists) {
+ 		ret = tcf_idr_create(tn, index, est, a,
+-				     &act_mpls_ops, bind, true, 0);
++				     &act_mpls_ops, bind, true, flags);
+ 		if (ret) {
+ 			tcf_idr_cleanup(tn, index);
+ 			return ret;
+diff --git a/net/sched/act_nat.c b/net/sched/act_nat.c
+index 7dd6b586ba7f..2a39b3729e84 100644
+--- a/net/sched/act_nat.c
++++ b/net/sched/act_nat.c
+@@ -61,7 +61,7 @@ static int tcf_nat_init(struct net *net, struct nlattr *nla, struct nlattr *est,
+ 	err = tcf_idr_check_alloc(tn, &index, a, bind);
+ 	if (!err) {
+ 		ret = tcf_idr_create(tn, index, est, a,
+-				     &act_nat_ops, bind, false, 0);
++				     &act_nat_ops, bind, false, flags);
+ 		if (ret) {
+ 			tcf_idr_cleanup(tn, index);
+ 			return ret;
+diff --git a/net/sched/act_pedit.c b/net/sched/act_pedit.c
+index c6c862c459cc..cd3b8aad3192 100644
+--- a/net/sched/act_pedit.c
++++ b/net/sched/act_pedit.c
+@@ -189,7 +189,7 @@ static int tcf_pedit_init(struct net *net, struct nlattr *nla,
+ 	err = tcf_idr_check_alloc(tn, &index, a, bind);
+ 	if (!err) {
+ 		ret = tcf_idr_create(tn, index, est, a,
+-				     &act_pedit_ops, bind, false, 0);
++				     &act_pedit_ops, bind, false, flags);
+ 		if (ret) {
+ 			tcf_idr_cleanup(tn, index);
+ 			goto out_free;
+diff --git a/net/sched/act_police.c b/net/sched/act_police.c
+index 9e77ba8401e5..c13a6245dfba 100644
+--- a/net/sched/act_police.c
++++ b/net/sched/act_police.c
+@@ -90,7 +90,7 @@ static int tcf_police_init(struct net *net, struct nlattr *nla,
+ 
+ 	if (!exists) {
+ 		ret = tcf_idr_create(tn, index, NULL, a,
+-				     &act_police_ops, bind, true, 0);
++				     &act_police_ops, bind, true, flags);
+ 		if (ret) {
+ 			tcf_idr_cleanup(tn, index);
+ 			return ret;
+diff --git a/net/sched/act_sample.c b/net/sched/act_sample.c
+index ce859b0e0deb..91a7a93d5f6a 100644
+--- a/net/sched/act_sample.c
++++ b/net/sched/act_sample.c
+@@ -70,7 +70,7 @@ static int tcf_sample_init(struct net *net, struct nlattr *nla,
+ 
+ 	if (!exists) {
+ 		ret = tcf_idr_create(tn, index, est, a,
+-				     &act_sample_ops, bind, true, 0);
++				     &act_sample_ops, bind, true, flags);
+ 		if (ret) {
+ 			tcf_idr_cleanup(tn, index);
+ 			return ret;
+diff --git a/net/sched/act_simple.c b/net/sched/act_simple.c
+index e617ab4505ca..8c1d60bde93e 100644
+--- a/net/sched/act_simple.c
++++ b/net/sched/act_simple.c
+@@ -129,7 +129,7 @@ static int tcf_simp_init(struct net *net, struct nlattr *nla,
+ 
+ 	if (!exists) {
+ 		ret = tcf_idr_create(tn, index, est, a,
+-				     &act_simp_ops, bind, false, 0);
++				     &act_simp_ops, bind, false, flags);
+ 		if (ret) {
+ 			tcf_idr_cleanup(tn, index);
+ 			return ret;
+diff --git a/net/sched/act_skbedit.c b/net/sched/act_skbedit.c
+index d30ecbfc8f84..cb2d10d3dcc0 100644
+--- a/net/sched/act_skbedit.c
++++ b/net/sched/act_skbedit.c
+@@ -176,7 +176,7 @@ static int tcf_skbedit_init(struct net *net, struct nlattr *nla,
+ 
+ 	if (!exists) {
+ 		ret = tcf_idr_create(tn, index, est, a,
+-				     &act_skbedit_ops, bind, true, 0);
++				     &act_skbedit_ops, bind, true, flags);
+ 		if (ret) {
+ 			tcf_idr_cleanup(tn, index);
+ 			return ret;
+diff --git a/net/sched/act_skbmod.c b/net/sched/act_skbmod.c
+index 9b6b52c5e24e..2083612d8780 100644
+--- a/net/sched/act_skbmod.c
++++ b/net/sched/act_skbmod.c
+@@ -168,7 +168,7 @@ static int tcf_skbmod_init(struct net *net, struct nlattr *nla,
+ 
+ 	if (!exists) {
+ 		ret = tcf_idr_create(tn, index, est, a,
+-				     &act_skbmod_ops, bind, true, 0);
++				     &act_skbmod_ops, bind, true, flags);
+ 		if (ret) {
+ 			tcf_idr_cleanup(tn, index);
+ 			return ret;
 -- 
 2.20.1
 
