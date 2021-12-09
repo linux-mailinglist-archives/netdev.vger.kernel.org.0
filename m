@@ -2,96 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A843946E3A3
-	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 09:00:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 94C7A46E3A6
+	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 09:01:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234189AbhLIIEV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Dec 2021 03:04:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55612 "EHLO
+        id S234250AbhLIIEv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Dec 2021 03:04:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229590AbhLIIEV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 03:04:21 -0500
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 207FDC061746
-        for <netdev@vger.kernel.org>; Thu,  9 Dec 2021 00:00:48 -0800 (PST)
-Received: by mail-yb1-xb29.google.com with SMTP id v203so11757581ybe.6
-        for <netdev@vger.kernel.org>; Thu, 09 Dec 2021 00:00:48 -0800 (PST)
+        with ESMTP id S229686AbhLIIEu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 03:04:50 -0500
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02894C061746;
+        Thu,  9 Dec 2021 00:01:18 -0800 (PST)
+Received: by mail-pl1-x629.google.com with SMTP id k4so3286101plx.8;
+        Thu, 09 Dec 2021 00:01:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=y7QisQKK1jSa5VBzzUpw4VqQ+Yo7QjjIW3wdQF4URmw=;
-        b=Vl59z+wTmb6FbQD/I9ZwPHiBEM/lXxuW8TxSSP4y7e1uoYYq//OM/iivAArTV2P+zY
-         5Ftz+rh7CU9XR8SBJ2DvICoeuuSpXBos6YuFAZoVcEXRqpdTqm5aLbk0b8AClbhZCixJ
-         QPjL6iIyL4BPA6Ej4DLSzTRROcW9CW1HreAzEvhBLNTvUlP6XYrv0YUFw1NYLu3mghdP
-         WKVyRNY5T7NG9hWoaAQUsiI2nk1Td06AshHLHgmkkdZkeV6tYImfKc01AZQVWlhQEcDq
-         6Ggn339PycTJXhDSI3o6saQ1co5EHBqy3zaeqdeMx6srPAx9yS+H6bDItvMYYOXGtLli
-         brnA==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=QfRJ3meNcEMg/hBc840EZK1vTCSuG9vpEpM34yNkkrE=;
+        b=QDOyQpnmpjp7JAZNDedIohyKhEj3k0F5OQ5OgJ7PWN9GMeFJZ9zLwNsh3uYEA49Pq/
+         70Arnmp+Q5mRhRkPH/lgsZPWHxqtQC5NxWoWbeG6mkUPHYzUAM07rSQv0Nnq6etmng6x
+         Xc3Mpbaywhms4wlqExRJnQQBTsamipCYGPDj5/tKoBskHc1SMg+FpcOJafvWm6mJ2M8F
+         f34CUfSNNGDyBtvHwd2hTOilx5JHK3nUiEKgDQqeraQvybVSadTiVyZe9Uz5yHtR7g1q
+         cyVZDwy46nZbajMBab5Ext1JJm5lPEZBV2nR46DRWezx/Vc/wWKIa4pRPo8Xw7/aLku5
+         7YIw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=y7QisQKK1jSa5VBzzUpw4VqQ+Yo7QjjIW3wdQF4URmw=;
-        b=etCbpdQ8YLSLvGfXNa0tYbFOjlTm+1TfoaZyqoPu8LKYKAjBakkH5aIHAfTfHsoJ2t
-         5xLBFplHlWdqm+1XlcGeSy7Tpzj3edCQuniv1L0eZ+d4mlplQ/osANyXHZaBB3SU8MUn
-         4Za3YuBrpz8ThSN+g87oATDQ/xilpDr9fADjT6uLWMG6d6ZrLI0rGISpJ0ykM6BORH5j
-         YQFOKpX+d78JmBC1AECU8b05YDtuUBSVcwB6QsLQSBPZjTDVSMuHp5Xhpznwm1xiHzuF
-         fh2Q8w5VkInAIQMvu5ckDK2OdS7NVHhgZ51F5wqLMcM7PXwVPCXOJT/kgalt7ovepLEU
-         zrGg==
-X-Gm-Message-State: AOAM530gHk+iQQ8SZL7zg+fx8g0MJyKwKjouEoKwil41Q7Eqf8vIdl4a
-        VjHMiD5K9koPpGGhalnSHN0KgeqpBEc/2wJpKP1XWg==
-X-Google-Smtp-Source: ABdhPJwp/iEmqGtD204Mgm0Jb27/zMhKXrbP4fJ+A5MVaVdM+TuS6YX4wice54QbfNFRggUNSAvXrf/HpuRllMy0FcQ=
-X-Received: by 2002:a05:6902:1025:: with SMTP id x5mr4640258ybt.156.1639036847016;
- Thu, 09 Dec 2021 00:00:47 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=QfRJ3meNcEMg/hBc840EZK1vTCSuG9vpEpM34yNkkrE=;
+        b=3CF+hh+8vdWpfl+r7wMLSsbjgFP4oRtZUGgFBIEKP6JXkhGzBWxJnJWaNFz5nBLodV
+         4J1M61enR9/AZThvQ3SqnWPu3oNBuzSbzjIRUJbaFrNp82YX1tamUJd4saurtXtfquWW
+         wEup+wljmn3aPvx0dXtrk9sph1o71gBP4eOHkcF7CHryGa5fwvioCJPss816y/zIAXON
+         5R19MJjSmnT0zXC6/f+10I1052TKlGoEP06FPaYFah5oVu5d8Pn24E/hRB8EZ3W5x7VO
+         Z+L23+b2Rwz1X++eQTIsJfKgNX27ow62DxJQTlqwwC7fOjMBjmpg28zX6L+LFM7FlnHT
+         l1tA==
+X-Gm-Message-State: AOAM533okux/BSYHkzN1+s0aCkP+CP17eVyoDZmB7P6d5cMqtOKzgEpO
+        hnClXReujDNgdEnKHw+tg/OKpvcmSCg=
+X-Google-Smtp-Source: ABdhPJyyQe7HdQxrvV1i6b8tnzpLKmPUt7sloM1aRGCMI4uQiuYu7l8f9I3yg1o4VPv0cEAQBxTqQw==
+X-Received: by 2002:a17:90a:1283:: with SMTP id g3mr13615242pja.174.1639036877529;
+        Thu, 09 Dec 2021 00:01:17 -0800 (PST)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id h6sm5835126pfh.82.2021.12.09.00.01.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Dec 2021 00:01:17 -0800 (PST)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: chi.minghao@zte.com.cn
+To:     andrii.nakryiko@gmail.com
+Cc:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        cgel.zte@gmail.com, chi.minghao@zte.com.cn, daniel@iogearbox.net,
+        davem@davemloft.net, hawk@kernel.org, john.fastabend@gmail.com,
+        kafai@fb.com, kpsingh@kernel.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        songliubraving@fb.com, yhs@fb.com, zealci@zte.com.cm
+Subject: [PATCHv2 bpf-next] samples/bpf:remove unneeded variable
+Date:   Thu,  9 Dec 2021 08:00:51 +0000
+Message-Id: <20211209080051.421844-1-chi.minghao@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <CAEf4BzacuM8cR8Xuv5tdg7=KScVi26pZ3CjewAy=UuHouiRZdg@mail.gmail.com>
+References: <CAEf4BzacuM8cR8Xuv5tdg7=KScVi26pZ3CjewAy=UuHouiRZdg@mail.gmail.com>
 MIME-Version: 1.0
-References: <20211209013250.44347-1-kuniyu@amazon.co.jp>
-In-Reply-To: <20211209013250.44347-1-kuniyu@amazon.co.jp>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 9 Dec 2021 00:00:35 -0800
-Message-ID: <CANn89iJ12OugQTv4JHwVWKtZp88sbQKXD61PvnQWOo3009tTKQ@mail.gmail.com>
-Subject: Re: [PATCH v2 net-next] tcp: Warn if sock_owned_by_user() is true in tcp_child_process().
-To:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Benjamin Herrenschmidt <benh@amazon.com>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 8, 2021 at 5:33 PM Kuniyuki Iwashima <kuniyu@amazon.co.jp> wrote:
->
-> While creating a child socket from ACK (not TCP Fast Open case), before
-> v2.3.41, we used to call bh_lock_sock() later than now; it was called just
-> before tcp_rcv_state_process().  The full socket was put into an accept
-> queue and exposed to other CPUs before bh_lock_sock() so that process
-> context might have acquired the lock by then.  Thus, we had to check if any
-> process context was accessing the socket before tcp_rcv_state_process().
->
+From: Minghao Chi <chi.minghao@zte.com.cn>
 
-I think you misunderstood me.
+return value form directly instead of
+taking this in another redundant variable.
 
-I think this code is not dead yet, so I would :
+Reported-by: Zeal Robot <zealci@zte.com.cm>
+Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+---
+ samples/bpf/xdp_redirect_cpu.bpf.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-Not include a Fixes: tag to avoid unnecessary backports (of a patch
-and its revert)
+diff --git a/samples/bpf/xdp_redirect_cpu.bpf.c b/samples/bpf/xdp_redirect_cpu.bpf.c
+index f10fe3cf25f6..25e3a405375f 100644
+--- a/samples/bpf/xdp_redirect_cpu.bpf.c
++++ b/samples/bpf/xdp_redirect_cpu.bpf.c
+@@ -100,7 +100,6 @@ u16 get_dest_port_ipv4_udp(struct xdp_md *ctx, u64 nh_off)
+ 	void *data     = (void *)(long)ctx->data;
+ 	struct iphdr *iph = data + nh_off;
+ 	struct udphdr *udph;
+-	u16 dport;
+ 
+ 	if (iph + 1 > data_end)
+ 		return 0;
+@@ -111,8 +110,7 @@ u16 get_dest_port_ipv4_udp(struct xdp_md *ctx, u64 nh_off)
+ 	if (udph + 1 > data_end)
+ 		return 0;
+ 
+-	dport = bpf_ntohs(udph->dest);
+-	return dport;
++	return bpf_ntohs(udph->dest);
+ }
+ 
+ static __always_inline
+-- 
+2.25.1
 
-If you want to get syzbot coverage for few releases, especially with
-MPTCP and synflood,
-you  can then submit a patch like the following.
-
-diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
-index cf913a66df17..19da6e442fca 100644
---- a/net/ipv4/tcp_minisocks.c
-+++ b/net/ipv4/tcp_minisocks.c
-@@ -843,6 +843,9 @@ int tcp_child_process(struct sock *parent, struct
-sock *child,
-                 * in main socket hash table and lock on listening
-                 * socket does not protect us more.
-                 */
-+
-+               /* Check if this code path is obsolete ? */
-+               WARN_ON_ONCE(1);
-                __sk_add_backlog(child, skb);
-        }
