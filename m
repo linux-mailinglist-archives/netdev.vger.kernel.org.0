@@ -2,86 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 99B1746E811
-	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 13:07:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 68AC746E830
+	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 13:11:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237092AbhLIMKg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Dec 2021 07:10:36 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:39015 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237091AbhLIMKd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 07:10:33 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1639051619;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=VrYGybXz2DW34hGWfFgETOhknQ/BQWp9erybghjeVR0=;
-        b=WkE3MXB19B9W6pRT4dnMhW1RsACgFofzbK0hFyGWeq0ZtaTMvAmthXVln0P5Ymw7iM6/HB
-        vErAZAnPG4UtPUpd2ZDOfzbKu6eOaAcWutHtKjTqa8iMxkyhvoaZVxK3GjgA+r3YCJMuNE
-        dYVdIquC2CxsKc63IspaN16boS4b6qI=
-Received: from mail-io1-f69.google.com (mail-io1-f69.google.com
- [209.85.166.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-496-bWsPtCwIPnm7QVUTfilyfg-1; Thu, 09 Dec 2021 07:06:58 -0500
-X-MC-Unique: bWsPtCwIPnm7QVUTfilyfg-1
-Received: by mail-io1-f69.google.com with SMTP id ay10-20020a5d9d8a000000b005e238eaeaa9so6757069iob.12
-        for <netdev@vger.kernel.org>; Thu, 09 Dec 2021 04:06:58 -0800 (PST)
+        id S230308AbhLIMOp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Dec 2021 07:14:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58180 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229530AbhLIMOo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 07:14:44 -0500
+Received: from mail-ua1-x934.google.com (mail-ua1-x934.google.com [IPv6:2607:f8b0:4864:20::934])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C990C061746
+        for <netdev@vger.kernel.org>; Thu,  9 Dec 2021 04:11:11 -0800 (PST)
+Received: by mail-ua1-x934.google.com with SMTP id w23so10330846uao.5
+        for <netdev@vger.kernel.org>; Thu, 09 Dec 2021 04:11:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=9b5xBisuK4x3KA4EUoNHvHf5Gu6yWcexSQe2ySnZ6qU=;
+        b=PpRsZRE4BxbIei8JmVsVsgBe1gE21qg28U2ZOt5KBpybCMuLJWSQy+uYvg8WCanP9A
+         jGUF0isDGYhH/GwPgwYaCq/L3EefdxYBwhsLksPcpwbxKrelub2zgO0wDtIBnGGuZEBc
+         jycNvAC4N0sUCDWbQPu6o1Ced8Nmxu7gKY6geTZWel++ObVgvvxAp5w9/30eGE5iKE3q
+         QiMrAaeqiC3fFPd0u3zrYvj9MYtBgGoVLpj2wMi+OSICiqQH6qwzHIOsetK3fko1ef7p
+         LTIdvESCorQN3FqnBDJmOIlNtjhMbDaCxcv58SmlZSpCBQtn6eOgnVivRvXwFS0NSqCC
+         pOQg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:content-transfer-encoding;
-        bh=VrYGybXz2DW34hGWfFgETOhknQ/BQWp9erybghjeVR0=;
-        b=vnNJlYFdC3fqhn7YAN5DzKSNrS7GE8CPQT2kmdaZ+cocyEqjDlCYMT6aIT+M7+ALs6
-         Fc3GLp1HOfgc5mtMmmlC5PkgB+nKVgwaGfSCOIJtgMvG1/1lh/V+eU5AiGUSF3B7uKNn
-         ZVgkarhe7n8vIQZccyQIhrUrqb8uSGrAe3U2l6van+juNpoVEGzTUINJqOfZij95K4zn
-         LSuFx4x7z6ivQO/lIJuV18iX/vzxfO0jHXCbyt77Zs4NcIPfIQNnZimhJJUrgc07Mxhd
-         YJGTdeezFJndvODWFxVFhY46YXDanJ8r2mSIiZzVcoDvVeCfIEt1qi/3aJWP1QWreyrf
-         IulA==
-X-Gm-Message-State: AOAM531Bo+GhvXcRCN/dB4z2wFYPg9UDFcoZL94D1lbHpAnlG5Tfadj9
-        P1b4nW+pgN/zuHzJ8EG7ClDfcUcZZmcfyrjSaDU5rHa5PaCBQ18ZFtuONgqf7SmZvGpkwHLmt22
-        QFC26NXab9qvSE1XQDVHblmDFDJfpfdUv
-X-Received: by 2002:a05:6e02:1528:: with SMTP id i8mr15303484ilu.312.1639051616672;
-        Thu, 09 Dec 2021 04:06:56 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyBSjv/dTRJPDmmWCa9Djh9hqJtcStw0thXIcyyfQtCQHeGlvHZXS8SragPZtGWAKpckef3Jr4gZrGdrvjVE+w=
-X-Received: by 2002:a05:6e02:1528:: with SMTP id i8mr15303452ilu.312.1639051616467;
- Thu, 09 Dec 2021 04:06:56 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=9b5xBisuK4x3KA4EUoNHvHf5Gu6yWcexSQe2ySnZ6qU=;
+        b=i0D7raOviTYYe/ISR9+80bd/6YB8mtEhu6tq6kvs2SPY4DED6snUGN6Uj3SDlLJRxB
+         YqauNd/5uLmXqrhh2MsWWq6Y52cTU8E4AD/bGvD8w8BXod4e9Jf6gNkj/KkUiH0L1+F7
+         YGMjETCEJNf7LbiN5yF0igwZxeTTFDFAF4YPWvA1VnxMHGwzye6Rzp+GLK/+X4ndyUdY
+         3ftNXoc/fax9lKZIZxcTTBXB3qhBb+q7xgejkQQYbb5K403XSBP5caIC4ejIJiH0p0Hi
+         D4sye+WJ4NxisE5uOqZDYwhyKoB0y7A3gedZLcWDGKep/+bNp+5MYnSwKRIQbhVA8Cyw
+         h04Q==
+X-Gm-Message-State: AOAM533w5XeYqBtUwdbDhwv90uVKjPos720uJjJ2LFezNiGs5exvwEK1
+        eJZaeAGh2uDQGN+0LbXUgDg=
+X-Google-Smtp-Source: ABdhPJxoytovpnMGYn3NcRzx3BO0F5ghQ5n+T1xJ7XIOrOtJsLe/Hy2vcZuy20SgypQpn9dqwbHIMA==
+X-Received: by 2002:a05:6102:2274:: with SMTP id v20mr7126646vsd.40.1639051870769;
+        Thu, 09 Dec 2021 04:11:10 -0800 (PST)
+Received: from t14s.localdomain ([2001:1284:f016:c8c6:42ae:ac00:c4d1:ee21])
+        by smtp.gmail.com with ESMTPSA id p46sm3762899uad.16.2021.12.09.04.11.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Dec 2021 04:11:10 -0800 (PST)
+Received: by t14s.localdomain (Postfix, from userid 1000)
+        id 0F27AECD22; Thu,  9 Dec 2021 09:11:08 -0300 (-03)
+Date:   Thu, 9 Dec 2021 09:11:07 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Paul Blakey <paulb@nvidia.com>
+Cc:     dev@openvswitch.org, netdev@vger.kernel.org,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Pravin B Shelar <pshelar@ovn.org>, davem@davemloft.net,
+        Jiri Pirko <jiri@nvidia.com>, wenxu <wenxu@ucloud.cn>,
+        Oz Shlomo <ozsh@nvidia.com>, Vlad Buslov <vladbu@nvidia.com>,
+        Roi Dayan <roid@nvidia.com>
+Subject: Re: [PATCH net v2 0/3] net/sched: Fix ct zone matching for invalid
+ conntrack state
+Message-ID: <YbHyW501AWOUZn7c@t14s.localdomain>
+References: <20211209075734.10199-1-paulb@nvidia.com>
 MIME-Version: 1.0
-References: <CACT4oudChHDKecLfDdA7R8jpQv2Nmz5xBS3hH_jFWeS37CnQGg@mail.gmail.com>
- <20211120083107.z2cm7tkl2rsri2v7@gmail.com>
-In-Reply-To: <20211120083107.z2cm7tkl2rsri2v7@gmail.com>
-From:   =?UTF-8?B?w43DsWlnbyBIdWd1ZXQ=?= <ihuguet@redhat.com>
-Date:   Thu, 9 Dec 2021 13:06:45 +0100
-Message-ID: <CACT4oufpvQ1Qzg3eC6wDu33_xBo5tVghr9G7Q=d-7F=bZbW4Vg@mail.gmail.com>
-Subject: Re: Bad performance in RX with sfc 40G
-To:     =?UTF-8?B?w43DsWlnbyBIdWd1ZXQ=?= <ihuguet@redhat.com>,
-        Edward Cree <ecree.xilinx@gmail.com>, netdev@vger.kernel.org,
-        Dinan Gunawardena <dinang@xilinx.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211209075734.10199-1-paulb@nvidia.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Thu, Dec 09, 2021 at 09:57:31AM +0200, Paul Blakey wrote:
+> Changelog:
+> 	1->2:
+> 	  Cover letter wording
+> 	  Added blamed CCs
 
-On Sat, Nov 20, 2021 at 9:31 AM Martin Habets <habetsm.xilinx@gmail.com> wr=
-ote:
-> If you're testing without the IOMMU enabled I suspect the recycle ring
-> size may be too small. Can your try the patch below?
+Thanks.
 
-Sorry for the very late reply, but I've had to be out of work for many days=
-.
+> 
+> Paul Blakey (3):
+>   net/sched: Extend qdisc control block with tc control block
+>   net/sched: flow_dissector: Fix matching on zone id for invalid conns
+>   net: openvswitch: Fix matching zone id for invalid conns arriving from tc
 
-This patch has improved the performance a lot, reaching the same
-30Gbps than in TX. However, it seems sometimes a bit erratic, still
-dropping to 15Gbps sometimes, specially after module remove & probe,
-or from one iperf call to another. But not being all the times, I
-didn't found a clear pattern. Anyway, it clearly improves things.
+I keep getting surprised by how much metadata we have on CT other than
+skb->_nfct. :-)
 
-Can this patch be applied as is or it's just a test?
-
---
-=C3=8D=C3=B1igo Huguet
-
+Reviewed-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
