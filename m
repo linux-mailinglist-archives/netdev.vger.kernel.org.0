@@ -2,111 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 164AE46E061
-	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 02:48:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DD7A46E078
+	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 02:52:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233863AbhLIBwE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 20:52:04 -0500
-Received: from mailgw01.mediatek.com ([60.244.123.138]:56716 "EHLO
-        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S229680AbhLIBwE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 20:52:04 -0500
-X-UUID: 955d2fae56574faa96afa38d2971b794-20211209
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=XjABykCBjXFelT4zEiqGcJGg15Ult0B96f3Fb8EdYNs=;
-        b=JEQMqBRWf7fQUOHn/Pm6V3VxkGp7vj6h5pUr6+CdfcdfmpjNOKXXWHfrJDhiC7ryTfZ5ehKNvACitzAGDeOhYvt0pn6jtmau31/68d9/+60/LRmrHMjzOuOwHlDy9kbsCeTNQrEtIzxSNBZKWVRK0d0+MUxwNrLdrGm9nQfTro8=;
-X-UUID: 955d2fae56574faa96afa38d2971b794-20211209
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
-        (envelope-from <biao.huang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 440424674; Thu, 09 Dec 2021 09:48:27 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Thu, 9 Dec 2021 09:48:26 +0800
-Received: from mhfsdcap04 (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 9 Dec 2021 09:48:25 +0800
-Message-ID: <39aa23e1a48bc36a631b3074af2abfd5d1e2256d.camel@mediatek.com>
-Subject: Re: [PATCH net-next v7 5/6] stmmac: dwmac-mediatek: add support for
- mt8195
-From:   Biao Huang <biao.huang@mediatek.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <davem@davemloft.net>, Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <srv_heupstream@mediatek.com>, <macpaul.lin@mediatek.com>,
-        <angelogioacchino.delregno@collabora.com>, <dkirjanov@suse.de>
-Date:   Thu, 9 Dec 2021 09:48:25 +0800
-In-Reply-To: <20211208063820.264df62d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20211208054716.603-1-biao.huang@mediatek.com>
-         <20211208054716.603-6-biao.huang@mediatek.com>
-         <20211208063820.264df62d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        id S233346AbhLIBz3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 20:55:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57686 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237537AbhLIBz2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 20:55:28 -0500
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49ED8C061D5F
+        for <netdev@vger.kernel.org>; Wed,  8 Dec 2021 17:51:55 -0800 (PST)
+Received: by mail-ed1-x52a.google.com with SMTP id e3so14660123edu.4
+        for <netdev@vger.kernel.org>; Wed, 08 Dec 2021 17:51:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=GG+lCnH988fX6GF0zU5+9f7rEQLZwfZ0q1MvlvDrpf0=;
+        b=l+tegFkIRPiaAG3dCwWHp5xCcE1fZ1VEwtnp0egEzfLwtfeK+86aXagidNVBvLuNAj
+         vkyGePpzMqZkA9ctJk8GOl1W7NTdh1om7r5Wdl5EM9Qz5lyEvRxT6sCGM/NVQUWSJcz7
+         dwll/B/AGp2MhRzZwOBYbGtkR+KNia1wen54fbLViA0q06vJMDbDBLRFYcelPhZkoZa/
+         lwYQg1xNkViCVmvx/gMFS7qxdQyX585wO/5BJWDzs2drBnz5BXaN6Vu2qQ3Hf7FVku+h
+         TYuBOzWVvdmNZTqRaaXZqLA2dFLoOQPKYBENFrrOwMRgI3gUibgJA+V1smAu3rqpwnzx
+         zZAw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=GG+lCnH988fX6GF0zU5+9f7rEQLZwfZ0q1MvlvDrpf0=;
+        b=sLPzshOQOygihtPQHbdQKli57ydjKG60dAlUCjilNeqvuYbMcIXCqWZxILAh9cyWtK
+         LbjPrx0xt0QWGDyvFDiR1rj6OTzBETWl3zcQwho8gQWqlDGh1Wu+vLJaZgLNr/9drpbt
+         /EL6komIOZeZfSmepczQJIp00htHn7Z2rmFuV/VsejDmGFGnHIzIuHjwJGRn4BHYO4Bi
+         mdpDqm+LzCxTMEfo3/j0ReIiWttX9xkuy/cwdEELaSGjPC+wRpdpP6QI2792DJWOxyuX
+         93a+2mg1POf2WISDHIzAGVhVUtTsGQu3CyZ1fRHuB2nLd40dstXp5GudeYVX2ZXp6mKO
+         K/Hg==
+X-Gm-Message-State: AOAM530nHmbEreaaT0gdof2TDSFOUhPL13bI8c5tWpzFEeHNldBDVeKj
+        NZ78fOGFFA+zMIKXj+m46AI7dXeuUt4PRFKX+h4=
+X-Google-Smtp-Source: ABdhPJxREIILLe7LuCNiTKzf6pmpaenmmqtxvpRwdD7+UKrKNIiKgp7qHWkdPNTAO9AFCY8MPGo9x5jlRR/cLSKXbAU=
+X-Received: by 2002:a17:906:9144:: with SMTP id y4mr11320778ejw.98.1639014713835;
+ Wed, 08 Dec 2021 17:51:53 -0800 (PST)
 MIME-Version: 1.0
-X-MTK:  N
-Content-Transfer-Encoding: base64
+References: <20211208143408.7047-3-xiangxia.m.yue@gmail.com> <202112090603.PxlqXFRw-lkp@intel.com>
+In-Reply-To: <202112090603.PxlqXFRw-lkp@intel.com>
+From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Date:   Thu, 9 Dec 2021 09:51:17 +0800
+Message-ID: <CAMDZJNUBhpu6KLAL08+BKRCJg0JDHNCQAXtNXzcOZwTHzRgChg@mail.gmail.com>
+Subject: Re: [net-next v2 2/2] net: sched: support hash/classid selecting tx queue
+To:     kernel test robot <lkp@intel.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Paolo Abeni <pabeni@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RGVhciBKYWt1YiwNCg0KU29ycnkgZm9yIHNvbWUgdHlwbyBpbiBwcmV2aW91cyByZXBseSwgZml4
-IGl0IGhlcmUuDQoNCkFsbCB0aGVzZSB3YXJuaW5nIGxpbmVzIHNoYXJlIGEgc2ltaWxhciBzZW1h
-bnRpY3M6DQpkZWxheV92YWwgfD0gRklFTERfUFJFUCh4eHgsICEhdmFsKTsNCg0KYW5kLCBzaG91
-bGQgY29tZSBmcm9tIHRoZSBleHBhbnNpb24gb2YgRklFTERfUFJFUCBpbg0KaW5jbHVkZS9saW51
-eC9iaXRmaWxlZC5oOg0KDQogIEZJRUxEIF9QUkVQIC0tPiBfX0JGX0ZJTEVEX0NIRUNLIC0tPiAi
-figoX21hc2spID4+IF9fYmZfc2hmKF9tYXNrKSkgJg0KKF92YWwpIDogMCwiDQoNCj09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQ0K
-X19CRl9GSUxFRF9DSEVDSyB7DQouLi4NCiAgQlVJTERfQlVHX09OX01TRyhfX2J1aWx0aW5fY29u
-c3RhbnRfcChfdmFsKSA/ICAgICAgICAgICBcDQogICAgICAgICAgICAgICAgICAgfigoX21hc2sp
-ID4+IF9fYmZfc2hmKF9tYXNrKSkgJiAoX3ZhbCkgOiAwLCBcDQogICAgICAgICAgICAgICAgICAg
-X3BmeCAidmFsdWUgdG9vIGxhcmdlIGZvciB0aGUgZmllbGQiKTsgXCAuLi4NCj09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQ0KDQpT
-aG91bGQgSSBmaXggaXQgYnkgY29udmVydGluZw0KICBkZWxheV92YWwgfD0gRklFTERfUFJFUChF
-VEhfRExZX1RYQ19FTkFCTEUsICEhbWFjX2RlbGF5LT50eF9kZWxheSk7DQp0bw0KICBlbl92YWwg
-PSAhIW1hY19kZWxheS0+dHhfZGVsYXk7DQogIGRlbGF5X3ZhbCB8PSBGSUVMRF9QUkVQKEVUSF9E
-TFlfVFhDX0VOQUJMRSwgZW5fdmFsKTsNCg0Kb3Igb3RoZXIgc3VnZ2VzdGlvbnMgZm9yIHRoZXNl
-IHdhcm5pbmdzPw0KDQpUaGFua3N+DQpPbiBXZWQsIDIwMjEtMTItMDggYXQgMDY6MzggLTA4MDAs
-IEpha3ViIEtpY2luc2tpIHdyb3RlOg0KPiBPbiBXZWQsIDggRGVjIDIwMjEgMTM6NDc6MTUgKzA4
-MDAgQmlhbyBIdWFuZyB3cm90ZToNCj4gPiBBZGQgRXRoZXJuZXQgc3VwcG9ydCBmb3IgTWVkaWFU
-ZWsgU29DcyBmcm9tIHRoZSBtdDgxOTUgZmFtaWx5Lg0KPiA+IA0KPiA+IFNpZ25lZC1vZmYtYnk6
-IEJpYW8gSHVhbmcgPGJpYW8uaHVhbmdAbWVkaWF0ZWsuY29tPg0KPiA+IEFja2VkLWJ5OiBBbmdl
-bG9HaW9hY2NoaW5vIERlbCBSZWdubyA8DQo+ID4gYW5nZWxvZ2lvYWNjaGluby5kZWxyZWdub0Bj
-b2xsYWJvcmEuY29tPg0KPiANCj4gc3BhcnNlIHJlcG9ydHMgd2hvbGUgYnVuY2ggb2Ygd2Fybmlu
-Z3MgbGlrZSB0aGlzOg0KPiANCj4gZHJpdmVycy9uZXQvZXRoZXJuZXQvc3RtaWNyby9zdG1tYWMv
-ZHdtYWMtbWVkaWF0ZWsuYzoyMTM6MzA6IHdhcm5pbmc6DQo+IGR1YmlvdXM6IHggJiAheQ0KPiBk
-cml2ZXJzL25ldC9ldGhlcm5ldC9zdG1pY3JvL3N0bW1hYy9kd21hYy1tZWRpYXRlay5jOjIxNzoz
-MDogd2FybmluZzoNCj4gZHViaW91czogeCAmICF5DQo+IGRyaXZlcnMvbmV0L2V0aGVybmV0L3N0
-bWljcm8vc3RtbWFjL2R3bWFjLW1lZGlhdGVrLmM6MjI4OjM4OiB3YXJuaW5nOg0KPiBkdWJpb3Vz
-OiB4ICYgIXkNCj4gZHJpdmVycy9uZXQvZXRoZXJuZXQvc3RtaWNyby9zdG1tYWMvZHdtYWMtbWVk
-aWF0ZWsuYzoyMzI6Mzg6IHdhcm5pbmc6DQo+IGR1YmlvdXM6IHggJiAheQ0KPiBkcml2ZXJzL25l
-dC9ldGhlcm5ldC9zdG1pY3JvL3N0bW1hYy9kd21hYy1tZWRpYXRlay5jOjI0Nzo0Njogd2Fybmlu
-ZzoNCj4gZHViaW91czogeCAmICF5DQo+IGRyaXZlcnMvbmV0L2V0aGVybmV0L3N0bWljcm8vc3Rt
-bWFjL2R3bWFjLW1lZGlhdGVrLmM6MjU1OjQ2OiB3YXJuaW5nOg0KPiBkdWJpb3VzOiB4ICYgIXkN
-Cj4gZHJpdmVycy9uZXQvZXRoZXJuZXQvc3RtaWNyby9zdG1tYWMvZHdtYWMtbWVkaWF0ZWsuYzoy
-NzM6MzA6IHdhcm5pbmc6DQo+IGR1YmlvdXM6IHggJiAheQ0KPiBkcml2ZXJzL25ldC9ldGhlcm5l
-dC9zdG1pY3JvL3N0bW1hYy9kd21hYy1tZWRpYXRlay5jOjI3NzozMDogd2FybmluZzoNCj4gZHVi
-aW91czogeCAmICF5DQo+IGRyaXZlcnMvbmV0L2V0aGVybmV0L3N0bWljcm8vc3RtbWFjL2R3bWFj
-LW1lZGlhdGVrLmM6Mzc1OjMwOiB3YXJuaW5nOg0KPiBkdWJpb3VzOiB4ICYgIXkNCj4gZHJpdmVy
-cy9uZXQvZXRoZXJuZXQvc3RtaWNyby9zdG1tYWMvZHdtYWMtbWVkaWF0ZWsuYzozNzk6MzA6IHdh
-cm5pbmc6DQo+IGR1YmlvdXM6IHggJiAheQ0KPiBkcml2ZXJzL25ldC9ldGhlcm5ldC9zdG1pY3Jv
-L3N0bW1hYy9kd21hYy1tZWRpYXRlay5jOjM5MDo0Mzogd2FybmluZzoNCj4gZHViaW91czogeCAm
-ICF5DQo+IGRyaXZlcnMvbmV0L2V0aGVybmV0L3N0bWljcm8vc3RtbWFjL2R3bWFjLW1lZGlhdGVr
-LmM6Mzk3OjQzOiB3YXJuaW5nOg0KPiBkdWJpb3VzOiB4ICYgIXkNCj4gZHJpdmVycy9uZXQvZXRo
-ZXJuZXQvc3RtaWNyby9zdG1tYWMvZHdtYWMtbWVkaWF0ZWsuYzo0MTU6NDY6IHdhcm5pbmc6DQo+
-IGR1YmlvdXM6IHggJiAheQ0KPiBkcml2ZXJzL25ldC9ldGhlcm5ldC9zdG1pY3JvL3N0bW1hYy9k
-d21hYy1tZWRpYXRlay5jOjQyNjo0Njogd2FybmluZzoNCj4gZHViaW91czogeCAmICF5DQo+IGRy
-aXZlcnMvbmV0L2V0aGVybmV0L3N0bWljcm8vc3RtbWFjL2R3bWFjLW1lZGlhdGVrLmM6NDM5OjM1
-OiB3YXJuaW5nOg0KPiBkdWJpb3VzOiB4ICYgIXkNCj4gZHJpdmVycy9uZXQvZXRoZXJuZXQvc3Rt
-aWNyby9zdG1tYWMvZHdtYWMtbWVkaWF0ZWsuYzo0NDM6MzA6IHdhcm5pbmc6DQo+IGR1YmlvdXM6
-IHggJiAheQ0KPiANCj4gQW55IGlkZWEgb24gd2hlcmUgdGhlc2UgY29tZSBmcm9tPw0K
+On Thu, Dec 9, 2021 at 6:22 AM kernel test robot <lkp@intel.com> wrote:
+>
+> Hi,
+>
+> Thank you for the patch! Perhaps something to improve:
+>
+> [auto build test WARNING on net-next/master]
+>
+> url:    https://github.com/0day-ci/linux/commits/xiangxia-m-yue-gmail-com/net-sched-allow-user-to-select-txqueue/20211208-223656
+> base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 1fe5b01262844be03de98afdd56d1d393df04d7e
+> config: i386-randconfig-r023-20211207 (https://download.01.org/0day-ci/archive/20211209/202112090603.PxlqXFRw-lkp@intel.com/config)
+> compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 097a1cb1d5ebb3a0ec4bcaed8ba3ff6a8e33c00a)
+> reproduce (this is a W=1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # https://github.com/0day-ci/linux/commit/522fbcfdde012bc46d29aa216bdfa73f512adcbd
+>         git remote add linux-review https://github.com/0day-ci/linux
+>         git fetch --no-tags linux-review xiangxia-m-yue-gmail-com/net-sched-allow-user-to-select-txqueue/20211208-223656
+>         git checkout 522fbcfdde012bc46d29aa216bdfa73f512adcbd
+>         # save the config file to linux build tree
+>         mkdir build_dir
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash mm/ net/sched/
+>
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
+>
+> All warnings (new ones prefixed by >>):
+>
+> >> net/sched/act_skbedit.c:39:11: warning: variable 'hash' is used uninitialized whenever 'if' condition is false [-Wsometimes-uninitialized]
+>            else if (params->flags & SKBEDIT_F_QUEUE_MAPPING_HASH)
+>                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>    net/sched/act_skbedit.c:42:34: note: uninitialized use occurs here
+>            queue_mapping = queue_mapping + hash % mapping_mod;
+>                                            ^~~~
+>    net/sched/act_skbedit.c:39:7: note: remove the 'if' if its condition is always true
+>            else if (params->flags & SKBEDIT_F_QUEUE_MAPPING_HASH)
+>                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>    net/sched/act_skbedit.c:32:10: note: initialize the variable 'hash' to silence this warning
+>            u32 hash;
+>                    ^
+>                     = 0
+>    1 warning generated.
+v1 has set the hash = 0, in v2, I remove it, because the hash will be
+set by classid or skb-hash.
+In next version, I will fix that warning.
+>
+> vim +39 net/sched/act_skbedit.c
+>
+>     26
+>     27  static u16 tcf_skbedit_hash(struct tcf_skbedit_params *params,
+>     28                              struct sk_buff *skb)
+>     29  {
+>     30          u16 queue_mapping = params->queue_mapping;
+>     31          u16 mapping_mod = params->mapping_mod;
+>     32          u32 hash;
+>     33
+>     34          if (!(params->flags & SKBEDIT_F_QUEUE_MAPPING_HASH_MASK))
+>     35                  return netdev_cap_txqueue(skb->dev, queue_mapping);
+>     36
+>     37          if (params->flags & SKBEDIT_F_QUEUE_MAPPING_CLASSID)
+>     38                  hash = jhash_1word(task_get_classid(skb), 0);
+>   > 39          else if (params->flags & SKBEDIT_F_QUEUE_MAPPING_HASH)
+>     40                  hash = skb_get_hash(skb);
+>     41
+>     42          queue_mapping = queue_mapping + hash % mapping_mod;
+>     43          return netdev_cap_txqueue(skb->dev, queue_mapping);
+>     44  }
+>     45
+>
+> ---
+> 0-DAY CI Kernel Test Service, Intel Corporation
+> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
 
+
+
+-- 
+Best regards, Tonghao
