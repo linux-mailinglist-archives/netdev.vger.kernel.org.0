@@ -2,96 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9331F46F3EE
-	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 20:27:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 55F9C46F3F9
+	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 20:31:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229909AbhLITbW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Dec 2021 14:31:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50360 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229461AbhLITbV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 14:31:21 -0500
-Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30880C061746;
-        Thu,  9 Dec 2021 11:27:48 -0800 (PST)
-Received: by mail-il1-x132.google.com with SMTP id s11so6372297ilv.3;
-        Thu, 09 Dec 2021 11:27:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=4hOHHwkqjJk4kcKlfoyCtHmx/km4QUengLsB3lOjqo0=;
-        b=Fek2BxxgUGj5ymX9KOKSMoSMpsCzXrvQDJpIPcPf7d5shUBNJwOZCRZPDHyNTryiZR
-         5EIldcRn9YP1N2wlkQVUFLpEudMEsmOs23y5kwtj/Jr2g5uRrDfj64kg7CmFItRdLUta
-         mO0YXqOhvi6SbfyxzSTdgLMOTHmRXtITLgPLGSySqwFWJzXGgobwxkL3HjjH1YC6sl7L
-         i7eUFedZM0MS9I+9R+X10/gHgzyIjjsu95+2ipul+mYvEiE0/yA/aHi0Jasqc/zhfOSM
-         jypUgU7RJ2pMvAfsOQJf/8VVABNZ3Ixx5maH3ANzFpacLSXTz4rlAHZMJW9OFkuvJQ6L
-         iodg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=4hOHHwkqjJk4kcKlfoyCtHmx/km4QUengLsB3lOjqo0=;
-        b=VTa3JgX6ZDmZX1NXS24TyF4jjvxQIAwVxvoFsiZkfuGDpqKRrjwuSrkmC0WnoXGD1h
-         C9IKqs645E9BX3DqtRZF3bNlThAb3r3/Yf7MFj40M9ckORuvf4FkeOl0CclA4C5RTqKZ
-         3et8+BaE/20CXxqBUsduvG30/m80JCAXRbYuIJ/FMIOJCy1gVuWvZ5weZkzDjC5axRVI
-         17NBiZC9P3p1/J9q86D7IWuJAEEKSDdDm5Aj8Ljjlv32U5yqRMS0eeKHWKVSMwbcCgOd
-         desX2ZFjqSHTplal2ePGeiyj5PXGD3N972R0kEuZhNxFC7me1ksIkLmMbYJQ+anu3sj+
-         xDRw==
-X-Gm-Message-State: AOAM530CioJVPJASGdS5SX09ffRD5wOVia9MbNeTmVQ5iLbGfqJa3seu
-        UfM02rt4sjrie3c2ufIOad8IVZl14ZHsvg==
-X-Google-Smtp-Source: ABdhPJyrNKulUyvdZZoKHXSYr3JUSRtRY7yCc+DHlDtN4sZgnBcdJnGnyDC286cU3FcjvQVIqCIGqg==
-X-Received: by 2002:a05:6e02:168f:: with SMTP id f15mr16215420ila.207.1639078067662;
-        Thu, 09 Dec 2021 11:27:47 -0800 (PST)
-Received: from localhost ([172.243.151.11])
-        by smtp.gmail.com with ESMTPSA id a7sm301426ioo.5.2021.12.09.11.27.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Dec 2021 11:27:47 -0800 (PST)
-Date:   Thu, 09 Dec 2021 11:27:41 -0800
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Tony Lu <tonylu@linux.alibaba.com>, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org
-Message-ID: <61b258ad273a9_6bfb2084d@john.notmuch>
-In-Reply-To: <20211209090250.73927-1-tonylu@linux.alibaba.com>
-References: <20211209090250.73927-1-tonylu@linux.alibaba.com>
-Subject: RE: [PATCH bpf-next 0/2] Introduce TCP_ULP option for
- bpf_{set,get}sockopt
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        id S230237AbhLITfZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Dec 2021 14:35:25 -0500
+Received: from wout2-smtp.messagingengine.com ([64.147.123.25]:43389 "EHLO
+        wout2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229710AbhLITfY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 14:35:24 -0500
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.west.internal (Postfix) with ESMTP id D36ED3201D29;
+        Thu,  9 Dec 2021 14:31:49 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute5.internal (MEProxy); Thu, 09 Dec 2021 14:31:50 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=+NI5GP
+        6UkM5zGu2Ef2fmeetuNAEpLvERTiKS5bvhQ3M=; b=bSiwuJAjh1Rzw/ExEhzqDW
+        p3SqH12mR7i/ss8eXJN2OQuCQdRPK7jRAb9tlmiD/dpEQcOa31Bn2hMlTOXZzO/D
+        RHah+1y3o6LD+c84ru0r/MAaNTe85PoIHcrIDEIzPkktD1hjYiAHpPcooJVK/70P
+        otcZkOFvAFuG6us2siU6IO+7gSWg69shkQxfMeaJrqdPezW6NfKWRJDhRxsCvUaj
+        +ASh7XZzTNSVLrRk5SUDdPkDg5NrBYS9hhF4TJUs5OrKvx2xDyBlfe0ptepbtH1W
+        t9aSly5c7UbTCEEXbHDFqF7UuonUxuLwkZbCEN453JLG+Vz0zlyZW5A1KTgxv1HA
+        ==
+X-ME-Sender: <xms:pFmyYaNGj_j8L1XX8l_doXIgCNAmAEMaPZHl-fNcm3Wmd-TILuupHQ>
+    <xme:pFmyYY-hsU5_NBfnlMpkUOvt6ZIHKHjUXdH_BRGIduHEBn4dsOnd13YQWY4-wwiJ7
+    7AP-LhDAZzb8Ik>
+X-ME-Received: <xmr:pFmyYRSc_AFTHoJSVJE5A7NhcOHmQ2WtkaewRYk1qinqYstX21H62xlTcUZVdJT8gm9FsAiC_9AmC0bw3P7iifDFCHqopQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvuddrkedtgdduvdehucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
+    gvrhhnpefgvefgveeuudeuffeiffehieffgfejleevtdetueetueffkeevgffgtddugfek
+    veenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivgeptd
+    enucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:pFmyYavYG0xGiZRCmRmiAQy_SQqCoTHRoN1Nky2AYVkkDx6bt2cxbQ>
+    <xmx:pFmyYSenbLCS2oXM3-_s7idSjLMkokapMnQep44J_eW0J3ayXYwt-g>
+    <xmx:pFmyYe3RSieqYXFf0uNrwHsiK0Uv5XHw9_oWr6phKGMJ33_kBjwzTg>
+    <xmx:pVmyYR6PjPyXgp5OgMeABLcD_g_d7a948Nrn7nTAyJlA4oJAILgN2Q>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 9 Dec 2021 14:31:48 -0500 (EST)
+Date:   Thu, 9 Dec 2021 21:31:44 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
+        bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] bpf: return EOPNOTSUPP when JIT is needed and not
+ possible
+Message-ID: <YbJZoK+qBEiLAxxM@shredder>
+References: <20211209134038.41388-1-cascardo@canonical.com>
+ <61b2536e5161d_6bfb2089@john.notmuch>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <61b2536e5161d_6bfb2089@john.notmuch>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tony Lu wrote:
-> This patch set introduces a new option TCP_ULP for bpf_{set,get}sockopt
-> helper. The bpf prog can set and get TCP_ULP sock option on demand.
+On Thu, Dec 09, 2021 at 11:05:18AM -0800, John Fastabend wrote:
+> Thadeu Lima de Souza Cascardo wrote:
+> > When a CBPF program is JITed and CONFIG_BPF_JIT_ALWAYS_ON is enabled, and
+> > the JIT fails, it would return ENOTSUPP, which is not a valid userspace
+> > error code.  Instead, EOPNOTSUPP should be returned.
+> > 
+> > Fixes: 290af86629b2 ("bpf: introduce BPF_JIT_ALWAYS_ON config")
+> > Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+> > ---
+> >  kernel/bpf/core.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+> > index de3e5bc6781f..5c89bae0d6f9 100644
+> > --- a/kernel/bpf/core.c
+> > +++ b/kernel/bpf/core.c
+> > @@ -1931,7 +1931,7 @@ struct bpf_prog *bpf_prog_select_runtime(struct bpf_prog *fp, int *err)
+> >  		fp = bpf_int_jit_compile(fp);
+> >  		bpf_prog_jit_attempt_done(fp);
+> >  		if (!fp->jited && jit_needed) {
+> > -			*err = -ENOTSUPP;
+> > +			*err = -EOPNOTSUPP;
+> >  			return fp;
+> >  		}
+> >  	} else {
+> > -- 
+> > 2.32.0
+> > 
 > 
-> With this, the bpf prog can set TCP_ULP based on strategies when socket
-> create or other's socket hook point. For example, the bpf prog can
-> control which socket should use tls or smc (WIP) ULP modules without
-> modifying the applications.
-> 
-> Patch 1 replaces if statement with switch to make it easy to extend.
-> 
-> Patch 2 introduces TCP_ULP sock option.
+> It seems BPF subsys returns ENOTSUPP in multiple places. This fixes one
+> paticular case and is user facing. Not sure we want to one-off fix them
+> here creating user facing changes over multiple kernel versions. On the
+> fence with this one curious to see what others think. Haven't apps
+> already adapted to the current convention or they don't care?
 
-Can you be a bit more specific on what ULP you are going to load on
-demand here and how that would work? For TLS I can't see how this will
-work, please elaborate. Because the user space side (e.g. openssl) behaves
-differently if running in kTLS vs uTLS modes I don't think you can
-from kernel side just flip it on? I'm a bit intrigued though on what
-might happen if we do did do this on an active socket, but seems it
-wouldn't be normal TLS with handshake and keys at that point? I'm
-not sure we need to block it from happening, but struggling to see
-how its useful at the moment.
-
-The smc case looks promising, but for that we need to get the order
-correct and merge smc first and then this series.
-
-Also this will need a selftests.
-
-Thanks,
-John
+Similar issue was discussed in the past. See:
+https://lore.kernel.org/netdev/20191204.125135.750458923752225025.davem@davemloft.net/
