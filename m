@@ -2,150 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE4CA46E98B
-	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 14:59:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D4AF846E9A1
+	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 15:10:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238289AbhLIODF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Dec 2021 09:03:05 -0500
-Received: from mail-db8eur05on2074.outbound.protection.outlook.com ([40.107.20.74]:52667
-        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231816AbhLIODF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Dec 2021 09:03:05 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MymyuD1OOCR5KU9lHhFwAA/0XgwCSCCvlPtaKAR/fKMRGmYsKMVFATDunsmS94Yadejmo3H7yBw6nm8t9ZzLjczCltLv2YxAsfc0hxNVRO1Pl1ZExsPWSdEaQyrxg9Q7OoLOuYAfx//PKK7yj8DFJogx2x+TXNjuselthP8z2/P/CH5fEJaGa8nzJdQgT2J1swQm7Rf2Dm76Ld38BoEf7sOF7Uf/MC8jZlL9JqKb4IHbBphkVRIVvMzS9V/eAOWaPoyW/cBPWK8haX9cdIoVxyoH+2U9NV4/jda43sdkLndbkpvuL6zrKymXsBjUQ3BFrMSTr0uIicfRWTLXp3bgUw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Et//yr+GNvr8bJJYna8JU9dBQGURINV8aje0mdYoFhM=;
- b=FVXPhqeLU8kfwi23G2fdTI9eDEWm016wXvE13COhncPMEv4UncuPKWrngAYJIGz6BPVYABi9iIvmTWz6Gf6aHBajey/7nQ8ck2Hs9NhvrW0tYM9CoQk5tB6T0k7dJ66kGuAWP/p9/a0A45Fx4FDZ+vM1/SJaBJ0ZykB4xwlgsH6H8REKAmur+yrjDRtyws3wr+2iJznkfrs5ceCC5iJDKhtRv/ngyTSoV1g/4Wvk6UplnzYMfMDutrQESE+7/w2d4DHxRoY8GPi8Ufzkka6QZDekzapVG/tLdfpIYeQOhIFKttqNZiwoMkAwLV+5iYTLZ9Q8OskApnr0HeTQUmTaRg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Et//yr+GNvr8bJJYna8JU9dBQGURINV8aje0mdYoFhM=;
- b=JNRNGPw33kAyHryiwFh+Lp3ko5oo4Huy5Fzfy5v9zNcmN72q+Ii0+yo0VbKhuNEl+6/DhydjQnUR8QKLYkCMkvWlvXCIajuclY7CfZuhfztZfVW1Db5EjvHoFdsnwtItqD5XbwVDcXPqTpxL+KkoBQYBEnWbqIVduaRZ+DM79/k=
-Received: from AM0PR04MB5121.eurprd04.prod.outlook.com (2603:10a6:208:c1::16)
- by AM0PR04MB5891.eurprd04.prod.outlook.com (2603:10a6:208:12e::28) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4778.12; Thu, 9 Dec
- 2021 13:59:29 +0000
-Received: from AM0PR04MB5121.eurprd04.prod.outlook.com
- ([fe80::8d61:83aa:b70c:3208]) by AM0PR04MB5121.eurprd04.prod.outlook.com
- ([fe80::8d61:83aa:b70c:3208%6]) with mapi id 15.20.4755.022; Thu, 9 Dec 2021
- 13:59:29 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>
-Subject: Re: [PATCH net-next v3 5/6] net: lan966x: Add vlan support
-Thread-Topic: [PATCH net-next v3 5/6] net: lan966x: Add vlan support
-Thread-Index: AQHX7OGlYEp5PrNq7UKGxDy/7sGvF6wqMDMA
-Date:   Thu, 9 Dec 2021 13:59:28 +0000
-Message-ID: <20211209135928.25myffd3xzcnmndl@skbuf>
-References: <20211209094615.329379-1-horatiu.vultur@microchip.com>
- <20211209094615.329379-6-horatiu.vultur@microchip.com>
-In-Reply-To: <20211209094615.329379-6-horatiu.vultur@microchip.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 23b74328-4ec1-4125-6800-08d9bb1c1e3b
-x-ms-traffictypediagnostic: AM0PR04MB5891:EE_
-x-microsoft-antispam-prvs: <AM0PR04MB589116BA15A2F2BECDB34086E0709@AM0PR04MB5891.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:3173;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: k8kgiK1FfiWHs9WNYy/Rj36wQYL5m2dvQc3vFEkdtUdRK/xagsex8sjg3bKbm4gl7KUT0EVWN+oMZ7CxjLg+IzdJ80Wu8S3ptLc5TOo2kkFVAeQumGJuN8tqz6tgH7puxXQ2snnsyigGruWlFd4z7fRczu9zd5awFC9orHxqnNfAMFDv7lK3pF7FJApUqutlgft1UQ/tPsaKeXnMF39p4Hhd6JDl15et0kGuL4JzeF0EwwKe8cYsuIMbENcRYQRPlf3tkYTFuDpkTfBcUVnV9B3uZYHqhnsmp/uO9MQqz8rjI20ZFaCnrKdkpQYSLVUUPN3NCiY/S2GJk1RLcAvmVmJkM4sPvlUAp1TqOETxoMrfF0mRkWmyWrIDx+PH+gtnFIbsT/Euzd3h7iKvgk1qeeUglZnVG8baKaMyBfqkdSCV9YuihudYqcguO/Pocify1IU3fFiIPickGVJ6PUYXk8zxc5FdkCrDLY8lyp5P59PigvPPjHPxASHGOVmqDdkz9pKe86CVte/8RmDRcdjDDZ8sce+7IQLM2NifU9RtomAEk49zWPvWom2Tr+4Lrep2dR13OlB3uiQJuTOhljHTMH/HC6sG+SF+W14YE7jeNMv1oO50Wx7bFAbAEFl+NPHJ/fVobG4Sa0BCz1sHXl29GTXlvd5URRVvGbup60FKHTb6W9cFivd+oHms262JUBxYMrfYWa54jXMhgBDrNc4MIA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5121.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(366004)(66476007)(2906002)(6916009)(38070700005)(4326008)(66946007)(54906003)(71200400001)(186003)(508600001)(6512007)(7416002)(9686003)(64756008)(66556008)(33716001)(38100700002)(86362001)(122000001)(1076003)(8936002)(6506007)(66446008)(8676002)(26005)(5660300002)(44832011)(91956017)(4744005)(76116006)(6486002)(316002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?77/834Y473qxC2RTRWjsXLzNY3zznTyN/x/679iTYh+V4NRSTSM+oL7+TTjK?=
- =?us-ascii?Q?wj1Z52COQBsOAFM0rWQ2xJA+09EaGFQgxfLNfcnnKB4g2nZ+uDLU9ZBM1hPW?=
- =?us-ascii?Q?Pq49AoPfzrEtGrTRXWblaNT8WOopKS0LWue98CkcXMys2c3XbQ6nGJVWZswR?=
- =?us-ascii?Q?xO5Q4inUD9D/lisSjKRcGAcahAzexSBJycw0c9NgqQKQjLAwcdG8sBG85iIy?=
- =?us-ascii?Q?vFD0uMAcsvKzqWIoG5U7qoNc4Em+c2pUDRDgLR4oZphU+tcJDCO0+sv4+hRM?=
- =?us-ascii?Q?jAtM/KMCelReQQ7HlSqftaszG09S5nnPyhJYA2Uo4L+RYiGbBPzUIUsu6FHS?=
- =?us-ascii?Q?NXULPa0I3ktMf6J4yg/W8mxv3fDqX4ukpyqOJZSsgYcVSm+itIKxQOkxPwmA?=
- =?us-ascii?Q?g7KYbdAKDZEaoD/WhVM/UXUaNidYSdojFdOrHKofStyYQWGeV+00634lvl65?=
- =?us-ascii?Q?PV1y8WRhkeNv8ZuL1m1bxA5vfCRekCm4Gll8HNHFIDkQFIbR6QQ2rk1pBiMd?=
- =?us-ascii?Q?EiNDuo0L73dyH+BKR7Iaizp8/23OfCBAvjD5ymVfLo22SUdRZx77oOr5vNmg?=
- =?us-ascii?Q?JpAlg0fi6lyaGDNJ284KfZoo2dLLh3E3qxL5zOZCA6CGEBdR6urIkdBXkLYK?=
- =?us-ascii?Q?V6itMLB6lPklW4o5HDMNx/OFSJ6lYPh08sBffp3+LXMuB6mEoOD3WHXXUvGR?=
- =?us-ascii?Q?jVgJ0kmW+r0rC8uutXXnBGXAQi/dEQubR8wgwLTmEQCAVcuygNzK7zeouOge?=
- =?us-ascii?Q?y5OCHKKDPKljU6y+V6ckM/IPCqucGc01njir5PYssG2ZaFmv100MgDa7ydgF?=
- =?us-ascii?Q?sQx4LzI5B2lo7nEpsO6I239trvzM/9xDEMkfg1/qyzZ08DJERB/n2p8D8wgV?=
- =?us-ascii?Q?WSbB/OhzCGfBCiFxE8LkRYipOloM6xilX3Qifk60Vz9MrL+QuL0HWBWs/BbW?=
- =?us-ascii?Q?iat8w5AZarrDJQwNICBvRxmZSJJH9Nsw67kZogWTbPIYwz8txEiD0OECwBqM?=
- =?us-ascii?Q?WJSeuqkwakKVaRuDZhnl2WBRoYDd9DUeMSneU2/SMMED6ZkR7Rf2y/0/6QrN?=
- =?us-ascii?Q?o8jqxigyr4bC0PhcKHrEQ3jqpT3Fjnu4n8ZRE4p0ZKI+EJrkmZVTPl1Bsarq?=
- =?us-ascii?Q?RA9WcvYw69dCSq2HEhuiIwM5rEa4luT94MnRjDR7H0UCZwynds/QgKOh35UO?=
- =?us-ascii?Q?+ld8cgT6onFqDsltFbl+qKtNPqt+IcjB2fyM3Fp2RsW74CDm1nD3fOsiiD5J?=
- =?us-ascii?Q?Im5U6OsT39LIONK67K9k8QAkFphe9QfhjwNCfM74sQ1OOpWXy7hLiF5fyAqX?=
- =?us-ascii?Q?pq332iV1wIMyu2nwsBDUGkGv0oo6WsoPsbpvembKBb47MaFmpk27MYGxJ3Oh?=
- =?us-ascii?Q?HtAFy3MBr/zp8PhTaWVajkcykikjNuoSvBWDxQ5WF5y6MsU3EfBCz6S6d/DC?=
- =?us-ascii?Q?yTomOVi6+SMHbCC2sB/ktxTfXPjhe+A6VOdvQmDQkaV+tIKrQuP6WWHYZsRz?=
- =?us-ascii?Q?8s56x6jRDqfarErraKqSAaGutNTVvYd2mngQEkzwsvlJLXzM29McEgo8KkQQ?=
- =?us-ascii?Q?x0yCdW0ymVygxJVW5Z+fciMHUxRB6OR4UZtZNsJX42MQQUEHdI/9fX+0sY/W?=
- =?us-ascii?Q?oTbW1HEqkI4t+JtJfIn6U8U=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <69A8819DF5FA2F489BD10B71AE9DCCFA@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S238387AbhLIOOA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Dec 2021 09:14:00 -0500
+Received: from serv108.segi.ulg.ac.be ([139.165.32.111]:57854 "EHLO
+        serv108.segi.ulg.ac.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230409AbhLIOOA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 09:14:00 -0500
+Received: from mbx12-zne.ulg.ac.be (serv470.segi.ulg.ac.be [139.165.32.199])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by serv108.segi.ulg.ac.be (Postfix) with ESMTPS id CBA26200C96B;
+        Thu,  9 Dec 2021 15:10:24 +0100 (CET)
+DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be CBA26200C96B
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uliege.be;
+        s=ulg20190529; t=1639059024;
+        bh=3nVVSPqG8CKLxKDGQj8yx3RvZL9TlFIg6XheRFahFI4=;
+        h=Date:From:Reply-To:To:Cc:In-Reply-To:References:Subject:From;
+        b=FiqN4dKQSM2En8yq2t2e1irSmxldo/JfbrNRRrNOCT5qnE/dPkeEY57in7D1NWZ/a
+         84UI+djWoTy/gGR6WdyvW+PYkD1GyuQHi/zg/Qymfe5kJcrAfGGU/ynJEnRQKLfEh2
+         o0FcIDEF392wgYi+jY+RAmAn+OG89ToPuK5TBmXNAdEUjlH5BmyQ+vNB4l5QGzr+XE
+         ZLSRlLRKMwBc/1iaEbtwwAHTY8+SOdcQh4yH8lNwcIMPJCeeTrwN/NyaHE0xegYa2d
+         dYOFeh+toHajP9wniM9EYEYyjUTIDFt0UuxN19zUyIZr7H1nHrXcwfnuj6fbLAp08g
+         46x34nUCcsP2Q==
+Received: from localhost (localhost [127.0.0.1])
+        by mbx12-zne.ulg.ac.be (Postfix) with ESMTP id BA9BE6008D5A9;
+        Thu,  9 Dec 2021 15:10:24 +0100 (CET)
+Received: from mbx12-zne.ulg.ac.be ([127.0.0.1])
+        by localhost (mbx12-zne.ulg.ac.be [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id RHBR6gHoZDsB; Thu,  9 Dec 2021 15:10:24 +0100 (CET)
+Received: from mbx12-zne.ulg.ac.be (mbx12-zne.ulg.ac.be [139.165.32.199])
+        by mbx12-zne.ulg.ac.be (Postfix) with ESMTP id 97FF06008D50B;
+        Thu,  9 Dec 2021 15:10:24 +0100 (CET)
+Date:   Thu, 9 Dec 2021 15:10:24 +0100 (CET)
+From:   Justin Iurman <justin.iurman@uliege.be>
+Reply-To: Justin Iurman <justin.iurman@uliege.be>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, dsahern@kernel.org,
+        yoshfuji@linux-ipv6.org, linux-mm@kvack.org, cl@linux.com,
+        penberg@kernel.org, rientjes@google.com,
+        iamjoonsoo kim <iamjoonsoo.kim@lge.com>,
+        akpm@linux-foundation.org, vbabka@suse.cz
+Message-ID: <1067680364.223350225.1639059024535.JavaMail.zimbra@uliege.be>
+In-Reply-To: <20211208141825.3091923c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20211206211758.19057-1-justin.iurman@uliege.be> <20211206161625.55a112bb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <262812089.220024115.1638878044162.JavaMail.zimbra@uliege.be> <20211207075037.6cda8832@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <1045511371.220520131.1638894949373.JavaMail.zimbra@uliege.be> <20211207090700.55725775@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <1665643630.220612437.1638900313011.JavaMail.zimbra@uliege.be> <20211208141825.3091923c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Subject: Re: [RFC net-next 2/2] ipv6: ioam: Support for Buffer occupancy
+ data field
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB5121.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 23b74328-4ec1-4125-6800-08d9bb1c1e3b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Dec 2021 13:59:28.9264
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: XGNO0pKfYs6f2KNPe500aMNoCRBE3e4//kucNGl1bgK2W1u+NMYORBJAIsYvQ97V9vrYvaFUMmvsYeLoGIhkZw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB5891
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [81.240.24.148]
+X-Mailer: Zimbra 8.8.15_GA_4018 (ZimbraWebClient - FF94 (Linux)/8.8.15_GA_4026)
+Thread-Topic: ipv6: ioam: Support for Buffer occupancy data field
+Thread-Index: lo9bTMAPwXOPEVq4KAaNz9YJDLyd/w==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 09, 2021 at 10:46:14AM +0100, Horatiu Vultur wrote:
-> +int lan966x_vlan_port_set_vid(struct lan966x_port *port, u16 vid,
-> +			      bool pvid, bool untagged)
-> +{
-> +	struct lan966x *lan966x =3D port->lan966x;
-> +
-> +	/* Egress vlan classification */
-> +	if (untagged && port->vid !=3D vid) {
-> +		if (port->vid) {
-> +			dev_err(lan966x->dev,
-> +				"Port already has a native VLAN: %d\n",
-> +				port->vid);
-> +			return -EBUSY;
+>> True. But keep also in mind the scope of IOAM which is not to be
+>> deployed widely on the Internet. It is deployed on limited (aka private)
+>> domains where each node is therefore managed by the operator. So, I'm
+>> not really sure why you think that the implementation specific thing is
+>> a problem here. Context of "unit" is provided by the IOAM Namespace-ID
+>> attached to the trace, as well as each Node-ID if included. Again, it's
+>> up to the operator to interpret values accordingly, depending on each
+>> node (i.e., the operator has a large and detailed view of his domain; he
+>> knows if the buffer occupancy value "X" is abnormal or not for a
+>> specific node, he knows which unit is used for a specific node, etc).
+> 
+> It's quite likely I'm missing the point.
 
-Are you interested in supporting the use case from 0da1a1c48911 ("net:
-mscc: ocelot: allow a config where all bridge VLANs are egress-untagged")?
-Because it would be good if the driver was structured that way from the
-get-go instead of patching it later.
+Let me try again to make it all clear on your mind. Here are some quoted
+paragraphs from the spec:
 
-> +		}
-> +		port->vid =3D vid;
-> +	}
-> +
-> +	/* Default ingress vlan classification */
-> +	if (pvid)
-> +		port->pvid =3D vid;
-> +
-> +	return 0;
-> +}=
+  "Generic data: Format-free information where syntax and semantic of
+   the information is defined by the operator in a specific
+   deployment.  For a specific IOAM-Namespace, all IOAM nodes have to
+   interpret the generic data the same way.  Examples for generic
+   IOAM data include geo-location information (location of the node
+   at the time the packet was processed), buffer queue fill level or
+   cache fill level at the time the packet was processed, or even a
+   battery charge level."
+
+This one basically says that the IOAM Namespace-ID (in the IOAM Trace
+Option-Type header) is responsible for providing context to data fields
+(i.e., for "units" too, in case of generic fields such as queue depth or
+buffer occupancy). So it's up to the operator to gather similar nodes
+within a same IOAM Namespace. And, even if "different" kind of nodes are
+within an IOAM Namespace, you still have a fallback solution if Node IDs
+are part of the trace (the "hop-lim & node-id" data field, bit 0 in the
+trace type). Indeed, the operator (or the collector/interpretor) knows if
+node A uses "bytes" or any other units for a generic data field.
+
+  "It should be noted that the semantics of some of the node data fields
+   that are defined below, such as the queue depth and buffer occupancy,
+   are implementation specific.  This approach is intended to allow IOAM
+   nodes with various different architectures."
+
+The last sentence is important here and is, in fact, related to what you
+describe below. Having genericity on units for such data fields allows
+for supporting multiple architectures. Same idea for the following
+paragraph:
+
+  "Data fields and associated data types for each of the IOAM-Data-
+   Fields are specified in the following sections.  The definition of
+   IOAM-Data-Fields focuses on the syntax of the data-fields and avoids
+   specifying the semantics where feasible.  This is why no units are
+   defined for data-fields like e.g., "buffer occupancy" or "queue
+   depth".  With this approach, nodes can supply the information in
+   their native format and are not required to perform unit or format
+   conversions.  Systems that further process IOAM information, like
+   e.g., a network management system are assumed to also handle unit
+   conversions as part of their IOAM data-fields processing.  The
+   combination of a particular data-field and the namespace-id provides
+   for the context to interpret the provided data appropriately."
+
+Does it make more sense now on why it's not really a problem to have
+implementation specific units for such data fields?
+
+>> [...]
+>>
+>> Do you believe this patch does not provide what is defined in the spec?
+>> If so, I'm open to any suggestions.
+> 
+> The opposite, in a sense. I think the patch does implement behavior
+> within a reasonable interpretation of the standard. But the feature
+> itself seems more useful for forwarding ASICs than Linux routers,
+
+Good point. Actually, it's probably why such data field was defined as it
+is.
+
+> because Linux routers can run a full telemetry stack and all sort
+> of advanced SW instrumentation. The use case for reporting kernel
+> memory use via IOAM's constrained interface does not seem particularly
+> practical since it's not providing a very strong signal on what's
+> going on.
+
+I agree and disagree. I disagree because this value definitely tells you
+that something (potentially bad) is going on, when it increases
+significantly enough to reach a critical threshold. Basically, we need
+more skb's, but oh, the pool is exhausted. OK, not a problem, expand the
+pool. Oh wait, no memory left. Why? Is it only due to too much
+(temporary?) load? Should I put the blame on the NIC? Is it a memory
+issue? Is it something else? Or maybe several issues combined? Well, you
+might not know exactly why (though you know there is a problem), which is
+also why I agree with you. But, this is also why you have other data
+fields available (i.e., detecting a problem might require 2+ symptoms
+instead of just one).
+
+> For switches running Linux the switch ASIC buffer occupancy can be read
+> via devlink-sb that'd seem like a better fit for me, but unfortunately
+> the devlink calls can sleep so we can't read such device info from the
+> datapath.
+
+Indeed, would be a better fit. I didn't know about this one, thanks for
+that. It's a shame it can't be used in this context, though. But, at the
+end of the day, we're left with nothing regarding buffer occupancy. So
+I'm wondering if "something" is not better than "nothing" in this case.
+And, for that, we're back to my previous answer on why I agree and
+disagree with what you said about its utility.
