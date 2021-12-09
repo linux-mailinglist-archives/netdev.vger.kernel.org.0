@@ -2,127 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D1F4F46F5E9
-	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 22:27:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 98A5F46F5F0
+	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 22:30:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231624AbhLIVbb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Dec 2021 16:31:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50020 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229505AbhLIVbb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 16:31:31 -0500
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3831AC061746
-        for <netdev@vger.kernel.org>; Thu,  9 Dec 2021 13:27:57 -0800 (PST)
-Received: by mail-pf1-x429.google.com with SMTP id i12so6591899pfd.6
-        for <netdev@vger.kernel.org>; Thu, 09 Dec 2021 13:27:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=SlYwdILx1pgFYgrzXrDq23q40uURPJrzp4eiVC0Mk/k=;
-        b=caSl8y1BBrdIsoOuLE8y2s7C2RbbGbd6/utl+lBm8XWaM+O4sE/xJbwecZ0aA6bbT0
-         JNVajC8Ola6BEqf+X/hlMV0Ltp7HDKhY7kWCjJl4Be2Wgi+TGfxW2/asMl88Ecr6fOqS
-         HIcrJ+7xbO1cdOcomoQhgTRcYX3DDDvHYauP++a43W5rHtbfysFgkJIbt0a3lhw2fqi7
-         mVZ4qDGDGqvLABhepzTqZrUx13lixF6FSrDJL9EITxywHAqHkqXdhAEwHkee5cjepwbV
-         KMPE/YOmfWyHTgQkWHWTxExZy3lky4yG7D1GvMy//Jlce8gWZY+U5fiCl0tM0PSR2fyb
-         nrOA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=SlYwdILx1pgFYgrzXrDq23q40uURPJrzp4eiVC0Mk/k=;
-        b=7Ztr6108Yc9E7EWmaxH2XzjpkMcn9fpYmgTBbPq/mZCSdgFMsj3bXprvjrbbx9Oiub
-         NOy5+5QD0L6HbirxU2CT0v2xJwDViPjrFLB3G31zD4PlOT4Lb3cvh5k2jYT1u/DEKU8C
-         9T8vovcGg0DnfQK5WJaRujcqsVN+xDkRLlX6EaTBnEYWvpOJ81AHAs0RTBm+Iry6rz2M
-         ruJzPK45zU7G9lWvCiYGxaS+HJ2Nj5CpXn8w1r7TPWZ0aNG4GEY7bWYdr1G8tXueiZQm
-         1NeRfyLV+x7GAiIkVYb2Non42uhmNm5AyJaQllvTxmTqG4+EP26OcSc7kCxi/L9KdaCc
-         qisg==
-X-Gm-Message-State: AOAM5301RDQnYfXyn38cwLbim16TfGpTF3aUwvbZFzQX08qbOMaYraN3
-        BtlmudQ9+Wu/2a3uXGE7ts8=
-X-Google-Smtp-Source: ABdhPJykkliK32R177o4RAdb9XX6/gJ76949q/G5nhL3mypwPTFFZtJ5mw5T+xFHPM7kThIHfaIDgA==
-X-Received: by 2002:a65:58cc:: with SMTP id e12mr33498392pgu.59.1639085276804;
-        Thu, 09 Dec 2021 13:27:56 -0800 (PST)
-Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id j22sm618291pfj.130.2021.12.09.13.27.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Dec 2021 13:27:56 -0800 (PST)
-Date:   Thu, 9 Dec 2021 13:27:53 -0800
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     netdev@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCHv2 net-next 1/2] net_tstamp: add new flag
- HWTSTAMP_FLAG_BONDED_PHC_INDEX
-Message-ID: <20211209212753.GC21819@hoboy.vegasvil.org>
-References: <20211209102449.2000401-1-liuhangbin@gmail.com>
- <20211209102449.2000401-2-liuhangbin@gmail.com>
+        id S232241AbhLIVeM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Dec 2021 16:34:12 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:35396 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229505AbhLIVeA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 16:34:00 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DE062B8268C;
+        Thu,  9 Dec 2021 21:30:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 8B198C341C7;
+        Thu,  9 Dec 2021 21:30:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1639085423;
+        bh=0nLiGm6DRDI48lr5XPK/3aMQSk0B5ldWPNaWbeZDORE=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=GEskyYFfxQ1ojYuDEvF79vtFaEsMF7UwU0vr2OBCMYdV616mpJe3K7LUFZVBgyjfm
+         znKq6cuwNBgeiXyDgYdiCBPzChQVt0B6mv97mb5TBrnC7d8Q+hN8ZTKxj3DNBaJpn3
+         DFLIz6ysMYVb9EZsF+xAPLj2SD5C1UMqG7WCT36nMxrjRttcnLc+Oslc3Lgci39NBI
+         L4xcjCOQMZtFVUsUPa0SO3A37j+opB8pGKz4Ls2fUvBLMYGZb1/lUrmnsDystY25ae
+         XpOO0uUlnR6bUwADclbINISGCZeG1gKIdQIKdDiCVUo2KBCfQ9D2AkZDAxWsRaVB+9
+         klpD3+aHgWvIQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 6F4A2609D7;
+        Thu,  9 Dec 2021 21:30:23 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211209102449.2000401-2-liuhangbin@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] skbuff: Extract list pointers to silence compiler warnings
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163908542345.522.6404194998355353542.git-patchwork-notify@kernel.org>
+Date:   Thu, 09 Dec 2021 21:30:23 +0000
+References: <20211207062758.2324338-1-keescook@chromium.org>
+In-Reply-To: <20211207062758.2324338-1-keescook@chromium.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     kuba@kernel.org, davem@davemloft.net, jonathan.lemon@gmail.com,
+        edumazet@google.com, elver@google.com, alobakin@pm.me,
+        pabeni@redhat.com, cong.wang@bytedance.com, talalahmad@google.com,
+        haokexin@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 09, 2021 at 06:24:48PM +0800, Hangbin Liu wrote:
-> diff --git a/net/core/dev_ioctl.c b/net/core/dev_ioctl.c
-> index 1d309a666932..10ac5457dcbc 100644
-> --- a/net/core/dev_ioctl.c
-> +++ b/net/core/dev_ioctl.c
-> @@ -186,18 +186,27 @@ static int net_hwtstamp_validate(struct ifreq *ifr)
->  	struct hwtstamp_config cfg;
->  	enum hwtstamp_tx_types tx_type;
->  	enum hwtstamp_rx_filters rx_filter;
-> -	int tx_type_valid = 0;
-> +	enum hwtstamp_flags flag;
->  	int rx_filter_valid = 0;
-> +	int tx_type_valid = 0;
-> +	int flag_valid = 0;
->  
->  	if (copy_from_user(&cfg, ifr->ifr_data, sizeof(cfg)))
->  		return -EFAULT;
->  
-> -	if (cfg.flags) /* reserved for future extensions */
-> -		return -EINVAL;
-> -
-> +	flag = cfg.flags;
->  	tx_type = cfg.tx_type;
->  	rx_filter = cfg.rx_filter;
->  
-> +	switch (flag) {
-> +	case HWTSTAMP_FLAG_BONDED_PHC_INDEX:
-> +		flag_valid = 1;
+Hello:
 
-This isn't correct.  You need to use a bitwise test.
+This patch was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-Thanks,
-Richard
-
-
-> +		break;
-> +	case __HWTSTAMP_FLAGS_CNT:
-> +		/* not a real value */
-> +		break;
-> +	}
-> +
->  	switch (tx_type) {
->  	case HWTSTAMP_TX_OFF:
->  	case HWTSTAMP_TX_ON:
-> @@ -234,7 +243,7 @@ static int net_hwtstamp_validate(struct ifreq *ifr)
->  		break;
->  	}
->  
-> -	if (!tx_type_valid || !rx_filter_valid)
-> +	if (!flag_valid || !tx_type_valid || !rx_filter_valid)
->  		return -ERANGE;
->  
->  	return 0;
-> -- 
-> 2.31.1
+On Mon,  6 Dec 2021 22:27:58 -0800 you wrote:
+> Under both -Warray-bounds and the object_size sanitizer, the compiler is
+> upset about accessing prev/next of sk_buff when the object it thinks it
+> is coming from is sk_buff_head. The warning is a false positive due to
+> the compiler taking a conservative approach, opting to warn at casting
+> time rather than access time.
 > 
+> However, in support of enabling -Warray-bounds globally (which has
+> found many real bugs), arrange things for sk_buff so that the compiler
+> can unambiguously see that there is no intention to access anything
+> except prev/next.  Introduce and cast to a separate struct sk_buff_list,
+> which contains _only_ the first two fields, silencing the warnings:
+> 
+> [...]
+
+Here is the summary with links:
+  - skbuff: Extract list pointers to silence compiler warnings
+    https://git.kernel.org/netdev/net-next/c/1a2fb220edca
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
