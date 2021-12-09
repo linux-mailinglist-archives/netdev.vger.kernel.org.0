@@ -2,186 +2,265 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B67846F4A2
-	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 21:07:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2879246F4DF
+	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 21:25:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230204AbhLIUKd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Dec 2021 15:10:33 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:3236 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229962AbhLIUKc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 15:10:32 -0500
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1B9HkiTw021168;
-        Thu, 9 Dec 2021 12:06:39 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
- subject : message-id : references : content-type : in-reply-to :
- mime-version; s=facebook; bh=Ras/Sn2LsqgGyQNRgSp4M9DxBkTvVLP7nNz9qlmQ4eQ=;
- b=Q12gPV/+iQFVwuWeTwCkTtRTf/Xx728ItE5S7tQUxEtRwaD1Z4FnuPptuWV85vUluDv9
- R1rgILXudfWEuvJ8qSKl+qedEBEcaVBSRRLFLcKrEeeG46RyC5JPvgLi+M9015aag0Fn
- C5dzRtrBBxEHMg3PUWft/+WB6twLV/Ch9dM= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 3cujg03346-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 09 Dec 2021 12:06:38 -0800
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.199) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Thu, 9 Dec 2021 12:06:37 -0800
+        id S231840AbhLIU27 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Dec 2021 15:28:59 -0500
+Received: from mail-dm6nam11lp2173.outbound.protection.outlook.com ([104.47.57.173]:20288
+        "EHLO NAM11-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229850AbhLIU25 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Dec 2021 15:28:57 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SzoQw/B32fDLmEd4fIhOix1PIzahV23DsFLjhKCjicza65yAx9j1Q/LztFHn6W1ign9v8tho3R+XQT8YxkuTt/KsWu5V9IffnGo5uIQtCd6O/vRE1QquABUQXupaUFoUQkrK88uqQlYh0JMNlQ7XQnJhnMZX60b7XMLNnvr9Cja5nCAMZvr0rdeoe1wsSvhlmLxtbRtf+rhIumRRrqIz6aivmQWQOKKV2rOAo0KsRGWhYQtaPu3kqfeRqmIjXUdwnAX/OaXz0XoHQlwDkmEKAmdoTy5JQZGcrJo2mdTz0A+2D7yM2F7kuNCrkvw/ASW4yLwUZ35BqID2TZDrMsfyqg==
+ b=a0PHMvKlAM/BnQMEo1u49VdFEJx/WuLG1BTPRsLUaVk+EuHMSf0d3Qnnu2+TblevfYCn2dPFA5o7sHUAaiRIPSFdZEYpIKfWqQr19ZM0N/wG+EppVtLq7CTWa24WeXz8pxN2Gp911wEtcDIzFxtYPAFTdKrcLleRTlx/8pCvovel/C+i0rvG1KeFHXMfCGjpaNqeqvLyw0NjXlGj0pH1MU/IPjIH7ZmNhGcbcrLGjUukAN3hVXMJyF9MzJa0d5rsLdDKR+yLdyN8Q+nDeldUKKSwY0eR8tuw+OX4olZnoqZPVd9CVM+k4JcM+FQN89noie3BYfgNzc0SnGJgKS+g2g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Ras/Sn2LsqgGyQNRgSp4M9DxBkTvVLP7nNz9qlmQ4eQ=;
- b=UPnf/Jn1zkx5ViwH+LLtJbxeF/8yZv4fWqZEqauv0Nm9qzNczTf/sfG9ii4gKkur1NZG47dxRwZ0SxqBFwqyaEQYFwAvlfJU1cW4GsHfK2VGvqG+f+iuLsGGmkSvC+PMa4vOKSsP1Y784cI4LBTkMTX3Z834qlIGYi8tyK6SpSMi8/OZc+vX7Eh66UHabayOdkotq7y/II8yhgxX6h/8SE27IVyWyP5Cq1+sJxM8tmDXggYgU43zyUOoR4LMM/bS60zx66WYpOB2t4Q4H6CnTsEblZfJjaXruGvB9+NbatUqtQ4OXnlmD+9biXUY0Bir+Ygpb5QIqeacrJNS0suMsQ==
+ bh=i2GInL2fbY9LM/yDScvF5EnyIC8c4u858vss0k9RZHQ=;
+ b=O6C2xdpBSNj2y0zXJ0a5tJBOW1j84HsllcZAursGyyLR6HDKs1GRxzt3U3u967bbdx6FWYY3B2ZgZLL614cE72ygfc7U3JQgjlG87y+IsewTspjzGKQVyiAmtJghlKYpAxJOiGE/XCQT9Jxy5uGlOH9EkQDAw9X1fvdFaUjZy9wFe7n68njaUn/nOI+KvjHYZLhe9JH2yrf/zvxiwsobKFzQZiK3yNG+ZsAgifIdBvtv7KuJwIaU14TmjgBv30weF4F6bL/dFlg8CH3iDsGsuEriWf7vBtOSyOb665Cxsw7iTE/3b5Plzv1qsNmwXWTArh1FxStfjFAmgEiLIACZhg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Received: from SA1PR15MB5016.namprd15.prod.outlook.com (2603:10b6:806:1db::19)
- by SN6PR15MB2510.namprd15.prod.outlook.com (2603:10b6:805:25::23) with
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=i2GInL2fbY9LM/yDScvF5EnyIC8c4u858vss0k9RZHQ=;
+ b=h4ttG+Gkx4QPU7OYF9U8RdL9/XtNtsKGaVjZ9jILtSKSc3bIshJV5vSlLDXrpx/47MqTxa7CcBl6/9OHOkDgejxJJsRdOPYQ3a17TUlqDkhzCWXjyGn4tkYpFxbwwVO4H58FWXeTLmTWLXbqJZMgXnneqpgRCxwK6mqBfKEEG3E=
+Received: from MWHPR21MB1593.namprd21.prod.outlook.com (2603:10b6:301:7c::11)
+ by PH0PR21MB1960.namprd21.prod.outlook.com (2603:10b6:510:8::5) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.25; Thu, 9 Dec
- 2021 20:06:36 +0000
-Received: from SA1PR15MB5016.namprd15.prod.outlook.com
- ([fe80::e589:cc2c:1c9c:8010]) by SA1PR15MB5016.namprd15.prod.outlook.com
- ([fe80::e589:cc2c:1c9c:8010%7]) with mapi id 15.20.4755.022; Thu, 9 Dec 2021
- 20:06:36 +0000
-Date:   Thu, 9 Dec 2021 12:06:32 -0800
-From:   Martin KaFai Lau <kafai@fb.com>
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-CC:     Jakub Kicinski <kuba@kernel.org>,
-        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        <eric.dumazet@gmail.com>, <davem@davemloft.net>,
-        <dsahern@kernel.org>, <efault@gmx.de>, <netdev@vger.kernel.org>,
-        <tglx@linutronix.de>, <yoshfuji@linux-ipv6.org>
-Subject: Re: [PATCH net v2] tcp: Don't acquire inet_listen_hashbucket::lock
- with disabled BH.
-Message-ID: <20211209200632.wpusjdlad5hyaal6@kafai-mbp.dhcp.thefacebook.com>
-References: <20211206120216.mgo6qibl5fmzdcrp@linutronix.de>
+ 2021 20:09:19 +0000
+Received: from MWHPR21MB1593.namprd21.prod.outlook.com
+ ([fe80::e9ea:fc3b:df77:af3e]) by MWHPR21MB1593.namprd21.prod.outlook.com
+ ([fe80::e9ea:fc3b:df77:af3e%8]) with mapi id 15.20.4801.007; Thu, 9 Dec 2021
+ 20:09:19 +0000
+From:   "Michael Kelley (LINUX)" <mikelley@microsoft.com>
+To:     Tianyu Lan <ltykernel@gmail.com>,
+        KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        Dexuan Cui <decui@microsoft.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "bp@alien8.de" <bp@alien8.de>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "x86@kernel.org" <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "jejb@linux.ibm.com" <jejb@linux.ibm.com>,
+        "martin.petersen@oracle.com" <martin.petersen@oracle.com>,
+        "arnd@arndb.de" <arnd@arndb.de>,
+        "hch@infradead.org" <hch@infradead.org>,
+        "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
+        "robin.murphy@arm.com" <robin.murphy@arm.com>,
+        Tianyu Lan <Tianyu.Lan@microsoft.com>,
+        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>
+CC:     "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        vkuznets <vkuznets@redhat.com>,
+        "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
+        "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
+        "hch@lst.de" <hch@lst.de>, "joro@8bytes.org" <joro@8bytes.org>,
+        "parri.andrea@gmail.com" <parri.andrea@gmail.com>,
+        "dave.hansen@intel.com" <dave.hansen@intel.com>
+Subject: RE: [PATCH V6 3/5] hyper-v: Enable swiotlb bounce buffer for
+ Isolation VM
+Thread-Topic: [PATCH V6 3/5] hyper-v: Enable swiotlb bounce buffer for
+ Isolation VM
+Thread-Index: AQHX6z/mlYtshOhm/UO21xPyGwUfQ6wqlr9A
+Date:   Thu, 9 Dec 2021 20:09:18 +0000
+Message-ID: <MWHPR21MB159359667085776793988EACD7709@MWHPR21MB1593.namprd21.prod.outlook.com>
+References: <20211207075602.2452-1-ltykernel@gmail.com>
+ <20211207075602.2452-4-ltykernel@gmail.com>
+In-Reply-To: <20211207075602.2452-4-ltykernel@gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=fb6518fb-4c13-42df-b79a-b4c6d0836b6e;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2021-12-09T19:54:49Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 25d976b4-8563-45f3-3a5b-08d9bb4fc898
+x-ms-traffictypediagnostic: PH0PR21MB1960:EE_
+x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
+x-microsoft-antispam-prvs: <PH0PR21MB19601DEE7C3B7CBACCEF6AD0D7709@PH0PR21MB1960.namprd21.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: rYD+MWM5lt6cwQz9Fg8XHqLH7LZzvc7JFYFY2R4gqWXz8bSuIHR0+ju9NYeUOTi25f7M7cVVr/QATpZqDSuS6qNem2lrgIIdeUh8FQPh+zoZvbXNYLxd++VtQ+z+ko0mx5IPUE8IMfkjec3Qq7efudoXjSv+mcWRGAtGn1n8YbHiuz5TAS6L1OIAFEDaiTtnqKqMeIyB77IiKSjQpFaEkvWup0I4j9t43kw7EW4dpC4ICeN7NcaqWunfPFk/LxdYmoneZzeZSZDnfksHgDRhcXxloTMkwl5aOJ6V+7QfIHDT+SMdi094SHOyAIWObpJrLPTCyU3REv5abgKLZ/7XkGZknq9wXoE6QsxzvWDVVF4WCUB6z8cBxwnNGCRkuaw25qB6DcPh+orb8tBHCLHOqot87Cy6D5gjg5ZGFNaOColK9BIIBRzXHaU6fri2grLCWfhyPEFVe6uoh1N476CMM0kuoPXR9MpY32v9arO961RUdzB1QcfVdPkbZk7h1Rei0CGgazLkJqOBQgN5TAZuG54pdgwl1DcTcc4US8OE1hrhB71v2hXFZ9ZtIPG1iJLuypjOsogDe7+v0oCDbgKEsD/ITliRWZkxtmkg6p4PBIQqpOZdvvxzs6NYAr+OxDfBYQaOviAE4gIkHuqNFnfXNdxJXt/B+dKMI2k9gXKKwWWJTmecpe2MhisoYeBTWAl6
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR21MB1593.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(76116006)(66476007)(66946007)(8936002)(316002)(4326008)(54906003)(8676002)(921005)(110136005)(66556008)(64756008)(52536014)(66446008)(86362001)(82950400001)(82960400001)(38070700005)(9686003)(55016003)(7406005)(83380400001)(71200400001)(33656002)(2906002)(8990500004)(26005)(6506007)(7416002)(10290500003)(5660300002)(7696005)(508600001)(122000001)(38100700002)(186003)(20210929001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: RT7JgHiVD8NG8Kr6fBi9zPiBXBP0l8tU9vJjjMj7s7prIcTej/TdjPEBmrxQbDamGpbXfzBFJE3C3rmlsSTArNUayWmwnhYwb8ePp0G7cO4IYlUWCnUVjUBKj8CN85WcWzNlPRVV6fNJG4khuaTEoXwnSzT2GrDBJCIXrerCWnxhP3IJR9JQuTcr8RN5XhfsEcc+Hnza59YvEFBM1ZdFYk0qs3utWKoq9EfGK9vOhH2LlBvBDBOgpFdPAOJyjQRsOfC7qbCK37CoWeRFwQxZh4vNG2IMAceV6R5vxuAPCT9K2NsPKTnVG7Cgov/cmDmLLerBnx1qAr1HdU057xOJX7ODPJX3pAYBj0HxibF63965LuuneJ+ejfDGFtv/rcIRnaNF5hNsGmwTy/ffEk9n5qxmfyTLMwzD6EqX2ijxrkniXfFRNVHSx35T6LIYetCIK8NiUfPVbELjw8EszB5LtLGTrB19KcqiDVayG9+TWRE8jsEOQM1uoRIv1TZA0Bdf
 Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20211206120216.mgo6qibl5fmzdcrp@linutronix.de>
-X-ClientProxiedBy: MWHPR15CA0046.namprd15.prod.outlook.com
- (2603:10b6:300:ad::32) To SA1PR15MB5016.namprd15.prod.outlook.com
- (2603:10b6:806:1db::19)
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:8c7) by MWHPR15CA0046.namprd15.prod.outlook.com (2603:10b6:300:ad::32) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.17 via Frontend Transport; Thu, 9 Dec 2021 20:06:34 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ca3cf8cc-dbdf-4ed3-3b78-08d9bb4f671e
-X-MS-TrafficTypeDiagnostic: SN6PR15MB2510:EE_
-X-Microsoft-Antispam-PRVS: <SN6PR15MB25106B7533199B366C4EA98AD5709@SN6PR15MB2510.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:2000;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 8S0MdX0hTOPEz4hzafQF0Lgp8Luaa6XRcNG0d2mYlZiQ2yjRI+RffvzIhHjABl9InODMMfVNnb+zCMJS4wiPMgjd92lZA/DVpr3CfypQJlUHPOz9m7LYBLlnuW+t3PnQoaV6m/GxVb5fpUjgOQJQ+674Wzc46IShY7hYlbVVKOdxEDzExt2jVMom2ClKMfD8wgJuGfZkATQJRn0hl06od0Sp9os5EFGYkxrUG2e5GizTK9SSUnPKbZaWQCuGsjB84le4ZB1V/Ach9wWilz6Cmbdb4XmNQlHwCi/If02uHQRnC7JcklRmFBVuB8CRvETVGBMyFaldUgLmm5Sbj/R6HBDB5hk7qluv4OYVtF3shsGNIgKmdQ/hNrp+v0UIEj4+XxnEW6P8rMfo9g3mWCvEK3y23OwcNvfIRN+OLZUcC8bw0QX8o2j0VpGxxDA3nB/B37mJrUTAdSnlpEiLFYYJx/oOOzQ+9zxXIRGGYQ6ouYiKtqCcYcSeV+EyYxrNCQg/VR/GwinbyuDyd7gTlYqT6nNi4KEZ8XTmOpQHBWEzpwHvvTYGK2pDuS5JB9a98L7/RvxJHoKkSXgG3uaWOb8IzRl+1zYhlmYuWRSd1By2nx/fH4lgGCXZLOXIH0l/TjvvHpwxRJ5jfwYzf87BnesSTA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR15MB5016.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(8936002)(8676002)(54906003)(9686003)(7416002)(38100700002)(316002)(1076003)(83380400001)(55016003)(5660300002)(66556008)(66476007)(86362001)(66946007)(6916009)(6506007)(2906002)(4326008)(508600001)(186003)(52116002)(7696005);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?u2er6YN3+a1vS5DUo9reo/HElvc+lJUqfIfZGFp8H9J/NYt1CoLmTILQ/RFx?=
- =?us-ascii?Q?87UYqlRgV6VDzVtFSHIEzDNEEfvqCVP/vqbZn/6MIdpTD3FM++j0nlIHax5x?=
- =?us-ascii?Q?U7EtxkvdT2HChLsE9ue6CkOOu7PFCjgAjwt4npwdr9he8yjIwA4MXaoB1G3A?=
- =?us-ascii?Q?2bB1pM8i/jblr9uNP4/2gY88MKIqbpl7z0sNzItc0tmZiLv9/fIBDrfYeJU+?=
- =?us-ascii?Q?vuirUmF29sSqtFDLHxRga8EIumnQM7S6c2VwaXbp7/f4aFHCbcgLSQvdzM5K?=
- =?us-ascii?Q?Q4sWWl7g/9YpsGVa0cUDt+o0TL3+NtMJ4fHTz1mf3BRQQLCU6KFMSYir87O0?=
- =?us-ascii?Q?LITZA6iR9Da5caXdiBJtWT5Veuloz01lr7o+DwWoHPo4jzOjl8atYT/UcJd2?=
- =?us-ascii?Q?5muzEPvPAV3wfoLI5KsoDiw0DkhVgfpIgTYzpXA95OF+xqH0FES3zylTQAfe?=
- =?us-ascii?Q?GY0E0h4yTHNrHQNyu1AMqSojiDHKrzR8SuO5OPtHpxndY3Hw9i/Rqoa9CzEC?=
- =?us-ascii?Q?Ck4qpv+gOdWVIRsfWfqZtWcKc44C/cBGguNTNiqh0/QoBi2HYuQYJ7UUGet4?=
- =?us-ascii?Q?+czBkAJxkEF4GrZ7yAb/1FfwZXN95+amLmpqT18bHwLDvPzx5EyJphlavao2?=
- =?us-ascii?Q?VFytaRIuXwwNAS/G/OVQryIKeiHQXsFf+tv67IKnZRPlqX1Wz9bJPMm4b2ul?=
- =?us-ascii?Q?pp5BNsCdHA2X7Bn+fLZm2jV2RUWJM2tWyncwRv1lY4COK7WlWhgE1gGpPXgB?=
- =?us-ascii?Q?fyoCLU+S8uSvdgOY6Mpx6RiH20F0biVdr8alu7leJLGJNFg7ojMixmSchTTI?=
- =?us-ascii?Q?SoEVrMOySKML8pBwtTOxE3laW081AeB7JeQ6N6ah/UM2BU4NXrnJKwkAF8uN?=
- =?us-ascii?Q?888QIEsr5/bm/Os81pSNh0VZIdrmKTZP6SWGTjHxRszYcD39hUTw5E8KrVvL?=
- =?us-ascii?Q?7Czu1LstG/A+8VENX2EwteUxKdDyFdVLUpzAIdUjHlijX3K/2q/mR7LrPAQ0?=
- =?us-ascii?Q?LJpZLL9+9zWZE05CZJindDtYy+vScue8mz9vQU1A9LEiH8ZwWQXwoje5DLN4?=
- =?us-ascii?Q?RIy764VK8rg45V+67yLqm+jYYmIrwogLAx5NTUton783iAbMAHut0z8fxX/Z?=
- =?us-ascii?Q?gFif2FuszROodfpMNcxPMbS2fm/gb8binCks8Uc5LBNHnl7xuMnkHBgMlczL?=
- =?us-ascii?Q?aNrfi6svfVtNePrXrpkve5BNL50gqHL01SN0rtKja8mGTmGTAFUNp3ioWcB8?=
- =?us-ascii?Q?f582AF0G9xEnieXjSF44TDJwRTOypY6eiCKUKQbaeIRS34pr6XcfMuYbpfyl?=
- =?us-ascii?Q?ref5znNfL8ScA/b3CTl+mA7yIsSUIHWAy+/C3i7fApezMA7e96G8gp2ljOCV?=
- =?us-ascii?Q?+XgGDF5zNq0jpB4LhLBo5AEwsIDZW4xw8N2hr79OmeqTnTr/W9twn8OzpGPm?=
- =?us-ascii?Q?hX0LYewJreEq64ezCClGshKf4E7v7ZPtGHAChnKV4CBIjnqXMG5DqurtNCBR?=
- =?us-ascii?Q?BxVrHeKvJwQMMbHJuB7FBEJJGLRbc05hI4uZZAQnY5Kc3tlm5U2RADB7moJX?=
- =?us-ascii?Q?q6ZsWtLEdlAXKf+sAq4Uh1b3YMTKQ/43XO/5ssqd?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: ca3cf8cc-dbdf-4ed3-3b78-08d9bb4f671e
-X-MS-Exchange-CrossTenant-AuthSource: SA1PR15MB5016.namprd15.prod.outlook.com
+X-OriginatorOrg: microsoft.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Dec 2021 20:06:35.9398
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR21MB1593.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 25d976b4-8563-45f3-3a5b-08d9bb4fc898
+X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Dec 2021 20:09:18.9916
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: EnJo9w3j1aYDKMmQo/Ou/n5NT3k3/SFVn/YdvYw4BarptpLUn4k3TYj//zKebO3r
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR15MB2510
-X-OriginatorOrg: fb.com
-X-Proofpoint-ORIG-GUID: L22iwKCdVAuS1z1O_qmUrH5ag8l9NF-r
-X-Proofpoint-GUID: L22iwKCdVAuS1z1O_qmUrH5ag8l9NF-r
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2021-12-09_09,2021-12-08_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=9 clxscore=1011
- phishscore=0 priorityscore=1501 adultscore=0 spamscore=9 impostorscore=0
- mlxscore=9 bulkscore=0 malwarescore=0 suspectscore=0 lowpriorityscore=0
- mlxlogscore=103 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2110150000 definitions=main-2112090104
-X-FB-Internal: deliver
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: m1xKY2RabmeS2pVUkIU4uDbnLiqbkvQGBaLLjrMTAuQk9AKLG9i/WyGVA6lnyklUmCF4x0sCBIjuy36JLJ0UuIXt8Rw16gls0i/c30y2MCY=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR21MB1960
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 06, 2021 at 01:02:16PM +0100, Sebastian Andrzej Siewior wrote:
-> Commit
->    9652dc2eb9e40 ("tcp: relax listening_hash operations")
-> 
-> removed the need to disable bottom half while acquiring
-> listening_hash.lock. There are still two callers left which disable
-> bottom half before the lock is acquired.
-> 
-> On PREEMPT_RT the softirqs are preemptible and local_bh_disable() acts
-> as a lock to ensure that resources, that are protected by disabling
-> bottom halves, remain protected.
-> This leads to a circular locking dependency if the lock acquired with
-> disabled bottom halves is also acquired with enabled bottom halves
-> followed by disabling bottom halves. This is the reverse locking order.
-> It has been observed with inet_listen_hashbucket::lock:
-> 
-> local_bh_disable() + spin_lock(&ilb->lock):
->   inet_listen()
->     inet_csk_listen_start()
->       sk->sk_prot->hash() := inet_hash()
-> 	local_bh_disable()
-> 	__inet_hash()
-> 	  spin_lock(&ilb->lock);
-> 	    acquire(&ilb->lock);
-> 
-> Reverse order: spin_lock(&ilb->lock) + local_bh_disable():
->   tcp_seq_next()
->     listening_get_next()
->       spin_lock(&ilb->lock);
-The net tree has already been using ilb2 instead of ilb.
-It does not change the problem though but updating
-the commit log will be useful to avoid future confusion.
+From: Tianyu Lan <ltykernel@gmail.com> Sent: Monday, December 6, 2021 11:56=
+ PM
+>=20
+> hyperv Isolation VM requires bounce buffer support to copy
+> data from/to encrypted memory and so enable swiotlb force
+> mode to use swiotlb bounce buffer for DMA transaction.
+>=20
+> In Isolation VM with AMD SEV, the bounce buffer needs to be
+> accessed via extra address space which is above shared_gpa_boundary
+> (E.G 39 bit address line) reported by Hyper-V CPUID ISOLATION_CONFIG.
+> The access physical address will be original physical address +
+> shared_gpa_boundary. The shared_gpa_boundary in the AMD SEV SNP
+> spec is called virtual top of memory(vTOM). Memory addresses below
+> vTOM are automatically treated as private while memory above
+> vTOM is treated as shared.
+>=20
+> Swiotlb bounce buffer code calls set_memory_decrypted()
+> to mark bounce buffer visible to host and map it in extra
+> address space via memremap. Populate the shared_gpa_boundary
+> (vTOM) via swiotlb_unencrypted_base variable.
+>=20
+> The map function memremap() can't work in the early place
+> (e.g ms_hyperv_init_platform()) and so call swiotlb_update_mem_
+> attributes() in the hyperv_init().
+>=20
+> Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
+> ---
+> Change since v4:
+> 	* Remove Hyper-V IOMMU IOMMU_INIT_FINISH related functions
+> 	  and set SWIOTLB_FORCE and swiotlb_unencrypted_base in the
+> 	  ms_hyperv_init_platform(). Call swiotlb_update_mem_attributes()
+> 	  in the hyperv_init().
+>=20
+> Change since v3:
+> 	* Add comment in pci-swiotlb-xen.c to explain why add
+> 	  dependency between hyperv_swiotlb_detect() and pci_
+> 	  xen_swiotlb_detect().
+> 	* Return directly when fails to allocate Hyper-V swiotlb
+> 	  buffer in the hyperv_iommu_swiotlb_init().
+> ---
+>  arch/x86/hyperv/hv_init.c      | 10 ++++++++++
+>  arch/x86/kernel/cpu/mshyperv.c | 11 ++++++++++-
+>  include/linux/hyperv.h         |  8 ++++++++
+>  3 files changed, 28 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/arch/x86/hyperv/hv_init.c b/arch/x86/hyperv/hv_init.c
+> index 24f4a06ac46a..9e18a280f89d 100644
+> --- a/arch/x86/hyperv/hv_init.c
+> +++ b/arch/x86/hyperv/hv_init.c
+> @@ -28,6 +28,7 @@
+>  #include <linux/syscore_ops.h>
+>  #include <clocksource/hyperv_timer.h>
+>  #include <linux/highmem.h>
+> +#include <linux/swiotlb.h>
+>=20
+>  int hyperv_init_cpuhp;
+>  u64 hv_current_partition_id =3D ~0ull;
+> @@ -502,6 +503,15 @@ void __init hyperv_init(void)
+>=20
+>  	/* Query the VMs extended capability once, so that it can be cached. */
+>  	hv_query_ext_cap(0);
+> +
+> +	/*
+> +	 * Swiotlb bounce buffer needs to be mapped in extra address
+> +	 * space. Map function doesn't work in the early place and so
+> +	 * call swiotlb_update_mem_attributes() here.
+> +	 */
+> +	if (hv_is_isolation_supported())
+> +		swiotlb_update_mem_attributes();
+> +
+>  	return;
+>=20
+>  clean_guest_os_id:
+> diff --git a/arch/x86/kernel/cpu/mshyperv.c b/arch/x86/kernel/cpu/mshyper=
+v.c
+> index 4794b716ec79..baf3a0873552 100644
+> --- a/arch/x86/kernel/cpu/mshyperv.c
+> +++ b/arch/x86/kernel/cpu/mshyperv.c
+> @@ -18,6 +18,7 @@
+>  #include <linux/kexec.h>
+>  #include <linux/i8253.h>
+>  #include <linux/random.h>
+> +#include <linux/swiotlb.h>
+>  #include <asm/processor.h>
+>  #include <asm/hypervisor.h>
+>  #include <asm/hyperv-tlfs.h>
+> @@ -319,8 +320,16 @@ static void __init ms_hyperv_init_platform(void)
+>  		pr_info("Hyper-V: Isolation Config: Group A 0x%x, Group B 0x%x\n",
+>  			ms_hyperv.isolation_config_a, ms_hyperv.isolation_config_b);
+>=20
+> -		if (hv_get_isolation_type() =3D=3D HV_ISOLATION_TYPE_SNP)
+> +		if (hv_get_isolation_type() =3D=3D HV_ISOLATION_TYPE_SNP) {
+>  			static_branch_enable(&isolation_type_snp);
+> +			swiotlb_unencrypted_base =3D ms_hyperv.shared_gpa_boundary;
+> +		}
+> +
+> +		/*
+> +		 * Enable swiotlb force mode in Isolation VM to
+> +		 * use swiotlb bounce buffer for dma transaction.
+> +		 */
+> +		swiotlb_force =3D SWIOTLB_FORCE;
 
-iiuc, established_get_next() does not hit this because
-it calls spin_lock_bh() which then keeps the
-local_bh_disable() => spin_lock() ordering?
+I'm good with this approach that directly updates the swiotlb settings here
+rather than in IOMMU initialization code.  It's a lot more straightforward.
 
-The patch lgtm.
-Acked-by: Martin KaFai Lau <kafai@fb.com>
+However, there's an issue if building for X86_32 without PAE, in that the=20
+swiotlb module may not be built, resulting in compile and link errors.  The
+swiotlb.h file needs to be updated to provide a stub function for
+swiotlb_update_mem_attributes().   swiotlb_unencrypted_base probably
+needs wrapper functions to get/set it, which can be stubs when=20
+CONFIG_SWIOTLB is not set.  swiotlb_force is a bit of a mess in that it alr=
+eady
+has a stub definition that assumes it will only be read, and not set.  A bi=
+t of
+thinking will be needed to sort that out.
 
-> 	acquire(&ilb->lock);
-> 
->   tcp4_seq_show()
->     get_tcp4_sock()
->       sock_i_ino()
-> 	read_lock_bh(&sk->sk_callback_lock);
-> 	  acquire(softirq_ctrl)	// <---- whoops
-> 	  acquire(&sk->sk_callback_lock)
-> 
-> Drop local_bh_disable() around __inet_hash() which acquires
-> listening_hash->lock. Split inet_unhash() and acquire the
-> listen_hashbucket lock without disabling bottom halves; the inet_ehash
-> lock with disabled bottom halves.
+>  	}
+>=20
+>  	if (hv_max_functions_eax >=3D HYPERV_CPUID_NESTED_FEATURES) {
+> diff --git a/include/linux/hyperv.h b/include/linux/hyperv.h
+> index b823311eac79..1f037e114dc8 100644
+> --- a/include/linux/hyperv.h
+> +++ b/include/linux/hyperv.h
+> @@ -1726,6 +1726,14 @@ int hyperv_write_cfg_blk(struct pci_dev *dev, void=
+ *buf, unsigned int len,
+>  int hyperv_reg_block_invalidate(struct pci_dev *dev, void *context,
+>  				void (*block_invalidate)(void *context,
+>  							 u64 block_mask));
+> +#if IS_ENABLED(CONFIG_HYPERV)
+> +int __init hyperv_swiotlb_detect(void);
+> +#else
+> +static inline int __init hyperv_swiotlb_detect(void)
+> +{
+> +	return 0;
+> +}
+> +#endif
+
+I don't think hyperv_swiotlb_detect() is used any longer, so this change
+should be dropped.
+
+>=20
+>  struct hyperv_pci_block_ops {
+>  	int (*read_block)(struct pci_dev *dev, void *buf, unsigned int buf_len,
+> --
+> 2.25.1
+
