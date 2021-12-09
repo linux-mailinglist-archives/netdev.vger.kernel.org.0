@@ -2,111 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1147D46F1D6
-	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 18:26:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EA24146F1DC
+	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 18:27:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242933AbhLIR36 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Dec 2021 12:29:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49612 "EHLO
+        id S242941AbhLIRbS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Dec 2021 12:31:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242912AbhLIR34 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 12:29:56 -0500
-Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7BE7C061353;
-        Thu,  9 Dec 2021 09:26:22 -0800 (PST)
-Received: by mail-yb1-xb34.google.com with SMTP id v64so15348901ybi.5;
-        Thu, 09 Dec 2021 09:26:22 -0800 (PST)
+        with ESMTP id S242183AbhLIRbS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 12:31:18 -0500
+Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE8C4C061746;
+        Thu,  9 Dec 2021 09:27:44 -0800 (PST)
+Received: by mail-yb1-xb2d.google.com with SMTP id d10so15507510ybn.0;
+        Thu, 09 Dec 2021 09:27:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=rSGhCEpW6oFZLSoL90yonkwQmJggemd7cOz0P3Hw7wQ=;
-        b=NP+TLXUbTvx+yci97Q4Z3UXkjvEArPYoSUyx1dPz1TF4FGJKe2uuLW5ptH5KzsV6su
-         VCfERZFV1UDrDDSD3/tS+gAsvqrjiNvu8J00kei1RzNS6B+CYDJMT5HmNM9yDETxb7Oc
-         ozhsJmQ6B/Cd2Y+XAZqLOSGrHgFd4xNqDgKRk4Ft66VivlScJ//NNYPoh1IOxLTla9XX
-         Tu1ihyr1SmCP7WM/cLHNOu64zbZlkpzd9iZ5sIWHKA0cg97IFvBoovEZoDKgaB223fye
-         sbivjAFx9txjWPjLcbJbbF/pH228sttehZnC0eE655GDEOIjJfeQ2HJ+mFyX4jn3O7E5
-         APCg==
+        bh=pCkReFNzycwmra9bDr3Pm6ySMhte/S1f1z5ZgTJWVXw=;
+        b=KwTLPBAwpSZjXvqyaBitmvwHh5L3ufMOcHRAsuKUQYZo6a49e7gzzRCAkke3M7hO3H
+         rcJW05Tw9DXIB/TTheFPpECt51hQ23oYA4gO64a/dF7xeKZYeLb8y+Qn7j4aFbW3NZeG
+         qBxmt8TbrS/3Bn0PC5HA4kIQYmnzJuLFd3xsH8idAZIq8xEQYg8LNgaqJK8f1vYkPRuf
+         bQ94zx0agW9GYBEMDYRJuAbMxJUP+kLJ1/ODjxaaVNzqZ6CW5ditHHNMRxKZTP/lBEBE
+         YLgenwgix0L5UAd8BNxDjJK78LsJuUceMl4h3A/0COvJTYFWz4PJ+yFQjehz908L3AuD
+         KWxw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=rSGhCEpW6oFZLSoL90yonkwQmJggemd7cOz0P3Hw7wQ=;
-        b=BT3vAcxunOr9pE/Pxqb4qmJC0sM88II16H2/sPSpI/aBbARPcZu9eWa6j2Fi2n5dOB
-         6KKCLSORqfEpNuDivuB4xRgEtIqtknxm8lHEWP4U8dWXmqMe2T3RuBqOVZribZV6Dmuh
-         OzGIqqfq6PxbNSRCtX4B45CZH9c67nkKcNhkRO8aX7jm57FMTXo25O+xqw6Ss98pZIBb
-         eYxBlWtMsiDQtIanJFrbamEUCY0PSUWa2LHBnJ42IK/wDp5j/AkXKyv+qrXItPuoWzgn
-         OXYn61Aed1X+OJnclTpmtxCciCy8+ddA0T1HG89mhYM70/KWb2s97Ubg80zkOAk2N21o
-         RbbA==
-X-Gm-Message-State: AOAM531ZayjiWb9eAEP4GtB5o3BOWdq+Td92Mgp5Wqg4lz39B1BsnYKy
-        39Fm2iSEcZY4poHTfCWFAhm40fwj8Pvl63xxsNs=
-X-Google-Smtp-Source: ABdhPJwEFK988WUuEzRzJBv+pm4e3nDYT3sdTuDLh/iLI2KLmWEqE6D7kP5kLqLlknWbXBaxPUqrzhCWq+sL6yYQqmY=
-X-Received: by 2002:a25:3c9:: with SMTP id 192mr8058827ybd.766.1639070781870;
- Thu, 09 Dec 2021 09:26:21 -0800 (PST)
+        bh=pCkReFNzycwmra9bDr3Pm6ySMhte/S1f1z5ZgTJWVXw=;
+        b=jdJf5bB7Qx8NVX8T1r75SaZV4SO4o1gwSI+d2DRFd8uJysLMx+t6wt7Buo2lXbonXt
+         M94SyL9FvnnGIhyry17RhaFmxUfqmmRKP3BBOfqCzI1CBg8ZVVnE3yugvj2HBruG+W8V
+         6YkLVy8B5HsBGgfKi90iesqk+7Geh+P4Kk2Q9Fwi2Yjy/Rr+Re4S6uqnwUUdApqVQnDf
+         vJA0b5MeG0R7DdYTp6DfhrmmSIcgc8RM6LojfuZ+sakSOckS0t5RtvI2Wj5oeOn1EGeU
+         zmvW/pnsXuUhv1fXAb7zzPguD7Bi3tJu/vyBN+klrH0zT4PgXY/0Th7MQHZ2RWXRZGWy
+         20sw==
+X-Gm-Message-State: AOAM531UuGz6gF6gTcV0QJO8k4u3yBVmrReKnmiEkna2PMLpfNqLnL+M
+        LZADOouglysvar/WejuvTT+9Q3LWrgI5W0hSEa95tsedOgo=
+X-Google-Smtp-Source: ABdhPJwoCPQobIbi3prHEyjeo6jIQqp6YrJObMO0wsbid/gzCJRV8pfgZqCoevPXtGp+HzmfesmhWLSNz9CwJm/yy1E=
+X-Received: by 2002:a25:e90a:: with SMTP id n10mr7590667ybd.180.1639070864037;
+ Thu, 09 Dec 2021 09:27:44 -0800 (PST)
 MIME-Version: 1.0
-References: <9eb3216b-a785-9024-0f1d-e5a14dfb025b@linux.alibaba.com>
-In-Reply-To: <9eb3216b-a785-9024-0f1d-e5a14dfb025b@linux.alibaba.com>
+References: <CAEf4BzacuM8cR8Xuv5tdg7=KScVi26pZ3CjewAy=UuHouiRZdg@mail.gmail.com>
+ <20211209080051.421844-1-chi.minghao@zte.com.cn>
+In-Reply-To: <20211209080051.421844-1-chi.minghao@zte.com.cn>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 9 Dec 2021 09:26:10 -0800
-Message-ID: <CAEf4BzbtQGnGZTLbTdy1GHK54f5S7YNFQak7BuEfaqGEwqNNJA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] libbpf: Skip the pinning of global data map for
- old kernels.
-To:     Shuyi Cheng <chengshuyi@linux.alibaba.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
+Date:   Thu, 9 Dec 2021 09:27:32 -0800
+Message-ID: <CAEf4BzbuQzP52M6sQVic36ehmL2JO52jz08GA8swdSazF7=umg@mail.gmail.com>
+Subject: Re: [PATCHv2 bpf-next] samples/bpf:remove unneeded variable
+To:     cgel.zte@gmail.com
+Cc:     Andrii Nakryiko <andrii@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
+        chiminghao <chi.minghao@zte.com.cn>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        john fastabend <john.fastabend@gmail.com>,
+        Martin Lau <kafai@fb.com>, KP Singh <kpsingh@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "open list:BPF (Safe dynamic programs and tools)" 
-        <netdev@vger.kernel.org>,
-        "open list:BPF (Safe dynamic programs and tools)" 
-        <bpf@vger.kernel.org>
+        Zeal Robot <zealci@zte.com.cm>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 9, 2021 at 12:44 AM Shuyi Cheng
-<chengshuyi@linux.alibaba.com> wrote:
+On Thu, Dec 9, 2021 at 12:01 AM <cgel.zte@gmail.com> wrote:
 >
+> From: Minghao Chi <chi.minghao@zte.com.cn>
 >
-> Fix error: "failed to pin map: Bad file descriptor, path:
-> /sys/fs/bpf/_rodata_str1_1."
+> return value form directly instead of
+> taking this in another redundant variable.
 >
-> In the old kernel, the global data map will not be created, see [0]. So
-> we should skip the pinning of the global data map to avoid
-> bpf_object__pin_maps returning error.
->
-> [0]: https://lore.kernel.org/bpf/20211123200105.387855-1-andrii@kernel.org
->
-> Signed-off-by: Shuyi Cheng <chengshuyi@linux.alibaba.com>
+> Reported-by: Zeal Robot <zealci@zte.com.cm>
+> Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
 > ---
->   tools/lib/bpf/libbpf.c | 4 ++++
->   1 file changed, 4 insertions(+)
->
-> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> index 6db0b5e8540e..d96cf49cebab 100644
-> --- a/tools/lib/bpf/libbpf.c
-> +++ b/tools/lib/bpf/libbpf.c
-> @@ -7884,6 +7884,10 @@ int bpf_object__pin_maps(struct bpf_object *obj,
-> const char *path)
->                 char *pin_path = NULL;
->                 char buf[PATH_MAX];
->
-> +               if (bpf_map__is_internal(map) &&
-> +                   !kernel_supports(obj, FEAT_GLOBAL_DATA))
 
+Applied to bpf-next, thanks.
 
-doing the same check in 3 different places sucks. Let's add "bool
-skipped" to struct bpf_map, which will be set in one place (at the map
-creation time) and then check during relocation and during pinning?
-
-> +                       continue;
-> +
->                 if (path) {
->                         int len;
+>  samples/bpf/xdp_redirect_cpu.bpf.c | 4 +---
+>  1 file changed, 1 insertion(+), 3 deletions(-)
 >
+> diff --git a/samples/bpf/xdp_redirect_cpu.bpf.c b/samples/bpf/xdp_redirect_cpu.bpf.c
+> index f10fe3cf25f6..25e3a405375f 100644
+> --- a/samples/bpf/xdp_redirect_cpu.bpf.c
+> +++ b/samples/bpf/xdp_redirect_cpu.bpf.c
+> @@ -100,7 +100,6 @@ u16 get_dest_port_ipv4_udp(struct xdp_md *ctx, u64 nh_off)
+>         void *data     = (void *)(long)ctx->data;
+>         struct iphdr *iph = data + nh_off;
+>         struct udphdr *udph;
+> -       u16 dport;
+>
+>         if (iph + 1 > data_end)
+>                 return 0;
+> @@ -111,8 +110,7 @@ u16 get_dest_port_ipv4_udp(struct xdp_md *ctx, u64 nh_off)
+>         if (udph + 1 > data_end)
+>                 return 0;
+>
+> -       dport = bpf_ntohs(udph->dest);
+> -       return dport;
+> +       return bpf_ntohs(udph->dest);
+>  }
+>
+>  static __always_inline
 > --
-> 2.19.1.6.gb485710b
+> 2.25.1
+>
