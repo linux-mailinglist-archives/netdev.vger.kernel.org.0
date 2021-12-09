@@ -2,46 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 35B4546DF24
-	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 00:58:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D5BD646DF2D
+	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 01:04:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241240AbhLIACP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 19:02:15 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:57308 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238024AbhLIACO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 19:02:14 -0500
+        id S241307AbhLIAHq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 19:07:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33424 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241333AbhLIAHn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 19:07:43 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A7E9C0617A1
+        for <netdev@vger.kernel.org>; Wed,  8 Dec 2021 16:04:10 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3965CB82311;
-        Wed,  8 Dec 2021 23:58:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C49A0C00446;
-        Wed,  8 Dec 2021 23:58:39 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 99CBBCE241F
+        for <netdev@vger.kernel.org>; Thu,  9 Dec 2021 00:04:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92F82C00446;
+        Thu,  9 Dec 2021 00:04:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1639007920;
-        bh=7nRwmELBED/pXoZE1UZHjca3QuaLjFUC/7GMuoTjSQ8=;
+        s=k20201202; t=1639008246;
+        bh=/apG6k+vW+j3XTZxBu7ZcuVmplejClenoMgF/w/a2yg=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=o/+Eh5pHo3NSQt+A8ZV6JbESSWfAA6Gny9fmDWO67nTeMRZtzVePLhp5JHIGtDSAg
-         1myCJhfnjBA7Lxgz7UHWfznqH/2DAJTxX/9fVR64jttXIqR3ULxh3Kqgp1rGCESphk
-         TaPQJEXyT5upXi3oNZ7aoaVBCPFEmA37HKlu+8v3rNuDvgWP39Dhjb83tB2dRjRoH2
-         NbJFMKK6mCb2VoYXN5SGRZNByIAcrjqM8TkmOL04uy0AB4rX/d/jEpD2Ep2jJDxgL0
-         X5FDgZ0+3sRF9OwhmPX07Y5McpdP2kspyOM48ykqq3dMJjGId+Z2R3Z877zo5stu+E
-         LkhraO8yuSK1w==
-Date:   Wed, 8 Dec 2021 15:58:38 -0800
+        b=hFvVdJJOhAaYCHZJ8bbDhm7VXu5z51AtIzUOFWGZjmYgEDxcs6yZrXihYm2Q8vjQ8
+         GwD/NeftTr4ZHKRSt5c0zrMbcx9BUCn053mAxkcpKUWgfesb0KdBM02HYXwwnsqKxj
+         erZSb0GTz2YVNzMqo4N/WaxvnSjDx5hh0vB4IdfK37bfhamnWzl3F+bc+1nywg5X6Y
+         ubERA6JqBFiye2orsi47nz25dvCOg7uKMVwIiE7+JFafcuzNJPTCkQygj+1FQPXjyX
+         uKCOdd4irHtVeEOiCklrxLk1gf6JcuXpmeyQ7hwL7y/5F3E+BTT3jDLLiaC5Pii8m8
+         fJGadlJOhs7mw==
+Date:   Wed, 8 Dec 2021 16:04:05 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     George Kennedy <george.kennedy@oracle.com>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        Greg KH <gregkh@linuxfoundation.org>, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] tun: avoid double free in tun_free_netdev
-Message-ID: <20211208155838.24556030@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <b141489b-780c-1753-2a83-ccb60c4554d0@oracle.com>
-References: <1638974605-24085-1-git-send-email-george.kennedy@oracle.com>
-        <YbDR/JStiIco3HQS@kroah.com>
-        <022193b1-4ddd-f04e-aafa-ce249ec6d120@oracle.com>
-        <20211208083614.61f386ad@hermes.local>
-        <b141489b-780c-1753-2a83-ccb60c4554d0@oracle.com>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Lahav Schlesinger <lschlesinger@drivenets.com>,
+        netdev@vger.kernel.org, nikolay@nvidia.com
+Subject: Re: [PATCH net-next v5] rtnetlink: Support fine-grained netdevice
+ bulk deletion
+Message-ID: <20211208160405.18c7d30f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <05fe0ea9-56ba-9248-fa05-b359d6166c9f@gmail.com>
+References: <20211205093658.37107-1-lschlesinger@drivenets.com>
+        <e5d8a127-fc98-4b3d-7887-a5398951a9a0@gmail.com>
+        <20211208214711.zr4ljxqpb5u7z3op@kgollan-pc>
+        <05fe0ea9-56ba-9248-fa05-b359d6166c9f@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -49,20 +51,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 8 Dec 2021 11:44:02 -0500 George Kennedy wrote:
-> > It looks like a lot of the problem is duplicate unwind.
-> > Why does err_free_flow, err_free_stat etc unwinds need to exist if
-> > the free_netdev is going to do same thing.  
+On Wed, 8 Dec 2021 16:43:28 -0700 David Ahern wrote:
+> On 12/8/21 2:47 PM, Lahav Schlesinger wrote:
+> > No visible changes from what I saw, this API is as fast as group
+> > deletion. Maybe a few tens of milliseconds slower, but it's lost in the
+> > noise.
+> > I'll run more thorough benchmarks to get to a more conclusive conclusion.
+> > 
+> > Also just pointing out that the sort will be needed even if we pass an
+> > array (IFLA_IFINDEX_LIST) instead.
+> > Feels like CS 101, but do you have a better approach for detecting
+> > duplicates in an array? I imagine a hash table will be slower as it will
+> > need to allocate a node object for each device (assuming we don't want
+> > to add a new hlist_node to 'struct net_device' just for this)  
 > 
-> Maybe instead do not call security_tun_dev_free_security(tun->security) 
-> in err_free_flow if it's going to be done anyway in tun_free_netdev().
+> I think marking the dev's and then using a delete loop is going to be
+> the better approach - avoid the sort and duplicate problem. I use that
+> approach for nexthop deletes:
+> 
+> https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/tree/net/ipv4/nexthop.c#n1849
+> 
+> Find a hole in net_device struct in an area used only for control path
+> and add 'bool grp_delete' (or a 1-bit hole). Mark the devices on pass
+> and delete them on another.
 
-That won't be good either. register_netdevice() has multiple failure
-modes, it may or may not call the destructor depending on where it
-fails. Either the stuff that destructor undoes needs to be moved to
-ndo_init (which is what destructor always pairs with), or you can check
-dev->reg_state. If dev->reg_state is NETREG_UNREGISTERING that means
-the destructor will be caller later.
-
-The ndo_init way is preferable, just cut and past the appropriate lines
-preceding registration into a ndo_init callback.
+If we want to keep state in the netdev itself we can probably piggy
+back on dev->unreg_list. It should be initialized to empty and not
+touched unless device goes thru unregister.
