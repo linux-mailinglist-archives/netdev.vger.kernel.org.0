@@ -2,50 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 41C6146EC3D
-	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 16:50:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C508446EC6C
+	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 17:00:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240536AbhLIPxu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Dec 2021 10:53:50 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:52086 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240513AbhLIPxp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 10:53:45 -0500
+        id S236756AbhLIQDq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Dec 2021 11:03:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55816 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239756AbhLIQDp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 11:03:45 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26BD9C0617A2
+        for <netdev@vger.kernel.org>; Thu,  9 Dec 2021 08:00:12 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ED3ACB8252A;
-        Thu,  9 Dec 2021 15:50:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 88CA0C341C7;
-        Thu,  9 Dec 2021 15:50:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D5750B8253E
+        for <netdev@vger.kernel.org>; Thu,  9 Dec 2021 16:00:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 8F9AFC341C8;
+        Thu,  9 Dec 2021 16:00:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1639065009;
-        bh=tZ2ZAb/cPyN7CaJfQInb7ZtSfx6eVNe0/0YWt9bYZho=;
+        s=k20201202; t=1639065609;
+        bh=0/PEl4TNEWjnIvETyPvtja6I2g6vq7WrdYlruzUUQLU=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=q+BojNGGjWbOmhGfCQBOTxjat5KUorhtSxP4hIwxcwWMbcmUbjGNvpnhyDv4DbqrE
-         pbIsvifWOU2/7DDWZcQAvbzerL/XHUCQ/pf920urBrcem+fJDNity1VP77oY5AvgOw
-         6lnijGXQOsBE59WlQslJsz/9RuA/5qBtNJesXaAy7D/JQss/w6LPI4/B5/fV6p+SxO
-         JS0Na+eICx5KNH6pQxg8lLWR2MLDZn6qLDDgsnyJyFhUsTNosfCkr75iAxUPvz4KCa
-         MAP0Vggs/+QxDufie5QikcsLshYbtr+uJHSSU9wpw6silgMme5BODedv3TIVorday/
-         k3gt+dNWMGATQ==
+        b=OS6E/FapmFmcTXOotCGMRLoqM/BcgLWa9bOEID3Art5Zgq7ZF1vyFw9IlYydoZvBe
+         oB/1n/PMazaMOBSlcYvdZ8X2+mR4Bi332qvIvzFdk+wd/oPmOW7GixQtqsEXhqd1px
+         i5ir7SEw2HvGXpOiaBqllZaqf4fImN9wxWNeH5X+xQ72p2WsX7SIbNh8ziV3MVPk1c
+         BZILr9GpRrjeZDqv8x0i6jZA648RWp/JqhYtvf1XfNeEkNZRz1BiPC33LDQps47Mln
+         Ds92wofneGTyBVE2XotfoM4p9qz0objUaASrSqaAd/IgzIvvrHeV92fZbn7DMhffWz
+         1zFJjYS20L8Aw==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 559AD60A3C;
-        Thu,  9 Dec 2021 15:50:09 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 66FAE60A37;
+        Thu,  9 Dec 2021 16:00:09 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v4] net: dsa: mv88e6xxx: error handling for serdes_power
- functions
+Subject: Re: [PATCH] udp: using datalen to cap max gso segments
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163906500934.10006.3830083843668512578.git-patchwork-notify@kernel.org>
-Date:   Thu, 09 Dec 2021 15:50:09 +0000
-References: <20211209041552.9810-1-amhamza.mgc@gmail.com>
-In-Reply-To: <20211209041552.9810-1-amhamza.mgc@gmail.com>
-To:     Ameer Hamza <amhamza.mgc@gmail.com>
-Cc:     kabel@kernel.org, kuba@kernel.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Message-Id: <163906560941.14007.18184912106434798578.git-patchwork-notify@kernel.org>
+Date:   Thu, 09 Dec 2021 16:00:09 +0000
+References: <900742e5-81fb-30dc-6e0b-375c6cdd7982@163.com>
+In-Reply-To: <900742e5-81fb-30dc-6e0b-375c6cdd7982@163.com>
+To:     Jianguo Wu <wujianguo106@163.com>
+Cc:     netdev@vger.kernel.org, willemb@google.com, davem@davemloft.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -55,20 +54,22 @@ Hello:
 This patch was applied to netdev/net.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Thu,  9 Dec 2021 09:15:52 +0500 you wrote:
-> Added default case to handle undefined cmode scenario in
-> mv88e6393x_serdes_power() and mv88e6393x_serdes_power() methods.
+On Wed, 8 Dec 2021 18:03:33 +0800 you wrote:
+> From: Jianguo Wu <wujianguo@chinatelecom.cn>
 > 
-> Addresses-Coverity: 1494644 ("Uninitialized scalar variable")
-> Fixes: 21635d9203e1c (net: dsa: mv88e6xxx: Fix application of erratum 4.8 for 88E6393X)
-> Reviewed-by: Marek Behún <kabel@kernel.org>
-> Signed-off-by: Ameer Hamza <amhamza.mgc@gmail.com>
+> The max number of UDP gso segments is intended to cap to UDP_MAX_SEGMENTS,
+> this is checked in udp_send_skb():
+> 
+>     if (skb->len > cork->gso_size * UDP_MAX_SEGMENTS) {
+>         kfree_skb(skb);
+>         return -EINVAL;
+>     }
 > 
 > [...]
 
 Here is the summary with links:
-  - [v4] net: dsa: mv88e6xxx: error handling for serdes_power functions
-    https://git.kernel.org/netdev/net/c/0416e7af2369
+  - udp: using datalen to cap max gso segments
+    https://git.kernel.org/netdev/net/c/158390e45612
 
 You are awesome, thank you!
 -- 
