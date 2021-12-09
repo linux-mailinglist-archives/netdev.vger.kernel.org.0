@@ -2,66 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5445A46F40A
-	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 20:35:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 758E746F436
+	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 20:45:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230506AbhLITjZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Dec 2021 14:39:25 -0500
-Received: from sin.source.kernel.org ([145.40.73.55]:47408 "EHLO
-        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229590AbhLITjX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 14:39:23 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 9D144CE27F4;
-        Thu,  9 Dec 2021 19:35:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 113F7C341CB;
-        Thu,  9 Dec 2021 19:35:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1639078546;
-        bh=3Y6sSFhQC6zE/Ent9Dbju/+ZfZjUqmHxioM8+U3W42U=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=f2WlktgMywCTKzyIIcW2CS6FmU8GJMWn1v1ZLvvhkjI8+QgyuBd+KRy2Pc3F/5FSU
-         dRijOqESZz/F08TOgFMipp3kAFFMq6y6boMXd56AqpEgY2595LvI7JrhVEB/DrlWEE
-         5vNKcdWo5BkI6qDzBtAMcgMMID3FmW47fVWjgfhkTz1uHhDFwtqcQowYUqb4sSIgy/
-         PzreDnftvNnvoUVnvFcet9IJeo5JrXb8QYDIihyEtPwMmJqz7PhK+K9QLmbmXsT3zO
-         dR+B3vTc+atkmj3lIb2Lkl7WqFIBRJNqI1oNniHeaHDUVdOCctfJeHIS2ZcR60iPnS
-         BJdDJtbAHMA3Q==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id EDAEB60A37;
-        Thu,  9 Dec 2021 19:35:45 +0000 (UTC)
-Subject: Re: [GIT PULL] Networking for 5.16-rc5
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20211209172032.610738-1-kuba@kernel.org>
-References: <20211209172032.610738-1-kuba@kernel.org>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20211209172032.610738-1-kuba@kernel.org>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.16-rc5
-X-PR-Tracked-Commit-Id: 04ec4e6250e5f58b525b08f3dca45c7d7427620e
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: ded746bfc94398d2ee9de315a187677b207b2004
-Message-Id: <163907854596.11961.15478565326988801668.pr-tracker-bot@kernel.org>
-Date:   Thu, 09 Dec 2021 19:35:45 +0000
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     torvalds@linux-foundation.org, kuba@kernel.org,
-        davem@davemloft.net, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        linux-can@vger.kernel.org
+        id S230374AbhLITtN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Dec 2021 14:49:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54546 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230249AbhLITtM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 14:49:12 -0500
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95A74C061746
+        for <netdev@vger.kernel.org>; Thu,  9 Dec 2021 11:45:38 -0800 (PST)
+Received: by mail-pl1-x632.google.com with SMTP id o14so4678498plg.5
+        for <netdev@vger.kernel.org>; Thu, 09 Dec 2021 11:45:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=YyCJJVppVowTxkE+zlT+lHTZu0h5h64AtApwEArmpFs=;
+        b=cqmjIhqSkjoCHVgRhMJD8xJVqfosS1CSoQBkDixFmpafjoOpZK9Gw9oQO2NbyacyLF
+         X7c2nX3qbZecNCsu6upAOqPiEsM0/2JjxBzcGsjEhnwhGkDygslzNfuhmt2RYJK/lKX8
+         /tilGBxMmT2st5iCi0osaOvZFbHzv4Gm9vXwxsNIVTeuUXBXUP1eAhIbdvBr4xgYs5mw
+         kjGtlgo0Fretn8ftvKaYwFCnxo/tuWyBm1+DkKay4YFckIGyBkYwVuGzcYwhtCXA5T17
+         qidAKQAj8h3JPpuSTgZU3qeBLsEYKCXBlUNP93y6V2psC/8jRCIEQ6T9CVVPAEV3Lra8
+         06zQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=YyCJJVppVowTxkE+zlT+lHTZu0h5h64AtApwEArmpFs=;
+        b=WS8IHguHReNyjOh/m1/+rfIzyvML+aBooUV5tXoycZB3KpvT4Qqb5xBMFwdMG4UyGW
+         0/7UP8BlD2+LI6mqDbJ6vU2T0qcu0ul5dFouCJNX1A1cPhsVDPydU8ZaJTlMTO3o7ARg
+         J2OqIW7LwK6yQ2mcNOXrrU3B6gVsmV6zG3cvokSlZDgjQb2oU1rwfkT15/Atryg0jpmH
+         DuNR0R+KeHVFKArLg3hZbj0Q/PETfg3fR6qjlbqQMw85RvFypvRTzMZDnQ8oHrovT1gR
+         7fN4dXt8G1fzRQI3oRwinaPzUKjROaSFOnC6ChoUKTL9LOWalPXgkBO6ClY4TB9fcfgZ
+         ZOaA==
+X-Gm-Message-State: AOAM533Uc/IdjYZbJlMGjHhP+cFV6VGrfoSvhfxsHGFz4XjjkPeAdZch
+        1+r1aPZvkLZH3YdEjlCsV2rSfeTPeZfBrZkrETs=
+X-Google-Smtp-Source: ABdhPJyEojYANkfcUXWgBnX704nzuJ7SF3w2dy/dC72H5MDR0FPOrzo5MKrqFklDY7e5Z7arAGTjEL08LfnKsiJeRUg=
+X-Received: by 2002:a17:902:7d96:b0:142:87dc:7dd3 with SMTP id
+ a22-20020a1709027d9600b0014287dc7dd3mr69789365plm.11.1639079137920; Thu, 09
+ Dec 2021 11:45:37 -0800 (PST)
+MIME-Version: 1.0
+Received: by 2002:a05:6a10:8ec7:0:0:0:0 with HTTP; Thu, 9 Dec 2021 11:45:37
+ -0800 (PST)
+Reply-To: compaorekone34@gmail.com
+From:   kone compaore <abbttnab20@gmail.com>
+Date:   Thu, 9 Dec 2021 11:45:37 -0800
+Message-ID: <CAEKSJ0R8W8hwSOZitHZf842QXvu5iffT3tcNc1YpOGtvbFZyWg@mail.gmail.com>
+Subject: Greetings from Kone
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The pull request you sent on Thu,  9 Dec 2021 09:20:32 -0800:
+Greetings to you and your family.
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.16-rc5
+My name is Mr. Kone Compaore, the auditing general with the bank,
+Africa Develop bank (ADB) Ouagadougou, Burkina Faso, in West Africa. I
+am contacting you to seek our honesty and sincere cooperation in
+confidential manner to transfer the sum of 10.5 (Ten million five
+hundred thousand Dollars) to your existing or new bank account.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/ded746bfc94398d2ee9de315a187677b207b2004
+This money belongs to one of our bank client, a Libyan oil exporter
+who was working with the former Libyan government; I learn t that he
+was killed by the revolutionary forces since October 2011. Our bank is
+planning to transfer this entire fund into the government public
+treasury as unclaimed fund if nobody comes to claim the money from our
+bank after four years without account activities .
 
-Thank you!
+We did not know each other before, but due to the fact that the
+deceased is a foreigner, the bank will welcome any claim from a
+foreigner without any suspect, that is why I decided to look for
+someone whim I can trust to come and claim the fund from our bank.
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+I will endorse your name in the deceased client file here in my office
+which will indicate to that the deceased is your legal joint account
+business partner or family member next of kin to the deceased and
+officially the bank will transfer the fund to your bank account within
+seven working days in accordance to our banking inheritance rules and
+fund claim regulation.
+
+I will share 40% for you and 60% for me after the fund is transferred
+to your bank account, we need to act fast to complete this transaction
+within seven days. I will come to your country to collect my share
+after the fund is transferred to your bank account in your country. I
+hope that you will not disappoint me after the fund is transferred to
+your bank account in your country.
+
+Waiting for your urgent response today
+Yours sincerely
+
+Kone Compaore
