@@ -2,188 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C0C546F23C
-	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 18:39:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 67B5146F271
+	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 18:47:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242747AbhLIRnY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Dec 2021 12:43:24 -0500
-Received: from mail-eopbgr140077.outbound.protection.outlook.com ([40.107.14.77]:38495
-        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S242485AbhLIRnX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Dec 2021 12:43:23 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Irh1z6iV0n6JIz890zIxUspPofws3fdz13/8EKmSWwHWd48XRVAQypPLTdXoFTcCJmv4mBhn7g6JK7pypySx+Z6oqj3wXghwL0CEyaa1pkPZWNlnyNUhPqHGR7oFEEO0f3er/m4ZMPxt4SweY712nNH/AhWP8eNlcCSf1cFwlO2VSdRQ3y95Ii0dxJn1lDQDC50+dDtt4CnfyM01GpNM4VnfRNsoTUj3+yYbSlkPJMiqIO4xYEsJFk17mTBLBV+fuQQKDchbPkZ3XwBrwPfIF564cxXhsHDHrxnj1kcqr24J7hl8nF0l9AGIT/bT5A/QeFVe4yE7JGIwPitB3gpHVg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=b2urq7N5KlBCnScAeNr2XOPwZAUTtqRk25PbmoiDShA=;
- b=GMiaHHUXSQrfp+eU2UlRNmIG68lf4uoYnodZpMP3gwq4nylc9zoXeiy5UsxWkiER8hWsHbH19yAPuLWQ+VP0BTPLQ1Jen4hMryYNRAxjJYvNs+8+Q2an1F3XdhdUgYtzxcvoM1xAgzTJNnKb78EXIGqvJxqwPPYx/Gor20WxlyclGPrzPIZ5P0mDSYDqw6/YbLyQVDXO1nWMz0DodC9sqi7QFaQXHjhiqa4zmBzsp28IKVhRgpVKzhk7nMZL2camqH+hbR8eFWvU/VTj/xUtDgCdHmLcw+pZwRLI6YiXfqg+bOmL18widLCAYx6/rjEgXYGNOmcYCI2/BZ5Di1MWAw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=b2urq7N5KlBCnScAeNr2XOPwZAUTtqRk25PbmoiDShA=;
- b=ATBH/4nt8t7sA7v8e4Y+4FUyZogKaKqgj9SCAEkbJipTJknoHXNfqRTRmuSouGZzUqbZZFY1ZzePlvuNrM41IV592kY2sU3zjdzrmB8grRjn+EJAas/sR3Uc8KAJNDQNLG8EOfR7LSGbhlDiGc1MNNqdzFGwmBgROx2Gq/Vjdng=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VE1PR04MB7216.eurprd04.prod.outlook.com (2603:10a6:800:1b0::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.21; Thu, 9 Dec
- 2021 17:39:45 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::c84:1f0b:cc79:9226]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::c84:1f0b:cc79:9226%3]) with mapi id 15.20.4755.024; Thu, 9 Dec 2021
- 17:39:45 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        id S241534AbhLIRvS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Dec 2021 12:51:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55070 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230002AbhLIRvS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 12:51:18 -0500
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35EC1C061746
+        for <netdev@vger.kernel.org>; Thu,  9 Dec 2021 09:47:44 -0800 (PST)
+Received: by mail-ed1-x530.google.com with SMTP id x10so4761553edd.5
+        for <netdev@vger.kernel.org>; Thu, 09 Dec 2021 09:47:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=vN6gd7Lg48ezwcTMXTgWLvg8TnvhVNZFdbDCJJrn8N8=;
+        b=j26BFhCBr1+8CildLPsLPXLUaTAdzM3RgvQoSRpgVi9BF0kAbqjn0GJx9MG2pZrtyG
+         aE4YnRdsQ9VDa5Wx6gV8Fl06mCxBgoWQYV7YgNazGtHrruOVMsySzBRQAbh28d+LnyhK
+         vxTN1D5DcmWYIM2cXDBycCXGx1qpbbUIMdlv4b+0SNhExd0IgOI+px8b3FXFThsMs3UD
+         y/9w2BYG0Tez5E62tP7eXS2hRUF2KRYwkODEET23Wb5u1uUhEvIePDagmRErz/Hif3lZ
+         UFBqWXr6Ufu/JcH0t7NS8JnAxmjACeJMSLDSsWB+PmUBFRXuVcxkx7Wyfk+5FYbg2xOg
+         31UA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=vN6gd7Lg48ezwcTMXTgWLvg8TnvhVNZFdbDCJJrn8N8=;
+        b=zbsBaqzN6THPmRGpV0jM9HhAC7WhX7VZVWluBsgHrczIhOlLli42u9MFJ3deyRa1mW
+         ZN9jWsA0IFdDKKEG9T2K9XUoALHfnpikaNRzXJUh+++fqgyQAkm2rOJ4bFn6RWlQQNdU
+         m8V4cWZIxJmMe0q+MP6Zr8qtKiJfPuVSfcECmhgy4EcKdHdBgd6qTYnJ+oqboXY8TNzF
+         AHbz71LKHWODTRAcnWWqOeVZg8HS6zKrZGi0tR6W6bokuEh7Q/g+pDncJl/Ul7B+a+fJ
+         6tUnDXmnWnnergBBrpjFN7xp7h23+AV5q1eApfEkCno7ua1NVX7N/yaNyb2f1GNp3nBH
+         vdKQ==
+X-Gm-Message-State: AOAM533hb8QplYo/FXuOU818oRrhgxhilRyA6PvG6YZ5wDQyq/69XRIC
+        TDW8MQU4pX/7H7a2XLWJ9hQ=
+X-Google-Smtp-Source: ABdhPJxOP6SeSVaIIHvG242Y4XPnct1BpQA4JXQNCWZ66yxugSFw6U93Y4xBr6riZ4UxB0efXoqDCQ==
+X-Received: by 2002:a17:906:dc91:: with SMTP id cs17mr17382091ejc.461.1639071882006;
+        Thu, 09 Dec 2021 09:44:42 -0800 (PST)
+Received: from Ansuel-xps. (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
+        by smtp.gmail.com with ESMTPSA id hq9sm241242ejc.119.2021.12.09.09.44.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Dec 2021 09:44:41 -0800 (PST)
+Message-ID: <61b24089.1c69fb81.c8040.164b@mx.google.com>
+X-Google-Original-Message-ID: <YbJAhjo/hVzRIIF2@Ansuel-xps.>
+Date:   Thu, 9 Dec 2021 18:44:38 +0100
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ansuel Smith <ansuelsmth@gmail.com>
-Subject: [RFC PATCH v2 net-next 4/4] net: dsa: replay master state events in dsa_tree_{setup,teardown}_master
-Date:   Thu,  9 Dec 2021 19:39:27 +0200
-Message-Id: <20211209173927.4179375-5-vladimir.oltean@nxp.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20211209173927.4179375-1-vladimir.oltean@nxp.com>
-References: <20211209173927.4179375-1-vladimir.oltean@nxp.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: VI1P195CA0059.EURP195.PROD.OUTLOOK.COM
- (2603:10a6:802:5a::48) To VI1PR04MB5136.eurprd04.prod.outlook.com
- (2603:10a6:803:55::19)
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: Re: [RFC PATCH net-next 0/7] DSA master state tracking
+References: <20211208223230.3324822-1-vladimir.oltean@nxp.com>
+ <61b17299.1c69fb81.8ef9.8daa@mx.google.com>
+ <20211209142830.yh3j6gv7kskfif5w@skbuf>
+ <61b21641.1c69fb81.d27e9.02a0@mx.google.com>
+ <20211209173316.qkm5kuroli7nmtwd@skbuf>
 MIME-Version: 1.0
-Received: from localhost.localdomain (188.25.173.50) by VI1P195CA0059.EURP195.PROD.OUTLOOK.COM (2603:10a6:802:5a::48) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.21 via Frontend Transport; Thu, 9 Dec 2021 17:39:45 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a7931528-0a44-4f24-b1e3-08d9bb3ae3f6
-X-MS-TrafficTypeDiagnostic: VE1PR04MB7216:EE_
-X-Microsoft-Antispam-PRVS: <VE1PR04MB72161DFADBDC1B1F35F9E3BDE0709@VE1PR04MB7216.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: jamSenpkffN5k5BlxYPKrgCYRbEScozMDL+bn9ar6soyXDgjFx2aYA5INWRBf/Z7Z/CUKlvL3DkSGmaOVYDaHXcUO1iuqry5sYvMzo2TOhfKTB9e9sPcj3agFEQeAes2PgeBmU64zfO/M0VnMlolWlXddREzpZlJDBYSa1I+i9F/9iES3QIozfXDO3kVtbgWgeXM6PheOA8vZ3Hy7e3aFV0rGUR2XSURxGHY829e4yIKSIhk0JRFjypbmlvyxmj6HfQH+Yc0rPEApFAaN0ZypIvdp+I5nz4S6uuOuMQycodOMnPITeDehudnehysqVbGA9xv17KbccCcfEcJy+NVyJNRTPvLe7Dd8T1bojwL78WlGF8xEUFKcXUWxVbBN10HqQzRS2H/O3eL1HdJo+oPtHGQRs3dbIvpdVtZEpaWaYjTrMVIiq6HcjAJOrj1LBTKpPVnCeh2DvMn/MwCzxvMnxDvMFSlv0+V0Q6x7RFS133Zsknc53Bbyc4hqrVX+BplYjeM6+yBcbUrbYeIXx2BNbetObYSXROBCmeku5sy5LKoAKRIyyF9bWux8QwZDRlAfrCnaqx5uXiLcFPlHPOVP5H+Y1LY83hg1918PsKQrbVClADqhXfTgYzFqrESpK2JKpTRTqqHh3UcBslMAGpEMnirhzrawI1yzuG5J7WblclsPGbZBUsXwrvEelQA862HVe61aFV2vw8H0Ec72ohVEQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(52116002)(6666004)(5660300002)(1076003)(44832011)(508600001)(6916009)(8936002)(956004)(8676002)(66946007)(4326008)(66476007)(66556008)(86362001)(2616005)(6486002)(26005)(186003)(83380400001)(6512007)(54906003)(38100700002)(38350700002)(2906002)(36756003)(6506007)(316002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?D8Hs/QcVJDtAQC3s48XbKw3YXOD5Oof/Mr19DPXSP3szmbX8Z0dJ4Iib4Rs2?=
- =?us-ascii?Q?4OAlrTO0rUKVMvS/JLLctxmwDa+XKf4Ci0xdBfVqnp00D5k9sXvTuHArCS33?=
- =?us-ascii?Q?5eHyI+ECd1wT7PdCkWcljlEQiEioc8jERkK3agOy+dsv242b+EUoFNS10xDr?=
- =?us-ascii?Q?HgxAyVzL3MWgqozSmPmSo1gzdp+4R6QGzbXRiiKvf9mUIWAdeBBxRPAg3oDj?=
- =?us-ascii?Q?5D7u6lMjEojK8MZzeGH+n2po1RwQlCaEMOlPWHbjn2KYggKMkP37V6qK5Kxv?=
- =?us-ascii?Q?XHTHk0u6F5w1mhhrmkF+ehfnZB0CJVCNNyGtYxIOwgSJ0+7CSZcPKToCDpU4?=
- =?us-ascii?Q?hP/FoR3tVJwBlfO5OlKhs6GDV1Enl5ZWpwlXW4qthJlPwHETaevsuut2Ynxl?=
- =?us-ascii?Q?gMYTt0i9ArRJc83spg1P+EHw+eRlLQrAHSrQJ3YQjlEO5Km6c6JVPR+6UXTB?=
- =?us-ascii?Q?mJEqcxKj+ghFqr4XqNLjfanaLbs8ZwG/gvOwbojy8rpM2ulcyPIZWULKK5bW?=
- =?us-ascii?Q?RAkGWBYD1LQMEFw7yC79E7mgDBzm+mPzcDecgDjI0Tl0G2/0UwcfV8eTMvl7?=
- =?us-ascii?Q?2Ye3T644QoeDp5toFiLXkCSdKHrUqqEv6CejWaqV3dB/lGRGIEcnxWvFn1aB?=
- =?us-ascii?Q?onHJ1OTxS8gtPJ6u3G0k025s38AIR7itCTwOwxUvEK0K39W2UGOmcadUCy4T?=
- =?us-ascii?Q?kEEbO1UgMovoDXjrO6GeFfhsuepnzwvfnDXrqY9oE4myVy3zxM3XyxBkUJs4?=
- =?us-ascii?Q?izLqTJcKcKnIBV5+3gdeIfE6cjXani3T2pWlytTgThdOdXFp68ZLuDdHcFp1?=
- =?us-ascii?Q?DkzHXmXFpkdmm+Ai3b6luDSnEtliHyWPoArjWyp+3xJVGQMraGhC5ISAIiXB?=
- =?us-ascii?Q?VKWvlI9ORDgWx6DfMrCSUzE/zYqCCWI/3vfy6pUPFbZ84ON7S+9X1Wrl7QH8?=
- =?us-ascii?Q?8xaf7DvQOCAdsma+306XiCHtkB1gth+4C2xY2xF0K8Fy0sQjT0xON4AFGmyv?=
- =?us-ascii?Q?I0pi+GixK5eQ8bepx6cGCNIZoljwItc7BJ0r7dlP20wF74v+y8tnL251DXDS?=
- =?us-ascii?Q?rRvVMRj1zwQEZmn+6Vhgf4N1JFeCC9N3Nv/E9Cq4NSoRR9JNz4vKCs7ISKQi?=
- =?us-ascii?Q?QdLK9tobreGK5jR+aSkO8ssftcOqOuHp9btDws1qB+YuzS2gJzLPbxNb/SyA?=
- =?us-ascii?Q?BgwgTCfO431FOro8MOohxtc+VRjNZRLpq42aNnCh5nHawb46nmjuLx5InRhj?=
- =?us-ascii?Q?tekUG7mxo/N2CWaPtGfoO1tfPr9GVc/t4elI3gWfrRVPbLIo+q1Q0/58NYRy?=
- =?us-ascii?Q?z35vuld92KRfFlw7phOqMFkIM3Cn3updTaASwRehnF8LMmBtoz0BMC69pTmM?=
- =?us-ascii?Q?Tr/xt18aKO63nIwFI8ACCN60zXbDovCnxfjUcf7UaqY7/RjjwX+02SdWwSbP?=
- =?us-ascii?Q?8vtbW3VDjzLOzAfxinq+Z5UAm2lvxFx5Tlc4WO8JNK8A1/ldaWwMO9vF25N8?=
- =?us-ascii?Q?+xZZ+QK97wg/G8egCum9ytPly8e0TVPA1AKS6PTOy5BKELk+dHinOuTrnJ/v?=
- =?us-ascii?Q?qA7t7SgeqOP/nscU+HaAp3Mz4xi7HzPExaCBSzTouXftGPVhigIG19y7wfTs?=
- =?us-ascii?Q?o+7gUxEqb+zzHA9CNDqvYCY=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a7931528-0a44-4f24-b1e3-08d9bb3ae3f6
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Dec 2021 17:39:45.7978
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: qHv749v/oZuVjItiCkKmLHkahOgwHZVsApmtq69wvWwQIME8tFwlMFRRlrF15W+jymeg8StvlxWID4Wk4M/dVg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB7216
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211209173316.qkm5kuroli7nmtwd@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In order for switch driver to be able to make simple and reliable use of
-the master tracking operations, they must also be notified of the
-initial state of the DSA master, not just of the changes. This is
-because they might enable certain features only during the time when
-they know that the DSA master is up and running.
+On Thu, Dec 09, 2021 at 05:33:17PM +0000, Vladimir Oltean wrote:
+> On Thu, Dec 09, 2021 at 03:44:14PM +0100, Ansuel Smith wrote:
+> > On Thu, Dec 09, 2021 at 02:28:30PM +0000, Vladimir Oltean wrote:
+> > > On Thu, Dec 09, 2021 at 04:05:59AM +0100, Ansuel Smith wrote:
+> > > > On Thu, Dec 09, 2021 at 12:32:23AM +0200, Vladimir Oltean wrote:
+> > > > > This patch set is provided solely for review purposes (therefore not to
+> > > > > be applied anywhere) and for Ansuel to test whether they resolve the
+> > > > > slowdown reported here:
+> > > > > https://patchwork.kernel.org/project/netdevbpf/cover/20211207145942.7444-1-ansuelsmth@gmail.com/
+> > > > > 
+> > > > > It does conflict with net-next due to other patches that are in my tree,
+> > > > > and which were also posted here and would need to be picked ("Rework DSA
+> > > > > bridge TX forwarding offload API"):
+> > > > > https://patchwork.kernel.org/project/netdevbpf/cover/20211206165758.1553882-1-vladimir.oltean@nxp.com/
+> > > > > 
+> > > > > Additionally, for Ansuel's work there is also a logical dependency with
+> > > > > this series ("Replace DSA dp->priv with tagger-owned storage"):
+> > > > > https://patchwork.kernel.org/project/netdevbpf/cover/20211208200504.3136642-1-vladimir.oltean@nxp.com/
+> > > > > 
+> > > > > To get both dependency series, the following commands should be sufficient:
+> > > > > git b4 20211206165758.1553882-1-vladimir.oltean@nxp.com
+> > > > > git b4 20211208200504.3136642-1-vladimir.oltean@nxp.com
+> > > > > 
+> > > > > where "git b4" is an alias in ~/.gitconfig:
+> > > > > [b4]
+> > > > > 	midmask = https://lore.kernel.org/r/%25s
+> > > > > [alias]
+> > > > > 	b4 = "!f() { b4 am -t -o - $@ | git am -3; }; f"
+> > > > > 
+> > > > > The patches posted here are mainly to offer a consistent
+> > > > > "master_up"/"master_going_down" chain of events to switches, without
+> > > > > duplicates, and always starting with "master_up" and ending with
+> > > > > "master_going_down". This way, drivers should know when they can perform
+> > > > > Ethernet-based register access.
+> > > > > 
+> > > > > Vladimir Oltean (7):
+> > > > >   net: dsa: only bring down user ports assigned to a given DSA master
+> > > > >   net: dsa: refactor the NETDEV_GOING_DOWN master tracking into separate
+> > > > >     function
+> > > > >   net: dsa: use dsa_tree_for_each_user_port in
+> > > > >     dsa_tree_master_going_down()
+> > > > >   net: dsa: provide switch operations for tracking the master state
+> > > > >   net: dsa: stop updating master MTU from master.c
+> > > > >   net: dsa: hold rtnl_mutex when calling dsa_master_{setup,teardown}
+> > > > >   net: dsa: replay master state events in
+> > > > >     dsa_tree_{setup,teardown}_master
+> > > > > 
+> > > > >  include/net/dsa.h  |  8 +++++++
+> > > > >  net/dsa/dsa2.c     | 52 ++++++++++++++++++++++++++++++++++++++++++++--
+> > > > >  net/dsa/dsa_priv.h | 11 ++++++++++
+> > > > >  net/dsa/master.c   | 29 +++-----------------------
+> > > > >  net/dsa/slave.c    | 32 +++++++++++++++-------------
+> > > > >  net/dsa/switch.c   | 29 ++++++++++++++++++++++++++
+> > > > >  6 files changed, 118 insertions(+), 43 deletions(-)
+> > > > > 
+> > > > > -- 
+> > > > > 2.25.1
+> > > > > 
+> > > > 
+> > > > I applied this patch and it does work correctly. Sadly the problem is
+> > > > not solved and still the packet are not tracked correctly. What I notice
+> > > > is that everything starts to work as soon as the master is set to
+> > > > promiiscuous mode. Wonder if we should track that event instead of
+> > > > simple up?
+> > > > 
+> > > > Here is a bootlog [0]. I added some log when the function timeouts and when
+> > > > master up is actually called.
+> > > > Current implementation for this is just a bool that is set to true on
+> > > > master up and false on master going down. (final version should use
+> > > > locking to check if an Ethernet transation is in progress)
+> > > > 
+> > > > [0] https://pastebin.com/7w2kgG7a
+> > > 
+> > > This is strange. What MAC DA do the ack packets have? Could you give us
+> > > a pcap with the request and reply packets (not necessarily now)?
+> > 
+> > If you want I can give you a pcap from a router bootup to the setup with
+> > no ethernet cable attached. I notice the switch sends some packet at the
+> > bootup for some reason but they are not Ethernet mdio packet or other
+> > type. It seems they are not even tagged (doesn't have qca tag) as the
+> > header mode is disabled by default)
+> > Let me know if you need just a pcap for the Ethernet mdio transaction or
+> > from a bootup. I assume it would be better from a bootup? (they are not
+> > tons of packet and the mdio Ethernet ones are easy to notice.)
+> 
+> Anything that contains some request and response packets should do, as
+> long as they're relatively easy to spot. But as stated, this can wait
+> for a while, I don't think that promiscuity is the issue, after your
+> second reply.
+>
 
-Therefore, this change explicitly checks the state of the DSA master
-under the same rtnl_mutex as we were holding during the
-dsa_master_setup() and dsa_master_teardown() call. The idea being that
-if the DSA master became operational in between the moment in which it
-became a DSA master (dsa_master_setup set dev->dsa_ptr) and the moment
-when we checked for master->flags & IFF_UP, there is a chance that we
-would emit a ->master_up() event twice. We need to avoid that by
-serializing the concurrent netdevice event with us. If the netdevice
-event started before, we force it to finish before we begin, because we
-take rtnl_lock before making netdev_uses_dsa() return true. So we also
-handle that early event and do nothing on it. Similarly, if the
-dev_open() attempt is concurrent with us, it will attempt to take the
-rtnl_mutex, but we're holding it. We'll see that the master flag IFF_UP
-isn't set, then when we release the rtnl_mutex we'll process the
-NETDEV_UP notifier.
+Ok will send a pcap. Any preferred way to send it?
 
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- net/dsa/dsa2.c | 26 ++++++++++++++++++++++----
- 1 file changed, 22 insertions(+), 4 deletions(-)
+> > > Can you try to set ".promisc_on_master = true" in qca_netdev_ops?
+> > 
+> > I already tried and here [0] is a log. I notice with promisc_on_master
+> > the "eth0 entered promiscuous mode" is missing. Is that correct?
+> > Unless I was tired and misread the code, the info should be printed
+> > anyway. Also looking at the comments for promisc_on_master I don't think
+> > that should be applied to this tagger.
+> > 
+> > [0] https://pastebin.com/MN2ttVpr
+> 
+> It isn't missing, it's right there on line 11.
 
-diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index 6d4422c9e334..c86c9688e8cc 100644
---- a/net/dsa/dsa2.c
-+++ b/net/dsa/dsa2.c
-@@ -1019,9 +1019,17 @@ static int dsa_tree_setup_master(struct dsa_switch_tree *dst)
- 
- 	list_for_each_entry(dp, &dst->ports, list) {
- 		if (dsa_port_is_cpu(dp)) {
--			err = dsa_master_setup(dp->master, dp);
-+			struct net_device *master = dp->master;
-+
-+			err = dsa_master_setup(master, dp);
- 			if (err)
- 				return err;
-+
-+			/* Replay master state event */
-+			dsa_tree_master_admin_state_change(dst, master,
-+							   master->flags & IFF_UP);
-+			dsa_tree_master_oper_state_change(dst, master,
-+							  netif_oper_up(master));
- 		}
- 	}
- 
-@@ -1036,9 +1044,19 @@ static void dsa_tree_teardown_master(struct dsa_switch_tree *dst)
- 
- 	rtnl_lock();
- 
--	list_for_each_entry(dp, &dst->ports, list)
--		if (dsa_port_is_cpu(dp))
--			dsa_master_teardown(dp->master);
-+	list_for_each_entry(dp, &dst->ports, list) {
-+		if (dsa_port_is_cpu(dp)) {
-+			struct net_device *master = dp->master;
-+
-+			/* Synthesizing an "admin down" state is sufficient for
-+			 * the switches to get a notification if the master is
-+			 * currently up and running.
-+			 */
-+			dsa_tree_master_admin_state_change(dst, master, false);
-+
-+			dsa_master_teardown(master);
-+		}
-+	}
- 
- 	rtnl_unlock();
- }
+Oww didn't notice that!
+
+> I think the problem is that we also need to track the operstate of the
+> master (netif_oper_up via NETDEV_CHANGE) before declaring it as good to go.
+> You can see that this is exactly the line after which the timeouts disappear:
+> 
+> [    7.146901] IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
+> 
+> I didn't really want to go there, because now I'm not sure how to
+> synthesize the information for the switch drivers to consume it.
+> Anyway I've prepared a v2 patchset and I'll send it out very soon.
+
+Wonder if we should leave the driver decide when it's ready by parsing
+the different state? (And change
+the up ops to something like a generic change?)
+
 -- 
-2.25.1
-
+	Ansuel
