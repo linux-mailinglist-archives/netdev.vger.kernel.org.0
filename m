@@ -2,81 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 562E846EF50
-	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 18:00:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 20E9546F07E
+	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 18:06:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237989AbhLIREF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Dec 2021 12:04:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42464 "EHLO
+        id S233044AbhLIRIz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Dec 2021 12:08:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241902AbhLIRDp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 12:03:45 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC004C0698C8
-        for <netdev@vger.kernel.org>; Thu,  9 Dec 2021 09:00:11 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AA718B825C8
-        for <netdev@vger.kernel.org>; Thu,  9 Dec 2021 17:00:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 7F513C341CA;
-        Thu,  9 Dec 2021 17:00:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1639069209;
-        bh=QS4x8RTykBZ2TUgvw0Eomqvdv07cHkT9zgSdqvcu6Z0=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=bhn5JDOD7m/Yxar9JIicHHgj7BqIv96aFrX+L9DOWLR+7kWpLL9KQrh28agjdl30F
-         1kSAxnShei3Y22FGN+KFQt76dIJCH9Imckb+2jqO3WsWTEKsnXCu94dcAi26ArQntd
-         7MNFFddxl6PvrdK3Bin/iJSBjD2l0Qd/S05d23+TV8EW1r0Z+gR9zUnxy3o7ND/0wl
-         WSbizDSsCjA03L52Lx68utkFE62B7MoBjo0fIymA6AUW8VoUBjAVu8zr3iovvbBeUO
-         c+7bfSslpWSBQqWmUNCpHGC0t3UtddMX0tiwuHnvt1C6C0Uf9QujI/MK4rqrqh25Se
-         zbdMk1HXsmokw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 68E9860A2F;
-        Thu,  9 Dec 2021 17:00:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S242222AbhLIRG7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 12:06:59 -0500
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F9C2C061746;
+        Thu,  9 Dec 2021 09:03:26 -0800 (PST)
+Received: by mail-pl1-x630.google.com with SMTP id u17so4329019plg.9;
+        Thu, 09 Dec 2021 09:03:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Op+42mbDhglNyviIkOZHonr4IeaA+i4s2xT7SfqcJB8=;
+        b=L6sTzlddpyukALP/eLZJGVymU8I6sqeHHWxwCtW3j8t4ITN1+tmfBp2128TGzPPMSx
+         iLx1Fc4n5aa4T1/LpZ3COj5hHFKKwIRFWRUOfssPpZhVprerAZIk/aYSnrvfejAZ5tDf
+         lMM0c+jivpvLb9JPa7tU7Yr66vLaRHYBN8kc3o+PaiOZyLBRl1cZKXs42NiBmbSmfqNm
+         59BuKWlsjCuL+vxTlyUT+3ynFbSbgQLJzTeBfBRQVSbD8f55N7mieuTgH/feqZxqdKm1
+         vALZSpDa5IWBhp7lj1B1Pm5MzE0gJ+LMP5YkYAXfu4ARRkNdYRQX2P5EUSVO6M7ROmIq
+         rKVw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Op+42mbDhglNyviIkOZHonr4IeaA+i4s2xT7SfqcJB8=;
+        b=HtAlXkfAbkLlW7qzP2r0mYW3fQ5p4CWdnm9ZcNIJHICqYGT0Y6k6yaCwaHGBsC22oJ
+         jVLIHwtUdGfLCeZwR2RpOWSBVOnAMlFKb6N0FcwTK5Z60+le2bf+0hjNEJG13sGwkwvA
+         gtw2jvpbgT88XyPZjZhgvP/AQshB5CqrMjXCpQjjwqvckbm5HLtNTO1umfJjRigTQHLo
+         evn5dZOLkoyfkiSSWtFL9cS3CnFOHiCOGpzFBZlPGkgHOWLlskCTc3HGuqp/PeYrx9Cv
+         zJRZdbAzPZTRRhyL6o2cFbD821vKdjDhm0rYjD/tADW5q1uTWvFRjyQ+A9VtSvZTn7FS
+         HBRg==
+X-Gm-Message-State: AOAM532rp9Hq195ndFfES82b3nMazM1gPCv+BCCPtmnq2AuxsQm1WPGQ
+        AX8LDA+nqI55ZdzTbsw6r4I=
+X-Google-Smtp-Source: ABdhPJxXtm1k+sBFHHygrBG/44c1yDsQTafG7aspDubKC1Q08FQQEdprTc82px39jxTK/7wtr0yaBQ==
+X-Received: by 2002:a17:902:ba84:b0:142:5514:8dd7 with SMTP id k4-20020a170902ba8400b0014255148dd7mr69407569pls.87.1639069405897;
+        Thu, 09 Dec 2021 09:03:25 -0800 (PST)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id o16sm269627pfu.72.2021.12.09.09.02.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 09 Dec 2021 09:03:25 -0800 (PST)
+Subject: Re: [PATCH v2 net-next] net: ocelot: fix missed include in the
+ vsc7514_regs.h file
+To:     Colin Foster <colin.foster@in-advantage.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <linux@armlinux.org.uk>
+References: <20211209074010.1813010-1-colin.foster@in-advantage.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <115ae71d-f0ad-c64f-5b0f-f58bc6615fb4@gmail.com>
+Date:   Thu, 9 Dec 2021 09:02:51 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: dsa: mv88e6xxx: allow use of PHYs on CPU and DSA
- ports
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163906920942.7990.14662211501678992293.git-patchwork-notify@kernel.org>
-Date:   Thu, 09 Dec 2021 17:00:09 +0000
-References: <E1mvFhP-00F8Zb-Ul@rmk-PC.armlinux.org.uk>
-In-Reply-To: <E1mvFhP-00F8Zb-Ul@rmk-PC.armlinux.org.uk>
-To:     Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Cc:     andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
-        netdev@vger.kernel.org, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, olteanv@gmail.com, kuba@kernel.org
+In-Reply-To: <20211209074010.1813010-1-colin.foster@in-advantage.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Thu, 09 Dec 2021 09:26:47 +0000 you wrote:
-> Martyn Welch reports that his CPU port is unable to link where it has
-> been necessary to use one of the switch ports with an internal PHY for
-> the CPU port. The reason behind this is the port control register is
-> left forcing the link down, preventing traffic flow.
+On 12/8/21 11:40 PM, Colin Foster wrote:
+> commit 32ecd22ba60b ("net: mscc: ocelot: split register definitions to a
+> separate file") left out an include for <soc/mscc/ocelot_vcap.h>. It was
+> missed because the only consumer was ocelot_vsc7514.h, which already
+> included ocelot_vcap.
 > 
-> This occurs because during initialisation, phylink expects the link to
-> be down, and DSA forces the link down by synthesising a call to the
-> DSA drivers phylink_mac_link_down() method, but we don't touch the
-> forced-link state when we later reconfigure the port.
-> 
-> [...]
+> Fixes: 32ecd22ba60b ("net: mscc: ocelot: split register definitions to a separate file")
+> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
 
-Here is the summary with links:
-  - [net] net: dsa: mv88e6xxx: allow use of PHYs on CPU and DSA ports
-    https://git.kernel.org/netdev/net/c/04ec4e6250e5
-
-You are awesome, thank you!
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Florian
