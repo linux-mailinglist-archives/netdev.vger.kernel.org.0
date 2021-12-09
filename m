@@ -2,74 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE6AE46E104
-	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 03:51:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EE4446E114
+	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 03:59:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230468AbhLICye (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 21:54:34 -0500
-Received: from smtp23.cstnet.cn ([159.226.251.23]:39870 "EHLO cstnet.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230401AbhLICyd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 Dec 2021 21:54:33 -0500
-Received: from localhost.localdomain (unknown [124.16.138.128])
-        by APP-03 (Coremail) with SMTP id rQCowADHlpEAb7FhZk63AQ--.18135S2;
-        Thu, 09 Dec 2021 10:50:41 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     idryomov@gmail.com, jlayton@kernel.org, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     ceph-devel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: [PATCH] libceph, ceph: potential dereference of null pointer
-Date:   Thu,  9 Dec 2021 10:50:38 +0800
-Message-Id: <20211209025038.2028112-1-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+        id S231163AbhLIDDL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 22:03:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44606 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229446AbhLIDDK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 22:03:10 -0500
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6232C061746;
+        Wed,  8 Dec 2021 18:59:37 -0800 (PST)
+Received: by mail-ed1-x535.google.com with SMTP id y12so14645970eda.12;
+        Wed, 08 Dec 2021 18:59:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=s0iRZAJ4YKfdAHbCWbg2s44QSJbfVQdVDell+AQzpQQ=;
+        b=AcljCbXq84DxP1SMjAsfM4nlekaEQe0jEbXR0eHqnmlF08NcDtXWjcd0/9mivZwKUU
+         Wqb0+WkkdrYP9m2+FI0BJKbH1lVlGpIyadD+MFE+7ak02uuhhFevzkAMFaeo+C4Ipv6K
+         +3JvfURLdLffYNRKXNdudJ5i0ThuzFXMRK4nvFLWGmI/JkIJ0N3PrqeklDIzhYgMf4Sx
+         V+VNHtlm4xAoafvPvxBH0I96Xuy848NzKr9iklLt+QOC+kXGA/N6jkSp+zn5buvsvSv6
+         posExISe+kv/vInhCKJBfAP6V9sIbU+yivETPchOScnfpRqwmfVzWljAl677FAnk8ljB
+         nQYg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=s0iRZAJ4YKfdAHbCWbg2s44QSJbfVQdVDell+AQzpQQ=;
+        b=rBTKE2eFrlNZ2E+b2Wpc/bdXcwiTt+euWaEubVlFNOT0iICD2ibpjj9dpWG7Sn3Hr0
+         /NNgBB0c1PvYCVD0+O7XssaAJ4kY9g5U4w3bizpLudpSWCnCgDPJwIDPzok9PgEMCycJ
+         YcBbITUY0kRgqkjq49FoOTTHF0DElYj6ihyAccfJBuDSGm2mi0icwZiEWP9Xs4gHei2w
+         1UAlvuqx1cc5WO3GDCoyg2iZL9SKxytnly0PiLW5V+ege4udjvMCc6XU9YvLKKWM9zL4
+         aqw7ab+IHll8OUIMv2V1FlaCJgI8n5mhCoM59DatrfR5oqgqJ5NeZFSy8If97mTtdsaX
+         TUEg==
+X-Gm-Message-State: AOAM533vIJOW/0G0nCBz6OqP5+jYm7pOSS0ZMyBnu8klzEMuG36kJADk
+        fw7BQoaO9PhqTykkCEx2OAMkc/et3js=
+X-Google-Smtp-Source: ABdhPJwcx+23NVamz0UYD/td4FOYKfyKsT14Z0PyK5sBAansT9MNh5zDYifZpGibBubQHrTFN4Nnsg==
+X-Received: by 2002:a17:906:f0d4:: with SMTP id dk20mr12154207ejb.257.1639018773762;
+        Wed, 08 Dec 2021 18:59:33 -0800 (PST)
+Received: from Ansuel-xps. (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
+        by smtp.gmail.com with ESMTPSA id w23sm2834208edr.19.2021.12.08.18.59.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Dec 2021 18:59:33 -0800 (PST)
+Message-ID: <61b17115.1c69fb81.40795.b778@mx.google.com>
+X-Google-Original-Message-ID: <YbFxE3GS/deJLstO@Ansuel-xps.>
+Date:   Thu, 9 Dec 2021 03:59:31 +0100
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [net-next RFC PATCH v2 0/8] Add support for qca8k mdio rw in
+ Ethernet packet
+References: <20211208034040.14457-1-ansuelsmth@gmail.com>
+ <20211208123222.pcljtugpq5clikhq@skbuf>
+ <61b0c239.1c69fb81.9dfd0.5dc2@mx.google.com>
+ <20211208145341.degqvm23bxc3vo7z@skbuf>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: rQCowADHlpEAb7FhZk63AQ--.18135S2
-X-Coremail-Antispam: 1UD129KBjvdXoWrtw4xtrW8Cw18uw4DCF43GFg_yoW3Arg_Ca
-        n2vrnIvr13ZF10kanrurWrWrZ2v347Wr4rZw13KF93Cr9ruFn8Aa4xX345AF13uFyxCFyD
-        CrZ8Cry3JwnFkjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUb4kFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Cr0_
-        Gr1UM28EF7xvwVC2z280aVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gr
-        1j6F4UJwAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv
-        7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r
-        1j6r4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY02Avz4vE14v_
-        Gr1l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxV
-        WUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI
-        7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r
-        1j6r4UMIIF0xvE42xK8VAvwI8IcIk0rVWrJr0_WFyUJwCI42IY6I8E87Iv67AKxVWUJVW8
-        JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfUO_MaUU
-        UUU
-X-Originating-IP: [124.16.138.128]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211208145341.degqvm23bxc3vo7z@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The return value of kzalloc() needs to be checked.
-To avoid use of null pointer in case of the failure of alloc.
+On Wed, Dec 08, 2021 at 04:53:41PM +0200, Vladimir Oltean wrote:
+> On Wed, Dec 08, 2021 at 03:33:27PM +0100, Ansuel Smith wrote:
+> > > But there are some problems with offering a "master_going_up/master_going_down"
+> > > set of callbacks. Specifically, we could easily hook into the NETDEV_PRE_UP/
+> > > NETDEV_GOING_DOWN netdev notifiers and transform these into DSA switch
+> > > API calls. The goal would be for the qca8k tagger to mark the
+> > > Ethernet-based register access method as available/unavailable, and in
+> > > the regmap implementation, to use that or the other. DSA would then also
+> > > be responsible for calling "master_going_up" when the switch ports and
+> > > master are sufficiently initialized that traffic should be possible.
+> > > But that first "master_going_up" notification is in fact the most
+> > > problematic one, because we may not receive a NETDEV_PRE_UP event,
+> > > because the DSA master may already be up when we probe our switch tree.
+> > > This would be a bit finicky to get right. We may, for instance, hold
+> > > rtnl_lock for the entirety of dsa_tree_setup_master(). This will block
+> > > potentially concurrent netdevice notifiers handled by dsa_slave_nb.
+> > > And while holding rtnl_lock() and immediately after each dsa_master_setup(),
+> > > we may check whether master->flags & IFF_UP is true, and if it is,
+> > > synthesize a call to ds->ops->master_going_up(). We also need to do the
+> > > reverse in dsa_tree_teardown_master().
+> > 
+> > Should we care about holding the lock for that much time? Will do some
+> > test hoping the IFF_UP is sufficient to make the Ethernet mdio work.
+> 
+> I'm certainly not smart enough to optimize things, so I'd rather hold
+> the rtnl_lock for as long as I'm comfortable is enough to avoid races.
+> The reason why we must hold rtnl_lock is because during
+> dsa_master_setup(), the value of netdev_uses_dsa(dp->master) changes
+> from false to true.
+> The idea is that if IFF_UP isn't set right now, no problem, release the
+> lock and we'll catch the NETDEV_UP notifier when that will appear.
+> But we want to
+> (a) replay the master up state if it was already up while it wasn't a
+>     DSA master
+> (b) avoid a potential race where the master does go up, we receive that
+>     notification, but netdev_uses_dsa() doesn't yet return true for it.
+> 
+> The model would be similar to what we have for the NETDEV_GOING_DOWN
+> handler.
+> 
+> Please wait for me to finish the sja1105 conversion. There are some
+> issues I've noticed in your connect/disconnect implementation that I
+> haven't had a chance to comment on, yet. I've tested ocelot-8021q plus
+> the tagging protocol change and these appear fine.
+> I'd like to post the changes I have, to make sure that what works for me
+> works for you, and what works for you works for me. I may also have some
+> patches laying around that track the master up/down state (I needed
+> those for some RFC DSA master change patches). I'll build a mini patch
+> series and post it soon-ish.
 
-Fixes: 3d14c5d2b6e1 ("ceph: factor out libceph from Ceph file system")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
----
- net/ceph/osd_client.c | 2 ++
- 1 file changed, 2 insertions(+)
+Anyway just as an info, I implemented also the mib handler and it does
+work correctly. Vladimir implementation works just good and it seems
+pretty clean with the tagger used only to implement stuff and the driver
+to do the ""dirty"" work.
 
-diff --git a/net/ceph/osd_client.c b/net/ceph/osd_client.c
-index ff8624a7c964..3203e8a34370 100644
---- a/net/ceph/osd_client.c
-+++ b/net/ceph/osd_client.c
-@@ -1234,6 +1234,8 @@ static struct ceph_osd *create_osd(struct ceph_osd_client *osdc, int onum)
- 	WARN_ON(onum == CEPH_HOMELESS_OSD);
- 
- 	osd = kzalloc(sizeof(*osd), GFP_NOIO | __GFP_NOFAIL);
-+	if (!osd)
-+		return NULL;
- 	osd_init(osd);
- 	osd->o_osdc = osdc;
- 	osd->o_osd = onum;
+But anyway for this kind of transaction, we really need a way to track
+when it's possible to use it. We need to polish that. Just to not mix
+things I will had my comments in the other series about tracking master
+up.
+
 -- 
-2.25.1
-
+	Ansuel
