@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AFD6946E19E
-	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 05:44:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 16AB846E1A3
+	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 05:44:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232147AbhLIEsH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 23:48:07 -0500
-Received: from o1.ptr2625.egauge.net ([167.89.112.53]:11574 "EHLO
+        id S232126AbhLIEsG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 23:48:06 -0500
+Received: from o1.ptr2625.egauge.net ([167.89.112.53]:11274 "EHLO
         o1.ptr2625.egauge.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230333AbhLIEsE (ORCPT
+        with ESMTP id S230249AbhLIEsE (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 23:48:04 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=egauge.net;
         h=from:subject:in-reply-to:references:mime-version:to:cc:
         content-transfer-encoding:content-type;
-        s=sgd; bh=4jU+mibC8yxDcqhHS9INe1ECc6xPDEbLP0oXfY4SoDE=;
-        b=p2BtZf9MNWKPHhQkhD5d40Z2Bjnyu48vmYfd+goUKmnVPuB17sZxcYedfB4A867AP7VP
-        G51ipKkF0QtawjziP3EEco389WNdeMdV8x3lKJP2WIMtZw/M8Au1sUf6MwnxIJETXL9rrz
-        P8QTg5uoKPyP+BXBtp0BC1Nt2wsJjpXFZhiag7BZNklOIGrmb4oFbwcCS0JkfVIA3YRmHJ
-        nzdmTEh0S9i/QRcJ2YhGuBlWMuGJtEO59qYcJgXPYFQvZERv86Np6RKWVRlhoR6wr72zhe
-        +3QYiNR0pEweqYjRfdiVEK/bzJVUTyamtv2CC9WFMFf1MFj8jw4XCk17cLRlo+FA==
-Received: by filterdrecv-75ff7b5ffb-7dt9d with SMTP id filterdrecv-75ff7b5ffb-7dt9d-1-61B189AC-14
-        2021-12-09 04:44:28.568802866 +0000 UTC m=+8490232.442480606
+        s=sgd; bh=YaTQ2gxJhl0t16vCN/mieGkdFAy59VhLYl6Y22oNjxs=;
+        b=QaBBm9exwNLuNKpyoT23WthmbAgSEhRABvzM0ArfeBDYwQcMVh/sYu3dMtD44uLY+YUt
+        ou3m9tiMJvW92VwywF3vG+hH21+7IrkNVf9mwuWF4IWVdX3eb1Sx+JH42YudQ1DBucFnWo
+        3DVQaGs2cM7bDibKs7AerMwg7LRlB+50kP9jS9suunAmgw3Y1fk9c9ufJhu3cwwGQwaaA0
+        lbc7HMgfFm/o0+fuXUOH4iEoXQgz35yp5g7AmU1vgXCfri3G3FWMLP/JhdkfNufgJgjZNy
+        PkF1qQFPntz9cumI5l8oYxQpIui+aCgLeBzW0PycIyjApMWr72y5NTRCF7GkKArg==
+Received: by filterdrecv-75ff7b5ffb-96rhp with SMTP id filterdrecv-75ff7b5ffb-96rhp-1-61B189AB-19
+        2021-12-09 04:44:27.857624053 +0000 UTC m=+8490247.738130723
 Received: from pearl.egauge.net (unknown)
-        by geopod-ismtpd-4-0 (SG)
-        with ESMTP
-        id vmywDYzRR0qPNZGoPANOAw
-        Thu, 09 Dec 2021 04:44:28.452 +0000 (UTC)
+        by ismtpd0047p1las1.sendgrid.net (SG) with ESMTP
+        id xn7barkGR2qV9cf5_7G2Wg
+        Thu, 09 Dec 2021 04:44:27.778 +0000 (UTC)
 Received: by pearl.egauge.net (Postfix, from userid 1000)
-        id 258F27002CB; Wed,  8 Dec 2021 21:44:28 -0700 (MST)
+        id 49BEB7002CB; Wed,  8 Dec 2021 21:44:27 -0700 (MST)
 From:   David Mosberger-Tang <davidm@egauge.net>
-Subject: [PATCH 3/4] wilc1000: Rename tx task from "K_TXQ_TASK" to NETDEV-tx
+Subject: [PATCH 2/4] wilc1000: Rename irq handler from "WILC_IRQ" to netdev
+ name
 Date:   Thu, 09 Dec 2021 04:44:28 +0000 (UTC)
-Message-Id: <20211209044411.3482259-4-davidm@egauge.net>
+Message-Id: <20211209044411.3482259-3-davidm@egauge.net>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211209044411.3482259-1-davidm@egauge.net>
 References: <20211209044411.3482259-1-davidm@egauge.net>
 MIME-Version: 1.0
 X-SG-EID: =?us-ascii?Q?+kMxBqj35EdRUKoy8diX1j4AXmPtd302oan+iXZuF8m2Nw4HRW2irNspffT=2Fkh?=
- =?us-ascii?Q?ET6RJF6+Prbl0h=2FEtF1rRLvPTgbt+ZgFQ0kkP0k?=
- =?us-ascii?Q?m9CAA5WLs05wsIeWz9KOel9Qh+wQViyidf1vLTe?=
- =?us-ascii?Q?gz4uABBl6OVnG1aHdivTRQJ33AWxhcj3ZfDrCUt?=
- =?us-ascii?Q?NzvYTojkmUQbGfzTwxHzLaoseFMu6ipd70NOGeO?=
- =?us-ascii?Q?TXoEWmicn6ffHkr9sg6Q6HZfwoOb3W86yOXhCk?=
+ =?us-ascii?Q?ET6RJF6+Prbl0h=2FEtF1rRLvFe3c01PoG04mJYIZ?=
+ =?us-ascii?Q?gQwDCewcoG18r=2Ff11AGGAmZHMWMyzfrUGZq0kyC?=
+ =?us-ascii?Q?MKkZ7Oshm9MG8hcWR3ioKnwDggTrV5d0FYSBG73?=
+ =?us-ascii?Q?3PuEplO16cx6demwN48yhT3Pczvak3OmWG09tLp?=
+ =?us-ascii?Q?n3YWyLsKa66oucQs6XBzBL5sCq+TI+YTpJcevF?=
 To:     Ajay Singh <ajay.kathat@microchip.com>
 Cc:     Claudiu Beznea <claudiu.beznea@microchip.com>,
         Kalle Valo <kvalo@codeaurora.org>,
@@ -58,9 +58,9 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This follows normal Linux conventions and is also more useful because
-the netdevice name is part of the task name (e.g., "wlan0-tx" for
-network device "wlan0").
+This change follows normal Linux convention and the new name is more
+useful since it'll be clear which irq handler statistics correspond to
+which net device.
 
 Signed-off-by: David Mosberger-Tang <davidm@egauge.net>
 ---
@@ -68,18 +68,18 @@ Signed-off-by: David Mosberger-Tang <davidm@egauge.net>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/net/wireless/microchip/wilc1000/netdev.c b/drivers/net/wireless/microchip/wilc1000/netdev.c
-index fae6b364ce5c..e3b7629b9410 100644
+index 690572e01a2a..fae6b364ce5c 100644
 --- a/drivers/net/wireless/microchip/wilc1000/netdev.c
 +++ b/drivers/net/wireless/microchip/wilc1000/netdev.c
-@@ -468,7 +468,7 @@ static int wlan_initialize_threads(struct net_device *dev)
- 	struct wilc *wilc = vif->wilc;
- 
- 	wilc->txq_thread = kthread_run(wilc_txq_task, (void *)wilc,
--				       "K_TXQ_TASK");
-+				       "%s-tx", dev->name);
- 	if (IS_ERR(wilc->txq_thread)) {
- 		netdev_err(dev, "couldn't create TXQ thread\n");
- 		wilc->close = 0;
+@@ -56,7 +56,7 @@ static int init_irq(struct net_device *dev)
+ 	ret = request_threaded_irq(wl->dev_irq_num, isr_uh_routine,
+ 				   isr_bh_routine,
+ 				   IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
+-				   "WILC_IRQ", wl);
++				   dev->name, wl);
+ 	if (ret) {
+ 		netdev_err(dev, "Failed to request IRQ [%d]\n", ret);
+ 		return ret;
 -- 
 2.25.1
 
