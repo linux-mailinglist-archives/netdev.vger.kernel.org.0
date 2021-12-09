@@ -2,77 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB7BE46E0A3
-	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 03:00:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9707546E0AD
+	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 03:03:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229711AbhLICDo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 21:03:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59668 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229583AbhLICDo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 21:03:44 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7D33C061746
-        for <netdev@vger.kernel.org>; Wed,  8 Dec 2021 18:00:11 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9FA3BB82375
-        for <netdev@vger.kernel.org>; Thu,  9 Dec 2021 02:00:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 4D222C341C6;
-        Thu,  9 Dec 2021 02:00:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1639015209;
-        bh=FJifAsTfwO8VUet2pg1PrYr95aM5d+v3GFUuHLB7fIg=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=DfQn0eHiaULFgyHHAzYU1YsiuyUskDGlXri/raXsvzo0QFXE3UowTewQwzM1OAg/5
-         9cdTJyv+/Fx1vWhFoItGTuE2Jwj006fx9FSBsMLjMvU9H/Lg1EC7495Fp3owe4nafT
-         hV1E41ko0Ao3U6hE+ILm72XNY/Q9d1lmJcmciEyp/A6mHp+sKgxbfeCMitjOq9zaqK
-         Mt53JtW2iTOEp2Z+XBDDzl/XxNChuDPWlDs57pfxhb17ksQzsUGrHR/hoLJQlHfqnN
-         0VmFTsRm14zpL4nWR6RDo5+shXHcVZrJjeTOys//zfSNoR40JAmH9WFHod+pjijUfk
-         ejeUrU/HdfXtw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 2C16E60A36;
-        Thu,  9 Dec 2021 02:00:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S229767AbhLICGw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 21:06:52 -0500
+Received: from mga17.intel.com ([192.55.52.151]:9219 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229534AbhLICGw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 8 Dec 2021 21:06:52 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10192"; a="218682638"
+X-IronPort-AV: E=Sophos;i="5.88,190,1635231600"; 
+   d="scan'208";a="218682638"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Dec 2021 18:03:11 -0800
+X-IronPort-AV: E=Sophos;i="5.88,190,1635231600"; 
+   d="scan'208";a="503306622"
+Received: from cxia1-mobl.ccr.corp.intel.com (HELO lkp-zhoujie.ccr.corp.intel.com) ([10.255.28.13])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Dec 2021 18:03:06 -0800
+From:   Jie2x Zhou <jie2x.zhou@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org, shuah@kernel.org,
+        dsahern@gmail.com
+Cc:     netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org, lkp@intel.com, xinjianx.ma@intel.com,
+        zhijianx.li@intel.com, Philip Li <philip.li@intel.com>,
+        Jie2x Zhou <jie2x.zhou@intel.com>
+Subject: [PATCH v3] selftests: net: Correct ping6 expected rc from 2 to 1
+Date:   Thu,  9 Dec 2021 10:02:30 +0800
+Message-Id: <20211209020230.37270-1-jie2x.zhou@intel.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net, neigh: clear whole pneigh_entry at alloc time
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163901520917.18433.4839560060498321567.git-patchwork-notify@kernel.org>
-Date:   Thu, 09 Dec 2021 02:00:09 +0000
-References: <20211206165329.1049835-1-eric.dumazet@gmail.com>
-In-Reply-To: <20211206165329.1049835-1-eric.dumazet@gmail.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        edumazet@google.com, roopa@nvidia.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+./fcnal-test.sh -v -t ipv6_ping
+TEST: ping out, VRF bind - ns-B IPv6 LLA                                      [FAIL]
+TEST: ping out, VRF bind - multicast IP                                       [FAIL]
 
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+ping6 is failing as it should.
+COMMAND: ip netns exec ns-A /bin/ping6 -c1 -w1 fe80::7c4c:bcff:fe66:a63a%red
+strace of ping6 shows it is failing with '1',
+so change the expected rc from 2 to 1.
 
-On Mon,  6 Dec 2021 08:53:29 -0800 you wrote:
-> From: Eric Dumazet <edumazet@google.com>
-> 
-> Commit 2c611ad97a82 ("net, neigh: Extend neigh->flags to 32 bit
-> to allow for extensions") enables a new KMSAM warning [1]
-> 
-> I think the bug is actually older, because the following intruction
-> only occurred if ndm->ndm_flags had NTF_PROXY set.
-> 
-> [...]
+Fixes: c0644e71df33 ("selftests: Add ipv6 ping tests to fcnal-test")
+Reported-by: kernel test robot <lkp@intel.com>
+Suggested-by: David Ahern <dsahern@gmail.com>
+Signed-off-by: Jie2x Zhou <jie2x.zhou@intel.com>
+---
+ tools/testing/selftests/net/fcnal-test.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Here is the summary with links:
-  - [net] net, neigh: clear whole pneigh_entry at alloc time
-    https://git.kernel.org/netdev/net/c/e195e9b5dee6
-
-You are awesome, thank you!
+diff --git a/tools/testing/selftests/net/fcnal-test.sh b/tools/testing/selftests/net/fcnal-test.sh
+index 7f5b265fcb90..966787c2f9f0 100755
+--- a/tools/testing/selftests/net/fcnal-test.sh
++++ b/tools/testing/selftests/net/fcnal-test.sh
+@@ -2191,7 +2191,7 @@ ipv6_ping_vrf()
+ 		log_start
+ 		show_hint "Fails since VRF device does not support linklocal or multicast"
+ 		run_cmd ${ping6} -c1 -w1 ${a}
+-		log_test_addr ${a} $? 2 "ping out, VRF bind"
++		log_test_addr ${a} $? 1 "ping out, VRF bind"
+ 	done
+ 
+ 	for a in ${NSB_IP6} ${NSB_LO_IP6} ${NSB_LINKIP6}%${NSA_DEV} ${MCAST}%${NSA_DEV}
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.31.1
 
