@@ -2,96 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F42346E27F
-	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 07:31:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C22A446E260
+	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 07:21:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231649AbhLIGex (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Dec 2021 01:34:53 -0500
-Received: from mail-m975.mail.163.com ([123.126.97.5]:4256 "EHLO
-        mail-m975.mail.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231567AbhLIGex (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 01:34:53 -0500
-X-Greylist: delayed 915 seconds by postgrey-1.27 at vger.kernel.org; Thu, 09 Dec 2021 01:34:52 EST
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=9lrPm
-        /CapB6Mo9iRlBIyUZhYHkn5dDSEHVfcF/AFzVo=; b=YMTtmMRh6d7NQMb2meGRh
-        PFONM6YhIvn4Xcy08b9aBOsIev7AnVlJEiaGfo+WHhF2QzvVWVf3uWdvkWTc77bR
-        b5WCtwMIGCsu+nNRYszAVV7GGmGGungL6G4dkvKnK3RapDw/UzlhAPTjF+b/bn1a
-        APUe63o2DH+0XmcdQ7WvaQ=
-Received: from localhost.localdomain (unknown [218.106.182.227])
-        by smtp5 (Coremail) with SMTP id HdxpCgCXSCQCn7FhlVI6Aw--.55449S4;
-        Thu, 09 Dec 2021 14:15:44 +0800 (CST)
-From:   Jianglei Nie <niejianglei2021@163.com>
-To:     simon.horman@corigine.com, kuba@kernel.org, davem@davemloft.net,
-        libaokun1@huawei.com
-Cc:     oss-drivers@corigine.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Jianglei Nie <niejianglei2021@163.com>
-Subject: [PATCH] nfp: Fix memory leak in nfp_cpp_area_cache_add()
-Date:   Thu,  9 Dec 2021 14:15:11 +0800
-Message-Id: <20211209061511.122535-1-niejianglei2021@163.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: HdxpCgCXSCQCn7FhlVI6Aw--.55449S4
-X-Coremail-Antispam: 1Uf129KBjvJXoW7uF1DCw45WrykGw4xur4kZwb_yoW8XFykpF
-        ZrJ3yrCrWxXr1qgw4DArW8Z3sYya4DGFyfWa45u3y5ZFyagF1UGF15KayrXFyDurWrKFyS
-        yry5JFy5Xrs8Cw7anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jqa0PUUUUU=
-X-Originating-IP: [218.106.182.227]
-X-CM-SenderInfo: xqlhyxxdqjzvrlsqjii6rwjhhfrp/xtbBORBkjF-PKRy54wAAs+
+        id S232873AbhLIGZP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Dec 2021 01:25:15 -0500
+Received: from out30-132.freemail.mail.aliyun.com ([115.124.30.132]:50538 "EHLO
+        out30-132.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232838AbhLIGZP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 01:25:15 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=15;SR=0;TI=SMTPD_---0V-1Ukdr_1639030886;
+Received: from j63c13417.sqa.eu95.tbsite.net(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0V-1Ukdr_1639030886)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 09 Dec 2021 14:21:39 +0800
+From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+To:     ast@kernel.org
+Cc:     daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, nathan@kernel.org, ndesaulniers@google.com,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Subject: [PATCH] bpf: use kmemdup() to replace kmalloc + memcpy
+Date:   Thu,  9 Dec 2021 14:21:22 +0800
+Message-Id: <1639030882-92383-1-git-send-email-jiapeng.chong@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In line 800 (#1), nfp_cpp_area_alloc() allocates and initializes a
-CPP area structure. But in line 807 (#2), when the cache is allocated
-failed, this CPP area structure is not freed, which will result in
-memory leak.
+Eliminate the follow coccicheck warning:
 
-We can fix it by freeing the CPP area when the cache is allocated
-failed (#2).
+./kernel/bpf/btf.c:6537:13-20: WARNING opportunity for kmemdup.
 
-792 int nfp_cpp_area_cache_add(struct nfp_cpp *cpp, size_t size)
-793 {
-794 	struct nfp_cpp_area_cache *cache;
-795 	struct nfp_cpp_area *area;
-
-800	area = nfp_cpp_area_alloc(cpp, NFP_CPP_ID(7, NFP_CPP_ACTION_RW, 0),
-801 				  0, size);
-	// #1: allocates and initializes
-
-802 	if (!area)
-803 		return -ENOMEM;
-
-805 	cache = kzalloc(sizeof(*cache), GFP_KERNEL);
-806 	if (!cache)
-807 		return -ENOMEM; // #2: missing free
-
-817	return 0;
-818 }
-
-Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
 ---
- drivers/net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ kernel/bpf/btf.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c b/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c
-index d7ac0307797f..34c0d2ddf9ef 100644
---- a/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c
-@@ -803,8 +803,10 @@ int nfp_cpp_area_cache_add(struct nfp_cpp *cpp, size_t size)
- 		return -ENOMEM;
- 
- 	cache = kzalloc(sizeof(*cache), GFP_KERNEL);
--	if (!cache)
-+	if (!cache) {
-+		nfp_cpp_area_free(area);
- 		return -ENOMEM;
-+	}
- 
- 	cache->id = 0;
- 	cache->addr = 0;
+diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+index 10e7a65..94f0342 100644
+--- a/kernel/bpf/btf.c
++++ b/kernel/bpf/btf.c
+@@ -6534,12 +6534,11 @@ static struct bpf_cand_cache *populate_cand_cache(struct bpf_cand_cache *cands,
+ 		bpf_free_cands_from_cache(*cc);
+ 		*cc = NULL;
+ 	}
+-	new_cands = kmalloc(sizeof_cands(cands->cnt), GFP_KERNEL);
++	new_cands = kmemdup(cands, sizeof_cands(cands->cnt), GFP_KERNEL);
+ 	if (!new_cands) {
+ 		bpf_free_cands(cands);
+ 		return ERR_PTR(-ENOMEM);
+ 	}
+-	memcpy(new_cands, cands, sizeof_cands(cands->cnt));
+ 	/* strdup the name, since it will stay in cache.
+ 	 * the cands->name points to strings in prog's BTF and the prog can be unloaded.
+ 	 */
 -- 
-2.25.1
+1.8.3.1
 
