@@ -2,117 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DEC2746E89A
-	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 13:42:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7203746E89E
+	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 13:46:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237490AbhLIMqL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Dec 2021 07:46:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37232 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230094AbhLIMqK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 07:46:10 -0500
-Received: from mail-vk1-xa2f.google.com (mail-vk1-xa2f.google.com [IPv6:2607:f8b0:4864:20::a2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42915C061746;
-        Thu,  9 Dec 2021 04:42:37 -0800 (PST)
-Received: by mail-vk1-xa2f.google.com with SMTP id m19so3652544vko.12;
-        Thu, 09 Dec 2021 04:42:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=B99doplKMhCF3/NI+gmHfnS9FII0vd0OCqQprdWAKGw=;
-        b=cyf0yHemDemISmOvVy+aopA4fi2LoydNrrkxsO/dk0BXNerSGHZF509VK4BHayIJjC
-         fUfr2j+YMMMPHDeBH8Slw8ikVrUcpZnHS6gqeo1XIVLKf4DacsGXUhNxkCY7MseMjWOS
-         GyuiRvkTFtEKcloYUUWM2yYtnR6N0uiinPu1Es0L0nN2ChPWZR91l4O7HcsD0wPQNJT/
-         B4Sj7abwy8G9NORm28sAlu1S61ejA3KyRlUigd5JR1HselBFQNlUXVTMLMlvKPGuNVVu
-         MiW380fJZ/J/1VRrffTnQupdJqCfrn+jUkJNcDEWOQsnesUlZyFYcwp25G3SyPrxwKED
-         IB1Q==
+        id S235075AbhLIMu1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Dec 2021 07:50:27 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:34307 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229680AbhLIMu1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 07:50:27 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1639054013;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=+rgwOZXwpAx5YyVASfGnt3zTU62rqVUjO/0XDdwQk1Q=;
+        b=GyTosu2fKWyUaeXRkIfJpMe61coNVLE5+KI5Uw1QC+OPnUK/ZupX1xyUloJB4T7caN0GzJ
+        M9JB3Au42jdBA4UKZoVXLtxSEDKkfplqN4z0uTghWqmdYjDC6QUt7xlJ72WQDnUt+dugwm
+        629+UvRa2xaq78/gT/qGw7w+pJVv1CQ=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-264-FkNEo8fQO1S60-XFZcIZPw-1; Thu, 09 Dec 2021 07:46:52 -0500
+X-MC-Unique: FkNEo8fQO1S60-XFZcIZPw-1
+Received: by mail-wm1-f72.google.com with SMTP id 69-20020a1c0148000000b0033214e5b021so3096488wmb.3
+        for <netdev@vger.kernel.org>; Thu, 09 Dec 2021 04:46:52 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=B99doplKMhCF3/NI+gmHfnS9FII0vd0OCqQprdWAKGw=;
-        b=6s5ddKTtVJVv8xzJlnB9ejWOr7lMZw8A7buBWLQuivCeeNtGglcYFEGBbXhiXg6e5e
-         r5VghTD2iFgTdj9tjgFPfwSTJOAPaXjeljGkAqM4RGKqU8t9xcqrw5NoU5GhvcKcBZZy
-         livRW0L+3eOmovaOyzmuEEX/MsgTa+uPA4ycAlz04G1BZooJuScEp4jDZKEIli4EYdnP
-         qnfDgMXn6cWUu9Dcg+rcAjCVqwq61rz4SuZoOApD9K8atuXxNhVwa9yeujrJwtzkfhXV
-         4EmLxG+Mm+UeE2+7CYo7Ao0om5u54HefIX4438OZbqAHxMiptSCTCrkPfEz0TZ7xiIL0
-         sA7Q==
-X-Gm-Message-State: AOAM530KyKZXH94WMysmI7tjg6BKtgLqofokFNdRYuuNkf1zsTqoLdKW
-        n9YYk9SIka1yA2IW7dpju5w=
-X-Google-Smtp-Source: ABdhPJx3lgyOD6ZeYYjqxmbuMSNvFbZ+0T6h79BGDGCI48zAjIY0NPzSMHB7GiHOIv4UE5mMT2mTKw==
-X-Received: by 2002:a1f:cd47:: with SMTP id d68mr8595660vkg.33.1639053756428;
-        Thu, 09 Dec 2021 04:42:36 -0800 (PST)
-Received: from t14s.localdomain ([177.220.172.101])
-        by smtp.gmail.com with ESMTPSA id t5sm3810985vsk.24.2021.12.09.04.42.35
+        h=x-gm-message-state:message-id:subject:from:to:date:in-reply-to
+         :references:user-agent:mime-version;
+        bh=+rgwOZXwpAx5YyVASfGnt3zTU62rqVUjO/0XDdwQk1Q=;
+        b=Mx+XjDw3yZW+5gfxEKqfGgB1k9cvbagHeJuo5LfYCpkyx/njmERnZ0Cr0lBwPoW/FG
+         sFpi9VoJSS7us3ubFh+tlJNaw83Vx6fYwafMtTsjDjyfD00lbqW9Ajv+gFW+CfNpFThZ
+         KwfHFMIigaBG/XknVWunws3ytxF28FIEp+l4MFAGE+fKDbmjsanmlibvTYQ75KeBw3vK
+         x53ybbnQ5gZZ7AiFP1EERimoIeMbdtQD/KgtBDKeLA4X0gMxlP5M20SUWoJ8DzmLM6kQ
+         KCEMSj4vdQIqyaGEZ28TKWw2/DORXocT9WlTLJXIM+QN6+oOErgPya9h6q846l2r15Jb
+         sUHg==
+X-Gm-Message-State: AOAM531KwWZH2ifYqX3BFCBkEj4/l40tcWkx3RApvifXqnzLbfECGhef
+        wBPVifhxeEyE8pbjvzLObs+HBazTvZ5wgkqylI7250V3gxMdt7krCd43FyJXc+4HHEuT+5tOHto
+        9f9J/0jHIMy6SU5SX
+X-Received: by 2002:adf:f6cf:: with SMTP id y15mr6060761wrp.56.1639054011192;
+        Thu, 09 Dec 2021 04:46:51 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxcYWp6HpitNPUMAnq1oU8ygzfOdTkel9TMOiRGTFVUC9FyfEIlxxRl1jFiLHUrW8VwlvpPxQ==
+X-Received: by 2002:adf:f6cf:: with SMTP id y15mr6060733wrp.56.1639054010986;
+        Thu, 09 Dec 2021 04:46:50 -0800 (PST)
+Received: from ?IPv6:2003:c4:372a:6fe5:a08b:eb12:3927:3670? (p200300c4372a6fe5a08beb1239273670.dip0.t-ipconnect.de. [2003:c4:372a:6fe5:a08b:eb12:3927:3670])
+        by smtp.gmail.com with ESMTPSA id g19sm8880792wmg.12.2021.12.09.04.46.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Dec 2021 04:42:36 -0800 (PST)
-Received: by t14s.localdomain (Postfix, from userid 1000)
-        id 43C72ECD4C; Thu,  9 Dec 2021 09:42:34 -0300 (-03)
-Date:   Thu, 9 Dec 2021 09:42:34 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Lee Jones <lee.jones@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, Vlad Yasevich <vyasevich@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        lksctp developers <linux-sctp@vger.kernel.org>,
-        "H.P. Yarroll" <piggy@acm.org>,
-        Karl Knutson <karl@athena.chicago.il.us>,
-        Jon Grimm <jgrimm@us.ibm.com>,
-        Xingang Guo <xingang.guo@intel.com>,
-        Hui Huang <hui.huang@nokia.com>,
-        Sridhar Samudrala <sri@us.ibm.com>,
-        Daisy Chang <daisyc@us.ibm.com>,
-        Ryan Layer <rmlayer@us.ibm.com>,
-        Kevin Gao <kevin.gao@intel.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH 1/1] sctp: Protect cached endpoints to prevent possible
- UAF
-Message-ID: <YbH5um3HVQbSecx4@t14s.localdomain>
-References: <20211208165434.2962062-1-lee.jones@linaro.org>
+        Thu, 09 Dec 2021 04:46:50 -0800 (PST)
+Message-ID: <14584c1a1e449cc20b5af7918b411ee27cf1570b.camel@redhat.com>
+Subject: Re: [syzbot] BUG: sleeping function called from invalid context in
+ hci_cmd_sync_cancel
+From:   Benjamin Berg <bberg@redhat.com>
+To:     Oliver Neukum <oneukum@suse.com>,
+        syzbot <syzbot+485cc00ea7cf41dfdbf1@syzkaller.appspotmail.com>,
+        Thinh.Nguyen@synopsys.com, changbin.du@intel.com,
+        christian.brauner@ubuntu.com, davem@davemloft.net,
+        edumazet@google.com, gregkh@linuxfoundation.org,
+        johan.hedberg@gmail.com, kuba@kernel.org,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org, luiz.dentz@gmail.com,
+        luiz.von.dentz@intel.com, marcel@holtmann.org,
+        mathias.nyman@linux.intel.com, netdev@vger.kernel.org,
+        stern@rowland.harvard.edu, syzkaller-bugs@googlegroups.com,
+        yajun.deng@linux.dev
+Date:   Thu, 09 Dec 2021 13:46:47 +0100
+In-Reply-To: <3e8cba55-5d34-eab3-0625-687b66bb9449@suse.com>
+References: <00000000000098464c05d2acf3ba@google.com>
+         <3e8cba55-5d34-eab3-0625-687b66bb9449@suse.com>
+Content-Type: multipart/signed; micalg="pgp-sha256";
+        protocol="application/pgp-signature"; boundary="=-83lGBtdr6vrReHv5wmRv"
+User-Agent: Evolution 3.42.1 (3.42.1-1.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211208165434.2962062-1-lee.jones@linaro.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 08, 2021 at 04:54:34PM +0000, Lee Jones wrote:
-> To prevent this from happening we need to take a reference on the
-> to-be-used/dereferenced 'struct sctp_endpoint' until such a time when
-> we know it can be safely released.
-> 
-> When KASAN is not enabled, a similar, but slightly different NULL
-> pointer derefernce crash occurs later along the thread of execution in
-> inet_sctp_diag_fill() this time.
 
-Hey Lee, did you try running lksctp-tools [1] func tests with this patch?
-I'm getting failures here.
+--=-83lGBtdr6vrReHv5wmRv
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-[root@vm1 func_tests]# make v4test
-./test_assoc_abort
-test_assoc_abort.c  1 PASS : ABORT an association using SCTP_ABORT
-test_assoc_abort passes
+Hi,
 
-./test_assoc_shutdown
-test_assoc_shutdown.c  1 BROK : bind: Address already in use
-DUMP_CORE ../../src/testlib/sctputil.h: 145
-/bin/sh: line 1:  3727 Segmentation fault      (core dumped) ./$a
-test_assoc_shutdown fails
-make: *** [Makefile:1648: v4test] Error 1
+On Thu, 2021-12-09 at 11:06 +0100, Oliver Neukum wrote:
+> As __cancel_work_timer can be called from hci_cmd_sync_cancel() this is
+> just not
+> an approach you can take. It looks like asynchronously canceling the
+> scheduled work
+> would result in a race, so I would for now just revert.
 
-I didn't check it closely but it would seem that the ep is beind held
-forever. If I simply retry after a few seconds, it's still there (now the 1st
-test fails):
+Right, so this needs to be pushed into a workqueue instead, I suppose.
 
-[root@vm1 func_tests]# make v4test
-./test_assoc_abort
-test_assoc_abort.c  1 BROK : bind: Address already in use
-DUMP_CORE ../../src/testlib/sctputil.h: 145
-/bin/sh: line 1:  3751 Segmentation fault      (core dumped) ./$a
-test_assoc_abort fails
+> What issue exactly is this trying to fix or improve?
 
-1.https://github.com/sctp/lksctp-tools
+The problem is aborting long-running synchronous operations. i.e.
+without this patchset, USB enumeration will hang for 10s if a USB
+bluetooth device disappears during firmware loading. This is because
+even though the USB device is gone and all URB submissions fail, the
+operation will only be aborted after the internal timeout happens.
 
-  Marcelo
+The device in turn disappears because an rfkill switch is blocked and
+the platform removes it from the bus. Overall, this can lead to
+graphical login to hang as fprintd cannot initialise as it hangs in USB
+enumeration.
+
+Benjamin
+
+--=-83lGBtdr6vrReHv5wmRv
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEED2NO4vMS33W8E4AFq6ZWhpmFY3AFAmGx+rcACgkQq6ZWhpmF
+Y3CJqw/+ONFnidIqlEKcCVDa9JZe01o4i/3PKsHyINaj/XljOCQr1869ewL084xw
+GYdljx03tA+05TDlwnMwaZOE8ozxAB8JInuAhg72BGcmM5HuaB0wMxej0Eyl1yRU
+Es2TLCvJhjRbOtoYnbQ/sMpmuhnAh9ditH7az1UR+dBIWD4/3y7A6wqzqEE1GbJw
+M29xhWuFP6WLn4InqY0PvhAnEiSxE5sWtGfl6gvm9RBtoSpdreFVu5DgYSHSodF6
+FFqg1HorMZP4gBalSe4EOYZiS21pN6aNih7o09TPGmRFfVIEUDbPjODR5z8zsYQx
+wLRHGSaG2O9oeMEJe0YufJyxSC1cZVMi/AzF3RNpX4N89Y4oCfA+TPx3SWqHGYyc
+aaiJkcxudD9Uu7y3EMC3P0J290tLQJkKHeyGrHHwtLPvvc7gS2CidCvAwM+m5qwX
+LTVXlnUX23xt/1ReFVlRBjq09kdxKNUDU4qkt7I0my1BXooCmR7qew1NqHW6c3ex
+lJdVX9y91RivhMVp8udORuT1V0C7K0Mrkr03xJy0q4LTAu94FkqPCjz8O+dRURMX
+jwj3uQ30jP28dwUq5QysHXN+lOrd+Fa2ksmCAIRU2WKBtNKDCXX1uyDjBZMwunvD
+IBrI3O953a1bwgHr+EaBGTgoibSP3f0vmA4P/QLp4/QtX8me5Uk=
+=xPCC
+-----END PGP SIGNATURE-----
+
+--=-83lGBtdr6vrReHv5wmRv--
+
