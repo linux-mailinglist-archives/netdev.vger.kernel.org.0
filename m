@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 57F9746F12D
-	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 18:11:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 40B5B46F130
+	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 18:11:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242538AbhLIRNg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Dec 2021 12:13:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45238 "EHLO
+        id S242669AbhLIRNo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Dec 2021 12:13:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242575AbhLIRN2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 12:13:28 -0500
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A220C0617A2;
-        Thu,  9 Dec 2021 09:09:55 -0800 (PST)
-Received: by mail-pg1-x541.google.com with SMTP id j11so5649573pgs.2;
-        Thu, 09 Dec 2021 09:09:55 -0800 (PST)
+        with ESMTP id S242596AbhLIRNb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 12:13:31 -0500
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D38C9C061A72;
+        Thu,  9 Dec 2021 09:09:57 -0800 (PST)
+Received: by mail-pj1-x1043.google.com with SMTP id f18-20020a17090aa79200b001ad9cb23022so5347445pjq.4;
+        Thu, 09 Dec 2021 09:09:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=GvJznNDAgo3CuiHz7/K7B75kA+ahi1yXh3hHCEA8oGk=;
-        b=HVHQD3Tb6SqPAHRTF9X2RQVura0Cgw/GUqxl0gcnbXawt2drQqX0W2Arq3H3gxZyMd
-         MDOM7MrtDoxEYHUVTC6JPJtd3Ta5E6Dy5K51Vsj5OsZjJ3tE7a5FRw0h7QdGA2af6E/l
-         XCLtiof5SAJNcUsjj4YLFGfLE6hAexGU6spMyqlh8TDo1pxu0uKt8oHbYssIVIJJOWxD
-         TMtsoCRkHse7Ds29RifDIVFMHf8J+PDDRRLj3r9ji36HaL4X9fi24TuY/3rRLmT1tWDq
-         SG01kCbO1/P/2pzk0AWF4TW4hLqt92xgAQNvP7+TuGs8XLzXwH3dxvW/bLmONckfNIiv
-         J9nw==
+        bh=aI1nGou3Nc0FoFgo0ANOkn7CZWEGUiq9qzL72YqOolY=;
+        b=V0c9APP6bMUDpR3j6gxvHoBh5UJEwAYx3H4Jftw4Mdo7VbfE1MaIww3dreN8ZmORks
+         oZU0kNnDrx0nZzCGWXl5FZvahiY6FD6n9mc5Te1pn0QslFMHuwmrYCRs1cq+KIsI7P1J
+         vOxGzx3KO0F/vozjcj+s7JD087a8cKJ6eqTeM+kFDZaiAidL3jFnVPAvioHoVvDeLe84
+         g1cwQlzsU2mrJjl9CRN+6eyYhmQdVKYNIEf8RMgiV81U37T2qNQnx+ospB6F61roFTzN
+         Unc18H70YlT34s5rONsnZOmNsgTP6+t6MqqiC4iSDyS14oU8PgM7MaXq4At2jgdt1x8V
+         ZWXQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=GvJznNDAgo3CuiHz7/K7B75kA+ahi1yXh3hHCEA8oGk=;
-        b=EDx8f8bLJN6nf1VASRBVpB+HQbeJ4hK3AlybyPpTfyPnA1O6qcK94iNKNz/8YzaXlW
-         Et7kARhdAbueyfiogvXrbAR1e+7D69KzKGAMBvn/AWAT5vE5nA64y7s9JDQNpbdChmuc
-         HvO1FT29UXI9GPhBQ2UzcszQoqPe3wy3RhUJ3R/WT4qt1snwt6kVUC5s0cV6CwtKGeUG
-         2MSnvt6Y6UjFrI/qV/yJnUDr6m7nmdg5OATm9U7mlh0JvBjf4kXmvQERd9ZLwc4VD+ys
-         PJ5E8Vi+H3UQpKWh521a3faS0aiYNiNkv/MD2tRVhXAkNzzLaOaoHx/bsG+Uruwj9EHE
-         8M9Q==
-X-Gm-Message-State: AOAM531ELLUTANViCblsmXX8h+vxnt0qhi/i72xTk4uA0urPO0RQpJ/S
-        uYN0v+cPlHUSfdS5nzkMycPsDfhhNm0=
-X-Google-Smtp-Source: ABdhPJxzf3UfyCtpmuDB8Ug9gOQq6eWDWBe1UCS/OaKTuEeCA0+QPLaw2f2fx2S0w9TgBo2ZRstt9w==
-X-Received: by 2002:a63:ff26:: with SMTP id k38mr34591633pgi.157.1639069794104;
-        Thu, 09 Dec 2021 09:09:54 -0800 (PST)
+        bh=aI1nGou3Nc0FoFgo0ANOkn7CZWEGUiq9qzL72YqOolY=;
+        b=MjcucLlQprDRhgjBrct1QlxBaPgZPsCViUlkKrvOpP2nAb2FBwQ/Pm3jG9OuZmILMO
+         CWPnx40gnbEDkHoig0fMS/7cZXPu3c+9X4m/XndCw/42LHh/Xo7kRdIL9hq68VCzBoCt
+         /VqdaoaYWC+O++vvqw6vZSSDUesqJkeJMpmSvKHZ7b0LzZ8FlLoOxHpKfsrQqi/r92yj
+         JIjnbJxKJ3Dbu0cyyo6At7989HYSwVPqfzjyCDEUL1IkPeenQkqXhxAKCOcjVwr2soon
+         mtGxs7yXYU4JJBJ6D1fw01jbBBfXpHSJIxTrf1Lu3P1XFtJ5Iluwjif89w7ZtoerUbjf
+         eyJg==
+X-Gm-Message-State: AOAM531UsfG+R37cmebtT9p7QeCiIoKxBx7xcEffRxgdXMuUuGjVUa+P
+        FxmwHprJr3vhUBzQQmAcBhDNrnvB1Es=
+X-Google-Smtp-Source: ABdhPJz4naH3vRAXK1UivP93k1jNz3BUABvSpC9fCwRlMpJM/9JE8zOgie3iHk/L5xqT31QMYPnSoQ==
+X-Received: by 2002:a17:90a:d48f:: with SMTP id s15mr17143580pju.64.1639069797123;
+        Thu, 09 Dec 2021 09:09:57 -0800 (PST)
 Received: from localhost ([2405:201:6014:d064:3d4e:6265:800c:dc84])
-        by smtp.gmail.com with ESMTPSA id i10sm262721pjd.3.2021.12.09.09.09.53
+        by smtp.gmail.com with ESMTPSA id j38sm183694pgb.84.2021.12.09.09.09.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Dec 2021 09:09:53 -0800 (PST)
+        Thu, 09 Dec 2021 09:09:56 -0800 (PST)
 From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
 To:     bpf@vger.kernel.org
 Cc:     Alexei Starovoitov <ast@kernel.org>,
@@ -60,717 +60,373 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         Jesper Dangaard Brouer <brouer@redhat.com>,
         =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         netdev@vger.kernel.org, netfilter-devel@vger.kernel.org
-Subject: [PATCH bpf-next v2 7/9] net/netfilter: Add unstable CT lookup helpers for XDP and TC-BPF
-Date:   Thu,  9 Dec 2021 22:39:27 +0530
-Message-Id: <20211209170929.3485242-8-memxor@gmail.com>
+Subject: [PATCH bpf-next v2 8/9] selftests/bpf: Extend kfunc selftests
+Date:   Thu,  9 Dec 2021 22:39:28 +0530
+Message-Id: <20211209170929.3485242-9-memxor@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20211209170929.3485242-1-memxor@gmail.com>
 References: <20211209170929.3485242-1-memxor@gmail.com>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=22298; h=from:subject; bh=o76RpCV9bRz8OhF6ZrHxAn5RDoQ+6bdBYT9JV9rTZYY=; b=owEBbQKS/ZANAwAIAUzgyIZIvxHKAcsmYgBhsjgHSmvJ7q06/jQyxBdH2uMfWPmiNnYSkrZQ8tzi h9uf4W6JAjMEAAEIAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYbI4BwAKCRBM4MiGSL8RykjZD/ 9/lgsAPrFjVqP3dVxUBSdnq2OXPcSm+Gz2zv/G4auvGe7B8XtLbTJ6LqvADo717W/x0jYJC2vHOG/V AlYnx4I1nb/S08/xS3nZiWtOMqRNNcERm6o6S8zdx4JfbGnUfYqUJmqUlUGSA6RvyGjyJSRwdpdtmd aE+gR/4Q5yuqcbb1gBu6besud98jZFTT3GFXEcaU5um4Y4FKFXOCg4xuwvvNN8vXRmMsd6VK/9o1h3 zurdLC/tQY1dvUDMQjirgSGpYkSRVwsss7+q6xxpMKT9gHWMmg1mxJaUKixwBPm1dQrwdJPYWsmttW apc6ZMKQHCWt0mgNWfmv8w2dn4fmwx4a0SboX62f5quCCDsw0g4UtTlQYZdABEVHfZ6LbZGSrmxElI OgS8G3lV9cT5mfBvKYvs2k7lBBCsYm4MyMFkvFF3ZCxJY5YLmi2ypwPky49Jp43PZpqt8978HHLfqo zEcfvVBhQ7vIexN8WmOgvMgL+C9G8fB4jFiJonAjy5LL9RUt7obr3J02KbElKO/+1KrzOWx8UBd6gJ fBa6IgBpCxkzfGDUMOY0BtUfTcTdc8DBAkILGjdPWxH1huUXE2GOCgSVSWLQt7Kv8GWYWkh/nEn3a8 FmmKh5wKprX6mL4K8vA38YbLfDjomNIVKF/VjKfwD2OPmEo2EWJwU7pwFl3w==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=12528; h=from:subject; bh=55KFim4ne0RHMM1nfAOqStqfVDWbySP87cnaUnDiO6k=; b=owEBbQKS/ZANAwAIAUzgyIZIvxHKAcsmYgBhsjgI93QMIBa/AUbCL9cdPn+fNjlUKo/O5oRU65mC 1RhxVNOJAjMEAAEIAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYbI4CAAKCRBM4MiGSL8RymZzEA CsnLPg4UhmYYAtDKqpye3Hc+rWq4CtiCCZjxsXGUmhwUM8NMv68vUC0D3cBcGrABWPHzfLY35noj6M yisOjXLWdnZhtabuyMSgNjC+cTaZoiGliJ+DUG3CNBPCYkiR3CsPmmKNOb+DgR84QwIXGNBVxUc0Fm 7f4ezCRFJ4Fd+utfrRQHE/V7pu5T7L6N91nP3O26jzNYTzDa4uvYR3aYu0mkPxhGBx7F2UaFDqzgLF K47LWMtsyCwZWlENrpvjq7hYfBdVAMEre6ENjjedIQ+xZKd4PDhIctS0bzh+BWB87HtSGPCxDyVrk9 3cxVTM8DhkHajp6RUcYjzFIvxCb07Au/Gm+eemlW2U8k0ZILUzanz9mUYl2S6IsI4J+tf8jxafpK/h gz419WlOm+pJLah4O5RRPkHGUAY/UaL29eJAJdit/B+o9kR9GoQT7Iwc4NudnAFYciNoWoDdC7vefp 8ikWfSgAU8Lyy/JkhTcCT3KDZuN2eTzKebje3GbplwL21DTmm0xyMh4UFO8nJKJy9yqKcMla2xT0wc qcE/TEfIo0+Qejki1eeFFDbMxMMf8k5MrQaiytkrjFR4nmnKptl14w7kSgG/nHtvX2/EC5EzIC+7wQ Nn0k+lA1LjC99ZT3PuyGPn2fOn6taT6UVPQ+s2jl7l+GYcW+xYKLD4pMx5Bw==
 X-Developer-Key: i=memxor@gmail.com; a=openpgp; fpr=4BBE2A7E06ECF9D5823C61114CE0C88648BF11CA
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This change adds conntrack lookup helpers using the unstable kfunc call
-interface for the XDP and TC-BPF hooks. The primary usecase is
-implementing a synproxy in XDP, see Maxim's patchset at [0].
+Use the prog_test kfuncs to test the referenced PTR_TO_BTF_ID kfunc
+support, and PTR_TO_CTX, PTR_TO_MEM argument passing support. Also
+testing the various failure cases.
 
-Also add acquire/release functions (randomly returning NULL), and also
-exercise the PTR_TO_BTF_ID_OR_NULL path so that BPF program caller has
-to check for NULL before dereferencing the pointer, for the TC hook.
-Introduce kfunc that take various argument types (for PTR_TO_MEM) that
-will pass and fail the verifier checks. These will be used in selftests.
-
-Export get_net_ns_by_id as nf_conntrack needs to call it.
-
-Note that we search for acquire, release, and null returning kfuncs in
-the intersection of those sets and main set.
-
-This implies that the kfunc_btf_id_list acq_set, rel_set, null_set may
-contain BTF ID not in main set, this is explicitly allowed and
-recommended (to save on definining more and more sets), since
-check_kfunc_call verifier operation would filter out the invalid BTF ID
-fairly early, so later checks for acquire, release, and ret_type_null
-kfunc will only consider allowed BTF IDs for that program that are
-allowed in main set. This is why the nf_conntrack_acq_ids set has BTF
-IDs for both xdp and tc hook kfuncs.
-
-  [0]: https://lore.kernel.org/bpf/20211019144655.3483197-1-maximmi@nvidia.com
+The failure selftests will test the following cases for kfunc:
+kfunc_call_test_fail1 - Argument struct type has non-scalar member
+kfunc_call_test_fail2 - Nesting depth of type > 8
+kfunc_call_test_fail3 - Struct type has trailing zero-sized FAM
+kfunc_call_test_fail4 - Trying to pass reg->type != PTR_TO_CTX when
+			argument struct type is a ctx type
+kfunc_call_test_fail5 - void * not part of mem, len pair
+kfunc_call_test_fail6 - u64 * not part of mem, len pair
+kfunc_call_test_fail7 - mark_btf_ld_reg copies ref_obj_id
+kfunc_call_test_fail8 - Same type btf_struct_walk reference copy handled
+			correctly during release (i.e. only parent
+			object can be released)
 
 Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 ---
- include/linux/bpf.h               |  21 +++
- include/linux/btf.h               |  30 +++-
- kernel/bpf/btf.c                  |  19 +++
- net/bpf/test_run.c                | 147 +++++++++++++++++
- net/core/filter.c                 |  27 ++++
- net/core/net_namespace.c          |   1 +
- net/netfilter/nf_conntrack_core.c | 252 ++++++++++++++++++++++++++++++
- 7 files changed, 496 insertions(+), 1 deletion(-)
+ .../selftests/bpf/prog_tests/kfunc_call.c     | 28 ++++++++++
+ .../selftests/bpf/progs/kfunc_call_test.c     | 52 ++++++++++++++++++-
+ .../bpf/progs/kfunc_call_test_fail1.c         | 16 ++++++
+ .../bpf/progs/kfunc_call_test_fail2.c         | 16 ++++++
+ .../bpf/progs/kfunc_call_test_fail3.c         | 16 ++++++
+ .../bpf/progs/kfunc_call_test_fail4.c         | 16 ++++++
+ .../bpf/progs/kfunc_call_test_fail5.c         | 16 ++++++
+ .../bpf/progs/kfunc_call_test_fail6.c         | 16 ++++++
+ .../bpf/progs/kfunc_call_test_fail7.c         | 24 +++++++++
+ .../bpf/progs/kfunc_call_test_fail8.c         | 22 ++++++++
+ 10 files changed, 220 insertions(+), 2 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/progs/kfunc_call_test_fail1.c
+ create mode 100644 tools/testing/selftests/bpf/progs/kfunc_call_test_fail2.c
+ create mode 100644 tools/testing/selftests/bpf/progs/kfunc_call_test_fail3.c
+ create mode 100644 tools/testing/selftests/bpf/progs/kfunc_call_test_fail4.c
+ create mode 100644 tools/testing/selftests/bpf/progs/kfunc_call_test_fail5.c
+ create mode 100644 tools/testing/selftests/bpf/progs/kfunc_call_test_fail6.c
+ create mode 100644 tools/testing/selftests/bpf/progs/kfunc_call_test_fail7.c
+ create mode 100644 tools/testing/selftests/bpf/progs/kfunc_call_test_fail8.c
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index 6a14072c72a0..7b370ed06b1d 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -1675,6 +1675,9 @@ int bpf_prog_test_run_sk_lookup(struct bpf_prog *prog,
- 				const union bpf_attr *kattr,
- 				union bpf_attr __user *uattr);
- bool bpf_prog_test_check_kfunc_call(u32 kfunc_id, struct module *owner);
-+bool bpf_prog_test_is_acquire_kfunc(u32 kfunc_id, struct module *owner);
-+bool bpf_prog_test_is_release_kfunc(u32 kfunc_id, struct module *owner);
-+bool bpf_prog_test_is_kfunc_ret_type_null(u32 kfunc_id, struct module *owner);
- bool btf_ctx_access(int off, int size, enum bpf_access_type type,
- 		    const struct bpf_prog *prog,
- 		    struct bpf_insn_access_aux *info);
-@@ -1933,6 +1936,24 @@ static inline bool bpf_prog_test_check_kfunc_call(u32 kfunc_id,
- 	return false;
- }
+diff --git a/tools/testing/selftests/bpf/prog_tests/kfunc_call.c b/tools/testing/selftests/bpf/prog_tests/kfunc_call.c
+index 7d7445ccc141..b6630b9427d0 100644
+--- a/tools/testing/selftests/bpf/prog_tests/kfunc_call.c
++++ b/tools/testing/selftests/bpf/prog_tests/kfunc_call.c
+@@ -5,11 +5,33 @@
+ #include "kfunc_call_test.lskel.h"
+ #include "kfunc_call_test_subprog.skel.h"
+ #include "kfunc_call_test_subprog.lskel.h"
++#include "kfunc_call_test_fail1.skel.h"
++#include "kfunc_call_test_fail2.skel.h"
++#include "kfunc_call_test_fail3.skel.h"
++#include "kfunc_call_test_fail4.skel.h"
++#include "kfunc_call_test_fail5.skel.h"
++#include "kfunc_call_test_fail6.skel.h"
++#include "kfunc_call_test_fail7.skel.h"
++#include "kfunc_call_test_fail8.skel.h"
  
-+static inline bool bpf_prog_test_is_acquire_kfunc(u32 kfunc_id,
-+						  struct module *owner)
-+{
-+	return false;
-+}
-+
-+static inline bool bpf_prog_test_is_release_kfunc(u32 kfunc_id,
-+						  struct module *owner)
-+{
-+	return false;
-+}
-+
-+static inline bool bpf_prog_test_is_kfunc_ret_type_null(u32 kfunc_id,
-+							struct module *owner)
-+{
-+	return false;
-+}
-+
- static inline void bpf_map_put(struct bpf_map *map)
+ static void test_main(void)
  {
+ 	struct kfunc_call_test_lskel *skel;
+ 	int prog_fd, retval, err;
++	void *fskel;
++
++#define FAIL(nr)                                                               \
++	({                                                                     \
++		fskel = kfunc_call_test_fail##nr##__open_and_load();           \
++		if (!ASSERT_EQ(fskel, NULL,                                    \
++			       "kfunc_call_test_fail" #nr                      \
++			       "__open_and_load")) {                           \
++			kfunc_call_test_fail##nr##__destroy(fskel);            \
++			return;                                                \
++		}                                                              \
++	})
++
++	FAIL(1); FAIL(2); FAIL(3); FAIL(4); FAIL(5); FAIL(6); FAIL(7); FAIL(8);
+ 
+ 	skel = kfunc_call_test_lskel__open_and_load();
+ 	if (!ASSERT_OK_PTR(skel, "skel"))
+@@ -27,6 +49,12 @@ static void test_main(void)
+ 	ASSERT_OK(err, "bpf_prog_test_run(test2)");
+ 	ASSERT_EQ(retval, 3, "test2-retval");
+ 
++	prog_fd = skel->progs.kfunc_call_test_ref_btf_id.prog_fd;
++	err = bpf_prog_test_run(prog_fd, 1, &pkt_v4, sizeof(pkt_v4),
++				NULL, NULL, (__u32 *)&retval, NULL);
++	ASSERT_OK(err, "bpf_prog_test_run(test_ref_btf_id)");
++	ASSERT_EQ(retval, 0, "test_ref_btf_id-retval");
++
+ 	kfunc_call_test_lskel__destroy(skel);
  }
-diff --git a/include/linux/btf.h b/include/linux/btf.h
-index ec9e69c14480..8362a39fe522 100644
---- a/include/linux/btf.h
-+++ b/include/linux/btf.h
-@@ -321,7 +321,10 @@ static inline const char *btf_name_by_offset(const struct btf *btf,
- #endif
  
- enum kfunc_btf_id_set_types {
--	BTF_SET_CHECK,
-+	BTF_SET_CHECK,    /* Allowed kfunc set */
-+	BTF_SET_ACQUIRE,  /* Acquire kfunc set */
-+	BTF_SET_RELEASE,  /* Release kfunc set */
-+	BTF_SET_RET_NULL, /* kfunc with 'return type PTR_TO_BTF_ID_OR_NULL' set */
- 	__BTF_SET_MAX,
- };
+diff --git a/tools/testing/selftests/bpf/progs/kfunc_call_test.c b/tools/testing/selftests/bpf/progs/kfunc_call_test.c
+index 8a8cf59017aa..5aecbb9fdc68 100644
+--- a/tools/testing/selftests/bpf/progs/kfunc_call_test.c
++++ b/tools/testing/selftests/bpf/progs/kfunc_call_test.c
+@@ -1,13 +1,20 @@
+ // SPDX-License-Identifier: GPL-2.0
+ /* Copyright (c) 2021 Facebook */
+-#include <linux/bpf.h>
++#include <vmlinux.h>
+ #include <bpf/bpf_helpers.h>
+-#include "bpf_tcp_helpers.h"
  
-@@ -331,6 +334,9 @@ struct kfunc_btf_id_set {
- 		struct btf_id_set *sets[__BTF_SET_MAX];
- 		struct {
- 			struct btf_id_set *set;
-+			struct btf_id_set *acq_set;
-+			struct btf_id_set *rel_set;
-+			struct btf_id_set *null_set;
- 		};
- 	};
- 	struct module *owner;
-@@ -345,6 +351,12 @@ void unregister_kfunc_btf_id_set(struct kfunc_btf_id_list *l,
- 				 struct kfunc_btf_id_set *s);
- bool bpf_check_mod_kfunc_call(struct kfunc_btf_id_list *klist, u32 kfunc_id,
- 			      struct module *owner);
-+bool bpf_is_mod_acquire_kfunc(struct kfunc_btf_id_list *klist, u32 kfunc_id,
-+			      struct module *owner);
-+bool bpf_is_mod_release_kfunc(struct kfunc_btf_id_list *klist, u32 kfunc_id,
-+			      struct module *owner);
-+bool bpf_is_mod_kfunc_ret_type_null(struct kfunc_btf_id_list *klist,
-+				    u32 kfunc_id, struct module *owner);
- #else
- static inline void register_kfunc_btf_id_set(struct kfunc_btf_id_list *l,
- 					     struct kfunc_btf_id_set *s)
-@@ -359,9 +371,25 @@ bool bpf_check_mod_kfunc_call(struct kfunc_btf_id_list *klist, u32 kfunc_id,
+ extern int bpf_kfunc_call_test2(struct sock *sk, __u32 a, __u32 b) __ksym;
+ extern __u64 bpf_kfunc_call_test1(struct sock *sk, __u32 a, __u64 b,
+ 				  __u32 c, __u64 d) __ksym;
+ 
++extern struct prog_test_ref_kfunc *bpf_kfunc_call_test_acquire(unsigned long *sp) __ksym;
++extern void bpf_kfunc_call_test_release(struct prog_test_ref_kfunc *p) __ksym;
++extern void bpf_kfunc_call_test_pass_ctx(struct __sk_buff *skb) __ksym;
++extern void bpf_kfunc_call_test_pass1(struct prog_test_pass1 *p) __ksym;
++extern void bpf_kfunc_call_test_pass2(struct prog_test_pass2 *p) __ksym;
++extern void bpf_kfunc_call_test_mem_len_pass1(void *mem, int len) __ksym;
++extern void bpf_kfunc_call_test_mem_len_fail2(__u64 *mem, int len) __ksym;
++
+ SEC("tc")
+ int kfunc_call_test2(struct __sk_buff *skb)
  {
- 	return false;
- }
-+bool bpf_is_mod_acquire_kfunc(struct kfunc_btf_id_list *klist, u32 kfunc_id,
-+			      struct module *owner)
-+{
-+	return false;
-+}
-+bool bpf_is_mod_release_kfunc(struct kfunc_btf_id_list *klist, u32 kfunc_id,
-+			      struct module *owner)
-+{
-+	return false;
-+}
-+bool bpf_is_mod_kfunc_ret_type_null(struct kfunc_btf_id_list *klist,
-+				    u32 kfunc_id, struct module *owner)
-+{
-+	return false;
-+}
- #endif
- 
- extern struct kfunc_btf_id_list bpf_tcp_ca_kfunc_list;
- extern struct kfunc_btf_id_list prog_test_kfunc_list;
-+extern struct kfunc_btf_id_list xdp_kfunc_list;
- 
- #endif
-diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-index a790ba6d93d8..4b955f47b800 100644
---- a/kernel/bpf/btf.c
-+++ b/kernel/bpf/btf.c
-@@ -6539,6 +6539,24 @@ bool bpf_check_mod_kfunc_call(struct kfunc_btf_id_list *klist, u32 kfunc_id,
- 	return kfunc_btf_id_set_contains(klist, kfunc_id, owner, BTF_SET_CHECK);
+@@ -44,4 +51,45 @@ int kfunc_call_test1(struct __sk_buff *skb)
+ 	return ret;
  }
  
-+bool bpf_is_mod_acquire_kfunc(struct kfunc_btf_id_list *klist, u32 kfunc_id,
-+			      struct module *owner)
++SEC("tc")
++int kfunc_call_test_ref_btf_id(struct __sk_buff *skb)
 +{
-+	return kfunc_btf_id_set_contains(klist, kfunc_id, owner, BTF_SET_ACQUIRE);
-+}
++	struct prog_test_ref_kfunc *pt;
++	unsigned long s = 0;
++	int ret = 0;
 +
-+bool bpf_is_mod_release_kfunc(struct kfunc_btf_id_list *klist, u32 kfunc_id,
-+			      struct module *owner)
-+{
-+	return kfunc_btf_id_set_contains(klist, kfunc_id, owner, BTF_SET_RELEASE);
-+}
-+
-+bool bpf_is_mod_kfunc_ret_type_null(struct kfunc_btf_id_list *klist,
-+				    u32 kfunc_id, struct module *owner)
-+{
-+	return kfunc_btf_id_set_contains(klist, kfunc_id, owner, BTF_SET_RET_NULL);
-+}
-+
- #endif
- 
- #define DEFINE_KFUNC_BTF_ID_LIST(name)                                         \
-@@ -6548,6 +6566,7 @@ bool bpf_check_mod_kfunc_call(struct kfunc_btf_id_list *klist, u32 kfunc_id,
- 
- DEFINE_KFUNC_BTF_ID_LIST(bpf_tcp_ca_kfunc_list);
- DEFINE_KFUNC_BTF_ID_LIST(prog_test_kfunc_list);
-+DEFINE_KFUNC_BTF_ID_LIST(xdp_kfunc_list);
- 
- int bpf_core_types_are_compat(const struct btf *local_btf, __u32 local_id,
- 			      const struct btf *targ_btf, __u32 targ_id)
-diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-index 46dd95755967..779377f4af25 100644
---- a/net/bpf/test_run.c
-+++ b/net/bpf/test_run.c
-@@ -232,6 +232,117 @@ struct sock * noinline bpf_kfunc_call_test3(struct sock *sk)
- 	return sk;
- }
- 
-+struct prog_test_ref_kfunc {
-+	int a;
-+	int b;
-+	struct prog_test_ref_kfunc *next;
-+};
-+
-+static struct prog_test_ref_kfunc prog_test_struct = {
-+	.a = 42,
-+	.b = 108,
-+	.next = &prog_test_struct,
-+};
-+
-+noinline struct prog_test_ref_kfunc *
-+bpf_kfunc_call_test_acquire(unsigned long *scalar_ptr)
-+{
-+	/* randomly return NULL */
-+	if (get_jiffies_64() % 2)
-+		return NULL;
-+	return &prog_test_struct;
-+}
-+
-+noinline void bpf_kfunc_call_test_release(struct prog_test_ref_kfunc *p)
-+{
-+}
-+
-+struct prog_test_pass1 {
-+	int x0;
-+	struct {
-+		int x1;
-+		struct {
-+			int x2;
-+			struct {
-+				int x3;
-+				struct {
-+					int x4;
-+					struct {
-+						int x5;
-+						struct {
-+							int x6;
-+							struct {
-+								int x7;
-+							};
-+						};
-+					};
-+				};
-+			};
-+		};
-+	};
-+};
-+
-+struct prog_test_pass2 {
-+	int len;
-+	short arr1[4];
-+	struct {
-+		char arr2[4];
-+		unsigned long arr3[8];
-+	} x;
-+};
-+
-+struct prog_test_fail1 {
-+	void *p;
-+	int x;
-+};
-+
-+struct prog_test_fail2 {
-+	int x8;
-+	struct prog_test_pass1 x;
-+};
-+
-+struct prog_test_fail3 {
-+	int len;
-+	char arr1[2];
-+	char arr2[0];
-+};
-+
-+noinline void bpf_kfunc_call_test_pass_ctx(struct __sk_buff *skb)
-+{
-+}
-+
-+noinline void bpf_kfunc_call_test_pass1(struct prog_test_pass1 *p)
-+{
-+}
-+
-+noinline void bpf_kfunc_call_test_pass2(struct prog_test_pass2 *p)
-+{
-+}
-+
-+noinline void bpf_kfunc_call_test_fail1(struct prog_test_fail1 *p)
-+{
-+}
-+
-+noinline void bpf_kfunc_call_test_fail2(struct prog_test_fail2 *p)
-+{
-+}
-+
-+noinline void bpf_kfunc_call_test_fail3(struct prog_test_fail3 *p)
-+{
-+}
-+
-+noinline void bpf_kfunc_call_test_mem_len_pass1(void *mem, int len__mem)
-+{
-+}
-+
-+noinline void bpf_kfunc_call_test_mem_len_fail1(void *mem, int len)
-+{
-+}
-+
-+noinline void bpf_kfunc_call_test_mem_len_fail2(u64 *mem, int len)
-+{
-+}
-+
- __diag_pop();
- 
- ALLOW_ERROR_INJECTION(bpf_modify_return_test, ERRNO);
-@@ -240,8 +351,23 @@ BTF_SET_START(test_sk_kfunc_ids)
- BTF_ID(func, bpf_kfunc_call_test1)
- BTF_ID(func, bpf_kfunc_call_test2)
- BTF_ID(func, bpf_kfunc_call_test3)
-+BTF_ID(func, bpf_kfunc_call_test_acquire)
-+BTF_ID(func, bpf_kfunc_call_test_release)
-+BTF_ID(func, bpf_kfunc_call_test_pass_ctx)
-+BTF_ID(func, bpf_kfunc_call_test_pass1)
-+BTF_ID(func, bpf_kfunc_call_test_pass2)
-+BTF_ID(func, bpf_kfunc_call_test_fail1)
-+BTF_ID(func, bpf_kfunc_call_test_fail2)
-+BTF_ID(func, bpf_kfunc_call_test_fail3)
-+BTF_ID(func, bpf_kfunc_call_test_mem_len_pass1)
-+BTF_ID(func, bpf_kfunc_call_test_mem_len_fail1)
-+BTF_ID(func, bpf_kfunc_call_test_mem_len_fail2)
- BTF_SET_END(test_sk_kfunc_ids)
- 
-+BTF_ID_LIST(test_sk_acq_rel)
-+BTF_ID(func, bpf_kfunc_call_test_acquire)
-+BTF_ID(func, bpf_kfunc_call_test_release)
-+
- bool bpf_prog_test_check_kfunc_call(u32 kfunc_id, struct module *owner)
- {
- 	if (btf_id_set_contains(&test_sk_kfunc_ids, kfunc_id))
-@@ -249,6 +375,27 @@ bool bpf_prog_test_check_kfunc_call(u32 kfunc_id, struct module *owner)
- 	return bpf_check_mod_kfunc_call(&prog_test_kfunc_list, kfunc_id, owner);
- }
- 
-+bool bpf_prog_test_is_acquire_kfunc(u32 kfunc_id, struct module *owner)
-+{
-+	if (kfunc_id == test_sk_acq_rel[0])
-+		return true;
-+	return bpf_is_mod_acquire_kfunc(&prog_test_kfunc_list, kfunc_id, owner);
-+}
-+
-+bool bpf_prog_test_is_release_kfunc(u32 kfunc_id, struct module *owner)
-+{
-+	if (kfunc_id == test_sk_acq_rel[1])
-+		return true;
-+	return bpf_is_mod_release_kfunc(&prog_test_kfunc_list, kfunc_id, owner);
-+}
-+
-+bool bpf_prog_test_is_kfunc_ret_type_null(u32 kfunc_id, struct module *owner)
-+{
-+	if (kfunc_id == test_sk_acq_rel[0])
-+		return true;
-+	return bpf_is_mod_kfunc_ret_type_null(&prog_test_kfunc_list, kfunc_id, owner);
-+}
-+
- static void *bpf_test_init(const union bpf_attr *kattr, u32 size,
- 			   u32 headroom, u32 tailroom)
- {
-diff --git a/net/core/filter.c b/net/core/filter.c
-index fe27c91e3758..ad84ec6e0daa 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -10000,17 +10000,44 @@ const struct bpf_verifier_ops tc_cls_act_verifier_ops = {
- 	.gen_prologue		= tc_cls_act_prologue,
- 	.gen_ld_abs		= bpf_gen_ld_abs,
- 	.check_kfunc_call	= bpf_prog_test_check_kfunc_call,
-+	.is_acquire_kfunc	= bpf_prog_test_is_acquire_kfunc,
-+	.is_release_kfunc	= bpf_prog_test_is_release_kfunc,
-+	.is_kfunc_ret_type_null = bpf_prog_test_is_kfunc_ret_type_null,
- };
- 
- const struct bpf_prog_ops tc_cls_act_prog_ops = {
- 	.test_run		= bpf_prog_test_run_skb,
- };
- 
-+static bool xdp_check_kfunc_call(u32 kfunc_id, struct module *owner)
-+{
-+	return bpf_check_mod_kfunc_call(&xdp_kfunc_list, kfunc_id, owner);
-+}
-+
-+static bool xdp_is_acquire_kfunc(u32 kfunc_id, struct module *owner)
-+{
-+	return bpf_is_mod_acquire_kfunc(&xdp_kfunc_list, kfunc_id, owner);
-+}
-+
-+static bool xdp_is_release_kfunc(u32 kfunc_id, struct module *owner)
-+{
-+	return bpf_is_mod_release_kfunc(&xdp_kfunc_list, kfunc_id, owner);
-+}
-+
-+static bool xdp_is_kfunc_ret_type_null(u32 kfunc_id, struct module *owner)
-+{
-+	return bpf_is_mod_kfunc_ret_type_null(&xdp_kfunc_list, kfunc_id, owner);
-+}
-+
- const struct bpf_verifier_ops xdp_verifier_ops = {
- 	.get_func_proto		= xdp_func_proto,
- 	.is_valid_access	= xdp_is_valid_access,
- 	.convert_ctx_access	= xdp_convert_ctx_access,
- 	.gen_prologue		= bpf_noop_prologue,
-+	.check_kfunc_call	= xdp_check_kfunc_call,
-+	.is_acquire_kfunc	= xdp_is_acquire_kfunc,
-+	.is_release_kfunc	= xdp_is_release_kfunc,
-+	.is_kfunc_ret_type_null = xdp_is_kfunc_ret_type_null,
- };
- 
- const struct bpf_prog_ops xdp_prog_ops = {
-diff --git a/net/core/net_namespace.c b/net/core/net_namespace.c
-index 202fa5eacd0f..7b4bfe793002 100644
---- a/net/core/net_namespace.c
-+++ b/net/core/net_namespace.c
-@@ -299,6 +299,7 @@ struct net *get_net_ns_by_id(const struct net *net, int id)
- 
- 	return peer;
- }
-+EXPORT_SYMBOL_GPL(get_net_ns_by_id);
- 
- /*
-  * setup_net runs the initializers for the network namespace object.
-diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
-index 770a63103c7a..85042cb6f82e 100644
---- a/net/netfilter/nf_conntrack_core.c
-+++ b/net/netfilter/nf_conntrack_core.c
-@@ -11,6 +11,9 @@
- 
- #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
- 
-+#include <linux/bpf.h>
-+#include <linux/btf.h>
-+#include <linux/btf_ids.h>
- #include <linux/types.h>
- #include <linux/netfilter.h>
- #include <linux/module.h>
-@@ -2451,6 +2454,249 @@ static int kill_all(struct nf_conn *i, void *data)
- 	return net_eq(nf_ct_net(i), data);
- }
- 
-+/* Unstable Kernel Helpers for XDP and TC-BPF hook
-+ *
-+ * These are called from the XDP and SCHED_CLS BPF programs. Note that it is
-+ * allowed to break compatibility for these functions since the interface they
-+ * are exposed through to BPF programs is explicitly unstable.
-+ */
-+static struct nf_conn *__bpf_nf_ct_lookup(struct net *net,
-+					  struct bpf_sock_tuple *bpf_tuple,
-+					  u32 tuple_len, u8 protonum,
-+					  s32 netns_id)
-+{
-+	struct nf_conntrack_tuple_hash *hash;
-+	struct nf_conntrack_tuple tuple;
-+
-+	if (unlikely(protonum != IPPROTO_TCP && protonum != IPPROTO_UDP))
-+		return ERR_PTR(-EPROTO);
-+	if (unlikely(netns_id < BPF_F_CURRENT_NETNS))
-+		return ERR_PTR(-EINVAL);
-+
-+	memset(&tuple, 0, sizeof(tuple));
-+	switch (tuple_len) {
-+	case sizeof(bpf_tuple->ipv4):
-+		tuple.src.l3num = AF_INET;
-+		tuple.src.u3.ip = bpf_tuple->ipv4.saddr;
-+		tuple.src.u.tcp.port = bpf_tuple->ipv4.sport;
-+		tuple.dst.u3.ip = bpf_tuple->ipv4.daddr;
-+		tuple.dst.u.tcp.port = bpf_tuple->ipv4.dport;
-+		break;
-+	case sizeof(bpf_tuple->ipv6):
-+		tuple.src.l3num = AF_INET6;
-+		memcpy(tuple.src.u3.ip6, bpf_tuple->ipv6.saddr, sizeof(bpf_tuple->ipv6.saddr));
-+		tuple.src.u.tcp.port = bpf_tuple->ipv6.sport;
-+		memcpy(tuple.dst.u3.ip6, bpf_tuple->ipv6.daddr, sizeof(bpf_tuple->ipv6.daddr));
-+		tuple.dst.u.tcp.port = bpf_tuple->ipv6.dport;
-+		break;
-+	default:
-+		return ERR_PTR(-EAFNOSUPPORT);
++	pt = bpf_kfunc_call_test_acquire(&s);
++	if (pt) {
++		if (pt->a != 42 || pt->b != 108)
++			ret = -1;
++		bpf_kfunc_call_test_release(pt);
 +	}
-+
-+	tuple.dst.protonum = protonum;
-+
-+	if (netns_id >= 0) {
-+		net = get_net_ns_by_id(net, netns_id);
-+		if (unlikely(!net))
-+			return ERR_PTR(-ENONET);
-+	}
-+
-+	hash = nf_conntrack_find_get(net, &nf_ct_zone_dflt, &tuple);
-+	if (netns_id >= 0)
-+		put_net(net);
-+	if (!hash)
-+		return ERR_PTR(-ENOENT);
-+	return nf_ct_tuplehash_to_ctrack(hash);
++	return ret;
 +}
 +
-+/* bpf_ct_opts - Options for CT lookup helpers
-+ *
-+ * Members:
-+ * @error      - Out parameter, set for any errors encountered
-+ *		 Values:
-+ *		   -EINVAL - Passed NULL for bpf_tuple pointer
-+ *		   -EINVAL - opts->reserved is not 0
-+ *		   -EINVAL - netns_id is less than -1
-+ *		   -EINVAL - len__opts isn't NF_BPF_CT_OPTS_SZ (12)
-+ *		   -EPROTO - l4proto isn't one of IPPROTO_TCP or IPPROTO_UDP
-+ *		   -ENONET - No network namespace found for netns_id
-+ *		   -ENOENT - Conntrack lookup could not find entry for tuple
-+ *		   -EAFNOSUPPORT - len__tuple isn't one of sizeof(tuple->ipv4)
-+ *				   or sizeof(tuple->ipv6)
-+ * @l4proto    - Layer 4 protocol
-+ *		 Values:
-+ *		   IPPROTO_TCP, IPPROTO_UDP
-+ * @reserved   - Reserved member, will be reused for more options in future
-+ *		 Values:
-+ *		   0
-+ * @netns_id   - Specify the network namespace for lookup
-+ *		 Values:
-+ *		   BPF_F_CURRENT_NETNS (-1)
-+ *		     Use namespace associated with ctx (xdp_md, __sk_buff)
-+ *		   [0, S32_MAX]
-+ *		     Network Namespace ID
-+ */
-+struct bpf_ct_opts {
-+	s32 netns_id;
-+	s32 error;
-+	u8 l4proto;
-+	u8 reserved[3];
-+};
-+
-+enum {
-+	NF_BPF_CT_OPTS_SZ = 12,
-+};
-+
-+/* bpf_xdp_ct_lookup - Lookup CT entry for the given tuple, and acquire a
-+ *		       reference to it
-+ *
-+ * Parameters:
-+ * @xdp_ctx	- Pointer to ctx (xdp_md) in XDP program
-+ *		    Cannot be NULL
-+ * @bpf_tuple	- Pointer to memory representing the tuple to look up
-+ *		    Cannot be NULL
-+ * @len__tuple	- Length of the tuple structure
-+ *		    Must be one of sizeof(bpf_tuple->ipv4) or
-+ *		    sizeof(bpf_tuple->ipv6)
-+ * @opts	- Additional options for lookup (documented above)
-+ *		    Cannot be NULL
-+ * @len__opts	- Length of the bpf_ct_opts structure
-+ *		    Must be NF_BPF_CT_OPTS_SZ (12)
-+ */
-+struct nf_conn *bpf_xdp_ct_lookup(struct xdp_md *xdp_ctx,
-+				  struct bpf_sock_tuple *bpf_tuple,
-+				  u32 len__tuple, struct bpf_ct_opts *opts,
-+				  u32 len__opts)
++SEC("tc")
++int kfunc_call_test_pass(struct __sk_buff *skb)
 +{
-+	struct xdp_buff *ctx = (struct xdp_buff *)xdp_ctx;
-+	struct net *caller_net;
-+	struct nf_conn *nfct;
++	struct prog_test_pass1 p1 = {};
++	struct prog_test_pass2 p2 = {};
++	short a = 0;
++	__u64 b = 0;
++	long c = 0;
++	char d = 0;
++	int e = 0;
 +
-+	BUILD_BUG_ON(sizeof(struct bpf_ct_opts) != NF_BPF_CT_OPTS_SZ);
++	bpf_kfunc_call_test_pass_ctx(skb);
++	bpf_kfunc_call_test_pass1(&p1);
++	bpf_kfunc_call_test_pass2(&p2);
 +
-+	if (!opts)
-+		return NULL;
-+	if (!bpf_tuple || opts->reserved[0] || opts->reserved[1] ||
-+	    opts->reserved[2] || len__opts != NF_BPF_CT_OPTS_SZ) {
-+		opts->error = -EINVAL;
-+		return NULL;
-+	}
-+	caller_net = dev_net(ctx->rxq->dev);
-+	nfct = __bpf_nf_ct_lookup(caller_net, bpf_tuple, len__tuple, opts->l4proto,
-+				  opts->netns_id);
-+	if (IS_ERR(nfct)) {
-+		opts->error = PTR_ERR(nfct);
-+		return NULL;
-+	}
-+	return nfct;
++	bpf_kfunc_call_test_mem_len_pass1(&a, sizeof(a));
++	bpf_kfunc_call_test_mem_len_pass1(&b, sizeof(b));
++	bpf_kfunc_call_test_mem_len_pass1(&c, sizeof(c));
++	bpf_kfunc_call_test_mem_len_pass1(&d, sizeof(d));
++	bpf_kfunc_call_test_mem_len_pass1(&e, sizeof(e));
++	bpf_kfunc_call_test_mem_len_fail2(&b, -1);
++
++	return 0;
 +}
 +
-+/* bpf_skb_ct_lookup - Lookup CT entry for the given tuple, and acquire a
-+ *		       reference to it
-+ *
-+ * Parameters:
-+ * @skb_ctx	- Pointer to ctx (__sk_buff) in TC program
-+ *		    Cannot be NULL
-+ * @bpf_tuple	- Pointer to memory representing the tuple to look up
-+ *		    Cannot be NULL
-+ * @len__tuple	- Length of the tuple structure
-+ *		    Must be one of sizeof(bpf_tuple->ipv4) or
-+ *		    sizeof(bpf_tuple->ipv6)
-+ * @opts	- Additional options for lookup (documented above)
-+ *		    Cannot be NULL
-+ * @len__opts	- Length of the bpf_ct_opts structure
-+ *		    Must be NF_BPF_CT_OPTS_SZ (12)
-+ */
-+struct nf_conn *bpf_skb_ct_lookup(struct __sk_buff *skb_ctx,
-+				  struct bpf_sock_tuple *bpf_tuple,
-+				  u32 len__tuple, struct bpf_ct_opts *opts,
-+				  u32 len__opts)
+ char _license[] SEC("license") = "GPL";
+diff --git a/tools/testing/selftests/bpf/progs/kfunc_call_test_fail1.c b/tools/testing/selftests/bpf/progs/kfunc_call_test_fail1.c
+new file mode 100644
+index 000000000000..4088000dcfc0
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/kfunc_call_test_fail1.c
+@@ -0,0 +1,16 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <vmlinux.h>
++#include <bpf/bpf_helpers.h>
++
++extern void bpf_kfunc_call_test_fail1(struct prog_test_fail1 *p) __ksym;
++
++SEC("tc")
++int kfunc_call_test_fail1(struct __sk_buff *skb)
 +{
-+	struct sk_buff *skb = (struct sk_buff *)skb_ctx;
-+	struct net *caller_net;
-+	struct nf_conn *nfct;
++	struct prog_test_fail1 s = {};
 +
-+	BUILD_BUG_ON(sizeof(struct bpf_ct_opts) != NF_BPF_CT_OPTS_SZ);
-+
-+	if (!opts)
-+		return NULL;
-+	if (!bpf_tuple || opts->reserved[0] || opts->reserved[1] ||
-+	    opts->reserved[2] || len__opts != NF_BPF_CT_OPTS_SZ) {
-+		opts->error = -EINVAL;
-+		return NULL;
-+	}
-+	caller_net = skb->dev ? dev_net(skb->dev) : sock_net(skb->sk);
-+	nfct = __bpf_nf_ct_lookup(caller_net, bpf_tuple, len__tuple, opts->l4proto,
-+				  opts->netns_id);
-+	if (IS_ERR(nfct)) {
-+		opts->error = PTR_ERR(nfct);
-+		return NULL;
-+	}
-+	return nfct;
++	bpf_kfunc_call_test_fail1(&s);
++	return 0;
 +}
 +
-+/* bpf_ct_release - Release acquired nf_conn object
-+ *
-+ * This must be invoked for referenced PTR_TO_BTF_ID, and the verifier rejects
-+ * the program if any references remain in the program in all of the explored
-+ * states.
-+ *
-+ * Parameters:
-+ * @nf_conn	 - Pointer to referenced nf_conn object, obtained using
-+ *		   bpf_xdp_ct_lookup or bpf_skb_ct_lookup.
-+ */
-+void bpf_ct_release(struct nf_conn *nfct)
++char _license[] SEC("license") = "GPL";
+diff --git a/tools/testing/selftests/bpf/progs/kfunc_call_test_fail2.c b/tools/testing/selftests/bpf/progs/kfunc_call_test_fail2.c
+new file mode 100644
+index 000000000000..0c9779693576
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/kfunc_call_test_fail2.c
+@@ -0,0 +1,16 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <vmlinux.h>
++#include <bpf/bpf_helpers.h>
++
++extern void bpf_kfunc_call_test_fail2(struct prog_test_fail2 *p) __ksym;
++
++SEC("tc")
++int kfunc_call_test_fail2(struct __sk_buff *skb)
 +{
-+	if (!nfct)
-+		return;
-+	nf_ct_put(nfct);
++	struct prog_test_fail2 s = {};
++
++	bpf_kfunc_call_test_fail2(&s);
++	return 0;
 +}
 +
-+/* kfuncs that may return NULL PTR_TO_BTF_ID */
-+BTF_SET_START(nf_conntrack_null_ids)
-+BTF_ID(func, bpf_xdp_ct_lookup)
-+BTF_ID(func, bpf_skb_ct_lookup)
-+BTF_SET_END(nf_conntrack_null_ids)
++char _license[] SEC("license") = "GPL";
+diff --git a/tools/testing/selftests/bpf/progs/kfunc_call_test_fail3.c b/tools/testing/selftests/bpf/progs/kfunc_call_test_fail3.c
+new file mode 100644
+index 000000000000..4e5a7493cdf7
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/kfunc_call_test_fail3.c
+@@ -0,0 +1,16 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <vmlinux.h>
++#include <bpf/bpf_helpers.h>
 +
-+/* XDP hook allowed kfuncs */
-+BTF_SET_START(nf_conntrack_xdp_ids)
-+BTF_ID(func, bpf_xdp_ct_lookup)
-+BTF_ID(func, bpf_ct_release)
-+BTF_SET_END(nf_conntrack_xdp_ids)
++extern void bpf_kfunc_call_test_fail3(struct prog_test_fail3 *p) __ksym;
 +
-+/* TC-BPF hook allowed kfuncs */
-+BTF_SET_START(nf_conntrack_skb_ids)
-+BTF_ID(func, bpf_skb_ct_lookup)
-+BTF_ID(func, bpf_ct_release)
-+BTF_SET_END(nf_conntrack_skb_ids)
++SEC("tc")
++int kfunc_call_test_fail3(struct __sk_buff *skb)
++{
++	struct prog_test_fail3 s = {};
 +
-+/* XDP and TC-BPF hook acquire kfuncs */
-+BTF_SET_START(nf_conntrack_acq_ids)
-+BTF_ID(func, bpf_xdp_ct_lookup)
-+BTF_ID(func, bpf_skb_ct_lookup)
-+BTF_SET_END(nf_conntrack_acq_ids)
++	bpf_kfunc_call_test_fail3(&s);
++	return 0;
++}
 +
-+/* XDP and TC-BPF hook release kfuncs */
-+BTF_SET_START(nf_conntrack_rel_ids)
-+BTF_ID(func, bpf_ct_release)
-+BTF_SET_END(nf_conntrack_rel_ids)
++char _license[] SEC("license") = "GPL";
+diff --git a/tools/testing/selftests/bpf/progs/kfunc_call_test_fail4.c b/tools/testing/selftests/bpf/progs/kfunc_call_test_fail4.c
+new file mode 100644
+index 000000000000..01c3523c7c50
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/kfunc_call_test_fail4.c
+@@ -0,0 +1,16 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <vmlinux.h>
++#include <bpf/bpf_helpers.h>
 +
-+static struct kfunc_btf_id_set nf_ct_xdp_kfunc_set = {
-+	.owner                 = THIS_MODULE,
-+	.set                   = &nf_conntrack_xdp_ids,
-+	.acq_set	       = &nf_conntrack_acq_ids,
-+	.rel_set	       = &nf_conntrack_rel_ids,
-+	.null_set	       = &nf_conntrack_null_ids,
-+};
++extern void bpf_kfunc_call_test_pass_ctx(struct __sk_buff *skb) __ksym;
 +
-+static struct kfunc_btf_id_set nf_ct_skb_kfunc_set = {
-+	.owner                 = THIS_MODULE,
-+	.set                   = &nf_conntrack_skb_ids,
-+	.acq_set	       = &nf_conntrack_acq_ids,
-+	.rel_set	       = &nf_conntrack_rel_ids,
-+	.null_set	       = &nf_conntrack_null_ids,
-+};
++SEC("tc")
++int kfunc_call_test_fail4(struct __sk_buff *skb)
++{
++	struct __sk_buff local_skb = {};
 +
- void nf_conntrack_cleanup_start(void)
- {
- 	conntrack_gc_work.exiting = true;
-@@ -2459,6 +2705,9 @@ void nf_conntrack_cleanup_start(void)
- 
- void nf_conntrack_cleanup_end(void)
- {
-+	unregister_kfunc_btf_id_set(&xdp_kfunc_list, &nf_ct_xdp_kfunc_set);
-+	unregister_kfunc_btf_id_set(&prog_test_kfunc_list, &nf_ct_skb_kfunc_set);
++	bpf_kfunc_call_test_pass_ctx(&local_skb);
++	return 0;
++}
 +
- 	RCU_INIT_POINTER(nf_ct_hook, NULL);
- 	cancel_delayed_work_sync(&conntrack_gc_work.dwork);
- 	kvfree(nf_conntrack_hash);
-@@ -2745,6 +2994,9 @@ int nf_conntrack_init_start(void)
- 	conntrack_gc_work_init(&conntrack_gc_work);
- 	queue_delayed_work(system_power_efficient_wq, &conntrack_gc_work.dwork, HZ);
- 
-+	register_kfunc_btf_id_set(&prog_test_kfunc_list, &nf_ct_skb_kfunc_set);
-+	register_kfunc_btf_id_set(&xdp_kfunc_list, &nf_ct_xdp_kfunc_set);
++char _license[] SEC("license") = "GPL";
+diff --git a/tools/testing/selftests/bpf/progs/kfunc_call_test_fail5.c b/tools/testing/selftests/bpf/progs/kfunc_call_test_fail5.c
+new file mode 100644
+index 000000000000..e32f13709357
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/kfunc_call_test_fail5.c
+@@ -0,0 +1,16 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <vmlinux.h>
++#include <bpf/bpf_helpers.h>
 +
- 	return 0;
- 
- err_proto:
++extern void bpf_kfunc_call_test_mem_len_fail1(void *mem, int len) __ksym;
++
++SEC("tc")
++int kfunc_call_test_fail5(struct __sk_buff *skb)
++{
++	int a = 0;
++
++	bpf_kfunc_call_test_mem_len_fail1(&a, sizeof(a));
++	return 0;
++}
++
++char _license[] SEC("license") = "GPL";
+diff --git a/tools/testing/selftests/bpf/progs/kfunc_call_test_fail6.c b/tools/testing/selftests/bpf/progs/kfunc_call_test_fail6.c
+new file mode 100644
+index 000000000000..998626aaca35
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/kfunc_call_test_fail6.c
+@@ -0,0 +1,16 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <vmlinux.h>
++#include <bpf/bpf_helpers.h>
++
++extern void bpf_kfunc_call_test_mem_len_fail2(__u64 *mem, int len) __ksym;
++
++SEC("tc")
++int kfunc_call_test_fail6(struct __sk_buff *skb)
++{
++	int a = 0;
++
++	bpf_kfunc_call_test_mem_len_fail2((void *)&a, sizeof(a));
++	return 0;
++}
++
++char _license[] SEC("license") = "GPL";
+diff --git a/tools/testing/selftests/bpf/progs/kfunc_call_test_fail7.c b/tools/testing/selftests/bpf/progs/kfunc_call_test_fail7.c
+new file mode 100644
+index 000000000000..05d4914b0533
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/kfunc_call_test_fail7.c
+@@ -0,0 +1,24 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <vmlinux.h>
++#include <bpf/bpf_helpers.h>
++
++extern struct prog_test_ref_kfunc *bpf_kfunc_call_test_acquire(unsigned long *sp) __ksym;
++extern void bpf_kfunc_call_test_release(struct prog_test_ref_kfunc *p) __ksym;
++
++SEC("tc")
++int kfunc_call_test_fail7(struct __sk_buff *skb)
++{
++	struct prog_test_ref_kfunc *p, *p2;
++	unsigned long sp = 0;
++
++	p = bpf_kfunc_call_test_acquire(&sp);
++	if (p) {
++		p2 = p->next->next;
++		bpf_kfunc_call_test_release(p);
++		if (p2->a == 42)
++			return 1;
++	}
++	return 0;
++}
++
++char _license[] SEC("license") = "GPL";
+diff --git a/tools/testing/selftests/bpf/progs/kfunc_call_test_fail8.c b/tools/testing/selftests/bpf/progs/kfunc_call_test_fail8.c
+new file mode 100644
+index 000000000000..eac8637ce841
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/kfunc_call_test_fail8.c
+@@ -0,0 +1,22 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <vmlinux.h>
++#include <bpf/bpf_helpers.h>
++
++extern struct prog_test_ref_kfunc *bpf_kfunc_call_test_acquire(unsigned long *sp) __ksym;
++extern void bpf_kfunc_call_test_release(struct prog_test_ref_kfunc *p) __ksym;
++
++SEC("tc")
++int kfunc_call_test_fail8(struct __sk_buff *skb)
++{
++	struct prog_test_ref_kfunc *p, *p2;
++	unsigned long sp = 0;
++
++	p = bpf_kfunc_call_test_acquire(&sp);
++	if (p) {
++		p2 = p->next->next;
++		bpf_kfunc_call_test_release(p2);
++	}
++	return 0;
++}
++
++char _license[] SEC("license") = "GPL";
 -- 
 2.34.1
 
