@@ -2,100 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 24D8346F618
-	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 22:38:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DE2246F6BF
+	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 23:25:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232405AbhLIVmP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Dec 2021 16:42:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52496 "EHLO
+        id S233427AbhLIW2d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Dec 2021 17:28:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229505AbhLIVmO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 16:42:14 -0500
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21C92C061746
-        for <netdev@vger.kernel.org>; Thu,  9 Dec 2021 13:38:41 -0800 (PST)
-Received: by mail-pg1-x534.google.com with SMTP id 137so6283535pgg.3
-        for <netdev@vger.kernel.org>; Thu, 09 Dec 2021 13:38:41 -0800 (PST)
+        with ESMTP id S230479AbhLIW2c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 17:28:32 -0500
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FEDEC061746
+        for <netdev@vger.kernel.org>; Thu,  9 Dec 2021 14:24:58 -0800 (PST)
+Received: by mail-lf1-x12c.google.com with SMTP id bi37so14775329lfb.5
+        for <netdev@vger.kernel.org>; Thu, 09 Dec 2021 14:24:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=gJXuuMgNuNgrFBYfkqmzoCt0UhY3r4a3OTl83mloyJ8=;
-        b=ZyKDiHqqQ/E9wm8pKWHaiX84upTuEfH+Bb7spwjWbl0mWZXPPzUfRDHhf3VPk16rXx
-         B/ONx2qiMc3w2pqPOsl/x6WvqA6CJK7rcF8BaJ3ZatsdiiXj3RM5z0XnhcClIFdN4CsL
-         HvYHjIWyAkBlt8JTKpqQjdXkSUwogkg25eHyFs+KPityPftyUk9Tyq/vNL5YE4U8vTEB
-         A33pgUU2SKV8zE5MZZwD1+Iopvay8zd0TWmlN1B1w7UcfsU6VTtNJa3Fxnflys0O6pXE
-         ASobS/xgsigZllf+BsnSBXlDbh9BP3JDRtiKS4Y9bh+kaj6J5o5Lo8Leya1y/IdvXlp2
-         56Yg==
+        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version:organization
+         :content-transfer-encoding;
+        bh=8/lJUfE2Eb9wUoTdVhk9oEZvVo0vf8+dPRjd5cHmykw=;
+        b=lKQIwCFo7oIF5x5xQ5iHYZh8ysqPHvYGuCAFOrnvSILesk1VOgeE0wPOTI7LHNIMUq
+         UAgXkWTSg4KjIJj5XAxoNSLW99L2ML7hTDuRJsywKhYzxHKXbui6dnYP0NbAACGnDGqZ
+         2vGQkWmfR1HsLmP3lejWkceuPY38L1cbJtZ8c/jeMKQx1cy61h/Ol884nujgDu5o54eU
+         ZFfjpZ3kWuKQHUbqM1SQvAw3r/6PlCNtIpU8ZXWjUFcvrSAhKBqtCI5/Izcr1QKEcaBl
+         VvCypj8r/F7lv+o3QsLtnKmYAdTT3H5QaG0X0N3Gz0AFeU2y4kErQl0Cld8i2UF03BWU
+         1vNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=gJXuuMgNuNgrFBYfkqmzoCt0UhY3r4a3OTl83mloyJ8=;
-        b=WabmiFwKvDBoy0GYaY7jg028LYAvzh/2seupSe22tmklD0KJJIIh2AvTbAym6Eg5BT
-         jees8ftSIzZvq4urAYjUVm5LJnFWAiypifl1gj3PZzhZmJ6KIdNSy1T0hia0b6tzGTpd
-         OqD2ecTwtomaYwttY05d8TKjZs5opFxybKwzsFhhhUTBSjV83KtgaTH444EVrJxtiEvz
-         Ziq34hqyn9F+ZeqOoSOsfgTrtCho6wH4uOdTpOfERyQ7Cv15uOxWSYx/CGttJ2T6Y9kj
-         2oEjWpMYr11K4YTuM765pF62x4dStF3xpoGdNoDYuvERMFNoBAGDzkKANRgWfhoovBMm
-         jW8w==
-X-Gm-Message-State: AOAM531J9dyb3eMXF9Q6Zz7Twt97IHubXl4OWt3dIkr7M2RJ0QVl5fMy
-        ep2O/m39lYuoqhhyl3KIxjc=
-X-Google-Smtp-Source: ABdhPJzf1UZ1PFFIHMd0ArPym6fO9z+O8D8DlQsa13l7KBLJnsqMXfXOL3o9mD2OC0H+bkAk2cwnOw==
-X-Received: by 2002:a63:5a20:: with SMTP id o32mr35806636pgb.42.1639085920749;
-        Thu, 09 Dec 2021 13:38:40 -0800 (PST)
-Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id nn4sm572581pjb.38.2021.12.09.13.38.39
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :organization:content-transfer-encoding;
+        bh=8/lJUfE2Eb9wUoTdVhk9oEZvVo0vf8+dPRjd5cHmykw=;
+        b=JXDJVkw9IxLyp4QTkoM17eCLMmeNy6DRak5kSv1FoOEJx3r99GM1AV4nEDJ6duqEcg
+         1kT40GzQbzJ0pjuAPn6fd4k/7g4s9pM4oucK1PtvLzrH1zHpSvbNKimOhyz4wev4Aj3L
+         KKXFSBOgwT4xVrakhBgoP+iwo+DBDZpD9mcUbn9sCYBTuKE0l0LKRHPDy10f4ZHLekWe
+         bpg5kBzHz3FByb0HPwAE5L2jLt5UkVnMJQ94x+t9Rvz4t7eG62kIMic34WE8+YVwxhgw
+         RH4q8jRJ+rjYhUuShcsXDtibgmCYaRF1Vs3VOIK8h01p/w9PRh00AQVhFO+x+Q4h3Iy/
+         Cq4Q==
+X-Gm-Message-State: AOAM530yQzvfjcx+F+JsX93Ys9rPHtXY3b93+1IJG+ClCygt98XDGq5l
+        IPwaoEln9NTLDbZjvLLc4xQkgtYkNJHX+g==
+X-Google-Smtp-Source: ABdhPJyO+TRRz4/r2zgcCuSwbUv8z7r0wj0+J7ao7xiohGGNPAAVssje4Y9LRKcK2n931Ju7X/PUKA==
+X-Received: by 2002:a05:6512:2ef:: with SMTP id m15mr8839939lfq.268.1639088696853;
+        Thu, 09 Dec 2021 14:24:56 -0800 (PST)
+Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id v7sm121355ljd.31.2021.12.09.14.24.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Dec 2021 13:38:40 -0800 (PST)
-Date:   Thu, 9 Dec 2021 13:38:37 -0800
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     netdev@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCHv2 net-next 1/2] net_tstamp: add new flag
- HWTSTAMP_FLAG_BONDED_PHC_INDEX
-Message-ID: <20211209213837.GA21948@hoboy.vegasvil.org>
-References: <20211209102449.2000401-1-liuhangbin@gmail.com>
- <20211209102449.2000401-2-liuhangbin@gmail.com>
- <20211209213347.GE21819@hoboy.vegasvil.org>
+        Thu, 09 Dec 2021 14:24:56 -0800 (PST)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        olteanv@gmail.com, netdev@vger.kernel.org
+Subject: [PATCH net-next] net: dsa: mv88e6xxx: Add tx fwd offload PVT on intermediate devices
+Date:   Thu,  9 Dec 2021 23:24:24 +0100
+Message-Id: <20211209222424.124791-1-tobias@waldekranz.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211209213347.GE21819@hoboy.vegasvil.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Organization: Westermo
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 09, 2021 at 01:33:47PM -0800, Richard Cochran wrote:
-> On Thu, Dec 09, 2021 at 06:24:48PM +0800, Hangbin Liu wrote:
-> 
-> > +/* possible values for hwtstamp_config->flags */
-> > +enum hwtstamp_flags {
-> > +	/*
-> > +	 * With this flag, the user could get bond active interface's
-> > +	 * PHC index. Note this PHC index is not stable as when there
-> > +	 * is a failover, the bond active interface will be changed, so
-> > +	 * will be the PHC index.
-> > +	 */
-> > +	HWTSTAMP_FLAG_BONDED_PHC_INDEX = (1<<0),
-> > +
-> > +	/* add new constants above here */
-> > +	__HWTSTAMP_FLAGS_CNT
-> > +};
-> 
-> I think this shouldn't be an enumerated type, but rather simply a bit
-> field of independent options.
+In a typical mv88e6xxx switch tree like this:
 
-Ok, it can be an enum (to be like the other fields in this header) but
-still the bits need to be independent of each other.
+  CPU
+   |    .----.
+.--0--. | .--0--.
+| sw0 | | | sw1 |
+'-1-2-' | '-1-2-'
+    '---'
 
-IOW, you should drop __HWTSTAMP_FLAGS_CNT and instead use a mask of
-valid bits.
+If sw1p{1,2} are added to a bridge that sw0p1 is not a part of, sw0
+still needs to add a crosschip PVT entry for the virtual DSA device
+assigned to represent the bridge.
 
-Thanks,
-Richard
+Fixes: ce5df6894a57 ("net: dsa: mv88e6xxx: map virtual bridges with forwarding offload in the PVT")
+Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+---
+
+Though this is a bugfix, it still targets net-next as it depends on
+the recent work done by Vladimir here:
+
+https://lore.kernel.org/netdev/20211206165758.1553882-1-vladimir.oltean@nxp.com/
+
+ drivers/net/dsa/mv88e6xxx/chip.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index 7fadbf987b23..85f5a35340d7 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -2522,6 +2522,7 @@ static int mv88e6xxx_crosschip_bridge_join(struct dsa_switch *ds,
+ 
+ 	mv88e6xxx_reg_lock(chip);
+ 	err = mv88e6xxx_pvt_map(chip, sw_index, port);
++	err = err ? : mv88e6xxx_map_virtual_bridge_to_pvt(ds, bridge.num);
+ 	mv88e6xxx_reg_unlock(chip);
+ 
+ 	return err;
+@@ -2537,7 +2538,8 @@ static void mv88e6xxx_crosschip_bridge_leave(struct dsa_switch *ds,
+ 		return;
+ 
+ 	mv88e6xxx_reg_lock(chip);
+-	if (mv88e6xxx_pvt_map(chip, sw_index, port))
++	if (mv88e6xxx_pvt_map(chip, sw_index, port) ||
++	    mv88e6xxx_map_virtual_bridge_to_pvt(ds, bridge.num))
+ 		dev_err(ds->dev, "failed to remap cross-chip Port VLAN\n");
+ 	mv88e6xxx_reg_unlock(chip);
+ }
+-- 
+2.25.1
+
