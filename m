@@ -2,84 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 45BAE46EB54
-	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 16:32:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 639D046EB6C
+	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 16:36:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234492AbhLIPgX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Dec 2021 10:36:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48662 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239771AbhLIPgG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 10:36:06 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7944C0617A1
-        for <netdev@vger.kernel.org>; Thu,  9 Dec 2021 07:32:32 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 86821B8251E
-        for <netdev@vger.kernel.org>; Thu,  9 Dec 2021 15:32:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF5DDC004DD;
-        Thu,  9 Dec 2021 15:32:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1639063950;
-        bh=la12TSxubwsMjMW6B0h+IfDSevd6t2JnN5OS4hUx7zA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=eFIKx8E4r2aTBbOj7eDD2Fk3I4FGm/eIITsojcrdFS0SsKOjT7kHFiFXbhwcUN/Wm
-         /uAJLQDNwiESqDqcRSAhcEvzhcsjVEBkpMcLJYE388bch+jC75lNQYw6uuEr2mIxqK
-         zzZsmT4u+FqspCV3ILuim/uCvAmcqX6LKlkjzkVP/aF1Bzcl1SftGlzuNg4X/kRP3C
-         Y6oebIy2v6/tF4Bcif4iSKSBE9vNKxwMrPeji7DbtXMZlhvey5u+23nMAKWx17BqSI
-         yWzMsrw2Ogw3J6a0R5e6dw9lePIsznXLy9IRKDTbCqrL0Pn+ehrNC7viaJNA6ei+cU
-         8doWdAERD3YmA==
-Date:   Thu, 9 Dec 2021 07:32:28 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Chris Snook <chris.snook@gmail.com>, Felix Fietkau <nbd@nbd.name>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        John Crispin <john@phrozen.org>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 1/5] net: phylink: add legacy_pre_march2020
- indicator
-Message-ID: <20211209073228.06171d9a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <YbIhOikjMwZ8aQlS@shell.armlinux.org.uk>
-References: <DGaGmGgWrlVkW@shell.armlinux.org.uk>
-        <E1mucmf-00EyCl-KA@rmk-PC.armlinux.org.uk>
-        <YbIBT7/6b0evemPB@shell.armlinux.org.uk>
-        <20211209072018.6f0413ed@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <YbIhOikjMwZ8aQlS@shell.armlinux.org.uk>
+        id S239951AbhLIPjd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Dec 2021 10:39:33 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:35728 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S234492AbhLIPjd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 10:39:33 -0500
+Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1B9FRmIR005017;
+        Thu, 9 Dec 2021 15:35:56 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : content-transfer-encoding : mime-version; s=pp1;
+ bh=tOxvwVBBJYKeBkWLLdqRTh3gpNj9EkW44GL8kpDN4nc=;
+ b=BipimZF71I8xhnavwZ7+1iK+3lAdq7NxR5TSlwAZLn/tQdYBiCMGY1U3+Kv3JHC4ZEiH
+ 6Hk6+ZVD4bT3Xed3ZSHoCjEURkdVktUccJXObf6ObVP10QskgcAas/e7Vo+ZgtMHa9xl
+ 9hATC/buDiNloxeRS6C256HnnKTG1OC0SD+tkk/91yhWKiRcEYFFRTpq9Q8YS4Gp1FRQ
+ Kz/TsRNxZEu7lTEakKmQPtJUjIAyxBm0RfU09Bo//lvOuhAfJ+9okAZXO6hgw4qfglWS
+ n80m2JeAHBcAMYz9YFGZIaA3xo+ASCHkFN55kfk6K2mXB58lNiX3CPkutANzdUdDfYkh Zg== 
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3cum1qrrhk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 09 Dec 2021 15:35:55 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 1B9FXwg4025409;
+        Thu, 9 Dec 2021 15:35:53 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma03ams.nl.ibm.com with ESMTP id 3cqyyajyp4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 09 Dec 2021 15:35:53 +0000
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 1B9FZolg28115276
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 9 Dec 2021 15:35:50 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 3D98EAE06E;
+        Thu,  9 Dec 2021 15:35:50 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E9DDDAE045;
+        Thu,  9 Dec 2021 15:35:49 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Thu,  9 Dec 2021 15:35:49 +0000 (GMT)
+From:   Julian Wiedmann <jwi@linux.ibm.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     linux-netdev <netdev@vger.kernel.org>,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        Alexandra Winter <wintera@linux.ibm.com>,
+        Wenjia Zhang <wenjia@linux.ibm.com>,
+        Julian Wiedmann <jwi@linux.ibm.com>
+Subject: [PATCH] MAINTAINERS: s390/net: remove myself as maintainer
+Date:   Thu,  9 Dec 2021 16:35:46 +0100
+Message-Id: <20211209153546.1152921-1-jwi@linux.ibm.com>
+X-Mailer: git-send-email 2.32.0
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: E8QdBocmNiaxo0BzIGQzuyNEnVI8GLGL
+X-Proofpoint-GUID: E8QdBocmNiaxo0BzIGQzuyNEnVI8GLGL
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2021-12-09_06,2021-12-08_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ lowpriorityscore=0 malwarescore=0 mlxlogscore=633 phishscore=0
+ suspectscore=0 bulkscore=0 mlxscore=0 adultscore=0 impostorscore=0
+ clxscore=1011 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2110150000 definitions=main-2112090084
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 9 Dec 2021 15:31:06 +0000 Russell King (Oracle) wrote:
-> On Thu, Dec 09, 2021 at 07:20:18AM -0800, Jakub Kicinski wrote:
-> > On Thu, 9 Dec 2021 13:14:55 +0000 Russell King (Oracle) wrote:  
-> > > This series was incorrectly threaded to its cover letter; the patches
-> > > have now been re-sent with the correct message-ID for their cover
-> > > letter. Sadly, this mistake was not obvious until I looked at patchwork
-> > > to work out why they haven't been applied yet.  
-> > 
-> > Hm, I think they were showing up fine in patchwork, I just didn't 
-> > get to them, yet. I'll apply as soon as I'm done with the weekly PR.  
-> 
-> Yes, they're in patchwork, but patchwork is saying "no cover letter" for
-> them, which is what alerted me to the problem. E.g.
-> 
-> https://patchwork.kernel.org/project/netdevbpf/patch/E1mucmu-00EyD4-Vy@rmk-PC.armlinux.org.uk/
-> 
->               Context              Check              Description
-> ...
->    netdev/cover_letter            warning Series does not have a cover letter
+I won't have access to the relevant HW and docs much longer.
 
-Oh, that, you're right.
+Signed-off-by: Julian Wiedmann <jwi@linux.ibm.com>
+---
+ MAINTAINERS | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 7e51081b6708..6dd20c31d875 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -16623,7 +16623,6 @@ W:	http://www.ibm.com/developerworks/linux/linux390/
+ F:	drivers/iommu/s390-iommu.c
+ 
+ S390 IUCV NETWORK LAYER
+-M:	Julian Wiedmann <jwi@linux.ibm.com>
+ M:	Alexandra Winter <wintera@linux.ibm.com>
+ M:	Wenjia Zhang <wenjia@linux.ibm.com>
+ L:	linux-s390@vger.kernel.org
+@@ -16635,7 +16634,6 @@ F:	include/net/iucv/
+ F:	net/iucv/
+ 
+ S390 NETWORK DRIVERS
+-M:	Julian Wiedmann <jwi@linux.ibm.com>
+ M:	Alexandra Winter <wintera@linux.ibm.com>
+ M:	Wenjia Zhang <wenjia@linux.ibm.com>
+ L:	linux-s390@vger.kernel.org
+-- 
+2.32.0
+
