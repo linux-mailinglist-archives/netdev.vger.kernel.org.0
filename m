@@ -2,73 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 95E1A46E096
-	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 02:59:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5351446E09B
+	for <lists+netdev@lfdr.de>; Thu,  9 Dec 2021 02:59:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229618AbhLICCe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Dec 2021 21:02:34 -0500
-Received: from mga17.intel.com ([192.55.52.151]:8732 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229634AbhLICCe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 Dec 2021 21:02:34 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10192"; a="218681897"
-X-IronPort-AV: E=Sophos;i="5.88,190,1635231600"; 
-   d="scan'208";a="218681897"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Dec 2021 17:58:59 -0800
-X-IronPort-AV: E=Sophos;i="5.88,190,1635231600"; 
-   d="scan'208";a="503305391"
-Received: from cxia1-mobl.ccr.corp.intel.com (HELO lkp-zhoujie.ccr.corp.intel.com) ([10.255.28.13])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Dec 2021 17:58:54 -0800
-From:   Jie2x Zhou <jie2x.zhou@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org, shuah@kernel.org,
-        dsahern@gmail.com
-Cc:     netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org, lkp@intel.com, xinjianx.ma@intel.com,
-        zhijianx.li@intel.com, Philip Li <philip.li@intel.com>,
-        zhoujie <jie2x.zhou@intel.com>
-Subject: [PATCH v2] selftests: net: Correct ping6 expected rc from 2 to 1
-Date:   Thu,  9 Dec 2021 09:58:17 +0800
-Message-Id: <20211209015817.37041-1-jie2x.zhou@intel.com>
-X-Mailer: git-send-email 2.20.1
+        id S229691AbhLICCk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Dec 2021 21:02:40 -0500
+Received: from mail-il1-f197.google.com ([209.85.166.197]:43935 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229634AbhLICCj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Dec 2021 21:02:39 -0500
+Received: by mail-il1-f197.google.com with SMTP id j1-20020a056e02154100b002a181a1ce89so5583257ilu.10
+        for <netdev@vger.kernel.org>; Wed, 08 Dec 2021 17:59:06 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=X4FiWxWmye52Y3LrKLRpr7dU5cRyOrBsZmbMNfSo5CY=;
+        b=N0cM36lxUV55rC33N3buT4/jHa2bXSuzPf4rCV8K2D3pcIUB7Kwd/3SD4piAkOg3bx
+         7uGjLI4vm8e+z4ZhJ2ervDnK/bnAdsLsoAGTeWURtCGmwdn0R8u3ZBdPY6geG/HfOYtB
+         q4TGyT4mLvuBZHflpgYhyrcTHevFBGzA/daAo352/NvWV8S/uY1ntRAekvuQ5wrbmy5A
+         VpRsO5f6oPmNIqmp43Z0xTtSz7CS6RDDlNQWxHi9D6vERWE5ZKExVccu7FBqpjBaixz9
+         DlOhxKKoYy08D2t1SDkD/vzIRODG/KP8ROhBK4oKJbstRulwsyX503/1i73SlptTHyMG
+         h+Zw==
+X-Gm-Message-State: AOAM533eaPjWtUgHTCrrVeL7kb93/c4IJV2AvR+7qFamQ3g7uOyIbUnx
+        G4tl7z8mmce85CXvWbYaTPXzd+f5y2KzRu9fBxk3IKgff1gV
+X-Google-Smtp-Source: ABdhPJwcKdNMEn0KYdQ1vLDPmmNZxklGqYWl2rCNCIb5QMi3PCt4qHD/Z9l7k31KBbRCAtfLak+fOlkcKYLqu/ng3mHqCptgF8XI
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a05:6638:260d:: with SMTP id m13mr5339337jat.99.1639015146603;
+ Wed, 08 Dec 2021 17:59:06 -0800 (PST)
+Date:   Wed, 08 Dec 2021 17:59:06 -0800
+In-Reply-To: <00000000000029e89205d2a8718d@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000098464c05d2acf3ba@google.com>
+Subject: Re: [syzbot] BUG: sleeping function called from invalid context in hci_cmd_sync_cancel
+From:   syzbot <syzbot+485cc00ea7cf41dfdbf1@syzkaller.appspotmail.com>
+To:     Thinh.Nguyen@synopsys.com, bberg@redhat.com, changbin.du@intel.com,
+        christian.brauner@ubuntu.com, davem@davemloft.net,
+        edumazet@google.com, gregkh@linuxfoundation.org,
+        johan.hedberg@gmail.com, kuba@kernel.org,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org, luiz.dentz@gmail.com,
+        luiz.von.dentz@intel.com, marcel@holtmann.org,
+        mathias.nyman@linux.intel.com, netdev@vger.kernel.org,
+        stern@rowland.harvard.edu, syzkaller-bugs@googlegroups.com,
+        yajun.deng@linux.dev
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: zhoujie <jie2x.zhou@intel.com>
+syzbot has bisected this issue to:
 
-./fcnal-test.sh -v -t ipv6_ping
-TEST: ping out, VRF bind - ns-B IPv6 LLA                                      [FAIL]
-TEST: ping out, VRF bind - multicast IP                                       [FAIL]
+commit c97a747efc93f94a4ad6c707972dfbf8d774edf9
+Author: Benjamin Berg <bberg@redhat.com>
+Date:   Fri Dec 3 14:59:02 2021 +0000
 
-ping6 is failing as it should.
-COMMAND: ip netns exec ns-A /bin/ping6 -c1 -w1 fe80::7c4c:bcff:fe66:a63a%red
-strace of ping6 shows it is failing with '1',
-so change the expected rc from 2 to 1.
+    Bluetooth: btusb: Cancel sync commands for certain URB errors
 
-Fixes: c0644e71df33 ("selftests: Add ipv6 ping tests to fcnal-test")
-Reported-by: kernel test robot <lkp@intel.com>
-Suggested-by: David Ahern <dsahern@gmail.com>
-Signed-off-by: Jie2x Zhou <jie2x.zhou@intel.com>
----
- tools/testing/selftests/net/fcnal-test.sh | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=10a0fdc5b00000
+start commit:   4eee8d0b64ec Add linux-next specific files for 20211208
+git tree:       linux-next
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=12a0fdc5b00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=14a0fdc5b00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=20b74d9da4ce1ef1
+dashboard link: https://syzkaller.appspot.com/bug?extid=485cc00ea7cf41dfdbf1
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13e7e955b00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10ed3641b00000
 
-diff --git a/tools/testing/selftests/net/fcnal-test.sh b/tools/testing/selftests/net/fcnal-test.sh
-index 7f5b265fcb90..966787c2f9f0 100755
---- a/tools/testing/selftests/net/fcnal-test.sh
-+++ b/tools/testing/selftests/net/fcnal-test.sh
-@@ -2191,7 +2191,7 @@ ipv6_ping_vrf()
- 		log_start
- 		show_hint "Fails since VRF device does not support linklocal or multicast"
- 		run_cmd ${ping6} -c1 -w1 ${a}
--		log_test_addr ${a} $? 2 "ping out, VRF bind"
-+		log_test_addr ${a} $? 1 "ping out, VRF bind"
- 	done
- 
- 	for a in ${NSB_IP6} ${NSB_LO_IP6} ${NSB_LINKIP6}%${NSA_DEV} ${MCAST}%${NSA_DEV}
--- 
-2.31.1
+Reported-by: syzbot+485cc00ea7cf41dfdbf1@syzkaller.appspotmail.com
+Fixes: c97a747efc93 ("Bluetooth: btusb: Cancel sync commands for certain URB errors")
 
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
