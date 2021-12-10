@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F3483470251
+	by mail.lfdr.de (Postfix) with ESMTP id 1087347024E
 	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 15:02:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239250AbhLJOFQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Dec 2021 09:05:16 -0500
-Received: from szxga01-in.huawei.com ([45.249.212.187]:15725 "EHLO
+        id S239246AbhLJOFP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Dec 2021 09:05:15 -0500
+Received: from szxga01-in.huawei.com ([45.249.212.187]:15726 "EHLO
         szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239213AbhLJOFO (ORCPT
+        with ESMTP id S239217AbhLJOFO (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 09:05:14 -0500
-Received: from dggpeml500025.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4J9XYv5d4qzZd0m;
-        Fri, 10 Dec 2021 21:58:43 +0800 (CST)
+Received: from dggpeml500025.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4J9XYw1hRqzZdYw;
+        Fri, 10 Dec 2021 21:58:44 +0800 (CST)
 Received: from huawei.com (10.175.124.27) by dggpeml500025.china.huawei.com
  (7.185.36.35) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.20; Fri, 10 Dec
- 2021 22:01:36 +0800
+ 2021 22:01:37 +0800
 From:   Hou Tao <houtao1@huawei.com>
 To:     Alexei Starovoitov <ast@kernel.org>
 CC:     Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>, <netdev@vger.kernel.org>,
         <bpf@vger.kernel.org>, <houtao1@huawei.com>
-Subject: [PATCH bpf-next v2 2/4] selftests/bpf: fix checkpatch error on empty function parameter
-Date:   Fri, 10 Dec 2021 22:16:50 +0800
-Message-ID: <20211210141652.877186-3-houtao1@huawei.com>
+Subject: [PATCH bpf-next v2 3/4] selftests/bpf: add benchmark for bpf_strncmp() helper
+Date:   Fri, 10 Dec 2021 22:16:51 +0800
+Message-ID: <20211210141652.877186-4-houtao1@huawei.com>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20211210141652.877186-1-houtao1@huawei.com>
 References: <20211210141652.877186-1-houtao1@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 X-Originating-IP: [10.175.124.27]
 X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
  dggpeml500025.china.huawei.com (7.185.36.35)
@@ -41,304 +41,381 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix checkpatch error: "ERROR: Bad function definition - void foo()
-should probably be void foo(void)". Most replacements are done by
-the following command:
+Add benchmark to compare the performance between home-made strncmp()
+in bpf program and bpf_strncmp() helper. In summary, the performance
+win of bpf_strncmp() under x86-64 is greater than 18% when the compared
+string length is greater than 64, and is 179% when the length is 4095.
+Under arm64 the performance win is even bigger: 33% when the length
+is greater than 64 and 600% when the length is 4095.
 
-  sed -i 's#\([a-z]\)()$#\1(void)#g' testing/selftests/bpf/benchs/*.c
+The following is the details:
+
+no-helper-X: use home-made strncmp() to compare X-sized string
+helper-Y: use bpf_strncmp() to compare Y-sized string
+
+Under x86-64:
+
+no-helper-1          3.504 ± 0.000M/s (drops 0.000 ± 0.000M/s)
+helper-1             3.347 ± 0.001M/s (drops 0.000 ± 0.000M/s)
+
+no-helper-8          3.357 ± 0.001M/s (drops 0.000 ± 0.000M/s)
+helper-8             3.307 ± 0.001M/s (drops 0.000 ± 0.000M/s)
+
+no-helper-32         3.064 ± 0.000M/s (drops 0.000 ± 0.000M/s)
+helper-32            3.253 ± 0.001M/s (drops 0.000 ± 0.000M/s)
+
+no-helper-64         2.563 ± 0.001M/s (drops 0.000 ± 0.000M/s)
+helper-64            3.040 ± 0.001M/s (drops 0.000 ± 0.000M/s)
+
+no-helper-128        1.975 ± 0.000M/s (drops 0.000 ± 0.000M/s)
+helper-128           2.641 ± 0.000M/s (drops 0.000 ± 0.000M/s)
+
+no-helper-512        0.759 ± 0.000M/s (drops 0.000 ± 0.000M/s)
+helper-512           1.574 ± 0.000M/s (drops 0.000 ± 0.000M/s)
+
+no-helper-2048       0.329 ± 0.000M/s (drops 0.000 ± 0.000M/s)
+helper-2048          0.602 ± 0.000M/s (drops 0.000 ± 0.000M/s)
+
+no-helper-4095       0.117 ± 0.000M/s (drops 0.000 ± 0.000M/s)
+helper-4095          0.327 ± 0.000M/s (drops 0.000 ± 0.000M/s)
+
+Under arm64:
+
+no-helper-1          2.806 ± 0.004M/s (drops 0.000 ± 0.000M/s)
+helper-1             2.819 ± 0.002M/s (drops 0.000 ± 0.000M/s)
+
+no-helper-8          2.797 ± 0.109M/s (drops 0.000 ± 0.000M/s)
+helper-8             2.786 ± 0.025M/s (drops 0.000 ± 0.000M/s)
+
+no-helper-32         2.399 ± 0.011M/s (drops 0.000 ± 0.000M/s)
+helper-32            2.703 ± 0.002M/s (drops 0.000 ± 0.000M/s)
+
+no-helper-64         2.020 ± 0.015M/s (drops 0.000 ± 0.000M/s)
+helper-64            2.702 ± 0.073M/s (drops 0.000 ± 0.000M/s)
+
+no-helper-128        1.604 ± 0.001M/s (drops 0.000 ± 0.000M/s)
+helper-128           2.516 ± 0.002M/s (drops 0.000 ± 0.000M/s)
+
+no-helper-512        0.699 ± 0.000M/s (drops 0.000 ± 0.000M/s)
+helper-512           2.106 ± 0.003M/s (drops 0.000 ± 0.000M/s)
+
+no-helper-2048       0.215 ± 0.000M/s (drops 0.000 ± 0.000M/s)
+helper-2048          1.223 ± 0.003M/s (drops 0.000 ± 0.000M/s)
+
+no-helper-4095       0.112 ± 0.000M/s (drops 0.000 ± 0.000M/s)
+helper-4095          0.796 ± 0.000M/s (drops 0.000 ± 0.000M/s)
 
 Signed-off-by: Hou Tao <houtao1@huawei.com>
 ---
- tools/testing/selftests/bpf/bench.c           |  2 +-
- tools/testing/selftests/bpf/bench.h           |  9 +++----
- .../selftests/bpf/benchs/bench_count.c        |  2 +-
- .../selftests/bpf/benchs/bench_rename.c       | 16 ++++++-------
- .../selftests/bpf/benchs/bench_ringbufs.c     | 14 +++++------
- .../selftests/bpf/benchs/bench_trigger.c      | 24 +++++++++----------
- 6 files changed, 34 insertions(+), 33 deletions(-)
+ tools/testing/selftests/bpf/Makefile          |   4 +-
+ tools/testing/selftests/bpf/bench.c           |   6 +
+ .../selftests/bpf/benchs/bench_strncmp.c      | 161 ++++++++++++++++++
+ .../selftests/bpf/benchs/run_bench_strncmp.sh |  12 ++
+ .../selftests/bpf/progs/strncmp_bench.c       |  50 ++++++
+ 5 files changed, 232 insertions(+), 1 deletion(-)
+ create mode 100644 tools/testing/selftests/bpf/benchs/bench_strncmp.c
+ create mode 100755 tools/testing/selftests/bpf/benchs/run_bench_strncmp.sh
+ create mode 100644 tools/testing/selftests/bpf/progs/strncmp_bench.c
 
+diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+index e38626fe3f5d..67ebf6be86f1 100644
+--- a/tools/testing/selftests/bpf/Makefile
++++ b/tools/testing/selftests/bpf/Makefile
+@@ -537,6 +537,7 @@ $(OUTPUT)/bench_ringbufs.o: $(OUTPUT)/ringbuf_bench.skel.h \
+ 			    $(OUTPUT)/perfbuf_bench.skel.h
+ $(OUTPUT)/bench_bloom_filter_map.o: $(OUTPUT)/bloom_filter_bench.skel.h
+ $(OUTPUT)/bench_bpf_loop.o: $(OUTPUT)/bpf_loop_bench.skel.h
++$(OUTPUT)/bench_strncmp.o: $(OUTPUT)/strncmp_bench.skel.h
+ $(OUTPUT)/bench.o: bench.h testing_helpers.h $(BPFOBJ)
+ $(OUTPUT)/bench: LDLIBS += -lm
+ $(OUTPUT)/bench: $(OUTPUT)/bench.o \
+@@ -547,7 +548,8 @@ $(OUTPUT)/bench: $(OUTPUT)/bench.o \
+ 		 $(OUTPUT)/bench_trigger.o \
+ 		 $(OUTPUT)/bench_ringbufs.o \
+ 		 $(OUTPUT)/bench_bloom_filter_map.o \
+-		 $(OUTPUT)/bench_bpf_loop.o
++		 $(OUTPUT)/bench_bpf_loop.o \
++		 $(OUTPUT)/bench_strncmp.o
+ 	$(call msg,BINARY,,$@)
+ 	$(Q)$(CC) $(LDFLAGS) $(filter %.a %.o,$^) $(LDLIBS) -o $@
+ 
 diff --git a/tools/testing/selftests/bpf/bench.c b/tools/testing/selftests/bpf/bench.c
-index 3d6082b97a56..ffe5752f3324 100644
+index ffe5752f3324..bbb42e2cee0c 100644
 --- a/tools/testing/selftests/bpf/bench.c
 +++ b/tools/testing/selftests/bpf/bench.c
-@@ -39,7 +39,7 @@ static int bump_memlock_rlimit(void)
- 	return setrlimit(RLIMIT_MEMLOCK, &rlim_new);
- }
+@@ -205,11 +205,13 @@ static const struct argp_option opts[] = {
+ extern struct argp bench_ringbufs_argp;
+ extern struct argp bench_bloom_map_argp;
+ extern struct argp bench_bpf_loop_argp;
++extern struct argp bench_strncmp_argp;
  
--void setup_libbpf()
-+void setup_libbpf(void)
- {
- 	int err;
+ static const struct argp_child bench_parsers[] = {
+ 	{ &bench_ringbufs_argp, 0, "Ring buffers benchmark", 0 },
+ 	{ &bench_bloom_map_argp, 0, "Bloom filter map benchmark", 0 },
+ 	{ &bench_bpf_loop_argp, 0, "bpf_loop helper benchmark", 0 },
++	{ &bench_strncmp_argp, 0, "bpf_strncmp helper benchmark", 0 },
+ 	{},
+ };
  
-diff --git a/tools/testing/selftests/bpf/bench.h b/tools/testing/selftests/bpf/bench.h
-index 50785503756b..fb3e213df3dc 100644
---- a/tools/testing/selftests/bpf/bench.h
-+++ b/tools/testing/selftests/bpf/bench.h
-@@ -38,8 +38,8 @@ struct bench_res {
+@@ -409,6 +411,8 @@ extern const struct bench bench_bloom_false_positive;
+ extern const struct bench bench_hashmap_without_bloom;
+ extern const struct bench bench_hashmap_with_bloom;
+ extern const struct bench bench_bpf_loop;
++extern const struct bench bench_strncmp_no_helper;
++extern const struct bench bench_strncmp_helper;
  
- struct bench {
- 	const char *name;
--	void (*validate)();
--	void (*setup)();
-+	void (*validate)(void);
-+	void (*setup)(void);
- 	void *(*producer_thread)(void *ctx);
- 	void *(*consumer_thread)(void *ctx);
- 	void (*measure)(struct bench_res* res);
-@@ -54,7 +54,7 @@ struct counter {
- extern struct env env;
- extern const struct bench *bench;
+ static const struct bench *benchs[] = {
+ 	&bench_count_global,
+@@ -441,6 +445,8 @@ static const struct bench *benchs[] = {
+ 	&bench_hashmap_without_bloom,
+ 	&bench_hashmap_with_bloom,
+ 	&bench_bpf_loop,
++	&bench_strncmp_no_helper,
++	&bench_strncmp_helper,
+ };
  
--void setup_libbpf();
-+void setup_libbpf(void);
- void hits_drops_report_progress(int iter, struct bench_res *res, long delta_ns);
- void hits_drops_report_final(struct bench_res res[], int res_cnt);
- void false_hits_report_progress(int iter, struct bench_res *res, long delta_ns);
-@@ -62,7 +62,8 @@ void false_hits_report_final(struct bench_res res[], int res_cnt);
- void ops_report_progress(int iter, struct bench_res *res, long delta_ns);
- void ops_report_final(struct bench_res res[], int res_cnt);
- 
--static inline __u64 get_time_ns() {
-+static inline __u64 get_time_ns(void)
+ static void setup_benchmark()
+diff --git a/tools/testing/selftests/bpf/benchs/bench_strncmp.c b/tools/testing/selftests/bpf/benchs/bench_strncmp.c
+new file mode 100644
+index 000000000000..494b591c0289
+--- /dev/null
++++ b/tools/testing/selftests/bpf/benchs/bench_strncmp.c
+@@ -0,0 +1,161 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (C) 2021. Huawei Technologies Co., Ltd */
++#include <argp.h>
++#include "bench.h"
++#include "strncmp_bench.skel.h"
++
++static struct strncmp_ctx {
++	struct strncmp_bench *skel;
++} ctx;
++
++static struct strncmp_args {
++	u32 cmp_str_len;
++} args = {
++	.cmp_str_len = 32,
++};
++
++enum {
++	ARG_CMP_STR_LEN = 5000,
++};
++
++static const struct argp_option opts[] = {
++	{ "cmp-str-len", ARG_CMP_STR_LEN, "CMP_STR_LEN", 0,
++	  "Set the length of compared string" },
++	{},
++};
++
++static error_t strncmp_parse_arg(int key, char *arg, struct argp_state *state)
 +{
- 	struct timespec t;
- 
- 	clock_gettime(CLOCK_MONOTONIC, &t);
-diff --git a/tools/testing/selftests/bpf/benchs/bench_count.c b/tools/testing/selftests/bpf/benchs/bench_count.c
-index befba7a82643..078972ce208e 100644
---- a/tools/testing/selftests/bpf/benchs/bench_count.c
-+++ b/tools/testing/selftests/bpf/benchs/bench_count.c
-@@ -36,7 +36,7 @@ static struct count_local_ctx {
- 	struct counter *hits;
- } count_local_ctx;
- 
--static void count_local_setup()
-+static void count_local_setup(void)
- {
- 	struct count_local_ctx *ctx = &count_local_ctx;
- 
-diff --git a/tools/testing/selftests/bpf/benchs/bench_rename.c b/tools/testing/selftests/bpf/benchs/bench_rename.c
-index c7ec114eca56..3c203b6d6a6e 100644
---- a/tools/testing/selftests/bpf/benchs/bench_rename.c
-+++ b/tools/testing/selftests/bpf/benchs/bench_rename.c
-@@ -11,7 +11,7 @@ static struct ctx {
- 	int fd;
- } ctx;
- 
--static void validate()
-+static void validate(void)
- {
- 	if (env.producer_cnt != 1) {
- 		fprintf(stderr, "benchmark doesn't support multi-producer!\n");
-@@ -43,7 +43,7 @@ static void measure(struct bench_res *res)
- 	res->hits = atomic_swap(&ctx.hits.value, 0);
- }
- 
--static void setup_ctx()
-+static void setup_ctx(void)
- {
- 	setup_libbpf();
- 
-@@ -71,36 +71,36 @@ static void attach_bpf(struct bpf_program *prog)
- 	}
- }
- 
--static void setup_base()
-+static void setup_base(void)
- {
- 	setup_ctx();
- }
- 
--static void setup_kprobe()
-+static void setup_kprobe(void)
- {
- 	setup_ctx();
- 	attach_bpf(ctx.skel->progs.prog1);
- }
- 
--static void setup_kretprobe()
-+static void setup_kretprobe(void)
- {
- 	setup_ctx();
- 	attach_bpf(ctx.skel->progs.prog2);
- }
- 
--static void setup_rawtp()
-+static void setup_rawtp(void)
- {
- 	setup_ctx();
- 	attach_bpf(ctx.skel->progs.prog3);
- }
- 
--static void setup_fentry()
-+static void setup_fentry(void)
- {
- 	setup_ctx();
- 	attach_bpf(ctx.skel->progs.prog4);
- }
- 
--static void setup_fexit()
-+static void setup_fexit(void)
- {
- 	setup_ctx();
- 	attach_bpf(ctx.skel->progs.prog5);
-diff --git a/tools/testing/selftests/bpf/benchs/bench_ringbufs.c b/tools/testing/selftests/bpf/benchs/bench_ringbufs.c
-index 52d4a2f91dbd..da8593b3494a 100644
---- a/tools/testing/selftests/bpf/benchs/bench_ringbufs.c
-+++ b/tools/testing/selftests/bpf/benchs/bench_ringbufs.c
-@@ -88,12 +88,12 @@ const struct argp bench_ringbufs_argp = {
- 
- static struct counter buf_hits;
- 
--static inline void bufs_trigger_batch()
-+static inline void bufs_trigger_batch(void)
- {
- 	(void)syscall(__NR_getpgid);
- }
- 
--static void bufs_validate()
-+static void bufs_validate(void)
- {
- 	if (env.consumer_cnt != 1) {
- 		fprintf(stderr, "rb-libbpf benchmark doesn't support multi-consumer!\n");
-@@ -132,7 +132,7 @@ static void ringbuf_libbpf_measure(struct bench_res *res)
- 	res->drops = atomic_swap(&ctx->skel->bss->dropped, 0);
- }
- 
--static struct ringbuf_bench *ringbuf_setup_skeleton()
-+static struct ringbuf_bench *ringbuf_setup_skeleton(void)
- {
- 	struct ringbuf_bench *skel;
- 
-@@ -167,7 +167,7 @@ static int buf_process_sample(void *ctx, void *data, size_t len)
- 	return 0;
- }
- 
--static void ringbuf_libbpf_setup()
-+static void ringbuf_libbpf_setup(void)
- {
- 	struct ringbuf_libbpf_ctx *ctx = &ringbuf_libbpf_ctx;
- 	struct bpf_link *link;
-@@ -223,7 +223,7 @@ static void ringbuf_custom_measure(struct bench_res *res)
- 	res->drops = atomic_swap(&ctx->skel->bss->dropped, 0);
- }
- 
--static void ringbuf_custom_setup()
-+static void ringbuf_custom_setup(void)
- {
- 	struct ringbuf_custom_ctx *ctx = &ringbuf_custom_ctx;
- 	const size_t page_size = getpagesize();
-@@ -352,7 +352,7 @@ static void perfbuf_measure(struct bench_res *res)
- 	res->drops = atomic_swap(&ctx->skel->bss->dropped, 0);
- }
- 
--static struct perfbuf_bench *perfbuf_setup_skeleton()
-+static struct perfbuf_bench *perfbuf_setup_skeleton(void)
- {
- 	struct perfbuf_bench *skel;
- 
-@@ -390,7 +390,7 @@ perfbuf_process_sample_raw(void *input_ctx, int cpu,
- 	return LIBBPF_PERF_EVENT_CONT;
- }
- 
--static void perfbuf_libbpf_setup()
-+static void perfbuf_libbpf_setup(void)
- {
- 	struct perfbuf_libbpf_ctx *ctx = &perfbuf_libbpf_ctx;
- 	struct perf_event_attr attr;
-diff --git a/tools/testing/selftests/bpf/benchs/bench_trigger.c b/tools/testing/selftests/bpf/benchs/bench_trigger.c
-index 049a5ad56f65..7f957c55a3ca 100644
---- a/tools/testing/selftests/bpf/benchs/bench_trigger.c
-+++ b/tools/testing/selftests/bpf/benchs/bench_trigger.c
-@@ -11,7 +11,7 @@ static struct trigger_ctx {
- 
- static struct counter base_hits;
- 
--static void trigger_validate()
-+static void trigger_validate(void)
- {
- 	if (env.consumer_cnt != 1) {
- 		fprintf(stderr, "benchmark doesn't support multi-consumer!\n");
-@@ -45,7 +45,7 @@ static void trigger_measure(struct bench_res *res)
- 	res->hits = atomic_swap(&ctx.skel->bss->hits, 0);
- }
- 
--static void setup_ctx()
-+static void setup_ctx(void)
- {
- 	setup_libbpf();
- 
-@@ -67,37 +67,37 @@ static void attach_bpf(struct bpf_program *prog)
- 	}
- }
- 
--static void trigger_tp_setup()
-+static void trigger_tp_setup(void)
- {
- 	setup_ctx();
- 	attach_bpf(ctx.skel->progs.bench_trigger_tp);
- }
- 
--static void trigger_rawtp_setup()
-+static void trigger_rawtp_setup(void)
- {
- 	setup_ctx();
- 	attach_bpf(ctx.skel->progs.bench_trigger_raw_tp);
- }
- 
--static void trigger_kprobe_setup()
-+static void trigger_kprobe_setup(void)
- {
- 	setup_ctx();
- 	attach_bpf(ctx.skel->progs.bench_trigger_kprobe);
- }
- 
--static void trigger_fentry_setup()
-+static void trigger_fentry_setup(void)
- {
- 	setup_ctx();
- 	attach_bpf(ctx.skel->progs.bench_trigger_fentry);
- }
- 
--static void trigger_fentry_sleep_setup()
-+static void trigger_fentry_sleep_setup(void)
- {
- 	setup_ctx();
- 	attach_bpf(ctx.skel->progs.bench_trigger_fentry_sleep);
- }
- 
--static void trigger_fmodret_setup()
-+static void trigger_fmodret_setup(void)
- {
- 	setup_ctx();
- 	attach_bpf(ctx.skel->progs.bench_trigger_fmodret);
-@@ -183,22 +183,22 @@ static void usetup(bool use_retprobe, bool use_nop)
- 	ctx.skel->links.bench_trigger_uprobe = link;
- }
- 
--static void uprobe_setup_with_nop()
-+static void uprobe_setup_with_nop(void)
- {
- 	usetup(false, true);
- }
- 
--static void uretprobe_setup_with_nop()
-+static void uretprobe_setup_with_nop(void)
- {
- 	usetup(true, true);
- }
- 
--static void uprobe_setup_without_nop()
-+static void uprobe_setup_without_nop(void)
- {
- 	usetup(false, false);
- }
- 
--static void uretprobe_setup_without_nop()
-+static void uretprobe_setup_without_nop(void)
- {
- 	usetup(true, false);
- }
++	switch (key) {
++	case ARG_CMP_STR_LEN:
++		args.cmp_str_len = strtoul(arg, NULL, 10);
++		if (!args.cmp_str_len ||
++		    args.cmp_str_len >= sizeof(ctx.skel->bss->str)) {
++			fprintf(stderr, "Invalid cmp str len (limit %zu)\n",
++				sizeof(ctx.skel->bss->str));
++			argp_usage(state);
++		}
++		break;
++	default:
++		return ARGP_ERR_UNKNOWN;
++	}
++
++	return 0;
++}
++
++const struct argp bench_strncmp_argp = {
++	.options = opts,
++	.parser = strncmp_parse_arg,
++};
++
++static void strncmp_validate(void)
++{
++	if (env.consumer_cnt != 1) {
++		fprintf(stderr, "strncmp benchmark doesn't support multi-consumer!\n");
++		exit(1);
++	}
++}
++
++static void strncmp_setup(void)
++{
++	int err;
++	char *target;
++	size_t i, sz;
++
++	sz = sizeof(ctx.skel->rodata->target);
++	if (!sz || sz < sizeof(ctx.skel->bss->str)) {
++		fprintf(stderr, "invalid string size (target %zu, src %zu)\n",
++			sz, sizeof(ctx.skel->bss->str));
++		exit(1);
++	}
++
++	setup_libbpf();
++
++	ctx.skel = strncmp_bench__open();
++	if (!ctx.skel) {
++		fprintf(stderr, "failed to open skeleton\n");
++		exit(1);
++	}
++
++	srandom(time(NULL));
++	target = ctx.skel->rodata->target;
++	for (i = 0; i < sz - 1; i++)
++		target[i] = '1' + random() % 9;
++	target[sz - 1] = '\0';
++
++	ctx.skel->rodata->cmp_str_len = args.cmp_str_len;
++
++	memcpy(ctx.skel->bss->str, target, args.cmp_str_len);
++	ctx.skel->bss->str[args.cmp_str_len] = '\0';
++	/* Make bss->str < rodata->target */
++	ctx.skel->bss->str[args.cmp_str_len - 1] -= 1;
++
++	err = strncmp_bench__load(ctx.skel);
++	if (err) {
++		fprintf(stderr, "failed to load skeleton\n");
++		strncmp_bench__destroy(ctx.skel);
++		exit(1);
++	}
++}
++
++static void strncmp_attach_prog(struct bpf_program *prog)
++{
++	struct bpf_link *link;
++
++	link = bpf_program__attach(prog);
++	if (!link) {
++		fprintf(stderr, "failed to attach program!\n");
++		exit(1);
++	}
++}
++
++static void strncmp_no_helper_setup(void)
++{
++	strncmp_setup();
++	strncmp_attach_prog(ctx.skel->progs.strncmp_no_helper);
++}
++
++static void strncmp_helper_setup(void)
++{
++	strncmp_setup();
++	strncmp_attach_prog(ctx.skel->progs.strncmp_helper);
++}
++
++static void *strncmp_producer(void *ctx)
++{
++	while (true)
++		(void)syscall(__NR_getpgid);
++	return NULL;
++}
++
++static void *strncmp_consumer(void *ctx)
++{
++	return NULL;
++}
++
++static void strncmp_measure(struct bench_res *res)
++{
++	res->hits = atomic_swap(&ctx.skel->bss->hits, 0);
++}
++
++const struct bench bench_strncmp_no_helper = {
++	.name = "strncmp-no-helper",
++	.validate = strncmp_validate,
++	.setup = strncmp_no_helper_setup,
++	.producer_thread = strncmp_producer,
++	.consumer_thread = strncmp_consumer,
++	.measure = strncmp_measure,
++	.report_progress = hits_drops_report_progress,
++	.report_final = hits_drops_report_final,
++};
++
++const struct bench bench_strncmp_helper = {
++	.name = "strncmp-helper",
++	.validate = strncmp_validate,
++	.setup = strncmp_helper_setup,
++	.producer_thread = strncmp_producer,
++	.consumer_thread = strncmp_consumer,
++	.measure = strncmp_measure,
++	.report_progress = hits_drops_report_progress,
++	.report_final = hits_drops_report_final,
++};
+diff --git a/tools/testing/selftests/bpf/benchs/run_bench_strncmp.sh b/tools/testing/selftests/bpf/benchs/run_bench_strncmp.sh
+new file mode 100755
+index 000000000000..142697284b45
+--- /dev/null
++++ b/tools/testing/selftests/bpf/benchs/run_bench_strncmp.sh
+@@ -0,0 +1,12 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0
++
++source ./benchs/run_common.sh
++
++set -eufo pipefail
++
++for s in 1 8 64 512 2048 4095; do
++	for b in no-helper helper; do
++		summarize ${b}-${s} "$($RUN_BENCH --cmp-str-len=$s strncmp-${b})"
++	done
++done
+diff --git a/tools/testing/selftests/bpf/progs/strncmp_bench.c b/tools/testing/selftests/bpf/progs/strncmp_bench.c
+new file mode 100644
+index 000000000000..18373a7df76e
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/strncmp_bench.c
+@@ -0,0 +1,50 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (C) 2021. Huawei Technologies Co., Ltd */
++#include <linux/types.h>
++#include <linux/bpf.h>
++#include <bpf/bpf_helpers.h>
++#include <bpf/bpf_tracing.h>
++
++#define STRNCMP_STR_SZ 4096
++
++/* Will be updated by benchmark before program loading */
++const volatile unsigned int cmp_str_len = 1;
++const char target[STRNCMP_STR_SZ];
++
++long hits = 0;
++char str[STRNCMP_STR_SZ];
++
++char _license[] SEC("license") = "GPL";
++
++static __always_inline int local_strncmp(const char *s1, unsigned int sz,
++					 const char *s2)
++{
++	int ret = 0;
++	unsigned int i;
++
++	for (i = 0; i < sz; i++) {
++		/* E.g. 0xff > 0x31 */
++		ret = (unsigned char)s1[i] - (unsigned char)s2[i];
++		if (ret || !s1[i])
++			break;
++	}
++
++	return ret;
++}
++
++SEC("tp/syscalls/sys_enter_getpgid")
++int strncmp_no_helper(void *ctx)
++{
++	if (local_strncmp(str, cmp_str_len + 1, target) < 0)
++		__sync_add_and_fetch(&hits, 1);
++	return 0;
++}
++
++SEC("tp/syscalls/sys_enter_getpgid")
++int strncmp_helper(void *ctx)
++{
++	if (bpf_strncmp(str, cmp_str_len + 1, target) < 0)
++		__sync_add_and_fetch(&hits, 1);
++	return 0;
++}
++
 -- 
 2.29.2
 
