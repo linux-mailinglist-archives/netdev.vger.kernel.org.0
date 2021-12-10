@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EA1946F940
-	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 03:36:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 425F846F941
+	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 03:37:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232156AbhLJCk1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Dec 2021 21:40:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35080 "EHLO
+        id S233363AbhLJCkd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Dec 2021 21:40:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230087AbhLJCk0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 21:40:26 -0500
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D238FC061746
-        for <netdev@vger.kernel.org>; Thu,  9 Dec 2021 18:36:52 -0800 (PST)
-Received: by mail-pj1-x1029.google.com with SMTP id gf14-20020a17090ac7ce00b001a7a2a0b5c3so8392470pjb.5
-        for <netdev@vger.kernel.org>; Thu, 09 Dec 2021 18:36:52 -0800 (PST)
+        with ESMTP id S230087AbhLJCkc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 21:40:32 -0500
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41871C061746
+        for <netdev@vger.kernel.org>; Thu,  9 Dec 2021 18:36:58 -0800 (PST)
+Received: by mail-pl1-x630.google.com with SMTP id n8so5326120plf.4
+        for <netdev@vger.kernel.org>; Thu, 09 Dec 2021 18:36:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=TW88ZYfqECxihaZG2wRwSDQZ3RpnTkkuxVf5gea+Zq0=;
-        b=ob4fS1RGK5CaoJFyax+0V+afb6kZHJtCmk03B6Tz1RDyticG8NFDE3tSv8dcURdFzS
-         iBbNxLnYTCWqC24WIG/foCpJlEDxUi6x+aVsO/18kTRx5wHbyBD5zmf4R0mHlvlhaegB
-         GUqcF0bnHg4XC6HW9ahTxRiewyB4+euxkC8i2AG1xtUO89vIoH3xiG7+w98z4RvjmjqI
-         2eCkmNpgEF1b1bL6D05gSmX0+lff6PhDFdiZxVRXk1C0w6Nm3hl3H7QgpE5uhdfOlEmV
-         XQ1tjaZ13N1iDhKAM+kgbhhItnCwNENl+8W/6r6KsDitw81GwbBm0qJsJvzQ/o5bOesX
-         6RdQ==
+        bh=VjJv16kmpXK9Vx6W/Jxt9RtFrqrsWnhvawZ4ZFN9ong=;
+        b=mIIrPaxLloqSScTzkCViqUAVU+aQ6/m2N4kU4p10PqjLJEayofzPF9ErkkpR88CbSF
+         fXwq1BDYc6oMSvWVpeVmRZHcwv66dYzQvLZY+sV8GLHxuLlowIWvpVuDDnj8E/W7Uzuu
+         CAtuIf9DxQTSTPJavnQWQD8vsk8uuQytl4TjyS4ffAh/gNGRYwL2/pgIxEsaikQwxIC/
+         updXYP4lZgYd5b0YKrVcLeDWhk6d5A+XfAPrZLIOdUSBn3lH1TT+vIvFXdXMK4GNi8E0
+         R4LLIuavTGI2xlV4FKOgPyUVbGjCx92unFXWQz9xBVhzmtBoZ20o2Qhjga6jqs1xGUTN
+         QdfA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=TW88ZYfqECxihaZG2wRwSDQZ3RpnTkkuxVf5gea+Zq0=;
-        b=QJFDvI/3UQmZhUEx+413DqDYGztea8UyL3KJq1ocU6780CT3Spev+kYnIwid9W3tGk
-         d0Ce84wi6atIkHcpBp4ZZWCxoZ04aQ8oxmPJAuZOcr6lhB4DqDJFGTRBzDoNURvBrFaK
-         8+FUxgxFo90ENZN/JvkbPAfVW2bWQhfaPUCHVCTlHUxEIAnCL6Vl52lA8P+TUYRMvf/d
-         LqzHaCuD2X/u255gXKWWl1vyWMCdz1c4QVYqkDRaWGxqq5qKJDLwxDNWgStMNnviW000
-         +WxwDr0Uq2NSvxRmspp37o60Ngn2JADUBxK5FYG0Auo9G6Lb8aajq0dt7pcN4YgaInpa
-         KjQg==
-X-Gm-Message-State: AOAM5319h0qp6iDbjxt1X4ea7poU8KMEFjhkVoYYXn9iz47ZlnoAQWrG
-        +S7sI/flvA2hk3MU0M8VXDfEYZBMlTCS2Q==
-X-Google-Smtp-Source: ABdhPJw4z9AFMdjBtRNggWbECeJLaNHQhcGG6BI5lnTb1uH7QO2pEo9+wyeSbx+RwzaPhxFBFsvwDw==
-X-Received: by 2002:a17:90a:be0c:: with SMTP id a12mr20818313pjs.204.1639103812013;
-        Thu, 09 Dec 2021 18:36:52 -0800 (PST)
+        bh=VjJv16kmpXK9Vx6W/Jxt9RtFrqrsWnhvawZ4ZFN9ong=;
+        b=yZ2YJIv8g0f2Q+4yYwf/TV4QcE7u/CCC2ZRZj7kZ1pc/85hjxPuGUkXE04r/cEwSZM
+         2AAjSN7n+1vdJ7uwCk+awtKJ31ZYy9rciZtrZEF9rdVPcOVNTWkpVrWZR06kiW+ePtiU
+         wWnfw16PHJuTcoKGwAtD+y+cBw1FY79F4jjxQfFp7b4damA4s1YfRN9PuQLYoL4AsKlD
+         BW8yI9rCmMvV2YOm8amvrkkoCmvVWj95smnaDQNMg1jhrOS6YIDwcgjKLcU1LRWA4Bkn
+         4GmaU9u8KkDo8+tfIvnSdwr8374fDKSfY0dmfhJKpZQqERakDRjhulO2rcpHGmbBrSjj
+         rY4g==
+X-Gm-Message-State: AOAM532tmGX3OE15aTYaXJP0xDCQ40DEuUw1hHsFyPra5SYvNRzfUPE9
+        Oh7IH+sOPjgN4daMvpr2PJMZboOP0/W8EA==
+X-Google-Smtp-Source: ABdhPJwboFSBLjR7oSDS+mUazYOv3rubNrlYnyp1WMOE07w6o+a4d/hu7uZUEdAkfnkg0mBlDkO4QQ==
+X-Received: by 2002:a17:90b:4b4e:: with SMTP id mi14mr20629640pjb.122.1639103817468;
+        Thu, 09 Dec 2021 18:36:57 -0800 (PST)
 Received: from localhost.localdomain ([111.204.182.100])
-        by smtp.gmail.com with ESMTPSA id g17sm861677pgh.46.2021.12.09.18.36.46
+        by smtp.gmail.com with ESMTPSA id g17sm861677pgh.46.2021.12.09.18.36.52
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 09 Dec 2021 18:36:51 -0800 (PST)
+        Thu, 09 Dec 2021 18:36:57 -0800 (PST)
 From:   xiangxia.m.yue@gmail.com
 To:     netdev@vger.kernel.org
 Cc:     Tonghao Zhang <xiangxia.m.yue@gmail.com>,
@@ -66,9 +66,9 @@ Cc:     Tonghao Zhang <xiangxia.m.yue@gmail.com>,
         Kumar Kartikeya Dwivedi <memxor@gmail.com>,
         Antoine Tenart <atenart@kernel.org>,
         Wei Wang <weiwan@google.com>, Arnd Bergmann <arnd@arndb.de>
-Subject: [net-next v3 1/2] net: sched: use queue_mapping to pick tx queue
-Date:   Fri, 10 Dec 2021 10:36:25 +0800
-Message-Id: <20211210023626.20905-2-xiangxia.m.yue@gmail.com>
+Subject: [net-next v3 2/2] net: sched: support hash/classid/cpuid selecting tx queue
+Date:   Fri, 10 Dec 2021 10:36:26 +0800
+Message-Id: <20211210023626.20905-3-xiangxia.m.yue@gmail.com>
 X-Mailer: git-send-email 2.30.1 (Apple Git-130)
 In-Reply-To: <20211210023626.20905-1-xiangxia.m.yue@gmail.com>
 References: <20211210023626.20905-1-xiangxia.m.yue@gmail.com>
@@ -80,60 +80,29 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 
-This patch fix issue:
-* If we install tc filters with act_skbedit in clsact hook.
-  It doesn't work, because netdev_core_pick_tx() overwrites
-  queue_mapping.
+This patch allows users to select queue_mapping, range
+from A to B. And users can use skb-hash, cgroup classid
+and cpuid to select Tx queues. Then we can load balance
+packets from A to B queue. The range is an unsigned 16bit
+value in decimal format.
 
-  $ tc filter ... action skbedit queue_mapping 1
+$ tc filter ... action skbedit queue_mapping hash-type normal A B
 
-And this patch is useful:
-* We can use FQ + EDT to implement efficient policies. Tx queues
-  are picked by xps, ndo_select_queue of netdev driver, or skb hash
-  in netdev_core_pick_tx(). In fact, the netdev driver, and skb
-  hash are _not_ under control. xps uses the CPUs map to select Tx
-  queues, but we can't figure out which task_struct of pod/containter
-  running on this cpu in most case. We can use clsact filters to classify
-  one pod/container traffic to one Tx queue. Why ?
+"skbedit queue_mapping QUEUE_MAPPING" (from "man 8 tc-skbedit") is
+enhanced with flags:
+* SKBEDIT_F_QUEUE_MAPPING_HASH
+* SKBEDIT_F_QUEUE_MAPPING_CLASSID
+* SKBEDIT_F_QUEUE_MAPPING_CPUID
 
-  In containter networking environment, there are two kinds of pod/
-  containter/net-namespace. One kind (e.g. P1, P2), the high throughput
-  is key in these applications. But avoid running out of network resource,
-  the outbound traffic of these pods is limited, using or sharing one
-  dedicated Tx queues assigned HTB/TBF/FQ Qdisc. Other kind of pods
-  (e.g. Pn), the low latency of data access is key. And the traffic is not
-  limited. Pods use or share other dedicated Tx queues assigned FIFO Qdisc.
-  This choice provides two benefits. First, contention on the HTB/FQ Qdisc
-  lock is significantly reduced since fewer CPUs contend for the same queue.
-  More importantly, Qdisc contention can be eliminated completely if each
-  CPU has its own FIFO Qdisc for the second kind of pods.
+Use skb->hash, cgroup classid, or cpuid to distribute packets.
+Then same range of tx queues can be shared for different flows,
+cgroups, or CPUs in a variety of scenarios.
 
-  There must be a mechanism in place to support classifying traffic based on
-  pods/container to different Tx queues. Note that clsact is outside of Qdisc
-  while Qdisc can run a classifier to select a sub-queue under the lock.
-
-  In general recording the decision in the skb seems a little heavy handed.
-  This patch introduces a per-CPU variable, suggested by Eric.
-
-  The skip txqueue flag will be cleared to avoid picking Tx queue in
-  next netdev, for example (not usual case):
-
-  eth0 (macvlan in Pod, skbedit queue_mapping) -> eth0.3 (vlan in Host)
-  -> eth0 (ixgbe in Host).
-
-  +----+      +----+      +----+
-  | P1 |      | P2 |      | Pn |
-  +----+      +----+      +----+
-    |           |           |
-    +-----------+-----------+
-                |
-                | clsact/skbedit
-                |      MQ
-                v
-    +-----------+-----------+
-    | q0        | q1        | qn
-    v           v           v
-  HTB/FQ      HTB/FQ  ...  FIFO
+For example, flows F1 may share range R1 with flows F2. The best
+way to do that is to set flag to SKBEDIT_F_QUEUE_MAPPING_HASH.
+If cgroup C1 share the R1 with cgroup C2 .. Cn, use the
+SKBEDIT_F_QUEUE_MAPPING_CLASSID. Of course, in some other scenario,
+C1 uses R1, while Cn can use Rn.
 
 Cc: Jamal Hadi Salim <jhs@mojatatu.com>
 Cc: Cong Wang <xiyou.wangcong@gmail.com>
@@ -152,86 +121,188 @@ Cc: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 Cc: Antoine Tenart <atenart@kernel.org>
 Cc: Wei Wang <weiwan@google.com>
 Cc: Arnd Bergmann <arnd@arndb.de>
-Suggested-by: Eric Dumazet <edumazet@google.com>
 Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 ---
- include/linux/netdevice.h | 21 +++++++++++++++++++++
- net/core/dev.c            |  6 +++++-
- net/sched/act_skbedit.c   |  4 +++-
- 3 files changed, 29 insertions(+), 2 deletions(-)
+ include/net/tc_act/tc_skbedit.h        |  1 +
+ include/uapi/linux/tc_act/tc_skbedit.h |  8 +++
+ net/sched/act_skbedit.c                | 74 ++++++++++++++++++++++++--
+ 3 files changed, 79 insertions(+), 4 deletions(-)
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 65117f01d5f2..64f12a819246 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -2997,6 +2997,7 @@ struct softnet_data {
- 	/* written and read only by owning cpu: */
- 	struct {
- 		u16 recursion;
-+		u8  skip_txqueue;
- 		u8  more;
- 	} xmit;
- #ifdef CONFIG_RPS
-@@ -4633,6 +4634,26 @@ static inline netdev_tx_t netdev_start_xmit(struct sk_buff *skb, struct net_devi
- 	return rc;
- }
+diff --git a/include/net/tc_act/tc_skbedit.h b/include/net/tc_act/tc_skbedit.h
+index 00bfee70609e..ee96e0fa6566 100644
+--- a/include/net/tc_act/tc_skbedit.h
++++ b/include/net/tc_act/tc_skbedit.h
+@@ -17,6 +17,7 @@ struct tcf_skbedit_params {
+ 	u32 mark;
+ 	u32 mask;
+ 	u16 queue_mapping;
++	u16 mapping_mod;
+ 	u16 ptype;
+ 	struct rcu_head rcu;
+ };
+diff --git a/include/uapi/linux/tc_act/tc_skbedit.h b/include/uapi/linux/tc_act/tc_skbedit.h
+index 800e93377218..5642b095d206 100644
+--- a/include/uapi/linux/tc_act/tc_skbedit.h
++++ b/include/uapi/linux/tc_act/tc_skbedit.h
+@@ -29,6 +29,13 @@
+ #define SKBEDIT_F_PTYPE			0x8
+ #define SKBEDIT_F_MASK			0x10
+ #define SKBEDIT_F_INHERITDSFIELD	0x20
++#define SKBEDIT_F_QUEUE_MAPPING_HASH	0x40
++#define SKBEDIT_F_QUEUE_MAPPING_CLASSID	0x80
++#define SKBEDIT_F_QUEUE_MAPPING_CPUID	0x100
++
++#define SKBEDIT_F_QUEUE_MAPPING_HASH_MASK (SKBEDIT_F_QUEUE_MAPPING_HASH | \
++					   SKBEDIT_F_QUEUE_MAPPING_CLASSID | \
++					   SKBEDIT_F_QUEUE_MAPPING_CPUID)
  
-+static inline void netdev_xmit_skip_txqueue(void)
-+{
-+	__this_cpu_write(softnet_data.xmit.skip_txqueue, 1);
-+}
-+
-+static inline bool netdev_xmit_txqueue_skipped(void)
-+{
-+	return __this_cpu_read(softnet_data.xmit.skip_txqueue);
-+}
-+
-+static inline struct netdev_queue *
-+netdev_tx_queue_mapping(struct net_device *dev, struct sk_buff *skb)
-+{
-+       int qm = skb_get_queue_mapping(skb);
-+
-+       /* Take effect only on current netdev. */
-+       __this_cpu_write(softnet_data.xmit.skip_txqueue, 0);
-+       return netdev_get_tx_queue(dev, netdev_cap_txqueue(dev, qm));
-+}
-+
- int netdev_class_create_file_ns(const struct class_attribute *class_attr,
- 				const void *ns);
- void netdev_class_remove_file_ns(const struct class_attribute *class_attr,
-diff --git a/net/core/dev.c b/net/core/dev.c
-index aba8acc1238c..a64297a4cc89 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -4069,7 +4069,11 @@ static int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
- 	else
- 		skb_dst_force(skb);
- 
--	txq = netdev_core_pick_tx(dev, skb, sb_dev);
-+	if (netdev_xmit_txqueue_skipped())
-+		txq = netdev_tx_queue_mapping(dev, skb);
-+	else
-+		txq = netdev_core_pick_tx(dev, skb, sb_dev);
-+
- 	q = rcu_dereference_bh(txq->qdisc);
- 
- 	trace_net_dev_queue(skb);
+ struct tc_skbedit {
+ 	tc_gen;
+@@ -45,6 +52,7 @@ enum {
+ 	TCA_SKBEDIT_PTYPE,
+ 	TCA_SKBEDIT_MASK,
+ 	TCA_SKBEDIT_FLAGS,
++	TCA_SKBEDIT_QUEUE_MAPPING_MAX,
+ 	__TCA_SKBEDIT_MAX
+ };
+ #define TCA_SKBEDIT_MAX (__TCA_SKBEDIT_MAX - 1)
 diff --git a/net/sched/act_skbedit.c b/net/sched/act_skbedit.c
-index d30ecbfc8f84..498feedad70a 100644
+index 498feedad70a..0b0d65d7112e 100644
 --- a/net/sched/act_skbedit.c
 +++ b/net/sched/act_skbedit.c
-@@ -58,8 +58,10 @@ static int tcf_skbedit_act(struct sk_buff *skb, const struct tc_action *a,
+@@ -10,6 +10,7 @@
+ #include <linux/kernel.h>
+ #include <linux/skbuff.h>
+ #include <linux/rtnetlink.h>
++#include <net/cls_cgroup.h>
+ #include <net/netlink.h>
+ #include <net/pkt_sched.h>
+ #include <net/ip.h>
+@@ -23,6 +24,37 @@
+ static unsigned int skbedit_net_id;
+ static struct tc_action_ops act_skbedit_ops;
+ 
++static u16 tcf_skbedit_hash(struct tcf_skbedit_params *params,
++			    struct sk_buff *skb)
++{
++	u16 queue_mapping = params->queue_mapping;
++	u16 mapping_mod = params->mapping_mod;
++	u32 mapping_hash_type = params->flags &
++				SKBEDIT_F_QUEUE_MAPPING_HASH_MASK;
++	u32 hash = 0;
++
++	if (!mapping_hash_type)
++		return netdev_cap_txqueue(skb->dev, queue_mapping);
++
++	switch (mapping_hash_type) {
++	case SKBEDIT_F_QUEUE_MAPPING_CLASSID:
++		hash = jhash_1word(task_get_classid(skb), 0);
++		break;
++	case SKBEDIT_F_QUEUE_MAPPING_HASH:
++		hash = skb_get_hash(skb);
++		break;
++	case SKBEDIT_F_QUEUE_MAPPING_CPUID:
++		hash = raw_smp_processor_id();
++		break;
++	default:
++		net_warn_ratelimited("The type of queue_mapping hash is not supported. 0x%x\n",
++				     mapping_hash_type);
++	}
++
++	queue_mapping = queue_mapping + hash % mapping_mod;
++	return netdev_cap_txqueue(skb->dev, queue_mapping);
++}
++
+ static int tcf_skbedit_act(struct sk_buff *skb, const struct tc_action *a,
+ 			   struct tcf_result *res)
+ {
+@@ -57,10 +89,9 @@ static int tcf_skbedit_act(struct sk_buff *skb, const struct tc_action *a,
+ 			break;
  		}
  	}
- 	if (params->flags & SKBEDIT_F_QUEUE_MAPPING &&
--	    skb->dev->real_num_tx_queues > params->queue_mapping)
-+	    skb->dev->real_num_tx_queues > params->queue_mapping) {
-+		netdev_xmit_skip_txqueue();
- 		skb_set_queue_mapping(skb, params->queue_mapping);
-+	}
+-	if (params->flags & SKBEDIT_F_QUEUE_MAPPING &&
+-	    skb->dev->real_num_tx_queues > params->queue_mapping) {
++	if (params->flags & SKBEDIT_F_QUEUE_MAPPING) {
+ 		netdev_xmit_skip_txqueue();
+-		skb_set_queue_mapping(skb, params->queue_mapping);
++		skb_set_queue_mapping(skb, tcf_skbedit_hash(params, skb));
+ 	}
  	if (params->flags & SKBEDIT_F_MARK) {
  		skb->mark &= ~params->mask;
- 		skb->mark |= params->mark & params->mask;
+@@ -94,6 +125,7 @@ static const struct nla_policy skbedit_policy[TCA_SKBEDIT_MAX + 1] = {
+ 	[TCA_SKBEDIT_PTYPE]		= { .len = sizeof(u16) },
+ 	[TCA_SKBEDIT_MASK]		= { .len = sizeof(u32) },
+ 	[TCA_SKBEDIT_FLAGS]		= { .len = sizeof(u64) },
++	[TCA_SKBEDIT_QUEUE_MAPPING_MAX]	= { .len = sizeof(u16) },
+ };
+ 
+ static int tcf_skbedit_init(struct net *net, struct nlattr *nla,
+@@ -110,6 +142,7 @@ static int tcf_skbedit_init(struct net *net, struct nlattr *nla,
+ 	struct tcf_skbedit *d;
+ 	u32 flags = 0, *priority = NULL, *mark = NULL, *mask = NULL;
+ 	u16 *queue_mapping = NULL, *ptype = NULL;
++	u16 mapping_mod = 0;
+ 	bool exists = false;
+ 	int ret = 0, err;
+ 	u32 index;
+@@ -154,7 +187,30 @@ static int tcf_skbedit_init(struct net *net, struct nlattr *nla,
+ 
+ 	if (tb[TCA_SKBEDIT_FLAGS] != NULL) {
+ 		u64 *pure_flags = nla_data(tb[TCA_SKBEDIT_FLAGS]);
++		u64 mapping_hash_type = *pure_flags &
++					SKBEDIT_F_QUEUE_MAPPING_HASH_MASK;
++		if (mapping_hash_type) {
++			u16 *queue_mapping_max;
++
++			/* Hash types are mutually exclusive. */
++			if (mapping_hash_type & (mapping_hash_type - 1))
++				return -EINVAL;
++
++			if (!tb[TCA_SKBEDIT_QUEUE_MAPPING_MAX])
++				return -EINVAL;
+ 
++			if (!tb[TCA_SKBEDIT_QUEUE_MAPPING])
++				return -EINVAL;
++
++			queue_mapping_max =
++				nla_data(tb[TCA_SKBEDIT_QUEUE_MAPPING_MAX]);
++
++			if (*queue_mapping_max < *queue_mapping)
++				return -EINVAL;
++
++			mapping_mod = *queue_mapping_max - *queue_mapping + 1;
++			flags |= mapping_hash_type;
++		}
+ 		if (*pure_flags & SKBEDIT_F_INHERITDSFIELD)
+ 			flags |= SKBEDIT_F_INHERITDSFIELD;
+ 	}
+@@ -206,8 +262,10 @@ static int tcf_skbedit_init(struct net *net, struct nlattr *nla,
+ 	params_new->flags = flags;
+ 	if (flags & SKBEDIT_F_PRIORITY)
+ 		params_new->priority = *priority;
+-	if (flags & SKBEDIT_F_QUEUE_MAPPING)
++	if (flags & SKBEDIT_F_QUEUE_MAPPING) {
+ 		params_new->queue_mapping = *queue_mapping;
++		params_new->mapping_mod = mapping_mod;
++	}
+ 	if (flags & SKBEDIT_F_MARK)
+ 		params_new->mark = *mark;
+ 	if (flags & SKBEDIT_F_PTYPE)
+@@ -274,6 +332,14 @@ static int tcf_skbedit_dump(struct sk_buff *skb, struct tc_action *a,
+ 		goto nla_put_failure;
+ 	if (params->flags & SKBEDIT_F_INHERITDSFIELD)
+ 		pure_flags |= SKBEDIT_F_INHERITDSFIELD;
++	if (params->flags & SKBEDIT_F_QUEUE_MAPPING_HASH_MASK) {
++		if (nla_put_u16(skb, TCA_SKBEDIT_QUEUE_MAPPING_MAX,
++				params->queue_mapping + params->mapping_mod - 1))
++			goto nla_put_failure;
++
++		pure_flags |= params->flags &
++			      SKBEDIT_F_QUEUE_MAPPING_HASH_MASK;
++	}
+ 	if (pure_flags != 0 &&
+ 	    nla_put(skb, TCA_SKBEDIT_FLAGS, sizeof(pure_flags), &pure_flags))
+ 		goto nla_put_failure;
 -- 
 2.27.0
 
