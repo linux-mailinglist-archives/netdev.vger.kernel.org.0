@@ -2,174 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 83A2346FD37
-	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 10:00:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 34DD746FD5F
+	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 10:06:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238933AbhLJJEI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Dec 2021 04:04:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35528 "EHLO
+        id S239047AbhLJJKB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Dec 2021 04:10:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238898AbhLJJEI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 04:04:08 -0500
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB014C061746
-        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 01:00:33 -0800 (PST)
-Received: from ip4d173d4a.dynamic.kabel-deutschland.de ([77.23.61.74] helo=[192.168.66.200]); authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1mvblV-0006nW-L4; Fri, 10 Dec 2021 10:00:30 +0100
-Message-ID: <cb51a8cc-7c43-745e-e075-398eee47b071@leemhuis.info>
-Date:   Fri, 10 Dec 2021 10:00:28 +0100
+        with ESMTP id S234276AbhLJJKA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 04:10:00 -0500
+Received: from mail-ua1-x92f.google.com (mail-ua1-x92f.google.com [IPv6:2607:f8b0:4864:20::92f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1C0AC061746
+        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 01:06:25 -0800 (PST)
+Received: by mail-ua1-x92f.google.com with SMTP id 30so15548642uag.13
+        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 01:06:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9tGFC4LzWqCgm0WZvcBZCqbYx5+hs05WaoMGVHtCwSQ=;
+        b=dzpOCEItnevmnc8O0NJ2fSw3n6TQ92XxO7pp66r2wpqtT5lx1yKL302TGJBZ+fRHur
+         wrIK+V1zGgd2tRlm6qJgkI4PG417GtmPOwMQYTBT4kxCpHfZtsmIZkund8StmOt6DbLw
+         gkl0/0hO55nO4rj6kPf/26O5z/2FSwjBNz47wBZ+79mv8fJ9lTNFFMQd9ZUKxB0MbvY8
+         1dz5TJo0RllEyA0kSN82ISIyHcOnjYgfsDxTaeVdGSDAuPDD88B+tg8p4wnAXytE6bkX
+         Dl2YXCnWW0EwEJExzaZIIZ5FOngJEg32AH2WWgogRr0Jk2NXNNu77PAOSNOfU3oHEGhE
+         JPGA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9tGFC4LzWqCgm0WZvcBZCqbYx5+hs05WaoMGVHtCwSQ=;
+        b=iDcv4Qa302VRKqcX/5oqu+JrMcTMWkJ9eZRL5u5+1Zzg/v9H7YxI76AgK0mXKAJSAA
+         NivPyw016NwTjYHrPLWFSAkr/Za15+45wseU3yiNJtas5tJdX7Jni6cuIfQKtf1j8fd2
+         s8k3vCrGPQV3yHfmn3FAdYN8NS4yCrAJuAFqtMrbEFE6UoNWrnBORisLpe5R3V/3nbT4
+         fwZq0TB4NAPOShKaIM1rOuOKTL9t9wlgjCy1MV91vWxlX8+YOEGo/fmx4vOPtkZPVrxZ
+         bLQ+1IPkLkUNEWQ0l7ehsKoHWq/77hqBIP1mVGxO6npSN5AE8cyZF5iH+pv0TZ7yeg+L
+         WydA==
+X-Gm-Message-State: AOAM532jjQfNxKMHXKxBdyG1SzRE/YeTx0TjFb53G9U4XaHKqIJTFvaO
+        viaqw6M9vM1QD6rDQZbTJrgDDVDEzgTI9DhqEws=
+X-Google-Smtp-Source: ABdhPJwrzX4R908X787m5pCkNfhqt1pa0auQvUb6jSQ5RECJlas/hTNiNuMIw0lJZP+KkheO/qddaS1r4cuYm+MR/EA=
+X-Received: by 2002:a05:6102:38ce:: with SMTP id k14mr14134171vst.70.1639127185051;
+ Fri, 10 Dec 2021 01:06:25 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: Fw: [Bug 215129] New: Linux kernel hangs during power down
- #forregzbot
-Content-Language: en-BS
-From:   Thorsten Leemhuis <regressions@leemhuis.info>
-To:     "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
-        netdev <netdev@vger.kernel.org>
-References: <20211124144505.31e15716@hermes.local>
- <bca0a700-65ba-1b8d-c265-b1051423a7e2@leemhuis.info>
- <93f23a8b-518d-d573-4b46-5883477eedfc@leemhuis.info>
-In-Reply-To: <93f23a8b-518d-d573-4b46-5883477eedfc@leemhuis.info>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1639126833;05e2f11d;
-X-HE-SMSGID: 1mvblV-0006nW-L4
+References: <CALW65jbKsDGTXghqQFQe2CxYbWPakkaeFrr+3vAA4gAPjeeL2w@mail.gmail.com>
+In-Reply-To: <CALW65jbKsDGTXghqQFQe2CxYbWPakkaeFrr+3vAA4gAPjeeL2w@mail.gmail.com>
+From:   Sergio Paracuellos <sergio.paracuellos@gmail.com>
+Date:   Fri, 10 Dec 2021 10:06:14 +0100
+Message-ID: <CAMhs-H9ve2VtLm8x__DEb0_CpoYsqix1HwLDcZ8_ZeEK9vdfQg@mail.gmail.com>
+Subject: Re: MT7621 ethernet does not get probed on net-next branch after 5.15 merge
+To:     DENG Qingfang <dqfext@gmail.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Siddhant Gupta <siddhantgupta416@gmail.com>,
+        Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>, Felix Fietkau <nbd@nbd.name>,
+        John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        =?UTF-8?Q?Ren=C3=A9_van_Dorst?= <opensource@vdorst.com>,
+        OpenWrt Development List <openwrt-devel@lists.openwrt.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi, this is your Linux kernel regression tracker speaking.
+Hi Qingfang,
 
-On 04.12.21 09:55, Thorsten Leemhuis wrote:
-> Top-posting for once, to make this easy accessible to everyone.
+On Fri, Oct 15, 2021 at 4:23 PM DENG Qingfang <dqfext@gmail.com> wrote:
+>
+> Hi,
+>
+> After the merge of 5.15.y into net-next, MT7621 ethernet
+> (mtk_eth_soc.c) does not get probed at all.
+>
+> Kernel log before 5.15 merge:
+> ...
+> libphy: Fixed MDIO Bus: probed
+> libphy: mdio: probed
+> mt7530 mdio-bus:1f: MT7530 adapts as multi-chip module
+> mtk_soc_eth 1e100000.ethernet eth0: mediatek frame engine at 0xbe100000, irq 20
+> mt7621-pci 1e140000.pcie: host bridge /pcie@1e140000 ranges:
+> ...
+>
+> Kernel log after 5.15 merge:
+> ...
+> libphy: Fixed MDIO Bus: probed
+> mt7621-pci 1e140000.pcie: host bridge /pcie@1e140000 ranges:
+> ...
+>
+>
+> I tried adding debug prints into the .mtk_probe function, but it did
+> not execute.
+> There are no dts changes for MT7621 between 5.14 and 5.15, so I
+> believe it should be something else.
+>
+> Any ideas?
 
-Once again. The fix sadly didn't link to the mail with the report on the
-list, as it should (see https://git.kernel.org/linus/1f57bd42b77c ),
-otherwise this message wouldn't be needed. But whatever, for the record
-& regzbot:
+I had time to create a new image for my gnubee board using kernel 5.15
+and this problem does not exist on my side. Since no more mails have
+come for a while I guess this was a problem from your configuration,
+but just in case I preferred to answer to let you know. I am currently
+using v5.15.7 from linux-stable with some other patches that will be
+for 5.16. Just in case, you can check the kernel tree [0] I am
+currently using.
 
-A fix was committed here:
+Best regards,
+     Sergio Paracuellos
 
-https://kernel.googlesource.com/pub/scm/linux/kernel/git/tnguy/net-queue/+/de98e3651464acb08a5bba6df9ad323c7e9cdc33
-
-Not yet in next and the commit-id is likely to different later, but I
-ignore that for now and tell regzbot about it nevertheless:
-
-#regzbot fixed-by: de98e3651464acb08a5bba6df9ad323c7e9cdc33
-
-Ciao, Thorsten
-
-
-> A fix is discussed here:
-> 
-> #regzbot link https://bugzilla.kernel.org/show_bug.cgi?id=215129
-> #regzbot monitor
-> https://lore.kernel.org/all/6bb28d2f-4884-7696-0582-c26c35534bae@gmail.com/
-> 
-> Ciao, Thorsten, your Linux kernel regression tracker.
-> 
-> TWIMC: this mail is primarily send for documentation purposes and for
-> regzbot, my Linux kernel regression tracking bot. These mails usually
-> contain '#forregzbot' in the subject, to make them easy to spot and filter.
-> 
-> P.S.: I guess I'll modify regzbot to automatically catch related
-> discussions if they links to the same bugzilla ticket (which I forgot to
-> tell regzbot about when I told it about the regression), then messages
-> like this wouldn't be needed.
-> 
-> 
-> On 25.11.21 12:17, Thorsten Leemhuis wrote:
->> Hi, this is your Linux kernel regression tracker speaking.
->>
->> On 24.11.21 23:45, Stephen Hemminger wrote:
->>>
->>>
->>> Begin forwarded message:
->>>
->>> Date: Wed, 24 Nov 2021 21:14:53 +0000
->>> From: bugzilla-daemon@bugzilla.kernel.org
->>> To: stephen@networkplumber.org
->>> Subject: [Bug 215129] New: Linux kernel hangs during power down
->>>
->>>
->>> https://bugzilla.kernel.org/show_bug.cgi?id=215129
->>>
->>>             Bug ID: 215129
->>>            Summary: Linux kernel hangs during power down
->>>            Product: Networking
->>>            Version: 2.5
->>>     Kernel Version: 5.15
->>>           Hardware: All
->>>                 OS: Linux
->>>               Tree: Mainline
->>>             Status: NEW
->>>           Severity: normal
->>>           Priority: P1
->>>          Component: Other
->>>           Assignee: stephen@networkplumber.org
->>>           Reporter: martin.stolpe@gmail.com
->>>         Regression: No
->>>
->>> Created attachment 299703
->>>   --> https://bugzilla.kernel.org/attachment.cgi?id=299703&action=edit  
->>> Kernel log after timeout occured
->>>
->>> On my system the kernel is waiting for a task during shutdown which doesn't
->>> complete.
->>>
->>> The commit which causes this behavior is:
->>> [f32a213765739f2a1db319346799f130a3d08820] ethtool: runtime-resume netdev
->>> parent before ethtool ioctl ops
->>>
->>> This bug causes also that the system gets unresponsive after starting Steam:
->>> https://steamcommunity.com/app/221410/discussions/2/3194736442566303600/
->>
->> TWIMC: To be sure this issue doesn't fall through the cracks unnoticed,
->> I'm adding it to regzbot, my Linux kernel regression tracking bot:
->>
->> #regzbot ^introduced f32a213765739f2a1db319346799f130a3d08820
->> #regzbot title net: kernel hangs during power down
->> #regzbot ignore-activity
->>
->> Ciao, Thorsten, your Linux kernel regression tracker.
->>
->> P.S.: As a Linux kernel regression tracker I'm getting a lot of reports
->> on my table. I can only look briefly into most of them. Unfortunately
->> therefore I sometimes will get things wrong or miss something important.
->> I hope that's not the case here; if you think it is, don't hesitate to
->> tell me about it in a public reply. That's in everyone's interest, as
->> what I wrote above might be misleading to everyone reading this; any
->> suggestion I gave they thus might sent someone reading this down the
->> wrong rabbit hole, which none of us wants.
->>
->> BTW, I have no personal interest in this issue, which is tracked using
->> regzbot, my Linux kernel regression tracking bot
->> (https://linux-regtracking.leemhuis.info/regzbot/). I'm only posting
->> this mail to get things rolling again and hence don't need to be CC on
->> all further activities wrt to this regression.
->>
->> P.S.: If you want to know more about regzbot, check out its
->> web-interface, the getting start guide, and/or the references documentation:
->>
->> https://linux-regtracking.leemhuis.info/regzbot/
->> https://gitlab.com/knurd42/regzbot/-/blob/main/docs/getting_started.md
->> https://gitlab.com/knurd42/regzbot/-/blob/main/docs/reference.md
->>
->> The last two documents will explain how you can interact with regzbot
->> yourself if your want to.
->>
->> Hint for the reporter: when reporting a regression it's in your interest
->> to tell #regzbot about it in the report, as that will ensure the
->> regression gets on the radar of regzbot and the regression tracker.
->> That's in your interest, as they will make sure the report won't fall
->> through the cracks unnoticed.
->>
->> Hint for developers: you normally don't need to care about regzbot, just
->> fix the issue as you normally would. Just remember to include a 'Link:'
->> tag to the report in the commit message, as explained in
->> Documentation/process/submitting-patches.rst
->> That aspect was recently was made more explicit in commit 1f57bd42b77c:
->> https://git.kernel.org/linus/1f57bd42b77c
->>
+[0]: https://github.com/paraka/linux/tree/gbpc1-5.15
