@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F3EE646FC07
+	by mail.lfdr.de (Postfix) with ESMTP id 6292346FC05
 	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 08:44:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234891AbhLJHsZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Dec 2021 02:48:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46346 "EHLO
+        id S233734AbhLJHsW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Dec 2021 02:48:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233882AbhLJHsO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 02:48:14 -0500
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 303C2C0617A1
-        for <netdev@vger.kernel.org>; Thu,  9 Dec 2021 23:44:40 -0800 (PST)
-Received: by mail-pl1-x635.google.com with SMTP id b11so5710349pld.12
-        for <netdev@vger.kernel.org>; Thu, 09 Dec 2021 23:44:40 -0800 (PST)
+        with ESMTP id S233901AbhLJHsQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 02:48:16 -0500
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16A62C0617A2
+        for <netdev@vger.kernel.org>; Thu,  9 Dec 2021 23:44:42 -0800 (PST)
+Received: by mail-pf1-x42f.google.com with SMTP id 8so7760694pfo.4
+        for <netdev@vger.kernel.org>; Thu, 09 Dec 2021 23:44:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=cXlcfrrJcOZBqldY5yvVfuYUB56sD5WnFhPJ5m+yXKE=;
-        b=FEmes7JSJ6x/u+ORwr1szNDsuGIBJUbaqR2SxjRkGmM4ugH6Jo8Yfkvkw6yHG0UrgH
-         LUL3kpYzw1jSh0G65WeFJhSG7wpa195HvsAjbrj6exvXdeGv/L0Qe1sK+ohXZ/hgYH3a
-         PbuRsq/FFAwjb4NwsQdvkAWgVvFxqFN6Y6mUh93GGDe29fAmcYjtfR5EqbNTSY0TjH8R
-         bISgJHRYfcAXYAmYglmv9N5fqkOa/f5T4/qLh/xFN+HQK95U/GruJAulEl6j/xqXB88L
-         ShSpR+McLXuL5oVDclS0sxvvxXKMSZwatMLkWuokNVtWIMCv6t0RBNms1tcHscUb0m3Y
-         PG5Q==
+        bh=iYlWezmQ+H2UHYpXYA112HiHGbAK6PAbKqAqIdMSK0E=;
+        b=LCV3JmR1AhNvPJEFarVXJfbF2ghrfiI/dYp/uW2fOJnOkyFz+cafbruik7tZ7PwfO5
+         HJyEI8mIYWEQgAkGP4SDRz+1U8kTS9PvRGqjwDx1CSdNNg1iJZejRntc25Xl3ZIQkcjj
+         SBInUPKqsVz8fnMiiXfYSnwL4hpPW2r/9eiJH+T3wYRHPnCPj9c3kF+6seRZBNTZOTj/
+         wxxN9shUAI6A96LwHhAwjWOUQc9IH1YoFJUWVVSCInyE2wJM37wdDm16JMn4zuJtodDb
+         d8BO5XbkhHTzP8LEYgFPsSEmyKO59/1d7RVe/JwwtuaVcQMqVSzZsrN8+lpbongrPlZ+
+         3sHA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=cXlcfrrJcOZBqldY5yvVfuYUB56sD5WnFhPJ5m+yXKE=;
-        b=PcpTJHrAaeTjTg4TVkyNEPQ/K+T+N3y3/h34QftZ6a0tpTrcAH6AnfV8u8dK/Efpin
-         C8wAJI8ku/u8NC6RzkE/VjTi0Agrpt/Vh5yK82BU454ep8bzF12eKP/FVBeVkr8hxzfC
-         Sr0rCqIrFjrsgXJIW1FUllDntSgDEF7tGdkuDZP5foK1ch7VrW15GeIwiGyiRMH6VxAc
-         7JpABye2EcWK7Szq7t8D01DC1BuBi+dkLAIjfpmwvi/muvjfrX1GTDD+VYHFAZQXL/O1
-         r6Ff5i2ZzhjRMNl1Jhh8i+eRHgurLQtKHKjII1fEiya90y8ebfvFlv7dZQsTxFtHj0eq
-         E53A==
-X-Gm-Message-State: AOAM531cZeGNMfVQDjviqoNF/+kudz1cmmptPPRwr48JG+1ffgD7QNae
-        g0l3fQKHuvPlgsJVguKip+l4+E0Y02hADQ==
-X-Google-Smtp-Source: ABdhPJzd/wQpXP7qt5j7e+jT1PSDwDSWCn9c5Swu8ITKanm+z6BsKmnGymSW/K1Vs6JHVrD42deUfA==
-X-Received: by 2002:a17:90b:3887:: with SMTP id mu7mr22045347pjb.41.1639122279704;
-        Thu, 09 Dec 2021 23:44:39 -0800 (PST)
+        bh=iYlWezmQ+H2UHYpXYA112HiHGbAK6PAbKqAqIdMSK0E=;
+        b=7DXJDy1r6jYcF/l2Ktx4W8fPPDj7uuv3oBcj4OZqAJqSnApsXb0wIE3VXWLEpqm75r
+         Dn87cTw70pvV3y+a7WPw8tOFalAmKMvLsNpwtlRbnAt5kXKEOuzWxRnJrd+XWmdfJ4/R
+         GOuASdqXndAkHl4UXF5GCbTKV2qJDh65LlOGpGI0o+jpNznHZbZKra3V0YDjiXJnXAPK
+         Miu5ZdSTlsvm2fDSW1J2OK1mbOIWMjZLfRAhexGS003pwm3OemqA10Jbf31Knv+IsH7g
+         lq6fmkwRZEK4RaN/OQatMdxxUc78BdLoqbDX2jFM+5jLKEJ/DGG3iE78aUQcpzfy9Z5h
+         FLBQ==
+X-Gm-Message-State: AOAM531v+6Wu07Ny/bkS9rL8VLyDihzJrHxsTjrWeJzmVeIMeQkeKPt6
+        zm6QAhqhRy2fZ83rAO3GoQmJsWRxhnz0rw==
+X-Google-Smtp-Source: ABdhPJwb+agvS4Sw1MlwxQ+VqUbW4boxf8/zNL5GkKyBI3KtRKvyiUwN3KWYHM+edOmzT9HH47r9Fg==
+X-Received: by 2002:a63:8749:: with SMTP id i70mr38747117pge.487.1639122281680;
+        Thu, 09 Dec 2021 23:44:41 -0800 (PST)
 Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:4f5:a6b4:3889:ebe5])
-        by smtp.gmail.com with ESMTPSA id y12sm2001346pfe.140.2021.12.09.23.44.38
+        by smtp.gmail.com with ESMTPSA id y12sm2001346pfe.140.2021.12.09.23.44.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Dec 2021 23:44:39 -0800 (PST)
+        Thu, 09 Dec 2021 23:44:41 -0800 (PST)
 From:   Eric Dumazet <eric.dumazet@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev <netdev@vger.kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH V2 net-next 3/6] net: add netns refcount tracker to struct seq_net_private
-Date:   Thu,  9 Dec 2021 23:44:23 -0800
-Message-Id: <20211210074426.279563-4-eric.dumazet@gmail.com>
+Subject: [PATCH V2 net-next 4/6] net: sched: add netns refcount tracker to struct tcf_exts
+Date:   Thu,  9 Dec 2021 23:44:24 -0800
+Message-Id: <20211210074426.279563-5-eric.dumazet@gmail.com>
 X-Mailer: git-send-email 2.34.1.173.g76aa8bc2d0-goog
 In-Reply-To: <20211210074426.279563-1-eric.dumazet@gmail.com>
 References: <20211210074426.279563-1-eric.dumazet@gmail.com>
@@ -69,75 +69,48 @@ From: Eric Dumazet <edumazet@google.com>
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- fs/proc/proc_net.c           | 19 ++++++++++++++++---
- include/linux/seq_file_net.h |  3 ++-
- 2 files changed, 18 insertions(+), 4 deletions(-)
+ include/net/pkt_cls.h | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/fs/proc/proc_net.c b/fs/proc/proc_net.c
-index 15c2e55d2ed2c4b8b00209ecf9b18caa1a47f1b7..39b823ab2564edf62fd08983ec44560b1120ee24 100644
---- a/fs/proc/proc_net.c
-+++ b/fs/proc/proc_net.c
-@@ -61,15 +61,27 @@ static int seq_open_net(struct inode *inode, struct file *file)
- 	}
- #ifdef CONFIG_NET_NS
- 	p->net = net;
-+	netns_tracker_alloc(net, &p->ns_tracker, GFP_KERNEL);
- #endif
- 	return 0;
- }
- 
-+static void seq_file_net_put_net(struct seq_file *seq)
-+{
-+#ifdef CONFIG_NET_NS
-+	struct seq_net_private *priv = seq->private;
-+
-+	put_net_track(priv->net, &priv->ns_tracker);
-+#else
-+	put_net(&init_net);
-+#endif
-+}
-+
- static int seq_release_net(struct inode *ino, struct file *f)
- {
- 	struct seq_file *seq = f->private_data;
- 
--	put_net(seq_file_net(seq));
-+	seq_file_net_put_net(seq);
- 	seq_release_private(ino, f);
- 	return 0;
- }
-@@ -87,7 +99,8 @@ int bpf_iter_init_seq_net(void *priv_data, struct bpf_iter_aux_info *aux)
- #ifdef CONFIG_NET_NS
- 	struct seq_net_private *p = priv_data;
- 
--	p->net = get_net(current->nsproxy->net_ns);
-+	p->net = get_net_track(current->nsproxy->net_ns, &p->ns_tracker,
-+			       GFP_KERNEL);
- #endif
- 	return 0;
- }
-@@ -97,7 +110,7 @@ void bpf_iter_fini_seq_net(void *priv_data)
- #ifdef CONFIG_NET_NS
- 	struct seq_net_private *p = priv_data;
- 
--	put_net(p->net);
-+	put_net_track(p->net, &p->ns_tracker);
- #endif
- }
- 
-diff --git a/include/linux/seq_file_net.h b/include/linux/seq_file_net.h
-index 0fdbe1ddd8d1bd53269c4ca49297544860f3d3e5..b97912fdbae78304be7c3c45c862dce880e08dd4 100644
---- a/include/linux/seq_file_net.h
-+++ b/include/linux/seq_file_net.h
-@@ -9,7 +9,8 @@ extern struct net init_net;
- 
- struct seq_net_private {
- #ifdef CONFIG_NET_NS
+diff --git a/include/net/pkt_cls.h b/include/net/pkt_cls.h
+index 193f88ebf629bd5a66c2d155346b40695e259a13..cebc1bd713b68e9c9c7b7656f569e749c0dc9297 100644
+--- a/include/net/pkt_cls.h
++++ b/include/net/pkt_cls.h
+@@ -202,7 +202,8 @@ struct tcf_exts {
+ 	__u32	type; /* for backward compat(TCA_OLD_COMPAT) */
+ 	int nr_actions;
+ 	struct tc_action **actions;
 -	struct net *net;
 +	struct net	*net;
 +	netns_tracker	ns_tracker;
  #endif
- };
+ 	/* Map to export classifier specific extension TLV types to the
+ 	 * generic extensions API. Unsupported extensions must be set to 0.
+@@ -218,6 +219,7 @@ static inline int tcf_exts_init(struct tcf_exts *exts, struct net *net,
+ 	exts->type = 0;
+ 	exts->nr_actions = 0;
+ 	exts->net = net;
++	netns_tracker_alloc(net, &exts->ns_tracker, GFP_KERNEL);
+ 	exts->actions = kcalloc(TCA_ACT_MAX_PRIO, sizeof(struct tc_action *),
+ 				GFP_KERNEL);
+ 	if (!exts->actions)
+@@ -236,6 +238,8 @@ static inline bool tcf_exts_get_net(struct tcf_exts *exts)
+ {
+ #ifdef CONFIG_NET_CLS_ACT
+ 	exts->net = maybe_get_net(exts->net);
++	if (exts->net)
++		netns_tracker_alloc(exts->net, &exts->ns_tracker, GFP_KERNEL);
+ 	return exts->net != NULL;
+ #else
+ 	return true;
+@@ -246,7 +250,7 @@ static inline void tcf_exts_put_net(struct tcf_exts *exts)
+ {
+ #ifdef CONFIG_NET_CLS_ACT
+ 	if (exts->net)
+-		put_net(exts->net);
++		put_net_track(exts->net, &exts->ns_tracker);
+ #endif
+ }
  
 -- 
 2.34.1.173.g76aa8bc2d0-goog
