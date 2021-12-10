@@ -2,134 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D09A470668
-	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 17:52:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 35FD7470669
+	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 17:52:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244210AbhLJQ4H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Dec 2021 11:56:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34532 "EHLO
+        id S244213AbhLJQ4S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Dec 2021 11:56:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240946AbhLJQ4G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 11:56:06 -0500
-Received: from mail-oi1-x236.google.com (mail-oi1-x236.google.com [IPv6:2607:f8b0:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6C6DC061746
-        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 08:52:30 -0800 (PST)
-Received: by mail-oi1-x236.google.com with SMTP id m6so14026816oim.2
-        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 08:52:30 -0800 (PST)
+        with ESMTP id S244155AbhLJQ4S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 11:56:18 -0500
+Received: from mail-oi1-x233.google.com (mail-oi1-x233.google.com [IPv6:2607:f8b0:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 103F8C061746;
+        Fri, 10 Dec 2021 08:52:43 -0800 (PST)
+Received: by mail-oi1-x233.google.com with SMTP id bf8so14017039oib.6;
+        Fri, 10 Dec 2021 08:52:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=2xtdh4wdBVz94bDpVXdLWduDzK1M5xMEVd1Ftm+SOt4=;
-        b=AjevYMSBRh88DbACbTSGjl0Xzc60sFmBHrrRkdKLpRaTdkEmidHHgl4p+jVDFq5CvZ
-         dmxAr0IHQ3lsRqR26JikSWa7PSLFGgj7rGKgp/Vyz6iArVpDuL4mZgqpUdXAWmVtx8mR
-         vH2wcQXzwXkdEcOFTf/pizSDA687OCz5OstPXXVZwX5tU2MT8iRfMCoGjD+shfd5QS1+
-         /x3ujEPO2rai6Bx1oeLdvbMr1qw6+cNeQOWohAX41vPVNshfgIsJwtzJ140a1ItMdoH5
-         rGZAiHSMPCb5CMIbW/BVmTiOMemuxLVBnLjLWtucuQKrng7cDUPMzAYhtffqq9J90sPw
-         f3Uw==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=22649vhBq2+EXGoWXGfR5yBZHrxpcXiBe7SMU6QvJ9E=;
+        b=VftFAwBD3J9MksWNJ5Q0i0pQIydLpWe2AWuYf9hpQ/Ka1F7NoQydT0ZsBgvzcnqTFM
+         7eSKfeBCTKGgjyzPFvXkS+1bGmvSjHVgpptuhuF/bIWT5D9/oZoa+UvPzksq41QYQlik
+         AIMg32rj7fr2HUHp+J34ApUAL/Hgtpufq6jvZnFaB4ieYkpMHUyki2KqcLdg6HX12jX0
+         cOV7ZE0a65Q/jG2Pq145sXlYdVdvVW4u8KbUB7S0MHSdLzRo76Pf4lURvrM1qrqecCfy
+         daAlQlCQOa7tON7rXYVKL3q77PzIptp+nfPEqF9Dv5MHqG/yt+FfJg7CAT1ekh9RLi9x
+         nG8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=2xtdh4wdBVz94bDpVXdLWduDzK1M5xMEVd1Ftm+SOt4=;
-        b=MJ5CjhstlxSRYFWYDXsW4+xF/Jo4sjs/HU/3zAdnRe1xZbKSM3z0G6vhGRhchLbgFu
-         3Ul5nTqt4cZWnP7aASgnb2Gt2iRvJ0FAVS3zBRs5chm9PwyjN6TmuBVldW4HDE4sl2IK
-         +jHY4RFUnuQ8KkNmAkzv53M/njQihC0BeA+MjSAelFbsdUqKJ6nxd6LdVSFGwRGf4zi5
-         LKHtpv8GoD116j5XdQ8M8I/AdnHyiJ4pjttXN4d1QxsW62oSPr+FXg7wya7EE5p+r5s0
-         gDm7JLhMKrea2b58VuHrJpEnRmLtzsZz2jLgGGLvgX2woJ6RGkdhpn+SED5q6DbPhKub
-         M4pA==
-X-Gm-Message-State: AOAM531AS1WPIz/4IdrJ7HZUYYKxuXxzQrYpk7iI217MKMqDwSn8+Xas
-        wUHnyD+Fr7O6P0eWsT5KkMU=
-X-Google-Smtp-Source: ABdhPJzhlgIaaBTk+Ru1G6t4Mlko9m2icdxMWty5eD1MHcZofrCubXa+PTwPq98lFZZ1kvf9v0pHcQ==
-X-Received: by 2002:a54:4692:: with SMTP id k18mr13427034oic.93.1639155150202;
-        Fri, 10 Dec 2021 08:52:30 -0800 (PST)
-Received: from localhost ([172.243.151.11])
-        by smtp.gmail.com with ESMTPSA id bq5sm864656oib.55.2021.12.10.08.52.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Dec 2021 08:52:29 -0800 (PST)
-Date:   Fri, 10 Dec 2021 08:52:21 -0800
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     John Fastabend <john.fastabend@gmail.com>,
-        xiangxia.m.yue@gmail.com, netdev@vger.kernel.org
-Cc:     Tonghao Zhang <xiangxia.m.yue@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Wei Wang <weiwan@google.com>, Arnd Bergmann <arnd@arndb.de>
-Message-ID: <61b385c5c21c3_203252085a@john.notmuch>
-In-Reply-To: <61b383c6373ca_1f50e20816@john.notmuch>
-References: <20211208145459.9590-1-xiangxia.m.yue@gmail.com>
- <20211208145459.9590-3-xiangxia.m.yue@gmail.com>
- <61b383c6373ca_1f50e20816@john.notmuch>
-Subject: RE: [net v5 2/3] net: sched: add check tc_skip_classify in sch egress
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=22649vhBq2+EXGoWXGfR5yBZHrxpcXiBe7SMU6QvJ9E=;
+        b=0BFuakcU8BGOZNrRp6ptFOjTmBuJHk/ZGdvI+LTa+DssKyePcuqS1z8t14G+UEVxg2
+         pMpMLA38hj+DPJ0Z7imuxdJdzOxtO+hFkVgn1DQ8Khsg5vv9TomkVCpdz0R4BcRLfWVu
+         beE/7wYFlLRM3usZE1203QQA0zlLV52LXurVYgF1OhsSdOa2Ox4an0sm41JooorbojZo
+         Km2LGJjbuuz2jGfE5LqJI6pnNcnhMuFXPLY7HZlqyKPJBGRZGdLWbmV3XMTTOmt4Xn1E
+         InBI9T145BalUm0w4tURebk+5EyqMyZAnglmWgQQZmp2abz6qjOZjrZcgE6/qoMe3Vcr
+         skQQ==
+X-Gm-Message-State: AOAM531Y26VwVbyDQWtSfoXUGrJ/zyjgtCgjz4uzb2rtlwJ+Dtolqp6X
+        lCJHN3TPaPfdEmeaAUijr9j+JcK7o9s=
+X-Google-Smtp-Source: ABdhPJxW9Ar0jM0wiz/JsNh5FO3yZcq6iyIKA1cdOfyZnTsUsxNwdyAP2uJove/VQzA+HL9k+sLMbA==
+X-Received: by 2002:a05:6808:699:: with SMTP id k25mr13313595oig.135.1639155162438;
+        Fri, 10 Dec 2021 08:52:42 -0800 (PST)
+Received: from [172.16.0.2] ([8.48.134.30])
+        by smtp.googlemail.com with ESMTPSA id s2sm597106otr.69.2021.12.10.08.52.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 10 Dec 2021 08:52:41 -0800 (PST)
+Message-ID: <36bbf0c3-06a9-db35-46f1-320cc502ef75@gmail.com>
+Date:   Fri, 10 Dec 2021 09:52:40 -0700
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.4.0
+Subject: Re: [syzbot] KMSAN: uninit-value in fib_get_nhs
+Content-Language: en-US
+To:     syzbot <syzbot+d4b9a2851cc3ce998741@syzkaller.appspotmail.com>,
+        davem@davemloft.net, dsahern@kernel.org, glider@google.com,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        yoshfuji@linux-ipv6.org
+References: <0000000000005a735005d2bb2dff@google.com>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <0000000000005a735005d2bb2dff@google.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-John Fastabend wrote:
-> xiangxia.m.yue@ wrote:
-> > From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
-> > 
-> > Try to resolve the issues as below:
-> > * We look up and then check tc_skip_classify flag in net
-> >   sched layer, even though skb don't want to be classified.
-> >   That case may consume a lot of cpu cycles. This patch
-> >   is useful when there are a lot of filters with different
-> >   prio. There is ~5 prio in in production, ~1% improvement.
-> > 
-> >   Rules as below:
-> >   $ for id in $(seq 1 5); do
-> >   $       tc filter add ... egress prio $id ... action mirred egress redirect dev ifb0
-> >   $ done
-> > 
-> > * bpf_redirect may be invoked in egress path. If we don't
-> >   check the flags and then return immediately, the packets
-> >   will loopback.
+On 12/9/21 11:57 AM, syzbot wrote:
+> Hello,
 > 
-> This would be the naive case right? Meaning the BPF program is
-> doing a redirect without any logic or is buggy?
+> syzbot found the following issue on:
 > 
-> Can you map out how this happens for me, I'm not fully sure I
-> understand the exact concern. Is it possible for BPF programs
-> that used to see packets no longer see the packet as expected?
+> HEAD commit:    8b936c96768e kmsan: core: remove the accidentally committe..
+> git tree:       https://github.com/google/kmsan.git master
+> console output: https://syzkaller.appspot.com/x/log.txt?x=1724ebc5b00000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=e00a8959fdd3f3e8
+> dashboard link: https://syzkaller.appspot.com/bug?extid=d4b9a2851cc3ce998741
+> compiler:       clang version 14.0.0 (git@github.com:llvm/llvm-project.git 0996585c8e3b3d409494eb5f1cad714b9e1f7fb5), GNU ld (GNU Binutils for Debian) 2.35.2
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1225f875b00000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=139513c5b00000
 > 
-> Is this the path you are talking about?
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+d4b9a2851cc3ce998741@syzkaller.appspotmail.com
 > 
->  rx ethx  ->
->    execute BPF program on ethx with bpf_redirect(ifb0) ->
->      __skb_dequeue @ifb tc_skip_classify = 1 ->
->        dev_queue_xmit() -> 
->           sch_handle_egress() ->
->             execute BPF program again
-> 
-> I can't see why you want to skip that second tc BPF program,
-> or for that matter any tc filter there. In general how do you
-> know that is the correct/expected behavior? Before the above
-> change it would have been called, what if its doing useful
-> work.
-> 
-> Also its not clear how your ifb setup is built or used. That
-> might help understand your use case. I would just remove the
-> IFB altogether and the above discussion is mute.
-> 
-> Thanks,
-> John
+> =====================================================
+> BUG: KMSAN: uninit-value in fib_get_nhs+0xac4/0x1f80 net/ipv4/fib_semantics.c:708
 
-After a bit further thought (and coffee) I think this will
-break some programs that exist today. Consider the case
-where I pop a header off and resubmit to the same device
-intentionally to reprocess the pkt without the header. I've
-used this pattern in BPF a few times.
+
+Most likely lack of length validation on nla like we have in
+fib_gw_from_via for the other attribute (nlav). Will send a patch.
+
