@@ -2,126 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD9024701AC
-	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 14:31:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E2DFD470234
+	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 15:00:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241879AbhLJNf3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Dec 2021 08:35:29 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:27670 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S241650AbhLJNf1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 08:35:27 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1639143112;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=l5sAoIuRwrqpOLkTWcO38tx+jvlOvty7121ooryZ460=;
-        b=hTOGfF9oSDi5Q8e+5fHqaILQ9ArV4t1iM+TvT/F0JuVg8DwcmzmY7eNHaCuTn+ugTGCn/k
-        UqmH37Mo99kJwwmuyALvceJoDLdkSp36PeGIy/Yh/NRFKv9bTb5ny9OEJZNvvmt92C8WZN
-        C389KdYOss4rON4/LsS8L2bJo5CFUMg=
-Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com
- [209.85.208.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-529-XwKtCKT-PquumpEAymr9Gg-1; Fri, 10 Dec 2021 08:31:51 -0500
-X-MC-Unique: XwKtCKT-PquumpEAymr9Gg-1
-Received: by mail-lj1-f197.google.com with SMTP id m20-20020a2eb6d4000000b002219b019ae8so2629607ljo.16
-        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 05:31:51 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:message-id:date:mime-version:user-agent:cc
-         :subject:content-language:to:references:in-reply-to
-         :content-transfer-encoding;
-        bh=l5sAoIuRwrqpOLkTWcO38tx+jvlOvty7121ooryZ460=;
-        b=ydqq16gCITRux1AwCbaQmLPwQW+EKM3AIphhPZBe6LmV/16P7nH9TEAyTzum+NtsCq
-         Mq3QpoJJC6sqOMr08fcd70YRL+PjOeY2vjj5atb2hREGOUpvAWhabx4EwF/Z8eDLv6TJ
-         GyxpCkSSR4TrQJZun5Ym9CIWU4EqFgPEgLD6fKeYM50xgyU3rkbA9aFyCKwAfFkZtacz
-         1tCgmKVYlg/NISe1xv7dUymMmms1NPn2RGKojV4Xl/ko6/MmoVIM8yuY2UhA5rcq3pr1
-         m630tM2GKjMGv3lLrgYNIN8+JcifX8EHS/+BoXROd5W8ZUE4Nf3zRqOW41dxZ8A9BUNb
-         5j4Q==
-X-Gm-Message-State: AOAM533u0DaFEyLYRkqBjAVEulCltsxwfrCyzv6mCEJ06TJY4mklI9pM
-        tz2azE0ufSatRVqGI8pG2k6eOiTaiI3PZjk22yQ4icUua+O/w4m08ZYlw0OkzS+plscWajPRplG
-        0d+HgbrhViQqeJzua
-X-Received: by 2002:a05:6512:2111:: with SMTP id q17mr12277309lfr.371.1639143109658;
-        Fri, 10 Dec 2021 05:31:49 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJysW1eZdvHlg7c/OsYcsKZD7z8jtHRQrASeKFQqWi/mEk65sVMMaWjbUnS35YwKQwYM7xjjAQ==
-X-Received: by 2002:a05:6512:2111:: with SMTP id q17mr12277281lfr.371.1639143109438;
-        Fri, 10 Dec 2021 05:31:49 -0800 (PST)
-Received: from [192.168.0.50] (87-59-106-155-cable.dk.customer.tdc.net. [87.59.106.155])
-        by smtp.gmail.com with ESMTPSA id k3sm313809ljn.55.2021.12.10.05.31.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 10 Dec 2021 05:31:48 -0800 (PST)
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Message-ID: <ccd27f5f-31c4-603f-ea36-ad32b16325b9@redhat.com>
-Date:   Fri, 10 Dec 2021 14:31:45 +0100
+        id S234293AbhLJOE1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Dec 2021 09:04:27 -0500
+Received: from mga09.intel.com ([134.134.136.24]:18427 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234344AbhLJOE1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 10 Dec 2021 09:04:27 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1639144852; x=1670680852;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=+3xcxnlr+0V9wAyeoMluAwgNokJlt0chsySF41otqNk=;
+  b=GKK4xjSpR9nGJN1KQ9ONToCqDKYOMw8ouS/055Vjq4em96rc+dTsFBGa
+   zsc/s2xJ6zTK+26i1e1Yi1HhEtv4g+1zyO5z/htTMXHcV1zn4GgNHVyVk
+   aqp9mT7YHJXlB3+C1K5/wWeuoWvzd2Jf6e1PyUKAzyWRpuv5nEOo2FrCR
+   Ur2qAVgI8sJcfR+Uoqdgi7srXF7OH/k5Y1wLpK0a0doSbzIdpnoGv8ipX
+   hQgabQtJeI8YMt3+cP8qIgQBpu27N7fxbq73fsmH6ZOC7ysqXiQew+zVO
+   7NnUTQjcAF4Vpcgo5l8KnlfHJyGWMz+0q9GQ502A/8Nucrn5UZx/E2Th5
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10193"; a="238150679"
+X-IronPort-AV: E=Sophos;i="5.88,195,1635231600"; 
+   d="scan'208";a="238150679"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Dec 2021 06:00:52 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,195,1635231600"; 
+   d="scan'208";a="612934611"
+Received: from unknown (HELO localhost.igk.intel.com) ([10.102.22.231])
+  by orsmga004.jf.intel.com with ESMTP; 10 Dec 2021 06:00:48 -0800
+From:   Maciej Machnikowski <maciej.machnikowski@intel.com>
+To:     maciej.machnikowski@intel.com, netdev@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org, arkadiusz.kubalewski@intel.com
+Cc:     richardcochran@gmail.com, abyagowi@fb.com,
+        anthony.l.nguyen@intel.com, davem@davemloft.net, kuba@kernel.org,
+        linux-kselftest@vger.kernel.org, idosch@idosch.org,
+        mkubecek@suse.cz, saeed@kernel.org, michael.chan@broadcom.com,
+        petrm@nvidia.com
+Subject: [PATCH v5 net-next 0/4] Add ethtool interface for RClocks
+Date:   Fri, 10 Dec 2021 14:45:46 +0100
+Message-Id: <20211210134550.1195182-1-maciej.machnikowski@intel.com>
+X-Mailer: git-send-email 2.26.3
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.2.0
-Cc:     brouer@redhat.com, intel-wired-lan@lists.osuosl.org,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-        Jithu Joseph <jithu.joseph@intel.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        KP Singh <kpsingh@kernel.org>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH v4 net-next 1/9] i40e: don't reserve excessive
- XDP_PACKET_HEADROOM on XSK Rx to skb
-Content-Language: en-US
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Jesper Dangaard Brouer <jbrouer@redhat.com>
-References: <20211208140702.642741-1-alexandr.lobakin@intel.com>
- <20211208140702.642741-2-alexandr.lobakin@intel.com>
- <da317f39-8679-96f7-ec6f-309216b02f33@redhat.com>
- <20211209173307.5003-1-alexandr.lobakin@intel.com>
-In-Reply-To: <20211209173307.5003-1-alexandr.lobakin@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Synchronous Ethernet networks use a physical layer clock to syntonize
+the frequency across different network elements.
+
+Basic SyncE node defined in the ITU-T G.8264 consist of an Ethernet
+Equipment Clock (EEC) and have the ability to synchronize to reference
+frequency sources.
+
+This patch series is a prerequisite for EEC object and adds ability
+to enable recovered clocks in the physical layer of the netdev object.
+Recovered clocks can be used as one of the reference signal by the EEC.
+
+Further work is required to add the DPLL subsystem, link it to the
+netdev object and create API to read the EEC DPLL state.
+
+v5:
+- rewritten the documentation
+- fixed doxygen headers
+
+v4:
+- Dropped EEC_STATE reporting (TBD: DPLL subsystem)
+- moved recovered clock configuration to ethtool netlink
+
+v3:
+- remove RTM_GETRCLKRANGE
+- return state of all possible pins in the RTM_GETRCLKSTATE
+- clarify documentation
+
+v2:
+- improved documentation
+- fixed kdoc warning
+
+RFC history:
+v2:
+- removed whitespace changes
+- fix issues reported by test robot
+v3:
+- Changed naming from SyncE to EEC
+- Clarify cover letter and commit message for patch 1
+v4:
+- Removed sync_source and pin_idx info
+- Changed one structure to attributes
+- Added EEC_SRC_PORT flag to indicate that the EEC is synchronized
+  to the recovered clock of a port that returns the state
+v5:
+- add EEC source as an optiona attribute
+- implement support for recovered clocks
+- align states returned by EEC to ITU-T G.781
+v6:
+- fix EEC clock state reporting
+- add documentation
+- fix descriptions in code comments
 
 
-On 09/12/2021 18.33, Alexander Lobakin wrote:
-> From: Jesper Dangaard Brouer <jbrouer@redhat.com>
-> Date: Thu, 9 Dec 2021 09:19:46 +0100
-> 
->> On 08/12/2021 15.06, Alexander Lobakin wrote:
->>> {__,}napi_alloc_skb() allocates and reserves additional NET_SKB_PAD
->>> + NET_IP_ALIGN for any skb.
->>> OTOH, i40e_construct_skb_zc() currently allocates and reserves
->>> additional `xdp->data - xdp->data_hard_start`, which is
->>> XDP_PACKET_HEADROOM for XSK frames.
->>> There's no need for that at all as the frame is post-XDP and will
->>> go only to the networking stack core.
->>
->> I disagree with this assumption, that headroom is not needed by netstack.
->> Why "no need for that at all" for netstack?
-> 
-> napi_alloc_skb() in our particular case will reserve 64 bytes, it is
-> sufficient for {TCP,UDP,SCTP,...}/IPv{4,6} etc.
+Maciej Machnikowski (4):
+  ice: add support detecting features based on netlist
+  ethtool: Add ability to configure recovered clock for SyncE feature
+  ice: add support for monitoring SyncE DPLL state
+  ice: add support for recovered clocks
 
-My bad, I misunderstood you. I now see (looking at code) that (as you 
-say) 64 bytes of headroom *is* reserved (in bottom of __napi_alloc_skb).
-Thus, the SKB *do* have headroom, so this patch should be fine.
+ Documentation/networking/ethtool-netlink.rst  |  62 ++++
+ drivers/net/ethernet/intel/ice/ice.h          |   7 +
+ .../net/ethernet/intel/ice/ice_adminq_cmd.h   |  70 ++++-
+ drivers/net/ethernet/intel/ice/ice_common.c   | 224 +++++++++++++++
+ drivers/net/ethernet/intel/ice/ice_common.h   |  20 +-
+ drivers/net/ethernet/intel/ice/ice_devids.h   |   3 +
+ drivers/net/ethernet/intel/ice/ice_ethtool.c  |  96 +++++++
+ drivers/net/ethernet/intel/ice/ice_lib.c      |   6 +-
+ drivers/net/ethernet/intel/ice/ice_ptp.c      |  35 +++
+ drivers/net/ethernet/intel/ice/ice_ptp_hw.c   |  49 ++++
+ drivers/net/ethernet/intel/ice/ice_ptp_hw.h   |  36 +++
+ drivers/net/ethernet/intel/ice/ice_type.h     |   1 +
+ include/linux/ethtool.h                       |   9 +
+ include/uapi/linux/ethtool_netlink.h          |  21 ++
+ net/ethtool/Makefile                          |   3 +-
+ net/ethtool/netlink.c                         |  20 ++
+ net/ethtool/netlink.h                         |   4 +
+ net/ethtool/synce.c                           | 267 ++++++++++++++++++
+ 18 files changed, 929 insertions(+), 4 deletions(-)
+ create mode 100644 net/ethtool/synce.c
 
-Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
-
-Do watch out that 64 bytes is not always enough. Notice the define 
-LL_MAX_HEADER and MAX_HEADER in include/linux/netdevice.h (that tries to 
-determine worst-case header length) which is above 64 bytes. It is also 
-affected by HyperV and WiFi configs.
+-- 
+2.26.3
 
