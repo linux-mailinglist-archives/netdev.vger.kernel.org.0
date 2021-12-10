@@ -2,195 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B13DF470BD3
-	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 21:30:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 549A4470BF9
+	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 21:41:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238623AbhLJUdi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Dec 2021 15:33:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57924 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234738AbhLJUdi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 15:33:38 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 439DFC061746;
-        Fri, 10 Dec 2021 12:30:02 -0800 (PST)
-Date:   Fri, 10 Dec 2021 21:29:59 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1639168200;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=wPN+XRGlttXQr842Y5fUhZgvaYSbPwRGAglIQKEtKmY=;
-        b=RBT+FkM9ExGg4qN/hACB/eQnuavpOvYQ/FAhMWC76u5gxHGqYQgTD1VjPTFFRU14jwT2Ur
-        epqHBFSpcry1DgHLFzNqDteJ/o7LzG51FM1vo9KJK7aIxh6WF4NdoFDzQERdvIB7cWdHtM
-        3UrHooSPLdbueCN/Hlzm02lfUzvI8Uq9f7feVGlQIu14hl5BCC1YRlSx4M10FO774aNvlg
-        FdSr3CIojMhw3D1vhwkMQ/WSQfiflzy4PhZIYH31aNfBQdMrcQfVqQXv9Z8kfxZmRekkHu
-        ixRL75Nxllcj9M/LlrRhdNHT9pod2LOjMCond3vqmZJAJXB1r2M3B3WY9golvw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1639168200;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=wPN+XRGlttXQr842Y5fUhZgvaYSbPwRGAglIQKEtKmY=;
-        b=vjmrJhHXmWpSoVHXzLQ7bfYd0tWOdXeXhWwBObUJEkb8meHYExEhCrVuj9Hk7YIZISbHaX
-        YVBVqJv3hgG8WdCw==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH net-next] u64_stats: Disable preemption on 32bit UP+SMP
- PREEMPT_RT during updates.
-Message-ID: <YbO4x7vRoDGUWxrv@linutronix.de>
+        id S1344201AbhLJUpB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Dec 2021 15:45:01 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:1700 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S243037AbhLJUpA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 15:45:00 -0500
+Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1BAKJGcb028161
+        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 12:41:24 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=41ikyzXEnOUBvYI154qWctfYbbM85qZ88S7TEH2eCO8=;
+ b=lgNQclwg7GJ1+eryPs42WlDv5tZ8ZiXyFkbFZnyt/hrBEoFZ5W8h8RupJH/O3WI+doii
+ ugbLarzJIkj5WC25Ag9y3K0Oyy2elxH+r6hkSfXBBZIgJaJ0EdH2xkl1ZOFkroJO5J8R
+ 6gONJFubT751aj4+XjUZBRCQLgE1Re+t4Ow= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 3cvcus8na5-3
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 12:41:24 -0800
+Received: from intmgw001.25.frc3.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Fri, 10 Dec 2021 12:41:23 -0800
+Received: by devbig612.frc2.facebook.com (Postfix, from userid 115148)
+        id EDDD85E6ED6F; Fri, 10 Dec 2021 12:41:19 -0800 (PST)
+From:   Joanne Koong <joannekoong@fb.com>
+To:     <netdev@vger.kernel.org>
+CC:     <ebiederm@xmission.com>, <kuba@kernel.org>, <davem@davemloft.net>,
+        <Kernel-team@fb.com>, <kafai@fb.com>,
+        Joanne Koong <joannekoong@fb.com>
+Subject: [PATCH net-next v2] net: Enable max_dgram_qlen unix sysctl to be configurable by non-init user namespaces
+Date:   Fri, 10 Dec 2021 12:40:23 -0800
+Message-ID: <20211210204023.2595573-1-joannekoong@fb.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-FB-Source: Intern
+X-Proofpoint-GUID: So9QSUKnMHbTEgAuSFossEvuO58U5IkO
+X-Proofpoint-ORIG-GUID: So9QSUKnMHbTEgAuSFossEvuO58U5IkO
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2021-12-10_08,2021-12-10_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 suspectscore=0
+ impostorscore=0 malwarescore=0 bulkscore=0 spamscore=0 phishscore=0
+ clxscore=1015 lowpriorityscore=0 priorityscore=1501 adultscore=0
+ mlxscore=0 mlxlogscore=631 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2110150000 definitions=main-2112100112
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On PREEMPT_RT the seqcount_t for synchronisation is required on 32bit
-architectures even on UP because the softirq (and the threaded IRQ handler) can
-be preempted.
+This patch enables the "/proc/sys/net/unix/max_dgram_qlen" sysctl to be
+exposed to non-init user namespaces. max_dgram_qlen is used as the defaul=
+t
+"sk_max_ack_backlog" value for when a unix socket is created.
 
-With the seqcount_t for synchronisation, a reader with higher priority can
-preempt the writer and then spin endlessly in read_seqcount_begin() while the
-writer can't make progress.
+Currently, when a networking namespace is initialized, its unix sysctls
+are exposed only if the user namespace that "owns" it is the init user
+namespace. If there is an non-init user namespace that "owns" a networkin=
+g
+namespace (for example, in the case after we call clone() with both
+CLONE_NEWUSER and CLONE_NEWNET set), the sysctls are hidden from view
+and not configurable.
 
-To avoid such a lock up on PREEMPT_RT the writer must disable preemption during
-the update. There is no need to disable interrupts because no writer is using
-this API in hard-IRQ context on PREEMPT_RT.
+Exposing the unix sysctl is safe because any changes made to it will be
+limited in scope to the networking namespace the non-init user namespace
+"owns" and has privileges over (changes won't affect any other net
+namespace). There is also no possibility of a non-privileged user namespa=
+ce
+messing up the net namespace sysctls it shares with its parent user names=
+pace.
+When a new user namespace is created without unsharing the network namesp=
+ace
+(eg calling clone()  with CLONE_NEWUSER), the new user namespace shares i=
+ts
+parent's network namespace. Write access is protected by the mode set
+in the sysctl's ctl_table (and enforced by procfs). Here in the case of
+"max_dgram_qlen", 0644 is set; only the user owner has write access.
 
-Disable preemption on 32bit-RT within the u64_stats write section.
+v1 -> v2:
+* Add more detail to commit message, specify the
+"/proc/sys/net/unix/max_dgram_qlen" sysctl in commit message.
 
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Joanne Koong <joannekoong@fb.com>
 ---
- include/linux/u64_stats_sync.h |   42 +++++++++++++++++++++++++++--------------
- 1 file changed, 28 insertions(+), 14 deletions(-)
+ net/unix/sysctl_net_unix.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
---- a/include/linux/u64_stats_sync.h
-+++ b/include/linux/u64_stats_sync.h
-@@ -66,7 +66,7 @@
- #include <linux/seqlock.h>
- 
- struct u64_stats_sync {
--#if BITS_PER_LONG==32 && defined(CONFIG_SMP)
-+#if BITS_PER_LONG == 32 && (defined(CONFIG_SMP) || defined(CONFIG_PREEMPT_RT))
- 	seqcount_t	seq;
- #endif
- };
-@@ -125,7 +125,7 @@ static inline void u64_stats_inc(u64_sta
- }
- #endif
- 
--#if BITS_PER_LONG == 32 && defined(CONFIG_SMP)
-+#if BITS_PER_LONG == 32 && (defined(CONFIG_SMP) || defined(CONFIG_PREEMPT_RT))
- #define u64_stats_init(syncp)	seqcount_init(&(syncp)->seq)
- #else
- static inline void u64_stats_init(struct u64_stats_sync *syncp)
-@@ -135,15 +135,19 @@ static inline void u64_stats_init(struct
- 
- static inline void u64_stats_update_begin(struct u64_stats_sync *syncp)
- {
--#if BITS_PER_LONG==32 && defined(CONFIG_SMP)
-+#if BITS_PER_LONG == 32 && (defined(CONFIG_SMP) || defined(CONFIG_PREEMPT_RT))
-+	if (IS_ENABLED(CONFIG_PREEMPT_RT))
-+		preempt_disable();
- 	write_seqcount_begin(&syncp->seq);
- #endif
- }
- 
- static inline void u64_stats_update_end(struct u64_stats_sync *syncp)
- {
--#if BITS_PER_LONG==32 && defined(CONFIG_SMP)
-+#if BITS_PER_LONG == 32 && (defined(CONFIG_SMP) || defined(CONFIG_PREEMPT_RT))
- 	write_seqcount_end(&syncp->seq);
-+	if (IS_ENABLED(CONFIG_PREEMPT_RT))
-+		preempt_enable();
- #endif
- }
- 
-@@ -152,8 +156,11 @@ u64_stats_update_begin_irqsave(struct u6
- {
- 	unsigned long flags = 0;
- 
--#if BITS_PER_LONG==32 && defined(CONFIG_SMP)
--	local_irq_save(flags);
-+#if BITS_PER_LONG == 32 && (defined(CONFIG_SMP) || defined(CONFIG_PREEMPT_RT))
-+	if (IS_ENABLED(CONFIG_PREEMPT_RT))
-+		preempt_disable();
-+	else
-+		local_irq_save(flags);
- 	write_seqcount_begin(&syncp->seq);
- #endif
- 	return flags;
-@@ -163,15 +170,18 @@ static inline void
- u64_stats_update_end_irqrestore(struct u64_stats_sync *syncp,
- 				unsigned long flags)
- {
--#if BITS_PER_LONG==32 && defined(CONFIG_SMP)
-+#if BITS_PER_LONG == 32 && (defined(CONFIG_SMP) || defined(CONFIG_PREEMPT_RT))
- 	write_seqcount_end(&syncp->seq);
--	local_irq_restore(flags);
-+	if (IS_ENABLED(CONFIG_PREEMPT_RT))
-+		preempt_enable();
-+	else
-+		local_irq_restore(flags);
- #endif
- }
- 
- static inline unsigned int __u64_stats_fetch_begin(const struct u64_stats_sync *syncp)
- {
--#if BITS_PER_LONG==32 && defined(CONFIG_SMP)
-+#if BITS_PER_LONG == 32 && (defined(CONFIG_SMP) || defined(CONFIG_PREEMPT_RT))
- 	return read_seqcount_begin(&syncp->seq);
- #else
- 	return 0;
-@@ -180,7 +190,7 @@ static inline unsigned int __u64_stats_f
- 
- static inline unsigned int u64_stats_fetch_begin(const struct u64_stats_sync *syncp)
- {
--#if BITS_PER_LONG==32 && !defined(CONFIG_SMP)
-+#if BITS_PER_LONG == 32 && (!defined(CONFIG_SMP) && !defined(CONFIG_PREEMPT_RT))
- 	preempt_disable();
- #endif
- 	return __u64_stats_fetch_begin(syncp);
-@@ -189,7 +199,7 @@ static inline unsigned int u64_stats_fet
- static inline bool __u64_stats_fetch_retry(const struct u64_stats_sync *syncp,
- 					 unsigned int start)
- {
--#if BITS_PER_LONG==32 && defined(CONFIG_SMP)
-+#if BITS_PER_LONG == 32 && (defined(CONFIG_SMP) || defined(CONFIG_PREEMPT_RT))
- 	return read_seqcount_retry(&syncp->seq, start);
- #else
- 	return false;
-@@ -199,7 +209,7 @@ static inline bool __u64_stats_fetch_ret
- static inline bool u64_stats_fetch_retry(const struct u64_stats_sync *syncp,
- 					 unsigned int start)
- {
--#if BITS_PER_LONG==32 && !defined(CONFIG_SMP)
-+#if BITS_PER_LONG == 32 && (!defined(CONFIG_SMP) && !defined(CONFIG_PREEMPT_RT))
- 	preempt_enable();
- #endif
- 	return __u64_stats_fetch_retry(syncp, start);
-@@ -213,7 +223,9 @@ static inline bool u64_stats_fetch_retry
-  */
- static inline unsigned int u64_stats_fetch_begin_irq(const struct u64_stats_sync *syncp)
- {
--#if BITS_PER_LONG==32 && !defined(CONFIG_SMP)
-+#if BITS_PER_LONG == 32 && defined(CONFIG_PREEMPT_RT)
-+	preempt_disable();
-+#elif BITS_PER_LONG == 32 && !defined(CONFIG_SMP)
- 	local_irq_disable();
- #endif
- 	return __u64_stats_fetch_begin(syncp);
-@@ -222,7 +234,9 @@ static inline unsigned int u64_stats_fet
- static inline bool u64_stats_fetch_retry_irq(const struct u64_stats_sync *syncp,
- 					     unsigned int start)
- {
--#if BITS_PER_LONG==32 && !defined(CONFIG_SMP)
-+#if BITS_PER_LONG == 32 && defined(CONFIG_PREEMPT_RT)
-+	preempt_enable();
-+#elif BITS_PER_LONG == 32 && !defined(CONFIG_SMP)
- 	local_irq_enable();
- #endif
- 	return __u64_stats_fetch_retry(syncp, start);
+diff --git a/net/unix/sysctl_net_unix.c b/net/unix/sysctl_net_unix.c
+index c09bea89151b..01d44e2598e2 100644
+--- a/net/unix/sysctl_net_unix.c
++++ b/net/unix/sysctl_net_unix.c
+@@ -30,10 +30,6 @@ int __net_init unix_sysctl_register(struct net *net)
+ 	if (table =3D=3D NULL)
+ 		goto err_alloc;
+=20
+-	/* Don't export sysctls to unprivileged users */
+-	if (net->user_ns !=3D &init_user_ns)
+-		table[0].procname =3D NULL;
+-
+ 	table[0].data =3D &net->unx.sysctl_max_dgram_qlen;
+ 	net->unx.ctl =3D register_net_sysctl(net, "net/unix", table);
+ 	if (net->unx.ctl =3D=3D NULL)
+--=20
+2.30.2
+
