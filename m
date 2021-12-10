@@ -2,231 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 72237470A8D
-	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 20:39:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F00B470AA8
+	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 20:45:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343667AbhLJTmo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Dec 2021 14:42:44 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:26882 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1343663AbhLJTmk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 14:42:40 -0500
-Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1BAJD7o3017991;
-        Fri, 10 Dec 2021 11:38:49 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=k9QG0qiD3tleD+mXRxE7F/fZL8UIpMt6hy0UpBwjXdc=;
- b=qI73HxfCbWGQAi+SXkr9ImIL0lgvKaqvlFkxBEzygHkJvUfh6vtFgFCAhqiUIvWUUmY4
- 1M6ssXF7nGRJDufzPzdhGLgzrF45Qyo8UYhlButnzxuQ7Muok8qX+v03kaLU3E7fW+c4
- GFUm32hZxs96MDRgK716Df79OWoZR/NK0sY= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 3cvcus8860-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 10 Dec 2021 11:38:49 -0800
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.36.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Fri, 10 Dec 2021 11:38:48 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QR0kw0VhlkQXWlvXGYQaGiGe0S2N7t0kyhTgsaxBnR8fNYcadKm3Tb7M7NsO9ta7xD6OUz0wPJx3EMmFbXPx3zc78p9yn1htMUlBPNV5DLy33gJ+dptw/HS5Ar78CGslhqamdcL9eSpQ91+BBEHMtqARZ3mYNNbVE56xiBBeP6PRqByVjMf9VVTxQmxWgmxlZFs5NkmA8ZyydFsdS4HZJs/tCzLBDVpOMKep+SwqH8mbUdeir6bc2Ih0WbhV3KmOGdnGqVUfvQeLch2x1oifBoQEa4giMHkiMKhbPQ0DclYbeaBeH/EnQJVKSR+HNHObPItdBvS4DDgyBPBzNHMCMA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=k9QG0qiD3tleD+mXRxE7F/fZL8UIpMt6hy0UpBwjXdc=;
- b=ZGm4BE9O0xx8b7XnQREthL5vI1tFBPO5VMJ7HtLf1sPnzrKnQrBZXmCs4CV2RubGSCyng31oFnhTLyt2u21qEBy+8Q1aoxlbM+V43s+3qKZNhz0BDyJDb/5V47XCGpFi+N7e+YukoMWccXPgWlwxk3G6GtLIDy53oPxMu0nzGcrhnxusFl81ZFhIivGkWerV2nlG85EQSdp723tWselOWqJ0PLHuCFcsjCVmAYoxIGfnQt3mkKLj5Sfa7dvoWWq9w1yCGcQU5GDnuYqnPn/x7pcz7kTPRY+JMluLvVlF0CzXWJw2gaXZLAJs8YGJx5RvomQSgdYU5+e1xOTrWtzGPQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Received: from SA1PR15MB4465.namprd15.prod.outlook.com (2603:10b6:806:194::23)
- by SA1PR15MB4611.namprd15.prod.outlook.com (2603:10b6:806:19e::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.20; Fri, 10 Dec
- 2021 19:38:47 +0000
-Received: from SA1PR15MB4465.namprd15.prod.outlook.com
- ([fe80::853:8eb0:5412:13b]) by SA1PR15MB4465.namprd15.prod.outlook.com
- ([fe80::853:8eb0:5412:13b%9]) with mapi id 15.20.4778.014; Fri, 10 Dec 2021
- 19:38:47 +0000
-Message-ID: <8f5bb6e3-0ab4-c4a9-56a2-affe61223021@fb.com>
-Date:   Fri, 10 Dec 2021 11:38:43 -0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.3.2
-Subject: Re: [PATCH net-next] net: Enable neighbor sysctls that is save for
- userns root
-Content-Language: en-US
-To:     <cgel.zte@gmail.com>, <davem@davemloft.net>
-CC:     <kuba@kernel.org>, <ebiederm@xmission.com>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <daniel@iogearbox.net>, xu xin <xu.xin16@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-References: <20211208085844.405570-1-xu.xin16@zte.com.cn>
-From:   Joanne Koong <joannekoong@fb.com>
-In-Reply-To: <20211208085844.405570-1-xu.xin16@zte.com.cn>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: MW4PR04CA0338.namprd04.prod.outlook.com
- (2603:10b6:303:8a::13) To SA1PR15MB4465.namprd15.prod.outlook.com
- (2603:10b6:806:194::23)
+        id S242404AbhLJTtZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Dec 2021 14:49:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47334 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242184AbhLJTtY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 14:49:24 -0500
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BCB1C061746
+        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 11:45:49 -0800 (PST)
+Received: by mail-ed1-x529.google.com with SMTP id e3so33880248edu.4
+        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 11:45:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=aZZxLkcb3qxQTYWAP3brmQ7juUisH0ddXymVV2saU50=;
+        b=pz21/umz5BZ3QDd3gbVC1Mapu4JtP6r0d/HiKW555EcfI4I0ngWHKRDEjZBa0FP9Wd
+         LAHcZFTzFZE6ZO9edf5FqiN2uedMoxKzq3LGwdkO6x3vc+TpV1775juNCtREtKmiCE7D
+         Gft2UDebzUV3M1Haaqmnm5K/B8AEjXnVyVZjHbzDxYIB6/otGJVHpy3H6SkT8vxLA/6J
+         xKlQ5xfSOMfKCD+t8g/USKKE/8SChO1CSQE05l+cLu+bcxRkWl2hjr0iyJrmV/nx/R7e
+         A9pGbMfSotLAsOdQY66n8GVPJaHUNHJTAsMu/CsZxogQ7ch+hZaFcRwXsizAbaLfnjCm
+         2/Cg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=aZZxLkcb3qxQTYWAP3brmQ7juUisH0ddXymVV2saU50=;
+        b=Bd1kqm3ieslMqZfnXuQzzBE9gNk4J+c6r6HhoVR2EjnsT+tKfGsdm/l2qwwiDgdA6E
+         AHO3gXXbIhK83EFJCSHvEdhBR60KsD4AbnbWRgg3MFhZ2kIxbUrsQu3wbWFKDz4mP7Ox
+         fw3MNJO8xJbDEDTnMxm9kRj3IH/cJH5oP5yxT2+/su/CWPwPQSHVqU2P5dtJorLh30Il
+         /7jZz7KYIlwdQNuhsp+Y3xjTCOumNcq3ex1IrmkEHaDu2GMMhOI1LYLdR0ujINugJuH0
+         Y4jtWokWtRdLXVou5dj/JWhv1VFEigKxP0DnNjyujIQQkohw2mNZ1FYCw90x4IJD+JI1
+         HiZQ==
+X-Gm-Message-State: AOAM531vq/IdFHYsxFdfoqaHpCzdKBcQSsRwgwWMIc7hMGLpwz5JEdLB
+        kheVhBkLva0UASaiMutLBfc=
+X-Google-Smtp-Source: ABdhPJzlEzM2VxePT63UXaMeNcg6KXU6LeosMnpFHNC2dKLYyjD+VqBBKKCWZcIzvxIoz57tHIubxA==
+X-Received: by 2002:a17:907:6ea8:: with SMTP id sh40mr26145530ejc.53.1639165547567;
+        Fri, 10 Dec 2021 11:45:47 -0800 (PST)
+Received: from Ansuel-xps. (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
+        by smtp.gmail.com with ESMTPSA id de15sm1909525ejc.70.2021.12.10.11.45.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 10 Dec 2021 11:45:47 -0800 (PST)
+Message-ID: <61b3ae6b.1c69fb81.9a57f.8856@mx.google.com>
+X-Google-Original-Message-ID: <YbOuZ0VrnLS4Y6CC@Ansuel-xps.>
+Date:   Fri, 10 Dec 2021 20:45:43 +0100
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: Re: [RFC PATCH v2 net-next 0/4] DSA master state tracking
+References: <20211209173927.4179375-1-vladimir.oltean@nxp.com>
+ <61b2cb93.1c69fb81.2192a.3ef3@mx.google.com>
+ <20211210170242.bckpdm2qa6lchbde@skbuf>
+ <61b38a18.1c69fb81.95975.8545@mx.google.com>
+ <20211210171530.xh7lajqsvct7dd3r@skbuf>
+ <61b38e7f.1c69fb81.96d1c.7933@mx.google.com>
+ <61b396c3.1c69fb81.17062.836a@mx.google.com>
+ <61b3a621.1c69fb81.b4bf5.8dd2@mx.google.com>
+ <20211210192723.noa3hb2vso6t7zju@skbuf>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f1cd2ca2-b273-473d-7592-08d9bc14aede
-X-MS-TrafficTypeDiagnostic: SA1PR15MB4611:EE_
-X-Microsoft-Antispam-PRVS: <SA1PR15MB4611DDE5CE4F0A1191196039D2719@SA1PR15MB4611.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:1443;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: vmRNBygif8GOOpExbXgURWQs/MP5wylAjeQvPy9dl7DpOew3/FlIGf2w0QXkPg7bIFCzpRVlYcL7VBqzFj286BVleFkLquLCl+tC8oxjPMZ4Nq0HPzadUBf1Nwsw2HP9eW5zzVtyJkdWaqsUQ/+CC+AHsR2/OcUR4M2Cm5wpc7M4PbNGfzqkehqeB+bwzRWEhc9QONKyHfqGuFrMTc67Ml/bucA5Nd5+qdBZB0qCBPWw5YoT+Oq+yvHRtfaUbUmLZL7k71ZwOKVf7tp128NuzcEDyQ0MujGzNVz9KWR5YxESLXyeS5chv3OYtlOTnHniVH/YupWhIrlx0CuHG6+S0OWNbqlGpqkTaGyYHeCnYUfH3TGPLrTK+O10R0W0GnlBJxCJDaOf99MW4XKikuoa2DtgE+kbJGKxoUqDw5UfSpu2Fgb1zngRy3aziL+SPX0J7ZupyRFltwALWjm5/+yjiqw6I6y4XO90gIgYnMC+4Tc95/tJtimw6O+LuEa/pXVw/0HBxKlSyjxEvIIuAmWB4nkHfxgEMhdQyRG3D7l/gVao4esMbgdQrkaEB99T50qOEmDq+ulf5z7nhx/DKCEtQk7/m9KB2ZIPhwhdUYAtLFcvsvbcAnYgUsXUVtl5r1CcOaCGVRoUqHfq14ZM/z3NBDgxnuDVIhRFLrVPS+1s8YfowgGr3hCuxz3y/eebdB1+7cfEtorMCq9pCx3MkOUwgGlqD1daPo0iKwOUtnAYogg=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR15MB4465.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(66946007)(186003)(66476007)(38100700002)(54906003)(66556008)(2906002)(6486002)(316002)(6512007)(31696002)(6506007)(53546011)(31686004)(2616005)(8676002)(508600001)(4326008)(86362001)(8936002)(83380400001)(36756003)(5660300002)(6666004)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?ODhZUE1CQWoyTzFQdnE5dzd4MDlUS3ZXeXpMZ1lTMXQrdFVOTXpjY0VEMVUy?=
- =?utf-8?B?VlNDY0tjL3VES00rdWJqZFQ3RjlJdmNidlkxOW5iaHpzQnhSekhOTVgvbm4r?=
- =?utf-8?B?R1BGYm9KOTBZdi9tZkh5R1hacEZTc0swcVBiWDhrZ1RmejB1cVhWaFFTOWtF?=
- =?utf-8?B?WHRIb1VXSzJyOGZjNUlNbnAwN3Y5UThGQlovTEZmMnFXbldOeUhTMy82QVF2?=
- =?utf-8?B?YmNSNkhyQ2JMbUNrblJkOGdPc0lTYmFEdXppcXdHeEFUMjBtQ1gvbzAzeFFa?=
- =?utf-8?B?aEZ3blNoS2xiVzcwUUE1Q1I3a2h5bXFNWmxhLzljb2NYd1MrNXhsSi90UGNq?=
- =?utf-8?B?b2ZRMUxmZS81S21iSm15c1F6ZTE1TTVHdVo0MDZpSFM0cXRSQStyZEppb3hh?=
- =?utf-8?B?cWxYYzh5VjVaVkpXajNBaTA3UmwvLzVUT2dSdWlDT2hpOWJ1SjgwMmxDcG9T?=
- =?utf-8?B?aUE0QXV5aWVqa1d3b1pINlJoN3M1OEV2RGJIRGljQkFrUVFuRGcwQmRUTmJx?=
- =?utf-8?B?UlRab3FmTERlQ285OHAvMWo0VGZGckwwQncvc3o4NG56Q1Q0UFRNSkd2d0p1?=
- =?utf-8?B?cG5leExkYWFqVzdCZDlyQmpKcU5yNXo2L09heVR1YkdTYk8yRHU3T2FybTZN?=
- =?utf-8?B?RHlYMkR6UGszYzFsZzk4VG9kRFREaDlmajVibHFaSTgwSC9ZYktjbFArajlL?=
- =?utf-8?B?OTBHcXVSNHJhckhrdkVjNEtOVXRodEJmM291U29IU2RDMEZVS2pCbVo2eWpF?=
- =?utf-8?B?Tnp6T1llZ2JFWnZMOU9oYzhQU0pMd2VIdEJmRWF0Q2VhWFpOeXFpSHV3YWRO?=
- =?utf-8?B?K3YvMWFCUllWSzV2MDlzQ1U5dDg4YjhwV1pVWjZncmxWZnFLdE9ud09Oci82?=
- =?utf-8?B?Qm9SdEJFcnVmenJUdkZkcGI0YzRLNVZ0ZnZHandtWDh4VEloaThKbUh1TXc1?=
- =?utf-8?B?YzIxSHlJL2E1a28vTm5ITzhQZXZoQm9GZzlReU8wR1d4UFUwMzQxQURjMUsr?=
- =?utf-8?B?MXpGalBkSksxNVdTejRXTU0zOU1ia0JBVGFFM2d2V0liRDZDeVlxbjlhUXR4?=
- =?utf-8?B?MHNsZkpnUFNBZlhtTkNHZDlPU3JHYzF6Q0wxaUFhSW41OXl4S3NXZzk0U0FK?=
- =?utf-8?B?bitybE9VT0E0Ti9CY2ZNUG8wSlJFQm80eVdnUXdOcHJKcU9BeGFNdVNzRHc4?=
- =?utf-8?B?Tlk0UHlobHlHdGY2RHd6QVJzbFFvNTBNeGRzT3RBbk5NL3l3VlFXYjNnM1kw?=
- =?utf-8?B?UEJPR1VTNU1VOG10R1dueTNDTXJPZXBueGtrcCthcDBlQTA0bVIyZ3hEQXdx?=
- =?utf-8?B?QnNrbmNZQThkUDJ2bXgva0xKYnZyelBrK3kxbnUxRXlCQjY3NDc5bGpRbEky?=
- =?utf-8?B?TUEwb21wVE5xZXQ1UjNxZHZNeUxDZTBCM0JOMWFiREhqZEhodVFieHUwTEhk?=
- =?utf-8?B?aDcxSUUwU3lUbC9sbnZUR1JTTS9wK3VIdDRVQmc3dUFjbWlaSFJmTVRNaVVv?=
- =?utf-8?B?L205clQrK3V1SjF5aVZXa05BNmZlVzFWRmRFYnlVSm9VVk95VVYya2FyNnZJ?=
- =?utf-8?B?ZHRBay9FcTVHSWpTZGt4RU5iMXdXVjMrTXovbE81VnZJa3pScUtEdEVHcDdI?=
- =?utf-8?B?Z2ViZEpFSWV4a2pwdG5LZ3F0dFJ3aTYyRnFCNjQ5cDRTQldBZ2FyM1dxY3lN?=
- =?utf-8?B?UnZ5SDN2NWxWVFhxTlNJSW11dUIrNDNyTGNHTWhXa3lyZUY1MGV5ZzNVK1JO?=
- =?utf-8?B?c3YxSHJGN0N3RE5MbHFUSHNaWVdvWVh6a2pLakNBYXBhOHQrN1ZoS0s2RkJj?=
- =?utf-8?B?QnE2c0ptSTNxTERtcUxIOERRK1F1Z1UxdldOL1Bmdy8zYXJoV1VFMjM5R2o4?=
- =?utf-8?B?SGlqWHJIZzNZd1hQUDJpZEszSWVQa09BU3RGNmZ5MW51TWpIeFp5MEdoTmoz?=
- =?utf-8?B?b0kyQjliMjViNkNQZ2YyVVN4WHhlMVlIZE1EckVwTmRmRmRVWmNiOUZ6Rk9T?=
- =?utf-8?B?U2krb0FyVStHV1pudWR2aTJLQXdUYk1CNEpCS3RTMzR5aEI2SG9NM2xiMExq?=
- =?utf-8?B?R1h6TWtBbjM1ckNsU1pKNWQyeGlXbFNuN1B1Tk5FZjQwcytiQlJDWkk4UXJi?=
- =?utf-8?B?U3NldGJPWmR1TGtNODlhVmdkWERzc1JaNjVHbkVucjVESld3MmpFbit2QlI3?=
- =?utf-8?Q?um+9+pvPX7Qq/VLiufQGQzy7L1Oc8Qjxm8SbANZ9OjE2?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: f1cd2ca2-b273-473d-7592-08d9bc14aede
-X-MS-Exchange-CrossTenant-AuthSource: SA1PR15MB4465.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Dec 2021 19:38:47.0958
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 2r7jwM2W5mDHKhkRcnuo8FnndjmLvMCa8mMx6hBQEblo7nHAcg/sCxix6/jYRd2v5GYQ+ayYEUI4B1VNVsj2cA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR15MB4611
-X-OriginatorOrg: fb.com
-X-Proofpoint-GUID: OCLmTz_EQ3OVL9Zc3aVwnhs26rbmc42Q
-X-Proofpoint-ORIG-GUID: OCLmTz_EQ3OVL9Zc3aVwnhs26rbmc42Q
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2021-12-10_07,2021-12-10_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 suspectscore=0
- impostorscore=0 malwarescore=0 bulkscore=0 spamscore=0 phishscore=0
- clxscore=1011 lowpriorityscore=0 priorityscore=1501 adultscore=0
- mlxscore=0 mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2110150000 definitions=main-2112100107
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211210192723.noa3hb2vso6t7zju@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/8/21 12:58 AM, cgel.zte@gmail.com wrote:
+On Fri, Dec 10, 2021 at 07:27:24PM +0000, Vladimir Oltean wrote:
+> On Fri, Dec 10, 2021 at 08:10:21PM +0100, Ansuel Smith wrote:
+> > > Ok I added more tracing and packet are received to the tagger right
+> > > after the log from ipv6 "link becomes ready". That log just check if the
+> > > interface is up and if it does have a valid sched.
+> > > I notice after link becomes ready we have a CHANGE event for eth0. That
+> > > should be the correct way to understand when the cpu port is actually
+> > > usable.
+> > > (just to make it clear before the link becomes ready no packet is
+> > > received to the tagger and the completion timeouts)
+> > > 
+> > > -- 
+> > > 	Ansuel
+> > 
+> > Sorry for the triple message spam... I have a solution. It seems packet
+> > are processed as soon as dev_activate is called (so a qdisk is assigned)
+> > By adding another bool like master_oper_ready and
+> > 
+> > void dsa_tree_master_oper_state_ready(struct dsa_switch_tree *dst,
+> >                                       struct net_device *master,
+> >                                       bool up);
+> > 
+> > static void dsa_tree_master_state_change(struct dsa_switch_tree *dst,
+> >                                         struct net_device *master)
+> > {
+> >        struct dsa_notifier_master_state_info info;
+> >        struct dsa_port *cpu_dp = master->dsa_ptr;
+> > 
+> >        info.master = master;
+> >        info.operational = cpu_dp->master_admin_up && cpu_dp->master_oper_up && cpu_dp->master_oper_ready;
+> > 
+> >        dsa_tree_notify(dst, DSA_NOTIFIER_MASTER_STATE_CHANGE, &info);
+> > }
+> > 
+> > void dsa_tree_master_oper_state_ready(struct dsa_switch_tree *dst,
+> >                                       struct net_device *master,
+> >                                       bool up)
+> > {
+> >        struct dsa_port *cpu_dp = master->dsa_ptr;
+> >        bool notify = false;
+> > 
+> >        if ((cpu_dp->master_oper_ready && cpu_dp->master_oper_ready) !=
+> >            (cpu_dp->master_oper_ready && up))
+> >                notify = true;
+> > 
+> >        cpu_dp->master_oper_ready = up;
+> > 
+> >        if (notify)
+> >                dsa_tree_master_state_change(dst, master);
+> > }
+> > 
+> > In slave.c at the NETDEV_CHANGE event the additional
+> > dsa_tree_master_oper_state_ready(dst, dev, dev_ingress_queue(dev));
+> > we have no timeout function. I just tested this and it works right away.
+> > 
+> > Think we need this additional check to make sure the tagger can finally
+> > accept packet from the switch.
+> > 
+> > With this added I think this is ready.
+> 
+> Why ingress_queue?
+> I was looking at dev_activate() too, especially since net/ipv6/addrconf.c uses:
+> 
+> /* Check if link is ready: is it up and is a valid qdisc available */
+> static inline bool addrconf_link_ready(const struct net_device *dev)
+> {
+> 	return netif_oper_up(dev) && !qdisc_tx_is_noop(dev);
+> }
+> 
+> and you can see that qdisc_tx_is_noop() checks for the qdisc on TX
+> queues, not ingress qdisc (which makes more sense anyway).
+> 
+> Anyway the reason why I didn't say anything about this is because I
+> don't yet understand how it is supposed to work. Specifically:
+> 
+> rtnl_lock
+> 
+> dev_open()
+> -> __dev_open()
+>    -> dev->flags |= IFF_UP;
+>    -> dev_activate()
+>       -> transition_one_qdisc()
+> -> call_netdevice_notifiers(NETDEV_UP, dev);
+> 
+> rtnl_unlock
+> 
+> so the qdisc should have already transitioned by the time NETDEV_UP is
+> emitted.
+> 
+> and since we already require a NETDEV_UP to have occurred, or dev->flags
+> to contain IFF_UP, I simply don't understand the following
+> (a) why would the qdisc be noop when we catch NETDEV_UP
+> (b) who calls netdev_state_change() (or __dev_notify_flags ?!) after the
+>     qdisc changes on a TX queue? If no one, then I'm not sure how we can
+>     reliably check for the state of the qdisc if we aren't notified
+>     about changes to it.
 
-> From: xu xin <xu.xin16@zte.com.cn>
->
-> Inside netns owned by non-init userns, sysctls about ARP/neighbor is
-> currently not visible and configurable.
->
-> For the attributes these sysctls correspond to, any modifications make
-> effects on the performance of networking(ARP, especilly) only in the
-> scope of netns, which does not affect other netns.
->
-> Actually, some tools via netlink can modify these attribute. iproute2 is
-> an example. see as follows:
->
-> $ unshare -ur -n
-> $ cat /proc/sys/net/ipv4/neigh/lo/retrans_time
-> cat: can't open '/proc/sys/net/ipv4/neigh/lo/retrans_time': No such file
-> or directory
-> $ ip ntable show dev lo
-> inet arp_cache
->      dev lo
->      refcnt 1 reachable 19494 base_reachable 30000 retrans 1000
->      gc_stale 60000 delay_probe 5000 queue 101
->      app_probes 0 ucast_probes 3 mcast_probes 3
->      anycast_delay 1000 proxy_delay 800 proxy_queue 64 locktime 1000
->
-> inet6 ndisc_cache
->      dev lo
->      refcnt 1 reachable 42394 base_reachable 30000 retrans 1000
->      gc_stale 60000 delay_probe 5000 queue 101
->      app_probes 0 ucast_probes 3 mcast_probes 3
->      anycast_delay 1000 proxy_delay 800 proxy_queue 64 locktime 0
-> $ ip ntable change name arp_cache dev <if> retrans 2000
-> inet arp_cache
->      dev lo
->      refcnt 1 reachable 22917 base_reachable 30000 retrans 2000
->      gc_stale 60000 delay_probe 5000 queue 101
->      app_probes 0 ucast_probes 3 mcast_probes 3
->      anycast_delay 1000 proxy_delay 800 proxy_queue 64 locktime 1000
->
-> inet6 ndisc_cache
->      dev lo
->      refcnt 1 reachable 35524 base_reachable 30000 retrans 1000
->      gc_stale 60000 delay_probe 5000 queue 101
->      app_probes 0 ucast_probes 3 mcast_probes 3
->      anycast_delay 1000 proxy_delay 800 proxy_queue 64 locktime 0
->
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: xu xin <xu.xin16@zte.com.cn>
-> ---
-This LGTM. The neighbour sysctls are registered to the net namespace
-associated with the neigh_parms. Any changes made to a net namespace
-will be locally scoped to that net namespace (changes won't affect any other
-net namespace).
+The ipv6 check is just a hint. The real clue was the second
+NETDEV_CHANGE called by linkwatch_do_dev in link_watch.c
+That is the one that calls the CHANGE event before the ready stuff.
 
-There is also no possibility of a non-privileged user namespace messing 
-up the
-net namespace sysctls it shares with its parent user namespace. When a 
-new user
-namespace is created without unsharing the network namespace (eg calling
-clone()  with CLONE_NEWUSER), the new user namespace shares its
-parent's network namespace. Write access is protected by the mode set
-in the sysctl ctl_table (and enforced by procfs). Here in the case of 
-the neighbour
-sysctls, 0644 is set for every sysctl; only the user owner has write access.
+I had problem tracking this as the change logic is "emit CHANGE when flags
+change" but netdev_state_change is also called for other reason and one
+example is dev_activate/dev_deactivate from linkwatch_do_dev.
+It seems a bit confusing that a generic state change is called even when
+flags are not changed and because of this is a bit problematic track why
+the CHANGE event was called.
 
+Wonder if linkwatch_do_dev should be changed and introduce a flag? But
+that seems problematic if for whatever reason a driver use the CHANGE
+event to track exactly dev_activate/deactivate.
 
-Acked-by: Joanne Koong <joannekoong@fb.com>
->   net/core/neighbour.c | 4 ----
->   1 file changed, 4 deletions(-)
->
-> diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-> index 0cdd4d9ad942..44d90cc341ea 100644
-> --- a/net/core/neighbour.c
-> +++ b/net/core/neighbour.c
-> @@ -3771,10 +3771,6 @@ int neigh_sysctl_register(struct net_device *dev, struct neigh_parms *p,
->   			neigh_proc_base_reachable_time;
->   	}
->   
-> -	/* Don't export sysctls to unprivileged users */
-> -	if (neigh_parms_net(p)->user_ns != &init_user_ns)
-> -		t->neigh_vars[0].procname = NULL;
-> -
->   	switch (neigh_parms_family(p)) {
->   	case AF_INET:
->   	      p_name = "ipv4";
+-- 
+	Ansuel
