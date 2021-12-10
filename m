@@ -2,82 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 26FF3470344
-	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 15:56:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C64B47034C
+	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 15:59:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239274AbhLJPAX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Dec 2021 10:00:23 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:58768 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233395AbhLJPAX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 10:00:23 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0E20AB8074E;
-        Fri, 10 Dec 2021 14:56:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BE26C00446;
-        Fri, 10 Dec 2021 14:56:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1639148205;
-        bh=+uMYm4WJjN8YogEz9+YTtBe/ZPclSEvBz3bD+J7hqFA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=MgWOk3dyOXHQH5z79TeCzFh+ip4l/zFtY7Kgm/y7xIZHLRseJBLb5Abk4gNNG6ryt
-         cvPI7rozMmoQPr+w4yaXAWSqGB1xYGiEJiF+sZ0Kxu/dtUk65w1q2Jr74VURc+ExEH
-         A5wMHNEz402GstGmgQSrpb+oFjIZagSSDiEOziJvoRTf9ZtZU57w7ja4Edf9HTHdU/
-         0mVRdrP2FaJGlo/iE8lUkQU3MO2IlU6I8exD1JYfGsQ5ht/dyi8JcqJcePClbpIRy6
-         +xLEBtCzFNkIPKGUdYO94Zrz6kVALaSlRixggyYwTk2+pkAKTJmCwIUso60pALbu49
-         MyURj0aOoqNew==
-Date:   Fri, 10 Dec 2021 06:56:44 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Matthieu Baerts <matthieu.baerts@tessares.net>
-Cc:     cgel.zte@gmail.com, mathew.j.martineau@linux.intel.com,
-        davem@davemloft.net, shuah@kernel.org, netdev@vger.kernel.org,
-        mptcp@lists.linux.dev, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Ye Guojin <ye.guojin@zte.com.cn>,
-        ZealRobot <zealci@zte.com.cn>
-Subject: Re: [PATCH] selftests: mptcp: remove duplicate include in
- mptcp_inq.c
-Message-ID: <20211210065644.192f5159@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211210065437.27c8fe23@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20211210071424.425773-1-ye.guojin@zte.com.cn>
-        <ab84ca1f-0f43-d50c-c272-81f64ee31ce8@tessares.net>
-        <20211210065437.27c8fe23@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S235206AbhLJPDY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Dec 2021 10:03:24 -0500
+Received: from mga04.intel.com ([192.55.52.120]:14344 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231735AbhLJPDX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 10 Dec 2021 10:03:23 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1639148389; x=1670684389;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Sc4UZZcBuoyPA5U2BemIlY7ATRRho8rNRsU713opSdc=;
+  b=C+hW4pIxBUixq2eUvJQiUZv7ErJGNJBiFcxQ9OOrz5AueGw9M9OJzOT4
+   wT7/eLIZ1oSKjRaHjvrMcqjS2mjpGVYvkyBhpk2nNS5ybLigdV1k+R12i
+   O35Mc6y2Y4r7FFUw3uHtrdSZw7IzQdEHztGwDCn0YPuwcTr4XmHJ4ZF8e
+   IeJrOaBvx7ZbzcUI4KFkSfSxwPKESmEBJJkIzryaORyJO+roDUis/tcDT
+   TeKOfdy+cmy2mLJmj7OG+2DixMxmHuW/MNmXdc16Cez1k6+chL6BweEzA
+   +7pJj6pC6nkk+N0oSl+QK+cZb2e4LBJNODM7sIIezjqGbFB4NFJlx8fDO
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10193"; a="237093248"
+X-IronPort-AV: E=Sophos;i="5.88,195,1635231600"; 
+   d="scan'208";a="237093248"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Dec 2021 06:59:48 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,195,1635231600"; 
+   d="scan'208";a="680763681"
+Received: from boxer.igk.intel.com ([10.102.20.173])
+  by orsmga005.jf.intel.com with ESMTP; 10 Dec 2021 06:59:46 -0800
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     intel-wired-lan@lists.osuosl.org
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        anthony.l.nguyen@intel.com, kuba@kernel.org, davem@davemloft.net,
+        magnus.karlsson@intel.com, elza.mathew@intel.com,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Subject: [PATCH intel-net 0/5] ice: xsk: Rx processing fixes
+Date:   Fri, 10 Dec 2021 15:59:36 +0100
+Message-Id: <20211210145941.5865-1-maciej.fijalkowski@intel.com>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 10 Dec 2021 06:54:37 -0800 Jakub Kicinski wrote:
-> On Fri, 10 Dec 2021 10:58:27 +0100 Matthieu Baerts wrote:
-> > Hi Ye,
-> > 
-> > On 10/12/2021 08:14, cgel.zte@gmail.com wrote:  
-> > > From: Ye Guojin <ye.guojin@zte.com.cn>
-> > > 
-> > > 'sys/ioctl.h' included in 'mptcp_inq.c' is duplicated.    
-> > 
-> > Good catch, the modification looks good to me:
-> > 
-> > Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-> > 
-> > 
-> > This patch is for "net-next" tree as it fixes an issue introduced by a
-> > patch only in this tree:
-> > 
-> > Fixes: b51880568f20 ("selftests: mptcp: add inq test case")
-> > 
-> > Regarding the commit message, please next time include the Fixes tag and
-> > mention for which tree it is for in the FAQ [1], e.g. [PATCH net-next].
-> > 
-> > 
-> > @David/Jakub: do you prefer a v2 with these modifications or is it fine
-> > to apply this small patch directly in net-next tree?  
-> 
-> v1 is fine. Let me apply it right away and do the edits before I forget
-> they are needed..
+Hi there,
+it seems that previous [0] Rx fix was not enough and there are still
+issues with AF_XDP Rx ZC support in ice driver. Elza reported that for
+multiple XSK sockets configured on a single netdev, some of them were
+becoming dead after a while. We have spotted more things that needed to
+be addressed this time. More of information can be found in particular
+commit messages.
 
-Actually, I take that back, let's hear from Mat, he may want to take
-the patch via his tree.
+Thanks,
+Maciej
+
+[0]: https://lore.kernel.org/bpf/20211129231746.2767739-1-anthony.l.nguyen@intel.com/
+
+Maciej Fijalkowski (5):
+  ice: xsk: return xsk buffers back to pool when cleaning the ring
+  ice: xsk: allocate separate memory for XDP SW ring
+  ice: xsk: do not clear status_error0 for ntu + nb_buffs descriptor
+  ice: xsk: allow empty Rx descriptors on XSK ZC data path
+  ice: xsk: fix cleaned_count setting
+
+ drivers/net/ethernet/intel/ice/ice_base.c | 19 +++++++
+ drivers/net/ethernet/intel/ice/ice_txrx.c | 19 ++++---
+ drivers/net/ethernet/intel/ice/ice_txrx.h |  1 -
+ drivers/net/ethernet/intel/ice/ice_xsk.c  | 62 +++++++++++------------
+ 4 files changed, 62 insertions(+), 39 deletions(-)
+
+-- 
+2.33.1
+
