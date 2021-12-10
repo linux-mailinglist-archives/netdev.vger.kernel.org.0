@@ -2,83 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F9E546F965
-	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 03:54:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D62646F96E
+	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 03:59:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236200AbhLJC5l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Dec 2021 21:57:41 -0500
-Received: from out30-133.freemail.mail.aliyun.com ([115.124.30.133]:47936 "EHLO
-        out30-133.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233693AbhLJC5l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 21:57:41 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R381e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0V-6w-uX_1639104844;
-Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0V-6w-uX_1639104844)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Fri, 10 Dec 2021 10:54:05 +0800
-Date:   Fri, 10 Dec 2021 10:54:02 +0800
-From:   Tony Lu <tonylu@linux.alibaba.com>
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        bpf@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH bpf-next 0/2] Introduce TCP_ULP option for
- bpf_{set,get}sockopt
-Message-ID: <YbLBSrhFZ2l4cCxH@TonyMac-Alibaba>
-Reply-To: Tony Lu <tonylu@linux.alibaba.com>
-References: <20211209090250.73927-1-tonylu@linux.alibaba.com>
- <61b258ad273a9_6bfb2084d@john.notmuch>
+        id S236251AbhLJDDL convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 9 Dec 2021 22:03:11 -0500
+Received: from szxga02-in.huawei.com ([45.249.212.188]:16353 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236246AbhLJDDJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 22:03:09 -0500
+Received: from canpemm100002.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4J9FwY37RJz91YY;
+        Fri, 10 Dec 2021 10:58:53 +0800 (CST)
+Received: from kwepemm600007.china.huawei.com (7.193.23.208) by
+ canpemm100002.china.huawei.com (7.192.105.47) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Fri, 10 Dec 2021 10:59:33 +0800
+Received: from kwepemm600007.china.huawei.com ([7.193.23.208]) by
+ kwepemm600007.china.huawei.com ([7.193.23.208]) with mapi id 15.01.2308.020;
+ Fri, 10 Dec 2021 10:59:32 +0800
+From:   "zhounan (E)" <zhounan14@huawei.com>
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "dev@openvswitch.org" <dev@openvswitch.org>,
+        "bugs@openvswitch.org" <bugs@openvswitch.org>
+CC:     "liucheng (J)" <liucheng11@huawei.com>,
+        "Hejiajun (he jiajun, SOCF&uDF )" <hejiajun@huawei.com>,
+        Lichunhe <lichunhe@huawei.com>,
+        Gregory Rose <gvrose8192@gmail.com>,
+        "pravin.ovn@gmail.com" <pravin.ovn@gmail.com>
+Subject: [ovs-dev] [PATCH] datapath: fix crash when ipv6 fragment pkt
+ recalculate L4 checksum
+Thread-Topic: [ovs-dev] [PATCH] datapath: fix crash when ipv6 fragment pkt
+ recalculate L4 checksum
+Thread-Index: AdfmZtKXsQ9RrfMPQa+M3wuy8s7DzgAAPTXQAcH6SZA=
+Date:   Fri, 10 Dec 2021 02:59:32 +0000
+Message-ID: <396da6f61fa948ac854531e935921dfc@huawei.com>
+References: <54c2ae5d003f49f6a29eec6a67c72315@huawei.com>
+ <35aa84e0d1fe4bd1ad1bf6fb61c83338@huawei.com>
+In-Reply-To: <35aa84e0d1fe4bd1ad1bf6fb61c83338@huawei.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.174.151.167]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <61b258ad273a9_6bfb2084d@john.notmuch>
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 09, 2021 at 11:27:41AM -0800, John Fastabend wrote:
-> Tony Lu wrote:
-> > This patch set introduces a new option TCP_ULP for bpf_{set,get}sockopt
-> > helper. The bpf prog can set and get TCP_ULP sock option on demand.
-> > 
-> > With this, the bpf prog can set TCP_ULP based on strategies when socket
-> > create or other's socket hook point. For example, the bpf prog can
-> > control which socket should use tls or smc (WIP) ULP modules without
-> > modifying the applications.
-> > 
-> > Patch 1 replaces if statement with switch to make it easy to extend.
-> > 
-> > Patch 2 introduces TCP_ULP sock option.
-> 
-> Can you be a bit more specific on what ULP you are going to load on
-> demand here and how that would work? For TLS I can't see how this will
-> work, please elaborate. Because the user space side (e.g. openssl) behaves
-> differently if running in kTLS vs uTLS modes I don't think you can
-> from kernel side just flip it on? I'm a bit intrigued though on what
-> might happen if we do did do this on an active socket, but seems it
-> wouldn't be normal TLS with handshake and keys at that point? I'm
-> not sure we need to block it from happening, but struggling to see
-> how its useful at the moment.
-> 
-> The smc case looks promising, but for that we need to get the order
-> correct and merge smc first and then this series.
+From: Zhou Nan <zhounan14@huawei.com>
 
-Yep, we are developing a set of patch to do with smc for transparent
-replacement. The smc provides the ability to be compatible with TCP,
-the applications can be replaced with smc without no side effects.
-In most cases, it is impossible to modify the compiled application
-binary or inject into applications' containers with LD_PRELOAD. So we
-are using smc ULP to replace TCP with smc when socket create.
+When we set ipv6 addr, we need to recalculate checksum of L4 header.
+In our testcase, after send ipv6 fragment package, KASAN detect "use after free" when calling function update_ipv6_checksum, and crash occurred after a while.
+If ipv6 package is fragment, and it is not first seg, we should not recalculate checksum of L4 header since this kind of package has no
+L4 header.
+To prevent crash, we set "recalc_csum" "false" when calling function "set_ipv6_addr".
+We also find that function skb_ensure_writable (make sure L4 header is writable) is helpful before calling inet_proto_csum_replace16 to recalculate checksum.
 
-These patches will be sent out soon. I will send them after smc's
-patches. Thank you.
+Fixes: ada5efce102d6191e5c66fc385ba52a2d340ef50
+       ("datapath: Fix IPv6 later frags parsing")
 
-> 
-> Also this will need a selftests.
+Signed-off-by: Zhou Nan <zhounan14@huawei.com>
+---
+ datapath/actions.c | 20 +++++++++++++++++++-
+ 1 file changed, 19 insertions(+), 1 deletion(-)
 
-I will fix it.
+diff --git a/datapath/actions.c b/datapath/actions.c index fbf4457..52cf03e 100644
+--- a/datapath/actions.c
++++ b/datapath/actions.c
+@@ -456,12 +456,21 @@ static void update_ipv6_checksum(struct sk_buff *skb, u8 l4_proto,
+ 				 __be32 addr[4], const __be32 new_addr[4])  {
+ 	int transport_len = skb->len - skb_transport_offset(skb);
++	int err;
+ 
+ 	if (l4_proto == NEXTHDR_TCP) {
++		err = skb_ensure_writable(skb, skb_transport_offset(skb) +
++				sizeof(struct tcphdr));
++		if (unlikely(err))
++			return;
+ 		if (likely(transport_len >= sizeof(struct tcphdr)))
+ 			inet_proto_csum_replace16(&tcp_hdr(skb)->check, skb,
+ 						  addr, new_addr, true);
+ 	} else if (l4_proto == NEXTHDR_UDP) {
++		err = skb_ensure_writable(skb, skb_transport_offset(skb) +
++				sizeof(struct udphdr));
++		if (unlikely(err))
++			return;
+ 		if (likely(transport_len >= sizeof(struct udphdr))) {
+ 			struct udphdr *uh = udp_hdr(skb);
+ 
+@@ -473,6 +482,10 @@ static void update_ipv6_checksum(struct sk_buff *skb, u8 l4_proto,
+ 			}
+ 		}
+ 	} else if (l4_proto == NEXTHDR_ICMP) {
++		err = skb_ensure_writable(skb, skb_transport_offset(skb) +
++				sizeof(struct icmp6hdr));
++		if (unlikely(err))
++			return;
+ 		if (likely(transport_len >= sizeof(struct icmp6hdr)))
+ 			inet_proto_csum_replace16(&icmp6_hdr(skb)->icmp6_cksum,
+ 						  skb, addr, new_addr, true);
+@@ -589,12 +602,15 @@ static int set_ipv6(struct sk_buff *skb, struct sw_flow_key *flow_key,
+ 	if (is_ipv6_mask_nonzero(mask->ipv6_src)) {
+ 		__be32 *saddr = (__be32 *)&nh->saddr;
+ 		__be32 masked[4];
++		bool recalc_csum = true;
+ 
+ 		mask_ipv6_addr(saddr, key->ipv6_src, mask->ipv6_src, masked);
+ 
+ 		if (unlikely(memcmp(saddr, masked, sizeof(masked)))) {
++			if (flow_key->ip.frag == OVS_FRAG_TYPE_LATER)
++				recalc_csum = false;
+ 			set_ipv6_addr(skb, flow_key->ip.proto, saddr, masked,
+-				      true);
++				      recalc_csum);
+ 			memcpy(&flow_key->ipv6.addr.src, masked,
+ 			       sizeof(flow_key->ipv6.addr.src));
+ 		}
+@@ -614,6 +630,8 @@ static int set_ipv6(struct sk_buff *skb, struct sw_flow_key *flow_key,
+ 							     NEXTHDR_ROUTING,
+ 							     NULL, &flags)
+ 					       != NEXTHDR_ROUTING);
++			if (flow_key->ip.frag == OVS_FRAG_TYPE_LATER)
++				recalc_csum = false;
+ 
+ 			set_ipv6_addr(skb, flow_key->ip.proto, daddr, masked,
+ 				      recalc_csum);
+--
+2.27.0
 
-> 
-> Thanks,
-> John
-
-Thanks,
-Tony Lu
