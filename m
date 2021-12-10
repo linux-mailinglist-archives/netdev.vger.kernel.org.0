@@ -2,135 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D62646F96E
-	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 03:59:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A86B646F972
+	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 04:02:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236251AbhLJDDL convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 9 Dec 2021 22:03:11 -0500
-Received: from szxga02-in.huawei.com ([45.249.212.188]:16353 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236246AbhLJDDJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 22:03:09 -0500
-Received: from canpemm100002.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4J9FwY37RJz91YY;
-        Fri, 10 Dec 2021 10:58:53 +0800 (CST)
-Received: from kwepemm600007.china.huawei.com (7.193.23.208) by
- canpemm100002.china.huawei.com (7.192.105.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Fri, 10 Dec 2021 10:59:33 +0800
-Received: from kwepemm600007.china.huawei.com ([7.193.23.208]) by
- kwepemm600007.china.huawei.com ([7.193.23.208]) with mapi id 15.01.2308.020;
- Fri, 10 Dec 2021 10:59:32 +0800
-From:   "zhounan (E)" <zhounan14@huawei.com>
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "dev@openvswitch.org" <dev@openvswitch.org>,
-        "bugs@openvswitch.org" <bugs@openvswitch.org>
-CC:     "liucheng (J)" <liucheng11@huawei.com>,
-        "Hejiajun (he jiajun, SOCF&uDF )" <hejiajun@huawei.com>,
-        Lichunhe <lichunhe@huawei.com>,
-        Gregory Rose <gvrose8192@gmail.com>,
-        "pravin.ovn@gmail.com" <pravin.ovn@gmail.com>
-Subject: [ovs-dev] [PATCH] datapath: fix crash when ipv6 fragment pkt
- recalculate L4 checksum
-Thread-Topic: [ovs-dev] [PATCH] datapath: fix crash when ipv6 fragment pkt
- recalculate L4 checksum
-Thread-Index: AdfmZtKXsQ9RrfMPQa+M3wuy8s7DzgAAPTXQAcH6SZA=
-Date:   Fri, 10 Dec 2021 02:59:32 +0000
-Message-ID: <396da6f61fa948ac854531e935921dfc@huawei.com>
-References: <54c2ae5d003f49f6a29eec6a67c72315@huawei.com>
- <35aa84e0d1fe4bd1ad1bf6fb61c83338@huawei.com>
-In-Reply-To: <35aa84e0d1fe4bd1ad1bf6fb61c83338@huawei.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.174.151.167]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S236258AbhLJDGS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Dec 2021 22:06:18 -0500
+Received: from out30-43.freemail.mail.aliyun.com ([115.124.30.43]:55588 "EHLO
+        out30-43.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234051AbhLJDGQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 22:06:16 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R901e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=chengshuyi@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0V-6w0j._1639105359;
+Received: from 30.225.28.43(mailfrom:chengshuyi@linux.alibaba.com fp:SMTPD_---0V-6w0j._1639105359)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 10 Dec 2021 11:02:40 +0800
+Message-ID: <d15eb127-3d9b-25e3-9865-d8922f5ff889@linux.alibaba.com>
+Date:   Fri, 10 Dec 2021 11:02:36 +0800
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.2.1
+Subject: Re: [PATCH bpf-next] libbpf: Skip the pinning of global data map for
+ old kernels.
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "open list:BPF (Safe dynamic programs and tools)" 
+        <netdev@vger.kernel.org>,
+        "open list:BPF (Safe dynamic programs and tools)" 
+        <bpf@vger.kernel.org>
+References: <9eb3216b-a785-9024-0f1d-e5a14dfb025b@linux.alibaba.com>
+ <CAEf4BzbtQGnGZTLbTdy1GHK54f5S7YNFQak7BuEfaqGEwqNNJA@mail.gmail.com>
+From:   Shuyi Cheng <chengshuyi@linux.alibaba.com>
+In-Reply-To: <CAEf4BzbtQGnGZTLbTdy1GHK54f5S7YNFQak7BuEfaqGEwqNNJA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Zhou Nan <zhounan14@huawei.com>
 
-When we set ipv6 addr, we need to recalculate checksum of L4 header.
-In our testcase, after send ipv6 fragment package, KASAN detect "use after free" when calling function update_ipv6_checksum, and crash occurred after a while.
-If ipv6 package is fragment, and it is not first seg, we should not recalculate checksum of L4 header since this kind of package has no
-L4 header.
-To prevent crash, we set "recalc_csum" "false" when calling function "set_ipv6_addr".
-We also find that function skb_ensure_writable (make sure L4 header is writable) is helpful before calling inet_proto_csum_replace16 to recalculate checksum.
 
-Fixes: ada5efce102d6191e5c66fc385ba52a2d340ef50
-       ("datapath: Fix IPv6 later frags parsing")
+On 12/10/21 1:26 AM, Andrii Nakryiko wrote:
+> On Thu, Dec 9, 2021 at 12:44 AM Shuyi Cheng
+> <chengshuyi@linux.alibaba.com> wrote:
+>>
+>>
+>> Fix error: "failed to pin map: Bad file descriptor, path:
+>> /sys/fs/bpf/_rodata_str1_1."
+>>
+>> In the old kernel, the global data map will not be created, see [0]. So
+>> we should skip the pinning of the global data map to avoid
+>> bpf_object__pin_maps returning error.
+>>
+>> [0]: https://lore.kernel.org/bpf/20211123200105.387855-1-andrii@kernel.org
+>>
+>> Signed-off-by: Shuyi Cheng <chengshuyi@linux.alibaba.com>
+>> ---
+>>    tools/lib/bpf/libbpf.c | 4 ++++
+>>    1 file changed, 4 insertions(+)
+>>
+>> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+>> index 6db0b5e8540e..d96cf49cebab 100644
+>> --- a/tools/lib/bpf/libbpf.c
+>> +++ b/tools/lib/bpf/libbpf.c
+>> @@ -7884,6 +7884,10 @@ int bpf_object__pin_maps(struct bpf_object *obj,
+>> const char *path)
+>>                  char *pin_path = NULL;
+>>                  char buf[PATH_MAX];
+>>
+>> +               if (bpf_map__is_internal(map) &&
+>> +                   !kernel_supports(obj, FEAT_GLOBAL_DATA))
+> 
+> 
+> doing the same check in 3 different places sucks. Let's add "bool
+> skipped" to struct bpf_map, which will be set in one place (at the map
+> creation time) and then check during relocation and during pinning?
+>
 
-Signed-off-by: Zhou Nan <zhounan14@huawei.com>
----
- datapath/actions.c | 20 +++++++++++++++++++-
- 1 file changed, 19 insertions(+), 1 deletion(-)
+Agree, thanks.
 
-diff --git a/datapath/actions.c b/datapath/actions.c index fbf4457..52cf03e 100644
---- a/datapath/actions.c
-+++ b/datapath/actions.c
-@@ -456,12 +456,21 @@ static void update_ipv6_checksum(struct sk_buff *skb, u8 l4_proto,
- 				 __be32 addr[4], const __be32 new_addr[4])  {
- 	int transport_len = skb->len - skb_transport_offset(skb);
-+	int err;
- 
- 	if (l4_proto == NEXTHDR_TCP) {
-+		err = skb_ensure_writable(skb, skb_transport_offset(skb) +
-+				sizeof(struct tcphdr));
-+		if (unlikely(err))
-+			return;
- 		if (likely(transport_len >= sizeof(struct tcphdr)))
- 			inet_proto_csum_replace16(&tcp_hdr(skb)->check, skb,
- 						  addr, new_addr, true);
- 	} else if (l4_proto == NEXTHDR_UDP) {
-+		err = skb_ensure_writable(skb, skb_transport_offset(skb) +
-+				sizeof(struct udphdr));
-+		if (unlikely(err))
-+			return;
- 		if (likely(transport_len >= sizeof(struct udphdr))) {
- 			struct udphdr *uh = udp_hdr(skb);
- 
-@@ -473,6 +482,10 @@ static void update_ipv6_checksum(struct sk_buff *skb, u8 l4_proto,
- 			}
- 		}
- 	} else if (l4_proto == NEXTHDR_ICMP) {
-+		err = skb_ensure_writable(skb, skb_transport_offset(skb) +
-+				sizeof(struct icmp6hdr));
-+		if (unlikely(err))
-+			return;
- 		if (likely(transport_len >= sizeof(struct icmp6hdr)))
- 			inet_proto_csum_replace16(&icmp6_hdr(skb)->icmp6_cksum,
- 						  skb, addr, new_addr, true);
-@@ -589,12 +602,15 @@ static int set_ipv6(struct sk_buff *skb, struct sw_flow_key *flow_key,
- 	if (is_ipv6_mask_nonzero(mask->ipv6_src)) {
- 		__be32 *saddr = (__be32 *)&nh->saddr;
- 		__be32 masked[4];
-+		bool recalc_csum = true;
- 
- 		mask_ipv6_addr(saddr, key->ipv6_src, mask->ipv6_src, masked);
- 
- 		if (unlikely(memcmp(saddr, masked, sizeof(masked)))) {
-+			if (flow_key->ip.frag == OVS_FRAG_TYPE_LATER)
-+				recalc_csum = false;
- 			set_ipv6_addr(skb, flow_key->ip.proto, saddr, masked,
--				      true);
-+				      recalc_csum);
- 			memcpy(&flow_key->ipv6.addr.src, masked,
- 			       sizeof(flow_key->ipv6.addr.src));
- 		}
-@@ -614,6 +630,8 @@ static int set_ipv6(struct sk_buff *skb, struct sw_flow_key *flow_key,
- 							     NEXTHDR_ROUTING,
- 							     NULL, &flags)
- 					       != NEXTHDR_ROUTING);
-+			if (flow_key->ip.frag == OVS_FRAG_TYPE_LATER)
-+				recalc_csum = false;
- 
- 			set_ipv6_addr(skb, flow_key->ip.proto, daddr, masked,
- 				      recalc_csum);
---
-2.27.0
+regards,
+Shuyi
 
+
+
+>> +                       continue;
+>> +
+>>                  if (path) {
+>>                          int len;
+>>
+>> --
+>> 2.19.1.6.gb485710b
