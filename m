@@ -2,251 +2,329 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 881544709EA
-	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 20:10:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E03C7470A01
+	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 20:15:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343544AbhLJTOD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Dec 2021 14:14:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39196 "EHLO
+        id S239613AbhLJTSl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Dec 2021 14:18:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233395AbhLJTOD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 14:14:03 -0500
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D06CC0617A1
-        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 11:10:27 -0800 (PST)
-Received: by mail-ed1-x52c.google.com with SMTP id g14so32154237edb.8
-        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 11:10:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=l0GLoG8P9uBaT/HNeJEnVyJ+pRllp2wwDyAm4pnrMVg=;
-        b=OphThgGbhlbB5+U+WNBViiMvmqopKO/Lh9uc4IV8gGKQt3ekF+/vcrGh41bhLH0iZj
-         Y8xxkz9v5L9jJgY1Yw2LJLDOUOAZOIp8MU8sBeDGmGzlhVnyd6O2O+dXcQF2mjp3angs
-         FlsjPdOssTs4RSdnvpXe5gpTxU+KxSnysuyB3x53TprvHN6s1vqmfjWu96pLPLkQzpSM
-         6qaLsehquBrv5s4yupFsk54r2zUfEooUmmwlvyZ7jmY+BRa7mPETuxYXLBjd70WQVmmy
-         TB6KsV2NYmiloZV9dx1RqxK4YeFral5hiUFtXUI0Hq4ujO2sYGZT8t/+jyeDJTrroZtT
-         BGnA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=l0GLoG8P9uBaT/HNeJEnVyJ+pRllp2wwDyAm4pnrMVg=;
-        b=yDN8CW+NHuIuIN0x2Ur0YfRKM2SgbMUps/CthR38wpo1XVSEGDsP9BQdwlHjubl+k7
-         W0CipqOWmoo322PftM3KepSTLB6U7qLuMHvrebyKuMo7WzAhWraemfLQreQuSNRxRkXv
-         rIGiFhPzRMLHZ6M26cY71REXMBU3hCuhFKI5l1x2xDt/SHBkJ+LwyGt+DsHAwoe3JvtC
-         2nnuePaxvu1lOhJDNWzKgSCjmRYbWDDCquMliWM5clHnRR9GKrUtmvwPrV/HXQGs/V/b
-         755U3aSnrCWuWubUUH3ods+TLY4W4JLfTWZj6WCo8wzU0kY/jEeRqklF5+kCfPWyDbLT
-         ctHQ==
-X-Gm-Message-State: AOAM530sCymUTmP2OwTndJJEfUeCLprzFwiN189E0KCP2nPOnuG1p8i0
-        E0wLTpM1mPjhFA8iKkNA4/I=
-X-Google-Smtp-Source: ABdhPJyhwkvK6HjdnTtyfaFOTVFsx4+sGnRU6fueMFHe+NVCo4W+7y4koxbeDiVeB2Qjyx1iFq/sYQ==
-X-Received: by 2002:a05:6402:4387:: with SMTP id o7mr36240102edc.47.1639163425788;
-        Fri, 10 Dec 2021 11:10:25 -0800 (PST)
-Received: from Ansuel-xps. (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.gmail.com with ESMTPSA id u23sm1957403edi.88.2021.12.10.11.10.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Dec 2021 11:10:25 -0800 (PST)
-Message-ID: <61b3a621.1c69fb81.b4bf5.8dd2@mx.google.com>
-X-Google-Original-Message-ID: <YbOmHec4qqaG+jHW@Ansuel-xps.>
-Date:   Fri, 10 Dec 2021 20:10:21 +0100
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: [RFC PATCH v2 net-next 0/4] DSA master state tracking
-References: <20211209173927.4179375-1-vladimir.oltean@nxp.com>
- <61b2cb93.1c69fb81.2192a.3ef3@mx.google.com>
- <20211210170242.bckpdm2qa6lchbde@skbuf>
- <61b38a18.1c69fb81.95975.8545@mx.google.com>
- <20211210171530.xh7lajqsvct7dd3r@skbuf>
- <61b38e7f.1c69fb81.96d1c.7933@mx.google.com>
- <61b396c3.1c69fb81.17062.836a@mx.google.com>
+        with ESMTP id S231135AbhLJTSk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 14:18:40 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6C5CC061746;
+        Fri, 10 Dec 2021 11:15:04 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id BAB9ACE2D28;
+        Fri, 10 Dec 2021 19:15:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04DF7C00446;
+        Fri, 10 Dec 2021 19:14:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1639163700;
+        bh=7eV5ruD72K8+hJ719hgvdbjdKR24zy4xce79JvhdaXs=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Dr5rDLJdz62a4w55xmn0QfysPremPTxYP4cB4vu9cdpSLuTFT58tZkdW0l0O4t0xY
+         oJnVEkvG6MwWoEI0IFTO6Arz1byzHIahACp2cqrQp3zYHplXXq/Czf3fkj2RoB1h7+
+         +ct8O2m4ZFbtUbp1qyS1L7ZO5LaE18Vk168C4N1A0YThEMKlez1x/rf28nn2kt4NFn
+         zObYkxhgqd3PUc6emXN7jUY+vl1XIAGbxQBxmisa9UiEMHeYA7p5RbBko+XQ3BkpBJ
+         xGDCUuIpeM7DTL1vlgJFvepcj4qAfp12+RU73KHAUW2o2PivlvJxCovQG0k3Wxc7xq
+         pEfTLCmRLLRNA==
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     bpf@vger.kernel.org, netdev@vger.kernel.org
+Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, shayagr@amazon.com,
+        john.fastabend@gmail.com, dsahern@kernel.org, brouer@redhat.com,
+        echaudro@redhat.com, jasowang@redhat.com,
+        alexander.duyck@gmail.com, saeed@kernel.org,
+        maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
+        tirthendu.sarkar@intel.com, toke@redhat.com
+Subject: [PATCH v20 bpf-next 00/23] mvneta: introduce XDP multi-buffer support
+Date:   Fri, 10 Dec 2021 20:14:07 +0100
+Message-Id: <cover.1639162845.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <61b396c3.1c69fb81.17062.836a@mx.google.com>
+Content-Type: text/plain; charset=y
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 10, 2021 at 07:04:48PM +0100, Ansuel Smith wrote:
-> On Fri, Dec 10, 2021 at 06:29:32PM +0100, Ansuel Smith wrote:
-> > On Fri, Dec 10, 2021 at 05:15:30PM +0000, Vladimir Oltean wrote:
-> > > On Fri, Dec 10, 2021 at 06:10:45PM +0100, Ansuel Smith wrote:
-> > > > On Fri, Dec 10, 2021 at 05:02:42PM +0000, Vladimir Oltean wrote:
-> > > > > On Fri, Dec 10, 2021 at 04:37:52AM +0100, Ansuel Smith wrote:
-> > > > > > On Thu, Dec 09, 2021 at 07:39:23PM +0200, Vladimir Oltean wrote:
-> > > > > > > This patch set is provided solely for review purposes (therefore not to
-> > > > > > > be applied anywhere) and for Ansuel to test whether they resolve the
-> > > > > > > slowdown reported here:
-> > > > > > > https://patchwork.kernel.org/project/netdevbpf/cover/20211207145942.7444-1-ansuelsmth@gmail.com/
-> > > > > > > 
-> > > > > > > The patches posted here are mainly to offer a consistent
-> > > > > > > "master_state_change" chain of events to switches, without duplicates,
-> > > > > > > and always starting with operational=true and ending with
-> > > > > > > operational=false. This way, drivers should know when they can perform
-> > > > > > > Ethernet-based register access, and need not care about more than that.
-> > > > > > > 
-> > > > > > > Changes in v2:
-> > > > > > > - dropped some useless patches
-> > > > > > > - also check master operstate.
-> > > > > > > 
-> > > > > > > Vladimir Oltean (4):
-> > > > > > >   net: dsa: provide switch operations for tracking the master state
-> > > > > > >   net: dsa: stop updating master MTU from master.c
-> > > > > > >   net: dsa: hold rtnl_mutex when calling dsa_master_{setup,teardown}
-> > > > > > >   net: dsa: replay master state events in
-> > > > > > >     dsa_tree_{setup,teardown}_master
-> > > > > > > 
-> > > > > > >  include/net/dsa.h  | 11 +++++++
-> > > > > > >  net/dsa/dsa2.c     | 80 +++++++++++++++++++++++++++++++++++++++++++---
-> > > > > > >  net/dsa/dsa_priv.h | 13 ++++++++
-> > > > > > >  net/dsa/master.c   | 29 ++---------------
-> > > > > > >  net/dsa/slave.c    | 27 ++++++++++++++++
-> > > > > > >  net/dsa/switch.c   | 15 +++++++++
-> > > > > > >  6 files changed, 145 insertions(+), 30 deletions(-)
-> > > > > > > 
-> > > > > > > -- 
-> > > > > > > 2.25.1
-> > > > > > > 
-> > > > > > 
-> > > > > > Hi, I tested this v2 and I still have 2 ethernet mdio failing on init.
-> > > > > > I don't think we have other way to track this. Am I wrong?
-> > > > > > 
-> > > > > > All works correctly with this and promisc_on_master.
-> > > > > > If you have other test, feel free to send me other stuff to test.
-> > > > > > 
-> > > > > > (I'm starting to think the fail is caused by some delay that the switch
-> > > > > > require to actually start accepting packet or from the reinit? But I'm
-> > > > > > not sure... don't know if you notice something from the pcap)
-> > > > > 
-> > > > > I've opened the pcap just now. The Ethernet MDIO packets are
-> > > > > non-standard. When the DSA master receives them, it expects the first 6
-> > > > > octets to be the MAC DA, because that's the format of an Ethernet frame.
-> > > > > But the packets have this other format, according to your own writing:
-> > > > > 
-> > > > > /* Specific define for in-band MDIO read/write with Ethernet packet */
-> > > > > #define QCA_HDR_MDIO_SEQ_LEN           4 /* 4 byte for the seq */
-> > > > > #define QCA_HDR_MDIO_COMMAND_LEN       4 /* 4 byte for the command */
-> > > > > #define QCA_HDR_MDIO_DATA1_LEN         4 /* First 4 byte for the mdio data */
-> > > > > #define QCA_HDR_MDIO_HEADER_LEN        (QCA_HDR_MDIO_SEQ_LEN + \
-> > > > >                                        QCA_HDR_MDIO_COMMAND_LEN + \
-> > > > >                                        QCA_HDR_MDIO_DATA1_LEN)
-> > > > > 
-> > > > > #define QCA_HDR_MDIO_DATA2_LEN         12 /* Other 12 byte for the mdio data */
-> > > > > #define QCA_HDR_MDIO_PADDING_LEN       34 /* Padding to reach the min Ethernet packet */
-> > > > > 
-> > > > > The first 6 octets change like crazy in your pcap. Definitely can't add
-> > > > > that to the RX filter of the DSA master.
-> > > > > 
-> > > > > So yes, promisc_on_master is precisely what you need, it exists for
-> > > > > situations like this.
-> > > > > 
-> > > > > Considering this, I guess it works?
-> > > > 
-> > > > Yes it works! We can totally accept 2 mdio timeout out of a good way to
-> > > > track the master port. It's probably related to other stuff like switch
-> > > > delay or other.
-> > > > 
-> > > > Wonder the next step is wait for this to be accepted and then I can
-> > > > propose a v3 of my patch? Or net-next is closed now and I should just
-> > > > send v3 RFC saying it does depend on this?
-> > > 
-> > > Wait a minute, I don't think I understood your previous reply.
-> > > With promisc_on_master, is there or is there not any timeout?
-> > 
-> > With promisc_on_master I have only 2 timeout.
-> > 
-> > > My understanding was this: DSA tells you when the master is up and
-> > > operational. That information is correct, except it isn't sufficient and
-> > > you don't see the replies back. Later during boot, you have some init
-> > > scripts triggered by user space that create a bridge interface and put
-> > > the switch ports under the bridge. The bridge puts the switch interfaces
-> > > in promiscuous mode, because that's what bridges do. Then DSA propagates
-> > > the promiscuous mode from the switch ports to the DSA master, and once
-> > > the master is promiscuous, the Ethernet MDIO starts working too.
-> > > Now, with promisc_on_master set, the DSA master is already promiscuous
-> > > by the time DSA tells you that it's up and running. Hence your message
-> > > that "All works correctly with this and promisc_on_master."
-> > > What did I misunderstand?
-> > 
-> > You got all correct. But still I have these 2 timeout at the very start.
-> > Let me give you another pastebin to make this more clear. [0]
-> > Transaction done is when the Ethernet packet is received and processed.
-> > I added some pr with the events received by switch.c
-> > 
-> > I should check if the tagger receive some packet before the
-> > "function timeout". 
-> > What I mean with "acceptable state" is that aside from the 2
-> > timeout everything else works correctly withtout any slowdown in the
-> > init process.
-> > 
-> > [0] https://pastebin.com/VfGB5hAQ
-> > 
-> > -- 
-> > 	Ansuel
-> 
-> Ok I added more tracing and packet are received to the tagger right
-> after the log from ipv6 "link becomes ready". That log just check if the
-> interface is up and if it does have a valid sched.
-> I notice after link becomes ready we have a CHANGE event for eth0. That
-> should be the correct way to understand when the cpu port is actually
-> usable.
-> (just to make it clear before the link becomes ready no packet is
-> received to the tagger and the completion timeouts)
-> 
-> -- 
-> 	Ansuel
+This series introduce XDP multi-buffer support. The mvneta driver is
+the first to support these new "non-linear" xdp_{buff,frame}. Reviewers
+please focus on how these new types of xdp_{buff,frame} packets
+traverse the different layers and the layout design. It is on purpose
+that BPF-helpers are kept simple, as we don't want to expose the
+internal layout to allow later changes.
 
-Sorry for the triple message spam... I have a solution. It seems packet
-are processed as soon as dev_activate is called (so a qdisk is assigned)
-By adding another bool like master_oper_ready and
+The main idea for the new multi-buffer layout is to reuse the same
+structure used for non-linear SKB. This rely on the "skb_shared_info"
+struct at the end of the first buffer to link together subsequent
+buffers. Keeping the layout compatible with SKBs is also done to ease
+and speedup creating a SKB from an xdp_{buff,frame}.
+Converting xdp_frame to SKB and deliver it to the network stack is shown
+in patch 05/18 (e.g. cpumaps).
 
-void dsa_tree_master_oper_state_ready(struct dsa_switch_tree *dst,
-                                      struct net_device *master,
-                                      bool up);
+A multi-buffer bit (mb) has been introduced in the flags field of xdp_{buff,frame}
+structure to notify the bpf/network layer if this is a xdp multi-buffer frame
+(mb = 1) or not (mb = 0).
+The mb bit will be set by a xdp multi-buffer capable driver only for
+non-linear frames maintaining the capability to receive linear frames
+without any extra cost since the skb_shared_info structure at the end
+of the first buffer will be initialized only if mb is set.
+Moreover the flags field in xdp_{buff,frame} will be reused even for
+xdp rx csum offloading in future series.
 
-static void dsa_tree_master_state_change(struct dsa_switch_tree *dst,
-                                        struct net_device *master)
-{
-       struct dsa_notifier_master_state_info info;
-       struct dsa_port *cpu_dp = master->dsa_ptr;
+Typical use cases for this series are:
+- Jumbo-frames
+- Packet header split (please see Google’s use-case @ NetDevConf 0x14, [0])
+- TSO/GRO for XDP_REDIRECT
 
-       info.master = master;
-       info.operational = cpu_dp->master_admin_up && cpu_dp->master_oper_up && cpu_dp->master_oper_ready;
+The three following ebpf helpers (and related selftests) has been introduced:
+- bpf_xdp_load_bytes:
+  This helper is provided as an easy way to load data from a xdp buffer. It
+  can be used to load len bytes from offset from the frame associated to
+  xdp_md, into the buffer pointed by buf.
+- bpf_xdp_store_bytes:
+  Store len bytes from buffer buf into the frame associated to xdp_md, at
+  offset.
+- bpf_xdp_get_buff_len:
+  Return the total frame size (linear + paged parts)
 
-       dsa_tree_notify(dst, DSA_NOTIFIER_MASTER_STATE_CHANGE, &info);
-}
+bpf_xdp_adjust_tail and bpf_xdp_copy helpers have been modified to take into
+account xdp multi-buff frames.
+Moreover, similar to skb_header_pointer, we introduced bpf_xdp_pointer utility
+routine to return a pointer to a given position in the xdp_buff if the
+requested area (offset + len) is contained in a contiguous memory area
+otherwise it must be copied in a bounce buffer provided by the caller running
+bpf_xdp_copy_buf().
 
-void dsa_tree_master_oper_state_ready(struct dsa_switch_tree *dst,
-                                      struct net_device *master,
-                                      bool up)
-{
-       struct dsa_port *cpu_dp = master->dsa_ptr;
-       bool notify = false;
+BPF_F_XDP_MB flag for bpf_attr has been introduced to notify the kernel the
+eBPF program fully support xdp multi-buffer.
+SEC("xdp_mb/"), SEC_DEF("xdp_devmap_mb/") and SEC_DEF("xdp_cpumap_mb/" have been
+introduced to declare xdp multi-buffer support.
+The NIC driver is expected to reject an eBPF program if it is running in XDP
+multi-buffer mode and the program does not support XDP multi-buffer.
+In the same way it is not possible to mix xdp multi-buffer and xdp legacy
+programs in a CPUMAP/DEVMAP or tailcall a xdp multi-buffer/legacy program from
+a legacy/multi-buff one.
 
-       if ((cpu_dp->master_oper_ready && cpu_dp->master_oper_ready) !=
-           (cpu_dp->master_oper_ready && up))
-               notify = true;
+More info about the main idea behind this approach can be found here [1][2].
 
-       cpu_dp->master_oper_ready = up;
+Changes since v19:
+- do not run deprecated bpf_prog_load()
+- rely on skb_frag_size_add/skb_frag_size_sub in
+  bpf_xdp_mb_increase_tail/bpf_xdp_mb_shrink_tail
+- rely on sinfo->nr_frags in bpf_xdp_mb_shrink_tail to check if the frame has
+  been shrunk to a single-buffer one
+- allow XDP_REDIRECT of a xdp-mb frame into a CPUMAP
 
-       if (notify)
-               dsa_tree_master_state_change(dst, master);
-}
+Changes since v18:
+- fix bpf_xdp_copy_buf utility routine when we want to load/store data
+  contained in frag<n>
+- add a selftest for bpf_xdp_load_bytes/bpf_xdp_store_bytes when the caller
+  accesses data contained in frag<n> and frag<n+1>
 
-In slave.c at the NETDEV_CHANGE event the additional
-dsa_tree_master_oper_state_ready(dst, dev, dev_ingress_queue(dev));
-we have no timeout function. I just tested this and it works right away.
+Changes since v17:
+- rework bpf_xdp_copy to squash base and frag management
+- remove unused variable in bpf_xdp_mb_shrink_tail()
+- move bpf_xdp_copy_buf() out of bpf_xdp_pointer()
+- add sanity check for len in bpf_xdp_pointer()
+- remove EXPORT_SYMBOL for __xdp_return()
+- introduce frag_size field in xdp_rxq_info to let the driver specify max value
+  for xdp fragments. frag_size set to 0 means the tail increase of last the
+  fragment is not supported.
 
-Think we need this additional check to make sure the tagger can finally
-accept packet from the switch.
+Changes since v16:
+- do not allow tailcalling a xdp multi-buffer/legacy program from a
+  legacy/multi-buff one.
+- do not allow mixing xdp multi-buffer and xdp legacy programs in a
+  CPUMAP/DEVMAP
+- add selftests for CPUMAP/DEVMAP xdp mb compatibility
+- disable XDP_REDIRECT for xdp multi-buff for the moment
+- set max offset value to 0xffff in bpf_xdp_pointer
+- use ARG_PTR_TO_UNINIT_MEM and ARG_CONST_SIZE for arg3_type and arg4_type
+  of bpf_xdp_store_bytes/bpf_xdp_load_bytes
 
-With this added I think this is ready.
+Changes since v15:
+- let the verifier check buf is not NULL in
+  bpf_xdp_load_bytes/bpf_xdp_store_bytes helpers
+- return an error if offset + length is over frame boundaries in
+  bpf_xdp_pointer routine
+- introduce BPF_F_XDP_MB flag for bpf_attr to notify the kernel the eBPF
+  program fully supports xdp multi-buffer.
+- reject a non XDP multi-buffer program if the driver is running in
+  XDP multi-buffer mode.
+
+Changes since v14:
+- intrudce bpf_xdp_pointer utility routine and
+  bpf_xdp_load_bytes/bpf_xdp_store_bytes helpers
+- drop bpf_xdp_adjust_data helper
+- drop xdp_frags_truesize in skb_shared_info
+- explode bpf_xdp_mb_adjust_tail in bpf_xdp_mb_increase_tail and
+  bpf_xdp_mb_shrink_tail
+
+Changes since v13:
+- use u32 for xdp_buff/xdp_frame flags field
+- rename xdp_frags_tsize in xdp_frags_truesize
+- fixed comments
+
+Changes since v12:
+- fix bpf_xdp_adjust_data helper for single-buffer use case
+- return -EFAULT in bpf_xdp_adjust_{head,tail} in case the data pointers are not
+  properly reset
+- collect ACKs from John
+
+Changes since v11:
+- add missing static to bpf_xdp_get_buff_len_proto structure
+- fix bpf_xdp_adjust_data helper when offset is smaller than linear area length.
+
+Changes since v10:
+- move xdp->data to the requested payload offset instead of to the beginning of
+  the fragment in bpf_xdp_adjust_data()
+
+Changes since v9:
+- introduce bpf_xdp_adjust_data helper and related selftest
+- add xdp_frags_size and xdp_frags_tsize fields in skb_shared_info
+- introduce xdp_update_skb_shared_info utility routine in ordere to not reset
+  frags array in skb_shared_info converting from a xdp_buff/xdp_frame to a skb 
+- simplify bpf_xdp_copy routine
+
+Changes since v8:
+- add proper dma unmapping if XDP_TX fails on mvneta for a xdp multi-buff
+- switch back to skb_shared_info implementation from previous xdp_shared_info
+  one
+- avoid using a bietfield in xdp_buff/xdp_frame since it introduces performance
+  regressions. Tested now on 10G NIC (ixgbe) to verify there are no performance
+  penalties for regular codebase
+- add bpf_xdp_get_buff_len helper and remove frame_length field in xdp ctx
+- add data_len field in skb_shared_info struct
+- introduce XDP_FLAGS_FRAGS_PF_MEMALLOC flag
+
+Changes since v7:
+- rebase on top of bpf-next
+- fix sparse warnings
+- improve comments for frame_length in include/net/xdp.h
+
+Changes since v6:
+- the main difference respect to previous versions is the new approach proposed
+  by Eelco to pass full length of the packet to eBPF layer in XDP context
+- reintroduce multi-buff support to eBPF kself-tests
+- reintroduce multi-buff support to bpf_xdp_adjust_tail helper
+- introduce multi-buffer support to bpf_xdp_copy helper
+- rebase on top of bpf-next
+
+Changes since v5:
+- rebase on top of bpf-next
+- initialize mb bit in xdp_init_buff() and drop per-driver initialization
+- drop xdp->mb initialization in xdp_convert_zc_to_xdp_frame()
+- postpone introduction of frame_length field in XDP ctx to another series
+- minor changes
+
+Changes since v4:
+- rebase ontop of bpf-next
+- introduce xdp_shared_info to build xdp multi-buff instead of using the
+  skb_shared_info struct
+- introduce frame_length in xdp ctx
+- drop previous bpf helpers
+- fix bpf_xdp_adjust_tail for xdp multi-buff
+- introduce xdp multi-buff self-tests for bpf_xdp_adjust_tail
+- fix xdp_return_frame_bulk for xdp multi-buff
+
+Changes since v3:
+- rebase ontop of bpf-next
+- add patch 10/13 to copy back paged data from a xdp multi-buff frame to
+  userspace buffer for xdp multi-buff selftests
+
+Changes since v2:
+- add throughput measurements
+- drop bpf_xdp_adjust_mb_header bpf helper
+- introduce selftest for xdp multibuffer
+- addressed comments on bpf_xdp_get_frags_count
+- introduce xdp multi-buff support to cpumaps
+
+Changes since v1:
+- Fix use-after-free in xdp_return_{buff/frame}
+- Introduce bpf helpers
+- Introduce xdp_mb sample program
+- access skb_shared_info->nr_frags only on the last fragment
+
+Changes since RFC:
+- squash multi-buffer bit initialization in a single patch
+- add mvneta non-linear XDP buff support for tx side
+
+[0] https://netdevconf.info/0x14/session.html?talk-the-path-to-tcp-4k-mtu-and-rx-zerocopy
+[1] https://github.com/xdp-project/xdp-project/blob/master/areas/core/xdp-multi-buffer01-design.org
+[2] https://netdevconf.info/0x14/session.html?tutorial-add-XDP-support-to-a-NIC-driver (XDPmulti-buffers section)
+
+Eelco Chaudron (3):
+  bpf: add multi-buff support to the bpf_xdp_adjust_tail() API
+  bpf: add multi-buffer support to xdp copy helpers
+  bpf: selftests: update xdp_adjust_tail selftest to include
+    multi-buffer
+
+Lorenzo Bianconi (19):
+  net: skbuff: add size metadata to skb_shared_info for xdp
+  xdp: introduce flags field in xdp_buff/xdp_frame
+  net: mvneta: update mb bit before passing the xdp buffer to eBPF layer
+  net: mvneta: simplify mvneta_swbm_add_rx_fragment management
+  net: xdp: add xdp_update_skb_shared_info utility routine
+  net: marvell: rely on xdp_update_skb_shared_info utility routine
+  xdp: add multi-buff support to xdp_return_{buff/frame}
+  net: mvneta: add multi buffer support to XDP_TX
+  bpf: introduce BPF_F_XDP_MB flag in prog_flags loading the ebpf
+    program
+  net: mvneta: enable jumbo frames if the loaded XDP program support mb
+  bpf: introduce bpf_xdp_get_buff_len helper
+  bpf: move user_size out of bpf_test_init
+  bpf: introduce multibuff support to bpf_prog_test_run_xdp()
+  bpf: test_run: add xdp_shared_info pointer in bpf_test_finish
+    signature
+  libbpf: Add SEC name for xdp_mb programs
+  net: xdp: introduce bpf_xdp_pointer utility routine
+  bpf: selftests: introduce bpf_xdp_{load,store}_bytes selftest
+  bpf: selftests: add CPUMAP/DEVMAP selftests for xdp multi-buff
+  xdp: disable XDP_REDIRECT for xdp multi-buff
+
+Toke Hoiland-Jorgensen (1):
+  bpf: generalise tail call map compatibility check
+
+ drivers/net/ethernet/marvell/mvneta.c         | 204 +++++++++------
+ include/linux/bpf.h                           |  32 ++-
+ include/linux/skbuff.h                        |   1 +
+ include/net/xdp.h                             | 108 +++++++-
+ include/uapi/linux/bpf.h                      |  30 +++
+ kernel/bpf/arraymap.c                         |   4 +-
+ kernel/bpf/core.c                             |  28 +-
+ kernel/bpf/cpumap.c                           |   8 +-
+ kernel/bpf/devmap.c                           |   3 +-
+ kernel/bpf/syscall.c                          |  25 +-
+ kernel/trace/bpf_trace.c                      |   3 +
+ net/bpf/test_run.c                            | 115 +++++++--
+ net/core/filter.c                             | 244 +++++++++++++++++-
+ net/core/xdp.c                                |  78 +++++-
+ tools/include/uapi/linux/bpf.h                |  30 +++
+ tools/lib/bpf/libbpf.c                        |   8 +
+ .../bpf/prog_tests/xdp_adjust_frags.c         | 103 ++++++++
+ .../bpf/prog_tests/xdp_adjust_tail.c          | 131 ++++++++++
+ .../selftests/bpf/prog_tests/xdp_bpf2bpf.c    | 151 ++++++++---
+ .../bpf/prog_tests/xdp_cpumap_attach.c        |  65 ++++-
+ .../bpf/prog_tests/xdp_devmap_attach.c        |  56 ++++
+ .../bpf/progs/test_xdp_adjust_tail_grow.c     |  10 +-
+ .../bpf/progs/test_xdp_adjust_tail_shrink.c   |  32 ++-
+ .../selftests/bpf/progs/test_xdp_bpf2bpf.c    |   2 +-
+ .../bpf/progs/test_xdp_update_frags.c         |  42 +++
+ .../bpf/progs/test_xdp_with_cpumap_helpers.c  |   6 +
+ .../progs/test_xdp_with_cpumap_mb_helpers.c   |  27 ++
+ .../bpf/progs/test_xdp_with_devmap_helpers.c  |   7 +
+ .../progs/test_xdp_with_devmap_mb_helpers.c   |  27 ++
+ 29 files changed, 1368 insertions(+), 212 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/xdp_adjust_frags.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_xdp_update_frags.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_xdp_with_cpumap_mb_helpers.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_xdp_with_devmap_mb_helpers.c
 
 -- 
-	Ansuel
+2.33.1
+
