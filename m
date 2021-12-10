@@ -2,149 +2,327 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CBECA46F789
-	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 00:35:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CB8CB46F7DB
+	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 01:08:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234497AbhLIXjH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Dec 2021 18:39:07 -0500
-Received: from mail-am6eur05on2077.outbound.protection.outlook.com ([40.107.22.77]:21854
-        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S234495AbhLIXjG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Dec 2021 18:39:06 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lN8doZ2oEfrMxstD0NjvtJxSM95jsc67IIwJFbwjhoZwCOMLFHvxKWh6aUukTpt6zpU5m8iq3YOJOSREdcn7uwbR8DWFlOuQEs6yHUyOI/XplC6RSM9rJ6G+H2Bh0oL1yRswUY6RfXbuw8nWumXpQU2go/WADcPatlUdPTWuLtK93Gw/bHz56H0QlFJWgq6Rfxg3sQbM2Uqz+rZ+z+PtL7It+R6op4Q7DBSx2CKyaODLSIdg1eBk9F25GOWiIlYGWBRxw5b5AxKVggE/YaKbPWUF/zlxsGbSrITlFsBdSiQQn1T8rKIF6I5jaauOh9Qdyrz1Fc3nH9GWToSdoo/A4g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+RkG/X5v0iRoolPQoX6IEAtfiLOFgo781iOq9T4ddok=;
- b=SPzctYAi65NO7OrCCVJnr4Oyb4Vr15ctVZWJh5FjkdW8iH9jCqfkYLSxyl/Kh1u90hGkz9bdbR8KTkrX+ad1YKpQYNvOZOu3nlSkziix0Jx85JJPH4IdzKMlM/HvhPKuSJrU1zfySklpUUYj9nKEgPhYduaPm/mnYSG8WCMkLY5Vsn1nsYtppYrcEn44raatQySZEBnq9Vt15C8XCAgFELiaBd97SCiOUVJwGK79jCM50E5rldl9unoDGIHclhCz+dm23EEVwu+oMNPjlIt4+rliWmEM+Iwt9lq1ue05AovfjJneLxNKAknsXSOWGOKnRdTAM9+SePELPWqIC1tBAQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+RkG/X5v0iRoolPQoX6IEAtfiLOFgo781iOq9T4ddok=;
- b=fBk73qWMd9WmbztJYA9EjsJsR4BUlFEkVOFVnMVy3tUaVJa390UEVXWBR9vbkGy6N5L9BxbBB67+zaZt6+mSv+ROqEzotjDnzTIIhSI85ps/Atct+nzzDZbse5rTelWIu9VNGrPni7MKz16vrT+tj28+WTTO6s2SKrWNmP/M1D8=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VI1PR0402MB3408.eurprd04.prod.outlook.com (2603:10a6:803:9::32) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.22; Thu, 9 Dec
- 2021 23:35:21 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::c84:1f0b:cc79:9226]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::c84:1f0b:cc79:9226%3]) with mapi id 15.20.4755.024; Thu, 9 Dec 2021
- 23:35:21 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Martin Kaistra <martin.kaistra@linutronix.de>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Ansuel Smith <ansuelsmth@gmail.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>
-Subject: [PATCH v2 net-next 11/11] net: dsa: remove dp->priv
-Date:   Fri, 10 Dec 2021 01:34:47 +0200
-Message-Id: <20211209233447.336331-12-vladimir.oltean@nxp.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20211209233447.336331-1-vladimir.oltean@nxp.com>
-References: <20211209233447.336331-1-vladimir.oltean@nxp.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: AM5PR1001CA0041.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:206:15::18) To VI1PR04MB5136.eurprd04.prod.outlook.com
- (2603:10a6:803:55::19)
+        id S234778AbhLJALi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Dec 2021 19:11:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58276 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231592AbhLJALh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 19:11:37 -0500
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 106ADC061746
+        for <netdev@vger.kernel.org>; Thu,  9 Dec 2021 16:08:03 -0800 (PST)
+Received: by mail-lf1-x133.google.com with SMTP id u3so15176405lfl.2
+        for <netdev@vger.kernel.org>; Thu, 09 Dec 2021 16:08:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=IbdN0EJ0DFXEofkkrXB3KzFAN2b9VfmdTc75rezXe1A=;
+        b=guUw6JLOgaNNcDEhdIrbey9hD6Y7jTmbzAFh5dAULD2oZxY1rJCPbIPzIw6MbI1K6d
+         MkMaW24AQc3SyMMaik156HOf6/9QVKmNosEU932F1QXy7lKvNrUh0z7XqUusSstKSX9A
+         E6u5+InusvUbNj6rWrWcmrFynkmR0Ps+ILU31pe/c5dbdHkEFuwYConbvhqvXoBKipAx
+         fL5Iz/7z5B+/sjOlzvRGPiRYfScSMhZdI0edk/vSfC7FReRfnBDwHRtbnPuaUkzKrf7g
+         ta7OYIORCBP22VQdJPxrU0BhAZo+qZs8Z8zEkJSkeGUkD0PvuNUw3e2lnufnS+B+KKrM
+         TG2g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=IbdN0EJ0DFXEofkkrXB3KzFAN2b9VfmdTc75rezXe1A=;
+        b=5k3nBqY2eLwMxX3swI1uLQn9nhO37treXMfNnRPxDCgHTtLLdeKjhBgP24DqFYZsp9
+         ZQ0EqiD51sGjy56cjpS/b1WI5peLWh6I+xWXPuYNOk5iTCOeJbkH50duGuxShWLfA9Xd
+         Gnoj9l+31hjAECXsSp76rKO5frnDgikZS6V0xjyC2ntEvO71fb9OLgRul3pF7AEAThzl
+         xdoIiiFuwEdWA5xlxaTyXdd24I2XRakIK6e+IJoE/XzAurj5LLszN0n+TSYDzGwwJ1qp
+         NIOP1dRoc0H/n//2nLTvuEkcEEme1QQDYvr4n0zPsoFhI5+WLErQ9MVzEIt2GJHPcXcn
+         BkuA==
+X-Gm-Message-State: AOAM532TkVdLPqi3EVBZzTBRLJqwVz2YTK1vZRkBROLXcnH9GFnv4FFA
+        4Zu+4hlK4KkhTpmUnTpQb8JPCw==
+X-Google-Smtp-Source: ABdhPJyxFMwrTsyfK0LkTwr2vgwnO08N4qIaqpuBi7aC2pgQkRrv+06mUSxxUArpbxYNIiNST9VDQg==
+X-Received: by 2002:ac2:4d19:: with SMTP id r25mr8926236lfi.82.1639094881034;
+        Thu, 09 Dec 2021 16:08:01 -0800 (PST)
+Received: from wkz-x280 (h-212-85-90-115.A259.priv.bahnhof.se. [212.85.90.115])
+        by smtp.gmail.com with ESMTPSA id d22sm143633lfe.158.2021.12.09.16.07.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Dec 2021 16:08:00 -0800 (PST)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     Kurt Kanzenbach <kurt@kmk-computers.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Richard Cochran <richardcochran@gmail.com>,
+        Kurt Kanzenbach <kurt@kmk-computers.de>
+Subject: Re: [PATCH net-next v1] net: dsa: mv88e6xxx: Trap PTP traffic
+In-Reply-To: <20211209173337.24521-1-kurt@kmk-computers.de>
+References: <20211209173337.24521-1-kurt@kmk-computers.de>
+Date:   Fri, 10 Dec 2021 01:07:59 +0100
+Message-ID: <87y24t1fvk.fsf@waldekranz.com>
 MIME-Version: 1.0
-Received: from localhost.localdomain (188.25.173.50) by AM5PR1001CA0041.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:206:15::18) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.17 via Frontend Transport; Thu, 9 Dec 2021 23:35:20 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f442e19f-05ee-4c00-d0df-08d9bb6c90f0
-X-MS-TrafficTypeDiagnostic: VI1PR0402MB3408:EE_
-X-LD-Processed: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635,ExtAddr
-X-Microsoft-Antispam-PRVS: <VI1PR0402MB3408D30225D3CFBF9269A655E0709@VI1PR0402MB3408.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 0Oa+nIB3srjCiNvncTyLZwSPnEylYyDpjdMVNoJBHtf0E3xO9La0K+16EcarRlmkBzbhO5B1v8EnDtn5XDseskyL+ZS1eGSEyNIF2gs5O+dOiltJRcDPZNkzgBpyFWk+Tn8Zd4WecA0+bDNiMjX9YLfGg9FCUoSiVizC56a1BAp7F8CDeyR9mP9hfwMlbOm2X0+ZfoQDtwU6UMHHuBWPh37jMEhjpgbnMb0Ov0s6txUfbc8ashZqz7M+jHOtHnFg52lkB/9ED4oiBe+iPIEMKTSnyOfpe1o+IlGrVkrO4x1yfT9eWmUbv5Gj8iUqpcGnttd8RtK088lLAbvNvgynSJCBBYWckO0owSrfNDxl0v1jUd6Wh9F/wEBBSb+V+ZIDbNbvXsDnFFSena9yHeHDQRgFGnRr+hcDpCOkUMV1cHrSBI8Azd18f1sF+U/RX7GT2aHXeRfPMaxt9rcMqJZzFwUsSmii12wyuNVdJ3EMGTu0TZspqiQFN1iPw9RKCgj/84BDjRKMjF1UCdeqbZajJA8KE6wOzFk234iEfrSTyW/laotESLC4POSne/HaIIRQ2KmTJpQmai1CnqH+2GFRUxKZQwJF33UJ1jXE+LiBIk/qmkAngJeudAbiG1mS0MO4WLDcJ/Rxa3c4LHA2pZo1R2gK56HqbFS6UBJTUjU6t4UPUtgZ0vAZsSNdq4nuY7WS0tpQI5AuQWylFw5ONTacMA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(2906002)(6512007)(316002)(83380400001)(66946007)(4744005)(6506007)(66476007)(1076003)(44832011)(86362001)(6666004)(7416002)(2616005)(36756003)(956004)(38350700002)(6916009)(26005)(5660300002)(186003)(38100700002)(4326008)(8676002)(8936002)(52116002)(54906003)(66556008)(6486002)(508600001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?SUW1+/3Yh2xZjDxYTZUTiSnZ8mLnCyYXwa1TLn567GY+W/xPYMIP430nvkfJ?=
- =?us-ascii?Q?YYGu4lkQUkSIE8dYWW/vAMDhm1I37tF1+tc9EzRB4Lhah86kAsOkISJIXSEG?=
- =?us-ascii?Q?Qx3Y+5aWBj4sDBFuhsAa5gFIHLS3PQlxd0xOtpo2ce2jVC8WjTe41iNOQcXR?=
- =?us-ascii?Q?9GSgynUxzDpjKdW+PalEXhlhkIYLDkMlWyLvnE/8DCH9baDSLjzJXxEaQhG/?=
- =?us-ascii?Q?7t90SaSYqnkfgJ8sYWO/dQagk8YKDqwvB+iTyKoyBcdaLXLCvz4ofbIRutar?=
- =?us-ascii?Q?FcfMqaUKwSGJlDuGbGVmZAKQzYTDIBy0CxX64QaYDN6+pdCV3QZ35JZhLZnY?=
- =?us-ascii?Q?HB7bH142CA9g4nVzocH4hlTH2p/tOYt04BDeTjhRW8DyNyRV1O0/Nd2Fq61A?=
- =?us-ascii?Q?TSGF1vtcS8AkFCv2EMC2h14kO43L/YPwCDvy1X8uTU6oYzGL+5y6dAOTfcwk?=
- =?us-ascii?Q?l4bJ/ivek13MlFNy1Um8wuyq1XvJPNRvMtI5SH+9uQ2+C2VKACMspDh9V40l?=
- =?us-ascii?Q?h9wvPukvmxm70hkHwk0ovozhd7A7KHrnSHS33eWrSRzPbMy7S4PEj9mLRZ0c?=
- =?us-ascii?Q?kavmSnjMKKN2M61OQ+DZIpwsnQ/YbotTYKNSbTaggzQ4cIr9ZSfqrwCLlbDj?=
- =?us-ascii?Q?slNyFJjNCsm6qecdUUp5R1j9xS0/Q5o82W5tr4+RVDYFqT0kOT9ndRko3svr?=
- =?us-ascii?Q?G2V2bK8PPqP37tIm/7K77NOAa9b224hxNncyp1tAd7nbXp0rnri0xpr3566k?=
- =?us-ascii?Q?IxYj71hID5MYC/EvqLXV06yRkPkuT48M6SAjh2i7kpEoGsWiZTleNUPq4k9Y?=
- =?us-ascii?Q?Bs2YWQUPpD2gngffkqGoiU+2JRXG1XXSv78otO8zdPoWLAdn/A1+R5bUhWR5?=
- =?us-ascii?Q?cALt3ZJw7EQygz/Iar03AoUcL+LXmKoPXXyxu0O5e7Ibi5b8NFjOgNZ6rGeU?=
- =?us-ascii?Q?BMT1nBSOh3yL06qNydSGp1MvQiCO2Kit+KE2jAndpLr36bdvGGA/oabgcOFo?=
- =?us-ascii?Q?y7Xcbenwvwr+CyH+CfcGkRboCUxOGo+RtMnefacRBk4OCZqSPd9sol+I80m5?=
- =?us-ascii?Q?wVHpFWVgXiE9FpSZIhIXmKSFy3l2H4Cths9vA0qSqnvVBmBS23hRZH8Lol5L?=
- =?us-ascii?Q?zJho6YCpfCIR0QcYUTs8PoUWmi1uJRxYT5x1wIQ+puMlAjoDOs4TXU0foIqL?=
- =?us-ascii?Q?JPAwaTbYA42yQmS54ntcE/AR2TIFwEsSLjVaBgP3K4fsZ29vJz0MIVXlqEoo?=
- =?us-ascii?Q?oP3gcMhTjDac0ynGH7vJ+q7h2eZmvjAkeM/I8ELDLRxL+LpJkmQj2AqaJbCw?=
- =?us-ascii?Q?7ud1/maZ54MDz/xxO5OggXqVViIUQ3tmi+Y3jyH2rA3YTlYGfYi2E6ZAoX59?=
- =?us-ascii?Q?0xxMS9C3AEaFCngAc3CKrqSFLhBnoXPeTnGqJQUHYmdwurHRcHpwyQw2KA59?=
- =?us-ascii?Q?WZ7DoA1gv59GGBu2WpR9JLIacTtrEZanw2/jUptHOMHye2o63dw1q8nRn9cx?=
- =?us-ascii?Q?zVa1XJs171xClfCF0sGcmg1i5/PMdtVJkglW5+6vY9Ls2mW2LiRXKCfXY5GA?=
- =?us-ascii?Q?ogDpEyVk2D8QPpNKNgONeYWCKCS5gQnHq+sYgHOveJmh/pp84TDn78qtLjq1?=
- =?us-ascii?Q?BI3lRVptz2GDu5kVxg9lpY4=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f442e19f-05ee-4c00-d0df-08d9bb6c90f0
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Dec 2021 23:35:21.5167
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 0DgbJyEqyKnxxZnc4dQQDjTwmq8cJ2mwmbfrUslAK1f6PBfY7z8ma8jsR5hoyym9tuGuCui11BprrNjCl/FMnA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3408
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-All current in-tree uses of dp->priv have been replaced with
-ds->tagger_data, which provides for a safer API especially when the
-connection isn't the regular 1:1 link between one switch driver and one
-tagging protocol driver, but could be either one switch to many taggers,
-or many switches to one tagger.
+On Thu, Dec 09, 2021 at 18:33, Kurt Kanzenbach <kurt@kmk-computers.de> wrote:
+> A time aware switch should trap PTP traffic to the management CPU. User space
+> daemons such as ptp4l will process these messages to implement Boundary (or
+> Transparent) Clocks.
+>
+> At the moment the mv88e6xxx driver for mv88e6341 doesn't trap these messages
+> which leads to confusion when multiple end devices are connected to the
+> switch. Therefore, setup PTP traps. Leverage the already implemented policy
+> mechanism based on destination addresses. Configure the traps only if
+> timestamping is enabled so that non time aware use case is still functioning.
 
-Therefore, we can remove this unused pointer.
+Do we know how PTP is supposed to work in relation to things like STP?
+I.e should you be able to run PTP over a link that is currently in
+blocking? It seems like being able to sync your clock before a topology
+change occurs would be nice. In that case, these addresses should be
+added to the ATU as MGMT instead of policy entries.
 
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- include/net/dsa.h | 6 ------
- 1 file changed, 6 deletions(-)
+> Introduce an additional PTP operation in case other devices need special
+> handling in regards to trapping as well.
+>
+> Tested on Marvell Topaz (mv88e6341) switch with multiple end devices connected
+> like this:
+>
+> |# DSA setup
+> |$ ip link set eth0 up
+> |$ ip link set lan0 up
+> |$ ip link set lan1 up
+> |$ ip link set lan2 up
+> |$ ip link add name br0 type bridge
+> |$ ip link set dev lan0 master br0
+> |$ ip link set dev lan1 master br0
+> |$ ip link set dev lan2 master br0
+> |$ ip link set lan0 up
+> |$ ip link set lan1 up
+> |$ ip link set lan2 up
+> |$ ip link set br0 up
+> |$ dhclient br0
+> |# Configure bridge routing
+> |$ ebtables --table broute --append BROUTING --protocol 0x88F7 --jump DROP
+> |# Start linuxptp
+> |$ ptp4l -H -2 -i lan0 -i lan1 -i lan2 --tx_timestamp_timeout=40 -m
+>
+> Verified added policies with mv88e6xxx_dump.
+>
+> Signed-off-by: Kurt Kanzenbach <kurt@kmk-computers.de>
+> ---
+>  drivers/net/dsa/mv88e6xxx/chip.c     | 12 +++---
+>  drivers/net/dsa/mv88e6xxx/chip.h     |  5 +++
+>  drivers/net/dsa/mv88e6xxx/hwtstamp.c |  7 ++++
+>  drivers/net/dsa/mv88e6xxx/ptp.c      | 59 ++++++++++++++++++++++++++++
+>  drivers/net/dsa/mv88e6xxx/ptp.h      |  2 +
+>  5 files changed, 80 insertions(+), 5 deletions(-)
+>
+> diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+> index 7fadbf987b23..ab50ebd85f1f 100644
+> --- a/drivers/net/dsa/mv88e6xxx/chip.c
+> +++ b/drivers/net/dsa/mv88e6xxx/chip.c
+> @@ -1816,8 +1816,8 @@ static int mv88e6xxx_port_db_load_purge(struct mv88e6xxx_chip *chip, int port,
+>  	return mv88e6xxx_g1_atu_loadpurge(chip, fid, &entry);
+>  }
+>  
+> -static int mv88e6xxx_policy_apply(struct mv88e6xxx_chip *chip, int port,
+> -				  const struct mv88e6xxx_policy *policy)
+> +int mv88e6xxx_policy_apply(struct mv88e6xxx_chip *chip, int port,
+> +			   const struct mv88e6xxx_policy *policy)
+>  {
+>  	enum mv88e6xxx_policy_mapping mapping = policy->mapping;
+>  	enum mv88e6xxx_policy_action action = policy->action;
+> @@ -1835,10 +1835,12 @@ static int mv88e6xxx_policy_apply(struct mv88e6xxx_chip *chip, int port,
+>  	case MV88E6XXX_POLICY_MAPPING_SA:
+>  		if (action == MV88E6XXX_POLICY_ACTION_NORMAL)
+>  			state = 0; /* Dissociate the port and address */
+> -		else if (action == MV88E6XXX_POLICY_ACTION_DISCARD &&
+> +		else if ((action == MV88E6XXX_POLICY_ACTION_DISCARD ||
+> +			  action == MV88E6XXX_POLICY_ACTION_TRAP) &&
+>  			 is_multicast_ether_addr(addr))
+>  			state = MV88E6XXX_G1_ATU_DATA_STATE_MC_STATIC_POLICY;
+> -		else if (action == MV88E6XXX_POLICY_ACTION_DISCARD &&
+> +		else if ((action == MV88E6XXX_POLICY_ACTION_DISCARD ||
+> +			  action == MV88E6XXX_POLICY_ACTION_TRAP) &&
+>  			 is_unicast_ether_addr(addr))
+>  			state = MV88E6XXX_G1_ATU_DATA_STATE_UC_STATIC_POLICY;
+>  		else
+> @@ -4589,7 +4591,7 @@ static const struct mv88e6xxx_ops mv88e6341_ops = {
+>  	.serdes_irq_status = mv88e6390_serdes_irq_status,
+>  	.gpio_ops = &mv88e6352_gpio_ops,
+>  	.avb_ops = &mv88e6390_avb_ops,
+> -	.ptp_ops = &mv88e6352_ptp_ops,
+> +	.ptp_ops = &mv88e6341_ptp_ops,
+>  	.serdes_get_sset_count = mv88e6390_serdes_get_sset_count,
+>  	.serdes_get_strings = mv88e6390_serdes_get_strings,
+>  	.serdes_get_stats = mv88e6390_serdes_get_stats,
+> diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
+> index 8271b8aa7b71..795ae5a56834 100644
+> --- a/drivers/net/dsa/mv88e6xxx/chip.h
+> +++ b/drivers/net/dsa/mv88e6xxx/chip.h
+> @@ -673,6 +673,8 @@ struct mv88e6xxx_ptp_ops {
+>  	int (*port_disable)(struct mv88e6xxx_chip *chip, int port);
+>  	int (*global_enable)(struct mv88e6xxx_chip *chip);
+>  	int (*global_disable)(struct mv88e6xxx_chip *chip);
+> +	int (*setup_ptp_traps)(struct mv88e6xxx_chip *chip, int port,
+> +			       bool enable);
+>  	int n_ext_ts;
+>  	int arr0_sts_reg;
+>  	int arr1_sts_reg;
+> @@ -760,4 +762,7 @@ static inline void mv88e6xxx_reg_unlock(struct mv88e6xxx_chip *chip)
+>  
+>  int mv88e6xxx_fid_map(struct mv88e6xxx_chip *chip, unsigned long *bitmap);
+>  
+> +int mv88e6xxx_policy_apply(struct mv88e6xxx_chip *chip, int port,
+> +			   const struct mv88e6xxx_policy *policy);
+> +
+>  #endif /* _MV88E6XXX_CHIP_H */
+> diff --git a/drivers/net/dsa/mv88e6xxx/hwtstamp.c b/drivers/net/dsa/mv88e6xxx/hwtstamp.c
+> index 8f74ffc7a279..617aeb6cbaac 100644
+> --- a/drivers/net/dsa/mv88e6xxx/hwtstamp.c
+> +++ b/drivers/net/dsa/mv88e6xxx/hwtstamp.c
+> @@ -94,6 +94,7 @@ static int mv88e6xxx_set_hwtstamp_config(struct mv88e6xxx_chip *chip, int port,
+>  	const struct mv88e6xxx_ptp_ops *ptp_ops = chip->info->ops->ptp_ops;
+>  	struct mv88e6xxx_port_hwtstamp *ps = &chip->port_hwtstamp[port];
+>  	bool tstamp_enable = false;
+> +	int ret;
+>  
+>  	/* Prevent the TX/RX paths from trying to interact with the
+>  	 * timestamp hardware while we reconfigure it.
+> @@ -161,6 +162,12 @@ static int mv88e6xxx_set_hwtstamp_config(struct mv88e6xxx_chip *chip, int port,
+>  		if (chip->enable_count == 0 && ptp_ops->global_disable)
+>  			ptp_ops->global_disable(chip);
+>  	}
+> +
+> +	if (ptp_ops->setup_ptp_traps) {
+> +		ret = ptp_ops->setup_ptp_traps(chip, port, tstamp_enable);
+> +		if (tstamp_enable && ret)
+> +			dev_warn(chip->dev, "Failed to setup PTP traps. PTP might not work as desired!\n");
+> +	}
+>  	mv88e6xxx_reg_unlock(chip);
+>  
+>  	/* Once hardware has been configured, enable timestamp checks
+> diff --git a/drivers/net/dsa/mv88e6xxx/ptp.c b/drivers/net/dsa/mv88e6xxx/ptp.c
+> index d838c174dc0d..8d6ff03d37c8 100644
+> --- a/drivers/net/dsa/mv88e6xxx/ptp.c
+> +++ b/drivers/net/dsa/mv88e6xxx/ptp.c
+> @@ -345,6 +345,37 @@ static int mv88e6352_ptp_verify(struct ptp_clock_info *ptp, unsigned int pin,
+>  	return 0;
+>  }
+>  
+> +static int mv88e6341_setup_ptp_traps(struct mv88e6xxx_chip *chip, int port,
+> +				     bool enable)
+> +{
+> +	static const u8 ptp_destinations[][ETH_ALEN] = {
+> +		{ 0x01, 0x1b, 0x19, 0x00, 0x00, 0x00 }, /* L2 PTP */
+> +		{ 0x01, 0x80, 0xc2, 0x00, 0x00, 0x0e }, /* L2 P2P */
+> +		{ 0x01, 0x00, 0x5e, 0x00, 0x01, 0x81 }, /* IPv4 PTP */
+> +		{ 0x01, 0x00, 0x5e, 0x00, 0x00, 0x6b }, /* IPv4 P2P */
+> +		{ 0x33, 0x33, 0x00, 0x00, 0x01, 0x81 }, /* IPv6 PTP */
+> +		{ 0x33, 0x33, 0x00, 0x00, 0x00, 0x6b }, /* IPv6 P2P */
 
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index 8b496c7e62ef..64d71968aa91 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -276,12 +276,6 @@ struct dsa_port {
- 
- 	struct list_head list;
- 
--	/*
--	 * Give the switch driver somewhere to hang its per-port private data
--	 * structures (accessible from the tagger).
--	 */
--	void *priv;
--
- 	/*
- 	 * Original copy of the master netdev ethtool_ops
- 	 */
--- 
-2.25.1
+How does the L3 entries above play together with IGMP/MLD? I.e. what
+happens if, after launching ptp4l, an IGMP report comes in on lanX,
+requesting that same group? Would the policy entry not be overwritten by
+mv88e6xxx_port_mdb_add?
 
+Eventually I think we will have many interfaces to configure static
+entries in the ATU:
+
+1. MDB entries from a bridge (already in place)
+2. User-configured entries through ethtool's rxnfc (already in place)
+3. Driver-internal consumers (this patch, MRP, etc.)
+4. User-configured entries through TC.
+
+Seems to me like we need to start tracking the owners for these to stop
+them from stomping on one another.
+
+> +	};
+> +	int ret, i;
+> +
+> +	for (i = 0; i < ARRAY_SIZE(ptp_destinations); ++i) {
+> +		struct mv88e6xxx_policy policy = { };
+> +
+> +		policy.mapping	= MV88E6XXX_POLICY_MAPPING_DA;
+> +		policy.action	= enable ? MV88E6XXX_POLICY_ACTION_TRAP :
+> +			MV88E6XXX_POLICY_ACTION_NORMAL;
+> +		policy.port	= port;
+> +		policy.vid	= 0;
+> +		ether_addr_copy(policy.addr, ptp_destinations[i]);
+> +
+> +		ret = mv88e6xxx_policy_apply(chip, port, &policy);
+> +		if (ret)
+> +			return ret;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+>  const struct mv88e6xxx_ptp_ops mv88e6165_ptp_ops = {
+>  	.clock_read = mv88e6165_ptp_clock_read,
+>  	.global_enable = mv88e6165_global_enable,
+> @@ -419,6 +450,34 @@ const struct mv88e6xxx_ptp_ops mv88e6352_ptp_ops = {
+>  	.cc_mult_dem = MV88E6XXX_CC_MULT_DEM,
+>  };
+>  
+> +const struct mv88e6xxx_ptp_ops mv88e6341_ptp_ops = {
+> +	.clock_read = mv88e6352_ptp_clock_read,
+> +	.ptp_enable = mv88e6352_ptp_enable,
+> +	.ptp_verify = mv88e6352_ptp_verify,
+> +	.event_work = mv88e6352_tai_event_work,
+> +	.port_enable = mv88e6352_hwtstamp_port_enable,
+> +	.port_disable = mv88e6352_hwtstamp_port_disable,
+> +	.setup_ptp_traps = mv88e6341_setup_ptp_traps,
+
+Is there any reason why this could not be added to the existing ops for
+6352 instead? Their ATU's are compatible, IIRC.
+
+> +	.n_ext_ts = 1,
+> +	.arr0_sts_reg = MV88E6XXX_PORT_PTP_ARR0_STS,
+> +	.arr1_sts_reg = MV88E6XXX_PORT_PTP_ARR1_STS,
+> +	.dep_sts_reg = MV88E6XXX_PORT_PTP_DEP_STS,
+> +	.rx_filters = (1 << HWTSTAMP_FILTER_NONE) |
+> +		(1 << HWTSTAMP_FILTER_PTP_V2_L4_EVENT) |
+> +		(1 << HWTSTAMP_FILTER_PTP_V2_L4_SYNC) |
+> +		(1 << HWTSTAMP_FILTER_PTP_V2_L4_DELAY_REQ) |
+> +		(1 << HWTSTAMP_FILTER_PTP_V2_L2_EVENT) |
+> +		(1 << HWTSTAMP_FILTER_PTP_V2_L2_SYNC) |
+> +		(1 << HWTSTAMP_FILTER_PTP_V2_L2_DELAY_REQ) |
+> +		(1 << HWTSTAMP_FILTER_PTP_V2_EVENT) |
+> +		(1 << HWTSTAMP_FILTER_PTP_V2_SYNC) |
+> +		(1 << HWTSTAMP_FILTER_PTP_V2_DELAY_REQ),
+> +	.cc_shift = MV88E6XXX_CC_SHIFT,
+> +	.cc_mult = MV88E6XXX_CC_MULT,
+> +	.cc_mult_num = MV88E6XXX_CC_MULT_NUM,
+> +	.cc_mult_dem = MV88E6XXX_CC_MULT_DEM,
+> +};
+> +
+>  static u64 mv88e6xxx_ptp_clock_read(const struct cyclecounter *cc)
+>  {
+>  	struct mv88e6xxx_chip *chip = cc_to_chip(cc);
+> diff --git a/drivers/net/dsa/mv88e6xxx/ptp.h b/drivers/net/dsa/mv88e6xxx/ptp.h
+> index 269d5d16a466..badcb72d10a6 100644
+> --- a/drivers/net/dsa/mv88e6xxx/ptp.h
+> +++ b/drivers/net/dsa/mv88e6xxx/ptp.h
+> @@ -151,6 +151,7 @@ void mv88e6xxx_ptp_free(struct mv88e6xxx_chip *chip);
+>  extern const struct mv88e6xxx_ptp_ops mv88e6165_ptp_ops;
+>  extern const struct mv88e6xxx_ptp_ops mv88e6250_ptp_ops;
+>  extern const struct mv88e6xxx_ptp_ops mv88e6352_ptp_ops;
+> +extern const struct mv88e6xxx_ptp_ops mv88e6341_ptp_ops;
+>  
+>  #else /* !CONFIG_NET_DSA_MV88E6XXX_PTP */
+>  
+> @@ -171,6 +172,7 @@ static inline void mv88e6xxx_ptp_free(struct mv88e6xxx_chip *chip)
+>  static const struct mv88e6xxx_ptp_ops mv88e6165_ptp_ops = {};
+>  static const struct mv88e6xxx_ptp_ops mv88e6250_ptp_ops = {};
+>  static const struct mv88e6xxx_ptp_ops mv88e6352_ptp_ops = {};
+> +static const struct mv88e6xxx_ptp_ops mv88e6341_ptp_ops = {};
+>  
+>  #endif /* CONFIG_NET_DSA_MV88E6XXX_PTP */
+>  
+> -- 
+> 2.34.1
