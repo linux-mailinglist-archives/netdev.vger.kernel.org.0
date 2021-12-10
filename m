@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FAA846FC03
-	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 08:44:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F3EE646FC07
+	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 08:44:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233774AbhLJHsN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Dec 2021 02:48:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46328 "EHLO
+        id S234891AbhLJHsZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Dec 2021 02:48:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231377AbhLJHsM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 02:48:12 -0500
-Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16A60C061746
-        for <netdev@vger.kernel.org>; Thu,  9 Dec 2021 23:44:38 -0800 (PST)
-Received: by mail-pg1-x52e.google.com with SMTP id m15so7331495pgu.11
-        for <netdev@vger.kernel.org>; Thu, 09 Dec 2021 23:44:38 -0800 (PST)
+        with ESMTP id S233882AbhLJHsO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 02:48:14 -0500
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 303C2C0617A1
+        for <netdev@vger.kernel.org>; Thu,  9 Dec 2021 23:44:40 -0800 (PST)
+Received: by mail-pl1-x635.google.com with SMTP id b11so5710349pld.12
+        for <netdev@vger.kernel.org>; Thu, 09 Dec 2021 23:44:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=/aGOC8WGff4D+4yjW7lT1y3LpQU4tbVydFHCNUqEMv0=;
-        b=YaHoXfWt1b3oIn/uvWqV3ehUGpWnEjW9xCecbR37hcCwxdjiLsvRlhSC1GUI15CqOs
-         zSaAEtbkCPXh4tDbHSvlop6YD5V3QwT0EP7jpb/dplsyHlmKynFxqrTUVXX/gzTObwQe
-         W3OQymAVBCg3srcUU0/zJU30UJM1mdVVXM56YCzAH2T2LOVMRVq2zEzukEIIgZuh0elk
-         OwOCnb65R8koUqO5Wd7b6Cjd9abEMUTWXwyzIU8mEYl+OckCrAyEk6Pz0SVcFWPov93W
-         6Ws/EF+r+KGz1D0dt+sff2QYQAlJMpfxJzbMHtXrOr+9Y50D/4xvsgiD4Yh49Qh8U3kH
-         xQ8Q==
+        bh=cXlcfrrJcOZBqldY5yvVfuYUB56sD5WnFhPJ5m+yXKE=;
+        b=FEmes7JSJ6x/u+ORwr1szNDsuGIBJUbaqR2SxjRkGmM4ugH6Jo8Yfkvkw6yHG0UrgH
+         LUL3kpYzw1jSh0G65WeFJhSG7wpa195HvsAjbrj6exvXdeGv/L0Qe1sK+ohXZ/hgYH3a
+         PbuRsq/FFAwjb4NwsQdvkAWgVvFxqFN6Y6mUh93GGDe29fAmcYjtfR5EqbNTSY0TjH8R
+         bISgJHRYfcAXYAmYglmv9N5fqkOa/f5T4/qLh/xFN+HQK95U/GruJAulEl6j/xqXB88L
+         ShSpR+McLXuL5oVDclS0sxvvxXKMSZwatMLkWuokNVtWIMCv6t0RBNms1tcHscUb0m3Y
+         PG5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=/aGOC8WGff4D+4yjW7lT1y3LpQU4tbVydFHCNUqEMv0=;
-        b=qPkamgXRsMOrpT0htdBYgCS+tJXeofLPhggMHJsZUfuIOeS1L6YYjh6LBLuozbvc3w
-         rd2uHZclbz9171Q+KpYZx3Cfqo3y8iVvGNDatbsQjifIirFTupPS0Vp/5ufnsYvsfIFH
-         CZAqV7JqUXekEFYfDoBrbr8r8+uXCGTWuOoYimNW3oGvypdx5KirVDrkg/hK7NV/ZUZ0
-         +1fJTruef5yvMItrb2alyGANKJgkVa6ANMXbob0hSyYIOwKLxJ2Dpa02wIr2tsPk4wyv
-         MFol0JchbUUcJlbv9msCQT/YWG9jHf0x52kWv10f6mpv3htIP8wUtVW2nviT0IgWxq+I
-         +uMw==
-X-Gm-Message-State: AOAM531T0h/dT9SqPJQT78wjCsgpWmAnU8PYGtx7/OkBxXvXIoE9uBbX
-        i3vOZO3QPaMDRHjEyLIbMAJEdpSREgBbnA==
-X-Google-Smtp-Source: ABdhPJzio56xZUAbalt7Ls1bgKWWPBBxoGjX5jSlQnFP+Nzsh3Ch+Cm3gW/pCZXpEQv76ww/2GlM+w==
-X-Received: by 2002:a63:6c81:: with SMTP id h123mr39141687pgc.313.1639122277597;
-        Thu, 09 Dec 2021 23:44:37 -0800 (PST)
+        bh=cXlcfrrJcOZBqldY5yvVfuYUB56sD5WnFhPJ5m+yXKE=;
+        b=PcpTJHrAaeTjTg4TVkyNEPQ/K+T+N3y3/h34QftZ6a0tpTrcAH6AnfV8u8dK/Efpin
+         C8wAJI8ku/u8NC6RzkE/VjTi0Agrpt/Vh5yK82BU454ep8bzF12eKP/FVBeVkr8hxzfC
+         Sr0rCqIrFjrsgXJIW1FUllDntSgDEF7tGdkuDZP5foK1ch7VrW15GeIwiGyiRMH6VxAc
+         7JpABye2EcWK7Szq7t8D01DC1BuBi+dkLAIjfpmwvi/muvjfrX1GTDD+VYHFAZQXL/O1
+         r6Ff5i2ZzhjRMNl1Jhh8i+eRHgurLQtKHKjII1fEiya90y8ebfvFlv7dZQsTxFtHj0eq
+         E53A==
+X-Gm-Message-State: AOAM531cZeGNMfVQDjviqoNF/+kudz1cmmptPPRwr48JG+1ffgD7QNae
+        g0l3fQKHuvPlgsJVguKip+l4+E0Y02hADQ==
+X-Google-Smtp-Source: ABdhPJzd/wQpXP7qt5j7e+jT1PSDwDSWCn9c5Swu8ITKanm+z6BsKmnGymSW/K1Vs6JHVrD42deUfA==
+X-Received: by 2002:a17:90b:3887:: with SMTP id mu7mr22045347pjb.41.1639122279704;
+        Thu, 09 Dec 2021 23:44:39 -0800 (PST)
 Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:4f5:a6b4:3889:ebe5])
-        by smtp.gmail.com with ESMTPSA id y12sm2001346pfe.140.2021.12.09.23.44.36
+        by smtp.gmail.com with ESMTPSA id y12sm2001346pfe.140.2021.12.09.23.44.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Dec 2021 23:44:37 -0800 (PST)
+        Thu, 09 Dec 2021 23:44:39 -0800 (PST)
 From:   Eric Dumazet <eric.dumazet@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev <netdev@vger.kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH V2 net-next 2/6] net: add netns refcount tracker to struct sock
-Date:   Thu,  9 Dec 2021 23:44:22 -0800
-Message-Id: <20211210074426.279563-3-eric.dumazet@gmail.com>
+Subject: [PATCH V2 net-next 3/6] net: add netns refcount tracker to struct seq_net_private
+Date:   Thu,  9 Dec 2021 23:44:23 -0800
+Message-Id: <20211210074426.279563-4-eric.dumazet@gmail.com>
 X-Mailer: git-send-email 2.34.1.173.g76aa8bc2d0-goog
 In-Reply-To: <20211210074426.279563-1-eric.dumazet@gmail.com>
 References: <20211210074426.279563-1-eric.dumazet@gmail.com>
@@ -69,61 +69,76 @@ From: Eric Dumazet <edumazet@google.com>
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- include/net/sock.h | 2 ++
- net/core/sock.c    | 6 +++---
- 2 files changed, 5 insertions(+), 3 deletions(-)
+ fs/proc/proc_net.c           | 19 ++++++++++++++++---
+ include/linux/seq_file_net.h |  3 ++-
+ 2 files changed, 18 insertions(+), 4 deletions(-)
 
-diff --git a/include/net/sock.h b/include/net/sock.h
-index ae61cd0b650de76d731c8f9b7f9050d9beb3d87e..5d8532f26208fbd05f5b1185afa87207c1c476c9 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -350,6 +350,7 @@ struct bpf_local_storage;
-   *	@sk_txtime_deadline_mode: set deadline mode for SO_TXTIME
-   *	@sk_txtime_report_errors: set report errors mode for SO_TXTIME
-   *	@sk_txtime_unused: unused txtime flags
-+  *	@ns_tracker: tracker for netns reference
-   */
- struct sock {
- 	/*
-@@ -538,6 +539,7 @@ struct sock {
- 	struct bpf_local_storage __rcu	*sk_bpf_storage;
+diff --git a/fs/proc/proc_net.c b/fs/proc/proc_net.c
+index 15c2e55d2ed2c4b8b00209ecf9b18caa1a47f1b7..39b823ab2564edf62fd08983ec44560b1120ee24 100644
+--- a/fs/proc/proc_net.c
++++ b/fs/proc/proc_net.c
+@@ -61,15 +61,27 @@ static int seq_open_net(struct inode *inode, struct file *file)
+ 	}
+ #ifdef CONFIG_NET_NS
+ 	p->net = net;
++	netns_tracker_alloc(net, &p->ns_tracker, GFP_KERNEL);
  #endif
- 	struct rcu_head		sk_rcu;
-+	netns_tracker		ns_tracker;
- };
- 
- enum sk_pacing {
-diff --git a/net/core/sock.c b/net/core/sock.c
-index 4a499d255f401e61fff2fbab3b0fd9337da77f7e..1a6a925397906508a33e1443b1ec27ac19d036e1 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -1983,7 +1983,7 @@ struct sock *sk_alloc(struct net *net, int family, gfp_t priority,
- 		sock_lock_init(sk);
- 		sk->sk_net_refcnt = kern ? 0 : 1;
- 		if (likely(sk->sk_net_refcnt)) {
--			get_net(net);
-+			get_net_track(net, &sk->ns_tracker, priority);
- 			sock_inuse_add(net, 1);
- 		}
- 
-@@ -2039,7 +2039,7 @@ static void __sk_destruct(struct rcu_head *head)
- 	put_pid(sk->sk_peer_pid);
- 
- 	if (likely(sk->sk_net_refcnt))
--		put_net(sock_net(sk));
-+		put_net_track(sock_net(sk), &sk->ns_tracker);
- 	sk_prot_free(sk->sk_prot_creator, sk);
+ 	return 0;
  }
  
-@@ -2126,7 +2126,7 @@ struct sock *sk_clone_lock(const struct sock *sk, const gfp_t priority)
++static void seq_file_net_put_net(struct seq_file *seq)
++{
++#ifdef CONFIG_NET_NS
++	struct seq_net_private *priv = seq->private;
++
++	put_net_track(priv->net, &priv->ns_tracker);
++#else
++	put_net(&init_net);
++#endif
++}
++
+ static int seq_release_net(struct inode *ino, struct file *f)
+ {
+ 	struct seq_file *seq = f->private_data;
  
- 	/* SANITY */
- 	if (likely(newsk->sk_net_refcnt)) {
--		get_net(sock_net(newsk));
-+		get_net_track(sock_net(newsk), &newsk->ns_tracker, priority);
- 		sock_inuse_add(sock_net(newsk), 1);
- 	}
- 	sk_node_init(&newsk->sk_node);
+-	put_net(seq_file_net(seq));
++	seq_file_net_put_net(seq);
+ 	seq_release_private(ino, f);
+ 	return 0;
+ }
+@@ -87,7 +99,8 @@ int bpf_iter_init_seq_net(void *priv_data, struct bpf_iter_aux_info *aux)
+ #ifdef CONFIG_NET_NS
+ 	struct seq_net_private *p = priv_data;
+ 
+-	p->net = get_net(current->nsproxy->net_ns);
++	p->net = get_net_track(current->nsproxy->net_ns, &p->ns_tracker,
++			       GFP_KERNEL);
+ #endif
+ 	return 0;
+ }
+@@ -97,7 +110,7 @@ void bpf_iter_fini_seq_net(void *priv_data)
+ #ifdef CONFIG_NET_NS
+ 	struct seq_net_private *p = priv_data;
+ 
+-	put_net(p->net);
++	put_net_track(p->net, &p->ns_tracker);
+ #endif
+ }
+ 
+diff --git a/include/linux/seq_file_net.h b/include/linux/seq_file_net.h
+index 0fdbe1ddd8d1bd53269c4ca49297544860f3d3e5..b97912fdbae78304be7c3c45c862dce880e08dd4 100644
+--- a/include/linux/seq_file_net.h
++++ b/include/linux/seq_file_net.h
+@@ -9,7 +9,8 @@ extern struct net init_net;
+ 
+ struct seq_net_private {
+ #ifdef CONFIG_NET_NS
+-	struct net *net;
++	struct net	*net;
++	netns_tracker	ns_tracker;
+ #endif
+ };
+ 
 -- 
 2.34.1.173.g76aa8bc2d0-goog
 
