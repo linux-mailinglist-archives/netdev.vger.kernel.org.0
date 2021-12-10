@@ -2,112 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 33D2746FDE5
-	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 10:35:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A6D046FE07
+	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 10:40:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234386AbhLJJjd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Dec 2021 04:39:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43942 "EHLO
+        id S239433AbhLJJoE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Dec 2021 04:44:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233120AbhLJJjc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 04:39:32 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33AEFC061746
-        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 01:35:58 -0800 (PST)
-From:   Kurt Kanzenbach <kurt.kanzenbach@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1639128955;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=WBYC6INRj8oAA6ylOY7yTpCGQBsmhCEkH4H9/SmuxZY=;
-        b=rrRR1owdCdOZDPHB8ylGip3CoJNyq1v1ksRu15cNU9meoa/aJTgQ28bHDgJ5qD2Z6PbYA3
-        GVaNasRjnz6kHOaWCYxTu9veTNDvtqiUM8To0r2ug44gKPjpo3IhqvU99ByDbKZSnypdQz
-        YC3QGoqsiH6qoXrGzcrjrJ3N4vGSJRIDTK+P/O4Bo9iLEc8Yzs8fWeQy7ZhUCZTTVI7bSA
-        E9Q2Am/63kRhUt8Qk6uuyNrSCaLDjCOOzf+7OdH9y4w708fWXlImDNZmtaJ5+hR/B/cOFR
-        uiHDEp2Tgy4UDaHML0C760iETnUaG/t+dfa/RVkxMWJ5RyZCSnX14VaEVNLM1A==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1639128955;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=WBYC6INRj8oAA6ylOY7yTpCGQBsmhCEkH4H9/SmuxZY=;
-        b=JKa3Ohp4lxLVvxXIDyehXNOqJTZR8GOVgHA3+FqUTWTL8oB4lxsSAXYX7P6ApEcZrmDkIz
-        hYMSrdMebd4akiBg==
-To:     Ong Boon Leong <boon.leong.ong@intel.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        alexandre.torgue@foss.st.com
-Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: Re: [PATCH net-next 2/2] net: stmmac: add tc flower filter for
- EtherType matching
-In-Reply-To: <20211209151631.138326-3-boon.leong.ong@intel.com>
-References: <20211209151631.138326-1-boon.leong.ong@intel.com>
- <20211209151631.138326-3-boon.leong.ong@intel.com>
-Date:   Fri, 10 Dec 2021 10:35:54 +0100
-Message-ID: <87ilvwzts5.fsf@kurt>
+        with ESMTP id S232524AbhLJJoD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 04:44:03 -0500
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B06EC061746
+        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 01:40:29 -0800 (PST)
+Received: from ip4d173d4a.dynamic.kabel-deutschland.de ([77.23.61.74] helo=[192.168.66.200]); authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1mvcO8-0007uy-Py; Fri, 10 Dec 2021 10:40:24 +0100
+Message-ID: <063995d8-acf3-9f33-5667-f284233c94b4@leemhuis.info>
+Date:   Fri, 10 Dec 2021 10:40:24 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH] igc: Avoid possible deadlock during suspend/resume
+Content-Language: en-BS
+To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Stefan Dietrich <roots@gmx.de>
+Cc:     kuba@kernel.org, greg@kroah.com, netdev@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org, regressions@lists.linux.dev
+References: <87r1awtdx3.fsf@intel.com>
+ <20211201185731.236130-1-vinicius.gomes@intel.com>
+ <5a4b31d43d9bf32e518188f3ef84c433df3a18b1.camel@gmx.de>
+ <87o85yljpu.fsf@intel.com>
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+In-Reply-To: <87o85yljpu.fsf@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1639129229;f52f8e27;
+X-HE-SMSGID: 1mvcO8-0007uy-Py
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
+Hi, this is your Linux kernel regression tracker speaking.
 
-Hi BL,
+On 02.12.21 23:34, Vinicius Costa Gomes wrote:
+> Hi Stefan,
+> 
+> Stefan Dietrich <roots@gmx.de> writes:
+> 
+>> Hi Vinicius,
+>>
+>> thanks for the patch - unfortunately it did not solve the issue and I
+>> am still getting reboots/lockups.
+>>
+> 
+> Thanks for the test. We learned something, not a lot, but something: the
+> problem you are facing is PTM related and it's not the same bug as that
+> PM deadlock.
+> 
+> I am still trying to understand what's going on.
+> 
+> Are you able to send me the 'dmesg' output for the two kernel configs
+> (CONFIG_PCIE_PTM enabled and disabled)? (no need to bring the network
+> interface up or down). Your kernel .config would be useful as well.
 
-On Thu Dec 09 2021, Ong Boon Leong wrote:
-> This patch adds basic support for EtherType RX frame steering for
-> LLDP and PTP using the hardware offload capabilities.
+Stefan, could you provide the data Vinicius asked for? Or did you do
+that in private already? Or was progress made somewhere else and I
+simply missed this?
 
-Maybe add an example here for users?
+Ciao, Thorsten, your Linux kernel regression tracker.
 
-|tc filter add dev eno1 parent ffff: protocol 0x88f7 flower hw_tc 4
-|tc filter add dev eno1 parent ffff: protocol 0x88cc flower hw_tc 4
+P.S.: As a Linux kernel regression tracker I'm getting a lot of reports
+on my table. I can only look briefly into most of them. Unfortunately
+therefore I sometimes will get things wrong or miss something important.
+I hope that's not the case here; if you think it is, don't hesitate to
+tell me about it in a public reply. That's in everyone's interest, as
+what I wrote above might be misleading to everyone reading this; any
+suggestion I gave they thus might sent someone reading this down the
+wrong rabbit hole, which none of us wants.
 
->
-> Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
+BTW, I have no personal interest in this issue, which is tracked using
+regzbot, my Linux kernel regression tracking bot
+(https://linux-regtracking.leemhuis.info/regzbot/). I'm only posting
+this mail to get things rolling again and hence don't need to be CC on
+all further activities wrt to this regression.
 
-Something is not quite correct. The use of the etype variable generates
-new warnings. For instance:
+#regzbot poke
 
-|drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c:768:25: warning: restricted __be16 degrades to integer
-|drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c:768:25: warning: restricted __be16 degrades to integer
-|drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c:817:22: warning: restricted __be16 degrades to integer
-|drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c:817:22: warning: restricted __be16 degrades to integer
-
-However, the steering works as expected. Thanks!
-
-Thanks,
-Kurt
-
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQJSBAEBCgA8FiEEooWgvezyxHPhdEojeSpbgcuY8KYFAmGzH3oeHGt1cnQua2Fu
-emVuYmFjaEBsaW51dHJvbml4LmRlAAoJEHkqW4HLmPCmtiEP/2Bi/cOq//6urSTu
-9iDsESTq1pnJFcfbykRsCaonY7bjzFZN/suxxUC4IZom/4kzhE9lJSPxaQUo+xqD
-/MLbehxqfA6VZ1HWWngVTxKcUhUhNdkw9R6zSkHXPdbTe6D3Q/ml/PoYMrNczR1W
-68u7Tl8khf6IQWRvZAinAvsgTSSkr4gCvmkcSDVCZ2tf9TvitdQILGr9DkCyK7mk
-8bXFWPFRB4Hmd2Mf09uGagpQxrRcqaIjf4AGgI1PedXFWEJ89mUeX+Czr4yM0tYb
-52j8QxTQpqAiJ9QXvATIY/wZqwalHc86EvFwZCAALpv7rPw96rvUrFGSsIqxMn0a
-NWPVHqvnr/rXPSA+3aiqrXFhUsKdVSk7/azOsElXcwPEkLH1G74ORYSp/gWIu/7u
-kNUhKHaftCvFHxZ9IqQySzkjl95dfomsbwuhmhJ1mxtSKiV/npcYsz6JwHxNn/y5
-BNBjmjVJ5Jj9bSgBlIRT7WlghNjrWWghPjRlt2vulnqMDeDfZeCCCgbyaAmwJn/K
-kVXIuByOtNTAfomUpv5dITVPCIBAreozXDAr4YGUF7u21ZWiCyXKKImNJXRt66IM
-3bv4sK05YdleYhcL/z6IaKzzKr5yH3RRTcDWqeRUxsWomjpmJ1zVE59vr+5zQZKs
-2j/rBVvZGry982hd7ll9/Uq3FkFC
-=6esP
------END PGP SIGNATURE-----
---=-=-=--
+>> On Wed, 2021-12-01 at 10:57 -0800, Vinicius Costa Gomes wrote:
+>>> Inspired by:
+>>> https://bugzilla.kernel.org/show_bug.cgi?id=215129
+>>>
+>>> Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+>>> ---
+>>> Just to see if it's indeed the same problem as the bug report above.
+>>>
+>>>  drivers/net/ethernet/intel/igc/igc_main.c | 19 +++++++++++++------
+>>>  1 file changed, 13 insertions(+), 6 deletions(-)
+>>>
+>>> diff --git a/drivers/net/ethernet/intel/igc/igc_main.c
+>>> b/drivers/net/ethernet/intel/igc/igc_main.c
+>>> index 0e19b4d02e62..c58bf557a2a1 100644
+>>> --- a/drivers/net/ethernet/intel/igc/igc_main.c
+>>> +++ b/drivers/net/ethernet/intel/igc/igc_main.c
+>>> @@ -6619,7 +6619,7 @@ static void igc_deliver_wake_packet(struct
+>>> net_device *netdev)
+>>>  	netif_rx(skb);
+>>>  }
+>>>
+>>> -static int __maybe_unused igc_resume(struct device *dev)
+>>> +static int __maybe_unused __igc_resume(struct device *dev, bool rpm)
+>>>  {
+>>>  	struct pci_dev *pdev = to_pci_dev(dev);
+>>>  	struct net_device *netdev = pci_get_drvdata(pdev);
+>>> @@ -6661,20 +6661,27 @@ static int __maybe_unused igc_resume(struct
+>>> device *dev)
+>>>
+>>>  	wr32(IGC_WUS, ~0);
+>>>
+>>> -	rtnl_lock();
+>>> +	if (!rpm)
+>>> +		rtnl_lock();
+>>>  	if (!err && netif_running(netdev))
+>>>  		err = __igc_open(netdev, true);
+>>>
+>>>  	if (!err)
+>>>  		netif_device_attach(netdev);
+>>> -	rtnl_unlock();
+>>> +	if (!rpm)
+>>> +		rtnl_unlock();
+>>>
+>>>  	return err;
+>>>  }
+>>>
+>>>  static int __maybe_unused igc_runtime_resume(struct device *dev)
+>>>  {
+>>> -	return igc_resume(dev);
+>>> +	return __igc_resume(dev, true);
+>>> +}
+>>> +
+>>> +static int __maybe_unused igc_resume(struct device *dev)
+>>> +{
+>>> +	return __igc_resume(dev, false);
+>>>  }
+>>>
+>>>  static int __maybe_unused igc_suspend(struct device *dev)
+>>> @@ -6738,7 +6745,7 @@ static pci_ers_result_t
+>>> igc_io_error_detected(struct pci_dev *pdev,
+>>>   *  @pdev: Pointer to PCI device
+>>>   *
+>>>   *  Restart the card from scratch, as if from a cold-boot.
+>>> Implementation
+>>> - *  resembles the first-half of the igc_resume routine.
+>>> + *  resembles the first-half of the __igc_resume routine.
+>>>   **/
+>>>  static pci_ers_result_t igc_io_slot_reset(struct pci_dev *pdev)
+>>>  {
+>>> @@ -6777,7 +6784,7 @@ static pci_ers_result_t
+>>> igc_io_slot_reset(struct pci_dev *pdev)
+>>>   *
+>>>   *  This callback is called when the error recovery driver tells us
+>>> that
+>>>   *  its OK to resume normal operation. Implementation resembles the
+>>> - *  second-half of the igc_resume routine.
+>>> + *  second-half of the __igc_resume routine.
+>>>   */
+>>>  static void igc_io_resume(struct pci_dev *pdev)
+>>>  {
+>>
+> 
+> 
+> Cheers,
+> 
