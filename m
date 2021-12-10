@@ -2,104 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B6D3046FE4B
-	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 10:58:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C67746FE7C
+	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 11:09:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239773AbhLJKCF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Dec 2021 05:02:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49406 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239752AbhLJKCF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 05:02:05 -0500
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87D49C0617A1
-        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 01:58:30 -0800 (PST)
-Received: by mail-ed1-x535.google.com with SMTP id y12so27593441eda.12
-        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 01:58:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares-net.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=nduhBFxPbxmifYpnO0eOOP3C7nxBPTbeIwjsdCqiSCo=;
-        b=ojvvj0K+k6NKnozWLW2tDWy91766MZb9YsUkZZD84yq8yaH1DnzCgRGc4zW9CR+Z3E
-         2vs+BSinUml6Qjyb0MbBrOgsHOui0a02cPy0cqrIUgGcPho1kK21Vv6AOKU4syfzyGr6
-         ZSM2KKARJ2O3WXBsrc+VrUfgJgi8GAHaVHe2HKB+OvOoTqxMHIykUz6SEjjyVYLDofUT
-         4tkWQHYJ8a7xdoQKOL1TGvS9bCMzyhfSxCNiEPqsSQMJYT0YND2DBanJfy4thrcjQpsv
-         NGVyKnbVO76+lE4LNwOMA8eTPqYUhFTsWhY12krSk4lNc2nU/54euf2N4eePg1MzmHYj
-         PSKA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=nduhBFxPbxmifYpnO0eOOP3C7nxBPTbeIwjsdCqiSCo=;
-        b=uySJYK6BSUcrBPqxbjnEMj84/Yex4Z33xrW1QNitH5p18hPJqLCohlXB9N/vcVrVnL
-         a8s17ms93vEvYFtNFKBQD0Hk/9lbuC+sPHnL0jRB6sI4eUKoXQ3LaJP7OZcMDYzC+pHL
-         vckOA70nRYwgKlQoDbL8ocaO2dMcC9KvW6pz8I90a7s91aUm8SSB2Uu84rCJfMm8luxY
-         xP7ThZCjtGTOBsSiw14axZd/9bqarRJVpL/PBt4Ra43xXg1qvpNVYKVnnnxs4QD7MSn3
-         OCaE7G24HQgs1qLyuMFivDW75urtar1vRMeaxO5DWRUaUAyjgYGOmCX+xvrhJXwwUP9d
-         RVzw==
-X-Gm-Message-State: AOAM532MTJFEkUA/x9kxImyRxwnLTnulMQnl9D5NnCkw5Xv7h2wFziea
-        PimREpOG/iNL4JRXxEGm7hdRdg==
-X-Google-Smtp-Source: ABdhPJylHws71T7EEEhue6UdCGoV/k4VWRPPxYHA0zXkEHzMN0zoHH6zuGQNrntdBPyvVA4MsSkOUQ==
-X-Received: by 2002:a17:907:7f2a:: with SMTP id qf42mr23268059ejc.388.1639130308873;
-        Fri, 10 Dec 2021 01:58:28 -0800 (PST)
-Received: from [192.168.178.33] (94.105.100.208.dyn.edpnet.net. [94.105.100.208])
-        by smtp.gmail.com with ESMTPSA id co10sm1129754edb.83.2021.12.10.01.58.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 10 Dec 2021 01:58:28 -0800 (PST)
-Message-ID: <ab84ca1f-0f43-d50c-c272-81f64ee31ce8@tessares.net>
-Date:   Fri, 10 Dec 2021 10:58:27 +0100
+        id S232002AbhLJKM4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Dec 2021 05:12:56 -0500
+Received: from www62.your-server.de ([213.133.104.62]:44984 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240070AbhLJKMC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 05:12:02 -0500
+Received: from [78.46.152.42] (helo=sslproxy04.your-server.de)
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1mvcpE-000CX1-Eg; Fri, 10 Dec 2021 11:08:24 +0100
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy04.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1mvcpE-0008zp-6o; Fri, 10 Dec 2021 11:08:24 +0100
+Subject: Re: [RFC PATCH net-next 2/2] net: Reset forwarded skb->tstamp before
+ delivering to user space
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, kernel-team@fb.com
+References: <20211207020102.3690724-1-kafai@fb.com>
+ <20211207020108.3691229-1-kafai@fb.com>
+ <CA+FuTScQigv7xR5COSFXAic11mwaEsFXVvV7EmSf-3OkvdUXcg@mail.gmail.com>
+ <83ff2f64-42b8-60ed-965a-810b4ec69f8d@iogearbox.net>
+ <20211208081842.p46p5ye2lecgqvd2@kafai-mbp.dhcp.thefacebook.com>
+ <20211208083013.zqeipdfprcdr3ntn@kafai-mbp.dhcp.thefacebook.com>
+ <1ef23d3b-fe49-213b-6b60-127393b24e84@iogearbox.net>
+ <20211208221924.v4gqpkzzrbhgi2xe@kafai-mbp.dhcp.thefacebook.com>
+ <b7989f8a-3f04-5186-a9f1-50f101575cfa@iogearbox.net>
+ <20211210013720.mp7avsr63i4nttr3@kafai-mbp.dhcp.thefacebook.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <fb490760-160f-6c39-7d17-2bde4297f4c7@iogearbox.net>
+Date:   Fri, 10 Dec 2021 11:08:23 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [PATCH] selftests: mptcp: remove duplicate include in mptcp_inq.c
-Content-Language: en-GB
-To:     cgel.zte@gmail.com, mathew.j.martineau@linux.intel.com
-Cc:     davem@davemloft.net, kuba@kernel.org, shuah@kernel.org,
-        netdev@vger.kernel.org, mptcp@lists.linux.dev,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Ye Guojin <ye.guojin@zte.com.cn>, ZealRobot <zealci@zte.com.cn>
-References: <20211210071424.425773-1-ye.guojin@zte.com.cn>
-From:   Matthieu Baerts <matthieu.baerts@tessares.net>
-In-Reply-To: <20211210071424.425773-1-ye.guojin@zte.com.cn>
-Content-Type: text/plain; charset=UTF-8
+In-Reply-To: <20211210013720.mp7avsr63i4nttr3@kafai-mbp.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.3/26378/Thu Dec  9 10:21:16 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Ye,
-
-On 10/12/2021 08:14, cgel.zte@gmail.com wrote:
-> From: Ye Guojin <ye.guojin@zte.com.cn>
+On 12/10/21 2:37 AM, Martin KaFai Lau wrote:
+> On Thu, Dec 09, 2021 at 01:58:52PM +0100, Daniel Borkmann wrote:
+>>> Daniel, do you have suggestion on where to temporarily store
+>>> the forwarded EDT so that the bpf@ingress can access?
+>>
+>> Hm, was thinking maybe moving skb->skb_mstamp_ns into the shared info as
+>> in skb_hwtstamps(skb)->skb_mstamp_ns could work. In other words, as a union
+>> with hwtstamp to not bloat it further. And TCP stack as well as everything
+>> else (like sch_fq) could switch to it natively (hwtstamp might only be used
+>> on RX or TX completion from driver side if I'm not mistaken).
+>>
+>> But then while this would solve the netns transfer, we would run into the
+>> /same/ issue again when implementing a hairpinning LB where we loop from RX
+>> to TX given this would have to be cleared somewhere again if driver populates
+>> hwtstamp, so not really feasible and bloating shared info with a second
+>> tstamp would bump it by one cacheline. :(
+> If the edt is set at skb_hwtstamps,
+> skb->tstamp probably needs to be re-populated for the bpf@tc-egress
+> but should be minor since there is a skb_at_tc_ingress() test.
 > 
-> 'sys/ioctl.h' included in 'mptcp_inq.c' is duplicated.
+> It seems fq does not need shinfo now, so that will be an extra cacheline to
+> bring... hmm
 
-Good catch, the modification looks good to me:
+Right. :/ The other thing I was wondering (but haven't looked enough into the
+code yet whether feasible or not) ... maybe skb_hwtstamps(skb)->hwtstamp could
+be changed to cover both hw & sw ingress tstamp (meaning, if nic doesn't provide
+it, then we fall back to the sw one and __net_timestamp() stores it there, too)
+whereas skb->tstamp would always concern an egress tstamp. However, it might
+result in quite a lot of churn given the wider-spread use, but more importantly,
+performance implications are also not quite clear as you mentioned above wrt
+extra cache miss.
 
-Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+>> A cleaner BUT still non-generic solution compared to the previous diff I could
+>> think of might be the below. So no change in behavior in general, but if the
+>> bpf@ingress@veth@host needs to access the original tstamp, it could do so
+>> via existing mapping we already have in BPF, and then it could transfer it
+>> for all or certain traffic (up to the prog) via BPF code setting ...
+>>
+>>    skb->tstamp = skb->hwtstamp
+>>
+>> ... and do the redirect from there to the phys dev with BPF_F_KEEP_TSTAMP
+>> flag. Minimal intrusive, but unfortunately only accessible for BPF. Maybe use
+>> of skb_hwtstamps(skb)->nststamp could be extended though (?)
+> I like the idea of the possibility in temporarily storing a future mono EDT
+> in skb_shared_hwtstamps.
+> 
+> It may open up some possibilities.  Not sure how that may look like yet
+> but I will try to develop on this.
 
+Ok! One thing I noticed later in the diff, that for the ingressing direction
+aka phys -> host veth -> netns veth, we also do the skb_xfer_tstamp() switch
+and might override the one stored from driver with potentially the one from
+__net_timestamp(), but maybe for netns'es that's acceptable (perhaps a test
+for existing skb->sk owner before skb_xfer_tstamp() could do the trick..).
 
-This patch is for "net-next" tree as it fixes an issue introduced by a
-patch only in this tree:
+> I may have to separate the fwd-edt problem from __sk_buff->tstamp accessibility
+> @ingress to keep it simple first.
+> will try to make it generic also before scaling back to a bpf-specific solution.
 
-Fixes: b51880568f20 ("selftests: mptcp: add inq test case")
+Yeah sounds good, if we can solve it generically, even better!
 
-Regarding the commit message, please next time include the Fixes tag and
-mention for which tree it is for in the FAQ [1], e.g. [PATCH net-next].
-
-
-@David/Jakub: do you prefer a v2 with these modifications or is it fine
-to apply this small patch directly in net-next tree?
-
-
-Cheers,
-Matt
-
-[1] https://www.kernel.org/doc/html/latest/networking/netdev-FAQ.html
-Please check the "How do I indicate which tree (net vs. net-next) my
-patch should be in?" section.
--- 
-Tessares | Belgium | Hybrid Access Solutions
-www.tessares.net
+> Thanks for the code and the idea !
+Thanks,
+Daniel
