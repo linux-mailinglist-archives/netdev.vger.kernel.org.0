@@ -2,90 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3678A470955
-	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 19:50:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A44B470964
+	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 19:52:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245593AbhLJSyT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Dec 2021 13:54:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34426 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238591AbhLJSyS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 13:54:18 -0500
-Received: from mail-qv1-xf34.google.com (mail-qv1-xf34.google.com [IPv6:2607:f8b0:4864:20::f34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EBCCC061746
-        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 10:50:43 -0800 (PST)
-Received: by mail-qv1-xf34.google.com with SMTP id gu12so8802585qvb.6
-        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 10:50:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Jvt0hW8j62Yafyq4p5GRxEQBCjarrXPWPoRmQXorS+c=;
-        b=EwJytH2Ez4PgXJCUl0six7eM5Je65NyotNZj1chqNHgX9HJHlTqAlpUCB6UV0jbC8P
-         Q1P5nlZN077ek3moluRmp/Wl1pfnlsB89n7zjck+bLD/qKypuXp/nox6Qr+ly+fSIWQE
-         U4jeLATUpQoY6+wpl1CXzvyhlG9W87jMxXUWyUM8vXuB49+GAFT/5yT+tMNEVZPjURJa
-         8En6cVQQzhuN2HoJfi4ZZ1fg92A2DxM1tT29Sub9YPi0F+DUU7JCueyWzDRJkEm55b6Z
-         C9b07tr2m72h4BmBRgflMrZxwtHuQGCsCA+WNxjxf/jwpzSWmJeUHWRyzcV51E29hIPW
-         e52g==
+        id S245627AbhLJS4A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Dec 2021 13:56:00 -0500
+Received: from mail-ot1-f50.google.com ([209.85.210.50]:42861 "EHLO
+        mail-ot1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245622AbhLJSz4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 13:55:56 -0500
+Received: by mail-ot1-f50.google.com with SMTP id 47-20020a9d0332000000b005798ac20d72so10502565otv.9;
+        Fri, 10 Dec 2021 10:52:20 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Jvt0hW8j62Yafyq4p5GRxEQBCjarrXPWPoRmQXorS+c=;
-        b=Jt6bwPNJVKIccaoPY/ZV29afAr6m+Tuquw1I8SHE0Q0sjZafAzvmh9AXaxAJ5sqgFr
-         kiDS7Z/PUv5X84pkMM1LEqNvg0juhJekIdggeGH7O/xz9jCqVF5viWJvWK9QL927utwy
-         I/jTh2B4YGpk9Z6cg+E5q+aB46SuEbfGxznOLSEjGS+7hO9EbroqCJJL/lPrazI/DRqj
-         S6ZSse6Oz6GeOtNSNiUK5wLBsi1N1A35pSb1IJBo4tAwM+Ayg3TsznXcT+ZA/gy581u3
-         n4931928dnhy83/2PqT1wdt3R71QUydgdqpuZE97So+jmzTq4rt3go1y6wM3RnnbYgkU
-         4JNg==
-X-Gm-Message-State: AOAM530984d97MCVFPpktiQhgqaQTkQ/h+Q6l5qvt5CABGwLZ1mZ58vr
-        yCo8M15OgPG2HR7BFj7K+bjQ94xVKNGQYQ==
-X-Google-Smtp-Source: ABdhPJz1g7TJou6QMRZvYYK0/v/f4miOFVthDjCVEmETPZ0zFxoSIABy2On70QIlXoT0hzpsTc9kfg==
-X-Received: by 2002:a05:6214:230a:: with SMTP id gc10mr26691237qvb.115.1639162242564;
-        Fri, 10 Dec 2021 10:50:42 -0800 (PST)
-Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id bl8sm1694648qkb.38.2021.12.10.10.50.41
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Y7NmFP1p6Qd1b0fL9f5rRq9R2qqG2ejfV+/bfCnpsio=;
+        b=3ZxZ1geVH/NV5eWu3VGPh/O8Zz/FbHO5qKodzll+szjx1dhXF0VoKSqasKSiWw0tEi
+         dgid+OZVFpMIlGFn84iBVBY5DI4JumJPfM+g7K9PV0hI69J07+J3bPEYXuMb3/ygiV7L
+         0oRstbyC6OSG77vAVKok2+t1GAlZKm4KDuzPfTkzlniD3yI5KPYAsRkCTSltjHFEBd5D
+         hZ8G7+XbB8ZoXzwx2y1b1bgVyRh1pTa+W3/CHqasF5OKnY29B/gxGFEXWTADqLz3qQbS
+         GdFhtbw7YZSumByAsSbg6vy5jMfv12Q4whNf7aGhecOR9MWroXSufxIxtoQFaDpPywqc
+         VojA==
+X-Gm-Message-State: AOAM532MAQ37HGWRGfTWy2EkGSSOS/6lMivggsMEh6ap9X3rjgF0VBmE
+        EsxgTuM4uz0gcCPBvqR3Ng==
+X-Google-Smtp-Source: ABdhPJxJINpWT9IGxH/gECmIc454mQcQqjJ6lflDgb0psgutHeLk4C87tidil+dvRTPlkQbusGCZJQ==
+X-Received: by 2002:a9d:6190:: with SMTP id g16mr12460797otk.54.1639162340148;
+        Fri, 10 Dec 2021 10:52:20 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id z12sm686907oor.45.2021.12.10.10.52.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Dec 2021 10:50:41 -0800 (PST)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     network dev <netdev@vger.kernel.org>,
-        tipc-discussion@lists.sourceforge.net
-Cc:     Jon Maloy <jmaloy@redhat.com>, Ying Xue <ying.xue@windriver.com>,
-        Hoang Huu Le <hoang.h.le@dektech.com.au>,
-        davem@davemloft.net, kuba@kernel.org
-Subject: [PATCH net-next] tipc: discard MSG_CRYPTO msgs when key_exchange_enabled is not set
-Date:   Fri, 10 Dec 2021 13:50:40 -0500
-Message-Id: <30b1e3d5fb5d00c4200837107d26f445fd3a958f.1639162240.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.27.0
+        Fri, 10 Dec 2021 10:52:19 -0800 (PST)
+Received: (nullmailer pid 1694615 invoked by uid 1000);
+        Fri, 10 Dec 2021 18:52:18 -0000
+Date:   Fri, 10 Dec 2021 12:52:18 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Biao Huang <biao.huang@mediatek.com>
+Cc:     davem@davemloft.net, Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        srv_heupstream@mediatek.com, macpaul.lin@mediatek.com,
+        angelogioacchino.delregno@collabora.com, dkirjanov@suse.de
+Subject: Re: [PATCH net-next v8 6/6] net: dt-bindings: dwmac: add support for
+ mt8195
+Message-ID: <YbOh4hZfc+QKA/hO@robh.at.kernel.org>
+References: <20211210013129.811-1-biao.huang@mediatek.com>
+ <20211210013129.811-7-biao.huang@mediatek.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211210013129.811-7-biao.huang@mediatek.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When key_exchange is disabled, there is no reason to accept MSG_CRYPTO
-msgs if it doesn't send MSG_CRYPTO msgs.
+On Fri, Dec 10, 2021 at 09:31:29AM +0800, Biao Huang wrote:
+> Add binding document for the ethernet on mt8195.
+> 
+> Signed-off-by: Biao Huang <biao.huang@mediatek.com>
+> ---
+>  .../bindings/net/mediatek-dwmac.yaml          | 86 +++++++++++++++----
+>  1 file changed, 70 insertions(+), 16 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml b/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
+> index 9207266a6e69..fb04166404d8 100644
+> --- a/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
+> +++ b/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
+> @@ -19,11 +19,67 @@ select:
+>        contains:
+>          enum:
+>            - mediatek,mt2712-gmac
+> +          - mediatek,mt8195-gmac
+>    required:
+>      - compatible
+>  
+>  allOf:
+>    - $ref: "snps,dwmac.yaml#"
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          contains:
+> +            enum:
+> +              - mediatek,mt2712-gmac
+> +
+> +    then:
+> +      properties:
+> +        clocks:
+> +          minItems: 5
+> +          items:
+> +            - description: AXI clock
+> +            - description: APB clock
+> +            - description: MAC Main clock
+> +            - description: PTP clock
+> +            - description: RMII reference clock provided by MAC
+> +
+> +        clock-names:
+> +          minItems: 5
+> +          items:
+> +            - const: axi
+> +            - const: apb
+> +            - const: mac_main
+> +            - const: ptp_ref
+> +            - const: rmii_internal
+> +
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          contains:
+> +            enum:
+> +              - mediatek,mt8195-gmac
+> +
+> +    then:
+> +      properties:
+> +        clocks:
+> +          minItems: 6
+> +          items:
+> +            - description: AXI clock
+> +            - description: APB clock
+> +            - description: MAC clock gate
 
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
-Acked-by: Jon Maloy <jmaloy@redhat.com>
----
- net/tipc/link.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Add new clocks on to the end of existing clocks. That will simplify the 
+binding as here you will just need 'minItems: 6'.
 
-diff --git a/net/tipc/link.c b/net/tipc/link.c
-index 09ae8448f394..8d9e09f48f4c 100644
---- a/net/tipc/link.c
-+++ b/net/tipc/link.c
-@@ -1298,7 +1298,8 @@ static bool tipc_data_input(struct tipc_link *l, struct sk_buff *skb,
- 		return false;
- #ifdef CONFIG_TIPC_CRYPTO
- 	case MSG_CRYPTO:
--		if (TIPC_SKB_CB(skb)->decrypted) {
-+		if (sysctl_tipc_key_exchange_enabled &&
-+		    TIPC_SKB_CB(skb)->decrypted) {
- 			tipc_crypto_msg_rcv(l->net, skb);
- 			return true;
- 		}
--- 
-2.27.0
-
+> +            - description: MAC Main clock
+> +            - description: PTP clock
+> +            - description: RMII reference clock provided by MAC
+> +
+> +        clock-names:
+> +          minItems: 6
+> +          items:
+> +            - const: axi
+> +            - const: apb
+> +            - const: mac_cg
+> +            - const: mac_main
+> +            - const: ptp_ref
+> +            - const: rmii_internal
+>  
+>  properties:
+>    compatible:
+> @@ -32,22 +88,10 @@ properties:
+>            - enum:
+>                - mediatek,mt2712-gmac
+>            - const: snps,dwmac-4.20a
+> -
+> -  clocks:
+> -    items:
+> -      - description: AXI clock
+> -      - description: APB clock
+> -      - description: MAC Main clock
+> -      - description: PTP clock
+> -      - description: RMII reference clock provided by MAC
+> -
+> -  clock-names:
+> -    items:
+> -      - const: axi
+> -      - const: apb
+> -      - const: mac_main
+> -      - const: ptp_ref
+> -      - const: rmii_internal
+> +      - items:
+> +          - enum:
+> +              - mediatek,mt8195-gmac
+> +          - const: snps,dwmac-5.10a
+>  
+>    mediatek,pericfg:
+>      $ref: /schemas/types.yaml#/definitions/phandle
+> @@ -62,6 +106,8 @@ properties:
+>        or will round down. Range 0~31*170.
+>        For MT2712 RMII/MII interface, Allowed value need to be a multiple of 550,
+>        or will round down. Range 0~31*550.
+> +      For MT8195 RGMII/RMII/MII interface, Allowed value need to be a multiple of 290,
+> +      or will round down. Range 0~31*290.
+>  
+>    mediatek,rx-delay-ps:
+>      description:
+> @@ -70,6 +116,8 @@ properties:
+>        or will round down. Range 0~31*170.
+>        For MT2712 RMII/MII interface, Allowed value need to be a multiple of 550,
+>        or will round down. Range 0~31*550.
+> +      For MT8195 RGMII/RMII/MII interface, Allowed value need to be a multiple
+> +      of 290, or will round down. Range 0~31*290.
+>  
+>    mediatek,rmii-rxc:
+>      type: boolean
+> @@ -103,6 +151,12 @@ properties:
+>        3. the inside clock, which be sent to MAC, will be inversed in RMII case when
+>           the reference clock is from MAC.
+>  
+> +  mediatek,mac-wol:
+> +    type: boolean
+> +    description:
+> +      If present, indicates that MAC supports WOL(Wake-On-LAN), and MAC WOL will be enabled.
+> +      Otherwise, PHY WOL is perferred.
+> +
+>  required:
+>    - compatible
+>    - reg
+> -- 
+> 2.25.1
+> 
+> 
