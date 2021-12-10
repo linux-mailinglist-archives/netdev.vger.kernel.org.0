@@ -2,60 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 73E9D47036B
-	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 16:01:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3976F470382
+	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 16:09:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238729AbhLJPFN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Dec 2021 10:05:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35208 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231156AbhLJPFN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 10:05:13 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 047ADC061746;
-        Fri, 10 Dec 2021 07:01:38 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BC428B82874;
-        Fri, 10 Dec 2021 15:01:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 255DAC00446;
-        Fri, 10 Dec 2021 15:01:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1639148495;
-        bh=HaSDOMZa7OpKNgjF0pJquOCb6/AT3yapHchpQryfnH8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=nJea+h8Ylkf/0vnQ1RbndpD86Qd3m07YctI8KAC2OebpJ9bTMqLdniYOv8F27MZZc
-         hFniIc8gLD5vGLojA17LIyGtCzSwQNda1XhAtB10fQ7llzkrwoZ/1Qx8uL5vDgIJ0w
-         PNdZfFZ7mZOFmrywJJEMjKV0wMNKpS3FTFGDZSSYG0oEN9eWC45cHH7wdhJNFiEETp
-         6ArU0FJAkvElUkAM4en16GB4S3bF9NtyIiuaWAVoUezLsUfE5bl5Mz7WtnuwKnjnZw
-         5xth/yFue4hM7AGcURr7aiSp7gX5cKcrWEdEn7p84o3MSTNtdBhcmI8EEQNIHQ/jLL
-         FbJGfn3vocxwg==
-Date:   Fri, 10 Dec 2021 07:01:34 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     JosephCHANG <josright123@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>, joseph_chang@davicom.com.tw,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3, 2/2] net: Add dm9051 driver
-Message-ID: <20211210070134.08977685@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211210084021.13993-3-josright123@gmail.com>
-References: <20211210084021.13993-1-josright123@gmail.com>
-        <20211210084021.13993-3-josright123@gmail.com>
+        id S242687AbhLJPNM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Dec 2021 10:13:12 -0500
+Received: from mail.netfilter.org ([217.70.188.207]:45724 "EHLO
+        mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242684AbhLJPM7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 10:12:59 -0500
+Received: from netfilter.org (unknown [78.30.32.163])
+        by mail.netfilter.org (Postfix) with ESMTPSA id 87C3B6006E;
+        Fri, 10 Dec 2021 16:06:53 +0100 (CET)
+Date:   Fri, 10 Dec 2021 16:09:14 +0100
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Cc:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Florian Westphal <fw@strlen.de>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org
+Subject: Re: [PATCH bpf-next v3 7/9] net/netfilter: Add unstable CT lookup
+ helpers for XDP and TC-BPF
+Message-ID: <YbNtmlaeqPuHHRgl@salvia>
+References: <20211210130230.4128676-1-memxor@gmail.com>
+ <20211210130230.4128676-8-memxor@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20211210130230.4128676-8-memxor@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 10 Dec 2021 16:40:21 +0800 JosephCHANG wrote:
-> Add davicom dm9051 spi ethernet driver. The driver work for the
-> device with its spi master.
-> 
-> Test ok with raspberry pi 2 and pi 4, the spi configure used in
-> my raspberry pi 4 is spi0.1, spi speed 31200000, and INT by pin 26.
+On Fri, Dec 10, 2021 at 06:32:28PM +0530, Kumar Kartikeya Dwivedi wrote:
+[...]
+>  net/netfilter/nf_conntrack_core.c | 252 ++++++++++++++++++++++++++++++
+>  7 files changed, 497 insertions(+), 1 deletion(-)
+>
+[...]
+> diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
+> index 770a63103c7a..85042cb6f82e 100644
+> --- a/net/netfilter/nf_conntrack_core.c
+> +++ b/net/netfilter/nf_conntrack_core.c
 
-Please rebase on top of net-next, this does not build because
-netdev->dev_addr is constant now.
+Please, keep this new code away from net/netfilter/nf_conntrack_core.c
