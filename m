@@ -2,110 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E410C46FE48
-	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 10:57:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B6D3046FE4B
+	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 10:58:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239745AbhLJKBO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Dec 2021 05:01:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49178 "EHLO
+        id S239773AbhLJKCF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Dec 2021 05:02:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239744AbhLJKBJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 05:01:09 -0500
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B12B3C0617A2;
-        Fri, 10 Dec 2021 01:57:34 -0800 (PST)
-Received: by mail-ed1-x52e.google.com with SMTP id l25so28362868eda.11;
-        Fri, 10 Dec 2021 01:57:34 -0800 (PST)
+        with ESMTP id S239752AbhLJKCF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 05:02:05 -0500
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87D49C0617A1
+        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 01:58:30 -0800 (PST)
+Received: by mail-ed1-x535.google.com with SMTP id y12so27593441eda.12
+        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 01:58:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=G1PqsxidNrMoTjGDIxBZooRNsXyKClIcuNd6vtliFB8=;
-        b=q4bOaXUOmEObDazQ+WcSijdmncOJx6SCwpAy/MPJrTUb3Jv3d6c2uu4tR+gDu86jXU
-         694ZMSfQDAz52FiI4BvZ9koza89cbjjcmCBM4pEWLpp9irBWLUXE6ROTXcokMUJMOlIC
-         YU8ANvFFknqVXroDSt8/8VaO1bJ5LjvPIxZKPxzIXFyg9DscKYqAoC9gHdkcE3R9Gumz
-         CUdGHxDR7i8Qc1+jOL3t44pkAATeCS1BCY2TX9PRy+xGUF3y3JJt5FGzX4MsmwHrSLv8
-         su7Z2mQJcy0nOeHZJtEPRucloIq2Vw4cVkqNk9s4xKTEYk4JZ/oY6KNeBUPCr3Qqs4RH
-         R/zw==
+        d=tessares-net.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=nduhBFxPbxmifYpnO0eOOP3C7nxBPTbeIwjsdCqiSCo=;
+        b=ojvvj0K+k6NKnozWLW2tDWy91766MZb9YsUkZZD84yq8yaH1DnzCgRGc4zW9CR+Z3E
+         2vs+BSinUml6Qjyb0MbBrOgsHOui0a02cPy0cqrIUgGcPho1kK21Vv6AOKU4syfzyGr6
+         ZSM2KKARJ2O3WXBsrc+VrUfgJgi8GAHaVHe2HKB+OvOoTqxMHIykUz6SEjjyVYLDofUT
+         4tkWQHYJ8a7xdoQKOL1TGvS9bCMzyhfSxCNiEPqsSQMJYT0YND2DBanJfy4thrcjQpsv
+         NGVyKnbVO76+lE4LNwOMA8eTPqYUhFTsWhY12krSk4lNc2nU/54euf2N4eePg1MzmHYj
+         PSKA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=G1PqsxidNrMoTjGDIxBZooRNsXyKClIcuNd6vtliFB8=;
-        b=erLt/FOawPGRM5bTUtRHtT+n5+FNjekHitiGv8fIYOaQResulsLsRLTJVlGu6/7icd
-         rhe19YjU+krJqhy52mATnRfl3i2jgnjwBoggS5G1lmnbU/VkMXrzryolJ2E4+oIoMRAi
-         08qG0uUKKiVQSVeqbt+8T5j1He9DIfh6c3kEnKe6xCmCVQ2lTrDJtbInpw+PvMqJJevG
-         9iAQAGxhWHV6dX5JsJro4xPI5yQuC2qTwKVzUVM5//mjxeU2X7I49szclUO+qyjh0ouq
-         hBciEbIWEh8ExAGAuIWk3O+gmJaNICuv8BgmaaTFIIsbu6luZD90JkOuriMxsZdzL5Y/
-         x0Hw==
-X-Gm-Message-State: AOAM533Eigg/SqoNRHt28CBS5+BL92b7z3lYdFfJMEVRLz1qi2Jz2cmu
-        hPudq8vrzNZxhLXJU5HdOKY=
-X-Google-Smtp-Source: ABdhPJz469+q5aM+0D2AI0xw0XaXDTyvQH30Ksrha55k67rmXA9zPEdFDZKNBIFKq0rXGXMnUlm96Q==
-X-Received: by 2002:a17:906:4f05:: with SMTP id t5mr23272318eju.68.1639130253127;
-        Fri, 10 Dec 2021 01:57:33 -0800 (PST)
-Received: from LABNL-ITC-SW01.tmt.telital.com (static-82-85-31-68.clienti.tiscali.it. [82.85.31.68])
-        by smtp.gmail.com with ESMTPSA id l18sm1258814ejo.114.2021.12.10.01.57.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Dec 2021 01:57:32 -0800 (PST)
-From:   Daniele Palmas <dnlplm@gmail.com>
-To:     =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org, Daniele Palmas <dnlplm@gmail.com>
-Subject: [PATCH 1/1] net: usb: qmi_wwan: add Telit 0x1070 composition
-Date:   Fri, 10 Dec 2021 10:57:22 +0100
-Message-Id: <20211210095722.22269-1-dnlplm@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        bh=nduhBFxPbxmifYpnO0eOOP3C7nxBPTbeIwjsdCqiSCo=;
+        b=uySJYK6BSUcrBPqxbjnEMj84/Yex4Z33xrW1QNitH5p18hPJqLCohlXB9N/vcVrVnL
+         a8s17ms93vEvYFtNFKBQD0Hk/9lbuC+sPHnL0jRB6sI4eUKoXQ3LaJP7OZcMDYzC+pHL
+         vckOA70nRYwgKlQoDbL8ocaO2dMcC9KvW6pz8I90a7s91aUm8SSB2Uu84rCJfMm8luxY
+         xP7ThZCjtGTOBsSiw14axZd/9bqarRJVpL/PBt4Ra43xXg1qvpNVYKVnnnxs4QD7MSn3
+         OCaE7G24HQgs1qLyuMFivDW75urtar1vRMeaxO5DWRUaUAyjgYGOmCX+xvrhJXwwUP9d
+         RVzw==
+X-Gm-Message-State: AOAM532MTJFEkUA/x9kxImyRxwnLTnulMQnl9D5NnCkw5Xv7h2wFziea
+        PimREpOG/iNL4JRXxEGm7hdRdg==
+X-Google-Smtp-Source: ABdhPJylHws71T7EEEhue6UdCGoV/k4VWRPPxYHA0zXkEHzMN0zoHH6zuGQNrntdBPyvVA4MsSkOUQ==
+X-Received: by 2002:a17:907:7f2a:: with SMTP id qf42mr23268059ejc.388.1639130308873;
+        Fri, 10 Dec 2021 01:58:28 -0800 (PST)
+Received: from [192.168.178.33] (94.105.100.208.dyn.edpnet.net. [94.105.100.208])
+        by smtp.gmail.com with ESMTPSA id co10sm1129754edb.83.2021.12.10.01.58.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 10 Dec 2021 01:58:28 -0800 (PST)
+Message-ID: <ab84ca1f-0f43-d50c-c272-81f64ee31ce8@tessares.net>
+Date:   Fri, 10 Dec 2021 10:58:27 +0100
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH] selftests: mptcp: remove duplicate include in mptcp_inq.c
+Content-Language: en-GB
+To:     cgel.zte@gmail.com, mathew.j.martineau@linux.intel.com
+Cc:     davem@davemloft.net, kuba@kernel.org, shuah@kernel.org,
+        netdev@vger.kernel.org, mptcp@lists.linux.dev,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Ye Guojin <ye.guojin@zte.com.cn>, ZealRobot <zealci@zte.com.cn>
+References: <20211210071424.425773-1-ye.guojin@zte.com.cn>
+From:   Matthieu Baerts <matthieu.baerts@tessares.net>
+In-Reply-To: <20211210071424.425773-1-ye.guojin@zte.com.cn>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the following Telit FN990 composition:
+Hi Ye,
 
-0x1070: tty, adb, rmnet, tty, tty, tty, tty
+On 10/12/2021 08:14, cgel.zte@gmail.com wrote:
+> From: Ye Guojin <ye.guojin@zte.com.cn>
+> 
+> 'sys/ioctl.h' included in 'mptcp_inq.c' is duplicated.
 
-Signed-off-by: Daniele Palmas <dnlplm@gmail.com>
----
-Hello Bjørn,
+Good catch, the modification looks good to me:
 
-following the output of usb-devices:
+Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
 
-T:  Bus=02 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  2 Spd=10000 MxCh= 0
-D:  Ver= 3.20 Cls=00(>ifc ) Sub=00 Prot=00 MxPS= 9 #Cfgs=  1
-P:  Vendor=1bc7 ProdID=1070 Rev=05.04
-S:  Manufacturer=Telit Wireless Solutions
-S:  Product=FN990A28
-S:  SerialNumber=522db9de
-C:  #Ifs= 8 Cfg#= 1 Atr=80 MxPwr=896mA
-I:  If#=0x0 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=30 Driver=option
-I:  If#=0x1 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=42 Prot=01 Driver=(none)
-I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=50 Driver=qmi_wwan
-I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=60 Driver=option
-I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=40 Driver=option
-I:  If#=0x5 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=40 Driver=option
-I:  If#=0x6 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=40 Driver=option
 
-Thanks,
-Daniele
----
- drivers/net/usb/qmi_wwan.c | 1 +
- 1 file changed, 1 insertion(+)
+This patch is for "net-next" tree as it fixes an issue introduced by a
+patch only in this tree:
 
-diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
-index 86b814e99224..f510e8219470 100644
---- a/drivers/net/usb/qmi_wwan.c
-+++ b/drivers/net/usb/qmi_wwan.c
-@@ -1358,6 +1358,7 @@ static const struct usb_device_id products[] = {
- 	{QMI_QUIRK_SET_DTR(0x1bc7, 0x1040, 2)},	/* Telit LE922A */
- 	{QMI_QUIRK_SET_DTR(0x1bc7, 0x1050, 2)},	/* Telit FN980 */
- 	{QMI_QUIRK_SET_DTR(0x1bc7, 0x1060, 2)},	/* Telit LN920 */
-+	{QMI_QUIRK_SET_DTR(0x1bc7, 0x1070, 2)},	/* Telit FN990 */
- 	{QMI_FIXED_INTF(0x1bc7, 0x1100, 3)},	/* Telit ME910 */
- 	{QMI_FIXED_INTF(0x1bc7, 0x1101, 3)},	/* Telit ME910 dual modem */
- 	{QMI_FIXED_INTF(0x1bc7, 0x1200, 5)},	/* Telit LE920 */
+Fixes: b51880568f20 ("selftests: mptcp: add inq test case")
+
+Regarding the commit message, please next time include the Fixes tag and
+mention for which tree it is for in the FAQ [1], e.g. [PATCH net-next].
+
+
+@David/Jakub: do you prefer a v2 with these modifications or is it fine
+to apply this small patch directly in net-next tree?
+
+
+Cheers,
+Matt
+
+[1] https://www.kernel.org/doc/html/latest/networking/netdev-FAQ.html
+Please check the "How do I indicate which tree (net vs. net-next) my
+patch should be in?" section.
 -- 
-2.30.2
-
+Tessares | Belgium | Hybrid Access Solutions
+www.tessares.net
