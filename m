@@ -2,102 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 032CC4705E2
-	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 17:38:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C74EE47060F
+	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 17:43:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243750AbhLJQld (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Dec 2021 11:41:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58638 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243367AbhLJQl1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 11:41:27 -0500
-Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4982C0617A2
-        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 08:37:51 -0800 (PST)
-Received: by mail-io1-xd2c.google.com with SMTP id z18so11030245iof.5
-        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 08:37:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=CgSHoGMd3MZ0+RwfUhTHIWklywVMelQpZkd8mqp/LWA=;
-        b=h9I0eI9TL9mZt8Dgdc2RYu1igsfIYeWryF/71YWTW0uxiQf5q1x/o5Sn0Hzx+eOLnu
-         rWkrcJSfF8QrHMZc3EXkFUoZWuecSpSbjbHlQqzn08MpzR2zaB4c9Gs5rfga0iVE5X4U
-         2tqkbf2yWCPMDx3ZQXJlYYd5YYMA2oeQzg10emvxWyxaBifRLm/DZvQU1W/h374TCQQW
-         deZIJ3m8A9nmeMqpRVLOhhIO0J4tN5GGSMtFHxBcJekAphomxwGOdq9jfx4fF26UnNVD
-         AZ7P/6b4dKw/gZarwhf26d3d9dgHqUiVldEZnqHHkaVfYl0qPplUfdGdaJjSrorYqhv8
-         OQhA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=CgSHoGMd3MZ0+RwfUhTHIWklywVMelQpZkd8mqp/LWA=;
-        b=MPlocwJTCbRJ3nO+K5d83J+XBEzhHC7J5hwD7fZUOHcWXJJg6BFBNxz8wALoegie7B
-         hN/wo784G8u2wjmm2GpDyYax9AYyfysDpg7GRUdpIgk4ZFNLcCcVtyEohxpkzsdvPKsL
-         U4KdydbZYCiRk075T8MPNhN74dN/gMXyMiXyL9LkwnW3sIwUgQ/8QCMxQ9WUWznQs9kr
-         58IJCihy7waf+5IQ4BkW/ALu39pCsUJOd7M6WAcncJCSvA+NF250gBQiEw4v3GKvq0zX
-         K7GFRSxgAo1JaLwJF19f0fQm0YHdRQan9FR6EBTT/Q3gFA/NUyhPv81zUQEyLxYMXEQl
-         H0Sg==
-X-Gm-Message-State: AOAM532PKXJpX/5Oz2L5jXTrV1IMXHD1w/jkAiI9wQFcrCU6ii5niCor
-        roRfswChtyCUO08iqGb+7qu1aw==
-X-Google-Smtp-Source: ABdhPJyrLh49PWZhlPD/da4BA3vtRMoZj1q58/rI8uWVBrEwHjVOfGXO/DDmn1S5Nvk7LtUUuQ90xw==
-X-Received: by 2002:a05:6638:d46:: with SMTP id d6mr17993604jak.129.1639154271123;
-        Fri, 10 Dec 2021 08:37:51 -0800 (PST)
-Received: from presto.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id p14sm2232642iod.38.2021.12.10.08.37.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Dec 2021 08:37:50 -0800 (PST)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     david@ixit.cz, manivannan.sadhasivam@linaro.org,
-        jponduru@codeaurora.org, avuyyuru@codeaurora.org,
-        bjorn.andersson@linaro.org, cpratapa@codeaurora.org,
-        subashab@codeaurora.org, evgreen@chromium.org, elder@kernel.org,
-        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 2/2] net: ipa: fix IPA v4.5 interconnect data
-Date:   Fri, 10 Dec 2021 10:37:45 -0600
-Message-Id: <20211210163745.34748-3-elder@linaro.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20211210163745.34748-1-elder@linaro.org>
-References: <20211210163745.34748-1-elder@linaro.org>
+        id S239990AbhLJQra (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Dec 2021 11:47:30 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:30119 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231180AbhLJQra (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 11:47:30 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1639154634;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=ApYMtEZdztqAcv+ON9PW580gKMzQ0KiCYLk0i0XDZ8Y=;
+        b=hH8mOk60gKssJ3ey7bm1kgRucddgdSRNkJWCwlEMGIzbxPhIykILl1JhI3R6oe9HUiUjPl
+        Jfz3FjAaWM4wpZ8s6Dj5ZtLktrh1PEBnnLlR3BWAvka2rg+QHXy1oeyz0eY9HhS50M+/HO
+        DaGZnYz16zD15FMb+0FhNIe0lw9jte8=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-468-EtlrWNFDN1e9NsmAHsB4NA-1; Fri, 10 Dec 2021 11:43:50 -0500
+X-MC-Unique: EtlrWNFDN1e9NsmAHsB4NA-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E46071966320;
+        Fri, 10 Dec 2021 16:43:47 +0000 (UTC)
+Received: from dcaratti.station (unknown [10.40.193.199])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8D1D319D9D;
+        Fri, 10 Dec 2021 16:43:45 +0000 (UTC)
+From:   Davide Caratti <dcaratti@redhat.com>
+To:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Shuang Li <shuali@redhat.com>
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH net] net/sched: sch_ets: don't remove idle classes from the round-robin list
+Date:   Fri, 10 Dec 2021 17:42:47 +0100
+Message-Id: <e08c7f4a6882f260011909a868311c6e9b54f3e4.1639153474.git.dcaratti@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Update the definition of the IPA interconnects for IPA v4.5 so
-the path between IPA and system memory is represented by a single
-"memory" interconnect.
+Shuang reported that the following script:
 
-Tested-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Signed-off-by: Alex Elder <elder@linaro.org>
+ 1) tc qdisc add dev ddd0 handle 10: parent 1: ets bands 8 strict 4 priomap 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
+ 2) mausezahn ddd0  -A 10.10.10.1 -B 10.10.10.2 -c 0 -a own -b 00:c1:a0:c1:a0:00 -t udp &
+ 3) tc qdisc change dev ddd0 handle 10: ets bands 4 strict 2 quanta 2500 2500 priomap 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+
+crashes systematically when line 2) is commented:
+
+ list_del corruption, ffff8e028404bd30->next is LIST_POISON1 (dead000000000100)
+ ------------[ cut here ]------------
+ kernel BUG at lib/list_debug.c:47!
+ invalid opcode: 0000 [#1] PREEMPT SMP NOPTI
+ CPU: 0 PID: 954 Comm: tc Not tainted 5.16.0-rc4+ #478
+ Hardware name: Red Hat KVM, BIOS 1.11.1-4.module+el8.1.0+4066+0f1aadab 04/01/2014
+ RIP: 0010:__list_del_entry_valid.cold.1+0x12/0x47
+ Code: fe ff 0f 0b 48 89 c1 4c 89 c6 48 c7 c7 08 42 1b 87 e8 1d c5 fe ff 0f 0b 48 89 fe 48 89 c2 48 c7 c7 98 42 1b 87 e8 09 c5 fe ff <0f> 0b 48 c7 c7 48 43 1b 87 e8 fb c4 fe ff 0f 0b 48 89 f2 48 89 fe
+ RSP: 0018:ffffae46807a3888 EFLAGS: 00010246
+ RAX: 000000000000004e RBX: 0000000000000007 RCX: 0000000000000202
+ RDX: 0000000000000000 RSI: ffffffff871ac536 RDI: 00000000ffffffff
+ RBP: ffffae46807a3a10 R08: 0000000000000000 R09: c0000000ffff7fff
+ R10: 0000000000000001 R11: ffffae46807a36a8 R12: ffff8e028404b800
+ R13: ffff8e028404bd30 R14: dead000000000100 R15: ffff8e02fafa2400
+ FS:  00007efdc92e4480(0000) GS:ffff8e02fb600000(0000) knlGS:0000000000000000
+ CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+ CR2: 0000000000682f48 CR3: 00000001058be000 CR4: 0000000000350ef0
+ Call Trace:
+  <TASK>
+  ets_qdisc_change+0x58b/0xa70 [sch_ets]
+  tc_modify_qdisc+0x323/0x880
+  rtnetlink_rcv_msg+0x169/0x4a0
+  netlink_rcv_skb+0x50/0x100
+  netlink_unicast+0x1a5/0x280
+  netlink_sendmsg+0x257/0x4d0
+  sock_sendmsg+0x5b/0x60
+  ____sys_sendmsg+0x1f2/0x260
+  ___sys_sendmsg+0x7c/0xc0
+  __sys_sendmsg+0x57/0xa0
+  do_syscall_64+0x3a/0x80
+  entry_SYSCALL_64_after_hwframe+0x44/0xae
+ RIP: 0033:0x7efdc8031338
+ Code: 89 02 48 c7 c0 ff ff ff ff eb b5 0f 1f 80 00 00 00 00 f3 0f 1e fa 48 8d 05 25 43 2c 00 8b 00 85 c0 75 17 b8 2e 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 58 c3 0f 1f 80 00 00 00 00 41 54 41 89 d4 55
+ RSP: 002b:00007ffdf1ce9828 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+ RAX: ffffffffffffffda RBX: 0000000061b37a97 RCX: 00007efdc8031338
+ RDX: 0000000000000000 RSI: 00007ffdf1ce9890 RDI: 0000000000000003
+ RBP: 0000000000000000 R08: 0000000000000001 R09: 000000000078a940
+ R10: 000000000000000c R11: 0000000000000246 R12: 0000000000000001
+ R13: 0000000000688880 R14: 0000000000000000 R15: 0000000000000000
+  </TASK>
+ Modules linked in: sch_ets sch_tbf dummy rfkill iTCO_wdt iTCO_vendor_support intel_rapl_msr intel_rapl_common joydev pcspkr i2c_i801 virtio_balloon i2c_smbus lpc_ich ip_tables xfs libcrc32c crct10dif_pclmul crc32_pclmul crc32c_intel serio_raw ghash_clmulni_intel ahci libahci libata virtio_blk virtio_console virtio_net net_failover failover sunrpc dm_mirror dm_region_hash dm_log dm_mod [last unloaded: sch_ets]
+ ---[ end trace f35878d1912655c2 ]---
+ RIP: 0010:__list_del_entry_valid.cold.1+0x12/0x47
+ Code: fe ff 0f 0b 48 89 c1 4c 89 c6 48 c7 c7 08 42 1b 87 e8 1d c5 fe ff 0f 0b 48 89 fe 48 89 c2 48 c7 c7 98 42 1b 87 e8 09 c5 fe ff <0f> 0b 48 c7 c7 48 43 1b 87 e8 fb c4 fe ff 0f 0b 48 89 f2 48 89 fe
+ RSP: 0018:ffffae46807a3888 EFLAGS: 00010246
+ RAX: 000000000000004e RBX: 0000000000000007 RCX: 0000000000000202
+ RDX: 0000000000000000 RSI: ffffffff871ac536 RDI: 00000000ffffffff
+ RBP: ffffae46807a3a10 R08: 0000000000000000 R09: c0000000ffff7fff
+ R10: 0000000000000001 R11: ffffae46807a36a8 R12: ffff8e028404b800
+ R13: ffff8e028404bd30 R14: dead000000000100 R15: ffff8e02fafa2400
+ FS:  00007efdc92e4480(0000) GS:ffff8e02fb600000(0000) knlGS:0000000000000000
+ CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+ CR2: 0000000000682f48 CR3: 00000001058be000 CR4: 0000000000350ef0
+ Kernel panic - not syncing: Fatal exception in interrupt
+ Kernel Offset: 0x4e00000 from 0xffffffff81000000 (relocation range: 0xffffffff80000000-0xffffffffbfffffff)
+ ---[ end Kernel panic - not syncing: Fatal exception in interrupt ]---
+
+we can remove 'q->classes[i].alist' only if DRR class 'i' was part of the
+active list. In the ETS scheduler DRR classes belong to that list only if
+the queue length is greater than zero: we need to test for non-zero value
+of 'q->classes[i].qdisc->q.qlen' before removing from the list, similarly
+to what has been done elsewhere in the ETS code.
+
+Fixes: de6d25924c2a ("net/sched: sch_ets: don't peek at classes beyond 'nbands'")
+Reported-by: Shuang Li <shuali@redhat.com>
+Signed-off-by: Davide Caratti <dcaratti@redhat.com>
 ---
- drivers/net/ipa/ipa_data-v4.5.c | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
+ net/sched/sch_ets.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ipa/ipa_data-v4.5.c b/drivers/net/ipa/ipa_data-v4.5.c
-index e62ab9c3ac672..2da2c4194f2e6 100644
---- a/drivers/net/ipa/ipa_data-v4.5.c
-+++ b/drivers/net/ipa/ipa_data-v4.5.c
-@@ -420,15 +420,10 @@ static const struct ipa_mem_data ipa_mem_data = {
- /* Interconnect rates are in 1000 byte/second units */
- static const struct ipa_interconnect_data ipa_interconnect_data[] = {
- 	{
--		.name			= "memory-a",
-+		.name			= "memory",
- 		.peak_bandwidth		= 600000,	/* 600 MBps */
- 		.average_bandwidth	= 150000,	/* 150 MBps */
- 	},
--	{
--		.name			= "memory-b",
--		.peak_bandwidth		= 1804000,	/* 1.804 GBps */
--		.average_bandwidth	= 150000,	/* 150 MBps */
--	},
- 	/* Average rate is unused for the next two interconnects */
- 	{
- 		.name			= "imem",
+diff --git a/net/sched/sch_ets.c b/net/sched/sch_ets.c
+index e007fc75ef2f..d73393493553 100644
+--- a/net/sched/sch_ets.c
++++ b/net/sched/sch_ets.c
+@@ -666,9 +666,9 @@ static int ets_qdisc_change(struct Qdisc *sch, struct nlattr *opt,
+ 		}
+ 	}
+ 	for (i = q->nbands; i < oldbands; i++) {
+-		qdisc_tree_flush_backlog(q->classes[i].qdisc);
+-		if (i >= q->nstrict)
++		if (i >= q->nstrict && q->classes[i].qdisc->q.qlen)
+ 			list_del(&q->classes[i].alist);
++		qdisc_tree_flush_backlog(q->classes[i].qdisc);
+ 	}
+ 	q->nstrict = nstrict;
+ 	memcpy(q->prio2band, priomap, sizeof(priomap));
 -- 
-2.32.0
+2.31.1
 
