@@ -2,134 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A88446FE80
-	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 11:10:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F08CB46FE9D
+	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 11:19:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232860AbhLJKNm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Dec 2021 05:13:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52280 "EHLO
+        id S240013AbhLJKXF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Dec 2021 05:23:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229562AbhLJKNm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 05:13:42 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41E97C061746
-        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 02:10:07 -0800 (PST)
-From:   Kurt Kanzenbach <kurt.kanzenbach@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1639131005;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=H9McyQ9MuBise9kEaMK0iwGANbPMdoM0lgD2I/oaTA0=;
-        b=dX7uX6vvv0AIy4FbDrtO4i+rH42bjZuDHgKsPc0PdhZYCvClw6EHqHxJLtjrIZCeeM1FVh
-        3qidyeiWPLC3/+bOsS53d0MqeTQT8D5JAb9/4uwpqJ2alWDii7Opbnsjl7bINAoknp9tMb
-        qnXwLpu+kb3WAWdXrySeMG1DbhtlDH50xWga9Nmq2e1zn6EcC/tZaYnxGK9W7WdcB3klqx
-        X4gq4ysWWYIcGJ780jSJ5MAiVXI4WLNwnctBXE8Yu2isFOd/rHFJpQEpsCNR0s/+OuQesH
-        riyTOtiSD9c1v+HJrKq9OmDo0PMBdpH+VqYeJ+0M3fifAUEJeDb0tiJ2kTAitQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1639131005;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=H9McyQ9MuBise9kEaMK0iwGANbPMdoM0lgD2I/oaTA0=;
-        b=mjPTFo3Zshvd6jHmVWuzrzrYY+GnhPATApuAxG4mkAJkq/QC9j5xhzJREmYgCqZ4Nlf/yQ
-        gb3hswro03CQhiBA==
-To:     Ong Boon Leong <boon.leong.ong@intel.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        alexandre.torgue@foss.st.com
-Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: Re: [PATCH net-next 2/2] net: stmmac: add tc flower filter for
- EtherType matching
-In-Reply-To: <20211209151631.138326-3-boon.leong.ong@intel.com>
-References: <20211209151631.138326-1-boon.leong.ong@intel.com>
- <20211209151631.138326-3-boon.leong.ong@intel.com>
-Date:   Fri, 10 Dec 2021 11:10:04 +0100
-Message-ID: <87fsr0zs77.fsf@kurt>
+        with ESMTP id S236599AbhLJKXE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 05:23:04 -0500
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8F4DC061746
+        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 02:19:29 -0800 (PST)
+Received: by mail-yb1-xb35.google.com with SMTP id y68so20266826ybe.1
+        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 02:19:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=k1kXipCH6bNKMJnW/zKudx/gO2zgGSzr72zH8fzfZIM=;
+        b=rQkjJoSfVOzcoltVZapK0InyiIizBmX8KoG+sdTNHeE6nHG5pNfly+tMOg7NIJCZa/
+         sTuh/zmOIzs0mdVwnRTd+OmQCBg1a+9eMNJ3LbOaQNVNkh0fNwZvNrOL6IrngjK2Pdq7
+         I06/J8gvRBxGhKQ1cX4GJc0t5Ck+sF0LThspKg7cg5RHYDL8FnrNe67YMMMwHybabRid
+         udep+7OjU9JV/8hw4IT485zJlIsRAZtx6CmQIGh+hLNZnK7yXayql9lpXL0JjffEaz6K
+         zx6+GqgxpmbR3aPfZBiKHQrzdAnzqpwAXEfbT8RbEhbw1tJfFWzsbFJuGVO/vMyS1z5/
+         V3Jw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=k1kXipCH6bNKMJnW/zKudx/gO2zgGSzr72zH8fzfZIM=;
+        b=cTbjUzDrILLYLTQ8fblHt/RbL1gEOadvzmFZlWde/+KlXsyZpWWUCwWrlLSGoOpzE6
+         bcipLWg3P84jeEKkfOyfsms9ugqb3l8myPgCZ8TSUIW3/i0gWA/X9zZCJP8E2Ejt8okJ
+         1kTfssBvhSXhHfmPMXRdSKd/IrAjumxLFnnasT6SpPBYVzMGnxx5trTaNlEdBZ7D7+vc
+         CISPETo/VTvg5Q3vlaq7SxKufQg1IWH/13NMDqdJXdVIITCFWo55VabQr+IpI4dxMzKr
+         us2xGSNro/k1o1X79u93SlPTS6JRF5zaB3T9mAG8iln+0CKQ5Ngw7BT01pFYZprfQYLT
+         OfFw==
+X-Gm-Message-State: AOAM533ONM1BodyG/+F3uRd2lj4PIsMnS/LiIXVcY8OhaU9/hb2Kz49E
+        JjJ61ByF+kgQVjmXALylyWkKPRHDRceRApxzUgH15Q==
+X-Google-Smtp-Source: ABdhPJxR1B2Z0efmUeCjHwa5GWgWzR9akRl9YRb5J+1IzT/A9xnvM7r5MGuDif1S+b+qgNlKYgH7Bn4Uscgmgz1Fq8w=
+X-Received: by 2002:a25:6c6:: with SMTP id 189mr13790122ybg.753.1639131568775;
+ Fri, 10 Dec 2021 02:19:28 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
+References: <20211207020102.3690724-1-kafai@fb.com> <20211207020108.3691229-1-kafai@fb.com>
+ <CA+FuTScQigv7xR5COSFXAic11mwaEsFXVvV7EmSf-3OkvdUXcg@mail.gmail.com>
+ <83ff2f64-42b8-60ed-965a-810b4ec69f8d@iogearbox.net> <20211208081842.p46p5ye2lecgqvd2@kafai-mbp.dhcp.thefacebook.com>
+ <20211208083013.zqeipdfprcdr3ntn@kafai-mbp.dhcp.thefacebook.com>
+ <CANn89iLXjnDZunHx04UUGQFLxWhq52HhdhcPiKiJW4mkLaLbOA@mail.gmail.com> <20211208204816.tvwckytomjuei2fz@kafai-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20211208204816.tvwckytomjuei2fz@kafai-mbp.dhcp.thefacebook.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 10 Dec 2021 02:19:17 -0800
+Message-ID: <CANn89i+dxFqE+6x=7xhwADDHX78_CG-0no7UgMjxbM9E5MnAyA@mail.gmail.com>
+Subject: Re: [RFC PATCH net-next 2/2] net: Reset forwarded skb->tstamp before
+ delivering to user space
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Kernel-team@fb.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
-
-On Thu Dec 09 2021, Ong Boon Leong wrote:
-> This patch adds basic support for EtherType RX frame steering for
-> LLDP and PTP using the hardware offload capabilities.
+On Wed, Dec 8, 2021 at 12:48 PM Martin KaFai Lau <kafai@fb.com> wrote:
 >
-> Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
+> On Wed, Dec 08, 2021 at 10:27:51AM -0800, Eric Dumazet wrote:
+> > On Wed, Dec 8, 2021 at 12:30 AM Martin KaFai Lau <kafai@fb.com> wrote:
+> >
+> > > For non bpf ingress, hmmm.... yeah, not sure if it is indeed an issue :/
+> > > may be save the tx tstamp first and then temporarily restamp with __net_timestamp()
+> >
+> > Martin, have you looked at time namespaces (CLONE_NEWTIME) ?
+> >
+> > Perhaps we need to have more than one bit to describe time bases.
+> My noob understanding is it only affects the time returning
+> to the user in the syscall.  Could you explain how that
+> may affect the time in skb->tstamp?
 
-[snip]
-
-> +	if (match.mask->n_proto) {
-> +		__be16 etype =3D ntohs(match.key->n_proto);
-
-n_proto is be16. The ntohs() call will produce an u16.
-
-Delta patch below.
-
-Thanks,
-Kurt
-
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac.h b/drivers/net/eth=
-ernet/stmicro/stmmac/stmmac.h
-index 35ff7c835018..d64e42308eb6 100644
-=2D-- a/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-@@ -182,7 +182,7 @@ enum stmmac_rfs_type {
-=20
- struct stmmac_rfs_entry {
-        unsigned long cookie;
-=2D       __be16 etype;
-+       u16 etype;
-        int in_use;
-        int type;
-        int idx;
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c b/drivers/net/=
-ethernet/stmicro/stmmac/stmmac_tc.c
-index cb7400943bb0..afa918185cf7 100644
-=2D-- a/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c
-@@ -759,7 +759,7 @@ static int tc_add_ethtype_flow(struct stmmac_priv *priv,
-        flow_rule_match_basic(rule, &match);
-=20
-        if (match.mask->n_proto) {
-=2D               __be16 etype =3D ntohs(match.key->n_proto);
-+               u16 etype =3D ntohs(match.key->n_proto);
-=20
-                if (match.mask->n_proto !=3D ETHER_TYPE_FULL_MASK) {
-                        netdev_err(priv->dev, "Only full mask is supported =
-for EthType filter");
-
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQJSBAEBCgA8FiEEooWgvezyxHPhdEojeSpbgcuY8KYFAmGzJ3weHGt1cnQua2Fu
-emVuYmFjaEBsaW51dHJvbml4LmRlAAoJEHkqW4HLmPCm0HgQAKCym+iwmw9dZxIj
-NTjjYl/OasE0mS+A7hCx12KB5kxw0zgSq1gzjXcuIfqHovQjV3ObFc6WPzNG+y7M
-IEF0jrNJx78dMWzBKLHGmzhR88r8eG/o5BhLUVjMqMbzCVD/Xj5z/dhe8BzPLeS2
-w8hn/EXnYOiWzm4gInKm3T26y0cazH+XwV34dYQVkduAJwFLNhlaFRf9SQ1A7eOh
-GQJ6biGNRCND296ZtJ/qGkUVd0N5lqIdHe7TOYHOTwSlnUqKwAblRWM3Ck505VMT
-RbGOPTxGybADkNivRebRkhz0wwf6DzVprHD6QnVurLJg7MM3NP9yIHMWE0wA1bZA
-XdJyP448rKMahd6uTVmJP7WAAV/pHDGVg+BxZlewOCAvwN4cxbmgmTvpSt/Fvrpf
-P8NgTqMY5pvn1AfsC8O+aqm2N68kxefEyw24Tpbpc1ZSMXr+e5vEkX3hZx4VAPzc
-+HyHSBuLnsJmSEX5s7fuFQqBVeQTGJ62oDEP4lBk6m30hswDREXobklConGitrqH
-IV6LHimyJTpONjb6WjVZqv5apkGq5JQQadrVE32HU2L1Q6IgAFYWyhhuAIRKPWla
-550X0dYUo9+oaVIHjQgKdmxdwqcnHr1nk+0J2rUPM3JXC8+Jtglbp6KBiEjyvXPv
-USbIhJuAdOokNaFzvY+F6vTwRY3G
-=44Bn
------END PGP SIGNATURE-----
---=-=-=--
+I would think it should affect timestamps (rx/tx network ones),
+otherwise user applications would be broken ?
