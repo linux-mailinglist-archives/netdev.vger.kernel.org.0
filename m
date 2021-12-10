@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3976F470382
-	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 16:09:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 70BBD470383
+	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 16:09:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242687AbhLJPNM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Dec 2021 10:13:12 -0500
-Received: from mail.netfilter.org ([217.70.188.207]:45724 "EHLO
-        mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242684AbhLJPM7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 10:12:59 -0500
-Received: from netfilter.org (unknown [78.30.32.163])
-        by mail.netfilter.org (Postfix) with ESMTPSA id 87C3B6006E;
-        Fri, 10 Dec 2021 16:06:53 +0100 (CET)
-Date:   Fri, 10 Dec 2021 16:09:14 +0100
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Cc:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Maxim Mikityanskiy <maximmi@nvidia.com>,
-        Florian Westphal <fw@strlen.de>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org
-Subject: Re: [PATCH bpf-next v3 7/9] net/netfilter: Add unstable CT lookup
- helpers for XDP and TC-BPF
-Message-ID: <YbNtmlaeqPuHHRgl@salvia>
-References: <20211210130230.4128676-1-memxor@gmail.com>
- <20211210130230.4128676-8-memxor@gmail.com>
+        id S235073AbhLJPNW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Dec 2021 10:13:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37138 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242644AbhLJPNV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 10:13:21 -0500
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF343C061746
+        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 07:09:46 -0800 (PST)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1mvhWr-0005bQ-0n; Fri, 10 Dec 2021 16:09:45 +0100
+Date:   Fri, 10 Dec 2021 16:09:44 +0100
+From:   Florian Westphal <fw@strlen.de>
+To:     Ignacy =?utf-8?B?R2F3xJlkemtp?= 
+        <ignacy.gawedzki@green-communications.fr>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH v2] netfilter: fix regression in looped
+ (broad|multi)cast's MAC handling
+Message-ID: <20211210150944.GG26636@breakpoint.cc>
+References: <20211210142741.fsklz2vzlsow3qre@zenon.in.qult.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20211210130230.4128676-8-memxor@gmail.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20211210142741.fsklz2vzlsow3qre@zenon.in.qult.net>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 10, 2021 at 06:32:28PM +0530, Kumar Kartikeya Dwivedi wrote:
-[...]
->  net/netfilter/nf_conntrack_core.c | 252 ++++++++++++++++++++++++++++++
->  7 files changed, 497 insertions(+), 1 deletion(-)
->
-[...]
-> diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
-> index 770a63103c7a..85042cb6f82e 100644
-> --- a/net/netfilter/nf_conntrack_core.c
-> +++ b/net/netfilter/nf_conntrack_core.c
+Ignacy Gawędzki <ignacy.gawedzki@green-communications.fr> wrote:
+> In commit 5648b5e1169f ("netfilter: nfnetlink_queue: fix OOB when mac
+> header was cleared"), the test for non-empty MAC header introduced in
+> commit 2c38de4c1f8da7 ("netfilter: fix looped (broad|multi)cast's MAC
+> handling") has been replaced with a test for a set MAC header, which
+> breaks the case when the MAC header has been reset (using
+> skb_reset_mac_header), as is the case with looped-back multicast
+> packets.
 
-Please, keep this new code away from net/netfilter/nf_conntrack_core.c
+Please rephrase this to say what breaks here.
+
+I guess you get a bogus hwaddr in the netlink message?
+
+Also, this should be sent to netfilter-devel@, not netdev@.
+
+For the patch itself:
+Reviewed-by: Florian Westphal <fw@strlen.de>
