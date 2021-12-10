@@ -2,98 +2,208 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 44F6746FB9D
-	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 08:36:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E945046FBA4
+	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 08:36:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235150AbhLJHjg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Dec 2021 02:39:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44262 "EHLO
+        id S237594AbhLJHkB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Dec 2021 02:40:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229609AbhLJHjf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 02:39:35 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C4E7C061746
-        for <netdev@vger.kernel.org>; Thu,  9 Dec 2021 23:36:01 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1mvaRZ-0002AJ-Nw; Fri, 10 Dec 2021 08:35:49 +0100
-Received: from pengutronix.de (2a03-f580-87bc-d400-5708-5a2a-1200-a3e0.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:5708:5a2a:1200:a3e0])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 0E13F6C1172;
-        Fri, 10 Dec 2021 07:35:46 +0000 (UTC)
-Date:   Fri, 10 Dec 2021 08:35:45 +0100
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Cc:     linux-can@vger.kernel.org,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Jimmy Assarsson <extja@kvaser.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-sunxi@lists.linux.dev, Yasushi SHOJI <yashi@spacecubics.com>
-Subject: Re: [PATCH v5 3/5] can: do not copy the payload of RTR frames
-Message-ID: <20211210073545.qdldwmaykts5dr4u@pengutronix.de>
-References: <20211207121531.42941-1-mailhol.vincent@wanadoo.fr>
- <20211207121531.42941-4-mailhol.vincent@wanadoo.fr>
+        with ESMTP id S235377AbhLJHj4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 02:39:56 -0500
+Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C07AC0617A1;
+        Thu,  9 Dec 2021 23:36:21 -0800 (PST)
+Received: by mail-qk1-x72c.google.com with SMTP id g28so6989250qkk.9;
+        Thu, 09 Dec 2021 23:36:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=HUTwS7xM+YcEvJ79qh9Q5lIy9ARorMvWQSRogohGLCs=;
+        b=TAleqTPVjeXyH067cJPzHDNf8lHlWKSqC+fOmbtTqF70LiN4oDRNA6mpDrRiZf1fva
+         H903BoBdaXwn2yXpdXmmunJQ5YWKLslIUCQPPR1ZVRPBTE5ilecMO//QrIleN+cokpKv
+         N9eGjHgWpawenAumJ+Q3Xa5uU+y67MLxH+GwMXMCte5qgBCXa3/lTtGShkcZMeJLzKLt
+         S/Tp8oRRLoPNfHbhiOL067n+DRqFmlAKjspCx16yc4YpxyvogyGNnXFgHuemfemD3TXw
+         1kx3SO43s8XG2HNqT5LcahLhekGahLRH5ckGSWEo7zExuT3C3/4uwds4VFs7tDSc0k7I
+         aA9Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=HUTwS7xM+YcEvJ79qh9Q5lIy9ARorMvWQSRogohGLCs=;
+        b=0K4htbxBXfq23JwSCdHlV4NmRgfTuTza+JothcZnmv4Yk4Z4frXWmWTPbQtmMl7k1j
+         g9XYGZPIsa3dFU2p6MpOnJFKs++cmT4a6cxsdONW3Tcqly29uNazt6jc3I37VteqcsSS
+         156LOH5dEzS2pGaUOVqJd+iyYgRJ/ThhdkORlJvE8lBvTm2bVNUFq+XBNGxUo8ZjHKWW
+         VSN8GMaNecx5FdrJZqOUKKx1tQS7cRvrvrKa+tVw/1JEaEejz0dd/9j09jF+niyIQsRO
+         toI6NR+023Hu6a8No5Q4Sd+kcB0Da1Rywb+9vn9Slx/qmXX3P5wsPYfx54C4xE7DqkpI
+         DR4g==
+X-Gm-Message-State: AOAM5321mB12HrIeB0nmEuIPKdPVSkqtLoomOi3uohbrqW6gJ3iZxHGj
+        6W76bBSwomEicq7FNJcQQTZIXAIYjOY98isDuXY=
+X-Google-Smtp-Source: ABdhPJwYHbxLow1IU041nfozRSJCzMxLTXgGvgqkCNZKDv1hk/hlD0U5+MJQ0Lat29M4BS8/zSOmk5N299fREPLQdkg=
+X-Received: by 2002:a37:654e:: with SMTP id z75mr18522006qkb.732.1639121780720;
+ Thu, 09 Dec 2021 23:36:20 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="xgu4n4z4axtjgfbb"
-Content-Disposition: inline
-In-Reply-To: <20211207121531.42941-4-mailhol.vincent@wanadoo.fr>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+References: <20211124193327.2736-1-cpp.code.lv@gmail.com> <CAOrHB_AUCGG0uF4d30Eb4dguPqwvDL8A2c=2EGXqdcqkqLZK-g@mail.gmail.com>
+ <CAASuNyWViYk6rt7bpqVApMFJB+k9NKSwasm1H_70uMMRUHxoHw@mail.gmail.com>
+ <CAOrHB_D1HKirnub8AQs=tjX60Mc+EP=aWf+xpr9YdOCOAPsi2Q@mail.gmail.com> <CAASuNyUKj+dsf++7mhdkjm2mabQggYW4x42_BV=y+VPPSBFqfA@mail.gmail.com>
+In-Reply-To: <CAASuNyUKj+dsf++7mhdkjm2mabQggYW4x42_BV=y+VPPSBFqfA@mail.gmail.com>
+From:   Pravin Shelar <pravin.ovn@gmail.com>
+Date:   Thu, 9 Dec 2021 23:36:09 -0800
+Message-ID: <CAOrHB_CyBoTYO8Qn-qtcfrbqfVc9TjaU6ib_2ZSQx-R9ns-bUQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v8] net: openvswitch: IPv6: Add IPv6 extension
+ header support
+To:     Cpp Code <cpp.code.lv@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        ovs dev <dev@openvswitch.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+()
 
---xgu4n4z4axtjgfbb
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On Mon, Dec 6, 2021 at 3:00 PM Cpp Code <cpp.code.lv@gmail.com> wrote:
+>
+> On Thu, Dec 2, 2021 at 9:28 PM Pravin Shelar <pravin.ovn@gmail.com> wrote:
+> >
+> > On Thu, Dec 2, 2021 at 12:20 PM Cpp Code <cpp.code.lv@gmail.com> wrote:
+> > >
+> > > On Wed, Dec 1, 2021 at 11:34 PM Pravin Shelar <pravin.ovn@gmail.com> wrote:
+> > > >
+> > > > On Wed, Nov 24, 2021 at 11:33 AM Toms Atteka <cpp.code.lv@gmail.com> wrote:
+> > > > >
+> > > > > This change adds a new OpenFlow field OFPXMT_OFB_IPV6_EXTHDR and
+> > > > > packets can be filtered using ipv6_ext flag.
+> > > > >
+> > > > > Signed-off-by: Toms Atteka <cpp.code.lv@gmail.com>
+> > > > > ---
+> > > > >  include/uapi/linux/openvswitch.h |   6 ++
+> > > > >  net/openvswitch/flow.c           | 140 +++++++++++++++++++++++++++++++
+> > > > >  net/openvswitch/flow.h           |  14 ++++
+> > > > >  net/openvswitch/flow_netlink.c   |  26 +++++-
+> > > > >  4 files changed, 184 insertions(+), 2 deletions(-)
+> > > > >
+> > > > > diff --git a/include/uapi/linux/openvswitch.h b/include/uapi/linux/openvswitch.h
+> > > > > index a87b44cd5590..43790f07e4a2 100644
+> > > > > --- a/include/uapi/linux/openvswitch.h
+> > > > > +++ b/include/uapi/linux/openvswitch.h
+> > > > > @@ -342,6 +342,7 @@ enum ovs_key_attr {
+> > > > >         OVS_KEY_ATTR_CT_ORIG_TUPLE_IPV4,   /* struct ovs_key_ct_tuple_ipv4 */
+> > > > >         OVS_KEY_ATTR_CT_ORIG_TUPLE_IPV6,   /* struct ovs_key_ct_tuple_ipv6 */
+> > > > >         OVS_KEY_ATTR_NSH,       /* Nested set of ovs_nsh_key_* */
+> > > > > +       OVS_KEY_ATTR_IPV6_EXTHDRS,  /* struct ovs_key_ipv6_exthdr */
+> > > > >
+> > > > >  #ifdef __KERNEL__
+> > > > >         OVS_KEY_ATTR_TUNNEL_INFO,  /* struct ip_tunnel_info */
+> > > > > @@ -421,6 +422,11 @@ struct ovs_key_ipv6 {
+> > > > >         __u8   ipv6_frag;       /* One of OVS_FRAG_TYPE_*. */
+> > > > >  };
+> > > > >
+> > > > > +/* separate structure to support backward compatibility with older user space */
+> > > > > +struct ovs_key_ipv6_exthdrs {
+> > > > > +       __u16  hdrs;
+> > > > > +};
+> > > > > +
+> > > > >  struct ovs_key_tcp {
+> > > > >         __be16 tcp_src;
+> > > > >         __be16 tcp_dst;
+> > > > > diff --git a/net/openvswitch/flow.c b/net/openvswitch/flow.c
+> > > > > index 9d375e74b607..28acb40437ca 100644
+> > > > > --- a/net/openvswitch/flow.c
+> > > > > +++ b/net/openvswitch/flow.c
+> > > > > @@ -239,6 +239,144 @@ static bool icmphdr_ok(struct sk_buff *skb)
+> > > > >                                   sizeof(struct icmphdr));
+> > > > >  }
+> > > > >
+> > > > > +/**
+> > > > > + * get_ipv6_ext_hdrs() - Parses packet and sets IPv6 extension header flags.
+> > > > > + *
+> > > > > + * @skb: buffer where extension header data starts in packet
+> > > > > + * @nh: ipv6 header
+> > > > > + * @ext_hdrs: flags are stored here
+> > > > > + *
+> > > > > + * OFPIEH12_UNREP is set if more than one of a given IPv6 extension header
+> > > > > + * is unexpectedly encountered. (Two destination options headers may be
+> > > > > + * expected and would not cause this bit to be set.)
+> > > > > + *
+> > > > > + * OFPIEH12_UNSEQ is set if IPv6 extension headers were not in the order
+> > > > > + * preferred (but not required) by RFC 2460:
+> > > > > + *
+> > > > > + * When more than one extension header is used in the same packet, it is
+> > > > > + * recommended that those headers appear in the following order:
+> > > > > + *      IPv6 header
+> > > > > + *      Hop-by-Hop Options header
+> > > > > + *      Destination Options header
+> > > > > + *      Routing header
+> > > > > + *      Fragment header
+> > > > > + *      Authentication header
+> > > > > + *      Encapsulating Security Payload header
+> > > > > + *      Destination Options header
+> > > > > + *      upper-layer header
+> > > > > + */
+> > > > > +static void get_ipv6_ext_hdrs(struct sk_buff *skb, struct ipv6hdr *nh,
+> > > > > +                             u16 *ext_hdrs)
+> > > > > +{
+> > > > > +       u8 next_type = nh->nexthdr;
+> > > > > +       unsigned int start = skb_network_offset(skb) + sizeof(struct ipv6hdr);
+> > > > > +       int dest_options_header_count = 0;
+> > > > > +
+> > > > > +       *ext_hdrs = 0;
+> > > > > +
+> > > > > +       while (ipv6_ext_hdr(next_type)) {
+> > > > > +               struct ipv6_opt_hdr _hdr, *hp;
+> > > > > +
+> > > > > +               switch (next_type) {
+> > > > > +               case IPPROTO_NONE:
+> > > > > +                       *ext_hdrs |= OFPIEH12_NONEXT;
+> > > > > +                       /* stop parsing */
+> > > > > +                       return;
+> > > > > +
+> > > > > +               case IPPROTO_ESP:
+> > > > > +                       if (*ext_hdrs & OFPIEH12_ESP)
+> > > > > +                               *ext_hdrs |= OFPIEH12_UNREP;
+> > > > > +                       if ((*ext_hdrs & ~(OFPIEH12_HOP | OFPIEH12_DEST |
+> > > > > +                                          OFPIEH12_ROUTER | IPPROTO_FRAGMENT |
+> > > > > +                                          OFPIEH12_AUTH | OFPIEH12_UNREP)) ||
+> > > > > +                           dest_options_header_count >= 2) {
+> > > > > +                               *ext_hdrs |= OFPIEH12_UNSEQ;
+> > > > > +                       }
+> > > > > +                       *ext_hdrs |= OFPIEH12_ESP;
+> > > > > +                       break;
+> > > > you need to check_header() before looking into each extension header.
+> > >
+> > > Could you elaborate why I need to add check_header(),
+> > > skb_header_pointer() is doing sanitization.
+> >
+> > I mean check_header() would allow you to read the header without
+> > copying the bits, it is used in ovs flow extraction so its usual
+> > check.
+>
+> But check_header() will call *__pskb_pull_tail which in turn will copy
+> bits if data will be fragmented.
+>
+OVS flow extract uses this function to extract flow upto L4, so
+skb_header_pointer() is not saving any copy operation.
 
-On 07.12.2021 21:15:29, Vincent Mailhol wrote:
-> The actual payload length of the CAN Remote Transmission Request (RTR)
-> frames is always 0, i.e. nothing is transmitted on the wire. However,
-                           ^^^^^^^
-I've changed this to "no payload" to make it more unambiguous.
+> /* Moves tail of skb head forward, copying data from fragmented part,
+>  * when it is necessary.
+>  * 1. It may fail due to malloc failure.
+>  * 2. It may change skb pointers.
+>  *
+>  * It is pretty complicated. Luckily, it is called only in exceptional cases.
+>  */
+> void *__pskb_pull_tail(struct sk_buff *skb, int delta)
+>
+> as well I noticed that for example commit
+> 4a06fa67c4da20148803525151845276cdb995c1 is moving from
+> pskb_may_pull() to skb_header_pointer()
+ok, I see advantage of using skb_header_pointer() in this case, but
+replacing all check_header() with skb_header_pointer() would add lot
+of copy operation in flow extract. Anyways for this use case
+skb_header_pointer() is fine.
 
-> those RTR frames still use the DLC to indicate the length of the
-> requested frame.
->=20
-> For this reason, it is incorrect to copy the payload of RTR frames
-> (the payload buffer would only contain garbage data). This patch
-> encapsulates the payload copy in a check toward the RTR flag.
->=20
-> CC: Yasushi SHOJI <yashi@spacecubics.com>
-> Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---xgu4n4z4axtjgfbb
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmGzA08ACgkQqclaivrt
-76k0wgf/Tt5RLv/yuQOh0Bg1Eim3GqTp91tjekXp/Kx65epni6ViEkdY6/B3bhN2
-8cprQ2aeC7npSQVSGr4AU8OhoX1dAn7Z986ThJOOl0v0JtuFjniNHoXK9FNjKWNJ
-NlpH7wYE3vv5jy9Yy3mSbQPP3Bp539dRfq5puTgFygv3yp2RzRVL0pX8/FK1dal8
-Ziq98LUACZF6Tc+uqIfaj9p2CJq94xQBHrmoOtpN7722ODt9JQjqGB8Bk1Dwe8l7
-XVWWbTrsWkt0SNniKIQAdo4UsigGQ6Ba3+MhEBraR0uZU7Qt6gNCXIYYR9dd7Iu8
-spshptUSQ0EvOSdsXO6MBy0KhT5p5w==
-=Niul
------END PGP SIGNATURE-----
-
---xgu4n4z4axtjgfbb--
+Acked-by: Pravin B Shelar <pshelar@ovn.org>
