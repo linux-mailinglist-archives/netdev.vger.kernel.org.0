@@ -2,114 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A5A3446F9A3
-	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 04:38:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A20A146FA06
+	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 05:49:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236384AbhLJDlc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Dec 2021 22:41:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48436 "EHLO
+        id S236698AbhLJEwf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Dec 2021 23:52:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231314AbhLJDlc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 22:41:32 -0500
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A3CFC061746
-        for <netdev@vger.kernel.org>; Thu,  9 Dec 2021 19:37:57 -0800 (PST)
-Received: by mail-ed1-x52c.google.com with SMTP id e3so26232499edu.4
-        for <netdev@vger.kernel.org>; Thu, 09 Dec 2021 19:37:57 -0800 (PST)
+        with ESMTP id S231842AbhLJEwe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 23:52:34 -0500
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B9A6C0617A1
+        for <netdev@vger.kernel.org>; Thu,  9 Dec 2021 20:49:00 -0800 (PST)
+Received: by mail-ed1-x529.google.com with SMTP id z5so26665455edd.3
+        for <netdev@vger.kernel.org>; Thu, 09 Dec 2021 20:49:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=0mLnFflG4Be9s185D3yK2MiXBMtK0V+8lgYUTJKkdyE=;
-        b=IlEtfacYqBrJVYe4LvciMIXeclQisq79uKJsDUXgDQgikj8+xIRM4XOClw3ZNyHWB2
-         9wrb6oiw0qWFUc6cRo5RjcfZwA2TT4dd6mZq2JlIKgQELokB/8X/wo1K5gaySS4lyMBf
-         Y77LQmDNUFg03OE2uj8hPmCtc22cSO3i3GrLD2ultqdBsBx2L7CEUJQICBWwZJL+rZ7h
-         D7kYjncB2LtUjr5bO5On3saeBspYOg6JbxLiV945IxrJCEAxCNXftMX/ii2Dy18+ZSP/
-         0neQ429IszXpgd3IbEQGjDhRlSOyoS2RVhqYvPcS6ghG9A+OcnZuNVS/W8dTFpoTzoe9
-         iQRA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=v7lryePrDcBW8bGfJXYUzSqYfPJp8orMyh4Ppmw8niU=;
+        b=O758yrgAh+YEDgsIo14qkk+/A438dCYomOvUQthIbr2HicRWLi0/RBxVTC7JlLIBYn
+         0dDg5uLDu5yXN5eJI8ovIueQMZkSfuscn3KZKxR8tC2pEA+rG6AjP0d+ACegqp9C0HL2
+         HsweZaSClNt+vAoaMGWbaBtZ8bC2rSgov+rPuqwHLvCsBI5X/y5qu6Uwq3JovTGYxu1B
+         X8SQnLCLW3YZwKhglst6Hw0sV+fsMYA+1N9nokWx+cSFTS+L/ON+ytn96s00ZcPqqAYi
+         HdC+W4dV8APBnfp6H5JwYDAbL6OMRfsUxu55W8ZXivQJcWPUImH2oclxeMoA+80TwYZj
+         2Vew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=0mLnFflG4Be9s185D3yK2MiXBMtK0V+8lgYUTJKkdyE=;
-        b=TLENVwngz6a5ICLTBGAOGW3yq2xJBchxXXXJqlms6WkTb1/XhhGOaGC78P3cKlsGjB
-         TOPXXvlpQ6dKWbKd1v7rtqbHnM+leVdfqxs/v5yfOhZUfabAywYHWy2ui1Cs28TgWxvc
-         NdfrO5bKwUY84QXaTdJxEENz65Y4MXH84YyGN2hHl3DQALVzwXuoFLNDk/2riciWgbWn
-         wypBUA+w/XX3oczppCSAypZZx8rgrOcllclBDl/lvwflIoOKfR1EOwxt2Hs5t1Hgyc8N
-         +pAh7XW0r0dzhmBTW3sx9jntqrmHPEaUWtguAx9Z5em/BqUr++HlGNx4mWyQWLVQsgg9
-         XGfg==
-X-Gm-Message-State: AOAM530o66uMwgdPBvDaVBNdj/aodBGr7KFC1NTGgi/hk4IyKYSKqNwU
-        fJfw0w2wER/gLdSVvHURWjPSvWywDT0=
-X-Google-Smtp-Source: ABdhPJxhgSpGz+NzCCYFA4QW1PcMQA5ilvZF/5kcpCHEYM4aMWJ041i33J/0m/SD5soZqMrkVvo18A==
-X-Received: by 2002:aa7:dd56:: with SMTP id o22mr34990437edw.73.1639107475852;
-        Thu, 09 Dec 2021 19:37:55 -0800 (PST)
-Received: from Ansuel-xps. (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.gmail.com with ESMTPSA id jz4sm769978ejc.19.2021.12.09.19.37.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Dec 2021 19:37:55 -0800 (PST)
-Message-ID: <61b2cb93.1c69fb81.2192a.3ef3@mx.google.com>
-X-Google-Original-Message-ID: <YbLLkNw+VC5gKQd5@Ansuel-xps.>
-Date:   Fri, 10 Dec 2021 04:37:52 +0100
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: [RFC PATCH v2 net-next 0/4] DSA master state tracking
-References: <20211209173927.4179375-1-vladimir.oltean@nxp.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=v7lryePrDcBW8bGfJXYUzSqYfPJp8orMyh4Ppmw8niU=;
+        b=jPZz4y8PHpweXjC4p4pwtLKPTvAl4ExsaWY+5IPtmmtStdZHzSyuDfQOw1NcOgtEFJ
+         rQbgDvjyOo+c++UrO2QQMfREExL4K2nroh2mq4KlegFdVM7p22oI9Q0bMl619Z2obV/k
+         R8X1j4zfvEODWsc6KXM+EZ/u1eQVHeKcs0pxuEA9NBF2dmoAZtqOcu7Blb4dXFzCSh/g
+         NsjgXPMfR1IN6c5CScz7X/CMBl5tfbNTWkVIUEIBc1CY1uyvurJVv5tcX4/z9K9Seorg
+         31K6mzy6Mvs6r06i5b5tUsGDS2xeRBicVWcAMHuAmebpQjMYemXSShv/RWC8AmEKYNjQ
+         4DGg==
+X-Gm-Message-State: AOAM530JhicTI9dz5cQS34P977nGDW0eWKA6+V9p81RXifEA1NXHn+XW
+        meNshMDHnL/JWyFNLyXWdk/kHg0vpXu2z9MKnhI=
+X-Google-Smtp-Source: ABdhPJwI6NBQgaxZK4/wjOAxB7CUoFJo7WSxkYPRq+Yfi4+Lquxk2Z+d/c8kf2hgHR/C/zKkvALdwIzrykExxxHeEbk=
+X-Received: by 2002:a17:906:c155:: with SMTP id dp21mr20988749ejc.450.1639111739023;
+ Thu, 09 Dec 2021 20:48:59 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211209173927.4179375-1-vladimir.oltean@nxp.com>
+References: <54c2ae5d003f49f6a29eec6a67c72315@huawei.com> <35aa84e0d1fe4bd1ad1bf6fb61c83338@huawei.com>
+ <396da6f61fa948ac854531e935921dfc@huawei.com>
+In-Reply-To: <396da6f61fa948ac854531e935921dfc@huawei.com>
+From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Date:   Fri, 10 Dec 2021 12:48:22 +0800
+Message-ID: <CAMDZJNXGTGHPLw0Lkz4k5-f_j5Pi1s6A1wWuRUuOMZAnv2EnMg@mail.gmail.com>
+Subject: Re: [ovs-discuss] [ovs-dev] [PATCH] datapath: fix crash when ipv6
+ fragment pkt recalculate L4 checksum
+To:     "zhounan (E)" <zhounan14@huawei.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "dev@openvswitch.org" <dev@openvswitch.org>,
+        "bugs@openvswitch.org" <bugs@openvswitch.org>,
+        "pravin.ovn@gmail.com" <pravin.ovn@gmail.com>,
+        Lichunhe <lichunhe@huawei.com>,
+        "liucheng (J)" <liucheng11@huawei.com>,
+        "Hejiajun (he jiajun, SOCF&uDF )" <hejiajun@huawei.com>,
+        Greg Rose <gvrose8192@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 09, 2021 at 07:39:23PM +0200, Vladimir Oltean wrote:
-> This patch set is provided solely for review purposes (therefore not to
-> be applied anywhere) and for Ansuel to test whether they resolve the
-> slowdown reported here:
-> https://patchwork.kernel.org/project/netdevbpf/cover/20211207145942.7444-1-ansuelsmth@gmail.com/
-> 
-> The patches posted here are mainly to offer a consistent
-> "master_state_change" chain of events to switches, without duplicates,
-> and always starting with operational=true and ending with
-> operational=false. This way, drivers should know when they can perform
-> Ethernet-based register access, and need not care about more than that.
-> 
-> Changes in v2:
-> - dropped some useless patches
-> - also check master operstate.
-> 
-> Vladimir Oltean (4):
->   net: dsa: provide switch operations for tracking the master state
->   net: dsa: stop updating master MTU from master.c
->   net: dsa: hold rtnl_mutex when calling dsa_master_{setup,teardown}
->   net: dsa: replay master state events in
->     dsa_tree_{setup,teardown}_master
-> 
->  include/net/dsa.h  | 11 +++++++
->  net/dsa/dsa2.c     | 80 +++++++++++++++++++++++++++++++++++++++++++---
->  net/dsa/dsa_priv.h | 13 ++++++++
->  net/dsa/master.c   | 29 ++---------------
->  net/dsa/slave.c    | 27 ++++++++++++++++
->  net/dsa/switch.c   | 15 +++++++++
->  6 files changed, 145 insertions(+), 30 deletions(-)
-> 
-> -- 
-> 2.25.1
-> 
+On Fri, Dec 10, 2021 at 10:59 AM zhounan (E) via discuss
+<ovs-discuss@openvswitch.org> wrote:
+>
+> From: Zhou Nan <zhounan14@huawei.com>
+>
+> When we set ipv6 addr, we need to recalculate checksum of L4 header.
+> In our testcase, after send ipv6 fragment package, KASAN detect "use after free" when calling function update_ipv6_checksum, and crash occurred after a while.
+> If ipv6 package is fragment, and it is not first seg, we should not recalculate checksum of L4 header since this kind of package has no
+> L4 header.
+> To prevent crash, we set "recalc_csum" "false" when calling function "set_ipv6_addr".
+> We also find that function skb_ensure_writable (make sure L4 header is writable) is helpful before calling inet_proto_csum_replace16 to recalculate checksum.
+>
+> Fixes: ada5efce102d6191e5c66fc385ba52a2d340ef50
+>        ("datapath: Fix IPv6 later frags parsing")
+>
+> Signed-off-by: Zhou Nan <zhounan14@huawei.com>
+> ---
+>  datapath/actions.c | 20 +++++++++++++++++++-
+>  1 file changed, 19 insertions(+), 1 deletion(-)
+>
+> diff --git a/datapath/actions.c b/datapath/actions.c index fbf4457..52cf03e 100644
+> --- a/datapath/actions.c
+> +++ b/datapath/actions.c
+> @@ -456,12 +456,21 @@ static void update_ipv6_checksum(struct sk_buff *skb, u8 l4_proto,
+>                                  __be32 addr[4], const __be32 new_addr[4])  {
+>         int transport_len = skb->len - skb_transport_offset(skb);
+> +       int err;
+>
+>         if (l4_proto == NEXTHDR_TCP) {
+> +               err = skb_ensure_writable(skb, skb_transport_offset(skb) +
+> +                               sizeof(struct tcphdr));
+> +               if (unlikely(err))
+> +                       return;
+>                 if (likely(transport_len >= sizeof(struct tcphdr)))
+>                         inet_proto_csum_replace16(&tcp_hdr(skb)->check, skb,
+>                                                   addr, new_addr, true);
+>         } else if (l4_proto == NEXTHDR_UDP) {
+> +               err = skb_ensure_writable(skb, skb_transport_offset(skb) +
+> +                               sizeof(struct udphdr));
+> +               if (unlikely(err))
+> +                       return;
+>                 if (likely(transport_len >= sizeof(struct udphdr))) {
+>                         struct udphdr *uh = udp_hdr(skb);
+>
+> @@ -473,6 +482,10 @@ static void update_ipv6_checksum(struct sk_buff *skb, u8 l4_proto,
+>                         }
+>                 }
+>         } else if (l4_proto == NEXTHDR_ICMP) {
+> +               err = skb_ensure_writable(skb, skb_transport_offset(skb) +
+> +                               sizeof(struct icmp6hdr));
+> +               if (unlikely(err))
+> +                       return;
+>                 if (likely(transport_len >= sizeof(struct icmp6hdr)))
+>                         inet_proto_csum_replace16(&icmp6_hdr(skb)->icmp6_cksum,
+>                                                   skb, addr, new_addr, true);
+> @@ -589,12 +602,15 @@ static int set_ipv6(struct sk_buff *skb, struct sw_flow_key *flow_key,
+>         if (is_ipv6_mask_nonzero(mask->ipv6_src)) {
+>                 __be32 *saddr = (__be32 *)&nh->saddr;
+>                 __be32 masked[4];
+> +               bool recalc_csum = true;
+>
+>                 mask_ipv6_addr(saddr, key->ipv6_src, mask->ipv6_src, masked);
+>
+>                 if (unlikely(memcmp(saddr, masked, sizeof(masked)))) {
+> +                       if (flow_key->ip.frag == OVS_FRAG_TYPE_LATER)
+> +                               recalc_csum = false;
+>                         set_ipv6_addr(skb, flow_key->ip.proto, saddr, masked,
+> -                                     true);
+> +                                     recalc_csum);
+>                         memcpy(&flow_key->ipv6.addr.src, masked,
+>                                sizeof(flow_key->ipv6.addr.src));
+>                 }
+> @@ -614,6 +630,8 @@ static int set_ipv6(struct sk_buff *skb, struct sw_flow_key *flow_key,
+>                                                              NEXTHDR_ROUTING,
+>                                                              NULL, &flags)
+>                                                != NEXTHDR_ROUTING);
+> +                       if (flow_key->ip.frag == OVS_FRAG_TYPE_LATER)
+> +                               recalc_csum = false;
+>
+>                         set_ipv6_addr(skb, flow_key->ip.proto, daddr, masked,
+>                                       recalc_csum);
+> --
+> 2.27.0
+>
+> _______________________________________________
+> discuss mailing list
 
-Hi, I tested this v2 and I still have 2 ethernet mdio failing on init.
-I don't think we have other way to track this. Am I wrong?
+As Gregory said, you should rebase your patch on linux upstream. and
+patch is reviewd in netdev@vger.kernel.org mail list.
+OvS kernel module in upstream is:
+https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/tree/net/openvswitch
 
-All works correctly with this and promisc_on_master.
-If you have other test, feel free to send me other stuff to test.
+When the patch is applied in linux upstream, you can backport it.
+Please see the section "Changes to Linux kernel components"
+https://docs.openvswitch.org/en/latest/internals/contributing/backporting-patches/
 
-(I'm starting to think the fail is caused by some delay that the switch
-require to actually start accepting packet or from the reinit? But I'm
-not sure... don't know if you notice something from the pcap)
+> discuss@openvswitch.org
+> https://mail.openvswitch.org/mailman/listinfo/ovs-discuss
+
+
 
 -- 
-	Ansuel
+Best regards, Tonghao
