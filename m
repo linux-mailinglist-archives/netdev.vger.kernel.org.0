@@ -2,216 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B9A3347077A
-	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 18:37:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E8D0470784
+	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 18:38:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241353AbhLJRl2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Dec 2021 12:41:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45300 "EHLO
+        id S241539AbhLJRmJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Dec 2021 12:42:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238351AbhLJRl1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 12:41:27 -0500
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29C9AC0617A1;
-        Fri, 10 Dec 2021 09:37:52 -0800 (PST)
-Received: by mail-yb1-xb30.google.com with SMTP id v203so22973648ybe.6;
-        Fri, 10 Dec 2021 09:37:52 -0800 (PST)
+        with ESMTP id S238612AbhLJRmI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 12:42:08 -0500
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 608B4C061746
+        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 09:38:33 -0800 (PST)
+Received: by mail-ed1-x532.google.com with SMTP id e3so32924533edu.4
+        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 09:38:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=rbDsL79OudshH/Pa1Nr6jNiPia/i/MwqyUuLxD54n8U=;
-        b=k8B1SGbxIqX3CJv6zv7/HSEoVou2QhPAqFyrJqn9ITy/M0Soa5H2+OkpfK1zj0PDiP
-         +8Rv+T0SDDMgQdOQrQeRj++rcwSabqlByk9Q2Hpnc/kiE/JMlNq5rnDaNbKl/UAjt6iN
-         0704HGrx2ll8XGw5ySeLqFfWCsmRjELxJB35DEsq9g2530iGVDAL9U2VwxJJgBmQWz4i
-         xPWG/VGZpLtbsR7HdJrJWfBPpseVOicSpWxqnbG1n20xsGzrqHm5MKaCseoqueISWKTQ
-         cIT5GJQswAVG8sXV+/bGAzu/M446Qkv1+xjRaOHqpzfurRuh2jG38SWbAVs/+vusnpYd
-         PNbw==
+        bh=r1TEcttao870SrnIicEigLO42+hcfR0TeBILkFKia7Y=;
+        b=CboLVXP61BcjnVlVdqz9HlC+G+qQbOOK29GAI2MsticWmll2r3p3ODnYgo9GhFKFdK
+         kXUSmTVedjzEkmv8LdxrKVLxiCTGvesTCHvrdN2TSTG3BjR0SNGHKtrgt4Rqdhmekw7W
+         r7N8vmuE2ASFT3QfcbthXK+3S9g8KmXmVJrL8BM3la8PzoO0YE+lndAv2NwMwdz1Sj0Y
+         sgVrfNDSoPstYhpVARaqCehlj5aouMxu9soPxGsSlVXj6aILw5IRS5LCK/a6j/ahBfFK
+         mtdtGtY70jdd1y0DsFGt17jr+IHHt65Gv2jgrfY0JuRY7apgKyNDe3+7Uq4z0260E+kX
+         5BkA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=rbDsL79OudshH/Pa1Nr6jNiPia/i/MwqyUuLxD54n8U=;
-        b=erhQ6Gdg3vlzsfvdSsHxyPf1aZtyaidgei4OO3k1pgwRIlyfQ+mWDU2nvxHXLKqJmf
-         lPAvd5mXIqYTzV+fYEXXAQASQUbR95N/lbJHgJURWdoWQ2tbPWxin21qJO1M8yFogIeK
-         Y+HeyBb4aDAIbLczRr8zokraBC/vY5Qkr1YSrlb6zeDTHFhOZwkzat3BVxwszPGXYhvW
-         OixouJZS4GUb6wZVClyp8R4LjoAbCijz4tQ3ley9va446I2gG4XHzRH7/rwLb90W6UTu
-         5t7toP8TZn6wFPoMMt0InDBt1puLOAW3UTA8/dMX1diovSK/iOZM7BjUj4MoxlCW30kX
-         t9VQ==
-X-Gm-Message-State: AOAM530rNs1ifIvqGraOPep8/IVuIhtigBVuR8iuIX9hkR8g1LSJH7c2
-        Hoi+pHyFRkYlJqCEGK9GgblSnDShRfvJiuFYSQ0=
-X-Google-Smtp-Source: ABdhPJzTmkWJaS8tlWJmvwoBriKbdM8BNPnF23BjxAmAPNGNlmbmNpHMPYdDAzdw7AmsaF2xg7Sl2PnF6MGDREGvqKE=
-X-Received: by 2002:a25:e90a:: with SMTP id n10mr15505738ybd.180.1639157871317;
- Fri, 10 Dec 2021 09:37:51 -0800 (PST)
+        bh=r1TEcttao870SrnIicEigLO42+hcfR0TeBILkFKia7Y=;
+        b=3BAsAMGDxnIcgZfOynq2imYdR1SP5TULksygtoHTvEc/O4k7tLCp7JxTibBuNJDCcA
+         0fmRwRAspzMwm7SCx0lHOLKUZ7kC2+mmitBochvv2FzmMityVgILmM21Arbu9GcmT9bb
+         3jycYgS4VCn/4UZc+CDbK9PPh+CkzzwKzKyWcQJMpWzyspTjU/AE83obruN64RWbzMyO
+         Ww7bj7+u3MQHr7evx28h3Fldkzf9Mc0SmHE1JFXmFJKrE8lM2nMjuBPliNiKE7eEVFBM
+         l+PR1bmeJsTAeJHJi2BtRJtGk+aSp0vD8YFHYnYmIxtJAQrKUth3aW5F1eIUGADOxDIp
+         I/Aw==
+X-Gm-Message-State: AOAM530h+a4EiPOkIlukxVJ2vvFmB2zOo0pvHkoowwqzfSldj48ZUwkA
+        jkDnUlXJHpFCh/nMxa5BR7LUOzWEbJvHzHv6vBc=
+X-Google-Smtp-Source: ABdhPJy3tAn00zTOJfEvNbSI+YgkApSEEj6rzUNLc50sjJnuFQXf3zF7RtA7bwNJ1RG5ErLCDUkr5xumbBWnlFp0wyg=
+X-Received: by 2002:a05:6402:405:: with SMTP id q5mr40555005edv.62.1639157911956;
+ Fri, 10 Dec 2021 09:38:31 -0800 (PST)
 MIME-Version: 1.0
-References: <20211209120327.551952-1-emmanuel.deloget@eho.link>
- <CAEf4BzYJ+GPpjcMMYQM_BfQ1-aq6dz_JbF-m5meiCZ=oPbrM=w@mail.gmail.com> <15676ff5-5c5c-fd06-308f-10611c01f6a9@eho.link>
-In-Reply-To: <15676ff5-5c5c-fd06-308f-10611c01f6a9@eho.link>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 10 Dec 2021 09:37:40 -0800
-Message-ID: <CAEf4Bzb_f1FYkVre62ACTpEYq5=rPjZ-5BD-jHAez=oUmvC6yA@mail.gmail.com>
-Subject: Re: [PATCH v1 bpf 1/1] libbpf: don't force user-supplied ifname
- string to be of fixed size
-To:     Emmanuel Deloget <emmanuel.deloget@eho.link>
-Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
+References: <20211208145459.9590-1-xiangxia.m.yue@gmail.com>
+ <20211208145459.9590-3-xiangxia.m.yue@gmail.com> <61b383c6373ca_1f50e20816@john.notmuch>
+In-Reply-To: <61b383c6373ca_1f50e20816@john.notmuch>
+From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Date:   Sat, 11 Dec 2021 01:37:55 +0800
+Message-ID: <CAMDZJNV3-y5jkUAJJ--10PcicKpGMwKS_3gG9O7srjomO3begw@mail.gmail.com>
+Subject: Re: [net v5 2/3] net: sched: add check tc_skip_classify in sch egress
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
+        Eric Dumazet <edumazet@google.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Wei Wang <weiwan@google.com>, Arnd Bergmann <arnd@arndb.de>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 9, 2021 at 9:55 AM Emmanuel Deloget
-<emmanuel.deloget@eho.link> wrote:
+On Sat, Dec 11, 2021 at 12:43 AM John Fastabend
+<john.fastabend@gmail.com> wrote:
 >
-> Hello,
->
-> On 09/12/2021 18:17, Andrii Nakryiko wrote:
-> > On Thu, Dec 9, 2021 at 4:03 AM Emmanuel Deloget
-> > <emmanuel.deloget@eho.link> wrote:
-> >>
-> >> When calling either xsk_socket__create_shared() or xsk_socket__create()
-> >> the user supplies a const char *ifname which is implicitely supposed to
-> >> be a pointer to the start of a char[IFNAMSIZ] array. The internal
-> >> function xsk_create_ctx() then blindly copy IFNAMSIZ bytes from this
-> >> string into the xsk context.
-> >>
-> >> This is counter-intuitive and error-prone.
-> >>
-> >> For example,
-> >>
-> >>          int r = xsk_socket__create(..., "eth0", ...)
-> >>
-> >> may result in an invalid object because of the blind copy. The "eth0"
-> >> string might be followed by random data from the ro data section,
-> >> resulting in ctx->ifname being filled with the correct interface name
-> >> then a bunch and invalid bytes.
-> >>
-> >> The same kind of issue arises when the ifname string is located on the
-> >> stack:
-> >>
-> >>          char ifname[] = "eth0";
-> >>          int r = xsk_socket__create(..., ifname, ...);
-> >>
-> >> Or comes from the command line
-> >>
-> >>          const char *ifname = argv[n];
-> >>          int r = xsk_socket__create(..., ifname, ...);
-> >>
-> >> In both case we'll fill ctx->ifname with random data from the stack.
-> >>
-> >> In practice, we saw that this issue caused various small errors which,
-> >> in then end, prevented us to setup a valid xsk context that would have
-> >> allowed us to capture packets on our interfaces. We fixed this issue in
-> >> our code by forcing our char ifname[] to be of size IFNAMSIZ but that felt
-> >> weird and unnecessary.
+> xiangxia.m.yue@ wrote:
+> > From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 > >
-> > I might be missing something, but the eth0 example above would include
-> > terminating zero at the right place, so ifname will still have
-> > "eth0\0" which is a valid string. Yes there will be some garbage after
-> > that, but it shouldn't matter. It could cause ASAN to complain about
-> > reading beyond allocated memory, of course, but I'm curious what
-> > problems you actually ran into in practice.
->
-> I cannot be extremely precise on what was happening as I did not
-> investigate past this (and this fixes our issue) but I suspect that
-> having weird bytes in ctx->ifname polutes ifr.ifr_name as initialized in
-> xsk_get_max_queues(). ioctl(SIOCETHTOOL) was then giving us an error.
-> Now, I haven't looked how the kernel implements this ioctl() so I'm not
-> going to say that there is a problem here as well.
->
-> And since the issue is now about 2 weeks old it's now a bit murky - and
-> I don't have much time to put myself in the same setup in order to
-> produce a better investigation (sorry for that).
->
-
-Ok, fine, but I still don't see how memcpy() could have caused
-correctness errors. The string will be zero-terminated properly, so it
-is a valid C string. The only issue I see is reading past allocated
-memory (which might trigger SIGSEGV or will make ASAN complain).
-Anyways, let's try strncpy() and fix this. Please send it against
-bpf-next for the respin, please.
-
-
-> >>
-> >> Fixes: 2f6324a3937f8 (libbpf: Support shared umems between queues and devices)
-> >> Signed-off-by: Emmanuel Deloget <emmanuel.deloget@eho.link>
-> >> ---
-> >>   tools/lib/bpf/xsk.c | 7 +++++--
-> >>   1 file changed, 5 insertions(+), 2 deletions(-)
-> >>
-> >> diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
-> >> index 81f8fbc85e70..8dda80bcefcc 100644
-> >> --- a/tools/lib/bpf/xsk.c
-> >> +++ b/tools/lib/bpf/xsk.c
-> >> @@ -944,6 +944,7 @@ static struct xsk_ctx *xsk_create_ctx(struct xsk_socket *xsk,
-> >>   {
-> >>          struct xsk_ctx *ctx;
-> >>          int err;
-> >> +       size_t ifnamlen;
-> >>
-> >>          ctx = calloc(1, sizeof(*ctx));
-> >>          if (!ctx)
-> >> @@ -965,8 +966,10 @@ static struct xsk_ctx *xsk_create_ctx(struct xsk_socket *xsk,
-> >>          ctx->refcount = 1;
-> >>          ctx->umem = umem;
-> >>          ctx->queue_id = queue_id;
-> >> -       memcpy(ctx->ifname, ifname, IFNAMSIZ - 1);
-> >> -       ctx->ifname[IFNAMSIZ - 1] = '\0';
-> >> +
-> >> +       ifnamlen = strnlen(ifname, IFNAMSIZ);
-> >> +       memcpy(ctx->ifname, ifname, ifnamlen);
+> > Try to resolve the issues as below:
+> > * We look up and then check tc_skip_classify flag in net
+> >   sched layer, even though skb don't want to be classified.
+> >   That case may consume a lot of cpu cycles. This patch
+> >   is useful when there are a lot of filters with different
+> >   prio. There is ~5 prio in in production, ~1% improvement.
 > >
-> > maybe use strncpy instead of strnlen + memcpy? keep the guaranteed
-> > zero termination (and keep '\0', why did you change it?)
+> >   Rules as below:
+> >   $ for id in $(seq 1 5); do
+> >   $       tc filter add ... egress prio $id ... action mirred egress redirect dev ifb0
+> >   $ done
+> >
+> > * bpf_redirect may be invoked in egress path. If we don't
+> >   check the flags and then return immediately, the packets
+> >   will loopback.
 >
-> Well, strncpy() calls were replaced by memcpy() a while ago (see
-> 3015b500ae42 (libbpf: Use memcpy instead of strncpy to please GCC) for
-> example but there are a few other examples ; most of the changes were
-> made to please gcc8) so I thought that it would be a bad idea :). What
-> would be the consensus on this?
+> This would be the naive case right? Meaning the BPF program is
+> doing a redirect without any logic or is buggy?
+>
+> Can you map out how this happens for me, I'm not fully sure I
+> understand the exact concern. Is it possible for BPF programs
+> that used to see packets no longer see the packet as expected?
+>
+> Is this the path you are talking about?
+Hi John
+Tx ethx -> __dev_queue_xmit -> sch_handle_egress
+->  execute BPF program on ethx with bpf_redirect(ifb0) ->
+-> ifb_xmit -> ifb_ri_tasklet -> dev_queue_xmit -> __dev_queue_xmit
+the packets loopbacks, that means bpf_redirect doesn't work with ifb
+netdev, right ?
+so in sch_handle_egress, I add the check skb_skip_tc_classify().
 
-3015b500ae42 ("libbpf: Use memcpy instead of strncpy to please GCC")
-is different, there we are copying from properly sized array which our
-code controls. memcpy() is totally reasonable there. Here we can't do
-memcpy, unfortunately. Let's try strncpy(), if GCC will start
-complaining about this, then GCC is clearly wrong and we'll just
-disable this warning altogether (I don't remember if it ever found any
-real issues anyways).
+>  rx ethx  ->
+>    execute BPF program on ethx with bpf_redirect(ifb0) ->
+>      __skb_dequeue @ifb tc_skip_classify = 1 ->
+>        dev_queue_xmit() ->
+>           sch_handle_egress() ->
+>             execute BPF program again
+>
+> I can't see why you want to skip that second tc BPF program,
+> or for that matter any tc filter there. In general how do you
+> know that is the correct/expected behavior? Before the above
+> change it would have been called, what if its doing useful
+> work.
+bpf_redirect works fine on ingress with ifb
+__netif_receive_skb_core -> sch_handle_ingress -> bpf_redirect (ifb0)
+-> ifb_xmit -> netif_receive_skb -> __netif_receive_skb_core
+but
+__netif_receive_skb_core --> skb_skip_tc_classify(so the packets will
+execute the BPF progam again)
+
+> Also its not clear how your ifb setup is built or used. That
+> might help understand your use case. I would just remove the
+> IFB altogether and the above discussion is mute.
+tc filter add dev veth1 egress bpf direct-action obj
+test_bpf_redirect_ifb.o sec redirect_ifb
+
+the test_bpf_redirect_ifb  bpf progam:
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (c) 2021 DiDi Global */
++
++#include <linux/bpf.h>
++#include <bpf/bpf_helpers.h>
++
++SEC("redirect_ifb")
++int redirect(struct __sk_buff *skb)
++{
++       return bpf_redirect(skb->ifindex + 1 /* ifbX */, 0);
++}
++
++char __license[] SEC("license") = "GPL";
+
+The 3/3 is selftest:
+https://patchwork.kernel.org/project/netdevbpf/patch/20211208145459.9590-4-xiangxia.m.yue@gmail.com/
+
+> Thanks,
+> John
 
 
->
-> Regarding '\0', I'll change that.
->
-> > Also, note that xsk.c is deprecated in libbpf and has been moved into
-> > libxdp, so please contribute a similar fix there.
->
-> Will do.
->
-> >> +       ctx->ifname[IFNAMSIZ - 1] = 0;
-> >>
-> >>          ctx->fill = fill;
-> >>          ctx->comp = comp;
-> >> --
-> >> 2.32.0
-> >>
->
-> BTW, is there a reason why this patch failed to pass the bpf/vmtest-bpf
-> test on patchwork?
->
 
-Unrelated bpftool-related check, that isn't supposed to pass on bpf
-tree. That one can be ignored.
-
-> Best regards,
->
-> -- Emmanuel Deloget
+-- 
+Best regards, Tonghao
