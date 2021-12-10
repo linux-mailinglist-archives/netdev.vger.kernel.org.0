@@ -2,79 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C49146F95C
-	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 03:50:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F9E546F965
+	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 03:54:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233693AbhLJCyB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Dec 2021 21:54:01 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:60428 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229957AbhLJCyA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 21:54:00 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AADF6B82644;
-        Fri, 10 Dec 2021 02:50:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09196C004DD;
-        Fri, 10 Dec 2021 02:50:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1639104624;
-        bh=83/ICU56MD7Q8EfnNZUQUHhZK9GX4pO3U1W/FVKNJ/4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=p4KM0xR4/OM+lEwQaj6VJPQy6dEVOjChiFKKQj/gdbC3euShHllnIU1mCL+JXG4vB
-         tfgzRrVsgg3bFtUaskXZrvji9w6ITkhvNMo6UF2Chgpeb0arXWhzOI5fmViIO1VDOA
-         I61PMJdHaFUPu0o0LbBXv/HZ5iczzq8sRplAOsDqHTEO/MAXRUazb9q13zsHR0Rp9o
-         XBKYYE96Qjlb2HDBhAtHXhW41hMzEjONVu8d9dMd0kNUu9zaQQ8LV7kNe98ZFHggV2
-         F54pmcm/SnOeekEGehQbHqbFvnMo2Jjh0LsG5eGLMoLADrfX7X7A06IXcjJPACVCmd
-         xRe7aEhSjH/dA==
-Date:   Thu, 9 Dec 2021 18:50:23 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     cgel.zte@gmail.com
-Cc:     davem@davemloft.net, pablo@netfilter.org, contact@proelbtn.com,
-        justin.iurman@uliege.be, chi.minghao@zte.com.cn,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Zeal Robot <zealci@zte.com.cm>
-Subject: Re: [PATCH core-next] net/core: remove unneeded variable
-Message-ID: <20211209185023.2660b7b1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211210022012.423994-1-chi.minghao@zte.com.cn>
-References: <20211210022012.423994-1-chi.minghao@zte.com.cn>
+        id S236200AbhLJC5l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Dec 2021 21:57:41 -0500
+Received: from out30-133.freemail.mail.aliyun.com ([115.124.30.133]:47936 "EHLO
+        out30-133.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233693AbhLJC5l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 21:57:41 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R381e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0V-6w-uX_1639104844;
+Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0V-6w-uX_1639104844)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 10 Dec 2021 10:54:05 +0800
+Date:   Fri, 10 Dec 2021 10:54:02 +0800
+From:   Tony Lu <tonylu@linux.alibaba.com>
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        bpf@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH bpf-next 0/2] Introduce TCP_ULP option for
+ bpf_{set,get}sockopt
+Message-ID: <YbLBSrhFZ2l4cCxH@TonyMac-Alibaba>
+Reply-To: Tony Lu <tonylu@linux.alibaba.com>
+References: <20211209090250.73927-1-tonylu@linux.alibaba.com>
+ <61b258ad273a9_6bfb2084d@john.notmuch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <61b258ad273a9_6bfb2084d@john.notmuch>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 10 Dec 2021 02:20:12 +0000 cgel.zte@gmail.com wrote:
-> From: Minghao Chi <chi.minghao@zte.com.cn>
+On Thu, Dec 09, 2021 at 11:27:41AM -0800, John Fastabend wrote:
+> Tony Lu wrote:
+> > This patch set introduces a new option TCP_ULP for bpf_{set,get}sockopt
+> > helper. The bpf prog can set and get TCP_ULP sock option on demand.
+> > 
+> > With this, the bpf prog can set TCP_ULP based on strategies when socket
+> > create or other's socket hook point. For example, the bpf prog can
+> > control which socket should use tls or smc (WIP) ULP modules without
+> > modifying the applications.
+> > 
+> > Patch 1 replaces if statement with switch to make it easy to extend.
+> > 
+> > Patch 2 introduces TCP_ULP sock option.
 > 
-> Return status directly from function called.
+> Can you be a bit more specific on what ULP you are going to load on
+> demand here and how that would work? For TLS I can't see how this will
+> work, please elaborate. Because the user space side (e.g. openssl) behaves
+> differently if running in kTLS vs uTLS modes I don't think you can
+> from kernel side just flip it on? I'm a bit intrigued though on what
+> might happen if we do did do this on an active socket, but seems it
+> wouldn't be normal TLS with handshake and keys at that point? I'm
+> not sure we need to block it from happening, but struggling to see
+> how its useful at the moment.
 > 
-> Reported-by: Zeal Robot <zealci@zte.com.cm>
-> Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
-> ---
->  net/core/lwtunnel.c | 6 +-----
->  1 file changed, 1 insertion(+), 5 deletions(-)
-> 
-> diff --git a/net/core/lwtunnel.c b/net/core/lwtunnel.c
-> index 2820aca2173a..c34248e358ac 100644
-> --- a/net/core/lwtunnel.c
-> +++ b/net/core/lwtunnel.c
-> @@ -63,11 +63,7 @@ static const char *lwtunnel_encap_str(enum lwtunnel_encap_types encap_type)
->  
->  struct lwtunnel_state *lwtunnel_state_alloc(int encap_len)
->  {
-> -	struct lwtunnel_state *lws;
-> -
-> -	lws = kzalloc(sizeof(*lws) + encap_len, GFP_ATOMIC);
-> -
-> -	return lws;
-> +	return kzalloc(sizeof(*lws) + encap_len, GFP_ATOMIC);
->  }
->  EXPORT_SYMBOL_GPL(lwtunnel_state_alloc);
+> The smc case looks promising, but for that we need to get the order
+> correct and merge smc first and then this series.
 
-I don't think any of your "remove unneeded variable" patches are worth
-applying, sorry.
+Yep, we are developing a set of patch to do with smc for transparent
+replacement. The smc provides the ability to be compatible with TCP,
+the applications can be replaced with smc without no side effects.
+In most cases, it is impossible to modify the compiled application
+binary or inject into applications' containers with LD_PRELOAD. So we
+are using smc ULP to replace TCP with smc when socket create.
 
-This one doesn't even build.
+These patches will be sent out soon. I will send them after smc's
+patches. Thank you.
+
+> 
+> Also this will need a selftests.
+
+I will fix it.
+
+> 
+> Thanks,
+> John
+
+Thanks,
+Tony Lu
