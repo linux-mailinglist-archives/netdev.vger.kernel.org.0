@@ -2,152 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 45015470667
+	by mail.lfdr.de (Postfix) with ESMTP id 8D09A470668
 	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 17:52:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240978AbhLJQ4G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Dec 2021 11:56:06 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:41118 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S240694AbhLJQ4F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 11:56:05 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1639155150;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=FDltKr+tc0V3tb+BTPpB3I0XwCBKsqwfBPRpJqCwhM8=;
-        b=RkQM6vvmkKILgi5CcKDzlX1OyjZ+PfhqFoUYvYO5PCQbmi7p0UMXY7ptyI/SuRLS463d+0
-        phJQ27lYA9mcKKhrPrO4oeV8sGtALECrsiQzt2O5qRAP8//KMU+bodfH3k5F6tm28HFlqY
-        Ue00mfhAPtIPsmYo72B5BJGWErTF8XE=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-592-xw1dsxRZPLOpgUipgeOZvA-1; Fri, 10 Dec 2021 11:52:27 -0500
-X-MC-Unique: xw1dsxRZPLOpgUipgeOZvA-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1FD0A801B0F;
-        Fri, 10 Dec 2021 16:52:26 +0000 (UTC)
-Received: from gerbillo.redhat.com (unknown [10.39.193.172])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 1314160622;
-        Fri, 10 Dec 2021 16:52:24 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     mptcp@lists.linux.dev, Geliang Tang <geliangtang@gmail.com>
-Subject: [PATCH net] mptcp: fix NULL ptr dereference in inet_csk_accept()
-Date:   Fri, 10 Dec 2021 17:51:52 +0100
-Message-Id: <299865ffd73315ea549ed4a8026783633203a237.1639155048.git.pabeni@redhat.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+        id S244210AbhLJQ4H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Dec 2021 11:56:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34532 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240946AbhLJQ4G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 11:56:06 -0500
+Received: from mail-oi1-x236.google.com (mail-oi1-x236.google.com [IPv6:2607:f8b0:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6C6DC061746
+        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 08:52:30 -0800 (PST)
+Received: by mail-oi1-x236.google.com with SMTP id m6so14026816oim.2
+        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 08:52:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=2xtdh4wdBVz94bDpVXdLWduDzK1M5xMEVd1Ftm+SOt4=;
+        b=AjevYMSBRh88DbACbTSGjl0Xzc60sFmBHrrRkdKLpRaTdkEmidHHgl4p+jVDFq5CvZ
+         dmxAr0IHQ3lsRqR26JikSWa7PSLFGgj7rGKgp/Vyz6iArVpDuL4mZgqpUdXAWmVtx8mR
+         vH2wcQXzwXkdEcOFTf/pizSDA687OCz5OstPXXVZwX5tU2MT8iRfMCoGjD+shfd5QS1+
+         /x3ujEPO2rai6Bx1oeLdvbMr1qw6+cNeQOWohAX41vPVNshfgIsJwtzJ140a1ItMdoH5
+         rGZAiHSMPCb5CMIbW/BVmTiOMemuxLVBnLjLWtucuQKrng7cDUPMzAYhtffqq9J90sPw
+         f3Uw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=2xtdh4wdBVz94bDpVXdLWduDzK1M5xMEVd1Ftm+SOt4=;
+        b=MJ5CjhstlxSRYFWYDXsW4+xF/Jo4sjs/HU/3zAdnRe1xZbKSM3z0G6vhGRhchLbgFu
+         3Ul5nTqt4cZWnP7aASgnb2Gt2iRvJ0FAVS3zBRs5chm9PwyjN6TmuBVldW4HDE4sl2IK
+         +jHY4RFUnuQ8KkNmAkzv53M/njQihC0BeA+MjSAelFbsdUqKJ6nxd6LdVSFGwRGf4zi5
+         LKHtpv8GoD116j5XdQ8M8I/AdnHyiJ4pjttXN4d1QxsW62oSPr+FXg7wya7EE5p+r5s0
+         gDm7JLhMKrea2b58VuHrJpEnRmLtzsZz2jLgGGLvgX2woJ6RGkdhpn+SED5q6DbPhKub
+         M4pA==
+X-Gm-Message-State: AOAM531AS1WPIz/4IdrJ7HZUYYKxuXxzQrYpk7iI217MKMqDwSn8+Xas
+        wUHnyD+Fr7O6P0eWsT5KkMU=
+X-Google-Smtp-Source: ABdhPJzhlgIaaBTk+Ru1G6t4Mlko9m2icdxMWty5eD1MHcZofrCubXa+PTwPq98lFZZ1kvf9v0pHcQ==
+X-Received: by 2002:a54:4692:: with SMTP id k18mr13427034oic.93.1639155150202;
+        Fri, 10 Dec 2021 08:52:30 -0800 (PST)
+Received: from localhost ([172.243.151.11])
+        by smtp.gmail.com with ESMTPSA id bq5sm864656oib.55.2021.12.10.08.52.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 10 Dec 2021 08:52:29 -0800 (PST)
+Date:   Fri, 10 Dec 2021 08:52:21 -0800
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     John Fastabend <john.fastabend@gmail.com>,
+        xiangxia.m.yue@gmail.com, netdev@vger.kernel.org
+Cc:     Tonghao Zhang <xiangxia.m.yue@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Wei Wang <weiwan@google.com>, Arnd Bergmann <arnd@arndb.de>
+Message-ID: <61b385c5c21c3_203252085a@john.notmuch>
+In-Reply-To: <61b383c6373ca_1f50e20816@john.notmuch>
+References: <20211208145459.9590-1-xiangxia.m.yue@gmail.com>
+ <20211208145459.9590-3-xiangxia.m.yue@gmail.com>
+ <61b383c6373ca_1f50e20816@john.notmuch>
+Subject: RE: [net v5 2/3] net: sched: add check tc_skip_classify in sch egress
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since commit 740d798e8767 ("mptcp: remove id 0 address"), the PM
-can remove the MPTCP first subflow in response to the netlink DEL_ADDR
-command. At subflow removal time, the TCP subflow socket is orphaned.
+John Fastabend wrote:
+> xiangxia.m.yue@ wrote:
+> > From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> > 
+> > Try to resolve the issues as below:
+> > * We look up and then check tc_skip_classify flag in net
+> >   sched layer, even though skb don't want to be classified.
+> >   That case may consume a lot of cpu cycles. This patch
+> >   is useful when there are a lot of filters with different
+> >   prio. There is ~5 prio in in production, ~1% improvement.
+> > 
+> >   Rules as below:
+> >   $ for id in $(seq 1 5); do
+> >   $       tc filter add ... egress prio $id ... action mirred egress redirect dev ifb0
+> >   $ done
+> > 
+> > * bpf_redirect may be invoked in egress path. If we don't
+> >   check the flags and then return immediately, the packets
+> >   will loopback.
+> 
+> This would be the naive case right? Meaning the BPF program is
+> doing a redirect without any logic or is buggy?
+> 
+> Can you map out how this happens for me, I'm not fully sure I
+> understand the exact concern. Is it possible for BPF programs
+> that used to see packets no longer see the packet as expected?
+> 
+> Is this the path you are talking about?
+> 
+>  rx ethx  ->
+>    execute BPF program on ethx with bpf_redirect(ifb0) ->
+>      __skb_dequeue @ifb tc_skip_classify = 1 ->
+>        dev_queue_xmit() -> 
+>           sch_handle_egress() ->
+>             execute BPF program again
+> 
+> I can't see why you want to skip that second tc BPF program,
+> or for that matter any tc filter there. In general how do you
+> know that is the correct/expected behavior? Before the above
+> change it would have been called, what if its doing useful
+> work.
+> 
+> Also its not clear how your ifb setup is built or used. That
+> might help understand your use case. I would just remove the
+> IFB altogether and the above discussion is mute.
+> 
+> Thanks,
+> John
 
-If the relevant MPTCP socket is in listening status and such
-operation races with an accept(), the kernel will access a NULL wait
-queue, as reported by syzbot:
-
-general protection fault, probably for non-canonical address 0xdffffc0000000003: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000018-0x000000000000001f]
-CPU: 1 PID: 6550 Comm: syz-executor122 Not tainted 5.16.0-rc4-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:__lock_acquire+0xd7d/0x54a0 kernel/locking/lockdep.c:4897
-Code: 0f 0e 41 be 01 00 00 00 0f 86 c8 00 00 00 89 05 69 cc 0f 0e e9 bd 00 00 00 48 b8 00 00 00 00 00 fc ff df 48 89 da 48 c1 ea 03 <80> 3c 02 00 0f 85 f3 2f 00 00 48 81 3b 20 75 17 8f 0f 84 52 f3 ff
-RSP: 0018:ffffc90001f2f818 EFLAGS: 00010016
-RAX: dffffc0000000000 RBX: 0000000000000018 RCX: 0000000000000000
-RDX: 0000000000000003 RSI: 0000000000000000 RDI: 0000000000000001
-RBP: 0000000000000000 R08: 0000000000000001 R09: 0000000000000001
-R10: 0000000000000000 R11: 000000000000000a R12: 0000000000000000
-R13: ffff88801b98d700 R14: 0000000000000000 R15: 0000000000000001
-FS:  00007f177cd3d700(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f177cd1b268 CR3: 000000001dd55000 CR4: 0000000000350ee0
-Call Trace:
- <TASK>
- lock_acquire kernel/locking/lockdep.c:5637 [inline]
- lock_acquire+0x1ab/0x510 kernel/locking/lockdep.c:5602
- __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
- _raw_spin_lock_irqsave+0x39/0x50 kernel/locking/spinlock.c:162
- finish_wait+0xc0/0x270 kernel/sched/wait.c:400
- inet_csk_wait_for_connect net/ipv4/inet_connection_sock.c:464 [inline]
- inet_csk_accept+0x7de/0x9d0 net/ipv4/inet_connection_sock.c:497
- mptcp_accept+0xe5/0x500 net/mptcp/protocol.c:2865
- inet_accept+0xe4/0x7b0 net/ipv4/af_inet.c:739
- mptcp_stream_accept+0x2e7/0x10e0 net/mptcp/protocol.c:3345
- do_accept+0x382/0x510 net/socket.c:1773
- __sys_accept4_file+0x7e/0xe0 net/socket.c:1816
- __sys_accept4+0xb0/0x100 net/socket.c:1846
- __do_sys_accept net/socket.c:1864 [inline]
- __se_sys_accept net/socket.c:1861 [inline]
- __x64_sys_accept+0x71/0xb0 net/socket.c:1861
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7f177cd8b8e9
-Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 b1 14 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f177cd3d308 EFLAGS: 00000246 ORIG_RAX: 000000000000002b
-RAX: ffffffffffffffda RBX: 00007f177ce13408 RCX: 00007f177cd8b8e9
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000003
-RBP: 00007f177ce13400 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007f177ce1340c
-R13: 00007f177cde1004 R14: 6d705f706374706d R15: 0000000000022000
- </TASK>
-
-Fix the issue explicitly preventing the PM from closing subflows
-of MPTCP socket in listener status.
-
-Reported-and-tested-by: syzbot+e4d843bb96a9431e6331@syzkaller.appspotmail.com
-Fixes: 740d798e8767 ("mptcp: remove id 0 address")
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
----
- net/mptcp/pm_netlink.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
-
-diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
-index 7b96be1e9f14..afd4c6ddad0c 100644
---- a/net/mptcp/pm_netlink.c
-+++ b/net/mptcp/pm_netlink.c
-@@ -1275,10 +1275,16 @@ static int mptcp_nl_remove_subflow_and_signal_addr(struct net *net,
- 		}
- 
- 		lock_sock(sk);
-+		/* don't touch subflows for listener sockets */
-+		if (sk->sk_state == TCP_LISTEN)
-+			goto unlock_next;
-+
- 		remove_subflow = lookup_subflow_by_saddr(&msk->conn_list, addr);
- 		mptcp_pm_remove_anno_addr(msk, addr, remove_subflow);
- 		if (remove_subflow)
- 			mptcp_pm_remove_subflow(msk, &list);
-+
-+unlock_next:
- 		release_sock(sk);
- 
- next:
-@@ -1318,10 +1324,16 @@ static int mptcp_nl_remove_id_zero_address(struct net *net,
- 			goto next;
- 
- 		lock_sock(sk);
-+		/* don't touch subflows for listener sockets */
-+		if (sk->sk_state == TCP_LISTEN)
-+			goto unlock_next;
-+
- 		spin_lock_bh(&msk->pm.lock);
- 		mptcp_pm_remove_addr(msk, &list);
- 		mptcp_pm_nl_rm_subflow_received(msk, &list);
- 		spin_unlock_bh(&msk->pm.lock);
-+
-+unlock_next:
- 		release_sock(sk);
- 
- next:
--- 
-2.33.1
-
+After a bit further thought (and coffee) I think this will
+break some programs that exist today. Consider the case
+where I pop a header off and resubmit to the same device
+intentionally to reprocess the pkt without the header. I've
+used this pattern in BPF a few times.
