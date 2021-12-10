@@ -2,628 +2,365 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE8DF46FF1E
-	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 11:53:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BBF9446FF18
+	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 11:53:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240074AbhLJK4l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Dec 2021 05:56:41 -0500
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:8728 "EHLO
+        id S234511AbhLJK4k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Dec 2021 05:56:40 -0500
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:8406 "EHLO
         mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S239280AbhLJK4g (ORCPT
+        by vger.kernel.org with ESMTP id S239459AbhLJK4g (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 05:56:36 -0500
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 1BA3NRcr021479;
-        Fri, 10 Dec 2021 05:52:35 -0500
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3cucqewvcs-1
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 1BA6cotC026429;
+        Fri, 10 Dec 2021 05:52:37 -0500
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3cv1tbrw1e-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 10 Dec 2021 05:52:35 -0500
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 1BAAqYKd051274
+        Fri, 10 Dec 2021 05:52:37 -0500
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 1BAAqZCX021149
         (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 10 Dec 2021 05:52:34 -0500
-Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
- ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Fri, 10 Dec 2021 05:52:33 -0500
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
- ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Fri, 10 Dec 2021 05:52:32 -0500
+        Fri, 10 Dec 2021 05:52:35 -0500
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Fri, 10 Dec
+ 2021 05:52:34 -0500
 Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
  (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Fri, 10 Dec 2021 05:52:32 -0500
+ Transport; Fri, 10 Dec 2021 05:52:34 -0500
 Received: from localhost.localdomain ([10.48.65.12])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 1BAAqLrE008399;
-        Fri, 10 Dec 2021 05:52:30 -0500
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 1BAAqLrF008399;
+        Fri, 10 Dec 2021 05:52:32 -0500
 From:   <alexandru.tachici@analog.com>
 To:     <andrew@lunn.ch>
 CC:     <o.rempel@pengutronix.de>, <alexandru.tachici@analog.com>,
         <davem@davemloft.net>, <devicetree@vger.kernel.org>,
         <hkallweit1@gmail.com>, <kuba@kernel.org>,
         <linux-kernel@vger.kernel.org>, <linux@armlinux.org.uk>,
-        <netdev@vger.kernel.org>, <robh+dt@kernel.org>
-Subject: [PATCH v4 4/7] net: phy: Add 10BASE-T1L support in phy-c45
-Date:   Fri, 10 Dec 2021 13:05:06 +0200
-Message-ID: <20211210110509.20970-5-alexandru.tachici@analog.com>
+        <netdev@vger.kernel.org>, <robh+dt@kernel.org>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>
+Subject: [PATCH v4 5/7] net: phy: adin1100: Add initial support for ADIN1100 industrial PHY
+Date:   Fri, 10 Dec 2021 13:05:07 +0200
+Message-ID: <20211210110509.20970-6-alexandru.tachici@analog.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20211210110509.20970-1-alexandru.tachici@analog.com>
 References: <20211210110509.20970-1-alexandru.tachici@analog.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-ORIG-GUID: EoGhq4GmYbW8NiQmOloXLivYVN8751Te
-X-Proofpoint-GUID: EoGhq4GmYbW8NiQmOloXLivYVN8751Te
+X-Proofpoint-GUID: 8WuRJi7m0u6OMcXRhAM7H2tOC75NAWtP
+X-Proofpoint-ORIG-GUID: 8WuRJi7m0u6OMcXRhAM7H2tOC75NAWtP
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
  definitions=2021-12-10_03,2021-12-08_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
- priorityscore=1501 lowpriorityscore=0 mlxlogscore=757 impostorscore=0
- bulkscore=0 malwarescore=0 adultscore=0 suspectscore=0 phishscore=0
- spamscore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ suspectscore=0 phishscore=0 mlxlogscore=999 clxscore=1015 impostorscore=0
+ lowpriorityscore=0 spamscore=0 bulkscore=0 adultscore=0 malwarescore=0
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2110150000 definitions=main-2112100059
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexandru Tachici <alexandru.tachici@analog.com>
+From: Alexandru Ardelean <alexandru.ardelean@analog.com>
 
-This patch is needed because the BASE-T1 uses different registers
-for status, control and advertisement to those already
-employed in the existing phy-c45 functions.
+The ADIN1100 is a low power single port 10BASE-T1L transceiver designed for
+industrial Ethernet applications and is compliant with the IEEE 802.3cg
+Ethernet standard for long reach 10 Mb/s Single Pair Ethernet.
 
-Where required, genphy_c45 functions will now check whether
-the device supports BASE-T1 and use the specific registers
-instead: 45.2.7.19 BASE-T1 AN control register,
-45.2.7.20 BASE-T1 AN status, 45.2.7.21 BASE-T1 AN
-advertisement register, 45.2.7.22 BASE-T1 AN LP Base
-Page ability register, 45.2.1.185 BASE-T1 PMA/PMD control
-register.
-
+Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
 Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
 ---
- drivers/net/phy/phy-c45.c | 283 +++++++++++++++++++++++++++++++++++++-
- include/linux/mdio.h      |  70 ++++++++++
- include/uapi/linux/mdio.h |  10 ++
- 3 files changed, 357 insertions(+), 6 deletions(-)
+ drivers/net/phy/Kconfig    |   7 ++
+ drivers/net/phy/Makefile   |   1 +
+ drivers/net/phy/adin1100.c | 247 +++++++++++++++++++++++++++++++++++++
+ 3 files changed, 255 insertions(+)
+ create mode 100644 drivers/net/phy/adin1100.c
 
-diff --git a/drivers/net/phy/phy-c45.c b/drivers/net/phy/phy-c45.c
-index db709d30bf84..9a96fa55f304 100644
---- a/drivers/net/phy/phy-c45.c
-+++ b/drivers/net/phy/phy-c45.c
-@@ -80,7 +80,14 @@ int genphy_c45_pma_setup_forced(struct phy_device *phydev)
+diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
+index 902495afcb38..2f65d39e0f2c 100644
+--- a/drivers/net/phy/Kconfig
++++ b/drivers/net/phy/Kconfig
+@@ -83,6 +83,13 @@ config ADIN_PHY
+ 	  - ADIN1300 - Robust,Industrial, Low Latency 10/100/1000 Gigabit
+ 	    Ethernet PHY
  
- 	switch (phydev->speed) {
- 	case SPEED_10:
--		ctrl2 |= MDIO_PMA_CTRL2_10BT;
-+		ret = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_PMA_EXTABLE);
-+		if (ret < 0)
-+			return ret;
++config ADIN1100_PHY
++	tristate "Analog Devices Industrial Ethernet T1L PHYs"
++	help
++	  Adds support for the Analog Devices Industrial T1L Ethernet PHYs.
++	  Currently supports the:
++	  - ADIN1100 - Robust,Industrial, Low Power 10BASE-T1L Ethernet PHY
 +
-+		if (ret & MDIO_PMA_EXTABLE_BT1)
-+			ctrl2 |= MDIO_PMA_CTRL2_BASET1;
-+		else
-+			ctrl2 |= MDIO_PMA_CTRL2_10BT;
- 		break;
- 	case SPEED_100:
- 		ctrl1 |= MDIO_PMA_CTRL1_SPEED100;
-@@ -118,10 +125,99 @@ int genphy_c45_pma_setup_forced(struct phy_device *phydev)
- 	if (ret < 0)
- 		return ret;
+ config AQUANTIA_PHY
+ 	tristate "Aquantia PHYs"
+ 	help
+diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
+index b2728d00fc9a..b82651b57043 100644
+--- a/drivers/net/phy/Makefile
++++ b/drivers/net/phy/Makefile
+@@ -31,6 +31,7 @@ sfp-obj-$(CONFIG_SFP)		+= sfp-bus.o
+ obj-y				+= $(sfp-obj-y) $(sfp-obj-m)
  
-+	ret = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_PMA_EXTABLE);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (ret & MDIO_PMA_EXTABLE_BT1) {
-+		int ctl = 0;
-+
-+		switch (phydev->master_slave_set) {
-+		case MASTER_SLAVE_CFG_MASTER_PREFERRED:
-+		case MASTER_SLAVE_CFG_MASTER_FORCE:
-+			ctl = MDIO_PMA_PMD_BT1_CTRL_CFG_MST;
-+			break;
-+		case MASTER_SLAVE_CFG_SLAVE_FORCE:
-+		case MASTER_SLAVE_CFG_SLAVE_PREFERRED:
-+		case MASTER_SLAVE_CFG_UNKNOWN:
-+		case MASTER_SLAVE_CFG_UNSUPPORTED:
-+			break;
-+		default:
-+			phydev_warn(phydev, "Unsupported Master/Slave mode\n");
-+			return -EOPNOTSUPP;
-+		}
-+
-+		ret = phy_modify_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_PMA_PMD_BT1_CTRL,
-+				     MDIO_PMA_PMD_BT1_CTRL_CFG_MST, ctl);
-+		if (ret < 0)
-+			return ret;
-+	}
-+
- 	return genphy_c45_an_disable_aneg(phydev);
- }
- EXPORT_SYMBOL_GPL(genphy_c45_pma_setup_forced);
- 
-+/* Sets master/slave preference and supported technologies.
-+ * The preference is set in the BIT(4) of BASE-T1 AN
-+ * advertisement register 7.515 and whether the status
-+ * is forced or not, it is set in the BIT(12) of BASE-T1
-+ * AN advertisement register 7.514.
-+ * Sets 10BASE-T1L Ability BIT(14) in BASE-T1 autonegotiation
-+ * advertisement register [31:16] if supported.
+ obj-$(CONFIG_ADIN_PHY)		+= adin.o
++obj-$(CONFIG_ADIN1100_PHY)	+= adin1100.o
+ obj-$(CONFIG_AMD_PHY)		+= amd.o
+ aquantia-objs			+= aquantia_main.o
+ ifdef CONFIG_HWMON
+diff --git a/drivers/net/phy/adin1100.c b/drivers/net/phy/adin1100.c
+new file mode 100644
+index 000000000000..23d1ae61e0ef
+--- /dev/null
++++ b/drivers/net/phy/adin1100.c
+@@ -0,0 +1,247 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
++/*
++ *  Driver for Analog Devices Industrial Ethernet T1L PHYs
++ *
++ * Copyright 2020 Analog Devices Inc.
 + */
-+static int genphy_c45_baset1_an_config_aneg(struct phy_device *phydev)
-+{
-+	int changed = 0;
-+	u16 adv_l = 0;
-+	u16 adv_m = 0;
-+	int ret;
++#include <linux/kernel.h>
++#include <linux/bitfield.h>
++#include <linux/delay.h>
++#include <linux/errno.h>
++#include <linux/init.h>
++#include <linux/module.h>
++#include <linux/mii.h>
++#include <linux/phy.h>
++#include <linux/property.h>
 +
-+	switch (phydev->master_slave_set) {
-+	case MASTER_SLAVE_CFG_MASTER_FORCE:
-+	case MASTER_SLAVE_CFG_SLAVE_FORCE:
-+		adv_l |= MDIO_AN_T1_ADV_L_FORCE_MS;
-+		break;
-+	case MASTER_SLAVE_CFG_MASTER_PREFERRED:
-+	case MASTER_SLAVE_CFG_SLAVE_PREFERRED:
-+		break;
-+	default:
-+		break;
-+	}
++#define PHY_ID_ADIN1100				0x0283bc81
 +
-+	switch (phydev->master_slave_set) {
-+	case MASTER_SLAVE_CFG_MASTER_FORCE:
-+	case MASTER_SLAVE_CFG_MASTER_PREFERRED:
-+		adv_m |= MDIO_AN_T1_ADV_M_MST;
-+		break;
-+	case MASTER_SLAVE_CFG_SLAVE_FORCE:
-+	case MASTER_SLAVE_CFG_SLAVE_PREFERRED:
-+		break;
-+	default:
-+		break;
-+	}
++#define ADIN_FORCED_MODE			0x8000
++#define   ADIN_FORCED_MODE_EN			BIT(0)
 +
-+	adv_l |= linkmode_adv_to_mii_t1_adv_l_t(phydev->advertising);
++#define ADIN_CRSM_SFT_RST			0x8810
++#define   ADIN_CRSM_SFT_RST_EN			BIT(0)
 +
-+	ret = phy_modify_mmd_changed(phydev, MDIO_MMD_AN, MDIO_AN_T1_ADV_L,
-+				     (MDIO_AN_T1_ADV_L_FORCE_MS | MDIO_AN_T1_ADV_L_PAUSE_CAP
-+				     | MDIO_AN_T1_ADV_L_PAUSE_ASYM), adv_l);
-+	if (ret < 0)
-+		return ret;
-+	if (ret > 0)
-+		changed = 1;
++#define ADIN_CRSM_SFT_PD_CNTRL			0x8812
++#define   ADIN_CRSM_SFT_PD_CNTRL_EN		BIT(0)
 +
-+	adv_m |= linkmode_adv_to_mii_t1_adv_m_t(phydev->advertising);
++#define ADIN_AN_PHY_INST_STATUS			0x8030
++#define   ADIN_IS_CFG_SLV			BIT(2)
++#define   ADIN_IS_CFG_MST			BIT(3)
 +
-+	ret = phy_modify_mmd_changed(phydev, MDIO_MMD_AN, MDIO_AN_T1_ADV_M,
-+				     MDIO_AN_T1_ADV_M_MST | MDIO_AN_T1_ADV_M_B10L, adv_m);
-+	if (ret < 0)
-+		return ret;
-+	if (ret > 0)
-+		changed = 1;
++#define ADIN_CRSM_STAT				0x8818
++#define   ADIN_CRSM_SFT_PD_RDY			BIT(1)
++#define   ADIN_CRSM_SYS_RDY			BIT(0)
 +
-+	return changed;
-+}
-+
- /**
-  * genphy_c45_an_config_aneg - configure advertisement registers
-  * @phydev: target phy_device struct
-@@ -133,7 +229,7 @@ EXPORT_SYMBOL_GPL(genphy_c45_pma_setup_forced);
-  */
- int genphy_c45_an_config_aneg(struct phy_device *phydev)
- {
--	int changed, ret;
-+	int changed, ret, val;
- 	u32 adv;
- 
- 	linkmode_and(phydev->advertising, phydev->advertising,
-@@ -141,6 +237,13 @@ int genphy_c45_an_config_aneg(struct phy_device *phydev)
- 
- 	changed = genphy_config_eee_advert(phydev);
- 
-+	val = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_PMA_EXTABLE);
-+	if (val < 0)
-+		return val;
-+
-+	if (val & MDIO_PMA_EXTABLE_BT1)
-+		return genphy_c45_baset1_an_config_aneg(phydev);
-+
- 	adv = linkmode_adv_to_mii_adv_t(phydev->advertising);
- 
- 	ret = phy_modify_mmd_changed(phydev, MDIO_MMD_AN, MDIO_AN_ADVERTISE,
-@@ -178,8 +281,17 @@ EXPORT_SYMBOL_GPL(genphy_c45_an_config_aneg);
-  */
- int genphy_c45_an_disable_aneg(struct phy_device *phydev)
- {
-+	u16 reg = MDIO_CTRL1;
-+	int ret;
-+
-+	ret = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_PMA_EXTABLE);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (ret & MDIO_PMA_EXTABLE_BT1)
-+		reg = MDIO_AN_T1_CTRL;
- 
--	return phy_clear_bits_mmd(phydev, MDIO_MMD_AN, MDIO_CTRL1,
-+	return phy_clear_bits_mmd(phydev, MDIO_MMD_AN, reg,
- 				  MDIO_AN_CTRL1_ENABLE | MDIO_AN_CTRL1_RESTART);
- }
- EXPORT_SYMBOL_GPL(genphy_c45_an_disable_aneg);
-@@ -194,7 +306,17 @@ EXPORT_SYMBOL_GPL(genphy_c45_an_disable_aneg);
-  */
- int genphy_c45_restart_aneg(struct phy_device *phydev)
- {
--	return phy_set_bits_mmd(phydev, MDIO_MMD_AN, MDIO_CTRL1,
-+	u16 reg = MDIO_CTRL1;
-+	int ret;
-+
-+	ret = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_PMA_EXTABLE);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (ret & MDIO_PMA_EXTABLE_BT1)
-+		reg = MDIO_AN_T1_CTRL;
-+
-+	return phy_set_bits_mmd(phydev, MDIO_MMD_AN, reg,
- 				MDIO_AN_CTRL1_ENABLE | MDIO_AN_CTRL1_RESTART);
- }
- EXPORT_SYMBOL_GPL(genphy_c45_restart_aneg);
-@@ -210,11 +332,19 @@ EXPORT_SYMBOL_GPL(genphy_c45_restart_aneg);
-  */
- int genphy_c45_check_and_restart_aneg(struct phy_device *phydev, bool restart)
- {
-+	u16 reg = MDIO_CTRL1;
- 	int ret;
- 
-+	ret = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_PMA_EXTABLE);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (ret & MDIO_PMA_EXTABLE_BT1)
-+		reg = MDIO_AN_T1_CTRL;
-+
- 	if (!restart) {
- 		/* Configure and restart aneg if it wasn't set before */
--		ret = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_CTRL1);
-+		ret = phy_read_mmd(phydev, MDIO_MMD_AN, reg);
- 		if (ret < 0)
- 			return ret;
- 
-@@ -242,7 +372,17 @@ EXPORT_SYMBOL_GPL(genphy_c45_check_and_restart_aneg);
-  */
- int genphy_c45_aneg_done(struct phy_device *phydev)
- {
--	int val = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_STAT1);
-+	int reg = MDIO_STAT1;
-+	int val;
-+
-+	val = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_PMA_EXTABLE);
-+	if (val < 0)
-+		return val;
-+
-+	if (val & MDIO_PMA_EXTABLE_BT1)
-+		reg = MDIO_AN_T1_STAT;
-+
-+	val = phy_read_mmd(phydev, MDIO_MMD_AN, reg);
- 
- 	return val < 0 ? val : val & MDIO_AN_STAT1_COMPLETE ? 1 : 0;
- }
-@@ -307,6 +447,49 @@ int genphy_c45_read_link(struct phy_device *phydev)
- }
- EXPORT_SYMBOL_GPL(genphy_c45_read_link);
- 
-+/* Read the Clause 45 defined BASE-T1 AN (7.513) status register to check
-+ * if autoneg is complete. If so read the BASE-T1 Autonegotiation
-+ * Advertisement registers filling in the link partner advertisement,
-+ * pause and asym_pause members in phydev.
++/**
++ * struct adin_priv - ADIN PHY driver private data
++ * @tx_level_2v4_able:		set if the PHY supports 2.4V TX levels (10BASE-T1L)
++ * @tx_level_2v4:		set if the PHY requests 2.4V TX levels (10BASE-T1L)
++ * @tx_level_prop_present:	set if the TX level is specified in DT
 + */
-+static int genphy_c45_baset1_read_lpa(struct phy_device *phydev)
++struct adin_priv {
++	unsigned int		tx_level_2v4_able:1;
++	unsigned int		tx_level_2v4:1;
++	unsigned int		tx_level_prop_present:1;
++};
++
++static int adin_read_status(struct phy_device *phydev)
 +{
-+	int val;
++	int ret;
 +
-+	val = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_AN_T1_STAT);
-+	if (val < 0)
-+		return val;
++	ret = genphy_c45_read_status(phydev);
++	if (ret)
++		return ret;
 +
-+	if (!(val & MDIO_AN_STAT1_COMPLETE)) {
-+		linkmode_clear_bit(ETHTOOL_LINK_MODE_Autoneg_BIT, phydev->lp_advertising);
-+		mii_t1_adv_l_mod_linkmode_t(phydev->lp_advertising, 0);
-+		mii_t1_adv_m_mod_linkmode_t(phydev->lp_advertising, 0);
++	ret = phy_read_mmd(phydev, MDIO_MMD_AN, ADIN_AN_PHY_INST_STATUS);
++	if (ret < 0)
++		return ret;
 +
-+		phydev->pause = 0;
-+		phydev->asym_pause = 0;
++	if (ret & ADIN_IS_CFG_SLV)
++		phydev->master_slave_state = MASTER_SLAVE_STATE_SLAVE;
 +
-+		return 0;
-+	}
-+
-+	linkmode_mod_bit(ETHTOOL_LINK_MODE_Autoneg_BIT, phydev->lp_advertising, 1);
-+
-+	val = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_AN_T1_LP_L);
-+	if (val < 0)
-+		return val;
-+
-+	mii_t1_adv_l_mod_linkmode_t(phydev->lp_advertising, val);
-+	phydev->pause = val & MDIO_AN_T1_ADV_L_PAUSE_CAP ? 1 : 0;
-+	phydev->asym_pause = val & MDIO_AN_T1_ADV_L_PAUSE_ASYM ? 1 : 0;
-+
-+	val = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_AN_T1_LP_M);
-+	if (val < 0)
-+		return val;
-+
-+	mii_t1_adv_m_mod_linkmode_t(phydev->lp_advertising, val);
++	if (ret & ADIN_IS_CFG_MST)
++		phydev->master_slave_state = MASTER_SLAVE_STATE_MASTER;
 +
 +	return 0;
 +}
 +
- /**
-  * genphy_c45_read_lpa - read the link partner advertisement and pause
-  * @phydev: target phy_device struct
-@@ -321,6 +504,13 @@ int genphy_c45_read_lpa(struct phy_device *phydev)
- {
- 	int val;
- 
-+	val = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_PMA_EXTABLE);
-+	if (val < 0)
-+		return val;
-+
-+	if (val & MDIO_PMA_EXTABLE_BT1)
-+		return genphy_c45_baset1_read_lpa(phydev);
-+
- 	val = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_STAT1);
- 	if (val < 0)
- 		return val;
-@@ -399,6 +589,21 @@ int genphy_c45_read_pma(struct phy_device *phydev)
- 
- 	phydev->duplex = DUPLEX_FULL;
- 
-+	val = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_PMA_EXTABLE);
-+	if (val < 0)
-+		return val;
-+
-+	if (val & MDIO_PMA_EXTABLE_BT1) {
-+		val = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_PMA_PMD_BT1_CTRL);
-+		if (val < 0)
-+			return val;
-+
-+		if (MDIO_PMA_PMD_BT1_CTRL_CFG_MST)
-+			phydev->master_slave_state = MASTER_SLAVE_STATE_MASTER;
-+		else
-+			phydev->master_slave_state = MASTER_SLAVE_STATE_SLAVE;
-+	}
-+
- 	return 0;
- }
- EXPORT_SYMBOL_GPL(genphy_c45_read_pma);
-@@ -530,12 +735,67 @@ int genphy_c45_pma_read_abilities(struct phy_device *phydev)
- 					 phydev->supported,
- 					 val & MDIO_PMA_NG_EXTABLE_5GBT);
- 		}
-+
-+		if (val & MDIO_PMA_EXTABLE_BT1) {
-+			val = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_PMA_PMD_BT1);
-+			if (val < 0)
-+				return val;
-+
-+			linkmode_mod_bit(ETHTOOL_LINK_MODE_10baseT1L_Full_BIT,
-+					 phydev->supported,
-+					 val & MDIO_PMA_PMD_BT1_B10L_ABLE);
-+
-+			val = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_AN_T1_STAT);
-+			if (val < 0)
-+				return val;
-+
-+			linkmode_mod_bit(ETHTOOL_LINK_MODE_Autoneg_BIT,
-+					 phydev->supported,
-+					 val & MDIO_AN_STAT1_ABLE);
-+		}
- 	}
- 
- 	return 0;
- }
- EXPORT_SYMBOL_GPL(genphy_c45_pma_read_abilities);
- 
-+/* Read master/slave preference from registers.
-+ * The preference is read from the BIT(4) of BASE-T1 AN
-+ * advertisement register 7.515 and whether the preference
-+ * is forced or not, it is read from BASE-T1 AN advertisement
-+ * register 7.514.
-+ */
-+static int genphy_c45_baset1_read_status(struct phy_device *phydev)
++static int adin_config_aneg(struct phy_device *phydev)
 +{
++	struct adin_priv *priv = phydev->priv;
 +	int ret;
-+	int cfg;
 +
-+	phydev->master_slave_get = MASTER_SLAVE_CFG_UNKNOWN;
-+	phydev->master_slave_state = MASTER_SLAVE_STATE_UNKNOWN;
++	if (phydev->autoneg == AUTONEG_DISABLE) {
++		ret = genphy_c45_pma_setup_forced(phydev);
++		if (ret < 0)
++			return ret;
 +
-+	ret = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_AN_T1_ADV_L);
-+	if (ret < 0)
-+		return ret;
-+
-+	cfg = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_AN_T1_ADV_M);
-+	if (cfg < 0)
-+		return cfg;
-+
-+	if (ret & MDIO_AN_T1_ADV_L_FORCE_MS) {
-+		if (cfg & MDIO_AN_T1_ADV_M_MST)
-+			phydev->master_slave_get = MASTER_SLAVE_CFG_MASTER_FORCE;
-+		else
-+			phydev->master_slave_get = MASTER_SLAVE_CFG_SLAVE_FORCE;
-+	} else {
-+		if (cfg & MDIO_AN_T1_ADV_M_MST)
-+			phydev->master_slave_get = MASTER_SLAVE_CFG_MASTER_PREFERRED;
-+		else
-+			phydev->master_slave_get = MASTER_SLAVE_CFG_SLAVE_PREFERRED;
-+	}
-+
-+	return 0;
-+}
-+
- /**
-  * genphy_c45_read_status - read PHY status
-  * @phydev: target phy_device struct
-@@ -545,6 +805,7 @@ EXPORT_SYMBOL_GPL(genphy_c45_pma_read_abilities);
- int genphy_c45_read_status(struct phy_device *phydev)
- {
- 	int ret;
-+	int val;
- 
- 	ret = genphy_c45_read_link(phydev);
- 	if (ret)
-@@ -560,6 +821,16 @@ int genphy_c45_read_status(struct phy_device *phydev)
- 		if (ret)
- 			return ret;
- 
-+		val = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_PMA_EXTABLE);
-+		if (val < 0)
-+			return val;
-+
-+		if (val & MDIO_PMA_EXTABLE_BT1) {
-+			ret = genphy_c45_baset1_read_status(phydev);
++		if (priv->tx_level_prop_present && priv->tx_level_2v4) {
++			ret = phy_set_bits_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_B10L_PMA_CTRL,
++					       MDIO_PMA_10T1L_CTRL_2V4_EN);
++			if (ret < 0)
++				return ret;
++		} else {
++			ret = phy_clear_bits_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_B10L_PMA_CTRL,
++						 MDIO_PMA_10T1L_CTRL_2V4_EN);
 +			if (ret < 0)
 +				return ret;
 +		}
 +
- 		phy_resolve_aneg_linkmode(phydev);
- 	} else {
- 		ret = genphy_c45_read_pma(phydev);
-diff --git a/include/linux/mdio.h b/include/linux/mdio.h
-index 9f3587a61e14..b621c4ea815b 100644
---- a/include/linux/mdio.h
-+++ b/include/linux/mdio.h
-@@ -338,6 +338,76 @@ static inline void mii_10gbt_stat_mod_linkmode_lpa_t(unsigned long *advertising,
- 			 advertising, lpa & MDIO_AN_10GBT_STAT_LP10G);
- }
- 
-+/**
-+ * mii_t1_adv_l_mod_linkmode_t
-+ * @advertising: target the linkmode advertisement settings
-+ * @lpa: value of the BASE-T1 Autonegotiation Advertisement [15:0] Register
-+ *
-+ * A small helper function that translates BASE-T1 Autonegotiation
-+ * Advertisement [15:0] Register bits to linkmode advertisement settings.
-+ * Other bits in advertising aren't changed.
-+ */
-+static inline void mii_t1_adv_l_mod_linkmode_t(unsigned long *advertising, u32 lpa)
-+{
-+	linkmode_mod_bit(ETHTOOL_LINK_MODE_Pause_BIT, advertising,
-+			 lpa & MDIO_AN_T1_ADV_L_PAUSE_CAP);
-+	linkmode_mod_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT, advertising,
-+			 lpa & MDIO_AN_T1_ADV_L_PAUSE_ASYM);
++		/* Force PHY to use above configurations */
++		return phy_set_bits_mmd(phydev, MDIO_MMD_AN, ADIN_FORCED_MODE, ADIN_FORCED_MODE_EN);
++	}
++
++	ret = phy_clear_bits_mmd(phydev, MDIO_MMD_AN, ADIN_FORCED_MODE, ADIN_FORCED_MODE_EN);
++	if (ret < 0)
++		return ret;
++
++	/* Request increased transmit level from LP. */
++	if (priv->tx_level_prop_present && priv->tx_level_2v4) {
++		ret = phy_set_bits_mmd(phydev, MDIO_MMD_AN, MDIO_AN_T1_ADV_H,
++				       MDIO_AN_T1_ADV_H_10L_TX_HI |
++				       MDIO_AN_T1_ADV_H_10L_TX_HI_REQ);
++		if (ret < 0)
++			return ret;
++	}
++
++	/* Disable 2.4 Vpp transmit level. */
++	if ((priv->tx_level_prop_present && !priv->tx_level_2v4) || !priv->tx_level_2v4_able) {
++		ret = phy_clear_bits_mmd(phydev, MDIO_MMD_AN, MDIO_AN_T1_ADV_H,
++					 MDIO_AN_T1_ADV_H_10L_TX_HI |
++					 MDIO_AN_T1_ADV_H_10L_TX_HI_REQ);
++		if (ret < 0)
++			return ret;
++	}
++
++	return genphy_c45_config_aneg(phydev);
 +}
 +
-+/**
-+ * mii_t1_adv_m_mod_linkmode_t
-+ * @advertising: target the linkmode advertisement settings
-+ * @lpa: value of the BASE-T1 Autonegotiation Advertisement [31:16] Register
-+ *
-+ * A small helper function that translates BASE-T1 Autonegotiation
-+ * Advertisement [31:16] Register bits to linkmode advertisement settings.
-+ * Other bits in advertising aren't changed.
-+ */
-+static inline void mii_t1_adv_m_mod_linkmode_t(unsigned long *advertising, u32 lpa)
++static int adin_set_powerdown_mode(struct phy_device *phydev, bool en)
 +{
-+	linkmode_mod_bit(ETHTOOL_LINK_MODE_10baseT1L_Full_BIT,
-+			 advertising, lpa & MDIO_AN_T1_ADV_M_B10L);
++	int ret;
++	int val;
++
++	if (en)
++		val = ADIN_CRSM_SFT_PD_CNTRL_EN;
++	else
++		val = 0;
++
++	ret = phy_write_mmd(phydev, MDIO_MMD_VEND1,
++			    ADIN_CRSM_SFT_PD_CNTRL, val);
++	if (ret < 0)
++		return ret;
++
++	return phy_read_mmd_poll_timeout(phydev, MDIO_MMD_VEND1, ADIN_CRSM_STAT, ret,
++					 (ret & ADIN_CRSM_SFT_PD_RDY) == val,
++					 1000, 30000, true);
 +}
 +
-+/**
-+ * linkmode_adv_to_mii_t1_adv_l_t
-+ * @advertising: the linkmode advertisement settings
-+ *
-+ * A small helper function that translates linkmode advertisement
-+ * settings to phy autonegotiation advertisements for the
-+ * BASE-T1 Autonegotiation Advertisement [15:0] Register.
-+ */
-+static inline u32 linkmode_adv_to_mii_t1_adv_l_t(unsigned long *advertising)
++static int adin_suspend(struct phy_device *phydev)
 +{
-+	u32 result = 0;
-+
-+	if (linkmode_test_bit(ETHTOOL_LINK_MODE_Pause_BIT, advertising))
-+		result |= MDIO_AN_T1_ADV_L_PAUSE_CAP;
-+	if (linkmode_test_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT, advertising))
-+		result |= MDIO_AN_T1_ADV_L_PAUSE_ASYM;
-+
-+	return result;
++	return adin_set_powerdown_mode(phydev, true);
 +}
 +
-+/**
-+ * linkmode_adv_to_mii_t1_adv_m_t
-+ * @advertising: the linkmode advertisement settings
-+ *
-+ * A small helper function that translates linkmode advertisement
-+ * settings to phy autonegotiation advertisements for the
-+ * BASE-T1 Autonegotiation Advertisement [31:16] Register.
-+ */
-+static inline u32 linkmode_adv_to_mii_t1_adv_m_t(unsigned long *advertising)
++static int adin_resume(struct phy_device *phydev)
 +{
-+	u32 result = 0;
-+
-+	if (linkmode_test_bit(ETHTOOL_LINK_MODE_10baseT1L_Full_BIT, advertising))
-+		result |= MDIO_AN_T1_ADV_M_B10L;
-+
-+	return result;
++	return adin_set_powerdown_mode(phydev, false);
 +}
 +
- int __mdiobus_read(struct mii_bus *bus, int addr, u32 regnum);
- int __mdiobus_write(struct mii_bus *bus, int addr, u32 regnum, u16 val);
- int __mdiobus_modify_changed(struct mii_bus *bus, int addr, u32 regnum,
-diff --git a/include/uapi/linux/mdio.h b/include/uapi/linux/mdio.h
-index fa3515257f54..75b7257a51e1 100644
---- a/include/uapi/linux/mdio.h
-+++ b/include/uapi/linux/mdio.h
-@@ -70,6 +70,7 @@
- #define MDIO_B10L_PMA_CTRL	2294	/* 10BASE-T1L PMA control */
- #define MDIO_PMA_10T1L_STAT	2295	/* 10BASE-T1L PMA status */
- #define MDIO_PCS_10T1L_CTRL	2278	/* 10BASE-T1L PCS control */
-+#define MDIO_PMA_PMD_BT1	18	/* BASE-T1 PMA/PMD extended ability */
- #define MDIO_AN_T1_CTRL		512	/* BASE-T1 AN control */
- #define MDIO_AN_T1_STAT		513	/* BASE-T1 AN status */
- #define MDIO_AN_T1_ADV_L	514	/* BASE-T1 AN advertisement register [15:0] */
-@@ -78,6 +79,7 @@
- #define MDIO_AN_T1_LP_L		517	/* BASE-T1 AN LP Base Page ability register [15:0] */
- #define MDIO_AN_T1_LP_M		518	/* BASE-T1 AN LP Base Page ability register [31:16] */
- #define MDIO_AN_T1_LP_H		519	/* BASE-T1 AN LP Base Page ability register [47:32] */
-+#define MDIO_PMA_PMD_BT1_CTRL	2100	/* BASE-T1 PMA/PMD control register */
- 
- /* LASI (Link Alarm Status Interrupt) registers, defined by XENPAK MSA. */
- #define MDIO_PMA_LASI_RXCTRL	0x9000	/* RX_ALARM control */
-@@ -170,6 +172,7 @@
- #define MDIO_PMA_CTRL2_10BT		0x000f	/* 10BASE-T type */
- #define MDIO_PMA_CTRL2_2_5GBT		0x0030  /* 2.5GBaseT type */
- #define MDIO_PMA_CTRL2_5GBT		0x0031  /* 5GBaseT type */
-+#define MDIO_PMA_CTRL2_BASET1		0x003D  /* BASE-T1 type */
- #define MDIO_PCS_CTRL2_TYPE		0x0003	/* PCS type selection */
- #define MDIO_PCS_CTRL2_10GBR		0x0000	/* 10GBASE-R type */
- #define MDIO_PCS_CTRL2_10GBX		0x0001	/* 10GBASE-X type */
-@@ -223,6 +226,7 @@
- #define MDIO_PMA_EXTABLE_1000BKX	0x0040	/* 1000BASE-KX ability */
- #define MDIO_PMA_EXTABLE_100BTX		0x0080	/* 100BASE-TX ability */
- #define MDIO_PMA_EXTABLE_10BT		0x0100	/* 10BASE-T ability */
-+#define MDIO_PMA_EXTABLE_BT1		0x0800	/* BASE-T1 ability */
- #define MDIO_PMA_EXTABLE_NBT		0x4000  /* 2.5/5GBASE-T ability */
- 
- /* PHY XGXS lane state register. */
-@@ -301,6 +305,9 @@
- #define MDIO_PCS_10T1L_CTRL_LB		0x4000	/* Enable PCS level loopback mode */
- #define MDIO_PCS_10T1L_CTRL_RESET	0x8000	/* PCS reset */
- 
-+/* BASE-T1 PMA/PMD extended ability register. */
-+#define MDIO_PMA_PMD_BT1_B10L_ABLE	0x0004	/* 10BASE-T1L Ability */
++static int adin_set_loopback(struct phy_device *phydev, bool enable)
++{
++	if (enable)
++		return phy_set_bits_mmd(phydev, MDIO_MMD_PCS, MDIO_PCS_10T1L_CTRL,
++					BMCR_LOOPBACK);
 +
- /* BASE-T1 auto-negotiation advertisement register [15:0] */
- #define MDIO_AN_T1_ADV_L_PAUSE_CAP	ADVERTISE_PAUSE_CAP
- #define MDIO_AN_T1_ADV_L_PAUSE_ASYM	ADVERTISE_PAUSE_ASYM
-@@ -333,6 +340,9 @@
- #define MDIO_AN_T1_LP_H_10L_TX_HI_REQ	0x1000	/* 10BASE-T1L High Level LP Transmit Request */
- #define MDIO_AN_T1_LP_H_10L_TX_HI	0x2000	/* 10BASE-T1L High Level LP Transmit Ability */
- 
-+/* BASE-T1 PMA/PMD control register */
-+#define MDIO_PMA_PMD_BT1_CTRL_CFG_MST	0x4000 /* MASTER-SLAVE config value */
++	/* PCS loopback (according to 10BASE-T1L spec) */
++	return phy_clear_bits_mmd(phydev, MDIO_MMD_PCS, MDIO_PCS_10T1L_CTRL,
++				 BMCR_LOOPBACK);
++}
 +
- /* EEE Supported/Advertisement/LP Advertisement registers.
-  *
-  * EEE capability Register (3.20), Advertisement (7.60) and
++static int adin_soft_reset(struct phy_device *phydev)
++{
++	int ret;
++
++	ret = phy_set_bits_mmd(phydev, MDIO_MMD_VEND1, ADIN_CRSM_SFT_RST, ADIN_CRSM_SFT_RST_EN);
++	if (ret < 0)
++		return ret;
++
++	return phy_read_mmd_poll_timeout(phydev, MDIO_MMD_VEND1, ADIN_CRSM_STAT, ret,
++					 (ret & ADIN_CRSM_SYS_RDY),
++					 10000, 30000, true);
++}
++
++static int adin_get_features(struct phy_device *phydev)
++{
++	struct adin_priv *priv = phydev->priv;
++	struct device *dev = &phydev->mdio.dev;
++	int ret;
++	u8 val;
++
++	ret = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_PMA_10T1L_STAT);
++	if (ret < 0)
++		return ret;
++
++	/* This depends on the voltage level from the power source */
++	priv->tx_level_2v4_able = !!(ret & MDIO_PMA_10T1L_STAT_2V4_ABLE);
++
++	phydev_dbg(phydev, "PHY supports 2.4V TX level: %s\n",
++		   priv->tx_level_2v4_able ? "yes" : "no");
++
++	priv->tx_level_prop_present = device_property_present(dev, "phy-10base-t1l-2.4vpp");
++	if (priv->tx_level_prop_present) {
++		ret = device_property_read_u8(dev, "phy-10base-t1l-2.4vpp", &val);
++		if (ret < 0)
++			return ret;
++
++		priv->tx_level_2v4 = val;
++		if (!priv->tx_level_2v4 && priv->tx_level_2v4_able)
++			phydev_info(phydev,
++				    "PHY supports 2.4V TX level, but disabled via config\n");
++	}
++
++	linkmode_set_bit_array(phy_basic_ports_array, ARRAY_SIZE(phy_basic_ports_array),
++			       phydev->supported);
++
++	return genphy_c45_pma_read_abilities(phydev);
++}
++
++static int adin_probe(struct phy_device *phydev)
++{
++	struct device *dev = &phydev->mdio.dev;
++	struct adin_priv *priv;
++
++	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
++	if (!priv)
++		return -ENOMEM;
++
++	phydev->priv = priv;
++
++	return 0;
++}
++
++static struct phy_driver adin_driver[] = {
++	{
++		PHY_ID_MATCH_MODEL(PHY_ID_ADIN1100),
++		.name			= "ADIN1100",
++		.get_features		= adin_get_features,
++		.soft_reset		= adin_soft_reset,
++		.probe			= adin_probe,
++		.config_aneg		= adin_config_aneg,
++		.read_status		= adin_read_status,
++		.set_loopback		= adin_set_loopback,
++		.suspend		= adin_suspend,
++		.resume			= adin_resume,
++	},
++};
++
++module_phy_driver(adin_driver);
++
++static struct mdio_device_id __maybe_unused adin_tbl[] = {
++	{ PHY_ID_MATCH_MODEL(PHY_ID_ADIN1100) },
++	{ }
++};
++
++MODULE_DEVICE_TABLE(mdio, adin_tbl);
++MODULE_DESCRIPTION("Analog Devices Industrial Ethernet T1L PHY driver");
++MODULE_LICENSE("Dual BSD/GPL");
 -- 
 2.25.1
 
