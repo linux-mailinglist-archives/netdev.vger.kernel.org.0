@@ -2,120 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C67746FE7C
-	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 11:09:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A88446FE80
+	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 11:10:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232002AbhLJKM4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Dec 2021 05:12:56 -0500
-Received: from www62.your-server.de ([213.133.104.62]:44984 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240070AbhLJKMC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 05:12:02 -0500
-Received: from [78.46.152.42] (helo=sslproxy04.your-server.de)
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1mvcpE-000CX1-Eg; Fri, 10 Dec 2021 11:08:24 +0100
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy04.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1mvcpE-0008zp-6o; Fri, 10 Dec 2021 11:08:24 +0100
-Subject: Re: [RFC PATCH net-next 2/2] net: Reset forwarded skb->tstamp before
- delivering to user space
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, kernel-team@fb.com
-References: <20211207020102.3690724-1-kafai@fb.com>
- <20211207020108.3691229-1-kafai@fb.com>
- <CA+FuTScQigv7xR5COSFXAic11mwaEsFXVvV7EmSf-3OkvdUXcg@mail.gmail.com>
- <83ff2f64-42b8-60ed-965a-810b4ec69f8d@iogearbox.net>
- <20211208081842.p46p5ye2lecgqvd2@kafai-mbp.dhcp.thefacebook.com>
- <20211208083013.zqeipdfprcdr3ntn@kafai-mbp.dhcp.thefacebook.com>
- <1ef23d3b-fe49-213b-6b60-127393b24e84@iogearbox.net>
- <20211208221924.v4gqpkzzrbhgi2xe@kafai-mbp.dhcp.thefacebook.com>
- <b7989f8a-3f04-5186-a9f1-50f101575cfa@iogearbox.net>
- <20211210013720.mp7avsr63i4nttr3@kafai-mbp.dhcp.thefacebook.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <fb490760-160f-6c39-7d17-2bde4297f4c7@iogearbox.net>
-Date:   Fri, 10 Dec 2021 11:08:23 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S232860AbhLJKNm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Dec 2021 05:13:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52280 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229562AbhLJKNm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 05:13:42 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41E97C061746
+        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 02:10:07 -0800 (PST)
+From:   Kurt Kanzenbach <kurt.kanzenbach@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1639131005;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=H9McyQ9MuBise9kEaMK0iwGANbPMdoM0lgD2I/oaTA0=;
+        b=dX7uX6vvv0AIy4FbDrtO4i+rH42bjZuDHgKsPc0PdhZYCvClw6EHqHxJLtjrIZCeeM1FVh
+        3qidyeiWPLC3/+bOsS53d0MqeTQT8D5JAb9/4uwpqJ2alWDii7Opbnsjl7bINAoknp9tMb
+        qnXwLpu+kb3WAWdXrySeMG1DbhtlDH50xWga9Nmq2e1zn6EcC/tZaYnxGK9W7WdcB3klqx
+        X4gq4ysWWYIcGJ780jSJ5MAiVXI4WLNwnctBXE8Yu2isFOd/rHFJpQEpsCNR0s/+OuQesH
+        riyTOtiSD9c1v+HJrKq9OmDo0PMBdpH+VqYeJ+0M3fifAUEJeDb0tiJ2kTAitQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1639131005;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=H9McyQ9MuBise9kEaMK0iwGANbPMdoM0lgD2I/oaTA0=;
+        b=mjPTFo3Zshvd6jHmVWuzrzrYY+GnhPATApuAxG4mkAJkq/QC9j5xhzJREmYgCqZ4Nlf/yQ
+        gb3hswro03CQhiBA==
+To:     Ong Boon Leong <boon.leong.ong@intel.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        alexandre.torgue@foss.st.com
+Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: Re: [PATCH net-next 2/2] net: stmmac: add tc flower filter for
+ EtherType matching
+In-Reply-To: <20211209151631.138326-3-boon.leong.ong@intel.com>
+References: <20211209151631.138326-1-boon.leong.ong@intel.com>
+ <20211209151631.138326-3-boon.leong.ong@intel.com>
+Date:   Fri, 10 Dec 2021 11:10:04 +0100
+Message-ID: <87fsr0zs77.fsf@kurt>
 MIME-Version: 1.0
-In-Reply-To: <20211210013720.mp7avsr63i4nttr3@kafai-mbp.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.3/26378/Thu Dec  9 10:21:16 2021)
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/10/21 2:37 AM, Martin KaFai Lau wrote:
-> On Thu, Dec 09, 2021 at 01:58:52PM +0100, Daniel Borkmann wrote:
->>> Daniel, do you have suggestion on where to temporarily store
->>> the forwarded EDT so that the bpf@ingress can access?
->>
->> Hm, was thinking maybe moving skb->skb_mstamp_ns into the shared info as
->> in skb_hwtstamps(skb)->skb_mstamp_ns could work. In other words, as a union
->> with hwtstamp to not bloat it further. And TCP stack as well as everything
->> else (like sch_fq) could switch to it natively (hwtstamp might only be used
->> on RX or TX completion from driver side if I'm not mistaken).
->>
->> But then while this would solve the netns transfer, we would run into the
->> /same/ issue again when implementing a hairpinning LB where we loop from RX
->> to TX given this would have to be cleared somewhere again if driver populates
->> hwtstamp, so not really feasible and bloating shared info with a second
->> tstamp would bump it by one cacheline. :(
-> If the edt is set at skb_hwtstamps,
-> skb->tstamp probably needs to be re-populated for the bpf@tc-egress
-> but should be minor since there is a skb_at_tc_ingress() test.
-> 
-> It seems fq does not need shinfo now, so that will be an extra cacheline to
-> bring... hmm
+--=-=-=
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
 
-Right. :/ The other thing I was wondering (but haven't looked enough into the
-code yet whether feasible or not) ... maybe skb_hwtstamps(skb)->hwtstamp could
-be changed to cover both hw & sw ingress tstamp (meaning, if nic doesn't provide
-it, then we fall back to the sw one and __net_timestamp() stores it there, too)
-whereas skb->tstamp would always concern an egress tstamp. However, it might
-result in quite a lot of churn given the wider-spread use, but more importantly,
-performance implications are also not quite clear as you mentioned above wrt
-extra cache miss.
+On Thu Dec 09 2021, Ong Boon Leong wrote:
+> This patch adds basic support for EtherType RX frame steering for
+> LLDP and PTP using the hardware offload capabilities.
+>
+> Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
 
->> A cleaner BUT still non-generic solution compared to the previous diff I could
->> think of might be the below. So no change in behavior in general, but if the
->> bpf@ingress@veth@host needs to access the original tstamp, it could do so
->> via existing mapping we already have in BPF, and then it could transfer it
->> for all or certain traffic (up to the prog) via BPF code setting ...
->>
->>    skb->tstamp = skb->hwtstamp
->>
->> ... and do the redirect from there to the phys dev with BPF_F_KEEP_TSTAMP
->> flag. Minimal intrusive, but unfortunately only accessible for BPF. Maybe use
->> of skb_hwtstamps(skb)->nststamp could be extended though (?)
-> I like the idea of the possibility in temporarily storing a future mono EDT
-> in skb_shared_hwtstamps.
-> 
-> It may open up some possibilities.  Not sure how that may look like yet
-> but I will try to develop on this.
+[snip]
 
-Ok! One thing I noticed later in the diff, that for the ingressing direction
-aka phys -> host veth -> netns veth, we also do the skb_xfer_tstamp() switch
-and might override the one stored from driver with potentially the one from
-__net_timestamp(), but maybe for netns'es that's acceptable (perhaps a test
-for existing skb->sk owner before skb_xfer_tstamp() could do the trick..).
+> +	if (match.mask->n_proto) {
+> +		__be16 etype =3D ntohs(match.key->n_proto);
 
-> I may have to separate the fwd-edt problem from __sk_buff->tstamp accessibility
-> @ingress to keep it simple first.
-> will try to make it generic also before scaling back to a bpf-specific solution.
+n_proto is be16. The ntohs() call will produce an u16.
 
-Yeah sounds good, if we can solve it generically, even better!
+Delta patch below.
 
-> Thanks for the code and the idea !
 Thanks,
-Daniel
+Kurt
+
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac.h b/drivers/net/eth=
+ernet/stmicro/stmmac/stmmac.h
+index 35ff7c835018..d64e42308eb6 100644
+=2D-- a/drivers/net/ethernet/stmicro/stmmac/stmmac.h
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
+@@ -182,7 +182,7 @@ enum stmmac_rfs_type {
+=20
+ struct stmmac_rfs_entry {
+        unsigned long cookie;
+=2D       __be16 etype;
++       u16 etype;
+        int in_use;
+        int type;
+        int idx;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c b/drivers/net/=
+ethernet/stmicro/stmmac/stmmac_tc.c
+index cb7400943bb0..afa918185cf7 100644
+=2D-- a/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c
+@@ -759,7 +759,7 @@ static int tc_add_ethtype_flow(struct stmmac_priv *priv,
+        flow_rule_match_basic(rule, &match);
+=20
+        if (match.mask->n_proto) {
+=2D               __be16 etype =3D ntohs(match.key->n_proto);
++               u16 etype =3D ntohs(match.key->n_proto);
+=20
+                if (match.mask->n_proto !=3D ETHER_TYPE_FULL_MASK) {
+                        netdev_err(priv->dev, "Only full mask is supported =
+for EthType filter");
+
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQJSBAEBCgA8FiEEooWgvezyxHPhdEojeSpbgcuY8KYFAmGzJ3weHGt1cnQua2Fu
+emVuYmFjaEBsaW51dHJvbml4LmRlAAoJEHkqW4HLmPCm0HgQAKCym+iwmw9dZxIj
+NTjjYl/OasE0mS+A7hCx12KB5kxw0zgSq1gzjXcuIfqHovQjV3ObFc6WPzNG+y7M
+IEF0jrNJx78dMWzBKLHGmzhR88r8eG/o5BhLUVjMqMbzCVD/Xj5z/dhe8BzPLeS2
+w8hn/EXnYOiWzm4gInKm3T26y0cazH+XwV34dYQVkduAJwFLNhlaFRf9SQ1A7eOh
+GQJ6biGNRCND296ZtJ/qGkUVd0N5lqIdHe7TOYHOTwSlnUqKwAblRWM3Ck505VMT
+RbGOPTxGybADkNivRebRkhz0wwf6DzVprHD6QnVurLJg7MM3NP9yIHMWE0wA1bZA
+XdJyP448rKMahd6uTVmJP7WAAV/pHDGVg+BxZlewOCAvwN4cxbmgmTvpSt/Fvrpf
+P8NgTqMY5pvn1AfsC8O+aqm2N68kxefEyw24Tpbpc1ZSMXr+e5vEkX3hZx4VAPzc
++HyHSBuLnsJmSEX5s7fuFQqBVeQTGJ62oDEP4lBk6m30hswDREXobklConGitrqH
+IV6LHimyJTpONjb6WjVZqv5apkGq5JQQadrVE32HU2L1Q6IgAFYWyhhuAIRKPWla
+550X0dYUo9+oaVIHjQgKdmxdwqcnHr1nk+0J2rUPM3JXC8+Jtglbp6KBiEjyvXPv
+USbIhJuAdOokNaFzvY+F6vTwRY3G
+=44Bn
+-----END PGP SIGNATURE-----
+--=-=-=--
