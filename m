@@ -2,89 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B33D46FB2B
-	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 08:16:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 79BFE46FB41
+	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 08:26:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237181AbhLJHT6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Dec 2021 02:19:58 -0500
-Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:45396
-        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237343AbhLJHT4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 02:19:56 -0500
-Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com [209.85.216.71])
+        id S237473AbhLJH3a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Dec 2021 02:29:30 -0500
+Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:38058
+        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S237455AbhLJH33 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 02:29:29 -0500
+Received: from mail-pg1-f200.google.com (mail-pg1-f200.google.com [209.85.215.200])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 678923F1AE
-        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 07:16:20 +0000 (UTC)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id C8DD33F1A9
+        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 07:25:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1639120580;
-        bh=2764l/FzSwXeYJBJfnIJ7mPXfvJ4eSHSnEqn470ay2c=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=uy8m62a0yq0xcC8tCuc9cE394i/q4m/QkCJsnzo+BKL1Fz9Xngm41JbPTcaI8kyHj
-         QV3mdT0uRmLRaxiE7wQvKrj04EbXfYFkU7qbeOvqjK/hDxlOGCzYW5T1hD6oiwh5N9
-         BkEJhSJkwXpAeeiKAU7UmwjFmbLNl2v2IeI1jq7iK3T9ytTK5ty+2RKmYDWmggxGFI
-         hsmf2/+zY7gZAk1wgY83bhF0V331K5cnFsDXM3fBylB0Ti4s9IHxSzUqRMNLywNxKQ
-         5lgZzhQfl2NKnOSZIcrubHWtDxNO2RzW64Y0i+lpoAFUCUbK8OJCtfRgnXmFBTby9Q
-         9oRz2D2NRbAFg==
-Received: by mail-pj1-f71.google.com with SMTP id gf15-20020a17090ac7cf00b001a9a31687d0so5185376pjb.1
-        for <netdev@vger.kernel.org>; Thu, 09 Dec 2021 23:16:20 -0800 (PST)
+        s=20210705; t=1639121153;
+        bh=76g9H+24WdaefKNkB80dgj1hR5XkeQFM1Oi8e8gaqLE=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=RfFw4HbksWRmq6T0Z0A5zBMsjle+Wiw6jA1u2QdifklgBzmpg5BxTrq1QPcjI731/
+         XJZ99GiSGNzHXj3n7hhu/drNPHsLauXFQ8kAJQoTg7iXSPimTwov6gbXVw57/JeRFU
+         iNeBydvnodVUyelRAgL81ZsjA/t+eYmfgrqcrAyaBUngJ591apAVdlR5WHgIpX/T3Y
+         Pj9G7eGpzwtBWN1MxIRh7yPVcSuNayGrWYdDtrkBv0Pw5YwHY6gXq4RHkcZJl84eje
+         HWJeezO30NG7cacF3xnCAFmGUZ/JqmVRJYRva2DfnuCW2dOro+dFzI9naw8FGXNWEa
+         u/UDwcEzrznyA==
+Received: by mail-pg1-f200.google.com with SMTP id u22-20020a632356000000b003308cbcefb0so4790287pgm.0
+        for <netdev@vger.kernel.org>; Thu, 09 Dec 2021 23:25:53 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2764l/FzSwXeYJBJfnIJ7mPXfvJ4eSHSnEqn470ay2c=;
-        b=fynUD0+1UGgZJjvZ48iVl5JcnmK1d5lwSZ4qJqXD7ysXRbiTVdZkz9ukd6tHC+fIrM
-         PuFh9aa3tJkhdqhT+a21Mfkue+pSfyKe1le6a6OSRF8jeyz32XukIqVjFSgIuttTAMp5
-         GBL6ODAFL+wLGWzcLBh5zD6QkaEclso50WXr20cYMT77YjDHVfnSusDWVfbacbV00fCz
-         F1sy51CWxtNI8Zl/KZWj/12qHIy7jSewHRQJdpsXM9ap1x19Ku58rY1yJmrJD29sBYX0
-         jX18BZPSPeqno46MesA+c4qdBjmz8CS8HWHFpfksYIblzCQ+Qw3DouB7yvpNDAxU/EBj
-         5WIA==
-X-Gm-Message-State: AOAM532B9qmgPMbuuuz6/dYHqwNOcanYT50uKaOLWUSKn/pvfi1iTigc
-        Zrq1UPAjg6f/d5fQq0qiLzN1XU+Gj4dRcadA5q+fHO3sLuwrKdrUeblwp9k1DH2Mq+iZzuESjF4
-        pjMpnQ/Ti5WKKd+JBXasuEC+Q+0MpFAIJ4Lh6H3bi2V7z2Ydo
-X-Received: by 2002:a65:5ac7:: with SMTP id d7mr38292556pgt.590.1639120579063;
-        Thu, 09 Dec 2021 23:16:19 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJy+s7PFvxrHr53QhbelxbodbgXrBhlzOozGF4llEt9d+qmmZIomlREAXFfGFzaw5ezGmkpkoM79krzcgVfu/AA=
-X-Received: by 2002:a65:5ac7:: with SMTP id d7mr38292532pgt.590.1639120578732;
- Thu, 09 Dec 2021 23:16:18 -0800 (PST)
-MIME-Version: 1.0
-References: <20211208071151.63971-1-po-hsu.lin@canonical.com> <20211209184620.78d02085@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211209184620.78d02085@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=76g9H+24WdaefKNkB80dgj1hR5XkeQFM1Oi8e8gaqLE=;
+        b=AjKGJMWNJr7qT2Ca0RGjcuANiVIiwjum4zG/+PQ0tvpLH7YPY/K65Ti93DsKeL/ueK
+         yv+78Ex2qfX5ZTobdfTHO/u6AnN096ghi6Ryo1BLS1HXOCq4fdsEtcmKZeNhsOU0HXm2
+         glYTgzwGCKIfJ7OCCQlvYbdEPpZHkNNLCKONG1m4oZA0zf5FALammPqD2mlK/JTwil6i
+         7eM+NIBDv036JQjdJIiZtS71rCJEnu5cbJxkvFs+hN77EFuIdbfQm9/Olp9JWts4n2Lp
+         BqD+9HDVAj/2XI+2D7I5K2f9EPz2w6+Cg8MOaom+MJPOXpBRpDO6hIEg+8yWAWIM2Q4Z
+         8I9Q==
+X-Gm-Message-State: AOAM532W90GNsDakol28kbPNta7DfBXWkpGKWa2qTz1he3SfEmhQJyUC
+        OwMNfPpcph2v+W6h1+6hvXQ4V8zd3a4GNbi5MAIshxWXKyFuoizF3k4eO3cC/k4Th8mhdrCNuH2
+        HN40002/DxmfpM4ftUWWKJAnzACbnDa/0
+X-Received: by 2002:a17:903:2352:b0:142:76bc:de3b with SMTP id c18-20020a170903235200b0014276bcde3bmr73296471plh.36.1639121152139;
+        Thu, 09 Dec 2021 23:25:52 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwzetkN44F8aKYW+okI7AjCcEBNigejRUZfb7v/OkzJmGpRM+L3VZl6OPtHP4nhDAV6iLWfvg==
+X-Received: by 2002:a17:903:2352:b0:142:76bc:de3b with SMTP id c18-20020a170903235200b0014276bcde3bmr73296438plh.36.1639121151849;
+        Thu, 09 Dec 2021 23:25:51 -0800 (PST)
+Received: from localhost.localdomain (2001-b011-2014-bac3-aa4d-91f5-d678-c6c2.dynamic-ip6.hinet.net. [2001:b011:2014:bac3:aa4d:91f5:d678:c6c2])
+        by smtp.gmail.com with ESMTPSA id c2sm2035762pfv.112.2021.12.09.23.25.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Dec 2021 23:25:50 -0800 (PST)
 From:   Po-Hsu Lin <po-hsu.lin@canonical.com>
-Date:   Fri, 10 Dec 2021 15:16:06 +0800
-Message-ID: <CAMy_GT-qqhgHFzW7wuzz__Ly3Eu4oEHx-RrA9KO-mhVqO2AokA@mail.gmail.com>
-Subject: Re: [PATCH] selftests: icmp_redirect: pass xfail=0 to log_test() for
- non-xfail cases
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org, davem@davemloft.net,
-        skhan@linuxfoundation.org
-Content-Type: text/plain; charset="UTF-8"
+To:     po-hsu.lin@canonical.com, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, skhan@linuxfoundation.org,
+        andrea.righi@canonical.com, dsahern@kernel.org
+Subject: [PATCHv2] selftests: icmp_redirect: pass xfail=0 to log_test()
+Date:   Fri, 10 Dec 2021 15:25:23 +0800
+Message-Id: <20211210072523.38886-1-po-hsu.lin@canonical.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 10, 2021 at 10:46 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Wed,  8 Dec 2021 15:11:51 +0800 Po-Hsu Lin wrote:
-> > If any sub-test in this icmp_redirect.sh is failing but not expected
-> > to fail. The script will complain:
-> >     ./icmp_redirect.sh: line 72: [: 1: unary operator expected
-> >
-> > This is because when the sub-test is not expected to fail, we won't
-> > pass any value for the xfail local variable in log_test() and thus
-> > it's empty. Fix this by passing 0 as the 4th variable to log_test()
-> > for non-xfail cases.
-> >
-> > Signed-off-by: Po-Hsu Lin <po-hsu.lin@canonical.com>
->
-> Thanks, could you please add a fixes tag (even if the breakage is only
-> present in linux-next) and CC David Ahern on v2?
+If any sub-test in this icmp_redirect.sh is failing but not expected
+to fail. The script will complain:
+    ./icmp_redirect.sh: line 72: [: 1: unary operator expected
 
-Sure thing,
-I will add fixes tag for this commit:
-0a36a75c selftests: icmp_redirect: support expected failures
+This is because when the sub-test is not expected to fail, we won't
+pass any value for the xfail local variable in log_test() and thus
+it's empty. Fix this by passing 0 as the 4th variable to log_test()
+for non-xfail cases.
 
-thanks for the feedback.
+v2: added fixes tag
+
+Fixes: 0a36a75c6818 ("selftests: icmp_redirect: support expected failures")
+Signed-off-by: Po-Hsu Lin <po-hsu.lin@canonical.com>
+---
+ tools/testing/selftests/net/icmp_redirect.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tools/testing/selftests/net/icmp_redirect.sh b/tools/testing/selftests/net/icmp_redirect.sh
+index ecbf57f..7b9d6e3 100755
+--- a/tools/testing/selftests/net/icmp_redirect.sh
++++ b/tools/testing/selftests/net/icmp_redirect.sh
+@@ -311,7 +311,7 @@ check_exception()
+ 		ip -netns h1 ro get ${H1_VRF_ARG} ${H2_N2_IP} | \
+ 		grep -E -v 'mtu|redirected' | grep -q "cache"
+ 	fi
+-	log_test $? 0 "IPv4: ${desc}"
++	log_test $? 0 "IPv4: ${desc}" 0
+ 
+ 	# No PMTU info for test "redirect" and "mtu exception plus redirect"
+ 	if [ "$with_redirect" = "yes" ] && [ "$desc" != "redirect exception plus mtu" ]; then
+-- 
+2.7.4
+
