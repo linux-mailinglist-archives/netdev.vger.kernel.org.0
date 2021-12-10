@@ -2,145 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ABA9146FD32
-	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 10:00:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EF7746FD33
+	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 10:00:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238889AbhLJJDz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Dec 2021 04:03:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35462 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236133AbhLJJDy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 04:03:54 -0500
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E44BC061746
-        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 01:00:20 -0800 (PST)
-Received: by mail-pl1-x633.google.com with SMTP id z6so5844844plk.6
-        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 01:00:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=llWTvWJI+VL9yuN1eTASa7Mg14h/Doe4lSzC5WWZ234=;
-        b=ExlxfhV9m5qsGRE0HFfIuLC8CWEbM0HMRBwwmydS+pMnnln5Lr6v51LFNRSTZSxUpP
-         AA4zsb+rNcShHxpfWUFFA/xkasTp9NpDJdnMT1jnDoMtgoyz6T+PTgcsKqWpdXDK48s2
-         0pTgu/59t8OtrRVNOExGgoOx1JwsNcfRycg1rS/hAmvQcE+gyBRbdQxPpKutjiM/FcRN
-         CEpB4q00kVEPiDIplDD1UjbW9zsAwZl1OWWHgGOara9fArJHCXaaChmBMWILmOIhsNqM
-         RYUJJgM8/ewvKt0tnH4NKGWZrWCz5Ym0E5HkB+0V5OlPrTWYwqaRLQlXdwLDrlace/2F
-         OkMQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=llWTvWJI+VL9yuN1eTASa7Mg14h/Doe4lSzC5WWZ234=;
-        b=ZLqjKRNYBaTrlwjrxnkUgcZ49v6x4aiMHmkoBPQGLqqCGEFMj1g/Zt/ijbLzB6Gxlt
-         5A2lXlLPkDF7n9UdsW6gmWBV1efzcHkGrGNh1vEhHgkZKiVCWUQFx6/61SjJu8ChknvC
-         Q8fBGXLCfEXsD60+zeVDXsuXaGWIteh3lh1jE9Kr6DDjoM/CD4VO7MgEPQXbnQLI3RiY
-         iOePvUjje5bsXxJqICJwAYX9xAOj1xSMUN8+Fnqo4OBq5EGInazPDfZSMFOUGaBobZDX
-         qkNw2wlR66kUI5F8Z872bHJi8Q/6Z+/Mu0xwP8ydKEY9DQJVpiKrExGyPzGGkiU9tsVE
-         gMfA==
-X-Gm-Message-State: AOAM533vYGDgzmVR0Dg9de9zUi6niu5W8SxENdsCKjTVVXpqA5OrK6D0
-        iiFzdNSXTCWsCQbkEgIJI5kt29bBmm4=
-X-Google-Smtp-Source: ABdhPJxN3DqNk6S4/O0y+DUayV9wPJbulUli+xKWGdke9nBTlLBGJfGTRIdlPywrKgVEWmK+R3gmRA==
-X-Received: by 2002:a17:90b:4ac9:: with SMTP id mh9mr22212771pjb.25.1639126819562;
-        Fri, 10 Dec 2021 01:00:19 -0800 (PST)
-Received: from Laptop-X1.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id o124sm2383038pfb.177.2021.12.10.01.00.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Dec 2021 01:00:19 -0800 (PST)
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCHv3 net-next 2/2] Bonding: force user to add HWTSTAMP_FLAG_BONDED_PHC_INDEX when get/set HWTSTAMP
-Date:   Fri, 10 Dec 2021 16:59:59 +0800
-Message-Id: <20211210085959.2023644-3-liuhangbin@gmail.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20211210085959.2023644-1-liuhangbin@gmail.com>
-References: <20211210085959.2023644-1-liuhangbin@gmail.com>
+        id S238912AbhLJJEA convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 10 Dec 2021 04:04:00 -0500
+Received: from rtits2.realtek.com ([211.75.126.72]:40835 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238898AbhLJJD7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 04:03:59 -0500
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 1BA904Lc8029046, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36504.realtek.com.tw[172.21.6.27])
+        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 1BA904Lc8029046
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Fri, 10 Dec 2021 17:00:04 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXH36504.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Fri, 10 Dec 2021 17:00:03 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS04.realtek.com.tw (172.21.6.97) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Fri, 10 Dec 2021 17:00:03 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::65a3:1e23:d911:4b01]) by
+ RTEXMBS04.realtek.com.tw ([fe80::65a3:1e23:d911:4b01%5]) with mapi id
+ 15.01.2308.020; Fri, 10 Dec 2021 17:00:03 +0800
+From:   Pkshih <pkshih@realtek.com>
+To:     Jian-Hong Pan <jhp@endlessos.org>,
+        Yan-Hsuan Chuang <tony0620emma@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "Kai-Heng Feng (kai.heng.feng@canonical.com)" 
+        <kai.heng.feng@canonical.com>
+CC:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux@endlessos.org" <linux@endlessos.org>
+Subject: RE: [PATCH] rtw88: 8821c: disable the ASPM of RTL8821CE
+Thread-Topic: [PATCH] rtw88: 8821c: disable the ASPM of RTL8821CE
+Thread-Index: AQHX7Z6qoa2juW6HuEaQNtYEJNeW8KwrYzIg
+Date:   Fri, 10 Dec 2021 09:00:03 +0000
+Message-ID: <6b0fcc8cf3bd4a77ad190dc6f72eb66f@realtek.com>
+References: <20211210081659.4621-1-jhp@endlessos.org>
+In-Reply-To: <20211210081659.4621-1-jhp@endlessos.org>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.69.188]
+x-kse-serverinfo: RTEXMBS04.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2021/12/10_=3F=3F_06:12:00?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-KSE-ServerInfo: RTEXH36504.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When there is a failover, the PHC index of bond active interface will be
-changed. This may break the user space program if the author didn't aware.
++Kai-Heng
 
-By setting this flag, the user should aware that the PHC index get/set
-by syscall is not stable. And the user space is able to deal with it.
-Without this flag, the kernel will reject the request forwarding to
-bonding.
+> -----Original Message-----
+> From: Jian-Hong Pan <jhp@endlessos.org>
+> Sent: Friday, December 10, 2021 4:17 PM
+> To: Pkshih <pkshih@realtek.com>; Yan-Hsuan Chuang <tony0620emma@gmail.com>; Kalle Valo
+> <kvalo@codeaurora.org>
+> Cc: linux-wireless@vger.kernel.org; netdev@vger.kernel.org; linux-kernel@vger.kernel.org;
+> linux@endlessos.org; Jian-Hong Pan <jhp@endlessos.org>
+> Subject: [PATCH] rtw88: 8821c: disable the ASPM of RTL8821CE
+> 
+> More and more laptops become frozen, due to the equipped RTL8821CE.
+> 
+> This patch follows the idea mentioned in commits 956c6d4f20c5 ("rtw88:
+> add quirks to disable pci capabilities") and 1d4dcaf3db9bd ("rtw88: add
+> quirk to disable pci caps on HP Pavilion 14-ce0xxx"), but disables its
+> PCI ASPM capability of RTL8821CE directly, instead of checking DMI.
+> 
+> Buglink:https://bugzilla.kernel.org/show_bug.cgi?id=215239
+> Fixes: 1d4dcaf3db9bd ("rtw88: add quirk to disable pci caps on HP Pavilion 14-ce0xxx")
+> Signed-off-by: Jian-Hong Pan <jhp@endlessos.org>
 
-Reported-by: Jakub Kicinski <kuba@kernel.org>
-Fixes: 94dd016ae538 ("bond: pass get_ts_info and SIOC[SG]HWTSTAMP ioctl to active device")
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+We also discuss similar thing in this thread: 
+https://bugzilla.kernel.org/show_bug.cgi?id=215131
 
----
-v2: change the flag name to HWTSTAMP_FLAG_BONDED_PHC_INDEX
----
- drivers/net/bonding/bond_main.c | 33 +++++++++++++++++++++------------
- 1 file changed, 21 insertions(+), 12 deletions(-)
+Since we still want to turn on ASPM to save more power, I would like to 
+enumerate the blacklist. Does it work to you?
+If so, please help to add one quirk entry of your platform.
 
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index 0f39ad2af81c..268190a624e0 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -4094,6 +4094,7 @@ static int bond_eth_ioctl(struct net_device *bond_dev, struct ifreq *ifr, int cm
- 	struct mii_ioctl_data *mii = NULL;
- 	const struct net_device_ops *ops;
- 	struct net_device *real_dev;
-+	struct hwtstamp_config cfg;
- 	struct ifreq ifrr;
- 	int res = 0;
- 
-@@ -4124,21 +4125,29 @@ static int bond_eth_ioctl(struct net_device *bond_dev, struct ifreq *ifr, int cm
- 		break;
- 	case SIOCSHWTSTAMP:
- 	case SIOCGHWTSTAMP:
--		rcu_read_lock();
--		real_dev = bond_option_active_slave_get_rcu(bond);
--		rcu_read_unlock();
--		if (real_dev) {
--			strscpy_pad(ifrr.ifr_name, real_dev->name, IFNAMSIZ);
--			ifrr.ifr_ifru = ifr->ifr_ifru;
-+		if (copy_from_user(&cfg, ifr->ifr_data, sizeof(cfg)))
-+			return -EFAULT;
-+
-+		if (cfg.flags & HWTSTAMP_FLAG_BONDED_PHC_INDEX) {
-+			rcu_read_lock();
-+			real_dev = bond_option_active_slave_get_rcu(bond);
-+			rcu_read_unlock();
-+			if (real_dev) {
-+				strscpy_pad(ifrr.ifr_name, real_dev->name, IFNAMSIZ);
-+				ifrr.ifr_ifru = ifr->ifr_ifru;
-+
-+				ops = real_dev->netdev_ops;
-+				if (netif_device_present(real_dev) && ops->ndo_eth_ioctl) {
-+					res = ops->ndo_eth_ioctl(real_dev, &ifrr, cmd);
- 
--			ops = real_dev->netdev_ops;
--			if (netif_device_present(real_dev) && ops->ndo_eth_ioctl)
--				res = ops->ndo_eth_ioctl(real_dev, &ifrr, cmd);
-+					if (!res)
-+						ifr->ifr_ifru = ifrr.ifr_ifru;
- 
--			if (!res)
--				ifr->ifr_ifru = ifrr.ifr_ifru;
-+					return res;
-+				}
-+			}
- 		}
--		break;
-+		fallthrough;
- 	default:
- 		res = -EOPNOTSUPP;
- 	}
--- 
-2.31.1
+Another thing is that "attachment 299735" is another workaround for certain
+platform. And, we plan to add quirk to enable this workaround.
+Could you try if it works to you?
+
+Thank you
+--
+Ping-Ke
 
