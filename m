@@ -2,62 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 947AD46F90E
-	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 03:19:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BDD7746F911
+	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 03:20:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235867AbhLJCW4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Dec 2021 21:22:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59416 "EHLO
+        id S235917AbhLJCXv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Dec 2021 21:23:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230463AbhLJCWz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 21:22:55 -0500
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9D7FC061746;
-        Thu,  9 Dec 2021 18:19:21 -0800 (PST)
-Received: by mail-pj1-x1029.google.com with SMTP id y14-20020a17090a2b4e00b001a5824f4918so8374887pjc.4;
-        Thu, 09 Dec 2021 18:19:21 -0800 (PST)
+        with ESMTP id S235911AbhLJCXu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 21:23:50 -0500
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0254C061746;
+        Thu,  9 Dec 2021 18:20:15 -0800 (PST)
+Received: by mail-pg1-x52b.google.com with SMTP id m24so6774340pgn.7;
+        Thu, 09 Dec 2021 18:20:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=FEw6cDwNumFEoIzG4G7yZNSpjLJlrE6wbUTHVe7gV4Y=;
-        b=RIYz7QcaHop7MkJ2jvAtyObrBy5vOjsdjPD3USKsTAUvzZ4HgL71XT1HRO87uUGyHA
-         rmhPBADv1RV8ZeL/2FvmwvTYA+tgDaHcbvvDYOCh8nzdLjEWe1g1kkEVPzwMCSSA2vaf
-         7Z7X5hfBA9qWNQQPfJsHVYsjpWRDiplcgj4ZTpEWnsFWvBrxk453ysMzZr3vgVMMIUhU
-         pgyVBSj+uqpmNnL9YAcqPFeAfvHbffjojzffDXySgxVz0kbndSYSOu4z4mWGxAfk7+by
-         NscW5XNT7rRzhjtsze7fFaUM1FasQwoSIn6JnWdAnCztT5EsJJVcYEagZLLeSJgirG/Y
-         ilDA==
+        bh=6JqmrYn5MnXo3sIg5m8rICeAl70tcXHDD8ylnTsluak=;
+        b=QkXO+13aySo56ouVWvJH4g7w1Zs6DkYNolh0GeYknQDWg4s/YeO5+FbPKtvyLm9GfV
+         XvlVM6xnEsL9aOWQ8lVjCIz7Z4UtyWx5ttqtGhX0Y82jf+Hv2Q8MU9034A5pcc4UuyHK
+         mPWGcAMZd4jdFXglSHuEYj/r+XyRZW16WEGhbtjljY9oCzd92eHnZDOlhhQRVEC33DRH
+         6oNwAe1jmjJ3uD5uqe9ZFL5B19TzdBex6cGk2N1GlTOQq3VtRXJahBrr3XfG42N4OJ++
+         TZrjV2XBUFY04/MgN/gQQSiko0cW1AHuvVoiWJU7WIF/G2TPLT9VNx2nwC7vCExU0234
+         pCNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=FEw6cDwNumFEoIzG4G7yZNSpjLJlrE6wbUTHVe7gV4Y=;
-        b=tZ6lrosCBWKs8EPsnuJJvq7KiKNk5tLx08GSrg4BsUd/vnWYvqMaNFcVev/h47JRN3
-         QfglIWqnu7bntmyFjD5kSB3GciHG3EGH97y5jtBG4YYnUfQe0ykj5p4BleJxADG/Q0Hs
-         kQrR810YMthxqNc5fiSUEcFB1oXprmPGP8UDtvsfKVk7WCL2J0OPD0dbvGwzNRJHRVrw
-         0D7L1+/VQiO50vjWi7J7Ke3ngUMaSx5SfBk4vKRXNdz10P42184h/6rC8YfG4gjQ2Zpr
-         6horUafrILPen8QlAs6ZeMI8My1KDQ/GNshgnXlukWtGu2kmGtH3FTeHxhT1KlkZpqNS
-         EE0Q==
-X-Gm-Message-State: AOAM533qN0Ir834gaRFpHKGeQNFuCHtgWf0BqkVZRguSlAWQEgHELwhR
-        shGIli4TJxEK6P64v83FLKA=
-X-Google-Smtp-Source: ABdhPJxwXZGDC1CedqgjnXGo0dpQS+/GKeAED/ubdvP3xlNrZQAKrcL1xIwGqKQ4ilY+qk9w9/ligg==
-X-Received: by 2002:a17:903:41cb:b0:142:62a:4d86 with SMTP id u11-20020a17090341cb00b00142062a4d86mr71711050ple.43.1639102761277;
-        Thu, 09 Dec 2021 18:19:21 -0800 (PST)
+        bh=6JqmrYn5MnXo3sIg5m8rICeAl70tcXHDD8ylnTsluak=;
+        b=NcCy3MRZrHgjnWrEAPtDGLULAnDbogApDFaPFGrTCKkiBWrpOw1MZXyD0HV6mA/+AL
+         rojcEkcp8dkiZzZWm75O73OggW2wzSJGDFu3347BzHncnD4Bp73S5Eu7h4RyLAVL6q50
+         M4r6V6g9tGVVYH2s2jcpGNjIAfy5HNfwd+L0GtgD7vk7Dp22qZYJ3vpwafEMiMq5CSC+
+         7tKTSHLJ5wgAMExxiP2AfcGDUvRyH6CriH8ztq61Avo50Pbj6lx/GABT4keczkP56xoS
+         ZykpBEA8/YFFnpsGVT9pYYLNsDWEKTVtmrLsfdggvQeHhrMwsKOSzckAogzOGkWiETg9
+         PQWQ==
+X-Gm-Message-State: AOAM531tko1SrbFv19f70FFDBtxF3ME9kjoJPB+EuPPqjXjt3E96JSfQ
+        wupNiNk4YJaVKlxSmohYPA0=
+X-Google-Smtp-Source: ABdhPJxG2pkZvA/BC1OdbKRVPESROngPQJaOmv7QSUzF4jaLORYByPKVP3mC7CUM9dj4+MZFeYcg/A==
+X-Received: by 2002:a63:90c8:: with SMTP id a191mr36435135pge.482.1639102815580;
+        Thu, 09 Dec 2021 18:20:15 -0800 (PST)
 Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id pi17sm11219742pjb.34.2021.12.09.18.19.19
+        by smtp.gmail.com with ESMTPSA id f10sm10805298pjm.52.2021.12.09.18.20.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Dec 2021 18:19:21 -0800 (PST)
+        Thu, 09 Dec 2021 18:20:15 -0800 (PST)
 From:   cgel.zte@gmail.com
 X-Google-Original-From: chi.minghao@zte.com.cn
-To:     mareklindner@neomailbox.ch
-Cc:     sw@simonwunderlich.de, a@unstable.cc, sven@narfation.org,
-        davem@davemloft.net, kuba@kernel.org,
-        b.a.t.m.a.n@lists.open-mesh.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
+To:     davem@davemloft.net
+Cc:     kuba@kernel.org, pablo@netfilter.org, contact@proelbtn.com,
+        justin.iurman@uliege.be, chi.minghao@zte.com.cn,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Zeal Robot <zealci@zte.com.cm>
-Subject: [PATCH] net/batman-adv:remove unneeded variable
-Date:   Fri, 10 Dec 2021 02:19:17 +0000
-Message-Id: <20211210021917.423912-1-chi.minghao@zte.com.cn>
+Subject: [PATCH core-next] net/core: remove unneeded variable
+Date:   Fri, 10 Dec 2021 02:20:12 +0000
+Message-Id: <20211210022012.423994-1-chi.minghao@zte.com.cn>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -72,28 +71,26 @@ Return status directly from function called.
 Reported-by: Zeal Robot <zealci@zte.com.cm>
 Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
 ---
- net/batman-adv/network-coding.c | 6 +-----
+ net/core/lwtunnel.c | 6 +-----
  1 file changed, 1 insertion(+), 5 deletions(-)
 
-diff --git a/net/batman-adv/network-coding.c b/net/batman-adv/network-coding.c
-index 0a7f1d36a6a8..0c300476d335 100644
---- a/net/batman-adv/network-coding.c
-+++ b/net/batman-adv/network-coding.c
-@@ -58,13 +58,9 @@ static int batadv_nc_recv_coded_packet(struct sk_buff *skb,
-  */
- int __init batadv_nc_init(void)
- {
--	int ret;
--
- 	/* Register our packet type */
--	ret = batadv_recv_handler_register(BATADV_CODED,
-+	return batadv_recv_handler_register(BATADV_CODED,
- 					   batadv_nc_recv_coded_packet);
--
--	return ret;
- }
+diff --git a/net/core/lwtunnel.c b/net/core/lwtunnel.c
+index 2820aca2173a..c34248e358ac 100644
+--- a/net/core/lwtunnel.c
++++ b/net/core/lwtunnel.c
+@@ -63,11 +63,7 @@ static const char *lwtunnel_encap_str(enum lwtunnel_encap_types encap_type)
  
- /**
+ struct lwtunnel_state *lwtunnel_state_alloc(int encap_len)
+ {
+-	struct lwtunnel_state *lws;
+-
+-	lws = kzalloc(sizeof(*lws) + encap_len, GFP_ATOMIC);
+-
+-	return lws;
++	return kzalloc(sizeof(*lws) + encap_len, GFP_ATOMIC);
+ }
+ EXPORT_SYMBOL_GPL(lwtunnel_state_alloc);
+ 
 -- 
 2.25.1
 
