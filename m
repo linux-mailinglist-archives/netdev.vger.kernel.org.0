@@ -2,62 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A1E4846F904
-	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 03:16:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 947AD46F90E
+	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 03:19:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235864AbhLJCUD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Dec 2021 21:20:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58746 "EHLO
+        id S235867AbhLJCW4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Dec 2021 21:22:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235682AbhLJCUC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 21:20:02 -0500
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8692BC0617A1;
-        Thu,  9 Dec 2021 18:16:28 -0800 (PST)
-Received: by mail-pl1-x636.google.com with SMTP id q17so5280603plr.11;
-        Thu, 09 Dec 2021 18:16:28 -0800 (PST)
+        with ESMTP id S230463AbhLJCWz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Dec 2021 21:22:55 -0500
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9D7FC061746;
+        Thu,  9 Dec 2021 18:19:21 -0800 (PST)
+Received: by mail-pj1-x1029.google.com with SMTP id y14-20020a17090a2b4e00b001a5824f4918so8374887pjc.4;
+        Thu, 09 Dec 2021 18:19:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=5vILFs48YezHx1KEwLGCib1UaqUg6sXTypNHDs6lRMU=;
-        b=eiqFaXAarweFPC8NhoXEwTojVq4rWX4qebgApsWYRS1DuxkzFu0rc2InlX6t96oMnY
-         OO3w1Ps444oZSDf2FdRWmNBG2Y4UTWbaMkYq7z8GCE/alhBkGiniSJlyj/2ihXjPF0/d
-         WGaB7hbQkmLZ4SL3HcJemGY59Ss3PoK3ntBYtNecuKtVvA7Ox/ULUYBA6XchFUf0ITSg
-         Q+3vudZ0kYwjatotD5kF2CEoAHesSkPANPfww8akj3Q5vgrEwZBvxrv3YZn3ZHWmGx9M
-         /3QCilV1OJ75lV+ZvMs64tdhSOsrYw93cvH4bmqnvVx7V8GQv9WTXKz3QJDD7cup7Nrz
-         RycQ==
+        bh=FEw6cDwNumFEoIzG4G7yZNSpjLJlrE6wbUTHVe7gV4Y=;
+        b=RIYz7QcaHop7MkJ2jvAtyObrBy5vOjsdjPD3USKsTAUvzZ4HgL71XT1HRO87uUGyHA
+         rmhPBADv1RV8ZeL/2FvmwvTYA+tgDaHcbvvDYOCh8nzdLjEWe1g1kkEVPzwMCSSA2vaf
+         7Z7X5hfBA9qWNQQPfJsHVYsjpWRDiplcgj4ZTpEWnsFWvBrxk453ysMzZr3vgVMMIUhU
+         pgyVBSj+uqpmNnL9YAcqPFeAfvHbffjojzffDXySgxVz0kbndSYSOu4z4mWGxAfk7+by
+         NscW5XNT7rRzhjtsze7fFaUM1FasQwoSIn6JnWdAnCztT5EsJJVcYEagZLLeSJgirG/Y
+         ilDA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=5vILFs48YezHx1KEwLGCib1UaqUg6sXTypNHDs6lRMU=;
-        b=xAzEZPm8dHLqqLzMhJk0Lf18bZHNsm9HVEzzh8vYaj97QPMna9ituPUDsZeVCSv1Ho
-         5HWolakwIRybLnwucyt/7cVInHWYiwMpJuYTq5t+nFEqlzYRoN3KYGKAB9ur2U33t5UD
-         aQ+VTwjD2NnYTrYdath4T92KXm1YKCesu7MEPsrTwpXyphT8uxj8FsLw4UP/WG7uhrud
-         cOu/NarUTzjTYSpVFR9B0mpwwpqU5siPE8eg8WK1z0fTc7xfdlTMKLuCSODkl3yMqdwy
-         5eHH7f8PzQoWKhsGTvrpwJpGHakwYLt/wegaz6awNIRp+fuQgooFbtYT9uf6ydO5abik
-         DCOQ==
-X-Gm-Message-State: AOAM531XC+nhPfauPI3+0ROW6NO1XaRURiOD8vsn4XsCkfNbNtbssl/9
-        wvwI3F7pCAREGFeM0IP05mM=
-X-Google-Smtp-Source: ABdhPJwUMCRYs3n4NOa/dkaQR5MswxyDQZgwr2M8ahQsaJ7v5ONdW09RA2CV5KuXw5Hxx/KuhGlWgw==
-X-Received: by 2002:a17:90b:1a88:: with SMTP id ng8mr19786360pjb.180.1639102588155;
-        Thu, 09 Dec 2021 18:16:28 -0800 (PST)
+        bh=FEw6cDwNumFEoIzG4G7yZNSpjLJlrE6wbUTHVe7gV4Y=;
+        b=tZ6lrosCBWKs8EPsnuJJvq7KiKNk5tLx08GSrg4BsUd/vnWYvqMaNFcVev/h47JRN3
+         QfglIWqnu7bntmyFjD5kSB3GciHG3EGH97y5jtBG4YYnUfQe0ykj5p4BleJxADG/Q0Hs
+         kQrR810YMthxqNc5fiSUEcFB1oXprmPGP8UDtvsfKVk7WCL2J0OPD0dbvGwzNRJHRVrw
+         0D7L1+/VQiO50vjWi7J7Ke3ngUMaSx5SfBk4vKRXNdz10P42184h/6rC8YfG4gjQ2Zpr
+         6horUafrILPen8QlAs6ZeMI8My1KDQ/GNshgnXlukWtGu2kmGtH3FTeHxhT1KlkZpqNS
+         EE0Q==
+X-Gm-Message-State: AOAM533qN0Ir834gaRFpHKGeQNFuCHtgWf0BqkVZRguSlAWQEgHELwhR
+        shGIli4TJxEK6P64v83FLKA=
+X-Google-Smtp-Source: ABdhPJxwXZGDC1CedqgjnXGo0dpQS+/GKeAED/ubdvP3xlNrZQAKrcL1xIwGqKQ4ilY+qk9w9/ligg==
+X-Received: by 2002:a17:903:41cb:b0:142:62a:4d86 with SMTP id u11-20020a17090341cb00b00142062a4d86mr71711050ple.43.1639102761277;
+        Thu, 09 Dec 2021 18:19:21 -0800 (PST)
 Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id lr6sm935264pjb.0.2021.12.09.18.16.25
+        by smtp.gmail.com with ESMTPSA id pi17sm11219742pjb.34.2021.12.09.18.19.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Dec 2021 18:16:27 -0800 (PST)
+        Thu, 09 Dec 2021 18:19:21 -0800 (PST)
 From:   cgel.zte@gmail.com
 X-Google-Original-From: chi.minghao@zte.com.cn
-To:     sgoutham@marvell.com
-Cc:     lcherian@marvell.com, gakula@marvell.com, jerinj@marvell.com,
-        hkelam@marvell.com, sbhatta@marvell.com, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
+To:     mareklindner@neomailbox.ch
+Cc:     sw@simonwunderlich.de, a@unstable.cc, sven@narfation.org,
+        davem@davemloft.net, kuba@kernel.org,
+        b.a.t.m.a.n@lists.open-mesh.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
         Zeal Robot <zealci@zte.com.cm>
-Subject: [PATCH] ethernet:octeontx2:remove unneeded variable
-Date:   Fri, 10 Dec 2021 02:16:21 +0000
-Message-Id: <20211210021621.423665-1-chi.minghao@zte.com.cn>
+Subject: [PATCH] net/batman-adv:remove unneeded variable
+Date:   Fri, 10 Dec 2021 02:19:17 +0000
+Message-Id: <20211210021917.423912-1-chi.minghao@zte.com.cn>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -72,27 +72,28 @@ Return status directly from function called.
 Reported-by: Zeal Robot <zealci@zte.com.cm>
 Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
 ---
- drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ net/batman-adv/network-coding.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
-index 2ca182a4ce82..05694cd5ed15 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
-@@ -815,12 +815,10 @@ int rvu_mbox_handler_cgx_features_get(struct rvu *rvu,
- u32 rvu_cgx_get_fifolen(struct rvu *rvu)
+diff --git a/net/batman-adv/network-coding.c b/net/batman-adv/network-coding.c
+index 0a7f1d36a6a8..0c300476d335 100644
+--- a/net/batman-adv/network-coding.c
++++ b/net/batman-adv/network-coding.c
+@@ -58,13 +58,9 @@ static int batadv_nc_recv_coded_packet(struct sk_buff *skb,
+  */
+ int __init batadv_nc_init(void)
  {
- 	struct mac_ops *mac_ops;
--	u32 fifo_len;
- 
- 	mac_ops = get_mac_ops(rvu_first_cgx_pdata(rvu));
--	fifo_len = mac_ops ? mac_ops->fifo_len : 0;
- 
--	return fifo_len;
-+	return mac_ops ? mac_ops->fifo_len : 0;
+-	int ret;
+-
+ 	/* Register our packet type */
+-	ret = batadv_recv_handler_register(BATADV_CODED,
++	return batadv_recv_handler_register(BATADV_CODED,
+ 					   batadv_nc_recv_coded_packet);
+-
+-	return ret;
  }
  
- static int rvu_cgx_config_intlbk(struct rvu *rvu, u16 pcifunc, bool en)
+ /**
 -- 
 2.25.1
 
