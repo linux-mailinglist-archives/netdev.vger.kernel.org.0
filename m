@@ -2,156 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B384247018F
-	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 14:25:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD9024701AC
+	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 14:31:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241679AbhLJN32 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Dec 2021 08:29:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41048 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230479AbhLJN31 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 08:29:27 -0500
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BEDAC061746;
-        Fri, 10 Dec 2021 05:25:52 -0800 (PST)
-Received: by mail-pf1-x42e.google.com with SMTP id 8so8489707pfo.4;
-        Fri, 10 Dec 2021 05:25:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=uqbMD53C4ItO9uYDsVUp6EzSCFXpBRENU7IWZcPSA4M=;
-        b=DYNhmkDVXoEZft9BS7jFUM1vYYZ9YvKi4muEhJQLHJqiGbbJk0Iumlz2I6fT8+haze
-         +MHAL/pcdD4GLXyqCU4Eprb2eJjd2mf5vjZ8DzEVupN2/zan52H0xynI+4aaWNtuVWQR
-         u3FFiz7DqcRVKU3YNjfbYFUBd9ISYneZ0CFIwjjQz4wdmgu3nHHTvURDoHnr8+4N58O0
-         +eACuj6LixZk6F8b3vkNTwo6yKMoV83F9BRq8aU/+w55tia+vJpE3bD21MEPY3j+2BaE
-         9dLxiZxTDsTYe+1zqNUFCvJlKUuDFeGgSZNtGgd0+OHn+cZQKKeYxLE0Si0RPs0NHEOx
-         16Kw==
+        id S241879AbhLJNf3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Dec 2021 08:35:29 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:27670 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S241650AbhLJNf1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 08:35:27 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1639143112;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=l5sAoIuRwrqpOLkTWcO38tx+jvlOvty7121ooryZ460=;
+        b=hTOGfF9oSDi5Q8e+5fHqaILQ9ArV4t1iM+TvT/F0JuVg8DwcmzmY7eNHaCuTn+ugTGCn/k
+        UqmH37Mo99kJwwmuyALvceJoDLdkSp36PeGIy/Yh/NRFKv9bTb5ny9OEJZNvvmt92C8WZN
+        C389KdYOss4rON4/LsS8L2bJo5CFUMg=
+Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com
+ [209.85.208.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-529-XwKtCKT-PquumpEAymr9Gg-1; Fri, 10 Dec 2021 08:31:51 -0500
+X-MC-Unique: XwKtCKT-PquumpEAymr9Gg-1
+Received: by mail-lj1-f197.google.com with SMTP id m20-20020a2eb6d4000000b002219b019ae8so2629607ljo.16
+        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 05:31:51 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:message-id:date:mime-version:user-agent:cc
+         :subject:content-language:to:references:in-reply-to
          :content-transfer-encoding;
-        bh=uqbMD53C4ItO9uYDsVUp6EzSCFXpBRENU7IWZcPSA4M=;
-        b=dmc4mvED9DO2IiGQtPKxe9QzVvaXQIfLeMof9VkeuGyVFRFdjppS/s1aIt8mpkbPr8
-         NKo67xR/iq9uLuIzmBhjw+e0rOVpstWsEot8jz7IFdz+++0phNgXtylpbxk/04wKWXnJ
-         UKYnR5QbR9WC2JxMhsOk96nMj+VzafpIZWYYRebPNAvoZTCjPu9BgUNdFe+8F6kaEIuH
-         8D+NkRqh7Ie5EQiAgRijSg4qpWAZioOKoeiYRatkFLxhrT4GXk14EVd+hsFZXW5cXsxD
-         q86ktT2AICAQH8jeIAQdt4fv053tSo92nhVRSf2ljLB/BJrhGSHpq2DmwROTPQ+xHzpo
-         nPZA==
-X-Gm-Message-State: AOAM530IxhxH/i6HBlmdp4AR/pXelH+kAlVmt1QkYvSRdeRyKxC38SA/
-        cn0p0UkBgogF4Ex3yVSersY=
-X-Google-Smtp-Source: ABdhPJw/w6j8JzL1Fx/z+ArF/5BNciB/RRrnV3JnjQfO14coUZUSUS2ONAfIBFDYLQpvqjdNq3HtQA==
-X-Received: by 2002:a62:1708:0:b0:4a7:e068:b121 with SMTP id 8-20020a621708000000b004a7e068b121mr17936120pfx.61.1639142752136;
-        Fri, 10 Dec 2021 05:25:52 -0800 (PST)
-Received: from [10.10.156.113] ([167.220.232.113])
-        by smtp.gmail.com with ESMTPSA id c17sm1481858pfc.163.2021.12.10.05.25.41
+        bh=l5sAoIuRwrqpOLkTWcO38tx+jvlOvty7121ooryZ460=;
+        b=ydqq16gCITRux1AwCbaQmLPwQW+EKM3AIphhPZBe6LmV/16P7nH9TEAyTzum+NtsCq
+         Mq3QpoJJC6sqOMr08fcd70YRL+PjOeY2vjj5atb2hREGOUpvAWhabx4EwF/Z8eDLv6TJ
+         GyxpCkSSR4TrQJZun5Ym9CIWU4EqFgPEgLD6fKeYM50xgyU3rkbA9aFyCKwAfFkZtacz
+         1tCgmKVYlg/NISe1xv7dUymMmms1NPn2RGKojV4Xl/ko6/MmoVIM8yuY2UhA5rcq3pr1
+         m630tM2GKjMGv3lLrgYNIN8+JcifX8EHS/+BoXROd5W8ZUE4Nf3zRqOW41dxZ8A9BUNb
+         5j4Q==
+X-Gm-Message-State: AOAM533u0DaFEyLYRkqBjAVEulCltsxwfrCyzv6mCEJ06TJY4mklI9pM
+        tz2azE0ufSatRVqGI8pG2k6eOiTaiI3PZjk22yQ4icUua+O/w4m08ZYlw0OkzS+plscWajPRplG
+        0d+HgbrhViQqeJzua
+X-Received: by 2002:a05:6512:2111:: with SMTP id q17mr12277309lfr.371.1639143109658;
+        Fri, 10 Dec 2021 05:31:49 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJysW1eZdvHlg7c/OsYcsKZD7z8jtHRQrASeKFQqWi/mEk65sVMMaWjbUnS35YwKQwYM7xjjAQ==
+X-Received: by 2002:a05:6512:2111:: with SMTP id q17mr12277281lfr.371.1639143109438;
+        Fri, 10 Dec 2021 05:31:49 -0800 (PST)
+Received: from [192.168.0.50] (87-59-106-155-cable.dk.customer.tdc.net. [87.59.106.155])
+        by smtp.gmail.com with ESMTPSA id k3sm313809ljn.55.2021.12.10.05.31.47
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 10 Dec 2021 05:25:51 -0800 (PST)
-Message-ID: <4d60fcd1-97df-f4a1-1b79-643e65f66b3e@gmail.com>
-Date:   Fri, 10 Dec 2021 21:25:40 +0800
+        Fri, 10 Dec 2021 05:31:48 -0800 (PST)
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
+Message-ID: <ccd27f5f-31c4-603f-ea36-ad32b16325b9@redhat.com>
+Date:   Fri, 10 Dec 2021 14:31:45 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [PATCH V6 3/5] hyper-v: Enable swiotlb bounce buffer for
- Isolation VM
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.2.0
+Cc:     brouer@redhat.com, intel-wired-lan@lists.osuosl.org,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
+        Jithu Joseph <jithu.joseph@intel.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        KP Singh <kpsingh@kernel.org>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [PATCH v4 net-next 1/9] i40e: don't reserve excessive
+ XDP_PACKET_HEADROOM on XSK Rx to skb
 Content-Language: en-US
-To:     "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
-        KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "bp@alien8.de" <bp@alien8.de>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "x86@kernel.org" <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "jejb@linux.ibm.com" <jejb@linux.ibm.com>,
-        "martin.petersen@oracle.com" <martin.petersen@oracle.com>,
-        "arnd@arndb.de" <arnd@arndb.de>,
-        "hch@infradead.org" <hch@infradead.org>,
-        "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
-        "robin.murphy@arm.com" <robin.murphy@arm.com>,
-        Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>
-Cc:     "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        vkuznets <vkuznets@redhat.com>,
-        "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
-        "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
-        "hch@lst.de" <hch@lst.de>, "joro@8bytes.org" <joro@8bytes.org>,
-        "parri.andrea@gmail.com" <parri.andrea@gmail.com>,
-        "dave.hansen@intel.com" <dave.hansen@intel.com>
-References: <20211207075602.2452-1-ltykernel@gmail.com>
- <20211207075602.2452-4-ltykernel@gmail.com>
- <MWHPR21MB159359667085776793988EACD7709@MWHPR21MB1593.namprd21.prod.outlook.com>
-From:   Tianyu Lan <ltykernel@gmail.com>
-In-Reply-To: <MWHPR21MB159359667085776793988EACD7709@MWHPR21MB1593.namprd21.prod.outlook.com>
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Jesper Dangaard Brouer <jbrouer@redhat.com>
+References: <20211208140702.642741-1-alexandr.lobakin@intel.com>
+ <20211208140702.642741-2-alexandr.lobakin@intel.com>
+ <da317f39-8679-96f7-ec6f-309216b02f33@redhat.com>
+ <20211209173307.5003-1-alexandr.lobakin@intel.com>
+In-Reply-To: <20211209173307.5003-1-alexandr.lobakin@intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/10/2021 4:09 AM, Michael Kelley (LINUX) wrote:
->> @@ -319,8 +320,16 @@ static void __init ms_hyperv_init_platform(void)
->>   		pr_info("Hyper-V: Isolation Config: Group A 0x%x, Group B 0x%x\n",
->>   			ms_hyperv.isolation_config_a, ms_hyperv.isolation_config_b);
->>
->> -		if (hv_get_isolation_type() == HV_ISOLATION_TYPE_SNP)
->> +		if (hv_get_isolation_type() == HV_ISOLATION_TYPE_SNP) {
->>   			static_branch_enable(&isolation_type_snp);
->> +			swiotlb_unencrypted_base = ms_hyperv.shared_gpa_boundary;
->> +		}
->> +
->> +		/*
->> +		 * Enable swiotlb force mode in Isolation VM to
->> +		 * use swiotlb bounce buffer for dma transaction.
->> +		 */
->> +		swiotlb_force = SWIOTLB_FORCE;
-> I'm good with this approach that directly updates the swiotlb settings here
-> 
-> rather than in IOMMU initialization code.  It's a lot more straightforward.
-> 
-> However, there's an issue if building for X86_32 without PAE, in that the
-> swiotlb module may not be built, resulting in compile and link errors.  The
-> swiotlb.h file needs to be updated to provide a stub function for
-> swiotlb_update_mem_attributes().   swiotlb_unencrypted_base probably
-> needs wrapper functions to get/set it, which can be stubs when
-> CONFIG_SWIOTLB is not set.  swiotlb_force is a bit of a mess in that it already
-> has a stub definition that assumes it will only be read, and not set.  A bit of
-> thinking will be needed to sort that out.
 
-It's ok to fix the issue via selecting swiotlb when CONFIG_HYPERV is
-set?
 
+On 09/12/2021 18.33, Alexander Lobakin wrote:
+> From: Jesper Dangaard Brouer <jbrouer@redhat.com>
+> Date: Thu, 9 Dec 2021 09:19:46 +0100
 > 
->>   	}
+>> On 08/12/2021 15.06, Alexander Lobakin wrote:
+>>> {__,}napi_alloc_skb() allocates and reserves additional NET_SKB_PAD
+>>> + NET_IP_ALIGN for any skb.
+>>> OTOH, i40e_construct_skb_zc() currently allocates and reserves
+>>> additional `xdp->data - xdp->data_hard_start`, which is
+>>> XDP_PACKET_HEADROOM for XSK frames.
+>>> There's no need for that at all as the frame is post-XDP and will
+>>> go only to the networking stack core.
 >>
->>   	if (hv_max_functions_eax >= HYPERV_CPUID_NESTED_FEATURES) {
->> diff --git a/include/linux/hyperv.h b/include/linux/hyperv.h
->> index b823311eac79..1f037e114dc8 100644
->> --- a/include/linux/hyperv.h
->> +++ b/include/linux/hyperv.h
->> @@ -1726,6 +1726,14 @@ int hyperv_write_cfg_blk(struct pci_dev *dev, void *buf, unsigned int len,
->>   int hyperv_reg_block_invalidate(struct pci_dev *dev, void *context,
->>   				void (*block_invalidate)(void *context,
->>   							 u64 block_mask));
->> +#if IS_ENABLED(CONFIG_HYPERV)
->> +int __init hyperv_swiotlb_detect(void);
->> +#else
->> +static inline int __init hyperv_swiotlb_detect(void)
->> +{
->> +	return 0;
->> +}
->> +#endif
-> I don't think hyperv_swiotlb_detect() is used any longer, so this change
-> should be dropped.
-Yes, will update.
+>> I disagree with this assumption, that headroom is not needed by netstack.
+>> Why "no need for that at all" for netstack?
+> 
+> napi_alloc_skb() in our particular case will reserve 64 bytes, it is
+> sufficient for {TCP,UDP,SCTP,...}/IPv{4,6} etc.
+
+My bad, I misunderstood you. I now see (looking at code) that (as you 
+say) 64 bytes of headroom *is* reserved (in bottom of __napi_alloc_skb).
+Thus, the SKB *do* have headroom, so this patch should be fine.
+
+Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+
+Do watch out that 64 bytes is not always enough. Notice the define 
+LL_MAX_HEADER and MAX_HEADER in include/linux/netdevice.h (that tries to 
+determine worst-case header length) which is above 64 bytes. It is also 
+affected by HyperV and WiFi configs.
+
