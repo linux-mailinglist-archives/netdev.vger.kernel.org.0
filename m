@@ -2,90 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C7D9747010B
-	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 13:57:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D22447014A
+	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 14:09:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241067AbhLJNAv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Dec 2021 08:00:51 -0500
-Received: from serv108.segi.ulg.ac.be ([139.165.32.111]:50948 "EHLO
-        serv108.segi.ulg.ac.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233882AbhLJNAu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 08:00:50 -0500
-Received: from mbx12-zne.ulg.ac.be (serv470.segi.ulg.ac.be [139.165.32.199])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by serv108.segi.ulg.ac.be (Postfix) with ESMTPS id 7B7FC200BE4B;
-        Fri, 10 Dec 2021 13:57:13 +0100 (CET)
-DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be 7B7FC200BE4B
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uliege.be;
-        s=ulg20190529; t=1639141033;
-        bh=wFe+CeEqaCqv3NqjLOm7g2hIIbR1I8s0HQPuVv6Eubc=;
-        h=Date:From:Reply-To:To:Cc:In-Reply-To:References:Subject:From;
-        b=V3BXAPd0khk90c2AKalZHbzlDLgFqfJIIVL7uw+jq5cilUuKSMVMoe/mQoYJMw7p3
-         tk9c5i38Jq/cSXknqX59IpxhuIlg9soAlbfRiZGF/8i9vNCSHPwvzcRZxL1YjbkgY7
-         yyoBL9OiPqzVeCgiC8LAI4vkRZCFU1hgMbPb4ASFbrC4JqJMkaOn3Y5kMqGLBLnSNX
-         GswfzgXIuPI9pBGth/0nNP/BMAAK0Qr8u2dBECEol5xz6DR9alGBB0+kmdnUrkP8zD
-         uvJVRPZlxFsHDsYF1qgRwqhZcV+y3ETvjCtd7ih4SICfDy0Hvyz7q8cNNFeAZv6WT+
-         r2In0zBGRrdYA==
-Received: from localhost (localhost [127.0.0.1])
-        by mbx12-zne.ulg.ac.be (Postfix) with ESMTP id 5EFA96022451C;
-        Fri, 10 Dec 2021 13:57:13 +0100 (CET)
-Received: from mbx12-zne.ulg.ac.be ([127.0.0.1])
-        by localhost (mbx12-zne.ulg.ac.be [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id IkfwqIB4FfQx; Fri, 10 Dec 2021 13:57:13 +0100 (CET)
-Received: from mbx12-zne.ulg.ac.be (mbx12-zne.ulg.ac.be [139.165.32.199])
-        by mbx12-zne.ulg.ac.be (Postfix) with ESMTP id 1AF6E6014635C;
-        Fri, 10 Dec 2021 13:57:13 +0100 (CET)
-Date:   Fri, 10 Dec 2021 13:57:12 +0100 (CET)
-From:   Justin Iurman <justin.iurman@uliege.be>
-Reply-To: Justin Iurman <justin.iurman@uliege.be>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, dsahern@kernel.org,
-        yoshfuji@linux-ipv6.org, linux-mm@kvack.org, cl@linux.com,
-        penberg@kernel.org, rientjes@google.com,
-        iamjoonsoo kim <iamjoonsoo.kim@lge.com>,
-        akpm@linux-foundation.org, vbabka@suse.cz,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Florian Westphal <fw@strlen.de>,
-        Paolo Abeni <pabeni@redhat.com>
-Message-ID: <1887416432.225095145.1639141032334.JavaMail.zimbra@uliege.be>
-In-Reply-To: <20211209163828.223815bd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20211206211758.19057-1-justin.iurman@uliege.be> <20211207075037.6cda8832@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <1045511371.220520131.1638894949373.JavaMail.zimbra@uliege.be> <20211207090700.55725775@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <1665643630.220612437.1638900313011.JavaMail.zimbra@uliege.be> <20211208141825.3091923c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <1067680364.223350225.1639059024535.JavaMail.zimbra@uliege.be> <20211209163828.223815bd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Subject: Re: [RFC net-next 2/2] ipv6: ioam: Support for Buffer occupancy
- data field
+        id S241481AbhLJNMp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Dec 2021 08:12:45 -0500
+Received: from str75-3-78-193-33-39.fbxo.proxad.net ([78.193.33.39]:42334 "EHLO
+        mail.qult.net" rhost-flags-OK-FAIL-OK-OK) by vger.kernel.org
+        with ESMTP id S241437AbhLJNMo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 08:12:44 -0500
+X-Greylist: delayed 2587 seconds by postgrey-1.27 at vger.kernel.org; Fri, 10 Dec 2021 08:12:44 EST
+Received: from zenon.in.qult.net ([192.168.64.1])
+        by mail.qult.net with esmtp (Exim 4.90_1)
+        (envelope-from <ignacy.gawedzki@green-communications.fr>)
+        id 1mveyR-0003vf-Bn
+        for netdev@vger.kernel.org; Fri, 10 Dec 2021 13:26:03 +0100
+Received: from ig by zenon.in.qult.net with local (Exim 4.94.2)
+        (envelope-from <ignacy.gawedzki@green-communications.fr>)
+        id 1mveyO-00FZgc-Ge
+        for netdev@vger.kernel.org; Fri, 10 Dec 2021 13:26:00 +0100
+Date:   Fri, 10 Dec 2021 13:26:00 +0100
+From:   Ignacy =?utf-8?B?R2F3xJlkemtp?= 
+        <ignacy.gawedzki@green-communications.fr>
+To:     netdev@vger.kernel.org
+Subject: [PATCH] netfilter: fix regression in looped (broad|multi)cast's MAC
+ handing
+Message-ID: <20211210122600.mrduxdw2uwpwoqbr@zenon.in.qult.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [139.165.223.37]
-X-Mailer: Zimbra 8.8.15_GA_4018 (ZimbraWebClient - FF94 (Linux)/8.8.15_GA_4026)
-Thread-Topic: ipv6: ioam: Support for Buffer occupancy data field
-Thread-Index: U6awZlPIBpVjCQ/wD/+4f3Z2EMewfA==
+Content-Type: text/plain; charset=iso-8859-2
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->> Indeed, would be a better fit. I didn't know about this one, thanks for
->> that. It's a shame it can't be used in this context, though. But, at the
->> end of the day, we're left with nothing regarding buffer occupancy. So
->> I'm wondering if "something" is not better than "nothing" in this case.
->> And, for that, we're back to my previous answer on why I agree and
->> disagree with what you said about its utility.
-> 
-> I think we're on the same page, the main problem is I've not seen
-> anyone use the skbuff_head_cache occupancy as a signal in practice.
+In 5648b5e1169f, the test for non-empty MAC header introduced in
+2c38de4c1f8da7 has been replaced with a test for a set MAC header,
+which breaks the case when the MAC header has been reset (using
+skb_reset_mac_header), as is the case with looped-back multicast
+packets.
 
-Indeed.
+This patch adds a test for a non-empty MAC header in addition to the
+test for a set MAC header.  The same two tests are also implemented in
+nfnetlink_log.c, where the initial code of 2c38de4c1f8da7 has not been
+touched, but where supposedly the same situation may happen.
 
-> I'm adding a bunch of people to the CC list, hopefully someone has
-> an opinion one way or the other.
+Signed-off-by: Ignacy Gawêdzki <ignacy.gawedzki@green-communications.fr>
+---
+ net/netfilter/nfnetlink_log.c   | 3 ++-
+ net/netfilter/nfnetlink_queue.c | 3 ++-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
 
-+1, thanks Jakub.
-
-> Lore link to the full thread, FWIW:
-> 
-> https://lore.kernel.org/all/20211206211758.19057-1-justin.iurman@uliege.be/
+diff --git a/net/netfilter/nfnetlink_log.c b/net/netfilter/nfnetlink_log.c
+index 691ef4cffdd9..7f83f9697fc1 100644
+--- a/net/netfilter/nfnetlink_log.c
++++ b/net/netfilter/nfnetlink_log.c
+@@ -556,7 +556,8 @@ __build_packet_message(struct nfnl_log_net *log,
+ 		goto nla_put_failure;
+ 
+ 	if (indev && skb->dev &&
+-	    skb->mac_header != skb->network_header) {
++	    skb_mac_header_was_set(skb) &&
++	    skb_mac_header_len(skb) != 0) {
+ 		struct nfulnl_msg_packet_hw phw;
+ 		int len;
+ 
+diff --git a/net/netfilter/nfnetlink_queue.c b/net/netfilter/nfnetlink_queue.c
+index 4acc4b8e9fe5..959527708e38 100644
+--- a/net/netfilter/nfnetlink_queue.c
++++ b/net/netfilter/nfnetlink_queue.c
+@@ -560,7 +560,8 @@ nfqnl_build_packet_message(struct net *net, struct nfqnl_instance *queue,
+ 		goto nla_put_failure;
+ 
+ 	if (indev && entskb->dev &&
+-	    skb_mac_header_was_set(entskb)) {
++	    skb_mac_header_was_set(entskb) &&
++	    skb_mac_header_len(entskb) != 0) {
+ 		struct nfqnl_msg_packet_hw phw;
+ 		int len;
+ 
+-- 
+2.32.0
