@@ -2,159 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E8D0470784
-	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 18:38:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B2581470788
+	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 18:40:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241539AbhLJRmJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Dec 2021 12:42:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45502 "EHLO
+        id S243840AbhLJRni (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Dec 2021 12:43:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238612AbhLJRmI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 12:42:08 -0500
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 608B4C061746
-        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 09:38:33 -0800 (PST)
-Received: by mail-ed1-x532.google.com with SMTP id e3so32924533edu.4
-        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 09:38:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=r1TEcttao870SrnIicEigLO42+hcfR0TeBILkFKia7Y=;
-        b=CboLVXP61BcjnVlVdqz9HlC+G+qQbOOK29GAI2MsticWmll2r3p3ODnYgo9GhFKFdK
-         kXUSmTVedjzEkmv8LdxrKVLxiCTGvesTCHvrdN2TSTG3BjR0SNGHKtrgt4Rqdhmekw7W
-         r7N8vmuE2ASFT3QfcbthXK+3S9g8KmXmVJrL8BM3la8PzoO0YE+lndAv2NwMwdz1Sj0Y
-         sgVrfNDSoPstYhpVARaqCehlj5aouMxu9soPxGsSlVXj6aILw5IRS5LCK/a6j/ahBfFK
-         mtdtGtY70jdd1y0DsFGt17jr+IHHt65Gv2jgrfY0JuRY7apgKyNDe3+7Uq4z0260E+kX
-         5BkA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=r1TEcttao870SrnIicEigLO42+hcfR0TeBILkFKia7Y=;
-        b=3BAsAMGDxnIcgZfOynq2imYdR1SP5TULksygtoHTvEc/O4k7tLCp7JxTibBuNJDCcA
-         0fmRwRAspzMwm7SCx0lHOLKUZ7kC2+mmitBochvv2FzmMityVgILmM21Arbu9GcmT9bb
-         3jycYgS4VCn/4UZc+CDbK9PPh+CkzzwKzKyWcQJMpWzyspTjU/AE83obruN64RWbzMyO
-         Ww7bj7+u3MQHr7evx28h3Fldkzf9Mc0SmHE1JFXmFJKrE8lM2nMjuBPliNiKE7eEVFBM
-         l+PR1bmeJsTAeJHJi2BtRJtGk+aSp0vD8YFHYnYmIxtJAQrKUth3aW5F1eIUGADOxDIp
-         I/Aw==
-X-Gm-Message-State: AOAM530h+a4EiPOkIlukxVJ2vvFmB2zOo0pvHkoowwqzfSldj48ZUwkA
-        jkDnUlXJHpFCh/nMxa5BR7LUOzWEbJvHzHv6vBc=
-X-Google-Smtp-Source: ABdhPJy3tAn00zTOJfEvNbSI+YgkApSEEj6rzUNLc50sjJnuFQXf3zF7RtA7bwNJ1RG5ErLCDUkr5xumbBWnlFp0wyg=
-X-Received: by 2002:a05:6402:405:: with SMTP id q5mr40555005edv.62.1639157911956;
- Fri, 10 Dec 2021 09:38:31 -0800 (PST)
-MIME-Version: 1.0
-References: <20211208145459.9590-1-xiangxia.m.yue@gmail.com>
- <20211208145459.9590-3-xiangxia.m.yue@gmail.com> <61b383c6373ca_1f50e20816@john.notmuch>
-In-Reply-To: <61b383c6373ca_1f50e20816@john.notmuch>
-From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Date:   Sat, 11 Dec 2021 01:37:55 +0800
-Message-ID: <CAMDZJNV3-y5jkUAJJ--10PcicKpGMwKS_3gG9O7srjomO3begw@mail.gmail.com>
-Subject: Re: [net v5 2/3] net: sched: add check tc_skip_classify in sch egress
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        with ESMTP id S231337AbhLJRni (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 12:43:38 -0500
+Received: from wp003.webpack.hosteurope.de (wp003.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:840a::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9B98C061746
+        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 09:40:02 -0800 (PST)
+Received: from p200300c1f70a1fec5527cb4e6f286342.dip0.t-ipconnect.de ([2003:c1:f70a:1fec:5527:cb4e:6f28:6342] helo=kmk0); authenticated
+        by wp003.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        id 1mvjsG-0000Zq-EC; Fri, 10 Dec 2021 18:40:00 +0100
+From:   Kurt Kanzenbach <kurt@kmk-computers.de>
+To:     Tobias Waldekranz <tobias@waldekranz.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Wei Wang <weiwan@google.com>, Arnd Bergmann <arnd@arndb.de>
-Content-Type: text/plain; charset="UTF-8"
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Richard Cochran <richardcochran@gmail.com>
+Subject: Re: [PATCH net-next v1] net: dsa: mv88e6xxx: Trap PTP traffic
+In-Reply-To: <87y24t1fvk.fsf@waldekranz.com>
+References: <20211209173337.24521-1-kurt@kmk-computers.de>
+ <87y24t1fvk.fsf@waldekranz.com>
+Date:   Fri, 10 Dec 2021 18:39:59 +0100
+Message-ID: <87y24s9x5c.fsf@kmk-computers.de>
+MIME-Version: 1.0
+Content-Type: text/plain
+X-bounce-key: webpack.hosteurope.de;kurt@kmk-computers.de;1639158003;5b1ab1b1;
+X-HE-SMSGID: 1mvjsG-0000Zq-EC
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Dec 11, 2021 at 12:43 AM John Fastabend
-<john.fastabend@gmail.com> wrote:
+On Fri Dec 10 2021, Tobias Waldekranz wrote:
+> On Thu, Dec 09, 2021 at 18:33, Kurt Kanzenbach <kurt@kmk-computers.de> wrote:
+>> A time aware switch should trap PTP traffic to the management CPU. User space
+>> daemons such as ptp4l will process these messages to implement Boundary (or
+>> Transparent) Clocks.
+>>
+>> At the moment the mv88e6xxx driver for mv88e6341 doesn't trap these messages
+>> which leads to confusion when multiple end devices are connected to the
+>> switch. Therefore, setup PTP traps. Leverage the already implemented policy
+>> mechanism based on destination addresses. Configure the traps only if
+>> timestamping is enabled so that non time aware use case is still functioning.
 >
-> xiangxia.m.yue@ wrote:
-> > From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
-> >
-> > Try to resolve the issues as below:
-> > * We look up and then check tc_skip_classify flag in net
-> >   sched layer, even though skb don't want to be classified.
-> >   That case may consume a lot of cpu cycles. This patch
-> >   is useful when there are a lot of filters with different
-> >   prio. There is ~5 prio in in production, ~1% improvement.
-> >
-> >   Rules as below:
-> >   $ for id in $(seq 1 5); do
-> >   $       tc filter add ... egress prio $id ... action mirred egress redirect dev ifb0
-> >   $ done
-> >
-> > * bpf_redirect may be invoked in egress path. If we don't
-> >   check the flags and then return immediately, the packets
-> >   will loopback.
+> Do we know how PTP is supposed to work in relation to things like STP?
+> I.e should you be able to run PTP over a link that is currently in
+> blocking? It seems like being able to sync your clock before a topology
+> change occurs would be nice. In that case, these addresses should be
+> added to the ATU as MGMT instead of policy entries.
+
+Given the fact that the l2 p2p address is already considered as
+management traffic (see mv88e6390_g1_mgmt_rsvd2cpu()) maybe all PTP
+addresses could be treated as such.
+
+[snip]
+
+>> +static int mv88e6341_setup_ptp_traps(struct mv88e6xxx_chip *chip, int port,
+>> +				     bool enable)
+>> +{
+>> +	static const u8 ptp_destinations[][ETH_ALEN] = {
+>> +		{ 0x01, 0x1b, 0x19, 0x00, 0x00, 0x00 }, /* L2 PTP */
+>> +		{ 0x01, 0x80, 0xc2, 0x00, 0x00, 0x0e }, /* L2 P2P */
+>> +		{ 0x01, 0x00, 0x5e, 0x00, 0x01, 0x81 }, /* IPv4 PTP */
+>> +		{ 0x01, 0x00, 0x5e, 0x00, 0x00, 0x6b }, /* IPv4 P2P */
+>> +		{ 0x33, 0x33, 0x00, 0x00, 0x01, 0x81 }, /* IPv6 PTP */
+>> +		{ 0x33, 0x33, 0x00, 0x00, 0x00, 0x6b }, /* IPv6 P2P */
 >
-> This would be the naive case right? Meaning the BPF program is
-> doing a redirect without any logic or is buggy?
+> How does the L3 entries above play together with IGMP/MLD? I.e. what
+> happens if, after launching ptp4l, an IGMP report comes in on lanX,
+> requesting that same group? Would the policy entry not be overwritten by
+> mv88e6xxx_port_mdb_add?
+
+Just tested this. Yes it is overwritten without any detection or
+errors. Actually I did test UDP as well and didn't notice it. It
+obviously depends on the order of events.
+
 >
-> Can you map out how this happens for me, I'm not fully sure I
-> understand the exact concern. Is it possible for BPF programs
-> that used to see packets no longer see the packet as expected?
+> Eventually I think we will have many interfaces to configure static
+> entries in the ATU:
 >
-> Is this the path you are talking about?
-Hi John
-Tx ethx -> __dev_queue_xmit -> sch_handle_egress
-->  execute BPF program on ethx with bpf_redirect(ifb0) ->
--> ifb_xmit -> ifb_ri_tasklet -> dev_queue_xmit -> __dev_queue_xmit
-the packets loopbacks, that means bpf_redirect doesn't work with ifb
-netdev, right ?
-so in sch_handle_egress, I add the check skb_skip_tc_classify().
-
->  rx ethx  ->
->    execute BPF program on ethx with bpf_redirect(ifb0) ->
->      __skb_dequeue @ifb tc_skip_classify = 1 ->
->        dev_queue_xmit() ->
->           sch_handle_egress() ->
->             execute BPF program again
+> 1. MDB entries from a bridge (already in place)
+> 2. User-configured entries through ethtool's rxnfc (already in place)
+> 3. Driver-internal consumers (this patch, MRP, etc.)
+> 4. User-configured entries through TC.
 >
-> I can't see why you want to skip that second tc BPF program,
-> or for that matter any tc filter there. In general how do you
-> know that is the correct/expected behavior? Before the above
-> change it would have been called, what if its doing useful
-> work.
-bpf_redirect works fine on ingress with ifb
-__netif_receive_skb_core -> sch_handle_ingress -> bpf_redirect (ifb0)
--> ifb_xmit -> netif_receive_skb -> __netif_receive_skb_core
-but
-__netif_receive_skb_core --> skb_skip_tc_classify(so the packets will
-execute the BPF progam again)
+> Seems to me like we need to start tracking the owners for these to stop
+> them from stomping on one another.
 
-> Also its not clear how your ifb setup is built or used. That
-> might help understand your use case. I would just remove the
-> IFB altogether and the above discussion is mute.
-tc filter add dev veth1 egress bpf direct-action obj
-test_bpf_redirect_ifb.o sec redirect_ifb
+Agreed. Some mechanism is required. Any idea how to implement it? In
+case of PTP the management/policy entries should take precedence.
 
-the test_bpf_redirect_ifb  bpf progam:
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2021 DiDi Global */
-+
-+#include <linux/bpf.h>
-+#include <bpf/bpf_helpers.h>
-+
-+SEC("redirect_ifb")
-+int redirect(struct __sk_buff *skb)
-+{
-+       return bpf_redirect(skb->ifindex + 1 /* ifbX */, 0);
-+}
-+
-+char __license[] SEC("license") = "GPL";
+>
+>> +	};
+>> +	int ret, i;
+>> +
+>> +	for (i = 0; i < ARRAY_SIZE(ptp_destinations); ++i) {
+>> +		struct mv88e6xxx_policy policy = { };
+>> +
+>> +		policy.mapping	= MV88E6XXX_POLICY_MAPPING_DA;
+>> +		policy.action	= enable ? MV88E6XXX_POLICY_ACTION_TRAP :
+>> +			MV88E6XXX_POLICY_ACTION_NORMAL;
+>> +		policy.port	= port;
+>> +		policy.vid	= 0;
+>> +		ether_addr_copy(policy.addr, ptp_destinations[i]);
+>> +
+>> +		ret = mv88e6xxx_policy_apply(chip, port, &policy);
+>> +		if (ret)
+>> +			return ret;
+>> +	}
+>> +
+>> +	return 0;
+>> +}
+>> +
+>>  const struct mv88e6xxx_ptp_ops mv88e6165_ptp_ops = {
+>>  	.clock_read = mv88e6165_ptp_clock_read,
+>>  	.global_enable = mv88e6165_global_enable,
+>> @@ -419,6 +450,34 @@ const struct mv88e6xxx_ptp_ops mv88e6352_ptp_ops = {
+>>  	.cc_mult_dem = MV88E6XXX_CC_MULT_DEM,
+>>  };
+>>  
+>> +const struct mv88e6xxx_ptp_ops mv88e6341_ptp_ops = {
+>> +	.clock_read = mv88e6352_ptp_clock_read,
+>> +	.ptp_enable = mv88e6352_ptp_enable,
+>> +	.ptp_verify = mv88e6352_ptp_verify,
+>> +	.event_work = mv88e6352_tai_event_work,
+>> +	.port_enable = mv88e6352_hwtstamp_port_enable,
+>> +	.port_disable = mv88e6352_hwtstamp_port_disable,
+>> +	.setup_ptp_traps = mv88e6341_setup_ptp_traps,
+>
+> Is there any reason why this could not be added to the existing ops for
+> 6352 instead? Their ATU's are compatible, IIRC.
 
-The 3/3 is selftest:
-https://patchwork.kernel.org/project/netdevbpf/patch/20211208145459.9590-4-xiangxia.m.yue@gmail.com/
+No particular reason except that I don't have access to a 6352 device to
+test it.
 
-> Thanks,
-> John
-
-
-
--- 
-Best regards, Tonghao
+Thanks,
+Kurt
