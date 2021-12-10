@@ -2,56 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3353647054B
-	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 17:06:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D60947056C
+	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 17:17:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239972AbhLJQKP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Dec 2021 11:10:15 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:35354 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233882AbhLJQKP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 11:10:15 -0500
+        id S240495AbhLJQUf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Dec 2021 11:20:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53378 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240634AbhLJQUe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 11:20:34 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 868A9C0617A2;
+        Fri, 10 Dec 2021 08:16:59 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 13B33B828A8;
-        Fri, 10 Dec 2021 16:06:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B7BFC341CB;
-        Fri, 10 Dec 2021 16:06:37 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id BB4C0CE2BEB;
+        Fri, 10 Dec 2021 16:16:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DEADC00446;
+        Fri, 10 Dec 2021 16:16:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1639152397;
-        bh=FXw+X46FJDb+N51VzNwvo7FkfBLgll06tDuKFIWiAV0=;
+        s=k20201202; t=1639153015;
+        bh=3ifJrSFjNhly+TY2+b6L86AuUb/oef45UACm9ExPytk=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=CRRz8zGClKmgOpis4VREWosgQ3KDQ1bMgLt3BMq4djfEXY1Lw29XJjI1TD+3RYW6T
-         DWwEj6g0EQ1A2tMCDn5DEWKY6qaD6ghFREUXDTdcfnFOyvUf3DOE1VTt8zNleCNUvr
-         ckRXVfIJ/ciuy86csJXUUznPt/qu+lIDexEfLHiglefLAf1fgacgh6yWTFCWENdKOl
-         572pSPCJa3n+0A2cJD744xG3USskICgA8fOuLNPrP+KsBEkOfd+sKb/HfeyJBLBNLl
-         SKHZ2Q6wKBMpRB/juSOZNur8AfIZ0os9ca7sZ3XGJUgFka5ItAtaEo1gfMswuaff6t
-         t1I+XBuojp7Bg==
-Date:   Fri, 10 Dec 2021 08:06:36 -0800
+        b=hi78EGlVGdyLvNLR0hbzVr0GKRJWWcmA9R2nonRI7O2dCpOwjXmjAjtk4NNY5woVE
+         Kel8PeqN5d+7iaJOB6aZXoZgEeSv/U0ScV4VU2X6W0PZq6UWdeDWZ2tvBiy5yvtxNG
+         ldC9dx/ZpqE2WTSGycY9bxhpLV5/DHD52pCCTQiwCtmAThLndj+lkbYwXaLCEXFuqC
+         NWDsjL2Qi6sKUgarJWHiRASkE172hze5EJqJZnrvDmMPyDVUE/wlNv1K/7XcI4RvS7
+         0jRxRFjld06t27TL+8J9SZ5kojYJfHL9/WkxHhIJscx2hZENMijLDOqeg/d7+MFO5q
+         5oR84vEJkQKeA==
+Date:   Fri, 10 Dec 2021 08:16:54 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
-Cc:     Joakim Zhang <qiangqing.zhang@nxp.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
-        "alexandre.torgue@foss.st.com" <alexandre.torgue@foss.st.com>,
-        "joabreu@synopsys.com" <joabreu@synopsys.com>,
-        Yannick Vignon <yannick.vignon@nxp.com>,
-        "boon.leong.ong@intel.com" <boon.leong.ong@intel.com>,
-        "Jose.Abreu@synopsys.com" <Jose.Abreu@synopsys.com>,
-        "mst@redhat.com" <mst@redhat.com>,
-        "Joao.Pinto@synopsys.com" <Joao.Pinto@synopsys.com>,
-        Mingkai Hu <mingkai.hu@nxp.com>, Leo Li <leoyang.li@nxp.com>
-Subject: Re: [EXT] Re: [PATCH net-next] net: stmmac: bump tc when get
- underflow error from DMA descriptor
-Message-ID: <20211210080636.3c1ab98f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <DB8PR04MB57852B80794A0B487167D3A2F0719@DB8PR04MB5785.eurprd04.prod.outlook.com>
-References: <20211208100651.19369-1-xiaoliang.yang_1@nxp.com>
-        <VI1PR04MB68009F16CAA80DCEBFA8F170E6709@VI1PR04MB6800.eurprd04.prod.outlook.com>
-        <20211209184123.63117f42@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <DB8PR04MB57852B80794A0B487167D3A2F0719@DB8PR04MB5785.eurprd04.prod.outlook.com>
+To:     Maciej Machnikowski <maciej.machnikowski@intel.com>
+Cc:     netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        arkadiusz.kubalewski@intel.com, richardcochran@gmail.com,
+        abyagowi@fb.com, anthony.l.nguyen@intel.com, davem@davemloft.net,
+        linux-kselftest@vger.kernel.org, idosch@idosch.org,
+        mkubecek@suse.cz, saeed@kernel.org, michael.chan@broadcom.com,
+        petrm@nvidia.com, Vadim Fedorenko <vfedorenko@novek.ru>
+Subject: Re: [PATCH v5 net-next 0/4] Add ethtool interface for RClocks
+Message-ID: <20211210081654.233a41b6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211210134550.1195182-1-maciej.machnikowski@intel.com>
+References: <20211210134550.1195182-1-maciej.machnikowski@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -59,23 +51,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 10 Dec 2021 03:11:16 +0000 Xiaoliang Yang wrote:
-> > > 5 queues with FIFO cut-through mode can work well after applying this patch.
-> > 
-> > This never worked, correct? It's not a regression fix?  
->
-> Yes, it's never worked when the underflow error is observed in the
-> case of NFS boot on i.mx8mp. I'm not sure if other SoC have same
-> issue in this case, but I think it's necessary to increase the
-> threshold value in case of underflow error.
+On Fri, 10 Dec 2021 14:45:46 +0100 Maciej Machnikowski wrote:
+> Synchronous Ethernet networks use a physical layer clock to syntonize
+> the frequency across different network elements.
+> 
+> Basic SyncE node defined in the ITU-T G.8264 consist of an Ethernet
+> Equipment Clock (EEC) and have the ability to synchronize to reference
+> frequency sources.
+> 
+> This patch series is a prerequisite for EEC object and adds ability
+> to enable recovered clocks in the physical layer of the netdev object.
+> Recovered clocks can be used as one of the reference signal by the EEC.
+> 
+> Further work is required to add the DPLL subsystem, link it to the
+> netdev object and create API to read the EEC DPLL state.
 
-Oh, so NFS boot works for the most part on i.mx8mp but under certain
-conditions (or with certain configuration?) this error can be observed 
-and the boot will fail?
+You missed CCing Vadim. I guess Ccing the right people may be right up
+there with naming things as the hardest things in SW development..
 
-> Do you mean that I need to send the patch as a bug fix to net branch?
-
-Your call, if you would like for the patch to go to stable and LTS
-releases -- then it need to be resent for net with a Fixes tag.
-
-LMK if you prefer net or net-next.
+Anyway, Vadim - do you have an ETA on the first chunk of the PLL work?
