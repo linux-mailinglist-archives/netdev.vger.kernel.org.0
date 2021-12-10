@@ -2,160 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BC91470548
-	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 17:06:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3353647054B
+	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 17:06:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238959AbhLJQKI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Dec 2021 11:10:08 -0500
-Received: from mail-oi1-f173.google.com ([209.85.167.173]:39934 "EHLO
-        mail-oi1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233882AbhLJQKI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 11:10:08 -0500
-Received: by mail-oi1-f173.google.com with SMTP id bf8so13836899oib.6;
-        Fri, 10 Dec 2021 08:06:33 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=dAnAsqrDSDhfamLtx23MuUTnyYgeJjRMBuZI8nDebcE=;
-        b=EfFLolP8n/ORGBb8ds194ShPW4gx9UC3FDscuN8qBYvsLvaNV70Tk0MVo9sR6lK7Ji
-         iPQBp8Saj2LLQvH8ETeblH/TOKopj33WJZ4veu8pfZMO8nwfsNvzyatB/Stcwwg+9glC
-         YkX2D0HJmepOkzHNCUSB26hFEFQgKNCWnrRQIflm2cmYqf6u/Tu/txLPdyqRPOiUzR6z
-         m6zD1ZzswjD7npApwNxrpG9/pBnHb5pe7hHd1hNyhwQ42arQbTN54ctAs+L46DyA3jY9
-         iJg7AuQlZovFGPe3RPJ+SLOuSrYlvdgS5AweBeAFKVKdvjiX5yqKuGFglWXx/GP2MM/f
-         GaEg==
-X-Gm-Message-State: AOAM532N/L/arwwhQAAZUbn9F/nMGbb5jlwJ9FBy+UFOksnlSZlKNe/4
-        eayTbCuXgscZnevf+gMHTg==
-X-Google-Smtp-Source: ABdhPJx/D0lhYrSL3dsY/Ab91GTKDE/ZDm7LRsWk8edmx6lOlOHlR5AxG7FnFFO4BED6RrRQRRESIg==
-X-Received: by 2002:a05:6808:180c:: with SMTP id bh12mr13589719oib.152.1639152392520;
-        Fri, 10 Dec 2021 08:06:32 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id k8sm599409oon.2.2021.12.10.08.06.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Dec 2021 08:06:30 -0800 (PST)
-Received: (nullmailer pid 1438117 invoked by uid 1000);
-        Fri, 10 Dec 2021 16:06:29 -0000
-Date:   Fri, 10 Dec 2021 10:06:29 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     JosephCHANG <josright123@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, joseph_chang@davicom.com.tw,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3, 1/2] yaml: Add dm9051 SPI network yaml file
-Message-ID: <YbN7BU7bOKGbvFMK@robh.at.kernel.org>
-References: <20211210084021.13993-1-josright123@gmail.com>
- <20211210084021.13993-2-josright123@gmail.com>
+        id S239972AbhLJQKP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Dec 2021 11:10:15 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:35354 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233882AbhLJQKP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 11:10:15 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 13B33B828A8;
+        Fri, 10 Dec 2021 16:06:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B7BFC341CB;
+        Fri, 10 Dec 2021 16:06:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1639152397;
+        bh=FXw+X46FJDb+N51VzNwvo7FkfBLgll06tDuKFIWiAV0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=CRRz8zGClKmgOpis4VREWosgQ3KDQ1bMgLt3BMq4djfEXY1Lw29XJjI1TD+3RYW6T
+         DWwEj6g0EQ1A2tMCDn5DEWKY6qaD6ghFREUXDTdcfnFOyvUf3DOE1VTt8zNleCNUvr
+         ckRXVfIJ/ciuy86csJXUUznPt/qu+lIDexEfLHiglefLAf1fgacgh6yWTFCWENdKOl
+         572pSPCJa3n+0A2cJD744xG3USskICgA8fOuLNPrP+KsBEkOfd+sKb/HfeyJBLBNLl
+         SKHZ2Q6wKBMpRB/juSOZNur8AfIZ0os9ca7sZ3XGJUgFka5ItAtaEo1gfMswuaff6t
+         t1I+XBuojp7Bg==
+Date:   Fri, 10 Dec 2021 08:06:36 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
+Cc:     Joakim Zhang <qiangqing.zhang@nxp.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
+        "alexandre.torgue@foss.st.com" <alexandre.torgue@foss.st.com>,
+        "joabreu@synopsys.com" <joabreu@synopsys.com>,
+        Yannick Vignon <yannick.vignon@nxp.com>,
+        "boon.leong.ong@intel.com" <boon.leong.ong@intel.com>,
+        "Jose.Abreu@synopsys.com" <Jose.Abreu@synopsys.com>,
+        "mst@redhat.com" <mst@redhat.com>,
+        "Joao.Pinto@synopsys.com" <Joao.Pinto@synopsys.com>,
+        Mingkai Hu <mingkai.hu@nxp.com>, Leo Li <leoyang.li@nxp.com>
+Subject: Re: [EXT] Re: [PATCH net-next] net: stmmac: bump tc when get
+ underflow error from DMA descriptor
+Message-ID: <20211210080636.3c1ab98f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <DB8PR04MB57852B80794A0B487167D3A2F0719@DB8PR04MB5785.eurprd04.prod.outlook.com>
+References: <20211208100651.19369-1-xiaoliang.yang_1@nxp.com>
+        <VI1PR04MB68009F16CAA80DCEBFA8F170E6709@VI1PR04MB6800.eurprd04.prod.outlook.com>
+        <20211209184123.63117f42@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <DB8PR04MB57852B80794A0B487167D3A2F0719@DB8PR04MB5785.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211210084021.13993-2-josright123@gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 10, 2021 at 04:40:20PM +0800, JosephCHANG wrote:
+On Fri, 10 Dec 2021 03:11:16 +0000 Xiaoliang Yang wrote:
+> > > 5 queues with FIFO cut-through mode can work well after applying this patch.
+> > 
+> > This never worked, correct? It's not a regression fix?  
+>
+> Yes, it's never worked when the underflow error is observed in the
+> case of NFS boot on i.mx8mp. I'm not sure if other SoC have same
+> issue in this case, but I think it's necessary to increase the
+> threshold value in case of underflow error.
 
-Follow the subject style used for the directory. 'dt-bindings: net: ...'
+Oh, so NFS boot works for the most part on i.mx8mp but under certain
+conditions (or with certain configuration?) this error can be observed 
+and the boot will fail?
 
-> For support davicom dm9051 device tree configure
+> Do you mean that I need to send the patch as a bug fix to net branch?
 
-Complete sentences please.
+Your call, if you would like for the patch to go to stable and LTS
+releases -- then it need to be resent for net with a Fixes tag.
 
-> 
-> Signed-off-by: JosephCHANG <josright123@gmail.com>
-
-space?                 ^
-
-> ---
->  .../bindings/net/davicom,dm9051.yaml          | 71 +++++++++++++++++++
->  1 file changed, 71 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/davicom,dm9051.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/net/davicom,dm9051.yaml b/Documentation/devicetree/bindings/net/davicom,dm9051.yaml
-> new file mode 100644
-> index 000000000000..4c2dd0362f7a
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/net/davicom,dm9051.yaml
-> @@ -0,0 +1,71 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/net/davicom,dm9051.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Davicom DM9051 SPI Ethernet Controller
-> +
-> +maintainers:
-> +  - Joseph CHANG <josright123@gmail.com>
-> +
-> +description: |
-> +  The DM9051 is a fully integrated and cost-effective low pin count single
-> +  chip Fast Ethernet controller with a Serial Peripheral Interface (SPI).
-> +
-> +allOf:
-> +  - $ref: ethernet-controller.yaml#
-> +
-> +properties:
-> +  compatible:
-> +    const: davicom,dm9051
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  spi-max-frequency:
-> +    maximum: 45000000
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  local-mac-address: true
-> +
-> +  mac-address: true
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - spi-max-frequency
-> +  - interrupts
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  # Raspberry Pi platform
-> +  - |
-> +    /* for Raspberry Pi with pin control stuff for GPIO irq */
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +    #include <dt-bindings/gpio/gpio.h>
-> +    spi {
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +
-> +        dm9051@0 {
-
-ethernet@...
-
-> +            compatible = "davicom,dm9051";
-> +            reg = <0>; /* spi chip select */
-> +            local-mac-address = [00 00 00 00 00 00];
-> +            pinctrl-names = "default";
-> +            pinctrl-0 = <&eth_int_pins>;
-> +            interrupt-parent = <&gpio>;
-> +            interrupts = <26 IRQ_TYPE_LEVEL_LOW>;
-> +            spi-max-frequency = <31200000>;
-> +        };
-> +    };
-> +    gpio {
-
-This part is not relevant to the binding example.
-
-> +        eth_int_pins {
-> +            brcm,pins = <26>;
-> +            brcm,function = <0>; /* in */
-> +            brcm,pull = <0>; /* none */
-> +        };
-> +    };
-> -- 
-> 2.20.1
-> 
-> 
+LMK if you prefer net or net-next.
