@@ -2,126 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D97834707FB
-	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 19:00:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B39BA4707FD
+	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 19:00:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244988AbhLJSEJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Dec 2021 13:04:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50692 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235392AbhLJSEI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 13:04:08 -0500
-Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10676C061746;
-        Fri, 10 Dec 2021 10:00:33 -0800 (PST)
-Received: by mail-oi1-x22d.google.com with SMTP id t19so14303508oij.1;
-        Fri, 10 Dec 2021 10:00:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=gAusYcjMSdi6ENjoyW2rmnebOZmH0DJmsAW1WGU5ejo=;
-        b=VXFJE1O848TGo7qIxz8zimyQdPxSmfi0z2tIFy191p8v3r7EiWlIfEfN0V2WropX4s
-         xKV0vrR/VLfSetqYDi3CdI7ATqxCt2uNv5ePs+5Ub0nCBVdBLw3ngHcHNLddAfImUHVY
-         fMouKQDAqTdb8Rbbg1WI9hNxAaFzNrUahfs+uCtS1bsHWWPfvT5jIS3q2mFGGwMM22Vj
-         YgJfPpAVJsa6V1F+QZ/jLVdCjtOBiklJarhBzVPnBD1tCbShz8BFFb8UaaHcNsFuDmG8
-         ecsAg6jyhZd30x3tiJhpnLhfWUrP62UZqwbk3vm9vyOdXRP+D6NovP3IEyeYuAvvbPMS
-         QLrw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=gAusYcjMSdi6ENjoyW2rmnebOZmH0DJmsAW1WGU5ejo=;
-        b=ttigJT0Pp8ORYgEqjrzimbpl+XXav61Uch1P7J9kXtKcDbcmVGzZx5R8jm/SIy8T7e
-         iWp7k4eE/1EhmlJKnhWlXMqxu4bkbtp0D+cppYjovZMLVTDFKcsg44O8QWP9w0Ae1kJD
-         oGwaa7Esmzt3dtRmDVLo3dy4ITNJbYZ+DJsjginFekK3cClsV0FZlw9/UiZy55vyrK8D
-         1DA7wYbVQr3UqwWACHeVgS8f08ilBM8kuUteb92+DCg1vE5LTgWAv5LAT6OwfiFTBOtw
-         JEK6TFjc6/RmY9yHBgdDtcnrHG8oFSkKWZLHw19DnS/JfLjeKswxs4MldXsvTf8GmtRI
-         3GXA==
-X-Gm-Message-State: AOAM533c98ko/XKcag1Z+J4VBRLgiktgSSeh8RlIC8Oz2M/RQUccmlnt
-        HY2Jboiav5Fq0ppWnFK9FsQeo7v/RuXErQ==
-X-Google-Smtp-Source: ABdhPJww+uZk2RQFNLxjbBx7wHU293+7KnyPm6xqnDALh2RMA3QUCzpAqBD4GbRy42e7bl6h5TRfQw==
-X-Received: by 2002:a54:4401:: with SMTP id k1mr14221689oiw.143.1639159232402;
-        Fri, 10 Dec 2021 10:00:32 -0800 (PST)
-Received: from localhost ([172.243.151.11])
-        by smtp.gmail.com with ESMTPSA id bq5sm917562oib.55.2021.12.10.10.00.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Dec 2021 10:00:32 -0800 (PST)
-Date:   Fri, 10 Dec 2021 10:00:26 -0800
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     "Daniel T. Lee" <danieltimlee@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org
-Message-ID: <61b395ba5cc03_2032520824@john.notmuch>
-In-Reply-To: <20211210111918.4904-1-danieltimlee@gmail.com>
-References: <20211210111918.4904-1-danieltimlee@gmail.com>
-Subject: RE: [PATCH] samples: bpf: fix tracex2 due to empty sys_write count
- argument
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        id S245002AbhLJSEN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Dec 2021 13:04:13 -0500
+Received: from mga12.intel.com ([192.55.52.136]:54156 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235392AbhLJSEM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 10 Dec 2021 13:04:12 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10194"; a="218425838"
+X-IronPort-AV: E=Sophos;i="5.88,196,1635231600"; 
+   d="scan'208";a="218425838"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Dec 2021 10:00:36 -0800
+X-IronPort-AV: E=Sophos;i="5.88,196,1635231600"; 
+   d="scan'208";a="544054225"
+Received: from dmales-mobl.amr.corp.intel.com ([10.251.4.94])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Dec 2021 10:00:36 -0800
+Date:   Fri, 10 Dec 2021 10:00:35 -0800 (PST)
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+cc:     Matthieu Baerts <matthieu.baerts@tessares.net>, cgel.zte@gmail.com,
+        davem@davemloft.net, shuah@kernel.org, netdev@vger.kernel.org,
+        mptcp@lists.linux.dev, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Ye Guojin <ye.guojin@zte.com.cn>,
+        ZealRobot <zealci@zte.com.cn>
+Subject: Re: [PATCH] selftests: mptcp: remove duplicate include in
+ mptcp_inq.c
+In-Reply-To: <20211210075701.06bfced2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Message-ID: <7041cc47-3728-c033-bc97-49d86a1938b9@linux.intel.com>
+References: <20211210071424.425773-1-ye.guojin@zte.com.cn> <ab84ca1f-0f43-d50c-c272-81f64ee31ce8@tessares.net> <20211210065437.27c8fe23@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <20211210065644.192f5159@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <b6c19c9c-de6c-225c-5899-789dfd8e7ae8@tessares.net> <20211210075701.06bfced2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+MIME-Version: 1.0
+Content-Type: text/plain; format=flowed; charset=US-ASCII
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Daniel T. Lee wrote:
-> Currently from syscall entry, argument can't be fetched correctly as a
-> result of register cleanup.
-> 
->     commit 6b8cf5cc9965 ("x86/entry/64/compat: Clear registers for compat syscalls, to reduce speculation attack surface")
-> 
-> For example in upper commit, registers are cleaned prior to syscall.
-> To be more specific, sys_write syscall has count size as a third argument.
-> But this can't be fetched from __x64_sys_enter/__s390x_sys_enter due to
-> register cleanup. (e.g. [x86] xorl %r8d, %r8d / [s390x] xgr %r7, %r7)
-> 
-> This commit fix this problem by modifying the trace event to ksys_write
-> instead of sys_write syscall entry.
-> 
->     # Wrong example of 'write()' syscall argument fetching
->     # ./tracex2
->     ...
->     pid 50909 cmd dd uid 0
->            syscall write() stats
->      byte_size       : count     distribution
->        1 -> 1        : 4968837  |************************************* |
-> 
->     # Successful example of 'write()' syscall argument fetching
->     # (dd's write bytes at a time defaults to 512)
->     # ./tracex2
->     ...
->     pid 3095 cmd dd uid 0
->            syscall write() stats
->      byte_size       : count     distribution
->     ...
->      256 -> 511      : 0        |                                      |
->      512 -> 1023     : 4968844  |************************************* |
-> 
-> Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
-> ---
->  samples/bpf/tracex2_kern.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/samples/bpf/tracex2_kern.c b/samples/bpf/tracex2_kern.c
-> index 5bc696bac27d..96dff3bea227 100644
-> --- a/samples/bpf/tracex2_kern.c
-> +++ b/samples/bpf/tracex2_kern.c
-> @@ -78,7 +78,7 @@ struct {
->  	__uint(max_entries, 1024);
->  } my_hist_map SEC(".maps");
->  
-> -SEC("kprobe/" SYSCALL(sys_write))
-> +SEC("kprobe/ksys_write")
->  int bpf_prog3(struct pt_regs *ctx)
->  {
->  	long write_size = PT_REGS_PARM3(ctx);
-> -- 
-> 2.32.0
-> 
+On Fri, 10 Dec 2021, Jakub Kicinski wrote:
 
-LGTM
+> On Fri, 10 Dec 2021 16:36:06 +0100 Matthieu Baerts wrote:
+>>> Actually, I take that back, let's hear from Mat, he may want to take
+>>> the patch via his tree.
+>>
+>> We "rebase" our tree on top of net-next every night. I think for such
+>> small patches with no behaviour change and sent directly to netdev ML,
+>> it is probably best to apply them directly. I can check with Mat if it
+>> is an issue if you prefer.
+>
+> Please do, I'm happy to apply the patch but Mat usually prefers to take
+> things thru MPTCP tree.
+>
 
-Acked-by: John Fastabend <john.fastabend@gmail.com>
+Jakub -
+
+It is ok with me if you apply this now, for the reasons Matthieu cited.
+
+The usual division of labor between Matthieu and I as MPTCP co-maintainers 
+usually has me upstreaming the patches to netdev, but I do trust 
+Matthieu's judgement on sending out Reviewed-by tags and advising direct 
+appliction to the netdev trees! Also, much like you & David, having offset 
+timezones can be helpful.
+
+Also appreciate your awareness of the normal patch flow for MPTCP, and 
+that you're checking that we're all on the same page.
+
+
+>> I would have applied it in our MPTCP tree if we were sending PR, not to
+>> bother you for such patches but I guess it is best not to have us
+>> sending this patch a second time later :)
+>>
+>> BTW, if you prefer us sending PR over batches of patches, please tell us!
+>
+> Small preference for patches. It's good to have the code on the ML for
+> everyone to look at and mixed PR + patches are a tiny bit more clicking
+> for me.
+>
+
+Good to know.
+
+
+Thanks!
+
+--
+Mat Martineau
+Intel
