@@ -2,116 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EFD546FFB3
-	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 12:19:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DF1846FFC1
+	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 12:26:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237838AbhLJLXA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Dec 2021 06:23:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40282 "EHLO
+        id S240314AbhLJLa2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Dec 2021 06:30:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237710AbhLJLXA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 06:23:00 -0500
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9A60C061746;
-        Fri, 10 Dec 2021 03:19:25 -0800 (PST)
-Received: by mail-pl1-x631.google.com with SMTP id p18so6037070plf.13;
-        Fri, 10 Dec 2021 03:19:25 -0800 (PST)
+        with ESMTP id S234694AbhLJLa1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 06:30:27 -0500
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04985C061746;
+        Fri, 10 Dec 2021 03:26:53 -0800 (PST)
+Received: by mail-pg1-x52a.google.com with SMTP id r5so7806846pgi.6;
+        Fri, 10 Dec 2021 03:26:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=kwY1VEJYtn6EcwuoRvcNTGc/ITcR071MZ71xACzBa7E=;
-        b=JqaNxKBRyYRNjkWHb4KB4MlHqiH/nBtS+xL+sTmy2s17+eUTNwNJ3aWfnnUjudYq6P
-         hwO3027g9XMt+dhzBLVf1FRm23P+ayxjvHvHqdn/aF4j3SQ9H5gHQPmaWwxS5yy/bIo9
-         l80t5ZbFcSkbzq3+3KAbQ/MoK83Q+gwhLbR+40X1zh51zEZile1/Cayd66mWFJpwPTnG
-         xAjxfO4q0Mkg5xWu6KAF+Qb/vZ/OjuqWiGSkFOz/LEUWXUgBRi6bovsMu7KNFg5tyKIR
-         RPH+8vQ4H1JF0/Xl94wpjHNCn2CTWeFlhmaHUUm4d8cmUgFg15qglSBODKR0gGlUKzfJ
-         pHXA==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=oNMML2GUfpRe4KuxNkgjDIBCEtPq+5IBWg/SvCiB1ac=;
+        b=R6WJg/vOJke+Pss70tPbsPfFF/c3xP//0lNWb4hUhYl4MWKxQP2AhRoJk4Y5bJnZp1
+         KlS/DCpvqpFeiAygTjN3XgOkI4wsSUC3pOrCoqxfXll66oNqjjEsxdBGCU8QLOGpiVFR
+         LWobxq8LFE1rEMc9YMoXunbOVZdz+3AjoVc8Kg1y1K0br5h1EYdR+RZpCv+3N4AQ+bZY
+         pcM/MyWJuqJ15I3uei6a2bY9gaYAbKfpGIxypgOKVezQsvr67voKcAS9cTyw+4bd89zI
+         U6kMYbLLJuqyUsx1sojCQ4Giu6rXvLiH2AL0GvH1cco0m27EzFRtcTcBh4LPEZ09Zf0b
+         hZFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=kwY1VEJYtn6EcwuoRvcNTGc/ITcR071MZ71xACzBa7E=;
-        b=cCVyLttdbYvPu+FyIhiKzVJCAYH9kLsGKtwpduyfbwez1nUsaC7bJe9jqg3IBQfaSF
-         Tar8IJebiDYrlFxwxKHUeUj7VklbgZcB/l3O6Iyj6wMxDjeZMX6n3X/IYBzkdks6Hn9g
-         7AEH3TY/JnwGaPWQMqf2nbdHqobSMvqSDrFuO/yFhhiF0g+YkJWS+IdC9jKA9/eQ4K/z
-         moYksa/cRJsX+CpUSl4OGPQPplZaURzNyjUXFqXM2gTJOPhVYNoUtJH9U4vFywm+17tM
-         lxQZKvp7hHrAxAF9DeuMB5Rh0SZrOtZA1SnuBl5DrNslkKZ4DAErf3kqgrYJvwHrPdlo
-         s/qg==
-X-Gm-Message-State: AOAM533WsG6cz863LrmiU+FlcStpCSxSpjWNrYxJF49PjER5Axe6talz
-        5yjQTcAtFRfbRh2+KcCS0Q==
-X-Google-Smtp-Source: ABdhPJzjb13cgS6Gop9dqMs3tqx7PwRGIwgV+Ze2Tw44iMAuusqOVvTzvw+xyi/MpyrqbRjd7kfEgg==
-X-Received: by 2002:a17:902:ba84:b0:142:5514:8dd7 with SMTP id k4-20020a170902ba8400b0014255148dd7mr75348793pls.87.1639135165246;
-        Fri, 10 Dec 2021 03:19:25 -0800 (PST)
-Received: from u-u2110-5.. ([182.209.58.45])
-        by smtp.gmail.com with ESMTPSA id x6sm2529197pga.14.2021.12.10.03.19.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Dec 2021 03:19:24 -0800 (PST)
-From:   "Daniel T. Lee" <danieltimlee@gmail.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH] samples: bpf: fix tracex2 due to empty sys_write count argument
-Date:   Fri, 10 Dec 2021 11:19:18 +0000
-Message-Id: <20211210111918.4904-1-danieltimlee@gmail.com>
-X-Mailer: git-send-email 2.32.0
+        bh=oNMML2GUfpRe4KuxNkgjDIBCEtPq+5IBWg/SvCiB1ac=;
+        b=oe7DT9hup1Ybt4K9Aw9x06z2lhJGiSASd1LxlOnE2k9YU4hB0jN/LiknrD8f2M/6AK
+         7iS8Sm46A5/1wVwUtFD6107X5ucOVPCXTy/FiU6uaVQdd4zXZ9UTVUI7WV8uNCPIzGzp
+         mrpLvHAkEs+yS09Y91czkXNubyyZ1f/tuFAfhmCLS984zYwU4EGkkLHjvK/BVgDmnZVm
+         6wtpJz4QBmrvtiTOGQDfgoAzkX+0o1lnP23vXGKmY6qYuhvKVH2xm9JIuvwXWrkouDT6
+         1ZwrP+NQoCCdy9KqByzC3tyZDdv6e8Jo+Up+/HJFFk80TZC3gyxADcKlaKkPBjDZzJuG
+         ngXw==
+X-Gm-Message-State: AOAM530xXfVP52+SZ3J9blf3A0aqSjz4GJiqQOovt0Bzr+SVXxnEvPW6
+        9sTbn5ljHkE46HgFsdLAIOw=
+X-Google-Smtp-Source: ABdhPJwHRIt+DqTuxKr3Ov92YpyxCIqQ63650YjNIjSjqT5l4iFIeahNGLj6YxvmmYkMJGFzIrL5ng==
+X-Received: by 2002:a63:d753:: with SMTP id w19mr5091188pgi.174.1639135612496;
+        Fri, 10 Dec 2021 03:26:52 -0800 (PST)
+Received: from ?IPV6:2404:f801:0:5:8000::50b? ([2404:f801:9000:1a:efea::50b])
+        by smtp.gmail.com with ESMTPSA id on6sm16041313pjb.47.2021.12.10.03.26.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 10 Dec 2021 03:26:52 -0800 (PST)
+Message-ID: <e4125f7b-fdd9-dc0d-63d0-93d841dbb3c3@gmail.com>
+Date:   Fri, 10 Dec 2021 19:26:40 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH V6 2/5] x86/hyper-v: Add hyperv Isolation VM check in the
+ cc_platform_has()
+Content-Language: en-US
+To:     "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
+        KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        Dexuan Cui <decui@microsoft.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "bp@alien8.de" <bp@alien8.de>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "x86@kernel.org" <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "jejb@linux.ibm.com" <jejb@linux.ibm.com>,
+        "martin.petersen@oracle.com" <martin.petersen@oracle.com>,
+        "arnd@arndb.de" <arnd@arndb.de>,
+        "hch@infradead.org" <hch@infradead.org>,
+        "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
+        "robin.murphy@arm.com" <robin.murphy@arm.com>,
+        Tianyu Lan <Tianyu.Lan@microsoft.com>,
+        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>
+Cc:     "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        vkuznets <vkuznets@redhat.com>,
+        "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
+        "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
+        "hch@lst.de" <hch@lst.de>, "joro@8bytes.org" <joro@8bytes.org>,
+        "parri.andrea@gmail.com" <parri.andrea@gmail.com>,
+        "dave.hansen@intel.com" <dave.hansen@intel.com>
+References: <20211207075602.2452-1-ltykernel@gmail.com>
+ <20211207075602.2452-3-ltykernel@gmail.com>
+ <MWHPR21MB1593F014EC440F5DEDCFDDFFD7709@MWHPR21MB1593.namprd21.prod.outlook.com>
+From:   Tianyu Lan <ltykernel@gmail.com>
+In-Reply-To: <MWHPR21MB1593F014EC440F5DEDCFDDFFD7709@MWHPR21MB1593.namprd21.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently from syscall entry, argument can't be fetched correctly as a
-result of register cleanup.
+On 12/10/2021 4:38 AM, Michael Kelley (LINUX) wrote:
+> From: Tianyu Lan <ltykernel@gmail.com> Sent: Monday, December 6, 2021 11:56 PM
+>>
+>> Hyper-V provides Isolation VM which has memory encrypt support. Add
+>> hyperv_cc_platform_has() and return true for check of GUEST_MEM_ENCRYPT
+>> attribute.
+>>
+>> Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
+>> ---
+>> Change since v3:
+>> 	* Change code style of checking GUEST_MEM attribute in the
+>> 	  hyperv_cc_platform_has().
+>> ---
+>>   arch/x86/kernel/cc_platform.c | 8 ++++++++
+>>   1 file changed, 8 insertions(+)
+>>
+>> diff --git a/arch/x86/kernel/cc_platform.c b/arch/x86/kernel/cc_platform.c
+>> index 03bb2f343ddb..47db88c275d5 100644
+>> --- a/arch/x86/kernel/cc_platform.c
+>> +++ b/arch/x86/kernel/cc_platform.c
+>> @@ -11,6 +11,7 @@
+>>   #include <linux/cc_platform.h>
+>>   #include <linux/mem_encrypt.h>
+>>
+>> +#include <asm/mshyperv.h>
+>>   #include <asm/processor.h>
+>>
+>>   static bool __maybe_unused intel_cc_platform_has(enum cc_attr attr)
+>> @@ -58,9 +59,16 @@ static bool amd_cc_platform_has(enum cc_attr attr)
+>>   #endif
+>>   }
+>>
+>> +static bool hyperv_cc_platform_has(enum cc_attr attr)
+>> +{
+>> +	return attr == CC_ATTR_GUEST_MEM_ENCRYPT;
+>> +}
+>>
+>>   bool cc_platform_has(enum cc_attr attr)
+>>   {
+>> +	if (hv_is_isolation_supported())
+>> +		return hyperv_cc_platform_has(attr);
+>> +
+>>   	if (sme_me_mask)
+>>   		return amd_cc_platform_has(attr);
+>>
+> 
+> Throughout Linux kernel code, there are about 20 calls to cc_platform_has()
+> with CC_ATTR_GUEST_MEM_ENCRYPT as the argument.  The original code
+> (from v1 of this patch set) only dealt with the call in sev_setup_arch().   But
+> with this patch, all the other calls that previously returned "false" will now
+> return "true" in a Hyper-V Isolated VM.  I didn't try to analyze all these other
+> calls, so I think there's an open question about whether this is the behavior
+> we want.
+> 
 
-    commit 6b8cf5cc9965 ("x86/entry/64/compat: Clear registers for compat syscalls, to reduce speculation attack surface")
+CC_ATTR_GUEST_MEM_ENCRYPT is for SEV support so far. Hyper-V Isolation
+VM is based on SEV or software memory encrypt. Most checks can be 
+reused. The difference is that SEV code use encrypt bit in the page
+table to encrypt and decrypt memory while Hyper-V uses vTOM. But the sev
+memory encrypt mask "sme_me_mask" is unset in the Hyper-V Isolation VM
+where claims sev and sme are unsupported. The rest of checks for mem enc
+bit are still safe. So reuse CC_ATTR_GUEST_MEM_ENCRYPT for Hyper-V.
 
-For example in upper commit, registers are cleaned prior to syscall.
-To be more specific, sys_write syscall has count size as a third argument.
-But this can't be fetched from __x64_sys_enter/__s390x_sys_enter due to
-register cleanup. (e.g. [x86] xorl %r8d, %r8d / [s390x] xgr %r7, %r7)
-
-This commit fix this problem by modifying the trace event to ksys_write
-instead of sys_write syscall entry.
-
-    # Wrong example of 'write()' syscall argument fetching
-    # ./tracex2
-    ...
-    pid 50909 cmd dd uid 0
-           syscall write() stats
-     byte_size       : count     distribution
-       1 -> 1        : 4968837  |************************************* |
-
-    # Successful example of 'write()' syscall argument fetching
-    # (dd's write bytes at a time defaults to 512)
-    # ./tracex2
-    ...
-    pid 3095 cmd dd uid 0
-           syscall write() stats
-     byte_size       : count     distribution
-    ...
-     256 -> 511      : 0        |                                      |
-     512 -> 1023     : 4968844  |************************************* |
-
-Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
----
- samples/bpf/tracex2_kern.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/samples/bpf/tracex2_kern.c b/samples/bpf/tracex2_kern.c
-index 5bc696bac27d..96dff3bea227 100644
---- a/samples/bpf/tracex2_kern.c
-+++ b/samples/bpf/tracex2_kern.c
-@@ -78,7 +78,7 @@ struct {
- 	__uint(max_entries, 1024);
- } my_hist_map SEC(".maps");
- 
--SEC("kprobe/" SYSCALL(sys_write))
-+SEC("kprobe/ksys_write")
- int bpf_prog3(struct pt_regs *ctx)
- {
- 	long write_size = PT_REGS_PARM3(ctx);
--- 
-2.32.0
 
