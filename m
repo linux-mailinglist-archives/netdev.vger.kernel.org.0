@@ -2,186 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9850447072E
-	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 18:29:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C24E470767
+	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 18:35:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238195AbhLJRdO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Dec 2021 12:33:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43280 "EHLO
+        id S235365AbhLJRiz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Dec 2021 12:38:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238148AbhLJRdM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 12:33:12 -0500
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66F4DC0617A2
-        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 09:29:37 -0800 (PST)
-Received: by mail-ed1-x52e.google.com with SMTP id l25so32553440eda.11
-        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 09:29:37 -0800 (PST)
+        with ESMTP id S244613AbhLJRhB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 12:37:01 -0500
+Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D054C0617A2
+        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 09:33:26 -0800 (PST)
+Received: by mail-oi1-x230.google.com with SMTP id s139so14081381oie.13
+        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 09:33:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=9RxjzszKD9Od2e7YXG/V8VJLLgdKFHVpoBxdV2xV9Sg=;
-        b=LR7UIFzXBJTvJ/2ftzA6+FUN6zNDCqpVodAdiO8Ey+SseHMDVX8HxfQM5tDjonYTmW
-         LZQ7D9rUm7ie9HLr2I0PnNawo5Byv7qRNA2dqsxUXG9oe+v8oh7bgJTRBlE9q6UGvBw1
-         DMBCYiirXfeI4c+Vr4Ix/ZPgIuKp9EMvLGdrONMuCw4B5YeD93pDt3QurD2WE+ton1zT
-         tSAaDiy/XgEBcERj16fnn+ZxBAgqGmd+Hths5oGd0Dp4PUJfrUwGewYS41qVL/DnHlwl
-         cHBJe/wL7seQMwboLb3+FkxmJachCDcQ7v1gH5iCmjH0LbD9BWTolz833ZZurbLNOyrA
-         Kf6g==
+        d=linuxfoundation.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=N5piJeGroEj5EK/nl0Pv9Gmn3OrmZFhy1pHRTuf94YA=;
+        b=g9+QdAKDtcUtq15KKC71Ntw+2MfOqG+XUAQDqkyK7Jg0EbL9dU9e9fXhNMoyUMDS5G
+         SnEWEn5JGFiH1/nSNkFCTpxAiKtRKqutdPjBo0jWoagYZ398eZrrSfq7jzPEDfvmoJ99
+         VuMh+A1ngJiI8532kLDIzoUxuLCkV+f6nJptA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=9RxjzszKD9Od2e7YXG/V8VJLLgdKFHVpoBxdV2xV9Sg=;
-        b=LQv+LnPgMp2MvGtAc3V1P31qovDEJpg1F165oLncdIrmVFgahNvuzt3PU68b/Fw9YY
-         zuoX+iEfr6jZ4OWhoeARoRcaKJmohGppOWctN29/fX+TqhgfrjyBiCupohEVQEaunOCg
-         ctxdOGlqDbxdWgW6UMgLYvtDMTm8SETnf9O+mVHBeVBg0C0dZyrnuY4bq9vfZB/QNXqo
-         lTXImEqSoEF6/+FNcgMgchUVkCiyqv3FGOd+gjG9Dy2p8OCbuPHUgCU9EoDvfxT6OXgD
-         VduTi2uyK1kGwp5Fdq/3irCiE5ZnGJkXE5c+rZWPB9Ndr1/rnfr5OrCLE9yJhzOHQwMG
-         HyFQ==
-X-Gm-Message-State: AOAM531gB7owf9S42KWPzeTLjSlZVsmWoSwnBA+PglrqCTwV2lL8DGbn
-        w5aCjHLPcFCDRh1pti5CHuU=
-X-Google-Smtp-Source: ABdhPJzt+E+1d9+t7u1kCRZSTqAaMJFAgii/jGX1dzx1wu1qeVTzcXyi2JSvYzkYvKpTwvJeeQFwow==
-X-Received: by 2002:a05:6402:1453:: with SMTP id d19mr38714841edx.388.1639157375661;
-        Fri, 10 Dec 2021 09:29:35 -0800 (PST)
-Received: from Ansuel-xps. (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.gmail.com with ESMTPSA id m22sm1726075eda.97.2021.12.10.09.29.34
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=N5piJeGroEj5EK/nl0Pv9Gmn3OrmZFhy1pHRTuf94YA=;
+        b=bBVf6jVl8S7uH59WFqOqbGeg47MQiRHmYXW4vI7bfbzQ3KMdjuG6vCAeF+HCeHsUFh
+         N9exKHMjmOZI8q/BtbWls50mvDJCN30WpsKulLLFYFjlbce0On6wnfGtkl8dwoqMbb+y
+         xN1zdpngAadTEamj+aliI/YiMjlc5DDMKAVuX9JGI1rLsfGFrlbzbzA0ESoNop/gNoni
+         Z/VkeJVvfvq3jVGoxY4ZbpcMS7hy/cOCjBMnuHZKy1pI/JiTYExOam0iOfk+43b1SOji
+         KVuzZRKt9qeY7pubGiy1Sy/q01IMCKSYCQ4U0qfOTeR+Q7t/24MwmPm2u4qg55r4cqxx
+         yr1Q==
+X-Gm-Message-State: AOAM530IsZq/aVfkIMs0CpgLHbPtRS0a/zjz7i13geXNXmgTJcBNzvjn
+        6QfSn2iIVVfDRnRhrNlDee7EQQ==
+X-Google-Smtp-Source: ABdhPJwpegtHSTsU291UpONzkrU9vfCDqPTNb+9w5/E07tR0hubuohplY3DJy4sIWD9rkj30iZEy5g==
+X-Received: by 2002:a05:6808:485:: with SMTP id z5mr13675532oid.96.1639157605614;
+        Fri, 10 Dec 2021 09:33:25 -0800 (PST)
+Received: from shuah-t480s.internal (c-24-9-64-241.hsd1.co.comcast.net. [24.9.64.241])
+        by smtp.gmail.com with ESMTPSA id x4sm892224oiv.35.2021.12.10.09.33.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Dec 2021 09:29:35 -0800 (PST)
-Message-ID: <61b38e7f.1c69fb81.96d1c.7933@mx.google.com>
-X-Google-Original-Message-ID: <YbOOfJMDSR2rPoI7@Ansuel-xps.>
-Date:   Fri, 10 Dec 2021 18:29:32 +0100
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: [RFC PATCH v2 net-next 0/4] DSA master state tracking
-References: <20211209173927.4179375-1-vladimir.oltean@nxp.com>
- <61b2cb93.1c69fb81.2192a.3ef3@mx.google.com>
- <20211210170242.bckpdm2qa6lchbde@skbuf>
- <61b38a18.1c69fb81.95975.8545@mx.google.com>
- <20211210171530.xh7lajqsvct7dd3r@skbuf>
+        Fri, 10 Dec 2021 09:33:25 -0800 (PST)
+From:   Shuah Khan <skhan@linuxfoundation.org>
+To:     catalin.marinas@arm.com, will@kernel.org, shuah@kernel.org,
+        keescook@chromium.org, mic@digikod.net, davem@davemloft.net,
+        kuba@kernel.org, peterz@infradead.org, paulmck@kernel.org,
+        boqun.feng@gmail.com, akpm@linux-foundation.org
+Cc:     Shuah Khan <skhan@linuxfoundation.org>,
+        linux-kselftest@vger.kernel.org,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        linux-mm@kvack.org
+Subject: [PATCH 00/12] selftests: Remove ARRAY_SIZE duplicate defines
+Date:   Fri, 10 Dec 2021 10:33:10 -0700
+Message-Id: <cover.1639156389.git.skhan@linuxfoundation.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211210171530.xh7lajqsvct7dd3r@skbuf>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 10, 2021 at 05:15:30PM +0000, Vladimir Oltean wrote:
-> On Fri, Dec 10, 2021 at 06:10:45PM +0100, Ansuel Smith wrote:
-> > On Fri, Dec 10, 2021 at 05:02:42PM +0000, Vladimir Oltean wrote:
-> > > On Fri, Dec 10, 2021 at 04:37:52AM +0100, Ansuel Smith wrote:
-> > > > On Thu, Dec 09, 2021 at 07:39:23PM +0200, Vladimir Oltean wrote:
-> > > > > This patch set is provided solely for review purposes (therefore not to
-> > > > > be applied anywhere) and for Ansuel to test whether they resolve the
-> > > > > slowdown reported here:
-> > > > > https://patchwork.kernel.org/project/netdevbpf/cover/20211207145942.7444-1-ansuelsmth@gmail.com/
-> > > > > 
-> > > > > The patches posted here are mainly to offer a consistent
-> > > > > "master_state_change" chain of events to switches, without duplicates,
-> > > > > and always starting with operational=true and ending with
-> > > > > operational=false. This way, drivers should know when they can perform
-> > > > > Ethernet-based register access, and need not care about more than that.
-> > > > > 
-> > > > > Changes in v2:
-> > > > > - dropped some useless patches
-> > > > > - also check master operstate.
-> > > > > 
-> > > > > Vladimir Oltean (4):
-> > > > >   net: dsa: provide switch operations for tracking the master state
-> > > > >   net: dsa: stop updating master MTU from master.c
-> > > > >   net: dsa: hold rtnl_mutex when calling dsa_master_{setup,teardown}
-> > > > >   net: dsa: replay master state events in
-> > > > >     dsa_tree_{setup,teardown}_master
-> > > > > 
-> > > > >  include/net/dsa.h  | 11 +++++++
-> > > > >  net/dsa/dsa2.c     | 80 +++++++++++++++++++++++++++++++++++++++++++---
-> > > > >  net/dsa/dsa_priv.h | 13 ++++++++
-> > > > >  net/dsa/master.c   | 29 ++---------------
-> > > > >  net/dsa/slave.c    | 27 ++++++++++++++++
-> > > > >  net/dsa/switch.c   | 15 +++++++++
-> > > > >  6 files changed, 145 insertions(+), 30 deletions(-)
-> > > > > 
-> > > > > -- 
-> > > > > 2.25.1
-> > > > > 
-> > > > 
-> > > > Hi, I tested this v2 and I still have 2 ethernet mdio failing on init.
-> > > > I don't think we have other way to track this. Am I wrong?
-> > > > 
-> > > > All works correctly with this and promisc_on_master.
-> > > > If you have other test, feel free to send me other stuff to test.
-> > > > 
-> > > > (I'm starting to think the fail is caused by some delay that the switch
-> > > > require to actually start accepting packet or from the reinit? But I'm
-> > > > not sure... don't know if you notice something from the pcap)
-> > > 
-> > > I've opened the pcap just now. The Ethernet MDIO packets are
-> > > non-standard. When the DSA master receives them, it expects the first 6
-> > > octets to be the MAC DA, because that's the format of an Ethernet frame.
-> > > But the packets have this other format, according to your own writing:
-> > > 
-> > > /* Specific define for in-band MDIO read/write with Ethernet packet */
-> > > #define QCA_HDR_MDIO_SEQ_LEN           4 /* 4 byte for the seq */
-> > > #define QCA_HDR_MDIO_COMMAND_LEN       4 /* 4 byte for the command */
-> > > #define QCA_HDR_MDIO_DATA1_LEN         4 /* First 4 byte for the mdio data */
-> > > #define QCA_HDR_MDIO_HEADER_LEN        (QCA_HDR_MDIO_SEQ_LEN + \
-> > >                                        QCA_HDR_MDIO_COMMAND_LEN + \
-> > >                                        QCA_HDR_MDIO_DATA1_LEN)
-> > > 
-> > > #define QCA_HDR_MDIO_DATA2_LEN         12 /* Other 12 byte for the mdio data */
-> > > #define QCA_HDR_MDIO_PADDING_LEN       34 /* Padding to reach the min Ethernet packet */
-> > > 
-> > > The first 6 octets change like crazy in your pcap. Definitely can't add
-> > > that to the RX filter of the DSA master.
-> > > 
-> > > So yes, promisc_on_master is precisely what you need, it exists for
-> > > situations like this.
-> > > 
-> > > Considering this, I guess it works?
-> > 
-> > Yes it works! We can totally accept 2 mdio timeout out of a good way to
-> > track the master port. It's probably related to other stuff like switch
-> > delay or other.
-> > 
-> > Wonder the next step is wait for this to be accepted and then I can
-> > propose a v3 of my patch? Or net-next is closed now and I should just
-> > send v3 RFC saying it does depend on this?
-> 
-> Wait a minute, I don't think I understood your previous reply.
-> With promisc_on_master, is there or is there not any timeout?
+ARRAY_SIZE is defined in several selftests. There are about 25+
+duplicate defines in various selftests source and header files.
+This patch series removes the duplicated defines.
 
-With promisc_on_master I have only 2 timeout.
+Several tests that define ARRAY_SIZE also include kselftest.h or
+kselftest_harness.h. Remove ARRAY_SIZE defines from them.
 
-> My understanding was this: DSA tells you when the master is up and
-> operational. That information is correct, except it isn't sufficient and
-> you don't see the replies back. Later during boot, you have some init
-> scripts triggered by user space that create a bridge interface and put
-> the switch ports under the bridge. The bridge puts the switch interfaces
-> in promiscuous mode, because that's what bridges do. Then DSA propagates
-> the promiscuous mode from the switch ports to the DSA master, and once
-> the master is promiscuous, the Ethernet MDIO starts working too.
-> Now, with promisc_on_master set, the DSA master is already promiscuous
-> by the time DSA tells you that it's up and running. Hence your message
-> that "All works correctly with this and promisc_on_master."
-> What did I misunderstand?
+Some tests that define ARRAY_SIZE don't include headers that define
+it. Remove ARRAY_SIZE define and include kselftest.h
 
-You got all correct. But still I have these 2 timeout at the very start.
-Let me give you another pastebin to make this more clear. [0]
-Transaction done is when the Ethernet packet is received and processed.
-I added some pr with the events received by switch.c
+The first patch in this series:
 
-I should check if the tagger receive some packet before the
-"function timeout". 
-What I mean with "acceptable state" is that aside from the 2
-timeout everything else works correctly withtout any slowdown in the
-init process.
+- Adds ARRAY_SIZE define to kselftest.h
+- Adds ifndef guard around ARRAY_SIZE define in
+  tools/include/linux/kernel.h and kselftest_harness.h
+- Patches 2-12 do the cleanup and depend on patch 1, hence
+  will have to go through kselftest tree.
 
-[0] https://pastebin.com/VfGB5hAQ
+Shuah Khan (12):
+  tools: fix ARRAY_SIZE defines in tools and selftests hdrs
+  selftests/arm64: remove ARRAY_SIZE define from vec-syscfg.c
+  selftests/cgroup: remove ARRAY_SIZE define from cgroup_util.h
+  selftests/core: remove ARRAY_SIZE define from close_range_test.c
+  selftests/ir: remove ARRAY_SIZE define from ir_loopback.c
+  selftests/landlock: remove ARRAY_SIZE define from common.h
+  selftests/net: remove ARRAY_SIZE define from individual tests
+  selftests/rseq: remove ARRAY_SIZE define from individual tests
+  selftests/seccomp: remove ARRAY_SIZE define from seccomp_benchmark
+  selftests/sparc64: remove ARRAY_SIZE define from adi-test
+  selftests/timens: remove ARRAY_SIZE define from individual tests
+  selftests/vm: remove ARRAY_SIZE define from individual tests
+
+ tools/include/linux/kernel.h                          | 2 ++
+ tools/testing/selftests/arm64/fp/vec-syscfg.c         | 2 --
+ tools/testing/selftests/cgroup/cgroup_util.h          | 4 ++--
+ tools/testing/selftests/core/close_range_test.c       | 4 ----
+ tools/testing/selftests/ir/ir_loopback.c              | 1 -
+ tools/testing/selftests/kselftest.h                   | 4 ++++
+ tools/testing/selftests/kselftest_harness.h           | 2 ++
+ tools/testing/selftests/landlock/common.h             | 4 ----
+ tools/testing/selftests/net/gro.c                     | 3 ++-
+ tools/testing/selftests/net/ipsec.c                   | 1 -
+ tools/testing/selftests/net/reuseport_bpf.c           | 4 +---
+ tools/testing/selftests/net/rxtimestamp.c             | 2 +-
+ tools/testing/selftests/net/socket.c                  | 3 ++-
+ tools/testing/selftests/net/tcp_fastopen_backup_key.c | 6 ++----
+ tools/testing/selftests/rseq/basic_percpu_ops_test.c  | 3 +--
+ tools/testing/selftests/rseq/rseq.c                   | 3 +--
+ tools/testing/selftests/seccomp/seccomp_benchmark.c   | 2 +-
+ tools/testing/selftests/sparc64/drivers/adi-test.c    | 4 ----
+ tools/testing/selftests/timens/procfs.c               | 2 --
+ tools/testing/selftests/timens/timens.c               | 2 --
+ tools/testing/selftests/vm/mremap_test.c              | 1 -
+ tools/testing/selftests/vm/pkey-helpers.h             | 3 ++-
+ tools/testing/selftests/vm/va_128TBswitch.c           | 2 +-
+ 23 files changed, 24 insertions(+), 40 deletions(-)
 
 -- 
-	Ansuel
+2.32.0
+
