@@ -2,61 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E47E470B28
+	by mail.lfdr.de (Postfix) with ESMTP id A8905470B29
 	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 20:56:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243351AbhLJUAS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Dec 2021 15:00:18 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:25200 "EHLO
+        id S243348AbhLJUAV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Dec 2021 15:00:21 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:45207 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234222AbhLJUAQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 15:00:16 -0500
+        by vger.kernel.org with ESMTP id S243382AbhLJUAU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 15:00:20 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1639166200;
+        s=mimecast20190719; t=1639166204;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=yXvAR6cl/lyPXT2PTp3HC1gTL6/TDYTyWxTK228C0lI=;
-        b=DA8fbxXDs59UKHp0IPHpCvuQqEne+Qf1bRSkOipm2S1tQrNy8FwMVYK5OT6iLyTTYSLjVF
-        xdvR0FvkL8aoNJ4vkWRYh/L3Fr3nl11aXmlxlh9HExlfcMbVxrKuxRRKKl0zOWFlyE4pY7
-        gtAaE5t6Uijjj0KXKa+c150/E0RWE7o=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=IAtNdaPKfQErP2uprt6b6x17dyKkU9ocY/5wmrkDVtA=;
+        b=FBne4AUbCBx96aQZTNN0U5TH58AbOz17Ie1DZIm0eECl8mMe/zckSC21Z9StM4i//Jc0HB
+        3L663lULxqi7OhBxxmHyLZ0lHz38rEAt2NNdXP+y4zQNcrvt2U5NS1YLvQGYH/KG56FxDn
+        8qwVOhQcHXPA1LBUUj75tVnvIzlXZw0=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-98-5ocOjPxDOL62HKsSgizNNA-1; Fri, 10 Dec 2021 14:56:40 -0500
-X-MC-Unique: 5ocOjPxDOL62HKsSgizNNA-1
-Received: by mail-wr1-f72.google.com with SMTP id q7-20020adff507000000b0017d160d35a8so2701340wro.4
-        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 11:56:39 -0800 (PST)
+ us-mta-595-S0voRJvFOhure_W1Pff8Zw-1; Fri, 10 Dec 2021 14:56:43 -0500
+X-MC-Unique: S0voRJvFOhure_W1Pff8Zw-1
+Received: by mail-wm1-f69.google.com with SMTP id y141-20020a1c7d93000000b0033c2ae3583fso5442089wmc.5
+        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 11:56:43 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=yXvAR6cl/lyPXT2PTp3HC1gTL6/TDYTyWxTK228C0lI=;
-        b=eXcDWeVg/mNMZWHlIpzNyunygnvKOYexESq3C3/Ai3qOWRBbg03P3+SocqDFiw+DgB
-         tlAal7B/MPbXxBHnFGn4AS7HhqcpbaZE8zURK8MCHaIXJhcGk9pvEDMLoAr7xoWf/1+c
-         ykRj1erm08zBkhCfixRXozey1NA6IJh6lt00QTdU/6awC/puknzAKYbwUo0tt4XSAp74
-         TESCJq8cwzf55GvYOCKxph3AczGDFqD1Ms+Kby5bgE0smYdDA7HTwouLsbCof+CXJ0zo
-         Nnlqa0xEO29ZJfaxFcCJh7gHy5HQv6EH+mVqkAW834bqHprTarTSH5DquLVKSP/rNhlY
-         aLLg==
-X-Gm-Message-State: AOAM531tbuKu9z8xY6FXXHp9qYW2W4NPL6S8jk6g+ZiGu9L9u0qWxIft
-        J9OASxeJ1tGZYJyqNPe/wDIqH5DVNrA977fTt47WD+aenldKvmQFmHbagr6SYbcp0rOFtr/Jxm1
-        Rtt3RTirf6eoX/EhO
-X-Received: by 2002:a1c:2047:: with SMTP id g68mr19943982wmg.181.1639166198655;
-        Fri, 10 Dec 2021 11:56:38 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzFnYtVjMhk6OyVoPiz+z17hs2upLK7r+SImcO36EalRMu5GHOOTSJVkp4olgvGgjh3yGu4jQ==
-X-Received: by 2002:a1c:2047:: with SMTP id g68mr19943970wmg.181.1639166198524;
-        Fri, 10 Dec 2021 11:56:38 -0800 (PST)
+        bh=IAtNdaPKfQErP2uprt6b6x17dyKkU9ocY/5wmrkDVtA=;
+        b=zwkwuLQUp7KW/7TjYSy8AzKcPmvWeZOpNiIHM9nuJrSDgaq8uaW+ZftcoIW32MLU65
+         TQ26fZbTvSozFAsEmF190H6sVBhdd/me1XwlKLIZ+grkICVPslXurK72k3mCRRrmDMdd
+         5NtGLcVZ144L3NyW5hGA80VXjmN6md7sMxPuJjfddyj3cdDpJTow0f4y4u/R5pfrLTm0
+         5I10Od9RayoFH5h38O6DlF/X2H58I39Lu9Pmmup2dxDvlUVhHLlSvo2oJtyG+PSdIVBY
+         FwcipVNJCbGo1anqMfYmr7S3P9z+VBRQt5RdWeO3g0mR37RItOvlS+8XTW56k56nR+w8
+         LbTA==
+X-Gm-Message-State: AOAM533FXgG5G60OJywOrWKhalWVxss0KBAhwE4tobECZUbpnuFHhePI
+        5QX3NCa/koSLd4laqRdFoLcEULjg2tRmSM5zAvXAOc0h7p1RRmwJdbVuJk4XNLOSZgYhNk6zqRE
+        ET9CMSoBjL6Dw+ZEJ
+X-Received: by 2002:a5d:69ce:: with SMTP id s14mr16437528wrw.25.1639166201712;
+        Fri, 10 Dec 2021 11:56:41 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxQLpYeSNxImb969v4lGIeL8tEo4j5rMDdOAk9IAbt8wGC+AQiamUhlN4vDrwMWu3IwnE56Fw==
+X-Received: by 2002:a5d:69ce:: with SMTP id s14mr16437514wrw.25.1639166201566;
+        Fri, 10 Dec 2021 11:56:41 -0800 (PST)
 Received: from pc-4.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
-        by smtp.gmail.com with ESMTPSA id p13sm12611182wmi.0.2021.12.10.11.56.37
+        by smtp.gmail.com with ESMTPSA id h15sm340280wrt.104.2021.12.10.11.56.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Dec 2021 11:56:38 -0800 (PST)
-Date:   Fri, 10 Dec 2021 20:56:36 +0100
+        Fri, 10 Dec 2021 11:56:41 -0800 (PST)
+Date:   Fri, 10 Dec 2021 20:56:39 +0100
 From:   Guillaume Nault <gnault@redhat.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Martin Varghese <martin.varghese@nokia.com>
-Subject: [PATCH net-next 1/2] bareudp: Remove bareudp_dev_create()
-Message-ID: <dd676419694f4a0ede3e53460d998b525f29c333.1639166064.git.gnault@redhat.com>
+Subject: [PATCH net-next 2/2] bareudp: Move definition of struct bareudp_conf
+ to bareudp.c
+Message-ID: <55d093863056201b96c08cc95dee8cf50886555e.1639166064.git.gnault@redhat.com>
 References: <cover.1639166064.git.gnault@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -66,70 +67,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There's no user for this function.
+This structure is used only in bareudp.c.
+
+While there, adjust include files: we need netdevice.h, not skbuff.h.
 
 Signed-off-by: Guillaume Nault <gnault@redhat.com>
 ---
- drivers/net/bareudp.c | 34 ----------------------------------
- include/net/bareudp.h |  4 ----
- 2 files changed, 38 deletions(-)
+ drivers/net/bareudp.c | 7 +++++++
+ include/net/bareudp.h | 9 +--------
+ 2 files changed, 8 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/net/bareudp.c b/drivers/net/bareudp.c
-index edffc3489a12..fb71a0753385 100644
+index fb71a0753385..f80330361399 100644
 --- a/drivers/net/bareudp.c
 +++ b/drivers/net/bareudp.c
-@@ -721,40 +721,6 @@ static struct rtnl_link_ops bareudp_link_ops __read_mostly = {
- 	.fill_info      = bareudp_fill_info,
+@@ -38,6 +38,13 @@ struct bareudp_net {
+ 	struct list_head        bareudp_list;
  };
  
--struct net_device *bareudp_dev_create(struct net *net, const char *name,
--				      u8 name_assign_type,
--				      struct bareudp_conf *conf)
--{
--	struct nlattr *tb[IFLA_MAX + 1];
--	struct net_device *dev;
--	int err;
--
--	memset(tb, 0, sizeof(tb));
--	dev = rtnl_create_link(net, name, name_assign_type,
--			       &bareudp_link_ops, tb, NULL);
--	if (IS_ERR(dev))
--		return dev;
--
--	err = bareudp_configure(net, dev, conf);
--	if (err) {
--		free_netdev(dev);
--		return ERR_PTR(err);
--	}
--	err = dev_set_mtu(dev, IP_MAX_MTU - BAREUDP_BASE_HLEN);
--	if (err)
--		goto err;
--
--	err = rtnl_configure_link(dev, NULL);
--	if (err < 0)
--		goto err;
--
--	return dev;
--err:
--	bareudp_dellink(dev, NULL);
--	return ERR_PTR(err);
--}
--EXPORT_SYMBOL_GPL(bareudp_dev_create);
--
- static __net_init int bareudp_init_net(struct net *net)
- {
- 	struct bareudp_net *bn = net_generic(net, bareudp_net_id);
++struct bareudp_conf {
++	__be16 ethertype;
++	__be16 port;
++	u16 sport_min;
++	bool multi_proto_mode;
++};
++
+ /* Pseudo network device */
+ struct bareudp_dev {
+ 	struct net         *net;        /* netns for packet i/o */
 diff --git a/include/net/bareudp.h b/include/net/bareudp.h
-index dc65a0d71d9b..8f07a91e0f25 100644
+index 8f07a91e0f25..17610c8d6361 100644
 --- a/include/net/bareudp.h
 +++ b/include/net/bareudp.h
-@@ -14,10 +14,6 @@ struct bareudp_conf {
- 	bool multi_proto_mode;
- };
+@@ -3,17 +3,10 @@
+ #ifndef __NET_BAREUDP_H
+ #define __NET_BAREUDP_H
  
--struct net_device *bareudp_dev_create(struct net *net, const char *name,
--				      u8 name_assign_type,
--				      struct bareudp_conf *info);
++#include <linux/netdevice.h>
+ #include <linux/types.h>
+-#include <linux/skbuff.h>
+ #include <net/rtnetlink.h>
+ 
+-struct bareudp_conf {
+-	__be16 ethertype;
+-	__be16 port;
+-	u16 sport_min;
+-	bool multi_proto_mode;
+-};
 -
  static inline bool netif_is_bareudp(const struct net_device *dev)
  {
