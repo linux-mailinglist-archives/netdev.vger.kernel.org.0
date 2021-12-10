@@ -2,148 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C74EE47060F
-	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 17:43:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B62AF470610
+	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 17:43:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239990AbhLJQra (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Dec 2021 11:47:30 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:30119 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231180AbhLJQra (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 11:47:30 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1639154634;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=ApYMtEZdztqAcv+ON9PW580gKMzQ0KiCYLk0i0XDZ8Y=;
-        b=hH8mOk60gKssJ3ey7bm1kgRucddgdSRNkJWCwlEMGIzbxPhIykILl1JhI3R6oe9HUiUjPl
-        Jfz3FjAaWM4wpZ8s6Dj5ZtLktrh1PEBnnLlR3BWAvka2rg+QHXy1oeyz0eY9HhS50M+/HO
-        DaGZnYz16zD15FMb+0FhNIe0lw9jte8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-468-EtlrWNFDN1e9NsmAHsB4NA-1; Fri, 10 Dec 2021 11:43:50 -0500
-X-MC-Unique: EtlrWNFDN1e9NsmAHsB4NA-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E46071966320;
-        Fri, 10 Dec 2021 16:43:47 +0000 (UTC)
-Received: from dcaratti.station (unknown [10.40.193.199])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8D1D319D9D;
-        Fri, 10 Dec 2021 16:43:45 +0000 (UTC)
-From:   Davide Caratti <dcaratti@redhat.com>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
+        id S243871AbhLJQrd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Dec 2021 11:47:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60148 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231180AbhLJQrc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 11:47:32 -0500
+Received: from mail-il1-x12f.google.com (mail-il1-x12f.google.com [IPv6:2607:f8b0:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86E43C061746
+        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 08:43:57 -0800 (PST)
+Received: by mail-il1-x12f.google.com with SMTP id w1so8925133ilh.9
+        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 08:43:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=Zg/QKVZKkl+UWbbCFkLJsd24kqstcfV/D3VkUVfDZFM=;
+        b=WDkrloC5bim8HeySPsC+4hCLVnIMAPDZyuHhF9KxENDLZzlp4S9YOg0FHF2ccUWx4U
+         GGBYb8h/wfaZZA79yfeVwNw+B/RXATIW80t0UxXPkB7yLENaqbSZ2a/Hik8Jb06TIufe
+         1vWHnliY+gzP4vdvCCi1EJviak/yfHtEPnx/NTnxiq8kfBoaPwH5Scqv3gJ9U8+CE/DZ
+         bjFkEk1skxAi5x0eB7NmqgZbep3/m7zOLLCjcghDhSK/89fp53MQOfl7M0brRWiYeBpO
+         1kIrjsLjuQ5lYbMY5QjbUQM0A1aPO5rnr0rDRATRHMnOPf1YS5E2s9G0nWCwa3az4OGb
+         7Nbg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=Zg/QKVZKkl+UWbbCFkLJsd24kqstcfV/D3VkUVfDZFM=;
+        b=2BxlqCoFsLb16etUOJnfcgNhg075huIlAQktl5VcT9EQDt9GSS7V46DnoLCNnEGNAD
+         sqHJ2ZENriKADeV9vvWB//SV+HqfGflDkp1mNjvLUAdzhr9PoaNs1LrYymCTsJZ1gEO+
+         k9NzDUL/BkHwZ4WWkuouy2vRXH3e5DIKhXzEFeYP2sZNL6zYME43+EwKnmuRUM0AbveQ
+         MXytVv7anKgHKsApotpYj0l0jOps/Pe8SIa/2kKS16uGIX2rXjo+fiPKk4gsflDpz47x
+         BcnTqljsuxYh1cfB+adY8aIUZLNl33xkEUoZSZ64JEf6O9KKCILLgpxv5iXo+GVAFude
+         vzvA==
+X-Gm-Message-State: AOAM530xXrEB3UyZwZ5AaTNZ/XZbALt5q5CDNUhc28m0O/mvADt9nYCx
+        RsN4/0yVfwan6vlFjxk9s1Y=
+X-Google-Smtp-Source: ABdhPJxZSle7G3Fp7Gzm1y10DNRRZzouFAKFhcwHpFg07Fw/bue9Fw099S3cPxU6z1jYdfeOgqYUAA==
+X-Received: by 2002:a05:6e02:12e5:: with SMTP id l5mr17125050iln.316.1639154636892;
+        Fri, 10 Dec 2021 08:43:56 -0800 (PST)
+Received: from localhost ([172.243.151.11])
+        by smtp.gmail.com with ESMTPSA id x18sm2473139iow.53.2021.12.10.08.43.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 10 Dec 2021 08:43:56 -0800 (PST)
+Date:   Fri, 10 Dec 2021 08:43:50 -0800
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     xiangxia.m.yue@gmail.com, netdev@vger.kernel.org
+Cc:     Tonghao Zhang <xiangxia.m.yue@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Shuang Li <shuali@redhat.com>
-Cc:     netdev@vger.kernel.org
-Subject: [PATCH net] net/sched: sch_ets: don't remove idle classes from the round-robin list
-Date:   Fri, 10 Dec 2021 17:42:47 +0100
-Message-Id: <e08c7f4a6882f260011909a868311c6e9b54f3e4.1639153474.git.dcaratti@redhat.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Wei Wang <weiwan@google.com>, Arnd Bergmann <arnd@arndb.de>
+Message-ID: <61b383c6373ca_1f50e20816@john.notmuch>
+In-Reply-To: <20211208145459.9590-3-xiangxia.m.yue@gmail.com>
+References: <20211208145459.9590-1-xiangxia.m.yue@gmail.com>
+ <20211208145459.9590-3-xiangxia.m.yue@gmail.com>
+Subject: RE: [net v5 2/3] net: sched: add check tc_skip_classify in sch egress
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Shuang reported that the following script:
+xiangxia.m.yue@ wrote:
+> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> 
+> Try to resolve the issues as below:
+> * We look up and then check tc_skip_classify flag in net
+>   sched layer, even though skb don't want to be classified.
+>   That case may consume a lot of cpu cycles. This patch
+>   is useful when there are a lot of filters with different
+>   prio. There is ~5 prio in in production, ~1% improvement.
+> 
+>   Rules as below:
+>   $ for id in $(seq 1 5); do
+>   $       tc filter add ... egress prio $id ... action mirred egress redirect dev ifb0
+>   $ done
+> 
+> * bpf_redirect may be invoked in egress path. If we don't
+>   check the flags and then return immediately, the packets
+>   will loopback.
 
- 1) tc qdisc add dev ddd0 handle 10: parent 1: ets bands 8 strict 4 priomap 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
- 2) mausezahn ddd0  -A 10.10.10.1 -B 10.10.10.2 -c 0 -a own -b 00:c1:a0:c1:a0:00 -t udp &
- 3) tc qdisc change dev ddd0 handle 10: ets bands 4 strict 2 quanta 2500 2500 priomap 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+This would be the naive case right? Meaning the BPF program is
+doing a redirect without any logic or is buggy?
 
-crashes systematically when line 2) is commented:
+Can you map out how this happens for me, I'm not fully sure I
+understand the exact concern. Is it possible for BPF programs
+that used to see packets no longer see the packet as expected?
 
- list_del corruption, ffff8e028404bd30->next is LIST_POISON1 (dead000000000100)
- ------------[ cut here ]------------
- kernel BUG at lib/list_debug.c:47!
- invalid opcode: 0000 [#1] PREEMPT SMP NOPTI
- CPU: 0 PID: 954 Comm: tc Not tainted 5.16.0-rc4+ #478
- Hardware name: Red Hat KVM, BIOS 1.11.1-4.module+el8.1.0+4066+0f1aadab 04/01/2014
- RIP: 0010:__list_del_entry_valid.cold.1+0x12/0x47
- Code: fe ff 0f 0b 48 89 c1 4c 89 c6 48 c7 c7 08 42 1b 87 e8 1d c5 fe ff 0f 0b 48 89 fe 48 89 c2 48 c7 c7 98 42 1b 87 e8 09 c5 fe ff <0f> 0b 48 c7 c7 48 43 1b 87 e8 fb c4 fe ff 0f 0b 48 89 f2 48 89 fe
- RSP: 0018:ffffae46807a3888 EFLAGS: 00010246
- RAX: 000000000000004e RBX: 0000000000000007 RCX: 0000000000000202
- RDX: 0000000000000000 RSI: ffffffff871ac536 RDI: 00000000ffffffff
- RBP: ffffae46807a3a10 R08: 0000000000000000 R09: c0000000ffff7fff
- R10: 0000000000000001 R11: ffffae46807a36a8 R12: ffff8e028404b800
- R13: ffff8e028404bd30 R14: dead000000000100 R15: ffff8e02fafa2400
- FS:  00007efdc92e4480(0000) GS:ffff8e02fb600000(0000) knlGS:0000000000000000
- CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
- CR2: 0000000000682f48 CR3: 00000001058be000 CR4: 0000000000350ef0
- Call Trace:
-  <TASK>
-  ets_qdisc_change+0x58b/0xa70 [sch_ets]
-  tc_modify_qdisc+0x323/0x880
-  rtnetlink_rcv_msg+0x169/0x4a0
-  netlink_rcv_skb+0x50/0x100
-  netlink_unicast+0x1a5/0x280
-  netlink_sendmsg+0x257/0x4d0
-  sock_sendmsg+0x5b/0x60
-  ____sys_sendmsg+0x1f2/0x260
-  ___sys_sendmsg+0x7c/0xc0
-  __sys_sendmsg+0x57/0xa0
-  do_syscall_64+0x3a/0x80
-  entry_SYSCALL_64_after_hwframe+0x44/0xae
- RIP: 0033:0x7efdc8031338
- Code: 89 02 48 c7 c0 ff ff ff ff eb b5 0f 1f 80 00 00 00 00 f3 0f 1e fa 48 8d 05 25 43 2c 00 8b 00 85 c0 75 17 b8 2e 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 58 c3 0f 1f 80 00 00 00 00 41 54 41 89 d4 55
- RSP: 002b:00007ffdf1ce9828 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
- RAX: ffffffffffffffda RBX: 0000000061b37a97 RCX: 00007efdc8031338
- RDX: 0000000000000000 RSI: 00007ffdf1ce9890 RDI: 0000000000000003
- RBP: 0000000000000000 R08: 0000000000000001 R09: 000000000078a940
- R10: 000000000000000c R11: 0000000000000246 R12: 0000000000000001
- R13: 0000000000688880 R14: 0000000000000000 R15: 0000000000000000
-  </TASK>
- Modules linked in: sch_ets sch_tbf dummy rfkill iTCO_wdt iTCO_vendor_support intel_rapl_msr intel_rapl_common joydev pcspkr i2c_i801 virtio_balloon i2c_smbus lpc_ich ip_tables xfs libcrc32c crct10dif_pclmul crc32_pclmul crc32c_intel serio_raw ghash_clmulni_intel ahci libahci libata virtio_blk virtio_console virtio_net net_failover failover sunrpc dm_mirror dm_region_hash dm_log dm_mod [last unloaded: sch_ets]
- ---[ end trace f35878d1912655c2 ]---
- RIP: 0010:__list_del_entry_valid.cold.1+0x12/0x47
- Code: fe ff 0f 0b 48 89 c1 4c 89 c6 48 c7 c7 08 42 1b 87 e8 1d c5 fe ff 0f 0b 48 89 fe 48 89 c2 48 c7 c7 98 42 1b 87 e8 09 c5 fe ff <0f> 0b 48 c7 c7 48 43 1b 87 e8 fb c4 fe ff 0f 0b 48 89 f2 48 89 fe
- RSP: 0018:ffffae46807a3888 EFLAGS: 00010246
- RAX: 000000000000004e RBX: 0000000000000007 RCX: 0000000000000202
- RDX: 0000000000000000 RSI: ffffffff871ac536 RDI: 00000000ffffffff
- RBP: ffffae46807a3a10 R08: 0000000000000000 R09: c0000000ffff7fff
- R10: 0000000000000001 R11: ffffae46807a36a8 R12: ffff8e028404b800
- R13: ffff8e028404bd30 R14: dead000000000100 R15: ffff8e02fafa2400
- FS:  00007efdc92e4480(0000) GS:ffff8e02fb600000(0000) knlGS:0000000000000000
- CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
- CR2: 0000000000682f48 CR3: 00000001058be000 CR4: 0000000000350ef0
- Kernel panic - not syncing: Fatal exception in interrupt
- Kernel Offset: 0x4e00000 from 0xffffffff81000000 (relocation range: 0xffffffff80000000-0xffffffffbfffffff)
- ---[ end Kernel panic - not syncing: Fatal exception in interrupt ]---
+Is this the path you are talking about?
 
-we can remove 'q->classes[i].alist' only if DRR class 'i' was part of the
-active list. In the ETS scheduler DRR classes belong to that list only if
-the queue length is greater than zero: we need to test for non-zero value
-of 'q->classes[i].qdisc->q.qlen' before removing from the list, similarly
-to what has been done elsewhere in the ETS code.
+ rx ethx  ->
+   execute BPF program on ethx with bpf_redirect(ifb0) ->
+     __skb_dequeue @ifb tc_skip_classify = 1 ->
+       dev_queue_xmit() -> 
+          sch_handle_egress() ->
+            execute BPF program again
 
-Fixes: de6d25924c2a ("net/sched: sch_ets: don't peek at classes beyond 'nbands'")
-Reported-by: Shuang Li <shuali@redhat.com>
-Signed-off-by: Davide Caratti <dcaratti@redhat.com>
----
- net/sched/sch_ets.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+I can't see why you want to skip that second tc BPF program,
+or for that matter any tc filter there. In general how do you
+know that is the correct/expected behavior? Before the above
+change it would have been called, what if its doing useful
+work.
 
-diff --git a/net/sched/sch_ets.c b/net/sched/sch_ets.c
-index e007fc75ef2f..d73393493553 100644
---- a/net/sched/sch_ets.c
-+++ b/net/sched/sch_ets.c
-@@ -666,9 +666,9 @@ static int ets_qdisc_change(struct Qdisc *sch, struct nlattr *opt,
- 		}
- 	}
- 	for (i = q->nbands; i < oldbands; i++) {
--		qdisc_tree_flush_backlog(q->classes[i].qdisc);
--		if (i >= q->nstrict)
-+		if (i >= q->nstrict && q->classes[i].qdisc->q.qlen)
- 			list_del(&q->classes[i].alist);
-+		qdisc_tree_flush_backlog(q->classes[i].qdisc);
- 	}
- 	q->nstrict = nstrict;
- 	memcpy(q->prio2band, priomap, sizeof(priomap));
--- 
-2.31.1
+Also its not clear how your ifb setup is built or used. That
+might help understand your use case. I would just remove the
+IFB altogether and the above discussion is mute.
 
+Thanks,
+John
