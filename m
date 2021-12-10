@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B7D2470137
-	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 14:03:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0123747013A
+	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 14:03:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241496AbhLJNGa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Dec 2021 08:06:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35782 "EHLO
+        id S241526AbhLJNGg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Dec 2021 08:06:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241455AbhLJNG3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 08:06:29 -0500
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B1BEC061746;
-        Fri, 10 Dec 2021 05:02:54 -0800 (PST)
-Received: by mail-pf1-x442.google.com with SMTP id k64so8389406pfd.11;
-        Fri, 10 Dec 2021 05:02:54 -0800 (PST)
+        with ESMTP id S241458AbhLJNGc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 08:06:32 -0500
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E4E9C061A32;
+        Fri, 10 Dec 2021 05:02:57 -0800 (PST)
+Received: by mail-pl1-x644.google.com with SMTP id m24so6223662pls.10;
+        Fri, 10 Dec 2021 05:02:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=4r5vRiQCUtnsrEXpXgVTZrt19aPResKG4UO9WSgK6HU=;
-        b=hMXlZY5sgceftmd67FnFFIgucQ4BBCfctTTvuqC+NVlkDDtwyuFwOpMHV71Cp2/yqu
-         e8rH00UAwaBGrxpFVqcqiUrCuizckoyR4uVm2/n0lSfNW4DgIA+MTzqsGz+46H+HNh4i
-         jbEdOyCN85+ZJRfrtYqG8Y5dBODU9zyehp1mEsjyF6IXU9vKXeDyEVQHGrduSlvdNDSO
-         SjtOom5e0sVAOl3t5Ima7skWSu9GygKgkLfngEOv2hbwgd4cOMdeOPwQNDooudEr7Lc2
-         8XGAY00NH6qWU5ff5s14UIpBdlabitK2CVFXMjpHU+nT3j9K7xTKbp8iA0VZLiGuMHml
-         /NRw==
+        bh=/cf1FojfoMcIVly88PLWeE+SGmQVmsIvi1Qqoa4dd/o=;
+        b=f+7vzxwrcGTy4KXsvYXvxNCEtsAUgytyaq5RzItRrEa6KA3ZV6I4BfoPNdIa8ridO/
+         cwvn1PYpO1GX0R7XhR9fYeqAHuYqolQQKgBDVoeNItBoF3J5iGi/h+cR0jk/JIemi6bL
+         3l7Ac61/UpEkAtrbhvqm3I/oAAfzLNmBo6xpShDVDRdWR1UZZhHXsQ17kCv6hAzUu93p
+         jJxIfrWaVHPiiJDlDrJYdo8465/JVo40rXWeEKKscvd7Bg60Vbkn9SdI1g3v1GVQ/16i
+         Q9wj3+5i7MOzjMD5HIlLeqRVDQ76l4A6La0tBU4gv+Zcn7zSuzQdW3KlKOEm3dgpsGWT
+         lGlQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=4r5vRiQCUtnsrEXpXgVTZrt19aPResKG4UO9WSgK6HU=;
-        b=yJBr2NbzhbqDvnk0zNBVlF1l75J0Mf7ulKbTJPW/UCqSIC3HwN1NXYT9LT9sYLvNy2
-         IsDDCW6F1hpoB/v8rkzHFNT7D78NWyD9ui73cZehVfRb6CksFyEmYhveZKR79w3Uo2OX
-         vkInClAmyTj+lQOhLuuC+3X2REdYXqsz3ktX6NA9pJkqTMLzplI3P8kN12sQ5mMzofIk
-         CDSICEgzHeGkC8Pzbpn9sMy8vG3cfgP2FSc+bCZNbUR+ayzh3qra/3WDj63i/Mz4xPWh
-         rTq0ke8koynenzcIbd5m7SuPM0Vrq6gNzZYo8Enu4Hglx9HDF3zY/4OJm9V9wcHz7aip
-         9qsA==
-X-Gm-Message-State: AOAM5300Jy5o2sAiPEND4Z/QKqqipZ07DiXoKxaGIzK1uZ3lyk5GRJBN
-        u64d8TrtSSueo1PDanp0LwZ+TvdwmXQ=
-X-Google-Smtp-Source: ABdhPJzX4TAF+6E//UtjkOytpFl9ruo7g37pBMiQ6Nh+7M06mJkQBvYMJ6xV/hmsIkRLfq1J6vIUjg==
-X-Received: by 2002:a63:d955:: with SMTP id e21mr3629639pgj.39.1639141373640;
-        Fri, 10 Dec 2021 05:02:53 -0800 (PST)
+        bh=/cf1FojfoMcIVly88PLWeE+SGmQVmsIvi1Qqoa4dd/o=;
+        b=lmzvTn+6/e5kVb2J3PkmQDl5ofObF1CfFzkrRKpZ0eOvtWP1j92m2EGPoWCM39Bo+g
+         MAnttqZo9r2S65OTYRC6yjAR0QqP2ZLn7iuSBER1F4TzLah4bsl7Z52FT2SWr+VouHa5
+         1TcgBU+QMWzgfVXtRaVol3lskA+OoENR4CjX/6mwAXViAy45tR/qPVkHtd5zCRTZe/3X
+         nJvmw9FavohZFmjskupLSJtweWxfGZZLF/NukIUABJs00HsbdwhQ5BJ/r3QDWtppKzJO
+         PZSMJl7YbGwqfgbE1GQSjMdYL26jEwLS887U/JYfHUGoUe7bTV6ehnfWkZqL8bT0+tJ5
+         dQNA==
+X-Gm-Message-State: AOAM531HAwsYczrqpTJDIpphvGeGKZXaRZPh+lNjXJxZqoYDUG5OelHT
+        T3gTvlqx9c00fVY3aO2Iin91A7XegOE=
+X-Google-Smtp-Source: ABdhPJxPBRRuKMzhccgDEd9CBviYj+ftf1iGj/w9pWZOezJ85XvlTddMPN+n1SeBTGhPxEya1umaiw==
+X-Received: by 2002:a17:902:ce8c:b0:141:d411:7e25 with SMTP id f12-20020a170902ce8c00b00141d4117e25mr76216352plg.85.1639141376789;
+        Fri, 10 Dec 2021 05:02:56 -0800 (PST)
 Received: from localhost ([2405:201:6014:d064:3d4e:6265:800c:dc84])
-        by smtp.gmail.com with ESMTPSA id z22sm3713662pfe.93.2021.12.10.05.02.51
+        by smtp.gmail.com with ESMTPSA id ip5sm3020374pjb.5.2021.12.10.05.02.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Dec 2021 05:02:53 -0800 (PST)
+        Fri, 10 Dec 2021 05:02:56 -0800 (PST)
 From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
 To:     bpf@vger.kernel.org
 Cc:     Alexei Starovoitov <ast@kernel.org>,
@@ -60,217 +60,718 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         Jesper Dangaard Brouer <brouer@redhat.com>,
         =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         netdev@vger.kernel.org, netfilter-devel@vger.kernel.org
-Subject: [PATCH bpf-next v3 6/9] bpf: Track provenance for pointers formed from referenced PTR_TO_BTF_ID
-Date:   Fri, 10 Dec 2021 18:32:27 +0530
-Message-Id: <20211210130230.4128676-7-memxor@gmail.com>
+Subject: [PATCH bpf-next v3 7/9] net/netfilter: Add unstable CT lookup helpers for XDP and TC-BPF
+Date:   Fri, 10 Dec 2021 18:32:28 +0530
+Message-Id: <20211210130230.4128676-8-memxor@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20211210130230.4128676-1-memxor@gmail.com>
 References: <20211210130230.4128676-1-memxor@gmail.com>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=7715; h=from:subject; bh=kDtn7PcefhwZyc4eaTzQBYsjRewCAc7PSsotdlO4r0k=; b=owEBbQKS/ZANAwAIAUzgyIZIvxHKAcsmYgBhs0/UvvOEPKmdf4ZXkRH+ZRv5QvWeaAHDi+xinDBY WCSa7C+JAjMEAAEIAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYbNP1AAKCRBM4MiGSL8RylBCD/ 9vy0Xxp3JDKmkLIT61thAhkjYpn1we0ZGpvQo0TkS7k3C+DaGRw/w4uvK5WsERbU6qOJR28UcSaayZ 2gNPHjEm89RVHjAWr7s7u0aEsCisEW5+pfcKJ7cX9g25QcZ1RrXNnVuJHm6e+lwYNOMl6FVnB+CHYU UN16QqAhqbqouhzJPJ9Nu1H6LR3BsVeyRTrfCoLvvBer8XjnP1RUAlaLGwUTwdgl53jiTaljDy6dWU e+c03aFzBR+xV5vPF0WudsGAimYsl3SXSTWaSnRVx0DJc1P78kbBDZjvmhqiCySHhj0LvynHsgYIk8 8zV4EsJjYbs4iJFRRZlzkx/ZymXDRg5+g0dM8MbeH9MVtM6LCdLG23N4NVGXrRgn2ieiZLWC8GXqjU IZHbzvH0yw5oZPuf/5EKIN2l5I6oMKMXLhQ/4IHVbsBrwbnczL6I32Jrd6Rzosrn/eOXJme9ZWPbco WGZsmFXtkU56YRPfCdaGLtgekRQjiLhOE5C44wq4MjIX4CehH2c3ZlwOtw3zm1DAYl4jTnEmV2rijh p2O81qoHyfs97eItPL90ga7srBIJ8xnJzzi5TAbofnQXvmNsvcqNhRncr7aQuaMdc9bNN1+JxMX5Do WovUun2gouGtU3LCarHNAU5g+ErNA7QEudCAqg19eyOeBqQ6g9UsGIC6o91w==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=22344; h=from:subject; bh=UZKXafxeD31dza2nDRrLzmiJdCVz7Pntczk0Oktfwok=; b=owEBbQKS/ZANAwAIAUzgyIZIvxHKAcsmYgBhs0/UxQzLveDV85rwPf9s1Ed7pcIooLC5RTEPsvd3 BrjcYz2JAjMEAAEIAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYbNP1AAKCRBM4MiGSL8RyjxpEA CVbUocKGefBuEwIIC8AA/MsqaEPme88eBrJSgIZLo3bNwJRgPvzZ8akM2IwZDEaaNYRQfW+prrY4ac otIw4vSAA2RqiCjbcoz2oEsq475I73pH/WQrMUCXDIDQr5Yw3ASUbxTN27fGB01laiOHvvVX+RLiXZ rJFXZBEtrOiwwQhBI3zBuUOpSy75gk+0yydcJdtd7zdsE3dRmvGgkh+raMALr7nfKEMG3d9pWrK+X3 1RRp8W2MQoPOcF+21ypMALlamwRsBuYxjZgarbzOMlkd31MtthS7R30QXha3PlL32Zym7AJMC3y45T eAO/LzuI3oHp91ind4RLaGeEvEY9D3+7mWmOVccScdSqLN91HQeS2JJggBu8yh8uCrwaUdL1uZ5ZPW ywOgEznOLRc7JW4WWA6sWpkZFIMUxNzcc3vBB/ou4jC9k0StASw9Qaj5+2wUg2rEN0DwmvYOfyAT2q p0Ac8dumIggfj8Jc+vOO6Vunvhs251yOlcFI3RrhSA4iN85wKuDa21F+LT+ziOaPt+VrD4gtZIcnQk dFdakQnRiHmAwQhiqZFKmdSk3KDvPGi4LIoTa7GNWEsS2ir/PDFfRcJ9U5x0Kczm8w/zILZAX+oBoZ H6zsUhI2ZebTFfVjnWLS9iAw5N6NRymlK9l39ebe/7DhgaV9LLzIWkbewdJA==
 X-Developer-Key: i=memxor@gmail.com; a=openpgp; fpr=4BBE2A7E06ECF9D5823C61114CE0C88648BF11CA
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In the previous commit, we implemented support in the verifier for
-working with referenced PTR_TO_BTF_ID registers. These are invalidated
-when their corresponding release function is called.
+This change adds conntrack lookup helpers using the unstable kfunc call
+interface for the XDP and TC-BPF hooks. The primary usecase is
+implementing a synproxy in XDP, see Maxim's patchset at [0].
 
-However, PTR_TO_BTF_ID is a bit special, in that distinct PTR_TO_BTF_ID
-can be formed by walking pointers in the struct represented by the BTF
-ID. mark_btf_ld_reg will copy the relevant register state to the
-destination register.
+Also add acquire/release functions (randomly returning NULL), and also
+exercise the PTR_TO_BTF_ID_OR_NULL path so that BPF program caller has
+to check for NULL before dereferencing the pointer, for the TC hook.
+Introduce kfunc that take various argument types (for PTR_TO_MEM) that
+will pass and fail the verifier checks. These will be used in selftests.
 
-However, we cannot simply copy ref_obj_id (such that
-release_reg_references will match and invalidate all pointers formed by
-pointer walking), as we obtain the same BTF ID in the destination
-register, leading to confusion during release. An example is show below:
+Export get_net_ns_by_id as nf_conntrack needs to call it.
 
-For a type like so:
-struct foo { struct foo *next; };
+Note that we search for acquire, release, and null returning kfuncs in
+the intersection of those sets and main set.
 
-r1 = acquire(...); // BTF ID of struct foo
-if (r1) {
-	r2 = r1->next; // BTF ID of struct foo, and we copied ref_obj_id in
-		       // mark_btf_ld_reg.
-	release(r2);
-}
+This implies that the kfunc_btf_id_list acq_set, rel_set, null_set may
+contain BTF ID not in main set, this is explicitly allowed and
+recommended (to save on definining more and more sets), since
+check_kfunc_call verifier operation would filter out the invalid BTF ID
+fairly early, so later checks for acquire, release, and ret_type_null
+kfunc will only consider allowed BTF IDs for that program that are
+allowed in main set. This is why the nf_conntrack_acq_ids set has BTF
+IDs for both xdp and tc hook kfuncs.
 
-With this logic, the above snippet succeeds. Hence we need to
-distinguish the canonical reference and pointers formed from it.
-
-We introduce a 'parent_ref_obj_id' member in bpf_reg_state, for a
-referenced register, only one of ref_obj_id or parent_ref_obj_id may be
-set, i.e. either a register holds a canonical reference, or it is
-related to a canonical reference for invalidation purposes (contains an
-edge pointing to it by way of having the same ref_obj_id in
-parent_ref_obj_id, in the graph of objects).
-
-When releasing reference, we ensure that both are not set at once, and
-then release if either of them match the requested ref_obj_id to be
-released. This ensures that the example given above will not succeed.
-A test to this end has been added in later patches.
-
-Typically, kernel objects have a nested object lifetime (where the
-parent object 'owns' the objects it holds references to). However, this
-is not always true. For now, we don't need support to hold on to
-references to objects obtained from a refcounted PTR_TO_BTF_ID after its
-release, but this can be relaxed on a case by case basis (i.e. based on
-the BTF ID and program type/attach type) in the future.
-
-The safest assumption for the verifier to make in absence of any other
-hints, is that all such pointers formed from refcounted PTR_TO_BTF_ID
-shall be invalidated.
+  [0]: https://lore.kernel.org/bpf/20211019144655.3483197-1-maximmi@nvidia.com
 
 Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 ---
- include/linux/bpf_verifier.h | 10 +++++++
- kernel/bpf/verifier.c        | 54 ++++++++++++++++++++++++++++--------
- 2 files changed, 52 insertions(+), 12 deletions(-)
+ include/linux/bpf.h               |  21 +++
+ include/linux/btf.h               |  31 +++-
+ kernel/bpf/btf.c                  |  19 +++
+ net/bpf/test_run.c                | 147 +++++++++++++++++
+ net/core/filter.c                 |  27 ++++
+ net/core/net_namespace.c          |   1 +
+ net/netfilter/nf_conntrack_core.c | 252 ++++++++++++++++++++++++++++++
+ 7 files changed, 497 insertions(+), 1 deletion(-)
 
-diff --git a/include/linux/bpf_verifier.h b/include/linux/bpf_verifier.h
-index b80fe5bf2a02..a6ef11db6823 100644
---- a/include/linux/bpf_verifier.h
-+++ b/include/linux/bpf_verifier.h
-@@ -128,6 +128,16 @@ struct bpf_reg_state {
- 	 * allowed and has the same effect as bpf_sk_release(sk).
- 	 */
- 	u32 ref_obj_id;
-+	/* This is set for pointers which are derived from referenced
-+	 * pointer (e.g. PTR_TO_BTF_ID pointer walking), so that the
-+	 * pointers obtained by walking referenced PTR_TO_BTF_ID
-+	 * are appropriately invalidated when the lifetime of their
-+	 * parent object ends.
-+	 *
-+	 * Only one of ref_obj_id and parent_ref_obj_id can be set,
-+	 * never both at once.
-+	 */
-+	u32 parent_ref_obj_id;
- 	/* For scalar types (SCALAR_VALUE), this represents our knowledge of
- 	 * the actual value.
- 	 * For pointer types, this represents the variable part of the offset
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index b8685fb7ff15..16e30d7f631b 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -654,7 +654,8 @@ static void print_verifier_state(struct bpf_verifier_env *env,
- 				verbose(env, "%s", kernel_type_name(reg->btf, reg->btf_id));
- 			verbose(env, "(id=%d", reg->id);
- 			if (reg_type_may_be_refcounted_or_null(t))
--				verbose(env, ",ref_obj_id=%d", reg->ref_obj_id);
-+				verbose(env, ",%sref_obj_id=%d", reg->ref_obj_id ? "" : "parent_",
-+					reg->ref_obj_id ?: reg->parent_ref_obj_id);
- 			if (t != SCALAR_VALUE)
- 				verbose(env, ",off=%d", reg->off);
- 			if (type_is_pkt_pointer(t))
-@@ -1500,7 +1501,8 @@ static void mark_reg_not_init(struct bpf_verifier_env *env,
- static void mark_btf_ld_reg(struct bpf_verifier_env *env,
- 			    struct bpf_reg_state *regs, u32 regno,
- 			    enum bpf_reg_type reg_type,
--			    struct btf *btf, u32 btf_id)
-+			    struct btf *btf, u32 btf_id,
-+			    u32 parent_ref_obj_id)
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index 6a14072c72a0..7b370ed06b1d 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -1675,6 +1675,9 @@ int bpf_prog_test_run_sk_lookup(struct bpf_prog *prog,
+ 				const union bpf_attr *kattr,
+ 				union bpf_attr __user *uattr);
+ bool bpf_prog_test_check_kfunc_call(u32 kfunc_id, struct module *owner);
++bool bpf_prog_test_is_acquire_kfunc(u32 kfunc_id, struct module *owner);
++bool bpf_prog_test_is_release_kfunc(u32 kfunc_id, struct module *owner);
++bool bpf_prog_test_is_kfunc_ret_type_null(u32 kfunc_id, struct module *owner);
+ bool btf_ctx_access(int off, int size, enum bpf_access_type type,
+ 		    const struct bpf_prog *prog,
+ 		    struct bpf_insn_access_aux *info);
+@@ -1933,6 +1936,24 @@ static inline bool bpf_prog_test_check_kfunc_call(u32 kfunc_id,
+ 	return false;
+ }
+ 
++static inline bool bpf_prog_test_is_acquire_kfunc(u32 kfunc_id,
++						  struct module *owner)
++{
++	return false;
++}
++
++static inline bool bpf_prog_test_is_release_kfunc(u32 kfunc_id,
++						  struct module *owner)
++{
++	return false;
++}
++
++static inline bool bpf_prog_test_is_kfunc_ret_type_null(u32 kfunc_id,
++							struct module *owner)
++{
++	return false;
++}
++
+ static inline void bpf_map_put(struct bpf_map *map)
  {
- 	if (reg_type == SCALAR_VALUE) {
- 		mark_reg_unknown(env, regs, regno);
-@@ -1509,6 +1511,7 @@ static void mark_btf_ld_reg(struct bpf_verifier_env *env,
- 	mark_reg_known_zero(env, regs, regno);
- 	regs[regno].type = PTR_TO_BTF_ID;
- 	regs[regno].btf = btf;
-+	regs[regno].parent_ref_obj_id = parent_ref_obj_id;
- 	regs[regno].btf_id = btf_id;
  }
+diff --git a/include/linux/btf.h b/include/linux/btf.h
+index 3730e845d266..bc92825d6e3f 100644
+--- a/include/linux/btf.h
++++ b/include/linux/btf.h
+@@ -321,7 +321,10 @@ static inline const char *btf_name_by_offset(const struct btf *btf,
+ #endif
  
-@@ -4136,8 +4139,14 @@ static int check_ptr_to_btf_access(struct bpf_verifier_env *env,
- 	if (ret < 0)
- 		return ret;
+ enum kfunc_btf_id_set_types {
+-	BTF_SET_CHECK,
++	BTF_SET_CHECK,    /* Allowed kfunc set */
++	BTF_SET_ACQUIRE,  /* Acquire kfunc set */
++	BTF_SET_RELEASE,  /* Release kfunc set */
++	BTF_SET_RET_NULL, /* kfunc with 'return type PTR_TO_BTF_ID_OR_NULL' set */
+ 	__BTF_SET_MAX,
+ };
  
--	if (atype == BPF_READ && value_regno >= 0)
--		mark_btf_ld_reg(env, regs, value_regno, ret, reg->btf, btf_id);
-+	if (atype == BPF_READ && value_regno >= 0) {
-+		if (WARN_ON_ONCE(reg->ref_obj_id && reg->parent_ref_obj_id)) {
-+			verbose(env, "verifier internal error: both ref and parent ref set\n");
-+			return -EACCES;
-+		}
-+		mark_btf_ld_reg(env, regs, value_regno, ret, reg->btf, btf_id,
-+				reg->ref_obj_id ?: reg->parent_ref_obj_id);
-+	}
- 
- 	return 0;
- }
-@@ -4191,8 +4200,14 @@ static int check_ptr_to_map_access(struct bpf_verifier_env *env,
- 	if (ret < 0)
- 		return ret;
- 
--	if (value_regno >= 0)
--		mark_btf_ld_reg(env, regs, value_regno, ret, btf_vmlinux, btf_id);
-+	if (value_regno >= 0) {
-+		if (WARN_ON_ONCE(reg->ref_obj_id && reg->parent_ref_obj_id)) {
-+			verbose(env, "verifier internal error: both ref and parent ref set\n");
-+			return -EACCES;
-+		}
-+		mark_btf_ld_reg(env, regs, value_regno, ret, btf_vmlinux, btf_id,
-+				reg->ref_obj_id ?: reg->parent_ref_obj_id);
-+	}
- 
- 	return 0;
- }
-@@ -5865,23 +5880,35 @@ static void mark_pkt_end(struct bpf_verifier_state *vstate, int regn, bool range
- 		reg->range = AT_PKT_END;
- }
- 
--static void release_reg_references(struct bpf_verifier_env *env,
-+static int release_reg_references(struct bpf_verifier_env *env,
- 				   struct bpf_func_state *state,
- 				   int ref_obj_id)
+@@ -331,6 +334,9 @@ struct kfunc_btf_id_set {
+ 		struct btf_id_set *sets[__BTF_SET_MAX];
+ 		struct {
+ 			struct btf_id_set *set;
++			struct btf_id_set *acq_set;
++			struct btf_id_set *rel_set;
++			struct btf_id_set *null_set;
+ 		};
+ 	};
+ 	struct module *owner;
+@@ -345,6 +351,12 @@ void unregister_kfunc_btf_id_set(struct kfunc_btf_id_list *l,
+ 				 struct kfunc_btf_id_set *s);
+ bool bpf_check_mod_kfunc_call(struct kfunc_btf_id_list *klist, u32 kfunc_id,
+ 			      struct module *owner);
++bool bpf_is_mod_acquire_kfunc(struct kfunc_btf_id_list *klist, u32 kfunc_id,
++			      struct module *owner);
++bool bpf_is_mod_release_kfunc(struct kfunc_btf_id_list *klist, u32 kfunc_id,
++			      struct module *owner);
++bool bpf_is_mod_kfunc_ret_type_null(struct kfunc_btf_id_list *klist,
++				    u32 kfunc_id, struct module *owner);
+ #else
+ static inline void register_kfunc_btf_id_set(struct kfunc_btf_id_list *l,
+ 					     struct kfunc_btf_id_set *s)
+@@ -359,9 +371,26 @@ static inline bool bpf_check_mod_kfunc_call(struct kfunc_btf_id_list *klist,
  {
- 	struct bpf_reg_state *regs = state->regs, *reg;
- 	int i;
+ 	return false;
+ }
++static inline bool bpf_is_mod_acquire_kfunc(struct kfunc_btf_id_list *klist,
++					    u32 kfunc_id, struct module *owner)
++{
++	return false;
++}
++static inline bool bpf_is_mod_release_kfunc(struct kfunc_btf_id_list *klist,
++					    u32 kfunc_id, struct module *owner)
++{
++	return false;
++}
++static inline bool
++bpf_is_mod_kfunc_ret_type_null(struct kfunc_btf_id_list *klist, u32 kfunc_id,
++			       struct module *owner)
++{
++	return false;
++}
+ #endif
  
--	for (i = 0; i < MAX_BPF_REG; i++)
--		if (regs[i].ref_obj_id == ref_obj_id)
-+	for (i = 0; i < MAX_BPF_REG; i++) {
-+		if (WARN_ON_ONCE(regs[i].ref_obj_id && regs[i].parent_ref_obj_id)) {
-+			verbose(env, "verifier internal error: both ref and parent ref set\n");
-+			return -EACCES;
-+		}
-+		if (regs[i].ref_obj_id == ref_obj_id ||
-+		    regs[i].parent_ref_obj_id == ref_obj_id)
- 			mark_reg_unknown(env, regs, i);
-+	}
+ extern struct kfunc_btf_id_list bpf_tcp_ca_kfunc_list;
+ extern struct kfunc_btf_id_list prog_test_kfunc_list;
++extern struct kfunc_btf_id_list xdp_kfunc_list;
  
- 	bpf_for_each_spilled_reg(i, state, reg) {
- 		if (!reg)
- 			continue;
--		if (reg->ref_obj_id == ref_obj_id)
-+		if (WARN_ON_ONCE(reg->ref_obj_id && reg->parent_ref_obj_id)) {
-+			verbose(env, "verifier internal error: both ref and parent ref set\n");
-+			return -EACCES;
-+		}
-+		if (reg->ref_obj_id == ref_obj_id ||
-+		    reg->parent_ref_obj_id == ref_obj_id)
- 			__mark_reg_unknown(env, reg);
- 	}
-+	return 0;
+ #endif
+diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+index a790ba6d93d8..4b955f47b800 100644
+--- a/kernel/bpf/btf.c
++++ b/kernel/bpf/btf.c
+@@ -6539,6 +6539,24 @@ bool bpf_check_mod_kfunc_call(struct kfunc_btf_id_list *klist, u32 kfunc_id,
+ 	return kfunc_btf_id_set_contains(klist, kfunc_id, owner, BTF_SET_CHECK);
  }
  
- /* The pointer with the specified id has released its reference to kernel
-@@ -5898,8 +5925,11 @@ static int release_reference(struct bpf_verifier_env *env,
- 	if (err)
- 		return err;
++bool bpf_is_mod_acquire_kfunc(struct kfunc_btf_id_list *klist, u32 kfunc_id,
++			      struct module *owner)
++{
++	return kfunc_btf_id_set_contains(klist, kfunc_id, owner, BTF_SET_ACQUIRE);
++}
++
++bool bpf_is_mod_release_kfunc(struct kfunc_btf_id_list *klist, u32 kfunc_id,
++			      struct module *owner)
++{
++	return kfunc_btf_id_set_contains(klist, kfunc_id, owner, BTF_SET_RELEASE);
++}
++
++bool bpf_is_mod_kfunc_ret_type_null(struct kfunc_btf_id_list *klist,
++				    u32 kfunc_id, struct module *owner)
++{
++	return kfunc_btf_id_set_contains(klist, kfunc_id, owner, BTF_SET_RET_NULL);
++}
++
+ #endif
  
--	for (i = 0; i <= vstate->curframe; i++)
--		release_reg_references(env, vstate->frame[i], ref_obj_id);
-+	for (i = 0; i <= vstate->curframe; i++) {
-+		err = release_reg_references(env, vstate->frame[i], ref_obj_id);
-+		if (err)
-+			return err;
+ #define DEFINE_KFUNC_BTF_ID_LIST(name)                                         \
+@@ -6548,6 +6566,7 @@ bool bpf_check_mod_kfunc_call(struct kfunc_btf_id_list *klist, u32 kfunc_id,
+ 
+ DEFINE_KFUNC_BTF_ID_LIST(bpf_tcp_ca_kfunc_list);
+ DEFINE_KFUNC_BTF_ID_LIST(prog_test_kfunc_list);
++DEFINE_KFUNC_BTF_ID_LIST(xdp_kfunc_list);
+ 
+ int bpf_core_types_are_compat(const struct btf *local_btf, __u32 local_id,
+ 			      const struct btf *targ_btf, __u32 targ_id)
+diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
+index 46dd95755967..779377f4af25 100644
+--- a/net/bpf/test_run.c
++++ b/net/bpf/test_run.c
+@@ -232,6 +232,117 @@ struct sock * noinline bpf_kfunc_call_test3(struct sock *sk)
+ 	return sk;
+ }
+ 
++struct prog_test_ref_kfunc {
++	int a;
++	int b;
++	struct prog_test_ref_kfunc *next;
++};
++
++static struct prog_test_ref_kfunc prog_test_struct = {
++	.a = 42,
++	.b = 108,
++	.next = &prog_test_struct,
++};
++
++noinline struct prog_test_ref_kfunc *
++bpf_kfunc_call_test_acquire(unsigned long *scalar_ptr)
++{
++	/* randomly return NULL */
++	if (get_jiffies_64() % 2)
++		return NULL;
++	return &prog_test_struct;
++}
++
++noinline void bpf_kfunc_call_test_release(struct prog_test_ref_kfunc *p)
++{
++}
++
++struct prog_test_pass1 {
++	int x0;
++	struct {
++		int x1;
++		struct {
++			int x2;
++			struct {
++				int x3;
++				struct {
++					int x4;
++					struct {
++						int x5;
++						struct {
++							int x6;
++							struct {
++								int x7;
++							};
++						};
++					};
++				};
++			};
++		};
++	};
++};
++
++struct prog_test_pass2 {
++	int len;
++	short arr1[4];
++	struct {
++		char arr2[4];
++		unsigned long arr3[8];
++	} x;
++};
++
++struct prog_test_fail1 {
++	void *p;
++	int x;
++};
++
++struct prog_test_fail2 {
++	int x8;
++	struct prog_test_pass1 x;
++};
++
++struct prog_test_fail3 {
++	int len;
++	char arr1[2];
++	char arr2[0];
++};
++
++noinline void bpf_kfunc_call_test_pass_ctx(struct __sk_buff *skb)
++{
++}
++
++noinline void bpf_kfunc_call_test_pass1(struct prog_test_pass1 *p)
++{
++}
++
++noinline void bpf_kfunc_call_test_pass2(struct prog_test_pass2 *p)
++{
++}
++
++noinline void bpf_kfunc_call_test_fail1(struct prog_test_fail1 *p)
++{
++}
++
++noinline void bpf_kfunc_call_test_fail2(struct prog_test_fail2 *p)
++{
++}
++
++noinline void bpf_kfunc_call_test_fail3(struct prog_test_fail3 *p)
++{
++}
++
++noinline void bpf_kfunc_call_test_mem_len_pass1(void *mem, int len__mem)
++{
++}
++
++noinline void bpf_kfunc_call_test_mem_len_fail1(void *mem, int len)
++{
++}
++
++noinline void bpf_kfunc_call_test_mem_len_fail2(u64 *mem, int len)
++{
++}
++
+ __diag_pop();
+ 
+ ALLOW_ERROR_INJECTION(bpf_modify_return_test, ERRNO);
+@@ -240,8 +351,23 @@ BTF_SET_START(test_sk_kfunc_ids)
+ BTF_ID(func, bpf_kfunc_call_test1)
+ BTF_ID(func, bpf_kfunc_call_test2)
+ BTF_ID(func, bpf_kfunc_call_test3)
++BTF_ID(func, bpf_kfunc_call_test_acquire)
++BTF_ID(func, bpf_kfunc_call_test_release)
++BTF_ID(func, bpf_kfunc_call_test_pass_ctx)
++BTF_ID(func, bpf_kfunc_call_test_pass1)
++BTF_ID(func, bpf_kfunc_call_test_pass2)
++BTF_ID(func, bpf_kfunc_call_test_fail1)
++BTF_ID(func, bpf_kfunc_call_test_fail2)
++BTF_ID(func, bpf_kfunc_call_test_fail3)
++BTF_ID(func, bpf_kfunc_call_test_mem_len_pass1)
++BTF_ID(func, bpf_kfunc_call_test_mem_len_fail1)
++BTF_ID(func, bpf_kfunc_call_test_mem_len_fail2)
+ BTF_SET_END(test_sk_kfunc_ids)
+ 
++BTF_ID_LIST(test_sk_acq_rel)
++BTF_ID(func, bpf_kfunc_call_test_acquire)
++BTF_ID(func, bpf_kfunc_call_test_release)
++
+ bool bpf_prog_test_check_kfunc_call(u32 kfunc_id, struct module *owner)
+ {
+ 	if (btf_id_set_contains(&test_sk_kfunc_ids, kfunc_id))
+@@ -249,6 +375,27 @@ bool bpf_prog_test_check_kfunc_call(u32 kfunc_id, struct module *owner)
+ 	return bpf_check_mod_kfunc_call(&prog_test_kfunc_list, kfunc_id, owner);
+ }
+ 
++bool bpf_prog_test_is_acquire_kfunc(u32 kfunc_id, struct module *owner)
++{
++	if (kfunc_id == test_sk_acq_rel[0])
++		return true;
++	return bpf_is_mod_acquire_kfunc(&prog_test_kfunc_list, kfunc_id, owner);
++}
++
++bool bpf_prog_test_is_release_kfunc(u32 kfunc_id, struct module *owner)
++{
++	if (kfunc_id == test_sk_acq_rel[1])
++		return true;
++	return bpf_is_mod_release_kfunc(&prog_test_kfunc_list, kfunc_id, owner);
++}
++
++bool bpf_prog_test_is_kfunc_ret_type_null(u32 kfunc_id, struct module *owner)
++{
++	if (kfunc_id == test_sk_acq_rel[0])
++		return true;
++	return bpf_is_mod_kfunc_ret_type_null(&prog_test_kfunc_list, kfunc_id, owner);
++}
++
+ static void *bpf_test_init(const union bpf_attr *kattr, u32 size,
+ 			   u32 headroom, u32 tailroom)
+ {
+diff --git a/net/core/filter.c b/net/core/filter.c
+index fe27c91e3758..ad84ec6e0daa 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -10000,17 +10000,44 @@ const struct bpf_verifier_ops tc_cls_act_verifier_ops = {
+ 	.gen_prologue		= tc_cls_act_prologue,
+ 	.gen_ld_abs		= bpf_gen_ld_abs,
+ 	.check_kfunc_call	= bpf_prog_test_check_kfunc_call,
++	.is_acquire_kfunc	= bpf_prog_test_is_acquire_kfunc,
++	.is_release_kfunc	= bpf_prog_test_is_release_kfunc,
++	.is_kfunc_ret_type_null = bpf_prog_test_is_kfunc_ret_type_null,
+ };
+ 
+ const struct bpf_prog_ops tc_cls_act_prog_ops = {
+ 	.test_run		= bpf_prog_test_run_skb,
+ };
+ 
++static bool xdp_check_kfunc_call(u32 kfunc_id, struct module *owner)
++{
++	return bpf_check_mod_kfunc_call(&xdp_kfunc_list, kfunc_id, owner);
++}
++
++static bool xdp_is_acquire_kfunc(u32 kfunc_id, struct module *owner)
++{
++	return bpf_is_mod_acquire_kfunc(&xdp_kfunc_list, kfunc_id, owner);
++}
++
++static bool xdp_is_release_kfunc(u32 kfunc_id, struct module *owner)
++{
++	return bpf_is_mod_release_kfunc(&xdp_kfunc_list, kfunc_id, owner);
++}
++
++static bool xdp_is_kfunc_ret_type_null(u32 kfunc_id, struct module *owner)
++{
++	return bpf_is_mod_kfunc_ret_type_null(&xdp_kfunc_list, kfunc_id, owner);
++}
++
+ const struct bpf_verifier_ops xdp_verifier_ops = {
+ 	.get_func_proto		= xdp_func_proto,
+ 	.is_valid_access	= xdp_is_valid_access,
+ 	.convert_ctx_access	= xdp_convert_ctx_access,
+ 	.gen_prologue		= bpf_noop_prologue,
++	.check_kfunc_call	= xdp_check_kfunc_call,
++	.is_acquire_kfunc	= xdp_is_acquire_kfunc,
++	.is_release_kfunc	= xdp_is_release_kfunc,
++	.is_kfunc_ret_type_null = xdp_is_kfunc_ret_type_null,
+ };
+ 
+ const struct bpf_prog_ops xdp_prog_ops = {
+diff --git a/net/core/net_namespace.c b/net/core/net_namespace.c
+index 202fa5eacd0f..7b4bfe793002 100644
+--- a/net/core/net_namespace.c
++++ b/net/core/net_namespace.c
+@@ -299,6 +299,7 @@ struct net *get_net_ns_by_id(const struct net *net, int id)
+ 
+ 	return peer;
+ }
++EXPORT_SYMBOL_GPL(get_net_ns_by_id);
+ 
+ /*
+  * setup_net runs the initializers for the network namespace object.
+diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
+index 770a63103c7a..85042cb6f82e 100644
+--- a/net/netfilter/nf_conntrack_core.c
++++ b/net/netfilter/nf_conntrack_core.c
+@@ -11,6 +11,9 @@
+ 
+ #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+ 
++#include <linux/bpf.h>
++#include <linux/btf.h>
++#include <linux/btf_ids.h>
+ #include <linux/types.h>
+ #include <linux/netfilter.h>
+ #include <linux/module.h>
+@@ -2451,6 +2454,249 @@ static int kill_all(struct nf_conn *i, void *data)
+ 	return net_eq(nf_ct_net(i), data);
+ }
+ 
++/* Unstable Kernel Helpers for XDP and TC-BPF hook
++ *
++ * These are called from the XDP and SCHED_CLS BPF programs. Note that it is
++ * allowed to break compatibility for these functions since the interface they
++ * are exposed through to BPF programs is explicitly unstable.
++ */
++static struct nf_conn *__bpf_nf_ct_lookup(struct net *net,
++					  struct bpf_sock_tuple *bpf_tuple,
++					  u32 tuple_len, u8 protonum,
++					  s32 netns_id)
++{
++	struct nf_conntrack_tuple_hash *hash;
++	struct nf_conntrack_tuple tuple;
++
++	if (unlikely(protonum != IPPROTO_TCP && protonum != IPPROTO_UDP))
++		return ERR_PTR(-EPROTO);
++	if (unlikely(netns_id < BPF_F_CURRENT_NETNS))
++		return ERR_PTR(-EINVAL);
++
++	memset(&tuple, 0, sizeof(tuple));
++	switch (tuple_len) {
++	case sizeof(bpf_tuple->ipv4):
++		tuple.src.l3num = AF_INET;
++		tuple.src.u3.ip = bpf_tuple->ipv4.saddr;
++		tuple.src.u.tcp.port = bpf_tuple->ipv4.sport;
++		tuple.dst.u3.ip = bpf_tuple->ipv4.daddr;
++		tuple.dst.u.tcp.port = bpf_tuple->ipv4.dport;
++		break;
++	case sizeof(bpf_tuple->ipv6):
++		tuple.src.l3num = AF_INET6;
++		memcpy(tuple.src.u3.ip6, bpf_tuple->ipv6.saddr, sizeof(bpf_tuple->ipv6.saddr));
++		tuple.src.u.tcp.port = bpf_tuple->ipv6.sport;
++		memcpy(tuple.dst.u3.ip6, bpf_tuple->ipv6.daddr, sizeof(bpf_tuple->ipv6.daddr));
++		tuple.dst.u.tcp.port = bpf_tuple->ipv6.dport;
++		break;
++	default:
++		return ERR_PTR(-EAFNOSUPPORT);
 +	}
++
++	tuple.dst.protonum = protonum;
++
++	if (netns_id >= 0) {
++		net = get_net_ns_by_id(net, netns_id);
++		if (unlikely(!net))
++			return ERR_PTR(-ENONET);
++	}
++
++	hash = nf_conntrack_find_get(net, &nf_ct_zone_dflt, &tuple);
++	if (netns_id >= 0)
++		put_net(net);
++	if (!hash)
++		return ERR_PTR(-ENOENT);
++	return nf_ct_tuplehash_to_ctrack(hash);
++}
++
++/* bpf_ct_opts - Options for CT lookup helpers
++ *
++ * Members:
++ * @error      - Out parameter, set for any errors encountered
++ *		 Values:
++ *		   -EINVAL - Passed NULL for bpf_tuple pointer
++ *		   -EINVAL - opts->reserved is not 0
++ *		   -EINVAL - netns_id is less than -1
++ *		   -EINVAL - len__opts isn't NF_BPF_CT_OPTS_SZ (12)
++ *		   -EPROTO - l4proto isn't one of IPPROTO_TCP or IPPROTO_UDP
++ *		   -ENONET - No network namespace found for netns_id
++ *		   -ENOENT - Conntrack lookup could not find entry for tuple
++ *		   -EAFNOSUPPORT - len__tuple isn't one of sizeof(tuple->ipv4)
++ *				   or sizeof(tuple->ipv6)
++ * @l4proto    - Layer 4 protocol
++ *		 Values:
++ *		   IPPROTO_TCP, IPPROTO_UDP
++ * @reserved   - Reserved member, will be reused for more options in future
++ *		 Values:
++ *		   0
++ * @netns_id   - Specify the network namespace for lookup
++ *		 Values:
++ *		   BPF_F_CURRENT_NETNS (-1)
++ *		     Use namespace associated with ctx (xdp_md, __sk_buff)
++ *		   [0, S32_MAX]
++ *		     Network Namespace ID
++ */
++struct bpf_ct_opts {
++	s32 netns_id;
++	s32 error;
++	u8 l4proto;
++	u8 reserved[3];
++};
++
++enum {
++	NF_BPF_CT_OPTS_SZ = 12,
++};
++
++/* bpf_xdp_ct_lookup - Lookup CT entry for the given tuple, and acquire a
++ *		       reference to it
++ *
++ * Parameters:
++ * @xdp_ctx	- Pointer to ctx (xdp_md) in XDP program
++ *		    Cannot be NULL
++ * @bpf_tuple	- Pointer to memory representing the tuple to look up
++ *		    Cannot be NULL
++ * @len__tuple	- Length of the tuple structure
++ *		    Must be one of sizeof(bpf_tuple->ipv4) or
++ *		    sizeof(bpf_tuple->ipv6)
++ * @opts	- Additional options for lookup (documented above)
++ *		    Cannot be NULL
++ * @len__opts	- Length of the bpf_ct_opts structure
++ *		    Must be NF_BPF_CT_OPTS_SZ (12)
++ */
++struct nf_conn *bpf_xdp_ct_lookup(struct xdp_md *xdp_ctx,
++				  struct bpf_sock_tuple *bpf_tuple,
++				  u32 len__tuple, struct bpf_ct_opts *opts,
++				  u32 len__opts)
++{
++	struct xdp_buff *ctx = (struct xdp_buff *)xdp_ctx;
++	struct net *caller_net;
++	struct nf_conn *nfct;
++
++	BUILD_BUG_ON(sizeof(struct bpf_ct_opts) != NF_BPF_CT_OPTS_SZ);
++
++	if (!opts)
++		return NULL;
++	if (!bpf_tuple || opts->reserved[0] || opts->reserved[1] ||
++	    opts->reserved[2] || len__opts != NF_BPF_CT_OPTS_SZ) {
++		opts->error = -EINVAL;
++		return NULL;
++	}
++	caller_net = dev_net(ctx->rxq->dev);
++	nfct = __bpf_nf_ct_lookup(caller_net, bpf_tuple, len__tuple, opts->l4proto,
++				  opts->netns_id);
++	if (IS_ERR(nfct)) {
++		opts->error = PTR_ERR(nfct);
++		return NULL;
++	}
++	return nfct;
++}
++
++/* bpf_skb_ct_lookup - Lookup CT entry for the given tuple, and acquire a
++ *		       reference to it
++ *
++ * Parameters:
++ * @skb_ctx	- Pointer to ctx (__sk_buff) in TC program
++ *		    Cannot be NULL
++ * @bpf_tuple	- Pointer to memory representing the tuple to look up
++ *		    Cannot be NULL
++ * @len__tuple	- Length of the tuple structure
++ *		    Must be one of sizeof(bpf_tuple->ipv4) or
++ *		    sizeof(bpf_tuple->ipv6)
++ * @opts	- Additional options for lookup (documented above)
++ *		    Cannot be NULL
++ * @len__opts	- Length of the bpf_ct_opts structure
++ *		    Must be NF_BPF_CT_OPTS_SZ (12)
++ */
++struct nf_conn *bpf_skb_ct_lookup(struct __sk_buff *skb_ctx,
++				  struct bpf_sock_tuple *bpf_tuple,
++				  u32 len__tuple, struct bpf_ct_opts *opts,
++				  u32 len__opts)
++{
++	struct sk_buff *skb = (struct sk_buff *)skb_ctx;
++	struct net *caller_net;
++	struct nf_conn *nfct;
++
++	BUILD_BUG_ON(sizeof(struct bpf_ct_opts) != NF_BPF_CT_OPTS_SZ);
++
++	if (!opts)
++		return NULL;
++	if (!bpf_tuple || opts->reserved[0] || opts->reserved[1] ||
++	    opts->reserved[2] || len__opts != NF_BPF_CT_OPTS_SZ) {
++		opts->error = -EINVAL;
++		return NULL;
++	}
++	caller_net = skb->dev ? dev_net(skb->dev) : sock_net(skb->sk);
++	nfct = __bpf_nf_ct_lookup(caller_net, bpf_tuple, len__tuple, opts->l4proto,
++				  opts->netns_id);
++	if (IS_ERR(nfct)) {
++		opts->error = PTR_ERR(nfct);
++		return NULL;
++	}
++	return nfct;
++}
++
++/* bpf_ct_release - Release acquired nf_conn object
++ *
++ * This must be invoked for referenced PTR_TO_BTF_ID, and the verifier rejects
++ * the program if any references remain in the program in all of the explored
++ * states.
++ *
++ * Parameters:
++ * @nf_conn	 - Pointer to referenced nf_conn object, obtained using
++ *		   bpf_xdp_ct_lookup or bpf_skb_ct_lookup.
++ */
++void bpf_ct_release(struct nf_conn *nfct)
++{
++	if (!nfct)
++		return;
++	nf_ct_put(nfct);
++}
++
++/* kfuncs that may return NULL PTR_TO_BTF_ID */
++BTF_SET_START(nf_conntrack_null_ids)
++BTF_ID(func, bpf_xdp_ct_lookup)
++BTF_ID(func, bpf_skb_ct_lookup)
++BTF_SET_END(nf_conntrack_null_ids)
++
++/* XDP hook allowed kfuncs */
++BTF_SET_START(nf_conntrack_xdp_ids)
++BTF_ID(func, bpf_xdp_ct_lookup)
++BTF_ID(func, bpf_ct_release)
++BTF_SET_END(nf_conntrack_xdp_ids)
++
++/* TC-BPF hook allowed kfuncs */
++BTF_SET_START(nf_conntrack_skb_ids)
++BTF_ID(func, bpf_skb_ct_lookup)
++BTF_ID(func, bpf_ct_release)
++BTF_SET_END(nf_conntrack_skb_ids)
++
++/* XDP and TC-BPF hook acquire kfuncs */
++BTF_SET_START(nf_conntrack_acq_ids)
++BTF_ID(func, bpf_xdp_ct_lookup)
++BTF_ID(func, bpf_skb_ct_lookup)
++BTF_SET_END(nf_conntrack_acq_ids)
++
++/* XDP and TC-BPF hook release kfuncs */
++BTF_SET_START(nf_conntrack_rel_ids)
++BTF_ID(func, bpf_ct_release)
++BTF_SET_END(nf_conntrack_rel_ids)
++
++static struct kfunc_btf_id_set nf_ct_xdp_kfunc_set = {
++	.owner                 = THIS_MODULE,
++	.set                   = &nf_conntrack_xdp_ids,
++	.acq_set	       = &nf_conntrack_acq_ids,
++	.rel_set	       = &nf_conntrack_rel_ids,
++	.null_set	       = &nf_conntrack_null_ids,
++};
++
++static struct kfunc_btf_id_set nf_ct_skb_kfunc_set = {
++	.owner                 = THIS_MODULE,
++	.set                   = &nf_conntrack_skb_ids,
++	.acq_set	       = &nf_conntrack_acq_ids,
++	.rel_set	       = &nf_conntrack_rel_ids,
++	.null_set	       = &nf_conntrack_null_ids,
++};
++
+ void nf_conntrack_cleanup_start(void)
+ {
+ 	conntrack_gc_work.exiting = true;
+@@ -2459,6 +2705,9 @@ void nf_conntrack_cleanup_start(void)
  
+ void nf_conntrack_cleanup_end(void)
+ {
++	unregister_kfunc_btf_id_set(&xdp_kfunc_list, &nf_ct_xdp_kfunc_set);
++	unregister_kfunc_btf_id_set(&prog_test_kfunc_list, &nf_ct_skb_kfunc_set);
++
+ 	RCU_INIT_POINTER(nf_ct_hook, NULL);
+ 	cancel_delayed_work_sync(&conntrack_gc_work.dwork);
+ 	kvfree(nf_conntrack_hash);
+@@ -2745,6 +2994,9 @@ int nf_conntrack_init_start(void)
+ 	conntrack_gc_work_init(&conntrack_gc_work);
+ 	queue_delayed_work(system_power_efficient_wq, &conntrack_gc_work.dwork, HZ);
+ 
++	register_kfunc_btf_id_set(&prog_test_kfunc_list, &nf_ct_skb_kfunc_set);
++	register_kfunc_btf_id_set(&xdp_kfunc_list, &nf_ct_xdp_kfunc_set);
++
  	return 0;
- }
+ 
+ err_proto:
 -- 
 2.34.1
 
