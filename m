@@ -2,89 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4ED6F4702D4
-	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 15:27:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2210B470314
+	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 15:45:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242156AbhLJObU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Dec 2021 09:31:20 -0500
-Received: from str75-3-78-193-33-39.fbxo.proxad.net ([78.193.33.39]:42940 "EHLO
-        mail.qult.net" rhost-flags-OK-FAIL-OK-OK) by vger.kernel.org
-        with ESMTP id S242171AbhLJObU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 09:31:20 -0500
-Received: from zenon.in.qult.net ([192.168.64.1])
-        by mail.qult.net with esmtp (Exim 4.90_1)
-        (envelope-from <ignacy.gawedzki@green-communications.fr>)
-        id 1mvgsB-0001QV-I7
-        for netdev@vger.kernel.org; Fri, 10 Dec 2021 15:27:43 +0100
-Received: from ig by zenon.in.qult.net with local (Exim 4.94.2)
-        (envelope-from <ignacy.gawedzki@green-communications.fr>)
-        id 1mvgs9-00Falc-GW
-        for netdev@vger.kernel.org; Fri, 10 Dec 2021 15:27:41 +0100
-Date:   Fri, 10 Dec 2021 15:27:41 +0100
-From:   Ignacy =?utf-8?B?R2F3xJlkemtp?= 
-        <ignacy.gawedzki@green-communications.fr>
+        id S242340AbhLJOt3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Dec 2021 09:49:29 -0500
+Received: from ciao.gmane.io ([116.202.254.214]:57628 "EHLO ciao.gmane.io"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S242318AbhLJOt1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 10 Dec 2021 09:49:27 -0500
+Received: from list by ciao.gmane.io with local (Exim 4.92)
+        (envelope-from <gl-netdev-2@m.gmane-mx.org>)
+        id 1mvh9i-0004K3-BB
+        for netdev@vger.kernel.org; Fri, 10 Dec 2021 15:45:50 +0100
+X-Injected-Via-Gmane: http://gmane.org/
 To:     netdev@vger.kernel.org
-Subject: [PATCH v2] netfilter: fix regression in looped (broad|multi)cast's
- MAC handling
-Message-ID: <20211210142741.fsklz2vzlsow3qre@zenon.in.qult.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-2
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+From:   "Andrey Jr. Melnikov" <temnota.am@gmail.com>
+Subject: Re: MT7621 ethernet does not get probed on net-next branch after 5.15 merge
+Date:   Fri, 10 Dec 2021 17:35:12 +0300
+Message-ID: <u55c8i-v7i.ln1@banana.localnet>
+References: <CALW65jbKsDGTXghqQFQe2CxYbWPakkaeFrr+3vAA4gAPjeeL2w@mail.gmail.com> <CAMhs-H9ve2VtLm8x__DEb0_CpoYsqix1HwLDcZ8_ZeEK9vdfQg@mail.gmail.com>
+User-Agent: tin/2.4.6-20210226 ("Glen Albyn") (Linux/5.14.0-0.bpo.2-armmp-lpae (armv7l))
+Cc:     linux-mediatek@lists.infradead.org, openwrt-devel@lists.openwrt.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In commit 5648b5e1169f ("netfilter: nfnetlink_queue: fix OOB when mac
-header was cleared"), the test for non-empty MAC header introduced in
-commit 2c38de4c1f8da7 ("netfilter: fix looped (broad|multi)cast's MAC
-handling") has been replaced with a test for a set MAC header, which
-breaks the case when the MAC header has been reset (using
-skb_reset_mac_header), as is the case with looped-back multicast
-packets.
+In gmane.comp.embedded.openwrt.devel Sergio Paracuellos <sergio.paracuellos@gmail.com> wrote:
+> Hi Qingfang,
 
-This patch adds a test for a non-empty MAC header in addition to the
-test for a set MAC header.  The same two tests are also implemented in
-nfnetlink_log.c, where the initial code of commit 2c38de4c1f8da7
-("netfilter: fix looped (broad|multi)cast's MAC handling") has not been
-touched, but where supposedly the same situation may happen.
+> On Fri, Oct 15, 2021 at 4:23 PM DENG Qingfang <dqfext@gmail.com> wrote:
+> >
+> > Hi,
+> >
+> > After the merge of 5.15.y into net-next, MT7621 ethernet
+> > (mtk_eth_soc.c) does not get probed at all.
+> >
+> > Kernel log before 5.15 merge:
+> > ...
+> > libphy: Fixed MDIO Bus: probed
+> > libphy: mdio: probed
+> > mt7530 mdio-bus:1f: MT7530 adapts as multi-chip module
+> > mtk_soc_eth 1e100000.ethernet eth0: mediatek frame engine at 0xbe100000, irq 20
+> > mt7621-pci 1e140000.pcie: host bridge /pcie@1e140000 ranges:
+> > ...
+> >
+> > Kernel log after 5.15 merge:
+> > ...
+> > libphy: Fixed MDIO Bus: probed
+> > mt7621-pci 1e140000.pcie: host bridge /pcie@1e140000 ranges:
+> > ...
+> >
+> >
+> > I tried adding debug prints into the .mtk_probe function, but it did
+> > not execute.
+> > There are no dts changes for MT7621 between 5.14 and 5.15, so I
+> > believe it should be something else.
+> >
+> > Any ideas?
 
-Fixes: 5648b5e1169f ("netfilter: nfnetlink_queue: fix OOB when mac
-header was cleared")
+> I had time to create a new image for my gnubee board using kernel 5.15
+> and this problem does not exist on my side. Since no more mails have
+> come for a while I guess this was a problem from your configuration,
+> but just in case I preferred to answer to let you know. I am currently
+> using v5.15.7 from linux-stable with some other patches that will be
+> for 5.16. Just in case, you can check the kernel tree [0] I am
+> currently using.
 
-Signed-off-by: Ignacy Gawêdzki <ignacy.gawedzki@green-communications.fr>
----
- net/netfilter/nfnetlink_log.c   | 3 ++-
- net/netfilter/nfnetlink_queue.c | 3 ++-
- 2 files changed, 4 insertions(+), 2 deletions(-)
+There is problem with reset controller and devlink commutication. reset
+controller is abent in mainline, devlink defer all drivers which use reset
+lines until reset-controller become available - so no drivers probed.
+I'm create for myself this patch:
+https://drive.google.com/file/d/1AiKlfvIgtrBsxtI-2XFBvaxGoE0S-s9d/view?usp=sharing
 
-diff --git a/net/netfilter/nfnetlink_log.c b/net/netfilter/nfnetlink_log.c
-index 691ef4cffdd9..7f83f9697fc1 100644
---- a/net/netfilter/nfnetlink_log.c
-+++ b/net/netfilter/nfnetlink_log.c
-@@ -556,7 +556,8 @@ __build_packet_message(struct nfnl_log_net *log,
- 		goto nla_put_failure;
- 
- 	if (indev && skb->dev &&
--	    skb->mac_header != skb->network_header) {
-+	    skb_mac_header_was_set(skb) &&
-+	    skb_mac_header_len(skb) != 0) {
- 		struct nfulnl_msg_packet_hw phw;
- 		int len;
- 
-diff --git a/net/netfilter/nfnetlink_queue.c b/net/netfilter/nfnetlink_queue.c
-index 4acc4b8e9fe5..959527708e38 100644
---- a/net/netfilter/nfnetlink_queue.c
-+++ b/net/netfilter/nfnetlink_queue.c
-@@ -560,7 +560,8 @@ nfqnl_build_packet_message(struct net *net, struct nfqnl_instance *queue,
- 		goto nla_put_failure;
- 
- 	if (indev && entskb->dev &&
--	    skb_mac_header_was_set(entskb)) {
-+	    skb_mac_header_was_set(entskb) &&
-+	    skb_mac_header_len(entskb) != 0) {
- 		struct nfqnl_msg_packet_hw phw;
- 		int len;
- 
--- 
-2.32.0
