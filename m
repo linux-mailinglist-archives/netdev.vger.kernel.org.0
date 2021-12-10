@@ -2,214 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B7A5D470253
-	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 15:02:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 06FDB47025D
+	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 15:03:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239231AbhLJOFX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Dec 2021 09:05:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49538 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239350AbhLJOFT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 09:05:19 -0500
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BA44C0617A1
-        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 06:01:44 -0800 (PST)
-Received: from ip4d173d4a.dynamic.kabel-deutschland.de ([77.23.61.74] helo=[192.168.66.200]); authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1mvgSw-0001Wl-TR; Fri, 10 Dec 2021 15:01:39 +0100
-Message-ID: <5c5b606a-4694-be1b-0d4b-80aad1999bd9@leemhuis.info>
-Date:   Fri, 10 Dec 2021 15:01:38 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH] igc: Avoid possible deadlock during suspend/resume
-Content-Language: en-BS
-To:     Stefan Dietrich <roots@gmx.de>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>
-Cc:     kuba@kernel.org, greg@kroah.com, netdev@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org, regressions@lists.linux.dev
-References: <87r1awtdx3.fsf@intel.com>
- <20211201185731.236130-1-vinicius.gomes@intel.com>
- <5a4b31d43d9bf32e518188f3ef84c433df3a18b1.camel@gmx.de>
- <87o85yljpu.fsf@intel.com>
- <063995d8-acf3-9f33-5667-f284233c94b4@leemhuis.info>
- <8e59b7d6b5d4674d5843bb45dde89e9881d0c741.camel@gmx.de>
-From:   Thorsten Leemhuis <regressions@leemhuis.info>
-In-Reply-To: <8e59b7d6b5d4674d5843bb45dde89e9881d0c741.camel@gmx.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1639144904;6be6ba00;
-X-HE-SMSGID: 1mvgSw-0001Wl-TR
+        id S239456AbhLJOGp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Dec 2021 09:06:45 -0500
+Received: from mail-ot1-f45.google.com ([209.85.210.45]:44802 "EHLO
+        mail-ot1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239405AbhLJOGo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 09:06:44 -0500
+Received: by mail-ot1-f45.google.com with SMTP id u18-20020a9d7212000000b00560cb1dc10bso9664412otj.11;
+        Fri, 10 Dec 2021 06:03:08 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=k7EaRnob3zOEquu+wkUbm05857jqaStaszAJkkyFu8I=;
+        b=j7nkdae4U5xqodaJfSWnsUJ6cIX9YjdrjK9GHEoFKfCJzQLN+1NFPTjJ1mSJ7Ug3TF
+         fvEM/3th/Az2EnnnrYUxbk+e9Cuv4MFNwzPmOJ9tojz70nmQvWGTFKywtinUJSZqjBtM
+         oUlbs69V/YQaCePK93tl6H5tIh2P2O0uXnp1GjkkjdV5nvxaht625di0ho+Ja5ZJ8+sl
+         +KFX1sxTdxadBneJfq0h6tSSHbk0L/HLcnNMb7d7y6IY6jkVre/V3OVdpoSxPB9+kHmc
+         QBNzs9Kppuu8cllyj6l3wS9O8pWQVoVmMcPZ+jhblZOAsATDNEtdRCVguKLa/uI212r2
+         0Xrw==
+X-Gm-Message-State: AOAM532Bly/SMGN857EdYq8t2qcP9UIVL8Phdb+CTjgxSlyMYwrIk/2m
+        SEAkbc5CBE6/pEjrVolZYA==
+X-Google-Smtp-Source: ABdhPJw8097NeWY7msvS0XSMdwLw1NEYFR27r4qN30zbTRskT35vsrks871Xs7VoBvqNOAmesE3DHQ==
+X-Received: by 2002:a05:6830:18b:: with SMTP id q11mr11543396ota.113.1639144985532;
+        Fri, 10 Dec 2021 06:03:05 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id t14sm554859oth.81.2021.12.10.06.03.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 10 Dec 2021 06:03:04 -0800 (PST)
+Received: (nullmailer pid 1252259 invoked by uid 1000);
+        Fri, 10 Dec 2021 14:02:56 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Biao Huang <biao.huang@mediatek.com>
+Cc:     Jose Abreu <joabreu@synopsys.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, srv_heupstream@mediatek.com,
+        linux-arm-kernel@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com, davem@davemloft.net,
+        angelogioacchino.delregno@collabora.com,
+        devicetree@vger.kernel.org,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        linux-kernel@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        dkirjanov@suse.de, linux-mediatek@lists.infradead.org,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        macpaul.lin@mediatek.com,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>
+In-Reply-To: <20211210013129.811-5-biao.huang@mediatek.com>
+References: <20211210013129.811-1-biao.huang@mediatek.com> <20211210013129.811-5-biao.huang@mediatek.com>
+Subject: Re: [PATCH net-next v8 4/6] net: dt-bindings: dwmac: Convert mediatek-dwmac to DT schema
+Date:   Fri, 10 Dec 2021 08:02:56 -0600
+Message-Id: <1639144976.227854.1252258.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10.12.21 14:45, Stefan Dietrich wrote:
+On Fri, 10 Dec 2021 09:31:27 +0800, Biao Huang wrote:
+> Convert mediatek-dwmac to DT schema, and delete old mediatek-dwmac.txt.
+> And there are some changes in .yaml than .txt, others almost keep the same:
+>   1. compatible "const: snps,dwmac-4.20".
+>   2. delete "snps,reset-active-low;" in example, since driver remove this
+>      property long ago.
+>   3. add "snps,reset-delay-us = <0 10000 10000>" in example.
+>   4. the example is for rgmii interface, keep related properties only.
 > 
-> thanks for keeping an eye on the issue. I've sent the files in private
-> because I did not want to spam the mailing lists with them. Please let
-> me know if this is the correct procedure.
-
-It's likely okay in this case, but FWIW: most of the time it's the wrong
-thing to do as outlined here:
-
-https://www.kernel.org/doc/html/latest/admin-guide/reporting-issues.html#general-advice-for-further-interactions
-
-One reason for this: others that might want to look into the issue now
-or a in a year or two might be unable to if crucial data was only sent
-in private.
-
-Ciao, Thorsten
-
-> On Fri, 2021-12-10 at 10:40 +0100, Thorsten Leemhuis wrote:
->> Hi, this is your Linux kernel regression tracker speaking.
->>
->> On 02.12.21 23:34, Vinicius Costa Gomes wrote:
->>> Hi Stefan,
->>>
->>> Stefan Dietrich <roots@gmx.de> writes:
->>>
->>>> Hi Vinicius,
->>>>
->>>> thanks for the patch - unfortunately it did not solve the issue
->>>> and I
->>>> am still getting reboots/lockups.
->>>>
->>>
->>> Thanks for the test. We learned something, not a lot, but
->>> something: the
->>> problem you are facing is PTM related and it's not the same bug as
->>> that
->>> PM deadlock.
->>>
->>> I am still trying to understand what's going on.
->>>
->>> Are you able to send me the 'dmesg' output for the two kernel
->>> configs
->>> (CONFIG_PCIE_PTM enabled and disabled)? (no need to bring the
->>> network
->>> interface up or down). Your kernel .config would be useful as well.
->>
->> Stefan, could you provide the data Vinicius asked for? Or did you do
->> that in private already? Or was progress made somewhere else and I
->> simply missed this?
->>
->> Ciao, Thorsten, your Linux kernel regression tracker.
->>
->> P.S.: As a Linux kernel regression tracker I'm getting a lot of
->> reports
->> on my table. I can only look briefly into most of them. Unfortunately
->> therefore I sometimes will get things wrong or miss something
->> important.
->> I hope that's not the case here; if you think it is, don't hesitate
->> to
->> tell me about it in a public reply. That's in everyone's interest, as
->> what I wrote above might be misleading to everyone reading this; any
->> suggestion I gave they thus might sent someone reading this down the
->> wrong rabbit hole, which none of us wants.
->>
->> BTW, I have no personal interest in this issue, which is tracked
->> using
->> regzbot, my Linux kernel regression tracking bot
->> (https://linux-regtracking.leemhuis.info/regzbot/). I'm only posting
->> this mail to get things rolling again and hence don't need to be CC
->> on
->> all further activities wrt to this regression.
->>
->> #regzbot poke
->>
->>>> On Wed, 2021-12-01 at 10:57 -0800, Vinicius Costa Gomes wrote:
->>>>> Inspired by:
->>>>> https://bugzilla.kernel.org/show_bug.cgi?id=215129
->>>>>
->>>>> Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
->>>>> ---
->>>>> Just to see if it's indeed the same problem as the bug report
->>>>> above.
->>>>>
->>>>>  drivers/net/ethernet/intel/igc/igc_main.c | 19 +++++++++++++
->>>>> ------
->>>>>  1 file changed, 13 insertions(+), 6 deletions(-)
->>>>>
->>>>> diff --git a/drivers/net/ethernet/intel/igc/igc_main.c
->>>>> b/drivers/net/ethernet/intel/igc/igc_main.c
->>>>> index 0e19b4d02e62..c58bf557a2a1 100644
->>>>> --- a/drivers/net/ethernet/intel/igc/igc_main.c
->>>>> +++ b/drivers/net/ethernet/intel/igc/igc_main.c
->>>>> @@ -6619,7 +6619,7 @@ static void
->>>>> igc_deliver_wake_packet(struct
->>>>> net_device *netdev)
->>>>>  	netif_rx(skb);
->>>>>  }
->>>>>
->>>>> -static int __maybe_unused igc_resume(struct device *dev)
->>>>> +static int __maybe_unused __igc_resume(struct device *dev,
->>>>> bool rpm)
->>>>>  {
->>>>>  	struct pci_dev *pdev = to_pci_dev(dev);
->>>>>  	struct net_device *netdev = pci_get_drvdata(pdev);
->>>>> @@ -6661,20 +6661,27 @@ static int __maybe_unused
->>>>> igc_resume(struct
->>>>> device *dev)
->>>>>
->>>>>  	wr32(IGC_WUS, ~0);
->>>>>
->>>>> -	rtnl_lock();
->>>>> +	if (!rpm)
->>>>> +		rtnl_lock();
->>>>>  	if (!err && netif_running(netdev))
->>>>>  		err = __igc_open(netdev, true);
->>>>>
->>>>>  	if (!err)
->>>>>  		netif_device_attach(netdev);
->>>>> -	rtnl_unlock();
->>>>> +	if (!rpm)
->>>>> +		rtnl_unlock();
->>>>>
->>>>>  	return err;
->>>>>  }
->>>>>
->>>>>  static int __maybe_unused igc_runtime_resume(struct device
->>>>> *dev)
->>>>>  {
->>>>> -	return igc_resume(dev);
->>>>> +	return __igc_resume(dev, true);
->>>>> +}
->>>>> +
->>>>> +static int __maybe_unused igc_resume(struct device *dev)
->>>>> +{
->>>>> +	return __igc_resume(dev, false);
->>>>>  }
->>>>>
->>>>>  static int __maybe_unused igc_suspend(struct device *dev)
->>>>> @@ -6738,7 +6745,7 @@ static pci_ers_result_t
->>>>> igc_io_error_detected(struct pci_dev *pdev,
->>>>>   *  @pdev: Pointer to PCI device
->>>>>   *
->>>>>   *  Restart the card from scratch, as if from a cold-boot.
->>>>> Implementation
->>>>> - *  resembles the first-half of the igc_resume routine.
->>>>> + *  resembles the first-half of the __igc_resume routine.
->>>>>   **/
->>>>>  static pci_ers_result_t igc_io_slot_reset(struct pci_dev
->>>>> *pdev)
->>>>>  {
->>>>> @@ -6777,7 +6784,7 @@ static pci_ers_result_t
->>>>> igc_io_slot_reset(struct pci_dev *pdev)
->>>>>   *
->>>>>   *  This callback is called when the error recovery driver
->>>>> tells us
->>>>> that
->>>>>   *  its OK to resume normal operation. Implementation
->>>>> resembles the
->>>>> - *  second-half of the igc_resume routine.
->>>>> + *  second-half of the __igc_resume routine.
->>>>>   */
->>>>>  static void igc_io_resume(struct pci_dev *pdev)
->>>>>  {
->>>
->>> Cheers,
->>>
+> Signed-off-by: Biao Huang <biao.huang@mediatek.com>
+> ---
+>  .../bindings/net/mediatek-dwmac.txt           |  91 ----------
+>  .../bindings/net/mediatek-dwmac.yaml          | 156 ++++++++++++++++++
+>  2 files changed, 156 insertions(+), 91 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/net/mediatek-dwmac.txt
+>  create mode 100644 Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
 > 
-> 
-> 
+
+Running 'make dtbs_check' with the schema in this patch gives the
+following warnings. Consider if they are expected or the schema is
+incorrect. These may not be new warnings.
+
+Note that it is not yet a requirement to have 0 warnings for dtbs_check.
+This will change in the future.
+
+Full log is available here: https://patchwork.ozlabs.org/patch/1566169
+
+
+ethernet@1101c000: clock-names: ['axi', 'apb', 'mac_main', 'ptp_ref'] is too short
+	arch/arm64/boot/dts/mediatek/mt2712-evb.dt.yaml
+
+ethernet@1101c000: clocks: [[27, 34], [27, 37], [6, 154], [6, 155]] is too short
+	arch/arm64/boot/dts/mediatek/mt2712-evb.dt.yaml
+
+ethernet@1101c000: compatible: ['mediatek,mt2712-gmac'] does not contain items matching the given schema
+	arch/arm64/boot/dts/mediatek/mt2712-evb.dt.yaml
+
+ethernet@1101c000: compatible: 'oneOf' conditional failed, one must be fixed:
+	arch/arm64/boot/dts/mediatek/mt2712-evb.dt.yaml
+
+ethernet@1101c000: Unevaluated properties are not allowed ('compatible', 'reg', 'interrupts', 'interrupt-names', 'mac-address', 'clock-names', 'clocks', 'power-domains', 'snps,axi-config', 'snps,mtl-rx-config', 'snps,mtl-tx-config', 'snps,txpbl', 'snps,rxpbl', 'clk_csr', 'phy-mode', 'phy-handle', 'snps,reset-gpio', 'mdio' were unexpected)
+	arch/arm64/boot/dts/mediatek/mt2712-evb.dt.yaml
+
