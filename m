@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D1E1A470792
-	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 18:44:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 33AE147079D
+	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 18:47:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242330AbhLJRru (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Dec 2021 12:47:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46818 "EHLO
+        id S244707AbhLJRuw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Dec 2021 12:50:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240884AbhLJRru (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 12:47:50 -0500
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF546C0617A1
-        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 09:44:14 -0800 (PST)
-Received: by mail-ed1-x530.google.com with SMTP id r11so31675767edd.9
-        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 09:44:14 -0800 (PST)
+        with ESMTP id S244445AbhLJRuv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 12:50:51 -0500
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49A95C061746
+        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 09:47:16 -0800 (PST)
+Received: by mail-ed1-x531.google.com with SMTP id v1so32715049edx.2
+        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 09:47:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=NxPxJyZawfrnZBMiRlqw1rETnKz3/ZdqmH3r9+FILxQ=;
-        b=j605hwarRrFsDpVW4VHk878pZcn/NVoEAqJD88DInE3+bhhTsb1mVkdPtZqtKvNy1F
-         sQDAIyPQps1MMsUNGE5ZzMV71vObGdGkDrkfEVHNMZ2u8iiz8OAQmp/Wc8jNzIUQKE6D
-         b8yrDYUPEMvfd2Y0g8Tw4vEAR2QDVHBC2GxZriLcDY7UF9RVifFlLCdKA+r3pZMvo4ON
-         Hzk6WSLjIsitN7LrxMwYG78lpiTrXd48OmvVS5pvuVETiBXg/Z52Cc6RsSvVqXseC6E+
-         3JomW7qaS5jsMuk6N3gRWQMDXlA8o1KR58RVuhqeV+s3HCnOgIuh1SLNNRZ5zCuofz3d
-         9fSA==
+        bh=u0kUDqAQhyOjtLkkVp3h3d0LtYuojuEYms8Q4IsgYGc=;
+        b=H0YOfzPR7xr29kQUkLYtrCS3VXAbrxmcxvVXug70Ng/WKDC9SVHWCUllgbJn11ZUVJ
+         NW2jGtJ0SYy6pRvF8QmqGyky+Dd6pKrsKbdpGik4OTZBnHA2yJk1qWAOEibCUdHU0UUS
+         wlHx0BkQU54/AG8dBaq1F2zHjmBW5Wujwl04eKsDh3+o5C8dUP/pWxiWQtl7nNQIXhq5
+         Mf2LXUS8YSY56iltwPxK/d2GPjMIWqWy+ivr3CxrVuw5pSc19UV18nb8yFVk4qRgQHqo
+         Do/4OERYUUWK/sBHMxKZAtdmAU5dxntA3X9etY4dbzsBu3jEhWMxij5Is/v09sNyWzqO
+         s10A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=NxPxJyZawfrnZBMiRlqw1rETnKz3/ZdqmH3r9+FILxQ=;
-        b=1OCOPXaJVAXEE+vPRxvFsMW6pZVYecXaHnVpK8i+54dMPDVARAX8ZqrA7zsMEVv2MN
-         O/5oRolrfvFb6Nqc3hJw7gcvnKLOUOjMP3pdefvqI2UCp5IzJLqvJG/ywJdFpvmz4Ig3
-         esxgw/TddViSA+xKOQLzKhZmlaTxXbzakt+qpZbqgm2ZvxhEgu8hRMG07JlQvZ/k/jWE
-         /46U35DRTFy2fcveew/rNU6qybA0N8IC6Y2ucqy/pEw1zhkQOrygPuOTEP88B0WCQUMR
-         dWYRiVzOFDBs5CjIZFEOjDXHGDpUBwxoNaZ2tBlghc+1uin+6NhpK0AU+DLMy3CONoqe
-         /muQ==
-X-Gm-Message-State: AOAM5301tmiMOwyhD6uBpicMqjqySTj3xYduZjTIJlSBv55uxJOJEUme
-        +DJHjCPenfACaDfbiveP6yoLANejTIEDEll+HHc=
-X-Google-Smtp-Source: ABdhPJz92j1m966zdNGaUj9clabUdoZanSLACG64zTW0jcWw/48D3utyUHk9w/qThmm0xP0YJMsUej8Pzwo3NSqSmnE=
-X-Received: by 2002:a05:6402:4407:: with SMTP id y7mr40521247eda.140.1639158252635;
- Fri, 10 Dec 2021 09:44:12 -0800 (PST)
+        bh=u0kUDqAQhyOjtLkkVp3h3d0LtYuojuEYms8Q4IsgYGc=;
+        b=FPsFEr8C2lwQD9kF5w0V1v61ozxKZdWZ/y0mBxqB3sU+yQBHOcCfJjVrT5GWNYpdrG
+         371yj11KOPMV8bSwcvp/x/VpMu2CP4VWAXLETXbTxMeEoLB8J5B22ntG78dbphq4Iz15
+         BEh8WkX1LhnicXbW4omA5FgdvzL643B76sOo8v2nDR1APN6P03a02gUKaPj+a1FZNcZg
+         YO2cB0ftBcIzLWRboQ7Np0A4E3CRznimwI2+d/EyRa83jBk0dY8uy3FZVMe5muFRTmUE
+         Qoh0TPPVXfTKxq9OuwV1kzB3dDMeKDvSGJzqurWtVsh1VGv0S03E6niJlcJwztRY9zFH
+         avFA==
+X-Gm-Message-State: AOAM531XvWkize1hySeE3plCog8YkK/jSUQECJR25J8RTuJUSHofEdut
+        rgj1zkKaLxfWI6zS2E7LYIr/K76SqJwRc1csXZw=
+X-Google-Smtp-Source: ABdhPJxNEynW3eecceOQMKhBFZ3wkVbf91zOE8v4V6DLy9e0F7cdcmZfr5XtfUPg9WY1KEktvROXEPNHe5uIQx27y6w=
+X-Received: by 2002:a05:6402:16cd:: with SMTP id r13mr41032361edx.264.1639158434814;
+ Fri, 10 Dec 2021 09:47:14 -0800 (PST)
 MIME-Version: 1.0
 References: <20211208145459.9590-1-xiangxia.m.yue@gmail.com>
  <20211208145459.9590-3-xiangxia.m.yue@gmail.com> <61b383c6373ca_1f50e20816@john.notmuch>
- <61b385c5c21c3_203252085a@john.notmuch>
-In-Reply-To: <61b385c5c21c3_203252085a@john.notmuch>
+ <CAMDZJNV3-y5jkUAJJ--10PcicKpGMwKS_3gG9O7srjomO3begw@mail.gmail.com>
+In-Reply-To: <CAMDZJNV3-y5jkUAJJ--10PcicKpGMwKS_3gG9O7srjomO3begw@mail.gmail.com>
 From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Date:   Sat, 11 Dec 2021 01:43:36 +0800
-Message-ID: <CAMDZJNUpnA2Ayq6vNLQ4_JYY2Z6vDhFd5riUeVFGwMK492+L4g@mail.gmail.com>
+Date:   Sat, 11 Dec 2021 01:46:38 +0800
+Message-ID: <CAMDZJNXL5qSfFv54A=RrMwHe8DOv48EfrypHb1FFSUFu36-9DQ@mail.gmail.com>
 Subject: Re: [net v5 2/3] net: sched: add check tc_skip_classify in sch egress
 To:     John Fastabend <john.fastabend@gmail.com>
 Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
@@ -71,10 +71,11 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Dec 11, 2021 at 12:52 AM John Fastabend
-<john.fastabend@gmail.com> wrote:
+On Sat, Dec 11, 2021 at 1:37 AM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
 >
-> John Fastabend wrote:
+> On Sat, Dec 11, 2021 at 12:43 AM John Fastabend
+> <john.fastabend@gmail.com> wrote:
+> >
 > > xiangxia.m.yue@ wrote:
 > > > From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 > > >
@@ -102,7 +103,14 @@ On Sat, Dec 11, 2021 at 12:52 AM John Fastabend
 > > that used to see packets no longer see the packet as expected?
 > >
 > > Is this the path you are talking about?
-> >
+> Hi John
+> Tx ethx -> __dev_queue_xmit -> sch_handle_egress
+> ->  execute BPF program on ethx with bpf_redirect(ifb0) ->
+> -> ifb_xmit -> ifb_ri_tasklet -> dev_queue_xmit -> __dev_queue_xmit
+> the packets loopbacks, that means bpf_redirect doesn't work with ifb
+> netdev, right ?
+> so in sch_handle_egress, I add the check skb_skip_tc_classify().
+>
 > >  rx ethx  ->
 > >    execute BPF program on ethx with bpf_redirect(ifb0) ->
 > >      __skb_dequeue @ifb tc_skip_classify = 1 ->
@@ -115,23 +123,47 @@ On Sat, Dec 11, 2021 at 12:52 AM John Fastabend
 > > know that is the correct/expected behavior? Before the above
 > > change it would have been called, what if its doing useful
 > > work.
-> >
+> bpf_redirect works fine on ingress with ifb
+> __netif_receive_skb_core -> sch_handle_ingress -> bpf_redirect (ifb0)
+> -> ifb_xmit -> netif_receive_skb -> __netif_receive_skb_core
+> but
+> __netif_receive_skb_core --> skb_skip_tc_classify(so the packets will
+> execute the BPF progam again)
+so the packets will NOT execute the BPF progam again)
+
 > > Also its not clear how your ifb setup is built or used. That
 > > might help understand your use case. I would just remove the
 > > IFB altogether and the above discussion is mute.
-> >
+> tc filter add dev veth1 egress bpf direct-action obj
+> test_bpf_redirect_ifb.o sec redirect_ifb
+>
+> the test_bpf_redirect_ifb  bpf progam:
+> +// SPDX-License-Identifier: GPL-2.0
+> +/* Copyright (c) 2021 DiDi Global */
+> +
+> +#include <linux/bpf.h>
+> +#include <bpf/bpf_helpers.h>
+> +
+> +SEC("redirect_ifb")
+> +int redirect(struct __sk_buff *skb)
+> +{
+> +       return bpf_redirect(skb->ifindex + 1 /* ifbX */, 0);
+> +}
+> +
+> +char __license[] SEC("license") = "GPL";
+>
+> The 3/3 is selftest:
+> https://patchwork.kernel.org/project/netdevbpf/patch/20211208145459.9590-4-xiangxia.m.yue@gmail.com/
+>
 > > Thanks,
 > > John
 >
-> After a bit further thought (and coffee) I think this will
-> break some programs that exist today. Consider the case
-> where I pop a header off and resubmit to the same device
-> intentionally to reprocess the pkt without the header. I've
-> used this pattern in BPF a few times.
-No, ifb netdev sets the skb->tc_skip_classify = 1, that means we
-should not process the skb again, no matter on egress or ingress.
-if the bpf programs don't set the skb->tc_skip_classify = 1, then we
-can process them again.
+>
+>
+> --
+> Best regards, Tonghao
+
+
 
 -- 
 Best regards, Tonghao
