@@ -2,74 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B5D33470061
-	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 12:57:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B6F6470098
+	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 13:24:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239522AbhLJMBU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Dec 2021 07:01:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49112 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237578AbhLJMBT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 07:01:19 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D02BCC0617A1
-        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 03:57:44 -0800 (PST)
-Date:   Fri, 10 Dec 2021 12:57:42 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1639137463;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=e1vgqxQf/HEi/380wsVHeIa9ywtiqHCGTo+cLrBRCS8=;
-        b=M06WG2fjZg8Q7s/v74qppLMukNLwKMvoskcPaBE+u0RABP+0hnmX1ucoBrvIcdc2ONks3i
-        xZE6b5nRkbka6yd8uj6I5EyaY6fh2d4xuSmoCGI9mBYeiyY1PmdQCOtu7EDJbZXiea2rrM
-        vdcfjawEaBaRyLWeF/E7Hg/hlAoDZnyh304ebFxSlPKzlyQA1fIZZSol8a8Y1Y4BPxpPYm
-        k6ulRdzVbUJgYaTenybJ5jI4LH7+NRH4/oJMFn7B9dCGilW8iPh6+u9K/Q7c4bng4Zz1C0
-        VhIuhmuZGMqq2gMBAbDmoGtlhwtI+u2nF6dosyq4Nhqp8Uc3vrOWussg4eWwNg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1639137463;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=e1vgqxQf/HEi/380wsVHeIa9ywtiqHCGTo+cLrBRCS8=;
-        b=rsc5nRk9sbKctQ/ZB7AeRdGtNr25bxJmH09axXoE00yDptL0jMq7ZL992/bFEo7MIiqUsc
-        2ysWQSGF6MWYVgCQ==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     Kurt Kanzenbach <kurt.kanzenbach@linutronix.de>
-Cc:     Ong Boon Leong <boon.leong.ong@intel.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        alexandre.torgue@foss.st.com, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH net-next 2/2] net: stmmac: add tc flower filter for
- EtherType matching
-Message-ID: <YbNAtugLvd83zP2W@linutronix.de>
-References: <20211209151631.138326-1-boon.leong.ong@intel.com>
- <20211209151631.138326-3-boon.leong.ong@intel.com>
- <87fsr0zs77.fsf@kurt>
+        id S240947AbhLJM1r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Dec 2021 07:27:47 -0500
+Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:55734
+        "EHLO smtp-relay-canonical-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S237629AbhLJM1r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 07:27:47 -0500
+Received: from mussarela (1.general.cascardo.us.vpn [10.172.70.58])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id EB79E40078;
+        Fri, 10 Dec 2021 12:24:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1639139050;
+        bh=oAEuyXSS+FfBE7IbC9Qm9bPmNR/CHY86PuhFfkuo8Ak=;
+        h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+         Content-Type:In-Reply-To;
+        b=lHxFDgr55MI0m1wV2nQ4dpY/zmLA1P/LAcOtm6Mm55I4KYV7zYc+IzULPjY+vDZAC
+         6VYrll6fjoQ7hrkYBw+BQHESJLZqulswRcCTZX99WYpybGrLW7UTGcbDT1HmvCxQp+
+         l4OhYNBmupNm6DiR+bwXRkMa8RRJL/xTrc+6bAJMqsCIe1+dPyO9QU7MxP46vDvrbo
+         AT4z24d0Lmx6VK+KdG1qUaJx7V1LgQLPRmqTwFdqIBgf6xQg1IOG2yqyvr8CLk1B/q
+         MjsjuRm5Yc/cmgj1nYKqEprPIZKvnNIu9szc0lADAvIGbUGfRchb4YSkdI/SHYNwtH
+         yT3+6IO5qVbtA==
+Date:   Fri, 10 Dec 2021 09:24:04 -0300
+From:   Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Ido Schimmel <idosch@idosch.org>,
+        John Fastabend <john.fastabend@gmail.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, ast@kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] bpf: return EOPNOTSUPP when JIT is needed and not
+ possible
+Message-ID: <YbNG5BliqnCyhs4J@mussarela>
+References: <20211209134038.41388-1-cascardo@canonical.com>
+ <61b2536e5161d_6bfb2089@john.notmuch>
+ <YbJZoK+qBEiLAxxM@shredder>
+ <b294e66b-0bac-008b-52b4-6f1a90215baa@iogearbox.net>
+ <20211209182349.038ac2b8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <87fsr0zs77.fsf@kurt>
+In-Reply-To: <20211209182349.038ac2b8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-12-10 11:10:04 [+0100], Kurt Kanzenbach wrote:
-> > +	if (match.mask->n_proto) {
-> > +		__be16 etype = ntohs(match.key->n_proto);
+On Thu, Dec 09, 2021 at 06:23:49PM -0800, Jakub Kicinski wrote:
+> On Fri, 10 Dec 2021 00:03:40 +0100 Daniel Borkmann wrote:
+> > > Similar issue was discussed in the past. See:
+> > > https://lore.kernel.org/netdev/20191204.125135.750458923752225025.davem@davemloft.net/  
+> > 
+> > With regards to ENOTSUPP exposure, if the consensus is that we should fix all
+> > occurences over to EOPNOTSUPP even if they've been exposed for quite some time
+> > (Jakub?), 
 > 
-> n_proto is be16. The ntohs() call will produce an u16.
+> Did you mean me? :) In case you did - I think we should avoid it 
+> for new code but changing existing now seems risky. Alexei and Andrii
+> would know best but quick search of code bases at work reveals some
+> scripts looking for ENOTSUPP.
+> 
+> Thadeu, what motivated the change?
+> 
+> If we're getting those changes fixes based on checkpatch output maybe 
+> there is a way to mute the checkpatch warnings when it's not run on a 
+> diff?
+> 
 
-While at it, could we be please remove that __force in
-ETHER_TYPE_FULL_MASK and use cpu_to_be16() macro?
+It was not checkpatch that motivated me.
 
-> Thanks,
-> Kurt
+I was looking into the following commits as we hit a failed test.
 
-Sebastian
+be08815c5d3b ("bpf: add also cbpf long jump test cases with heavy expansion")
+050fad7c4534 ("bpf: fix truncated jump targets on heavy expansions") 
+
+Then, I realized that if given the right number of BPF_LDX | BPF_B | BPF_MSH
+instructions, it will pass the bpf_convert_filter stage, but fail at blinding.
+And if you have CONFIG_BPF_JIT_ALWAYS_ON, setting the filter will fail with
+ENOTSUPP, which should not be sent to userspace.
+
+I noticed other ENOTSUPP, but they seemed to be returned by helpers, and I was
+not sure this would be relayed to userspace. So, I went for fixing the observed
+case.
+
+I will see if any of the tests I can run is broken by this change and submit it
+again with the tests fixed as well.
+
+Cascardo.
+
+> > we could give this patch a try maybe via bpf-next and see if anyone complains.
+> > 
+> > Thadeu, I think you also need to fix up BPF selftests as test_verifier, to mention
+> > one example (there are also bunch of others under tools/testing/selftests/), is
+> > checking for ENOTSUPP specifically..
