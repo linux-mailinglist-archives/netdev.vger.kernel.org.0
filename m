@@ -2,95 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC72747025B
-	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 15:03:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B8BF470265
+	for <lists+netdev@lfdr.de>; Fri, 10 Dec 2021 15:04:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239213AbhLJOGn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Dec 2021 09:06:43 -0500
-Received: from mail-ot1-f49.google.com ([209.85.210.49]:35636 "EHLO
-        mail-ot1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239289AbhLJOGl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 09:06:41 -0500
-Received: by mail-ot1-f49.google.com with SMTP id x43-20020a056830246b00b00570d09d34ebso9727720otr.2;
-        Fri, 10 Dec 2021 06:03:06 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=qFj8K3WFpcuS6IdcgSs6T2eGLRNYj7TpTJrIpVhra44=;
-        b=t9qrPmKVNBPUFFzRZnxuT5Ns2+7PeQSjQ/EqrycRjGN7V/ATokYbPwSt6ko2h/x5nv
-         a89zw00Quvvk2kZiM7FFzjnVmTatpSNxW+smlI/uE/gcyQyuFApgMoc4mfQGDz3yGkmP
-         VrYHL1Nlre5PbhccicRkDpmmZXxw6FqJGM6vECUufHVtkRqRrlxT059e8A6qa7tgQzzv
-         BsmM6bNYyxl5WoNq9udleW31JzfJ/TRclIERkr//MYqIKLytqOC/+NaSxKLorzuNRRIv
-         3YynmPb8TWM8sVufwVV1+hwOjcHvglsXZxuPkMWf9cy6DcTzDSs70dE+W9CtQdFoy7RA
-         zpmg==
-X-Gm-Message-State: AOAM531z4WjYrjN13qxIbWEjEEtU7Rt6gMriXGZDmWXY2bWoffb9ccu8
-        f1OobPnNfmzprmpcR8SCQg==
-X-Google-Smtp-Source: ABdhPJxGA9LwgjCGvSQm44Ms90YQCfR3aM+imwu+hZ7RRERaZQjBVA7pPuzIZen5MPrjMTwZuS9PoA==
-X-Received: by 2002:a9d:1b0f:: with SMTP id l15mr10945246otl.38.1639144983324;
-        Fri, 10 Dec 2021 06:03:03 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id y192sm673672oie.21.2021.12.10.06.03.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Dec 2021 06:03:00 -0800 (PST)
-Received: (nullmailer pid 1252262 invoked by uid 1000);
-        Fri, 10 Dec 2021 14:02:56 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Biao Huang <biao.huang@mediatek.com>
-Cc:     Jose Abreu <joabreu@synopsys.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        srv_heupstream@mediatek.com, macpaul.lin@mediatek.com,
-        linux-mediatek@lists.infradead.org,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        angelogioacchino.delregno@collabora.com,
-        linux-kernel@vger.kernel.org, dkirjanov@suse.de,
-        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
-        davem@davemloft.net, Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        devicetree@vger.kernel.org
-In-Reply-To: <20211210013129.811-7-biao.huang@mediatek.com>
-References: <20211210013129.811-1-biao.huang@mediatek.com> <20211210013129.811-7-biao.huang@mediatek.com>
-Subject: Re: [PATCH net-next v8 6/6] net: dt-bindings: dwmac: add support for mt8195
-Date:   Fri, 10 Dec 2021 08:02:56 -0600
-Message-Id: <1639144976.235371.1252261.nullmailer@robh.at.kernel.org>
+        id S242003AbhLJOHF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Dec 2021 09:07:05 -0500
+Received: from smtp-out1.suse.de ([195.135.220.28]:46448 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238527AbhLJOHE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 09:07:04 -0500
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 6539621108;
+        Fri, 10 Dec 2021 14:03:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1639145008; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=lStuFTCpT32EwO774aLe8VXENvz+BIXqOEoy5mRtbZQ=;
+        b=CodCcSm+SiSjJsATKBo8GG3RC3RU7Z9ToHnWxEijTrG6o2EUvn5+a4YhW+0bQ9P8vMb3XJ
+        QFwFl/91GyEsr5oh4xs45vY3Ygx8StbLF3vq0ORPCB96od7j2bsNu6f1ShJFAdQMdoJvR9
+        xc1eqdDKuuy9XymuOd59XpozfdKc8u8=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1639145008;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=lStuFTCpT32EwO774aLe8VXENvz+BIXqOEoy5mRtbZQ=;
+        b=BejK88X1IqETklRl9RpQBRmeB8aqS218XrXEz140mS50HByghR9yxD90fcQnvC9Dxu6ca0
+        Jgdz9Nfc3B7GohAg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 1E8A413E15;
+        Fri, 10 Dec 2021 14:03:28 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id MmuqAzBes2FrOwAAMHmgww
+        (envelope-from <dkirjanov@suse.de>); Fri, 10 Dec 2021 14:03:28 +0000
+Subject: Re: [PATCH] netfilter: fix regression in looped (broad|multi)cast's
+ MAC handing
+To:     =?UTF-8?Q?Ignacy_Gaw=c4=99dzki?= 
+        <ignacy.gawedzki@green-communications.fr>, netdev@vger.kernel.org
+References: <20211210122600.mrduxdw2uwpwoqbr@zenon.in.qult.net>
+From:   Denis Kirjanov <dkirjanov@suse.de>
+Message-ID: <b2e527bc-4c38-54a9-f909-aca6453c0cfc@suse.de>
+Date:   Fri, 10 Dec 2021 17:03:27 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
+MIME-Version: 1.0
+In-Reply-To: <20211210122600.mrduxdw2uwpwoqbr@zenon.in.qult.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Language: ru
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 10 Dec 2021 09:31:29 +0800, Biao Huang wrote:
-> Add binding document for the ethernet on mt8195.
+
+
+12/10/21 3:26 PM, Ignacy Gawędzki пишет:
+> In 5648b5e1169f, the test for non-empty MAC header introduced in
+> 2c38de4c1f8da7 has been replaced with a test for a set MAC header,
+> which breaks the case when the MAC header has been reset (using
+> skb_reset_mac_header), as is the case with looped-back multicast
+> packets.
 > 
-> Signed-off-by: Biao Huang <biao.huang@mediatek.com>
+> This patch adds a test for a non-empty MAC header in addition to the
+> test for a set MAC header.  The same two tests are also implemented in
+> nfnetlink_log.c, where the initial code of 2c38de4c1f8da7 has not been
+> touched, but where supposedly the same situation may happen.
+>
+Fixes: 2c38de4c1f8da7 ("netfilter: fix looped (broad|multi)cast's MAC 
+handling")
+
+> Signed-off-by: Ignacy Gawędzki <ignacy.gawedzki@green-communications.fr>
 > ---
->  .../bindings/net/mediatek-dwmac.yaml          | 86 +++++++++++++++----
->  1 file changed, 70 insertions(+), 16 deletions(-)
+>   net/netfilter/nfnetlink_log.c   | 3 ++-
+>   net/netfilter/nfnetlink_queue.c | 3 ++-
+>   2 files changed, 4 insertions(+), 2 deletions(-)
 > 
-
-Running 'make dtbs_check' with the schema in this patch gives the
-following warnings. Consider if they are expected or the schema is
-incorrect. These may not be new warnings.
-
-Note that it is not yet a requirement to have 0 warnings for dtbs_check.
-This will change in the future.
-
-Full log is available here: https://patchwork.ozlabs.org/patch/1566168
-
-
-ethernet@1101c000: clock-names: ['axi', 'apb', 'mac_main', 'ptp_ref'] is too short
-	arch/arm64/boot/dts/mediatek/mt2712-evb.dt.yaml
-
-ethernet@1101c000: clocks: [[27, 34], [27, 37], [6, 154], [6, 155]] is too short
-	arch/arm64/boot/dts/mediatek/mt2712-evb.dt.yaml
-
-ethernet@1101c000: compatible: ['mediatek,mt2712-gmac'] does not contain items matching the given schema
-	arch/arm64/boot/dts/mediatek/mt2712-evb.dt.yaml
-
-ethernet@1101c000: compatible: 'oneOf' conditional failed, one must be fixed:
-	arch/arm64/boot/dts/mediatek/mt2712-evb.dt.yaml
-
-ethernet@1101c000: Unevaluated properties are not allowed ('compatible', 'reg', 'interrupts', 'interrupt-names', 'mac-address', 'clock-names', 'clocks', 'assigned-clocks', 'assigned-clock-parents', 'power-domains', 'snps,axi-config', 'snps,mtl-rx-config', 'snps,mtl-tx-config', 'snps,txpbl', 'snps,rxpbl', 'clk_csr', 'phy-mode', 'phy-handle', 'snps,reset-gpio', 'mdio' were unexpected)
-	arch/arm64/boot/dts/mediatek/mt2712-evb.dt.yaml
-
+> diff --git a/net/netfilter/nfnetlink_log.c b/net/netfilter/nfnetlink_log.c
+> index 691ef4cffdd9..7f83f9697fc1 100644
+> --- a/net/netfilter/nfnetlink_log.c
+> +++ b/net/netfilter/nfnetlink_log.c
+> @@ -556,7 +556,8 @@ __build_packet_message(struct nfnl_log_net *log,
+>   		goto nla_put_failure;
+>   
+>   	if (indev && skb->dev &&
+> -	    skb->mac_header != skb->network_header) {
+> +	    skb_mac_header_was_set(skb) &&
+> +	    skb_mac_header_len(skb) != 0) {
+>   		struct nfulnl_msg_packet_hw phw;
+>   		int len;
+>   
+> diff --git a/net/netfilter/nfnetlink_queue.c b/net/netfilter/nfnetlink_queue.c
+> index 4acc4b8e9fe5..959527708e38 100644
+> --- a/net/netfilter/nfnetlink_queue.c
+> +++ b/net/netfilter/nfnetlink_queue.c
+> @@ -560,7 +560,8 @@ nfqnl_build_packet_message(struct net *net, struct nfqnl_instance *queue,
+>   		goto nla_put_failure;
+>   
+>   	if (indev && entskb->dev &&
+> -	    skb_mac_header_was_set(entskb)) {
+> +	    skb_mac_header_was_set(entskb) &&
+> +	    skb_mac_header_len(entskb) != 0) {
+>   		struct nfqnl_msg_packet_hw phw;
+>   		int len;
+>   
+> 
