@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E173471058
-	for <lists+netdev@lfdr.de>; Sat, 11 Dec 2021 03:02:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BE4C47105B
+	for <lists+netdev@lfdr.de>; Sat, 11 Dec 2021 03:02:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345694AbhLKCGL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Dec 2021 21:06:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48280 "EHLO
+        id S1345766AbhLKCGU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Dec 2021 21:06:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345710AbhLKCF5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 21:05:57 -0500
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9C6EC061746;
-        Fri, 10 Dec 2021 18:02:21 -0800 (PST)
-Received: by mail-ed1-x529.google.com with SMTP id x10so17834775edd.5;
-        Fri, 10 Dec 2021 18:02:21 -0800 (PST)
+        with ESMTP id S236232AbhLKCGI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 21:06:08 -0500
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DCEDC061714;
+        Fri, 10 Dec 2021 18:02:23 -0800 (PST)
+Received: by mail-ed1-x52d.google.com with SMTP id x15so36045034edv.1;
+        Fri, 10 Dec 2021 18:02:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Bt2e9cpzmKNi/ZkvQlAApQrFQuwVRyt+mcfwXyAkA5w=;
-        b=Kpb0e18Uzc2SI9ztXe2c9wj2DRYGcRxaLyvpHHVMLGLm1qgnwZO5uUul4mk6xUk1dA
-         rWArBU7Y5Xrnmc4YPMMVecseQCmQ4oYLwhuo9rwGqiwUmRI9+d6QIWA4A8Ia587vCXmw
-         a/JSZYqvsBCN319Giwq1+AoM/VVPlrqGxOn1goDiH/jgLczIXFQzlfE6lyWOIgLRaCW1
-         wmOirV8I1bWWGKumaQBVN43Pv5WOOjRQVjo+M8MZdzEdL0X8N5wwFfa/49OKf+m7pN5U
-         WqYI77NMwMc3I+jx+miO0/2pDAxmLq6df0DviijGqBgH6MtjY45mYeZ+jTSsj9Jz4VwR
-         qmoQ==
+        bh=MsFfAGLof3Dm9/LrR3eo50ukODDBjEJuAPZhIodAjb8=;
+        b=H7Ipv3u+6+S3eEvDoI6LyEtyl9WL3LaAV9Y5t5ns7VvFske1+/sSP8h1Xq0pFxCvJs
+         LtnhD4gaUrq+43Cf0WUTiQJbmvq+nfA0pGQtIeejOSNPTwjHMRGwGmQRyyU+9dgMX648
+         Hbn0MYrVo++b28V7bi3OFVqs7u6FUFf4pvueWAn8kJSqUKqRMzdqdtceIkCnlXzEWo6F
+         +oemCssXGoushIjaMa4++GkQhAxbsLw/RxR/ba/4SdJ5ZHYwk8piYswWzrI18kf1Qyr1
+         tENmIqS3uxPdBRg0we9Q7WR2eDyhDxtFzXPHaMiefUNzPLNMLNx2FCPwDn3VOW/ysDy5
+         r77A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Bt2e9cpzmKNi/ZkvQlAApQrFQuwVRyt+mcfwXyAkA5w=;
-        b=t2U8+fJo5EgScGkJjDkoANH5x9Wuqa9I1SBJ0wP20rpPTcce6vKitQzFoLeJFGDthp
-         4NmrrW+fwU3OzLlR6jvDZKKk8pB68/jGuF/4yoscZBObMnGJDfx7Le9ke/snHHgYEcGc
-         uwDVfqmiXvKU1vrWvM2dQdsGq+EmmwyBcx+LKVKYDCGwCiUAwblfxYfkB6rLoFYXEhRT
-         0EMQp93kEZKV9EYeBHQEWWo7SX6KJujqaNmMDQJCakvvr6XsfBmuItNHYzd1m7bOULZZ
-         E4BHBWnr3d5mNy9SOi+Qw03WEpMvi2P8NJEcZ2FkdxNw9CNr7WOinOzkLHjdFBdZH1CV
-         00yA==
-X-Gm-Message-State: AOAM530e6WlBCX8OIfS/2f/aMA5jMzB83OcLobizKlr7DFxus/IGQKYq
-        ic6Q7usHew3Dhewb/uxful0=
-X-Google-Smtp-Source: ABdhPJzgr/HHQYL45p2ThoOiXEqbYqYMYLopVCCUC21FVGgUQpx5HrYwLDwmQfnZ2vu22nCj3Ov/zg==
-X-Received: by 2002:a17:906:974a:: with SMTP id o10mr28510027ejy.226.1639188140083;
-        Fri, 10 Dec 2021 18:02:20 -0800 (PST)
+        bh=MsFfAGLof3Dm9/LrR3eo50ukODDBjEJuAPZhIodAjb8=;
+        b=PSjGXY6rqVzTxrRmry1H6cvUGJrjgWPUqNW3/SA4t8dg7zU9E4uo5yVzgi7NCQBYbX
+         zuJ2ZTJrhN1CL+b+g3+OCiWAmJM6FZKsI+RkiBsaqE/Gvaz5EYWHXONe/MkFkPuTQR6o
+         bQTwxLTqncrkTTMY4fv0I7JoFdAlUxp/3X5OEN+HNKSn2ToJA2AWONtOOQFKRs9WCBUP
+         yEpNAVYgwGV61x0TJRYJNLvEbQ1Kzi5tFXAuiGiB18MM2vw11mcTH+fq3jqJtU8govAL
+         2fNBicvDGTWsS/hyrdfmxl6LLgSBNkjUmRw+3paw4MPqFfWUT+9/TVH9FlZKNgtRg5Sh
+         rSKg==
+X-Gm-Message-State: AOAM5324C19bRjtJK7mlLLiDLHstZxa59CidwIW87x5Wl71KlbcHjB5E
+        6q3cem9gB1cA5wa5h6jM+i0f+w2EKZRIRA==
+X-Google-Smtp-Source: ABdhPJx/2z0MX3VHpvYqYPXQQ1Igm3zjDVnnLvgGVBK/jENd6zK9sjWHU+U5qbXPEJhweaqgZUtTmA==
+X-Received: by 2002:aa7:d4c3:: with SMTP id t3mr44776130edr.268.1639188141321;
+        Fri, 10 Dec 2021 18:02:21 -0800 (PST)
 Received: from localhost.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.googlemail.com with ESMTPSA id p13sm2265956eds.38.2021.12.10.18.02.18
+        by smtp.googlemail.com with ESMTPSA id p13sm2265956eds.38.2021.12.10.18.02.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Dec 2021 18:02:19 -0800 (PST)
+        Fri, 10 Dec 2021 18:02:21 -0800 (PST)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -64,9 +64,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         netdev@vger.kernel.org, bpf@vger.kernel.org
 Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
         Ansuel Smith <ansuelsmth@gmail.com>
-Subject: [net-next RFC PATCH v3 03/15] net: dsa: hold rtnl_mutex when calling dsa_master_{setup,teardown}
-Date:   Sat, 11 Dec 2021 03:01:35 +0100
-Message-Id: <20211211020155.10114-4-ansuelsmth@gmail.com>
+Subject: [net-next RFC PATCH v3 04/15] net: dsa: replay master state events in dsa_tree_{setup,teardown}_master
+Date:   Sat, 11 Dec 2021 03:01:36 +0100
+Message-Id: <20211211020155.10114-5-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20211211020155.10114-1-ansuelsmth@gmail.com>
 References: <20211211020155.10114-1-ansuelsmth@gmail.com>
@@ -78,81 +78,81 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-DSA needs to simulate master tracking events when a binding is first
-with a DSA master established and torn down, in order to give drivers
-the simplifying guarantee that ->master_state_change calls are made
-only when the master's readiness state to pass traffic changes.
-master_state_change() provide a operational bool that DSA driver can use
-to understand if DSA master is operational or not.
-To avoid races, we need to block the reception of
-NETDEV_UP/NETDEV_CHANGE/NETDEV_GOING_DOWN events in the netdev notifier
-chain while we are changing the master's dev->dsa_ptr (this changes what
-netdev_uses_dsa(dev) reports).
+In order for switch driver to be able to make simple and reliable use of
+the master tracking operations, they must also be notified of the
+initial state of the DSA master, not just of the changes. This is
+because they might enable certain features only during the time when
+they know that the DSA master is up and running.
 
-The dsa_master_setup() and dsa_master_teardown() functions optionally
-require the rtnl_mutex to be held, if the tagger needs the master to be
-promiscuous, these functions call dev_set_promiscuity(). Move the
-rtnl_lock() from that function and make it top-level.
+Therefore, this change explicitly checks the state of the DSA master
+under the same rtnl_mutex as we were holding during the
+dsa_master_setup() and dsa_master_teardown() call. The idea being that
+if the DSA master became operational in between the moment in which it
+became a DSA master (dsa_master_setup set dev->dsa_ptr) and the moment
+when we checked for the master being up, there is a chance that we
+would emit a ->master_state_change() call with no actual state change.
+We need to avoid that by serializing the concurrent netdevice event with
+us. If the netdevice event started before, we force it to finish before
+we begin, because we take rtnl_lock before making netdev_uses_dsa()
+return true. So we also handle that early event and do nothing on it.
+Similarly, if the dev_open() attempt is concurrent with us, it will
+attempt to take the rtnl_mutex, but we're holding it. We'll see that
+the master flag IFF_UP isn't set, then when we release the rtnl_mutex
+we'll process the NETDEV_UP notifier.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- net/dsa/dsa2.c   | 8 ++++++++
- net/dsa/master.c | 4 ++--
- 2 files changed, 10 insertions(+), 2 deletions(-)
+ net/dsa/dsa2.c | 27 +++++++++++++++++++++++----
+ 1 file changed, 23 insertions(+), 4 deletions(-)
 
 diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index 86b1e2f11469..90e29dd42d3d 100644
+index 90e29dd42d3d..76cf9ee1153c 100644
 --- a/net/dsa/dsa2.c
 +++ b/net/dsa/dsa2.c
-@@ -1030,6 +1030,8 @@ static int dsa_tree_setup_master(struct dsa_switch_tree *dst)
- 	struct dsa_port *dp;
- 	int err;
+@@ -1034,9 +1034,18 @@ static int dsa_tree_setup_master(struct dsa_switch_tree *dst)
  
-+	rtnl_lock();
-+
  	list_for_each_entry(dp, &dst->ports, list) {
  		if (dsa_port_is_cpu(dp)) {
- 			err = dsa_master_setup(dp->master, dp);
-@@ -1038,6 +1040,8 @@ static int dsa_tree_setup_master(struct dsa_switch_tree *dst)
+-			err = dsa_master_setup(dp->master, dp);
++			struct net_device *master = dp->master;
++			bool admin_up = (master->flags & IFF_UP) &&
++					!qdisc_tx_is_noop(master);
++
++			err = dsa_master_setup(master, dp);
+ 			if (err)
+ 				return err;
++
++			/* Replay master state event */
++			dsa_tree_master_admin_state_change(dst, master, admin_up);
++			dsa_tree_master_oper_state_change(dst, master,
++							  netif_oper_up(master));
  		}
  	}
  
-+	rtnl_unlock();
+@@ -1051,9 +1060,19 @@ static void dsa_tree_teardown_master(struct dsa_switch_tree *dst)
+ 
+ 	rtnl_lock();
+ 
+-	list_for_each_entry(dp, &dst->ports, list)
+-		if (dsa_port_is_cpu(dp))
+-			dsa_master_teardown(dp->master);
++	list_for_each_entry(dp, &dst->ports, list) {
++		if (dsa_port_is_cpu(dp)) {
++			struct net_device *master = dp->master;
 +
- 	return 0;
++			/* Synthesizing an "admin down" state is sufficient for
++			 * the switches to get a notification if the master is
++			 * currently up and running.
++			 */
++			dsa_tree_master_admin_state_change(dst, master, false);
++
++			dsa_master_teardown(master);
++		}
++	}
+ 
+ 	rtnl_unlock();
  }
- 
-@@ -1045,9 +1049,13 @@ static void dsa_tree_teardown_master(struct dsa_switch_tree *dst)
- {
- 	struct dsa_port *dp;
- 
-+	rtnl_lock();
-+
- 	list_for_each_entry(dp, &dst->ports, list)
- 		if (dsa_port_is_cpu(dp))
- 			dsa_master_teardown(dp->master);
-+
-+	rtnl_unlock();
- }
- 
- static int dsa_tree_setup_lags(struct dsa_switch_tree *dst)
-diff --git a/net/dsa/master.c b/net/dsa/master.c
-index f4efb244f91d..2199104ca7df 100644
---- a/net/dsa/master.c
-+++ b/net/dsa/master.c
-@@ -267,9 +267,9 @@ static void dsa_master_set_promiscuity(struct net_device *dev, int inc)
- 	if (!ops->promisc_on_master)
- 		return;
- 
--	rtnl_lock();
-+	ASSERT_RTNL();
-+
- 	dev_set_promiscuity(dev, inc);
--	rtnl_unlock();
- }
- 
- static ssize_t tagging_show(struct device *d, struct device_attribute *attr,
 -- 
 2.32.0
 
