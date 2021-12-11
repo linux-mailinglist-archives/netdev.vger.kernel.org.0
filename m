@@ -2,73 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CAE92471569
-	for <lists+netdev@lfdr.de>; Sat, 11 Dec 2021 19:43:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BAD0E471565
+	for <lists+netdev@lfdr.de>; Sat, 11 Dec 2021 19:43:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231775AbhLKSnh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Dec 2021 13:43:37 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:58167 "EHLO
+        id S231773AbhLKSnd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Dec 2021 13:43:33 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:42527 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231766AbhLKSnc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Dec 2021 13:43:32 -0500
+        by vger.kernel.org with ESMTP id S231734AbhLKSn3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Dec 2021 13:43:29 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1639248211;
+        s=mimecast20190719; t=1639248208;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=YKGdcsrGGsfL9IqUuswtI/8NYS6Yd2LQe5Uj78i7ME8=;
-        b=d1JQNDUZiNl3If0OSQDSN6OkZGQzcrko7Urs9j/VnelhAxUuC8nxhrOZS4Te/8WLymXArd
-        YKfzF3IB103Q7MZlSbHepc2mWa/M8z1apWN04HnNMIONw1B1OxYgA+ZGDufdVbLdHkZFbl
-        BI3u0BOsxMQjGPADCOTi7aCXKHiSn7A=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=/1Kcx3yx+iUNoYMcXpH7nt4oIAaYFOwsIruWeNBlL4w=;
+        b=aJzvY+Cfs5seMDQgIKW7QSajVS6Il5rP9R/sbT1b9MsPteRodFqAE41D6RnWNW7xgdP+qL
+        SjeLAdvDZBqQkXE0+4IACePkp6JFGVs7dCNr3ZEB/YlVZcztRytZuqgK3z6dkp+wLidN1s
+        8NybY0UB7VIO/phjjf68TZHA6KvEc6c=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-470-X162xFQmMeOlUtHYHp-X6Q-1; Sat, 11 Dec 2021 13:43:30 -0500
-X-MC-Unique: X162xFQmMeOlUtHYHp-X6Q-1
-Received: by mail-ed1-f72.google.com with SMTP id t9-20020aa7d709000000b003e83403a5cbso10808698edq.19
-        for <netdev@vger.kernel.org>; Sat, 11 Dec 2021 10:43:29 -0800 (PST)
+ us-mta-56-TmmI9DtbO3WcL1eSD4lPHw-1; Sat, 11 Dec 2021 13:43:27 -0500
+X-MC-Unique: TmmI9DtbO3WcL1eSD4lPHw-1
+Received: by mail-ed1-f70.google.com with SMTP id 30-20020a508e5e000000b003f02e458b17so10773137edx.17
+        for <netdev@vger.kernel.org>; Sat, 11 Dec 2021 10:43:27 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=YKGdcsrGGsfL9IqUuswtI/8NYS6Yd2LQe5Uj78i7ME8=;
-        b=P1qF0GWp2ESbMxRU9rMRTRtHWRBkD1v+1WXvAISPPIh+VSnWPFIGPLoapirl8S/I3n
-         iolZfBCkp37hkMruvh3RjLE2EJjPAqgpi8hWERPG4Tg3d2gQ4OWskighXPNL1Px87/Oq
-         AaVwz2pgpUY4LWNNqZw+tT1n2N3Aw1m4XAb4a8PncJJvjdZc0GXbX1+254/qlIxOvpXw
-         WSq+Ym3meAPX7OCPA+F/8USyoD0/j2ueaOTQJ3wi14vrw7UYy5DjyR7APQaze72pUsOF
-         RzlFInF0gZUBL2D6zlJOtFT34tGjamcj2tvch2FVV1XN2wECOLn1R/Hgbt1qiolQ2192
-         bfHA==
-X-Gm-Message-State: AOAM5331BuNAMjUdwqsQpJaJ5A008EuVY6BmMvKeGMwQ9tBzy5FTvE9B
-        UuG86j/0j6KVt9Qj+M9t1JavFQKxE4WQzWxs3JA+SA9tpr6QqKCCzZ7kSiw0KIw7XswfVEdlp79
-        aA3uYYJjlHTk7actP
-X-Received: by 2002:a50:e0c9:: with SMTP id j9mr49332380edl.336.1639248206731;
-        Sat, 11 Dec 2021 10:43:26 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJy155dYLxcn2rzl6A/QgkXsI2OS7AM7FGp8XniIzyJK2b1r2oVHcBKBMayKv3jM/vXeuhpMdg==
-X-Received: by 2002:a50:e0c9:: with SMTP id j9mr49332244edl.336.1639248205437;
+        bh=/1Kcx3yx+iUNoYMcXpH7nt4oIAaYFOwsIruWeNBlL4w=;
+        b=ab/khYxo3qkYgVzF4fVCCx+nhgBgN3C4ecwvOQ3n6uMm2IXfuH93ystCVM6UWMgR0v
+         D+muX6q7hWNz1VpE08lCK5jIRfu+kHZkrdaCGg+9kr5j7R7hA4SjXjNYVI6oNU5NxGGJ
+         Uekcb2zq1mcKbCQX5UYyJ/FJHJjfm+jM4HdJ5uVfk94EQxfXoAqiR49vls1iMVW63GgN
+         eNOSyD3+vjSgooE/0qFHTpC85a0et+zBkM3qpBhLXKlq+n9YTzT7e541+pPIdEwHfz7D
+         cPXcAbrNBRFw0853ScF9p0Syp6wDw481tVXLNK1APRxhoIeI1jSayX8qYtPfBNWumIx2
+         htyA==
+X-Gm-Message-State: AOAM533kK9BWiy1Z1KWfOhRWP5Y0vTQaRMfb8zBBD8CKJm51BVugnAu2
+        +7tgPQzXhtJSgH+9w5W21uuL7PhKeZlz+al7WhAYfnS/2CNanKkR7AYDhftMBtvrU9nRk0z8OjG
+        gIVoTuWaQjJZ7/Ulf
+X-Received: by 2002:a05:6402:b82:: with SMTP id cf2mr48683242edb.40.1639248205432;
         Sat, 11 Dec 2021 10:43:25 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJziiTNngzeUwvGURwzsfQfpho1FvjUGAGv8pxNn5G/VB7EfGxex4wjIj8XiLI98vqgQS/ctWQ==
+X-Received: by 2002:a05:6402:b82:: with SMTP id cf2mr48683133edb.40.1639248204481;
+        Sat, 11 Dec 2021 10:43:24 -0800 (PST)
 Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id m16sm3484473edd.61.2021.12.11.10.43.24
+        by smtp.gmail.com with ESMTPSA id ar4sm3354904ejc.52.2021.12.11.10.43.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Sat, 11 Dec 2021 10:43:24 -0800 (PST)
 Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id F3CAF180496; Sat, 11 Dec 2021 19:43:22 +0100 (CET)
+        id 60C3C180499; Sat, 11 Dec 2021 19:43:23 +0100 (CET)
 From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
+To:     Jesper Dangaard Brouer <hawk@kernel.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@kernel.org>
 Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH bpf-next v3 1/8] xdp: Allow registering memory model without rxq reference
-Date:   Sat, 11 Dec 2021 19:41:35 +0100
-Message-Id: <20211211184143.142003-2-toke@redhat.com>
+Subject: [PATCH bpf-next v3 2/8] page_pool: Add callback to init pages when they are allocated
+Date:   Sat, 11 Dec 2021 19:41:36 +0100
+Message-Id: <20211211184143.142003-3-toke@redhat.com>
 X-Mailer: git-send-email 2.34.0
 In-Reply-To: <20211211184143.142003-1-toke@redhat.com>
 References: <20211211184143.142003-1-toke@redhat.com>
@@ -79,201 +80,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The functions that register an XDP memory model take a struct xdp_rxq as
-parameter, but the RXQ is not actually used for anything other than pulling
-out the struct xdp_mem_info that it embeds. So refactor the register
-functions and export variants that just take a pointer to the xdp_mem_info.
+Add a new callback function to page_pool that, if set, will be called every
+time a new page is allocated. This will be used from bpf_test_run() to
+initialise the page data with the data provided by userspace when running
+XDP programs with redirect turned on.
 
-This is in preparation for enabling XDP_REDIRECT in bpf_prog_run(), using a
-page_pool instance that is not connected to any network device.
-
+Acked-by: John Fastabend <john.fastabend@gmail.com>
 Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
 ---
- include/net/xdp.h |  3 ++
- net/core/xdp.c    | 92 +++++++++++++++++++++++++++++++----------------
- 2 files changed, 65 insertions(+), 30 deletions(-)
+ include/net/page_pool.h | 2 ++
+ net/core/page_pool.c    | 2 ++
+ 2 files changed, 4 insertions(+)
 
-diff --git a/include/net/xdp.h b/include/net/xdp.h
-index 447f9b1578f3..8f0812e4996d 100644
---- a/include/net/xdp.h
-+++ b/include/net/xdp.h
-@@ -260,6 +260,9 @@ bool xdp_rxq_info_is_reg(struct xdp_rxq_info *xdp_rxq);
- int xdp_rxq_info_reg_mem_model(struct xdp_rxq_info *xdp_rxq,
- 			       enum xdp_mem_type type, void *allocator);
- void xdp_rxq_info_unreg_mem_model(struct xdp_rxq_info *xdp_rxq);
-+int xdp_reg_mem_model(struct xdp_mem_info *mem,
-+		      enum xdp_mem_type type, void *allocator);
-+void xdp_unreg_mem_model(struct xdp_mem_info *mem);
+diff --git a/include/net/page_pool.h b/include/net/page_pool.h
+index 3855f069627f..a71201854c41 100644
+--- a/include/net/page_pool.h
++++ b/include/net/page_pool.h
+@@ -80,6 +80,8 @@ struct page_pool_params {
+ 	enum dma_data_direction dma_dir; /* DMA mapping direction */
+ 	unsigned int	max_len; /* max DMA sync memory size */
+ 	unsigned int	offset;  /* DMA addr offset */
++	void (*init_callback)(struct page *page, void *arg);
++	void *init_arg;
+ };
  
- /* Drivers not supporting XDP metadata can use this helper, which
-  * rejects any room expansion for metadata as a result.
-diff --git a/net/core/xdp.c b/net/core/xdp.c
-index 5ddc29f29bad..ac476c84a986 100644
---- a/net/core/xdp.c
-+++ b/net/core/xdp.c
-@@ -110,20 +110,15 @@ static void mem_allocator_disconnect(void *allocator)
- 	mutex_unlock(&mem_id_lock);
- }
- 
--void xdp_rxq_info_unreg_mem_model(struct xdp_rxq_info *xdp_rxq)
-+void xdp_unreg_mem_model(struct xdp_mem_info *mem)
+ struct page_pool {
+diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+index 9b60e4301a44..c3b134a86ec9 100644
+--- a/net/core/page_pool.c
++++ b/net/core/page_pool.c
+@@ -219,6 +219,8 @@ static void page_pool_set_pp_info(struct page_pool *pool,
  {
- 	struct xdp_mem_allocator *xa;
--	int type = xdp_rxq->mem.type;
--	int id = xdp_rxq->mem.id;
-+	int type = mem->type;
-+	int id = mem->id;
- 
- 	/* Reset mem info to defaults */
--	xdp_rxq->mem.id = 0;
--	xdp_rxq->mem.type = 0;
--
--	if (xdp_rxq->reg_state != REG_STATE_REGISTERED) {
--		WARN(1, "Missing register, driver bug");
--		return;
--	}
-+	mem->id = 0;
-+	mem->type = 0;
- 
- 	if (id == 0)
- 		return;
-@@ -135,6 +130,17 @@ void xdp_rxq_info_unreg_mem_model(struct xdp_rxq_info *xdp_rxq)
- 		rcu_read_unlock();
- 	}
- }
-+EXPORT_SYMBOL_GPL(xdp_unreg_mem_model);
-+
-+void xdp_rxq_info_unreg_mem_model(struct xdp_rxq_info *xdp_rxq)
-+{
-+	if (xdp_rxq->reg_state != REG_STATE_REGISTERED) {
-+		WARN(1, "Missing register, driver bug");
-+		return;
-+	}
-+
-+	xdp_unreg_mem_model(&xdp_rxq->mem);
-+}
- EXPORT_SYMBOL_GPL(xdp_rxq_info_unreg_mem_model);
- 
- void xdp_rxq_info_unreg(struct xdp_rxq_info *xdp_rxq)
-@@ -259,28 +265,24 @@ static bool __is_supported_mem_type(enum xdp_mem_type type)
- 	return true;
+ 	page->pp = pool;
+ 	page->pp_magic |= PP_SIGNATURE;
++	if (pool->p.init_callback)
++		pool->p.init_callback(page, pool->p.init_arg);
  }
  
--int xdp_rxq_info_reg_mem_model(struct xdp_rxq_info *xdp_rxq,
--			       enum xdp_mem_type type, void *allocator)
-+static struct xdp_mem_allocator *__xdp_reg_mem_model(struct xdp_mem_info *mem,
-+						     enum xdp_mem_type type,
-+						     void *allocator)
- {
- 	struct xdp_mem_allocator *xdp_alloc;
- 	gfp_t gfp = GFP_KERNEL;
- 	int id, errno, ret;
- 	void *ptr;
- 
--	if (xdp_rxq->reg_state != REG_STATE_REGISTERED) {
--		WARN(1, "Missing register, driver bug");
--		return -EFAULT;
--	}
--
- 	if (!__is_supported_mem_type(type))
--		return -EOPNOTSUPP;
-+		return ERR_PTR(-EOPNOTSUPP);
- 
--	xdp_rxq->mem.type = type;
-+	mem->type = type;
- 
- 	if (!allocator) {
- 		if (type == MEM_TYPE_PAGE_POOL)
--			return -EINVAL; /* Setup time check page_pool req */
--		return 0;
-+			return ERR_PTR(-EINVAL); /* Setup time check page_pool req */
-+		return NULL;
- 	}
- 
- 	/* Delay init of rhashtable to save memory if feature isn't used */
-@@ -290,13 +292,13 @@ int xdp_rxq_info_reg_mem_model(struct xdp_rxq_info *xdp_rxq,
- 		mutex_unlock(&mem_id_lock);
- 		if (ret < 0) {
- 			WARN_ON(1);
--			return ret;
-+			return ERR_PTR(ret);
- 		}
- 	}
- 
- 	xdp_alloc = kzalloc(sizeof(*xdp_alloc), gfp);
- 	if (!xdp_alloc)
--		return -ENOMEM;
-+		return ERR_PTR(-ENOMEM);
- 
- 	mutex_lock(&mem_id_lock);
- 	id = __mem_id_cyclic_get(gfp);
-@@ -304,15 +306,15 @@ int xdp_rxq_info_reg_mem_model(struct xdp_rxq_info *xdp_rxq,
- 		errno = id;
- 		goto err;
- 	}
--	xdp_rxq->mem.id = id;
--	xdp_alloc->mem  = xdp_rxq->mem;
-+	mem->id = id;
-+	xdp_alloc->mem = *mem;
- 	xdp_alloc->allocator = allocator;
- 
- 	/* Insert allocator into ID lookup table */
- 	ptr = rhashtable_insert_slow(mem_id_ht, &id, &xdp_alloc->node);
- 	if (IS_ERR(ptr)) {
--		ida_simple_remove(&mem_id_pool, xdp_rxq->mem.id);
--		xdp_rxq->mem.id = 0;
-+		ida_simple_remove(&mem_id_pool, mem->id);
-+		mem->id = 0;
- 		errno = PTR_ERR(ptr);
- 		goto err;
- 	}
-@@ -322,13 +324,43 @@ int xdp_rxq_info_reg_mem_model(struct xdp_rxq_info *xdp_rxq,
- 
- 	mutex_unlock(&mem_id_lock);
- 
--	trace_mem_connect(xdp_alloc, xdp_rxq);
--	return 0;
-+	return xdp_alloc;
- err:
- 	mutex_unlock(&mem_id_lock);
- 	kfree(xdp_alloc);
--	return errno;
-+	return ERR_PTR(errno);
-+}
-+
-+int xdp_reg_mem_model(struct xdp_mem_info *mem,
-+		      enum xdp_mem_type type, void *allocator)
-+{
-+	struct xdp_mem_allocator *xdp_alloc;
-+
-+	xdp_alloc = __xdp_reg_mem_model(mem, type, allocator);
-+	if (IS_ERR(xdp_alloc))
-+		return PTR_ERR(xdp_alloc);
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(xdp_reg_mem_model);
-+
-+int xdp_rxq_info_reg_mem_model(struct xdp_rxq_info *xdp_rxq,
-+			       enum xdp_mem_type type, void *allocator)
-+{
-+	struct xdp_mem_allocator *xdp_alloc;
-+
-+	if (xdp_rxq->reg_state != REG_STATE_REGISTERED) {
-+		WARN(1, "Missing register, driver bug");
-+		return -EFAULT;
-+	}
-+
-+	xdp_alloc = __xdp_reg_mem_model(&xdp_rxq->mem, type, allocator);
-+	if (IS_ERR(xdp_alloc))
-+		return PTR_ERR(xdp_alloc);
-+
-+	trace_mem_connect(xdp_alloc, xdp_rxq);
-+	return 0;
- }
-+
- EXPORT_SYMBOL_GPL(xdp_rxq_info_reg_mem_model);
- 
- /* XDP RX runs under NAPI protection, and in different delivery error
+ static void page_pool_clear_pp_info(struct page *page)
 -- 
 2.34.0
 
