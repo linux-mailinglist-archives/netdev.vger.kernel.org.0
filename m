@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F3848471080
-	for <lists+netdev@lfdr.de>; Sat, 11 Dec 2021 03:03:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 29C22471079
+	for <lists+netdev@lfdr.de>; Sat, 11 Dec 2021 03:03:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346088AbhLKCHI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Dec 2021 21:07:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48348 "EHLO
+        id S1346003AbhLKCG6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Dec 2021 21:06:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345777AbhLKCGV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 21:06:21 -0500
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32161C0698CE;
-        Fri, 10 Dec 2021 18:02:39 -0800 (PST)
-Received: by mail-ed1-x531.google.com with SMTP id x10so17836144edd.5;
-        Fri, 10 Dec 2021 18:02:39 -0800 (PST)
+        with ESMTP id S1345813AbhLKCGW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 21:06:22 -0500
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64CB9C0698D0;
+        Fri, 10 Dec 2021 18:02:40 -0800 (PST)
+Received: by mail-ed1-x52c.google.com with SMTP id w1so35039328edc.6;
+        Fri, 10 Dec 2021 18:02:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
         bh=G+El3VU7kFi+f+gSiUl3JhZawQPXtAaFeZtpDHNPJt4=;
-        b=Fy/am/hIzudEgAzEnUSGP0lUmPDNqqaOT/6Zh2vJa7oAmRbIjiZviyz1gaX9j0ixZQ
-         Q1Q31oUaUZvk0ZCjNUvM7qPZT3bdew0hLazye9FlVFjLYn374ByrRIe/p1zaBXD+uJRi
-         76XTrvOi6NQpGfoxxQEeVhNwh9K4L5G+7SFrpuJYSjl+r2tXsATFnoGoQW+pib507UUQ
-         vYa1qZtt+nfaW/C/bnBmLHTaTycjFxyV7u7FbaGwYFJTuIOjTBjKVuAXtGgCF2aZYO+o
-         T5Ncgr5GSXEnG8P/qidZfP8C+JpPEwemgEovTpHRZ4uQNtxTEyXwwzBMslTH6Ub8giBr
-         Mfmg==
+        b=DpAkyfK2sLlSrXznzIjXcP4WOsTEp5pktjyYN5QXHXoX1AAcFwY+mNRov98rhIHEKh
+         vG/c7BJA0KgBkWblQqLX5YXwTb1r7XVWXf/z5cJd8WEDanjucMp+lGugSujFsQKvXky4
+         OX4wd8LzDs7NBDbcSHNye13XNuc/knzX+VKBh/ioP8hLq2QehvkKw6hzkfIDldbRXYYk
+         Axgu8BCrf+FasTkVKaPDuK48TyY4pWJzqn0BUKxcpOo3vD8N0ofWhi453EE2plO2mC51
+         l7dAjA9XHWFc2G5rgvSOXoKJuZd9Fp5SG3x0mrv1xtrBd6LrLbpJl6KGOvbaneLSIaxA
+         pgeA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
         bh=G+El3VU7kFi+f+gSiUl3JhZawQPXtAaFeZtpDHNPJt4=;
-        b=AzRVqoRhfK2VZUMbIXrr/08/2uRseyVmYMc+ThB40247+AUu2/yK7qGAtZU5d0vo7s
-         pVt1f8cKafuqj3u6YHPUzxgTJlc3773a7JabfjR0/9et1HZtu5ZP/yXNXs6Ffk0k0EJO
-         hrNWtXPGpfAov9mt/Z7+z3DSvKJUq+kRouWMHaKQCEfaXoXC3ysFZEtRMfSeILkyQOCw
-         DqPeEkMZZvUnznSsffD2RC4rDuOyHf2z4fXWYLxsT1I1EbU6QDETpXzS5Ii3J9qgp+PQ
-         FCIvtK65VzJQnmFFJzSmT3VHdVYXrd4hoIbpKG1knzr2fmwvpG0mvPuIzTJ4RT+tIpCf
-         2p1Q==
-X-Gm-Message-State: AOAM533C0+6Yr91Xm6CnVsCNdc5B+8HzcZ4EMJzFGgjmLSC4Hv4eZLiB
-        N5aGYDOd1aph77mLPdvLzd8=
-X-Google-Smtp-Source: ABdhPJz+itcEf+MBjBAM5A2JoTH5tjABvSfeQYjiEiPqpoNOJ1giOFe+2lB71D6WEtsSoWjGl0KGSw==
-X-Received: by 2002:a17:906:3085:: with SMTP id 5mr27661554ejv.365.1639188157629;
-        Fri, 10 Dec 2021 18:02:37 -0800 (PST)
+        b=cZRfaVVKaJsEuvBQMP2Wsx/ogp2zJ7+mIDbGCW1G0LRengF7D7zXnw43uDpO1fBzM3
+         /zv/U2hJa0dV+7MdzifBWvYRaIDdaUtFoAfTeEvuKSiL4HlBWi42guVjHZp3UazPZf5g
+         JyIgSvKGQIuAes3KU76TGXpzbLhyJMrCy65JogNjx5AxrWO8d2ZSM+oOKNEx2/hH7F5c
+         kAj1B6UCO3N34MRe2O8kSpZz0R0E/hHquClKSTB+KjETWLFJBvO3BgTdWZFwBUM02NqJ
+         Mn8nfUgHNM3SLAoi/39LEdwUtguyHyoHhfZiqDRPH7dVzMLNGtf+sQ7HJWzyAzx/AUPl
+         BUJg==
+X-Gm-Message-State: AOAM530RVVK+1G0859/nDeA/RNMtJwxjM/SsBt3HKMnYzqOIYUNoOxn0
+        RQlMRiJ44kAFp8oEgH59V54=
+X-Google-Smtp-Source: ABdhPJz8tjmvPTjjYq/wYtOWADunQPcFckaxsYAUSDbZDvXihTjBhV0zxjrQRYMLEjVe8l1p9qKc6A==
+X-Received: by 2002:a17:906:48c9:: with SMTP id d9mr28417598ejt.57.1639188158764;
+        Fri, 10 Dec 2021 18:02:38 -0800 (PST)
 Received: from localhost.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.googlemail.com with ESMTPSA id p13sm2265956eds.38.2021.12.10.18.02.36
+        by smtp.googlemail.com with ESMTPSA id p13sm2265956eds.38.2021.12.10.18.02.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Dec 2021 18:02:37 -0800 (PST)
+        Fri, 10 Dec 2021 18:02:38 -0800 (PST)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -63,9 +63,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         KP Singh <kpsingh@kernel.org>, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, bpf@vger.kernel.org
 Cc:     Ansuel Smith <ansuelsmth@gmail.com>
-Subject: [net-next RFC PATCH v3 12/14] net: dsa: qca8k: add support for mib autocast in Ethernet packet
-Date:   Sat, 11 Dec 2021 03:01:50 +0100
-Message-Id: <20211211020155.10114-19-ansuelsmth@gmail.com>
+Subject: [net-next RFC PATCH v3 13/15] net: dsa: qca8k: add support for mib autocast in Ethernet packet
+Date:   Sat, 11 Dec 2021 03:01:51 +0100
+Message-Id: <20211211020155.10114-20-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20211211020155.10114-1-ansuelsmth@gmail.com>
 References: <20211211020155.10114-1-ansuelsmth@gmail.com>
