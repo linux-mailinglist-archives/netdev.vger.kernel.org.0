@@ -2,307 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E1A547144E
-	for <lists+netdev@lfdr.de>; Sat, 11 Dec 2021 15:54:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 64119471458
+	for <lists+netdev@lfdr.de>; Sat, 11 Dec 2021 15:58:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230172AbhLKOyt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Dec 2021 09:54:49 -0500
-Received: from mga18.intel.com ([134.134.136.126]:8123 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229804AbhLKOys (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 11 Dec 2021 09:54:48 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1639234488; x=1670770488;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=UOLKBoHSgO+0GowgGZAGTm6qW/9LK+in/UDqb9zQlK8=;
-  b=ZbCrIgQckzL6RqCvvr4taDCYDYQgQOwv/ylOzvfQrtUTpeNbCmB0hKJN
-   LiqoIEFYzDJMoyBjqfGb272HHETyTE/rkZObTw/PJaZoGt85MJ7oGEUBQ
-   OGWU3ql+vpia9oAvZO4xujgbJ61WYryJtMDyXESKXVsxtbjcTi+ZfVtpk
-   9NVYREGVih9iqLFjg6qCShnK+7SwtNxmM8Yb5VLXGfMxdQKyKbKP2isUH
-   uwMcKuzjwKru0Z9OJQg+x87f2Dwgg5/oF2gZ+Z5Ef4ZQBiEDHDTkrvtgb
-   nnCrSsfMEZHpID2FlN9lv7v+aD0ZdB/l6XdZf5sGysKMSV2AonNiOzK06
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10194"; a="225401487"
-X-IronPort-AV: E=Sophos;i="5.88,198,1635231600"; 
-   d="scan'208";a="225401487"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Dec 2021 06:54:48 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,198,1635231600"; 
-   d="scan'208";a="481046501"
-Received: from p12hl98bong5.png.intel.com ([10.158.65.178])
-  by orsmga002.jf.intel.com with ESMTP; 11 Dec 2021 06:54:44 -0800
-From:   Ong Boon Leong <boon.leong.ong@intel.com>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        alexandre.torgue@foss.st.com, Kurt Kanzenbach <kurt@linutronix.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Yannick Vignon <yannick.vignon@oss.nxp.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org,
-        Ong Boon Leong <boon.leong.ong@intel.com>
-Subject: [PATCH net v2 1/1] net: stmmac: fix tc flower deletion for VLAN priority Rx steering
-Date:   Sat, 11 Dec 2021 22:51:34 +0800
-Message-Id: <20211211145134.630258-1-boon.leong.ong@intel.com>
-X-Mailer: git-send-email 2.25.1
+        id S230174AbhLKO6A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Dec 2021 09:58:00 -0500
+Received: from mail-gv0che01on2122.outbound.protection.outlook.com ([40.107.23.122]:5024
+        "EHLO CHE01-GV0-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S230172AbhLKO57 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 11 Dec 2021 09:57:59 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=a9bDKO5dZw6lFJwS+6eWwHh6IjoHV+y4COBVZN+ebJoVgUxhMa0+iJ5qub1OVLuDOold/NPmr9n1mKU6Tp9SklwbH+DKa081lJIbUq0ifxKzwtELpzNMRrB73af0ivnTwfeVx5thImSj4bXWp5PT9YnNN6UakKydpCxkE9VuxY/LV+6AjENv76VhCTv4xwO8TjU3rAlDraugGhydLMWAAXSyz+U7rPygpzvfu5hJ02lMt9nYgFseAV9wvQaYMVl2Dw4xuZPB2JLFv+UzfiVGSWBFLHwnyRtaeNGWkyTjXLbQtCFjdbrm4Osn5xjrq0QdmsTRxcW37mGk6vtfNdfI3A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=I488eq8nToz930+ToYmgiuMAm05MBtGF1g8ueLHbeOA=;
+ b=T1gWmp55iRNCIWfL+ON1mo/JTclh45f/t6PQZl0lolw+F7Ccv3MZy5QVu3bJ84E/UQ8sOIKg/oY3r5i9Cj2U56grmUASHfFXF1jRz+4eHAXv+gHnEjRQ4/OwB9Q8kYrgcjckTkW36azdaB7NxqP9xPHCzhbR/4jI1znA1Js8A7jTTn4o3zHvUKRzW51/YIQ9mGXnsmwySuN9hxKfk0epDwtKJ4VD5MynvZNaJ0yoCDIQZRc9C//DlPdQAii8DzQ4JDPWPdEleO2vxinizYMBnndpmyCpEs4eCt7gJN19d2NW5DrWb46pNsjR2jaeW0Evs+EbQQAJ7p6UMUGb7nlgsg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=toradex.com; dmarc=pass action=none header.from=toradex.com;
+ dkim=pass header.d=toradex.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=toradex.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=I488eq8nToz930+ToYmgiuMAm05MBtGF1g8ueLHbeOA=;
+ b=Y5aFdbImFPi7+mjUNtyhQmGphLcpsKr3/h070T9vbZ+P0OIcv4TZxSEA0y+7IZ9VTzzkVVkbEmgodD2NjKWaLwD3xcokg9kiD/zARRqN3FvJFe6Nkizg5VZtfxRy2iLqM843YTuhCnHAdBFPqI+xwVtTw/YjfuXOVcJzmWBZNvo=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=toradex.com;
+Received: from ZRAP278MB0642.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:3d::11)
+ by ZR0P278MB0490.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:30::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.21; Sat, 11 Dec
+ 2021 14:57:55 +0000
+Received: from ZRAP278MB0642.CHEP278.PROD.OUTLOOK.COM
+ ([fe80::d837:7398:e400:25f0]) by ZRAP278MB0642.CHEP278.PROD.OUTLOOK.COM
+ ([fe80::d837:7398:e400:25f0%2]) with mapi id 15.20.4778.017; Sat, 11 Dec 2021
+ 14:57:55 +0000
+Date:   Sat, 11 Dec 2021 15:57:54 +0100
+From:   Francesco Dolcini <francesco.dolcini@toradex.com>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Francesco Dolcini <francesco.dolcini@toradex.com>,
+        philippe.schenker@toradex.com, andrew@lunn.ch,
+        qiangqing.zhang@nxp.com, davem@davemloft.net, festevam@gmail.com,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] net: phy: perform a PHY reset on resume
+Message-ID: <20211211145754.GA360685@francesco-nb.int.toradex.com>
+References: <7a4830b495e5e819a2b2b39dd01785aa3eba4ce7.camel@toradex.com>
+ <20211211130146.357794-1-francesco.dolcini@toradex.com>
+ <YbSymkxlslW2DqLW@shell.armlinux.org.uk>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YbSymkxlslW2DqLW@shell.armlinux.org.uk>
+X-ClientProxiedBy: MR2P264CA0177.FRAP264.PROD.OUTLOOK.COM (2603:10a6:501::16)
+ To ZRAP278MB0642.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:3d::11)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 23d351fc-6d65-446f-f2e7-08d9bcb69d20
+X-MS-TrafficTypeDiagnostic: ZR0P278MB0490:EE_
+X-Microsoft-Antispam-PRVS: <ZR0P278MB04904F60C9A57212025531CDE2729@ZR0P278MB0490.CHEP278.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: lRdpBfbQVxji/Fe22fRGPgPMArJ8jW2guzvoE3GmBN1wxIzFjDIc8KiSqUxQR1wEERTGQN1qHsnE5TrM+6UsG/z3TOrnq9w2wkCB702FYtZrjRa6QLHi3LXMyD7+M9shEm4TFY9w2bu5YViYBguXMJ5IpzqZfsrwkTExPrMu0iJs/Zfu9iwOx3kkOfFAH9rkLoiWMgf2pSIwE4a/VUgJs5Pc02cNNahlgxNCkIvwz721j8ceEp8/eUXMaFsUfrtp9jpUJBrAs6o4huBVa0Jfgg7+m669jbRBpdP6JYcqj+Mw3YYXcNe4na6V7R4CwJx3zYTL9ze3cKJGfNmczpstE/kFWarw7/JHkSbJIle2FO/9PhlExKE6b4QpC+eZutQ55TGIAhbDViqXE193P+X3GSnqQ/C6Hhuhp4ijnYBs3FfTWScEihrPJzJDjRLgpA03jRECdaQY5TVy7HxqNpzGb1boLhbXIKFs1ercAShaziwLdISYhvzQtFzAe0lID8FHywn3hTZ5utxI+gmbfqPLUU4FfSTUdze1dY9z6nhIux/mQTsERyRmuQCg+7L1zOHtiISz/lT618aw7KE2WPVNZe0WVbYyQNJhFwn0/Ryeld2iI6ReBTPgDE4LJIaLkQZ4tFKwX28i8B6mIs8paepjQMYkb3s0sEBjl8QRh/Ut+4HAsLNpHUEEXgWISVvLzCFjpojY7h7DJi1o9sC9e/ilC9zQyjLapf1jy+WxV4Zt900Y9gS3+s1KavQ+733mFbQLBBmM/CFl9GcZ1VZwNIJi5iwa5KSKKcNhFdaWQ/t1zLg=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:ZRAP278MB0642.CHEP278.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(4636009)(346002)(366004)(2906002)(966005)(83380400001)(38350700002)(38100700002)(6512007)(5660300002)(8936002)(6506007)(8676002)(6916009)(1076003)(33656002)(6486002)(52116002)(86362001)(508600001)(66946007)(44832011)(66556008)(66476007)(316002)(26005)(186003)(4326008);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?8Nb7E7qGto76cRO/6A8tk+eE8gBpXe2w5JrGBFEqaZyppbXndq0Hn065MQ1M?=
+ =?us-ascii?Q?gOCZrJXXdbR8FgSuTgKWesKfC4bMgronWQi8+hT74t7PlovYdUb9FDFAQQrh?=
+ =?us-ascii?Q?JQ7gkPT7VSudwTHbCQsEgtZ/VL7iBN1ih3G2vVdtzIwW9eL3p3Uyr/3s+3fW?=
+ =?us-ascii?Q?Xk4/m5EsP9qEhTj+Nv8nRhOOZ1vA004XU6L5jfpFPApjxAxw5XQN62gxqKfp?=
+ =?us-ascii?Q?5YnjA8zgf9Wg8MyOBgcoA8fQx/TXTR9Lshrhqykq/FYefjqp9tR8Z/uShVFD?=
+ =?us-ascii?Q?oLBzqGqvT5I7e+gWc6ZBGbp3/WhnLmmZ82zxLirkCrX+jjho/ja2awBLcYdo?=
+ =?us-ascii?Q?Jr5Rnvr7bHNmH+h5V3iKXoAGrY2vcA2orv6eUdvMpTQsdSKKJEQNoSV0b95o?=
+ =?us-ascii?Q?OLHNc/Pa6MlUGsHoC67uO1zKRxsJP1vntkmdAx9I5US9oN84b1f0VdXdOx4d?=
+ =?us-ascii?Q?xHSubHzF1lKcvBmu7NSYkMkZisOqtSmQw3llfvAFHn8IJd8JSXHk2CBnRjON?=
+ =?us-ascii?Q?6AJ6XsyMs8oTsOaBeFnEm9UdcLTHupxHqAGyK3mr/9J5G/Mw4koUDd7D6/ee?=
+ =?us-ascii?Q?kUmTrsKUWBhfeb52ayPStgCmux+UGjVv7cY+G3ljX/YW6yRVovQAFUCtrBrk?=
+ =?us-ascii?Q?dnYkgL39LGQGgf6NktRJASZAprdbb4uQqWQPY+fyo0j0nBZI/EgrJckplCcx?=
+ =?us-ascii?Q?HR/9aWMmGYVqrt86/r8ffgc8TzlNETzK8hdT3Ia3e69/R09ursnFZi0JUpQn?=
+ =?us-ascii?Q?kqGaunLUVuHyOdFm+Jc/XoqvghJ4JTzWzAoxmH7TJ0pmd/1MJkMCIODvGD7n?=
+ =?us-ascii?Q?F1lGqFCXtWL0NgKTcXnCY+Tyl8Ujj31OAH8cKIGqnwEJhRR8rUXK5lttI3YV?=
+ =?us-ascii?Q?gHTO4pFIw2HxZnN1qyWSqV2OYuNU84/Te2InoRL8VntbICVwAy/EQQ34hqhh?=
+ =?us-ascii?Q?D8sixxS2I9T49tYnpLKN+BCn47r1+W56Ps0CxCdW2rdzp1/vNYljgqz+zDjg?=
+ =?us-ascii?Q?ic5JjD20hlSoM3k5Ptuxc3ac6l0Zo7fwOVTlK0KCpv5pUxZDoJA0EkhO44TP?=
+ =?us-ascii?Q?uXmqzteQbNsYSBDM++bPWsK45H+RO61Bb/xloG/yhcsziOZ0tEB9e11FxuXn?=
+ =?us-ascii?Q?T/FORNTcgk1y+zvyujhxHRRhF+wPCYPuhk+lgpjzm+VSEXW77ycJCn/0ZDvK?=
+ =?us-ascii?Q?j9IOZn/nSX56aC20vjFbJBeHxP2X3yMmGKRI9Sqjg5cqsM57VR2u5fDFhZgR?=
+ =?us-ascii?Q?K9jNlwVrZCMXlkizJbVIw63NNVZGRd9GeWdUQFkoBKs+FeSWLyOrTrjd3Ql9?=
+ =?us-ascii?Q?/F3EmWFKm6i8lHwwpxWTJ9KpdLCLh+0upmXVOj3qVSv1GtyFyNkPTmqIUFNg?=
+ =?us-ascii?Q?N2jMK/IrDTSwuuWmcQoBw2g57U+Tiiyo10KgdLnubJUkK+eouYU5ukj8IRV8?=
+ =?us-ascii?Q?yXhwYCW861TWfT/sKXNi+kvD3YS5Yqrr9i4cBX5LeDLWHmjivboy+t86c+rH?=
+ =?us-ascii?Q?uVP/qAduAH1Tcg5xnmtrrfs6GXiRK74sTBSHN0n5pLEJS8s7lnsWzVmZc3rY?=
+ =?us-ascii?Q?4Hfv6Ttd4nBUs9BO2vhJTW7PoRUJKfc3hOyRW1KoULeARjJPbfRi9A0+qJSR?=
+ =?us-ascii?Q?U5FpC5QsPTKUNUKH5CRjJdwzMxuKoDEfnaTVEtqUXJaPGgWbYLjeCz4nWSGe?=
+ =?us-ascii?Q?F/rk1g=3D=3D?=
+X-OriginatorOrg: toradex.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 23d351fc-6d65-446f-f2e7-08d9bcb69d20
+X-MS-Exchange-CrossTenant-AuthSource: ZRAP278MB0642.CHEP278.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Dec 2021 14:57:55.7500
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: d9995866-0d9b-4251-8315-093f062abab4
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: rzV4za2PjVBlWGqnbPde381W7MjndRYI8i7pUndMkzKmRVchF/B/Ln5nVcqwsXg2UxbKgmsieznQorHE705EmDucjtY6iZsrAN4ICyKC7q0=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: ZR0P278MB0490
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-To replicate the issue:-
+Hello,
 
-1) Add 1 flower filter for VLAN Priority based frame steering:-
-$ IFDEVNAME=eth0
-$ tc qdisc add dev $IFDEVNAME ingress
-$ tc qdisc add dev $IFDEVNAME root mqprio num_tc 8 \
-   map 0 1 2 3 4 5 6 7 0 0 0 0 0 0 0 0 \
-   queues 1@0 1@1 1@2 1@3 1@4 1@5 1@6 1@7 hw 0
-$ tc filter add dev $IFDEVNAME parent ffff: protocol 802.1Q \
-   flower vlan_prio 0 hw_tc 0
+On Sat, Dec 11, 2021 at 02:15:54PM +0000, Russell King (Oracle) wrote:
+> I don't particularly like this - this impacts everyone who is using
+> phylib at this point, whereas no reset was happening if the reset was
+> already deasserted here.
 
-2) Get the 'pref' id
-$ tc filter show dev $IFDEVNAME ingress
+I understand your concern, but I do not believe that this can create any
+issue. The code should be able to handle the situation in which the PHY
+is getting out of reset at that time.
 
-3) Delete a specific tc flower record (say pref 49151)
-$ tc filter del dev $IFDEVNAME parent ffff: pref 49151
+> In the opening remarks to this series, it is stated:
+> 
+>   If a hardware-design is able to control power to the Ethernet PHY and
+>   relying on software to do a reset, the PHY does no longer work after
+>   resuming from suspend, given the PHY does need a hardware-reset.
+> 
+> This requirement is conditional on the hardware design, it isn't a
+> universal requirement and won't apply everywhere. I think it needs to
+> be described in firmware that this action is required. That said...
+> 
+> Please check the datasheet on the PHY regarding application of power and
+> reset. You may find that the PHY datasheet requires the reset to be held
+> active from power up until the clock input is stable - this could mean
+> you need some other arrangement to assert the PHY reset signal after
+> re-applying power sooner than would happen by the proposed point in the
+> kernel.
 
-From dmesg, we will observe kernel NULL pointer ooops
+I checked before sending this patch, the phy is a KSZ9131 [1] and
+according to the power sequence timing  the reset should be toggled after
+the power-up. No requirement on the clock or other signals.
 
-[  197.170464] BUG: kernel NULL pointer dereference, address: 0000000000000000
-[  197.171367] #PF: supervisor read access in kernel mode
-[  197.171367] #PF: error_code(0x0000) - not-present page
-[  197.171367] PGD 0 P4D 0
-[  197.171367] Oops: 0000 [#1] PREEMPT SMP NOPTI
+The HW design is quite simple, we have a regulator controlling the PHY
+power, and a GPIO controlling the reset. On suspend we remove the power
+(FEC driver), on resume after enabling the power the PHY require a
+reset, but nobody is doing it.
 
-<snip>
+The issue here is that the phy regulator is handled by the FEC driver,
+while the RESET_N GPIO can be controlled by both the FEC driver or the
+phylib.
+The initial proposal was to handle this into the FEC driver, but it was
+not considered a good idea, therefore this new proposal.
 
-[  197.171367] RIP: 0010:tc_setup_cls+0x20b/0x4a0 [stmmac]
+One more comment about that, I do not believe that asserting the reset
+in the suspend path is a good idea, in the general situation in which
+the PHY is powered in suspend the power-consumption is likely to be
+higher if the device is in reset compared to software power-down using
+the BMCR register.
 
-<snip>
+> universal requirement and won't apply everywhere. I think it needs to
+> be described in firmware that this action is required. That said...
+Are you thinking at a DTS property? Not sure to understand how do you
+envision this. At the moment the regulator is not handled by the phylib,
+and the property should be something like reset-on-resume, I guess ...
 
-[  197.171367] Call Trace:
-[  197.171367]  <TASK>
-[  197.171367]  ? __stmmac_disable_all_queues+0xa8/0xe0 [stmmac]
-[  197.171367]  stmmac_setup_tc_block_cb+0x70/0x110 [stmmac]
-[  197.171367]  tc_setup_cb_destroy+0xb3/0x180
-[  197.171367]  fl_hw_destroy_filter+0x94/0xc0 [cls_flower]
+Francesco
 
-The above issue is due to previous incorrect implementation of
-tc_del_vlan_flow(), shown below, that uses flow_cls_offload_flow_rule()
-to get struct flow_rule *rule which is no longer valid for tc filter
-delete operation.
-
-  struct flow_rule *rule = flow_cls_offload_flow_rule(cls);
-  struct flow_dissector *dissector = rule->match.dissector;
-
-So, to ensure tc_del_vlan_flow() deletes the right VLAN cls record for
-earlier configured RX queue (configured by hw_tc) in tc_add_vlan_flow(),
-this patch introduces stmmac_rfs_entry as driver-side flow_cls_offload
-record for 'RX frame steering' tc flower, currently used for VLAN
-priority. The implementation has taken consideration for future extension
-to include other type RX frame steering such as EtherType based.
-
-v2:
- - Clean up overly extensive backtrace and rewrite git message to better
-   explain the kernel NULL pointer issue.
-
-Fixes: 0e039f5cf86c ("net: stmmac: add RX frame steering based on VLAN priority in tc flower")
-Tested-by: Kurt Kanzenbach <kurt@linutronix.de>
-Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
----
- drivers/net/ethernet/stmicro/stmmac/stmmac.h  | 17 ++++
- .../net/ethernet/stmicro/stmmac/stmmac_tc.c   | 86 ++++++++++++++++---
- 2 files changed, 90 insertions(+), 13 deletions(-)
-
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac.h b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-index 4f5292cadf5..18a262ef17f 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-@@ -171,6 +171,19 @@ struct stmmac_flow_entry {
- 	int is_l4;
- };
- 
-+/* Rx Frame Steering */
-+enum stmmac_rfs_type {
-+	STMMAC_RFS_T_VLAN,
-+	STMMAC_RFS_T_MAX,
-+};
-+
-+struct stmmac_rfs_entry {
-+	unsigned long cookie;
-+	int in_use;
-+	int type;
-+	int tc;
-+};
-+
- struct stmmac_priv {
- 	/* Frequently used values are kept adjacent for cache effect */
- 	u32 tx_coal_frames[MTL_MAX_TX_QUEUES];
-@@ -288,6 +301,10 @@ struct stmmac_priv {
- 	struct stmmac_tc_entry *tc_entries;
- 	unsigned int flow_entries_max;
- 	struct stmmac_flow_entry *flow_entries;
-+	unsigned int rfs_entries_max[STMMAC_RFS_T_MAX];
-+	unsigned int rfs_entries_cnt[STMMAC_RFS_T_MAX];
-+	unsigned int rfs_entries_total;
-+	struct stmmac_rfs_entry *rfs_entries;
- 
- 	/* Pulse Per Second output */
- 	struct stmmac_pps_cfg pps[STMMAC_PPS_MAX];
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c
-index 1c4ea0b1b84..d0a2b289f46 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c
-@@ -232,11 +232,33 @@ static int tc_setup_cls_u32(struct stmmac_priv *priv,
- 	}
- }
- 
-+static int tc_rfs_init(struct stmmac_priv *priv)
-+{
-+	int i;
-+
-+	priv->rfs_entries_max[STMMAC_RFS_T_VLAN] = 8;
-+
-+	for (i = 0; i < STMMAC_RFS_T_MAX; i++)
-+		priv->rfs_entries_total += priv->rfs_entries_max[i];
-+
-+	priv->rfs_entries = devm_kcalloc(priv->device,
-+					 priv->rfs_entries_total,
-+					 sizeof(*priv->rfs_entries),
-+					 GFP_KERNEL);
-+	if (!priv->rfs_entries)
-+		return -ENOMEM;
-+
-+	dev_info(priv->device, "Enabled RFS Flow TC (entries=%d)\n",
-+		 priv->rfs_entries_total);
-+
-+	return 0;
-+}
-+
- static int tc_init(struct stmmac_priv *priv)
- {
- 	struct dma_features *dma_cap = &priv->dma_cap;
- 	unsigned int count;
--	int i;
-+	int ret, i;
- 
- 	if (dma_cap->l3l4fnum) {
- 		priv->flow_entries_max = dma_cap->l3l4fnum;
-@@ -250,10 +272,14 @@ static int tc_init(struct stmmac_priv *priv)
- 		for (i = 0; i < priv->flow_entries_max; i++)
- 			priv->flow_entries[i].idx = i;
- 
--		dev_info(priv->device, "Enabled Flow TC (entries=%d)\n",
-+		dev_info(priv->device, "Enabled L3L4 Flow TC (entries=%d)\n",
- 			 priv->flow_entries_max);
- 	}
- 
-+	ret = tc_rfs_init(priv);
-+	if (ret)
-+		return -ENOMEM;
-+
- 	if (!priv->plat->fpe_cfg) {
- 		priv->plat->fpe_cfg = devm_kzalloc(priv->device,
- 						   sizeof(*priv->plat->fpe_cfg),
-@@ -607,16 +633,45 @@ static int tc_del_flow(struct stmmac_priv *priv,
- 	return ret;
- }
- 
-+static struct stmmac_rfs_entry *tc_find_rfs(struct stmmac_priv *priv,
-+					    struct flow_cls_offload *cls,
-+					    bool get_free)
-+{
-+	int i;
-+
-+	for (i = 0; i < priv->rfs_entries_total; i++) {
-+		struct stmmac_rfs_entry *entry = &priv->rfs_entries[i];
-+
-+		if (entry->cookie == cls->cookie)
-+			return entry;
-+		if (get_free && entry->in_use == false)
-+			return entry;
-+	}
-+
-+	return NULL;
-+}
-+
- #define VLAN_PRIO_FULL_MASK (0x07)
- 
- static int tc_add_vlan_flow(struct stmmac_priv *priv,
- 			    struct flow_cls_offload *cls)
- {
-+	struct stmmac_rfs_entry *entry = tc_find_rfs(priv, cls, false);
- 	struct flow_rule *rule = flow_cls_offload_flow_rule(cls);
- 	struct flow_dissector *dissector = rule->match.dissector;
- 	int tc = tc_classid_to_hwtc(priv->dev, cls->classid);
- 	struct flow_match_vlan match;
- 
-+	if (!entry) {
-+		entry = tc_find_rfs(priv, cls, true);
-+		if (!entry)
-+			return -ENOENT;
-+	}
-+
-+	if (priv->rfs_entries_cnt[STMMAC_RFS_T_VLAN] >=
-+	    priv->rfs_entries_max[STMMAC_RFS_T_VLAN])
-+		return -ENOENT;
-+
- 	/* Nothing to do here */
- 	if (!dissector_uses_key(dissector, FLOW_DISSECTOR_KEY_VLAN))
- 		return -EINVAL;
-@@ -638,6 +693,12 @@ static int tc_add_vlan_flow(struct stmmac_priv *priv,
- 
- 		prio = BIT(match.key->vlan_priority);
- 		stmmac_rx_queue_prio(priv, priv->hw, prio, tc);
-+
-+		entry->in_use = true;
-+		entry->cookie = cls->cookie;
-+		entry->tc = tc;
-+		entry->type = STMMAC_RFS_T_VLAN;
-+		priv->rfs_entries_cnt[STMMAC_RFS_T_VLAN]++;
- 	}
- 
- 	return 0;
-@@ -646,20 +707,19 @@ static int tc_add_vlan_flow(struct stmmac_priv *priv,
- static int tc_del_vlan_flow(struct stmmac_priv *priv,
- 			    struct flow_cls_offload *cls)
- {
--	struct flow_rule *rule = flow_cls_offload_flow_rule(cls);
--	struct flow_dissector *dissector = rule->match.dissector;
--	int tc = tc_classid_to_hwtc(priv->dev, cls->classid);
-+	struct stmmac_rfs_entry *entry = tc_find_rfs(priv, cls, false);
- 
--	/* Nothing to do here */
--	if (!dissector_uses_key(dissector, FLOW_DISSECTOR_KEY_VLAN))
--		return -EINVAL;
-+	if (!entry || !entry->in_use || entry->type != STMMAC_RFS_T_VLAN)
-+		return -ENOENT;
- 
--	if (tc < 0) {
--		netdev_err(priv->dev, "Invalid traffic class\n");
--		return -EINVAL;
--	}
-+	stmmac_rx_queue_prio(priv, priv->hw, 0, entry->tc);
-+
-+	entry->in_use = false;
-+	entry->cookie = 0;
-+	entry->tc = 0;
-+	entry->type = 0;
- 
--	stmmac_rx_queue_prio(priv, priv->hw, 0, tc);
-+	priv->rfs_entries_cnt[STMMAC_RFS_T_VLAN]--;
- 
- 	return 0;
- }
--- 
-2.25.1
+[1] https://ww1.microchip.com/downloads/en/DeviceDoc/00002841C.pdf
 
