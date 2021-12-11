@@ -2,147 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 549C6470F87
-	for <lists+netdev@lfdr.de>; Sat, 11 Dec 2021 01:38:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 90F4E470F89
+	for <lists+netdev@lfdr.de>; Sat, 11 Dec 2021 01:39:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345493AbhLKAlx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Dec 2021 19:41:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58092 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345465AbhLKAlt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 19:41:49 -0500
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80B43C061714
-        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 16:38:13 -0800 (PST)
-Received: by mail-ed1-x530.google.com with SMTP id z5so35601179edd.3
-        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 16:38:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=+HtJv7UQXnlWIVwfi+CjeSm1dzhTzPYVG1OMTvzte1c=;
-        b=Sj1GthU6T8a2qkwOJd+J7LBQ3DosZLHs3WSw9f8iIwhvnTQKJ0EKA4H1djIQiyEBVJ
-         037wr1+i/B8a468+PtwOxzGuSSzhydtghr2YkRQKb8RZ3jYJFRY04LLTEoK4Lq8i3ng0
-         SefUOeGHtgVKMT90UfDGEpOeuhPfpbkMyuiDfDhUk4dH4/95zdCGj1UTmBSzGlQnm7n9
-         K6W1D9NIjUEem3SUmdvfYELhCx0ITwyJWi4gk5k6tkbMd1he5EfVQslCmEBSfsCDkFuX
-         oyn8OktqIuH1Cpqcg4NwAF+IliumXx67s5IPt+xuWspNuveQkK46/6fqlJD+LfqbOF1/
-         DBHA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+HtJv7UQXnlWIVwfi+CjeSm1dzhTzPYVG1OMTvzte1c=;
-        b=0jRW6nsKGeqQusMOs6s4vi18uSQeFKD/OPRmRXdPK9kWqw3M3Ni7TSNUaMElzBHoBY
-         OuVV6UxjcDWBeebC/JvRe2ofKq+KiusQj7FP+cSWC1wfJAZjIcY/lnoi2qs+yiZr2xe3
-         VbQMdH5EApf0vhiBK5vKWDe1vitZZ0V/raj4ngnvCXXNYmv/5BjSj4ZYWuUVOXTk8dTZ
-         /K3r8EXYxb/Lq+dSjh/MM9uut3bDVST08NmXcyTqts9r7Z59+hrEkiiaFX8bSPYV7T60
-         6GxZlLMIyx8wbJ3JnyDg8goOSYW3EyJrSVxOs1pA2ZQUhtgQ9U46Xb8uBSz0qNYFyyuk
-         kjaA==
-X-Gm-Message-State: AOAM533GYWYPnlpe7tF4Q/gSKYVtJeLwxlxYt0R25ju/b5c52mOQN8iS
-        il3rXbc9WBZ1PdP/ClpdLjoHlng/026gcNFkiWcFycwEMfPCrgi7
-X-Google-Smtp-Source: ABdhPJwYf/7IETYLuoT7L2izYrTcZejyP3Bz8q2Vhv+ouLx1G+WOAZuGaDlxdAKmFtx9K3kRDCoHhxvgFEUnXpKLdtU=
-X-Received: by 2002:a17:906:7009:: with SMTP id n9mr27731645ejj.431.1639183092047;
- Fri, 10 Dec 2021 16:38:12 -0800 (PST)
-MIME-Version: 1.0
-References: <20211208145459.9590-1-xiangxia.m.yue@gmail.com>
- <20211208145459.9590-3-xiangxia.m.yue@gmail.com> <61b383c6373ca_1f50e20816@john.notmuch>
- <CAMDZJNV3-y5jkUAJJ--10PcicKpGMwKS_3gG9O7srjomO3begw@mail.gmail.com>
- <CAMDZJNXL5qSfFv54A=RrMwHe8DOv48EfrypHb1FFSUFu36-9DQ@mail.gmail.com>
- <CAMDZJNUyOELOcf0dtxktCTRKv1sUrp5Z17mW+4so7tt6DFnJsw@mail.gmail.com> <368e82ef-24be-06c7-2111-8a21cd558100@iogearbox.net>
-In-Reply-To: <368e82ef-24be-06c7-2111-8a21cd558100@iogearbox.net>
-From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Date:   Sat, 11 Dec 2021 08:37:35 +0800
-Message-ID: <CAMDZJNXY249r_SBuSjCwkAf-xGF98-5EPN41d23Jix0fTawZTw@mail.gmail.com>
-Subject: Re: [net v5 2/3] net: sched: add check tc_skip_classify in sch egress
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     John Fastabend <john.fastabend@gmail.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
+        id S1345490AbhLKAme (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Dec 2021 19:42:34 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:22526 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1345465AbhLKAmd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 19:42:33 -0500
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1BAKJD7A020592;
+        Fri, 10 Dec 2021 16:38:43 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=RtYbiNAjyrI1mAqsX8JDsUcuNw4GDG2laQ+7mjCgnN0=;
+ b=LSxsuCKEKOd7KyWhhAHyMfI7e9f+/Td3bcz3SZFEHTQ20sNiPI8Qc2qNgLir3UDegj4+
+ ZKqM4BuwQnfeOeKya7PxO6mWXXmf/AJ3HSiQ/sxIDk0tfmKRPI50iQMJ1dm/5umRvEII
+ HHn3jabKX4o45T9Uh5VEf3GCRDHEmcM//dk= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 3cvchfj2xu-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Fri, 10 Dec 2021 16:38:43 -0800
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.228) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Fri, 10 Dec 2021 16:38:42 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=MMB86VzRsTkS49NWJN54gzd4VjHBOfVBIydXlDVHZzJzyWQtsm0fsMDVh7jjE27fKRABXnWiRBlCEKzKG5uvTuSenvYVcQPEdk8xRq4SRvmEktLV59wYR8AI6P/4Ne8lxu0owPkv+myqDhj61iVkbrcfCbrQFae4owpyACX/XdJC+5mi/KtwOW6sphxbm1ftzcagmEVB+vDJRPB32z+StAemGHwMzEyDqXDOX+X/iZCqvVzloXfnurZ/xmJyIwAt2GXDioaDCRt2C34zJqQMKJv1zd8WnY63Kq+lKZeiTD/BKL71FjzXJnvW3/5fHoirNz4DmXxlp7oXgPpBwgqtIA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=RtYbiNAjyrI1mAqsX8JDsUcuNw4GDG2laQ+7mjCgnN0=;
+ b=YwVrX+RqGWeeoM9Xh3ub5YZ+1uIZTsWcFDXNRoovjS1ZUCC2Era5X8izKU3zV1CnYPTIIdB5CH866qoDTzgRnX8WSZqw4jlET4eOw6sdRes0XkwwoCrq9z8CruJvYM6Pv5r1VlNMVKkZVhmwJU8maE2xUjQwIzc4d1LdaEsIUvIRxYkSqz5mz8j8+EF2L59EUee3UwSWc0v6Lgiqq278DZnFQSM58UCsEz/Bfm2FNgcyx1xRqgWzRK4JQ5okqql46+w1nj3XqAtIU1+L5v4n1KNvPUR3wA9Dj/hAld0v4RBR574ks44CDiorwK/X8Lwy3XwHt2MWfyNdPv3ymzfl1A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Received: from SA1PR15MB5016.namprd15.prod.outlook.com (2603:10b6:806:1db::19)
+ by SA1PR15MB4981.namprd15.prod.outlook.com (2603:10b6:806:1d4::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.21; Sat, 11 Dec
+ 2021 00:38:41 +0000
+Received: from SA1PR15MB5016.namprd15.prod.outlook.com
+ ([fe80::e589:cc2c:1c9c:8010]) by SA1PR15MB5016.namprd15.prod.outlook.com
+ ([fe80::e589:cc2c:1c9c:8010%7]) with mapi id 15.20.4755.022; Sat, 11 Dec 2021
+ 00:38:41 +0000
+Date:   Fri, 10 Dec 2021 16:38:38 -0800
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     Pavel Begunkov <asml.silence@gmail.com>
+CC:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Wei Wang <weiwan@google.com>, Arnd Bergmann <arnd@arndb.de>
-Content-Type: text/plain; charset="UTF-8"
+        Song Liu <songliubraving@fb.com>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [BPF PATCH for-next] cgroup/bpf: fast path for not loaded skb
+ BPF filtering
+Message-ID: <20211211003838.7u4lcqghcq2gqvho@kafai-mbp.dhcp.thefacebook.com>
+References: <d77b08bf757a8ea8dab3a495885c7de6ff6678da.1639102791.git.asml.silence@gmail.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <d77b08bf757a8ea8dab3a495885c7de6ff6678da.1639102791.git.asml.silence@gmail.com>
+X-ClientProxiedBy: CO2PR18CA0059.namprd18.prod.outlook.com
+ (2603:10b6:104:2::27) To SA1PR15MB5016.namprd15.prod.outlook.com
+ (2603:10b6:806:1db::19)
+MIME-Version: 1.0
+Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:acd1) by CO2PR18CA0059.namprd18.prod.outlook.com (2603:10b6:104:2::27) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.20 via Frontend Transport; Sat, 11 Dec 2021 00:38:40 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 6462e14e-58cb-4395-b55d-08d9bc3e943e
+X-MS-TrafficTypeDiagnostic: SA1PR15MB4981:EE_
+X-Microsoft-Antispam-PRVS: <SA1PR15MB49812A16C6B6C1AF150955DBD5729@SA1PR15MB4981.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 80U1Vmo3Vz7i2rtca/LnfFWh+VjSg7NAUog2uqX8ncBYULY4iEDPgdnPqQKFiFa+IwKx84ViBSyOH6+2SDOyUeSTbNI3FGtyi3X4B4E/74dR0JnGkhtWScnb5UTv9GMzaFaSy2kptl2g8P5fTuQ8I1M1nkyJAUSzxpJxExdmAUcw+LOBBJYAE06yYzC1qDA0KIpQWzI1KdKMPSvD1UgVo+swcr21vMRRpevdaQ4qxZqeJF8MzFR0dZ/E/ODPFL37QntriTRu9UmLGG7bSUb0qlwg10TvO87xWfYfqPcNEZmFqCc1eq/Hoh7mepw76AjmmJ4F8aoc0WqnptHa5Gi86dhZmcTJtIAseA0WgLGNPQdiL9Hoibx16HWIkaDj0yEusjrNw519iFEaMTioSAXrN+Fh9+Sx1Wi3ln5Tzz27m5u/k4RebU0fAhPejC9kSrGN7zucDGw/xyVQwHF42c5AEgS2r6OOTR8TJTdnHipvr7mDgUsfEv8VuGw2vGWTlGqV+l75z4/fxxhGHhPan5FJplJl4mihX99mDwDp04kQ+K3yaqDCxcx97bsmMl5xjQ8qD1HS/BmUcDciKlzqES2mCLraw/D2C5/t8Vj7WY6uiJQFAClmo8dGNyfqVRBDhfhI56vI7iN17VP6KJMzCuNuoA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR15MB5016.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(54906003)(86362001)(66946007)(66556008)(66476007)(316002)(52116002)(508600001)(38100700002)(7696005)(186003)(9686003)(2906002)(8936002)(5660300002)(6506007)(1076003)(83380400001)(8676002)(6916009)(4326008)(55016003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?YzablPr3ykuDuaBU3Fg90tyWnM8i3ErzcaWSmU6JFEA7Zx8lrR7Rs57NMgjc?=
+ =?us-ascii?Q?VLe8mPLV0BlxacVb520jQVxet9yktLnPqIgeQVcnvn3aR21cp94C/Yr1Fjva?=
+ =?us-ascii?Q?xIJsyZIy6Oc5g+JfG/kPQueuNd4Uwbn1FxKd8Fnm6g0oaIANc6tpprP0u84k?=
+ =?us-ascii?Q?+40jWa97yCOjg4Fmr6XbJb+nLKmNTMIfpQBLwMqcNwTA2cC6mUbMvvN6veOF?=
+ =?us-ascii?Q?rFXUB71GrQaZQbtflyvO0YpwSi6X09g3sLebs9Yi5a/jQv/JdlRhEQzCBzzP?=
+ =?us-ascii?Q?AZ+h7cm7kbpl9PLJirAmHiNfXFEWTFidzKWOdabImz9cRhkuy81rlny25Eq+?=
+ =?us-ascii?Q?7u3tgSy6nMHvghnv1auGe75ofEZw3ahpalj15GKUBieg8VqsMwd+gL1mQbnj?=
+ =?us-ascii?Q?dlwx8y7wKVmNEHE9lbiKX96WTSAPDgoRIpJ3laCSl5SKqJW16HOyCAkBrxtu?=
+ =?us-ascii?Q?uVNzvppW4V0BjeTVYaM0zEnPmWqV4/FwwNOVWSZD+D76gqGutDpCgeWn5G8T?=
+ =?us-ascii?Q?9GsTMHJ9rnC+Q+XNde8dVDi3smvB02T1fEChbSW8UCiCcPlcvHAqUtBEDUus?=
+ =?us-ascii?Q?bTEYh6PQhmrKVIL1ijs84znWln/B2gWAWEIVvM81FgUKXw+tbzRWc+EImDss?=
+ =?us-ascii?Q?n4V9eBJkyot8y0oNy2Ij5Z72d/NQf2LyGhEyXKM/1G/J2PsMFdYz79IhU9CF?=
+ =?us-ascii?Q?B29e6sWXrUIq/vVqwNB689v8RZ/VRZN5W0FOGckLcR0sJ7WC+ONAY5qTgFRT?=
+ =?us-ascii?Q?/8iwmudpOsh8P+4xh3Rx+4g5Lit+Y6mejuQZ0rULgOhJa2S9XM1jeVWdOXK1?=
+ =?us-ascii?Q?MnWWi+RZbkOjUj2qK6IB9KEGRndmcc04Ap61MHOi4CAMWqvhEeI3BU/6OKGD?=
+ =?us-ascii?Q?8JS3Q+Ad1k1fxb9d2vjoPdcACk8jAtEVyydFoJ2ARb+lGXfbI0uX37wZ6Umh?=
+ =?us-ascii?Q?UsP6daVI5QJy4KbCLSCVk+/RpWIe7tGtE+BJzAVZNo6ZMtJmPJc+79/O2bsy?=
+ =?us-ascii?Q?eOGHceMgKMFo++bGmfN+R7MZdyKysYwAKnwBVgT+iuWiWPoaWPQ/b2UL7a1k?=
+ =?us-ascii?Q?8uQRvjJdgKB+6YjEfCED4Wt0F/5yYML0bwK5GP3tauI5mZ3zf/fvH0sfz+8N?=
+ =?us-ascii?Q?hiesMnqlkaVkV4YzVWd/TSdSAcVsrV/Mx9wqkFyOuMim8fcV0tgpeUjIxtVU?=
+ =?us-ascii?Q?mG34+RcxKJwL4kO6nPOYVE7rgdnvY64iDgnK0okuZmP8XSqXNKQjjKyj8bJz?=
+ =?us-ascii?Q?/xU5wEGDQOpaiCZlx08onmYtjT95PkERwkJYpXIkfgS4WO1YgcCC5nHz9RaC?=
+ =?us-ascii?Q?R3XQllkSEip5mNVr+HQk+Rven2JOaudGk/FkDTOny5F4zMnhCS/6bsX5a5bd?=
+ =?us-ascii?Q?Nybstx+cfctCdqiNjlMHjoL+5XUtGpDjdEpHNwBQp3FS47hWEzrKpL4LHH6M?=
+ =?us-ascii?Q?+MG4IhG+PYTfgF+SHldJ8RRZtqlzB/vlf8iDhg7kBnQ/NGN8AeJ7Vt2jV0dt?=
+ =?us-ascii?Q?yqqh3LS4hg8muDjsrvG2aJJQxXq11bzJaQ5iY3xk3mJ7HNgwC6oZvVDVrtP5?=
+ =?us-ascii?Q?K5C+AqreXyyZVGlWbOiBdt9sx1zj4eLsCkzxWJnS?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6462e14e-58cb-4395-b55d-08d9bc3e943e
+X-MS-Exchange-CrossTenant-AuthSource: SA1PR15MB5016.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Dec 2021 00:38:41.6173
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ShZzw+7mP4pkQ/vhF+J/ibJwKPKzcSnjUrBOajsr6q0bGxXpI/jlxSPhUbQBjSVs
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR15MB4981
+X-OriginatorOrg: fb.com
+X-Proofpoint-GUID: -gEwKmlgOJ-zpzMbkDXfw4Qih0LYrqNj
+X-Proofpoint-ORIG-GUID: -gEwKmlgOJ-zpzMbkDXfw4Qih0LYrqNj
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2021-12-10_09,2021-12-10_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 priorityscore=1501
+ phishscore=0 spamscore=0 malwarescore=0 bulkscore=0 impostorscore=0
+ adultscore=0 mlxlogscore=552 suspectscore=0 lowpriorityscore=0 mlxscore=0
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2110150000 definitions=main-2112110001
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Dec 11, 2021 at 4:11 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> On 12/10/21 8:54 PM, Tonghao Zhang wrote:
-> > On Sat, Dec 11, 2021 at 1:46 AM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
-> >> On Sat, Dec 11, 2021 at 1:37 AM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
-> >>> On Sat, Dec 11, 2021 at 12:43 AM John Fastabend
-> >>> <john.fastabend@gmail.com> wrote:
-> >>>> xiangxia.m.yue@ wrote:
-> >>>>> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
-> >>>>>
-> >>>>> Try to resolve the issues as below:
-> >>>>> * We look up and then check tc_skip_classify flag in net
-> >>>>>    sched layer, even though skb don't want to be classified.
-> >>>>>    That case may consume a lot of cpu cycles. This patch
-> >>>>>    is useful when there are a lot of filters with different
-> >>>>>    prio. There is ~5 prio in in production, ~1% improvement.
-> >>>>>
-> >>>>>    Rules as below:
-> >>>>>    $ for id in $(seq 1 5); do
-> >>>>>    $       tc filter add ... egress prio $id ... action mirred egress redirect dev ifb0
-> >>>>>    $ done
-> >>>>>
-> >>>>> * bpf_redirect may be invoked in egress path. If we don't
-> >>>>>    check the flags and then return immediately, the packets
-> >>>>>    will loopback.
-> >>>>
-> >>>> This would be the naive case right? Meaning the BPF program is
-> >>>> doing a redirect without any logic or is buggy?
-> >>>>
-> >>>> Can you map out how this happens for me, I'm not fully sure I
-> >>>> understand the exact concern. Is it possible for BPF programs
-> >>>> that used to see packets no longer see the packet as expected?
-> >>>>
-> >>>> Is this the path you are talking about?
-> >>> Hi John
-> >>> Tx ethx -> __dev_queue_xmit -> sch_handle_egress
-> >>> ->  execute BPF program on ethx with bpf_redirect(ifb0) ->
-> >>> -> ifb_xmit -> ifb_ri_tasklet -> dev_queue_xmit -> __dev_queue_xmit
-> >>> the packets loopbacks, that means bpf_redirect doesn't work with ifb
-> >>> netdev, right ?
-> >>> so in sch_handle_egress, I add the check skb_skip_tc_classify().
->
-> But why would you do that? Usage like this is just broken by design..
-As I understand, we can redirect packets to a target device either at
-ingress or at *egress
+On Fri, Dec 10, 2021 at 02:23:34AM +0000, Pavel Begunkov wrote:
+> cgroup_bpf_enabled_key static key guards from overhead in cases where
+> no cgroup bpf program of a specific type is loaded in any cgroup. Turn
+> out that's not always good enough, e.g. when there are many cgroups but
+> ones that we're interesting in are without bpf. It's seen in server
+> environments, but the problem seems to be even wider as apparently
+> systemd loads some BPF affecting my laptop.
+> 
+> Profiles for small packet or zerocopy transmissions over fast network
+> show __cgroup_bpf_run_filter_skb() taking 2-3%, 1% of which is from
+> migrate_disable/enable(), and similarly on the receiving side. Also
+> got +4-5% of t-put for local testing.
+> 
+> Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
+> ---
+>  include/linux/bpf-cgroup.h | 24 +++++++++++++++++++++---
+>  kernel/bpf/cgroup.c        | 23 +++++++----------------
+>  2 files changed, 28 insertions(+), 19 deletions(-)
+> 
+> diff --git a/include/linux/bpf-cgroup.h b/include/linux/bpf-cgroup.h
+> index 11820a430d6c..99b01201d7db 100644
+> --- a/include/linux/bpf-cgroup.h
+> +++ b/include/linux/bpf-cgroup.h
+> @@ -141,6 +141,9 @@ struct cgroup_bpf {
+>  	struct list_head progs[MAX_CGROUP_BPF_ATTACH_TYPE];
+>  	u32 flags[MAX_CGROUP_BPF_ATTACH_TYPE];
+>  
+> +	/* for each type tracks whether effective prog array is not empty */
+> +	unsigned long enabled_mask;
+> +
+>  	/* list of cgroup shared storages */
+>  	struct list_head storages;
+>  
+> @@ -219,11 +222,25 @@ int bpf_percpu_cgroup_storage_copy(struct bpf_map *map, void *key, void *value);
+>  int bpf_percpu_cgroup_storage_update(struct bpf_map *map, void *key,
+>  				     void *value, u64 flags);
+>  
+> +static inline bool __cgroup_bpf_type_enabled(struct cgroup_bpf *cgrp_bpf,
+> +					     enum cgroup_bpf_attach_type atype)
+> +{
+> +	return test_bit(atype, &cgrp_bpf->enabled_mask);
+> +}
+> +
+> +#define CGROUP_BPF_TYPE_ENABLED(sk, atype)				       \
+> +({									       \
+> +	struct cgroup *__cgrp = sock_cgroup_ptr(&(sk)->sk_cgrp_data);	       \
+> +									       \
+> +	__cgroup_bpf_type_enabled(&__cgrp->bpf, (atype));		       \
+> +})
+I think it should directly test if the array is empty or not instead of
+adding another bit.
 
-The commit ID: 3896d655f4d491c67d669a15f275a39f713410f8
-Allow eBPF programs attached to classifier/actions to call
-bpf_clone_redirect(skb, ifindex, flags) helper which will mirror or
-redirect the packet by dynamic ifindex selection from within the
-program to a target device either at ingress or at egress. Can be used
-for various scenarios, for example, to load balance skbs into veths,
-split parts of the traffic to local taps, etc.
-
-https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/?id=3896d655f4d491c67d669a15f275a39f713410f8
-https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/?id=27b29f63058d26c6c1742f1993338280d5a41dc6
-
-But at egress the bpf_redirect doesn't work with ifb.
-> If you need to loop anything back to RX, just use bpf_redirect() with
-Not use it to loop packets back. the flags of bpf_redirect is 0. for example:
-
-tc filter add dev veth1 \
-egress bpf direct-action obj test_bpf_redirect_ifb.o sec redirect_ifb
-https://patchwork.kernel.org/project/netdevbpf/patch/20211208145459.9590-4-xiangxia.m.yue@gmail.com/
-> BPF_F_INGRESS? What is the concrete/actual rationale for ifb here?
-We load balance the packets to different ifb netdevices at egress. On
-ifb, we install filters, rate limit police,
-
-
-
-
--- 
-Best regards, Tonghao
+Can the existing __cgroup_bpf_prog_array_is_empty(cgrp, ...) test be used instead?
