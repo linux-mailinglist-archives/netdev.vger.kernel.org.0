@@ -2,131 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CCFD54714AA
-	for <lists+netdev@lfdr.de>; Sat, 11 Dec 2021 17:11:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EBFA4714AF
+	for <lists+netdev@lfdr.de>; Sat, 11 Dec 2021 17:21:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229950AbhLKQLr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Dec 2021 11:11:47 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:54318 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229749AbhLKQLr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Dec 2021 11:11:47 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1639239106;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=GQ9xh+D/1SeL383/68SRgs7GGISVsePJUy2mdr8iR3E=;
-        b=em7e7i4MKU3mfplu8nNYBvwkwb3PcKKiNWWkFhznfaSDDyKa4jZANrex9CqtAYSXrREicd
-        jsYCXYIPtbTUyV6vJVPxzn/NTAryIkoO8HPkMmCVTgwQnAhXumARxvB2iejtDqPSOtb+gC
-        2gEBSMPAiPHp+Gq5s7Z7VW7AI5ovB2g=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-232-NqxIWm_KNP6t_V-N-iczIQ-1; Sat, 11 Dec 2021 11:11:44 -0500
-X-MC-Unique: NqxIWm_KNP6t_V-N-iczIQ-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S231443AbhLKQV4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Dec 2021 11:21:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37244 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229749AbhLKQVz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Dec 2021 11:21:55 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CC72C061714
+        for <netdev@vger.kernel.org>; Sat, 11 Dec 2021 08:21:55 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B641418C8C03;
-        Sat, 11 Dec 2021 16:11:43 +0000 (UTC)
-Received: from gerbillo.redhat.com (unknown [10.39.192.7])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7850460C17;
-        Sat, 11 Dec 2021 16:11:42 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 513ADB807E7
+        for <netdev@vger.kernel.org>; Sat, 11 Dec 2021 16:21:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 697F9C004DD;
+        Sat, 11 Dec 2021 16:21:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1639239712;
+        bh=hSdXb71B7AsIeLEKioI4zkM+TB40dhFgbqMI/PNSlCc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=uIhr9xYfbU3cyQ6xVnf1b/fFf0EFiECMRuG8SFsP7VaeHI0aDPiXaTO+7P+ic1tRC
+         wf9f8J1WArWyRlcRg5ldns5bBMDkjN11QlAtF79S1M094hCPFheeLAzl8GrH6lfiP2
+         790Vmtg5rNDBn02Kmp6NfV0fwUsAJmLpLRdW684b5Kg9eLfK3B8I1wfp/yC8qnXzB8
+         aF+Y+RhkNg+7HeNbV/FDh/CKZEDmBFAl3J1PqIimfJJ8+yj9MDj1kdcz41MyjLEWOI
+         9wPAz7VBCFao4sTzHWw5H85Xmb3N77oC3Cezc4ojLiCPD/hYyw4YG3m7ePja4QN8/M
+         l0u+S7I4WS2Sg==
+From:   David Ahern <dsahern@kernel.org>
 To:     netdev@vger.kernel.org
-Cc:     Geliang Tang <geliangtang@gmail.com>, mptcp@lists.linux.dev
-Subject: [PATCH net] mptcp: never allow the PM to close a listener subflow
-Date:   Sat, 11 Dec 2021 17:11:12 +0100
-Message-Id: <ebc7594cdd420d241fb2172ddb8542ba64717657.1639238695.git.pabeni@redhat.com>
+Cc:     David Ahern <dsahern@kernel.org>,
+        syzbot+d4b9a2851cc3ce998741@syzkaller.appspotmail.com,
+        Thomas Graf <tgraf@suug.ch>
+Subject: [PATCH net] ipv4: Check attribute length for RTA_GATEWAY
+Date:   Sat, 11 Dec 2021 09:21:48 -0700
+Message-Id: <20211211162148.74404-1-dsahern@kernel.org>
+X-Mailer: git-send-email 2.24.3 (Apple Git-128)
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, when deleting an endpoint the netlink PM treverses
-all the local MPTCP sockets, regardless of their status.
+syzbot reported uninit-value:
+============================================================
+  BUG: KMSAN: uninit-value in fib_get_nhs+0xac4/0x1f80
+  net/ipv4/fib_semantics.c:708
+   fib_get_nhs+0xac4/0x1f80 net/ipv4/fib_semantics.c:708
+   fib_create_info+0x2411/0x4870 net/ipv4/fib_semantics.c:1453
+   fib_table_insert+0x45c/0x3a10 net/ipv4/fib_trie.c:1224
+   inet_rtm_newroute+0x289/0x420 net/ipv4/fib_frontend.c:886
 
-If an MPTCP listener socket is bound to the IP matching the
-delete endpoint, the listener TCP socket will be closed.
-That is unexpected, the PM should only affect data subflows.
+Add length checking before using the attribute.
 
-Additionally, syzbot was able to trigger a NULL ptr dereference
-due to the above:
-
-general protection fault, probably for non-canonical address 0xdffffc0000000003: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000018-0x000000000000001f]
-CPU: 1 PID: 6550 Comm: syz-executor122 Not tainted 5.16.0-rc4-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:__lock_acquire+0xd7d/0x54a0 kernel/locking/lockdep.c:4897
-Code: 0f 0e 41 be 01 00 00 00 0f 86 c8 00 00 00 89 05 69 cc 0f 0e e9 bd 00 00 00 48 b8 00 00 00 00 00 fc ff df 48 89 da 48 c1 ea 03 <80> 3c 02 00 0f 85 f3 2f 00 00 48 81 3b 20 75 17 8f 0f 84 52 f3 ff
-RSP: 0018:ffffc90001f2f818 EFLAGS: 00010016
-RAX: dffffc0000000000 RBX: 0000000000000018 RCX: 0000000000000000
-RDX: 0000000000000003 RSI: 0000000000000000 RDI: 0000000000000001
-RBP: 0000000000000000 R08: 0000000000000001 R09: 0000000000000001
-R10: 0000000000000000 R11: 000000000000000a R12: 0000000000000000
-R13: ffff88801b98d700 R14: 0000000000000000 R15: 0000000000000001
-FS:  00007f177cd3d700(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f177cd1b268 CR3: 000000001dd55000 CR4: 0000000000350ee0
-Call Trace:
- <TASK>
- lock_acquire kernel/locking/lockdep.c:5637 [inline]
- lock_acquire+0x1ab/0x510 kernel/locking/lockdep.c:5602
- __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
- _raw_spin_lock_irqsave+0x39/0x50 kernel/locking/spinlock.c:162
- finish_wait+0xc0/0x270 kernel/sched/wait.c:400
- inet_csk_wait_for_connect net/ipv4/inet_connection_sock.c:464 [inline]
- inet_csk_accept+0x7de/0x9d0 net/ipv4/inet_connection_sock.c:497
- mptcp_accept+0xe5/0x500 net/mptcp/protocol.c:2865
- inet_accept+0xe4/0x7b0 net/ipv4/af_inet.c:739
- mptcp_stream_accept+0x2e7/0x10e0 net/mptcp/protocol.c:3345
- do_accept+0x382/0x510 net/socket.c:1773
- __sys_accept4_file+0x7e/0xe0 net/socket.c:1816
- __sys_accept4+0xb0/0x100 net/socket.c:1846
- __do_sys_accept net/socket.c:1864 [inline]
- __se_sys_accept net/socket.c:1861 [inline]
- __x64_sys_accept+0x71/0xb0 net/socket.c:1861
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7f177cd8b8e9
-Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 b1 14 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f177cd3d308 EFLAGS: 00000246 ORIG_RAX: 000000000000002b
-RAX: ffffffffffffffda RBX: 00007f177ce13408 RCX: 00007f177cd8b8e9
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000003
-RBP: 00007f177ce13400 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007f177ce1340c
-R13: 00007f177cde1004 R14: 6d705f706374706d R15: 0000000000022000
- </TASK>
-
-Fix the issue explicitly skipping MPTCP socket in TCP_LISTEN
-status.
-
-Reported-and-tested-by: syzbot+e4d843bb96a9431e6331@syzkaller.appspotmail.com
-Reviewed-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-Fixes: 740d798e8767 ("mptcp: remove id 0 address")
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Fixes: 4e902c57417c ("[IPv4]: FIB configuration using struct fib_config")
+Reported-by: syzbot+d4b9a2851cc3ce998741@syzkaller.appspotmail.com
+Signed-off-by: David Ahern <dsahern@kernel.org>
+Cc: Thomas Graf <tgraf@suug.ch>
 ---
- net/mptcp/pm_netlink.c | 3 +++
- 1 file changed, 3 insertions(+)
+I do not have KMSAN setup, so this is based on a code analysis. Before
+4e902c57417c fib_get_attr32 was checking the attribute length; the
+switch to nla_get_u32 does not.
 
-diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
-index 7b96be1e9f14..f523051f5aef 100644
---- a/net/mptcp/pm_netlink.c
-+++ b/net/mptcp/pm_netlink.c
-@@ -700,6 +700,9 @@ static void mptcp_pm_nl_rm_addr_or_subflow(struct mptcp_sock *msk,
- 
- 	msk_owned_by_me(msk);
- 
-+	if (sk->sk_state == TCP_LISTEN)
-+		return;
-+
- 	if (!rm_list->nr)
- 		return;
- 
+ net/ipv4/fib_semantics.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
+index 3cad543dc747..930843ba3b17 100644
+--- a/net/ipv4/fib_semantics.c
++++ b/net/ipv4/fib_semantics.c
+@@ -704,6 +704,10 @@ static int fib_get_nhs(struct fib_info *fi, struct rtnexthop *rtnh,
+ 				return -EINVAL;
+ 			}
+ 			if (nla) {
++				if (nla_len(nla) < sizeof(__be32)) {
++					NL_SET_ERR_MSG(extack, "Invalid IPv4 address in RTA_GATEWAY");
++					return -EINVAL;
++				}
+ 				fib_cfg.fc_gw4 = nla_get_in_addr(nla);
+ 				if (fib_cfg.fc_gw4)
+ 					fib_cfg.fc_gw_family = AF_INET;
 -- 
-2.33.1
+2.24.3 (Apple Git-128)
 
