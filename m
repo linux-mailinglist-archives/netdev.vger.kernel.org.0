@@ -2,98 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 595C4471554
-	for <lists+netdev@lfdr.de>; Sat, 11 Dec 2021 19:26:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EFD7B471559
+	for <lists+netdev@lfdr.de>; Sat, 11 Dec 2021 19:36:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231728AbhLKS02 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Dec 2021 13:26:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35976 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230415AbhLKS02 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Dec 2021 13:26:28 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4CE4C061714
-        for <netdev@vger.kernel.org>; Sat, 11 Dec 2021 10:26:27 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 80C92B80951
-        for <netdev@vger.kernel.org>; Sat, 11 Dec 2021 18:26:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A818AC004DD;
-        Sat, 11 Dec 2021 18:26:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1639247185;
-        bh=b5xhOO+whI31FmF+W64Cy8mVJvnlksT6XIs83nEtkLk=;
-        h=From:To:Cc:Subject:Date:From;
-        b=JOicknH+66c45Bc0ONYHf0DFkeyHHTXBhlzZKjxiwh/i5yBCKIRnzghZkX5gvmHJG
-         dAdSkWNLD7fAcVUYI84h54ooHDm23sx9YSY1OJhIglHMThQsxUPH68nqjUfrVurdwN
-         PFgs2jlACgqiFsaHwnF0rmVOD/joRKvufzKURalan/midRn5wBP5nPHGyNsxj/pKY1
-         elTyEQikvcAsnblQvx6O3gkGpm/oNc7/7O+1tXlldMjCrxPbMxq9qRA+xkOhyyh3fh
-         4euawgBsYCSVhyQhdABmkIY+jYsXLQrcd41mVx8kdYtvwMBdkPx7uqXGD2OphJBu55
-         gz7Lbl5lHDBTg==
-From:   David Ahern <dsahern@kernel.org>
-To:     netdev@vger.kernel.org
-Cc:     David Ahern <dsahern@kernel.org>,
-        Li Zhijian <lizhijian@fujitsu.com>
-Subject: [PATCH net] selftests: Fix IPv6 address bind tests
-Date:   Sat, 11 Dec 2021 11:26:16 -0700
-Message-Id: <20211211182616.74865-1-dsahern@kernel.org>
-X-Mailer: git-send-email 2.24.3 (Apple Git-128)
+        id S231739AbhLKSgD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Dec 2021 13:36:03 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:58558 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231734AbhLKSgD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Dec 2021 13:36:03 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1639247762;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Ajlmog3xH6YXGMfi/eJM6BOlcjlzkfu8C1zEPFmZomM=;
+        b=Lmo/S7B7XxqmsWv4ZyWhLh+mTzN1LBINvPIm7H75/zmxX/fKw7dHJHVJ7MuXhM3aCrLCqO
+        FdlXMI9fB098hlyWgO5JCP4c3EZC/KVg0NMJ8jJMgi606M5HfLJ679ONodzWvm0pfQDtLh
+        u2VRHWNvnxc3tm1N4jn1z8JA8XgY+rs=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-192-jnCJ7NsiNMe3Ue4SY9ntkA-1; Sat, 11 Dec 2021 13:36:01 -0500
+X-MC-Unique: jnCJ7NsiNMe3Ue4SY9ntkA-1
+Received: by mail-ed1-f72.google.com with SMTP id c1-20020aa7c741000000b003e7bf1da4bcso10700819eds.21
+        for <netdev@vger.kernel.org>; Sat, 11 Dec 2021 10:36:01 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=Ajlmog3xH6YXGMfi/eJM6BOlcjlzkfu8C1zEPFmZomM=;
+        b=hba3FVy9hkA0RCrAvYkQiTqzLArHFfPNxAmGJ/wzwPB4AMzn57M5ViZQXGKqVUI/QM
+         u7AOBdN7NbItjeS57N19KTw8DpPLQzLtONKB25JTh7wTaLoIPlDHr7cEOlEgiCXLf9zv
+         NpqGr90aJXqQw+CMF8LQrxu7WTfx6COdSl0MmgYr/KKGbnr6bZsJBRoWYhRXWox5LMdp
+         ASOWaDdLAZvgzlpydLDvyRcq3RKY5qDDhtZMTVfcjrreeXb0tQq06Mt5f2yhJcl2R/VX
+         syQCjPEsCf56AUBfh5pACXkEvoNLtRxo7TNVdVPrP6tjIQdd8ORcDDzylHpBPY8fg2jw
+         ydHA==
+X-Gm-Message-State: AOAM532ILCdvf/LCsbx9HUIC6qY+buenQ0hedm2D+LV4sJgGYYLPxaL6
+        q/RFUUgdXVXAx4mVaoPuMsFkDkfEi3g47tKp4hFofAoefBDXFBPZ8MthXKZKpLv4l8ALj5bWYPh
+        U8ux2/2iA9MT1Yc4G
+X-Received: by 2002:a17:906:4bcf:: with SMTP id x15mr32858845ejv.273.1639247759932;
+        Sat, 11 Dec 2021 10:35:59 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxAFqc5JuXJpR1PDi7k/x9dO4ZE+BE0VTGlDb2bqnamOUNKbVBx1kYG1eQmBCh9kyvI7D29gw==
+X-Received: by 2002:a17:906:4bcf:: with SMTP id x15mr32858809ejv.273.1639247759610;
+        Sat, 11 Dec 2021 10:35:59 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id q7sm3522535edr.9.2021.12.11.10.35.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 11 Dec 2021 10:35:58 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 156FE180471; Sat, 11 Dec 2021 19:35:58 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Cc:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Florian Westphal <fw@strlen.de>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org
+Subject: Re: [PATCH bpf-next v3 7/9] net/netfilter: Add unstable CT lookup
+ helpers for XDP and TC-BPF
+In-Reply-To: <YbPcxjdsdqepEQAJ@salvia>
+References: <20211210130230.4128676-1-memxor@gmail.com>
+ <20211210130230.4128676-8-memxor@gmail.com> <YbNtmlaeqPuHHRgl@salvia>
+ <20211210153129.srb6p2ebzhl5yyzh@apollo.legion> <YbPcxjdsdqepEQAJ@salvia>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Sat, 11 Dec 2021 19:35:58 +0100
+Message-ID: <87pmq3ugz5.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-IPv6 allows binding a socket to a device then binding to an address
-not on the device (__inet6_bind -> ipv6_chk_addr with strict flag
-not set). Update the bind tests to reflect legacy behavior.
+Pablo Neira Ayuso <pablo@netfilter.org> writes:
 
-Fixes: 34d0302ab861 ("selftests: Add ipv6 address bind tests to fcnal-test")
-Reported-by: Li Zhijian <lizhijian@fujitsu.com>
-Signed-off-by: David Ahern <dsahern@kernel.org>
----
- tools/testing/selftests/net/fcnal-test.sh | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+> On Fri, Dec 10, 2021 at 09:01:29PM +0530, Kumar Kartikeya Dwivedi wrote:
+>> On Fri, Dec 10, 2021 at 08:39:14PM IST, Pablo Neira Ayuso wrote:
+>> > On Fri, Dec 10, 2021 at 06:32:28PM +0530, Kumar Kartikeya Dwivedi wrote:
+>> > [...]
+>> > >  net/netfilter/nf_conntrack_core.c | 252 ++++++++++++++++++++++++++++++
+>> > >  7 files changed, 497 insertions(+), 1 deletion(-)
+>> > >
+>> > [...]
+>> > > diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
+>> > > index 770a63103c7a..85042cb6f82e 100644
+>> > > --- a/net/netfilter/nf_conntrack_core.c
+>> > > +++ b/net/netfilter/nf_conntrack_core.c
+>> >
+>> > Please, keep this new code away from net/netfilter/nf_conntrack_core.c
+>> 
+>> Ok. Can it be a new file under net/netfilter, or should it live elsewhere?
+>
+> IPVS and OVS use conntrack for already quite a bit of time and they
+> keep their code in their respective folders.
 
-diff --git a/tools/testing/selftests/net/fcnal-test.sh b/tools/testing/selftests/net/fcnal-test.sh
-index 25bba4557a8e..daa63e087b9f 100755
---- a/tools/testing/selftests/net/fcnal-test.sh
-+++ b/tools/testing/selftests/net/fcnal-test.sh
-@@ -3461,11 +3461,14 @@ ipv6_addr_bind_novrf()
- 	run_cmd nettest -6 -s -l ${a} -I ${NSA_DEV} -t1 -b
- 	log_test_addr ${a} $? 0 "TCP socket bind to local address after device bind"
- 
-+	# Sadly, the kernel allows binding a socket to a device and then
-+	# binding to an address not on the device. So this test passes
-+	# when it really should not
- 	a=${NSA_LO_IP6}
- 	log_start
--	show_hint "Should fail with 'Cannot assign requested address'"
-+	show_hint "Tecnically should fail since address is not on device but kernel allows"
- 	run_cmd nettest -6 -s -l ${a} -I ${NSA_DEV} -t1 -b
--	log_test_addr ${a} $? 1 "TCP socket bind to out of scope local address"
-+	log_test_addr ${a} $? 0 "TCP socket bind to out of scope local address"
- }
- 
- ipv6_addr_bind_vrf()
-@@ -3514,10 +3517,15 @@ ipv6_addr_bind_vrf()
- 	run_cmd nettest -6 -s -l ${a} -I ${NSA_DEV} -t1 -b
- 	log_test_addr ${a} $? 0 "TCP socket bind to local address with device bind"
- 
-+	# Sadly, the kernel allows binding a socket to a device and then
-+	# binding to an address not on the device. The only restriction
-+	# is that the address is valid in the L3 domain. So this test
-+	# passes when it really should not
- 	a=${VRF_IP6}
- 	log_start
-+	show_hint "Tecnically should fail since address is not on device but kernel allows"
- 	run_cmd nettest -6 -s -l ${a} -I ${NSA_DEV} -t1 -b
--	log_test_addr ${a} $? 1 "TCP socket bind to VRF address with device bind"
-+	log_test_addr ${a} $? 0 "TCP socket bind to VRF address with device bind"
- 
- 	a=${NSA_LO_IP6}
- 	log_start
--- 
-2.25.1
+Those are users, though. This is adding a different set of exported
+functions, like a BPF version of EXPORT_SYMBOL(). We don't put those
+outside the module where the code lives either...
+
+I can buy not wanting to bloat nf_conntrack_core.c, but what's the
+problem with adding a net/netfilter_nf_conntrack_bpf.c that gets linked
+into the same kmod?
+
+-Toke
 
