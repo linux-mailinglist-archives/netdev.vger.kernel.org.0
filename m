@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ACC1B47108F
+	by mail.lfdr.de (Postfix) with ESMTP id DF426471091
 	for <lists+netdev@lfdr.de>; Sat, 11 Dec 2021 03:04:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346169AbhLKCHc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Dec 2021 21:07:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48394 "EHLO
+        id S236461AbhLKCHe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Dec 2021 21:07:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345754AbhLKCGU (ORCPT
+        with ESMTP id S1345757AbhLKCGU (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 21:06:20 -0500
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AB81C0698C9;
-        Fri, 10 Dec 2021 18:02:32 -0800 (PST)
-Received: by mail-ed1-x536.google.com with SMTP id x10so17835644edd.5;
-        Fri, 10 Dec 2021 18:02:32 -0800 (PST)
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DC48C0617A2;
+        Fri, 10 Dec 2021 18:02:33 -0800 (PST)
+Received: by mail-ed1-x52d.google.com with SMTP id y13so34776693edd.13;
+        Fri, 10 Dec 2021 18:02:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Ug17C0BlF8flc3ASDfigJVcIU3yUjGTjLhKNa+SJZOg=;
-        b=QXRFy1zGMEzwHGscx1GDGZRc4MaB8MYQzjpC5KwwlPayCCbZF0J/nzRYWcXowNqlKm
-         TyOGi/6PO8+0nq3MweqViBugKISnW8R+i2BVrV7NgCqqc7p9uclhd9+87BjM5Wj0l2GC
-         0+RIEz/EOP1lIUtXWq46SLgu4rSNRzgdgnEbAp5pZ6/zmKg5NmUpg24eYyLWtUNA4jaE
-         s1M9NUQdv0F7/W7m3eNwvmScx190aF82fUQ8jv6LNiwaMf/RVSKxIvVtuDfXyr3JKO6l
-         a9GpF+zN4YIFtcarM7kWhw8FwQZnAKIYzYZVlPevz1GKx1zhmkmd+/+0fntRa1RELLT1
-         jl3A==
+        bh=jpcobtTbBZ1w887AMWL3/EJGu3y4OL0zdgkB+Vu4530=;
+        b=GVLidNvstcOFcXce1MeoCrlsHcR30MahiQS0EDAtDs3XpSPZOUWN/17qHPCX54MpCh
+         glJ7FROHD5OEHIvu6BOrQQk9VHQ8IdcSrDaJG2MkP6BGHxq1HapqgBvALi3K9y06m0lh
+         gFuhvhEJDXvtvYEe9ky/zSQ20mVx+MHTcqAFzUr5ROgfWGIw0XDSRZisok443NijBfDE
+         J1CCtRUUoyVhFEbjYIepjy7rFgxbpwP7YutUnyyQ7ipybLsj0rnHqf+F9xLCxDhvtQMw
+         AUiw2loa8Tp3WNYf8ID90XttreOyBLf8yCxLIpnEbf+wpZKg/uQu3fbjE4u42HX4M+co
+         brXw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Ug17C0BlF8flc3ASDfigJVcIU3yUjGTjLhKNa+SJZOg=;
-        b=023O4h8yAoovXSEBsXGG9xhWikVQKUKGDIYgmP+cNjQdXF2lbKkFuL4edBbgfTKEAR
-         lxZwSpzmXWryv4YB5lVeXs2EWTobubE0h2MJrmernoXdGdkRyKX1Tk4FUg5iTYchgGB6
-         2vEoDnQcjXjfnDACskxklYOMgvMJ7Hmd9uKtQyRk/LWEM/KPYOHYh4RG2Zl0vSRoZ3G5
-         I88NxR92y9TLh72Pd0umTX8RreG7iYuK7q3BOppPG+xj7U85te3wgRBQmS2yffpbFwCa
-         IGwY5JzJjFPYwbpGNMHr2tYTChPtAbzwCzk0fHNhRWDyp4bElLv/D/ps2i78KaosQA9R
-         WuvA==
-X-Gm-Message-State: AOAM533b8xgE9x4CdSAJH0MEBF0zhsFGcSE1nY7Df2EZVm3Mr60YwSDS
-        7nFC9XWUGyw2AzLmwmoUqcc=
-X-Google-Smtp-Source: ABdhPJwnbH7tLeSECimzcf5Evgd6qKjZpjiI2Pze20Skrtt/WPuhYi+MtSyk98T5yx2a9Dj6srN5sQ==
-X-Received: by 2002:a50:d543:: with SMTP id f3mr42655692edj.56.1639188150539;
-        Fri, 10 Dec 2021 18:02:30 -0800 (PST)
+        bh=jpcobtTbBZ1w887AMWL3/EJGu3y4OL0zdgkB+Vu4530=;
+        b=1iKZtUzO9656R+3U37T6eOsGBig3MYe8uBFHi9l3NS1k4fgfNzgdb2wmNrYozvn7dX
+         vaZt66UT4dE4xYVKxr4OjOVuCKqM4GFBaaqOKljl5p8BPt9unDCmJNz+T00AZg7PgunJ
+         txgW8UePPKmYS1zQO15DQvLqDaoBiXWh02KTXf1gnxDSt3R6QHSRuFDhBFcg06vMySPN
+         +Z3n23JGYW4VKr4TSzUS1GFCqQ/NdoTj+ga0LFKAA/q14DyfMhpoFE4skpTW8KiDL+R4
+         KbBYyD5zKql/A9n8bsJ6jD0jcMZJiEMm2ZTjpCzESepns7b12nKTHCzkhtVWZEkDI477
+         300g==
+X-Gm-Message-State: AOAM5337MPVKaQJ0JFPiB0XWVepRzZOlS0swaoi5K8tXUq9hk3GbjdPD
+        9Eu/7UflGi7YhdHMJLlSUn0=
+X-Google-Smtp-Source: ABdhPJx4rvGrwOx7ayqzXup2KfFTclQPuHSJ8dd9TxM3d5P/QnJK2VNsLITyuFIxjcy0CANWpe0m5Q==
+X-Received: by 2002:a17:907:9707:: with SMTP id jg7mr27089113ejc.533.1639188151714;
+        Fri, 10 Dec 2021 18:02:31 -0800 (PST)
 Received: from localhost.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.googlemail.com with ESMTPSA id p13sm2265956eds.38.2021.12.10.18.02.29
+        by smtp.googlemail.com with ESMTPSA id p13sm2265956eds.38.2021.12.10.18.02.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Dec 2021 18:02:30 -0800 (PST)
+        Fri, 10 Dec 2021 18:02:31 -0800 (PST)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -63,9 +63,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         KP Singh <kpsingh@kernel.org>, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, bpf@vger.kernel.org
 Cc:     Ansuel Smith <ansuelsmth@gmail.com>
-Subject: [net-next RFC PATCH v3 09/14] net: dsa: tag_qca: add support for handling mdio Ethernet and MIB packet
-Date:   Sat, 11 Dec 2021 03:01:44 +0100
-Message-Id: <20211211020155.10114-13-ansuelsmth@gmail.com>
+Subject: [net-next RFC PATCH v3 10/14] net: dsa: qca8k: add tracking state of master port
+Date:   Sat, 11 Dec 2021 03:01:45 +0100
+Message-Id: <20211211020155.10114-14-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20211211020155.10114-1-ansuelsmth@gmail.com>
 References: <20211211020155.10114-1-ansuelsmth@gmail.com>
@@ -75,102 +75,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add connect/disconnect helper to assign private struct to the cpu port
-dsa priv.
-Add support for Ethernet mdio packet and MIB packet if the dsa driver
-provide an handler to correctly parse and elaborate the data.
+MDIO/MIB Ethernet require the master port and the tagger availabale to
+correctly work. Use the new api master_state_change to track when master
+is operational or not and set a bool in qca8k_priv.
+This bool will later be used by mdio read/write and mib request to
+correctly use the working function.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- net/dsa/tag_qca.c | 52 +++++++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 50 insertions(+), 2 deletions(-)
+ drivers/net/dsa/qca8k.c | 13 +++++++++++++
+ drivers/net/dsa/qca8k.h |  1 +
+ 2 files changed, 14 insertions(+)
 
-diff --git a/net/dsa/tag_qca.c b/net/dsa/tag_qca.c
-index b8b05d54a74c..ded4d024d791 100644
---- a/net/dsa/tag_qca.c
-+++ b/net/dsa/tag_qca.c
-@@ -32,11 +32,15 @@ static struct sk_buff *qca_tag_xmit(struct sk_buff *skb, struct net_device *dev)
- 
- static struct sk_buff *qca_tag_rcv(struct sk_buff *skb, struct net_device *dev)
- {
-+	struct dsa_port *dp = dev->dsa_ptr;
-+	struct tag_qca_priv *priv;
- 	u16  hdr, pk_type;
- 	__be16 *phdr;
- 	int port;
- 	u8 ver;
- 
-+	priv = dp->ds->tagger_data;
-+
- 	if (unlikely(!pskb_may_pull(skb, QCA_HDR_LEN)))
- 		return NULL;
- 
-@@ -51,9 +55,19 @@ static struct sk_buff *qca_tag_rcv(struct sk_buff *skb, struct net_device *dev)
- 	/* Get pk type */
- 	pk_type = FIELD_GET(QCA_HDR_RECV_TYPE, hdr);
- 
--	/* MDIO read/write packet */
--	if (pk_type == QCA_HDR_RECV_TYPE_RW_REG_ACK)
-+	/* Ethernet MDIO read/write packet */
-+	if (pk_type == QCA_HDR_RECV_TYPE_RW_REG_ACK) {
-+		if (priv->rw_reg_ack_handler)
-+			priv->rw_reg_ack_handler(dp, skb);
-+		return NULL;
-+	}
-+
-+	/* Ethernet MIB counter packet */
-+	if (pk_type == QCA_HDR_RECV_TYPE_MIB) {
-+		if (priv->mib_autocast_handler)
-+			priv->mib_autocast_handler(dp, skb);
- 		return NULL;
-+	}
- 
- 	/* Remove QCA tag and recalculate checksum */
- 	skb_pull_rcsum(skb, QCA_HDR_LEN);
-@@ -69,9 +83,43 @@ static struct sk_buff *qca_tag_rcv(struct sk_buff *skb, struct net_device *dev)
- 	return skb;
+diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
+index 039694518788..905fae26e05b 100644
+--- a/drivers/net/dsa/qca8k.c
++++ b/drivers/net/dsa/qca8k.c
+@@ -2383,6 +2383,18 @@ qca8k_port_lag_leave(struct dsa_switch *ds, int port,
+ 	return qca8k_lag_refresh_portmap(ds, port, lag, true);
  }
  
-+static int qca_tag_connect(struct dsa_switch_tree *dst)
++static void
++qca8k_master_change(struct dsa_switch *ds, const struct net_device *master,
++		    bool operational)
 +{
-+	struct tag_qca_priv *priv;
-+	struct dsa_port *dp;
++	struct qca8k_priv *priv = ds->priv;
 +
-+	list_for_each_entry(dp, &dst->ports, list) {
-+		if (dp->ds->tagger_data)
-+			continue;
-+
-+		priv = kzalloc(sizeof(*priv), GFP_KERNEL);
-+		if (!priv)
-+			return -ENOMEM;
-+
-+		dp->ds->tagger_data = priv;
-+	}
-+
-+	return 0;
++	if (operational)
++		priv->master_oper = true;
++	else
++		priv->master_oper = false;
 +}
 +
-+static void qca_tag_disconnect(struct dsa_switch_tree *dst)
-+{
-+	struct dsa_port *dp;
-+
-+	list_for_each_entry(dp, &dst->ports, list) {
-+		if (dp->ds->tagger_data)
-+			continue;
-+
-+		kfree(dp->ds->tagger_data);
-+		dp->ds->tagger_data = NULL;
-+	}
-+}
-+
- static const struct dsa_device_ops qca_netdev_ops = {
- 	.name	= "qca",
- 	.proto	= DSA_TAG_PROTO_QCA,
-+	.connect = qca_tag_connect,
-+	.disconnect = qca_tag_disconnect,
- 	.xmit	= qca_tag_xmit,
- 	.rcv	= qca_tag_rcv,
- 	.needed_headroom = QCA_HDR_LEN,
+ static const struct dsa_switch_ops qca8k_switch_ops = {
+ 	.get_tag_protocol	= qca8k_get_tag_protocol,
+ 	.setup			= qca8k_setup,
+@@ -2418,6 +2430,7 @@ static const struct dsa_switch_ops qca8k_switch_ops = {
+ 	.get_phy_flags		= qca8k_get_phy_flags,
+ 	.port_lag_join		= qca8k_port_lag_join,
+ 	.port_lag_leave		= qca8k_port_lag_leave,
++	.master_state_change	= qca8k_master_change,
+ };
+ 
+ static int qca8k_read_switch_id(struct qca8k_priv *priv)
+diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
+index ab4a417b25a9..fb98536bf3e8 100644
+--- a/drivers/net/dsa/qca8k.h
++++ b/drivers/net/dsa/qca8k.h
+@@ -342,6 +342,7 @@ struct qca8k_priv {
+ 	u8 mirror_rx;
+ 	u8 mirror_tx;
+ 	u8 lag_hash_mode;
++	bool master_oper; /* Track if mdio/mib Ethernet is available */
+ 	bool legacy_phy_port_mapping;
+ 	struct qca8k_ports_config ports_config;
+ 	struct regmap *regmap;
 -- 
 2.32.0
 
