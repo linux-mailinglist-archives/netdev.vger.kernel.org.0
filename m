@@ -2,92 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 80D5B4715A6
-	for <lists+netdev@lfdr.de>; Sat, 11 Dec 2021 20:24:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AAF174715B0
+	for <lists+netdev@lfdr.de>; Sat, 11 Dec 2021 20:30:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230123AbhLKTY1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Dec 2021 14:24:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48432 "EHLO
+        id S229795AbhLKTai (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Dec 2021 14:30:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229578AbhLKTYV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Dec 2021 14:24:21 -0500
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDE3DC061714;
-        Sat, 11 Dec 2021 11:24:20 -0800 (PST)
-Received: by mail-ed1-x52a.google.com with SMTP id o20so40288190eds.10;
-        Sat, 11 Dec 2021 11:24:20 -0800 (PST)
+        with ESMTP id S229642AbhLKTah (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Dec 2021 14:30:37 -0500
+Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09068C061714
+        for <netdev@vger.kernel.org>; Sat, 11 Dec 2021 11:30:37 -0800 (PST)
+Received: by mail-qt1-x834.google.com with SMTP id t11so11613988qtw.3
+        for <netdev@vger.kernel.org>; Sat, 11 Dec 2021 11:30:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=84hUlvKVgZDC+ZcGqUWLm8LxXshIZ4qu0ulOtjIo8fw=;
-        b=U4XQpvqNX7Ys4mSMsp/DkX7ErKQINfCKPeIbbk2VeBZiwmD6pbBeRIH5c8a8gYL2ru
-         AbKgxxQIyvE2rmWuv7vbIbIgt2Or0rQbhGGhLY1UCGPuvf44ZfAPlUgAioTq3oGa90QA
-         QCKrO8IDT1EdLPwKUtwfLYSPSrVe3keJ6UAeva16C7gttXANfkJk3bPlvvybLXgh5LiY
-         5LGSKHepNpdXNESWEh9EE3ep5KN7qZ3R+azIkbDUi27mHctLY9vNzovQ+gJoGFYaQcy1
-         UHbQyll13SFKMFDji+s4PNZaXl2nLePJAbcHEnRUdkemclKSB+a7xuT32OgAOlwLJl+x
-         v/GA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Ym7Hmxs8bQvOILbWqOr3GfdzEeej8L4ZIingTpygvXs=;
+        b=hugcjm8L0mxnaVeyr18x6TGeyRXBnETUjxmDN81MI/iRPCTVtxBu4WUPFW2J7G1esh
+         +9qWF7cJqVtWWX+TwVdo/8dTjeUaMkvyjUoKRvbZxz2ZlLoKoD/WUn2TLWw+F2x6ENpP
+         oECH2BXzgbFvf/L86N/mQJki0jCaqCsx0d/ey5JnrhDVaCHpqtoCLCiF3qXmrraqvpY/
+         QAGTtJKDWubqAQy99REDv7vreKs8TSshZT5vxihibhFoQ9ODaQr6epTSV3kofySLvyFR
+         3Yjd8G8dNAgOPsJ4qdnOwr87fa869nEdK8KtNJjy1NSBzdR14VQ24vc9CeQAPjpWqcyQ
+         GZLQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=84hUlvKVgZDC+ZcGqUWLm8LxXshIZ4qu0ulOtjIo8fw=;
-        b=vrlDuJ8O6w48Cp3z4fKeMlir/Q9sPWcfEh4Wo+5/7orV/UIEHLlqIWTCvrTgdLhP8L
-         wMtI0xAOri2BtZyZDMo8tGuyEq204kSgw7ZY4wCkDaoJDKdPBR3XB7yZ9kvkTnp8oo+z
-         6vBwl61yJJXEpEoDcMyoVLPCVgL0TsW7wUR/CpFMsgjahsra2TdYGAdJ8BXYutu32Eas
-         EN5yaoWYEHv9ng92Z8EFaKeoPC7kkMmNHj6KG3IBPWX/XHmgkqpfm2NqX6sWs3+OhHCZ
-         OFZrIM6+x9CAwyT3Uynw5FWMkplAzDFA38dXOv/k8HMqLAIDfedc7dolxI8BMqGf4Ffb
-         6bNg==
-X-Gm-Message-State: AOAM533iAnwFyf4cLihM0aCtAqUlxm3ulOyWYIjXrk3AV977Syag3EWR
-        7F6F8Hu9Rp/RFiav3bZSQ14=
-X-Google-Smtp-Source: ABdhPJztpWpCMFwm8PQ5kxnnY9fltNkaYjrulKtdM9e+vgMeZiTldKn7IATnl3pxUkVNVKjPQS5uog==
-X-Received: by 2002:a17:906:c112:: with SMTP id do18mr33497385ejc.103.1639250659211;
-        Sat, 11 Dec 2021 11:24:19 -0800 (PST)
-Received: from skbuf ([188.25.173.50])
-        by smtp.gmail.com with ESMTPSA id hx14sm3423140ejc.92.2021.12.11.11.24.17
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Ym7Hmxs8bQvOILbWqOr3GfdzEeej8L4ZIingTpygvXs=;
+        b=Mw4M413hYtWFwcPY2opBDNvDEvfJKsk3Er1PsdBB7auSSfHNtCJnACvWuA/E8NGEPT
+         3O3WcfTgpcZeT4s0yqtY0j/4XLDV7Qdl+Nj41bny1qiKdXzKbcdvD0dTSE47A/cn6tz9
+         hweuKmej9n69f4o8PGICLh7VOMbT0naTOMnO3Vx21wWQ125mX703ZTiK8FxeyFlym4Bu
+         JoLNoe0dqY7baaOUFfdCrvJJ/WtOR0gj4IE/eXmNGXcED9NaZmtEjpaHDsIeI+ZreelJ
+         bPOLcd5ZhvqpJnNtgXFQFGSpMegvJlVAigsFkFZFhe1YyuOrkoPt7uTP0YvDawBWIcVF
+         NyRA==
+X-Gm-Message-State: AOAM533jp1PrPXu6bQcZcMeZYtcN6E3SCbP9ZOUwBbD/3ABajUVxiknU
+        Z5Iq5JffH3k1il4EEAx2KwWmLp7zfw4=
+X-Google-Smtp-Source: ABdhPJwFzL1EknyK7DoM/6FPGeQ3Z1kzf0oi57HCeqdJwq/Nab9mv3npjU/Ww70yi8Z3pgyGbt8sGA==
+X-Received: by 2002:ac8:5914:: with SMTP id 20mr35432787qty.409.1639251036081;
+        Sat, 11 Dec 2021 11:30:36 -0800 (PST)
+Received: from willemb.c.googlers.com.com (55.87.194.35.bc.googleusercontent.com. [35.194.87.55])
+        by smtp.gmail.com with ESMTPSA id w8sm5182287qtc.36.2021.12.11.11.30.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 11 Dec 2021 11:24:18 -0800 (PST)
-Date:   Sat, 11 Dec 2021 21:24:17 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Ansuel Smith <ansuelsmth@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [net-next RFC PATCH v3 07/14] net: dsa: tag_qca: add define for
- handling mdio Ethernet packet
-Message-ID: <20211211192417.n5vzf6jniqqxfwir@skbuf>
-References: <20211211020155.10114-1-ansuelsmth@gmail.com>
- <20211211020155.10114-9-ansuelsmth@gmail.com>
+        Sat, 11 Dec 2021 11:30:35 -0800 (PST)
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        Willem de Bruijn <willemb@google.com>
+Subject: [PATCH net] selftests/net: toeplitz: fix udp option
+Date:   Sat, 11 Dec 2021 14:30:31 -0500
+Message-Id: <20211211193031.2178614-1-willemdebruijn.kernel@gmail.com>
+X-Mailer: git-send-email 2.34.1.173.g76aa8bc2d0-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211211020155.10114-9-ansuelsmth@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Dec 11, 2021 at 03:01:40AM +0100, Ansuel Smith wrote:
-> Add all the required define to prepare support for mdio read/write in
-> Ethernet packet. Any packet of this type has to be dropped as the only
-> use of these special packet is receive ack for an mdio write request or
-> receive data for an mdio read request.
-> A struct is used that emulates the Ethernet header but is used for a
-> different purpose.
-> 
-> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-> ---
+From: Willem de Bruijn <willemb@google.com>
 
-These patches (the ones with /14 instead of /15) are duplicates. I think
-you forgot to wipe your output directory when running git format-patch.
-Also, I don't think you need to copy the BPF maintainers just because
-you posted a netdevbpf URL, even if scripts/get_maintainer.pl says so :)
+Tiny fix. Option -u ("use udp") does not take an argument.
+
+It can cause the next argument to silently be ignored.
+
+Fixes: 5ebfb4cc3048 ("selftests/net: toeplitz test")
+Signed-off-by: Willem de Bruijn <willemb@google.com>
+---
+ tools/testing/selftests/net/toeplitz.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tools/testing/selftests/net/toeplitz.c b/tools/testing/selftests/net/toeplitz.c
+index 710ac956bdb3..c5489341cfb8 100644
+--- a/tools/testing/selftests/net/toeplitz.c
++++ b/tools/testing/selftests/net/toeplitz.c
+@@ -498,7 +498,7 @@ static void parse_opts(int argc, char **argv)
+ 	bool have_toeplitz = false;
+ 	int index, c;
+ 
+-	while ((c = getopt_long(argc, argv, "46C:d:i:k:r:stT:u:v", long_options, &index)) != -1) {
++	while ((c = getopt_long(argc, argv, "46C:d:i:k:r:stT:uv", long_options, &index)) != -1) {
+ 		switch (c) {
+ 		case '4':
+ 			cfg_family = AF_INET;
+-- 
+2.34.1.173.g76aa8bc2d0-goog
+
