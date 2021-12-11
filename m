@@ -2,166 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D1D70470F4F
-	for <lists+netdev@lfdr.de>; Sat, 11 Dec 2021 01:17:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 549C6470F87
+	for <lists+netdev@lfdr.de>; Sat, 11 Dec 2021 01:38:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243906AbhLKAUf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Dec 2021 19:20:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53382 "EHLO
+        id S1345493AbhLKAlx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Dec 2021 19:41:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240722AbhLKAUe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 19:20:34 -0500
-Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4008EC061714;
-        Fri, 10 Dec 2021 16:16:59 -0800 (PST)
-Received: by mail-oi1-x235.google.com with SMTP id 7so15388485oip.12;
-        Fri, 10 Dec 2021 16:16:59 -0800 (PST)
+        with ESMTP id S1345465AbhLKAlt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Dec 2021 19:41:49 -0500
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80B43C061714
+        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 16:38:13 -0800 (PST)
+Received: by mail-ed1-x530.google.com with SMTP id z5so35601179edd.3
+        for <netdev@vger.kernel.org>; Fri, 10 Dec 2021 16:38:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=LPsEBllkti1Y/WFnvaprKAKcU70ku+EJ/zndB3NRcV4=;
-        b=CCqnhmWYXAbY0SLoWvB2AAc4cmOi2AdcDLsTQcb4eHH7jg9YjG6UMbmU1a4wXuWyMg
-         gzUFuJDverG65JpPqI+//PJDJ3qKxiW3QDIdIPvNGaUdg7VVJdMXF1Ez7+Rxyb2d5ROT
-         yVh+vMzfdIxnj1GerBJ20PdIQfWyMkjBpZw2Y4Ui68Vl7F5LHO6jaThSwUDkVEiIIr4a
-         O/sSxlqOn/uh3TW0LwDGd1cSQ7KSG5h3wamEiz+T0l6A+aIpp7oEAWGfXhDNN6xmJcpa
-         JUiaBl95yBQls+K1+lMYhNqGhNUzycyLT02xwaJt+w94oNgWfc2qDIfnbZv27RecdVDl
-         9b7A==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=+HtJv7UQXnlWIVwfi+CjeSm1dzhTzPYVG1OMTvzte1c=;
+        b=Sj1GthU6T8a2qkwOJd+J7LBQ3DosZLHs3WSw9f8iIwhvnTQKJ0EKA4H1djIQiyEBVJ
+         037wr1+i/B8a468+PtwOxzGuSSzhydtghr2YkRQKb8RZ3jYJFRY04LLTEoK4Lq8i3ng0
+         SefUOeGHtgVKMT90UfDGEpOeuhPfpbkMyuiDfDhUk4dH4/95zdCGj1UTmBSzGlQnm7n9
+         K6W1D9NIjUEem3SUmdvfYELhCx0ITwyJWi4gk5k6tkbMd1he5EfVQslCmEBSfsCDkFuX
+         oyn8OktqIuH1Cpqcg4NwAF+IliumXx67s5IPt+xuWspNuveQkK46/6fqlJD+LfqbOF1/
+         DBHA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=LPsEBllkti1Y/WFnvaprKAKcU70ku+EJ/zndB3NRcV4=;
-        b=tzBMJbfiWcGOH03Xmi1rWnFtDgeYH6nNICHtnr+HuT9fQ4mcg2PuE8vvX/3EaQdzsE
-         Bal6eiPIiUw9W14Pz8lbF1t3i1j1JOSDoM5KAYjKlsXSQZxlW3v10+m4fLyK2GtWivtF
-         k8i9QmqZ16dMJEdbVFICAehTU0tRwL1D1Dxo+wfquFNNfpm4s/gZhuIsqmrIIfeCg2XR
-         rA+Mb5lMRrMZC+IQpaVkahddVmiRo1wV0CEgklkYOzdKBbByTDUxgXq+ld4+VyTZ+JMo
-         IhFh4cuuU+sg9dfz9jYyIuFUM6Wf0C/4FNe+KkxWseWknsHTGPZd9em0XhBXoNWiD6SZ
-         dfTw==
-X-Gm-Message-State: AOAM532VWbTpC4GxHSeP50zJl6eb3+OIs3NswuINwov8IaR+M+U/XKgB
-        N73/MVMYvAM1q2zIX1c6ilk=
-X-Google-Smtp-Source: ABdhPJy57y/3rG8iI5IVRwu/IgQEjLMHVCikBXPbAdBkaF/5cRnB6popLjFbhq5rCEy7a/0O3dBEzg==
-X-Received: by 2002:aca:5b87:: with SMTP id p129mr15382978oib.30.1639181818600;
-        Fri, 10 Dec 2021 16:16:58 -0800 (PST)
-Received: from localhost ([172.243.151.11])
-        by smtp.gmail.com with ESMTPSA id j187sm1057295oih.5.2021.12.10.16.16.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Dec 2021 16:16:57 -0800 (PST)
-Date:   Fri, 10 Dec 2021 16:16:51 -0800
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, shayagr@amazon.com,
-        john.fastabend@gmail.com, dsahern@kernel.org, brouer@redhat.com,
-        echaudro@redhat.com, jasowang@redhat.com,
-        alexander.duyck@gmail.com, saeed@kernel.org,
-        maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
-        tirthendu.sarkar@intel.com, toke@redhat.com
-Message-ID: <61b3edf34d399_2c40320815@john.notmuch>
-In-Reply-To: <cover.1639162845.git.lorenzo@kernel.org>
-References: <cover.1639162845.git.lorenzo@kernel.org>
-Subject: RE: [PATCH v20 bpf-next 00/23] mvneta: introduce XDP multi-buffer
- support
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=+HtJv7UQXnlWIVwfi+CjeSm1dzhTzPYVG1OMTvzte1c=;
+        b=0jRW6nsKGeqQusMOs6s4vi18uSQeFKD/OPRmRXdPK9kWqw3M3Ni7TSNUaMElzBHoBY
+         OuVV6UxjcDWBeebC/JvRe2ofKq+KiusQj7FP+cSWC1wfJAZjIcY/lnoi2qs+yiZr2xe3
+         VbQMdH5EApf0vhiBK5vKWDe1vitZZ0V/raj4ngnvCXXNYmv/5BjSj4ZYWuUVOXTk8dTZ
+         /K3r8EXYxb/Lq+dSjh/MM9uut3bDVST08NmXcyTqts9r7Z59+hrEkiiaFX8bSPYV7T60
+         6GxZlLMIyx8wbJ3JnyDg8goOSYW3EyJrSVxOs1pA2ZQUhtgQ9U46Xb8uBSz0qNYFyyuk
+         kjaA==
+X-Gm-Message-State: AOAM533GYWYPnlpe7tF4Q/gSKYVtJeLwxlxYt0R25ju/b5c52mOQN8iS
+        il3rXbc9WBZ1PdP/ClpdLjoHlng/026gcNFkiWcFycwEMfPCrgi7
+X-Google-Smtp-Source: ABdhPJwYf/7IETYLuoT7L2izYrTcZejyP3Bz8q2Vhv+ouLx1G+WOAZuGaDlxdAKmFtx9K3kRDCoHhxvgFEUnXpKLdtU=
+X-Received: by 2002:a17:906:7009:: with SMTP id n9mr27731645ejj.431.1639183092047;
+ Fri, 10 Dec 2021 16:38:12 -0800 (PST)
+MIME-Version: 1.0
+References: <20211208145459.9590-1-xiangxia.m.yue@gmail.com>
+ <20211208145459.9590-3-xiangxia.m.yue@gmail.com> <61b383c6373ca_1f50e20816@john.notmuch>
+ <CAMDZJNV3-y5jkUAJJ--10PcicKpGMwKS_3gG9O7srjomO3begw@mail.gmail.com>
+ <CAMDZJNXL5qSfFv54A=RrMwHe8DOv48EfrypHb1FFSUFu36-9DQ@mail.gmail.com>
+ <CAMDZJNUyOELOcf0dtxktCTRKv1sUrp5Z17mW+4so7tt6DFnJsw@mail.gmail.com> <368e82ef-24be-06c7-2111-8a21cd558100@iogearbox.net>
+In-Reply-To: <368e82ef-24be-06c7-2111-8a21cd558100@iogearbox.net>
+From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Date:   Sat, 11 Dec 2021 08:37:35 +0800
+Message-ID: <CAMDZJNXY249r_SBuSjCwkAf-xGF98-5EPN41d23Jix0fTawZTw@mail.gmail.com>
+Subject: Re: [net v5 2/3] net: sched: add check tc_skip_classify in sch egress
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     John Fastabend <john.fastabend@gmail.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Wei Wang <weiwan@google.com>, Arnd Bergmann <arnd@arndb.de>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Lorenzo Bianconi wrote:
-> This series introduce XDP multi-buffer support. The mvneta driver is
-> the first to support these new "non-linear" xdp_{buff,frame}. Reviewers=
+On Sat, Dec 11, 2021 at 4:11 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>
+> On 12/10/21 8:54 PM, Tonghao Zhang wrote:
+> > On Sat, Dec 11, 2021 at 1:46 AM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
+> >> On Sat, Dec 11, 2021 at 1:37 AM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
+> >>> On Sat, Dec 11, 2021 at 12:43 AM John Fastabend
+> >>> <john.fastabend@gmail.com> wrote:
+> >>>> xiangxia.m.yue@ wrote:
+> >>>>> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> >>>>>
+> >>>>> Try to resolve the issues as below:
+> >>>>> * We look up and then check tc_skip_classify flag in net
+> >>>>>    sched layer, even though skb don't want to be classified.
+> >>>>>    That case may consume a lot of cpu cycles. This patch
+> >>>>>    is useful when there are a lot of filters with different
+> >>>>>    prio. There is ~5 prio in in production, ~1% improvement.
+> >>>>>
+> >>>>>    Rules as below:
+> >>>>>    $ for id in $(seq 1 5); do
+> >>>>>    $       tc filter add ... egress prio $id ... action mirred egress redirect dev ifb0
+> >>>>>    $ done
+> >>>>>
+> >>>>> * bpf_redirect may be invoked in egress path. If we don't
+> >>>>>    check the flags and then return immediately, the packets
+> >>>>>    will loopback.
+> >>>>
+> >>>> This would be the naive case right? Meaning the BPF program is
+> >>>> doing a redirect without any logic or is buggy?
+> >>>>
+> >>>> Can you map out how this happens for me, I'm not fully sure I
+> >>>> understand the exact concern. Is it possible for BPF programs
+> >>>> that used to see packets no longer see the packet as expected?
+> >>>>
+> >>>> Is this the path you are talking about?
+> >>> Hi John
+> >>> Tx ethx -> __dev_queue_xmit -> sch_handle_egress
+> >>> ->  execute BPF program on ethx with bpf_redirect(ifb0) ->
+> >>> -> ifb_xmit -> ifb_ri_tasklet -> dev_queue_xmit -> __dev_queue_xmit
+> >>> the packets loopbacks, that means bpf_redirect doesn't work with ifb
+> >>> netdev, right ?
+> >>> so in sch_handle_egress, I add the check skb_skip_tc_classify().
+>
+> But why would you do that? Usage like this is just broken by design..
+As I understand, we can redirect packets to a target device either at
+ingress or at *egress
 
-> please focus on how these new types of xdp_{buff,frame} packets
-> traverse the different layers and the layout design. It is on purpose
-> that BPF-helpers are kept simple, as we don't want to expose the
-> internal layout to allow later changes.
-> =
+The commit ID: 3896d655f4d491c67d669a15f275a39f713410f8
+Allow eBPF programs attached to classifier/actions to call
+bpf_clone_redirect(skb, ifindex, flags) helper which will mirror or
+redirect the packet by dynamic ifindex selection from within the
+program to a target device either at ingress or at egress. Can be used
+for various scenarios, for example, to load balance skbs into veths,
+split parts of the traffic to local taps, etc.
 
-> The main idea for the new multi-buffer layout is to reuse the same
-> structure used for non-linear SKB. This rely on the "skb_shared_info"
-> struct at the end of the first buffer to link together subsequent
-> buffers. Keeping the layout compatible with SKBs is also done to ease
-> and speedup creating a SKB from an xdp_{buff,frame}.
-> Converting xdp_frame to SKB and deliver it to the network stack is show=
-n
-> in patch 05/18 (e.g. cpumaps).
-> =
+https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/?id=3896d655f4d491c67d669a15f275a39f713410f8
+https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/?id=27b29f63058d26c6c1742f1993338280d5a41dc6
 
-> A multi-buffer bit (mb) has been introduced in the flags field of xdp_{=
-buff,frame}
-> structure to notify the bpf/network layer if this is a xdp multi-buffer=
- frame
-> (mb =3D 1) or not (mb =3D 0).
-> The mb bit will be set by a xdp multi-buffer capable driver only for
-> non-linear frames maintaining the capability to receive linear frames
-> without any extra cost since the skb_shared_info structure at the end
-> of the first buffer will be initialized only if mb is set.
-> Moreover the flags field in xdp_{buff,frame} will be reused even for
-> xdp rx csum offloading in future series.
-> =
+But at egress the bpf_redirect doesn't work with ifb.
+> If you need to loop anything back to RX, just use bpf_redirect() with
+Not use it to loop packets back. the flags of bpf_redirect is 0. for example:
 
-> Typical use cases for this series are:
-> - Jumbo-frames
-> - Packet header split (please see Google=EF=BF=BD=EF=BF=BD=EF=BF=BDs us=
-e-case @ NetDevConf 0x14, [0])
-> - TSO/GRO for XDP_REDIRECT
-> =
+tc filter add dev veth1 \
+egress bpf direct-action obj test_bpf_redirect_ifb.o sec redirect_ifb
+https://patchwork.kernel.org/project/netdevbpf/patch/20211208145459.9590-4-xiangxia.m.yue@gmail.com/
+> BPF_F_INGRESS? What is the concrete/actual rationale for ifb here?
+We load balance the packets to different ifb netdevices at egress. On
+ifb, we install filters, rate limit police,
 
-> The three following ebpf helpers (and related selftests) has been intro=
-duced:
-> - bpf_xdp_load_bytes:
->   This helper is provided as an easy way to load data from a xdp buffer=
-. It
->   can be used to load len bytes from offset from the frame associated t=
-o
->   xdp_md, into the buffer pointed by buf.
-> - bpf_xdp_store_bytes:
->   Store len bytes from buffer buf into the frame associated to xdp_md, =
-at
->   offset.
-> - bpf_xdp_get_buff_len:
->   Return the total frame size (linear + paged parts)
-> =
 
-> bpf_xdp_adjust_tail and bpf_xdp_copy helpers have been modified to take=
- into
-> account xdp multi-buff frames.
-> Moreover, similar to skb_header_pointer, we introduced bpf_xdp_pointer =
-utility
-> routine to return a pointer to a given position in the xdp_buff if the
-> requested area (offset + len) is contained in a contiguous memory area
-> otherwise it must be copied in a bounce buffer provided by the caller r=
-unning
-> bpf_xdp_copy_buf().
-> =
 
-> BPF_F_XDP_MB flag for bpf_attr has been introduced to notify the kernel=
- the
-> eBPF program fully support xdp multi-buffer.
-> SEC("xdp_mb/"), SEC_DEF("xdp_devmap_mb/") and SEC_DEF("xdp_cpumap_mb/" =
-have been
-> introduced to declare xdp multi-buffer support.
-> The NIC driver is expected to reject an eBPF program if it is running i=
-n XDP
-> multi-buffer mode and the program does not support XDP multi-buffer.
-> In the same way it is not possible to mix xdp multi-buffer and xdp lega=
-cy
-> programs in a CPUMAP/DEVMAP or tailcall a xdp multi-buffer/legacy progr=
-am from
-> a legacy/multi-buff one.
-> =
 
-> More info about the main idea behind this approach can be found here [1=
-][2].
-
-Thanks for sticking with this.
-
-OK for the series, I really want to see this on some other hardware thoug=
-h,
-preferably 40Gbps or more ASAP...
-
-Acked-by: John Fastabend <john.fastabend@gmail.com>=
+-- 
+Best regards, Tonghao
