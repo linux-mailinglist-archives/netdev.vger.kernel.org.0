@@ -2,128 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C6DC471336
-	for <lists+netdev@lfdr.de>; Sat, 11 Dec 2021 10:51:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C3CDF4713DE
+	for <lists+netdev@lfdr.de>; Sat, 11 Dec 2021 14:02:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230259AbhLKJu5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Dec 2021 04:50:57 -0500
-Received: from mout.gmx.net ([212.227.15.18]:56327 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230243AbhLKJu4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 11 Dec 2021 04:50:56 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1639216232;
-        bh=3RKzO9hWDYU9MudoYZeXX5RtPE5R5CVGnBOGjx6Z1Hw=;
-        h=X-UI-Sender-Class:Subject:From:To:Cc:Date:In-Reply-To:References;
-        b=NzoyyXd9SljeHxyoJiI5SEPoJm5nsTnAqBEzpQciHe2YtYawAAMSy1QVomCUjD9gs
-         e2porgYrYb9EJYl+gLPS02HE05Lb9cMr1kw61Opy354SHhVaFuajjmrWZFJLvDR+JT
-         Bt1Ci7KDjd/lG3T/4oT31VZySwThSbOw92lQzfRM=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from machineone.fritz.box ([84.190.132.169]) by mail.gmx.net
- (mrgmx004 [212.227.17.190]) with ESMTPSA (Nemesis) id
- 1Mi2Nv-1mImak3dGj-00e1vZ; Sat, 11 Dec 2021 10:50:31 +0100
-Message-ID: <6bcce8e66fde064fd2879e802970bb4a8f382743.camel@gmx.de>
-Subject: Re: [PATCH] igc: Avoid possible deadlock during suspend/resume
-From:   Stefan Dietrich <roots@gmx.de>
-To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Thorsten Leemhuis <regressions@leemhuis.info>
-Cc:     kuba@kernel.org, greg@kroah.com, netdev@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org, regressions@lists.linux.dev
-Date:   Sat, 11 Dec 2021 10:50:30 +0100
-In-Reply-To: <87h7bgrn0j.fsf@intel.com>
-References: <87r1awtdx3.fsf@intel.com>
-         <20211201185731.236130-1-vinicius.gomes@intel.com>
-         <5a4b31d43d9bf32e518188f3ef84c433df3a18b1.camel@gmx.de>
-         <87o85yljpu.fsf@intel.com>
-         <063995d8-acf3-9f33-5667-f284233c94b4@leemhuis.info>
-         <8e59b7d6b5d4674d5843bb45dde89e9881d0c741.camel@gmx.de>
-         <5c5b606a-4694-be1b-0d4b-80aad1999bd9@leemhuis.info>
-         <d4c9bb101aa79c5acaaa6dd7b42159fb0c91a341.camel@gmx.de>
-         <87h7bgrn0j.fsf@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5-0ubuntu1 
+        id S229985AbhLKNCS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Dec 2021 08:02:18 -0500
+Received: from mail-gv0che01on2122.outbound.protection.outlook.com ([40.107.23.122]:53537
+        "EHLO CHE01-GV0-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229578AbhLKNCS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 11 Dec 2021 08:02:18 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZLMpSN+ZPXIpAI7jGLef9NiiYLeSq7cZWc8UeemFfG888POuWWTtHEz3XueKwe3Up5zDboHw1cOPAZ3oqfO1Oc6uzYPbstQmNpx+LMm569MdjoQYtFRVQD5Hvp6dtE0aSpN03PUB6zkknsAc+6zsiZiTgXq2u+6+luhFTtTfomK15Ra+BbPwq6rr27YCdnIF2p5NMKYAdxRxXJwRkOVo8KKWdJj/DtWVHypUvKc8FCjDZ9L4fLA/1vDpQoHjgsKeP3O1VpietRu8Og7fOTqVSv+EhZhB/ONOueZnZwonnAd5HpAGmkHkq39C+x2s5D90J32Ue+wEPbx5ZLORBbHCqg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=IF0TBg/sB6hb1KuhDMOpyZpeVOUc7DyyeqDjz0oYhlc=;
+ b=d/alYO+ha8+rW/E8skkAcUzB2Kh+rN2msZGkJDgojcsNeGQm7jnvQnkGLKgx7Mns4SYdQ0fDhs9uE74c2zk51iMWSuTZwUlcpuQSjIn6rMut29DXxzfozbV2BEeHu5w/mO4EhVjh6LdccyUG2RTbrbtxqKb1vnkEnIVtpx3h1XXTOEZGQVmqSqbhZuxMegk62ewbQ9c/We2W0BxIncTgNCXWc1dIiyIiZsAUIK5G7gbBJxpbrMPc5JA81B/GAl4AjUIU7z4lW8CTS7L98wJaRNU968Wzr0pu61CfFRc8ew2QosHQKN5QrN8HecSoYV5WRF8OxTElTWvYkbXGpbNt8g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=toradex.com; dmarc=pass action=none header.from=toradex.com;
+ dkim=pass header.d=toradex.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=toradex.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=IF0TBg/sB6hb1KuhDMOpyZpeVOUc7DyyeqDjz0oYhlc=;
+ b=QReKv8vd6rskaqNiijLjUNy8hUroL/EtX0mPjmR/PsP7jZRO+UvuqQKsovIaehZndBXm6IkE3bhilTIHN9dyORs2easVLZmy0Bplu0yKfVQtsO7jXHg2sQnBaRNz1B4ksiPADSE2UlfYBXyrV/Ybp9RZhooda69np6ZNEs1RrX0=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=toradex.com;
+Received: from ZRAP278MB0642.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:3d::11)
+ by ZRAP278MB0192.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:28::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4778.16; Sat, 11 Dec
+ 2021 13:01:59 +0000
+Received: from ZRAP278MB0642.CHEP278.PROD.OUTLOOK.COM
+ ([fe80::d837:7398:e400:25f0]) by ZRAP278MB0642.CHEP278.PROD.OUTLOOK.COM
+ ([fe80::d837:7398:e400:25f0%2]) with mapi id 15.20.4778.017; Sat, 11 Dec 2021
+ 13:01:58 +0000
+From:   Francesco Dolcini <francesco.dolcini@toradex.com>
+To:     philippe.schenker@toradex.com, andrew@lunn.ch,
+        qiangqing.zhang@nxp.com
+Cc:     davem@davemloft.net, festevam@gmail.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux@armlinux.org.uk,
+        netdev@vger.kernel.org,
+        Francesco Dolcini <francesco.dolcini@toradex.com>
+Subject: [PATCH net-next] net: phy: perform a PHY reset on resume
+Date:   Sat, 11 Dec 2021 14:01:46 +0100
+Message-Id: <20211211130146.357794-1-francesco.dolcini@toradex.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <7a4830b495e5e819a2b2b39dd01785aa3eba4ce7.camel@toradex.com>
+References: <7a4830b495e5e819a2b2b39dd01785aa3eba4ce7.camel@toradex.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: MRXP264CA0004.FRAP264.PROD.OUTLOOK.COM
+ (2603:10a6:500:15::16) To ZRAP278MB0642.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:910:3d::11)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:8LI/fKBfWWexm++YwmECNEaNPSHmv2Xe7HCv7xOa+COdilqTiKU
- M1HpihgfPOmO/dUPfvco2PYdZuRORuHEfqJw1vFKADtDVI0Uh5N7IhJ86eKKO4tVI6Fxpe/
- foJAvYzEpSmhNo3Bn5MlX7tdv45r63WecX2ByNVhyjfSNOQeos+Qsc/f2OaxXm3P+H09Sb0
- 8INdOUq10Spo3g9LPcoKw==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:y7OCSOtXiHU=:asm3GPDocLw8YTkJJ/9OAX
- uxR8gkHhvJ8trD6tC80Njsl3XYNie/X6fp+2V9xFNeLk8m/w0iYkbeWiZ8hNxdXKvJRkOyTfh
- xhQQWWjUpJCVPvb6Gt1J12RDpGxyvqxARcJUlqN1LkK7xT4mzpTGbj2kZvETi2cXQvx43NIBz
- Nwi/Fofn9S3G9RtRtiys6ILRXRPFYva2mCLj68z+QnkJc9EtMQbrQjWVXt3jsXkWYdTAtMV/M
- yaPCoGpGmmNdW71Uf5OCJWzGI07Fx+M82hlKy1/IpDg4hMFj4fyRJgsczP4Og+b8tmzJj+Bgk
- ER0ZxjHdCFxZ+sTwAgGO+xf9Xa0tTLk9JxpCjXJ79019Uc6n48OU4+TQ+i3Z3vcpjf3LVYHLt
- ZnyK4atXoZmtBBRzQiKJmnFEtvKH4bDBKCGGbqx8LvFcxFexIXDLjkE38jpcq+8MNLvd420Yy
- PWksk9sPR/C0gkOs+W3Vm8npWtsg53vRuVs3FW1AEd8ANYUjPjBdwBKxgpIb8KBedbrSQnrf6
- UCWHaZI+XZFmDGfFiiSli4Cw7ZpawUsPs76zXlT4hPTrByTJWMiXc5zTMZaVvOk9YEoJHiSBK
- Ox1OaexRQRCtuifXGyfR8i1Ue3x7IyjonISICNSEFH5kr/xM09D4Au9pPcgDPEn6UI/79cbwx
- 2aQvxud/fYxR9fLmSlbtCl1aSiddI1VYKS9x8e6IcimnBVx7XHA6Yp7H5b9fhnButI4eacQ9I
- xuCEKgvKBoCzw/OkhwlGSB5o6Q6V2QffoWAe2rKXNbdYz7FxtRHCJo0FzpwoTYny6cD+7oI3f
- W5YKVtHHF4HBEsHFi6xc/XXEmYNQJMz1xLCV6tUjBVJpkP2o8XaxizAkU2qlBbcPl6o67T8PB
- o0gzdX3sNZTMs3hJN/gHu7lFmfJw61xM58z36Bl8NXUSBfpDSa4sUc+5RALUr6z0dJcFeWEme
- fHnJW7ptIDOfDkIbIi10sO82qAbegDK38p0DGKx2V9S5nHuZhmF62uK2ywNKNRcpgqBP4ovjo
- +32a7hvjB9VE4QFvX3PknpWFApNZlLfSPRaRgXw/D5gT5jLbZybhb8/s5gvvp3kaEQ==
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: c579e18c-aabe-4089-bb99-08d9bca6693d
+X-MS-TrafficTypeDiagnostic: ZRAP278MB0192:EE_
+X-Microsoft-Antispam-PRVS: <ZRAP278MB0192CE9A045EA27AB85CB42BE2729@ZRAP278MB0192.CHEP278.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: QPC0mqce6Q3ge84Sb9zsi8Iy+SlLAqO6HxMLMYheL2d0NfVgzxbDQ5svFaI0BnwEes2rPeQfBXUgkAq2wxIxAQYJfVjcDxSTlya61iPKrWyyL1JOWDlIEGz64hBX/XbzPTqsyNteSUL31ktmlamjerwrIuJq5+uLP095vfh5Q0Vr4Z/7H8m6FKtk8k5z9jNZ2Hp0Iq3G2Gw7E300rO4nBBXs5IroxI99vTufqh36idx3Yiy3Ti5XsWxxKO4b5Rfn9VDUWgRUUeEO2413ZsnlZb4sHpEDT5axi88vNsjIlKs1AaMvDbVSnoeW5kKE5raF65MVEPjkglnv3ji20Hgq5RY1lWksLjc5KOpcIyKIqs4JmvN9T+ICNw3K2Tf4lXCJ2+2XBXMG9zWsuqQnm8JAbvqzjRRgiUkRiOqd6Lzxens2+HDLqCzogQIQZEvh53mMaNWPSfpxD5JEiafbXnfVbnm+vgh74SqdxgdatAeCyDxHAMayheIo6DD3Bo3QSstbvxbdr5Tgpfi1Ju78oYREe7fXNdbdTaw5FF8ijtUmJWrnGdBHQssIxH8g+70zD8KHGtHbUq+8tz6XKqd6CFU0sxO+OJBswT6/YQyLWTx87IkzTZCQAgHcadarYOnusWa8EhRHCEwICCgCsKBzzHFDKpWFrshqnXzQ29j1qcQSROJDUuh0S+6LHs6iQEQjzc/dZK2/BBKL2mGO05lneciRfTNcPEbcwr2kFA1yfs0mza5g54+vg2xv6FHh2vrO4lUQPO3XMgyf6gjQ5AagfaFzDqmdOwt7QiR0h0fNq1ICneY=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:ZRAP278MB0642.CHEP278.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(4636009)(346002)(396003)(366004)(39840400004)(376002)(136003)(186003)(316002)(8936002)(83380400001)(966005)(4326008)(66946007)(44832011)(26005)(6486002)(66476007)(6666004)(8676002)(508600001)(107886003)(5660300002)(38350700002)(36756003)(52116002)(2616005)(6506007)(86362001)(1076003)(2906002)(6512007)(38100700002)(66556008);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Gl4eKX+iwgB1USkePlCf2va32P2MQ4tGHC8+11+XmojZyJ4Rbt69rphWr0i7?=
+ =?us-ascii?Q?VMQtv1oze1MddGAhqQZFW8llYsSER2lqbDResyjxP9jaaqP3ORgjDVf8FzoD?=
+ =?us-ascii?Q?TzsIXxUMEOPDWQdANMctYjJC0kJodhp/RZ4cb6yQw41fPm/Q+mKhXJo5DfLt?=
+ =?us-ascii?Q?9EVlQ6tDbApX2j36FjfEdtoTlwlHs9mCBlb+t17fBm6cROtz8gkQBqH00cwv?=
+ =?us-ascii?Q?anfg1KRoCIaY4UsYKuEse4GHqATSEnoXKDDIa6tQAykMl5McfpDDJCqr6R7J?=
+ =?us-ascii?Q?sbxza8sa7L/c14HmQKE3d2QIQLXC8Xu9oFuYmBtUQQQ4+nkFntT9KP1Kr5Km?=
+ =?us-ascii?Q?SDLPb1u/+VrbUJ8J5HSUFRYra1puLppXU21c0ZLOwZtQfP5Nn9QUxZw3Dm6y?=
+ =?us-ascii?Q?6x5qem5MtlD+XGD19vKWfQimOaEpYTvzwjBiUT8+Y8EOi96rPWL3XwaUMZ+H?=
+ =?us-ascii?Q?Fw62ICgK9WS1S8uXMmtSBaH1V/oV0zlfuh7YZrYUSq1xZZ7ZpXMBpcRy3PAi?=
+ =?us-ascii?Q?k5z+tyA0fFbMKSoUSJWxEQjFjLE+5z4+4MRD9UPzGNoGhCeH7q/yKBRWZSqA?=
+ =?us-ascii?Q?u9yr5Fc28v87likccHIL1H+1F96ygiGcfcR470eVz94OEOzJ5/1tAQBb08Be?=
+ =?us-ascii?Q?5JMUR7pIZO148SL8s7aLMRzi49cLuI0HS0ptxkE6yRMeVq4PUuchv30M4jlo?=
+ =?us-ascii?Q?3g4EQOpSrUkKYo4jssP8Gzs9I7LmlZ5WCqKR2n+eT/olXgmQCC6PtpEs2IID?=
+ =?us-ascii?Q?cl8y+C6gNQZf0Htf7vOigQ8IDMqxe4UQZZZWmEfGvKHOhh9L00TLFpG75uK1?=
+ =?us-ascii?Q?DJy2ATviDWhqvzlXr3fcT/6+txoXl56gXKt0AU6Q4q4re710y5vYlGY0olbG?=
+ =?us-ascii?Q?/5m2JjMMdbAn32oNCZway/eqYsz5KI76JNnTEV8ZDhihT0hmrJruRSpV+2tQ?=
+ =?us-ascii?Q?ayXBRUvvH/PHEq1w5+maHm/R/AUbLU55i5f8K+MG8xVtXmCJDq/imEtkfMNY?=
+ =?us-ascii?Q?eN5ZofPnhpyIphogtcvLx4q0IhVYub7Xpxm9PtOXB3658cFTXAb1EFoYiEZv?=
+ =?us-ascii?Q?E38s0dIM6ab1K3mBsGvW+iWZh3mpiEHkaCGyrawG0kQGQmdwfM0zODXdaelc?=
+ =?us-ascii?Q?PS9R28V5d4rIHZ/tZ56m2FoZrktZ7IOgCbR4b0ETa0RAJ2z+0lApEEjFjfkZ?=
+ =?us-ascii?Q?uaGfOnJlABR8aweztiKDheTYTI5GNLMicSlq+xp0fuzXAL8IDb3pxH7DLoxi?=
+ =?us-ascii?Q?1R66QbdmweQd/iBA3XPlfM18Wca+PaAbx2vK3PrlN81amdBb7bOLpnbNgZ2j?=
+ =?us-ascii?Q?lHBtoT8wzQHudjejn5Ymw/KZttZFQktfr6veGpwGpqeAMcxlswEupR0HuYd0?=
+ =?us-ascii?Q?aLCzNBa9cxKaJaY44E/fjuBGsjIi8BwdX8NWsK7+eHM4TYt2e6qRe9MpSiTm?=
+ =?us-ascii?Q?kGUEIU76jb0yr+wlbMGTD8ZQgaf0NFUVV6eyrc2fzjIOmNIaBaItojKP16IW?=
+ =?us-ascii?Q?u4+MQgZZ1MtQcjZXpM5f0uVWyfs8D3x0/mftNVUAw7AoUf/xKwoELJeZEho8?=
+ =?us-ascii?Q?FECDgXeH7pBULKS8pQ6n2IO28+0lmzjhe5MmuATru/a1v8EDFL7+fwr0n6bV?=
+ =?us-ascii?Q?xROTPoHoAbqphaG4S5mkkXMmYqhGx9548MrPcGFkXapqgGQA2YZF4qXHswAF?=
+ =?us-ascii?Q?H1Ua5w=3D=3D?=
+X-OriginatorOrg: toradex.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c579e18c-aabe-4089-bb99-08d9bca6693d
+X-MS-Exchange-CrossTenant-AuthSource: ZRAP278MB0642.CHEP278.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Dec 2021 13:01:56.7385
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: d9995866-0d9b-4251-8315-093f062abab4
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: qhd9DjtR+cqGiuSYB2KwKQo2cxMPCY4tB98YhmfCYTiiOritmCCveCPDnTd2CUHFRddXZE0ZORpWhcsxBlzB+3lvAoUn+HkMsmVLniXvyQY=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: ZRAP278MB0192
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Vinicius,
+Perform a PHY reset in phy_init_hw() to ensure that the PHY is working
+after resume. This is required if the PHY was powered down in suspend
+like it is done by the freescale FEC driver in fec_suspend().
 
-thanks a lot - that patch fixed it! Both "normal" shutdown as well as
-ifdown/ifup are working without issues now if CONFIG_PCIE_PTM is
-enabled in the kernel config.
+Link: https://lore.kernel.org/netdev/20211206101326.1022527-1-philippe.schenker@toradex.com/
+Signed-off-by: Francesco Dolcini <francesco.dolcini@toradex.com>
 
-I've done a DSL download/upload speed comparison against my current
-5.14.0-19.2 and did not see any performance differences outside margin
-of error. I currently have no other Linux machine I could use for iperf
-but I will report if I encounter any issues.
+---
 
-As I am not familiar with the kernel development procedure: can you
-give a rough estimate when we may expect this patch in the stable
-branch?
+Philippe: what about something like that? Only compile tested, but I see no reason for this not solving the issue.
 
+Any delay required on the reset can be specified using reset-assert-us/reset-deassert-us.
 
-Thanks again,
-Stefan
+---
+ drivers/net/phy/phy_device.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-
-
-On Fri, 2021-12-10 at 16:41 -0800, Vinicius Costa Gomes wrote:
-> Hi Stefan,
->
-> Stefan Dietrich <roots@gmx.de> writes:
->
-> > Agreed and thanks for the pointers; please see the log files and
-> > .config attached as requested.
-> >
->
-> Thanks for the logs.
->
-> Very interesting that the initialization of the device is fine, so
-> it's
-> something that happens later.
->
-> Can you test the attached patch?
->
-> If the patch works, I would also be interested if you notice any loss
-> of
-> functionality with your NIC. (I wouldn't think so, as far as I know,
-> i225-V models have PTM support but don't have any PTP support).
->
-> > Cheers,
-> > Stefan
-> >
-> >
-> > On Fri, 2021-12-10 at 15:01 +0100, Thorsten Leemhuis wrote:
-> > > On 10.12.21 14:45, Stefan Dietrich wrote:
-> > > > thanks for keeping an eye on the issue. I've sent the files in
-> > > > private
-> > > > because I did not want to spam the mailing lists with them.
-> > > > Please
-> > > > let
-> > > > me know if this is the correct procedure.
->
-> Cheers,
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 74d8e1dc125f..7eab0c054adf 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -1158,7 +1158,8 @@ int phy_init_hw(struct phy_device *phydev)
+ {
+ 	int ret = 0;
+ 
+-	/* Deassert the reset signal */
++	/* phy reset required if the phy was powered down during suspend */
++	phy_device_reset(phydev, 1);
+ 	phy_device_reset(phydev, 0);
+ 
+ 	if (!phydev->drv)
+-- 
+2.25.1
 
