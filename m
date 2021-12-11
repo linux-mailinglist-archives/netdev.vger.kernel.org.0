@@ -2,75 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 904AC4714E5
-	for <lists+netdev@lfdr.de>; Sat, 11 Dec 2021 18:21:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 367F64714F7
+	for <lists+netdev@lfdr.de>; Sat, 11 Dec 2021 18:38:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230351AbhLKRV2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Dec 2021 12:21:28 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:59342 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230343AbhLKRV2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Dec 2021 12:21:28 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 33742B80B27
-        for <netdev@vger.kernel.org>; Sat, 11 Dec 2021 17:21:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FD49C004DD;
-        Sat, 11 Dec 2021 17:21:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1639243285;
-        bh=eBvZ1raDO6HZ/OLuoy9VWN5HvX6hA5r/6uq2awTWMcI=;
-        h=From:To:Cc:Subject:Date:From;
-        b=duQfCOJlcvqTFSFTPPfHRGXHwxXbGNp3sm6iavzylp4QRVPF18EvdHd8c1F6Tuvix
-         cRFuWzYO8KM50oFZ3MypLAzejF6yLO5SABicJq9qIaPJrfJWdWxwk/29wmx+tsrP7c
-         2UD+aw4hV4fvJrMGwki3+48TIfqBCWG99hb29AaWeBrqgCgOgJ4qOmhBYBCFKGvkXl
-         BlOqdaY2zR2RPqVfNQnsqqUaJA+UqEYvkR7rtEeUCIl6FggO6N6dUJn4DYRuxseCnT
-         ANqnkJmePPWgHLu3rzFoFB+G/+K/wpie2hJ1BcSVqp9Brf+gDVZVjAt5Za5N7QbXFX
-         CzqdZgGvaoRxA==
-From:   David Ahern <dsahern@kernel.org>
-To:     netdev@vger.kernel.org
-Cc:     David Ahern <dsahern@kernel.org>,
-        Li Zhijian <lizhijian@fujitsu.com>
-Subject: [PATCH net] selftests: Fix raw socket bind tests with VRF
-Date:   Sat, 11 Dec 2021 10:21:08 -0700
-Message-Id: <20211211172108.74647-1-dsahern@kernel.org>
-X-Mailer: git-send-email 2.24.3 (Apple Git-128)
+        id S229644AbhLKRiM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Dec 2021 12:38:12 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:34497 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229531AbhLKRiL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Dec 2021 12:38:11 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1639244291;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ASqsGdqGwmy6tBt5Un+IbVxTDzM4SfmgbGYRPDU4TV4=;
+        b=WwniTxJeDwPoz7l0oW6EEOL7h0e+FlqB1eyb/Iwunsr2KmiEC2POqHMZJbLPhy8o7WMAE+
+        EiJe3rz81gTIwLZzKUboLHUuGWPdBR0dDrJB1LQ4SzB1QuUNUbFDKdWoZiB0NY15UTzPkH
+        s9oYSDIR9CMzZtSJBt4+X1aVhMk3pfs=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-226-L_n9dKZONQyDt5laJSg9-w-1; Sat, 11 Dec 2021 12:38:10 -0500
+X-MC-Unique: L_n9dKZONQyDt5laJSg9-w-1
+Received: by mail-ed1-f70.google.com with SMTP id m12-20020a056402430c00b003e9f10bbb7dso10680554edc.18
+        for <netdev@vger.kernel.org>; Sat, 11 Dec 2021 09:38:10 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=ASqsGdqGwmy6tBt5Un+IbVxTDzM4SfmgbGYRPDU4TV4=;
+        b=Jnfb//2oTyxBi/inrc8yI3ZbVeE2r8UivLsUadUaivu8EPFG5GU+d6BiVJcECKK1tr
+         bcz7js3vdtqxoE94Yc1orqaxdphJOU7Wo7QV/r0QQE8Qfeny3FploqYhBh+NhTUjs/xW
+         op9EgGh2xXA43ll4DncjDFn7b7byG0isESCpCRKvpkGCge0lROHG0O7ImoCiJnsSzaBO
+         Zx48dzu8z5lOtLPxlJIGw448PotVudeQXx3ARZp6HOeH0k6EEQCscP+AnKrS0O6u4p9u
+         SS3WsoZmTLpdE330zzKwH1EN7Gprr5AEnxyOplaAGfxLUkbYbRYUx3Ho8+S2+DhRJqPk
+         JHBw==
+X-Gm-Message-State: AOAM531G7BIvsmhbw79nUoXc91wKa439qkJi2x55ZzMJYKM/frAjgfaN
+        iGkefUbw42Ck6YIDuF9Q9ru0TZ4c0cHUduixZ8ZegzrTd++AUuAqVWtE4Tb9FWGw+MzaZx4eqp0
+        sIYKHTWMJMq+ZpRbc
+X-Received: by 2002:a17:906:7109:: with SMTP id x9mr31497209ejj.559.1639244287880;
+        Sat, 11 Dec 2021 09:38:07 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzP4HhgDQhu1cxOhOziOXERhExUHGglniiCh42iZ0X5NFreuCF5NHfjkQ+1xm34DkD4VHok9w==
+X-Received: by 2002:a17:906:7109:: with SMTP id x9mr31497114ejj.559.1639244286704;
+        Sat, 11 Dec 2021 09:38:06 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id d18sm3385548edj.23.2021.12.11.09.38.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 11 Dec 2021 09:38:06 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 40EAC180471; Sat, 11 Dec 2021 18:38:05 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, shayagr@amazon.com,
+        john.fastabend@gmail.com, dsahern@kernel.org, brouer@redhat.com,
+        echaudro@redhat.com, jasowang@redhat.com,
+        alexander.duyck@gmail.com, saeed@kernel.org,
+        maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
+        tirthendu.sarkar@intel.com
+Subject: Re: [PATCH v20 bpf-next 00/23] mvneta: introduce XDP multi-buffer
+ support
+In-Reply-To: <cover.1639162845.git.lorenzo@kernel.org>
+References: <cover.1639162845.git.lorenzo@kernel.org>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Sat, 11 Dec 2021 18:38:05 +0100
+Message-ID: <87v8zvujnm.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit referenced below added negative socket bind tests for VRF. The
-socket binds should fail since the address to bind to is in a VRF yet
-the socket is not bound to the VRF or a device within it. Update the
-expected return code to check for 1 (bind failure) so the test passes
-when the bind fails as expected. Add a 'show_hint' comment to explain
-why the bind is expected to fail.
+Lorenzo Bianconi <lorenzo@kernel.org> writes:
 
-Fixes: 75b2b2b3db4c ("selftests: Add ipv4 address bind tests to fcnal-test")
-Reported-by: Li Zhijian <lizhijian@fujitsu.com>
-Signed-off-by: David Ahern <dsahern@kernel.org>
----
- tools/testing/selftests/net/fcnal-test.sh | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+> This series introduce XDP multi-buffer support. The mvneta driver is
+> the first to support these new "non-linear" xdp_{buff,frame}. Reviewers
+> please focus on how these new types of xdp_{buff,frame} packets
+> traverse the different layers and the layout design. It is on purpose
+> that BPF-helpers are kept simple, as we don't want to expose the
+> internal layout to allow later changes.
+>
+> The main idea for the new multi-buffer layout is to reuse the same
+> structure used for non-linear SKB. This rely on the "skb_shared_info"
+> struct at the end of the first buffer to link together subsequent
+> buffers. Keeping the layout compatible with SKBs is also done to ease
+> and speedup creating a SKB from an xdp_{buff,frame}.
+> Converting xdp_frame to SKB and deliver it to the network stack is shown
+> in patch 05/18 (e.g. cpumaps).
+>
+> A multi-buffer bit (mb) has been introduced in the flags field of xdp_{bu=
+ff,frame}
+> structure to notify the bpf/network layer if this is a xdp multi-buffer f=
+rame
+> (mb =3D 1) or not (mb =3D 0).
+> The mb bit will be set by a xdp multi-buffer capable driver only for
+> non-linear frames maintaining the capability to receive linear frames
+> without any extra cost since the skb_shared_info structure at the end
+> of the first buffer will be initialized only if mb is set.
+> Moreover the flags field in xdp_{buff,frame} will be reused even for
+> xdp rx csum offloading in future series.
+>
+> Typical use cases for this series are:
+> - Jumbo-frames
+> - Packet header split (please see Google=E2=80=99s use-case @ NetDevConf =
+0x14, [0])
+> - TSO/GRO for XDP_REDIRECT
+>
+> The three following ebpf helpers (and related selftests) has been introdu=
+ced:
+> - bpf_xdp_load_bytes:
+>   This helper is provided as an easy way to load data from a xdp buffer. =
+It
+>   can be used to load len bytes from offset from the frame associated to
+>   xdp_md, into the buffer pointed by buf.
+> - bpf_xdp_store_bytes:
+>   Store len bytes from buffer buf into the frame associated to xdp_md, at
+>   offset.
+> - bpf_xdp_get_buff_len:
+>   Return the total frame size (linear + paged parts)
+>
+> bpf_xdp_adjust_tail and bpf_xdp_copy helpers have been modified to take i=
+nto
+> account xdp multi-buff frames.
+> Moreover, similar to skb_header_pointer, we introduced bpf_xdp_pointer ut=
+ility
+> routine to return a pointer to a given position in the xdp_buff if the
+> requested area (offset + len) is contained in a contiguous memory area
+> otherwise it must be copied in a bounce buffer provided by the caller run=
+ning
+> bpf_xdp_copy_buf().
+>
+> BPF_F_XDP_MB flag for bpf_attr has been introduced to notify the kernel t=
+he
+> eBPF program fully support xdp multi-buffer.
+> SEC("xdp_mb/"), SEC_DEF("xdp_devmap_mb/") and SEC_DEF("xdp_cpumap_mb/" ha=
+ve been
+> introduced to declare xdp multi-buffer support.
+> The NIC driver is expected to reject an eBPF program if it is running in =
+XDP
+> multi-buffer mode and the program does not support XDP multi-buffer.
+> In the same way it is not possible to mix xdp multi-buffer and xdp legacy
+> programs in a CPUMAP/DEVMAP or tailcall a xdp multi-buffer/legacy program=
+ from
+> a legacy/multi-buff one.
+>
+> More info about the main idea behind this approach can be found here
+> [1][2].
 
-diff --git a/tools/testing/selftests/net/fcnal-test.sh b/tools/testing/selftests/net/fcnal-test.sh
-index d0c45023b4d4..25bba4557a8e 100755
---- a/tools/testing/selftests/net/fcnal-test.sh
-+++ b/tools/testing/selftests/net/fcnal-test.sh
-@@ -1825,8 +1825,9 @@ ipv4_addr_bind_vrf()
- 	for a in ${NSA_IP} ${VRF_IP}
- 	do
- 		log_start
-+		show_hint "Socket not bound to VRF, but address is in VRF"
- 		run_cmd nettest -s -R -P icmp -l ${a} -b
--		log_test_addr ${a} $? 0 "Raw socket bind to local address"
-+		log_test_addr ${a} $? 1 "Raw socket bind to local address"
- 
- 		log_start
- 		run_cmd nettest -s -R -P icmp -l ${a} -I ${NSA_DEV} -b
--- 
-2.25.1
+Great to see this converging; as John said, thanks for sticking with it!
+Nice round number on the series version as well ;)
+
+For the series:
+
+Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
 
