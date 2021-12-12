@@ -2,72 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E098471B93
-	for <lists+netdev@lfdr.de>; Sun, 12 Dec 2021 17:30:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B5473471BD5
+	for <lists+netdev@lfdr.de>; Sun, 12 Dec 2021 18:16:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231667AbhLLQaP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Dec 2021 11:30:15 -0500
-Received: from sin.source.kernel.org ([145.40.73.55]:56850 "EHLO
-        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231648AbhLLQaN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Dec 2021 11:30:13 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id D3D21CE0BA7
-        for <netdev@vger.kernel.org>; Sun, 12 Dec 2021 16:30:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id C942BC341C5;
-        Sun, 12 Dec 2021 16:30:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1639326609;
-        bh=6YlCj+gwuHNzmFFSEsY3IZkSegOlalE2g0OzQ6BoRo4=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=sQSkeHuIWWoLSo6a8wirDzPwVDYJiPdWTwAUDxDGytM6cNRvkaevH48JCabL2ZDUQ
-         LxqkjMEx04UUNFLkOAhS1pzYi33X9nhgdx6OeAogSVjTAnzTgXJR+7Sp5KjYjioGm/
-         I0W25ZHwqKDMbzGTScbGS1jHcm/Kq39F0GZf+DtBSmR4WmwTBffsAT+FTwSgLZSnlv
-         wZ5Ue4EpuCdbnN4dV3Kp7mD/Spsgip5LetON6nKlLthZ8dZ2LmaM8wko/MuTWA9QTD
-         5BN2xJoBaH0DneVxHzsb9Y8W+drC2WDcG5nLCx8EYiOj6CDiXGXhVCz28d6wU2UEyF
-         Kf3ZeIBJeymfg==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id AAFB960BD0;
-        Sun, 12 Dec 2021 16:30:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S230386AbhLLRQG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Dec 2021 12:16:06 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:51472 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229787AbhLLRQG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 12 Dec 2021 12:16:06 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=1wo9ue0IPBBD9tqcmN+31xcYEpmU6Z8Yl7/UZXFocCs=; b=LOrbySGP6a7jKSBcFzqy3JImEF
+        IUvqRIfzzf381LtUoQiW5swFTNAjBg61uXgIfA1xNKHx8osJ+48xGhAu2sUIYY2gbEOUk7dc543iM
+        B0k8uazBifJugzylTKLVuG19KxjODtIO71PGmSNtLM5qnyq0ENE+3sh7UG9eI0RLXKas=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mwSRx-00GKjU-CP; Sun, 12 Dec 2021 18:15:49 +0100
+Date:   Sun, 12 Dec 2021 18:15:49 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Joseph CHANG <josright123@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, joseph_chang@davicom.com.tw,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4, 0/2] ADD DM9051 ETHERNET DRIVER
+Message-ID: <YbYuRcrW6QdIkzmM@lunn.ch>
+References: <20211212104604.20334-1-josright123@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] selftests: Fix raw socket bind tests with VRF
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163932660969.2571.18307490990576517365.git-patchwork-notify@kernel.org>
-Date:   Sun, 12 Dec 2021 16:30:09 +0000
-References: <20211211172108.74647-1-dsahern@kernel.org>
-In-Reply-To: <20211211172108.74647-1-dsahern@kernel.org>
-To:     David Ahern <dsahern@kernel.org>
-Cc:     netdev@vger.kernel.org, lizhijian@fujitsu.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211212104604.20334-1-josright123@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Sun, Dec 12, 2021 at 06:46:02PM +0800, Joseph CHANG wrote:
+> DM9051 is a spi interface ethernet controller chip
+> Fewer connect pins to CPU compare to DM9000
+ 
+Please include in the cover letter what has changed since the previous
+version.
 
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
+I see you have not removed the wrappers, nor swapped to phylib.
 
-On Sat, 11 Dec 2021 10:21:08 -0700 you wrote:
-> Commit referenced below added negative socket bind tests for VRF. The
-> socket binds should fail since the address to bind to is in a VRF yet
-> the socket is not bound to the VRF or a device within it. Update the
-> expected return code to check for 1 (bind failure) so the test passes
-> when the bind fails as expected. Add a 'show_hint' comment to explain
-> why the bind is expected to fail.
-> 
-> [...]
-
-Here is the summary with links:
-  - [net] selftests: Fix raw socket bind tests with VRF
-    https://git.kernel.org/netdev/net/c/0f108ae44520
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+  Andrew
