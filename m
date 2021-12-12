@@ -2,80 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BD297471B78
-	for <lists+netdev@lfdr.de>; Sun, 12 Dec 2021 17:02:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C386471B8C
+	for <lists+netdev@lfdr.de>; Sun, 12 Dec 2021 17:23:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231565AbhLLQAR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Dec 2021 11:00:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33506 "EHLO
+        id S230320AbhLLQXE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Dec 2021 11:23:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231533AbhLLQAP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Dec 2021 11:00:15 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D9D8C061714
-        for <netdev@vger.kernel.org>; Sun, 12 Dec 2021 08:00:14 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B8975B80D23
-        for <netdev@vger.kernel.org>; Sun, 12 Dec 2021 16:00:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 4C380C341CA;
-        Sun, 12 Dec 2021 16:00:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1639324811;
-        bh=97cThCaxpNwoAB2q2V9Hs8UMTYi0P3zOkKvjAh0/P6U=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Wck28GcCxhtDfyE78ELxQ+y0239icxCEmotwOIe3EIEm/FOA3cSxxQCWpT+FihQBy
-         KoUzzf6p4KfZOvThYR4nizVBSEQzxCgRErB/SU9+IpO5om1/Tbm9pkdcv0o0z9bbO6
-         k/3Ush+hd4P/ta9QY+7eWbVoJvOWizwT6oU0VmU4+rsGyOqioVeFSgaMka4JFsq1YA
-         VqGhNqTT9j0DCPdxDUoHdoKkTkckJ6nTyKmbZuVQME7NRBfkDnCuZME3OlYTyEgT3E
-         RIOlBhAX4JyIbaqF+UjtBa+JUbXbmENcDpemJiYODYhPWvHh24yosrB4LEdn3kinqU
-         ztf6H4O50m6xg==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 1F9EE60C73;
-        Sun, 12 Dec 2021 16:00:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229648AbhLLQXD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Dec 2021 11:23:03 -0500
+Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46B27C061714
+        for <netdev@vger.kernel.org>; Sun, 12 Dec 2021 08:23:03 -0800 (PST)
+Received: by mail-lf1-x142.google.com with SMTP id k37so26832475lfv.3
+        for <netdev@vger.kernel.org>; Sun, 12 Dec 2021 08:23:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:sender:from:date:message-id:subject:to;
+        bh=FqJ8tNx4gvdKJfhkVuiNbKK59BBXOXVm0m28Sw7UZys=;
+        b=dsfajSWkA0QmjxXAGcEN1jfUHgvHEZ0mv6u4rPh8MY8lR6PjZzVHbdwi0q9GFZ9bT/
+         RKbhhd8jxwMuYuWaMoJqr71AFQUTbGrU/jAu2Vp9q9jo1yykje9cf4iMOTL6lRO0gi59
+         L7D92mvoiGH7lKBhg7FVmbTPBODBTU49vyo1pSZ34q6TqknVoibmJN8NKPwBeEoy2ko4
+         0Pm3IuTANeZpJlI3E0r3eVvY64TA1vYdZseiDRJBPPrFs/91/gR1qbuSTHLYV3NOk2c9
+         Xsk45CMIxQ3nG9qWy6kagcUIlKRWt/wynRZK3krCwjbQAMJDZ3cMHgsObv0JuRSSosO+
+         EDeA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:sender:from:date
+         :message-id:subject:to;
+        bh=FqJ8tNx4gvdKJfhkVuiNbKK59BBXOXVm0m28Sw7UZys=;
+        b=uEqlJy5ZdfMKcD55II6CwIUKZi2QCaIl/XB9WnkbTfVSubGcxldE5b2vwyH2De/tk+
+         Nwpr20Ug5eW3x91Aat1uBPSnWll1IRgV0qY/qskXtHntwAvG5EJuJyIklIlY5ELNAoJp
+         pSZAAPzzEkkKerCsDwBrfmykpTqvLOKx3cNnVRN9hgiLdVArTXkG3Obcym7XlgIIPtEu
+         zxAy8D3llslXqO6LK3heetKMyW5jep6stf6iJEXK9nc/qCtRrJqMSJc1rqdatDu1o3A+
+         tlOfOHap7H9PeeJUFPeTACc0gNICOomlKaaTASLGy8E7JzOkLqi/LqLHsXLtCPjJQp9T
+         pvGA==
+X-Gm-Message-State: AOAM532nx4xRVfASF31CgsL47C2fGFaRtTIROp0QCnq+uYUbD8kZ150G
+        LVhiKLEKjgxTyBkMyKKZtBkw3p4q3jyaafW7R9elmIL9mE+vHOaWXi2aeO9v
+X-Google-Smtp-Source: ABdhPJw2L60ANLANs3jlRyeauvjLHfsNitxTnpk1gG4IlwQnIWRyv4IyjJaovmx+B3kcQyr1Aj5+DhIoTZ+9yBzFtsw=
+X-Received: by 2002:a19:fc0a:: with SMTP id a10mr24382035lfi.507.1639324856333;
+ Sun, 12 Dec 2021 08:00:56 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: dsa: mv88e6xxx: Add tx fwd offload PVT on
- intermediate devices
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163932481112.23253.7619803131813967578.git-patchwork-notify@kernel.org>
-Date:   Sun, 12 Dec 2021 16:00:11 +0000
-References: <20211209222424.124791-1-tobias@waldekranz.com>
-In-Reply-To: <20211209222424.124791-1-tobias@waldekranz.com>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
-        netdev@vger.kernel.org
+Reply-To: ouedibepaul@yandex.com
+Sender: abnerabdeel123@gmail.com
+Received: by 2002:a2e:998b:0:0:0:0:0 with HTTP; Sun, 12 Dec 2021 08:00:55
+ -0800 (PST)
+From:   Ouedibe Paul <ouedibepa1@gmail.com>
+Date:   Sun, 12 Dec 2021 16:00:55 +0000
+X-Google-Sender-Auth: aLTue48GlO0Ymyb9PaxohAu4zUQ
+Message-ID: <CAGcb3BTDDV=cxoqeRNdppUE5J-16wzTTxukyLQwpq-Q4s-RmSw@mail.gmail.com>
+Subject: Hello.......!!
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Greetings to you!
 
-This patch was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+I am Mr.Ouedibe Paul, the Audit and Account Manager (A.D.B)Bank in
+Ouagadougou Burkina Faso, West Africa
 
-On Thu,  9 Dec 2021 23:24:24 +0100 you wrote:
-> In a typical mv88e6xxx switch tree like this:
-> 
->   CPU
->    |    .----.
-> .--0--. | .--0--.
-> | sw0 | | | sw1 |
-> '-1-2-' | '-1-2-'
->     '---'
-> 
-> [...]
+I have a business transaction for you, In my department i discovered
+an abandoned Sum of US$10,2 Million Dollars,
+In an account that belongs to one of our late foreign customer who
+died in plane crash with his family member years ago.
+ever Since he died, Nobody to claim the left over balance in the account.
+It is therefore upon this discovery that I decided to seek your
+assistance to transfer the funds to your bank account.
 
-Here is the summary with links:
-  - [net-next] net: dsa: mv88e6xxx: Add tx fwd offload PVT on intermediate devices
-    https://git.kernel.org/netdev/net-next/c/e0068620e5e1
+If you accept i would give you the guide lines of how we can achieve
+this transfer of the balance $10,2 Million Dollars to your account.
+the fund will be share 50-50%. by both of us, I await your urgent response.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Best Regards,
+Mr.Ouedibe Paul.
