@@ -2,78 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A257B471B79
-	for <lists+netdev@lfdr.de>; Sun, 12 Dec 2021 17:05:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 16EDB471B92
+	for <lists+netdev@lfdr.de>; Sun, 12 Dec 2021 17:30:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231572AbhLLQFP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Dec 2021 11:05:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34572 "EHLO
+        id S231666AbhLLQaO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Dec 2021 11:30:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231533AbhLLQFO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Dec 2021 11:05:14 -0500
-Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17D4CC061714
-        for <netdev@vger.kernel.org>; Sun, 12 Dec 2021 08:05:14 -0800 (PST)
-Received: by mail-lj1-x22b.google.com with SMTP id 13so20406830ljj.11
-        for <netdev@vger.kernel.org>; Sun, 12 Dec 2021 08:05:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:sender:from:date:message-id:subject:to;
-        bh=FqJ8tNx4gvdKJfhkVuiNbKK59BBXOXVm0m28Sw7UZys=;
-        b=IScbkmL6pKGYjXk8rkfg+r6vbvDDS4wa+fSpfylebZCYfC4CWuKcIgunad8hqUj830
-         HieUUCLAEDdc3tdgHYCrDBQRdR/KgEL0KJMsdTN3abXl5+Sazf3TfWmZuzGXqIKv9+UM
-         sJgGOHD0eZmVbNBj36EIammEcWoeCi+MdZGaczJk4w5H3daLD7EUbZbl67E0pUJ0XNzx
-         VDQB8Bx5+2ZctI+eLTGPq76Yqofy9nw51aFqNC3YL3C9YD8ljKUTuaNIHT/6DMCrYwtj
-         Nr9FLH9HrOu6jK16+jSO+8ko9/xUKU5gapF5D/KJNKvF62MMLLxFEZLZ3Zm6Zl2rz/fM
-         JDqg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:sender:from:date
-         :message-id:subject:to;
-        bh=FqJ8tNx4gvdKJfhkVuiNbKK59BBXOXVm0m28Sw7UZys=;
-        b=JR88jMI1WPgZykrLtnFhrxV+sGPWfTFJgpFged12IL4x01pB9nIf3rTs+ix78wvdV2
-         ewZ9ZDWy1l0XdS5fKtOBfL0uWAwOwJVsJH+baAOQIOAk8Vi4vzoQ5YRw5p6Bet7OysL6
-         vhCYhiMNdxI7PvaqCdAPQ+VwrKmhjRStX+trN53196Pw7BFQmqwnyEeyh+gGqBiw17O9
-         gmWnwnh8oBYmrUupmvZy7REr8p7tDXmUEHNWsq9//m+m+xWIL0Cv+XoH31t/XTP0mwhg
-         f4xDA4uYNOcLsDOoECy00vNr+MtSB43nng/CFcHy1MQEDlkr1/DxHSB9WcKv8j085TKL
-         oCTA==
-X-Gm-Message-State: AOAM533qITM0ntG0If4tG1Krz0zA4sYgg1V1NHLF1ry/ze2r97jBTVq7
-        6st+idhC+URx3ssZuCk8PKcxkg95y3zVbG884Pg=
-X-Google-Smtp-Source: ABdhPJwqn9kl4TQ06j8a5mqz2NVK4GmAbJ/drOEatsyn8V2Atx4n+bHihkA7gKm4CVjp8AQfMc7B7Vebv+wEHcECIUY=
-X-Received: by 2002:a2e:b712:: with SMTP id j18mr24229311ljo.523.1639325111785;
- Sun, 12 Dec 2021 08:05:11 -0800 (PST)
+        with ESMTP id S231649AbhLLQaM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Dec 2021 11:30:12 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C53FC061714
+        for <netdev@vger.kernel.org>; Sun, 12 Dec 2021 08:30:12 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3CB4BB80D4A
+        for <netdev@vger.kernel.org>; Sun, 12 Dec 2021 16:30:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E0086C341CC;
+        Sun, 12 Dec 2021 16:30:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1639326609;
+        bh=nM4fj8ZNhC9BUEtWNd98L/cua/SsVgbx+VB7imxz95U=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Y1Tbg1MjmeGmpOusGnpwmkjANisMlg3EVGpN4L4wciXpe8+I+gVr5Y+QDfR6oaH55
+         4ijbstHUYtN25kzzLtp6g5ROjPZt6P5DuE5eV3+F8Fk/hj2KsHl2QsjvsQj0vndz7n
+         y2p1LbJUYeTk+CgU4YuMonVsUtWYh4P6kVDU7ePNWjynhCTSBNePKy9u0TWuumEG9x
+         +FI2AdVBg1Epr0bc5MC885uw4qd5zBYCoLrxA7j2oeselAYFDnThndLnG7hida1LyD
+         vPEN0VCqRSbMJQTOZ4q0tNeb30hmHWnrTHjchkeNVCJJ5lotp5RkB/DIT0RQdZ4D7F
+         9sPaETMsZhchA==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id C65EB60C73;
+        Sun, 12 Dec 2021 16:30:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Reply-To: ouedibepaul@yandex.com
-Sender: mrdantata42@gmail.com
-Received: by 2002:a05:6504:14d1:0:0:0:0 with HTTP; Sun, 12 Dec 2021 08:05:11
- -0800 (PST)
-From:   Ouedibe Paul <ouedibepa1@gmail.com>
-Date:   Sun, 12 Dec 2021 16:05:11 +0000
-X-Google-Sender-Auth: NHhr-9CNsjRqTTfjh7hjaM8JKcE
-Message-ID: <CAJiv8yx4xTdt004XyoC7P4g4gNKijoYs3mpuHh0-yNPzHfyxBg@mail.gmail.com>
-Subject: Greetings to you....!!
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] selftests: Fix IPv6 address bind tests
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163932660980.2571.2974512925430864063.git-patchwork-notify@kernel.org>
+Date:   Sun, 12 Dec 2021 16:30:09 +0000
+References: <20211211182616.74865-1-dsahern@kernel.org>
+In-Reply-To: <20211211182616.74865-1-dsahern@kernel.org>
+To:     David Ahern <dsahern@kernel.org>
+Cc:     netdev@vger.kernel.org, lizhijian@fujitsu.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Greetings to you!
+Hello:
 
-I am Mr.Ouedibe Paul, the Audit and Account Manager (A.D.B)Bank in
-Ouagadougou Burkina Faso, West Africa
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-I have a business transaction for you, In my department i discovered
-an abandoned Sum of US$10,2 Million Dollars,
-In an account that belongs to one of our late foreign customer who
-died in plane crash with his family member years ago.
-ever Since he died, Nobody to claim the left over balance in the account.
-It is therefore upon this discovery that I decided to seek your
-assistance to transfer the funds to your bank account.
+On Sat, 11 Dec 2021 11:26:16 -0700 you wrote:
+> IPv6 allows binding a socket to a device then binding to an address
+> not on the device (__inet6_bind -> ipv6_chk_addr with strict flag
+> not set). Update the bind tests to reflect legacy behavior.
+> 
+> Fixes: 34d0302ab861 ("selftests: Add ipv6 address bind tests to fcnal-test")
+> Reported-by: Li Zhijian <lizhijian@fujitsu.com>
+> Signed-off-by: David Ahern <dsahern@kernel.org>
+> 
+> [...]
 
-If you accept i would give you the guide lines of how we can achieve
-this transfer of the balance $10,2 Million Dollars to your account.
-the fund will be share 50-50%. by both of us, I await your urgent response.
+Here is the summary with links:
+  - [net] selftests: Fix IPv6 address bind tests
+    https://git.kernel.org/netdev/net/c/28a2686c185e
 
-Best Regards,
-Mr.Ouedibe Paul.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
