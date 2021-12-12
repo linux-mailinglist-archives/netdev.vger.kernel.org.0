@@ -2,122 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 94843471939
-	for <lists+netdev@lfdr.de>; Sun, 12 Dec 2021 09:09:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E863B47193B
+	for <lists+netdev@lfdr.de>; Sun, 12 Dec 2021 09:10:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229739AbhLLIJ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Dec 2021 03:09:26 -0500
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:50485 "EHLO
-        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229641AbhLLIJ0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Dec 2021 03:09:26 -0500
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.nyi.internal (Postfix) with ESMTP id C1CFD5C0125;
-        Sun, 12 Dec 2021 03:09:25 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Sun, 12 Dec 2021 03:09:25 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=hXQuDG
-        lzjy/3xUxrf64ysd1cj+5C6g7s7wwybJFOTOQ=; b=cG03nb9AYQKJ+gVeiKjbwo
-        v1SZfEDkI/SQVeZhGQOV9U+8Y8i3gT+hisASpF1JuKks+ZkP3Ue7XdY7BoX81JOD
-        OVQrjeMJ6BCHFWblm6qG9h4rs8XNI7i9BnG1/s/Kwuhqrox5uMFz4hCii79Ifb/C
-        1FfmTfyPvTbJHFa9QPSQ1SVdwoeEZSyGpVDHY4q9tHmvyU6of+fyKjQpeJ4Df+8t
-        Tuft9ied8EqNzuYHeCInzYt1S5CzPCel2dYbMpMhMNnHWKTn+6mnzppnqwvOuBxY
-        bSttQsb+zyvgqvqusaPtlfgtyG2bdxq2h2R1lIXAhaMJVB0auKoMNbH/g/HPN4BA
-        ==
-X-ME-Sender: <xms:Na61YT1WFM2Ocx2DOKnBK1qFGvJIpW2SYB5u9Dd3YHRKH7URSey-Ig>
-    <xme:Na61YSGiVUXaNyQ2RWFvcoDrJiTruwb9TGNVEeoLUKqE1jnISbicEk3k9kJljh0hg
-    JsnkNTYKSKX4xM>
-X-ME-Received: <xmr:Na61YT4G7ID_yek9tJIyCtAiQycNoWHTSdry8TPkGjHNh2bcjbleIoxZ7j9i>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvuddrkeehgdduudduucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
-    gvrhhnpeffhfehveefleejlefflefhleehhffggeejjeegtdejhfdthfegueeghfduvedv
-    geenucffohhmrghinhepghhithhhuhgsrdgtohhmpdhshiiisghothdrmhgupdhnohhtrd
-    hnvghtnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhep
-    ihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:Na61YY3IJbzB_60jkQSQ0UHb5EphkgzlhyWOHjqeRuaEc_0icmbmNw>
-    <xmx:Na61YWHWhHIJleDhoF0bPYbhrOo7604DWV4VjjVNAerLt79Q5C4MPQ>
-    <xmx:Na61YZ8JfVtbUWmx8Gdl7D8oXKnkBAdsp_2lxSphkqT4w6qhqEtJiw>
-    <xmx:Na61YbTuFTx7D3Hk4jouQw9hyhVWNMZ0eceLrASWH5GksHldSOMP3A>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
- 12 Dec 2021 03:09:24 -0500 (EST)
-Date:   Sun, 12 Dec 2021 10:09:22 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
-        syzbot+d4b9a2851cc3ce998741@syzkaller.appspotmail.com,
-        Thomas Graf <tgraf@suug.ch>
-Subject: Re: [PATCH net] ipv4: Check attribute length for RTA_GATEWAY
-Message-ID: <YbWuMj3moQ9uShMc@shredder>
-References: <20211211162148.74404-1-dsahern@kernel.org>
- <YbT4ZJ+bSc/qeT5A@shredder>
- <73de092c-e6d0-72d6-3547-b4217076f6f9@gmail.com>
+        id S229796AbhLLIKp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Dec 2021 03:10:45 -0500
+Received: from smtpbg587.qq.com ([113.96.223.105]:50980 "EHLO smtpbg587.qq.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229772AbhLLIKp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 12 Dec 2021 03:10:45 -0500
+X-QQ-mid: bizesmtp38t1639296604t6oikcmj
+Received: from localhost.localdomain (unknown [182.132.179.213])
+        by esmtp6.qq.com (ESMTP) with 
+        id ; Sun, 12 Dec 2021 16:10:03 +0800 (CST)
+X-QQ-SSF: 01000000002000D0I000B00A0000000
+X-QQ-FEAT: hR9GyqeohShUxdW3mu+7fFAfGUyr+SlNqYGhRsPHYYX+MvQr7svU16nMkacwm
+        UX4FTtuY62WwOpkG5weoNDC86skft94YO6j4y8r9s1FfzkqIVyb4/iBY+S9OtDXqcOhNV5Q
+        i43V+gGfdKfIZby9LjvPL5JklvmivqFs4z/iP4Dfj2Q1w1MOq7QabNV1HUzD3/EngasyYX7
+        KxVdzHKSWQMOSTkgv33/47INDZvLERMUt/pHlGOa9Nkys8gkKwlhhYIfOl1r6lCVhUQHoXJ
+        ku4lnYxoAaqzjNjBGLV30bm4fjEVeaCdfOY+D6IavdFpxs6UNWALkoJ005v09N8gJyRGpD7
+        bkabWgBe4G4vnzPBHMSyMLQBHOsAbG4PxGFVRcKxX/c1GnwDCM=
+X-QQ-GoodBg: 0
+From:   Jason Wang <wangborong@cdjrlc.com>
+To:     kuba@kernel.org
+Cc:     davem@davemloft.net, jesse.brandeburg@intel.com,
+        anthony.l.nguyen@intel.com, intel-wired-lan@lists.osuosl.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jason Wang <wangborong@cdjrlc.com>
+Subject: [PATCH] iavf: remove an unneeded variable
+Date:   Sun, 12 Dec 2021 16:10:01 +0800
+Message-Id: <20211212081001.368126-1-wangborong@cdjrlc.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <73de092c-e6d0-72d6-3547-b4217076f6f9@gmail.com>
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam3
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Dec 11, 2021 at 03:13:02PM -0700, David Ahern wrote:
-> On 12/11/21 12:13 PM, Ido Schimmel wrote:
-> > On Sat, Dec 11, 2021 at 09:21:48AM -0700, David Ahern wrote:
-> >> syzbot reported uninit-value:
-> >> ============================================================
-> >>   BUG: KMSAN: uninit-value in fib_get_nhs+0xac4/0x1f80
-> >>   net/ipv4/fib_semantics.c:708
-> >>    fib_get_nhs+0xac4/0x1f80 net/ipv4/fib_semantics.c:708
-> >>    fib_create_info+0x2411/0x4870 net/ipv4/fib_semantics.c:1453
-> >>    fib_table_insert+0x45c/0x3a10 net/ipv4/fib_trie.c:1224
-> >>    inet_rtm_newroute+0x289/0x420 net/ipv4/fib_frontend.c:886
-> >>
-> >> Add length checking before using the attribute.
-> >>
-> >> Fixes: 4e902c57417c ("[IPv4]: FIB configuration using struct fib_config")
-> >> Reported-by: syzbot+d4b9a2851cc3ce998741@syzkaller.appspotmail.com
-> >> Signed-off-by: David Ahern <dsahern@kernel.org>
-> >> Cc: Thomas Graf <tgraf@suug.ch>
-> >> ---
-> >> I do not have KMSAN setup, so this is based on a code analysis. Before
-> > 
-> > Was using this in the past:
-> > https://github.com/google/syzkaller/blob/master/docs/syzbot.md#kmsan-bugs
-> 
-> thanks for the pointer. I am a bit hardware challenged at the moment for
-> out of tree features.
-> 
-> > 
-> >> 4e902c57417c fib_get_attr32 was checking the attribute length; the
-> >> switch to nla_get_u32 does not.
-> >>
-> >>  net/ipv4/fib_semantics.c | 4 ++++
-> >>  1 file changed, 4 insertions(+)
-> >>
-> >> diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
-> >> index 3cad543dc747..930843ba3b17 100644
-> >> --- a/net/ipv4/fib_semantics.c
-> >> +++ b/net/ipv4/fib_semantics.c
-> >> @@ -704,6 +704,10 @@ static int fib_get_nhs(struct fib_info *fi, struct rtnexthop *rtnh,
-> >>  				return -EINVAL;
-> >>  			}
-> >>  			if (nla) {
-> >> +				if (nla_len(nla) < sizeof(__be32)) {
-> >> +					NL_SET_ERR_MSG(extack, "Invalid IPv4 address in RTA_GATEWAY");
-> >> +					return -EINVAL;
-> >> +				}
-> > 
-> > Isn't the problem more general than that? It seems that there is no
-> > minimum length validation to any of the attributes inside RTA_MULTIPATH.
-> > Except maybe RTA_VIA
-> > 
-> 
-> A follow up commit is needed for RTA_FLOW.
+The variable `ret_code' used for returning is never changed in function
+`iavf_shutdown_adminq'. So that it can be removed and just return its
+initial value 0 at the end of `iavf_shutdown_adminq' function.
 
-The same problem seems to exists in the delete path and IPv6. See
-fib_nh_match() and ip6_route_multipath_add(), for example.
+Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
+---
+ drivers/net/ethernet/intel/iavf/iavf_adminq.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/iavf/iavf_adminq.c b/drivers/net/ethernet/intel/iavf/iavf_adminq.c
+index 9fa3fa99b4c2..cd4e6a22d0f9 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf_adminq.c
++++ b/drivers/net/ethernet/intel/iavf/iavf_adminq.c
+@@ -551,15 +551,13 @@ enum iavf_status iavf_init_adminq(struct iavf_hw *hw)
+  **/
+ enum iavf_status iavf_shutdown_adminq(struct iavf_hw *hw)
+ {
+-	enum iavf_status ret_code = 0;
+-
+ 	if (iavf_check_asq_alive(hw))
+ 		iavf_aq_queue_shutdown(hw, true);
+ 
+ 	iavf_shutdown_asq(hw);
+ 	iavf_shutdown_arq(hw);
+ 
+-	return ret_code;
++	return 0;
+ }
+ 
+ /**
+-- 
+2.34.1
+
