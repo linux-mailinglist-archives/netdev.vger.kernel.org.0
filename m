@@ -2,86 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1501A4717DA
+	by mail.lfdr.de (Postfix) with ESMTP id F20274717DD
 	for <lists+netdev@lfdr.de>; Sun, 12 Dec 2021 03:44:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232592AbhLLCmY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Dec 2021 21:42:24 -0500
-Received: from relay036.a.hostedemail.com ([64.99.140.36]:9897 "EHLO
-        relay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S232495AbhLLCmY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Dec 2021 21:42:24 -0500
-Received: from omf18.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay09.hostedemail.com (Postfix) with ESMTP id 7A0002234B;
-        Sun, 12 Dec 2021 02:42:22 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf18.hostedemail.com (Postfix) with ESMTPA id 02B2F37;
-        Sun, 12 Dec 2021 02:42:20 +0000 (UTC)
-Message-ID: <e7eeecfb1c967336944f0941900a9052bcce279e.camel@perches.com>
-Subject: Re: [PATCH] net: bcmgenet: Fix NULL vs IS_ERR() checking
-From:   Joe Perches <joe@perches.com>
-To:     Miaoqian Lin <linmq006@gmail.com>,
-        Dan Carpenter <error27@gmail.com>
-Cc:     Doug Berger <opendmb@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        id S232611AbhLLCoI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Dec 2021 21:44:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58858 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232495AbhLLCoI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Dec 2021 21:44:08 -0500
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41CAFC061714;
+        Sat, 11 Dec 2021 18:44:08 -0800 (PST)
+Received: by mail-pj1-x1030.google.com with SMTP id v23so9464591pjr.5;
+        Sat, 11 Dec 2021 18:44:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=r5m+EB93vaUnLwMUHnlU8mXWbcAF+nVW77ZhZ96ER7U=;
+        b=DSyCguhqkb8oz1XCkBGhoDf8P5aqE+ZBrQcOvNTsLYDoTVi2xt8E596svg1mcps4dn
+         oxUi0NOY2nnDN1tF7QmGbSU3wq326zYvxDulgE57j9skOF23yU9yKGOpy/cY0wXcd1tH
+         faW8mHjJMw/vEXwlhQe/DUsdGcYgPoGtWcaqHIQzBv4HCfG6rbk4unjxzH4FIt8gjKoz
+         MMGne37nnjkql/8bYBDBk/7aeR29lvPzL/ldbQGiRuPTCHNKncZYoPyUdWpLeOiTFDHB
+         9JBiBZ6FNZTGynNOMuAKq1suDn/AfOQUkN8DvIGToY2cxRdhA44mp6OSx2fkD5ytkLxd
+         y4Xg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=r5m+EB93vaUnLwMUHnlU8mXWbcAF+nVW77ZhZ96ER7U=;
+        b=IZq1v5BNKLcYqrpa0ZCz0BrGdL5swrO3QPxEK4d4532IUeV28Tl+ze0F+JKT2zCYrK
+         9Suji3xzy2UWFKLVo/D1d6yHBzok7IFpeJliP1y8cY3/7fpTQmpIrPcZO9lr/XsCj+PT
+         02Ltkmh7O58SaKv12mtchXFgCbTTFqtP7+NMov8WlrU5toe4uH6FkuHIxLAMvviim7d/
+         zbjJR/376dnP3wnMgVEH/rSFLDQibYLXNoYsXAZUSC6xK1m8lJEtNOCwlg0ij72t4BJX
+         gTLZblYzXHzLsPRdz4JR+84mZjX00f2VveAUBo2D4Td+DgpfpOWf3MY4hJ793O2uY1I1
+         QTZA==
+X-Gm-Message-State: AOAM533Mk9/F0B7DpB6b0HFauyfEmyUhHtTfZEhPo8XsCiy20n88fQK8
+        UkiFBPOX/jKMTPs3z/pfyyI2zpuZP4RtCNWTOf0=
+X-Google-Smtp-Source: ABdhPJyoirSOfqP/6kVZWn0ufFNfUcpKg5O1F6xqWu4uBnUkriu1hoQoIj4qHWZod5znAWv4LeojU2bq3+q1+zfgdr4=
+X-Received: by 2002:a17:902:d491:b0:142:892d:a89 with SMTP id
+ c17-20020a170902d49100b00142892d0a89mr84276618plg.20.1639277047729; Sat, 11
+ Dec 2021 18:44:07 -0800 (PST)
+MIME-Version: 1.0
+References: <20211211184143.142003-1-toke@redhat.com> <20211211184143.142003-7-toke@redhat.com>
+In-Reply-To: <20211211184143.142003-7-toke@redhat.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Sat, 11 Dec 2021 18:43:56 -0800
+Message-ID: <CAADnVQJYfyHs41H1x-1wR5WVSX+3ju69XMUQ4id5+1DLkTVDkg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 6/8] bpf: Add XDP_REDIRECT support to XDP for bpf_prog_run()
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Sat, 11 Dec 2021 18:42:19 -0800
-In-Reply-To: <20211211140154.23613-1-linmq006@gmail.com>
-References: <20211211140154.23613-1-linmq006@gmail.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.4-1ubuntu2 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Rspamd-Queue-Id: 02B2F37
-X-Spam-Status: No, score=-3.04
-X-Stat-Signature: rtx4mxyg7rrt6c6e4terzb84xmjnc1fm
-X-Rspamd-Server: rspamout08
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX19V+2w4H3z8/tKHt6v8o/V7BtPfcoyla5g=
-X-HE-Tag: 1639276940-116653
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 2021-12-11 at 14:01 +0000, Miaoqian Lin wrote:
-> The phy_attach() function does not return NULL. It returns error pointers.
+On Sat, Dec 11, 2021 at 10:43 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@red=
+hat.com> wrote:
+> +
+> +static void bpf_test_run_xdp_teardown(struct bpf_test_timer *t)
+> +{
+> +       struct xdp_mem_info mem =3D {
+> +               .id =3D t->xdp.pp->xdp_mem_id,
+> +               .type =3D MEM_TYPE_PAGE_POOL,
+> +       };
 
-Perhaps all the functions that return error pointers rather than
-NULL on error should be marked with a special attribute:
+pls add a new line.
 
-Something like:
+> +       xdp_unreg_mem_model(&mem);
+> +}
+> +
+> +static bool ctx_was_changed(struct xdp_page_head *head)
+> +{
+> +       return (head->orig_ctx.data !=3D head->ctx.data ||
+> +               head->orig_ctx.data_meta !=3D head->ctx.data_meta ||
+> +               head->orig_ctx.data_end !=3D head->ctx.data_end);
 
-#define __returns_nonnull	__attribute__((__returns_nonnull__))
+redundant ()
 
----
+>         bpf_test_timer_enter(&t);
+>         old_ctx =3D bpf_set_run_ctx(&run_ctx.run_ctx);
+>         do {
+>                 run_ctx.prog_item =3D &item;
+> -               if (xdp)
+> +               if (xdp && xdp_redirect) {
+> +                       ret =3D bpf_test_run_xdp_redirect(&t, prog, ctx);
+> +                       if (unlikely(ret < 0))
+> +                               break;
+> +                       *retval =3D ret;
+> +               } else if (xdp) {
+>                         *retval =3D bpf_prog_run_xdp(prog, ctx);
 
- include/linux/compiler_attributes.h | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
-
-diff --git a/include/linux/compiler_attributes.h b/include/linux/compiler_attributes.h
-index 37e2600202216..e2351a36dda97 100644
---- a/include/linux/compiler_attributes.h
-+++ b/include/linux/compiler_attributes.h
-@@ -250,6 +250,18 @@
- # define __no_profile
- #endif
- 
-+/*
-+ * Optional: only supported since GCC >= 5.x
-+ *
-+ *      gcc: https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html#index-returns_005fnonnull-function-attribute
-+ *    clang: https://clang.llvm.org/docs/AttributeReference.html#returns-nonnull
-+ */
-+#if __has_attribute(__returns_nonnull__)
-+# define __returns_nonnull		__attribute__((__returns_nonnull__))
-+#else
-+# define __returns_nonnull
-+#endif
-+
- /*
-  *   gcc: https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html#index-noreturn-function-attribute
-  * clang: https://clang.llvm.org/docs/AttributeReference.html#noreturn
-
-
+Can we do this unconditionally without introducing a new uapi flag?
+I mean "return bpf_redirect()" was a nop under test_run.
+What kind of tests might break if it stops being a nop?
