@@ -2,102 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A28B471776
-	for <lists+netdev@lfdr.de>; Sun, 12 Dec 2021 02:00:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DDEAE471781
+	for <lists+netdev@lfdr.de>; Sun, 12 Dec 2021 02:21:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232338AbhLLAsJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Dec 2021 19:48:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33904 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229622AbhLLAsI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Dec 2021 19:48:08 -0500
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 541EEC061714
-        for <netdev@vger.kernel.org>; Sat, 11 Dec 2021 16:48:08 -0800 (PST)
-Received: by mail-yb1-xb30.google.com with SMTP id d10so30035406ybe.3
-        for <netdev@vger.kernel.org>; Sat, 11 Dec 2021 16:48:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=n16xBoWvAX9KIRlmXdieCZbcOaL7kNYqHvDhDSk8yZA=;
-        b=GfyBqHaVwFYWx09uG01J1yoj9TSacprEoOiltresphBRERLQUdgzaw9GA9KD7nAVl5
-         gXU5Ls2qKt/P33FQU2GStJn7ptiloPMbzMMwj81CfUfpUs1PkKdxnvwg7plVp8r9G64a
-         /f5iecfCpEJfUKI39I3d+xGhasUK5313K9nkP899ZAXa6ySjjNUqCyv29qgHPLFEGpo+
-         yod24JwJNuQCDNov8GG2uxRkMWZdmOmHX9LkR2XSUXGcXoygaJaz2UoX+IL/NdBKdlKC
-         F+xCgOclFTUcZkx8yxuRCEmISi49L0u8wgDiuLyo9xh2WHWsHCuulNXFHNytS1dcXMVy
-         cOgg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=n16xBoWvAX9KIRlmXdieCZbcOaL7kNYqHvDhDSk8yZA=;
-        b=rFF9KAWhRxwM+Mn0XdxGTlYn4a6jn30TDLSeUB8LpJfqv/HaN9Hwc+oRtN7r/Ipt9c
-         cqWnyn74vEtU8La3/k/6L3LXjqc5HMrWYhYix0uM8Yh53keIYgcQHG9uBG5WIDv999hR
-         SzbTKWoYhPzMZnhkOP0s09CnKz6G8vg9hKrlrDMDgiV26b8pqebb5swgmH8gmDZ+k0a/
-         bjmjvM1EH8jdBSyKJtLytd9BM5Y829VokNiGDKgR5C40v2mRgWTdHW0PI09SzYHt5Dyp
-         dPERL1twgeMvZ/U/hI/ikg5pLfxGja8cjA1jcjdKPeVUZZV3PXZMLZ5YSrbX1bixXEar
-         JiEQ==
-X-Gm-Message-State: AOAM531RL5zz9j+8iz9ZXNGyxB+6+gbSQTystoM/6AFAnPpeFVz6djns
-        3PME5gkxJBaeFRHEiQ/l2E+TPNP6TOJ1Ef0uu04=
-X-Google-Smtp-Source: ABdhPJz4+HkSmwbgY7V9M4h/StdnctOkzbRFDKom9lMjVlvE5g+3yToRIwS46D2RSInIjYTv1eEtREWLNyt6yEzlCUs=
-X-Received: by 2002:a05:6902:70a:: with SMTP id k10mr3374643ybt.120.1639270087423;
- Sat, 11 Dec 2021 16:48:07 -0800 (PST)
+        id S232367AbhLLBSq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Dec 2021 20:18:46 -0500
+Received: from o1.ptr2625.egauge.net ([167.89.112.53]:16398 "EHLO
+        o1.ptr2625.egauge.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232348AbhLLBSp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Dec 2021 20:18:45 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=egauge.net;
+        h=from:subject:mime-version:to:cc:content-transfer-encoding:
+        content-type;
+        s=sgd; bh=n0HMddjGrKnpVS5OFQD8ByG36/ADhDg6KTCm0PmFbCs=;
+        b=jS7VhUJptqrjQkc02N/NL+xGFyWX+1Yf+uJAuvP/OZzmzx+lFyqu2t9FZvQcg6fzxvZh
+        NpbrC3Y9FxCvXuRq5WJ6VHq/FkpOvpDOFlG3VSvhE8yWBXYzCS3T813ZewzOTwJNHSeqez
+        y++AYxQtJfgBjHnouFopXULP/1JnFG2AA9wrDMgKW82Q69Cp1CXrVmG7n0JZ/7pRo2bpsz
+        IQHVzZw1ZZogzP02aSU63QfCXDufLIEzMLbdhTvr0oTFI0vbEH52ZHx5DVG+iolRbFvdgL
+        L7KU4NqQDq5Ry2rGyGJcnVlPUQmKRF5ZIod+2YpicCSolV8wcjjxjNIs13V7Y9Lw==
+Received: by filterdrecv-75ff7b5ffb-8jc8g with SMTP id filterdrecv-75ff7b5ffb-8jc8g-1-61B54DF4-10
+        2021-12-12 01:18:44.284698431 +0000 UTC m=+8737071.970174269
+Received: from pearl.egauge.net (unknown)
+        by ismtpd0065p1las1.sendgrid.net (SG) with ESMTP
+        id xfk2N9YfTpi5F9GS2LxzDg
+        Sun, 12 Dec 2021 01:18:44.149 +0000 (UTC)
+Received: by pearl.egauge.net (Postfix, from userid 1000)
+        id EB8707003AA; Sat, 11 Dec 2021 18:18:40 -0700 (MST)
+From:   David Mosberger-Tang <davidm@egauge.net>
+Subject: [PATCH] wilc1000: Allow setting power_save before driver is
+ initialized
+Date:   Sun, 12 Dec 2021 01:18:44 +0000 (UTC)
+Message-Id: <20211212011835.3719001-1-davidm@egauge.net>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20211209075734.10199-1-paulb@nvidia.com> <20211209075734.10199-3-paulb@nvidia.com>
- <20211210205216.1ec35b39@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211210205216.1ec35b39@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Sat, 11 Dec 2021 16:47:56 -0800
-Message-ID: <CAM_iQpWtwwj1pMWQbPTV6Rctd_0hcjeEyXywSj-h=94p3MZUiw@mail.gmail.com>
-Subject: Re: [PATCH net v2 2/3] net/sched: flow_dissector: Fix matching on
- zone id for invalid conns
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Paul Blakey <paulb@nvidia.com>, dev@openvswitch.org,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Pravin B Shelar <pshelar@ovn.org>,
-        David Miller <davem@davemloft.net>,
-        Jiri Pirko <jiri@nvidia.com>, wenxu <wenxu@ucloud.cn>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Oz Shlomo <ozsh@nvidia.com>, Vlad Buslov <vladbu@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
+X-SG-EID: =?us-ascii?Q?+kMxBqj35EdRUKoy8diX1j4AXmPtd302oan+iXZuF8m2Nw4HRW2irNspffT=2Fkh?=
+ =?us-ascii?Q?ET6RJF6+Prbl0h=2FEtF1rRLvLrlz+ZJBGlhg9mbn?=
+ =?us-ascii?Q?G0wJvhbY2=2FMh8gXkndExOud2LyxMko2i1zJTFmG?=
+ =?us-ascii?Q?t7jbdHjreJO5R6qSOJ1WF6yxZnYn7O0IaWLElRr?=
+ =?us-ascii?Q?Md5OiibAIyYrMG8eEwCZr9h7G7Y8Ar3tGAGXFzp?=
+ =?us-ascii?Q?aPNfZpJeHvu1WMPbTljQj31gCpUDHiDDWy0l2H?=
+To:     Ajay Singh <ajay.kathat@microchip.com>
+Cc:     Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        David Mosberger-Tang <davidm@egauge.net>
+X-Entity-ID: Xg4JGAcGrJFIz2kDG9eoaQ==
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 10, 2021 at 8:52 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Thu, 9 Dec 2021 09:57:33 +0200 Paul Blakey wrote:
-> > @@ -238,10 +239,12 @@ void
-> >  skb_flow_dissect_ct(const struct sk_buff *skb,
-> >                   struct flow_dissector *flow_dissector,
-> >                   void *target_container, u16 *ctinfo_map,
-> > -                 size_t mapsize, bool post_ct)
-> > +                 size_t mapsize)
-> >  {
-> >  #if IS_ENABLED(CONFIG_NF_CONNTRACK)
-> > +     bool post_ct = tc_skb_cb(skb)->post_ct;
-> >       struct flow_dissector_key_ct *key;
-> > +     u16 zone = tc_skb_cb(skb)->zone;
-> >       enum ip_conntrack_info ctinfo;
-> >       struct nf_conn_labels *cl;
-> >       struct nf_conn *ct;
-> > @@ -260,6 +263,7 @@ skb_flow_dissect_ct(const struct sk_buff *skb,
-> >       if (!ct) {
-> >               key->ct_state = TCA_FLOWER_KEY_CT_FLAGS_TRACKED |
-> >                               TCA_FLOWER_KEY_CT_FLAGS_INVALID;
-> > +             key->ct_zone = zone;
-> >               return;
-> >       }
-> >
->
-> Why is flow dissector expecting skb cb to be TC now?
-> Please keep the appropriate abstractions intact.
+Without this patch, trying to use:
 
-Probably because only fl_classify() calls it, but I agree with you
-on this point, this function is supposed to be TC independent.
+	iw dev wlan0 set power_save on
 
-Thanks.
+before the driver is initialized results in an EIO error.  It is more
+useful to simply remember the desired setting and establish it when
+the driver is initialized.
+
+Signed-off-by: David Mosberger-Tang <davidm@egauge.net>
+---
+ drivers/net/wireless/microchip/wilc1000/cfg80211.c | 3 ---
+ drivers/net/wireless/microchip/wilc1000/hif.c      | 8 ++++++++
+ drivers/net/wireless/microchip/wilc1000/netdev.c   | 3 ++-
+ 3 files changed, 10 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/wireless/microchip/wilc1000/cfg80211.c b/drivers/net/wireless/microchip/wilc1000/cfg80211.c
+index dc4bfe7be378..01d607fa2ded 100644
+--- a/drivers/net/wireless/microchip/wilc1000/cfg80211.c
++++ b/drivers/net/wireless/microchip/wilc1000/cfg80211.c
+@@ -1280,9 +1280,6 @@ static int set_power_mgmt(struct wiphy *wiphy, struct net_device *dev,
+ 	struct wilc_vif *vif = netdev_priv(dev);
+ 	struct wilc_priv *priv = &vif->priv;
+ 
+-	if (!priv->hif_drv)
+-		return -EIO;
+-
+ 	wilc_set_power_mgmt(vif, enabled, timeout);
+ 
+ 	return 0;
+diff --git a/drivers/net/wireless/microchip/wilc1000/hif.c b/drivers/net/wireless/microchip/wilc1000/hif.c
+index 29a42bc47017..66fd77c816f7 100644
+--- a/drivers/net/wireless/microchip/wilc1000/hif.c
++++ b/drivers/net/wireless/microchip/wilc1000/hif.c
+@@ -1934,6 +1934,14 @@ int wilc_set_power_mgmt(struct wilc_vif *vif, bool enabled, u32 timeout)
+ 	int result;
+ 	s8 power_mode;
+ 
++	if (!wilc->initialized) {
++		/* Simply remember the desired setting for now; will be
++		 * established by wilc_init_fw_config().
++		 */
++		wilc->power_save_mode = enabled;
++		return 0;
++	}
++
+ 	if (enabled)
+ 		power_mode = WILC_FW_MIN_FAST_PS;
+ 	else
+diff --git a/drivers/net/wireless/microchip/wilc1000/netdev.c b/drivers/net/wireless/microchip/wilc1000/netdev.c
+index 4712cd7dff9f..082bed26a981 100644
+--- a/drivers/net/wireless/microchip/wilc1000/netdev.c
++++ b/drivers/net/wireless/microchip/wilc1000/netdev.c
+@@ -244,6 +244,7 @@ static int wilc1000_firmware_download(struct net_device *dev)
+ static int wilc_init_fw_config(struct net_device *dev, struct wilc_vif *vif)
+ {
+ 	struct wilc_priv *priv = &vif->priv;
++	struct wilc *wilc = vif->wilc;
+ 	struct host_if_drv *hif_drv;
+ 	u8 b;
+ 	u16 hw;
+@@ -305,7 +306,7 @@ static int wilc_init_fw_config(struct net_device *dev, struct wilc_vif *vif)
+ 	if (!wilc_wlan_cfg_set(vif, 0, WID_QOS_ENABLE, &b, 1, 0, 0))
+ 		goto fail;
+ 
+-	b = WILC_FW_NO_POWERSAVE;
++	b = wilc->power_save_mode ? WILC_FW_MIN_FAST_PS : WILC_FW_NO_POWERSAVE;
+ 	if (!wilc_wlan_cfg_set(vif, 0, WID_POWER_MANAGEMENT, &b, 1, 0, 0))
+ 		goto fail;
+ 
+-- 
+2.25.1
+
