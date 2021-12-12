@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC0C6471A71
-	for <lists+netdev@lfdr.de>; Sun, 12 Dec 2021 14:47:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F1ECE471A77
+	for <lists+netdev@lfdr.de>; Sun, 12 Dec 2021 14:47:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231226AbhLLNrd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Dec 2021 08:47:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60658 "EHLO
+        id S231248AbhLLNrh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Dec 2021 08:47:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231214AbhLLNrc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Dec 2021 08:47:32 -0500
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2752FC0613F8
-        for <netdev@vger.kernel.org>; Sun, 12 Dec 2021 05:47:32 -0800 (PST)
-Received: by mail-ed1-x533.google.com with SMTP id w1so43953686edc.6
-        for <netdev@vger.kernel.org>; Sun, 12 Dec 2021 05:47:32 -0800 (PST)
+        with ESMTP id S231235AbhLLNrf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Dec 2021 08:47:35 -0500
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5715C0613FE
+        for <netdev@vger.kernel.org>; Sun, 12 Dec 2021 05:47:34 -0800 (PST)
+Received: by mail-ed1-x52c.google.com with SMTP id r25so43687369edq.7
+        for <netdev@vger.kernel.org>; Sun, 12 Dec 2021 05:47:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=TqWs8DPwgrK4V8do+h3/zlOpIdi25/lNlJflq/UjYQE=;
-        b=AHq59JGlV0k7iw3rdhr5yfTpsM6dqF9Ki2s8OAhjW91L+zM6coM6t3mrEX9YOC7QXC
-         SdFFStr9Q/4IALFGkySkl1ZLsySsWiZwg50xlTLX+hzretjoScM4tbfmaBBM6YFvtdGI
-         1SLKcjWy+GB23J4BFc3Fv/Ob9hekQb8xRSYukTSbh4jL+gd8NlQWBrdmUsvv+u2qGG/5
-         V0VMiN1BBLd21hSxSIf4X0AwVuQLqwK7R1GJD22igEg7jMe1ZjUEP3U7lHrXaaZ6BVK5
-         GuTCB2o3Bzji9Gx3G4MHjAE45YmjG2ejVbrZM2UXl6LPVO6gp14NDqsxXLTfWycAhpoL
-         HTFA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=CiSpeKrc6xdYQkaSsrV1saCX+tLWJIyEe2AX2g4FsfY=;
+        b=ulXWmXYH8stsLnZOejOmSZSyeTh0HECoohO+a4rGro7VxdhFGeTSbSpdkZiikNDQAa
+         BJp/CtQQveMhJwiLLfiWtnjVT91BnXMuDq3W6dD/uiGOcYRj3DgsJICtCbRtDQqZ8v2A
+         pooR5iHRk7nxRaylbwRV9wpCgx3rOtnmF6r31KHyp8l4oQKf6IrktXzathKEF08WX1o2
+         9AX5b3TvOe9JlvTFhMQIObJg5d1fDCUxYh1Fhy0R3CqC5a0O+dfG3f9pLb8c+VH3CwTb
+         tWvG70NjiHsK6M2Ea1d00xkeo+5XbhIIEZId81CW6346jHUlJ6LHjaXS9pJ+74FwI3vD
+         Fwcw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=TqWs8DPwgrK4V8do+h3/zlOpIdi25/lNlJflq/UjYQE=;
-        b=k441zhVV9NWM3le4GkMgUmu2cmqwBDmP4JZv0vXNy9oMVxH+pj17qtR3xMbf4mDc4F
-         VpeNhlVk1EM5qEpW6g7dkFxbrlG4u/WowhajfrXsbMUYrucItisiShMlkdU5YwoGVwAo
-         d0rTzTrbWRvNwx+8+Z0sBeqZQGL9cb+KGd79+iinBNwPRyk9ftIgcjTn9wNeNOYf1RBK
-         ccTd63A4xLfSukuMvENDpkO+3uyRo7uh1LjZJd6Y+Xov1jlJCjW9LF9nAr9Ss33Y1ReS
-         gNPiWhlL4BCBwQf1/9A8HoON+OinrI7jUdYnuyxaZCzKcxxIbhR4Ntn2qd9zdHfXF3gF
-         tImw==
-X-Gm-Message-State: AOAM533MCX2eME9OOMdOofJ/dzHIN+UiqQk4lM5LyN8wHI6Vi5d/KnBb
-        qUEKvupE80Bxhs53V+zMap7vLQ==
-X-Google-Smtp-Source: ABdhPJzDCfz3+3qv85xX++TCcQcIFr8NszHqqXCovx9fPQXwcS4W4cFGhV+xYEm2fPgBZRvXvNa//w==
-X-Received: by 2002:a05:6402:5c9:: with SMTP id n9mr54686840edx.306.1639316850583;
-        Sun, 12 Dec 2021 05:47:30 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=CiSpeKrc6xdYQkaSsrV1saCX+tLWJIyEe2AX2g4FsfY=;
+        b=iBHh1wVAylRkMZlb1OljYtbEPYkBtOesuQnmjIGVp6q6X5u252xPgRbL7QRpdn5lSF
+         TxFYsdLxhKjCq2r7dxv6jXpd0lQr8AMdDyPGB8Jm2zZ3OYLzIYSULXR2pB6ZuB7C+cKq
+         51u5zwZ7+bw7QwHPi6WdZYbvZcd6gHuqwL4WiNpnOCSZBQDEvR8Qm1dc9I17vwMFIbdN
+         QTlXHxMBvd8yUaXR/c7CrVgOQR6SxEM0dJf3Wr6hCRt1B9/BzqIaA8d4LtBCTrQ+ouk1
+         VGrcgkIamD50Ibw9/gWI3wKUzr90tclyd3XJP2cWQDm3S9eBPR/WFgrR9rYXyy1z4uOx
+         kHPg==
+X-Gm-Message-State: AOAM531ggO1pHuTH4Dko4QgoQvNAsOavJ9hqkKPCgMEc5dwPVS0WCesS
+        3NFXPO25H/CP6Ej+di6bAN4eEg==
+X-Google-Smtp-Source: ABdhPJxbZDcMAGyCRfoQKuWsGxx685XQpDHyN9I0NfvgAcYf1nJUdb72Q3Ihv9iHIsidz8HWrql1mg==
+X-Received: by 2002:a05:6402:3514:: with SMTP id b20mr55160604edd.169.1639316853318;
+        Sun, 12 Dec 2021 05:47:33 -0800 (PST)
 Received: from localhost ([104.245.96.202])
-        by smtp.gmail.com with ESMTPSA id oz31sm4543552ejc.35.2021.12.12.05.47.29
+        by smtp.gmail.com with ESMTPSA id r13sm4669936edo.71.2021.12.12.05.47.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 12 Dec 2021 05:47:30 -0800 (PST)
+        Sun, 12 Dec 2021 05:47:33 -0800 (PST)
 From:   Leo Yan <leo.yan@linaro.org>
 To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
         Jiri Olsa <jolsa@redhat.com>,
@@ -68,48 +68,151 @@ To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
         linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, bpf@vger.kernel.org
 Cc:     Leo Yan <leo.yan@linaro.org>
-Subject: [PATCH v1 0/2] perf: Fix perf in non-root PID namespace
-Date:   Sun, 12 Dec 2021 21:47:19 +0800
-Message-Id: <20211212134721.1721245-1-leo.yan@linaro.org>
+Subject: [PATCH v1 1/2] perf namespaces: Add helper nsinfo__is_in_root_namespace()
+Date:   Sun, 12 Dec 2021 21:47:20 +0800
+Message-Id: <20211212134721.1721245-2-leo.yan@linaro.org>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20211212134721.1721245-1-leo.yan@linaro.org>
+References: <20211212134721.1721245-1-leo.yan@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When perf tool runs in non-root PID namespace, it fails to gather the
-correct process and namespace info for the profiled (forked) program
-since it wrongly uses the non-root PID number to access '/proc' nodes.
+Refactors code for gathering PID infos, it creates the function
+nsinfo__get_nspid() to parse process 'status' node in folder '/proc'.
 
-To fix this issue, this patchset adds the checking if the perf tool runs
-in the non-root namespace, if it is the case, perf tool reports error to
-notify users to run perf tool in root PID namespace.  This can ensure
-perf tool gathers correct process info for profiled program.
+Base on the refactoring, this patch introduces a new helper
+nsinfo__is_in_root_namespace(), it returns true when the caller runs in
+the root PID namespace.
 
-After applied this patchset:
-
-  # unshare --fork --pid perf record -e cs_etm//u -a -- uname
-  Perf runs in non-root PID namespace; please run perf tool in the root PID namespace for gathering process info.
-  Couldn't run the workload!
-
-  # perf record -e cs_etm//u -a -- unshare --fork --pid uname
-  Couldn't synthesize bpf events.
-  Linux
-  [ perf record: Woken up 1 times to write data ]
-  [ perf record: Captured and wrote 0.438 MB perf_test.data ]
-
-
-Leo Yan (2):
-  perf namespaces: Add helper nsinfo__is_in_root_namespace()
-  perf evlist: Don't run perf in non-root PID namespace when launch
-    workload
-
- tools/perf/util/evlist.c     |  7 ++++
+Signed-off-by: Leo Yan <leo.yan@linaro.org>
+---
  tools/perf/util/namespaces.c | 76 ++++++++++++++++++++++--------------
  tools/perf/util/namespaces.h |  2 +
- 3 files changed, 55 insertions(+), 30 deletions(-)
+ 2 files changed, 48 insertions(+), 30 deletions(-)
 
+diff --git a/tools/perf/util/namespaces.c b/tools/perf/util/namespaces.c
+index 608b20c72a5c..48aa3217300b 100644
+--- a/tools/perf/util/namespaces.c
++++ b/tools/perf/util/namespaces.c
+@@ -60,17 +60,49 @@ void namespaces__free(struct namespaces *namespaces)
+ 	free(namespaces);
+ }
+ 
++static int nsinfo__get_nspid(struct nsinfo *nsi, const char *path)
++{
++	FILE *f = NULL;
++	char *statln = NULL;
++	size_t linesz = 0;
++	char *nspid;
++
++	f = fopen(path, "r");
++	if (f == NULL)
++		return -1;
++
++	while (getline(&statln, &linesz, f) != -1) {
++		/* Use tgid if CONFIG_PID_NS is not defined. */
++		if (strstr(statln, "Tgid:") != NULL) {
++			nsi->tgid = (pid_t)strtol(strrchr(statln, '\t'),
++						     NULL, 10);
++			nsi->nstgid = nsi->tgid;
++		}
++
++		if (strstr(statln, "NStgid:") != NULL) {
++			nspid = strrchr(statln, '\t');
++			nsi->nstgid = (pid_t)strtol(nspid, NULL, 10);
++			/*
++			 * If innermost tgid is not the first, process is in a different
++			 * PID namespace.
++			 */
++			nsi->in_pidns = (statln + sizeof("NStgid:") - 1) != nspid;
++			break;
++		}
++	}
++
++	fclose(f);
++	free(statln);
++	return 0;
++}
++
+ int nsinfo__init(struct nsinfo *nsi)
+ {
+ 	char oldns[PATH_MAX];
+ 	char spath[PATH_MAX];
+ 	char *newns = NULL;
+-	char *statln = NULL;
+-	char *nspid;
+ 	struct stat old_stat;
+ 	struct stat new_stat;
+-	FILE *f = NULL;
+-	size_t linesz = 0;
+ 	int rv = -1;
+ 
+ 	if (snprintf(oldns, PATH_MAX, "/proc/self/ns/mnt") >= PATH_MAX)
+@@ -100,34 +132,9 @@ int nsinfo__init(struct nsinfo *nsi)
+ 	if (snprintf(spath, PATH_MAX, "/proc/%d/status", nsi->pid) >= PATH_MAX)
+ 		goto out;
+ 
+-	f = fopen(spath, "r");
+-	if (f == NULL)
+-		goto out;
+-
+-	while (getline(&statln, &linesz, f) != -1) {
+-		/* Use tgid if CONFIG_PID_NS is not defined. */
+-		if (strstr(statln, "Tgid:") != NULL) {
+-			nsi->tgid = (pid_t)strtol(strrchr(statln, '\t'),
+-						     NULL, 10);
+-			nsi->nstgid = nsi->tgid;
+-		}
+-
+-		if (strstr(statln, "NStgid:") != NULL) {
+-			nspid = strrchr(statln, '\t');
+-			nsi->nstgid = (pid_t)strtol(nspid, NULL, 10);
+-			/* If innermost tgid is not the first, process is in a different
+-			 * PID namespace.
+-			 */
+-			nsi->in_pidns = (statln + sizeof("NStgid:") - 1) != nspid;
+-			break;
+-		}
+-	}
+-	rv = 0;
++	rv = nsinfo__get_nspid(nsi, spath);
+ 
+ out:
+-	if (f != NULL)
+-		(void) fclose(f);
+-	free(statln);
+ 	free(newns);
+ 	return rv;
+ }
+@@ -299,3 +306,12 @@ int nsinfo__stat(const char *filename, struct stat *st, struct nsinfo *nsi)
+ 
+ 	return ret;
+ }
++
++bool nsinfo__is_in_root_namespace(void)
++{
++	struct nsinfo nsi;
++
++	memset(&nsi, 0x0, sizeof(nsi));
++	nsinfo__get_nspid(&nsi, "/proc/self/status");
++	return !nsi.in_pidns;
++}
+diff --git a/tools/perf/util/namespaces.h b/tools/perf/util/namespaces.h
+index ad9775db7b9c..9ceea9643507 100644
+--- a/tools/perf/util/namespaces.h
++++ b/tools/perf/util/namespaces.h
+@@ -59,6 +59,8 @@ void nsinfo__mountns_exit(struct nscookie *nc);
+ char *nsinfo__realpath(const char *path, struct nsinfo *nsi);
+ int nsinfo__stat(const char *filename, struct stat *st, struct nsinfo *nsi);
+ 
++bool nsinfo__is_in_root_namespace(void);
++
+ static inline void __nsinfo__zput(struct nsinfo **nsip)
+ {
+ 	if (nsip) {
 -- 
 2.25.1
 
