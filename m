@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 80C7F471832
-	for <lists+netdev@lfdr.de>; Sun, 12 Dec 2021 05:15:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 69B5B471836
+	for <lists+netdev@lfdr.de>; Sun, 12 Dec 2021 05:22:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231853AbhLLEMz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Dec 2021 23:12:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49766 "EHLO
+        id S232861AbhLLEWn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Dec 2021 23:22:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230117AbhLLEMy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Dec 2021 23:12:54 -0500
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24986C061714;
-        Sat, 11 Dec 2021 20:12:54 -0800 (PST)
-Received: by mail-pj1-x1034.google.com with SMTP id x7so9580382pjn.0;
-        Sat, 11 Dec 2021 20:12:54 -0800 (PST)
+        with ESMTP id S230117AbhLLEWm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Dec 2021 23:22:42 -0500
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68DEEC061714;
+        Sat, 11 Dec 2021 20:22:42 -0800 (PST)
+Received: by mail-pl1-x62b.google.com with SMTP id v19so8908933plo.7;
+        Sat, 11 Dec 2021 20:22:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=iLKE4nl9vXA5y2N9rP0xI834Q5UXzM8Oml3susVm0zs=;
-        b=b4KIyJ4wFPJL7zQFqD+U4+oYFbty/Org/jgRm2ETBGC0MS6d1/JTeuKBh6uoV5sp+N
-         XSHPyX/U7Uwtpz4nSTDiJS+JZZS5Qb6YRmtxQw+oJ5xVnevmlybzO6y0SIKIb/De3YuJ
-         eb7ctIAAH+FfLxQg0ZL84SzXr5Z18ERRa246Fw6r7yP7VJqoJeyj6ox1QpdrMjyybpDo
-         UYniU0rtztsxovRL8YwNav0sVYlbcUH9BuKweu2uG4NxKsec5xIEos4Z00Fd91rQFb+3
-         javGqkiEIxAdAm3Bf6NQmRBpNSA07H6RpTOLF7Wv+FIBfOz3uXxtzvJj82cPq0MDWAom
-         VvzA==
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=MDNHAH0fszf7UXzwB+BwNWzxK8BPxPRrFMJ6KTs60Ms=;
+        b=mSjTaiBnwqotUMxuDqUih80axkl7e/NCfbV7vQOuKNFEtN3w/BO5NyzQtJC+HEZcd+
+         x7LI0QRZEFU8e1OOsIUtw1GIU+bU1T3Tno6ARBwfu3nAlE5WfXFozivzk+xqQvPIDpNE
+         rh60UHSopU265GFoEATHszn0WfcJAGi2qDXU8fyf1vLNzWf8IBEQRzBAkBvOoXNEE1B+
+         mq9QvdloQujqgp7bYswY+o72guE5oxycKG40DE5wIwp/DjTg3/6GpV2cfNDPxAeu58P8
+         yCKU3ow/TqUXdPh0ZaDRHsgBfzhD76WpCHC5bvcToyU4swIbQluBYPoU7C+sp+pN8baP
+         nyrg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=iLKE4nl9vXA5y2N9rP0xI834Q5UXzM8Oml3susVm0zs=;
-        b=HxMzsBIrwxu3vLWKW+BWw5lO22TLs9nBA/qOmaXymlsIyKg8dWJUkoBE15ivJqnu9y
-         vHUiy6bgtac2TcfblEaV4X0gy4apFFhDLLmWFbytXYNX7+F3InapoPRp0FfX8L2SXvZS
-         6W34mkHmjHxTnvElC7Jr2cYyIROi4mDunB7QoOmspkFWOdt5yFJPyVw5L3/g+CwdY6y+
-         Cu6WkjhdvSbEHzo9LSJZEXJqQMnfcOO4ot4ZcAA/DzAGzIyy3hX0ENVxEWRTEGdXx9pW
-         wU8RIRYIzG0V4a4G+P897XirmRTPX6Y06sxX56eRZ8CbHp7Cq9ino7zfNBFz2HkcJdRU
-         fcFw==
-X-Gm-Message-State: AOAM533Elm5qEaMshTqTGz3aNWKbpd0I8prQWvpfvEUGOA6rQxnQX2Ly
-        dyj4XgcULV5cJhXLCnBKkFY=
-X-Google-Smtp-Source: ABdhPJwacd6V6auTrviLBQGY+c/H6yTGfxm3SX2LVC7btLkcWeDDbsbCsFeuNCQ5FXqVYOPSPs/xGg==
-X-Received: by 2002:a17:903:18d:b0:142:8ab:d11f with SMTP id z13-20020a170903018d00b0014208abd11fmr87096597plg.47.1639282373371;
-        Sat, 11 Dec 2021 20:12:53 -0800 (PST)
+        bh=MDNHAH0fszf7UXzwB+BwNWzxK8BPxPRrFMJ6KTs60Ms=;
+        b=T9/6ggHu1kficUDSnpdubfFXrELSezvhK6UXAG7+4pqXcY6OD3HrXwfh/VLtqVYYKC
+         P1werTnhOWHPsv0zQU9mPjX70taXU+Ka0NFa9BUxf5cMNWDWKY8N43K4iz0ybjpBIMiB
+         MTmBOUNzKTrM1qWChyZQcsw/g9H7B1KRPtVK+6APV/Ls5AWl4/lnnJhIW3OQtwAeHtgP
+         zxojma1PxefivWbe/l0MaBD5MEWUsIIc6dReDI6yKJdTwqZf2W+P0E07BTWxgnkYaQYC
+         X8fSxlelDOYp/D517fkci6cHpwwKbHBYwd7oJO+BNkcOWDxdcUwolNninGgIy59UYz0h
+         IClA==
+X-Gm-Message-State: AOAM531MuwXbJu+si3VpMAb/essY/cjuqEqSDj958z/biMXXR+GDF0Eo
+        z0tDDlFrDq0uFVq7blMoLzw=
+X-Google-Smtp-Source: ABdhPJxxCPgwHlndd1eaXBZJv1NI4rUDCcF8NrmbO1mgQSAB8wt2Ntfq/19iuYndI/7NHjETpcDz9g==
+X-Received: by 2002:a17:902:9047:b0:143:6e5f:a480 with SMTP id w7-20020a170902904700b001436e5fa480mr86821262plz.66.1639282961774;
+        Sat, 11 Dec 2021 20:22:41 -0800 (PST)
 Received: from ?IPV6:2600:8802:b00:4a48:4964:df1f:902d:8530? ([2600:8802:b00:4a48:4964:df1f:902d:8530])
-        by smtp.gmail.com with ESMTPSA id b16sm6381047pgi.36.2021.12.11.20.12.52
+        by smtp.gmail.com with ESMTPSA id p188sm7768229pfg.102.2021.12.11.20.22.40
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 11 Dec 2021 20:12:52 -0800 (PST)
-Message-ID: <1776b726-6a96-d522-e625-f0f6b108782a@gmail.com>
-Date:   Sat, 11 Dec 2021 20:12:51 -0800
+        Sat, 11 Dec 2021 20:22:40 -0800 (PST)
+Message-ID: <723bd735-5edc-88ee-4870-e91c98c7dd22@gmail.com>
+Date:   Sat, 11 Dec 2021 20:22:39 -0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.3.2
-Subject: Re: [net-next RFC PATCH v4 12/15] net: dsa: qca8k: add support for
- mdio read/write in Ethernet packet
+Subject: Re: [net-next RFC PATCH v4 01/15] net: dsa: provide switch operations
+ for tracking the master state
 Content-Language: en-US
 To:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -62,10 +62,11 @@ To:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>
 References: <20211211195758.28962-1-ansuelsmth@gmail.com>
- <20211211195758.28962-13-ansuelsmth@gmail.com>
+ <20211211195758.28962-2-ansuelsmth@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20211211195758.28962-13-ansuelsmth@gmail.com>
+In-Reply-To: <20211211195758.28962-2-ansuelsmth@gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -75,108 +76,212 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 12/11/2021 11:57 AM, Ansuel Smith wrote:
-> Add qca8k side support for mdio read/write in Ethernet packet.
-> qca8k supports some specially crafted Ethernet packet that can be used
-> for mdio read/write instead of the legacy method uart/internal mdio.
-> This add support for the qca8k side to craft the packet and enqueue it.
-> Each port and the qca8k_priv have a special struct to put data in it.
-> The completion API is used to wait for the packet to be received back
-> with the requested data.
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> The various steps are:
-> 1. Craft the special packet with the qca hdr set to mdio read/write
->     mode.
-> 2. Set the lock in the dedicated mdio struct.
-> 3. Reinit the completion.
-> 4. Enqueue the packet.
-> 5. Wait the packet to be received.
-> 6. Use the data set by the tagger to complete the mdio operation.
+> Certain drivers may need to send management traffic to the switch for
+> things like register access, FDB dump, etc, to accelerate what their
+> slow bus (SPI, I2C, MDIO) can already do.
 > 
-> If the completion timeouts or the ack value is not true, the legacy
-> mdio way is used.
+> Ethernet is faster (especially in bulk transactions) but is also more
+> unreliable, since the user may decide to bring the DSA master down (or
+> not bring it up), therefore severing the link between the host and the
+> attached switch.
 > 
-> It has to be considered that in the initial setup mdio is still used and
-> mdio is still used until DSA is ready to accept and tag packet.
+> Drivers needing Ethernet-based register access already should have
+> fallback logic to the slow bus if the Ethernet method fails, but that
+> fallback may be based on a timeout, and the I/O to the switch may slow
+> down to a halt if the master is down, because every Ethernet packet will
+> have to time out. The driver also doesn't have the option to turn off
+> Ethernet-based I/O momentarily, because it wouldn't know when to turn it
+> back on.
 > 
-> tag_proto_connect() is used to fill the required handler for the tagger
-> to correctly parse and elaborate the special Ethernet mdio packet.
+> Which is where this change comes in. By tracking NETDEV_CHANGE,
+> NETDEV_UP and NETDEV_GOING_DOWN events on the DSA master, we should know
+> the exact interval of time during which this interface is reliably
+> available for traffic. Provide this information to switches so they can
+> use it as they wish.
 > 
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 > ---
-
-[snip]
-
+>   include/net/dsa.h  | 11 +++++++++++
+>   net/dsa/dsa2.c     | 46 ++++++++++++++++++++++++++++++++++++++++++++++
+>   net/dsa/dsa_priv.h | 13 +++++++++++++
+>   net/dsa/slave.c    | 32 ++++++++++++++++++++++++++++++++
+>   net/dsa/switch.c   | 15 +++++++++++++++
+>   5 files changed, 117 insertions(+)
+> 
+> diff --git a/include/net/dsa.h b/include/net/dsa.h
+> index 8b496c7e62ef..12352aafe1cf 100644
+> --- a/include/net/dsa.h
+> +++ b/include/net/dsa.h
+> @@ -299,6 +299,10 @@ struct dsa_port {
+>   	struct list_head	fdbs;
+>   	struct list_head	mdbs;
+>   
+> +	/* Master state bits, valid only on CPU ports */
+> +	u8 master_admin_up:1,
+> +	   master_oper_up:1;
 > +
-> +static struct sk_buff *qca8k_alloc_mdio_header(enum mdio_cmd cmd, u32 reg, u32 *val,
-> +					       int seq_num)
+>   	bool setup;
+>   };
+>   
+> @@ -1023,6 +1027,13 @@ struct dsa_switch_ops {
+>   	int	(*tag_8021q_vlan_add)(struct dsa_switch *ds, int port, u16 vid,
+>   				      u16 flags);
+>   	int	(*tag_8021q_vlan_del)(struct dsa_switch *ds, int port, u16 vid);
+> +
+> +	/*
+> +	 * DSA master tracking operations
+> +	 */
+> +	void	(*master_state_change)(struct dsa_switch *ds,
+> +				       const struct net_device *master,
+> +				       bool operational);
+>   };
+>   
+>   #define DSA_DEVLINK_PARAM_DRIVER(_id, _name, _type, _cmodes)		\
+> diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
+> index cf6566168620..86b1e2f11469 100644
+> --- a/net/dsa/dsa2.c
+> +++ b/net/dsa/dsa2.c
+> @@ -1245,6 +1245,52 @@ int dsa_tree_change_tag_proto(struct dsa_switch_tree *dst,
+>   	return err;
+>   }
+>   
+> +static void dsa_tree_master_state_change(struct dsa_switch_tree *dst,
+> +					 struct net_device *master)
 > +{
-> +	struct mdio_ethhdr *mdio_ethhdr;
-> +	struct sk_buff *skb;
-> +	u16 hdr;
+> +	struct dsa_notifier_master_state_info info;
+> +	struct dsa_port *cpu_dp = master->dsa_ptr;
 > +
-> +	skb = dev_alloc_skb(QCA_HDR_MDIO_PKG_LEN);
+> +	info.master = master;
+> +	info.operational = cpu_dp->master_admin_up && cpu_dp->master_oper_up;
 
-No out of memory condition handling?
+Since this gets tested a few times below, I would be tempted to add a:
 
-> +
-> +	prefetchw(skb->data);
-
-What's the point you are going to dirty the cache lines right below with 
-your skb_push().
+dsa_master_is_operational() helper and use it throughout.
 
 > +
-> +	skb_reset_mac_header(skb);
-> +	skb_set_network_header(skb, skb->len);
-> +
-> +	mdio_ethhdr = skb_push(skb, QCA_HDR_MDIO_HEADER_LEN + QCA_HDR_LEN);
-> +
-> +	hdr = FIELD_PREP(QCA_HDR_XMIT_VERSION, QCA_HDR_VERSION);
-> +	hdr |= QCA_HDR_XMIT_FROM_CPU;
-> +	hdr |= FIELD_PREP(QCA_HDR_XMIT_DP_BIT, BIT(0));
-> +	hdr |= FIELD_PREP(QCA_HDR_XMIT_CONTROL, QCA_HDR_XMIT_TYPE_RW_REG);
-> +
-> +	mdio_ethhdr->seq = FIELD_PREP(QCA_HDR_MDIO_SEQ_NUM, seq_num);
-> +
-> +	mdio_ethhdr->command = FIELD_PREP(QCA_HDR_MDIO_ADDR, reg);
-> +	mdio_ethhdr->command |= FIELD_PREP(QCA_HDR_MDIO_LENGTH, 4);
-> +	mdio_ethhdr->command |= FIELD_PREP(QCA_HDR_MDIO_CMD, cmd);
-> +	mdio_ethhdr->command |= FIELD_PREP(QCA_HDR_MDIO_CHECK_CODE, MDIO_CHECK_CODE_VAL);
-> +
-> +	if (cmd == MDIO_WRITE)
-> +		mdio_ethhdr->mdio_data = *val;
-> +
-> +	mdio_ethhdr->hdr = htons(hdr);
-> +
-> +	skb_put_zero(skb, QCA_HDR_MDIO_DATA2_LEN);
-> +	skb_put_zero(skb, QCA_HDR_MDIO_PADDING_LEN);
-> +
-> +	return skb;
+> +	dsa_tree_notify(dst, DSA_NOTIFIER_MASTER_STATE_CHANGE, &info);
 > +}
 > +
-> +static int qca8k_read_eth(struct qca8k_priv *priv, u32 reg, u32 *val)
+> +void dsa_tree_master_admin_state_change(struct dsa_switch_tree *dst,
+> +					struct net_device *master,
+> +					bool up)
 > +{
-> +	struct qca8k_mdio_hdr_data *mdio_hdr_data = &priv->mdio_hdr_data;
-> +	struct sk_buff *skb;
-> +	bool ack;
-> +	int ret;
+> +	struct dsa_port *cpu_dp = master->dsa_ptr;
+> +	bool notify = false;
 > +
-> +	skb = qca8k_alloc_mdio_header(MDIO_READ, reg, NULL, 200);
-> +	skb->dev = dsa_to_port(priv->ds, 0)->master;
+> +	if ((cpu_dp->master_admin_up && cpu_dp->master_oper_up) !=
 
-Surely you should be checking that this is the CPU port and obtain it 
-from DSA instead of hard coding it to 0.
+Here
 
+> +	    (up && cpu_dp->master_oper_up))
+> +		notify = true;
 > +
-> +	mutex_lock(&mdio_hdr_data->mutex);
+> +	cpu_dp->master_admin_up = up;
 > +
-> +	reinit_completion(&mdio_hdr_data->rw_done);
-> +	mdio_hdr_data->seq = 200;
-> +	mdio_hdr_data->ack = false;
+> +	if (notify)
+> +		dsa_tree_master_state_change(dst, master);
+> +}
 > +
-> +	dev_queue_xmit(skb);
+> +void dsa_tree_master_oper_state_change(struct dsa_switch_tree *dst,
+> +				       struct net_device *master,
+> +				       bool up)
+> +{
+> +	struct dsa_port *cpu_dp = master->dsa_ptr;
+> +	bool notify = false;
 > +
-> +	ret = wait_for_completion_timeout(&mdio_hdr_data->rw_done, QCA8K_ETHERNET_TIMEOUT);
+> +	if ((cpu_dp->master_admin_up && cpu_dp->master_oper_up) !=
 
-msec_to_jiffies(QCA8K_ETHERNET_TIMEOUT) at least?
+And here as well
+
+> +	    (cpu_dp->master_admin_up && up))
+> +		notify = true;
+> +
+> +	cpu_dp->master_oper_up = up;
+> +
+> +	if (notify)
+> +		dsa_tree_master_state_change(dst, master);
+> +}
+> +
+>   static struct dsa_port *dsa_port_touch(struct dsa_switch *ds, int index)
+>   {
+>   	struct dsa_switch_tree *dst = ds->dst;
+> diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
+> index 0db2b26b0c83..d2f2bce2391b 100644
+> --- a/net/dsa/dsa_priv.h
+> +++ b/net/dsa/dsa_priv.h
+> @@ -44,6 +44,7 @@ enum {
+>   	DSA_NOTIFIER_MRP_DEL_RING_ROLE,
+>   	DSA_NOTIFIER_TAG_8021Q_VLAN_ADD,
+>   	DSA_NOTIFIER_TAG_8021Q_VLAN_DEL,
+> +	DSA_NOTIFIER_MASTER_STATE_CHANGE,
+>   };
+>   
+>   /* DSA_NOTIFIER_AGEING_TIME */
+> @@ -127,6 +128,12 @@ struct dsa_notifier_tag_8021q_vlan_info {
+>   	u16 vid;
+>   };
+>   
+> +/* DSA_NOTIFIER_MASTER_STATE_CHANGE */
+> +struct dsa_notifier_master_state_info {
+> +	const struct net_device *master;
+> +	bool operational;
+> +};
+> +
+>   struct dsa_switchdev_event_work {
+>   	struct dsa_switch *ds;
+>   	int port;
+> @@ -507,6 +514,12 @@ int dsa_tree_change_tag_proto(struct dsa_switch_tree *dst,
+>   			      struct net_device *master,
+>   			      const struct dsa_device_ops *tag_ops,
+>   			      const struct dsa_device_ops *old_tag_ops);
+> +void dsa_tree_master_admin_state_change(struct dsa_switch_tree *dst,
+> +					struct net_device *master,
+> +					bool up);
+> +void dsa_tree_master_oper_state_change(struct dsa_switch_tree *dst,
+> +				       struct net_device *master,
+> +				       bool up);
+>   unsigned int dsa_bridge_num_get(const struct net_device *bridge_dev, int max);
+>   void dsa_bridge_num_put(const struct net_device *bridge_dev,
+>   			unsigned int bridge_num);
+> diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+> index 88f7b8686dac..5ccb0616022d 100644
+> --- a/net/dsa/slave.c
+> +++ b/net/dsa/slave.c
+> @@ -2348,6 +2348,36 @@ static int dsa_slave_netdevice_event(struct notifier_block *nb,
+>   		err = dsa_port_lag_change(dp, info->lower_state_info);
+>   		return notifier_from_errno(err);
+>   	}
+> +	case NETDEV_CHANGE:
+> +	case NETDEV_UP: {
+> +		/* Track state of master port.
+> +		 * DSA driver may require the master port (and indirectly
+> +		 * the tagger) to be available for some special operation.
+> +		 */
+> +		if (netdev_uses_dsa(dev)) {
+> +			struct dsa_port *cpu_dp = dev->dsa_ptr;
+> +			struct dsa_switch_tree *dst = cpu_dp->ds->dst;
+> +
+> +			/* Track when the master port is UP */
+> +			dsa_tree_master_oper_state_change(dst, dev,
+> +							  netif_oper_up(dev));
+> +
+> +			/* Track when the master port is ready and can accept
+> +			 * packet.
+> +			 * NETDEV_UP event is not enough to flag a port as ready.
+> +			 * We also have to wait for linkwatch_do_dev to dev_activate
+> +			 * and emit a NETDEV_CHANGE event.
+> +			 * We check if a master port is ready by checking if the dev
+> +			 * have a qdisc assigned and is not noop.
+> +			 */
+> +			dsa_tree_master_admin_state_change(dst, dev,
+> +							   qdisc_tx_is_noop(dev));
+
+If my kernel is built with no packet scheduler, is not the interface 
+going to be configured with noop all of the time?
+
+Other than that LGTM!
 -- 
 Florian
