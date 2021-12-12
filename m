@@ -2,80 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C66BA471A40
-	for <lists+netdev@lfdr.de>; Sun, 12 Dec 2021 14:00:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E003471A42
+	for <lists+netdev@lfdr.de>; Sun, 12 Dec 2021 14:01:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230489AbhLLNAN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Dec 2021 08:00:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50434 "EHLO
+        id S230496AbhLLNBX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Dec 2021 08:01:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229846AbhLLNAM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Dec 2021 08:00:12 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FC76C061714;
-        Sun, 12 Dec 2021 05:00:12 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 50506CE0B53;
-        Sun, 12 Dec 2021 13:00:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 70EC5C341CA;
-        Sun, 12 Dec 2021 13:00:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1639314008;
-        bh=H2l+xf2WeTwJXBbO9SZOz0IoqXaav2fWOq4Wutvwjek=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=SA7iwLgW36Yr5tI+gDE/hkdzXECmcQgyFIUKd2wMcR9jlfZBxtL6O/xoVHPCNbMcT
-         d7+iIFDtPrXrjpTLDyoQNmTimw64ntwY7LskdWmRofeWAL+Q7vFJrJx3SPWz55Nurx
-         v8x9DeagZJojjAmyjJANOAfbIDzj+iqG1FU8mQJnFf6VtVz7KQR3K4P2+DhKBylQxY
-         Ck2++zEQkwMbQz44AE/f9I4udVoIGMQ63vK/V5U5jEuMn5CNDKuVt8u7LN774ds1i0
-         Z9apXVO2bYiv5y6PoypwQy55VKNFKEEG1qXH9tXCfrP6YF3ieZCqNF5tcBJCIFomNd
-         XZZ/ZF/RCPk7g==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 507DC60BD0;
-        Sun, 12 Dec 2021 13:00:08 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229739AbhLLNBW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Dec 2021 08:01:22 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 424C1C061714
+        for <netdev@vger.kernel.org>; Sun, 12 Dec 2021 05:01:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
+        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
+        Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=58R7jiYWFw7GIrEbSLWqRMSidUnqz0Ryva5lwW0x8b8=; b=yY3NjLwfLdp80LSAmvYrsk2CI/
+        wJ8GILLBwcnPFQjbTUOsMaimues4IRX4x9Mhg/hA8l+4PvtKboipq54prPx4mDmG2eovSvZ5a6pyy
+        G45t5KwCgycFQhV1YtOYHEnKx3eda1km9pNu/8Q7l+4PykK+vIvO5x7ElUzj1vDVIhV+HkdE4jiLV
+        pq7DvIdD5vsnh6eyl+fiCsUvlyuADNNsHgKpaYAf9DrO/YOP6+gnAhnsLAGO5I+ucmSHKu8JfqHn8
+        71fQfidh8XKqMY2OIr+WfvF6BF5OKRTA9WM1qHHa+1r2l+nLG/geFaHpnHpBqugNjKaaGnx7bZN0A
+        Y171MD/Q==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:42542 helo=rmk-PC.armlinux.org.uk)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1mwOTc-0002bd-Ce; Sun, 12 Dec 2021 13:01:16 +0000
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1mwOTb-00FHgY-TW; Sun, 12 Dec 2021 13:01:15 +0000
+From:   "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
+        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
+        Michal Simek <michal.simek@xilinx.com>, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH net-next] net: axienet: mark as a legacy_pre_march2020 driver
 MIME-Version: 1.0
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCHv2] selftests: icmp_redirect: pass xfail=0 to log_test()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163931400832.17396.4075834071106906036.git-patchwork-notify@kernel.org>
-Date:   Sun, 12 Dec 2021 13:00:08 +0000
-References: <20211210072523.38886-1-po-hsu.lin@canonical.com>
-In-Reply-To: <20211210072523.38886-1-po-hsu.lin@canonical.com>
-To:     Po-Hsu Lin <po-hsu.lin@canonical.com>
-Cc:     netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        skhan@linuxfoundation.org, andrea.righi@canonical.com,
-        dsahern@kernel.org
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1mwOTb-00FHgY-TW@rmk-PC.armlinux.org.uk>
+Sender: Russell King <rmk@armlinux.org.uk>
+Date:   Sun, 12 Dec 2021 13:01:15 +0000
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+axienet has a PCS, but does not make use of the phylink PCS support.
+Mark it was a pre-March 2020 driver.
 
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+---
+This driver was missed from the patch set when the patches were sent
+for merging; it was in the original RFC series.
 
-On Fri, 10 Dec 2021 15:25:23 +0800 you wrote:
-> If any sub-test in this icmp_redirect.sh is failing but not expected
-> to fail. The script will complain:
->     ./icmp_redirect.sh: line 72: [: 1: unary operator expected
-> 
-> This is because when the sub-test is not expected to fail, we won't
-> pass any value for the xfail local variable in log_test() and thus
-> it's empty. Fix this by passing 0 as the 4th variable to log_test()
-> for non-xfail cases.
-> 
-> [...]
+ drivers/net/ethernet/xilinx/xilinx_axienet_main.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Here is the summary with links:
-  - [PATCHv2] selftests: icmp_redirect: pass xfail=0 to log_test()
-    https://git.kernel.org/netdev/net/c/3748939bce3f
-
-You are awesome, thank you!
+diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+index e39356364f33..23ac353b35fe 100644
+--- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
++++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+@@ -2051,6 +2051,7 @@ static int axienet_probe(struct platform_device *pdev)
+ 
+ 	lp->phylink_config.dev = &ndev->dev;
+ 	lp->phylink_config.type = PHYLINK_NETDEV;
++	lp->phylink_config.legacy_pre_march2020 = true;
+ 	lp->phylink_config.mac_capabilities = MAC_SYM_PAUSE | MAC_ASYM_PAUSE |
+ 		MAC_10FD | MAC_100FD | MAC_1000FD;
+ 
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.30.2
 
