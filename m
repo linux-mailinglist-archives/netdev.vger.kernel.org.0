@@ -2,105 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F5014717B5
-	for <lists+netdev@lfdr.de>; Sun, 12 Dec 2021 02:53:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F9244717CA
+	for <lists+netdev@lfdr.de>; Sun, 12 Dec 2021 03:16:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231806AbhLLBxu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Dec 2021 20:53:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48112 "EHLO
+        id S232503AbhLLCQS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Dec 2021 21:16:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230381AbhLLBxt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Dec 2021 20:53:49 -0500
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 889D8C061714;
-        Sat, 11 Dec 2021 17:53:49 -0800 (PST)
-Received: by mail-pf1-x430.google.com with SMTP id k26so11855468pfp.10;
-        Sat, 11 Dec 2021 17:53:49 -0800 (PST)
+        with ESMTP id S230381AbhLLCQR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Dec 2021 21:16:17 -0500
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2481C061714;
+        Sat, 11 Dec 2021 18:16:17 -0800 (PST)
+Received: by mail-pj1-x1035.google.com with SMTP id gx15-20020a17090b124f00b001a695f3734aso10637304pjb.0;
+        Sat, 11 Dec 2021 18:16:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=28IDWmEuuMa9Hdo0pq67vUNP/LnTqKCPRzx/AIyjFVk=;
-        b=Mgln7ic3xKgLM2C4pKtwQz2U8+2GWbx6s1/9F7xceFG+qIp/9N+DTArPNv4GHeOdxP
-         QNf1TU8KRWK82Kp1PTor3w5492D/FvTo34ulGekl/XmibZUAEQPppHMLNlOqNjApEY4U
-         ODEc4sJb1kSp1CXBuYZAAFN3pnERsnAlnZraP27i74ESLwOO/p9ystUIfMZTOLG4Xo6o
-         hTJkoNKjhkmnmdVz0+KhcRgnWxSxJhyFaTWVVNwVABpgxxq12G5eO6YVG7gA1MzZYKtJ
-         QSWpPMO3zdbRxX6CMyayBobnoPowIrYnzoMDf4dbGLC1X0n9OCkvWQYjuT+J61uEir1P
-         TgNQ==
+        bh=ODm5tTBiKjrGbG+xckr2d0+8GcplwxAyRg/WZM+r+ZU=;
+        b=fx/cYQjNTogkQkklLJydR4YdBt6fJXbRKvaeOoIOFI7DBXmRSoXo0ojIGmfZMOZhNr
+         dMcuspsbvAJNb9rzHf1GX3K6IeTIcMC0c5Ymmz1w8LubF7dk50Ur8q+uUrA6KRi+iKp2
+         khoaI/56VO2lV9pSIdiqQpkeMSJqH/CnS33OQ4Pdjp6CamzXMJn5WI8X29TU2ZV9QU3g
+         q0Rp3c0onPer0gpCnAh2JC5At7NuCfw44RArqd4m/rM6MU6iKPVLYsefDsyQUkNa9gl/
+         PpeMQ6zdz/DRWduDt0zCfTDFxG56jCFAVH+oB3kTpoTTyZb3ymiN9ChoJG970B9/SETd
+         Hicw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=28IDWmEuuMa9Hdo0pq67vUNP/LnTqKCPRzx/AIyjFVk=;
-        b=BKVNslHmkSJKA0FoxKb7/K6UwdgriOEhdByhFAN+ujrP+kEo22IJ95nUqUblHn732r
-         8Y5GuqjqLfvYV7rT6txDwRLDrGB7J/993pKJcT7iKU9v+xMFfJlwULMxN0GVRl2r1Cyc
-         8dTWKihkpK8EJrYlmFsF1wMsKPeM8/EBsXIreqZgnHIY3VHbgpAiB3LNNeT7SPtqSpD8
-         hzKuKfqtTnLAB+GaOWhsnn7eUXIWUnTST4gZ6ZeDYYTbsqIFemzikHI2Z75bcJ4e6Hvn
-         7h5vZR6tjijZe02xsyhMzMNQ649o+nq0RRnahpqTsp9mBFRMXMNZkMS4DUHDutqT+Tkr
-         7V3g==
-X-Gm-Message-State: AOAM531M2nDtSiPBXeqJZs8JE8tNcCMZeObLGdUToSZZxczAcBqj/x6/
-        Aq77F13mr915TJL7WgyN+YKbldBllI+PwbKpQPZAdk4ZxXE=
-X-Google-Smtp-Source: ABdhPJxvfex0tAYFlBaaZbONK+8xpQgvwo76J48WOncwb2aJG4FDNaQKmRghuqOcc+LeO9GVtpGfs+wpng6MTzo4RpI=
-X-Received: by 2002:a63:8f06:: with SMTP id n6mr33306484pgd.95.1639274028602;
- Sat, 11 Dec 2021 17:53:48 -0800 (PST)
+        bh=ODm5tTBiKjrGbG+xckr2d0+8GcplwxAyRg/WZM+r+ZU=;
+        b=TDE+5tVKYJdpj2wIjvb7k6EbagpF2VWtx5iDbUd3Okk7vworJq805iF896U+HSu9MS
+         B4sh1ww2paLfs38t59Ea+dqtKPe95exRlDYZlh1DbEALCo6Bn5EsQZnkUxHzgMbq0Hpj
+         +RF07+P0t/JvI7gq9xzWA8FTY/XkTVjrX9l9o6v0+vp+aTym2YxpFWaPKUfi5x/xQ/og
+         r4aaxMsji5vD0TD57rU66TaydgpnFd4Mpvd6lxNd0Mo9QhEISCGhzT8/+c6WInZdamwS
+         ZwnGjvZ9X5VWvmmf4fsr8eqxIwgt/WHB3DaGbLq0cLStBZBy1LUIUBnBFpeOAlxCRvpy
+         7dsQ==
+X-Gm-Message-State: AOAM5313fXdBTQqvoaND1yxEgfC4ah/aGKOwPduh6Y6Snszpad/XCakt
+        kcYyu3oAxLnieO6AOK81mpIWSbMQynycxBYbYR0=
+X-Google-Smtp-Source: ABdhPJxxdL1mGuaBvfT4Vll0Ypm45+kpnKpBj99qjYdQuu116CxUfv0X/VSqia83k0TsstchZ5IoKRVNzzHPr4Xi0dE=
+X-Received: by 2002:a17:90b:4c03:: with SMTP id na3mr34447607pjb.62.1639275377221;
+ Sat, 11 Dec 2021 18:16:17 -0800 (PST)
 MIME-Version: 1.0
-References: <20211210173433.13247-1-skhan@linuxfoundation.org>
-In-Reply-To: <20211210173433.13247-1-skhan@linuxfoundation.org>
+References: <1639030882-92383-1-git-send-email-jiapeng.chong@linux.alibaba.com>
+In-Reply-To: <1639030882-92383-1-git-send-email-jiapeng.chong@linux.alibaba.com>
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Sat, 11 Dec 2021 17:53:37 -0800
-Message-ID: <CAADnVQ+Fnn-NuGoLq1ZYbHM=kR_W01GB1DCFOnQTHhgfDOrnaA@mail.gmail.com>
-Subject: Re: [PATCH] selftests/bpf: remove ARRAY_SIZE defines from tests
-To:     Shuah Khan <skhan@linuxfoundation.org>
-Cc:     Shuah Khan <shuah@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+Date:   Sat, 11 Dec 2021 18:16:06 -0800
+Message-ID: <CAADnVQKnN6bariMqkXCzHCGcb-ZT6MSJqXq1QjpRbwS8vdy=eQ@mail.gmail.com>
+Subject: Re: [PATCH] bpf: use kmemdup() to replace kmalloc + memcpy
+To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
         Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        llvm@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 10, 2021 at 9:34 AM Shuah Khan <skhan@linuxfoundation.org> wrote:
+On Wed, Dec 8, 2021 at 10:22 PM Jiapeng Chong
+<jiapeng.chong@linux.alibaba.com> wrote:
 >
-> ARRAY_SIZE is defined in multiple test files. Remove the definitions
-> and include header file for the define instead.
+> Eliminate the follow coccicheck warning:
 >
-> Remove ARRAY_SIZE define and add include bpf_util.h to bring in the
-> define.
+> ./kernel/bpf/btf.c:6537:13-20: WARNING opportunity for kmemdup.
 >
-> Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
-> ---
->  tools/testing/selftests/bpf/progs/netif_receive_skb.c | 5 +----
->  tools/testing/selftests/bpf/progs/profiler.inc.h      | 5 +----
->  tools/testing/selftests/bpf/progs/test_sysctl_loop1.c | 5 +----
->  tools/testing/selftests/bpf/progs/test_sysctl_loop2.c | 4 +---
->  tools/testing/selftests/bpf/progs/test_sysctl_prog.c  | 5 +----
->  5 files changed, 5 insertions(+), 19 deletions(-)
->
-> diff --git a/tools/testing/selftests/bpf/progs/netif_receive_skb.c b/tools/testing/selftests/bpf/progs/netif_receive_skb.c
-> index 1d8918dfbd3f..7a5ebd330689 100644
-> --- a/tools/testing/selftests/bpf/progs/netif_receive_skb.c
-> +++ b/tools/testing/selftests/bpf/progs/netif_receive_skb.c
-> @@ -5,6 +5,7 @@
->  #include <bpf/bpf_helpers.h>
->  #include <bpf/bpf_tracing.h>
->  #include <bpf/bpf_core_read.h>
-> +#include <bpf/bpf_util.h>
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
 
-It doesn't look like you've built it.
-
-progs/test_sysctl_prog.c:11:10: fatal error: 'bpf/bpf_util.h' file not found
-#include <bpf/bpf_util.h>
-         ^~~~~~~~~~~~~~~~
-  CLNG-BPF [test_maps] socket_cookie_prog.o
-progs/test_sysctl_loop2.c:11:10: fatal error: 'bpf/bpf_util.h' file not found
-#include <bpf/bpf_util.h>
-         ^~~~~~~~~~~~~~~~
-1 error generated.
-In file included from progs/profiler2.c:6:
-progs/profiler.inc.h:7:10: fatal error: 'bpf/bpf_util.h' file not found
-#include <bpf/bpf_util.h>
-         ^~~~~~~~~~~~~~~~
+Applied. Thanks
