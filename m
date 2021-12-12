@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB5B2471842
-	for <lists+netdev@lfdr.de>; Sun, 12 Dec 2021 05:42:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 32ADC471854
+	for <lists+netdev@lfdr.de>; Sun, 12 Dec 2021 06:05:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232918AbhLLEmU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Dec 2021 23:42:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56060 "EHLO
+        id S231132AbhLLFEW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Dec 2021 00:04:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232874AbhLLEmT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Dec 2021 23:42:19 -0500
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E912C061714;
-        Sat, 11 Dec 2021 20:42:19 -0800 (PST)
-Received: by mail-pf1-x42b.google.com with SMTP id g18so12062668pfk.5;
-        Sat, 11 Dec 2021 20:42:19 -0800 (PST)
+        with ESMTP id S229849AbhLLFEW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Dec 2021 00:04:22 -0500
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4716C061714;
+        Sat, 11 Dec 2021 21:04:21 -0800 (PST)
+Received: by mail-pg1-x530.google.com with SMTP id m15so11537781pgu.11;
+        Sat, 11 Dec 2021 21:04:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id;
-        bh=FkhTj63126y9lAhicHFfO4FpHXcr7hg/OoN3XKYiZo4=;
-        b=Opq0Mv5C0QupzX/jrhdWt82gxjAVPnLhkFGbU4Wdcwp/PCwwiuJq4hNDvH4RyjN7GU
-         p/JmFgFjDuGc4c2+EuSFZo6f2Skt1xSTk4SXlNpXN2ATHLk+m/BtyXrdvRnc0U/4V06Q
-         bwMeZZDIrSaElT+yoIwVA2j5Ddmwa7OxKa+4cKK4ZHH8sL1FWmJdGZFrfOjU1T+61z4v
-         gmBRl1oxqWyruYrE34o9leTaW58+TUHWuwqCAI+WMjzxxg7JcikVgPfu15DC79q+YWXT
-         A3AXj197ESqy7gaWNbcK3eUcsKjS6TGPKa6+MBG+iLOjRxVVwBnq0avo5O7vjGriiBZm
-         Hw3w==
+        bh=oz3vhxEEPbDamv8BpZGdKnIlSqK4/xNum2DQN3KV040=;
+        b=dtdBI74AVvKFn2hVSFY1xTijT8b/vroECOjGYYi+ZH6zvqViC5UKg+lE5vdk/7VSGR
+         FGMTikEUuO3Ye38rWCx9KyCv7b476yhlhCPgVz8yORhwOZ3/h5sht5pvJ8MRq+gJQtyu
+         H/b/7LUipv6UVEGTKq39L5buto4C+p2iOwFEhAg6HjB6wwKNb4t4dAhVegw4GbGJp0+Y
+         dj4EQnSjeD8ii3fYC9183OrNFSi/eJri0rxWuLObOjREfTQjaoCxKb3f5HrbDXgLvQSu
+         KPSbFXKBOA5Y5LFccwEtewZa39kDmw/kEgkhMDuZ/w4Duz3eKHDKu/mVXtR5wUsT2gok
+         k9HA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=FkhTj63126y9lAhicHFfO4FpHXcr7hg/OoN3XKYiZo4=;
-        b=qm0Mh/X3GALWanwSHuFuylVj4RsMEqzDUWi2435zgvGTjPaslVoZlwdleb8mHBdMDT
-         GJV9qTQM+IffLAIKb8q9ymKSiydmQ7XV5MEaXw978Oyc25FpVbzpgOrtl13uqa67sNQO
-         9QrnWIERRWtZvSV62KkFT9qaBeK94vpvE8pQ8AJBKvsW3GqUM0Gr15rqYagDC4fKUZjh
-         yMOCbextkIM8RyoC4eGMwcUSdrqb3vcWcmvS+1QnZDflAjFeV3lyMB7kTiffVAxtKNeq
-         bgkyXi4Fbr58t7jshFJpwKdtt7U0QCV1Mr331eHO/xqCmua17S8a3ASXnXWlBsu7fl9S
-         MyzA==
-X-Gm-Message-State: AOAM533rFn5HNchQ1IrPZVLOXcEl4LtAZxoHKJBmLA9XISILifO9J4gC
-        fyDDw/ypiDcAS4ky9kDG3wo=
-X-Google-Smtp-Source: ABdhPJy2SHqTFnQRsphqnWkzjkLNcmj8IoIrxu/fahFcIL+OV2q+cNACuGZv89j6Ty/3GnlyDtu2Ng==
-X-Received: by 2002:a62:e908:0:b0:49f:c633:51ec with SMTP id j8-20020a62e908000000b0049fc63351ecmr26676099pfh.1.1639284138566;
-        Sat, 11 Dec 2021 20:42:18 -0800 (PST)
+        bh=oz3vhxEEPbDamv8BpZGdKnIlSqK4/xNum2DQN3KV040=;
+        b=guw3/fqm8JVNA/FtzE+BQAjQXuvZl68TRq5vRHFKZTXkGyZfMWXdmuCCrRlwFd5kJb
+         +5x4t4w1mksb5SFR8as/KxxVYi+ii0tyWId3ZMAYmnbDzYX9ldtb7VoMIVSGXQWqI69+
+         QNsN9Q6CsSTrP98Ll6wlU+hbFxHLXmqHVNpKgOvkyepPwzQAvipeNtqzjKUNdhgG9VBg
+         sXPGX4Miu9vPXxGKLbqumorx782uNFSh+0ppkz4l3uwP2nmtGx8l+3MR66lLl3CvZuMi
+         PHsy/AJj4IQOqPKoI4fHc1GgNemKA/8jop5ev/NKyRF9smrE3Y5E108sZ0gNqPBT2it7
+         shCg==
+X-Gm-Message-State: AOAM530dA08pom1KYjEHTil6+PEAdacZDTyHfakpPqwSE8T4zPS4/mg1
+        ucrNYzr/SqrAJk8XyRluhfA=
+X-Google-Smtp-Source: ABdhPJxp8O7H93R7IQqwX49pF2ZGZ7g34OK0J6VZ9zqALaZxPtmCIxtbSALCuBAkTqsPrz2MtqnyCw==
+X-Received: by 2002:a63:8bca:: with SMTP id j193mr9023278pge.293.1639285461166;
+        Sat, 11 Dec 2021 21:04:21 -0800 (PST)
 Received: from localhost.localdomain ([159.226.95.43])
-        by smtp.googlemail.com with ESMTPSA id on6sm3430471pjb.47.2021.12.11.20.42.15
+        by smtp.googlemail.com with ESMTPSA id n22sm7707766pfu.2.2021.12.11.21.04.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 11 Dec 2021 20:42:18 -0800 (PST)
+        Sat, 11 Dec 2021 21:04:20 -0800 (PST)
 From:   Miaoqian Lin <linmq006@gmail.com>
 Cc:     linmq006@gmail.com, Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -54,40 +54,39 @@ Cc:     linmq006@gmail.com, Alexei Starovoitov <ast@kernel.org>,
         John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@kernel.org>,
         Quentin Monnet <quentin@isovalent.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Hengqi Chen <hengqi.chen@gmail.com>, netdev@vger.kernel.org,
+        Hengqi Chen <hengqi.chen@gmail.com>,
+        Ilya Leoshkevich <iii@linux.ibm.com>, netdev@vger.kernel.org,
         bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] bpftool: Fix NULL vs IS_ERR() checking in do_show()
-Date:   Sun, 12 Dec 2021 04:42:08 +0000
-Message-Id: <20211212044212.12551-1-linmq006@gmail.com>
+Subject: [PATCH] bpftool: Fix NULL vs IS_ERR() checking
+Date:   Sun, 12 Dec 2021 05:04:12 +0000
+Message-Id: <20211212050415.17273-1-linmq006@gmail.com>
 X-Mailer: git-send-email 2.17.1
 To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
- The hashmap__new() function does not return NULL on errors. It returns
- ERR_PTR(-ENOMEM). Using IS_ERR() to check the return value
- to fix this.
+The hashmap__new() function does not return NULL on errors. It returns
+ERR_PTR(-ENOMEM). Using IS_ERR() to check the return value to fix this.
 
 Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
 ---
- tools/bpf/bpftool/prog.c | 2 +-
+ tools/bpf/bpftool/btf.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/bpf/bpftool/prog.c b/tools/bpf/bpftool/prog.c
-index 515d22952602..564a15f881c6 100644
---- a/tools/bpf/bpftool/prog.c
-+++ b/tools/bpf/bpftool/prog.c
-@@ -571,7 +571,7 @@ static int do_show(int argc, char **argv)
- 	if (show_pinned) {
- 		prog_table = hashmap__new(hash_fn_for_key_as_id,
- 					  equal_fn_for_key_as_id, NULL);
--		if (!prog_table) {
-+		if (IS_ERR(prog_table)) {
- 			p_err("failed to create hashmap for pinned paths");
- 			return -1;
- 		}
+diff --git a/tools/bpf/bpftool/btf.c b/tools/bpf/bpftool/btf.c
+index 015d2758f826..4a561ec848c0 100644
+--- a/tools/bpf/bpftool/btf.c
++++ b/tools/bpf/bpftool/btf.c
+@@ -899,7 +899,7 @@ static int do_show(int argc, char **argv)
+ 				      equal_fn_for_key_as_id, NULL);
+ 	btf_map_table = hashmap__new(hash_fn_for_key_as_id,
+ 				     equal_fn_for_key_as_id, NULL);
+-	if (!btf_prog_table || !btf_map_table) {
++	if (IS_ERR(btf_prog_table) || IS_ERR(btf_map_table)) {
+ 		hashmap__free(btf_prog_table);
+ 		hashmap__free(btf_map_table);
+ 		if (fd >= 0)
 -- 
 2.17.1
 
