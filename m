@@ -2,117 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B35A3471893
-	for <lists+netdev@lfdr.de>; Sun, 12 Dec 2021 06:41:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8928C471904
+	for <lists+netdev@lfdr.de>; Sun, 12 Dec 2021 08:12:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232689AbhLLFSh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Dec 2021 00:18:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35606 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231886AbhLLFSg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Dec 2021 00:18:36 -0500
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B26ABC061714;
-        Sat, 11 Dec 2021 21:18:36 -0800 (PST)
-Received: by mail-pg1-x52a.google.com with SMTP id d11so2928693pgl.1;
-        Sat, 11 Dec 2021 21:18:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=jlIYHo2VQhB5Dy3xMpCTQ53s0lSZWeKnDpK15S71oTQ=;
-        b=dwe3LIjddRevbulUQuUHNgZpPiTvqfjPpXbs8UOTe/XezSPsJlNDKPv2sB8pn1YNIK
-         x3YZzXdzyty7hZIH4djEm1sksPYSQ8jMWvcANzRTPicPdauERRkWQlhJWAIWjSZ/BssX
-         ufF5CTBLiqPg7Z51D5OYBGwJOkh0pYIdohRyaogOxu5IJMIAQ2VG2ih3sQ71UOkWwzpd
-         ojeT8reJVeVXo0tXKN+mbhRF3755QLl8ukWlOpi0HKYHW8bGsKN25jODFwc/PrHYb6ZO
-         Jw3Aj7tdRTCAhnRWeD5sps0ZOiWnrCKiIXN8GfZsVdqWK2SyXBdw4TQQYFx9k/nSsQGo
-         bK+A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=jlIYHo2VQhB5Dy3xMpCTQ53s0lSZWeKnDpK15S71oTQ=;
-        b=HLteqDdvewaRviTwE5+4juC9vBqdezIKTyvGoCCH6zZyCQpMmxgCBZOYbEQMs4iaUK
-         Xy8UenrMIPTotd245IHbw2S/8g8oqemxiJt5eDTjNMO290XMpJBLslyvOweqO3+6fHpU
-         0Q9gk1j59lEP5SKvzedtvqaqJS+1tIN0pQR6Wgc5P0mksnVz9ts7knketaaTWogkILb/
-         fSwW3pjaDDeChkPC2caNsTcAv9UBniNmdt59JYRvv1jUQ+2gVj2S1Fp0NVaCSVsY/E6X
-         r7W5dd45MnCYvYFEFtHitPVG/9KFiXrt2pyHGbfTECtedUIb7UE+pB98eBajMrkNU8NS
-         EBhA==
-X-Gm-Message-State: AOAM532/yFFkVwkXhwC1/IMDdWcMkWHbV6hsW+XU8l9GFQz1H3tK3CKD
-        Az4KoW++SZbqmOsnCoT9K3Q=
-X-Google-Smtp-Source: ABdhPJzrPL74goJ1X5fkVuGribEiRNlVPHxHbjDd6iWILZdmpBpdz4ZPZjtCQ+IhVenV6uRja1Eahw==
-X-Received: by 2002:a63:d811:: with SMTP id b17mr45635979pgh.562.1639286315487;
-        Sat, 11 Dec 2021 21:18:35 -0800 (PST)
-Received: from localhost.localdomain ([159.226.95.43])
-        by smtp.googlemail.com with ESMTPSA id d9sm2950072pjs.2.2021.12.11.21.18.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 11 Dec 2021 21:18:35 -0800 (PST)
-From:   Miaoqian Lin <linmq006@gmail.com>
-Cc:     linmq006@gmail.com, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Quentin Monnet <quentin@isovalent.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] bpftool: Fix NULL vs IS_ERR() checking for return value of hashmap__new
-Date:   Sun, 12 Dec 2021 05:18:09 +0000
-Message-Id: <20211212051816.20478-1-linmq006@gmail.com>
-X-Mailer: git-send-email 2.17.1
-To:     unlisted-recipients:; (no To-header on input)
+        id S229651AbhLLHMu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Dec 2021 02:12:50 -0500
+Received: from smtpbg128.qq.com ([106.55.201.39]:14646 "EHLO smtpbg587.qq.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229518AbhLLHMt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 12 Dec 2021 02:12:49 -0500
+X-QQ-mid: bizesmtp44t1639293128tgcghhpq
+Received: from localhost.localdomain (unknown [182.132.179.213])
+        by esmtp6.qq.com (ESMTP) with 
+        id ; Sun, 12 Dec 2021 15:12:06 +0800 (CST)
+X-QQ-SSF: 01000000002000D0I000B00A0000000
+X-QQ-FEAT: BVRItfLxsF5N0FKv6/avTPr/sb1RniA01AUrRZuUoLjXX1S0Hf7YFxeWXbkTv
+        LYqclodWvQTuPxTU38Sm2K1+n2vIQmk6Csjf/mjTY/VB+sz1nGrQSXKlgdabceWJrg1D9gr
+        ZdR612YR2OC+QBwozFtMt8nP6n/aepl23BB4luMJJIsqYcJFGMVpA94F30ezyawisMxq6xc
+        rvKInz8ptrQ1rDAmSOXJDpwWoWfUfTttgNANo4qU3aV8/1MB+M6eDO/cXwkluK70J25ydFV
+        XRaIvWAm0BJZzVIEBP2d8bgutMqS4BWWLMJhLijt4VQZ+w2wQ5mk/F/OSHwlXfInAwiyGl9
+        YpOpoKhrd2bRfDthhoo1FwQfsh0xykgnzNyQSkjDwS8DG1lrXbUoLt+YjjqiQ==
+X-QQ-GoodBg: 0
+From:   Jason Wang <wangborong@cdjrlc.com>
+To:     isdn@linux-pingi.de
+Cc:     arnd@arndb.de, davem@davemloft.net, wangborong@cdjrlc.com,
+        butterflyhuangxx@gmail.com, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] isdn: cpai: no need to initialise statics to 0
+Date:   Sun, 12 Dec 2021 15:12:04 +0800
+Message-Id: <20211212071204.293677-1-wangborong@cdjrlc.com>
+X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam5
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The hashmap__new() function does not return NULL on errors. It returns
-ERR_PTR(-ENOMEM). Using IS_ERR() to check the return value to fix this.
+Static variables do not need to be initialised to 0, because compiler
+will initialise all uninitialised statics to 0. Thus, remove the
+unneeded initializations.
 
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
 ---
- tools/bpf/bpftool/link.c | 2 +-
- tools/bpf/bpftool/map.c  | 2 +-
- tools/bpf/bpftool/pids.c | 2 +-
- 3 files changed, 3 insertions(+), 3 deletions(-)
+ drivers/isdn/capi/kcapi.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/bpf/bpftool/link.c b/tools/bpf/bpftool/link.c
-index 2c258db0d352..0dc402a89cd8 100644
---- a/tools/bpf/bpftool/link.c
-+++ b/tools/bpf/bpftool/link.c
-@@ -306,7 +306,7 @@ static int do_show(int argc, char **argv)
- 	if (show_pinned) {
- 		link_table = hashmap__new(hash_fn_for_key_as_id,
- 					  equal_fn_for_key_as_id, NULL);
--		if (!link_table) {
-+		if (IS_ERR(link_table)) {
- 			p_err("failed to create hashmap for pinned paths");
- 			return -1;
- 		}
-diff --git a/tools/bpf/bpftool/map.c b/tools/bpf/bpftool/map.c
-index cae1f1119296..af83ae37d247 100644
---- a/tools/bpf/bpftool/map.c
-+++ b/tools/bpf/bpftool/map.c
-@@ -698,7 +698,7 @@ static int do_show(int argc, char **argv)
- 	if (show_pinned) {
- 		map_table = hashmap__new(hash_fn_for_key_as_id,
- 					 equal_fn_for_key_as_id, NULL);
--		if (!map_table) {
-+		if (IS_ERR(map_table)) {
- 			p_err("failed to create hashmap for pinned paths");
- 			return -1;
- 		}
-diff --git a/tools/bpf/bpftool/pids.c b/tools/bpf/bpftool/pids.c
-index 56b598eee043..6c4767e97061 100644
---- a/tools/bpf/bpftool/pids.c
-+++ b/tools/bpf/bpftool/pids.c
-@@ -101,7 +101,7 @@ int build_obj_refs_table(struct hashmap **map, enum bpf_obj_type type)
- 	libbpf_print_fn_t default_print;
+diff --git a/drivers/isdn/capi/kcapi.c b/drivers/isdn/capi/kcapi.c
+index 7313454e403a..e69c4bf557bf 100644
+--- a/drivers/isdn/capi/kcapi.c
++++ b/drivers/isdn/capi/kcapi.c
+@@ -32,7 +32,7 @@
+ #include <linux/mutex.h>
+ #include <linux/rcupdate.h>
  
- 	*map = hashmap__new(hash_fn_for_key_as_id, equal_fn_for_key_as_id, NULL);
--	if (!*map) {
-+	if (IS_ERR(*map)) {
- 		p_err("failed to create hashmap for PID references");
- 		return -1;
- 	}
+-static int showcapimsgs = 0;
++static int showcapimsgs;
+ static struct workqueue_struct *kcapi_wq;
+ 
+ module_param(showcapimsgs, uint, 0);
 -- 
-2.17.1
+2.34.1
 
