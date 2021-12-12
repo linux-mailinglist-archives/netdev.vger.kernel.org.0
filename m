@@ -2,133 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D535F47199E
-	for <lists+netdev@lfdr.de>; Sun, 12 Dec 2021 11:35:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 315564719A8
+	for <lists+netdev@lfdr.de>; Sun, 12 Dec 2021 11:45:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230102AbhLLKfJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Dec 2021 05:35:09 -0500
-Received: from a.mx.secunet.com ([62.96.220.36]:47044 "EHLO a.mx.secunet.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230078AbhLLKfI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 12 Dec 2021 05:35:08 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 11DE0204E0;
-        Sun, 12 Dec 2021 11:35:07 +0100 (CET)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id 57jqAhMn4iAc; Sun, 12 Dec 2021 11:35:06 +0100 (CET)
-Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 8EA54201E4;
-        Sun, 12 Dec 2021 11:35:06 +0100 (CET)
-Received: from cas-essen-02.secunet.de (unknown [10.53.40.202])
-        by mailout1.secunet.com (Postfix) with ESMTP id 7F67F80004A;
-        Sun, 12 Dec 2021 11:35:06 +0100 (CET)
-Received: from mbx-essen-02.secunet.de (10.53.40.198) by
- cas-essen-02.secunet.de (10.53.40.202) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Sun, 12 Dec 2021 11:35:06 +0100
-Received: from moon.secunet.de (172.18.149.1) by mbx-essen-02.secunet.de
- (10.53.40.198) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.17; Sun, 12 Dec
- 2021 11:35:06 +0100
-Date:   Sun, 12 Dec 2021 11:35:00 +0100
-From:   Antony Antony <antony.antony@secunet.com>
-To:     Steffen Klassert <steffen.klassert@secunet.com>
-CC:     Eyal Birger <eyal.birger@gmail.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Antony Antony <antony.antony@secunet.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>
-Subject: [PATCH v2 ipsec-next 2/2] xfrm: state and policy should fail if
- XFRMA_IF_ID 0
-Message-ID: <750d7eeedf4767485fa616a245e1f1cf0881cbfe.1639304726.git.antony.antony@secunet.com>
-Reply-To: <antony.antony@secunet.com>
-References: <0bfebd4e5f317cbf301750d5dd5cc706d4385d7f.1639064087.git.antony.antony@secunet.com>
+        id S230122AbhLLKpD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Dec 2021 05:45:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49232 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229622AbhLLKpD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Dec 2021 05:45:03 -0500
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E27EC061714;
+        Sun, 12 Dec 2021 02:45:03 -0800 (PST)
+Received: by mail-pl1-x629.google.com with SMTP id b11so9211011pld.12;
+        Sun, 12 Dec 2021 02:45:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rCn440tKtkzAwO1Bl/FgEJ2hmsU7YRbUmVeW5PxwasM=;
+        b=GnavoKbhE7V4CZiF+ENSkwT29zXiV4bKjZYKvRwIx976Al67IttZvFhf+nB+bcpcBi
+         XW2GTdmtqwETnrecyuhTURev8XPHr93nJvJwd9ml3ghjy9nhEHc9iZMXj/D0AnPb67hb
+         s+GZLBD/ODokJZkHmY0sfZyS+hilLpm5HKTwiku+uJjDv8D85j8k+aPlNkR0PWsEbmJV
+         gkzbbFNJ4Qngfd/1gayKkqFlnsj+NhPqZ9BLS1RZT1xbYdsnOJ/1WOOWgDRN0yc1krIw
+         Fcfe9/PysVmXFcZiCfP419D8iR7ZHIfd6aMtFvoErp5hJnWjdx6QmQ4p2yP/hI/Mr08y
+         UDIQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rCn440tKtkzAwO1Bl/FgEJ2hmsU7YRbUmVeW5PxwasM=;
+        b=ZUUdM6WIQiPSy8Qo8zSA8YMnGf5jHeZ48B9DFd3m3wKjqmgRP1pqRTel5dFc4Wpp76
+         T8bcwX0FS/OpPr7rk70RZRvOV7P0zTj7LTyvYXrYVqYgRcBk5WWu+2yRkaK4ANUY/n8y
+         m6xdpOooIE/NMiSHIWCfQ8zHTX68lFFeTxUovBrh79ciyWF3i954Y2hDtmWTtsQi5xCH
+         WNq3GvDeejRt6ZYFJ6BZnmyBcQGE95AHQtcpPFpMa4EiD8pB3UPEwOrebGtlm90tsBIX
+         kiP+67BUFAc5326gsIh1IQ0WX1g98v6hBzNeJ/RVy+xqel6j4dcEQydHKTnfQtmnvsvN
+         tRkA==
+X-Gm-Message-State: AOAM531sCF42DunjEzHHOG21062n8bh2F5li7WLWDjx6CQvNuLw/FFeP
+        noDHklH6amxtv68PaNBQfRI//HjGfprrnA==
+X-Google-Smtp-Source: ABdhPJyyQqs5e2hm4kAqpUZ7gKLzmgvaVmuj3KuTVJQTQfa8q5uuSTPSCYfqiZrILD/EnyswXruo0Q==
+X-Received: by 2002:a17:90b:3ec2:: with SMTP id rm2mr37301920pjb.1.1639305902564;
+        Sun, 12 Dec 2021 02:45:02 -0800 (PST)
+Received: from LAPTOP-M5MOLEEC.localdomain (111-243-35-130.dynamic-ip.hinet.net. [111.243.35.130])
+        by smtp.gmail.com with ESMTPSA id k19sm8291722pff.20.2021.12.12.02.45.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 12 Dec 2021 02:45:02 -0800 (PST)
+From:   Joseph CHANG <josright123@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Joseph CHANG <josright123@gmail.com>,
+        joseph_chang@davicom.com.tw
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v4, 0/2] ADD DM9051 ETHERNET DRIVER
+Date:   Sun, 12 Dec 2021 18:46:02 +0800
+Message-Id: <20211212104604.20334-1-josright123@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <0bfebd4e5f317cbf301750d5dd5cc706d4385d7f.1639064087.git.antony.antony@secunet.com>
-Organization: secunet
-X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
- mbx-essen-02.secunet.de (10.53.40.198)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-xfrm ineterface does not allow xfrm if_id = 0
-fail to create or update xfrm state and policy.
+DM9051 is a spi interface ethernet controller chip
+Fewer connect pins to CPU compare to DM9000
 
-With this commit:
- ip xfrm policy add src 192.0.2.1 dst 192.0.2.2 dir out if_id 0
- RTNETLINK answers: Invalid argument
+Joseph CHANG (2):
+  yaml: Add dm9051 SPI network yaml file
+  net: Add dm9051 driver
 
- ip xfrm state add src 192.0.2.1 dst 192.0.2.2 proto esp spi 1 \
-            reqid 1 mode tunnel aead 'rfc4106(gcm(aes))' \
-            0x1111111111111111111111111111111111111111 96 if_id 0
- RTNETLINK answers: Invalid argument
+ .../bindings/net/davicom,dm9051.yaml          |  62 ++
+ drivers/net/ethernet/davicom/Kconfig          |  30 +
+ drivers/net/ethernet/davicom/Makefile         |   1 +
+ drivers/net/ethernet/davicom/dm9051.c         | 865 ++++++++++++++++++
+ drivers/net/ethernet/davicom/dm9051.h         | 225 +++++
+ 5 files changed, 1183 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/davicom,dm9051.yaml
+ create mode 100644 drivers/net/ethernet/davicom/dm9051.c
+ create mode 100644 drivers/net/ethernet/davicom/dm9051.h
 
-v1->v2 change:
- - add Fixes: tag
 
-Fixes: 9f8550e4bd9d ("xfrm: fix disable_xfrm sysctl when used on xfrm interfaces")
-Signed-off-by: Antony Antony <antony.antony@secunet.com>
----
- net/xfrm/xfrm_user.c | 21 ++++++++++++++++++---
- 1 file changed, 18 insertions(+), 3 deletions(-)
-
-diff --git a/net/xfrm/xfrm_user.c b/net/xfrm/xfrm_user.c
-index 064f91cd2f01..3e5fb1648be3 100644
---- a/net/xfrm/xfrm_user.c
-+++ b/net/xfrm/xfrm_user.c
-@@ -626,8 +626,13 @@ static struct xfrm_state *xfrm_state_construct(struct net *net,
- 
- 	xfrm_smark_init(attrs, &x->props.smark);
- 
--	if (attrs[XFRMA_IF_ID])
-+	if (attrs[XFRMA_IF_ID]) {
- 		x->if_id = nla_get_u32(attrs[XFRMA_IF_ID]);
-+		if (!x->if_id) {
-+			err = -EINVAL;
-+			goto error;
-+		}
-+	}
- 
- 	err = __xfrm_init_state(x, false, attrs[XFRMA_OFFLOAD_DEV]);
- 	if (err)
-@@ -1418,8 +1423,13 @@ static int xfrm_alloc_userspi(struct sk_buff *skb, struct nlmsghdr *nlh,
- 
- 	mark = xfrm_mark_get(attrs, &m);
- 
--	if (attrs[XFRMA_IF_ID])
-+	if (attrs[XFRMA_IF_ID]) {
- 		if_id = nla_get_u32(attrs[XFRMA_IF_ID]);
-+		if (!if_id) {
-+			err = -EINVAL;
-+			goto out_noput;
-+		}
-+	}
- 
- 	if (p->info.seq) {
- 		x = xfrm_find_acq_byseq(net, mark, p->info.seq);
-@@ -1732,8 +1742,13 @@ static struct xfrm_policy *xfrm_policy_construct(struct net *net, struct xfrm_us
- 
- 	xfrm_mark_get(attrs, &xp->mark);
- 
--	if (attrs[XFRMA_IF_ID])
-+	if (attrs[XFRMA_IF_ID]) {
- 		xp->if_id = nla_get_u32(attrs[XFRMA_IF_ID]);
-+		if (!xp->if_id) {
-+			err = -EINVAL;
-+			goto error;
-+		}
-+	}
- 
- 	return xp;
-  error:
+base-commit: 77ab714f00703c91d5a6e15d7445775c80358774
 -- 
-2.30.2
+2.25.1
 
