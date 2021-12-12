@@ -2,183 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F7DF47197A
-	for <lists+netdev@lfdr.de>; Sun, 12 Dec 2021 10:26:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 91434471984
+	for <lists+netdev@lfdr.de>; Sun, 12 Dec 2021 10:41:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230004AbhLLJ0N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Dec 2021 04:26:13 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:55353 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229888AbhLLJ0M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Dec 2021 04:26:12 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1639301172;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=iOXcr6pHx2dTcXC87fAYLtq4NSmVsSlQxlt3kaDLk48=;
-        b=ZIvcv8drU6jW+85nnVwBZBkygEs8cujoQgjhXMRqvbwG0DNjeNqcZ/swibDOpyKntupGxN
-        XT6mWXnJhEmyNKSfKmRfYlzhwVYVeTZfneFaXGhCuxAZmoEhQnGzBZqPtAHNIHbUikkanl
-        9qZeBcNJvPPpU7BwjpyFSzZY6UOLhHI=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-338-w4CMWzEaOu-wD-UihGeAzQ-1; Sun, 12 Dec 2021 04:26:10 -0500
-X-MC-Unique: w4CMWzEaOu-wD-UihGeAzQ-1
-Received: by mail-wr1-f72.google.com with SMTP id q5-20020a5d5745000000b00178abb72486so3201929wrw.9
-        for <netdev@vger.kernel.org>; Sun, 12 Dec 2021 01:26:10 -0800 (PST)
+        id S230004AbhLLJlb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Dec 2021 04:41:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35590 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229651AbhLLJl3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Dec 2021 04:41:29 -0500
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FD86C061714
+        for <netdev@vger.kernel.org>; Sun, 12 Dec 2021 01:41:29 -0800 (PST)
+Received: by mail-ed1-x52c.google.com with SMTP id v1so43452360edx.2
+        for <netdev@vger.kernel.org>; Sun, 12 Dec 2021 01:41:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=KwaV+90gkfKpRorBcfPvmE8WN7HF/WeI5cAnJtlChFI=;
+        b=pZKbCN9VZ9P5odNzSE342s3SW0xxrliS/lZCysrRZDUaTGXMJztt+w7JxyrQizctFj
+         WvnwssiwvK9VAkDUcqG+mJ+F8E7pCoN0oCYCNXkzNk94W3P0XkAKg6lmQuDifKHuP1DV
+         9jXUQf5UeG4hy2Z25E2XFgfC7eGHMrfAaXOqRO10Fvq76zlNBP3fVs9ujO6D70n7byGd
+         XiBPBOtBipj1PGP9fAWfh8x54k0fgDXPd6R13j2F3IPH0ElMXb0qrUUD7N3vSjSp2SKD
+         BPJpnoqdbtHzmdEV2wq8FvIvkHSfl2uuAFg3dyAlQi9GHWon8T8/zf5dlbwb3oyy/E83
+         s4vg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=iOXcr6pHx2dTcXC87fAYLtq4NSmVsSlQxlt3kaDLk48=;
-        b=FSZl2J0sWAP88BHB23sHFimBkDMGdqTnLkSxa3LVQvM3GVcr3vTUTz+ADl8c0oATIB
-         h+vJzN/E5e2comlBJ2+N5B0eOPfQuO7tNk6VGFxX2oq6A3HpKgeLwX/XFRHOraNXWJoa
-         kWV7HmfibWQdRk1aRAzTlFiZBgtY2+pyJIi4XeoPO3Psf9S2ASVQADeBBbT2gLd3TPe+
-         JeMbHqRxISeHaMoP50wTjjtmOtnGPJmJrlF/yRZ0Km7u9bjuYSPql+AutIav24b2T0Zl
-         BZJfO9thZZ+TecvTWK9Rl9KRLw4wdvCW1/7pWLaiwIJ7yQhnH1NU6t0gqTSpcuyifYIs
-         OxBQ==
-X-Gm-Message-State: AOAM532oiUpNha319jhQRuhE0b2QrXvbWM7JblasLKN6WtvUe6OdeAni
-        cWnA1SFKRwc/6LLgb4AQ+4UZLOE7tSMN2j3k87LuSnvqJOTR3dHIiuNVcJIz/yITHbCiagfLbLc
-        kdqFqxLYamzS2G2Qe
-X-Received: by 2002:adf:f352:: with SMTP id e18mr24921186wrp.39.1639301169219;
-        Sun, 12 Dec 2021 01:26:09 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxtqXoz8hDbJjLt2rbzhBOfaD5dc4meh/BYw1JmqhXFGUH5XhglF+PBQQDu4hLMN81ueRNuRg==
-X-Received: by 2002:adf:f352:: with SMTP id e18mr24921175wrp.39.1639301169009;
-        Sun, 12 Dec 2021 01:26:09 -0800 (PST)
-Received: from redhat.com ([2a03:c5c0:107e:eefb:294:6ac8:eff6:22df])
-        by smtp.gmail.com with ESMTPSA id 9sm9707263wry.0.2021.12.12.01.26.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 12 Dec 2021 01:26:08 -0800 (PST)
-Date:   Sun, 12 Dec 2021 04:26:04 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Si-Wei Liu <si-wei.liu@oracle.com>
-Cc:     Jason Wang <jasowang@redhat.com>, elic@nvidia.com,
-        linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-Subject: Re: vdpa legacy guest support (was Re: [PATCH] vdpa/mlx5:
- set_features should allow reset to zero)
-Message-ID: <20211212042311-mutt-send-email-mst@kernel.org>
-References: <fae0bae7-e4cd-a3aa-57fe-d707df99b634@redhat.com>
- <20210223082536-mutt-send-email-mst@kernel.org>
- <3ff5fd23-1db0-2f95-4cf9-711ef403fb62@oracle.com>
- <20210224000057-mutt-send-email-mst@kernel.org>
- <52836a63-4e00-ff58-50fb-9f450ce968d7@oracle.com>
- <20210228163031-mutt-send-email-mst@kernel.org>
- <2cb51a6d-afa0-7cd1-d6f2-6b153186eaca@redhat.com>
- <20210302043419-mutt-send-email-mst@kernel.org>
- <178f8ea7-cebd-0e81-3dc7-10a058d22c07@redhat.com>
- <c9a0932f-a6d7-a9df-38ba-97e50f70c2b2@oracle.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=KwaV+90gkfKpRorBcfPvmE8WN7HF/WeI5cAnJtlChFI=;
+        b=GLQPtBqQTVVTuQA3ZR3BAXygm158TVxFVHEumUtXzzreSGy6uOIKVoghXyjYxXhzQX
+         1sVwbXLA/ClHqIVbjjomZIh8NRgpdIo913WV0c1uWEuOFn/EtNbqEt8uIP4R9xfn9wh2
+         QVTP0I2aG8pvumXxf71SbmoFCFnLdmgnZAKy5A/hjhn+y3Oo/0Tg0T3O9qt9MfB4LDjB
+         vNkqlWFnMou4PA1d8b1pVS/IJjaqmjdBXuKuYiteVNOu5v2y1R9SYcSf+ITmvRlQzgGT
+         sp85B6+qwMnnsC15Jky+ypZJ/TSQBr3cEmU+I+WCL7z2DYcqZcbcWkSUZqnKFuPFCtOV
+         C9tQ==
+X-Gm-Message-State: AOAM531RcjHrmu+1F6WGitm9HXPUaYgtl7knnIaot2Jt1TtXXUuJZKjF
+        VXUDgLJZ4cJjhpPADYA7Kx/CfX52hmHIveGHaQc=
+X-Google-Smtp-Source: ABdhPJzR1zenKTBp9cW1jMx1ffSYFcS3ovrPE0Gb+IqJ52vAtbzQc9WGYoTgx5s72pTfEpF0NHGulC8+NfTv9qjRL4k=
+X-Received: by 2002:a05:6402:34d:: with SMTP id r13mr53357414edw.208.1639302087805;
+ Sun, 12 Dec 2021 01:41:27 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <c9a0932f-a6d7-a9df-38ba-97e50f70c2b2@oracle.com>
+References: <20211208145459.9590-1-xiangxia.m.yue@gmail.com>
+ <20211208145459.9590-3-xiangxia.m.yue@gmail.com> <61b383c6373ca_1f50e20816@john.notmuch>
+ <CAMDZJNV3-y5jkUAJJ--10PcicKpGMwKS_3gG9O7srjomO3begw@mail.gmail.com>
+ <CAMDZJNXL5qSfFv54A=RrMwHe8DOv48EfrypHb1FFSUFu36-9DQ@mail.gmail.com>
+ <CAMDZJNUyOELOcf0dtxktCTRKv1sUrp5Z17mW+4so7tt6DFnJsw@mail.gmail.com> <368e82ef-24be-06c7-2111-8a21cd558100@iogearbox.net>
+In-Reply-To: <368e82ef-24be-06c7-2111-8a21cd558100@iogearbox.net>
+From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Date:   Sun, 12 Dec 2021 17:40:51 +0800
+Message-ID: <CAMDZJNXMDWYd_CYVDSEdpkAUSZDJLdK7G4qBb4AVc1Nye0r_yA@mail.gmail.com>
+Subject: Re: [net v5 2/3] net: sched: add check tc_skip_classify in sch egress
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     John Fastabend <john.fastabend@gmail.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Wei Wang <weiwan@google.com>, Arnd Bergmann <arnd@arndb.de>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 10, 2021 at 05:44:15PM -0800, Si-Wei Liu wrote:
-> Sorry for reviving this ancient thread. I was kinda lost for the conclusion
-> it ended up with. I have the following questions,
-> 
-> 1. legacy guest support: from the past conversations it doesn't seem the
-> support will be completely dropped from the table, is my understanding
-> correct? Actually we're interested in supporting virtio v0.95 guest for x86,
-> which is backed by the spec at
-> https://ozlabs.org/~rusty/virtio-spec/virtio-0.9.5.pdf. Though I'm not sure
-> if there's request/need to support wilder legacy virtio versions earlier
-> beyond.
-
-I personally feel it's less work to add in kernel than try to
-work around it in userspace. Jason feels differently.
-Maybe post the patches and this will prove to Jason it's not
-too terrible?
-
-> 2. suppose some form of legacy guest support needs to be there, how do we
-> deal with the bogus assumption below in vdpa_get_config() in the short term?
-> It looks one of the intuitive fix is to move the vdpa_set_features call out
-> of vdpa_get_config() to vdpa_set_config().
-> 
->         /*
->          * Config accesses aren't supposed to trigger before features are
-> set.
->          * If it does happen we assume a legacy guest.
->          */
->         if (!vdev->features_valid)
->                 vdpa_set_features(vdev, 0);
->         ops->get_config(vdev, offset, buf, len);
-> 
-> I can post a patch to fix 2) if there's consensus already reached.
-> 
-> Thanks,
-> -Siwei
-
-I'm not sure how important it is to change that.
-In any case it only affects transitional devices, right?
-Legacy only should not care ...
-
-
-> On 3/2/2021 2:53 AM, Jason Wang wrote:
-> > 
-> > On 2021/3/2 5:47 下午, Michael S. Tsirkin wrote:
-> > > On Mon, Mar 01, 2021 at 11:56:50AM +0800, Jason Wang wrote:
-> > > > On 2021/3/1 5:34 上午, Michael S. Tsirkin wrote:
-> > > > > On Wed, Feb 24, 2021 at 10:24:41AM -0800, Si-Wei Liu wrote:
-> > > > > > > Detecting it isn't enough though, we will need a new ioctl to notify
-> > > > > > > the kernel that it's a legacy guest. Ugh :(
-> > > > > > Well, although I think adding an ioctl is doable, may I
-> > > > > > know what the use
-> > > > > > case there will be for kernel to leverage such info
-> > > > > > directly? Is there a
-> > > > > > case QEMU can't do with dedicate ioctls later if there's indeed
-> > > > > > differentiation (legacy v.s. modern) needed?
-> > > > > BTW a good API could be
-> > > > > 
-> > > > > #define VHOST_SET_ENDIAN _IOW(VHOST_VIRTIO, ?, int)
-> > > > > #define VHOST_GET_ENDIAN _IOW(VHOST_VIRTIO, ?, int)
-> > > > > 
-> > > > > we did it per vring but maybe that was a mistake ...
-> > > > 
-> > > > Actually, I wonder whether it's good time to just not support
-> > > > legacy driver
-> > > > for vDPA. Consider:
-> > > > 
-> > > > 1) It's definition is no-normative
-> > > > 2) A lot of budren of codes
-> > > > 
-> > > > So qemu can still present the legacy device since the config
-> > > > space or other
-> > > > stuffs that is presented by vhost-vDPA is not expected to be
-> > > > accessed by
-> > > > guest directly. Qemu can do the endian conversion when necessary
-> > > > in this
-> > > > case?
-> > > > 
-> > > > Thanks
-> > > > 
-> > > Overall I would be fine with this approach but we need to avoid breaking
-> > > working userspace, qemu releases with vdpa support are out there and
-> > > seem to work for people. Any changes need to take that into account
-> > > and document compatibility concerns.
-> > 
-> > 
-> > Agree, let me check.
-> > 
-> > 
-> > >   I note that any hardware
-> > > implementation is already broken for legacy except on platforms with
-> > > strong ordering which might be helpful in reducing the scope.
-> > 
-> > 
-> > Yes.
-> > 
-> > Thanks
-> > 
-> > 
-> > > 
-> > > 
-> > 
-
+On Sat, Dec 11, 2021 at 4:11 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>
+> On 12/10/21 8:54 PM, Tonghao Zhang wrote:
+> > On Sat, Dec 11, 2021 at 1:46 AM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
+> >> On Sat, Dec 11, 2021 at 1:37 AM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
+> >>> On Sat, Dec 11, 2021 at 12:43 AM John Fastabend
+> >>> <john.fastabend@gmail.com> wrote:
+> >>>> xiangxia.m.yue@ wrote:
+> >>>>> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> >>>>>
+> >>>>> Try to resolve the issues as below:
+> >>>>> * We look up and then check tc_skip_classify flag in net
+> >>>>>    sched layer, even though skb don't want to be classified.
+> >>>>>    That case may consume a lot of cpu cycles. This patch
+> >>>>>    is useful when there are a lot of filters with different
+> >>>>>    prio. There is ~5 prio in in production, ~1% improvement.
+> >>>>>
+> >>>>>    Rules as below:
+> >>>>>    $ for id in $(seq 1 5); do
+> >>>>>    $       tc filter add ... egress prio $id ... action mirred egress redirect dev ifb0
+> >>>>>    $ done
+> >>>>>
+> >>>>> * bpf_redirect may be invoked in egress path. If we don't
+> >>>>>    check the flags and then return immediately, the packets
+> >>>>>    will loopback.
+> >>>>
+> >>>> This would be the naive case right? Meaning the BPF program is
+> >>>> doing a redirect without any logic or is buggy?
+> >>>>
+> >>>> Can you map out how this happens for me, I'm not fully sure I
+> >>>> understand the exact concern. Is it possible for BPF programs
+> >>>> that used to see packets no longer see the packet as expected?
+> >>>>
+> >>>> Is this the path you are talking about?
+> >>> Hi John
+> >>> Tx ethx -> __dev_queue_xmit -> sch_handle_egress
+> >>> ->  execute BPF program on ethx with bpf_redirect(ifb0) ->
+> >>> -> ifb_xmit -> ifb_ri_tasklet -> dev_queue_xmit -> __dev_queue_xmit
+> >>> the packets loopbacks, that means bpf_redirect doesn't work with ifb
+> >>> netdev, right ?
+> >>> so in sch_handle_egress, I add the check skb_skip_tc_classify().
+>
+> But why would you do that? Usage like this is just broken by design..
+> If you need to loop anything back to RX, just use bpf_redirect() with
+> BPF_F_INGRESS? What is the concrete/actual rationale for ifb here?
+Hi
+note that: ifb_ri_tasklet can send out the packets or receive skb
+ifb_ri_tasklet
+                if (!skb->from_ingress) {
+                        dev_queue_xmit(skb); // bpf_redirect to ifb
+and ifb invoked the dev_queue_xmit in our case.
+                } else {
+                        skb_pull_rcsum(skb, skb->mac_len);
+                        netif_receive_skb(skb);
+                }
+-- 
+Best regards, Tonghao
