@@ -2,86 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EA024472AD0
-	for <lists+netdev@lfdr.de>; Mon, 13 Dec 2021 12:03:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 36265472AD3
+	for <lists+netdev@lfdr.de>; Mon, 13 Dec 2021 12:05:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232578AbhLMLD1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Dec 2021 06:03:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47592 "EHLO
+        id S231640AbhLMLFQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Dec 2021 06:05:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232342AbhLMLD1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 06:03:27 -0500
+        with ESMTP id S231629AbhLMLFP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 06:05:15 -0500
 Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7836C06173F;
-        Mon, 13 Dec 2021 03:03:26 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B8B6C061574
+        for <netdev@vger.kernel.org>; Mon, 13 Dec 2021 03:05:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=TAxkZYTLGQdMl8InjvEC8WjPoh21RqQVBS9pBjUFe48=; b=ycFjoDTBAlTagIUP/oMHJM4ATO
-        Ob7GLoxAAD5gc8lE7Kq9Zob+RkI8OojC+d8/0o/QQBdj32gifcPpTiukGTx7GMsyLDf3oy48JrE2z
-        +AAx2xaxqQFPV2sslZvyV4PUjQOt6KSftcm0SdTyOBC3n8ES93tb/DF61a3boHsodh5udCqqjxNPs
-        zDZP+wj5UYa3Q5SuSo5h0NrXNklVmWy9pnUTclsMD5oXlUUNei42qYS3IETbJXxWRka2WrofUN92D
-        H+qvpcAuuYbS3uZg4Iff6tJSzKJZ9zZn7zdN3YLb5zPjqIfpF94OFzbM/1arWG2KvGpFaxmoJKrwS
-        HpOdo4JQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:56258)
+        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
+        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
+        Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=gYnr8xI9dS+Md6MclwatJo3HcS+j4NQAGL+9xOFx3oM=; b=CUP/6kq2YBP4iGsHWm6WTg6ufv
+        E3FDuZqY826Z0ooLZxjYKpj0BwuMeDPg55V10PxxfsprfaB6ALIrni2XQ84S0vd7O7P5Wdxuv67Ud
+        wYbyuFCZYCzOxagZAjTsWDhxJjEojfxET1v9IxEERGjZf9K4ftw5kLtqltc/7TKIcVvwZG+swzfsG
+        5ru0U+Dr3kaPBeg7kmoFU0HU8gZfNH8uHE9ayG7JIZtgXLgBwn90S/LNpTV+09klnQK/EUC5DWMpj
+        /VizQcsrLr/u/UJQ6hr79K80PRgQVfIIOaCClLj0s+CBm+Q05ZlsrHpLYBLjRwdGuLbE9NUjHx09p
+        Xf0yPc+A==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:48604 helo=rmk-PC.armlinux.org.uk)
         by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1mwj6x-0003UV-0p; Mon, 13 Dec 2021 11:03:15 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1mwj6u-0002WP-Aj; Mon, 13 Dec 2021 11:03:12 +0000
-Date:   Mon, 13 Dec 2021 11:03:12 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Qing Wang <wangqing@vivo.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: phy: add missing of_node_put before return
-Message-ID: <YbcocBZBAJaZ0Rf6@shell.armlinux.org.uk>
-References: <1639388689-64038-1-git-send-email-wangqing@vivo.com>
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1mwj8s-0003Uh-0Z; Mon, 13 Dec 2021 11:05:14 +0000
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1mwj8r-00FjNH-Ix; Mon, 13 Dec 2021 11:05:13 +0000
+From:   "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net] net: phy: add a note about refcounting
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1639388689-64038-1-git-send-email-wangqing@vivo.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1mwj8r-00FjNH-Ix@rmk-PC.armlinux.org.uk>
+Sender: Russell King <rmk@armlinux.org.uk>
+Date:   Mon, 13 Dec 2021 11:05:13 +0000
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 13, 2021 at 01:44:49AM -0800, Qing Wang wrote:
-> From: Wang Qing <wangqing@vivo.com>
-> 
-> Fix following coccicheck warning:
-> WARNING: Function "for_each_available_child_of_node" 
-> should have of_node_put() before return.
-> 
-> Early exits from for_each_available_child_of_node should decrement the
-> node reference counter.
+Recently, a patch has been submitted to "fix" the refcounting for a DT
+node in of_mdiobus_link_mdiodev(). This is not a leaked refcount. The
+refcount is passed to the new device.
 
-Most *definitely* NAK. Coccicheck is most definitely wrong on this one,
-and we will probably need some way to tell people not to believe
-coccicheck on this.
+Sadly, coccicheck identifies this location as a leaked refcount, which
+means we're likely to keep getting patches to "fix" this. However,
+fixing this will cause breakage. Add a comment to state that the lack
+of of_node_put() here is intentional.
 
-In this path, the DT node is assigned to a struct device. This _must_
-be reference counted. device_set_node() does not increment the
-reference count, nor does of_fwnode_handle(). The reference count
-here is passed from this code over to the struct device.
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+---
+ drivers/net/phy/mdio_bus.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-Adding an of_node_put() will break this.
-
-This must _never_ be "fixed" no matter how much coccicheck complains,
-as fixing the warning _will_ introduce a refcounting bug.
-
-I'll send a patch adding a comment to this effect.
-
-Thanks.
-
+diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
+index c204067f1890..c198722e4871 100644
+--- a/drivers/net/phy/mdio_bus.c
++++ b/drivers/net/phy/mdio_bus.c
+@@ -460,6 +460,9 @@ static void of_mdiobus_link_mdiodev(struct mii_bus *bus,
+ 
+ 		if (addr == mdiodev->addr) {
+ 			device_set_node(dev, of_fwnode_handle(child));
++			/* The refcount on "child" is passed to the mdio
++			 * device. Do _not_ use of_node_put(child) here.
++			 */
+ 			return;
+ 		}
+ 	}
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.30.2
+
