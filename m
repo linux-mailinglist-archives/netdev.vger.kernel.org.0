@@ -2,176 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 74370473446
-	for <lists+netdev@lfdr.de>; Mon, 13 Dec 2021 19:45:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8277E473450
+	for <lists+netdev@lfdr.de>; Mon, 13 Dec 2021 19:48:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241972AbhLMSp1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Dec 2021 13:45:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44628 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232419AbhLMSp0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 13:45:26 -0500
-Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C077C061574
-        for <netdev@vger.kernel.org>; Mon, 13 Dec 2021 10:45:26 -0800 (PST)
-Received: by mail-yb1-xb34.google.com with SMTP id d10so40668209ybe.3
-        for <netdev@vger.kernel.org>; Mon, 13 Dec 2021 10:45:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Cz/oV6rucbFXxpVSl31hZc9OC3uLAvr6D9l8ggAwmMM=;
-        b=g0s4+FNsRzHTIFMgfuac332mUINiKCGVCRW75S/B9HApUnl7HQvHB5fezY8zOE2JFi
-         Oj106DoyqWG5jcPhpxbKZQvZ+o7TBuTIJyHTewsQw8A4DcVUrURhF82qDxKfQV5JrytE
-         vJFgIrWjOk88LG6r7UOnZj/jM3Vw4+D4ltN7rDoR94ejEmi82Ihqk+RQTa26n91RQPSA
-         3t5Uuxb+Q/qE42HGXvuntmAQfHTlso8gANDwEz8D9YitQb138N4jwxxCQTZWmaSaxNpw
-         j3USbsUREPCbmoai4VhuyTpunyFz+eTZ3SGX0AZEG/w+cStqpxwjSAGYa2NcpLAqwMwH
-         IkGA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Cz/oV6rucbFXxpVSl31hZc9OC3uLAvr6D9l8ggAwmMM=;
-        b=7N1AB3XPKzbxz0GUKg0GBDjVtODEdQl8JlbacaMxpA8Q9wTPsApee4lZHqq1bK80s0
-         SwhIKSx/3d/JHMTXmpYnFqEz/6bs5upnqh4L/9us4qlxnsJJ8+CQsUhvud/wEQq7T5Cz
-         qGvsSnlXoU1gLpu0J3BZbp5Yj6zR/KrVHyHvlQFtOp+dlpoyS6WRIgrcFvQuIi02u0y8
-         xUAjEbt5c9eEe9lISdCP/u1tSB9artFKHKuGnb5k/6x2tRSOEvlEOJsXDDgg2QRcpuEb
-         wxR2q9egIdtyrn9Kb55/hXrljNhjDX5/OcMQUh5aAn2nXGtn+iBTpJegukf4/l9RJeC8
-         hafw==
-X-Gm-Message-State: AOAM532vTGxWwNG70nBY5nRxDinF6YYOoU5Xxb0+mg0NSPlCURq6/aGm
-        AuxzLEuLmzrFzsjroDlzaCAFl8mKyHqEW/me8778NA==
-X-Google-Smtp-Source: ABdhPJwjCXDEoY7SsfAHxNtNDcS3iz7wdnHdybiyBTgskB0tF4HTH1L9nNXr+l8tERRSjW16SIf8IVVjE2IzldK3F9M=
-X-Received: by 2002:a05:6902:1025:: with SMTP id x5mr361655ybt.156.1639421125202;
- Mon, 13 Dec 2021 10:45:25 -0800 (PST)
+        id S230199AbhLMSsW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Dec 2021 13:48:22 -0500
+Received: from mga17.intel.com ([192.55.52.151]:21417 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229834AbhLMSsT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 Dec 2021 13:48:19 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10197"; a="219485849"
+X-IronPort-AV: E=Sophos;i="5.88,203,1635231600"; 
+   d="scan'208";a="219485849"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Dec 2021 10:48:18 -0800
+X-IronPort-AV: E=Sophos;i="5.88,203,1635231600"; 
+   d="scan'208";a="517877596"
+Received: from luisdsan-mobl.amr.corp.intel.com ([10.209.68.26])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Dec 2021 10:48:18 -0800
+Date:   Mon, 13 Dec 2021 10:48:17 -0800 (PST)
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+To:     Paolo Abeni <pabeni@redhat.com>
+cc:     netdev@vger.kernel.org, Geliang Tang <geliangtang@gmail.com>,
+        mptcp@lists.linux.dev
+Subject: Re: [PATCH net] mptcp: never allow the PM to close a listener
+ subflow
+In-Reply-To: <ebc7594cdd420d241fb2172ddb8542ba64717657.1639238695.git.pabeni@redhat.com>
+Message-ID: <cbdde89-b442-aad2-28be-c793334e61ab@linux.intel.com>
+References: <ebc7594cdd420d241fb2172ddb8542ba64717657.1639238695.git.pabeni@redhat.com>
 MIME-Version: 1.0
-References: <f1cd1a19878248f09e2e7cffe88c8191@AcuMS.aculab.com>
-In-Reply-To: <f1cd1a19878248f09e2e7cffe88c8191@AcuMS.aculab.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 13 Dec 2021 10:45:13 -0800
-Message-ID: <CANn89i+FCddAJSAY1pj3kEDcP5wMnuQFVCa5ZbJwi1GqJ89Hkg@mail.gmail.com>
-Subject: Re: [PATCH] lib/x86: Optimise csum_partial of buffers that are not
- multiples of 8 bytes.
-To:     David Laight <David.Laight@aculab.com>
-Cc:     Noah Goldstein <goldstein.w.n@gmail.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        Borislav Petkov <bp@alien8.de>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        X86 ML <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "alexanderduyck@fb.com" <alexanderduyck@fb.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII; format=flowed
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 13, 2021 at 10:00 AM David Laight <David.Laight@aculab.com> wrote:
+On Sat, 11 Dec 2021, Paolo Abeni wrote:
+
+> Currently, when deleting an endpoint the netlink PM treverses
+> all the local MPTCP sockets, regardless of their status.
 >
+> If an MPTCP listener socket is bound to the IP matching the
+> delete endpoint, the listener TCP socket will be closed.
+> That is unexpected, the PM should only affect data subflows.
 >
-> Add in the trailing bytes first so that there is no need to worry
-> about the sum exceeding 64 bits.
+> Additionally, syzbot was able to trigger a NULL ptr dereference
+> due to the above:
 >
-> Signed-off-by: David Laight <david.laight@aculab.com>
+> general protection fault, probably for non-canonical address 0xdffffc0000000003: 0000 [#1] PREEMPT SMP KASAN
+> KASAN: null-ptr-deref in range [0x0000000000000018-0x000000000000001f]
+> CPU: 1 PID: 6550 Comm: syz-executor122 Not tainted 5.16.0-rc4-syzkaller #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> RIP: 0010:__lock_acquire+0xd7d/0x54a0 kernel/locking/lockdep.c:4897
+> Code: 0f 0e 41 be 01 00 00 00 0f 86 c8 00 00 00 89 05 69 cc 0f 0e e9 bd 00 00 00 48 b8 00 00 00 00 00 fc ff df 48 89 da 48 c1 ea 03 <80> 3c 02 00 0f 85 f3 2f 00 00 48 81 3b 20 75 17 8f 0f 84 52 f3 ff
+> RSP: 0018:ffffc90001f2f818 EFLAGS: 00010016
+> RAX: dffffc0000000000 RBX: 0000000000000018 RCX: 0000000000000000
+> RDX: 0000000000000003 RSI: 0000000000000000 RDI: 0000000000000001
+> RBP: 0000000000000000 R08: 0000000000000001 R09: 0000000000000001
+> R10: 0000000000000000 R11: 000000000000000a R12: 0000000000000000
+> R13: ffff88801b98d700 R14: 0000000000000000 R15: 0000000000000001
+> FS:  00007f177cd3d700(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 00007f177cd1b268 CR3: 000000001dd55000 CR4: 0000000000350ee0
+> Call Trace:
+> <TASK>
+> lock_acquire kernel/locking/lockdep.c:5637 [inline]
+> lock_acquire+0x1ab/0x510 kernel/locking/lockdep.c:5602
+> __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
+> _raw_spin_lock_irqsave+0x39/0x50 kernel/locking/spinlock.c:162
+> finish_wait+0xc0/0x270 kernel/sched/wait.c:400
+> inet_csk_wait_for_connect net/ipv4/inet_connection_sock.c:464 [inline]
+> inet_csk_accept+0x7de/0x9d0 net/ipv4/inet_connection_sock.c:497
+> mptcp_accept+0xe5/0x500 net/mptcp/protocol.c:2865
+> inet_accept+0xe4/0x7b0 net/ipv4/af_inet.c:739
+> mptcp_stream_accept+0x2e7/0x10e0 net/mptcp/protocol.c:3345
+> do_accept+0x382/0x510 net/socket.c:1773
+> __sys_accept4_file+0x7e/0xe0 net/socket.c:1816
+> __sys_accept4+0xb0/0x100 net/socket.c:1846
+> __do_sys_accept net/socket.c:1864 [inline]
+> __se_sys_accept net/socket.c:1861 [inline]
+> __x64_sys_accept+0x71/0xb0 net/socket.c:1861
+> do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+> do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+> entry_SYSCALL_64_after_hwframe+0x44/0xae
+> RIP: 0033:0x7f177cd8b8e9
+> Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 b1 14 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+> RSP: 002b:00007f177cd3d308 EFLAGS: 00000246 ORIG_RAX: 000000000000002b
+> RAX: ffffffffffffffda RBX: 00007f177ce13408 RCX: 00007f177cd8b8e9
+> RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000003
+> RBP: 00007f177ce13400 R08: 0000000000000000 R09: 0000000000000000
+> R10: 0000000000000000 R11: 0000000000000246 R12: 00007f177ce1340c
+> R13: 00007f177cde1004 R14: 6d705f706374706d R15: 0000000000022000
+> </TASK>
+>
+> Fix the issue explicitly skipping MPTCP socket in TCP_LISTEN
+> status.
+>
+> Reported-and-tested-by: syzbot+e4d843bb96a9431e6331@syzkaller.appspotmail.com
+> Reviewed-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+
+Just re-confirming that I'd like to see this merged for the -net branch!
+
+Thanks,
+
+Mat
+
+
+> Fixes: 740d798e8767 ("mptcp: remove id 0 address")
+> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 > ---
+> net/mptcp/pm_netlink.c | 3 +++
+> 1 file changed, 3 insertions(+)
 >
-> This ought to be faster - because of all the removed 'adc $0'.
-> Guessing how fast x86 code will run is hard!
-> There are other ways of handing buffers that are shorter than 8 bytes,
-> but I'd rather hope they don't happen in any hot paths.
+> diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
+> index 7b96be1e9f14..f523051f5aef 100644
+> --- a/net/mptcp/pm_netlink.c
+> +++ b/net/mptcp/pm_netlink.c
+> @@ -700,6 +700,9 @@ static void mptcp_pm_nl_rm_addr_or_subflow(struct mptcp_sock *msk,
 >
-> Note - I've not even compile tested it.
-> (But have tested an equivalent change before.)
+> 	msk_owned_by_me(msk);
 >
->  arch/x86/lib/csum-partial_64.c | 55 ++++++++++++----------------------
->  1 file changed, 19 insertions(+), 36 deletions(-)
->
-> diff --git a/arch/x86/lib/csum-partial_64.c b/arch/x86/lib/csum-partial_64.c
-> index abf819dd8525..fbcc073fc2b5 100644
-> --- a/arch/x86/lib/csum-partial_64.c
-> +++ b/arch/x86/lib/csum-partial_64.c
-> @@ -37,6 +37,24 @@ __wsum csum_partial(const void *buff, int len, __wsum sum)
->         u64 temp64 = (__force u64)sum;
->         unsigned result;
->
-> +       if (len & 7) {
-> +               if (unlikely(len < 8)) {
-> +                       /* Avoid falling off the start of the buffer */
-> +                       if (len & 4) {
-> +                               temp64 += *(u32 *)buff;
-> +                               buff += 4;
-> +                       }
-> +                       if (len & 2) {
-> +                               temp64 += *(u16 *)buff;
-> +                               buff += 2;
-> +                       }
-> +                       if (len & 1)
-> +                               temp64 += *(u8 *)buff;
-> +                       goto reduce_to32;
-> +               }
-> +               temp64 += *(u64 *)(buff + len - 8) << (8 - (len & 7)) * 8;
-
-This is reading far away (end of buffer).
-
-Maybe instead read the first bytes and adjust @buff, to allow for
-better hardware prefetching ?
-
-
-
-> +       }
+> +	if (sk->sk_state == TCP_LISTEN)
+> +		return;
 > +
->         while (unlikely(len >= 64)) {
->                 asm("addq 0*8(%[src]),%[res]\n\t"
->                     "adcq 1*8(%[src]),%[res]\n\t"
-> @@ -82,43 +100,8 @@ __wsum csum_partial(const void *buff, int len, __wsum sum)
->                         : "memory");
->                 buff += 8;
->         }
-> -       if (len & 7) {
-> -#ifdef CONFIG_DCACHE_WORD_ACCESS
-> -               unsigned int shift = (8 - (len & 7)) * 8;
-> -               unsigned long trail;
-> -
-> -               trail = (load_unaligned_zeropad(buff) << shift) >> shift;
+> 	if (!rm_list->nr)
+> 		return;
 >
-> -               asm("addq %[trail],%[res]\n\t"
-> -                   "adcq $0,%[res]"
-> -                       : [res] "+r" (temp64)
-> -                       : [trail] "r" (trail));
-> -#else
-> -               if (len & 4) {
-> -                       asm("addq %[val],%[res]\n\t"
-> -                           "adcq $0,%[res]"
-> -                               : [res] "+r" (temp64)
-> -                               : [val] "r" ((u64)*(u32 *)buff)
-> -                               : "memory");
-> -                       buff += 4;
-> -               }
-> -               if (len & 2) {
-> -                       asm("addq %[val],%[res]\n\t"
-> -                           "adcq $0,%[res]"
-> -                               : [res] "+r" (temp64)
-> -                               : [val] "r" ((u64)*(u16 *)buff)
-> -                               : "memory");
-> -                       buff += 2;
-> -               }
-> -               if (len & 1) {
-> -                       asm("addq %[val],%[res]\n\t"
-> -                           "adcq $0,%[res]"
-> -                               : [res] "+r" (temp64)
-> -                               : [val] "r" ((u64)*(u8 *)buff)
-> -                               : "memory");
-> -               }
-> -#endif
-> -       }
-> +reduce_to32:
->         result = add32_with_carry(temp64 >> 32, temp64 & 0xffffffff);
->         return (__force __wsum)result;
->  }
-> --
-> 2.17.1
+> -- 
+> 2.33.1
 >
-> -
-> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-> Registration No: 1397386 (Wales)
+>
+>
+
+--
+Mat Martineau
+Intel
