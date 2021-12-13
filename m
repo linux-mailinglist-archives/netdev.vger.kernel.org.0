@@ -2,108 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 45D2A472A49
-	for <lists+netdev@lfdr.de>; Mon, 13 Dec 2021 11:37:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B3BC04729D2
+	for <lists+netdev@lfdr.de>; Mon, 13 Dec 2021 11:26:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232909AbhLMKh2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Dec 2021 05:37:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41024 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234822AbhLMKhR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 05:37:17 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57F37C0497C5
-        for <netdev@vger.kernel.org>; Mon, 13 Dec 2021 02:18:34 -0800 (PST)
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1639390712;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=vGFMhWE3YNxN8OCVi38W/wgfSB8G1kKisT2knFJIAUQ=;
-        b=2E40IAajG8FvxPZ34f4VdsxJNYnTi32mop3/Z4Nsifnw6Hsfc0ihjLGTNetT9KV1eGNZon
-        8rriwoxW8AR2it6Hm6RL/WTcK5FF/wMaBd+D+kA12IIRDBZWMGRC2k3cRZX1rImEBvI3d1
-        i3entNaYLrCDJ3UK6cqDeECAj5z6eLV51zACFUOLn10g0KtZCynJxF6x+IiEonv7cGNM2e
-        UIdTzjnlbD2r7u7kQefzMPoHQG6Mp+WqzqjTcys8Sfu+V/fMcn31+6bIgx6Zpd319yYjzv
-        IEdsTPD4fW+FryTrsUSmMHeoSGA9H+0AG09sKZ36m6gscyay7kB4x8LXh1u24A==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1639390712;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=vGFMhWE3YNxN8OCVi38W/wgfSB8G1kKisT2knFJIAUQ=;
-        b=wQBtgZ+Nlewl4YL5cSUBbaUcrp9pE/r3ub1DzStPaTBMV2Vlmn0/xAuwimfmUTrYvOK1Xj
-        s+rcjii/MxdbcDBw==
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
-        netdev@vger.kernel.org, Kurt Kanzenbach <kurt@linutronix.de>
-Subject: [PATCH net] net: dsa: hellcreek: Allow PTP on blocked ports
-Date:   Mon, 13 Dec 2021 11:18:10 +0100
-Message-Id: <20211213101810.121553-1-kurt@linutronix.de>
+        id S236905AbhLMKZc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Dec 2021 05:25:32 -0500
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:65029 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242212AbhLMKXa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 05:23:30 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1639391011; x=1670927011;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=RW19rszBP6toUbDeC1RTtY+8YV4n8NBBlhMnFptQuwU=;
+  b=yl3RvcKOWamkj9D0eynwoC70JxvShvWgd5bjOSIZJgA/2kOSqO15c9dx
+   wvDI6KpCM/Pa4yCIoUOPRm5pw8BFXy0qRQJVHTlK7oDDbD3hD3pTPC/n+
+   YuLQjdEJ+FsBSuu4YmWxa/cv5ITw4Wfrdpnf1j3NKnkl5ADA0e4Yxy706
+   fxB7ePP1oSgD3a+cLk0AKhT1+I9r4KFASnKvUztrOcK8AY6qmQPemTx6q
+   +hRn8JrqkM2SJOETFktdwE7UQU8qqQYJI12xnC4IT1+xtR8Nrs+VbFS1T
+   KNeF2+VAxmrT28j2Aaytq6EGvBpuRbZxDGMgSkziNwldhYMLbNA7w+cB5
+   g==;
+IronPort-SDR: /5CJsChaOHgaInoE5fLrPx6y/v9MLhiY6SQy3jAJfsvXR7CpYHiSkVhADnurO9b9y0i9D2hQuD
+ CyUj4SiFZ4loXQNxYEgA8E94tVFyifxY2kSB3H8raErHsU8cbQ/xPmX+0DC7USZQveydBwannF
+ PdxY534HzVKTtlZYsDfJSoQirHVMKA829NSfdjrFYhrgnxhg2r+X6hoz1OMykbjjAMvhhIdSqS
+ 3Fn6I11julh7rnjC886X+cIZ3u1RoePM1IJDGr6DW7CpCxSIJs+nADazf5T/Jd1vVaDQuQpjf3
+ 0CoroNbzkxLuh3D/DSvhY4b2
+X-IronPort-AV: E=Sophos;i="5.88,202,1635231600"; 
+   d="scan'208";a="146447267"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 Dec 2021 03:23:29 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Mon, 13 Dec 2021 03:23:27 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Mon, 13 Dec 2021 03:23:27 -0700
+Date:   Mon, 13 Dec 2021 11:25:29 +0100
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
+        "andrew@lunn.ch" <andrew@lunn.ch>
+Subject: Re: [PATCH net-next v3 6/6] net: lan966x: Add switchdev support
+Message-ID: <20211213102529.tzdvekwwngo4zgex@soft-dev3-1.localhost>
+References: <20211209094615.329379-1-horatiu.vultur@microchip.com>
+ <20211209094615.329379-7-horatiu.vultur@microchip.com>
+ <20211209133616.2kii2xfz5rioii4o@skbuf>
+ <20211209164311.agnofh275znn5t5c@soft-dev3-1.localhost>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <20211209164311.agnofh275znn5t5c@soft-dev3-1.localhost>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PTP forms its own clock distribution tree. Therefore, PTP traffic is allowed to
-traverse blocked ports by STP. Adjust the static FDB entries accordingly.
+The 12/09/2021 17:43, Horatiu Vultur wrote:
+> > > +int lan966x_register_notifier_blocks(struct lan966x *lan966x)
+> > > +{
+> > > +     int err;
+> > > +
+> > > +     lan966x->netdevice_nb.notifier_call = lan966x_netdevice_event;
+> > > +     err = register_netdevice_notifier(&lan966x->netdevice_nb);
+> > > +     if (err)
+> > > +             return err;
+> > > +
+> > > +     lan966x->switchdev_nb.notifier_call = lan966x_switchdev_event;
+> > > +     err = register_switchdev_notifier(&lan966x->switchdev_nb);
+> > > +     if (err)
+> > > +             goto err_switchdev_nb;
+> > > +
+> > > +     lan966x->switchdev_blocking_nb.notifier_call = lan966x_switchdev_blocking_event;
+> > > +     err = register_switchdev_blocking_notifier(&lan966x->switchdev_blocking_nb);
+> > > +     if (err)
+> > > +             goto err_switchdev_blocking_nb;
+> > > +
+> > > +     lan966x_owq = alloc_ordered_workqueue("lan966x_order", 0);
+> > > +     if (!lan966x_owq) {
+> > > +             err = -ENOMEM;
+> > > +             goto err_switchdev_blocking_nb;
+> > > +     }
+> > 
+> > These should be singleton objects, otherwise things get problematic if
+> > you have more than one switch device instantiated in the system.
+> 
+> Yes, I will update this.
 
-Fixes: ddd56dfe52c9 ("net: dsa: hellcreek: Add PTP clock support")
-Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
----
- drivers/net/dsa/hirschmann/hellcreek.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+Actually I think they need to be part of lan966x.
+Because we want each lan966x instance to be independent of each other.
+This is not seen in this version but is more clear in the next version
+(v4).
 
-diff --git a/drivers/net/dsa/hirschmann/hellcreek.c b/drivers/net/dsa/hirschmann/hellcreek.c
-index 4e0b53d94b52..072fc442cde2 100644
---- a/drivers/net/dsa/hirschmann/hellcreek.c
-+++ b/drivers/net/dsa/hirschmann/hellcreek.c
-@@ -710,8 +710,9 @@ static int __hellcreek_fdb_add(struct hellcreek *hellcreek,
- 	u16 meta = 0;
- 
- 	dev_dbg(hellcreek->dev, "Add static FDB entry: MAC=%pM, MASK=0x%02x, "
--		"OBT=%d, REPRIO_EN=%d, PRIO=%d\n", entry->mac, entry->portmask,
--		entry->is_obt, entry->reprio_en, entry->reprio_tc);
-+		"OBT=%d, PASS_BLOCKED=%d, REPRIO_EN=%d, PRIO=%d\n", entry->mac,
-+		entry->portmask, entry->is_obt, entry->pass_blocked,
-+		entry->reprio_en, entry->reprio_tc);
- 
- 	/* Add mac address */
- 	hellcreek_write(hellcreek, entry->mac[1] | (entry->mac[0] << 8), HR_FDBWDH);
-@@ -722,6 +723,8 @@ static int __hellcreek_fdb_add(struct hellcreek *hellcreek,
- 	meta |= entry->portmask << HR_FDBWRM0_PORTMASK_SHIFT;
- 	if (entry->is_obt)
- 		meta |= HR_FDBWRM0_OBT;
-+	if (entry->pass_blocked)
-+		meta |= HR_FDBWRM0_PASS_BLOCKED;
- 	if (entry->reprio_en) {
- 		meta |= HR_FDBWRM0_REPRIO_EN;
- 		meta |= entry->reprio_tc << HR_FDBWRM0_REPRIO_TC_SHIFT;
-@@ -1055,7 +1058,7 @@ static int hellcreek_setup_fdb(struct hellcreek *hellcreek)
- 		.portmask     = 0x03,	/* Management ports */
- 		.age	      = 0,
- 		.is_obt	      = 0,
--		.pass_blocked = 0,
-+		.pass_blocked = 1,
- 		.is_static    = 1,
- 		.reprio_tc    = 6,	/* TC: 6 as per IEEE 802.1AS */
- 		.reprio_en    = 1,
-@@ -1066,7 +1069,7 @@ static int hellcreek_setup_fdb(struct hellcreek *hellcreek)
- 		.portmask     = 0x03,	/* Management ports */
- 		.age	      = 0,
- 		.is_obt	      = 0,
--		.pass_blocked = 0,
-+		.pass_blocked = 1,
- 		.is_static    = 1,
- 		.reprio_tc    = 6,	/* TC: 6 as per IEEE 802.1AS */
- 		.reprio_en    = 1,
+> 
+> > 
+> 
+> -- 
+> /Horatiu
+
 -- 
-2.30.2
-
+/Horatiu
