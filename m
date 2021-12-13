@@ -2,111 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F32B4731FE
-	for <lists+netdev@lfdr.de>; Mon, 13 Dec 2021 17:40:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A842B47321E
+	for <lists+netdev@lfdr.de>; Mon, 13 Dec 2021 17:44:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240936AbhLMQkJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Dec 2021 11:40:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43592 "EHLO
+        id S238552AbhLMQo3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Dec 2021 11:44:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240928AbhLMQkI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 11:40:08 -0500
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23D21C06173F;
-        Mon, 13 Dec 2021 08:40:08 -0800 (PST)
-Received: by mail-pf1-x430.google.com with SMTP id x131so15373914pfc.12;
-        Mon, 13 Dec 2021 08:40:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=dRRexe2kuoBv0Y2m9PN9mpB/UFD4YUanEyofcXNpoew=;
-        b=Iwkjo1XS88e5vWIVAtU889jEf+umB8ztxpHnp4p43LVbZ5A3GSFMUN/dgU0F8Oqgzl
-         uociatJU+Uj/I+HgFnXY/n0n3gksaRtLlsKduJqP/pIw+8h9fsCXlaDtjU+b0JS0bNhn
-         7QzhXJiypPL1KUf56JZ6AIquEN7Onha2m9Gq1/GzhN837gQHs8BRCoho+2Pu+uy6Y6p2
-         BiWTJGPNhHaHlTscaHUOQzsky+XgInaIRk34WTWNmybI3R7EMP+XBkYNp0UAw5GwzJQp
-         vW25quxW05oGzUGcW4ehTySG91XvED99p521vXsaopGCjYYig3AgaBS2GWPNOLhKKQBI
-         5oRg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=dRRexe2kuoBv0Y2m9PN9mpB/UFD4YUanEyofcXNpoew=;
-        b=kSOma//YfrL3cMJIdLzfVAJnWnTkpfcnTjfvExlLsQTa4lvsKhJfhHVrVJBRKF8YtK
-         oXpo1ZDZhWI+UbX4SLaxkpGWzTp5u7ItPXgqtscDqljZZtFsg6NRvDLPpVnD7oYKaWnj
-         lq4acxK+liGi3WoNR5NQMoEfc0RHpoaoCdLXxCJSrw766JrJqS/RbkA/6G7+QFrN5vfm
-         t++19HvvBFNf0v+Ij+3LZJYGOI/pVTue09CBngN7E9Wp+WkFVRASc0afFn9BhpAPy5hI
-         Cjj7BCShaWjW2jM5RrnLaaMS2l2R1sz3kvPF5OXafxe97ii6o4DHQ44GwgTqwu9J6VY/
-         34Ew==
-X-Gm-Message-State: AOAM53380lrDL/FzgugTcKcvS4L73jbSAYIfbWlguDpDKKg2BQxq7OV5
-        /pgkqhmQTptb+zRQNtFD0rxmN1kLyxd98w==
-X-Google-Smtp-Source: ABdhPJx/RsSqWhYBDbljOA4qI6XMHTKT8SPVyEPu30XndeOXdfiudCok5hRgYwh+QX/XqsqcA2Nzbg==
-X-Received: by 2002:a65:6819:: with SMTP id l25mr11463268pgt.506.1639413607703;
-        Mon, 13 Dec 2021 08:40:07 -0800 (PST)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:84ea:43e5:6ccb:fc65])
-        by smtp.gmail.com with ESMTPSA id 78sm1556239pgg.85.2021.12.13.08.40.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Dec 2021 08:40:07 -0800 (PST)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>,
-        Florian Westphal <fw@strlen.de>
-Cc:     netfilter-devel@vger.kernel.org, netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH net-next 2/2] netfilter: nf_nat_masquerade: add netns refcount tracker to masq_dev_work
-Date:   Mon, 13 Dec 2021 08:40:00 -0800
-Message-Id: <20211213164000.3241266-2-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.34.1.173.g76aa8bc2d0-goog
-In-Reply-To: <20211213164000.3241266-1-eric.dumazet@gmail.com>
-References: <20211213164000.3241266-1-eric.dumazet@gmail.com>
+        with ESMTP id S229790AbhLMQo1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 11:44:27 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2D07C061574
+        for <netdev@vger.kernel.org>; Mon, 13 Dec 2021 08:44:27 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4149861188
+        for <netdev@vger.kernel.org>; Mon, 13 Dec 2021 16:44:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AC78C34603;
+        Mon, 13 Dec 2021 16:44:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1639413866;
+        bh=Uzjjlm7Df7+4mUhVfz+tq5QCKvHI/nPplkrGGmZRMNc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=UrLVeNAZjskXLjGiEYiHxJ6ON3t2xug0gyzeJs+ByQQmtGf8GnZHWmIGKCz09zOjh
+         l/GxWo6CMq+1vZo+brR+DEmGue1UXqzN43hiVRfJqG4qVwuUdZYaOM22BQH4x3EJf8
+         b2yA46QCbpX+JyLM9/s9z5Euen0dmdmloFVZKJT8xYy5DSnTfPVgMKUrixSCXI39i5
+         oU5ERzrz0OxE/MOMRpnf2lXYYRwOTbh0xhV0k2+y0JRjipNZgF1ipE71fSmQ0uTLr4
+         uPl+5ymkHuMW32wITKfnaGGDafawf1m4TrX6z1crcap76r5QpkyJtZWcweDFwfJmkl
+         ho855QB2ZMv/w==
+Date:   Mon, 13 Dec 2021 08:44:25 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     Tobias Waldekranz <tobias@waldekranz.com>,
+        Kurt Kanzenbach <kurt@kmk-computers.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v1] net: dsa: mv88e6xxx: Trap PTP traffic
+Message-ID: <20211213084425.65951354@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211213121045.GA14042@hoboy.vegasvil.org>
+References: <20211209173337.24521-1-kurt@kmk-computers.de>
+        <87y24t1fvk.fsf@waldekranz.com>
+        <20211210211410.62cf1f01@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20211211153926.GA3357@hoboy.vegasvil.org>
+        <20211213121045.GA14042@hoboy.vegasvil.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+On Mon, 13 Dec 2021 04:10:45 -0800 Richard Cochran wrote:
+> I looked at 1588 again, and for E2E TC it states, "All PTP version 2
+> messages shall be forwarded according to the addressing rules of the
+> network."  I suppose that includes the STP state.
+> 
+> For P2P TC, there is an exception that the peer delay messages are not
+> forwarded.  These are generated and consumed by the switch.
 
-If compiled with CONFIG_NET_NS_REFCNT_TRACKER=y,
-using put_net_track() in iterate_cleanup_work()
-and netns_tracker_alloc() in nf_nat_masq_schedule()
-might help us finding netns refcount imbalances.
-
-Signed-off-by: Eric Dumazet <edumazet@google.com>
----
- net/netfilter/nf_nat_masquerade.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/net/netfilter/nf_nat_masquerade.c b/net/netfilter/nf_nat_masquerade.c
-index acd73f717a0883d791fc351851a98bac4144705f..e32fac374608576d6237f80b1bff558e9453585a 100644
---- a/net/netfilter/nf_nat_masquerade.c
-+++ b/net/netfilter/nf_nat_masquerade.c
-@@ -12,6 +12,7 @@
- struct masq_dev_work {
- 	struct work_struct work;
- 	struct net *net;
-+	netns_tracker ns_tracker;
- 	union nf_inet_addr addr;
- 	int ifindex;
- 	int (*iter)(struct nf_conn *i, void *data);
-@@ -82,7 +83,7 @@ static void iterate_cleanup_work(struct work_struct *work)
- 
- 	nf_ct_iterate_cleanup_net(w->net, w->iter, (void *)w, 0, 0);
- 
--	put_net(w->net);
-+	put_net_track(w->net, &w->ns_tracker);
- 	kfree(w);
- 	atomic_dec(&masq_worker_count);
- 	module_put(THIS_MODULE);
-@@ -119,6 +120,7 @@ static void nf_nat_masq_schedule(struct net *net, union nf_inet_addr *addr,
- 		INIT_WORK(&w->work, iterate_cleanup_work);
- 		w->ifindex = ifindex;
- 		w->net = net;
-+		netns_tracker_alloc(net, &w->ns_tracker, gfp_flags);
- 		w->iter = iter;
- 		if (addr)
- 			w->addr = *addr;
--- 
-2.34.1.173.g76aa8bc2d0-goog
-
+Indeed, looks like a v1 vs v2 change :S
