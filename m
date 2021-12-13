@@ -2,74 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E3E9D47302A
-	for <lists+netdev@lfdr.de>; Mon, 13 Dec 2021 16:10:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EDF5473072
+	for <lists+netdev@lfdr.de>; Mon, 13 Dec 2021 16:27:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240011AbhLMPKK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Dec 2021 10:10:10 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:33622 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231924AbhLMPKJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 10:10:09 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 87FE06114A
-        for <netdev@vger.kernel.org>; Mon, 13 Dec 2021 15:10:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E9E29C34608;
-        Mon, 13 Dec 2021 15:10:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1639408209;
-        bh=dg5sd+ohnGAVAj8wjQ9M4vt9CnvDIyLEH0vFplju5hk=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=IgLFeSeoHmhvjgOHQfvm1B2t5FCkzoQDeica/vpqQuoUfwsai+tLjVRCJ7BL5AfVN
-         74W/ZvyXzqeZtKehrMJj4TOEFVb15yjDfSY+TKus+06x2YtuILaHPa4IPJMSbPtA62
-         wYWqRARp1wk5slRFBpoz1c/p1VUS+smpUJSQGJqVvSJxmngmflYMmhlqwORqU2B4Pe
-         F6ZBUAM/w7tZ8aXLcsF9EydSiAcs7Sy+dH49D7SnSCn1mbxV3+GwFjnRr48czB90a+
-         vEjotcOLL8l/4gv6nx0n5ZeLcdzHFPMajZksCRIIVY3JTq/ExOMlpCZ9NXDlSL2ntl
-         bZyMLu3VbWj7w==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id D6EA1609CD;
-        Mon, 13 Dec 2021 15:10:08 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S237612AbhLMP1T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Dec 2021 10:27:19 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:52678 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234672AbhLMP1S (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 Dec 2021 10:27:18 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=tNx28Q3CDvse1uQz8pHopU8Cr2rZJSaSkY4hEnwxs6g=; b=Whkj9aUmBvsmnNOKQV+Hw/EGnT
+        5FjNDK4/yPqTjaPBex2+PfSh3FlhlVeWmRkfC+tA7liseYrDMb54cyLC7uF4dEBygkvxVl+4pQVsc
+        Of41wOr7QlcHaSgj9dudTDBw2ni/O/TxG4/tX4VGbKHUd/Egdh8tGl9Z+hEGKOsqfVVY=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mwnEH-00GPKJ-JV; Mon, 13 Dec 2021 16:27:05 +0100
+Date:   Mon, 13 Dec 2021 16:27:05 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Richard Cochran <richardcochran@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        Kurt Kanzenbach <kurt@kmk-computers.de>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v1] net: dsa: mv88e6xxx: Trap PTP traffic
+Message-ID: <YbdmSbuhuuWqt3P8@lunn.ch>
+References: <20211209173337.24521-1-kurt@kmk-computers.de>
+ <87y24t1fvk.fsf@waldekranz.com>
+ <20211210211410.62cf1f01@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20211211153926.GA3357@hoboy.vegasvil.org>
+ <20211213121045.GA14042@hoboy.vegasvil.org>
+ <20211213123147.2lc63aok6l5kg643@skbuf>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: mtk_eth: add COMPILE_TEST support
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163940820887.31162.94347076363115868.git-patchwork-notify@kernel.org>
-Date:   Mon, 13 Dec 2021 15:10:08 +0000
-References: <208b18f9e48e1ebddaee4baf28721bd3f9715046.1639394268.git.lorenzo@kernel.org>
-In-Reply-To: <208b18f9e48e1ebddaee4baf28721bd3f9715046.1639394268.git.lorenzo@kernel.org>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
-        nbd@nbd.name, john@phrozen.org, sean.wang@mediatek.com,
-        mark-mc.Lee@mediatek.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211213123147.2lc63aok6l5kg643@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+>  I think this isn't even specific to DSA, the same thing would
+> happen with software bridging
 
-This patch was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+And pure switchdev switches. I wonder what the Mellanox switch does in
+this case?
 
-On Mon, 13 Dec 2021 12:23:22 +0100 you wrote:
-> Improve the build testing of mtk_eth drivers by enabling them when
-> COMPILE_TEST is selected. Moreover COMPILE_TEST will be useful
-> for the driver development.
-> 
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> ---
->  drivers/net/ethernet/mediatek/Kconfig | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-
-Here is the summary with links:
-  - [net-next] net: mtk_eth: add COMPILE_TEST support
-    https://git.kernel.org/netdev/net-next/c/a3c62a042237
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+     Andrew
