@@ -2,150 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 38A39472BFC
-	for <lists+netdev@lfdr.de>; Mon, 13 Dec 2021 13:09:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 36935472C00
+	for <lists+netdev@lfdr.de>; Mon, 13 Dec 2021 13:10:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231722AbhLMMJn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Dec 2021 07:09:43 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:34836 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230370AbhLMMJm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 07:09:42 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1639397382;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=1a/bd6+FuUOJG/H4wd0T2lOdNMz9aPxRtEUk/VcsT3Y=;
-        b=ZhJU0Pc8VLMiSNIrHUcmVuIxyj8UPhYtON5X0u65dECNJfNPUDcmzisoRu4NVw1RljmSSL
-        zp8PmktZMBywD2PEX6it/YF1TKYy1bjHkSZ8c5oNf3aOC8dJTO6zhassSbp957JUoIYx+T
-        JksyEXPgYha4lUGUKJ0H3zf0gkyDGQQ=
-Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
- [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-559-RvOx69aRNuuxLYhFwS1Puw-1; Mon, 13 Dec 2021 07:09:41 -0500
-X-MC-Unique: RvOx69aRNuuxLYhFwS1Puw-1
-Received: by mail-qv1-f71.google.com with SMTP id jn10-20020ad45dea000000b003bd74c93df4so23553950qvb.15
-        for <netdev@vger.kernel.org>; Mon, 13 Dec 2021 04:09:41 -0800 (PST)
+        id S234664AbhLMMKu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Dec 2021 07:10:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35144 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231405AbhLMMKt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 07:10:49 -0500
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D7B8C061574
+        for <netdev@vger.kernel.org>; Mon, 13 Dec 2021 04:10:49 -0800 (PST)
+Received: by mail-pf1-x436.google.com with SMTP id k26so14739315pfp.10
+        for <netdev@vger.kernel.org>; Mon, 13 Dec 2021 04:10:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=aeDoOoeMSWHks6DEzg3i5Lx0mGgPR00BvNdSpkqFsNg=;
+        b=qNeaJMryifL5dHzcUD3bMecJVazg6+6HB7zgNj3Hv4NrQ6RPYbygi8IDH1PQoLSZSw
+         9Fcl/gL3T88ojswJo2R1LWis8Q7BJTZAlePl2CVbC7JMp8rTZztLqHvpFr//FeReXQ9b
+         Pjh2ds1aZw498sG+qPpGeNUS+ZaeteLnUlKxsbBaxjPqxDcPqjKI//DxihvbuXpJtKSI
+         Q7IMxMDukcqB/Bm20urfq2uzoZxCAHvlIpzr5ziqkuUJPztPoaJPxVxmvdJLJ3Smf3D3
+         AUGR5izCC/EFpeq/suqZXu3+gLDHIA8nb1ohLPFKFkA5rp/Q2bSiByQ80gP4H1j3OjOQ
+         4szA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=1a/bd6+FuUOJG/H4wd0T2lOdNMz9aPxRtEUk/VcsT3Y=;
-        b=b8sOQw9pZlpzBh7ntDQWjc5enZcpv6xvnYTIG4VW9D3r/KfVct0pDX/L7/NF5eDKAz
-         ZS4XoxMrYx/N9B+Pjp7z/Yq14MzYIXDKrxY9d2okv0cCnSFcWMOV9AFOQ4yOLY7SzmNP
-         jStLS/mpw/LovQ8flXz/E7ug7btXVIuA9/Dffz5FW8TM2dpBX/hUWyZNhwbqLUuyby7H
-         wwzaG1Ib9jTdWXRY3YrGjMdlO+xUilnsMnDBS0IIDpXx6W+jMJyKceCKiseLFCEv7kUy
-         17+sOzV9zPtesZAXvXKN8coPmsJkWmiNbGfYxRem6c0pxHqUKsbGe7qGbFdJY0MBJ9bv
-         ob6w==
-X-Gm-Message-State: AOAM531ZwlkT54S1I0Y1H8NF0lSZgfK8ZTh1sf/H2uodt7we1tUj2k47
-        horVeY7lbtK9c3+FPKaSvBxKaYN7ipY4wgpoTu5XcYD/UfIaze5M/S5jFzmady6p5W0L60QxcfW
-        swkL/H6rLkrDPaHa/
-X-Received: by 2002:a05:620a:1904:: with SMTP id bj4mr32164875qkb.536.1639397380551;
-        Mon, 13 Dec 2021 04:09:40 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwUMjea4dS/GuZs2NBiHsvdQKAl1msbX4jKzb27GUcYuJ0+s3SA6OeCnzyR+/7myLc0P/iXYw==
-X-Received: by 2002:a05:620a:1904:: with SMTP id bj4mr32164837qkb.536.1639397380127;
-        Mon, 13 Dec 2021 04:09:40 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id n13sm6194857qkp.19.2021.12.13.04.09.37
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=aeDoOoeMSWHks6DEzg3i5Lx0mGgPR00BvNdSpkqFsNg=;
+        b=3C7dQ+xso0y1zVANRj2y3R7LzPPRofP3Ua47I3pMFFo4s9ZKeu1x5gsnplJDaegE7o
+         KNvFG2lsv6eLzInqzf21x8oCJy/OaZ6zSgmVCl02gzKpNQmgR5oCcguVLbUvDKke61jN
+         Af9tLtK3zlZXsBvX7O+jmfM0DHEnkUZigvzNpBGfZ57wE+As9Jxk19X25suufy8zRpRX
+         MHKM+qZm+D8J3dgj4fRoGO/bdvY/Q4Xk44wiqucoB6TuasWkGYYJqur2yA0S4b2GRmvb
+         G+iNPzhPqTxlQhYNWxlNE+fz08ULrjXARJhm7AqbXOBkLT4QWEdGGtWYe9ISF7PnSPwL
+         RoiA==
+X-Gm-Message-State: AOAM532rJ4SwGU4RhMq8HuBaBwSBfUcXGUDy5gGkFSGyODvyiv45eoSV
+        hgZgZz5BcJ/dLh+lr4jYc/k=
+X-Google-Smtp-Source: ABdhPJwIjRtSFc9vWt5dvt98e1WwHpJJX97ibtV2H2StrTwlMvPztvRe3ph2WinCo4fKSqqCerI7OQ==
+X-Received: by 2002:a63:e657:: with SMTP id p23mr1809369pgj.337.1639397448984;
+        Mon, 13 Dec 2021 04:10:48 -0800 (PST)
+Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id h8sm13542230pfh.10.2021.12.13.04.10.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Dec 2021 04:09:39 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 845DC180496; Mon, 13 Dec 2021 13:09:35 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Yihao Han <hanyihao@vivo.com>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>, kernel@vivo.com
-Subject: Re: [PATCH v2] samples/bpf: xdpsock: fix swap.cocci warning
-In-Reply-To: <CAEf4BzYv3ONhy-JnQUtknzgBSK0gpm9GBJYtbAiJQe50_eX7Uw@mail.gmail.com>
-References: <20211209092250.56430-1-hanyihao@vivo.com>
- <877dccwn6x.fsf@toke.dk>
- <CAEf4Bza3a88pdhFEQdR-FnT_gBPqBh+KL-OP-1P3bVfXv=Gbaw@mail.gmail.com>
- <87sfuzuia3.fsf@toke.dk>
- <CAEf4BzYv3ONhy-JnQUtknzgBSK0gpm9GBJYtbAiJQe50_eX7Uw@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Mon, 13 Dec 2021 13:09:35 +0100
-Message-ID: <87fsqwg0zk.fsf@toke.dk>
+        Mon, 13 Dec 2021 04:10:48 -0800 (PST)
+Date:   Mon, 13 Dec 2021 04:10:45 -0800
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Tobias Waldekranz <tobias@waldekranz.com>,
+        Kurt Kanzenbach <kurt@kmk-computers.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v1] net: dsa: mv88e6xxx: Trap PTP traffic
+Message-ID: <20211213121045.GA14042@hoboy.vegasvil.org>
+References: <20211209173337.24521-1-kurt@kmk-computers.de>
+ <87y24t1fvk.fsf@waldekranz.com>
+ <20211210211410.62cf1f01@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20211211153926.GA3357@hoboy.vegasvil.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211211153926.GA3357@hoboy.vegasvil.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+On Sat, Dec 11, 2021 at 07:39:26AM -0800, Richard Cochran wrote:
+> On Fri, Dec 10, 2021 at 09:14:10PM -0800, Jakub Kicinski wrote:
+> > On Fri, 10 Dec 2021 01:07:59 +0100 Tobias Waldekranz wrote:
+> > > Do we know how PTP is supposed to work in relation to things like STP?
+> > > I.e should you be able to run PTP over a link that is currently in
+> > > blocking?
+> > 
+> > Not sure if I'm missing the real question but IIRC the standard
+> > calls out that PTP clock distribution tree can be different that
+> > the STP tree, ergo PTP ignores STP forwarding state.
+> 
+> That is correct.  The PTP will form its own spanning tree, and that
+> might be different than the STP.  In fact, the Layer2 PTP messages
+> have special MAC addresses that are supposed to be sent
+> unconditionally, even over blocked ports.
 
-> On Sat, Dec 11, 2021 at 10:07 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@r=
-edhat.com> wrote:
->>
->> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
->>
->> > On Fri, Dec 10, 2021 at 6:26 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke=
-@redhat.com> wrote:
->> >>
->> >> Yihao Han <hanyihao@vivo.com> writes:
->> >>
->> >> > Fix following swap.cocci warning:
->> >> > ./samples/bpf/xdpsock_user.c:528:22-23:
->> >> > WARNING opportunity for swap()
->> >> >
->> >> > Signed-off-by: Yihao Han <hanyihao@vivo.com>
->> >>
->> >> Erm, did this get applied without anyone actually trying to compile
->> >> samples? I'm getting build errors as:
->> >
->> > Good news: I actually do build samples/bpf nowadays after fixing a
->> > bunch of compilation issues recently.
->>
->> Awesome!
->>
->> > Bad news: seems like I didn't pay too much attention after building
->> > samples/bpf for this particular patch, sorry about that. I've dropped
->> > this patch, samples/bpf builds for me. We should be good now.
->>
->> Yup, looks good, thanks!
->>
->> >>   CC  /home/build/linux/samples/bpf/xsk_fwd.o
->> >> /home/build/linux/samples/bpf/xsk_fwd.c: In function =E2=80=98swap_ma=
-c_addresses=E2=80=99:
->> >> /home/build/linux/samples/bpf/xsk_fwd.c:658:9: warning: implicit decl=
-aration of function =E2=80=98swap=E2=80=99; did you mean =E2=80=98swab=E2=
-=80=99? [-Wimplicit-function-declaration]
->> >>   658 |         swap(*src_addr, *dst_addr);
->> >>       |         ^~~~
->> >>       |         swab
->> >>
->> >> /usr/bin/ld: /home/build/linux/samples/bpf/xsk_fwd.o: in function `th=
-read_func':
->> >> xsk_fwd.c:(.text+0x440): undefined reference to `swap'
->> >> collect2: error: ld returned 1 exit status
->> >>
->> >>
->> >> Could we maybe get samples/bpf added to the BPF CI builds? :)
->> >
->> > Maybe we could, if someone dedicated their effort towards making this
->> > happen.
->>
->> Is it documented anywhere what that would entail? Is it just a matter of
->> submitting a change to https://github.com/kernel-patches/vmtest ?
->
-> I think the right way would be to build samples/bpf from
-> selftests/bpf's Makefile. At the very least we should not require make
-> headers_install (I never understood that with samples/bpf, all those
-> up-to-date UAPI headers are right there in the same repo). Once that
-> is done, at the very least we'll build tests samples/bpf during CI
-> runs.
+Let me correct that statement.
 
-Alright, sounds fair. I'll look into that, but probably before the
-holidays :)
+I looked at 1588 again, and for E2E TC it states, "All PTP version 2
+messages shall be forwarded according to the addressing rules of the
+network."  I suppose that includes the STP state.
 
--Toke
+For P2P TC, there is an exception that the peer delay messages are not
+forwarded.  These are generated and consumed by the switch.
 
+The PTP spanning tree still is formed by the Boundary Clocks (BC), and
+a Transparent Clock (TC) does not participate in forming the PTP
+spanning tree.
+
+What does this mean for Linux DSA switch drivers?
+
+1. All incoming PTP frames should be forwarded to the CPU port, so
+   that the software stack may perform its BC or TC functions.
+
+2. When used as a BC, the PTP frames sent from the CPU port should not
+   be dropped.
+
+3. When used as a TC, PTP frames sent from the CPU port can be dropped
+   on blocked external ports, except for the Peer Delay messages.
+
+Now maybe a particular switch implementation makes it hard to form
+rules for #3 that still work for UDP over IPv4/6.
+
+Thanks,
+Richard
