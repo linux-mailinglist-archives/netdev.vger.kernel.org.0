@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 938584731BB
-	for <lists+netdev@lfdr.de>; Mon, 13 Dec 2021 17:27:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DCD5E4731CE
+	for <lists+netdev@lfdr.de>; Mon, 13 Dec 2021 17:28:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240755AbhLMQ1B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Dec 2021 11:27:01 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:43394 "EHLO
+        id S240774AbhLMQ2c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Dec 2021 11:28:32 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:22921 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S240827AbhLMQ05 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 11:26:57 -0500
+        by vger.kernel.org with ESMTP id S234495AbhLMQ2b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 11:28:31 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1639412816;
+        s=mimecast20190719; t=1639412911;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=xStP3+7Ro9V0luE32DgT7Hp9RicdgEwCYJfQCO89zJk=;
-        b=DNtY4cL5v8qeyyAKtpkbEk6RXepIXZaRgREMO81gMTbZsMM7nQtxS04fcTXBP/6ua1THWn
-        XjSwonZbaxUGJo+LGAKFqXPG6QMInrOjG8PCsq8OQ/DS+60HLiEnnDt5BCQrbX82/6Ie/e
-        U7fvkibnhR5p3bUYuHEx41n2xd3mg0k=
+        bh=xFgMJS5OYLT6odUDPQrNQS9uxsTb4uqYrE9YvbeaGk0=;
+        b=e5SijWY6Ly3axe9TvyKuXWr4IbjeQ0sdHdeyCSwkeCZofpFSEpvv/UL3wCq/sqq0tRrpgw
+        usC9zppIGrD9faNWcHpOBV4Vpl4rx/wLiHmCSU71dH3UGgVVip5pq38Q/SK/tL8Ff45GHz
+        P0DCPgltBTvYIBFtLnVe6mFtVUMjVpk=
 Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
  [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-569-7Q9iqZSlPtK8dQTzW73gPQ-1; Mon, 13 Dec 2021 11:26:53 -0500
-X-MC-Unique: 7Q9iqZSlPtK8dQTzW73gPQ-1
-Received: by mail-ed1-f70.google.com with SMTP id q17-20020aa7da91000000b003e7c0641b9cso14393971eds.12
-        for <netdev@vger.kernel.org>; Mon, 13 Dec 2021 08:26:53 -0800 (PST)
+ us-mta-590-9_BHtIjBNuy5XjcfZwCsnQ-1; Mon, 13 Dec 2021 11:28:30 -0500
+X-MC-Unique: 9_BHtIjBNuy5XjcfZwCsnQ-1
+Received: by mail-ed1-f70.google.com with SMTP id y9-20020aa7c249000000b003e7bf7a1579so14412895edo.5
+        for <netdev@vger.kernel.org>; Mon, 13 Dec 2021 08:28:30 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
          :message-id:mime-version:content-transfer-encoding;
-        bh=xStP3+7Ro9V0luE32DgT7Hp9RicdgEwCYJfQCO89zJk=;
-        b=PGKSNLMVJEi+WJuZJVwUIBh4PYYdoBOcF/f80Bd1FG1FdAJZAh/RDNCC8G7BHw1qKo
-         V8NfC2AbKrSwc4P0oYpWFaWkiLO84BXxOnbkSLNzB+OzjB/voQSMFtW+RCKHX1ih408a
-         eLN/Jt+bQ3rH92bsJ0VaCA8jhrGFIcLDRCunRmzkA26B88ne2uPPUK/lq6x0ZGVZ23lJ
-         whOvSMNQV88cnu0YQStvilKBOdTttrg5NM9i5dCrRX4hxuVqy5ekzRYE817s3ZRocvl0
-         k4xNHOwibhs4bnXlLQmluL0n7olKW1h1+t/WQ5zAZB/dvnvrgg86KT2aDQ4m6Csi76L+
-         hGUQ==
-X-Gm-Message-State: AOAM531CumSQqF/sImFt+5skMKgeOZ47QGmCzXmfnx/470guM6a67fCS
-        /3asXQRReUa8SABvdlOO9tEIHN0cdMtdB1IjACR8cNrLcH+7m4+bzWDT7+2tLYleHDdFr8Mt7Fe
-        cA6e+yJVUVQrN1KX3
-X-Received: by 2002:a17:907:160c:: with SMTP id hb12mr44802248ejc.460.1639412811994;
-        Mon, 13 Dec 2021 08:26:51 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwqepGzhbcfvTvErYJ74zZ/4uLaabIGMemsbkGr36u0LTcJroOlW5D/IdsKyygsqQTSDTYOTw==
-X-Received: by 2002:a17:907:160c:: with SMTP id hb12mr44802199ejc.460.1639412811649;
-        Mon, 13 Dec 2021 08:26:51 -0800 (PST)
+        bh=xFgMJS5OYLT6odUDPQrNQS9uxsTb4uqYrE9YvbeaGk0=;
+        b=5GtZAC1fUPuBSnFFu01KBR3X4pWTgp7Qfe+8I0bNBOe0vhdCfnfxuNLbz3vqW4Jr3d
+         o2LkL/R0M5+C3W5GMeb71BKtnUJQGxAG+FnGo3XDWN96FkjGijQ/57YmHNBYwwPy0oEx
+         StF8w6jDFVbjtkcdJrZjrSloJHfEwDCzha8bAFkQYcu9SDr0wdo+yb315SDGlZtyNPaV
+         jOYk1ygbmcZg6H+7PcIyYkIzJWSei3Un5Z8EULp3PdiQ+7RauIUPXmiAutBUwUt7RQFi
+         GPNS4p9/8kc63/Fhi2SWReyXuwFSxmrLN5zVtSDi9uCv4F3UMIdYHirFpJmyvktCvj6l
+         10Ew==
+X-Gm-Message-State: AOAM5320U623+/MWSZmy+nnOEmuy5Z/13VWYPwrucpKNwXrsyvdpkdBo
+        d6oOXq/iu/WR2dcqG45AwatceViM8LFxAlMhA68GkkUQoHTB6GkPoSwQ5PUv8stxnCUh5V+6dd4
+        BSrQVsL0Ajbs1r/nF
+X-Received: by 2002:a17:906:11ce:: with SMTP id o14mr45416727eja.457.1639412908762;
+        Mon, 13 Dec 2021 08:28:28 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJy+1Jri9oBR6QcOXdVO9FQbIa19fYz+o7TqfqBqmF1DCRiSzjfHSbvt13CDIvqX6QJnfcbNiQ==
+X-Received: by 2002:a17:906:11ce:: with SMTP id o14mr45416690eja.457.1639412908387;
+        Mon, 13 Dec 2021 08:28:28 -0800 (PST)
 Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id t5sm6662646edd.68.2021.12.13.08.26.51
+        by smtp.gmail.com with ESMTPSA id z8sm6706897edb.5.2021.12.13.08.28.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Dec 2021 08:26:51 -0800 (PST)
+        Mon, 13 Dec 2021 08:28:27 -0800 (PST)
 Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 716CF183553; Mon, 13 Dec 2021 17:26:50 +0100 (CET)
+        id 6330D18355A; Mon, 13 Dec 2021 17:28:27 +0100 (CET)
 From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
 To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
@@ -67,15 +67,14 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         Jesper Dangaard Brouer <hawk@kernel.org>,
         Network Development <netdev@vger.kernel.org>,
         bpf <bpf@vger.kernel.org>
-Subject: Re: [PATCH bpf-next v3 6/8] bpf: Add XDP_REDIRECT support to XDP
- for bpf_prog_run()
-In-Reply-To: <CAADnVQJYfyHs41H1x-1wR5WVSX+3ju69XMUQ4id5+1DLkTVDkg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 8/8] samples/bpf: Add xdp_trafficgen sample
+In-Reply-To: <CAADnVQKiPgDtEUwg7WQ2YVByBUTRYuCZn-Y17td+XHazFXchaA@mail.gmail.com>
 References: <20211211184143.142003-1-toke@redhat.com>
- <20211211184143.142003-7-toke@redhat.com>
- <CAADnVQJYfyHs41H1x-1wR5WVSX+3ju69XMUQ4id5+1DLkTVDkg@mail.gmail.com>
+ <20211211184143.142003-9-toke@redhat.com>
+ <CAADnVQKiPgDtEUwg7WQ2YVByBUTRYuCZn-Y17td+XHazFXchaA@mail.gmail.com>
 X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Mon, 13 Dec 2021 17:26:50 +0100
-Message-ID: <87tufceaid.fsf@toke.dk>
+Date:   Mon, 13 Dec 2021 17:28:27 +0100
+Message-ID: <87r1ageafo.fsf@toke.dk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
@@ -87,56 +86,49 @@ Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
 
 > On Sat, Dec 11, 2021 at 10:43 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@r=
 edhat.com> wrote:
->> +
->> +static void bpf_test_run_xdp_teardown(struct bpf_test_timer *t)
->> +{
->> +       struct xdp_mem_info mem =3D {
->> +               .id =3D t->xdp.pp->xdp_mem_id,
->> +               .type =3D MEM_TYPE_PAGE_POOL,
->> +       };
+>>
+>> This adds an XDP-based traffic generator sample which uses the DO_REDIRE=
+CT
+>> flag of bpf_prog_run(). It works by building the initial packet in
+>> userspace and passing it to the kernel where an XDP program redirects the
+>> packet to the target interface. The traffic generator supports two modes=
+ of
+>> operation: one that just sends copies of the same packet as fast as it c=
+an
+>> without touching the packet data at all, and one that rewrites the
+>> destination port number of each packet, making the generated traffic spa=
+n a
+>> range of port numbers.
+>>
+>> The dynamic mode is included to demonstrate how the bpf_prog_run() facil=
+ity
+>> enables building a completely programmable packet generator using XDP.
+>> Using the dynamic mode has about a 10% overhead compared to the static
+>> mode, because the latter completely avoids touching the page data.
+>>
+>> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+>> ---
+>>  samples/bpf/.gitignore            |   1 +
+>>  samples/bpf/Makefile              |   4 +
+>>  samples/bpf/xdp_redirect.bpf.c    |  34 +++
+>>  samples/bpf/xdp_trafficgen_user.c | 421 ++++++++++++++++++++++++++++++
+>>  4 files changed, 460 insertions(+)
+>>  create mode 100644 samples/bpf/xdp_trafficgen_user.c
 >
-> pls add a new line.
->
->> +       xdp_unreg_mem_model(&mem);
->> +}
->> +
->> +static bool ctx_was_changed(struct xdp_page_head *head)
->> +{
->> +       return (head->orig_ctx.data !=3D head->ctx.data ||
->> +               head->orig_ctx.data_meta !=3D head->ctx.data_meta ||
->> +               head->orig_ctx.data_end !=3D head->ctx.data_end);
->
-> redundant ()
->
->>         bpf_test_timer_enter(&t);
->>         old_ctx =3D bpf_set_run_ctx(&run_ctx.run_ctx);
->>         do {
->>                 run_ctx.prog_item =3D &item;
->> -               if (xdp)
->> +               if (xdp && xdp_redirect) {
->> +                       ret =3D bpf_test_run_xdp_redirect(&t, prog, ctx);
->> +                       if (unlikely(ret < 0))
->> +                               break;
->> +                       *retval =3D ret;
->> +               } else if (xdp) {
->>                         *retval =3D bpf_prog_run_xdp(prog, ctx);
->
-> Can we do this unconditionally without introducing a new uapi flag?
-> I mean "return bpf_redirect()" was a nop under test_run.
-> What kind of tests might break if it stops being a nop?
+> I think it deserves to be in tools/bpf/
+> samples/bpf/ bit rots too often now.
+> imo everything in there either needs to be converted to selftests/bpf
+> or deleted.
 
-Well, I view the existing mode of bpf_prog_test_run() with XDP as a way
-to write XDP unit tests: it allows you to submit a packet, run your XDP
-program on it, and check that it returned the right value and did the
-right modifications. This means if you XDP program does 'return
-bpf_redirect()', userspace will still get the XDP_REDIRECT value and so
-it can check correctness of your XDP program.
-
-With this flag the behaviour changes quite drastically, in that it will
-actually put packets on the wire instead of getting back the program
-return. So I think it makes more sense to make it a separate opt-in
-mode; the old behaviour can still be useful for checking XDP program
-behaviour.
+I think there's value in having a separate set of utilities that are
+more user-facing than the selftests. But I do agree that it's annoying
+they bit rot. So how about we fix that instead? Andrii suggested just
+integrating the build of samples/bpf into selftests[0], so I'll look
+into that after the holidays. But in the meantime I don't think there's
+any harm in adding this utility here?
 
 -Toke
+
+[0] https://lore.kernel.org/r/CAEf4BzYv3ONhy-JnQUtknzgBSK0gpm9GBJYtbAiJQe50=
+_eX7Uw@mail.gmail.com
 
