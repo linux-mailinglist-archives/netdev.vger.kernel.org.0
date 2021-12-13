@@ -2,147 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CFB4B472CEE
-	for <lists+netdev@lfdr.de>; Mon, 13 Dec 2021 14:13:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4341E472D33
+	for <lists+netdev@lfdr.de>; Mon, 13 Dec 2021 14:26:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233518AbhLMNNN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Dec 2021 08:13:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49686 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232266AbhLMNNN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 08:13:13 -0500
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07C66C061574;
-        Mon, 13 Dec 2021 05:13:13 -0800 (PST)
-Received: by mail-pf1-x436.google.com with SMTP id r130so14943464pfc.1;
-        Mon, 13 Dec 2021 05:13:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/n5g73Zi2zAOOD+aV8wfwUw34A87dZdhqC0QHxMoNdo=;
-        b=hO1Xs6xfq1L9hJc06Z5zLQNeIGtctoBr9J0NxXtQNA1CtRqKWhlrwiWMJWr3cmWC7T
-         BV96xuerbrRDABvjyMT24M91U1us4TqilE7XgSwfmygnA2UqzZzb40Z0Gpnjv33nUSXn
-         sPvcNMMp8UZfP0xCYV7jbSfUpaT8p995zmlkaWAOB9rmAyYMfHUK3q3wMmoiKULI0S7W
-         ilnqy994/aK20Zl7jSvfUI6PXftdThOwdvBe6/xOJ4qpjFzUOKB2qWZmTDZVmTKMoHlZ
-         yh53cEDLuwOSGdIkuUdUiVvyJVX/cOsjtLmQsAEWD9dNvjXHRihK4ZibtiKAeESRV9hx
-         d41g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/n5g73Zi2zAOOD+aV8wfwUw34A87dZdhqC0QHxMoNdo=;
-        b=tt7ivkn0zejHCoHMB7BPQPep5Acmt6s9wsTk7F77m9R0qf9WtLhZANnxMsZhZSN4LD
-         g4fOyeoXIBHv6eS2MHZ4t/tAFh0FND3oVI4SWZ1AqGOMlPlgOWclVQ4P9kvys/S8HrHz
-         tN1Rlf6ntXB7/H3u9OY7kqvDKAg2P5okGOPr7+vWSQ6nzua1Akc4yINgHHOLPfCemo43
-         gHSwXyd+V9uf37thffllItGQFNb5CWWCtS9R/PhXsL5mxi1XyAiOgjjhWTLGnD1z/2ZE
-         5nKjqng4O0dMaS/Mee3obmPIeBmVTRT4O6yIhF6GmtYxyUvDb1CIFHuXlFuNwpEqQCdi
-         eFww==
-X-Gm-Message-State: AOAM532nufApW6tGU89jNBqEHZAjexBb5JBYa7tjZ7IHrCz78BlrTGUX
-        EQvzfYfaUnw/a76B17QXCTkb3nUfncG4Tw2ZF4tEWe8Zwa0ssuMr
-X-Google-Smtp-Source: ABdhPJwzlG6nHaQi5R/WYqtGpK+ujR2XjaCtGkGLKmjlBeXmLMEjmNpgYnSjyOBThfT0FZEIjoM6OZJxZG6g3JHtNJk=
-X-Received: by 2002:aa7:9acc:0:b0:4a2:b8b5:8813 with SMTP id
- x12-20020aa79acc000000b004a2b8b58813mr33483223pfp.4.1639401192517; Mon, 13
- Dec 2021 05:13:12 -0800 (PST)
+        id S233368AbhLMNZt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Dec 2021 08:25:49 -0500
+Received: from out5-smtp.messagingengine.com ([66.111.4.29]:45527 "EHLO
+        out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S237462AbhLMNZt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 08:25:49 -0500
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
+        by mailout.nyi.internal (Postfix) with ESMTP id 3C3B85C0113;
+        Mon, 13 Dec 2021 08:25:48 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute6.internal (MEProxy); Mon, 13 Dec 2021 08:25:48 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=DDnhlZ
+        KC6XyDruk2BpxFq5djd7b5Vh6i4oMXct5kRM4=; b=TMurrTL1DLyxLuvVsGufSy
+        Kcra7SrQ8M+q35aqv8X9yP6Cqcksqva1xOqfx0YucHjZ7yuQwz1jDzVJuACbN70j
+        oFj9I+z+fZQMXAeRXIKhgfAyC8TlRgUbm+N6+FdsK/X5yCOzLCTcLiKJJp97g5Gt
+        2Gg5Rwty8ho7cDLwW4lbXZPsYTAEnjp5jKv2FpQHxEXgpTQOfz18j4tFwfMQWzUt
+        PEccfsGjFF/npR42Aln+xSrtZ9ydTkaVp0F8WtDzmfqBpJ4duEDXXw6f6q1AySUP
+        8E77yrT9Dj+RBzbC2R0tvE0bp+jokrep/M1H8sotQp/boswt5EV0oU90HStPYYQQ
+        ==
+X-ME-Sender: <xms:20m3YQFbBT_5z1uARYIIG2veRq3NWdZBH_XxAA5bXbNJh3ZUA98_hA>
+    <xme:20m3YZXB7K9B4HGtk1Qfz7foBnVfp1Em6OdJ5YPUiAE0xOyasVb5RqYeQstpRSqxw
+    qh-4XLR85r4mfY>
+X-ME-Received: <xmr:20m3YaKidkAQEAO_FQ51-Cgq5nzjTmS3N_3AEJjJ3tjiqLe2dQj48SKTWlvhyORRKkwmedjc8yL1fy19_m1BRsqQQqfSDQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvuddrkeekgdehvdcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
+    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
+    hrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudehleet
+    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
+    hstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:20m3YSE33LaRSVPMuO2DH4qf8KmQyKucNT55UkbO_sAxeQspzQem2w>
+    <xmx:20m3YWXj-mF9XF6S8R0B-3wEtqQMKaK1z7AAbKGxzkCP2LDjrFTkEw>
+    <xmx:20m3YVMsItgb6PWF1yQRjlqbYS69f27Xj3f4e_R2ZQTAxPDok4m8OA>
+    <xmx:3Em3YTgY98lN57uwbIQ8Fao9SbBL19aM4ERIng_D9igFEFUO7uF9VQ>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 13 Dec 2021 08:25:47 -0500 (EST)
+Date:   Mon, 13 Dec 2021 15:25:43 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     netdev@vger.kernel.org, Stephen Suryaputra <ssuryaextr@gmail.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net] selftest/net/forwarding: declare NETIFS p9 p10
+Message-ID: <YbdJ1wYOHl+gMQxI@shredder>
+References: <20211213083600.2117824-1-liuhangbin@gmail.com>
 MIME-Version: 1.0
-References: <20211210171425.11475-1-maciej.fijalkowski@intel.com> <20211210171425.11475-4-maciej.fijalkowski@intel.com>
-In-Reply-To: <20211210171425.11475-4-maciej.fijalkowski@intel.com>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Mon, 13 Dec 2021 14:13:01 +0100
-Message-ID: <CAJ8uoz0NBd9t87PtASWRyTR-YVwDaUi_Dd6gJKOCQBOROgLEzA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 3/3] ice: xsk: borrow xdp_tx_active logic from i40e
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211213083600.2117824-1-liuhangbin@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Dec 11, 2021 at 3:02 AM Maciej Fijalkowski
-<maciej.fijalkowski@intel.com> wrote:
->
-> One of the things that commit 5574ff7b7b3d ("i40e: optimize AF_XDP Tx
-> completion path") introduced was the @xdp_tx_active field. Its usage
-> from i40e can be adjusted to ice driver and give us positive performance
-> results.
->
-> If the descriptor that @next_dd to points has been sent by HW (its DD
-> bit is set), then we are sure that there are ICE_TX_THRESH count of
-> descriptors ready to be cleaned. If @xdp_tx_active is 0 which means that
-> related xdp_ring is not used for XDP_{TX, REDIRECT} workloads, then we
-> know how many XSK entries should placed to completion queue, IOW walking
-> through the ring can be skipped.
+On Mon, Dec 13, 2021 at 04:36:00PM +0800, Hangbin Liu wrote:
+> The resent GRE selftests defined NUM_NETIFS=10. If the users copy
 
-Thanks for implementing this in ice too.
+s/resent/recent/
 
-Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
+> forwarding.config.sample to forwarding.config directly, they will get
+> error "Command line is not complete" when run the GRE tests, because
+> create_netif_veth() failed with no interface name defined.
+> 
+> Fix it by extending the NETIFS with p9 and p10.
+> 
+> Fixes: 2800f2485417 ("selftests: forwarding: Test multipath hashing on inner IP pkts for GRE tunnel")
+> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
 
-> Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> ---
->  drivers/net/ethernet/intel/ice/ice_txrx.h     | 1 +
->  drivers/net/ethernet/intel/ice/ice_txrx_lib.c | 1 +
->  drivers/net/ethernet/intel/ice/ice_xsk.c      | 7 +++++++
->  3 files changed, 9 insertions(+)
->
-> diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.h b/drivers/net/ethernet/intel/ice/ice_txrx.h
-> index f2ebbe2158e7..8dd9c92662ad 100644
-> --- a/drivers/net/ethernet/intel/ice/ice_txrx.h
-> +++ b/drivers/net/ethernet/intel/ice/ice_txrx.h
-> @@ -332,6 +332,7 @@ struct ice_tx_ring {
->         struct ice_ptp_tx *tx_tstamps;
->         spinlock_t tx_lock;
->         u32 txq_teid;                   /* Added Tx queue TEID */
-> +       u16 xdp_tx_active;
->  #define ICE_TX_FLAGS_RING_XDP          BIT(0)
->         u8 flags;
->         u8 dcb_tc;                      /* Traffic class of ring */
-> diff --git a/drivers/net/ethernet/intel/ice/ice_txrx_lib.c b/drivers/net/ethernet/intel/ice/ice_txrx_lib.c
-> index 1dd7e84f41f8..f15c215c973c 100644
-> --- a/drivers/net/ethernet/intel/ice/ice_txrx_lib.c
-> +++ b/drivers/net/ethernet/intel/ice/ice_txrx_lib.c
-> @@ -299,6 +299,7 @@ int ice_xmit_xdp_ring(void *data, u16 size, struct ice_tx_ring *xdp_ring)
->         tx_desc->cmd_type_offset_bsz = ice_build_ctob(ICE_TX_DESC_CMD_EOP, 0,
->                                                       size, 0);
->
-> +       xdp_ring->xdp_tx_active++;
->         i++;
->         if (i == xdp_ring->count) {
->                 i = 0;
-> diff --git a/drivers/net/ethernet/intel/ice/ice_xsk.c b/drivers/net/ethernet/intel/ice/ice_xsk.c
-> index a7f866b3fcd7..8949a7be45c6 100644
-> --- a/drivers/net/ethernet/intel/ice/ice_xsk.c
-> +++ b/drivers/net/ethernet/intel/ice/ice_xsk.c
-> @@ -684,6 +684,7 @@ static void
->  ice_clean_xdp_tx_buf(struct ice_tx_ring *xdp_ring, struct ice_tx_buf *tx_buf)
->  {
->         xdp_return_frame((struct xdp_frame *)tx_buf->raw_buf);
-> +       xdp_ring->xdp_tx_active--;
->         dma_unmap_single(xdp_ring->dev, dma_unmap_addr(tx_buf, dma),
->                          dma_unmap_len(tx_buf, len), DMA_TO_DEVICE);
->         dma_unmap_len_set(tx_buf, len, 0);
-> @@ -713,6 +714,11 @@ bool ice_clean_tx_irq_zc(struct ice_tx_ring *xdp_ring)
->
->  again:
->         xsk_frames = 0;
-> +       if (likely(!xdp_ring->xdp_tx_active)) {
-> +               xsk_frames = ICE_TX_THRESH;
-> +               goto skip;
-> +       }
-> +
->         ntc = xdp_ring->next_to_clean;
->
->         for (i = 0; i < ICE_TX_THRESH; i++) {
-> @@ -729,6 +735,7 @@ bool ice_clean_tx_irq_zc(struct ice_tx_ring *xdp_ring)
->                 if (ntc >= xdp_ring->count)
->                         ntc = 0;
->         }
-> +skip:
->         xdp_ring->next_to_clean += ICE_TX_THRESH;
->         if (xdp_ring->next_to_clean >= desc_cnt)
->                 xdp_ring->next_to_clean -= desc_cnt;
-> --
-> 2.33.1
->
+Reviewed-by: Ido Schimmel <idosch@nvidia.com>
