@@ -2,125 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 994584730F6
-	for <lists+netdev@lfdr.de>; Mon, 13 Dec 2021 16:56:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6438E4730FE
+	for <lists+netdev@lfdr.de>; Mon, 13 Dec 2021 16:58:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240227AbhLMP4e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Dec 2021 10:56:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32820 "EHLO
+        id S240246AbhLMP6x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Dec 2021 10:58:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237436AbhLMP4d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 10:56:33 -0500
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9694BC06173F
-        for <netdev@vger.kernel.org>; Mon, 13 Dec 2021 07:56:33 -0800 (PST)
-Received: by mail-yb1-xb30.google.com with SMTP id x32so39322251ybi.12
-        for <netdev@vger.kernel.org>; Mon, 13 Dec 2021 07:56:33 -0800 (PST)
+        with ESMTP id S233389AbhLMP6w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 10:58:52 -0500
+Received: from mail-oi1-x236.google.com (mail-oi1-x236.google.com [IPv6:2607:f8b0:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE7D3C061574;
+        Mon, 13 Dec 2021 07:58:52 -0800 (PST)
+Received: by mail-oi1-x236.google.com with SMTP id n66so23678494oia.9;
+        Mon, 13 Dec 2021 07:58:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=TJvT79EfcA7O0EY/8/ibhfo/O9cdo3pl3yfd1aNngOA=;
-        b=TmeDngSyR8aTmXx91HH/CW8JsF4ov1PSJRE8TgYYvD+FzXxvUQCtJkq3lPBmDRMwt2
-         SzdNYNa+tvX6Z+KN77/kqG9/aXuFXfTqKXmQcx0EbmgWkSPGMaJDy8XNa5lE/dp95n4M
-         pvXG6tVJqE69hSvjV45bmynX/IbKKgWuEJar6MApx+nvX1KQQU4iEnk18X87gNvPSso+
-         qojOfHej71CFMlOk7RheAe23e//oYCMJTb0GH+AO25NwEbILS3hRe2cqB2seOntW+X2i
-         1mh8z9Br5IjxUvVPiy96EOX7D6YyRnjVNgjVBX38V63b00E/tZn8Ejl9vX+VYlPfnM2u
-         JpAQ==
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=yGfzyDYwTUBRIBWmk787nJHKxOhWCaJ2ogedCtBIFp0=;
+        b=dWBgYGE+1jy15pU/SA8uESGrurPXMg+geN1MMCYoc0j6kMP23Hn9RK2A3u4Tpnm73p
+         u3JxCPByl9oqKh+iIncJyQ9zdnU43V6bM9YI++TvIQgp8UMJtoPh2CCWGKBvnSiWb32X
+         gHfazgNz8J+9MK2/WzmdsGQelYrXeBi3dmj6bbjOfviSc1SYz5SP7mZcqxSeSVw+v5Is
+         qfMg+xiQZIIxa/eGmZerqWezZmYHINHKp+a+YKgd8hOCSoim2KtwA7GMo0bhZjHmIQZW
+         74SYZL6ibpW4UprvE7ibe/aMBOX2wsUMs+G7ivknL2T7Efr+ZEQNq1Ene11whY8lNhWs
+         hw1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=TJvT79EfcA7O0EY/8/ibhfo/O9cdo3pl3yfd1aNngOA=;
-        b=jZg6oQGl9GJgu+Ph6A+X9eNzP5GPM1a+HOxOQEWPCZJQOPGwsHNBHApisvx/v8MiQP
-         IQ0ANDX6vosZJvssahDh3a9/9/MN3h4GhEqgq0282FXFzA2IycemppXAQ2vhRD4nPMno
-         v0Bl4/140BsaYmM7Ht/CsyEWZSzharO3wtB7DOVnDuI/7ksItbf7fnuARQ/pu2W0mHqx
-         5WCgMFzDQ5iu89qqaQ7V5Byj7kH4VLtm+bBW8uQobbkVw/nc0yAKJhiY0X30Wab7IbJL
-         WovjYn5T040qkZqdH1rFccgnO4OjJZPdDoIUvbbaZo+/YdWBXarg9qykRz2EjU8pgndQ
-         s0og==
-X-Gm-Message-State: AOAM531ZARtOwk8Qh/uzTToXHUyzMZt10G4yyxpEIkGozliDfRF0z31C
-        8k5uH2YyrMbhVcxOAvtxm5gLQZKYsaY/v5YgqMs9pg==
-X-Google-Smtp-Source: ABdhPJxlK8jZHDGMWgi6JUell0daIec/wGzGFUvgQQWqotEzT3/6vJvJEXBx5S7k7Nm+v4Yjje3FKcYQK583wCVjouo=
-X-Received: by 2002:a25:9d82:: with SMTP id v2mr35214440ybp.383.1639410992399;
- Mon, 13 Dec 2021 07:56:32 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=yGfzyDYwTUBRIBWmk787nJHKxOhWCaJ2ogedCtBIFp0=;
+        b=PKvruxMFu/Do6L56Btpsp32A+NkRFHeLRmjqczNOb3Q6RqUsPgb2UUQDOk3qCwtFqC
+         OC6o+RD6+MkfrDzeGNvOd/mAlxmGCcvsOZF38C89kJVo7wEcFYULIiUofyDnQNJAECt+
+         iWMLrE0CSXzloGWIsS3VFbzOF3V2yIQJyemfLYbRG5/hijYhTgPdLsbbVg9Uld/P6xcS
+         VdhFWpgS3jMxJebRY8Ex8hJmQrFVVgYLnvRObRl7zGaJf/IksrcZS4/CmWkFxdSOHsWV
+         QUqTmI3qrVCIuU38PnRyuT7NdyG16ApwJoRNgU6IBKj/y6KtYSkXU6hfH8G5P2d8S7VB
+         GOSg==
+X-Gm-Message-State: AOAM532nF5AtKEJMzqCpp90c4Jy/rBvw+tPK4qozMpj5/afRhEYpVK6e
+        I6hJunDMjeWktkHIGMxzk8V2cI2qLGg=
+X-Google-Smtp-Source: ABdhPJxdEgNEluuOP+Mg+WGZz5WdDvYAl977/wITRh82fIbG32cqCCawD3aMXBeZ346805JYBy1fjA==
+X-Received: by 2002:a05:6808:14c2:: with SMTP id f2mr28062103oiw.154.1639411132077;
+        Mon, 13 Dec 2021 07:58:52 -0800 (PST)
+Received: from [172.16.0.2] ([8.48.134.30])
+        by smtp.googlemail.com with ESMTPSA id e14sm2306709oow.3.2021.12.13.07.58.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 13 Dec 2021 07:58:51 -0800 (PST)
+Message-ID: <56ae3614-f666-4eed-cfee-e2dc7b7eb169@gmail.com>
+Date:   Mon, 13 Dec 2021 08:58:50 -0700
 MIME-Version: 1.0
-References: <45d12aa0c95049a392d52ff239d42d83@AcuMS.aculab.com>
- <52edd5fd-daa0-729b-4646-43450552d2ab@intel.com> <96b6a476c4154da3bd04996139cd8a6d@AcuMS.aculab.com>
-In-Reply-To: <96b6a476c4154da3bd04996139cd8a6d@AcuMS.aculab.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 13 Dec 2021 07:56:20 -0800
-Message-ID: <CANn89i+4acJp8ohBMWU4sketLfitKCzmS8FQTvduxumYYketvw@mail.gmail.com>
-Subject: Re: [PATCH] x86/lib: Remove the special case for odd-aligned buffers
- in csum_partial.c
-To:     David Laight <David.Laight@aculab.com>
-Cc:     Dave Hansen <dave.hansen@intel.com>,
-        Noah Goldstein <goldstein.w.n@gmail.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        Borislav Petkov <bp@alien8.de>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        X86 ML <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "alexanderduyck@fb.com" <alexanderduyck@fb.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.4.0
+Subject: Re: [PATCH v2] selftests: net: Correct case name
+Content-Language: en-US
+To:     "Zhou, Jie2X" <jie2x.zhou@intel.com>,
+        "lizhijian@fujitsu.com" <lizhijian@fujitsu.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "shuah@kernel.org" <shuah@kernel.org>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Li, ZhijianX" <zhijianx.li@intel.com>,
+        "Li, Philip" <philip.li@intel.com>,
+        "Ma, XinjianX" <xinjianx.ma@intel.com>
+References: <20211202022841.23248-1-lizhijian@cn.fujitsu.com>
+ <bbb91e78-018f-c09c-47db-119010c810c2@fujitsu.com>
+ <41a78a37-6136-ba45-d8fa-c7af4ee772b9@gmail.com>
+ <4d92af7d-5a84-4a5d-fd98-37f969ac4c23@fujitsu.com>
+ <8e3bb197-3f56-a9a7-b75d-4a6343276ec7@gmail.com>
+ <PH0PR11MB47925643B3A60192AAD18D7AC5749@PH0PR11MB4792.namprd11.prod.outlook.com>
+ <65ca2349-5d11-93fb-d9d3-22ff87fe7533@gmail.com>
+ <PH0PR11MB4792C379D6C64BE6BA0ECED8C5749@PH0PR11MB4792.namprd11.prod.outlook.com>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <PH0PR11MB4792C379D6C64BE6BA0ECED8C5749@PH0PR11MB4792.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 13, 2021 at 7:37 AM David Laight <David.Laight@aculab.com> wrote:
->
-> From: Dave Hansen
-> > Sent: 13 December 2021 15:02
-> .c
-> >
-> > On 12/13/21 6:43 AM, David Laight wrote:
-> > > There is no need to special case the very unusual odd-aligned buffers.
-> > > They are no worse than 4n+2 aligned buffers.
-> > >
-> > > Signed-off-by: David Laight <david.laight@aculab.com>
-> > > ---
-> > >
-> > > On an i7-7700 misaligned buffers add 2 or 3 clocks (in 115) to a 512 byte
-> > >   checksum.
-> > > That is just measuring the main loop with an lfence prior to rdpmc to
-> > > read PERF_COUNT_HW_CPU_CYCLES.
-> >
-> > I'm a bit confused by this changelog.
-> >
-> > Are you saying that the patch causes a (small) performance regression?
-> >
-> > Are you also saying that the optimization here is not worth it because
-> > it saves 15 lines of code?  Or that the misalignment checks themselves
-> > add 2 or 3 cycles, and this is an *optimization*?
->
-> I'm saying that it can't be worth optimising for a misaligned
-> buffer because the cost of the buffer being misaligned is so small.
-> So the test for a misaligned buffer are going to cost more than
-> and plausible gain.
->
-> Not only that the buffer will never be odd aligned at all.
->
-> The code is left in from a previous version that did do aligned
-> word reads - so had to do extra for odd alignment.
->
-> Note that code is doing misaligned reads for the more likely 4n+2
-> aligned ethernet receive buffers.
-> I doubt that even a test for that would be worthwhile even if you
-> were checksumming full sized ethernet packets.
->
-> So the change is deleting code that is never actually executed
-> from the hot path.
->
+On 12/13/21 2:44 AM, Zhou, Jie2X wrote:
+> hi,
+> 
+>> After the last round of patches all tests but 2 pass with the 5.16.0-rc3
+>> kernel (net-next based) and ubuntu 20.04 OS.
+>> The 2 failures are due local pings and to bugs in 'ping' - it removes
+>> the device bind by calling setsockopt with an "" arg.
+> 
+> The failed testcase command is nettest not ping.
+> COMMAND: ip netns exec ns-A nettest -s -R -P icmp -l 172.16.1.1 -b
+> TEST: Raw socket bind to local address - ns-A IP                              [FAIL]
+> 
+> It failed because it return 0.
+> But the patch expected return 1.
+> 
+> May be the patch should expected 0 return value for  ${NSA_IP}.
+> And expected 1 return value for  ${VRF_IP}.
+> 
+> diff --git a/tools/testing/selftests/net/fcnal-test.sh b/tools/testing/selftests/net/fcnal-test.sh
+> index dd7437dd2680b..4340477863d36 100755
+> --- a/tools/testing/selftests/net/fcnal-test.sh
+> +++ b/tools/testing/selftests/net/fcnal-test.sh
+> @@ -1810,8 +1810,9 @@ ipv4_addr_bind_vrf()
+>         for a in ${NSA_IP} ${VRF_IP}
+>         do
+>                 log_start
+> +               show_hint "Socket not bound to VRF, but address is in VRF"
+>                 run_cmd nettest -s -R -P icmp -l ${a} -b
+> -               log_test_addr ${a} $? 0 "Raw socket bind to local address"
+> +               log_test_addr ${a} $? 1 "Raw socket bind to local address"
+> 
+>                 log_start
+>                 run_cmd nettest -s -R -P icmp -l ${a} -I ${NSA_DEV} -b
+> 
 
-I think I left this code because I got confused with odd/even case,
-but this is handled by upper functions like csum_block_add()
+apply *all* patches.
 
-What matters is not if the start of a frag is odd/even, but what
-offset it is in the overall ' frame', if a frame is split into multiple
-areas (scatter/gather)
+https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/?id=0f108ae44520
 
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-
-Thanks !
