@@ -2,238 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C65F472357
-	for <lists+netdev@lfdr.de>; Mon, 13 Dec 2021 09:58:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 46D2F472364
+	for <lists+netdev@lfdr.de>; Mon, 13 Dec 2021 10:00:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231772AbhLMI54 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Dec 2021 03:57:56 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:53952 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233487AbhLMI5z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 03:57:55 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1639385874;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=p9DVBPqK/d21aVsh+v6i0c9OVAXlQK07WZGATq/KnvE=;
-        b=Uy/2QEiekuZZsyO/ICD4Sbw/vjqLtUBie59Qkse0v445p2qlsWgbOo+B/MtmqhlRu50QWh
-        QCUzgyT1eB529KQ6GUTxW5KToxwZIZvO9TFYqAQDMXiajlWC2/ViGvzsQTqUkVs5LvHLol
-        Qsi/gfEJLUwGmOcozZaz/l0VTog7W8Q=
-Received: from mail-lj1-f199.google.com (mail-lj1-f199.google.com
- [209.85.208.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-262-NmGG97fNPxy32faj6IB5jg-1; Mon, 13 Dec 2021 03:57:51 -0500
-X-MC-Unique: NmGG97fNPxy32faj6IB5jg-1
-Received: by mail-lj1-f199.google.com with SMTP id s16-20020a2ea710000000b0021b674e9347so4268585lje.8
-        for <netdev@vger.kernel.org>; Mon, 13 Dec 2021 00:57:51 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=p9DVBPqK/d21aVsh+v6i0c9OVAXlQK07WZGATq/KnvE=;
-        b=ghkaznJ/zbnN4ceFd9z58IzC4cU4IvyWDCaFR3nWrTnLuFxEu7QvyOgMkK8cDaauTe
-         yZRgqSbYijgfkWGGH3XsoZVBjZeKY5cOV79wcfVGX2HtappKC01gz4mne99sE9XRY95S
-         ktafY+8q42vqhpzmchbimS0O8VlmZtHImq8X/Ump5h7uGJWAhtZamOsVabQ/pYrbXjAF
-         eRdQwkDmmFC1bFZeyEgAB/3lp7Ir7oxe2NzO81eiECzTsVoDQMKORGvZJkcajMLvVILb
-         rerGmttGcrq7B3brclbyXwPeh/2bYOwypKmi5hHiuQWP5o0CVyGd5+L5Y2w7vArn355U
-         DtmQ==
-X-Gm-Message-State: AOAM532qgk7ATTisz2a0NkLBhc063Js7O+3bkdYDB9a/+ayD0SKMChoK
-        Y3L4pTm0dn/LfmPwKVkjTt35iYm+jUNp6recE6ZPp2TgWTwUlAxSpLRa1FFLg9irpvG/hAqnyC9
-        2A3Ktz2LEBqtUjdhejSam2yy3brRz54ei
-X-Received: by 2002:a05:6512:3b2b:: with SMTP id f43mr28111796lfv.629.1639385869926;
-        Mon, 13 Dec 2021 00:57:49 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwKQv6cjOzLwU+SaW+IgVD/YNCHy3d5cQA+UHXctkBj0q7a1O8d5EuvuGrOXD0FCaxdFFZAe4G2ilJ7UjuF+y4=
-X-Received: by 2002:a05:6512:3b2b:: with SMTP id f43mr28111776lfv.629.1639385869712;
- Mon, 13 Dec 2021 00:57:49 -0800 (PST)
+        id S233450AbhLMJAM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Dec 2021 04:00:12 -0500
+Received: from rtits2.realtek.com ([211.75.126.72]:49010 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233335AbhLMJAL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 04:00:11 -0500
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 1BD8xuMvB029310, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36504.realtek.com.tw[172.21.6.27])
+        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 1BD8xuMvB029310
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Mon, 13 Dec 2021 16:59:56 +0800
+Received: from RTEXMBS06.realtek.com.tw (172.21.6.99) by
+ RTEXH36504.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Mon, 13 Dec 2021 16:59:56 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS06.realtek.com.tw (172.21.6.99) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Mon, 13 Dec 2021 16:59:55 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::65a3:1e23:d911:4b01]) by
+ RTEXMBS04.realtek.com.tw ([fe80::65a3:1e23:d911:4b01%5]) with mapi id
+ 15.01.2308.020; Mon, 13 Dec 2021 16:59:55 +0800
+From:   Pkshih <pkshih@realtek.com>
+To:     Jian-Hong Pan <jhp@endlessos.org>
+CC:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        Yan-Hsuan Chuang <tony0620emma@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux@endlessos.org" <linux@endlessos.org>
+Subject: RE: [PATCH] rtw88: 8821c: disable the ASPM of RTL8821CE
+Thread-Topic: [PATCH] rtw88: 8821c: disable the ASPM of RTL8821CE
+Thread-Index: AQHX7Z6qoa2juW6HuEaQNtYEJNeW8KwrYzIg//+KwICAAAK8AIAB4vUwgAKxvgCAAJx1QA==
+Date:   Mon, 13 Dec 2021 08:59:55 +0000
+Message-ID: <e78b81f3a73c45b59f4c4d9f5b414508@realtek.com>
+References: <20211210081659.4621-1-jhp@endlessos.org>
+ <6b0fcc8cf3bd4a77ad190dc6f72eb66f@realtek.com>
+ <CAAd53p66HPH9v0_hzOaQAydberd8JA4HthNVwpQ86xb-dSuUEA@mail.gmail.com>
+ <CAPpJ_efvmPWsCFsff35GHV8Q52YvQcFr_Hs=q3RtvbfVohY+4Q@mail.gmail.com>
+ <617008e3be9c4b5aa37b26f97daf9354@realtek.com>
+ <CAPpJ_ecqf+LqkN-Wb+zNGHbtJ3rKD8_kU3W0c2gTQGQqK1sUwg@mail.gmail.com>
+In-Reply-To: <CAPpJ_ecqf+LqkN-Wb+zNGHbtJ3rKD8_kU3W0c2gTQGQqK1sUwg@mail.gmail.com>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.69.188]
+x-kse-serverinfo: RTEXMBS06.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIxLzEyLzEzIOS4iuWNiCAwNjozODowMA==?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <3ff5fd23-1db0-2f95-4cf9-711ef403fb62@oracle.com>
- <20210224000057-mutt-send-email-mst@kernel.org> <52836a63-4e00-ff58-50fb-9f450ce968d7@oracle.com>
- <20210228163031-mutt-send-email-mst@kernel.org> <2cb51a6d-afa0-7cd1-d6f2-6b153186eaca@redhat.com>
- <20210302043419-mutt-send-email-mst@kernel.org> <178f8ea7-cebd-0e81-3dc7-10a058d22c07@redhat.com>
- <c9a0932f-a6d7-a9df-38ba-97e50f70c2b2@oracle.com> <20211212042311-mutt-send-email-mst@kernel.org>
- <CACGkMEtwWcBNj62Yn_ZSq33N42ZG5yhCcZf=eQZ_AdVgJhEjEA@mail.gmail.com> <20211213030535-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20211213030535-mutt-send-email-mst@kernel.org>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Mon, 13 Dec 2021 16:57:38 +0800
-Message-ID: <CACGkMEtRfqRDPxXS2T-a0u4Aji3KtUq7-2iUD8Z-X1k84EgOZA@mail.gmail.com>
-Subject: Re: vdpa legacy guest support (was Re: [PATCH] vdpa/mlx5:
- set_features should allow reset to zero)
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Si-Wei Liu <si-wei.liu@oracle.com>, Eli Cohen <elic@nvidia.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-KSE-ServerInfo: RTEXH36504.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 13, 2021 at 4:07 PM Michael S. Tsirkin <mst@redhat.com> wrote:
->
-> On Mon, Dec 13, 2021 at 11:02:39AM +0800, Jason Wang wrote:
-> > On Sun, Dec 12, 2021 at 5:26 PM Michael S. Tsirkin <mst@redhat.com> wro=
-te:
-> > >
-> > > On Fri, Dec 10, 2021 at 05:44:15PM -0800, Si-Wei Liu wrote:
-> > > > Sorry for reviving this ancient thread. I was kinda lost for the co=
-nclusion
-> > > > it ended up with. I have the following questions,
-> > > >
-> > > > 1. legacy guest support: from the past conversations it doesn't see=
-m the
-> > > > support will be completely dropped from the table, is my understand=
-ing
-> > > > correct? Actually we're interested in supporting virtio v0.95 guest=
- for x86,
-> > > > which is backed by the spec at
-> > > > https://ozlabs.org/~rusty/virtio-spec/virtio-0.9.5.pdf. Though I'm =
-not sure
-> > > > if there's request/need to support wilder legacy virtio versions ea=
-rlier
-> > > > beyond.
-> > >
-> > > I personally feel it's less work to add in kernel than try to
-> > > work around it in userspace. Jason feels differently.
-> > > Maybe post the patches and this will prove to Jason it's not
-> > > too terrible?
-> >
-> > That's one way, other than the config access before setting features,
-> > we need to deal with other stuffs:
-> >
-> > 1) VIRTIO_F_ORDER_PLATFORM
-> > 2) there could be a parent device that only support 1.0 device
-> >
-> > And a lot of other stuff summarized in spec 7.4 which seems not an
-> > easy task. Various vDPA parent drivers were written under the
-> > assumption that only modern devices are supported.
-> >
-> > Thanks
->
-> Limiting things to x86 will likely address most issues though, won't it?
-
-For the ordering, yes. But it means we need to introduce a config
-option for legacy logic?
-
-And we need to deal with, as you said in another thread, kick before DRIVER=
-_OK:
-
-E.g we had thing like this:
-
-        if ((status & VIRTIO_CONFIG_S_DRIVER_OK) &&
-            !(status_old & VIRTIO_CONFIG_S_DRIVER_OK)) {
-                ret =3D ifcvf_request_irq(adapter);
-                if (ret) {
-
-Similar issues could be found in other parents.
-
-We also need to consider whether we should encourage the vendor to
-implement the logic.
-
-I think we can try and see how hard it is.
-
-Thanks
-
->
-> > >
-> > > > 2. suppose some form of legacy guest support needs to be there, how=
- do we
-> > > > deal with the bogus assumption below in vdpa_get_config() in the sh=
-ort term?
-> > > > It looks one of the intuitive fix is to move the vdpa_set_features =
-call out
-> > > > of vdpa_get_config() to vdpa_set_config().
-> > > >
-> > > >         /*
-> > > >          * Config accesses aren't supposed to trigger before featur=
-es are
-> > > > set.
-> > > >          * If it does happen we assume a legacy guest.
-> > > >          */
-> > > >         if (!vdev->features_valid)
-> > > >                 vdpa_set_features(vdev, 0);
-> > > >         ops->get_config(vdev, offset, buf, len);
-> > > >
-> > > > I can post a patch to fix 2) if there's consensus already reached.
-> > > >
-> > > > Thanks,
-> > > > -Siwei
-> > >
-> > > I'm not sure how important it is to change that.
-> > > In any case it only affects transitional devices, right?
-> > > Legacy only should not care ...
-> > >
-> > >
-> > > > On 3/2/2021 2:53 AM, Jason Wang wrote:
-> > > > >
-> > > > > On 2021/3/2 5:47 =E4=B8=8B=E5=8D=88, Michael S. Tsirkin wrote:
-> > > > > > On Mon, Mar 01, 2021 at 11:56:50AM +0800, Jason Wang wrote:
-> > > > > > > On 2021/3/1 5:34 =E4=B8=8A=E5=8D=88, Michael S. Tsirkin wrote=
-:
-> > > > > > > > On Wed, Feb 24, 2021 at 10:24:41AM -0800, Si-Wei Liu wrote:
-> > > > > > > > > > Detecting it isn't enough though, we will need a new io=
-ctl to notify
-> > > > > > > > > > the kernel that it's a legacy guest. Ugh :(
-> > > > > > > > > Well, although I think adding an ioctl is doable, may I
-> > > > > > > > > know what the use
-> > > > > > > > > case there will be for kernel to leverage such info
-> > > > > > > > > directly? Is there a
-> > > > > > > > > case QEMU can't do with dedicate ioctls later if there's =
-indeed
-> > > > > > > > > differentiation (legacy v.s. modern) needed?
-> > > > > > > > BTW a good API could be
-> > > > > > > >
-> > > > > > > > #define VHOST_SET_ENDIAN _IOW(VHOST_VIRTIO, ?, int)
-> > > > > > > > #define VHOST_GET_ENDIAN _IOW(VHOST_VIRTIO, ?, int)
-> > > > > > > >
-> > > > > > > > we did it per vring but maybe that was a mistake ...
-> > > > > > >
-> > > > > > > Actually, I wonder whether it's good time to just not support
-> > > > > > > legacy driver
-> > > > > > > for vDPA. Consider:
-> > > > > > >
-> > > > > > > 1) It's definition is no-normative
-> > > > > > > 2) A lot of budren of codes
-> > > > > > >
-> > > > > > > So qemu can still present the legacy device since the config
-> > > > > > > space or other
-> > > > > > > stuffs that is presented by vhost-vDPA is not expected to be
-> > > > > > > accessed by
-> > > > > > > guest directly. Qemu can do the endian conversion when necess=
-ary
-> > > > > > > in this
-> > > > > > > case?
-> > > > > > >
-> > > > > > > Thanks
-> > > > > > >
-> > > > > > Overall I would be fine with this approach but we need to avoid=
- breaking
-> > > > > > working userspace, qemu releases with vdpa support are out ther=
-e and
-> > > > > > seem to work for people. Any changes need to take that into acc=
-ount
-> > > > > > and document compatibility concerns.
-> > > > >
-> > > > >
-> > > > > Agree, let me check.
-> > > > >
-> > > > >
-> > > > > >   I note that any hardware
-> > > > > > implementation is already broken for legacy except on platforms=
- with
-> > > > > > strong ordering which might be helpful in reducing the scope.
-> > > > >
-> > > > >
-> > > > > Yes.
-> > > > >
-> > > > > Thanks
-> > > > >
-> > > > >
-> > > > > >
-> > > > > >
-> > > > >
-> > >
->
-
+DQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IEppYW4tSG9uZyBQYW4gPGpo
+cEBlbmRsZXNzb3Mub3JnPg0KPiBTZW50OiBNb25kYXksIERlY2VtYmVyIDEzLCAyMDIxIDM6MzEg
+UE0NCj4gVG86IFBrc2hpaCA8cGtzaGloQHJlYWx0ZWsuY29tPg0KPiBDYzogS2FpLUhlbmcgRmVu
+ZyA8a2FpLmhlbmcuZmVuZ0BjYW5vbmljYWwuY29tPjsgWWFuLUhzdWFuIENodWFuZyA8dG9ueTA2
+MjBlbW1hQGdtYWlsLmNvbT47IEthbGxlIFZhbG8NCj4gPGt2YWxvQGNvZGVhdXJvcmEub3JnPjsg
+bGludXgtd2lyZWxlc3NAdmdlci5rZXJuZWwub3JnOyBuZXRkZXZAdmdlci5rZXJuZWwub3JnOw0K
+PiBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnOyBsaW51eEBlbmRsZXNzb3Mub3JnDQo+IFN1
+YmplY3Q6IFJlOiBbUEFUQ0hdIHJ0dzg4OiA4ODIxYzogZGlzYWJsZSB0aGUgQVNQTSBvZiBSVEw4
+ODIxQ0UNCj4gDQo+IFBrc2hpaCA8cGtzaGloQHJlYWx0ZWsuY29tPiDmlrwgMjAyMeW5tDEy5pyI
+MTHml6Ug6YCx5YWtIOS4i+WNiDI6MzHlr6vpgZPvvJoNCj4gPg0KPiA+DQo+ID4gPiAtLS0tLU9y
+aWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiA+ID4gRnJvbTogSmlhbi1Ib25nIFBhbiA8amhwQGVuZGxl
+c3Nvcy5vcmc+DQo+ID4gPiBTZW50OiBGcmlkYXksIERlY2VtYmVyIDEwLCAyMDIxIDU6MzQgUE0N
+Cj4gPiA+IFRvOiBLYWktSGVuZyBGZW5nIDxrYWkuaGVuZy5mZW5nQGNhbm9uaWNhbC5jb20+DQo+
+ID4gPiBDYzogUGtzaGloIDxwa3NoaWhAcmVhbHRlay5jb20+OyBZYW4tSHN1YW4gQ2h1YW5nIDx0
+b255MDYyMGVtbWFAZ21haWwuY29tPjsgS2FsbGUgVmFsbw0KPiA+ID4gPGt2YWxvQGNvZGVhdXJv
+cmEub3JnPjsgbGludXgtd2lyZWxlc3NAdmdlci5rZXJuZWwub3JnOyBuZXRkZXZAdmdlci5rZXJu
+ZWwub3JnOw0KPiA+ID4gbGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZzsgbGludXhAZW5kbGVz
+c29zLm9yZw0KPiA+ID4gU3ViamVjdDogUmU6IFtQQVRDSF0gcnR3ODg6IDg4MjFjOiBkaXNhYmxl
+IHRoZSBBU1BNIG9mIFJUTDg4MjFDRQ0KPiA+ID4NCj4gPiA+IEthaS1IZW5nIEZlbmcgPGthaS5o
+ZW5nLmZlbmdAY2Fub25pY2FsLmNvbT4g5pa8IDIwMjHlubQxMuaciDEw5pelIOmAseS6lCDkuIvl
+jYg1OjI05a+r6YGT77yaDQo+ID4gPg0KPiA+ID4gPiBSaWdodCBub3cgaXQgc2VlbXMgbGlrZSBv
+bmx5IEludGVsIHBsYXRmb3JtcyBhcmUgYWZmZWN0ZWQsIHNvIGNhbiBJDQo+ID4gPiA+IHByb3Bv
+c2UgYSBwYXRjaCB0byBkaXNhYmxlIEFTUE0gd2hlbiBpdHMgdXBzdHJlYW0gcG9ydCBpcyBJbnRl
+bD8NCj4gPiA+DQo+ID4gPiBJIG9ubHkgaGF2ZSBsYXB0b3BzIHdpdGggSW50ZWwgY2hpcCBub3cu
+ICBTbywgSSBhbSBub3Qgc3VyZSB0aGUgc3RhdHVzDQo+ID4gPiB3aXRoIEFNRCBwbGF0Zm9ybXMu
+DQo+ID4gPiBJZiB0aGlzIGlzIHRydWUsIHRoZW4gImRpc2FibGUgQVNQTSB3aGVuIGl0cyB1cHN0
+cmVhbSBwb3J0IGlzIEludGVsIg0KPiA+ID4gbWlnaHQgYmUgYSBnb29kIGlkZWEuDQo+ID4gPg0K
+PiA+DQo+ID4gSmlhbi1Ib25nLCBjb3VsZCB5b3UgdHJ5IEthaS1IZW5nJ3Mgd29ya2Fyb3VuZCB0
+aGF0IG9ubHkgdHVybiBvZmYgQVNQTQ0KPiA+IGR1cmluZyBOQVBJIHBvbGwgZnVuY3Rpb24uIElm
+IGl0IGFsc28gd29ya3MgdG8geW91LCBJIHRoaW5rIGl0IGlzIG9rYXkNCj4gPiB0byBhcHBseSB0
+aGlzIHdvcmthcm91bmQgdG8gYWxsIEludGVsIHBsYXRmb3JtIHdpdGggUlRMODgyMUNFIGNoaXBz
+ZXQuDQo+ID4gQmVjYXVzZSB0aGlzIHdvcmthcm91bmQgaGFzIGxpdHRsZSAoYWxtb3N0IG5vKSBp
+bXBhY3Qgb2YgcG93ZXIgY29uc3VtcHRpb24uDQo+IA0KPiBBY2NvcmRpbmcgdG8gS2FpLUhlbmcn
+cyBoYWNrIHBhdGNoIFsxXSBhbmQgdGhlIGNvbW1lbnQgWzJdIG1lbnRpb25pbmcNCj4gY2hlY2tp
+bmcgInJlZl9jbnQiIGJ5IHJ0d19wY2lfbGlua19wcygpLCBJIGFycmFuZ2UgdGhlIHBhdGNoIGFz
+DQo+IGZvbGxvd2luZy4NCg0KSSBtZWFudCB0aGF0IG1vdmUgInJlZl9jbnQiIGludG8gcnR3X3Bj
+aV9saW5rX3BzKCkgYnkgWzJdLCBidXQgeW91IHJlbW92ZQ0KdGhlICJyZWZfY250Ii4gVGhpcyBs
+ZWFkcyBsb3dlciBwZXJmb3JtYW5jZSwgYmVjYXVzZSBpdCBtdXN0IHR1cm4gb2ZmDQpBU1BNIGFm
+dGVyIG5hcGlfcG9sbCgpIHdoZW4gd2UgaGF2ZSBoaWdoIHRyYWZmaWMuDQoNCkluIGZhY3QsIEth
+aS1IZW5nJ3MgcGF0Y2ggaXMgdG8gbGVhdmUgQVNQTSBiZWZvcmUgbmFwaV9wb2xsKCksIGFuZA0K
+InJlc3RvcmUiIEFTUE0gc2V0dGluZy4gU28sIHdlIHN0aWxsIG5lZWQgInJlZl9jbnQiLg0KDQoN
+Cj4gVGhpcyBwYXRjaCBvbmx5IGRpc2FibGVzIEFTUE0gKGlmIHRoZSBoYXJkd2FyZSBoYXMgdGhl
+IGNhcGFiaWxpdHkpDQo+IHdoZW4gc3lzdGVtIGdldHMgaW50byBydHdfcGNpX25hcGlfcG9sbCgp
+IGFuZCByZS1lbmFibGVzIEFTUE0gd2hlbiBpdA0KPiBsZWF2ZXMgcnR3X3BjaV9uYXBpX3BvbGwo
+KS4gIEl0IGlzIGFzIFBpbmctS2UgbWVudGlvbmVkICJvbmx5IHR1cm4gb2ZmDQo+IEFTUE0gZHVy
+aW5nIE5BUEkgcG9sbCBmdW5jdGlvbiIuDQo+IFRoZSBXaUZpICYgQlQgd29yaywgYW5kIHN5c3Rl
+bSBpcyBzdGlsbCBhbGl2ZSBhZnRlciBJIHVzZSB0aGUgaW50ZXJuZXQNCj4gYXdoaWxlLiAgQmVz
+aWRlcywgdGhlcmUgaXMgbm8gbW9yZSAicGNpIGJ1cyB0aW1lb3V0LCBjaGVjayBkbWEgc3RhdHVz
+Ig0KPiBlcnJvci4NCj4gDQo+IFsxXSBodHRwczovL2J1Z3ppbGxhLmtlcm5lbC5vcmcvc2hvd19i
+dWcuY2dpP2lkPTIxNTEzMSNjMTENCj4gWzJdIGh0dHBzOi8vYnVnemlsbGEua2VybmVsLm9yZy9z
+aG93X2J1Zy5jZ2k/aWQ9MjE1MTMxI2MxNQ0KPiANCj4gSmlhbi1Ib25nIFBhbg0KPiANCj4gZGlm
+ZiAtLWdpdCBhL2RyaXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnR3ODgvcGNpLmMNCj4gYi9k
+cml2ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0dzg4L3BjaS5jDQo+IGluZGV4IGE3YTZlYmZh
+YTIwMy4uYTZmZGRkZWNkMzdkIDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL25ldC93aXJlbGVzcy9y
+ZWFsdGVrL3J0dzg4L3BjaS5jDQo+ICsrKyBiL2RyaXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsv
+cnR3ODgvcGNpLmMNCj4gQEAgLTE2NTgsNiArMTY1OCw3IEBAIHN0YXRpYyBpbnQgcnR3X3BjaV9u
+YXBpX3BvbGwoc3RydWN0IG5hcGlfc3RydWN0DQo+ICpuYXBpLCBpbnQgYnVkZ2V0KQ0KPiAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgcHJpdik7DQo+ICAgICAg
+ICAgaW50IHdvcmtfZG9uZSA9IDA7DQo+IA0KPiArICAgICAgIHJ0d19wY2lfbGlua19wcyhydHdk
+ZXYsIGZhbHNlKTsNCj4gICAgICAgICB3aGlsZSAod29ya19kb25lIDwgYnVkZ2V0KSB7DQo+ICAg
+ICAgICAgICAgICAgICB1MzIgd29ya19kb25lX29uY2U7DQo+IA0KPiBAQCAtMTY4MSw2ICsxNjgy
+LDcgQEAgc3RhdGljIGludCBydHdfcGNpX25hcGlfcG9sbChzdHJ1Y3QgbmFwaV9zdHJ1Y3QNCj4g
+Km5hcGksIGludCBidWRnZXQpDQo+ICAgICAgICAgICAgICAgICBpZiAocnR3X3BjaV9nZXRfaHdf
+cnhfcmluZ19ucihydHdkZXYsIHJ0d3BjaSkpDQo+ICAgICAgICAgICAgICAgICAgICAgICAgIG5h
+cGlfc2NoZWR1bGUobmFwaSk7DQo+ICAgICAgICAgfQ0KPiArICAgICAgIHJ0d19wY2lfbGlua19w
+cyhydHdkZXYsIHRydWUpOw0KPiANCj4gICAgICAgICByZXR1cm4gd29ya19kb25lOw0KPiAgfQ0K
+PiANCg0KSG93IGFib3V0IGRvaW5nIHRoaXMgdGhpbmcgb25seSBpZiA4ODIxQ0UgYW5kIEludGVs
+IHBsYXRmb3JtPw0KQ291bGQgeW91IGhlbHAgdG8gYWRkIHRoaXM/DQoNCi0tDQpQaW5nLWtlDQoN
+Cg0K
