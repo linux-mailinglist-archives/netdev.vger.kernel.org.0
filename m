@@ -2,467 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A72D6472185
-	for <lists+netdev@lfdr.de>; Mon, 13 Dec 2021 08:14:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D8D5472190
+	for <lists+netdev@lfdr.de>; Mon, 13 Dec 2021 08:17:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232450AbhLMHOe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Dec 2021 02:14:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49852 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232421AbhLMHO2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 02:14:28 -0500
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42F80C061756;
-        Sun, 12 Dec 2021 23:14:27 -0800 (PST)
-Received: by mail-pg1-x530.google.com with SMTP id 133so13744745pgc.12;
-        Sun, 12 Dec 2021 23:14:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=BiuvDQgBYtgkz/lKwY7UUjXHJxsW+qDMldjZZpP5Fro=;
-        b=TLXsUu5w+RLJGQv4tvmu5HbRKy3RFxm/AubT9pa2WyyoLHA6PoBNtYyzKYDyFtrsSN
-         KG9PLz7rwtYBmzp0SdzPxK+6d+EDPoGzbjBAnTNj48BpAfK+Z3iAH5GicJyyuye9f3R6
-         2avDB4MRd+2GFE/b0Q+u2pe1pP9z9rwcyUwpVxDe5IUq779D1zppzt8rtv/eqHSJIwcy
-         xAu/Q+TSnVeHZ3LhbloYwbzCsflV83MXArws+lbAJXpdU1e9lL+6dI0c+xtXnUB67i/x
-         KU68QNPbM3YV0keGpBjRu/SnIkmZs3bWQkdQCpgK4oHty8LkoRpPVnYg6CCAe6MWWipb
-         nVWA==
+        id S232387AbhLMHR0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Dec 2021 02:17:26 -0500
+Received: from mail-io1-f71.google.com ([209.85.166.71]:38805 "EHLO
+        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229829AbhLMHRZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 02:17:25 -0500
+Received: by mail-io1-f71.google.com with SMTP id l124-20020a6b3e82000000b005ed165a1506so14620159ioa.5
+        for <netdev@vger.kernel.org>; Sun, 12 Dec 2021 23:17:25 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=BiuvDQgBYtgkz/lKwY7UUjXHJxsW+qDMldjZZpP5Fro=;
-        b=mZ0IRxu/QHBTqUmFSHB3SoJXTEprB30vzMEgQJ+sz5EY8bHhdNjcJw4GTwqp+9bXJ3
-         vhkz87RVm0x+TMvfkrKDVr2YTRETzgG0qgIcUn87JFohowMFS+ghsWZ7x1MEgWMT5djl
-         d8YUnj1bt/esT67FrHr8DyUw2ZSoR9zauC2Mvm1Ukommcnq4IGgRBb3SGPdR0X8+iuSC
-         Of5CZyGt0Xp/p+NMGcfjIGRPTJ9AZhmaopsd40R2T+DU0LRNIExrn82g3CyYGqyb94Lp
-         462hEkHTer1ft9zW5HTAb3C1/++lkssHhyz/psfNUp7DWPGMCp4xm7q2WRyKQpJARQev
-         Ez/g==
-X-Gm-Message-State: AOAM531+s418vSeOIZe2XVvYxtN86et6q2B9NFRO7BEqkx02fEYfk85C
-        E7eryi5bkrqxNSaMr55FelE=
-X-Google-Smtp-Source: ABdhPJxiiuRlI6RzRYYUZHzwo3dSPVuo3/B9oNaM7LeB+FUGTZNUspv67qJWhaoFRIEFH63ptYVReg==
-X-Received: by 2002:a63:ef58:: with SMTP id c24mr52317210pgk.94.1639379666761;
-        Sun, 12 Dec 2021 23:14:26 -0800 (PST)
-Received: from ubuntu-Virtual-Machine.corp.microsoft.com ([2001:4898:80e8:36:a586:a4cb:7d3:4f27])
-        by smtp.gmail.com with ESMTPSA id qe12sm6079401pjb.29.2021.12.12.23.14.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 12 Dec 2021 23:14:26 -0800 (PST)
-From:   Tianyu Lan <ltykernel@gmail.com>
-To:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org, hpa@zytor.com, davem@davemloft.net,
-        kuba@kernel.org, jejb@linux.ibm.com, martin.petersen@oracle.com,
-        arnd@arndb.de, hch@infradead.org, m.szyprowski@samsung.com,
-        robin.murphy@arm.com, thomas.lendacky@amd.com,
-        Tianyu.Lan@microsoft.com, michael.h.kelley@microsoft.com
-Cc:     iommu@lists.linux-foundation.org, linux-arch@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
-        vkuznets@redhat.com, brijesh.singh@amd.com, konrad.wilk@oracle.com,
-        hch@lst.de, joro@8bytes.org, parri.andrea@gmail.com,
-        dave.hansen@intel.com
-Subject: [PATCH V7 5/5] net: netvsc: Add Isolation VM support for netvsc driver
-Date:   Mon, 13 Dec 2021 02:14:06 -0500
-Message-Id: <20211213071407.314309-6-ltykernel@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20211213071407.314309-1-ltykernel@gmail.com>
-References: <20211213071407.314309-1-ltykernel@gmail.com>
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=zHiZFlIrM7wIAcI8lHR33E8wR1XxlzzFcwEQ45+HOGY=;
+        b=wWQLuU6BrdMOxTs6Smg5OA36BofmmCxiI/rV7Oqn68d0Lh4apIwPnh+5E5NKIM8QOK
+         +R/Iqt3hB5/GFjeBVPOMk5kNdGbBUfRjtJxA8Ty2+ugdd0J1eBB8boFsDUeTUyF1GR86
+         xbSIWR4iuaFSgz++tfjb/jcpS2aNtrNO1OVbUnfFe29AARYCMwTpmSOTLJDkg3E/rKJ7
+         OaAJpnXt0ohD7JmbvfnD47g1Ivw5NzXMTxmEeetWa4In+p+4/FnXdzsu5j8foPPqAMnJ
+         d7nGfss8yBS8U4aSDl3/CthRuV7mZGEJZTbGEhzEVrSMWTES4ai4uV9iaGN3VUYUCZJm
+         eP7A==
+X-Gm-Message-State: AOAM530DafNFmWO3mCOr2u+Ta+RlRbgc0Geuh83i1ezJK+22vg6mOZP4
+        kECaAIDpDwqMU5SLUiYh/8DMt4S4l7ManOi3Xazdrpr7Hwmk
+X-Google-Smtp-Source: ABdhPJyOccnJaSOZhWgLu76wjFR2FIunCcoHxFYtpWAVaBiuwV4oXLP2fp3ahqXGItpVmDkeQTBF6Co/RuaFGAaDT1lpOI5RTenS
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a05:6638:381b:: with SMTP id i27mr31102807jav.138.1639379845409;
+ Sun, 12 Dec 2021 23:17:25 -0800 (PST)
+Date:   Sun, 12 Dec 2021 23:17:25 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000056758e05d301dd90@google.com>
+Subject: [syzbot] general protection fault in hci_inquiry_result_with_rssi_evt
+From:   syzbot <syzbot+e3cad3a4e3f03bc00562@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, johan.hedberg@gmail.com, kuba@kernel.org,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
+        luiz.dentz@gmail.com, luiz.von.dentz@intel.com,
+        marcel@holtmann.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tianyu Lan <Tianyu.Lan@microsoft.com>
+Hello,
 
-In Isolation VM, all shared memory with host needs to mark visible
-to host via hvcall. vmbus_establish_gpadl() has already done it for
-netvsc rx/tx ring buffer. The page buffer used by vmbus_sendpacket_
-pagebuffer() stills need to be handled. Use DMA API to map/umap
-these memory during sending/receiving packet and Hyper-V swiotlb
-bounce buffer dma address will be returned. The swiotlb bounce buffer
-has been masked to be visible to host during boot up.
+syzbot found the following issue on:
 
-rx/tx ring buffer is allocated via vzalloc() and they need to be
-mapped into unencrypted address space(above vTOM) before sharing
-with host and accessing. Add hv_map/unmap_memory() to map/umap rx
-/tx ring buffer.
+HEAD commit:    4eee8d0b64ec Add linux-next specific files for 20211208
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=130203e5b00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=20b74d9da4ce1ef1
+dashboard link: https://syzkaller.appspot.com/bug?extid=e3cad3a4e3f03bc00562
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=101eb355b00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15b8f805b00000
 
-Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
+The issue was bisected to:
+
+commit 3e54c5890c87a30b1019a3de9dab968ff2b21e06
+Author: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Date:   Wed Dec 1 18:55:03 2021 +0000
+
+    Bluetooth: hci_event: Use of a function table to handle HCI events
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=150100bab00000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=170100bab00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=130100bab00000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+e3cad3a4e3f03bc00562@syzkaller.appspotmail.com
+Fixes: 3e54c5890c87 ("Bluetooth: hci_event: Use of a function table to handle HCI events")
+
+Bluetooth: hci0: unexpected cc 0x1001 length: 249 > 9
+Bluetooth: hci0: unexpected cc 0x0c23 length: 249 > 4
+Bluetooth: hci0: unexpected cc 0x0c25 length: 249 > 3
+Bluetooth: hci0: unexpected cc 0x0c38 length: 249 > 2
+general protection fault, probably for non-canonical address 0xdffffc0000000000: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
+CPU: 0 PID: 6545 Comm: kworker/u5:1 Not tainted 5.16.0-rc4-next-20211208-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: hci0 hci_rx_work
+RIP: 0010:hci_inquiry_result_with_rssi_evt+0xbc/0x970 net/bluetooth/hci_event.c:4520
+Code: 00 fc ff df 48 c1 ea 03 80 3c 02 00 0f 85 88 07 00 00 48 8b 04 24 4c 8b 28 48 b8 00 00 00 00 00 fc ff df 4c 89 ea 48 c1 ea 03 <0f> b6 04 02 4c 89 ea 83 e2 07 38 d0 7f 08 84 c0 0f 85 1b 07 00 00
+RSP: 0018:ffffc90001aafad0 EFLAGS: 00010246
+RAX: dffffc0000000000 RBX: ffff88807e754000 RCX: 0000000000000000
+RDX: 0000000000000000 RSI: ffffffff883588a8 RDI: ffff88807e754000
+RBP: ffff88807e754000 R08: 0000000000000000 R09: 0000000000000000
+R10: ffffffff88376f27 R11: 0000000000000000 R12: ffff88807015eb40
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+FS:  0000000000000000(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007ffd653f7000 CR3: 0000000071f88000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ hci_event_func net/bluetooth/hci_event.c:6812 [inline]
+ hci_event_packet+0x817/0xe90 net/bluetooth/hci_event.c:6860
+ hci_rx_work+0x4fa/0xd30 net/bluetooth/hci_core.c:3817
+ process_one_work+0x9b2/0x1690 kernel/workqueue.c:2318
+ worker_thread+0x658/0x11f0 kernel/workqueue.c:2465
+ kthread+0x405/0x4f0 kernel/kthread.c:345
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+ </TASK>
+Modules linked in:
+---[ end trace 403a15c54e29c5c4 ]---
+RIP: 0010:hci_inquiry_result_with_rssi_evt+0xbc/0x970 net/bluetooth/hci_event.c:4520
+Code: 00 fc ff df 48 c1 ea 03 80 3c 02 00 0f 85 88 07 00 00 48 8b 04 24 4c 8b 28 48 b8 00 00 00 00 00 fc ff df 4c 89 ea 48 c1 ea 03 <0f> b6 04 02 4c 89 ea 83 e2 07 38 d0 7f 08 84 c0 0f 85 1b 07 00 00
+RSP: 0018:ffffc90001aafad0 EFLAGS: 00010246
+RAX: dffffc0000000000 RBX: ffff88807e754000 RCX: 0000000000000000
+RDX: 0000000000000000 RSI: ffffffff883588a8 RDI: ffff88807e754000
+RBP: ffff88807e754000 R08: 0000000000000000 R09: 0000000000000000
+R10: ffffffff88376f27 R11: 0000000000000000 R12: ffff88807015eb40
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+FS:  0000000000000000(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f2bb803f018 CR3: 000000001d893000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+----------------
+Code disassembly (best guess), 4 bytes skipped:
+   0:	48 c1 ea 03          	shr    $0x3,%rdx
+   4:	80 3c 02 00          	cmpb   $0x0,(%rdx,%rax,1)
+   8:	0f 85 88 07 00 00    	jne    0x796
+   e:	48 8b 04 24          	mov    (%rsp),%rax
+  12:	4c 8b 28             	mov    (%rax),%r13
+  15:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
+  1c:	fc ff df
+  1f:	4c 89 ea             	mov    %r13,%rdx
+  22:	48 c1 ea 03          	shr    $0x3,%rdx
+* 26:	0f b6 04 02          	movzbl (%rdx,%rax,1),%eax <-- trapping instruction
+  2a:	4c 89 ea             	mov    %r13,%rdx
+  2d:	83 e2 07             	and    $0x7,%edx
+  30:	38 d0                	cmp    %dl,%al
+  32:	7f 08                	jg     0x3c
+  34:	84 c0                	test   %al,%al
+  36:	0f 85 1b 07 00 00    	jne    0x757
+
+
 ---
-Change since v3:
-       * Replace HV_HYP_PAGE_SIZE with PAGE_SIZE and virt_to_hvpfn()
-         with vmalloc_to_pfn() in the hv_map_memory()
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-Change since v2:
-       * Add hv_map/unmap_memory() to map/umap rx/tx ring buffer.
----
- arch/x86/hyperv/ivm.c             |  28 ++++++
- drivers/hv/hv_common.c            |  11 +++
- drivers/net/hyperv/hyperv_net.h   |   5 ++
- drivers/net/hyperv/netvsc.c       | 136 +++++++++++++++++++++++++++++-
- drivers/net/hyperv/netvsc_drv.c   |   1 +
- drivers/net/hyperv/rndis_filter.c |   2 +
- include/asm-generic/mshyperv.h    |   2 +
- include/linux/hyperv.h            |   5 ++
- 8 files changed, 187 insertions(+), 3 deletions(-)
-
-diff --git a/arch/x86/hyperv/ivm.c b/arch/x86/hyperv/ivm.c
-index 69c7a57f3307..2b994117581e 100644
---- a/arch/x86/hyperv/ivm.c
-+++ b/arch/x86/hyperv/ivm.c
-@@ -287,3 +287,31 @@ int hv_set_mem_host_visibility(unsigned long kbuffer, int pagecount, bool visibl
- 	kfree(pfn_array);
- 	return ret;
- }
-+
-+/*
-+ * hv_map_memory - map memory to extra space in the AMD SEV-SNP Isolation VM.
-+ */
-+void *hv_map_memory(void *addr, unsigned long size)
-+{
-+	unsigned long *pfns = kcalloc(size / PAGE_SIZE,
-+				      sizeof(unsigned long), GFP_KERNEL);
-+	void *vaddr;
-+	int i;
-+
-+	if (!pfns)
-+		return NULL;
-+
-+	for (i = 0; i < size / PAGE_SIZE; i++)
-+		pfns[i] = vmalloc_to_pfn(addr + i * PAGE_SIZE) +
-+			(ms_hyperv.shared_gpa_boundary >> PAGE_SHIFT);
-+
-+	vaddr = vmap_pfn(pfns, size / PAGE_SIZE, PAGE_KERNEL_IO);
-+	kfree(pfns);
-+
-+	return vaddr;
-+}
-+
-+void hv_unmap_memory(void *addr)
-+{
-+	vunmap(addr);
-+}
-diff --git a/drivers/hv/hv_common.c b/drivers/hv/hv_common.c
-index 7be173a99f27..3c5cb1f70319 100644
---- a/drivers/hv/hv_common.c
-+++ b/drivers/hv/hv_common.c
-@@ -295,3 +295,14 @@ u64 __weak hv_ghcb_hypercall(u64 control, void *input, void *output, u32 input_s
- 	return HV_STATUS_INVALID_PARAMETER;
- }
- EXPORT_SYMBOL_GPL(hv_ghcb_hypercall);
-+
-+void __weak *hv_map_memory(void *addr, unsigned long size)
-+{
-+	return NULL;
-+}
-+EXPORT_SYMBOL_GPL(hv_map_memory);
-+
-+void __weak hv_unmap_memory(void *addr)
-+{
-+}
-+EXPORT_SYMBOL_GPL(hv_unmap_memory);
-diff --git a/drivers/net/hyperv/hyperv_net.h b/drivers/net/hyperv/hyperv_net.h
-index 315278a7cf88..cf69da0e296c 100644
---- a/drivers/net/hyperv/hyperv_net.h
-+++ b/drivers/net/hyperv/hyperv_net.h
-@@ -164,6 +164,7 @@ struct hv_netvsc_packet {
- 	u32 total_bytes;
- 	u32 send_buf_index;
- 	u32 total_data_buflen;
-+	struct hv_dma_range *dma_range;
- };
- 
- #define NETVSC_HASH_KEYLEN 40
-@@ -1074,6 +1075,7 @@ struct netvsc_device {
- 
- 	/* Receive buffer allocated by us but manages by NetVSP */
- 	void *recv_buf;
-+	void *recv_original_buf;
- 	u32 recv_buf_size; /* allocated bytes */
- 	struct vmbus_gpadl recv_buf_gpadl_handle;
- 	u32 recv_section_cnt;
-@@ -1082,6 +1084,7 @@ struct netvsc_device {
- 
- 	/* Send buffer allocated by us */
- 	void *send_buf;
-+	void *send_original_buf;
- 	u32 send_buf_size;
- 	struct vmbus_gpadl send_buf_gpadl_handle;
- 	u32 send_section_cnt;
-@@ -1731,4 +1734,6 @@ struct rndis_message {
- #define RETRY_US_HI	10000
- #define RETRY_MAX	2000	/* >10 sec */
- 
-+void netvsc_dma_unmap(struct hv_device *hv_dev,
-+		      struct hv_netvsc_packet *packet);
- #endif /* _HYPERV_NET_H */
-diff --git a/drivers/net/hyperv/netvsc.c b/drivers/net/hyperv/netvsc.c
-index 396bc1c204e6..b7ade735a806 100644
---- a/drivers/net/hyperv/netvsc.c
-+++ b/drivers/net/hyperv/netvsc.c
-@@ -153,8 +153,21 @@ static void free_netvsc_device(struct rcu_head *head)
- 	int i;
- 
- 	kfree(nvdev->extension);
--	vfree(nvdev->recv_buf);
--	vfree(nvdev->send_buf);
-+
-+	if (nvdev->recv_original_buf) {
-+		hv_unmap_memory(nvdev->recv_buf);
-+		vfree(nvdev->recv_original_buf);
-+	} else {
-+		vfree(nvdev->recv_buf);
-+	}
-+
-+	if (nvdev->send_original_buf) {
-+		hv_unmap_memory(nvdev->send_buf);
-+		vfree(nvdev->send_original_buf);
-+	} else {
-+		vfree(nvdev->send_buf);
-+	}
-+
- 	kfree(nvdev->send_section_map);
- 
- 	for (i = 0; i < VRSS_CHANNEL_MAX; i++) {
-@@ -338,6 +351,7 @@ static int netvsc_init_buf(struct hv_device *device,
- 	unsigned int buf_size;
- 	size_t map_words;
- 	int i, ret = 0;
-+	void *vaddr;
- 
- 	/* Get receive buffer area. */
- 	buf_size = device_info->recv_sections * device_info->recv_section_size;
-@@ -373,6 +387,17 @@ static int netvsc_init_buf(struct hv_device *device,
- 		goto cleanup;
- 	}
- 
-+	if (hv_isolation_type_snp()) {
-+		vaddr = hv_map_memory(net_device->recv_buf, buf_size);
-+		if (!vaddr) {
-+			ret = -ENOMEM;
-+			goto cleanup;
-+		}
-+
-+		net_device->recv_original_buf = net_device->recv_buf;
-+		net_device->recv_buf = vaddr;
-+	}
-+
- 	/* Notify the NetVsp of the gpadl handle */
- 	init_packet = &net_device->channel_init_pkt;
- 	memset(init_packet, 0, sizeof(struct nvsp_message));
-@@ -476,6 +501,17 @@ static int netvsc_init_buf(struct hv_device *device,
- 		goto cleanup;
- 	}
- 
-+	if (hv_isolation_type_snp()) {
-+		vaddr = hv_map_memory(net_device->send_buf, buf_size);
-+		if (!vaddr) {
-+			ret = -ENOMEM;
-+			goto cleanup;
-+		}
-+
-+		net_device->send_original_buf = net_device->send_buf;
-+		net_device->send_buf = vaddr;
-+	}
-+
- 	/* Notify the NetVsp of the gpadl handle */
- 	init_packet = &net_device->channel_init_pkt;
- 	memset(init_packet, 0, sizeof(struct nvsp_message));
-@@ -766,7 +802,7 @@ static void netvsc_send_tx_complete(struct net_device *ndev,
- 
- 	/* Notify the layer above us */
- 	if (likely(skb)) {
--		const struct hv_netvsc_packet *packet
-+		struct hv_netvsc_packet *packet
- 			= (struct hv_netvsc_packet *)skb->cb;
- 		u32 send_index = packet->send_buf_index;
- 		struct netvsc_stats *tx_stats;
-@@ -782,6 +818,7 @@ static void netvsc_send_tx_complete(struct net_device *ndev,
- 		tx_stats->bytes += packet->total_bytes;
- 		u64_stats_update_end(&tx_stats->syncp);
- 
-+		netvsc_dma_unmap(ndev_ctx->device_ctx, packet);
- 		napi_consume_skb(skb, budget);
- 	}
- 
-@@ -946,6 +983,88 @@ static void netvsc_copy_to_send_buf(struct netvsc_device *net_device,
- 		memset(dest, 0, padding);
- }
- 
-+void netvsc_dma_unmap(struct hv_device *hv_dev,
-+		      struct hv_netvsc_packet *packet)
-+{
-+	u32 page_count = packet->cp_partial ?
-+		packet->page_buf_cnt - packet->rmsg_pgcnt :
-+		packet->page_buf_cnt;
-+	int i;
-+
-+	if (!hv_is_isolation_supported())
-+		return;
-+
-+	if (!packet->dma_range)
-+		return;
-+
-+	for (i = 0; i < page_count; i++)
-+		dma_unmap_single(&hv_dev->device, packet->dma_range[i].dma,
-+				 packet->dma_range[i].mapping_size,
-+				 DMA_TO_DEVICE);
-+
-+	kfree(packet->dma_range);
-+}
-+
-+/* netvsc_dma_map - Map swiotlb bounce buffer with data page of
-+ * packet sent by vmbus_sendpacket_pagebuffer() in the Isolation
-+ * VM.
-+ *
-+ * In isolation VM, netvsc send buffer has been marked visible to
-+ * host and so the data copied to send buffer doesn't need to use
-+ * bounce buffer. The data pages handled by vmbus_sendpacket_pagebuffer()
-+ * may not be copied to send buffer and so these pages need to be
-+ * mapped with swiotlb bounce buffer. netvsc_dma_map() is to do
-+ * that. The pfns in the struct hv_page_buffer need to be converted
-+ * to bounce buffer's pfn. The loop here is necessary because the
-+ * entries in the page buffer array are not necessarily full
-+ * pages of data.  Each entry in the array has a separate offset and
-+ * len that may be non-zero, even for entries in the middle of the
-+ * array.  And the entries are not physically contiguous.  So each
-+ * entry must be individually mapped rather than as a contiguous unit.
-+ * So not use dma_map_sg() here.
-+ */
-+int netvsc_dma_map(struct hv_device *hv_dev,
-+		   struct hv_netvsc_packet *packet,
-+		   struct hv_page_buffer *pb)
-+{
-+	u32 page_count =  packet->cp_partial ?
-+		packet->page_buf_cnt - packet->rmsg_pgcnt :
-+		packet->page_buf_cnt;
-+	dma_addr_t dma;
-+	int i;
-+
-+	if (!hv_is_isolation_supported())
-+		return 0;
-+
-+	packet->dma_range = kcalloc(page_count,
-+				    sizeof(*packet->dma_range),
-+				    GFP_KERNEL);
-+	if (!packet->dma_range)
-+		return -ENOMEM;
-+
-+	for (i = 0; i < page_count; i++) {
-+		char *src = phys_to_virt((pb[i].pfn << HV_HYP_PAGE_SHIFT)
-+					 + pb[i].offset);
-+		u32 len = pb[i].len;
-+
-+		dma = dma_map_single(&hv_dev->device, src, len,
-+				     DMA_TO_DEVICE);
-+		if (dma_mapping_error(&hv_dev->device, dma)) {
-+			kfree(packet->dma_range);
-+			return -ENOMEM;
-+		}
-+
-+		/* pb[].offset and pb[].len are not changed during dma mapping
-+		 * and so not reassign.
-+		 */
-+		packet->dma_range[i].dma = dma;
-+		packet->dma_range[i].mapping_size = len;
-+		pb[i].pfn = dma >> HV_HYP_PAGE_SHIFT;
-+	}
-+
-+	return 0;
-+}
-+
- static inline int netvsc_send_pkt(
- 	struct hv_device *device,
- 	struct hv_netvsc_packet *packet,
-@@ -986,14 +1105,24 @@ static inline int netvsc_send_pkt(
- 
- 	trace_nvsp_send_pkt(ndev, out_channel, rpkt);
- 
-+	packet->dma_range = NULL;
- 	if (packet->page_buf_cnt) {
- 		if (packet->cp_partial)
- 			pb += packet->rmsg_pgcnt;
- 
-+		ret = netvsc_dma_map(ndev_ctx->device_ctx, packet, pb);
-+		if (ret) {
-+			ret = -EAGAIN;
-+			goto exit;
-+		}
-+
- 		ret = vmbus_sendpacket_pagebuffer(out_channel,
- 						  pb, packet->page_buf_cnt,
- 						  &nvmsg, sizeof(nvmsg),
- 						  req_id);
-+
-+		if (ret)
-+			netvsc_dma_unmap(ndev_ctx->device_ctx, packet);
- 	} else {
- 		ret = vmbus_sendpacket(out_channel,
- 				       &nvmsg, sizeof(nvmsg),
-@@ -1001,6 +1130,7 @@ static inline int netvsc_send_pkt(
- 				       VMBUS_DATA_PACKET_FLAG_COMPLETION_REQUESTED);
- 	}
- 
-+exit:
- 	if (ret == 0) {
- 		atomic_inc_return(&nvchan->queue_sends);
- 
-diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
-index 7e66ae1d2a59..17958533bf30 100644
---- a/drivers/net/hyperv/netvsc_drv.c
-+++ b/drivers/net/hyperv/netvsc_drv.c
-@@ -2512,6 +2512,7 @@ static int netvsc_probe(struct hv_device *dev,
- 	net->netdev_ops = &device_ops;
- 	net->ethtool_ops = &ethtool_ops;
- 	SET_NETDEV_DEV(net, &dev->device);
-+	dma_set_min_align_mask(&dev->device, HV_HYP_PAGE_SIZE - 1);
- 
- 	/* We always need headroom for rndis header */
- 	net->needed_headroom = RNDIS_AND_PPI_SIZE;
-diff --git a/drivers/net/hyperv/rndis_filter.c b/drivers/net/hyperv/rndis_filter.c
-index f6c9c2a670f9..448fcc325ed7 100644
---- a/drivers/net/hyperv/rndis_filter.c
-+++ b/drivers/net/hyperv/rndis_filter.c
-@@ -361,6 +361,8 @@ static void rndis_filter_receive_response(struct net_device *ndev,
- 			}
- 		}
- 
-+		netvsc_dma_unmap(((struct net_device_context *)
-+			netdev_priv(ndev))->device_ctx, &request->pkt);
- 		complete(&request->wait_event);
- 	} else {
- 		netdev_err(ndev,
-diff --git a/include/asm-generic/mshyperv.h b/include/asm-generic/mshyperv.h
-index 3e2248ac328e..94e73ba129c5 100644
---- a/include/asm-generic/mshyperv.h
-+++ b/include/asm-generic/mshyperv.h
-@@ -269,6 +269,8 @@ bool hv_isolation_type_snp(void);
- u64 hv_ghcb_hypercall(u64 control, void *input, void *output, u32 input_size);
- void hyperv_cleanup(void);
- bool hv_query_ext_cap(u64 cap_query);
-+void *hv_map_memory(void *addr, unsigned long size);
-+void hv_unmap_memory(void *addr);
- #else /* CONFIG_HYPERV */
- static inline bool hv_is_hyperv_initialized(void) { return false; }
- static inline bool hv_is_hibernation_supported(void) { return false; }
-diff --git a/include/linux/hyperv.h b/include/linux/hyperv.h
-index 650a0574b746..f565a8938836 100644
---- a/include/linux/hyperv.h
-+++ b/include/linux/hyperv.h
-@@ -1584,6 +1584,11 @@ struct hyperv_service_callback {
- 	void (*callback)(void *context);
- };
- 
-+struct hv_dma_range {
-+	dma_addr_t dma;
-+	u32 mapping_size;
-+};
-+
- #define MAX_SRV_VER	0x7ffffff
- extern bool vmbus_prep_negotiate_resp(struct icmsg_hdr *icmsghdrp, u8 *buf, u32 buflen,
- 				const int *fw_version, int fw_vercnt,
--- 
-2.25.1
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
