@@ -2,138 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A3F2473508
-	for <lists+netdev@lfdr.de>; Mon, 13 Dec 2021 20:33:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C97447361B
+	for <lists+netdev@lfdr.de>; Mon, 13 Dec 2021 21:38:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239716AbhLMTdN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Dec 2021 14:33:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55776 "EHLO
+        id S242937AbhLMUiM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Dec 2021 15:38:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231772AbhLMTdM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 14:33:12 -0500
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1501CC061574;
-        Mon, 13 Dec 2021 11:33:12 -0800 (PST)
-Received: by mail-yb1-xb36.google.com with SMTP id d10so41035189ybn.0;
-        Mon, 13 Dec 2021 11:33:12 -0800 (PST)
+        with ESMTP id S240680AbhLMUiL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 15:38:11 -0500
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D84CC061574
+        for <netdev@vger.kernel.org>; Mon, 13 Dec 2021 12:38:11 -0800 (PST)
+Received: by mail-pg1-x534.google.com with SMTP id k4so15575031pgb.8
+        for <netdev@vger.kernel.org>; Mon, 13 Dec 2021 12:38:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=GyQXe7k/6WqlCtMNdMFwF2JLby24XGQu452pyWy5gvM=;
-        b=Lt1CZxNt29K/wifUNSFIZpbS7yWuiMb9eUKT+Bwvf8/vNyS6nTFzgYXT3khMZSJPHA
-         wQuPvblhdIarqJ38ESUTyxhaVZuYKeos41luKUhGPQIZxEjv5Oq528leJ3Ytn53jV27M
-         tcwd8kSM5doazZ1kziRBIpCtmxryEeAML29MeRW8JCBRJ08XYVYsAzfT6UZoYQQ1fZmr
-         RJfPl/ow9qm8tO4I70TQ37+NK6cwGf2WbfEZwZH+ci4wtWMVURFBVTEJEbwbZYbcD93a
-         nLMunTPbxk7Ddvs+ldeHwqR8vvNsBV9iHetxgiEu47pqB+R181q/OvmbvwA2vhRtty05
-         SsqQ==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=FKvkyPX1bDE2h0Q01c3iENOpP3uB49QbVTU9+BOOcRY=;
+        b=S6eeDQjmjCkWwGcRkWpNMj0zQMC14q6RphCvU5khCboVMxxVucmJWzH8rEPdPQuoUx
+         emxL2yMlxrGaIm2o4duCve98uwxkUkIFKY+noBGkwk7wlXepcp96rQfJHVx5Q1XplX73
+         W10VDY3Sr/UhdFzGxWJluZrc8VPW7ilyoXbWc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=GyQXe7k/6WqlCtMNdMFwF2JLby24XGQu452pyWy5gvM=;
-        b=QY9A60bpDTO3LyOmOzcIU2//Rj1jcW6Xpo4/4oDIAY8aa4VaUGfBpJEchM25ZM0XEN
-         PkZ6Vasz02HZ0EN68whBu0KbJoEDJFKIwkNjy5KmSnjdF5ALGT9TvbkpyVn5QTo2uLQ/
-         AbUmPMiSbIEf93fyt/CeL4WesWsf9Qwwt8h/xDC4L+Auo5NdP6agq5RGH7gyRZ+Hr+MK
-         QLDWGNCoH9kmr7qCMI19ZN3AInFavJNK8kUe4hThO5i3lE9q86Ly4+2JU7EysrHlEri2
-         OscU3xC2aFR3XsrXB/01Xzm1pERiHPcBbWn2C34j7pB7fm9eNdjLrK/IuHp3eRvvtuXL
-         ZSIg==
-X-Gm-Message-State: AOAM531vuYM6icIcDvue/p4SRqO6E/wNZE4juaZaa8s0McoGpf3+yLlx
-        T7Rmv8T3uzXJhxsKmJqdBUpfkNblkcCO1SzNWQ8=
-X-Google-Smtp-Source: ABdhPJy8gSThjsBrvGkgAy/EBU6r2lKg5zfrb19Fg9URvnfKLqt6JHU22WWTLH7NfDYYCNXCb80WOjpD4UKNjpoJWoI=
-X-Received: by 2002:a25:2a89:: with SMTP id q131mr663563ybq.436.1639423991137;
- Mon, 13 Dec 2021 11:33:11 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=FKvkyPX1bDE2h0Q01c3iENOpP3uB49QbVTU9+BOOcRY=;
+        b=0XkBD4Xl2nabDbKX1OUuz9YK9LzphOTVDbHxxWTlAEnj/92YKWouhtZ2EznkPrucUz
+         v0XFoCgB1HzDhyBFI5uE0k6rTAjMOukSEuwPJUy8bpGgSyNwlhxL3ALzrKws902osU1d
+         4nOwP+UofiFp8k/a5GzxTUTNHdG8dPA7RDDxc1CPPolPMjQt4EB+YUSMUp/knfoH8Oef
+         b8qebIRCwCHJiiV6VK1bDHl+KApIQyfvcH9SwXd9xzbwsgcaQLEi7DOQ1HagL7vOn7rf
+         uqOIgEWWSavAFbuksaJzL7srNgmg4TGjMhOYFci6Kar6phRU0/p87YOb9Zryans16qYw
+         CO9g==
+X-Gm-Message-State: AOAM531n+xDJYSApDy4GEJl8P6uJkBWvUFvGZ+94Oz9H3QcC+u9/dSZg
+        neenJhB3sVt1fOXNnYbFbibpeQ==
+X-Google-Smtp-Source: ABdhPJzTOk2cB0BO46AZlrjTU/JytY7dpEktlEQmTICo+f5zFSYYE2twDKDHZYe0PBqaQ8Rpa3MDww==
+X-Received: by 2002:a62:88c3:0:b0:4a2:b2d2:7082 with SMTP id l186-20020a6288c3000000b004a2b2d27082mr425147pfd.48.1639427890914;
+        Mon, 13 Dec 2021 12:38:10 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id z13sm926069pfj.160.2021.12.13.12.38.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Dec 2021 12:38:10 -0800 (PST)
+Date:   Mon, 13 Dec 2021 12:38:10 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     Shuah Khan <skhan@linuxfoundation.org>
+Cc:     catalin.marinas@arm.com, will@kernel.org, shuah@kernel.org,
+        mic@digikod.net, davem@davemloft.net, kuba@kernel.org,
+        peterz@infradead.org, paulmck@kernel.org, boqun.feng@gmail.com,
+        akpm@linux-foundation.org, linux-kselftest@vger.kernel.org,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        linux-mm@kvack.org
+Subject: Re: [PATCH 01/12] tools: fix ARRAY_SIZE defines in tools and
+ selftests hdrs
+Message-ID: <202112131238.24E1713A0@keescook>
+References: <cover.1639156389.git.skhan@linuxfoundation.org>
+ <30585e0f0acfb523c6f7a93e0b916ae756e0c7e7.1639156389.git.skhan@linuxfoundation.org>
 MIME-Version: 1.0
-References: <20211212051816.20478-1-linmq006@gmail.com> <CAH-r-ZGri414YWumUs7U_ktvcv+BWOYfPTsB7So6kz5PNcK5tw@mail.gmail.com>
-In-Reply-To: <CAH-r-ZGri414YWumUs7U_ktvcv+BWOYfPTsB7So6kz5PNcK5tw@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 13 Dec 2021 11:33:00 -0800
-Message-ID: <CAEf4BzZG7_ihS7m8e9KNcoO0WhFXqw4iK1=SNPr2u3bPmOmxLQ@mail.gmail.com>
-Subject: Re: [PATCH] bpftool: Fix NULL vs IS_ERR() checking for return value
- of hashmap__new
-To:     =?UTF-8?B?5p6X5aaZ5YCp?= <linmq006@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <30585e0f0acfb523c6f7a93e0b916ae756e0c7e7.1639156389.git.skhan@linuxfoundation.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 13, 2021 at 7:07 AM =E6=9E=97=E5=A6=99=E5=80=A9 <linmq006@gmail=
-.com> wrote:
->
-> Sorry, I forgot to do compile testing. I will test it and let you know.
->
-> Miaoqian Lin <linmq006@gmail.com> =E4=BA=8E2021=E5=B9=B412=E6=9C=8812=E6=
-=97=A5=E5=91=A8=E6=97=A5 13:18=E5=86=99=E9=81=93=EF=BC=9A
->>
->> The hashmap__new() function does not return NULL on errors. It returns
->> ERR_PTR(-ENOMEM). Using IS_ERR() to check the return value to fix this.
->>
->> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
->> ---
+On Fri, Dec 10, 2021 at 10:33:11AM -0700, Shuah Khan wrote:
+> tools/include/linux/kernel.h and kselftest_harness.h are missing
+> ifndef guard around ARRAY_SIZE define. Fix them to avoid duplicate
+> define errors during compile when another file defines it. This
+> problem was found when compiling selftests that include a header
+> with ARRAY_SIZE define.
+> 
+> ARRAY_SIZE is defined in several selftests. There are about 25+
+> duplicate defines in various selftests source and header files.
+> Add ARRAY_SIZE to kselftest.h in preparation for removing duplicate
+> ARRAY_SIZE defines from individual test files.
+> 
+> Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 
-Please do test (not just compile test) and re-send all three patches
-as one patch set instead of three independent patches. Thanks.
+Reviewed-by: Kees Cook <keescook@chromium.org>
 
-
->>  tools/bpf/bpftool/link.c | 2 +-
->>  tools/bpf/bpftool/map.c  | 2 +-
->>  tools/bpf/bpftool/pids.c | 2 +-
->>  3 files changed, 3 insertions(+), 3 deletions(-)
->>
->> diff --git a/tools/bpf/bpftool/link.c b/tools/bpf/bpftool/link.c
->> index 2c258db0d352..0dc402a89cd8 100644
->> --- a/tools/bpf/bpftool/link.c
->> +++ b/tools/bpf/bpftool/link.c
->> @@ -306,7 +306,7 @@ static int do_show(int argc, char **argv)
->>         if (show_pinned) {
->>                 link_table =3D hashmap__new(hash_fn_for_key_as_id,
->>                                           equal_fn_for_key_as_id, NULL);
->> -               if (!link_table) {
->> +               if (IS_ERR(link_table)) {
->>                         p_err("failed to create hashmap for pinned paths=
-");
->>                         return -1;
->>                 }
->> diff --git a/tools/bpf/bpftool/map.c b/tools/bpf/bpftool/map.c
->> index cae1f1119296..af83ae37d247 100644
->> --- a/tools/bpf/bpftool/map.c
->> +++ b/tools/bpf/bpftool/map.c
->> @@ -698,7 +698,7 @@ static int do_show(int argc, char **argv)
->>         if (show_pinned) {
->>                 map_table =3D hashmap__new(hash_fn_for_key_as_id,
->>                                          equal_fn_for_key_as_id, NULL);
->> -               if (!map_table) {
->> +               if (IS_ERR(map_table)) {
->>                         p_err("failed to create hashmap for pinned paths=
-");
->>                         return -1;
->>                 }
->> diff --git a/tools/bpf/bpftool/pids.c b/tools/bpf/bpftool/pids.c
->> index 56b598eee043..6c4767e97061 100644
->> --- a/tools/bpf/bpftool/pids.c
->> +++ b/tools/bpf/bpftool/pids.c
->> @@ -101,7 +101,7 @@ int build_obj_refs_table(struct hashmap **map, enum =
-bpf_obj_type type)
->>         libbpf_print_fn_t default_print;
->>
->>         *map =3D hashmap__new(hash_fn_for_key_as_id, equal_fn_for_key_as=
-_id, NULL);
->> -       if (!*map) {
->> +       if (IS_ERR(*map)) {
->>                 p_err("failed to create hashmap for PID references");
->>                 return -1;
->>         }
->> --
->> 2.17.1
->>
+-- 
+Kees Cook
