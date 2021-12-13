@@ -2,131 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC651472D70
-	for <lists+netdev@lfdr.de>; Mon, 13 Dec 2021 14:35:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E14A472D8C
+	for <lists+netdev@lfdr.de>; Mon, 13 Dec 2021 14:40:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236958AbhLMNf3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Dec 2021 08:35:29 -0500
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:20137 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236166AbhLMNfP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 08:35:15 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1639402516; x=1670938516;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=RSFM3Z6HDJUr0fxzj0LErU5vN/FtBT1CCIoA1vLoXBA=;
-  b=TNeXgOeZN7rY8BFR9EQr9IRlRoLVJV12OBXIbNoPZcVgfRPcYLosLra8
-   MpIc4C4RyuwjsqJ0Vm5+gy+RAK0SExguhdgZAw11e+0doDJIzPNRsC2Kc
-   EZmNAidHtrFfMqgulX+dS45G8/nH0I4ZW5A946rGikqTQPcaHkI3eN+L4
-   /2L3MYuULnS+nHTGb7nyYmf/3Pw+RBhJ1iKdL8edZ61UI2u2EX07MFWS2
-   W9QG5WWzOX/eCRMAHkVn6cZmcHUGWSgBk1QLB0Y2pibCln3pTrpEzBMd6
-   bOdGfu0rkE6BYrK8AJw0JNcPqxHZgKEgoGzASiDIaph1YtYXTI6VPSCly
-   A==;
-IronPort-SDR: GGwYrh/hfgvdY9Tn1kTXmdf+0JaNKbf70Nrz+YrbmDWXS5q9DMNwDTKlDKbhmBSMmiTmob687x
- xCsySKVvNFHMBMn/RqIe+vWvp5+6+0LPwatflFv/c/M8lUzObRWezaoUhEjpzHXmy/a5eDKvfD
- a7Wa6wG7kb7zXsyIgptQwHUd+NOMDS7sXDZcpeh4KcO04/ICoWTyyKkgX4EinbUQb9wHrSewv+
- ZFH4hsSlB8zWoOhXgLFnELkmsAdkuYroV4+a0xUuietpeyf+UbpgFQrduGjEMODyIKVcWrJJXr
- Gr+/p6uQcZ+T2Wi3U85vI9Fm
-X-IronPort-AV: E=Sophos;i="5.88,202,1635231600"; 
-   d="scan'208";a="146464261"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 Dec 2021 06:35:16 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 13 Dec 2021 06:35:14 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Mon, 13 Dec 2021 06:35:14 -0700
-Date:   Mon, 13 Dec 2021 14:37:16 +0100
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>
-Subject: Re: [PATCH net-next v3 6/6] net: lan966x: Add switchdev support
-Message-ID: <20211213133716.sfcgl4zrmynwagbr@soft-dev3-1.localhost>
-References: <20211209094615.329379-1-horatiu.vultur@microchip.com>
- <20211209094615.329379-7-horatiu.vultur@microchip.com>
- <20211209133616.2kii2xfz5rioii4o@skbuf>
- <20211209164311.agnofh275znn5t5c@soft-dev3-1.localhost>
- <20211213114603.jdvv5htw22vd3azj@skbuf>
+        id S237716AbhLMNkB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Dec 2021 08:40:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56152 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232611AbhLMNkA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 08:40:00 -0500
+Received: from mail-ot1-x32c.google.com (mail-ot1-x32c.google.com [IPv6:2607:f8b0:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59F92C061574
+        for <netdev@vger.kernel.org>; Mon, 13 Dec 2021 05:40:00 -0800 (PST)
+Received: by mail-ot1-x32c.google.com with SMTP id a23-20020a9d4717000000b0056c15d6d0caso17386174otf.12
+        for <netdev@vger.kernel.org>; Mon, 13 Dec 2021 05:40:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:sender:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=Hp2wuf+GFIgPk2krY9oLPCwUDqecUtCiJ9IkJj6FAwY=;
+        b=JoTgBZ5QhZ1zJ+zoAs/5acKsh/nqSl8ksgt5417h8ZMYvSOnCAnsN70JPPOGxNVLKc
+         LRpMVtKERVEzhaqSk5tabMb3721y0l2aPpMaVQyaFXnSgbRjVEkbPxePJxvl7QPsatBG
+         bzzLIZ+OUHVEERgadEm/OhRbk64EI3s6saGFvpdNcHJY1KhyqzcSqYTTzUkUh9lK739w
+         NVn4VqpuXhwiYbmn0lW+9QBp/HXX7YdXrZXyfZJRMj3cEpSBoBxx3bq4EU06TrFgxU3D
+         2hopzLwoUHEKltSTjngfUnflsK2wQDZiuxKaW3W3VgbyC1PWvjOB2Q8ltftkYTZPpbuc
+         lxIQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to:content-transfer-encoding;
+        bh=Hp2wuf+GFIgPk2krY9oLPCwUDqecUtCiJ9IkJj6FAwY=;
+        b=ummDD+tMekSzE6h4/s0oznN6XaP6D6Oz4CQvKNtzsHnZ2m3e+B1FP9kTMzmhRSriVG
+         RtxCclqm4KpiK3MmT/B0EngsbG1MMntkmZNZkCVcVJffkWENqeTK8v6MF5Crrm5umN1Z
+         dKUgms8bg0zK/41S5eNrzM/aMWJ114o8djkgl+cC7sIcpcBHm3rMNEsZ3TFWJsmU9QYp
+         v+fFXCEuMeSOeGYzC72GKH1TopxypXamVt4PAXuXNG25Gn4ufkTsf/+DWzHEIGqH8X/u
+         wtd2ShJgVxPQNcphf5PePb+63UKgDOpSp/VMqlPZ402jw8Ev20krJ0CQwkrhrTWyfWYA
+         j4jw==
+X-Gm-Message-State: AOAM531pIiJhUodU1glfjxvND55tCNrRqKxFQaiDiaU03QGAq/f6RBLf
+        QIZh0DIQPBTNDi03bYmCggLiPB2W6kP7WNWgqgo=
+X-Google-Smtp-Source: ABdhPJwVQipOClbYvFQMj4nEZ1mR8CMlndZPukxyrOm6a6rt+JaJ12/CHsCSgH+/r4bzKCpynMfTjq31osrxEX6Sjs4=
+X-Received: by 2002:a05:6830:1417:: with SMTP id v23mr25299274otp.367.1639402799686;
+ Mon, 13 Dec 2021 05:39:59 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <20211213114603.jdvv5htw22vd3azj@skbuf>
+Sender: blessmegod87@gmail.com
+Received: by 2002:a05:6838:9414:0:0:0:0 with HTTP; Mon, 13 Dec 2021 05:39:59
+ -0800 (PST)
+From:   DINA MCKENNA <dinamckennahowley@gmail.com>
+Date:   Mon, 13 Dec 2021 13:39:59 +0000
+X-Google-Sender-Auth: gcM7gUYPrGGWQnSh9sWC4ff2zPA
+Message-ID: <CACOw96=huHRYv7zh2RN72Y3WF5LngtgiVerYC73bSLNRob6YRg@mail.gmail.com>
+Subject: Hello,
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 12/13/2021 11:46, Vladimir Oltean wrote:
-> 
-> On Thu, Dec 09, 2021 at 05:43:11PM +0100, Horatiu Vultur wrote:
-> > > My documentation of CPU_SRC_COPY_ENA says:
-> > >
-> > > If set, all frames received on this port are
-> > > copied to the CPU extraction queue given by
-> > > CPUQ_CFG.CPUQ_SRC_COPY.
-> > >
-> > > I think it was established a while ago that this isn't what promiscuous
-> > > mode is about? Instead it is about accepting packets on a port
-> > > regardless of whether the MAC DA is in their RX filter or not.
-> >
-> > Yes, I am aware that this change interprets the things differently and I
-> > am totally OK to drop this promisc if it is needed.
-> 
-> I think we just need to agree on the observable behavior. Promiscuous
-> means for an interface to receive packets with unknown destination, and
-> while in standalone mode you do support that, in bridge mode you're a
-> bit on the edge: the port accepts them but will deliver them anywhere
-> except to the CPU. I suppose you could try to make an argument that you
-> know better than the bridge, and as long as the use cases for that are
-> restricted enough, maybe it could work for most scenarios. I don't know.
+Hello my dear,
 
-I think this requires some proper explanations of the intended
-behaviour for both the standalone and bridge mode. I will drop this
-promisc for now, as other drivers are doing it and at a later point
-send some patch series with all the explanations.
+ I sent this mail praying it will get to you in a good condition of
+health, since I myself are in a very critical health condition in
+which I sleep every night without knowing if I may be alive to see the
+next day. I bring peace and love to you. It is by the grace of God, I
+had no choice than to do what is lawful and right in the sight of God
+for eternal life and in the sight of man, for witness of God=E2=80=99s merc=
+y
+and glory upon my life. I am Mrs. Dina Howley Mckenna, a widow. I am
+suffering from a long time brain tumor, It has defiled all forms of
+medical treatment, and right now I have about a few months to leave,
+according to medical experts. The situation has gotten complicated
+recently with my inability to hear proper, am communicating with you
+with the help of the chief nurse herein the hospital, from all
+indication my conditions is really deteriorating and it is quite
+obvious that, according to my doctors they have advised me that I may
+not live too long, Because this illness has gotten to a very bad
+stage. I plead that you will not expose or betray this trust and
+confidence that I am about to repose on you for the mutual benefit of
+the orphans and the less privilege. I have some funds I inherited from
+my late husband, the sum of ($ 11,000,000.00, Eleven Million Dollars).
+Having known my condition, I decided to donate this fund to you
+believing that you will utilize it the way i am going to instruct
+herein. I need you to assist me and reclaim this money and use it for
+Charity works therein your country  for orphanages and gives justice
+and help to the poor, needy and widows says The Lord." Jeremiah
+22:15-16.=E2=80=9C and also build schools for less privilege that will be
+named after my late husband if possible and to promote the word of God
+and the effort that the house of God is maintained. I do not want a
+situation where this money will be used in an ungodly manner. That's
+why I'm taking this decision. I'm not afraid of death, so I know where
+I'm going. I accept this decision because I do not have any child who
+will inherit this money after I die.. Please I want your sincerely and
+urgent answer to know if you will be able to execute this project for
+the glory of God, and I will give you more information on how the fund
+will be transferred to your bank account.. May the grace, peace, love
+and the truth in the Word of God be with you and all those that you
+love and care for.
 
-> 
-> > > Hence the oddity of your change. I understand what it intends to do:
-> > > if this is a standalone port you support IFF_UNICAST_FLT, so you drop
-> > > frames with unknown MAC DA. But if IFF_PROMISC is set, then why do you
-> > > copy all frames to the CPU? Why don't you just put the CPU in the
-> > > unknown flooding mask?
-> >
-> > Because I don't want the CPU to be in the unknown flooding mask. I want
-> > to send frames to the CPU only if it is required.
-> 
-> What is the strategy through which this driver accepts things like
-> pinging the bridge device over IPv6, with the Neighbor Discovery
-> protocol having the ICMP6 neighbor solicitation messages delivered to
-> (according to my knowledge) an unregistered IPv6 multicast address?
-> Whose responsibility is it to notify the driver of that address, and
-> does the driver copy those packets to the CPU in the right VLAN?
+I'm waiting for your immediate reply..
 
-I think in that case the CPU should be part of the multicast flooding
-mask. I will need to look more on this because I don't know much about
-the IPv6.
-
-> 
-> > > How do you handle migration of an FDB entry pointing towards the CPU,
-> > > towards one pointing towards a port?
-> >
-> > Shouldn't I get 2 calls that the entry is removed from CPU and then
-> > added to a port?
-> 
-> Ok.
-
--- 
-/Horatiu
+May God Bless you,
+Mrs. Dina Howley Mckenna.
