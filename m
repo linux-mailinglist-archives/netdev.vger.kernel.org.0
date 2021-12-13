@@ -2,211 +2,224 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E453047328C
-	for <lists+netdev@lfdr.de>; Mon, 13 Dec 2021 17:57:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 853484732A8
+	for <lists+netdev@lfdr.de>; Mon, 13 Dec 2021 18:06:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241288AbhLMQ4v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Dec 2021 11:56:51 -0500
-Received: from mail-dm6nam11lp2177.outbound.protection.outlook.com ([104.47.57.177]:18764
-        "EHLO NAM11-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S241224AbhLMQ4o (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 13 Dec 2021 11:56:44 -0500
+        id S238283AbhLMRGR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Dec 2021 12:06:17 -0500
+Received: from mx0b-00069f02.pphosted.com ([205.220.177.32]:29142 "EHLO
+        mx0b-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232507AbhLMRGQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 12:06:16 -0500
+Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1BDG0Tsa026256;
+        Mon, 13 Dec 2021 17:06:12 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : content-type : mime-version;
+ s=corp-2021-07-09; bh=NX9vVaaNlt3nId4A3FBA3PCK2wc5QkanAxO8J2t3NSU=;
+ b=ysPxBKmScT+iIjSIeEnZbDGQcVmyfoYUwpa4IreNJrEuWg7jpA5S/A8QXrJYzbGDcDuU
+ iKtwQRALnNKOCCMG0eTokNZI9i6PovWTjg4gpi4LF6EvMqr7AXXDH409Bp+giFDgHLE5
+ G6PZSJRmiXVqVyU3IQNHAILNHhp4Zq0Lries8HNhgcnfY6hIvvApylFgKfZMgsXnYots
+ 9JfXBHe2ET5qIcGCucBGIlQBNfmY/hQfserf1ld3g1JM9Gg2JlcolUBR+w6DKTIxhZcv
+ 8BgxdPhTbERMaq65hxqZliiu9mGyU3PppZrSATSppIfWDSaTKmlnrVOglPQH7lLLS0PE Ow== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3cx2nf9aum-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 13 Dec 2021 17:06:11 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 1BDH0TiS019464;
+        Mon, 13 Dec 2021 17:06:11 GMT
+Received: from nam10-dm6-obe.outbound.protection.outlook.com (mail-dm6nam10lp2104.outbound.protection.outlook.com [104.47.58.104])
+        by aserp3020.oracle.com with ESMTP id 3cvkt38b1r-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 13 Dec 2021 17:06:10 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UB+OrO2PBs9yc8JKNKwgjXfFBf7EofDbtU4bgabdcEf+wtRZMJjOWDhsAwi3j6QrMbXZsT4UEzf3dMxUMrh+YA1QbSFSeph6AfHVwsCdWD1/yuPlNXwOdPCkSomwZ70IdAgsjYPPNzDcQm99jBequrwI8/Obv/cn1K1NHNXpaKel4mYtWwM/y3PHu7QIrtWuB8uhVL+EBRy89DU9Cf/JNGzM4elE3AoRe0DT9M8ZqL7DWYrAnIT2GCbflbI5Vt3FPWWkvRU7gG+RMSnJ/2QYGuhLF+Drw9kzRd7H8fUNFGcCbs2HB8YJsQ9sspYKWZ1tC7/qxndRnN3xuw1Hkh7fHw==
+ b=OA+LdDphcKghn16UNGKnR9HPJCwdXG1ijv2KvBYA9whGKLIbQnqzmL+CiyDDZhP+d4aWTcgX+qySzAVS59CWhAbYde5d0dwQU5z8VgvnbWczRaoncYlduE9Jq89yeZaBKnFWE2yVvcY+hNDu7UpzLHIXLpwgbTN+kgiz7Ofjmy0MiGMyG+aoeV0xWQa3lTb5+sa7cSO4nlnSOLpmtLLPasnIVOPq1I5CdA64qsavFhb95E17llM6OG0czhr6bp9AFl2sefzoeO9NrILyWY/1g7oXpVCIjqa4qpCX2xALZpr2r3z47tUR/RnG1DMuw9cp5V7I22Sq92nAP5K/wzeIZQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Vowl/On6xbtDSDaqK1juomqGWTRu6Mu3TLXtVf4Gvyo=;
- b=HbzNJbFBr5Q8Hra+iJRj+yDrengr/APRFaBVbXMG/CPAiNaAISPvYcWLNlKjyB/oJ8YIzRVPXyyCtzfB1MPRyMROb7ZNEfd/+GcgQmJxzGmErXmdDapNSK8E8Tu68TF5p+ZzlDtyyFSm2HjunRhSe0eLT43HYbdyNb+MoI5QBqXGNFsqUnjBiLsNMb1zWVn+i7FxMAa1yG+7HQeUnZMd6D8Gfblug3knoCbHVFyzL8gzqhnMozgqL5w1dUa6VprKwWhp8By/GIPYT0MgRw3jiwhN256NxvwgSnWEq7go0MaQTAv5SZfqYzFQmZVFvAHVmC/4eDmJfYrMQ/Io9DD6fg==
+ bh=NX9vVaaNlt3nId4A3FBA3PCK2wc5QkanAxO8J2t3NSU=;
+ b=N8qthHMXx5Mh3vSLMD0nkzynNjhz+vmo4jJJpC85pj5v7Y6mgM1LuK5WwVvB43p+grll/ZSXg35kLVNpYxmaZBHc52HXRhkO74dDDRUJbGDrVDu2T+XK9Ip1DefI2xGMVMVRLUkWjU4Xsbb4dZdVNlNVeJ5TfYnVPShUdwza/6qImMWAHkq862bMl1z9eJ4gP1EVZ6h0O9g0Rtl8pUL6FXh4oZXDU6xwqvLIii0iqCvwnFjhhPK2Fh5WY3joYS7h9Q4uqSN60QRSXRVadevag/cBqcIumXLA1ltPP1hlBh0y78x7szsbagb89mxbgCA1YYrS/ZZ8H0Of3IoE+tguAw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Vowl/On6xbtDSDaqK1juomqGWTRu6Mu3TLXtVf4Gvyo=;
- b=fV34wNcOuBnlgZlE6+bnwNA8eZEfiXGRhp7J0dgbfGnWD361vPqVhkrNJ02Rl4jtksilPMSKC1wO/odxXtvU1UZu9stznKha3S8ng7yGVR6Q4s3EsO8HlHxFzzrvDkyWDMJorNh9YFhpyBtOfK/Ng6Dq+XaNK8Qk69e4CNf10CU=
-Received: from MN2PR21MB1295.namprd21.prod.outlook.com (2603:10b6:208:3e::25)
- by BN7PR21MB1732.namprd21.prod.outlook.com (2603:10b6:406:ad::31) with
+ bh=NX9vVaaNlt3nId4A3FBA3PCK2wc5QkanAxO8J2t3NSU=;
+ b=k2x2KCY175AZzgGHw9891FuHIeAQ2LuTm0rNHtfqvJQGX/wsLdELh0Uym1LSkLvcPhPA9SWiqveyx3lps5ARn/a5+q3ufz8TZqeL1E+K9hMPNaK9i/+YjWL2Gi993vBjtYSig2HeDSG8Qr4piYwec9v066hROvKc/vlUqAACR6k=
+Received: from BN0PR10MB5192.namprd10.prod.outlook.com (2603:10b6:408:115::8)
+ by BN8PR10MB3203.namprd10.prod.outlook.com (2603:10b6:408:c6::20) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4823.6; Mon, 13 Dec
- 2021 16:56:30 +0000
-Received: from MN2PR21MB1295.namprd21.prod.outlook.com
- ([fe80::8c70:eedb:b406:726]) by MN2PR21MB1295.namprd21.prod.outlook.com
- ([fe80::8c70:eedb:b406:726%8]) with mapi id 15.20.4801.010; Mon, 13 Dec 2021
- 16:56:30 +0000
-From:   Haiyang Zhang <haiyangz@microsoft.com>
-To:     Tianyu Lan <ltykernel@gmail.com>,
-        KY Srinivasan <kys@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "bp@alien8.de" <bp@alien8.de>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "x86@kernel.org" <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "jejb@linux.ibm.com" <jejb@linux.ibm.com>,
-        "martin.petersen@oracle.com" <martin.petersen@oracle.com>,
-        "arnd@arndb.de" <arnd@arndb.de>,
-        "hch@infradead.org" <hch@infradead.org>,
-        "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
-        "robin.murphy@arm.com" <robin.murphy@arm.com>,
-        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
-        Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        "Michael Kelley (LINUX)" <mikelley@microsoft.com>
-CC:     "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        vkuznets <vkuznets@redhat.com>,
-        "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
-        "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
-        "hch@lst.de" <hch@lst.de>, "joro@8bytes.org" <joro@8bytes.org>,
-        "parri.andrea@gmail.com" <parri.andrea@gmail.com>,
-        "dave.hansen@intel.com" <dave.hansen@intel.com>
-Subject: RE: [PATCH V7 5/5] net: netvsc: Add Isolation VM support for netvsc
- driver
-Thread-Topic: [PATCH V7 5/5] net: netvsc: Add Isolation VM support for netvsc
- driver
-Thread-Index: AQHX7/EWMl5F6LxDHkely1IHtTPBiqwwpHUA
-Date:   Mon, 13 Dec 2021 16:56:30 +0000
-Message-ID: <MN2PR21MB129599B0242599704B82433CCA749@MN2PR21MB1295.namprd21.prod.outlook.com>
-References: <20211213071407.314309-1-ltykernel@gmail.com>
- <20211213071407.314309-6-ltykernel@gmail.com>
-In-Reply-To: <20211213071407.314309-6-ltykernel@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=9e602df1-03ad-49c5-a979-13134afc720b;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2021-12-13T16:55:02Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: cc92fa70-e668-4fae-a26a-08d9be598307
-x-ms-traffictypediagnostic: BN7PR21MB1732:EE_
-x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
-x-microsoft-antispam-prvs: <BN7PR21MB17327513C01A52B61B1D0D78CA749@BN7PR21MB1732.namprd21.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2733;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: k5s/T/hDITtzZI4lkN4MoVemWYBhlmTOTi9rC5TkIA37tI4klodhR6zG/k33GgD/ikHRmyHyTFoGOCwniEy55lCgC+bsEq/NC/Y+JX9bu09TKn4RDyoHTF8X/gAnmNajdm8xKs14V5yTt04uWEVmT6Y2BhUDZRiwN0K25qDiXpFfScMwqLPq6iJwaVB7atRACHxsJCC8I6/Pwyy7spWlyTqNGvs6Iz2gkS88TH7te7MGRa85hOv/Ey7KGAK7Wok16ZfcJ8puHGbKB41AEBqN/mEMv2zNchm3yDKtq/gbJM0ONSm+bqSsiC1lMRMxo8ZGEcLneHex/VzhJuPGS4dpVcn+UFyqXFQIGnopSDQ+YKyhT9P6iSfsRREOjTJFX/iU3HZ6uIUbNBve0Q/6X5rO6mDhQ/zu9u/PMGtYYVFx3qrLWNDGd84rXgQizZ4f9Izr50CJWCMI0q04Jwvd0QtQ97qK8Dvz38j48pBCeoT5Q2153vNX6NJ474lDYXLX3NepkQWK/LH+Z5aLMamx9kbNf9e7kHwzZRt9ndrGdFHWDH/2WPFlBDufqn6/CKUA/zsD6ale24AKk9MWdOv6cRMba9ulOIxGfetQVQCOf6ZThBlbkS6/HZlhaBbenmO4/lhJKmi3R2tVy0GXCJk3zLY0K2/GOoK2QVoVs5QWHOK3gko0CADbLtu2IPKrMoJJnGCFEBdg/SxjWy7CGVncAmObHuA4DU7lvxLAPqYcEolbW7LjDBRY/cLB/q5VHeShPpSNtHqFrJzP2dz2T92+/nVgCA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR21MB1295.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(316002)(38100700002)(55016003)(110136005)(8676002)(83380400001)(8936002)(5660300002)(6636002)(66446008)(64756008)(66556008)(66476007)(4326008)(52536014)(7416002)(76116006)(66946007)(54906003)(7406005)(2906002)(122000001)(9686003)(10290500003)(71200400001)(508600001)(8990500004)(26005)(186003)(921005)(38070700005)(82950400001)(53546011)(6506007)(33656002)(7696005)(86362001)(82960400001)(20210929001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?TwaKfmUanuDMbus0Exj7pzUSUTcPeIWuciUoqDU+xdw4VStLBtK6oA81Cf+y?=
- =?us-ascii?Q?CCNa1nQ1DihkHk57k1EHixgUJJsbcAfFfWDU8RETtaUlr1YjZ2ZNr+sXJ3qp?=
- =?us-ascii?Q?s+1ya3Wj0CUQFOnFPEnZkbF0pqKvkCm99GeaX8RzVsQlsuzu7gvw2zUJt5om?=
- =?us-ascii?Q?yzt7gSyi4BqUvbyPfMXvGz38nGT8gLSs3H0Ae7RDGcwQfy88FZeBcHuisf66?=
- =?us-ascii?Q?zb/OyClA8hPUzDtf9fwNY+OTuWyxb6AQNMKN6ilRQjz3FcnkuuSfkFBTPke5?=
- =?us-ascii?Q?22xmq26BsOBdxrYcM4Cbz/F/dhAr9PZsvboFtsnHronWPDWv8ndS9ZABGrPy?=
- =?us-ascii?Q?mR8DXn1CXNF+AU3FzWnF+OZwfiAuyDN7uUN+GbMwQoC9hNcuB2D1SJfW7LBz?=
- =?us-ascii?Q?zriv/bHzhyRdIj0U+TIKkOKKikBFzdpLDuYCplUzP6lXxfBsQ16iKc/v90zh?=
- =?us-ascii?Q?hWg/sVTxbK55vza+MnseoHsreYpCNxnrSmsa4wXKk2fNyaAhPwzz3hUEbdis?=
- =?us-ascii?Q?+pX8XD84Ev/FjsdRGoyW622c9l56QobMN29BbJuGHCW33Lfds3rrJt0Kb2Eb?=
- =?us-ascii?Q?5owNrYp7s/sQmONqj5dzhNCjydomH397QHr6iIxvNbL8uukowLeXh71fTGEM?=
- =?us-ascii?Q?DPTYIvPsMZLc+i5itl3YWQEBY/Jtu0CluW/+ItNxcGsrOswL0Rc2YNkedjYJ?=
- =?us-ascii?Q?N67dthzXNeA/XpaZlH8wQe2ZTm+w+3mcPgInL4AuYc2CDjrrxFW6In92Hac2?=
- =?us-ascii?Q?SMA8hxSj41CN6s7G1ElrNBoYJIMUTJKvBfXFljzrXvEgnDvQkw8FHgjnm5rd?=
- =?us-ascii?Q?vtEdcjKdaO85Je/qWKKeIoAz+kC2AlB4SOakWtSa9j5mdkYVzDW8J9ri5B+5?=
- =?us-ascii?Q?SFOzSj1CKOn1TQ54Rmd2wG4y58t27QE4c/I5Xh8/+0Vzhx3xqTGo5JwHU/QZ?=
- =?us-ascii?Q?OVS0HwPwxMnnbZW8igAgeCKAxwhUkg35gLeDFFMraasSJrBd2uLrDh/oQJln?=
- =?us-ascii?Q?PSxLQEXCTM6+J9kI/qjSyXO0gGn4IwsIZz+sFczeABG9G8eu6DfjF+hHSUil?=
- =?us-ascii?Q?Yd+Y2IJa4CZR60D8KTY0qhtksO/cQ/Ms1pFpmKbvI2T1Ev/88QLHQJFOpjiQ?=
- =?us-ascii?Q?lGGG2ZqBpZkR2ckG0kWT145UspIdorHi+JERAfIfCZZved8hc3NlpAPWhlxV?=
- =?us-ascii?Q?wCKiOcDugmI2WW02Jztp3rbilTevg8DugybDY8p0NKiPHePZuDZZ0XN+9trK?=
- =?us-ascii?Q?5uOOkjwLVyzeSELbreqREc3bxlX1dwqInCsRU6inofeWtsbkESEUP4EHDtmc?=
- =?us-ascii?Q?Ps80hAFyxUvTp993WAQRO81JC+UdRf9X8OfC+bvOsRXbHHQ1UiLKKnpPL8Mn?=
- =?us-ascii?Q?F5w3nCsEw+sD8FfqOgZb5JwvKBbbLe+97ikpiLbrCIV5fCj5JLcUi05Y3mLU?=
- =?us-ascii?Q?vWAelqncvrq2efWGNyqLxREWMhuIY+QFdsCaUuAqZzwFOV5fPLSECQssT9++?=
- =?us-ascii?Q?GLZdmZ2VUHc3j19i00LcfTU7fpdcFIJcbDe9O9gipCSF7F6OiBFWZEXO1bd9?=
- =?us-ascii?Q?QtFoO2rh34/EYmQjR73yg7U/fx6j3SDuG4VoxZEvH9LvtlbEfi/hWBzkKJ/K?=
- =?us-ascii?Q?Jg=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4778.17; Mon, 13 Dec
+ 2021 17:06:09 +0000
+Received: from BN0PR10MB5192.namprd10.prod.outlook.com
+ ([fe80::4440:4f39:6d92:a14c]) by BN0PR10MB5192.namprd10.prod.outlook.com
+ ([fe80::4440:4f39:6d92:a14c%8]) with mapi id 15.20.4778.018; Mon, 13 Dec 2021
+ 17:06:09 +0000
+From:   George Kennedy <george.kennedy@oracle.com>
+To:     kuba@kernel.org
+Cc:     george.kennedy@oracle.com, stephen@networkplumber.org,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2] tun: avoid double free in tun_free_netdev
+Date:   Mon, 13 Dec 2021 12:04:11 -0500
+Message-Id: <1639415051-10245-1-git-send-email-george.kennedy@oracle.com>
+X-Mailer: git-send-email 1.8.3.1
+Content-Type: text/plain
+X-ClientProxiedBy: SA9PR13CA0032.namprd13.prod.outlook.com
+ (2603:10b6:806:22::7) To BN0PR10MB5192.namprd10.prod.outlook.com
+ (2603:10b6:408:115::8)
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 76ba7da4-fad9-4921-4e4d-08d9be5adb71
+X-MS-TrafficTypeDiagnostic: BN8PR10MB3203:EE_
+X-Microsoft-Antispam-PRVS: <BN8PR10MB3203D7FCE91B66A55A9D4BCFE6749@BN8PR10MB3203.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 0JKu5nz0Hz4gRWgwZZuFZgNSsh7/X2D1eIkCyKfYPjYDeditYuOlxtDFtXDxbGIckMh7hDtpYEPHhV0pxs6UTyGVs2iV/nFz9uvSOLqmVqhK3jNtxkMNwPYzAXG86Sc5DR4s4bYTyglvhDscjMQCACOoGBj1oSwIgjzy3DPflIs+7QN9hbCOeu0zHCMkiKvk7GGMbHPN466QdhbTcwXm0LpngH5nGWecHA4st5GB86p7gyqvt39vdNK519bkK6qsbia7gCCkfdXwSXYeUtQoo0gKDljavZp6AAnK9pp0EjeexK8QaeZXqTxPfMwN8hyJnjDK5I6rTq32ad3QvWWr+x6Xe7KJWuq3PItTzrlHgARak8wJlwdnM0DhJnCFnbAcvHxLOp4CRXILUiKfrtSNFTsNAwJoSJCxxQhfKIszLbIaODRUTM8/bMgLpTChVB4ptcpo6msp06Q+aqZkjy9DLlHi1zv6uSmy8/ia/ZFPwmOiINDtqOYO2l7kjJq//lZkni80eH6OUXAilM6MyKTfdY57nInh9FEaFTJaRVRSRLMNe0dCyx2uNpV3A7QMhTuWrXTAMYOiBlo8BLXYzI33l3e8Nfdr8liM9SxR4UJNJaAilpN9FU08P9CKKvyEnK0xicySWZY9r2jh+Olsa8kJn9TUo5GXAZcsZDzyXpdJztxVWHaQg3lYCDmUzWhiai1yvwc5OKL+5GRxnfUlDFqSNQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN0PR10MB5192.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(38350700002)(8936002)(6506007)(52116002)(66476007)(4326008)(38100700002)(66556008)(508600001)(6512007)(26005)(66946007)(83380400001)(8676002)(86362001)(6916009)(6486002)(5660300002)(6666004)(186003)(316002)(2906002)(44832011)(2616005)(36756003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?RpjQasoKQm412OQKRgC0Zg6eC9bsXoKHT2ruo6xn6d3y2MqYzFKw2t06oVDc?=
+ =?us-ascii?Q?P7Pi586ewVtIkKY2AfXlVVqYD4fqUowkxJLuBsJbmQy3v/fFLYJX+3Vbz9M+?=
+ =?us-ascii?Q?0NXbsk2P32mTCGgVb+iSiYDllCpxoJ/X3AraA3CDa5wWoEQMIP3ame3G17dl?=
+ =?us-ascii?Q?C3X64YKPSky/hzzcoQxZu6RBLOdntaucdnL2xNIrBCqBZlQaSdAVIGAeVxOZ?=
+ =?us-ascii?Q?B9rx/StFUmll6ih3fTzH5Xlkw12MuQ1AM7azJ8yOzZPYrpVkbXGkcT+xXrxM?=
+ =?us-ascii?Q?CmCajym6CVYoZFqu4icbsM9NzwLAGDUA/rxQ3QSH/Z01IXFsfyr4w77dGQTR?=
+ =?us-ascii?Q?g9kiq4ezBHCAY3EKVWU0nfhBYFnpAYHBowyQD6nPW3Eu60rzyU+Z/0QCoxCN?=
+ =?us-ascii?Q?tnmTA1XR8w/uk726bT/cV5Tk0JkTVwoOr6EY9jOoPLZwvsBnUeChxwmMv64O?=
+ =?us-ascii?Q?rBFpmK9U2ZneQd0SmjWNGS3w8u+DVGPHtEjrMgBlqb+So2+53pUv5vP6rhRs?=
+ =?us-ascii?Q?efMWfSQPyWY1ayMbnqVMcrjP+pJ1Jyz55PJ5xU0Afs2+bFf4MUQh2uP+1mKS?=
+ =?us-ascii?Q?HNYF2goqvWW2VJCWX6GO0IaOutpe08AGldPeHpWQBVllqeVqYyle/gky8qSr?=
+ =?us-ascii?Q?+EDX5jIKyneOpy89kexqT0lydNgaQ1zJRwVW7PslT1ACD46wovZ1whx9g8kC?=
+ =?us-ascii?Q?zZunOg8+rZmV0gpZ834GO8NVzLboZ1Y/ESCakD0XSOB2xuk5CT5vztyJJf/G?=
+ =?us-ascii?Q?UzTuZSljvM0BY2bHgsxsO7r+QNGqSd9RP/rHyPR3yvMUJzDzeb53QWIgYPMX?=
+ =?us-ascii?Q?TwQhaQu5ZowCVbL5floiw+WnMHpcNMZmAKQH39r6RQMtlYtSJbQtK8q1bSUB?=
+ =?us-ascii?Q?f1UKpUGD3hxVHgEI4W4OKQiGZA4VkM1PJOBp86aBEi9IPvyGBg0q3OzZ4KsI?=
+ =?us-ascii?Q?eWjL0MfiyjKJrH+MwwanuqXnSm+AabN1LKd03xoDUPRxwzCXVuLqHv7Fl6yZ?=
+ =?us-ascii?Q?E+WA3PjVwicZ8EZDLasIS6ygFrPK//6HQkb7iqRKW5UzjA0kcBN6NA5uv/AA?=
+ =?us-ascii?Q?NTgqNj47UIAQDFP8RCM79HzQt4Qw2D/xcpEg4DoKA2IiBz8X4GQTtZ051VlN?=
+ =?us-ascii?Q?xFlpWjdAVvfGTkdO4kYfBpOymg+SFv5LXCcu9JqLANKIanf6C9fDl+7Xqptp?=
+ =?us-ascii?Q?y00X1VyyBX+WKfsCwzmzpl4sPnDGJ5htk/wG/mFBM2A0SAk4JKlrZw4sBMeM?=
+ =?us-ascii?Q?Abq4wNdYbuElUE3Q6KI1VpAWbZR3deb8+KL0Mcyw0GhBJWahMZQwhpkmt3kM?=
+ =?us-ascii?Q?YQBj9qR9PRnVB7odcFNRL2AyAoG2bBrqBZIlV7lfVMmpghTjiAu6wjsbsQYU?=
+ =?us-ascii?Q?OPWHG+3pvo23CR4xUx3Ulm4mf4qaV6aGuRONU08rfwlvACHOFQlArZ2g4DpL?=
+ =?us-ascii?Q?qsh7dTmLbzq2ZzINjhvMaKajWrfQKFrmpBQM0He+GeSN1991+gZHvE9hzl39?=
+ =?us-ascii?Q?uG5QKiPfgGwUh8awNM9uXrPYrFlnetOp+z3Drl0geEaoefQ59ePLjPYb8FiU?=
+ =?us-ascii?Q?6kxfhrhKA6DZI4szJW3VZxWaNEr1x25VX5zHESlxpeQMFmtCO8y0yr0fcsjm?=
+ =?us-ascii?Q?Z2NszImcfNexseGtscpOpwWh6ytIQiO+jQAsOjTcJZMtWoJKcCEncSelyJ4/?=
+ =?us-ascii?Q?ekYjkQ=3D=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 76ba7da4-fad9-4921-4e4d-08d9be5adb71
+X-MS-Exchange-CrossTenant-AuthSource: BN0PR10MB5192.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR21MB1295.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cc92fa70-e668-4fae-a26a-08d9be598307
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Dec 2021 16:56:30.7618
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Dec 2021 17:06:08.9636
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: B/9za8DDfD2vda/khn+g0NK/zy3hzMZ29hJwT3Z7l8EWuo76RhQ+mI6qE5hm9XbGWM3u4sCcVUizTvN/OF2k1A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR21MB1732
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: dspwLVn8kgUycjBVfVAWP/0wldy6sxSuA7mYuG6NvTt9WHoo6q0SM+wZUxpfgEw85q5nqCbVoeigQNncwqhbtgk21D65my1VAEoaE63xvYk=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR10MB3203
+X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10197 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 adultscore=0 suspectscore=0
+ mlxlogscore=943 phishscore=0 malwarescore=0 bulkscore=0 mlxscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2110150000
+ definitions=main-2112130109
+X-Proofpoint-ORIG-GUID: GVrwQISYgGh8n3WnXQNHWuzPYXc-ZAen
+X-Proofpoint-GUID: GVrwQISYgGh8n3WnXQNHWuzPYXc-ZAen
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Avoid double free in tun_free_netdev() by checking if
+dev->reg_state is NETREG_UNREGISTERING in the tun_set_iff()
+error paths. If dev->reg_state is NETREG_UNREGISTERING that means
+the destructor will be called later.
 
+BUG: KASAN: double-free or invalid-free in selinux_tun_dev_free_security+0x1a/0x20 security/selinux/hooks.c:5605
 
-> -----Original Message-----
-> From: Tianyu Lan <ltykernel@gmail.com>
-> Sent: Monday, December 13, 2021 2:14 AM
-> To: KY Srinivasan <kys@microsoft.com>; Haiyang Zhang <haiyangz@microsoft.=
-com>; Stephen
-> Hemminger <sthemmin@microsoft.com>; wei.liu@kernel.org; Dexuan Cui <decui=
-@microsoft.com>;
-> tglx@linutronix.de; mingo@redhat.com; bp@alien8.de; dave.hansen@linux.int=
-el.com;
-> x86@kernel.org; hpa@zytor.com; davem@davemloft.net; kuba@kernel.org; jejb=
-@linux.ibm.com;
-> martin.petersen@oracle.com; arnd@arndb.de; hch@infradead.org; m.szyprowsk=
-i@samsung.com;
-> robin.murphy@arm.com; thomas.lendacky@amd.com; Tianyu Lan <Tianyu.Lan@mic=
-rosoft.com>;
-> Michael Kelley (LINUX) <mikelley@microsoft.com>
-> Cc: iommu@lists.linux-foundation.org; linux-arch@vger.kernel.org; linux-
-> hyperv@vger.kernel.org; linux-kernel@vger.kernel.org; linux-scsi@vger.ker=
-nel.org;
-> netdev@vger.kernel.org; vkuznets <vkuznets@redhat.com>; brijesh.singh@amd=
-.com;
-> konrad.wilk@oracle.com; hch@lst.de; joro@8bytes.org; parri.andrea@gmail.c=
-om;
-> dave.hansen@intel.com
-> Subject: [PATCH V7 5/5] net: netvsc: Add Isolation VM support for netvsc =
-driver
->=20
-> From: Tianyu Lan <Tianyu.Lan@microsoft.com>
->=20
-> In Isolation VM, all shared memory with host needs to mark visible
-> to host via hvcall. vmbus_establish_gpadl() has already done it for
-> netvsc rx/tx ring buffer. The page buffer used by vmbus_sendpacket_
-> pagebuffer() stills need to be handled. Use DMA API to map/umap
-> these memory during sending/receiving packet and Hyper-V swiotlb
-> bounce buffer dma address will be returned. The swiotlb bounce buffer
-> has been masked to be visible to host during boot up.
->=20
-> rx/tx ring buffer is allocated via vzalloc() and they need to be
-> mapped into unencrypted address space(above vTOM) before sharing
-> with host and accessing. Add hv_map/unmap_memory() to map/umap rx
-> /tx ring buffer.
->=20
-> Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
-> ---
-> Change since v3:
->        * Replace HV_HYP_PAGE_SIZE with PAGE_SIZE and virt_to_hvpfn()
->          with vmalloc_to_pfn() in the hv_map_memory()
->=20
-> Change since v2:
->        * Add hv_map/unmap_memory() to map/umap rx/tx ring buffer.
-> ---
->  arch/x86/hyperv/ivm.c             |  28 ++++++
->  drivers/hv/hv_common.c            |  11 +++
->  drivers/net/hyperv/hyperv_net.h   |   5 ++
->  drivers/net/hyperv/netvsc.c       | 136 +++++++++++++++++++++++++++++-
->  drivers/net/hyperv/netvsc_drv.c   |   1 +
->  drivers/net/hyperv/rndis_filter.c |   2 +
->  include/asm-generic/mshyperv.h    |   2 +
->  include/linux/hyperv.h            |   5 ++
->  8 files changed, 187 insertions(+), 3 deletions(-)
->=20
+CPU: 0 PID: 25750 Comm: syz-executor416 Not tainted 5.16.0-rc2-syzk #1
+Hardware name: Red Hat KVM, BIOS
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0x89/0xb5 lib/dump_stack.c:106
+ print_address_description.constprop.9+0x28/0x160 mm/kasan/report.c:247
+ kasan_report_invalid_free+0x55/0x80 mm/kasan/report.c:372
+ ____kasan_slab_free mm/kasan/common.c:346 [inline]
+ __kasan_slab_free+0x107/0x120 mm/kasan/common.c:374
+ kasan_slab_free include/linux/kasan.h:235 [inline]
+ slab_free_hook mm/slub.c:1723 [inline]
+ slab_free_freelist_hook mm/slub.c:1749 [inline]
+ slab_free mm/slub.c:3513 [inline]
+ kfree+0xac/0x2d0 mm/slub.c:4561
+ selinux_tun_dev_free_security+0x1a/0x20 security/selinux/hooks.c:5605
+ security_tun_dev_free_security+0x4f/0x90 security/security.c:2342
+ tun_free_netdev+0xe6/0x150 drivers/net/tun.c:2215
+ netdev_run_todo+0x4df/0x840 net/core/dev.c:10627
+ rtnl_unlock+0x13/0x20 net/core/rtnetlink.c:112
+ __tun_chr_ioctl+0x80c/0x2870 drivers/net/tun.c:3302
+ tun_chr_ioctl+0x2f/0x40 drivers/net/tun.c:3311
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:874 [inline]
+ __se_sys_ioctl fs/ioctl.c:860 [inline]
+ __x64_sys_ioctl+0x19d/0x220 fs/ioctl.c:860
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x3a/0x80 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-Reviewed-by: Haiyang Zhang <haiyangz@microsoft.com>
+Reported-by: syzkaller <syzkaller@googlegroups.com>
+Signed-off-by: George Kennedy <george.kennedy@oracle.com>
+---
+Jakub, decided to go the less code churn route and just
+check for dev->reg_state is NETREG_UNREGISTERING.
+
+ drivers/net/tun.c | 21 +++++++--------------
+ 1 file changed, 7 insertions(+), 14 deletions(-)
+
+diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+index 1572878..9ab530a 100644
+--- a/drivers/net/tun.c
++++ b/drivers/net/tun.c
+@@ -2206,10 +2206,6 @@ static void tun_free_netdev(struct net_device *dev)
+ 	BUG_ON(!(list_empty(&tun->disabled)));
+ 
+ 	free_percpu(dev->tstats);
+-	/* We clear tstats so that tun_set_iff() can tell if
+-	 * tun_free_netdev() has been called from register_netdevice().
+-	 */
+-	dev->tstats = NULL;
+ 
+ 	tun_flow_uninit(tun);
+ 	security_tun_dev_free_security(tun->security);
+@@ -2770,18 +2766,15 @@ static int tun_set_iff(struct net *net, struct file *file, struct ifreq *ifr)
+ 
+ err_detach:
+ 	tun_detach_all(dev);
+-	/* We are here because register_netdevice() has failed.
+-	 * If register_netdevice() already called tun_free_netdev()
+-	 * while dealing with the error, dev->stats has been cleared.
+-	 */
+-	if (!dev->tstats)
+-		goto err_free_dev;
+-
+ err_free_flow:
+-	tun_flow_uninit(tun);
+-	security_tun_dev_free_security(tun->security);
++	/* if NETREG_UNREGISTERING, destructor will be called later */
++	if (dev->reg_state != NETREG_UNREGISTERING) {
++		tun_flow_uninit(tun);
++		security_tun_dev_free_security(tun->security);
++	}
+ err_free_stat:
+-	free_percpu(dev->tstats);
++	if (dev->reg_state != NETREG_UNREGISTERING)
++		free_percpu(dev->tstats);
+ err_free_dev:
+ 	free_netdev(dev);
+ 	return err;
+-- 
+1.8.3.1
+
