@@ -2,118 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 36935472C00
-	for <lists+netdev@lfdr.de>; Mon, 13 Dec 2021 13:10:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CB56472C18
+	for <lists+netdev@lfdr.de>; Mon, 13 Dec 2021 13:14:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234664AbhLMMKu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Dec 2021 07:10:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35144 "EHLO
+        id S236635AbhLMMOK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Dec 2021 07:14:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231405AbhLMMKt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 07:10:49 -0500
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D7B8C061574
-        for <netdev@vger.kernel.org>; Mon, 13 Dec 2021 04:10:49 -0800 (PST)
-Received: by mail-pf1-x436.google.com with SMTP id k26so14739315pfp.10
-        for <netdev@vger.kernel.org>; Mon, 13 Dec 2021 04:10:49 -0800 (PST)
+        with ESMTP id S236620AbhLMMOK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 07:14:10 -0500
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00CBFC061574
+        for <netdev@vger.kernel.org>; Mon, 13 Dec 2021 04:14:10 -0800 (PST)
+Received: by mail-pf1-x434.google.com with SMTP id i12so14771510pfd.6
+        for <netdev@vger.kernel.org>; Mon, 13 Dec 2021 04:14:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=aeDoOoeMSWHks6DEzg3i5Lx0mGgPR00BvNdSpkqFsNg=;
-        b=qNeaJMryifL5dHzcUD3bMecJVazg6+6HB7zgNj3Hv4NrQ6RPYbygi8IDH1PQoLSZSw
-         9Fcl/gL3T88ojswJo2R1LWis8Q7BJTZAlePl2CVbC7JMp8rTZztLqHvpFr//FeReXQ9b
-         Pjh2ds1aZw498sG+qPpGeNUS+ZaeteLnUlKxsbBaxjPqxDcPqjKI//DxihvbuXpJtKSI
-         Q7IMxMDukcqB/Bm20urfq2uzoZxCAHvlIpzr5ziqkuUJPztPoaJPxVxmvdJLJ3Smf3D3
-         AUGR5izCC/EFpeq/suqZXu3+gLDHIA8nb1ohLPFKFkA5rp/Q2bSiByQ80gP4H1j3OjOQ
-         4szA==
+        bh=pu7c1wcP402KWNHD9dPBzkqwQoQWqxMYnBL92eSZ8l4=;
+        b=OC+wnOfUNgnVHHIwIHPcK1eJLoCR61LggQEru+D7B1MZiuQGxHYw/sR3IOPjR0yyYk
+         jr9dDdjriHNW3U8I9i4ye4x1/2isIaGj2/kpCUaPtSm5YZjrZsDY5LdaoHM/i5WZTtA4
+         zEa2yrBamT/HABg216nuH8Cup1+tldOyU8dh+bOUWce6GzMLfCVrRiib3TQG5OA6JuiV
+         sCH09KXNvVfpA9MRH9DwBH8shL8gPSdW7BlSWr+TIvYNSVCmEZdqUNf5FLaC4J9p3qL3
+         0gpiE+a5cUNk48TqevW0WsCleG8IJ/0ugqpIqHUhhyd0EslvyT21mHstgMgeywGKiMKi
+         fn8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=aeDoOoeMSWHks6DEzg3i5Lx0mGgPR00BvNdSpkqFsNg=;
-        b=3C7dQ+xso0y1zVANRj2y3R7LzPPRofP3Ua47I3pMFFo4s9ZKeu1x5gsnplJDaegE7o
-         KNvFG2lsv6eLzInqzf21x8oCJy/OaZ6zSgmVCl02gzKpNQmgR5oCcguVLbUvDKke61jN
-         Af9tLtK3zlZXsBvX7O+jmfM0DHEnkUZigvzNpBGfZ57wE+As9Jxk19X25suufy8zRpRX
-         MHKM+qZm+D8J3dgj4fRoGO/bdvY/Q4Xk44wiqucoB6TuasWkGYYJqur2yA0S4b2GRmvb
-         G+iNPzhPqTxlQhYNWxlNE+fz08ULrjXARJhm7AqbXOBkLT4QWEdGGtWYe9ISF7PnSPwL
-         RoiA==
-X-Gm-Message-State: AOAM532rJ4SwGU4RhMq8HuBaBwSBfUcXGUDy5gGkFSGyODvyiv45eoSV
-        hgZgZz5BcJ/dLh+lr4jYc/k=
-X-Google-Smtp-Source: ABdhPJwIjRtSFc9vWt5dvt98e1WwHpJJX97ibtV2H2StrTwlMvPztvRe3ph2WinCo4fKSqqCerI7OQ==
-X-Received: by 2002:a63:e657:: with SMTP id p23mr1809369pgj.337.1639397448984;
-        Mon, 13 Dec 2021 04:10:48 -0800 (PST)
+        bh=pu7c1wcP402KWNHD9dPBzkqwQoQWqxMYnBL92eSZ8l4=;
+        b=HHROem180s0FnK8GPJCAeRF6TZrVcwX6jsu99HSwuOR4anEy7dhBczreStGHHe/2gr
+         zyMCWeYb0efod5QV1VXmF3RsAbx4S8UYR4SiElk5i0mdnbJ7i17biO+lmud3bAJ9uvhG
+         x9C0WeTfnEYJSWOdmteeWFPJz5wzGKX3Qzqz/MzJTwfsr/2Jac7PE9qcmMqUOKiM9TvV
+         g5jFr7bYIBaLwd6k4NyqqyiUrKH5Wjyh08M9yGFKXSaf8Olq2gg561og/ImZu/lsiRa0
+         wwkKQBJsnD2KXo8AVSjtny0okcUEmuQ+hcZeDzxOBOaH/hNB9fIdL2aCbOOwHrSSC4PG
+         VQDw==
+X-Gm-Message-State: AOAM531ds9LxHDK++wbgSfpK6Gc3zQBcVa+fBoLIzJ6KAp7VNvGMUZaH
+        Aerx2k+2y68wex5hAjeUah0=
+X-Google-Smtp-Source: ABdhPJzjwP1IvvxmIaGMyGORJG3SYyONfT+4foDWYOk+nBVyb9hqnkF8FJfeLq/LH4HQpkhc8Lk+7A==
+X-Received: by 2002:aa7:8386:0:b0:4b0:29bf:b0d4 with SMTP id u6-20020aa78386000000b004b029bfb0d4mr23381898pfm.26.1639397649574;
+        Mon, 13 Dec 2021 04:14:09 -0800 (PST)
 Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id h8sm13542230pfh.10.2021.12.13.04.10.47
+        by smtp.gmail.com with ESMTPSA id u14sm12690413pfi.219.2021.12.13.04.14.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Dec 2021 04:10:48 -0800 (PST)
-Date:   Mon, 13 Dec 2021 04:10:45 -0800
+        Mon, 13 Dec 2021 04:14:09 -0800 (PST)
+Date:   Mon, 13 Dec 2021 04:14:06 -0800
 From:   Richard Cochran <richardcochran@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Tobias Waldekranz <tobias@waldekranz.com>,
-        Kurt Kanzenbach <kurt@kmk-computers.de>,
-        Andrew Lunn <andrew@lunn.ch>,
+To:     Kurt Kanzenbach <kurt@linutronix.de>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v1] net: dsa: mv88e6xxx: Trap PTP traffic
-Message-ID: <20211213121045.GA14042@hoboy.vegasvil.org>
-References: <20211209173337.24521-1-kurt@kmk-computers.de>
- <87y24t1fvk.fsf@waldekranz.com>
- <20211210211410.62cf1f01@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20211211153926.GA3357@hoboy.vegasvil.org>
+        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net] net: dsa: hellcreek: Allow PTP on blocked ports
+Message-ID: <20211213121406.GB14042@hoboy.vegasvil.org>
+References: <20211213101810.121553-1-kurt@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211211153926.GA3357@hoboy.vegasvil.org>
+In-Reply-To: <20211213101810.121553-1-kurt@linutronix.de>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Dec 11, 2021 at 07:39:26AM -0800, Richard Cochran wrote:
-> On Fri, Dec 10, 2021 at 09:14:10PM -0800, Jakub Kicinski wrote:
-> > On Fri, 10 Dec 2021 01:07:59 +0100 Tobias Waldekranz wrote:
-> > > Do we know how PTP is supposed to work in relation to things like STP?
-> > > I.e should you be able to run PTP over a link that is currently in
-> > > blocking?
-> > 
-> > Not sure if I'm missing the real question but IIRC the standard
-> > calls out that PTP clock distribution tree can be different that
-> > the STP tree, ergo PTP ignores STP forwarding state.
+On Mon, Dec 13, 2021 at 11:18:10AM +0100, Kurt Kanzenbach wrote:
+
+> @@ -1055,7 +1058,7 @@ static int hellcreek_setup_fdb(struct hellcreek *hellcreek)
+>  		.portmask     = 0x03,	/* Management ports */
+>  		.age	      = 0,
+>  		.is_obt	      = 0,
+> -		.pass_blocked = 0,
+> +		.pass_blocked = 1,
+
+This one should stay blocked.
+
+>  		.is_static    = 1,
+>  		.reprio_tc    = 6,	/* TC: 6 as per IEEE 802.1AS */
+>  		.reprio_en    = 1,
+> @@ -1066,7 +1069,7 @@ static int hellcreek_setup_fdb(struct hellcreek *hellcreek)
+>  		.portmask     = 0x03,	/* Management ports */
+>  		.age	      = 0,
+>  		.is_obt	      = 0,
+> -		.pass_blocked = 0,
+> +		.pass_blocked = 1,
+
+This one is okay.
+
+>  		.is_static    = 1,
+>  		.reprio_tc    = 6,	/* TC: 6 as per IEEE 802.1AS */
+>  		.reprio_en    = 1,
+> -- 
+> 2.30.2
 > 
-> That is correct.  The PTP will form its own spanning tree, and that
-> might be different than the STP.  In fact, the Layer2 PTP messages
-> have special MAC addresses that are supposed to be sent
-> unconditionally, even over blocked ports.
-
-Let me correct that statement.
-
-I looked at 1588 again, and for E2E TC it states, "All PTP version 2
-messages shall be forwarded according to the addressing rules of the
-network."  I suppose that includes the STP state.
-
-For P2P TC, there is an exception that the peer delay messages are not
-forwarded.  These are generated and consumed by the switch.
-
-The PTP spanning tree still is formed by the Boundary Clocks (BC), and
-a Transparent Clock (TC) does not participate in forming the PTP
-spanning tree.
-
-What does this mean for Linux DSA switch drivers?
-
-1. All incoming PTP frames should be forwarded to the CPU port, so
-   that the software stack may perform its BC or TC functions.
-
-2. When used as a BC, the PTP frames sent from the CPU port should not
-   be dropped.
-
-3. When used as a TC, PTP frames sent from the CPU port can be dropped
-   on blocked external ports, except for the Peer Delay messages.
-
-Now maybe a particular switch implementation makes it hard to form
-rules for #3 that still work for UDP over IPv4/6.
 
 Thanks,
 Richard
