@@ -2,115 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F0220473804
-	for <lists+netdev@lfdr.de>; Mon, 13 Dec 2021 23:52:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C157473806
+	for <lists+netdev@lfdr.de>; Mon, 13 Dec 2021 23:53:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243961AbhLMWwU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Dec 2021 17:52:20 -0500
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.85.151]:58518 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237296AbhLMWwT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 17:52:19 -0500
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-236-RVzOHFxaPKeIAG20wAJ41w-1; Mon, 13 Dec 2021 22:52:16 +0000
-X-MC-Unique: RVzOHFxaPKeIAG20wAJ41w-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.26; Mon, 13 Dec 2021 22:52:15 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.026; Mon, 13 Dec 2021 22:52:15 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Alexander Duyck' <alexanderduyck@fb.com>,
-        'Noah Goldstein' <goldstein.w.n@gmail.com>,
-        'Eric Dumazet' <edumazet@google.com>
-CC:     "'tglx@linutronix.de'" <tglx@linutronix.de>,
-        "'mingo@redhat.com'" <mingo@redhat.com>,
-        'Borislav Petkov' <bp@alien8.de>,
-        "'dave.hansen@linux.intel.com'" <dave.hansen@linux.intel.com>,
-        'X86 ML' <x86@kernel.org>, "'hpa@zytor.com'" <hpa@zytor.com>,
-        "'peterz@infradead.org'" <peterz@infradead.org>,
-        'open list' <linux-kernel@vger.kernel.org>,
-        'netdev' <netdev@vger.kernel.org>
-Subject: RE: [PATCH] lib/x86: Optimise csum_partial of buffers that are not
- multiples of 8 bytes.
-Thread-Topic: [PATCH] lib/x86: Optimise csum_partial of buffers that are not
- multiples of 8 bytes.
-Thread-Index: AdfwSx7jhGb9mOkwS12sTJ1p5oR1JQABEUYAAAftMsA=
-Date:   Mon, 13 Dec 2021 22:52:15 +0000
-Message-ID: <db7346b355f14be0bbd450906252e4ab@AcuMS.aculab.com>
-References: <f1cd1a19878248f09e2e7cffe88c8191@AcuMS.aculab.com>
- <MW4PR15MB47622E3EB6776AEDB531F4A6BD749@MW4PR15MB4762.namprd15.prod.outlook.com>
-In-Reply-To: <MW4PR15MB47622E3EB6776AEDB531F4A6BD749@MW4PR15MB4762.namprd15.prod.outlook.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S238972AbhLMWxh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Dec 2021 17:53:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46050 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234858AbhLMWxg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 17:53:36 -0500
+Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B356C061574
+        for <netdev@vger.kernel.org>; Mon, 13 Dec 2021 14:53:36 -0800 (PST)
+Received: by mail-yb1-xb2b.google.com with SMTP id d10so42082894ybe.3
+        for <netdev@vger.kernel.org>; Mon, 13 Dec 2021 14:53:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/SYcpd9bI2hyZwaAPP1X30HscFWwOZw4QHqN4po8k1k=;
+        b=iilmJ/+aOdti6QzihhP+InswG6KBQLB8bDmy1NWXnrWh25z0alNFhRBs/PWaN2oEDJ
+         D2vIQgDIPodGiW/81RSZ6gObdACnbDWMn1dXeTY0I40AhwvSPqLq9rV8jbbxxrpRD7Gu
+         aJuZ690Yk+BBcXB5znk68fAkf3ay7ZIDvvnmACDY10J+VRuARz9jJHW2o/Onl5eReXz6
+         m9+a41PPU3udyrRI/ZCAMIkkZPKIVR+sj0Led+vrqjVP3kOAk3S7wL45DnhLeK+afUyd
+         k4CndcCLNl6NnqiCWh3I2vdEgpn973D49V1A5Dh5bZ9q9WOdhTi4Wz/nh5Mb1I0kqU7M
+         PlKQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/SYcpd9bI2hyZwaAPP1X30HscFWwOZw4QHqN4po8k1k=;
+        b=uc/IaB3zPJ4BzbEc5aSD5Wz1I9+z8TKMv1xfHs5L6OK+E+3LyEU0KSMD6eUiABihgX
+         xOG8F6Zp+DkQpCUjGyFK1I5+Btffed7sFEESAQ9RBELX06FQLoH1J33LkrEnJ/MIXwnt
+         VJC7by/3kk7/AZXtq5PSrsY3TP5+ORvr7TsltyH5JcHfaCHImYEF/xB7KmkVzWTNey9A
+         ZPtFiaZj5oe5PHDfMyS2noBIWl9LWfejMXEIIfoS33FRql0NjoKeuhkc7aSsV+flEnWc
+         BZ7UR7cYQoYa9WZxw8HgRZ1rL9a+fAHCa8upkVL3Gguf31do0G7JRqyK+Qn9vWp42Q8l
+         nGbg==
+X-Gm-Message-State: AOAM531VFib+9Gnr5WqAEoPbmtn6LeIH9RpP6yJB8sIlAMESYPnoha6v
+        9VQwbzYKIPsq34GQEqJSgMXW+Rw324AqbXa4O6E=
+X-Google-Smtp-Source: ABdhPJxJwZHwuwRJVq+RUguc3KDdGi1PrixNsl+n5bSKH9gYAA+yVTNPnAagHi1GoiJl9bZXiGqsQAGETgFTrMgUU04=
+X-Received: by 2002:a25:73cc:: with SMTP id o195mr1766211ybc.740.1639436015778;
+ Mon, 13 Dec 2021 14:53:35 -0800 (PST)
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+References: <20211210023626.20905-1-xiangxia.m.yue@gmail.com>
+ <20211210023626.20905-3-xiangxia.m.yue@gmail.com> <CAM_iQpVOuQ4C3xAo1F0pasPB5M+zUfviyYO1VkanvfYkq2CqNg@mail.gmail.com>
+ <CAMDZJNUos+sb+Q1QTpDTfVDj7-RcsajcT=P6PABuzGuHCXZqHw@mail.gmail.com>
+In-Reply-To: <CAMDZJNUos+sb+Q1QTpDTfVDj7-RcsajcT=P6PABuzGuHCXZqHw@mail.gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Mon, 13 Dec 2021 14:53:25 -0800
+Message-ID: <CAM_iQpU+JMtrObsGUwUwC8eoZ1G39Lvp7ihV2iERF5dg0FySXA@mail.gmail.com>
+Subject: Re: [net-next v3 2/2] net: sched: support hash/classid/cpuid
+ selecting tx queue
+To:     Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Talal Ahmad <talalahmad@google.com>,
+        Kevin Hao <haokexin@gmail.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Kees Cook <keescook@chromium.org>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Wei Wang <weiwan@google.com>, Arnd Bergmann <arnd@arndb.de>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogQWxleGFuZGVyIER1eWNrIDxhbGV4YW5kZXJkdXlja0BmYi5jb20+DQo+IFNlbnQ6IDEz
-IERlY2VtYmVyIDIwMjEgMTg6NDANCi4uLg0KPiA+IEFkZCBpbiB0aGUgdHJhaWxpbmcgYnl0ZXMg
-Zmlyc3Qgc28gdGhhdCB0aGVyZSBpcyBubyBuZWVkIHRvIHdvcnJ5IGFib3V0IHRoZSBzdW0NCj4g
-PiBleGNlZWRpbmcgNjQgYml0cy4NCj4gPg0KPiA+IFNpZ25lZC1vZmYtYnk6IERhdmlkIExhaWdo
-dCA8ZGF2aWQubGFpZ2h0QGFjdWxhYi5jb20+DQo+ID4gLS0tDQo+ID4NCj4gPiBUaGlzIG91Z2h0
-IHRvIGJlIGZhc3RlciAtIGJlY2F1c2Ugb2YgYWxsIHRoZSByZW1vdmVkICdhZGMgJDAnLg0KPiA+
-IEd1ZXNzaW5nIGhvdyBmYXN0IHg4NiBjb2RlIHdpbGwgcnVuIGlzIGhhcmQhDQo+ID4gVGhlcmUg
-YXJlIG90aGVyIHdheXMgb2YgaGFuZGluZyBidWZmZXJzIHRoYXQgYXJlIHNob3J0ZXIgdGhhbiA4
-IGJ5dGVzLCBidXQgSSdkDQo+ID4gcmF0aGVyIGhvcGUgdGhleSBkb24ndCBoYXBwZW4gaW4gYW55
-IGhvdCBwYXRocy4NCj4gPg0KPiA+IE5vdGUgLSBJJ3ZlIG5vdCBldmVuIGNvbXBpbGUgdGVzdGVk
-IGl0Lg0KPiA+IChCdXQgaGF2ZSB0ZXN0ZWQgYW4gZXF1aXZhbGVudCBjaGFuZ2UgYmVmb3JlLikN
-Cj4gPg0KPiA+ICBhcmNoL3g4Ni9saWIvY3N1bS1wYXJ0aWFsXzY0LmMgfCA1NSArKysrKysrKysr
-KystLS0tLS0tLS0tLS0tLS0tLS0tLS0tDQo+ID4gIDEgZmlsZSBjaGFuZ2VkLCAxOSBpbnNlcnRp
-b25zKCspLCAzNiBkZWxldGlvbnMoLSkNCj4gPg0KPiA+IGRpZmYgLS1naXQgYS9hcmNoL3g4Ni9s
-aWIvY3N1bS1wYXJ0aWFsXzY0LmMgYi9hcmNoL3g4Ni9saWIvY3N1bS1wYXJ0aWFsXzY0LmMNCj4g
-PiBpbmRleCBhYmY4MTlkZDg1MjUuLmZiY2MwNzNmYzJiNSAxMDA2NDQNCj4gPiAtLS0gYS9hcmNo
-L3g4Ni9saWIvY3N1bS1wYXJ0aWFsXzY0LmMNCj4gPiArKysgYi9hcmNoL3g4Ni9saWIvY3N1bS1w
-YXJ0aWFsXzY0LmMNCj4gPiBAQCAtMzcsNiArMzcsMjQgQEAgX193c3VtIGNzdW1fcGFydGlhbChj
-b25zdCB2b2lkICpidWZmLCBpbnQgbGVuLA0KPiA+IF9fd3N1bSBzdW0pDQo+ID4gIAl1NjQgdGVt
-cDY0ID0gKF9fZm9yY2UgdTY0KXN1bTsNCj4gPiAgCXVuc2lnbmVkIHJlc3VsdDsNCj4gPg0KPiA+
-ICsJaWYgKGxlbiAmIDcpIHsNCj4gPiArCQlpZiAodW5saWtlbHkobGVuIDwgOCkpIHsNCj4gPiAr
-CQkJLyogQXZvaWQgZmFsbGluZyBvZmYgdGhlIHN0YXJ0IG9mIHRoZSBidWZmZXIgKi8NCj4gPiAr
-CQkJaWYgKGxlbiAmIDQpIHsNCj4gPiArCQkJCXRlbXA2NCArPSAqKHUzMiAqKWJ1ZmY7DQo+ID4g
-KwkJCQlidWZmICs9IDQ7DQo+ID4gKwkJCX0NCj4gPiArCQkJaWYgKGxlbiAmIDIpIHsNCj4gPiAr
-CQkJCXRlbXA2NCArPSAqKHUxNiAqKWJ1ZmY7DQo+ID4gKwkJCQlidWZmICs9IDI7DQo+ID4gKwkJ
-CX0NCj4gPiArCQkJaWYgKGxlbiAmIDEpDQo+ID4gKwkJCQl0ZW1wNjQgKz0gKih1OCAqKWJ1ZmY7
-DQo+ID4gKwkJCWdvdG8gcmVkdWNlX3RvMzI7DQo+ID4gKwkJfQ0KPiA+ICsJCXRlbXA2NCArPSAq
-KHU2NCAqKShidWZmICsgbGVuIC0gOCkgPDwgKDggLSAobGVuICYgNykpICogODsNCj4gPiArCX0N
-Cj4gPiArDQo+IA0KPiBJIGRvbid0IHRoaW5rIHlvdXIgc2hpZnQgaXMgaGVhZGVkIGluIHRoZSBy
-aWdodCBkaXJlY3Rpb24uIElmIHlvdXIgc3RhcnRpbmcgb2Zmc2V0IGlzICJidWZmICsgbGVuIC0g
-OCINCj4gdGhlbiB5b3VyIHJlbWFpbmluZyBiaXRzIHNob3VsZCBiZSBpbiB0aGUgdXBwZXIgYnl0
-ZXMgb2YgdGhlIHF3b3JkLCBub3QgdGhlIGxvd2VyIGJ5dGVzIHNob3VsZG4ndA0KPiB0aGV5PyBT
-byBJIHdvdWxkIHRoaW5rIGl0IHNob3VsZCBiZSAiPj4iIG5vdCAiPDwiLg0KDQpCcmFpbi1mYXJ0
-IDotKQ0KSXQgbmVlZHMgdG8gZGlzY2FyZCB0aGUgbG93IGJ5dGVzIC0gc28gPj4gaXMgaW5kZWVk
-IHJpZ2h0Lg0KSSBkaWQgc2F5IEkgaGFkbid0IHRlc3RlZCBpdC4NCg0KQ2FjaGUgbGluZSB3aXNl
-IEknbSBub3Qgc3VyZSB3aGV0aGVyIGl0IG1hdHRlcnMuDQpJZiB0aGUgZGF0YSBpcyBpbiB0aGUg
-Y2FjaGUgaXQgZG9lc24ndCBtYXR0ZXIuDQpJZiB0aGUgZGF0YSBpc24ndCBpbiB0aGUgY2FjaGUg
-dGhlbiB0aGUgb25seSByZWFsIHByb2JsZW0gaXMgaWYgdGhlDQpsaW5lIGdldHMgZXZpY3RlZCAt
-IG9ubHkgbGlrZWx5IGZvciA0ay1pc2grIGJ1ZmZlcnMuDQpJJ2QgZ3Vlc3MgdGhlIGxhcmdlc3Qg
-Y2hlY2tzdW0gaXMgdW5kZXIgMTUwMCBieXRlcyAtIGhhcmR3YXJlIGRvaW5nDQpUU08gd2lsbCBi
-ZSBkb2luZyBoYXJkd2FyZSBjaGVja3N1bXMuIFNvIGV2ZWN0aW9ucyBhcmUgdW5saWtlbHkuDQoN
-ClBsYXVzaWJseSB0aGUgKihidWYgKyBsZW4gLSA4KSByZWFkIGNvdWxkIGJlIGRvbmUgYWZ0ZXIg
-dGhlIHdoaWxlKCkgbG9vcC4NClRoYXQgd291bGQgbmVlZCBhbiBhZGMgYW5kIGEgc2F2ZWQgY29w
-eSBvZiB0aGUgbGVuZ3RoIChvciBhIHJlYWQgdGhhdCB3b3VsZCB0cmFwKQ0KYnV0IHdvdWxkIG9u
-bHkgYmUgbG9hZGluZyB0aGUgJ25leHQnIGNhY2hlIGxpbmUuDQoNClNvIHlvdSdkIGVuZCB1cCB3
-aXRoIHNvbWV0aGluZyBsaWtlOg0KCQl3aGlsZSAobGVuID49IDY0KSB7DQoJCQkuLi4NCgkJfQ0K
-CQlpZiAobGVuICYgNykNCgkJCXRyYWlsID0gKih1NjQgKikoYnVmZiArIGxlbiAtIDgpID4+ICg4
-IC0gKGxlbiAmIDcpKSAqIDg7DQoJCWlmIChsZW4gJiAzMikNCgkJCS4uLg0KCQlpZiAobGVuICYg
-MTYpDQoJCQkuLi4NCgkJaWYgKGxlbiAmIDgpDQoJCQkuLi4NCgkJdGVtcDY0ICs9IHRyYWlsDQoJ
-CWFkYyAkMCwgdGVtcDY0DQoNCglEYXZpZA0KDQotDQpSZWdpc3RlcmVkIEFkZHJlc3MgTGFrZXNp
-ZGUsIEJyYW1sZXkgUm9hZCwgTW91bnQgRmFybSwgTWlsdG9uIEtleW5lcywgTUsxIDFQVCwgVUsN
-ClJlZ2lzdHJhdGlvbiBObzogMTM5NzM4NiAoV2FsZXMpDQo=
+On Sat, Dec 11, 2021 at 6:34 PM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
+>
+> On Sun, Dec 12, 2021 at 10:19 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> >
+> > On Thu, Dec 9, 2021 at 6:36 PM <xiangxia.m.yue@gmail.com> wrote:
+> > >
+> > > From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> > >
+> > > This patch allows users to select queue_mapping, range
+> > > from A to B. And users can use skb-hash, cgroup classid
+> > > and cpuid to select Tx queues. Then we can load balance
+> > > packets from A to B queue. The range is an unsigned 16bit
+> > > value in decimal format.
+> > >
+> > > $ tc filter ... action skbedit queue_mapping hash-type normal A B
+> > >
+> > > "skbedit queue_mapping QUEUE_MAPPING" (from "man 8 tc-skbedit") is
+> > > enhanced with flags:
+> > > * SKBEDIT_F_QUEUE_MAPPING_HASH
+> > > * SKBEDIT_F_QUEUE_MAPPING_CLASSID
+> > > * SKBEDIT_F_QUEUE_MAPPING_CPUID
+> >
+> > With act_bpf you can do all of them... So why do you have to do it
+> > in skbedit?
+> Hi Cong
+> This idea is inspired by skbedit queue_mapping, and skbedit is
+> enhanced by this patch.
 
+This is exactly my question. ;)
+
+> We support this in skbedit firstly in production. act_bpf can do more
+> things than this. Anyway we
+> can support this in both act_skbedit/acc_bpf. 1/2 is changed from
+> skip_tx_queue in skb to per-cpu var suggested-by Eric. We need another
+> patch which can change the
+> per-cpu var in bpf. I will post this patch later.
+
+The point is if act_bpf can do it, you don't need to bother skbedit at
+all. More importantly, you are enforcing policies in kernel, which is
+not encouraged. So unless you provide more details, this patch is not
+needed at all.
+
+Thanks.
