@@ -2,125 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E78147291B
-	for <lists+netdev@lfdr.de>; Mon, 13 Dec 2021 11:20:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 45D2A472A49
+	for <lists+netdev@lfdr.de>; Mon, 13 Dec 2021 11:37:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238340AbhLMKSJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Dec 2021 05:18:09 -0500
-Received: from sin.source.kernel.org ([145.40.73.55]:57970 "EHLO
-        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237182AbhLMKPO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 05:15:14 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 6069DCE0F0F;
-        Mon, 13 Dec 2021 10:15:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFFE8C34602;
-        Mon, 13 Dec 2021 10:15:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1639390509;
-        bh=my/X2S/rJujwq12TrbafCXI5IQ5H0PRDazBL7lL4chE=;
-        h=From:To:Cc:Subject:Date:From;
-        b=rrr90osq3QT7vjfjzI8sRS1qNte5Zbt/uQ0IlZUpdUP+byVGy/Ifa3SOBrlbxWoD1
-         8gCIs6+IoVr5SPCtCVy4QW5yRegPx+UGtQcHDvxDbX83rqwo55CrbvVxa9v5gWCV4S
-         HjoaGBKHCReSxny1MXQH72VGPxesg0c3TwMAsuvoRAmqoZrePAzPHHsluS5eTT+dvS
-         0g+gvbGPKbxyeGAg1UOd7lvp6uSKjQi5fvT9AxpUPlUhp5f+UcISrqvbBjtG2u81Lt
-         T7LAS40+AnI3MlO06jNZRmKtW3TYuiV5rZcFIK/Wrf8UrELZ6yV+WRUHUZOR7liRh6
-         8AJ288qJCucdA==
-From:   Antoine Tenart <atenart@kernel.org>
-To:     gregkh@linuxfoundation.org, davem@davemloft.net, kuba@kernel.org
-Cc:     Antoine Tenart <atenart@kernel.org>, netdev@vger.kernel.org,
-        stable@vger.kernel.org
-Subject: [PATCH 5.10] ethtool: do not perform operations on net devices being unregistered
-Date:   Mon, 13 Dec 2021 11:15:06 +0100
-Message-Id: <20211213101506.118377-1-atenart@kernel.org>
-X-Mailer: git-send-email 2.33.1
+        id S232909AbhLMKh2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Dec 2021 05:37:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41024 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234822AbhLMKhR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 05:37:17 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57F37C0497C5
+        for <netdev@vger.kernel.org>; Mon, 13 Dec 2021 02:18:34 -0800 (PST)
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1639390712;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=vGFMhWE3YNxN8OCVi38W/wgfSB8G1kKisT2knFJIAUQ=;
+        b=2E40IAajG8FvxPZ34f4VdsxJNYnTi32mop3/Z4Nsifnw6Hsfc0ihjLGTNetT9KV1eGNZon
+        8rriwoxW8AR2it6Hm6RL/WTcK5FF/wMaBd+D+kA12IIRDBZWMGRC2k3cRZX1rImEBvI3d1
+        i3entNaYLrCDJ3UK6cqDeECAj5z6eLV51zACFUOLn10g0KtZCynJxF6x+IiEonv7cGNM2e
+        UIdTzjnlbD2r7u7kQefzMPoHQG6Mp+WqzqjTcys8Sfu+V/fMcn31+6bIgx6Zpd319yYjzv
+        IEdsTPD4fW+FryTrsUSmMHeoSGA9H+0AG09sKZ36m6gscyay7kB4x8LXh1u24A==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1639390712;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=vGFMhWE3YNxN8OCVi38W/wgfSB8G1kKisT2knFJIAUQ=;
+        b=wQBtgZ+Nlewl4YL5cSUBbaUcrp9pE/r3ub1DzStPaTBMV2Vlmn0/xAuwimfmUTrYvOK1Xj
+        s+rcjii/MxdbcDBw==
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
+        netdev@vger.kernel.org, Kurt Kanzenbach <kurt@linutronix.de>
+Subject: [PATCH net] net: dsa: hellcreek: Allow PTP on blocked ports
+Date:   Mon, 13 Dec 2021 11:18:10 +0100
+Message-Id: <20211213101810.121553-1-kurt@linutronix.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-commit dde91ccfa25fd58f64c397d91b81a4b393100ffa upstream
+PTP forms its own clock distribution tree. Therefore, PTP traffic is allowed to
+traverse blocked ports by STP. Adjust the static FDB entries accordingly.
 
-There is a short period between a net device starts to be unregistered
-and when it is actually gone. In that time frame ethtool operations
-could still be performed, which might end up in unwanted or undefined
-behaviours[1].
-
-Do not allow ethtool operations after a net device starts its
-unregistration. This patch targets the netlink part as the ioctl one
-isn't affected: the reference to the net device is taken and the
-operation is executed within an rtnl lock section and the net device
-won't be found after unregister.
-
-[1] For example adding Tx queues after unregister ends up in NULL
-    pointer exceptions and UaFs, such as:
-
-      BUG: KASAN: use-after-free in kobject_get+0x14/0x90
-      Read of size 1 at addr ffff88801961248c by task ethtool/755
-
-      CPU: 0 PID: 755 Comm: ethtool Not tainted 5.15.0-rc6+ #778
-      Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-4.fc34 04/014
-      Call Trace:
-       dump_stack_lvl+0x57/0x72
-       print_address_description.constprop.0+0x1f/0x140
-       kasan_report.cold+0x7f/0x11b
-       kobject_get+0x14/0x90
-       kobject_add_internal+0x3d1/0x450
-       kobject_init_and_add+0xba/0xf0
-       netdev_queue_update_kobjects+0xcf/0x200
-       netif_set_real_num_tx_queues+0xb4/0x310
-       veth_set_channels+0x1c3/0x550
-       ethnl_set_channels+0x524/0x610
-
-[The patch differs from the upstream one as code was moved around by
-commit 41107ac22fcf ("ethtool: move netif_device_present check from
-ethnl_parse_header_dev_get to ethnl_ops_begin"). The check on the netdev
-state is still done in ethnl_ops_begin as it must be done in an rtnl
-section (the one which performs the op) to not race with
-unregister_netdevice_many.
-Also note the trace in [1] is not possible here as the channel ops for
-veth were added later, but that was just one example.]
-
-Fixes: 041b1c5d4a53 ("ethtool: helper functions for netlink interface")
-Suggested-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Antoine Tenart <atenart@kernel.org>
+Fixes: ddd56dfe52c9 ("net: dsa: hellcreek: Add PTP clock support")
+Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
 ---
+ drivers/net/dsa/hirschmann/hellcreek.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
-Hello,
-
-This patch is intended for the stable 5.10 tree.
-
-As reported by Greg, patch dde91ccfa25f ("ethtool: do not perform
-operations on net devices being unregistered") did not apply correctly
-on the 5.10 tree. The explanation of this and the approach taken here is
-explained in the above commit log, between [].
-
-I removed the Link tag and Signed-off-by from Jakub from the original
-patch as this one is slightly different in its implementation.
-
-Thanks,
-Antoine
-
- net/ethtool/netlink.h | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/net/ethtool/netlink.h b/net/ethtool/netlink.h
-index d8efec516d86..979dee6bb88c 100644
---- a/net/ethtool/netlink.h
-+++ b/net/ethtool/netlink.h
-@@ -249,6 +249,9 @@ struct ethnl_reply_data {
+diff --git a/drivers/net/dsa/hirschmann/hellcreek.c b/drivers/net/dsa/hirschmann/hellcreek.c
+index 4e0b53d94b52..072fc442cde2 100644
+--- a/drivers/net/dsa/hirschmann/hellcreek.c
++++ b/drivers/net/dsa/hirschmann/hellcreek.c
+@@ -710,8 +710,9 @@ static int __hellcreek_fdb_add(struct hellcreek *hellcreek,
+ 	u16 meta = 0;
  
- static inline int ethnl_ops_begin(struct net_device *dev)
- {
-+	if (dev && dev->reg_state == NETREG_UNREGISTERING)
-+		return -ENODEV;
-+
- 	if (dev && dev->ethtool_ops->begin)
- 		return dev->ethtool_ops->begin(dev);
- 	else
+ 	dev_dbg(hellcreek->dev, "Add static FDB entry: MAC=%pM, MASK=0x%02x, "
+-		"OBT=%d, REPRIO_EN=%d, PRIO=%d\n", entry->mac, entry->portmask,
+-		entry->is_obt, entry->reprio_en, entry->reprio_tc);
++		"OBT=%d, PASS_BLOCKED=%d, REPRIO_EN=%d, PRIO=%d\n", entry->mac,
++		entry->portmask, entry->is_obt, entry->pass_blocked,
++		entry->reprio_en, entry->reprio_tc);
+ 
+ 	/* Add mac address */
+ 	hellcreek_write(hellcreek, entry->mac[1] | (entry->mac[0] << 8), HR_FDBWDH);
+@@ -722,6 +723,8 @@ static int __hellcreek_fdb_add(struct hellcreek *hellcreek,
+ 	meta |= entry->portmask << HR_FDBWRM0_PORTMASK_SHIFT;
+ 	if (entry->is_obt)
+ 		meta |= HR_FDBWRM0_OBT;
++	if (entry->pass_blocked)
++		meta |= HR_FDBWRM0_PASS_BLOCKED;
+ 	if (entry->reprio_en) {
+ 		meta |= HR_FDBWRM0_REPRIO_EN;
+ 		meta |= entry->reprio_tc << HR_FDBWRM0_REPRIO_TC_SHIFT;
+@@ -1055,7 +1058,7 @@ static int hellcreek_setup_fdb(struct hellcreek *hellcreek)
+ 		.portmask     = 0x03,	/* Management ports */
+ 		.age	      = 0,
+ 		.is_obt	      = 0,
+-		.pass_blocked = 0,
++		.pass_blocked = 1,
+ 		.is_static    = 1,
+ 		.reprio_tc    = 6,	/* TC: 6 as per IEEE 802.1AS */
+ 		.reprio_en    = 1,
+@@ -1066,7 +1069,7 @@ static int hellcreek_setup_fdb(struct hellcreek *hellcreek)
+ 		.portmask     = 0x03,	/* Management ports */
+ 		.age	      = 0,
+ 		.is_obt	      = 0,
+-		.pass_blocked = 0,
++		.pass_blocked = 1,
+ 		.is_static    = 1,
+ 		.reprio_tc    = 6,	/* TC: 6 as per IEEE 802.1AS */
+ 		.reprio_en    = 1,
 -- 
-2.33.1
+2.30.2
 
