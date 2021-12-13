@@ -2,113 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B3BC04729D2
-	for <lists+netdev@lfdr.de>; Mon, 13 Dec 2021 11:26:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 72D05472A00
+	for <lists+netdev@lfdr.de>; Mon, 13 Dec 2021 11:29:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236905AbhLMKZc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Dec 2021 05:25:32 -0500
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:65029 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242212AbhLMKXa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 05:23:30 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1639391011; x=1670927011;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=RW19rszBP6toUbDeC1RTtY+8YV4n8NBBlhMnFptQuwU=;
-  b=yl3RvcKOWamkj9D0eynwoC70JxvShvWgd5bjOSIZJgA/2kOSqO15c9dx
-   wvDI6KpCM/Pa4yCIoUOPRm5pw8BFXy0qRQJVHTlK7oDDbD3hD3pTPC/n+
-   YuLQjdEJ+FsBSuu4YmWxa/cv5ITw4Wfrdpnf1j3NKnkl5ADA0e4Yxy706
-   fxB7ePP1oSgD3a+cLk0AKhT1+I9r4KFASnKvUztrOcK8AY6qmQPemTx6q
-   +hRn8JrqkM2SJOETFktdwE7UQU8qqQYJI12xnC4IT1+xtR8Nrs+VbFS1T
-   KNeF2+VAxmrT28j2Aaytq6EGvBpuRbZxDGMgSkziNwldhYMLbNA7w+cB5
-   g==;
-IronPort-SDR: /5CJsChaOHgaInoE5fLrPx6y/v9MLhiY6SQy3jAJfsvXR7CpYHiSkVhADnurO9b9y0i9D2hQuD
- CyUj4SiFZ4loXQNxYEgA8E94tVFyifxY2kSB3H8raErHsU8cbQ/xPmX+0DC7USZQveydBwannF
- PdxY534HzVKTtlZYsDfJSoQirHVMKA829NSfdjrFYhrgnxhg2r+X6hoz1OMykbjjAMvhhIdSqS
- 3Fn6I11julh7rnjC886X+cIZ3u1RoePM1IJDGr6DW7CpCxSIJs+nADazf5T/Jd1vVaDQuQpjf3
- 0CoroNbzkxLuh3D/DSvhY4b2
-X-IronPort-AV: E=Sophos;i="5.88,202,1635231600"; 
-   d="scan'208";a="146447267"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 Dec 2021 03:23:29 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 13 Dec 2021 03:23:27 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Mon, 13 Dec 2021 03:23:27 -0700
-Date:   Mon, 13 Dec 2021 11:25:29 +0100
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>
-Subject: Re: [PATCH net-next v3 6/6] net: lan966x: Add switchdev support
-Message-ID: <20211213102529.tzdvekwwngo4zgex@soft-dev3-1.localhost>
-References: <20211209094615.329379-1-horatiu.vultur@microchip.com>
- <20211209094615.329379-7-horatiu.vultur@microchip.com>
- <20211209133616.2kii2xfz5rioii4o@skbuf>
- <20211209164311.agnofh275znn5t5c@soft-dev3-1.localhost>
+        id S240134AbhLMK3Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Dec 2021 05:29:16 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:56939 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1344441AbhLMK1S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 05:27:18 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1639391237;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=NxaVc541VXNT+4q7xpNYTkUpKWpJuMIMXoG66q+nrAk=;
+        b=eTi7lmGpJg8pI0S8idBRbufuHE0Tw1cEgbQkxvI3++Rd3DkDgeWC6TIEIYoS0IGCScQuMf
+        LRxHr4ufZ6qvaCsQrFS2fF1zmy+5QKlcVoFdeOwNyEfGDz7EC0tyPMNm+ObbE7Bgj3/DUK
+        OW/l1pVmWZ0wuRD3FGQZ2HZuRbT3/5k=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-291-oZFCtQGmPumajKbQx89xsw-1; Mon, 13 Dec 2021 05:27:16 -0500
+X-MC-Unique: oZFCtQGmPumajKbQx89xsw-1
+Received: by mail-wm1-f69.google.com with SMTP id 201-20020a1c04d2000000b003335bf8075fso9440022wme.0
+        for <netdev@vger.kernel.org>; Mon, 13 Dec 2021 02:27:16 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=NxaVc541VXNT+4q7xpNYTkUpKWpJuMIMXoG66q+nrAk=;
+        b=RBNNYx9vHS5b3Dj1ryJTH3wziu4ezVZPjA9qjO65LV4Kk6pS5bZ45pZYEupWC/lJhF
+         P8WFN2SqdPUUoKaeFLWckNqKzcLMJTQ8e649FcL16+lCMyTm4qulbmA7fw9AP/9SVzQV
+         SBlzGaqViS4JoiM6MP7vy2vRH7dGQY/zna9W3BMMYKnK4r8VAic+ObvkFrqeLfZl59Mr
+         LaZLtWHHH+2qvr/s7c1qswem03vRpP4HrFv5Kbk9HYJGeeh6QXv9PTMh50rmPWnQ1zMS
+         KSs+6gl6Yh7yrkpsiVFWvnL3jVREDZ8X3CjCsdQ5A0RwYKVUhfDxMA+VLvxG2cyhQMIF
+         yfvA==
+X-Gm-Message-State: AOAM531MtbuAcfwE0u1Cn8H5Zm3XR1RvctHWT2D9v+arxlbXctjIWIjP
+        J18Rivn4Vmr32c0ldjZ/wDlVWlNZKGOq4vBUG6s2VFgeMQsjfD9Rkx5S0rUAe0APBYSKKZZKJqK
+        SSBqTWI9V1D7iH1zs
+X-Received: by 2002:a05:600c:4f02:: with SMTP id l2mr36293164wmq.26.1639391234947;
+        Mon, 13 Dec 2021 02:27:14 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwSBnbJfTjm8c+Pjgm9ySDC6AViMIIu879Npyh/eLysK8cD4gqws0OxiM4EXIcKdYN/vE1XNg==
+X-Received: by 2002:a05:600c:4f02:: with SMTP id l2mr36293143wmq.26.1639391234748;
+        Mon, 13 Dec 2021 02:27:14 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-237-50.dyn.eolo.it. [146.241.237.50])
+        by smtp.gmail.com with ESMTPSA id bg12sm8010244wmb.5.2021.12.13.02.27.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Dec 2021 02:27:14 -0800 (PST)
+Message-ID: <9b76f8593aa69596c2fe6f6bd2910b4078a1f6b8.camel@redhat.com>
+Subject: Re: [PATCH net-next] net: dev: Always serialize on Qdisc::busylock
+ in __dev_xmit_skb() on PREEMPT_RT.
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Thomas Gleixner <tglx@linutronix.de>
+Date:   Mon, 13 Dec 2021 11:27:13 +0100
+In-Reply-To: <YbOEaSQW+LtWjuzI@linutronix.de>
+References: <YbN1OL0I1ja4Fwkb@linutronix.de>
+         <99af5c3079470432b97a74ab6aa3a43a1f7b178d.camel@redhat.com>
+         <YbOEaSQW+LtWjuzI@linutronix.de>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.2 (3.42.2-1.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <20211209164311.agnofh275znn5t5c@soft-dev3-1.localhost>
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 12/09/2021 17:43, Horatiu Vultur wrote:
-> > > +int lan966x_register_notifier_blocks(struct lan966x *lan966x)
-> > > +{
-> > > +     int err;
-> > > +
-> > > +     lan966x->netdevice_nb.notifier_call = lan966x_netdevice_event;
-> > > +     err = register_netdevice_notifier(&lan966x->netdevice_nb);
-> > > +     if (err)
-> > > +             return err;
-> > > +
-> > > +     lan966x->switchdev_nb.notifier_call = lan966x_switchdev_event;
-> > > +     err = register_switchdev_notifier(&lan966x->switchdev_nb);
-> > > +     if (err)
-> > > +             goto err_switchdev_nb;
-> > > +
-> > > +     lan966x->switchdev_blocking_nb.notifier_call = lan966x_switchdev_blocking_event;
-> > > +     err = register_switchdev_blocking_notifier(&lan966x->switchdev_blocking_nb);
-> > > +     if (err)
-> > > +             goto err_switchdev_blocking_nb;
-> > > +
-> > > +     lan966x_owq = alloc_ordered_workqueue("lan966x_order", 0);
-> > > +     if (!lan966x_owq) {
-> > > +             err = -ENOMEM;
-> > > +             goto err_switchdev_blocking_nb;
-> > > +     }
+On Fri, 2021-12-10 at 17:46 +0100, Sebastian Andrzej Siewior wrote:
+> On 2021-12-10 17:35:21 [+0100], Paolo Abeni wrote:
+> > On Fri, 2021-12-10 at 16:41 +0100, Sebastian Andrzej Siewior wrote:
+> > > The root-lock is dropped before dev_hard_start_xmit() is invoked and after
+> > > setting the __QDISC___STATE_RUNNING bit. If the Qdisc owner is preempted
+> > > by another sender/task with a higher priority then this new sender won't
+> > > be able to submit packets to the NIC directly instead they will be
+> > > enqueued into the Qdisc. The NIC will remain idle until the Qdisc owner
+> > > is scheduled again and finishes the job.
+> > > 
+> > > By serializing every task on the ->busylock then the task will be
+> > > preempted by a sender only after the Qdisc has no owner.
+> > > 
+> > > Always serialize on the busylock on PREEMPT_RT.
 > > 
-> > These should be singleton objects, otherwise things get problematic if
-> > you have more than one switch device instantiated in the system.
+> > Not sure how much is relevant in the RT context, but this should impact
+> > the xmit tput in a relevant, negative way.
 > 
-> Yes, I will update this.
+> Negative because everyone blocks on lock and transmits packets directly
+> instead of adding it to the queue and leaving for more?
 
-Actually I think they need to be part of lan966x.
-Because we want each lan966x instance to be independent of each other.
-This is not seen in this version but is more clear in the next version
-(v4).
+In the uncontended scenario this adds an atomic operation and increases
+the data set size. Thinking again about it, in RT build this is much
+less noticeable (I forgot spinlock are actually mutex in RT...)
 
+> > If I read correctly, you use the busylock to trigger priority
+> > ceiling
+> > on each sender. I'm wondering if there are other alternative ways
+> > (no
+> > contended lock, just some RT specific annotation) to mark a whole
+> > section of code for priority ceiling ?!?
 > 
-> > 
-> 
-> -- 
-> /Horatiu
+> priority ceiling as you call it, happens always with the help of a
+> lock.
+> The root_lock is dropped in sch_direct_xmit().
+> qdisc_run_begin() sets only a bit with no owner association.
+> If I know why the busy-lock bad than I could add another one. The
+> important part is force the sende out of the section so the task with
+> the higher priority can send packets instead of queueing them only.
 
--- 
-/Horatiu
+I thought about adding a local_lock() instead, but that will not solve.
+
+I don't see a better solution than this patch, so I'm ok with that.
+Please follow Jakub's suggestion to clean the code a bit.
+
+Thanks!
+
+Paolo
+
