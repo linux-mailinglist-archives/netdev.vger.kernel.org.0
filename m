@@ -2,168 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2ADAE472BBC
-	for <lists+netdev@lfdr.de>; Mon, 13 Dec 2021 12:46:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 38A39472BFC
+	for <lists+netdev@lfdr.de>; Mon, 13 Dec 2021 13:09:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234711AbhLMLqJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Dec 2021 06:46:09 -0500
-Received: from mail-eopbgr50057.outbound.protection.outlook.com ([40.107.5.57]:45154
-        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231452AbhLMLqI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 13 Dec 2021 06:46:08 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fwaCpaQff18WcYGSUVZV0HBffWwJxeFtm70+/p27BiCy/YkG4sOI74iputmVo19yB7p1y8wjKseisn0gdRpfioAPmhM7ycrxZ8zDlsLEJjLBSnZsMN9tR84JsBYD0Y8obfsU4oDW6fdHKbQF3UIB7otAfloa7p3W0oV9uJ6eEWh8qAs/SA6QOmIls6EswKuKOXRg8E4P9nVaIrTtJExQ8deZs2sLHu94wu7YRTNfGuz4WlXNO7ozGyMihxp89obSuVgrJtmTBq8WyaF2axzCO7vanRYpBLXsRY3lOSekiubLR8PcAvsGj6jySJQTeRn8DQuoZAs2EugKpaF1wizdCQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=h0ohea10PJQ+Tx5KQVzoRugjCwgVQYxdStfEEi8czdM=;
- b=NmTlLZxhEqedOBLF/OCi17mbvHUo9gkN+YVPkVePDaPnhezoeWCXqcwMlRaR4wpVqwdp4RSt8TDi4oTO9d1Q+fcs/3X365YzyOwPnuZnisYsTujoKCDTfjHWuoQPIWAuiIPzzK+EI74c8cVjxoPRohCUS/aASbdtiSXTge9T4lTfo1FEyewfSbYkNAvGoh9w93Y6iv125sB2Kec2Hoct/v3bXC0iNBDHL3f45pC/HEkSt/0T9AXUp/0Gc8PqHN7Tnm3qSyIZaw5PK0OwCd+wmwrwsN99wU21GGvGs+agkYO3XefH4j8Sb7E+u93NDerUmyL453hvKV3kb1+qSgc3kA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=h0ohea10PJQ+Tx5KQVzoRugjCwgVQYxdStfEEi8czdM=;
- b=AXLZEQSZeGTMEyH/mEFdPLiOSUWhCjAvFp9bZzP783JcDChF5c8UBOcVKV8QYYvorSj/vsHVPWzYcxZ8AYfXtWMVcpTNx/309AOy5C3xCRDMgJq+taFSDtFWTQ7zafArUJmXB/3D/1nJLrO7qT9X+e3dsOGBTKqP3g0tHlopqEg=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VI1PR04MB4685.eurprd04.prod.outlook.com (2603:10a6:803:70::25) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4778.17; Mon, 13 Dec
- 2021 11:46:05 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::c84:1f0b:cc79:9226]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::c84:1f0b:cc79:9226%3]) with mapi id 15.20.4755.028; Mon, 13 Dec 2021
- 11:46:05 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>
-Subject: Re: [PATCH net-next v3 6/6] net: lan966x: Add switchdev support
-Thread-Topic: [PATCH net-next v3 6/6] net: lan966x: Add switchdev support
-Thread-Index: AQHX7OGqma9W7JTLPke3A5iwt0gyh6wqKbcAgAA0OYCABfZPgA==
-Date:   Mon, 13 Dec 2021 11:46:05 +0000
-Message-ID: <20211213114603.jdvv5htw22vd3azj@skbuf>
-References: <20211209094615.329379-1-horatiu.vultur@microchip.com>
- <20211209094615.329379-7-horatiu.vultur@microchip.com>
- <20211209133616.2kii2xfz5rioii4o@skbuf>
- <20211209164311.agnofh275znn5t5c@soft-dev3-1.localhost>
-In-Reply-To: <20211209164311.agnofh275znn5t5c@soft-dev3-1.localhost>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: f3e70041-e660-4548-e435-08d9be2e256c
-x-ms-traffictypediagnostic: VI1PR04MB4685:EE_
-x-microsoft-antispam-prvs: <VI1PR04MB4685C29314589F073C9834D5E0749@VI1PR04MB4685.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: AaLdcrJXEuWBYhO/p3rjNQjdXzWFL/wlVCJ31tGd6FUH0ry4K4EOd28qqNgs5DJ1wvtmdvEunFh6VYk8IwPGDMOeTSOEvdlqxLx8uW9PVDMN7yS11xi2DCp91y6Uem6Oe3kSc93je4jHc/luT8Tm3ltV5AuKHpLgdYL6Ucy1nhglBHkAWXvnaYDxn9oQw45LNt3PmJR/2G36hL18OmMutldljDrtO6vvRueAyNBUuPTWrusTfGI0gF623swRnY03CMBB4HH8mISSGL+ARzsew4eeb2P5/g1Iindsz/UkOpLyRPk20EykQqJFXrcHAr+2eC/oahmhOdmaeWCryyVaMcBRHXz3d7+naN9sfVASJa3SrTZozNAC3K7BgvkuoWEwVaNK8K5uPYxCTXTUry+eJBfJz6L2AF145UkKkJVoOgtnSatFMHpO7I687wn/+SapRSu3jvWcW8NyaL9oap+7f+hJI9FAmubRe3O2SBy/d2VRXGnqWk6InvIRJigT+lCXcocQJBFWjrRa6Jau4lj1iF/duCsXI4hvRXrgQMNeKZufuLw0WYPbWqElD3Wz1MXVGS2dtcziUITAE/3xwOkdJIVHynw0v1wPqQPHdLbu5XuGthPFwHlDco8AMI6WWRyfhPwd1racoWEtRfkqz9D4R7Sz9xvp9XO4HJnWU0MW7/Ops2m7JuPw+UzoLOI1J2ZhkcROVILV+RMIeqN7N8npLA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(366004)(64756008)(38100700002)(1076003)(8676002)(66556008)(66476007)(66446008)(186003)(76116006)(26005)(316002)(91956017)(38070700005)(66946007)(508600001)(71200400001)(54906003)(86362001)(6486002)(44832011)(122000001)(6506007)(4326008)(33716001)(2906002)(5660300002)(83380400001)(6916009)(9686003)(6512007)(8936002)(7416002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?GgpjhJ5c+6+9fb8bsADDbmsi4sjd2Jv9ycLbsErfm1bVG4AthXKfNx2p5yuG?=
- =?us-ascii?Q?5zFk3HMatGu3CFX2HTXbKJRCwrTqfHNFrLaBIe6IfnnIfVKNKCeCOKktFf6J?=
- =?us-ascii?Q?u/9aQ5+ReulmoABB3yW/0dTyNfWchp1PUNe4jKu+X6tvdfcEllVG/Z1l1EZG?=
- =?us-ascii?Q?W51XqSS296FUUdePG1MSovQNQRmKoqMf6MpEIRuzBRjkmTN6FjticaSMr+8i?=
- =?us-ascii?Q?B7Scew9GYnHrCST6yAFfufMqFLbgYmIDEQDtrB8pslVK5wdYEoG/Zchut7JT?=
- =?us-ascii?Q?ySC3KZOV2brjPHmtcXPuoVTzMdvga3RwPlK3sxicrokkIg33NLbrVZWpPob8?=
- =?us-ascii?Q?xgmh4BTp84q4YoLbYvn1+U/GFFlPqnIxdjBS/1qxIqcsct76zxnTDTaujvgw?=
- =?us-ascii?Q?GhZEZono1DS3x9W8J7482nEEr34VhQdjyWnhYs3qxZ1biXjFgJcaXxk+9H0E?=
- =?us-ascii?Q?3ivS4RHl9bvELMIgx5Os+mSDG/D6STiN/oqCzeK/VuiAHf+aXo++qz7po5XG?=
- =?us-ascii?Q?MnM97H0z7Ot2VP0hwWlYL8iEonNBdSNF2H8A7eEOnbFElrvDNUN39FIfHFWj?=
- =?us-ascii?Q?bGmB/W8cR7HtQdqIVakY9nHG+Yt3OOiI7qBIqEA86vaMoxTbV78zCr0HKkMp?=
- =?us-ascii?Q?Z7IGAVIxe/E83VRktBGnaKvVDBLJMNitZehmauBWG2fpTxhn2UoEpS83G6cs?=
- =?us-ascii?Q?3mF6fx1G6xdwDcfrVHwz/TS39yiqLQ06V3DFWWvyAqUo1nTLx8dzaAkSEI1u?=
- =?us-ascii?Q?lMdZ8CDpoQ9WhfMtOzi40pLfrIRPpLnTUqZTqgd9JDDcMYOa6u2AmztaEEB8?=
- =?us-ascii?Q?mvHYQ2yC9fn8M91hWZNdpuivVnG1IU4Yh0lPWMZPXZyaTI55wsZLvF2i2Fo7?=
- =?us-ascii?Q?/1vk8mDVu2H9NIWR8ffpMaxoe8toWGx0QCT7Iqdo05VCVCrBu7nRwHAUgtyF?=
- =?us-ascii?Q?A16lGrvNYjegjbDXKlI2BzBK/jNuXLC5+P0Esw8BjvpMd7Ttvo7WXaDKvRur?=
- =?us-ascii?Q?i0FzeWErA+Q6S7E3pi5Lev9FDIySf3e3P6d/eRvyiWpAEcGrOG/pkA5ZEg7g?=
- =?us-ascii?Q?x+KvSFRsxPSfyGRqK77FzZ3pH9jmZWRSQVfrzV5IuPoW7ZN7gp/Y7F4WzRqu?=
- =?us-ascii?Q?ZhXCVF9CmArqBOGnBj3sSgLGkp3qCwj0Vvi2Sh/DlOBzkFH4IZBTxF+4GeH6?=
- =?us-ascii?Q?AjMpAmBrN+bKx1Lk7cjzYjZpJRDwtzueI3XY1KpVs9KsvV8744GfHWgPJduV?=
- =?us-ascii?Q?MQ+8Uf5yEjyJbUtacOiAJGa3qRjFfLyDiRab3frOkUPzYtJMdxPrJuqwjRZR?=
- =?us-ascii?Q?LXO1O2AaApc4a4gPEY6qLPplBX099UIl1JJrS+h8HZn4EL4yRHeWuUrr4ToF?=
- =?us-ascii?Q?Vv5DwuHxMywQyreDyd8KZvo7TPbuCxMZPZwTXzQv37C4uz60lAWNf6pjdcwA?=
- =?us-ascii?Q?7Tb2NFQ/qRe6MEpa1ed+9x7O5Jik6BioEebKLwI2VgbnVLjjYM00shji+I8k?=
- =?us-ascii?Q?BgrRAYmaiERKb8d5YuAMkkr3+l1nnvzdqFCHd36i5eQ0tTKCtDURJ6zLA5Eh?=
- =?us-ascii?Q?qzD/+iS1qyVr0iWyJyuzJaS/YVrzLeWJES1bfrOLpgGISHaa02KD12U8+4OG?=
- =?us-ascii?Q?NXSEMMLwMgek1wVBqCClBDA=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <A723559F15A3124C83A082C890259669@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S231722AbhLMMJn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Dec 2021 07:09:43 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:34836 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230370AbhLMMJm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 07:09:42 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1639397382;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=1a/bd6+FuUOJG/H4wd0T2lOdNMz9aPxRtEUk/VcsT3Y=;
+        b=ZhJU0Pc8VLMiSNIrHUcmVuIxyj8UPhYtON5X0u65dECNJfNPUDcmzisoRu4NVw1RljmSSL
+        zp8PmktZMBywD2PEX6it/YF1TKYy1bjHkSZ8c5oNf3aOC8dJTO6zhassSbp957JUoIYx+T
+        JksyEXPgYha4lUGUKJ0H3zf0gkyDGQQ=
+Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
+ [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-559-RvOx69aRNuuxLYhFwS1Puw-1; Mon, 13 Dec 2021 07:09:41 -0500
+X-MC-Unique: RvOx69aRNuuxLYhFwS1Puw-1
+Received: by mail-qv1-f71.google.com with SMTP id jn10-20020ad45dea000000b003bd74c93df4so23553950qvb.15
+        for <netdev@vger.kernel.org>; Mon, 13 Dec 2021 04:09:41 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=1a/bd6+FuUOJG/H4wd0T2lOdNMz9aPxRtEUk/VcsT3Y=;
+        b=b8sOQw9pZlpzBh7ntDQWjc5enZcpv6xvnYTIG4VW9D3r/KfVct0pDX/L7/NF5eDKAz
+         ZS4XoxMrYx/N9B+Pjp7z/Yq14MzYIXDKrxY9d2okv0cCnSFcWMOV9AFOQ4yOLY7SzmNP
+         jStLS/mpw/LovQ8flXz/E7ug7btXVIuA9/Dffz5FW8TM2dpBX/hUWyZNhwbqLUuyby7H
+         wwzaG1Ib9jTdWXRY3YrGjMdlO+xUilnsMnDBS0IIDpXx6W+jMJyKceCKiseLFCEv7kUy
+         17+sOzV9zPtesZAXvXKN8coPmsJkWmiNbGfYxRem6c0pxHqUKsbGe7qGbFdJY0MBJ9bv
+         ob6w==
+X-Gm-Message-State: AOAM531ZwlkT54S1I0Y1H8NF0lSZgfK8ZTh1sf/H2uodt7we1tUj2k47
+        horVeY7lbtK9c3+FPKaSvBxKaYN7ipY4wgpoTu5XcYD/UfIaze5M/S5jFzmady6p5W0L60QxcfW
+        swkL/H6rLkrDPaHa/
+X-Received: by 2002:a05:620a:1904:: with SMTP id bj4mr32164875qkb.536.1639397380551;
+        Mon, 13 Dec 2021 04:09:40 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwUMjea4dS/GuZs2NBiHsvdQKAl1msbX4jKzb27GUcYuJ0+s3SA6OeCnzyR+/7myLc0P/iXYw==
+X-Received: by 2002:a05:620a:1904:: with SMTP id bj4mr32164837qkb.536.1639397380127;
+        Mon, 13 Dec 2021 04:09:40 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id n13sm6194857qkp.19.2021.12.13.04.09.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Dec 2021 04:09:39 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 845DC180496; Mon, 13 Dec 2021 13:09:35 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Yihao Han <hanyihao@vivo.com>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>, kernel@vivo.com
+Subject: Re: [PATCH v2] samples/bpf: xdpsock: fix swap.cocci warning
+In-Reply-To: <CAEf4BzYv3ONhy-JnQUtknzgBSK0gpm9GBJYtbAiJQe50_eX7Uw@mail.gmail.com>
+References: <20211209092250.56430-1-hanyihao@vivo.com>
+ <877dccwn6x.fsf@toke.dk>
+ <CAEf4Bza3a88pdhFEQdR-FnT_gBPqBh+KL-OP-1P3bVfXv=Gbaw@mail.gmail.com>
+ <87sfuzuia3.fsf@toke.dk>
+ <CAEf4BzYv3ONhy-JnQUtknzgBSK0gpm9GBJYtbAiJQe50_eX7Uw@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Mon, 13 Dec 2021 13:09:35 +0100
+Message-ID: <87fsqwg0zk.fsf@toke.dk>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f3e70041-e660-4548-e435-08d9be2e256c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Dec 2021 11:46:05.4208
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: PeKPQfShXfyeh9WSZaTXUBnadR4NHAqbvewPNdEVfG7cN+NVM3+b/tWh1ikkV6q2BKhsRk6stiolygj/T5H8JQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4685
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 09, 2021 at 05:43:11PM +0100, Horatiu Vultur wrote:
-> > My documentation of CPU_SRC_COPY_ENA says:
-> >=20
-> > If set, all frames received on this port are
-> > copied to the CPU extraction queue given by
-> > CPUQ_CFG.CPUQ_SRC_COPY.
-> >=20
-> > I think it was established a while ago that this isn't what promiscuous
-> > mode is about? Instead it is about accepting packets on a port
-> > regardless of whether the MAC DA is in their RX filter or not.
->=20
-> Yes, I am aware that this change interprets the things differently and I
-> am totally OK to drop this promisc if it is needed.
+Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
 
-I think we just need to agree on the observable behavior. Promiscuous
-means for an interface to receive packets with unknown destination, and
-while in standalone mode you do support that, in bridge mode you're a
-bit on the edge: the port accepts them but will deliver them anywhere
-except to the CPU. I suppose you could try to make an argument that you
-know better than the bridge, and as long as the use cases for that are
-restricted enough, maybe it could work for most scenarios. I don't know.
+> On Sat, Dec 11, 2021 at 10:07 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@r=
+edhat.com> wrote:
+>>
+>> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+>>
+>> > On Fri, Dec 10, 2021 at 6:26 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke=
+@redhat.com> wrote:
+>> >>
+>> >> Yihao Han <hanyihao@vivo.com> writes:
+>> >>
+>> >> > Fix following swap.cocci warning:
+>> >> > ./samples/bpf/xdpsock_user.c:528:22-23:
+>> >> > WARNING opportunity for swap()
+>> >> >
+>> >> > Signed-off-by: Yihao Han <hanyihao@vivo.com>
+>> >>
+>> >> Erm, did this get applied without anyone actually trying to compile
+>> >> samples? I'm getting build errors as:
+>> >
+>> > Good news: I actually do build samples/bpf nowadays after fixing a
+>> > bunch of compilation issues recently.
+>>
+>> Awesome!
+>>
+>> > Bad news: seems like I didn't pay too much attention after building
+>> > samples/bpf for this particular patch, sorry about that. I've dropped
+>> > this patch, samples/bpf builds for me. We should be good now.
+>>
+>> Yup, looks good, thanks!
+>>
+>> >>   CC  /home/build/linux/samples/bpf/xsk_fwd.o
+>> >> /home/build/linux/samples/bpf/xsk_fwd.c: In function =E2=80=98swap_ma=
+c_addresses=E2=80=99:
+>> >> /home/build/linux/samples/bpf/xsk_fwd.c:658:9: warning: implicit decl=
+aration of function =E2=80=98swap=E2=80=99; did you mean =E2=80=98swab=E2=
+=80=99? [-Wimplicit-function-declaration]
+>> >>   658 |         swap(*src_addr, *dst_addr);
+>> >>       |         ^~~~
+>> >>       |         swab
+>> >>
+>> >> /usr/bin/ld: /home/build/linux/samples/bpf/xsk_fwd.o: in function `th=
+read_func':
+>> >> xsk_fwd.c:(.text+0x440): undefined reference to `swap'
+>> >> collect2: error: ld returned 1 exit status
+>> >>
+>> >>
+>> >> Could we maybe get samples/bpf added to the BPF CI builds? :)
+>> >
+>> > Maybe we could, if someone dedicated their effort towards making this
+>> > happen.
+>>
+>> Is it documented anywhere what that would entail? Is it just a matter of
+>> submitting a change to https://github.com/kernel-patches/vmtest ?
+>
+> I think the right way would be to build samples/bpf from
+> selftests/bpf's Makefile. At the very least we should not require make
+> headers_install (I never understood that with samples/bpf, all those
+> up-to-date UAPI headers are right there in the same repo). Once that
+> is done, at the very least we'll build tests samples/bpf during CI
+> runs.
 
-> > Hence the oddity of your change. I understand what it intends to do:
-> > if this is a standalone port you support IFF_UNICAST_FLT, so you drop
-> > frames with unknown MAC DA. But if IFF_PROMISC is set, then why do you
-> > copy all frames to the CPU? Why don't you just put the CPU in the
-> > unknown flooding mask?
->=20
-> Because I don't want the CPU to be in the unknown flooding mask. I want
-> to send frames to the CPU only if it is required.
+Alright, sounds fair. I'll look into that, but probably before the
+holidays :)
 
-What is the strategy through which this driver accepts things like
-pinging the bridge device over IPv6, with the Neighbor Discovery
-protocol having the ICMP6 neighbor solicitation messages delivered to
-(according to my knowledge) an unregistered IPv6 multicast address?
-Whose responsibility is it to notify the driver of that address, and
-does the driver copy those packets to the CPU in the right VLAN?
+-Toke
 
-> > How do you handle migration of an FDB entry pointing towards the CPU,
-> > towards one pointing towards a port?
->=20
-> Shouldn't I get 2 calls that the entry is removed from CPU and then
-> added to a port?
-
-Ok.=
