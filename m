@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C385472939
-	for <lists+netdev@lfdr.de>; Mon, 13 Dec 2021 11:20:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DB9547293E
+	for <lists+netdev@lfdr.de>; Mon, 13 Dec 2021 11:20:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237720AbhLMKTG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Dec 2021 05:19:06 -0500
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:3448 "EHLO
+        id S245077AbhLMKTJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Dec 2021 05:19:09 -0500
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:3463 "EHLO
         esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243972AbhLMKPB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 05:15:01 -0500
+        with ESMTP id S243987AbhLMKPC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 05:15:02 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1639390500; x=1670926500;
+  t=1639390501; x=1670926501;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=CT7jtIkme9AhFMoPO9xaJSjN1ls35Idn183GYh+dElo=;
-  b=Q02coIZS/t1e5rHb3870i+QEKPsLpPNm8aN6w8u/Z14ffel4C0FR8guQ
-   OjZAuS68S7ASO+cnKQc4vlz6iSRvzIbA6edJCkfFqCkt0yeigAnX+tAqT
-   56sHuL2iYRFDL5+BK3dG5d3bTUR4mZPVRQAqg2oYt2aYtmELHm0QVErG1
-   5c0cdfoE4239JTTWww14cF1KVgFXGb8xMeK8iMPr3zsCnXIwhn0H3YzWE
-   o0zvRGAz5aYRDeMzgBjWxlZgllQ+if0gv4hHwO3q4jzyTGb1jFHGkCd/2
-   jDQ49JOT1ktbakCMEk8UIOVeX1/nvY99X6ZTVUmQrCV+USp5+hGWt06Hb
+  bh=V+Jv9MaMFqvcBDNSlIjW3tUS0kwQ8RDWb5PfDQGs6NU=;
+  b=SPFas1cbqyiU3lLweIksQTDvc1n6i5kABhORH1VbHBj4uYRRSAserCEb
+   lKj0xIzoOihlyFQFmJ5z6VTaqe0luX+rPfy4qqs/1t1/gEPJRAWxxBjAK
+   3RrBpWFK/AzE77idTwozXpmimyYt3sgaeYfya/QaoazpkAiCrbZQLGut0
+   EccsP+0pvvGDGXh0EwWIHicKugxdBCSqtIogEQpgODerlkqIWJwcyMbgF
+   TZPPlQ3imLs2unCovWCxGlaGnAfqlQ2IoOzPl7wZDBIKJDSSWMEcWU1M4
+   fXl7qvhs8/P2Wr3zuo92X37BV16an65FGXifuqw3CSY0oCHluP1hgDBa1
    Q==;
-IronPort-SDR: Gus5mUqA6q4Ae0kicWKcQQdrOKnn/Vm2ktLSq5tD1xYYx13Y+v6DX1Eit0G0SCqwcUTLVH0ROA
- tle17Pr7PnAhs6L1YQ7Fwo6ncErJs/+L6ClX1LgC7rplBqCEzyMIEFxp4vZQwQnGnYx4g0FOvp
- p+j0UBpJkAGiRU1EWGHBTXOhRZTniXRlG307gqyIPdmtUEFrG4vdS74EyfjMgD1ZpatfqE/fzx
- 9YYP11morZ3tPljrBYQStCdKP97HoSYuu/Fn+O9qCN+fPAEwemqdUCbqN2PLKxyPXA+HkxYPGm
- R9KPEZz6HvT/zcXT5rcrfJf7
+IronPort-SDR: yOpSMrsFf9gV7hKYwW+bqXe0385gEc88EBCZap+PqjJyzDibmssJZnFmNldL5YB1GqXJ1vKlYr
+ Pigf0I23KGFytgHrth51Gb/UkErqxQ7plPZC4NQwtwZ6RsDhTOs+byn5ZJ4rlcDgqyY8FG/29Q
+ C0rF0qNuvF1WMM5RPBy8Lt9XfNCEykGo+m88SpqvVKzSlBNCxDKvat1vjzUafNJVKwCSBO4UcD
+ o2429y60LW50rw/nqboJFOPbVLw86vpDGp3H/AYSs1Yfo+IkprZZGrD4lpDkEu8AXGzC2zHqJu
+ XK+vCFmD5omsOoEixiQ0ITg5
 X-IronPort-AV: E=Sophos;i="5.88,202,1635231600"; 
-   d="scan'208";a="147013373"
+   d="scan'208";a="147013397"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 Dec 2021 03:14:57 -0700
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 Dec 2021 03:15:01 -0700
 Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 13 Dec 2021 03:14:57 -0700
+ 15.1.2375.17; Mon, 13 Dec 2021 03:15:00 -0700
 Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Mon, 13 Dec 2021 03:14:54 -0700
+ 15.1.2375.17 via Frontend Transport; Mon, 13 Dec 2021 03:14:57 -0700
 From:   Horatiu Vultur <horatiu.vultur@microchip.com>
 To:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
@@ -48,9 +48,9 @@ CC:     <davem@davemloft.net>, <kuba@kernel.org>, <robh+dt@kernel.org>,
         <f.fainelli@gmail.com>, <vivien.didelot@gmail.com>,
         <vladimir.oltean@nxp.com>, <andrew@lunn.ch>,
         Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net-next v4 01/10] net: lan966x: Add registers that are used for switch and vlan functionality
-Date:   Mon, 13 Dec 2021 11:14:23 +0100
-Message-ID: <20211213101432.2668820-2-horatiu.vultur@microchip.com>
+Subject: [PATCH net-next v4 02/10] dt-bindings: net: lan966x: Extend with the analyzer interrupt
+Date:   Mon, 13 Dec 2021 11:14:24 +0100
+Message-ID: <20211213101432.2668820-3-horatiu.vultur@microchip.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211213101432.2668820-1-horatiu.vultur@microchip.com>
 References: <20211213101432.2668820-1-horatiu.vultur@microchip.com>
@@ -61,168 +61,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds the registers that will be used to enable switchdev and
-vlan functionality in the HW.
+Extend dt-bindings for lan966x with analyzer interrupt.
+This interrupt can be generated for example when the HW learn/forgets
+an entry in the MAC table.
 
+Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 ---
- .../ethernet/microchip/lan966x/lan966x_regs.h | 129 ++++++++++++++++++
- 1 file changed, 129 insertions(+)
+ .../devicetree/bindings/net/microchip,lan966x-switch.yaml       | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_regs.h b/drivers/net/ethernet/microchip/lan966x/lan966x_regs.h
-index 879dcd807dec..2f2b26b9f8c6 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_regs.h
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_regs.h
-@@ -61,6 +61,9 @@ enum lan966x_target {
- #define ANA_ADVLEARN_VLAN_CHK_GET(x)\
- 	FIELD_GET(ANA_ADVLEARN_VLAN_CHK, x)
+diff --git a/Documentation/devicetree/bindings/net/microchip,lan966x-switch.yaml b/Documentation/devicetree/bindings/net/microchip,lan966x-switch.yaml
+index 5bee665d5fcf..e79e4e166ad8 100644
+--- a/Documentation/devicetree/bindings/net/microchip,lan966x-switch.yaml
++++ b/Documentation/devicetree/bindings/net/microchip,lan966x-switch.yaml
+@@ -37,12 +37,14 @@ properties:
+     items:
+       - description: register based extraction
+       - description: frame dma based extraction
++      - description: analyzer interrupt
  
-+/*      ANA:ANA:VLANMASK */
-+#define ANA_VLANMASK              __REG(TARGET_ANA, 0, 1, 29824, 0, 1, 244, 8, 0, 1, 4)
-+
- /*      ANA:ANA:ANAINTR */
- #define ANA_ANAINTR               __REG(TARGET_ANA, 0, 1, 29824, 0, 1, 244, 16, 0, 1, 4)
+   interrupt-names:
+     minItems: 1
+     items:
+       - const: xtr
+       - const: fdma
++      - const: ana
  
-@@ -184,6 +187,102 @@ enum lan966x_target {
- #define ANA_MACACCESS_MAC_TABLE_CMD_GET(x)\
- 	FIELD_GET(ANA_MACACCESS_MAC_TABLE_CMD, x)
- 
-+/*      ANA:ANA_TABLES:MACTINDX */
-+#define ANA_MACTINDX              __REG(TARGET_ANA, 0, 1, 27520, 0, 1, 128, 52, 0, 1, 4)
-+
-+#define ANA_MACTINDX_BUCKET                      GENMASK(12, 11)
-+#define ANA_MACTINDX_BUCKET_SET(x)\
-+	FIELD_PREP(ANA_MACTINDX_BUCKET, x)
-+#define ANA_MACTINDX_BUCKET_GET(x)\
-+	FIELD_GET(ANA_MACTINDX_BUCKET, x)
-+
-+#define ANA_MACTINDX_M_INDEX                     GENMASK(10, 0)
-+#define ANA_MACTINDX_M_INDEX_SET(x)\
-+	FIELD_PREP(ANA_MACTINDX_M_INDEX, x)
-+#define ANA_MACTINDX_M_INDEX_GET(x)\
-+	FIELD_GET(ANA_MACTINDX_M_INDEX, x)
-+
-+/*      ANA:ANA_TABLES:VLAN_PORT_MASK */
-+#define ANA_VLAN_PORT_MASK        __REG(TARGET_ANA, 0, 1, 27520, 0, 1, 128, 56, 0, 1, 4)
-+
-+#define ANA_VLAN_PORT_MASK_VLAN_PORT_MASK        GENMASK(8, 0)
-+#define ANA_VLAN_PORT_MASK_VLAN_PORT_MASK_SET(x)\
-+	FIELD_PREP(ANA_VLAN_PORT_MASK_VLAN_PORT_MASK, x)
-+#define ANA_VLAN_PORT_MASK_VLAN_PORT_MASK_GET(x)\
-+	FIELD_GET(ANA_VLAN_PORT_MASK_VLAN_PORT_MASK, x)
-+
-+/*      ANA:ANA_TABLES:VLANACCESS */
-+#define ANA_VLANACCESS            __REG(TARGET_ANA, 0, 1, 27520, 0, 1, 128, 60, 0, 1, 4)
-+
-+#define ANA_VLANACCESS_VLAN_TBL_CMD              GENMASK(1, 0)
-+#define ANA_VLANACCESS_VLAN_TBL_CMD_SET(x)\
-+	FIELD_PREP(ANA_VLANACCESS_VLAN_TBL_CMD, x)
-+#define ANA_VLANACCESS_VLAN_TBL_CMD_GET(x)\
-+	FIELD_GET(ANA_VLANACCESS_VLAN_TBL_CMD, x)
-+
-+/*      ANA:ANA_TABLES:VLANTIDX */
-+#define ANA_VLANTIDX              __REG(TARGET_ANA, 0, 1, 27520, 0, 1, 128, 64, 0, 1, 4)
-+
-+#define ANA_VLANTIDX_VLAN_PGID_CPU_DIS           BIT(18)
-+#define ANA_VLANTIDX_VLAN_PGID_CPU_DIS_SET(x)\
-+	FIELD_PREP(ANA_VLANTIDX_VLAN_PGID_CPU_DIS, x)
-+#define ANA_VLANTIDX_VLAN_PGID_CPU_DIS_GET(x)\
-+	FIELD_GET(ANA_VLANTIDX_VLAN_PGID_CPU_DIS, x)
-+
-+#define ANA_VLANTIDX_V_INDEX                     GENMASK(11, 0)
-+#define ANA_VLANTIDX_V_INDEX_SET(x)\
-+	FIELD_PREP(ANA_VLANTIDX_V_INDEX, x)
-+#define ANA_VLANTIDX_V_INDEX_GET(x)\
-+	FIELD_GET(ANA_VLANTIDX_V_INDEX, x)
-+
-+/*      ANA:PORT:VLAN_CFG */
-+#define ANA_VLAN_CFG(g)           __REG(TARGET_ANA, 0, 1, 28672, g, 9, 128, 0, 0, 1, 4)
-+
-+#define ANA_VLAN_CFG_VLAN_AWARE_ENA              BIT(20)
-+#define ANA_VLAN_CFG_VLAN_AWARE_ENA_SET(x)\
-+	FIELD_PREP(ANA_VLAN_CFG_VLAN_AWARE_ENA, x)
-+#define ANA_VLAN_CFG_VLAN_AWARE_ENA_GET(x)\
-+	FIELD_GET(ANA_VLAN_CFG_VLAN_AWARE_ENA, x)
-+
-+#define ANA_VLAN_CFG_VLAN_POP_CNT                GENMASK(19, 18)
-+#define ANA_VLAN_CFG_VLAN_POP_CNT_SET(x)\
-+	FIELD_PREP(ANA_VLAN_CFG_VLAN_POP_CNT, x)
-+#define ANA_VLAN_CFG_VLAN_POP_CNT_GET(x)\
-+	FIELD_GET(ANA_VLAN_CFG_VLAN_POP_CNT, x)
-+
-+#define ANA_VLAN_CFG_VLAN_VID                    GENMASK(11, 0)
-+#define ANA_VLAN_CFG_VLAN_VID_SET(x)\
-+	FIELD_PREP(ANA_VLAN_CFG_VLAN_VID, x)
-+#define ANA_VLAN_CFG_VLAN_VID_GET(x)\
-+	FIELD_GET(ANA_VLAN_CFG_VLAN_VID, x)
-+
-+/*      ANA:PORT:DROP_CFG */
-+#define ANA_DROP_CFG(g)           __REG(TARGET_ANA, 0, 1, 28672, g, 9, 128, 4, 0, 1, 4)
-+
-+#define ANA_DROP_CFG_DROP_UNTAGGED_ENA           BIT(6)
-+#define ANA_DROP_CFG_DROP_UNTAGGED_ENA_SET(x)\
-+	FIELD_PREP(ANA_DROP_CFG_DROP_UNTAGGED_ENA, x)
-+#define ANA_DROP_CFG_DROP_UNTAGGED_ENA_GET(x)\
-+	FIELD_GET(ANA_DROP_CFG_DROP_UNTAGGED_ENA, x)
-+
-+#define ANA_DROP_CFG_DROP_PRIO_S_TAGGED_ENA      BIT(3)
-+#define ANA_DROP_CFG_DROP_PRIO_S_TAGGED_ENA_SET(x)\
-+	FIELD_PREP(ANA_DROP_CFG_DROP_PRIO_S_TAGGED_ENA, x)
-+#define ANA_DROP_CFG_DROP_PRIO_S_TAGGED_ENA_GET(x)\
-+	FIELD_GET(ANA_DROP_CFG_DROP_PRIO_S_TAGGED_ENA, x)
-+
-+#define ANA_DROP_CFG_DROP_PRIO_C_TAGGED_ENA      BIT(2)
-+#define ANA_DROP_CFG_DROP_PRIO_C_TAGGED_ENA_SET(x)\
-+	FIELD_PREP(ANA_DROP_CFG_DROP_PRIO_C_TAGGED_ENA, x)
-+#define ANA_DROP_CFG_DROP_PRIO_C_TAGGED_ENA_GET(x)\
-+	FIELD_GET(ANA_DROP_CFG_DROP_PRIO_C_TAGGED_ENA, x)
-+
-+#define ANA_DROP_CFG_DROP_MC_SMAC_ENA            BIT(0)
-+#define ANA_DROP_CFG_DROP_MC_SMAC_ENA_SET(x)\
-+	FIELD_PREP(ANA_DROP_CFG_DROP_MC_SMAC_ENA, x)
-+#define ANA_DROP_CFG_DROP_MC_SMAC_ENA_GET(x)\
-+	FIELD_GET(ANA_DROP_CFG_DROP_MC_SMAC_ENA, x)
-+
- /*      ANA:PORT:CPU_FWD_CFG */
- #define ANA_CPU_FWD_CFG(g)        __REG(TARGET_ANA, 0, 1, 28672, g, 9, 128, 96, 0, 1, 4)
- 
-@@ -589,6 +688,36 @@ enum lan966x_target {
- /*      QSYS:RES_CTRL:RES_CFG */
- #define QSYS_RES_CFG(g)           __REG(TARGET_QSYS, 0, 1, 32768, g, 1024, 8, 0, 0, 1, 4)
- 
-+/*      REW:PORT:PORT_VLAN_CFG */
-+#define REW_PORT_VLAN_CFG(g)      __REG(TARGET_REW, 0, 1, 0, g, 10, 128, 0, 0, 1, 4)
-+
-+#define REW_PORT_VLAN_CFG_PORT_TPID              GENMASK(31, 16)
-+#define REW_PORT_VLAN_CFG_PORT_TPID_SET(x)\
-+	FIELD_PREP(REW_PORT_VLAN_CFG_PORT_TPID, x)
-+#define REW_PORT_VLAN_CFG_PORT_TPID_GET(x)\
-+	FIELD_GET(REW_PORT_VLAN_CFG_PORT_TPID, x)
-+
-+#define REW_PORT_VLAN_CFG_PORT_VID               GENMASK(11, 0)
-+#define REW_PORT_VLAN_CFG_PORT_VID_SET(x)\
-+	FIELD_PREP(REW_PORT_VLAN_CFG_PORT_VID, x)
-+#define REW_PORT_VLAN_CFG_PORT_VID_GET(x)\
-+	FIELD_GET(REW_PORT_VLAN_CFG_PORT_VID, x)
-+
-+/*      REW:PORT:TAG_CFG */
-+#define REW_TAG_CFG(g)            __REG(TARGET_REW, 0, 1, 0, g, 10, 128, 4, 0, 1, 4)
-+
-+#define REW_TAG_CFG_TAG_CFG                      GENMASK(8, 7)
-+#define REW_TAG_CFG_TAG_CFG_SET(x)\
-+	FIELD_PREP(REW_TAG_CFG_TAG_CFG, x)
-+#define REW_TAG_CFG_TAG_CFG_GET(x)\
-+	FIELD_GET(REW_TAG_CFG_TAG_CFG, x)
-+
-+#define REW_TAG_CFG_TAG_TPID_CFG                 GENMASK(6, 5)
-+#define REW_TAG_CFG_TAG_TPID_CFG_SET(x)\
-+	FIELD_PREP(REW_TAG_CFG_TAG_TPID_CFG, x)
-+#define REW_TAG_CFG_TAG_TPID_CFG_GET(x)\
-+	FIELD_GET(REW_TAG_CFG_TAG_TPID_CFG, x)
-+
- /*      REW:PORT:PORT_CFG */
- #define REW_PORT_CFG(g)           __REG(TARGET_REW, 0, 1, 0, g, 10, 128, 8, 0, 1, 4)
- 
+   resets:
+     items:
 -- 
 2.33.0
 
