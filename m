@@ -2,80 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 58E61472C93
-	for <lists+netdev@lfdr.de>; Mon, 13 Dec 2021 13:50:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B71A4472CB6
+	for <lists+netdev@lfdr.de>; Mon, 13 Dec 2021 14:00:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236629AbhLMMuN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Dec 2021 07:50:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44304 "EHLO
+        id S237030AbhLMNAn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Dec 2021 08:00:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234393AbhLMMuN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 07:50:13 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07E9CC061574
-        for <netdev@vger.kernel.org>; Mon, 13 Dec 2021 04:50:13 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 77F23B80EB0
-        for <netdev@vger.kernel.org>; Mon, 13 Dec 2021 12:50:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 24BAEC34609;
-        Mon, 13 Dec 2021 12:50:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1639399810;
-        bh=0Lv3twYOpxUG2QHIubNiyODmkDVLlxs3zVj7kc6WUOw=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=cNNZLoeVh4/IIdQzYroI5uDGciLu77J7lpef8vtebaztlkjLQ8eG+doenWKmdVX2b
-         iuZfP4z7Vnu1w0L/sqwi+nC6BRtV68JPKTuLGeM768Cq9+7nq26h+ufSrkBa0aMdiV
-         cEpCzOdJ85JO5Vgxm3V0T3oVlt9SkVWwOc85/mwwM6YMPnil6ezzJfsEB1Ov3q8/RM
-         zlXKLa8FMmbQhq+W+MFe5tU6SmA/y9SXXuUzlnWIifHmq8ffB56YhpivSakypS4+La
-         +q0+pmRaY9Ebipl8bwjICN87MRC/DG00UgwdXBNBfHCQPKU85/pB5ItE4ixKHx49L1
-         PVa+6FiobBvaQ==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 074F760A39;
-        Mon, 13 Dec 2021 12:50:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S231465AbhLMNAm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 08:00:42 -0500
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 912C1C061574;
+        Mon, 13 Dec 2021 05:00:42 -0800 (PST)
+Received: by mail-pj1-x102d.google.com with SMTP id k6-20020a17090a7f0600b001ad9d73b20bso13255078pjl.3;
+        Mon, 13 Dec 2021 05:00:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=QX8Aew80hIXRTchz8+FcQ8MQ/fpacOHED6ScaQzbTlY=;
+        b=LwC+k8Ww6UvhnLh6TjOJkJwCLLR9bPRPiZSmcyqIaGaKEZaXvsikX1yS5dywl4FkEZ
+         TIGz7YNKhmr60ZJ/NEx11alohtq6L2dsl5wmPl8/OY92SvO/XkvjPT8FSrZkjYSXH4wc
+         ifOuS2kwSJXTtTVUtG6/ZWIyxHq64fGiGDNLOTnSZIfRxpvjL/rjcO1CAlip2wfXZfmL
+         b4FxasCoFCzAq+gI3rVdC5mTMElm+m4d7br6yiyv/mdlVIx2o+9Kgq1Y/K3T6n4oOfTc
+         /N9KKzJaeZgVFGctBPHVHf9/FqdhQacE77PXfdDjObv5sZWR6uMZ78qKl5ZK0kxrOcVE
+         6Axg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=QX8Aew80hIXRTchz8+FcQ8MQ/fpacOHED6ScaQzbTlY=;
+        b=DTi/rtUn1nEKol5N8mhxnDU4pKSYBWm+cqDEkVqo8rTcHrRGjS3yz/B33HfIy8is/t
+         nNW3YOqlBymJJNq6T+aZgt5R9gtaPG6jFvPpJkuIc29vvSLUR4emX6dEpfS6KsKfUSun
+         mgN2/2yMrmOFDFNvB9CsEP81Gtne1qQ/bbioulS39HLGiVSxBKg4Bztr5HQm4ALwoZiw
+         470sAQYB8edXYPFHtflubIxYid0pMQx+amAGhkPxCrJMlJqABfbUmMdDmbGAzxmx+8vj
+         oZcb5z65Oy9OUiOtzGAG1g04Ca9aWeL+hGA7nq9+HY8CBjstjpGC8F5a3RhFnjGRity8
+         lHUg==
+X-Gm-Message-State: AOAM531wnxGMAJqFDH1x1O3Mq5nekZuuQuXLlpfvNt5GcfNQw6pCfssU
+        iurZHD0yX2/+I5UPUetwKojonQ+z9Edz1HEXOsmJxr+xZNeY8wsn
+X-Google-Smtp-Source: ABdhPJxh4/9NHemB2eiU2uTvyp3eJIa1vtxBJTB/Yhn6Mg1X1LbvgYbzmGO/yE4RBRMDwr5b8g1sdVty+0lahDgR1qo=
+X-Received: by 2002:a17:903:11c4:b0:143:d220:9161 with SMTP id
+ q4-20020a17090311c400b00143d2209161mr95330662plh.2.1639400442111; Mon, 13 Dec
+ 2021 05:00:42 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/2] bareudp: Remove unused code from header file
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163939981002.30215.2793574527337535525.git-patchwork-notify@kernel.org>
-Date:   Mon, 13 Dec 2021 12:50:10 +0000
-References: <cover.1639166064.git.gnault@redhat.com>
-In-Reply-To: <cover.1639166064.git.gnault@redhat.com>
-To:     Guillaume Nault <gnault@redhat.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        martin.varghese@nokia.com
+References: <20211210171511.11574-1-maciej.fijalkowski@intel.com>
+In-Reply-To: <20211210171511.11574-1-maciej.fijalkowski@intel.com>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Mon, 13 Dec 2021 14:00:31 +0100
+Message-ID: <CAJ8uoz34a-ASbbd5YvwmHfA5zeicLVfZCeyv3+RC-vWrYozSGQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] xsk: wipe out dead zero_copy_allocator declarations
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Sat, Dec 11, 2021 at 3:02 AM Maciej Fijalkowski
+<maciej.fijalkowski@intel.com> wrote:
+>
+> zero_copy_allocator has been removed back when Bjorn Topel introduced
+> xsk_buff_pool. Remove references to it that were dangling in the tree.
 
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+Thanks Maciej.
 
-On Fri, 10 Dec 2021 20:56:33 +0100 you wrote:
-> Stop exporting unused functions and structures in bareudp.h. The only
-> piece of bareudp.h that is actually used is netif_is_bareudp(). The
-> rest can be moved to bareudp.c or even dropped entirely.
-> 
-> 
-> Guillaume Nault (2):
->   bareudp: Remove bareudp_dev_create()
->   bareudp: Move definition of struct bareudp_conf to bareudp.c
-> 
-> [...]
+Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
 
-Here is the summary with links:
-  - [net-next,1/2] bareudp: Remove bareudp_dev_create()
-    https://git.kernel.org/netdev/net-next/c/614b7a1f28f4
-  - [net-next,2/2] bareudp: Move definition of struct bareudp_conf to bareudp.c
-    https://git.kernel.org/netdev/net-next/c/dcdd77ee55a7
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+> Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+> ---
+>  drivers/net/ethernet/intel/i40e/i40e_xsk.h           | 1 -
+>  drivers/net/ethernet/intel/ixgbe/ixgbe_txrx_common.h | 2 --
+>  include/net/xdp_priv.h                               | 1 -
+>  3 files changed, 4 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.h b/drivers/net/ethernet/intel/i40e/i40e_xsk.h
+> index ea88f4597a07..bb962987f300 100644
+> --- a/drivers/net/ethernet/intel/i40e/i40e_xsk.h
+> +++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.h
+> @@ -22,7 +22,6 @@
+>
+>  struct i40e_vsi;
+>  struct xsk_buff_pool;
+> -struct zero_copy_allocator;
+>
+>  int i40e_queue_pair_disable(struct i40e_vsi *vsi, int queue_pair);
+>  int i40e_queue_pair_enable(struct i40e_vsi *vsi, int queue_pair);
+> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_txrx_common.h b/drivers/net/ethernet/intel/ixgbe/ixgbe_txrx_common.h
+> index a82533f21d36..bba3feaf3318 100644
+> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_txrx_common.h
+> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_txrx_common.h
+> @@ -35,8 +35,6 @@ int ixgbe_xsk_pool_setup(struct ixgbe_adapter *adapter,
+>                          struct xsk_buff_pool *pool,
+>                          u16 qid);
+>
+> -void ixgbe_zca_free(struct zero_copy_allocator *alloc, unsigned long handle);
+> -
+>  bool ixgbe_alloc_rx_buffers_zc(struct ixgbe_ring *rx_ring, u16 cleaned_count);
+>  int ixgbe_clean_rx_irq_zc(struct ixgbe_q_vector *q_vector,
+>                           struct ixgbe_ring *rx_ring,
+> diff --git a/include/net/xdp_priv.h b/include/net/xdp_priv.h
+> index a9d5b7603b89..a2d58b1a12e1 100644
+> --- a/include/net/xdp_priv.h
+> +++ b/include/net/xdp_priv.h
+> @@ -10,7 +10,6 @@ struct xdp_mem_allocator {
+>         union {
+>                 void *allocator;
+>                 struct page_pool *page_pool;
+> -               struct zero_copy_allocator *zc_alloc;
+>         };
+>         struct rhash_head node;
+>         struct rcu_head rcu;
+> --
+> 2.33.1
+>
