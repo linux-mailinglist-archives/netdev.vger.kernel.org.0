@@ -2,131 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ED802473481
-	for <lists+netdev@lfdr.de>; Mon, 13 Dec 2021 19:58:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 149364734E1
+	for <lists+netdev@lfdr.de>; Mon, 13 Dec 2021 20:22:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237499AbhLMS6n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Dec 2021 13:58:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47644 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236468AbhLMS6j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 13:58:39 -0500
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30081C061574
-        for <netdev@vger.kernel.org>; Mon, 13 Dec 2021 10:58:39 -0800 (PST)
-Received: by mail-ed1-x530.google.com with SMTP id g14so54510098edb.8
-        for <netdev@vger.kernel.org>; Mon, 13 Dec 2021 10:58:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=R9tRYPb6/n97ciTmk66fxIkPaVa9JqzoSDalx6w2kUk=;
-        b=WMvbjrvBtO7qJ3jzUpz6NQASFpXckt4eyL706l53Sc2OvM3/fkh4uttWtWK+IuLx+h
-         Zs5v9bNE1OxDEcEuSmHY1T/U2TZknQZpQ0HbT2eTINZFBgLS2hBbYywxS4q+bAU7wbRp
-         FhgLTIjNkTwmdhDqf+G/MkdrFcu2drMSwg92bo/oxkJMBgzIH6LvpI675XgkINkQR+XS
-         4Ffpk0rBK2S5J5HpQeRnx+4z0+bJmKu4yu18gKYbptv3BNyVFMqHWzZKJTL96SUmGjis
-         /fFW+4pPVKyf8/cIbIOevwcMqdFEbJfxIMR5oYY0uCUNDhtMO1EH5E/YDU96nsUSYCOr
-         YEyA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=R9tRYPb6/n97ciTmk66fxIkPaVa9JqzoSDalx6w2kUk=;
-        b=cPQk+754kxk9KOTs2KSP2ug+y/WCfDmBNqYCY3W1LFhjmHop0CQCgrpgnOAFUReiss
-         rJoxzt504r4ETN1PTzpSwUjFiIqxmj+smRtgUed+d5ZdLAcSHjZ5pZ8AxBaW0loI+MmG
-         zBMdRTolo3LmLCxBMWXu5oTgDlTz/VK7UaVtPUcru5fV5YpW+CsS1KfNdWTK8nZdQZUE
-         e3sNbldipbXhUuD/5upkGyNnYhzi+sLKKdXw7LBZx427Ui7TuEghbqEsaaF1nbzka0BH
-         umY23VcdD3/3z06r6IEbwaljw1UwP637uWG8BcDxz1Jn9RRCBq5TBK6fJ/yGthOVbBsm
-         nagQ==
-X-Gm-Message-State: AOAM5336h80mRXY/7QH4WXoC7zU/rh3bPtSrjOvEO0RXpqGckxKSlZy5
-        eoNkhxRqXsnEz9BY8IIq5dXvwWQJ1cQ=
-X-Google-Smtp-Source: ABdhPJzO9vxXCpAnizNXi6r2UR3g5G3+v682aE2xrIO39MAaz8/Z5vVbpcE+1Ni/C9rB3XmhTFMv+Q==
-X-Received: by 2002:a17:906:a215:: with SMTP id r21mr191545ejy.21.1639421917639;
-        Mon, 13 Dec 2021 10:58:37 -0800 (PST)
-Received: from skbuf ([188.25.173.50])
-        by smtp.gmail.com with ESMTPSA id p26sm6621445edt.94.2021.12.13.10.58.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Dec 2021 10:58:37 -0800 (PST)
-Date:   Mon, 13 Dec 2021 20:58:35 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        Kurt Kanzenbach <kurt@kmk-computers.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v1] net: dsa: mv88e6xxx: Trap PTP traffic
-Message-ID: <20211213185835.ltvv5qz7pincloyj@skbuf>
-References: <20211209173337.24521-1-kurt@kmk-computers.de>
- <87y24t1fvk.fsf@waldekranz.com>
- <20211210211410.62cf1f01@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20211211153926.GA3357@hoboy.vegasvil.org>
- <20211213121045.GA14042@hoboy.vegasvil.org>
- <20211213123147.2lc63aok6l5kg643@skbuf>
- <20211213171140.GB14706@hoboy.vegasvil.org>
+        id S242328AbhLMTWH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Dec 2021 14:22:07 -0500
+Received: from mail-dm3nam07on2050.outbound.protection.outlook.com ([40.107.95.50]:43124
+        "EHLO NAM02-DM3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S242301AbhLMTWH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 Dec 2021 14:22:07 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=iADiqHZTcPP3+EwiInogu7W7oa8izGRB1Q0R0G1Gp/JS7FDqN7rueOZzfgn/hYMmqUTTsZnid6okChe23x+phFLL4XP7mMvYgjIowkqWO650/C8cQqKC5s0+AZhWOqFV90WUZYFtRDxmcqO3FOkFYnLxX97Z8PFxDdlHAN3Dhp35EG5OAe0R/PHiIyM1wk3uQHjjd5DFnwbJ/lH+d1Gu3eSKCrPxZWv5sk+dlL38qSh1rDDylPU1vVe4wg639g9MssaR8o/nAv9nRn1HgexYG1sOJkgKUCKhTPTA/fd3v8QtC8kgLqj7j6/VtC0tkSkTTHZckRxlXFoPmW//Ogbnag==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=XddImDywvqZCihuZTdupwXYPn5W9/U30/BkKgybABwM=;
+ b=Zbu1ttI7V9EbWLyjjvKAUou2qo2jUYRBq60BDRYCSEFkf9M7qFg5hcqj6b3yzKclJqwU8UMpPTkkbhwos7skzf/65n6Wj6Kp83Ust70kanPqLQ1Yt8YhruiWvy9PiacZSxUH96PET3XEuJdj+wmG4ga9pMXJ2K/iXKKZCdwjwB35dvkM5jN8cZfISTxVSfGCHnCrBXBhyDCvq3URPZMRZhS2WOuTimfjES6wn6nk45Ku9/Z4KbA5W6RvLLzrCwXv5FqlzQnwCMHeg5l94r1SYKb7pci00vEM8Y8xEC459xlMWjK+YQACpGFCv+V37s+3VP4DrsOuQlu+mAg+QxK/ww==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 203.18.50.13) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=nvidia.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=XddImDywvqZCihuZTdupwXYPn5W9/U30/BkKgybABwM=;
+ b=OiuL+2Rzz928F09frp9rAbObUw3FDSh/Uj3qSdAe7JX3Dy1e/+Jrm83vdm+BHjUQRtZXYl/YeFnykHUl/mu0KsuAiZkjgs7LnErbjJJM9kuaIVTeF0EY0re1pLvk19CW0Juhc+JCJuRZ5QO1sco+s7z8riG9QH+Y6WNfAYsuNwg9RzclTaoEYQGfpuxKux8Fsscfnau83Lvw6Yc+yi1QqreQ5x6liF5ueOAT9dG0LF9sMIO3AjKqSlalrqLtdiicSqrxgnKkgzlevE8dbR7K3sTs4BdpAE0d2gYr4lT6RdCwp54eNE04SVUB35s4ge5Mx3EkacNoyFoZs4OxffPzkA==
+Received: from BN6PR20CA0072.namprd20.prod.outlook.com (2603:10b6:404:151::34)
+ by MWHPR1201MB0254.namprd12.prod.outlook.com (2603:10b6:301:57::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4778.17; Mon, 13 Dec
+ 2021 19:22:04 +0000
+Received: from BN8NAM11FT029.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:404:151:cafe::5c) by BN6PR20CA0072.outlook.office365.com
+ (2603:10b6:404:151::34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4778.17 via Frontend
+ Transport; Mon, 13 Dec 2021 19:22:04 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 203.18.50.13)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 203.18.50.13 as permitted sender) receiver=protection.outlook.com;
+ client-ip=203.18.50.13; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (203.18.50.13) by
+ BN8NAM11FT029.mail.protection.outlook.com (10.13.177.68) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4778.13 via Frontend Transport; Mon, 13 Dec 2021 19:22:03 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by HKMAIL102.nvidia.com
+ (10.18.16.11) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Mon, 13 Dec
+ 2021 19:22:02 +0000
+Received: from localhost.localdomain.nvidia.com (172.20.187.6) by
+ rnnvmail201.nvidia.com (10.129.68.8) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.986.9;
+ Mon, 13 Dec 2021 11:21:57 -0800
+References: <20211209092806.12336-1-simon.horman@corigine.com>
+User-agent: mu4e 1.4.15; emacs 27.2
+From:   Vlad Buslov <vladbu@nvidia.com>
+To:     Simon Horman <simon.horman@corigine.com>
+CC:     <netdev@vger.kernel.org>, Cong Wang <xiyou.wangcong@gmail.com>,
+        "Dan Carpenter" <dan.carpenter@oracle.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>, "Oz Shlomo" <ozsh@nvidia.com>,
+        Roi Dayan <roid@nvidia.com>,
+        Baowen Zheng <baowen.zheng@corigine.com>,
+        Louis Peens <louis.peens@corigine.com>,
+        <oss-drivers@corigine.com>
+Subject: Re: [PATCH v6 net-next 00/12] allow user to offload tc action to
+ net device
+In-Reply-To: <20211209092806.12336-1-simon.horman@corigine.com>
+Date:   Mon, 13 Dec 2021 21:21:54 +0200
+Message-ID: <ygnhzgp4nwdp.fsf@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211213171140.GB14706@hoboy.vegasvil.org>
+Content-Type: text/plain
+X-Originating-IP: [172.20.187.6]
+X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: ceb784ce-6873-4ce4-03d5-08d9be6dd887
+X-MS-TrafficTypeDiagnostic: MWHPR1201MB0254:EE_
+X-Microsoft-Antispam-PRVS: <MWHPR1201MB02546E3B83DE4871F97F04DAA0749@MWHPR1201MB0254.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2089;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: kRpx+nDvjU3yq+Qphop4RqusnEH5kBqQaA2aWtC9kUh9d/cKfgJrNOyAmnYjVBDiDacKw4zYFTOcmVkb5jkQ8qsV9BneN5O0W+W0BbX+Td8e3L3QVx+FMRxJRsFsut9fQfSgYWVNN21zbOVk95la7Ia8ODebCMQolUetIjlNQRJsk+EbepiObTkYS/fW15tw96+z1Jv1VK0yqobIy7Fs/o2xlU+cZqo3ulW7a7WVCJwAgBXwaLVGgvRqHKH2LeIsb73iIjJ+10bcO6TeqrwGUDC5a/Ton7RYUdEZGApgll02KgLYsJlJVCsB8k8LHLAcHZzG6nJHRtYsgIVoc8cWO+fxSXN3eFxW7L/gZq70+wWuWGeElpA/rD4tp840GPUYdKG69feln/8Lid19hqrthnuAV3OsGzMOsX5ogTpfBOf73+nQTjl8EK98Xc7oKrVqNTgr/c42k7pqaFeVpJozjr2Zz9ZVfR3jMK9aUondKQrJ2nJ/65ssiPlDl9/ZYaTVl5Svs+CSL2GILAB1PkKLdE9ObX/Mw2CMS6Uj9fM7uyDOpiQtIDo9dWQx/YWLpvxKp3oZwEtGYsk0z7rJzP9SXgNkMcETb/GkOv07PEVtCdyyY/7n969XzOyboyANorlljbGsRQ2pZ5yBkV2LFrv2NL26w5vLAdZMgiLFgwINmQF6HeToc+bUxUiJyKUmADLkk6TWle6+bT/lUqFeFzY4CF/3xDUEQokQ9veVN4CK/OyrFbwJvZWjAlgIP+HyO5udA7JPT7FYdaYv/fr9fV1eZwchE5eoLmOOMMqhGwXGzr8=
+X-Forefront-Antispam-Report: CIP:203.18.50.13;CTRY:HK;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:hkhybrid02.nvidia.com;CAT:NONE;SFS:(4636009)(36840700001)(46966006)(40470700001)(36756003)(7696005)(5660300002)(83380400001)(426003)(86362001)(2906002)(8936002)(6666004)(40460700001)(82310400004)(4326008)(70206006)(316002)(16526019)(336012)(186003)(70586007)(356005)(7636003)(26005)(54906003)(36860700001)(34070700002)(47076005)(508600001)(8676002)(6916009)(2616005);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Dec 2021 19:22:03.8075
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: ceb784ce-6873-4ce4-03d5-08d9be6dd887
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[203.18.50.13];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT029.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR1201MB0254
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 13, 2021 at 09:11:40AM -0800, Richard Cochran wrote:
-> On Mon, Dec 13, 2021 at 02:31:47PM +0200, Vladimir Oltean wrote:
-> 
-> > With other drivers, all packets injected from the CPU port act as if in
-> > "god mode", bypassing any STP state. It then becomes the responsibility
-> > of the software to not send packets on a port that is blocking,
-> > except for packets for control protocols. Would you agree that ptp4l
-> > should consider monitoring whether its ports are under a bridge, and
-> > what STP state that bridge port is in?
-> 
-> Perhaps.  linuxptp TC mode will forward frames out all configured
-> interfaces.  If the bridge can't drop the PTP frames automatically,
-> then this could cause loops.
+On Thu 09 Dec 2021 at 11:27, Simon Horman <simon.horman@corigine.com> wrote:
+> Baowen Zheng says:
+>
+> Allow use of flow_indr_dev_register/flow_indr_dev_setup_offload to offload
+> tc actions independent of flows.
+>
+> The motivation for this work is to prepare for using TC police action
+> instances to provide hardware offload of OVS metering feature - which calls
+> for policers that may be used by multiple flows and whose lifecycle is
+> independent of any flows that use them.
+>
+> This patch includes basic changes to offload drivers to return EOPNOTSUPP
+> if this feature is used - it is not yet supported by any driver.
+>
+> Tc cli command to offload and quote an action:
+>
+>  # tc qdisc del dev $DEV ingress && sleep 1 || true
+>  # tc actions delete action police index 200 || true
+>
+>  # tc qdisc add dev $DEV ingress
+>  # tc qdisc show dev $DEV ingress
+>
+>  # tc actions add action police rate 100mbit burst 10000k index 200 skip_sw
+>  # tc -s -d actions list action police
+>  total acts 1
+>
+>          action order 0:  police 0xc8 rate 100Mbit burst 10000Kb mtu 2Kb action reclassify 
+>          overhead 0b linklayer ethernet
+>          ref 1 bind 0  installed 142 sec used 0 sec
+>          Action statistics:
+>          Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
+>          backlog 0b 0p requeues 0
+>          skip_sw in_hw in_hw_count 1
+>          used_hw_stats delayed
+>
+>  # tc filter add dev $DEV protocol ip parent ffff: \
+>          flower skip_sw ip_proto tcp action police index 200
+>  # tc -s -d filter show dev $DEV protocol ip parent ffff:
+>  filter pref 49152 flower chain 0
+>  filter pref 49152 flower chain 0 handle 0x1
+>    eth_type ipv4
+>    ip_proto tcp
+>    skip_sw
+>    in_hw in_hw_count 1
+>          action order 1:  police 0xc8 rate 100Mbit burst 10000Kb mtu 2Kb action 
+>          reclassify overhead 0b linklayer ethernet
+>          ref 2 bind 1  installed 300 sec used 0 sec
+>          Action statistics:
+>          Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
+>          backlog 0b 0p requeues 0
+>          skip_sw in_hw in_hw_count 1
+>          used_hw_stats delayed
+>
+>  # tc filter add dev $DEV protocol ipv6 parent ffff: \
+>          flower skip_sw ip_proto tcp action police index 200
+>  # tc -s -d filter show dev $DEV protocol ipv6 parent ffff:
+>    filter pref 49151 flower chain 0
+>    filter pref 49151 flower chain 0 handle 0x1
+>    eth_type ipv6
+>    ip_proto tcp
+>    skip_sw
+>    in_hw in_hw_count 1
+>          action order 1:  police 0xc8 rate 100Mbit burst 10000Kb mtu 2Kb action 
+>          reclassify overhead 0b linklayer ethernet
+>          ref 3 bind 2  installed 761 sec used 0 sec
+>          Action statistics:
+>          Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
+>          backlog 0b 0p requeues 0
+>          skip_sw in_hw in_hw_count 1
+>          used_hw_stats delayed
+>
+>  # tc -s -d actions list action police
+>  total acts 1
+>
+>           action order 0:  police 0xc8 rate 100Mbit burst 10000Kb mtu 2Kb action reclassify overhead 0b linklayer ethernet
+>           ref 3 bind 2  installed 917 sec used 0 sec
+>           Action statistics:
+>           Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
+>           backlog 0b 0p requeues 0
+>           skip_sw in_hw in_hw_count 1
+>          used_hw_stats delayed
+>
+> Changes compared to v5 patches:
+> * Fix issue reported by Dan Carpenter found using Smatch.
 
-Considering that in this configuration:
+Hi,
 
-ip link add br0 type bridge
-ip link set swp0 master br0
-ip link set swp1 master br0
-ip link set swp2 master br0
-ip link set swp3 master br0
-ptp4l -i swp0 -i swp1 -i swp2 -i swp3 -f configs/P2P-TC.cfg -m
+Sorry for late response to this and previous version. From my side
+series LGTM besides points raised by Jamal and Roi.
 
-the kernel code path for PTP packets has nothing to do with the bridge
-driver (unless maybe an explicit netfilter rule to tell the bridge RX
-handler to not steal those packets from the physical port), I think it's
-safe to say that yes, the bridge can't drop the PTP frames automatically.
+Regards,
+Vlad
 
-> So if switch HW in general won't drop them, then, yes, the TC user
-> space stack will need to follow the STP state.
+[...]
 
-The hardware offloads tend to follow the software model as closely as
-possible, and as mentioned, I think this has to do with the software
-model in this case, rather than a hardware quirk. I would consider the
-hardware to be quirky quite in the opposite case: you send a packet
-through a physical port rather than the bridge, and that one is affected
-by the STP state. We have switch drivers like that too, but let's not go
-there, they're rather the exception.
-
-> > I think this isn't even specific
-> > to DSA, the same thing would happen with software bridging:
-> 
-> (Linux doesn't support even SW time stamping on SW bridges, so you
-> can't have a TC running in this case.)
-
-As also rephrased in the replies above, the point was that STP state has
-nothing to do, in general, with whether this is a DSA switch or not.
-It is a bridging service concept, and applies to data plane packets,
-which ptp4l isn't sending/receiving, since as you very well point out,
-your socket is opened on the physical port and not on the bridge device.
-So don't expect the STP state of the port to do something here. If you
-send a packet on a socket opened on an interface that is backed by a
-physical port, expect that packet to be sent - is the main point.
-The fact that I used the "software bridging" term was just to clarify
-that it hasn't got anything to do with whether the bridging is offloaded
-or not.
