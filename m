@@ -2,94 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B19B34730AB
-	for <lists+netdev@lfdr.de>; Mon, 13 Dec 2021 16:37:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CD9E4730B9
+	for <lists+netdev@lfdr.de>; Mon, 13 Dec 2021 16:43:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234872AbhLMPhT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Dec 2021 10:37:19 -0500
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.85.151]:26250 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232572AbhLMPhS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 10:37:18 -0500
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-58-a24iemFmMfm37i7mZ3Uxgw-1; Mon, 13 Dec 2021 15:37:16 +0000
-X-MC-Unique: a24iemFmMfm37i7mZ3Uxgw-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.26; Mon, 13 Dec 2021 15:37:15 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.026; Mon, 13 Dec 2021 15:37:15 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Dave Hansen' <dave.hansen@intel.com>,
-        'Noah Goldstein' <goldstein.w.n@gmail.com>,
-        Eric Dumazet <edumazet@google.com>
-CC:     "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        Borislav Petkov <bp@alien8.de>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        X86 ML <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "alexanderduyck@fb.com" <alexanderduyck@fb.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Subject: RE: [PATCH] x86/lib: Remove the special case for odd-aligned buffers
- in csum_partial.c
-Thread-Topic: [PATCH] x86/lib: Remove the special case for odd-aligned buffers
- in csum_partial.c
-Thread-Index: AdfwL8CqMU0zbyVyQYmiKOZRxmZfsgAAq7MAAADny8A=
-Date:   Mon, 13 Dec 2021 15:37:15 +0000
-Message-ID: <96b6a476c4154da3bd04996139cd8a6d@AcuMS.aculab.com>
-References: <45d12aa0c95049a392d52ff239d42d83@AcuMS.aculab.com>
- <52edd5fd-daa0-729b-4646-43450552d2ab@intel.com>
-In-Reply-To: <52edd5fd-daa0-729b-4646-43450552d2ab@intel.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S238932AbhLMPnv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Dec 2021 10:43:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58114 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236536AbhLMPnv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 10:43:51 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01EA4C061574;
+        Mon, 13 Dec 2021 07:43:51 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A4E6BB81171;
+        Mon, 13 Dec 2021 15:43:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35497C34603;
+        Mon, 13 Dec 2021 15:43:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1639410228;
+        bh=Jyem4IeeXOlhrKvT5N2teQC7ZSrwA6+8aYLVrZpsUXw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=WE7sxn1dxV/XRVrb+OwCqKRbuak+ydOpFIFdysBd6qrGAWRjgd5niEOfX48dy+Q03
+         PGZ9ALW1NRUlsrxiDdJzKjPrRQbimzSJZ//WkahiXbtKfcWAH6WHUrHNG83bulUBOc
+         qiC61EqgOjOzoR4Tx69irFye7ED2cCG2Dxm8RmmRYJddktuHRkawx94jKvQ+W6wpre
+         eD0s/UZXpTKQaQ0jA0N/8x+xvZ1tNLwF2ZGmlEZJcASEObRhs2G4SKG+LYzMJMYMVh
+         J/W8gYPcdeV5XJGJ3KG2T8RnLg8NvgFeQWpF/pg/1VmjDlMDqPI0MBRc2yGPrKCYON
+         9JV9S6tVj8eMQ==
+Date:   Mon, 13 Dec 2021 07:43:47 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Aleksander Bajkowski <olek2@wp.pl>
+Cc:     hauke@hauke-m.de, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net v2] net: lantiq_xrx200: increase buffer reservation
+Message-ID: <20211213074347.2e5ae33b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <c4d93a2e-b4de-9b19-ff44-a122dbbb22b8@wp.pl>
+References: <20211206223909.749043-1-olek2@wp.pl>
+        <20211207205448.3b297e7e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <c4d93a2e-b4de-9b19-ff44-a122dbbb22b8@wp.pl>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogRGF2ZSBIYW5zZW4NCj4gU2VudDogMTMgRGVjZW1iZXIgMjAyMSAxNTowMg0KLmMNCj4g
-DQo+IE9uIDEyLzEzLzIxIDY6NDMgQU0sIERhdmlkIExhaWdodCB3cm90ZToNCj4gPiBUaGVyZSBp
-cyBubyBuZWVkIHRvIHNwZWNpYWwgY2FzZSB0aGUgdmVyeSB1bnVzdWFsIG9kZC1hbGlnbmVkIGJ1
-ZmZlcnMuDQo+ID4gVGhleSBhcmUgbm8gd29yc2UgdGhhbiA0bisyIGFsaWduZWQgYnVmZmVycy4N
-Cj4gPg0KPiA+IFNpZ25lZC1vZmYtYnk6IERhdmlkIExhaWdodCA8ZGF2aWQubGFpZ2h0QGFjdWxh
-Yi5jb20+DQo+ID4gLS0tDQo+ID4NCj4gPiBPbiBhbiBpNy03NzAwIG1pc2FsaWduZWQgYnVmZmVy
-cyBhZGQgMiBvciAzIGNsb2NrcyAoaW4gMTE1KSB0byBhIDUxMiBieXRlDQo+ID4gICBjaGVja3N1
-bS4NCj4gPiBUaGF0IGlzIGp1c3QgbWVhc3VyaW5nIHRoZSBtYWluIGxvb3Agd2l0aCBhbiBsZmVu
-Y2UgcHJpb3IgdG8gcmRwbWMgdG8NCj4gPiByZWFkIFBFUkZfQ09VTlRfSFdfQ1BVX0NZQ0xFUy4N
-Cj4gDQo+IEknbSBhIGJpdCBjb25mdXNlZCBieSB0aGlzIGNoYW5nZWxvZy4NCj4gDQo+IEFyZSB5
-b3Ugc2F5aW5nIHRoYXQgdGhlIHBhdGNoIGNhdXNlcyBhIChzbWFsbCkgcGVyZm9ybWFuY2UgcmVn
-cmVzc2lvbj8NCj4gDQo+IEFyZSB5b3UgYWxzbyBzYXlpbmcgdGhhdCB0aGUgb3B0aW1pemF0aW9u
-IGhlcmUgaXMgbm90IHdvcnRoIGl0IGJlY2F1c2UNCj4gaXQgc2F2ZXMgMTUgbGluZXMgb2YgY29k
-ZT8gIE9yIHRoYXQgdGhlIG1pc2FsaWdubWVudCBjaGVja3MgdGhlbXNlbHZlcw0KPiBhZGQgMiBv
-ciAzIGN5Y2xlcywgYW5kIHRoaXMgaXMgYW4gKm9wdGltaXphdGlvbio/DQoNCkknbSBzYXlpbmcg
-dGhhdCBpdCBjYW4ndCBiZSB3b3J0aCBvcHRpbWlzaW5nIGZvciBhIG1pc2FsaWduZWQNCmJ1ZmZl
-ciBiZWNhdXNlIHRoZSBjb3N0IG9mIHRoZSBidWZmZXIgYmVpbmcgbWlzYWxpZ25lZCBpcyBzbyBz
-bWFsbC4NClNvIHRoZSB0ZXN0IGZvciBhIG1pc2FsaWduZWQgYnVmZmVyIGFyZSBnb2luZyB0byBj
-b3N0IG1vcmUgdGhhbg0KYW5kIHBsYXVzaWJsZSBnYWluLg0KDQpOb3Qgb25seSB0aGF0IHRoZSBi
-dWZmZXIgd2lsbCBuZXZlciBiZSBvZGQgYWxpZ25lZCBhdCBhbGwuDQoNClRoZSBjb2RlIGlzIGxl
-ZnQgaW4gZnJvbSBhIHByZXZpb3VzIHZlcnNpb24gdGhhdCBkaWQgZG8gYWxpZ25lZA0Kd29yZCBy
-ZWFkcyAtIHNvIGhhZCB0byBkbyBleHRyYSBmb3Igb2RkIGFsaWdubWVudC4NCg0KTm90ZSB0aGF0
-IGNvZGUgaXMgZG9pbmcgbWlzYWxpZ25lZCByZWFkcyBmb3IgdGhlIG1vcmUgbGlrZWx5IDRuKzIN
-CmFsaWduZWQgZXRoZXJuZXQgcmVjZWl2ZSBidWZmZXJzLg0KSSBkb3VidCB0aGF0IGV2ZW4gYSB0
-ZXN0IGZvciB0aGF0IHdvdWxkIGJlIHdvcnRod2hpbGUgZXZlbiBpZiB5b3UNCndlcmUgY2hlY2tz
-dW1taW5nIGZ1bGwgc2l6ZWQgZXRoZXJuZXQgcGFja2V0cy4NCg0KU28gdGhlIGNoYW5nZSBpcyBk
-ZWxldGluZyBjb2RlIHRoYXQgaXMgbmV2ZXIgYWN0dWFsbHkgZXhlY3V0ZWQNCmZyb20gdGhlIGhv
-dCBwYXRoLg0KDQoJRGF2aWQNCg0KLQ0KUmVnaXN0ZXJlZCBBZGRyZXNzIExha2VzaWRlLCBCcmFt
-bGV5IFJvYWQsIE1vdW50IEZhcm0sIE1pbHRvbiBLZXluZXMsIE1LMSAxUFQsIFVLDQpSZWdpc3Ry
-YXRpb24gTm86IDEzOTczODYgKFdhbGVzKQ0K
+On Mon, 13 Dec 2021 00:05:16 +0100 Aleksander Bajkowski wrote:
+> On 12/8/21 5:54 AM, Jakub Kicinski wrote:
+> > On Mon,  6 Dec 2021 23:39:09 +0100 Aleksander Jan Bajkowski wrote: =20
+> >> +static int xrx200_max_frame_len(int mtu)
+> >> +{
+> >> +	return VLAN_ETH_HLEN + mtu + ETH_FCS_LEN; =20
+> >=20
+> > You sure the problem is not that this doesn't include ETH_HLEN?=20
+> > MTU is the length of the L2 _payload_.
+>=20
+> VLAN_ETH_HLEN (14 + 4) contains ETH_HLEN (14). This function returns
+> the length of the frame that is written to the RX descriptor. Maybe
+> I don't understand the question and you are asking something else?=20
 
+Ah, right, misread that as VLAN_HLEN.
+
+> >> +}
+> >> +
+> >> +static int xrx200_buffer_size(int mtu)
+> >> +{
+> >> +	return round_up(xrx200_max_frame_len(mtu) - 1, 4 * XRX200_DMA_BURST_=
+LEN); =20
+> >=20
+> > Why the - 1 ? =F0=9F=A4=94
+> >  =20
+>=20
+> This is how the hardware behaves. I don't really know where the -1
+> comes from. Unfortunately, I do not have access to TRM.=20
+>
+> > For a frame size 101 =3D> max_frame_len 109 you'll presumably want=20
+> > the buffer to be 116, not 108?
+>=20
+> For a frame size 101 =3D> max_frame_len is 123 (18 + 101 + 4).
+
+You get my point, tho right?
+
+> Infact, PMAC strips FCS and ETH_FCS_LEN may not be needed. This behavior
+> is controlled by the PMAC_HD_CTL_RC bit. This bit is enabled from
+> the beginning of this driver. Ethtool has the option to enable
+> FCS reception, but the ethtool interface is not yet supported
+> by this driver.=20
+>=20
+> >> +}
+> >> + =20
+>=20
+> Experiments show that the hardware starts to split the frame at
+> max_frame_len() - 1. Some examples:
+>=20
+> pkt len	MTU	max_frame_size()	buffer_size()	desc1	desc2	desc3	desc4
+> -------------------------------------------------------------------------=
+---------------------
+> 1506		1483		1505		1504		1502	4	X	X
+> 1505		1483		1505		1504		1502	3	X	X
+> 1504		1483		1505		1504		1504	X	X	X
+> 1503		1483		1505		1504		1503	X	X	X
+> 1502		1483		1505		1504		1502	X	X	X
+> 1501		1483		1505		1504		1501	X	X	X
+> -------------------------------------------------------------------------=
+---------------------
+> 1249		380		402		416		414	416	416	3
+> 1248		380		402		416		414	416	416	2
+> 1247		380		402		416		414	416	416	1
+> 1246		380		402		416		414	416	416	X
+> 1245		380		402		416		414	416	415	X
+> -------------------------------------------------------------------------=
+---------------------
+
+Hm, doesn't the former example prove that the calculation in this
+patch is incorrect? Shouldn't we be able to receive a 1505B frame=20
+into a single buffer for the MTU of 1483?
+
+The HW doesn't split at max_frame_len - 1 in the latter example.
+Maybe to save one bit of state the HW doesn't register the lowest=20
+bit of the buffer length? I thinks the buffer is 1504.
+
+I'd lean towards dropping the -1 and letting the DMA alignment
+calculation round the whole length up.
+
+Also should we not take NET_IP_ALIGN into account?
+
+Judging by the length of the first buffer when split happens
+NET_IP_ALIGN is 2, and HW rounds off (2 + pkt-len) to the DMA
+burst size. This makes me think we overrun the end of the buffer
+by NET_IP_ALIGN.
+
+> In fact, this patch is a preparation for SG DMA support, which
+> I wrote some time ago.
