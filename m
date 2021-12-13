@@ -2,69 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5564A4731DD
-	for <lists+netdev@lfdr.de>; Mon, 13 Dec 2021 17:32:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CF3754731FC
+	for <lists+netdev@lfdr.de>; Mon, 13 Dec 2021 17:40:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237444AbhLMQci (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Dec 2021 11:32:38 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:35850 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233962AbhLMQch (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 11:32:37 -0500
-Date:   Mon, 13 Dec 2021 17:32:35 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1639413156;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=l/o9NNCf6o81abGjXJcgio9IBjvwavhfuwFkoSEKieo=;
-        b=FTNxzB5pL4XtGEeJ/YMf3no1IzsPUt6we5IBa7SDAjGZQ8iqHO0swixgKpuHcu1ZWv66ZR
-        M+48+o1dGUaHbom6lpMJXWwRoRnSIPxnMO2uIHWYTyRmnpTRwdThzOdnXM/ST8U7ZAlrm+
-        tbztiW8iwkpwlidP5If8aDpsTOByfd3J4zRS/xIy69m7DKAOhfE6JdZ9XUwFpvUeqr4G0W
-        2qDh8ZPq7KKcvHD6IgzswzEBI6cSTwLjRZUmMqSgLvcoEnQgE2Bze+m9T5eiyW3fmNgavb
-        mWvn+TVJAwB53CwZSbYec2v3wSZHWj0eb1n0YuOdpNMoULGsusDb3f4VJp/VSA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1639413156;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=l/o9NNCf6o81abGjXJcgio9IBjvwavhfuwFkoSEKieo=;
-        b=XIvVHO+/1xeJOsocLRjjtX3iu43cRp1i3XaOt+2z1dDwDXIOiIXtq+QFFY/oD80lxPOsKD
-        HeZq6iBkqcFUxACA==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        id S240938AbhLMQkH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Dec 2021 11:40:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43580 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233954AbhLMQkG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 11:40:06 -0500
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA24BC06173F;
+        Mon, 13 Dec 2021 08:40:05 -0800 (PST)
+Received: by mail-pl1-x62a.google.com with SMTP id y8so11578708plg.1;
+        Mon, 13 Dec 2021 08:40:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lxOuteE2e2VwZEMPoNVGi1WADgcDfEtTyVVKRokDP5I=;
+        b=Tnp16x3HzN802eSAqxZdDTggs6MWwMVMeGDByE/lSqEUETf0WJRfYJUBkpPwmOFSQn
+         7kERFDGvwo9aoYheODGlZ1JmYJqBGaAo6I+lOeIE+kswBi+X72OBb7GglOt4Ws0a1igZ
+         3OAwuik5R3JR7XXULnWEtDR6Bjxsrk6U1AEtk5/BTUdc3Qb4F21g3dmwTQONw6HHvQn+
+         ptfpA6ifFms2+8t7EM88XF8U189+HB4LYWcF6gYJqHtQYlVXHjxI4/KzrM+4+2rMfygt
+         LVWRkQCCh4tW1GSnP4qlPsZHqP4Ib4HjUxduNKERl8V41qqau0S+xhwo1pGC9jG+nTdG
+         oNFQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lxOuteE2e2VwZEMPoNVGi1WADgcDfEtTyVVKRokDP5I=;
+        b=XaLT+WUyfPxqH9ChhYaD1yxWBWFnyTULgEM7zlTgjt8BTFc7YDTxi6+gUmGcZK/z8L
+         mJC7C/zuc/npy8wHmNItyqHVjTp3m/g/tQLerDaSzHCsZLydtWiGSeOxEWRgacvFo3vj
+         RkGKgsy76ikYdde99jJjAuunciIrt8SH/CGx+3EW3b+7Gnq9Fp9SiVWzQhfcA7M9w3ln
+         aTVGZudXMLHEIGwERJ6Bjii/RW1JosBMRPkwlTeMtsv5ms07hP2BzL9ZqiviBgwN4FE/
+         BEMawQDriHSQ9oV+bdFcoWxdwmg6LOnDYPxCRa3ww/peKPPso9z5WZtDLuQAJLExorxm
+         pQfg==
+X-Gm-Message-State: AOAM530hbE1hXpotHM6OWYHPZnMGrb1Iu1zucisadUNJuQwOLasZ72Jc
+        f93fn2q3jWtppvq91EJ+eDA=
+X-Google-Smtp-Source: ABdhPJzjSDpkGy7stBQY7XRpfJb94sVKYuwSgYBAUE8tfIrPPQ5pUWsQKC8oOFdjEk9HlWbns9yz7Q==
+X-Received: by 2002:a17:90a:be10:: with SMTP id a16mr45049751pjs.133.1639413605110;
+        Mon, 13 Dec 2021 08:40:05 -0800 (PST)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:84ea:43e5:6ccb:fc65])
+        by smtp.gmail.com with ESMTPSA id 78sm1556239pgg.85.2021.12.13.08.40.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Dec 2021 08:40:04 -0800 (PST)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>,
+        Florian Westphal <fw@strlen.de>
+Cc:     netfilter-devel@vger.kernel.org, netdev <netdev@vger.kernel.org>,
         Eric Dumazet <edumazet@google.com>,
-        Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [PATCH net-next] net: dev: Always serialize on Qdisc::busylock
- in __dev_xmit_skb() on PREEMPT_RT.
-Message-ID: <Ybd1o6ZXs2C5rzaz@linutronix.de>
-References: <YbN1OL0I1ja4Fwkb@linutronix.de>
- <20211210203256.09eec931@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <YbckZ8VxICTThXOn@linutronix.de>
- <20211213081556.1a575a28@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <YbdyPR0keP1wJmCC@linutronix.de>
- <20211213082046.17360ddd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        Eric Dumazet <eric.dumazet@gmail.com>
+Subject: [PATCH net-next 1/2] netfilter: nfnetlink: add netns refcount tracker to struct nfulnl_instance
+Date:   Mon, 13 Dec 2021 08:39:59 -0800
+Message-Id: <20211213164000.3241266-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.34.1.173.g76aa8bc2d0-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20211213082046.17360ddd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-12-13 08:20:46 [-0800], Jakub Kicinski wrote:
-> On Mon, 13 Dec 2021 17:18:05 +0100 Sebastian Andrzej Siewior wrote:
-> > On 2021-12-13 08:15:56 [-0800], Jakub Kicinski wrote:
-> > > FWIW I disagree. My version was more readable. The sprinkling of the
-> > > PREEMPT_RT tosh is getting a little annoying. Trying to regress the 
-> > > clarity of the code should be top of mind here.  
-> > 
-> > No worries. Let me spin a new version with a swap.
-> 
-> Dave applied your previous version, it's not a big deal, we'll live.
+From: Eric Dumazet <edumazet@google.com>
 
-but happy. Not just live. I've sent a follow-up. I need the network
-department in a happy mood :)
+If compiled with CONFIG_NET_NS_REFCNT_TRACKER=y,
+using put_net_track() in nfulnl_instance_free_rcu()
+and get_net_track() in instance_create()
+might help us finding netns refcount imbalances.
 
-Sebastian
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+---
+ net/netfilter/nfnetlink_log.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/net/netfilter/nfnetlink_log.c b/net/netfilter/nfnetlink_log.c
+index 691ef4cffdd907cf09d3a7e680ebe83ea5562ee0..7a3a91fc7ffaaf7c632692949a990f5867173e5c 100644
+--- a/net/netfilter/nfnetlink_log.c
++++ b/net/netfilter/nfnetlink_log.c
+@@ -66,6 +66,7 @@ struct nfulnl_instance {
+ 	struct sk_buff *skb;		/* pre-allocatd skb */
+ 	struct timer_list timer;
+ 	struct net *net;
++	netns_tracker ns_tracker;
+ 	struct user_namespace *peer_user_ns;	/* User namespace of the peer process */
+ 	u32 peer_portid;		/* PORTID of the peer process */
+ 
+@@ -140,7 +141,7 @@ static void nfulnl_instance_free_rcu(struct rcu_head *head)
+ 	struct nfulnl_instance *inst =
+ 		container_of(head, struct nfulnl_instance, rcu);
+ 
+-	put_net(inst->net);
++	put_net_track(inst->net, &inst->ns_tracker);
+ 	kfree(inst);
+ 	module_put(THIS_MODULE);
+ }
+@@ -187,7 +188,7 @@ instance_create(struct net *net, u_int16_t group_num,
+ 
+ 	timer_setup(&inst->timer, nfulnl_timer, 0);
+ 
+-	inst->net = get_net(net);
++	inst->net = get_net_track(net, &inst->ns_tracker, GFP_ATOMIC);
+ 	inst->peer_user_ns = user_ns;
+ 	inst->peer_portid = portid;
+ 	inst->group_num = group_num;
+-- 
+2.34.1.173.g76aa8bc2d0-goog
+
