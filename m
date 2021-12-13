@@ -2,85 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D518473150
-	for <lists+netdev@lfdr.de>; Mon, 13 Dec 2021 17:11:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DDEB473165
+	for <lists+netdev@lfdr.de>; Mon, 13 Dec 2021 17:16:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240495AbhLMQLR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Dec 2021 11:11:17 -0500
-Received: from smtp04.smtpout.orange.fr ([80.12.242.126]:53572 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240490AbhLMQLQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 11:11:16 -0500
-Received: from localhost.localdomain ([106.133.22.31])
-        by smtp.orange.fr with ESMTPA
-        id wnuom1qs4k3HQwnuxmkP2j; Mon, 13 Dec 2021 17:11:15 +0100
-X-ME-Helo: localhost.localdomain
-X-ME-Auth: MDU0YmViZGZmMDIzYiBlMiM2NTczNTRjNWZkZTMwOGRiOGQ4ODf3NWI1ZTMyMzdiODlhOQ==
-X-ME-Date: Mon, 13 Dec 2021 17:11:15 +0100
-X-ME-IP: 106.133.22.31
-From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>, linux-can@vger.kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Lukas Magel <lukas.magel@escrypt.com>
-Subject: [RESEND PATCH v1] can: etas_es58x: es58x_init_netdev: populate net_device::dev_port
-Date:   Tue, 14 Dec 2021 01:10:58 +0900
-Message-Id: <20211213161058.56599-1-mailhol.vincent@wanadoo.fr>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20211029111829.crrwdjizlflzzhq2@pengutronix.de>
-References: <20211029111829.crrwdjizlflzzhq2@pengutronix.de>
+        id S240591AbhLMQQA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Dec 2021 11:16:00 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:58228 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238112AbhLMQQA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 11:16:00 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5A255B81170
+        for <netdev@vger.kernel.org>; Mon, 13 Dec 2021 16:15:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E75B0C34602;
+        Mon, 13 Dec 2021 16:15:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1639412158;
+        bh=f7afz/4Uy57OvBierwdcWgG76PzVbZlIaTgdiRwTrFY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=jLd6Xt2LA7Qw+gWCa7f+8dpq78e6cpWNxI6sSuMVYZQN7O0JmkmbftrNgaiCiQa4Z
+         PxO+5YvQJtykuKUAJKEndcQ4oGNtUG436SYljVDRNwYxVHq1HaZzB+K6wH6wNeFS2J
+         aKCbCb/mdAfP9Il4MoxgBURGetjrLveUp+CF6U/OO7fy02r7qOucuYcggpb7RpitiV
+         zAKX1zohVduVxsHHBTDuNJSy50qx3uxVyaTeQL8jvX2iczUVi7lUXEzlLH3I0iEQf1
+         u/GQHyH5zRnnsvGVuZt4b1/ibBkQmT0xXdnTEl9EAiWARvf7qVpKyeMYCF2K9X94ID
+         rPA22hl6wpntg==
+Date:   Mon, 13 Dec 2021 08:15:56 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [PATCH net-next] net: dev: Always serialize on Qdisc::busylock
+ in __dev_xmit_skb() on PREEMPT_RT.
+Message-ID: <20211213081556.1a575a28@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <YbckZ8VxICTThXOn@linutronix.de>
+References: <YbN1OL0I1ja4Fwkb@linutronix.de>
+        <20211210203256.09eec931@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <YbckZ8VxICTThXOn@linutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The field dev_port of struct net_device indicates the port number of a
-network device [1]. This patch populates this field.
+On Mon, 13 Dec 2021 11:45:59 +0100 Sebastian Andrzej Siewior wrote:
+> On 2021-12-10 20:32:56 [-0800], Jakub Kicinski wrote:
+> > On Fri, 10 Dec 2021 16:41:44 +0100 Sebastian Andrzej Siewior wrote:  
+> > > -	contended = qdisc_is_running(q);
+> > > +	if (!IS_ENABLED(CONFIG_PREEMPT_RT))
+> > > +		contended = qdisc_is_running(q);
+> > > +	else
+> > > +		contended = true;  
+> > 
+> > Why not:
+> > 
+> > 	contended = qdisc_is_running(q) || IS_ENABLED(CONFIG_PREEMPT_RT);  
+> 
+> I could do that. But I would swap the two arguments so that the
+> IS_ENABLED macro comes first and if true qdisc_is_running() is optimized
+> away.
 
-This field can be helpful to distinguish between the two network
-interfaces of a dual channel device (i.e. ES581.4 or ES582.1). Indeed,
-at the moment, all the network interfaces of a same device share the
-same static udev attributes c.f. output of:
-
-| udevadm info --attribute-walk /sys/class/net/canX
-
-The dev_port attribute can then be used to write some udev rules to,
-for example, assign a permanent name to each network interface based
-on the serial/dev_port pair (which is convenient when you have a test
-bench with several CAN devices connected simultaneously and wish to
-keep consistent interface names upon reboot).
-
-[1] https://www.kernel.org/doc/Documentation/ABI/testing/sysfs-class-net
-
-Suggested-by: Lukas Magel <lukas.magel@escrypt.com>
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
----
-Hi Marc,
-
-At one point, this patch was applied to linux-can-next/testing but was
-then removed. I guess it just went off your radar. Resending it :)
-
-
-Yours sincerely,
-Vincent Mailhol
-
----
- drivers/net/can/usb/etas_es58x/es58x_core.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/net/can/usb/etas_es58x/es58x_core.c b/drivers/net/can/usb/etas_es58x/es58x_core.c
-index 96a13c770e4a..403de7e9d084 100644
---- a/drivers/net/can/usb/etas_es58x/es58x_core.c
-+++ b/drivers/net/can/usb/etas_es58x/es58x_core.c
-@@ -2096,6 +2096,7 @@ static int es58x_init_netdev(struct es58x_device *es58x_dev, int channel_idx)
- 
- 	netdev->netdev_ops = &es58x_netdev_ops;
- 	netdev->flags |= IFF_ECHO;	/* We support local echo */
-+	netdev->dev_port = channel_idx;
- 
- 	ret = register_candev(netdev);
- 	if (ret)
--- 
-2.32.0
-
+FWIW I disagree. My version was more readable. The sprinkling of the
+PREEMPT_RT tosh is getting a little annoying. Trying to regress the 
+clarity of the code should be top of mind here.
