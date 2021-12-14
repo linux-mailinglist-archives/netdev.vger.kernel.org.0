@@ -2,98 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE07147406F
-	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 11:27:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A4DF04740B2
+	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 11:45:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233058AbhLNK1I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Dec 2021 05:27:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32836 "EHLO
+        id S231415AbhLNKpp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Dec 2021 05:45:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233036AbhLNK1E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 05:27:04 -0500
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA1F7C061574;
-        Tue, 14 Dec 2021 02:27:03 -0800 (PST)
-Received: by mail-wr1-x436.google.com with SMTP id a9so31531797wrr.8;
-        Tue, 14 Dec 2021 02:27:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=TMyGa1ZURjU4WC46Rk0LZynE/EHJadQsWtw3kSUAXB8=;
-        b=L+hUiq55QFzpZ7byn3M6JwQEpNCuZxUyywcuLHq5vDRok8DY6a7NwNQvJZnMm2jfzv
-         c8aDogvddjUy6/c4i1d57I6NGNemEy+4rp6hgQz7ZQONxKGogxyKP8rv8cLU2YR3hDUl
-         G5QzHy+ZO+M/J75ZjzkKBV+HNb3A1rGOgiFXBgX3Wn7+dM5dcd7BJcNwVehuNDwxWe2o
-         xAm/K9H7maFYteCV9H+3NYZtOkfR5Yp4M3oZ9Y70k2OIw5hKDoc/ABRoopDvqaEYICcE
-         baJNnj3bFEIBDnYhx0JYz+VwBQoEQUiqQ0cs/pv5cBYJ/9ScHQpGqXxhRp3aqHFnDb/q
-         /WzQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=TMyGa1ZURjU4WC46Rk0LZynE/EHJadQsWtw3kSUAXB8=;
-        b=EznWvSwtci2mjuIffax5t2pCA3FVUZU0H1LE+HdOh40IIw+7/AK7+Fam9G56t9qANw
-         glAgmWD3vBoz+Nw4IJo/bTSOxtHb7N37pjE04FSZM7rlR/cP8rxJK24tPGQQnMFfk04/
-         cefHe2xFfDj+42gH6I3gGIyH7hh68mhe3fBwBVQDiPUCxQ/YuOoTM1Zai9bDv6mz95vA
-         fWRXoeYvEn42tQ/dlxoLIvimEKHebUII4Bk++wFzjVxzMbeQIVqgkVNoRuoR78TCkkj7
-         C310MSHiAnqyxaWRTmgW+A8cUfBKCrXkIbv+gS5jIkXyiZzUxgWmL2RaMjPcTHUrNS+j
-         /7jg==
-X-Gm-Message-State: AOAM532iIt8bnFiJkcCukVvAqTytE8jTHDJO97Sf+7DzW6n1Eb0wxu4N
-        cPc2NXuYRAbBFqORA0l+LIo=
-X-Google-Smtp-Source: ABdhPJwcUZxZEEScQtU2ozI8WKoVZdULNqWWZF7QIdj/paQhu59VlIjO3ncylyfaQZIFN9AyAv9Njg==
-X-Received: by 2002:a5d:4d8b:: with SMTP id b11mr4911663wru.393.1639477622459;
-        Tue, 14 Dec 2021 02:27:02 -0800 (PST)
-Received: from localhost.localdomain (h-46-59-47-246.A165.priv.bahnhof.se. [46.59.47.246])
-        by smtp.gmail.com with ESMTPSA id z8sm15566276wrh.54.2021.12.14.02.27.01
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 14 Dec 2021 02:27:01 -0800 (PST)
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-To:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, netdev@vger.kernel.org,
-        maciej.fijalkowski@intel.com
-Cc:     jonathan.lemon@gmail.com, bpf@vger.kernel.org
-Subject: [PATCH bpf-next] xsk: add test for tx_writeable to batched path
-Date:   Tue, 14 Dec 2021 11:26:47 +0100
-Message-Id: <20211214102647.7734-1-magnus.karlsson@gmail.com>
-X-Mailer: git-send-email 2.29.0
+        with ESMTP id S233192AbhLNKpo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 05:45:44 -0500
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 917B4C061574;
+        Tue, 14 Dec 2021 02:45:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
+        Message-Id:Date:Subject:Cc:To:From:Content-Type:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-To:Resent-Cc:
+        Resent-Message-ID:In-Reply-To:References;
+        bh=HTc0NEIwIfaemjmwtA9usH0K3xhOw0FIrPWzzLfx8YM=; t=1639478743; x=1640688343; 
+        b=Rp00jp/F7uTud7Ju79r8VEL4WKPXI1YbJwk3A2Xf2G7B+m+LIOoy4NJbdJvry0AM2o9EL1N2nEL
+        erO08rmnwu/vcRCjcjCvT/bepXaqCqV2v3TkyDFCwJdcd/lqBWmDvLD2PrY9rUx4CneEZJaTDxk5s
+        3E8T6Sekv1C2aveICprfCsRM51m+tOw7Nb8YbKpf5Qb2wEP9xHsqhtnCqEMecEXFvctEx66aqzoPM
+        qoKT2IEAjoWhJ63+dJ4+o1Wwf6d61xvgkNRgC+hB8MdkpM6eXCOMLveF66LTg7mwe+yZwtwM+iZpU
+        MYIHeBxHfwvfU3ed3VaJyoSAg+6prXh/l6Mg==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.95)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1mx5JU-00BDoR-Va;
+        Tue, 14 Dec 2021 11:45:41 +0100
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     netdev@vger.kernel.org
+Cc:     linux-wireless@vger.kernel.org
+Subject: pull-request: mac80211 2021-12-14
+Date:   Tue, 14 Dec 2021 11:45:36 +0100
+Message-Id: <20211214104537.16995-1-johannes@sipsolutions.net>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Magnus Karlsson <magnus.karlsson@intel.com>
+Hi,
 
-Add a test for the tx_writeable condition to the batched Tx processing
-path. This test is in the skb and non-batched code paths but not in the
-batched code path. So add it there. This test makes sure that a
-process is not woken up until there are a sufficiently large number of
-free entries in the Tx ring. Currently, any driver using the batched
-interface will be woken up even if there is only one free entry,
-impacting performance negatively.
+Sorry - I accumulated more stuff than I'd like due to
+various other competing priorities...
 
-Fixes: 3413f04141aa ("xsk: Change the tx writeable condition")
-Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
----
- net/xdp/xsk.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Please pull and let me know if there's any problem.
 
-diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-index 28ef3f4465ae..3772fcaa76ed 100644
---- a/net/xdp/xsk.c
-+++ b/net/xdp/xsk.c
-@@ -392,7 +392,8 @@ u32 xsk_tx_peek_release_desc_batch(struct xsk_buff_pool *pool, struct xdp_desc *
- 
- 	xskq_cons_release_n(xs->tx, nb_pkts);
- 	__xskq_cons_release(xs->tx);
--	xs->sk.sk_write_space(&xs->sk);
-+	if (xsk_tx_writeable(xs))
-+		xs->sk.sk_write_space(&xs->sk);
- 
- out:
- 	rcu_read_unlock();
+Thanks,
+johannes
 
-base-commit: d27a662290963a1cde26cdfdbac71a546c06e94a
--- 
-2.29.0
+
+
+The following changes since commit 49573ff7830b1186011f5f2e9c08935ec5fc39b6:
+
+  Merge branch 'tls-splice_read-fixes' (2021-11-25 19:28:21 -0800)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211.git tags/mac80211-for-net-2021-12-14
+
+for you to fetch changes up to 13dee10b30c058ee2c58c5da00339cc0d4201aa6:
+
+  mac80211: do drv_reconfig_complete() before restarting all (2021-12-14 11:22:20 +0100)
+
+----------------------------------------------------------------
+A fairly large number of fixes this time:
+ * fix a station info memory leak on insert collisions
+ * a rate control fix for retransmissions
+ * two aggregation setup fixes
+ * reload current regdomain when reloading database
+ * a locking fix in regulatory work
+ * a probe request allocation size fix in mac80211
+ * apply TCP vs. aggregation (sk pacing) on mesh
+ * fix ordering of channel context update vs. station
+   state
+ * set up skb->dev for mesh forwarding properly
+ * track QoS data frames only for admission control to
+   avoid out-of-bounds read (found by syzbot)
+ * validate extended element ID vs. existing data to
+   avoid out-of-bounds read (found by syzbot)
+ * fix locking in mac80211 aggregation TX setup
+ * fix traffic stall after HW restart when TXQs are used
+ * fix ordering of reconfig/restart after HW restart
+ * fix interface type for extended aggregation capability
+   lookup
+
+----------------------------------------------------------------
+Ahmed Zaki (1):
+      mac80211: fix a memory leak where sta_info is not freed
+
+Felix Fietkau (3):
+      mac80211: fix rate control for retransmitted frames
+      mac80211: fix regression in SSN handling of addba tx
+      mac80211: send ADDBA requests using the tid/queue of the aggregation session
+
+Finn Behrens (2):
+      nl80211: reset regdom when reloading regdb
+      nl80211: remove reload flag from regulatory_request
+
+Ilan Peer (2):
+      cfg80211: Acquire wiphy mutex on regulatory work
+      mac80211: Fix the size used for building probe request
+
+Johannes Berg (7):
+      mac80211: track only QoS data frames for admission control
+      mac80211: add docs for ssn in struct tid_ampdu_tx
+      mac80211: agg-tx: don't schedule_and_wake_txq() under sta->lock
+      mac80211: validate extended element ID is present
+      mac80211: fix lookup when adding AddBA extension element
+      mac80211: mark TX-during-stop for TX in in_reconfig
+      mac80211: do drv_reconfig_complete() before restarting all
+
+Maxime Bizon (1):
+      mac80211: fix TCP performance on mesh interface
+
+Mordechay Goodstein (1):
+      mac80211: update channel context before station state
+
+Xing Song (1):
+      mac80211: set up the fwd_skb->dev for mesh forwarding
+
+ net/mac80211/agg-rx.c     |  5 +++--
+ net/mac80211/agg-tx.c     | 16 +++++++++++-----
+ net/mac80211/driver-ops.h |  5 ++++-
+ net/mac80211/mlme.c       | 13 ++++++++++---
+ net/mac80211/rx.c         |  1 +
+ net/mac80211/sta_info.c   | 21 ++++++++++++---------
+ net/mac80211/sta_info.h   |  2 ++
+ net/mac80211/tx.c         | 10 +++++-----
+ net/mac80211/util.c       | 23 ++++++++++++++---------
+ net/wireless/reg.c        | 30 ++++++++++++++++++++++++++++--
+ 10 files changed, 90 insertions(+), 36 deletions(-)
 
