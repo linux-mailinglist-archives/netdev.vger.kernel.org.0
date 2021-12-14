@@ -2,161 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6509F473D18
-	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 07:17:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C189473D48
+	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 07:40:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230417AbhLNGRb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Dec 2021 01:17:31 -0500
-Received: from rtits2.realtek.com ([211.75.126.72]:60034 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230374AbhLNGRa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 01:17:30 -0500
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 1BE6H9d14009276, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36504.realtek.com.tw[172.21.6.27])
-        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 1BE6H9d14009276
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 14 Dec 2021 14:17:09 +0800
-Received: from RTEXMBS03.realtek.com.tw (172.21.6.96) by
- RTEXH36504.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Tue, 14 Dec 2021 14:17:09 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS03.realtek.com.tw (172.21.6.96) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Tue, 14 Dec 2021 14:17:08 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::65a3:1e23:d911:4b01]) by
- RTEXMBS04.realtek.com.tw ([fe80::65a3:1e23:d911:4b01%5]) with mapi id
- 15.01.2308.020; Tue, 14 Dec 2021 14:17:08 +0800
-From:   Pkshih <pkshih@realtek.com>
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-CC:     "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
-        "jian-hong@endlessm.com" <jhp@endlessos.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Bernie Huang <phhuang@realtek.com>,
-        Brian Norris <briannorris@chromium.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH v2] rtw88: Disable PCIe ASPM while doing NAPI poll on 8821CE
-Thread-Topic: [PATCH v2] rtw88: Disable PCIe ASPM while doing NAPI poll on
- 8821CE
-Thread-Index: AQHX8KxEGsnToIDXSUCJmFSUmWAcOawxeDaA//+B4wCAAIbGIA==
-Date:   Tue, 14 Dec 2021 06:17:08 +0000
-Message-ID: <db0e4a43a09f4618b0ed0ad191140e34@realtek.com>
-References: <20211214053302.242222-1-kai.heng.feng@canonical.com>
- <4aaf5dd030004285a56bc55cc6b2731b@realtek.com>
- <CAAd53p6TWV=vciEPkM-_rPy4op1Nqpqye-UhHXnsUJ4MjoVk=w@mail.gmail.com>
-In-Reply-To: <CAAd53p6TWV=vciEPkM-_rPy4op1Nqpqye-UhHXnsUJ4MjoVk=w@mail.gmail.com>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.69.188]
-x-kse-serverinfo: RTEXMBS03.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIxLzEyLzE0IOS4iuWNiCAwNDo0NzowMA==?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S230511AbhLNGkQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Dec 2021 01:40:16 -0500
+Received: from mout.gmx.net ([212.227.17.22]:56195 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230494AbhLNGkP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Dec 2021 01:40:15 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1639463994;
+        bh=AnY0FXth2uT3DootG1OkAz5YN7wfCnOeoOzAnGdj19g=;
+        h=X-UI-Sender-Class:Subject:From:To:Cc:Date:In-Reply-To:References;
+        b=B3b8jHviVMGMjfE/xf4LSW3S8HdmyW1U1WtQOf57rTf0Z4oKgepiogq2Xiu1DgHj0
+         fggO/+LFyyzHkRbPrHjxHXJqnxvFeombw5ATmRYNsWxwWqGeFM/14u0YaKVBJlAcVp
+         uVYCxbJCcdbfnvTOJMuY8hOJxu5akUASuK6suIv4=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from machineone.fritz.box ([84.190.129.90]) by mail.gmx.net
+ (mrgmx105 [212.227.17.168]) with ESMTPSA (Nemesis) id
+ 1MA7KU-1mmX4t3wQE-00BfUn; Tue, 14 Dec 2021 07:39:54 +0100
+Message-ID: <d1867ea068e57702bdd953668a3c992f3e205ded.camel@gmx.de>
+Subject: Re: [PATCH] igc: Avoid possible deadlock during suspend/resume
+From:   Stefan Dietrich <roots@gmx.de>
+To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Thorsten Leemhuis <regressions@leemhuis.info>
+Cc:     kuba@kernel.org, greg@kroah.com, netdev@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org, regressions@lists.linux.dev
+Date:   Tue, 14 Dec 2021 07:39:52 +0100
+In-Reply-To: <87wnk8qrt8.fsf@intel.com>
+References: <87r1awtdx3.fsf@intel.com>
+         <20211201185731.236130-1-vinicius.gomes@intel.com>
+         <5a4b31d43d9bf32e518188f3ef84c433df3a18b1.camel@gmx.de>
+         <87o85yljpu.fsf@intel.com>
+         <063995d8-acf3-9f33-5667-f284233c94b4@leemhuis.info>
+         <8e59b7d6b5d4674d5843bb45dde89e9881d0c741.camel@gmx.de>
+         <5c5b606a-4694-be1b-0d4b-80aad1999bd9@leemhuis.info>
+         <d4c9bb101aa79c5acaaa6dd7b42159fb0c91a341.camel@gmx.de>
+         <87h7bgrn0j.fsf@intel.com>
+         <6bcce8e66fde064fd2879e802970bb4a8f382743.camel@gmx.de>
+         <87wnk8qrt8.fsf@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5-0ubuntu1 
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36504.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:RiWRIMtuWVXoDkIC7M8NSnDGO7Rp+EHeW6tydokhA9qJQYBrtT8
+ G5ke373qJUrZ+XMLoOyTO1Omua7GunCbdokEm4xPCBsBSY08/wex9vx82NfNiVzDgy0Eblj
+ b0EGdtraERvm8DlBDbhPVJoIOF/HNpu1TIFIAT3gMh96njRlUTUQ+jvy+q0GF9RxKE9KSUL
+ WSvCy+YczVY6SfzCR7ZEg==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:RI6SScsUaKY=:T3p6lPS1jMOTGse6jxNDI7
+ yHkJ5dhYkJ71EI3Hj2V3YG6aaNVYRB3m0fOt+l+bOfO3vrqyrFRv4SfpasneEKilKMXdIOaSr
+ xWuRhX6yyFQcJpnQDBCYrjrllUF+rwvb1WNYQw6R3lLPzFmqUnHmgZjUxGTDdFFReZnz193dv
+ OsMwkvjNsyfRmcdfromy4ChOugP+RatLUIEtEx9VsZ5cgf6dD0YDMxy2E7GF6YdFsfVPKmqcL
+ jEwoC33sijQZDX74qSR7eQQxpHA7GjmhsSF0eKVW6bUkb0T5OtLVpQbbeTAeckzX9ag3FqM23
+ OiB6H4jeenILWbTpnJP7k1irX8OgRNxaEk42eK+4lZXBjM1ummgFNRQABwCItkAXicl8eVEOB
+ QmqMUS5XCv2B+Rd6sH+3C5f+nDqdTU3ShwVtZwgj3ZBbSybYsT1AmeM2MDqXUSGYtyvvu+i78
+ IbURMG85tFy+PBn94diG8qx2UARXc7TA+z1zffnp3ZedN8/ZXR9FFX48almAEgIVOvfmLl4//
+ eETv5yDLu1/RWqbZ9ZNynrTOc178arr9p8EmMPo2Qbl36QjVR0SmPu+8IVjm/8LLwIm2/y2Xu
+ LQykYIQhX3w5KPNBVrtXrQyD4xUfXWpucHtQcFHDRFFQGB+BjigNdE0eKwgAyNqUb4wVdMQyz
+ 8Hmf7r9whTxxI88l/y/REIDIUrIzH2+rJOc/xHuO0w5T11RAQN2JDXnmzE2VuPlr8lrC8LcSP
+ MS+JlqoSX002QytTrTq3K4mMlqzZPD5qes82wseJ/yZ7Qb/vWh4+nbwar3t7Vnd8D1yl5J84q
+ 0ZMUyiEmuJNJNp7ZX5Akll9td+17Tq2e1odcGHVzLxz457RPhDjk11SehVCYIu0dtfe4pJ5zV
+ Yitshd8LHRH2hnpWO8E9ZjbfHIz/o3QQzyZzSeZNwgmVDhOR2RNMGamosAq1BLOUt6fOY7WFt
+ JBZfBntVst0wDhQqVV83K2Go/KBt1MpXRXMLSHM8oiQ85D47PSII9XfC9s9tZiYt3doGqxt9I
+ zKENY9IIqNxwf84r5gU2hnU4z8qgGdHy6ZmryIca/e0IIHZ+dYHa9nJXfT9Y72YNeQ==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IEthaS1IZW5nIEZlbmcgPGth
-aS5oZW5nLmZlbmdAY2Fub25pY2FsLmNvbT4NCj4gU2VudDogVHVlc2RheSwgRGVjZW1iZXIgMTQs
-IDIwMjEgMjowNyBQTQ0KPiBUbzogUGtzaGloIDxwa3NoaWhAcmVhbHRlay5jb20+DQo+IENjOiB0
-b255MDYyMGVtbWFAZ21haWwuY29tOyBqaWFuLWhvbmdAZW5kbGVzc20uY29tIDxqaHBAZW5kbGVz
-c29zLm9yZz47IEthbGxlIFZhbG8gPGt2YWxvQGNvZGVhdXJvcmEub3JnPjsNCj4gRGF2aWQgUy4g
-TWlsbGVyIDxkYXZlbUBkYXZlbWxvZnQubmV0PjsgSmFrdWIgS2ljaW5za2kgPGt1YmFAa2VybmVs
-Lm9yZz47IEJlcm5pZSBIdWFuZw0KPiA8cGhodWFuZ0ByZWFsdGVrLmNvbT47IEJyaWFuIE5vcnJp
-cyA8YnJpYW5ub3JyaXNAY2hyb21pdW0ub3JnPjsgbGludXgtd2lyZWxlc3NAdmdlci5rZXJuZWwu
-b3JnOw0KPiBuZXRkZXZAdmdlci5rZXJuZWwub3JnOyBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwu
-b3JnDQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggdjJdIHJ0dzg4OiBEaXNhYmxlIFBDSWUgQVNQTSB3
-aGlsZSBkb2luZyBOQVBJIHBvbGwgb24gODgyMUNFDQo+IA0KPiBPbiBUdWUsIERlYyAxNCwgMjAy
-MSBhdCAxOjU5IFBNIFBrc2hpaCA8cGtzaGloQHJlYWx0ZWsuY29tPiB3cm90ZToNCj4gPg0KPiA+
-DQo+ID4gPiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiA+ID4gRnJvbTogS2FpLUhlbmcg
-RmVuZyA8a2FpLmhlbmcuZmVuZ0BjYW5vbmljYWwuY29tPg0KPiA+ID4gU2VudDogVHVlc2RheSwg
-RGVjZW1iZXIgMTQsIDIwMjEgMTozMyBQTQ0KPiA+ID4gVG86IHRvbnkwNjIwZW1tYUBnbWFpbC5j
-b207IFBrc2hpaCA8cGtzaGloQHJlYWx0ZWsuY29tPg0KPiA+ID4gQ2M6IGppYW4taG9uZ0BlbmRs
-ZXNzbS5jb207IEthaS1IZW5nIEZlbmcgPGthaS5oZW5nLmZlbmdAY2Fub25pY2FsLmNvbT47IEth
-bGxlIFZhbG8NCj4gPiA+IDxrdmFsb0Bjb2RlYXVyb3JhLm9yZz47IERhdmlkIFMuIE1pbGxlciA8
-ZGF2ZW1AZGF2ZW1sb2Z0Lm5ldD47IEpha3ViIEtpY2luc2tpIDxrdWJhQGtlcm5lbC5vcmc+OyBC
-ZXJuaWUNCj4gPiA+IEh1YW5nIDxwaGh1YW5nQHJlYWx0ZWsuY29tPjsgQnJpYW4gTm9ycmlzIDxi
-cmlhbm5vcnJpc0BjaHJvbWl1bS5vcmc+OyBsaW51eC13aXJlbGVzc0B2Z2VyLmtlcm5lbC5vcmc7
-DQo+ID4gPiBuZXRkZXZAdmdlci5rZXJuZWwub3JnOyBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwu
-b3JnDQo+ID4gPiBTdWJqZWN0OiBbUEFUQ0ggdjJdIHJ0dzg4OiBEaXNhYmxlIFBDSWUgQVNQTSB3
-aGlsZSBkb2luZyBOQVBJIHBvbGwgb24gODgyMUNFDQo+ID4gPg0KPiA+ID4gTWFueSBJbnRlbCBi
-YXNlZCBwbGF0Zm9ybXMgZmFjZSBzeXN0ZW0gcmFuZG9tIGZyZWV6ZSBhZnRlciBjb21taXQNCj4g
-PiA+IDllMmZkMjk4NjRjNSAoInJ0dzg4OiBhZGQgbmFwaSBzdXBwb3J0IikuDQo+ID4gPg0KPiA+
-ID4gVGhlIGNvbW1pdCBpdHNlbGYgc2hvdWxkbid0IGJlIHRoZSBjdWxwcml0LiBNeSBndWVzcyBp
-cyB0aGF0IHRoZSA4ODIxQ0UNCj4gPiA+IG9ubHkgbGVhdmVzIEFTUE0gTDEgZm9yIGEgc2hvcnQg
-cGVyaW9kIHdoZW4gSVJRIGlzIHJhaXNlZC4gU2luY2UgSVJRIGlzDQo+ID4gPiBtYXNrZWQgZHVy
-aW5nIE5BUEkgcG9sbGluZywgdGhlIFBDSWUgbGluayBzdGF5cyBhdCBMMSBhbmQgbWFrZXMgUlgg
-RE1BDQo+ID4gPiBleHRyZW1lbHkgc2xvdy4gRXZlbnR1YWxseSB0aGUgUlggcmluZyBiZWNvbWVz
-IG1lc3NlZCB1cDoNCj4gPiA+IFsgMTEzMy4xOTQ2OTddIHJ0d184ODIxY2UgMDAwMDowMjowMC4w
-OiBwY2kgYnVzIHRpbWVvdXQsIGNoZWNrIGRtYSBzdGF0dXMNCj4gPiA+DQo+ID4gPiBTaW5jZSB0
-aGUgODgyMUNFIGhhcmR3YXJlIG1heSBmYWlsIHRvIGxlYXZlIEFTUE0gTDEsIG1hbnVhbGx5IGRv
-IGl0IGluDQo+ID4gPiB0aGUgZHJpdmVyIHRvIHJlc29sdmUgdGhlIGlzc3VlLg0KPiA+ID4NCj4g
-PiA+IEZpeGVzOiA5ZTJmZDI5ODY0YzUgKCJydHc4ODogYWRkIG5hcGkgc3VwcG9ydCIpDQo+ID4g
-PiBCdWd6aWxsYTogaHR0cHM6Ly9idWd6aWxsYS5rZXJuZWwub3JnL3Nob3dfYnVnLmNnaT9pZD0y
-MTUxMzENCj4gPiA+IEJ1Z0xpbms6IGh0dHBzOi8vYnVncy5sYXVuY2hwYWQubmV0L2J1Z3MvMTky
-NzgwOA0KPiA+ID4gU2lnbmVkLW9mZi1ieTogS2FpLUhlbmcgRmVuZyA8a2FpLmhlbmcuZmVuZ0Bj
-YW5vbmljYWwuY29tPg0KPiA+ID4gLS0tDQo+ID4gPiB2MjoNCj4gPiA+ICAtIEFkZCBkZWZhdWx0
-IHZhbHVlIGZvciBtb2R1bGUgcGFyYW1ldGVyLg0KPiA+ID4NCj4gPiA+ICBkcml2ZXJzL25ldC93
-aXJlbGVzcy9yZWFsdGVrL3J0dzg4L3BjaS5jIHwgNzQgKysrKysrKystLS0tLS0tLS0tLS0tLS0t
-DQo+ID4gPiAgZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydHc4OC9wY2kuaCB8ICAxICsN
-Cj4gPiA+ICAyIGZpbGVzIGNoYW5nZWQsIDI0IGluc2VydGlvbnMoKyksIDUxIGRlbGV0aW9ucygt
-KQ0KPiA+ID4NCj4gPiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVr
-L3J0dzg4L3BjaS5jIGIvZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydHc4OC9wY2kuYw0K
-PiA+ID4gaW5kZXggM2IzNjdjOTA4NWViYS4uNGFiNzVhYzI1MDBlOSAxMDA2NDQNCj4gPiA+IC0t
-LSBhL2RyaXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnR3ODgvcGNpLmMNCj4gPiA+ICsrKyBi
-L2RyaXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnR3ODgvcGNpLmMNCj4gPiA+IEBAIC0yLDcg
-KzIsNiBAQA0KPiA+ID4gIC8qIENvcHlyaWdodChjKSAyMDE4LTIwMTkgIFJlYWx0ZWsgQ29ycG9y
-YXRpb24NCj4gPiA+ICAgKi8NCj4gPiA+DQo+ID4gPiAtI2luY2x1ZGUgPGxpbnV4L2RtaS5oPg0K
-PiA+ID4gICNpbmNsdWRlIDxsaW51eC9tb2R1bGUuaD4NCj4gPiA+ICAjaW5jbHVkZSA8bGludXgv
-cGNpLmg+DQo+ID4gPiAgI2luY2x1ZGUgIm1haW4uaCINCj4gPiA+IEBAIC0xNiwxMCArMTUsMTMg
-QEANCj4gPiA+DQo+ID4gPiAgc3RhdGljIGJvb2wgcnR3X2Rpc2FibGVfbXNpOw0KPiA+ID4gIHN0
-YXRpYyBib29sIHJ0d19wY2lfZGlzYWJsZV9hc3BtOw0KPiA+ID4gK3N0YXRpYyBpbnQgcnR3X3J4
-X2FzcG0gPSAtMTsNCj4gPiA+ICBtb2R1bGVfcGFyYW1fbmFtZWQoZGlzYWJsZV9tc2ksIHJ0d19k
-aXNhYmxlX21zaSwgYm9vbCwgMDY0NCk7DQo+ID4gPiAgbW9kdWxlX3BhcmFtX25hbWVkKGRpc2Fi
-bGVfYXNwbSwgcnR3X3BjaV9kaXNhYmxlX2FzcG0sIGJvb2wsIDA2NDQpOw0KPiA+ID4gK21vZHVs
-ZV9wYXJhbV9uYW1lZChyeF9hc3BtLCBydHdfcnhfYXNwbSwgaW50LCAwNDQ0KTsNCj4gPiA+ICBN
-T0RVTEVfUEFSTV9ERVNDKGRpc2FibGVfbXNpLCAiU2V0IFkgdG8gZGlzYWJsZSBNU0kgaW50ZXJy
-dXB0IHN1cHBvcnQiKTsNCj4gPiA+ICBNT0RVTEVfUEFSTV9ERVNDKGRpc2FibGVfYXNwbSwgIlNl
-dCBZIHRvIGRpc2FibGUgUENJIEFTUE0gc3VwcG9ydCIpOw0KPiA+ID4gK01PRFVMRV9QQVJNX0RF
-U0MocnhfYXNwbSwgIlVzZSBQQ0llIEFTUE0gZm9yIFJYICgwPWRpc2FibGUsIDE9ZW5hYmxlLCAt
-MT1kZWZhdWx0KSIpOw0KPiA+ID4NCj4gPiA+ICBzdGF0aWMgdTMyIHJ0d19wY2lfdHhfcXVldWVf
-aWR4X2FkZHJbXSA9IHsNCj4gPiA+ICAgICAgIFtSVFdfVFhfUVVFVUVfQktdICAgICAgID0gUlRL
-X1BDSV9UWEJEX0lEWF9CS1EsDQo+ID4gPiBAQCAtMTQwOSw3ICsxNDExLDExIEBAIHN0YXRpYyB2
-b2lkIHJ0d19wY2lfbGlua19wcyhzdHJ1Y3QgcnR3X2RldiAqcnR3ZGV2LCBib29sIGVudGVyKQ0K
-PiA+ID4gICAgICAgICogdGhyb3VnaHB1dC4gVGhpcyBpcyBwcm9iYWJseSBiZWNhdXNlIHRoZSBB
-U1BNIGJlaGF2aW9yIHNsaWdodGx5DQo+ID4gPiAgICAgICAgKiB2YXJpZXMgZnJvbSBkaWZmZXJl
-bnQgU09DLg0KPiA+ID4gICAgICAgICovDQo+ID4gPiAtICAgICBpZiAocnR3cGNpLT5saW5rX2N0
-cmwgJiBQQ0lfRVhQX0xOS0NUTF9BU1BNX0wxKQ0KPiA+ID4gKyAgICAgaWYgKCEocnR3cGNpLT5s
-aW5rX2N0cmwgJiBQQ0lfRVhQX0xOS0NUTF9BU1BNX0wxKSkNCj4gPiA+ICsgICAgICAgICAgICAg
-cmV0dXJuOw0KPiA+ID4gKw0KPiA+ID4gKyAgICAgaWYgKChlbnRlciAmJiBhdG9taWNfZGVjX3Jl
-dHVybigmcnR3cGNpLT5saW5rX3VzYWdlKSA9PSAwKSB8fA0KPiA+ID4gKyAgICAgICAgICghZW50
-ZXIgJiYgYXRvbWljX2luY19yZXR1cm4oJnJ0d3BjaS0+bGlua191c2FnZSkgPT0gMSkpDQo+ID4g
-PiAgICAgICAgICAgICAgIHJ0d19wY2lfYXNwbV9zZXQocnR3ZGV2LCBlbnRlcik7DQo+ID4gPiAg
-fQ0KPiA+ID4NCj4gPg0KPiA+IEkgZm91bmQgY2FsbGluZyBwY2lfbGlua19wcyBpc24ndCBhbHdh
-eXMgc3ltbWV0cmljLCBzbyB3ZSBuZWVkIHRvIHJlc2V0DQo+ID4gcmVmX2NudCBhdCBwY2lfc3Rh
-cnQoKSBsaWtlIGJlbG93LCBvciB3ZSBjYW4ndCBlbnRlciBydHdfcGNpX2FzcG1fc2V0KCkNCj4g
-PiBhbnltb3JlLiBUaGUgbmVnYXRpdmUgZmxvdyBJIGZhY2UgaXMNCj4gPiBpZnVwIC0+IGNvbm5l
-Y3QgQVAgLT4gaWZkb3duIC0+IGlmdXAgKHJlZl9jbnQgaXNuJ3QgZXhwZWN0ZWQgbm93KS4NCj4g
-DQo+IElzIGl0IGV4cGVjdGVkIHRvIGJlIGFzeW1tZXRyaWM/DQo+IElmIGl0J3MgaW50ZW5kZWQg
-dG8gYmUgdGhpcyB3YXksIEknbGwgY2hhbmdlIHdoZXJlIHdlIHNldCBsaW5rX3VzYWdlLg0KPiBP
-dGhlcndpc2UgSSB0aGluayBtYWtpbmcgaXQgc3ltbWV0cmljIG1ha2VzIG1vcmUgc2Vuc2UuDQoN
-CkFncmVlIHdpdGggeW91ciB0aG91Z2h0LCBidXQgSSBkb24ndCByZW1lbWJlciBjbGVhcmx5IHdo
-eSBpdCBlbnRlcnMgaWRsZSB0d2ljZQ0KaW4gYWJvdmUgZmxvdy4gU28sIHlvdSBtYXkgdXNlIHR3
-byBmbGFncyB0byBpbmRpY2F0ZSB0aGUgc3RhdGUgd2FudGVkIGJ5DQp0d28gY2FsbGVycy4NCg0K
-LS0NClBpbmctS2UNCg0KDQo=
+Hi Vinicius,
+
+thanks for the info and you work on that issue.
+
+
+Stefan
+
+On Mon, 2021-12-13 at 10:32 -0800, Vinicius Costa Gomes wrote:
+> Hi Stefan,
+>
+> Stefan Dietrich <roots@gmx.de> writes:
+>
+> > Hi Vinicius,
+> >
+> > thanks a lot - that patch fixed it! Both "normal" shutdown as well
+> > as
+> > ifdown/ifup are working without issues now if CONFIG_PCIE_PTM is
+> > enabled in the kernel config.
+>
+> Great!
+>
+> This patch is mostly to give us time to investigate, this seems to be
+> an
+> issue related to that specific i225 model. I have to track one down
+> and
+> perhaps talk to the hardware folks and see what I am doing wrong.
+>
+> > I've done a DSL download/upload speed comparison against my current
+> > 5.14.0-19.2 and did not see any performance differences outside
+> > margin
+> > of error. I currently have no other Linux machine I could use for
+> > iperf
+> > but I will report if I encounter any issues.
+> >
+>
+> I wasn't expecting any changes in performance, I was more asking if
+> you
+> had some use case for PCIe PTM, and something stopped working. It
+> seems
+> that the answer is no. That's good.
+>
+> > As I am not familiar with the kernel development procedure: can you
+> > give a rough estimate when we may expect this patch in the stable
+> > branch?
+>
+> I will write a useful commit message, take another closer look to see
+> if
+> I am still missing something and propose the patch upstream. From
+> there
+> until it's accepted in a stable tree, I guess it could take a few
+> days,
+> a week, perhaps.
+>
+> >
+> > Thanks again,
+> > Stefan
+> >
+> >
+> >
+> > On Fri, 2021-12-10 at 16:41 -0800, Vinicius Costa Gomes wrote:
+> > > Hi Stefan,
+> > >
+> > > Stefan Dietrich <roots@gmx.de> writes:
+> > >
+> > > > Agreed and thanks for the pointers; please see the log files
+> > > > and
+> > > > .config attached as requested.
+> > > >
+> > >
+> > > Thanks for the logs.
+> > >
+> > > Very interesting that the initialization of the device is fine,
+> > > so
+> > > it's
+> > > something that happens later.
+> > >
+> > > Can you test the attached patch?
+> > >
+> > > If the patch works, I would also be interested if you notice any
+> > > loss
+> > > of
+> > > functionality with your NIC. (I wouldn't think so, as far as I
+> > > know,
+> > > i225-V models have PTM support but don't have any PTP support).
+> > >
+> > > > Cheers,
+> > > > Stefan
+> > > >
+> > > >
+> > > > On Fri, 2021-12-10 at 15:01 +0100, Thorsten Leemhuis wrote:
+> > > > > On 10.12.21 14:45, Stefan Dietrich wrote:
+> > > > > > thanks for keeping an eye on the issue. I've sent the files
+> > > > > > in
+> > > > > > private
+> > > > > > because I did not want to spam the mailing lists with them.
+> > > > > > Please
+> > > > > > let
+> > > > > > me know if this is the correct procedure.
+> > >
+> > > Cheers,
+>
+> Cheers,
+
