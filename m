@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 400D4474B61
-	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 20:00:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C585474B54
+	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 19:59:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237277AbhLNTAS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Dec 2021 14:00:18 -0500
-Received: from mga01.intel.com ([192.55.52.88]:50835 "EHLO mga01.intel.com"
+        id S237208AbhLNS7K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Dec 2021 13:59:10 -0500
+Received: from mga12.intel.com ([192.55.52.136]:13865 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237279AbhLNTAO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 Dec 2021 14:00:14 -0500
+        id S229982AbhLNS7J (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Dec 2021 13:59:09 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1639508414; x=1671044414;
+  t=1639508349; x=1671044349;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=XynYfaHPcwnAoEIBTfMczTgLVzMSgBjVMQiRatUW/Qs=;
-  b=gfkdDpKJAa0dIUya2Nn4FcsHENUdNfFzoVvOwt0aEmJZN6RTgcDknJZT
-   71cGnUDMQNVQF2+8S1QdMEu6IZf9Hm9ONSfqJxWfQEa99PEUd5mbxOMGC
-   iZIV6JF01SF07Y2uffcMMQYoFqp3U4QOWOBfOaDYocxSfFTH8lxrpx19u
-   PZSUMCy3xxgPl+FRYWJ6w628bIGHudte0RqfYEP0H5FN+ssdGW7Tqi/XV
-   rdVgAUkYr0NR72+HCJBJ/OqAuD8Jn9KdAU6vmxR3IVarWkFW4LrARDOwK
-   ykKRw+qaarCMAReJksYa5pWy5HXtCk5ZhMsqDLn4NfKOivIXMht6K/khh
+  bh=hwV9V9DCFxZP+nTbkl8IuRe11sHCBVvKGPQjD1DLoAw=;
+  b=U78vkyE7mLoCflTbks7BG2vmo2DaFTLhCeZYgG/Lvfk20jbYygS69C9i
+   5zBurJJrhTG6Eb+wdKRu+thlCPnAxVq9Zes5npE8KlO6jolAR9Az9dqQ5
+   eTNSnc2cerVEBaHxPvCaOnith2BGoWsqHUGnhZ/HtAWKIKUlonKJhZTZZ
+   lo9E9t7THS2XU0ul1t/fUD9RZKkYSGoSBXUqd1hTCGQIrrlMlfFJR80rH
+   ALyyNPQ1THWJkcUY9IphTL7nTCVPPjE73GT3wCasXZZe7r+DE7HbwvjTZ
+   B2N3R6ButeA4D5bh5oZIWwd/OTLune4E1JIgkgDqnzpX26gla80NXj2qE
    w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10197"; a="263200035"
+X-IronPort-AV: E=McAfee;i="6200,9189,10197"; a="219072678"
 X-IronPort-AV: E=Sophos;i="5.88,205,1635231600"; 
-   d="scan'208";a="263200035"
+   d="scan'208";a="219072678"
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Dec 2021 10:30:11 -0800
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Dec 2021 10:30:11 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,205,1635231600"; 
-   d="scan'208";a="583712776"
+   d="scan'208";a="583712785"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by fmsmga004.fm.intel.com with ESMTP; 14 Dec 2021 10:30:10 -0800
+  by fmsmga004.fm.intel.com with ESMTP; 14 Dec 2021 10:30:11 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
         Gurucharan G <gurucharanx.g@intel.com>
-Subject: [PATCH net-next 08/12] ice: Cleanup after ice_status removal
-Date:   Tue, 14 Dec 2021 10:29:04 -0800
-Message-Id: <20211214182908.1513343-9-anthony.l.nguyen@intel.com>
+Subject: [PATCH net-next 09/12] ice: Remove excess error variables
+Date:   Tue, 14 Dec 2021 10:29:05 -0800
+Message-Id: <20211214182908.1513343-10-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211214182908.1513343-1-anthony.l.nguyen@intel.com>
 References: <20211214182908.1513343-1-anthony.l.nguyen@intel.com>
@@ -50,2753 +50,1346 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Clean up code after changing ice_status to int. Rearrange to fix reverse
-Christmas tree and pull lines up where applicable.
+ice_status previously had a variable to contain these values where other
+error codes had a variable as well. With ice_status now being an int,
+there is no need for two variables to hold error values. In cases where
+this occurs, remove one of the excess variables and use a single one.
+Some initialization of variables are no longer needed and have been
+removed.
 
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Tested-by: Gurucharan G <gurucharanx.g@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_common.c   | 45 ++++++-----
- drivers/net/ethernet/intel/ice/ice_controlq.c | 18 ++---
- drivers/net/ethernet/intel/ice/ice_dcb.c      | 19 ++---
- drivers/net/ethernet/intel/ice/ice_dcb.h      |  3 +-
- drivers/net/ethernet/intel/ice/ice_devlink.c  |  4 +-
- drivers/net/ethernet/intel/ice/ice_ethtool.c  | 35 ++++-----
- .../net/ethernet/intel/ice/ice_ethtool_fdir.c |  4 +-
- drivers/net/ethernet/intel/ice/ice_fdir.c     |  6 +-
- drivers/net/ethernet/intel/ice/ice_fdir.h     |  6 +-
- .../net/ethernet/intel/ice/ice_flex_pipe.c    | 59 +++++++--------
- .../net/ethernet/intel/ice/ice_flex_pipe.h    |  3 +-
- drivers/net/ethernet/intel/ice/ice_flow.c     | 17 ++---
- drivers/net/ethernet/intel/ice/ice_flow.h     |  9 +--
- drivers/net/ethernet/intel/ice/ice_fltr.c     | 25 +++----
- drivers/net/ethernet/intel/ice/ice_fltr.h     |  6 +-
- .../net/ethernet/intel/ice/ice_fw_update.c    | 22 +++---
- drivers/net/ethernet/intel/ice/ice_lib.c      | 29 ++++---
- drivers/net/ethernet/intel/ice/ice_lib.h      |  3 +-
- drivers/net/ethernet/intel/ice/ice_main.c     | 60 +++++++--------
- drivers/net/ethernet/intel/ice/ice_nvm.c      | 41 +++++-----
- drivers/net/ethernet/intel/ice/ice_nvm.h      | 12 +--
- drivers/net/ethernet/intel/ice/ice_sched.c    | 54 +++++++------
- drivers/net/ethernet/intel/ice/ice_sched.h    |  3 +-
- drivers/net/ethernet/intel/ice/ice_switch.c   | 75 +++++++++----------
- drivers/net/ethernet/intel/ice/ice_switch.h   | 20 ++---
- drivers/net/ethernet/intel/ice/ice_tc_lib.c   |  2 +-
- .../ethernet/intel/ice/ice_virtchnl_fdir.c    |  4 +-
- .../net/ethernet/intel/ice/ice_virtchnl_pf.c  | 31 ++++----
- 28 files changed, 265 insertions(+), 350 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_common.c   |   9 +-
+ drivers/net/ethernet/intel/ice/ice_devlink.c  |  25 ++-
+ drivers/net/ethernet/intel/ice/ice_ethtool.c  |  79 ++++-----
+ .../net/ethernet/intel/ice/ice_ethtool_fdir.c |  44 ++---
+ .../net/ethernet/intel/ice/ice_fw_update.c    |  42 ++---
+ drivers/net/ethernet/intel/ice/ice_lib.c      |  70 ++++----
+ drivers/net/ethernet/intel/ice/ice_main.c     | 159 ++++++++----------
+ drivers/net/ethernet/intel/ice/ice_tc_lib.c   |   9 +-
+ .../ethernet/intel/ice/ice_virtchnl_fdir.c    |  24 +--
+ .../net/ethernet/intel/ice/ice_virtchnl_pf.c  |  44 ++---
+ 10 files changed, 223 insertions(+), 282 deletions(-)
 
 diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
-index 2f74ab437129..2728cea1a490 100644
+index 2728cea1a490..cc8297e1db3a 100644
 --- a/drivers/net/ethernet/intel/ice/ice_common.c
 +++ b/drivers/net/ethernet/intel/ice/ice_common.c
-@@ -183,8 +183,8 @@ ice_aq_get_phy_caps(struct ice_port_info *pi, bool qual_mods, u8 report_mode,
- 	struct ice_aqc_get_phy_caps *cmd;
- 	u16 pcaps_size = sizeof(*pcaps);
- 	struct ice_aq_desc desc;
--	int status;
- 	struct ice_hw *hw;
-+	int status;
- 
- 	cmd = &desc.params.get_phy;
- 
-@@ -428,9 +428,9 @@ ice_aq_get_link_info(struct ice_port_info *pi, bool ena_lse,
- 	struct ice_fc_info *hw_fc_info;
- 	bool tx_pause, rx_pause;
- 	struct ice_aq_desc desc;
--	int status;
- 	struct ice_hw *hw;
- 	u16 cmd_flags;
-+	int status;
- 
- 	if (!pi)
- 		return -EINVAL;
-@@ -668,8 +668,8 @@ static void ice_cleanup_fltr_mgmt_struct(struct ice_hw *hw)
- static int ice_get_fw_log_cfg(struct ice_hw *hw)
- {
- 	struct ice_aq_desc desc;
--	int status;
- 	__le16 *config;
-+	int status;
- 	u16 size;
- 
- 	size = sizeof(*config) * ICE_AQC_FW_LOG_ID_MAX;
-@@ -740,12 +740,12 @@ static int ice_get_fw_log_cfg(struct ice_hw *hw)
- static int ice_cfg_fw_log(struct ice_hw *hw, bool enable)
- {
- 	struct ice_aqc_fw_logging *cmd;
--	int status = 0;
- 	u16 i, chgs = 0, len = 0;
- 	struct ice_aq_desc desc;
- 	__le16 *data = NULL;
- 	u8 actv_evnts = 0;
- 	void *buf = NULL;
-+	int status = 0;
- 
- 	if (!hw->fw_log.cq_en && !hw->fw_log.uart_en)
- 		return 0;
-@@ -906,9 +906,9 @@ static void ice_get_itr_intrl_gran(struct ice_hw *hw)
- int ice_init_hw(struct ice_hw *hw)
- {
- 	struct ice_aqc_get_phy_caps_data *pcaps;
--	int status;
- 	u16 mac_buf_len;
- 	void *mac_buf;
-+	int status;
- 
- 	/* Set MAC type based on DeviceID */
- 	status = ice_set_mac_type(hw);
-@@ -1457,11 +1457,11 @@ ice_sq_send_cmd_retry(struct ice_hw *hw, struct ice_ctl_q_info *cq,
- 		      struct ice_sq_cd *cd)
- {
- 	struct ice_aq_desc desc_cpy;
--	int status;
- 	bool is_cmd_for_retry;
- 	u8 *buf_cpy = NULL;
- 	u8 idx = 0;
- 	u16 opcode;
-+	int status;
- 
- 	opcode = le16_to_cpu(desc->opcode);
- 	is_cmd_for_retry = ice_should_retry_sq_send_cmd(opcode);
-@@ -1820,16 +1820,15 @@ ice_acquire_res(struct ice_hw *hw, enum ice_aq_res_ids res,
-  */
- void ice_release_res(struct ice_hw *hw, enum ice_aq_res_ids res)
- {
--	int status;
- 	u32 total_delay = 0;
-+	int status;
- 
- 	status = ice_aq_release_res(hw, res, 0, NULL);
- 
- 	/* there are some rare cases when trying to release the resource
- 	 * results in an admin queue timeout, so handle them correctly
- 	 */
--	while ((status == -EIO) &&
--	       (total_delay < hw->adminq.sq_cmd_timeout)) {
-+	while ((status == -EIO) && (total_delay < hw->adminq.sq_cmd_timeout)) {
- 		mdelay(1);
- 		status = ice_aq_release_res(hw, res, 0, NULL);
- 		total_delay++;
-@@ -1884,8 +1883,8 @@ int
- ice_alloc_hw_res(struct ice_hw *hw, u16 type, u16 num, bool btm, u16 *res)
- {
- 	struct ice_aqc_alloc_free_res_elem *buf;
--	int status;
- 	u16 buf_len;
-+	int status;
- 
- 	buf_len = struct_size(buf, elem, num);
- 	buf = kzalloc(buf_len, GFP_KERNEL);
-@@ -1921,8 +1920,8 @@ ice_alloc_hw_res(struct ice_hw *hw, u16 type, u16 num, bool btm, u16 *res)
- int ice_free_hw_res(struct ice_hw *hw, u16 type, u16 num, u16 *res)
- {
- 	struct ice_aqc_alloc_free_res_elem *buf;
--	int status;
- 	u16 buf_len;
-+	int status;
- 
- 	buf_len = struct_size(buf, elem, num);
- 	buf = kzalloc(buf_len, GFP_KERNEL);
-@@ -2518,9 +2517,9 @@ ice_aq_list_caps(struct ice_hw *hw, void *buf, u16 buf_size, u32 *cap_count,
- int
- ice_discover_dev_caps(struct ice_hw *hw, struct ice_hw_dev_caps *dev_caps)
- {
--	int status;
- 	u32 cap_count = 0;
- 	void *cbuf;
-+	int status;
- 
- 	cbuf = kzalloc(ICE_AQ_MAX_BUF_LEN, GFP_KERNEL);
- 	if (!cbuf)
-@@ -2552,9 +2551,9 @@ ice_discover_dev_caps(struct ice_hw *hw, struct ice_hw_dev_caps *dev_caps)
- static int
- ice_discover_func_caps(struct ice_hw *hw, struct ice_hw_func_caps *func_caps)
- {
--	int status;
- 	u32 cap_count = 0;
- 	void *cbuf;
-+	int status;
- 
- 	cbuf = kzalloc(ICE_AQ_MAX_BUF_LEN, GFP_KERNEL);
- 	if (!cbuf)
-@@ -3120,8 +3119,8 @@ ice_set_fc(struct ice_port_info *pi, u8 *aq_failures, bool ena_auto_link_update)
- {
- 	struct ice_aqc_set_phy_cfg_data cfg = { 0 };
- 	struct ice_aqc_get_phy_caps_data *pcaps;
--	int status;
- 	struct ice_hw *hw;
-+	int status;
- 
- 	if (!pi || !aq_failures)
- 		return -EINVAL;
-@@ -3261,8 +3260,8 @@ ice_cfg_phy_fec(struct ice_port_info *pi, struct ice_aqc_set_phy_cfg_data *cfg,
- 		enum ice_fec_mode fec)
- {
- 	struct ice_aqc_get_phy_caps_data *pcaps;
--	int status;
- 	struct ice_hw *hw;
-+	int status;
- 
- 	if (!pi || !cfg)
- 		return -EINVAL;
-@@ -3652,9 +3651,9 @@ ice_aq_set_rss_lut(struct ice_hw *hw, struct ice_aq_get_set_rss_lut_params *set_
-  *
-  * get (0x0B04) or set (0x0B02) the RSS key per VSI
-  */
--static int __ice_aq_get_set_rss_key(struct ice_hw *hw, u16 vsi_id,
--				    struct ice_aqc_get_set_rss_keys *key,
--				    bool set)
-+static int
-+__ice_aq_get_set_rss_key(struct ice_hw *hw, u16 vsi_id,
-+			 struct ice_aqc_get_set_rss_keys *key, bool set)
- {
- 	struct ice_aqc_get_set_rss_key *cmd_resp;
- 	u16 key_size = sizeof(*key);
-@@ -3793,8 +3792,8 @@ ice_aq_dis_lan_txq(struct ice_hw *hw, u8 num_qgrps,
- 	struct ice_aqc_dis_txq_item *item;
- 	struct ice_aqc_dis_txqs *cmd;
- 	struct ice_aq_desc desc;
--	int status;
- 	u16 i, sz = 0;
-+	int status;
- 
- 	cmd = &desc.params.dis_txqs;
- 	ice_fill_dflt_direct_cmd_desc(&desc, ice_aqc_opc_dis_txqs);
-@@ -4189,8 +4188,8 @@ ice_ena_vsi_txq(struct ice_port_info *pi, u16 vsi_handle, u8 tc, u16 q_handle,
- 	struct ice_aqc_txsched_elem_data node = { 0 };
+@@ -4447,7 +4447,6 @@ ice_ena_vsi_rdma_qset(struct ice_port_info *pi, u16 vsi_handle, u8 tc,
  	struct ice_sched_node *parent;
- 	struct ice_q_ctx *q_ctx;
--	int status;
- 	struct ice_hw *hw;
-+	int status;
- 
- 	if (!pi || pi->port_state != ICE_SCHED_PORT_STATE_READY)
- 		return -EIO;
-@@ -4292,9 +4291,9 @@ ice_dis_vsi_txq(struct ice_port_info *pi, u16 vsi_handle, u8 tc, u8 num_queues,
- 		enum ice_disq_rst_src rst_src, u16 vmvf_num,
- 		struct ice_sq_cd *cd)
- {
--	int status = -ENOENT;
- 	struct ice_aqc_dis_txq_item *qg_list;
- 	struct ice_q_ctx *q_ctx;
-+	int status = -ENOENT;
  	struct ice_hw *hw;
  	u16 i, buf_size;
- 
-@@ -4446,9 +4445,9 @@ ice_ena_vsi_rdma_qset(struct ice_port_info *pi, u16 vsi_handle, u8 tc,
- 	struct ice_aqc_txsched_elem_data node = { 0 };
- 	struct ice_aqc_add_rdma_qset_data *buf;
- 	struct ice_sched_node *parent;
 -	int status;
- 	struct ice_hw *hw;
- 	u16 i, buf_size;
-+	int status;
  	int ret;
  
  	if (!pi || pi->port_state != ICE_SCHED_PORT_STATE_READY)
-@@ -4523,8 +4522,8 @@ ice_dis_vsi_rdma_qset(struct ice_port_info *pi, u16 count, u32 *qset_teid,
- 		      u16 *q_id)
- {
- 	struct ice_aqc_dis_txq_item *qg_list;
--	int status = 0;
- 	struct ice_hw *hw;
-+	int status = 0;
- 	u16 qg_size;
- 	int i;
- 
-diff --git a/drivers/net/ethernet/intel/ice/ice_controlq.c b/drivers/net/ethernet/intel/ice/ice_controlq.c
-index 5b0c1456698e..6bcfee295991 100644
---- a/drivers/net/ethernet/intel/ice/ice_controlq.c
-+++ b/drivers/net/ethernet/intel/ice/ice_controlq.c
-@@ -295,8 +295,7 @@ ice_cfg_cq_regs(struct ice_hw *hw, struct ice_ctl_q_ring *ring, u16 num_entries)
-  *
-  * Configure base address and length registers for the transmit queue
-  */
--static int
--ice_cfg_sq_regs(struct ice_hw *hw, struct ice_ctl_q_info *cq)
-+static int ice_cfg_sq_regs(struct ice_hw *hw, struct ice_ctl_q_info *cq)
- {
- 	return ice_cfg_cq_regs(hw, &cq->sq, cq->num_sq_entries);
- }
-@@ -308,8 +307,7 @@ ice_cfg_sq_regs(struct ice_hw *hw, struct ice_ctl_q_info *cq)
-  *
-  * Configure base address and length registers for the receive (event queue)
-  */
--static int
--ice_cfg_rq_regs(struct ice_hw *hw, struct ice_ctl_q_info *cq)
-+static int ice_cfg_rq_regs(struct ice_hw *hw, struct ice_ctl_q_info *cq)
- {
- 	int status;
- 
-@@ -474,8 +472,7 @@ static int ice_init_rq(struct ice_hw *hw, struct ice_ctl_q_info *cq)
-  *
-  * The main shutdown routine for the Control Transmit Queue
-  */
--static int
--ice_shutdown_sq(struct ice_hw *hw, struct ice_ctl_q_info *cq)
-+static int ice_shutdown_sq(struct ice_hw *hw, struct ice_ctl_q_info *cq)
- {
- 	int ret_code = 0;
- 
-@@ -541,8 +538,7 @@ static bool ice_aq_ver_check(struct ice_hw *hw)
-  *
-  * The main shutdown routine for the Control Receive Queue
-  */
--static int
--ice_shutdown_rq(struct ice_hw *hw, struct ice_ctl_q_info *cq)
-+static int ice_shutdown_rq(struct ice_hw *hw, struct ice_ctl_q_info *cq)
- {
- 	int ret_code = 0;
- 
-@@ -753,8 +749,8 @@ void ice_shutdown_all_ctrlq(struct ice_hw *hw)
-  */
- int ice_init_all_ctrlq(struct ice_hw *hw)
- {
--	int status;
- 	u32 retry = 0;
-+	int status;
- 
- 	/* Init FW admin queue */
- 	do {
-@@ -970,9 +966,9 @@ ice_sq_send_cmd(struct ice_hw *hw, struct ice_ctl_q_info *cq,
- 	struct ice_dma_mem *dma_buf = NULL;
- 	struct ice_aq_desc *desc_on_ring;
- 	bool cmd_completed = false;
--	int status = 0;
- 	struct ice_sq_cd *details;
- 	u32 total_delay = 0;
-+	int status = 0;
- 	u16 retval = 0;
- 	u32 val = 0;
- 
-@@ -1160,9 +1156,9 @@ ice_clean_rq_elem(struct ice_hw *hw, struct ice_ctl_q_info *cq,
- {
- 	u16 ntc = cq->rq.next_to_clean;
- 	enum ice_aq_err rq_last_status;
--	int ret_code = 0;
- 	struct ice_aq_desc *desc;
- 	struct ice_dma_mem *bi;
-+	int ret_code = 0;
- 	u16 desc_idx;
- 	u16 datalen;
- 	u16 flags;
-diff --git a/drivers/net/ethernet/intel/ice/ice_dcb.c b/drivers/net/ethernet/intel/ice/ice_dcb.c
-index 14cb301210fc..0b146a0d4205 100644
---- a/drivers/net/ethernet/intel/ice/ice_dcb.c
-+++ b/drivers/net/ethernet/intel/ice/ice_dcb.c
-@@ -116,8 +116,7 @@ ice_aq_stop_lldp(struct ice_hw *hw, bool shutdown_lldp_agent, bool persist,
-  *
-  * Start the embedded LLDP Agent on all ports. (0x0A06)
-  */
--int
--ice_aq_start_lldp(struct ice_hw *hw, bool persist, struct ice_sq_cd *cd)
-+int ice_aq_start_lldp(struct ice_hw *hw, bool persist, struct ice_sq_cd *cd)
- {
- 	struct ice_aqc_lldp_start *cmd;
- 	struct ice_aq_desc desc;
-@@ -597,12 +596,11 @@ ice_parse_org_tlv(struct ice_lldp_org_tlv *tlv, struct ice_dcbx_cfg *dcbcfg)
-  *
-  * Parse DCB configuration from the LLDPDU
-  */
--static int
--ice_lldp_to_dcb_cfg(u8 *lldpmib, struct ice_dcbx_cfg *dcbcfg)
-+static int ice_lldp_to_dcb_cfg(u8 *lldpmib, struct ice_dcbx_cfg *dcbcfg)
- {
- 	struct ice_lldp_org_tlv *tlv;
--	int ret = 0;
- 	u16 offset = 0;
-+	int ret = 0;
- 	u16 typelen;
- 	u16 type;
- 	u16 len;
-@@ -652,8 +650,8 @@ int
- ice_aq_get_dcb_cfg(struct ice_hw *hw, u8 mib_type, u8 bridgetype,
- 		   struct ice_dcbx_cfg *dcbcfg)
- {
--	int ret;
- 	u8 *lldpmib;
-+	int ret;
- 
- 	/* Allocate the LLDPDU */
- 	lldpmib = devm_kzalloc(ice_hw_to_dev(hw), ICE_LLDPDU_SIZE, GFP_KERNEL);
-@@ -691,9 +689,9 @@ ice_aq_start_stop_dcbx(struct ice_hw *hw, bool start_dcbx_agent,
- 		       bool *dcbx_agent_status, struct ice_sq_cd *cd)
- {
- 	struct ice_aqc_lldp_stop_start_specific_agent *cmd;
--	int status;
- 	struct ice_aq_desc desc;
- 	u16 opcode;
-+	int status;
- 
- 	cmd = &desc.params.lldp_agent_ctrl;
- 
-@@ -902,8 +900,7 @@ ice_cee_to_dcb_cfg(struct ice_aqc_get_cee_dcb_cfg_resp *cee_cfg,
-  *
-  * Get IEEE or CEE mode DCB configuration from the Firmware
-  */
--static int
--ice_get_ieee_or_cee_dcb_cfg(struct ice_port_info *pi, u8 dcbx_mode)
-+static int ice_get_ieee_or_cee_dcb_cfg(struct ice_port_info *pi, u8 dcbx_mode)
- {
- 	struct ice_dcbx_cfg *dcbx_cfg = NULL;
- 	int ret;
-@@ -1472,9 +1469,9 @@ int ice_set_dcb_cfg(struct ice_port_info *pi)
- {
- 	u8 mib_type, *lldpmib = NULL;
- 	struct ice_dcbx_cfg *dcbcfg;
--	int ret;
- 	struct ice_hw *hw;
- 	u16 miblen;
-+	int ret;
- 
- 	if (!pi)
- 		return -EINVAL;
-@@ -1542,8 +1539,8 @@ ice_update_port_tc_tree_cfg(struct ice_port_info *pi,
- {
- 	struct ice_sched_node *node, *tc_node;
- 	struct ice_aqc_txsched_elem_data elem;
--	int status = 0;
- 	u32 teid1, teid2;
-+	int status = 0;
- 	u8 i, j;
- 
- 	if (!pi)
-diff --git a/drivers/net/ethernet/intel/ice/ice_dcb.h b/drivers/net/ethernet/intel/ice/ice_dcb.h
-index 4eb6383c363e..d73348f279f7 100644
---- a/drivers/net/ethernet/intel/ice/ice_dcb.h
-+++ b/drivers/net/ethernet/intel/ice/ice_dcb.h
-@@ -152,8 +152,7 @@ ice_query_port_ets(struct ice_port_info *pi,
- int
- ice_aq_stop_lldp(struct ice_hw *hw, bool shutdown_lldp_agent, bool persist,
- 		 struct ice_sq_cd *cd);
--int
--ice_aq_start_lldp(struct ice_hw *hw, bool persist, struct ice_sq_cd *cd);
-+int ice_aq_start_lldp(struct ice_hw *hw, bool persist, struct ice_sq_cd *cd);
- int
- ice_aq_start_stop_dcbx(struct ice_hw *hw, bool start_dcbx_agent,
- 		       bool *dcbx_agent_status, struct ice_sq_cd *cd);
+@@ -4496,12 +4495,10 @@ ice_ena_vsi_rdma_qset(struct ice_port_info *pi, u16 vsi_handle, u8 tc,
+ 	node.data.elem_type = ICE_AQC_ELEM_TYPE_LEAF;
+ 	for (i = 0; i < num_qsets; i++) {
+ 		node.node_teid = buf->rdma_qsets[i].qset_teid;
+-		status = ice_sched_add_node(pi, hw->num_tx_sched_layers - 1,
+-					    &node);
+-		if (status) {
+-			ret = status;
++		ret = ice_sched_add_node(pi, hw->num_tx_sched_layers - 1,
++					 &node);
++		if (ret)
+ 			break;
+-		}
+ 		qset_teid[i] = le32_to_cpu(node.node_teid);
+ 	}
+ rdma_error_exit:
 diff --git a/drivers/net/ethernet/intel/ice/ice_devlink.c b/drivers/net/ethernet/intel/ice/ice_devlink.c
-index e838494bf060..dde112e74d41 100644
+index dde112e74d41..50003331addc 100644
 --- a/drivers/net/ethernet/intel/ice/ice_devlink.c
 +++ b/drivers/net/ethernet/intel/ice/ice_devlink.c
-@@ -762,9 +762,9 @@ static int ice_devlink_nvm_snapshot(struct devlink *devlink,
- 	struct ice_pf *pf = devlink_priv(devlink);
+@@ -251,7 +251,6 @@ static int ice_devlink_info_get(struct devlink *devlink,
  	struct device *dev = ice_pf_to_dev(pf);
  	struct ice_hw *hw = &pf->hw;
+ 	struct ice_info_ctx *ctx;
 -	int status;
- 	void *nvm_data;
- 	u32 nvm_size;
-+	int status;
+ 	size_t i;
+ 	int err;
  
- 	nvm_size = hw->flash.flash_size;
- 	nvm_data = vzalloc(nvm_size);
-@@ -819,8 +819,8 @@ ice_devlink_devcaps_snapshot(struct devlink *devlink,
- 	struct ice_pf *pf = devlink_priv(devlink);
- 	struct device *dev = ice_pf_to_dev(pf);
- 	struct ice_hw *hw = &pf->hw;
--	int status;
- 	void *devcaps;
-+	int status;
+@@ -266,20 +265,20 @@ static int ice_devlink_info_get(struct devlink *devlink,
+ 		return -ENOMEM;
  
- 	devcaps = vzalloc(ICE_AQ_MAX_BUF_LEN);
- 	if (!devcaps)
+ 	/* discover capabilities first */
+-	status = ice_discover_dev_caps(hw, &ctx->dev_caps);
+-	if (status) {
++	err = ice_discover_dev_caps(hw, &ctx->dev_caps);
++	if (err) {
+ 		dev_dbg(dev, "Failed to discover device capabilities, status %d aq_err %s\n",
+-			status, ice_aq_str(hw->adminq.sq_last_status));
++			err, ice_aq_str(hw->adminq.sq_last_status));
+ 		NL_SET_ERR_MSG_MOD(extack, "Unable to discover device capabilities");
+ 		err = -EIO;
+ 		goto out_free_ctx;
+ 	}
+ 
+ 	if (ctx->dev_caps.common_cap.nvm_update_pending_orom) {
+-		status = ice_get_inactive_orom_ver(hw, &ctx->pending_orom);
+-		if (status) {
++		err = ice_get_inactive_orom_ver(hw, &ctx->pending_orom);
++		if (err) {
+ 			dev_dbg(dev, "Unable to read inactive Option ROM version data, status %d aq_err %s\n",
+-				status, ice_aq_str(hw->adminq.sq_last_status));
++				err, ice_aq_str(hw->adminq.sq_last_status));
+ 
+ 			/* disable display of pending Option ROM */
+ 			ctx->dev_caps.common_cap.nvm_update_pending_orom = false;
+@@ -287,10 +286,10 @@ static int ice_devlink_info_get(struct devlink *devlink,
+ 	}
+ 
+ 	if (ctx->dev_caps.common_cap.nvm_update_pending_nvm) {
+-		status = ice_get_inactive_nvm_ver(hw, &ctx->pending_nvm);
+-		if (status) {
++		err = ice_get_inactive_nvm_ver(hw, &ctx->pending_nvm);
++		if (err) {
+ 			dev_dbg(dev, "Unable to read inactive NVM version data, status %d aq_err %s\n",
+-				status, ice_aq_str(hw->adminq.sq_last_status));
++				err, ice_aq_str(hw->adminq.sq_last_status));
+ 
+ 			/* disable display of pending Option ROM */
+ 			ctx->dev_caps.common_cap.nvm_update_pending_nvm = false;
+@@ -298,10 +297,10 @@ static int ice_devlink_info_get(struct devlink *devlink,
+ 	}
+ 
+ 	if (ctx->dev_caps.common_cap.nvm_update_pending_netlist) {
+-		status = ice_get_inactive_netlist_ver(hw, &ctx->pending_netlist);
+-		if (status) {
++		err = ice_get_inactive_netlist_ver(hw, &ctx->pending_netlist);
++		if (err) {
+ 			dev_dbg(dev, "Unable to read inactive Netlist version data, status %d aq_err %s\n",
+-				status, ice_aq_str(hw->adminq.sq_last_status));
++				err, ice_aq_str(hw->adminq.sq_last_status));
+ 
+ 			/* disable display of pending Option ROM */
+ 			ctx->dev_caps.common_cap.nvm_update_pending_netlist = false;
 diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool.c b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-index ca7e0ccc81bc..900572181f69 100644
+index 900572181f69..71869c2b2390 100644
 --- a/drivers/net/ethernet/intel/ice/ice_ethtool.c
 +++ b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-@@ -270,9 +270,9 @@ ice_get_eeprom(struct net_device *netdev, struct ethtool_eeprom *eeprom,
- 	struct ice_vsi *vsi = np->vsi;
+@@ -271,8 +271,7 @@ ice_get_eeprom(struct net_device *netdev, struct ethtool_eeprom *eeprom,
  	struct ice_pf *pf = vsi->back;
  	struct ice_hw *hw = &pf->hw;
--	int status;
  	struct device *dev;
- 	int ret = 0;
-+	int status;
+-	int ret = 0;
+-	int status;
++	int ret;
  	u8 *buf;
  
  	dev = ice_pf_to_dev(pf);
-@@ -288,8 +288,7 @@ ice_get_eeprom(struct net_device *netdev, struct ethtool_eeprom *eeprom,
- 	status = ice_acquire_nvm(hw, ICE_RES_READ);
- 	if (status) {
+@@ -285,19 +284,19 @@ ice_get_eeprom(struct net_device *netdev, struct ethtool_eeprom *eeprom,
+ 	if (!buf)
+ 		return -ENOMEM;
+ 
+-	status = ice_acquire_nvm(hw, ICE_RES_READ);
+-	if (status) {
++	ret = ice_acquire_nvm(hw, ICE_RES_READ);
++	if (ret) {
  		dev_err(dev, "ice_acquire_nvm failed, err %d aq_err %s\n",
--			status,
--			ice_aq_str(hw->adminq.sq_last_status));
-+			status, ice_aq_str(hw->adminq.sq_last_status));
+-			status, ice_aq_str(hw->adminq.sq_last_status));
++			ret, ice_aq_str(hw->adminq.sq_last_status));
  		ret = -EIO;
  		goto out;
  	}
-@@ -298,8 +297,7 @@ ice_get_eeprom(struct net_device *netdev, struct ethtool_eeprom *eeprom,
- 				   false);
- 	if (status) {
+ 
+-	status = ice_read_flat_nvm(hw, eeprom->offset, &eeprom->len, buf,
+-				   false);
+-	if (status) {
++	ret = ice_read_flat_nvm(hw, eeprom->offset, &eeprom->len, buf,
++				false);
++	if (ret) {
  		dev_err(dev, "ice_read_flat_nvm failed, err %d aq_err %s\n",
--			status,
--			ice_aq_str(hw->adminq.sq_last_status));
-+			status, ice_aq_str(hw->adminq.sq_last_status));
+-			status, ice_aq_str(hw->adminq.sq_last_status));
++			ret, ice_aq_str(hw->adminq.sq_last_status));
  		ret = -EIO;
  		goto release;
  	}
-@@ -342,8 +340,8 @@ static bool ice_active_vfs(struct ice_pf *pf)
- static u64 ice_link_test(struct net_device *netdev)
- {
- 	struct ice_netdev_priv *np = netdev_priv(netdev);
--	int status;
- 	bool link_up = false;
-+	int status;
- 
- 	netdev_info(netdev, "link test\n");
- 	status = ice_get_link_status(np->vsi->port_info, &link_up);
-@@ -1052,8 +1050,8 @@ ice_get_fecparam(struct net_device *netdev, struct ethtool_fecparam *fecparam)
+@@ -1050,8 +1049,7 @@ ice_get_fecparam(struct net_device *netdev, struct ethtool_fecparam *fecparam)
  	struct ice_link_status *link_info;
  	struct ice_vsi *vsi = np->vsi;
  	struct ice_port_info *pi;
+-	int err = 0;
 -	int status;
- 	int err = 0;
-+	int status;
++	int err;
  
  	pi = vsi->port_info;
  
-@@ -1232,8 +1230,8 @@ static int ice_set_priv_flags(struct net_device *netdev, u32 flags)
- 			pf->dcbx_cap &= ~DCB_CAP_DCBX_LLD_MANAGED;
- 			pf->dcbx_cap |= DCB_CAP_DCBX_HOST;
- 		} else {
--			int status;
- 			bool dcbx_agent_status;
-+			int status;
+@@ -1077,9 +1075,9 @@ ice_get_fecparam(struct net_device *netdev, struct ethtool_fecparam *fecparam)
+ 	if (!caps)
+ 		return -ENOMEM;
  
- 			if (ice_get_pfc_mode(pf) == ICE_QOS_MODE_DSCP) {
- 				clear_bit(ICE_FLAG_FW_LLDP_AGENT, pf->flags);
-@@ -1938,8 +1936,8 @@ ice_get_link_ksettings(struct net_device *netdev,
+-	status = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_TOPO_CAP_MEDIA,
+-				     caps, NULL);
+-	if (status) {
++	err = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_TOPO_CAP_MEDIA,
++				  caps, NULL);
++	if (err) {
+ 		err = -EAGAIN;
+ 		goto done;
+ 	}
+@@ -1936,8 +1934,7 @@ ice_get_link_ksettings(struct net_device *netdev,
  	struct ice_aqc_get_phy_caps_data *caps;
  	struct ice_link_status *hw_link_info;
  	struct ice_vsi *vsi = np->vsi;
+-	int err = 0;
 -	int status;
- 	int err = 0;
-+	int status;
++	int err;
  
  	ethtool_link_ksettings_zero_link_mode(ks, supported);
  	ethtool_link_ksettings_zero_link_mode(ks, advertising);
-@@ -2210,11 +2208,11 @@ ice_set_link_ksettings(struct net_device *netdev,
- 	struct ice_pf *pf = np->vsi->back;
- 	struct ice_port_info *pi;
+@@ -1988,9 +1985,9 @@ ice_get_link_ksettings(struct net_device *netdev,
+ 	if (!caps)
+ 		return -ENOMEM;
+ 
+-	status = ice_aq_get_phy_caps(vsi->port_info, false,
+-				     ICE_AQC_REPORT_ACTIVE_CFG, caps, NULL);
+-	if (status) {
++	err = ice_aq_get_phy_caps(vsi->port_info, false,
++				  ICE_AQC_REPORT_ACTIVE_CFG, caps, NULL);
++	if (err) {
+ 		err = -EIO;
+ 		goto done;
+ 	}
+@@ -2025,9 +2022,9 @@ ice_get_link_ksettings(struct net_device *netdev,
+ 	    caps->link_fec_options & ICE_AQC_PHY_FEC_25G_RS_544_REQ)
+ 		ethtool_link_ksettings_add_link_mode(ks, advertising, FEC_RS);
+ 
+-	status = ice_aq_get_phy_caps(vsi->port_info, false,
+-				     ICE_AQC_REPORT_TOPO_CAP_MEDIA, caps, NULL);
+-	if (status) {
++	err = ice_aq_get_phy_caps(vsi->port_info, false,
++				  ICE_AQC_REPORT_TOPO_CAP_MEDIA, caps, NULL);
++	if (err) {
+ 		err = -EIO;
+ 		goto done;
+ 	}
+@@ -2210,9 +2207,8 @@ ice_set_link_ksettings(struct net_device *netdev,
  	u8 autoneg_changed = 0;
--	int status;
  	u64 phy_type_high = 0;
  	u64 phy_type_low = 0;
- 	int err = 0;
+-	int err = 0;
  	bool linkup;
-+	int status;
+-	int status;
++	int err;
  
  	pi = np->vsi->port_info;
  
-@@ -2522,9 +2520,9 @@ static int
- ice_set_rss_hash_opt(struct ice_vsi *vsi, struct ethtool_rxnfc *nfc)
- {
- 	struct ice_pf *pf = vsi->back;
--	int status;
- 	struct device *dev;
- 	u64 hashed_flds;
-+	int status;
- 	u32 hdrs;
+@@ -2232,12 +2228,12 @@ ice_set_link_ksettings(struct net_device *netdev,
  
- 	dev = ice_pf_to_dev(pf);
-@@ -3003,10 +3001,10 @@ ice_set_pauseparam(struct net_device *netdev, struct ethtool_pauseparam *pause)
- 	struct ice_vsi *vsi = np->vsi;
- 	struct ice_hw *hw = &pf->hw;
+ 	/* Get the PHY capabilities based on media */
+ 	if (ice_fw_supports_report_dflt_cfg(pi->hw))
+-		status = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_DFLT_CFG,
+-					     phy_caps, NULL);
++		err = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_DFLT_CFG,
++					  phy_caps, NULL);
+ 	else
+-		status = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_TOPO_CAP_MEDIA,
+-					     phy_caps, NULL);
+-	if (status) {
++		err = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_TOPO_CAP_MEDIA,
++					  phy_caps, NULL);
++	if (err) {
+ 		err = -EIO;
+ 		goto done;
+ 	}
+@@ -2306,8 +2302,8 @@ ice_set_link_ksettings(struct net_device *netdev,
+ 
+ 	/* Call to get the current link speed */
+ 	pi->phy.get_link_info = true;
+-	status = ice_get_link_status(pi, &linkup);
+-	if (status) {
++	err = ice_get_link_status(pi, &linkup);
++	if (err) {
+ 		err = -EIO;
+ 		goto done;
+ 	}
+@@ -2379,8 +2375,8 @@ ice_set_link_ksettings(struct net_device *netdev,
+ 	}
+ 
+ 	/* make the aq call */
+-	status = ice_aq_set_phy_cfg(&pf->hw, pi, &config, NULL);
+-	if (status) {
++	err = ice_aq_set_phy_cfg(&pf->hw, pi, &config, NULL);
++	if (err) {
+ 		netdev_info(netdev, "Set phy config failed,\n");
+ 		err = -EIO;
+ 		goto done;
+@@ -3003,9 +2999,8 @@ ice_set_pauseparam(struct net_device *netdev, struct ethtool_pauseparam *pause)
  	struct ice_port_info *pi;
--	int status;
  	u8 aq_failures;
  	bool link_up;
- 	int err = 0;
-+	int status;
+-	int err = 0;
+-	int status;
  	u32 is_an;
++	int err;
  
  	pi = vsi->port_info;
-@@ -3077,18 +3075,15 @@ ice_set_pauseparam(struct net_device *netdev, struct ethtool_pauseparam *pause)
+ 	hw_link_info = &pi->phy.link_info;
+@@ -3031,9 +3026,9 @@ ice_set_pauseparam(struct net_device *netdev, struct ethtool_pauseparam *pause)
+ 		return -ENOMEM;
+ 
+ 	/* Get current PHY config */
+-	status = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_ACTIVE_CFG, pcaps,
+-				     NULL);
+-	if (status) {
++	err = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_ACTIVE_CFG, pcaps,
++				  NULL);
++	if (err) {
+ 		kfree(pcaps);
+ 		return -EIO;
+ 	}
+@@ -3071,19 +3066,19 @@ ice_set_pauseparam(struct net_device *netdev, struct ethtool_pauseparam *pause)
+ 		return -EINVAL;
+ 
+ 	/* Set the FC mode and only restart AN if link is up */
+-	status = ice_set_fc(pi, &aq_failures, link_up);
++	err = ice_set_fc(pi, &aq_failures, link_up);
  
  	if (aq_failures & ICE_SET_FC_AQ_FAIL_GET) {
  		netdev_info(netdev, "Set fc failed on the get_phy_capabilities call with err %d aq_err %s\n",
--			    status,
--			    ice_aq_str(hw->adminq.sq_last_status));
-+			    status, ice_aq_str(hw->adminq.sq_last_status));
+-			    status, ice_aq_str(hw->adminq.sq_last_status));
++			    err, ice_aq_str(hw->adminq.sq_last_status));
  		err = -EAGAIN;
  	} else if (aq_failures & ICE_SET_FC_AQ_FAIL_SET) {
  		netdev_info(netdev, "Set fc failed on the set_phy_config call with err %d aq_err %s\n",
--			    status,
--			    ice_aq_str(hw->adminq.sq_last_status));
-+			    status, ice_aq_str(hw->adminq.sq_last_status));
+-			    status, ice_aq_str(hw->adminq.sq_last_status));
++			    err, ice_aq_str(hw->adminq.sq_last_status));
  		err = -EAGAIN;
  	} else if (aq_failures & ICE_SET_FC_AQ_FAIL_UPDATE) {
  		netdev_info(netdev, "Set fc failed on the get_link_info call with err %d aq_err %s\n",
--			    status,
--			    ice_aq_str(hw->adminq.sq_last_status));
-+			    status, ice_aq_str(hw->adminq.sq_last_status));
+-			    status, ice_aq_str(hw->adminq.sq_last_status));
++			    err, ice_aq_str(hw->adminq.sq_last_status));
  		err = -EAGAIN;
  	}
  
-@@ -3928,11 +3923,11 @@ ice_get_module_info(struct net_device *netdev,
- 	struct ice_vsi *vsi = np->vsi;
- 	struct ice_pf *pf = vsi->back;
- 	struct ice_hw *hw = &pf->hw;
--	int status;
- 	u8 sff8472_comp = 0;
- 	u8 sff8472_swap = 0;
- 	u8 sff8636_rev = 0;
- 	u8 value = 0;
-+	int status;
- 
- 	status = ice_aq_sff_eeprom(hw, 0, ICE_I2C_EEPROM_DEV_ADDR, 0x00, 0x00,
- 				   0, &value, 1, 0, NULL);
-@@ -4005,11 +4000,11 @@ ice_get_module_eeprom(struct net_device *netdev,
- 	struct ice_vsi *vsi = np->vsi;
- 	struct ice_pf *pf = vsi->back;
- 	struct ice_hw *hw = &pf->hw;
--	int status;
- 	bool is_sfp = false;
- 	unsigned int i, j;
- 	u16 offset = 0;
- 	u8 page = 0;
-+	int status;
- 
- 	if (!ee || !ee->len || !data)
- 		return -EINVAL;
 diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool_fdir.c b/drivers/net/ethernet/intel/ice/ice_ethtool_fdir.c
-index 226ec42abbc7..deb4e3ad38f6 100644
+index deb4e3ad38f6..bbc64d6ce4cd 100644
 --- a/drivers/net/ethernet/intel/ice/ice_ethtool_fdir.c
 +++ b/drivers/net/ethernet/intel/ice/ice_ethtool_fdir.c
-@@ -530,10 +530,10 @@ ice_fdir_set_hw_fltr_rule(struct ice_pf *pf, struct ice_flow_seg_info *seg,
- 	struct ice_flow_prof *prof = NULL;
- 	struct ice_fd_hw_prof *hw_prof;
- 	struct ice_hw *hw = &pf->hw;
--	int status;
+@@ -533,7 +533,6 @@ ice_fdir_set_hw_fltr_rule(struct ice_pf *pf, struct ice_flow_seg_info *seg,
  	u64 entry1_h = 0;
  	u64 entry2_h = 0;
  	u64 prof_id;
-+	int status;
+-	int status;
  	int err;
  
  	main_vsi = ice_get_main_vsi(pf);
-@@ -1190,9 +1190,9 @@ ice_fdir_write_fltr(struct ice_pf *pf, struct ice_fdir_fltr *input, bool add,
- 	struct ice_hw *hw = &pf->hw;
- 	struct ice_fltr_desc desc;
+@@ -581,24 +580,20 @@ ice_fdir_set_hw_fltr_rule(struct ice_pf *pf, struct ice_flow_seg_info *seg,
+ 	 * actions (NULL) and zero actions 0.
+ 	 */
+ 	prof_id = flow + tun * ICE_FLTR_PTYPE_MAX;
+-	status = ice_flow_add_prof(hw, ICE_BLK_FD, ICE_FLOW_RX, prof_id, seg,
+-				   TNL_SEG_CNT(tun), &prof);
+-	if (status)
+-		return status;
+-	status = ice_flow_add_entry(hw, ICE_BLK_FD, prof_id, main_vsi->idx,
+-				    main_vsi->idx, ICE_FLOW_PRIO_NORMAL,
+-				    seg, &entry1_h);
+-	if (status) {
+-		err = status;
++	err = ice_flow_add_prof(hw, ICE_BLK_FD, ICE_FLOW_RX, prof_id, seg,
++				TNL_SEG_CNT(tun), &prof);
++	if (err)
++		return err;
++	err = ice_flow_add_entry(hw, ICE_BLK_FD, prof_id, main_vsi->idx,
++				 main_vsi->idx, ICE_FLOW_PRIO_NORMAL,
++				 seg, &entry1_h);
++	if (err)
+ 		goto err_prof;
+-	}
+-	status = ice_flow_add_entry(hw, ICE_BLK_FD, prof_id, main_vsi->idx,
+-				    ctrl_vsi->idx, ICE_FLOW_PRIO_NORMAL,
+-				    seg, &entry2_h);
+-	if (status) {
+-		err = status;
++	err = ice_flow_add_entry(hw, ICE_BLK_FD, prof_id, main_vsi->idx,
++				 ctrl_vsi->idx, ICE_FLOW_PRIO_NORMAL,
++				 seg, &entry2_h);
++	if (err)
+ 		goto err_entry;
+-	}
+ 
+ 	hw_prof->fdir_seg[tun] = seg;
+ 	hw_prof->entry_h[0][tun] = entry1_h;
+@@ -1192,7 +1187,6 @@ ice_fdir_write_fltr(struct ice_pf *pf, struct ice_fdir_fltr *input, bool add,
  	struct ice_vsi *ctrl_vsi;
--	int status;
  	u8 *pkt, *frag_pkt;
  	bool has_frag;
-+	int status;
+-	int status;
  	int err;
  
  	ctrl_vsi = ice_get_ctrl_vsi(pf);
-diff --git a/drivers/net/ethernet/intel/ice/ice_fdir.c b/drivers/net/ethernet/intel/ice/ice_fdir.c
-index bbef6f4366de..ae089d32ee9d 100644
---- a/drivers/net/ethernet/intel/ice/ice_fdir.c
-+++ b/drivers/net/ethernet/intel/ice/ice_fdir.c
-@@ -735,8 +735,7 @@ int ice_free_fd_res_cntr(struct ice_hw *hw, u16 cntr_id)
-  * @cntr_id: returns counter index
-  * @num_fltr: number of filter entries to be allocated
-  */
--int
--ice_alloc_fd_guar_item(struct ice_hw *hw, u16 *cntr_id, u16 num_fltr)
-+int ice_alloc_fd_guar_item(struct ice_hw *hw, u16 *cntr_id, u16 num_fltr)
- {
- 	return ice_alloc_res_cntr(hw, ICE_AQC_RES_TYPE_FDIR_GUARANTEED_ENTRIES,
- 				  ICE_AQC_RES_TYPE_FLAG_DEDICATED, num_fltr,
-@@ -749,8 +748,7 @@ ice_alloc_fd_guar_item(struct ice_hw *hw, u16 *cntr_id, u16 num_fltr)
-  * @cntr_id: returns counter index
-  * @num_fltr: number of filter entries to be allocated
-  */
--int
--ice_alloc_fd_shrd_item(struct ice_hw *hw, u16 *cntr_id, u16 num_fltr)
-+int ice_alloc_fd_shrd_item(struct ice_hw *hw, u16 *cntr_id, u16 num_fltr)
- {
- 	return ice_alloc_res_cntr(hw, ICE_AQC_RES_TYPE_FDIR_SHARED_ENTRIES,
- 				  ICE_AQC_RES_TYPE_FLAG_DEDICATED, num_fltr,
-diff --git a/drivers/net/ethernet/intel/ice/ice_fdir.h b/drivers/net/ethernet/intel/ice/ice_fdir.h
-index 49a2453731d2..b6c7c6903f35 100644
---- a/drivers/net/ethernet/intel/ice/ice_fdir.h
-+++ b/drivers/net/ethernet/intel/ice/ice_fdir.h
-@@ -203,10 +203,8 @@ struct ice_fdir_base_pkt {
+@@ -1209,11 +1203,9 @@ ice_fdir_write_fltr(struct ice_pf *pf, struct ice_fdir_fltr *input, bool add,
+ 	}
  
- int ice_alloc_fd_res_cntr(struct ice_hw *hw, u16 *cntr_id);
- int ice_free_fd_res_cntr(struct ice_hw *hw, u16 cntr_id);
--int
--ice_alloc_fd_guar_item(struct ice_hw *hw, u16 *cntr_id, u16 num_fltr);
--int
--ice_alloc_fd_shrd_item(struct ice_hw *hw, u16 *cntr_id, u16 num_fltr);
-+int ice_alloc_fd_guar_item(struct ice_hw *hw, u16 *cntr_id, u16 num_fltr);
-+int ice_alloc_fd_shrd_item(struct ice_hw *hw, u16 *cntr_id, u16 num_fltr);
- void
- ice_fdir_get_prgm_desc(struct ice_hw *hw, struct ice_fdir_fltr *input,
- 		       struct ice_fltr_desc *fdesc, bool add);
-diff --git a/drivers/net/ethernet/intel/ice/ice_flex_pipe.c b/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
-index b52ea684ee9c..d29197ab3d02 100644
---- a/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
-+++ b/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
-@@ -964,11 +964,10 @@ ice_find_seg_in_pkg(struct ice_hw *hw, u32 seg_type,
-  *
-  * Obtains change lock and updates package.
-  */
--static int
--ice_update_pkg(struct ice_hw *hw, struct ice_buf *bufs, u32 count)
-+static int ice_update_pkg(struct ice_hw *hw, struct ice_buf *bufs, u32 count)
- {
--	int status;
- 	u32 offset, info, i;
-+	int status;
- 
- 	status = ice_acquire_change_lock(hw, ICE_RES_WRITE);
- 	if (status)
-@@ -1023,10 +1022,10 @@ static enum ice_ddp_state
- ice_dwnld_cfg_bufs(struct ice_hw *hw, struct ice_buf *bufs, u32 count)
- {
- 	enum ice_ddp_state state = ICE_DDP_PKG_SUCCESS;
--	int status;
- 	struct ice_buf_hdr *bh;
- 	enum ice_aq_err err;
- 	u32 offset, info, i;
-+	int status;
- 
- 	if (!bufs || !count)
- 		return ICE_DDP_PKG_ERR;
-@@ -2101,8 +2100,8 @@ ice_create_tunnel(struct ice_hw *hw, u16 index,
- 		  enum ice_tunnel_type type, u16 port)
- {
- 	struct ice_boost_tcam_section *sect_rx, *sect_tx;
--	int status = -ENOSPC;
- 	struct ice_buf_build *bld;
-+	int status = -ENOSPC;
- 
- 	mutex_lock(&hw->tnl_lock);
- 
-@@ -2172,8 +2171,8 @@ ice_destroy_tunnel(struct ice_hw *hw, u16 index, enum ice_tunnel_type type,
- 		   u16 port)
- {
- 	struct ice_boost_tcam_section *sect_rx, *sect_tx;
--	int status = -ENOSPC;
- 	struct ice_buf_build *bld;
-+	int status = -ENOSPC;
- 
- 	mutex_lock(&hw->tnl_lock);
- 
-@@ -2399,8 +2398,8 @@ ice_ptg_remove_ptype(struct ice_hw *hw, enum ice_block blk, u16 ptype, u8 ptg)
- static int
- ice_ptg_add_mv_ptype(struct ice_hw *hw, enum ice_block blk, u16 ptype, u8 ptg)
- {
--	int status;
- 	u8 original_ptg;
-+	int status;
- 
- 	if (ptype > ICE_XLT1_CNT - 1)
- 		return -EINVAL;
-@@ -2636,8 +2635,7 @@ ice_find_dup_props_vsig(struct ice_hw *hw, enum ice_block blk,
-  * The function will remove all VSIs associated with the input VSIG and move
-  * them to the DEFAULT_VSIG and mark the VSIG available.
-  */
--static int
--ice_vsig_free(struct ice_hw *hw, enum ice_block blk, u16 vsig)
-+static int ice_vsig_free(struct ice_hw *hw, enum ice_block blk, u16 vsig)
- {
- 	struct ice_vsig_prof *dtmp, *del;
- 	struct ice_vsig_vsi *vsi_cur;
-@@ -2759,8 +2757,8 @@ static int
- ice_vsig_add_mv_vsi(struct ice_hw *hw, enum ice_block blk, u16 vsi, u16 vsig)
- {
- 	struct ice_vsig_vsi *tmp;
--	int status;
- 	u16 orig_vsig, idx;
-+	int status;
- 
- 	idx = vsig & ICE_VSIG_IDX_M;
- 
-@@ -2998,12 +2996,11 @@ ice_free_tcam_ent(struct ice_hw *hw, enum ice_block blk, u16 tcam_idx)
-  * This function allocates a new profile ID, which also corresponds to a Field
-  * Vector (Extraction Sequence) entry.
-  */
--static int
--ice_alloc_prof_id(struct ice_hw *hw, enum ice_block blk, u8 *prof_id)
-+static int ice_alloc_prof_id(struct ice_hw *hw, enum ice_block blk, u8 *prof_id)
- {
--	int status;
- 	u16 res_type;
- 	u16 get_prof;
-+	int status;
- 
- 	if (!ice_prof_id_rsrc_type(blk, &res_type))
- 		return -EINVAL;
-@@ -3023,8 +3020,7 @@ ice_alloc_prof_id(struct ice_hw *hw, enum ice_block blk, u8 *prof_id)
-  *
-  * This function frees a profile ID, which also corresponds to a Field Vector.
-  */
--static int
--ice_free_prof_id(struct ice_hw *hw, enum ice_block blk, u8 prof_id)
-+static int ice_free_prof_id(struct ice_hw *hw, enum ice_block blk, u8 prof_id)
- {
- 	u16 tmp_prof_id = (u16)prof_id;
- 	u16 res_type;
-@@ -3041,8 +3037,7 @@ ice_free_prof_id(struct ice_hw *hw, enum ice_block blk, u8 prof_id)
-  * @blk: the block from which to free the profile ID
-  * @prof_id: the profile ID for which to increment the reference count
-  */
--static int
--ice_prof_inc_ref(struct ice_hw *hw, enum ice_block blk, u8 prof_id)
-+static int ice_prof_inc_ref(struct ice_hw *hw, enum ice_block blk, u8 prof_id)
- {
- 	if (prof_id > hw->blk[blk].es.count)
- 		return -EINVAL;
-@@ -3167,8 +3162,8 @@ ice_alloc_prof_mask(struct ice_hw *hw, enum ice_block blk, u16 idx, u16 mask,
- 		    u16 *mask_idx)
- {
- 	bool found_unused = false, found_copy = false;
--	int status = -ENOSPC;
- 	u16 unused_idx = 0, copy_idx = 0;
-+	int status = -ENOSPC;
- 	u16 i;
- 
- 	if (blk != ICE_BLK_RSS && blk != ICE_BLK_FD)
-@@ -4267,12 +4262,12 @@ ice_upd_prof_hw(struct ice_hw *hw, enum ice_block blk,
- {
- 	struct ice_buf_build *b;
- 	struct ice_chs_chg *tmp;
--	int status;
- 	u16 pkg_sects;
- 	u16 xlt1 = 0;
- 	u16 xlt2 = 0;
- 	u16 tcam = 0;
- 	u16 es = 0;
-+	int status;
- 	u16 sects;
- 
- 	/* count number of sections we need */
-@@ -4638,9 +4633,9 @@ ice_add_prof(struct ice_hw *hw, enum ice_block blk, u64 id, u8 ptypes[],
- 	u32 bytes = DIV_ROUND_UP(ICE_FLOW_PTYPE_MAX, BITS_PER_BYTE);
- 	DECLARE_BITMAP(ptgs_used, ICE_XLT1_CNT);
- 	struct ice_prof_map *prof;
--	int status;
- 	u8 byte = 0;
- 	u8 prof_id;
-+	int status;
- 
- 	bitmap_zero(ptgs_used, ICE_XLT1_CNT);
- 
-@@ -4798,8 +4793,7 @@ ice_vsig_prof_id_count(struct ice_hw *hw, enum ice_block blk, u16 vsig)
-  * @blk: hardware block
-  * @idx: the index to release
-  */
--static int
--ice_rel_tcam_idx(struct ice_hw *hw, enum ice_block blk, u16 idx)
-+static int ice_rel_tcam_idx(struct ice_hw *hw, enum ice_block blk, u16 idx)
- {
- 	/* Masks to invoke a never match entry */
- 	u8 vl_msk[ICE_TCAM_KEY_VAL_SZ] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
-@@ -4941,12 +4935,11 @@ ice_rem_prof_id_vsig(struct ice_hw *hw, enum ice_block blk, u16 vsig, u64 hdl,
-  * @blk: hardware block
-  * @id: profile tracking ID
-  */
--static int
--ice_rem_flow_all(struct ice_hw *hw, enum ice_block blk, u64 id)
-+static int ice_rem_flow_all(struct ice_hw *hw, enum ice_block blk, u64 id)
- {
- 	struct ice_chs_chg *del, *tmp;
--	int status;
- 	struct list_head chg;
-+	int status;
- 	u16 i;
- 
- 	INIT_LIST_HEAD(&chg);
-@@ -5022,9 +5015,9 @@ static int
- ice_get_prof(struct ice_hw *hw, enum ice_block blk, u64 hdl,
- 	     struct list_head *chg)
- {
--	int status = 0;
- 	struct ice_prof_map *map;
- 	struct ice_chs_chg *p;
-+	int status = 0;
- 	u16 i;
- 
- 	mutex_lock(&hw->blk[blk].es.prof_map_lock);
-@@ -5115,9 +5108,9 @@ static int
- ice_add_prof_to_lst(struct ice_hw *hw, enum ice_block blk,
- 		    struct list_head *lst, u64 hdl)
- {
--	int status = 0;
- 	struct ice_prof_map *map;
- 	struct ice_vsig_prof *p;
-+	int status = 0;
- 	u16 i;
- 
- 	mutex_lock(&hw->blk[blk].es.prof_map_lock);
-@@ -5162,9 +5155,9 @@ static int
- ice_move_vsi(struct ice_hw *hw, enum ice_block blk, u16 vsi, u16 vsig,
- 	     struct list_head *chg)
- {
--	int status;
- 	struct ice_chs_chg *p;
- 	u16 orig_vsig;
-+	int status;
- 
- 	p = devm_kzalloc(ice_hw_to_dev(hw), sizeof(*p), GFP_KERNEL);
- 	if (!p)
-@@ -5223,8 +5216,8 @@ ice_prof_tcam_ena_dis(struct ice_hw *hw, enum ice_block blk, bool enable,
- 		      u16 vsig, struct ice_tcam_inf *tcam,
- 		      struct list_head *chg)
- {
--	int status;
- 	struct ice_chs_chg *p;
-+	int status;
- 
- 	u8 vl_msk[ICE_TCAM_KEY_VAL_SZ] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
- 	u8 dc_msk[ICE_TCAM_KEY_VAL_SZ] = { 0xFF, 0xFF, 0x00, 0x00, 0x00 };
-@@ -5370,11 +5363,11 @@ ice_add_prof_id_vsig(struct ice_hw *hw, enum ice_block blk, u16 vsig, u64 hdl,
- 	u8 vl_msk[ICE_TCAM_KEY_VAL_SZ] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
- 	u8 dc_msk[ICE_TCAM_KEY_VAL_SZ] = { 0xFF, 0xFF, 0x00, 0x00, 0x00 };
- 	u8 nm_msk[ICE_TCAM_KEY_VAL_SZ] = { 0x00, 0x00, 0x00, 0x00, 0x00 };
--	int status = 0;
- 	struct ice_prof_map *map;
- 	struct ice_vsig_prof *t;
- 	struct ice_chs_chg *p;
- 	u16 vsig_idx, i;
-+	int status = 0;
- 
- 	/* Error, if this VSIG already has this profile */
- 	if (ice_has_prof_vsig(hw, blk, vsig, hdl))
-@@ -5478,9 +5471,9 @@ static int
- ice_create_prof_id_vsig(struct ice_hw *hw, enum ice_block blk, u16 vsi, u64 hdl,
- 			struct list_head *chg)
- {
--	int status;
- 	struct ice_chs_chg *p;
- 	u16 new_vsig;
-+	int status;
- 
- 	p = devm_kzalloc(ice_hw_to_dev(hw), sizeof(*p), GFP_KERNEL);
- 	if (!p)
-@@ -5565,8 +5558,8 @@ static bool
- ice_find_prof_vsig(struct ice_hw *hw, enum ice_block blk, u64 hdl, u16 *vsig)
- {
- 	struct ice_vsig_prof *t;
--	int status;
- 	struct list_head lst;
-+	int status;
- 
- 	INIT_LIST_HEAD(&lst);
- 
-@@ -5602,8 +5595,8 @@ ice_add_prof_id_flow(struct ice_hw *hw, enum ice_block blk, u16 vsi, u64 hdl)
- 	struct ice_vsig_prof *tmp1, *del1;
- 	struct ice_chs_chg *tmp, *del;
- 	struct list_head union_lst;
--	int status;
- 	struct list_head chg;
-+	int status;
- 	u16 vsig;
- 
- 	INIT_LIST_HEAD(&union_lst);
-diff --git a/drivers/net/ethernet/intel/ice/ice_flex_pipe.h b/drivers/net/ethernet/intel/ice/ice_flex_pipe.h
-index dd602285c78e..6cbc29bcb02f 100644
---- a/drivers/net/ethernet/intel/ice/ice_flex_pipe.h
-+++ b/drivers/net/ethernet/intel/ice/ice_flex_pipe.h
-@@ -118,6 +118,5 @@ void ice_free_seg(struct ice_hw *hw);
- void ice_fill_blk_tbls(struct ice_hw *hw);
- void ice_clear_hw_tbls(struct ice_hw *hw);
- void ice_free_hw_tbls(struct ice_hw *hw);
--int
--ice_rem_prof(struct ice_hw *hw, enum ice_block blk, u64 id);
-+int ice_rem_prof(struct ice_hw *hw, enum ice_block blk, u64 id);
- #endif /* _ICE_FLEX_PIPE_H_ */
-diff --git a/drivers/net/ethernet/intel/ice/ice_flow.c b/drivers/net/ethernet/intel/ice/ice_flow.c
-index ee6a8fab4c4c..b17b984196a2 100644
---- a/drivers/net/ethernet/intel/ice/ice_flow.c
-+++ b/drivers/net/ethernet/intel/ice/ice_flow.c
-@@ -625,8 +625,7 @@ struct ice_flow_prof_params {
-  * @segs: array of one or more packet segments that describe the flow
-  * @segs_cnt: number of packet segments provided
-  */
--static int
--ice_flow_val_hdrs(struct ice_flow_seg_info *segs, u8 segs_cnt)
-+static int ice_flow_val_hdrs(struct ice_flow_seg_info *segs, u8 segs_cnt)
- {
- 	u8 i;
- 
-@@ -700,8 +699,7 @@ static u16 ice_flow_calc_seg_sz(struct ice_flow_prof_params *params, u8 seg)
-  * This function identifies the packet types associated with the protocol
-  * headers being present in packet segments of the specified flow profile.
-  */
--static int
--ice_flow_proc_seg_hdrs(struct ice_flow_prof_params *params)
-+static int ice_flow_proc_seg_hdrs(struct ice_flow_prof_params *params)
- {
- 	struct ice_flow_prof *prof;
- 	u8 i;
-@@ -1574,8 +1572,7 @@ ice_flow_add_prof(struct ice_hw *hw, enum ice_block blk, enum ice_flow_dir dir,
-  * @blk: the block for which the flow profile is to be removed
-  * @prof_id: unique ID of the flow profile to be removed
-  */
--int
--ice_flow_rem_prof(struct ice_hw *hw, enum ice_block blk, u64 prof_id)
-+int ice_flow_rem_prof(struct ice_hw *hw, enum ice_block blk, u64 prof_id)
- {
- 	struct ice_flow_prof *prof;
- 	int status;
-@@ -1680,8 +1677,7 @@ ice_flow_add_entry(struct ice_hw *hw, enum ice_block blk, u64 prof_id,
-  * @blk: classification stage
-  * @entry_h: handle to the flow entry to be removed
-  */
--int ice_flow_rem_entry(struct ice_hw *hw, enum ice_block blk,
--		       u64 entry_h)
-+int ice_flow_rem_entry(struct ice_hw *hw, enum ice_block blk, u64 entry_h)
- {
- 	struct ice_flow_entry *entry;
- 	struct ice_flow_prof *prof;
-@@ -2279,8 +2275,7 @@ ice_rem_rss_cfg(struct ice_hw *hw, u16 vsi_handle, u64 hashed_flds,
-  * message, convert it to ICE-compatible values, and configure RSS flow
-  * profiles.
-  */
--int
--ice_add_avf_rss_cfg(struct ice_hw *hw, u16 vsi_handle, u64 avf_hash)
-+int ice_add_avf_rss_cfg(struct ice_hw *hw, u16 vsi_handle, u64 avf_hash)
- {
- 	int status = 0;
- 	u64 hash_flds;
-@@ -2370,8 +2365,8 @@ ice_add_avf_rss_cfg(struct ice_hw *hw, u16 vsi_handle, u64 avf_hash)
-  */
- int ice_replay_rss_cfg(struct ice_hw *hw, u16 vsi_handle)
- {
--	int status = 0;
- 	struct ice_rss_cfg *r;
-+	int status = 0;
- 
- 	if (!ice_is_vsi_valid(hw, vsi_handle))
- 		return -EINVAL;
-diff --git a/drivers/net/ethernet/intel/ice/ice_flow.h b/drivers/net/ethernet/intel/ice/ice_flow.h
-index 818986437001..d8782b28323e 100644
---- a/drivers/net/ethernet/intel/ice/ice_flow.h
-+++ b/drivers/net/ethernet/intel/ice/ice_flow.h
-@@ -387,14 +387,12 @@ int
- ice_flow_add_prof(struct ice_hw *hw, enum ice_block blk, enum ice_flow_dir dir,
- 		  u64 prof_id, struct ice_flow_seg_info *segs, u8 segs_cnt,
- 		  struct ice_flow_prof **prof);
--int
--ice_flow_rem_prof(struct ice_hw *hw, enum ice_block blk, u64 prof_id);
-+int ice_flow_rem_prof(struct ice_hw *hw, enum ice_block blk, u64 prof_id);
- int
- ice_flow_add_entry(struct ice_hw *hw, enum ice_block blk, u64 prof_id,
- 		   u64 entry_id, u16 vsi, enum ice_flow_priority prio,
- 		   void *data, u64 *entry_h);
--int
--ice_flow_rem_entry(struct ice_hw *hw, enum ice_block blk, u64 entry_h);
-+int ice_flow_rem_entry(struct ice_hw *hw, enum ice_block blk, u64 entry_h);
- void
- ice_flow_set_fld(struct ice_flow_seg_info *seg, enum ice_flow_field fld,
- 		 u16 val_loc, u16 mask_loc, u16 last_loc, bool range);
-@@ -403,8 +401,7 @@ ice_flow_add_fld_raw(struct ice_flow_seg_info *seg, u16 off, u8 len,
- 		     u16 val_loc, u16 mask_loc);
- void ice_rem_vsi_rss_list(struct ice_hw *hw, u16 vsi_handle);
- int ice_replay_rss_cfg(struct ice_hw *hw, u16 vsi_handle);
--int
--ice_add_avf_rss_cfg(struct ice_hw *hw, u16 vsi_handle, u64 hashed_flds);
-+int ice_add_avf_rss_cfg(struct ice_hw *hw, u16 vsi_handle, u64 hashed_flds);
- int ice_rem_vsi_rss_cfg(struct ice_hw *hw, u16 vsi_handle);
- int
- ice_add_rss_cfg(struct ice_hw *hw, u16 vsi_handle, u64 hashed_flds,
-diff --git a/drivers/net/ethernet/intel/ice/ice_fltr.c b/drivers/net/ethernet/intel/ice/ice_fltr.c
-index 52d9d78039e2..94903b450345 100644
---- a/drivers/net/ethernet/intel/ice/ice_fltr.c
-+++ b/drivers/net/ethernet/intel/ice/ice_fltr.c
-@@ -109,8 +109,7 @@ ice_fltr_set_vsi_promisc(struct ice_hw *hw, u16 vsi_handle, u8 promisc_mask,
-  * @vsi: pointer to VSI struct
-  * @list: list of filters
-  */
--int
--ice_fltr_add_mac_list(struct ice_vsi *vsi, struct list_head *list)
-+int ice_fltr_add_mac_list(struct ice_vsi *vsi, struct list_head *list)
- {
- 	return ice_add_mac(&vsi->back->hw, list);
- }
-@@ -120,8 +119,7 @@ ice_fltr_add_mac_list(struct ice_vsi *vsi, struct list_head *list)
-  * @vsi: pointer to VSI struct
-  * @list: list of filters
-  */
--int
--ice_fltr_remove_mac_list(struct ice_vsi *vsi, struct list_head *list)
-+int ice_fltr_remove_mac_list(struct ice_vsi *vsi, struct list_head *list)
- {
- 	return ice_remove_mac(&vsi->back->hw, list);
- }
-@@ -131,8 +129,7 @@ ice_fltr_remove_mac_list(struct ice_vsi *vsi, struct list_head *list)
-  * @vsi: pointer to VSI struct
-  * @list: list of filters
-  */
--static int
--ice_fltr_add_vlan_list(struct ice_vsi *vsi, struct list_head *list)
-+static int ice_fltr_add_vlan_list(struct ice_vsi *vsi, struct list_head *list)
- {
- 	return ice_add_vlan(&vsi->back->hw, list);
- }
-@@ -153,8 +150,7 @@ ice_fltr_remove_vlan_list(struct ice_vsi *vsi, struct list_head *list)
-  * @vsi: pointer to VSI struct
-  * @list: list of filters
-  */
--static int
--ice_fltr_add_eth_list(struct ice_vsi *vsi, struct list_head *list)
-+static int ice_fltr_add_eth_list(struct ice_vsi *vsi, struct list_head *list)
- {
- 	return ice_add_eth_mac(&vsi->back->hw, list);
- }
-@@ -164,8 +160,7 @@ ice_fltr_add_eth_list(struct ice_vsi *vsi, struct list_head *list)
-  * @vsi: pointer to VSI struct
-  * @list: list of filters
-  */
--static int
--ice_fltr_remove_eth_list(struct ice_vsi *vsi, struct list_head *list)
-+static int ice_fltr_remove_eth_list(struct ice_vsi *vsi, struct list_head *list)
- {
- 	return ice_remove_eth_mac(&vsi->back->hw, list);
- }
-@@ -270,8 +265,8 @@ ice_fltr_prepare_mac(struct ice_vsi *vsi, const u8 *mac,
- 		     enum ice_sw_fwd_act_type action,
- 		     int (*mac_action)(struct ice_vsi *, struct list_head *))
- {
--	int result;
- 	LIST_HEAD(tmp_list);
-+	int result;
- 
- 	if (ice_fltr_add_mac_to_list(vsi, &tmp_list, mac, action)) {
- 		ice_fltr_free_list(ice_pf_to_dev(vsi->back), &tmp_list);
-@@ -297,8 +292,8 @@ ice_fltr_prepare_mac_and_broadcast(struct ice_vsi *vsi, const u8 *mac,
- 				   (struct ice_vsi *, struct list_head *))
- {
- 	u8 broadcast[ETH_ALEN];
--	int result;
- 	LIST_HEAD(tmp_list);
-+	int result;
- 
- 	eth_broadcast_addr(broadcast);
- 	if (ice_fltr_add_mac_to_list(vsi, &tmp_list, mac, action) ||
-@@ -324,8 +319,8 @@ ice_fltr_prepare_vlan(struct ice_vsi *vsi, u16 vlan_id,
- 		      enum ice_sw_fwd_act_type action,
- 		      int (*vlan_action)(struct ice_vsi *, struct list_head *))
- {
--	int result;
- 	LIST_HEAD(tmp_list);
-+	int result;
- 
- 	if (ice_fltr_add_vlan_to_list(vsi, &tmp_list, vlan_id, action))
- 		return -ENOMEM;
-@@ -348,8 +343,8 @@ ice_fltr_prepare_eth(struct ice_vsi *vsi, u16 ethertype, u16 flag,
- 		     enum ice_sw_fwd_act_type action,
- 		     int (*eth_action)(struct ice_vsi *, struct list_head *))
- {
--	int result;
- 	LIST_HEAD(tmp_list);
-+	int result;
- 
- 	if (ice_fltr_add_eth_to_list(vsi, &tmp_list, ethertype, flag, action))
- 		return -ENOMEM;
-@@ -466,8 +461,8 @@ ice_fltr_update_rule_flags(struct ice_hw *hw, u16 rule_id, u16 recipe_id,
- 			   u32 act, u16 type, u16 src, u32 new_flags)
- {
- 	struct ice_aqc_sw_rules_elem *s_rule;
--	int err;
- 	u32 flags_mask;
-+	int err;
- 
- 	s_rule = kzalloc(ICE_SW_RULE_RX_TX_NO_HDR_SIZE, GFP_KERNEL);
- 	if (!s_rule)
-diff --git a/drivers/net/ethernet/intel/ice/ice_fltr.h b/drivers/net/ethernet/intel/ice/ice_fltr.h
-index bb04f87376da..0e65fd021ad2 100644
---- a/drivers/net/ethernet/intel/ice/ice_fltr.h
-+++ b/drivers/net/ethernet/intel/ice/ice_fltr.h
-@@ -26,13 +26,11 @@ ice_fltr_add_mac(struct ice_vsi *vsi, const u8 *mac,
- int
- ice_fltr_add_mac_and_broadcast(struct ice_vsi *vsi, const u8 *mac,
- 			       enum ice_sw_fwd_act_type action);
--int
--ice_fltr_add_mac_list(struct ice_vsi *vsi, struct list_head *list);
-+int ice_fltr_add_mac_list(struct ice_vsi *vsi, struct list_head *list);
- int
- ice_fltr_remove_mac(struct ice_vsi *vsi, const u8 *mac,
- 		    enum ice_sw_fwd_act_type action);
--int
--ice_fltr_remove_mac_list(struct ice_vsi *vsi, struct list_head *list);
-+int ice_fltr_remove_mac_list(struct ice_vsi *vsi, struct list_head *list);
- 
- int
- ice_fltr_add_vlan(struct ice_vsi *vsi, u16 vid,
+ 	ice_fdir_get_prgm_desc(hw, input, &desc, add);
+-	status = ice_fdir_get_gen_prgm_pkt(hw, input, pkt, false, is_tun);
+-	if (status) {
+-		err = status;
++	err = ice_fdir_get_gen_prgm_pkt(hw, input, pkt, false, is_tun);
++	if (err)
+ 		goto err_free_all;
+-	}
+ 	err = ice_prgm_fdir_fltr(ctrl_vsi, &desc, pkt);
+ 	if (err)
+ 		goto err_free_all;
+@@ -1223,12 +1215,10 @@ ice_fdir_write_fltr(struct ice_pf *pf, struct ice_fdir_fltr *input, bool add,
+ 	if (has_frag) {
+ 		/* does not return error */
+ 		ice_fdir_get_prgm_desc(hw, input, &desc, add);
+-		status = ice_fdir_get_gen_prgm_pkt(hw, input, frag_pkt, true,
+-						   is_tun);
+-		if (status) {
+-			err = status;
++		err = ice_fdir_get_gen_prgm_pkt(hw, input, frag_pkt, true,
++						is_tun);
++		if (err)
+ 			goto err_frag;
+-		}
+ 		err = ice_prgm_fdir_fltr(ctrl_vsi, &desc, frag_pkt);
+ 		if (err)
+ 			goto err_frag;
 diff --git a/drivers/net/ethernet/intel/ice/ice_fw_update.c b/drivers/net/ethernet/intel/ice/ice_fw_update.c
-index c6ed12cf36eb..d12f292a576a 100644
+index d12f292a576a..a11a5626ff8c 100644
 --- a/drivers/net/ethernet/intel/ice/ice_fw_update.c
 +++ b/drivers/net/ethernet/intel/ice/ice_fw_update.c
-@@ -40,8 +40,8 @@ ice_send_package_data(struct pldmfw *context, const u8 *data, u16 length)
- 	struct device *dev = context->dev;
- 	struct ice_pf *pf = priv->pf;
- 	struct ice_hw *hw = &pf->hw;
--	int status;
- 	u8 *package_data;
-+	int status;
- 
- 	dev_dbg(dev, "Sending PLDM record package data to firmware\n");
- 
-@@ -55,8 +55,7 @@ ice_send_package_data(struct pldmfw *context, const u8 *data, u16 length)
- 
- 	if (status) {
- 		dev_err(dev, "Failed to send record package data to firmware, err %d aq_err %s\n",
--			status,
--			ice_aq_str(hw->adminq.sq_last_status));
-+			status, ice_aq_str(hw->adminq.sq_last_status));
- 		NL_SET_ERR_MSG_MOD(extack, "Failed to record package data to firmware");
- 		return -EIO;
- 	}
-@@ -203,8 +202,8 @@ ice_send_component_table(struct pldmfw *context, struct pldmfw_component *compon
- 	struct device *dev = context->dev;
- 	struct ice_pf *pf = priv->pf;
- 	struct ice_hw *hw = &pf->hw;
--	int status;
- 	size_t length;
-+	int status;
- 
- 	switch (component->identifier) {
- 	case NVM_COMP_ID_OROM:
-@@ -241,8 +240,7 @@ ice_send_component_table(struct pldmfw *context, struct pldmfw_component *compon
- 
- 	if (status) {
- 		dev_err(dev, "Failed to transfer component table to firmware, err %d aq_err %s\n",
--			status,
--			ice_aq_str(hw->adminq.sq_last_status));
-+			status, ice_aq_str(hw->adminq.sq_last_status));
- 		NL_SET_ERR_MSG_MOD(extack, "Failed to transfer component table to firmware");
- 		return -EIO;
- 	}
-@@ -277,8 +275,8 @@ ice_write_one_nvm_block(struct ice_pf *pf, u16 module, u32 offset,
- 	struct device *dev = ice_pf_to_dev(pf);
+@@ -276,7 +276,6 @@ ice_write_one_nvm_block(struct ice_pf *pf, u16 module, u32 offset,
  	struct ice_rq_event_info event;
  	struct ice_hw *hw = &pf->hw;
--	int status;
  	u32 completion_offset;
-+	int status;
+-	int status;
  	int err;
  
  	memset(&event, 0, sizeof(event));
-@@ -524,8 +522,8 @@ static int ice_switch_flash_banks(struct ice_pf *pf, u8 activate_flags,
- 	struct device *dev = ice_pf_to_dev(pf);
+@@ -284,11 +283,11 @@ ice_write_one_nvm_block(struct ice_pf *pf, u16 module, u32 offset,
+ 	dev_dbg(dev, "Writing block of %u bytes for module 0x%02x at offset %u\n",
+ 		block_size, module, offset);
+ 
+-	status = ice_aq_update_nvm(hw, module, offset, block_size, block,
+-				   last_cmd, 0, NULL);
+-	if (status) {
++	err = ice_aq_update_nvm(hw, module, offset, block_size, block,
++				last_cmd, 0, NULL);
++	if (err) {
+ 		dev_err(dev, "Failed to flash module 0x%02x with block of size %u at offset %u, err %d aq_err %s\n",
+-			module, block_size, offset, status,
++			module, block_size, offset, err,
+ 			ice_aq_str(hw->adminq.sq_last_status));
+ 		NL_SET_ERR_MSG_MOD(extack, "Failed to program flash module");
+ 		return -EIO;
+@@ -443,7 +442,6 @@ ice_erase_nvm_module(struct ice_pf *pf, u16 module, const char *component,
  	struct ice_rq_event_info event;
  	struct ice_hw *hw = &pf->hw;
+ 	struct devlink *devlink;
 -	int status;
+ 	int err;
+ 
+ 	dev_dbg(dev, "Beginning erase of flash component '%s', module 0x%02x\n", component, module);
+@@ -454,10 +452,10 @@ ice_erase_nvm_module(struct ice_pf *pf, u16 module, const char *component,
+ 
+ 	devlink_flash_update_timeout_notify(devlink, "Erasing", component, ICE_FW_ERASE_TIMEOUT);
+ 
+-	status = ice_aq_erase_nvm(hw, module, NULL);
+-	if (status) {
++	err = ice_aq_erase_nvm(hw, module, NULL);
++	if (err) {
+ 		dev_err(dev, "Failed to erase %s (module 0x%02x), err %d aq_err %s\n",
+-			component, module, status,
++			component, module, err,
+ 			ice_aq_str(hw->adminq.sq_last_status));
+ 		NL_SET_ERR_MSG_MOD(extack, "Failed to erase flash module");
+ 		err = -EIO;
+@@ -523,15 +521,14 @@ static int ice_switch_flash_banks(struct ice_pf *pf, u8 activate_flags,
+ 	struct ice_rq_event_info event;
+ 	struct ice_hw *hw = &pf->hw;
  	u16 completion_retval;
-+	int status;
+-	int status;
  	int err;
  
  	memset(&event, 0, sizeof(event));
-@@ -533,8 +531,7 @@ static int ice_switch_flash_banks(struct ice_pf *pf, u8 activate_flags,
- 	status = ice_nvm_write_activate(hw, activate_flags);
- 	if (status) {
+ 
+-	status = ice_nvm_write_activate(hw, activate_flags);
+-	if (status) {
++	err = ice_nvm_write_activate(hw, activate_flags);
++	if (err) {
  		dev_err(dev, "Failed to switch active flash banks, err %d aq_err %s\n",
--			status,
--			ice_aq_str(hw->adminq.sq_last_status));
-+			status, ice_aq_str(hw->adminq.sq_last_status));
+-			status, ice_aq_str(hw->adminq.sq_last_status));
++			err, ice_aq_str(hw->adminq.sq_last_status));
  		NL_SET_ERR_MSG_MOD(extack, "Failed to switch active flash banks");
  		return -EIO;
  	}
-@@ -695,8 +692,7 @@ int ice_flash_pldm_image(struct ice_pf *pf, const struct firmware *fw,
- 	status = ice_acquire_nvm(hw, ICE_RES_WRITE);
- 	if (status) {
+@@ -667,7 +664,6 @@ int ice_flash_pldm_image(struct ice_pf *pf, const struct firmware *fw,
+ 	struct device *dev = ice_pf_to_dev(pf);
+ 	struct ice_hw *hw = &pf->hw;
+ 	struct ice_fwu_priv priv;
+-	int status;
+ 	int err;
+ 
+ 	switch (preservation) {
+@@ -689,10 +685,10 @@ int ice_flash_pldm_image(struct ice_pf *pf, const struct firmware *fw,
+ 	priv.pf = pf;
+ 	priv.activate_flags = preservation;
+ 
+-	status = ice_acquire_nvm(hw, ICE_RES_WRITE);
+-	if (status) {
++	err = ice_acquire_nvm(hw, ICE_RES_WRITE);
++	if (err) {
  		dev_err(dev, "Failed to acquire device flash lock, err %d aq_err %s\n",
--			status,
--			ice_aq_str(hw->adminq.sq_last_status));
-+			status, ice_aq_str(hw->adminq.sq_last_status));
+-			status, ice_aq_str(hw->adminq.sq_last_status));
++			err, ice_aq_str(hw->adminq.sq_last_status));
  		NL_SET_ERR_MSG_MOD(extack, "Failed to acquire device flash lock");
  		return -EIO;
  	}
-@@ -736,8 +732,8 @@ int ice_check_for_pending_update(struct ice_pf *pf, const char *component,
- 	struct device *dev = ice_pf_to_dev(pf);
+@@ -733,7 +729,6 @@ int ice_check_for_pending_update(struct ice_pf *pf, const char *component,
  	struct ice_hw_dev_caps *dev_caps;
  	struct ice_hw *hw = &pf->hw;
--	int status;
  	u8 pending = 0;
-+	int status;
+-	int status;
  	int err;
  
  	dev_caps = kzalloc(sizeof(*dev_caps), GFP_KERNEL);
+@@ -745,8 +740,8 @@ int ice_check_for_pending_update(struct ice_pf *pf, const char *component,
+ 	 * may have changed, e.g. if an update was previously completed and
+ 	 * the system has not yet rebooted.
+ 	 */
+-	status = ice_discover_dev_caps(hw, dev_caps);
+-	if (status) {
++	err = ice_discover_dev_caps(hw, dev_caps);
++	if (err) {
+ 		NL_SET_ERR_MSG_MOD(extack, "Unable to read device capabilities");
+ 		kfree(dev_caps);
+ 		return -EIO;
+@@ -794,11 +789,10 @@ int ice_check_for_pending_update(struct ice_pf *pf, const char *component,
+ 					   "Canceling previous pending update",
+ 					   component, 0, 0);
+ 
+-	status = ice_acquire_nvm(hw, ICE_RES_WRITE);
+-	if (status) {
++	err = ice_acquire_nvm(hw, ICE_RES_WRITE);
++	if (err) {
+ 		dev_err(dev, "Failed to acquire device flash lock, err %d aq_err %s\n",
+-			status,
+-			ice_aq_str(hw->adminq.sq_last_status));
++			err, ice_aq_str(hw->adminq.sq_last_status));
+ 		NL_SET_ERR_MSG_MOD(extack, "Failed to acquire device flash lock");
+ 		return -EIO;
+ 	}
 diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
-index 758af9bc225a..1902aa250eac 100644
+index 1902aa250eac..c4c8e14fcf13 100644
 --- a/drivers/net/ethernet/intel/ice/ice_lib.c
 +++ b/drivers/net/ethernet/intel/ice/ice_lib.c
-@@ -1545,8 +1545,8 @@ int ice_vsi_cfg_rss_lut_key(struct ice_vsi *vsi)
- static void ice_vsi_set_vf_rss_flow_fld(struct ice_vsi *vsi)
+@@ -1750,20 +1750,20 @@ int ice_vsi_kill_vlan(struct ice_vsi *vsi, u16 vid)
  {
  	struct ice_pf *pf = vsi->back;
--	int status;
  	struct device *dev;
-+	int status;
+-	int err = 0;
+-	int status;
++	int err;
  
  	dev = ice_pf_to_dev(pf);
- 	if (ice_is_safe_mode(pf)) {
-@@ -1577,8 +1577,8 @@ static void ice_vsi_set_rss_flow_fld(struct ice_vsi *vsi)
- 	u16 vsi_handle = vsi->idx, vsi_num = vsi->vsi_num;
- 	struct ice_pf *pf = vsi->back;
- 	struct ice_hw *hw = &pf->hw;
--	int status;
- 	struct device *dev;
-+	int status;
  
- 	dev = ice_pf_to_dev(pf);
- 	if (ice_is_safe_mode(pf)) {
-@@ -1749,9 +1749,9 @@ ice_vsi_add_vlan(struct ice_vsi *vsi, u16 vid, enum ice_sw_fwd_act_type action)
- int ice_vsi_kill_vlan(struct ice_vsi *vsi, u16 vid)
+-	status = ice_fltr_remove_vlan(vsi, vid, ICE_FWD_TO_VSI);
+-	if (!status) {
++	err = ice_fltr_remove_vlan(vsi, vid, ICE_FWD_TO_VSI);
++	if (!err) {
+ 		vsi->num_vlan--;
+-	} else if (status == -ENOENT) {
++	} else if (err == -ENOENT) {
+ 		dev_dbg(dev, "Failed to remove VLAN %d on VSI %i, it does not exist, error: %d\n",
+-			vid, vsi->vsi_num, status);
++			vid, vsi->vsi_num, err);
++		err = 0;
+ 	} else {
+ 		dev_err(dev, "Error removing VLAN %d on vsi %i error: %d\n",
+-			vid, vsi->vsi_num, status);
++			vid, vsi->vsi_num, err);
+ 		err = -EIO;
+ 	}
+ 
+@@ -2105,8 +2105,7 @@ int ice_vsi_manage_vlan_insertion(struct ice_vsi *vsi)
  {
- 	struct ice_pf *pf = vsi->back;
+ 	struct ice_hw *hw = &vsi->back->hw;
+ 	struct ice_vsi_ctx *ctxt;
+-	int ret = 0;
 -	int status;
- 	struct device *dev;
- 	int err = 0;
-+	int status;
++	int ret;
  
- 	dev = ice_pf_to_dev(pf);
+ 	ctxt = kzalloc(sizeof(*ctxt), GFP_KERNEL);
+ 	if (!ctxt)
+@@ -2124,11 +2123,10 @@ int ice_vsi_manage_vlan_insertion(struct ice_vsi *vsi)
  
-@@ -2105,8 +2105,8 @@ int ice_vsi_manage_vlan_insertion(struct ice_vsi *vsi)
+ 	ctxt->info.valid_sections = cpu_to_le16(ICE_AQ_VSI_PROP_VLAN_VALID);
+ 
+-	status = ice_update_vsi(hw, vsi->idx, ctxt, NULL);
+-	if (status) {
++	ret = ice_update_vsi(hw, vsi->idx, ctxt, NULL);
++	if (ret) {
+ 		dev_err(ice_pf_to_dev(vsi->back), "update VSI for VLAN insert failed, err %d aq_err %s\n",
+-			status,
+-			ice_aq_str(hw->adminq.sq_last_status));
++			ret, ice_aq_str(hw->adminq.sq_last_status));
+ 		ret = -EIO;
+ 		goto out;
+ 	}
+@@ -2148,8 +2146,7 @@ int ice_vsi_manage_vlan_stripping(struct ice_vsi *vsi, bool ena)
  {
  	struct ice_hw *hw = &vsi->back->hw;
  	struct ice_vsi_ctx *ctxt;
 -	int status;
- 	int ret = 0;
-+	int status;
+-	int ret = 0;
++	int ret;
  
- 	ctxt = kzalloc(sizeof(*ctxt), GFP_KERNEL);
- 	if (!ctxt)
-@@ -2326,8 +2326,7 @@ int ice_cfg_vlan_pruning(struct ice_vsi *vsi, bool ena)
- 	if (status) {
- 		netdev_err(vsi->netdev, "%sabling VLAN pruning on VSI handle: %d, VSI HW ID: %d failed, err = %d, aq_err = %s\n",
- 			   ena ? "En" : "Dis", vsi->idx, vsi->vsi_num,
--			   status,
--			   ice_aq_str(pf->hw.adminq.sq_last_status));
-+			   status, ice_aq_str(pf->hw.adminq.sq_last_status));
- 		goto err_out;
+ 	/* do not allow modifying VLAN stripping when a port VLAN is configured
+ 	 * on this VSI
+@@ -2177,11 +2174,10 @@ int ice_vsi_manage_vlan_stripping(struct ice_vsi *vsi, bool ena)
+ 
+ 	ctxt->info.valid_sections = cpu_to_le16(ICE_AQ_VSI_PROP_VLAN_VALID);
+ 
+-	status = ice_update_vsi(hw, vsi->idx, ctxt, NULL);
+-	if (status) {
++	ret = ice_update_vsi(hw, vsi->idx, ctxt, NULL);
++	if (ret) {
+ 		dev_err(ice_pf_to_dev(vsi->back), "update VSI for VLAN strip failed, ena = %d err %d aq_err %s\n",
+-			ena, status,
+-			ice_aq_str(hw->adminq.sq_last_status));
++			ena, ret, ice_aq_str(hw->adminq.sq_last_status));
+ 		ret = -EIO;
+ 		goto out;
  	}
- 
-@@ -2408,8 +2407,8 @@ void ice_cfg_sw_lldp(struct ice_vsi *vsi, bool tx, bool create)
- 	int (*eth_fltr)(struct ice_vsi *v, u16 type, u16 flag,
- 			enum ice_sw_fwd_act_type act);
- 	struct ice_pf *pf = vsi->back;
--	int status;
- 	struct device *dev;
-+	int status;
- 
- 	dev = ice_pf_to_dev(pf);
- 	eth_fltr = create ? ice_fltr_add_eth : ice_fltr_remove_eth;
-@@ -2576,9 +2575,9 @@ ice_vsi_setup(struct ice_pf *pf, struct ice_port_info *pi,
- {
- 	u16 max_txqs[ICE_MAX_TRAFFIC_CLASS] = { 0 };
+@@ -2577,7 +2573,6 @@ ice_vsi_setup(struct ice_pf *pf, struct ice_port_info *pi,
  	struct device *dev = ice_pf_to_dev(pf);
--	int status;
  	struct ice_vsi *vsi;
  	int ret, i;
-+	int status;
+-	int status;
  
  	if (vsi_type == ICE_VSI_CHNL)
  		vsi = ice_vsi_alloc(pf, vsi_type, ch, ICE_INVAL_VFID);
-@@ -3036,8 +3035,8 @@ void ice_napi_del(struct ice_vsi *vsi)
-  */
- int ice_vsi_release(struct ice_vsi *vsi)
- {
--	int err;
- 	struct ice_pf *pf;
-+	int err;
+@@ -2724,11 +2719,11 @@ ice_vsi_setup(struct ice_pf *pf, struct ice_port_info *pi,
+ 	}
  
- 	if (!vsi->back)
- 		return -ENODEV;
-@@ -3273,9 +3272,9 @@ int ice_vsi_rebuild(struct ice_vsi *vsi, bool init_vsi)
- 	int prev_num_q_vectors = 0;
- 	struct ice_vf *vf = NULL;
+ 	dev_dbg(dev, "vsi->tc_cfg.ena_tc = %d\n", vsi->tc_cfg.ena_tc);
+-	status = ice_cfg_vsi_lan(vsi->port_info, vsi->idx, vsi->tc_cfg.ena_tc,
+-				 max_txqs);
+-	if (status) {
++	ret = ice_cfg_vsi_lan(vsi->port_info, vsi->idx, vsi->tc_cfg.ena_tc,
++			      max_txqs);
++	if (ret) {
+ 		dev_err(dev, "VSI %d failed lan queue config, error %d\n",
+-			vsi->vsi_num, status);
++			vsi->vsi_num, ret);
+ 		goto unroll_clear_rings;
+ 	}
+ 
+@@ -3274,7 +3269,6 @@ int ice_vsi_rebuild(struct ice_vsi *vsi, bool init_vsi)
  	enum ice_vsi_type vtype;
--	int status;
  	struct ice_pf *pf;
  	int ret, i;
-+	int status;
+-	int status;
  
  	if (!vsi)
  		return -EINVAL;
-@@ -3663,10 +3662,10 @@ int ice_vsi_cfg_tc(struct ice_vsi *vsi, u8 ena_tc)
- 	u16 max_txqs[ICE_MAX_TRAFFIC_CLASS] = { 0 };
- 	struct ice_pf *pf = vsi->back;
- 	struct ice_vsi_ctx *ctx;
--	int status;
+@@ -3420,14 +3414,14 @@ int ice_vsi_rebuild(struct ice_vsi *vsi, bool init_vsi)
+ 		/* If MQPRIO is set, means channel code path, hence for main
+ 		 * VSI's, use TC as 1
+ 		 */
+-		status = ice_cfg_vsi_lan(vsi->port_info, vsi->idx, 1, max_txqs);
++		ret = ice_cfg_vsi_lan(vsi->port_info, vsi->idx, 1, max_txqs);
+ 	else
+-		status = ice_cfg_vsi_lan(vsi->port_info, vsi->idx,
+-					 vsi->tc_cfg.ena_tc, max_txqs);
++		ret = ice_cfg_vsi_lan(vsi->port_info, vsi->idx,
++				      vsi->tc_cfg.ena_tc, max_txqs);
+ 
+-	if (status) {
++	if (ret) {
+ 		dev_err(ice_pf_to_dev(pf), "VSI %d failed lan queue config, error %d\n",
+-			vsi->vsi_num, status);
++			vsi->vsi_num, ret);
+ 		if (init_vsi) {
+ 			ret = -EIO;
+ 			goto err_vectors;
+@@ -3665,7 +3659,6 @@ int ice_vsi_cfg_tc(struct ice_vsi *vsi, u8 ena_tc)
  	struct device *dev;
  	int i, ret = 0;
  	u8 num_tc = 0;
-+	int status;
+-	int status;
  
  	dev = ice_pf_to_dev(pf);
  	if (vsi->tc_cfg.ena_tc == ena_tc &&
-@@ -3816,8 +3815,8 @@ bool ice_is_vsi_dflt_vsi(struct ice_sw *sw, struct ice_vsi *vsi)
-  */
- int ice_set_dflt_vsi(struct ice_sw *sw, struct ice_vsi *vsi)
- {
--	int status;
- 	struct device *dev;
-+	int status;
+@@ -3704,8 +3697,8 @@ int ice_vsi_cfg_tc(struct ice_vsi *vsi, u8 ena_tc)
  
- 	if (!sw || !vsi)
- 		return -EINVAL;
-@@ -3862,8 +3861,8 @@ int ice_set_dflt_vsi(struct ice_sw *sw, struct ice_vsi *vsi)
- int ice_clear_dflt_vsi(struct ice_sw *sw)
- {
- 	struct ice_vsi *dflt_vsi;
--	int status;
- 	struct device *dev;
-+	int status;
+ 	/* must to indicate which section of VSI context are being modified */
+ 	ctx->info.valid_sections = cpu_to_le16(ICE_AQ_VSI_PROP_RXQ_MAP_VALID);
+-	status = ice_update_vsi(&pf->hw, vsi->idx, ctx, NULL);
+-	if (status) {
++	ret = ice_update_vsi(&pf->hw, vsi->idx, ctx, NULL);
++	if (ret) {
+ 		dev_info(dev, "Failed VSI Update\n");
+ 		ret = -EIO;
+ 		goto out;
+@@ -3713,15 +3706,14 @@ int ice_vsi_cfg_tc(struct ice_vsi *vsi, u8 ena_tc)
  
- 	if (!sw)
- 		return -EINVAL;
-@@ -3954,8 +3953,8 @@ int ice_get_link_speed_kbps(struct ice_vsi *vsi)
- int ice_set_min_bw_limit(struct ice_vsi *vsi, u64 min_tx_rate)
- {
- 	struct ice_pf *pf = vsi->back;
--	int status;
- 	struct device *dev;
-+	int status;
- 	int speed;
+ 	if (vsi->type == ICE_VSI_PF &&
+ 	    test_bit(ICE_FLAG_TC_MQPRIO, pf->flags))
+-		status = ice_cfg_vsi_lan(vsi->port_info, vsi->idx, 1,
+-					 max_txqs);
++		ret = ice_cfg_vsi_lan(vsi->port_info, vsi->idx, 1, max_txqs);
+ 	else
+-		status = ice_cfg_vsi_lan(vsi->port_info, vsi->idx,
+-					 vsi->tc_cfg.ena_tc, max_txqs);
++		ret = ice_cfg_vsi_lan(vsi->port_info, vsi->idx,
++				      vsi->tc_cfg.ena_tc, max_txqs);
  
- 	dev = ice_pf_to_dev(pf);
-@@ -4015,8 +4014,8 @@ int ice_set_min_bw_limit(struct ice_vsi *vsi, u64 min_tx_rate)
- int ice_set_max_bw_limit(struct ice_vsi *vsi, u64 max_tx_rate)
- {
- 	struct ice_pf *pf = vsi->back;
--	int status;
- 	struct device *dev;
-+	int status;
- 	int speed;
- 
- 	dev = ice_pf_to_dev(pf);
-diff --git a/drivers/net/ethernet/intel/ice/ice_lib.h b/drivers/net/ethernet/intel/ice/ice_lib.h
-index 7865a743efee..b2ed189527d6 100644
---- a/drivers/net/ethernet/intel/ice/ice_lib.h
-+++ b/drivers/net/ethernet/intel/ice/ice_lib.h
-@@ -107,8 +107,7 @@ void ice_write_intrl(struct ice_q_vector *q_vector, u8 intrl);
- void ice_write_itr(struct ice_ring_container *rc, u16 itr);
- void ice_set_q_vector_intrl(struct ice_q_vector *q_vector);
- 
--int
--ice_vsi_cfg_mac_fltr(struct ice_vsi *vsi, const u8 *macaddr, bool set);
-+int ice_vsi_cfg_mac_fltr(struct ice_vsi *vsi, const u8 *macaddr, bool set);
- 
- bool ice_is_safe_mode(struct ice_pf *pf);
- bool ice_is_aux_ena(struct ice_pf *pf);
+-	if (status) {
++	if (ret) {
+ 		dev_err(dev, "VSI %d failed TC config, error %d\n",
+-			vsi->vsi_num, status);
++			vsi->vsi_num, ret);
+ 		ret = -EIO;
+ 		goto out;
+ 	}
 diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 154a90989897..c4676f289ad8 100644
+index c4676f289ad8..1e2b053332aa 100644
 --- a/drivers/net/ethernet/intel/ice/ice_main.c
 +++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -155,9 +155,9 @@ static void ice_check_for_hang_subtask(struct ice_pf *pf)
-  */
- static int ice_init_mac_fltr(struct ice_pf *pf)
- {
--	int status;
- 	struct ice_vsi *vsi;
- 	u8 *perm_addr;
-+	int status;
- 
- 	vsi = ice_get_main_vsi(pf);
- 	if (!vsi)
-@@ -295,8 +295,8 @@ static int ice_vsi_sync_fltr(struct ice_vsi *vsi)
- 	bool promisc_forced_on = false;
+@@ -296,9 +296,8 @@ static int ice_vsi_sync_fltr(struct ice_vsi *vsi)
  	struct ice_pf *pf = vsi->back;
  	struct ice_hw *hw = &pf->hw;
--	int status = 0;
  	u32 changed_flags = 0;
-+	int status = 0;
+-	int status = 0;
  	u8 promisc_m;
- 	int err = 0;
+-	int err = 0;
++	int err;
  
-@@ -708,12 +708,12 @@ void ice_print_link_msg(struct ice_vsi *vsi, bool isup)
- {
- 	struct ice_aqc_get_phy_caps_data *caps;
- 	const char *an_advertised;
--	int status;
- 	const char *fec_req;
- 	const char *speed;
- 	const char *fec;
- 	const char *fc;
- 	const char *an;
-+	int status;
+ 	if (!vsi->netdev)
+ 		return -EINVAL;
+@@ -328,25 +327,23 @@ static int ice_vsi_sync_fltr(struct ice_vsi *vsi)
+ 	}
  
- 	if (!vsi)
- 		return;
-@@ -1033,10 +1033,10 @@ ice_link_event(struct ice_pf *pf, struct ice_port_info *pi, bool link_up,
- {
- 	struct device *dev = ice_pf_to_dev(pf);
- 	struct ice_phy_info *phy_info;
--	int status;
- 	struct ice_vsi *vsi;
- 	u16 old_link_speed;
- 	bool old_link;
-+	int status;
+ 	/* Remove MAC addresses in the unsync list */
+-	status = ice_fltr_remove_mac_list(vsi, &vsi->tmp_unsync_list);
++	err = ice_fltr_remove_mac_list(vsi, &vsi->tmp_unsync_list);
+ 	ice_fltr_free_list(dev, &vsi->tmp_unsync_list);
+-	if (status) {
++	if (err) {
+ 		netdev_err(netdev, "Failed to delete MAC filters\n");
+ 		/* if we failed because of alloc failures, just bail */
+-		if (status == -ENOMEM) {
+-			err = -ENOMEM;
++		if (err == -ENOMEM)
+ 			goto out;
+-		}
+ 	}
  
- 	phy_info = &pi->phy;
- 	phy_info->link_info_old = phy_info->link_info;
-@@ -1420,8 +1420,8 @@ static int __ice_clean_ctrlq(struct ice_pf *pf, enum ice_ctl_q q_type)
- 		return 0;
- 
- 	do {
--		int ret;
- 		u16 opcode;
-+		int ret;
- 
- 		ret = ice_clean_rq_elem(hw, cq, &event, &pending);
- 		if (ret == -EALREADY)
-@@ -1879,8 +1879,8 @@ static int ice_init_nvm_phy_type(struct ice_port_info *pi)
+ 	/* Add MAC addresses in the sync list */
+-	status = ice_fltr_add_mac_list(vsi, &vsi->tmp_sync_list);
++	err = ice_fltr_add_mac_list(vsi, &vsi->tmp_sync_list);
+ 	ice_fltr_free_list(dev, &vsi->tmp_sync_list);
+ 	/* If filter is added successfully or already exists, do not go into
+ 	 * 'if' condition and report it as error. Instead continue processing
+ 	 * rest of the function.
+ 	 */
+-	if (status && status != -EEXIST) {
++	if (err && err != -EEXIST) {
+ 		netdev_err(netdev, "Failed to add MAC filters\n");
+ 		/* If there is no more space for new umac filters, VSI
+ 		 * should go into promiscuous mode. There should be some
+@@ -363,6 +360,7 @@ static int ice_vsi_sync_fltr(struct ice_vsi *vsi)
+ 			goto out;
+ 		}
+ 	}
++	err = 0;
+ 	/* check for changes in promiscuous modes */
+ 	if (changed_flags & IFF_ALLMULTI) {
+ 		if (vsi->current_netdev_flags & IFF_ALLMULTI) {
+@@ -409,6 +407,7 @@ static int ice_vsi_sync_fltr(struct ice_vsi *vsi)
+ 						~IFF_PROMISC;
+ 					goto out_promisc;
+ 				}
++				err = 0;
+ 				ice_cfg_vlan_pruning(vsi, false);
+ 			}
+ 		} else {
+@@ -1879,17 +1878,16 @@ static int ice_init_nvm_phy_type(struct ice_port_info *pi)
  {
  	struct ice_aqc_get_phy_caps_data *pcaps;
  	struct ice_pf *pf = pi->hw->back;
+-	int err = 0;
 -	int status;
- 	int err = 0;
-+	int status;
++	int err;
  
  	pcaps = kzalloc(sizeof(*pcaps), GFP_KERNEL);
  	if (!pcaps)
-@@ -1990,8 +1990,8 @@ static int ice_init_phy_user_cfg(struct ice_port_info *pi)
+ 		return -ENOMEM;
+ 
+-	status = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_TOPO_CAP_NO_MEDIA, pcaps,
+-				     NULL);
++	err = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_TOPO_CAP_NO_MEDIA,
++				  pcaps, NULL);
+ 
+-	if (status) {
++	if (err) {
+ 		dev_err(ice_pf_to_dev(pf), "Get PHY capability failed.\n");
+ 		err = -EIO;
+ 		goto out;
+@@ -1990,8 +1988,7 @@ static int ice_init_phy_user_cfg(struct ice_port_info *pi)
  	struct ice_aqc_get_phy_caps_data *pcaps;
  	struct ice_phy_info *phy = &pi->phy;
  	struct ice_pf *pf = pi->hw->back;
+-	int err = 0;
 -	int status;
- 	int err = 0;
-+	int status;
++	int err;
  
  	if (!(phy->link_info.link_info & ICE_AQ_MEDIA_AVAILABLE))
  		return -EIO;
-@@ -2062,8 +2062,8 @@ static int ice_configure_phy(struct ice_vsi *vsi)
+@@ -2001,12 +1998,12 @@ static int ice_init_phy_user_cfg(struct ice_port_info *pi)
+ 		return -ENOMEM;
+ 
+ 	if (ice_fw_supports_report_dflt_cfg(pi->hw))
+-		status = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_DFLT_CFG,
+-					     pcaps, NULL);
++		err = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_DFLT_CFG,
++					  pcaps, NULL);
+ 	else
+-		status = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_TOPO_CAP_MEDIA,
+-					     pcaps, NULL);
+-	if (status) {
++		err = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_TOPO_CAP_MEDIA,
++					  pcaps, NULL);
++	if (err) {
+ 		dev_err(ice_pf_to_dev(pf), "Get PHY capability failed.\n");
+ 		err = -EIO;
+ 		goto err_out;
+@@ -2062,8 +2059,7 @@ static int ice_configure_phy(struct ice_vsi *vsi)
  	struct ice_aqc_set_phy_cfg_data *cfg;
  	struct ice_phy_info *phy = &pi->phy;
  	struct ice_pf *pf = vsi->back;
+-	int err = 0;
 -	int status;
- 	int err = 0;
-+	int status;
++	int err;
  
  	/* Ensure we have media as we cannot configure a medialess port */
  	if (!(phy->link_info.link_info & ICE_AQ_MEDIA_AVAILABLE))
-@@ -2562,9 +2562,9 @@ int ice_prepare_xdp_rings(struct ice_vsi *vsi, struct bpf_prog *prog)
- 		.vsi_map_offset = vsi->alloc_txq,
- 		.mapping_mode = ICE_VSI_MAP_CONTIG
- 	};
--	int status;
- 	struct device *dev;
- 	int i, v_idx;
-+	int status;
+@@ -2083,11 +2079,11 @@ static int ice_configure_phy(struct ice_vsi *vsi)
+ 		return -ENOMEM;
  
- 	dev = ice_pf_to_dev(pf);
- 	vsi->xdp_rings = devm_kcalloc(dev, vsi->num_xdp_txq,
-@@ -4036,8 +4036,8 @@ static void ice_set_safe_mode_vlan_cfg(struct ice_pf *pf)
- {
- 	struct ice_vsi *vsi = ice_get_main_vsi(pf);
- 	struct ice_vsi_ctx *ctxt;
--	int status;
- 	struct ice_hw *hw;
-+	int status;
+ 	/* Get current PHY config */
+-	status = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_ACTIVE_CFG, pcaps,
+-				     NULL);
+-	if (status) {
++	err = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_ACTIVE_CFG, pcaps,
++				  NULL);
++	if (err) {
+ 		dev_err(dev, "Failed to get PHY configuration, VSI %d error %d\n",
+-			vsi->vsi_num, status);
++			vsi->vsi_num, err);
+ 		err = -EIO;
+ 		goto done;
+ 	}
+@@ -2102,14 +2098,14 @@ static int ice_configure_phy(struct ice_vsi *vsi)
+ 	/* Use PHY topology as baseline for configuration */
+ 	memset(pcaps, 0, sizeof(*pcaps));
+ 	if (ice_fw_supports_report_dflt_cfg(pi->hw))
+-		status = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_DFLT_CFG,
+-					     pcaps, NULL);
++		err = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_DFLT_CFG,
++					  pcaps, NULL);
+ 	else
+-		status = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_TOPO_CAP_MEDIA,
+-					     pcaps, NULL);
+-	if (status) {
++		err = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_TOPO_CAP_MEDIA,
++					  pcaps, NULL);
++	if (err) {
+ 		dev_err(dev, "Failed to get PHY caps, VSI %d error %d\n",
+-			vsi->vsi_num, status);
++			vsi->vsi_num, err);
+ 		err = -EIO;
+ 		goto done;
+ 	}
+@@ -2163,10 +2159,10 @@ static int ice_configure_phy(struct ice_vsi *vsi)
+ 	/* Enable link and link update */
+ 	cfg->caps |= ICE_AQ_PHY_ENA_AUTO_LINK_UPDT | ICE_AQ_PHY_ENA_LINK;
  
- 	if (!vsi)
- 		return;
-@@ -4068,8 +4068,7 @@ static void ice_set_safe_mode_vlan_cfg(struct ice_pf *pf)
- 	status = ice_update_vsi(hw, vsi->idx, ctxt, NULL);
- 	if (status) {
- 		dev_err(ice_pf_to_dev(vsi->back), "Failed to update VSI for safe mode VLANs, err %d aq_err %s\n",
--			status,
--			ice_aq_str(hw->adminq.sq_last_status));
-+			status, ice_aq_str(hw->adminq.sq_last_status));
- 	} else {
- 		vsi->info.sec_flags = ctxt->info.sec_flags;
- 		vsi->info.sw_flags2 = ctxt->info.sw_flags2;
-@@ -4792,9 +4791,9 @@ static void ice_setup_mc_magic_wake(struct ice_pf *pf)
+-	status = ice_aq_set_phy_cfg(&pf->hw, pi, cfg, NULL);
+-	if (status) {
++	err = ice_aq_set_phy_cfg(&pf->hw, pi, cfg, NULL);
++	if (err) {
+ 		dev_err(dev, "Failed to set phy config, VSI %d error %d\n",
+-			vsi->vsi_num, status);
++			vsi->vsi_num, err);
+ 		err = -EIO;
+ 	}
+ 
+@@ -3533,7 +3529,7 @@ static int ice_setup_pf_sw(struct ice_pf *pf)
  {
  	struct device *dev = ice_pf_to_dev(pf);
- 	struct ice_hw *hw = &pf->hw;
--	int status;
- 	u8 mac_addr[ETH_ALEN];
  	struct ice_vsi *vsi;
+-	int status = 0;
 +	int status;
- 	u8 flags;
  
- 	if (!pf->wol_ena)
-@@ -4817,8 +4816,7 @@ static void ice_setup_mc_magic_wake(struct ice_pf *pf)
- 	status = ice_aq_manage_mac_write(hw, mac_addr, flags, NULL);
+ 	if (ice_is_reset_in_progress(pf->state))
+ 		return -EBUSY;
+@@ -3580,7 +3576,7 @@ static int ice_setup_pf_sw(struct ice_pf *pf)
  	if (status)
- 		dev_err(dev, "Failed to enable Multicast Magic Packet wake, err %d aq_err %s\n",
--			status,
--			ice_aq_str(hw->adminq.sq_last_status));
-+			status, ice_aq_str(hw->adminq.sq_last_status));
- }
+ 		goto free_cpu_rx_map;
  
- /**
-@@ -5357,10 +5355,10 @@ static int ice_set_mac_address(struct net_device *netdev, void *pi)
- 	struct ice_pf *pf = vsi->back;
- 	struct ice_hw *hw = &pf->hw;
+-	return status;
++	return 0;
+ 
+ free_cpu_rx_map:
+ 	ice_free_cpu_rx_rmap(vsi);
+@@ -5357,9 +5353,8 @@ static int ice_set_mac_address(struct net_device *netdev, void *pi)
  	struct sockaddr *addr = pi;
--	int status;
  	u8 old_mac[ETH_ALEN];
  	u8 flags = 0;
- 	int err = 0;
-+	int status;
+-	int err = 0;
+-	int status;
  	u8 *mac;
++	int err;
  
  	mac = (u8 *)addr->sa_data;
-@@ -5472,8 +5470,8 @@ ice_set_tx_maxrate(struct net_device *netdev, int queue_index, u32 maxrate)
- {
- 	struct ice_netdev_priv *np = netdev_priv(netdev);
- 	struct ice_vsi *vsi = np->vsi;
--	int status;
- 	u16 q_handle;
-+	int status;
- 	u8 tc;
  
- 	/* Validate maxrate requested is within permitted range */
-@@ -6554,8 +6552,7 @@ static int ice_vsi_rebuild_by_type(struct ice_pf *pf, enum ice_vsi_type type)
- 		status = ice_replay_vsi(&pf->hw, vsi->idx);
- 		if (status) {
+@@ -5391,22 +5386,22 @@ static int ice_set_mac_address(struct net_device *netdev, void *pi)
+ 	netif_addr_unlock_bh(netdev);
+ 
+ 	/* Clean up old MAC filter. Not an error if old filter doesn't exist */
+-	status = ice_fltr_remove_mac(vsi, old_mac, ICE_FWD_TO_VSI);
+-	if (status && status != -ENOENT) {
++	err = ice_fltr_remove_mac(vsi, old_mac, ICE_FWD_TO_VSI);
++	if (err && err != -ENOENT) {
+ 		err = -EADDRNOTAVAIL;
+ 		goto err_update_filters;
+ 	}
+ 
+ 	/* Add filter for new MAC. If filter exists, return success */
+-	status = ice_fltr_add_mac(vsi, mac, ICE_FWD_TO_VSI);
+-	if (status == -EEXIST)
++	err = ice_fltr_add_mac(vsi, mac, ICE_FWD_TO_VSI);
++	if (err == -EEXIST)
+ 		/* Although this MAC filter is already present in hardware it's
+ 		 * possible in some cases (e.g. bonding) that dev_addr was
+ 		 * modified outside of the driver and needs to be restored back
+ 		 * to this value.
+ 		 */
+ 		netdev_dbg(netdev, "filter for MAC %pM already exists\n", mac);
+-	else if (status)
++	else if (err)
+ 		/* error if the new filter addition failed */
+ 		err = -EADDRNOTAVAIL;
+ 
+@@ -5425,10 +5420,10 @@ static int ice_set_mac_address(struct net_device *netdev, void *pi)
+ 
+ 	/* write new MAC address to the firmware */
+ 	flags = ICE_AQC_MAN_MAC_UPDATE_LAA_WOL;
+-	status = ice_aq_manage_mac_write(hw, mac, flags, NULL);
+-	if (status) {
++	err = ice_aq_manage_mac_write(hw, mac, flags, NULL);
++	if (err) {
+ 		netdev_err(netdev, "can't set MAC %pM. write to firmware failed error %d\n",
+-			   mac, status);
++			   mac, err);
+ 	}
+ 	return 0;
+ }
+@@ -6531,7 +6526,6 @@ static void ice_vsi_release_all(struct ice_pf *pf)
+ static int ice_vsi_rebuild_by_type(struct ice_pf *pf, enum ice_vsi_type type)
+ {
+ 	struct device *dev = ice_pf_to_dev(pf);
+-	int status;
+ 	int i, err;
+ 
+ 	ice_for_each_vsi(pf, i) {
+@@ -6549,10 +6543,10 @@ static int ice_vsi_rebuild_by_type(struct ice_pf *pf, enum ice_vsi_type type)
+ 		}
+ 
+ 		/* replay filters for the VSI */
+-		status = ice_replay_vsi(&pf->hw, vsi->idx);
+-		if (status) {
++		err = ice_replay_vsi(&pf->hw, vsi->idx);
++		if (err) {
  			dev_err(dev, "replay VSI failed, error %d, VSI index %d, type %s\n",
--				status, vsi->idx,
--				ice_vsi_type_str(type));
-+				status, vsi->idx, ice_vsi_type_str(type));
+-				status, vsi->idx, ice_vsi_type_str(type));
++				err, vsi->idx, ice_vsi_type_str(type));
  			return -EIO;
  		}
  
-@@ -6629,8 +6626,7 @@ static void ice_rebuild(struct ice_pf *pf, enum ice_reset_req reset_type)
+@@ -6616,7 +6610,6 @@ static void ice_rebuild(struct ice_pf *pf, enum ice_reset_req reset_type)
+ {
+ 	struct device *dev = ice_pf_to_dev(pf);
+ 	struct ice_hw *hw = &pf->hw;
+-	int ret;
+ 	int err;
  
- 	ret = ice_init_all_ctrlq(hw);
- 	if (ret) {
--		dev_err(dev, "control queues init failed %d\n",
--			ret);
-+		dev_err(dev, "control queues init failed %d\n", ret);
+ 	if (test_bit(ICE_DOWN, pf->state))
+@@ -6624,9 +6617,9 @@ static void ice_rebuild(struct ice_pf *pf, enum ice_reset_req reset_type)
+ 
+ 	dev_dbg(dev, "rebuilding PF after reset_type=%d\n", reset_type);
+ 
+-	ret = ice_init_all_ctrlq(hw);
+-	if (ret) {
+-		dev_err(dev, "control queues init failed %d\n", ret);
++	err = ice_init_all_ctrlq(hw);
++	if (err) {
++		dev_err(dev, "control queues init failed %d\n", err);
  		goto err_init_ctrlq;
  	}
  
-@@ -6646,8 +6642,7 @@ static void ice_rebuild(struct ice_pf *pf, enum ice_reset_req reset_type)
+@@ -6640,9 +6633,9 @@ static void ice_rebuild(struct ice_pf *pf, enum ice_reset_req reset_type)
+ 			ice_load_pkg(NULL, pf);
+ 	}
  
- 	ret = ice_clear_pf_cfg(hw);
- 	if (ret) {
--		dev_err(dev, "clear PF configuration failed %d\n",
--			ret);
-+		dev_err(dev, "clear PF configuration failed %d\n", ret);
+-	ret = ice_clear_pf_cfg(hw);
+-	if (ret) {
+-		dev_err(dev, "clear PF configuration failed %d\n", ret);
++	err = ice_clear_pf_cfg(hw);
++	if (err) {
++		dev_err(dev, "clear PF configuration failed %d\n", err);
  		goto err_init_ctrlq;
  	}
  
-@@ -6964,8 +6959,7 @@ int ice_set_rss_lut(struct ice_vsi *vsi, u8 *lut, u16 lut_size)
- 	status = ice_aq_set_rss_lut(hw, &params);
- 	if (status) {
- 		dev_err(ice_pf_to_dev(vsi->back), "Cannot set RSS lut, err %d aq_err %s\n",
--			status,
--			ice_aq_str(hw->adminq.sq_last_status));
-+			status, ice_aq_str(hw->adminq.sq_last_status));
- 		return -EIO;
+@@ -6654,21 +6647,21 @@ static void ice_rebuild(struct ice_pf *pf, enum ice_reset_req reset_type)
+ 
+ 	ice_clear_pxe_mode(hw);
+ 
+-	ret = ice_init_nvm(hw);
+-	if (ret) {
+-		dev_err(dev, "ice_init_nvm failed %d\n", ret);
++	err = ice_init_nvm(hw);
++	if (err) {
++		dev_err(dev, "ice_init_nvm failed %d\n", err);
+ 		goto err_init_ctrlq;
  	}
  
-@@ -6990,8 +6984,7 @@ int ice_set_rss_key(struct ice_vsi *vsi, u8 *seed)
- 	status = ice_aq_set_rss_key(hw, vsi->idx, (struct ice_aqc_get_set_rss_keys *)seed);
- 	if (status) {
- 		dev_err(ice_pf_to_dev(vsi->back), "Cannot set RSS key, err %d aq_err %s\n",
--			status,
--			ice_aq_str(hw->adminq.sq_last_status));
-+			status, ice_aq_str(hw->adminq.sq_last_status));
- 		return -EIO;
+-	ret = ice_get_caps(hw);
+-	if (ret) {
+-		dev_err(dev, "ice_get_caps failed %d\n", ret);
++	err = ice_get_caps(hw);
++	if (err) {
++		dev_err(dev, "ice_get_caps failed %d\n", err);
+ 		goto err_init_ctrlq;
  	}
  
-@@ -7023,8 +7016,7 @@ int ice_get_rss_lut(struct ice_vsi *vsi, u8 *lut, u16 lut_size)
- 	status = ice_aq_get_rss_lut(hw, &params);
- 	if (status) {
- 		dev_err(ice_pf_to_dev(vsi->back), "Cannot get RSS lut, err %d aq_err %s\n",
--			status,
--			ice_aq_str(hw->adminq.sq_last_status));
-+			status, ice_aq_str(hw->adminq.sq_last_status));
- 		return -EIO;
+-	ret = ice_aq_set_mac_cfg(hw, ICE_AQ_SET_MAC_FRAME_SIZE_MAX, NULL);
+-	if (ret) {
+-		dev_err(dev, "set_mac_cfg failed %d\n", ret);
++	err = ice_aq_set_mac_cfg(hw, ICE_AQ_SET_MAC_FRAME_SIZE_MAX, NULL);
++	if (err) {
++		dev_err(dev, "set_mac_cfg failed %d\n", err);
+ 		goto err_init_ctrlq;
  	}
  
-@@ -7049,8 +7041,7 @@ int ice_get_rss_key(struct ice_vsi *vsi, u8 *seed)
- 	status = ice_aq_get_rss_key(hw, vsi->idx, (struct ice_aqc_get_set_rss_keys *)seed);
- 	if (status) {
- 		dev_err(ice_pf_to_dev(vsi->back), "Cannot get RSS key, err %d aq_err %s\n",
--			status,
--			ice_aq_str(hw->adminq.sq_last_status));
-+			status, ice_aq_str(hw->adminq.sq_last_status));
- 		return -EIO;
+@@ -6751,10 +6744,10 @@ static void ice_rebuild(struct ice_pf *pf, enum ice_reset_req reset_type)
+ 	ice_update_pf_netdev_link(pf);
+ 
+ 	/* tell the firmware we are up */
+-	ret = ice_send_version(pf);
+-	if (ret) {
++	err = ice_send_version(pf);
++	if (err) {
+ 		dev_err(dev, "Rebuild failed due to error sending driver version: %d\n",
+-			ret);
++			err);
+ 		goto err_vsi_rebuild;
  	}
  
-@@ -7095,8 +7086,8 @@ static int ice_vsi_update_bridge_mode(struct ice_vsi *vsi, u16 bmode)
+@@ -7086,8 +7079,7 @@ static int ice_vsi_update_bridge_mode(struct ice_vsi *vsi, u16 bmode)
  	struct ice_aqc_vsi_props *vsi_props;
  	struct ice_hw *hw = &vsi->back->hw;
  	struct ice_vsi_ctx *ctxt;
+-	int ret = 0;
 -	int status;
- 	int ret = 0;
-+	int status;
++	int ret;
  
  	vsi_props = &vsi->info;
  
-@@ -7117,8 +7108,7 @@ static int ice_vsi_update_bridge_mode(struct ice_vsi *vsi, u16 bmode)
- 	status = ice_update_vsi(hw, vsi->idx, ctxt, NULL);
- 	if (status) {
+@@ -7105,10 +7097,10 @@ static int ice_vsi_update_bridge_mode(struct ice_vsi *vsi, u16 bmode)
+ 		ctxt->info.sw_flags &= ~ICE_AQ_VSI_SW_FLAG_ALLOW_LB;
+ 	ctxt->info.valid_sections = cpu_to_le16(ICE_AQ_VSI_PROP_SW_VALID);
+ 
+-	status = ice_update_vsi(hw, vsi->idx, ctxt, NULL);
+-	if (status) {
++	ret = ice_update_vsi(hw, vsi->idx, ctxt, NULL);
++	if (ret) {
  		dev_err(ice_pf_to_dev(vsi->back), "update VSI for bridge mode failed, bmode = %d err %d aq_err %s\n",
--			bmode, status,
--			ice_aq_str(hw->adminq.sq_last_status));
-+			bmode, status, ice_aq_str(hw->adminq.sq_last_status));
+-			bmode, status, ice_aq_str(hw->adminq.sq_last_status));
++			bmode, ret, ice_aq_str(hw->adminq.sq_last_status));
  		ret = -EIO;
  		goto out;
  	}
-@@ -7151,9 +7141,9 @@ ice_bridge_setlink(struct net_device *dev, struct nlmsghdr *nlh,
- 	struct ice_pf *pf = np->vsi->back;
- 	struct nlattr *attr, *br_spec;
+@@ -7143,7 +7135,6 @@ ice_bridge_setlink(struct net_device *dev, struct nlmsghdr *nlh,
  	struct ice_hw *hw = &pf->hw;
--	int status;
  	struct ice_sw *pf_sw;
  	int rem, v, err = 0;
-+	int status;
+-	int status;
  
  	pf_sw = pf->first_sw;
  	/* find the attribute in the netlink message */
-diff --git a/drivers/net/ethernet/intel/ice/ice_nvm.c b/drivers/net/ethernet/intel/ice/ice_nvm.c
-index 40c9bcb7889a..2d95fe533d1e 100644
---- a/drivers/net/ethernet/intel/ice/ice_nvm.c
-+++ b/drivers/net/ethernet/intel/ice/ice_nvm.c
-@@ -64,10 +64,10 @@ int
- ice_read_flat_nvm(struct ice_hw *hw, u32 offset, u32 *length, u8 *data,
- 		  bool read_shadow_ram)
- {
+@@ -7175,10 +7166,10 @@ ice_bridge_setlink(struct net_device *dev, struct nlmsghdr *nlh,
+ 		/* Update the unicast switch filter rules for the corresponding
+ 		 * switch of the netdev
+ 		 */
+-		status = ice_update_sw_rule_bridge_mode(hw);
+-		if (status) {
++		err = ice_update_sw_rule_bridge_mode(hw);
++		if (err) {
+ 			netdev_err(dev, "switch rule update failed, mode = %d err %d aq_err %s\n",
+-				   mode, status,
++				   mode, err,
+ 				   ice_aq_str(hw->adminq.sq_last_status));
+ 			/* revert hw->evb_veb */
+ 			hw->evb_veb = (pf_sw->bridge_mode == BRIDGE_MODE_VEB);
+@@ -8357,7 +8348,6 @@ int ice_open_internal(struct net_device *netdev)
+ 	struct ice_vsi *vsi = np->vsi;
+ 	struct ice_pf *pf = vsi->back;
+ 	struct ice_port_info *pi;
 -	int status;
- 	u32 inlen = *length;
- 	u32 bytes_read = 0;
- 	bool last_cmd;
-+	int status;
+ 	int err;
+ 
+ 	if (test_bit(ICE_NEEDS_RESTART, pf->state)) {
+@@ -8368,10 +8358,9 @@ int ice_open_internal(struct net_device *netdev)
+ 	netif_carrier_off(netdev);
+ 
+ 	pi = vsi->port_info;
+-	status = ice_update_link_info(pi);
+-	if (status) {
+-		netdev_err(netdev, "Failed to get link info, error %d\n",
+-			   status);
++	err = ice_update_link_info(pi);
++	if (err) {
++		netdev_err(netdev, "Failed to get link info, error %d\n", err);
+ 		return -EIO;
+ 	}
  
- 	*length = 0;
- 
-@@ -158,8 +158,7 @@ ice_aq_update_nvm(struct ice_hw *hw, u16 module_typeid, u32 offset,
-  *
-  * Erase the NVM sector using the admin queue commands (0x0702)
-  */
--int
--ice_aq_erase_nvm(struct ice_hw *hw, u16 module_typeid, struct ice_sq_cd *cd)
-+int ice_aq_erase_nvm(struct ice_hw *hw, u16 module_typeid, struct ice_sq_cd *cd)
- {
- 	struct ice_aq_desc desc;
- 	struct ice_aqc_nvm *cmd;
-@@ -184,12 +183,11 @@ ice_aq_erase_nvm(struct ice_hw *hw, u16 module_typeid, struct ice_sq_cd *cd)
-  *
-  * Reads one 16 bit word from the Shadow RAM using ice_read_flat_nvm.
-  */
--static int
--ice_read_sr_word_aq(struct ice_hw *hw, u16 offset, u16 *data)
-+static int ice_read_sr_word_aq(struct ice_hw *hw, u16 offset, u16 *data)
- {
- 	u32 bytes = sizeof(u16);
--	int status;
- 	__le16 data_local;
-+	int status;
- 
- 	/* Note that ice_read_flat_nvm takes into account the 4Kb AdminQ and
- 	 * Shadow RAM sector restrictions necessary when reading from the NVM.
-@@ -210,8 +208,7 @@ ice_read_sr_word_aq(struct ice_hw *hw, u16 offset, u16 *data)
-  *
-  * This function will request NVM ownership.
-  */
--int
--ice_acquire_nvm(struct ice_hw *hw, enum ice_aq_res_access_type access)
-+int ice_acquire_nvm(struct ice_hw *hw, enum ice_aq_res_access_type access)
- {
- 	if (hw->flash.blank_nvm_mode)
- 		return 0;
-@@ -356,8 +353,8 @@ ice_read_flash_module(struct ice_hw *hw, enum ice_bank_select bank, u16 module,
- static int
- ice_read_nvm_module(struct ice_hw *hw, enum ice_bank_select bank, u32 offset, u16 *data)
- {
--	int status;
- 	__le16 data_local;
-+	int status;
- 
- 	status = ice_read_flash_module(hw, bank, ICE_SR_1ST_NVM_BANK_PTR, offset * sizeof(u16),
- 				       (__force u8 *)&data_local, sizeof(u16));
-@@ -395,8 +392,8 @@ ice_read_nvm_sr_copy(struct ice_hw *hw, enum ice_bank_select bank, u32 offset, u
- static int
- ice_read_netlist_module(struct ice_hw *hw, enum ice_bank_select bank, u32 offset, u16 *data)
- {
--	int status;
- 	__le16 data_local;
-+	int status;
- 
- 	status = ice_read_flash_module(hw, bank, ICE_SR_NETLIST_BANK_PTR, offset * sizeof(u16),
- 				       (__force u8 *)&data_local, sizeof(u16));
-@@ -442,9 +439,9 @@ int
- ice_get_pfa_module_tlv(struct ice_hw *hw, u16 *module_tlv, u16 *module_tlv_len,
- 		       u16 module_type)
- {
--	int status;
- 	u16 pfa_len, pfa_ptr;
- 	u16 next_tlv;
-+	int status;
- 
- 	status = ice_read_sr_word(hw, ICE_SR_PFA_PTR, &pfa_ptr);
- 	if (status) {
-@@ -501,12 +498,11 @@ ice_get_pfa_module_tlv(struct ice_hw *hw, u16 *module_tlv, u16 *module_tlv_len,
-  *
-  * Reads the part number string from the NVM.
-  */
--int
--ice_read_pba_string(struct ice_hw *hw, u8 *pba_num, u32 pba_num_size)
-+int ice_read_pba_string(struct ice_hw *hw, u8 *pba_num, u32 pba_num_size)
- {
- 	u16 pba_tlv, pba_tlv_len;
--	int status;
- 	u16 pba_word, pba_size;
-+	int status;
- 	u16 i;
- 
- 	status = ice_get_pfa_module_tlv(hw, &pba_tlv, &pba_tlv_len,
-@@ -673,8 +669,8 @@ static int
- ice_get_orom_ver_info(struct ice_hw *hw, enum ice_bank_select bank, struct ice_orom_info *orom)
- {
- 	struct ice_orom_civd_info civd;
--	int status;
- 	u32 combo_ver;
-+	int status;
- 
- 	status = ice_get_orom_civd_data(hw, bank, &civd);
- 	if (status) {
-@@ -720,8 +716,8 @@ ice_get_netlist_info(struct ice_hw *hw, enum ice_bank_select bank,
- 		     struct ice_netlist_info *netlist)
- {
- 	u16 module_id, length, node_count, i;
--	int status;
- 	u16 *id_blk;
-+	int status;
- 
- 	status = ice_read_netlist_module(hw, bank, ICE_NETLIST_TYPE_OFFSET, &module_id);
- 	if (status)
-@@ -859,8 +855,7 @@ static int ice_discover_flash_size(struct ice_hw *hw)
-  * sector size by using the highest bit. The reported pointer value will be in
-  * bytes, intended for flat NVM reads.
-  */
--static int
--ice_read_sr_pointer(struct ice_hw *hw, u16 offset, u32 *pointer)
-+static int ice_read_sr_pointer(struct ice_hw *hw, u16 offset, u32 *pointer)
- {
- 	int status;
- 	u16 value;
-@@ -891,8 +886,7 @@ ice_read_sr_pointer(struct ice_hw *hw, u16 offset, u32 *pointer)
-  * Each area size word is specified in 4KB sector units. This function reports
-  * the size in bytes, intended for flat NVM reads.
-  */
--static int
--ice_read_sr_area_size(struct ice_hw *hw, u16 offset, u32 *size)
-+static int ice_read_sr_area_size(struct ice_hw *hw, u16 offset, u32 *size)
- {
- 	int status;
- 	u16 value;
-@@ -917,12 +911,11 @@ ice_read_sr_area_size(struct ice_hw *hw, u16 offset, u32 *size)
-  * structure for later use in order to calculate the correct offset to read
-  * from the active module.
-  */
--static int
--ice_determine_active_flash_banks(struct ice_hw *hw)
-+static int ice_determine_active_flash_banks(struct ice_hw *hw)
- {
- 	struct ice_bank_info *banks = &hw->flash.banks;
--	int status;
- 	u16 ctrl_word;
-+	int status;
- 
- 	status = ice_read_sr_word(hw, ICE_SR_NVM_CTRL_WORD, &ctrl_word);
- 	if (status) {
-@@ -1000,9 +993,9 @@ ice_determine_active_flash_banks(struct ice_hw *hw)
- int ice_init_nvm(struct ice_hw *hw)
- {
- 	struct ice_flash_info *flash = &hw->flash;
--	int status;
- 	u32 fla, gens_stat;
- 	u8 sr_size;
-+	int status;
- 
- 	/* The SR size is stored regardless of the NVM programming mode
- 	 * as the blank mode may be used in the factory line.
-diff --git a/drivers/net/ethernet/intel/ice/ice_nvm.h b/drivers/net/ethernet/intel/ice/ice_nvm.h
-index ed5165d24cb1..f1d754ffac16 100644
---- a/drivers/net/ethernet/intel/ice/ice_nvm.h
-+++ b/drivers/net/ethernet/intel/ice/ice_nvm.h
-@@ -12,8 +12,7 @@ struct ice_orom_civd_info {
- 	__le16 combo_name[32];	/* Unicode string representing the Combo Image version */
- } __packed;
- 
--int
--ice_acquire_nvm(struct ice_hw *hw, enum ice_aq_res_access_type access);
-+int ice_acquire_nvm(struct ice_hw *hw, enum ice_aq_res_access_type access);
- void ice_release_nvm(struct ice_hw *hw);
- int
- ice_read_flat_nvm(struct ice_hw *hw, u32 offset, u32 *length, u8 *data,
-@@ -21,14 +20,11 @@ ice_read_flat_nvm(struct ice_hw *hw, u32 offset, u32 *length, u8 *data,
- int
- ice_get_pfa_module_tlv(struct ice_hw *hw, u16 *module_tlv, u16 *module_tlv_len,
- 		       u16 module_type);
--int
--ice_get_inactive_orom_ver(struct ice_hw *hw, struct ice_orom_info *orom);
--int
--ice_get_inactive_nvm_ver(struct ice_hw *hw, struct ice_nvm_info *nvm);
-+int ice_get_inactive_orom_ver(struct ice_hw *hw, struct ice_orom_info *orom);
-+int ice_get_inactive_nvm_ver(struct ice_hw *hw, struct ice_nvm_info *nvm);
- int
- ice_get_inactive_netlist_ver(struct ice_hw *hw, struct ice_netlist_info *netlist);
--int
--ice_read_pba_string(struct ice_hw *hw, u8 *pba_num, u32 pba_num_size);
-+int ice_read_pba_string(struct ice_hw *hw, u8 *pba_num, u32 pba_num_size);
- int ice_init_nvm(struct ice_hw *hw);
- int ice_read_sr_word(struct ice_hw *hw, u16 offset, u16 *data);
- int
-diff --git a/drivers/net/ethernet/intel/ice/ice_sched.c b/drivers/net/ethernet/intel/ice/ice_sched.c
-index e80f35cf7eab..b4bf18f9d4e3 100644
---- a/drivers/net/ethernet/intel/ice/ice_sched.c
-+++ b/drivers/net/ethernet/intel/ice/ice_sched.c
-@@ -152,8 +152,8 @@ ice_sched_add_node(struct ice_port_info *pi, u8 layer,
- 	struct ice_aqc_txsched_elem_data elem;
- 	struct ice_sched_node *parent;
- 	struct ice_sched_node *node;
--	int status;
- 	struct ice_hw *hw;
-+	int status;
- 
- 	if (!pi)
- 		return -EINVAL;
-@@ -234,8 +234,8 @@ ice_sched_remove_elems(struct ice_hw *hw, struct ice_sched_node *parent,
- {
- 	struct ice_aqc_delete_elem *buf;
- 	u16 i, num_groups_removed = 0;
--	int status;
- 	u16 buf_size;
-+	int status;
- 
- 	buf_size = struct_size(buf, teid, num_nodes);
- 	buf = devm_kzalloc(ice_hw_to_dev(hw), buf_size, GFP_KERNEL);
-@@ -525,8 +525,8 @@ ice_sched_suspend_resume_elems(struct ice_hw *hw, u8 num_nodes, u32 *node_teids,
- 			       bool suspend)
- {
- 	u16 i, buf_size, num_elem_ret = 0;
--	int status;
- 	__le32 *buf;
-+	int status;
- 
- 	buf_size = sizeof(*buf) * num_nodes;
- 	buf = devm_kzalloc(ice_hw_to_dev(hw), buf_size, GFP_KERNEL);
-@@ -727,8 +727,8 @@ ice_sched_del_rl_profile(struct ice_hw *hw,
- {
- 	struct ice_aqc_rl_profile_elem *buf;
- 	u16 num_profiles_removed;
--	int status;
- 	u16 num_profiles = 1;
-+	int status;
- 
- 	if (rl_info->prof_id_ref != 0)
- 		return -EBUSY;
-@@ -883,9 +883,9 @@ ice_sched_add_elems(struct ice_port_info *pi, struct ice_sched_node *tc_node,
- 	struct ice_sched_node *prev, *new_node;
- 	struct ice_aqc_add_elem *buf;
- 	u16 i, num_groups_added = 0;
--	int status = 0;
- 	struct ice_hw *hw = pi->hw;
- 	size_t buf_size;
-+	int status = 0;
- 	u32 teid;
- 
- 	buf_size = struct_size(buf, generic, num_nodes);
-@@ -1201,10 +1201,10 @@ static void ice_sched_rm_dflt_nodes(struct ice_port_info *pi)
- int ice_sched_init_port(struct ice_port_info *pi)
- {
- 	struct ice_aqc_get_topo_elem *buf;
--	int status;
- 	struct ice_hw *hw;
- 	u8 num_branches;
- 	u16 num_elems;
-+	int status;
- 	u8 i, j;
- 
- 	if (!pi)
-@@ -1303,8 +1303,8 @@ int ice_sched_init_port(struct ice_port_info *pi)
- int ice_sched_query_res_alloc(struct ice_hw *hw)
- {
- 	struct ice_aqc_query_txsched_res_resp *buf;
--	int status = 0;
- 	__le16 max_sibl;
-+	int status = 0;
- 	u16 i;
- 
- 	if (hw->layer_info)
-@@ -1621,10 +1621,10 @@ ice_sched_add_vsi_child_nodes(struct ice_port_info *pi, u16 vsi_handle,
- {
- 	struct ice_sched_node *parent, *node;
- 	struct ice_hw *hw = pi->hw;
--	int status;
- 	u32 first_node_teid;
- 	u16 num_added = 0;
- 	u8 i, qgl, vsil;
-+	int status;
- 
- 	qgl = ice_sched_get_qgrp_layer(hw);
- 	vsil = ice_sched_get_vsi_layer(hw);
-@@ -1722,10 +1722,10 @@ ice_sched_add_vsi_support_nodes(struct ice_port_info *pi, u16 vsi_handle,
- 				struct ice_sched_node *tc_node, u16 *num_nodes)
- {
- 	struct ice_sched_node *parent = tc_node;
--	int status;
- 	u32 first_node_teid;
- 	u16 num_added = 0;
- 	u8 i, vsil;
-+	int status;
- 
- 	if (!pi)
- 		return -EINVAL;
-@@ -1802,9 +1802,9 @@ ice_sched_update_vsi_child_nodes(struct ice_port_info *pi, u16 vsi_handle,
- 	struct ice_sched_node *vsi_node;
- 	struct ice_sched_node *tc_node;
- 	struct ice_vsi_ctx *vsi_ctx;
--	int status = 0;
- 	struct ice_hw *hw = pi->hw;
- 	u16 prev_numqs;
-+	int status = 0;
- 
- 	tc_node = ice_sched_get_tc_node(pi, tc);
- 	if (!tc_node)
-@@ -1875,8 +1875,8 @@ ice_sched_cfg_vsi(struct ice_port_info *pi, u16 vsi_handle, u8 tc, u16 maxqs,
- {
- 	struct ice_sched_node *vsi_node, *tc_node;
- 	struct ice_vsi_ctx *vsi_ctx;
--	int status = 0;
- 	struct ice_hw *hw = pi->hw;
-+	int status = 0;
- 
- 	ice_debug(pi->hw, ICE_DBG_SCHED, "add/config VSI %d\n", vsi_handle);
- 	tc_node = ice_sched_get_tc_node(pi, tc);
-@@ -1996,8 +1996,8 @@ static bool ice_sched_is_leaf_node_present(struct ice_sched_node *node)
- static int
- ice_sched_rm_vsi_cfg(struct ice_port_info *pi, u16 vsi_handle, u8 owner)
- {
--	int status = -EINVAL;
- 	struct ice_vsi_ctx *vsi_ctx;
-+	int status = -EINVAL;
- 	u8 i;
- 
- 	ice_debug(pi->hw, ICE_DBG_SCHED, "removing VSI %d\n", vsi_handle);
-@@ -2194,9 +2194,9 @@ ice_sched_move_nodes(struct ice_port_info *pi, struct ice_sched_node *parent,
- {
- 	struct ice_aqc_move_elem *buf;
- 	struct ice_sched_node *node;
--	int status = 0;
- 	u16 i, grps_movd = 0;
- 	struct ice_hw *hw;
-+	int status = 0;
- 	u16 buf_len;
- 
- 	hw = pi->hw;
-@@ -2258,9 +2258,9 @@ ice_sched_move_vsi_to_agg(struct ice_port_info *pi, u16 vsi_handle, u32 agg_id,
- 	struct ice_sched_node *vsi_node, *agg_node, *tc_node, *parent;
- 	u16 num_nodes[ICE_AQC_TOPO_MAX_LEVEL_NUM] = { 0 };
- 	u32 first_node_teid, vsi_teid;
--	int status;
- 	u16 num_nodes_added;
- 	u8 aggl, vsil, i;
-+	int status;
- 
- 	tc_node = ice_sched_get_tc_node(pi, tc);
- 	if (!tc_node)
-@@ -2506,10 +2506,10 @@ ice_sched_add_agg_cfg(struct ice_port_info *pi, u32 agg_id, u8 tc)
- {
- 	struct ice_sched_node *parent, *agg_node, *tc_node;
- 	u16 num_nodes[ICE_AQC_TOPO_MAX_LEVEL_NUM] = { 0 };
--	int status = 0;
- 	struct ice_hw *hw = pi->hw;
- 	u32 first_node_teid;
- 	u16 num_nodes_added;
-+	int status = 0;
- 	u8 i, aggl;
- 
- 	tc_node = ice_sched_get_tc_node(pi, tc);
-@@ -2596,8 +2596,8 @@ ice_sched_cfg_agg(struct ice_port_info *pi, u32 agg_id,
- 		  enum ice_agg_type agg_type, unsigned long *tc_bitmap)
- {
- 	struct ice_sched_agg_info *agg_info;
--	int status = 0;
- 	struct ice_hw *hw = pi->hw;
-+	int status = 0;
- 	u8 tc;
- 
- 	agg_info = ice_get_agg_info(hw, agg_id);
-@@ -2760,8 +2760,8 @@ ice_sched_assoc_vsi_to_agg(struct ice_port_info *pi, u32 agg_id,
- {
- 	struct ice_sched_agg_vsi_info *agg_vsi_info, *old_agg_vsi_info = NULL;
- 	struct ice_sched_agg_info *agg_info, *old_agg_info;
--	int status = 0;
- 	struct ice_hw *hw = pi->hw;
-+	int status = 0;
- 	u8 tc;
- 
- 	if (!ice_is_vsi_valid(pi->hw, vsi_handle))
-@@ -2856,9 +2856,9 @@ ice_sched_update_elem(struct ice_hw *hw, struct ice_sched_node *node,
- 		      struct ice_aqc_txsched_elem_data *info)
- {
- 	struct ice_aqc_txsched_elem_data buf;
--	int status;
- 	u16 elem_cfgd = 0;
- 	u16 num_elems = 1;
-+	int status;
- 
- 	buf = *info;
- 	/* Parent TEID is reserved field in this aq call */
-@@ -3102,8 +3102,8 @@ static int
- ice_sched_bw_to_rl_profile(struct ice_hw *hw, u32 bw,
- 			   struct ice_aqc_rl_profile_elem *profile)
- {
--	int status = -EINVAL;
- 	s64 bytes_per_sec, ts_rate, mv_tmp;
-+	int status = -EINVAL;
- 	bool found = false;
- 	s32 encode = 0;
- 	s64 mv = 0;
-@@ -3176,9 +3176,9 @@ ice_sched_add_rl_profile(struct ice_port_info *pi,
- 	struct ice_aqc_rl_profile_info *rl_prof_elem;
- 	u16 profiles_added = 0, num_profiles = 1;
- 	struct ice_aqc_rl_profile_elem *buf;
--	int status;
- 	struct ice_hw *hw;
- 	u8 profile_type;
-+	int status;
- 
- 	if (layer_num >= ICE_AQC_TOPO_MAX_LEVEL_NUM)
- 		return NULL;
-@@ -3466,11 +3466,11 @@ ice_sched_set_node_bw_dflt(struct ice_port_info *pi,
- 			   struct ice_sched_node *node,
- 			   enum ice_rl_type rl_type, u8 layer_num)
- {
--	int status;
- 	struct ice_hw *hw;
- 	u8 profile_type;
- 	u16 rl_prof_id;
- 	u16 old_id;
-+	int status;
- 
- 	hw = pi->hw;
- 	switch (rl_type) {
-@@ -3567,9 +3567,9 @@ ice_sched_set_node_bw(struct ice_port_info *pi, struct ice_sched_node *node,
- 		      enum ice_rl_type rl_type, u32 bw, u8 layer_num)
- {
- 	struct ice_aqc_rl_profile_info *rl_prof_info;
--	int status = -EINVAL;
- 	struct ice_hw *hw = pi->hw;
- 	u16 old_id, rl_prof_id;
-+	int status = -EINVAL;
- 
- 	rl_prof_info = ice_sched_add_rl_profile(pi, rl_type, bw, layer_num);
- 	if (!rl_prof_info)
-@@ -3735,9 +3735,9 @@ static int
- ice_sched_set_q_bw_lmt(struct ice_port_info *pi, u16 vsi_handle, u8 tc,
- 		       u16 q_handle, enum ice_rl_type rl_type, u32 bw)
- {
--	int status = -EINVAL;
- 	struct ice_sched_node *node;
- 	struct ice_q_ctx *q_ctx;
-+	int status = -EINVAL;
- 
- 	if (!ice_is_vsi_valid(pi->hw, vsi_handle))
- 		return -EINVAL;
-@@ -3885,8 +3885,8 @@ ice_sched_set_node_bw_lmt_per_tc(struct ice_port_info *pi, u32 id,
- 				 enum ice_agg_type agg_type, u8 tc,
- 				 enum ice_rl_type rl_type, u32 bw)
- {
--	int status = -EINVAL;
- 	struct ice_sched_node *node;
-+	int status = -EINVAL;
- 
- 	if (!pi)
- 		return status;
-@@ -4191,8 +4191,7 @@ void ice_sched_replay_agg_vsi_preinit(struct ice_hw *hw)
-  * their node bandwidth information. This function needs to be called with
-  * scheduler lock held.
-  */
--static int
--ice_sched_replay_vsi_agg(struct ice_hw *hw, u16 vsi_handle)
-+static int ice_sched_replay_vsi_agg(struct ice_hw *hw, u16 vsi_handle)
- {
- 	DECLARE_BITMAP(replay_bitmap, ICE_MAX_TRAFFIC_CLASS);
- 	struct ice_sched_agg_vsi_info *agg_vsi_info;
-@@ -4252,8 +4251,7 @@ int ice_replay_vsi_agg(struct ice_hw *hw, u16 vsi_handle)
-  * This function replays queue type node bandwidth. This function needs to be
-  * called with scheduler lock held.
-  */
--int
--ice_sched_replay_q_bw(struct ice_port_info *pi, struct ice_q_ctx *q_ctx)
-+int ice_sched_replay_q_bw(struct ice_port_info *pi, struct ice_q_ctx *q_ctx)
- {
- 	struct ice_sched_node *q_node;
- 
-diff --git a/drivers/net/ethernet/intel/ice/ice_sched.h b/drivers/net/ethernet/intel/ice/ice_sched.h
-index 6f21355ddd44..4f91577fed56 100644
---- a/drivers/net/ethernet/intel/ice/ice_sched.h
-+++ b/drivers/net/ethernet/intel/ice/ice_sched.h
-@@ -120,6 +120,5 @@ int ice_cfg_rl_burst_size(struct ice_hw *hw, u32 bytes);
- void ice_sched_replay_agg_vsi_preinit(struct ice_hw *hw);
- void ice_sched_replay_agg(struct ice_hw *hw);
- int ice_replay_vsi_agg(struct ice_hw *hw, u16 vsi_handle);
--int
--ice_sched_replay_q_bw(struct ice_port_info *pi, struct ice_q_ctx *q_ctx);
-+int ice_sched_replay_q_bw(struct ice_port_info *pi, struct ice_q_ctx *q_ctx);
- #endif /* _ICE_SCHED_H_ */
-diff --git a/drivers/net/ethernet/intel/ice/ice_switch.c b/drivers/net/ethernet/intel/ice/ice_switch.c
-index 12e76717cecd..e477c2b1d5bb 100644
---- a/drivers/net/ethernet/intel/ice/ice_switch.c
-+++ b/drivers/net/ethernet/intel/ice/ice_switch.c
-@@ -946,8 +946,8 @@ ice_aq_alloc_free_vsi_list(struct ice_hw *hw, u16 *vsi_list_id,
- {
- 	struct ice_aqc_alloc_free_res_elem *sw_buf;
- 	struct ice_aqc_res_elem *vsi_ele;
--	int status;
- 	u16 buf_len;
-+	int status;
- 
- 	buf_len = struct_size(sw_buf, elem, 1);
- 	sw_buf = devm_kzalloc(ice_hw_to_dev(hw), buf_len, GFP_KERNEL);
-@@ -1076,8 +1076,8 @@ ice_aq_get_recipe(struct ice_hw *hw,
- {
- 	struct ice_aqc_add_get_recipe *cmd;
- 	struct ice_aq_desc desc;
--	int status;
- 	u16 buf_size;
-+	int status;
- 
- 	if (*num_recipes != ICE_MAX_NUM_RECIPES)
- 		return -EINVAL;
-@@ -1157,8 +1157,8 @@ ice_aq_get_recipe_to_profile(struct ice_hw *hw, u32 profile_id, u8 *r_bitmap,
- static int ice_alloc_recipe(struct ice_hw *hw, u16 *rid)
- {
- 	struct ice_aqc_alloc_free_res_elem *sw_buf;
--	int status;
- 	u16 buf_len;
-+	int status;
- 
- 	buf_len = struct_size(sw_buf, elem, 1);
- 	sw_buf = kzalloc(buf_len, GFP_KERNEL);
-@@ -1238,9 +1238,9 @@ ice_get_recp_frm_fw(struct ice_hw *hw, struct ice_sw_recipe *recps, u8 rid,
- 	struct ice_aqc_recipe_data_elem *tmp;
- 	u16 num_recps = ICE_MAX_NUM_RECIPES;
- 	struct ice_prot_lkup_ext *lkup_exts;
--	int status;
- 	u8 fv_word_idx = 0;
- 	u16 sub_recps;
-+	int status;
- 
- 	bitmap_zero(result_bm, ICE_MAX_FV_WORDS);
- 
-@@ -1410,9 +1410,9 @@ ice_init_port_info(struct ice_port_info *pi, u16 vsi_port_num, u8 type,
- int ice_get_initial_sw_cfg(struct ice_hw *hw)
- {
- 	struct ice_aqc_get_sw_cfg_resp_elem *rbuf;
--	int status;
- 	u16 req_desc = 0;
- 	u16 num_elems;
-+	int status;
- 	u16 i;
- 
- 	rbuf = devm_kzalloc(ice_hw_to_dev(hw), ICE_SW_CFG_MAX_BUF_LEN,
-@@ -1681,9 +1681,9 @@ ice_add_marker_act(struct ice_hw *hw, struct ice_fltr_mgmt_list_entry *m_ent,
- 	 * 3. GENERIC VALUE action to hold the software marker ID
- 	 */
- 	const u16 num_lg_acts = 3;
--	int status;
- 	u16 lg_act_size;
- 	u16 rules_size;
-+	int status;
- 	u32 act;
- 	u16 id;
- 
-@@ -1814,9 +1814,9 @@ ice_update_vsi_list_rule(struct ice_hw *hw, u16 *vsi_handle_arr, u16 num_vsi,
- 			 enum ice_sw_lkup_type lkup_type)
- {
- 	struct ice_aqc_sw_rules_elem *s_rule;
--	int status;
- 	u16 s_rule_size;
- 	u16 rule_type;
-+	int status;
- 	int i;
- 
- 	if (!num_vsi)
-@@ -1992,9 +1992,9 @@ int ice_update_sw_rule_bridge_mode(struct ice_hw *hw)
- {
- 	struct ice_switch_info *sw = hw->switch_info;
- 	struct ice_fltr_mgmt_list_entry *fm_entry;
--	int status = 0;
- 	struct list_head *rule_head;
- 	struct mutex *rule_lock; /* Lock to protect filter rule list */
-+	int status = 0;
- 
- 	rule_lock = &sw->recp_list[ICE_SW_LKUP_MAC].filt_rule_lock;
- 	rule_head = &sw->recp_list[ICE_SW_LKUP_MAC].filt_rules;
-@@ -2050,8 +2050,8 @@ ice_add_update_vsi_list(struct ice_hw *hw,
- 			struct ice_fltr_info *cur_fltr,
- 			struct ice_fltr_info *new_fltr)
- {
--	int status = 0;
- 	u16 vsi_list_id = 0;
-+	int status = 0;
- 
- 	if ((cur_fltr->fltr_act == ICE_FWD_TO_Q ||
- 	     cur_fltr->fltr_act == ICE_FWD_TO_QGRP))
-@@ -2260,8 +2260,8 @@ ice_remove_vsi_list_rule(struct ice_hw *hw, u16 vsi_list_id,
- 			 enum ice_sw_lkup_type lkup_type)
- {
- 	struct ice_aqc_sw_rules_elem *s_rule;
--	int status;
- 	u16 s_rule_size;
-+	int status;
- 
- 	s_rule_size = (u16)ICE_SW_RULE_VSI_LIST_SIZE(0);
- 	s_rule = devm_kzalloc(ice_hw_to_dev(hw), s_rule_size, GFP_KERNEL);
-@@ -2293,8 +2293,8 @@ ice_rem_update_vsi_list(struct ice_hw *hw, u16 vsi_handle,
- 			struct ice_fltr_mgmt_list_entry *fm_list)
- {
- 	enum ice_sw_lkup_type lkup_type;
--	int status = 0;
- 	u16 vsi_list_id;
-+	int status = 0;
- 
- 	if (fm_list->fltr_info.fltr_act != ICE_FWD_TO_VSI_LIST ||
- 	    fm_list->vsi_count == 0)
-@@ -2382,9 +2382,9 @@ ice_remove_rule_internal(struct ice_hw *hw, u8 recp_id,
- 	struct ice_switch_info *sw = hw->switch_info;
- 	struct ice_fltr_mgmt_list_entry *list_elem;
- 	struct mutex *rule_lock; /* Lock to protect filter rule list */
--	int status = 0;
- 	bool remove_rule = false;
- 	u16 vsi_handle;
-+	int status = 0;
- 
- 	if (!ice_is_vsi_valid(hw, f_entry->fltr_info.vsi_handle))
- 		return -EINVAL;
-@@ -2598,8 +2598,8 @@ int ice_add_mac(struct ice_hw *hw, struct list_head *m_list)
- 	u16 total_elem_left, s_rule_size;
- 	struct ice_switch_info *sw;
- 	struct mutex *rule_lock; /* Lock to protect filter rule list */
--	int status = 0;
- 	u16 num_unicast = 0;
-+	int status = 0;
- 	u8 elem_sent;
- 
- 	if (!m_list || !hw)
-@@ -2917,8 +2917,7 @@ int ice_add_vlan(struct ice_hw *hw, struct list_head *v_list)
-  * the filter list with the necessary fields (including flags to
-  * indicate Tx or Rx rules).
-  */
--int
--ice_add_eth_mac(struct ice_hw *hw, struct list_head *em_list)
-+int ice_add_eth_mac(struct ice_hw *hw, struct list_head *em_list)
- {
- 	struct ice_fltr_list_entry *em_list_itr;
- 
-@@ -2946,8 +2945,7 @@ ice_add_eth_mac(struct ice_hw *hw, struct list_head *em_list)
-  * @hw: pointer to the hardware structure
-  * @em_list: list of ethertype or ethertype MAC entries
-  */
--int
--ice_remove_eth_mac(struct ice_hw *hw, struct list_head *em_list)
-+int ice_remove_eth_mac(struct ice_hw *hw, struct list_head *em_list)
- {
- 	struct ice_fltr_list_entry *em_list_itr, *tmp;
- 
-@@ -3020,15 +3018,14 @@ ice_rem_adv_rule_info(struct ice_hw *hw, struct list_head *rule_head)
-  * add filter rule to set/unset given VSI as default VSI for the switch
-  * (represented by swid)
-  */
--int
--ice_cfg_dflt_vsi(struct ice_hw *hw, u16 vsi_handle, bool set, u8 direction)
-+int ice_cfg_dflt_vsi(struct ice_hw *hw, u16 vsi_handle, bool set, u8 direction)
- {
- 	struct ice_aqc_sw_rules_elem *s_rule;
- 	struct ice_fltr_info f_info;
- 	enum ice_adminq_opc opcode;
--	int status;
- 	u16 s_rule_size;
- 	u16 hw_vsi_id;
-+	int status;
- 
- 	if (!ice_is_vsi_valid(hw, vsi_handle))
- 		return -EINVAL;
-@@ -3137,10 +3134,10 @@ ice_find_ucast_rule_entry(struct ice_hw *hw, u8 recp_id,
-  * This function removes either a MAC filter rule or a specific VSI from a
-  * VSI list for a multicast MAC address.
-  *
-- * Returns -ENOENT if a given entry was not added by
-- * ice_add_mac. Caller should be aware that this call will only work if all
-- * the entries passed into m_list were added previously. It will not attempt to
-- * do a partial remove of entries that were found.
-+ * Returns -ENOENT if a given entry was not added by ice_add_mac. Caller should
-+ * be aware that this call will only work if all the entries passed into m_list
-+ * were added previously. It will not attempt to do a partial remove of entries
-+ * that were found.
-  */
- int ice_remove_mac(struct ice_hw *hw, struct list_head *m_list)
- {
-@@ -3192,8 +3189,7 @@ int ice_remove_mac(struct ice_hw *hw, struct list_head *m_list)
-  * @hw: pointer to the hardware structure
-  * @v_list: list of VLAN entries and forwarding information
-  */
--int
--ice_remove_vlan(struct ice_hw *hw, struct list_head *v_list)
-+int ice_remove_vlan(struct ice_hw *hw, struct list_head *v_list)
- {
- 	struct ice_fltr_list_entry *v_list_itr, *tmp;
- 
-@@ -3350,8 +3346,7 @@ static u8 ice_determine_promisc_mask(struct ice_fltr_info *fi)
-  * @v_list: list of promisc entries
-  */
- static int
--ice_remove_promisc(struct ice_hw *hw, u8 recp_id,
--		   struct list_head *v_list)
-+ice_remove_promisc(struct ice_hw *hw, u8 recp_id, struct list_head *v_list)
- {
- 	struct ice_fltr_list_entry *v_list_itr, *tmp;
- 
-@@ -3450,8 +3445,8 @@ ice_set_vsi_promisc(struct ice_hw *hw, u16 vsi_handle, u8 promisc_mask, u16 vid)
- 	enum { UCAST_FLTR = 1, MCAST_FLTR, BCAST_FLTR };
- 	struct ice_fltr_list_entry f_list_entry;
- 	struct ice_fltr_info new_fltr;
--	int status = 0;
- 	bool is_tx_fltr;
-+	int status = 0;
- 	u16 hw_vsi_id;
- 	int pkt_type;
- 	u8 recipe_id;
-@@ -3567,8 +3562,8 @@ ice_set_vlan_vsi_promisc(struct ice_hw *hw, u16 vsi_handle, u8 promisc_mask,
- 	struct list_head vsi_list_head;
- 	struct list_head *vlan_head;
- 	struct mutex *vlan_lock; /* Lock to protect filter rule list */
--	int status;
- 	u16 vlan_id;
-+	int status;
- 
- 	INIT_LIST_HEAD(&vsi_list_head);
- 	vlan_lock = &sw->recp_list[ICE_SW_LKUP_VLAN].filt_rule_lock;
-@@ -3686,8 +3681,8 @@ ice_alloc_res_cntr(struct ice_hw *hw, u8 type, u8 alloc_shared, u16 num_items,
- 		   u16 *counter_id)
- {
- 	struct ice_aqc_alloc_free_res_elem *buf;
--	int status;
- 	u16 buf_len;
-+	int status;
- 
- 	/* Allocate resource */
- 	buf_len = struct_size(buf, elem, 1);
-@@ -3724,8 +3719,8 @@ ice_free_res_cntr(struct ice_hw *hw, u8 type, u8 alloc_shared, u16 num_items,
- 		  u16 counter_id)
- {
- 	struct ice_aqc_alloc_free_res_elem *buf;
--	int status;
- 	u16 buf_len;
-+	int status;
- 
- 	/* Free resource */
- 	buf_len = struct_size(buf, elem, 1);
-@@ -4123,11 +4118,11 @@ ice_add_sw_recipe(struct ice_hw *hw, struct ice_sw_recipe *rm,
- 	struct ice_aqc_recipe_data_elem *tmp;
- 	struct ice_aqc_recipe_data_elem *buf;
- 	struct ice_recp_grp_entry *entry;
--	int status;
- 	u16 free_res_idx;
- 	u16 recipe_count;
- 	u8 chain_idx;
- 	u8 recps = 0;
-+	int status;
- 
- 	/* When more than one recipe are required, another recipe is needed to
- 	 * chain them together. Matching a tunnel metadata ID takes up one of
-@@ -4411,8 +4406,8 @@ static int
- ice_create_recipe_group(struct ice_hw *hw, struct ice_sw_recipe *rm,
- 			struct ice_prot_lkup_ext *lkup_exts)
- {
--	int status;
- 	u8 recp_count = 0;
-+	int status;
- 
- 	rm->n_grp_count = 0;
- 
-@@ -4446,8 +4441,8 @@ static int
- ice_get_fv(struct ice_hw *hw, struct ice_adv_lkup_elem *lkups, u16 lkups_cnt,
- 	   unsigned long *bm, struct list_head *fv_list)
- {
--	int status;
- 	u8 *prot_ids;
-+	int status;
- 	u16 i;
- 
- 	prot_ids = kcalloc(lkups_cnt, sizeof(*prot_ids), GFP_KERNEL);
-@@ -4572,8 +4567,8 @@ ice_add_adv_recipe(struct ice_hw *hw, struct ice_adv_lkup_elem *lkups,
- 	struct ice_sw_fv_list_entry *fvit;
- 	struct ice_recp_grp_entry *r_tmp;
- 	struct ice_sw_fv_list_entry *tmp;
--	int status = 0;
- 	struct ice_sw_recipe *rm;
-+	int status = 0;
- 	u8 i;
- 
- 	if (!lkups_cnt)
-@@ -5060,8 +5055,8 @@ ice_adv_add_update_vsi_list(struct ice_hw *hw,
- 			    struct ice_adv_rule_info *cur_fltr,
- 			    struct ice_adv_rule_info *new_fltr)
- {
--	int status;
- 	u16 vsi_list_id = 0;
-+	int status;
- 
- 	if (cur_fltr->sw_act.fltr_act == ICE_FWD_TO_Q ||
- 	    cur_fltr->sw_act.fltr_act == ICE_FWD_TO_QGRP ||
-@@ -5171,10 +5166,10 @@ ice_add_adv_rule(struct ice_hw *hw, struct ice_adv_lkup_elem *lkups,
- 	struct ice_aqc_sw_rules_elem *s_rule = NULL;
- 	struct list_head *rule_head;
- 	struct ice_switch_info *sw;
--	int status;
- 	const u8 *pkt = NULL;
- 	u16 word_cnt;
- 	u32 act = 0;
-+	int status;
- 	u8 q_rgn;
- 
- 	/* Initialize profile to result index bitmap */
-@@ -5439,8 +5434,8 @@ ice_adv_rem_update_vsi_list(struct ice_hw *hw, u16 vsi_handle,
- {
- 	struct ice_vsi_list_map_info *vsi_list_info;
- 	enum ice_sw_lkup_type lkup_type;
--	int status;
- 	u16 vsi_list_id;
-+	int status;
- 
- 	if (fm_list->rule_info.sw_act.fltr_act != ICE_FWD_TO_VSI_LIST ||
- 	    fm_list->vsi_count == 0)
-@@ -5538,10 +5533,10 @@ ice_rem_adv_rule(struct ice_hw *hw, struct ice_adv_lkup_elem *lkups,
- {
- 	struct ice_adv_fltr_mgmt_list_entry *list_elem;
- 	struct ice_prot_lkup_ext lkup_exts;
--	int status = 0;
- 	bool remove_rule = false;
- 	struct mutex *rule_lock; /* Lock to protect filter rule list */
- 	u16 i, rid, vsi_handle;
-+	int status = 0;
- 
- 	memset(&lkup_exts, 0, sizeof(lkup_exts));
- 	for (i = 0; i < lkups_cnt; i++) {
-diff --git a/drivers/net/ethernet/intel/ice/ice_switch.h b/drivers/net/ethernet/intel/ice/ice_switch.h
-index 8238dae0babd..d8334beaaa8a 100644
---- a/drivers/net/ethernet/intel/ice/ice_switch.h
-+++ b/drivers/net/ethernet/intel/ice/ice_switch.h
-@@ -330,24 +330,19 @@ ice_add_adv_rule(struct ice_hw *hw, struct ice_adv_lkup_elem *lkups,
- 		 u16 lkups_cnt, struct ice_adv_rule_info *rinfo,
- 		 struct ice_rule_query_data *added_entry);
- int ice_update_sw_rule_bridge_mode(struct ice_hw *hw);
-+int ice_add_vlan(struct ice_hw *hw, struct list_head *m_list);
-+int ice_remove_vlan(struct ice_hw *hw, struct list_head *v_list);
- int ice_add_mac(struct ice_hw *hw, struct list_head *m_lst);
- int ice_remove_mac(struct ice_hw *hw, struct list_head *m_lst);
--int
--ice_add_eth_mac(struct ice_hw *hw, struct list_head *em_list);
--int
--ice_remove_eth_mac(struct ice_hw *hw, struct list_head *em_list);
--int
--ice_cfg_rdma_fltr(struct ice_hw *hw, u16 vsi_handle, bool enable);
- bool ice_mac_fltr_exist(struct ice_hw *hw, u8 *mac, u16 vsi_handle);
- bool ice_vlan_fltr_exist(struct ice_hw *hw, u16 vlan_id, u16 vsi_handle);
-+int ice_add_eth_mac(struct ice_hw *hw, struct list_head *em_list);
-+int ice_remove_eth_mac(struct ice_hw *hw, struct list_head *em_list);
-+int ice_cfg_rdma_fltr(struct ice_hw *hw, u16 vsi_handle, bool enable);
- void ice_remove_vsi_fltr(struct ice_hw *hw, u16 vsi_handle);
--int
--ice_add_vlan(struct ice_hw *hw, struct list_head *m_list);
--int ice_remove_vlan(struct ice_hw *hw, struct list_head *v_list);
- 
- /* Promisc/defport setup for VSIs */
--int
--ice_cfg_dflt_vsi(struct ice_hw *hw, u16 vsi_handle, bool set, u8 direction);
-+int ice_cfg_dflt_vsi(struct ice_hw *hw, u16 vsi_handle, bool set, u8 direction);
- int
- ice_set_vsi_promisc(struct ice_hw *hw, u16 vsi_handle, u8 promisc_mask,
- 		    u16 vid);
-@@ -358,8 +353,7 @@ int
- ice_set_vlan_vsi_promisc(struct ice_hw *hw, u16 vsi_handle, u8 promisc_mask,
- 			 bool rm_vlan_promisc);
- 
--int
--ice_rem_adv_rule_for_vsi(struct ice_hw *hw, u16 vsi_handle);
-+int ice_rem_adv_rule_for_vsi(struct ice_hw *hw, u16 vsi_handle);
- int
- ice_rem_adv_rule_by_id(struct ice_hw *hw,
- 		       struct ice_rule_query_data *remove_entry);
 diff --git a/drivers/net/ethernet/intel/ice/ice_tc_lib.c b/drivers/net/ethernet/intel/ice/ice_tc_lib.c
-index 21c4bc0db33b..476fcdf9c794 100644
+index 476fcdf9c794..b3212ec5988f 100644
 --- a/drivers/net/ethernet/intel/ice/ice_tc_lib.c
 +++ b/drivers/net/ethernet/intel/ice/ice_tc_lib.c
-@@ -398,9 +398,9 @@ ice_eswitch_add_tc_fltr(struct ice_vsi *vsi, struct ice_tc_flower_fltr *fltr)
- 	struct ice_hw *hw = &vsi->back->hw;
+@@ -399,8 +399,7 @@ ice_eswitch_add_tc_fltr(struct ice_vsi *vsi, struct ice_tc_flower_fltr *fltr)
  	struct ice_adv_lkup_elem *list;
  	u32 flags = fltr->flags;
--	int status;
  	int lkups_cnt;
- 	int ret = 0;
-+	int status;
+-	int ret = 0;
+-	int status;
++	int ret;
  	int i;
  
  	if (!flags || (flags & ICE_TC_FLWR_FIELD_ENC_SRC_L4_PORT)) {
+@@ -449,12 +448,12 @@ ice_eswitch_add_tc_fltr(struct ice_vsi *vsi, struct ice_tc_flower_fltr *fltr)
+ 	/* specify the cookie as filter_rule_id */
+ 	rule_info.fltr_rule_id = fltr->cookie;
+ 
+-	status = ice_add_adv_rule(hw, list, lkups_cnt, &rule_info, &rule_added);
+-	if (status == -EEXIST) {
++	ret = ice_add_adv_rule(hw, list, lkups_cnt, &rule_info, &rule_added);
++	if (ret == -EEXIST) {
+ 		NL_SET_ERR_MSG_MOD(fltr->extack, "Unable to add filter because it already exist");
+ 		ret = -EINVAL;
+ 		goto exit;
+-	} else if (status) {
++	} else if (ret) {
+ 		NL_SET_ERR_MSG_MOD(fltr->extack, "Unable to add filter due to error");
+ 		ret = -EIO;
+ 		goto exit;
 diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.c
-index 5db87f7999d3..4ce30ff96a79 100644
+index 4ce30ff96a79..d64df81d4893 100644
 --- a/drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.c
 +++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.c
-@@ -560,13 +560,13 @@ ice_vc_fdir_write_flow_prof(struct ice_vf *vf, enum ice_fltr_ptype flow,
- 	struct ice_flow_seg_info *old_seg;
- 	struct ice_flow_prof *prof = NULL;
- 	struct ice_fd_hw_prof *vf_prof;
--	int status;
- 	struct device *dev;
- 	struct ice_pf *pf;
- 	struct ice_hw *hw;
+@@ -566,7 +566,6 @@ ice_vc_fdir_write_flow_prof(struct ice_vf *vf, enum ice_fltr_ptype flow,
  	u64 entry1_h = 0;
  	u64 entry2_h = 0;
  	u64 prof_id;
-+	int status;
+-	int status;
  	int ret;
  
  	pf = vf->pf;
-@@ -1199,10 +1199,10 @@ static int ice_vc_fdir_write_fltr(struct ice_vf *vf,
- 	struct ice_fdir_fltr *input = &conf->input;
- 	struct ice_vsi *vsi, *ctrl_vsi;
- 	struct ice_fltr_desc desc;
--	int status;
+@@ -603,29 +602,26 @@ ice_vc_fdir_write_flow_prof(struct ice_vf *vf, enum ice_fltr_ptype flow,
+ 	prof_id = ICE_FLOW_PROF_FD(vf_vsi->vsi_num, flow,
+ 				   tun ? ICE_FLTR_PTYPE_MAX : 0);
+ 
+-	status = ice_flow_add_prof(hw, ICE_BLK_FD, ICE_FLOW_RX, prof_id, seg,
+-				   tun + 1, &prof);
+-	ret = status;
++	ret = ice_flow_add_prof(hw, ICE_BLK_FD, ICE_FLOW_RX, prof_id, seg,
++				tun + 1, &prof);
+ 	if (ret) {
+ 		dev_dbg(dev, "Could not add VSI flow 0x%x for VF %d\n",
+ 			flow, vf->vf_id);
+ 		goto err_exit;
+ 	}
+ 
+-	status = ice_flow_add_entry(hw, ICE_BLK_FD, prof_id, vf_vsi->idx,
+-				    vf_vsi->idx, ICE_FLOW_PRIO_NORMAL,
+-				    seg, &entry1_h);
+-	ret = status;
++	ret = ice_flow_add_entry(hw, ICE_BLK_FD, prof_id, vf_vsi->idx,
++				 vf_vsi->idx, ICE_FLOW_PRIO_NORMAL,
++				 seg, &entry1_h);
+ 	if (ret) {
+ 		dev_dbg(dev, "Could not add flow 0x%x VSI entry for VF %d\n",
+ 			flow, vf->vf_id);
+ 		goto err_prof;
+ 	}
+ 
+-	status = ice_flow_add_entry(hw, ICE_BLK_FD, prof_id, vf_vsi->idx,
+-				    ctrl_vsi->idx, ICE_FLOW_PRIO_NORMAL,
+-				    seg, &entry2_h);
+-	ret = status;
++	ret = ice_flow_add_entry(hw, ICE_BLK_FD, prof_id, vf_vsi->idx,
++				 ctrl_vsi->idx, ICE_FLOW_PRIO_NORMAL,
++				 seg, &entry2_h);
+ 	if (ret) {
+ 		dev_dbg(dev,
+ 			"Could not add flow 0x%x Ctrl VSI entry for VF %d\n",
+@@ -1202,7 +1198,6 @@ static int ice_vc_fdir_write_fltr(struct ice_vf *vf,
  	struct device *dev;
  	struct ice_pf *pf;
  	struct ice_hw *hw;
-+	int status;
+-	int status;
  	int ret;
  	u8 *pkt;
  
+@@ -1229,8 +1224,7 @@ static int ice_vc_fdir_write_fltr(struct ice_vf *vf,
+ 		return -ENOMEM;
+ 
+ 	ice_fdir_get_prgm_desc(hw, input, &desc, add);
+-	status = ice_fdir_get_gen_prgm_pkt(hw, input, pkt, false, is_tun);
+-	ret = status;
++	ret = ice_fdir_get_gen_prgm_pkt(hw, input, pkt, false, is_tun);
+ 	if (ret) {
+ 		dev_dbg(dev, "Gen training pkt for VF %d ptype %d failed\n",
+ 			vf->vf_id, input->flow_type);
 diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-index ece5aa897ab8..92ddc3042d0d 100644
+index 92ddc3042d0d..f0fe8e193f2c 100644
 --- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
 +++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-@@ -653,8 +653,8 @@ static int ice_vsi_manage_pvid(struct ice_vsi *vsi, u16 pvid_info, bool enable)
+@@ -653,8 +653,7 @@ static int ice_vsi_manage_pvid(struct ice_vsi *vsi, u16 pvid_info, bool enable)
  	struct ice_hw *hw = &vsi->back->hw;
  	struct ice_aqc_vsi_props *info;
  	struct ice_vsi_ctx *ctxt;
+-	int ret = 0;
 -	int status;
- 	int ret = 0;
-+	int status;
++	int ret;
  
  	ctxt = kzalloc(sizeof(*ctxt), GFP_KERNEL);
  	if (!ctxt)
-@@ -680,8 +680,7 @@ static int ice_vsi_manage_pvid(struct ice_vsi *vsi, u16 pvid_info, bool enable)
- 	status = ice_update_vsi(hw, vsi->idx, ctxt, NULL);
- 	if (status) {
+@@ -677,10 +676,10 @@ static int ice_vsi_manage_pvid(struct ice_vsi *vsi, u16 pvid_info, bool enable)
+ 	info->valid_sections = cpu_to_le16(ICE_AQ_VSI_PROP_VLAN_VALID |
+ 					   ICE_AQ_VSI_PROP_SW_VALID);
+ 
+-	status = ice_update_vsi(hw, vsi->idx, ctxt, NULL);
+-	if (status) {
++	ret = ice_update_vsi(hw, vsi->idx, ctxt, NULL);
++	if (ret) {
  		dev_info(ice_hw_to_dev(hw), "update VSI for port VLAN failed, err %d aq_err %s\n",
--			 status,
--			 ice_aq_str(hw->adminq.sq_last_status));
-+			 status, ice_aq_str(hw->adminq.sq_last_status));
+-			 status, ice_aq_str(hw->adminq.sq_last_status));
++			 ret, ice_aq_str(hw->adminq.sq_last_status));
  		ret = -EIO;
  		goto out;
  	}
-@@ -851,8 +850,8 @@ static int ice_vf_rebuild_host_mac_cfg(struct ice_vf *vf)
- {
- 	struct device *dev = ice_pf_to_dev(vf->pf);
- 	struct ice_vsi *vsi = ice_get_vf_vsi(vf);
--	int status;
+@@ -1735,7 +1734,6 @@ static int ice_init_vf_vsi_res(struct ice_vf *vf)
  	u8 broadcast[ETH_ALEN];
-+	int status;
- 
- 	if (ice_is_eswitch_mode_switchdev(vf->pf))
- 		return 0;
-@@ -1303,8 +1302,8 @@ static void ice_vf_pre_vsi_rebuild(struct ice_vf *vf)
- static void ice_vf_rebuild_aggregator_node_cfg(struct ice_vsi *vsi)
- {
- 	struct ice_pf *pf = vsi->back;
--	int status;
- 	struct device *dev;
-+	int status;
- 
- 	if (!vsi->agg_node)
- 		return;
-@@ -1734,9 +1733,9 @@ static int ice_init_vf_vsi_res(struct ice_vf *vf)
- {
- 	struct ice_pf *pf = vf->pf;
- 	u8 broadcast[ETH_ALEN];
--	int status;
  	struct ice_vsi *vsi;
  	struct device *dev;
-+	int status;
+-	int status;
  	int err;
  
  	vf->first_vector_idx = ice_calc_vf_first_vector_idx(pf, vf);
-@@ -2160,9 +2159,9 @@ int
- ice_vc_send_msg_to_vf(struct ice_vf *vf, u32 v_opcode,
- 		      enum virtchnl_status_code v_retval, u8 *msg, u16 msglen)
+@@ -1753,11 +1751,10 @@ static int ice_init_vf_vsi_res(struct ice_vf *vf)
+ 	}
+ 
+ 	eth_broadcast_addr(broadcast);
+-	status = ice_fltr_add_mac(vsi, broadcast, ICE_FWD_TO_VSI);
+-	if (status) {
++	err = ice_fltr_add_mac(vsi, broadcast, ICE_FWD_TO_VSI);
++	if (err) {
+ 		dev_err(dev, "Failed to add broadcast MAC filter for VF %d, error %d\n",
+-			vf->vf_id, status);
+-		err = status;
++			vf->vf_id, err);
+ 		goto release_vsi;
+ 	}
+ 
+@@ -2003,7 +2000,6 @@ int ice_sriov_configure(struct pci_dev *pdev, int num_vfs)
  {
--	int aq_ret;
- 	struct device *dev;
- 	struct ice_pf *pf;
-+	int aq_ret;
- 
- 	if (!vf)
- 		return -EINVAL;
-@@ -2672,8 +2671,8 @@ static int ice_vc_handle_rss_cfg(struct ice_vf *vf, u8 *msg, bool add)
- 
- 	if (rss_cfg->rss_algorithm == VIRTCHNL_RSS_ALG_R_ASYMMETRIC) {
- 		struct ice_vsi_ctx *ctx;
--		int status;
- 		u8 lut_type, hash_type;
-+		int status;
- 
- 		lut_type = ICE_AQ_VSI_Q_OPT_RSS_LUT_VSI;
- 		hash_type = add ? ICE_AQ_VSI_Q_OPT_RSS_XOR :
-@@ -2703,8 +2702,7 @@ static int ice_vc_handle_rss_cfg(struct ice_vf *vf, u8 *msg, bool add)
- 		status = ice_update_vsi(hw, vsi->idx, ctx, NULL);
- 		if (status) {
- 			dev_err(dev, "update VSI for RSS failed, err %d aq_err %s\n",
--				status,
--				ice_aq_str(hw->adminq.sq_last_status));
-+				status, ice_aq_str(hw->adminq.sq_last_status));
- 			v_ret = VIRTCHNL_STATUS_ERR_PARAM;
- 		} else {
- 			vsi->info.q_opt_rss = ctx->info.q_opt_rss;
-@@ -2733,10 +2731,9 @@ static int ice_vc_handle_rss_cfg(struct ice_vf *vf, u8 *msg, bool add)
- 
- 			status = ice_rem_rss_cfg(hw, vsi->idx, hash_flds,
- 						 addl_hdrs);
--			/* We just ignore -ENOENT, because
--			 * if two configurations share the same profile remove
--			 * one of them actually removes both, since the
--			 * profile is deleted.
-+			/* We just ignore -ENOENT, because if two configurations
-+			 * share the same profile remove one of them actually
-+			 * removes both, since the profile is deleted.
- 			 */
- 			if (status && status != -ENOENT) {
- 				v_ret = VIRTCHNL_STATUS_ERR_PARAM;
-@@ -2899,9 +2896,9 @@ int ice_set_vf_spoofchk(struct net_device *netdev, int vf_id, bool ena)
- 	struct ice_pf *pf = np->vsi->back;
- 	struct ice_vsi_ctx *ctx;
- 	struct ice_vsi *vf_vsi;
+ 	struct ice_pf *pf = pci_get_drvdata(pdev);
+ 	struct device *dev = ice_pf_to_dev(pf);
 -	int status;
+ 	int err;
+ 
+ 	err = ice_check_sriov_allowed(pf);
+@@ -2023,9 +2019,9 @@ int ice_sriov_configure(struct pci_dev *pdev, int num_vfs)
+ 		return -EBUSY;
+ 	}
+ 
+-	status = ice_mbx_init_snapshot(&pf->hw, num_vfs);
+-	if (status)
+-		return status;
++	err = ice_mbx_init_snapshot(&pf->hw, num_vfs);
++	if (err)
++		return err;
+ 
+ 	err = ice_pci_sriov_ena(pf, num_vfs);
+ 	if (err) {
+@@ -2898,7 +2894,6 @@ int ice_set_vf_spoofchk(struct net_device *netdev, int vf_id, bool ena)
+ 	struct ice_vsi *vf_vsi;
  	struct device *dev;
  	struct ice_vf *vf;
-+	int status;
+-	int status;
  	int ret;
  
  	dev = ice_pf_to_dev(pf);
-@@ -3789,8 +3786,8 @@ ice_vc_add_mac_addr(struct ice_vf *vf, struct ice_vsi *vsi,
+@@ -2946,11 +2941,10 @@ int ice_set_vf_spoofchk(struct net_device *netdev, int vf_id, bool ena)
+ 			   ICE_AQ_VSI_SEC_TX_PRUNE_ENA_S));
+ 	}
+ 
+-	status = ice_update_vsi(&pf->hw, vf_vsi->idx, ctx, NULL);
+-	if (status) {
++	ret = ice_update_vsi(&pf->hw, vf_vsi->idx, ctx, NULL);
++	if (ret) {
+ 		dev_err(dev, "Failed to %sable spoofchk on VF %d VSI %d\n error %d\n",
+-			ena ? "en" : "dis", vf->vf_id, vf_vsi->vsi_num,
+-			status);
++			ena ? "en" : "dis", vf->vf_id, vf_vsi->vsi_num, ret);
+ 		ret = -EIO;
+ 		goto out;
+ 	}
+@@ -3786,8 +3780,7 @@ ice_vc_add_mac_addr(struct ice_vf *vf, struct ice_vsi *vsi,
  {
  	struct device *dev = ice_pf_to_dev(vf->pf);
  	u8 *mac_addr = vc_ether_addr->addr;
+-	int ret = 0;
 -	int status;
- 	int ret = 0;
-+	int status;
++	int ret;
  
  	/* device MAC already added */
  	if (ether_addr_equal(mac_addr, vf->dev_lan_addr.addr))
-@@ -5265,9 +5262,9 @@ ice_is_malicious_vf(struct ice_pf *pf, struct ice_rq_event_info *event,
- 	s16 vf_id = le16_to_cpu(event->desc.retval);
- 	struct device *dev = ice_pf_to_dev(pf);
- 	struct ice_mbx_data mbxdata;
--	int status;
- 	bool malvf = false;
- 	struct ice_vf *vf;
-+	int status;
+@@ -3798,17 +3791,16 @@ ice_vc_add_mac_addr(struct ice_vf *vf, struct ice_vsi *vsi,
+ 		return -EPERM;
+ 	}
  
- 	if (ice_validate_vf_id(pf, vf_id))
- 		return false;
+-	status = ice_fltr_add_mac(vsi, mac_addr, ICE_FWD_TO_VSI);
+-	if (status == -EEXIST) {
++	ret = ice_fltr_add_mac(vsi, mac_addr, ICE_FWD_TO_VSI);
++	if (ret == -EEXIST) {
+ 		dev_dbg(dev, "MAC %pM already exists for VF %d\n", mac_addr,
+ 			vf->vf_id);
+ 		/* don't return since we might need to update
+ 		 * the primary MAC in ice_vfhw_mac_add() below
+ 		 */
+-		ret = -EEXIST;
+-	} else if (status) {
++	} else if (ret) {
+ 		dev_err(dev, "Failed to add MAC %pM for VF %d\n, error %d\n",
+-			mac_addr, vf->vf_id, status);
++			mac_addr, vf->vf_id, ret);
+ 		return -EIO;
+ 	} else {
+ 		vf->num_mac++;
 -- 
 2.31.1
 
