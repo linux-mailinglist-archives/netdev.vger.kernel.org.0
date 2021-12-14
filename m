@@ -2,103 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 20DFE4741BD
-	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 12:45:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B54E34741C3
+	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 12:46:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233670AbhLNLo4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Dec 2021 06:44:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50580 "EHLO
+        id S233691AbhLNLqN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Dec 2021 06:46:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231233AbhLNLoz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 06:44:55 -0500
-Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31F7CC061574;
-        Tue, 14 Dec 2021 03:44:55 -0800 (PST)
-Received: by mail-qt1-x82a.google.com with SMTP id 8so18052740qtx.5;
-        Tue, 14 Dec 2021 03:44:55 -0800 (PST)
+        with ESMTP id S231233AbhLNLqN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 06:46:13 -0500
+Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC95FC061574
+        for <netdev@vger.kernel.org>; Tue, 14 Dec 2021 03:46:12 -0800 (PST)
+Received: by mail-yb1-xb44.google.com with SMTP id f186so45498720ybg.2
+        for <netdev@vger.kernel.org>; Tue, 14 Dec 2021 03:46:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=/WiGVwXD5szJpXekvLi+rIYbV6iDlKwEbmIuA9qTTxI=;
-        b=GTMy6m1uKE/Eu0kGasr5n9WaFtjJAnHIES4JWiDkpkGjJWF1a87bQftjj5DLtdr4YX
-         +pFBmBAhDLXbdVmZF9nJ8S8gs+6nPecI6+d7qb+qtBgRq+dmRVLx+7c2AJ+Mzp4UqTtp
-         eIwOL8Sin+37oB99VYIYTYmGYltJGbeMCsjQx58qTp5Z9l435FD1IgfbNWiC12flCtoz
-         iy8te2/GfNV4oQ/XtG+aBtY3+lPeDfk4ooR5VnBgnpkBABejmXzyh58beXbZlWhPR3bk
-         UWvJkf890b+HIo7ogZEVTDiUtHyxe9KZM4316YZH9jOcILc8/q1ysvWtLqHd/VtRbwdh
-         gcEQ==
+        h=mime-version:sender:from:date:message-id:subject:to;
+        bh=vIF0HCtULT8/Hj4oEOKhM3wVM2dbK4vAQWbMA06NHEs=;
+        b=RoHOXGL4eYezH1YkOBLtr1BGSn8BAdoWuzZrD8SSj5YJiXtRei/XmmBcmWFTk9kMoD
+         rb5oToETcC82TMeW5qS2s+A9mKuJU0u29zcfO1So2j/fEl51tCqNqXn8TmvG3cO6WJn8
+         /tqH5MjRPWTTs168A1ez9QwZ4x1GIELKZSMRH1hHg3hDnb7wvVmTIDdWRQWOh4OxWexQ
+         yu6K0FEGqrzuI+h2LaFcosf64NN9JB/G8jQbKR4Yzw/lFpMSsu5GjI8DhLH2PhVyk/sw
+         CXXfYWYP9kQr7GfSnoO5IDDnzc1edJ2vCl47bnlZW/L6thtKoHJu9KYi2ASr7KYDyGBH
+         0+Xw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=/WiGVwXD5szJpXekvLi+rIYbV6iDlKwEbmIuA9qTTxI=;
-        b=D3d+MCHCCTELJ/mQePM3NqiSaDUxiyhiSabNh4AQArWkXfY2iYWR9Paks62RT6ISVv
-         E+PbyO3VgI6+h7ihSHDtxqbUE1ZaMeFY9wgti+sMEB/IsjMsECpHDJtOnFmuDdx9bnqI
-         VMo4e8ctY+o/P6WRTTj0WqkydoEPpADEsmYPxWQ2nTTN5affrBpMyb2OAt/jAalJtt0q
-         GuAqZk5rHxueKfY0bcFsvzgW+Hnceb0+2Fg3ktF4C41GHqw6gQArsXsU0SNAUQuK00iQ
-         eM8/JNPZXXXZv8feE277OeRWK1Sf/ABxjSubPvLhSxbEGceDMDng/LEPuCaxVL1Fl+Hv
-         Q3Lg==
-X-Gm-Message-State: AOAM533fytV7VJgX1C7gVC+o2r3gpni2kT5AyO6xwna2vyMc99r6kTxu
-        UaH4yIny7mSMJDNT36c5j10=
-X-Google-Smtp-Source: ABdhPJzWVwOd87044dfW6ELeRVhrc9UnuAQSqzkdnDsQ6rNe+39K3w9DVsC5AtgSj4aqgLhSh7WCwA==
-X-Received: by 2002:ac8:7f06:: with SMTP id f6mr5325214qtk.258.1639482294417;
-        Tue, 14 Dec 2021 03:44:54 -0800 (PST)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id c8sm7225022qkp.8.2021.12.14.03.44.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Dec 2021 03:44:54 -0800 (PST)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: deng.changcheng@zte.com.cn
-To:     davem@davemloft.net
-Cc:     kuba@kernel.org, richardsonnick@google.com, edumazet@google.com,
-        zhudi21@huawei.com, songmuchun@bytedance.com,
-        yejune.deng@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Changcheng Deng <deng.changcheng@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] pktgen: use min() to make code cleaner
-Date:   Tue, 14 Dec 2021 11:44:47 +0000
-Message-Id: <20211214114447.439632-1-deng.changcheng@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to;
+        bh=vIF0HCtULT8/Hj4oEOKhM3wVM2dbK4vAQWbMA06NHEs=;
+        b=oc/kBooCvtgM/pcwlNdd1kY/KLOc7SOc+vYzfkqcIcrWxSWQ4KQ1IjpEd39u9jgtTW
+         tkYR/ac47wZospv7hdwaazH9YVD96MtSavCfB5V3G3gXJTzIhZSdh1T5hll1OoEiBSZM
+         gcghqZ75OeTZdltvF4BsLRm2/QprpDs44S/wV7ShVTBpbxPFfRtItf/DQ7ZyqOUfdKXk
+         U2mm0VS5Lk2K088Es67NkDppoVSN5pqT/JC0yrZfKVP0G8ej6VGIDhwLfqBA60+hZFvM
+         KAhUWxvXDWBAZgrbJqVetoBfK8NMcPYyzvrj2JNSVzvPpDQYJ9udF7q7zxRUu5tvsfVp
+         z1Wg==
+X-Gm-Message-State: AOAM530GrAWfBsLoeOhlDjfy+Tn/gv7wff5CZ8IvXIJpN62/8SAkDZLH
+        7xlxQx7iQHgTIxWT+tLknRDC0kXmCgknxAnvPKc=
+X-Google-Smtp-Source: ABdhPJzo6XyGYKEXJhfu0Si69QzEmkLsLUnUCOjxeBJoaDbZdyeidKsX5iOg+Yh8sRuIClrnBZ2QiHIkBU5DmaRtFVg=
+X-Received: by 2002:a25:8752:: with SMTP id e18mr5296427ybn.701.1639482372181;
+ Tue, 14 Dec 2021 03:46:12 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Sender: karbiruahmed60@gmail.com
+Received: by 2002:a05:7010:6981:b0:1e3:a534:eb9b with HTTP; Tue, 14 Dec 2021
+ 03:46:11 -0800 (PST)
+From:   Sal Kavar <salkavar2@gmail.com>
+Date:   Tue, 14 Dec 2021 12:46:11 +0100
+X-Google-Sender-Auth: vma-2hr0VBR5KIzkU01Fa35ThSw
+Message-ID: <CAOmUQf1gehx=2wHGfzMSYSbxt_Xu4SNYwhsNnv3cX2+iiM1c_g@mail.gmail.com>
+Subject: Yours Faithful,
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Changcheng Deng <deng.changcheng@zte.com.cn>
+I assume you and your family are in good health. I am the foreign
+operations Manager
 
-Use min() in order to make code cleaner. Issue found by coccinelle.
+This being a wide world in which it can be difficult to make new
+acquaintances and because it is virtually impossible to know who is
+trustworthy and who can be believed, i have decided to repose
+confidence in you after much fasting and prayer. It is only because of
+this that I have decided to confide in you and to share with you this
+confidential business.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Changcheng Deng <deng.changcheng@zte.com.cn>
----
- net/core/pktgen.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+overdue and unclaimed sum of $15.5m, (Fifteen Million Five Hundred
+Thousand Dollars Only) when the account holder suddenly passed on, he
+left no beneficiary who would be entitled to the receipt of this fund.
+For this reason, I have found it expedient to transfer this fund to a
+trustworthy individual with capacity to act as foreign business
+partner.
 
-diff --git a/net/core/pktgen.c b/net/core/pktgen.c
-index 84b62cd7bc57..7a0b07a22692 100644
---- a/net/core/pktgen.c
-+++ b/net/core/pktgen.c
-@@ -2778,8 +2778,7 @@ static void pktgen_finalize_skb(struct pktgen_dev *pkt_dev, struct sk_buff *skb,
- 		}
- 
- 		i = 0;
--		frag_len = (datalen/frags) < PAGE_SIZE ?
--			   (datalen/frags) : PAGE_SIZE;
-+		frag_len = min(datalen / frags, PAGE_SIZE);
- 		while (datalen > 0) {
- 			if (unlikely(!pkt_dev->page)) {
- 				int node = numa_node_id();
-@@ -2796,7 +2795,7 @@ static void pktgen_finalize_skb(struct pktgen_dev *pkt_dev, struct sk_buff *skb,
- 			/*last fragment, fill rest of data*/
- 			if (i == (frags - 1))
- 				skb_frag_size_set(&skb_shinfo(skb)->frags[i],
--				    (datalen < PAGE_SIZE ? datalen : PAGE_SIZE));
-+				    min(datalen, PAGE_SIZE));
- 			else
- 				skb_frag_size_set(&skb_shinfo(skb)->frags[i], frag_len);
- 			datalen -= skb_frag_size(&skb_shinfo(skb)->frags[i]);
--- 
-2.25.1
+Thus i humbly request your assistance to claim this fund. Upon the
+transfer of this fund in your account, you will take 45% as your share
+from the total fund, 10% will be shared to Charity Organizations in
+both country and 45% will be for me.
 
+Yours Faithful,
+Mr.Sal Kavar.
