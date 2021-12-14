@@ -2,93 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DCFE474C73
-	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 21:05:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 16FB1474C7D
+	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 21:10:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237573AbhLNUEz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Dec 2021 15:04:55 -0500
-Received: from mail-ot1-f45.google.com ([209.85.210.45]:37384 "EHLO
-        mail-ot1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229959AbhLNUEy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 15:04:54 -0500
-Received: by mail-ot1-f45.google.com with SMTP id h19-20020a9d3e53000000b0056547b797b2so22149169otg.4;
-        Tue, 14 Dec 2021 12:04:54 -0800 (PST)
+        id S237584AbhLNUKB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Dec 2021 15:10:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56366 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229795AbhLNUKB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 15:10:01 -0500
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54711C061574
+        for <netdev@vger.kernel.org>; Tue, 14 Dec 2021 12:10:01 -0800 (PST)
+Received: by mail-pj1-x102a.google.com with SMTP id np6-20020a17090b4c4600b001a90b011e06so17008799pjb.5
+        for <netdev@vger.kernel.org>; Tue, 14 Dec 2021 12:10:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=tUcxJau8o2NA6rKJurbeUEAP/6UqB5CVfGIYN2vnW8o=;
+        b=LeMwMiKdKMAn3b/pQk1L45vAC8IvV7I18/2VGy217DUncWm2gT2zK5I5Fi0uKs68eb
+         Q2ruhMDCXMVv+0uDImGpo6gxQmVb63pej4K05Y/LR2Cz1hh33LRG5e+sHYOXTfRODbft
+         e16ahZ66yqnn9Qy91/9LlyEdhuj/LeAkIQKiyDwq6T+EWAMugjwf7ccY34DecejDDvCE
+         QIdRciHyc3ylzWanr8ZDTklxsaD7h2XzplP8iXDwvrcC2GKz+F68qVA/Kx+bpyHF9P6V
+         MmaaQIplRHS3EkR10H5uVLXWvSwZKYIBFYW7OsSgo4OSO3XnjJjX8rw8MFQFy4GcKSBP
+         zXcg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=ca/8UwhkKrIrm1GYEgOJKPRg9ilbjbbUc4xGIZnlUw0=;
-        b=OLlzFOuTYtQO63bi1btZdmCqs5Gxwnt7iwlgDfqWk0y8m0qvFnMlRbH4o/gcs1icHX
-         V/WmP+KIm5oa/bPHBSMO4fS1y2owMrIbld1tg3ZlJGHNe7+7IX2Nf1NXHdIyy+FWjXPD
-         ONmUb2Qo7UWB+3nGKhvg2OGcS2NVjP7FVkf1qvsqPVmYh75zzwBzsgSGMfduAQGIf74C
-         gO3de3f8DendgDa9BnNkerna3d+09ZkaXrPp7uODEVweHIdMLqURhuf0QWQWfoY9xaEj
-         z6uEUvSs2lz13tB790LpM68QdlCVyF1R/+cU5VisyVo/pdYLMwu2xZqQBz6TsIaJPPz4
-         jW/A==
-X-Gm-Message-State: AOAM53304+EdAx7LNd8RpAwircGtnBoZnSARuLPWbDr2MKHqAIdB3StR
-        PNskkdW45B94JR6pnmpTGc8nU7MYag==
-X-Google-Smtp-Source: ABdhPJxjjNMTn71D4902pz6s8UtNh8ftM5r6dHrAsXV2UWzK6nMfcRwddt9l/qf2loDIKyIicx2YlA==
-X-Received: by 2002:a05:6830:1688:: with SMTP id k8mr5951527otr.238.1639512293684;
-        Tue, 14 Dec 2021 12:04:53 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id r22sm171007oij.36.2021.12.14.12.04.52
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=tUcxJau8o2NA6rKJurbeUEAP/6UqB5CVfGIYN2vnW8o=;
+        b=xdgtuwQt52tXrnUxL9d5BRbIeBQHbuVlxgKbSdL0bJeZ5aJQMpeuBoa73ZuBcXJeUq
+         pqOs17JTFHN5bYlaKlZjDmayyab5PXWhowmuR6iJwUL2b+tcsyKMI6x5ZzPR4S0k+ci7
+         w1kXplQgFvksp8YedwWfVeWepBxZPsu7fyoNvhcDfNa+FFUV/fF11fsNtBdvpdEgWmSM
+         45bzmJuVXBnXtrd3EgNMPtHnnCsh1ZxcBoe2oz66/vfRbQIKzFV5ZJdUBWtLZ8NIvUVz
+         lyjEoeaWyAa5WMxQM1CIQwIWq7UFE0nQlaAq+WrH1BiBAf5bYzWAtIEhG/3PI76Q7mGy
+         c2Xw==
+X-Gm-Message-State: AOAM53082YSFHtdst2A5n1OJoxbs1BuTC0TkBQXvtCoQ2iUk/ZpwktdG
+        JtIYbgglfrKq9PoxuNAWeZ0=
+X-Google-Smtp-Source: ABdhPJxq7/KH3dzED8URhIacHhE9U0jBb3QTQov+yf3wdX4hyTZkgzMwbcOIpgS+qHnxMGgaX7tB6Q==
+X-Received: by 2002:a17:90a:2a47:: with SMTP id d7mr7791101pjg.155.1639512600833;
+        Tue, 14 Dec 2021 12:10:00 -0800 (PST)
+Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id il7sm411778pjb.54.2021.12.14.12.09.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Dec 2021 12:04:52 -0800 (PST)
-Received: (nullmailer pid 3819897 invoked by uid 1000);
-        Tue, 14 Dec 2021 20:04:50 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     David Mosberger-Tang <davidm@egauge.net>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Kalle Valo <kvalo@codeaurora.org>, netdev@vger.kernel.org,
-        Adham Abozaeid <adham.abozaeid@microchip.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Ajay Singh <ajay.kathat@microchip.com>,
-        linux-wireless@vger.kernel.org, devicetree@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>
-In-Reply-To: <20211214163315.3769677-3-davidm@egauge.net>
-References: <20211214163315.3769677-1-davidm@egauge.net> <20211214163315.3769677-3-davidm@egauge.net>
-Subject: Re: [PATCH v4 2/2] wilc1000: Document enable-gpios and reset-gpios properties
-Date:   Tue, 14 Dec 2021 14:04:50 -0600
-Message-Id: <1639512290.330041.3819896.nullmailer@robh.at.kernel.org>
+        Tue, 14 Dec 2021 12:10:00 -0800 (PST)
+Date:   Tue, 14 Dec 2021 12:09:57 -0800
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Kurt Kanzenbach <kurt@linutronix.de>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v2 0/4] net: dsa: hellcreek: Fix handling of
+ MGMT protocols
+Message-ID: <20211214200957.GA2576@hoboy.vegasvil.org>
+References: <20211214134508.57806-1-kurt@linutronix.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211214134508.57806-1-kurt@linutronix.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 14 Dec 2021 16:33:22 +0000, David Mosberger-Tang wrote:
-> Add documentation for the ENABLE and RESET GPIOs that may be needed by
-> wilc1000-spi.
+On Tue, Dec 14, 2021 at 02:45:04PM +0100, Kurt Kanzenbach wrote:
+
+> Kurt Kanzenbach (4):
+>   net: dsa: hellcreek: Fix insertion of static FDB entries
+>   net: dsa: hellcreek: Add STP forwarding rule
+>   net: dsa: hellcreek: Allow PTP P2P measurements on blocked ports
+>   net: dsa: hellcreek: Add missing PTP via UDP rules
 > 
-> Signed-off-by: David Mosberger-Tang <davidm@egauge.net>
-> ---
->  .../net/wireless/microchip,wilc1000.yaml        | 17 +++++++++++++++++
->  1 file changed, 17 insertions(+)
-> 
+>  drivers/net/dsa/hirschmann/hellcreek.c | 87 +++++++++++++++++++++++---
+>  1 file changed, 80 insertions(+), 7 deletions(-)
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
-
-yamllint warnings/errors:
-
-dtschema/dtc warnings/errors:
-Error: Documentation/devicetree/bindings/net/wireless/microchip,wilc1000.example.dts:30.37-38 syntax error
-FATAL ERROR: Unable to parse input tree
-make[1]: *** [scripts/Makefile.lib:373: Documentation/devicetree/bindings/net/wireless/microchip,wilc1000.example.dt.yaml] Error 1
-make[1]: *** Waiting for unfinished jobs....
-make: *** [Makefile:1413: dt_binding_check] Error 2
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/patch/1567796
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
-
+Acked-by: Richard Cochran <richardcochran@gmail.com>
