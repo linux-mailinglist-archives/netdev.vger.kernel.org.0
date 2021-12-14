@@ -2,105 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F6F3474EB4
-	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 00:45:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D5E27474ECB
+	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 00:54:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238317AbhLNXpa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Dec 2021 18:45:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48190 "EHLO
+        id S238367AbhLNXyc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Dec 2021 18:54:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238315AbhLNXp3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 18:45:29 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B16CC061574;
-        Tue, 14 Dec 2021 15:45:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=MCj3uEcu5c6UlruWu6bGSHyPZC5qkeb9xLdGlN1FpGc=; b=IsZndqkKv/JSXqxKDBEWJmdQZi
-        LlElMSIgl8FII2Vs4iJlldipr5nqbC21aV4g2bnlA08PoCockhqXBObbigf+rM+uED3RJYH4vjZeN
-        LnO4DGPj+2nEQE1Qmo0jtNMvSDQsAy9bHeIebw+F0Emun3JXLAIeimmcxeJ6GFyRRkQqEJimlN+7h
-        wGa6DmrR4jVXe2d3rOWaEu81gAGDXVtkh8NCSrGyiLsjOvqPh0jnBGPqxmjEwzwsorAsiH77K9LNF
-        8Y1+2N58wwsE0/rF1k3TBLjjUyPhthM5TJ1q2/LH1MWB0Hk4RlnL+Ttz+27vRzSWdXY2l2IPZZupb
-        RJXeq2qA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:56288)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1mxHTu-0005Yg-VW; Tue, 14 Dec 2021 23:45:14 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1mxHTq-0003vk-2y; Tue, 14 Dec 2021 23:45:10 +0000
-Date:   Tue, 14 Dec 2021 23:45:10 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Sean Anderson <sean.anderson@seco.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Marcin Wojtas <mw@semihalf.com>, UNGLinuxDriver@microchip.com,
-        "David S . Miller" <davem@davemloft.net>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH] net: phylink: Pass state to pcs_config
-Message-ID: <YbkshnqgXP7Gd188@shell.armlinux.org.uk>
-References: <20211214233450.1488736-1-sean.anderson@seco.com>
+        with ESMTP id S230120AbhLNXyb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 18:54:31 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 424DCC061574;
+        Tue, 14 Dec 2021 15:54:30 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0EB32B81D7B;
+        Tue, 14 Dec 2021 23:54:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3A22C34600;
+        Tue, 14 Dec 2021 23:54:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1639526067;
+        bh=NbVNYrferHfK7Et1tLU+6jHiQp8Yu5js3Qgqf8gRZ6w=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=So5j1gY28yYedmfARaWH3xdXnuzVqawAwtFbovlmfZAbQPdwiJ8Kzrc0DUAqccodD
+         +vCvksQ4y8UdS9RqJcCjHRh4oBlKbr8AyblSWHKevSlUrdAxt5Fpv4kXiSlV47oAx6
+         l3jOvluU9M0flvnDnkaNuyS6F90UY8Av9KmTj6fqDMFv2WsnCdY5U95Ft7CSL2YLFp
+         NmD0oVW1YP+kHTwR//XR2HbNI90O9Y0+yEti+Jr9sAfLiqsHdlpTQH15mES76oL70l
+         4CyWlh10r1RkLjTeyxU/bFqqQ7/P97IVhirls5gDgVRnhDfR5wcFCBcXVHyAT3mEaK
+         SkwNzXKCTgmkg==
+Received: by mail-ed1-f45.google.com with SMTP id v1so69013257edx.2;
+        Tue, 14 Dec 2021 15:54:27 -0800 (PST)
+X-Gm-Message-State: AOAM5330r8jCF+OhuRfoDEnHk55JBSX6cIOlEwsPckn2W5oSZI/Aa/6k
+        fcTBTKYtId2AWEA/rDnoAvsrrcj5P7GD9+SRXQ==
+X-Google-Smtp-Source: ABdhPJzp/5VvUlwABGdKDrORoiAKsOFL9lfiyfvDlKLdyjmNKuH0Av0WZQ9j/LmjnxdTEMVKsH0dKrI/HjqdDOtI/UE=
+X-Received: by 2002:a17:907:7b98:: with SMTP id ne24mr8557534ejc.14.1639526066241;
+ Tue, 14 Dec 2021 15:54:26 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211214233450.1488736-1-sean.anderson@seco.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+References: <20211214163315.3769677-1-davidm@egauge.net> <20211214163315.3769677-3-davidm@egauge.net>
+ <1639512290.330041.3819896.nullmailer@robh.at.kernel.org> <e88e908e720172d8571d48bd1ebdab3617534f73.camel@egauge.net>
+In-Reply-To: <e88e908e720172d8571d48bd1ebdab3617534f73.camel@egauge.net>
+From:   Rob Herring <robh@kernel.org>
+Date:   Tue, 14 Dec 2021 17:54:14 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqLFyaAvTGQJc0GjYbXwyhpmfpRm3_rkGopD8cz6-ZX5zw@mail.gmail.com>
+Message-ID: <CAL_JsqLFyaAvTGQJc0GjYbXwyhpmfpRm3_rkGopD8cz6-ZX5zw@mail.gmail.com>
+Subject: Re: [PATCH v4 2/2] wilc1000: Document enable-gpios and reset-gpios properties
+To:     David Mosberger-Tang <davidm@egauge.net>
+Cc:     Kalle Valo <kvalo@codeaurora.org>, netdev <netdev@vger.kernel.org>,
+        Adham Abozaeid <adham.abozaeid@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Ajay Singh <ajay.kathat@microchip.com>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        devicetree@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 14, 2021 at 06:34:50PM -0500, Sean Anderson wrote:
-> Although most PCSs only need the interface and advertising to configure
-> themselves, there is an oddly named "permit_pause_to_mac" parameter
-> included as well, and only used by mvpp2. This parameter indicates
-> whether pause settings should be autonegotiated or not. mvpp2 needs this
-> because it cannot both set the pause mode manually and and advertise
-> pause support. That is, if you want to set the pause mode, you have to
-> advertise that you don't support flow control. We can't just
-> autonegotiate the pause mode and then set it manually, because if
-> the link goes down we will start advertising the wrong thing. So
-> instead, we have to set it up front during pcs_config. However, we can't
-> determine whether we are autonegotiating flow control based on our
-> advertisement (since we advertise flow control even when it is set
-> manually).
-> 
-> So we have had this strange additional argument tagging along which is
-> used by one driver (though soon to be one more since mvneta has the same
-> problem). We could stick MLO_PAUSE_AN in the "mode" parameter, since
-> that contains other autonegotiation configuration. However, there are a
-> lot of places in the codebase which do a direct comparison (e.g. mode ==
-> MLO_AN_FIXED), so it would be difficult to add an extra bit without
-> breaking things. But this whole time, mac_config has been getting the
-> whole state, and it has not suffered unduly. So just pass state and
-> eliminate these other parameters.
+On Tue, Dec 14, 2021 at 5:30 PM David Mosberger-Tang <davidm@egauge.net> wrote:
+>
+> On Tue, 2021-12-14 at 14:04 -0600, Rob Herring wrote:
+> > On Tue, 14 Dec 2021 16:33:22 +0000, David Mosberger-Tang wrote:
+> > > Add documentation for the ENABLE and RESET GPIOs that may be needed by
+> > > wilc1000-spi.
+> > >
+> > > Signed-off-by: David Mosberger-Tang <davidm@egauge.net>
+> > > ---
+> > >  .../net/wireless/microchip,wilc1000.yaml        | 17 +++++++++++++++++
+> > >  1 file changed, 17 insertions(+)
+> > >
+> >
+> > My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+> > on your patch (DT_CHECKER_FLAGS is new in v5.13):
+> >
+> > yamllint warnings/errors:
+> >
+> > dtschema/dtc warnings/errors:
+> > Error: Documentation/devicetree/bindings/net/wireless/microchip,wilc1000.example.dts:30.37-38 syntax error
+> > FATAL ERROR: Unable to parse input tree
+> > make[1]: *** [scripts/Makefile.lib:373: Documentation/devicetree/bindings/net/wireless/microchip,wilc1000.example.dt.yaml] Error 1
+> > make[1]: *** Waiting for unfinished jobs....
+> > make: *** [Makefile:1413: dt_binding_check] Error 2
+>
+> So this error appears due to GPIO_ACTIVE_HIGH and GPIO_ACTIVE_LOW in these
+> lines:
+>
+>         enable-gpios = <&pioA 5 GPIO_ACTIVE_HIGH>;
+>         reset-gpios = <&pioA 6 GPIO_ACTIVE_LOW>;
+>
+> I can replace those with 0 and 1 respectively, but I doubt a lot of people would
+> recognize what those integers standard for.  Is there a better way to get this
+> to pass?
 
-Please no. This is a major step backwards.
+Include the header(s) you use in the example.
 
-mac_config() suffers from the proiblem that people constantly
-mis-understand what they can access in "state" and what they can't.
-This patch introduces exactly the same problem but for a new API.
-
-I really don't want to make that same mistake again, and this patch
-is making that same mistake.
-
-The reason mvpp2 and mvneta are different is because they have a
-separate bit to allow the results of pause mode negotiation to be
-forwarded to the MAC, and that bit needs to be turned off if the
-pause autonegotiation is disabled (which is entirely different
-from normal autonegotiation.)
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Rob
