@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 82C88474E21
-	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 23:46:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C2F3C474E1F
+	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 23:46:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238096AbhLNWpE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Dec 2021 17:45:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34456 "EHLO
+        id S237956AbhLNWpC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Dec 2021 17:45:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234496AbhLNWof (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 17:44:35 -0500
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39FD2C06173E;
-        Tue, 14 Dec 2021 14:44:35 -0800 (PST)
-Received: by mail-ed1-x536.google.com with SMTP id g14so67337992edb.8;
+        with ESMTP id S234991AbhLNWog (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 17:44:36 -0500
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00D7FC061747;
+        Tue, 14 Dec 2021 14:44:36 -0800 (PST)
+Received: by mail-ed1-x535.google.com with SMTP id t5so68003631edd.0;
         Tue, 14 Dec 2021 14:44:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=JeAi0SZFbE9hfwA4m3ax/iVDjREfzAlmtjN25vO1oZY=;
-        b=N0ia3f/RS5V5QelIErJMO3SJQGVSfgACX8XrHHEvtmv2xUfMB2MPwoRCnJYtxTL4bV
-         zzWxYSMA1no7B+gEPBpKoDap6G4j+5GlsRKg0xFdHbWcNivJxmlZR29/dgvQKjTdGtvi
-         iVLHrCoICPKN24HVYiyXc+Lj73RXFHTRErZPdunoJ9clqYowUV7QcVkb3+8Bq7sNWiOI
-         PzvgKJNOW/OahHkWwXzHvBeBQoGoORS7wgKab8doQ8wdOQu4lpqsRpmSCszC7NIw7FwL
-         yGITwGY+SJ9su4oBZItVlrxxTR9ekhcUowCOGwy6vq2MGxNPfIrBPpLFbMBdhZvWQi/o
-         uP+w==
+        bh=S512LTgy5xGLeOLFRV+SrFz9c3b/WhxCle94KC/wZ9M=;
+        b=HyW/OHJsxQ5yKVN9JD2uu9uVDtDJbp5C0DPkdTQNmfE3GomX9BqHQgq2kDiAOQWCUn
+         tae4MZFbmoU6MKegVzbpxvlium/kvjCgP4Nz//3LNM08ljTmC42MrB9fgBaR9gALrciP
+         GwFKl/V1arj1hJSusCgWkM1eoIdaM9JoE4HTpCM2WLvG17xUqWo3cspypDOCF7aOqZDm
+         nZwfiJzi/SuyI4yiCTllzoEra9dhCbdoyguOglzIwBfQ5vku94AI67PHQRJVJTas1ISd
+         erkU4dlN5gYiQ2bWuFrwfJx/Il33RcoR9edAxHcFs07VC1mViPaNitzzp2wQJT+lczrx
+         /NcA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=JeAi0SZFbE9hfwA4m3ax/iVDjREfzAlmtjN25vO1oZY=;
-        b=QOBQehIPEfiSffCUfUPt6bvNbIoRDlVLWj3oqgm7gGC3LsWgkXCScatJEDpRUnUfqB
-         idrqU7Fe+SAdskoTlquAxcOFFaN5rkJ1fnqRkGeoHKMPKeB7gikaxlHnRc67/1gAzVCA
-         uYjIrSoZHHaFQY2ZFTOCPjMzvQZLdavgMBTXMVIhrpXBcfhixnaQ3xzvrkkLvSL4u3z5
-         exg0nOqRo/0IwF9/tOgm9anz2kMAvwZa00KB9l/LiALzTubO15JiUjnN4Tsi7lW4SKi3
-         MszpDtIzeK1qBWvOjMBSCzn5DgMRL5WcsZyS/+LmyeR6kbKwgf/Ta0IYOEeJVoc76ri+
-         8o3A==
-X-Gm-Message-State: AOAM531WdMjFlM9IPPZXwpZUqrrF/NyTgmTB1m62na9QdQn4jHo+Iryw
-        weRyQCFOXdeGOcvv4KRGnh1L5t6VHlVNCw==
-X-Google-Smtp-Source: ABdhPJyWV43DgHW9u5yJ9m6xYY6IOcniQZ6sNe1hsqCRMy3VpiGIEnNVohl+e/CyfWtC3KvaBDRXUg==
-X-Received: by 2002:aa7:cb81:: with SMTP id r1mr11359619edt.352.1639521873596;
-        Tue, 14 Dec 2021 14:44:33 -0800 (PST)
+        bh=S512LTgy5xGLeOLFRV+SrFz9c3b/WhxCle94KC/wZ9M=;
+        b=CEwAbkWphhODffGdqIM/RC4fGPEEjJQ35cev2Ydmsy4ZbizE8i4+mytKSXB8RHXkQe
+         kHCgXytuE/bK4eyTFpWdzYvePxT0FUyViK+FhwWYdy/J+6vTN5q2sKJg6QiVRWhp1vk7
+         Z99rdOoWH4tFvANCBuAeZbArYDhNfeWua2HdBqe+ehFC3vCnq53aDINk3CLwqYbzvIrj
+         UhDc+HBqzSS0pfmDKArVNhaVcyn+aVDcx7u+alwSNI7P3bzhyxmXDmg5mGWoTxYgTOn3
+         g/b0KnKwayzSMPGTqT8goERDKV/e3EA8EoYrvDCCixKoAy+QSLtgd4kb2ky2VhkNZy3z
+         ASCg==
+X-Gm-Message-State: AOAM5305xHbktQiH8F9L1Y2mb5vF9o4B+3eEg57OtE+SlycHFrLXhyOF
+        dxbIjiWKlFNdCQ7w+TfToLE=
+X-Google-Smtp-Source: ABdhPJxVkfVuIzDzDBAJIfoFjlAkmKty9ooWUCchPb4tj0faiEqkdBUfiMzezneTcRnr/ostfnhpow==
+X-Received: by 2002:aa7:cd9a:: with SMTP id x26mr11362174edv.159.1639521874438;
+        Tue, 14 Dec 2021 14:44:34 -0800 (PST)
 Received: from localhost.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.googlemail.com with ESMTPSA id b19sm39008ejl.152.2021.12.14.14.44.32
+        by smtp.googlemail.com with ESMTPSA id b19sm39008ejl.152.2021.12.14.14.44.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Dec 2021 14:44:33 -0800 (PST)
+        Tue, 14 Dec 2021 14:44:34 -0800 (PST)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -56,9 +56,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org
 Cc:     Ansuel Smith <ansuelsmth@gmail.com>
-Subject: [net-next PATCH RFC v6 13/16] net: dsa: qca8k: add support for mib autocast in Ethernet packet
-Date:   Tue, 14 Dec 2021 23:44:06 +0100
-Message-Id: <20211214224409.5770-14-ansuelsmth@gmail.com>
+Subject: [net-next PATCH RFC v6 14/16] net: dsa: qca8k: add support for phy read/write with mdio Ethernet
+Date:   Tue, 14 Dec 2021 23:44:07 +0100
+Message-Id: <20211214224409.5770-15-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20211214224409.5770-1-ansuelsmth@gmail.com>
 References: <20211214224409.5770-1-ansuelsmth@gmail.com>
@@ -68,227 +68,251 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The switch can autocast MIB counter using Ethernet packet.
-Add support for this and provide a handler for the tagger.
-The switch will send packet with MIB counter for each port, the switch
-will use completion API to wait for the correct packet to be received
-and will complete the task only when each packet is received.
-Although the handler will drop all the other packet, we still have to
-consume each MIB packet to complete the request. This is done to prevent
-mixed data with concurrent ethtool request.
-
-connect_tag_protocol() is used to add the handler to the tag_qca tagger,
-master_state_change() use the MIB lock to make sure no MIB Ethernet is
-in progress.
+Use mdio Ethernet also for phy read/write if availabale. Use a different
+seq number to make sure we receive the correct packet.
+On any error, we fallback to the legacy mdio read/write.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- drivers/net/dsa/qca8k.c | 106 +++++++++++++++++++++++++++++++++++++++-
- drivers/net/dsa/qca8k.h |  17 ++++++-
- 2 files changed, 121 insertions(+), 2 deletions(-)
+ drivers/net/dsa/qca8k.c | 177 ++++++++++++++++++++++++++++++++++++++++
+ drivers/net/dsa/qca8k.h |   1 +
+ 2 files changed, 178 insertions(+)
 
 diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-index b35ba26a0696..15f265c6ef02 100644
+index 15f265c6ef02..b08db31933e0 100644
 --- a/drivers/net/dsa/qca8k.c
 +++ b/drivers/net/dsa/qca8k.c
-@@ -795,7 +795,10 @@ qca8k_mib_init(struct qca8k_priv *priv)
- 	int ret;
- 
- 	mutex_lock(&priv->reg_mutex);
--	ret = regmap_set_bits(priv->regmap, QCA8K_REG_MIB, QCA8K_MIB_FLUSH | QCA8K_MIB_BUSY);
-+	ret = regmap_update_bits(priv->regmap, QCA8K_REG_MIB,
-+				 QCA8K_MIB_FUNC | QCA8K_MIB_BUSY,
-+				 FIELD_PREP(QCA8K_MIB_FUNC, QCA8K_MIB_FLUSH) |
-+				 QCA8K_MIB_BUSY);
- 	if (ret)
- 		goto exit;
- 
-@@ -1866,6 +1869,97 @@ qca8k_get_strings(struct dsa_switch *ds, int port, u32 stringset, uint8_t *data)
- 			ETH_GSTRING_LEN);
+@@ -832,6 +832,152 @@ qca8k_port_set_status(struct qca8k_priv *priv, int port, int enable)
+ 		regmap_clear_bits(priv->regmap, QCA8K_REG_PORT_STATUS(port), mask);
  }
  
-+static void qca8k_mib_autocast_handler(struct dsa_port *dp, struct sk_buff *skb)
++static int
++qca8k_mdio_eth_busy_wait(struct qca8k_mdio_hdr_data *phy_hdr_data,
++			 struct sk_buff *read_skb, u32 *val)
 +{
-+	const struct qca8k_match_data *match_data;
-+	struct qca8k_mib_hdr_data *mib_hdr_data;
-+	struct qca8k_priv *priv = dp->ds->priv;
-+	const struct qca8k_mib_desc *mib;
-+	struct mib_ethhdr *mib_ethhdr;
-+	int i, mib_len, offset = 0;
-+	u64 *data;
-+	u8 port;
++	struct sk_buff *skb = skb_copy(read_skb, GFP_KERNEL);
++	bool ack;
++	int ret;
 +
-+	mib_ethhdr = (struct mib_ethhdr *)skb_mac_header(skb);
-+	mib_hdr_data = &priv->mib_hdr_data;
++	reinit_completion(&phy_hdr_data->rw_done);
++	phy_hdr_data->seq = 400;
++	phy_hdr_data->ack = false;
 +
-+	/* The switch autocast every port. Ignore other packet and
-+	 * parse only the requested one.
-+	 */
-+	port = FIELD_GET(QCA_HDR_RECV_SOURCE_PORT, ntohs(mib_ethhdr->hdr));
-+	if (port != mib_hdr_data->req_port)
-+		goto exit;
++	dev_queue_xmit(skb);
 +
-+	match_data = device_get_match_data(priv->dev);
-+	data = mib_hdr_data->data;
++	ret = wait_for_completion_timeout(&phy_hdr_data->rw_done,
++					  QCA8K_ETHERNET_TIMEOUT);
 +
-+	for (i = 0; i < match_data->mib_count; i++) {
-+		mib = &ar8327_mib[i];
++	ack = phy_hdr_data->ack;
 +
-+		/* First 3 mib are present in the skb head */
-+		if (i < 3) {
-+			data[i] = mib_ethhdr->data[i];
-+			continue;
-+		}
++	if (ret <= 0)
++		return -ETIMEDOUT;
 +
-+		mib_len = sizeof(uint32_t);
++	if (!ack)
++		return -EINVAL;
 +
-+		/* Some mib are 64 bit wide */
-+		if (mib->size == 2)
-+			mib_len = sizeof(uint64_t);
++	*val = phy_hdr_data->data[0];
 +
-+		/* Copy the mib value from packet to the */
-+		memcpy(data + i, skb->data + offset, mib_len);
-+
-+		/* Set the offset for the next mib */
-+		offset += mib_len;
-+	}
-+
-+exit:
-+	/* Complete on receiving all the mib packet */
-+	if (refcount_dec_and_test(&mib_hdr_data->port_parsed))
-+		complete(&mib_hdr_data->rw_done);
++	return 0;
 +}
 +
 +static int
-+qca8k_get_ethtool_stats_eth(struct dsa_switch *ds, int port, u64 *data)
++qca8k_mdio_eth_command(struct qca8k_priv *priv, bool read, int phy,
++		       int regnum, u16 data)
 +{
-+	struct dsa_port *dp = dsa_to_port(ds, port);
-+	struct qca8k_mib_hdr_data *mib_hdr_data;
-+	struct qca8k_priv *priv = ds->priv;
-+	int ret;
++	struct sk_buff *write_skb, *clear_skb, *read_skb;
++	const struct net_device *dev = priv->master;
++	struct qca8k_mdio_hdr_data *phy_hdr_data;
++	u32 write_val, clear_val = 0, val;
++	int seq_num = 400;
++	int ret, ret1;
++	bool ack;
 +
-+	mib_hdr_data = &priv->mib_hdr_data;
++	if (regnum >= QCA8K_MDIO_MASTER_MAX_REG)
++		return -EINVAL;
 +
-+	mutex_lock(&mib_hdr_data->mutex);
++	phy_hdr_data = &priv->mdio_hdr_data;
 +
-+	reinit_completion(&mib_hdr_data->rw_done);
++	write_val = QCA8K_MDIO_MASTER_BUSY | QCA8K_MDIO_MASTER_EN |
++		    QCA8K_MDIO_MASTER_PHY_ADDR(phy) |
++		    QCA8K_MDIO_MASTER_REG_ADDR(regnum);
 +
-+	mib_hdr_data->req_port = dp->index;
-+	mib_hdr_data->data = data;
-+	refcount_set(&mib_hdr_data->port_parsed, QCA8K_NUM_PORTS);
++	if (read) {
++		write_val |= QCA8K_MDIO_MASTER_READ;
++	} else {
++		write_val |= QCA8K_MDIO_MASTER_WRITE;
++		write_val |= QCA8K_MDIO_MASTER_DATA(data);
++	}
 +
-+	mutex_lock(&priv->reg_mutex);
++	/* Prealloc all the needed skb before the lock */
++	write_skb = qca8k_alloc_mdio_header(MDIO_WRITE, QCA8K_MDIO_MASTER_CTRL,
++					    &write_val, seq_num, QCA8K_ETHERNET_PHY_PRIORITY);
++	write_skb->dev = (struct net_device *)dev;
++	clear_skb = qca8k_alloc_mdio_header(MDIO_WRITE, QCA8K_MDIO_MASTER_CTRL,
++					    &clear_val, seq_num, QCA8K_ETHERNET_PHY_PRIORITY);
++	clear_skb->dev = (struct net_device *)dev;
++	read_skb = qca8k_alloc_mdio_header(MDIO_READ, QCA8K_MDIO_MASTER_CTRL,
++					   &clear_val, seq_num, QCA8K_ETHERNET_PHY_PRIORITY);
++	read_skb->dev = (struct net_device *)dev;
 +
-+	/* Send mib autocast request */
-+	ret = regmap_update_bits(priv->regmap, QCA8K_REG_MIB,
-+				 QCA8K_MIB_FUNC | QCA8K_MIB_BUSY,
-+				 FIELD_PREP(QCA8K_MIB_FUNC, QCA8K_MIB_CAST) |
-+				 QCA8K_MIB_BUSY);
++	/* Actually start the request:
++	 * 1. Send mdio master packet
++	 * 2. Busy Wait for mdio master command
++	 * 3. Get the data if we are reading
++	 * 4. Reset the mdio master (even with error)
++	 */
++	mutex_lock(&phy_hdr_data->mutex);
 +
-+	mutex_unlock(&priv->reg_mutex);
++	reinit_completion(&phy_hdr_data->rw_done);
++	phy_hdr_data->ack = false;
++	phy_hdr_data->seq = seq_num;
 +
-+	if (ret)
++	dev_queue_xmit(write_skb);
++
++	ret = wait_for_completion_timeout(&phy_hdr_data->rw_done,
++					  QCA8K_ETHERNET_TIMEOUT);
++
++	ack = phy_hdr_data->ack;
++
++	if (ret <= 0) {
++		ret = -ETIMEDOUT;
 +		goto exit;
++	}
 +
-+	ret = wait_for_completion_timeout(&mib_hdr_data->rw_done, QCA8K_ETHERNET_TIMEOUT);
++	if (!ack) {
++		ret = -EINVAL;
++		goto exit;
++	}
++
++	ret = read_poll_timeout(qca8k_mdio_eth_busy_wait, ret1,
++				!(val & QCA8K_MDIO_MASTER_BUSY), 0,
++				QCA8K_BUSY_WAIT_TIMEOUT * USEC_PER_MSEC, false,
++				phy_hdr_data, read_skb, &val);
++
++	if (ret < 0 && ret1 < 0) {
++		ret = ret1;
++		goto exit;
++	}
++
++	if (read) {
++		reinit_completion(&phy_hdr_data->rw_done);
++		phy_hdr_data->ack = false;
++
++		dev_queue_xmit(read_skb);
++
++		ret = wait_for_completion_timeout(&phy_hdr_data->rw_done,
++						  QCA8K_ETHERNET_TIMEOUT);
++
++		ack = phy_hdr_data->ack;
++
++		if (ret <= 0) {
++			ret = -ETIMEDOUT;
++			goto exit;
++		}
++
++		if (!ack) {
++			ret = -EINVAL;
++			goto exit;
++		}
++
++		ret = phy_hdr_data->data[0] & QCA8K_MDIO_MASTER_DATA_MASK;
++	}
 +
 +exit:
-+	mutex_unlock(&mib_hdr_data->mutex);
++	reinit_completion(&phy_hdr_data->rw_done);
++	phy_hdr_data->ack = false;
++
++	dev_queue_xmit(clear_skb);
++
++	wait_for_completion_timeout(&phy_hdr_data->rw_done,
++				    QCA8K_ETHERNET_TIMEOUT);
++
++	mutex_unlock(&phy_hdr_data->mutex);
 +
 +	return ret;
 +}
 +
- static void
- qca8k_get_ethtool_stats(struct dsa_switch *ds, int port,
- 			uint64_t *data)
-@@ -1877,6 +1971,10 @@ qca8k_get_ethtool_stats(struct dsa_switch *ds, int port,
- 	u32 hi = 0;
- 	int ret;
- 
-+	if (priv->master &&
-+	    qca8k_get_ethtool_stats_eth(ds, port, data) > 0)
-+		return;
+ static u32
+ qca8k_port_to_phy(int port)
+ {
+@@ -954,6 +1100,14 @@ qca8k_internal_mdio_write(struct mii_bus *slave_bus, int phy, int regnum, u16 da
+ {
+ 	struct qca8k_priv *priv = slave_bus->priv;
+ 	struct mii_bus *bus = priv->bus;
++	int ret;
 +
- 	match_data = of_device_get_match_data(priv->dev);
++	/* Use mdio Ethernet when available, fallback to legacy one on error */
++	if (priv->master) {
++		ret = qca8k_mdio_eth_command(priv, false, phy, regnum, data);
++		if (!ret)
++			return 0;
++	}
  
- 	for (i = 0; i < match_data->mib_count; i++) {
-@@ -2558,6 +2656,7 @@ qca8k_master_change(struct dsa_switch *ds, const struct net_device *master,
- 		return;
+ 	return qca8k_mdio_write(bus, phy, regnum, data);
+ }
+@@ -963,6 +1117,14 @@ qca8k_internal_mdio_read(struct mii_bus *slave_bus, int phy, int regnum)
+ {
+ 	struct qca8k_priv *priv = slave_bus->priv;
+ 	struct mii_bus *bus = priv->bus;
++	int ret;
++
++	/* Use mdio Ethernet when available, fallback to legacy one on error */
++	if (priv->master) {
++		ret = qca8k_mdio_eth_command(priv, true, phy, regnum, 0);
++		if (ret >= 0)
++			return ret;
++	}
  
- 	mutex_lock(&priv->mdio_hdr_data.mutex);
-+	mutex_lock(&priv->mib_hdr_data.mutex);
+ 	return qca8k_mdio_read(bus, phy, regnum);
+ }
+@@ -971,6 +1133,7 @@ static int
+ qca8k_phy_write(struct dsa_switch *ds, int port, int regnum, u16 data)
+ {
+ 	struct qca8k_priv *priv = ds->priv;
++	int ret;
  
- 	if (operational)
- 		priv->master = master;
-@@ -2565,6 +2664,7 @@ qca8k_master_change(struct dsa_switch *ds, const struct net_device *master,
- 		priv->master = NULL;
+ 	/* Check if the legacy mapping should be used and the
+ 	 * port is not correctly mapped to the right PHY in the
+@@ -979,6 +1142,13 @@ qca8k_phy_write(struct dsa_switch *ds, int port, int regnum, u16 data)
+ 	if (priv->legacy_phy_port_mapping)
+ 		port = qca8k_port_to_phy(port) % PHY_MAX_ADDR;
  
- 	mutex_unlock(&priv->mdio_hdr_data.mutex);
-+	mutex_unlock(&priv->mib_hdr_data.mutex);
++	/* Use mdio Ethernet when available, fallback to legacy one on error */
++	if (priv->master) {
++		ret = qca8k_mdio_eth_command(priv, true, port, regnum, 0);
++		if (!ret)
++			return ret;
++	}
++
+ 	return qca8k_mdio_write(priv->bus, port, regnum, data);
  }
  
- static int qca8k_connect_tag_protocol(struct dsa_switch *ds,
-@@ -2581,7 +2681,11 @@ static int qca8k_connect_tag_protocol(struct dsa_switch *ds,
- 		mutex_init(&qca8k_priv->mdio_hdr_data.mutex);
- 		init_completion(&qca8k_priv->mdio_hdr_data.rw_done);
+@@ -995,6 +1165,13 @@ qca8k_phy_read(struct dsa_switch *ds, int port, int regnum)
+ 	if (priv->legacy_phy_port_mapping)
+ 		port = qca8k_port_to_phy(port) % PHY_MAX_ADDR;
  
-+		mutex_init(&qca8k_priv->mib_hdr_data.mutex);
-+		init_completion(&qca8k_priv->mib_hdr_data.rw_done);
++	/* Use mdio Ethernet when available, fallback to legacy one on error */
++	if (priv->master) {
++		ret = qca8k_mdio_eth_command(priv, true, port, regnum, 0);
++		if (ret >= 0)
++			return ret;
++	}
 +
- 		priv->rw_reg_ack_handler = qca8k_rw_reg_ack_handler;
-+		priv->mib_autocast_handler = qca8k_mib_autocast_handler;
+ 	ret = qca8k_mdio_read(priv->bus, port, regnum);
  
- 		break;
- 	default:
+ 	if (ret < 0)
 diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
-index dbe8c74c9793..4aca07db0192 100644
+index 4aca07db0192..203220efa5c0 100644
 --- a/drivers/net/dsa/qca8k.h
 +++ b/drivers/net/dsa/qca8k.h
-@@ -67,7 +67,7 @@
- #define QCA8K_REG_MODULE_EN				0x030
- #define   QCA8K_MODULE_EN_MIB				BIT(0)
- #define QCA8K_REG_MIB					0x034
--#define   QCA8K_MIB_FLUSH				BIT(24)
-+#define   QCA8K_MIB_FUNC				GENMASK(26, 24)
- #define   QCA8K_MIB_CPU_KEEP				BIT(20)
- #define   QCA8K_MIB_BUSY				BIT(17)
- #define QCA8K_MDIO_MASTER_CTRL				0x3c
-@@ -317,6 +317,12 @@ enum qca8k_vlan_cmd {
- 	QCA8K_VLAN_READ = 6,
- };
+@@ -14,6 +14,7 @@
+ #include <linux/dsa/tag_qca.h>
  
-+enum qca8k_mid_cmd {
-+	QCA8K_MIB_FLUSH = 1,
-+	QCA8K_MIB_FLUSH_PORT = 2,
-+	QCA8K_MIB_CAST = 3,
-+};
-+
- struct ar8xxx_port_status {
- 	int enabled;
- };
-@@ -340,6 +346,14 @@ struct qca8k_mdio_hdr_data {
- 	u32 data[4];
- };
+ #define QCA8K_ETHERNET_MDIO_PRIORITY			7
++#define QCA8K_ETHERNET_PHY_PRIORITY			6
+ #define QCA8K_ETHERNET_TIMEOUT				100
  
-+struct qca8k_mib_hdr_data {
-+	struct completion rw_done;
-+	struct mutex mutex; /* Process one command at time */
-+	refcount_t port_parsed; /* Counter to track parsed port */
-+	u8 req_port;
-+	u64 *data; /* pointer to ethtool data */
-+};
-+
- struct qca8k_ports_config {
- 	bool sgmii_rx_clk_falling_edge;
- 	bool sgmii_tx_clk_falling_edge;
-@@ -367,6 +381,7 @@ struct qca8k_priv {
- 	unsigned int port_mtu[QCA8K_NUM_PORTS];
- 	const struct net_device *master; /* Track if mdio/mib Ethernet is available */
- 	struct qca8k_mdio_hdr_data mdio_hdr_data;
-+	struct qca8k_mib_hdr_data mib_hdr_data;
- };
- 
- struct qca8k_mib_desc {
+ #define QCA8K_NUM_PORTS					7
 -- 
 2.33.1
 
