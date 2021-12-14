@@ -2,102 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 96162473CD2
-	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 06:58:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 26FD9473CD6
+	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 06:59:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230173AbhLNF6h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Dec 2021 00:58:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56796 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230114AbhLNF6h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 00:58:37 -0500
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E7C4C061574;
-        Mon, 13 Dec 2021 21:58:37 -0800 (PST)
-Received: by mail-pj1-x102a.google.com with SMTP id np6-20020a17090b4c4600b001a90b011e06so15204381pjb.5;
-        Mon, 13 Dec 2021 21:58:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=uE8tm7fba5U6NBtNlVs+75ZMG9iOEUJb31FfCod84+w=;
-        b=dCYD2p897oCg0sRe1lmek/4jFC+FOSIkEee2sTpRc6SP1ff9GiS90q8sDeKKlPfIdv
-         3QCeDPSWw+94OEan2cXREv4sAw+6KQQz931C9FZU1TDUN3fNL9eescfMg58gPsE217zK
-         SFYD1ivheYnLXTjnTNXlKrSq29uEJc+EA9wDeokdKudFDT6fIPEHq4OlFtz+9Y2jvlEQ
-         N0l4XWVXK8kMADWcFI+67iuusPs4K+GMdgMDyDA+HHm4zm3iuMqKzGhhY5xDDBxW9gpX
-         kASBhlhS2jwJdgNex7uDYnU3gMeonWhCIATBNE6ICyaxGAsD5hqZyfUsqwV+s32wo0Rx
-         ZHEw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=uE8tm7fba5U6NBtNlVs+75ZMG9iOEUJb31FfCod84+w=;
-        b=XkslM/elFFE+/y7kls5PMybEx+h/1z2iETObg/YoH+7nzgOxFaPP3mm8ZWIV7wy8Z9
-         pAAm6Z+TsSto1mNjymXeGwIk0raFCAqgjDzgVw2Y3zcn8knlY/li/Xz+WXMC/sjefJJV
-         nWl1sNcdTMKdFnPGAIwZ9k+O2d67SyqB13LsKUkNiWlxVnzmWLrR/WL1siAQoJpa8Gzn
-         64YMUJIswatUz0Vyk1K0xQqApdSCF4kRQDkbbclsNKqR+yaj84dkuDFOb4UyMeyHMprc
-         zrWKOF/vzgW/DT4zLTyeST5higHkVlT1MP8dcR1ypeGdJa4X1Hdr0VyJn9YhwO/1eDB4
-         2sqQ==
-X-Gm-Message-State: AOAM533yhbkKCz6gslPwoIWlQnRyhq2p6F74vb17f33eanrONzESZP6k
-        83G+jIG7PL1z5VQUTe8qNzQ=
-X-Google-Smtp-Source: ABdhPJw6AuSqH/TZUjqfvsk1KhigqT3WeS/B3avdSl+QZpNNsPQ1+e71qbUYWXziTJBd0aPeGSopHA==
-X-Received: by 2002:a17:90b:230c:: with SMTP id mt12mr3398651pjb.63.1639461516315;
-        Mon, 13 Dec 2021 21:58:36 -0800 (PST)
-Received: from localhost ([110.141.142.237])
-        by smtp.gmail.com with ESMTPSA id nn4sm1071069pjb.38.2021.12.13.21.58.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Dec 2021 21:58:35 -0800 (PST)
-Date:   Tue, 14 Dec 2021 16:58:32 +1100
-From:   Balbir Singh <bsingharora@gmail.com>
-To:     Leo Yan <leo.yan@linaro.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Leon Romanovsky <leon@kernel.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Mike Leach <mike.leach@linaro.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jan Harkes <jaharkes@cs.cmu.edu>, coda@cs.cmu.edu,
-        Paul Moore <paul@paul-moore.com>,
-        Eric Paris <eparis@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, coresight@lists.linaro.org,
-        linux-arm-kernel@lists.infradead.org, codalist@coda.cs.cmu.edu,
-        linux-audit@redhat.com
-Subject: Re: [PATCH v2 4/7] connector/cn_proc: Use task_is_in_init_pid_ns()
-Message-ID: <YbgyiIZDDaOB93Em@balbir-desktop>
-References: <20211208083320.472503-1-leo.yan@linaro.org>
- <20211208083320.472503-5-leo.yan@linaro.org>
+        id S230189AbhLNF7c convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 14 Dec 2021 00:59:32 -0500
+Received: from rtits2.realtek.com ([211.75.126.72]:57966 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230114AbhLNF7b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 00:59:31 -0500
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 1BE5x6gyD004824, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36504.realtek.com.tw[172.21.6.27])
+        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 1BE5x6gyD004824
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 14 Dec 2021 13:59:06 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXH36504.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Tue, 14 Dec 2021 13:59:06 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS04.realtek.com.tw (172.21.6.97) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Tue, 14 Dec 2021 13:59:06 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::65a3:1e23:d911:4b01]) by
+ RTEXMBS04.realtek.com.tw ([fe80::65a3:1e23:d911:4b01%5]) with mapi id
+ 15.01.2308.020; Tue, 14 Dec 2021 13:59:06 +0800
+From:   Pkshih <pkshih@realtek.com>
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        "tony0620emma@gmail.com" <tony0620emma@gmail.com>
+CC:     "jian-hong@endlessm.com" <jian-hong@endlessm.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        Bernie Huang <phhuang@realtek.com>,
+        Brian Norris <briannorris@chromium.org>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH v2] rtw88: Disable PCIe ASPM while doing NAPI poll on 8821CE
+Thread-Topic: [PATCH v2] rtw88: Disable PCIe ASPM while doing NAPI poll on
+ 8821CE
+Thread-Index: AQHX8KxEGsnToIDXSUCJmFSUmWAcOawxeDaA
+Date:   Tue, 14 Dec 2021 05:59:06 +0000
+Message-ID: <4aaf5dd030004285a56bc55cc6b2731b@realtek.com>
+References: <20211214053302.242222-1-kai.heng.feng@canonical.com>
+In-Reply-To: <20211214053302.242222-1-kai.heng.feng@canonical.com>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.69.188]
+x-kse-serverinfo: RTEXMBS04.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2021/12/14_=3F=3F_02:07:00?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211208083320.472503-5-leo.yan@linaro.org>
+X-KSE-ServerInfo: RTEXH36504.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 08, 2021 at 04:33:17PM +0800, Leo Yan wrote:
-> This patch replaces open code with task_is_in_init_pid_ns() to check if
-> a task is in root PID namespace.
+
+> -----Original Message-----
+> From: Kai-Heng Feng <kai.heng.feng@canonical.com>
+> Sent: Tuesday, December 14, 2021 1:33 PM
+> To: tony0620emma@gmail.com; Pkshih <pkshih@realtek.com>
+> Cc: jian-hong@endlessm.com; Kai-Heng Feng <kai.heng.feng@canonical.com>; Kalle Valo
+> <kvalo@codeaurora.org>; David S. Miller <davem@davemloft.net>; Jakub Kicinski <kuba@kernel.org>; Bernie
+> Huang <phhuang@realtek.com>; Brian Norris <briannorris@chromium.org>; linux-wireless@vger.kernel.org;
+> netdev@vger.kernel.org; linux-kernel@vger.kernel.org
+> Subject: [PATCH v2] rtw88: Disable PCIe ASPM while doing NAPI poll on 8821CE
 > 
-> Signed-off-by: Leo Yan <leo.yan@linaro.org>
+> Many Intel based platforms face system random freeze after commit
+> 9e2fd29864c5 ("rtw88: add napi support").
+> 
+> The commit itself shouldn't be the culprit. My guess is that the 8821CE
+> only leaves ASPM L1 for a short period when IRQ is raised. Since IRQ is
+> masked during NAPI polling, the PCIe link stays at L1 and makes RX DMA
+> extremely slow. Eventually the RX ring becomes messed up:
+> [ 1133.194697] rtw_8821ce 0000:02:00.0: pci bus timeout, check dma status
+> 
+> Since the 8821CE hardware may fail to leave ASPM L1, manually do it in
+> the driver to resolve the issue.
+> 
+> Fixes: 9e2fd29864c5 ("rtw88: add napi support")
+> Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=215131
+> BugLink: https://bugs.launchpad.net/bugs/1927808
+> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
 > ---
->  drivers/connector/cn_proc.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> v2:
+>  - Add default value for module parameter.
 > 
-> diff --git a/drivers/connector/cn_proc.c b/drivers/connector/cn_proc.c
-> index 646ad385e490..ccac1c453080 100644
-> --- a/drivers/connector/cn_proc.c
-> +++ b/drivers/connector/cn_proc.c
-> @@ -358,7 +358,7 @@ static void cn_proc_mcast_ctl(struct cn_msg *msg,
->  	 * other namespaces.
+>  drivers/net/wireless/realtek/rtw88/pci.c | 74 ++++++++----------------
+>  drivers/net/wireless/realtek/rtw88/pci.h |  1 +
+>  2 files changed, 24 insertions(+), 51 deletions(-)
+> 
+> diff --git a/drivers/net/wireless/realtek/rtw88/pci.c b/drivers/net/wireless/realtek/rtw88/pci.c
+> index 3b367c9085eba..4ab75ac2500e9 100644
+> --- a/drivers/net/wireless/realtek/rtw88/pci.c
+> +++ b/drivers/net/wireless/realtek/rtw88/pci.c
+> @@ -2,7 +2,6 @@
+>  /* Copyright(c) 2018-2019  Realtek Corporation
+>   */
+> 
+> -#include <linux/dmi.h>
+>  #include <linux/module.h>
+>  #include <linux/pci.h>
+>  #include "main.h"
+> @@ -16,10 +15,13 @@
+> 
+>  static bool rtw_disable_msi;
+>  static bool rtw_pci_disable_aspm;
+> +static int rtw_rx_aspm = -1;
+>  module_param_named(disable_msi, rtw_disable_msi, bool, 0644);
+>  module_param_named(disable_aspm, rtw_pci_disable_aspm, bool, 0644);
+> +module_param_named(rx_aspm, rtw_rx_aspm, int, 0444);
+>  MODULE_PARM_DESC(disable_msi, "Set Y to disable MSI interrupt support");
+>  MODULE_PARM_DESC(disable_aspm, "Set Y to disable PCI ASPM support");
+> +MODULE_PARM_DESC(rx_aspm, "Use PCIe ASPM for RX (0=disable, 1=enable, -1=default)");
+> 
+>  static u32 rtw_pci_tx_queue_idx_addr[] = {
+>  	[RTW_TX_QUEUE_BK]	= RTK_PCI_TXBD_IDX_BKQ,
+> @@ -1409,7 +1411,11 @@ static void rtw_pci_link_ps(struct rtw_dev *rtwdev, bool enter)
+>  	 * throughput. This is probably because the ASPM behavior slightly
+>  	 * varies from different SOC.
 >  	 */
->  	if ((current_user_ns() != &init_user_ns) ||
-> -	    (task_active_pid_ns(current) != &init_pid_ns))
-> +	    !task_is_in_init_pid_ns(current))
->  		return;
->
+> -	if (rtwpci->link_ctrl & PCI_EXP_LNKCTL_ASPM_L1)
+> +	if (!(rtwpci->link_ctrl & PCI_EXP_LNKCTL_ASPM_L1))
+> +		return;
+> +
+> +	if ((enter && atomic_dec_return(&rtwpci->link_usage) == 0) ||
+> +	    (!enter && atomic_inc_return(&rtwpci->link_usage) == 1))
+>  		rtw_pci_aspm_set(rtwdev, enter);
+>  }
+> 
 
-Sounds like there might scope for other wrappers - is_current_in_user_init_ns()
+I found calling pci_link_ps isn't always symmetric, so we need to reset
+ref_cnt at pci_start() like below, or we can't enter rtw_pci_aspm_set()
+anymore. The negative flow I face is 
+ifup -> connect AP -> ifdown -> ifup (ref_cnt isn't expected now).
 
-Acked-by: Balbir Singh <bsingharora@gmail.com>
+
+@@ -582,6 +582,8 @@ static int rtw_pci_start(struct rtw_dev *rtwdev)
+        rtw_pci_napi_start(rtwdev);
+
+        spin_lock_bh(&rtwpci->irq_lock);
++       atomic_set(&rtwpci->link_usage, 1);
+        rtwpci->running = true;
+        rtw_pci_enable_interrupt(rtwdev, rtwpci, false);
+        spin_unlock_bh(&rtwpci->irq_lock);
+
+--
+Ping-Ke
+
 
