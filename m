@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DA8E474939
-	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 18:24:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D2BA47493B
+	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 18:24:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236432AbhLNRYy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Dec 2021 12:24:54 -0500
-Received: from mail-mw2nam12on2064.outbound.protection.outlook.com ([40.107.244.64]:42081
-        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
+        id S236426AbhLNRYz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Dec 2021 12:24:55 -0500
+Received: from mail-bn8nam08on2069.outbound.protection.outlook.com ([40.107.100.69]:40032
+        "EHLO NAM04-BN8-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231625AbhLNRYv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 Dec 2021 12:24:51 -0500
+        id S236424AbhLNRYy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Dec 2021 12:24:54 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=W8VdsvTWEoWNXidMoaOkqIpQBy/GFN1mbpPM8PeYeUCI2cr29Jxill1q+Dham07RMRT48iFhcpYvOLbRsqGh8r6dOzvFUJuomDjtQO4z9ZzlG4zFZsl+UazODepcyFF1L8Cmrcf8RoiVjizPAKayYpfccXWf26moF4qdaIns5sV8UKabMHK4fRKvjUOpx2+Tqivys/6xx41ZDHGvXYG+/8zKJAC5cuTz5N4VR0bAW3AdDp7AZpTivPtDiuij8bBoZVBXI5HgcGouSYcbk8B8f+WJsVM5zyGrnX6/Lt2vK8hwhnLPP2Z2fbeSdZlEHWnhnPBjvwGN+JVrwluXSJzHvw==
+ b=Ey4/52GpipTCgm8NVHTRz19r0gMEyZW6HsJ2Z00X4Gix20FKfgCf1XfpWkmIwhyT8ka9iGe2Q2tdBecN5Oj68MJWNmJ0L5mkIAqmnmPZhept+d2kLXuxEspPOKy82TDSn2CtSrDtp1mg2x/yiniWQsOR+KBvLhY1RNkDg0yQOGCDvLZdvToDYMfbY2vKqel5OD+M52cd7dkprMRwWCIdml1MW/6fThQKfGKRBp5lh3mNTlnnsQofI24M70wy8hQ8HYjm1cBW6we7chKmdVN3swRwwBBNmrOxNk+raBchF+urARlyKrt2yJk60V71BWqZVt82zlYBOrMyueQP0Ja9Ew==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=DUAsR4xy5RTdu3+ZpWFuxBDZZecWFdzDUvjRgnVk9Rw=;
- b=LBL8M++D2WZ3wFkHh2q8pqu6elicVcCpN0qcY6uO3h60MU2pDcbfBxbMx8+JIhCnc1LFQnntuRL1fKswRZeKDvENTblrIp9vdFjKn6OllfT7mfc15bbC5C4ICaxD0GwpKKE92CcDAqPWCjyLveWGKeusRO1dMeSROnSxhOMUm02BXiRPpeeFoUqZMotJ9fy1zH26ig0Ithg4ytnGycEfUbqiTzm7ABAwxf2KH02qSuMvIwI3e208nqe2VWsI9F/AS7q8c8C7nH0ttY5aArcd39n/x5PJyqMdolysTuyCi9ghT9WvXvKCbni/FrT+RGOS1IWueF/uDCo2sOLo55fmfw==
+ bh=79JM/MbrmODiFRgErMjsuA+5wfvYPFNkA4dhLysjHNk=;
+ b=aPPtgkcsalExv40S85WdnwYR8y3YBTctqrBZIX8hJNS7PuCtmexUMKAD+RMOFDM0QEBsDBvdH5jAByaa7Xbd0i0arupCUR8AKAbhKW0UAKxDTsyssf+bdrPf0eo8qyCnuuHYp9ZzXdQxRRcr1TN2QboZ59xZaEaXMjs4UuMUjgXaYPRar6J0VbD2dA2wl3dIFICsoUsSTD8rcYae71TXXBq8hX/jC6GRE6Cbzvx1OW3RxKojxua23ygynErmXsxbhmxUdd6gBVboe9MHwcSxviErE7nV89K3JS2kuv9lbxVtYkr1dOzKqkdsaWd4XNTXH+9VtAB36R7kJ2sVB6LBDg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  203.18.50.13) smtp.rcpttodomain=ovn.org smtp.mailfrom=nvidia.com; dmarc=pass
  (p=quarantine sp=quarantine pct=100) action=none header.from=nvidia.com;
@@ -26,18 +26,18 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DUAsR4xy5RTdu3+ZpWFuxBDZZecWFdzDUvjRgnVk9Rw=;
- b=lFS6Do4v+YuKH6pGqHHGBuZDTStAoZsOcSXsXl7NeFfNqqBjZLfdOSvo+eKkcdZG2hLMigkXvyNhFgX8VJCYbjrHchc4Uy1mzAZlW2L0KlgeNH+KfCwyvgGj6bQpxqXMfxsMkiRMAk3srL/Ln8cXK+5QOFLU/muLKvPZnbkF982hTGsliRintBKcxKoweEleQkLaun71NRkxneSTNQA43rt1NyyZKEI7LCURqhNQsERZROnHlD5LfKHVtOkXyzxT3cOZdoPFxsuk+VyyyVbKfQW82Zi7LflgDspLQ+6401Y6oefcVF1os5RPRBdE6h4zYRUvG4vvHNxrGJIE11+gQQ==
-Received: from MW4PR03CA0275.namprd03.prod.outlook.com (2603:10b6:303:b5::10)
- by BY5PR12MB4145.namprd12.prod.outlook.com (2603:10b6:a03:212::11) with
+ bh=79JM/MbrmODiFRgErMjsuA+5wfvYPFNkA4dhLysjHNk=;
+ b=CkSitJYauhcZLk1rhYpgNVqoBkXrCfEO5+os8UMTcCsaAfsyfYTaXnrPjbp7UeO7cdJNASFGSjUyBXMmg1rrIPsf3JQOjBc7GurxIh9clN217swmrz+L/pOI5u4xERP0PRjPQkK+z/Y5kzRTvOS3iWyloPepL3JMk9/w4T3/SADQu9rgdEI9KN1nGaBdDBpnaUBVb2U1UaTrney7mYAzIGVOH71PrQiJoKkFiDwC0nkZE9W6Mui4twgUMfBE56QpYP3rYlKd04gCc7zy0ONVElOaPTtoXUTryxJhPT8E5W++t/ccXTSI8ztos83JOr82VOXoW1KyIutkdVaEwvPssA==
+Received: from MW4PR03CA0291.namprd03.prod.outlook.com (2603:10b6:303:b5::26)
+ by CH0PR12MB5041.namprd12.prod.outlook.com (2603:10b6:610:e0::16) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4778.13; Tue, 14 Dec
- 2021 17:24:50 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4801.14; Tue, 14 Dec
+ 2021 17:24:52 +0000
 Received: from CO1NAM11FT046.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:b5:cafe::97) by MW4PR03CA0275.outlook.office365.com
- (2603:10b6:303:b5::10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4801.14 via Frontend
- Transport; Tue, 14 Dec 2021 17:24:50 +0000
+ (2603:10b6:303:b5:cafe::57) by MW4PR03CA0291.outlook.office365.com
+ (2603:10b6:303:b5::26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4778.15 via Frontend
+ Transport; Tue, 14 Dec 2021 17:24:52 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 203.18.50.13)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
@@ -47,16 +47,16 @@ Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
 Received: from mail.nvidia.com (203.18.50.13) by
  CO1NAM11FT046.mail.protection.outlook.com (10.13.174.203) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4778.13 via Frontend Transport; Tue, 14 Dec 2021 17:24:49 +0000
-Received: from HQMAIL101.nvidia.com (172.20.187.10) by HKMAIL102.nvidia.com
+ 15.20.4778.13 via Frontend Transport; Tue, 14 Dec 2021 17:24:51 +0000
+Received: from HQMAIL111.nvidia.com (172.20.187.18) by HKMAIL102.nvidia.com
  (10.18.16.11) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 14 Dec
- 2021 17:24:47 +0000
-Received: from HQMAIL101.nvidia.com (172.20.187.10) by HQMAIL101.nvidia.com
- (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 14 Dec
- 2021 17:24:45 +0000
+ 2021 17:24:51 +0000
+Received: from HQMAIL101.nvidia.com (172.20.187.10) by HQMAIL111.nvidia.com
+ (172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 14 Dec
+ 2021 17:24:49 +0000
 Received: from reg-r-vrt-019-180.mtr.labs.mlnx (172.20.187.6) by
  mail.nvidia.com (172.20.187.10) with Microsoft SMTP Server id 15.0.1497.18
- via Frontend Transport; Tue, 14 Dec 2021 17:24:41 +0000
+ via Frontend Transport; Tue, 14 Dec 2021 17:24:45 +0000
 From:   Paul Blakey <paulb@nvidia.com>
 To:     Paul Blakey <paulb@nvidia.com>, <dev@openvswitch.org>,
         <netdev@vger.kernel.org>, Saeed Mahameed <saeedm@nvidia.com>,
@@ -68,83 +68,255 @@ To:     Paul Blakey <paulb@nvidia.com>, <dev@openvswitch.org>,
         Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
 CC:     Oz Shlomo <ozsh@nvidia.com>, Vlad Buslov <vladbu@nvidia.com>,
         Roi Dayan <roid@nvidia.com>
-Subject: [PATCH net v3 0/3] net/sched: Fix ct zone matching for invalid conntrack state
-Date:   Tue, 14 Dec 2021 19:24:32 +0200
-Message-ID: <20211214172435.24207-1-paulb@nvidia.com>
+Subject: [PATCH net v3 1/3] net/sched: Extend qdisc control block with tc control block
+Date:   Tue, 14 Dec 2021 19:24:33 +0200
+Message-ID: <20211214172435.24207-2-paulb@nvidia.com>
 X-Mailer: git-send-email 2.30.1
+In-Reply-To: <20211214172435.24207-1-paulb@nvidia.com>
+References: <20211214172435.24207-1-paulb@nvidia.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 72c2ca7a-554b-4737-cdeb-08d9bf26a21d
-X-MS-TrafficTypeDiagnostic: BY5PR12MB4145:EE_
-X-Microsoft-Antispam-PRVS: <BY5PR12MB4145FAECF40C9AC548C57E14C2759@BY5PR12MB4145.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-MS-Office365-Filtering-Correlation-Id: 2070498b-a80e-41f6-a5a0-08d9bf26a35f
+X-MS-TrafficTypeDiagnostic: CH0PR12MB5041:EE_
+X-Microsoft-Antispam-PRVS: <CH0PR12MB50418C94E71179EBE2C513CCC2759@CH0PR12MB5041.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: kLxZYeYAZejGNPfrAy+JCcm4wlyjQXtAxmO+5SxWJaUbd7UB87VnzQNFGzEmPd1qMJT7JM5L5CGIt1KXxCVTrCr4dC62LyN2Kt6LdxWVRqALyxrigmaP+5tybSX8l1OTSIYf9W+WGxRogvXXM4ebe+a3kAnypSGQhIcKHxLIP0SwBDxdFsEkje4eD1MVDe2d6TbR2zcmPqHKo7FS36+6yv3T+Zfk33MCedYU18CsqMaw8Jq4ixqFf/SZ0SucAFur+vhgyx63Mv920UK3/MG3U4EhyJrQvVvn/+lQU0Gl12uyEwhSYHOB6kSM7/q+TJy2Ludyk+s1TbdmJ+fv2L9tCbMcOd2odsg49jifX/SuY3Rid5fTLKi/ejyYplJ5s2KIqhUO+fGVHlHQl3QQMF29gSpvfkUoJAMGU6q/GDogl9qoRFLDnJQaUm+s6kNNW+FHbPO4jtuNkOjMe4d5e16BNSiYiq8CONWHGMdz4Vef1NUQTQHZHOQtaQdzfLiMbagDOJ4+fn0CsYkOnNkhj/OdIaal7fyfy976Mq12r9WK7lVJ3yMrwRTlLyCr44J1zltdE0e/vzUMJTrQUhKAkIHSMPVbPVU1QydQxbnwtTOXS3BFp0gDSe6Rqcrahs374JLg+8xS5yixWsQoZX1aFoSe84Q4xyhUnG7XhZyUqCPo9KODZga5H2EzRGIwZ7vC+O/5Sitgnb5IJSSzmTmOKO2cmsOUEOntXJmqYXwISb/abw3YqwUq1d8IoHK3anEjX8AWEfo/r/+f3kg18dRECfcW7jahTfTl5NH84P8hy/e8gcxmkgKJwkjJ8ZZUl3t4CCwp
-X-Forefront-Antispam-Report: CIP:203.18.50.13;CTRY:HK;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:hkhybrid02.nvidia.com;CAT:NONE;SFS:(4636009)(36840700001)(46966006)(40470700001)(508600001)(47076005)(5660300002)(83380400001)(36756003)(36860700001)(54906003)(26005)(1076003)(316002)(34020700004)(356005)(82310400004)(8676002)(336012)(86362001)(2906002)(107886003)(40460700001)(186003)(2616005)(6666004)(8936002)(70586007)(7636003)(921005)(70206006)(426003)(110136005)(4326008);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: qSY4yMgH6TjZdxVSzgA0eim5r3LJIfM40s2EndtAlLC54z7jqCR4bOSEdvaZqsNhr2HgSjl3V8LjhRtkVNBQhbRP5HbHUfXJli4ITk8xzEoaiIIN23xEJkRiS/knuyDK14SgkNAmbZkQAyZ9l209abMzjYofvF0mbBvOH8r7Z65mYSiOjiDxckJOTTlZBq2MMetKfzYRZcPYt8EKjESNE6qqgS67MrmTN5/WfCqN793NgU0Bg0+c9vorXNZUVjDu7PUzxsgAH6Z9t8eD4spjOY/dksIknZXC9BiIv2SHYn96CizdjhxMKLXatNOclSn9gibZldmudxYXo6n6N6SMvzApBywuIkCZbpTgwKLgHO1aJwry9wYvSYS6GCPuaiWV29xXBFsICAycBe7sWcMgu/WFWFKRi4/B/e9cAXdm7XNfQugK/xwCc2JeiBTGYjG+ShP0xXTpImJ8zSCIjZHi/6KKShjFExgz483PUduY+DrymY+0wTuegqYDe/uhniSwQs2qbNoaYapO5MaodOZ/sWW+ubiliqhqihC/jNJpKTL9GLNGeBb0AZXiVX1bFlH+CLV5RPGOIc14kV84PTn1ZKmI2e6VZipFL+FId1qOBPbrgf0joKYrmoTqN7Y6u7yPNplHquB29qvyFKdlEv49LtlCJtuJS7Db5k8WUvrpKWA6d3U5WNQm5BKMZIzN3GJl6uradiF3urAoL69imJYiYNNKs12pxVWrNDayF2b8TodAHuFIDnMBMNB5upKVliQyzIRc37fCLwCAPL1ZXavRQGLgazKs8CDrvhQUpasoIAA2i3gq6QN2oLE/nlAlLDgh
+X-Forefront-Antispam-Report: CIP:203.18.50.13;CTRY:HK;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:hkhybrid02.nvidia.com;CAT:NONE;SFS:(4636009)(46966006)(36840700001)(40470700001)(5660300002)(2616005)(426003)(7636003)(107886003)(86362001)(2906002)(1076003)(356005)(336012)(26005)(83380400001)(4326008)(47076005)(921005)(36860700001)(186003)(36756003)(8676002)(6666004)(82310400004)(70206006)(70586007)(110136005)(316002)(508600001)(40460700001)(8936002)(34020700004)(54906003);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Dec 2021 17:24:49.5723
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Dec 2021 17:24:51.6815
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 72c2ca7a-554b-4737-cdeb-08d9bf26a21d
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2070498b-a80e-41f6-a5a0-08d9bf26a35f
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[203.18.50.13];Helo=[mail.nvidia.com]
 X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT046.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4145
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR12MB5041
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+BPF layer extends the qdisc control block via struct bpf_skb_data_end
+and because of that there is no more room to add variables to the
+qdisc layer control block without going over the skb->cb size.
 
-Currently, when a packet is marked as invalid conntrack_in in act_ct,
-post_ct will be set, and connection info (nf_conn) will be removed
-from the skb. Later openvswitch and flower matching will parse this
-as ct_state=+trk+inv. But because the connection info is missing,
-there is also no zone info to match against even though the packet
-is tracked.
+Extend the qdisc control block with a tc control block,
+and move all tc related variables to there as a pre-step for
+extending the tc control block with additional members.
 
-This series fixes that, by passing the last executed zone by act_ct.
-The zone info is passed along from act_ct to the ct flow dissector
-(used by flower to extract zone info) and to ovs, the same way as post_ct
-is passed, via qdisc layer skb cb to dissector, and via skb extension
-to OVS.
-
-Since adding any more data to qdisc skb cb, there will be no room 
-for BPF skb cb to extend it and stay under skb->cb size, this series
-moves the tc related info from within qdisc skb cb to a tc specific cb
-that also extends it.
-
+Signed-off-by: Paul Blakey <paulb@nvidia.com>
 ---
-Changelog:
-	v3->v2:
-	  Moved tc skb cb details from dissector back to flower
-	v1->v2:
-	  Cover letter wording
-	  Added blamed CCs
-
-Paul Blakey (3):
-  net/sched: Extend qdisc control block with tc control block
-  net/sched: flow_dissector: Fix matching on zone id for invalid conns
-  net: openvswitch: Fix matching zone id for invalid conns arriving from tc
-
- include/linux/skbuff.h    |  3 ++-
- include/net/pkt_sched.h   | 16 ++++++++++++++++
+ include/net/pkt_sched.h   | 15 +++++++++++++++
  include/net/sch_generic.h |  2 --
  net/core/dev.c            |  8 ++++----
- net/core/flow_dissector.c |  3 ++-
- net/openvswitch/flow.c    |  8 +++++++-
- net/sched/act_ct.c        | 15 ++++++++-------
- net/sched/cls_api.c       |  7 +++++--
- net/sched/cls_flower.c    |  6 ++++--
+ net/sched/act_ct.c        | 14 +++++++-------
+ net/sched/cls_api.c       |  6 ++++--
+ net/sched/cls_flower.c    |  3 ++-
  net/sched/sch_frag.c      |  3 ++-
- 10 files changed, 50 insertions(+), 21 deletions(-)
+ 7 files changed, 34 insertions(+), 17 deletions(-)
 
+diff --git a/include/net/pkt_sched.h b/include/net/pkt_sched.h
+index bf79f3a890af..05f18e81f3e8 100644
+--- a/include/net/pkt_sched.h
++++ b/include/net/pkt_sched.h
+@@ -193,4 +193,19 @@ static inline void skb_txtime_consumed(struct sk_buff *skb)
+ 	skb->tstamp = ktime_set(0, 0);
+ }
+ 
++struct tc_skb_cb {
++	struct qdisc_skb_cb qdisc_cb;
++
++	u16 mru;
++	bool post_ct;
++};
++
++static inline struct tc_skb_cb *tc_skb_cb(const struct sk_buff *skb)
++{
++	struct tc_skb_cb *cb = (struct tc_skb_cb *)skb->cb;
++
++	BUILD_BUG_ON(sizeof(*cb) > sizeof_field(struct sk_buff, cb));
++	return cb;
++}
++
+ #endif
+diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
+index 22179b2fda72..c70e6d2b2fdd 100644
+--- a/include/net/sch_generic.h
++++ b/include/net/sch_generic.h
+@@ -447,8 +447,6 @@ struct qdisc_skb_cb {
+ 	};
+ #define QDISC_CB_PRIV_LEN 20
+ 	unsigned char		data[QDISC_CB_PRIV_LEN];
+-	u16			mru;
+-	bool			post_ct;
+ };
+ 
+ typedef void tcf_chain_head_change_t(struct tcf_proto *tp_head, void *priv);
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 2a352e668d10..c4708e2487fb 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -3941,8 +3941,8 @@ sch_handle_egress(struct sk_buff *skb, int *ret, struct net_device *dev)
+ 		return skb;
+ 
+ 	/* qdisc_skb_cb(skb)->pkt_len was already set by the caller. */
+-	qdisc_skb_cb(skb)->mru = 0;
+-	qdisc_skb_cb(skb)->post_ct = false;
++	tc_skb_cb(skb)->mru = 0;
++	tc_skb_cb(skb)->post_ct = false;
+ 	mini_qdisc_bstats_cpu_update(miniq, skb);
+ 
+ 	switch (tcf_classify(skb, miniq->block, miniq->filter_list, &cl_res, false)) {
+@@ -5103,8 +5103,8 @@ sch_handle_ingress(struct sk_buff *skb, struct packet_type **pt_prev, int *ret,
+ 	}
+ 
+ 	qdisc_skb_cb(skb)->pkt_len = skb->len;
+-	qdisc_skb_cb(skb)->mru = 0;
+-	qdisc_skb_cb(skb)->post_ct = false;
++	tc_skb_cb(skb)->mru = 0;
++	tc_skb_cb(skb)->post_ct = false;
+ 	skb->tc_at_ingress = 1;
+ 	mini_qdisc_bstats_cpu_update(miniq, skb);
+ 
+diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
+index 90866ae45573..98e248b9c0b1 100644
+--- a/net/sched/act_ct.c
++++ b/net/sched/act_ct.c
+@@ -690,10 +690,10 @@ static int tcf_ct_handle_fragments(struct net *net, struct sk_buff *skb,
+ 				   u8 family, u16 zone, bool *defrag)
+ {
+ 	enum ip_conntrack_info ctinfo;
+-	struct qdisc_skb_cb cb;
+ 	struct nf_conn *ct;
+ 	int err = 0;
+ 	bool frag;
++	u16 mru;
+ 
+ 	/* Previously seen (loopback)? Ignore. */
+ 	ct = nf_ct_get(skb, &ctinfo);
+@@ -708,7 +708,7 @@ static int tcf_ct_handle_fragments(struct net *net, struct sk_buff *skb,
+ 		return err;
+ 
+ 	skb_get(skb);
+-	cb = *qdisc_skb_cb(skb);
++	mru = tc_skb_cb(skb)->mru;
+ 
+ 	if (family == NFPROTO_IPV4) {
+ 		enum ip_defrag_users user = IP_DEFRAG_CONNTRACK_IN + zone;
+@@ -722,7 +722,7 @@ static int tcf_ct_handle_fragments(struct net *net, struct sk_buff *skb,
+ 
+ 		if (!err) {
+ 			*defrag = true;
+-			cb.mru = IPCB(skb)->frag_max_size;
++			mru = IPCB(skb)->frag_max_size;
+ 		}
+ 	} else { /* NFPROTO_IPV6 */
+ #if IS_ENABLED(CONFIG_NF_DEFRAG_IPV6)
+@@ -735,7 +735,7 @@ static int tcf_ct_handle_fragments(struct net *net, struct sk_buff *skb,
+ 
+ 		if (!err) {
+ 			*defrag = true;
+-			cb.mru = IP6CB(skb)->frag_max_size;
++			mru = IP6CB(skb)->frag_max_size;
+ 		}
+ #else
+ 		err = -EOPNOTSUPP;
+@@ -744,7 +744,7 @@ static int tcf_ct_handle_fragments(struct net *net, struct sk_buff *skb,
+ 	}
+ 
+ 	if (err != -EINPROGRESS)
+-		*qdisc_skb_cb(skb) = cb;
++		tc_skb_cb(skb)->mru = mru;
+ 	skb_clear_hash(skb);
+ 	skb->ignore_df = 1;
+ 	return err;
+@@ -963,7 +963,7 @@ static int tcf_ct_act(struct sk_buff *skb, const struct tc_action *a,
+ 	tcf_action_update_bstats(&c->common, skb);
+ 
+ 	if (clear) {
+-		qdisc_skb_cb(skb)->post_ct = false;
++		tc_skb_cb(skb)->post_ct = false;
+ 		ct = nf_ct_get(skb, &ctinfo);
+ 		if (ct) {
+ 			nf_conntrack_put(&ct->ct_general);
+@@ -1048,7 +1048,7 @@ static int tcf_ct_act(struct sk_buff *skb, const struct tc_action *a,
+ out_push:
+ 	skb_push_rcsum(skb, nh_ofs);
+ 
+-	qdisc_skb_cb(skb)->post_ct = true;
++	tc_skb_cb(skb)->post_ct = true;
+ out_clear:
+ 	if (defrag)
+ 		qdisc_skb_cb(skb)->pkt_len = skb->len;
+diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+index 2ef8f5a6205a..a5050999d607 100644
+--- a/net/sched/cls_api.c
++++ b/net/sched/cls_api.c
+@@ -1617,12 +1617,14 @@ int tcf_classify(struct sk_buff *skb,
+ 
+ 	/* If we missed on some chain */
+ 	if (ret == TC_ACT_UNSPEC && last_executed_chain) {
++		struct tc_skb_cb *cb = tc_skb_cb(skb);
++
+ 		ext = tc_skb_ext_alloc(skb);
+ 		if (WARN_ON_ONCE(!ext))
+ 			return TC_ACT_SHOT;
+ 		ext->chain = last_executed_chain;
+-		ext->mru = qdisc_skb_cb(skb)->mru;
+-		ext->post_ct = qdisc_skb_cb(skb)->post_ct;
++		ext->mru = cb->mru;
++		ext->post_ct = cb->post_ct;
+ 	}
+ 
+ 	return ret;
+diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
+index aab13ba11767..9782b93db1b3 100644
+--- a/net/sched/cls_flower.c
++++ b/net/sched/cls_flower.c
+@@ -19,6 +19,7 @@
+ 
+ #include <net/sch_generic.h>
+ #include <net/pkt_cls.h>
++#include <net/pkt_sched.h>
+ #include <net/ip.h>
+ #include <net/flow_dissector.h>
+ #include <net/geneve.h>
+@@ -309,7 +310,7 @@ static int fl_classify(struct sk_buff *skb, const struct tcf_proto *tp,
+ 		       struct tcf_result *res)
+ {
+ 	struct cls_fl_head *head = rcu_dereference_bh(tp->root);
+-	bool post_ct = qdisc_skb_cb(skb)->post_ct;
++	bool post_ct = tc_skb_cb(skb)->post_ct;
+ 	struct fl_flow_key skb_key;
+ 	struct fl_flow_mask *mask;
+ 	struct cls_fl_filter *f;
+diff --git a/net/sched/sch_frag.c b/net/sched/sch_frag.c
+index 8c06381391d6..5ded4c8672a6 100644
+--- a/net/sched/sch_frag.c
++++ b/net/sched/sch_frag.c
+@@ -1,6 +1,7 @@
+ // SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
+ #include <net/netlink.h>
+ #include <net/sch_generic.h>
++#include <net/pkt_sched.h>
+ #include <net/dst.h>
+ #include <net/ip.h>
+ #include <net/ip6_fib.h>
+@@ -137,7 +138,7 @@ static int sch_fragment(struct net *net, struct sk_buff *skb,
+ 
+ int sch_frag_xmit_hook(struct sk_buff *skb, int (*xmit)(struct sk_buff *skb))
+ {
+-	u16 mru = qdisc_skb_cb(skb)->mru;
++	u16 mru = tc_skb_cb(skb)->mru;
+ 	int err;
+ 
+ 	if (mru && skb->len > mru + skb->dev->hard_header_len)
 -- 
 2.30.1
 
