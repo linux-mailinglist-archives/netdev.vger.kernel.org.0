@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 97A5F474B5D
-	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 20:00:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 18DD5474B5E
+	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 20:00:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237268AbhLNTAO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S237274AbhLNTAO (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Tue, 14 Dec 2021 14:00:14 -0500
-Received: from mga01.intel.com ([192.55.52.88]:50835 "EHLO mga01.intel.com"
+Received: from mga01.intel.com ([192.55.52.88]:50829 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237265AbhLNTAL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S237264AbhLNTAL (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 14 Dec 2021 14:00:11 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1639508411; x=1671044411;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=LQgMNq5cW+ThuBG+pXNR11I3QiVpdwg4alb8/hHGXT0=;
-  b=KKGjsfT7RUr1tXvgJgsqWSSw5Bnf0UhtPJpeA9uXsJj4fQt0SquyXfKn
-   q4hgDuXx5FOiwp5AccN7Ce9CG4EV62UmIXJAlfWW5wXKjhkb10sSyCi8p
-   3K+noUeUwBUPe8/6cVu0OXoxltOPQ/CXt3TdpprZBC2HMv/ppXVkRfx6W
-   Z02uz9HQc7hJNQraZlLVl0+9W/ybomiZ7XtvZN/d1rlvDTsipgi3w1NWU
-   k8YUjkWaxrE7fFGrWFAe1yI2/mHZwreYC48fJh7URoViRVEp5tklElfki
-   FcKOPcny4OMfMYggIkpokNKcPGlqpSOVF0n/LpWzue05ZkVpyQuGWLGbY
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10197"; a="263200021"
+  bh=hnDm9IAI7ZRo6bHrimlXjwM6SweOUhnu5eazKJJ9OHg=;
+  b=Z8Eq6btBiWjERSGyBGomARb/EVsYC1ayrVaHCj4ur1yYU0mkB5q+L+4H
+   LBE9tV5ipO0TYoNQhSqgbHnjqah97/qCFDWhMCKn6BpiBBXVIms8j0K/2
+   gC4pmcB3Ui/7ZVroO950RZ9zW9Q9ymIJjctlL2DI4lsY005UciNqkrTaW
+   P3fy9q7bhQ1KzJ6TEeKEB5dYshNm+yLV3rCjcsdt67iB5LIcDYjamDv7V
+   J3wQPGFeGK6xs2sUmm4EHjjXeTGBwHNkdc3CIBuhEq5cfBeOK0nGiQQuO
+   igPdEV6wPTWKciWtQg5THIxhloLJkdRMzMl6Vh6IdOiobVbQRMKqqSr3s
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10197"; a="263200024"
 X-IronPort-AV: E=Sophos;i="5.88,205,1635231600"; 
-   d="scan'208";a="263200021"
+   d="scan'208";a="263200024"
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Dec 2021 10:30:07 -0800
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Dec 2021 10:30:08 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,205,1635231600"; 
-   d="scan'208";a="583712734"
+   d="scan'208";a="583712741"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by fmsmga004.fm.intel.com with ESMTP; 14 Dec 2021 10:30:06 -0800
+  by fmsmga004.fm.intel.com with ESMTP; 14 Dec 2021 10:30:07 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Jeff Guo <jia.guo@intel.com>, netdev@vger.kernel.org,
+Cc:     Brett Creeley <brett.creeley@intel.com>, netdev@vger.kernel.org,
         anthony.l.nguyen@intel.com,
-        Tony Brelinski <tony.brelinski@intel.com>
-Subject: [PATCH net-next 02/12] ice: refactor PTYPE validating
-Date:   Tue, 14 Dec 2021 10:28:58 -0800
-Message-Id: <20211214182908.1513343-3-anthony.l.nguyen@intel.com>
+        Konrad Jankowski <konrad0.jankowski@intel.com>
+Subject: [PATCH net-next 03/12] ice: Refactor promiscuous functions
+Date:   Tue, 14 Dec 2021 10:28:59 -0800
+Message-Id: <20211214182908.1513343-4-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211214182908.1513343-1-anthony.l.nguyen@intel.com>
 References: <20211214182908.1513343-1-anthony.l.nguyen@intel.com>
@@ -51,630 +51,394 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jeff Guo <jia.guo@intel.com>
+From: Brett Creeley <brett.creeley@intel.com>
 
-Since the capability of a PTYPE within a specific package could be
-negotiated by checking the HW bit map, it means that there's no need
-to maintain a different PTYPE list for each type of the package when
-parsing PTYPE. So refactor the PTYPE validating mechanism.
+Some of the promiscuous mode functions take a boolean to indicate
+set/clear, which affects readability. Refactor and provide an
+interface for the promiscuous mode code with explicit set and clear
+promiscuous mode operations.
 
-Signed-off-by: Jeff Guo <jia.guo@intel.com>
-Tested-by: Tony Brelinski <tony.brelinski@intel.com>
+Signed-off-by: Brett Creeley <brett.creeley@intel.com>
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- .../net/ethernet/intel/ice/ice_flex_type.h    |  22 ++
- .../ethernet/intel/ice/ice_virtchnl_fdir.c    | 274 +-----------------
- .../net/ethernet/intel/ice/ice_virtchnl_pf.c  | 207 ++++++-------
- .../net/ethernet/intel/ice/ice_virtchnl_pf.h  |   2 +
- 4 files changed, 133 insertions(+), 372 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_fltr.c     |  58 ++++++++
+ drivers/net/ethernet/intel/ice/ice_fltr.h     |  12 ++
+ drivers/net/ethernet/intel/ice/ice_main.c     |  49 +++---
+ .../net/ethernet/intel/ice/ice_virtchnl_pf.c  | 139 +++++++-----------
+ 4 files changed, 156 insertions(+), 102 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_flex_type.h b/drivers/net/ethernet/intel/ice/ice_flex_type.h
-index a8246fb039ca..fc087e0b5292 100644
---- a/drivers/net/ethernet/intel/ice/ice_flex_type.h
-+++ b/drivers/net/ethernet/intel/ice/ice_flex_type.h
-@@ -202,6 +202,24 @@ enum ice_sect {
- 	ICE_SECT_COUNT
- };
- 
-+/* Packet Type (PTYPE) values */
-+#define ICE_PTYPE_MAC_PAY		1
-+#define ICE_PTYPE_IPV4_PAY		23
-+#define ICE_PTYPE_IPV4_UDP_PAY		24
-+#define ICE_PTYPE_IPV4_TCP_PAY		26
-+#define ICE_PTYPE_IPV4_SCTP_PAY		27
-+#define ICE_PTYPE_IPV6_PAY		89
-+#define ICE_PTYPE_IPV6_UDP_PAY		90
-+#define ICE_PTYPE_IPV6_TCP_PAY		92
-+#define ICE_PTYPE_IPV6_SCTP_PAY		93
-+#define ICE_MAC_IPV4_ESP		160
-+#define ICE_MAC_IPV6_ESP		161
-+#define ICE_MAC_IPV4_AH			162
-+#define ICE_MAC_IPV6_AH			163
-+#define ICE_MAC_IPV4_NAT_T_ESP		164
-+#define ICE_MAC_IPV6_NAT_T_ESP		165
-+#define ICE_MAC_IPV4_GTPU		329
-+#define ICE_MAC_IPV6_GTPU		330
- #define ICE_MAC_IPV4_GTPU_IPV4_FRAG	331
- #define ICE_MAC_IPV4_GTPU_IPV4_PAY	332
- #define ICE_MAC_IPV4_GTPU_IPV4_UDP_PAY	333
-@@ -222,6 +240,10 @@ enum ice_sect {
- #define ICE_MAC_IPV6_GTPU_IPV6_UDP_PAY	348
- #define ICE_MAC_IPV6_GTPU_IPV6_TCP	349
- #define ICE_MAC_IPV6_GTPU_IPV6_ICMPV6	350
-+#define ICE_MAC_IPV4_PFCP_SESSION	352
-+#define ICE_MAC_IPV6_PFCP_SESSION	354
-+#define ICE_MAC_IPV4_L2TPV3		360
-+#define ICE_MAC_IPV6_L2TPV3		361
- 
- /* Attributes that can modify PTYPE definitions.
-  *
-diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.c
-index eee180d8c024..6abf9ed1dd2e 100644
---- a/drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.c
-+++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.c
-@@ -47,197 +47,6 @@ struct virtchnl_fdir_fltr_conf {
- 	u32 flow_id;
- };
- 
--static enum virtchnl_proto_hdr_type vc_pattern_ether[] = {
--	VIRTCHNL_PROTO_HDR_ETH,
--	VIRTCHNL_PROTO_HDR_NONE,
--};
--
--static enum virtchnl_proto_hdr_type vc_pattern_ipv4[] = {
--	VIRTCHNL_PROTO_HDR_ETH,
--	VIRTCHNL_PROTO_HDR_IPV4,
--	VIRTCHNL_PROTO_HDR_NONE,
--};
--
--static enum virtchnl_proto_hdr_type vc_pattern_ipv4_tcp[] = {
--	VIRTCHNL_PROTO_HDR_ETH,
--	VIRTCHNL_PROTO_HDR_IPV4,
--	VIRTCHNL_PROTO_HDR_TCP,
--	VIRTCHNL_PROTO_HDR_NONE,
--};
--
--static enum virtchnl_proto_hdr_type vc_pattern_ipv4_udp[] = {
--	VIRTCHNL_PROTO_HDR_ETH,
--	VIRTCHNL_PROTO_HDR_IPV4,
--	VIRTCHNL_PROTO_HDR_UDP,
--	VIRTCHNL_PROTO_HDR_NONE,
--};
--
--static enum virtchnl_proto_hdr_type vc_pattern_ipv4_sctp[] = {
--	VIRTCHNL_PROTO_HDR_ETH,
--	VIRTCHNL_PROTO_HDR_IPV4,
--	VIRTCHNL_PROTO_HDR_SCTP,
--	VIRTCHNL_PROTO_HDR_NONE,
--};
--
--static enum virtchnl_proto_hdr_type vc_pattern_ipv6[] = {
--	VIRTCHNL_PROTO_HDR_ETH,
--	VIRTCHNL_PROTO_HDR_IPV6,
--	VIRTCHNL_PROTO_HDR_NONE,
--};
--
--static enum virtchnl_proto_hdr_type vc_pattern_ipv6_tcp[] = {
--	VIRTCHNL_PROTO_HDR_ETH,
--	VIRTCHNL_PROTO_HDR_IPV6,
--	VIRTCHNL_PROTO_HDR_TCP,
--	VIRTCHNL_PROTO_HDR_NONE,
--};
--
--static enum virtchnl_proto_hdr_type vc_pattern_ipv6_udp[] = {
--	VIRTCHNL_PROTO_HDR_ETH,
--	VIRTCHNL_PROTO_HDR_IPV6,
--	VIRTCHNL_PROTO_HDR_UDP,
--	VIRTCHNL_PROTO_HDR_NONE,
--};
--
--static enum virtchnl_proto_hdr_type vc_pattern_ipv6_sctp[] = {
--	VIRTCHNL_PROTO_HDR_ETH,
--	VIRTCHNL_PROTO_HDR_IPV6,
--	VIRTCHNL_PROTO_HDR_SCTP,
--	VIRTCHNL_PROTO_HDR_NONE,
--};
--
--static enum virtchnl_proto_hdr_type vc_pattern_ipv4_gtpu[] = {
--	VIRTCHNL_PROTO_HDR_ETH,
--	VIRTCHNL_PROTO_HDR_IPV4,
--	VIRTCHNL_PROTO_HDR_UDP,
--	VIRTCHNL_PROTO_HDR_GTPU_IP,
--	VIRTCHNL_PROTO_HDR_NONE,
--};
--
--static enum virtchnl_proto_hdr_type vc_pattern_ipv4_gtpu_eh[] = {
--	VIRTCHNL_PROTO_HDR_ETH,
--	VIRTCHNL_PROTO_HDR_IPV4,
--	VIRTCHNL_PROTO_HDR_UDP,
--	VIRTCHNL_PROTO_HDR_GTPU_IP,
--	VIRTCHNL_PROTO_HDR_GTPU_EH,
--	VIRTCHNL_PROTO_HDR_NONE,
--};
--
--static enum virtchnl_proto_hdr_type vc_pattern_ipv4_l2tpv3[] = {
--	VIRTCHNL_PROTO_HDR_ETH,
--	VIRTCHNL_PROTO_HDR_IPV4,
--	VIRTCHNL_PROTO_HDR_L2TPV3,
--	VIRTCHNL_PROTO_HDR_NONE,
--};
--
--static enum virtchnl_proto_hdr_type vc_pattern_ipv6_l2tpv3[] = {
--	VIRTCHNL_PROTO_HDR_ETH,
--	VIRTCHNL_PROTO_HDR_IPV6,
--	VIRTCHNL_PROTO_HDR_L2TPV3,
--	VIRTCHNL_PROTO_HDR_NONE,
--};
--
--static enum virtchnl_proto_hdr_type vc_pattern_ipv4_esp[] = {
--	VIRTCHNL_PROTO_HDR_ETH,
--	VIRTCHNL_PROTO_HDR_IPV4,
--	VIRTCHNL_PROTO_HDR_ESP,
--	VIRTCHNL_PROTO_HDR_NONE,
--};
--
--static enum virtchnl_proto_hdr_type vc_pattern_ipv6_esp[] = {
--	VIRTCHNL_PROTO_HDR_ETH,
--	VIRTCHNL_PROTO_HDR_IPV6,
--	VIRTCHNL_PROTO_HDR_ESP,
--	VIRTCHNL_PROTO_HDR_NONE,
--};
--
--static enum virtchnl_proto_hdr_type vc_pattern_ipv4_ah[] = {
--	VIRTCHNL_PROTO_HDR_ETH,
--	VIRTCHNL_PROTO_HDR_IPV4,
--	VIRTCHNL_PROTO_HDR_AH,
--	VIRTCHNL_PROTO_HDR_NONE,
--};
--
--static enum virtchnl_proto_hdr_type vc_pattern_ipv6_ah[] = {
--	VIRTCHNL_PROTO_HDR_ETH,
--	VIRTCHNL_PROTO_HDR_IPV6,
--	VIRTCHNL_PROTO_HDR_AH,
--	VIRTCHNL_PROTO_HDR_NONE,
--};
--
--static enum virtchnl_proto_hdr_type vc_pattern_ipv4_nat_t_esp[] = {
--	VIRTCHNL_PROTO_HDR_ETH,
--	VIRTCHNL_PROTO_HDR_IPV4,
--	VIRTCHNL_PROTO_HDR_UDP,
--	VIRTCHNL_PROTO_HDR_ESP,
--	VIRTCHNL_PROTO_HDR_NONE,
--};
--
--static enum virtchnl_proto_hdr_type vc_pattern_ipv6_nat_t_esp[] = {
--	VIRTCHNL_PROTO_HDR_ETH,
--	VIRTCHNL_PROTO_HDR_IPV6,
--	VIRTCHNL_PROTO_HDR_UDP,
--	VIRTCHNL_PROTO_HDR_ESP,
--	VIRTCHNL_PROTO_HDR_NONE,
--};
--
--static enum virtchnl_proto_hdr_type vc_pattern_ipv4_pfcp[] = {
--	VIRTCHNL_PROTO_HDR_ETH,
--	VIRTCHNL_PROTO_HDR_IPV4,
--	VIRTCHNL_PROTO_HDR_UDP,
--	VIRTCHNL_PROTO_HDR_PFCP,
--	VIRTCHNL_PROTO_HDR_NONE,
--};
--
--static enum virtchnl_proto_hdr_type vc_pattern_ipv6_pfcp[] = {
--	VIRTCHNL_PROTO_HDR_ETH,
--	VIRTCHNL_PROTO_HDR_IPV6,
--	VIRTCHNL_PROTO_HDR_UDP,
--	VIRTCHNL_PROTO_HDR_PFCP,
--	VIRTCHNL_PROTO_HDR_NONE,
--};
--
--struct virtchnl_fdir_pattern_match_item {
--	enum virtchnl_proto_hdr_type *list;
--	u64 input_set;
--	u64 *meta;
--};
--
--static const struct virtchnl_fdir_pattern_match_item vc_fdir_pattern_os[] = {
--	{vc_pattern_ipv4,                     0,         NULL},
--	{vc_pattern_ipv4_tcp,                 0,         NULL},
--	{vc_pattern_ipv4_udp,                 0,         NULL},
--	{vc_pattern_ipv4_sctp,                0,         NULL},
--	{vc_pattern_ipv6,                     0,         NULL},
--	{vc_pattern_ipv6_tcp,                 0,         NULL},
--	{vc_pattern_ipv6_udp,                 0,         NULL},
--	{vc_pattern_ipv6_sctp,                0,         NULL},
--};
--
--static const struct virtchnl_fdir_pattern_match_item vc_fdir_pattern_comms[] = {
--	{vc_pattern_ipv4,                     0,         NULL},
--	{vc_pattern_ipv4_tcp,                 0,         NULL},
--	{vc_pattern_ipv4_udp,                 0,         NULL},
--	{vc_pattern_ipv4_sctp,                0,         NULL},
--	{vc_pattern_ipv6,                     0,         NULL},
--	{vc_pattern_ipv6_tcp,                 0,         NULL},
--	{vc_pattern_ipv6_udp,                 0,         NULL},
--	{vc_pattern_ipv6_sctp,                0,         NULL},
--	{vc_pattern_ether,                    0,         NULL},
--	{vc_pattern_ipv4_gtpu,                0,         NULL},
--	{vc_pattern_ipv4_gtpu_eh,             0,         NULL},
--	{vc_pattern_ipv4_l2tpv3,              0,         NULL},
--	{vc_pattern_ipv6_l2tpv3,              0,         NULL},
--	{vc_pattern_ipv4_esp,                 0,         NULL},
--	{vc_pattern_ipv6_esp,                 0,         NULL},
--	{vc_pattern_ipv4_ah,                  0,         NULL},
--	{vc_pattern_ipv6_ah,                  0,         NULL},
--	{vc_pattern_ipv4_nat_t_esp,           0,         NULL},
--	{vc_pattern_ipv6_nat_t_esp,           0,         NULL},
--	{vc_pattern_ipv4_pfcp,                0,         NULL},
--	{vc_pattern_ipv6_pfcp,                0,         NULL},
--};
--
- struct virtchnl_fdir_inset_map {
- 	enum virtchnl_proto_hdr_field field;
- 	enum ice_flow_field fld;
-@@ -910,83 +719,6 @@ ice_vc_fdir_config_input_set(struct ice_vf *vf, struct virtchnl_fdir_add *fltr,
- 	return ret;
- }
- 
--/**
-- * ice_vc_fdir_match_pattern
-- * @fltr: virtual channel add cmd buffer
-- * @type: virtual channel protocol filter header type
-- *
-- * Matching the header type by comparing fltr and type's value.
-- *
-- * Return: true on success, and false on error.
-- */
--static bool
--ice_vc_fdir_match_pattern(struct virtchnl_fdir_add *fltr,
--			  enum virtchnl_proto_hdr_type *type)
--{
--	struct virtchnl_proto_hdrs *proto = &fltr->rule_cfg.proto_hdrs;
--	int i = 0;
--
--	while ((i < proto->count) &&
--	       (*type == proto->proto_hdr[i].type) &&
--	       (*type != VIRTCHNL_PROTO_HDR_NONE)) {
--		type++;
--		i++;
--	}
--
--	return ((i == proto->count) && (*type == VIRTCHNL_PROTO_HDR_NONE));
--}
--
--/**
-- * ice_vc_fdir_get_pattern - get while list pattern
-- * @vf: pointer to the VF info
-- * @len: filter list length
-- *
-- * Return: pointer to allowed filter list
-- */
--static const struct virtchnl_fdir_pattern_match_item *
--ice_vc_fdir_get_pattern(struct ice_vf *vf, int *len)
--{
--	const struct virtchnl_fdir_pattern_match_item *item;
--	struct ice_pf *pf = vf->pf;
--	struct ice_hw *hw;
--
--	hw = &pf->hw;
--	if (!strncmp(hw->active_pkg_name, "ICE COMMS Package",
--		     sizeof(hw->active_pkg_name))) {
--		item = vc_fdir_pattern_comms;
--		*len = ARRAY_SIZE(vc_fdir_pattern_comms);
--	} else {
--		item = vc_fdir_pattern_os;
--		*len = ARRAY_SIZE(vc_fdir_pattern_os);
--	}
--
--	return item;
--}
--
--/**
-- * ice_vc_fdir_search_pattern
-- * @vf: pointer to the VF info
-- * @fltr: virtual channel add cmd buffer
-- *
-- * Search for matched pattern from supported pattern list
-- *
-- * Return: 0 on success, and other on error.
-- */
--static int
--ice_vc_fdir_search_pattern(struct ice_vf *vf, struct virtchnl_fdir_add *fltr)
--{
--	const struct virtchnl_fdir_pattern_match_item *pattern;
--	int len, i;
--
--	pattern = ice_vc_fdir_get_pattern(vf, &len);
--
--	for (i = 0; i < len; i++)
--		if (ice_vc_fdir_match_pattern(fltr, pattern[i].list))
--			return 0;
--
--	return -EINVAL;
--}
--
- /**
-  * ice_vc_fdir_parse_pattern
-  * @vf: pointer to the VF info
-@@ -1299,11 +1031,11 @@ static int
- ice_vc_validate_fdir_fltr(struct ice_vf *vf, struct virtchnl_fdir_add *fltr,
- 			  struct virtchnl_fdir_fltr_conf *conf)
- {
-+	struct virtchnl_proto_hdrs *proto = &fltr->rule_cfg.proto_hdrs;
- 	int ret;
- 
--	ret = ice_vc_fdir_search_pattern(vf, fltr);
--	if (ret)
--		return ret;
-+	if (!ice_vc_validate_pattern(vf, proto))
-+		return -EINVAL;
- 
- 	ret = ice_vc_fdir_parse_pattern(vf, fltr, conf);
- 	if (ret)
-diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-index 6427e7ec93de..596d354f714e 100644
---- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-+++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-@@ -9,6 +9,7 @@
- #include "ice_flow.h"
- #include "ice_eswitch.h"
- #include "ice_virtchnl_allowlist.h"
-+#include "ice_flex_pipe.h"
- 
- #define FIELD_SELECTOR(proto_hdr_field) \
- 		BIT((proto_hdr_field) & PROTO_HDR_FIELD_MASK)
-@@ -18,18 +19,7 @@ struct ice_vc_hdr_match_type {
- 	u32 ice_hdr;	/* ice headers (ICE_FLOW_SEG_HDR_XXX) */
- };
- 
--static const struct ice_vc_hdr_match_type ice_vc_hdr_list_os[] = {
--	{VIRTCHNL_PROTO_HDR_NONE,	ICE_FLOW_SEG_HDR_NONE},
--	{VIRTCHNL_PROTO_HDR_IPV4,	ICE_FLOW_SEG_HDR_IPV4 |
--					ICE_FLOW_SEG_HDR_IPV_OTHER},
--	{VIRTCHNL_PROTO_HDR_IPV6,	ICE_FLOW_SEG_HDR_IPV6 |
--					ICE_FLOW_SEG_HDR_IPV_OTHER},
--	{VIRTCHNL_PROTO_HDR_TCP,	ICE_FLOW_SEG_HDR_TCP},
--	{VIRTCHNL_PROTO_HDR_UDP,	ICE_FLOW_SEG_HDR_UDP},
--	{VIRTCHNL_PROTO_HDR_SCTP,	ICE_FLOW_SEG_HDR_SCTP},
--};
--
--static const struct ice_vc_hdr_match_type ice_vc_hdr_list_comms[] = {
-+static const struct ice_vc_hdr_match_type ice_vc_hdr_list[] = {
- 	{VIRTCHNL_PROTO_HDR_NONE,	ICE_FLOW_SEG_HDR_NONE},
- 	{VIRTCHNL_PROTO_HDR_ETH,	ICE_FLOW_SEG_HDR_ETH},
- 	{VIRTCHNL_PROTO_HDR_S_VLAN,	ICE_FLOW_SEG_HDR_VLAN},
-@@ -67,83 +57,7 @@ struct ice_vc_hash_field_match_type {
- };
- 
- static const struct
--ice_vc_hash_field_match_type ice_vc_hash_field_list_os[] = {
--	{VIRTCHNL_PROTO_HDR_IPV4, FIELD_SELECTOR(VIRTCHNL_PROTO_HDR_IPV4_SRC),
--		BIT_ULL(ICE_FLOW_FIELD_IDX_IPV4_SA)},
--	{VIRTCHNL_PROTO_HDR_IPV4, FIELD_SELECTOR(VIRTCHNL_PROTO_HDR_IPV4_DST),
--		BIT_ULL(ICE_FLOW_FIELD_IDX_IPV4_DA)},
--	{VIRTCHNL_PROTO_HDR_IPV4, FIELD_SELECTOR(VIRTCHNL_PROTO_HDR_IPV4_SRC) |
--		FIELD_SELECTOR(VIRTCHNL_PROTO_HDR_IPV4_DST),
--		ICE_FLOW_HASH_IPV4},
--	{VIRTCHNL_PROTO_HDR_IPV4, FIELD_SELECTOR(VIRTCHNL_PROTO_HDR_IPV4_SRC) |
--		FIELD_SELECTOR(VIRTCHNL_PROTO_HDR_IPV4_PROT),
--		BIT_ULL(ICE_FLOW_FIELD_IDX_IPV4_SA) |
--		BIT_ULL(ICE_FLOW_FIELD_IDX_IPV4_PROT)},
--	{VIRTCHNL_PROTO_HDR_IPV4, FIELD_SELECTOR(VIRTCHNL_PROTO_HDR_IPV4_DST) |
--		FIELD_SELECTOR(VIRTCHNL_PROTO_HDR_IPV4_PROT),
--		BIT_ULL(ICE_FLOW_FIELD_IDX_IPV4_DA) |
--		BIT_ULL(ICE_FLOW_FIELD_IDX_IPV4_PROT)},
--	{VIRTCHNL_PROTO_HDR_IPV4, FIELD_SELECTOR(VIRTCHNL_PROTO_HDR_IPV4_SRC) |
--		FIELD_SELECTOR(VIRTCHNL_PROTO_HDR_IPV4_DST) |
--		FIELD_SELECTOR(VIRTCHNL_PROTO_HDR_IPV4_PROT),
--		ICE_FLOW_HASH_IPV4 | BIT_ULL(ICE_FLOW_FIELD_IDX_IPV4_PROT)},
--	{VIRTCHNL_PROTO_HDR_IPV4, FIELD_SELECTOR(VIRTCHNL_PROTO_HDR_IPV4_PROT),
--		BIT_ULL(ICE_FLOW_FIELD_IDX_IPV4_PROT)},
--	{VIRTCHNL_PROTO_HDR_IPV6, FIELD_SELECTOR(VIRTCHNL_PROTO_HDR_IPV6_SRC),
--		BIT_ULL(ICE_FLOW_FIELD_IDX_IPV6_SA)},
--	{VIRTCHNL_PROTO_HDR_IPV6, FIELD_SELECTOR(VIRTCHNL_PROTO_HDR_IPV6_DST),
--		BIT_ULL(ICE_FLOW_FIELD_IDX_IPV6_DA)},
--	{VIRTCHNL_PROTO_HDR_IPV6, FIELD_SELECTOR(VIRTCHNL_PROTO_HDR_IPV6_SRC) |
--		FIELD_SELECTOR(VIRTCHNL_PROTO_HDR_IPV6_DST),
--		ICE_FLOW_HASH_IPV6},
--	{VIRTCHNL_PROTO_HDR_IPV6, FIELD_SELECTOR(VIRTCHNL_PROTO_HDR_IPV6_SRC) |
--		FIELD_SELECTOR(VIRTCHNL_PROTO_HDR_IPV6_PROT),
--		BIT_ULL(ICE_FLOW_FIELD_IDX_IPV6_SA) |
--		BIT_ULL(ICE_FLOW_FIELD_IDX_IPV6_PROT)},
--	{VIRTCHNL_PROTO_HDR_IPV6, FIELD_SELECTOR(VIRTCHNL_PROTO_HDR_IPV6_DST) |
--		FIELD_SELECTOR(VIRTCHNL_PROTO_HDR_IPV6_PROT),
--		BIT_ULL(ICE_FLOW_FIELD_IDX_IPV6_DA) |
--		BIT_ULL(ICE_FLOW_FIELD_IDX_IPV6_PROT)},
--	{VIRTCHNL_PROTO_HDR_IPV6, FIELD_SELECTOR(VIRTCHNL_PROTO_HDR_IPV6_SRC) |
--		FIELD_SELECTOR(VIRTCHNL_PROTO_HDR_IPV6_DST) |
--		FIELD_SELECTOR(VIRTCHNL_PROTO_HDR_IPV6_PROT),
--		ICE_FLOW_HASH_IPV6 | BIT_ULL(ICE_FLOW_FIELD_IDX_IPV6_PROT)},
--	{VIRTCHNL_PROTO_HDR_IPV6, FIELD_SELECTOR(VIRTCHNL_PROTO_HDR_IPV6_PROT),
--		BIT_ULL(ICE_FLOW_FIELD_IDX_IPV6_PROT)},
--	{VIRTCHNL_PROTO_HDR_TCP,
--		FIELD_SELECTOR(VIRTCHNL_PROTO_HDR_TCP_SRC_PORT),
--		BIT_ULL(ICE_FLOW_FIELD_IDX_TCP_SRC_PORT)},
--	{VIRTCHNL_PROTO_HDR_TCP,
--		FIELD_SELECTOR(VIRTCHNL_PROTO_HDR_TCP_DST_PORT),
--		BIT_ULL(ICE_FLOW_FIELD_IDX_TCP_DST_PORT)},
--	{VIRTCHNL_PROTO_HDR_TCP,
--		FIELD_SELECTOR(VIRTCHNL_PROTO_HDR_TCP_SRC_PORT) |
--		FIELD_SELECTOR(VIRTCHNL_PROTO_HDR_TCP_DST_PORT),
--		ICE_FLOW_HASH_TCP_PORT},
--	{VIRTCHNL_PROTO_HDR_UDP,
--		FIELD_SELECTOR(VIRTCHNL_PROTO_HDR_UDP_SRC_PORT),
--		BIT_ULL(ICE_FLOW_FIELD_IDX_UDP_SRC_PORT)},
--	{VIRTCHNL_PROTO_HDR_UDP,
--		FIELD_SELECTOR(VIRTCHNL_PROTO_HDR_UDP_DST_PORT),
--		BIT_ULL(ICE_FLOW_FIELD_IDX_UDP_DST_PORT)},
--	{VIRTCHNL_PROTO_HDR_UDP,
--		FIELD_SELECTOR(VIRTCHNL_PROTO_HDR_UDP_SRC_PORT) |
--		FIELD_SELECTOR(VIRTCHNL_PROTO_HDR_UDP_DST_PORT),
--		ICE_FLOW_HASH_UDP_PORT},
--	{VIRTCHNL_PROTO_HDR_SCTP,
--		FIELD_SELECTOR(VIRTCHNL_PROTO_HDR_SCTP_SRC_PORT),
--		BIT_ULL(ICE_FLOW_FIELD_IDX_SCTP_SRC_PORT)},
--	{VIRTCHNL_PROTO_HDR_SCTP,
--		FIELD_SELECTOR(VIRTCHNL_PROTO_HDR_SCTP_DST_PORT),
--		BIT_ULL(ICE_FLOW_FIELD_IDX_SCTP_DST_PORT)},
--	{VIRTCHNL_PROTO_HDR_SCTP,
--		FIELD_SELECTOR(VIRTCHNL_PROTO_HDR_SCTP_SRC_PORT) |
--		FIELD_SELECTOR(VIRTCHNL_PROTO_HDR_SCTP_DST_PORT),
--		ICE_FLOW_HASH_SCTP_PORT},
--};
--
--static const struct
--ice_vc_hash_field_match_type ice_vc_hash_field_list_comms[] = {
-+ice_vc_hash_field_match_type ice_vc_hash_field_list[] = {
- 	{VIRTCHNL_PROTO_HDR_ETH, FIELD_SELECTOR(VIRTCHNL_PROTO_HDR_ETH_SRC),
- 		BIT_ULL(ICE_FLOW_FIELD_IDX_ETH_SA)},
- 	{VIRTCHNL_PROTO_HDR_ETH, FIELD_SELECTOR(VIRTCHNL_PROTO_HDR_ETH_DST),
-@@ -2555,6 +2469,100 @@ static bool ice_vc_isvalid_ring_len(u16 ring_len)
- 		!(ring_len % ICE_REQ_DESC_MULTIPLE));
+diff --git a/drivers/net/ethernet/intel/ice/ice_fltr.c b/drivers/net/ethernet/intel/ice/ice_fltr.c
+index c2e78eaf4ccb..e12c9810830b 100644
+--- a/drivers/net/ethernet/intel/ice/ice_fltr.c
++++ b/drivers/net/ethernet/intel/ice/ice_fltr.c
+@@ -46,6 +46,64 @@ ice_fltr_add_entry_to_list(struct device *dev, struct ice_fltr_info *info,
+ 	return 0;
  }
  
 +/**
-+ * ice_vc_validate_pattern
-+ * @vf: pointer to the VF info
-+ * @proto: virtchnl protocol headers
++ * ice_fltr_set_vlan_vsi_promisc
++ * @hw: pointer to the hardware structure
++ * @vsi: the VSI being configured
++ * @promisc_mask: mask of promiscuous config bits
 + *
-+ * validate the pattern is supported or not.
-+ *
-+ * Return: true on success, false on error.
++ * Set VSI with all associated VLANs to given promiscuous mode(s)
 + */
-+bool
-+ice_vc_validate_pattern(struct ice_vf *vf, struct virtchnl_proto_hdrs *proto)
++enum ice_status
++ice_fltr_set_vlan_vsi_promisc(struct ice_hw *hw, struct ice_vsi *vsi,
++			      u8 promisc_mask)
 +{
-+	bool is_ipv4 = false;
-+	bool is_ipv6 = false;
-+	bool is_udp = false;
-+	u16 ptype = -1;
-+	int i = 0;
++	return ice_set_vlan_vsi_promisc(hw, vsi->idx, promisc_mask, false);
++}
 +
-+	while (i < proto->count &&
-+	       proto->proto_hdr[i].type != VIRTCHNL_PROTO_HDR_NONE) {
-+		switch (proto->proto_hdr[i].type) {
-+		case VIRTCHNL_PROTO_HDR_ETH:
-+			ptype = ICE_PTYPE_MAC_PAY;
-+			break;
-+		case VIRTCHNL_PROTO_HDR_IPV4:
-+			ptype = ICE_PTYPE_IPV4_PAY;
-+			is_ipv4 = true;
-+			break;
-+		case VIRTCHNL_PROTO_HDR_IPV6:
-+			ptype = ICE_PTYPE_IPV6_PAY;
-+			is_ipv6 = true;
-+			break;
-+		case VIRTCHNL_PROTO_HDR_UDP:
-+			if (is_ipv4)
-+				ptype = ICE_PTYPE_IPV4_UDP_PAY;
-+			else if (is_ipv6)
-+				ptype = ICE_PTYPE_IPV6_UDP_PAY;
-+			is_udp = true;
-+			break;
-+		case VIRTCHNL_PROTO_HDR_TCP:
-+			if (is_ipv4)
-+				ptype = ICE_PTYPE_IPV4_TCP_PAY;
-+			else if (is_ipv6)
-+				ptype = ICE_PTYPE_IPV6_TCP_PAY;
-+			break;
-+		case VIRTCHNL_PROTO_HDR_SCTP:
-+			if (is_ipv4)
-+				ptype = ICE_PTYPE_IPV4_SCTP_PAY;
-+			else if (is_ipv6)
-+				ptype = ICE_PTYPE_IPV6_SCTP_PAY;
-+			break;
-+		case VIRTCHNL_PROTO_HDR_GTPU_IP:
-+		case VIRTCHNL_PROTO_HDR_GTPU_EH:
-+			if (is_ipv4)
-+				ptype = ICE_MAC_IPV4_GTPU;
-+			else if (is_ipv6)
-+				ptype = ICE_MAC_IPV6_GTPU;
-+			goto out;
-+		case VIRTCHNL_PROTO_HDR_L2TPV3:
-+			if (is_ipv4)
-+				ptype = ICE_MAC_IPV4_L2TPV3;
-+			else if (is_ipv6)
-+				ptype = ICE_MAC_IPV6_L2TPV3;
-+			goto out;
-+		case VIRTCHNL_PROTO_HDR_ESP:
-+			if (is_ipv4)
-+				ptype = is_udp ? ICE_MAC_IPV4_NAT_T_ESP :
-+						ICE_MAC_IPV4_ESP;
-+			else if (is_ipv6)
-+				ptype = is_udp ? ICE_MAC_IPV6_NAT_T_ESP :
-+						ICE_MAC_IPV6_ESP;
-+			goto out;
-+		case VIRTCHNL_PROTO_HDR_AH:
-+			if (is_ipv4)
-+				ptype = ICE_MAC_IPV4_AH;
-+			else if (is_ipv6)
-+				ptype = ICE_MAC_IPV6_AH;
-+			goto out;
-+		case VIRTCHNL_PROTO_HDR_PFCP:
-+			if (is_ipv4)
-+				ptype = ICE_MAC_IPV4_PFCP_SESSION;
-+			else if (is_ipv6)
-+				ptype = ICE_MAC_IPV6_PFCP_SESSION;
-+			goto out;
-+		default:
-+			break;
-+		}
-+		i++;
-+	}
++/**
++ * ice_fltr_clear_vlan_vsi_promisc
++ * @hw: pointer to the hardware structure
++ * @vsi: the VSI being configured
++ * @promisc_mask: mask of promiscuous config bits
++ *
++ * Clear VSI with all associated VLANs to given promiscuous mode(s)
++ */
++enum ice_status
++ice_fltr_clear_vlan_vsi_promisc(struct ice_hw *hw, struct ice_vsi *vsi,
++				u8 promisc_mask)
++{
++	return ice_set_vlan_vsi_promisc(hw, vsi->idx, promisc_mask, true);
++}
 +
-+out:
-+	return ice_hw_ptype_ena(&vf->pf->hw, ptype);
++/**
++ * ice_fltr_clear_vsi_promisc - clear specified promiscuous mode(s)
++ * @hw: pointer to the hardware structure
++ * @vsi_handle: VSI handle to clear mode
++ * @promisc_mask: mask of promiscuous config bits to clear
++ * @vid: VLAN ID to clear VLAN promiscuous
++ */
++enum ice_status
++ice_fltr_clear_vsi_promisc(struct ice_hw *hw, u16 vsi_handle, u8 promisc_mask,
++			   u16 vid)
++{
++	return ice_clear_vsi_promisc(hw, vsi_handle, promisc_mask, vid);
++}
++
++/**
++ * ice_fltr_set_vsi_promisc - set given VSI to given promiscuous mode(s)
++ * @hw: pointer to the hardware structure
++ * @vsi_handle: VSI handle to configure
++ * @promisc_mask: mask of promiscuous config bits
++ * @vid: VLAN ID to set VLAN promiscuous
++ */
++enum ice_status
++ice_fltr_set_vsi_promisc(struct ice_hw *hw, u16 vsi_handle, u8 promisc_mask,
++			 u16 vid)
++{
++	return ice_set_vsi_promisc(hw, vsi_handle, promisc_mask, vid);
 +}
 +
  /**
-  * ice_vc_parse_rss_cfg - parses hash fields and headers from
-  * a specific virtchnl RSS cfg
-@@ -2578,18 +2586,10 @@ ice_vc_parse_rss_cfg(struct ice_hw *hw, struct virtchnl_rss_cfg *rss_cfg,
- 	const struct ice_vc_hdr_match_type *hdr_list;
- 	int i, hf_list_len, hdr_list_len;
+  * ice_fltr_add_mac_list - add list of MAC filters
+  * @vsi: pointer to VSI struct
+diff --git a/drivers/net/ethernet/intel/ice/ice_fltr.h b/drivers/net/ethernet/intel/ice/ice_fltr.h
+index 8eec4febead1..6cf398a84009 100644
+--- a/drivers/net/ethernet/intel/ice/ice_fltr.h
++++ b/drivers/net/ethernet/intel/ice/ice_fltr.h
+@@ -6,6 +6,18 @@
  
--	if (!strncmp(hw->active_pkg_name, "ICE COMMS Package",
--		     sizeof(hw->active_pkg_name))) {
--		hf_list = ice_vc_hash_field_list_comms;
--		hf_list_len = ARRAY_SIZE(ice_vc_hash_field_list_comms);
--		hdr_list = ice_vc_hdr_list_comms;
--		hdr_list_len = ARRAY_SIZE(ice_vc_hdr_list_comms);
+ void ice_fltr_free_list(struct device *dev, struct list_head *h);
+ enum ice_status
++ice_fltr_set_vlan_vsi_promisc(struct ice_hw *hw, struct ice_vsi *vsi,
++			      u8 promisc_mask);
++enum ice_status
++ice_fltr_clear_vlan_vsi_promisc(struct ice_hw *hw, struct ice_vsi *vsi,
++				u8 promisc_mask);
++enum ice_status
++ice_fltr_clear_vsi_promisc(struct ice_hw *hw, u16 vsi_handle, u8 promisc_mask,
++			   u16 vid);
++enum ice_status
++ice_fltr_set_vsi_promisc(struct ice_hw *hw, u16 vsi_handle, u8 promisc_mask,
++			 u16 vid);
++enum ice_status
+ ice_fltr_add_mac_to_list(struct ice_vsi *vsi, struct list_head *list,
+ 			 const u8 *mac, enum ice_sw_fwd_act_type action);
+ enum ice_status
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index a3ce54a78859..07a243d2ba91 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -237,32 +237,45 @@ static bool ice_vsi_fltr_changed(struct ice_vsi *vsi)
+ }
+ 
+ /**
+- * ice_cfg_promisc - Enable or disable promiscuous mode for a given PF
++ * ice_set_promisc - Enable promiscuous mode for a given PF
+  * @vsi: the VSI being configured
+  * @promisc_m: mask of promiscuous config bits
+- * @set_promisc: enable or disable promisc flag request
+  *
+  */
+-static int ice_cfg_promisc(struct ice_vsi *vsi, u8 promisc_m, bool set_promisc)
++static int ice_set_promisc(struct ice_vsi *vsi, u8 promisc_m)
+ {
+-	struct ice_hw *hw = &vsi->back->hw;
+-	enum ice_status status = 0;
++	enum ice_status status;
+ 
+ 	if (vsi->type != ICE_VSI_PF)
+ 		return 0;
+ 
+-	if (vsi->num_vlan > 1) {
+-		status = ice_set_vlan_vsi_promisc(hw, vsi->idx, promisc_m,
+-						  set_promisc);
 -	} else {
--		hf_list = ice_vc_hash_field_list_os;
--		hf_list_len = ARRAY_SIZE(ice_vc_hash_field_list_os);
--		hdr_list = ice_vc_hdr_list_os;
--		hdr_list_len = ARRAY_SIZE(ice_vc_hdr_list_os);
+-		if (set_promisc)
+-			status = ice_set_vsi_promisc(hw, vsi->idx, promisc_m,
+-						     0);
+-		else
+-			status = ice_clear_vsi_promisc(hw, vsi->idx, promisc_m,
+-						       0);
 -	}
-+	hf_list = ice_vc_hash_field_list;
-+	hf_list_len = ARRAY_SIZE(ice_vc_hash_field_list);
-+	hdr_list = ice_vc_hdr_list;
-+	hdr_list_len = ARRAY_SIZE(ice_vc_hdr_list);
++	if (vsi->num_vlan > 1)
++		status = ice_fltr_set_vlan_vsi_promisc(&vsi->back->hw, vsi, promisc_m);
++	else
++		status = ice_fltr_set_vsi_promisc(&vsi->back->hw, vsi->idx, promisc_m, 0);
++	if (status)
++		return -EIO;
++
++	return 0;
++}
  
- 	for (i = 0; i < rss_cfg->proto_hdrs.count; i++) {
- 		struct virtchnl_proto_hdr *proto_hdr =
-@@ -2691,6 +2691,11 @@ static int ice_vc_handle_rss_cfg(struct ice_vf *vf, u8 *msg, bool add)
- 		goto error_param;
- 	}
++/**
++ * ice_clear_promisc - Disable promiscuous mode for a given PF
++ * @vsi: the VSI being configured
++ * @promisc_m: mask of promiscuous config bits
++ *
++ */
++static int ice_clear_promisc(struct ice_vsi *vsi, u8 promisc_m)
++{
++	enum ice_status status;
++
++	if (vsi->type != ICE_VSI_PF)
++		return 0;
++
++	if (vsi->num_vlan > 1)
++		status = ice_fltr_clear_vlan_vsi_promisc(&vsi->back->hw, vsi, promisc_m);
++	else
++		status = ice_fltr_clear_vsi_promisc(&vsi->back->hw, vsi->idx, promisc_m, 0);
+ 	if (status)
+ 		return -EIO;
  
-+	if (!ice_vc_validate_pattern(vf, &rss_cfg->proto_hdrs)) {
-+		v_ret = VIRTCHNL_STATUS_ERR_PARAM;
-+		goto error_param;
+@@ -358,7 +371,7 @@ static int ice_vsi_sync_fltr(struct ice_vsi *vsi)
+ 			else
+ 				promisc_m = ICE_MCAST_PROMISC_BITS;
+ 
+-			err = ice_cfg_promisc(vsi, promisc_m, true);
++			err = ice_set_promisc(vsi, promisc_m);
+ 			if (err) {
+ 				netdev_err(netdev, "Error setting Multicast promiscuous mode on VSI %i\n",
+ 					   vsi->vsi_num);
+@@ -372,7 +385,7 @@ static int ice_vsi_sync_fltr(struct ice_vsi *vsi)
+ 			else
+ 				promisc_m = ICE_MCAST_PROMISC_BITS;
+ 
+-			err = ice_cfg_promisc(vsi, promisc_m, false);
++			err = ice_clear_promisc(vsi, promisc_m);
+ 			if (err) {
+ 				netdev_err(netdev, "Error clearing Multicast promiscuous mode on VSI %i\n",
+ 					   vsi->vsi_num);
+diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
+index 596d354f714e..8a1a3364298f 100644
+--- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
++++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
+@@ -202,37 +202,6 @@ static int ice_check_vf_init(struct ice_pf *pf, struct ice_vf *vf)
+ 	return 0;
+ }
+ 
+-/**
+- * ice_err_to_virt_err - translate errors for VF return code
+- * @ice_err: error return code
+- */
+-static enum virtchnl_status_code ice_err_to_virt_err(enum ice_status ice_err)
+-{
+-	switch (ice_err) {
+-	case ICE_SUCCESS:
+-		return VIRTCHNL_STATUS_SUCCESS;
+-	case ICE_ERR_BAD_PTR:
+-	case ICE_ERR_INVAL_SIZE:
+-	case ICE_ERR_DEVICE_NOT_SUPPORTED:
+-	case ICE_ERR_PARAM:
+-	case ICE_ERR_CFG:
+-		return VIRTCHNL_STATUS_ERR_PARAM;
+-	case ICE_ERR_NO_MEMORY:
+-		return VIRTCHNL_STATUS_ERR_NO_MEMORY;
+-	case ICE_ERR_NOT_READY:
+-	case ICE_ERR_RESET_FAILED:
+-	case ICE_ERR_FW_API_VER:
+-	case ICE_ERR_AQ_ERROR:
+-	case ICE_ERR_AQ_TIMEOUT:
+-	case ICE_ERR_AQ_FULL:
+-	case ICE_ERR_AQ_NO_WORK:
+-	case ICE_ERR_AQ_EMPTY:
+-		return VIRTCHNL_STATUS_ERR_ADMIN_QUEUE_ERROR;
+-	default:
+-		return VIRTCHNL_STATUS_ERR_NOT_SUPPORTED;
+-	}
+-}
+-
+ /**
+  * ice_vc_vf_broadcast - Broadcast a message to all VFs on PF
+  * @pf: pointer to the PF structure
+@@ -1255,45 +1224,50 @@ static void ice_clear_vf_reset_trigger(struct ice_vf *vf)
+ 	ice_flush(hw);
+ }
+ 
+-/**
+- * ice_vf_set_vsi_promisc - set given VF VSI to given promiscuous mode(s)
+- * @vf: pointer to the VF info
+- * @vsi: the VSI being configured
+- * @promisc_m: mask of promiscuous config bits
+- * @rm_promisc: promisc flag request from the VF to remove or add filter
+- *
+- * This function configures VF VSI promiscuous mode, based on the VF requests,
+- * for Unicast, Multicast and VLAN
+- */
+-static enum ice_status
+-ice_vf_set_vsi_promisc(struct ice_vf *vf, struct ice_vsi *vsi, u8 promisc_m,
+-		       bool rm_promisc)
++static int
++ice_vf_set_vsi_promisc(struct ice_vf *vf, struct ice_vsi *vsi, u8 promisc_m)
+ {
+-	struct ice_pf *pf = vf->pf;
+-	enum ice_status status = 0;
+-	struct ice_hw *hw;
++	struct ice_hw *hw = &vsi->back->hw;
++	enum ice_status status;
+ 
+-	hw = &pf->hw;
+-	if (vsi->num_vlan) {
+-		status = ice_set_vlan_vsi_promisc(hw, vsi->idx, promisc_m,
+-						  rm_promisc);
+-	} else if (vf->port_vlan_info) {
+-		if (rm_promisc)
+-			status = ice_clear_vsi_promisc(hw, vsi->idx, promisc_m,
+-						       vf->port_vlan_info);
+-		else
+-			status = ice_set_vsi_promisc(hw, vsi->idx, promisc_m,
+-						     vf->port_vlan_info);
+-	} else {
+-		if (rm_promisc)
+-			status = ice_clear_vsi_promisc(hw, vsi->idx, promisc_m,
+-						       0);
+-		else
+-			status = ice_set_vsi_promisc(hw, vsi->idx, promisc_m,
+-						     0);
++	if (vf->port_vlan_info)
++		status = ice_fltr_set_vsi_promisc(hw, vsi->idx, promisc_m,
++						  vf->port_vlan_info & VLAN_VID_MASK);
++	else if (vsi->num_vlan > 1)
++		status = ice_fltr_set_vlan_vsi_promisc(hw, vsi, promisc_m);
++	else
++		status = ice_fltr_set_vsi_promisc(hw, vsi->idx, promisc_m, 0);
++
++	if (status && status != ICE_ERR_ALREADY_EXISTS) {
++		dev_err(ice_pf_to_dev(vsi->back), "enable Tx/Rx filter promiscuous mode on VF-%u failed, error: %s\n",
++			vf->vf_id, ice_stat_str(status));
++		return ice_status_to_errno(status);
 +	}
 +
- 	if (rss_cfg->rss_algorithm == VIRTCHNL_RSS_ALG_R_ASYMMETRIC) {
- 		struct ice_vsi_ctx *ctx;
- 		enum ice_status status;
-diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h
-index 7e28ecbbe7af..752487a1bdd6 100644
---- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h
-+++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h
-@@ -203,6 +203,8 @@ void
- ice_vf_lan_overflow_event(struct ice_pf *pf, struct ice_rq_event_info *event);
- void ice_print_vfs_mdd_events(struct ice_pf *pf);
- void ice_print_vf_rx_mdd_event(struct ice_vf *vf);
-+bool
-+ice_vc_validate_pattern(struct ice_vf *vf, struct virtchnl_proto_hdrs *proto);
- struct ice_vsi *ice_vf_ctrl_vsi_setup(struct ice_vf *vf);
- int
- ice_vc_send_msg_to_vf(struct ice_vf *vf, u32 v_opcode,
++	return 0;
++}
++
++static int
++ice_vf_clear_vsi_promisc(struct ice_vf *vf, struct ice_vsi *vsi, u8 promisc_m)
++{
++	struct ice_hw *hw = &vsi->back->hw;
++	enum ice_status status;
++
++	if (vf->port_vlan_info)
++		status = ice_fltr_clear_vsi_promisc(hw, vsi->idx, promisc_m,
++						    vf->port_vlan_info & VLAN_VID_MASK);
++	else if (vsi->num_vlan > 1)
++		status = ice_fltr_clear_vlan_vsi_promisc(hw, vsi, promisc_m);
++	else
++		status = ice_fltr_clear_vsi_promisc(hw, vsi->idx, promisc_m, 0);
++
++	if (status && status != ICE_ERR_DOES_NOT_EXIST) {
++		dev_err(ice_pf_to_dev(vsi->back), "disable Tx/Rx filter promiscuous mode on VF-%u failed, error: %s\n",
++			vf->vf_id, ice_stat_str(status));
++		return ice_status_to_errno(status);
+ 	}
+ 
+-	return status;
++	return 0;
+ }
+ 
+ static void ice_vf_clear_counters(struct ice_vf *vf)
+@@ -1657,7 +1631,7 @@ bool ice_reset_vf(struct ice_vf *vf, bool is_vflr)
+ 		else
+ 			promisc_m = ICE_UCAST_PROMISC_BITS;
+ 
+-		if (ice_vf_set_vsi_promisc(vf, vsi, promisc_m, true))
++		if (ice_vf_clear_vsi_promisc(vf, vsi, promisc_m))
+ 			dev_err(dev, "disabling promiscuous mode failed\n");
+ 	}
+ 
+@@ -3026,10 +3000,10 @@ bool ice_is_any_vf_in_promisc(struct ice_pf *pf)
+ static int ice_vc_cfg_promiscuous_mode_msg(struct ice_vf *vf, u8 *msg)
+ {
+ 	enum virtchnl_status_code v_ret = VIRTCHNL_STATUS_SUCCESS;
+-	enum ice_status mcast_status = 0, ucast_status = 0;
+ 	bool rm_promisc, alluni = false, allmulti = false;
+ 	struct virtchnl_promisc_info *info =
+ 	    (struct virtchnl_promisc_info *)msg;
++	int mcast_err = 0, ucast_err = 0;
+ 	struct ice_pf *pf = vf->pf;
+ 	struct ice_vsi *vsi;
+ 	struct device *dev;
+@@ -3111,24 +3085,21 @@ static int ice_vc_cfg_promiscuous_mode_msg(struct ice_vf *vf, u8 *msg)
+ 			ucast_m = ICE_UCAST_PROMISC_BITS;
+ 		}
+ 
+-		ucast_status = ice_vf_set_vsi_promisc(vf, vsi, ucast_m,
+-						      !alluni);
+-		if (ucast_status) {
+-			dev_err(dev, "%sable Tx/Rx filter promiscuous mode on VF-%d failed\n",
+-				alluni ? "en" : "dis", vf->vf_id);
+-			v_ret = ice_err_to_virt_err(ucast_status);
+-		}
++		if (alluni)
++			ucast_err = ice_vf_set_vsi_promisc(vf, vsi, ucast_m);
++		else
++			ucast_err = ice_vf_clear_vsi_promisc(vf, vsi, ucast_m);
+ 
+-		mcast_status = ice_vf_set_vsi_promisc(vf, vsi, mcast_m,
+-						      !allmulti);
+-		if (mcast_status) {
+-			dev_err(dev, "%sable Tx/Rx filter promiscuous mode on VF-%d failed\n",
+-				allmulti ? "en" : "dis", vf->vf_id);
+-			v_ret = ice_err_to_virt_err(mcast_status);
+-		}
++		if (allmulti)
++			mcast_err = ice_vf_set_vsi_promisc(vf, vsi, mcast_m);
++		else
++			mcast_err = ice_vf_clear_vsi_promisc(vf, vsi, mcast_m);
++
++		if (ucast_err || mcast_err)
++			v_ret = VIRTCHNL_STATUS_ERR_PARAM;
+ 	}
+ 
+-	if (!mcast_status) {
++	if (!mcast_err) {
+ 		if (allmulti &&
+ 		    !test_and_set_bit(ICE_VF_STATE_MC_PROMISC, vf->vf_states))
+ 			dev_info(dev, "VF %u successfully set multicast promiscuous mode\n",
+@@ -3138,7 +3109,7 @@ static int ice_vc_cfg_promiscuous_mode_msg(struct ice_vf *vf, u8 *msg)
+ 				 vf->vf_id);
+ 	}
+ 
+-	if (!ucast_status) {
++	if (!ucast_err) {
+ 		if (alluni && !test_and_set_bit(ICE_VF_STATE_UC_PROMISC, vf->vf_states))
+ 			dev_info(dev, "VF %u successfully set unicast promiscuous mode\n",
+ 				 vf->vf_id);
 -- 
 2.31.1
 
