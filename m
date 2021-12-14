@@ -2,60 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BBFA47406D
-	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 11:26:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE07147406F
+	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 11:27:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231273AbhLNK0g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Dec 2021 05:26:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60966 "EHLO
+        id S233058AbhLNK1I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Dec 2021 05:27:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231226AbhLNK0f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 05:26:35 -0500
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EA4CC061574;
-        Tue, 14 Dec 2021 02:26:35 -0800 (PST)
-Received: by mail-wr1-x435.google.com with SMTP id a9so31529710wrr.8;
-        Tue, 14 Dec 2021 02:26:35 -0800 (PST)
+        with ESMTP id S233036AbhLNK1E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 05:27:04 -0500
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA1F7C061574;
+        Tue, 14 Dec 2021 02:27:03 -0800 (PST)
+Received: by mail-wr1-x436.google.com with SMTP id a9so31531797wrr.8;
+        Tue, 14 Dec 2021 02:27:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=/VGyRwF+8Rszd1IEhKwQkaBM8IPnn8NnVzK7EFHiQQI=;
-        b=MeomFovZoLezTR1tSnbnhyVLZK6yJCzBDSmkj/nBgqbUvsOhoByun/xXnue5ZYdI58
-         /nxkoa2ddfI7vFrfQWBbH4q9UDKBcbM68NlvitWX9Hvn82BCv9RXUe6El+nqswJpnaqg
-         0DKESmsXneed8P59QD23eYdcNB3RCbXJG+UCq7IKXxrgD72eG/FWoKXaxnRCjLSGXFDd
-         qw+sjvA+5PSiBTVEV2OmV0+KNvCo59GCGusfnCtgWe6Ta36FYfe6JDk4r1IW8OkACh4h
-         E5h68MKdReHs2JA+waMB7QXuGj/sAbA6dd94A3Au2mOKVKPm6K95jyzJFQs6xsli3S4g
-         L9dA==
+        bh=TMyGa1ZURjU4WC46Rk0LZynE/EHJadQsWtw3kSUAXB8=;
+        b=L+hUiq55QFzpZ7byn3M6JwQEpNCuZxUyywcuLHq5vDRok8DY6a7NwNQvJZnMm2jfzv
+         c8aDogvddjUy6/c4i1d57I6NGNemEy+4rp6hgQz7ZQONxKGogxyKP8rv8cLU2YR3hDUl
+         G5QzHy+ZO+M/J75ZjzkKBV+HNb3A1rGOgiFXBgX3Wn7+dM5dcd7BJcNwVehuNDwxWe2o
+         xAm/K9H7maFYteCV9H+3NYZtOkfR5Yp4M3oZ9Y70k2OIw5hKDoc/ABRoopDvqaEYICcE
+         baJNnj3bFEIBDnYhx0JYz+VwBQoEQUiqQ0cs/pv5cBYJ/9ScHQpGqXxhRp3aqHFnDb/q
+         /WzQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=/VGyRwF+8Rszd1IEhKwQkaBM8IPnn8NnVzK7EFHiQQI=;
-        b=pLz171+v4YgaadibSwgl0fdHzvgUpxtjXxQq7c0MY3mk79yb+AblPHqMapmeJiXJEA
-         Ds82uPFzfZ9nev2ZpZvUm30fj2W7JZile9/RMJKbkSgdyqBfPGQ90Zzg2xHwNv6vgoQa
-         JKPN4wfmXSOtafz0ZZcFl2QjvqPjJMU325nHvvr6LIm220/p5agd9T91dqnu8FdzYUJz
-         akUTHhM4umbeGCbJm377UL+w/XYxsDwoOMo00u0Y/Of9BSKrlYGAQzCCajdGbtcKTG/V
-         6hxtEbUF0dDFaAYKgmBuI62ghgg4H2Zi8IkrK3163PFNO75vBnbtkUIzpOXNtp1EL/Wp
-         idJA==
-X-Gm-Message-State: AOAM5312/i9jaMOSkE8EZ69xvmrvvDfUxpi8VjW6N3Te90Jw5HL7LZke
-        Zu3sIMxeZLvufkhXLcbIG38=
-X-Google-Smtp-Source: ABdhPJzxIiqQNLAmcsI/Rqq1kNp8fxUliullKf6oqWJW5fL1PEPSOyNsqm/JeFoDYsiP1KczCoKlUA==
-X-Received: by 2002:adf:e482:: with SMTP id i2mr5107521wrm.284.1639477593618;
-        Tue, 14 Dec 2021 02:26:33 -0800 (PST)
+        bh=TMyGa1ZURjU4WC46Rk0LZynE/EHJadQsWtw3kSUAXB8=;
+        b=EznWvSwtci2mjuIffax5t2pCA3FVUZU0H1LE+HdOh40IIw+7/AK7+Fam9G56t9qANw
+         glAgmWD3vBoz+Nw4IJo/bTSOxtHb7N37pjE04FSZM7rlR/cP8rxJK24tPGQQnMFfk04/
+         cefHe2xFfDj+42gH6I3gGIyH7hh68mhe3fBwBVQDiPUCxQ/YuOoTM1Zai9bDv6mz95vA
+         fWRXoeYvEn42tQ/dlxoLIvimEKHebUII4Bk++wFzjVxzMbeQIVqgkVNoRuoR78TCkkj7
+         C310MSHiAnqyxaWRTmgW+A8cUfBKCrXkIbv+gS5jIkXyiZzUxgWmL2RaMjPcTHUrNS+j
+         /7jg==
+X-Gm-Message-State: AOAM532iIt8bnFiJkcCukVvAqTytE8jTHDJO97Sf+7DzW6n1Eb0wxu4N
+        cPc2NXuYRAbBFqORA0l+LIo=
+X-Google-Smtp-Source: ABdhPJwcUZxZEEScQtU2ozI8WKoVZdULNqWWZF7QIdj/paQhu59VlIjO3ncylyfaQZIFN9AyAv9Njg==
+X-Received: by 2002:a5d:4d8b:: with SMTP id b11mr4911663wru.393.1639477622459;
+        Tue, 14 Dec 2021 02:27:02 -0800 (PST)
 Received: from localhost.localdomain (h-46-59-47-246.A165.priv.bahnhof.se. [46.59.47.246])
-        by smtp.gmail.com with ESMTPSA id f7sm1958737wmg.6.2021.12.14.02.26.32
+        by smtp.gmail.com with ESMTPSA id z8sm15566276wrh.54.2021.12.14.02.27.01
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 14 Dec 2021 02:26:33 -0800 (PST)
+        Tue, 14 Dec 2021 02:27:01 -0800 (PST)
 From:   Magnus Karlsson <magnus.karlsson@gmail.com>
 To:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
         daniel@iogearbox.net, netdev@vger.kernel.org,
         maciej.fijalkowski@intel.com
-Cc:     jonathan.lemon@gmail.com, bpf@vger.kernel.org,
-        Keith Wiles <keith.wiles@intel.com>
-Subject: [PATCH bpf] xsk: do not sleep in poll() when need_wakeup set
-Date:   Tue, 14 Dec 2021 11:26:07 +0100
-Message-Id: <20211214102607.7677-1-magnus.karlsson@gmail.com>
+Cc:     jonathan.lemon@gmail.com, bpf@vger.kernel.org
+Subject: [PATCH bpf-next] xsk: add test for tx_writeable to batched path
+Date:   Tue, 14 Dec 2021 11:26:47 +0100
+Message-Id: <20211214102647.7734-1-magnus.karlsson@gmail.com>
 X-Mailer: git-send-email 2.29.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -65,49 +64,36 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Magnus Karlsson <magnus.karlsson@intel.com>
 
-Do not sleep in poll() when the need_wakeup flag is set. When this
-flag is set, the application needs to explicitly wake up the driver
-with a syscall (poll, recvmsg, sendmsg, etc.) to guarantee that Rx
-and/or Tx processing will be processed promptly. But the current code
-in poll(), sleeps first then wakes up the driver. This means that no
-driver processing will occur (baring any interrupts) until the timeout
-has expired.
+Add a test for the tx_writeable condition to the batched Tx processing
+path. This test is in the skb and non-batched code paths but not in the
+batched code path. So add it there. This test makes sure that a
+process is not woken up until there are a sufficiently large number of
+free entries in the Tx ring. Currently, any driver using the batched
+interface will be woken up even if there is only one free entry,
+impacting performance negatively.
 
-Fix this by checking the need_wakeup flag first and if set, wake the
-driver and return to the application. Only if need_wakeup is not set
-should the process sleep if there is a timeout set in the poll() call.
-
-Fixes: 77cd0d7b3f25 ("xsk: add support for need_wakeup flag in AF_XDP rings")
-Reported-by: Keith Wiles <keith.wiles@intel.com>
+Fixes: 3413f04141aa ("xsk: Change the tx writeable condition")
 Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
 ---
- net/xdp/xsk.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/xdp/xsk.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-index f16074eb53c7..7a466ea962c5 100644
+index 28ef3f4465ae..3772fcaa76ed 100644
 --- a/net/xdp/xsk.c
 +++ b/net/xdp/xsk.c
-@@ -677,8 +677,6 @@ static __poll_t xsk_poll(struct file *file, struct socket *sock,
- 	struct xdp_sock *xs = xdp_sk(sk);
- 	struct xsk_buff_pool *pool;
+@@ -392,7 +392,8 @@ u32 xsk_tx_peek_release_desc_batch(struct xsk_buff_pool *pool, struct xdp_desc *
  
--	sock_poll_wait(file, sock, wait);
--
- 	if (unlikely(!xsk_is_bound(xs)))
- 		return mask;
+ 	xskq_cons_release_n(xs->tx, nb_pkts);
+ 	__xskq_cons_release(xs->tx);
+-	xs->sk.sk_write_space(&xs->sk);
++	if (xsk_tx_writeable(xs))
++		xs->sk.sk_write_space(&xs->sk);
  
-@@ -690,6 +688,8 @@ static __poll_t xsk_poll(struct file *file, struct socket *sock,
- 		else
- 			/* Poll needs to drive Tx also in copy mode */
- 			__xsk_sendmsg(sk);
-+	} else {
-+		sock_poll_wait(file, sock, wait);
- 	}
- 
- 	if (xs->rx && !xskq_prod_is_empty(xs->rx))
+ out:
+ 	rcu_read_unlock();
 
-base-commit: 0be2516f865f5a876837184a8385163ff64a5889
+base-commit: d27a662290963a1cde26cdfdbac71a546c06e94a
 -- 
 2.29.0
 
