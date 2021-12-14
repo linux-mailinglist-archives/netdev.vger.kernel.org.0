@@ -2,90 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 95270473F7A
-	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 10:32:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD58F473FA9
+	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 10:39:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230251AbhLNJcr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Dec 2021 04:32:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48608 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230231AbhLNJcq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 04:32:46 -0500
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CECFC061574
-        for <netdev@vger.kernel.org>; Tue, 14 Dec 2021 01:32:46 -0800 (PST)
-Received: by mail-ed1-x52c.google.com with SMTP id y12so60001987eda.12
-        for <netdev@vger.kernel.org>; Tue, 14 Dec 2021 01:32:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares-net.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=7fwVpUOaodKaM1HiiY3Hyq1TyISHZ2AYLMJfZDUkWAQ=;
-        b=71KLJdM6lHcUy7qUZGxXRU+h3DmKZjKoJjQ8xBtmTsnjpJ+l4P1I8oDFTuwJRGDXCg
-         y8v4cL1sh8msuNXKeJnwAogYBTxRW8mQe6O0aikq0aRQUKdCm1J1z80+qBFEqjPhjus3
-         6WzUcSOm5DevA2tMiqIgw7+f7YJsRBktL0J3g6L997N5EKpJWVQ6V9OBoQAG4ULhznYg
-         6aah/W520k7pB3N+VWT+qtDTj5uR0YshpURo4np1or90qDr8QwjFSOv/2JLcYE9z8kyI
-         lCr5bkLBWZk7MWugxqmsDI12+vvvKfO+KGYoi5tm9c/P57dFnsRJDdhuCKbLHmp9/qoJ
-         oaIg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=7fwVpUOaodKaM1HiiY3Hyq1TyISHZ2AYLMJfZDUkWAQ=;
-        b=saeXLiddpXisPt8z2NL2kFsV1ExzWcXO8rTwca9EOf67kIQ2+2LzN363kEYmoY95DE
-         /mVUhDH4K3VYkgLpa7AE6JssfIFcqzy0CTL/9+gkdAoYL2Is09rFopapTKgk+inMCtfq
-         WQ79GKCkFWl+N2EzyVitRnPZJWWHE/Pz4WT+ybOs3BxqC4Nf0LgWmp4amRj8u2FSTLEd
-         +cFN1+mxWXbD4Apk81thJVWIqoAzA778L8jQMBhGjH1K7mHX6KziHP//K5AgMAIO9kub
-         M6ZNeO31Mr2GKCBDbaqbBfU63yMK43OBUJ0i9swxbo6FekBrmJOPCHe+ABhLGdtw4gsq
-         fCmA==
-X-Gm-Message-State: AOAM531eBU7rvYNPbex4nLMSPgZVw9MGRWWbKVxB15yvSvCBo8Wm2Q5y
-        AaLdBFVrXyJEUqetoSOXU5EAiQ==
-X-Google-Smtp-Source: ABdhPJy3ksNPqGkvwoTkcRk0gUHfzeOLqcskXSY8MiUKUWlel4ZJGMNu64BJubGTEGHCz2A28cKiaQ==
-X-Received: by 2002:a50:ff10:: with SMTP id a16mr6385771edu.275.1639474364767;
-        Tue, 14 Dec 2021 01:32:44 -0800 (PST)
-Received: from ?IPV6:2a02:578:8593:1200:6ccb:ff63:52c1:4a46? ([2a02:578:8593:1200:6ccb:ff63:52c1:4a46])
-        by smtp.gmail.com with ESMTPSA id f16sm550057edd.19.2021.12.14.01.32.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 14 Dec 2021 01:32:44 -0800 (PST)
-Message-ID: <d577aafc-4b2a-1b1c-ef14-8d670395055c@tessares.net>
-Date:   Tue, 14 Dec 2021 10:32:43 +0100
+        id S230412AbhLNJj3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Dec 2021 04:39:29 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:53930 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229744AbhLNJj2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Dec 2021 04:39:28 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=j+RmcVDTIeDOSJuZcBLUijsZL+mu256ZqxBjLPcGmew=; b=bMftSZdo18MuMjlDm+K0MuPhVc
+        bjMBPGvfceiSJzj/Y2abt0E06Vavz3L3vfEm/bwUicQ8D/rI6TcsnsVH79kSKT38PCeP22kvbeZkZ
+        gLmnYos48Cz8p0yBm8XrY6RCn8rfS1NwxFmIUF1rUpC1NqJuNwNPkanA3zvnAVOhJo8E=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mx4HN-00GUcp-Bh; Tue, 14 Dec 2021 10:39:25 +0100
+Date:   Tue, 14 Dec 2021 10:39:25 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     "Ismail, Mohammad Athari" <mohammad.athari.ismail@intel.com>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Voon, Weifeng" <weifeng.voon@intel.com>,
+        "Wong, Vee Khee" <vee.khee.wong@intel.com>
+Subject: Re: [BUG] net: phy: genphy_loopback: add link speed configuration
+Message-ID: <YbhmTcFITSD1dOts@lunn.ch>
+References: <CO1PR11MB4771251E6D2E59B1B413211FD5759@CO1PR11MB4771.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [PATCH net-next] mptcp: adjust to use netns refcount tracker
-Content-Language: en-GB
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Florian Westphal <fw@strlen.de>,
-        Paolo Abeni <pabeni@redhat.com>
-References: <20211214043208.3543046-1-eric.dumazet@gmail.com>
-From:   Matthieu Baerts <matthieu.baerts@tessares.net>
-In-Reply-To: <20211214043208.3543046-1-eric.dumazet@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CO1PR11MB4771251E6D2E59B1B413211FD5759@CO1PR11MB4771.namprd11.prod.outlook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Eric,
-
-On 14/12/2021 05:32, Eric Dumazet wrote:
-> From: Eric Dumazet <edumazet@google.com>
+On Tue, Dec 14, 2021 at 07:00:37AM +0000, Ismail, Mohammad Athari wrote:
+> Hi Oleksij,
 > 
-> MPTCP can change sk_net_refcnt after sock_create_kern() call.
+> "net: phy: genphy_loopback: add link speed configuration" patch causes Marvell 88E1510 PHY not able to perform PHY loopback using ethtool command (ethtool -t eth0 offline). Below is the error message: 
+> 
+> "Marvell 88E1510 stmmac-3:01: genphy_loopback failed: -110" 
 
-Thank you for the fix and the new tracking infra!
+-110 is ETIMEDOUT. So that points to the phy_read_poll_timeout().
 
-Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+Ah, that points to the fact the Marvell PHYs are odd. You need to
+perform a software reset after changing some registers to actually
+execute the change.
 
-Cheers,
-Matt
--- 
-Tessares | Belgium | Hybrid Access Solutions
-www.tessares.net
+As a quick test, please could you try:
+
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 74d8e1dc125f..b45f3ffc7c7f 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -2625,6 +2625,10 @@ int genphy_loopback(struct phy_device *phydev, bool enable)
+ 
+                phy_modify(phydev, MII_BMCR, ~0, ctl);
+ 
++               ret = genphy_soft_reset(phydev);
++               if (ret < 0)
++                       return ret;
++
+                ret = phy_read_poll_timeout(phydev, MII_BMSR, val,
+                                            val & BMSR_LSTATUS,
+                                    5000, 500000, true);
+
+If this fixes it for you, the actual fix will be more complex, Marvell
+cannot use genphy_loopback, it will need its own implementation.
+
+       Andrew
