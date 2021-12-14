@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D8F87474D02
-	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 22:11:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EA71474D03
+	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 22:11:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237846AbhLNVKm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Dec 2021 16:10:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41554 "EHLO
+        id S237841AbhLNVKn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Dec 2021 16:10:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237809AbhLNVKf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 16:10:35 -0500
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 662F4C061401;
-        Tue, 14 Dec 2021 13:10:35 -0800 (PST)
-Received: by mail-ed1-x535.google.com with SMTP id x15so68470834edv.1;
-        Tue, 14 Dec 2021 13:10:35 -0800 (PST)
+        with ESMTP id S237818AbhLNVKg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 16:10:36 -0500
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B33AC061747;
+        Tue, 14 Dec 2021 13:10:36 -0800 (PST)
+Received: by mail-ed1-x536.google.com with SMTP id z5so68181596edd.3;
+        Tue, 14 Dec 2021 13:10:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=4eIBpE5JL23eJLpbXYARtkXjBt7PEvR6KJPTH926Cjw=;
-        b=HAoD2GZCMeVAp0AXTnKr2YjwAEzTw0m5V1CMDUVfdWgu3eaaRJqtfWzZDcKQwaat7E
-         YYavXHiae3uyPYhixF9ipzggRn3Henh6jvmY9PceDF+xrXK870Br5lKa4RlCeN39fZlo
-         NmT1pbYNrsmsEn0jBKM+3b8aw6ThKdqf0zS+NsDwXWBh5hOuvAs7Py+m68XYZ+lwGTAC
-         nBitGI+OD+lHHQUjAQKk0Lw1J3m+wEElEMf+cwznkjWXCOR8sHrJ+cC6MObm27VE33vD
-         XTOLz7z6W81LZ4lu7PamEkf53EVPJ8gv2Js2Rxmqt7a0JBSu/C0QKeh4gPZbgOp1NkuY
-         YE1A==
+        bh=x5ytspfYRqVU3RtWAvC1Q4PzIaOo9sudFVOwJXe4gcg=;
+        b=JoRbd0Hv15x541l/3Tnd38AcKQZH/X1ee4VUpizeL7sAq5C7qOCvKLwLkxAa/OUfKn
+         2io+Fj2ffx9nCqE/hhuO5/VQC6md2KD569TejHweEdfSOWuR3S/jK9JUVaOMN1ruWiKc
+         pjY7Goko6c5amODx/HFoHjZBCoDohtPmsZxmQiTR0USk/rCco1J1uNS/cXy1b6VljYny
+         7rjhGiB7RT2Hvg4AOfW58ohzohVPbeYyS3i1LOOOXwDkSBFUyihuRv0r5tBChaDS7LiS
+         tQSQhxfe05KEsMMUl4+uDzn+dlrwQsRT97t5iolDOcEy2GCV+JHrPGf99dKINBtN6GfW
+         /CfA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=4eIBpE5JL23eJLpbXYARtkXjBt7PEvR6KJPTH926Cjw=;
-        b=TZBI/fo9bS7Ep80OC+fRaP9NHgUgrcQ8TTJxgsvNNG3YcTYwyD8Q+aF5b1SE+tHhSE
-         ZgeYuZGO002RinsgkAD3HxEz1//69WIBi3zX+5vDa1aN7+jsrJx1kqpLTi+uCgfaIbVf
-         oFgA3IWE7nMfi5McsWuaBVmMFd0RQ07D8A1rGx2E7ynEzS2WOt4XNzD+1FE5YymNFEdK
-         Ra/b/G1/nOUc4JnqET94GQxmQWXAqI+Gwo0SeL14D/MZwBs4/rx5UZbYhIajdE2D3mq+
-         37IGcNl2kVBJzSsMUpy+4PYS8r1BX9mJ6mEDMG9sNscjLxHH54m/30mhjMVKfytdzhyk
-         VNCg==
-X-Gm-Message-State: AOAM5321JwmqeO+BNm/ljhB2CBSI0TYJSxwxoewXAbY8sEQxViHDK3km
-        deIkC9Osd9tNcJ++UUutTSg=
-X-Google-Smtp-Source: ABdhPJyqawfzr0FTMCH1+TlwrKo9tsxlsoAxQNoJHC9ucHM/mWbc44YgCg/HEnM4NZrSdRakUCd+Fg==
-X-Received: by 2002:a50:da48:: with SMTP id a8mr10948919edk.146.1639516233910;
-        Tue, 14 Dec 2021 13:10:33 -0800 (PST)
+        bh=x5ytspfYRqVU3RtWAvC1Q4PzIaOo9sudFVOwJXe4gcg=;
+        b=ZyXh7DwqYH9a0uQ264Fhoes0EiGpkzfLR7KWxgaY0n1jnG2K+pTBaNn7feq0dGy0xA
+         Snth7LeYadxAMeFq1nVJzHX1bDCZRxD0xNLtRKdhSpUSKv+y98fShOi0PYE7HTQh3+d+
+         WmNwCIfi31DBMv2WJFxjrcSOZaWQYuFAE5lomgjhyJ8tYoFcvPO+GZCIBQL0ljusW1Sy
+         xAA4Qg/WrExJ2K9o/eM4imFUkgztMvZ6cMCC2avdZAW3vO1bPMi5QSqiMgYwPt10ivEz
+         9XsN4YJ6J/4lxW3dU213oZbN0mNkN9xsgBBxtuQYZjgBZqEnkpN4sOgDqMKa5mMwKV1r
+         M1AQ==
+X-Gm-Message-State: AOAM532Be0NBi3yCvshozynV0GSM6BXNZ+d0DjrEp3uORAePqPeedXz7
+        GAMsLy4yIGO3xum3Pn9zmk4wmKk+0jYQDg==
+X-Google-Smtp-Source: ABdhPJxjAV0xBcaNdJSLXJYXbrQzqL1D44gCiyzUA7gYAg7rNIat5zum9hF2ip1dRHpXL1lb+hLfcw==
+X-Received: by 2002:a17:906:2793:: with SMTP id j19mr2543789ejc.254.1639516234716;
+        Tue, 14 Dec 2021 13:10:34 -0800 (PST)
 Received: from localhost.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.googlemail.com with ESMTPSA id b4sm261034ejl.206.2021.12.14.13.10.32
+        by smtp.googlemail.com with ESMTPSA id b4sm261034ejl.206.2021.12.14.13.10.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Dec 2021 13:10:33 -0800 (PST)
+        Tue, 14 Dec 2021 13:10:34 -0800 (PST)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -56,9 +56,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Cc:     Ansuel Smith <ansuelsmth@gmail.com>
-Subject: [net-next PATCH RFC v5 07/16] net: dsa: tag_qca: enable promisc_on_master flag
-Date:   Tue, 14 Dec 2021 22:10:02 +0100
-Message-Id: <20211214211011.24850-8-ansuelsmth@gmail.com>
+Subject: [net-next PATCH RFC v5 08/16] net: dsa: tag_qca: add define for handling mdio Ethernet packet
+Date:   Tue, 14 Dec 2021 22:10:03 +0100
+Message-Id: <20211214211011.24850-9-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20211214211011.24850-1-ansuelsmth@gmail.com>
 References: <20211214211011.24850-1-ansuelsmth@gmail.com>
@@ -68,27 +68,107 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Ethernet MDIO packets are non-standard and DSA master expects the first
-6 octets to be the MAC DA. To address these kind of packet, enable
-promisc_on_master flag for the tagger.
+Add all the required define to prepare support for mdio read/write in
+Ethernet packet. Any packet of this type has to be dropped as the only
+use of these special packet is receive ack for an mdio write request or
+receive data for an mdio read request.
+A struct is used that emulates the Ethernet header but is used for a
+different purpose.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- net/dsa/tag_qca.c | 1 +
- 1 file changed, 1 insertion(+)
+ include/linux/dsa/tag_qca.h | 41 +++++++++++++++++++++++++++++++++++++
+ net/dsa/tag_qca.c           | 13 +++++++++---
+ 2 files changed, 51 insertions(+), 3 deletions(-)
 
+diff --git a/include/linux/dsa/tag_qca.h b/include/linux/dsa/tag_qca.h
+index c02d2d39ff4a..21cd0db5acc2 100644
+--- a/include/linux/dsa/tag_qca.h
++++ b/include/linux/dsa/tag_qca.h
+@@ -12,10 +12,51 @@
+ #define QCA_HDR_RECV_FRAME_IS_TAGGED	BIT(3)
+ #define QCA_HDR_RECV_SOURCE_PORT	GENMASK(2, 0)
+ 
++/* Packet type for recv */
++#define QCA_HDR_RECV_TYPE_NORMAL	0x0
++#define QCA_HDR_RECV_TYPE_MIB		0x1
++#define QCA_HDR_RECV_TYPE_RW_REG_ACK	0x2
++
+ #define QCA_HDR_XMIT_VERSION		GENMASK(15, 14)
+ #define QCA_HDR_XMIT_PRIORITY		GENMASK(13, 11)
+ #define QCA_HDR_XMIT_CONTROL		GENMASK(10, 8)
+ #define QCA_HDR_XMIT_FROM_CPU		BIT(7)
+ #define QCA_HDR_XMIT_DP_BIT		GENMASK(6, 0)
+ 
++/* Packet type for xmit */
++#define QCA_HDR_XMIT_TYPE_NORMAL	0x0
++#define QCA_HDR_XMIT_TYPE_RW_REG	0x1
++
++#define MDIO_CHECK_CODE_VAL		0x5
++
++/* Specific define for in-band MDIO read/write with Ethernet packet */
++#define QCA_HDR_MDIO_SEQ_LEN		4 /* 4 byte for the seq */
++#define QCA_HDR_MDIO_COMMAND_LEN	4 /* 4 byte for the command */
++#define QCA_HDR_MDIO_DATA1_LEN		4 /* First 4 byte for the mdio data */
++#define QCA_HDR_MDIO_HEADER_LEN		(QCA_HDR_MDIO_SEQ_LEN + \
++					QCA_HDR_MDIO_COMMAND_LEN + \
++					QCA_HDR_MDIO_DATA1_LEN)
++
++#define QCA_HDR_MDIO_DATA2_LEN		12 /* Other 12 byte for the mdio data */
++#define QCA_HDR_MDIO_PADDING_LEN	34 /* Padding to reach the min Ethernet packet */
++
++#define QCA_HDR_MDIO_PKG_LEN		(QCA_HDR_MDIO_HEADER_LEN + \
++					QCA_HDR_LEN + \
++					QCA_HDR_MDIO_DATA2_LEN + \
++					QCA_HDR_MDIO_PADDING_LEN)
++
++#define QCA_HDR_MDIO_SEQ_NUM		GENMASK(31, 0)  /* 63, 32 */
++#define QCA_HDR_MDIO_CHECK_CODE		GENMASK(31, 29) /* 31, 29 */
++#define QCA_HDR_MDIO_CMD		BIT(28)		/* 28 */
++#define QCA_HDR_MDIO_LENGTH		GENMASK(23, 20) /* 23, 20 */
++#define QCA_HDR_MDIO_ADDR		GENMASK(18, 0)  /* 18, 0 */
++
++/* Special struct emulating a Ethernet header */
++struct mdio_ethhdr {
++	u32 command;		/* command bit 31:0 */
++	u32 seq;		/* seq 63:32 */
++	u32 mdio_data;		/* first 4byte mdio */
++	__be16 hdr;		/* qca hdr */
++} __packed;
++
+ #endif /* __TAG_QCA_H */
 diff --git a/net/dsa/tag_qca.c b/net/dsa/tag_qca.c
-index 34e565e00ece..f8df49d5956f 100644
+index f8df49d5956f..d30249b5205d 100644
 --- a/net/dsa/tag_qca.c
 +++ b/net/dsa/tag_qca.c
-@@ -68,6 +68,7 @@ static const struct dsa_device_ops qca_netdev_ops = {
- 	.xmit	= qca_tag_xmit,
- 	.rcv	= qca_tag_rcv,
- 	.needed_headroom = QCA_HDR_LEN,
-+	.promisc_on_master = true,
- };
+@@ -32,10 +32,10 @@ static struct sk_buff *qca_tag_xmit(struct sk_buff *skb, struct net_device *dev)
  
- MODULE_LICENSE("GPL");
+ static struct sk_buff *qca_tag_rcv(struct sk_buff *skb, struct net_device *dev)
+ {
+-	u8 ver;
+-	u16  hdr;
+-	int port;
++	u16  hdr, pk_type;
+ 	__be16 *phdr;
++	int port;
++	u8 ver;
+ 
+ 	if (unlikely(!pskb_may_pull(skb, QCA_HDR_LEN)))
+ 		return NULL;
+@@ -48,6 +48,13 @@ static struct sk_buff *qca_tag_rcv(struct sk_buff *skb, struct net_device *dev)
+ 	if (unlikely(ver != QCA_HDR_VERSION))
+ 		return NULL;
+ 
++	/* Get pk type */
++	pk_type = FIELD_GET(QCA_HDR_RECV_TYPE, hdr);
++
++	/* Ethernet MDIO read/write packet */
++	if (pk_type == QCA_HDR_RECV_TYPE_RW_REG_ACK)
++		return NULL;
++
+ 	/* Remove QCA tag and recalculate checksum */
+ 	skb_pull_rcsum(skb, QCA_HDR_LEN);
+ 	dsa_strip_etype_header(skb, QCA_HDR_LEN);
 -- 
 2.33.1
 
