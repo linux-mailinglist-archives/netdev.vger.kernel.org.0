@@ -2,221 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BDA94741CA
-	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 12:48:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B04A4741E5
+	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 12:59:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233731AbhLNLsI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Dec 2021 06:48:08 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:25113 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233701AbhLNLsD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 06:48:03 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1639482481;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=3RvtHCVmlMZy9Ar2QfnJIpooqhdOg1Edmr9vHxfSUd0=;
-        b=ThMhs4HGkvQsrZOR9KBa0zMqP9IfoeGRUdZgC8d1fm9PSdHnZzro4uSN6dXeDwjYQ3kTUh
-        owgWIcDYs8mgYb7+PdKx7e5YZUf4JkQoQlYoeUcdtiqlr6gS0ou9zp7xHBDOUC5uqkKT7w
-        +J18QO94BGL7tPoo3jyNNtsRj/pySUQ=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-203-p1wbhLJcMsqstES02VI-DA-1; Tue, 14 Dec 2021 06:47:00 -0500
-X-MC-Unique: p1wbhLJcMsqstES02VI-DA-1
-Received: by mail-ed1-f71.google.com with SMTP id v10-20020aa7d9ca000000b003e7bed57968so16716911eds.23
-        for <netdev@vger.kernel.org>; Tue, 14 Dec 2021 03:46:59 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=3RvtHCVmlMZy9Ar2QfnJIpooqhdOg1Edmr9vHxfSUd0=;
-        b=2MIvIMAhyuzRbzn1L9b81+Lvt7WcC7MkN34rQ6MqquDFfLYNVe+qQbRGWoDIv5yP02
-         qWJ3Lm4L0dq48gJLWgoZXXTGXtQEu1upqLlX5XURiBvMMwVD198qMduFFpS74P7L7Z6L
-         VggOCSaSXBKvAh1P0BIBmfb3V8xoiOyhXH9kr4dlkc1TSnW13ioy3AJOC/uZxL22SVyK
-         ty5RpfASzJwF8HuVGlfSK4UGFMSVJJAvQ9nCUe6X8nsa4MOgLb4mvxmPNl5AooOBgNaJ
-         T3jW3AsoOJDj6wsZNDzqoRTqUEhecJfXert4KPsUkGCw0jJReDpROJEU1JeqCEhn0BIU
-         tm1Q==
-X-Gm-Message-State: AOAM532/zvpmb1HXBja2E3hRSYg92TYXWGb8WsOr6JgH38SxCEY4l6DT
-        ImcrWvZCO9uJbjSBV+H1ZuQMh0h2AmlrbBniqbOK+rNAKUD5qAyTfTT3EtSg0Ke/LWoKlReJMSz
-        Me17ynl1fMjadnXKj
-X-Received: by 2002:aa7:cd8a:: with SMTP id x10mr7162149edv.3.1639482417853;
-        Tue, 14 Dec 2021 03:46:57 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzZNEPABW3x0WzZIWAhn1kMS0hIUA1n/NxBrALSeJRp+RasyTPS9tjpja95XnCjrc8hhifFSA==
-X-Received: by 2002:aa7:cd8a:: with SMTP id x10mr7162031edv.3.1639482416907;
-        Tue, 14 Dec 2021 03:46:56 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id 26sm1291854ejk.138.2021.12.14.03.46.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Dec 2021 03:46:56 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id B3A83183566; Tue, 14 Dec 2021 12:46:55 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-Subject: Re: [PATCH bpf-next v3 6/8] bpf: Add XDP_REDIRECT support to XDP
- for bpf_prog_run()
-In-Reply-To: <CAADnVQKRAFCqUj9J8B5cM4u=wS-0Kh9YZYR=QqT6GiiX3ZXXDQ@mail.gmail.com>
-References: <20211211184143.142003-1-toke@redhat.com>
- <20211211184143.142003-7-toke@redhat.com>
- <CAADnVQJYfyHs41H1x-1wR5WVSX+3ju69XMUQ4id5+1DLkTVDkg@mail.gmail.com>
- <87tufceaid.fsf@toke.dk>
- <CAADnVQJunh7KTKJe3F_tO0apqLHtOMFqGAB-V28ORh6o5JUTUQ@mail.gmail.com>
- <87fsqwyqdf.fsf@toke.dk>
- <CAADnVQKRAFCqUj9J8B5cM4u=wS-0Kh9YZYR=QqT6GiiX3ZXXDQ@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Tue, 14 Dec 2021 12:46:55 +0100
-Message-ID: <874k7bz9w0.fsf@toke.dk>
+        id S233738AbhLNL7E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Dec 2021 06:59:04 -0500
+Received: from mail-zr0che01on2122.outbound.protection.outlook.com ([40.107.24.122]:52161
+        "EHLO CHE01-ZR0-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S233730AbhLNL7A (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Dec 2021 06:59:00 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jxm7iU0J05q0pzQtxQLqmONkvNRkQhFUgtFRUGr080aCE62IcfFGRGn45RyNWRLiLAI6uTyNGo4MEtHgWsx59Zy+RD3YxcgibGcmImqYzA8899yBvvu03PUNjR52CsXQ3xoQhD4CESMTGRxyJCzc5FaaSvSFJc9ZznZFvBBS5P1wsn6XZFh3T9t6tEGFwu9jjQjznAbxP4VCaUIx0qa7F2r1cato32KvDi0iuLFTiFBjQds4L4KPaiMUo6DKXC571pVDX7/ZTzuffgoMXvKBmM4u1AfF2thl2dlKXGJ+anQOj993cmkOCeWdk4IF0MVUctx5no2zY6c0+ZffkIrElQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=6zhOh2kefMjwK+ffOCKH2ohfZE6akXlfzY87miBH1hI=;
+ b=O2OcmF9W4DjQP/IyKWWoCryj1KpubU98eObFA/jg1PJ/JVgcoieJKmUnpvUlTYUNcW5E/478Kj7CfuSQOLOnIBbAc+TXFL0ezcaWC3A+QGAlubBsLP9BwjDMf2x6Fn02Y3FyzN7VR4NFpKfhxrldI8dT/uwHwCibB60kOkYmTxIZGQh1R+qz4cIgh5HrvsnnsfSc0yOPJyS2K+567ojhcFJVjpvfEa9svfPi6dhsN0OODsKglVyD5hRx8lrdgQfIDtz5siXyJ/2AFanUT2+yuSO7XpAHdiJrdKdfc0oKKi1wwTfHlThSFjS7fsi9xZ+yBgK1/mUA4MbVcGBMLDg01A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=toradex.com; dmarc=pass action=none header.from=toradex.com;
+ dkim=pass header.d=toradex.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=toradex.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6zhOh2kefMjwK+ffOCKH2ohfZE6akXlfzY87miBH1hI=;
+ b=nGQVbpEM3/doLEmOtrTOwL3MMreaDo58iucjvSPPMGSprKLgLGDkGuwIqnVSzR8WLIdD6Jg+ca68//w4PmzOWvHeQqrPRiPMjR5c9RsolHU7pSOXdQEFG3ZgF1nt96IR8AkmrSQsuW9LIiKkbSSZ4aHK/Axq7UkzUeNQIvV850M=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=toradex.com;
+Received: from ZRAP278MB0642.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:3d::11)
+ by ZRAP278MB0238.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:2d::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4778.17; Tue, 14 Dec
+ 2021 11:58:58 +0000
+Received: from ZRAP278MB0642.CHEP278.PROD.OUTLOOK.COM
+ ([fe80::d837:7398:e400:25f0]) by ZRAP278MB0642.CHEP278.PROD.OUTLOOK.COM
+ ([fe80::d837:7398:e400:25f0%2]) with mapi id 15.20.4778.018; Tue, 14 Dec 2021
+ 11:58:58 +0000
+Date:   Tue, 14 Dec 2021 12:58:57 +0100
+From:   Francesco Dolcini <francesco.dolcini@toradex.com>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Francesco Dolcini <francesco.dolcini@toradex.com>,
+        philippe.schenker@toradex.com, andrew@lunn.ch,
+        qiangqing.zhang@nxp.com, davem@davemloft.net, festevam@gmail.com,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] net: phy: perform a PHY reset on resume
+Message-ID: <20211214115857.GA13490@francesco-nb.int.toradex.com>
+References: <7a4830b495e5e819a2b2b39dd01785aa3eba4ce7.camel@toradex.com>
+ <20211211130146.357794-1-francesco.dolcini@toradex.com>
+ <YbSymkxlslW2DqLW@shell.armlinux.org.uk>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YbSymkxlslW2DqLW@shell.armlinux.org.uk>
+X-ClientProxiedBy: ZR0P278CA0010.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:910:16::20) To ZRAP278MB0642.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:910:3d::11)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: ea4ac6b0-458d-495e-f48c-08d9bef91c3d
+X-MS-TrafficTypeDiagnostic: ZRAP278MB0238:EE_
+X-Microsoft-Antispam-PRVS: <ZRAP278MB0238EE10B5ACA847F7D2D021E2759@ZRAP278MB0238.CHEP278.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 2T0twbHo4omxb4yXGRg9GNkZitl7T5E6NgQR3SCQnIApfgxdiSN9STgjplNp8q9h+HnG4lYRK/JywU6Z5EfPpL94DzwZ2bgPUj5q15UkynqXeWbPQjHI/LPF4RaR2PUiQINPZg4wMEMVSdapL4BcZcn9nayWToOi/tCdTbkwsePClxHKE/ushZPppmZp5OuPYEQibSm9fCsih/2aV/I1D6psE19mIK7DrjUqvx9diEfiN6Cdq7udeKSP6U7neix+CoVMBkw0m7xJlLo7swAPEzJxytdc9LAZP4qBSDFuFYfCUwHpyalhDSZMwH6k5GMtkMk0XJ9U4fxLVsTTVKl3Pj+kO59NGwkSQBmHJzWWNtgIFO/JngDgIKwZZMyvzuaaZDPXc9atNdNFkrTOt9/0IuDYL9nMZXQcHVX6Q2je4bhnraZzVptmYWb7UzTgcykNSAoQd3YmGVupPEwZdVWU4VQ3xpizkMscEps16+HtCxjWQxC2wfq5l4FHJpUKIKaXbXKeBQ7+HpYXlN9Ns3MYix/s1Bz4uw/i4CdGf1rK9DnL3eJAr5G5XZTqa7mY7W287qauO5k77OaiU4Pw4lQSjJrX/HDxpVi0/xrYIZEXpJPmuFvdLALzz20ZKP6mFoM0twsmnBWG/sW/97V/dFKjcn5yEoYtkNMkYvUtWug0GBeUKAMeYXlcmaqcPorx57PSZ8PiWcMvPNjIuK2vFjCj9Q==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:ZRAP278MB0642.CHEP278.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(4636009)(39850400004)(376002)(136003)(366004)(396003)(346002)(8676002)(6512007)(6916009)(4744005)(6486002)(33656002)(86362001)(38350700002)(52116002)(8936002)(6506007)(1076003)(38100700002)(26005)(186003)(44832011)(316002)(5660300002)(2906002)(66476007)(66556008)(508600001)(66946007)(4326008);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?YWfJ9zhH73OtHfOA5wiQJL0UGlRrn7GqVq4EMCIThj4YWTO9ZDhSGx5t9A6G?=
+ =?us-ascii?Q?xe4xUDFcM2trgELgBYdcMFlJ11R9RLvjLiIdjDTfyTjWYyo1W+R/0DnhqV7X?=
+ =?us-ascii?Q?10vHp9elesgvW4U37wyuvftiHJ6qyCBaTqwUdvmF8Lq2OGtxEazOQL0+srHU?=
+ =?us-ascii?Q?hGK5TBC/8piOF/PaTG4C3uQ6jKSzA5y5xCfzUzUfcOX5n5GiQf8oAzsPimwG?=
+ =?us-ascii?Q?FJbeybubegCdfok5W5qcPKfl21/U6z/dd1y2cgduP7UtKIuMe3pBP9WvACLa?=
+ =?us-ascii?Q?txQaRK22dtURwquADKLeh49pjRghkbqvEahS+EiZERaTgaCCprT33y9IzI2m?=
+ =?us-ascii?Q?LdZwszKiUuMdxTN05nLocNsTdnI+spcdNc0C/IHgTGPG9LlMwoYYtMhiUYo8?=
+ =?us-ascii?Q?eKbvzneQN+auAqUrAXYmm1203HuUTrac3tv/kHolaT7Bv8jnmbUzlQqLf8i4?=
+ =?us-ascii?Q?t595lYuy+VvUfjzT+TTXIaWpLTQnwPxQ1FIcESTrpNUKWqS+Zkf6cxu8SOR5?=
+ =?us-ascii?Q?u6yY3mEGD8EgURfu40UT4klfu4XipH4P3QngJK29NhG4ykDBEAswlrPBGfBX?=
+ =?us-ascii?Q?5kYdq4k1P1Oez+tP75AMW2pG9pdt8pe37IT9SwdrDXcGXOb6SqKHkLixad2e?=
+ =?us-ascii?Q?VPNNxyM47pk3LOYrXFcATSRfv93mxYpgprOlAwLi7jJolbBqVGjcMhrhCP3w?=
+ =?us-ascii?Q?FuhjyJnPhijCyIJPaw2ntkZ/elY+YUoEujmA1aOBSAR3HKJsIBFXYU9KuTzt?=
+ =?us-ascii?Q?acbKuZhqvi3s3UWvsiIhVhEm5EJL0Fon444B9ZuujLuLzueYbFs7HFkY1e6s?=
+ =?us-ascii?Q?pHszR+H5H+xTUNSAJTQox5CIv436UJIycfsOqiBAdT4p6cpUlRFXzDBru/X5?=
+ =?us-ascii?Q?hhEXd4On+TcpWU2LQxIV25Lq2vj2P0NV2cdKXyaJYasESJbNzRNnf9iAYrFN?=
+ =?us-ascii?Q?Kq/oTYH0v+GJh9iYBPTn6FHZ8iuiNaJ5naO4/IFpiQftAE5fg9DsW8QBchnm?=
+ =?us-ascii?Q?PcQet/TIxVcNpBxNRq2eA5e4g6RoVj4xLmxkulC/Vx+MXTNTyReGmb1FdJDv?=
+ =?us-ascii?Q?6hqzgJ33qnIEjMrpfCYfJOLt9gobLfa7rF5haEEK/XXMEs2W1NtCSa7cgzA3?=
+ =?us-ascii?Q?0ZAvqNHWbGimv9nRu/q8Ug+WdFxYU/qmwu0ZAwMARxniRqnNksQxFGgB0Tst?=
+ =?us-ascii?Q?UydKHzQF17DCoR4INHOqBkNRLxQblp42Xpq3j+kohdOZfxlSEnCBTUPNm+TD?=
+ =?us-ascii?Q?AB3UTpMAboX7VW2UuhIyuviZGzWGdI9wnxVezwa/r3GrgcjSMtLzpKMDJ0RD?=
+ =?us-ascii?Q?MJEP5/CdrufwyejGBIA5cWeQ4/MMxWh5njvOkUYoXjAsiMRKcGS3L6TNgquM?=
+ =?us-ascii?Q?pVQ6V2rzJERkHd1sbWRpWSs+t9wE5P6D2LvsDyY5iW+Rl/TK8XxSzc4yeygH?=
+ =?us-ascii?Q?Stw7ggoZgHubk9ezi0CWhuVKRN33Mhk9PAC9K9Adlf2zP89OE+3o9yJF5JzL?=
+ =?us-ascii?Q?KUFaxTYa5XhhioTNdzOp/Iv3Zc8uyV82abkW6JmgvNV4LAtu0r9s/DV1tWnT?=
+ =?us-ascii?Q?9Z3saHGiBQh5V12+5sfU8+BiW+i+B+FugHMSFbLaBXRGqFh2uyW5o6mgWEHP?=
+ =?us-ascii?Q?BJjHJjaGJpjLzUXgx4TSc8dnyOQx00JjQOSFJt+tkm1aCe2yhOrIfdCF2qJp?=
+ =?us-ascii?Q?SrKqfA=3D=3D?=
+X-OriginatorOrg: toradex.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ea4ac6b0-458d-495e-f48c-08d9bef91c3d
+X-MS-Exchange-CrossTenant-AuthSource: ZRAP278MB0642.CHEP278.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Dec 2021 11:58:58.0627
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: d9995866-0d9b-4251-8315-093f062abab4
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: KT7m5VWySBeNTzMtzC8215YF8xYybwByxhA3JH/zxJ2FAOIPjXhD1oNRxx/hdYzjLRsjsHh4tVPJ2PQiX68ACj9j/Jvnoyl3DbfdnLvnCjk=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: ZRAP278MB0238
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+On Sat, Dec 11, 2021 at 02:15:54PM +0000, Russell King (Oracle) wrote:
+> I don't particularly like this - this impacts everyone who is using
+> phylib at this point, whereas no reset was happening if the reset was
+> already deasserted here.
 
-> On Mon, Dec 13, 2021 at 4:36 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@re=
-dhat.com> wrote:
->>
->> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
->>
->> > On Mon, Dec 13, 2021 at 8:26 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke=
-@redhat.com> wrote:
->> >>
->> >> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
->> >>
->> >> > On Sat, Dec 11, 2021 at 10:43 AM Toke H=C3=B8iland-J=C3=B8rgensen <=
-toke@redhat.com> wrote:
->> >> >> +
->> >> >> +static void bpf_test_run_xdp_teardown(struct bpf_test_timer *t)
->> >> >> +{
->> >> >> +       struct xdp_mem_info mem =3D {
->> >> >> +               .id =3D t->xdp.pp->xdp_mem_id,
->> >> >> +               .type =3D MEM_TYPE_PAGE_POOL,
->> >> >> +       };
->> >> >
->> >> > pls add a new line.
->> >> >
->> >> >> +       xdp_unreg_mem_model(&mem);
->> >> >> +}
->> >> >> +
->> >> >> +static bool ctx_was_changed(struct xdp_page_head *head)
->> >> >> +{
->> >> >> +       return (head->orig_ctx.data !=3D head->ctx.data ||
->> >> >> +               head->orig_ctx.data_meta !=3D head->ctx.data_meta =
-||
->> >> >> +               head->orig_ctx.data_end !=3D head->ctx.data_end);
->> >> >
->> >> > redundant ()
->> >> >
->> >> >>         bpf_test_timer_enter(&t);
->> >> >>         old_ctx =3D bpf_set_run_ctx(&run_ctx.run_ctx);
->> >> >>         do {
->> >> >>                 run_ctx.prog_item =3D &item;
->> >> >> -               if (xdp)
->> >> >> +               if (xdp && xdp_redirect) {
->> >> >> +                       ret =3D bpf_test_run_xdp_redirect(&t, prog=
-, ctx);
->> >> >> +                       if (unlikely(ret < 0))
->> >> >> +                               break;
->> >> >> +                       *retval =3D ret;
->> >> >> +               } else if (xdp) {
->> >> >>                         *retval =3D bpf_prog_run_xdp(prog, ctx);
->> >> >
->> >> > Can we do this unconditionally without introducing a new uapi flag?
->> >> > I mean "return bpf_redirect()" was a nop under test_run.
->> >> > What kind of tests might break if it stops being a nop?
->> >>
->> >> Well, I view the existing mode of bpf_prog_test_run() with XDP as a w=
-ay
->> >> to write XDP unit tests: it allows you to submit a packet, run your X=
-DP
->> >> program on it, and check that it returned the right value and did the
->> >> right modifications. This means if you XDP program does 'return
->> >> bpf_redirect()', userspace will still get the XDP_REDIRECT value and =
-so
->> >> it can check correctness of your XDP program.
->> >>
->> >> With this flag the behaviour changes quite drastically, in that it wi=
-ll
->> >> actually put packets on the wire instead of getting back the program
->> >> return. So I think it makes more sense to make it a separate opt-in
->> >> mode; the old behaviour can still be useful for checking XDP program
->> >> behaviour.
->> >
->> > Ok that all makes sense.
->>
->> Great!
->>
->> > How about using prog_run to feed the data into proper netdev?
->> > XDP prog may or may not attach to it (this detail is tbd) and
->> > prog_run would use prog_fd and ifindex to trigger RX (yes, receive)
->> > in that netdev. XDP prog will execute and will be able to perform
->> > all actions (not only XDP_REDIRECT).
->> > XDP_PASS would pass the packet to the stack, etc.
->>
->> Hmm, that's certainly an interesting idea! I don't think we can actually
->> run the XDP hook on the netdev itself (since that is deep in the
->> driver), but we can emulate it: we just need to do what this version of
->> the patch is doing, but add handling of the other return codes.
->>
->> XDP_PASS could be supported by basically copying what cpumap is doing
->> (turn the frames into skbs and call netif_receive_skb_list()), but
->> XDP_TX would have to be implemented via ndo_xdp_xmit(), so it becomes
->> equivalent to a REDIRECT back to the same interface. That's probably OK,
->> though, right?
->
-> Yep. Something like this.
-> imo the individual BPF_F_TEST_XDP_DO_REDIRECT knob doesn't look right.
-> It's tweaking the prog run from no side effects execution model
-> to partial side effects.
-> If we want to run xdp prog with side effects it probably should
-> behave like normal execution on the netdev when it receives the packet.
-> We might not even need to create a new netdev for that.
-> I can imagine a bpf_prog_run operating on eth0 with a packet prepared
-> by the user space.
-> Like injecting a packet right into the driver and xdp part of it.
-> If prog says XDP_PASS the packet will go up the stack like normal.
-> So this mechanism could be used to inject packets into the stack.
-> Obviously buffer management is an issue in the traditional NIC
-> when a packet doesn't come from the wire.
-> Also doing this in every driver would be a pain.
-> So we need some common infra to inject the user packet into a netdev
-> like it was received by this netdev. It could be a change for tuntap
-> or for veth or not related to netdev at all.
+Let's drop this patch, Philippe will send a new patch adding a
+phy_reset_after_power_on() function similar to
+phy_reset_after_clk_enable().
 
-What you're describing is basically what the cpumap code does; except it
-doesn't handle XDP_TX, and it doesn't do buffer management. But I
-already implemented the latter, and the former is straight-forward to do
-as a special-case XDP_REDIRECT. So my plan is to try this out and see
-what that looks like :)
-
-> After XDP_PASS it doesn't need to be fast. skb will get allocated
-> and the stack might see it as it arrived from ifindex=3DN regardless
-> of the HW of that netdev.
-> XDP_TX would xmit right out of that ifindex=3Dnetdev.
-> and XDP_REDIRECT would redirect to a different netdev.
-> At the end there will be less special cases and page_pool tweaks.
-> Thought the patches 1-5 look fine, it still feels a bit custom
-> just for this particular BPF_F_TEST_XDP_DO_REDIRECT use case.
-> With more generic bpf_run_prog(xdp_prog_fd, ifindex_of_netdev)
-> it might reduce custom handling.
-
-Yup, totally makes sense!
-
--Toke
+Francesco
 
