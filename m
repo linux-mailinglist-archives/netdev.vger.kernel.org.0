@@ -2,68 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 310464749C1
-	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 18:38:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 158894749CE
+	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 18:39:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231876AbhLNRic (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Dec 2021 12:38:32 -0500
-Received: from mail-ot1-f43.google.com ([209.85.210.43]:40682 "EHLO
-        mail-ot1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229912AbhLNRia (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 12:38:30 -0500
-Received: by mail-ot1-f43.google.com with SMTP id v15-20020a9d604f000000b0056cdb373b82so21695363otj.7;
-        Tue, 14 Dec 2021 09:38:30 -0800 (PST)
+        id S236653AbhLNRjZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Dec 2021 12:39:25 -0500
+Received: from mail-oi1-f176.google.com ([209.85.167.176]:36427 "EHLO
+        mail-oi1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236657AbhLNRjY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 12:39:24 -0500
+Received: by mail-oi1-f176.google.com with SMTP id t23so28155508oiw.3;
+        Tue, 14 Dec 2021 09:39:24 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=T+wvpVWDdsGpJBe6gIqFrAVl31VdvDh0Jr2/KDBVPwc=;
-        b=pz1Y5L1Wjx/Es9A2CggGVwGZHKYx7nlKwnIdzGl1+dZ81DOrTeIzHyrmnz4dHYb6jm
-         nZUz7zdlH4Pw3G/fDzjPPYJebT4qZjd7W5TA6l758q/ew2Dz9EK5r5MqpCyUdilDnYBu
-         arx6ze5j7CtnJsg1LmJbzFAvd651OqNl4x9FijckEQDdMh3kLNooMBtkZIP0SRVs5oSh
-         vy0YDlX6Lt3o0vxDRW/Wkm5t4xkBFwlv6p+jSWzKMhJe7KyclosPh8UH2DOFDnQJC3fw
-         VbtCJHgiWAi0jYoQkWIaqnUqK4chw9dEWkJ9mdNkc03ugrkOYOfqQNmmR4VXnVipdAjj
-         +ZHg==
-X-Gm-Message-State: AOAM532MN7AVwzxG7furzfcbAa4TkhSX/gm1gAZNsxK05IgQlHnBm0ua
-        9548kofHBbzP0lFkcen+HqwmmTT0fg==
-X-Google-Smtp-Source: ABdhPJzxIBvR+HWF/N1VRKgTGmrzoX7oVPEv+bwOOH8ny+QgsYNdvWRVBbssClGxRtLzizxNLKfqVA==
-X-Received: by 2002:a05:6830:410a:: with SMTP id w10mr5384642ott.55.1639503509337;
-        Tue, 14 Dec 2021 09:38:29 -0800 (PST)
+        bh=O0xCXgIG7KmD+MIqqHCpMghuSId2pal3UJtMVD2ehNo=;
+        b=edp+7nwlzwfcOMFnx3bHtT16TVJj1Hp0OYqz0LSLbc0pKrl+0ha2t3BFKcfXDoV7zd
+         xoT/2Ax9xxhD2dXOJrLGQ0g6atqI5zvz/BwmVZtdsY2bawSAbPuxXmJanUIGqgI97osF
+         5r6ih7qXsgCIwFIp+8Ps9Y8qQHTQm91lar+0ObkKYwiOSqr6QnJI2zd+4eORlUW0hxyP
+         cGTI7Jq9PfBmM8LoeReght9DHasLcLRuIBmv4JWFmFRKLxj0+VSloAHgiO8ylmFUK2qm
+         euWbwaBorqBro64IdghMt6ah8LYbBJMeMTfRc3aXT0tWMjZm51wPZ6zQ1DdnS4D39bWX
+         IZ8A==
+X-Gm-Message-State: AOAM533Sd5oWko38Ak8dJs+5nBknxkO+xNXHe5z73B+8zt/fHr2IFML8
+        sb0kFRy9KbCGdA/XckakmQ==
+X-Google-Smtp-Source: ABdhPJxAM3rZCbW8t+Gi0ZQoRDmlqN/q9GMHRgQuQlbzGPkx3MEK6e1ZRopuv0dobsoLP6qspurRvQ==
+X-Received: by 2002:a05:6808:bc3:: with SMTP id o3mr33306166oik.151.1639503563866;
+        Tue, 14 Dec 2021 09:39:23 -0800 (PST)
 Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id w71sm98513oiw.6.2021.12.14.09.38.28
+        by smtp.gmail.com with ESMTPSA id i16sm95832oig.15.2021.12.14.09.39.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Dec 2021 09:38:28 -0800 (PST)
-Received: (nullmailer pid 3605724 invoked by uid 1000);
-        Tue, 14 Dec 2021 17:38:27 -0000
-Date:   Tue, 14 Dec 2021 11:38:27 -0600
+        Tue, 14 Dec 2021 09:39:23 -0800 (PST)
+Received: (nullmailer pid 3607204 invoked by uid 1000);
+        Tue, 14 Dec 2021 17:39:22 -0000
+Date:   Tue, 14 Dec 2021 11:39:22 -0600
 From:   Rob Herring <robh@kernel.org>
-To:     Joseph CHANG <josright123@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org, joseph_chang@davicom.com.tw,
-        Rob Herring <robh+dt@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, devicetree@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v4, 1/2] yaml: Add dm9051 SPI network yaml file
-Message-ID: <YbjWkzwjzMN0OVWp@robh.at.kernel.org>
-References: <20211212104604.20334-1-josright123@gmail.com>
- <20211212104604.20334-2-josright123@gmail.com>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     kuba@kernel.org, netdev@vger.kernel.org,
+        UNGLinuxDriver@microchip.com, f.fainelli@gmail.com, andrew@lunn.ch,
+        linux-kernel@vger.kernel.org, davem@davemloft.net,
+        vivien.didelot@gmail.com, devicetree@vger.kernel.org,
+        robh+dt@kernel.org, vladimir.oltean@nxp.com, linux@armlinux.org.uk
+Subject: Re: [PATCH net-next v4 02/10] dt-bindings: net: lan966x: Extend with
+ the analyzer interrupt
+Message-ID: <YbjWyqP11d+dDFK2@robh.at.kernel.org>
+References: <20211213101432.2668820-1-horatiu.vultur@microchip.com>
+ <20211213101432.2668820-3-horatiu.vultur@microchip.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211212104604.20334-2-josright123@gmail.com>
+In-Reply-To: <20211213101432.2668820-3-horatiu.vultur@microchip.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 12 Dec 2021 18:46:03 +0800, Joseph CHANG wrote:
-> This is a new yaml base data file for configure davicom dm9051 with
-> device tree
+On Mon, 13 Dec 2021 11:14:24 +0100, Horatiu Vultur wrote:
+> Extend dt-bindings for lan966x with analyzer interrupt.
+> This interrupt can be generated for example when the HW learn/forgets
+> an entry in the MAC table.
 > 
-> Signed-off-by: Joseph CHANG <josright123@gmail.com>
+> Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 > ---
->  .../bindings/net/davicom,dm9051.yaml          | 62 +++++++++++++++++++
->  1 file changed, 62 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/davicom,dm9051.yaml
+>  .../devicetree/bindings/net/microchip,lan966x-switch.yaml       | 2 ++
+>  1 file changed, 2 insertions(+)
 > 
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Acked-by: Rob Herring <robh@kernel.org>
