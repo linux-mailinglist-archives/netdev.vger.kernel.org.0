@@ -2,148 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C044473AA6
-	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 03:14:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 302CB473AB5
+	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 03:20:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233285AbhLNCOR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Dec 2021 21:14:17 -0500
-Received: from mail-psaapc01on2131.outbound.protection.outlook.com ([40.107.255.131]:24602
-        "EHLO APC01-PSA-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231543AbhLNCOR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 13 Dec 2021 21:14:17 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HDqQLhDWg/atc0YHQaDwrLC8//Q15ivLYbiyyAlOZW+Sc/5KPFhmtQnlazNMJ/ZDBHRfB6+WVMLxfIkITWwx4nhdDMFVPMLciw/hGMsxGyJpWwreHueczDKqDk6UqhkK+Ao8K3SjYUaRk1y0DLNdiqlAwmqPHOKMxRwpLyQfNQ5k0xYTJCog0hdlYeL72zs3QOlKrINhmxFLsjdVaDL44oVmR0ZfjpLO8cxJyJ5Em4G8waPuIysgDBbUZnCms73FTeW9MPJAZ+Xezb9Fu0ZjjJrdxz5vj0/lsldMj2woFj22EfA5C1Z5ZZw5xxraas2gWrykeMxOT+J8danqBzdosg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=lLBAzweCgND1G7h+3v219E235QXz7w6ASU7aBLqFP8I=;
- b=IVDH4fLFixYSpBCbpFc8OXTbHeqW0Yr5fo/CV/IefsqPNt7TuTz2JmjaGaS/wnbYDf4/cY9rCQUXVnw9VcrflzdsWsIZaoRNXp73um227N+lJvZJxrBZhSY88/3oef+OE1g9j0Xaxty87qfKMcdNNF9K1tCio5F93vC9pVF3dqC0QzURaXiEJGXxYWUtGyyFn2NFxlqKy51Jud8y7a/MxAApX0PT3aPdn79e4K3XlR5vu0KBjKWljzfgihM6CBvwCopi3lz/OOqqmMLTdLH8QG4gWnet7rFH/KTXrZNZ2LDe7DWV6Rx/qIVGxdOOJmcSL8mTWEOM90KrTFByKyNP+w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
- dkim=pass header.d=vivo.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
- s=selector2-vivo0-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lLBAzweCgND1G7h+3v219E235QXz7w6ASU7aBLqFP8I=;
- b=jt2PZddicVJg5a3YOyIPuYhiFrPJzaW/HAlPIKU/srQwtUeJtu6Z1+RnE1+wt1dS+IT6o4cuPJRUVQ50RirrNwua1l0UAWJIWQ5/8onuCyi/8SNa7ZK2BNHph996RC669s3GZnMFBFELXQ9mmNLZOpzBkFK4YSJOR+ngr3HQ3os=
-Received: from SL2PR06MB3082.apcprd06.prod.outlook.com (2603:1096:100:37::17)
- by SL2PR06MB3243.apcprd06.prod.outlook.com (2603:1096:100:35::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4778.12; Tue, 14 Dec
- 2021 02:14:14 +0000
-Received: from SL2PR06MB3082.apcprd06.prod.outlook.com
- ([fe80::a0cf:a0e2:ee48:a396]) by SL2PR06MB3082.apcprd06.prod.outlook.com
- ([fe80::a0cf:a0e2:ee48:a396%4]) with mapi id 15.20.4778.018; Tue, 14 Dec 2021
- 02:14:13 +0000
-From:   =?gb2312?B?zfXH5g==?= <wangqing@vivo.com>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-CC:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
+        id S231543AbhLNCUS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Dec 2021 21:20:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36460 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229616AbhLNCUR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 21:20:17 -0500
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E927C061574
+        for <netdev@vger.kernel.org>; Mon, 13 Dec 2021 18:20:17 -0800 (PST)
+Received: by mail-ed1-x52e.google.com with SMTP id e3so59087284edu.4
+        for <netdev@vger.kernel.org>; Mon, 13 Dec 2021 18:20:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=chLmVj5F9v7o8xwppcyYkXk9RedN5pKR5WdpbUeegJU=;
+        b=P/QppK3RdMoDu6QZYv0XFavlDJPpKNfl+llVo6CUgDl8kiizOpu2Cqfe/2YiaBZDQ8
+         RMB+tRMhdDweu88XzTDFDvAl2Ypa9g75sU0OkRPxOUE3fVUlAl/y6F2JbkHWVumsXuFm
+         tEjQA3oxKsRCiHkrNldKzs70AfztRaRNyNLN7PV9gDwn65OuJgB0a3c65Rq/XneEKkRF
+         rPc4ER5YChYxu7sBgvvYuchLcrLjv2FcceI4AdW38gg5qRB+CrngHCcurmS4mPLl9w0/
+         MunSHjn57/Uk+RXFw3qIWilx+LzDPCHBm/FgEjlcxFHvcqC00cnqRv45DnuduQAmzZWb
+         5CDA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=chLmVj5F9v7o8xwppcyYkXk9RedN5pKR5WdpbUeegJU=;
+        b=fsFTbHpL4DiEuB5lOvrc8aiFdYfXeCcPdYKfnqo3zoT8GuCNGo3NXkaWU+sSJ7nbik
+         3t0S29lCeEDRJSrtyqwDA1uRYepIjaxUragoIorn0K+k7kPGUp9FBtpYE1OkmmCKAX6a
+         8tnreZ1gqPi3qDL8dsWNXWElCG21waN7VY6vfY6NnVMM4x3ehAE640HNeQzDBQmv4vE7
+         ZygiflWQR8Z8f/5uShaz4c8DOYv8IcZD43wbz8nkvBsCEXtQbRIB0P7NSoC6CEsTPltZ
+         A43Vv0wkdnDK5GDVtBG3KawIUm9h5tCh5tGOk7ylQUJprvSfVBp8o+TOtkMoDVABne3h
+         eFMQ==
+X-Gm-Message-State: AOAM533frCjq8V0b0OOTebacFIevle2dFcL8IZCg5AyMdVaxCGax65f6
+        NdQAEDZUPgBZuGwxwDwqsdv4d3Ln7YXc2BcqybA=
+X-Google-Smtp-Source: ABdhPJyA1LPDxoWLUy+g+W/V7lKtmkRHIam7Q4hXFkAfEqpttgb4uvfTw9xbNS/DMl7RfD0Ly7Y2otY0K8j4D01FPYY=
+X-Received: by 2002:a05:6402:2152:: with SMTP id bq18mr3644503edb.105.1639448415602;
+ Mon, 13 Dec 2021 18:20:15 -0800 (PST)
+MIME-Version: 1.0
+References: <20211210023626.20905-1-xiangxia.m.yue@gmail.com>
+ <20211210023626.20905-3-xiangxia.m.yue@gmail.com> <CAM_iQpVOuQ4C3xAo1F0pasPB5M+zUfviyYO1VkanvfYkq2CqNg@mail.gmail.com>
+ <CAMDZJNUos+sb+Q1QTpDTfVDj7-RcsajcT=P6PABuzGuHCXZqHw@mail.gmail.com> <CAM_iQpU+JMtrObsGUwUwC8eoZ1G39Lvp7ihV2iERF5dg0FySXA@mail.gmail.com>
+In-Reply-To: <CAM_iQpU+JMtrObsGUwUwC8eoZ1G39Lvp7ihV2iERF5dg0FySXA@mail.gmail.com>
+From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Date:   Tue, 14 Dec 2021 10:19:39 +0800
+Message-ID: <CAMDZJNXwOZUyJndHsOjjR-n-m1V2BkVh7xsvEOuj=tJ2OaVHbQ@mail.gmail.com>
+Subject: Re: [net-next v3 2/2] net: sched: support hash/classid/cpuid
+ selecting tx queue
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] net: phy: add missing of_node_put before return
-Thread-Topic: [PATCH] net: phy: add missing of_node_put before return
-Thread-Index: AQHX8AYYpJEfF6j9uU24/kC+73Lm/6wwQf0AgAD9E+Y=
-Date:   Tue, 14 Dec 2021 02:14:13 +0000
-Message-ID: <SL2PR06MB308280CD1F51C87B171D1F64BD759@SL2PR06MB3082.apcprd06.prod.outlook.com>
-References: <1639388689-64038-1-git-send-email-wangqing@vivo.com>
- <ALAA5ABiE1JEtj4aLwAwtqpi.9.1639393400698.Hmail.wangqing@vivo.com.@PFliY29jQlpCQUphWjBSZjZAc2hlbGwuYXJtbGludXgub3JnLnVrPg==>
-In-Reply-To: <ALAA5ABiE1JEtj4aLwAwtqpi.9.1639393400698.Hmail.wangqing@vivo.com.@PFliY29jQlpCQUphWjBSZjZAc2hlbGwuYXJtbGludXgub3JnLnVrPg==>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-suggested_attachment_session_id: bd46784c-af8f-2199-03a6-3ae118c25fa0
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=vivo.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 117179f3-1231-478b-936d-08d9bea76c47
-x-ms-traffictypediagnostic: SL2PR06MB3243:EE_
-x-microsoft-antispam-prvs: <SL2PR06MB3243BB31E0344B4F0FFD11D7BD759@SL2PR06MB3243.apcprd06.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7219;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: /CxxhoQrC7kL9IEjctRV3fhKyBifNsJRXS2cCA4rbFbP/NrJ50mgM7VHgsEe4kB6eejZup4e+qCV2cgC8HvXQsdpNOY/xsMrHjPAsxCHpss0JR7BVIrPuahI0VwlNYr8e2ZCVcWqqcDjl64tqOY6XIHu/opHy9sNswAKKCz3LzrT4o7O6UcMkmNrLCsSNK8/RoNCvHWzrqH+9OwstLz5YJDUq5ds0Azsw30ABzFQ9T/y0cdztoTwNw3e0McXydkBol9Sz9JramdO550qyGTfv5Vf+bl2otuaKyzqPWXNiIBXREcOQuhqhouuBIA5SjHnHPMLI+2hqQS2fFOXGTk0NFhxSsupwNzsAZDke7cugqp7inrPbViY2r3cj6vBdvXKn28HIbONoN60/u5UiDc7zgmlx0QjYGN1WanjIfXYD1rHmPJy6NAVGQchlyDZ/Sp4K4FNODfNkcSAtR4zWzbsuFxwIgUk50hvFsseRbqcu59XJIBJ3SKTOt6Cvoi4bnjf5+oTPGX1WKzuiHmnHNjI47xADU7i7p19R1NgiVQmrCbI3+ZeqMMEbNSAaaukCS/Jb5MPEfe1hFGAkUHDVotq4ct9kg6IDuPeiUXZAinY7v2DVat11ysWVGJ4ydOiqNEJX1n1d1juda7CG05KHoFqMIHv84/IqXGbcz0vqTcrXG7EZCieVYUvEhMZNUIy9NpJNWqQRiGpj0GzvwcnDf0LnWVQznFBegn5z/OCkcF3r8KLQph1X+eAQxFNujQ2QQqArzJH6XzgWnpLqTU9N6yzQqENlwiFSqAlJ8mz+++Yw3s=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SL2PR06MB3082.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(5660300002)(52536014)(8676002)(966005)(2906002)(38100700002)(9686003)(33656002)(122000001)(76116006)(7696005)(6506007)(91956017)(71200400001)(26005)(85182001)(86362001)(316002)(66446008)(6916009)(8936002)(4326008)(83380400001)(508600001)(66556008)(64756008)(66946007)(54906003)(66476007)(55016003)(186003)(38070700005);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?gb2312?B?QWtmNm45ckxBeFhSaW9sZzlBRFI5a3ZWY3NENVJacU14Vmg4cHpCZkxYeEJj?=
- =?gb2312?B?cks5MGQ4WStUbDRYclpiQ1RkMzFHNUhLa1hzVWsxV21ldFZyeEY0M3Nkcmo2?=
- =?gb2312?B?ZitmS0t0OVc1Q1JOVzdDamhkRUtOSGJGUTY5MHZ1NG9jbUJOU1hDZUJIY3RT?=
- =?gb2312?B?UzJFZnRQRzB2Y3VjSWlBa3V0ZUwvUG5EUHk2NmdvWGxQVmE3YmRWN3NxRHFC?=
- =?gb2312?B?dlFFOVJyd1lSaFlzSnB0aGU0b3ZTWHRSbUtzdVVwNldwL1RiWTFTSWdETVpo?=
- =?gb2312?B?N0pqeVkwMXA3alpkai9WLzE3KytOeTg2dGQzS3BKSk14aXVYY01JQ0xmM0hU?=
- =?gb2312?B?cS9MRmpYUEtpVVE4OHRwa3dLcnRBc0w2Rk9jSmVQNVVrUGpEUm51ZjVkdGl4?=
- =?gb2312?B?Y3dDQitXZ0psQ1dlbjFLLzNhSHlBQXowekp6Tkhib1U2K0xEbWNNVGQ0dzZx?=
- =?gb2312?B?ZmZzdStMWTJTNVR0dEh6QlVlSlVwSDIvZUFMVndsTWsxK2lZZXFrS2hkN0Vo?=
- =?gb2312?B?UVhjK2UrR0hKYVFWQTIvcW5GQnhldmt5cVQzTXRVdklFeUdBMnJYZi9ob1VI?=
- =?gb2312?B?YVNnb3pXZWJzd2c5by8waUw0elVzdGEzYXlOM2NqMlNTbThjenQxTXNFK1dp?=
- =?gb2312?B?MG1YMS84WVl0aDVFWmhPS0RRY3ZpeDI1YVFrdFZUa0xuMkdWVlgzUmJIa2Nx?=
- =?gb2312?B?WmdoQ2NoTERUMGd2NDhHaThsck85WWxrWEZjVkpJUE0yWU9mbXh3UnoyRS8x?=
- =?gb2312?B?U0FJR0cvTStzclo4WHlzMGJuMlBuOHNTeVEzR0RHTFdyTTVsV1FJV2RrNHBN?=
- =?gb2312?B?bHhPcGxpTktRbUR6eDNERllUMlpMSTVVWEw3eFNaS05LME9uT1hlTXVGRTln?=
- =?gb2312?B?MTA3ZUdXeVZ2SFdXZ2Z1Zlc5ekI1dEkzak42NlBlNW0wbDhLcnZNb3U4dmpY?=
- =?gb2312?B?cWJva21SWjU3Y3lxUzFndVBQQU9SNHBSRmhSY2NnbU5MZmg0V2pJZ2ptRUpX?=
- =?gb2312?B?S016NUJzSGNTUEFmdSs3bWcvUkNRSCtQdGVFMG53WVgrSURMbzhMb3ZLVDM2?=
- =?gb2312?B?YUhrYjJhOG5qbEZrUmpoeWVpeUNMMjMwYkEybjg3OHdhN0dsZkNjaURGMFR5?=
- =?gb2312?B?NEgvZWo3d2pPbWdEditxSGRySGUxci9jbTFiSnRVbGRGU3VPSnFIMWFSUVVl?=
- =?gb2312?B?Q0tJS3JsOUs1NitGRGt6NTVJVVkyaWRHdHBmSjJVUGJBQVN4c2dDcGM2Snht?=
- =?gb2312?B?R1hFWGJTNm1oNFd4OEZOR2RKVGh1NWQxd0dZY2s5cWZtOUpFUTE4YzdiQzd2?=
- =?gb2312?B?dUhtdGxDWFliTkw5VUJQakVscW1RZ3ZLSGU1SW5PbncvcjErQmxQK1cxalJr?=
- =?gb2312?B?MGk0dkdvc2RmcFFkZURGS3RUZ2x4ZUN5MDA3U2dZSzgwRzZHSU9NUjM0Yktr?=
- =?gb2312?B?eHVCNDg2ODRLcVNScVN0Ny9zYXRmT290YksrT21lSXJCeUVkbllZaVZ1Qk50?=
- =?gb2312?B?djhsVytpaG4ybWdWcG1MVnJ5aVFPVWxobjVuUnFaZHpMenVSUU9oSUhtbEE5?=
- =?gb2312?B?cnduNVRpSGZNcCs2UXp0eXF6QmFSRWkyMUZpcUlZWG1yQVZYYW1LVmZkZEVi?=
- =?gb2312?B?UzRPbHFFQnNxRDVhdk9NSHVubnVqOVVSdElXdlFpY1pFVGYyZWV3VFc1cE5F?=
- =?gb2312?B?TGpFMEJVRmVhTllDZWMrbVJDRlBFRWNOdEpxbi9YeHhwdSsxT1M2cjhxN0NS?=
- =?gb2312?B?MGJtTG9SbkdORXVXRkgvSXdmaTVQVHEreU8yUEh0bTI3M1o2eFEvVXZjc2k0?=
- =?gb2312?B?U1U1TEpiemUwUG9YZ2dMYTNtTitjdmpDSldOMXF5YnRFaVRabEc2RVRsT2RY?=
- =?gb2312?B?VkF4em5URWVJSFh6RDJSQjZFMzd5T3UwRGxlbGlJeWlKbG1Bcmo2T3NIZ1ZF?=
- =?gb2312?B?ejhwS2V6TXdKOVB1emVaNUY5NG9zZFpmbWcyWkVrOWNTSklTNlZxZktaQmdL?=
- =?gb2312?B?RWZ2OHJTekQvaXp6R3hrb3NCTUpHbVU5ZG1IdXAxUElIdlpDN2FqcHYwWGRP?=
- =?gb2312?B?ZmNkRmUyNCtVanFIWW1MTEJwZEFsekJFM0VMNlV4aWtLTkhsdnRSK0o4WjFS?=
- =?gb2312?B?dXBYSGVZc1FlZWNLM2lXQ05zYWlUSSsyeDhvemxxSXd6Y3ZZcldqRldWMGZG?=
- =?gb2312?B?N2c9PQ==?=
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-OriginatorOrg: vivo.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SL2PR06MB3082.apcprd06.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 117179f3-1231-478b-936d-08d9bea76c47
-X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Dec 2021 02:14:13.1533
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: eqLl9/x62zbWT0yUWGrYagH9skrzyF8E1RtzDusHLOSH6y0pPxSjCzROmonsR2BFRQfq5ddOmy3BfxVgLu7nDw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SL2PR06MB3243
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Talal Ahmad <talalahmad@google.com>,
+        Kevin Hao <haokexin@gmail.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Kees Cook <keescook@chromium.org>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Wei Wang <weiwan@google.com>, Arnd Bergmann <arnd@arndb.de>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Cj4+IEZyb206IFdhbmcgUWluZyA8d2FuZ3FpbmdAdml2by5jb20+Cj4+IAo+PiBGaXggZm9sbG93
-aW5nIGNvY2NpY2hlY2sgd2FybmluZzoKPj4gV0FSTklORzogRnVuY3Rpb24gImZvcl9lYWNoX2F2
-YWlsYWJsZV9jaGlsZF9vZl9ub2RlIiAKPj4gc2hvdWxkIGhhdmUgb2Zfbm9kZV9wdXQoKSBiZWZv
-cmUgcmV0dXJuLgo+PiAKPj4gRWFybHkgZXhpdHMgZnJvbSBmb3JfZWFjaF9hdmFpbGFibGVfY2hp
-bGRfb2Zfbm9kZSBzaG91bGQgZGVjcmVtZW50IHRoZQo+PiBub2RlIHJlZmVyZW5jZSBjb3VudGVy
-Lgo+Cj5Nb3N0ICpkZWZpbml0ZWx5KiBOQUsuIENvY2NpY2hlY2sgaXMgbW9zdCBkZWZpbml0ZWx5
-IHdyb25nIG9uIHRoaXMgb25lLAo+YW5kIHdlIHdpbGwgcHJvYmFibHkgbmVlZCBzb21lIHdheSB0
-byB0ZWxsIHBlb3BsZSBub3QgdG8gYmVsaWV2ZQo+Y29jY2ljaGVjayBvbiB0aGlzLgo+Cj5JbiB0
-aGlzIHBhdGgsIHRoZSBEVCBub2RlIGlzIGFzc2lnbmVkIHRvIGEgc3RydWN0IGRldmljZS4gVGhp
-cyBfbXVzdF8KPmJlIHJlZmVyZW5jZSBjb3VudGVkLiBkZXZpY2Vfc2V0X25vZGUoKSBkb2VzIG5v
-dCBpbmNyZW1lbnQgdGhlCj5yZWZlcmVuY2UgY291bnQsIG5vciBkb2VzIG9mX2Z3bm9kZV9oYW5k
-bGUoKS4gVGhlIHJlZmVyZW5jZSBjb3VudAo+aGVyZSBpcyBwYXNzZWQgZnJvbSB0aGlzIGNvZGUg
-b3ZlciB0byB0aGUgc3RydWN0IGRldmljZS4KPgo+QWRkaW5nIGFuIG9mX25vZGVfcHV0KCkgd2ls
-bCBicmVhayB0aGlzLgo+Cj5UaGlzIG11c3QgX25ldmVyXyBiZSAiZml4ZWQiIG5vIG1hdHRlciBo
-b3cgbXVjaCBjb2NjaWNoZWNrIGNvbXBsYWlucywKPmFzIGZpeGluZyB0aGUgd2FybmluZyBfd2ls
-bF8gaW50cm9kdWNlIGEgcmVmY291bnRpbmcgYnVnLgo+Cj5JJ2xsIHNlbmQgYSBwYXRjaCBhZGRp
-bmcgYSBjb21tZW50IHRvIHRoaXMgZWZmZWN0Lgo+Cj5UaGFua3MuCgpZZXMsIHlvdSBhcmUgcmln
-aHQuIE1heWJlIHdlIGNhbiBhZGQgYSBqdWRnbWVudCBpbiB0aGlzIGNvY2NpIG9uIHdoaWNoIGV4
-aXQgYXMgZXhwZWN0ZWQgCm9yIGFibm9ybWFsbHksIG9ubHkgdGhlIGxhdHRlciBuZWVkcyB0byBi
-ZSByZXBvcnRlZC4KClRoYW5rcywKUWluZwo+Cj4tLSAKPlJNSydzIFBhdGNoIHN5c3RlbTogaHR0
-cHM6Ly93d3cuYXJtbGludXgub3JnLnVrL2RldmVsb3Blci9wYXRjaGVzLwo+RlRUUCBpcyBoZXJl
-ISA0ME1icHMgZG93biAxME1icHMgdXAuIERlY2VudCBjb25uZWN0aXZpdHkgYXQgbGFzdCE=
+On Tue, Dec 14, 2021 at 6:53 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+>
+> On Sat, Dec 11, 2021 at 6:34 PM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
+> >
+> > On Sun, Dec 12, 2021 at 10:19 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> > >
+> > > On Thu, Dec 9, 2021 at 6:36 PM <xiangxia.m.yue@gmail.com> wrote:
+> > > >
+> > > > From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> > > >
+> > > > This patch allows users to select queue_mapping, range
+> > > > from A to B. And users can use skb-hash, cgroup classid
+> > > > and cpuid to select Tx queues. Then we can load balance
+> > > > packets from A to B queue. The range is an unsigned 16bit
+> > > > value in decimal format.
+> > > >
+> > > > $ tc filter ... action skbedit queue_mapping hash-type normal A B
+> > > >
+> > > > "skbedit queue_mapping QUEUE_MAPPING" (from "man 8 tc-skbedit") is
+> > > > enhanced with flags:
+> > > > * SKBEDIT_F_QUEUE_MAPPING_HASH
+> > > > * SKBEDIT_F_QUEUE_MAPPING_CLASSID
+> > > > * SKBEDIT_F_QUEUE_MAPPING_CPUID
+> > >
+> > > With act_bpf you can do all of them... So why do you have to do it
+> > > in skbedit?
+> > Hi Cong
+> > This idea is inspired by skbedit queue_mapping, and skbedit is
+> > enhanced by this patch.
+>
+> This is exactly my question. ;)
+>
+> > We support this in skbedit firstly in production. act_bpf can do more
+> > things than this. Anyway we
+> > can support this in both act_skbedit/acc_bpf. 1/2 is changed from
+> > skip_tx_queue in skb to per-cpu var suggested-by Eric. We need another
+> > patch which can change the
+> > per-cpu var in bpf. I will post this patch later.
+>
+> The point is if act_bpf can do it, you don't need to bother skbedit at
+> all. More importantly, you are enforcing policies in kernel, which is
+> not encouraged. So unless you provide more details, this patch is not
+> needed at all.
+Hi Cong,
+1. As I understand it, act_bpf can work with 1/2 patch(but we should
+another path to change the skip_txqueue in bpf).
+It is easy for kernel developer. But for another user, it is not easy.
+tc command is a choice, and easy to use.
+2. BTW, act_bpf can't try to instead act_xxx action in future even
+though it can do more thing. right ?
+3. This patch is more important to work with 1/2, and only enhance the
+skbedit queue_mapping function. not a big change.
+4. "policies" ? if selecting tx from a range(this patch) is what you
+mean "policies", so change the skb mark, priority, tc-peidt
+and other tc-action are "policies" too. we still need the different tc actions.
+>
+> Thanks.
+
+
+
+-- 
+Best regards, Tonghao
