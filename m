@@ -2,189 +2,231 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 73EE9473C61
-	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 06:20:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C804473C9B
+	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 06:34:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229877AbhLNFUC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Dec 2021 00:20:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48252 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229794AbhLNFUC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 00:20:02 -0500
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C13ABC061574
-        for <netdev@vger.kernel.org>; Mon, 13 Dec 2021 21:20:01 -0800 (PST)
-Received: by mail-pg1-x52b.google.com with SMTP id q16so16401425pgq.10
-        for <netdev@vger.kernel.org>; Mon, 13 Dec 2021 21:20:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0jFJ731tO1DafUJR1sZLTJXZ2we/4B1gtDWjogmSxhU=;
-        b=IfXwsmBNNugBq+m5WX2ZqN9zhmfa5Z/1ZIiv7dnrDcpefMFarUWVqYDsMCDq3ckX6+
-         VdVOLFKeNkL9UGyUYj5CjeBsHh2vn+lTzLGvX7xZ9+AULvJ3HwJNpfxebuKaTZkzhTdE
-         +uIKcr1yYt0a4ivOTL+mgypGpzGR1bz2xWTfLeTSW2gWGdcjt/9mWkCZ3rcB7krlSu3f
-         QX8+/iVSsQZHih5gQYTUqQwmbIvpeeR0OZ71kkcpF9B+b7AUlxm1Iu3o7W/BJnLuf/GO
-         qyLuRyFRUqTSvGvc2Il4ZRKnYz2SJLkLJGIfU1t2dmil9r86JA5AWL/XZQXOEzh20gUr
-         ct3A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0jFJ731tO1DafUJR1sZLTJXZ2we/4B1gtDWjogmSxhU=;
-        b=KgFOHkqmY7nE3jvjsnU3BeplJ2DjVZ78VV/3HekN1Yz6QHGq/+3sd08UfacXi0zp9o
-         V3Q3tHs9ThfwrKlm3d7guQx24Z0rR1ezwTdigaAUOwRT34DAwc+8WGXBHNaV7DdaOT/7
-         UhYt+hy6LkOlq+gfOo7CQInQOg6Me/DsxBzlqdGYyGPN7Lqtw18YyOIJcpvq6kUpeE0A
-         aZFYU1UxRJjStqzLHeGZdotqbbPbeKKNduLYJLDIYkj/K/05AYVN9rez0NI1+VUcls0/
-         aSBy3zHOvRLJsBQSRLCU85b2n80HZOFPeFaeLthgC1hGsuEGE38FmbmFrTlj/gfUGo+f
-         BtmA==
-X-Gm-Message-State: AOAM531vylAO6XqZUH0mlf5DbGLa8aVJuxgECWT7ZJxayGlxik2SgKoz
-        Yad5bBTCORRD/75QL+gANDQ=
-X-Google-Smtp-Source: ABdhPJxJVJ6LXzV/cTugNNKuUfwny6prc/tZ9AavJ7XGWQVAZyPbrhhDiC2OJkLC8C7GEL2xI5c/7A==
-X-Received: by 2002:a63:461c:: with SMTP id t28mr2112956pga.171.1639459201153;
-        Mon, 13 Dec 2021 21:20:01 -0800 (PST)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:5cbb:7251:72ab:eb48])
-        by smtp.gmail.com with ESMTPSA id m24sm11912401pgk.39.2021.12.13.21.19.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Dec 2021 21:20:00 -0800 (PST)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        syzbot <syzkaller@googlegroups.com>
-Subject: [PATCH net-next] net: linkwatch: be more careful about dev->linkwatch_dev_tracker
-Date:   Mon, 13 Dec 2021 21:19:55 -0800
-Message-Id: <20211214051955.3569843-1-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.34.1.173.g76aa8bc2d0-goog
+        id S229945AbhLNFe1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Dec 2021 00:34:27 -0500
+Received: from smtp-relay-canonical-1.canonical.com ([185.125.188.121]:57766
+        "EHLO smtp-relay-canonical-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229755AbhLNFe0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 00:34:26 -0500
+Received: from localhost.localdomain (1.general.khfeng.us.vpn [10.172.68.174])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id 945423F200;
+        Tue, 14 Dec 2021 05:34:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1639460061;
+        bh=fnPbGyy3W6/FBwdpVOJ9B0tDvUSOyOPBgjsdn9P4i+I=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=hHyH5HfRJu4Nb6tfRckssY7aq5OPfOXZzT3W9tasLgPM+prNEIYT8TXOAZpieHsHd
+         jXNAc6zzuDhYy07+DmDAkbuigaY3xymClrmUMYm9K/G4xHjlPmy7xN0NxOkVoyVEg3
+         lSbs/0Bu6LcYyz/HIohPgbHU8anEceL8T0oRLUwEvjQzB13munkvHovKJv/IA2+UaN
+         GjoHX0OsUisX0GgJj3ajDYb0wDWZmzg/9Qcc19KK8BYEuthy3m0ZqZWkeZo0OZ62W8
+         9Q2x+QXNhYHCs9Imu1suxvJeUqm5kGLl8dU0FSaAmQcqOrRSNH5lFdyBncaZbWhCwF
+         k3sFKk56vOg8A==
+From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
+To:     tony0620emma@gmail.com, pkshih@realtek.com
+Cc:     jian-hong@endlessm.com,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Po-Hao Huang <phhuang@realtek.com>,
+        Brian Norris <briannorris@chromium.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2] rtw88: Disable PCIe ASPM while doing NAPI poll on 8821CE
+Date:   Tue, 14 Dec 2021 13:33:02 +0800
+Message-Id: <20211214053302.242222-1-kai.heng.feng@canonical.com>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+Many Intel based platforms face system random freeze after commit
+9e2fd29864c5 ("rtw88: add napi support").
 
-Apparently a concurrent linkwatch_add_event() could
-run while we are in __linkwatch_run_queue().
+The commit itself shouldn't be the culprit. My guess is that the 8821CE
+only leaves ASPM L1 for a short period when IRQ is raised. Since IRQ is
+masked during NAPI polling, the PCIe link stays at L1 and makes RX DMA
+extremely slow. Eventually the RX ring becomes messed up:
+[ 1133.194697] rtw_8821ce 0000:02:00.0: pci bus timeout, check dma status
 
-We need to free dev->linkwatch_dev_tracker tracker
-under lweventlist_lock protection to avoid this race.
+Since the 8821CE hardware may fail to leave ASPM L1, manually do it in
+the driver to resolve the issue.
 
-syzbot report:
-[   77.935949][ T3661] reference already released.
-[   77.941015][ T3661] allocated in:
-[   77.944482][ T3661]  linkwatch_fire_event+0x202/0x260
-[   77.950318][ T3661]  netif_carrier_on+0x9c/0x100
-[   77.955120][ T3661]  __ieee80211_sta_join_ibss+0xc52/0x1590
-[   77.960888][ T3661]  ieee80211_sta_create_ibss.cold+0xd2/0x11f
-[   77.966908][ T3661]  ieee80211_ibss_work.cold+0x30e/0x60f
-[   77.972483][ T3661]  ieee80211_iface_work+0xb70/0xd00
-[   77.977715][ T3661]  process_one_work+0x9ac/0x1680
-[   77.982671][ T3661]  worker_thread+0x652/0x11c0
-[   77.987371][ T3661]  kthread+0x405/0x4f0
-[   77.991465][ T3661]  ret_from_fork+0x1f/0x30
-[   77.995895][ T3661] freed in:
-[   77.999006][ T3661]  linkwatch_do_dev+0x96/0x160
-[   78.004014][ T3661]  __linkwatch_run_queue+0x233/0x6a0
-[   78.009496][ T3661]  linkwatch_event+0x4a/0x60
-[   78.014099][ T3661]  process_one_work+0x9ac/0x1680
-[   78.019034][ T3661]  worker_thread+0x652/0x11c0
-[   78.023719][ T3661]  kthread+0x405/0x4f0
-[   78.027810][ T3661]  ret_from_fork+0x1f/0x30
-[   78.042541][ T3661] ------------[ cut here ]------------
-[   78.048253][ T3661] WARNING: CPU: 0 PID: 3661 at lib/ref_tracker.c:120 ref_tracker_free.cold+0x110/0x14e
-[   78.062364][ T3661] Modules linked in:
-[   78.066424][ T3661] CPU: 0 PID: 3661 Comm: kworker/0:5 Not tainted 5.16.0-rc4-next-20211210-syzkaller #0
-[   78.076075][ T3661] Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-[   78.090648][ T3661] Workqueue: events linkwatch_event
-[   78.095890][ T3661] RIP: 0010:ref_tracker_free.cold+0x110/0x14e
-[   78.102191][ T3661] Code: ea 03 48 c1 e0 2a 0f b6 04 02 84 c0 74 04 3c 03 7e 4c 8b 7b 18 e8 6b 54 e9 fa e8 26 4d 57 f8 4c 89 ee 48 89 ef e8 fb 33 36 00 <0f> 0b 41 bd ea ff ff ff e9 bd 60 e9 fa 4c 89 f7 e8 16 45 a2 f8 e9
-[   78.127211][ T3661] RSP: 0018:ffffc90002b5fb18 EFLAGS: 00010246
-[   78.133684][ T3661] RAX: 0000000000000000 RBX: ffff88807467f700 RCX: 0000000000000000
-[   78.141928][ T3661] RDX: 0000000000000001 RSI: 0000000000000001 RDI: 0000000000000001
-[   78.150087][ T3661] RBP: ffff888057e105b8 R08: 0000000000000001 R09: ffffffff8ffa1967
-[   78.158211][ T3661] R10: 0000000000000001 R11: 0000000000000000 R12: 1ffff9200056bf65
-[   78.166204][ T3661] R13: 0000000000000292 R14: ffff88807467f718 R15: 00000000c0e0008c
-[   78.174321][ T3661] FS:  0000000000000000(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
-[   78.183310][ T3661] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   78.190156][ T3661] CR2: 000000c000208800 CR3: 000000007f7b5000 CR4: 00000000003506f0
-[   78.198235][ T3661] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[   78.206214][ T3661] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[   78.214328][ T3661] Call Trace:
-[   78.217679][ T3661]  <TASK>
-[   78.220621][ T3661]  ? __sanitizer_cov_trace_const_cmp4+0x1c/0x70
-[   78.226981][ T3661]  ? nlmsg_notify+0xbe/0x280
-[   78.231607][ T3661]  ? ref_tracker_dir_exit+0x330/0x330
-[   78.237654][ T3661]  ? linkwatch_do_dev+0x96/0x160
-[   78.242628][ T3661]  ? __linkwatch_run_queue+0x233/0x6a0
-[   78.248170][ T3661]  ? linkwatch_event+0x4a/0x60
-[   78.252946][ T3661]  ? process_one_work+0x9ac/0x1680
-[   78.258136][ T3661]  ? worker_thread+0x853/0x11c0
-[   78.263020][ T3661]  ? kthread+0x405/0x4f0
-[   78.267905][ T3661]  ? ret_from_fork+0x1f/0x30
-[   78.272670][ T3661]  ? netdev_state_change+0xa1/0x130
-[   78.278019][ T3661]  ? netdev_exit+0xd0/0xd0
-[   78.282466][ T3661]  ? dev_activate+0x420/0xa60
-[   78.287261][ T3661]  linkwatch_do_dev+0x96/0x160
-[   78.292043][ T3661]  __linkwatch_run_queue+0x233/0x6a0
-[   78.297505][ T3661]  ? linkwatch_do_dev+0x160/0x160
-[   78.302561][ T3661]  linkwatch_event+0x4a/0x60
-[   78.307225][ T3661]  process_one_work+0x9ac/0x1680
-[   78.312292][ T3661]  ? pwq_dec_nr_in_flight+0x2a0/0x2a0
-[   78.317757][ T3661]  ? rwlock_bug.part.0+0x90/0x90
-[   78.322726][ T3661]  ? _raw_spin_lock_irq+0x41/0x50
-[   78.327844][ T3661]  worker_thread+0x853/0x11c0
-[   78.332543][ T3661]  ? process_one_work+0x1680/0x1680
-[   78.338500][ T3661]  kthread+0x405/0x4f0
-[   78.342610][ T3661]  ? set_kthread_struct+0x130/0x130
-
-Fixes: 63f13937cbe9 ("net: linkwatch: add net device refcount tracker")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
+Fixes: 9e2fd29864c5 ("rtw88: add napi support")
+Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=215131
+BugLink: https://bugs.launchpad.net/bugs/1927808
+Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
 ---
- net/core/link_watch.c | 13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
+v2:
+ - Add default value for module parameter.
 
-diff --git a/net/core/link_watch.c b/net/core/link_watch.c
-index d7d089963b1da4142a0863715382aa81241625eb..b0f5344d1185be66d05cd1dc50cffc5ccfe883ef 100644
---- a/net/core/link_watch.c
-+++ b/net/core/link_watch.c
-@@ -166,7 +166,10 @@ static void linkwatch_do_dev(struct net_device *dev)
+ drivers/net/wireless/realtek/rtw88/pci.c | 74 ++++++++----------------
+ drivers/net/wireless/realtek/rtw88/pci.h |  1 +
+ 2 files changed, 24 insertions(+), 51 deletions(-)
+
+diff --git a/drivers/net/wireless/realtek/rtw88/pci.c b/drivers/net/wireless/realtek/rtw88/pci.c
+index 3b367c9085eba..4ab75ac2500e9 100644
+--- a/drivers/net/wireless/realtek/rtw88/pci.c
++++ b/drivers/net/wireless/realtek/rtw88/pci.c
+@@ -2,7 +2,6 @@
+ /* Copyright(c) 2018-2019  Realtek Corporation
+  */
  
- 		netdev_state_change(dev);
- 	}
--	dev_put_track(dev, &dev->linkwatch_dev_tracker);
-+	/* Note: our callers are responsible for
-+	 * calling netdev_tracker_free().
-+	 */
-+	dev_put(dev);
+-#include <linux/dmi.h>
+ #include <linux/module.h>
+ #include <linux/pci.h>
+ #include "main.h"
+@@ -16,10 +15,13 @@
+ 
+ static bool rtw_disable_msi;
+ static bool rtw_pci_disable_aspm;
++static int rtw_rx_aspm = -1;
+ module_param_named(disable_msi, rtw_disable_msi, bool, 0644);
+ module_param_named(disable_aspm, rtw_pci_disable_aspm, bool, 0644);
++module_param_named(rx_aspm, rtw_rx_aspm, int, 0444);
+ MODULE_PARM_DESC(disable_msi, "Set Y to disable MSI interrupt support");
+ MODULE_PARM_DESC(disable_aspm, "Set Y to disable PCI ASPM support");
++MODULE_PARM_DESC(rx_aspm, "Use PCIe ASPM for RX (0=disable, 1=enable, -1=default)");
+ 
+ static u32 rtw_pci_tx_queue_idx_addr[] = {
+ 	[RTW_TX_QUEUE_BK]	= RTK_PCI_TXBD_IDX_BKQ,
+@@ -1409,7 +1411,11 @@ static void rtw_pci_link_ps(struct rtw_dev *rtwdev, bool enter)
+ 	 * throughput. This is probably because the ASPM behavior slightly
+ 	 * varies from different SOC.
+ 	 */
+-	if (rtwpci->link_ctrl & PCI_EXP_LNKCTL_ASPM_L1)
++	if (!(rtwpci->link_ctrl & PCI_EXP_LNKCTL_ASPM_L1))
++		return;
++
++	if ((enter && atomic_dec_return(&rtwpci->link_usage) == 0) ||
++	    (!enter && atomic_inc_return(&rtwpci->link_usage) == 1))
+ 		rtw_pci_aspm_set(rtwdev, enter);
  }
  
- static void __linkwatch_run_queue(int urgent_only)
-@@ -209,6 +212,10 @@ static void __linkwatch_run_queue(int urgent_only)
- 			list_add_tail(&dev->link_watch_list, &lweventlist);
- 			continue;
- 		}
-+		/* We must free netdev tracker under
-+		 * the spinlock protection.
-+		 */
-+		netdev_tracker_free(dev, &dev->linkwatch_dev_tracker);
- 		spin_unlock_irq(&lweventlist_lock);
- 		linkwatch_do_dev(dev);
- 		do_dev--;
-@@ -232,6 +239,10 @@ void linkwatch_forget_dev(struct net_device *dev)
- 	if (!list_empty(&dev->link_watch_list)) {
- 		list_del_init(&dev->link_watch_list);
- 		clean = 1;
-+		/* We must release netdev tracker under
-+		 * the spinlock protection.
-+		 */
-+		netdev_tracker_free(dev, &dev->linkwatch_dev_tracker);
+@@ -1658,6 +1664,9 @@ static int rtw_pci_napi_poll(struct napi_struct *napi, int budget)
+ 					      priv);
+ 	int work_done = 0;
+ 
++	if (!rtw_rx_aspm)
++		rtw_pci_link_ps(rtwdev, false);
++
+ 	while (work_done < budget) {
+ 		u32 work_done_once;
+ 
+@@ -1681,6 +1690,8 @@ static int rtw_pci_napi_poll(struct napi_struct *napi, int budget)
+ 		if (rtw_pci_get_hw_rx_ring_nr(rtwdev, rtwpci))
+ 			napi_schedule(napi);
  	}
- 	spin_unlock_irqrestore(&lweventlist_lock, flags);
- 	if (clean)
++	if (!rtw_rx_aspm)
++		rtw_pci_link_ps(rtwdev, true);
+ 
+ 	return work_done;
+ }
+@@ -1702,59 +1713,13 @@ static void rtw_pci_napi_deinit(struct rtw_dev *rtwdev)
+ 	netif_napi_del(&rtwpci->napi);
+ }
+ 
+-enum rtw88_quirk_dis_pci_caps {
+-	QUIRK_DIS_PCI_CAP_MSI,
+-	QUIRK_DIS_PCI_CAP_ASPM,
+-};
+-
+-static int disable_pci_caps(const struct dmi_system_id *dmi)
+-{
+-	uintptr_t dis_caps = (uintptr_t)dmi->driver_data;
+-
+-	if (dis_caps & BIT(QUIRK_DIS_PCI_CAP_MSI))
+-		rtw_disable_msi = true;
+-	if (dis_caps & BIT(QUIRK_DIS_PCI_CAP_ASPM))
+-		rtw_pci_disable_aspm = true;
+-
+-	return 1;
+-}
+-
+-static const struct dmi_system_id rtw88_pci_quirks[] = {
+-	{
+-		.callback = disable_pci_caps,
+-		.ident = "Protempo Ltd L116HTN6SPW",
+-		.matches = {
+-			DMI_MATCH(DMI_SYS_VENDOR, "Protempo Ltd"),
+-			DMI_MATCH(DMI_PRODUCT_NAME, "L116HTN6SPW"),
+-		},
+-		.driver_data = (void *)BIT(QUIRK_DIS_PCI_CAP_ASPM),
+-	},
+-	{
+-		.callback = disable_pci_caps,
+-		.ident = "HP HP Pavilion Laptop 14-ce0xxx",
+-		.matches = {
+-			DMI_MATCH(DMI_SYS_VENDOR, "HP"),
+-			DMI_MATCH(DMI_PRODUCT_NAME, "HP Pavilion Laptop 14-ce0xxx"),
+-		},
+-		.driver_data = (void *)BIT(QUIRK_DIS_PCI_CAP_ASPM),
+-	},
+-	{
+-		.callback = disable_pci_caps,
+-		.ident = "HP HP 250 G7 Notebook PC",
+-		.matches = {
+-			DMI_MATCH(DMI_SYS_VENDOR, "HP"),
+-			DMI_MATCH(DMI_PRODUCT_NAME, "HP 250 G7 Notebook PC"),
+-		},
+-		.driver_data = (void *)BIT(QUIRK_DIS_PCI_CAP_ASPM),
+-	},
+-	{}
+-};
+-
+ int rtw_pci_probe(struct pci_dev *pdev,
+ 		  const struct pci_device_id *id)
+ {
++	struct pci_dev *bridge = pci_upstream_bridge(pdev);
+ 	struct ieee80211_hw *hw;
+ 	struct rtw_dev *rtwdev;
++	struct rtw_pci *rtwpci;
+ 	int drv_data_size;
+ 	int ret;
+ 
+@@ -1772,6 +1737,9 @@ int rtw_pci_probe(struct pci_dev *pdev,
+ 	rtwdev->hci.ops = &rtw_pci_ops;
+ 	rtwdev->hci.type = RTW_HCI_TYPE_PCIE;
+ 
++	rtwpci = (struct rtw_pci *)rtwdev->priv;
++	atomic_set(&rtwpci->link_usage, 1);
++
+ 	ret = rtw_core_init(rtwdev);
+ 	if (ret)
+ 		goto err_release_hw;
+@@ -1800,7 +1768,11 @@ int rtw_pci_probe(struct pci_dev *pdev,
+ 		goto err_destroy_pci;
+ 	}
+ 
+-	dmi_check_system(rtw88_pci_quirks);
++	/* Disable PCIe ASPM L1 while doing NAPI poll for 8821CE */
++	if (pdev->device == 0xc821 && bridge->vendor == PCI_VENDOR_ID_INTEL &&
++	    rtw_rx_aspm == -1)
++		rtw_rx_aspm = 0;
++
+ 	rtw_pci_phy_cfg(rtwdev);
+ 
+ 	ret = rtw_register_hw(rtwdev, hw);
+diff --git a/drivers/net/wireless/realtek/rtw88/pci.h b/drivers/net/wireless/realtek/rtw88/pci.h
+index 66f78eb7757c5..0aaa12ea03739 100644
+--- a/drivers/net/wireless/realtek/rtw88/pci.h
++++ b/drivers/net/wireless/realtek/rtw88/pci.h
+@@ -223,6 +223,7 @@ struct rtw_pci {
+ 	struct rtw_pci_tx_ring tx_rings[RTK_MAX_TX_QUEUE_NUM];
+ 	struct rtw_pci_rx_ring rx_rings[RTK_MAX_RX_QUEUE_NUM];
+ 	u16 link_ctrl;
++	atomic_t link_usage;
+ 	DECLARE_BITMAP(flags, NUM_OF_RTW_PCI_FLAGS);
+ 
+ 	void __iomem *mmap;
 -- 
-2.34.1.173.g76aa8bc2d0-goog
+2.33.1
 
