@@ -2,126 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0778747405A
+	by mail.lfdr.de (Postfix) with ESMTP id 4F89847405B
 	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 11:22:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232994AbhLNKWS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Dec 2021 05:22:18 -0500
-Received: from mail-mw2nam08on2042.outbound.protection.outlook.com ([40.107.101.42]:10720
-        "EHLO NAM04-MW2-obe.outbound.protection.outlook.com"
+        id S233032AbhLNKWU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Dec 2021 05:22:20 -0500
+Received: from mail-mw2nam12on2077.outbound.protection.outlook.com ([40.107.244.77]:26272
+        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232977AbhLNKWG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 Dec 2021 05:22:06 -0500
+        id S233037AbhLNKWN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Dec 2021 05:22:13 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZlIhvVhS6NYwsjcIdm442j/3NtKGMVz6LexHisU1ko+i4WvxaoQcap0HsY7xv1pOESagakqnwc6Dq1JPztsGXKM8uyoH5CJIa88eCu0RkwYFP7RDIUWTm1qdaqYeAgVNacTxpBqMk0ZqRI3UEJ8eiyDH7oWONdaX2WyBsq5Db14utg2GWV+nDiMQnqvUi1fwr0WyAMV4m0LFtNYTeNbaZVkB+rXYVpBu+7DHb6xe6voPUoOdpson9q4dG7cBaQGLKy+lvfRNptOPEnA/oYPKASVelXBgILYLdfdi/nl26at9799GtwuGWo4rq+kADxtgmEO73TajIretQpA8Qq7B7w==
+ b=d7YM+Ag6l/FGFEGkzajxaRbC6/FPv4rQulQnQUSSwhXUF2sxGRT3gDpUGYpHzDtoKURcCi5ijkd9//zQMVDeiiREKkzOLpRR6cOs7MnUPoE4Ul/Qd7UZwkrLo0iNLW5LdoTLiqh8ocrZOaPwOuzjL7/uO4x8ayY4mhk3i6ZxzcZgztFmi0ZSiN5mYs/re4Cbrz2SsqVSwHXZ+sxrAprI7fStJyojklg1ggMpQW3ktaExWCSnL4fSEVIPcv708aeZnCqPzZFVCcISghmp/pBE/AueEcSoP9AtTO+nLuH5dSPrgxw5gE/jP8jCYxPRwz0lkuPc+dti3/+B53tAePjSBg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=XqBkfTUzJkv+a99yD7Is/ggt5YXEX7tFZUWfNfYKGho=;
- b=gPMUtD4QozAJY2ELPhGAYO+ThEFnyovQw9J8KN+wq+b5crmPSeLjzDLLogmrbpEXHMpKxWveqeZ0Clc/CW7gyQhN/t5K1jyL7RzlohBjF2WoPivhIuIvl0M9yEQjayjDeLPvhKqbwUF0uC41zmV8y0RltAWJanGrPRF7ugbMGMByzrw6tU6CP6Asbf4kH70I87wpN8YkFCBxEegeDs431itZtrk8ws8PMbIqnB5kZhh+K+heFUdyUKZnHoLC413XZMIpbvmQVAO8rN3JqaET6OS/6XOPHSRur5kR1OAz1ys/WSKIBNQVedFmsgVKbJLxlbCecgI/q5rS0PerAejwPw==
+ bh=nS+iugIAWKcB5wbrznom4AYqCfvJLsVrQM9jknQTAvE=;
+ b=h7sucQdwENI/XGJTUlCG0PGnJf863CQIIWRFGY4Jghwzo1b6/lju4POEgldV/YIGZeqnhWvL/+iHt42Ovw7JIuBfh+IcLwlHOChTT/M69EyQqikrTj1c/zDBs0dugM02dYXE37gnrKhvFwZkzC4KmNRGWU+KFIgzSrGospAO+E+A3purKnM/kpOJZmgXUg6JyWDi8Yvvyf1kPg/OziaYITLyr9wd5KX7XCeoHjK5+2rgGAvEI74CX8nYuM51in59jFi5tKov/c6xJ5kHhXo2tbl5vw9JtVTcGPT4aRVLsnQizqd12anG72E8lzHZRMzCOvQVw6OewDV/tny4URjJ3Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XqBkfTUzJkv+a99yD7Is/ggt5YXEX7tFZUWfNfYKGho=;
- b=qEj+/xQl8/CzUVYTCz+2iA8k2yUVO6x4QY1Ab4lTtwlVV+sD69ChfskGpCFr7TNTEmwLhaZqe8fjauZ8yhInl5ybyveEWGBN61rUPhY5H5pLvdTiYv5yaoMz5BC/PRZ/UjLKoFSWj1Rui+pCeKtVAZyVxJ7afZ7G++74XxjR65EiRzcMWM+rz19RJmX5pPo/tF3Yrf4kzGLwP4poJHAMxZbUfZqAzUiXsJDw+McoBgHeLRmGu3u4Ku08hv280tV2rxX3tJAbJppS+30rRrDCebCPdH65gHxPUWflmDYmHVyWJK8CBmIsg8NasVgF6LEWTBHAu3aCqtnOamdO/hxYBQ==
+ bh=nS+iugIAWKcB5wbrznom4AYqCfvJLsVrQM9jknQTAvE=;
+ b=e7efdw/zUHOccEXKrfXQEZrt7zHno+mhPrSSxso9WqTgRPxZydxRwZRk2mfwiNlzjhM/QspHF0BAZgBgKZ3GJGZiPpZOH/jhVz33/P/PjNKYBhDcjKB9FwBI68DMrOi22fZdX/6qK7GKZV51wQ879mYEeaslfTkO3VhQoZroGL4VtjJ1+PeIXLY0EOAsRoV68NqkdRzDm13rje2QMPYTRnkXow0VOqIOVw7ydo4ukR6wFE1MJDgIk9NAudcqG8ptsHevT7qX9S4OvSQY/w7Yhb4TBk44HlsqMFZ9mb9uQllzYAImRvoEkOOvW1Fm0avOMvmmsCqMer2Q07FC/5q4fw==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from BYAPR12MB4757.namprd12.prod.outlook.com (2603:10b6:a03:97::32)
  by BYAPR12MB3079.namprd12.prod.outlook.com (2603:10b6:a03:a9::21) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4778.11; Tue, 14 Dec
- 2021 10:22:05 +0000
+ 2021 10:22:10 +0000
 Received: from BYAPR12MB4757.namprd12.prod.outlook.com
  ([fe80::398b:d0f7:22f:5d2b]) by BYAPR12MB4757.namprd12.prod.outlook.com
  ([fe80::398b:d0f7:22f:5d2b%3]) with mapi id 15.20.4755.028; Tue, 14 Dec 2021
- 10:22:04 +0000
+ 10:22:10 +0000
 From:   Ido Schimmel <idosch@nvidia.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, petrm@nvidia.com,
         danieller@nvidia.com, mlxsw@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net 0/2] mlxsw: MAC profiles occupancy fix
-Date:   Tue, 14 Dec 2021 12:21:35 +0200
-Message-Id: <20211214102137.580179-1-idosch@nvidia.com>
+Subject: [PATCH net 1/2] mlxsw: spectrum_router: Consolidate MAC profiles when possible
+Date:   Tue, 14 Dec 2021 12:21:36 +0200
+Message-Id: <20211214102137.580179-2-idosch@nvidia.com>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20211214102137.580179-1-idosch@nvidia.com>
+References: <20211214102137.580179-1-idosch@nvidia.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: MR1P264CA0078.FRAP264.PROD.OUTLOOK.COM
- (2603:10a6:501:3f::24) To BYAPR12MB4757.namprd12.prod.outlook.com
+X-ClientProxiedBy: MR2P264CA0015.FRAP264.PROD.OUTLOOK.COM
+ (2603:10a6:500:1::27) To BYAPR12MB4757.namprd12.prod.outlook.com
  (2603:10b6:a03:97::32)
 MIME-Version: 1.0
-Received: from localhost (2a0d:6fc2:5560:e600:ddf8:d1fa:667a:53e3) by MR1P264CA0078.FRAP264.PROD.OUTLOOK.COM (2603:10a6:501:3f::24) with Microsoft SMTP Server (version=TLS1_2, cipher=) via Frontend Transport; Tue, 14 Dec 2021 10:22:02 +0000
+Received: from localhost (2a0d:6fc2:5560:e600:ddf8:d1fa:667a:53e3) by MR2P264CA0015.FRAP264.PROD.OUTLOOK.COM (2603:10a6:500:1::27) with Microsoft SMTP Server (version=TLS1_2, cipher=) via Frontend Transport; Tue, 14 Dec 2021 10:22:09 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ed1e9be4-247d-459c-38f6-08d9beeb92b4
+X-MS-Office365-Filtering-Correlation-Id: 5fb90c3c-0e6f-4541-bd5a-08d9beeb96b7
 X-MS-TrafficTypeDiagnostic: BYAPR12MB3079:EE_
-X-Microsoft-Antispam-PRVS: <BYAPR12MB30790A9929D176C89A0DBCB0B2759@BYAPR12MB3079.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4941;
+X-Microsoft-Antispam-PRVS: <BYAPR12MB307943EA1D4A28F312914677B2759@BYAPR12MB3079.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: +RMneDvKdvnlKLd9P2gAw2etauOXfbLbEEP/WokdSgtK0zjIPB4r04S3rcFruPgdVn6wyo2+r3vYsCvMyeyO3Kvk3+2S6tBTLcty4JQ1C43QMBxlxbNkjM6m3abLBXeLD2Icl2nIr8GuLS2Xm0ptbKebNVeOR+LBpAV4Plc3QPoUm/qFI7MPiv33Cb+k2H/+PyytSSBXbtPEQDFFStO9BY9a00EanyhvyaSVUQCHpO3OVq38P8MbSVLwDAX5CANnu5dWKoUVRYMEP1kG3Ao75JE1NqsuMVaCPTYYF/Y97tUwWqpbxOLEysA8MHqJKWwmK4pPN+Jw6jqVSE7NbkQJ4Vt4ABCyjJ+OSdG32fzbMzKWTw+IxgmCKq7U2L+eaaPvJW3RXNl0vNzhjytntW0M29um8J4+HI/KRfq90pjp8X9z/bxS/iqe/nUiDCmroGWbo2ZBRAq3M3cDUm6+gXQ5OdtMUCGTJyUsBYXhyg4HXAd6yLwUP9+P7ztddgT5nLplxZUQv0K8aRuXsbDZqbXSzZGpM0xOJSRC+wLTJtmuY4jdDLaHG5peTagfSp8uYM/aglqNueos5RkU+mmfCumsyJOPQEFJWbhJSTT2wu6kDXAzpHfIb4wEt1JcZJY+UhWrnPTkhuuRa0ah0TWJLo9cYA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR12MB4757.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(4744005)(66556008)(66476007)(66946007)(508600001)(5660300002)(1076003)(107886003)(66574015)(316002)(8936002)(8676002)(86362001)(83380400001)(2906002)(36756003)(6666004)(4326008)(6486002)(38100700002)(6496006)(2616005)(6916009)(186003);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: u+UWf/uOqHnkMBg8QNKNHE8MsKIqlyYzQUnPR0iiS85zeIjSSp1COl8BE1oNKY1vdt6ZKzQAwduj+Ue6edxwLiA6OpjCMI9HSg5r4QOdrDgV8aTV8qmGH0V4bFP/j1YYgcex8vN6uhFgf6qKjnnDF78GK5Jas8FqE2b+F/fTj4I7mP1/APiwt6BRJvMhqX+Si+fwQXwA9mVEJqMCTEyCc1hJAEhJtSQ+qySoSsi7vLcpjSIQbWxxnBaOVN+YM9qipcIhRTaK+f7NBErvfw5jr74upEfFNHdoZVGdkYnMqpjsM1upFr9gwhM94Qb4dZQj4XSulaBS5oFYvZIsqSvnvQ9dCQOJIaGggpzCAg00DGxY9tSJGUAw6cHzMchHxswQX74YyXGM+CeghHZIKjerFLqkAfENNfBaPusLPSGwS/AUFUVvNijDLWA6bLTzCLO8dKzxxsZXOdCtf9/HM+AEZtWa8P1RI7GhEkqzsMMsZQSSF5HatqPq/qpRxaDHlprjJwl+PpITP++37I3ZCTirfEGsknyqpcql5ZM+hOCtBczgBGtK+rFBMndq2111FQi1Kw8KBYNwqU3wfg6KQd+UdaTtAsZQFPIJ05Z1LRFhr6hpQvxnqSncVgwxeefgWaBEtMWsmekijuijYHC4N9NI/A==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR12MB4757.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(66556008)(66476007)(66946007)(508600001)(5660300002)(1076003)(107886003)(66574015)(316002)(8936002)(8676002)(86362001)(83380400001)(2906002)(36756003)(6666004)(4326008)(6486002)(38100700002)(6496006)(2616005)(6916009)(186003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?B+CiYJK0DeC+bz50THMR4QhkiiisCuofQT+X6c4uwc9O15yFlEWXr6XdEgB1?=
- =?us-ascii?Q?XjF9NA1bMoVKX/88bOwSALle+ZI2LIFm1ycmZBiSPnJs9O3vXa2tLvfhE+8O?=
- =?us-ascii?Q?uDlKfRs61DkrADJ5+2Vxze+NFo5iJMN0cvKpy9+W+95teRQtzgckIYcjxwkM?=
- =?us-ascii?Q?TSbVofzA/eX0jik4lS9pJoyg18/xyar7cYmMmabZCM7He9zjyPJ4jRWcaTWa?=
- =?us-ascii?Q?htCJMieXdrM5J4MTehq0EHTwnrCMYgPwDUHylqzZNq1XcOh/+tM8I+5e70Sp?=
- =?us-ascii?Q?dJxVYYLrHQxGL8jWZSfuOFxwxKa4HZN894rqUjlp1Z5kji6e8hOZ/LYi36L/?=
- =?us-ascii?Q?+1nyJauvQshYskbf0vgXV81b00PXQjx6cT8UAmzqTh/FOTAGxuACJxCB7nYt?=
- =?us-ascii?Q?x2zOjkf25unVooI1gkxtrNSBsOKFh87zX6tBc2D0LOEeG9d++BIPo/ih8Rms?=
- =?us-ascii?Q?BQf2xTA9GrjYOlM2FmnAK6soksxhkJbZE1dNgCrm6afNgw5yiMDMQ/6UkiRj?=
- =?us-ascii?Q?P5mRfbtSzVCjGtg+7fi7lx3Dz4WiMdxcDNVpGOCSj1Y6bur2//dV+5vGdIB9?=
- =?us-ascii?Q?2SAqzA7Y3JpoHjLaZ0fPf7X/tpW6RTKwwsdrk6zTuTUo0atY63fgYz3a0Cqt?=
- =?us-ascii?Q?hhuf/rLS47nGSXjwcfVrgKD2X2+S5+r5I8W5+nMj9at4bSKsOWgMtCZIc4gP?=
- =?us-ascii?Q?f6gMwHVjgXMFIblTUgaE2L7aIwwsnj0F0FpOd2KrjjorD+m5HhmrYcbNntmm?=
- =?us-ascii?Q?bCdb3G8RvemiSAX47MC21ScPccQ+ihrL8M9hNds2ACqKMxUJmU2ANK6xV6TO?=
- =?us-ascii?Q?f9AWKp4SJiCm8lnUiGV4JhOIrVwcBZ8YUvmXPn9KpK4lYYGjLOUeiHifWWsK?=
- =?us-ascii?Q?hbm1OBw1Z3xILt+xawDUTAF3NO4oFFzPfkRiq3v3vL3ByOKvERMv7ofjM5NK?=
- =?us-ascii?Q?9NhceP+cLqJrDu7tWGAfBB3B36iD/ONmvm+aA5OPWdd+Scai8PvrXo+UbCp6?=
- =?us-ascii?Q?jb70njFTRyO7VFj3Iyjp3ybMqKxnmppXL7UNV2iRd3YxT/PZP8bVNlyfkqo4?=
- =?us-ascii?Q?I8MTiMTOms6dXJGwZvs6SRvdroHh8zEKd4rkZat/q504DHofZoryYnZjUwGt?=
- =?us-ascii?Q?LgGp3BHSuVj5RvdTUdBTv/uSeVCHMJ/TqBwV52HwFEw6MfR0i69roJPta2pD?=
- =?us-ascii?Q?Y0Tn6boC8a/oG6xcYz1X0IDeBMFbKl/ldNevcTm94w7qSUKJC6Kpr1rw8yT0?=
- =?us-ascii?Q?SwZHqXGnuOfUue+AEr8s7f2VR8165T7i2q9VlXASo8MBcmpCCBW0vsub0l2S?=
- =?us-ascii?Q?TIrJvQcEjIQLVEP+P9lMLg3ZLINCW5Ubp6RzTGM5zP0fGJr7/h1prIHC5YU5?=
- =?us-ascii?Q?k2+Wdb39LhKPjt7hMkcXN5WIS2vwy1yIH+okDUteqF/gcw3NNuSegI3csmyo?=
- =?us-ascii?Q?JbqKuJmadKDNrpOY/Z/LpZ9ifiL4TvXPDQFQUIoZXiJIRzQLgcrIWpv96k2p?=
- =?us-ascii?Q?r5E/PTAfM7mD6aX6OSB5bIv6GLePb3XZQMGTmAP4b/KbOp57DQ/7RqlNPTWq?=
- =?us-ascii?Q?DosugJJx2mfpiyKOfGmguOwV7QKsMdGtJ9m6yFnaz7aWOr5JMPW58CPzIajZ?=
- =?us-ascii?Q?K7gNuDaystxKrXN1AOToX6KJU2pt0cE1z3sh7kSqFYTlSW66i5PyQvjQ1wrT?=
- =?us-ascii?Q?IhBKu3Q/WX2c2Uwfx7D+YMjUrYo=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?1rhM0y7LeO+XPwLFjn3eU8cLgTHxuemrPc4TTs0EXjlBOPvDALowX6m2NsCZ?=
+ =?us-ascii?Q?60oeTVOKy+ggV4YGz0xlOofYGBcyLANnxKiepuB5JtjH7jjaf+yHuz8s5mMW?=
+ =?us-ascii?Q?qZhxDd5H69YBMZwRav8FAQoR6EBUvONJ8Pgsnz2zbbnNvVjTYk/H3D8mdE5b?=
+ =?us-ascii?Q?gJIuTb+edcdbkkV/PifEGxT4cMCW2g06NAEztesjEBD2FJsaYOBWDwoGRGKB?=
+ =?us-ascii?Q?kD0z146lXPsuM/JT8gsQxOici6d+yZ3tpsINW3tumU8I7CNNzeB56eZ301BH?=
+ =?us-ascii?Q?sjjTBeJkplk6jLdKOeRCUqFO2JWs2KgRH/kZW/fAZMwC9yMnOOPEcm/FFu5/?=
+ =?us-ascii?Q?LSO6Gj2ONfvQSDx6Ius0Aj6PW80FUnfdyK7eVZnv1ZP0jTTbIAG0+vasKipj?=
+ =?us-ascii?Q?fx8YyyG3NK1Ocd8n8zsJWuYveE7VAdhi94cqBue8zeU3Z0DjSxs/KeyMl84z?=
+ =?us-ascii?Q?9Dci176pDocfbSfpx+kaeZyNToPa9BcTpZU1Q8D5TUknI7ZvDPMrWUq5SSsR?=
+ =?us-ascii?Q?xpFnVTxBUIpBJtiRoT3taTKrP5Xm6uuNeprDDakybovgK5+WAgcLwqAFuoCW?=
+ =?us-ascii?Q?PWsOuUy6c4hYxHJ03L/SN7N7aXdPC/SNDqPMz55bqjJMIuUlUBsTN1y6NOjv?=
+ =?us-ascii?Q?oxrO3mgquQQlB6+lelnmgzAjjE/TgC5OVF3ZX9u+42UI63AkYUFf5VVpU5Gv?=
+ =?us-ascii?Q?PJ1FgJsDqFeulONFb3f2JlbfDMwPo61lJxAcCisIIt/lPCITaxtZa7kPSjW4?=
+ =?us-ascii?Q?yZ7VEaFLCXifhvbJM1bZw4greKvbdEmpk/3bM1vPyg3Un3DS+jr7eatMQ17J?=
+ =?us-ascii?Q?4Mqz2nvs1ps8dmVWEXaTXZrKMuhNNolJtZZ6dJuxEt+pyBwTCPOtzaEMhIpQ?=
+ =?us-ascii?Q?ik42wFEfmR2Ax2DOQEYhi5qHmQVA6g4rl0C+QGWK/ShU6bCR9SAFwueTLE6t?=
+ =?us-ascii?Q?uQxEI9JRy6NYinrc21vx9T0K109biNL+yFlSDq30Sga8RqEWP//Rrh0FHSeu?=
+ =?us-ascii?Q?FAwpeTMKs/eoo/X0b+GzoWPNKUg+84VjaQYavbYu6qt4nkTxieNFm9gLZT21?=
+ =?us-ascii?Q?HEvy6V9DCMFegMzMhhpRuYsumhmN5xHF7Y3jATPH7vE1ofJs05mJJFK7c75v?=
+ =?us-ascii?Q?vb2h9vsp0PdblaExZXjDx71rjHwIqiqpnmE3xFEfYlgOdgIAnsc0hNlMAYMs?=
+ =?us-ascii?Q?HmyjjfpMj41qoMqG3UVEMpNNXbYSRz5zxS+FsjFzel9cRSMZ1iAExmQmjCwX?=
+ =?us-ascii?Q?LsGdi3JnXgWF6sQuXSYSDM/Z1miJAiZZnC2Dc7oEA8RfiSmcPMJEwQty5Vjk?=
+ =?us-ascii?Q?fg8lDxdGFCtC9vFllqa7Pm7RoUbR3uaTJYzmU6f1aOdjdA9tB6QEJRDSroCB?=
+ =?us-ascii?Q?At4+Tmz0+NPj7tAsrqfqm4SHyBGZR9MTIFjD/TEpwiB5Uq+Z81oUVgVVOq7m?=
+ =?us-ascii?Q?5sLcOK6Tm+dTfooS1TgadJFkMKv+Vd+wwsfQgE3Rlo/ay6twnHHz+3mr5Qag?=
+ =?us-ascii?Q?fBzYgPon1IVgwACmzvmlYDsmpiLQndN+6J2PWYb6NgR9FOwhcGNwEZyWD1Dj?=
+ =?us-ascii?Q?FKVf7Ms7hIfP8ajQsp7CgE460BPAKUNcBU6G+/kLPZ9gom3ZSwjIwcWjfh3U?=
+ =?us-ascii?Q?59hKnohK6n6eFYKBvQYTFcqeQhuPbn2+yw06VqrllzoiV+scZJpUcifnDp6Q?=
+ =?us-ascii?Q?mwW5rdSKd1+j9v/a2gdO6Ku5S8A=3D?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ed1e9be4-247d-459c-38f6-08d9beeb92b4
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5fb90c3c-0e6f-4541-bd5a-08d9beeb96b7
 X-MS-Exchange-CrossTenant-AuthSource: BYAPR12MB4757.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Dec 2021 10:22:04.0012
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Dec 2021 10:22:10.7507
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: UCNLsKef5VbYGEKAGdSNq8ylcYoEDL7xRak9wiRD2/PH3oC+7Daprh9u43rtmfCpke7OrHHnTKl5M3P8e2WN9Q==
+X-MS-Exchange-CrossTenant-UserPrincipalName: HREN/QV2hg5QDCm+9U0fqwjXidQFz0tNSiikg72WGf5yzvr/lzKR2Ql7aVooxRf3v16A2fMJl3bxtgLTZl3dKA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3079
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Patch #1 fixes a router interface (RIF) MAC profiles occupancy bug that
-was merged in the last cycle.
+From: Danielle Ratson <danieller@nvidia.com>
 
-Patch #2 adds a selftest that fails without the fix.
+Currently, when setting a router interface (RIF) MAC address while the
+MAC profile is not shared with other RIFs, the profile is edited so that
+the new MAC address is assigned to it.
 
-Danielle Ratson (2):
-  mlxsw: spectrum_router: Consolidate MAC profiles when possible
-  selftests: mlxsw: Add a test case for MAC profiles consolidation
+This does not take into account a situation in which the new MAC address
+already matches an existing MAC profile. In that situation, two MAC
+profiles will be occupied even though they hold MAC addresses from the
+same profile.
 
- .../ethernet/mellanox/mlxsw/spectrum_router.c |  3 +-
- .../drivers/net/mlxsw/rif_mac_profiles_occ.sh | 30 +++++++++++++++++++
- 2 files changed, 32 insertions(+), 1 deletion(-)
+In order to prevent that, add a check to ensure that editing a MAC
+profile takes place only when the new MAC address does not match an
+existing profile.
 
+Fixes: 605d25cd782a6 ("mlxsw: spectrum_router: Add RIF MAC profiles support")
+Reported-by: Maksym Yaremchuk <maksymy@nvidia.com>
+Tested-by: Maksym Yaremchuk <maksymy@nvidia.com>
+Signed-off-by: Danielle Ratson <danieller@nvidia.com>
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+---
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+index 2af0c6382609..764731eae2cd 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+@@ -8491,7 +8491,8 @@ mlxsw_sp_rif_mac_profile_replace(struct mlxsw_sp *mlxsw_sp,
+ 	u8 mac_profile;
+ 	int err;
+ 
+-	if (!mlxsw_sp_rif_mac_profile_is_shared(rif))
++	if (!mlxsw_sp_rif_mac_profile_is_shared(rif) &&
++	    !mlxsw_sp_rif_mac_profile_find(mlxsw_sp, new_mac))
+ 		return mlxsw_sp_rif_mac_profile_edit(rif, new_mac);
+ 
+ 	err = mlxsw_sp_rif_mac_profile_get(mlxsw_sp, new_mac,
 -- 
 2.31.1
 
