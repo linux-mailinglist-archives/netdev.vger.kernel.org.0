@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 44550474CD0
-	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 21:54:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DF4E474CD1
+	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 21:55:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230448AbhLNUyT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Dec 2021 15:54:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37886 "EHLO
+        id S231560AbhLNUzT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Dec 2021 15:55:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230394AbhLNUyS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 15:54:18 -0500
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90099C061574
-        for <netdev@vger.kernel.org>; Tue, 14 Dec 2021 12:54:18 -0800 (PST)
-Received: by mail-ed1-x529.google.com with SMTP id y12so66471194eda.12
-        for <netdev@vger.kernel.org>; Tue, 14 Dec 2021 12:54:18 -0800 (PST)
+        with ESMTP id S230394AbhLNUzT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 15:55:19 -0500
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96266C061574
+        for <netdev@vger.kernel.org>; Tue, 14 Dec 2021 12:55:18 -0800 (PST)
+Received: by mail-ed1-x532.google.com with SMTP id z5so68053374edd.3
+        for <netdev@vger.kernel.org>; Tue, 14 Dec 2021 12:55:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=jJzVIxIwAcRhrQBADY0zhgs6ffMlJwwbNnJr4iyIrko=;
-        b=BwIEMSaVYd1Zsb7rclznV5/jXEQOTl2YbwpdOrUM06uduXUHYdGRCAv0OVnA/JIk2W
-         CQk75Q+Haj5fXW3T5HXYJrwF4PITuu1A5a/pFxlz+uVk6H0N/SRdCxaf9eNkM0dPrfsp
-         sxJwjNE2ZOrTALvCDxmfMQBSD1HPQtg1X552CNEY/N+0NY1etRTwVV6vmV3Pwu3T083+
-         ulfcKAZxQxltlUBh5JXkptwWB3SRw2QAWYkRacE8N0+Fkmc8QXiL6eU/uIC2OuaFWe/Y
-         xsnJZcmJsgTTMtBtSah80gNc/x+Q/7RmWpCPN57qcFQOPs/g+UZi3Wku/nhI70oXBSXr
-         cFkA==
+        bh=1w8aBA4E+7NGNWSKQpbqbx/6haGUUDyNG+UHDOSKO9I=;
+        b=FjGQ1/pp2JzBAI6UahjW0gNKYeCub96qxTF7OiUQNuthakA7MvNAnQelaBY2YbripF
+         Ul50RUk8yXVmsxadpY8lLKfAmVLg0FVmFJWvfypXLQRBpCVWz4y/JdeNqxh0sZOXawok
+         k9DVxTGE1C0WxHsq0luA65QV+7e8rlil+F5WN57P671xCUQK91Y9ZGGR6xpXr4qI5a/p
+         rNFmnLTg7YddoHe7dqnS06Av1NGYj3DjL2p51aDIAXJGIJsNiUc9yIRm7kg7M35oa5He
+         iwdEoIJ8V/5P1buksXEE+9CuYrGsm53cTerv+c0G3r780gvGVRgSqaLygSODWwbZ6zHX
+         gi9w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=jJzVIxIwAcRhrQBADY0zhgs6ffMlJwwbNnJr4iyIrko=;
-        b=Nyu/rNTiZNVLBdo8GqQI211lfo+VmxVhsY3yCrfyZ7RE7Rjqc9D9BhXWSjtf74tSDe
-         25sExOo1j5bQIWbTt44/4szX+vWkpEsAiMYYPvPeIMoE4SGUsrhppRXXcd4zWmnJTZIu
-         7+ykRTMTS/f6XsOfb2HkeJGcGvElzB4WL81iMFtgloJ9foel4RJvNb4XnwUDc0QsV+vt
-         ZiTepBP8YE9sbtB6paWyv/No7RXo6EmdJ7bgoKwdrsVdshZJa8bbI57i8TOuL5qDth0U
-         /bD/CvrZIo+Pp8Nn+B/a9BuibVOC0jsyKO0+CtR272hybt26oFlv/oKeasdKFh42mgth
-         3Pdw==
-X-Gm-Message-State: AOAM533WoRmJnhpfFEb+Qd7p8ZJssItnXhzDxOmGOOm4aY8mM/JaDuyu
-        nZClnffFd8lf5xRU7mzyxOc=
-X-Google-Smtp-Source: ABdhPJz/tw4sLjqmGceCgnoqIUMUv6ixOx80kZmMXKH7XRQ7TovgdKh/xtUHVB2pg4oDd0Zm3GpIFw==
-X-Received: by 2002:a17:906:f43:: with SMTP id h3mr8233949ejj.414.1639515257073;
-        Tue, 14 Dec 2021 12:54:17 -0800 (PST)
+        bh=1w8aBA4E+7NGNWSKQpbqbx/6haGUUDyNG+UHDOSKO9I=;
+        b=kz25R+VpbbnUIEA2crleEfgl4rkl8BYzbRlBdvDGUOmXE7isR/k2WeF+tbCFpRdPxw
+         OM7ZT/Fj70jvN73UjHjBEnoSB0CbqQK94jKpmx/kGAEZt44/mAmTHi2dw2oHN5twIEH1
+         JOSVlOMi/TvlmwMKfjbPA02dDEbJH9CDC6BBAsu46ab2gmLhI1cQuLIYx1yXtTqzmJhu
+         sFXVkdRG3YkoNSF/5n4w52AkPjX1b694Y2115D1s57aiWOMKrgXjYBz8Ck3a8aCQbtLE
+         QhQnuXmr9RnA+bYuqWc2fRgRmElO9MlBeM6rY3vcFTzNLOLI1LEeoUWCkyvcG67RwUaj
+         wIqw==
+X-Gm-Message-State: AOAM530v01KC8Bqadr3bKybfkrE5WqUErKnJwDxK8fesqQTfJS3lR3Vp
+        Gwch38bneK2i8+wduORaQhs=
+X-Google-Smtp-Source: ABdhPJxbcHuUfRtvu86RTrYiMfUNF8UHcKiMfVLRaaxhkBOT+ihcteoTET13C9hrnmYvPtqnI2b8OA==
+X-Received: by 2002:a17:906:55c4:: with SMTP id z4mr8295311ejp.665.1639515317184;
+        Tue, 14 Dec 2021 12:55:17 -0800 (PST)
 Received: from skbuf ([188.25.173.50])
-        by smtp.gmail.com with ESMTPSA id g15sm276133ejt.10.2021.12.14.12.54.16
+        by smtp.gmail.com with ESMTPSA id s4sm266950ejn.25.2021.12.14.12.55.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Dec 2021 12:54:16 -0800 (PST)
-Date:   Tue, 14 Dec 2021 22:54:15 +0200
+        Tue, 14 Dec 2021 12:55:16 -0800 (PST)
+Date:   Tue, 14 Dec 2021 22:55:15 +0200
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Kurt Kanzenbach <kurt@linutronix.de>
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -57,25 +57,27 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Richard Cochran <richardcochran@gmail.com>,
         Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
         netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v2 3/4] net: dsa: hellcreek: Allow PTP P2P
- measurements on blocked ports
-Message-ID: <20211214205415.yht4gogvddifvnh4@skbuf>
+Subject: Re: [PATCH net-next v2 2/4] net: dsa: hellcreek: Add STP forwarding
+ rule
+Message-ID: <20211214205515.of5wifohpwyyxywm@skbuf>
 References: <20211214134508.57806-1-kurt@linutronix.de>
- <20211214134508.57806-4-kurt@linutronix.de>
+ <20211214134508.57806-3-kurt@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211214134508.57806-4-kurt@linutronix.de>
+In-Reply-To: <20211214134508.57806-3-kurt@linutronix.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 14, 2021 at 02:45:07PM +0100, Kurt Kanzenbach wrote:
-> Allow PTP peer delay measurements on blocked ports by STP. In case of topology
-> changes the PTP stack can directly start with the correct delays.
+On Tue, Dec 14, 2021 at 02:45:06PM +0100, Kurt Kanzenbach wrote:
+> Treat STP as management traffic. STP traffic is designated for the CPU port
+> only. In addition, STP traffic has to pass blocked ports.
 > 
-> Fixes: ddd56dfe52c9 ("net: dsa: hellcreek: Add PTP clock support")
+> Fixes: e4b27ebc780f ("net: dsa: Add DSA driver for Hirschmann Hellcreek switches")
 > Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
 > ---
+
+Kinda "net" material?
 
 Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
