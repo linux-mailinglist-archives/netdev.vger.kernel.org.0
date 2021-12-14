@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D897474CFC
-	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 22:10:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FA75474CFE
+	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 22:10:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237793AbhLNVKc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Dec 2021 16:10:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41528 "EHLO
+        id S237811AbhLNVKg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Dec 2021 16:10:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237780AbhLNVKb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 16:10:31 -0500
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C7DEC061574;
+        with ESMTP id S237786AbhLNVKc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 16:10:32 -0500
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6908EC06173E;
         Tue, 14 Dec 2021 13:10:31 -0800 (PST)
-Received: by mail-ed1-x52f.google.com with SMTP id z7so6380896edc.11;
+Received: by mail-ed1-x536.google.com with SMTP id r25so66924406edq.7;
         Tue, 14 Dec 2021 13:10:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=z3KHK1Qz252qPTPlwp2DQrEAnJLSvMy6tiK8HNT5asM=;
-        b=iHWjPUfRGNAjaO9Sk7Ciunx4Q6RDEm6wq/Gj1Yk5y095gUE5azHgzaJO0dB1iLebhW
-         LVzS9X7jZraiuWQYO5KyZqb5C1qN5pU4YLAzDNazeGdSL3YQTFCW5MXwJsWRaWotTwkl
-         BP4ocINuEZBSycL0JZH7W4m0llYvQbxxeOzS9E1trHNATAgRKC/0tVFo5mXEE0kxxLVj
-         /uOvXKJWt35xyNIeWftbh/phEeJp1j6v02p3lzP+JldecHDfqD38FOqBhxHdE9t2ONgq
-         FGbBepYL7lD6FIqg3wJegJLBIPrlI6NeuFD+rJTkd9M0cEBElpVccTUnwRi48SAiJPCn
-         wnSQ==
+        bh=qQRzAmXXLzovHTeQ0OGq4HgeHs5rmFO6afBOjf35icI=;
+        b=EbYaTy1FZXFwjpv1CYbZeXZ2DBfWWQftlgDLMYQ/vl4WTznhyruYKJ7Xmye7BK7ycG
+         VVkRf1a56WfN9aAdsosUxRz+M1gVc9THp2cv8yJzZRXUfBKC3qM3rh+rKC3CZvGv3oMA
+         hiYQqir9IBDbOYPZ8SmazEIhs2uKDGdYF6dexpl59zgTgtepkIxGANP6MO1VlPPERF5f
+         H1KR8F+ZIe4t+TsCnxS9iJaC2gcbAHsn/FOagxVFdYJXTqixF/qupWk98DOuNIvblsBz
+         RXtD0eiqzbzh7AQC2aG+6koCZnZwdvuVy9mjXo3PjSy7Th7pE8z34S8E0S5dq1zX37Qi
+         jzEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=z3KHK1Qz252qPTPlwp2DQrEAnJLSvMy6tiK8HNT5asM=;
-        b=ehKf/CGF0eS/ymC/7uClAp54Jz0f01xPanzeIDg8q1xdDPCUXngN/p/rax5hs9Zt25
-         VlSTGL519O2M3U2x0PjntvD1Ja1h7PVst1oUBqYYJR1EimPNyJeKjBEzyrIRVoKKoAWx
-         qZr3xjmDxC1VKY4yT1WciPH+H052zczjFoEnS91QFHHuBP1j5xsxwzgoNtJyK25D3SOA
-         cmld/K+dgLIr1qii7hvpOn5unI68KEbhSiD6598WyjnXeg9CTVCdoPLL2FMMCa8dypJi
-         NxbJpZdzFgHq+wxI9xpdmV38iOQAhlxZidHWVRFaN4iCWZwnlc3UdkY6YJe4LnX25LBf
-         Icpw==
-X-Gm-Message-State: AOAM5330VDBWnug14lYQPuGW8fg2kXtnEqP+Bm2zIGYHGhk1fIyitq7g
-        ODVQ/G+qwx/JIJOZlZRhXJg=
-X-Google-Smtp-Source: ABdhPJwF57ZNeM045om8M2Nzq+dsHHHWyezW+86zBrE09tHZ5J/rqtsyqrzRq/AM7lx2owHeF0dVwA==
-X-Received: by 2002:a17:906:54d:: with SMTP id k13mr7717542eja.545.1639516228357;
-        Tue, 14 Dec 2021 13:10:28 -0800 (PST)
+        bh=qQRzAmXXLzovHTeQ0OGq4HgeHs5rmFO6afBOjf35icI=;
+        b=7DsXO/6Ez0A1XM4/kY3NCqAkfXQI0q4faCGz12i4tsOEQpI3m7n+WNXBPSsTrLo6TG
+         l447SHZt3BKqFQEAUT/f5eASv81AmiwcGrgeNIaaRWuFYkDULycs/TnTWy8sq41fz55C
+         sRwlGEA5j/FxRyJGbNmd2IrgjRfkCgv0s1VWo7DD6W/BRDqpYAMLa7H2W9KfoEo2EUEI
+         UJCr241xgXuZ9PLOg+Ro4x5QddlDBILS6tdRfHcW/6QlUWEbox7PhRV0Sexq7TRfiqzh
+         iOgDT6PzrdOLR2E2Jm73CQT8l6qRxvXcL0fGX6fpW5KeFynbhabaH0rG2kOfp4YlDe7U
+         gU/g==
+X-Gm-Message-State: AOAM5314gJGrGn7fsSVYxeX0SseRKCn1u0EFd0h0K4tcU1mN36iX2tXa
+        pteLVtPyE5+WR4nM9A/MNcQ=
+X-Google-Smtp-Source: ABdhPJzX7wpPujsO1PE9ZnXjGDyARJUaLlPFiakpyvAJMzbWLSWNG9fQ7esDX+jTPot0XlkOf+QfxQ==
+X-Received: by 2002:a17:907:c15:: with SMTP id ga21mr8119750ejc.349.1639516229623;
+        Tue, 14 Dec 2021 13:10:29 -0800 (PST)
 Received: from localhost.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.googlemail.com with ESMTPSA id b4sm261034ejl.206.2021.12.14.13.10.27
+        by smtp.googlemail.com with ESMTPSA id b4sm261034ejl.206.2021.12.14.13.10.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Dec 2021 13:10:28 -0800 (PST)
+        Tue, 14 Dec 2021 13:10:29 -0800 (PST)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -55,10 +55,11 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [net-next PATCH RFC v5 02/16] net: dsa: stop updating master MTU from master.c
-Date:   Tue, 14 Dec 2021 22:09:57 +0100
-Message-Id: <20211214211011.24850-3-ansuelsmth@gmail.com>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Ansuel Smith <ansuelsmth@gmail.com>
+Subject: [net-next PATCH RFC v5 03/16] net: dsa: hold rtnl_mutex when calling dsa_master_{setup,teardown}
+Date:   Tue, 14 Dec 2021 22:09:58 +0100
+Message-Id: <20211214211011.24850-4-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20211214211011.24850-1-ansuelsmth@gmail.com>
 References: <20211214211011.24850-1-ansuelsmth@gmail.com>
@@ -70,75 +71,82 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-The dev_set_mtu() call from dsa_master_setup() has been effectively
-superseded by the dsa_slave_change_mtu(slave_dev, ETH_DATA_LEN) that is
-done from dsa_slave_create() for each user port. This function also
-updates the master MTU according to the largest user port MTU from the
-tree. Therefore, updating the master MTU through a separate code path
-isn't needed.
+DSA needs to simulate master tracking events when a binding is first
+with a DSA master established and torn down, in order to give drivers
+the simplifying guarantee that ->master_state_change calls are made
+only when the master's readiness state to pass traffic changes.
+master_state_change() provide a operational bool that DSA driver can use
+to understand if DSA master is operational or not.
+To avoid races, we need to block the reception of
+NETDEV_UP/NETDEV_CHANGE/NETDEV_GOING_DOWN events in the netdev notifier
+chain while we are changing the master's dev->dsa_ptr (this changes what
+netdev_uses_dsa(dev) reports).
+
+The dsa_master_setup() and dsa_master_teardown() functions optionally
+require the rtnl_mutex to be held, if the tagger needs the master to be
+promiscuous, these functions call dev_set_promiscuity(). Move the
+rtnl_lock() from that function and make it top-level.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- net/dsa/master.c | 25 +------------------------
- 1 file changed, 1 insertion(+), 24 deletions(-)
+ net/dsa/dsa2.c   | 8 ++++++++
+ net/dsa/master.c | 4 ++--
+ 2 files changed, 10 insertions(+), 2 deletions(-)
 
+diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
+index eb466e92069c..e8b56c84a417 100644
+--- a/net/dsa/dsa2.c
++++ b/net/dsa/dsa2.c
+@@ -1038,6 +1038,8 @@ static int dsa_tree_setup_master(struct dsa_switch_tree *dst)
+ 	struct dsa_port *dp;
+ 	int err;
+ 
++	rtnl_lock();
++
+ 	list_for_each_entry(dp, &dst->ports, list) {
+ 		if (dsa_port_is_cpu(dp)) {
+ 			err = dsa_master_setup(dp->master, dp);
+@@ -1046,6 +1048,8 @@ static int dsa_tree_setup_master(struct dsa_switch_tree *dst)
+ 		}
+ 	}
+ 
++	rtnl_unlock();
++
+ 	return 0;
+ }
+ 
+@@ -1053,9 +1057,13 @@ static void dsa_tree_teardown_master(struct dsa_switch_tree *dst)
+ {
+ 	struct dsa_port *dp;
+ 
++	rtnl_lock();
++
+ 	list_for_each_entry(dp, &dst->ports, list)
+ 		if (dsa_port_is_cpu(dp))
+ 			dsa_master_teardown(dp->master);
++
++	rtnl_unlock();
+ }
+ 
+ static int dsa_tree_setup_lags(struct dsa_switch_tree *dst)
 diff --git a/net/dsa/master.c b/net/dsa/master.c
-index e8e19857621b..f4efb244f91d 100644
+index f4efb244f91d..2199104ca7df 100644
 --- a/net/dsa/master.c
 +++ b/net/dsa/master.c
-@@ -330,28 +330,13 @@ static const struct attribute_group dsa_group = {
- 	.attrs	= dsa_slave_attrs,
- };
- 
--static void dsa_master_reset_mtu(struct net_device *dev)
--{
--	int err;
--
--	rtnl_lock();
--	err = dev_set_mtu(dev, ETH_DATA_LEN);
--	if (err)
--		netdev_dbg(dev,
--			   "Unable to reset MTU to exclude DSA overheads\n");
--	rtnl_unlock();
--}
--
- static struct lock_class_key dsa_master_addr_list_lock_key;
- 
- int dsa_master_setup(struct net_device *dev, struct dsa_port *cpu_dp)
- {
--	const struct dsa_device_ops *tag_ops = cpu_dp->tag_ops;
- 	struct dsa_switch *ds = cpu_dp->ds;
- 	struct device_link *consumer_link;
--	int mtu, ret;
--
--	mtu = ETH_DATA_LEN + dsa_tag_protocol_overhead(tag_ops);
-+	int ret;
- 
- 	/* The DSA master must use SET_NETDEV_DEV for this to work. */
- 	consumer_link = device_link_add(ds->dev, dev->dev.parent,
-@@ -361,13 +346,6 @@ int dsa_master_setup(struct net_device *dev, struct dsa_port *cpu_dp)
- 			   "Failed to create a device link to DSA switch %s\n",
- 			   dev_name(ds->dev));
+@@ -267,9 +267,9 @@ static void dsa_master_set_promiscuity(struct net_device *dev, int inc)
+ 	if (!ops->promisc_on_master)
+ 		return;
  
 -	rtnl_lock();
--	ret = dev_set_mtu(dev, mtu);
++	ASSERT_RTNL();
++
+ 	dev_set_promiscuity(dev, inc);
 -	rtnl_unlock();
--	if (ret)
--		netdev_warn(dev, "error %d setting MTU to %d to include DSA overhead\n",
--			    ret, mtu);
--
- 	/* If we use a tagging format that doesn't have an ethertype
- 	 * field, make sure that all packets from this point on get
- 	 * sent to the tag format's receive function.
-@@ -405,7 +383,6 @@ void dsa_master_teardown(struct net_device *dev)
- 	sysfs_remove_group(&dev->dev.kobj, &dsa_group);
- 	dsa_netdev_ops_set(dev, NULL);
- 	dsa_master_ethtool_teardown(dev);
--	dsa_master_reset_mtu(dev);
- 	dsa_master_set_promiscuity(dev, -1);
+ }
  
- 	dev->dsa_ptr = NULL;
+ static ssize_t tagging_show(struct device *d, struct device_attribute *attr,
 -- 
 2.33.1
 
