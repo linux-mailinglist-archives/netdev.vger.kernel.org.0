@@ -2,108 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F751474960
-	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 18:28:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EC3864749C5
+	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 18:38:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233734AbhLNR2B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Dec 2021 12:28:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46938 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233789AbhLNR2A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 12:28:00 -0500
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7C50C061574
-        for <netdev@vger.kernel.org>; Tue, 14 Dec 2021 09:28:00 -0800 (PST)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@breakpoint.cc>)
-        id 1mxBap-0005S9-8A; Tue, 14 Dec 2021 18:27:59 +0100
-From:   Florian Westphal <fw@strlen.de>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, dsahern@kernel.org,
-        Florian Westphal <fw@strlen.de>
-Subject: [PATCH v2 net-next 4/4] fib: expand fib_rule_policy
-Date:   Tue, 14 Dec 2021 18:27:31 +0100
-Message-Id: <20211214172731.3591-5-fw@strlen.de>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20211214172731.3591-1-fw@strlen.de>
-References: <20211214172731.3591-1-fw@strlen.de>
+        id S233988AbhLNRix (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Dec 2021 12:38:53 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:43980 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236568AbhLNRgz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 12:36:55 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B7E55B81B9C;
+        Tue, 14 Dec 2021 17:36:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 362FFC34600;
+        Tue, 14 Dec 2021 17:36:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1639503413;
+        bh=Mgw42nqNVH2UDsMBcL0QqjHMIZftvJst+KcMB+YFVpE=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=VIQ3I1n1tha4LzAb/tfWCJJrcOUJip1scVHGVQm3Zqpl/kO/SuiJqjLOx40bx9RAy
+         WvBSmIkR/u/7uy3jr2UtHGRblCSCBbRTMp+dKgn3h/0WzJ+NemKjW6ofPcWX7y+oqp
+         mGnTL2qaHK1GzFe7N2oPkxgD8nCrS9qjVBvmwtLorLKFBsDHHGKQn4wde2MHmUYqHy
+         agWQSjZNYO2q4G2uRGWo9EPavk6obeJlGIRyG6Fy6BlBAoeFuWJd/NnnI6II/cJeHP
+         gChRJHfM29VsVtIS+W4+UNN2xWYgGhEuYlTQW8kRkmUeuOEZ8BjVf3YcH+fmg/5CLz
+         vQfYGDYKIIt/Q==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     David Mosberger-Tang <davidm@egauge.net>
+Cc:     Ajay Singh <ajay.kathat@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: RFC: wilc1000: refactor TX path to use sk_buff queue
+References: <e3502ecffe0c4c01b263ada8deed814d5135c24c.camel@egauge.net>
+Date:   Tue, 14 Dec 2021 19:36:47 +0200
+In-Reply-To: <e3502ecffe0c4c01b263ada8deed814d5135c24c.camel@egauge.net>
+        (David Mosberger-Tang's message of "Sat, 11 Dec 2021 13:32:09 -0700")
+Message-ID: <8735mvhyvk.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now that there is only one fib nla_policy there is no need to
-keep the macro around.  Place it where its used.
+David Mosberger-Tang <davidm@egauge.net> writes:
 
-Signed-off-by: Florian Westphal <fw@strlen.de>
----
- no changes since last version.
- include/net/fib_rules.h | 20 --------------------
- net/core/fib_rules.c    | 18 +++++++++++++++++-
- 2 files changed, 17 insertions(+), 21 deletions(-)
+> I'd like to propose to restructure the wilc1000 TX path to take
+> advantage of the existing sk_buff queuing and buffer operations rather
+> than using a driver-specific solution.  To me, the resulting code looks
+> simpler and the diffstat shows a fair amount of code-reduction:
+>
+>  cfg80211.c |   35 ----
+>  mon.c      |   36 ----
+>  netdev.c   |   28 ---
+>  netdev.h   |   10 -
+>  wlan.c     |  499 ++++++++++++++++++++++++++-----------------------------------
+>  wlan.h     |   51 ++----
+>  6 files changed, 255 insertions(+), 404 deletions(-)
 
-diff --git a/include/net/fib_rules.h b/include/net/fib_rules.h
-index 08b85a4eedcc..27dbff62b5c2 100644
---- a/include/net/fib_rules.h
-+++ b/include/net/fib_rules.h
-@@ -100,26 +100,6 @@ struct fib_rule_notifier_info {
- 	struct fib_rule *rule;
- };
- 
--#define FRA_GENERIC_POLICY \
--	[FRA_UNSPEC]	= { .strict_start_type = FRA_DPORT_RANGE + 1 }, \
--	[FRA_IIFNAME]	= { .type = NLA_STRING, .len = IFNAMSIZ - 1 }, \
--	[FRA_OIFNAME]	= { .type = NLA_STRING, .len = IFNAMSIZ - 1 }, \
--	[FRA_PRIORITY]	= { .type = NLA_U32 }, \
--	[FRA_FWMARK]	= { .type = NLA_U32 }, \
--	[FRA_TUN_ID]	= { .type = NLA_U64 }, \
--	[FRA_FWMASK]	= { .type = NLA_U32 }, \
--	[FRA_TABLE]     = { .type = NLA_U32 }, \
--	[FRA_SUPPRESS_PREFIXLEN] = { .type = NLA_U32 }, \
--	[FRA_SUPPRESS_IFGROUP] = { .type = NLA_U32 }, \
--	[FRA_GOTO]	= { .type = NLA_U32 }, \
--	[FRA_L3MDEV]	= { .type = NLA_U8 }, \
--	[FRA_UID_RANGE]	= { .len = sizeof(struct fib_rule_uid_range) }, \
--	[FRA_PROTOCOL]  = { .type = NLA_U8 }, \
--	[FRA_IP_PROTO]  = { .type = NLA_U8 }, \
--	[FRA_SPORT_RANGE] = { .len = sizeof(struct fib_rule_port_range) }, \
--	[FRA_DPORT_RANGE] = { .len = sizeof(struct fib_rule_port_range) }
--
--
- static inline void fib_rule_get(struct fib_rule *rule)
- {
- 	refcount_inc(&rule->refcnt);
-diff --git a/net/core/fib_rules.c b/net/core/fib_rules.c
-index 5dce3f5adb17..d616fe9253bd 100644
---- a/net/core/fib_rules.c
-+++ b/net/core/fib_rules.c
-@@ -829,8 +829,24 @@ static int rule_exists(struct fib_rules_ops *ops, struct fib_rule_hdr *frh,
- }
- 
- static const struct nla_policy fib_rule_policy[FRA_MAX + 1] = {
--	FRA_GENERIC_POLICY,
-+	[FRA_UNSPEC]	= { .strict_start_type = FRA_DPORT_RANGE + 1 },
-+	[FRA_IIFNAME]	= { .type = NLA_STRING, .len = IFNAMSIZ - 1 },
-+	[FRA_OIFNAME]	= { .type = NLA_STRING, .len = IFNAMSIZ - 1 },
-+	[FRA_PRIORITY]	= { .type = NLA_U32 },
-+	[FRA_FWMARK]	= { .type = NLA_U32 },
- 	[FRA_FLOW]	= { .type = NLA_U32 },
-+	[FRA_TUN_ID]	= { .type = NLA_U64 },
-+	[FRA_FWMASK]	= { .type = NLA_U32 },
-+	[FRA_TABLE]     = { .type = NLA_U32 },
-+	[FRA_SUPPRESS_PREFIXLEN] = { .type = NLA_U32 },
-+	[FRA_SUPPRESS_IFGROUP] = { .type = NLA_U32 },
-+	[FRA_GOTO]	= { .type = NLA_U32 },
-+	[FRA_L3MDEV]	= { .type = NLA_U8 },
-+	[FRA_UID_RANGE]	= { .len = sizeof(struct fib_rule_uid_range) },
-+	[FRA_PROTOCOL]  = { .type = NLA_U8 },
-+	[FRA_IP_PROTO]  = { .type = NLA_U8 },
-+	[FRA_SPORT_RANGE] = { .len = sizeof(struct fib_rule_port_range) },
-+	[FRA_DPORT_RANGE] = { .len = sizeof(struct fib_rule_port_range) }
- };
- 
- int fib_nl_newrule(struct sk_buff *skb, struct nlmsghdr *nlh,
+Looks like a very good cleanup.
+
+> +static void wilc_wlan_txq_drop_net_pkt(struct sk_buff *skb)
+> +{
+> +	struct wilc_vif *vif = netdev_priv(skb->dev);
+> +	struct wilc *wilc = vif->wilc;
+> +	struct wilc_skb_tx_cb *tx_cb = WILC_SKB_TX_CB(skb);
+> +
+> +	if ((u8)tx_cb->q_num >= NQUEUES) {
+> +		netdev_err(vif->ndev, "Invalid AC queue number %d",
+> +			   tx_cb->q_num);
+> +		return;
+> +	}
+
+But why the cast here? Casting should be avoided as much as possible,
+they just create so many problems if used badly.
+
 -- 
-2.32.0
+https://patchwork.kernel.org/project/linux-wireless/list/
 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
