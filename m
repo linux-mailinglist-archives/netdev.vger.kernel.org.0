@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 51D81474E10
-	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 23:44:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 03827474E13
+	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 23:46:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234923AbhLNWof (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Dec 2021 17:44:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34432 "EHLO
+        id S235000AbhLNWog (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Dec 2021 17:44:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234557AbhLNWo1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 17:44:27 -0500
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D1B6C06173F;
-        Tue, 14 Dec 2021 14:44:27 -0800 (PST)
-Received: by mail-ed1-x535.google.com with SMTP id z7so7059857edc.11;
-        Tue, 14 Dec 2021 14:44:27 -0800 (PST)
+        with ESMTP id S234573AbhLNWo2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 17:44:28 -0500
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5084CC061747;
+        Tue, 14 Dec 2021 14:44:28 -0800 (PST)
+Received: by mail-ed1-x52e.google.com with SMTP id z9so13310385edb.5;
+        Tue, 14 Dec 2021 14:44:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=dfo2Z28c0nUHb7GY/2itHROe1c/3b/U6k/gdflVih/g=;
-        b=eQJhItNfKrQiPUeX1ELNgLGAHHcXIkd114eTAA2bzzIVrfxjWOV7xiLy+wgHp7ey+n
-         kz35SXhVLXxR9RChbzoH2PlxwDZmzYmOTjhz3i2Q6RBXdda4WH1F90TNdxTOEsjTcPDe
-         ptS3O+MAdNz12bNYGD+ZSl4PUPDDC6MbdZZfYAboqKjj3WsgyvgSDJvK3/RWV3MgJTR+
-         YkHUFsVnvDGW8poIqTcqnXhRQiVKIAP3WfyuRQUZClMyKmeD80XznK2ZdAGy++8sKvy2
-         z6LV7xfsvevsNzD5bf3foFd+qQnlbQHjDU+B4UFpIzpDkK7BIJ2OOPGRngiGNvDWB28K
-         0bAw==
+        bh=FPHCW224dbQX+hfHQkJaGaEhoEvlqsOfdITuUUKo/eY=;
+        b=iQonsgNdyXWXKzPgB6sLOQvOktwGJFwXKqY+7JNW96plQoL4G7lFr33gEUyX+Joa1W
+         keB7iCvbaztjl25PJMdAB5OkfpF/RPIrfLhQwf6nvpZQqVFYQDB9EGj8hNy1Wt1vvJjj
+         vs8hFJd63mkx+6FXpHBNqJfzfYvxwmeBt6dA6scXiWEKiTn5vk8JVr5iBuWNWpwuUO6a
+         WHbWdA8yNvaywkzTqqBThVbVsk72bqzHqfVLeqjIrhgKDMsaat0WlRHGC/hLId5ZufvM
+         nDPl7foYLBjWIikKv1U9KBsr4Yj8fT1nT8DJvBRgyUbtnhXyTwf94UMITblUbnaTKcCV
+         eJLQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=dfo2Z28c0nUHb7GY/2itHROe1c/3b/U6k/gdflVih/g=;
-        b=FGmVitYP3T/X932LeanV7QUaNj5b3Nvf+ytrhHsMYutYpZkBS6nx1au4oOXgzSDT2y
-         4PbbziA5tfViMLgIs8ml+WGupLN8GPFVJfyxrTsZ6rBED0swvk+AwxIB+kKQtd0O8gCb
-         Ej0AV4YDqL45o4UIlTVqCDXR6KLpMg7WBOBj1Q3NxfTR7MBb3PuZOFKRcUIyVpNOCBDb
-         uM/BPlV/qLjBoESz+Tt+YIop8VQoaXMeaARHWKxMMbBL4mdIALRF0h6uL8glgiHJm2nm
-         4U1Q5n2PFYb8r0x/RY0FhRVauVODs2j6KXO+MZ0MvrLXlQbhd0BfceNVMB1jBKCXWo0z
-         cb9g==
-X-Gm-Message-State: AOAM532ipOgAWV5MeopaPZAXX/xPvrCqZ29W37KlSrLurDOOjMTnYYqa
-        uY/cazImBFowoGaO+SxQnEkF2x7WEGeLTQ==
-X-Google-Smtp-Source: ABdhPJzrM6giJ5DgBtTgxUZO/Q1O6vFwIsDhEofqQ2aehe8zE/OVSjmZ7e5N1vLsiUXzqdR7zRrsiA==
-X-Received: by 2002:a17:906:6c96:: with SMTP id s22mr3096ejr.756.1639521865603;
-        Tue, 14 Dec 2021 14:44:25 -0800 (PST)
+        bh=FPHCW224dbQX+hfHQkJaGaEhoEvlqsOfdITuUUKo/eY=;
+        b=MlIuSyeG7PSd1bv4Lh9jOGXIQCUuutSv6lKxdy2Vo++/RQIQ9rNYaOju3+vS2R+d+Z
+         FXKGyEwmLkOTdCx4u40bT0jbz73V3WuGWBCqcuZarQO7C1/WxGwH7ji1t26nnzqZCC5j
+         b3GTk19kru4iZFtdGBvaazzUH1HjnuLo2/HGmNn+RILw19LRjoAzvEy5siE68oEPyXrc
+         JVLwO4DzyMVXs/h7w1hjFSsxLJ+sJzeo5wOcfKABvwERnlXbO3vZFwOPjIUa+G3fAsWx
+         MNDhEpmGF/XJIpLWkujyLgdG2zy+0NGBskZQ84Gz+6I/t+jikrUKPJMIvP/e8VdVrUOD
+         D3pA==
+X-Gm-Message-State: AOAM53174VFSfpzinKnsHyBy7Bl98Y22cNKunUFEU6K5IycGC+eHFAUk
+        ywp2bk1tGKR+b7gX21vYZU4TGY7+4c/VpA==
+X-Google-Smtp-Source: ABdhPJy6MZXSsX1TWSxYSH8AZSFlF65IrsrCZUIp9UGo7ZyLb5P7nnWKAIw1oWOcImxV8CdJBE95PQ==
+X-Received: by 2002:a17:907:2da3:: with SMTP id gt35mr8979972ejc.314.1639521866713;
+        Tue, 14 Dec 2021 14:44:26 -0800 (PST)
 Received: from localhost.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.googlemail.com with ESMTPSA id b19sm39008ejl.152.2021.12.14.14.44.24
+        by smtp.googlemail.com with ESMTPSA id b19sm39008ejl.152.2021.12.14.14.44.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Dec 2021 14:44:25 -0800 (PST)
+        Tue, 14 Dec 2021 14:44:26 -0800 (PST)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -55,11 +55,10 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Ansuel Smith <ansuelsmth@gmail.com>
-Subject: [net-next PATCH RFC v6 04/16] net: dsa: replay master state events in dsa_tree_{setup,teardown}_master
-Date:   Tue, 14 Dec 2021 23:43:57 +0100
-Message-Id: <20211214224409.5770-5-ansuelsmth@gmail.com>
+Cc:     Ansuel Smith <ansuelsmth@gmail.com>
+Subject: [net-next PATCH RFC v6 05/16] net: dsa: tag_qca: convert to FIELD macro
+Date:   Tue, 14 Dec 2021 23:43:58 +0100
+Message-Id: <20211214224409.5770-6-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20211214224409.5770-1-ansuelsmth@gmail.com>
 References: <20211214224409.5770-1-ansuelsmth@gmail.com>
@@ -69,83 +68,87 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+Convert driver to FIELD macro to drop redundant define.
 
-In order for switch driver to be able to make simple and reliable use of
-the master tracking operations, they must also be notified of the
-initial state of the DSA master, not just of the changes. This is
-because they might enable certain features only during the time when
-they know that the DSA master is up and running.
-
-Therefore, this change explicitly checks the state of the DSA master
-under the same rtnl_mutex as we were holding during the
-dsa_master_setup() and dsa_master_teardown() call. The idea being that
-if the DSA master became operational in between the moment in which it
-became a DSA master (dsa_master_setup set dev->dsa_ptr) and the moment
-when we checked for the master being up, there is a chance that we
-would emit a ->master_state_change() call with no actual state change.
-We need to avoid that by serializing the concurrent netdevice event with
-us. If the netdevice event started before, we force it to finish before
-we begin, because we take rtnl_lock before making netdev_uses_dsa()
-return true. So we also handle that early event and do nothing on it.
-Similarly, if the dev_open() attempt is concurrent with us, it will
-attempt to take the rtnl_mutex, but we're holding it. We'll see that
-the master flag IFF_UP isn't set, then when we release the rtnl_mutex
-we'll process the NETDEV_UP notifier.
-
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- net/dsa/dsa2.c | 27 +++++++++++++++++++++++----
- 1 file changed, 23 insertions(+), 4 deletions(-)
+ net/dsa/tag_qca.c | 34 +++++++++++++++-------------------
+ 1 file changed, 15 insertions(+), 19 deletions(-)
 
-diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index e8b56c84a417..4ab6d1df2b19 100644
---- a/net/dsa/dsa2.c
-+++ b/net/dsa/dsa2.c
-@@ -1042,9 +1042,18 @@ static int dsa_tree_setup_master(struct dsa_switch_tree *dst)
+diff --git a/net/dsa/tag_qca.c b/net/dsa/tag_qca.c
+index 1ea9401b8ace..55fa6b96b4eb 100644
+--- a/net/dsa/tag_qca.c
++++ b/net/dsa/tag_qca.c
+@@ -4,29 +4,24 @@
+  */
  
- 	list_for_each_entry(dp, &dst->ports, list) {
- 		if (dsa_port_is_cpu(dp)) {
--			err = dsa_master_setup(dp->master, dp);
-+			struct net_device *master = dp->master;
-+			bool admin_up = (master->flags & IFF_UP) &&
-+					!qdisc_tx_is_noop(master);
+ #include <linux/etherdevice.h>
++#include <linux/bitfield.h>
+ 
+ #include "dsa_priv.h"
+ 
+ #define QCA_HDR_LEN	2
+ #define QCA_HDR_VERSION	0x2
+ 
+-#define QCA_HDR_RECV_VERSION_MASK	GENMASK(15, 14)
+-#define QCA_HDR_RECV_VERSION_S		14
+-#define QCA_HDR_RECV_PRIORITY_MASK	GENMASK(13, 11)
+-#define QCA_HDR_RECV_PRIORITY_S		11
+-#define QCA_HDR_RECV_TYPE_MASK		GENMASK(10, 6)
+-#define QCA_HDR_RECV_TYPE_S		6
++#define QCA_HDR_RECV_VERSION		GENMASK(15, 14)
++#define QCA_HDR_RECV_PRIORITY		GENMASK(13, 11)
++#define QCA_HDR_RECV_TYPE		GENMASK(10, 6)
+ #define QCA_HDR_RECV_FRAME_IS_TAGGED	BIT(3)
+-#define QCA_HDR_RECV_SOURCE_PORT_MASK	GENMASK(2, 0)
+-
+-#define QCA_HDR_XMIT_VERSION_MASK	GENMASK(15, 14)
+-#define QCA_HDR_XMIT_VERSION_S		14
+-#define QCA_HDR_XMIT_PRIORITY_MASK	GENMASK(13, 11)
+-#define QCA_HDR_XMIT_PRIORITY_S		11
+-#define QCA_HDR_XMIT_CONTROL_MASK	GENMASK(10, 8)
+-#define QCA_HDR_XMIT_CONTROL_S		8
++#define QCA_HDR_RECV_SOURCE_PORT	GENMASK(2, 0)
 +
-+			err = dsa_master_setup(master, dp);
- 			if (err)
- 				return err;
-+
-+			/* Replay master state event */
-+			dsa_tree_master_admin_state_change(dst, master, admin_up);
-+			dsa_tree_master_oper_state_change(dst, master,
-+							  netif_oper_up(master));
- 		}
- 	}
++#define QCA_HDR_XMIT_VERSION		GENMASK(15, 14)
++#define QCA_HDR_XMIT_PRIORITY		GENMASK(13, 11)
++#define QCA_HDR_XMIT_CONTROL		GENMASK(10, 8)
+ #define QCA_HDR_XMIT_FROM_CPU		BIT(7)
+-#define QCA_HDR_XMIT_DP_BIT_MASK	GENMASK(6, 0)
++#define QCA_HDR_XMIT_DP_BIT		GENMASK(6, 0)
  
-@@ -1059,9 +1068,19 @@ static void dsa_tree_teardown_master(struct dsa_switch_tree *dst)
+ static struct sk_buff *qca_tag_xmit(struct sk_buff *skb, struct net_device *dev)
+ {
+@@ -40,8 +35,9 @@ static struct sk_buff *qca_tag_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	phdr = dsa_etype_header_pos_tx(skb);
  
- 	rtnl_lock();
+ 	/* Set the version field, and set destination port information */
+-	hdr = QCA_HDR_VERSION << QCA_HDR_XMIT_VERSION_S |
+-		QCA_HDR_XMIT_FROM_CPU | BIT(dp->index);
++	hdr = FIELD_PREP(QCA_HDR_XMIT_VERSION, QCA_HDR_VERSION);
++	hdr |= QCA_HDR_XMIT_FROM_CPU;
++	hdr |= FIELD_PREP(QCA_HDR_XMIT_DP_BIT, BIT(dp->index));
  
--	list_for_each_entry(dp, &dst->ports, list)
--		if (dsa_port_is_cpu(dp))
--			dsa_master_teardown(dp->master);
-+	list_for_each_entry(dp, &dst->ports, list) {
-+		if (dsa_port_is_cpu(dp)) {
-+			struct net_device *master = dp->master;
-+
-+			/* Synthesizing an "admin down" state is sufficient for
-+			 * the switches to get a notification if the master is
-+			 * currently up and running.
-+			 */
-+			dsa_tree_master_admin_state_change(dst, master, false);
-+
-+			dsa_master_teardown(master);
-+		}
-+	}
+ 	*phdr = htons(hdr);
  
- 	rtnl_unlock();
- }
+@@ -62,7 +58,7 @@ static struct sk_buff *qca_tag_rcv(struct sk_buff *skb, struct net_device *dev)
+ 	hdr = ntohs(*phdr);
+ 
+ 	/* Make sure the version is correct */
+-	ver = (hdr & QCA_HDR_RECV_VERSION_MASK) >> QCA_HDR_RECV_VERSION_S;
++	ver = FIELD_GET(QCA_HDR_RECV_VERSION, hdr);
+ 	if (unlikely(ver != QCA_HDR_VERSION))
+ 		return NULL;
+ 
+@@ -71,7 +67,7 @@ static struct sk_buff *qca_tag_rcv(struct sk_buff *skb, struct net_device *dev)
+ 	dsa_strip_etype_header(skb, QCA_HDR_LEN);
+ 
+ 	/* Get source port information */
+-	port = (hdr & QCA_HDR_RECV_SOURCE_PORT_MASK);
++	port = FIELD_GET(QCA_HDR_RECV_SOURCE_PORT, hdr);
+ 
+ 	skb->dev = dsa_master_find_slave(dev, 0, port);
+ 	if (!skb->dev)
 -- 
 2.33.1
 
