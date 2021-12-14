@@ -2,139 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9AA78474B79
-	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 20:03:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E29B5474B82
+	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 20:07:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237302AbhLNTDj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Dec 2021 14:03:39 -0500
-Received: from mga09.intel.com ([134.134.136.24]:10765 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234429AbhLNTDh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 Dec 2021 14:03:37 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1639508617; x=1671044617;
-  h=subject:to:cc:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=moCcawZ7TdWbgzj24jFWevKSGpg/rJ0aDgg6BUfDmHk=;
-  b=hw4E+UXeMyJUwSRQ+YIF1aIptpEZnRd55zIL939soR6YeZ9zqmmYHHfQ
-   ThoaYxGbz7g+Vur8t/dswj2VDPkaolFOKqjGBv5HysJ5a/E/ioyTuwpwq
-   eh1WvFtlDKv+xHXU7v+Qz22lZp34YA0IV3r5atGJoW82mUzfKMIL+MJGT
-   BrZNqOFBtvDr0we1M21cZMrM5Ct/V1lWZD3FIHI2t94xfxS3xSoYeV0tS
-   zeLlCAOZjnsQ9RHSNvP7Du6w7FMt3AZEji8FClmHB8thM4NinHI15iZxB
-   qmH5v+qMrvjrKIRDvwLEJJjAoIQdKDvQNv565lCaerfLDQS3V2omgs0eh
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10197"; a="238870440"
-X-IronPort-AV: E=Sophos;i="5.88,205,1635231600"; 
-   d="scan'208";a="238870440"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Dec 2021 10:40:52 -0800
-X-IronPort-AV: E=Sophos;i="5.88,205,1635231600"; 
-   d="scan'208";a="505470613"
-Received: from soniasah-mobl2.amr.corp.intel.com (HELO [10.212.242.116]) ([10.212.242.116])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Dec 2021 10:40:51 -0800
-Subject: Re: [PATCH V7 1/5] swiotlb: Add swiotlb bounce buffer remap function
- for HV IVM
-To:     Tianyu Lan <ltykernel@gmail.com>, kys@microsoft.com,
-        haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
-        decui@microsoft.com, tglx@linutronix.de, mingo@redhat.com,
-        bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
-        hpa@zytor.com, davem@davemloft.net, kuba@kernel.org,
-        jejb@linux.ibm.com, martin.petersen@oracle.com, arnd@arndb.de,
-        hch@infradead.org, m.szyprowski@samsung.com, robin.murphy@arm.com,
-        thomas.lendacky@amd.com, Tianyu.Lan@microsoft.com,
-        michael.h.kelley@microsoft.com
-Cc:     iommu@lists.linux-foundation.org, linux-arch@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
-        vkuznets@redhat.com, brijesh.singh@amd.com, konrad.wilk@oracle.com,
-        hch@lst.de, joro@8bytes.org, parri.andrea@gmail.com
-References: <20211213071407.314309-1-ltykernel@gmail.com>
- <20211213071407.314309-2-ltykernel@gmail.com>
- <198e9243-abca-b23e-0e8e-8581a7329ede@intel.com>
- <3243ff22-f6c8-b7cd-26b7-6e917e274a7c@gmail.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-Autocrypt: addr=dave.hansen@intel.com; keydata=
- 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
- z5cecg==
-Message-ID: <c25ff1e8-4d1e-cf1c-a9f6-c189307f92fd@intel.com>
-Date:   Tue, 14 Dec 2021 10:40:49 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S234429AbhLNTHQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Dec 2021 14:07:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42124 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237301AbhLNTHP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 14:07:15 -0500
+Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38B97C06173E
+        for <netdev@vger.kernel.org>; Tue, 14 Dec 2021 11:07:15 -0800 (PST)
+Received: by mail-qt1-x829.google.com with SMTP id q14so19378982qtx.10
+        for <netdev@vger.kernel.org>; Tue, 14 Dec 2021 11:07:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2wlVPpuSrlrq2/3b5Q3d+JfiAzzAY/Lgb3NCBAaE4b8=;
+        b=dyDEwgomvbK/Orf+H4ZZzhPvOP/xqgN7bGGr0r4ODWmZEsfsS/nWg1nVQMTHUOL9aK
+         vLX3qZcEL31fCzotOShmijl366OnovUploW85pX0nF/OJasP5vvv5VlYU1Yak8cKJGO/
+         T4drZpGyidYerIGDeJLcvXdjH8Sip9P2ZN3+gXcK7RbHDQwjzQqy0IyUflvi5u7Aijzv
+         DEoUM2hefu4N28gBvl37YTX+/UqfoMI8k3yPDlTmpMjSUprZB1KrkJdqIGpgqevq0yYl
+         8L54vdoxUx2cE+wOSniWCDUN+39JqL549dtjHRDqRJ8P8siwXaS9GOaZLFv0oi2138Yf
+         Teow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2wlVPpuSrlrq2/3b5Q3d+JfiAzzAY/Lgb3NCBAaE4b8=;
+        b=dFpd6Tjn/cdop2jHh58udE4wLF1QjajUGbtOXtjsaklKaOfIE3BHTnn4MOQycJrKiy
+         8VFay5sWSZyEiFvQYzfcLcDM4iyTrZXtZ3u5peGlSU0GOLnYdlPt3RysTRRGBSos9x64
+         SL4qRpQtE3/+gGFer5Qo1i+UcPOyS7W6y/pOaBa2SEknTqSXVbqQo3e1C00Hywo68FaQ
+         +Xmc1xQ6Mt2dR0G2K8mQ9uuGtoIk+uy/zesHmGqPqC+uurMRbv9MUL8GTqkHRR3riJuU
+         d6tuj8crqG9eV3sXUKQDZCcaJ8Xk0LkQ61Gmr6kQvKCePXbvW66zpWT3l+72209f1Npl
+         xMVA==
+X-Gm-Message-State: AOAM532zjCSITn8I69ucBbM6A7wNjVvySe9kPSX65ZvHT63ykQNjahK2
+        aZtg7VLDA0OtfCm/i05isPofU5K/iqw=
+X-Google-Smtp-Source: ABdhPJwE1Fr9C33TNwX+6wmexP65WH2O1NuY5JqTlsFb6QuQDrNebrCgZXxMz9u+tIRArVTi47fkeA==
+X-Received: by 2002:ac8:4e4b:: with SMTP id e11mr8221683qtw.503.1639508834015;
+        Tue, 14 Dec 2021 11:07:14 -0800 (PST)
+Received: from tresc043793.tre-sc.gov.br (187-049-235-234.floripa.net.br. [187.49.235.234])
+        by smtp.gmail.com with ESMTPSA id r16sm592936qta.46.2021.12.14.11.07.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Dec 2021 11:07:13 -0800 (PST)
+From:   luizluca@gmail.com
+To:     netdev@vger.kernel.org
+Cc:     alsi@bang-olufsen.dk,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
+Subject: [PATCH net-next] net: dsa: rtl8365mb: add GMII as user port mode
+Date:   Tue, 14 Dec 2021 16:07:05 -0300
+Message-Id: <20211214190705.12581-1-luizluca@gmail.com>
+X-Mailer: git-send-email 2.34.0
 MIME-Version: 1.0
-In-Reply-To: <3243ff22-f6c8-b7cd-26b7-6e917e274a7c@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/13/21 8:36 PM, Tianyu Lan wrote:
-> On 12/14/2021 12:45 AM, Dave Hansen wrote:
->> On 12/12/21 11:14 PM, Tianyu Lan wrote:
->>> In Isolation VM with AMD SEV, bounce buffer needs to be accessed via
->>> extra address space which is above shared_gpa_boundary (E.G 39 bit
->>> address line) reported by Hyper-V CPUID ISOLATION_CONFIG. The access
->>> physical address will be original physical address +
->>> shared_gpa_boundary.
->>> The shared_gpa_boundary in the AMD SEV SNP spec is called virtual top of
->>> memory(vTOM). Memory addresses below vTOM are automatically treated as
->>> private while memory above vTOM is treated as shared.
->>
->> This seems to be independently reintroducing some of the SEV
->> infrastructure.  Is it really OK that this doesn't interact at all with
->> any existing SEV code?
->>
->> For instance, do we need a new 'swiotlb_unencrypted_base', or should
->> this just be using sme_me_mask somehow?
-> 
->        Thanks for your review. Hyper-V provides a para-virtualized
-> confidential computing solution based on the AMD SEV function and not
-> expose sev&sme capabilities to guest. So sme_me_mask is unset in the
-> Hyper-V Isolation VM. swiotlb_unencrypted_base is more general solution
-> to handle such case of different address space for encrypted and
-> decrypted memory and other platform also may reuse it.
+From: Luiz Angelo Daros de Luca <luizluca@gmail.com>
 
-I don't really understand how this can be more general any *not* get
-utilized by the existing SEV support.
+Recent net-next fails to initialize ports with:
+
+ realtek-smi switch: phy mode gmii is unsupported on port 0
+ realtek-smi switch lan5 (uninitialized): validation of gmii with
+ support 0000000,00000000,000062ef and advertisement
+ 0000000,00000000,000062ef failed: -22
+ realtek-smi switch lan5 (uninitialized): failed to connect to PHY:
+ -EINVAL
+ realtek-smi switch lan5 (uninitialized): error -22 setting up PHY
+ for tree 1, switch 0, port 0
+
+Current net branch(3dd7d40b43663f58d11ee7a3d3798813b26a48f1) is not
+affected.
+
+I also noticed the same issue before with older versions but using
+a MDIO interface driver, not realtek-smi.
+
+Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
+---
+ drivers/net/dsa/rtl8365mb.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/dsa/rtl8365mb.c b/drivers/net/dsa/rtl8365mb.c
+index 2ac68c867636..3b729544798b 100644
+--- a/drivers/net/dsa/rtl8365mb.c
++++ b/drivers/net/dsa/rtl8365mb.c
+@@ -900,7 +900,8 @@ static bool rtl8365mb_phy_mode_supported(struct dsa_switch *ds, int port,
+ {
+ 	if (dsa_is_user_port(ds, port) &&
+ 	    (interface == PHY_INTERFACE_MODE_NA ||
+-	     interface == PHY_INTERFACE_MODE_INTERNAL))
++	     interface == PHY_INTERFACE_MODE_INTERNAL ||
++	     interface == PHY_INTERFACE_MODE_GMII))
+ 		/* Internal PHY */
+ 		return true;
+ 	else if (dsa_is_cpu_port(ds, port) &&
+-- 
+2.34.0
+
