@@ -2,243 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AED45473B39
-	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 04:02:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 99796473B55
+	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 04:13:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234967AbhLNDCN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Dec 2021 22:02:13 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:54157 "EHLO
+        id S235504AbhLNDNV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Dec 2021 22:13:21 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:39048 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234405AbhLNDCN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 22:02:13 -0500
+        by vger.kernel.org with ESMTP id S232540AbhLNDNV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 22:13:21 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1639450932;
+        s=mimecast20190719; t=1639451600;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Bu9IQ6OFp8WKIafDhLgGALQ8s+ZyeyFhZV7jSjaz0VE=;
-        b=PoiG4/ys3INlX0zqHw+TBlW9b9phTUckpqg67H2cwDlmLGaIYWlPLwmL836/3mxaFlsyXz
-        mqzf6ZPhWIm1rbrVcgtl9j7GGOIGxPHHpnb25Y0YH0wRvVePjwMbeYb15TJLRVGckrpIY+
-        WVaWt1TEDZ3C7y75K3FkhSC8TUJp4ho=
+        bh=99hHa+R8DxpGc57uFm6oCLjvQUYhFLts8EwSb1a/bxk=;
+        b=i98HusjQARCC5iXS0/CA/19lKvRRlbvvSg347gmDb2uCXUc/A0uhcpX+JdTnelivBLesyp
+        hDg5Gt2bB82trC0SFMjL2RC1E37MD0Gotq0i9BBQ7oc7RO4FxkU/oIvAyFmjT4DT9K7zMb
+        hwVA+Hfo9ahXCuiUkNi2aS3MD/eroZY=
 Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
  [209.85.167.71]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-277-zCXIod4WNK2R7TO77Z9EtA-1; Mon, 13 Dec 2021 22:02:11 -0500
-X-MC-Unique: zCXIod4WNK2R7TO77Z9EtA-1
-Received: by mail-lf1-f71.google.com with SMTP id s11-20020a195e0b000000b0041c0a47fb77so8317135lfb.20
-        for <netdev@vger.kernel.org>; Mon, 13 Dec 2021 19:02:10 -0800 (PST)
+ us-mta-588-YeVrRxS1PYKqLAYUDJ7iAQ-1; Mon, 13 Dec 2021 22:13:19 -0500
+X-MC-Unique: YeVrRxS1PYKqLAYUDJ7iAQ-1
+Received: by mail-lf1-f71.google.com with SMTP id w21-20020a197b15000000b00422b0797fa3so1146733lfc.4
+        for <netdev@vger.kernel.org>; Mon, 13 Dec 2021 19:13:19 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Bu9IQ6OFp8WKIafDhLgGALQ8s+ZyeyFhZV7jSjaz0VE=;
-        b=nc+g6KPSI70ObGGAEE7qZINSmnV6ccr65ZRThSK++StntAOKumiW6NlZebs+5H3UHh
-         1KmutWkMVZU2LNttGWwEGMmA0InjEiIC3vPKyS5mhLf4ZhSXqoxYSJDhNQxZ8hsKaf9i
-         usoFOtmdyaKABssTsSnCme3b6wRcvzLAxpwdKtkiJlBmy9LPByJxhQC0yAOJrRiw9PwN
-         7CVnfhRC3oAxyqKKoUkfAy46qwJohbwbYpKAfYPdePOX7iR8J0KWoRNIwx1mUGrWsf7g
-         kcWFVISIXkgEaVXIsDJtHhdLHiE1ViCObG+0S15VjsuSemudRE8oy3EgvfHKJ4aa6ks6
-         A2jA==
-X-Gm-Message-State: AOAM533Pf0UUmQOkX7ueZD7g5Cotu0Werfd0VMkKffjC3u8mJAKD5aaZ
-        YwnoFUvVSWUC7YIYhD9CC78ASUtsY+CbyKvNV1ZESF26W0DWPxTnbJ4G36JCUup+dVlcMHCvAFl
-        wjflgXqxbRMmM9H/C0XUjZE9o9wEjCIWi
-X-Received: by 2002:a05:6512:3d09:: with SMTP id d9mr2289502lfv.481.1639450928905;
-        Mon, 13 Dec 2021 19:02:08 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxoBz5QZXCrzq6mFK2FP4oNu6GUwTHLciq3tJxPrbOySxsyH079jZwtqoTEnDqUSVqEBpDKzOE/W/UkNiJhASU=
-X-Received: by 2002:a05:6512:3d09:: with SMTP id d9mr2289483lfv.481.1639450928676;
- Mon, 13 Dec 2021 19:02:08 -0800 (PST)
+        bh=99hHa+R8DxpGc57uFm6oCLjvQUYhFLts8EwSb1a/bxk=;
+        b=5FF3zzdb1d7qoKVR0BiuBhCvtWocJhKyPwk4Rhoif65peWnMiw4qNPPoHctxwDJicc
+         Mt9zfqhRnksYjRhjdHbSPx3nNJ7KzuZLBY0Cp/NoSQTTC9exJs6ktFfn+kAotxELwOzz
+         5wgwhZG8KgZIpthV7FsCekwCzEa4GrPRBAuT32jNCfIky6qI83a6DcCa+qoFXW7Rygfg
+         jhG0/Y+/OqZzdwwBHbOThRkXGnakX8Qu5wbGoCMGSfHJtzY+cZ+zLE/YIPSTYI6Mm1Wl
+         9pXuG1mj7m/CsK37qCiGCfJ0lzUUbupVu1NRHLNoOC0NlrwVEOZqHL6Y8RitcTupmBs0
+         r9fw==
+X-Gm-Message-State: AOAM533Xo0R4+MKLy2b2hEVU2GdvR4T+YdhsZ0C+2SL4u88WciRnZPGS
+        lg2gSedChzfg5Cbduu0HOCk9sQzt48FPuCg3xAytILNTIrl8vVM2O/QusNYtgHAXV0mk424/HYj
+        cS8v6JerA3yLr5NA6iPPBwuB3pWZbUDqg
+X-Received: by 2002:ac2:518b:: with SMTP id u11mr2321122lfi.498.1639451597761;
+        Mon, 13 Dec 2021 19:13:17 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwZ1HCIVLCKmLXdf3Yl2yAjouNx1OCPxPcR7jWZs3VxYTOSPUyURuqCGeB00yGBqOXmIWH1kqW4dvobsBNeN9Y=
+X-Received: by 2002:ac2:518b:: with SMTP id u11mr2321107lfi.498.1639451597577;
+ Mon, 13 Dec 2021 19:13:17 -0800 (PST)
 MIME-Version: 1.0
-References: <fae0bae7-e4cd-a3aa-57fe-d707df99b634@redhat.com>
- <20210223082536-mutt-send-email-mst@kernel.org> <3ff5fd23-1db0-2f95-4cf9-711ef403fb62@oracle.com>
- <20210224000057-mutt-send-email-mst@kernel.org> <52836a63-4e00-ff58-50fb-9f450ce968d7@oracle.com>
- <20210228163031-mutt-send-email-mst@kernel.org> <2cb51a6d-afa0-7cd1-d6f2-6b153186eaca@redhat.com>
- <20210302043419-mutt-send-email-mst@kernel.org> <178f8ea7-cebd-0e81-3dc7-10a058d22c07@redhat.com>
- <c9a0932f-a6d7-a9df-38ba-97e50f70c2b2@oracle.com> <20211212042311-mutt-send-email-mst@kernel.org>
- <ba9df703-29af-98a9-c554-f303ff045398@oracle.com>
-In-Reply-To: <ba9df703-29af-98a9-c554-f303ff045398@oracle.com>
+References: <20211213045012.12757-1-mengensun@tencent.com> <CACGkMEtLso8QjvmjTQ=S_bbGxu11O_scRa8GT7z6MXfJbfzfRg@mail.gmail.com>
+In-Reply-To: <CACGkMEtLso8QjvmjTQ=S_bbGxu11O_scRa8GT7z6MXfJbfzfRg@mail.gmail.com>
 From:   Jason Wang <jasowang@redhat.com>
-Date:   Tue, 14 Dec 2021 11:01:57 +0800
-Message-ID: <CACGkMEtS3nKAnda8G19hNf=WaeMAgjgeqj3-pi6CjaDsde9jXA@mail.gmail.com>
-Subject: Re: vdpa legacy guest support (was Re: [PATCH] vdpa/mlx5:
- set_features should allow reset to zero)
-To:     Si-Wei Liu <si-wei.liu@oracle.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>, Eli Cohen <elic@nvidia.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
+Date:   Tue, 14 Dec 2021 11:13:06 +0800
+Message-ID: <CACGkMEukGbDcxJe3nGFkeBNenniJdMkFMRnrN4OOfDsCb7ZPuA@mail.gmail.com>
+Subject: Re: [PATCH] virtio-net: make copy len check in xdp_linearize_page
+To:     mengensun8801@gmail.com
+Cc:     davem <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
         virtualization <virtualization@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>
+        netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>, bpf@vger.kernel.org,
+        mengensun <mengensun@tencent.com>,
+        MengLong Dong <imagedong@tencent.com>,
+        ZhengXiong Jiang <mungerjiang@tencent.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 14, 2021 at 10:00 AM Si-Wei Liu <si-wei.liu@oracle.com> wrote:
+On Mon, Dec 13, 2021 at 5:14 PM =E5=AD=99=E8=92=99=E6=81=A9 <mengensun8801@=
+gmail.com> wrote:
 >
->
->
-> On 12/12/2021 1:26 AM, Michael S. Tsirkin wrote:
-> > On Fri, Dec 10, 2021 at 05:44:15PM -0800, Si-Wei Liu wrote:
-> >> Sorry for reviving this ancient thread. I was kinda lost for the concl=
-usion
-> >> it ended up with. I have the following questions,
-> >>
-> >> 1. legacy guest support: from the past conversations it doesn't seem t=
-he
-> >> support will be completely dropped from the table, is my understanding
-> >> correct? Actually we're interested in supporting virtio v0.95 guest fo=
-r x86,
-> >> which is backed by the spec at
-> >> https://urldefense.com/v3/__https://ozlabs.org/*rusty/virtio-spec/virt=
-io-0.9.5.pdf__;fg!!ACWV5N9M2RV99hQ!dTKmzJwwRsFM7BtSuTDu1cNly5n4XCotH0WYmidz=
-GqHSXt40i7ZU43UcNg7GYxZg$ . Though I'm not sure
-> >> if there's request/need to support wilder legacy virtio versions earli=
-er
-> >> beyond.
-> > I personally feel it's less work to add in kernel than try to
-> > work around it in userspace. Jason feels differently.
-> > Maybe post the patches and this will prove to Jason it's not
-> > too terrible?
-> I suppose if the vdpa vendor does support 0.95 in the datapath and ring
-> layout level and is limited to x86 only, there should be easy way out.
-
-Note that thought I try to mandate 1.0 device when writing the codes
-but the core vdpa doesn't mandate it, and we've already had one parent
-which is based on the 0.95 spec which is the eni_vdpa:
-
-1) it depends on X86 (so no endian and ordering issues)
-2) it has various subtle things like it can't work well without
-mrg_rxbuf features negotiated since the device assumes a fixed vnet
-header length.
-3) it can only be used by legacy drivers in the guest (no VERSION_1
-since the device mandates a 4096 alignment which doesn't comply with
-1.0)
-
-So it's a proof of 0.95 parent support in the vDPA core.
-
-And we had a modern only parent, that is the vp_vdpa parent (though
-it's not hard to add legacy support).
-
-So for all the other vendors, assuming it has full support for
-transitional devices for x86. As discussed, we need to handle:
-
-1) config access before features
-2) kick before driver_ok
-
-Anything else? If not, it looks easier to do them in the userspace.
-The only advantages for doing it in the kernel is to make it work for
-virtio-vdpa. But virito-vdpa doesn't need transitional devices.
-
-> I
-> checked with Eli and other Mellanox/NVDIA folks for hardware/firmware
-> level 0.95 support, it seems all the ingredient had been there already
-> dated back to the DPDK days. The only major thing limiting is in the
-> vDPA software that the current vdpa core has the assumption around
-> VIRTIO_F_ACCESS_PLATFORM for a few DMA setup ops, which is virtio 1.0 onl=
-y.
-
-The code doesn't have such an assumption or anything I missed? Or you
-meant the vhost-vdpa that tries to talk with the IOMMU layer directly,
-it should be ok since host IOMMU is hidden from guest anyway.
-
->
+> Jason Wang <jasowang@redhat.com> =E4=BA=8E2021=E5=B9=B412=E6=9C=8813=E6=
+=97=A5=E5=91=A8=E4=B8=80 15:49=E5=86=99=E9=81=93=EF=BC=9A
 > >
-> >> 2. suppose some form of legacy guest support needs to be there, how do=
- we
-> >> deal with the bogus assumption below in vdpa_get_config() in the short=
- term?
-> >> It looks one of the intuitive fix is to move the vdpa_set_features cal=
-l out
-> >> of vdpa_get_config() to vdpa_set_config().
-> >>
-> >>          /*
-> >>           * Config accesses aren't supposed to trigger before features=
- are
-> >> set.
-> >>           * If it does happen we assume a legacy guest.
-> >>           */
-> >>          if (!vdev->features_valid)
-> >>                  vdpa_set_features(vdev, 0);
-> >>          ops->get_config(vdev, offset, buf, len);
-> >>
-> >> I can post a patch to fix 2) if there's consensus already reached.
-> >>
-> >> Thanks,
-> >> -Siwei
-> > I'm not sure how important it is to change that.
-> > In any case it only affects transitional devices, right?
-> > Legacy only should not care ...
-> Yes I'd like to distinguish legacy driver (suppose it is 0.95) against
-> the modern one in a transitional device model rather than being legacy
-> only. That way a v0.95 and v1.0 supporting vdpa parent can support both
-> types of guests without having to reconfigure.
+> > On Mon, Dec 13, 2021 at 12:50 PM <mengensun8801@gmail.com> wrote:
+> > >
+> > > From: mengensun <mengensun@tencent.com>
+> > >
+> > > xdp_linearize_page asume ring elem size is smaller then page size
+> > > when copy the first ring elem, but, there may be a elem size bigger
+> > > then page size.
+> > >
+> > > add_recvbuf_mergeable may add a hole to ring elem, the hole size is
+> > > not sure, according EWMA.
+> >
+> > The logic is to try to avoid dropping packets in this case, so I
+> > wonder if it's better to "fix" the add_recvbuf_mergeable().
+>
 
-I think this is what a transitional device is expected to work.
+Adding lists back.
+
+> turn to XDP generic is so difficulty for me, here can "fix" the
+> add_recvbuf_mergeable link follow:
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index 36a4b7c195d5..06ce8bb10b47 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -1315,6 +1315,7 @@ static int add_recvbuf_mergeable(struct virtnet_inf=
+o *vi,
+>                 alloc_frag->offset +=3D hole;
+>         }
+> +       len =3D min(len, PAGE_SIZE - room);
+>         sg_init_one(rq->sg, buf, len);
+>         ctx =3D mergeable_len_to_ctx(len, headroom);
+
+Then the truesize here is wrong.
+
+>         err =3D virtqueue_add_inbuf_ctx(rq->vq, rq->sg, 1, buf, ctx, gfp)=
+;
+>
+> it seems a rule that, length of elem giving to vring is away smaller
+> or equall then PAGE_SIZE
+
+It aims to be consistent to what EWMA tries to do:
+
+        len =3D hdr_len + clamp_t(unsigned int, ewma_pkt_len_read(avg_pkt_l=
+en),
+                        rq->min_buf_len, PAGE_SIZE - hdr_len);
 
 Thanks
 
-> Or are you suggesting
-> limit to legacy only at the time of vdpa creation would simplify the
-> implementation a lot?
->
-> Thanks,
-> -Siwei
 >
 > >
-> >> On 3/2/2021 2:53 AM, Jason Wang wrote:
-> >>> On 2021/3/2 5:47 =E4=B8=8B=E5=8D=88, Michael S. Tsirkin wrote:
-> >>>> On Mon, Mar 01, 2021 at 11:56:50AM +0800, Jason Wang wrote:
-> >>>>> On 2021/3/1 5:34 =E4=B8=8A=E5=8D=88, Michael S. Tsirkin wrote:
-> >>>>>> On Wed, Feb 24, 2021 at 10:24:41AM -0800, Si-Wei Liu wrote:
-> >>>>>>>> Detecting it isn't enough though, we will need a new ioctl to no=
-tify
-> >>>>>>>> the kernel that it's a legacy guest. Ugh :(
-> >>>>>>> Well, although I think adding an ioctl is doable, may I
-> >>>>>>> know what the use
-> >>>>>>> case there will be for kernel to leverage such info
-> >>>>>>> directly? Is there a
-> >>>>>>> case QEMU can't do with dedicate ioctls later if there's indeed
-> >>>>>>> differentiation (legacy v.s. modern) needed?
-> >>>>>> BTW a good API could be
-> >>>>>>
-> >>>>>> #define VHOST_SET_ENDIAN _IOW(VHOST_VIRTIO, ?, int)
-> >>>>>> #define VHOST_GET_ENDIAN _IOW(VHOST_VIRTIO, ?, int)
-> >>>>>>
-> >>>>>> we did it per vring but maybe that was a mistake ...
-> >>>>> Actually, I wonder whether it's good time to just not support
-> >>>>> legacy driver
-> >>>>> for vDPA. Consider:
-> >>>>>
-> >>>>> 1) It's definition is no-normative
-> >>>>> 2) A lot of budren of codes
-> >>>>>
-> >>>>> So qemu can still present the legacy device since the config
-> >>>>> space or other
-> >>>>> stuffs that is presented by vhost-vDPA is not expected to be
-> >>>>> accessed by
-> >>>>> guest directly. Qemu can do the endian conversion when necessary
-> >>>>> in this
-> >>>>> case?
-> >>>>>
-> >>>>> Thanks
-> >>>>>
-> >>>> Overall I would be fine with this approach but we need to avoid brea=
-king
-> >>>> working userspace, qemu releases with vdpa support are out there and
-> >>>> seem to work for people. Any changes need to take that into account
-> >>>> and document compatibility concerns.
-> >>>
-> >>> Agree, let me check.
-> >>>
-> >>>
-> >>>>    I note that any hardware
-> >>>> implementation is already broken for legacy except on platforms with
-> >>>> strong ordering which might be helpful in reducing the scope.
-> >>>
-> >>> Yes.
-> >>>
-> >>> Thanks
-> >>>
-> >>>
-> >>>>
+> > Or another idea is to switch to use XDP generic here where we can use
+> > skb_linearize() which should be more robust and we can drop the
+> > xdp_linearize_page() logic completely.
+> >
+> > Thanks
+> >
+> > >
+> > > so, fix it by check copy len,if checked failed, just dropped the
+> > > whole frame, not make the memory dirty after the page.
+> > >
+> > > Signed-off-by: mengensun <mengensun@tencent.com>
+> > > Reviewed-by: MengLong Dong <imagedong@tencent.com>
+> > > Reviewed-by: ZhengXiong Jiang <mungerjiang@tencent.com>
+> > > ---
+> > >  drivers/net/virtio_net.c | 6 +++++-
+> > >  1 file changed, 5 insertions(+), 1 deletion(-)
+> > >
+> > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> > > index 36a4b7c195d5..844bdbd67ff7 100644
+> > > --- a/drivers/net/virtio_net.c
+> > > +++ b/drivers/net/virtio_net.c
+> > > @@ -662,8 +662,12 @@ static struct page *xdp_linearize_page(struct re=
+ceive_queue *rq,
+> > >                                        int page_off,
+> > >                                        unsigned int *len)
+> > >  {
+> > > -       struct page *page =3D alloc_page(GFP_ATOMIC);
+> > > +       struct page *page;
+> > >
+> > > +       if (*len > PAGE_SIZE - page_off)
+> > > +               return NULL;
+> > > +
+> > > +       page =3D alloc_page(GFP_ATOMIC);
+> > >         if (!page)
+> > >                 return NULL;
+> > >
+> > > --
+> > > 2.27.0
+> > >
+> >
 >
 
