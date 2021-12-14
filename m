@@ -2,82 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 15B234742C6
+	by mail.lfdr.de (Postfix) with ESMTP id 8CDC34742C7
 	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 13:40:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234069AbhLNMkO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Dec 2021 07:40:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35442 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234072AbhLNMkL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 07:40:11 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B868C061574
-        for <netdev@vger.kernel.org>; Tue, 14 Dec 2021 04:40:11 -0800 (PST)
+        id S234048AbhLNMkP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Dec 2021 07:40:15 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:35584 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234078AbhLNMkM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 07:40:12 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EAFA3614A2
-        for <netdev@vger.kernel.org>; Tue, 14 Dec 2021 12:40:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 56D78C34606;
-        Tue, 14 Dec 2021 12:40:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5469D614D6
+        for <netdev@vger.kernel.org>; Tue, 14 Dec 2021 12:40:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id B7A36C34609;
+        Tue, 14 Dec 2021 12:40:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1639485610;
-        bh=h8V7zXX+upGWCiSmZdX9Mv0fkIwrT5zALRr/nQXpHfo=;
+        s=k20201202; t=1639485611;
+        bh=Gke9hSHs6NZDPXHBT1XNpL9oFwU1yntfeLMFEDXhwcs=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=B522xN9Hviu+kuYoqoo6wXCWIcXjzgvQbzIoUI+G7teuEfFxcw3lFre4CySiHkA8k
-         MIgB3tB05H3X87gJVAZbNTYkdsV6yolZ+OxQsBw2tFW/ym9uB5jZNmFtHWrMuhlP2O
-         6sNRe6zxRDrA1mz/lfpTe9dq/4j5NxOC+ww8lzA5ZH4b6eT5/AE/aQp6CSfZdWPb5Z
-         xsNytCtaF0w+8lj5sNeaJRwR0gyKgFKVWOA/qshkmR6exJPQ1QFyQ5WQuCgC9r0oHL
-         fM7qSVotdJUco5Q+SVmZSy8rc9wJTdHglRXr46KTOKKw9kFdhNAmtTFusL01Spbua5
-         nMqSUvBsWFe1w==
+        b=BlDxbdPZWQYxOR/fO5IBQj4KRsH+/X5tB/C3/QFO9ym1dtYJyZIwos8mzHq+EobOd
+         LThyY2UNNpc2i1pA0o0LUvP/mHhdZ0+UEye680jx68+Y9T7LqN1oWvlBqJDsmBL2Km
+         OFqVCzLcerib5aRJpqfYOQ+GDmsXuaBrB4wjwRoterASC9Dpqf3tbbUggX5SxpsdhG
+         Nn6oQ5JN2aScg99+nFEQWO0h2m4iGPGK5FY6/QyIv277/cIhO7lQYF60cl8BK8b1M8
+         vHMotmTVIlbirI+/5ESQDD9OwZOP37QXf0s/l3GZL1qTLHPSBWWbLO54TORmGz7Wqv
+         /6fDbfjn2cz8g==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 4384C60A2F;
-        Tue, 14 Dec 2021 12:40:10 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id A5FC0609BA;
+        Tue, 14 Dec 2021 12:40:11 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v2 1/1] net: stmmac: fix tc flower deletion for VLAN
- priority Rx steering
+Subject: Re: [PATCH net-next] bareudp: Add extack support to bareudp_configure()
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163948561027.12013.1168434953133030170.git-patchwork-notify@kernel.org>
-Date:   Tue, 14 Dec 2021 12:40:10 +0000
-References: <20211211145134.630258-1-boon.leong.ong@intel.com>
-In-Reply-To: <20211211145134.630258-1-boon.leong.ong@intel.com>
-To:     Ong Boon Leong <boon.leong.ong@intel.com>
-Cc:     peppe.cavallaro@st.com, alexandre.torgue@st.com,
-        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
-        mcoquelin.stm32@gmail.com, alexandre.torgue@foss.st.com,
-        kurt@linutronix.de, bigeasy@linutronix.de,
-        yannick.vignon@oss.nxp.com, olteanv@gmail.com,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
+Message-Id: <163948561167.12013.3217881532774578637.git-patchwork-notify@kernel.org>
+Date:   Tue, 14 Dec 2021 12:40:11 +0000
+References: <1cb1c14b1423222550601004a3053722c9200f6f.1639417012.git.gnault@redhat.com>
+In-Reply-To: <1cb1c14b1423222550601004a3053722c9200f6f.1639417012.git.gnault@redhat.com>
+To:     Guillaume Nault <gnault@redhat.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        martin.varghese@nokia.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (master)
+This patch was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Sat, 11 Dec 2021 22:51:34 +0800 you wrote:
-> To replicate the issue:-
+On Mon, 13 Dec 2021 19:17:17 +0100 you wrote:
+> Add missing extacks for common configuration errors.
 > 
-> 1) Add 1 flower filter for VLAN Priority based frame steering:-
-> $ IFDEVNAME=eth0
-> $ tc qdisc add dev $IFDEVNAME ingress
-> $ tc qdisc add dev $IFDEVNAME root mqprio num_tc 8 \
->    map 0 1 2 3 4 5 6 7 0 0 0 0 0 0 0 0 \
->    queues 1@0 1@1 1@2 1@3 1@4 1@5 1@6 1@7 hw 0
-> $ tc filter add dev $IFDEVNAME parent ffff: protocol 802.1Q \
->    flower vlan_prio 0 hw_tc 0
-> 
-> [...]
+> Signed-off-by: Guillaume Nault <gnault@redhat.com>
+> ---
+>  drivers/net/bareudp.c | 13 +++++++++----
+>  1 file changed, 9 insertions(+), 4 deletions(-)
 
 Here is the summary with links:
-  - [net,v2,1/1] net: stmmac: fix tc flower deletion for VLAN priority Rx steering
-    https://git.kernel.org/netdev/net/c/aeb7c75cb774
+  - [net-next] bareudp: Add extack support to bareudp_configure()
+    https://git.kernel.org/netdev/net-next/c/b4bffa4ceab1
 
 You are awesome, thank you!
 -- 
