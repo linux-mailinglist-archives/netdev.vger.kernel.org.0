@@ -2,106 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E29B5474B82
-	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 20:07:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A13DF474B89
+	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 20:09:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234429AbhLNTHQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Dec 2021 14:07:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42124 "EHLO
+        id S237317AbhLNTJQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Dec 2021 14:09:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237301AbhLNTHP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 14:07:15 -0500
-Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38B97C06173E
-        for <netdev@vger.kernel.org>; Tue, 14 Dec 2021 11:07:15 -0800 (PST)
-Received: by mail-qt1-x829.google.com with SMTP id q14so19378982qtx.10
-        for <netdev@vger.kernel.org>; Tue, 14 Dec 2021 11:07:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2wlVPpuSrlrq2/3b5Q3d+JfiAzzAY/Lgb3NCBAaE4b8=;
-        b=dyDEwgomvbK/Orf+H4ZZzhPvOP/xqgN7bGGr0r4ODWmZEsfsS/nWg1nVQMTHUOL9aK
-         vLX3qZcEL31fCzotOShmijl366OnovUploW85pX0nF/OJasP5vvv5VlYU1Yak8cKJGO/
-         T4drZpGyidYerIGDeJLcvXdjH8Sip9P2ZN3+gXcK7RbHDQwjzQqy0IyUflvi5u7Aijzv
-         DEoUM2hefu4N28gBvl37YTX+/UqfoMI8k3yPDlTmpMjSUprZB1KrkJdqIGpgqevq0yYl
-         8L54vdoxUx2cE+wOSniWCDUN+39JqL549dtjHRDqRJ8P8siwXaS9GOaZLFv0oi2138Yf
-         Teow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2wlVPpuSrlrq2/3b5Q3d+JfiAzzAY/Lgb3NCBAaE4b8=;
-        b=dFpd6Tjn/cdop2jHh58udE4wLF1QjajUGbtOXtjsaklKaOfIE3BHTnn4MOQycJrKiy
-         8VFay5sWSZyEiFvQYzfcLcDM4iyTrZXtZ3u5peGlSU0GOLnYdlPt3RysTRRGBSos9x64
-         SL4qRpQtE3/+gGFer5Qo1i+UcPOyS7W6y/pOaBa2SEknTqSXVbqQo3e1C00Hywo68FaQ
-         +Xmc1xQ6Mt2dR0G2K8mQ9uuGtoIk+uy/zesHmGqPqC+uurMRbv9MUL8GTqkHRR3riJuU
-         d6tuj8crqG9eV3sXUKQDZCcaJ8Xk0LkQ61Gmr6kQvKCePXbvW66zpWT3l+72209f1Npl
-         xMVA==
-X-Gm-Message-State: AOAM532zjCSITn8I69ucBbM6A7wNjVvySe9kPSX65ZvHT63ykQNjahK2
-        aZtg7VLDA0OtfCm/i05isPofU5K/iqw=
-X-Google-Smtp-Source: ABdhPJwE1Fr9C33TNwX+6wmexP65WH2O1NuY5JqTlsFb6QuQDrNebrCgZXxMz9u+tIRArVTi47fkeA==
-X-Received: by 2002:ac8:4e4b:: with SMTP id e11mr8221683qtw.503.1639508834015;
-        Tue, 14 Dec 2021 11:07:14 -0800 (PST)
-Received: from tresc043793.tre-sc.gov.br (187-049-235-234.floripa.net.br. [187.49.235.234])
-        by smtp.gmail.com with ESMTPSA id r16sm592936qta.46.2021.12.14.11.07.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Dec 2021 11:07:13 -0800 (PST)
-From:   luizluca@gmail.com
-To:     netdev@vger.kernel.org
-Cc:     alsi@bang-olufsen.dk,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
-Subject: [PATCH net-next] net: dsa: rtl8365mb: add GMII as user port mode
-Date:   Tue, 14 Dec 2021 16:07:05 -0300
-Message-Id: <20211214190705.12581-1-luizluca@gmail.com>
-X-Mailer: git-send-email 2.34.0
+        with ESMTP id S232356AbhLNTJP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 14:09:15 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69FF7C061574;
+        Tue, 14 Dec 2021 11:09:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=HKcArdlqNmLGeqSCDGvu48lUwNGbHVSawdH0aTcC0AU=; b=dMZV5K9SF5HblZef+Gw57T6LAx
+        ERILAH8wF0ZrN7y2PQj5y6Md1AsxOnAEm5PPvWZJt75lSDnoTpZr3Wp2T91zrEA7mAfss1mej8XrL
+        yxomPzytG3jgZZh3Tr2ewuDxC2BVQFqs2lffwp/wTnAfEwIxIUtd2dAXF+xYD3OYHEveb7vXAmyAK
+        BO9giHuzHzNmd9mo/g5fmMvTvQN/161CqoL0zhQIOgAyAtqtvNxKAeJch4iw4XQfjJCTdwNTJz4n1
+        yEmLtlp+fCEN3uLvQQXcRJmT7FSw/f5QEs32rIA4mvUJIFmAOmzwGuMbiQMjjfqBJ9yUNAS/GwmPL
+        pzvg+t/g==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:56282)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1mxDAm-0005Md-2j; Tue, 14 Dec 2021 19:09:12 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1mxDAk-0003jN-4e; Tue, 14 Dec 2021 19:09:10 +0000
+Date:   Tue, 14 Dec 2021 19:09:10 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Philippe Schenker <philippe.schenker@toradex.com>,
+        netdev@vger.kernel.org, Joakim Zhang <qiangqing.zhang@nxp.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Francesco Dolcini <francesco.dolcini@toradex.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Fabio Estevam <festevam@gmail.com>,
+        Fugang Duan <fugang.duan@nxp.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 3/3] net: fec: reset phy on resume after power-up
+Message-ID: <Ybjr1isMQBXfoo0S@shell.armlinux.org.uk>
+References: <20211214121638.138784-1-philippe.schenker@toradex.com>
+ <20211214121638.138784-4-philippe.schenker@toradex.com>
+ <YbjofqEBIjonjIgg@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YbjofqEBIjonjIgg@lunn.ch>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Luiz Angelo Daros de Luca <luizluca@gmail.com>
+On Tue, Dec 14, 2021 at 07:54:54PM +0100, Andrew Lunn wrote:
+> On Tue, Dec 14, 2021 at 01:16:38PM +0100, Philippe Schenker wrote:
+> > Reset the eth PHY after resume in case the power was switched off
+> > during suspend, this is required by some PHYs if the reset signal
+> > is controlled by software.
+> > 
+> > Signed-off-by: Philippe Schenker <philippe.schenker@toradex.com>
+> > 
+> > ---
+> > 
+> >  drivers/net/ethernet/freescale/fec_main.c | 1 +
+> 
+> Hi Philippe
+> 
+> What i don't particularly like about this is that the MAC driver is
+> doing it. Meaning if this PHY is used with any other MAC, the same
+> code needs adding there.
+> 
+> Is there a way we can put this into phylib? Maybe as part of
+> phy_init_hw()? Humm, actually, thinking aloud:
+> 
+> int phy_init_hw(struct phy_device *phydev)
+> {
+> 	int ret = 0;
+> 
+> 	/* Deassert the reset signal */
+> 	phy_device_reset(phydev, 0);
+> 
+> So maybe in the phy driver, add a suspend handler, which asserts the
+> reset. This call here will take it out of reset, so applying the reset
+> you need?
 
-Recent net-next fails to initialize ports with:
+It seems to be a combination issue - it's the fact that the power is
+turned off and the fact that the reset needs to be applied.
 
- realtek-smi switch: phy mode gmii is unsupported on port 0
- realtek-smi switch lan5 (uninitialized): validation of gmii with
- support 0000000,00000000,000062ef and advertisement
- 0000000,00000000,000062ef failed: -22
- realtek-smi switch lan5 (uninitialized): failed to connect to PHY:
- -EINVAL
- realtek-smi switch lan5 (uninitialized): error -22 setting up PHY
- for tree 1, switch 0, port 0
+If other PHYs such as AR8035 are subjected to this, they appear to
+have a requirement that reset is asserted when power is applied and
+kept asserted until the clock has stabilised and a certain time has
+elapsed.
 
-Current net branch(3dd7d40b43663f58d11ee7a3d3798813b26a48f1) is not
-affected.
+As I've already highlighted, we do not want to be asserting the reset
+signal in phy_init_hw() - doing so would mean that any PHY with a GPIO
+reset gets reset whenever the PHY is connected to the MAC - which can
+be whenever the interface is brought up. That will introduce a multi-
+second delay to bringing up the network.
 
-I also noticed the same issue before with older versions but using
-a MDIO interface driver, not realtek-smi.
-
-Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
-Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
----
- drivers/net/dsa/rtl8365mb.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/dsa/rtl8365mb.c b/drivers/net/dsa/rtl8365mb.c
-index 2ac68c867636..3b729544798b 100644
---- a/drivers/net/dsa/rtl8365mb.c
-+++ b/drivers/net/dsa/rtl8365mb.c
-@@ -900,7 +900,8 @@ static bool rtl8365mb_phy_mode_supported(struct dsa_switch *ds, int port,
- {
- 	if (dsa_is_user_port(ds, port) &&
- 	    (interface == PHY_INTERFACE_MODE_NA ||
--	     interface == PHY_INTERFACE_MODE_INTERNAL))
-+	     interface == PHY_INTERFACE_MODE_INTERNAL ||
-+	     interface == PHY_INTERFACE_MODE_GMII))
- 		/* Internal PHY */
- 		return true;
- 	else if (dsa_is_cpu_port(ds, port) &&
 -- 
-2.34.0
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
