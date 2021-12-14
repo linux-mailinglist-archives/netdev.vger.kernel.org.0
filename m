@@ -2,232 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE037474E1C
-	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 23:46:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 22C6E474E30
+	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 23:48:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235084AbhLNWo7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Dec 2021 17:44:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34466 "EHLO
+        id S234614AbhLNWs1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Dec 2021 17:48:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235053AbhLNWoi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 17:44:38 -0500
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8ADEC06175C;
-        Tue, 14 Dec 2021 14:44:37 -0800 (PST)
-Received: by mail-ed1-x529.google.com with SMTP id r11so67453559edd.9;
-        Tue, 14 Dec 2021 14:44:37 -0800 (PST)
+        with ESMTP id S234557AbhLNWsZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 17:48:25 -0500
+Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEC3AC06173E
+        for <netdev@vger.kernel.org>; Tue, 14 Dec 2021 14:48:24 -0800 (PST)
+Received: by mail-io1-xd34.google.com with SMTP id 14so26859011ioe.2
+        for <netdev@vger.kernel.org>; Tue, 14 Dec 2021 14:48:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=GZlXwUXdxSgcWUi7ykyPehodBfkBH2pJGAGjNTWEjdg=;
-        b=bTFN1jFLeBurgpyHeCfkxWEo2rC1L/P7CVzXbj+6o9wyTWg/rbZbGF9y3ffa3nDefo
-         UeHmdUHFKe1iRCeeNPnSiyEuLOX92NrJyRCwWXGkc5F4VMh1HZQy9r/+iHbneJ4HqDxW
-         G5brrDnGX1Juku29ybOwlc7eO4RrkdOyvtjajKA+FhC8Wp//a0YeQHa+78xrXWJHLFmA
-         6biwTT7rd0hXuQeyjzAlDVlitH0/5j8EqPhVHgJaOu+vuof1lMnllWxxIsOueJ013Gzm
-         DC2czsHrb48au+J9Qo05gj0O3x231SWiTvmNq0Xc370ra62A8thfJbUk76nSFm0xu2L1
-         ucLw==
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=MXv/DtzT+RrVII/ZrToN2ofTA5+xjSjZP2wWKJOuS5k=;
+        b=m7u5do6kEqS/yNJotc7vURvyVHtIY4LPihgG2+Q6Ucu5lAjpSWyNKgjSKZMvQXo7eL
+         ru1Iqg5bdj1O7/RsdWMyhPd1+1b4jZk7MggskgtLsEEmHf0sv2cfE/+08hjd97vqyHOs
+         LHFMSZaDaxCFs1Vsb/P9GFPbTL11VxrVTJRqk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=GZlXwUXdxSgcWUi7ykyPehodBfkBH2pJGAGjNTWEjdg=;
-        b=fJmeZEbFdvDdq5tl34T6mVN3kRUgo18VBOrE/ETl11NxkOmNbVu8xbMeSxudC2/1Ub
-         5nSc3mXB/UHGUGk19XgiUTQJrk1HLVxcaNKBoNxt219pKUxcxvk2CrekWmhcoaccnOfY
-         xKu+Ilp7ih0NBi2JXans3rCLv0CwFosIiz71Thke78J9+/5w41j9VFYcpCKT9ZGT4pb/
-         yKtkckjBywDVYLxkh6LAYoNpVQ/7ftg53Oua7Up+uElzrWf37+KLKA40wi5p4o7dkjQx
-         2ND5fWxA1b9RJRPl7r313Xj0EyEyCkYMYeSspQrvytGL+yeqeOF2q8aJn4BS4mc1MdgZ
-         gh3g==
-X-Gm-Message-State: AOAM533aYSEKNHR0yYefB33zgW+BGGTwfXMCcG78iou92j9xjRs0XtVg
-        XTp7c+/5t7kVTZRbN5gnS2Y=
-X-Google-Smtp-Source: ABdhPJyM8efrVBbJNIljCDJ+iagoAARPDn4YNMQ6ooEMpyDYYn02MhZBXvN1FQuqFoiOKNEVot6/Mg==
-X-Received: by 2002:a17:907:86a1:: with SMTP id qa33mr8626997ejc.142.1639521876196;
-        Tue, 14 Dec 2021 14:44:36 -0800 (PST)
-Received: from localhost.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.googlemail.com with ESMTPSA id b19sm39008ejl.152.2021.12.14.14.44.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Dec 2021 14:44:35 -0800 (PST)
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     Ansuel Smith <ansuelsmth@gmail.com>
-Subject: [net-next PATCH RFC v6 16/16] net: dsa: qca8k: cache lo and hi for mdio write
-Date:   Tue, 14 Dec 2021 23:44:09 +0100
-Message-Id: <20211214224409.5770-17-ansuelsmth@gmail.com>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20211214224409.5770-1-ansuelsmth@gmail.com>
-References: <20211214224409.5770-1-ansuelsmth@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=MXv/DtzT+RrVII/ZrToN2ofTA5+xjSjZP2wWKJOuS5k=;
+        b=07hW8TOiCyI4jFra0cw5MwINR4RLIWVUHTZdeXKlDfkeGgSYu4QFwvBvVu1YdZscym
+         pOdcUHQQnF9IKeiF9VBsUeUUdKZjAtlCtBuQUF29P4gP3OpsL9XeKgcl/aD+Zslcws5e
+         fO1fqqjoFOAXYTDVEo4TmaLxOiqpPOhHbRcOiCUMi1vgw+LOQivut1vjckSyeKgjMIsO
+         Hm3xW6Epv1ZGmyORvQGJu1sNrVgQmmLaC/cOsjWpebvyin9rXlOv2kp0ZJnyhhoXeo7e
+         r8MRiITq2uwivWWVhnkPqJTN9lVKPAf5PmqedO/73vV+qCWtPzo/EwpE3LiBhhpYP//j
+         yLZw==
+X-Gm-Message-State: AOAM532RWPKMoDh4yQMEBzjV/rcEQ4GPq4MOdgCxInyCuPY/xRdFZ1ds
+        rvTACoQIS+3tVixyAxB4GzdC9oB4FVPiXsZltlP1Z3ECqSpRtg==
+X-Google-Smtp-Source: ABdhPJwhPBYy3YkhpWPba0anVBjfvoXbIbG2xjp4g5uA3wsijJAtQub1bOlhDmNO/tfHCSUs1QnrSOvce1nGtdLL3rM=
+X-Received: by 2002:a05:6638:134d:: with SMTP id u13mr4477072jad.360.1639522104190;
+ Tue, 14 Dec 2021 14:48:24 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20211214223901.1.I777939e0ef1e89872d4ab65340f3fd756615a047@changeid>
+In-Reply-To: <20211214223901.1.I777939e0ef1e89872d4ab65340f3fd756615a047@changeid>
+From:   Abhishek Kumar <kuabhs@chromium.org>
+Date:   Tue, 14 Dec 2021 14:48:13 -0800
+Message-ID: <CACTWRwtn+xwVfdFC_1ZAEGC41+gqjDNpTk46vctejnF74Pf+AQ@mail.gmail.com>
+Subject: Re: [PATCH] ath10k: enable threaded napi on ath10k driver
+To:     kvalo@codeaurora.org, briannorris@chromium.org
+Cc:     linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        dianders@chromium.org, pillair@codeaurora.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, ath10k@lists.infradead.org,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From Documentation, we can cache lo and hi the same way we do with the
-page. This massively reduce the mdio write as 3/4 of the time as we only
-require to write the lo or hi part for a mdio write.
+Hi All,
 
-Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
----
- drivers/net/dsa/qca8k.c | 60 ++++++++++++++++++++++++++++++++---------
- drivers/net/dsa/qca8k.h |  5 ++++
- 2 files changed, 53 insertions(+), 12 deletions(-)
+This patch is to trigger a discussion on the best approach to enable
+threaded NAPI on ath10k. Threaded NAPI feature was added in (net:
+extract napi poll functionality to __napi_poll() commit
+898f8015ffe74118e7b461827451f2cc6e51035b) and showed good results on
+ath10k snoc based solution.
 
-diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-index 4254cb12c7f7..cc8fac188389 100644
---- a/drivers/net/dsa/qca8k.c
-+++ b/drivers/net/dsa/qca8k.c
-@@ -88,6 +88,42 @@ qca8k_split_addr(u32 regaddr, u16 *r1, u16 *r2, u16 *page)
- 	*page = regaddr & 0x3ff;
- }
- 
-+static int
-+qca8k_set_lo(struct mii_bus *bus, int phy_id, u32 regnum,
-+	     u16 lo, u16 *cached_lo)
-+{
-+	int ret;
-+
-+	if (lo == *cached_lo)
-+		return 0;
-+
-+	ret = bus->write(bus, phy_id, regnum, lo);
-+	if (ret < 0)
-+		dev_err_ratelimited(&bus->dev,
-+				    "failed to write qca8k 32bit lo register\n");
-+
-+	*cached_lo = lo;
-+	return 0;
-+}
-+
-+static int
-+qca8k_set_hi(struct mii_bus *bus, int phy_id, u32 regnum,
-+	     u16 hi, u16 *cached_hi)
-+{
-+	int ret;
-+
-+	if (hi == *cached_hi)
-+		return 0;
-+
-+	ret = bus->write(bus, phy_id, regnum, hi);
-+	if (ret < 0)
-+		dev_err_ratelimited(&bus->dev,
-+				    "failed to write qca8k 32bit hi register\n");
-+
-+	*cached_hi = hi;
-+	return 0;
-+}
-+
- static int
- qca8k_mii_read32(struct mii_bus *bus, int phy_id, u32 regnum, u32 *val)
- {
-@@ -111,7 +147,8 @@ qca8k_mii_read32(struct mii_bus *bus, int phy_id, u32 regnum, u32 *val)
- }
- 
- static void
--qca8k_mii_write32(struct mii_bus *bus, int phy_id, u32 regnum, u32 val)
-+qca8k_mii_write32(struct mii_bus *bus, struct qca8k_mdio_cache *cache,
-+		  int phy_id, u32 regnum, u32 val)
- {
- 	u16 lo, hi;
- 	int ret;
-@@ -119,12 +156,9 @@ qca8k_mii_write32(struct mii_bus *bus, int phy_id, u32 regnum, u32 val)
- 	lo = val & 0xffff;
- 	hi = (u16)(val >> 16);
- 
--	ret = bus->write(bus, phy_id, regnum, lo);
-+	ret = qca8k_set_lo(bus, phy_id, regnum, lo, &cache->lo);
- 	if (ret >= 0)
--		ret = bus->write(bus, phy_id, regnum + 1, hi);
--	if (ret < 0)
--		dev_err_ratelimited(&bus->dev,
--				    "failed to write qca8k 32bit register\n");
-+		ret = qca8k_set_hi(bus, phy_id, regnum + 1, hi, &cache->hi);
- }
- 
- static int
-@@ -368,7 +402,7 @@ qca8k_regmap_write(void *ctx, uint32_t reg, uint32_t val)
- 	if (ret < 0)
- 		goto exit;
- 
--	qca8k_mii_write32(bus, 0x10 | r2, r1, val);
-+	qca8k_mii_write32(bus, mdio_cache, 0x10 | r2, r1, val);
- 
- exit:
- 	mutex_unlock(&bus->mdio_lock);
-@@ -405,7 +439,7 @@ qca8k_regmap_update_bits(void *ctx, uint32_t reg, uint32_t mask, uint32_t write_
- 
- 	val &= ~mask;
- 	val |= write_val;
--	qca8k_mii_write32(bus, 0x10 | r2, r1, val);
-+	qca8k_mii_write32(bus, mdio_cache, 0x10 | r2, r1, val);
- 
- exit:
- 	mutex_unlock(&bus->mdio_lock);
-@@ -1042,14 +1076,14 @@ qca8k_mdio_write(struct mii_bus *bus, struct qca8k_mdio_cache *cache,
- 	if (ret)
- 		goto exit;
- 
--	qca8k_mii_write32(bus, 0x10 | r2, r1, val);
-+	qca8k_mii_write32(bus, cache, 0x10 | r2, r1, val);
- 
- 	ret = qca8k_mdio_busy_wait(bus, QCA8K_MDIO_MASTER_CTRL,
- 				   QCA8K_MDIO_MASTER_BUSY);
- 
- exit:
- 	/* even if the busy_wait timeouts try to clear the MASTER_EN */
--	qca8k_mii_write32(bus, 0x10 | r2, r1, 0);
-+	qca8k_mii_write32(bus, cache, 0x10 | r2, r1, 0);
- 
- 	mutex_unlock(&bus->mdio_lock);
- 
-@@ -1079,7 +1113,7 @@ qca8k_mdio_read(struct mii_bus *bus, struct qca8k_mdio_cache *cache,
- 	if (ret)
- 		goto exit;
- 
--	qca8k_mii_write32(bus, 0x10 | r2, r1, val);
-+	qca8k_mii_write32(bus, cache, 0x10 | r2, r1, val);
- 
- 	ret = qca8k_mdio_busy_wait(bus, QCA8K_MDIO_MASTER_CTRL,
- 				   QCA8K_MDIO_MASTER_BUSY);
-@@ -1090,7 +1124,7 @@ qca8k_mdio_read(struct mii_bus *bus, struct qca8k_mdio_cache *cache,
- 
- exit:
- 	/* even if the busy_wait timeouts try to clear the MASTER_EN */
--	qca8k_mii_write32(bus, 0x10 | r2, r1, 0);
-+	qca8k_mii_write32(bus, cache, 0x10 | r2, r1, 0);
- 
- 	mutex_unlock(&bus->mdio_lock);
- 
-@@ -2985,6 +3019,8 @@ qca8k_sw_probe(struct mdio_device *mdiodev)
- 	}
- 
- 	priv->mdio_cache.page = 0xffff;
-+	priv->mdio_cache.lo = 0xffff;
-+	priv->mdio_cache.hi = 0xffff;
- 
- 	/* Check the detected switch id */
- 	ret = qca8k_read_switch_id(priv);
-diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
-index c4800ee06c34..79cd35f48730 100644
---- a/drivers/net/dsa/qca8k.h
-+++ b/drivers/net/dsa/qca8k.h
-@@ -369,6 +369,11 @@ struct qca8k_mdio_cache {
-  * mdio writes
-  */
- 	u16 page;
-+/* lo and hi can also be cached and from Documentation we can skip one
-+ * extra mdio write if lo or hi is didn't change.
-+ */
-+	u16 lo;
-+	u16 hi;
- };
- 
- struct qca8k_priv {
--- 
-2.33.1
+If we come to a consensus with this as the best approach to enable
+threaded NAPI on ath10k, then we can moved ahead with the
+implementation and enable across sdio and pci, or if there is any
+objection then we can discuss it here.
 
+Thanks
+Abhishek
+
+On Tue, Dec 14, 2021 at 2:41 PM Abhishek Kumar <kuabhs@chromium.org> wrote:
+>
+> NAPI poll can be done in threaded context along with soft irq
+> context. Threaded context can be scheduled efficiently, thus
+> creating less of bottleneck during Rx processing. This patch is
+> to enable threaded NAPI on ath10k driver.
+>
+> Tested-on: WCN3990 hw1.0 SNOC WLAN.HL.3.2.2-00696-QCAHLSWMTPL-1
+> Signed-off-by: Abhishek Kumar <kuabhs@chromium.org>
+> ---
+>
+>  drivers/net/wireless/ath/ath10k/pci.c  | 1 +
+>  drivers/net/wireless/ath/ath10k/sdio.c | 1 +
+>  drivers/net/wireless/ath/ath10k/snoc.c | 2 +-
+>  3 files changed, 3 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/net/wireless/ath/ath10k/pci.c b/drivers/net/wireless/ath/ath10k/pci.c
+> index 4d4e2f91e15c..584307574d99 100644
+> --- a/drivers/net/wireless/ath/ath10k/pci.c
+> +++ b/drivers/net/wireless/ath/ath10k/pci.c
+> @@ -1958,6 +1958,7 @@ static int ath10k_pci_hif_start(struct ath10k *ar)
+>
+>         ath10k_dbg(ar, ATH10K_DBG_BOOT, "boot hif start\n");
+>
+> +       dev_set_threaded(&ar->napi_dev, true);
+>         ath10k_core_napi_enable(ar);
+>
+>         ath10k_pci_irq_enable(ar);
+> diff --git a/drivers/net/wireless/ath/ath10k/sdio.c b/drivers/net/wireless/ath/ath10k/sdio.c
+> index 63e1c2d783c5..52ef74d9811a 100644
+> --- a/drivers/net/wireless/ath/ath10k/sdio.c
+> +++ b/drivers/net/wireless/ath/ath10k/sdio.c
+> @@ -1862,6 +1862,7 @@ static int ath10k_sdio_hif_start(struct ath10k *ar)
+>         struct ath10k_sdio *ar_sdio = ath10k_sdio_priv(ar);
+>         int ret;
+>
+> +       dev_set_threaded(&ar->napi_dev, true);
+>         ath10k_core_napi_enable(ar);
+>
+>         /* Sleep 20 ms before HIF interrupts are disabled.
+> diff --git a/drivers/net/wireless/ath/ath10k/snoc.c b/drivers/net/wireless/ath/ath10k/snoc.c
+> index 9513ab696fff..e7d12dbb3fa5 100644
+> --- a/drivers/net/wireless/ath/ath10k/snoc.c
+> +++ b/drivers/net/wireless/ath/ath10k/snoc.c
+> @@ -926,7 +926,7 @@ static int ath10k_snoc_hif_start(struct ath10k *ar)
+>         struct ath10k_snoc *ar_snoc = ath10k_snoc_priv(ar);
+>
+>         bitmap_clear(ar_snoc->pending_ce_irqs, 0, CE_COUNT_MAX);
+> -
+> +       dev_set_threaded(&ar->napi_dev, true);
+>         ath10k_core_napi_enable(ar);
+>         ath10k_snoc_irq_enable(ar);
+>         ath10k_snoc_rx_post(ar);
+> --
+> 2.34.1.173.g76aa8bc2d0-goog
+>
