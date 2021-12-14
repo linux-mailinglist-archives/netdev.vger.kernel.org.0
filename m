@@ -2,101 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB8C2473CB9
-	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 06:49:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CFBC473CC3
+	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 06:54:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230056AbhLNFt0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Dec 2021 00:49:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54716 "EHLO
+        id S230102AbhLNFyk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Dec 2021 00:54:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229889AbhLNFt0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 00:49:26 -0500
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21286C061748
-        for <netdev@vger.kernel.org>; Mon, 13 Dec 2021 21:49:26 -0800 (PST)
-Received: from ip4d173d4a.dynamic.kabel-deutschland.de ([77.23.61.74] helo=[192.168.66.200]); authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1mx0gj-000665-31; Tue, 14 Dec 2021 06:49:21 +0100
-Message-ID: <28922ca0-8513-c804-7f1d-bcce30147b68@leemhuis.info>
-Date:   Tue, 14 Dec 2021 06:49:20 +0100
+        with ESMTP id S230045AbhLNFyk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 00:54:40 -0500
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10655C061574;
+        Mon, 13 Dec 2021 21:54:40 -0800 (PST)
+Received: by mail-pj1-x102b.google.com with SMTP id k6-20020a17090a7f0600b001ad9d73b20bso15210918pjl.3;
+        Mon, 13 Dec 2021 21:54:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=R1Fbcs2PkAzxnxr2SD1nIRjZeiJzFKllZFg8W2MhEa4=;
+        b=f31dRgVVLcnOpSdPmRXV5OrNE3tKzDUx9GIBP8WXjcaa1CE7TJNLUstR9/LWNogZz5
+         UdGrsAK5UaeODNHriSquMzJrUQcSM9vu6CvixYmk7Wsb8y7858f8EcNqTP3InZoYAghY
+         MKJ329LZ66SVlUv2QjJRzk0Eyy1GPUyBg7i5vbXBiC07Vzo1zL3j87/OSPo/ByTDYgXb
+         nZCcGO8QUa2P9wOBBc/2VCio2X9Upb0napZ1Zcj6YwFzVFWzOF9RbEVfJFQOIZrRisSX
+         o+M5tZn3vmQdeZtA1N9Rzd/D4AKIqypgVSUG6zEqiiKjAr5MF0PhzRYghausmF8MXrIC
+         ziLg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=R1Fbcs2PkAzxnxr2SD1nIRjZeiJzFKllZFg8W2MhEa4=;
+        b=t8I3tnogIQ9LkfjixIoe2LZMMGWvmuN6Eoy9cvj8qseCho9KUzRWP2OvnzeIQpNlHi
+         M5m4bo3KffSnWcfhBiRpCq5ND1xHSKyGy+VGyye5yETEEJtm1d2zUELvoL7YPGEsV2EM
+         fJb+gF3CKBBYQZMRWrzT5vqR3rnFGC8kOgms+e5005ErCQxWYc/7gSVzjblXO0O8uPyJ
+         ZBXFnSt5SjggqJ8oKgEGyt35p0j4V8I6KwoiuOA8QsYulsGLt6BcwMY8OJ1OM4SQBhiq
+         Lrd8MAXU+VFc7KWoWXwNtEFISG9+UdZHpYNSUSIz1SuGM1g60adq69Eb3oZWdlFaUk9+
+         cYtA==
+X-Gm-Message-State: AOAM531HwpAROXW8tXCiOUQKvoWuVAZznm9h1YleNezWDGXbUHUxS6mf
+        vJ8m+esRT4CCu6ucK2TcmHM=
+X-Google-Smtp-Source: ABdhPJzmNeU8tuF6oceL4w9UBP6NmorClr6I1o6JhnvNSREoQpNWLILs9bOV3hnbB07xMd55xQ7GLQ==
+X-Received: by 2002:a17:902:a714:b0:143:d007:412f with SMTP id w20-20020a170902a71400b00143d007412fmr3185130plq.18.1639461279440;
+        Mon, 13 Dec 2021 21:54:39 -0800 (PST)
+Received: from localhost ([110.141.142.237])
+        by smtp.gmail.com with ESMTPSA id l25sm11090819pgt.62.2021.12.13.21.54.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Dec 2021 21:54:38 -0800 (PST)
+Date:   Tue, 14 Dec 2021 16:54:35 +1100
+From:   Balbir Singh <bsingharora@gmail.com>
+To:     Leo Yan <leo.yan@linaro.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Leon Romanovsky <leon@kernel.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Mike Leach <mike.leach@linaro.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jan Harkes <jaharkes@cs.cmu.edu>, coda@cs.cmu.edu,
+        Paul Moore <paul@paul-moore.com>,
+        Eric Paris <eparis@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, coresight@lists.linaro.org,
+        linux-arm-kernel@lists.infradead.org, codalist@coda.cs.cmu.edu,
+        linux-audit@redhat.com
+Subject: Re: [PATCH v2 3/7] coresight: etm4x: Use task_is_in_init_pid_ns()
+Message-ID: <Ybgxm6o+yLhP+f6L@balbir-desktop>
+References: <20211208083320.472503-1-leo.yan@linaro.org>
+ <20211208083320.472503-4-leo.yan@linaro.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH net v1] igc: Do not enable crosstimestamping for i225-V
- models
-Content-Language: en-BW
-To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        intel-wired-lan@lists.osuosl.org
-Cc:     netdev@vger.kernel.org, roots@gmx.de, jesse.brandeburg@intel.com,
-        anthony.l.nguyen@intel.com, greg@kroah.com, kuba@kernel.org
-References: <87wnk8qrt8.fsf@intel.com>
- <20211214003949.666642-1-vinicius.gomes@intel.com>
-From:   Thorsten Leemhuis <regressions@leemhuis.info>
-In-Reply-To: <20211214003949.666642-1-vinicius.gomes@intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1639460966;f13f2927;
-X-HE-SMSGID: 1mx0gj-000665-31
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211208083320.472503-4-leo.yan@linaro.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi, this is your Linux kernel regression tracker speaking.
-
-Thx for working on this. Two small details:
-
-On 14.12.21 01:39, Vinicius Costa Gomes wrote:
-> It was reported that when PCIe PTM is enabled, some lockups could
-> be observed with some integrated i225-V models.
+On Wed, Dec 08, 2021 at 04:33:16PM +0800, Leo Yan wrote:
+> This patch replaces open code with task_is_in_init_pid_ns() to check if
+> a task is in root PID namespace.
 > 
-> While the issue is investigated, we can disable crosstimestamp for
-> those models and see no loss of functionality, because those models
-> don't have any support for time synchronization.
-> 
-> Fixes: a90ec8483732 ("igc: Add support for PTP getcrosststamp()")
-
-That commit is in 5.15 (and Stefan is facing the problem there), hence
-to make backporting explicit it's afaics better to add this line :
-
-Cc: stable@vger.kernel.org #5.15
-
-> Link: https://lore.kernel.org/all/924175a188159f4e03bd69908a91e606b574139b.camel@gmx.de/
-
-Nitpicking: not sure if it's really important for anything, but to get
-the proper format you afaik should do a s!/all/!/r/! to that line.
-
-Ciao, Thorsten
-
-> Reported-by: Stefan Dietrich <roots@gmx.de>
-> Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+> Signed-off-by: Leo Yan <leo.yan@linaro.org>
 > ---
->  drivers/net/ethernet/intel/igc/igc_ptp.c | 15 ++++++++++++++-
->  1 file changed, 14 insertions(+), 1 deletion(-)
+>  drivers/hwtracing/coresight/coresight-etm4x-sysfs.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
 > 
-> diff --git a/drivers/net/ethernet/intel/igc/igc_ptp.c b/drivers/net/ethernet/intel/igc/igc_ptp.c
-> index 30568e3544cd..4f9245aa79a1 100644
-> --- a/drivers/net/ethernet/intel/igc/igc_ptp.c
-> +++ b/drivers/net/ethernet/intel/igc/igc_ptp.c
-> @@ -768,7 +768,20 @@ int igc_ptp_get_ts_config(struct net_device *netdev, struct ifreq *ifr)
->   */
->  static bool igc_is_crosststamp_supported(struct igc_adapter *adapter)
->  {
-> -	return IS_ENABLED(CONFIG_X86_TSC) ? pcie_ptm_enabled(adapter->pdev) : false;
-> +	if (!IS_ENABLED(CONFIG_X86_TSC))
-> +		return false;
-> +
-> +	/* FIXME: it was noticed that enabling support for PCIe PTM in
-> +	 * some i225-V models could cause lockups when bringing the
-> +	 * interface up/down. There should be no downsides to
-> +	 * disabling crosstimestamping support for i225-V, as it
-> +	 * doesn't have any PTP support. That way we gain some time
-> +	 * while root causing the issue.
-> +	 */
-> +	if (adapter->pdev->device == IGC_DEV_ID_I225_V)
-> +		return false;
-> +
-> +	return pcie_ptm_enabled(adapter->pdev);
->  }
+> diff --git a/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c b/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
+> index a0640fa5c55b..10ef2a29006e 100644
+> --- a/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
+> +++ b/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
+> @@ -1890,7 +1890,7 @@ static ssize_t ctxid_pid_show(struct device *dev,
+>  	 * Don't use contextID tracing if coming from a PID namespace.  See
+>  	 * comment in ctxid_pid_store().
+>  	 */
+> -	if (task_active_pid_ns(current) != &init_pid_ns)
+> +	if (!task_is_in_init_pid_ns(current))
+>  		return -EINVAL;
 >  
->  static struct system_counterval_t igc_device_tstamp_to_system(u64 tstamp)
-> 
+>  	spin_lock(&drvdata->spinlock);
+> @@ -1918,7 +1918,7 @@ static ssize_t ctxid_pid_store(struct device *dev,
+>  	 * As such refuse to use the feature if @current is not in the initial
+>  	 * PID namespace.
+>  	 */
+> -	if (task_active_pid_ns(current) != &init_pid_ns)
+> +	if (!task_is_in_init_pid_ns(current))
+>  		return -EINVAL;
+>  
+>  	/*
+> @@ -1951,7 +1951,7 @@ static ssize_t ctxid_masks_show(struct device *dev,
+>  	 * Don't use contextID tracing if coming from a PID namespace.  See
+>  	 * comment in ctxid_pid_store().
+>  	 */
+> -	if (task_active_pid_ns(current) != &init_pid_ns)
+> +	if (!task_is_in_init_pid_ns(current))
+>  		return -EINVAL;
+>  
+>  	spin_lock(&drvdata->spinlock);
+> @@ -1975,7 +1975,7 @@ static ssize_t ctxid_masks_store(struct device *dev,
+>  	 * Don't use contextID tracing if coming from a PID namespace.  See
+>  	 * comment in ctxid_pid_store().
+>  	 */
+> -	if (task_active_pid_ns(current) != &init_pid_ns)
+> +	if (!task_is_in_init_pid_ns(current))
+>  		return -EINVAL;
+>  
+>  	/*
+
+Acked-by: Balbir Singh <bsingharora@gmail.com>
