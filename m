@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B9BE47422D
+	by mail.lfdr.de (Postfix) with ESMTP id AC94D47422F
 	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 13:17:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229757AbhLNMQ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Dec 2021 07:16:56 -0500
+        id S229904AbhLNMQ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Dec 2021 07:16:57 -0500
 Received: from mail-zr0che01on2122.outbound.protection.outlook.com ([40.107.24.122]:35264
         "EHLO CHE01-ZR0-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231613AbhLNMQx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 Dec 2021 07:16:53 -0500
+        id S231808AbhLNMQy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Dec 2021 07:16:54 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dFAq/+s30ebAiLLW2bXysNp0Q4gTGWUpH/eU0coocZ2guv2rnwCVHJOrDbrnWrCVy1mChD2aIEZhcBCuXNa9ch4aKOgG/pT9nmjUNM8n9lw7rZduVTY5fEwQwN2vGTJiY41eoAryo582TxpveP13uAJQ9tosUUG3akuHEO2sIjyaKGSfdnH4XtfL/3xc+asq9JVHgU4C/bc9HNTUzGN+y77y5l+F24trdJvM+cBKlNKaL6ngGsmO6w/MDHcvnAhoaXbWcnwzFuqvpyc36uOdEP12Aglrn6hpiy5u09o0IlcLpR+SaxiwEsxc9N+a2HLJFLIP2cYFIynAHor2Mguejg==
+ b=hfCPdq5Znvvu7G07d1KEP0A2NpL6r/iYOH3yBLJi8kuH53KuAKczhLkzIbTqHcTWilnvaqfKLbf7chkMbvcLwkRkfLNd6gNO8KXh+htZkfz28CYgMEDNTD1J6JhhbyHQjpobhmmAxrV/L6a+7DSqd+0cg57kLVw5TIrv0bzhWqUnN2jbu+38O7ZvxibhaqvvyBXorCyow1hsmKFxZhPtBDDQPQOhphv8+wKKOwNIRattslRzG9thpdOSsiM3Ln4h6ErjvMNtO6c3KZqPQw6o8rcMi2mcxGDIoN1THumBiQW5fRyDX5dNM5QqNXAQp5KBourIHcaZPW0dYV+ooCqKPA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=RhUBnY7Ec2wSAESThYhy2vQfHFzgU0xLciGy/vyZ5YQ=;
- b=NhVsOSfELeCpn/7lB+Krhxa+56JLaCCGlKmxmNabMTHmnlHXwRRMEYf4XD3f0FkwHx+/BcjGdwJj7NBmVqaBjBj/abLUaXTQNn1pGhRJrQgU4e+lATU2WBylfuTneyvX+wbEJXcfqDanRPLyt6IKGRvF2gM5Voq4WpGa4a7Grbz7Dk6FNdfAd9qXDmvaqfop3j0Gr6LxLUP8uB+jzONA5vqQnfssUVuHGtu5L7A/XFj+lONQ99cQVWHUbsDMqihzJBAoUbeV5WXWlJEy5piEjCyZV0vd2gV9IDtJized12M1EWAfdWfu6y6Kz0TA1KVRhz7gMBbIEwCh0mUE+UUffg==
+ bh=sxQ9vroGi8XCJhlxryfAysI5HU1US+RVSjmWZMbpSnw=;
+ b=dqk8MT004Dc+gepiKGHH725xOgTbPxbbWnJqZM+s3vk5WPytb7XQHjFEuEZdoqVhS8Lrxtjy2MR06PRaot2r2A8VQupLttF11b4bw9hPqWgXSxygpE2kvYDFP8Tqdl4vNzEaoa4KN94xZyR8+/7L7qSHC+VAMdWQG5cKaH6wDxKcAWcBHpnAxSGMD5udGVSzboZ0jOUKMaRVvwokVQHODGg84gnMvEIfB2YQXgpwS02dWHE1zD2NFKoUiBL6iQvWZrII7NLPkmbcJsmXvetunbSdnQQ0V1dCSdLobcaTG6uKeSQuzMEKZ927lQcGyOV3lDmSXD3e928lPPDDfPT0yA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=toradex.com; dmarc=pass action=none header.from=toradex.com;
  dkim=pass header.d=toradex.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=toradex.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=RhUBnY7Ec2wSAESThYhy2vQfHFzgU0xLciGy/vyZ5YQ=;
- b=g0Yce1MqsA0CB07TuvgUoYA5l+HMfyx/vUW3Xo8RcE4xrv7e/HZW4a9EhOHFLzYrcs+oout1bod0J1FCgodcCYC9K0hM/W7JOYiTtkQQ9toADfN/2rcSnM32BbjYyh1nsOH4cEYGgsyigkplcxtC7mhjSmXluFgtz5bvBFFpfNk=
+ bh=sxQ9vroGi8XCJhlxryfAysI5HU1US+RVSjmWZMbpSnw=;
+ b=rEVdwrSkyfZzDAQRS72KTw7qo37WCOqfosWQlxkYznW2mLPg0DQTmEScU68HQidUf6oBcEofCxkN0YhHGrpb6iBxJ454trC0EHDfkjoR8ODwaTVO8IKN2ueTmerrF2ITXG6AUMafePX37GYWziD9l74X5CpamF+uCnwp9NjgZ8U=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=toradex.com;
 Received: from ZR0P278MB0377.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:34::14)
  by ZR0P278MB0234.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:36::7) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4778.17; Tue, 14 Dec
- 2021 12:16:51 +0000
+ 2021 12:16:52 +0000
 Received: from ZR0P278MB0377.CHEP278.PROD.OUTLOOK.COM
  ([fe80::e5c4:5c29:1958:fbea]) by ZR0P278MB0377.CHEP278.PROD.OUTLOOK.COM
  ([fe80::e5c4:5c29:1958:fbea%8]) with mapi id 15.20.4778.018; Tue, 14 Dec 2021
@@ -50,10 +50,12 @@ Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
         Fugang Duan <fugang.duan@nxp.com>,
         Philippe Schenker <philippe.schenker@toradex.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 0/3] Add Possiblity to Reset PHY After Power-up
-Date:   Tue, 14 Dec 2021 13:16:35 +0100
-Message-Id: <20211214121638.138784-1-philippe.schenker@toradex.com>
+Subject: [PATCH net-next 1/3] net: phy: add phy_reset_after_power_on() function
+Date:   Tue, 14 Dec 2021 13:16:36 +0100
+Message-Id: <20211214121638.138784-2-philippe.schenker@toradex.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20211214121638.138784-1-philippe.schenker@toradex.com>
+References: <20211214121638.138784-1-philippe.schenker@toradex.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: ZR0P278CA0167.CHEP278.PROD.OUTLOOK.COM
@@ -61,89 +63,126 @@ X-ClientProxiedBy: ZR0P278CA0167.CHEP278.PROD.OUTLOOK.COM
  (2603:10a6:910:34::14)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: c33c5d13-ce87-4e0d-ba4d-08d9befb9c04
+X-MS-Office365-Filtering-Correlation-Id: 59d61e07-b0d3-4d59-f77c-08d9befb9c52
 X-MS-TrafficTypeDiagnostic: ZR0P278MB0234:EE_
-X-Microsoft-Antispam-PRVS: <ZR0P278MB023484D4E3A0E458FEE79520F4759@ZR0P278MB0234.CHEP278.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-Microsoft-Antispam-PRVS: <ZR0P278MB0234EB6D345D49F1D102FC3AF4759@ZR0P278MB0234.CHEP278.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1443;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Bqwad8yDcjSK0vOBRxdCVwHQCVIaV8TslwZBUmlmHFPgQ9umbBqkNXsq+/BQL54rPTzgtaq6sQv+Fd94OQl93xD2wv57i3osC5objT23NSECQVfxGseZhbN7IvyS40mTNq0CXRjnelo1Fxx5stq6uGehi+cTugKMQ4EDulbLykridhllgftG4dMou3jgGoZS1Zfm0srXokG9XOt5lEenlnqh7fuT/+bfSMw51dYi2ieCQnVy8kAKg7SJTK3kAxteLbPfhFZ0gvM4ISEiTFZrLVwd26WbF3m9DvTRINPEhwnpJGJc/PEwnNIrhZUH0E+rYJzLdmmezFO57uCOtbH/MdWkoOawgMvQVgOa+tMYm0zUwPIoVeD2zWyguiKQIfeT4qA780Ct6kZEvEwldJwlEWJNq2AHaA+5NOD1QYQsWGZD9/MLyIP59XSF+853utmzNt325ARB4h3wq3a1WlovBmUyMR2avbkv0mrf3f4Y0zdEIMLuabQaUJK6qfcUNm8B9XQko35WWEHSaUq88alEHQGR3Y5zKyAWSTkRMf7jNNJghiYZc0L90R5Y34a+IUbMRvM4V9ETM5+UdED+bKWOH3dpA0GWZEsBd4FdLVtzRrD9fhGzM3gyXjgJVv1laXBwOGdvFDbKojX+zOo+iAG8PngEoi3mczUWN9H1OX799aQyG5JA9xj5QPRN33H+4aNaZRvQQAQKdaE5BhV6u+fvNLdx3dtHuwyqclcOXbLlZXWQcDER94oN6ws0+J2FkKqHyPQIjpKLkDntYBAwRTU+NexJQTHz6dWyf2cxdb5xzNQ=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:ZR0P278MB0377.CHEP278.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(4636009)(39850400004)(346002)(376002)(396003)(136003)(366004)(8936002)(86362001)(966005)(6506007)(66946007)(52116002)(316002)(6486002)(54906003)(5660300002)(2616005)(1076003)(508600001)(38350700002)(38100700002)(4326008)(8676002)(186003)(6666004)(26005)(36756003)(6512007)(44832011)(83380400001)(66476007)(66556008)(7416002)(110136005)(2906002);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: AP/VNhgu0IfSTTBJvtSzH25mKutIl19hEH9RVgQa7vlOxORAZScmdWbFsj3lNKRALk3gpNVAk3Mi6Agj3fhHqF2F8RiwZ6fFbpJdyMq2CrRZ1NKIUmdGk/xLihR12Aa7TuMwU/dWcuf+3MViZhQvPvxyh6rFKbnQNkmIu9DQE0lcBuT32kK6LTiAhBNAAhk5YHlsi31PRwlgZDa9yZAyjxKzNR5w/sEtH6QsrR+/M5JPydN8wckmUqz+KbeISA7o68cThQQyh3MeNsqg/HvqB+SfJqCjg/y/S7ahJlPOgyqKh42BnZjbU7BpkjnGiDtm9IDMN18wbn0rZWpEIr9QvqUzhNjMJVjZpOOUEzKAPp93PtSZXz/C0b1G0huuVszs/6LNOaxewRt6yHLTN6fXkIuwhxy54OQOyIwAoeDOqfGBwCsD9shtXvjnohNT7VOnqyuOyfs7nwR6Op/YOyfoiXoJMrWf141zYWfh5J33gTwID5bMOESb4BnJnplpXzVr6fMHuF2lMUZn6B/qFesyyNiPgPa15xCsDOrpn8ADN3GxXOyR8Z9zWfGG5+j6GX34gIkp2BdGwqd97R/xgXfKjYgxBsWTeIylTB2HcK1QURkAEHVyshu5064W9F37sUFV5+2WkTpRSs+qCgZC7a/25+T6FmCMfqLZ0CN+TuSP5NeGPUwQfDL+jaiWt+ugBhO0X/4rMLBi1ABrwxn0VcBLdA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:ZR0P278MB0377.CHEP278.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(4636009)(39850400004)(346002)(376002)(396003)(136003)(366004)(8936002)(86362001)(6506007)(66946007)(52116002)(316002)(6486002)(54906003)(5660300002)(2616005)(1076003)(508600001)(38350700002)(38100700002)(4326008)(8676002)(186003)(6666004)(26005)(36756003)(6512007)(44832011)(66476007)(66556008)(7416002)(110136005)(2906002);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?5G+T9GFe5UNveJPdvOtX4YXBDqgljeuuRPCDMBon370Wdg/uHTUlwXrAv70+?=
- =?us-ascii?Q?3rxS1PqSDDIQXAJ1UhaO3wCqsXEQOJ6nNniea6AnDxSgRcwq4J1AtlWF46d2?=
- =?us-ascii?Q?fEnMf+t+HWdSiDTSKEM9vljvcC15WoQFjNr8yakH/Yrbn1RGYIcvlx1eAN/H?=
- =?us-ascii?Q?H3uZQaZCMLMzX0X0UfEiAfBGwZuRqRbj1rSbBwKUGpYt+Smu1pWSt51IStIL?=
- =?us-ascii?Q?ticc4zka7jZlI9pHhmgjOy8HAGE+QaDNhhtmASjYFpPikvnuy1uptYWkGw9w?=
- =?us-ascii?Q?grdaYpBUM9bBEOwQL9ZIku4a+9SaqHaqujZw8A0Lj3GZwO9k1GWvKSMOT7+y?=
- =?us-ascii?Q?xxmx3VIPKHBeAr9YJXoyF8c8EKdTGjFhkyUSoHtpUKfsZftBMbnKB5Nn7SfU?=
- =?us-ascii?Q?CceB5+zFXmmPXFrzBjBCdsQjh0vn9HJTmbgJFRL1RN2ZM1RtZYkd1Hh+Th+d?=
- =?us-ascii?Q?AfQhnWLiN9D97lhBL56OlZ0G3ZzqCqEz8Kl5pEDx8kvH99WS2TsckXCfhBdF?=
- =?us-ascii?Q?SCaVOcrU6waBLd9bZrJ69Tc/aXOrnAnSoAE1rIn/gWj3IiNilIlaXPrIea3s?=
- =?us-ascii?Q?fy+e/X/E8kB8qe2Y6+y6HvH/AvGi6pDHick8vOxvGmU+xtmfbMMZTiaKW+wh?=
- =?us-ascii?Q?4O8BJMvJNT3/o0KLlqFi4wEAPwCxCN8mxzYvjahXcpdebUyeEUK8tAD53nTf?=
- =?us-ascii?Q?f23jtySVdADm1znrM7nkQGBK78rDdKqttVp290G9kedyFZ7J7BXdiGEdlZB0?=
- =?us-ascii?Q?859tqt1t4I5tWnyATzJ5tfsFFGk82LmtbDQRLjywvEmvkSDvWPtLvqwj0crn?=
- =?us-ascii?Q?PLgPnGeuAGpU5hWpdwYfTMkF4KgbA8ZHypW5Gmq4uWFexQ45w9HRIAI2Whri?=
- =?us-ascii?Q?bji5IU2meHSmeM20ygsl7CGt2qaUWQEbKdAY7UU/7iLhHOVYyNraCJotWKux?=
- =?us-ascii?Q?D6e8OIldNG50XjYZUcI3gKTjbgxbRC22YNtoLcUpDhAvFPxACymnj6clEZLM?=
- =?us-ascii?Q?i9w/Eh/C0qtblRB7RI5clkNU8O4BgZY7x8QLIWo5R2b6r8jKk5RZQg+yoqMh?=
- =?us-ascii?Q?eNCU6H5yd0a0FQmZRM8KeyaIezknVbK1J3TuYD7cMYdXi1Bmg1ANgHx+gdC5?=
- =?us-ascii?Q?SwbaCqjE0mtdwjzgKLhEMn/NHwLEamAraiuTwKwZMduASZMQ5Jb+Me/d6Hmi?=
- =?us-ascii?Q?3n/fEKW7bsRj5ROOF1uiCgdheZK8XtyPP8wiIGJ/CNaEBIY22Zh5GaD21YxK?=
- =?us-ascii?Q?tSEALSO7ds0rk3XASObiNaoLbGRdctrB9/ybT2mXOR/jKPxN3AisoW0uPN3+?=
- =?us-ascii?Q?KSYZOTjg3XERwVuLhOGYbyC9hPDXHQFjhqtHdCEAbELJ3Rcnz0JsIpHJBnWx?=
- =?us-ascii?Q?z9EBRsKhVGwUSbu3dvV1k4qfnv4vKrbK9Vi07d8aZclBq6whlwkXSAObMbMR?=
- =?us-ascii?Q?6hHTD91BvHGX/WmxeuX7et2aVWvF36YSTY3UzoSfJJhceFiEyuqe34I9jiV5?=
- =?us-ascii?Q?K/W5MIHVrx9U3G1LNkVJMC4KUu50nIY8Jr9D4TVcqJhb2KbWnhiXbbT4pQQ8?=
- =?us-ascii?Q?8UBdzOJ+VjqaCgAo+f7lRCZIX+/cNQ1Af3T9LTFRrz79tFDpM6bHh3IbGvii?=
- =?us-ascii?Q?2Cnsn1oDFdD/V52LxQJK7lPFgCvs94zRNv82VhgGopSfbpvepH5qhESeXUAV?=
- =?us-ascii?Q?d49zSw=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Ty1+hyeQhJgL2m0h+bzlj1R38aNmcZTwvpRkSMxifYlQs30QDeEAjy5WXBUZ?=
+ =?us-ascii?Q?r6V93n0HSDmqTdwh3At7vYhz9ME84avN+ZYHq1N1PP/E0UKSzCMLUt2069oC?=
+ =?us-ascii?Q?RZoCxV2jKlKPb/pPBxBfhgBmshIzraVH9obcG75U6AAB8Bro+J31560oM1j8?=
+ =?us-ascii?Q?/kz3fO6OI5An24Twoey2wuAVcNaedB6uXH7gZcxbZ5YQOajscX9Wzl4w2wpN?=
+ =?us-ascii?Q?TcD5kuC5EH1KyGJ2OEVMMTx0Z59GJtAg0Jr8wA49fvr6HfBdXQH/D0lD6Mb0?=
+ =?us-ascii?Q?c16GZP22/NQ2lxljEvG0aPpCr1IQMnuQ/mCLODiX8ZNAv/34cK5BBtPYgRsX?=
+ =?us-ascii?Q?Nb5Qc1TbZ/s6bcWbscZ7ZkUubNe2l3a2xGvvJ+GLZqD9jbXX2X8Ok3G7jGA3?=
+ =?us-ascii?Q?fRxjcl3TMg9Qak39bkrt9a4ovUB8DZCzQCHbnEVVLjqeexgBHz2ehLuld8dN?=
+ =?us-ascii?Q?xVdS+8U2dR2F0RHxTe/i97coJajLiDS5rfG1wSRui0U/JZZy9SNrSkVgKn3W?=
+ =?us-ascii?Q?FDP48/dUMpyDzPzOI4Aac+rtP80ni7jvs+cuaNbAo/pNJcPXJvze2jGtGwqx?=
+ =?us-ascii?Q?eW/uMCPH0XzMsBP9xaE6ShkNr20xbwpMoLrbWQiWwPAR2othrjr/an46CTM8?=
+ =?us-ascii?Q?4agfo0lUEM3Xr97zrCKIOlmoYdkbX9pkwMwibrBaAupwMWAf1yHgie3gbFG7?=
+ =?us-ascii?Q?kGUdR/lHT0i6J7YfvocpTyFfmmZN4Kl3SopP1IYBQHSGneTSpqbGib7iUI6t?=
+ =?us-ascii?Q?rHeKUJHinNZXy1lrahp/RVY3bWzbTR0KilExn+rvteypxH0nU2sC/29Oz7hJ?=
+ =?us-ascii?Q?ECVuRwS2DuZQhw+akrCTxeTOWrWjWmsWmeOsyG/JmJgl5uTeai9n7j0vCl6A?=
+ =?us-ascii?Q?tDfJ8VyjjTXnkvqLkC4XFZ8Axc69UI16SQBuxNWS+3Thr2WcUkGTaiufO0vN?=
+ =?us-ascii?Q?NnaKhZxX0mO333l4a+HeBuE7amTpC/WGy4o/WhYSj+gtt/sxnE0tkzwTB3dp?=
+ =?us-ascii?Q?KQwk/b58HbCfdoAcbJTQ6IojqlleS1/YJ1vZko7cskxBUa5GUCuFwow73lUT?=
+ =?us-ascii?Q?j8UQqV3U2fWU/bJu20di0IBf52LvwhHNiNG1Kb65v5f3lSn2vjlyG+QiHLRZ?=
+ =?us-ascii?Q?Hl0n3eXfXkFOaLNT4s2v3i0O+glCe7dYzkQr4EO+agTEXaacn0r1yEmDVrAB?=
+ =?us-ascii?Q?CRNCjKDNb0z8Y+Yuy+3heq1GsqlEgv4nuFWNzLQimsfhwNb0Kf47eDgzwr4G?=
+ =?us-ascii?Q?cKRm3Nkh/+xZIPpdo3i5x8483WuHCYuV0uatMemvV1cnKf28yL7j9xt7Yogw?=
+ =?us-ascii?Q?uzRWypzd2FUtFATd++T7K8wnJ+72gb1zDBvNbf+ildTIoW7CCl+yU3g/jmI1?=
+ =?us-ascii?Q?1RBbaDZl0l+gdAwxZvUhv8WNUlBXm+6djMpfzgzRuNzHryil7f0j98qODM5K?=
+ =?us-ascii?Q?s1hHU6zB1+eEyMDld2Jaj+gb56cAd8uE2rj5PTCb0bYb541pag89vISzbchD?=
+ =?us-ascii?Q?vlfk4OMQefyi3KBdvvocPGI75ubgNIUaAavw17UUL+VHXjGM1KToQjsup1rg?=
+ =?us-ascii?Q?0qjJTBCWElfdVGJCmOKNZRTf2S+8QJzPS2uvY8bfLqyMxqI6g+Lpsc2tZWD8?=
+ =?us-ascii?Q?bZYX3MSHIO3dEKVRuop8AXjfqckI6mkbyO3T7D3/oGrDH0cV8hWyzhy5I2dm?=
+ =?us-ascii?Q?h9Boyg=3D=3D?=
 X-OriginatorOrg: toradex.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c33c5d13-ce87-4e0d-ba4d-08d9befb9c04
+X-MS-Exchange-CrossTenant-Network-Message-Id: 59d61e07-b0d3-4d59-f77c-08d9befb9c52
 X-MS-Exchange-CrossTenant-AuthSource: ZR0P278MB0377.CHEP278.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Dec 2021 12:16:51.4663
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Dec 2021 12:16:51.9313
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: d9995866-0d9b-4251-8315-093f062abab4
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: MmnB3UhWbTcKVlUmEpxW3YnRvdbXGFNn2LoP1BAxrLz0aeBIUitCNnNE7wcvjyZHX2c2xT5u5Un2UgqITi8X9Qo4B1VFfcZlzo9M+enOyc4=
+X-MS-Exchange-CrossTenant-UserPrincipalName: gXL72wuck8bMUKsCAnEqmsKQb7mHP376l38lnM9kqjTQafmLSZSnxrONxNEQeP2qlNfitnT+NRz0gML7LY8Xc2FJyeKoEfpFfZTrEnVxcrE=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: ZR0P278MB0234
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We do have a hardware design in which the ethernet phy regulator and
-reset are controlled by software. The ethernet PHY is a Microchip
-KSZ9131 [1] and the power sequencing requires a reset after the power
-goes up.
+Some PHY requires a reset after being powered on (e.g. KSZ9131), add a
+new function and related PHY_RST_AFTER_POWER_ON phy flag to be called
+after the PHY regulator is enabled.
 
-In our case the ethernet PHY is connected to a Freescale FEC and the
-driver is shutting down the regulator on suspend, however on the resume
-path the reset signal is never asserted and because of that the
-ethernet is not working anymore.
+Signed-off-by: Philippe Schenker <philippe.schenker@toradex.com>
+---
 
-To solve this adds a new phy_reset_after_power_on() function, similar
-to the existing phy_reset_after_clk_enable(), and call it in the fec
-resume path after the regulator is switched on as suggested by
-Joakim Zhang <qiangqing.zhang@nxp.com>.
+ drivers/net/phy/phy_device.c | 24 ++++++++++++++++++++++++
+ include/linux/phy.h          |  2 ++
+ 2 files changed, 26 insertions(+)
 
-[1] https://ww1.microchip.com/downloads/en/DeviceDoc/00002841C.pdf
-
-
-Philippe Schenker (3):
-  net: phy: add phy_reset_after_power_on() function
-  net: phy: micrel: add reset-after-power-on flag to ksz9x31 phys
-  net: fec: reset phy on resume after power-up
-
- drivers/net/ethernet/freescale/fec_main.c |  1 +
- drivers/net/phy/micrel.c                  |  2 ++
- drivers/net/phy/phy_device.c              | 24 +++++++++++++++++++++++
- include/linux/phy.h                       |  2 ++
- 4 files changed, 29 insertions(+)
-
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 74d8e1dc125f..bad836a7ee01 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -1878,6 +1878,30 @@ int phy_reset_after_clk_enable(struct phy_device *phydev)
+ }
+ EXPORT_SYMBOL(phy_reset_after_clk_enable);
+ 
++/**
++ * phy_reset_after_power_on - perform a PHY reset if needed
++ * @phydev: target phy_device struct
++ *
++ * Description: Some PHYs or hardware design, need a reset after power was
++ *   enabled and rely on that software reset. This function evaluates the flags
++ *   and perform the reset if it's needed.
++ *   Returns < 0 on error, 0 if the phy wasn't reset and 1 if the phy was reset.
++ */
++int phy_reset_after_power_on(struct phy_device *phydev)
++{
++	if (!phydev || !phydev->drv)
++		return -ENODEV;
++
++	if (phydev->drv->flags & PHY_RST_AFTER_POWER_ON) {
++		phy_device_reset(phydev, 1);
++		phy_device_reset(phydev, 0);
++		return 1;
++	}
++
++	return 0;
++}
++EXPORT_SYMBOL(phy_reset_after_power_on);
++
+ /* Generic PHY support and helper functions */
+ 
+ /**
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index cbf03a5f9cf5..0d88cdc97dbd 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -80,6 +80,7 @@ extern const int phy_10gbit_features_array[1];
+ #define PHY_IS_INTERNAL		0x00000001
+ #define PHY_RST_AFTER_CLK_EN	0x00000002
+ #define PHY_POLL_CABLE_TEST	0x00000004
++#define PHY_RST_AFTER_POWER_ON	0x00000008
+ #define MDIO_DEVICE_IS_PHY	0x80000000
+ 
+ /**
+@@ -1499,6 +1500,7 @@ int phy_speed_up(struct phy_device *phydev);
+ 
+ int phy_restart_aneg(struct phy_device *phydev);
+ int phy_reset_after_clk_enable(struct phy_device *phydev);
++int phy_reset_after_power_on(struct phy_device *phydev);
+ 
+ #if IS_ENABLED(CONFIG_PHYLIB)
+ int phy_start_cable_test(struct phy_device *phydev,
 -- 
 2.34.1
 
