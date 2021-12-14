@@ -2,37 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A17304743C8
-	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 14:45:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6598D4743CA
+	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 14:45:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234541AbhLNNpj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Dec 2021 08:45:39 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:41874 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234537AbhLNNph (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 08:45:37 -0500
+        id S234546AbhLNNpk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Dec 2021 08:45:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50458 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234548AbhLNNpi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 08:45:38 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59809C061574
+        for <netdev@vger.kernel.org>; Tue, 14 Dec 2021 05:45:38 -0800 (PST)
 From:   Kurt Kanzenbach <kurt@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1639489535;
+        s=2020; t=1639489537;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=dtBv0pCkOaDpa1ktY12/an6AVoU44vB4b5jZF67iQuA=;
-        b=IGM0UuBfcTAslINHF00Rv9nT5k1KeA1SxHn/YwOpwUbmDZBkR9ttVTByoL5ywtlAqlqiyz
-        7gyHhhrVraMHPAxswP47YruGvs94Rm+QFFVIUVDl1MMyyAzYuEG84WCltyW1SQz+cryPBr
-        1b7Fm8MeW8rq+ktHyTjkG+IZTGoBc3sUUxNKR5AqkoY6jiFJ5BbqGSgT2X4fnS9EZrOTCv
-        YrhvEXUk2fsbW01NW4tNEC3ww3RUDZ9TJW/FmuznGJRe3tpRcOC2MTI5ucF951ErV9tibj
-        1/gc6uv9UP8K1dGRUpjuicaZdvPnm+boRIFbMWqUfkXz65sVoB2uoVzW5Sik5A==
+        bh=26GwEMF7AGneK4l0UHeYTB845ctWzrnTU2d7an7yp9o=;
+        b=bYrFwUt0cosW/ISGRM0QzXWaPDUcnQEMHgJgR0JYUGMdvKZLMfv0jyINxikqsdcYwcFnkE
+        pcRUBRidvOhSpTevCN2cSECFsll+rPHBYuZe/rbmEEViJ3Wcp9LYIi908nk413OJz403X8
+        /SngImZsCKXyfv0JPjAfmTQ6O5nu1yFcO3c82jhbfHZguTY2ZqwREW5hCmgM+Pu6BcnHBR
+        ZQXkfT7HqKF7aRHEgwGSHiWITvC2DONjRaiKdgezx30EB/fH7h1eFnECtxMup+oQdMhu2c
+        hY6i9S2aui1WAgrhTB6q2t9OMhebxjEuEmNvxMmev4690OnovJVvG07bMfN19A==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1639489535;
+        s=2020e; t=1639489537;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=dtBv0pCkOaDpa1ktY12/an6AVoU44vB4b5jZF67iQuA=;
-        b=xQdnos2B/6DYSIFykSgLWPadISD9J0nMzoGhUnXrVpJ76WcDziLo426FcmvhG2ibvx8KJS
-        17ytJx2UGubQJbAw==
+        bh=26GwEMF7AGneK4l0UHeYTB845ctWzrnTU2d7an7yp9o=;
+        b=zNHyntp44BbWYLC4cdzF9NKQ6MGYu1dEIj6qBJfrngGqGrWg/aFAeMKQLrbogHDaj+E7n+
+        iiTxiS5PgY8BExAw==
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -42,9 +45,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Richard Cochran <richardcochran@gmail.com>,
         Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
         netdev@vger.kernel.org, Kurt Kanzenbach <kurt@linutronix.de>
-Subject: [PATCH net-next v2 1/4] net: dsa: hellcreek: Fix insertion of static FDB entries
-Date:   Tue, 14 Dec 2021 14:45:05 +0100
-Message-Id: <20211214134508.57806-2-kurt@linutronix.de>
+Subject: [PATCH net-next v2 2/4] net: dsa: hellcreek: Add STP forwarding rule
+Date:   Tue, 14 Dec 2021 14:45:06 +0100
+Message-Id: <20211214134508.57806-3-kurt@linutronix.de>
 In-Reply-To: <20211214134508.57806-1-kurt@linutronix.de>
 References: <20211214134508.57806-1-kurt@linutronix.de>
 MIME-Version: 1.0
@@ -53,40 +56,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The insertion of static FDB entries ignores the pass_blocked bit. That bit is
-evaluated with regards to STP. Add the missing functionality.
+Treat STP as management traffic. STP traffic is designated for the CPU port
+only. In addition, STP traffic has to pass blocked ports.
 
 Fixes: e4b27ebc780f ("net: dsa: Add DSA driver for Hirschmann Hellcreek switches")
 Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
 ---
- drivers/net/dsa/hirschmann/hellcreek.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/net/dsa/hirschmann/hellcreek.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
 diff --git a/drivers/net/dsa/hirschmann/hellcreek.c b/drivers/net/dsa/hirschmann/hellcreek.c
-index 9eecb7529573..c4f840b20adf 100644
+index c4f840b20adf..17d3a4a3582e 100644
 --- a/drivers/net/dsa/hirschmann/hellcreek.c
 +++ b/drivers/net/dsa/hirschmann/hellcreek.c
-@@ -711,8 +711,9 @@ static int __hellcreek_fdb_add(struct hellcreek *hellcreek,
- 	u16 meta = 0;
+@@ -1075,6 +1075,17 @@ static int hellcreek_setup_fdb(struct hellcreek *hellcreek)
+ 		.reprio_tc    = 6,	/* TC: 6 as per IEEE 802.1AS */
+ 		.reprio_en    = 1,
+ 	};
++	static struct hellcreek_fdb_entry stp = {
++		/* MAC: 01-80-C2-00-00-00 */
++		.mac	      = { 0x01, 0x80, 0xc2, 0x00, 0x00, 0x00 },
++		.portmask     = 0x03,	/* Management ports */
++		.age	      = 0,
++		.is_obt	      = 0,
++		.pass_blocked = 1,
++		.is_static    = 1,
++		.reprio_tc    = 6,
++		.reprio_en    = 1,
++	};
+ 	int ret;
  
- 	dev_dbg(hellcreek->dev, "Add static FDB entry: MAC=%pM, MASK=0x%02x, "
--		"OBT=%d, REPRIO_EN=%d, PRIO=%d\n", entry->mac, entry->portmask,
--		entry->is_obt, entry->reprio_en, entry->reprio_tc);
-+		"OBT=%d, PASS_BLOCKED=%d, REPRIO_EN=%d, PRIO=%d\n", entry->mac,
-+		entry->portmask, entry->is_obt, entry->pass_blocked,
-+		entry->reprio_en, entry->reprio_tc);
+ 	mutex_lock(&hellcreek->reg_lock);
+@@ -1082,6 +1093,9 @@ static int hellcreek_setup_fdb(struct hellcreek *hellcreek)
+ 	if (ret)
+ 		goto out;
+ 	ret = __hellcreek_fdb_add(hellcreek, &p2p);
++	if (ret)
++		goto out;
++	ret = __hellcreek_fdb_add(hellcreek, &stp);
+ out:
+ 	mutex_unlock(&hellcreek->reg_lock);
  
- 	/* Add mac address */
- 	hellcreek_write(hellcreek, entry->mac[1] | (entry->mac[0] << 8), HR_FDBWDH);
-@@ -723,6 +724,8 @@ static int __hellcreek_fdb_add(struct hellcreek *hellcreek,
- 	meta |= entry->portmask << HR_FDBWRM0_PORTMASK_SHIFT;
- 	if (entry->is_obt)
- 		meta |= HR_FDBWRM0_OBT;
-+	if (entry->pass_blocked)
-+		meta |= HR_FDBWRM0_PASS_BLOCKED;
- 	if (entry->reprio_en) {
- 		meta |= HR_FDBWRM0_REPRIO_EN;
- 		meta |= entry->reprio_tc << HR_FDBWRM0_REPRIO_TC_SHIFT;
 -- 
 2.30.2
 
