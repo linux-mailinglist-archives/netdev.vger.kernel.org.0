@@ -2,85 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 39ABB47453B
-	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 15:35:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F10FA474577
+	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 15:46:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232673AbhLNOf5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Dec 2021 09:35:57 -0500
-Received: from www62.your-server.de ([213.133.104.62]:57542 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234921AbhLNOf4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 09:35:56 -0500
-Received: from sslproxy03.your-server.de ([88.198.220.132])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1mx8uE-000BLw-Sj; Tue, 14 Dec 2021 15:35:50 +0100
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1mx8uE-000Eo7-LN; Tue, 14 Dec 2021 15:35:50 +0100
-Subject: Re: [PATCH bpf-next] xsk: add test for tx_writeable to batched path
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        bpf <bpf@vger.kernel.org>
-References: <20211214102647.7734-1-magnus.karlsson@gmail.com>
- <Ybip7mXZuCXYTlwn@boxer>
- <CAJ8uoz1ioNtZyCRG2b3OH4pGh8b2CwHeXKC=M+4Xtf0OouxORw@mail.gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <029c16c2-f344-7089-a941-079d0a293189@iogearbox.net>
-Date:   Tue, 14 Dec 2021 15:35:50 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S232616AbhLNOqc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Dec 2021 09:46:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36836 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234989AbhLNOqb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 09:46:31 -0500
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A844C061574;
+        Tue, 14 Dec 2021 06:46:31 -0800 (PST)
+Received: by mail-pj1-x1034.google.com with SMTP id gj24so530234pjb.0;
+        Tue, 14 Dec 2021 06:46:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=TIVCmsuAMVImfriiYow8c1qDhI05Ehf9vFjNjkmAmtM=;
+        b=gawJlSLJAMBNqBeAsSK57x0uKhwlYQRI8jtsSjQ0BDq9mHT6uHpzoyrBcy3D3BJVqA
+         /Ysvgur2G5iht8txUsgEZZ34c94dJSkL/W0CWJ5bUex9dekd2T61Za5TmuGuzv+MnrHe
+         mlnA/94cORuogMyWgMc3eOm6RYHtCbN8hrlEWxYdWprDXi9mdNicy2f8nGgaR/6ALtyJ
+         PvTIKyJiF6K/Fk/J16p4yCrq2YMD+RDTbfiXEQJTduUkkcj1fqiDq4wEIVQacrgtOgzb
+         vZIsC1HvF+XgQ01CPonvcLnRjVyKX7x8+HwWcvaJXvT2Y4h8EvlXF+wP+zjf1slCc8GP
+         t5iw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=TIVCmsuAMVImfriiYow8c1qDhI05Ehf9vFjNjkmAmtM=;
+        b=YbgQtSwhxbE/40fcRrjrsogHE3ZEDFEnt4Hm+OKfjdGrr8XRos+6lrxEJoFjqRm00+
+         auTjx9+PzWANuRYbDM7gLCcS1pPFrgdqgYLwzpZNpGamC952UG0ByMsTbXUZGdzesnoR
+         rjW5Bi9BZuaqXV53xcCD3uI93bLuWKk5OE4aZSh0Pq6FfrBJBBGqQVanwt9aUtY3eWZ5
+         dqaIZ5eHaRRLGG0USfJKcWXE18eyT+hjRtFHgbD3vxoUEe0eLOE82tSh2TOTHFrp7kQD
+         6tjx67oRl+tfaaYFQcUvwORC4+JRkw5Bq6UpNibIzhA6n8IkWU83N+CgW2SlqVX4fVyd
+         I9QA==
+X-Gm-Message-State: AOAM533wJd3triq7fuJIcuXMswb4CauUAfXIFVpAM2RC+NzCrthCgQEW
+        JLisUKNRWB1p8usXK0DFlG0O+mzxNTdrdsfaLuUgtxAU2km8TXWb
+X-Google-Smtp-Source: ABdhPJxVWeGKAMAekRtLG64jFT56xxyEr62immDtXUwhTaUHaatqeQEA8PlVYLwpgyLj/7nWlsLN3VbJgy7iLN2yU8Y=
+X-Received: by 2002:a17:90b:3b8d:: with SMTP id pc13mr5904614pjb.112.1639493190905;
+ Tue, 14 Dec 2021 06:46:30 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <CAJ8uoz1ioNtZyCRG2b3OH4pGh8b2CwHeXKC=M+4Xtf0OouxORw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.3/26387/Tue Dec 14 10:33:30 2021)
+References: <20211213153111.110877-1-maciej.fijalkowski@intel.com>
+In-Reply-To: <20211213153111.110877-1-maciej.fijalkowski@intel.com>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Tue, 14 Dec 2021 15:46:19 +0100
+Message-ID: <CAJ8uoz0Fb-hciySWAy79X2d_H=oUddbFGCm3RUAtRYhUQ5-K5w@mail.gmail.com>
+Subject: Re: [Intel-wired-lan] [PATCH v2 intel-net 0/6] ice: xsk: Rx
+ processing fixes
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Cc:     intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
+        elza.mathew@intel.com,
+        Network Development <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, bpf <bpf@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/14/21 3:29 PM, Magnus Karlsson wrote:
-> On Tue, Dec 14, 2021 at 3:28 PM Maciej Fijalkowski
-> <maciej.fijalkowski@intel.com> wrote:
->> On Tue, Dec 14, 2021 at 11:26:47AM +0100, Magnus Karlsson wrote:
->>> From: Magnus Karlsson <magnus.karlsson@intel.com>
->>>
->>> Add a test for the tx_writeable condition to the batched Tx processing
->>> path. This test is in the skb and non-batched code paths but not in the
->>> batched code path. So add it there. This test makes sure that a
->>> process is not woken up until there are a sufficiently large number of
->>> free entries in the Tx ring. Currently, any driver using the batched
->>> interface will be woken up even if there is only one free entry,
->>> impacting performance negatively.
->>
->> I gave this patch a shot on ice driver with the Tx batching patch that i'm
->> about to send which is using the xsk_tx_peek_release_desc_batch(). I ran
->> the 2 core setup with no busy poll and it turned out that this change has
->> a negative impact on performance - it degrades by 5%.
->>
->> After a short chat with Magnus he said it's due to the touch to the global
->> state of a ring that xsk_tx_writeable() is doing.
->>
->> So maintainers, please do not apply this yet, we'll come up with a
->> solution.
->>
->> Also, should this be sent to bpf tree (not bpf-next) ?
-> 
-> It is just a performance fix, so I would say bpf-next.
+On Mon, Dec 13, 2021 at 4:31 PM Maciej Fijalkowski
+<maciej.fijalkowski@intel.com> wrote:
+>
+> Hi there,
+> it seems that previous [0] Rx fix was not enough and there are still
+> issues with AF_XDP Rx ZC support in ice driver. Elza reported that for
+> multiple XSK sockets configured on a single netdev, some of them were
+> becoming dead after a while. We have spotted more things that needed to
+> be addressed this time. More of information can be found in particular
+> commit messages.
+>
+> v2 has a diff around only patch 2:
+> - use array_size() in memsets (Alexandr)
+> - remove unnecessary ternary operator from ice_alloc_rx_buf{, _zc}()
+>   (Alexandr)
+> - respect RCT in ice_construct_skb_zc() (Alexandr)
+> - fix kdoc issue (Anthony)
+>
+> It also carries Alexandr's patch that was sent previously which was
+> overlapping with this set.
+>
+> Thanks,
+> Maciej
+>
+> [0]: https://lore.kernel.org/bpf/20211129231746.2767739-1-anthony.l.nguyen@intel.com/
 
-Ok, np. I'm tossing it from patchwork in that case now, and wait for a v2.
-Given the fix is a two-liner, I'll leave it up to you which tree you think
-it would be best.
+Thank you so much for all these fixes Maciej and Alexandr!
 
-Thanks,
-Daniel
+BTW, ice zero-copy support in bpf and bpf-next does not work at all
+without this patch set, so need to get this in as soon as possible.
+net and net-next might not work either, but have not tried.
+
+Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
+
+> Alexander Lobakin (1):
+>   ice: remove dead store on XSK hotpath
+>
+> Maciej Fijalkowski (5):
+>   ice: xsk: return xsk buffers back to pool when cleaning the ring
+>   ice: xsk: allocate separate memory for XDP SW ring
+>   ice: xsk: do not clear status_error0 for ntu + nb_buffs descriptor
+>   ice: xsk: allow empty Rx descriptors on XSK ZC data path
+>   ice: xsk: fix cleaned_count setting
+>
+>  drivers/net/ethernet/intel/ice/ice_base.c | 17 ++++++
+>  drivers/net/ethernet/intel/ice/ice_txrx.c | 19 ++++---
+>  drivers/net/ethernet/intel/ice/ice_txrx.h |  1 -
+>  drivers/net/ethernet/intel/ice/ice_xsk.c  | 66 +++++++++++------------
+>  4 files changed, 62 insertions(+), 41 deletions(-)
+>
+> --
+> 2.33.1
+>
+> _______________________________________________
+> Intel-wired-lan mailing list
+> Intel-wired-lan@osuosl.org
+> https://lists.osuosl.org/mailman/listinfo/intel-wired-lan
