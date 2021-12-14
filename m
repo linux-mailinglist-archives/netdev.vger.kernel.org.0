@@ -2,98 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 38881473B79
-	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 04:24:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EC6E9473B80
+	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 04:25:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231509AbhLNDYs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Dec 2021 22:24:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51020 "EHLO
+        id S233029AbhLNDZm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Dec 2021 22:25:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230155AbhLNDYr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 22:24:47 -0500
-Received: from mail-ot1-x331.google.com (mail-ot1-x331.google.com [IPv6:2607:f8b0:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C625BC061574
-        for <netdev@vger.kernel.org>; Mon, 13 Dec 2021 19:24:47 -0800 (PST)
-Received: by mail-ot1-x331.google.com with SMTP id x3-20020a05683000c300b0057a5318c517so19513040oto.13
-        for <netdev@vger.kernel.org>; Mon, 13 Dec 2021 19:24:47 -0800 (PST)
+        with ESMTP id S231715AbhLNDZm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 22:25:42 -0500
+Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AA9BC061574
+        for <netdev@vger.kernel.org>; Mon, 13 Dec 2021 19:25:42 -0800 (PST)
+Received: by mail-oi1-x235.google.com with SMTP id 7so25703249oip.12
+        for <netdev@vger.kernel.org>; Mon, 13 Dec 2021 19:25:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=7nPzF4dKOobV096CkNpB9CTF7uynTVpWUFlhbSX3YLA=;
-        b=fs012ym/HMLiwvgb8uN4+vAZewcPSDx+KNr1J3Y42fqOHZXJatsDJDyevAX0fTgHIt
-         Xk14+B2Yo57aYhx4SRgEP6J0/cTo9/zSJQ2Yq3QEfedTYSuaPENaWE7+lccCEV0tx5w6
-         xyWaBQW4UY/MBbQHhYHPWyFhQbzwdO+WaPubTwLQq1Yi0zg2X/jN1ZwLoKIno856TMVv
-         ghgkTpSZ1UKtvE5LnYgJzXNutS8sFCP0KbKpwNn30tHO3ru9gYp2no1MMEg0EM2xnWl1
-         yP0GfBMMXY5hFlcmhqVZcN2x3gmT91Xxf6xApizxZu2avswHzbAvSpzAwXkfxTCIA+Nk
-         +HYg==
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=ypmcXXp8spuGA40lF3D5fD+jU02RQTKj421NSyVWrLc=;
+        b=j6Y3hnR5vyAivMg2BuaUGw+W7aFDYXNYT690rZqZqTV86CTLgGMLDrUNWnqbdEZ8ma
+         +gbmjpZQQJWCOWimc3tGndPhaW7KsaJOszm9D5aY95KmZL5Mqd0oTAy9TH1QMTi5KbnQ
+         exUB6RPyVvu1gg/1ZkOo5kbhrfJhFnxD5ThgQuOJ7YlvnJXSstzQBCLKv/X+mk3kyuGK
+         7KBf/7GwNOBT2/O41NfxmQdgbMCq6Fsw5vYJABbkQNudm81Ou+Vdi88XdRHfK/DPyv5T
+         TslMuETU4CLseDwGhLl3kQe8Pl3sDro+rV+NPTrQDtW4ZCFSFHMvAM+icogxaXDyWA3i
+         cRyQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=7nPzF4dKOobV096CkNpB9CTF7uynTVpWUFlhbSX3YLA=;
-        b=A1xUHyViNAOX5OKgs7QsNO3qBaNO5dLk8Twsg5WecUztxkaaIO90b9ykCfMNNDVS1g
-         UvmpJwY6T39Igh94VmPGRJASx3I+K+dKM0Qz80WYAQWIqBO/erhRSP2y7qbUwtYSLreh
-         Ugy7wjQ+qldebml1AKCRSUJ3T3uqUytShVkaGY1FxcSaMbHscQxlpArYLEyzA2EbpHED
-         ZsKo4NmgxUrhg1se+rC0rwZoANDl189H7dYuLCT6qpd8hnaQ6NWFtnE/fb6jsnftlNx3
-         2VGX36AoqjgFoHBceI5yjpGczJkM5qJquzmLf9rZPtFdWrYQ/p91ueD523WxzCVIMk09
-         jmjQ==
-X-Gm-Message-State: AOAM530Omnv9E6kMy8tMde4iuGqub7BI1XQcfRC4ux2j51gHtLm2knwB
-        +ybtEFlRlnLEU3dofSO/WukubKDoWnE=
-X-Google-Smtp-Source: ABdhPJzKcwvgZ3rYTwn6qiitnkEfmdx6zJT/4cKhDxcA0j/a2iU9+oH3TCGLjZWkrWmiq03bSctQ3A==
-X-Received: by 2002:a9d:1727:: with SMTP id i39mr2202552ota.48.1639452287227;
-        Mon, 13 Dec 2021 19:24:47 -0800 (PST)
+        bh=ypmcXXp8spuGA40lF3D5fD+jU02RQTKj421NSyVWrLc=;
+        b=x3iRaSOESSPok7slPAgS5hsbmUWPMUyGmWi1inA4u/l1DQLrkZG+zInRQaXEw7v52r
+         QggZ2HL5Vk9MlNl9nG9BE1FZkTur3u0gCN8U/sUqEy3WE6j43GyhMgsoVX/S7olCcnu7
+         YuHQ5/MFpOTMj2GojDYlCZZxcyoQAeDwPE5j5Ew6Q95ZDX1+o+6qYmkUHbxZwEIUS6cS
+         KjBgWNnh+ewhfpYYdDzjYfptOyGehqYXIYfM1eM5idpKWS0GZFKSE/llUxj35vpbyfgZ
+         PHAqKyKKVMiZ6og6/wwsTjh3uAHyDLkIMlGMflUDzHWFyTI3XVzlrpdru+UioHtXgUS6
+         PZNg==
+X-Gm-Message-State: AOAM531XW7sZsUGTifD0U1Y1+qDhBol8wPF2ijN/cpx9OEUeI6mc1R+s
+        ndIsLTq4qUpCBFOhQXhZjmQ=
+X-Google-Smtp-Source: ABdhPJxqPsQSoDm7R8hCzaUiCl9yiGsdbZ8eHUVuPjGUxUQs/7AUab9yrPd3vR9Kh7nM0XQ3o3AIDQ==
+X-Received: by 2002:a05:6808:20a5:: with SMTP id s37mr30088721oiw.127.1639452341717;
+        Mon, 13 Dec 2021 19:25:41 -0800 (PST)
 Received: from [172.16.0.2] ([8.48.134.30])
-        by smtp.googlemail.com with ESMTPSA id j2sm2548925oor.18.2021.12.13.19.24.46
+        by smtp.googlemail.com with ESMTPSA id o2sm3266881oik.11.2021.12.13.19.25.40
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 13 Dec 2021 19:24:46 -0800 (PST)
-Message-ID: <d7ba6b69-4a17-8d43-b2f1-58b8033684df@gmail.com>
-Date:   Mon, 13 Dec 2021 20:24:45 -0700
+        Mon, 13 Dec 2021 19:25:41 -0800 (PST)
+Message-ID: <43124a32-b509-bbbc-ea3f-38aa4c656b86@gmail.com>
+Date:   Mon, 13 Dec 2021 20:25:40 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
  Gecko/20100101 Thunderbird/91.4.0
-Subject: Re: [PATCH iproute2-next v2] tc: Add support for
- ce_threshold_value/mask in fq_codel
+Subject: Re: [PATCH iproute2-next] mptcp: add support for changing the backup
+ flag
 Content-Language: en-US
-To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        netdev@vger.kernel.org
-References: <20211208124517.10687-1-toke@redhat.com>
+To:     Davide Caratti <dcaratti@redhat.com>, netdev@vger.kernel.org,
+        David Ahern <dsahern@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Andrea Claudi <aclaudi@redhat.com>
+Cc:     Matthieu Baerts <matthieu.baerts@tessares.net>
+References: <cb2ddffb2211d6fdde7a8bf81879a3a83c620f00.1639039948.git.dcaratti@redhat.com>
 From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <20211208124517.10687-1-toke@redhat.com>
+In-Reply-To: <cb2ddffb2211d6fdde7a8bf81879a3a83c620f00.1639039948.git.dcaratti@redhat.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/8/21 5:45 AM, Toke Høiland-Jørgensen wrote:
-> Commit dfcb63ce1de6 ("fq_codel: generalise ce_threshold marking for subset
-> of traffic") added support in fq_codel for setting a value and mask that
-> will be applied to the diffserv/ECN byte to turn on the ce_threshold
-> feature for a subset of traffic.
+On 12/9/21 2:10 AM, Davide Caratti wrote:
+> Linux supports 'MPTCP_PM_CMD_SET_FLAGS' since v5.12, and this control has
+> recently been extended to allow setting flags for a given endpoint id.
+> Although there is no use for changing 'signal' or 'subflow' flags, it can
+> be helpful to set/clear the backup bit on existing endpoints: add the 'ip
+> mptcp endpoint change <...>' command for this purpose.
 > 
-> This adds support to iproute for setting these values. The parameter is
-> called ce_threshold_selector and takes a value followed by a
-> slash-separated mask. Some examples:
-> 
->  # apply ce_threshold to ECT(1) traffic
->  tc qdisc replace dev eth0 root fq_codel ce_threshold 1ms ce_threshold_selector 0x1/0x3
-> 
->  # apply ce_threshold to ECN-capable traffic marked as diffserv AF22
->  tc qdisc replace dev eth0 root fq_codel ce_threshold 1ms ce_threshold_selector 0x50/0xfc
-> 
-> Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+> Link: https://github.com/multipath-tcp/mptcp_net-next/issues/158
+> Acked-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+> Signed-off-by: Davide Caratti <dcaratti@redhat.com>
 > ---
-> v2:
-> - Also update man page
-> 
->  man/man8/tc-fq_codel.8 | 11 +++++++++++
->  tc/q_fq_codel.c        | 40 ++++++++++++++++++++++++++++++++++++++++
->  2 files changed, 51 insertions(+)
+>  ip/ipmptcp.c        | 20 ++++++++++++++++----
+>  man/man8/ip-mptcp.8 | 14 ++++++++++++++
+>  2 files changed, 30 insertions(+), 4 deletions(-)
 > 
 
-please remember to cc Stephen and I on iproute2 patches. Otherwise you
-are at the mercy of vger - from wild delays in delivery time to
-unsubscribing accounts in which case I would never get it.
+does not apply to iproute2-next; please rebase.
 
