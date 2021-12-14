@@ -2,170 +2,243 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A7B49473B30
-	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 03:58:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AED45473B39
+	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 04:02:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232118AbhLNC6M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Dec 2021 21:58:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45000 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230243AbhLNC6L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 21:58:11 -0500
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC0E1C061574
-        for <netdev@vger.kernel.org>; Mon, 13 Dec 2021 18:58:10 -0800 (PST)
-Received: by mail-pf1-x42c.google.com with SMTP id g19so16668932pfb.8
-        for <netdev@vger.kernel.org>; Mon, 13 Dec 2021 18:58:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ftt/2g7KLww9t/K/wDgcyd21kcWI24YRIuT8eUsGniY=;
-        b=AYtDxAqE/929WrLiqrf/FNgXiyuYodSp9jmbFY3tl/yzwgRa+0fSE57/QjVyTUxNFX
-         mwLaUcE4sa4EDX92a5wCZVoQTh01fr8cXA9ZIzjeIWQmSFrUBqpt6wBfziz9m36rUzgl
-         hVovTE+dPLtMd4rumBglFpM+d7dN8NmkH4GJ+fVffqrOiMaMogXESw3i7a3UFlm5ZQpS
-         Fm3gdG0ahN11kNdIZXa6QUrFTQFv+7qacA46+45AD0CgXgSpt+Iz0kXlwFMW7azIItDo
-         ov2H1XIWUdH51uRqzfydLfP2a/Br5P76joR1XOOLQDyh7wdKBeEsleZZl6vjJnU0zsMi
-         fLNg==
+        id S234967AbhLNDCN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Dec 2021 22:02:13 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:54157 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234405AbhLNDCN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 22:02:13 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1639450932;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Bu9IQ6OFp8WKIafDhLgGALQ8s+ZyeyFhZV7jSjaz0VE=;
+        b=PoiG4/ys3INlX0zqHw+TBlW9b9phTUckpqg67H2cwDlmLGaIYWlPLwmL836/3mxaFlsyXz
+        mqzf6ZPhWIm1rbrVcgtl9j7GGOIGxPHHpnb25Y0YH0wRvVePjwMbeYb15TJLRVGckrpIY+
+        WVaWt1TEDZ3C7y75K3FkhSC8TUJp4ho=
+Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
+ [209.85.167.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-277-zCXIod4WNK2R7TO77Z9EtA-1; Mon, 13 Dec 2021 22:02:11 -0500
+X-MC-Unique: zCXIod4WNK2R7TO77Z9EtA-1
+Received: by mail-lf1-f71.google.com with SMTP id s11-20020a195e0b000000b0041c0a47fb77so8317135lfb.20
+        for <netdev@vger.kernel.org>; Mon, 13 Dec 2021 19:02:10 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ftt/2g7KLww9t/K/wDgcyd21kcWI24YRIuT8eUsGniY=;
-        b=6Pj0hqGS4pFnzEhFHpNh0cdSw7+L7sIa5DSr2oblS26NpXIdrKEamA1W7HSp3EKwDK
-         e/Zqz4lwejXDLvArljNKFSZJ0Cz8aq9E0Gbyye0b74KGuS2qP9EQsSD9D+g84sIXIB17
-         gR9hBGV2Di9ZEvPmYyCfA56Glgvi0zvIeUW4iGXlzne7eo90vlf5NwSq8sX08vs1A+4e
-         /3Vqx281dA6LCEXi72o425LlREK1K70A01Qw3ubyaiLhZh+/SM9R6sjXDE5nHZAkQZ8q
-         JyIvXIf3GmvGyrS73PF9gqBHtPFUrz4S4PLgonIwNWkp6S3QGAIUiXwCZF/wu6SarGOQ
-         /MDA==
-X-Gm-Message-State: AOAM531+c9EjCBSaoytJwjBSTM/tKUfqyyLntFbcj9iDOfVeBwmqpZw2
-        bjL8rENbhlPoC2tOv1KFjw8=
-X-Google-Smtp-Source: ABdhPJyz/jNd6i1cAtRxC0j5nuRJNubMcswgog41jhATQz+HmZVpgOmJ1BvqEVjf31V3NXf9ggzlAg==
-X-Received: by 2002:a63:d008:: with SMTP id z8mr1811478pgf.623.1639450690206;
-        Mon, 13 Dec 2021 18:58:10 -0800 (PST)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:5cbb:7251:72ab:eb48])
-        by smtp.gmail.com with ESMTPSA id c2sm13966604pfv.112.2021.12.13.18.58.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Dec 2021 18:58:09 -0800 (PST)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        syzbot <syzkaller@googlegroups.com>
-Subject: [PATCH net-next] ipv6: use GFP_ATOMIC in rt6_probe()
-Date:   Mon, 13 Dec 2021 18:58:06 -0800
-Message-Id: <20211214025806.3456382-1-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.34.1.173.g76aa8bc2d0-goog
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Bu9IQ6OFp8WKIafDhLgGALQ8s+ZyeyFhZV7jSjaz0VE=;
+        b=nc+g6KPSI70ObGGAEE7qZINSmnV6ccr65ZRThSK++StntAOKumiW6NlZebs+5H3UHh
+         1KmutWkMVZU2LNttGWwEGMmA0InjEiIC3vPKyS5mhLf4ZhSXqoxYSJDhNQxZ8hsKaf9i
+         usoFOtmdyaKABssTsSnCme3b6wRcvzLAxpwdKtkiJlBmy9LPByJxhQC0yAOJrRiw9PwN
+         7CVnfhRC3oAxyqKKoUkfAy46qwJohbwbYpKAfYPdePOX7iR8J0KWoRNIwx1mUGrWsf7g
+         kcWFVISIXkgEaVXIsDJtHhdLHiE1ViCObG+0S15VjsuSemudRE8oy3EgvfHKJ4aa6ks6
+         A2jA==
+X-Gm-Message-State: AOAM533Pf0UUmQOkX7ueZD7g5Cotu0Werfd0VMkKffjC3u8mJAKD5aaZ
+        YwnoFUvVSWUC7YIYhD9CC78ASUtsY+CbyKvNV1ZESF26W0DWPxTnbJ4G36JCUup+dVlcMHCvAFl
+        wjflgXqxbRMmM9H/C0XUjZE9o9wEjCIWi
+X-Received: by 2002:a05:6512:3d09:: with SMTP id d9mr2289502lfv.481.1639450928905;
+        Mon, 13 Dec 2021 19:02:08 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxoBz5QZXCrzq6mFK2FP4oNu6GUwTHLciq3tJxPrbOySxsyH079jZwtqoTEnDqUSVqEBpDKzOE/W/UkNiJhASU=
+X-Received: by 2002:a05:6512:3d09:: with SMTP id d9mr2289483lfv.481.1639450928676;
+ Mon, 13 Dec 2021 19:02:08 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <fae0bae7-e4cd-a3aa-57fe-d707df99b634@redhat.com>
+ <20210223082536-mutt-send-email-mst@kernel.org> <3ff5fd23-1db0-2f95-4cf9-711ef403fb62@oracle.com>
+ <20210224000057-mutt-send-email-mst@kernel.org> <52836a63-4e00-ff58-50fb-9f450ce968d7@oracle.com>
+ <20210228163031-mutt-send-email-mst@kernel.org> <2cb51a6d-afa0-7cd1-d6f2-6b153186eaca@redhat.com>
+ <20210302043419-mutt-send-email-mst@kernel.org> <178f8ea7-cebd-0e81-3dc7-10a058d22c07@redhat.com>
+ <c9a0932f-a6d7-a9df-38ba-97e50f70c2b2@oracle.com> <20211212042311-mutt-send-email-mst@kernel.org>
+ <ba9df703-29af-98a9-c554-f303ff045398@oracle.com>
+In-Reply-To: <ba9df703-29af-98a9-c554-f303ff045398@oracle.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Tue, 14 Dec 2021 11:01:57 +0800
+Message-ID: <CACGkMEtS3nKAnda8G19hNf=WaeMAgjgeqj3-pi6CjaDsde9jXA@mail.gmail.com>
+Subject: Re: vdpa legacy guest support (was Re: [PATCH] vdpa/mlx5:
+ set_features should allow reset to zero)
+To:     Si-Wei Liu <si-wei.liu@oracle.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>, Eli Cohen <elic@nvidia.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+On Tue, Dec 14, 2021 at 10:00 AM Si-Wei Liu <si-wei.liu@oracle.com> wrote:
+>
+>
+>
+> On 12/12/2021 1:26 AM, Michael S. Tsirkin wrote:
+> > On Fri, Dec 10, 2021 at 05:44:15PM -0800, Si-Wei Liu wrote:
+> >> Sorry for reviving this ancient thread. I was kinda lost for the concl=
+usion
+> >> it ended up with. I have the following questions,
+> >>
+> >> 1. legacy guest support: from the past conversations it doesn't seem t=
+he
+> >> support will be completely dropped from the table, is my understanding
+> >> correct? Actually we're interested in supporting virtio v0.95 guest fo=
+r x86,
+> >> which is backed by the spec at
+> >> https://urldefense.com/v3/__https://ozlabs.org/*rusty/virtio-spec/virt=
+io-0.9.5.pdf__;fg!!ACWV5N9M2RV99hQ!dTKmzJwwRsFM7BtSuTDu1cNly5n4XCotH0WYmidz=
+GqHSXt40i7ZU43UcNg7GYxZg$ . Though I'm not sure
+> >> if there's request/need to support wilder legacy virtio versions earli=
+er
+> >> beyond.
+> > I personally feel it's less work to add in kernel than try to
+> > work around it in userspace. Jason feels differently.
+> > Maybe post the patches and this will prove to Jason it's not
+> > too terrible?
+> I suppose if the vdpa vendor does support 0.95 in the datapath and ring
+> layout level and is limited to x86 only, there should be easy way out.
 
-syzbot reminded me that rt6_probe() can run from
-atomic contexts.
+Note that thought I try to mandate 1.0 device when writing the codes
+but the core vdpa doesn't mandate it, and we've already had one parent
+which is based on the 0.95 spec which is the eni_vdpa:
 
-stack backtrace:
+1) it depends on X86 (so no endian and ordering issues)
+2) it has various subtle things like it can't work well without
+mrg_rxbuf features negotiated since the device assumes a fixed vnet
+header length.
+3) it can only be used by legacy drivers in the guest (no VERSION_1
+since the device mandates a 4096 alignment which doesn't comply with
+1.0)
 
-CPU: 1 PID: 7461 Comm: syz-executor.2 Not tainted 5.16.0-rc4-next-20211210-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- <IRQ>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- print_usage_bug kernel/locking/lockdep.c:203 [inline]
- valid_state kernel/locking/lockdep.c:3945 [inline]
- mark_lock_irq kernel/locking/lockdep.c:4148 [inline]
- mark_lock.cold+0x61/0x8e kernel/locking/lockdep.c:4605
- mark_usage kernel/locking/lockdep.c:4500 [inline]
- __lock_acquire+0x11d5/0x54a0 kernel/locking/lockdep.c:4981
- lock_acquire kernel/locking/lockdep.c:5639 [inline]
- lock_acquire+0x1ab/0x510 kernel/locking/lockdep.c:5604
- __fs_reclaim_acquire mm/page_alloc.c:4550 [inline]
- fs_reclaim_acquire+0x115/0x160 mm/page_alloc.c:4564
- might_alloc include/linux/sched/mm.h:253 [inline]
- slab_pre_alloc_hook mm/slab.h:739 [inline]
- slab_alloc_node mm/slub.c:3145 [inline]
- slab_alloc mm/slub.c:3239 [inline]
- kmem_cache_alloc_trace+0x3b/0x2c0 mm/slub.c:3256
- kmalloc include/linux/slab.h:581 [inline]
- kzalloc include/linux/slab.h:715 [inline]
- ref_tracker_alloc+0xe1/0x430 lib/ref_tracker.c:74
- netdev_tracker_alloc include/linux/netdevice.h:3860 [inline]
- dev_hold_track include/linux/netdevice.h:3877 [inline]
- rt6_probe net/ipv6/route.c:661 [inline]
- find_match.part.0+0xac9/0xd00 net/ipv6/route.c:752
- find_match net/ipv6/route.c:825 [inline]
- __find_rr_leaf+0x17f/0xd20 net/ipv6/route.c:826
- find_rr_leaf net/ipv6/route.c:847 [inline]
- rt6_select net/ipv6/route.c:891 [inline]
- fib6_table_lookup+0x649/0xa20 net/ipv6/route.c:2185
- ip6_pol_route+0x1c5/0x11e0 net/ipv6/route.c:2221
- pol_lookup_func include/net/ip6_fib.h:580 [inline]
- fib6_rule_lookup+0x52a/0x6f0 net/ipv6/fib6_rules.c:120
- ip6_route_output_flags_noref+0x2e2/0x380 net/ipv6/route.c:2629
- ip6_route_output_flags+0x72/0x320 net/ipv6/route.c:2642
- ip6_route_output include/net/ip6_route.h:98 [inline]
- ip6_dst_lookup_tail+0x5ab/0x1620 net/ipv6/ip6_output.c:1070
- ip6_dst_lookup_flow+0x8c/0x1d0 net/ipv6/ip6_output.c:1200
- geneve_get_v6_dst+0x46f/0x9a0 drivers/net/geneve.c:858
- geneve6_xmit_skb drivers/net/geneve.c:991 [inline]
- geneve_xmit+0x520/0x3530 drivers/net/geneve.c:1074
- __netdev_start_xmit include/linux/netdevice.h:4685 [inline]
- netdev_start_xmit include/linux/netdevice.h:4699 [inline]
- xmit_one net/core/dev.c:3473 [inline]
- dev_hard_start_xmit+0x1eb/0x920 net/core/dev.c:3489
- __dev_queue_xmit+0x2983/0x3640 net/core/dev.c:4112
- neigh_resolve_output net/core/neighbour.c:1522 [inline]
- neigh_resolve_output+0x50e/0x820 net/core/neighbour.c:1502
- neigh_output include/net/neighbour.h:541 [inline]
- ip6_finish_output2+0x56e/0x14f0 net/ipv6/ip6_output.c:126
- __ip6_finish_output net/ipv6/ip6_output.c:191 [inline]
- __ip6_finish_output+0x61e/0xe80 net/ipv6/ip6_output.c:170
- ip6_finish_output+0x32/0x200 net/ipv6/ip6_output.c:201
- NF_HOOK_COND include/linux/netfilter.h:296 [inline]
- ip6_output+0x1e4/0x530 net/ipv6/ip6_output.c:224
- dst_output include/net/dst.h:451 [inline]
- NF_HOOK include/linux/netfilter.h:307 [inline]
- ndisc_send_skb+0xa99/0x17f0 net/ipv6/ndisc.c:508
- ndisc_send_rs+0x12e/0x6f0 net/ipv6/ndisc.c:702
- addrconf_rs_timer+0x3f2/0x820 net/ipv6/addrconf.c:3898
- call_timer_fn+0x1a5/0x6b0 kernel/time/timer.c:1421
- expire_timers kernel/time/timer.c:1466 [inline]
- __run_timers.part.0+0x675/0xa20 kernel/time/timer.c:1734
- __run_timers kernel/time/timer.c:1715 [inline]
- run_timer_softirq+0xb3/0x1d0 kernel/time/timer.c:1747
- __do_softirq+0x29b/0x9c2 kernel/softirq.c:558
- invoke_softirq kernel/softirq.c:432 [inline]
- __irq_exit_rcu+0x123/0x180 kernel/softirq.c:637
- irq_exit_rcu+0x5/0x20 kernel/softirq.c:649
- sysvec_apic_timer_interrupt+0x93/0xc0 arch/x86/kernel/apic/apic.c:1097
- </IRQ>
+So it's a proof of 0.95 parent support in the vDPA core.
 
-Fixes: fb67510ba9bd ("ipv6: add net device refcount tracker to rt6_probe_deferred()")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
----
- net/ipv6/route.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+And we had a modern only parent, that is the vp_vdpa parent (though
+it's not hard to add legacy support).
 
-diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index 4d02a329ab6004169ebd31c5474ce8be5553d569..03be0e6b4826521b262b0ac98433f0d25f86c1f1 100644
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -658,7 +658,7 @@ static void rt6_probe(struct fib6_nh *fib6_nh)
- 	} else {
- 		INIT_WORK(&work->work, rt6_probe_deferred);
- 		work->target = *nh_gw;
--		dev_hold_track(dev, &work->dev_tracker, GFP_KERNEL);
-+		dev_hold_track(dev, &work->dev_tracker, GFP_ATOMIC);
- 		work->dev = dev;
- 		schedule_work(&work->work);
- 	}
--- 
-2.34.1.173.g76aa8bc2d0-goog
+So for all the other vendors, assuming it has full support for
+transitional devices for x86. As discussed, we need to handle:
+
+1) config access before features
+2) kick before driver_ok
+
+Anything else? If not, it looks easier to do them in the userspace.
+The only advantages for doing it in the kernel is to make it work for
+virtio-vdpa. But virito-vdpa doesn't need transitional devices.
+
+> I
+> checked with Eli and other Mellanox/NVDIA folks for hardware/firmware
+> level 0.95 support, it seems all the ingredient had been there already
+> dated back to the DPDK days. The only major thing limiting is in the
+> vDPA software that the current vdpa core has the assumption around
+> VIRTIO_F_ACCESS_PLATFORM for a few DMA setup ops, which is virtio 1.0 onl=
+y.
+
+The code doesn't have such an assumption or anything I missed? Or you
+meant the vhost-vdpa that tries to talk with the IOMMU layer directly,
+it should be ok since host IOMMU is hidden from guest anyway.
+
+>
+> >
+> >> 2. suppose some form of legacy guest support needs to be there, how do=
+ we
+> >> deal with the bogus assumption below in vdpa_get_config() in the short=
+ term?
+> >> It looks one of the intuitive fix is to move the vdpa_set_features cal=
+l out
+> >> of vdpa_get_config() to vdpa_set_config().
+> >>
+> >>          /*
+> >>           * Config accesses aren't supposed to trigger before features=
+ are
+> >> set.
+> >>           * If it does happen we assume a legacy guest.
+> >>           */
+> >>          if (!vdev->features_valid)
+> >>                  vdpa_set_features(vdev, 0);
+> >>          ops->get_config(vdev, offset, buf, len);
+> >>
+> >> I can post a patch to fix 2) if there's consensus already reached.
+> >>
+> >> Thanks,
+> >> -Siwei
+> > I'm not sure how important it is to change that.
+> > In any case it only affects transitional devices, right?
+> > Legacy only should not care ...
+> Yes I'd like to distinguish legacy driver (suppose it is 0.95) against
+> the modern one in a transitional device model rather than being legacy
+> only. That way a v0.95 and v1.0 supporting vdpa parent can support both
+> types of guests without having to reconfigure.
+
+I think this is what a transitional device is expected to work.
+
+Thanks
+
+> Or are you suggesting
+> limit to legacy only at the time of vdpa creation would simplify the
+> implementation a lot?
+>
+> Thanks,
+> -Siwei
+>
+> >
+> >> On 3/2/2021 2:53 AM, Jason Wang wrote:
+> >>> On 2021/3/2 5:47 =E4=B8=8B=E5=8D=88, Michael S. Tsirkin wrote:
+> >>>> On Mon, Mar 01, 2021 at 11:56:50AM +0800, Jason Wang wrote:
+> >>>>> On 2021/3/1 5:34 =E4=B8=8A=E5=8D=88, Michael S. Tsirkin wrote:
+> >>>>>> On Wed, Feb 24, 2021 at 10:24:41AM -0800, Si-Wei Liu wrote:
+> >>>>>>>> Detecting it isn't enough though, we will need a new ioctl to no=
+tify
+> >>>>>>>> the kernel that it's a legacy guest. Ugh :(
+> >>>>>>> Well, although I think adding an ioctl is doable, may I
+> >>>>>>> know what the use
+> >>>>>>> case there will be for kernel to leverage such info
+> >>>>>>> directly? Is there a
+> >>>>>>> case QEMU can't do with dedicate ioctls later if there's indeed
+> >>>>>>> differentiation (legacy v.s. modern) needed?
+> >>>>>> BTW a good API could be
+> >>>>>>
+> >>>>>> #define VHOST_SET_ENDIAN _IOW(VHOST_VIRTIO, ?, int)
+> >>>>>> #define VHOST_GET_ENDIAN _IOW(VHOST_VIRTIO, ?, int)
+> >>>>>>
+> >>>>>> we did it per vring but maybe that was a mistake ...
+> >>>>> Actually, I wonder whether it's good time to just not support
+> >>>>> legacy driver
+> >>>>> for vDPA. Consider:
+> >>>>>
+> >>>>> 1) It's definition is no-normative
+> >>>>> 2) A lot of budren of codes
+> >>>>>
+> >>>>> So qemu can still present the legacy device since the config
+> >>>>> space or other
+> >>>>> stuffs that is presented by vhost-vDPA is not expected to be
+> >>>>> accessed by
+> >>>>> guest directly. Qemu can do the endian conversion when necessary
+> >>>>> in this
+> >>>>> case?
+> >>>>>
+> >>>>> Thanks
+> >>>>>
+> >>>> Overall I would be fine with this approach but we need to avoid brea=
+king
+> >>>> working userspace, qemu releases with vdpa support are out there and
+> >>>> seem to work for people. Any changes need to take that into account
+> >>>> and document compatibility concerns.
+> >>>
+> >>> Agree, let me check.
+> >>>
+> >>>
+> >>>>    I note that any hardware
+> >>>> implementation is already broken for legacy except on platforms with
+> >>>> strong ordering which might be helpful in reducing the scope.
+> >>>
+> >>> Yes.
+> >>>
+> >>> Thanks
+> >>>
+> >>>
+> >>>>
+>
 
