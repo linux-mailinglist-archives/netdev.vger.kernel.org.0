@@ -2,38 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 344664743C7
+	by mail.lfdr.de (Postfix) with ESMTP id A17304743C8
 	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 14:45:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234545AbhLNNph (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Dec 2021 08:45:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50448 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234525AbhLNNpg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 08:45:36 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0BB3C061574
-        for <netdev@vger.kernel.org>; Tue, 14 Dec 2021 05:45:35 -0800 (PST)
+        id S234541AbhLNNpj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Dec 2021 08:45:39 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:41874 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234537AbhLNNph (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 08:45:37 -0500
 From:   Kurt Kanzenbach <kurt@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1639489534;
+        s=2020; t=1639489535;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=6upzLT69P3sVwByYKQbESny2a1x1JuKG3ngfi5Y3vYw=;
-        b=SGdq0ZZLKNTeOjotkPnOxNr/EiLD4hvH8UWQgk8ErAu3MRO8RvYWCMr/T9pi2G9XhT30FW
-        XY1wgJTwNIlAe6h69vgYIVxcIni9iTEYVikhj0IGtHRaSxQbcH67XT6zHQvx7VFMK+LEpP
-        MFJGYiwyQT8jb8vAm1tlhckiSi0h7Bkmu7S5p23CzUZtM1Gxzbxq2v473ahSu1LKbax6Fb
-        3vgogIXHSnX6KCo5oblmdDYeH4BdL27dstuDT+uZLHaf4gOY50C/1kv+RwdJVUVGd8rlWt
-        cGui/qTBwoVV7qY/IFiPRNMgPRvZJyqV/Bmk4QQ5h97nXcUP7py0fHeZEN+nAA==
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=dtBv0pCkOaDpa1ktY12/an6AVoU44vB4b5jZF67iQuA=;
+        b=IGM0UuBfcTAslINHF00Rv9nT5k1KeA1SxHn/YwOpwUbmDZBkR9ttVTByoL5ywtlAqlqiyz
+        7gyHhhrVraMHPAxswP47YruGvs94Rm+QFFVIUVDl1MMyyAzYuEG84WCltyW1SQz+cryPBr
+        1b7Fm8MeW8rq+ktHyTjkG+IZTGoBc3sUUxNKR5AqkoY6jiFJ5BbqGSgT2X4fnS9EZrOTCv
+        YrhvEXUk2fsbW01NW4tNEC3ww3RUDZ9TJW/FmuznGJRe3tpRcOC2MTI5ucF951ErV9tibj
+        1/gc6uv9UP8K1dGRUpjuicaZdvPnm+boRIFbMWqUfkXz65sVoB2uoVzW5Sik5A==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1639489534;
+        s=2020e; t=1639489535;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=6upzLT69P3sVwByYKQbESny2a1x1JuKG3ngfi5Y3vYw=;
-        b=fTVb3Ysno6ZpI8WZYSuEkTrDsjUbwNRVl3psQMy2FFE9oJLwcG4FtFrqVGPNyHVCtHkXva
-        vdL59FMw2CVig4BA==
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=dtBv0pCkOaDpa1ktY12/an6AVoU44vB4b5jZF67iQuA=;
+        b=xQdnos2B/6DYSIFykSgLWPadISD9J0nMzoGhUnXrVpJ76WcDziLo426FcmvhG2ibvx8KJS
+        17ytJx2UGubQJbAw==
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -43,55 +42,51 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Richard Cochran <richardcochran@gmail.com>,
         Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
         netdev@vger.kernel.org, Kurt Kanzenbach <kurt@linutronix.de>
-Subject: [PATCH net-next v2 0/4] net: dsa: hellcreek: Fix handling of MGMT protocols
-Date:   Tue, 14 Dec 2021 14:45:04 +0100
-Message-Id: <20211214134508.57806-1-kurt@linutronix.de>
+Subject: [PATCH net-next v2 1/4] net: dsa: hellcreek: Fix insertion of static FDB entries
+Date:   Tue, 14 Dec 2021 14:45:05 +0100
+Message-Id: <20211214134508.57806-2-kurt@linutronix.de>
+In-Reply-To: <20211214134508.57806-1-kurt@linutronix.de>
+References: <20211214134508.57806-1-kurt@linutronix.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+The insertion of static FDB entries ignores the pass_blocked bit. That bit is
+evaluated with regards to STP. Add the missing functionality.
 
-this series fixes some minor issues with regards to management protocols such as
-PTP and STP in the hellcreek DSA driver. Configure static FDB for these
-protocols. The end result is:
+Fixes: e4b27ebc780f ("net: dsa: Add DSA driver for Hirschmann Hellcreek switches")
+Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
+---
+ drivers/net/dsa/hirschmann/hellcreek.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-|root@tsn:~# mv88e6xxx_dump --atu
-|Using device <platform/ff240000.switch>
-|ATU:
-|FID  MAC               0123 Age OBT Pass Static Reprio Prio
-|   0 01:1b:19:00:00:00 1100   1               X       X    6
-|   1 01:00:5e:00:01:81 1100   1               X       X    6
-|   2 33:33:00:00:01:81 1100   1               X       X    6
-|   3 01:80:c2:00:00:0e 1100   1        X      X       X    6
-|   4 01:00:5e:00:00:6b 1100   1        X      X       X    6
-|   5 33:33:00:00:00:6b 1100   1        X      X       X    6
-|   6 01:80:c2:00:00:00 1100   1        X      X       X    6
-
-Thanks,
-Kurt
-
-Previous version:
-
- * https://lore.kernel.org/r/20211213101810.121553-1-kurt@linutronix.de/
-
-Changes since v1:
-
- * Target net-next, as this never worked correctly and is not critical
- * Add STP and PTP over UDP rules
- * Use pass_blocked for PDelay messages only (Richard Cochran)
-
-Kurt Kanzenbach (4):
-  net: dsa: hellcreek: Fix insertion of static FDB entries
-  net: dsa: hellcreek: Add STP forwarding rule
-  net: dsa: hellcreek: Allow PTP P2P measurements on blocked ports
-  net: dsa: hellcreek: Add missing PTP via UDP rules
-
- drivers/net/dsa/hirschmann/hellcreek.c | 87 +++++++++++++++++++++++---
- 1 file changed, 80 insertions(+), 7 deletions(-)
-
+diff --git a/drivers/net/dsa/hirschmann/hellcreek.c b/drivers/net/dsa/hirschmann/hellcreek.c
+index 9eecb7529573..c4f840b20adf 100644
+--- a/drivers/net/dsa/hirschmann/hellcreek.c
++++ b/drivers/net/dsa/hirschmann/hellcreek.c
+@@ -711,8 +711,9 @@ static int __hellcreek_fdb_add(struct hellcreek *hellcreek,
+ 	u16 meta = 0;
+ 
+ 	dev_dbg(hellcreek->dev, "Add static FDB entry: MAC=%pM, MASK=0x%02x, "
+-		"OBT=%d, REPRIO_EN=%d, PRIO=%d\n", entry->mac, entry->portmask,
+-		entry->is_obt, entry->reprio_en, entry->reprio_tc);
++		"OBT=%d, PASS_BLOCKED=%d, REPRIO_EN=%d, PRIO=%d\n", entry->mac,
++		entry->portmask, entry->is_obt, entry->pass_blocked,
++		entry->reprio_en, entry->reprio_tc);
+ 
+ 	/* Add mac address */
+ 	hellcreek_write(hellcreek, entry->mac[1] | (entry->mac[0] << 8), HR_FDBWDH);
+@@ -723,6 +724,8 @@ static int __hellcreek_fdb_add(struct hellcreek *hellcreek,
+ 	meta |= entry->portmask << HR_FDBWRM0_PORTMASK_SHIFT;
+ 	if (entry->is_obt)
+ 		meta |= HR_FDBWRM0_OBT;
++	if (entry->pass_blocked)
++		meta |= HR_FDBWRM0_PASS_BLOCKED;
+ 	if (entry->reprio_en) {
+ 		meta |= HR_FDBWRM0_REPRIO_EN;
+ 		meta |= entry->reprio_tc << HR_FDBWRM0_REPRIO_TC_SHIFT;
 -- 
 2.30.2
 
