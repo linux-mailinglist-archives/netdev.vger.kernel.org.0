@@ -2,254 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4611F474E90
-	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 00:29:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 67639474E92
+	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 00:30:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238223AbhLNX3M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Dec 2021 18:29:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44536 "EHLO
+        id S238236AbhLNXaY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Dec 2021 18:30:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234176AbhLNX3L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 18:29:11 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57DB2C061574
-        for <netdev@vger.kernel.org>; Tue, 14 Dec 2021 15:29:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=OUaYmfK3e6emXI/QF7xFCey7AfSxASdhwImkSRwcsTQ=; b=s1dGf0510JgzgdQuAPWGig1szT
-        9zHYduw7za+yq4FrYoy/g3umniRdvt992SfEkV8OqEebdKDACji58C7fXiT5Y4ss7heM7/7BTf7kO
-        XNYCkOS6AMMyRRmFg6v5QlNlRo//SC/YSQVrhmXWtoabBGWX7h0y3sWgJh1WuKVXrcLMiBdtPcLDJ
-        AeLIdDoAid6MY4RonLPat8IXEWbaIgw7aRJJukPE0tlKnZ+5ZclNVp6qsOWGDaKH8PH0AVfu6CLID
-        sGRWj+Wbb3bOAgTYhYIxo6aWhKorZPT5qnEG3YWd1OVS37IA0z0yJi1FXU8RwBLvEdUHxTcfFFRiZ
-        ByOrSw/Q==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:56286)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1mxHEJ-0005Xb-04; Tue, 14 Dec 2021 23:29:07 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1mxHEI-0003uj-Ae; Tue, 14 Dec 2021 23:29:06 +0000
-Date:   Tue, 14 Dec 2021 23:29:06 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Sean Anderson <sean.anderson@seco.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
+        with ESMTP id S235215AbhLNXaW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 18:30:22 -0500
+Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AA5BC061574
+        for <netdev@vger.kernel.org>; Tue, 14 Dec 2021 15:30:22 -0800 (PST)
+Received: by mail-io1-xd36.google.com with SMTP id y16so27112946ioc.8
+        for <netdev@vger.kernel.org>; Tue, 14 Dec 2021 15:30:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=egauge.net; s=google;
+        h=message-id:subject:from:to:cc:date:in-reply-to:references
+         :organization:user-agent:mime-version:content-transfer-encoding;
+        bh=AVKBudmt9G81SkbUfzt3qtmKS50VDi84/QAtg5tb48o=;
+        b=fUCmXQBFmpf5Gr1QfyxLjFBDavTnDARaTFZ/rwQ2Ux3CneWhH+/BjTx6+Ce4lyxSCa
+         yFjOgno0JA6c5j1UJ6zn9fTwO8CEzeph97jI3TYlisVjnArc5NAneju5b+NIKeHY2FiD
+         eX2ZzxJc3sgApFL+56CixrE0V2E99mpp2+2eWFOgmBikf9tyYsJBc6Fo5AkAb0h57lr4
+         Qp9qnIBNQHw/VKqY08i0dM1XSuyI4mzPhnwCdD6DRIdxiSCFOqhHV3JBE8NGHeFWk4PR
+         BLnpZ2AREMMmv6ZIf+sZ6RtTn26Zvsnjq6JygaYOyNCA/H0E52trlmg6k/Y4T7grnPtU
+         7ALg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:organization:user-agent:mime-version
+         :content-transfer-encoding;
+        bh=AVKBudmt9G81SkbUfzt3qtmKS50VDi84/QAtg5tb48o=;
+        b=FnnpdzMFPaPR1UEJsAmFt+lWGYvR3oCw0AqlqFV8KlVRlqdwIw8BLnv/EBWU8EvS+O
+         Mb2FVWm+56iOZ9RF0x2s+9GfAUvaw2BELA7V7ehXbCEH/rqABFStjzuu4Uw7gBQkwIwG
+         5PMkQE7xfJJUcBz/7qfI88vmJ+kaWLp8E7hvWPtmJJAryeEK892l8ucTTFp83YDeTckM
+         vA8zA40bxIKASEBJoItlSzv1uEUZpfIbU7aCvYzaMG9GW/0AUer8PVm5xZarg+L9jI/7
+         zjlVVXnU+ZoOyCksCpkuk80wcFxARNwEzGNy/93//0fF6hg7kP8c97iXa4NInS6+CvCf
+         5VPQ==
+X-Gm-Message-State: AOAM5333b4dmIIFtUFjxeY/b+XCCRrHZWisGLW1JSsLt5qFMiWSx2QMC
+        IyRZ2zIugKwF978qm5xAI+my
+X-Google-Smtp-Source: ABdhPJw4SVrNuJhAydW0rdGa58Fa2riWaCU0ZYAwdxkxtptJsiAE1NaXtrf12CH0lf59HYeQ/IgAUg==
+X-Received: by 2002:a05:6638:4089:: with SMTP id m9mr4712723jam.187.1639524621556;
+        Tue, 14 Dec 2021 15:30:21 -0800 (PST)
+Received: from bixby.lan (c-73-181-115-211.hsd1.co.comcast.net. [73.181.115.211])
+        by smtp.gmail.com with ESMTPSA id k13sm174077iow.45.2021.12.14.15.30.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Dec 2021 15:30:21 -0800 (PST)
+Message-ID: <e88e908e720172d8571d48bd1ebdab3617534f73.camel@egauge.net>
+Subject: Re: [PATCH v4 2/2] wilc1000: Document enable-gpios and reset-gpios
+ properties
+From:   David Mosberger-Tang <davidm@egauge.net>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Kalle Valo <kvalo@codeaurora.org>, netdev@vger.kernel.org,
+        Adham Abozaeid <adham.abozaeid@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        linux-kernel@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Marcin Wojtas <mw@semihalf.com>, netdev@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH net-next 2/7] net: phylink: add pcs_validate() method
-Message-ID: <Ybkowi4KJpL+gIsk@shell.armlinux.org.uk>
-References: <Ybiue1TPCwsdHmV4@shell.armlinux.org.uk>
- <E1mx96A-00GCdF-Ei@rmk-PC.armlinux.org.uk>
- <0d7361a9-ea74-ce75-b5e0-904596fbefd1@seco.com>
- <YbkoWsMPgw5RsQCo@shell.armlinux.org.uk>
+        Ajay Singh <ajay.kathat@microchip.com>,
+        linux-wireless@vger.kernel.org, devicetree@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>
+Date:   Tue, 14 Dec 2021 16:30:20 -0700
+In-Reply-To: <1639512290.330041.3819896.nullmailer@robh.at.kernel.org>
+References: <20211214163315.3769677-1-davidm@egauge.net>
+         <20211214163315.3769677-3-davidm@egauge.net>
+         <1639512290.330041.3819896.nullmailer@robh.at.kernel.org>
+Organization: eGauge Systems LLC
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5-0ubuntu1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YbkoWsMPgw5RsQCo@shell.armlinux.org.uk>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 14, 2021 at 11:27:22PM +0000, Russell King (Oracle) wrote:
-> I already have a conversion for axienet in my tree, and it doesn't
-> need a pcs_validate() implementation. I'll provide it below.
+On Tue, 2021-12-14 at 14:04 -0600, Rob Herring wrote:
+> On Tue, 14 Dec 2021 16:33:22 +0000, David Mosberger-Tang wrote:
+> > Add documentation for the ENABLE and RESET GPIOs that may be needed by
+> > wilc1000-spi.
+> > 
+> > Signed-off-by: David Mosberger-Tang <davidm@egauge.net>
+> > ---
+> >  .../net/wireless/microchip,wilc1000.yaml        | 17 +++++++++++++++++
+> >  1 file changed, 17 insertions(+)
+> > 
+> 
+> My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+> on your patch (DT_CHECKER_FLAGS is new in v5.13):
+> 
+> yamllint warnings/errors:
+> 
+> dtschema/dtc warnings/errors:
+> Error: Documentation/devicetree/bindings/net/wireless/microchip,wilc1000.example.dts:30.37-38 syntax error
+> FATAL ERROR: Unable to parse input tree
+> make[1]: *** [scripts/Makefile.lib:373: Documentation/devicetree/bindings/net/wireless/microchip,wilc1000.example.dt.yaml] Error 1
+> make[1]: *** Waiting for unfinished jobs....
+> make: *** [Makefile:1413: dt_binding_check] Error 2
 
-Forgot to do so... this is obviously untested on real hardware.
+So this error appears due to GPIO_ACTIVE_HIGH and GPIO_ACTIVE_LOW in these
+lines:
 
-8<===
-From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-Subject: [PATCH] net: axienet: convert to phylink_pcs
+        enable-gpios = <&pioA 5 GPIO_ACTIVE_HIGH>;
+        reset-gpios = <&pioA 6 GPIO_ACTIVE_LOW>;
 
-Convert axienet to use the phylink_pcs layer, resulting in it no longer
-being a legacy driver.
+I can replace those with 0 and 1 respectively, but I doubt a lot of people would
+recognize what those integers standard for.  Is there a better way to get this
+to pass?
 
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
----
- drivers/net/ethernet/xilinx/xilinx_axienet.h  |   1 +
- .../net/ethernet/xilinx/xilinx_axienet_main.c | 109 +++++++++---------
- 2 files changed, 53 insertions(+), 57 deletions(-)
+  --david
 
-diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet.h b/drivers/net/ethernet/xilinx/xilinx_axienet.h
-index 5b4d153b1492..81f09bd8f11c 100644
---- a/drivers/net/ethernet/xilinx/xilinx_axienet.h
-+++ b/drivers/net/ethernet/xilinx/xilinx_axienet.h
-@@ -434,6 +434,7 @@ struct axienet_local {
- 	struct phylink_config phylink_config;
- 
- 	struct mdio_device *pcs_phy;
-+	struct phylink_pcs pcs;
- 
- 	bool switch_x_sgmii;
- 
-diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-index 25082ff3794b..8d90e887c3e5 100644
---- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-+++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-@@ -1503,78 +1503,75 @@ static const struct ethtool_ops axienet_ethtool_ops = {
- 	.nway_reset	= axienet_ethtools_nway_reset,
- };
- 
--static void axienet_mac_pcs_get_state(struct phylink_config *config,
--				      struct phylink_link_state *state)
-+static struct axienet_local *pcs_to_axienet_local(struct phylink_pcs *pcs)
- {
--	struct net_device *ndev = to_net_dev(config->dev);
--	struct axienet_local *lp = netdev_priv(ndev);
-+	return container_of(pcs, struct axienet_local, pcs);
-+}
- 
--	switch (state->interface) {
--	case PHY_INTERFACE_MODE_SGMII:
--	case PHY_INTERFACE_MODE_1000BASEX:
--		phylink_mii_c22_pcs_get_state(lp->pcs_phy, state);
--		break;
--	default:
--		break;
--	}
-+static void axienet_pcs_get_state(struct phylink_pcs *pcs,
-+				  struct phylink_link_state *state)
-+{
-+	struct mdio_device *pcs_phy = pcs_to_axienet_local(pcs)->pcs_phy;
-+
-+	phylink_mii_c22_pcs_get_state(pcs_phy, state);
- }
- 
--static void axienet_mac_an_restart(struct phylink_config *config)
-+static void axienet_pcs_an_restart(struct phylink_pcs *pcs)
- {
--	struct net_device *ndev = to_net_dev(config->dev);
--	struct axienet_local *lp = netdev_priv(ndev);
-+	struct mdio_device *pcs_phy = pcs_to_axienet_local(pcs)->pcs_phy;
- 
--	phylink_mii_c22_pcs_an_restart(lp->pcs_phy);
-+	phylink_mii_c22_pcs_an_restart(pcs_phy);
- }
- 
--static int axienet_mac_prepare(struct phylink_config *config, unsigned int mode,
--			       phy_interface_t iface)
-+static int axienet_pcs_config(struct phylink_config *pcs, unsigned int mode,
-+			      phy_interface_t interface,
-+			      const unsigned long *advertising,
-+			      bool permit_pause_to_mac)
- {
--	struct net_device *ndev = to_net_dev(config->dev);
--	struct axienet_local *lp = netdev_priv(ndev);
-+	struct net_device *ndev = pcs_to_axienet_local(pcs)->ndev;
-+	struct mdio_device *pcs_phy = pcs_to_axienet_local(pcs)->pcs_phy;
- 	int ret;
- 
--	switch (iface) {
--	case PHY_INTERFACE_MODE_SGMII:
--	case PHY_INTERFACE_MODE_1000BASEX:
--		if (!lp->switch_x_sgmii)
--			return 0;
--
--		ret = mdiobus_write(lp->pcs_phy->bus,
--				    lp->pcs_phy->addr,
--				    XLNX_MII_STD_SELECT_REG,
--				    iface == PHY_INTERFACE_MODE_SGMII ?
--					XLNX_MII_STD_SELECT_SGMII : 0);
--		if (ret < 0)
--			netdev_warn(ndev, "Failed to switch PHY interface: %d\n",
--				    ret);
-+	ret = mdiobus_write(pcs_phy->bus, pcs_phy->addr,
-+			    XLNX_MII_STD_SELECT_REG,
-+			    iface == PHY_INTERFACE_MODE_SGMII ?
-+				XLNX_MII_STD_SELECT_SGMII : 0);
-+	if (ret < 0) {
-+		netdev_warn(ndev, "Failed to switch PHY interface: %d\n",
-+			    ret);
- 		return ret;
--	default:
--		return 0;
- 	}
-+
-+	ret = phylink_mii_c22_pcs_config(pcs_phy, mode, interface, advertising);
-+	if (ret < 0)
-+		netdev_warn(ndev, "Failed to configure PCS: %d\n", ret);
-+
-+	return ret;
- }
- 
--static void axienet_mac_config(struct phylink_config *config, unsigned int mode,
--			       const struct phylink_link_state *state)
-+static const struct phylink_pcs_ops axienet_pcs_ops = {
-+	.pcs_get_state = axienet_pcs_get_state,
-+	.pcs_config = axienet_pcs_config,
-+	.pcs_an_restart = axienet_pcs_an_restart,
-+};
-+
-+static struct phylink_pcs *axienet_mac_select_pcs(struct phylink_config *config,
-+						  phy_interface_t interface)
- {
- 	struct net_device *ndev = to_net_dev(config->dev);
- 	struct axienet_local *lp = netdev_priv(ndev);
--	int ret;
- 
--	switch (state->interface) {
--	case PHY_INTERFACE_MODE_SGMII:
--	case PHY_INTERFACE_MODE_1000BASEX:
--		ret = phylink_mii_c22_pcs_config(lp->pcs_phy, mode,
--						 state->interface,
--						 state->advertising);
--		if (ret < 0)
--			netdev_warn(ndev, "Failed to configure PCS: %d\n",
--				    ret);
--		break;
-+	if (interface == PHY_INTERFACE_MODE_1000BASEX ||
-+	    interface ==  PHY_INTERFACE_MODE_SGMII)
-+		return &lp->pcs;
- 
--	default:
--		break;
--	}
-+	return NULL;
-+}
-+
-+static void axienet_mac_config(struct phylink_config *config, unsigned int mode,
-+			       const struct phylink_link_state *state)
-+{
-+	/* nothing meaningful to do */
- }
- 
- static void axienet_mac_link_down(struct phylink_config *config,
-@@ -1629,9 +1626,7 @@ static void axienet_mac_link_up(struct phylink_config *config,
- 
- static const struct phylink_mac_ops axienet_phylink_ops = {
- 	.validate = phylink_generic_validate,
--	.mac_pcs_get_state = axienet_mac_pcs_get_state,
--	.mac_an_restart = axienet_mac_an_restart,
--	.mac_prepare = axienet_mac_prepare,
-+	.mac_select_pcs = axienet_mac_select_pcs,
- 	.mac_config = axienet_mac_config,
- 	.mac_link_down = axienet_mac_link_down,
- 	.mac_link_up = axienet_mac_link_up,
-@@ -2040,12 +2035,12 @@ static int axienet_probe(struct platform_device *pdev)
- 			ret = -EPROBE_DEFER;
- 			goto cleanup_mdio;
- 		}
--		lp->phylink_config.pcs_poll = true;
-+		lp->pcs.ops = &axienet_pcs_ops;
-+		lp->pcs.poll = true;
- 	}
- 
- 	lp->phylink_config.dev = &ndev->dev;
- 	lp->phylink_config.type = PHYLINK_NETDEV;
--	lp->phylink_config.legacy_pre_march2020 = true;
- 	lp->phylink_config.mac_capabilities = MAC_SYM_PAUSE | MAC_ASYM_PAUSE |
- 		MAC_10FD | MAC_100FD | MAC_1000FD;
- 
--- 
-2.30.2
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
