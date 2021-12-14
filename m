@@ -2,74 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C418B4743EB
-	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 14:53:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C2A54743EE
+	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 14:54:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234032AbhLNNxr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Dec 2021 08:53:47 -0500
-Received: from out30-43.freemail.mail.aliyun.com ([115.124.30.43]:36311 "EHLO
-        out30-43.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230146AbhLNNxq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 08:53:46 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R951e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=cuibixuan@linux.alibaba.com;NM=1;PH=DS;RN=14;SR=0;TI=SMTPD_---0V-dK6r3_1639490018;
-Received: from VM20210331-25.tbsite.net(mailfrom:cuibixuan@linux.alibaba.com fp:SMTPD_---0V-dK6r3_1639490018)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Tue, 14 Dec 2021 21:53:44 +0800
-From:   Bixuan Cui <cuibixuan@linux.alibaba.com>
-To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-nfs@vger.kernel.org
-Cc:     cuibixuan@linux.alibaba.com, bfields@fieldses.org,
-        chuck.lever@oracle.com, trond.myklebust@hammerspace.com,
-        anna.schumaker@netapp.com, davem@davemloft.net, kuba@kernel.org,
-        pete.wl@alibaba-inc.com, wenan.mwa@alibaba-inc.com,
-        xiaoh.peixh@alibaba-inc.com, weipu.zy@alibaba-inc.com
-Subject: [PATCH -next] SUNRPC: Clean XPRT_CONGESTED of xprt->state when rpc task is killed
-Date:   Tue, 14 Dec 2021 21:53:38 +0800
-Message-Id: <1639490018-128451-2-git-send-email-cuibixuan@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1639490018-128451-1-git-send-email-cuibixuan@linux.alibaba.com>
-References: <1639490018-128451-1-git-send-email-cuibixuan@linux.alibaba.com>
+        id S234581AbhLNNyQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Dec 2021 08:54:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52390 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230146AbhLNNyP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 08:54:15 -0500
+Received: from mail-ot1-x333.google.com (mail-ot1-x333.google.com [IPv6:2607:f8b0:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B9A2C061574;
+        Tue, 14 Dec 2021 05:54:15 -0800 (PST)
+Received: by mail-ot1-x333.google.com with SMTP id a23-20020a9d4717000000b0056c15d6d0caso20853699otf.12;
+        Tue, 14 Dec 2021 05:54:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cgTqtlANKYIU73+lyzmmWQUIm3CKi0FC0Wv6HvCfbsU=;
+        b=LuNmbxwerVfT24HPUT0/qNe10EtrVOdZv2q42DIM2eMep9+4wpACv1iYc8oJwRhGpM
+         AjPysi2YjgvJ/ChrpVf7Dt1rkgSjYfRZ9J/nZx9QCxoIsufryoasIAKH7qw6v/I1T6Hd
+         rXIRopK3ecRn7po0Ffla6t2bUbZm13zW9wDLIQ2AUrBVRVt1icHkpuz4BKV/Ny8Ig+yY
+         LpxUxmMUXXj+8sI1CPotwVq1Yyh5/NDYF7StCnbZ5cSHPwFS73ma5/aFlzRrIHo6xlaC
+         g+gzGQanw+9MSuPWLDStqk2w5RHF56JS69ZBcHuZEcJ4iDXCfgF5eFhE0yj4pIFiYSL9
+         vABQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cgTqtlANKYIU73+lyzmmWQUIm3CKi0FC0Wv6HvCfbsU=;
+        b=6+v2bP1lfvuLY0bgP+StzXjqr+PX+QhvbJp3dWI1PsuqW7I40B9xmm0+go2ydG7+nk
+         H2DwxUGupan2RWUbjTjbLvOwym0mFaexJ/upROF7IOsf1AFRpoDuF2Q2B2CS2Xij5a00
+         EGv+Z+cA9fK14iCQU2afEjbA/I46w2IVn2Pf2jQpKEgqO1BGWET4asVB+9kpaqoI4s5U
+         EW5XF2u+FCyuRNhBWq01hIG8yOniGtgKEVjj+fkC+vsKImphWMHHLcOV8Wg7KJUUPgl3
+         uXtYXzELIkQ5ZXzyJhncgIlE1mgO17rf7jBzyXOs3jp8HpzcOZOmY83jLFtyPid2Wbrx
+         DW9g==
+X-Gm-Message-State: AOAM530ELPPmd0kHGYNh8YYd7RSufoOp7SfX/1b4N9X05aJDFDPPhPH8
+        Fr5Ln+IQggKb6Kc0nLUWSyBKTYKGvkR8ugOjP0O0mixv
+X-Google-Smtp-Source: ABdhPJzeo8E+gTbgNDF22geVeVKUcDQp28Jiy2JpzrYBzONdL2M2Rk2onkVeZ03pRLbgSTrKbqZwE2qZr0JHK7bFtLY=
+X-Received: by 2002:a05:6830:601:: with SMTP id w1mr4224213oti.267.1639490054806;
+ Tue, 14 Dec 2021 05:54:14 -0800 (PST)
+MIME-Version: 1.0
+References: <1638864419-17501-1-git-send-email-wellslutw@gmail.com>
+ <1638864419-17501-2-git-send-email-wellslutw@gmail.com> <YbPHxVf1vXZj9GOC@robh.at.kernel.org>
+ <CAFnkrsmXu9ceSQ7rzOAFy_kP6JMa7GvY7HCbT=_wfskH6wXuSw@mail.gmail.com> <CAL_Jsq+5nM2L=p13CSq8FRZX0sMykbXdyBatDR7McUXkv5NXzA@mail.gmail.com>
+In-Reply-To: <CAL_Jsq+5nM2L=p13CSq8FRZX0sMykbXdyBatDR7McUXkv5NXzA@mail.gmail.com>
+From:   =?UTF-8?B?5ZGC6Iqz6aiw?= <wellslutw@gmail.com>
+Date:   Tue, 14 Dec 2021 21:54:19 +0800
+Message-ID: <CAFnkrsmiq9xk56MCd5nVx9yfsajMyqUA6W4e50B7PXpy-y3R9Q@mail.gmail.com>
+Subject: Re: [PATCH net-next v4 1/2] devicetree: bindings: net: Add bindings
+ doc for Sunplus SP7021.
+To:     Rob Herring <robh@kernel.org>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>, devicetree@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Wells Lu <wells.lu@sunplus.com>,
+        Vincent Shih <vincent.shih@sunplus.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the values of tcp_max_slot_table_entries and
-sunrpc.tcp_slot_table_entries are lower than the number of rpc tasks,
-xprt_dynamic_alloc_slot() in xprt_alloc_slot() will return -EAGAIN, and
-then set xprt->state to XPRT_CONGESTED:
-  xprt_retry_reserve
-    ->xprt_do_reserve
-      ->xprt_alloc_slot
-        ->xprt_dynamic_alloc_slot // return -EAGAIN and task->tk_rqstp is NULL
-          ->xprt_add_backlog // set_bit(XPRT_CONGESTED, &xprt->state);
+Hi Rob,
 
-When rpc task is killed, XPRT_CONGESTED bit of xprt->state will not be
-cleaned up and nfs hangs:
-  rpc_exit_task
-    ->xprt_release // if (req == NULL) is true, then XPRT_CONGESTED
-		   // bit not clean
+Thanks a lot for explanation.
+I'll use default mdio node.
 
-Add xprt_wake_up_backlog(xprt) to clean XPRT_CONGESTED bit in
-xprt_release().
-
-Signed-off-by: Bixuan Cui <cuibixuan@linux.alibaba.com>
-Signed-off-by: Xiaohui Pei <xiaoh.peixh@alibaba-inc.com>
----
- net/sunrpc/xprt.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/net/sunrpc/xprt.c b/net/sunrpc/xprt.c
-index a02de2b..70d11ae 100644
---- a/net/sunrpc/xprt.c
-+++ b/net/sunrpc/xprt.c
-@@ -1952,6 +1952,7 @@ void xprt_release(struct rpc_task *task)
- 	if (req == NULL) {
- 		if (task->tk_client) {
- 			xprt = task->tk_xprt;
-+			xprt_wake_up_backlog(xprt);
- 			xprt_release_write(xprt, task);
- 		}
- 		return;
--- 
-1.8.3.1
-
+best regards,
+Wells
