@@ -2,84 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 57BBD473A2F
-	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 02:29:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 959F4473A56
+	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 02:39:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243430AbhLNB3t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Dec 2021 20:29:49 -0500
-Received: from out162-62-57-49.mail.qq.com ([162.62.57.49]:57349 "EHLO
-        out162-62-57-49.mail.qq.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S239113AbhLNB3s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 20:29:48 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-        s=s201512; t=1639445380;
-        bh=L0NU3uCfH6BwHi/HtxNLgfo5q5Ci+ZYIu919U2rXtPU=;
-        h=From:To:Cc:Subject:Date;
-        b=URAQCruKriFrD1YS2fiqIED4juGMnPyMlTboaLlHqnasqKA6IMFDwIzQj96IJBOWW
-         nwpY11yEdno7KpTf55sJx0IaVHr2SUXX/BAxM9aElN3g0SSUB0UiLNgcWwl72GnamN
-         jd6rI7qVRBbodmQ7xFTfo7Q78gB/p2l4Ok+FJFOI=
-Received: from localhost.localdomain ([218.197.153.188])
-        by newxmesmtplogicsvrszb7.qq.com (NewEsmtp) with SMTP
-        id 711AB499; Tue, 14 Dec 2021 09:28:17 +0800
-X-QQ-mid: xmsmtpt1639445297twp53qpk6
-Message-ID: <tencent_3C2E330722056D7891D2C83F29C802734B06@qq.com>
-X-QQ-XMAILINFO: N0opbxSOYLeW1Bgt/ZOlSLkbg6r/9aRaI90p7x8tr/UsyfnUnXE8sAqheuJr9g
-         BVQYKowrZX/y0XJ9gEIEiLWx3hf7dIbJU90D1qrOCEaIcJNPthCcSQs4ne34x+oJWON0/TM+jyk1
-         BTv5r1JUz/Zzn4zS16Bvg292TRb2vT419bgeiU4vVVtemhnBs/oQSpBBhwi2z+sPk9yDMWzF7sGq
-         QoPEFqvU9fSVwONsRfnosaNr43+raXzotqw2Q23vMWe0pfNW5AiDtybxFhDpxzjWb3E3qcmcbqmG
-         7giaVYs8K826TqXTABYshejhBLu1nzWmbsKujzGvLLZzt0sfLzgzVjOOqIv5zbYipmGjLESjDelX
-         XcbcswadYXZNXrw1hIQ3CtBEcoC3rvvx4gMCpb74ncogtdvY1Wn6PKmZue6YYymuYguEVAN8SYsb
-         YY3Oa3z2nRR3PG8JedeX79QRR/lIlibggJ6bPfrXcK4jTB4IJ5ANwFSidY2natXOtXYZe804YvNh
-         EhBHBJ0VnubMJIEzG0rJEn3bVAAm5Cvv7bkH1XcUW7RkPCGP6G/OlamyAFBPN29MDYJN/sldQV3y
-         P3/LwLzwTy/+pCOPuSGA/oFW1LHU7E9l/dWJ4cZW9ZFOvHMHVRK0rTV80N6naLmvBjecf8OA5ZCp
-         AcRbX6Bc/CfIIdKGWDlwRsg8yI4LQbzEvRtuxA8spyIrTF1RwaG/0jNxLWppICDZt6cMuFY7t80T
-         4oblMLQi7LYufizEkWtNSXia50iGBUpqNm/E+77HgKuvkBJd8meyQXgqNHttMsgZQQpzLye3qjv0
-         mXETDTEujkqxkHZ3xa18BPXuLii27xBJwjKiWqquzANBMOUvAcxGQpOU7atDIdFmsPYu/EMp1pVX
-         McV3x5JFq3VZPIbqqk3wciL2FgWejQr2TK8fK2VelxDFT7Y0U9ixPpoKCs2idAVJG2/eYhWe/l
-From:   xkernel.wang@foxmail.com
-To:     rostedt@goodmis.org, mingo@redhat.com
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Xiaoke Wang <xkernel.wang@foxmail.com>
-Subject: [PATCH v2] tracing: check the return value of kstrdup()
-Date:   Tue, 14 Dec 2021 09:28:02 +0800
-X-OQ-MSGID: <20211214012802.1247-1-xkernel.wang@foxmail.com>
-X-Mailer: git-send-email 2.33.0.windows.2
+        id S240091AbhLNBjR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Dec 2021 20:39:17 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:60996 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244786AbhLNBjL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 20:39:11 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 34078B81749
+        for <netdev@vger.kernel.org>; Tue, 14 Dec 2021 01:39:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A23F6C34600;
+        Tue, 14 Dec 2021 01:39:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1639445948;
+        bh=C6Wj/9580N917wjVQ+sNukw1SoqmDfLu08zJxl38cfg=;
+        h=From:To:Cc:Subject:Date:From;
+        b=HfGBngxbvkr8u9uxWOuIjEaZcLbp+BEdcBPaCzyNr440QXEBj9+LdhSSmz5FdH/+Y
+         AOvrZOuzP6mo522NSIJCzs4sT8SwVlGfQFbAY23rNAMF8PGAMoe7XIMg89Tvt+8Hbj
+         QN8GP/3kCezh3dsdcpJlbNjvYV9luXr0k7JLqw5HrIPzobO+7a64KN6Q3DJ8RYT8au
+         8GE3JFWMdP1N3DImnYJn8NIaN7V2ypd9wSAliasxGp3Lo1+mfItPxs/5vJ/VH8DMBk
+         hMBqCqLIv627Y+rQtR/4XhhkoSrzL1UVCf5pgF5f+z2/XTQ+GhW/AmBDimDV7JOAUE
+         NUc+1tR95BO5A==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     eric.dumazet@gmail.com, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next] ethtool: fix null-ptr-deref on ref tracker
+Date:   Mon, 13 Dec 2021 17:39:02 -0800
+Message-Id: <20211214013902.386186-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Xiaoke Wang <xkernel.wang@foxmail.com>
+dev can be a NULL here, not all requests set require_dev.
 
-kstrdup() returns NULL when some internal memory errors happen, it is
-better to check the return value of it so to catch the memory error in
-time.
-
-Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+Fixes: e4b8954074f6 ("netlink: add net device refcount tracker to struct ethnl_req_info")
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
-Changelogs:
-Compare with the last email, this one is using my full name.
-And I am sorry that I did not notice the bugs in trace_boot.c had been
-already patched. So I removed the content about trace_boot.c.
----
- kernel/trace/trace_uprobe.c | 5 +++++
- 1 files changed, 5 insertions(+)
+ net/ethtool/netlink.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/trace/trace_uprobe.c b/kernel/trace/trace_uprobe.c
-index 225ce56..173ff0f 100644
---- a/kernel/trace/trace_uprobe.c
-+++ b/kernel/trace/trace_uprobe.c
-@@ -1618,6 +1618,11 @@ create_local_trace_uprobe(char *name, unsigned long offs,
- 	tu->path = path;
- 	tu->ref_ctr_offset = ref_ctr_offset;
- 	tu->filename = kstrdup(name, GFP_KERNEL);
-+	if (!tu->filename) {
-+		ret = -ENOMEM;
-+		goto error;
-+	}
-+
- 	init_trace_event_call(tu);
+diff --git a/net/ethtool/netlink.c b/net/ethtool/netlink.c
+index 23f32a995099..767fb3f17267 100644
+--- a/net/ethtool/netlink.c
++++ b/net/ethtool/netlink.c
+@@ -141,8 +141,10 @@ int ethnl_parse_header_dev_get(struct ethnl_req_info *req_info,
+ 		return -EINVAL;
+ 	}
  
- 	ptype = is_ret_probe(tu) ? PROBE_PRINT_RETURN : PROBE_PRINT_NORMAL;
+-	req_info->dev = dev;
+-	netdev_tracker_alloc(dev, &req_info->dev_tracker, GFP_KERNEL);
++	if (dev) {
++		req_info->dev = dev;
++		netdev_tracker_alloc(dev, &req_info->dev_tracker, GFP_KERNEL);
++	}
+ 	req_info->flags = flags;
+ 	return 0;
+ }
 -- 
+2.31.1
+
