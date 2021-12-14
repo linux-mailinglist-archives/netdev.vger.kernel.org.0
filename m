@@ -2,184 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F0023474E06
-	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 23:43:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 37D64474E0A
+	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 23:44:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234342AbhLNWnO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Dec 2021 17:43:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34148 "EHLO
+        id S234362AbhLNWoY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Dec 2021 17:44:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234225AbhLNWnN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 17:43:13 -0500
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54B8FC061574
-        for <netdev@vger.kernel.org>; Tue, 14 Dec 2021 14:43:13 -0800 (PST)
-Received: by mail-pl1-x631.google.com with SMTP id n8so14763735plf.4
-        for <netdev@vger.kernel.org>; Tue, 14 Dec 2021 14:43:13 -0800 (PST)
+        with ESMTP id S234333AbhLNWoY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 17:44:24 -0500
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEB93C061574;
+        Tue, 14 Dec 2021 14:44:23 -0800 (PST)
+Received: by mail-ed1-x535.google.com with SMTP id z5so68864999edd.3;
+        Tue, 14 Dec 2021 14:44:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fastly.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=9N389LoTGE6mkt5oIUV8Cfwv96Xp7JiTrhAZSKUqRm8=;
-        b=cML2mpwqvMNN/LTebykUwE2fMZaeIvgC07oc10BPfDvg5nrr3JaWt/wN8DiF4JezUg
-         BZg6J38YgSojWHCycSirp7dPxJBAF0wMS0HVKR5guq1G061AUEQdFzqwQehh5DPY+LwX
-         tia7GwRmwhCsGvlVSJc5T2Pfs/ZmCSPOHi2DE=
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=fTMa6nBW2dVDD4ivSmBS0v0oje7pKvnZd8kC99gARJI=;
+        b=Fxw0CYlRA/rEAedZO5kF5CKN3BQwD02sxl4Lq6bT5RTpCZ6/4/RseRye/IvRIvoBiD
+         wBJzFBl+5/Di52mkNoyyqoLkW9H699aMvOB6+lDInWoZRdy9NOhM3NH26DaeA98QE6Sj
+         3jRzhUl2Lof9s8YY+cuenPKPLosYZX4WIefuat7AE69EliSar7XqMLr/6jfHLXcZKn3s
+         21txN34ccvzthz9yebpENjmLGQAElH6o/pWEXLFxiIzLXJUEcHX3AGjf7PbmP6mfgtCa
+         mPDcZO6+uJ2wrBFBuGuUrDdB39QnypctI0zKjLHM7syjudKfixEustlJuUoomKEOk2Af
+         ciCg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=9N389LoTGE6mkt5oIUV8Cfwv96Xp7JiTrhAZSKUqRm8=;
-        b=rp1TaeNskZoP/Q4M7EYmv+l4ISEzK2vT6tIHB5R1z8J7Y98OcB0Uq/0lZSJPMi1j7J
-         r4ovxLPj5YYPXZHnhddvRjH4sPZp3p6msYnv+LcG0zDsIOAG+DTOds8rxWNfHbVHDIru
-         WmlcVfkGQywQmdxKuG7xVv35mk/SNvh9X237i5VckwxV3LkMZvYJRYA4aKMhOSfXGGzH
-         4ysoJJUJ+5c7lfcVrG5nVjSoYDQ0UVSRZWdyIM2d78w33UJiywyoYh4oreDrZ0WyXiGl
-         O+hyaBqHAracqCQERCrvWTHkq7EoLwpI+GVpbvq828J6cY2RbVtIBBcQQxVBhXnjXIu3
-         mQxA==
-X-Gm-Message-State: AOAM530IiVO7UAbXr0K/Z2DLhwMzcncoZxROPI3HailkuDY00ssFoV93
-        3XiUaFRXmRsc+Y223xVnP23/qw==
-X-Google-Smtp-Source: ABdhPJwu8VvQfDP4t4kH5s1EridEC1TGMkQI5RwoCYPjm8LiNZj2QNJLNnq6k8u2Ywe5rhG3FS+d5g==
-X-Received: by 2002:a17:902:8645:b0:142:8c0d:3f4a with SMTP id y5-20020a170902864500b001428c0d3f4amr8075863plt.3.1639521792792;
-        Tue, 14 Dec 2021 14:43:12 -0800 (PST)
-Received: from localhost.localdomain (c-73-223-190-181.hsd1.ca.comcast.net. [73.223.190.181])
-        by smtp.gmail.com with ESMTPSA id mg12sm3448012pjb.10.2021.12.14.14.43.11
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 14 Dec 2021 14:43:12 -0800 (PST)
-From:   Joe Damato <jdamato@fastly.com>
-To:     intel-wired-lan@lists.osuosl.org
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        Joe Damato <jdamato@fastly.com>
-Subject: [net-queue PATCH 5/5] i40e: Add a stat for tracking busy rx pages.
-Date:   Tue, 14 Dec 2021 14:42:10 -0800
-Message-Id: <1639521730-57226-6-git-send-email-jdamato@fastly.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1639521730-57226-1-git-send-email-jdamato@fastly.com>
-References: <1639521730-57226-1-git-send-email-jdamato@fastly.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=fTMa6nBW2dVDD4ivSmBS0v0oje7pKvnZd8kC99gARJI=;
+        b=C7COfpdQq/mC1mzGMP4drQxXgG+dXWV28FesjkZvbhDM143s1jWqYqUVw9XImpQUlA
+         Vh6HU7je2yMBOrpDyIqQ/UG6G/G+LLu7653j67gnFHloVSfijj6yghr3TbM6aWU+q1v+
+         I/U7tIGbTZcrvNgkPRVfzXvq98VrXsGt7cguMm2a9JDYxtHRtT+BPMZqTLSfGImQqIAv
+         zxpmi2DHc51N/ni2+TjFkZiodQAb1tNZSBgv1nMEUO8xjt/UVLVPLgFTv94SIJISMB1a
+         Ve5ZLxMXGY77hmEPj58mh/9zOpQ1Zn0VoJVRc27rJ3juC9Venp53PivZZqgej25hULx1
+         IndA==
+X-Gm-Message-State: AOAM533IyGTCmFh25wY5Q57FfAaFHzQkYgc2ws1xVzQvHMeTuj4kuj2S
+        7mApitUiVznBIMOt8mt9KMMPAPncFNYcQQ==
+X-Google-Smtp-Source: ABdhPJwr5Z0Od7rOz1+ze0fDToJKfFx3uYByz5AHRNn29+pJx/C0/zie5/AEm5g8oKhApEipLvPmeA==
+X-Received: by 2002:a17:906:478e:: with SMTP id cw14mr1398725ejc.319.1639521862145;
+        Tue, 14 Dec 2021 14:44:22 -0800 (PST)
+Received: from localhost.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
+        by smtp.googlemail.com with ESMTPSA id b19sm39008ejl.152.2021.12.14.14.44.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Dec 2021 14:44:21 -0800 (PST)
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     Ansuel Smith <ansuelsmth@gmail.com>
+Subject: [net-next PATCH RFC v6 00/16] Add support for qca8k mdio rw in Ethernet packet
+Date:   Tue, 14 Dec 2021 23:43:53 +0100
+Message-Id: <20211214224409.5770-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.33.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In some cases, pages cannot be reused by i40e because the page is busy. Add
-a counter for this event.
+Hi, this is ready but require some additional test on a wider userbase.
 
-Busy page count is accessible via ethtool.
+The main reason for this is that we notice some routing problem in the
+switch and it seems assisted learning is needed. Considering mdio is
+quite slow due to the indirect write using this Ethernet alternative way
+seems to be quicker.
 
-Signed-off-by: Joe Damato <jdamato@fastly.com>
----
- drivers/net/ethernet/intel/i40e/i40e.h         |  1 +
- drivers/net/ethernet/intel/i40e/i40e_ethtool.c |  1 +
- drivers/net/ethernet/intel/i40e/i40e_main.c    |  5 ++++-
- drivers/net/ethernet/intel/i40e/i40e_txrx.c    | 12 ++++++++----
- drivers/net/ethernet/intel/i40e/i40e_txrx.h    |  1 +
- 5 files changed, 15 insertions(+), 5 deletions(-)
+The qca8k switch supports a special way to pass mdio read/write request
+using specially crafted Ethernet packet.
+This works by putting some defined data in the Ethernet header where the
+mac source and dst should be placed. The Ethernet type header is set to qca
+header and is set to a mdio read/write type.
+This is used to communicate to the switch that this is a special packet
+and should be parsed differently.
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e.h b/drivers/net/ethernet/intel/i40e/i40e.h
-index 3774e7b..b50530e 100644
---- a/drivers/net/ethernet/intel/i40e/i40e.h
-+++ b/drivers/net/ethernet/intel/i40e/i40e.h
-@@ -856,6 +856,7 @@ struct i40e_vsi {
- 	u64 rx_page_reuse;
- 	u64 rx_page_alloc;
- 	u64 rx_page_waive;
-+	u64 rx_page_busy;
- 
- 	/* These are containers of ring pointers, allocated at run-time */
- 	struct i40e_ring **rx_rings;
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_ethtool.c b/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
-index 224fe6d..64fd869 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
-@@ -298,6 +298,7 @@ static const struct i40e_stats i40e_gstrings_misc_stats[] = {
- 	I40E_VSI_STAT("rx_cache_reuse", rx_page_reuse),
- 	I40E_VSI_STAT("rx_cache_alloc", rx_page_alloc),
- 	I40E_VSI_STAT("rx_cache_waive", rx_page_waive),
-+	I40E_VSI_STAT("rx_cache_busy", rx_page_busy),
- };
- 
- /* These PF_STATs might look like duplicates of some NETDEV_STATs,
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
-index ded7aa9..1d9032c 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -812,7 +812,7 @@ static void i40e_update_vsi_stats(struct i40e_vsi *vsi)
- 	struct i40e_eth_stats *es;     /* device's eth stats */
- 	u64 tx_restart, tx_busy;
- 	struct i40e_ring *p;
--	u64 rx_page, rx_buf, rx_reuse, rx_alloc, rx_waive;
-+	u64 rx_page, rx_buf, rx_reuse, rx_alloc, rx_waive, rx_busy;
- 	u64 bytes, packets;
- 	unsigned int start;
- 	u64 tx_linearize;
-@@ -841,6 +841,7 @@ static void i40e_update_vsi_stats(struct i40e_vsi *vsi)
- 	rx_reuse = 0;
- 	rx_reuse = 0;
- 	rx_waive = 0;
-+	rx_busy = 0;
- 	rcu_read_lock();
- 	for (q = 0; q < vsi->num_queue_pairs; q++) {
- 		/* locate Tx ring */
-@@ -877,6 +878,7 @@ static void i40e_update_vsi_stats(struct i40e_vsi *vsi)
- 		rx_reuse += p->rx_stats.page_reuse_count;
- 		rx_alloc += p->rx_stats.page_alloc_count;
- 		rx_waive += p->rx_stats.page_waive_count;
-+		rx_busy += p->rx_stats.page_busy_count;
- 
- 		if (i40e_enabled_xdp_vsi(vsi)) {
- 			/* locate XDP ring */
-@@ -907,6 +909,7 @@ static void i40e_update_vsi_stats(struct i40e_vsi *vsi)
- 	vsi->rx_page_reuse = rx_reuse;
- 	vsi->rx_page_alloc = rx_alloc;
- 	vsi->rx_page_waive = rx_waive;
-+	vsi->rx_page_busy = rx_busy;
- 
- 	ns->rx_packets = rx_p;
- 	ns->rx_bytes = rx_b;
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx.c b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-index c7ad983..271697b 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-@@ -1990,8 +1990,8 @@ static bool i40e_cleanup_headers(struct i40e_ring *rx_ring, struct sk_buff *skb,
-  * pointing to; otherwise, the DMA mapping needs to be destroyed and
-  * page freed.
-  *
-- * rx_stats will be updated to indicate if the page was waived because it was
-- * not reusable.
-+ * rx_stats will be updated to indicate whether the page was waived
-+ * or busy if it could not be reused.
-  */
- static bool i40e_can_reuse_rx_page(struct i40e_rx_buffer *rx_buffer,
- 				   struct i40e_rx_queue_stats *rx_stats,
-@@ -2008,13 +2008,17 @@ static bool i40e_can_reuse_rx_page(struct i40e_rx_buffer *rx_buffer,
- 
- #if (PAGE_SIZE < 8192)
- 	/* if we are only owner of page we can reuse it */
--	if (unlikely((rx_buffer_pgcnt - pagecnt_bias) > 1))
-+	if (unlikely((rx_buffer_pgcnt - pagecnt_bias) > 1)) {
-+		rx_stats->page_busy_count++;
- 		return false;
-+	}
- #else
- #define I40E_LAST_OFFSET \
- 	(SKB_WITH_OVERHEAD(PAGE_SIZE) - I40E_RXBUFFER_2048)
--	if (rx_buffer->page_offset > I40E_LAST_OFFSET)
-+	if (rx_buffer->page_offset > I40E_LAST_OFFSET) {
-+		rx_stats->page_busy_count++;
- 		return false;
-+	}
- #endif
- 
- 	/* If we have drained the page fragment pool we need to update
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx.h b/drivers/net/ethernet/intel/i40e/i40e_txrx.h
-index e049cf48..fd22e2f 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_txrx.h
-+++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.h
-@@ -301,6 +301,7 @@ struct i40e_rx_queue_stats {
- 	u64 realloc_count;
- 	u64 page_alloc_count;
- 	u64 page_waive_count;
-+	u64 page_busy_count;
- };
- 
- enum i40e_ring_state_t {
+Currently we use Ethernet packet for
+- MIB counter
+- mdio read/write configuration
+- phy read/write for each port
+
+Current implementation of this use completion API to wait for the packet
+to be processed by the tagger and has a timeout that fallback to the
+legacy mdio way and mutex to enforce one transaction at time.
+
+We now have connect()/disconnect() ops for the tagger. They are used to
+allocate priv data in the dsa priv. The header still has to be put in
+global include to make it usable by a dsa driver.
+They are called when the tag is connect to the dst and the data is freed
+using discconect on tagger change.
+
+(if someone wonder why the bind function is put at in the general setup
+function it's because tag is set in the cpu port where the notifier is
+still not available and we require the notifier to sen the
+tag_proto_connect() event.
+
+We now have a tag_proto_connect() for the dsa driver used to put
+additional data in the tagger priv (that is actually the dsa priv).
+This is called using a switch event DSA_NOTIFIER_TAG_PROTO_CONNECT.
+Current use for this is adding handler for the Ethernet packet to keep
+the tagger code as dumb as possible.
+
+The tagger priv implement only the handler for the special packet. All the
+other stuff is placed in the qca8k_priv and the tagger has to access
+it under lock.
+
+We use the new API from Vladimir to track if the master port is
+operational or not. We had to track many thing to reach a usable state.
+Checking if the port is UP is not enough and tracking a NETDEV_CHANGE is
+also not enough since it use also for other task. The correct way was
+both track for interface UP and if a qdisc was assigned to the
+interface. That tells us the port (and the tagger indirectly) is ready
+to accept and process packet.
+
+I tested this with multicpu port and with port6 set as the unique port and
+it's sad.
+It seems they implemented this feature in a bad way and this is only
+supported with cpu port0. When cpu port6 is the unique port, the switch
+doesn't send ack packet. With multicpu port, packet ack are not duplicated
+and only cpu port0 sends them. This is the same for the MIB counter.
+For this reason this feature is enabled only when cpu port0 is enabled and
+operational.
+
+Current concern are:
+- Any hint about the naming? Is calling this mdio Ethernet correct?
+  Should we use a more ""standard""/significant name? (considering also
+  other switch will implement this)
+
+v6:
+- Fix some error in ethtool handler caused by rebase/cleanup
+v5:
+- Adapt to new API fixes
+- Fix a wrong logic for noop
+- Add additional lock for master_state change
+- Limit mdio Ethernet to cpu port0 (switch limitation)
+- Add priority to these special packet
+- Move mdio cache to qca8k_priv
+v4:
+- Remove duplicate patch sent by mistake.
+v3:
+- Include MIB with Ethernet packet.
+- Include phy read/write with Ethernet packet.
+- Reorganize code with new API.
+- Introuce master tracking by Vladimir
+v2:
+- Address all suggestion from Vladimir.
+  Try to generilize this with connect/disconnect function from the
+  tagger and tag_proto_connect for the driver.
+
+Ansuel Smith (12):
+  net: dsa: tag_qca: convert to FIELD macro
+  net: dsa: tag_qca: move define to include linux/dsa
+  net: dsa: tag_qca: enable promisc_on_master flag
+  net: dsa: tag_qca: add define for handling mdio Ethernet packet
+  net: dsa: tag_qca: add define for handling MIB packet
+  net: dsa: tag_qca: add support for handling mdio Ethernet and MIB
+    packet
+  net: dsa: qca8k: add tracking state of master port
+  net: dsa: qca8k: add support for mdio read/write in Ethernet packet
+  net: dsa: qca8k: add support for mib autocast in Ethernet packet
+  net: dsa: qca8k: add support for phy read/write with mdio Ethernet
+  net: dsa: qca8k: move page cache to driver priv
+  net: dsa: qca8k: cache lo and hi for mdio write
+
+Vladimir Oltean (4):
+  net: dsa: provide switch operations for tracking the master state
+  net: dsa: stop updating master MTU from master.c
+  net: dsa: hold rtnl_mutex when calling dsa_master_{setup,teardown}
+  net: dsa: replay master state events in
+    dsa_tree_{setup,teardown}_master
+
+ drivers/net/dsa/qca8k.c     | 600 ++++++++++++++++++++++++++++++++++--
+ drivers/net/dsa/qca8k.h     |  46 ++-
+ include/linux/dsa/tag_qca.h |  79 +++++
+ include/net/dsa.h           |  17 +
+ net/dsa/dsa2.c              |  81 ++++-
+ net/dsa/dsa_priv.h          |  13 +
+ net/dsa/master.c            |  29 +-
+ net/dsa/slave.c             |  32 ++
+ net/dsa/switch.c            |  15 +
+ net/dsa/tag_qca.c           |  81 +++--
+ 10 files changed, 901 insertions(+), 92 deletions(-)
+ create mode 100644 include/linux/dsa/tag_qca.h
+
 -- 
-2.7.4
+2.33.1
 
