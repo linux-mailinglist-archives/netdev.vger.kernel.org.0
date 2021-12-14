@@ -2,46 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 18DD5474B5E
+	by mail.lfdr.de (Postfix) with ESMTP id 97E13474B5F
 	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 20:00:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237274AbhLNTAO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Dec 2021 14:00:14 -0500
-Received: from mga01.intel.com ([192.55.52.88]:50829 "EHLO mga01.intel.com"
+        id S237281AbhLNTAQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Dec 2021 14:00:16 -0500
+Received: from mga01.intel.com ([192.55.52.88]:50835 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237264AbhLNTAL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 Dec 2021 14:00:11 -0500
+        id S237278AbhLNTAN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Dec 2021 14:00:13 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1639508411; x=1671044411;
+  t=1639508413; x=1671044413;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=hnDm9IAI7ZRo6bHrimlXjwM6SweOUhnu5eazKJJ9OHg=;
-  b=Z8Eq6btBiWjERSGyBGomARb/EVsYC1ayrVaHCj4ur1yYU0mkB5q+L+4H
-   LBE9tV5ipO0TYoNQhSqgbHnjqah97/qCFDWhMCKn6BpiBBXVIms8j0K/2
-   gC4pmcB3Ui/7ZVroO950RZ9zW9Q9ymIJjctlL2DI4lsY005UciNqkrTaW
-   P3fy9q7bhQ1KzJ6TEeKEB5dYshNm+yLV3rCjcsdt67iB5LIcDYjamDv7V
-   J3wQPGFeGK6xs2sUmm4EHjjXeTGBwHNkdc3CIBuhEq5cfBeOK0nGiQQuO
-   igPdEV6wPTWKciWtQg5THIxhloLJkdRMzMl6Vh6IdOiobVbQRMKqqSr3s
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10197"; a="263200024"
+  bh=QRXpy+t51VErtCaH0iBVhAb+evG8ef/6gl16l+secxY=;
+  b=bOqg8DecERLS3sx3iTa1l6FM2BwuNX2ZlhblvKXBqMcwf+1z7QMrKzaY
+   E+Ow21Fssn8yfMHpFNaP7qVSDvbORjG5a7FaSSs2NjcpXErM7JR/HHKcQ
+   cLY2nCnqpr+L+xZTQMnIb4rKzrOQRczfFcAcbUnMJuBdIbFnzHTN0OZ45
+   D3Ia7NfeCV/BQQxE7hqlOahuKr+FKTk5fF1X8qkvxKWStwubTtcX3PIXr
+   kQvgAAZTAq2vBvsLaQxapQhyGPwBQdtyhOG22Q4K1L3ioetOMUPYsM+BL
+   lzRX32PrFie1isnbymTQQH0qvlfQT2vUZgexfvNyQ58dDkY1ldBJajDpp
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10197"; a="263200028"
 X-IronPort-AV: E=Sophos;i="5.88,205,1635231600"; 
-   d="scan'208";a="263200024"
+   d="scan'208";a="263200028"
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
   by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Dec 2021 10:30:08 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,205,1635231600"; 
-   d="scan'208";a="583712741"
+   d="scan'208";a="583712748"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by fmsmga004.fm.intel.com with ESMTP; 14 Dec 2021 10:30:07 -0800
+  by fmsmga004.fm.intel.com with ESMTP; 14 Dec 2021 10:30:08 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Brett Creeley <brett.creeley@intel.com>, netdev@vger.kernel.org,
-        anthony.l.nguyen@intel.com,
-        Konrad Jankowski <konrad0.jankowski@intel.com>
-Subject: [PATCH net-next 03/12] ice: Refactor promiscuous functions
-Date:   Tue, 14 Dec 2021 10:28:59 -0800
-Message-Id: <20211214182908.1513343-4-anthony.l.nguyen@intel.com>
+Cc:     Wojciech Drewek <wojciech.drewek@intel.com>,
+        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Tony Brelinski <tony.brelinski@intel.com>
+Subject: [PATCH net-next 04/12] ice: Refactor status flow for DDP load
+Date:   Tue, 14 Dec 2021 10:29:00 -0800
+Message-Id: <20211214182908.1513343-5-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211214182908.1513343-1-anthony.l.nguyen@intel.com>
 References: <20211214182908.1513343-1-anthony.l.nguyen@intel.com>
@@ -51,394 +52,856 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Brett Creeley <brett.creeley@intel.com>
+From: Wojciech Drewek <wojciech.drewek@intel.com>
 
-Some of the promiscuous mode functions take a boolean to indicate
-set/clear, which affects readability. Refactor and provide an
-interface for the promiscuous mode code with explicit set and clear
-promiscuous mode operations.
+Before this change, final state of the DDP pkg load process was
+dependent on many variables such as: ice_status, pkg version,
+ice_aq_err. The last one had be stored in hw->pkg_dwnld_status.
+It was impossible to conclude this state just from ice_status, that's
+why logging process of DDP pkg load in the caller was a little bit
+complicated.
 
-Signed-off-by: Brett Creeley <brett.creeley@intel.com>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+With this patch new status enum is introduced - ice_ddp_state.
+It covers all the possible final states of the loading process.
+What's tricky for ice_ddp_state is that not only
+ICE_DDP_PKG_SUCCESS(=0) means that load was successful. Actually
+three states mean that:
+ - ICE_DDP_PKG_SUCCESS
+ - ICE_DDP_PKG_SAME_VERSION_ALREADY_LOADED
+ - ICE_DDP_PKG_COMPATIBLE_ALREADY_LOADED
+ice_is_init_pkg_successful can tell that information.
+
+One ddp_state should not be used outside of ice_init_pkg which is
+ICE_DDP_PKG_ALREADY_LOADED. It is more generic, it is used in
+ice_dwnld_cfg_bufs to see if pkg is already loaded. At this point
+we can't use one of the specific one (SAME_VERSION, COMPATIBLE,
+NOT_SUPPORTED) because we don't have information on the package
+currently loaded in HW (we are before calling ice_get_pkg_info).
+
+We can get rid of hw->pkg_dwnld_status because we are immediately
+mapping aq errors to ice_ddp_state in ice_dwnld_cfg_bufs.
+
+Other errors like ICE_ERR_NO_MEMORY, ICE_ERR_PARAM are mapped the
+generic ICE_DDP_PKG_ERR.
+
+Suggested-by: Jacob Keller <jacob.e.keller@intel.com>
+Signed-off-by: Wojciech Drewek <wojciech.drewek@intel.com>
+Tested-by: Tony Brelinski <tony.brelinski@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_fltr.c     |  58 ++++++++
- drivers/net/ethernet/intel/ice/ice_fltr.h     |  12 ++
- drivers/net/ethernet/intel/ice/ice_main.c     |  49 +++---
- .../net/ethernet/intel/ice/ice_virtchnl_pf.c  | 139 +++++++-----------
- 4 files changed, 156 insertions(+), 102 deletions(-)
+ .../net/ethernet/intel/ice/ice_flex_pipe.c    | 224 +++++++++++-------
+ .../net/ethernet/intel/ice/ice_flex_pipe.h    |  62 ++++-
+ drivers/net/ethernet/intel/ice/ice_main.c     | 166 ++++++-------
+ drivers/net/ethernet/intel/ice/ice_type.h     |   2 -
+ 4 files changed, 272 insertions(+), 182 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_fltr.c b/drivers/net/ethernet/intel/ice/ice_fltr.c
-index c2e78eaf4ccb..e12c9810830b 100644
---- a/drivers/net/ethernet/intel/ice/ice_fltr.c
-+++ b/drivers/net/ethernet/intel/ice/ice_fltr.c
-@@ -46,6 +46,64 @@ ice_fltr_add_entry_to_list(struct device *dev, struct ice_fltr_info *info,
- 	return 0;
+diff --git a/drivers/net/ethernet/intel/ice/ice_flex_pipe.c b/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
+index 8b8209a76229..f2b1d9761ea2 100644
+--- a/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
++++ b/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
+@@ -993,6 +993,22 @@ ice_update_pkg(struct ice_hw *hw, struct ice_buf *bufs, u32 count)
+ 	return status;
  }
  
-+/**
-+ * ice_fltr_set_vlan_vsi_promisc
-+ * @hw: pointer to the hardware structure
-+ * @vsi: the VSI being configured
-+ * @promisc_mask: mask of promiscuous config bits
-+ *
-+ * Set VSI with all associated VLANs to given promiscuous mode(s)
-+ */
-+enum ice_status
-+ice_fltr_set_vlan_vsi_promisc(struct ice_hw *hw, struct ice_vsi *vsi,
-+			      u8 promisc_mask)
++static enum ice_ddp_state ice_map_aq_err_to_ddp_state(enum ice_aq_err aq_err)
 +{
-+	return ice_set_vlan_vsi_promisc(hw, vsi->idx, promisc_mask, false);
-+}
-+
-+/**
-+ * ice_fltr_clear_vlan_vsi_promisc
-+ * @hw: pointer to the hardware structure
-+ * @vsi: the VSI being configured
-+ * @promisc_mask: mask of promiscuous config bits
-+ *
-+ * Clear VSI with all associated VLANs to given promiscuous mode(s)
-+ */
-+enum ice_status
-+ice_fltr_clear_vlan_vsi_promisc(struct ice_hw *hw, struct ice_vsi *vsi,
-+				u8 promisc_mask)
-+{
-+	return ice_set_vlan_vsi_promisc(hw, vsi->idx, promisc_mask, true);
-+}
-+
-+/**
-+ * ice_fltr_clear_vsi_promisc - clear specified promiscuous mode(s)
-+ * @hw: pointer to the hardware structure
-+ * @vsi_handle: VSI handle to clear mode
-+ * @promisc_mask: mask of promiscuous config bits to clear
-+ * @vid: VLAN ID to clear VLAN promiscuous
-+ */
-+enum ice_status
-+ice_fltr_clear_vsi_promisc(struct ice_hw *hw, u16 vsi_handle, u8 promisc_mask,
-+			   u16 vid)
-+{
-+	return ice_clear_vsi_promisc(hw, vsi_handle, promisc_mask, vid);
-+}
-+
-+/**
-+ * ice_fltr_set_vsi_promisc - set given VSI to given promiscuous mode(s)
-+ * @hw: pointer to the hardware structure
-+ * @vsi_handle: VSI handle to configure
-+ * @promisc_mask: mask of promiscuous config bits
-+ * @vid: VLAN ID to set VLAN promiscuous
-+ */
-+enum ice_status
-+ice_fltr_set_vsi_promisc(struct ice_hw *hw, u16 vsi_handle, u8 promisc_mask,
-+			 u16 vid)
-+{
-+	return ice_set_vsi_promisc(hw, vsi_handle, promisc_mask, vid);
-+}
-+
- /**
-  * ice_fltr_add_mac_list - add list of MAC filters
-  * @vsi: pointer to VSI struct
-diff --git a/drivers/net/ethernet/intel/ice/ice_fltr.h b/drivers/net/ethernet/intel/ice/ice_fltr.h
-index 8eec4febead1..6cf398a84009 100644
---- a/drivers/net/ethernet/intel/ice/ice_fltr.h
-+++ b/drivers/net/ethernet/intel/ice/ice_fltr.h
-@@ -6,6 +6,18 @@
- 
- void ice_fltr_free_list(struct device *dev, struct list_head *h);
- enum ice_status
-+ice_fltr_set_vlan_vsi_promisc(struct ice_hw *hw, struct ice_vsi *vsi,
-+			      u8 promisc_mask);
-+enum ice_status
-+ice_fltr_clear_vlan_vsi_promisc(struct ice_hw *hw, struct ice_vsi *vsi,
-+				u8 promisc_mask);
-+enum ice_status
-+ice_fltr_clear_vsi_promisc(struct ice_hw *hw, u16 vsi_handle, u8 promisc_mask,
-+			   u16 vid);
-+enum ice_status
-+ice_fltr_set_vsi_promisc(struct ice_hw *hw, u16 vsi_handle, u8 promisc_mask,
-+			 u16 vid);
-+enum ice_status
- ice_fltr_add_mac_to_list(struct ice_vsi *vsi, struct list_head *list,
- 			 const u8 *mac, enum ice_sw_fwd_act_type action);
- enum ice_status
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index a3ce54a78859..07a243d2ba91 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -237,32 +237,45 @@ static bool ice_vsi_fltr_changed(struct ice_vsi *vsi)
- }
- 
- /**
-- * ice_cfg_promisc - Enable or disable promiscuous mode for a given PF
-+ * ice_set_promisc - Enable promiscuous mode for a given PF
-  * @vsi: the VSI being configured
-  * @promisc_m: mask of promiscuous config bits
-- * @set_promisc: enable or disable promisc flag request
-  *
-  */
--static int ice_cfg_promisc(struct ice_vsi *vsi, u8 promisc_m, bool set_promisc)
-+static int ice_set_promisc(struct ice_vsi *vsi, u8 promisc_m)
- {
--	struct ice_hw *hw = &vsi->back->hw;
--	enum ice_status status = 0;
-+	enum ice_status status;
- 
- 	if (vsi->type != ICE_VSI_PF)
- 		return 0;
- 
--	if (vsi->num_vlan > 1) {
--		status = ice_set_vlan_vsi_promisc(hw, vsi->idx, promisc_m,
--						  set_promisc);
--	} else {
--		if (set_promisc)
--			status = ice_set_vsi_promisc(hw, vsi->idx, promisc_m,
--						     0);
--		else
--			status = ice_clear_vsi_promisc(hw, vsi->idx, promisc_m,
--						       0);
--	}
-+	if (vsi->num_vlan > 1)
-+		status = ice_fltr_set_vlan_vsi_promisc(&vsi->back->hw, vsi, promisc_m);
-+	else
-+		status = ice_fltr_set_vsi_promisc(&vsi->back->hw, vsi->idx, promisc_m, 0);
-+	if (status)
-+		return -EIO;
-+
-+	return 0;
-+}
- 
-+/**
-+ * ice_clear_promisc - Disable promiscuous mode for a given PF
-+ * @vsi: the VSI being configured
-+ * @promisc_m: mask of promiscuous config bits
-+ *
-+ */
-+static int ice_clear_promisc(struct ice_vsi *vsi, u8 promisc_m)
-+{
-+	enum ice_status status;
-+
-+	if (vsi->type != ICE_VSI_PF)
-+		return 0;
-+
-+	if (vsi->num_vlan > 1)
-+		status = ice_fltr_clear_vlan_vsi_promisc(&vsi->back->hw, vsi, promisc_m);
-+	else
-+		status = ice_fltr_clear_vsi_promisc(&vsi->back->hw, vsi->idx, promisc_m, 0);
- 	if (status)
- 		return -EIO;
- 
-@@ -358,7 +371,7 @@ static int ice_vsi_sync_fltr(struct ice_vsi *vsi)
- 			else
- 				promisc_m = ICE_MCAST_PROMISC_BITS;
- 
--			err = ice_cfg_promisc(vsi, promisc_m, true);
-+			err = ice_set_promisc(vsi, promisc_m);
- 			if (err) {
- 				netdev_err(netdev, "Error setting Multicast promiscuous mode on VSI %i\n",
- 					   vsi->vsi_num);
-@@ -372,7 +385,7 @@ static int ice_vsi_sync_fltr(struct ice_vsi *vsi)
- 			else
- 				promisc_m = ICE_MCAST_PROMISC_BITS;
- 
--			err = ice_cfg_promisc(vsi, promisc_m, false);
-+			err = ice_clear_promisc(vsi, promisc_m);
- 			if (err) {
- 				netdev_err(netdev, "Error clearing Multicast promiscuous mode on VSI %i\n",
- 					   vsi->vsi_num);
-diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-index 596d354f714e..8a1a3364298f 100644
---- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-+++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-@@ -202,37 +202,6 @@ static int ice_check_vf_init(struct ice_pf *pf, struct ice_vf *vf)
- 	return 0;
- }
- 
--/**
-- * ice_err_to_virt_err - translate errors for VF return code
-- * @ice_err: error return code
-- */
--static enum virtchnl_status_code ice_err_to_virt_err(enum ice_status ice_err)
--{
--	switch (ice_err) {
--	case ICE_SUCCESS:
--		return VIRTCHNL_STATUS_SUCCESS;
--	case ICE_ERR_BAD_PTR:
--	case ICE_ERR_INVAL_SIZE:
--	case ICE_ERR_DEVICE_NOT_SUPPORTED:
--	case ICE_ERR_PARAM:
--	case ICE_ERR_CFG:
--		return VIRTCHNL_STATUS_ERR_PARAM;
--	case ICE_ERR_NO_MEMORY:
--		return VIRTCHNL_STATUS_ERR_NO_MEMORY;
--	case ICE_ERR_NOT_READY:
--	case ICE_ERR_RESET_FAILED:
--	case ICE_ERR_FW_API_VER:
--	case ICE_ERR_AQ_ERROR:
--	case ICE_ERR_AQ_TIMEOUT:
--	case ICE_ERR_AQ_FULL:
--	case ICE_ERR_AQ_NO_WORK:
--	case ICE_ERR_AQ_EMPTY:
--		return VIRTCHNL_STATUS_ERR_ADMIN_QUEUE_ERROR;
--	default:
--		return VIRTCHNL_STATUS_ERR_NOT_SUPPORTED;
--	}
--}
--
- /**
-  * ice_vc_vf_broadcast - Broadcast a message to all VFs on PF
-  * @pf: pointer to the PF structure
-@@ -1255,45 +1224,50 @@ static void ice_clear_vf_reset_trigger(struct ice_vf *vf)
- 	ice_flush(hw);
- }
- 
--/**
-- * ice_vf_set_vsi_promisc - set given VF VSI to given promiscuous mode(s)
-- * @vf: pointer to the VF info
-- * @vsi: the VSI being configured
-- * @promisc_m: mask of promiscuous config bits
-- * @rm_promisc: promisc flag request from the VF to remove or add filter
-- *
-- * This function configures VF VSI promiscuous mode, based on the VF requests,
-- * for Unicast, Multicast and VLAN
-- */
--static enum ice_status
--ice_vf_set_vsi_promisc(struct ice_vf *vf, struct ice_vsi *vsi, u8 promisc_m,
--		       bool rm_promisc)
-+static int
-+ice_vf_set_vsi_promisc(struct ice_vf *vf, struct ice_vsi *vsi, u8 promisc_m)
- {
--	struct ice_pf *pf = vf->pf;
--	enum ice_status status = 0;
--	struct ice_hw *hw;
-+	struct ice_hw *hw = &vsi->back->hw;
-+	enum ice_status status;
- 
--	hw = &pf->hw;
--	if (vsi->num_vlan) {
--		status = ice_set_vlan_vsi_promisc(hw, vsi->idx, promisc_m,
--						  rm_promisc);
--	} else if (vf->port_vlan_info) {
--		if (rm_promisc)
--			status = ice_clear_vsi_promisc(hw, vsi->idx, promisc_m,
--						       vf->port_vlan_info);
--		else
--			status = ice_set_vsi_promisc(hw, vsi->idx, promisc_m,
--						     vf->port_vlan_info);
--	} else {
--		if (rm_promisc)
--			status = ice_clear_vsi_promisc(hw, vsi->idx, promisc_m,
--						       0);
--		else
--			status = ice_set_vsi_promisc(hw, vsi->idx, promisc_m,
--						     0);
-+	if (vf->port_vlan_info)
-+		status = ice_fltr_set_vsi_promisc(hw, vsi->idx, promisc_m,
-+						  vf->port_vlan_info & VLAN_VID_MASK);
-+	else if (vsi->num_vlan > 1)
-+		status = ice_fltr_set_vlan_vsi_promisc(hw, vsi, promisc_m);
-+	else
-+		status = ice_fltr_set_vsi_promisc(hw, vsi->idx, promisc_m, 0);
-+
-+	if (status && status != ICE_ERR_ALREADY_EXISTS) {
-+		dev_err(ice_pf_to_dev(vsi->back), "enable Tx/Rx filter promiscuous mode on VF-%u failed, error: %s\n",
-+			vf->vf_id, ice_stat_str(status));
-+		return ice_status_to_errno(status);
++	switch (aq_err) {
++	case ICE_AQ_RC_ENOSEC:
++	case ICE_AQ_RC_EBADSIG:
++		return ICE_DDP_PKG_FILE_SIGNATURE_INVALID;
++	case ICE_AQ_RC_ESVN:
++		return ICE_DDP_PKG_FILE_REVISION_TOO_LOW;
++	case ICE_AQ_RC_EBADMAN:
++	case ICE_AQ_RC_EBADBUF:
++		return ICE_DDP_PKG_LOAD_ERROR;
++	default:
++		return ICE_DDP_PKG_ERR;
 +	}
-+
-+	return 0;
 +}
 +
-+static int
-+ice_vf_clear_vsi_promisc(struct ice_vf *vf, struct ice_vsi *vsi, u8 promisc_m)
+ /**
+  * ice_dwnld_cfg_bufs
+  * @hw: pointer to the hardware structure
+@@ -1003,15 +1019,17 @@ ice_update_pkg(struct ice_hw *hw, struct ice_buf *bufs, u32 count)
+  * to the firmware. Metadata buffers are skipped, and the first metadata buffer
+  * found indicates that the rest of the buffers are all metadata buffers.
+  */
+-static enum ice_status
++static enum ice_ddp_state
+ ice_dwnld_cfg_bufs(struct ice_hw *hw, struct ice_buf *bufs, u32 count)
+ {
++	enum ice_ddp_state state = ICE_DDP_PKG_SUCCESS;
+ 	enum ice_status status;
+ 	struct ice_buf_hdr *bh;
++	enum ice_aq_err err;
+ 	u32 offset, info, i;
+ 
+ 	if (!bufs || !count)
+-		return ICE_ERR_PARAM;
++		return ICE_DDP_PKG_ERR;
+ 
+ 	/* If the first buffer's first section has its metadata bit set
+ 	 * then there are no buffers to be downloaded, and the operation is
+@@ -1019,20 +1037,13 @@ ice_dwnld_cfg_bufs(struct ice_hw *hw, struct ice_buf *bufs, u32 count)
+ 	 */
+ 	bh = (struct ice_buf_hdr *)bufs;
+ 	if (le32_to_cpu(bh->section_entry[0].type) & ICE_METADATA_BUF)
+-		return 0;
+-
+-	/* reset pkg_dwnld_status in case this function is called in the
+-	 * reset/rebuild flow
+-	 */
+-	hw->pkg_dwnld_status = ICE_AQ_RC_OK;
++		return ICE_DDP_PKG_SUCCESS;
+ 
+ 	status = ice_acquire_global_cfg_lock(hw, ICE_RES_WRITE);
+ 	if (status) {
+ 		if (status == ICE_ERR_AQ_NO_WORK)
+-			hw->pkg_dwnld_status = ICE_AQ_RC_EEXIST;
+-		else
+-			hw->pkg_dwnld_status = hw->adminq.sq_last_status;
+-		return status;
++			return ICE_DDP_PKG_ALREADY_LOADED;
++		return ice_map_aq_err_to_ddp_state(hw->adminq.sq_last_status);
+ 	}
+ 
+ 	for (i = 0; i < count; i++) {
+@@ -1058,11 +1069,11 @@ ice_dwnld_cfg_bufs(struct ice_hw *hw, struct ice_buf *bufs, u32 count)
+ 					     &offset, &info, NULL);
+ 
+ 		/* Save AQ status from download package */
+-		hw->pkg_dwnld_status = hw->adminq.sq_last_status;
+ 		if (status) {
+ 			ice_debug(hw, ICE_DBG_PKG, "Pkg download failed: err %d off %d inf %d\n",
+ 				  status, offset, info);
+-
++			err = hw->adminq.sq_last_status;
++			state = ice_map_aq_err_to_ddp_state(err);
+ 			break;
+ 		}
+ 
+@@ -1072,7 +1083,7 @@ ice_dwnld_cfg_bufs(struct ice_hw *hw, struct ice_buf *bufs, u32 count)
+ 
+ 	ice_release_global_cfg_lock(hw);
+ 
+-	return status;
++	return state;
+ }
+ 
+ /**
+@@ -1103,7 +1114,7 @@ ice_aq_get_pkg_info_list(struct ice_hw *hw,
+  *
+  * Handles the download of a complete package.
+  */
+-static enum ice_status
++static enum ice_ddp_state
+ ice_download_pkg(struct ice_hw *hw, struct ice_seg *ice_seg)
+ {
+ 	struct ice_buf_table *ice_buf_tbl;
+@@ -1134,13 +1145,13 @@ ice_download_pkg(struct ice_hw *hw, struct ice_seg *ice_seg)
+  *
+  * Saves off the package details into the HW structure.
+  */
+-static enum ice_status
++static enum ice_ddp_state
+ ice_init_pkg_info(struct ice_hw *hw, struct ice_pkg_hdr *pkg_hdr)
+ {
+ 	struct ice_generic_seg_hdr *seg_hdr;
+ 
+ 	if (!pkg_hdr)
+-		return ICE_ERR_PARAM;
++		return ICE_DDP_PKG_ERR;
+ 
+ 	seg_hdr = ice_find_seg_in_pkg(hw, SEGMENT_TYPE_ICE, pkg_hdr);
+ 	if (seg_hdr) {
+@@ -1154,7 +1165,7 @@ ice_init_pkg_info(struct ice_hw *hw, struct ice_pkg_hdr *pkg_hdr)
+ 					    ICE_SID_METADATA);
+ 		if (!meta) {
+ 			ice_debug(hw, ICE_DBG_INIT, "Did not find ice metadata section in package\n");
+-			return ICE_ERR_CFG;
++			return ICE_DDP_PKG_INVALID_FILE;
+ 		}
+ 
+ 		hw->pkg_ver = meta->ver;
+@@ -1176,10 +1187,10 @@ ice_init_pkg_info(struct ice_hw *hw, struct ice_pkg_hdr *pkg_hdr)
+ 			  seg_hdr->seg_id);
+ 	} else {
+ 		ice_debug(hw, ICE_DBG_INIT, "Did not find ice segment in driver package\n");
+-		return ICE_ERR_CFG;
++		return ICE_DDP_PKG_INVALID_FILE;
+ 	}
+ 
+-	return 0;
++	return ICE_DDP_PKG_SUCCESS;
+ }
+ 
+ /**
+@@ -1188,21 +1199,22 @@ ice_init_pkg_info(struct ice_hw *hw, struct ice_pkg_hdr *pkg_hdr)
+  *
+  * Store details of the package currently loaded in HW into the HW structure.
+  */
+-static enum ice_status ice_get_pkg_info(struct ice_hw *hw)
++static enum ice_ddp_state ice_get_pkg_info(struct ice_hw *hw)
+ {
++	enum ice_ddp_state state = ICE_DDP_PKG_SUCCESS;
+ 	struct ice_aqc_get_pkg_info_resp *pkg_info;
+-	enum ice_status status;
+ 	u16 size;
+ 	u32 i;
+ 
+ 	size = struct_size(pkg_info, pkg_info, ICE_PKG_CNT);
+ 	pkg_info = kzalloc(size, GFP_KERNEL);
+ 	if (!pkg_info)
+-		return ICE_ERR_NO_MEMORY;
++		return ICE_DDP_PKG_ERR;
+ 
+-	status = ice_aq_get_pkg_info_list(hw, pkg_info, size, NULL);
+-	if (status)
++	if (ice_aq_get_pkg_info_list(hw, pkg_info, size, NULL)) {
++		state = ICE_DDP_PKG_ERR;
+ 		goto init_pkg_free_alloc;
++	}
+ 
+ 	for (i = 0; i < le32_to_cpu(pkg_info->count); i++) {
+ #define ICE_PKG_FLAG_COUNT	4
+@@ -1237,7 +1249,7 @@ static enum ice_status ice_get_pkg_info(struct ice_hw *hw)
+ init_pkg_free_alloc:
+ 	kfree(pkg_info);
+ 
+-	return status;
++	return state;
+ }
+ 
+ /**
+@@ -1248,28 +1260,28 @@ static enum ice_status ice_get_pkg_info(struct ice_hw *hw)
+  * Verifies various attributes of the package file, including length, format
+  * version, and the requirement of at least one segment.
+  */
+-static enum ice_status ice_verify_pkg(struct ice_pkg_hdr *pkg, u32 len)
++static enum ice_ddp_state ice_verify_pkg(struct ice_pkg_hdr *pkg, u32 len)
+ {
+ 	u32 seg_count;
+ 	u32 i;
+ 
+ 	if (len < struct_size(pkg, seg_offset, 1))
+-		return ICE_ERR_BUF_TOO_SHORT;
++		return ICE_DDP_PKG_INVALID_FILE;
+ 
+ 	if (pkg->pkg_format_ver.major != ICE_PKG_FMT_VER_MAJ ||
+ 	    pkg->pkg_format_ver.minor != ICE_PKG_FMT_VER_MNR ||
+ 	    pkg->pkg_format_ver.update != ICE_PKG_FMT_VER_UPD ||
+ 	    pkg->pkg_format_ver.draft != ICE_PKG_FMT_VER_DFT)
+-		return ICE_ERR_CFG;
++		return ICE_DDP_PKG_INVALID_FILE;
+ 
+ 	/* pkg must have at least one segment */
+ 	seg_count = le32_to_cpu(pkg->seg_count);
+ 	if (seg_count < 1)
+-		return ICE_ERR_CFG;
++		return ICE_DDP_PKG_INVALID_FILE;
+ 
+ 	/* make sure segment array fits in package length */
+ 	if (len < struct_size(pkg, seg_offset, seg_count))
+-		return ICE_ERR_BUF_TOO_SHORT;
++		return ICE_DDP_PKG_INVALID_FILE;
+ 
+ 	/* all segments must fit within length */
+ 	for (i = 0; i < seg_count; i++) {
+@@ -1278,16 +1290,16 @@ static enum ice_status ice_verify_pkg(struct ice_pkg_hdr *pkg, u32 len)
+ 
+ 		/* segment header must fit */
+ 		if (len < off + sizeof(*seg))
+-			return ICE_ERR_BUF_TOO_SHORT;
++			return ICE_DDP_PKG_INVALID_FILE;
+ 
+ 		seg = (struct ice_generic_seg_hdr *)((u8 *)pkg + off);
+ 
+ 		/* segment body must fit */
+ 		if (len < off + le32_to_cpu(seg->seg_size))
+-			return ICE_ERR_BUF_TOO_SHORT;
++			return ICE_DDP_PKG_INVALID_FILE;
+ 	}
+ 
+-	return 0;
++	return ICE_DDP_PKG_SUCCESS;
+ }
+ 
+ /**
+@@ -1331,13 +1343,18 @@ static void ice_init_pkg_regs(struct ice_hw *hw)
+  * version must match our ICE_PKG_SUPP_VER_MAJ and ICE_PKG_SUPP_VER_MNR
+  * definitions.
+  */
+-static enum ice_status ice_chk_pkg_version(struct ice_pkg_ver *pkg_ver)
++static enum ice_ddp_state ice_chk_pkg_version(struct ice_pkg_ver *pkg_ver)
+ {
+-	if (pkg_ver->major != ICE_PKG_SUPP_VER_MAJ ||
+-	    pkg_ver->minor != ICE_PKG_SUPP_VER_MNR)
+-		return ICE_ERR_NOT_SUPPORTED;
++	if (pkg_ver->major > ICE_PKG_SUPP_VER_MAJ ||
++	    (pkg_ver->major == ICE_PKG_SUPP_VER_MAJ &&
++	     pkg_ver->minor > ICE_PKG_SUPP_VER_MNR))
++		return ICE_DDP_PKG_FILE_VERSION_TOO_HIGH;
++	else if (pkg_ver->major < ICE_PKG_SUPP_VER_MAJ ||
++		 (pkg_ver->major == ICE_PKG_SUPP_VER_MAJ &&
++		  pkg_ver->minor < ICE_PKG_SUPP_VER_MNR))
++		return ICE_DDP_PKG_FILE_VERSION_TOO_LOW;
+ 
+-	return 0;
++	return ICE_DDP_PKG_SUCCESS;
+ }
+ 
+ /**
+@@ -1348,20 +1365,20 @@ static enum ice_status ice_chk_pkg_version(struct ice_pkg_ver *pkg_ver)
+  *
+  * This function checks the package version compatibility with driver and NVM
+  */
+-static enum ice_status
++static enum ice_ddp_state
+ ice_chk_pkg_compat(struct ice_hw *hw, struct ice_pkg_hdr *ospkg,
+ 		   struct ice_seg **seg)
+ {
+ 	struct ice_aqc_get_pkg_info_resp *pkg;
+-	enum ice_status status;
++	enum ice_ddp_state state;
+ 	u16 size;
+ 	u32 i;
+ 
+ 	/* Check package version compatibility */
+-	status = ice_chk_pkg_version(&hw->pkg_ver);
+-	if (status) {
++	state = ice_chk_pkg_version(&hw->pkg_ver);
++	if (state) {
+ 		ice_debug(hw, ICE_DBG_INIT, "Package version check failed.\n");
+-		return status;
++		return state;
+ 	}
+ 
+ 	/* find ICE segment in given package */
+@@ -1369,18 +1386,19 @@ ice_chk_pkg_compat(struct ice_hw *hw, struct ice_pkg_hdr *ospkg,
+ 						     ospkg);
+ 	if (!*seg) {
+ 		ice_debug(hw, ICE_DBG_INIT, "no ice segment in package.\n");
+-		return ICE_ERR_CFG;
++		return ICE_DDP_PKG_INVALID_FILE;
+ 	}
+ 
+ 	/* Check if FW is compatible with the OS package */
+ 	size = struct_size(pkg, pkg_info, ICE_PKG_CNT);
+ 	pkg = kzalloc(size, GFP_KERNEL);
+ 	if (!pkg)
+-		return ICE_ERR_NO_MEMORY;
++		return ICE_DDP_PKG_ERR;
+ 
+-	status = ice_aq_get_pkg_info_list(hw, pkg, size, NULL);
+-	if (status)
++	if (ice_aq_get_pkg_info_list(hw, pkg, size, NULL)) {
++		state = ICE_DDP_PKG_LOAD_ERROR;
+ 		goto fw_ddp_compat_free_alloc;
++	}
+ 
+ 	for (i = 0; i < le32_to_cpu(pkg->count); i++) {
+ 		/* loop till we find the NVM package */
+@@ -1390,7 +1408,7 @@ ice_chk_pkg_compat(struct ice_hw *hw, struct ice_pkg_hdr *ospkg,
+ 			pkg->pkg_info[i].ver.major ||
+ 		    (*seg)->hdr.seg_format_ver.minor >
+ 			pkg->pkg_info[i].ver.minor) {
+-			status = ICE_ERR_FW_DDP_MISMATCH;
++			state = ICE_DDP_PKG_FW_MISMATCH;
+ 			ice_debug(hw, ICE_DBG_INIT, "OS package is not compatible with NVM.\n");
+ 		}
+ 		/* done processing NVM package so break */
+@@ -1398,7 +1416,7 @@ ice_chk_pkg_compat(struct ice_hw *hw, struct ice_pkg_hdr *ospkg,
+ 	}
+ fw_ddp_compat_free_alloc:
+ 	kfree(pkg);
+-	return status;
++	return state;
+ }
+ 
+ /**
+@@ -1481,6 +1499,34 @@ static enum ice_status ice_get_prof_index_max(struct ice_hw *hw)
+ 	return 0;
+ }
+ 
++/**
++ * ice_get_ddp_pkg_state - get DDP pkg state after download
++ * @hw: pointer to the HW struct
++ * @already_loaded: indicates if pkg was already loaded onto the device
++ */
++static enum ice_ddp_state
++ice_get_ddp_pkg_state(struct ice_hw *hw, bool already_loaded)
 +{
-+	struct ice_hw *hw = &vsi->back->hw;
-+	enum ice_status status;
++	if (hw->pkg_ver.major == hw->active_pkg_ver.major &&
++	    hw->pkg_ver.minor == hw->active_pkg_ver.minor &&
++	    hw->pkg_ver.update == hw->active_pkg_ver.update &&
++	    hw->pkg_ver.draft == hw->active_pkg_ver.draft &&
++	    !memcmp(hw->pkg_name, hw->active_pkg_name, sizeof(hw->pkg_name))) {
++		if (already_loaded)
++			return ICE_DDP_PKG_SAME_VERSION_ALREADY_LOADED;
++		else
++			return ICE_DDP_PKG_SUCCESS;
++	} else if (hw->active_pkg_ver.major != ICE_PKG_SUPP_VER_MAJ ||
++		   hw->active_pkg_ver.minor != ICE_PKG_SUPP_VER_MNR) {
++		return ICE_DDP_PKG_ALREADY_LOADED_NOT_SUPPORTED;
++	} else if (hw->active_pkg_ver.major == ICE_PKG_SUPP_VER_MAJ &&
++		   hw->active_pkg_ver.minor == ICE_PKG_SUPP_VER_MNR) {
++		return ICE_DDP_PKG_COMPATIBLE_ALREADY_LOADED;
++	} else {
++		return ICE_DDP_PKG_ERR;
++	}
++}
 +
-+	if (vf->port_vlan_info)
-+		status = ice_fltr_clear_vsi_promisc(hw, vsi->idx, promisc_m,
-+						    vf->port_vlan_info & VLAN_VID_MASK);
-+	else if (vsi->num_vlan > 1)
-+		status = ice_fltr_clear_vlan_vsi_promisc(hw, vsi, promisc_m);
-+	else
-+		status = ice_fltr_clear_vsi_promisc(hw, vsi->idx, promisc_m, 0);
-+
-+	if (status && status != ICE_ERR_DOES_NOT_EXIST) {
-+		dev_err(ice_pf_to_dev(vsi->back), "disable Tx/Rx filter promiscuous mode on VF-%u failed, error: %s\n",
-+			vf->vf_id, ice_stat_str(status));
-+		return ice_status_to_errno(status);
+ /**
+  * ice_init_pkg - initialize/download package
+  * @hw: pointer to the hardware structure
+@@ -1506,53 +1552,54 @@ static enum ice_status ice_get_prof_index_max(struct ice_hw *hw)
+  * ice_copy_and_init_pkg() instead of directly calling ice_init_pkg() in this
+  * case.
+  */
+-enum ice_status ice_init_pkg(struct ice_hw *hw, u8 *buf, u32 len)
++enum ice_ddp_state ice_init_pkg(struct ice_hw *hw, u8 *buf, u32 len)
+ {
++	bool already_loaded = false;
++	enum ice_ddp_state state;
+ 	struct ice_pkg_hdr *pkg;
+-	enum ice_status status;
+ 	struct ice_seg *seg;
+ 
+ 	if (!buf || !len)
+-		return ICE_ERR_PARAM;
++		return ICE_DDP_PKG_ERR;
+ 
+ 	pkg = (struct ice_pkg_hdr *)buf;
+-	status = ice_verify_pkg(pkg, len);
+-	if (status) {
++	state = ice_verify_pkg(pkg, len);
++	if (state) {
+ 		ice_debug(hw, ICE_DBG_INIT, "failed to verify pkg (err: %d)\n",
+-			  status);
+-		return status;
++			  state);
++		return state;
+ 	}
+ 
+ 	/* initialize package info */
+-	status = ice_init_pkg_info(hw, pkg);
+-	if (status)
+-		return status;
++	state = ice_init_pkg_info(hw, pkg);
++	if (state)
++		return state;
+ 
+ 	/* before downloading the package, check package version for
+ 	 * compatibility with driver
+ 	 */
+-	status = ice_chk_pkg_compat(hw, pkg, &seg);
+-	if (status)
+-		return status;
++	state = ice_chk_pkg_compat(hw, pkg, &seg);
++	if (state)
++		return state;
+ 
+ 	/* initialize package hints and then download package */
+ 	ice_init_pkg_hints(hw, seg);
+-	status = ice_download_pkg(hw, seg);
+-	if (status == ICE_ERR_AQ_NO_WORK) {
++	state = ice_download_pkg(hw, seg);
++	if (state == ICE_DDP_PKG_ALREADY_LOADED) {
+ 		ice_debug(hw, ICE_DBG_INIT, "package previously loaded - no work.\n");
+-		status = 0;
++		already_loaded = true;
+ 	}
+ 
+ 	/* Get information on the package currently loaded in HW, then make sure
+ 	 * the driver is compatible with this version.
+ 	 */
+-	if (!status) {
+-		status = ice_get_pkg_info(hw);
+-		if (!status)
+-			status = ice_chk_pkg_version(&hw->active_pkg_ver);
++	if (!state || state == ICE_DDP_PKG_ALREADY_LOADED) {
++		state = ice_get_pkg_info(hw);
++		if (!state)
++			state = ice_get_ddp_pkg_state(hw, already_loaded);
+ 	}
+ 
+-	if (!status) {
++	if (ice_is_init_pkg_successful(state)) {
+ 		hw->seg = seg;
+ 		/* on successful package download update other required
+ 		 * registers to support the package and fill HW tables
+@@ -1564,10 +1611,10 @@ enum ice_status ice_init_pkg(struct ice_hw *hw, u8 *buf, u32 len)
+ 		ice_get_prof_index_max(hw);
+ 	} else {
+ 		ice_debug(hw, ICE_DBG_INIT, "package load failed, %d\n",
+-			  status);
++			  state);
  	}
  
 -	return status;
-+	return 0;
++	return state;
  }
  
- static void ice_vf_clear_counters(struct ice_vf *vf)
-@@ -1657,7 +1631,7 @@ bool ice_reset_vf(struct ice_vf *vf, bool is_vflr)
- 		else
- 			promisc_m = ICE_UCAST_PROMISC_BITS;
- 
--		if (ice_vf_set_vsi_promisc(vf, vsi, promisc_m, true))
-+		if (ice_vf_clear_vsi_promisc(vf, vsi, promisc_m))
- 			dev_err(dev, "disabling promiscuous mode failed\n");
- 	}
- 
-@@ -3026,10 +3000,10 @@ bool ice_is_any_vf_in_promisc(struct ice_pf *pf)
- static int ice_vc_cfg_promiscuous_mode_msg(struct ice_vf *vf, u8 *msg)
+ /**
+@@ -1593,18 +1640,19 @@ enum ice_status ice_init_pkg(struct ice_hw *hw, u8 *buf, u32 len)
+  * package buffer, as the new copy will be managed by this function and
+  * related routines.
+  */
+-enum ice_status ice_copy_and_init_pkg(struct ice_hw *hw, const u8 *buf, u32 len)
++enum ice_ddp_state
++ice_copy_and_init_pkg(struct ice_hw *hw, const u8 *buf, u32 len)
  {
- 	enum virtchnl_status_code v_ret = VIRTCHNL_STATUS_SUCCESS;
--	enum ice_status mcast_status = 0, ucast_status = 0;
- 	bool rm_promisc, alluni = false, allmulti = false;
- 	struct virtchnl_promisc_info *info =
- 	    (struct virtchnl_promisc_info *)msg;
-+	int mcast_err = 0, ucast_err = 0;
- 	struct ice_pf *pf = vf->pf;
- 	struct ice_vsi *vsi;
- 	struct device *dev;
-@@ -3111,24 +3085,21 @@ static int ice_vc_cfg_promiscuous_mode_msg(struct ice_vf *vf, u8 *msg)
- 			ucast_m = ICE_UCAST_PROMISC_BITS;
- 		}
+-	enum ice_status status;
++	enum ice_ddp_state state;
+ 	u8 *buf_copy;
  
--		ucast_status = ice_vf_set_vsi_promisc(vf, vsi, ucast_m,
--						      !alluni);
--		if (ucast_status) {
--			dev_err(dev, "%sable Tx/Rx filter promiscuous mode on VF-%d failed\n",
--				alluni ? "en" : "dis", vf->vf_id);
--			v_ret = ice_err_to_virt_err(ucast_status);
--		}
-+		if (alluni)
-+			ucast_err = ice_vf_set_vsi_promisc(vf, vsi, ucast_m);
-+		else
-+			ucast_err = ice_vf_clear_vsi_promisc(vf, vsi, ucast_m);
+ 	if (!buf || !len)
+-		return ICE_ERR_PARAM;
++		return ICE_DDP_PKG_ERR;
  
--		mcast_status = ice_vf_set_vsi_promisc(vf, vsi, mcast_m,
--						      !allmulti);
--		if (mcast_status) {
--			dev_err(dev, "%sable Tx/Rx filter promiscuous mode on VF-%d failed\n",
--				allmulti ? "en" : "dis", vf->vf_id);
--			v_ret = ice_err_to_virt_err(mcast_status);
--		}
-+		if (allmulti)
-+			mcast_err = ice_vf_set_vsi_promisc(vf, vsi, mcast_m);
-+		else
-+			mcast_err = ice_vf_clear_vsi_promisc(vf, vsi, mcast_m);
+ 	buf_copy = devm_kmemdup(ice_hw_to_dev(hw), buf, len, GFP_KERNEL);
+ 
+-	status = ice_init_pkg(hw, buf_copy, len);
+-	if (status) {
++	state = ice_init_pkg(hw, buf_copy, len);
++	if (!ice_is_init_pkg_successful(state)) {
+ 		/* Free the copy, since we failed to initialize the package */
+ 		devm_kfree(ice_hw_to_dev(hw), buf_copy);
+ 	} else {
+@@ -1613,7 +1661,23 @@ enum ice_status ice_copy_and_init_pkg(struct ice_hw *hw, const u8 *buf, u32 len)
+ 		hw->pkg_size = len;
+ 	}
+ 
+-	return status;
++	return state;
++}
 +
-+		if (ucast_err || mcast_err)
-+			v_ret = VIRTCHNL_STATUS_ERR_PARAM;
++/**
++ * ice_is_init_pkg_successful - check if DDP init was successful
++ * @state: state of the DDP pkg after download
++ */
++bool ice_is_init_pkg_successful(enum ice_ddp_state state)
++{
++	switch (state) {
++	case ICE_DDP_PKG_SUCCESS:
++	case ICE_DDP_PKG_SAME_VERSION_ALREADY_LOADED:
++	case ICE_DDP_PKG_COMPATIBLE_ALREADY_LOADED:
++		return true;
++	default:
++		return false;
++	}
+ }
+ 
+ /**
+diff --git a/drivers/net/ethernet/intel/ice/ice_flex_pipe.h b/drivers/net/ethernet/intel/ice/ice_flex_pipe.h
+index 863a3f546b82..7f7226a9fb6b 100644
+--- a/drivers/net/ethernet/intel/ice/ice_flex_pipe.h
++++ b/drivers/net/ethernet/intel/ice/ice_flex_pipe.h
+@@ -18,6 +18,63 @@
+ 
+ #define ICE_PKG_CNT 4
+ 
++enum ice_ddp_state {
++	/* Indicates that this call to ice_init_pkg
++	 * successfully loaded the requested DDP package
++	 */
++	ICE_DDP_PKG_SUCCESS			= 0,
++
++	/* Generic error for already loaded errors, it is mapped later to
++	 * the more specific one (one of the next 3)
++	 */
++	ICE_DDP_PKG_ALREADY_LOADED			= -1,
++
++	/* Indicates that a DDP package of the same version has already been
++	 * loaded onto the device by a previous call or by another PF
++	 */
++	ICE_DDP_PKG_SAME_VERSION_ALREADY_LOADED		= -2,
++
++	/* The device has a DDP package that is not supported by the driver */
++	ICE_DDP_PKG_ALREADY_LOADED_NOT_SUPPORTED	= -3,
++
++	/* The device has a compatible package
++	 * (but different from the request) already loaded
++	 */
++	ICE_DDP_PKG_COMPATIBLE_ALREADY_LOADED		= -4,
++
++	/* The firmware loaded on the device is not compatible with
++	 * the DDP package loaded
++	 */
++	ICE_DDP_PKG_FW_MISMATCH				= -5,
++
++	/* The DDP package file is invalid */
++	ICE_DDP_PKG_INVALID_FILE			= -6,
++
++	/* The version of the DDP package provided is higher than
++	 * the driver supports
++	 */
++	ICE_DDP_PKG_FILE_VERSION_TOO_HIGH		= -7,
++
++	/* The version of the DDP package provided is lower than the
++	 * driver supports
++	 */
++	ICE_DDP_PKG_FILE_VERSION_TOO_LOW		= -8,
++
++	/* The signature of the DDP package file provided is invalid */
++	ICE_DDP_PKG_FILE_SIGNATURE_INVALID		= -9,
++
++	/* The DDP package file security revision is too low and not
++	 * supported by firmware
++	 */
++	ICE_DDP_PKG_FILE_REVISION_TOO_LOW		= -10,
++
++	/* An error occurred in firmware while loading the DDP package */
++	ICE_DDP_PKG_LOAD_ERROR				= -11,
++
++	/* Other errors */
++	ICE_DDP_PKG_ERR					= -12
++};
++
+ enum ice_status
+ ice_acquire_change_lock(struct ice_hw *hw, enum ice_aq_res_access_type access);
+ void ice_release_change_lock(struct ice_hw *hw);
+@@ -52,9 +109,10 @@ enum ice_status
+ ice_add_prof_id_flow(struct ice_hw *hw, enum ice_block blk, u16 vsi, u64 hdl);
+ enum ice_status
+ ice_rem_prof_id_flow(struct ice_hw *hw, enum ice_block blk, u16 vsi, u64 hdl);
+-enum ice_status ice_init_pkg(struct ice_hw *hw, u8 *buff, u32 len);
+-enum ice_status
++enum ice_ddp_state ice_init_pkg(struct ice_hw *hw, u8 *buff, u32 len);
++enum ice_ddp_state
+ ice_copy_and_init_pkg(struct ice_hw *hw, const u8 *buf, u32 len);
++bool ice_is_init_pkg_successful(enum ice_ddp_state state);
+ enum ice_status ice_init_hw_tbls(struct ice_hw *hw);
+ void ice_free_seg(struct ice_hw *hw);
+ void ice_fill_blk_tbls(struct ice_hw *hw);
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index 07a243d2ba91..a001d3fec3db 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -4082,109 +4082,80 @@ static void ice_set_safe_mode_vlan_cfg(struct ice_pf *pf)
+ /**
+  * ice_log_pkg_init - log result of DDP package load
+  * @hw: pointer to hardware info
+- * @status: status of package load
++ * @state: state of package load
+  */
+-static void
+-ice_log_pkg_init(struct ice_hw *hw, enum ice_status *status)
++static void ice_log_pkg_init(struct ice_hw *hw, enum ice_ddp_state state)
+ {
+-	struct ice_pf *pf = (struct ice_pf *)hw->back;
+-	struct device *dev = ice_pf_to_dev(pf);
++	struct ice_pf *pf = hw->back;
++	struct device *dev;
+ 
+-	switch (*status) {
+-	case ICE_SUCCESS:
+-		/* The package download AdminQ command returned success because
+-		 * this download succeeded or ICE_ERR_AQ_NO_WORK since there is
+-		 * already a package loaded on the device.
+-		 */
+-		if (hw->pkg_ver.major == hw->active_pkg_ver.major &&
+-		    hw->pkg_ver.minor == hw->active_pkg_ver.minor &&
+-		    hw->pkg_ver.update == hw->active_pkg_ver.update &&
+-		    hw->pkg_ver.draft == hw->active_pkg_ver.draft &&
+-		    !memcmp(hw->pkg_name, hw->active_pkg_name,
+-			    sizeof(hw->pkg_name))) {
+-			if (hw->pkg_dwnld_status == ICE_AQ_RC_EEXIST)
+-				dev_info(dev, "DDP package already present on device: %s version %d.%d.%d.%d\n",
+-					 hw->active_pkg_name,
+-					 hw->active_pkg_ver.major,
+-					 hw->active_pkg_ver.minor,
+-					 hw->active_pkg_ver.update,
+-					 hw->active_pkg_ver.draft);
+-			else
+-				dev_info(dev, "The DDP package was successfully loaded: %s version %d.%d.%d.%d\n",
+-					 hw->active_pkg_name,
+-					 hw->active_pkg_ver.major,
+-					 hw->active_pkg_ver.minor,
+-					 hw->active_pkg_ver.update,
+-					 hw->active_pkg_ver.draft);
+-		} else if (hw->active_pkg_ver.major != ICE_PKG_SUPP_VER_MAJ ||
+-			   hw->active_pkg_ver.minor != ICE_PKG_SUPP_VER_MNR) {
+-			dev_err(dev, "The device has a DDP package that is not supported by the driver.  The device has package '%s' version %d.%d.x.x.  The driver requires version %d.%d.x.x.  Entering Safe Mode.\n",
+-				hw->active_pkg_name,
+-				hw->active_pkg_ver.major,
+-				hw->active_pkg_ver.minor,
+-				ICE_PKG_SUPP_VER_MAJ, ICE_PKG_SUPP_VER_MNR);
+-			*status = ICE_ERR_NOT_SUPPORTED;
+-		} else if (hw->active_pkg_ver.major == ICE_PKG_SUPP_VER_MAJ &&
+-			   hw->active_pkg_ver.minor == ICE_PKG_SUPP_VER_MNR) {
+-			dev_info(dev, "The driver could not load the DDP package file because a compatible DDP package is already present on the device.  The device has package '%s' version %d.%d.%d.%d.  The package file found by the driver: '%s' version %d.%d.%d.%d.\n",
+-				 hw->active_pkg_name,
+-				 hw->active_pkg_ver.major,
+-				 hw->active_pkg_ver.minor,
+-				 hw->active_pkg_ver.update,
+-				 hw->active_pkg_ver.draft,
+-				 hw->pkg_name,
+-				 hw->pkg_ver.major,
+-				 hw->pkg_ver.minor,
+-				 hw->pkg_ver.update,
+-				 hw->pkg_ver.draft);
+-		} else {
+-			dev_err(dev, "An unknown error occurred when loading the DDP package, please reboot the system.  If the problem persists, update the NVM.  Entering Safe Mode.\n");
+-			*status = ICE_ERR_NOT_SUPPORTED;
+-		}
++	dev = ice_pf_to_dev(pf);
++
++	switch (state) {
++	case ICE_DDP_PKG_SUCCESS:
++		dev_info(dev, "The DDP package was successfully loaded: %s version %d.%d.%d.%d\n",
++			 hw->active_pkg_name,
++			 hw->active_pkg_ver.major,
++			 hw->active_pkg_ver.minor,
++			 hw->active_pkg_ver.update,
++			 hw->active_pkg_ver.draft);
+ 		break;
+-	case ICE_ERR_FW_DDP_MISMATCH:
++	case ICE_DDP_PKG_SAME_VERSION_ALREADY_LOADED:
++		dev_info(dev, "DDP package already present on device: %s version %d.%d.%d.%d\n",
++			 hw->active_pkg_name,
++			 hw->active_pkg_ver.major,
++			 hw->active_pkg_ver.minor,
++			 hw->active_pkg_ver.update,
++			 hw->active_pkg_ver.draft);
++		break;
++	case ICE_DDP_PKG_ALREADY_LOADED_NOT_SUPPORTED:
++		dev_err(dev, "The device has a DDP package that is not supported by the driver.  The device has package '%s' version %d.%d.x.x.  The driver requires version %d.%d.x.x.  Entering Safe Mode.\n",
++			hw->active_pkg_name,
++			hw->active_pkg_ver.major,
++			hw->active_pkg_ver.minor,
++			ICE_PKG_SUPP_VER_MAJ, ICE_PKG_SUPP_VER_MNR);
++		break;
++	case ICE_DDP_PKG_COMPATIBLE_ALREADY_LOADED:
++		dev_info(dev, "The driver could not load the DDP package file because a compatible DDP package is already present on the device.  The device has package '%s' version %d.%d.%d.%d.  The package file found by the driver: '%s' version %d.%d.%d.%d.\n",
++			 hw->active_pkg_name,
++			 hw->active_pkg_ver.major,
++			 hw->active_pkg_ver.minor,
++			 hw->active_pkg_ver.update,
++			 hw->active_pkg_ver.draft,
++			 hw->pkg_name,
++			 hw->pkg_ver.major,
++			 hw->pkg_ver.minor,
++			 hw->pkg_ver.update,
++			 hw->pkg_ver.draft);
++		break;
++	case ICE_DDP_PKG_FW_MISMATCH:
+ 		dev_err(dev, "The firmware loaded on the device is not compatible with the DDP package.  Please update the device's NVM.  Entering safe mode.\n");
+ 		break;
+-	case ICE_ERR_BUF_TOO_SHORT:
+-	case ICE_ERR_CFG:
++	case ICE_DDP_PKG_INVALID_FILE:
+ 		dev_err(dev, "The DDP package file is invalid. Entering Safe Mode.\n");
+ 		break;
+-	case ICE_ERR_NOT_SUPPORTED:
+-		/* Package File version not supported */
+-		if (hw->pkg_ver.major > ICE_PKG_SUPP_VER_MAJ ||
+-		    (hw->pkg_ver.major == ICE_PKG_SUPP_VER_MAJ &&
+-		     hw->pkg_ver.minor > ICE_PKG_SUPP_VER_MNR))
+-			dev_err(dev, "The DDP package file version is higher than the driver supports.  Please use an updated driver.  Entering Safe Mode.\n");
+-		else if (hw->pkg_ver.major < ICE_PKG_SUPP_VER_MAJ ||
+-			 (hw->pkg_ver.major == ICE_PKG_SUPP_VER_MAJ &&
+-			  hw->pkg_ver.minor < ICE_PKG_SUPP_VER_MNR))
+-			dev_err(dev, "The DDP package file version is lower than the driver supports.  The driver requires version %d.%d.x.x.  Please use an updated DDP Package file.  Entering Safe Mode.\n",
+-				ICE_PKG_SUPP_VER_MAJ, ICE_PKG_SUPP_VER_MNR);
++	case ICE_DDP_PKG_FILE_VERSION_TOO_HIGH:
++		dev_err(dev, "The DDP package file version is higher than the driver supports.  Please use an updated driver.  Entering Safe Mode.\n");
+ 		break;
+-	case ICE_ERR_AQ_ERROR:
+-		switch (hw->pkg_dwnld_status) {
+-		case ICE_AQ_RC_ENOSEC:
+-		case ICE_AQ_RC_EBADSIG:
+-			dev_err(dev, "The DDP package could not be loaded because its signature is not valid.  Please use a valid DDP Package.  Entering Safe Mode.\n");
+-			return;
+-		case ICE_AQ_RC_ESVN:
+-			dev_err(dev, "The DDP Package could not be loaded because its security revision is too low.  Please use an updated DDP Package.  Entering Safe Mode.\n");
+-			return;
+-		case ICE_AQ_RC_EBADMAN:
+-		case ICE_AQ_RC_EBADBUF:
+-			dev_err(dev, "An error occurred on the device while loading the DDP package.  The device will be reset.\n");
++	case ICE_DDP_PKG_FILE_VERSION_TOO_LOW:
++		dev_err(dev, "The DDP package file version is lower than the driver supports.  The driver requires version %d.%d.x.x.  Please use an updated DDP Package file.  Entering Safe Mode.\n",
++			ICE_PKG_SUPP_VER_MAJ, ICE_PKG_SUPP_VER_MNR);
++		break;
++	case ICE_DDP_PKG_FILE_SIGNATURE_INVALID:
++		dev_err(dev, "The DDP package could not be loaded because its signature is not valid.  Please use a valid DDP Package.  Entering Safe Mode.\n");
++		break;
++	case ICE_DDP_PKG_FILE_REVISION_TOO_LOW:
++		dev_err(dev, "The DDP Package could not be loaded because its security revision is too low.  Please use an updated DDP Package.  Entering Safe Mode.\n");
++		break;
++	case ICE_DDP_PKG_LOAD_ERROR:
++		dev_err(dev, "An error occurred on the device while loading the DDP package.  The device will be reset.\n");
+ 			/* poll for reset to complete */
+ 			if (ice_check_reset(hw))
+ 				dev_err(dev, "Error resetting device. Please reload the driver\n");
+-			return;
+-		default:
+-			break;
+-		}
+-		fallthrough;
+-	default:
+-		dev_err(dev, "An unknown error (%d) occurred when loading the DDP package.  Entering Safe Mode.\n",
+-			*status);
+ 		break;
++	case ICE_DDP_PKG_ERR:
++	default:
++		dev_err(dev, "An unknown error occurred when loading the DDP package.  Entering Safe Mode.\n");
+ 	}
+ }
+ 
+@@ -4199,24 +4170,24 @@ ice_log_pkg_init(struct ice_hw *hw, enum ice_status *status)
+ static void
+ ice_load_pkg(const struct firmware *firmware, struct ice_pf *pf)
+ {
+-	enum ice_status status = ICE_ERR_PARAM;
++	enum ice_ddp_state state = ICE_DDP_PKG_ERR;
+ 	struct device *dev = ice_pf_to_dev(pf);
+ 	struct ice_hw *hw = &pf->hw;
+ 
+ 	/* Load DDP Package */
+ 	if (firmware && !hw->pkg_copy) {
+-		status = ice_copy_and_init_pkg(hw, firmware->data,
+-					       firmware->size);
+-		ice_log_pkg_init(hw, &status);
++		state = ice_copy_and_init_pkg(hw, firmware->data,
++					      firmware->size);
++		ice_log_pkg_init(hw, state);
+ 	} else if (!firmware && hw->pkg_copy) {
+ 		/* Reload package during rebuild after CORER/GLOBR reset */
+-		status = ice_init_pkg(hw, hw->pkg_copy, hw->pkg_size);
+-		ice_log_pkg_init(hw, &status);
++		state = ice_init_pkg(hw, hw->pkg_copy, hw->pkg_size);
++		ice_log_pkg_init(hw, state);
+ 	} else {
+ 		dev_err(dev, "The DDP package file failed to load. Entering Safe Mode.\n");
  	}
  
--	if (!mcast_status) {
-+	if (!mcast_err) {
- 		if (allmulti &&
- 		    !test_and_set_bit(ICE_VF_STATE_MC_PROMISC, vf->vf_states))
- 			dev_info(dev, "VF %u successfully set multicast promiscuous mode\n",
-@@ -3138,7 +3109,7 @@ static int ice_vc_cfg_promiscuous_mode_msg(struct ice_vf *vf, u8 *msg)
- 				 vf->vf_id);
- 	}
+-	if (status) {
++	if (!ice_is_init_pkg_successful(state)) {
+ 		/* Safe Mode */
+ 		clear_bit(ICE_FLAG_ADV_FEATURES, pf->flags);
+ 		return;
+@@ -4539,7 +4510,6 @@ ice_probe(struct pci_dev *pdev, const struct pci_device_id __always_unused *ent)
+ 	 * true
+ 	 */
+ 	if (ice_is_safe_mode(pf)) {
+-		dev_err(dev, "Package download failed. Advanced features disabled - Device now in Safe Mode\n");
+ 		/* we already got function/device capabilities but these don't
+ 		 * reflect what the driver needs to do in safe mode. Instead of
+ 		 * adding conditional logic everywhere to ignore these
+diff --git a/drivers/net/ethernet/intel/ice/ice_type.h b/drivers/net/ethernet/intel/ice/ice_type.h
+index 1f3582197e60..1525bfd86a32 100644
+--- a/drivers/net/ethernet/intel/ice/ice_type.h
++++ b/drivers/net/ethernet/intel/ice/ice_type.h
+@@ -873,8 +873,6 @@ struct ice_hw {
+ 	u8 active_pkg_name[ICE_PKG_NAME_SIZE];
+ 	u8 active_pkg_in_nvm;
  
--	if (!ucast_status) {
-+	if (!ucast_err) {
- 		if (alluni && !test_and_set_bit(ICE_VF_STATE_UC_PROMISC, vf->vf_states))
- 			dev_info(dev, "VF %u successfully set unicast promiscuous mode\n",
- 				 vf->vf_id);
+-	enum ice_aq_err pkg_dwnld_status;
+-
+ 	/* Driver's package ver - (from the Ice Metadata section) */
+ 	struct ice_pkg_ver pkg_ver;
+ 	u8 pkg_name[ICE_PKG_NAME_SIZE];
 -- 
 2.31.1
 
