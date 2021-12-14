@@ -2,136 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 302CB473AB5
-	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 03:20:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 31DA3473ABF
+	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 03:28:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231543AbhLNCUS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Dec 2021 21:20:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36460 "EHLO
+        id S244008AbhLNC2A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Dec 2021 21:28:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229616AbhLNCUR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 21:20:17 -0500
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E927C061574
-        for <netdev@vger.kernel.org>; Mon, 13 Dec 2021 18:20:17 -0800 (PST)
-Received: by mail-ed1-x52e.google.com with SMTP id e3so59087284edu.4
-        for <netdev@vger.kernel.org>; Mon, 13 Dec 2021 18:20:16 -0800 (PST)
+        with ESMTP id S229616AbhLNC17 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Dec 2021 21:27:59 -0500
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FF7EC061574
+        for <netdev@vger.kernel.org>; Mon, 13 Dec 2021 18:27:59 -0800 (PST)
+Received: by mail-ed1-x536.google.com with SMTP id l25so58650480eda.11
+        for <netdev@vger.kernel.org>; Mon, 13 Dec 2021 18:27:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=chLmVj5F9v7o8xwppcyYkXk9RedN5pKR5WdpbUeegJU=;
-        b=P/QppK3RdMoDu6QZYv0XFavlDJPpKNfl+llVo6CUgDl8kiizOpu2Cqfe/2YiaBZDQ8
-         RMB+tRMhdDweu88XzTDFDvAl2Ypa9g75sU0OkRPxOUE3fVUlAl/y6F2JbkHWVumsXuFm
-         tEjQA3oxKsRCiHkrNldKzs70AfztRaRNyNLN7PV9gDwn65OuJgB0a3c65Rq/XneEKkRF
-         rPc4ER5YChYxu7sBgvvYuchLcrLjv2FcceI4AdW38gg5qRB+CrngHCcurmS4mPLl9w0/
-         MunSHjn57/Uk+RXFw3qIWilx+LzDPCHBm/FgEjlcxFHvcqC00cnqRv45DnuduQAmzZWb
-         5CDA==
+        bh=IINFqFM48YEdk/eyQMnqQrTgqiUFOQW3mFSLXia9rwk=;
+        b=ecUJbIH4rSILW9xTOPVbAWxjoHpB8w+t5qSjY8t8bPtEua2AdYqpnSPJu2EoXm7vg8
+         lOaD7OWlMbBi0VyXrLmCGdJh+u/LtIbJ6Jm00o60MtkKkNCaXr4atixLC1ODvfY9+XLj
+         Vn5u6i9LAdIG+8HUW2yr7rVaECgSkQkBzuL5qwlvTyALkoEELRgwniL0fXrB6mcvvlHs
+         aoZ0yAqM6bbcnUt2oKA1owt47ZhNAnhK+pMRzziLevD/q6CjWUwAnvUZajZiPJzrLE78
+         tfqA0S94r+b2AH7QZ+T/LqVptM3c40RtwQLoi7hHc20LgwZ8fFILAajdpUQPU7d7thlS
+         SCkg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=chLmVj5F9v7o8xwppcyYkXk9RedN5pKR5WdpbUeegJU=;
-        b=fsFTbHpL4DiEuB5lOvrc8aiFdYfXeCcPdYKfnqo3zoT8GuCNGo3NXkaWU+sSJ7nbik
-         3t0S29lCeEDRJSrtyqwDA1uRYepIjaxUragoIorn0K+k7kPGUp9FBtpYE1OkmmCKAX6a
-         8tnreZ1gqPi3qDL8dsWNXWElCG21waN7VY6vfY6NnVMM4x3ehAE640HNeQzDBQmv4vE7
-         ZygiflWQR8Z8f/5uShaz4c8DOYv8IcZD43wbz8nkvBsCEXtQbRIB0P7NSoC6CEsTPltZ
-         A43Vv0wkdnDK5GDVtBG3KawIUm9h5tCh5tGOk7ylQUJprvSfVBp8o+TOtkMoDVABne3h
-         eFMQ==
-X-Gm-Message-State: AOAM533frCjq8V0b0OOTebacFIevle2dFcL8IZCg5AyMdVaxCGax65f6
-        NdQAEDZUPgBZuGwxwDwqsdv4d3Ln7YXc2BcqybA=
-X-Google-Smtp-Source: ABdhPJyA1LPDxoWLUy+g+W/V7lKtmkRHIam7Q4hXFkAfEqpttgb4uvfTw9xbNS/DMl7RfD0Ly7Y2otY0K8j4D01FPYY=
-X-Received: by 2002:a05:6402:2152:: with SMTP id bq18mr3644503edb.105.1639448415602;
- Mon, 13 Dec 2021 18:20:15 -0800 (PST)
+        bh=IINFqFM48YEdk/eyQMnqQrTgqiUFOQW3mFSLXia9rwk=;
+        b=Oj14tV9LFzZfohxu+ZANPjtkb6VbN4EPYXmhjVcjh7RtKNULmaD5/EWX0U2QhELBxu
+         GjxBUvWAKZMk46OTzfVaKiQXKWLIx+FxoV3xIx76lNI3wgxtVaNiRiMNNiVlyb55P+EM
+         QtCiQTTM3qb2YkhOM6hEGYib+/qlUcCsaapN9QJ6nfl/vykM8yKTpMBneTsT6oNcxljj
+         adW9oWwJkOjNH3C0XlCnv5tOl/sVA1pNqksmQvGxzwQfMxopN+oaffx5BddcyXismvTh
+         Ceern+dBpLU9iW/itKUoSOYMmUqr8umv5a8ZdlkshMPjVBbM8E0HppuGOIfiniYeDaS0
+         q7Cw==
+X-Gm-Message-State: AOAM530Ol+asb0jb87TNLWB7JhwpqghtWB1xnWx4H45tKOEtwHNOqF8L
+        pZVmJXlj+oZzJsskDK0iMax+ry0273/4cs4G+Yw=
+X-Google-Smtp-Source: ABdhPJyT4nUxmG09CnVeBNeYa2MQtzKKquOlTwaK22GQtDGXBREUe6oTSyQjrSBHNrTSUgKe/T/H1CKDaUW65d8nJWk=
+X-Received: by 2002:a05:6402:2152:: with SMTP id bq18mr3690883edb.105.1639448878023;
+ Mon, 13 Dec 2021 18:27:58 -0800 (PST)
 MIME-Version: 1.0
-References: <20211210023626.20905-1-xiangxia.m.yue@gmail.com>
- <20211210023626.20905-3-xiangxia.m.yue@gmail.com> <CAM_iQpVOuQ4C3xAo1F0pasPB5M+zUfviyYO1VkanvfYkq2CqNg@mail.gmail.com>
- <CAMDZJNUos+sb+Q1QTpDTfVDj7-RcsajcT=P6PABuzGuHCXZqHw@mail.gmail.com> <CAM_iQpU+JMtrObsGUwUwC8eoZ1G39Lvp7ihV2iERF5dg0FySXA@mail.gmail.com>
-In-Reply-To: <CAM_iQpU+JMtrObsGUwUwC8eoZ1G39Lvp7ihV2iERF5dg0FySXA@mail.gmail.com>
+References: <20211208145459.9590-1-xiangxia.m.yue@gmail.com>
+ <20211208145459.9590-3-xiangxia.m.yue@gmail.com> <61b383c6373ca_1f50e20816@john.notmuch>
+ <CAMDZJNV3-y5jkUAJJ--10PcicKpGMwKS_3gG9O7srjomO3begw@mail.gmail.com>
+ <CAMDZJNXL5qSfFv54A=RrMwHe8DOv48EfrypHb1FFSUFu36-9DQ@mail.gmail.com>
+ <CAMDZJNUyOELOcf0dtxktCTRKv1sUrp5Z17mW+4so7tt6DFnJsw@mail.gmail.com>
+ <368e82ef-24be-06c7-2111-8a21cd558100@iogearbox.net> <CAMDZJNXMDWYd_CYVDSEdpkAUSZDJLdK7G4qBb4AVc1Nye0r_yA@mail.gmail.com>
+In-Reply-To: <CAMDZJNXMDWYd_CYVDSEdpkAUSZDJLdK7G4qBb4AVc1Nye0r_yA@mail.gmail.com>
 From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Date:   Tue, 14 Dec 2021 10:19:39 +0800
-Message-ID: <CAMDZJNXwOZUyJndHsOjjR-n-m1V2BkVh7xsvEOuj=tJ2OaVHbQ@mail.gmail.com>
-Subject: Re: [net-next v3 2/2] net: sched: support hash/classid/cpuid
- selecting tx queue
-To:     Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Tue, 14 Dec 2021 10:27:21 +0800
+Message-ID: <CAMDZJNXN3wAtyoOHCGD=oLdwPoy2cNhmuKZ9JEP6KZX4TjCoMA@mail.gmail.com>
+Subject: Re: [net v5 2/3] net: sched: add check tc_skip_classify in sch egress
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>
 Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Talal Ahmad <talalahmad@google.com>,
-        Kevin Hao <haokexin@gmail.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Kees Cook <keescook@chromium.org>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
         Antoine Tenart <atenart@kernel.org>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
         Wei Wang <weiwan@google.com>, Arnd Bergmann <arnd@arndb.de>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 14, 2021 at 6:53 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+On Sun, Dec 12, 2021 at 5:40 PM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
 >
-> On Sat, Dec 11, 2021 at 6:34 PM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
+> On Sat, Dec 11, 2021 at 4:11 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
 > >
-> > On Sun, Dec 12, 2021 at 10:19 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> > >
-> > > On Thu, Dec 9, 2021 at 6:36 PM <xiangxia.m.yue@gmail.com> wrote:
-> > > >
-> > > > From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
-> > > >
-> > > > This patch allows users to select queue_mapping, range
-> > > > from A to B. And users can use skb-hash, cgroup classid
-> > > > and cpuid to select Tx queues. Then we can load balance
-> > > > packets from A to B queue. The range is an unsigned 16bit
-> > > > value in decimal format.
-> > > >
-> > > > $ tc filter ... action skbedit queue_mapping hash-type normal A B
-> > > >
-> > > > "skbedit queue_mapping QUEUE_MAPPING" (from "man 8 tc-skbedit") is
-> > > > enhanced with flags:
-> > > > * SKBEDIT_F_QUEUE_MAPPING_HASH
-> > > > * SKBEDIT_F_QUEUE_MAPPING_CLASSID
-> > > > * SKBEDIT_F_QUEUE_MAPPING_CPUID
-> > >
-> > > With act_bpf you can do all of them... So why do you have to do it
-> > > in skbedit?
-> > Hi Cong
-> > This idea is inspired by skbedit queue_mapping, and skbedit is
-> > enhanced by this patch.
->
-> This is exactly my question. ;)
->
-> > We support this in skbedit firstly in production. act_bpf can do more
-> > things than this. Anyway we
-> > can support this in both act_skbedit/acc_bpf. 1/2 is changed from
-> > skip_tx_queue in skb to per-cpu var suggested-by Eric. We need another
-> > patch which can change the
-> > per-cpu var in bpf. I will post this patch later.
->
-> The point is if act_bpf can do it, you don't need to bother skbedit at
-> all. More importantly, you are enforcing policies in kernel, which is
-> not encouraged. So unless you provide more details, this patch is not
-> needed at all.
-Hi Cong,
-1. As I understand it, act_bpf can work with 1/2 patch(but we should
-another path to change the skip_txqueue in bpf).
-It is easy for kernel developer. But for another user, it is not easy.
-tc command is a choice, and easy to use.
-2. BTW, act_bpf can't try to instead act_xxx action in future even
-though it can do more thing. right ?
-3. This patch is more important to work with 1/2, and only enhance the
-skbedit queue_mapping function. not a big change.
-4. "policies" ? if selecting tx from a range(this patch) is what you
-mean "policies", so change the skb mark, priority, tc-peidt
-and other tc-action are "policies" too. we still need the different tc actions.
->
-> Thanks.
+> > On 12/10/21 8:54 PM, Tonghao Zhang wrote:
+> > > On Sat, Dec 11, 2021 at 1:46 AM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
+> > >> On Sat, Dec 11, 2021 at 1:37 AM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
+> > >>> On Sat, Dec 11, 2021 at 12:43 AM John Fastabend
+> > >>> <john.fastabend@gmail.com> wrote:
+> > >>>> xiangxia.m.yue@ wrote:
+> > >>>>> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> > >>>>>
+> > >>>>> Try to resolve the issues as below:
+> > >>>>> * We look up and then check tc_skip_classify flag in net
+> > >>>>>    sched layer, even though skb don't want to be classified.
+> > >>>>>    That case may consume a lot of cpu cycles. This patch
+> > >>>>>    is useful when there are a lot of filters with different
+> > >>>>>    prio. There is ~5 prio in in production, ~1% improvement.
+> > >>>>>
+> > >>>>>    Rules as below:
+> > >>>>>    $ for id in $(seq 1 5); do
+> > >>>>>    $       tc filter add ... egress prio $id ... action mirred egress redirect dev ifb0
+> > >>>>>    $ done
+> > >>>>>
+> > >>>>> * bpf_redirect may be invoked in egress path. If we don't
+> > >>>>>    check the flags and then return immediately, the packets
+> > >>>>>    will loopback.
+> > >>>>
+> > >>>> This would be the naive case right? Meaning the BPF program is
+> > >>>> doing a redirect without any logic or is buggy?
+> > >>>>
+> > >>>> Can you map out how this happens for me, I'm not fully sure I
+> > >>>> understand the exact concern. Is it possible for BPF programs
+> > >>>> that used to see packets no longer see the packet as expected?
+> > >>>>
+> > >>>> Is this the path you are talking about?
+> > >>> Hi John
+> > >>> Tx ethx -> __dev_queue_xmit -> sch_handle_egress
+> > >>> ->  execute BPF program on ethx with bpf_redirect(ifb0) ->
+> > >>> -> ifb_xmit -> ifb_ri_tasklet -> dev_queue_xmit -> __dev_queue_xmit
+> > >>> the packets loopbacks, that means bpf_redirect doesn't work with ifb
+> > >>> netdev, right ?
+> > >>> so in sch_handle_egress, I add the check skb_skip_tc_classify().
+> >
+> > But why would you do that? Usage like this is just broken by design..
+> > If you need to loop anything back to RX, just use bpf_redirect() with
+> > BPF_F_INGRESS? What is the concrete/actual rationale for ifb here?
+> Hi
+> note that: ifb_ri_tasklet can send out the packets or receive skb
+> ifb_ri_tasklet
+>                 if (!skb->from_ingress) {
+>                         dev_queue_xmit(skb); // bpf_redirect to ifb
+> and ifb invoked the dev_queue_xmit in our case.
+>                 } else {
+>                         skb_pull_rcsum(skb, skb->mac_len);
+>                         netif_receive_skb(skb);
+>                 }
+Hi
+In this thread, I try to explain this patch, and answer questions.
+What should I do next? v1-v4 is "Changes Requested" in patchwork, but
+v5 is "Rejected"
+Should I add more commit message in this patch, and send v6 ?
+1/3, 3/3 patch still need to be reviewed.
+
+> --
+> Best regards, Tonghao
 
 
 
