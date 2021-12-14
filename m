@@ -2,77 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD58F473FA9
-	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 10:39:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CC1E473FF5
+	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 10:56:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230412AbhLNJj3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Dec 2021 04:39:29 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:53930 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229744AbhLNJj2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 Dec 2021 04:39:28 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=j+RmcVDTIeDOSJuZcBLUijsZL+mu256ZqxBjLPcGmew=; b=bMftSZdo18MuMjlDm+K0MuPhVc
-        bjMBPGvfceiSJzj/Y2abt0E06Vavz3L3vfEm/bwUicQ8D/rI6TcsnsVH79kSKT38PCeP22kvbeZkZ
-        gLmnYos48Cz8p0yBm8XrY6RCn8rfS1NwxFmIUF1rUpC1NqJuNwNPkanA3zvnAVOhJo8E=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mx4HN-00GUcp-Bh; Tue, 14 Dec 2021 10:39:25 +0100
-Date:   Tue, 14 Dec 2021 10:39:25 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "Ismail, Mohammad Athari" <mohammad.athari.ismail@intel.com>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Voon, Weifeng" <weifeng.voon@intel.com>,
-        "Wong, Vee Khee" <vee.khee.wong@intel.com>
-Subject: Re: [BUG] net: phy: genphy_loopback: add link speed configuration
-Message-ID: <YbhmTcFITSD1dOts@lunn.ch>
-References: <CO1PR11MB4771251E6D2E59B1B413211FD5759@CO1PR11MB4771.namprd11.prod.outlook.com>
+        id S232718AbhLNJ4c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Dec 2021 04:56:32 -0500
+Received: from relay1-d.mail.gandi.net ([217.70.183.193]:44973 "EHLO
+        relay1-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229550AbhLNJ4b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 04:56:31 -0500
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by relay1-d.mail.gandi.net (Postfix) with ESMTPSA id 23458240012;
+        Tue, 14 Dec 2021 09:56:27 +0000 (UTC)
+From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com
+Cc:     =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Julian Wiedmann <jwi@linux.ibm.com>
+Subject: [PATCH net-next] net: ocelot: add support to get port mac from device-tree
+Date:   Tue, 14 Dec 2021 10:55:34 +0100
+Message-Id: <20211214095534.563822-1-clement.leger@bootlin.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CO1PR11MB4771251E6D2E59B1B413211FD5759@CO1PR11MB4771.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 14, 2021 at 07:00:37AM +0000, Ismail, Mohammad Athari wrote:
-> Hi Oleksij,
-> 
-> "net: phy: genphy_loopback: add link speed configuration" patch causes Marvell 88E1510 PHY not able to perform PHY loopback using ethtool command (ethtool -t eth0 offline). Below is the error message: 
-> 
-> "Marvell 88E1510 stmmac-3:01: genphy_loopback failed: -110" 
+Add support to get mac from device-tree using of_get_ethdev_address.
 
--110 is ETIMEDOUT. So that points to the phy_read_poll_timeout().
+Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Signed-off-by: Clément Léger <clement.leger@bootlin.com>
+---
+ drivers/net/ethernet/mscc/ocelot_net.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-Ah, that points to the fact the Marvell PHYs are odd. You need to
-perform a software reset after changing some registers to actually
-execute the change.
-
-As a quick test, please could you try:
-
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 74d8e1dc125f..b45f3ffc7c7f 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -2625,6 +2625,10 @@ int genphy_loopback(struct phy_device *phydev, bool enable)
+diff --git a/drivers/net/ethernet/mscc/ocelot_net.c b/drivers/net/ethernet/mscc/ocelot_net.c
+index 5fc8a0f8e8cd..8115c3db252e 100644
+--- a/drivers/net/ethernet/mscc/ocelot_net.c
++++ b/drivers/net/ethernet/mscc/ocelot_net.c
+@@ -1695,7 +1695,10 @@ int ocelot_probe_port(struct ocelot *ocelot, int port, struct regmap *target,
+ 		NETIF_F_HW_TC;
+ 	dev->features |= NETIF_F_HW_VLAN_CTAG_FILTER | NETIF_F_HW_TC;
  
-                phy_modify(phydev, MII_BMCR, ~0, ctl);
- 
-+               ret = genphy_soft_reset(phydev);
-+               if (ret < 0)
-+                       return ret;
+-	eth_hw_addr_gen(dev, ocelot->base_mac, port);
++	err = of_get_ethdev_address(portnp, dev);
++	if (err)
++		eth_hw_addr_gen(dev, ocelot->base_mac, port);
 +
-                ret = phy_read_poll_timeout(phydev, MII_BMSR, val,
-                                            val & BMSR_LSTATUS,
-                                    5000, 500000, true);
+ 	ocelot_mact_learn(ocelot, PGID_CPU, dev->dev_addr,
+ 			  OCELOT_VLAN_UNAWARE_PVID, ENTRYTYPE_LOCKED);
+ 
+-- 
+2.34.1
 
-If this fixes it for you, the actual fix will be more complex, Marvell
-cannot use genphy_loopback, it will need its own implementation.
-
-       Andrew
