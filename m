@@ -2,134 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 611DE474E3C
-	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 23:55:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 680B3474E78
+	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 00:19:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232147AbhLNWz3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Dec 2021 17:55:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36966 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234975AbhLNWz3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 17:55:29 -0500
-Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ECB7C061574
-        for <netdev@vger.kernel.org>; Tue, 14 Dec 2021 14:55:29 -0800 (PST)
-Received: by mail-io1-xd2a.google.com with SMTP id 14so26883683ioe.2
-        for <netdev@vger.kernel.org>; Tue, 14 Dec 2021 14:55:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=EDHcUN/a8YzochDyOEdr4oiQk6lxDkZ6bVg77BIbjig=;
-        b=OUFf3YKlYpoYVc8C13f3NOzaAGShl/26r8BXG8cQdKAb3Jc6j7KMAiFiXBXR3oEOaj
-         8PfDmDYR7BpG1EIZCO8YnTdSnkdXyfWbRnuyp43Qur/bkQT/9jpBs1Gw1ONhIzWGxAcx
-         nMzWEIZI1c5ZcymA4BTIWHkHgRNmkMuhKjtNdCh87VDukAeOpYEnhyacuFgyQA+unfF6
-         nIp6reX40kk2MIi6CGMiAF14Bb6YkqiXoTQjjC4SZ79pq/fvU04jngzIDpKhzgEriXWk
-         jbQmKD2iNpe672x9VEqFbXWtCTfUP7jx5KGRuqqD6J8uKSz6tQRO/iLuyh/6sGu/LbFo
-         wcTg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=EDHcUN/a8YzochDyOEdr4oiQk6lxDkZ6bVg77BIbjig=;
-        b=Lb9NU7ibbiF5QzHglDu75NJibDPH+unqWGldMLFoBT4CXtpg8aEVAY9lqjREVtNib2
-         R/skQRj1kPbT8x+Wr7Um/iTl5bPISEz4+N7ob1C4CXtAnuSCykGWDCd5Xf98Ly8fipD3
-         SK5GvAavozIXoIdD/OxXjmwe45OlNkw6tVTS0hIImdSZWLVyP5S2NiQ0Bwgr0AHj31Hq
-         w6PlufcgSt2vBOF1zgDHEsV4fo3LZL1WqgzAEZtxfIbR4yNfuV6BkcvaVwM/JeOeDAXO
-         O/00y7UUUM4xr+HXDVk/Q8SrKUU6fKqsjRRwklT93Y+GDblRexsuPDEnvQTuwLUm0QFA
-         AkzA==
-X-Gm-Message-State: AOAM530M4esxeflsoLJdG5luV4Cia1xQdw0TUMSADOKh9pafaU7rVjEZ
-        WrYlP/xP2A3zUhgenTnV6RZ/lU7yna0jpP2m
-X-Google-Smtp-Source: ABdhPJzOSaPcUiMpSvX4VOHhwmfFdg14iJ86v17slG9YwnQnQm/o5s6ZgRSTNul03EVeN2dcsKWkRg==
-X-Received: by 2002:a02:cc03:: with SMTP id n3mr4689027jap.778.1639522528268;
-        Tue, 14 Dec 2021 14:55:28 -0800 (PST)
-Received: from [172.22.22.26] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id h14sm113122ild.16.2021.12.14.14.55.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 14 Dec 2021 14:55:27 -0800 (PST)
-Message-ID: <3bd97657-7a33-71ce-b33a-e4eb02ee7e20@linaro.org>
-Date:   Tue, 14 Dec 2021 16:55:27 -0600
+        id S238183AbhLNXQY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Dec 2021 18:16:24 -0500
+Received: from mga18.intel.com ([134.134.136.126]:9338 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231684AbhLNXQW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Dec 2021 18:16:22 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10197"; a="225961169"
+X-IronPort-AV: E=Sophos;i="5.88,206,1635231600"; 
+   d="scan'208";a="225961169"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Dec 2021 15:16:09 -0800
+X-IronPort-AV: E=Sophos;i="5.88,206,1635231600"; 
+   d="scan'208";a="518491434"
+Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.212.180.223])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Dec 2021 15:16:09 -0800
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+To:     netdev@vger.kernel.org
+Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        davem@davemloft.net, kuba@kernel.org, matthieu.baerts@tessares.net,
+        mptcp@lists.linux.dev
+Subject: [PATCH net 0/4] mptcp: Fixes for ULP, a deadlock, and netlink docs
+Date:   Tue, 14 Dec 2021 15:16:00 -0800
+Message-Id: <20211214231604.211016-1-mathew.j.martineau@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.1
-Subject: Re: Port mirroring (RFC)
-Content-Language: en-US
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        "bjorn.andersson@linaro.org" <bjorn.andersson@linaro.org>
-References: <384e168b-8266-cb9b-196b-347a513c0d36@linaro.org>
- <YbjiCNRffWYEcWDt@lunn.ch>
-From:   Alex Elder <elder@linaro.org>
-In-Reply-To: <YbjiCNRffWYEcWDt@lunn.ch>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/14/21 12:27 PM, Andrew Lunn wrote:
-> On Tue, Dec 14, 2021 at 08:47:12AM -0600, Alex Elder wrote:
->> I am implementing what amounts to port mirroring functionality
->> for the IPA driver.
->>
->> The IPA hardware isn't exactly a network switch (it's sort of
->> more than that), but it has the ability to supply replicas of
->> packets transferred within it to a special (read only) interface.
-> 
-> I think you need to explain "within it" in a bit more detail. Where
-> are these packets coming from/going to?
+Two of the MPTCP fixes in this set are related to the TCP_ULP socket
+option with MPTCP sockets operating in "fallback" mode (the connection
+has reverted to regular TCP). The other issues are an observed deadlock
+and missing parameter documentation in the MPTCP netlink API.
 
-Sorry, I didn't want to dive into too much detail up front.
 
-IPA is a device that sits between the main CPU and a modem,
-carrying WWAN network data between them.
+Patch 1 marks TCP_ULP as unsupported earlier in MPTCP setsockopt code,
+so the fallback code path in the MPTCP layer does not pass the TCP_ULP
+option down to the subflow TCP socket.
 
-In addition, there is a small number of other entities that
-could be reachable through the IPA hardware, such as a WiFi
-device providing access to a WLAN.
+Patch 2 makes sure a TCP fallback socket returned to userspace by
+accept()ing on a MPTCP listening socket does not allow use of the
+"mptcp" TCP_ULP type. That ULP is intended only for use by in-kernel
+MPTCP subflows.
 
-Packets can travel "within IPA" between any of these
-"connected entities."  So far only the path between the
-AP and the modem is supported upstream, but I'm working
-on enabling more capability.
+Patch 3 fixes the possible deadlock when sending data and there are
+socket option changes to sync to the subflows.
 
-Technically, the replicated packets aren't visible on
-any one port; the only way to see that traffic is in
-using this special port.  To me this seemed like port
-mirroring, which is why I suggested that.  I'm want to
-use the proper model though, so I appreciate your
-response.
+Patch 4 makes sure all MPTCP netlink event parameters are documented
+in the MPTCP uapi header.
 
->> My plan is to implement this using a new "ipa_mirror" network
->> device, so it could be used with a raw socket to capture the
->> arriving packets.  There currently exists one other netdev,
->> which represents access through a modem to a WWAN network.
->>
->> I would like some advice on how to proceed with this.  I want
->> the result to match "best practice" upstream, and would like
->> this to be as well integrated possible with existing network
->> tools.
->>
->> A few details about the stream of packets that arrive on
->> this hardware interface:
->> - Packet data is truncated if it's larger than a certain size
->> - Each packet is preceded by a fixed-size header describing it
->> - Packets (and their headers) are aggregated into a buffer; i.e.
->>    a single receive might carry a dozen (truncated) packets
-> 
-> So this sounds something more like what you would attach pcap/tcpdump
-> to.  I'm not sure port mirroring is the correct model here. Maybe take
-> a look at wifi adaptors and their monitor mode? See if that fits
-> better?
 
-Yes, pcap and tcpdump are exactly the model I envisioned.  I had
-heard of monitoring but hadn't looked at it closely, so I will.
+Florian Westphal (2):
+  mptcp: remove tcp ulp setsockopt support
+  mptcp: clear 'kern' flag from fallback sockets
 
-Thanks a lot for the suggestion.
+Matthieu Baerts (1):
+  mptcp: add missing documented NL params
 
-					-Alex
->   
-> 	Andrew
-> 
+Maxim Galaganov (1):
+  mptcp: fix deadlock in __mptcp_push_pending()
+
+ include/uapi/linux/mptcp.h | 18 ++++++++++--------
+ net/mptcp/protocol.c       |  6 ++++--
+ net/mptcp/sockopt.c        |  1 -
+ 3 files changed, 14 insertions(+), 11 deletions(-)
+
+
+base-commit: 3dd7d40b43663f58d11ee7a3d3798813b26a48f1
+-- 
+2.34.1
 
