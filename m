@@ -2,101 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 64A3A47472D
-	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 17:10:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D8D7D474825
+	for <lists+netdev@lfdr.de>; Tue, 14 Dec 2021 17:33:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235541AbhLNQKJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Dec 2021 11:10:09 -0500
-Received: from mail-wr1-f51.google.com ([209.85.221.51]:43006 "EHLO
-        mail-wr1-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235532AbhLNQKI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 11:10:08 -0500
-Received: by mail-wr1-f51.google.com with SMTP id c4so33200068wrd.9;
-        Tue, 14 Dec 2021 08:10:07 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ZHPbCWI6bYGyjK8mmI0D3KyfsrOlvTBd5Vd+F5/Vwkw=;
-        b=GVdnAkdGmrpQ/TDUYhNXccYo3u5fEwyCAJ51PVTyCJw6L2I5qjgfKFwL247pJDPB7G
-         cJkp6f3BCpJVP9kcsXylsd7h37n26VdtqGo0Hx35Tpze9WuO/C/gCJH/YvnL8F7XX91b
-         tPJTDkXh5I2cdX8s86GBKZCHvBO6fSOJBEYIOouXuZZXz1VoLMLWKix6khcVDJDljB3B
-         fE+wzEPF8qS1sIkRjs0zpeOloB8j2xhJjk4NUInphZK3SUb+1ba02ptbFrSHSVLMRSBa
-         0BPOJW5xlMSSnvcvxhvo9MFejxI9vvcu8qyrWWsGFgUqJySrlBOtkoP20yWBwwIv4Wz8
-         QKtw==
-X-Gm-Message-State: AOAM533HBFrhwYZgV3g+BXJnvn1FoDEE+PB9L0U+Hm8qIQ7fux23qUcU
-        5hQux9fJBMgq6mN/s6hy9R8=
-X-Google-Smtp-Source: ABdhPJzA+fSss7tQ8CtjfcSBZIFl347bWFgxFbLG30HYf3L29Y8+Tw56U4i6sm2K19aVkEk2EE2ZJw==
-X-Received: by 2002:a5d:6a8f:: with SMTP id s15mr6869384wru.544.1639498206781;
-        Tue, 14 Dec 2021 08:10:06 -0800 (PST)
-Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
-        by smtp.gmail.com with ESMTPSA id u10sm363011wrs.99.2021.12.14.08.10.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Dec 2021 08:10:06 -0800 (PST)
-Date:   Tue, 14 Dec 2021 16:10:04 +0000
-From:   Wei Liu <wei.liu@kernel.org>
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     Tianyu Lan <ltykernel@gmail.com>, kys@microsoft.com,
-        haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
-        decui@microsoft.com, tglx@linutronix.de, mingo@redhat.com,
-        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
-        davem@davemloft.net, kuba@kernel.org, jejb@linux.ibm.com,
-        martin.petersen@oracle.com, arnd@arndb.de, hch@infradead.org,
-        m.szyprowski@samsung.com, robin.murphy@arm.com,
-        thomas.lendacky@amd.com, Tianyu.Lan@microsoft.com,
-        michael.h.kelley@microsoft.com, iommu@lists.linux-foundation.org,
-        linux-arch@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
-        netdev@vger.kernel.org, vkuznets@redhat.com, brijesh.singh@amd.com,
-        konrad.wilk@oracle.com, hch@lst.de, joro@8bytes.org,
-        parri.andrea@gmail.com, dave.hansen@intel.com
-Subject: Re: [PATCH V7 2/5] x86/hyper-v: Add hyperv Isolation VM check in the
- cc_platform_has()
-Message-ID: <20211214161004.6ofxl5ko43myn76o@liuwe-devbox-debian-v2>
-References: <20211213071407.314309-1-ltykernel@gmail.com>
- <20211213071407.314309-3-ltykernel@gmail.com>
- <YbjArUL+biZMsFOL@zn.tnic>
+        id S235993AbhLNQdX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Dec 2021 11:33:23 -0500
+Received: from o1.ptr2625.egauge.net ([167.89.112.53]:24030 "EHLO
+        o1.ptr2625.egauge.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235918AbhLNQdW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 11:33:22 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=egauge.net;
+        h=from:subject:mime-version:to:cc:content-transfer-encoding:
+        content-type;
+        s=sgd; bh=IJV8PusPqPkrxAZlSJxF+oVTe0HORUxFLp6tQeLt1s8=;
+        b=s3fyn9KBdTIQRjnoU6oHuN9EHJOZPk7jwxK3m/1iORFiNy1YlpqSrjkNOnvG0hfb/R/v
+        OPggmibOMhMCxcVpVj3mOB3oC1UXFQDCLUqpIfEZmtzZ6Mej/56+JTeSHcDVOKt83LVbM6
+        6CselkLxP4eutSaFa8+OZV6cG+lTnC2uXnFTc3mfWcLJ/CjuYLE9Bh+lMlQc9VsWu0P/7T
+        6nGC3GhI1m1Yoq8x/5mYO7Z0xZDOj9aS8FyxDKjJwxUVwApocYak53IzX++eo0y7zFPbOD
+        IHnAkcp0nTt9Txtvs/eaYO26D65NVDDMS3+ZqpxYC+bwNke3k55L3PTIJBouYfvA==
+Received: by filterdrecv-64fcb979b9-2mw87 with SMTP id filterdrecv-64fcb979b9-2mw87-1-61B8C750-7D
+        2021-12-14 16:33:20.485721837 +0000 UTC m=+7922123.955850576
+Received: from pearl.egauge.net (unknown)
+        by geopod-ismtpd-5-1 (SG)
+        with ESMTP
+        id fPpvnHkiQ_awP5-wiFek1g
+        Tue, 14 Dec 2021 16:33:20.203 +0000 (UTC)
+Received: by pearl.egauge.net (Postfix, from userid 1000)
+        id 6CF8E700269; Tue, 14 Dec 2021 09:33:19 -0700 (MST)
+From:   David Mosberger-Tang <davidm@egauge.net>
+Subject: [PATCH v4 0/2] Add reset/enable GPIO support to SPI driver
+Date:   Tue, 14 Dec 2021 16:33:20 +0000 (UTC)
+Message-Id: <20211214163315.3769677-1-davidm@egauge.net>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
+X-SG-EID: =?us-ascii?Q?+kMxBqj35EdRUKoy8diX1j4AXmPtd302oan+iXZuF8m2Nw4HRW2irNspffT=2Fkh?=
+ =?us-ascii?Q?ET6RJF6+Prbl0h=2FEtF1rRLvBoQ+OES1vxgY33Go?=
+ =?us-ascii?Q?OnFY7WpVM1MtolvW065rR7eEZ+HpazFWrCv8kL2?=
+ =?us-ascii?Q?2H0L5MCjp=2FpTmAxLGBlfG=2F2YY0CGd1ZrRE=2FR2vM?=
+ =?us-ascii?Q?FL+9s1bL84pWlE2jb89owFk3R=2FgyEQdaRv=2FbHGq?=
+ =?us-ascii?Q?nE5RrWT9+mmP19q2MwhmXC1g8+Tulinvrv731Gq?=
+ =?us-ascii?Q?nLvS2G3Ob+kukT4tzmOVA=3D=3D?=
+To:     Ajay Singh <ajay.kathat@microchip.com>
+Cc:     Adham Abozaeid <adham.abozaeid@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        devicetree@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        David Mosberger-Tang <davidm@egauge.net>
+X-Entity-ID: Xg4JGAcGrJFIz2kDG9eoaQ==
+Content-Transfer-Encoding: 7bit
 Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YbjArUL+biZMsFOL@zn.tnic>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 14, 2021 at 05:05:01PM +0100, Borislav Petkov wrote:
-> On Mon, Dec 13, 2021 at 02:14:03AM -0500, Tianyu Lan wrote:
-> > From: Tianyu Lan <Tianyu.Lan@microsoft.com>
-> > 
-> > Hyper-V provides Isolation VM for confidential computing support and
-> > guest memory is encrypted in it. Places checking cc_platform_has()
-> > with GUEST_MEM_ENCRYPT attr should return "True" in Isolation vm. e.g,
-> 
-> Stick to a single spelling variant: "VM".
-> 
-> > swiotlb bounce buffer size needs to adjust according to memory size
-> > in the sev_setup_arch().
-> 
-> So basically you wanna simply say here:
-> 
-> "Hyper-V Isolation VMs need to adjust the SWIOTLB size just like SEV
-> guests. Add a hyperv_cc_platform_has() variant which enables that."
-> 
-> ?
-> 
-> With that addressed you can have my
-> 
-> Acked-by: Borislav Petkov <bp@suse.de>
+I made a mistake last night when checking whether gpiod_set_value() is
+safe to call with a NULL gpiod descriptor (it is).  v4 of the patch
+just fixes that mistake.  It does simplify the code nicely.
 
-Thanks. I can address your comments when I pick up this series.
+This version also fixes the error handling when the reset gpio is
+missing.
 
-Wei.
+David Mosberger-Tang (2):
+  wilc1000: Add reset/enable GPIO support to SPI driver
+  wilc1000: Document enable-gpios and reset-gpios properties
 
-> 
-> Thx.
-> 
-> -- 
-> Regards/Gruss,
->     Boris.
-> 
-> https://people.kernel.org/tglx/notes-about-netiquette
+ .../net/wireless/microchip,wilc1000.yaml      | 17 ++++++
+ drivers/net/wireless/microchip/wilc1000/spi.c | 58 ++++++++++++++++++-
+ .../net/wireless/microchip/wilc1000/wlan.c    |  2 +-
+ 3 files changed, 73 insertions(+), 4 deletions(-)
+
+-- 
+2.25.1
+
