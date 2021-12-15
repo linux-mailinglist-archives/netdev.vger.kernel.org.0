@@ -2,157 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2586C4762D8
-	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 21:12:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A1C8747632B
+	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 21:24:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234938AbhLOUMY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Dec 2021 15:12:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46986 "EHLO
+        id S235791AbhLOUY5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Dec 2021 15:24:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231579AbhLOUMX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Dec 2021 15:12:23 -0500
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75597C061574
-        for <netdev@vger.kernel.org>; Wed, 15 Dec 2021 12:12:23 -0800 (PST)
-Received: by mail-pj1-x1031.google.com with SMTP id v23so18434677pjr.5
-        for <netdev@vger.kernel.org>; Wed, 15 Dec 2021 12:12:23 -0800 (PST)
+        with ESMTP id S235696AbhLOUY4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Dec 2021 15:24:56 -0500
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BDDCC061574;
+        Wed, 15 Dec 2021 12:24:56 -0800 (PST)
+Received: by mail-pf1-x436.google.com with SMTP id f11so23918pfc.9;
+        Wed, 15 Dec 2021 12:24:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=CT+8e7rlvOJJLzuN6UNTfUfvmlNQg0RTRzFa81JxHeU=;
-        b=kDHajlcsvrT89GObQV51AgbDNNzXV/wMhGnqOro0Q2T65gAdJwcISvRzqHTk8KSYxr
-         aWqGHAJeN/A9SBiH6i3+sWSjccCcg3pwOMLDiY34DfrDrCYOCvR7HMNww/RA/xaVQhju
-         wAEiWMi2kM2AYtIMCHC8IqwRkB+QDyPvvKc6JEm1BGnI3vC2G1S8mxcCFuBggJMdtYw5
-         0wgmWo8EBXvTGqZJb+786a3h6i/V4DiNgUdscehwMNKvtUDccJuSmC6PqHR5eWsvmIh1
-         0Db/w+IKMxClNoJFgFdOA6G3Ku1r3rNMBVukDupjtssdBOoXgkexSy39+NsRsnPtVuYj
-         CPNg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=aQsIra73/x88GR1KtCmaf/z2BjHJdIeNO56pE9+Q+NI=;
+        b=obESI4k11QInt55Yl8KhxPfxoa8YfxniAXIohBgTdbbKvHpkycJMEcxciMnOgv1XZl
+         keA9bPaBizdqyUocB3Oi7qALuC+U/xlQ69xW9AcjH7qT45QqBYPZjCwxClS63W93bQcM
+         d8q0RZMg4yXkv3xL6IQt8wcdoFTUF1s+VjLJxZDb57XQ3gmjrGEiRiybdRnuDCZVpYKs
+         v4p6lj4sZTzTOtM17aHy0BhY/WdQW/StAH8xi28Mcjbn275L1i/bhjAnw0+wFR3Kp+rC
+         OGZ9n4ci8Hcp7a7/z0/bM//PZpcJ/UPU4fAU56rCHwK8TgglCBI5wvWbh4eLy9HjcxLD
+         6r+A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=CT+8e7rlvOJJLzuN6UNTfUfvmlNQg0RTRzFa81JxHeU=;
-        b=qW4+axqxoVI/CsVceGeTPXz/Jb/MJRtDvWvoJZRV2PF7FHefcDyiPKZVVW4AF3lzT7
-         JX4CGKZSYJJpevmN05Q7YF8Qrir0fmeuJ6PM175aHmq6VLwpFzLAwLKYuRm83eucvWq/
-         8/6yWzmKtDHr8oLJD7e4ZItC1q59nNb05/k5sWyvPP6ONp708nJ1jGkPkCUqa8WVHCeg
-         csPPqnb5X9AX6x0xtQCn+OMhKY2sB695e/x/m60081Fod3Po0z/M1MAG4mzJxqtsI3if
-         Un4Q3IwygXMktuHX8SzRDsrr5wChkMMc9Xrc+1zCJmnHFqKBTysv0Bx9H8Dpgey9gy66
-         uSzg==
-X-Gm-Message-State: AOAM532BbsOxS/BMdGPaimO3u6lEi0rbqAYcG9oqJAvDXMYfZQaSFImp
-        ptxaYuAwRTqcp2YqyxubWBU=
-X-Google-Smtp-Source: ABdhPJzMf3BgNe8/MTCEGGnxwsH0/s+lVy1AcAJizD0hx94rywX9JYuajhbn6jv5j7e6jPZ+j0Z4eQ==
-X-Received: by 2002:a17:902:eccb:b0:148:a2e8:2757 with SMTP id a11-20020a170902eccb00b00148a2e82757mr5974123plh.94.1639599142902;
-        Wed, 15 Dec 2021 12:12:22 -0800 (PST)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id r13sm3292571pga.29.2021.12.15.12.12.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 15 Dec 2021 12:12:22 -0800 (PST)
-Subject: Re: Port mirroring (RFC)
-To:     Alex Elder <elder@linaro.org>, Andrew Lunn <andrew@lunn.ch>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        "bjorn.andersson@linaro.org" <bjorn.andersson@linaro.org>
-References: <384e168b-8266-cb9b-196b-347a513c0d36@linaro.org>
- <YbjiCNRffWYEcWDt@lunn.ch> <3bd97657-7a33-71ce-b33a-e4eb02ee7e20@linaro.org>
- <YbmzAkE+5v7Mv89D@lunn.ch> <b00fb6e2-c923-39e9-f326-6ec485fcff21@linaro.org>
+        bh=aQsIra73/x88GR1KtCmaf/z2BjHJdIeNO56pE9+Q+NI=;
+        b=pVLdohAaOhtsmN9CDRu/y0Jqk0iZzDH+RHdDseXvni/7hsBOkFzrw1N/9Ebx2lH1pY
+         HMh2lXGWG7jb9nZDPpDXqPEA1m/kNYHCD3ZqI5y/QSep1RscCcbBROOq+hJWmvl3UhKj
+         sXYhgRXbyfPmHgnIm64GmiCStfBMmwRBCvp/iGPz/cCajYWp/l+d5YSeThwR3JxpSNF/
+         RhMcl7+3Ov+MTkTrdb4yABSBiDHVRn4hu2oGOS6Y4StEJo1H5NuJOmfyZo3g4SuNDWsr
+         6lvYyBtfl4nfPNi6s8aZiSIR36RLPzE/6qyA1KbkW7ePddt9Zw/9TNk7dWDBSyX0AYhv
+         4D8A==
+X-Gm-Message-State: AOAM533UUXEViHI8n/fqz81x+YErEQb0e84dLnxM2TSELA4E0fsSX0NR
+        +hSB5cw+giAudMeZRmFJgJWP7Jo2w/0=
+X-Google-Smtp-Source: ABdhPJyPWKjqw8D/5KJS0JAYGh+25/9nlfyItg5JEhRCrRRvgv0MPmLLD96/grCfeY8Wo/EXshFjGg==
+X-Received: by 2002:a63:6c48:: with SMTP id h69mr9002848pgc.603.1639599895582;
+        Wed, 15 Dec 2021 12:24:55 -0800 (PST)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id c18sm3812049pfl.201.2021.12.15.12.24.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Dec 2021 12:24:55 -0800 (PST)
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <cdaf3a32-65d6-6fc0-dafc-cd07cb67fc3e@gmail.com>
-Date:   Wed, 15 Dec 2021 12:12:21 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+To:     netdev@vger.kernel.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        bcm-kernel-feedback-list@broadcom.com (open list:BROADCOM SYSTEMPORT
+        ETHERNET DRIVER), linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH net] net: systemport: Add global locking for descriptor lifecycle
+Date:   Wed, 15 Dec 2021 12:24:49 -0800
+Message-Id: <20211215202450.4086240-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <b00fb6e2-c923-39e9-f326-6ec485fcff21@linaro.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/15/21 6:47 AM, Alex Elder wrote:
-> On 12/15/21 3:18 AM, Andrew Lunn wrote:
->>> IPA is a device that sits between the main CPU and a modem,
->>> carrying WWAN network data between them.
->>>
->>> In addition, there is a small number of other entities that
->>> could be reachable through the IPA hardware, such as a WiFi
->>> device providing access to a WLAN.
->>>
->>> Packets can travel "within IPA" between any of these
->>> "connected entities."  So far only the path between the
->>> AP and the modem is supported upstream, but I'm working
->>> on enabling more capability.
->>>
->>> Technically, the replicated packets aren't visible on
->>> any one port; the only way to see that traffic is in
->>> using this special port.  To me this seemed like port
->>> mirroring, which is why I suggested that.  I'm want to
->>> use the proper model though, so I appreciate your
->>> response.
->>
->> Do you have netdevs for the modem, the wifi, and whatever other
->> interfaces the hardware might have?
-> 
-> Not yet, but yes I expect that's how it will work.
-> 
->> To setup a mirror you would do something like:
->>
->> sudo tc filter add dev eth0 parent ffff: protocol all u32 match u32 0
->> 0 action mirred egress mirror dev tun0
-> 
-> OK so it sounds like the term "mirror" means mirroring using
-> Linux filtering.  And then I suppose "monitoring" is collecting
-> all "observed" traffic through an interface?
+The descriptor list is a shared resource across all of the transmit queues, and
+the locking mechanism used today only protects concurrency across a given
+transmit queue between the transmit and reclaiming. This creates an opportunity
+for the SYSTEMPORT hardware to work on corrupted descriptors if we have
+multiple producers at once which is the case when using multiple transmit
+queues.
 
-It is mirroring in terms of an action to perform for a given packet
-having been matched, now Ethernet switches for instance support
-mirroring in hardware and that specific action can be offloaded down to
-your hardware. You can take a look at net/dsa/* and drivers/net/dsa/ for
-an example of how this is done.
+This was particularly noticeable when using multiple flows/transmit queues and
+it showed up in interesting ways in that UDP packets would get a correct UDP
+header checksum being calculated over an incorrect packet length. Similarly TCP
+packets would get an equally correct checksum computed by the hardware over an
+incorrect packet length.
 
-> 
-> If that's the case, this seems to me more like monitoring, except
-> I suggested presenting the replicated data through a separate
-> netdev (rather than, for example, through the one for the modem).
-> 
-> If it makes more sense, I could probably inject the replicated
-> packets received through this special interface into one or
-> another of the existing netdevs, rather than using a separate
-> one for this purpose.
-> 
->> where you are mirroring eth0 to tun0. eth0 would have to be your modem
->> netdev, or your wifi netdev, and tun0 would be your monitor device.
->>
->> If you do have a netdev on the host for each of these network
->> interfaces, mirroring could work. Architecturally, it would make sense
->> to have these netdevs, so you can run wpa_supplicant on the wifi
->> interface to do authentication, etc.
->>
->> Do you have control over selecting egress and ingress packets to be
->> mirrored?
-> 
-> That I'm not sure about.  If it's possible, it would be controlling
-> which originators have their traffic replicated.
+The SYSTEMPORT hardware maintains an internal descriptor list that it re-arranges
+when the driver produces a new descriptor anytime it writes to the
+WRITE_PORT_{HI,LO} registers, there is however some delay in the hardware to
+re-organize its descriptors and it is possible that concurrent TX queues
+eventually break this internal allocation scheme to the point where the
+length/status part of the descriptor gets used for an incorrect data buffer.
 
-And the originators would be represented as network devices, or would
-they be another kind of object in the Linux kernel? If they are network
-devices then you can use the example from Andrew above because you
-basically define the source device to mirror. Else, you may have to
-invent your own thing.
+The fix is to impose a global serialization for all TX queues in the short
+section where we are writing to the WRITE_PORT_{HI,LO} registers which solves
+the corruption even with multiple concurrent TX queues being used.
 
-> 
-> I don't think it will take me all that long to implement this, but
-> my goal right now is to be sure that the design I implement is a good
-> solution.  I'm open to recommendations.
-> 
-> Thanks.
-> 
->                     -Alex
-> 
->>     Andrew
->>
-> 
+Fixes: 80105befdb4b ("net: systemport: add Broadcom SYSTEMPORT Ethernet MAC driver")
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+ drivers/net/ethernet/broadcom/bcmsysport.c | 5 ++++-
+ drivers/net/ethernet/broadcom/bcmsysport.h | 1 +
+ 2 files changed, 5 insertions(+), 1 deletion(-)
 
-
+diff --git a/drivers/net/ethernet/broadcom/bcmsysport.c b/drivers/net/ethernet/broadcom/bcmsysport.c
+index 40933bf5a710..60dde29974bf 100644
+--- a/drivers/net/ethernet/broadcom/bcmsysport.c
++++ b/drivers/net/ethernet/broadcom/bcmsysport.c
+@@ -1309,11 +1309,11 @@ static netdev_tx_t bcm_sysport_xmit(struct sk_buff *skb,
+ 	struct bcm_sysport_priv *priv = netdev_priv(dev);
+ 	struct device *kdev = &priv->pdev->dev;
+ 	struct bcm_sysport_tx_ring *ring;
++	unsigned long flags, desc_flags;
+ 	struct bcm_sysport_cb *cb;
+ 	struct netdev_queue *txq;
+ 	u32 len_status, addr_lo;
+ 	unsigned int skb_len;
+-	unsigned long flags;
+ 	dma_addr_t mapping;
+ 	u16 queue;
+ 	int ret;
+@@ -1373,8 +1373,10 @@ static netdev_tx_t bcm_sysport_xmit(struct sk_buff *skb,
+ 	ring->desc_count--;
+ 
+ 	/* Ports are latched, so write upper address first */
++	spin_lock_irqsave(&priv->desc_lock, desc_flags);
+ 	tdma_writel(priv, len_status, TDMA_WRITE_PORT_HI(ring->index));
+ 	tdma_writel(priv, addr_lo, TDMA_WRITE_PORT_LO(ring->index));
++	spin_unlock_irqrestore(&priv->desc_lock, desc_flags);
+ 
+ 	/* Check ring space and update SW control flow */
+ 	if (ring->desc_count == 0)
+@@ -2013,6 +2015,7 @@ static int bcm_sysport_open(struct net_device *dev)
+ 	}
+ 
+ 	/* Initialize both hardware and software ring */
++	spin_lock_init(&priv->desc_lock);
+ 	for (i = 0; i < dev->num_tx_queues; i++) {
+ 		ret = bcm_sysport_init_tx_ring(priv, i);
+ 		if (ret) {
+diff --git a/drivers/net/ethernet/broadcom/bcmsysport.h b/drivers/net/ethernet/broadcom/bcmsysport.h
+index 984f76e74b43..16b73bb9acc7 100644
+--- a/drivers/net/ethernet/broadcom/bcmsysport.h
++++ b/drivers/net/ethernet/broadcom/bcmsysport.h
+@@ -711,6 +711,7 @@ struct bcm_sysport_priv {
+ 	int			wol_irq;
+ 
+ 	/* Transmit rings */
++	spinlock_t		desc_lock;
+ 	struct bcm_sysport_tx_ring *tx_rings;
+ 
+ 	/* Receive queue */
 -- 
-Florian
+2.25.1
+
