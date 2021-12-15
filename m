@@ -2,85 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9AA07476472
-	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 22:18:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C3507476476
+	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 22:21:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229659AbhLOVR5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Dec 2021 16:17:57 -0500
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:45824 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229555AbhLOVR4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Dec 2021 16:17:56 -0500
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1BFJEVtx014264;
-        Wed, 15 Dec 2021 21:17:55 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- in-reply-to; s=pp1; bh=HrvX+MXvQbCBEOWN6sajnu0iKgVh+zmYO4w7V9uFkw4=;
- b=pNzx+N07KB9bzojCEDBkD59ZW2K+sGxBR9sUQ4+ELj2SbXiJ6Yf94dz56q3njqpLkvMG
- C2gioIrM2WjFIrFcFbqMiEXxgPKjwnZQ06mmXhWNsKj2y9Fssu6A3b7DDKnb/o2OuP7j
- /0koSskUTwAoIoUdjki2ZIa7D3m2gatIOhWOrY0b1vgzqvfKtLnRmp/vC7IdhCXn6bpu
- AGR0i0d1bpAMoB+DvLkX/MNM8vk3U2YCg6HbK8KRlCE7MmxoRYBzuL/kHCfnfaz3izyE
- leqcwPRi1RAiRDhVeBWlUB5F5Pk9F9JLou/8RcG9Jec3zQQVfwwuX27OKV6PxqG9jSZg rg== 
-Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3cyfdp5bga-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 15 Dec 2021 21:17:55 +0000
-Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
-        by ppma02dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 1BFLC0xk011175;
-        Wed, 15 Dec 2021 21:17:54 GMT
-Received: from b03cxnp08027.gho.boulder.ibm.com (b03cxnp08027.gho.boulder.ibm.com [9.17.130.19])
-        by ppma02dal.us.ibm.com with ESMTP id 3cy7fvrsvg-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 15 Dec 2021 21:17:54 +0000
-Received: from b03ledav005.gho.boulder.ibm.com (b03ledav005.gho.boulder.ibm.com [9.17.130.236])
-        by b03cxnp08027.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 1BFLHrnv14287276
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 15 Dec 2021 21:17:53 GMT
-Received: from b03ledav005.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 4CA58BE04F;
-        Wed, 15 Dec 2021 21:17:53 +0000 (GMT)
-Received: from b03ledav005.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id D3A17BE061;
-        Wed, 15 Dec 2021 21:17:52 +0000 (GMT)
-Received: from suka-w540.localdomain (unknown [9.65.207.4])
-        by b03ledav005.gho.boulder.ibm.com (Postfix) with SMTP;
-        Wed, 15 Dec 2021 21:17:52 +0000 (GMT)
-Received: by suka-w540.localdomain (Postfix, from userid 1000)
-        id 04BEB2E0B34; Wed, 15 Dec 2021 13:17:51 -0800 (PST)
-Date:   Wed, 15 Dec 2021 13:17:51 -0800
-From:   Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-To:     Dany Madden <drt@linux.ibm.com>
-Cc:     netdev@vger.kernel.org, ricklind@linux.ibm.com,
-        brking@linux.ibm.com, otis@otisroot.com
-Subject: Re: [PATCH net 2/2] ibmvnic: remove unused defines
-Message-ID: <YbpbfySAj3qtxIiR@us.ibm.com>
-References: <20211214051748.511675-1-drt@linux.ibm.com>
- <20211214051748.511675-3-drt@linux.ibm.com>
+        id S229667AbhLOVVc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Dec 2021 16:21:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34908 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229555AbhLOVVb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Dec 2021 16:21:31 -0500
+Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9582AC061574;
+        Wed, 15 Dec 2021 13:21:31 -0800 (PST)
+Received: by mail-io1-xd33.google.com with SMTP id p65so32328349iof.3;
+        Wed, 15 Dec 2021 13:21:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=62fzi/yubRlJ1sBEx4EIWF++cZfm17HNsL13nBxxScY=;
+        b=FnY4329EiQnIIlKCdE/eGYP038H+XszAQu8X+JmwHj7aENONJIznCc72NuD3MSbCu4
+         gfFJwgHHYUyKr6+4fJe+HJa7lxZauXP0uLbTZ1hUU5/srwqvJt5KVuMnCEiD7GqxBxd4
+         JiD78WWpiP6i1V0DcOWjctH73X/l6vDsqxovik1QKnAzpCI8dA/ydgRpRWOYiPTvLabK
+         D28Xzunp5XvOOvwYdp46l25816gA/SOgbGvqq5wIqWu9HuNiD4azi159w7H6tka3brdP
+         31Bct/9CU569AAmJxWK0TV6gasma88cXS991F24m7NM/Y3fJMsqdpmeQCeV2XIEAiWcV
+         uEyg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=62fzi/yubRlJ1sBEx4EIWF++cZfm17HNsL13nBxxScY=;
+        b=xRNWWWTbQRGyFwtI5uaMayPQm2Zr9sKtum92Iww11MmjrC1oZSuIggWDkkRpZ6juoT
+         D3k1y+WopFg0K68LAXBf9E32zDWiyFn/ZiRcah9MsQEOj1mcNFjsWeGeSkdKkbpsNQ2c
+         c1o2uxHO4X5YOzC9DYQVE8uWsPZlpUxkKCotGGIGTkh6EWHXUVy7Sf3LbKVW/uh6Vqzf
+         3YMFcvotdx6VFJkwDzDlfcn76JSU4QyXsQdfiNkQTvxWNCToGj1nFXRvquDjwk3PyWUX
+         xTI7T8kfzHdswP9TTUgkyM4dQUsVspaaDPIdGYlcVkZLkOxFyy+S+ZPSQ3wvc0nnzFgr
+         9cFA==
+X-Gm-Message-State: AOAM5326dpHdh6Vd1KfKuP67rLWHka4nwNBwY0VVKo5nsAzmJYKWWAEI
+        7n5lujXyHqYFtu7ea/tQC/TTOUv/v2rSmirw43SvyfD9
+X-Google-Smtp-Source: ABdhPJx5hkdMklD2d++pgM0j9INz5YE67w868ETgHnmN1lJfTiALd1EQ9jK0c20iXP1gRsUifHN2ilgFkmy3Lpclq1k=
+X-Received: by 2002:a05:6638:32aa:: with SMTP id f42mr6917063jav.115.1639603290833;
+ Wed, 15 Dec 2021 13:21:30 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211214051748.511675-3-drt@linux.ibm.com>
-X-Operating-System: Linux 2.0.32 on an i486
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 9wVzut9-3HG2B_s2J3Hq50G3OCnjLaJ6
-X-Proofpoint-ORIG-GUID: 9wVzut9-3HG2B_s2J3Hq50G3OCnjLaJ6
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2021-12-15_12,2021-12-14_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011
- lowpriorityscore=0 mlxlogscore=827 adultscore=0 priorityscore=1501
- phishscore=0 malwarescore=0 spamscore=0 impostorscore=0 bulkscore=0
- mlxscore=0 suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2110150000 definitions=main-2112150116
+References: <CABJS2x78hO71EAUpe+4xNUb8b5BTypOSOfd4Ati+r6PTq3sopA@mail.gmail.com>
+In-Reply-To: <CABJS2x78hO71EAUpe+4xNUb8b5BTypOSOfd4Ati+r6PTq3sopA@mail.gmail.com>
+From:   Dave Taht <dave.taht@gmail.com>
+Date:   Wed, 15 Dec 2021 13:21:18 -0800
+Message-ID: <CAA93jw6p47ZN4DgRjxGjeYEub5fibo3bwn6mDCd=DqkH-toDTg@mail.gmail.com>
+Subject: Re: Question about QoS hardware offload
+To:     Naveen Mamindlapalli <naveen130617.lkml@gmail.com>
+Cc:     lartc <lartc@vger.kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>, maximmi@nvidia.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dany Madden [drt@linux.ibm.com] wrote:
-> IBMVNIC_STATS_TIMEOUT and IBMVNIC_INIT_FAILED are not used in the driver.
-> Remove them.
-> 
-> Suggested-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-> Signed-off-by: Dany Madden <drt@linux.ibm.com>
-Reviewed-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+On Wed, Dec 15, 2021 at 12:46 PM Naveen Mamindlapalli
+<naveen130617.lkml@gmail.com> wrote:
+>
+> Hi,
+>
+> Our NIC hardware provides a hierarchical QoS tree for each physical
+> link with strict
+> priority and DRR scheduling & also supports traffic shaping at each
+> level. I'm curious what the closest qdisc that supports the above
+> functionalities for offloading to hardware. I looked into htb/drr/prio
+> qdiscs, but each qdisc supports a subset of the functionality enabled
+> by our hardware.
+>
+> As per my understanding, The HTB hardware offload is used for shaping
+> rather than scheduling (strict priority/DRR).
+
+Correct.
+
+> The PRIO qdisc seems to support strict priority but not DRR. Similarly
+> DRR doesn't support strict priority.
+
+My assumption is your hardware does not do 5 tuple FQ for the DRR, but
+leverages the dscp field?
+
+Instead, linux pretty much does a 5 tuple hash universally now for
+packet steering (RPS) and in the sch_fq and fq_codel qdiscs.
+
+I am not really big on strict priority with dscp, as whenever someone
+lucks into the right dscp value they get most of the bandwidth, and
+it's
+more or less a matter of historical accident that the support in
+mqprio/pfifo_fast is not more abused in the field. But that's me.
+
+>
+> Please advise on how to effectively offload all the features.
+>
+> Is the ETS - Enhanced Transmission Selection scheduler a better fit if
+> we simply need to offload scheduling with strict priority and DRR?
+
+Of course, my dream is to see 5 tuple fq-codel or cake land in some
+offload somewhere.
+
+I don't know enough about how when and where ets is used, it's pretty
+new, and I'd lke to know more.
+
+>
+> Thanks,
+> Naveen
+
+
+
+--=20
+I tried to build a better future, a few times:
+https://wayforward.archive.org/?site=3Dhttps%3A%2F%2Fwww.icei.org
+
+Dave T=C3=A4ht CEO, TekLibre, LLC
