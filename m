@@ -2,119 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 958704754FE
-	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 10:18:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 45EFA475542
+	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 10:35:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241102AbhLOJSQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Dec 2021 04:18:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34812 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236009AbhLOJSQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Dec 2021 04:18:16 -0500
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5B9BC06173E
-        for <netdev@vger.kernel.org>; Wed, 15 Dec 2021 01:18:15 -0800 (PST)
-Received: by mail-pf1-x433.google.com with SMTP id 8so20169085pfo.4
-        for <netdev@vger.kernel.org>; Wed, 15 Dec 2021 01:18:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=PuUpV7unZmDgwkYXvnbs8yf/Y2SOw0EcLwtXV3LJfDE=;
-        b=EJj8entE9fccxgKtWpK2X0p2L1Nzsln4+xQCyKlCaPjieIxV4K30Fx70/AxkqNunZC
-         kJPeAQgkePmYa+PSoGPscDigPn9uvqq89tHBq8uAccgzV12ta0i2KSbIioQgrN+WuL6r
-         sBxxLSq+UAPW395eA5SPZNyETeiBBaDIG1sUmqJt+ZKj5eD+3wbiW5/aTGAhAafuKX9g
-         wUuwNLUn9xhVPq/nXQ1K3qX5AwPYM0N2Vo/yqUrQrlki2CXQDDQhD0IbSZL2BXsXPQ1M
-         Alf0ISOpNMzECaq1yfhsK+DWl7Xa4O5VwhtQzBPag0f/zuMgcXcThDfwTUJIugprzE1m
-         a6jw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=PuUpV7unZmDgwkYXvnbs8yf/Y2SOw0EcLwtXV3LJfDE=;
-        b=oMVU2b+TtgsMOuhPeqvQwwoyCBhC8Csrezrj8i6ZLxcgGirhWdwe+GP3Mk7uEg7UID
-         flp3BQQkBJMzIR+uU4edjKfdtxU0iz80LUj87WQVWc7dbt1iWOzB9KhsAD7/foULpm/9
-         1bjm6TDuPhWVe9+HY7e++VsQOUBB79W4qiBZGNUWVaiLREn0g1PUYaTtKt7tKv9MmJWa
-         XfqTLkgFZN37E0OqcLtYY04ryKTfkGy8aV/T8fBCub5I5eJBatg7MVdoW8x4rlqn9z5z
-         Jg/2lx25RZlyaBsM9vg32YNSNmuQ2EQfBZjBMo8lIcEAM5n9Yhgk/gdLEPm9EUZIxjzz
-         rgBQ==
-X-Gm-Message-State: AOAM532zRZofeplbMojqovhW2IeUZaonVPIIwF64FBuo4cx/kY5mTxZj
-        oBN6YnhGU9gqy/9l7t4KcLTOyl4Wtp+vs/DVQSPT4A==
-X-Google-Smtp-Source: ABdhPJweKdAqX4eth/0RRfyhxeipqNSi1Pn37tjp7vkwm8PbUqsllU7qQk/phWZI5KFGpeGw/yMtpaRR3rKlcbgDZ1c=
-X-Received: by 2002:a63:2212:: with SMTP id i18mr7095763pgi.586.1639559895299;
- Wed, 15 Dec 2021 01:18:15 -0800 (PST)
-MIME-Version: 1.0
-References: <20211208040414.151960-1-xiayu.zhang@mediatek.com>
- <CAHNKnsRZpYsiWORgAejYwQqP5P=PSt-V7_i73G1yfh-UR2zFjw@mail.gmail.com>
- <6f4ae1d8b1b53cf998eaa14260d93fd3f4c8d5ad.camel@mediatek.com>
- <CAHNKnsQ6qLcUTiTiPEAp+rmoVtrGOjoY98nQFsrwSWUu-v7wYQ@mail.gmail.com> <76bc0c0174edc3a0c89bb880a237c844d44ac46b.camel@mediatek.com>
-In-Reply-To: <76bc0c0174edc3a0c89bb880a237c844d44ac46b.camel@mediatek.com>
-From:   Loic Poulain <loic.poulain@linaro.org>
-Date:   Wed, 15 Dec 2021 10:29:48 +0100
-Message-ID: <CAMZdPi_bpCdbxsEfh-=-LzGywsmXqoqujg-8H8y1bp2VM5uayw@mail.gmail.com>
-Subject: Re: [PATCH] Add Multiple TX/RX Queues Support for WWAN Network Device
-To:     Xiayu Zhang <xiayu.zhang@mediatek.com>
-Cc:     Sergey Ryazanov <ryazanov.s.a@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
+        id S241205AbhLOJfc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Dec 2021 04:35:32 -0500
+Received: from mga12.intel.com ([192.55.52.136]:42840 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S241191AbhLOJf3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 Dec 2021 04:35:29 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1639560929; x=1671096929;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=9+28yWy+U3CfpAFKhwL5jeZgmxsrrPtqmcm6DyFjsY0=;
+  b=CwTTJX16FQ3ax5u9/OXx381I+yRC5wRFszltf6ZEgNqgt74c/tSINulT
+   4dqwwF39y39Tn+r1L7ti1yR91UB9E2LVyzwZSaoJp5USrmc66HJSc+cKS
+   KZnIqo8q51PrOokzEElrjDywv+KvRNsoYXROBl+ihhC5qPY+pJ0m3SkNg
+   vBBnC2+eGMYSQXt98Qy/efEmDFQO0hFC9lG2+SFBXRZOLFA0o7P4ee2OO
+   HMjE+uvkslcKsEyQz16/kryyYh359RahH5LzV/tDyaJhTgFJttBeH/f3V
+   S90BXrjw+KR1NVutUwWfPvCw7ejjjPBsCsgIGRJ83wiPDSMGbezVwJTrJ
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10198"; a="219204499"
+X-IronPort-AV: E=Sophos;i="5.88,207,1635231600"; 
+   d="scan'208";a="219204499"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Dec 2021 01:35:28 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,207,1635231600"; 
+   d="scan'208";a="604869229"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by FMSMGA003.fm.intel.com with ESMTP; 15 Dec 2021 01:35:27 -0800
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Wed, 15 Dec 2021 01:35:27 -0800
+Received: from orsmsx608.amr.corp.intel.com (10.22.229.21) by
+ ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Wed, 15 Dec 2021 01:35:27 -0800
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ orsmsx608.amr.corp.intel.com (10.22.229.21) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20 via Frontend Transport; Wed, 15 Dec 2021 01:35:27 -0800
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.173)
+ by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.20; Wed, 15 Dec 2021 01:35:26 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=nU3QYp9A72+z/UlrTCkcphV9rVJYOheMH4WphwlLOWGhyFpoN0bTOgX9euX0QJ82oqAB11Khm36XUBjMfUzRMYNgJoceMF8RntaqxKC3dARr7BEWqiU+koWq3jE5kry78IdfrlYPuX0104a58bYZ9MuLI5ysg8vyzEqa+e65w51yxnAXef5UcDZK6eQAkrdjWDWMKzbZLO0kkeZB/xU23Y8RKcujcb0IItd8xGyc2GGxC2syZUcwoFsF2vHrTY/1WL1jbsv8ZamrXuZRMtGzEQMicztdTU9EMpcdiMPUVFLCQR3S//NOkQqYi2iesb12dRMlk8hRFXmwUv+QsAUw5g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=0s43FS5KDUn1hE7qhq1yQ0noBwbzSZJr/qNVRugEof4=;
+ b=Acl4XszjG46xSbuQTwffitGvqJSB2bIPnsiu/Mwa0/pE9iPqBpytvbSXGGkUr1itaSD3ggdOuvYLVjXCPMXgaYsoWbN+fzo/YZuNkGhCFPmuKbHDZJgnrxhBT1JRJPcIxvhGqFHwqlqRFFBaD+TMibbb4NeurcNfu184nEwXeHiKVBT5KvPXDjyl4rliIx5jUPwh8AlKk4Fbn3hNjbaArjBqW4G+GZGMqPrqLTIYHpW0D3HL+gz3zT37h4qUh+3D8hWj/Yk+cB7Z9WjJUsrtNZp16XANqNUs95m8kez6hQe2LR9OTdf627Kge9r7XwPLgdnmlupI6JCVwrfssJXBDQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from CO1PR11MB4771.namprd11.prod.outlook.com (2603:10b6:303:9f::9)
+ by MWHPR11MB1904.namprd11.prod.outlook.com (2603:10b6:300:111::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4778.17; Wed, 15 Dec
+ 2021 09:35:20 +0000
+Received: from CO1PR11MB4771.namprd11.prod.outlook.com
+ ([fe80::116:4172:f06e:e2b]) by CO1PR11MB4771.namprd11.prod.outlook.com
+ ([fe80::116:4172:f06e:e2b%8]) with mapi id 15.20.4778.018; Wed, 15 Dec 2021
+ 09:35:20 +0000
+From:   "Ismail, Mohammad Athari" <mohammad.athari.ismail@intel.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     Oleksij Rempel <o.rempel@pengutronix.de>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        =?UTF-8?B?SGFpanVuIExpdSAo5YiY5rW35YabKQ==?= 
-        <haijun.liu@mediatek.com>,
-        =?UTF-8?B?Wmhhb3BpbmcgU2h1ICjoiJLlj6zlubMp?= 
-        <Zhaoping.Shu@mediatek.com>,
-        =?UTF-8?B?SFcgSGUgKOS9leS8nyk=?= <HW.He@mediatek.com>,
-        srv_heupstream <srv_heupstream@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Voon, Weifeng" <weifeng.voon@intel.com>,
+        "Wong, Vee Khee" <vee.khee.wong@intel.com>
+Subject: RE: [BUG] net: phy: genphy_loopback: add link speed configuration
+Thread-Topic: [BUG] net: phy: genphy_loopback: add link speed configuration
+Thread-Index: AdfwtmkvCyrAW5M4S3mERBKDxICdHAAGBHqAADANSQAAAa06AAAAYHXg
+Date:   Wed, 15 Dec 2021 09:35:20 +0000
+Message-ID: <CO1PR11MB47715A9B7ADB8AF36066DCE6D5769@CO1PR11MB4771.namprd11.prod.outlook.com>
+References: <CO1PR11MB4771251E6D2E59B1B413211FD5759@CO1PR11MB4771.namprd11.prod.outlook.com>
+ <YbhmTcFITSD1dOts@lunn.ch>
+ <CO1PR11MB477111F4B2AF4EFA61D9B7F4D5769@CO1PR11MB4771.namprd11.prod.outlook.com>
+ <Ybm0Bgclc0FP/Q3f@lunn.ch>
+In-Reply-To: <Ybm0Bgclc0FP/Q3f@lunn.ch>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-version: 11.6.200.16
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: d25e84aa-545c-43c7-fc98-08d9bfae3653
+x-ms-traffictypediagnostic: MWHPR11MB1904:EE_
+x-microsoft-antispam-prvs: <MWHPR11MB1904D521DF119655EF7D449CD5769@MWHPR11MB1904.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7691;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 9SI4R5WysPRb0wUbEIuTezqQJyeXEU4fC5nl8jBN0/rcYGeq5AYnyqud+r5GxPeI+wfG6Et69UvnbT0xNkS9Btjmu7e48zz6kNBeBVEHJDqbYI2hZOWPgat1tu1EpCBNvNRorrEmDUI54NtXC8XD19RzZhgUImU7qs3ICbUnRTGz/26tWGcTyk1aoGjcwY3c2AgMH3UCk8UkdsGdgaFqBWOZrV4EFiYSVTzwy1zkMgJNDU3OOLd/RHt/Fe3wVLSiMISlVTVTuYvWphIz5osE5+OJj3233zUZdDOHte+ROXsS6iBCDSeSHNiqlv+MYJ8u1DTUV7tHG2zziSU1+fG6Jtb+bj++a0NEiIZxBYjGwY8NwFh4M2ESMT8PpoF3yb9ub/XTAFIl03iXYTWT3vP5/k/ilMsVq52jvO+TLlsso5tMLkZsNe76p05pLxqUBUY0OgY6jVjvHX76p6MJKEve1W5LBfralbzbQuHN2HEBMvPvIvvvDVRjORGozazjQT2t83YA9DTJATSLTJ121Y6hRWuysbmr31usGUWa4eJxVhWn+wGgL3B/fWwcOYiLUKB2Wv52fTkyXrpF/d0gXBF41694Cua45CQMy4GyyfM7GQFcs55MKn7aQD3ENI+L4V0dnd1U9TH2gHqhWIC+n2Y8QtKLDfGmJzRYA6D2LzJlsnXO0CNMBjxdXhCJbSjMg1ELeo5ehNSCNPO87ofDUWD06Q==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB4771.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(8936002)(54906003)(5660300002)(8676002)(64756008)(76116006)(55016003)(86362001)(6916009)(66446008)(122000001)(6506007)(4326008)(66476007)(66556008)(4744005)(66946007)(316002)(7696005)(38100700002)(33656002)(53546011)(9686003)(2906002)(38070700005)(82960400001)(26005)(71200400001)(52536014)(186003)(83380400001)(107886003)(508600001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?GN/xRawQzJ2OjPImkYQthpkdry1D62GBDaJUFRrAXl1ulObwO8TXmNN6Q1cH?=
+ =?us-ascii?Q?iHvQ93TFo2TZUTQfEyiOHvplOGDabPw+QVVJDbn4Tb/pO/GjENqlHCwA4bq6?=
+ =?us-ascii?Q?nab+lnw4md7lsb4PT3E28jkn9MZjb5clNRiaK4vgk1QWyYWq8Ljt/rh+DX+q?=
+ =?us-ascii?Q?KZidvSxaRdRnGkVaDK6tWhOjZxrXX0hHiew4euBGTsToYepcg6iO/0gDjE9C?=
+ =?us-ascii?Q?0YXNzd9Lp57vs0woS99e8sQu9mD0DXJw8ZiMcvRojgY3qL5oNzFqThow5FGr?=
+ =?us-ascii?Q?alNv4DJ/X5J7Jen9euVIBU8eh8FOdUWNzMk94ZoAEb0Z91jn4OTMkUVLLhP3?=
+ =?us-ascii?Q?//nMnRRALG4JjmUXcVOwLzPyD64ThX2V887/ECHs29ZAL2SNv+H2cuJ+3iEg?=
+ =?us-ascii?Q?CYIIGk9nGxabqzBmonqPnmC7VJr+S7uFWfAxnzvNr3q/6y4lwuXN1xxlusQs?=
+ =?us-ascii?Q?b5JvL7XDe+nwVmRR5/RUYzhVhddNE0NenEQ2nTSPo0G+mhjHUtZfK3ynnKyo?=
+ =?us-ascii?Q?Ojdvr2CUfjBDeBzub4UeEteKGTktr9Wa+flcjhEFxC6tVKx+5ymtdA8chhTY?=
+ =?us-ascii?Q?PEEPE3k2m7ljdD+50Grngk+Tn2hrLLZYaT/OxlDEFoHeS0PFYl5wUyWwAa0n?=
+ =?us-ascii?Q?iLYeQyNfis8/qU0LEt2kDahx2ame9Y3/+h/jwWPNTR6CYeDCUx35HUGybUaf?=
+ =?us-ascii?Q?8N/zkiEt7OPWAxj1oJFdFwW5g9sA5YtrILxev7IUq0LXQSApDWn3oi2+YON3?=
+ =?us-ascii?Q?pfySKGH69UVMJgATTeB1rzhTl/MTezzEbM1GUP/mAeaI8vi9K71RPIlG61wb?=
+ =?us-ascii?Q?cs1OHrHT9LCQAt0Lf+ClkyviNnNt6TyJJ2QxDhFpsr/tI2aHCreVYXvmpn7D?=
+ =?us-ascii?Q?qBxhd86Yk5Z1qASLULLdFNuXMAm/g7Bwx8rrYe/WY32Q5uGHhVZ98ziwsp1f?=
+ =?us-ascii?Q?Pjdj+dWxrj+KQrDJ3J6bdJ9bOM2tRCwDIswrTVO0gvLSLWXvMzu2h/mV3zKX?=
+ =?us-ascii?Q?QT71zSk393G+ggG645GyR6lnv4Q6bMHz7ELw9EWWwXJbbBeh7VNa6e1Z/Pc0?=
+ =?us-ascii?Q?HBSO+5K8N3LyOBzGMYSbzt70sBpUzebyCXWVQXv/mSnfWr9qVVS3RBkJ8cRS?=
+ =?us-ascii?Q?D8tg3KDTP32lo94jAqd9KwUnIr61PcSU+B6KrhDygrXlZOyQ2M4QkzRt4lQz?=
+ =?us-ascii?Q?DnsJhfAKnk0ZNTfWUq5HhmE7EjYdqTWvsAAOkXTk4ZSE19mZpHTqb5AKsvRD?=
+ =?us-ascii?Q?fEengT1LqRI4MlhSLaL9HrEGky3qJGupDs9P1Y4o6NVEGH90ZwXkVJVnhH/2?=
+ =?us-ascii?Q?wQNdvciHTtY08f5LUHQSbWCupu1W8lvQYsNvjBBdQunjd2eQOap0aJkcaYiw?=
+ =?us-ascii?Q?gX16JmJSVm3/8j34KC+pjxIqLkptFFPHWyvweK3lQWpncSmohtccnX+yxiYe?=
+ =?us-ascii?Q?u/VLR7q1+tnX0YFL1Xj+pHIyK8kZm1RNlpZxbgHBJ0+aR9MBVIN8Uvtbi6io?=
+ =?us-ascii?Q?7jfnZhZwl5TfVFg1wyVQ7W0iR3jBBfuXIguNCmcBPIHIQHJmFJEdae8ml9JR?=
+ =?us-ascii?Q?YrqsLyjonSh/Fm6sO0hnqFx0KFlonJN+AxVVs3FtL/fFhqWqpn9kUmMQHlLQ?=
+ =?us-ascii?Q?WT6a5lp/l3NifkQZ6DH29XgTKPUaY7n6/HJ1TslpLYYRH3KzGvEf3mrENLsy?=
+ =?us-ascii?Q?CGjCeEKCcbZIj6FhwEw3knuktFaRwUFvdtb3V7FR9x+RWQrE?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB4771.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d25e84aa-545c-43c7-fc98-08d9bfae3653
+X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Dec 2021 09:35:20.5468
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: cnPmkyCFPLR4zQmd92FQaU28uspjpX6r2MrDqRWHbVoRr2+a4SGW4qiTlav3oWWeGSp5xv6XALjltVTLWA4us856HqFo0sJY0mjI/ilbw4csqxF2osQMhrHSwMDVHih8
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR11MB1904
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Xiayu, Sergey,
 
-> > > > As for the default queues number selection it seems better to
-> > > > implement the RTNL .get_num_rx_queues callback in the WWAN core
-> > > > and
-> > > > call optional driver specific callback through it. Something like
-> > > > this:
-> > > >
-> > > > static unsigned int wwan_rtnl_get_num_tx_queues(struct nlattr
-> > > > *tb[])
-> > > > {
-> > > >     const char *devname = nla_data(tb[IFLA_PARENT_DEV_NAME]);
-> > > >     struct wwan_device *wwandev = wwan_dev_get_by_name(devname);
-> > > >
-> > > >     return wwandev && wwandev->ops && wwandev->ops-
-> > > > >get_num_tx_queues
-> > > > ?
-> > > >               wwandev->ops->get_num_tx_queues() : 1;
-> > > > }
-> > > >
-> > > > static struct rtnl_link_ops wwan_rtnl_link_ops __read_mostly = {
-> > > >     ...
-> > > >     .get_num_tx_queues = wwan_rtnl_get_num_tx_queues,
-> > > > };
-> > > >
-> > > > This way the default queues number selection will be implemented
-> > > > in a
-> > > > less surprising way.
-> > > >
-> > > > But to be able to implement this we need to modify the RTNL ops
-> > > > .get_num_tx_queues/.get_num_rx_queues callback definitions to
-> > > > make
-> > > > them able to accept the RTM_NEWLINK message attributes. This is
-> > > > not
-> > > > difficult since the callbacks are implemented only by a few
-> > > > virtual
-> > > > devices, but can be assumed too intrusive to implement a one
-> > > > feature
-> > > > for a single subsystem.
 
-I agree with this solution. The wwan core can forward
-get_num_tx_queues to per wwan driver callbacks or simply rely on a
-'default_tx_queues' field in ops struct. As said previously, you need
-a user for this change in the same series.
+> -----Original Message-----
+> From: Andrew Lunn <andrew@lunn.ch>
+> Sent: Wednesday, December 15, 2021 5:23 PM
+> To: Ismail, Mohammad Athari <mohammad.athari.ismail@intel.com>
+> Cc: Oleksij Rempel <o.rempel@pengutronix.de>; netdev@vger.kernel.org;
+> linux-kernel@vger.kernel.org; Voon, Weifeng <weifeng.voon@intel.com>;
+> Wong, Vee Khee <vee.khee.wong@intel.com>
+> Subject: Re: [BUG] net: phy: genphy_loopback: add link speed configuratio=
+n
+>=20
+> > Thanks for the suggestion. The proposed solution also doesn't work. Sti=
+ll
+> get -110 error.
+>=20
+> Please can you trace where this -110 comes from. Am i looking at the wron=
+g
+> poll call?
 
-Regards,
-Loic
+I did read the ret value from genphy_soft_reset() and phy_read_poll_timeout=
+().
+The -110 came from phy_read_poll_timeout().
+
+-Athari-
+
+>=20
+> Thanks
+> 	Andrew
