@@ -2,47 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EBB4947612F
-	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 19:55:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E8D50476133
+	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 19:56:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344078AbhLOSzf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Dec 2021 13:55:35 -0500
-Received: from mga18.intel.com ([134.134.136.126]:24022 "EHLO mga18.intel.com"
+        id S1344084AbhLOSzg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Dec 2021 13:55:36 -0500
+Received: from mga18.intel.com ([134.134.136.126]:23972 "EHLO mga18.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1344072AbhLOSzN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1344071AbhLOSzN (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 15 Dec 2021 13:55:13 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1639594513; x=1671130513;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=GRrGATW9Q8cGPxl82Dc63IVG+WZSxYNjipZPugDtlws=;
-  b=FpAsMoOupHWKcVwuttZ4mPbuPm8a5O8kdVrkO/lTeKjDss46TLt//btD
-   oL9MZIutwNWnRmqw6relzK5EbL0TSvCzx0fROT/zkoh/ONj2D0Auz+u0U
-   ZZVrO8GH1HAcZlXYwbHRmZ2ooJjD7S78ILfsMDm+GNZvX/XUNjZwGakSo
-   Ups6HDYCUwBNKn4f6RT9yEjVg2bju2rtWpgaXQ5rr6sLiAY9+xCFW426N
-   FCX2QKyzXmR0RaonO/jQdZ/wxjhZZsGtMrktK2BW6F0HbTALKloIM475i
-   1+6Vl16U7YwyjBgJ7YYT4YRKTM91/l6uzJPFiDUESSs91Xwjun7hHXFWh
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10199"; a="226169614"
+  bh=VtJLLd7GLaeGs4+dAalUo4ReM9Mw/fYgR0PmNYX0QH4=;
+  b=IczkTAl66bDujQLoPztHUWWd6PQ3qKTrxVjrXbv3Dd7H5s7n4RM/R2gV
+   VujgQjmKKj44NRdxcE6s0tOq4DXJEXS+n3mKYZqF9K1kIFcj7+VloiUlI
+   6KO+fSY3+jly7YBnjmgqil0k8sTcPSTdOFUOsqGzDt8KHWGTURP2T2v9x
+   hc/x7RcHTN4Jfn5iW0NVweHhOi0QadAED9PZjIL1HVeZ28i3seJrJ327U
+   afN2OGYQt4h/hQe/axlrSvYWgXWlT7ZlC1+HEEKzcmnxLhw27McsxirXZ
+   avvq6VyucA5rl+EFJ7+UvbMtjCSTVAflyCUzo6fbKuXkXjLogvOCvgXqU
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10199"; a="226169615"
 X-IronPort-AV: E=Sophos;i="5.88,207,1635231600"; 
-   d="scan'208";a="226169614"
+   d="scan'208";a="226169615"
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
   by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Dec 2021 10:54:55 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,207,1635231600"; 
-   d="scan'208";a="465729952"
+   d="scan'208";a="465729955"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by orsmga006.jf.intel.com with ESMTP; 15 Dec 2021 10:54:54 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
         netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        Piotr Raczynski <piotr.raczynski@intel.com>,
         Gurucharan G <gurucharanx.g@intel.com>
-Subject: [PATCH net-next 7/9] ice: use prefetch methods
-Date:   Wed, 15 Dec 2021 10:53:53 -0800
-Message-Id: <20211215185355.3249738-8-anthony.l.nguyen@intel.com>
+Subject: [PATCH net-next 8/9] ice: tighter control over VSI_DOWN state
+Date:   Wed, 15 Dec 2021 10:53:54 -0800
+Message-Id: <20211215185355.3249738-9-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211215185355.3249738-1-anthony.l.nguyen@intel.com>
 References: <20211215185355.3249738-1-anthony.l.nguyen@intel.com>
@@ -54,75 +53,65 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jesse Brandeburg <jesse.brandeburg@intel.com>
 
-The kernel provides some prefetch mechanisms to speed up commonly
-cold cache line accesses during receive processing. Since these are
-software structures it helps to have these strategically placed
-prefetches.
+The driver had comments to the effect of: This flag should be set before
+calling this function. While reviewing code it was found that there were
+several violations of this policy, which could introduce hard to find
+bugs or races.
 
-Be careful to call BQL prefetch complete only for non XDP queues.
+Fix the violations of the "VSI DOWN state must be set before calling
+ice_down" and make checking the state into code with a WARN_ON.
 
-Co-developed-by: Piotr Raczynski <piotr.raczynski@intel.com>
-Signed-off-by: Piotr Raczynski <piotr.raczynski@intel.com>
 Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
 Tested-by: Gurucharan G <gurucharanx.g@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
-Testing Hints:
-Run AF_XDP socket and then terminate it or run xdp2
-sample and send some traffic into the port.
+Testing Hints: legacy-rx private flag disable/enable forgot to set this
+previously and is a way to trigger the down/up path.
 
-Performance numbers for xdp2 sample are not noticeably
-affected by introducing branch from this patch.
+ drivers/net/ethernet/intel/ice/ice_ethtool.c | 6 ++++--
+ drivers/net/ethernet/intel/ice/ice_main.c    | 7 ++++---
+ 2 files changed, 8 insertions(+), 5 deletions(-)
 
- drivers/net/ethernet/intel/ice/ice_txrx.c | 13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.c b/drivers/net/ethernet/intel/ice/ice_txrx.c
-index 12a2edd13877..de9247d45c39 100644
---- a/drivers/net/ethernet/intel/ice/ice_txrx.c
-+++ b/drivers/net/ethernet/intel/ice/ice_txrx.c
-@@ -3,8 +3,9 @@
- 
- /* The driver transmit and receive code */
- 
--#include <linux/prefetch.h>
- #include <linux/mm.h>
-+#include <linux/netdevice.h>
-+#include <linux/prefetch.h>
- #include <linux/bpf_trace.h>
- #include <net/dsfield.h>
- #include <net/xdp.h>
-@@ -219,6 +220,10 @@ static bool ice_clean_tx_irq(struct ice_tx_ring *tx_ring, int napi_budget)
- 	struct ice_tx_desc *tx_desc;
- 	struct ice_tx_buf *tx_buf;
- 
-+	/* get the bql data ready */
-+	if (!ice_ring_is_xdp(tx_ring))
-+		netdev_txq_bql_complete_prefetchw(txring_txq(tx_ring));
-+
- 	tx_buf = &tx_ring->tx_buf[i];
- 	tx_desc = ICE_TX_DESC(tx_ring, i);
- 	i -= tx_ring->count;
-@@ -232,6 +237,9 @@ static bool ice_clean_tx_irq(struct ice_tx_ring *tx_ring, int napi_budget)
- 		if (!eop_desc)
- 			break;
- 
-+		/* follow the guidelines of other drivers */
-+		prefetchw(&tx_buf->skb->users);
-+
- 		smp_rmb();	/* prevent any other reads prior to eop_desc */
- 
- 		ice_trace(clean_tx_irq, tx_ring, tx_desc, tx_buf);
-@@ -2265,6 +2273,9 @@ ice_xmit_frame_ring(struct sk_buff *skb, struct ice_tx_ring *tx_ring)
- 		return NETDEV_TX_BUSY;
+diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool.c b/drivers/net/ethernet/intel/ice/ice_ethtool.c
+index aefd9c3d450b..e2e3ef7fba7f 100644
+--- a/drivers/net/ethernet/intel/ice/ice_ethtool.c
++++ b/drivers/net/ethernet/intel/ice/ice_ethtool.c
+@@ -1280,8 +1280,10 @@ static int ice_set_priv_flags(struct net_device *netdev, u32 flags)
  	}
+ 	if (test_bit(ICE_FLAG_LEGACY_RX, change_flags)) {
+ 		/* down and up VSI so that changes of Rx cfg are reflected. */
+-		ice_down(vsi);
+-		ice_up(vsi);
++		if (!test_and_set_bit(ICE_VSI_DOWN, vsi->state)) {
++			ice_down(vsi);
++			ice_up(vsi);
++		}
+ 	}
+ 	/* don't allow modification of this flag when a single VF is in
+ 	 * promiscuous mode because it's not supported
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index 452fa28f8967..865f2231bb24 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -6229,14 +6229,15 @@ static void ice_napi_disable_all(struct ice_vsi *vsi)
+ /**
+  * ice_down - Shutdown the connection
+  * @vsi: The VSI being stopped
++ *
++ * Caller of this function is expected to set the vsi->state ICE_DOWN bit
+  */
+ int ice_down(struct ice_vsi *vsi)
+ {
+ 	int i, tx_err, rx_err, link_err = 0;
  
-+	/* prefetch for bql data which is infrequently used */
-+	netdev_txq_bql_enqueue_prefetchw(txring_txq(tx_ring));
+-	/* Caller of this function is expected to set the
+-	 * vsi->state ICE_DOWN bit
+-	 */
++	WARN_ON(!test_bit(ICE_VSI_DOWN, vsi->state));
 +
- 	offload.tx_ring = tx_ring;
- 
- 	/* record the location of the first descriptor for this packet */
+ 	if (vsi->netdev && vsi->type == ICE_VSI_PF) {
+ 		netif_carrier_off(vsi->netdev);
+ 		netif_tx_disable(vsi->netdev);
 -- 
 2.31.1
 
