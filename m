@@ -2,159 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C263475B40
-	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 15:59:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A3D2475B51
+	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 16:04:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230093AbhLOO71 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Dec 2021 09:59:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57244 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230210AbhLOO71 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Dec 2021 09:59:27 -0500
-Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3C7FC06173E
-        for <netdev@vger.kernel.org>; Wed, 15 Dec 2021 06:59:26 -0800 (PST)
-Received: by mail-il1-x132.google.com with SMTP id w1so19596251ilh.9
-        for <netdev@vger.kernel.org>; Wed, 15 Dec 2021 06:59:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=egauge.net; s=google;
-        h=message-id:subject:from:to:cc:date:in-reply-to:references
-         :organization:user-agent:mime-version:content-transfer-encoding;
-        bh=FGUzSktIeEIDsFM8vyYCPEieWo/StazW6rU1WrCQ4Sc=;
-        b=X0s1Sl8WfdAvOXQqlGhOh24HfvJJ3OSaVj96SkWh09YHVwiKfY/yPCVVOJF26OBdFg
-         QtIR98y2KTv+W/cC6cxX0RZKWgxSJ88ScuWnb4+HzFeR8uBrOtHCeVeX/w6iXQGgUf8f
-         IaI8NhsxEBLFCtYJWzwpuqh/sDDRk1fVkHEs04l8I7vacetXVtot/8GsPPgZdC+PALhx
-         0vFG09L+UJ2zXlsUiXNcen53SYy16qg9FC21A+4oMS6ouR0TQZggUHIlD27A8BqbQNwZ
-         euA+tLdnegY5HO5BcaLCYRpqVTS8PYDr9XqG9YI+oMFbmCoiXQ2Xb0m1vXGnXOkcrfnT
-         Tf2A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:organization:user-agent:mime-version
-         :content-transfer-encoding;
-        bh=FGUzSktIeEIDsFM8vyYCPEieWo/StazW6rU1WrCQ4Sc=;
-        b=462G1qsTzzt6UY52IcI/ytIWcnJGYsvxQ3wNr5X+4M60G35yToweOiR2mT1fp+aAuR
-         UpR9NwveIopW2cO0JEqQP84AJcKDXK6Pi8RF8wppztTpC39cOWTyiYOl+GieoL3SThJc
-         hAy3IJqasn2OsCcHm98KVUqgIjewmZXQxzutPLNQA8Rct+baCwualcxquVWM0mkXm1ib
-         AJs+nh5F7RKIz1fNE3GjsiVMi3v1EEt6Psb/ZyUvwbUa0FXvWrXDABDeNd6bYVmIuQEo
-         IXaT2egqzi6Ti6lve1Ywx8FQnQH3F1fcgK8izUT6u1L8jVqGONFUR1opUY2RxH62boFx
-         N8Bw==
-X-Gm-Message-State: AOAM5311S4ztuYFLKlPPivyw4PReomVoFph8BwTt2uh4Vb5mGyQpkX9R
-        /LbpbQO2DcmsCoyGz4Aq5fR1BlaVC/xwD28=
-X-Google-Smtp-Source: ABdhPJyr96cALkbCjBKoe8urBSmD4Rj9c9Bsxrk9TkZIYGeCPzjxC8N2fJsHIUld2UFGjLX3IVrBUQ==
-X-Received: by 2002:a05:6e02:1c85:: with SMTP id w5mr6640419ill.211.1639580366235;
-        Wed, 15 Dec 2021 06:59:26 -0800 (PST)
-Received: from ?IPv6:2601:281:8300:4e0:2ba9:697d:eeec:13b? ([2601:281:8300:4e0:2ba9:697d:eeec:13b])
-        by smtp.gmail.com with ESMTPSA id i1sm1086042ilv.54.2021.12.15.06.59.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Dec 2021 06:59:25 -0800 (PST)
-Message-ID: <9cfbcc99f8a70ba2c03a9ad99f273f12e237e09f.camel@egauge.net>
-Subject: Re: [PATCH v5 1/2] wilc1000: Add reset/enable GPIO support to SPI
- driver
-From:   David Mosberger-Tang <davidm@egauge.net>
-To:     Claudiu.Beznea@microchip.com, Ajay.Kathat@microchip.com
-Cc:     adham.abozaeid@microchip.com, davem@davemloft.net,
-        devicetree@vger.kernel.org, kuba@kernel.org, kvalo@codeaurora.org,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, robh+dt@kernel.org
-Date:   Wed, 15 Dec 2021 07:59:05 -0700
-In-Reply-To: <d55a2558-b05d-5995-b0f0-f234cb3b50aa@microchip.com>
-References: <20211215030501.3779911-1-davidm@egauge.net>
-         <20211215030501.3779911-2-davidm@egauge.net>
-         <d55a2558-b05d-5995-b0f0-f234cb3b50aa@microchip.com>
-Organization: eGauge Systems LLC
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5-0ubuntu1 
+        id S242156AbhLOPD4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Dec 2021 10:03:56 -0500
+Received: from mga07.intel.com ([134.134.136.100]:29065 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229623AbhLOPDz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 Dec 2021 10:03:55 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1639580635; x=1671116635;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=RT7wwlzfQgCt7UrqjWS02XgK8kU4dDVX1Qy7mX2o0dU=;
+  b=YW6eveOOYnmkeQJbK+dLzWKBS9PqONgUV0qY0FhfSF2XzuXrrb0YOvWp
+   OpacihpZIPVmQDtZ52PX6J5UJ+ASaWiqZh/RAFtpHAuehyi15gMyWbp+S
+   v2m/t1A6cyK3xXICJTCp88w3WADjybbvWcjix4QTkn1jIx45GUnUxXp10
+   2KC9r18TgqkQpaJXKE2lj9rdpwhCSeFKbSwvVTVzXHP/wRJLu5PkpguLg
+   DdHiSdmgRJ8dT3/0xlt0WGPuHFDik5+FEadPuEFALouVNhlkGE9GcwCQT
+   5XGO7IIT++XrkaLeduSoFruFtLwn/kKOaDEjIAP1WNDC2PpBp/PA9Z9Q2
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10198"; a="302618151"
+X-IronPort-AV: E=Sophos;i="5.88,207,1635231600"; 
+   d="scan'208";a="302618151"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Dec 2021 07:03:55 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,207,1635231600"; 
+   d="scan'208";a="682527033"
+Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
+  by orsmga005.jf.intel.com with ESMTP; 15 Dec 2021 07:03:54 -0800
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Wed, 15 Dec 2021 07:03:54 -0800
+Received: from fmsmsx604.amr.corp.intel.com (10.18.126.84) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Wed, 15 Dec 2021 07:03:54 -0800
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ fmsmsx604.amr.corp.intel.com (10.18.126.84) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20 via Frontend Transport; Wed, 15 Dec 2021 07:03:53 -0800
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (104.47.73.49) by
+ edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.20; Wed, 15 Dec 2021 07:03:53 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=kjVXPTtDAa3IUCJlYe04cl4oxmGENBoffWqQscAcm2kcgvkT61MoV5QXXiMt5WwosZ26BvAuv0HFrTYUNH0K3zKAW1pBhCAK9mEqg4VFiYFGk95LnFSno2MlCqCnokRfa5xwD9Tz8Ze/lNcXs9pOAsCQI/7SeXReHMrtodgqOOtG4idkotz3KeDToBOedwmMZxZ4DPNzAjAIEeDmES3hG3B0HSb+dXG2dhNRLCn5TQUara4JCCesFcmzHwowCwxI8/VJVXpoa1yUQJjpaTAJRi4mbfNd35MMtLOrRm+9U+NPa2ylzOiKwMu3dlqugQzYYQTh4mdpPAPOjGp0L6NSfw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=kXf6lKOI6pjSGm0BbDzXKlrfLtf8+CY8ubtzAvN3blo=;
+ b=hg/SFxpbLMhY0AYutdh68ww3X6NleSm8MMusaMGY/Pg+vRWgwSZWDVOahbkgnMaOshbOfQe0E1ZgrNcb9JUy+QTS0QdBG7RxzeKNLhSJUzjwW6MzCsv+NfzpTMNpo7hMcd5Cb0kcDV3Rxp7mDSOFMwL5kUftAgqahM2q1orgFxhNOoCQv7Z2/m75kHki3b11i280YI6t/uNmZ2xO7vszFjwzj3TUdBIqJW5Fttm1QuMzDLE/siBM8tURs2EHNrMMG7M03fIggHkS/RSIPpK7K+OQYvZLC7gomiXO4ZnQVya+m2Q7NvYF/WIP/AWva+8HLF4gWNqBTmP08AeGZoIM1Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from CO1PR11MB4771.namprd11.prod.outlook.com (2603:10b6:303:9f::9)
+ by MWHPR11MB1792.namprd11.prod.outlook.com (2603:10b6:300:10b::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4778.18; Wed, 15 Dec
+ 2021 15:03:52 +0000
+Received: from CO1PR11MB4771.namprd11.prod.outlook.com
+ ([fe80::116:4172:f06e:e2b]) by CO1PR11MB4771.namprd11.prod.outlook.com
+ ([fe80::116:4172:f06e:e2b%8]) with mapi id 15.20.4778.018; Wed, 15 Dec 2021
+ 15:03:52 +0000
+From:   "Ismail, Mohammad Athari" <mohammad.athari.ismail@intel.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Voon, Weifeng" <weifeng.voon@intel.com>,
+        "Wong, Vee Khee" <vee.khee.wong@intel.com>
+Subject: RE: [BUG] net: phy: genphy_loopback: add link speed configuration
+Thread-Topic: [BUG] net: phy: genphy_loopback: add link speed configuration
+Thread-Index: AdfwtmkvCyrAW5M4S3mERBKDxICdHAAGBHqAADANSQAAAa06AAAAYHXgAAC+sIAACnbKwA==
+Date:   Wed, 15 Dec 2021 15:03:52 +0000
+Message-ID: <CO1PR11MB47710EE8587C6F4A4D40851ED5769@CO1PR11MB4771.namprd11.prod.outlook.com>
+References: <CO1PR11MB4771251E6D2E59B1B413211FD5759@CO1PR11MB4771.namprd11.prod.outlook.com>
+ <YbhmTcFITSD1dOts@lunn.ch>
+ <CO1PR11MB477111F4B2AF4EFA61D9B7F4D5769@CO1PR11MB4771.namprd11.prod.outlook.com>
+ <Ybm0Bgclc0FP/Q3f@lunn.ch>
+ <CO1PR11MB47715A9B7ADB8AF36066DCE6D5769@CO1PR11MB4771.namprd11.prod.outlook.com>
+ <Ybm7jVwNfj01b7S4@lunn.ch>
+In-Reply-To: <Ybm7jVwNfj01b7S4@lunn.ch>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-version: 11.6.200.16
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 8c9bc89a-9e4c-4970-f1b2-08d9bfdc1ba0
+x-ms-traffictypediagnostic: MWHPR11MB1792:EE_
+x-microsoft-antispam-prvs: <MWHPR11MB1792F6F9A4B07BCC1D54BDFED5769@MWHPR11MB1792.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: X/gjfs+Je2NA8b52ZoWa3p9/ZcTV7O1TE25CX7WHKFLkrHOkm4ncZlqjTj68mj2TfxNfxpV0I6vXq8jMDfvfJj+LSLDafOMN0D3iXCKRe72KobArczCFVYFBVPuUDtmtOJWlW/fU0EyVwl650UZotoBybriUsduwuWsS6C98aONTNcx5EczL4A54h6CgT/AE6zY3JIMqBt/eKZ/+4F/9ZRSKv0hDlhMTYbVvBPU/KMkRra9NmqcAOv91KuuFds5y5yDWye/WqSDxinwYLM97T3GdrVKM6e4qGE+Ny67/O2uLNkc0kfc0+TYSbfP67+5lw5xadj3B+R7e1c58YQLDH5+U79drXz6ZNzfTkXNZAr+J6goM/RIPakzzL5RFeV/XD1mYwgOgmQKh2SfjHbyabwwgc0xSrM3WckYuiMxgEvlYhnxkgaFwPXgQQOwTlACkfNr1qXH5k61UFnQvB8nC7l85jKW6LNBEarQdh4QUNjOIuWneMCN6JYUv3aWL8aVnodoFeVAOZofoLZ+WY1FYCV8OKg2b9lT8sqvVfvvr6LoguJ6BvLLSvWoDdX2D9EgKsbwOsJsKdK4LtJLSqnssdBBAn2telEW94baYpU93IKypv1b2l1i9dohg4GTtvt3O27U8DmhDZu0NegwG1iRGIewty1vdbjRlAkIOC0jPPcJhCPxMBNIYpo3Mxe2QbH5gFBuNsuEX8R31l5iMRsBTrQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB4771.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(83380400001)(26005)(52536014)(107886003)(2906002)(8676002)(186003)(5660300002)(8936002)(53546011)(6916009)(64756008)(316002)(82960400001)(54906003)(7696005)(6506007)(38070700005)(66476007)(66446008)(66946007)(66556008)(71200400001)(55016003)(508600001)(9686003)(76116006)(122000001)(38100700002)(86362001)(33656002)(4326008);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?oip6Ew1cF9A15rUjadBb3Cd60Vn0KCRAlKFI3nEjyFnf50ga+LX6SsgqctSW?=
+ =?us-ascii?Q?F/kc7O/obCONIXNdEUkGdpS76GpdasiL4dEGEfPc3Tgn657iNeyclz7MNZo4?=
+ =?us-ascii?Q?OYo8xJEPAbsokss3yeGSjtwHvcXe4zWBWPeKjJios6IH5gaG2+0VXK+VU6xs?=
+ =?us-ascii?Q?i1HNA2+59rou7VyyR208scxKCWMqVa9DtPj3rilMZD57lujsntR6GEGSSdTf?=
+ =?us-ascii?Q?v645BbqdXgD+wl9AoqBVI1LJt2mPWjrj3e1bitikcrCQodcHhMiGT39esFFQ?=
+ =?us-ascii?Q?DhReXYGg055kFfBXqHfV0/1UQItBOwzkeE1gAALejjYUMH29RQvkMsYVANTC?=
+ =?us-ascii?Q?wlYA7zDGPuZXMm7Qwzsm//pyoTDtI2yN/sEoQiK3DL81csLIzpmAKeiZDaiB?=
+ =?us-ascii?Q?loTRMqwRZFgGRrXigNZUyv/JAf0rJUfDkj0xYhsn/WkJd6+uIOCAAX9weeMp?=
+ =?us-ascii?Q?nZ8stmzYXt1g+Bp/NBF5hSYaxHV6Mtn1kprZu7I0hFOy4mtjtin82uHFK4x2?=
+ =?us-ascii?Q?h3ThyFKHFa3WkmMrw5dvnGs+rBuaOuXbe0ibEY1WIddpK6729cE/gPqMiR/P?=
+ =?us-ascii?Q?PErxJq65EfL49jm9Qh1ZkK6S4xnTfkdSizUh4dvw+bTZHA+NmVWLT5AoRsQT?=
+ =?us-ascii?Q?OCcXtV3xo7TSwq1xEEVFB1lHdt72vCtbZ9OBcFKhbvZVqlRFce9DUWR2N7W3?=
+ =?us-ascii?Q?W9uZXCTLgl80B8e9dGVggSjFnsxWwbPEA7Uelev85X6RAh0FwB10O90TcxRl?=
+ =?us-ascii?Q?CV+3BqStK25IIMkMPIKRTOWTcEQA0nMsS8WAtQ8Q+AZhGYXSKYi14pkw3pDq?=
+ =?us-ascii?Q?D21dCl1hrRH0coiVnvOX3ybNQUcKxTHao//1WApzdvMhKVHAZSai+yCNnX+u?=
+ =?us-ascii?Q?OrTSM9o7Uvwx6SjAa96c8NamK4UujDr1RSLok4jwMD81+RZ9zH9+tDqp1fsh?=
+ =?us-ascii?Q?c2KLkZErJx2Nbt8liyQoQ07AyUa9rK2YETwktpoeS7r0LXqYii9ZhpRzDUcR?=
+ =?us-ascii?Q?WJPa7jIw1tKEU43jZv6I4aFAn3Vq6GXtMHe5YkYfUuzSyUIDyq4WAEdNviT4?=
+ =?us-ascii?Q?fLWPvkwIh7cICRwkLZktj10nzXGVZRLEoLiUu+S3wbrdj1nglM2ZrJEoDpP1?=
+ =?us-ascii?Q?dAdeLcL2Xyn4aU5CdywJg5+oXD6CWkS11NLWaazOcwYmzvJaTKq/nTjkhvBa?=
+ =?us-ascii?Q?iA0NJ6aN8D5N/OWmz/chO6MywNXNQibsut3vPdI0yzsv6Q3mb6ZsToaeNnKA?=
+ =?us-ascii?Q?M0TgIwhMXAYf54m933TLDDasl9HnZL5gobJvVvEbpe9dG1z/7KH3KpqVmry0?=
+ =?us-ascii?Q?ankhY4x+LdGeLmanTO4iL+8EtW1TAznUNBXeVgL+wnMmU1G3t4POwW1SOp7A?=
+ =?us-ascii?Q?mjkZ1EFrpqeo8bodd7+//j2LWheW7RBTFiLlInfIt1VETuF32RD9LnR/2ZEF?=
+ =?us-ascii?Q?Wt2k877VJA5Pnjj+kpUM0AYXDO5hQIwmi0EqxAsSpluiI+QhNn3QRrVW+hqN?=
+ =?us-ascii?Q?+kYOIlaXUd6KaBA1M+Zrzt5fRMCesKmT4svxHYNry986J77rSIL4HP7yPibx?=
+ =?us-ascii?Q?HqNmNQOYaJwWtVK/FJ6prYcIZZY5Yc/iYrbNZRVRY2cUOUjrj/DyDzFeOejC?=
+ =?us-ascii?Q?Y9f0iyk+8MiKV0DUYjzLc3NFA5b7+U64CM+LTfo2Igx5upvKmtH0Eyk5YjbM?=
+ =?us-ascii?Q?w3WiFOqkZSPMHnCnocdHIZK6zwKMxYJySaAP6fSx/i4Reh/G?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB4771.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8c9bc89a-9e4c-4970-f1b2-08d9bfdc1ba0
+X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Dec 2021 15:03:52.5036
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 1wh90lolYo5wwAWRFdBbglsxWA2C0FlPkHFC4rLy5yrBBWrwa3ohq4QjTjNm0lMlMR8d5y4kPO0af41bbNaPqX9XRB2w/qi3munJI46ZOhWyiUP5i6mRcdbsCXq2u/D9
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR11MB1792
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2021-12-15 at 06:41 +0000, Claudiu.Beznea@microchip.com wrote:
-> On 15.12.2021 05:05, David Mosberger-Tang wrote:
-> > 
-> +static int wilc_parse_gpios(struct wilc *wilc)
-> > +{
-> > +       struct spi_device *spi = to_spi_device(wilc->dev);
-> > +       struct wilc_spi *spi_priv = wilc->bus_data;
-> > +       struct wilc_gpios *gpios = &spi_priv->gpios;
-> > +
-> > +       /* get ENABLE pin and deassert it (if it is defined): */
-> > +       gpios->enable = devm_gpiod_get_optional(&spi->dev,
-> > +                                               "enable", GPIOD_OUT_LOW);
-> > +       /* get RESET pin and assert it (if it is defined): */
-> > +       if (gpios->enable) {
-> > +               /* if enable pin exists, reset must exist as well */
-> > +               gpios->reset = devm_gpiod_get(&spi->dev,
-> > +                                             "reset", GPIOD_OUT_HIGH);
-> 
-> As far as I can tell form gpiolib code the difference b/w GPIOD_OUT_HIGH
-> and GPIOD_OUT_LOW in gpiolib is related to the initial value for the GPIO.
 
-Yes.
 
-> Did you used GPIOD_OUT_HIGH for reset to have the chip out of reset at this
-> point?
+> -----Original Message-----
+> From: Andrew Lunn <andrew@lunn.ch>
+> Sent: Wednesday, December 15, 2021 5:55 PM
+> To: Ismail, Mohammad Athari <mohammad.athari.ismail@intel.com>
+> Cc: Oleksij Rempel <o.rempel@pengutronix.de>; netdev@vger.kernel.org;
+> linux-kernel@vger.kernel.org; Voon, Weifeng <weifeng.voon@intel.com>;
+> Wong, Vee Khee <vee.khee.wong@intel.com>
+> Subject: Re: [BUG] net: phy: genphy_loopback: add link speed configuratio=
+n
+>=20
+> > > -----Original Message-----
+> > > From: Andrew Lunn <andrew@lunn.ch>
+> > > Sent: Wednesday, December 15, 2021 5:23 PM
+> > > To: Ismail, Mohammad Athari <mohammad.athari.ismail@intel.com>
+> > > Cc: Oleksij Rempel <o.rempel@pengutronix.de>;
+> > > netdev@vger.kernel.org; linux-kernel@vger.kernel.org; Voon, Weifeng
+> > > <weifeng.voon@intel.com>; Wong, Vee Khee
+> <vee.khee.wong@intel.com>
+> > > Subject: Re: [BUG] net: phy: genphy_loopback: add link speed
+> > > configuration
+> > >
+> > > > Thanks for the suggestion. The proposed solution also doesn't
+> > > > work. Still
+> > > get -110 error.
+> > >
+> > > Please can you trace where this -110 comes from. Am i looking at the
+> > > wrong poll call?
+> >
+> > I did read the ret value from genphy_soft_reset() and
+> phy_read_poll_timeout().
+> > The -110 came from phy_read_poll_timeout().
+>=20
+> O.K.
+>=20
+> Does the PHY actually do loopback, despite the -110?
 
-No, ~RESET is an active-low signal.  GPIOD_OUT_LOW should really be
-called GPIOD_OUT_DEASSERTED or something like that.  The code ensures
-that the chip is in RESET and ~ENABLEd after parsing the GPIOs.
+As Intel Elkhart Lake is using stmmac driver, in stmmac_selftest, return va=
+lue of phy_loopback() is checked as well. If it return -110, the selftest t=
+hat using PHY loopback will be recorded as -110 (fail).
 
-> > +               if (IS_ERR(gpios->reset)) {
-> > +                       dev_err(&spi->dev, "missing reset gpio.\n");
-> > +                       return PTR_ERR(gpios->reset);
-> > +               }
-> > +       } else {
-> > +               gpios->reset = devm_gpiod_get_optional(&spi->dev,
-> > +                                                      "reset", GPIOD_OUT_HIGH);
-> > +       }
-> > +       return 0;
-> > +}
-> > +
-> > +static void wilc_wlan_power(struct wilc *wilc, bool on)
-> > +{
-> > +       struct wilc_spi *spi_priv = wilc->bus_data;
-> > +       struct wilc_gpios *gpios = &spi_priv->gpios;
-> > +
-> > +       if (on) {
-> > +               gpiod_set_value(gpios->enable, 1);      /* assert ENABLE */
-> > +               mdelay(5);
-> > +               gpiod_set_value(gpios->reset, 0);       /* deassert RESET */
-> 
-> From what I can tell from gpiolib code, requesting the pin from device tree
-> with:
-> 
-> +        reset-gpios = <&pioA 6 GPIO_ACTIVE_LOW>;
-> 
-> makes the value written with gpiod_set_value() to be negated, thus the 0
-> written here is translated to a 1 on the pin. Is there a reason you did it
-> like this?
+>=20
+> I'm wondering if we should ignore the return value from
+> phy_read_poll_timeout().
 
-Yes, of course.  RESET is an active-low signal, as defined in the
-datasheet.
+Removing/ignoring the return value from phy_read_poll_timeout() can work. B=
+ut, the -110 error message will be displayed in dmesg. It is because there =
+is phydev_err() as part of phy_read_poll_timeout() definition.
 
-> Would it have been simpler to have both pins requested with
-> GPIO_ACTIVE_HIGH and here to do gpiod_set_value(gpio, 1) for both of the
-> pin. In this way, at the first read of the code one one would have been
-> telling that it does what datasheet specifies: for power on toggle enable
-> and reset gpios from 0 to 1 with a delay in between.
+-Athari-
 
-I think you're confusing 0 and 1 with low-voltage and high-voltage.  0
-means de-assert the signal, 1 means assert the signal.  Whether that
-translates to a low voltage or a high voltage depends on whether the
-signal a active-low or active-high.
-
-> 
-> 
-> > +       } else {
-> > +               gpiod_set_value(gpios->reset, 1);       /* assert RESET */
-> > +               gpiod_set_value(gpios->enable, 0);      /* deassert ENABLE */
-> 
-> I don't usually see comments near the code line in kernel. Maybe move them
-> before the actual code line or remove them at all as the code is impler enough?
-
-You're kidding, right?
-
-  --david
-
+>=20
+> 	Andrew
