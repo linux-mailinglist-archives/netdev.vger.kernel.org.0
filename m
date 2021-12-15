@@ -2,109 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 17F8F475577
-	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 10:51:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 42803475580
+	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 10:52:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236454AbhLOJvW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Dec 2021 04:51:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42326 "EHLO
+        id S241308AbhLOJvt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Dec 2021 04:51:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236291AbhLOJvV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Dec 2021 04:51:21 -0500
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 952B1C061574
-        for <netdev@vger.kernel.org>; Wed, 15 Dec 2021 01:51:21 -0800 (PST)
-Received: by mail-yb1-xb33.google.com with SMTP id y68so53670483ybe.1
-        for <netdev@vger.kernel.org>; Wed, 15 Dec 2021 01:51:21 -0800 (PST)
+        with ESMTP id S233733AbhLOJvt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Dec 2021 04:51:49 -0500
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF86AC061574;
+        Wed, 15 Dec 2021 01:51:48 -0800 (PST)
+Received: by mail-ed1-x52a.google.com with SMTP id x15so73580868edv.1;
+        Wed, 15 Dec 2021 01:51:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=tFT9slFzR2Yf0j3yzAPs2dGyzL0oVYEo3K/VfvSACI8=;
-        b=PzOIJV4Yjhq/PSV/T+fa0v+1hgjWHgeE6yJBgYxRqr+ZseW+QBtxyuFZXfZtcWhsOY
-         7h5kOfpz2lh2bRXJHQw4XjbD2aW5AozdVTqMj2U8dMpxBDaEUo1Kq9ERzOctW0QyV3Ky
-         CBxsbrJu0S7QLbVf+57RQPRZXr4EGpjJFqk0GR59q33rO4TVDsdDcht3F9mSWJEqSTUF
-         ZEqwUnyChANbfawGpcIQfCmQ2JkCX2+WSfyzDpr/TqcYtzmwJ8koSdmcqSvzV1Mi2ALK
-         qovQux4WZIS2IidFpLXCxy8/gN3ahMqWeEkzQVSddcmwvPD3n2dp68Ik43kyxjPRhrVk
-         G+5g==
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=koGuE3MJrYmL3d3PsbPHNf+GbUxEW6jsrheOLs2z698=;
+        b=a2WgJ+4kAFsCJ3iHDxrSZcQABLWbL6BHE6VcHtljgQpvAYCdKbSc9NmIxpVWLJtTPw
+         PoKstj15djE1FKJmAVmIsCxnlfPuevUSA4vxQUtUP2h+dE1o6l+9kgQVH6XSn/1wKmjT
+         FDpbTwSkyDe5ud5ToW/QbNeev8BdFrAbLuV8dZYMM4Thn2o4H0y+kypq47vm7utMBWxL
+         sAHK2Z23D1e2Bd5F037j2WLuiZhxeOLhP7N7Hgk8yeQZUnrxKrFJqi4Q6D/v612h1Bns
+         ELGP+3TaIqpfyF5QnSyWZaj4uM55wPlOgMjf3BDsYAfPPpmFz8A/uHe/R7SVf4vG63GL
+         TdqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=tFT9slFzR2Yf0j3yzAPs2dGyzL0oVYEo3K/VfvSACI8=;
-        b=Rush5FfMMx/FAjqm63Xweu/Cb7tU1rcmfbRPfE9gp8OdBi/2IUrSWr+eRDixldqf8c
-         Ap+SYLgiOwPxg3G1p7Z4oDirrYXoitrpKqS48VwlKtG3Hp3M+wIMCMTNsXqzJ9hja4kq
-         uE3c2XAIyvnlnptvJ6E9zdY4X347KLAfwSM+Z7gMhe4XMaN9WhoQKDWj9xW1L45G+ahK
-         tXGYcwoyOxnrXOqwQf4ugDnII+mRYSuE8Fh9LRpYLs8EQYAp2Dyip9UrdYGwwMTCij1d
-         Z8lnFcTjms6Z0HWor5z7Nl3BEpt3q3Gpz41cRheJrIvJcY/veg3XOCfrZinZydNBJXwm
-         g5pA==
-X-Gm-Message-State: AOAM531f8WtycY1qO0Hy6lZWzjuFQS1aLF8Qb0OoTqUwjjkCOn9TIKSN
-        wVhez2Xy75p1fZe+Hzb16Q9tv1g9tbwCbTYWCXW9Gwduk3qSnw==
-X-Google-Smtp-Source: ABdhPJxEcUv+QwNjP0pSGrF5WpKqx1mIIo85nwLnFmdOfBLktNHZo6YNCXbpOXqvbqVqj+IUJSZy9qZqfJ3eyTBVT9Q=
-X-Received: by 2002:a25:df4f:: with SMTP id w76mr5399025ybg.711.1639561880366;
- Wed, 15 Dec 2021 01:51:20 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=koGuE3MJrYmL3d3PsbPHNf+GbUxEW6jsrheOLs2z698=;
+        b=efY+PZlTSPwYfVdsNVqOdjMqHhJ8a4dhFdJiOHtiDRPoYR/mFB5pfQLJ5nnca/NmFw
+         YDMsgP+9f/sc+Cbst6f8B0nlmcnw7mE9CZj1hKT048EQjD4mRgXfhVAJ49Q91bxoQoxf
+         zomgu+l4twJdnzDtbXvW6XaMex99QhpeXjACfu2f8/x7sGbAOINZ+TziFOluZdF+03B3
+         KS89w9I0DbH6x80OMAEdmh8mZBvS64lj2uOMS1IYhZbQBhQTZ3O5Zspoi3c6qqzav9Ty
+         DsEaPWnjcAtYKsT5H9L3qPCgd+s8d343hXMNH0NKGl2p/FxhhFKuF1XS1rO8dsV+Vct8
+         aJBQ==
+X-Gm-Message-State: AOAM530b+h4laKZZlbOLFsDPE5jJVNoks3/Pe1auOo/6Ib5rz7zwQEly
+        1lpBGtw0hzvN1Gxzr1V5pMc=
+X-Google-Smtp-Source: ABdhPJyxc1IVQbZfU1zzVP1mlmXfXaW1qthX7TgqpAE412/diUOFYuVfEQkLv+vwhgcMKfrE0dv1MA==
+X-Received: by 2002:a17:907:97c7:: with SMTP id js7mr9866654ejc.235.1639561907314;
+        Wed, 15 Dec 2021 01:51:47 -0800 (PST)
+Received: from skbuf ([188.25.173.50])
+        by smtp.gmail.com with ESMTPSA id w17sm319149edu.48.2021.12.15.01.51.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Dec 2021 01:51:47 -0800 (PST)
+Date:   Wed, 15 Dec 2021 11:51:46 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [net-next PATCH RFC v6 11/16] net: dsa: qca8k: add tracking
+ state of master port
+Message-ID: <20211215095146.6awhx44lamojipoo@skbuf>
+References: <20211214224409.5770-1-ansuelsmth@gmail.com>
+ <20211214224409.5770-12-ansuelsmth@gmail.com>
 MIME-Version: 1.0
-References: <0b6c06487234b0fb52b7a2fbd2237af42f9d11a6.1639560869.git.geert+renesas@glider.be>
-In-Reply-To: <0b6c06487234b0fb52b7a2fbd2237af42f9d11a6.1639560869.git.geert+renesas@glider.be>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 15 Dec 2021 01:51:08 -0800
-Message-ID: <CANn89iKdorp0Ki0KFf6LAdjtKOm2np=vYY_YtkmJCoGfet1q-g@mail.gmail.com>
-Subject: Re: [PATCH -next] lib: TEST_REF_TRACKER should depend on REF_TRACKER
- instead of selecting it
-To:     Geert Uytterhoeven <geert+renesas@glider.be>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211214224409.5770-12-ansuelsmth@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 15, 2021 at 1:36 AM Geert Uytterhoeven
-<geert+renesas@glider.be> wrote:
->
-> TEST_REF_TRACKER selects REF_TRACKER, thus enabling an optional feature
-> the user may not want to have enabled.  Fix this by making the test
-> depend on REF_TRACKER instead.
+On Tue, Dec 14, 2021 at 11:44:04PM +0100, Ansuel Smith wrote:
+> MDIO/MIB Ethernet require the master port and the tagger availabale to
+> correctly work. Use the new api master_state_change to track when master
+> is operational or not and set a bool in qca8k_priv.
+> We cache the first cached master available and we check if other cpu
+> port are operational when the cached one goes down.
+> This cached master will later be used by mdio read/write and mib request to
+> correctly use the working function.
+> 
+> qca8k implementation for MDIO/MIB Ethernet is bad. CPU port0 is the only
+> one that answers with the ack packet or sends MIB Ethernet packets. For
+> this reason the master_state_change ignore CPU port6 and checkes only
+> CPU port0 if it's operational and enables this mode.
 
-I do not understand this.
+CPU port 0 may not always be wired, it depends on board design, right?
+So the Ethernet management protocol may or may not be available to all users.
 
-How can I test this infra alone, without any ref_tracker being selected ?
-
-I have in my configs
-
-CONFIG_TEST_REF_TRACKER=m
-# CONFIG_NET_DEV_REFCNT_TRACKER is not set
-# CONFIG_NET_NS_REFCNT_TRACKER is not set
-
-This should work.
-
-I would not have sent patches built around ref_tracker if I had no
-ways of testing the base infrastructure.
-
-
-
->
-> Fixes: 914a7b5000d08f14 ("lib: add tests for reference tracker")
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> 
+> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 > ---
->  lib/Kconfig.debug | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
->
-> diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
-> index c77fe36bb3d89685..d5e4afee09d78a1e 100644
-> --- a/lib/Kconfig.debug
-> +++ b/lib/Kconfig.debug
-> @@ -2114,8 +2114,7 @@ config BACKTRACE_SELF_TEST
->
->  config TEST_REF_TRACKER
->         tristate "Self test for reference tracker"
-> -       depends on DEBUG_KERNEL && STACKTRACE_SUPPORT
-> -       select REF_TRACKER
-> +       depends on DEBUG_KERNEL && STACKTRACE_SUPPORT && REF_TRACKER
->         help
->           This option provides a kernel module performing tests
->           using reference tracker infrastructure.
-> --
-> 2.25.1
->
+> diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
+> index ab4a417b25a9..6edd6adc3063 100644
+> --- a/drivers/net/dsa/qca8k.h
+> +++ b/drivers/net/dsa/qca8k.h
+> @@ -353,6 +353,7 @@ struct qca8k_priv {
+>  	struct dsa_switch_ops ops;
+>  	struct gpio_desc *reset_gpio;
+>  	unsigned int port_mtu[QCA8K_NUM_PORTS];
+> +	const struct net_device *master; /* Track if mdio/mib Ethernet is available */
+
+Maybe "mgmt_master" would be a clearer naming scheme?
+
+>  };
+>  
+>  struct qca8k_mib_desc {
+> -- 
+> 2.33.1
+> 
+
