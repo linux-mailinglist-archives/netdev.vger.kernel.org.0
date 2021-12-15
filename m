@@ -2,189 +2,265 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C3AA47563C
-	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 11:25:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E4EC447564D
+	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 11:26:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236625AbhLOKZS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Dec 2021 05:25:18 -0500
-Received: from mail-eopbgr60076.outbound.protection.outlook.com ([40.107.6.76]:22535
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229791AbhLOKZR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 Dec 2021 05:25:17 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Oq6zaDUzl1Df/80UcJMdSmZPBrEq92MelfvJI+e5gDWOqvVOy3mz9iYWmW8lrB8nKxc2531TrMRgnhX+UzyT6mE4m9kA9HWVwxKtzJTCRHbkAq+6p7d23w8N2UsEeG3IO2B6tV8kLt4rFdWUyShNhejxjxlbtbmBbhoRiPGA/JOCvoR+xgWA0MJzdZelrQuMPsyF6vr6OvT/SZ4IF6h2X4982sX/f8eSVdMWUtgz+wIyM7+wiHNtcaX3XWTflimkh7nDon274vMDO0lT59cAA8Fk86t7lBbM6e752PAgD4khKP5GH9scNYIBbMocijfb5FfWl9OSOUuWvmod1pc0hQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6q8KcVHKtqS4Zb3vAAjQ908PojUHXc0KHz1CMCLDmgc=;
- b=fhhC1umRHGs/hpakyzz9sYOeBaMveAdhDxMkob5v23ElDexqeOOfGcwJ7fKdhYlKnwKLIhO/NapfU/JIg2hEwFGMWlmHMwcBKforweM3FMcynPqBzQElP5UM7X/OF4OBwUOK1QRRX+G5tpmkC1g8HvXicltM56yLRa/cE7FgDVUwPt4o/JAOSs5VIHLiX9O/2nssU/2OTc5QJyjVKRzgp4ZrAvdtu1AMc5KojLjxZNXn42eaI7wpoDrTC9XOKbPhZXi9Q2i04d1UWtANH1dczQjfstk4UqnPwI1e93zuYBQjtAl4KdveSJPKW9+9e4EWP4uSHg7RcH/8IHmPCoOdWQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6q8KcVHKtqS4Zb3vAAjQ908PojUHXc0KHz1CMCLDmgc=;
- b=XxUmTdxKApirZHtXvf1am4vQyIRTQzoXa9gsXQXBmj44g/Wg0gzEBYghVQKGsSRpDVAWmjt2AuxOJkN+tFivu7MhkjlFwowS7L8M3GyUR2Msu7TpFYJH6D1WYwKitTY5KPC3CEtaU+zqct8AkwOPw4kCPRo0l6ik6UyCewappfs=
-Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
- by DB7PR04MB4778.eurprd04.prod.outlook.com (2603:10a6:10:18::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4778.16; Wed, 15 Dec
- 2021 10:25:15 +0000
-Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
- ([fe80::c005:8cdc:9d35:4079]) by DB8PR04MB6795.eurprd04.prod.outlook.com
- ([fe80::c005:8cdc:9d35:4079%5]) with mapi id 15.20.4778.018; Wed, 15 Dec 2021
- 10:25:14 +0000
-From:   Joakim Zhang <qiangqing.zhang@nxp.com>
-To:     Francesco Dolcini <francesco.dolcini@toradex.com>,
-        Andrew Lunn <andrew@lunn.ch>
-CC:     Philippe Schenker <philippe.schenker@toradex.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Russell King <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Fabio Estevam <festevam@gmail.com>,
-        Fugang Duan <fugang.duan@nxp.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH net-next 3/3] net: fec: reset phy on resume after power-up
-Thread-Topic: [PATCH net-next 3/3] net: fec: reset phy on resume after
- power-up
-Thread-Index: AQHX8OR72xHlAReyBk2jbzr2bx9r+KwyVmAAgAA9uACAAMQSsA==
-Date:   Wed, 15 Dec 2021 10:25:14 +0000
-Message-ID: <DB8PR04MB679570A356B655A5D6BFE818E6769@DB8PR04MB6795.eurprd04.prod.outlook.com>
-References: <20211214121638.138784-1-philippe.schenker@toradex.com>
- <20211214121638.138784-4-philippe.schenker@toradex.com>
- <YbjofqEBIjonjIgg@lunn.ch>
- <20211214223548.GA47132@francesco-nb.int.toradex.com>
-In-Reply-To: <20211214223548.GA47132@francesco-nb.int.toradex.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: adda18b9-693b-49a5-9bac-08d9bfb52f18
-x-ms-traffictypediagnostic: DB7PR04MB4778:EE_
-x-microsoft-antispam-prvs: <DB7PR04MB4778FF464C1D0C7FDEA9E604E6769@DB7PR04MB4778.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: OsfPnSkyasUFaeD84cUGeT7AP1ssoqF/jaf1pScqmvbts9jSFKEkO2gWKV0cpCeFZCyJet3s8wSBAQw1zdMkhejcm2Ngd082rPDnbLglFLgX10fwYHvH+6HDGxcM0St6dcoOH2EvW/sX3XG8HAnb69+iX+8g5XLkgu8LL6ysdxiWrznp3r4tI0SqclVMCi1KAjrbqA0sBRp5dPS4GnLPiTy2L8QslbCBGqngfvi3zlQHkWmW6QonW/ybQmEX6cHJDsav4yxenbUcy/bYc0e412UYXsWBTdf1szmyTHCovGkptK8S0I0V2qIqyqLw8ZxYHL6AVpOvd0Q8hvhfXBSRziz9CjwnEg0Kq0EQKfjc4wMFQy6TwwkzGccCx5IwHytfQjY61ohzPIon1m8Lz73l9vmFUxxWHHZwnV58dJK1mG6eOWcbLbROPKjV++u1sMnqEsQ+K2h0f+QDI2MKZaR6btmAp5rJa+3JG/v6j7vkktXp/x6d2IFM5619Q73nQfhmuu0NnZZi8BqWrhI1ghr3UkWLeZdakvnG+LywrK9Qf047tRD3b8/HFAdNp8Dtjah0Pma/q90bjM5NGbXrNVGNdiXMV+lV3+M6F+UCJbBCEIPRV9xiZepWubnVbn72N1uCvNQZ6mSVrCVpo5LRaLsMFxFlxj69zgatF6IR2O2OSusMuT2TV0rFNwdEd5uAtEtHSu3+PAQWGM88eI1pPA/VHg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(76116006)(316002)(6506007)(110136005)(54906003)(33656002)(966005)(5660300002)(83380400001)(38100700002)(66556008)(55016003)(71200400001)(66476007)(66946007)(64756008)(186003)(8676002)(38070700005)(508600001)(45080400002)(7416002)(26005)(66446008)(122000001)(52536014)(4326008)(7696005)(2906002)(9686003)(86362001)(53546011)(8936002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?gb2312?B?K2xkbWlkbE5UZHl3bkxrK0d6a2NrVmREV2dRS09Id2JhZ0tXd2dyVXZJUHhn?=
- =?gb2312?B?aGduaFV0VmFISTB5eXJsL3hDM2dKY0xPeFAySlI0RVVzeVB3VTRveEY4Sk5S?=
- =?gb2312?B?a0pGQTFwMi9ZSlQyVWZDZ2R5RkhMMEY3Q3JFNnc0dzZ5RXAvMFR3cmdqVVB2?=
- =?gb2312?B?c1VnMTJmeTJsWTcyUEZkeVVNN1FkSnp3WEZrZ1pvWWJkbHB2MGdKOXBWajJP?=
- =?gb2312?B?VFViblRQdzhnQzN0QVEySXhwbStVWTFXZ2hZeUphaWpiRTNrS1M1bzVLRFhT?=
- =?gb2312?B?NG5Ld0VGOU9QSUFQaGh0aFViOHdEMktxaDdtUlo4WlUrajFEUmdobFhmOHZt?=
- =?gb2312?B?WVA4Ukl6cnZPYjdNOVpBL3hGMUpMa0RGY3BzemVTdk5QRUkvOHBQS1MySEFL?=
- =?gb2312?B?KythbCtUVndzVjUwbWplQmJOWDRzU1lLOFc0SE1RNWltL0RKc3dlODA5YU5X?=
- =?gb2312?B?aWs5TytvODd4Z3p1TnZaTlIzUHREZEFvcVdTS2k5cnE5R1BxdFJudzNHYytN?=
- =?gb2312?B?R3RPZGV6bmtGbUI0bDArblNNRWUzc2V3RDZTeEtHcG42cXNXUjhyYXE0MXhT?=
- =?gb2312?B?MXdzaG8yK1ZuZmhuM1JzMzdlQVJWak4rQ1ZjRzVORjhJSmh5ODRzZHlPTzdF?=
- =?gb2312?B?OEtvR1JMSzFDdnNIQWJNN1R3aHg5SHpiMHBpOWl6Y3dnR29GTmVKQXI2cjNt?=
- =?gb2312?B?NGQyemphRFYwS2tCNFJic21UYUFMYVQwV0haN3FEYlByaXErNEE0ZUFTU2Jz?=
- =?gb2312?B?aTNVNUpxWHFqWWg0c0FEL2VhSEhkMzQyMUs5RzRkQk1reTVhSXUwOElqb2pz?=
- =?gb2312?B?ZEhpNk4wR0JxYi96WUhMUWRuWStPY3NKSWhobWwzbWN6dFRNS2dxM3JEM2Nw?=
- =?gb2312?B?M1JoMWhvVVdZc3VBTDVPeGhRUmZkTUN1RVlwK2Z0RkZSa0dNLy83b1VNL0RV?=
- =?gb2312?B?YjRWSjREb3NyZmNJRXorSTM0N050Rzl2cU81aWVxV3RnN3huS3RmTmh2SENF?=
- =?gb2312?B?YVRTRDYvekRSZEhJNWFydkVxdjVlQWJaeWlBTGtRMURVYTkrZzBZZE1NQzFl?=
- =?gb2312?B?VHFxZW5DM0Z1WkcwY0h2NmVmbFlmQUxHZzBhcm11bTlGa0JsT05CazN4cm82?=
- =?gb2312?B?YThERFRGMGt6QnM1NXRWTkhVOG9vbHl4bFBjZWtNVHJRYklJMG1BUTVGWURm?=
- =?gb2312?B?eHJxSjZENFo5RXA1VWNUTFRFM0p1NkgxRW1uRVZBVGZZdExmZFJ2UDYvSzhK?=
- =?gb2312?B?Q3lxbkJWdlQzS1prSkcyZ0c5S05JNUVnbHBWUUFkcytrVDZxLy92alV0K1Z4?=
- =?gb2312?B?eWl5SmZzS3dGWlJBWW9qQXNrNmxqeDVSWCsxajhnWFZIMkdkSFpMMFVoZ2Vu?=
- =?gb2312?B?U0lSWU8rMzRjamRlUk5yM3U0dTYrV1RDSlRhNHhQdUo3c045QnFZUEUyLzl1?=
- =?gb2312?B?WXFNLzFTS29QRXByT3BKQ05TY1ozcUhvb3FIRG8zdk5ORlZqV1BhUkdxaTNK?=
- =?gb2312?B?dVpqd0x1QTczSTVHeVBjNXlFWWxpd0J5WkYwZXlyQlJFRHZwMVRRaWR6Y1Nt?=
- =?gb2312?B?M3RUalZZNjhzYnl3a3NzMGhaOEZjRy9WbjNpUEZjWFJsOXNvVWEzVFlId1Fn?=
- =?gb2312?B?RmlXVEZNNCsxVitEN0gyOXJmK25wT3oybWtwRWdJNSsrZWVkUXZFWjZnY0Nv?=
- =?gb2312?B?eHMrTHVSVWlieEFsYlFGS1VZcXNQdXl0ZG5UTkd3cHUvSCtnTStNUWd6WnJW?=
- =?gb2312?B?WWxpLzZOUHUwYVpqcUZKZHNkZ2NOaCtlcldIc2xvNHBJbVM5RmlGVGdOZ1FX?=
- =?gb2312?B?NW9nQ0ZtM01NSkNLRFVLUXJUR3Q3M0FWYkhpeUl0dnBCanIvbGtnYU5Pamx5?=
- =?gb2312?B?ZXdjZ3REYzBxWWJpd2U0V2RXaHRmRFFEaE5WYVlSZXdSNUJ2NkdhNHFUa0w0?=
- =?gb2312?B?aXlJaUJOTHJXSVhWMkk5angxRStpbGFycFluTndMQm81anIzaVNxc3lhcXp5?=
- =?gb2312?B?eGRxblhkZFZTSzd0MWhlZ0oybEhZNUNEVjJiaUM2aVRDQzE0OXFDL1JMemkw?=
- =?gb2312?B?V24rTzUxaGZIREFYZkNCTHNKTG9leTFtRlc2WE1odmYvZmUycTAwZkowcGZS?=
- =?gb2312?B?WG1ianE4dFhpUEhPeTBUMTlOdCtHZzJiZXRCMWd0Tm9UU1VpWnR1ZG5GUDhp?=
- =?gb2312?B?eGc9PQ==?=
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+        id S241666AbhLOK0k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Dec 2021 05:26:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50730 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241670AbhLOK0d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Dec 2021 05:26:33 -0500
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19F27C061574;
+        Wed, 15 Dec 2021 02:26:33 -0800 (PST)
+Received: by mail-ed1-x52e.google.com with SMTP id g14so72082253edb.8;
+        Wed, 15 Dec 2021 02:26:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=fz4Jz0+vX+aUVpp5Y4uncPTRAvJiGc0fY8ndG6NwN+w=;
+        b=Q8PLwZ4/3O1PpgQ+3+U1enAloA7O76F4OskNCY8PCWiJjj8fBI+eh7QXaK8Gx2lvmh
+         udEbfa2odorNnDykKDft81HvA2hEirnlbg41N1DQRbSqEs3zeKtVGG6+OQ1Y2qHs00yV
+         Ral3HOXerJcrgxZcbUBPYPKnEBIg6LxxN25zw0U0QVTmFyqMu4Uc+1IYnjkRI+YcRov7
+         LoHhyOMJyo8d6DO993Cy3kruxXxFffRUFra4E44xlh35JpkgVtJOAmYiP3+D+m1u3o9D
+         ybW02cdOMrKvN2qtetceX+/xdFEItF+UZM395ENC/MrGAzK+zMHrO9pDkBcmewYC4MiT
+         YoZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=fz4Jz0+vX+aUVpp5Y4uncPTRAvJiGc0fY8ndG6NwN+w=;
+        b=OMsXj24mDZVpVwH/y8IpXD/FawLoKjZjREDVEHtDZx5ZT3VxpqjEuVspvuTDZslpAq
+         jmPLQ+ARaYs859bGIqRVfNZGJEG405VfkUmBJq703HMZDzNeo2KgdN3kWMQEs3x1om8a
+         YVRxfiMR9BKDJkN+pKuKNqd6U88cd0FjOGKjo7Qdc7pPKIvfYlkxZ5qSwYQBGGTQmhbP
+         R/BRCQT5Sl77c53pqUBsYPxrVilbHlyvB8d/Z1wSF/QtQsmMdPFzi+32qTaEojPH1THw
+         0pp+SsV9rrYPJZWcVc+E0dVcKEEEiIvwXJhpyZdIh2SFVw5RNphU6uysiBTLr3RDJpWc
+         IOpg==
+X-Gm-Message-State: AOAM532c86OR3UG43/vqlwvdQAk00y7zbnzRNf+6HR7L4taLX2EoNQfU
+        eQD/9ht+ohntB9kB6oEgm6I=
+X-Google-Smtp-Source: ABdhPJxmDWZte5Up9qc5GzUzL8Z+ppEdsCLXvF4tHzV2PfyQFwjeSC3X9u89Tg/p5tjLroJg0S9qrA==
+X-Received: by 2002:a17:907:97d0:: with SMTP id js16mr10482515ejc.199.1639563991348;
+        Wed, 15 Dec 2021 02:26:31 -0800 (PST)
+Received: from skbuf ([188.25.173.50])
+        by smtp.gmail.com with ESMTPSA id w7sm774299ede.66.2021.12.15.02.26.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Dec 2021 02:26:31 -0800 (PST)
+Date:   Wed, 15 Dec 2021 12:26:29 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [net-next PATCH RFC v6 00/16] Add support for qca8k mdio rw in
+ Ethernet packet
+Message-ID: <20211215102629.75q6odnxetitfl3w@skbuf>
+References: <20211214224409.5770-1-ansuelsmth@gmail.com>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: adda18b9-693b-49a5-9bac-08d9bfb52f18
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Dec 2021 10:25:14.8638
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: NfTBogMrgNIR7sB9CDOa2Gwnuww6kVTtQbo4h84BR9vzSR1r4e6zo8qpMKaXd+xBLWSmVE5x14I8P75+A+zFxQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB4778
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211214224409.5770-1-ansuelsmth@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQpIaSBGcmFuY2VzY28sDQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTog
-RnJhbmNlc2NvIERvbGNpbmkgPGZyYW5jZXNjby5kb2xjaW5pQHRvcmFkZXguY29tPg0KPiBTZW50
-OiAyMDIxxOoxMtTCMTXI1SA2OjM2DQo+IFRvOiBBbmRyZXcgTHVubiA8YW5kcmV3QGx1bm4uY2g+
-DQo+IENjOiBQaGlsaXBwZSBTY2hlbmtlciA8cGhpbGlwcGUuc2NoZW5rZXJAdG9yYWRleC5jb20+
-Ow0KPiBuZXRkZXZAdmdlci5rZXJuZWwub3JnOyBKb2FraW0gWmhhbmcgPHFpYW5ncWluZy56aGFu
-Z0BueHAuY29tPjsgRGF2aWQNCj4gUyAuIE1pbGxlciA8ZGF2ZW1AZGF2ZW1sb2Z0Lm5ldD47IFJ1
-c3NlbGwgS2luZyA8bGludXhAYXJtbGludXgub3JnLnVrPjsNCj4gSGVpbmVyIEthbGx3ZWl0IDxo
-a2FsbHdlaXQxQGdtYWlsLmNvbT47IEZyYW5jZXNjbyBEb2xjaW5pDQo+IDxmcmFuY2VzY28uZG9s
-Y2luaUB0b3JhZGV4LmNvbT47IEpha3ViIEtpY2luc2tpIDxrdWJhQGtlcm5lbC5vcmc+OyBGYWJp
-bw0KPiBFc3RldmFtIDxmZXN0ZXZhbUBnbWFpbC5jb20+OyBGdWdhbmcgRHVhbiA8ZnVnYW5nLmR1
-YW5AbnhwLmNvbT47DQo+IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmcNCj4gU3ViamVjdDog
-UmU6IFtQQVRDSCBuZXQtbmV4dCAzLzNdIG5ldDogZmVjOiByZXNldCBwaHkgb24gcmVzdW1lIGFm
-dGVyDQo+IHBvd2VyLXVwDQo+IA0KPiBIZWxsbyBBbmRyZXcsDQo+IA0KPiBPbiBUdWUsIERlYyAx
-NCwgMjAyMSBhdCAwNzo1NDo1NFBNICswMTAwLCBBbmRyZXcgTHVubiB3cm90ZToNCj4gPiBXaGF0
-IGkgZG9uJ3QgcGFydGljdWxhcmx5IGxpa2UgYWJvdXQgdGhpcyBpcyB0aGF0IHRoZSBNQUMgZHJp
-dmVyIGlzDQo+ID4gZG9pbmcgaXQuIE1lYW5pbmcgaWYgdGhpcyBQSFkgaXMgdXNlZCB3aXRoIGFu
-eSBvdGhlciBNQUMsIHRoZSBzYW1lDQo+ID4gY29kZSBuZWVkcyBhZGRpbmcgdGhlcmUuDQo+IFRo
-aXMgaXMgZXhhY3RseSB0aGUgc2FtZSBjYXNlIGFzIHBoeV9yZXNldF9hZnRlcl9jbGtfZW5hYmxl
-KCkgWzFdWzJdLCB0byBtZSBpdA0KPiBkb2VzIG5vdCBsb29rIHRoYXQgYmFkLg0KPiANCj4gPiBT
-byBtYXliZSBpbiB0aGUgcGh5IGRyaXZlciwgYWRkIGEgc3VzcGVuZCBoYW5kbGVyLCB3aGljaCBh
-c3NlcnRzIHRoZQ0KPiA+IHJlc2V0LiBUaGlzIGNhbGwgaGVyZSB3aWxsIHRha2UgaXQgb3V0IG9m
-IHJlc2V0LCBzbyBhcHBseWluZyB0aGUgcmVzZXQNCj4gPiB5b3UgbmVlZD8NCj4gQXNzZXJ0aW5n
-IHRoZSByZXNldCBpbiB0aGUgcGh5bGliIGluIHN1c3BlbmQgcGF0aCBpcyBhIGJhZCBpZGVhLCBp
-biB0aGUgZ2VuZXJhbA0KPiBjYXNlIGluIHdoaWNoIHRoZSBQSFkgaXMgcG93ZXJlZCBpbiBzdXNw
-ZW5kIHRoZSBwb3dlci1jb25zdW1wdGlvbiBpcyBsaWtlbHkNCj4gdG8gYmUgaGlnaGVyIGlmIHRo
-ZSBkZXZpY2UgaXMgaW4gcmVzZXQgY29tcGFyZWQgdG8gc29mdHdhcmUgcG93ZXItZG93biB1c2lu
-Zw0KPiB0aGUgQk1DUiByZWdpc3RlciAoYXQgbGVhc3QgZm9yIHRoZSBQSFkgZGF0YXNoZWV0IEkg
-Y2hlY2tlZCkuDQo+IA0KPiBXaGF0IHdlIGNvdWxkIGRvIGlzIHRvIGNhbGwgcGh5X2RldmljZV9y
-ZXNldCBpbiB0aGUgZmVjIGRyaXZlciBzdXNwZW5kIHBhdGgNCj4gd2hlbiB3ZSBrbm93IHdlIGFy
-ZSBnb2luZyB0byBkaXNhYmxlIHRoZSByZWd1bGF0b3IsIEkgZG8gbm90IGxpa2UgaXQsIGJ1dCBp
-dA0KPiB3b3VsZCBzb2x2ZSB0aGUgaXNzdWUuDQo+IA0KPiAtLS0gYS9kcml2ZXJzL25ldC9ldGhl
-cm5ldC9mcmVlc2NhbGUvZmVjX21haW4uYw0KPiArKysgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9m
-cmVlc2NhbGUvZmVjX21haW4uYw0KPiBAQCAtNDA2NCw3ICs0MDY0LDExIEBAIHN0YXRpYyBpbnQg
-X19tYXliZV91bnVzZWQgZmVjX3N1c3BlbmQoc3RydWN0DQo+IGRldmljZSAqZGV2KQ0KPiAgICAg
-ICAgIHJ0bmxfdW5sb2NrKCk7DQo+IA0KPiAgICAgICAgIGlmIChmZXAtPnJlZ19waHkgJiYgIShm
-ZXAtPndvbF9mbGFnICYgRkVDX1dPTF9GTEFHX0VOQUJMRSkpDQo+ICsgICAgICAgew0KPiAgICAg
-ICAgICAgICAgICAgcmVndWxhdG9yX2Rpc2FibGUoZmVwLT5yZWdfcGh5KTsNCj4gKyAgICAgICAg
-ICAgICAgIHBoeV9kZXZpY2VfcmVzZXQobmRldi0+cGh5ZGV2LCAxKTsNCj4gKyAgICAgICB9DQo+
-ICsNCj4gDQo+ICAgICAgICAgLyogU09DIHN1cHBseSBjbG9jayB0byBwaHksIHdoZW4gY2xvY2sg
-aXMgZGlzYWJsZWQsIHBoeSBsaW5rIGRvd24NCj4gICAgICAgICAgKiBTT0MgY29udHJvbCBwaHkg
-cmVndWxhdG9yLCB3aGVuIHJlZ3VsYXRvciBpcyBkaXNhYmxlZCwgcGh5IGxpbmsNCj4gZG93bg0K
-DQpBcyBJIG1lbnRpb25lZCBiZWZvcmUsIGJvdGggbWFjIGFuZCBwaHlsaWIgaGF2ZSBub3QgdGFr
-ZW4gUEhZIHJlc2V0IGludG8gY29uc2lkZXJhdGlvbiBkdXJpbmcNCnN5c3RlbSBzdXNwZW5kL3Jl
-c3VtZSBzY2VuYXJpby4gQXMgQW5kcmV3IHN1Z2dlc3RlZCwgeW91IGNvdWxkIG1vdmUgdGhpcyBp
-bnRvIHBoeSBkcml2ZXIgc3VzcGVuZA0KZnVuY3Rpb24sIHRoaXMgaXMgYSBjb3JuZXIgY2FzZS4g
-T25lIHBvaW50IEkgZG9uJ3QgdW5kZXJzdGFuZCwgd2h5IGRvIHlvdSByZWplY3QgdG8gYXNzZXJ0
-IHJlc2V0IHNpZ25hbCBkdXJpbmcNCnN5c3RlbSBzdXNwZW5kZWQ/IA0KDQpCZXN0IFJlZ2FyZHMs
-DQpKb2FraW0gWmhhbmcNCj4gRnJhbmNlc2NvDQo+IA0KPiBbMV0NCj4gaHR0cHM6Ly9ldXIwMS5z
-YWZlbGlua3MucHJvdGVjdGlvbi5vdXRsb29rLmNvbS8/dXJsPWh0dHBzJTNBJTJGJTJGbG9yZS5r
-DQo+IGVybmVsLm9yZyUyRm5ldGRldiUyRjIwMTcxMjExMTIxNzAwLjEwMjAwLTEtZGV2JTQwZzBo
-bDFuLm5ldCUyRiZhDQo+IG1wO2RhdGE9MDQlN0MwMSU3Q3FpYW5ncWluZy56aGFuZyU0MG54cC5j
-b20lN0NmNzE0MGZlOTcxNTQ0ZmU4ZDINCj4gMjYwOGQ5YmY1MjE1MTclN0M2ODZlYTFkM2JjMmI0
-YzZmYTkyY2Q5OWM1YzMwMTYzNSU3QzAlN0MwJTdDNjM3Nw0KPiA1MTE4MTUyNzk3OTIzMyU3Q1Vu
-a25vd24lN0NUV0ZwYkdac2IzZDhleUpXSWpvaU1DNHdMakF3TURBaUwNCj4gQ0pRSWpvaVYybHVN
-eklpTENKQlRpSTZJazFoYVd3aUxDSlhWQ0k2TW4wJTNEJTdDMzAwMCZhbXA7c2RhdGE9aXRWDQo+
-IG0wanJvUTBNekRHNUlwcXMzT1kwRjVTWSUyRmtiZEZSV2F1TktxMlhpUSUzRCZhbXA7cmVzZXJ2
-ZWQ9MA0KPiBbMl0gMWIwYTgzYWMwNGUzICgibmV0OiBmZWM6IGFkZCBwaHlfcmVzZXRfYWZ0ZXJf
-Y2xrX2VuYWJsZSgpIHN1cHBvcnQiKQ0KDQo=
+On Tue, Dec 14, 2021 at 11:43:53PM +0100, Ansuel Smith wrote:
+> Hi, this is ready but require some additional test on a wider userbase.
+> 
+> The main reason for this is that we notice some routing problem in the
+> switch and it seems assisted learning is needed. Considering mdio is
+> quite slow due to the indirect write using this Ethernet alternative way
+> seems to be quicker.
+> 
+> The qca8k switch supports a special way to pass mdio read/write request
+> using specially crafted Ethernet packet.
+> This works by putting some defined data in the Ethernet header where the
+> mac source and dst should be placed. The Ethernet type header is set to qca
+> header and is set to a mdio read/write type.
+> This is used to communicate to the switch that this is a special packet
+> and should be parsed differently.
+> 
+> Currently we use Ethernet packet for
+> - MIB counter
+> - mdio read/write configuration
+> - phy read/write for each port
+> 
+> Current implementation of this use completion API to wait for the packet
+> to be processed by the tagger and has a timeout that fallback to the
+> legacy mdio way and mutex to enforce one transaction at time.
+> 
+> We now have connect()/disconnect() ops for the tagger. They are used to
+> allocate priv data in the dsa priv. The header still has to be put in
+> global include to make it usable by a dsa driver.
+> They are called when the tag is connect to the dst and the data is freed
+> using discconect on tagger change.
+> 
+> (if someone wonder why the bind function is put at in the general setup
+> function it's because tag is set in the cpu port where the notifier is
+> still not available and we require the notifier to sen the
+> tag_proto_connect() event.
+
+I don't think this paragraph is true anymore, since the initial binding
+between the switch and the tagger is done from dsa_switch_setup() ->
+dsa_switch_setup_tag_protocol(), which is called once per switch (due to
+the ds->setup bool) and does not require cross-chip notifiers.
+
+> We now have a tag_proto_connect() for the dsa driver used to put
+> additional data in the tagger priv (that is actually the dsa priv).
+> This is called using a switch event DSA_NOTIFIER_TAG_PROTO_CONNECT.
+
+Only the dsa_tree_change_tag_proto() code path emits the cross-chip
+notifier event that you mention. The qca8k doesn't support changing the
+tagging protocol, therefore this isn't relevant.
+
+> Current use for this is adding handler for the Ethernet packet to keep
+> the tagger code as dumb as possible.
+> 
+> The tagger priv implement only the handler for the special packet. All the
+> other stuff is placed in the qca8k_priv and the tagger has to access
+> it under lock.
+> 
+> We use the new API from Vladimir to track if the master port is
+> operational or not. We had to track many thing to reach a usable state.
+> Checking if the port is UP is not enough and tracking a NETDEV_CHANGE is
+> also not enough since it use also for other task. The correct way was
+> both track for interface UP and if a qdisc was assigned to the
+> interface. That tells us the port (and the tagger indirectly) is ready
+> to accept and process packet.
+> 
+> I tested this with multicpu port and with port6 set as the unique port and
+> it's sad.
+> It seems they implemented this feature in a bad way and this is only
+> supported with cpu port0. When cpu port6 is the unique port, the switch
+> doesn't send ack packet. With multicpu port, packet ack are not duplicated
+> and only cpu port0 sends them. This is the same for the MIB counter.
+> For this reason this feature is enabled only when cpu port0 is enabled and
+> operational.
+
+Let's discuss this a bit (not the hardware limitation, that one is what
+it is). When DSA has multiple CPU ports, right now both host-side
+Ethernet ports are set up as DSA masters. By being a DSA master, I mean
+that dev->dsa_ptr is a non-NULL pointer, so these interfaces expect to
+receive packets that are trapped by the DSA packet_type handlers.
+But due to the way in which dsa_tree_setup_default_cpu() is written,
+by default only the first CPU port will be used. So the host port
+attached to the second CPU port will be a DSA master technically, but it
+will be an inactive one and won't be anyone's master (no dp->cpu_dp will
+point to this master's dev->dsa_ptr). My idea of DSA support for
+multiple CPU ports would be to be able to change the dp->cpu_dp mapping
+through rtnetlink, on a per user port basis (yes, this implies we don't
+have a solution for DSA ports).
+My second observation is based on the fact that some switches support a
+single CPU port, yet they are wired using two Ethernet ports towards the
+host. The Felix and Seville switches are structured this way. I think
+some Broadcom switches too.
+Using the rtnetlink user API, a user could be able to migrate all user
+ports between one CPU port and the other, and as long as the
+configuration is valid, the switch driver should accept this (we perform
+DSA master changing while all ports are down, and we could refuse going
+up if e.g. some user ports are assigned to CPU port A and some user
+ports to CPU port B). Nonetheless, the key point is that when a single
+CPU port is used, the other CPU port kinda sits there doing nothing. So
+I also have some patches that make the host port attached to this other
+CPU port be a normal interface (not a DSA master).
+The switch side of things is still a CPU port (not a user port, since
+there still isn't any net device registered for it), but nonetheless, it
+is a CPU port with no DSA tagging over it, hence the reason why the host
+port isn't a DSA master. The patch itself that changes this behavior
+sounds something like "only set up a host port as a DSA master if some
+user ports are assigned to it".
+As to why I'm doing it this way: the device tree should be fixed, and I
+do need to describe the connection between the switch CPU ports and the
+DSA masters via the 'ethernet = <&phandle>;' property. From a hardware
+perspective, both switch ports A and B are CPU ports, equally. But this
+means that DSA won't create a user port for the CPU port B, which would
+be the more natural way to use it.
+Now why this pertains to you: Vivien's initial stab at management over
+Ethernet wanted to decouple a bit the concept of a DSA master (used for
+the network stack) from the concept of a host port used for in-band
+management (used for register access). Whereas our approach here is to
+keep the two coupled, due to us saying "hey, if there's a direct
+connection to the switch, this is a DSA master anyway, is it not?".
+Well, here's one thing which you wouldn't be able to do if I pursue my
+idea with lazy DSA master setup: if you decide to move all your user
+ports using rtnetlink to CPU port 6, then the DSA master of CPU port 0
+will cease to be a DSA master. So that will also prevent the management
+protocol from working.
+I don't want to break your use case, but then again, I'm wondering what
+we could do to support the second CPU port working without DSA tagging,
+without changing the device trees to declare it as a user port (which in
+itself isn't bad, it's just that we need to support all use cases with a
+single, unified device tree).
+
+> Current concern are:
+> - Any hint about the naming? Is calling this mdio Ethernet correct?
+>   Should we use a more ""standard""/significant name? (considering also
+>   other switch will implement this)
+
+Responded inline to this too, I think "Ethernet management" may be
+clearer than "MDIO Ethernet", but I don't have a strong preference.
+
+> v6:
+> - Fix some error in ethtool handler caused by rebase/cleanup
+> v5:
+> - Adapt to new API fixes
+> - Fix a wrong logic for noop
+> - Add additional lock for master_state change
+> - Limit mdio Ethernet to cpu port0 (switch limitation)
+> - Add priority to these special packet
+> - Move mdio cache to qca8k_priv
+> v4:
+> - Remove duplicate patch sent by mistake.
+> v3:
+> - Include MIB with Ethernet packet.
+> - Include phy read/write with Ethernet packet.
+> - Reorganize code with new API.
+> - Introuce master tracking by Vladimir
+> v2:
+> - Address all suggestion from Vladimir.
+>   Try to generilize this with connect/disconnect function from the
+>   tagger and tag_proto_connect for the driver.
+> 
+> Ansuel Smith (12):
+>   net: dsa: tag_qca: convert to FIELD macro
+>   net: dsa: tag_qca: move define to include linux/dsa
+>   net: dsa: tag_qca: enable promisc_on_master flag
+>   net: dsa: tag_qca: add define for handling mdio Ethernet packet
+>   net: dsa: tag_qca: add define for handling MIB packet
+>   net: dsa: tag_qca: add support for handling mdio Ethernet and MIB
+>     packet
+>   net: dsa: qca8k: add tracking state of master port
+>   net: dsa: qca8k: add support for mdio read/write in Ethernet packet
+>   net: dsa: qca8k: add support for mib autocast in Ethernet packet
+>   net: dsa: qca8k: add support for phy read/write with mdio Ethernet
+>   net: dsa: qca8k: move page cache to driver priv
+>   net: dsa: qca8k: cache lo and hi for mdio write
+> 
+> Vladimir Oltean (4):
+>   net: dsa: provide switch operations for tracking the master state
+>   net: dsa: stop updating master MTU from master.c
+>   net: dsa: hold rtnl_mutex when calling dsa_master_{setup,teardown}
+>   net: dsa: replay master state events in
+>     dsa_tree_{setup,teardown}_master
+> 
+>  drivers/net/dsa/qca8k.c     | 600 ++++++++++++++++++++++++++++++++++--
+>  drivers/net/dsa/qca8k.h     |  46 ++-
+>  include/linux/dsa/tag_qca.h |  79 +++++
+>  include/net/dsa.h           |  17 +
+>  net/dsa/dsa2.c              |  81 ++++-
+>  net/dsa/dsa_priv.h          |  13 +
+>  net/dsa/master.c            |  29 +-
+>  net/dsa/slave.c             |  32 ++
+>  net/dsa/switch.c            |  15 +
+>  net/dsa/tag_qca.c           |  81 +++--
+>  10 files changed, 901 insertions(+), 92 deletions(-)
+>  create mode 100644 include/linux/dsa/tag_qca.h
+> 
+> -- 
+> 2.33.1
+> 
+
