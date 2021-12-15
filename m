@@ -2,266 +2,451 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E77CA475DDE
-	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 17:51:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 943B9475DE8
+	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 17:54:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245000AbhLOQvM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Dec 2021 11:51:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55952 "EHLO
+        id S245024AbhLOQxy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Dec 2021 11:53:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244928AbhLOQvM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Dec 2021 11:51:12 -0500
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3B81C06173E
-        for <netdev@vger.kernel.org>; Wed, 15 Dec 2021 08:51:11 -0800 (PST)
-Received: by mail-yb1-xb49.google.com with SMTP id w5-20020a25ac05000000b005c55592df4dso44389388ybi.12
-        for <netdev@vger.kernel.org>; Wed, 15 Dec 2021 08:51:11 -0800 (PST)
+        with ESMTP id S232819AbhLOQxy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Dec 2021 11:53:54 -0500
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7D06C061574;
+        Wed, 15 Dec 2021 08:53:53 -0800 (PST)
+Received: by mail-ed1-x52c.google.com with SMTP id x15so78018159edv.1;
+        Wed, 15 Dec 2021 08:53:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=tSLoCvV83uVNWzNSIKfpbb32NYaHee7L5yjLmgJjO04=;
-        b=OF3LHg69rEr1/589FxdwoGn7zU+F41Hblpa7aO0QfKR5B2atC/HFFiC92HUtQ0jApv
-         XzgBGCjjBaa8ctauGw4rICaURUg3IIcgu+H04B//s1+o/HIQMg7REEh3CdaJUvIra5oW
-         oZwp23um+QuLz3OmeG1TmTf2EoP2dsqaaHaD9n3pjdlEP7r070ta2fDaXOZbUl4LsvWs
-         Dc48nPWYnx4+QL/P50e7+527QyT3FREMENpb6keEaXUNYEsPWMpj1lvHlpu7dYahoWRG
-         UUsCAB1LMkHGMhElsY1GrZxgji3gD720XBrmWei0nhPEDf8fP6k3pBfjxVtt7u7vEOB9
-         ok4w==
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=7ONVACEf9qaS54CzMeQ4LhCD5DqrmpDkceimVhhKDwM=;
+        b=IalUGH48T7nkRBHEOM3l7qLbjmpep1WORrkuWMQc8zjcnhEMS3aTIV1q9o92ijtIht
+         vA//fDCH1GLbAshHC4IGUoLQSnNXacUHfVx6w1eGXPUmbr05S5vCgGMjYHeUlqGupVd8
+         oKFczXDSBt2xNeJV1vps3kq8btRWLHfviigVI9XFhfUjRacjKurWOERmbEs1I4uxfMKh
+         a8pDlXZiB9T6H3n2tDOn/a2LGr556aunmLB5oSUF9q8NZ9TL7YCsXl1fN6mF+1juQStJ
+         OKX4Y9d7ihsihdrP06vECl8g8I9qCrOZC8Ob6jr+YEw2mRCZWQHNm50DqsKlqE27RHqQ
+         SEHA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=tSLoCvV83uVNWzNSIKfpbb32NYaHee7L5yjLmgJjO04=;
-        b=gjGtceZM1k7J1emAdjRsK6Y3tP0WGYAv/bLsuJwWuOF57fkz7tzSW4oT4R/UfeicDU
-         fLW0LAlmGbWTKepTPQg2Jmr7x6hAYm4Pa8KV92/RQpiEGk958IVbYNIktJj4XT4K6ToO
-         Ym1M6DFVVwXl0kmB/nwd3T0ICm0khj//CWyoVElSCy3ZWqfRcAmQP/vpv2MrRNjezR+w
-         SE1f8rFK93iAtMcpIPtvYKn3jIdxnWQkd0v3gcz5B4pC5ogzc4RodbcyCLn5bhmZ8THC
-         lfmvx7Q54psTPwpnhFsfX51ZVsA2nJIUhY16RxwjenJZEB8VNV92U9RlufhLM6VFTXuh
-         PuhA==
-X-Gm-Message-State: AOAM530ZNWr4LUhoRIgVxfwKCLLb/IWYFoPqB0PL9xEhP1WNESqcnQqF
-        Hx9yQUqjrWJTIDHW7KZaIJRlRlo=
-X-Google-Smtp-Source: ABdhPJytWSFWDftlNCzb6hiGAzk4etWEeuivRs5nb1gmQf263LPVBKP9vqCdudWtGZ2KldkOUE5KSBA=
-X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:201:fc03:a91c:4fe0:3b78])
- (user=sdf job=sendgmr) by 2002:a25:ae51:: with SMTP id g17mr7450259ybe.738.1639587070923;
- Wed, 15 Dec 2021 08:51:10 -0800 (PST)
-Date:   Wed, 15 Dec 2021 08:51:08 -0800
-In-Reply-To: <462ce9402621f5e32f08cc8acbf3d9da4d7d69ca.1639579508.git.asml.silence@gmail.com>
-Message-Id: <Yboc/G18R1Vi1eQV@google.com>
-Mime-Version: 1.0
-References: <462ce9402621f5e32f08cc8acbf3d9da4d7d69ca.1639579508.git.asml.silence@gmail.com>
-Subject: Re: [PATCH v3] cgroup/bpf: fast path skb BPF filtering
-From:   sdf@google.com
-To:     Pavel Begunkov <asml.silence@gmail.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=7ONVACEf9qaS54CzMeQ4LhCD5DqrmpDkceimVhhKDwM=;
+        b=CBGb1gZZ1zEyBbX74eywdJrRECLrwJsipp+NZ/Mou/jQ+jmpfGC6kbw57FhB6LzzSy
+         b5Wrf0gK9ut4bIp/knhR3SFE17i7SiSCnT1uL+jNaleWVdQAoav2zhHxwhZLOyQiPABo
+         98qR8K/Se1ILVhrdo7sdCCsw9wTlxu2vkS/iMGp0tukTTyARQ0Jq/qUegvpiTEISyniw
+         1UGiDgUZ/vhDe6ndQmO9DYUfvOfg6Z0M9HvxD8cXGizoYNUlQShY7sb1HWqCYLUOZq9o
+         sPVjIIITwszI4f1UdLDS4SZErshQv84GWRrzpTOhcmYWtNwhoHFJTSHjEXme87G+MLTb
+         h0vw==
+X-Gm-Message-State: AOAM5331dGfqRoq54hr2bQmqe3IkxtMhuNwumb65Z+xtsCThxkOiBJbR
+        7/74oDFwm8PK7bhecNhxXME=
+X-Google-Smtp-Source: ABdhPJw9lbMWS1A5036GePshxRENV1LOKDtWmuRTZkVd1h4rzcZri773T3YpNggecoetPmvLFP1PhA==
+X-Received: by 2002:a17:907:1626:: with SMTP id hb38mr12261758ejc.481.1639587231827;
+        Wed, 15 Dec 2021 08:53:51 -0800 (PST)
+Received: from Ansuel-xps. (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
+        by smtp.gmail.com with ESMTPSA id gb4sm924514ejc.90.2021.12.15.08.53.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Dec 2021 08:53:51 -0800 (PST)
+Message-ID: <61ba1d9f.1c69fb81.9148a.3673@mx.google.com>
+X-Google-Original-Message-ID: <YbodmzgvEwM07lyn@Ansuel-xps.>
+Date:   Wed, 15 Dec 2021 17:53:47 +0100
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [net-next PATCH RFC v6 12/16] net: dsa: qca8k: add support for
+ mdio read/write in Ethernet packet
+References: <20211214224409.5770-1-ansuelsmth@gmail.com>
+ <20211214224409.5770-13-ansuelsmth@gmail.com>
+ <20211215094912.gkqq4pfwac7gqeaa@skbuf>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211215094912.gkqq4pfwac7gqeaa@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/15, Pavel Begunkov wrote:
-> Add per socket fast path for not enabled BPF skb filtering, which sheds
-> a nice chunk of send/recv overhead when affected. Testing udp with 128
-> byte payload and/or zerocopy with any payload size showed 2-3%
-> improvement in requests/s on the tx side using fast NICs across network,
-> and around 4% for dummy device. Same goes for rx, not measured, but
-> numbers should be relatable.
-> In my understanding, this should affect a good share of machines, and at
-> least it includes my laptops and some checked servers.
+On Wed, Dec 15, 2021 at 11:49:12AM +0200, Vladimir Oltean wrote:
+> On Tue, Dec 14, 2021 at 11:44:05PM +0100, Ansuel Smith wrote:
+> > Add qca8k side support for mdio read/write in Ethernet packet.
+> > qca8k supports some specially crafted Ethernet packet that can be used
+> > for mdio read/write instead of the legacy method uart/internal mdio.
+> > This add support for the qca8k side to craft the packet and enqueue it.
+> > Each port and the qca8k_priv have a special struct to put data in it.
+> > The completion API is used to wait for the packet to be received back
+> > with the requested data.
+> > 
+> > The various steps are:
+> > 1. Craft the special packet with the qca hdr set to mdio read/write
+> >    mode.
+> > 2. Set the lock in the dedicated mdio struct.
+> > 3. Reinit the completion.
+> > 4. Enqueue the packet.
+> > 5. Wait the packet to be received.
+> > 6. Use the data set by the tagger to complete the mdio operation.
+> > 
+> > If the completion timeouts or the ack value is not true, the legacy
+> > mdio way is used.
+> > 
+> > It has to be considered that in the initial setup mdio is still used and
+> > mdio is still used until DSA is ready to accept and tag packet.
+> > 
+> > tag_proto_connect() is used to fill the required handler for the tagger
+> > to correctly parse and elaborate the special Ethernet mdio packet.
+> > 
+> > Locking is added to qca8k_master_change() to make sure no mdio Ethernet
+> > are in progress.
+> > 
+> > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> > ---
+> >  drivers/net/dsa/qca8k.c | 192 ++++++++++++++++++++++++++++++++++++++++
+> >  drivers/net/dsa/qca8k.h |  13 +++
+> >  2 files changed, 205 insertions(+)
+> > 
+> > diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
+> > index f317f527dd6d..b35ba26a0696 100644
+> > --- a/drivers/net/dsa/qca8k.c
+> > +++ b/drivers/net/dsa/qca8k.c
+> > @@ -20,6 +20,7 @@
+> >  #include <linux/phylink.h>
+> >  #include <linux/gpio/consumer.h>
+> >  #include <linux/etherdevice.h>
+> > +#include <linux/dsa/tag_qca.h>
+> >  
+> >  #include "qca8k.h"
+> >  
+> > @@ -170,6 +171,158 @@ qca8k_rmw(struct qca8k_priv *priv, u32 reg, u32 mask, u32 write_val)
+> >  	return regmap_update_bits(priv->regmap, reg, mask, write_val);
+> >  }
+> >  
+> > +static void qca8k_rw_reg_ack_handler(struct dsa_port *dp, struct sk_buff *skb)
+> > +{
+> > +	struct qca8k_mdio_hdr_data *mdio_hdr_data;
+> > +	struct qca8k_priv *priv = dp->ds->priv;
+> > +	struct mdio_ethhdr *mdio_ethhdr;
+> > +	u8 len, cmd;
+> > +
+> > +	mdio_ethhdr = (struct mdio_ethhdr *)skb_mac_header(skb);
+> > +	mdio_hdr_data = &priv->mdio_hdr_data;
+> > +
+> > +	cmd = FIELD_GET(QCA_HDR_MDIO_CMD, mdio_ethhdr->command);
+> > +	len = FIELD_GET(QCA_HDR_MDIO_LENGTH, mdio_ethhdr->command);
+> > +
+> > +	/* Make sure the seq match the requested packet */
+> > +	if (mdio_ethhdr->seq == mdio_hdr_data->seq)
+> > +		mdio_hdr_data->ack = true;
+> > +
+> > +	if (cmd == MDIO_READ) {
+> > +		mdio_hdr_data->data[0] = mdio_ethhdr->mdio_data;
+> > +
+> > +		/* Get the rest of the 12 byte of data */
+> > +		if (len > QCA_HDR_MDIO_DATA1_LEN)
+> > +			memcpy(mdio_hdr_data->data + 1, skb->data,
+> > +			       QCA_HDR_MDIO_DATA2_LEN);
+> > +	}
+> > +
+> > +	complete(&mdio_hdr_data->rw_done);
+> > +}
+> > +
+> > +static struct sk_buff *qca8k_alloc_mdio_header(enum mdio_cmd cmd, u32 reg, u32 *val,
+> > +					       int seq_num, int priority)
+> > +{
+> > +	struct mdio_ethhdr *mdio_ethhdr;
+> > +	struct sk_buff *skb;
+> > +	u16 hdr;
+> > +
+> > +	skb = dev_alloc_skb(QCA_HDR_MDIO_PKG_LEN);
+> 
+> Still no if (!skb) checking... Not only here, but also at the call sites
+> of this.
+> 
+> > +
+> > +	skb_reset_mac_header(skb);
+> > +	skb_set_network_header(skb, skb->len);
+> > +
+> > +	mdio_ethhdr = skb_push(skb, QCA_HDR_MDIO_HEADER_LEN + QCA_HDR_LEN);
+> > +
+> > +	hdr = FIELD_PREP(QCA_HDR_XMIT_VERSION, QCA_HDR_VERSION);
+> > +	hdr |= FIELD_PREP(QCA_HDR_XMIT_PRIORITY, priority);
+> > +	hdr |= QCA_HDR_XMIT_FROM_CPU;
+> > +	hdr |= FIELD_PREP(QCA_HDR_XMIT_DP_BIT, BIT(0));
+> > +	hdr |= FIELD_PREP(QCA_HDR_XMIT_CONTROL, QCA_HDR_XMIT_TYPE_RW_REG);
+> > +
+> > +	mdio_ethhdr->seq = FIELD_PREP(QCA_HDR_MDIO_SEQ_NUM, seq_num);
+> > +
+> > +	mdio_ethhdr->command = FIELD_PREP(QCA_HDR_MDIO_ADDR, reg);
+> > +	mdio_ethhdr->command |= FIELD_PREP(QCA_HDR_MDIO_LENGTH, 4);
+> > +	mdio_ethhdr->command |= FIELD_PREP(QCA_HDR_MDIO_CMD, cmd);
+> > +	mdio_ethhdr->command |= FIELD_PREP(QCA_HDR_MDIO_CHECK_CODE, MDIO_CHECK_CODE_VAL);
+> > +
+> > +	if (cmd == MDIO_WRITE)
+> > +		mdio_ethhdr->mdio_data = *val;
+> > +
+> > +	mdio_ethhdr->hdr = htons(hdr);
+> > +
+> > +	skb_put_zero(skb, QCA_HDR_MDIO_DATA2_LEN);
+> > +	skb_put_zero(skb, QCA_HDR_MDIO_PADDING_LEN);
+> 
+> Maybe a single call to skb_put_zero, and pass the sum as argument?
+> 
+> > +
+> > +	return skb;
+> > +}
+> > +
+> > +static int qca8k_read_eth(struct qca8k_priv *priv, u32 reg, u32 *val)
+> > +{
+> > +	struct qca8k_mdio_hdr_data *mdio_hdr_data = &priv->mdio_hdr_data;
+> > +	struct sk_buff *skb;
+> > +	bool ack;
+> > +	int ret;
+> > +
+> > +	skb = qca8k_alloc_mdio_header(MDIO_READ, reg, NULL, 200, QCA8K_ETHERNET_MDIO_PRIORITY);
+> 
+> You hardcode "seq" to 200? Aren't you supposed to increment it or
+> something?
+>
 
-> The core of the problem is that even though there is
-> cgroup_bpf_enabled_key guarding from __cgroup_bpf_run_filter_skb()
-> overhead, there are cases where we have several cgroups and loading a
-> BPF program to one also makes all others to go through the slow path
-> even when they don't have any BPF attached. It's even worse, because
-> apparently systemd or some other early init loads some BPF and so
-> triggers exactly this situation for normal networking.
+We enforce one operation at time using lock. Seq is currently used to
+check if the packet is correct.
 
-> Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
-> ---
+> > +	skb->dev = (struct net_device *)priv->master;
+> 
+> You access priv->master outside of priv->mdio_hdr_data.mutex from
+> qca8k_master_change(), that can't be good.
+> 
 
-> v2: replace bitmask appoach with empty_prog_array (suggested by Martin)
-> v3: add "bpf_" prefix to empty_prog_array (Martin)
+Tell me if the logic is correct.
+qca8k_master_change() removes or sets the priv->master under lock (so no
+operation in progress)
+A read/write checks if priv->master is not NULL and try to use this
+alternative way. (not under lock)
 
->   include/linux/bpf-cgroup.h | 24 +++++++++++++++++++++---
->   include/linux/bpf.h        | 13 +++++++++++++
->   kernel/bpf/cgroup.c        | 18 ++----------------
->   kernel/bpf/core.c          | 16 ++++------------
->   4 files changed, 40 insertions(+), 31 deletions(-)
+Think I should remove the priv->master check from the read/write and
+move it here under lock (and release the lock if it's not defined)
+(The main idea is try to keep the skb alloc and packet setup outside of
+locking to save some locking time)
 
-> diff --git a/include/linux/bpf-cgroup.h b/include/linux/bpf-cgroup.h
-> index 11820a430d6c..c6dacdbdf565 100644
-> --- a/include/linux/bpf-cgroup.h
-> +++ b/include/linux/bpf-cgroup.h
-> @@ -219,11 +219,28 @@ int bpf_percpu_cgroup_storage_copy(struct bpf_map  
-> *map, void *key, void *value);
->   int bpf_percpu_cgroup_storage_update(struct bpf_map *map, void *key,
->   				     void *value, u64 flags);
+Can I check priv->master 2 times? One outside the lock and one under
+lock when is actually used by the skb? To skip locking and releasing for
+every read/write if the alternative way is not available. 
 
-> +static inline bool
-> +__cgroup_bpf_prog_array_is_empty(struct cgroup_bpf *cgrp_bpf,
-> +				 enum cgroup_bpf_attach_type type)
-> +{
-> +	struct bpf_prog_array *array =  
-> rcu_access_pointer(cgrp_bpf->effective[type]);
-> +
-> +	return array == &bpf_empty_prog_array.hdr;
-> +}
-> +
-> +#define CGROUP_BPF_TYPE_ENABLED(sk, atype)				       \
-> +({									       \
-> +	struct cgroup *__cgrp = sock_cgroup_ptr(&(sk)->sk_cgrp_data);	       \
-> +									       \
-> +	!__cgroup_bpf_prog_array_is_empty(&__cgrp->bpf, (atype));	       \
-> +})
-> +
->   /* Wrappers for __cgroup_bpf_run_filter_skb() guarded by  
-> cgroup_bpf_enabled. */
->   #define BPF_CGROUP_RUN_PROG_INET_INGRESS(sk, skb)			      \
->   ({									      \
->   	int __ret = 0;							      \
-> -	if (cgroup_bpf_enabled(CGROUP_INET_INGRESS))		      \
-> +	if (cgroup_bpf_enabled(CGROUP_INET_INGRESS) && sk &&		      \
-> +	    CGROUP_BPF_TYPE_ENABLED((sk), CGROUP_INET_INGRESS)) 	      \
+> > +
+> > +	mutex_lock(&mdio_hdr_data->mutex);
+> > +
+> > +	reinit_completion(&mdio_hdr_data->rw_done);
+> > +	mdio_hdr_data->seq = 200;
+> 
+> Why do you rewrite the seq here?
+> 
 
-Why not add this __cgroup_bpf_run_filter_skb check to
-__cgroup_bpf_run_filter_skb? Result of sock_cgroup_ptr() is already there
-and you can use it. Maybe move the things around if you want
-it to happen earlier.
+Seq is checked by the handler. Should I set it one time in probe?
 
->   		__ret = __cgroup_bpf_run_filter_skb(sk, skb,		      \
->   						    CGROUP_INET_INGRESS); \
->   									      \
-> @@ -235,9 +252,10 @@ int bpf_percpu_cgroup_storage_update(struct bpf_map  
-> *map, void *key,
->   	int __ret = 0;							       \
->   	if (cgroup_bpf_enabled(CGROUP_INET_EGRESS) && sk && sk == skb->sk) { \
->   		typeof(sk) __sk = sk_to_full_sk(sk);			       \
-> -		if (sk_fullsock(__sk))					       \
-> +		if (sk_fullsock(__sk) &&				       \
-> +		    CGROUP_BPF_TYPE_ENABLED(__sk, CGROUP_INET_EGRESS))	       \
->   			__ret = __cgroup_bpf_run_filter_skb(__sk, skb,	       \
-> -						      CGROUP_INET_EGRESS); \
-> +						      CGROUP_INET_EGRESS);     \
->   	}								       \
->   	__ret;								       \
->   })
-> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> index e7a163a3146b..0d2195c6fb2a 100644
-> --- a/include/linux/bpf.h
-> +++ b/include/linux/bpf.h
-> @@ -1161,6 +1161,19 @@ struct bpf_prog_array {
->   	struct bpf_prog_array_item items[];
->   };
+> > +	mdio_hdr_data->ack = false;
+> > +
+> > +	dev_queue_xmit(skb);
+> > +
+> > +	ret = wait_for_completion_timeout(&mdio_hdr_data->rw_done,
+> > +					  msecs_to_jiffies(QCA8K_ETHERNET_TIMEOUT));
+> > +
+> > +	*val = mdio_hdr_data->data[0];
+> > +	ack = mdio_hdr_data->ack;
+> > +
+> > +	mutex_unlock(&mdio_hdr_data->mutex);
+> > +
+> > +	if (ret <= 0)
+> > +		return -ETIMEDOUT;
+> > +
+> > +	if (!ack)
+> > +		return -EINVAL;
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +static int qca8k_write_eth(struct qca8k_priv *priv, u32 reg, u32 val)
+> > +{
+> > +	struct qca8k_mdio_hdr_data *mdio_hdr_data = &priv->mdio_hdr_data;
+> > +	struct sk_buff *skb;
+> > +	bool ack;
+> > +	int ret;
+> > +
+> > +	skb = qca8k_alloc_mdio_header(MDIO_WRITE, reg, &val, 200, QCA8K_ETHERNET_MDIO_PRIORITY);
+> > +	skb->dev = (struct net_device *)priv->master;
+> > +
+> > +	mutex_lock(&mdio_hdr_data->mutex);
+> > +
+> > +	reinit_completion(&mdio_hdr_data->rw_done);
+> > +	mdio_hdr_data->ack = false;
+> > +	mdio_hdr_data->seq = 200;
+> > +
+> > +	dev_queue_xmit(skb);
+> > +
+> > +	ret = wait_for_completion_timeout(&mdio_hdr_data->rw_done,
+> > +					  msecs_to_jiffies(QCA8K_ETHERNET_TIMEOUT));
+> > +
+> > +	ack = mdio_hdr_data->ack;
+> > +
+> > +	mutex_unlock(&mdio_hdr_data->mutex);
+> > +
+> > +	if (ret <= 0)
+> > +		return -ETIMEDOUT;
+> > +
+> > +	if (!ack)
+> > +		return -EINVAL;
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +static int
+> > +qca8k_regmap_update_bits_eth(struct qca8k_priv *priv, u32 reg, u32 mask, u32 write_val)
+> > +{
+> > +	u32 val = 0;
+> > +	int ret;
+> > +
+> > +	ret = qca8k_read_eth(priv, reg, &val);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	val &= ~mask;
+> > +	val |= write_val;
+> > +
+> > +	return qca8k_write_eth(priv, reg, val);
+> > +}
+> > +
+> >  static int
+> >  qca8k_regmap_read(void *ctx, uint32_t reg, uint32_t *val)
+> >  {
+> > @@ -178,6 +331,9 @@ qca8k_regmap_read(void *ctx, uint32_t reg, uint32_t *val)
+> >  	u16 r1, r2, page;
+> >  	int ret;
+> >  
+> > +	if (priv->master && !qca8k_read_eth(priv, reg, val))
+> > +		return 0;
+> > +
+> >  	qca8k_split_addr(reg, &r1, &r2, &page);
+> >  
+> >  	mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
+> > @@ -201,6 +357,9 @@ qca8k_regmap_write(void *ctx, uint32_t reg, uint32_t val)
+> >  	u16 r1, r2, page;
+> >  	int ret;
+> >  
+> > +	if (priv->master && !qca8k_write_eth(priv, reg, val))
+> > +		return 0;
+> > +
+> >  	qca8k_split_addr(reg, &r1, &r2, &page);
+> >  
+> >  	mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
+> > @@ -225,6 +384,10 @@ qca8k_regmap_update_bits(void *ctx, uint32_t reg, uint32_t mask, uint32_t write_
+> >  	u32 val;
+> >  	int ret;
+> >  
+> > +	if (priv->master &&
+> > +	    !qca8k_regmap_update_bits_eth(priv, reg, mask, write_val))
+> > +		return 0;
+> > +
+> >  	qca8k_split_addr(reg, &r1, &r2, &page);
+> >  
+> >  	mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
+> > @@ -2394,10 +2557,38 @@ qca8k_master_change(struct dsa_switch *ds, const struct net_device *master,
+> >  	if (dp->index != 0)
+> >  		return;
+> >  
+> > +	mutex_lock(&priv->mdio_hdr_data.mutex);
+> > +
+> >  	if (operational)
+> >  		priv->master = master;
+> >  	else
+> >  		priv->master = NULL;
+> > +
+> > +	mutex_unlock(&priv->mdio_hdr_data.mutex);
+> > +}
+> > +
+> > +static int qca8k_connect_tag_protocol(struct dsa_switch *ds,
+> > +				      enum dsa_tag_protocol proto)
+> > +{
+> > +	struct qca8k_priv *qca8k_priv = ds->priv;
+> > +
+> > +	switch (proto) {
+> > +	case DSA_TAG_PROTO_QCA:
+> > +		struct tag_qca_priv *priv;
+> > +
+> > +		priv = ds->tagger_data;
+> > +
+> > +		mutex_init(&qca8k_priv->mdio_hdr_data.mutex);
+> > +		init_completion(&qca8k_priv->mdio_hdr_data.rw_done);
+> 
+> I think having these initializations here dilutes the purpose of this
+> callback. Could you please move these two lines to qca8k_sw_probe()?
+> 
+> > +
+> > +		priv->rw_reg_ack_handler = qca8k_rw_reg_ack_handler;
+> > +
+> > +		break;
+> > +	default:
+> > +		return -EOPNOTSUPP;
+> > +	}
+> > +
+> > +	return 0;
+> >  }
+> >  
+> >  static const struct dsa_switch_ops qca8k_switch_ops = {
+> > @@ -2436,6 +2627,7 @@ static const struct dsa_switch_ops qca8k_switch_ops = {
+> >  	.port_lag_join		= qca8k_port_lag_join,
+> >  	.port_lag_leave		= qca8k_port_lag_leave,
+> >  	.master_state_change	= qca8k_master_change,
+> > +	.connect_tag_protocol	= qca8k_connect_tag_protocol,
+> >  };
+> >  
+> >  static int qca8k_read_switch_id(struct qca8k_priv *priv)
+> > diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
+> > index 6edd6adc3063..dbe8c74c9793 100644
+> > --- a/drivers/net/dsa/qca8k.h
+> > +++ b/drivers/net/dsa/qca8k.h
+> > @@ -11,6 +11,10 @@
+> >  #include <linux/delay.h>
+> >  #include <linux/regmap.h>
+> >  #include <linux/gpio.h>
+> > +#include <linux/dsa/tag_qca.h>
+> > +
+> > +#define QCA8K_ETHERNET_MDIO_PRIORITY			7
+> > +#define QCA8K_ETHERNET_TIMEOUT				100
+> >  
+> >  #define QCA8K_NUM_PORTS					7
+> >  #define QCA8K_NUM_CPU_PORTS				2
+> > @@ -328,6 +332,14 @@ enum {
+> >  	QCA8K_CPU_PORT6,
+> >  };
+> >  
+> > +struct qca8k_mdio_hdr_data {
+> 
+> What do you think about the "qca8k_eth_mgmt_data" name rather than
+> "mdio_hdr_data"? I don't think this has anything to do with MDIO.
+> 
+> > +	struct completion rw_done;
+> > +	struct mutex mutex; /* Enforce one mdio read/write at time */
+> > +	bool ack;
+> > +	u32 seq;
+> > +	u32 data[4];
+> > +};
+> > +
+> >  struct qca8k_ports_config {
+> >  	bool sgmii_rx_clk_falling_edge;
+> >  	bool sgmii_tx_clk_falling_edge;
+> > @@ -354,6 +366,7 @@ struct qca8k_priv {
+> >  	struct gpio_desc *reset_gpio;
+> >  	unsigned int port_mtu[QCA8K_NUM_PORTS];
+> >  	const struct net_device *master; /* Track if mdio/mib Ethernet is available */
+> > +	struct qca8k_mdio_hdr_data mdio_hdr_data;
+> >  };
+> >  
+> >  struct qca8k_mib_desc {
+> > -- 
+> > 2.33.1
+> > 
 
-> +struct bpf_empty_prog_array {
-> +	struct bpf_prog_array hdr;
-> +	struct bpf_prog *null_prog;
-> +};
-> +
-> +/* to avoid allocating empty bpf_prog_array for cgroups that
-> + * don't have bpf program attached use one global 'bpf_empty_prog_array'
-> + * It will not be modified the caller of bpf_prog_array_alloc()
-> + * (since caller requested prog_cnt == 0)
-> + * that pointer should be 'freed' by bpf_prog_array_free()
-> + */
-> +extern struct bpf_empty_prog_array bpf_empty_prog_array;
-> +
->   struct bpf_prog_array *bpf_prog_array_alloc(u32 prog_cnt, gfp_t flags);
->   void bpf_prog_array_free(struct bpf_prog_array *progs);
->   int bpf_prog_array_length(struct bpf_prog_array *progs);
-> diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
-> index 43eb3501721b..99e85f44e257 100644
-> --- a/kernel/bpf/cgroup.c
-> +++ b/kernel/bpf/cgroup.c
-> @@ -1354,20 +1354,6 @@ int __cgroup_bpf_run_filter_sysctl(struct  
-> ctl_table_header *head,
->   }
-
->   #ifdef CONFIG_NET
-> -static bool __cgroup_bpf_prog_array_is_empty(struct cgroup *cgrp,
-> -					     enum cgroup_bpf_attach_type attach_type)
-> -{
-> -	struct bpf_prog_array *prog_array;
-> -	bool empty;
-> -
-> -	rcu_read_lock();
-> -	prog_array = rcu_dereference(cgrp->bpf.effective[attach_type]);
-> -	empty = bpf_prog_array_is_empty(prog_array);
-> -	rcu_read_unlock();
-> -
-> -	return empty;
-> -}
-> -
->   static int sockopt_alloc_buf(struct bpf_sockopt_kern *ctx, int  
-> max_optlen,
->   			     struct bpf_sockopt_buf *buf)
->   {
-> @@ -1430,7 +1416,7 @@ int __cgroup_bpf_run_filter_setsockopt(struct sock  
-> *sk, int *level,
->   	 * attached to the hook so we don't waste time allocating
->   	 * memory and locking the socket.
->   	 */
-> -	if (__cgroup_bpf_prog_array_is_empty(cgrp, CGROUP_SETSOCKOPT))
-> +	if (__cgroup_bpf_prog_array_is_empty(&cgrp->bpf, CGROUP_SETSOCKOPT))
->   		return 0;
-
->   	/* Allocate a bit more than the initial user buffer for
-> @@ -1526,7 +1512,7 @@ int __cgroup_bpf_run_filter_getsockopt(struct sock  
-> *sk, int level,
->   	 * attached to the hook so we don't waste time allocating
->   	 * memory and locking the socket.
->   	 */
-> -	if (__cgroup_bpf_prog_array_is_empty(cgrp, CGROUP_GETSOCKOPT))
-> +	if (__cgroup_bpf_prog_array_is_empty(&cgrp->bpf, CGROUP_GETSOCKOPT))
->   		return retval;
-
->   	ctx.optlen = max_optlen;
-> diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-> index 2405e39d800f..fa76d1d839ad 100644
-> --- a/kernel/bpf/core.c
-> +++ b/kernel/bpf/core.c
-> @@ -1967,18 +1967,10 @@ static struct bpf_prog_dummy {
->   	},
->   };
-
-> -/* to avoid allocating empty bpf_prog_array for cgroups that
-> - * don't have bpf program attached use one global 'empty_prog_array'
-> - * It will not be modified the caller of bpf_prog_array_alloc()
-> - * (since caller requested prog_cnt == 0)
-> - * that pointer should be 'freed' by bpf_prog_array_free()
-> - */
-> -static struct {
-> -	struct bpf_prog_array hdr;
-> -	struct bpf_prog *null_prog;
-> -} empty_prog_array = {
-> +struct bpf_empty_prog_array bpf_empty_prog_array = {
->   	.null_prog = NULL,
->   };
-> +EXPORT_SYMBOL(bpf_empty_prog_array);
-
->   struct bpf_prog_array *bpf_prog_array_alloc(u32 prog_cnt, gfp_t flags)
->   {
-> @@ -1988,12 +1980,12 @@ struct bpf_prog_array *bpf_prog_array_alloc(u32  
-> prog_cnt, gfp_t flags)
->   			       (prog_cnt + 1),
->   			       flags);
-
-> -	return &empty_prog_array.hdr;
-> +	return &bpf_empty_prog_array.hdr;
->   }
-
->   void bpf_prog_array_free(struct bpf_prog_array *progs)
->   {
-> -	if (!progs || progs == &empty_prog_array.hdr)
-> +	if (!progs || progs == &bpf_empty_prog_array.hdr)
->   		return;
->   	kfree_rcu(progs, rcu);
->   }
-> --
-> 2.34.0
-
+-- 
+	Ansuel
