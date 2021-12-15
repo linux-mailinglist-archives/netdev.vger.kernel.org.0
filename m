@@ -2,84 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 403974754F8
-	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 10:17:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B9FA6475504
+	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 10:19:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241090AbhLOJRo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Dec 2021 04:17:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34684 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236009AbhLOJRn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Dec 2021 04:17:43 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AED4C061574;
-        Wed, 15 Dec 2021 01:17:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=ciNIolSnF0w3P4/6NyIscaHcZqy7GkcNoYmDZxekxE0=; b=fyZ6hxbhOxZ+QdfRh+XzozqNdX
-        LzkhWrjFTvoKMboLzrttB6OAu3GPt8RqWlC8W4wF/wQLAquUQ9r6KIFtqke/8+d6YtamSjUwbOUJt
-        7MUFTiY5qFS45cDBpMSO5QEVFY9fVLN7hwgJi0cQ36D9OPiyBqkqwX6tM0IRCnpnI9p7VLEDXGPq+
-        ukGxcg2E+SQX6YtO/cuZUmIUgOF9PQL7zWndvSauuM42a9hBz0PlaimTTh2Pa7jcAVFO9SPPtlmV6
-        RmKMI6kge2kPQ+Jc2HpTlD959l/5WJNEkNsXNIz7JgdXO7ZbiUZcphFKtBTkDaJZENUL6vMkZH/gq
-        sn9S9Llg==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1mxQPm-00EVNv-Q0; Wed, 15 Dec 2021 09:17:35 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 25103300252;
-        Wed, 15 Dec 2021 10:17:35 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 0DF642B3204AF; Wed, 15 Dec 2021 10:17:35 +0100 (CET)
-Date:   Wed, 15 Dec 2021 10:17:35 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Song Liu <song@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, kernel-team@fb.com, x86@kernel.org
-Subject: Re: [PATCH v2 bpf-next 5/7] x86/alternative: introduce text_poke_jit
-Message-ID: <Ybmyr3GB5+nZbso2@hirez.programming.kicks-ass.net>
-References: <20211215060102.3793196-1-song@kernel.org>
- <20211215060102.3793196-6-song@kernel.org>
+        id S241097AbhLOJTA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Dec 2021 04:19:00 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:56030 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236370AbhLOJTA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 Dec 2021 04:19:00 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=N/BHcqYbeBKuPaHbSSkfkqmZ1iq2aVpkVjLY1d/Xf0I=; b=Td0skQN7yczo1H98juij9wlKix
+        QuRalEGmBQu1KHUcssGLRbNpaJSEwIQI0VjldRpAZ3zrToDKhh0Cc2vpqb2gKpXgF3VcBPcJLkuyw
+        DsWyrtaTDSpCZtfI9/hIpDXc7+ijEewMEfD0bwYKys9+x984r16MAjVpFrQWAQ5+3sT0=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mxQR8-00GcrH-FN; Wed, 15 Dec 2021 10:18:58 +0100
+Date:   Wed, 15 Dec 2021 10:18:58 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Alex Elder <elder@linaro.org>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        "bjorn.andersson@linaro.org" <bjorn.andersson@linaro.org>
+Subject: Re: Port mirroring (RFC)
+Message-ID: <YbmzAkE+5v7Mv89D@lunn.ch>
+References: <384e168b-8266-cb9b-196b-347a513c0d36@linaro.org>
+ <YbjiCNRffWYEcWDt@lunn.ch>
+ <3bd97657-7a33-71ce-b33a-e4eb02ee7e20@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211215060102.3793196-6-song@kernel.org>
+In-Reply-To: <3bd97657-7a33-71ce-b33a-e4eb02ee7e20@linaro.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 14, 2021 at 10:01:00PM -0800, Song Liu wrote:
-> This will be used by BPF jit compiler to dump JITed binary to a RWX huge
+> IPA is a device that sits between the main CPU and a modem,
+> carrying WWAN network data between them.
+> 
+> In addition, there is a small number of other entities that
+> could be reachable through the IPA hardware, such as a WiFi
+> device providing access to a WLAN.
+> 
+> Packets can travel "within IPA" between any of these
+> "connected entities."  So far only the path between the
+> AP and the modem is supported upstream, but I'm working
+> on enabling more capability.
+> 
+> Technically, the replicated packets aren't visible on
+> any one port; the only way to see that traffic is in
+> using this special port.  To me this seemed like port
+> mirroring, which is why I suggested that.  I'm want to
+> use the proper model though, so I appreciate your
+> response.
 
-OK, I read the actually allocator you use and the relevant code for this
-patch and the above is a typo, you meant: RX. Those pages are most
-definitely not writable.
+Do you have netdevs for the modem, the wifi, and whatever other
+interfaces the hardware might have?
 
+To setup a mirror you would do something like:
 
-> +void *text_poke_jit(void *addr, const void *opcode, size_t len)
-> +{
-> +	unsigned long start = (unsigned long)addr;
-> +	size_t patched = 0;
-> +
-> +	if (WARN_ON_ONCE(core_kernel_text(start)))
-> +		return NULL;
-> +
-> +	while (patched < len) {
-> +		unsigned long ptr = start + patched;
-> +		size_t s;
-> +
-> +		s = min_t(size_t, PAGE_SIZE * 2 - offset_in_page(ptr), len - patched);
+sudo tc filter add dev eth0 parent ffff: protocol all u32 match u32 0 0 action mirred egress mirror dev tun0
 
-Cute, should work.
+where you are mirroring eth0 to tun0. eth0 would have to be your modem
+netdev, or your wifi netdev, and tun0 would be your monitor device.
 
-> +
-> +		__text_poke((void *)ptr, opcode + patched, s);
-> +		patched += s;
-> +	}
-> +	return addr;
-> +}
+If you do have a netdev on the host for each of these network
+interfaces, mirroring could work. Architecturally, it would make sense
+to have these netdevs, so you can run wpa_supplicant on the wifi
+interface to do authentication, etc.
+
+Do you have control over selecting egress and ingress packets to be
+mirrored?
+
+	Andrew
