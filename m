@@ -2,139 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A0CCE475527
-	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 10:27:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 958704754FE
+	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 10:18:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241177AbhLOJ1f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Dec 2021 04:27:35 -0500
-Received: from mail-eopbgr50049.outbound.protection.outlook.com ([40.107.5.49]:13538
-        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230475AbhLOJ1e (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 Dec 2021 04:27:34 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ypw6uxoJU9qq9VyONJSPaREREHA35e1uiFe8ERty2lnsMuwIPZMepBposauTAQFecQU6t4JTugWaH6Fh4YJ/BTxxU647iHILA6c5N/Q7g4agrmoJAHrR9N6DqZti96X/tNnkFA+hZ2KI3tAWC+6hzPTTsO628PkX3vLAlkqi8e9PgqTIz1J1iriuRXa4FcYQaUQd9YNSvVOeo/0MeOZoeyNl0lUDZUplT5ZdRULpjZpxv/SI0gWKmI9o0qBZysWdLK8CzL8LnC1ONBlIBCeozRO16o/8/kZB51ETY+bbYJ9coQZmJ2T3zOdj0wrvsr+NvS96OoiBTXM2Gg5qj3AC7A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=RxYJkTvnmzFIV3WLWJYUxZHVDAGxhz4bL19MxeU/nlI=;
- b=DdNTMMz/K9TaV3nIZqxbHjNJZQVSW9pBZTD29mkiCDxhob6Pjuj0pqEyYmnauliKH6u195UdW5YX4BMmNbXd30mw58OZJnyu1c1WuWbNQnKYl7SjbYWyF9Lxrcnltf+x/uRf8ojbuMk8ZOk3mZBJRj38uQXascpAK60ty1dVVrRhSaZ0sMnil1HRi5W6/DodO7nwof2eX2d6quKNEsKRfaoRH4nMPfX4fcQW7gEwnxB+bRug6U2SAVHwf3UdKP/WaXDeyQHbMn4ByXx6E9kjO2qZ7q+BBBz3QXpmmJGkAbyPAaX67nvpZgAHsmZrhENf39UEXU7wurJHeS4VqP7RLQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=RxYJkTvnmzFIV3WLWJYUxZHVDAGxhz4bL19MxeU/nlI=;
- b=cjwN0HZIagiUKKjoZh9A+qrz5dGZtsmAtSfsmr+XD1M2hqcsxkFuKWY6HBu7BJZchuFwBuzhqqYagaYiGcW0/AhJjUlm8+rk47i5iFgdPuJOIMQorvBEyWd4xy09at7qQJLAkcr1DSA0GnqHOa+v7RYz0wN3bjwh9Q6SjPwgRC4=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VI1PR0402MB2862.eurprd04.prod.outlook.com (2603:10a6:800:b6::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4778.18; Wed, 15 Dec
- 2021 09:27:31 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::c84:1f0b:cc79:9226]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::c84:1f0b:cc79:9226%3]) with mapi id 15.20.4755.028; Wed, 15 Dec 2021
- 09:27:31 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>
-Subject: Re: [PATCH net-next v3 6/6] net: lan966x: Add switchdev support
-Thread-Topic: [PATCH net-next v3 6/6] net: lan966x: Add switchdev support
-Thread-Index: AQHX7OGqma9W7JTLPke3A5iwt0gyh6wqKbcAgAA0OYCABd/MgIAAN0eAgAAMLwCAAACdgIAAEJAAgAAP1QCAAFPBAIAAK9+AgADy+YCAAT1mAA==
-Date:   Wed, 15 Dec 2021 09:27:31 +0000
-Message-ID: <20211215092730.w4ptdsymqgdhtcte@skbuf>
-References: <20211209164311.agnofh275znn5t5c@soft-dev3-1.localhost>
- <20211213102529.tzdvekwwngo4zgex@soft-dev3-1.localhost>
- <20211213134319.dp6b3or24pl3p4en@skbuf>
- <20211213142656.tfonhcmmtkelszvf@soft-dev3-1.localhost>
- <20211213142907.7s74smjudcecpgik@skbuf>
- <20211213152824.22odaltycnotozkw@soft-dev3-1.localhost>
- <20211213162504.gc62jvm6csmymtos@skbuf>
- <20211213212450.ldu5budcx7ybe3nb@soft-dev3-1.localhost>
- <20211214000151.xiyserx62zq2wpzh@skbuf>
- <20211214143129.his7l6juatvv3nry@soft-dev3-1.localhost>
-In-Reply-To: <20211214143129.his7l6juatvv3nry@soft-dev3-1.localhost>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 6a585352-f05f-40dc-f428-08d9bfad1ed5
-x-ms-traffictypediagnostic: VI1PR0402MB2862:EE_
-x-microsoft-antispam-prvs: <VI1PR0402MB28626EE1366B7EA4BD4E51E6E0769@VI1PR0402MB2862.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: MbaErPzrEnBlRPJcaNiYispYCWJXfiTPKNJEXvD/oxL+RZjJ1kH38GhvFPfWIsb5HgygN1IXfFw9y8R5g4BnY+ON0+IvYkH7w+UJf1daHGpgTjloe7suK/JhU1FgYsRRHSw97dcIu4MC3L0ZhikmaStimLIUMrIDSrDk5pVgHd2bQDsf5tx4QGMElnQOgXozeodP8/8AQL1m9J45kussrgVJZkgBGfIhuQMtLAnAYWwyxmIxuUzJdcmubEAQi2sZ/uqJKRkERzRL0eCjESeK4tJz1CtQGSjiVAi+9R7DITeNatBV/plTYsH8iLgY/5Eal+pptv92sbx4rjWoRkskMOc8h4/cxa+3FONZxAp7PLhNZb9cyNk+5J43/FDt85ki5iQ4a3aMB7FzkqpLfYe6JhKpAJAq/I0HTQzkgmhsyyuMQVrMxUNVVQgQqor4jSibfGjghR+eWE3Unp2w2TSV36NwXVhIT5Vcu4JDmo6N0GfKJ07qtSDQYpbVgiZUo5Kv7uQizIIL2tEDYl3FOqE8nMqnMWO2SG/VFVDt6Lqu7NipC/P5Ju0l+Rc8Coo5NoOSXCRaE1od4yrEuJt0aoeRPmGQXNJ2tG9WaFOBGmSll419MwvusE3ZNfqK/AcbZ8ugh6rVuBNTEl5IoCkcDef6M5i+WgbwanfaNd/KsBb9i/lqJxRU2jc/BOz50yZvKgOU3BApucitXhwys568pk4gLA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(366004)(38100700002)(316002)(4326008)(186003)(8676002)(66476007)(6512007)(91956017)(71200400001)(1076003)(83380400001)(26005)(122000001)(44832011)(9686003)(33716001)(4744005)(6486002)(76116006)(66446008)(508600001)(54906003)(38070700005)(6506007)(64756008)(5660300002)(7416002)(6916009)(66946007)(86362001)(66556008)(2906002)(8936002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?LaHFCXGv+9/C91XKmgp6XDVex4bPE3tGaH8IajuCKjWT6UgZyaBZP8qCbPGh?=
- =?us-ascii?Q?GTMmXnMzKLqCaDQMGLYdC2lZjp+oOgles/R0cEw+H7KBTe+Rnt+YLPpZEp8Y?=
- =?us-ascii?Q?YGV49rt3hrJFoXuu84mPnGSo/nM5QvfQOqAofLxqfJSYfKpKmqvtKTJQ39Sn?=
- =?us-ascii?Q?L8sQx8zZr5eckw58IhICJQjEcrnyqB07pcKF65ayvHU38qrJCUBFtIfoDWHP?=
- =?us-ascii?Q?0zKVPs+q38iS7RYCIVegMMor267EZLku9HVbGefL6M/WGoR9JFgWJ7bvMcC3?=
- =?us-ascii?Q?4S1MtOPArXNI9NyY2VJEXLuHrdxjvbNmB1g0lzVIj19/OO+VaZNI6vYV3RSp?=
- =?us-ascii?Q?2pX68mVDVWxhlJUodw67QG/p4btOLueej8xAl24OXA/3Ez0aWknd9ZKMHE5I?=
- =?us-ascii?Q?fINb9oSKcRSXrmGY9Kb/Db+w3KtvEW/a5AJKokouV16Tt7gbCi7oMrwEwSCe?=
- =?us-ascii?Q?COuEJlhaFsHitCh8Qr0aFUUCpbg++R2mpaLJg4gXqYfDurzI+Ftp1zSNa7zZ?=
- =?us-ascii?Q?NAp3/gtcRupudRUSi3agxOYZEUnzgTk4MIlBvPO57aQQv6oPOgj3P4BVC6lf?=
- =?us-ascii?Q?+NP3A6e0Gj0w7QLszVBBYeOEapKCQOlH/tMfK62IGi6STyBYpxPPOGtDHRcc?=
- =?us-ascii?Q?LIZkOObxvjKoP6/oVsVWGMFRR87Eosd6TxK/Oa9u3n5DBSJpMMa+mlVYDKxW?=
- =?us-ascii?Q?2/+wMNTfFOFcu/pS3JE/jc/dz47tzqcdISUhumd5hT7IdiDQvmnbG+uEF33z?=
- =?us-ascii?Q?HHYbuDNjkjGDbwUhdifHQNA+9H/quLMmmTpX5C2wz+ji/DIuJ9484JcCRS4a?=
- =?us-ascii?Q?5D/02DPkgjWFuM0arbL4uduo5tgEFxuIE8UunVhmpswOTeswBLv1KMaVTjJP?=
- =?us-ascii?Q?69Sbym6ZsFhfZoa73SD/vjrOgPm8ot9h5/88daDeFDbjcdk2sSPka0eQRwhs?=
- =?us-ascii?Q?g7D0Xmo0Ufkitrzb1ZVJSAws+lMQuxtK2v7BEyOEwoSe6RYSoUrQjrRWdVyp?=
- =?us-ascii?Q?2lpzaPWtpoLMwx5hycW04SrIusqrj3wdNIKShZeMNcCPa7iLoBoPcF80VUOC?=
- =?us-ascii?Q?P+WlUyz0edwychJ/6T0gb+4/xPi2XNXg4Jtcw/VLlPMe6pxQr8wFoQd1Y2L5?=
- =?us-ascii?Q?tDabT1XdJTh0bYxaRQe1Fex2PTt2P6VWZLIrConEDGba6wxj1reHhm6+sb3u?=
- =?us-ascii?Q?OFT4e84JVmLS9S6VvOknW5iCZ8toRzvzagQP1PIZvmYepmnU1Uf89kq+gl6L?=
- =?us-ascii?Q?bOYUuQYGhIQ3mueqAte7BfZ1g/31AfZLHzbaqq72X+RMB4CIGd0/5tccK3oD?=
- =?us-ascii?Q?KW5ImOxClcACuBu2RsQmlDx7XQT2w6BbL80wXGSuYpap1ExgnuCGnbV3+QZS?=
- =?us-ascii?Q?bokMUjpqYQla26bMxjW7jjMWaxz1VGXG7N6ZFOYn3H5w05wNatVvw+ABlopk?=
- =?us-ascii?Q?SSjkH+7CQP1kK2Q52/E8FPIRV1Adtg64uKZrKYlgm6bT8+sq+JMLk2gAuMh/?=
- =?us-ascii?Q?yoWaQ09k9K4rMW525sY7c0jtO1OFpOBuJPRLSBRCW9IznzEZ8hpxmpvIHNf3?=
- =?us-ascii?Q?7bE8bYFUbjpPyX20vGslCVpBENTToewAVZUpZ0n8+U8uIAgrUht6HT6uJCWl?=
- =?us-ascii?Q?lGcFmTUFhABQXMLvHDtLPdU=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <4F8DC25BC9077B4A973F01B1F35A2674@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S241102AbhLOJSQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Dec 2021 04:18:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34812 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236009AbhLOJSQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Dec 2021 04:18:16 -0500
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5B9BC06173E
+        for <netdev@vger.kernel.org>; Wed, 15 Dec 2021 01:18:15 -0800 (PST)
+Received: by mail-pf1-x433.google.com with SMTP id 8so20169085pfo.4
+        for <netdev@vger.kernel.org>; Wed, 15 Dec 2021 01:18:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=PuUpV7unZmDgwkYXvnbs8yf/Y2SOw0EcLwtXV3LJfDE=;
+        b=EJj8entE9fccxgKtWpK2X0p2L1Nzsln4+xQCyKlCaPjieIxV4K30Fx70/AxkqNunZC
+         kJPeAQgkePmYa+PSoGPscDigPn9uvqq89tHBq8uAccgzV12ta0i2KSbIioQgrN+WuL6r
+         sBxxLSq+UAPW395eA5SPZNyETeiBBaDIG1sUmqJt+ZKj5eD+3wbiW5/aTGAhAafuKX9g
+         wUuwNLUn9xhVPq/nXQ1K3qX5AwPYM0N2Vo/yqUrQrlki2CXQDDQhD0IbSZL2BXsXPQ1M
+         Alf0ISOpNMzECaq1yfhsK+DWl7Xa4O5VwhtQzBPag0f/zuMgcXcThDfwTUJIugprzE1m
+         a6jw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=PuUpV7unZmDgwkYXvnbs8yf/Y2SOw0EcLwtXV3LJfDE=;
+        b=oMVU2b+TtgsMOuhPeqvQwwoyCBhC8Csrezrj8i6ZLxcgGirhWdwe+GP3Mk7uEg7UID
+         flp3BQQkBJMzIR+uU4edjKfdtxU0iz80LUj87WQVWc7dbt1iWOzB9KhsAD7/foULpm/9
+         1bjm6TDuPhWVe9+HY7e++VsQOUBB79W4qiBZGNUWVaiLREn0g1PUYaTtKt7tKv9MmJWa
+         XfqTLkgFZN37E0OqcLtYY04ryKTfkGy8aV/T8fBCub5I5eJBatg7MVdoW8x4rlqn9z5z
+         Jg/2lx25RZlyaBsM9vg32YNSNmuQ2EQfBZjBMo8lIcEAM5n9Yhgk/gdLEPm9EUZIxjzz
+         rgBQ==
+X-Gm-Message-State: AOAM532zRZofeplbMojqovhW2IeUZaonVPIIwF64FBuo4cx/kY5mTxZj
+        oBN6YnhGU9gqy/9l7t4KcLTOyl4Wtp+vs/DVQSPT4A==
+X-Google-Smtp-Source: ABdhPJweKdAqX4eth/0RRfyhxeipqNSi1Pn37tjp7vkwm8PbUqsllU7qQk/phWZI5KFGpeGw/yMtpaRR3rKlcbgDZ1c=
+X-Received: by 2002:a63:2212:: with SMTP id i18mr7095763pgi.586.1639559895299;
+ Wed, 15 Dec 2021 01:18:15 -0800 (PST)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6a585352-f05f-40dc-f428-08d9bfad1ed5
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Dec 2021 09:27:31.5815
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: kGyefxuqx2oHo9t5AoobHCWJ9iXYf42bvDY2/JKjT1DVZpn+6fvji7OlJSsN4dKHgV+4iANT3aesWfOb/kKapA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB2862
+References: <20211208040414.151960-1-xiayu.zhang@mediatek.com>
+ <CAHNKnsRZpYsiWORgAejYwQqP5P=PSt-V7_i73G1yfh-UR2zFjw@mail.gmail.com>
+ <6f4ae1d8b1b53cf998eaa14260d93fd3f4c8d5ad.camel@mediatek.com>
+ <CAHNKnsQ6qLcUTiTiPEAp+rmoVtrGOjoY98nQFsrwSWUu-v7wYQ@mail.gmail.com> <76bc0c0174edc3a0c89bb880a237c844d44ac46b.camel@mediatek.com>
+In-Reply-To: <76bc0c0174edc3a0c89bb880a237c844d44ac46b.camel@mediatek.com>
+From:   Loic Poulain <loic.poulain@linaro.org>
+Date:   Wed, 15 Dec 2021 10:29:48 +0100
+Message-ID: <CAMZdPi_bpCdbxsEfh-=-LzGywsmXqoqujg-8H8y1bp2VM5uayw@mail.gmail.com>
+Subject: Re: [PATCH] Add Multiple TX/RX Queues Support for WWAN Network Device
+To:     Xiayu Zhang <xiayu.zhang@mediatek.com>
+Cc:     Sergey Ryazanov <ryazanov.s.a@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        =?UTF-8?B?SGFpanVuIExpdSAo5YiY5rW35YabKQ==?= 
+        <haijun.liu@mediatek.com>,
+        =?UTF-8?B?Wmhhb3BpbmcgU2h1ICjoiJLlj6zlubMp?= 
+        <Zhaoping.Shu@mediatek.com>,
+        =?UTF-8?B?SFcgSGUgKOS9leS8nyk=?= <HW.He@mediatek.com>,
+        srv_heupstream <srv_heupstream@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 14, 2021 at 03:31:29PM +0100, Horatiu Vultur wrote:
-> So long story short, I agree with your comments, I can make the
-> notifier_block as singleton objects and start to use
-> switchdev_handle_port_obj_add and the other variants.
-> In this way it should also work "parallel instances of the driver".
+Hi Xiayu, Sergey,
 
-To be clear, what I'd like to see for v5 is a set of patterns that is
-simple, clean and functional enough that it could be copied by other
-drivers - I'd be interested in limiting the VLANs on the CPU ports in
-DSA too.=
+> > > > As for the default queues number selection it seems better to
+> > > > implement the RTNL .get_num_rx_queues callback in the WWAN core
+> > > > and
+> > > > call optional driver specific callback through it. Something like
+> > > > this:
+> > > >
+> > > > static unsigned int wwan_rtnl_get_num_tx_queues(struct nlattr
+> > > > *tb[])
+> > > > {
+> > > >     const char *devname = nla_data(tb[IFLA_PARENT_DEV_NAME]);
+> > > >     struct wwan_device *wwandev = wwan_dev_get_by_name(devname);
+> > > >
+> > > >     return wwandev && wwandev->ops && wwandev->ops-
+> > > > >get_num_tx_queues
+> > > > ?
+> > > >               wwandev->ops->get_num_tx_queues() : 1;
+> > > > }
+> > > >
+> > > > static struct rtnl_link_ops wwan_rtnl_link_ops __read_mostly = {
+> > > >     ...
+> > > >     .get_num_tx_queues = wwan_rtnl_get_num_tx_queues,
+> > > > };
+> > > >
+> > > > This way the default queues number selection will be implemented
+> > > > in a
+> > > > less surprising way.
+> > > >
+> > > > But to be able to implement this we need to modify the RTNL ops
+> > > > .get_num_tx_queues/.get_num_rx_queues callback definitions to
+> > > > make
+> > > > them able to accept the RTM_NEWLINK message attributes. This is
+> > > > not
+> > > > difficult since the callbacks are implemented only by a few
+> > > > virtual
+> > > > devices, but can be assumed too intrusive to implement a one
+> > > > feature
+> > > > for a single subsystem.
+
+I agree with this solution. The wwan core can forward
+get_num_tx_queues to per wwan driver callbacks or simply rely on a
+'default_tx_queues' field in ops struct. As said previously, you need
+a user for this change in the same series.
+
+Regards,
+Loic
