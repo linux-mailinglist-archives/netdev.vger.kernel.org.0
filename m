@@ -2,98 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 352EE475239
-	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 06:41:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B329647525D
+	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 07:01:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235720AbhLOFk6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Dec 2021 00:40:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42504 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235611AbhLOFk6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Dec 2021 00:40:58 -0500
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03E0AC061574;
-        Tue, 14 Dec 2021 21:40:58 -0800 (PST)
-Received: by mail-pl1-x633.google.com with SMTP id n8so15482971plf.4;
-        Tue, 14 Dec 2021 21:40:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kjNCbNe58uR7WK7clmqj8tgvXMlbRh3fhjB+Aq/w/qw=;
-        b=LuWODWD7brLyz/Zz4yk3ZKU/s2UPMR5QdEoSl+TlDVe4mppMzlFLrxJLR4vvoXEto0
-         QvqbSAyJZUDRcY2x7/is1NF9iapGVcS7qRxioiS0RWLqqGZEzFSU2BVPPDjpY422UAvl
-         rASxNP1kNUPsFFtJH044Q2TLaCQZvCENVU41jJNFSFYH8U65h1Chtjxgezk1sY576o+D
-         5GHAH3/nscKhgGQvBOy4aYyUbSRpWwGLwNYY9Hv/xfnuQetKmwvkLflPPBf9UjiOfBcF
-         YLcCUPHrg1vKDJ8A3zp8U9guI3t77LCHXebPnKRpOIzGlcV14L0VajWCOU+Ggn6xckuR
-         XXug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kjNCbNe58uR7WK7clmqj8tgvXMlbRh3fhjB+Aq/w/qw=;
-        b=GbmN0iTMLaJXQedL3whzidnhMu4rn4E/YfF2nn0O4nXCNTXuxocDWmxsFog2AbohZZ
-         4RBY7pYGGv9WzKB7QK/sEtYMATa5SIRi+ucDsEN0cNW9sqPwbOcrC1I2kurqeimeCF1m
-         DfZQIVuzRoEWBE6jORF5GzkCxPEsXkiWftKXyV//5LS8h1kuLrd36lAk/seipaMubt16
-         fiK3KIXxMDiFp3YKLShGeEcBNG/pATbWy2DKJa1J64llfvmsEvVjzf3Hv0dTZJathpLx
-         kaM2N4La8Uck5Wab9yM7dTw/uVIyHrbqkheWLKGKV8vavJQBJW1v9KJOIKzKT5FytWnI
-         jd4g==
-X-Gm-Message-State: AOAM532pzy1Afwp/R2xjLzmij7726BjBBw8bp64T0OnNNfZofidg/IKv
-        pWKITPmirjKN9QpGvYPJr0BJ4fAsH/+b/wG2Keg84xNthjA=
-X-Google-Smtp-Source: ABdhPJxm8eM6TyZAxK2eNHRGWdkpzEGPze/xftSE032sJeFIafjR0E1Shkh7bi2j9rSZNx5+W05zieudyOO/JDkne1Y=
-X-Received: by 2002:a17:90b:4c03:: with SMTP id na3mr9954036pjb.62.1639546857494;
- Tue, 14 Dec 2021 21:40:57 -0800 (PST)
+        id S239963AbhLOGBZ convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 15 Dec 2021 01:01:25 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:58144 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235741AbhLOGBY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Dec 2021 01:01:24 -0500
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 1BF343JX012248
+        for <netdev@vger.kernel.org>; Tue, 14 Dec 2021 22:01:23 -0800
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3cy84krxhk-3
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 14 Dec 2021 22:01:23 -0800
+Received: from intmgw006.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::d) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Tue, 14 Dec 2021 22:01:21 -0800
+Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
+        id 984A926045B20; Tue, 14 Dec 2021 22:01:19 -0800 (PST)
+From:   Song Liu <song@kernel.org>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <kernel-team@fb.com>, <peterz@infradead.org>, <x86@kernel.org>,
+        Song Liu <song@kernel.org>
+Subject: [PATCH v2 bpf-next 0/7] bpf_prog_pack allocator
+Date:   Tue, 14 Dec 2021 22:00:55 -0800
+Message-ID: <20211215060102.3793196-1-song@kernel.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-References: <20211214140402.288101-1-hch@lst.de> <20211214140402.288101-4-hch@lst.de>
-In-Reply-To: <20211214140402.288101-4-hch@lst.de>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 14 Dec 2021 21:40:46 -0800
-Message-ID: <CAADnVQKakFTQTnW6q-9eWsmgLcc7eTGbPM=a4A9PWNdXGrgKjA@mail.gmail.com>
-Subject: Re: [PATCH 3/4] bpf, docs: Only document eBPF in instruction-set.rst
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Jonathan Corbet <corbet@lwn.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-FB-Source: Intern
+X-Proofpoint-GUID: 9DoxIo_fq6vERrh8xTQFU6FAfnOMY9Gs
+X-Proofpoint-ORIG-GUID: 9DoxIo_fq6vERrh8xTQFU6FAfnOMY9Gs
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2021-12-15_06,2021-12-14_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 suspectscore=0
+ spamscore=0 clxscore=1034 bulkscore=0 mlxlogscore=622 priorityscore=1501
+ impostorscore=0 lowpriorityscore=0 mlxscore=0 phishscore=0 malwarescore=0
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2110150000 definitions=main-2112150035
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 14, 2021 at 6:04 AM Christoph Hellwig <hch@lst.de> wrote:
->  Three LSB bits store instruction class which is one of:
->
-> -  ===================     ===============
-> -  Classic BPF classes     eBPF classes
-> -  ===================     ===============
-> -  BPF_LD    0x00          BPF_LD    0x00
-> -  BPF_LDX   0x01          BPF_LDX   0x01
-> -  BPF_ST    0x02          BPF_ST    0x02
-> -  BPF_STX   0x03          BPF_STX   0x03
-> -  BPF_ALU   0x04          BPF_ALU   0x04
-> -  BPF_JMP   0x05          BPF_JMP   0x05
-> -  BPF_RET   0x06          BPF_JMP32 0x06
-> -  BPF_MISC  0x07          BPF_ALU64 0x07
-> -  ===================     ===============
+Changes v1 => v2:
+1. Use text_poke instead of writing through linear mapping. (Peter)
+2. Avoid making changes to non-x86_64 code.
 
-I don't want to lose the classic vs extended visual comparison.
-These were one the most valuable tables to me.
-Maybe instead of intro.rst call it classic_vs_extended.rst ?
-or history.rst ?
+Most BPF programs are small, but they consume a page each. For systems
+with busy traffic and many BPF programs, this could also add significant
+pressure to instruction TLB.
 
-That would be patch 2 as-is plus extra tables and text
-that this patch removes.
-There will be a bit of overlap between history.rst
-and instruction-set.rst.
-I think it's ok.
+This set tries to solve this problem with customized allocator that pack
+multiple programs into a huge page.
 
-The rest makes sense to me.
+Patches 1-5 prepare the work. Patch 6 contains key logic of the allocator.
+Patch 7 uses this allocator in x86_64 jit compiler.
 
-Maybe Daniel has better ideas.
+Song Liu (7):
+  x86/Kconfig: select HAVE_ARCH_HUGE_VMALLOC with HAVE_ARCH_HUGE_VMAP
+  bpf: use bytes instead of pages for bpf_jit_[charge|uncharge]_modmem
+  bpf: use size instead of pages in bpf_binary_header
+  bpf: add a pointer of bpf_binary_header to bpf_prog
+  x86/alternative: introduce text_poke_jit
+  bpf: introduce bpf_prog_pack allocator
+  bpf, x86_64: use bpf_prog_pack allocator
+
+ arch/x86/Kconfig                     |   1 +
+ arch/x86/include/asm/text-patching.h |   1 +
+ arch/x86/kernel/alternative.c        |  28 ++++
+ arch/x86/net/bpf_jit_comp.c          |  93 ++++++++++--
+ include/linux/bpf.h                  |   4 +-
+ include/linux/filter.h               |  23 ++-
+ kernel/bpf/core.c                    | 213 ++++++++++++++++++++++++---
+ kernel/bpf/trampoline.c              |   6 +-
+ 8 files changed, 328 insertions(+), 41 deletions(-)
+
+--
+2.30.2
