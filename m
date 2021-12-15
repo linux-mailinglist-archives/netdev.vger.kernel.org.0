@@ -2,92 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EFF08475198
-	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 05:09:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 406EB4751C1
+	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 05:40:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232187AbhLOEJf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Dec 2021 23:09:35 -0500
-Received: from pi.codeconstruct.com.au ([203.29.241.158]:35758 "EHLO
-        codeconstruct.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229767AbhLOEJe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 23:09:34 -0500
-Received: from pecola.lan (unknown [159.196.93.152])
-        by mail.codeconstruct.com.au (Postfix) with ESMTPSA id 3710D20164;
-        Wed, 15 Dec 2021 12:09:32 +0800 (AWST)
-Message-ID: <7fae5b279352b9d3bdc524a45b50c0e57ebc7b15.camel@codeconstruct.com.au>
-Subject: Re: [PATCH net-next] mctp: emit RTM_NEWADDR and RTM_DELADDR
-From:   Jeremy Kerr <jk@codeconstruct.com.au>
-To:     Matt Johnston <matt@codeconstruct.com.au>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Date:   Wed, 15 Dec 2021 12:09:31 +0800
-In-Reply-To: <20211215022816.449508-1-matt@codeconstruct.com.au>
-References: <20211215022816.449508-1-matt@codeconstruct.com.au>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.0-2 
+        id S231503AbhLOEkO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Dec 2021 23:40:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57566 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229554AbhLOEkN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 23:40:13 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C858C061574
+        for <netdev@vger.kernel.org>; Tue, 14 Dec 2021 20:40:13 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 5C91DCE16E0
+        for <netdev@vger.kernel.org>; Wed, 15 Dec 2021 04:40:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 790FEC34604;
+        Wed, 15 Dec 2021 04:40:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1639543209;
+        bh=myTZUyFP8jwijp/WSM8lu6gT089/W/+zVypCxbikl7I=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=RrLq4c84BXFViHkAxASRH5/wgVw0ifO4sAIhRqqg8iso6DehCxc6SL+GuNUsaiF3j
+         PA6iqi1pzI9gN3oA752BLhaD0gjiNtkc4B4FzZzEOKdpDV5uFn+3jG1oxVfHCA8kG3
+         rTx4Obg07gvcgFjD7NdJEbGAe3vyI5hxmSW2ml3ptUNWiS8g1vxNN3RoniVaA4NejI
+         5e9yvX6d+IZIT4piHOIRbEcgHGa6jbOoEUDmxUOjZNaf09hqHu/GBzpfC5T0u05GbQ
+         fZOf0ytPeuVSyhEvAVckMy8M3yCZlgouwtaW/Xt92pXwNJ175VuXdltc+iZP5Ot7wP
+         dp2MoGHzcblow==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 4BF2E60A53;
+        Wed, 15 Dec 2021 04:40:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net 0/4] mptcp: Fixes for ULP, a deadlock, and netlink docs
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163954320930.357.8040539166907410920.git-patchwork-notify@kernel.org>
+Date:   Wed, 15 Dec 2021 04:40:09 +0000
+References: <20211214231604.211016-1-mathew.j.martineau@linux.intel.com>
+In-Reply-To: <20211214231604.211016-1-mathew.j.martineau@linux.intel.com>
+To:     Mat Martineau <mathew.j.martineau@linux.intel.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        matthieu.baerts@tessares.net, mptcp@lists.linux.dev
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Matt,
+Hello:
 
-> Userspace can receive notification of MCTP address changes via
-> RTNLGRP_MCTP_IFADDR rtnetlink multicast group.
+This series was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-Nice! A couple of minor things:
+On Tue, 14 Dec 2021 15:16:00 -0800 you wrote:
+> Two of the MPTCP fixes in this set are related to the TCP_ULP socket
+> option with MPTCP sockets operating in "fallback" mode (the connection
+> has reverted to regular TCP). The other issues are an observed deadlock
+> and missing parameter documentation in the MPTCP netlink API.
+> 
+> 
+> Patch 1 marks TCP_ULP as unsupported earlier in MPTCP setsockopt code,
+> so the fallback code path in the MPTCP layer does not pass the TCP_ULP
+> option down to the subflow TCP socket.
+> 
+> [...]
 
-> +static void mctp_addr_notify(struct mctp_dev *mdev, mctp_eid_t eid, int msg_type,
-> +                            struct sk_buff *req_skb, struct nlmsghdr *req_nlh)
+Here is the summary with links:
+  - [net,1/4] mptcp: remove tcp ulp setsockopt support
+    https://git.kernel.org/netdev/net/c/404cd9a22150
+  - [net,2/4] mptcp: clear 'kern' flag from fallback sockets
+    https://git.kernel.org/netdev/net/c/d6692b3b97bd
+  - [net,3/4] mptcp: fix deadlock in __mptcp_push_pending()
+    https://git.kernel.org/netdev/net/c/3d79e3756ca9
+  - [net,4/4] mptcp: add missing documented NL params
+    https://git.kernel.org/netdev/net/c/6813b1928758
 
-Is it worthwhile keeping the portid argument here, rather than the
-entire request skb? Might prevent some confusion with the notify skb.
-
-(I'm OK if we settle on the req_skb approach too though, as it does save
-a little repeated code in call sites)
-
-> +{
-> +       int rc;
-> +       struct sk_buff *skb;
-> +       struct net *net = dev_net(mdev->dev);
-> +       u32 portid = NETLINK_CB(req_skb).portid;
-
-Super minor, but: reverse Christmas tree here (and above)?
-
-> +
-> +       skb = nlmsg_new(mctp_addrinfo_size(), GFP_KERNEL);
-> +       if (!skb) {
-> +               rc = -ENOBUFS;
-> +               goto out;
-> +       }
-> +
-> +       rc = mctp_fill_addrinfo(skb, mdev, eid, msg_type,
-> +                               portid, req_nlh->nlmsg_seq, 0);
-> +       if (rc < 0)
-> +               goto out;
-> +
-> +       rtnl_notify(skb, net, portid, RTNLGRP_MCTP_IFADDR, req_nlh,
-> GFP_KERNEL);
-> +out:
-> +       if (rc < 0) {
-> +               if (skb)
-> +                       kfree_skb(skb);
-> +               rtnl_set_sk_err(net, RTNLGRP_MCTP_IFADDR, rc);
-> +       }
-
-We don't need that `if (skb)` condition on the kfree_skb - Yang has
-removed a bunch in 5cfe53cfeb1. We could also remove the rc check if we
-use the goto-label only for errors. Maybe something like:
-
-            rtnl_notify(skb, net, portid, RTNLGRP_MCTP_IFADDR, req_nlh, GFP_KERNEL);
-            return;
-    err:
-            kfree_skb(skb);
-            rtnl_set_sk_err(net, RTNLGRP_MCTP_IFADDR, rc);
-    }
-
-Cheers,
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
-Jeremy
