@@ -2,102 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 72928475796
-	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 12:16:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C822F4757B8
+	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 12:25:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234523AbhLOLQZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Dec 2021 06:16:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34134 "EHLO
+        id S237134AbhLOLZh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Dec 2021 06:25:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236990AbhLOLQT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Dec 2021 06:16:19 -0500
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 521CBC06173F
-        for <netdev@vger.kernel.org>; Wed, 15 Dec 2021 03:16:19 -0800 (PST)
-Received: by mail-pg1-x534.google.com with SMTP id 200so11070534pgg.3
-        for <netdev@vger.kernel.org>; Wed, 15 Dec 2021 03:16:19 -0800 (PST)
+        with ESMTP id S229982AbhLOLZh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Dec 2021 06:25:37 -0500
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C729AC061574
+        for <netdev@vger.kernel.org>; Wed, 15 Dec 2021 03:25:36 -0800 (PST)
+Received: by mail-yb1-xb2e.google.com with SMTP id f186so54210013ybg.2
+        for <netdev@vger.kernel.org>; Wed, 15 Dec 2021 03:25:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=1J5rh8c88OIRT0cbzlqagWTRc0k7QBWGbd0OGAGYHKQ=;
-        b=ZRiIx3G1K5spEnSmaztOgrLBgOSqAYBIV6SNAJZT37P61/XxH96oEMNKKATV+UNP06
-         Q1W+R6yOxGXce8GaRa/tLBrvpq2dnguaNSXZD9ArtX9ASjoDWWgW/z4BSfbu29dNNyWa
-         eyLisk9FIgXJP6YgPMkTtDIzBY3WgRs3B2fe1bbDMM/dB95MiBOaR3mOgrkga3+nnOaX
-         vFuaY3J/kZZ3aV6ZR9jGHW55qE2KBOC79MXoVqTOXtBZn3c4w/+4W4A+/wz9sW/LyWbC
-         mpnmQaG0lgV7726LjsbgvdfNWnqrDZFac70S/oN7Le6+RP8k5M552kDyrPPKsX9Lzutt
-         A+JQ==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=he8lpC46ZHc1CWptJ+5SKK8l+XBUgWkWNvY/kjy3GBc=;
+        b=fRn4CaZzejCMWg7VQpL88+0nbsOH0Kg+Wk7gCsIYrMhhkvrr2mJoa3a9P4msD6zgJp
+         Tn4phKZhNV5P522/5Dbk8C3Q094rnMzcdZ7g3kfc8o45iXorVJiQ/q5HS5/M5FPE9Q+1
+         4minpVTP28Ijt3iKil7ySfDXWYNpRXsf1WpLungR3aIrh17Ow8GbSFzQouuwgmqWCt5B
+         /e0JmB+5RdPdvZwbccl3WldT5cKklaokkt54p+a80/YYxzsSAMMdd8mPje7c3SPQ4e2Q
+         7mjGfi2bxDwDcIR28FA4DbAprwiJK6bDe3hJmDPj2c7TibgKAA6Db1josPfyo8+T1FgX
+         uWRA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=1J5rh8c88OIRT0cbzlqagWTRc0k7QBWGbd0OGAGYHKQ=;
-        b=EXRyh8Bw4r8XYl0jkLXLXV0jfTucSc2WO0lWC30FiM5nDVLRoyhBr6/hUlU+lnc0FM
-         siAApIOwaYGuVWOQcVpgb3UXo60A1blXNSV32WBgVHT1cDA/uJOEJAMchjm9IZCrwwHH
-         U0SXE70fUcc7BsQmEYwyTZKmNT/BxITRLWshznnPJFA/yUXAC8/OkJnQo6tjra7Ge5+4
-         VQJgkAv91Y9Zhwn38VOpjwLYnvbUUUigT1Lerg4KD4lrZwj9tfTBtQQHgiCuzNRp9gjz
-         VF/yPtGN/zWQhSbLOE9fgbuJCtuvEtpNDRBhQu3rGb1y1nGYO+qWHMLlOg7qlKyS7RxY
-         zc/w==
-X-Gm-Message-State: AOAM532y9oPlyfT6iUUdUWIKy+hJddhskITbpHNPomqJDYgTkpUEm0ky
-        BevPwxWvhq+jbS4xblUefNI=
-X-Google-Smtp-Source: ABdhPJyc5D+19GIGvcIvjihecYJUsuIx04Moljqr171eleFa0vxNImbOBsqZOGH6BQBVQlwm9rJWaw==
-X-Received: by 2002:a63:74b:: with SMTP id 72mr7584104pgh.231.1639566978876;
-        Wed, 15 Dec 2021 03:16:18 -0800 (PST)
-Received: from ELIJAHBAI-MB0.tencent.com ([103.7.29.31])
-        by smtp.gmail.com with ESMTPSA id oa2sm5266812pjb.53.2021.12.15.03.16.16
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 15 Dec 2021 03:16:18 -0800 (PST)
-From:   Haimin Zhang <tcs.kernel@gmail.com>
-To:     Greg KH <greg@kroah.com>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Haimin Zhang <tcs.kernel@gmail.com>,
-        security <security@kernel.org>,
-        elijahbai <elijahbai@tencent.com>, netdev@vger.kernel.org
-Subject: [PATCH v4] netdevsim: Zero-initialize memory for new map's value in function nsim_bpf_map_alloc
-Date:   Wed, 15 Dec 2021 19:15:30 +0800
-Message-Id: <20211215111530.72103-1-tcs.kernel@gmail.com>
-X-Mailer: git-send-email 2.30.1 (Apple Git-130)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=he8lpC46ZHc1CWptJ+5SKK8l+XBUgWkWNvY/kjy3GBc=;
+        b=FY0mnFXNnzEsjrGH5vt2gfGPBEIHALv2uFaXi0p7D3FHbkmOqoTmXh4rE14QQo+xwA
+         wKJlu480bq+FpTYkpGYCy1ACvwPq7i9p8TkxxPlaiw13akrQhVKLoOi+ad5JT8/VvHX/
+         X8Hy5tYlJcrrKM6ncNgbPQ+kZelWsMVNTHJJ4FNELX1nIue+9c/yvtfy83+sRQEL+pAm
+         VPsqCRbB48YsWRxF+mKIsjOvaC6y3/N7woApBvQBXUAG/i6nFSf79PHJJHQNLGjCWEyi
+         A+ee35y5NqYY1yfpEgMMhaJ4YXhndHm/vuxI8WCD/RI8B5qmP5j7wI4L7wqiC7vAybcK
+         Vs0A==
+X-Gm-Message-State: AOAM531xLEZG67XZifXXCP3tMUqlo/7d1kFiwL7FccQLnklg9n+1uACg
+        VvPAgnzG9gXI17azlwmHLm/v1lXvqG1hF1Ulx5RAEw==
+X-Google-Smtp-Source: ABdhPJwqW2mD4Pf3N8MVnjtlLppXBTvYfiLAerjtP22o9rV+pWLbxu5Ku+PK/Enf9twRSWt/0ALReUTikZ6fXLemkIY=
+X-Received: by 2002:a05:6902:1025:: with SMTP id x5mr5806021ybt.156.1639567535685;
+ Wed, 15 Dec 2021 03:25:35 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20211205042217.982127-1-eric.dumazet@gmail.com>
+ <20211205042217.982127-2-eric.dumazet@gmail.com> <a6b342b3-8ce1-70c8-8398-fceaee0b51ff@gmail.com>
+ <CANn89iLCaPLhrGi5FyDppfzqdtsow2i6c5+E7pjtd47hwgvpGA@mail.gmail.com>
+ <CANn89iLzZaVObgj-OSG7bT2V8q2AdqUekc2aoiwG7QeRyemNLw@mail.gmail.com>
+ <45c1b738-1a2f-5b5f-2f6d-86fab206d01c@suse.cz> <CANn89iK+a5+Y=qCAERMBKAL8WRmZw3UOQiwoerse1cmxbTbFZw@mail.gmail.com>
+ <14d361d8-c06d-e332-1a08-56eb727ded5c@gmail.com>
+In-Reply-To: <14d361d8-c06d-e332-1a08-56eb727ded5c@gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 15 Dec 2021 03:25:24 -0800
+Message-ID: <CANn89i+1V1_8dsFrF8ps=sc4ob1yzt1j6BGFKzsv+kiJ9b_1tQ@mail.gmail.com>
+Subject: Re: [PATCH v3 net-next 01/23] lib: add reference counting tracking infrastructure
+To:     Jiri Slaby <jirislaby@gmail.com>
+Cc:     Vlastimil Babka <vbabka@suse.cz>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Zero-initialize memory for new map's value in function nsim_bpf_map_alloc
-since it may cause a potential kernel information leak issue, as follows:
-1. nsim_bpf_map_alloc calls nsim_map_alloc_elem to allocate elements for 
-a new map.
-2. nsim_map_alloc_elem uses kmalloc to allocate map's value, but doesn't
-zero it.
-3. A user application can use IOCTL BPF_MAP_LOOKUP_ELEM to get specific
-element's information in the map.
-4. The kernel function map_lookup_elem will call bpf_map_copy_value to get
-the information allocated at step-2, then use copy_to_user to copy to the
-user buffer.
-This can only leak information for an array map.
+On Wed, Dec 15, 2021 at 3:09 AM Jiri Slaby <jirislaby@gmail.com> wrote:
+>
+> On 15. 12. 21, 12:08, Eric Dumazet wrote:
+> > Reported-by: Jiri Slab <jirislaby@gmail.com>
+>
+> (I am not the allocator :P.)
 
-Fixes: 395cacb5f1a0 ("netdevsim: bpf: support fake map offload")
-Suggested-by: Jakub Kicinski <kuba@kernel.org>
-Acked-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Haimin Zhang <tcs.kernel@gmail.com>
----
- drivers/net/netdevsim/bpf.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/net/netdevsim/bpf.c b/drivers/net/netdevsim/bpf.c
-index 90aafb56f140..a43820212932 100644
---- a/drivers/net/netdevsim/bpf.c
-+++ b/drivers/net/netdevsim/bpf.c
-@@ -514,6 +514,7 @@ nsim_bpf_map_alloc(struct netdevsim *ns, struct bpf_offloaded_map *offmap)
- 				goto err_free;
- 			key = nmap->entry[i].key;
- 			*key = i;
-+			memset(nmap->entry[i].value, 0, offmap->map.value_size);
- 		}
- 	}
- 
--- 
-2.30.1 (Apple Git-130)
-
+Ah, it took me a while to understand, sorry for the typo ;)
