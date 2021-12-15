@@ -2,117 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C5EF475138
-	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 04:05:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 18C49475174
+	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 04:42:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239533AbhLODFX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Dec 2021 22:05:23 -0500
-Received: from o1.ptr2625.egauge.net ([167.89.112.53]:27972 "EHLO
-        o1.ptr2625.egauge.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239490AbhLODFO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 22:05:14 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=egauge.net;
-        h=from:subject:in-reply-to:references:mime-version:to:cc:
-        content-transfer-encoding:content-type;
-        s=sgd; bh=n5E/dGiaWc093mMx2isrqIl9xS2diTFoldK85pjdP9U=;
-        b=EnnqmqN3JxQA/cuMBO7tEt/6PLEiAcHUzEIqxbueNbdf8uVAGJFD4tpOtBTZgw6oMHvo
-        9kOJL4Ont7VUb9rcPeflwFOSlMTtAPDPZrvwBDMs8rMjxzHGogJZIWOFhUWd332ujx1luU
-        kEBOy4gOS5mqJOMAdXpOzoBCUeOum71HVvXvKvuOa3I6AUd4hGOpJGy0Rr7+c/crc/P1ci
-        5cuZYa/pJRHUT7uxylL/BPAJJCPZNHo8SX9Thut5Ed2xBL2h1PZQ2P5uznoL9C55UvbNdb
-        DZMcJWB2fTnomHOq+iPNzgXHEeST5YNqb5wmufg4q/PBa7IiVZHX2YOj25WRsNDw==
-Received: by filterdrecv-656998cfdd-bkftm with SMTP id filterdrecv-656998cfdd-bkftm-1-61B95B67-94
-        2021-12-15 03:05:12.007490305 +0000 UTC m=+7270674.434639005
-Received: from pearl.egauge.net (unknown)
-        by geopod-ismtpd-6-0 (SG)
-        with ESMTP
-        id uY3a5_yrR9G7jgcsBnOj4g
-        Wed, 15 Dec 2021 03:05:11.797 +0000 (UTC)
-Received: by pearl.egauge.net (Postfix, from userid 1000)
-        id 79A74700269; Tue, 14 Dec 2021 20:05:11 -0700 (MST)
-From:   David Mosberger-Tang <davidm@egauge.net>
-Subject: [PATCH v5 2/2] wilc1000: Document enable-gpios and reset-gpios
- properties
-Date:   Wed, 15 Dec 2021 03:05:12 +0000 (UTC)
-Message-Id: <20211215030501.3779911-3-davidm@egauge.net>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20211215030501.3779911-1-davidm@egauge.net>
-References: <20211215030501.3779911-1-davidm@egauge.net>
+        id S239610AbhLODlz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Dec 2021 22:41:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44842 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231547AbhLODlz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Dec 2021 22:41:55 -0500
+Received: from mail-qv1-xf2a.google.com (mail-qv1-xf2a.google.com [IPv6:2607:f8b0:4864:20::f2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37493C061574
+        for <netdev@vger.kernel.org>; Tue, 14 Dec 2021 19:41:55 -0800 (PST)
+Received: by mail-qv1-xf2a.google.com with SMTP id kl7so2308548qvb.3
+        for <netdev@vger.kernel.org>; Tue, 14 Dec 2021 19:41:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2wlVPpuSrlrq2/3b5Q3d+JfiAzzAY/Lgb3NCBAaE4b8=;
+        b=Aro2CH293RqcEFyIBYMix5hDSZPQ7O/mWLIFtpMXWJupfOhxlR1ZRj9bVJhIfa01gu
+         QTP13jr9T87b6h7FYPpWga2J7TsGkXscwF5VnTcyehKIE3GXSUwZpZJJZfQJbzxZp4jV
+         FOzgl9VJC/1DrGWEwyPs/MQw6uK+1IlH1WixlYrdq6rjPOHHhdzb6rZF92PtMvS68CMe
+         XeRaHFOPE1AhgYcMaQyy2GzllRn4/6SDmyFKUaYMkvrk9m3h+AXJ44RsyYeeDiJ1tkYi
+         RXz888CF00BtETMb04bcZWXjaPaPpnvsHaN8eFcSIn5zWQPDeLIA/QhnXrec0Ug+NXoZ
+         cMSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2wlVPpuSrlrq2/3b5Q3d+JfiAzzAY/Lgb3NCBAaE4b8=;
+        b=A9379eJoWfWud9d5xtlAZd1yfng+QHecKO/lwAlHVfV9rxH4zeg3E+2fo6dBoEXqrA
+         IzPkE1zE/HbstKCF7l0Bp8yESn67fc3M68eRvwe6XJmj2xOCWLFWGuI+TgGUXRROZi4M
+         clSvtrSAZzbPXFPzQzJQ816rKarZaGKtOEoADjklR/DGRuFSvkFJ9JneKfK+cx16LZKI
+         m09K68sR7qi+Mji42pywgzYQTk7gfr5Ng+fV1eVCd3ok3x9qYCbsH2U5rIzORDC/UjdT
+         jAwbaY0Jbswb/3X+4faXUwO8pCK0hS6Pz+0UpDOUSGlKBwJgZEgkQYqxsj1DGtboD4II
+         xrmw==
+X-Gm-Message-State: AOAM531TFdw9pHmytaLYCn1uLHKp6vszizdWSv8Pwton8ql3iQq8W2dN
+        cSIC0cnacMYFZRymFguc75buIEkK+FjC0w==
+X-Google-Smtp-Source: ABdhPJwx2Hm5zVxy++0oq/p7KKk0L/+Nv7ah/vY1N8Iizrz+a9v6VLP0y5mbt6YQ5RaiOhFJf9BQ1A==
+X-Received: by 2002:ad4:4eec:: with SMTP id dv12mr9385417qvb.23.1639539713997;
+        Tue, 14 Dec 2021 19:41:53 -0800 (PST)
+Received: from tresc043793.tre-sc.gov.br ([187.94.103.218])
+        by smtp.gmail.com with ESMTPSA id s7sm614316qta.31.2021.12.14.19.41.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Dec 2021 19:41:53 -0800 (PST)
+From:   luizluca@gmail.com
+To:     netdev@vger.kernel.org
+Cc:     alsi@bang-olufsen.dk, linus.walleij@linaro.org,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
+Subject: [PATCH net-next] net: dsa: rtl8365mb: add GMII as user port mode
+Date:   Wed, 15 Dec 2021 00:41:28 -0300
+Message-Id: <20211215034128.18199-1-luizluca@gmail.com>
+X-Mailer: git-send-email 2.34.0
 MIME-Version: 1.0
-X-SG-EID: =?us-ascii?Q?+kMxBqj35EdRUKoy8diX1j4AXmPtd302oan+iXZuF8m2Nw4HRW2irNspffT=2Fkh?=
- =?us-ascii?Q?ET6RJF6+Prbl0h=2FEtF1rRLvAJX2hjXqlZEyi4OX?=
- =?us-ascii?Q?rLApbyobOaAcwna02jHMyQlXVEb6oBIx1uTmA4c?=
- =?us-ascii?Q?4pTGtpKVJWiWyGwTcEunqp1kxe2wSQulgWXNtsq?=
- =?us-ascii?Q?PZJXFl81YiIeGbJ7SbuMq5WARs8dDrS26FUr5Xx?=
- =?us-ascii?Q?vcVQsL2wSy3kpBTy59v4YemuBGUpJGXlc7uG8Hy?=
- =?us-ascii?Q?QbcmiQJ+ilDhdKDapZmFA=3D=3D?=
-To:     Ajay Singh <ajay.kathat@microchip.com>
-Cc:     Adham Abozaeid <adham.abozaeid@microchip.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        devicetree@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        David Mosberger-Tang <davidm@egauge.net>
-X-Entity-ID: Xg4JGAcGrJFIz2kDG9eoaQ==
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add documentation for the ENABLE and RESET GPIOs that may be needed by
-wilc1000-spi.
+From: Luiz Angelo Daros de Luca <luizluca@gmail.com>
 
-Signed-off-by: David Mosberger-Tang <davidm@egauge.net>
+Recent net-next fails to initialize ports with:
+
+ realtek-smi switch: phy mode gmii is unsupported on port 0
+ realtek-smi switch lan5 (uninitialized): validation of gmii with
+ support 0000000,00000000,000062ef and advertisement
+ 0000000,00000000,000062ef failed: -22
+ realtek-smi switch lan5 (uninitialized): failed to connect to PHY:
+ -EINVAL
+ realtek-smi switch lan5 (uninitialized): error -22 setting up PHY
+ for tree 1, switch 0, port 0
+
+Current net branch(3dd7d40b43663f58d11ee7a3d3798813b26a48f1) is not
+affected.
+
+I also noticed the same issue before with older versions but using
+a MDIO interface driver, not realtek-smi.
+
+Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
 ---
- .../net/wireless/microchip,wilc1000.yaml      | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
+ drivers/net/dsa/rtl8365mb.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/net/wireless/microchip,wilc1000.yaml b/Documentation/devicetree/bindings/net/wireless/microchip,wilc1000.yaml
-index 6c35682377e6..60de78f1bc7b 100644
---- a/Documentation/devicetree/bindings/net/wireless/microchip,wilc1000.yaml
-+++ b/Documentation/devicetree/bindings/net/wireless/microchip,wilc1000.yaml
-@@ -32,6 +32,21 @@ properties:
-   clock-names:
-     const: rtc
- 
-+  enable-gpios:
-+    maxItems: 1
-+    description: Used by wilc1000-spi to determine the GPIO line
-+      connected to the ENABLE line.  If specified, reset-gpios
-+      must be specified as well as otherwise the driver cannot
-+      ensure the timing required between asserting ENABLE
-+      and deasserting RESET.  This should be declared as an
-+      active-high signal.
-+
-+  reset-gpios:
-+    maxItems: 1
-+    description: Used by wilc1000-spi to determine the GPIO line
-+      connected to the RESET line.  This should be declared as an
-+      active-low signal.
-+
- required:
-   - compatible
-   - interrupts
-@@ -40,6 +55,8 @@ additionalProperties: false
- 
- examples:
-   - |
-+    #include <dt-bindings/gpio/gpio.h>
-+
-     spi {
-       #address-cells = <1>;
-       #size-cells = <0>;
-@@ -51,6 +68,8 @@ examples:
-         interrupts = <27 0>;
-         clocks = <&pck1>;
-         clock-names = "rtc";
-+        enable-gpios = <&pioA 5 GPIO_ACTIVE_HIGH>;
-+        reset-gpios = <&pioA 6 GPIO_ACTIVE_LOW>;
-       };
-     };
- 
+diff --git a/drivers/net/dsa/rtl8365mb.c b/drivers/net/dsa/rtl8365mb.c
+index 2ac68c867636..3b729544798b 100644
+--- a/drivers/net/dsa/rtl8365mb.c
++++ b/drivers/net/dsa/rtl8365mb.c
+@@ -900,7 +900,8 @@ static bool rtl8365mb_phy_mode_supported(struct dsa_switch *ds, int port,
+ {
+ 	if (dsa_is_user_port(ds, port) &&
+ 	    (interface == PHY_INTERFACE_MODE_NA ||
+-	     interface == PHY_INTERFACE_MODE_INTERNAL))
++	     interface == PHY_INTERFACE_MODE_INTERNAL ||
++	     interface == PHY_INTERFACE_MODE_GMII))
+ 		/* Internal PHY */
+ 		return true;
+ 	else if (dsa_is_cpu_port(ds, port) &&
 -- 
-2.25.1
+2.34.0
 
