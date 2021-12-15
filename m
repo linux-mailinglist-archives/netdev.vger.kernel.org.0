@@ -2,103 +2,255 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F886475BE3
-	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 16:34:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A4A1475BE4
+	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 16:34:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243955AbhLOPdh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Dec 2021 10:33:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36958 "EHLO
+        id S243957AbhLOPeT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Dec 2021 10:34:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232553AbhLOPdf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Dec 2021 10:33:35 -0500
+        with ESMTP id S243956AbhLOPeS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Dec 2021 10:34:18 -0500
 Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39FF4C061574
-        for <netdev@vger.kernel.org>; Wed, 15 Dec 2021 07:33:35 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4871CC061574
+        for <netdev@vger.kernel.org>; Wed, 15 Dec 2021 07:34:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
-        Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=EjS6/74HdveiK0yFnJxz0Chysh58HHnzd1NZvs3z3zQ=; b=Fu0RNBtFdjt54/vncKn9ja3dPt
-        PKSKZu4cLftcqntoGqMBhicfpNw9UI68qcL5PzxAUmovMEzckv7yh7kU/+X5pSTqJ5ob0RGzmu2Jc
-        WGEP16JGo6VSfT0TPiM1iU6keg4JtWolh+i0xaD8GPy43cro+E6JuLJDccWGpXByGyxc5eBL/Q2lc
-        xmSDzhzrTYcCViAhDQG4U1695nNUOTWsQYTO0VL1z3kvljuz7QrDNALYdqT981AQ/KVMu5Eif/1UX
-        HwiquvUfk9eSoolP7vDow8yOi+8Admdk2QDU0XYR3qei4dIWu3jTnzR2Qm5+D5+W9UqsDU8td2bDK
-        Zi3yF+NA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:56306)
+        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
+        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=IVKw+6ZWvV8MaEh/QNoD2a4v/CMCFcTKW1nx3OcRnw4=; b=xWKqSXpb6sElNqaml49xwhczKu
+        DSy0sIl+JAZw1FoP9Z8xXB8ODsnyIOt8mipGD4PgwL3wit5qwDQensUJnEjmxtpnu5uL5aqyH5up4
+        8CPvDduZxNZZfQWQZ5vm4Gq9OhXDgop1L6FvzUjOlnZGemXbwmXkAyzO4KXdEIl58FXoGVpEHq32l
+        poV0iBJpiob6mgVISCyYUSMJO0naIIBc0hXHBxizFJdzPFrWqSaer+8ZMYFKsWbLEiIZ2TPR2jvLh
+        TSceWTrbAukWjPcQdsAlw2Sl0J/GRFU/QvS5aZsV877VIM6p4qm5MLmfIM1zieksnzIpRPZnrD5Mf
+        q3hrSMdA==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:43816 helo=rmk-PC.armlinux.org.uk)
         by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1mxWHa-0006Yo-7o; Wed, 15 Dec 2021 15:33:30 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1mxWHX-0004a5-6W; Wed, 15 Dec 2021 15:33:27 +0000
-Date:   Wed, 15 Dec 2021 15:33:27 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1mxWIJ-0006Yz-IV; Wed, 15 Dec 2021 15:34:15 +0000
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1mxWIJ-00GPi1-4F; Wed, 15 Dec 2021 15:34:15 +0000
+In-Reply-To: <YboKxwxonGND3Mom@shell.armlinux.org.uk>
+References: <YboKxwxonGND3Mom@shell.armlinux.org.uk>
+From:   "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Marcin Wojtas <mw@semihalf.com>, netdev@vger.kernel.org,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: [PATCH net-next v2 0/7] net: phylink: add PCS validation
-Message-ID: <YboKxwxonGND3Mom@shell.armlinux.org.uk>
+Subject: [PATCH v2 net-next 1/7] net: phylink: add mac_select_pcs() method to
+ phylink_mac_ops
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1mxWIJ-00GPi1-4F@rmk-PC.armlinux.org.uk>
+Sender: Russell King <rmk@armlinux.org.uk>
+Date:   Wed, 15 Dec 2021 15:34:15 +0000
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+mac_select_pcs() allows us to have an explicit point to query which
+PCS the MAC wishes to use for a particular PHY interface mode, thereby
+allowing us to add support to validate the link settings with the PCS.
 
-This series allows phylink to include the PCS in its validation step.
-There are two reasons to make this change:
+Phylink will also use this to select the PCS to be used during a major
+configuration event without the MAC driver needing to call
+phylink_set_pcs().
 
-1. Some of the network drivers that are making use of the split PCS
-   support are already manually calling into their PCS drivers to
-   perform validation. E.g. stmmac with xpcs.
+Note that if mac_select_pcs() is present, the supported_interfaces
+bitmap must be filled in; this avoids mac_select_pcs() being called
+with PHY_INTERFACE_MODE_NA when we want to get support for all
+interface types. Phylink will return an error in phylink_create()
+unless this condition is satisfied.
 
-2. Logically, some network drivers such as mvneta and mvpp2, the
-   restriction we impose in the validate() callback is a property of
-   the "PCS" block that we provide rather than the MAC.
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+---
+ drivers/net/phy/phylink.c | 68 +++++++++++++++++++++++++++++++++------
+ include/linux/phylink.h   | 18 +++++++++++
+ 2 files changed, 77 insertions(+), 9 deletions(-)
 
-This series:
-
-1. Gives phylink a mechanism to query the MAC driver which PCS is
-   wishes to use for the PHY interface mode. This is necessary to allow
-   the PCS to be involved in the validation step without making changes
-   to the configuration.
-
-2. Provide a pcs_validate() method that PCS can implement. This follows
-   a similar model to the MAC's validate() callback, but with some minor
-   differences due to observations from the various implementations.
-   E.g. returning an error code for not-supported and the way the
-   advertising bitmap is masked.
-
-3. Convert mvpp2 and mvneta to this as examples of its use. Further
-   Conversions are in the pipeline, including for stmmac+xpcs, as well
-   as some DSA drivers. Note that DSA conversion to this is conditional
-   upon all DSA drivers populating their supported_interfaces bitmap,
-   since this is required before mac_select_pcs() can be used.
-
-Existing drivers that set a PCS in mac_prepare() or mac_config(), or
-shortly after phylink_create() will continue to work. However, it should
-be noted that mac_select_pcs() will be called during phylink_create(),
-and thus any PCS returned by mac_select_pcs() must be available by this
-time - or we drop the check in phylink_create().
-
-v2: fix kerneldoc typo in patch 1.
-
- drivers/net/ethernet/marvell/mvneta.c           | 229 ++++++++++++++++--------
- drivers/net/ethernet/marvell/mvpp2/mvpp2.h      |   3 +-
- drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 112 ++++++------
- drivers/net/phy/phylink.c                       |  99 +++++++++-
- include/linux/phylink.h                         |  38 ++++
- 5 files changed, 337 insertions(+), 144 deletions(-)
-
+diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+index 20df8af3e201..c7035d65e159 100644
+--- a/drivers/net/phy/phylink.c
++++ b/drivers/net/phy/phylink.c
+@@ -419,6 +419,23 @@ void phylink_generic_validate(struct phylink_config *config,
+ }
+ EXPORT_SYMBOL_GPL(phylink_generic_validate);
+ 
++static int phylink_validate_mac_and_pcs(struct phylink *pl,
++					unsigned long *supported,
++					struct phylink_link_state *state)
++{
++	struct phylink_pcs *pcs;
++
++	if (pl->mac_ops->mac_select_pcs) {
++		pcs = pl->mac_ops->mac_select_pcs(pl->config, state->interface);
++		if (IS_ERR(pcs))
++			return PTR_ERR(pcs);
++	}
++
++	pl->mac_ops->validate(pl->config, supported, state);
++
++	return phylink_is_empty_linkmode(supported) ? -EINVAL : 0;
++}
++
+ static int phylink_validate_any(struct phylink *pl, unsigned long *supported,
+ 				struct phylink_link_state *state)
+ {
+@@ -434,9 +451,10 @@ static int phylink_validate_any(struct phylink *pl, unsigned long *supported,
+ 
+ 			t = *state;
+ 			t.interface = intf;
+-			pl->mac_ops->validate(pl->config, s, &t);
+-			linkmode_or(all_s, all_s, s);
+-			linkmode_or(all_adv, all_adv, t.advertising);
++			if (!phylink_validate_mac_and_pcs(pl, s, &t)) {
++				linkmode_or(all_s, all_s, s);
++				linkmode_or(all_adv, all_adv, t.advertising);
++			}
+ 		}
+ 	}
+ 
+@@ -458,9 +476,7 @@ static int phylink_validate(struct phylink *pl, unsigned long *supported,
+ 			return -EINVAL;
+ 	}
+ 
+-	pl->mac_ops->validate(pl->config, supported, state);
+-
+-	return phylink_is_empty_linkmode(supported) ? -EINVAL : 0;
++	return phylink_validate_mac_and_pcs(pl, supported, state);
+ }
+ 
+ static int phylink_parse_fixedlink(struct phylink *pl,
+@@ -750,10 +766,21 @@ static void phylink_mac_pcs_an_restart(struct phylink *pl)
+ static void phylink_major_config(struct phylink *pl, bool restart,
+ 				  const struct phylink_link_state *state)
+ {
++	struct phylink_pcs *pcs = NULL;
+ 	int err;
+ 
+ 	phylink_dbg(pl, "major config %s\n", phy_modes(state->interface));
+ 
++	if (pl->mac_ops->mac_select_pcs) {
++		pcs = pl->mac_ops->mac_select_pcs(pl->config, state->interface);
++		if (IS_ERR(pcs)) {
++			phylink_err(pl,
++				    "mac_select_pcs unexpectedly failed: %pe\n",
++				    pcs);
++			return;
++		}
++	}
++
+ 	if (pl->mac_ops->mac_prepare) {
+ 		err = pl->mac_ops->mac_prepare(pl->config, pl->cur_link_an_mode,
+ 					       state->interface);
+@@ -764,6 +791,12 @@ static void phylink_major_config(struct phylink *pl, bool restart,
+ 		}
+ 	}
+ 
++	/* If we have a new PCS, switch to the new PCS after preparing the MAC
++	 * for the change.
++	 */
++	if (pcs)
++		phylink_set_pcs(pl, pcs);
++
+ 	phylink_mac_config(pl, state);
+ 
+ 	if (pl->pcs_ops) {
+@@ -1155,6 +1188,14 @@ struct phylink *phylink_create(struct phylink_config *config,
+ 	struct phylink *pl;
+ 	int ret;
+ 
++	/* Validate the supplied configuration */
++	if (mac_ops->mac_select_pcs &&
++	    phy_interface_empty(config->supported_interfaces)) {
++		dev_err(config->dev,
++			"phylink: error: empty supported_interfaces but mac_select_pcs() method present\n");
++		return ERR_PTR(-EINVAL);
++	}
++
+ 	pl = kzalloc(sizeof(*pl), GFP_KERNEL);
+ 	if (!pl)
+ 		return ERR_PTR(-ENOMEM);
+@@ -1222,9 +1263,10 @@ EXPORT_SYMBOL_GPL(phylink_create);
+  * @pl: a pointer to a &struct phylink returned from phylink_create()
+  * @pcs: a pointer to the &struct phylink_pcs
+  *
+- * Bind the MAC PCS to phylink.  This may be called after phylink_create(),
+- * in mac_prepare() or mac_config() methods if it is desired to dynamically
+- * change the PCS.
++ * Bind the MAC PCS to phylink.  This may be called after phylink_create().
++ * If it is desired to dynamically change the PCS, then the preferred method
++ * is to use mac_select_pcs(), but it may also be called in mac_prepare()
++ * or mac_config().
+  *
+  * Please note that there are behavioural changes with the mac_config()
+  * callback if a PCS is present (denoting a newer setup) so removing a PCS
+@@ -1235,6 +1277,14 @@ void phylink_set_pcs(struct phylink *pl, struct phylink_pcs *pcs)
+ {
+ 	pl->pcs = pcs;
+ 	pl->pcs_ops = pcs->ops;
++
++	if (!pl->phylink_disable_state &&
++	    pl->cfg_link_an_mode == MLO_AN_INBAND) {
++		if (pl->config->pcs_poll || pcs->poll)
++			mod_timer(&pl->link_poll, jiffies + HZ);
++		else
++			del_timer(&pl->link_poll);
++	}
+ }
+ EXPORT_SYMBOL_GPL(phylink_set_pcs);
+ 
+diff --git a/include/linux/phylink.h b/include/linux/phylink.h
+index a2f266cc3442..b3086dcafeaf 100644
+--- a/include/linux/phylink.h
++++ b/include/linux/phylink.h
+@@ -112,6 +112,7 @@ struct phylink_config {
+ /**
+  * struct phylink_mac_ops - MAC operations structure.
+  * @validate: Validate and update the link configuration.
++ * @mac_select_pcs: Select a PCS for the interface mode.
+  * @mac_pcs_get_state: Read the current link state from the hardware.
+  * @mac_prepare: prepare for a major reconfiguration of the interface.
+  * @mac_config: configure the MAC for the selected mode and state.
+@@ -126,6 +127,8 @@ struct phylink_mac_ops {
+ 	void (*validate)(struct phylink_config *config,
+ 			 unsigned long *supported,
+ 			 struct phylink_link_state *state);
++	struct phylink_pcs *(*mac_select_pcs)(struct phylink_config *config,
++					      phy_interface_t interface);
+ 	void (*mac_pcs_get_state)(struct phylink_config *config,
+ 				  struct phylink_link_state *state);
+ 	int (*mac_prepare)(struct phylink_config *config, unsigned int mode,
+@@ -178,6 +181,21 @@ struct phylink_mac_ops {
+  */
+ void validate(struct phylink_config *config, unsigned long *supported,
+ 	      struct phylink_link_state *state);
++/**
++ * mac_select_pcs: Select a PCS for the interface mode.
++ * @config: a pointer to a &struct phylink_config.
++ * @interface: PHY interface mode for PCS
++ *
++ * Return the &struct phylink_pcs for the specified interface mode, or
++ * NULL if none is required, or an error pointer on error.
++ *
++ * This must not modify any state. It is used to query which PCS should
++ * be used. Phylink will use this during validation to ensure that the
++ * configuration is valid, and when setting a configuration to internally
++ * set the PCS that will be used.
++ */
++struct phylink_pcs *mac_select_pcs(struct phylink_config *config,
++				   phy_interface_t interface);
+ 
+ /**
+  * mac_pcs_get_state() - Read the current inband link state from the hardware
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.30.2
+
