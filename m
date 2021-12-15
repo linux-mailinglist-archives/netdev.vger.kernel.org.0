@@ -2,123 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 49269475A43
-	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 15:04:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B1FBF475A64
+	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 15:16:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243152AbhLOOEJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Dec 2021 09:04:09 -0500
-Received: from mga04.intel.com ([192.55.52.120]:43325 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243142AbhLOOEJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 Dec 2021 09:04:09 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1639577049; x=1671113049;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=2Up2jDEYXke6v6z8WRRwDnkt2e/mpyh4/QrYQZCrST4=;
-  b=cSJULkQkqM2rA/VmQlUc4xfnwuvPn8aJjPTOR4aV1miuZeDOBsvBVYf7
-   9hcs+qUIAcLltZqNm590jwrcOpco70X+QQ0Vl1tKPlKM3qHU1M7qem+J/
-   j0Rmaqw2N37E3PRoiHEbLZH06O5kHHJH77WUF79mOehJG0FK5dtpVDn0U
-   V9xxPhG/fNzHqNaYyLNAuJiH02OtkqpMmn6Brfpgfnah/nOtFBd/A30ka
-   oQYsHYI6WiERRdx9U3DL8d29wjWV/MwwqYoUsv82KgWaUZsRcdl9wtkUg
-   yHLdUZN7r5InFtV+7nM2/7UOHC9ZVKHjbUtC//+wFZP7mPHE340j9kqNc
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10198"; a="237970334"
-X-IronPort-AV: E=Sophos;i="5.88,207,1635231600"; 
-   d="scan'208";a="237970334"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Dec 2021 06:04:05 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,207,1635231600"; 
-   d="scan'208";a="464277492"
-Received: from lkp-server02.sh.intel.com (HELO 9f38c0981d9f) ([10.239.97.151])
-  by orsmga003.jf.intel.com with ESMTP; 15 Dec 2021 06:04:03 -0800
-Received: from kbuild by 9f38c0981d9f with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1mxUt0-0001rI-DS; Wed, 15 Dec 2021 14:04:02 +0000
-Date:   Wed, 15 Dec 2021 22:03:32 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>, ecree.xilinx@gmail.com,
-        habetsm.xilinx@gmail.com, davem@davemloft.net, kuba@kernel.org
-Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: Re: [PATCH] sfc_ef100: potential dereference of null pointer
-Message-ID: <202112152115.lNKRy4uk-lkp@intel.com>
-References: <20211215094141.164417-1-jiasheng@iscas.ac.cn>
+        id S237565AbhLOOQO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Dec 2021 09:16:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47212 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229451AbhLOOQN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Dec 2021 09:16:13 -0500
+Received: from mail-ua1-x933.google.com (mail-ua1-x933.google.com [IPv6:2607:f8b0:4864:20::933])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 851E8C061574;
+        Wed, 15 Dec 2021 06:16:13 -0800 (PST)
+Received: by mail-ua1-x933.google.com with SMTP id i6so41174586uae.6;
+        Wed, 15 Dec 2021 06:16:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=CzbcpPsGeUu7cJzf3YmL97esTyegl1WilzwunHBlsJ0=;
+        b=jQ3z1cfZEizwMVs6X9FHIKAYSCLQEZfG9jBGu6U5eoX9t3cxn2eK22elO0OTZJN69h
+         Hn+F8vkLmwBfB578y8gVSXOPSRPG+UHZf9bm2KmLLJDjbOh5AIV7parjNUiHpJxrM0iW
+         p5T5FK4MMFw+ERF7e0E4+igdewZbUJ9F3hzyLUfPPEOFYLFzA3ug1JiDR9PL7ZcNIvK6
+         p4PtXl1+yP3AgMaBp+WhABR5xmamvD7qNuBwUz3mqPxrY17i33Jk7SkKYqf1pe004f1X
+         rnTY65EfiluoKF3GNdURKFgUXlXNaiv9lK09YfKDKw1pS1Pls+r2sR2A+jVbdTByOurc
+         971g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=CzbcpPsGeUu7cJzf3YmL97esTyegl1WilzwunHBlsJ0=;
+        b=egm9gEHBNDrvRs0/x3QVfv8J4zq9z9nP6AG1hkVUMInasgjBb8iJ54eez2/NBr9HTQ
+         J5DPZGOMx6nBguIF/w+Wt7iMqRN8z7F8bM0m2utegOYOxgaivJg/iRX52xAcUg844xqi
+         Va7+fOJpXzbm+osFGkaDXLRvX+78bbbn6ajZK1OZmXY2rBManrJunrdvsIQseE9j+vxl
+         2lU2siEFp/DAaFpX3kscOTn8CPdTtUPraxhSaYiLmSzSuiy/K6PBUcuBs3OeH3tAmYGQ
+         2SzTb56U2cEpdPvMiLmSha3HjIw0wE/dsr1nG8NX6kRb3zIhpMTwJBw5hqtoDTEIA9pX
+         +Y6A==
+X-Gm-Message-State: AOAM531t0nmigMmVdT4ehlx6HzlhxtcJkfDwB7FwewfIYa06oUzDK8GT
+        d4xbqpEkIIVU/Qu/5GB8Ao3FYpejhIkZGeCB3NI=
+X-Google-Smtp-Source: ABdhPJxdL2tTTGHJqdrnbuJO9P7hgjMkVQp/qQTD2TuSHHUNy6I1A/PqvwNkyLn7WxuKlm+/IoK/o+YjeolRNyYzGJM=
+X-Received: by 2002:a67:d893:: with SMTP id f19mr2833967vsj.39.1639577772711;
+ Wed, 15 Dec 2021 06:16:12 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211215094141.164417-1-jiasheng@iscas.ac.cn>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20211208040414.151960-1-xiayu.zhang@mediatek.com>
+ <CAHNKnsRZpYsiWORgAejYwQqP5P=PSt-V7_i73G1yfh-UR2zFjw@mail.gmail.com>
+ <6f4ae1d8b1b53cf998eaa14260d93fd3f4c8d5ad.camel@mediatek.com>
+ <CAHNKnsQ6qLcUTiTiPEAp+rmoVtrGOjoY98nQFsrwSWUu-v7wYQ@mail.gmail.com> <76bc0c0174edc3a0c89bb880a237c844d44ac46b.camel@mediatek.com>
+In-Reply-To: <76bc0c0174edc3a0c89bb880a237c844d44ac46b.camel@mediatek.com>
+From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
+Date:   Wed, 15 Dec 2021 17:16:01 +0300
+Message-ID: <CAHNKnsTWkiaKPmOghn_ztLDOcTbci8w4wkWhQ_EZPMNu0dRy3Q@mail.gmail.com>
+Subject: Re: [PATCH] Add Multiple TX/RX Queues Support for WWAN Network Device
+To:     Xiayu Zhang <xiayu.zhang@mediatek.com>
+Cc:     Loic Poulain <loic.poulain@linaro.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        =?UTF-8?B?SGFpanVuIExpdSAo5YiY5rW35YabKQ==?= 
+        <haijun.liu@mediatek.com>,
+        =?UTF-8?B?Wmhhb3BpbmcgU2h1ICjoiJLlj6zlubMp?= 
+        <Zhaoping.Shu@mediatek.com>,
+        =?UTF-8?B?SFcgSGUgKOS9leS8nyk=?= <HW.He@mediatek.com>,
+        srv_heupstream <srv_heupstream@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jiasheng,
+On Wed, Dec 15, 2021 at 11:44 AM Xiayu Zhang <xiayu.zhang@mediatek.com> wrote:
+> I want to know whether it is acceptable to add new callback functions
+> into WWAN subsystem only as well. Hope anyone could help confirm.
 
-Thank you for the patch! Perhaps something to improve:
+Yes. Feel free to add any callbacks to the WWAN subsystem for proper
+hardware support.
 
-[auto build test WARNING on linus/master]
-[also build test WARNING on v5.16-rc5 next-20211214]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+There are two things that trigger the discussion:
+1) absence of users of the new API;
+2) an attempt to silently correct a user choice instead of explicit
+rejection of a wrong value.
 
-url:    https://github.com/0day-ci/linux/commits/Jiasheng-Jiang/sfc_ef100-potential-dereference-of-null-pointer/20211215-174422
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 5472f14a37421d1bca3dddf33cabd3bd6dbefbbc
-config: microblaze-allyesconfig (https://download.01.org/0day-ci/archive/20211215/202112152115.lNKRy4uk-lkp@intel.com/config)
-compiler: microblaze-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/fc56ac03164889a206ee1b65187a8be7aa7b0f04
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Jiasheng-Jiang/sfc_ef100-potential-dereference-of-null-pointer/20211215-174422
-        git checkout fc56ac03164889a206ee1b65187a8be7aa7b0f04
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=microblaze SHELL=/bin/bash drivers/net/ethernet/sfc/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   drivers/net/ethernet/sfc/ef100_nic.c: In function 'ef100_update_stats':
->> drivers/net/ethernet/sfc/ef100_nic.c:608:9: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
-     608 |         struct ef100_nic_data *nic_data = efx->nic_data;
-         |         ^~~~~~
-
-
-vim +608 drivers/net/ethernet/sfc/ef100_nic.c
-
-b593b6f1b492170 Edward Cree    2020-08-03  599  
-b593b6f1b492170 Edward Cree    2020-08-03  600  static size_t ef100_update_stats(struct efx_nic *efx,
-b593b6f1b492170 Edward Cree    2020-08-03  601  				 u64 *full_stats,
-b593b6f1b492170 Edward Cree    2020-08-03  602  				 struct rtnl_link_stats64 *core_stats)
-b593b6f1b492170 Edward Cree    2020-08-03  603  {
-b593b6f1b492170 Edward Cree    2020-08-03  604  	__le64 *mc_stats = kmalloc(array_size(efx->num_mac_stats, sizeof(__le64)), GFP_ATOMIC);
-fc56ac03164889a Jiasheng Jiang 2021-12-15  605  	if (!mc_stats)
-fc56ac03164889a Jiasheng Jiang 2021-12-15  606  		return 0;
-fc56ac03164889a Jiasheng Jiang 2021-12-15  607  
-b593b6f1b492170 Edward Cree    2020-08-03 @608  	struct ef100_nic_data *nic_data = efx->nic_data;
-b593b6f1b492170 Edward Cree    2020-08-03  609  	DECLARE_BITMAP(mask, EF100_STAT_COUNT) = {};
-b593b6f1b492170 Edward Cree    2020-08-03  610  	u64 *stats = nic_data->stats;
-b593b6f1b492170 Edward Cree    2020-08-03  611  
-b593b6f1b492170 Edward Cree    2020-08-03  612  	ef100_common_stat_mask(mask);
-b593b6f1b492170 Edward Cree    2020-08-03  613  	ef100_ethtool_stat_mask(mask);
-b593b6f1b492170 Edward Cree    2020-08-03  614  
-b593b6f1b492170 Edward Cree    2020-08-03  615  	efx_nic_copy_stats(efx, mc_stats);
-b593b6f1b492170 Edward Cree    2020-08-03  616  	efx_nic_update_stats(ef100_stat_desc, EF100_STAT_COUNT, mask,
-b593b6f1b492170 Edward Cree    2020-08-03  617  			     stats, mc_stats, false);
-b593b6f1b492170 Edward Cree    2020-08-03  618  
-b593b6f1b492170 Edward Cree    2020-08-03  619  	kfree(mc_stats);
-b593b6f1b492170 Edward Cree    2020-08-03  620  
-b593b6f1b492170 Edward Cree    2020-08-03  621  	return ef100_update_stats_common(efx, full_stats, core_stats);
-b593b6f1b492170 Edward Cree    2020-08-03  622  }
-b593b6f1b492170 Edward Cree    2020-08-03  623  
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+-- 
+Sergey
