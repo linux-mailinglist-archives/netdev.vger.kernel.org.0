@@ -2,97 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 63160475DAD
-	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 17:42:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 67FD3475DBE
+	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 17:45:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244893AbhLOQkt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Dec 2021 11:40:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53508 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230350AbhLOQks (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Dec 2021 11:40:48 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92ABAC061574;
-        Wed, 15 Dec 2021 08:40:48 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5C6B7B8201E;
-        Wed, 15 Dec 2021 16:40:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E064AC36AE3;
-        Wed, 15 Dec 2021 16:40:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1639586446;
-        bh=SX0OrCxVumA1tCRQnY9OBElu2TNIeelB2MX6iLzch1c=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=EJqZAbpsBWw5B8ZRKYd5Y5EZA4vn6LZCwRchReyc3VzOpjMtMt7FzaODVwCJ8hBWP
-         Xr8HYP2J7qLD7mei2bZxiXAs+xmC6CSLB7jSCwN90cwauFNLnA7NydTcoMpdkiE88M
-         nSF+z9cjTQAge+yV54jgZO1XtqImgpqS4QiUVo4mZMA7BhWmKNj5Jtae75CdO9EOvL
-         UobCss4x8ODAfmfk/CC+lJSh56MiRdcm1efWWZsTf1y9nCRdB9VBJw71XazXwz+enk
-         CjFv5/AMMe+EM9d31ApiqLF/4TT3YrQmwFrsnFJQo5N0PsV5igNIGRim7KOR1saUor
-         XG+YQNKzKqtjA==
-Date:   Wed, 15 Dec 2021 08:40:44 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Pavel Begunkov <asml.silence@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] cgroup/bpf: fast path skb BPF filtering
-Message-ID: <20211215084044.064e6861@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <462ce9402621f5e32f08cc8acbf3d9da4d7d69ca.1639579508.git.asml.silence@gmail.com>
-References: <462ce9402621f5e32f08cc8acbf3d9da4d7d69ca.1639579508.git.asml.silence@gmail.com>
+        id S244961AbhLOQpW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Dec 2021 11:45:22 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:45663 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231883AbhLOQpV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Dec 2021 11:45:21 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1639586720;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Zr39epKNIeLqCYAviX0DP39J0kASqwukLjlBFjVs0XU=;
+        b=WOknj9aN7glqMgqscVeyOa5g8dwzd3TT1sNGc27sYLngPpFrvc4k9V5mCitR2RHC9btoEb
+        9ABE7xUShpyCBVZfGl4tU7j3QmaAXFZJTFhhytHPHVDe1/vT+CAi6XqA85RQvXvCPxwEOf
+        xI2OnPrmQvRAWHynjvGvpUt3BAH8lt0=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-427-9oGDK-3xPYS7VwG_uPpxOw-1; Wed, 15 Dec 2021 11:45:19 -0500
+X-MC-Unique: 9oGDK-3xPYS7VwG_uPpxOw-1
+Received: by mail-wm1-f72.google.com with SMTP id k25-20020a05600c1c9900b00332f798ba1dso14888289wms.4
+        for <netdev@vger.kernel.org>; Wed, 15 Dec 2021 08:45:19 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Zr39epKNIeLqCYAviX0DP39J0kASqwukLjlBFjVs0XU=;
+        b=ZXGnjmzJj4ENsceOxdGoIbAOYb13oxLuemYnUEO8J+pRiRSkMSiWuTJzhgXCQQvoOX
+         YsdZTFCiUeehUdmT97fKsEichbq1GH+28bVx7ZfMoMGKa9Sk9f10AUF09YnPCEOdhAJo
+         /Sv1Qcaljknjz6o2W6fwPFCliWjqEvvNWShgIogT0abJYC9Y0oJ/clADkRCjILy76lI/
+         qH2UZ2QoudeVSVPjcJf6gciFdQSEhOAyunecUB4gjBxzUlfGlYNh6BwU+lR60abThjdL
+         xH4Rk5aH5fCeeQVb/G2rjBnFnAwc6FM7Nhmg4xuonmvPvsRQGX3PnLtPUjUZ8UoG5E3j
+         4hfw==
+X-Gm-Message-State: AOAM530dtLPc9tdL55GPI6Es+jKVuO4KSh/c4t7jR20UiGvRdi8+YSM8
+        VZy+77Q9XfFfdZrVLRy5xPao7Lfitqzs0nP7lgFsc6OB56Ss2f6Fvv49gq/nv703LVPRGTwob1p
+        UT0LMXbWk5dWAK9D0
+X-Received: by 2002:a05:600c:1e87:: with SMTP id be7mr695300wmb.182.1639586718059;
+        Wed, 15 Dec 2021 08:45:18 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJy+3vIbzUHPuqX0QQ2sjRKOoX2Vtnk6RSxWjA+2ON0AX89jmdKEyRTtA718GGxV+iwjCPrzpA==
+X-Received: by 2002:a05:600c:1e87:: with SMTP id be7mr695283wmb.182.1639586717877;
+        Wed, 15 Dec 2021 08:45:17 -0800 (PST)
+Received: from steredhat (host-87-21-203-138.retail.telecomitalia.it. [87.21.203.138])
+        by smtp.gmail.com with ESMTPSA id p5sm2540559wrd.13.2021.12.15.08.45.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Dec 2021 08:45:17 -0800 (PST)
+Date:   Wed, 15 Dec 2021 17:45:15 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev@vger.kernel.org
+Subject: Re: Fw: [Bug 215329] New: The vsock component triggers out of memory
+ when sending small packets.
+Message-ID: <20211215164515.6cnjzcndrqsqtlkp@steredhat>
+References: <20211215073807.30c0041d@hermes.local>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20211215073807.30c0041d@hermes.local>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 15 Dec 2021 14:49:18 +0000 Pavel Begunkov wrote:
-> +static inline bool
-> +__cgroup_bpf_prog_array_is_empty(struct cgroup_bpf *cgrp_bpf,
-> +				 enum cgroup_bpf_attach_type type)
-> +{
-> +	struct bpf_prog_array *array = rcu_access_pointer(cgrp_bpf->effective[type]);
-> +
-> +	return array == &bpf_empty_prog_array.hdr;
-> +}
-> +
-> +#define CGROUP_BPF_TYPE_ENABLED(sk, atype)				       \
-> +({									       \
-> +	struct cgroup *__cgrp = sock_cgroup_ptr(&(sk)->sk_cgrp_data);	       \
-> +									       \
-> +	!__cgroup_bpf_prog_array_is_empty(&__cgrp->bpf, (atype));	       \
-> +})
-> +
+On Wed, Dec 15, 2021 at 07:38:36AM -0800, Stephen Hemminger wrote:
+>
+>
+>Begin forwarded message:
+>
+>Date: Wed, 15 Dec 2021 03:40:59 +0000
+>From: bugzilla-daemon@bugzilla.kernel.org
+>To: stephen@networkplumber.org
+>Subject: [Bug 215329] New: The vsock component triggers out of memory 
+>when sending small packets.
+>
+>
+>https://bugzilla.kernel.org/show_bug.cgi?id=215329
 
-> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> index e7a163a3146b..0d2195c6fb2a 100644
-> --- a/include/linux/bpf.h
-> +++ b/include/linux/bpf.h
-> @@ -1161,6 +1161,19 @@ struct bpf_prog_array {
->  	struct bpf_prog_array_item items[];
->  };
->  
-> +struct bpf_empty_prog_array {
-> +	struct bpf_prog_array hdr;
-> +	struct bpf_prog *null_prog;
-> +};
-> +
-> +/* to avoid allocating empty bpf_prog_array for cgroups that
-> + * don't have bpf program attached use one global 'bpf_empty_prog_array'
-> + * It will not be modified the caller of bpf_prog_array_alloc()
-> + * (since caller requested prog_cnt == 0)
-> + * that pointer should be 'freed' by bpf_prog_array_free()
-> + */
-> +extern struct bpf_empty_prog_array bpf_empty_prog_array;
+Thanks for CC me. I think it's related to this issue: 
+https://gitlab.com/vsock/vsock/-/issues/1
 
-mumble mumble, this adds more "fun" dependencies [1] Maybe I'm going
-about this all wrong, maybe I should be pulling out struct cgroup_bpf
-so that cgroup.h does not need bpf-cgroup, not breaking bpf <-> bpf-cgroup.
-Alexei, WDYT?
+virtio-vsock provides a credit mechanism, but we need to improve the 
+memory tracking, maybe reusing sk_sndbuf and sk_rcvbuf.
 
-[1] https://lore.kernel.org/all/20211215061916.715513-2-kuba@kernel.org/
+Unfortunately, when vsock was introduce it adds is own IOCTL to set the 
+buffer size, so we need to clean up a bit that part.
+
+I can't work on it right now, maybe in the next months I can, but I can 
+help for sure if someone has time.
+
+Thanks,
+Stefano
+
