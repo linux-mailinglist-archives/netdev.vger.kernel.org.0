@@ -2,98 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 807FF4758C7
-	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 13:23:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 863FD4758DA
+	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 13:29:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242428AbhLOMXd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Dec 2021 07:23:33 -0500
-Received: from rtits2.realtek.com ([211.75.126.72]:36813 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237111AbhLOMXc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Dec 2021 07:23:32 -0500
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 1BFCN88r8021830, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 1BFCN88r8021830
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 15 Dec 2021 20:23:08 +0800
-Received: from RTEXMBS06.realtek.com.tw (172.21.6.99) by
- RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 15 Dec 2021 20:23:08 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS06.realtek.com.tw (172.21.6.99) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Wed, 15 Dec 2021 20:23:07 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::65a3:1e23:d911:4b01]) by
- RTEXMBS04.realtek.com.tw ([fe80::65a3:1e23:d911:4b01%5]) with mapi id
- 15.01.2308.020; Wed, 15 Dec 2021 20:23:07 +0800
-From:   Pkshih <pkshih@realtek.com>
-To:     "kai.heng.feng@canonical.com" <kai.heng.feng@canonical.com>,
-        "tony0620emma@gmail.com" <tony0620emma@gmail.com>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "jian-hong@endlessm.com" <jian-hong@endlessm.com>,
-        "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
-        Bernie Huang <phhuang@realtek.com>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "briannorris@chromium.org" <briannorris@chromium.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v4] rtw88: Disable PCIe ASPM while doing NAPI poll on 8821CE
-Thread-Topic: [PATCH v4] rtw88: Disable PCIe ASPM while doing NAPI poll on
- 8821CE
-Thread-Index: AQHX8amLQ1c7M9LrfUaQkh1Nis88KKwy82wA
-Date:   Wed, 15 Dec 2021 12:23:07 +0000
-Message-ID: <d2ddfaa035315ca91a2a05a8188810ff50db83c8.camel@realtek.com>
-References: <20211215114635.333767-1-kai.heng.feng@canonical.com>
-In-Reply-To: <20211215114635.333767-1-kai.heng.feng@canonical.com>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.36.1-2 
-x-originating-ip: [114.26.206.138]
-x-kse-serverinfo: RTEXMBS06.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIxLzEyLzE1IOS4iuWNiCAxMDo0NjowMA==?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <BE14E3E86E3CFF46A962ED5D3DBCEDA6@realtek.com>
-Content-Transfer-Encoding: base64
+        id S242501AbhLOM30 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Dec 2021 07:29:26 -0500
+Received: from out30-42.freemail.mail.aliyun.com ([115.124.30.42]:40515 "EHLO
+        out30-42.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S242428AbhLOM3Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Dec 2021 07:29:25 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0V-j2cWu_1639571363;
+Received: from localhost(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0V-j2cWu_1639571363)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 15 Dec 2021 20:29:23 +0800
+From:   "D. Wythe" <alibuda@linux.alibaba.com>
+To:     kgraul@linux.ibm.com
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org,
+        "D. Wythe" <alibuda@linux.alibaba.com>
+Subject: [PATCH net] net/smc: Prevent smc_release() from long blocking
+Date:   Wed, 15 Dec 2021 20:29:21 +0800
+Message-Id: <1639571361-101128-1-git-send-email-alibuda@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gV2VkLCAyMDIxLTEyLTE1IGF0IDE5OjQ2ICswODAwLCBLYWktSGVuZyBGZW5nIHdyb3RlOg0K
-PiBNYW55IEludGVsIGJhc2VkIHBsYXRmb3JtcyBmYWNlIHN5c3RlbSByYW5kb20gZnJlZXplIGFm
-dGVyIGNvbW1pdA0KPiA5ZTJmZDI5ODY0YzUgKCJydHc4ODogYWRkIG5hcGkgc3VwcG9ydCIpLg0K
-PiANCj4gVGhlIGNvbW1pdCBpdHNlbGYgc2hvdWxkbid0IGJlIHRoZSBjdWxwcml0LiBNeSBndWVz
-cyBpcyB0aGF0IHRoZSA4ODIxQ0UNCj4gb25seSBsZWF2ZXMgQVNQTSBMMSBmb3IgYSBzaG9ydCBw
-ZXJpb2Qgd2hlbiBJUlEgaXMgcmFpc2VkLiBTaW5jZSBJUlEgaXMNCj4gbWFza2VkIGR1cmluZyBO
-QVBJIHBvbGxpbmcsIHRoZSBQQ0llIGxpbmsgc3RheXMgYXQgTDEgYW5kIG1ha2VzIFJYIERNQQ0K
-PiBleHRyZW1lbHkgc2xvdy4gRXZlbnR1YWxseSB0aGUgUlggcmluZyBiZWNvbWVzIG1lc3NlZCB1
-cDoNCj4gWyAxMTMzLjE5NDY5N10gcnR3Xzg4MjFjZSAwMDAwOjAyOjAwLjA6IHBjaSBidXMgdGlt
-ZW91dCwgY2hlY2sgZG1hIHN0YXR1cw0KPiANCj4gU2luY2UgdGhlIDg4MjFDRSBoYXJkd2FyZSBt
-YXkgZmFpbCB0byBsZWF2ZSBBU1BNIEwxLCBtYW51YWxseSBkbyBpdCBpbg0KPiB0aGUgZHJpdmVy
-IHRvIHJlc29sdmUgdGhlIGlzc3VlLg0KPiANCj4gRml4ZXM6IDllMmZkMjk4NjRjNSAoInJ0dzg4
-OiBhZGQgbmFwaSBzdXBwb3J0IikNCj4gQnVnemlsbGE6IGh0dHBzOi8vYnVnemlsbGEua2VybmVs
-Lm9yZy9zaG93X2J1Zy5jZ2k/aWQ9MjE1MTMxDQo+IEJ1Z0xpbms6IGh0dHBzOi8vYnVncy5sYXVu
-Y2hwYWQubmV0L2J1Z3MvMTkyNzgwOA0KPiBTaWduZWQtb2ZmLWJ5OiBLYWktSGVuZyBGZW5nIDxr
-YWkuaGVuZy5mZW5nQGNhbm9uaWNhbC5jb20+DQoNClJldmlld2VkLWFuZC1UZXN0ZWQtYnk6IFBp
-bmctS2UgU2hpaCA8cGtzaGloQHJlYWx0ZWsuY29tPg0KDQo+IC0tLQ0KPiB2NDoNCj4gIC0gUmVi
-YXNlIHRvIHRoZSByaWdodCB0cmVlLg0KPiANCj4gdjM6DQo+ICAtIE1vdmUgdGhlIG1vZHVsZSBw
-YXJhbWV0ZXIgdG8gYmUgcGFydCBvZiBwcml2YXRlIHN0cnVjdC4NCj4gIC0gRW5zdXJlIGxpbmtf
-dXNhZ2UgbmV2ZXIgZ29lcyBiZWxvdyB6ZXJvLg0KPiANCj4gdjI6DQo+ICAtIEFkZCBkZWZhdWx0
-IHZhbHVlIGZvciBtb2R1bGUgcGFyYW1ldGVyLg0KPiANCj4gIGRyaXZlcnMvbmV0L3dpcmVsZXNz
-L3JlYWx0ZWsvcnR3ODgvcGNpLmMgfCA3MCArKysrKysrLS0tLS0tLS0tLS0tLS0tLS0NCj4gIGRy
-aXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnR3ODgvcGNpLmggfCAgMiArDQo+ICAyIGZpbGVz
-IGNoYW5nZWQsIDIxIGluc2VydGlvbnMoKyksIDUxIGRlbGV0aW9ucygtKQ0KPiANCj4gDQoNClsu
-Li5dDQoNCg0K
+From: "D. Wythe" <alibuda@linux.alibaba.com>
+
+In nginx/wrk benchmark, there's a hung problem with high probability
+on case likes that: (client will last several minutes to exit)
+
+server: smc_run nginx
+
+client: smc_run wrk -c 10000 -t 1 http://server
+
+Client hangs with the following backtrace:
+
+0 [ffffa7ce8Of3bbf8] __schedule at ffffffff9f9eOd5f
+1 [ffffa7ce8Of3bc88] schedule at ffffffff9f9eløe6
+2 [ffffa7ce8Of3bcaO] schedule_timeout at ffffffff9f9e3f3c
+3 [ffffa7ce8Of3bd2O] wait_for_common at ffffffff9f9el9de
+4 [ffffa7ce8Of3bd8O] __flush_work at ffffffff9fOfeOl3
+5 [ffffa7ce8øf3bdfO] smc_release at ffffffffcO697d24 [smc]
+6 [ffffa7ce8Of3be2O] __sock_release at ffffffff9f8O2e2d
+7 [ffffa7ce8Of3be4ø] sock_close at ffffffff9f8ø2ebl
+8 [ffffa7ce8øf3be48] __fput at ffffffff9f334f93
+9 [ffffa7ce8Of3be78] task_work_run at ffffffff9flOlff5
+10 [ffffa7ce8Of3beaO] do_exit at ffffffff9fOe5Ol2
+11 [ffffa7ce8Of3bflO] do_group_exit at ffffffff9fOe592a
+12 [ffffa7ce8Of3bf38] __x64_sys_exit_group at ffffffff9fOe5994
+13 [ffffa7ce8Of3bf4O] do_syscall_64 at ffffffff9f9d4373
+14 [ffffa7ce8Of3bfsO] entry_SYSCALL_64_after_hwframe at ffffffff9fa0007c
+
+This issue dues to flush_work(), which is used to wait for
+smc_connect_work() to finish in smc_release(). Once lots of
+smc_connect_work() was pending or all executing work dangling,
+smc_release() has to block until one worker comes to free, which
+is equivalent to wait another smc_connnect_work() to finish.
+
+In order to fix this, There are two changes:
+
+1. For those idle smc_connect_work(), cancel it from the workqueue; for
+   executing smc_connect_work(), waiting for it to finish. For that
+   purpose, replace flush_work() with cancel_work_sync().
+
+2. Since smc_connect() hold a reference for passive closing, if
+   smc_connect_work() has been cancelled, release the reference.
+
+Fixes: 24ac3a08e658 ("smc: rebuild nonblocking connect")
+Reported-by: Tony Lu <tonylu@linux.alibaba.com>
+Tested-by: Dust Li <dust.li@linux.alibaba.com>
+Reviewed-by: Dust Li <dust.li@linux.alibaba.com>
+Reviewed-by: Tony Lu <tonylu@linux.alibaba.com> 
+Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
+---
+ net/smc/af_smc.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+index b44cc4c..5d9911c 100644
+--- a/net/smc/af_smc.c
++++ b/net/smc/af_smc.c
+@@ -195,7 +195,9 @@ static int smc_release(struct socket *sock)
+ 	/* cleanup for a dangling non-blocking connect */
+ 	if (smc->connect_nonblock && sk->sk_state == SMC_INIT)
+ 		tcp_abort(smc->clcsock->sk, ECONNABORTED);
+-	flush_work(&smc->connect_work);
++
++	if (cancel_work_sync(&smc->connect_work))
++		sock_put(&smc->sk); /* sock_hold in smc_connect for passive closing */
+ 
+ 	if (sk->sk_state == SMC_LISTEN)
+ 		/* smc_close_non_accepted() is called and acquires
+-- 
+1.8.3.1
+
