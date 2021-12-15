@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E8D50476133
-	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 19:56:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8957047612A
+	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 19:55:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344084AbhLOSzg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Dec 2021 13:55:36 -0500
+        id S1344063AbhLOSzS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Dec 2021 13:55:18 -0500
 Received: from mga18.intel.com ([134.134.136.126]:23972 "EHLO mga18.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1344071AbhLOSzN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 Dec 2021 13:55:13 -0500
+        id S1344074AbhLOSyz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 Dec 2021 13:54:55 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1639594513; x=1671130513;
+  t=1639594495; x=1671130495;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=VtJLLd7GLaeGs4+dAalUo4ReM9Mw/fYgR0PmNYX0QH4=;
-  b=IczkTAl66bDujQLoPztHUWWd6PQ3qKTrxVjrXbv3Dd7H5s7n4RM/R2gV
-   VujgQjmKKj44NRdxcE6s0tOq4DXJEXS+n3mKYZqF9K1kIFcj7+VloiUlI
-   6KO+fSY3+jly7YBnjmgqil0k8sTcPSTdOFUOsqGzDt8KHWGTURP2T2v9x
-   hc/x7RcHTN4Jfn5iW0NVweHhOi0QadAED9PZjIL1HVeZ28i3seJrJ327U
-   afN2OGYQt4h/hQe/axlrSvYWgXWlT7ZlC1+HEEKzcmnxLhw27McsxirXZ
-   avvq6VyucA5rl+EFJ7+UvbMtjCSTVAflyCUzo6fbKuXkXjLogvOCvgXqU
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10199"; a="226169615"
+  bh=794rMP6XQgkpRCYu52Qd7FPD5/Tny6GuDnO5b78YSWA=;
+  b=ksv0UHo2PSuXdzcxsJcgkj7rKMnOciVd3ky4GZdmrJ1sWVf1CYH2DsWz
+   Zu+D81MIL5QtmXEdhhg9Yuv/g36wxLIDMEcCgYfuvTo2iu8Yh84CfPhVd
+   EeGS6jepT3lOkTat8x+b2e1pGD0DEPp40HaV88VdZLXvoPZ+D4dr28GDT
+   62i8J94rC3ykL7I676cTs21UnIABj0xG7JvHl5WMfBiEkE0uoj65x1Ei2
+   TSLtO3Dv91WSqh3/Nfk3UV7Z5gPByfRCThShcaDy0PycT4akU0m9F1XMg
+   cAl5rYapDHxPE1hemmZdfT0+nRvApBaC8Uekn1U5hjU/AMxpnOEpMO2bh
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10199"; a="226169616"
 X-IronPort-AV: E=Sophos;i="5.88,207,1635231600"; 
-   d="scan'208";a="226169615"
+   d="scan'208";a="226169616"
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
   by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Dec 2021 10:54:55 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,207,1635231600"; 
-   d="scan'208";a="465729955"
+   d="scan'208";a="465729959"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by orsmga006.jf.intel.com with ESMTP; 15 Dec 2021 10:54:54 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
@@ -39,9 +39,9 @@ To:     davem@davemloft.net, kuba@kernel.org
 Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
         netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
         Gurucharan G <gurucharanx.g@intel.com>
-Subject: [PATCH net-next 8/9] ice: tighter control over VSI_DOWN state
-Date:   Wed, 15 Dec 2021 10:53:54 -0800
-Message-Id: <20211215185355.3249738-9-anthony.l.nguyen@intel.com>
+Subject: [PATCH net-next 9/9] ice: use modern kernel API for kick
+Date:   Wed, 15 Dec 2021 10:53:55 -0800
+Message-Id: <20211215185355.3249738-10-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211215185355.3249738-1-anthony.l.nguyen@intel.com>
 References: <20211215185355.3249738-1-anthony.l.nguyen@intel.com>
@@ -53,65 +53,50 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jesse Brandeburg <jesse.brandeburg@intel.com>
 
-The driver had comments to the effect of: This flag should be set before
-calling this function. While reviewing code it was found that there were
-several violations of this policy, which could introduce hard to find
-bugs or races.
-
-Fix the violations of the "VSI DOWN state must be set before calling
-ice_down" and make checking the state into code with a WARN_ON.
+The kernel gained a new interface for drivers to use to combine tail
+bump (doorbell) and BQL updates, attempt to use those new interfaces.
 
 Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
 Tested-by: Gurucharan G <gurucharanx.g@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
-Testing Hints: legacy-rx private flag disable/enable forgot to set this
-previously and is a way to trigger the down/up path.
+ drivers/net/ethernet/intel/ice/ice_txrx.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
- drivers/net/ethernet/intel/ice/ice_ethtool.c | 6 ++++--
- drivers/net/ethernet/intel/ice/ice_main.c    | 7 ++++---
- 2 files changed, 8 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool.c b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-index aefd9c3d450b..e2e3ef7fba7f 100644
---- a/drivers/net/ethernet/intel/ice/ice_ethtool.c
-+++ b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-@@ -1280,8 +1280,10 @@ static int ice_set_priv_flags(struct net_device *netdev, u32 flags)
- 	}
- 	if (test_bit(ICE_FLAG_LEGACY_RX, change_flags)) {
- 		/* down and up VSI so that changes of Rx cfg are reflected. */
--		ice_down(vsi);
--		ice_up(vsi);
-+		if (!test_and_set_bit(ICE_VSI_DOWN, vsi->state)) {
-+			ice_down(vsi);
-+			ice_up(vsi);
-+		}
- 	}
- 	/* don't allow modification of this flag when a single VF is in
- 	 * promiscuous mode because it's not supported
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 452fa28f8967..865f2231bb24 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -6229,14 +6229,15 @@ static void ice_napi_disable_all(struct ice_vsi *vsi)
- /**
-  * ice_down - Shutdown the connection
-  * @vsi: The VSI being stopped
-+ *
-+ * Caller of this function is expected to set the vsi->state ICE_DOWN bit
-  */
- int ice_down(struct ice_vsi *vsi)
- {
- 	int i, tx_err, rx_err, link_err = 0;
+diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.c b/drivers/net/ethernet/intel/ice/ice_txrx.c
+index de9247d45c39..3987a0dd0e11 100644
+--- a/drivers/net/ethernet/intel/ice/ice_txrx.c
++++ b/drivers/net/ethernet/intel/ice/ice_txrx.c
+@@ -1576,6 +1576,7 @@ ice_tx_map(struct ice_tx_ring *tx_ring, struct ice_tx_buf *first,
+ 	struct sk_buff *skb;
+ 	skb_frag_t *frag;
+ 	dma_addr_t dma;
++	bool kick;
  
--	/* Caller of this function is expected to set the
--	 * vsi->state ICE_DOWN bit
--	 */
-+	WARN_ON(!test_bit(ICE_VSI_DOWN, vsi->state));
-+
- 	if (vsi->netdev && vsi->type == ICE_VSI_PF) {
- 		netif_carrier_off(vsi->netdev);
- 		netif_tx_disable(vsi->netdev);
+ 	td_tag = off->td_l2tag1;
+ 	td_cmd = off->td_cmd;
+@@ -1657,9 +1658,6 @@ ice_tx_map(struct ice_tx_ring *tx_ring, struct ice_tx_buf *first,
+ 		tx_buf = &tx_ring->tx_buf[i];
+ 	}
+ 
+-	/* record bytecount for BQL */
+-	netdev_tx_sent_queue(txring_txq(tx_ring), first->bytecount);
+-
+ 	/* record SW timestamp if HW timestamp is not available */
+ 	skb_tx_timestamp(first->skb);
+ 
+@@ -1688,7 +1686,10 @@ ice_tx_map(struct ice_tx_ring *tx_ring, struct ice_tx_buf *first,
+ 	ice_maybe_stop_tx(tx_ring, DESC_NEEDED);
+ 
+ 	/* notify HW of packet */
+-	if (netif_xmit_stopped(txring_txq(tx_ring)) || !netdev_xmit_more())
++	kick = __netdev_tx_sent_queue(txring_txq(tx_ring), first->bytecount,
++				      netdev_xmit_more());
++	if (kick)
++		/* notify HW of packet */
+ 		writel(i, tx_ring->tail);
+ 
+ 	return;
 -- 
 2.31.1
 
