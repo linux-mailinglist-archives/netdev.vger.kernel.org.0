@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 11EDA4766B7
-	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 00:49:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 640824766BA
+	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 00:49:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232196AbhLOXt2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Dec 2021 18:49:28 -0500
-Received: from mail.netfilter.org ([217.70.188.207]:56632 "EHLO
+        id S232210AbhLOXtd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Dec 2021 18:49:33 -0500
+Received: from mail.netfilter.org ([217.70.188.207]:56624 "EHLO
         mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232160AbhLOXt0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Dec 2021 18:49:26 -0500
+        with ESMTP id S231740AbhLOXt1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Dec 2021 18:49:27 -0500
 Received: from localhost.localdomain (unknown [78.30.32.163])
-        by mail.netfilter.org (Postfix) with ESMTPSA id 9D99C607E0;
-        Thu, 16 Dec 2021 00:46:55 +0100 (CET)
+        by mail.netfilter.org (Postfix) with ESMTPSA id 1708C625F7;
+        Thu, 16 Dec 2021 00:46:56 +0100 (CET)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH nf-next 6/7] netfilter: bridge: add support for pppoe filtering
-Date:   Thu, 16 Dec 2021 00:49:10 +0100
-Message-Id: <20211215234911.170741-7-pablo@netfilter.org>
+Subject: [PATCH nf-next 7/7] netfilter: conntrack: Remove useless assignment statements
+Date:   Thu, 16 Dec 2021 00:49:11 +0100
+Message-Id: <20211215234911.170741-8-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20211215234911.170741-1-pablo@netfilter.org>
 References: <20211215234911.170741-1-pablo@netfilter.org>
@@ -29,72 +29,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: luo penghao <luo.penghao@zte.com.cn>
 
-This makes 'bridge-nf-filter-pppoe-tagged' sysctl work for
-bridged traffic.
+The old_size assignment here will not be used anymore
 
-Looking at the original commit it doesn't appear this ever worked:
+The clang_analyzer complains as follows:
 
- static unsigned int br_nf_post_routing(unsigned int hook, struct sk_buff **pskb,
-[..]
-        if (skb->protocol == htons(ETH_P_8021Q)) {
-                skb_pull(skb, VLAN_HLEN);
-                skb->network_header += VLAN_HLEN;
-+       } else if (skb->protocol == htons(ETH_P_PPP_SES)) {
-+               skb_pull(skb, PPPOE_SES_HLEN);
-+               skb->network_header += PPPOE_SES_HLEN;
-        }
- [..]
-	NF_HOOK(... POST_ROUTING, ...)
+Value stored to 'old_size' is never read
 
-... but the adjusted offsets are never restored.
-
-The alternative would be to rip this code out for good,
-but otoh we'd have to keep this anyway for the vlan handling
-(which works because vlan tag info is in the skb, not the packet
- payload).
-
-Reported-and-tested-by: Amish Chana <amish@3g.co.za>
-Fixes: 516299d2f5b6f97 ("[NETFILTER]: bridge-nf: filter bridged IPv4/IPv6 encapsulated in pppoe traffic")
-Signed-off-by: Florian Westphal <fw@strlen.de>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: luo penghao <luo.penghao@zte.com.cn>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- net/bridge/br_netfilter_hooks.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ net/netfilter/nf_conntrack_core.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/net/bridge/br_netfilter_hooks.c b/net/bridge/br_netfilter_hooks.c
-index b5af68c105a8..4fd882686b04 100644
---- a/net/bridge/br_netfilter_hooks.c
-+++ b/net/bridge/br_netfilter_hooks.c
-@@ -743,6 +743,9 @@ static int br_nf_dev_queue_xmit(struct net *net, struct sock *sk, struct sk_buff
- 	if (nf_bridge->frag_max_size && nf_bridge->frag_max_size < mtu)
- 		mtu = nf_bridge->frag_max_size;
+diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
+index aa657db18318..b622ef143415 100644
+--- a/net/netfilter/nf_conntrack_core.c
++++ b/net/netfilter/nf_conntrack_core.c
+@@ -2588,7 +2588,6 @@ int nf_conntrack_hash_resize(unsigned int hashsize)
+ 			hlist_nulls_add_head_rcu(&h->hnnode, &hash[bucket]);
+ 		}
+ 	}
+-	old_size = nf_conntrack_htable_size;
+ 	old_hash = nf_conntrack_hash;
  
-+	nf_bridge_update_protocol(skb);
-+	nf_bridge_push_encap_header(skb);
-+
- 	if (skb_is_gso(skb) || skb->len + mtu_reserved <= mtu) {
- 		nf_bridge_info_free(skb);
- 		return br_dev_queue_push_xmit(net, sk, skb);
-@@ -760,8 +763,6 @@ static int br_nf_dev_queue_xmit(struct net *net, struct sock *sk, struct sk_buff
- 
- 		IPCB(skb)->frag_max_size = nf_bridge->frag_max_size;
- 
--		nf_bridge_update_protocol(skb);
--
- 		data = this_cpu_ptr(&brnf_frag_data_storage);
- 
- 		if (skb_vlan_tag_present(skb)) {
-@@ -789,8 +790,6 @@ static int br_nf_dev_queue_xmit(struct net *net, struct sock *sk, struct sk_buff
- 
- 		IP6CB(skb)->frag_max_size = nf_bridge->frag_max_size;
- 
--		nf_bridge_update_protocol(skb);
--
- 		data = this_cpu_ptr(&brnf_frag_data_storage);
- 		data->encap_size = nf_bridge_encap_header_len(skb);
- 		data->size = ETH_HLEN + data->encap_size;
+ 	nf_conntrack_hash = hash;
 -- 
 2.30.2
 
