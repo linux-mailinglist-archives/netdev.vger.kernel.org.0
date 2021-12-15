@@ -2,133 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CA865475A04
-	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 14:55:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F4221475A31
+	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 15:01:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243013AbhLONzo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Dec 2021 08:55:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42352 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232338AbhLONzn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Dec 2021 08:55:43 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5A34C061574;
-        Wed, 15 Dec 2021 05:55:42 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 91093B81F05;
-        Wed, 15 Dec 2021 13:55:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0CC8C34604;
-        Wed, 15 Dec 2021 13:55:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1639576540;
-        bh=Xw/T47Xd/1MGbXKzyKiQWGb6WlKQuClEoedkpf+Imv4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=K/WnvhvtWXHeiHZHHdrPqHT7Vy2uisx2DoMXd+WDk8SGeFGxZP08aktJR/iufmjtk
-         lGUPk6MrT172tdni9yM3lJ3nI6y4ru8FBRM9q05EcSAdjElq85j0dNBo9kC7NQeCrV
-         QORHS3xyP7nFdFdfTQJbWzogtuLtpN0cQOzmwrG4=
-Date:   Wed, 15 Dec 2021 14:55:37 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Antoine Tenart <atenart@kernel.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        stable@vger.kernel.org
-Subject: Re: [PATCH 5.10] ethtool: do not perform operations on net devices
- being unregistered
-Message-ID: <Ybnz2agUcwHE8hRH@kroah.com>
-References: <20211213101506.118377-1-atenart@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211213101506.118377-1-atenart@kernel.org>
+        id S234687AbhLOOBK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Dec 2021 09:01:10 -0500
+Received: from mail-oi1-f175.google.com ([209.85.167.175]:43556 "EHLO
+        mail-oi1-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230117AbhLOOBK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Dec 2021 09:01:10 -0500
+Received: by mail-oi1-f175.google.com with SMTP id o4so31777776oia.10;
+        Wed, 15 Dec 2021 06:01:10 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=v2N2/2aRl0uDViM7Eo18ZEycm6qiJCN1cJkIyTdCyMk=;
+        b=7kLoa8v4csmCqQezHcwUlNB2BDTigIYGynImdVvway3FvvWXQijx+7C2N0QqKLjhPq
+         DSaT46+Sk0BAd8fTTFOtSGsRastP7djj+bj6WEVv2YlrtAJnHarH+m2SRiz5nBrX5jaK
+         7pnIg3WbiHQNfMIClTrjS+bEdnhoDRSuPp81qcUIvqGlCSqVChEmJyZZSKQg3j1cwdvB
+         nv94MUYhLBOuJROpLR0WiCbl1BwDZbkSK7TYHou03ejcQZMS/gcOed81CocqIbG1cRqN
+         PY2XnORJSH4y9bvDsF5OYfrp2vONtGHPGOxTfr00IzukxLfvB9716mUpADjHxIDS3Srd
+         rnsw==
+X-Gm-Message-State: AOAM532S/tb5Y+3S7CoM5hfDwpjqO1yVWLqUqjxkVYEFZkYsr63wbDlr
+        b3lGxAnWID72tdV3mj3XeA==
+X-Google-Smtp-Source: ABdhPJyLHls0NqIbXlFT86l7QPNmz2Nu39/Akl9ZcQh7M1EkHj/vb600jTYN0BNbCBgWUtj6wv4pJQ==
+X-Received: by 2002:aca:2319:: with SMTP id e25mr38548861oie.164.1639576869775;
+        Wed, 15 Dec 2021 06:01:09 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id b1sm447272otj.5.2021.12.15.06.01.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Dec 2021 06:01:09 -0800 (PST)
+Received: (nullmailer pid 1207416 invoked by uid 1000);
+        Wed, 15 Dec 2021 14:01:07 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Biao Huang <biao.huang@mediatek.com>
+Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        davem@davemloft.net,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        devicetree@vger.kernel.org, srv_heupstream@mediatek.com,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        macpaul.lin@mediatek.com, linux-arm-kernel@lists.infradead.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-mediatek@lists.infradead.org,
+        angelogioacchino.delregno@collabora.com, dkirjanov@suse.de,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+In-Reply-To: <20211215021652.7270-5-biao.huang@mediatek.com>
+References: <20211215021652.7270-1-biao.huang@mediatek.com> <20211215021652.7270-5-biao.huang@mediatek.com>
+Subject: Re: [PATCH net-next v9 4/6] net: dt-bindings: dwmac: Convert mediatek-dwmac to DT schema
+Date:   Wed, 15 Dec 2021 08:01:07 -0600
+Message-Id: <1639576867.892685.1207415.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 13, 2021 at 11:15:06AM +0100, Antoine Tenart wrote:
-> commit dde91ccfa25fd58f64c397d91b81a4b393100ffa upstream
+On Wed, 15 Dec 2021 10:16:50 +0800, Biao Huang wrote:
+> Convert mediatek-dwmac to DT schema, and delete old mediatek-dwmac.txt.
+> And there are some changes in .yaml than .txt, others almost keep the same:
+>   1. compatible "const: snps,dwmac-4.20".
+>   2. delete "snps,reset-active-low;" in example, since driver remove this
+>      property long ago.
+>   3. add "snps,reset-delay-us = <0 10000 10000>" in example.
+>   4. the example is for rgmii interface, keep related properties only.
 > 
-> There is a short period between a net device starts to be unregistered
-> and when it is actually gone. In that time frame ethtool operations
-> could still be performed, which might end up in unwanted or undefined
-> behaviours[1].
-> 
-> Do not allow ethtool operations after a net device starts its
-> unregistration. This patch targets the netlink part as the ioctl one
-> isn't affected: the reference to the net device is taken and the
-> operation is executed within an rtnl lock section and the net device
-> won't be found after unregister.
-> 
-> [1] For example adding Tx queues after unregister ends up in NULL
->     pointer exceptions and UaFs, such as:
-> 
->       BUG: KASAN: use-after-free in kobject_get+0x14/0x90
->       Read of size 1 at addr ffff88801961248c by task ethtool/755
-> 
->       CPU: 0 PID: 755 Comm: ethtool Not tainted 5.15.0-rc6+ #778
->       Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-4.fc34 04/014
->       Call Trace:
->        dump_stack_lvl+0x57/0x72
->        print_address_description.constprop.0+0x1f/0x140
->        kasan_report.cold+0x7f/0x11b
->        kobject_get+0x14/0x90
->        kobject_add_internal+0x3d1/0x450
->        kobject_init_and_add+0xba/0xf0
->        netdev_queue_update_kobjects+0xcf/0x200
->        netif_set_real_num_tx_queues+0xb4/0x310
->        veth_set_channels+0x1c3/0x550
->        ethnl_set_channels+0x524/0x610
-> 
-> [The patch differs from the upstream one as code was moved around by
-> commit 41107ac22fcf ("ethtool: move netif_device_present check from
-> ethnl_parse_header_dev_get to ethnl_ops_begin"). The check on the netdev
-> state is still done in ethnl_ops_begin as it must be done in an rtnl
-> section (the one which performs the op) to not race with
-> unregister_netdevice_many.
-> Also note the trace in [1] is not possible here as the channel ops for
-> veth were added later, but that was just one example.]
-> 
-> Fixes: 041b1c5d4a53 ("ethtool: helper functions for netlink interface")
-> Suggested-by: Jakub Kicinski <kuba@kernel.org>
-> Signed-off-by: Antoine Tenart <atenart@kernel.org>
+> Signed-off-by: Biao Huang <biao.huang@mediatek.com>
 > ---
-> 
-> Hello,
-> 
-> This patch is intended for the stable 5.10 tree.
-> 
-> As reported by Greg, patch dde91ccfa25f ("ethtool: do not perform
-> operations on net devices being unregistered") did not apply correctly
-> on the 5.10 tree. The explanation of this and the approach taken here is
-> explained in the above commit log, between [].
-> 
-> I removed the Link tag and Signed-off-by from Jakub from the original
-> patch as this one is slightly different in its implementation.
-> 
-> Thanks,
-> Antoine
-> 
->  net/ethtool/netlink.h | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/net/ethtool/netlink.h b/net/ethtool/netlink.h
-> index d8efec516d86..979dee6bb88c 100644
-> --- a/net/ethtool/netlink.h
-> +++ b/net/ethtool/netlink.h
-> @@ -249,6 +249,9 @@ struct ethnl_reply_data {
->  
->  static inline int ethnl_ops_begin(struct net_device *dev)
->  {
-> +	if (dev && dev->reg_state == NETREG_UNREGISTERING)
-> +		return -ENODEV;
-> +
->  	if (dev && dev->ethtool_ops->begin)
->  		return dev->ethtool_ops->begin(dev);
->  	else
-> -- 
-> 2.33.1
+>  .../bindings/net/mediatek-dwmac.txt           |  91 ----------
+>  .../bindings/net/mediatek-dwmac.yaml          | 155 ++++++++++++++++++
+>  2 files changed, 155 insertions(+), 91 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/net/mediatek-dwmac.txt
+>  create mode 100644 Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
 > 
 
-Now queued up, thanks.
+Running 'make dtbs_check' with the schema in this patch gives the
+following warnings. Consider if they are expected or the schema is
+incorrect. These may not be new warnings.
 
-greg k-h
+Note that it is not yet a requirement to have 0 warnings for dtbs_check.
+This will change in the future.
+
+Full log is available here: https://patchwork.ozlabs.org/patch/1567987
+
+
+ethernet@1101c000: clock-names: ['axi', 'apb', 'mac_main', 'ptp_ref'] is too short
+	arch/arm64/boot/dts/mediatek/mt2712-evb.dt.yaml
+
+ethernet@1101c000: clocks: [[27, 34], [27, 37], [6, 154], [6, 155]] is too short
+	arch/arm64/boot/dts/mediatek/mt2712-evb.dt.yaml
+
+ethernet@1101c000: compatible: ['mediatek,mt2712-gmac'] does not contain items matching the given schema
+	arch/arm64/boot/dts/mediatek/mt2712-evb.dt.yaml
+
+ethernet@1101c000: compatible: ['mediatek,mt2712-gmac'] is too short
+	arch/arm64/boot/dts/mediatek/mt2712-evb.dt.yaml
+
+ethernet@1101c000: Unevaluated properties are not allowed ('compatible', 'reg', 'interrupts', 'interrupt-names', 'mac-address', 'clock-names', 'clocks', 'power-domains', 'snps,axi-config', 'snps,mtl-rx-config', 'snps,mtl-tx-config', 'snps,txpbl', 'snps,rxpbl', 'clk_csr', 'phy-mode', 'phy-handle', 'snps,reset-gpio', 'mdio' were unexpected)
+	arch/arm64/boot/dts/mediatek/mt2712-evb.dt.yaml
+
