@@ -2,147 +2,384 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A1C8747632B
-	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 21:24:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BD99476336
+	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 21:26:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235791AbhLOUY5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Dec 2021 15:24:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50148 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235696AbhLOUY4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Dec 2021 15:24:56 -0500
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BDDCC061574;
-        Wed, 15 Dec 2021 12:24:56 -0800 (PST)
-Received: by mail-pf1-x436.google.com with SMTP id f11so23918pfc.9;
-        Wed, 15 Dec 2021 12:24:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=aQsIra73/x88GR1KtCmaf/z2BjHJdIeNO56pE9+Q+NI=;
-        b=obESI4k11QInt55Yl8KhxPfxoa8YfxniAXIohBgTdbbKvHpkycJMEcxciMnOgv1XZl
-         keA9bPaBizdqyUocB3Oi7qALuC+U/xlQ69xW9AcjH7qT45QqBYPZjCwxClS63W93bQcM
-         d8q0RZMg4yXkv3xL6IQt8wcdoFTUF1s+VjLJxZDb57XQ3gmjrGEiRiybdRnuDCZVpYKs
-         v4p6lj4sZTzTOtM17aHy0BhY/WdQW/StAH8xi28Mcjbn275L1i/bhjAnw0+wFR3Kp+rC
-         OGZ9n4ci8Hcp7a7/z0/bM//PZpcJ/UPU4fAU56rCHwK8TgglCBI5wvWbh4eLy9HjcxLD
-         6r+A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=aQsIra73/x88GR1KtCmaf/z2BjHJdIeNO56pE9+Q+NI=;
-        b=pVLdohAaOhtsmN9CDRu/y0Jqk0iZzDH+RHdDseXvni/7hsBOkFzrw1N/9Ebx2lH1pY
-         HMh2lXGWG7jb9nZDPpDXqPEA1m/kNYHCD3ZqI5y/QSep1RscCcbBROOq+hJWmvl3UhKj
-         sXYhgRXbyfPmHgnIm64GmiCStfBMmwRBCvp/iGPz/cCajYWp/l+d5YSeThwR3JxpSNF/
-         RhMcl7+3Ov+MTkTrdb4yABSBiDHVRn4hu2oGOS6Y4StEJo1H5NuJOmfyZo3g4SuNDWsr
-         6lvYyBtfl4nfPNi6s8aZiSIR36RLPzE/6qyA1KbkW7ePddt9Zw/9TNk7dWDBSyX0AYhv
-         4D8A==
-X-Gm-Message-State: AOAM533UUXEViHI8n/fqz81x+YErEQb0e84dLnxM2TSELA4E0fsSX0NR
-        +hSB5cw+giAudMeZRmFJgJWP7Jo2w/0=
-X-Google-Smtp-Source: ABdhPJyPWKjqw8D/5KJS0JAYGh+25/9nlfyItg5JEhRCrRRvgv0MPmLLD96/grCfeY8Wo/EXshFjGg==
-X-Received: by 2002:a63:6c48:: with SMTP id h69mr9002848pgc.603.1639599895582;
-        Wed, 15 Dec 2021 12:24:55 -0800 (PST)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id c18sm3812049pfl.201.2021.12.15.12.24.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Dec 2021 12:24:55 -0800 (PST)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S235868AbhLOU0Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Dec 2021 15:26:25 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:57324 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231725AbhLOU0Y (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 Dec 2021 15:26:24 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
+        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
+        In-Reply-To:References; bh=O9kFh7ehOUk1/MEm6VfiaQHDfhj5jsuM6K5g6awA2xs=; b=Zd
+        CIt8cleD+O5Pc6obgPlwJ/74fstU+a7274Ya/lCRwbGVVnJmLz7Xwyfvj9ZHwxuklqnnwCkvxPOZD
+        9Ep4R/XPH6rZz1M5Lue+JQb8iaJLkcY4Oo5xpoeBMf++Up5vJaMuRdsCCwBpw0Ati39dyr/eCFP9b
+        JBKGuYPW8NV9SUI=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mxaqq-00GgKQ-1P; Wed, 15 Dec 2021 21:26:12 +0100
+Date:   Wed, 15 Dec 2021 21:26:12 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     JosephCHANG <josright123@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        bcm-kernel-feedback-list@broadcom.com (open list:BROADCOM SYSTEMPORT
-        ETHERNET DRIVER), linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH net] net: systemport: Add global locking for descriptor lifecycle
-Date:   Wed, 15 Dec 2021 12:24:49 -0800
-Message-Id: <20211215202450.4086240-1-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Rob Herring <robh+dt@kernel.org>, joseph_chang@davicom.com.tw,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5, 2/2] net: Add dm9051 driver
+Message-ID: <YbpPZMYfBu2RVvQ5@lunn.ch>
+References: <20211215073507.16776-1-josright123@gmail.com>
+ <20211215073507.16776-3-josright123@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20211215073507.16776-3-josright123@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The descriptor list is a shared resource across all of the transmit queues, and
-the locking mechanism used today only protects concurrency across a given
-transmit queue between the transmit and reclaiming. This creates an opportunity
-for the SYSTEMPORT hardware to work on corrupted descriptors if we have
-multiple producers at once which is the case when using multiple transmit
-queues.
+> +static u8 ior(struct board_info *db, unsigned int reg)
 
-This was particularly noticeable when using multiple flows/transmit queues and
-it showed up in interesting ways in that UDP packets would get a correct UDP
-header checksum being calculated over an incorrect packet length. Similarly TCP
-packets would get an equally correct checksum computed by the hardware over an
-incorrect packet length.
+Can we have some meaningful names please.  And don't forget namespace
+prefix, ideally dm9051_
 
-The SYSTEMPORT hardware maintains an internal descriptor list that it re-arranges
-when the driver produces a new descriptor anytime it writes to the
-WRITE_PORT_{HI,LO} registers, there is however some delay in the hardware to
-re-organize its descriptors and it is possible that concurrent TX queues
-eventually break this internal allocation scheme to the point where the
-length/status part of the descriptor gets used for an incorrect data buffer.
+> +{
+> +	u8 rxb[1];
+> +
+> +	dm9051_xfer(db, DM_SPI_RD | reg, NULL, rxb, 1);
+> +	return rxb[0];
+> +}
+> +
+> +/* chip ID display */
+> +static u8 iior(struct device *dev, struct board_info *db, unsigned int r=
+eg)
 
-The fix is to impose a global serialization for all TX queues in the short
-section where we are writing to the WRITE_PORT_{HI,LO} registers which solves
-the corruption even with multiple concurrent TX queues being used.
+What does the extra i mean?=20
 
-Fixes: 80105befdb4b ("net: systemport: add Broadcom SYSTEMPORT Ethernet MAC driver")
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
----
- drivers/net/ethernet/broadcom/bcmsysport.c | 5 ++++-
- drivers/net/ethernet/broadcom/bcmsysport.h | 1 +
- 2 files changed, 5 insertions(+), 1 deletion(-)
+> +{
+> +	u8 rxdata;
+> +
+> +	rxdata =3D ior(db, reg);
+> +	if (reg =3D=3D DM9051_PIDL || reg =3D=3D DM9051_PIDH)
+> +		dev_dbg(dev, "dm905.MOSI [%02x][..]\n", reg);
+> +	if (reg =3D=3D DM9051_PIDL || reg =3D=3D DM9051_PIDH)
+> +		dev_info(dev, "dm905.MISO [..][%02x]\n", rxdata);
 
-diff --git a/drivers/net/ethernet/broadcom/bcmsysport.c b/drivers/net/ethernet/broadcom/bcmsysport.c
-index 40933bf5a710..60dde29974bf 100644
---- a/drivers/net/ethernet/broadcom/bcmsysport.c
-+++ b/drivers/net/ethernet/broadcom/bcmsysport.c
-@@ -1309,11 +1309,11 @@ static netdev_tx_t bcm_sysport_xmit(struct sk_buff *skb,
- 	struct bcm_sysport_priv *priv = netdev_priv(dev);
- 	struct device *kdev = &priv->pdev->dev;
- 	struct bcm_sysport_tx_ring *ring;
-+	unsigned long flags, desc_flags;
- 	struct bcm_sysport_cb *cb;
- 	struct netdev_queue *txq;
- 	u32 len_status, addr_lo;
- 	unsigned int skb_len;
--	unsigned long flags;
- 	dma_addr_t mapping;
- 	u16 queue;
- 	int ret;
-@@ -1373,8 +1373,10 @@ static netdev_tx_t bcm_sysport_xmit(struct sk_buff *skb,
- 	ring->desc_count--;
- 
- 	/* Ports are latched, so write upper address first */
-+	spin_lock_irqsave(&priv->desc_lock, desc_flags);
- 	tdma_writel(priv, len_status, TDMA_WRITE_PORT_HI(ring->index));
- 	tdma_writel(priv, addr_lo, TDMA_WRITE_PORT_LO(ring->index));
-+	spin_unlock_irqrestore(&priv->desc_lock, desc_flags);
- 
- 	/* Check ring space and update SW control flow */
- 	if (ring->desc_count == 0)
-@@ -2013,6 +2015,7 @@ static int bcm_sysport_open(struct net_device *dev)
- 	}
- 
- 	/* Initialize both hardware and software ring */
-+	spin_lock_init(&priv->desc_lock);
- 	for (i = 0; i < dev->num_tx_queues; i++) {
- 		ret = bcm_sysport_init_tx_ring(priv, i);
- 		if (ret) {
-diff --git a/drivers/net/ethernet/broadcom/bcmsysport.h b/drivers/net/ethernet/broadcom/bcmsysport.h
-index 984f76e74b43..16b73bb9acc7 100644
---- a/drivers/net/ethernet/broadcom/bcmsysport.h
-+++ b/drivers/net/ethernet/broadcom/bcmsysport.h
-@@ -711,6 +711,7 @@ struct bcm_sysport_priv {
- 	int			wol_irq;
- 
- 	/* Transmit rings */
-+	spinlock_t		desc_lock;
- 	struct bcm_sysport_tx_ring *tx_rings;
- 
- 	/* Receive queue */
--- 
-2.25.1
+At appears to be the same condition for both? Is that wrong, or can
+they be combined?
 
+> +	return rxdata;
+> +}
+> +
+> +static void iow(struct board_info *db, unsigned int reg, unsigned int va=
+l)
+> +{
+> +	u8 txb[1];
+> +
+> +	txb[0] =3D val;
+> +	dm9051_xfer(db, DM_SPI_WR | reg, txb, NULL, 1);
+> +}
+> +
+> +static void dm9inblk(struct board_info *db, u8 *buff, unsigned int len)
+
+Please make your namespace prefix uniform. I would suggest dm9051_.
+
+> +static int dm_phy_read_func(struct board_info *db, int reg)
+> +{
+> +	int ret;
+> +	u8 check_val;
+> +
+> +	iow(db, DM9051_EPAR, DM9051_PHY | reg);
+> +	iow(db, DM9051_EPCR, EPCR_ERPRR | EPCR_EPOS);
+> +	read_poll_timeout(ior, check_val, !(check_val & EPCR_ERRE), 100, 10000,
+> +			  true, db, DM9051_EPCR);
+
+read_poll_timeout() return an error code. Don't ignore it.
+
+> +	iow(db, DM9051_EPCR, 0x0);
+> +	ret =3D (ior(db, DM9051_EPDRH) << 8) | ior(db, DM9051_EPDRL);
+> +	return ret;
+> +}
+> +
+> +static void dm_phy_write_func(struct board_info *db, int reg, int value)
+
+The _func does not add anything useful. Please remove them all.
+
+> +{
+> +	u8 check_val;
+> +
+> +	iow(db, DM9051_EPAR, DM9051_PHY | reg);
+> +	iow(db, DM9051_EPDRL, value);
+> +	iow(db, DM9051_EPDRH, value >> 8);
+> +	iow(db, DM9051_EPCR, EPCR_EPOS | EPCR_ERPRW);
+> +	read_poll_timeout(ior, check_val, !(check_val & EPCR_ERRE), 100, 10000,
+> +			  true, db, DM9051_EPCR);
+> +	iow(db, DM9051_EPCR, 0x0);
+> +}
+
+> +
+> +static int dm9051_mdio_read(struct mii_bus *mdiobus, int phy_id_unused, =
+int reg)
+> +{
+> +	struct board_info *db =3D mdiobus->priv;
+> +	int val;
+> +
+> +	mutex_lock(&db->addr_lock);
+> +	val =3D dm_phy_read_func(db, reg);
+> +	mutex_unlock(&db->addr_lock);
+
+When you register the mdiobus, the MDIO core will probe all 32
+addresses on the bus. It looks like you PHY is on address 1. You
+should return 0xffff for all addresses other than 1.
+
+> +
+> +	return val;
+> +}
+> +
+> +static int dm9051_mdio_write(struct mii_bus *mdiobus, int phy_id_unused,=
+ int reg, u16 val)
+> +{
+> +	struct board_info *db =3D mdiobus->priv;
+> +
+> +	mutex_lock(&db->addr_lock);
+> +	dm_phy_write_func(db, reg, val);
+> +	mutex_unlock(&db->addr_lock);
+
+And here you should return -ENODEV for any address other than 1.
+
+> +static void dm9051_fifo_reset(struct board_info *db)
+> +{
+> +	db->bc.DO_FIFO_RST_counter++;
+> +	dm_phy_write_func(db, MII_ADVERTISE, ADVERTISE_PAUSE_CAP |
+> +			  ADVERTISE_ALL | ADVERTISE_CSMA); /* for fcr, essential */
+
+The MAC driver should not be accessing the PHY registers. That is the
+PHY drivers job.
+
+> +	iow(db, DM9051_FCR, FCR_FLOW_ENABLE); /* FlowCtrl */
+> +	iow(db, DM9051_PPCR, PPCR_PAUSE_COUNT); /* Pause Pkt Count */
+> +	iow(db, DM9051_LMCR, db->lcr_all); /* LEDMode1 */
+> +	iow(db, DM9051_INTCR, INTCR_POL_LOW); /* INTCR */
+> +}
+> +
+
+=00> +/* loop rx
+> + */
+> +static int dm9051_lrx(struct board_info *db)
+
+Why not just call the function dm9051_loop_rx() so you don't need the
+comment?
+
+> +/* single tx
+> + */
+> +static int dm9051_stx(struct board_info *db, u8 *buff, unsigned int len)
+
+dm9051_single_tx() ?
+
+The fact you have a comment suggests the function name is not good.
+
+> +{
+> +	int ret;
+> +	u8 check_val;
+> +
+> +	/* shorter waiting time with tx-end check */
+> +	ret =3D read_poll_timeout(ior, check_val, check_val & (NSR_TX2END | NSR=
+_TX1END),
+> +				1, 20, false, db, DM9051_NSR);
+> +	dm9outblk(db, buff, len);
+> +	iow(db, DM9051_TXPLL, len);
+> +	iow(db, DM9051_TXPLH, len >> 8);
+> +	iow(db, DM9051_TCR, TCR_TXREQ);
+
+Does it make sense to perform these writes if the timeout failed?
+
+> +	return ret;
+> +}
+> +
+> +static int dm9051_send(struct board_info *db)
+> +{
+> +	struct net_device *ndev =3D db->ndev;
+> +	int ntx =3D 0;
+> +
+> +	while (!skb_queue_empty(&db->txq)) {
+> +		struct sk_buff *skb;
+> +
+> +		skb =3D skb_dequeue(&db->txq);
+> +		if (skb) {
+> +			ntx++;
+> +			if (dm9051_stx(db, skb->data, skb->len))
+> +				netdev_dbg(ndev, "timeout %d--- WARNING---do-ntx\n", ntx);
+
+You should be returning the error up the call stack.
+
+> +			ndev->stats.tx_bytes +=3D skb->len;
+> +			ndev->stats.tx_packets++;
+> +			dev_kfree_skb(skb);
+> +		}
+> +	}
+> +	return ntx;
+> +}
+> +
+> +/* end with enable the interrupt mask
+> + */
+> +static irqreturn_t dm9051_rx_threaded_irq(int irq, void *pw)
+> +{
+> +	struct board_info *db =3D pw;
+> +	int nrx;
+> +
+> +	mutex_lock(&db->spi_lock); /* dlywork essential */
+
+dlywork?
+
+> +	dm_imr_disable_lock_essential(db); /* set imr disable */
+> +	if (netif_carrier_ok(db->ndev)) {
+> +		mutex_lock(&db->addr_lock);
+> +		do {
+> +			nrx =3D dm9051_lrx(db);
+> +			dm9051_send(db); /* for more performance */
+> +		} while (nrx);
+> +		mutex_unlock(&db->addr_lock);
+> +	}
+> +	dm_imr_enable_lock_essential(db); /* set imr enable */
+> +	mutex_unlock(&db->spi_lock); /* dlywork essential */
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +/* end with enable the interrupt mask
+> + */
+> +static void dm_stopcode_lock(struct board_info *db)
+> +{
+> +	mutex_lock(&db->addr_lock);
+> +
+> +	dm_phy_write_func(db, MII_BMCR, BMCR_RESET); /* PHY RESET */
+
+The PHY driver should do this.
+
+> +	iow(db, DM9051_GPR, 0x01); /* Power-Down PHY */
+> +	iow(db, DM9051_RCR, RCR_RX_DISABLE);	/* Disable RX */
+> +
+> +	mutex_unlock(&db->addr_lock);
+> +}
+> +
+> +/* handle link change
+> + */
+> +static void dm_handle_link_change(struct net_device *ndev)
+> +{
+> +	struct phy_device *phydev =3D ndev->phydev;
+> +	struct board_info *db =3D netdev_priv(ndev);
+
+Don't you need to tell the MAC about the link speed? Duplex?
+
+> +
+> +	phy_print_status(phydev);
+> +
+> +	if (db->link !=3D phydev->link) {
+> +		db->link =3D phydev->link;
+> +		netdev_dbg(ndev, "dm_handle_link link=3D %d\n", phydev->link);
+> +
+> +		if (phydev->link)
+> +			netif_carrier_on(ndev);
+> +		else
+> +			netif_carrier_off(ndev);
+
+phylib will handle the carrier for you.
+
+> +static int dm_phy_connect(struct board_info *db)
+> +{
+> +	char phy_id[MII_BUS_ID_SIZE + 3];
+> +
+> +	snprintf(phy_id, MII_BUS_ID_SIZE + 3, PHY_ID_FMT,
+> +		 db->mdiobus->id, DM9051_PHY_ID);
+> +	db->phydev =3D phy_connect(db->ndev, phy_id, dm_handle_link_change,
+> +				 PHY_INTERFACE_MODE_MII);
+> +
+> +	if (IS_ERR(db->phydev))
+> +		return PTR_ERR(db->phydev);
+> +
+> +	db->phydev->irq =3D PHY_POLL;
+
+Polling is the default, there is no need to set this.
+
+> +	return 0;
+> +}
+> +
+> +static void dm_phy_start(struct board_info *db)
+> +{
+> +	db->link =3D 0;
+
+db->link does not appear to be useless.
+
+> +	phy_start(db->phydev);
+> +	phy_set_asym_pause(db->phydev, true, true);
+
+You should do this before calling start.
+
+But i don't see any code using the results of the autoneg. Does the
+MAC really support pause?
+
+> +static int dm9051_open(struct net_device *ndev)
+> +{
+> +	struct board_info *db =3D netdev_priv(ndev);
+> +	int ret;
+> +
+> +	dm_opencode_lock(ndev, db);
+> +
+> +	skb_queue_head_init(&db->txq);
+> +	netif_start_queue(ndev);
+> +	netif_wake_queue(ndev);
+> +
+> +	ret =3D dm_opencode_receiving(ndev, db);
+> +	if (ret < 0) {
+> +		netdev_err(ndev, "failed to get irq\n");
+
+It makes more sense to put that error inside dm_opencode_receiving()
+where you actually failed to get the interrupt.
+
+> +		return ret;
+> +	}
+> +
+> +	dm_phy_start(db);
+> +	netdev_dbg(ndev, "[dm_open] %pM irq_no %d ACTIVE_LOW\n", ndev->dev_addr=
+, ndev->irq);
+> +	return 0;
+> +}
+> +
+> +static int dm9051_probe(struct spi_device *spi)
+> +{
+> +	struct device *dev =3D &spi->dev;
+> +	struct net_device *ndev;
+> +	struct board_info *db;
+> +	int ret =3D 0;
+
+=2E..
+
+> +
+> +	ret =3D devm_register_netdev(dev, ndev);
+> +	if (ret) {
+> +		dev_err(dev, "failed to register network device\n");
+> +		goto err_netdev;
+> +	}
+> +
+> +	dm_operation_clear(db);
+
+This should probably be before devm_register_netdev() since the device
+can be opened while still inside devm_register_netdev()..
+
+
+> +	return 0;
+> +
+> +err_netdev:
+> +	phy_disconnect(db->phydev);
+> +err_phycnnt:
+> +err_mdiobus:
+> +err_chipid:
+> +	return ret;
+> +}
+
+  Andrew
