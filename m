@@ -2,77 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 98D68475705
-	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 11:57:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E1FB475701
+	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 11:57:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241831AbhLOK5g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Dec 2021 05:57:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57786 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241809AbhLOK5f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Dec 2021 05:57:35 -0500
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EEBAC061574
-        for <netdev@vger.kernel.org>; Wed, 15 Dec 2021 02:57:35 -0800 (PST)
-Received: by mail-yb1-xb2b.google.com with SMTP id 131so54002021ybc.7
-        for <netdev@vger.kernel.org>; Wed, 15 Dec 2021 02:57:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=AIrkD/IobhHZYxHxGbgH3jxyfBz6NWo4YroRSenLJUE=;
-        b=bTTv63Ge/6FRH89M7D86qhkk/pyCDjZIoIBeoUV3DKzSqkzsVNS7z9mXK4/h6OUDQI
-         lLVz6Gw0j4byVy4KyQNKzfrPyc72WrQjruSL7AYfw6JfmYo6IRZUatCPx43Arilfo4HM
-         DiatrggvhKt1R9HK2ZaAtJnN1dAxzndkkq5x2qMxsZ+ssbw3tIOI1itbFf+zg1ie37CE
-         a39rcdDsdQm0un6PMmz1f9zOcDMmCXuWnv2gjEoIsmz5ouIqYLF7B3siGOhLZbc0u7ee
-         blnG2P0pM6cGKBKlOeRwEM9nxderFfs3RYTeTJ4qf4q1CJs2eWHRkE01irm3GQYzF2o0
-         tqrA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=AIrkD/IobhHZYxHxGbgH3jxyfBz6NWo4YroRSenLJUE=;
-        b=W8SHR4YAqQS5SKuBYH687aOZT1Td8NSk87HsW0TXXLYz2phkik1EOeMxDo9McgsaYL
-         VPJGVG9z+K1DCKNPWu/qPNhsXNTTZlP4NoMCN5SBTCt1d9kJ1EcnYaTN3gg+9V3F6YoH
-         TOkn3KDtRfLWqCU+xUcFG2zD9WXQhF3ZWNnPT0bRRSY1ek9aJeukkAUH4wjJr0IulO0e
-         Rb+N+4DHD0Hdkk4ODg+ovyiQPCv8RNWOSufHYarx9djXlHOB4oKQ7jepu62Sjwo+v9Y0
-         wCTmQzqMgKTwwlA6pb3GPs6/XSFgXc3mF0wWREb6b6nxO0eMPXEwulzQ30cIpVB3vMgd
-         p7xg==
-X-Gm-Message-State: AOAM530a4XCtFmVx4CntYLdbL19Hw6Ixc0Khh1rkDwDBme+gUUGzDgqz
-        Z3P3+COWPUy72fgTwxG9sHXgXeKufg8Zb4pUwloagQ==
-X-Google-Smtp-Source: ABdhPJxJOMUSo4Ey+qvovIH8KQHFepe9ugEWNg072zmjsMSsURjykDxmENoqPcZCtk9GINwhiqy3l2oE+uvi6uwqsdk=
-X-Received: by 2002:a25:760d:: with SMTP id r13mr5552778ybc.296.1639565854209;
- Wed, 15 Dec 2021 02:57:34 -0800 (PST)
+        id S241825AbhLOK5Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Dec 2021 05:57:25 -0500
+Received: from smtp-out1.suse.de ([195.135.220.28]:50840 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241809AbhLOK5Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Dec 2021 05:57:24 -0500
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id A86A2212BD;
+        Wed, 15 Dec 2021 10:57:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1639565843; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=71KLsGFyTfHQmtWPtJva/8POSdqz59E3zDHvaoF0bPs=;
+        b=s8379Nmjjoz5PcoEikeXUuWJGPh2bkhTRK5B3RBLYyazCCjPqTd49BJKTooAF3UDIZIQAF
+        2TIQP+P0+YL9og5NXAKSglGy53fGfEpiSb7mrLkwY4g2TkLrVAWd8NIHLfrLCmX/eLtIRP
+        gy+wUXGeCXri1shkoWX8v7bcc0m8fp0=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1639565843;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=71KLsGFyTfHQmtWPtJva/8POSdqz59E3zDHvaoF0bPs=;
+        b=5RgxaosdupGJrj/duuEL79qM0V97LnqnfjHwVa5MKkfs3pakxxk9IOFrMDn/xPyJfz8PB7
+        cJOH6XeV0szWqIBQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 857F813B1C;
+        Wed, 15 Dec 2021 10:57:23 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id R2HWHxPKuWEDAgAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Wed, 15 Dec 2021 10:57:23 +0000
+Message-ID: <45c1b738-1a2f-5b5f-2f6d-86fab206d01c@suse.cz>
+Date:   Wed, 15 Dec 2021 11:57:23 +0100
 MIME-Version: 1.0
-References: <0b6c06487234b0fb52b7a2fbd2237af42f9d11a6.1639560869.git.geert+renesas@glider.be>
- <CANn89iKdorp0Ki0KFf6LAdjtKOm2np=vYY_YtkmJCoGfet1q-g@mail.gmail.com>
- <CAMuHMdWQZA_fS-pr+4wVYtZ6h9Bx4PJ_92qpDNZ2kdjpzj+DHQ@mail.gmail.com>
- <CANn89iJ-uGzpbAhNjT=fGfDYTjpxo335yhKbqUKwSUPOwPZqWw@mail.gmail.com>
- <CAMuHMdUepDEgf9xD6+6qLqKtQH-ptvUf-fP1M=gt5nemitQBsw@mail.gmail.com> <CANn89iJ2HjNqOM=yF0yCi5K8id7XY=nG-yoo-sJsv=ykaSNDnw@mail.gmail.com>
-In-Reply-To: <CANn89iJ2HjNqOM=yF0yCi5K8id7XY=nG-yoo-sJsv=ykaSNDnw@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 15 Dec 2021 02:57:23 -0800
-Message-ID: <CANn89i+rBQr0dCKp6KrO83cFmB-abNSSbxJiDmOVf-gFfiKnwg@mail.gmail.com>
-Subject: Re: [PATCH -next] lib: TEST_REF_TRACKER should depend on REF_TRACKER
- instead of selecting it
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH v3 net-next 01/23] lib: add reference counting tracking
+ infrastructure
+Content-Language: en-US
+To:     Eric Dumazet <edumazet@google.com>,
+        Jiri Slaby <jirislaby@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
         netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Dmitry Vyukov <dvyukov@google.com>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>
+References: <20211205042217.982127-1-eric.dumazet@gmail.com>
+ <20211205042217.982127-2-eric.dumazet@gmail.com>
+ <a6b342b3-8ce1-70c8-8398-fceaee0b51ff@gmail.com>
+ <CANn89iLCaPLhrGi5FyDppfzqdtsow2i6c5+E7pjtd47hwgvpGA@mail.gmail.com>
+ <CANn89iLzZaVObgj-OSG7bT2V8q2AdqUekc2aoiwG7QeRyemNLw@mail.gmail.com>
+From:   Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <CANn89iLzZaVObgj-OSG7bT2V8q2AdqUekc2aoiwG7QeRyemNLw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 15, 2021 at 2:55 AM Eric Dumazet <edumazet@google.com> wrote:
->
 
-> So you say that STACKDEPOT should be user selectable,
-> even if no layer is using it ?
->
-> I based my work on STACKDEPOT, not on EXT4
+On 12/15/21 11:41, Eric Dumazet wrote:
+> On Wed, Dec 15, 2021 at 2:38 AM Eric Dumazet <edumazet@google.com> wrote:
+>>
+>> On Wed, Dec 15, 2021 at 2:18 AM Jiri Slaby <jirislaby@gmail.com> wrote:
+>> >
+>> > On 05. 12. 21, 5:21, Eric Dumazet wrote:
+>> > > From: Eric Dumazet <edumazet@google.com>
+>> > >
+>> > > It can be hard to track where references are taken and released.
+>> > >
+>> > > In networking, we have annoying issues at device or netns dismantles,
+>> > > and we had various proposals to ease root causing them.
+>> > ...
+>> > > --- a/lib/Kconfig
+>> > > +++ b/lib/Kconfig
+>> > > @@ -680,6 +680,11 @@ config STACK_HASH_ORDER
+>> > >        Select the hash size as a power of 2 for the stackdepot hash table.
+>> > >        Choose a lower value to reduce the memory impact.
+>> > >
+>> > > +config REF_TRACKER
+>> > > +     bool
+>> > > +     depends on STACKTRACE_SUPPORT
+>> > > +     select STACKDEPOT
+>> >
+>> > Hi,
+>> >
+>> > I have to:
+>> > +       select STACKDEPOT_ALWAYS_INIT
+>> > here. Otherwise I see this during boot:
+>> >
+>>
+>> Thanks, I am adding Vlastimil Babka to the CC
+>>
+>> This stuff has been added in
+>> commit e88cc9f5e2e7a5d28a1adf12615840fab4cbebfd
+>> Author: Vlastimil Babka <vbabka@suse.cz>
+>> Date:   Tue Dec 14 21:50:42 2021 +0000
+>>
+>>     lib/stackdepot: allow optional init and stack_table allocation by kvmalloc()
+>>
+>>
+> 
+> (This is a problem because this patch is not yet in net-next, so I really do
+> not know how this issue should be handled)
 
-In any case, the patch you sent prevents me from testing the module alone.
+Looks like multiple new users of stackdepot start appearing as soon as I
+touch it :)
 
-So whatever you had in mind, you will have to send another patch.
+The way we solved this with a new DRM user was Andrew adding a fixup to my
+patch referenced above, in his "after-next" section of mm tree.
+Should work here as well.
+
+----8<----
+From 0fa1f25925c05f8c5c4f776913d84904fb4c03a1 Mon Sep 17 00:00:00 2001
+From: Vlastimil Babka <vbabka@suse.cz>
+Date: Wed, 15 Dec 2021 11:52:10 +0100
+Subject: [PATCH] lib/stackdepot: allow optional init and stack_table
+ allocation by kvmalloc() - fixup4
+
+Due to 4e66934eaadc ("lib: add reference counting tracking infrastructure")
+landing recently to net-next adding a new stack depot user in lib/ref_tracker.c
+we need to add an appropriate call to stack_depot_init() there as well.
+
+Signed-off-by: Vlastimil Babka <vbabka@suse.cz>
+---
+ include/linux/ref_tracker.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/include/linux/ref_tracker.h b/include/linux/ref_tracker.h
+index c11c9db5825c..60f3453be23e 100644
+--- a/include/linux/ref_tracker.h
++++ b/include/linux/ref_tracker.h
+@@ -4,6 +4,7 @@
+ #include <linux/refcount.h>
+ #include <linux/types.h>
+ #include <linux/spinlock.h>
++#include <linux/stackdepot.h>
+ 
+ struct ref_tracker;
+ 
+@@ -26,6 +27,7 @@ static inline void ref_tracker_dir_init(struct ref_tracker_dir *dir,
+ 	spin_lock_init(&dir->lock);
+ 	dir->quarantine_avail = quarantine_count;
+ 	refcount_set(&dir->untracked, 1);
++	stack_depot_init();
+ }
+ 
+ void ref_tracker_dir_exit(struct ref_tracker_dir *dir);
+-- 
+2.34.1
+
