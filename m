@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4318447610E
-	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 19:49:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 39730476129
+	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 19:55:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343993AbhLOSty (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Dec 2021 13:49:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55764 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239049AbhLOSty (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Dec 2021 13:49:54 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11A8EC061574;
-        Wed, 15 Dec 2021 10:49:53 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BB84CB820E0;
-        Wed, 15 Dec 2021 18:49:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F3B3C36AE2;
-        Wed, 15 Dec 2021 18:49:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1639594191;
-        bh=6Un467KeQkKW+BO4ptVLniQHArMmndAWZ0Jb/gb0EVg=;
-        h=From:To:Cc:Subject:Date:From;
-        b=eXIde3VCErkqRQnCK0sp3gfaza+/k+chSuBwVsqCEaFqKKyQg9F1KHFgaYQUxVzKL
-         bPpKD0SndzEiANoZk8h0tmobp2dxyRSb4qOWl6EF/QgjWkC5OVDeD8yScGpzqIWQ6O
-         XbNpmPEmM1yWNLC3iVRK+wHqu+fg9xpujMBeKP/b8Rp+hDp/JHghABwKFV368OKDt/
-         ijqKGGFr5Y1hT4rNKdeMpY9U/njmODE5skfy9XengqeCfBC4Z7PeZ8aUe84vSr+kLk
-         vhLtQFSc9uOov+BPqtUfOqkOsWTUQGIiq9EuYv7bmWqHwbVn52eMO7M3Fyc3jAb9rs
-         P24MOhc6mnpfA==
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Leon Romanovsky <leonro@nvidia.com>, linux-rdma@vger.kernel.org,
-        netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>
-Subject: [pull-request] mlx5-next branch 2021-12-15
-Date:   Wed, 15 Dec 2021 10:49:45 -0800
-Message-Id: <20211215184945.185708-1-saeed@kernel.org>
+        id S1344073AbhLOSzO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Dec 2021 13:55:14 -0500
+Received: from mga14.intel.com ([192.55.52.115]:57351 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1344059AbhLOSyz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 Dec 2021 13:54:55 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1639594495; x=1671130495;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=CJ3QIN8qtqTy11dgMk5dEO3fIxZecRujzDJBBE6MpGI=;
+  b=i5W6+v12z4OXqpCq7hBAs7fR2Bqo26P+bUOu/iqyxj1DNwQGgcgY50j3
+   uXAmZyxJiswbcueRtMWWPL4SH0D6BEHJ0YIGTcYkNCBW4axX2CFhhpBhj
+   t8VMVtLc96wvFhnggDGpsFMXlUUxOXF1cw0fK3KU9t5Cf4/8rCsl+HFHJ
+   siuzHUGgiG0JzzVTIJcE9GSuEacKnWBfCQA7ujsCjvWgii9BhNKrVbS0k
+   mh1PGbQ2wF2xe0q0JipkCCE/rbs+5ZSsa5eED/Y12wudrTmiAvd83+87p
+   xlz4A1Ziwv39Tl+1a5EyJTXyzCacKOvOAUUbWXk4JLW4zDInc83IsILz/
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10199"; a="239533292"
+X-IronPort-AV: E=Sophos;i="5.88,207,1635231600"; 
+   d="scan'208";a="239533292"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Dec 2021 10:54:54 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,207,1635231600"; 
+   d="scan'208";a="465729927"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by orsmga006.jf.intel.com with ESMTP; 15 Dec 2021 10:54:53 -0800
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org
+Subject: [PATCH net-next 0/9][pull request] 100GbE Intel Wired LAN Driver Updates 2021-12-15
+Date:   Wed, 15 Dec 2021 10:53:46 -0800
+Message-Id: <20211215185355.3249738-1-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -47,52 +47,63 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Saeed Mahameed <saeedm@nvidia.com>
+This series contains updates to ice driver only.
 
-Hi Dave, Jakub, Jason
+Jake makes changes to flash update. This includes the following:
 
-This pulls mlx5-next branch into net-next and rdma branches.
-All patches already reviewed on both rdma and netdev mailing lists.
+ * a new shadow-ram region similar to NVM region but for the device shadow
+   RAM contents. This is distinct from NVM region because shadow RAM is
+   built up during device init and may be different from the raw NVM flash
+   data.
+ * refactoring of the ice_flash_pldm_image to become the main flash update
+   entry point. This is simpler than having both an
+   ice_devlink_flash_update and an ice_flash_pldm_image. It will make
+   additions like dry-run easier in the future.
+ * reducing time to read Option ROM version information.
+ * adding support for firmware activation via devlink reload, when
+   possible.
 
-Please pull and let me know if there's any problem.
+The major new work is the reload support, which allows activating firmware
+immediately without a reboot when possible. Reload support only supports
+firmware activation.
 
-1) Add multiple FDB steering priorities [1]
-2) Introduce HW bits needed to configure MAC list size of VF/SF.
-   Required for ("net/mlx5: Memory optimizations") upcoming series [2].
+Jesse improves transmit code: utilizing newer netif_tx* API, adding some
+prefetch calls, correcting expected conditions when calling ice_vsi_down(),
+and utilizing __netdev_tx_sent_queue() call.
 
-[1] https://lore.kernel.org/netdev/20211201193621.9129-1-saeed@kernel.org/
-[2] https://lore.kernel.org/lkml/20211208141722.13646-1-shayd@nvidia.com/
+The following are changes since commit 3bc14ea0d12a57a968038f8e86e9bc2c1668ad9a:
+  ethtool: always write dev in ethnl_parse_header_dev_get
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue 100GbE
 
-Thanks,
-Saeed.
+Jacob Keller (5):
+  ice: devlink: add shadow-ram region to snapshot Shadow RAM
+  ice: move and rename ice_check_for_pending_update
+  ice: move ice_devlink_flash_update and merge with ice_flash_pldm_image
+  ice: reduce time to read Option ROM CIVD data
+  ice: support immediate firmware activation via devlink reload
 
-The following changes since commit fa55b7dcdc43c1aa1ba12bca9d2dd4318c2a0dbf:
+Jesse Brandeburg (4):
+  ice: update to newer kernel API
+  ice: use prefetch methods
+  ice: tighter control over VSI_DOWN state
+  ice: use modern kernel API for kick
 
-  Linux 5.16-rc1 (2021-11-14 13:56:52 -0800)
+ Documentation/networking/devlink/ice.rst      |  24 +-
+ drivers/net/ethernet/intel/ice/ice.h          |   2 +
+ .../net/ethernet/intel/ice/ice_adminq_cmd.h   |   7 +
+ drivers/net/ethernet/intel/ice/ice_common.c   |  12 +
+ drivers/net/ethernet/intel/ice/ice_devlink.c  | 202 +++++++++--
+ drivers/net/ethernet/intel/ice/ice_ethtool.c  |   6 +-
+ .../net/ethernet/intel/ice/ice_fw_update.c    | 335 +++++++++++++-----
+ .../net/ethernet/intel/ice/ice_fw_update.h    |   9 +-
+ drivers/net/ethernet/intel/ice/ice_main.c     |  15 +-
+ drivers/net/ethernet/intel/ice/ice_nvm.c      |  67 +++-
+ drivers/net/ethernet/intel/ice/ice_nvm.h      |   2 +-
+ drivers/net/ethernet/intel/ice/ice_txrx.c     |  40 ++-
+ drivers/net/ethernet/intel/ice/ice_type.h     |   4 +
+ 13 files changed, 558 insertions(+), 167 deletions(-)
 
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/mellanox/linux.git mlx5-next
-
-for you to fetch changes up to 685b1afd7911676691c4167f420e16a957f5a38e:
-
-  net/mlx5: Introduce log_max_current_uc_list_wr_supported bit (2021-12-15 10:21:50 -0800)
-
-----------------------------------------------------------------
-Maor Gottlieb (4):
-      net/mlx5: Separate FDB namespace
-      net/mlx5: Refactor mlx5_get_flow_namespace
-      net/mlx5: Create more priorities for FDB bypass namespace
-      RDMA/mlx5: Add support to multiple priorities for FDB rules
-
-Shay Drory (1):
-      net/mlx5: Introduce log_max_current_uc_list_wr_supported bit
-
- drivers/infiniband/hw/mlx5/fs.c                   | 18 +++++++++---------
- drivers/infiniband/hw/mlx5/mlx5_ib.h              |  3 ++-
- drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.c  |  4 +++-
- drivers/net/ethernet/mellanox/mlx5/core/fs_core.c | 76 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++----------------
- include/linux/mlx5/fs.h                           |  1 +
- include/linux/mlx5/mlx5_ifc.h                     |  2 +-
- 6 files changed, 76 insertions(+), 28 deletions(-)
+-- 
+2.31.1
 
