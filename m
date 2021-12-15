@@ -2,220 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A494C475738
-	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 12:01:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 08D1047575E
+	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 12:08:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241927AbhLOLBq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Dec 2021 06:01:46 -0500
-Received: from mail-gv0che01on2122.outbound.protection.outlook.com ([40.107.23.122]:42081
-        "EHLO CHE01-GV0-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S241878AbhLOLBn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 Dec 2021 06:01:43 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=AfglxGkaYOsK7AyrihhF83ix9yy5c/arisHiS1y70eDOvwQgS/Yu4c4GwLltk+Sa+WnKWGC8nbT6VCGPZ/HTy3RQLZt/f/OOGScTyWDKA9KF0FWBEItw2s4SXQZKCJ9v91RgywGBPB6nCIDMZ1xoxtf+I8pv1QfAl5Oe3AHlbAxJsI5isgQ+dcAbRbd9r/dQNWJCg569Rr/fLSHP4EDalTYa8Luyz6Q9PFeQzoruLyKI89Ns0rV5PHIIilCzhr2NNwREMk/0TKRlRXM0mYcYceFLCRx1U332F24gjyOQ/yKZvrrXyLLHSdFRgPCzH6KfFNg6AbJTemS17F7LFA4jug==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mSh/iezWuJLPLZlle81tkR2K98RobqnNuXjQ3U5t/Ag=;
- b=e5x7niVSRUMYiqGXinXSltIddjqyk8JL9cB1ps7e2sXNpdWTye/FbYrMZ/dz8hfuklBZtj765v0GCqHd6dTG+vkPqX9q9m8M/dX+giS739gGHyp6ICgm82AVyXM/ecx4BOdJetyhGImyBnC6yn38Yu8WPbPqFLDRbnToPBTEo6cIsjSqjU6mknNuSWVh0TlLVom8CpRgP/RjerbR53k9PhBzUB87xGoR8nBCKAngfl7jyrwQ4RYE5APebqHTOU0uLBOCXDuWZMP1tf5ZROsoKduQNybASZAykNDkrRTErn4KjAQR0w2PY00EYn24D9Pg3u93WvVPcNs/SfVWxS/51g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=toradex.com; dmarc=pass action=none header.from=toradex.com;
- dkim=pass header.d=toradex.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=toradex.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mSh/iezWuJLPLZlle81tkR2K98RobqnNuXjQ3U5t/Ag=;
- b=M97foljGPl3wfT9g9pfwT7PoEDDbPibCz0TD1nTKeENNNMl20HWz/ysr1W/tunrmlCTCu1yXjjv8lyaMLyFb9WF7GWz91RfiZ0S6l/qkCKTjChg2yEigg33ivaRS6W9Qx0+tV8q4caJj5GLiQH8Z4WgOrG/a8iQ37kL/F7BPKng=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=toradex.com;
-Received: from ZRAP278MB0642.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:3d::11)
- by ZR0P278MB0348.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:37::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4778.16; Wed, 15 Dec
- 2021 11:01:40 +0000
-Received: from ZRAP278MB0642.CHEP278.PROD.OUTLOOK.COM
- ([fe80::d837:7398:e400:25f0]) by ZRAP278MB0642.CHEP278.PROD.OUTLOOK.COM
- ([fe80::d837:7398:e400:25f0%2]) with mapi id 15.20.4778.018; Wed, 15 Dec 2021
- 11:01:40 +0000
-Date:   Wed, 15 Dec 2021 12:01:39 +0100
-From:   Francesco Dolcini <francesco.dolcini@toradex.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        "Russell King (Oracle)" <linux@armlinux.org.uk>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>
-Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
-        Francesco Dolcini <francesco.dolcini@toradex.com>,
-        Philippe Schenker <philippe.schenker@toradex.com>,
-        netdev@vger.kernel.org, Joakim Zhang <qiangqing.zhang@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Fabio Estevam <festevam@gmail.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 3/3] net: fec: reset phy on resume after power-up
-Message-ID: <20211215110139.GA64001@francesco-nb.int.toradex.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <DB8PR04MB679570A356B655A5D6BFE818E6769@DB8PR04MB6795.eurprd04.prod.outlook.com>
- <YbnDc/snmb1WYVCt@shell.armlinux.org.uk>
- <Ybm3NDeq96TSjh+k@lunn.ch>
-X-ClientProxiedBy: AS9PR06CA0216.eurprd06.prod.outlook.com
- (2603:10a6:20b:45e::30) To ZRAP278MB0642.CHEP278.PROD.OUTLOOK.COM
- (2603:10a6:910:3d::11)
+        id S236826AbhLOLIa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Dec 2021 06:08:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60330 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236790AbhLOLI2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Dec 2021 06:08:28 -0500
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7775CC061574
+        for <netdev@vger.kernel.org>; Wed, 15 Dec 2021 03:08:28 -0800 (PST)
+Received: by mail-yb1-xb32.google.com with SMTP id v64so54133027ybi.5
+        for <netdev@vger.kernel.org>; Wed, 15 Dec 2021 03:08:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=A0vP+/wf7tROPM54COWXj5vF8GszBwkxGxw5qfBgKPU=;
+        b=AB+xftGZiEk7z+rq+DSOxL1xuqffrnZpqo3Bqtw/vwKWVCLMWBqHVjFBXWZNTN4e0Q
+         KIRKVQt146GIvEnvUysFH+Vq2bH+uLeGfTdKaaqeChakJAa9xiS2pAEDhdWIP0ab4bj+
+         AWzokV3zO32QvhoNQJ8ET+K72rpmC7pCvzwMYChjLu6aXHpIYGxCdtNbFtodHd1oOmeJ
+         Oh2iGoWDDkg5TJYKA3vv3YNJy2tPb61jGxhlaPYVJf4b7kkUgMjeMsNd7PGJHba0ScwC
+         UkVf4H8Trn60CU0B8MEjp+JwuWjOmAd0Mi0VxxBziOfffn9lYxUYcaLPLgtVpBCsSTmS
+         u48g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=A0vP+/wf7tROPM54COWXj5vF8GszBwkxGxw5qfBgKPU=;
+        b=KLyaIMzzmI+5Q7hAuFTlgGB35tLZP6es9Ihgc9v0cWocwr7aYCY/faHwFhpbtOhJix
+         b5hfFltq9NY4aVnp3phGfDh9/6ZNonuDH2dWR79W7CWfDsadm+zcdVg82oda4aSj8YYg
+         SPIrcpkaLI8omVRz9vknfZpQdBKNY2lXTuSdUETH/eDQoYfiNxE/7eT61qqe/vnHB5ag
+         mrfV8Pm+Re3JFdX7Gx78qrOXet/fFli/eBVDwCu7NqgqboP35EhYm+AVMHkB5dDc0l2L
+         jwIJZAFN5FlyTexvrjU/GSk7NRSpcLjxh1JE1UFKXp+koMTT3f+wIZCWHv7neq1ujhLM
+         O/bw==
+X-Gm-Message-State: AOAM5314p9lns7GPMZUmhRyLAYTHc7V8DROJ3D0O+eSrA8yBzF5a3RBv
+        5jlWXI1LDApqmAtOzwtTXgHgm4uP7U08PHMAi+Hczw==
+X-Google-Smtp-Source: ABdhPJy8YejpFy3uOY9TFh9jJILgF70D/7YLJk7RIDdmvk4UN8+402gWwBI9l8Qlzuv7W1GFUmhvovQK2uB44YjpZMk=
+X-Received: by 2002:a25:df4f:: with SMTP id w76mr5797147ybg.711.1639566507334;
+ Wed, 15 Dec 2021 03:08:27 -0800 (PST)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 17788432-b52b-4c0f-773b-08d9bfba45da
-X-MS-TrafficTypeDiagnostic: ZR0P278MB0348:EE_
-X-Microsoft-Antispam-PRVS: <ZR0P278MB0348E34E9DEC0B526072A83FE2769@ZR0P278MB0348.CHEP278.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: dAh+yRgUPuUshKfbGbOUr9V5CShxzQZd4x4NaDDSlrVmTeSyYuzsBQ9zvBY2Q95cxqyJpt+8vd05iFZYF/T18ssj+UALmR4bp2SkY4/4uA4CPRSqLxO19RIID2/rF2jgeoz4DDPzneP4X8qh4A3U6Mk6niTypQL/mazbRlhxzxV/pslpLGFLmaoYJPi80PbXHQg8whd1db3lyMYN9B3XI7lv2bd/eRgJOos0HqxovlZpafluW8ocDxxXMBQGc21QdYnQv8uUvWxgkru/cN8o9mk91K+QrR6hqLPU9E6464RGJP8P9Nl+Siqc9obkkW1J+CGvajGJHCBCsmLj46bOvOVLxXe4ZyS3Ic6u37j+845I2c5gojRWddb+K61Vni72I16GMNaYitZg/jjAIJADJs7nvxW7HszhG15no+4RLsywzZmgTN7/DYREYwKa6OiKOEU+WKOcwJqcAlP4HUpKvj/3MEcIOfKV9FtB4XIb7vfyYp40NhjOkrZTpM9Z8oY9ZO+yAvS2zGCxqpaZPQrexRRa3dUDICI0atgYFO8GI507AiAwHwelEJrikR9+jMPqHXFWSrQ/cF2ihG7Vwa7fsQM9BKR1mCwSsUGSS9Wl59LWt5k8SrBrbUsplaSiAXIFlAeax0Joq/o3oQkF5Qgven9PrK4AZoQhsgS3pQr2u2pw8KAvAGb0TC1U9gJYPuGytF5AEl3N1B7Yp7PpzPQWqQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:ZRAP278MB0642.CHEP278.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(4636009)(366004)(39840400004)(376002)(396003)(136003)(346002)(6486002)(86362001)(66476007)(54906003)(316002)(33656002)(4326008)(5660300002)(66556008)(110136005)(6512007)(8936002)(44832011)(83380400001)(38100700002)(38350700002)(26005)(52116002)(1076003)(186003)(6506007)(2906002)(8676002)(508600001)(66946007);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?jXmHLV9zglTTwiJhaz0mNzY8Q5Lhh7GVVMjQzrl3FfliHrCvvxccd4nMcYYA?=
- =?us-ascii?Q?gspClqJfc0A+mendeUo16IvyavgUfcrgwgCLKHii8TPczi9F3jO1vy2I/ArO?=
- =?us-ascii?Q?WTrSAOK0MrY7RYD+aqglouqcArwksM34u1olF4kZ7nwD54R/blm8HSqMRhCe?=
- =?us-ascii?Q?WT0Fmp7bbOJ2fi+2U89U9kWYHrmUZbKOPTny/96xu2MeY5TNz/8d4LsWk/2r?=
- =?us-ascii?Q?3+dUmIOpIBGhtYlx9yZgHNMPDgUqnj7gpw9cpkrkffK0LWgYR+s5mPaKLcWe?=
- =?us-ascii?Q?nTd/j9ZDtiq+LYJDiF+L9r1YvCmxNTI8GAaWk1n1lBMsSEtsr0Tkk4VTZkxD?=
- =?us-ascii?Q?ez9AcFGaH/PHhoVzQTTsyHG7VCyyRepRX1d/qK/vMt2ODuv3gk9R+lYR5LvN?=
- =?us-ascii?Q?svGEIxNR/Ncd6LH8LZc6m2izM2oNCDiAb1UZmPgAA8SLB2Xnf2TfyI9L1uIk?=
- =?us-ascii?Q?TsFxntx650ppAVmJUcqMNzXekgYLHvFSJnVvm7dkSj+OUgHq66JXVR55hPBu?=
- =?us-ascii?Q?4PPwu0ti+6bNIUMtEja2wG+DTTuntsl9W84RdL0rQ0Hc/eoYi8Doq4TvLAB9?=
- =?us-ascii?Q?3mqi34CiAv20kgtKsUMTEoG3dYW0hBVl5JViUPlNBpdegmfyDmxsPlgj9+kC?=
- =?us-ascii?Q?quex695Zl5mEHYI26jStPhF2desezrrlBwY/3cGZwZRykuLa1Y5FYn2dUE1q?=
- =?us-ascii?Q?EXlb0bZlfUajjvILLrcFyuz5pvZ6+a8xUC7OEYWtw+5JN7ojFJvOoh7oW1qU?=
- =?us-ascii?Q?JF1Qjgb9573JIoPl3k9bncx0pOxXO0pZOqcYFhV++Lh7oO8AeYtz1hCXYaUd?=
- =?us-ascii?Q?XutZmcRsIl2EPcxpTructdpPF0AscaXyBK2EFTmfmkRDDaBBTQYf113cSYhf?=
- =?us-ascii?Q?6U6l34sXqroOR9PZ83gWLJFVhE8DwQ7qVnfg11mEJ0Mg6GlGQ35AJRBZDCrX?=
- =?us-ascii?Q?h4qQW3o8KUDt+hpC1qQrEn5egXP77A8v0LVEnkxUsjZJBQ7u9RUjbaFTKa/d?=
- =?us-ascii?Q?aIBZjmClLEGwHe1IY3zZtFNGWoY4OYEiO6SFwYWhTAHrslurClmPqT1N2UW+?=
- =?us-ascii?Q?FNGNI//UlIgXii4CnYDcSVnxJD0PxJUS33sMDLuttMcFipESK4ds/qgkNtFW?=
- =?us-ascii?Q?gNxC+rYq4c+1yz9ILQBib0zo9UYo6wUJe5pQbsdjsl/6k4DrJlEcf3v8AbpB?=
- =?us-ascii?Q?ZbVu82LHRCOwsg2USZQgt+As6c/T9GbPZqJf4dhl89dWjvhc/SL/XEL5cWfX?=
- =?us-ascii?Q?1cx3micTXr+sx8ip3Pte8o4V06BSUAv4AJChlDj+kHoXL8MYiiTLdF+Z0uid?=
- =?us-ascii?Q?Ll2SVDQ1FJo0R6TL2H3r4TQ4zo9xKNsrlK/htSIKpxahgfV37BjB1R++BffJ?=
- =?us-ascii?Q?E6zlhOiyjXTU19oxEPrn7j8jx+CBy/qb8uFFoZf+bDD+fdTfK0eX/wm0RHpK?=
- =?us-ascii?Q?h7IyesOqqJ8mbMC5I9khbtb4vmplOseq43KiWxjfvwt8ehNOXpaWW/OHUCbE?=
- =?us-ascii?Q?B2uikLkp/8gIxnfvLaSaSmLble8subdOYAdyXIyoJlyC6ZZW6ovtEyYVroDu?=
- =?us-ascii?Q?9lCCuyoza+xwdr2etf7VonImqClVgO4IXSB+2KyqtV65aHy2gN8eV21rmeEi?=
- =?us-ascii?Q?DO1NfeznxbbWI06/sELQDk0YAfpez30CxRbmrr8u9G0ao0vm1w2hoLQpMoWW?=
- =?us-ascii?Q?9Hlc2cibs+PHaiOsz9lcDVS/r1k=3D?=
-X-OriginatorOrg: toradex.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 17788432-b52b-4c0f-773b-08d9bfba45da
-X-MS-Exchange-CrossTenant-AuthSource: ZRAP278MB0642.CHEP278.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Dec 2021 11:01:40.7170
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: d9995866-0d9b-4251-8315-093f062abab4
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ZwxQdcFhwlyUfTF7AgHvCOJWgZivTVEl9nuJFTwN2Y/PW2AS/EX9xXCZLPF5+nRoSnn+9QgmSRSanIJgheZTqYR81Hx3cc89uUWyhBKFWvo=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: ZR0P278MB0348
+References: <20211205042217.982127-1-eric.dumazet@gmail.com>
+ <20211205042217.982127-2-eric.dumazet@gmail.com> <a6b342b3-8ce1-70c8-8398-fceaee0b51ff@gmail.com>
+ <CANn89iLCaPLhrGi5FyDppfzqdtsow2i6c5+E7pjtd47hwgvpGA@mail.gmail.com>
+ <CANn89iLzZaVObgj-OSG7bT2V8q2AdqUekc2aoiwG7QeRyemNLw@mail.gmail.com> <45c1b738-1a2f-5b5f-2f6d-86fab206d01c@suse.cz>
+In-Reply-To: <45c1b738-1a2f-5b5f-2f6d-86fab206d01c@suse.cz>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 15 Dec 2021 03:08:15 -0800
+Message-ID: <CANn89iK+a5+Y=qCAERMBKAL8WRmZw3UOQiwoerse1cmxbTbFZw@mail.gmail.com>
+Subject: Re: [PATCH v3 net-next 01/23] lib: add reference counting tracking infrastructure
+To:     Vlastimil Babka <vbabka@suse.cz>
+Cc:     Jiri Slaby <jirislaby@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 15, 2021 at 10:36:52AM +0100, Andrew Lunn wrote:
-> On Tue, Dec 14, 2021 at 11:35:48PM +0100, Francesco Dolcini wrote:
-> > Hello Andrew,
-> > 
-> > On Tue, Dec 14, 2021 at 07:54:54PM +0100, Andrew Lunn wrote:
-> > > What i don't particularly like about this is that the MAC driver is
-> > > doing it. Meaning if this PHY is used with any other MAC, the same
-> > > code needs adding there.
-> > This is exactly the same case as phy_reset_after_clk_enable() [1][2], to
-> > me it does not look that bad.
-> > 
-> > > So maybe in the phy driver, add a suspend handler, which asserts the
-> > > reset. This call here will take it out of reset, so applying the reset
-> > > you need?
-> > Asserting the reset in the phylib in suspend path is a bad idea, in the
-> > general case in which the PHY is powered in suspend the
-> > power-consumption is likely to be higher if the device is in reset
-> > compared to software power-down using the BMCR register (at least for
-> > the PHY datasheet I checked).
-> 
-> Maybe i don't understand your hardware.
-> 
-> You have a regulator providing power of the PHY.
-> 
-> You have a reset, i guess a GPIO, connected to the reset pin of the
-> PHY.
-> 
-> What you could do is:
-> 
-> PHY driver suspend handler does a phy_device_reset(ndev->phydev, 1)
-> to put the PHY into reset.
-> 
-> MAC driver disables the regulator.
-> 
-> Power consumption should now be 0, since it does not have any power.
-> 
-> On resume, the MAC enables the regulator. At this point, the PHY gets
-> power, but is still held in reset. It is now consuming power, but not
-> doing anything. The MAC calls phy_hw_init(), which calls
-> phy_device_reset(ndev->phydev, 0), taking the PHY out of reset.
-> 
-> Hopefully, this release from reset is enough to make the PHY work.
-This is all correct and will solve the issue, however ...
+On Wed, Dec 15, 2021 at 2:57 AM Vlastimil Babka <vbabka@suse.cz> wrote:
+>
+>
+> On 12/15/21 11:41, Eric Dumazet wrote:
+> > On Wed, Dec 15, 2021 at 2:38 AM Eric Dumazet <edumazet@google.com> wrote:
+> >>
+> >> On Wed, Dec 15, 2021 at 2:18 AM Jiri Slaby <jirislaby@gmail.com> wrote:
+> >> >
+> >> > On 05. 12. 21, 5:21, Eric Dumazet wrote:
+> >> > > From: Eric Dumazet <edumazet@google.com>
+> >> > >
+> >> > > It can be hard to track where references are taken and released.
+> >> > >
+> >> > > In networking, we have annoying issues at device or netns dismantles,
+> >> > > and we had various proposals to ease root causing them.
+> >> > ...
+> >> > > --- a/lib/Kconfig
+> >> > > +++ b/lib/Kconfig
+> >> > > @@ -680,6 +680,11 @@ config STACK_HASH_ORDER
+> >> > >        Select the hash size as a power of 2 for the stackdepot hash table.
+> >> > >        Choose a lower value to reduce the memory impact.
+> >> > >
+> >> > > +config REF_TRACKER
+> >> > > +     bool
+> >> > > +     depends on STACKTRACE_SUPPORT
+> >> > > +     select STACKDEPOT
+> >> >
+> >> > Hi,
+> >> >
+> >> > I have to:
+> >> > +       select STACKDEPOT_ALWAYS_INIT
+> >> > here. Otherwise I see this during boot:
+> >> >
+> >>
+> >> Thanks, I am adding Vlastimil Babka to the CC
+> >>
+> >> This stuff has been added in
+> >> commit e88cc9f5e2e7a5d28a1adf12615840fab4cbebfd
+> >> Author: Vlastimil Babka <vbabka@suse.cz>
+> >> Date:   Tue Dec 14 21:50:42 2021 +0000
+> >>
+> >>     lib/stackdepot: allow optional init and stack_table allocation by kvmalloc()
+> >>
+> >>
+> >
+> > (This is a problem because this patch is not yet in net-next, so I really do
+> > not know how this issue should be handled)
+>
+> Looks like multiple new users of stackdepot start appearing as soon as I
+> touch it :)
+>
+> The way we solved this with a new DRM user was Andrew adding a fixup to my
+> patch referenced above, in his "after-next" section of mm tree.
+> Should work here as well.
+>
+> ----8<----
+> From 0fa1f25925c05f8c5c4f776913d84904fb4c03a1 Mon Sep 17 00:00:00 2001
+> From: Vlastimil Babka <vbabka@suse.cz>
+> Date: Wed, 15 Dec 2021 11:52:10 +0100
+> Subject: [PATCH] lib/stackdepot: allow optional init and stack_table
+>  allocation by kvmalloc() - fixup4
+>
+> Due to 4e66934eaadc ("lib: add reference counting tracking infrastructure")
+> landing recently to net-next adding a new stack depot user in lib/ref_tracker.c
+> we need to add an appropriate call to stack_depot_init() there as well.
+>
+> Signed-off-by: Vlastimil Babka <vbabka@suse.cz>
+> ---
 
-The problem I see is that nor the phylib nor the PHY driver is aware
-that the PHY was powered down, if we unconditionally assert the reset in
-the suspend callback in the PHY driver/lib this will affect in a bad
-case the most common use case in which we keep the PHY powered in
-suspend.
+I guess this minimal fix will do.
 
-We would have to move the regulator in the PHY driver (phy/micrel.c) to
-do it properly.
+In the future, when net-next (or net tree) has everything in place,
+I will probably un-inline ref_tracker_dir_init() to avoid pulling
+all these includes...
 
-The reason is that the power consumption in reset is higher in reset
-compared to the normal PHY software power down.
-
-This will create a power consumption regression for lot of users.
-
-Doing this into the FEC driver would not have this issue, since we know
-if we have a regulator (I guess you saw my one line patch for it).
-
-
-On Wed, Dec 15, 2021 at 10:29:07AM +0000, Russell King (Oracle) wrote:
-> Here's another question which no one seems to have considered. If the
-> PHY power source can be controlled, why doesn't the firmware describe
-> the power supply for the PHY, and why doesn't the PHY driver control
-> the PHY power source? Why is that in the SoC network driver?
-Legacy/historical reasons ...
-
-In the first RFC patch for this issue this was mentioned by Philippe,
-but than the discussion went into another direction.
-
-As I wrote above if we handle both reset/regulator in the PHY driver it
-should work, just a little bit tricky because phy/micrel.c handle a
-whole family of phys.
-
-
-On Wed, Dec 15, 2021 at 10:25:14AM +0000, Joakim Zhang wrote:
-> As I mentioned before, both mac and phylib have not taken PHY reset
-> into consideration during system suspend/resume scenario. As Andrew
-> suggested, you could move this into phy driver suspend function, this
-> is a corner case. One point I don't understand, why do you reject to
-> assert reset signal during system suspended? 
-See my answer to Andrew above, in short asserting the reset without
-disabling the regulator will create a regression on the power
-consumption.
-
-Any agreement on how to move forward?
-
- 1. add phy_reset_after_power_on() and call it from FEC driver (current
- patchset)
- 2. assert phy reset in FEC driver suspend (one line patch from me in
- this thread)
- 3. move regulator to phy/micrel.c and assert reset in the phy driver resume
- callback
- 4. ?
-
-?
-
-Francesco
-
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Reported-by: Jiri Slab <jirislaby@gmail.com>
