@@ -2,194 +2,266 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 91337475DDB
-	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 17:49:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E77CA475DDE
+	for <lists+netdev@lfdr.de>; Wed, 15 Dec 2021 17:51:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239830AbhLOQsf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Dec 2021 11:48:35 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:49061 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S245004AbhLOQse (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Dec 2021 11:48:34 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1639586913;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=H2PoDojIll4DRKu3kVtyz6pqodV49vpxONM7LsSXB5k=;
-        b=Oje0JIa0tY0AA1HPNDEGEHaA51Kseq5nIcStAjRPORK//juV77S3jTfca+0oHxFNcXNxe0
-        Tb6GxivXupDle8RUEyV2PKycvLUPfxe3anvXtpBnqG4UQ4K3yhODTvpOk8iOa3LgHajDs9
-        4rfvF6yYfn+6XhVQT04eidw7zfVc4Kg=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-131-PxG1MOJJN-aJYPpnE6qwgQ-1; Wed, 15 Dec 2021 11:48:30 -0500
-X-MC-Unique: PxG1MOJJN-aJYPpnE6qwgQ-1
-Received: by mail-wr1-f72.google.com with SMTP id q7-20020adff507000000b0017d160d35a8so6055093wro.4
-        for <netdev@vger.kernel.org>; Wed, 15 Dec 2021 08:48:29 -0800 (PST)
+        id S245000AbhLOQvM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Dec 2021 11:51:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55952 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244928AbhLOQvM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Dec 2021 11:51:12 -0500
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3B81C06173E
+        for <netdev@vger.kernel.org>; Wed, 15 Dec 2021 08:51:11 -0800 (PST)
+Received: by mail-yb1-xb49.google.com with SMTP id w5-20020a25ac05000000b005c55592df4dso44389388ybi.12
+        for <netdev@vger.kernel.org>; Wed, 15 Dec 2021 08:51:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=tSLoCvV83uVNWzNSIKfpbb32NYaHee7L5yjLmgJjO04=;
+        b=OF3LHg69rEr1/589FxdwoGn7zU+F41Hblpa7aO0QfKR5B2atC/HFFiC92HUtQ0jApv
+         XzgBGCjjBaa8ctauGw4rICaURUg3IIcgu+H04B//s1+o/HIQMg7REEh3CdaJUvIra5oW
+         oZwp23um+QuLz3OmeG1TmTf2EoP2dsqaaHaD9n3pjdlEP7r070ta2fDaXOZbUl4LsvWs
+         Dc48nPWYnx4+QL/P50e7+527QyT3FREMENpb6keEaXUNYEsPWMpj1lvHlpu7dYahoWRG
+         UUsCAB1LMkHGMhElsY1GrZxgji3gD720XBrmWei0nhPEDf8fP6k3pBfjxVtt7u7vEOB9
+         ok4w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=H2PoDojIll4DRKu3kVtyz6pqodV49vpxONM7LsSXB5k=;
-        b=44LbC/avlZL08L55WnACAeec/wKG67/smIPS0zO+qMdSowH2UzAX+H8ARtWWPNHM/i
-         PG4EwZwpy66IBEwWFcaYVnBK1IBPlDwQ1cC1jSQghJB4yiI5Wxi9lpaLKC/UB7PLkyso
-         FnySGPfPdi8Q4iaoXHSHw5RvWCKJAGnsUVf6AF1kVySAa6M3De1N44lneb1NtEwou4Ju
-         UNIw06WaVnmkalVC4Vc6GM8ZjeXIlhKcBc7MVxgUJL5Sssl3wmZ+3/ZnupFSeo4FnAtR
-         wkyGQm5AuUZQMUDOLYNI1IrfSDOhe8KQtfeh3wtDCdul5aci/EM/Cz3FJOToN3uxJhYX
-         6Q1A==
-X-Gm-Message-State: AOAM531ugEhGFeL2cyl+XD/EBz/5ANug7ENphrOTOovf3uddOyBrbFbw
-        auhSdviS8UjiwZoSkiTFTHC+zbZzcceEkEAh6WCY4ZW2KSh3Ll8rI3I/gzTZSPQWoBIC99V9yYX
-        uLqmC9B2jKP+9RRvx
-X-Received: by 2002:a7b:c257:: with SMTP id b23mr726977wmj.67.1639586908902;
-        Wed, 15 Dec 2021 08:48:28 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyy7xYyskZfOkYS57Nomzieq7s1f+O4325J51TIRIToPhF9/t/j75EQTIbT+pYD33lhW+6LUw==
-X-Received: by 2002:a7b:c257:: with SMTP id b23mr726946wmj.67.1639586908621;
-        Wed, 15 Dec 2021 08:48:28 -0800 (PST)
-Received: from pc-1.home (2a01cb058d24940001d1c23ad2b4ba61.ipv6.abo.wanadoo.fr. [2a01:cb05:8d24:9400:1d1:c23a:d2b4:ba61])
-        by smtp.gmail.com with ESMTPSA id n1sm3129232wrc.54.2021.12.15.08.48.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Dec 2021 08:48:28 -0800 (PST)
-Date:   Wed, 15 Dec 2021 17:48:26 +0100
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Russell Strong <russell@strong.id.au>
-Subject: Re: [PATCH net-next 0/4] inet: Separate DSCP from ECN bits using new
- dscp_t type
-Message-ID: <20211215164826.GA3426@pc-1.home>
-References: <cover.1638814614.git.gnault@redhat.com>
- <87k0g8yr9w.fsf@toke.dk>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <87k0g8yr9w.fsf@toke.dk>
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=tSLoCvV83uVNWzNSIKfpbb32NYaHee7L5yjLmgJjO04=;
+        b=gjGtceZM1k7J1emAdjRsK6Y3tP0WGYAv/bLsuJwWuOF57fkz7tzSW4oT4R/UfeicDU
+         fLW0LAlmGbWTKepTPQg2Jmr7x6hAYm4Pa8KV92/RQpiEGk958IVbYNIktJj4XT4K6ToO
+         Ym1M6DFVVwXl0kmB/nwd3T0ICm0khj//CWyoVElSCy3ZWqfRcAmQP/vpv2MrRNjezR+w
+         SE1f8rFK93iAtMcpIPtvYKn3jIdxnWQkd0v3gcz5B4pC5ogzc4RodbcyCLn5bhmZ8THC
+         lfmvx7Q54psTPwpnhFsfX51ZVsA2nJIUhY16RxwjenJZEB8VNV92U9RlufhLM6VFTXuh
+         PuhA==
+X-Gm-Message-State: AOAM530ZNWr4LUhoRIgVxfwKCLLb/IWYFoPqB0PL9xEhP1WNESqcnQqF
+        Hx9yQUqjrWJTIDHW7KZaIJRlRlo=
+X-Google-Smtp-Source: ABdhPJytWSFWDftlNCzb6hiGAzk4etWEeuivRs5nb1gmQf263LPVBKP9vqCdudWtGZ2KldkOUE5KSBA=
+X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:201:fc03:a91c:4fe0:3b78])
+ (user=sdf job=sendgmr) by 2002:a25:ae51:: with SMTP id g17mr7450259ybe.738.1639587070923;
+ Wed, 15 Dec 2021 08:51:10 -0800 (PST)
+Date:   Wed, 15 Dec 2021 08:51:08 -0800
+In-Reply-To: <462ce9402621f5e32f08cc8acbf3d9da4d7d69ca.1639579508.git.asml.silence@gmail.com>
+Message-Id: <Yboc/G18R1Vi1eQV@google.com>
+Mime-Version: 1.0
+References: <462ce9402621f5e32f08cc8acbf3d9da4d7d69ca.1639579508.git.asml.silence@gmail.com>
+Subject: Re: [PATCH v3] cgroup/bpf: fast path skb BPF filtering
+From:   sdf@google.com
+To:     Pavel Begunkov <asml.silence@gmail.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 14, 2021 at 01:16:43AM +0100, Toke Høiland-Jørgensen wrote:
-> Guillaume Nault <gnault@redhat.com> writes:
-> 
-> > Following my talk at LPC 2021 [1], here's a patch series whose
-> > objective is to start fixing the problems with how DSCP and ECN bits
-> > are handled in the kernel. This approach seemed to make consensus among
-> > the participants, although it implies a few behaviour changes for some
-> > corner cases of ip rule and ip route. Let's see if this consensus can
-> > survive a wider review :).
-> 
-> I like the approach, although I must admit to not being too familiar
-> with the parts of the code you're touching in this series. But I think
-> the typedefs make sense, and I (still) think it's a good idea to do the
-> conversion. I think the main thing to ensure from a backwards
-> compatibility PoV is that we don't silently change behaviour in a way
-> that is hard to detect. I.e., rejecting invalid configuration is fine
-> even if it was "allowed" before, but, say, changing the matching
-> behaviour so an existing rule set will still run unchanged but behave
-> differently is best avoided.
-> 
-> > Note, this patch series differs slightly from that of the original talk
-> > (slide 14 [2]). For the talk, I just cleared the ECN bits, while in
-> > this series, I do a bit-shift. This way dscp_t really represents DSCP
-> > values, as defined in RFCs. Also I've renamed the helper functions to
-> > replace "u8" by "dsfield", as I felt "u8" was ambiguous. Using
-> > "dsfield" makes it clear that dscp_t to u8 conversion isn't just a
-> > plain cast, but that a bit-shift happens and the result has the two ECN
-> > bits.
-> 
-> I like the names, but why do the bitshift? I get that it's conceptually
-> "cleaner", but AFAICT the shifted values are not actually used for
-> anything other than being shifted back again? In which case you're just
-> adding operations in the fast path for no reason...
+On 12/15, Pavel Begunkov wrote:
+> Add per socket fast path for not enabled BPF skb filtering, which sheds
+> a nice chunk of send/recv overhead when affected. Testing udp with 128
+> byte payload and/or zerocopy with any payload size showed 2-3%
+> improvement in requests/s on the tx side using fast NICs across network,
+> and around 4% for dummy device. Same goes for rx, not measured, but
+> numbers should be relatable.
+> In my understanding, this should affect a good share of machines, and at
+> least it includes my laptops and some checked servers.
 
-That's right, the value is always shifted back again because all
-current APIs work with the full dsfield (well all the ones I'm aware of
-at least).
+> The core of the problem is that even though there is
+> cgroup_bpf_enabled_key guarding from __cgroup_bpf_run_filter_skb()
+> overhead, there are cases where we have several cgroups and loading a
+> BPF program to one also makes all others to go through the slow path
+> even when they don't have any BPF attached. It's even worse, because
+> apparently systemd or some other early init loads some BPF and so
+> triggers exactly this situation for normal networking.
 
-I switched to a bit shift when I tried writing down what dscp_t
-was representing: I found it a bit clumsy to explain that it actually
-wasn't exactly the DSCP. Also I didn't expect the bit shift to have any
-mesurable impact.
+> Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
+> ---
 
-Anyway, I don't mind reverting to a simple bit mask.
+> v2: replace bitmask appoach with empty_prog_array (suggested by Martin)
+> v3: add "bpf_" prefix to empty_prog_array (Martin)
 
-> > The new dscp_t type is then used to convert several field members:
-> >
-> >   * Patch 1 converts the tclass field of struct fib6_rule. It
-> >     effectively forbids the use of ECN bits in the tos/dsfield option
-> >     of ip -6 rule. Rules now match packets solely based on their DSCP
-> >     bits, so ECN doesn't influence the result anymore. This contrasts
-> >     with previous behaviour where all 8 bits of the Traffic Class field
-> >     was used. It is believed this change is acceptable as matching ECN
-> >     bits wasn't usable for IPv4, so only IPv6-only deployments could be
-> >     depending on it (that is, it's unlikely enough that a someone uses
-> >     ip6 rules matching ECN bits in production).
-> 
-> I think this is OK, cf the "break explicitly" thing I wrote above.
-> 
-> >   * Patch 2 converts the tos field of struct fib4_rule. This one too
-> >     effectively forbids defining ECN bits, this time in ip -4 rule.
-> >     Before that, setting ECN bit 1 was accepted, while ECN bit 0 was
-> >     rejected. But even when accepted, the rule wouldn't match as the
-> >     packets would normally have their ECN bits cleared while doing the
-> >     rule lookup.
-> 
-> As above.
-> 
-> >   * Patch 3 converts the fc_tos field of struct fib_config. This is
-> >     like patch 2, but for ip4 routes. Routes using a tos/dsfield option
-> >     with any ECN bit set is now rejected. Before this patch, they were
-> >     accepted but, as with ip4 rules, these routes couldn't match any
-> >     real packet, since callers were supposed to clear their ECN bits
-> >     beforehand.
-> 
-> Didn't work at all, so also fine.
-> 
-> >   * Patch 4 converts the fa_tos field of struct fib_alias. This one is
-> >     pure internal u8 to dscp_t conversion. While patches 1-3 dealed
-> >     with user facing consequences, this patch shouldn't have any side
-> >     effect and is just there to give an overview of what such
-> >     conversion patches will look like. These are quite mechanical, but
-> >     imply some code churn.
-> 
-> This is reasonable, and I think the code churn is worth the extra
-> clarity.
+>   include/linux/bpf-cgroup.h | 24 +++++++++++++++++++++---
+>   include/linux/bpf.h        | 13 +++++++++++++
+>   kernel/bpf/cgroup.c        | 18 ++----------------
+>   kernel/bpf/core.c          | 16 ++++------------
+>   4 files changed, 40 insertions(+), 31 deletions(-)
 
-Thanks for these feedbacks. These are the main points I wanted to
-discuss with this RFC.
+> diff --git a/include/linux/bpf-cgroup.h b/include/linux/bpf-cgroup.h
+> index 11820a430d6c..c6dacdbdf565 100644
+> --- a/include/linux/bpf-cgroup.h
+> +++ b/include/linux/bpf-cgroup.h
+> @@ -219,11 +219,28 @@ int bpf_percpu_cgroup_storage_copy(struct bpf_map  
+> *map, void *key, void *value);
+>   int bpf_percpu_cgroup_storage_update(struct bpf_map *map, void *key,
+>   				     void *value, u64 flags);
 
-> You should probably spell out in the commit message that it's
-> not intended to change behaviour, though.
+> +static inline bool
+> +__cgroup_bpf_prog_array_is_empty(struct cgroup_bpf *cgrp_bpf,
+> +				 enum cgroup_bpf_attach_type type)
+> +{
+> +	struct bpf_prog_array *array =  
+> rcu_access_pointer(cgrp_bpf->effective[type]);
+> +
+> +	return array == &bpf_empty_prog_array.hdr;
+> +}
+> +
+> +#define CGROUP_BPF_TYPE_ENABLED(sk, atype)				       \
+> +({									       \
+> +	struct cgroup *__cgrp = sock_cgroup_ptr(&(sk)->sk_cgrp_data);	       \
+> +									       \
+> +	!__cgroup_bpf_prog_array_is_empty(&__cgrp->bpf, (atype));	       \
+> +})
+> +
+>   /* Wrappers for __cgroup_bpf_run_filter_skb() guarded by  
+> cgroup_bpf_enabled. */
+>   #define BPF_CGROUP_RUN_PROG_INET_INGRESS(sk, skb)			      \
+>   ({									      \
+>   	int __ret = 0;							      \
+> -	if (cgroup_bpf_enabled(CGROUP_INET_INGRESS))		      \
+> +	if (cgroup_bpf_enabled(CGROUP_INET_INGRESS) && sk &&		      \
+> +	    CGROUP_BPF_TYPE_ENABLED((sk), CGROUP_INET_INGRESS)) 	      \
 
-Will do.
+Why not add this __cgroup_bpf_run_filter_skb check to
+__cgroup_bpf_run_filter_skb? Result of sock_cgroup_ptr() is already there
+and you can use it. Maybe move the things around if you want
+it to happen earlier.
 
-> > Note that there's no equivalent of patch 3 for IPv6 (ip route), since
-> > the tos/dsfield option is silently ignored for IPv6 routes.
-> 
-> Shouldn't we just start rejecting them, like for v4?
+>   		__ret = __cgroup_bpf_run_filter_skb(sk, skb,		      \
+>   						    CGROUP_INET_INGRESS); \
+>   									      \
+> @@ -235,9 +252,10 @@ int bpf_percpu_cgroup_storage_update(struct bpf_map  
+> *map, void *key,
+>   	int __ret = 0;							       \
+>   	if (cgroup_bpf_enabled(CGROUP_INET_EGRESS) && sk && sk == skb->sk) { \
+>   		typeof(sk) __sk = sk_to_full_sk(sk);			       \
+> -		if (sk_fullsock(__sk))					       \
+> +		if (sk_fullsock(__sk) &&				       \
+> +		    CGROUP_BPF_TYPE_ENABLED(__sk, CGROUP_INET_EGRESS))	       \
+>   			__ret = __cgroup_bpf_run_filter_skb(__sk, skb,	       \
+> -						      CGROUP_INET_EGRESS); \
+> +						      CGROUP_INET_EGRESS);     \
+>   	}								       \
+>   	__ret;								       \
+>   })
+> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> index e7a163a3146b..0d2195c6fb2a 100644
+> --- a/include/linux/bpf.h
+> +++ b/include/linux/bpf.h
+> @@ -1161,6 +1161,19 @@ struct bpf_prog_array {
+>   	struct bpf_prog_array_item items[];
+>   };
 
-I had some thoughs about that, but didn't talk about them in the cover
-letter since I felt there was already enough edge cases to discuss, and
-this one wasn't directly related to this series (the problem is there
-regardless of this RFC).
+> +struct bpf_empty_prog_array {
+> +	struct bpf_prog_array hdr;
+> +	struct bpf_prog *null_prog;
+> +};
+> +
+> +/* to avoid allocating empty bpf_prog_array for cgroups that
+> + * don't have bpf program attached use one global 'bpf_empty_prog_array'
+> + * It will not be modified the caller of bpf_prog_array_alloc()
+> + * (since caller requested prog_cnt == 0)
+> + * that pointer should be 'freed' by bpf_prog_array_free()
+> + */
+> +extern struct bpf_empty_prog_array bpf_empty_prog_array;
+> +
+>   struct bpf_prog_array *bpf_prog_array_alloc(u32 prog_cnt, gfp_t flags);
+>   void bpf_prog_array_free(struct bpf_prog_array *progs);
+>   int bpf_prog_array_length(struct bpf_prog_array *progs);
+> diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
+> index 43eb3501721b..99e85f44e257 100644
+> --- a/kernel/bpf/cgroup.c
+> +++ b/kernel/bpf/cgroup.c
+> @@ -1354,20 +1354,6 @@ int __cgroup_bpf_run_filter_sysctl(struct  
+> ctl_table_header *head,
+>   }
 
-So, on the one hand, we have this old policy of ignoring unknown
-netlink attributes, so it looks consistent to also ignore unused
-structure fields.
+>   #ifdef CONFIG_NET
+> -static bool __cgroup_bpf_prog_array_is_empty(struct cgroup *cgrp,
+> -					     enum cgroup_bpf_attach_type attach_type)
+> -{
+> -	struct bpf_prog_array *prog_array;
+> -	bool empty;
+> -
+> -	rcu_read_lock();
+> -	prog_array = rcu_dereference(cgrp->bpf.effective[attach_type]);
+> -	empty = bpf_prog_array_is_empty(prog_array);
+> -	rcu_read_unlock();
+> -
+> -	return empty;
+> -}
+> -
+>   static int sockopt_alloc_buf(struct bpf_sockopt_kern *ctx, int  
+> max_optlen,
+>   			     struct bpf_sockopt_buf *buf)
+>   {
+> @@ -1430,7 +1416,7 @@ int __cgroup_bpf_run_filter_setsockopt(struct sock  
+> *sk, int *level,
+>   	 * attached to the hook so we don't waste time allocating
+>   	 * memory and locking the socket.
+>   	 */
+> -	if (__cgroup_bpf_prog_array_is_empty(cgrp, CGROUP_SETSOCKOPT))
+> +	if (__cgroup_bpf_prog_array_is_empty(&cgrp->bpf, CGROUP_SETSOCKOPT))
+>   		return 0;
 
-On the other hand, ignoring rtm_tos leads to a different behaviour than
-what was requested. So it certainly makes sense to at least warn the
-user. But a hard fail may break existing programs that don't clear
-rtm_tos by mistake.
+>   	/* Allocate a bit more than the initial user buffer for
+> @@ -1526,7 +1512,7 @@ int __cgroup_bpf_run_filter_getsockopt(struct sock  
+> *sk, int level,
+>   	 * attached to the hook so we don't waste time allocating
+>   	 * memory and locking the socket.
+>   	 */
+> -	if (__cgroup_bpf_prog_array_is_empty(cgrp, CGROUP_GETSOCKOPT))
+> +	if (__cgroup_bpf_prog_array_is_empty(&cgrp->bpf, CGROUP_GETSOCKOPT))
+>   		return retval;
 
-I'm not too sure which approach is better.
+>   	ctx.optlen = max_optlen;
+> diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+> index 2405e39d800f..fa76d1d839ad 100644
+> --- a/kernel/bpf/core.c
+> +++ b/kernel/bpf/core.c
+> @@ -1967,18 +1967,10 @@ static struct bpf_prog_dummy {
+>   	},
+>   };
 
-> -Toke
-> 
+> -/* to avoid allocating empty bpf_prog_array for cgroups that
+> - * don't have bpf program attached use one global 'empty_prog_array'
+> - * It will not be modified the caller of bpf_prog_array_alloc()
+> - * (since caller requested prog_cnt == 0)
+> - * that pointer should be 'freed' by bpf_prog_array_free()
+> - */
+> -static struct {
+> -	struct bpf_prog_array hdr;
+> -	struct bpf_prog *null_prog;
+> -} empty_prog_array = {
+> +struct bpf_empty_prog_array bpf_empty_prog_array = {
+>   	.null_prog = NULL,
+>   };
+> +EXPORT_SYMBOL(bpf_empty_prog_array);
+
+>   struct bpf_prog_array *bpf_prog_array_alloc(u32 prog_cnt, gfp_t flags)
+>   {
+> @@ -1988,12 +1980,12 @@ struct bpf_prog_array *bpf_prog_array_alloc(u32  
+> prog_cnt, gfp_t flags)
+>   			       (prog_cnt + 1),
+>   			       flags);
+
+> -	return &empty_prog_array.hdr;
+> +	return &bpf_empty_prog_array.hdr;
+>   }
+
+>   void bpf_prog_array_free(struct bpf_prog_array *progs)
+>   {
+> -	if (!progs || progs == &empty_prog_array.hdr)
+> +	if (!progs || progs == &bpf_empty_prog_array.hdr)
+>   		return;
+>   	kfree_rcu(progs, rcu);
+>   }
+> --
+> 2.34.0
 
