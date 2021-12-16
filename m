@@ -2,311 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FB56477041
-	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 12:30:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB483477045
+	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 12:31:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234051AbhLPLaC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Dec 2021 06:30:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57244 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233866AbhLPLaB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 06:30:01 -0500
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03548C061574
-        for <netdev@vger.kernel.org>; Thu, 16 Dec 2021 03:30:01 -0800 (PST)
-Received: by mail-ed1-x530.google.com with SMTP id y13so85595772edd.13
-        for <netdev@vger.kernel.org>; Thu, 16 Dec 2021 03:30:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=rTEeFptWA6LaRM68h66sJhoA9kf1WW6Xz7GGCTbIjcY=;
-        b=PI9ceE7baEBsz5WAv72M9+SySbTNfZohD9n1b/njvITOhc5ZFggNMHrpudaNLtDvFd
-         Rui88p5PgPSWfCj43BvWKKI2CuWUZeu1fbObfvta9EZHlkoom1MxQy3kpL7hCfQIBfIN
-         i4h+JrLbZBQLplGfQ1O8teIXjeYhAYlFiQjFYMgc8XtOAjIyIbTH52AG94bUTQRyM8Bq
-         bXWnLEpetTJOovZiYjAf8IHk2g3BZTlFvOGjL74zK2XE6kRcdMeN7qje9MJ3UQc0Fd7O
-         us+pRl0FbFOCQRIza+n+51VmyEcwrVpiNItCOkGPSD0+xhPLIv0J++Ud/fxEYBErCco9
-         taQg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rTEeFptWA6LaRM68h66sJhoA9kf1WW6Xz7GGCTbIjcY=;
-        b=eVQ59iHQt/6S9lh2iR256hpoJpF5Dx3Lsztefiiwl7tWyC2LP4qfwg5SI8+pd9kAOH
-         bE7r1JutLuGP8S5ZGcAjQn2vzlfcrtGqN42hTjOxPnkoH7U4NfoSMafufYlDwfcJKTz2
-         5Q6CzTzJ35zkIfLU6cv9Db42NKWdBzP7DNS8uimEdmiDTryRI9Rvjx26IBtOy+HBo26K
-         G2vxf26yfhYZxmDykHn2BU68JRsom59aTPJsedI8pXaPd/ww0VGu6XDvZvtqpVRoOaOe
-         5swepyKO/pzfjFVgXej9Dr9H9DEr/YaHeQsKhhgS9nOjVjVKB3gNBbi+Fflmc+MHcZK+
-         5NDg==
-X-Gm-Message-State: AOAM530hLJyiyiobfVPI4J6JloXBDq8Jbf5++MPxiUv9qQoYssUmdhEV
-        XaRm2rZw9re+q4Gzhc6Re6//3LB5mnZeAPpdC5M=
-X-Google-Smtp-Source: ABdhPJyBcA7xNlVQkmTEuCDXidirs2Y97YdcIfDu7w68EAgTHCKmD3f43yzDoo88EvP0FLITejXWoxlPCVgyEqkeGyM=
-X-Received: by 2002:a17:907:2d8c:: with SMTP id gt12mr15475963ejc.61.1639654199565;
- Thu, 16 Dec 2021 03:29:59 -0800 (PST)
+        id S236768AbhLPLbI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Dec 2021 06:31:08 -0500
+Received: from mail-zr0che01on2116.outbound.protection.outlook.com ([40.107.24.116]:62688
+        "EHLO CHE01-ZR0-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229996AbhLPLbH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Dec 2021 06:31:07 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dzDJXWWqr1zyX20kNd3tiMBNwCzKh4jNKww/tc40ZoNqk2KaztgIR+dXR9FKmRwV8pcyd4F6QKlA4rKikcAtSXduOkSLFwi0H1jF6jC1UZ+5YmEEnByGBb6DSW/AsXp1FvI8ACHL7woKayzC7v675ORVa3RPk5Dan7i7N/V0Iw4vE8SOj2DtwejiNYmiz8w2noEBBxQRimMnGc66G2xcqwBYolLcI1BXFZiAOyXjWPpQ55bfO5kRB/NsNlNJH7dqEpDw180lTf96qkVC8W8jUPXwLyqd97e+c7QGya2+gTpbZv6xICbBuQmDndOIql7akxi1BT5MBJn61s/vShNmyw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=4o80wvUBKcgbYzLp+0GZ720X97Yhtr28NPdigoyrWbE=;
+ b=l5SzmZK6MRDvhREQlL0Aiw852EcgsNCD0I+dkhlvmG38YGJ7G/K4oU19PVFLe+MvWAd2jjCx6DaPMgwcNFT+pNlD37+J3kwh5AlswMXAS15HxNTU/x6HT4AGVM3NnG8oqjMrzMoYXw5bobd49HTsZ2rm1XfEXw8cp/rcl/tKlAB/goHPlh+xV+njpOTWwZN8MRJ2DRO/Zg876CVct7z+aIdRT59RDcn/Vo16MQ4PgA9w6XwomDrze9zFGqR+lWIA5pf3elDIu+vFlUxqDozK67ICyUmf5k7ngs/MNbZkfhRmcmvU1ykCAROErfMwGOpi4YZ7QHkzQKbgi4Sp/qoT9w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=toradex.com; dmarc=pass action=none header.from=toradex.com;
+ dkim=pass header.d=toradex.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=toradex.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=4o80wvUBKcgbYzLp+0GZ720X97Yhtr28NPdigoyrWbE=;
+ b=H2ARqK3+SwkO+rzvDoUPwt6O2neNNJgiVYaRaktrCuLn/TCBDYzvYMgRgaA6zHM6rtjI7bnmH9FrP04CKhiAvBdD92L1ltTynnPPLPOXz0FL0/yWxXweMK519sRDvI9b0mJPW7FU/UwhRxSfXXspQfDz4X3d7P7wxYZrwmmpCOI=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=toradex.com;
+Received: from ZRAP278MB0642.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:3d::11)
+ by ZR0P278MB0123.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:19::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4801.14; Thu, 16 Dec
+ 2021 11:31:05 +0000
+Received: from ZRAP278MB0642.CHEP278.PROD.OUTLOOK.COM
+ ([fe80::d837:7398:e400:25f0]) by ZRAP278MB0642.CHEP278.PROD.OUTLOOK.COM
+ ([fe80::d837:7398:e400:25f0%2]) with mapi id 15.20.4801.014; Thu, 16 Dec 2021
+ 11:31:05 +0000
+Date:   Thu, 16 Dec 2021 12:31:04 +0100
+From:   Francesco Dolcini <francesco.dolcini@toradex.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Francesco Dolcini <francesco.dolcini@toradex.com>,
+        "Russell King (Oracle)" <linux@armlinux.org.uk>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Philippe Schenker <philippe.schenker@toradex.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Fabio Estevam <festevam@gmail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next 3/3] net: fec: reset phy on resume after power-up
+Message-ID: <20211216113104.GC4190@francesco-nb.int.toradex.com>
+References: <DB8PR04MB679570A356B655A5D6BFE818E6769@DB8PR04MB6795.eurprd04.prod.outlook.com>
+ <YbnDc/snmb1WYVCt@shell.armlinux.org.uk>
+ <Ybm3NDeq96TSjh+k@lunn.ch>
+ <20211215110139.GA64001@francesco-nb.int.toradex.com>
+ <DB8PR04MB67951CB5217193E4CBF73B26E6779@DB8PR04MB6795.eurprd04.prod.outlook.com>
+ <20211216075216.GA4190@francesco-nb.int.toradex.com>
+ <YbsT2G5oMoe4baCJ@lunn.ch>
+ <20211216112433.GB4190@francesco-nb.int.toradex.com>
+ <Ybsi00/CAd7oVl17@lunn.ch>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Ybsi00/CAd7oVl17@lunn.ch>
+X-ClientProxiedBy: GV0P278CA0007.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:710:26::17) To ZRAP278MB0642.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:910:3d::11)
 MIME-Version: 1.0
-References: <20211210023626.20905-1-xiangxia.m.yue@gmail.com>
- <20211210023626.20905-3-xiangxia.m.yue@gmail.com> <20211215075256.33adf3ee@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211215075256.33adf3ee@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Date:   Thu, 16 Dec 2021 19:29:23 +0800
-Message-ID: <CAMDZJNX7SDuPW7HvgiR_QVGRFz4+h8JMkvzRPXKd9uscgnc+sQ@mail.gmail.com>
-Subject: Re: [net-next v3 2/2] net: sched: support hash/classid/cpuid
- selecting tx queue
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Talal Ahmad <talalahmad@google.com>,
-        Kevin Hao <haokexin@gmail.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Kees Cook <keescook@chromium.org>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        Wei Wang <weiwan@google.com>, Arnd Bergmann <arnd@arndb.de>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: e374c254-b4af-427d-8b6a-08d9c0878bd8
+X-MS-TrafficTypeDiagnostic: ZR0P278MB0123:EE_
+X-Microsoft-Antispam-PRVS: <ZR0P278MB0123A5F2737F5AFC85520B99E2779@ZR0P278MB0123.CHEP278.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5516;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: gDrG6zNTj8UiNsDn2dKh03/QW8vzjhMmQbqvrlw4W8FeI9HkN5fy31TJdTRHV0NM1mA67hdguzMbBSU1AgXUkuS0FsYkKQ8hcINme5T21zAxX5TKP6VV+9STCMijuQo7fDX+rMHFlDdEVuLXDwLASVFtpvYVWokEIWR831OBLoXz6aLOeWvG4ItdE2RqOC/SExmFSpdAFExRJJJbRH3MjdSkOBnWKn7uT6IbA+BTEa4rrTLuWsSuksvYhR/hRZ79V7ira50BUCWiredw+gxFzdRm+myJiDE7Oc+3twN8pMeugWDxmnKI4gK0+ru6CfdPpdO8ENSWQLx6sRHKrgJJF/CtQq5Z1aj/ee8Pq8bvdC3sktEdH4zUoPET96AsHfXv1tiRVXMfMvJeo0iNoMQoFzruB5qhYSMQ8qcAGBFVaFaMm+5bChaHlR44k+88W1y1vRQBa7+KfbC2P04lf4tP2188T1vl37sBu/ipFgjkUmRZQMmOrIkA78UNvX7wqyud8e0kRWmgQLiVg0NRdLY9R+7y3r2WfhdD/7NEW2hOKuN+jOW8tSDbT600cUw8o5zOUrNNlUi+ZmrLPp7FT7CmihN20/e1RjW8oJpWB6hRuSrq6Fvs6RprIfcPIq5F2Tl7qha8EWL3iXrEGn2oV+SSkwXSL+KgMbi6DIS0ZQzHbUh1TOaIT4UloeYXZzu6sR4e1gh8FJZrGy8jPF3iaZF90Q==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:ZRAP278MB0642.CHEP278.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(4636009)(376002)(366004)(136003)(39850400004)(396003)(346002)(316002)(66946007)(26005)(33656002)(54906003)(6486002)(52116002)(8676002)(8936002)(186003)(66556008)(6512007)(66476007)(38350700002)(38100700002)(44832011)(6506007)(2906002)(4744005)(1076003)(508600001)(4326008)(5660300002)(6916009)(86362001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?jq5G2oCWo8vrh8dVuhu7GMlmPCWgdvib6P3mia7ifeDEeSBeDCwx7zdCmjnc?=
+ =?us-ascii?Q?sPFBXVHimbDpKlSnsijdXBdgX/NMcQff3lnIaN1Io9df8G1TvwX4ZXU+Rvq/?=
+ =?us-ascii?Q?endumYAL3AglrCaFSPxQ8WLOkIAdjE+wRb4GzdCQR0rOKsm5ZZrqoiC3t4Eg?=
+ =?us-ascii?Q?U4jIzBAnQlgi3aJfIWT85edRojySEh6JsD/+1+UUN2uv/d7oW/Tl1m2yuNOs?=
+ =?us-ascii?Q?vThCzUsJ/WvCiRImeQ/PKh5F/PnIEthzL1WuA7QWYUYDQJa1m0UGnGU2jLVS?=
+ =?us-ascii?Q?iSQ6jtjjkTqdoPHU2wrNn+bOi47d07qcOoEp26PgGTqORXUvA2GQbmfM2sWq?=
+ =?us-ascii?Q?Q5HdXKrD1lWWsBhkad2htdWoMVazLm7yNfx07JqByQ/5PtIdNz77UCsDF3Sx?=
+ =?us-ascii?Q?O1PExl2L4i7U9bvcxQ0BqdeiRU3l4k+u5T4xjtiBOVPDmwQigpGWPSWRPSzA?=
+ =?us-ascii?Q?3Vg8eG4uK/tYd7SQfAakCk1VNSb8Y+OF5T8Kl1bc/8tXkuWDlWhpt1MZRW1p?=
+ =?us-ascii?Q?xllh/C83jPSV/1BSZN2lx0PBBLbfm/1i9HNlamaQ3zZpMsbCoPPOF4hmRp+s?=
+ =?us-ascii?Q?tmXFyC88T+5XkNVYfkDRhADvWvRcGu45egmpMgp7+KzNYzp1pHmMic73SiW4?=
+ =?us-ascii?Q?jGXNHpjP418LoAQR12oVPPv+DAXwiOJUaAD0hXV5HOJ8RHVFTMfd0EMQrs4P?=
+ =?us-ascii?Q?djWcej+OG+HP9t7kNejtqusEd/vnoh5tc+W4XPxLkW+uy8IVDPyB/72Wz3RY?=
+ =?us-ascii?Q?KaQbAn/EA3rluTW+ahsgxrFpuKTFev/lVw0duUNOMoO2I9UeHzvjec+UMRXe?=
+ =?us-ascii?Q?GvvCY2gymYCJur+ONRJuihH03thEuRzSK9l8Zw62mkmdnoaxgcB2Ac2xKvBL?=
+ =?us-ascii?Q?2V5qunDAjt+FOdfg6kTWUKvV+t79urjZ+Bbe6Epwmr0MksQJLZldjs8d1PN3?=
+ =?us-ascii?Q?deiM7HcjIPCqGIFek5u6lUuQ33ABxem824Q/KqkyKAkpn8E8XF7rg3wUUdhG?=
+ =?us-ascii?Q?RLjwdjB7mm8mvrWvidP1a0Ok/rrUK05avE4jlqO7vcjGNa84SlTwtQbIUlhI?=
+ =?us-ascii?Q?lOmdHmsV8F6uAmRxw8r/Vqwdxgn3LWFmcRnFcpnDHuYyRMZAl+sjZ0q2bb9J?=
+ =?us-ascii?Q?8gza5jOL/T72eW41snReNTGns8YzK35++E793kzhjbgeFvO14M7g0SdKe+LE?=
+ =?us-ascii?Q?neyB9H/uJXCPf6JWolujXz87Sf811GasRAV03Uu7s4LXR5hKIIj3CYidgeE2?=
+ =?us-ascii?Q?WXanEsgwkL9pPkIzcSSCTbSFFZKNdYMxFCidrJkryzuXq5+HbaA+3jlH+zX4?=
+ =?us-ascii?Q?YcyTWrbSif94OQx9jikVrtzW0sFhJDx76qaZijBhhORWqu2hxY3mBL0avsdk?=
+ =?us-ascii?Q?gsaHO2I1wHArPDADg2UyrrSlt3kADt0moQe9Nr1r4f107CkIa9u7BlmLmXqH?=
+ =?us-ascii?Q?f8nd0hsXHthPBT4knDYhkQUIV2Oae4pVU7oapuhLYzW5bnSert0FbOyCqNKn?=
+ =?us-ascii?Q?wCr8nNu7uJc80TbNvJ4R5ZGBp1KtaunpQP2YT7PqKGhDnGJMgt2FtjD3xiu1?=
+ =?us-ascii?Q?wyk79zg34g+PMq3OGr+WjFit2t/fmhRrEJ13hceDDqGd/tdTAgfTJDpIhIcm?=
+ =?us-ascii?Q?f4vdxksl8tgm/G0OCX9m2LbSgCNaGb8qBnmh2XM9MELi9w5pm/SN63wafUwU?=
+ =?us-ascii?Q?1DHgLsYwIuIKJ0BIsC509+1m0o4=3D?=
+X-OriginatorOrg: toradex.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e374c254-b4af-427d-8b6a-08d9c0878bd8
+X-MS-Exchange-CrossTenant-AuthSource: ZRAP278MB0642.CHEP278.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Dec 2021 11:31:04.9575
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: d9995866-0d9b-4251-8315-093f062abab4
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: s8c5qTDOxknQIiugbIIIUMArkqQza27vb9fbi4cAzvskHeeN4fCYPgkf3MRXuF7wVgCDEtLVrAwfYPcMQe2ueGD89ZrXVbcIqI4YAWHHVMI=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: ZR0P278MB0123
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 16, 2021 at 12:09 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Fri, 10 Dec 2021 10:36:26 +0800 xiangxia.m.yue@gmail.com wrote:
-> > From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
-> >
-> > This patch allows users to select queue_mapping, range
-> > from A to B. And users can use skb-hash, cgroup classid
-> > and cpuid to select Tx queues. Then we can load balance
-> > packets from A to B queue. The range is an unsigned 16bit
-> > value in decimal format.
-> >
-> > $ tc filter ... action skbedit queue_mapping hash-type normal A B
-> >
-> > "skbedit queue_mapping QUEUE_MAPPING" (from "man 8 tc-skbedit") is
-> > enhanced with flags:
-> > * SKBEDIT_F_QUEUE_MAPPING_HASH
-> > * SKBEDIT_F_QUEUE_MAPPING_CLASSID
-> > * SKBEDIT_F_QUEUE_MAPPING_CPUID
-> >
-> > Use skb->hash, cgroup classid, or cpuid to distribute packets.
-> > Then same range of tx queues can be shared for different flows,
-> > cgroups, or CPUs in a variety of scenarios.
-> >
-> > For example, flows F1 may share range R1 with flows F2. The best
-> > way to do that is to set flag to SKBEDIT_F_QUEUE_MAPPING_HASH.
-> > If cgroup C1 share the R1 with cgroup C2 .. Cn, use the
-> > SKBEDIT_F_QUEUE_MAPPING_CLASSID. Of course, in some other scenario,
-> > C1 uses R1, while Cn can use Rn.
->
-> > diff --git a/include/net/tc_act/tc_skbedit.h b/include/net/tc_act/tc_skbedit.h
-> > index 00bfee70609e..ee96e0fa6566 100644
-> > --- a/include/net/tc_act/tc_skbedit.h
-> > +++ b/include/net/tc_act/tc_skbedit.h
-> > @@ -17,6 +17,7 @@ struct tcf_skbedit_params {
-> >       u32 mark;
-> >       u32 mask;
-> >       u16 queue_mapping;
-> > +     u16 mapping_mod;
-> >       u16 ptype;
-> >       struct rcu_head rcu;
-> >  };
-> > diff --git a/include/uapi/linux/tc_act/tc_skbedit.h b/include/uapi/linux/tc_act/tc_skbedit.h
-> > index 800e93377218..5642b095d206 100644
-> > --- a/include/uapi/linux/tc_act/tc_skbedit.h
-> > +++ b/include/uapi/linux/tc_act/tc_skbedit.h
-> > @@ -29,6 +29,13 @@
-> >  #define SKBEDIT_F_PTYPE                      0x8
-> >  #define SKBEDIT_F_MASK                       0x10
-> >  #define SKBEDIT_F_INHERITDSFIELD     0x20
-> > +#define SKBEDIT_F_QUEUE_MAPPING_HASH 0x40
-> > +#define SKBEDIT_F_QUEUE_MAPPING_CLASSID      0x80
-> > +#define SKBEDIT_F_QUEUE_MAPPING_CPUID        0x100
-> > +
-> > +#define SKBEDIT_F_QUEUE_MAPPING_HASH_MASK (SKBEDIT_F_QUEUE_MAPPING_HASH | \
-> > +                                        SKBEDIT_F_QUEUE_MAPPING_CLASSID | \
-> > +                                        SKBEDIT_F_QUEUE_MAPPING_CPUID)
->
-> Any way we can make these defines shorter?
->
-> s/QUEUE_MAPPING_/TXQ_/ ?
-Yes
->
-> >  struct tc_skbedit {
-> >       tc_gen;
-> > @@ -45,6 +52,7 @@ enum {
-> >       TCA_SKBEDIT_PTYPE,
-> >       TCA_SKBEDIT_MASK,
-> >       TCA_SKBEDIT_FLAGS,
-> > +     TCA_SKBEDIT_QUEUE_MAPPING_MAX,
-> >       __TCA_SKBEDIT_MAX
-> >  };
-> >  #define TCA_SKBEDIT_MAX (__TCA_SKBEDIT_MAX - 1)
-> > diff --git a/net/sched/act_skbedit.c b/net/sched/act_skbedit.c
-> > index 498feedad70a..0b0d65d7112e 100644
-> > --- a/net/sched/act_skbedit.c
-> > +++ b/net/sched/act_skbedit.c
-> > @@ -10,6 +10,7 @@
-> >  #include <linux/kernel.h>
-> >  #include <linux/skbuff.h>
-> >  #include <linux/rtnetlink.h>
-> > +#include <net/cls_cgroup.h>
-> >  #include <net/netlink.h>
-> >  #include <net/pkt_sched.h>
-> >  #include <net/ip.h>
-> > @@ -23,6 +24,37 @@
-> >  static unsigned int skbedit_net_id;
-> >  static struct tc_action_ops act_skbedit_ops;
-> >
-> > +static u16 tcf_skbedit_hash(struct tcf_skbedit_params *params,
-> > +                         struct sk_buff *skb)
-> > +{
-> > +     u16 queue_mapping = params->queue_mapping;
-> > +     u16 mapping_mod = params->mapping_mod;
-> > +     u32 mapping_hash_type = params->flags &
-> > +                             SKBEDIT_F_QUEUE_MAPPING_HASH_MASK;
->
-> Don't do inline init if the init doesn't fit on a line.
-OK
-> > +     u32 hash = 0;
-> > +
-> > +     if (!mapping_hash_type)
-> > +             return netdev_cap_txqueue(skb->dev, queue_mapping);
->
-> Make it "case 0:" below?
-Yes
->
-> > +     switch (mapping_hash_type) {
-> > +     case SKBEDIT_F_QUEUE_MAPPING_CLASSID:
-> > +             hash = jhash_1word(task_get_classid(skb), 0);
-> > +             break;
-> > +     case SKBEDIT_F_QUEUE_MAPPING_HASH:
-> > +             hash = skb_get_hash(skb);
-> > +             break;
-> > +     case SKBEDIT_F_QUEUE_MAPPING_CPUID:
-> > +             hash = raw_smp_processor_id();
-> > +             break;
-> > +     default:
-> > +             net_warn_ratelimited("The type of queue_mapping hash is not supported. 0x%x\n",
-> > +                                  mapping_hash_type);
-> > +     }
-> > +
-> > +     queue_mapping = queue_mapping + hash % mapping_mod;
-> > +     return netdev_cap_txqueue(skb->dev, queue_mapping);
-> > +}
-> > +
-> >  static int tcf_skbedit_act(struct sk_buff *skb, const struct tc_action *a,
-> >                          struct tcf_result *res)
-> >  {
-> > @@ -57,10 +89,9 @@ static int tcf_skbedit_act(struct sk_buff *skb, const struct tc_action *a,
-> >                       break;
-> >               }
-> >       }
-> > -     if (params->flags & SKBEDIT_F_QUEUE_MAPPING &&
-> > -         skb->dev->real_num_tx_queues > params->queue_mapping) {
-> > +     if (params->flags & SKBEDIT_F_QUEUE_MAPPING) {
-> >               netdev_xmit_skip_txqueue();
-> > -             skb_set_queue_mapping(skb, params->queue_mapping);
-> > +             skb_set_queue_mapping(skb, tcf_skbedit_hash(params, skb));
-> >       }
-> >       if (params->flags & SKBEDIT_F_MARK) {
-> >               skb->mark &= ~params->mask;
-> > @@ -94,6 +125,7 @@ static const struct nla_policy skbedit_policy[TCA_SKBEDIT_MAX + 1] = {
-> >       [TCA_SKBEDIT_PTYPE]             = { .len = sizeof(u16) },
-> >       [TCA_SKBEDIT_MASK]              = { .len = sizeof(u32) },
-> >       [TCA_SKBEDIT_FLAGS]             = { .len = sizeof(u64) },
-> > +     [TCA_SKBEDIT_QUEUE_MAPPING_MAX] = { .len = sizeof(u16) },
->
-> .type = NLA_U16 ? I think it's okay to use the modern stuff here.
-TCA_SKBEDIT_QUEUE_MAPPING_MAX and TCA_SKBEDIT_QUEUE_MAPPING are the
-same type of value,
-so I use the len of u16 as TCA_SKBEDIT_QUEUE_MAPPING. I think it is better.
-> >  };
-> >
-> >  static int tcf_skbedit_init(struct net *net, struct nlattr *nla,
-> > @@ -110,6 +142,7 @@ static int tcf_skbedit_init(struct net *net, struct nlattr *nla,
-> >       struct tcf_skbedit *d;
-> >       u32 flags = 0, *priority = NULL, *mark = NULL, *mask = NULL;
-> >       u16 *queue_mapping = NULL, *ptype = NULL;
-> > +     u16 mapping_mod = 0;
-> >       bool exists = false;
-> >       int ret = 0, err;
-> >       u32 index;
-> > @@ -154,7 +187,30 @@ static int tcf_skbedit_init(struct net *net, struct nlattr *nla,
-> >
-> >       if (tb[TCA_SKBEDIT_FLAGS] != NULL) {
-> >               u64 *pure_flags = nla_data(tb[TCA_SKBEDIT_FLAGS]);
-> > +             u64 mapping_hash_type = *pure_flags &
-> > +                                     SKBEDIT_F_QUEUE_MAPPING_HASH_MASK;
->
-> Again, doing init inline and new line between variables and code
-Ok
-> > +             if (mapping_hash_type) {
-> > +                     u16 *queue_mapping_max;
-> > +
-> > +                     /* Hash types are mutually exclusive. */
-> > +                     if (mapping_hash_type & (mapping_hash_type - 1))
-> > +                             return -EINVAL;
-> > +
-> > +                     if (!tb[TCA_SKBEDIT_QUEUE_MAPPING_MAX])
-> > +                             return -EINVAL;
-> >
-> > +                     if (!tb[TCA_SKBEDIT_QUEUE_MAPPING])
-> > +                             return -EINVAL;
->
-> Can be merged with the condition above, unless you add extack, which
-> perhaps you should..
-Yes, I will merged them and add exack.
-> > +                     queue_mapping_max =
-> > +                             nla_data(tb[TCA_SKBEDIT_QUEUE_MAPPING_MAX]);
->
-> nla_get_u16()
->
-> > +                     if (*queue_mapping_max < *queue_mapping)
-> > +                             return -EINVAL;
-> > +
-> > +                     mapping_mod = *queue_mapping_max - *queue_mapping + 1;
-> > +                     flags |= mapping_hash_type;
-> > +             }
-> >               if (*pure_flags & SKBEDIT_F_INHERITDSFIELD)
-> >                       flags |= SKBEDIT_F_INHERITDSFIELD;
-> >       }
-> > @@ -206,8 +262,10 @@ static int tcf_skbedit_init(struct net *net, struct nlattr *nla,
-> >       params_new->flags = flags;
-> >       if (flags & SKBEDIT_F_PRIORITY)
-> >               params_new->priority = *priority;
-> > -     if (flags & SKBEDIT_F_QUEUE_MAPPING)
-> > +     if (flags & SKBEDIT_F_QUEUE_MAPPING) {
-> >               params_new->queue_mapping = *queue_mapping;
-> > +             params_new->mapping_mod = mapping_mod;
-> > +     }
-> >       if (flags & SKBEDIT_F_MARK)
-> >               params_new->mark = *mark;
-> >       if (flags & SKBEDIT_F_PTYPE)
-> > @@ -274,6 +332,14 @@ static int tcf_skbedit_dump(struct sk_buff *skb, struct tc_action *a,
-> >               goto nla_put_failure;
-> >       if (params->flags & SKBEDIT_F_INHERITDSFIELD)
-> >               pure_flags |= SKBEDIT_F_INHERITDSFIELD;
-> > +     if (params->flags & SKBEDIT_F_QUEUE_MAPPING_HASH_MASK) {
-> > +             if (nla_put_u16(skb, TCA_SKBEDIT_QUEUE_MAPPING_MAX,
-> > +                             params->queue_mapping + params->mapping_mod - 1))
-> > +                     goto nla_put_failure;
-> > +
-> > +             pure_flags |= params->flags &
-> > +                           SKBEDIT_F_QUEUE_MAPPING_HASH_MASK;
->
-> Why "params->flags &" ? Given the if above the flag must be set.
-We have checked "params->flags", we can use it in this block. Thanks!
-> > +     }
-> >       if (pure_flags != 0 &&
-> >           nla_put(skb, TCA_SKBEDIT_FLAGS, sizeof(pure_flags), &pure_flags))
-> >               goto nla_put_failure;
->
+On Thu, Dec 16, 2021 at 12:28:19PM +0100, Andrew Lunn wrote:
+> On Thu, Dec 16, 2021 at 12:24:33PM +0100, Francesco Dolcini wrote:
+> > On Thu, Dec 16, 2021 at 11:24:24AM +0100, Andrew Lunn wrote:
+> > > I think you need to move the regulator into phylib, so the PHY driver
+> > > can do the right thing. It is really the only entity which knows what
+> > > is the correct thing to do.
+> 
+> > Do you believe that the right place is the phylib and not the phy driver?
+> > Is this generic enough?
+> 
+> It is split. phylib can do the lookup in DT, get the regulator and
+> provide a helper to enable/disable it. So very similar to the reset.
+Sounds good.
 
+Can we safely assume that we do have at most one regulator for the phy?
 
--- 
-Best regards, Tonghao
+Francesco
+
