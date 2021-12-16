@@ -2,148 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 77DFA4771B1
-	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 13:25:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D01B4771F4
+	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 13:37:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236642AbhLPMZ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Dec 2021 07:25:57 -0500
-Received: from mga11.intel.com ([192.55.52.93]:5945 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236595AbhLPMZ4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Dec 2021 07:25:56 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10199"; a="237013841"
-X-IronPort-AV: E=Sophos;i="5.88,211,1635231600"; 
-   d="scan'208";a="237013841"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Dec 2021 04:25:56 -0800
-X-IronPort-AV: E=Sophos;i="5.88,211,1635231600"; 
-   d="scan'208";a="519227912"
-Received: from jetten-mobl.ger.corp.intel.com ([10.252.36.24])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Dec 2021 04:25:49 -0800
-Date:   Thu, 16 Dec 2021 14:25:47 +0200 (EET)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Ricardo Martinez <ricardo.martinez@linux.intel.com>
-cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
-        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
-        m.chetan.kumar@intel.com, chandrashekar.devegowda@intel.com,
-        linuxwwan@intel.com, chiranjeevi.rapolu@linux.intel.com,
-        haijun.liu@mediatek.com, amir.hanania@intel.com,
-        andriy.shevchenko@linux.intel.com, dinesh.sharma@intel.com,
-        eliot.lee@intel.com, mika.westerberg@linux.intel.com,
-        moises.veleta@intel.com, pierre-louis.bossart@intel.com,
-        muralidharan.sethuraman@intel.com, Soumya.Prakash.Mishra@intel.com,
-        sreehari.kancharla@intel.com, suresh.nagaraj@intel.com
-Subject: Re: [PATCH net-next v3 05/12] net: wwan: t7xx: Add AT and MBIM WWAN
- ports
-In-Reply-To: <20211207024711.2765-6-ricardo.martinez@linux.intel.com>
-Message-ID: <66e09242-ee3e-f714-a9b9-d3ee80ef6596@linux.intel.com>
-References: <20211207024711.2765-1-ricardo.martinez@linux.intel.com> <20211207024711.2765-6-ricardo.martinez@linux.intel.com>
+        id S234025AbhLPMhV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Dec 2021 07:37:21 -0500
+Received: from www62.your-server.de ([213.133.104.62]:40434 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234165AbhLPMhU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 07:37:20 -0500
+Received: from sslproxy03.your-server.de ([88.198.220.132])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1mxq0c-000Dwp-Py; Thu, 16 Dec 2021 13:37:18 +0100
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1mxq0c-000Rga-CL; Thu, 16 Dec 2021 13:37:18 +0100
+Subject: Re: [net v5 2/3] net: sched: add check tc_skip_classify in sch egress
+To:     Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Cc:     John Fastabend <john.fastabend@gmail.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Wei Wang <weiwan@google.com>, Arnd Bergmann <arnd@arndb.de>
+References: <20211208145459.9590-1-xiangxia.m.yue@gmail.com>
+ <20211208145459.9590-3-xiangxia.m.yue@gmail.com>
+ <61b383c6373ca_1f50e20816@john.notmuch>
+ <CAMDZJNV3-y5jkUAJJ--10PcicKpGMwKS_3gG9O7srjomO3begw@mail.gmail.com>
+ <CAMDZJNXL5qSfFv54A=RrMwHe8DOv48EfrypHb1FFSUFu36-9DQ@mail.gmail.com>
+ <CAMDZJNUyOELOcf0dtxktCTRKv1sUrp5Z17mW+4so7tt6DFnJsw@mail.gmail.com>
+ <368e82ef-24be-06c7-2111-8a21cd558100@iogearbox.net>
+ <CAMDZJNXY249r_SBuSjCwkAf-xGF98-5EPN41d23Jix0fTawZTw@mail.gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <1ba06b2f-6c78-cec1-4ba4-98494a402d0e@iogearbox.net>
+Date:   Thu, 16 Dec 2021 13:37:17 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <CAMDZJNXY249r_SBuSjCwkAf-xGF98-5EPN41d23Jix0fTawZTw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.3/26389/Thu Dec 16 07:02:49 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 6 Dec 2021, Ricardo Martinez wrote:
-
-> From: Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>
+On 12/11/21 1:37 AM, Tonghao Zhang wrote:
+> On Sat, Dec 11, 2021 at 4:11 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>> On 12/10/21 8:54 PM, Tonghao Zhang wrote:
+>>> On Sat, Dec 11, 2021 at 1:46 AM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
+>>>> On Sat, Dec 11, 2021 at 1:37 AM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
+>>>>> On Sat, Dec 11, 2021 at 12:43 AM John Fastabend
+>>>>> <john.fastabend@gmail.com> wrote:
+>>>>>> xiangxia.m.yue@ wrote:
+[...]
+>>>>> Hi John
+>>>>> Tx ethx -> __dev_queue_xmit -> sch_handle_egress
+>>>>> ->  execute BPF program on ethx with bpf_redirect(ifb0) ->
+>>>>> -> ifb_xmit -> ifb_ri_tasklet -> dev_queue_xmit -> __dev_queue_xmit
+>>>>> the packets loopbacks, that means bpf_redirect doesn't work with ifb
+>>>>> netdev, right ?
+>>>>> so in sch_handle_egress, I add the check skb_skip_tc_classify().
+>>
+>> But why would you do that? Usage like this is just broken by design..
+> As I understand, we can redirect packets to a target device either at
+> ingress or at *egress
 > 
-> Adds AT and MBIM ports to the port proxy infrastructure.
-> The initialization method is responsible for creating the corresponding
-> ports using the WWAN framework infrastructure. The implemented WWAN port
-> operations are start, stop, and TX.
+> The commit ID: 3896d655f4d491c67d669a15f275a39f713410f8
+> Allow eBPF programs attached to classifier/actions to call
+> bpf_clone_redirect(skb, ifindex, flags) helper which will mirror or
+> redirect the packet by dynamic ifindex selection from within the
+> program to a target device either at ingress or at egress. Can be used
+> for various scenarios, for example, to load balance skbs into veths,
+> split parts of the traffic to local taps, etc.
 > 
-> Signed-off-by: Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>
-> Co-developed-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
-> Signed-off-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
+> https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/?id=3896d655f4d491c67d669a15f275a39f713410f8
+> https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/?id=27b29f63058d26c6c1742f1993338280d5a41dc6
+> 
+> But at egress the bpf_redirect doesn't work with ifb.
+>> If you need to loop anything back to RX, just use bpf_redirect() with
+> Not use it to loop packets back. the flags of bpf_redirect is 0. for example:
+> 
+> tc filter add dev veth1 \
+> egress bpf direct-action obj test_bpf_redirect_ifb.o sec redirect_ifb
+> https://patchwork.kernel.org/project/netdevbpf/patch/20211208145459.9590-4-xiangxia.m.yue@gmail.com/
+>> BPF_F_INGRESS? What is the concrete/actual rationale for ifb here?
+> We load balance the packets to different ifb netdevices at egress. On
+> ifb, we install filters, rate limit police,
 
-> +static int t7xx_port_ctrl_tx(struct wwan_port *port, struct sk_buff *skb)
-> +{
-> +	struct t7xx_port *port_private = wwan_port_get_drvdata(port);
-> +	size_t actual_count = 0, alloc_size = 0, txq_mtu = 0;
-> +	struct t7xx_port_static *port_static;
-> +	int i, multi_packet = 1, ret = 0;
-> +	struct sk_buff *skb_ccci = NULL;
-> +	struct t7xx_fsm_ctl *ctl;
-> +	enum md_state md_state;
-> +	unsigned int count;
-> +	bool port_multi;
-> +
-> +	count = skb->len;
-> +	if (!count)
-> +		return -EINVAL;
-> +
-> +	port_static = port_private->port_static;
-> +	ctl = port_private->t7xx_dev->md->fsm_ctl;
-> +	md_state = t7xx_fsm_get_md_state(ctl);
-> +	if (md_state == MD_STATE_WAITING_FOR_HS1 || md_state == MD_STATE_WAITING_FOR_HS2) {
-> +		dev_warn(port_private->dev, "Cannot write to %s port when md_state=%d\n",
-> +			 port_static->name, md_state);
-> +		return -ENODEV;
-> +	}
-> +
-> +	txq_mtu = CLDMA_TXQ_MTU;
-> +
-> +	if (port_private->flags & PORT_F_USER_HEADER) {
-> +		if (port_private->flags & PORT_F_USER_HEADER && count > txq_mtu) {
-> +			dev_err(port_private->dev, "Packet %u larger than MTU on %s port\n",
-> +				count, port_static->name);
-> +			return -ENOMEM;
-> +		}
-> +
-> +		alloc_size = min_t(size_t, txq_mtu, count);
-> +		actual_count = alloc_size;
-> +	} else {
-> +		alloc_size = min_t(size_t, txq_mtu, count + CCCI_H_ELEN);
-> +		actual_count = alloc_size - CCCI_H_ELEN;
-> +		port_multi = t7xx_port_wwan_multipkt_capable(port_static);
-> +		if ((count + CCCI_H_ELEN > txq_mtu) && port_multi)
-> +			multi_packet = DIV_ROUND_UP(count, txq_mtu - CCCI_H_ELEN);
-> +	}
-> +
-> +	for (i = 0; i < multi_packet; i++) {
-> +		struct ccci_header *ccci_h = NULL;
-> +
-> +		if (multi_packet > 1 && multi_packet == i + 1) {
-> +			actual_count = count % (txq_mtu - CCCI_H_ELEN);
-> +			alloc_size = actual_count + CCCI_H_ELEN;
-> +		}
-> +
-> +		skb_ccci = __dev_alloc_skb(alloc_size, GFP_KERNEL);
-> +		if (!skb_ccci)
-> +			return -ENOMEM;
-> +
-> +		ccci_h = skb_put(skb_ccci, CCCI_H_LEN);
-> +		ccci_h->packet_header = 0;
-> +		ccci_h->packet_len = cpu_to_le32(actual_count + CCCI_H_LEN);
-> +		ccci_h->status &= cpu_to_le32(~HDR_FLD_CHN);
-> +		ccci_h->status |= cpu_to_le32(FIELD_PREP(HDR_FLD_CHN, port_static->tx_ch));
-> +		ccci_h->ex_msg = 0;
-> +
-> +		memcpy(skb_put(skb_ccci, actual_count), skb->data + i * (txq_mtu - CCCI_H_ELEN),
-> +		       actual_count);
-> +
-> +		t7xx_port_proxy_set_seq_num(port_private, ccci_h);
-> +
-> +		ret = t7xx_port_send_skb_to_md(port_private, skb_ccci, true);
-> +		if (ret)
-> +			goto err_free_skb;
-> +
-> +		port_private->seq_nums[MTK_TX]++;
-> +
-> +		if (multi_packet == 1)
-> +			return actual_count;
-> +		else if (multi_packet == i + 1)
-> +			return count;
-> +	}
+I guess this part here is what I don't quite follow. Could you walk me through
+the packet flow in this case? So you go from bpf@tc-egress@phys-dev to do the
+redirect to bpf@tc-egress@ifb, and then again to bpf@tc-egress@phys-dev (same
+dev or different one I presume)? Why not doing the load-balancing, applying the
+policy, and doing the rate-limiting (e.g. EDT with sch_fq) directly at the initial
+bpf@tc-egress@phys-dev location given bpf is perfectly capable to do all of it
+there w/o the extra detour & overhead through ifb? The issue I see here is adding
+extra overhead to support such a narrow case that nobody else is using and that
+can be achieved already with existing infra as I understood it; the justification
+right now to add the extra checks to the critical fast path is very thin..
 
-I'd recommend renaming variables to make it clearer what they count:
-- count -> bytes
-- actual_count -> actual_bytes
-- multi_packet -> packets
-
-
--- 
- i.
-
+Thanks,
+Daniel
