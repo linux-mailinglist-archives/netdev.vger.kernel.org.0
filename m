@@ -2,97 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 424C84773A2
-	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 14:53:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 985D04773A8
+	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 14:53:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236932AbhLPNxG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Dec 2021 08:53:06 -0500
-Received: from mail-ot1-f44.google.com ([209.85.210.44]:35571 "EHLO
-        mail-ot1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229453AbhLPNxF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 08:53:05 -0500
-Received: by mail-ot1-f44.google.com with SMTP id x43-20020a056830246b00b00570d09d34ebso29057388otr.2;
-        Thu, 16 Dec 2021 05:53:05 -0800 (PST)
+        id S237036AbhLPNxJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Dec 2021 08:53:09 -0500
+Received: from mail-oi1-f169.google.com ([209.85.167.169]:45777 "EHLO
+        mail-oi1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229453AbhLPNxH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 08:53:07 -0500
+Received: by mail-oi1-f169.google.com with SMTP id 7so36515154oip.12;
+        Thu, 16 Dec 2021 05:53:07 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
          :message-id;
-        bh=K3q3sT5gz9V74YhNPyceV1V6wk4tRvJfYiaAGVR5wDk=;
-        b=IMA8mkxAucS94FUq4f/axGDQZ3HcUffRXG4DdymJUGQc6dKKPCuBUhTIEkdXWdjEkP
-         4k3G3yqLPyJmbBObIXL5OdH4e5gfU+Z1rceqYgzRJFnJlgwCzzFhvA79mEE51PSlMz6Q
-         ucoY4SUNLtq42LPXqmduJAZ74l/Ty3J7YeDtTxOjgH4HUdmX4h1YC7+Me1hAhV/92rLu
-         iMJvVWQTeFx4A1Mkc7dWHDfL2vdCba+Lk8muQcZaePzPZ3lV0V6x4PGbhAOYdWAvoJ/C
-         OmBi6dzaGDXz81BcFBqWGuGT/wBfS+3tL2pCYibh36MLL1WS0bm9qsrial0E7Buq0lzA
-         4E/g==
-X-Gm-Message-State: AOAM531UDfHb4QRmc1kxntU8DpPYSac7Sr9O9pukGjCfH3rkRolDNEzY
-        EVfKFGWsxbnD7TWBPuD42GRn8KbOzA==
-X-Google-Smtp-Source: ABdhPJwzi2LUj+RCSn0XStSyJDnnJAJ+K5H1xEp0vB1nUSgaPfqCMGLhpagEgc0ZOqdMMiDluU4UEg==
-X-Received: by 2002:a9d:461:: with SMTP id 88mr13058565otc.300.1639662785099;
-        Thu, 16 Dec 2021 05:53:05 -0800 (PST)
+        bh=6fkUBesEK+ljm2rlPJZWtYPxz7Qh1jlpFH5iXSMcGv8=;
+        b=UVf6FCLqJBxFQFiqz41n97REGIYbL6r/AXZv2jRg7zV0RcaPQ+IKZW2VTNRZNM3It1
+         nS/yVTnTY9m2vLqoorvl16A3PdPzs1hewHYHeerv8LUzpZ4CcLiu581V8zWML7dPvwNZ
+         cS+ZKEUv2++iUNKS7yduZPI0fNPFy/oel/bjvBhyVo7j0xPrQPQ7WUKsH40cQbC/i6Vu
+         7u9IPNlTyAwrBUv8pNBHRmkL0zXgRJdeJMC1su87l3lGbwGg6VRODrdjbcfrgSCn3EAZ
+         Esll5yFmDrnqeRrvCC7cRAIkns2Op5pfva7qidbo3ebp1Us6zt3B26WLvJMkbjID67Q2
+         k31Q==
+X-Gm-Message-State: AOAM531Bk2vu34PeSeSETCm9WLoPqC+g1KW3LXLi6b13Zq/QS8VB1m82
+        EmEGzyhuTRIhFOu+pbb7W4O+W9evnQ==
+X-Google-Smtp-Source: ABdhPJw5upVfoScoQm9JMcGvL7W6litpwZZt9iGYREg40ouAGdsEx1RNm5o/nQz8hQBdqefWZlPU/w==
+X-Received: by 2002:aca:c650:: with SMTP id w77mr4205603oif.8.1639662787205;
+        Thu, 16 Dec 2021 05:53:07 -0800 (PST)
 Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id 52sm381367oth.52.2021.12.16.05.53.03
+        by smtp.gmail.com with ESMTPSA id i3sm1041907ooq.39.2021.12.16.05.53.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Dec 2021 05:53:04 -0800 (PST)
-Received: (nullmailer pid 4004876 invoked by uid 1000);
-        Thu, 16 Dec 2021 13:53:02 -0000
+        Thu, 16 Dec 2021 05:53:06 -0800 (PST)
+Received: (nullmailer pid 4004891 invoked by uid 1000);
+        Thu, 16 Dec 2021 13:53:03 -0000
 From:   Rob Herring <robh@kernel.org>
 To:     Biao Huang <biao.huang@mediatek.com>
-Cc:     srv_heupstream@mediatek.com, linux-arm-kernel@lists.infradead.org,
-        davem@davemloft.net, linux-stm32@st-md-mailman.stormreply.com,
-        angelogioacchino.delregno@collabora.com,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-mediatek@lists.infradead.org,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Jose Abreu <joabreu@synopsys.com>, netdev@vger.kernel.org,
-        dkirjanov@suse.de, linux-kernel@vger.kernel.org,
-        macpaul.lin@mediatek.com,
+Cc:     Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, srv_heupstream@mediatek.com,
+        macpaul.lin@mediatek.com, davem@davemloft.net,
+        Rob Herring <robh+dt@kernel.org>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        devicetree@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
-In-Reply-To: <20211216055328.15953-7-biao.huang@mediatek.com>
-References: <20211216055328.15953-1-biao.huang@mediatek.com> <20211216055328.15953-7-biao.huang@mediatek.com>
-Subject: Re: [PATCH net-next v10 6/6] net: dt-bindings: dwmac: add support for mt8195
-Date:   Thu, 16 Dec 2021 07:53:02 -0600
-Message-Id: <1639662782.987227.4004875.nullmailer@robh.at.kernel.org>
+        linux-arm-kernel@lists.infradead.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        Jose Abreu <joabreu@synopsys.com>,
+        linux-mediatek@lists.infradead.org, dkirjanov@suse.de,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        angelogioacchino.delregno@collabora.com,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>
+In-Reply-To: <20211216055328.15953-5-biao.huang@mediatek.com>
+References: <20211216055328.15953-1-biao.huang@mediatek.com> <20211216055328.15953-5-biao.huang@mediatek.com>
+Subject: Re: [PATCH net-next v10 4/6] net: dt-bindings: dwmac: Convert mediatek-dwmac to DT schema
+Date:   Thu, 16 Dec 2021 07:53:03 -0600
+Message-Id: <1639662783.037495.4004890.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 16 Dec 2021 13:53:28 +0800, Biao Huang wrote:
-> Add binding document for the ethernet on mt8195.
+On Thu, 16 Dec 2021 13:53:26 +0800, Biao Huang wrote:
+> Convert mediatek-dwmac to DT schema, and delete old mediatek-dwmac.txt.
+> And there are some changes in .yaml than .txt, others almost keep the same:
+>   1. compatible "const: snps,dwmac-4.20".
+>   2. delete "snps,reset-active-low;" in example, since driver remove this
+>      property long ago.
+>   3. add "snps,reset-delay-us = <0 10000 10000>" in example.
+>   4. the example is for rgmii interface, keep related properties only.
 > 
 > Signed-off-by: Biao Huang <biao.huang@mediatek.com>
 > ---
->  .../bindings/net/mediatek-dwmac.yaml          | 29 ++++++++++++++++---
->  1 file changed, 25 insertions(+), 4 deletions(-)
+>  .../bindings/net/mediatek-dwmac.txt           |  91 ----------
+>  .../bindings/net/mediatek-dwmac.yaml          | 155 ++++++++++++++++++
+>  2 files changed, 155 insertions(+), 91 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/net/mediatek-dwmac.txt
+>  create mode 100644 Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
 > 
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+Running 'make dtbs_check' with the schema in this patch gives the
+following warnings. Consider if they are expected or the schema is
+incorrect. These may not be new warnings.
 
-yamllint warnings/errors:
+Note that it is not yet a requirement to have 0 warnings for dtbs_check.
+This will change in the future.
 
-dtschema/dtc warnings/errors:
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml: properties:clock-names: {'minItems': 5, 'maxItems': 6, 'items': [{'const': 'axi'}, {'const': 'apb'}, {'const': 'mac_main'}, {'const': 'ptp_ref'}, {'const': 'rmii_internal'}, {'const': 'mac_cg'}]} should not be valid under {'required': ['maxItems']}
-	hint: "maxItems" is not needed with an "items" list
-	from schema $id: http://devicetree.org/meta-schemas/items.yaml#
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml: ignoring, error in schema: properties: clock-names
-warning: no schema found in file: ./Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
-Documentation/devicetree/bindings/net/mediatek-dwmac.example.dt.yaml:0:0: /example-0/ethernet@1101c000: failed to match any schema with compatible: ['mediatek,mt2712-gmac', 'snps,dwmac-4.20a']
+Full log is available here: https://patchwork.ozlabs.org/patch/1568901
 
-doc reference errors (make refcheckdocs):
 
-See https://patchwork.ozlabs.org/patch/1568902
+ethernet@1101c000: clock-names: ['axi', 'apb', 'mac_main', 'ptp_ref'] is too short
+	arch/arm64/boot/dts/mediatek/mt2712-evb.dt.yaml
 
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
+ethernet@1101c000: clocks: [[27, 34], [27, 37], [6, 154], [6, 155]] is too short
+	arch/arm64/boot/dts/mediatek/mt2712-evb.dt.yaml
 
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
+ethernet@1101c000: compatible: ['mediatek,mt2712-gmac'] does not contain items matching the given schema
+	arch/arm64/boot/dts/mediatek/mt2712-evb.dt.yaml
 
-pip3 install dtschema --upgrade
+ethernet@1101c000: compatible: ['mediatek,mt2712-gmac'] is too short
+	arch/arm64/boot/dts/mediatek/mt2712-evb.dt.yaml
 
-Please check and re-submit.
+ethernet@1101c000: Unevaluated properties are not allowed ('compatible', 'reg', 'interrupts', 'interrupt-names', 'mac-address', 'clock-names', 'clocks', 'power-domains', 'snps,axi-config', 'snps,mtl-rx-config', 'snps,mtl-tx-config', 'snps,txpbl', 'snps,rxpbl', 'clk_csr', 'phy-mode', 'phy-handle', 'snps,reset-gpio', 'mdio' were unexpected)
+	arch/arm64/boot/dts/mediatek/mt2712-evb.dt.yaml
 
