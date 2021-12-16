@@ -2,311 +2,230 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 67EB2476A6C
-	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 07:35:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4916D476ACF
+	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 08:09:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234121AbhLPGfQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Dec 2021 01:35:16 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:20566 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232919AbhLPGfM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 01:35:12 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1639636512;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Xtjxk7vbEoRGCIi4LCQQtU/KJOvEczYA81RP/eWBh9Y=;
-        b=TSCGGSxF4JO/qjTQRuJRMmJP55JZr2PdwN+S17IATL6ypRTo8XMhYtv3JS6raGXnYYkN5M
-        915FB3XUj+V8RQAu2IYaBBI8ccBFLFV3MzLqbf2MZJ1dgxgrqutr2W8pqFYYEmXw/TVVdb
-        2nPo+uCwKM+KRovsSXSAJ4jRWWWUAHU=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-259-AvzVVHvOMCygLLrs415r_w-1; Thu, 16 Dec 2021 01:35:10 -0500
-X-MC-Unique: AvzVVHvOMCygLLrs415r_w-1
-Received: by mail-ed1-f72.google.com with SMTP id a3-20020a05640213c300b003e7d12bb925so22306157edx.9
-        for <netdev@vger.kernel.org>; Wed, 15 Dec 2021 22:35:10 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=Xtjxk7vbEoRGCIi4LCQQtU/KJOvEczYA81RP/eWBh9Y=;
-        b=yrDQc+4nO2uQH5q/RFJ0I9kD+Nf3ce4RNoe1FTfCRi2dhCfmRjKTcs5uQtWmdX8rn2
-         AMvNhct0Tb4W1I2285li1XEA8YJzRBo5SYAUFaXHF3DoCg2JoDJDdSA0ahjQUv6scKAq
-         71DDakf3oCr/vK18YVnwzks843tx5xr62Q3F+3HyrdUC8bv4R5pX+4LgEe1gjUJIdo3P
-         d1oJg9v8U1BH9Vcj5nbqtFOv1WbOKaPG8lSLfyWjLQF+bQgsUAZysgkVUPWB+m7uwleC
-         A6ZKlUCltF+VsJHh+IYWUOuX+HH+8Qa6FrAxVoaZRIBtdu9h8YHCdnC80s/aq889X1Hy
-         /QqQ==
-X-Gm-Message-State: AOAM530EuzYPwdKwMsZUHp5rLw0B3ShCcmTn+Nx7c9tVYgtaU8F1Bfmf
-        AYcpkUHCaX0Czk+ZhPwp+/iaEjAnGzMWsQM/Dxd4Pzy672MJNvM9+1P5LAdI1ikBeTiS12sInE6
-        5QhYD5XY1sr1o+XHm
-X-Received: by 2002:a05:6402:11c7:: with SMTP id j7mr18802916edw.83.1639636508818;
-        Wed, 15 Dec 2021 22:35:08 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwWCUmlRiKevknUPqmIQUHsZ+5y6PNB1J0axe2lqls/B6DVNAlfPTQH5R9PundfbCHdLNAHzQ==
-X-Received: by 2002:a05:6402:11c7:: with SMTP id j7mr18802899edw.83.1639636508514;
-        Wed, 15 Dec 2021 22:35:08 -0800 (PST)
-Received: from redhat.com ([2.55.22.18])
-        by smtp.gmail.com with ESMTPSA id hv13sm1441483ejc.75.2021.12.15.22.35.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Dec 2021 22:35:07 -0800 (PST)
-Date:   Thu, 16 Dec 2021 01:35:04 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Si-Wei Liu <si-wei.liu@oracle.com>
-Cc:     Jason Wang <jasowang@redhat.com>, Eli Cohen <elic@nvidia.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: vdpa legacy guest support (was Re: [PATCH] vdpa/mlx5:
- set_features should allow reset to zero)
-Message-ID: <20211216013403-mutt-send-email-mst@kernel.org>
-References: <178f8ea7-cebd-0e81-3dc7-10a058d22c07@redhat.com>
- <c9a0932f-a6d7-a9df-38ba-97e50f70c2b2@oracle.com>
- <20211212042311-mutt-send-email-mst@kernel.org>
- <ba9df703-29af-98a9-c554-f303ff045398@oracle.com>
- <20211214000245-mutt-send-email-mst@kernel.org>
- <4fc43d0f-da9e-ce16-1f26-9f0225239b75@oracle.com>
- <CACGkMEsttnFEKGK-aKdCZeXkUnZJg1uaqYzFqpv-g5TobHGSzQ@mail.gmail.com>
- <6eaf672c-cc86-b5bf-5b74-c837affeb6e1@oracle.com>
- <20211215162917-mutt-send-email-mst@kernel.org>
- <71d2a69c-94a7-76b5-2971-570026760bf0@oracle.com>
+        id S234341AbhLPHJH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Dec 2021 02:09:07 -0500
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:64803 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234333AbhLPHJG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 02:09:06 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1639638547; x=1671174547;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-id:content-transfer-encoding:
+   mime-version;
+  bh=6jNBb7MSI8l6TnBB/camvVVqgNqGXRXRMbUhHFD8tg4=;
+  b=RyzaNmpV9/LZenvAr6W81p8pL37wrVsk8T9DuX51WNvHi7ZqTfC/8T8Y
+   T6rXqqJRH7eFsxGBalbtBq+DsBp0Slrp0GCtchYNxw/Cdt2+Wa71qjtDt
+   xTgf6iXCruYaUgKsu6yM9a6OG5IO17vgSHvzPol5Pdkz/0c6gv7CcSlMA
+   dbQFqiBnRj+w8nI8WDD/WZFvIT1Ie846gfQbiqbw23/FuTJyhs4S1lW0U
+   F3uRUVGjhFhjnHuJ62z7CovT6yHvF5NhzRGOxhRPZ1bOlOtN41JC7MK7m
+   mHGK372EYoUbgweMh89+AGMo78+LyrRTpKa6qcrcUOv0oQN5TNkhfEvlS
+   A==;
+IronPort-SDR: xE8jrmhygneTBDyLJeEY36uTYP15acHjN9y9AOqaqYRX/5lEiJKMVBn+s6LXwrSsJFScd2NmGz
+ lEjOw9EQHEweebGKOUH4jYyzAY0TcrbIx8n48N2FsS/JObFPKoBC5aKG20XpbdlrLOGCl+tXIC
+ 9dbMIzHyahs1wnwjGnk7MOnVz8CehrSw4NGhbSXbc/lJij1N0yBZqxatytE8AZe5zy5uisoAM1
+ c1twPXYx9rjhfLYChe+po3qvStwpcyv1Vmtwudqy7x0pLMDXz/Q9flNiqvTK9n9kGTi274K71f
+ gfgKnN6aiKI0vXuFjhnkEHab
+X-IronPort-AV: E=Sophos;i="5.88,210,1635231600"; 
+   d="scan'208";a="146852259"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 16 Dec 2021 00:09:05 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Thu, 16 Dec 2021 00:09:00 -0700
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.71) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.17 via Frontend
+ Transport; Thu, 16 Dec 2021 00:09:00 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=IiDwSvIHQLNN9l/c4l4a01XT5Pg1bn/GGLQ5KffMjiigJtPFrHpEaviZbsGNUSSbrXkYywIxwv5d2k7i4onZed3AGmgUJYJz6IYFY4Gk4e0JG6462aGRy2hEHg0QoqbRGMLQwocmIucKuULkf40gguI74z7h/eibW/SrLUlpoGNBU0bCiGP23bCIl7Y1oDVQYBXMhfIOWKA9TMXZ+/5254ma5YEnu6uYhvnhxMNoobFdSJn5AtMsKsZVqYsZClNZVZ8sZGrMp9MDBdXtLSwyChYl7O7ljE+wWQdNednxScjBkJNqZkGhD2nEW6pWSdfpD4aGR74xJxMZpnsqHqYYug==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=6jNBb7MSI8l6TnBB/camvVVqgNqGXRXRMbUhHFD8tg4=;
+ b=AwhAVdlRNf/AyUH4UIt87wZvUh9YdZy8pZPl0RmO4J99oDugNjhg5aZ4dTeJ3jt6znF9r3HlXf9wtQBa+JRhrLrOCyia9j2oXO/HbgiTxUgPZuCE6KeH0iIUmeiTkTQmCoEil8xeYVX8oIWxkgMRvRVLF+WZLcuQfqoAbpRK/fke7K5JLOz3EWNA8p+Y7urfBKHuyAo1SBg3jw7byUvYn6hocACOobMM5M3L/Qp1BgDAJSi+EoLnIoqBOHO8mbTffFuwcpjnH7yKZqp1DMhAq67tj9azZR6c0KGX9/MMUZfaemgNK0pWiu03VKXUJLpGMD1AF3TCaeot71ZlpEqQAw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6jNBb7MSI8l6TnBB/camvVVqgNqGXRXRMbUhHFD8tg4=;
+ b=I7IlI3x2ICE7XgcljgcTXYohG6HeSK/FTHbCtHASwkBi4V0V6pAmWd1rERDzVNkhv3hZVDCgoyCKbf2STqQVzyURZPnIeBfaFga6lzb5hKhMtCL+lNtjhO0/wuP19nbOw26k9A+QZO+UzZbGSnc9g3ZvAlnauTHS4ShvPdED/lU=
+Received: from CO1PR11MB4769.namprd11.prod.outlook.com (2603:10b6:303:91::21)
+ by MWHPR11MB1581.namprd11.prod.outlook.com (2603:10b6:301:d::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4778.18; Thu, 16 Dec
+ 2021 07:08:55 +0000
+Received: from CO1PR11MB4769.namprd11.prod.outlook.com
+ ([fe80::bd93:cf07:ea77:3b50]) by CO1PR11MB4769.namprd11.prod.outlook.com
+ ([fe80::bd93:cf07:ea77:3b50%7]) with mapi id 15.20.4778.018; Thu, 16 Dec 2021
+ 07:08:55 +0000
+From:   <Claudiu.Beznea@microchip.com>
+To:     <davidm@egauge.net>, <Ajay.Kathat@microchip.com>
+CC:     <adham.abozaeid@microchip.com>, <davem@davemloft.net>,
+        <devicetree@vger.kernel.org>, <kuba@kernel.org>,
+        <kvalo@codeaurora.org>, <linux-kernel@vger.kernel.org>,
+        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <robh+dt@kernel.org>
+Subject: Re: [PATCH v5 1/2] wilc1000: Add reset/enable GPIO support to SPI
+ driver
+Thread-Topic: [PATCH v5 1/2] wilc1000: Add reset/enable GPIO support to SPI
+ driver
+Thread-Index: AQHX8X7Fz1JXQBD6wEiVBWL5VPrTzg==
+Date:   Thu, 16 Dec 2021 07:08:55 +0000
+Message-ID: <0d3a6f22-1ab4-a93d-1fea-8763546db291@microchip.com>
+References: <20211215030501.3779911-1-davidm@egauge.net>
+ <20211215030501.3779911-2-davidm@egauge.net>
+ <d55a2558-b05d-5995-b0f0-f234cb3b50aa@microchip.com>
+ <9cfbcc99f8a70ba2c03a9ad99f273f12e237e09f.camel@egauge.net>
+In-Reply-To: <9cfbcc99f8a70ba2c03a9ad99f273f12e237e09f.camel@egauge.net>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.2
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microchip.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: c7a45bee-2263-40b7-e49c-08d9c062ecab
+x-ms-traffictypediagnostic: MWHPR11MB1581:EE_
+x-microsoft-antispam-prvs: <MWHPR11MB158140E5A9643B938FE7204D87779@MWHPR11MB1581.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: r2OWZkyI7mOOmNW52WBZHsy0dQgYNib/Gktm6JV3glr1As05WCADY2XObhfpamHZiHOntHdxK3Z1XWvDpkEU7ld2nSm4FyphS6vfYmUbMtbfzoTn3Tks0N+VMe1j9EEHke/fc7PQ4kYvdYHjaL48TsjGjApx/awiqC6CUj2AMZZJuz+hFqGKUaPYn32/Uv3T+h+F2kl/72ZoyHvs1+DVqA6/Ea7B1SwxRuTdB7yqzvsVRm4H7BEUL5ryEtpgmfeh/2dB6j5Ms8+1PayCnzmgOgkCPqcHOO/M/1N4/I53Dw8/BOvfjn4aCqRiwcpCC4zrjPIcBB6+36r9i6Tq1pfxcLKDxwGUvnQJCcPmmI6Yo1kV25bPmtkqT+DtFah7LtGP5SpeP5VI8EyWtjFTE2WmzFWzLmH5sj+Bomarxb1qmsLwWl+8GYMuPbryL+ZBvbhlNeFeKRDBux0tv5CER2egJRJmH2kf2xE0V0pk1oLLrieOO/TnTUYEB7k/bqjlbPxH4K8GmowaLoKHlz+NtVYLQzSBQA/ekZJ9jvNw9RXnZe4JfoDNTEJusTeSOnQOeH1fKy9eF2/4SbhReOk29JRsunRqxZ+K/vx5RKQuUzfWItj5Mxe/pNZNnDAvHSW48U38YyvtC/2eB9UyJ6T+zWGGgpX97Pc6Tl4iTMHqe1fH7dab/JZ/vr6X+6HkVr2fVX/SXe57kbrU3o3eecSYbshvbB/1zT++Wj8jTGbveJeYIfPc1KJpUAdJsk7S7IIfLBILI4v9Z81u/hEMKN/Mc+CjZg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB4769.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(66946007)(31686004)(5660300002)(36756003)(38070700005)(6636002)(508600001)(6506007)(31696002)(186003)(2906002)(66556008)(8936002)(64756008)(4326008)(54906003)(86362001)(8676002)(66476007)(6512007)(71200400001)(91956017)(38100700002)(316002)(53546011)(6486002)(76116006)(110136005)(66446008)(83380400001)(26005)(4001150100001)(122000001)(2616005)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?QWVPTnRKWU5XV1hpVlNHSGdDbVozNVlQWDkxMG1HekNuUkVlWm9Wd0tDUi9S?=
+ =?utf-8?B?TXBDNlhiblJUNkVrUTkxaUE0UzBZZnNxMTh1S3FjdDBTZENySW5XNS9HdmhF?=
+ =?utf-8?B?a2dWV2hBK1ZzL2l5WERtUlZ2Y3BXMXJYbzZOamlEYTR2ZHRMb1RNYUtPZDRF?=
+ =?utf-8?B?Skp4Z3M2R05uT0xQOXhCY0tudVBndlNQcTZKMHJrSUdiWTlqV04zdzIzdUJN?=
+ =?utf-8?B?Ukx0NVJoL2NSdFhPWWNNejc5WTVIaitSTk5MellLUFJ2bEJxVkwzWC9wS3J5?=
+ =?utf-8?B?dUcyL2tyRkdRNHB2UkJyUE1QWHZpdTRIeEVuaHVLdUQvLy9wKzNPSC9YbFYy?=
+ =?utf-8?B?V21kL3l4cWQzcSs1L0ZHT0E1bnpEL2xtRkNTcXZCak00bTc2QjNmVEtBT3R5?=
+ =?utf-8?B?T2htUXhnSGVIY2dJV29GQk5INzhDTzlDRlJUY21vaEdibmlwQzh3VXdIbzFP?=
+ =?utf-8?B?Y1hOaEgzRitwbUtIM05Sc3ZUa1pEOUdHUkRnTDg0VW5iWjlibi8wRWxIWXJZ?=
+ =?utf-8?B?QXM0UlpJNFBROGhPaVJ6YU9qOW5qSUxaYjZudDZIMHV5UkVRQWFkRks0eVhF?=
+ =?utf-8?B?ZWEzQWFZUVBJN1pjUmZPaFRMODFFS3QvOXNXZDJXclZFZjJtU2dFKzRXVHk3?=
+ =?utf-8?B?Tkl5M2EvSE40QmtDN1ZyckxuL00rTjlaTWs3NHdpaUxjZU8xclZVRHB0Z1o3?=
+ =?utf-8?B?U1pSdTZLbkU5QnZOUEMxc2pKYkxSaGMwd2RQYUh3RlNiUnJzK1VJMW5xWWM0?=
+ =?utf-8?B?QWw3M3FUbHpDK0JFaGJRMmYxbDV3bytVV0lrMWxpblFvQTJCVWc0bnFkV2tN?=
+ =?utf-8?B?UHc5RUVRVVFTbDhrOEJpTTFmT0VUQ3VkUXpXdktxYW96eHpzd0ZUSSt2eWFp?=
+ =?utf-8?B?RkZlcG9JMk1MVW81WEp3bk9QaDBybHpkNFBDRG8yblFDUE03UzF5MHJWMHNl?=
+ =?utf-8?B?VEkrNGtlR2dORTVBMTl6WFA0a0xZNlJzdWdSTGVsdk85WGx6MlBraFJoOGxh?=
+ =?utf-8?B?U1lNdmxqMlVWR2R1czNiQVNEYWh2MXdLbWZEVUwwbDlITHEwQUcyT1VqY3pJ?=
+ =?utf-8?B?TlNRMTFpbklUZWQ2eFRLMzFKMk1lRjZsQVlCUTNFY2Z6Y0tvazFnYkFVcGdQ?=
+ =?utf-8?B?M0xHUjN5TjgyVHhmWXRaMUlSbWZjbEJqRnZoYm9oNXNnUy9ZcjNRN3BYb0RR?=
+ =?utf-8?B?TmthTXdBdlFUaWNpS0xITURVdU93eU83SUtEV3JjZTlXcWdBZWR2NFV3UXEv?=
+ =?utf-8?B?Um5BWjd6NG1BV2ZESGJuVmdrL3pIS1JmUlJjNTcxeDJaZUNKdGxLUmVaMmJ1?=
+ =?utf-8?B?aDdkcXowaFM1MFRtd3cxTzV5NnpRTnB1Q3pTaXRLVXc5enJrYlBYSDA4STV0?=
+ =?utf-8?B?dzJWb0p2cVRtV1lWSHl5NTB1cHQ0NE1BTU9FZFFtQ3VReXZOdjdIN1dpUEx3?=
+ =?utf-8?B?TnFPYlRyaGdlSDE5WTE1Z3BxTnN0ZzlqTkJrS09HeWV4NytBa0tWbjJYWGU5?=
+ =?utf-8?B?dXR1d1c1ZHRFYk1BanorZlBjdWMxcEo2K1p2VS9ZbUVqaFZQa2hqRFRqSGZ1?=
+ =?utf-8?B?SHdxelF2dVlUOWhlUU1wd1R0WUtkVVorRnoyZmFNR2EvOENrWEZGTHhReE5S?=
+ =?utf-8?B?V0pCSCt6Y1k4NFRhdlpBSlpNTllSU0NNTDRTWHN5dGtzWlo0OU9sUGxOOTFL?=
+ =?utf-8?B?Rlova2t3RURocVdGUi9lUXZxNEdpbmc5cFJSd3NZQ1E0Zll6Ly9mMlFLNGZE?=
+ =?utf-8?B?WW5aeUxYa2dQUkxaTzhFMjNPeWZUTHRHeFpkK3U1VFlPT2dWT2VpSU9uaVpu?=
+ =?utf-8?B?RGpuVzczWjhNOFdiNTJxUmNHSnpPcXl1b1NQL3R3KzJvUWtaanhDVXA5S0Fj?=
+ =?utf-8?B?VXpiT01JbitKUjJVUU1pVzlvNk1zWTFWdEptTVdPSGo0VDEvWFNadjdHWXg0?=
+ =?utf-8?B?T2V1c290Vm9mUFdYTkdGLzNRaUY3SlI0VURYbFV5bVhtcXd2cmRNeXd6Zkdy?=
+ =?utf-8?B?YTF3TlNzbkFJampoOVFpYmFvUFdZUXJHNjJxdi80aStWRENwdkdseTZ5Vkg3?=
+ =?utf-8?B?aTBZRWxId1kwWmhBV0ExVjdlMzhRVkxGeitCTno5UUlwditFZHNrUS8xTE9j?=
+ =?utf-8?B?VEZOZDlFQUF3UkNFWXVsL1VDUE8vNzZ3aXVBK0dXeWRqdDBrWmV0cGozUGVE?=
+ =?utf-8?B?WmlSS2liakNLa0pyMCtNNTZPVEw1d0gwTVVFKytpbWVYOEVWbDVmdmExSE4x?=
+ =?utf-8?B?ckFOanA4c1UvdVFDaDNmVG1pdlNnPT0=?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <ACA354B21DA0CF4EA322A1947D19C3EC@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <71d2a69c-94a7-76b5-2971-570026760bf0@oracle.com>
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB4769.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c7a45bee-2263-40b7-e49c-08d9c062ecab
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Dec 2021 07:08:55.8656
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: d7tzrQoEXECgfY3rYr3WztMjnDK7X2wcxZGXdWZouv5e1N9JtAyX7MkAjDR1SwTZqXMLgcVQrLo3Qi3wrh9l8KncxMVOYyEOG+2NUk71kLU=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR11MB1581
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 15, 2021 at 06:01:55PM -0800, Si-Wei Liu wrote:
-> 
-> 
-> On 12/15/2021 1:33 PM, Michael S. Tsirkin wrote:
-> > On Wed, Dec 15, 2021 at 12:52:20PM -0800, Si-Wei Liu wrote:
-> > > 
-> > > On 12/14/2021 6:06 PM, Jason Wang wrote:
-> > > > On Wed, Dec 15, 2021 at 9:05 AM Si-Wei Liu <si-wei.liu@oracle.com> wrote:
-> > > > > 
-> > > > > On 12/13/2021 9:06 PM, Michael S. Tsirkin wrote:
-> > > > > > On Mon, Dec 13, 2021 at 05:59:45PM -0800, Si-Wei Liu wrote:
-> > > > > > > On 12/12/2021 1:26 AM, Michael S. Tsirkin wrote:
-> > > > > > > > On Fri, Dec 10, 2021 at 05:44:15PM -0800, Si-Wei Liu wrote:
-> > > > > > > > > Sorry for reviving this ancient thread. I was kinda lost for the conclusion
-> > > > > > > > > it ended up with. I have the following questions,
-> > > > > > > > > 
-> > > > > > > > > 1. legacy guest support: from the past conversations it doesn't seem the
-> > > > > > > > > support will be completely dropped from the table, is my understanding
-> > > > > > > > > correct? Actually we're interested in supporting virtio v0.95 guest for x86,
-> > > > > > > > > which is backed by the spec at
-> > > > > > > > > https://urldefense.com/v3/__https://ozlabs.org/*rusty/virtio-spec/virtio-0.9.5.pdf__;fg!!ACWV5N9M2RV99hQ!dTKmzJwwRsFM7BtSuTDu1cNly5n4XCotH0WYmidzGqHSXt40i7ZU43UcNg7GYxZg$ . Though I'm not sure
-> > > > > > > > > if there's request/need to support wilder legacy virtio versions earlier
-> > > > > > > > > beyond.
-> > > > > > > > I personally feel it's less work to add in kernel than try to
-> > > > > > > > work around it in userspace. Jason feels differently.
-> > > > > > > > Maybe post the patches and this will prove to Jason it's not
-> > > > > > > > too terrible?
-> > > > > > > I suppose if the vdpa vendor does support 0.95 in the datapath and ring
-> > > > > > > layout level and is limited to x86 only, there should be easy way out.
-> > > > > > Note a subtle difference: what matters is that guest, not host is x86.
-> > > > > > Matters for emulators which might reorder memory accesses.
-> > > > > > I guess this enforcement belongs in QEMU then?
-> > > > > Right, I mean to get started, the initial guest driver support and the
-> > > > > corresponding QEMU support for transitional vdpa backend can be limited
-> > > > > to x86 guest/host only. Since the config space is emulated in QEMU, I
-> > > > > suppose it's not hard to enforce in QEMU.
-> > > > It's more than just config space, most devices have headers before the buffer.
-> > > The ordering in datapath (data VQs) would have to rely on vendor's support.
-> > > Since ORDER_PLATFORM is pretty new (v1.1), I guess vdpa h/w vendor nowadays
-> > > can/should well support the case when ORDER_PLATFORM is not acked by the
-> > > driver (actually this feature is filtered out by the QEMU vhost-vdpa driver
-> > > today), even with v1.0 spec conforming and modern only vDPA device. The
-> > > control VQ is implemented in software in the kernel, which can be easily
-> > > accommodated/fixed when needed.
-> > > 
-> > > > > QEMU can drive GET_LEGACY,
-> > > > > GET_ENDIAN et al ioctls in advance to get the capability from the
-> > > > > individual vendor driver. For that, we need another negotiation protocol
-> > > > > similar to vhost_user's protocol_features between the vdpa kernel and
-> > > > > QEMU, way before the guest driver is ever probed and its feature
-> > > > > negotiation kicks in. Not sure we need a GET_MEMORY_ORDER ioctl call
-> > > > > from the device, but we can assume weak ordering for legacy at this
-> > > > > point (x86 only)?
-> > > > I'm lost here, we have get_features() so:
-> > > I assume here you refer to get_device_features() that Eli just changed the
-> > > name.
-> > > > 1) VERSION_1 means the device uses LE if provided, otherwise natvie
-> > > > 2) ORDER_PLATFORM means device requires platform ordering
-> > > > 
-> > > > Any reason for having a new API for this?
-> > > Are you going to enforce all vDPA hardware vendors to support the
-> > > transitional model for legacy guest? meaning guest not acknowledging
-> > > VERSION_1 would use the legacy interfaces captured in the spec section 7.4
-> > > (regarding ring layout, native endianness, message framing, vq alignment of
-> > > 4096, 32bit feature, no features_ok bit in status, IO port interface i.e.
-> > > all the things) instead? Noted we don't yet have a set_device_features()
-> > > that allows the vdpa device to tell whether it is operating in transitional
-> > > or modern-only mode. For software virtio, all support for the legacy part in
-> > > a transitional model has been built up there already, however, it's not easy
-> > > for vDPA vendors to implement all the requirements for an all-or-nothing
-> > > legacy guest support (big endian guest for example). To these vendors, the
-> > > legacy support within a transitional model is more of feature to them and
-> > > it's best to leave some flexibility for them to implement partial support
-> > > for legacy. That in turn calls out the need for a vhost-user protocol
-> > > feature like negotiation API that can prohibit those unsupported guest
-> > > setups to as early as backend_init before launching the VM.
-> > Right. Of note is the fact that it's a spec bug which I
-> > hope yet to fix, though due to existing guest code the
-> > fix won't be complete.
-> I thought at one point you pointed out to me that the spec does allow config
-> space read before claiming features_ok, and only config write before
-> features_ok is prohibited. I haven't read up the full thread of Halil's
-> VERSION_1 for transitional big endian device yet, but what is the spec bug
-> you hope to fix?
-
-Allowing config space reads before features_ok seemed useful years ago
-but in practice is only causing bugs and complicating device design.
-
-> 
-> > 
-> > WRT ioctls, One thing we can do though is abuse set_features
-> > where it's called by QEMU early on with just the VERSION_1
-> > bit set, to distinguish between legacy and modern
-> > interface. This before config space accesses and FEATURES_OK.
-> > 
-> > Halil has been working on this, pls take a look and maybe help him out.
-> Interesting thread, am reading now and see how I may leverage or help there.
-> 
-> > > > > > > I
-> > > > > > > checked with Eli and other Mellanox/NVDIA folks for hardware/firmware level
-> > > > > > > 0.95 support, it seems all the ingredient had been there already dated back
-> > > > > > > to the DPDK days. The only major thing limiting is in the vDPA software that
-> > > > > > > the current vdpa core has the assumption around VIRTIO_F_ACCESS_PLATFORM for
-> > > > > > > a few DMA setup ops, which is virtio 1.0 only.
-> > > > > > > 
-> > > > > > > > > 2. suppose some form of legacy guest support needs to be there, how do we
-> > > > > > > > > deal with the bogus assumption below in vdpa_get_config() in the short term?
-> > > > > > > > > It looks one of the intuitive fix is to move the vdpa_set_features call out
-> > > > > > > > > of vdpa_get_config() to vdpa_set_config().
-> > > > > > > > > 
-> > > > > > > > >             /*
-> > > > > > > > >              * Config accesses aren't supposed to trigger before features are
-> > > > > > > > > set.
-> > > > > > > > >              * If it does happen we assume a legacy guest.
-> > > > > > > > >              */
-> > > > > > > > >             if (!vdev->features_valid)
-> > > > > > > > >                     vdpa_set_features(vdev, 0);
-> > > > > > > > >             ops->get_config(vdev, offset, buf, len);
-> > > > > > > > > 
-> > > > > > > > > I can post a patch to fix 2) if there's consensus already reached.
-> > > > > > > > > 
-> > > > > > > > > Thanks,
-> > > > > > > > > -Siwei
-> > > > > > > > I'm not sure how important it is to change that.
-> > > > > > > > In any case it only affects transitional devices, right?
-> > > > > > > > Legacy only should not care ...
-> > > > > > > Yes I'd like to distinguish legacy driver (suppose it is 0.95) against the
-> > > > > > > modern one in a transitional device model rather than being legacy only.
-> > > > > > > That way a v0.95 and v1.0 supporting vdpa parent can support both types of
-> > > > > > > guests without having to reconfigure. Or are you suggesting limit to legacy
-> > > > > > > only at the time of vdpa creation would simplify the implementation a lot?
-> > > > > > > 
-> > > > > > > Thanks,
-> > > > > > > -Siwei
-> > > > > > I don't know for sure. Take a look at the work Halil was doing
-> > > > > > to try and support transitional devices with BE guests.
-> > > > > Hmmm, we can have those endianness ioctls defined but the initial QEMU
-> > > > > implementation can be started to support x86 guest/host with little
-> > > > > endian and weak memory ordering first. The real trick is to detect
-> > > > > legacy guest - I am not sure if it's feasible to shift all the legacy
-> > > > > detection work to QEMU, or the kernel has to be part of the detection
-> > > > > (e.g. the kick before DRIVER_OK thing we have to duplicate the tracking
-> > > > > effort in QEMU) as well. Let me take a further look and get back.
-> > > > Michael may think differently but I think doing this in Qemu is much easier.
-> > > I think the key is whether we position emulating legacy interfaces in QEMU
-> > > doing translation on top of a v1.0 modern-only device in the kernel, or we
-> > > allow vdpa core (or you can say vhost-vdpa) and vendor driver to support a
-> > > transitional model in the kernel that is able to work for both v0.95 and
-> > > v1.0 drivers, with some slight aid from QEMU for
-> > > detecting/emulation/shadowing (for e.g CVQ, I/O port relay). I guess for the
-> > > former we still rely on vendor for a performant data vqs implementation,
-> > > leaving the question to what it may end up eventually in the kernel is
-> > > effectively the latter).
-> > > 
-> > > Thanks,
-> > > -Siwei
-> > 
-> > My suggestion is post the kernel patches, and we can evaluate
-> > how much work they are.
-> Thanks for the feedback. I will take some read then get back, probably after
-> the winter break. Stay tuned.
-> 
-> Thanks,
-> -Siwei
-> 
-> > 
-> > > > Thanks
-> > > > 
-> > > > 
-> > > > 
-> > > > > Meanwhile, I'll check internally to see if a legacy only model would
-> > > > > work. Thanks.
-> > > > > 
-> > > > > Thanks,
-> > > > > -Siwei
-> > > > > 
-> > > > > 
-> > > > > > > > > On 3/2/2021 2:53 AM, Jason Wang wrote:
-> > > > > > > > > > On 2021/3/2 5:47 下午, Michael S. Tsirkin wrote:
-> > > > > > > > > > > On Mon, Mar 01, 2021 at 11:56:50AM +0800, Jason Wang wrote:
-> > > > > > > > > > > > On 2021/3/1 5:34 上午, Michael S. Tsirkin wrote:
-> > > > > > > > > > > > > On Wed, Feb 24, 2021 at 10:24:41AM -0800, Si-Wei Liu wrote:
-> > > > > > > > > > > > > > > Detecting it isn't enough though, we will need a new ioctl to notify
-> > > > > > > > > > > > > > > the kernel that it's a legacy guest. Ugh :(
-> > > > > > > > > > > > > > Well, although I think adding an ioctl is doable, may I
-> > > > > > > > > > > > > > know what the use
-> > > > > > > > > > > > > > case there will be for kernel to leverage such info
-> > > > > > > > > > > > > > directly? Is there a
-> > > > > > > > > > > > > > case QEMU can't do with dedicate ioctls later if there's indeed
-> > > > > > > > > > > > > > differentiation (legacy v.s. modern) needed?
-> > > > > > > > > > > > > BTW a good API could be
-> > > > > > > > > > > > > 
-> > > > > > > > > > > > > #define VHOST_SET_ENDIAN _IOW(VHOST_VIRTIO, ?, int)
-> > > > > > > > > > > > > #define VHOST_GET_ENDIAN _IOW(VHOST_VIRTIO, ?, int)
-> > > > > > > > > > > > > 
-> > > > > > > > > > > > > we did it per vring but maybe that was a mistake ...
-> > > > > > > > > > > > Actually, I wonder whether it's good time to just not support
-> > > > > > > > > > > > legacy driver
-> > > > > > > > > > > > for vDPA. Consider:
-> > > > > > > > > > > > 
-> > > > > > > > > > > > 1) It's definition is no-normative
-> > > > > > > > > > > > 2) A lot of budren of codes
-> > > > > > > > > > > > 
-> > > > > > > > > > > > So qemu can still present the legacy device since the config
-> > > > > > > > > > > > space or other
-> > > > > > > > > > > > stuffs that is presented by vhost-vDPA is not expected to be
-> > > > > > > > > > > > accessed by
-> > > > > > > > > > > > guest directly. Qemu can do the endian conversion when necessary
-> > > > > > > > > > > > in this
-> > > > > > > > > > > > case?
-> > > > > > > > > > > > 
-> > > > > > > > > > > > Thanks
-> > > > > > > > > > > > 
-> > > > > > > > > > > Overall I would be fine with this approach but we need to avoid breaking
-> > > > > > > > > > > working userspace, qemu releases with vdpa support are out there and
-> > > > > > > > > > > seem to work for people. Any changes need to take that into account
-> > > > > > > > > > > and document compatibility concerns.
-> > > > > > > > > > Agree, let me check.
-> > > > > > > > > > 
-> > > > > > > > > > 
-> > > > > > > > > > >       I note that any hardware
-> > > > > > > > > > > implementation is already broken for legacy except on platforms with
-> > > > > > > > > > > strong ordering which might be helpful in reducing the scope.
-> > > > > > > > > > Yes.
-> > > > > > > > > > 
-> > > > > > > > > > Thanks
-> > > > > > > > > > 
-> > > > > > > > > > 
-
+T24gMTUuMTIuMjAyMSAxNjo1OSwgRGF2aWQgTW9zYmVyZ2VyLVRhbmcgd3JvdGU6DQo+IEVYVEVS
+TkFMIEVNQUlMOiBEbyBub3QgY2xpY2sgbGlua3Mgb3Igb3BlbiBhdHRhY2htZW50cyB1bmxlc3Mg
+eW91IGtub3cgdGhlIGNvbnRlbnQgaXMgc2FmZQ0KPiANCj4gT24gV2VkLCAyMDIxLTEyLTE1IGF0
+IDA2OjQxICswMDAwLCBDbGF1ZGl1LkJlem5lYUBtaWNyb2NoaXAuY29tIHdyb3RlOg0KPj4gT24g
+MTUuMTIuMjAyMSAwNTowNSwgRGF2aWQgTW9zYmVyZ2VyLVRhbmcgd3JvdGU6DQo+Pj4NCj4+ICtz
+dGF0aWMgaW50IHdpbGNfcGFyc2VfZ3Bpb3Moc3RydWN0IHdpbGMgKndpbGMpDQo+Pj4gK3sNCj4+
+PiArICAgICAgIHN0cnVjdCBzcGlfZGV2aWNlICpzcGkgPSB0b19zcGlfZGV2aWNlKHdpbGMtPmRl
+dik7DQo+Pj4gKyAgICAgICBzdHJ1Y3Qgd2lsY19zcGkgKnNwaV9wcml2ID0gd2lsYy0+YnVzX2Rh
+dGE7DQo+Pj4gKyAgICAgICBzdHJ1Y3Qgd2lsY19ncGlvcyAqZ3Bpb3MgPSAmc3BpX3ByaXYtPmdw
+aW9zOw0KPj4+ICsNCj4+PiArICAgICAgIC8qIGdldCBFTkFCTEUgcGluIGFuZCBkZWFzc2VydCBp
+dCAoaWYgaXQgaXMgZGVmaW5lZCk6ICovDQo+Pj4gKyAgICAgICBncGlvcy0+ZW5hYmxlID0gZGV2
+bV9ncGlvZF9nZXRfb3B0aW9uYWwoJnNwaS0+ZGV2LA0KPj4+ICsgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICJlbmFibGUiLCBHUElPRF9PVVRfTE9XKTsNCj4+
+PiArICAgICAgIC8qIGdldCBSRVNFVCBwaW4gYW5kIGFzc2VydCBpdCAoaWYgaXQgaXMgZGVmaW5l
+ZCk6ICovDQo+Pj4gKyAgICAgICBpZiAoZ3Bpb3MtPmVuYWJsZSkgew0KPj4+ICsgICAgICAgICAg
+ICAgICAvKiBpZiBlbmFibGUgcGluIGV4aXN0cywgcmVzZXQgbXVzdCBleGlzdCBhcyB3ZWxsICov
+DQo+Pj4gKyAgICAgICAgICAgICAgIGdwaW9zLT5yZXNldCA9IGRldm1fZ3Bpb2RfZ2V0KCZzcGkt
+PmRldiwNCj4+PiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+InJlc2V0IiwgR1BJT0RfT1VUX0hJR0gpOw0KPj4NCj4+IEFzIGZhciBhcyBJIGNhbiB0ZWxsIGZv
+cm0gZ3Bpb2xpYiBjb2RlIHRoZSBkaWZmZXJlbmNlIGIvdyBHUElPRF9PVVRfSElHSA0KPj4gYW5k
+IEdQSU9EX09VVF9MT1cgaW4gZ3Bpb2xpYiBpcyByZWxhdGVkIHRvIHRoZSBpbml0aWFsIHZhbHVl
+IGZvciB0aGUgR1BJTy4NCj4gDQo+IFllcy4NCj4gDQo+PiBEaWQgeW91IHVzZWQgR1BJT0RfT1VU
+X0hJR0ggZm9yIHJlc2V0IHRvIGhhdmUgdGhlIGNoaXAgb3V0IG9mIHJlc2V0IGF0IHRoaXMNCj4+
+IHBvaW50Pw0KPiANCj4gTm8sIH5SRVNFVCBpcyBhbiBhY3RpdmUtbG93IHNpZ25hbC4gIEdQSU9E
+X09VVF9MT1cgc2hvdWxkIHJlYWxseSBiZQ0KPiBjYWxsZWQgR1BJT0RfT1VUX0RFQVNTRVJURUQg
+b3Igc29tZXRoaW5nIGxpa2UgdGhhdC4gIFRoZSBjb2RlIGVuc3VyZXMNCj4gdGhhdCB0aGUgY2hp
+cCBpcyBpbiBSRVNFVCBhbmQgfkVOQUJMRWQgYWZ0ZXIgcGFyc2luZyB0aGUgR1BJT3MuDQo+IA0K
+Pj4+ICsgICAgICAgICAgICAgICBpZiAoSVNfRVJSKGdwaW9zLT5yZXNldCkpIHsNCj4+PiArICAg
+ICAgICAgICAgICAgICAgICAgICBkZXZfZXJyKCZzcGktPmRldiwgIm1pc3NpbmcgcmVzZXQgZ3Bp
+by5cbiIpOw0KPj4+ICsgICAgICAgICAgICAgICAgICAgICAgIHJldHVybiBQVFJfRVJSKGdwaW9z
+LT5yZXNldCk7DQo+Pj4gKyAgICAgICAgICAgICAgIH0NCj4+PiArICAgICAgIH0gZWxzZSB7DQo+
+Pj4gKyAgICAgICAgICAgICAgIGdwaW9zLT5yZXNldCA9IGRldm1fZ3Bpb2RfZ2V0X29wdGlvbmFs
+KCZzcGktPmRldiwNCj4+PiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgInJlc2V0IiwgR1BJT0RfT1VUX0hJR0gpOw0KPj4+ICsgICAgICAgfQ0K
+Pj4+ICsgICAgICAgcmV0dXJuIDA7DQo+Pj4gK30NCj4+PiArDQo+Pj4gK3N0YXRpYyB2b2lkIHdp
+bGNfd2xhbl9wb3dlcihzdHJ1Y3Qgd2lsYyAqd2lsYywgYm9vbCBvbikNCj4+PiArew0KPj4+ICsg
+ICAgICAgc3RydWN0IHdpbGNfc3BpICpzcGlfcHJpdiA9IHdpbGMtPmJ1c19kYXRhOw0KPj4+ICsg
+ICAgICAgc3RydWN0IHdpbGNfZ3Bpb3MgKmdwaW9zID0gJnNwaV9wcml2LT5ncGlvczsNCj4+PiAr
+DQo+Pj4gKyAgICAgICBpZiAob24pIHsNCj4+PiArICAgICAgICAgICAgICAgZ3Bpb2Rfc2V0X3Zh
+bHVlKGdwaW9zLT5lbmFibGUsIDEpOyAgICAgIC8qIGFzc2VydCBFTkFCTEUgKi8NCj4+PiArICAg
+ICAgICAgICAgICAgbWRlbGF5KDUpOw0KPj4+ICsgICAgICAgICAgICAgICBncGlvZF9zZXRfdmFs
+dWUoZ3Bpb3MtPnJlc2V0LCAwKTsgICAgICAgLyogZGVhc3NlcnQgUkVTRVQgKi8NCj4+DQo+PiBG
+cm9tIHdoYXQgSSBjYW4gdGVsbCBmcm9tIGdwaW9saWIgY29kZSwgcmVxdWVzdGluZyB0aGUgcGlu
+IGZyb20gZGV2aWNlIHRyZWUNCj4+IHdpdGg6DQo+Pg0KPj4gKyAgICAgICAgcmVzZXQtZ3Bpb3Mg
+PSA8JnBpb0EgNiBHUElPX0FDVElWRV9MT1c+Ow0KPj4NCj4+IG1ha2VzIHRoZSB2YWx1ZSB3cml0
+dGVuIHdpdGggZ3Bpb2Rfc2V0X3ZhbHVlKCkgdG8gYmUgbmVnYXRlZCwgdGh1cyB0aGUgMA0KPj4g
+d3JpdHRlbiBoZXJlIGlzIHRyYW5zbGF0ZWQgdG8gYSAxIG9uIHRoZSBwaW4uIElzIHRoZXJlIGEg
+cmVhc29uIHlvdSBkaWQgaXQNCj4+IGxpa2UgdGhpcz8NCj4gDQo+IFllcywgb2YgY291cnNlLiAg
+UkVTRVQgaXMgYW4gYWN0aXZlLWxvdyBzaWduYWwsIGFzIGRlZmluZWQgaW4gdGhlDQo+IGRhdGFz
+aGVldC4NCg0KUmlnaHQsIEkgbWlzc2VkIHRoYXQuDQoNCj4gDQo+PiBXb3VsZCBpdCBoYXZlIGJl
+ZW4gc2ltcGxlciB0byBoYXZlIGJvdGggcGlucyByZXF1ZXN0ZWQgd2l0aA0KPj4gR1BJT19BQ1RJ
+VkVfSElHSCBhbmQgaGVyZSB0byBkbyBncGlvZF9zZXRfdmFsdWUoZ3BpbywgMSkgZm9yIGJvdGgg
+b2YgdGhlDQo+PiBwaW4uIEluIHRoaXMgd2F5LCBhdCB0aGUgZmlyc3QgcmVhZCBvZiB0aGUgY29k
+ZSBvbmUgb25lIHdvdWxkIGhhdmUgYmVlbg0KPj4gdGVsbGluZyB0aGF0IGl0IGRvZXMgd2hhdCBk
+YXRhc2hlZXQgc3BlY2lmaWVzOiBmb3IgcG93ZXIgb24gdG9nZ2xlIGVuYWJsZQ0KPj4gYW5kIHJl
+c2V0IGdwaW9zIGZyb20gMCB0byAxIHdpdGggYSBkZWxheSBpbiBiZXR3ZWVuLg0KPiANCj4gSSB0
+aGluayB5b3UncmUgY29uZnVzaW5nIDAgYW5kIDEgd2l0aCBsb3ctdm9sdGFnZSBhbmQgaGlnaC12
+b2x0YWdlLiAgMA0KPiBtZWFucyBkZS1hc3NlcnQgdGhlIHNpZ25hbCwgMSBtZWFucyBhc3NlcnQg
+dGhlIHNpZ25hbC4gIFdoZXRoZXIgdGhhdA0KPiB0cmFuc2xhdGVzIHRvIGEgbG93IHZvbHRhZ2Ug
+b3IgYSBoaWdoIHZvbHRhZ2UgZGVwZW5kcyBvbiB3aGV0aGVyIHRoZQ0KPiBzaWduYWwgYSBhY3Rp
+dmUtbG93IG9yIGFjdGl2ZS1oaWdoLg0KPiANCj4+DQo+Pg0KPj4+ICsgICAgICAgfSBlbHNlIHsN
+Cj4+PiArICAgICAgICAgICAgICAgZ3Bpb2Rfc2V0X3ZhbHVlKGdwaW9zLT5yZXNldCwgMSk7ICAg
+ICAgIC8qIGFzc2VydCBSRVNFVCAqLw0KPj4+ICsgICAgICAgICAgICAgICBncGlvZF9zZXRfdmFs
+dWUoZ3Bpb3MtPmVuYWJsZSwgMCk7ICAgICAgLyogZGVhc3NlcnQgRU5BQkxFICovDQo+Pg0KPj4g
+SSBkb24ndCB1c3VhbGx5IHNlZSBjb21tZW50cyBuZWFyIHRoZSBjb2RlIGxpbmUgaW4ga2VybmVs
+LiBNYXliZSBtb3ZlIHRoZW0NCj4+IGJlZm9yZSB0aGUgYWN0dWFsIGNvZGUgbGluZSBvciByZW1v
+dmUgdGhlbSBhdCBhbGwgYXMgdGhlIGNvZGUgaXMgaW1wbGVyIGVub3VnaD8NCj4gDQo+IFlvdSdy
+ZSBraWRkaW5nLCByaWdodD8NCj4gDQo+ICAgLS1kYXZpZA0KPiANCg0K
