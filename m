@@ -2,249 +2,202 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 88A0A478083
-	for <lists+netdev@lfdr.de>; Fri, 17 Dec 2021 00:30:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B20E94780BE
+	for <lists+netdev@lfdr.de>; Fri, 17 Dec 2021 00:38:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236868AbhLPX3k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Dec 2021 18:29:40 -0500
-Received: from mail-eopbgr140110.outbound.protection.outlook.com ([40.107.14.110]:47429
-        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S235555AbhLPX3j (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Dec 2021 18:29:39 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dqzFDIysml8uC+YvL06ZzVCws9UgNiTCa6kgu8XawW3CG78D7qntDqsX/bgfCDRDS1A3O5Zze+qqH5yyyAbp3VB2a+nmY4kPLS4CAl8wcEGSqnDlnsrUbcFO2o1FJHtBM+3Z8y/ynoaqQsfDrGQsiZyNuaOguZW452JGuFxHozwV/PcoDGij8Td8CSJr3byzlXbimu2LXG4KS6u26S6Vhj82buuo9lLG9RsZhwdYYt3bFavBh0UcsXRW6e8VUBoJyfySZeOOzxPpR3UCWFkCUwWNlXnRwghKBHb9MkwurdigFEOemAIn88vC+uM0sdJ300kiCxmgxMr3wagN+HS5CQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6N9QEGhA69ycYsSYhNGrQqRY/LpLw4kJ7KSikvWJJLQ=;
- b=iT8OEUa2NEYlB8Ua3ANA1VOLDfjj1Gw8tSx/NoKxWC1msbPgGln03A03XBg7mOk2DWn/0MnOJPN7LUNmTAe3qozuhQn40xn+9FP1ybVHGckUtm5WerxorE+UC1SWLNvHLcjgjIB3vCduKofu2nJdEt22WMgkg05vYib9ocWBSNztNj8tw096GaT2twpzYwWZSY57qHhG6QqaOdRkCrESkHtbwCb2V1Znle18AQPSSf4RqyomHvKU50jj4EeMM4ZFyxbNHhcDOWXHZBjf1S7g6BTzBRECxEoAWALkYjvb+2E+NgrqNHLh0U9f5/uu5IQs2b7yN+YOkwSgVO97JekDXA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=bang-olufsen.dk; dmarc=pass action=none
- header.from=bang-olufsen.dk; dkim=pass header.d=bang-olufsen.dk; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bang-olufsen.dk;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6N9QEGhA69ycYsSYhNGrQqRY/LpLw4kJ7KSikvWJJLQ=;
- b=mUQZQoKrZPhBAwxyt90VfwgGYK8Qsp9tWJKHitclkHxNbcSpFxfhOux82LAcvW2Nxleecdvm0hiDDNDEA2cj3ITVD69H2E5DEs4t2n+ppKUwPHa9RTKywDigf2V6sTX/zpQaKXxLgdj3PJzxUVdpWDQvcdtAylxMoqtT1Rqz84E=
-Received: from AM6PR03MB3943.eurprd03.prod.outlook.com (2603:10a6:20b:26::24)
- by AM6PR0302MB3382.eurprd03.prod.outlook.com (2603:10a6:209:17::33) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4778.17; Thu, 16 Dec
- 2021 23:29:36 +0000
-Received: from AM6PR03MB3943.eurprd03.prod.outlook.com
- ([fe80::9d54:99ff:d6f4:9c63]) by AM6PR03MB3943.eurprd03.prod.outlook.com
- ([fe80::9d54:99ff:d6f4:9c63%3]) with mapi id 15.20.4778.018; Thu, 16 Dec 2021
- 23:29:35 +0000
-From:   =?utf-8?B?QWx2aW4gxaBpcHJhZ2E=?= <ALSI@bang-olufsen.dk>
-To:     "luizluca@gmail.com" <luizluca@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "olteanv@gmail.com" <olteanv@gmail.com>,
-        "arinc.unal@arinc9.com" <arinc.unal@arinc9.com>
-Subject: Re: [PATCH net-next 04/13] net: dsa: realtek: convert subdrivers into
- modules
-Thread-Topic: [PATCH net-next 04/13] net: dsa: realtek: convert subdrivers
- into modules
-Thread-Index: AQHX8rmFW+LQiQ3YPEK3na1wpNfg7Kw1xB6A
-Date:   Thu, 16 Dec 2021 23:29:35 +0000
-Message-ID: <04fab19f-36c6-4db0-e0f2-6f69f3a190ec@bang-olufsen.dk>
-References: <20211216201342.25587-1-luizluca@gmail.com>
- <20211216201342.25587-5-luizluca@gmail.com>
-In-Reply-To: <20211216201342.25587-5-luizluca@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=bang-olufsen.dk;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: d2d319f2-5888-4320-900f-08d9c0ebec0f
-x-ms-traffictypediagnostic: AM6PR0302MB3382:EE_
-x-microsoft-antispam-prvs: <AM6PR0302MB33824C6039C8790960B684E283779@AM6PR0302MB3382.eurprd03.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6790;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: lAnHMW6SW8uH+mouqF2hapNvLq2FvbQJ/x5EB8Xi7K+gSJ53pBCwnf7YtX//00TTIb1gJo/oQYqFrCI33EqC2A0HIWV8mPW3KO+eqA873TTmXlKZXhABQleN0fiCJQJ1F0RXUdEZTpJMVRjw6tuVNvsV4ZV1OOnqCYdBR9teXxax46GzETcqM3BmQYHyetAibOhV1eRRdOkcfbGtksUZtWvz2qwNG0NVXGTHWoFUd9PkMY2gQGH5az+ZQLxoCKiGNnNJ5PMwoQwSKScb/uxRaDfT7yTUVWhLtWmax8zCJiwR8+sRTBw7k76MB1MYYgdnLe9evHNATaUIpE4AZDk3KW10F0VJAwnrrnmA4Mr/DpSu4vmKgI/aZ/ibtUoD8PlvLysOHv5sOcKWmsh7tZy39sEA7ieCq6/4bvgb73DjUJgFu5YeahqBTPLpeWwOtdvGJPAanmP+MxLpBe/nt1s+Yzw1zOoRXkjXXCvUO100QOaqBjyuKm4s17VjNkEchRAwUu/r0O14osEVyl2c4WO6yUoFqL3INM5D61RaoU4mx31kZ1Bm/EiQ3W0MmCGONlQj7yrXUnsAiVhrYVlg4XeD61CDjO8wLYPeee0Vpmu6of2ZxIHgLOfxcVDD51ENFznjPerXMouVTgShg/F/ckdy1G+9PGi8K+DjbuWmd9Yof0XH+b+D5FCCCD1dyA7Y1b5MV8vLCy4FHcuNZm+xJ40FHl9NBUGjnbSa2pjEKggW41FyTea+60FH55ABEFEsoD5cd2n7zLBzuR06WxLk+k40bA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR03MB3943.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(36756003)(186003)(71200400001)(508600001)(316002)(76116006)(122000001)(66574015)(38070700005)(8676002)(66476007)(64756008)(5660300002)(66946007)(66556008)(85202003)(2906002)(91956017)(66446008)(2616005)(38100700002)(6506007)(6486002)(86362001)(31696002)(26005)(6512007)(110136005)(8936002)(85182001)(31686004)(53546011)(4326008)(83380400001)(8976002)(54906003)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?MmYxS2xXMit2MXRKVlJuOE9uNmFxTVVUMlU2dDVCQnp5ODVBRjVVSGszOFlv?=
- =?utf-8?B?L3NLZmZianp2bCtpM21jelc5Y240Yzk4am5nQmltQzNNVDJGVVgyU3V2ZE9D?=
- =?utf-8?B?UUNPREEzRDVHT3JobENzUkZScEhoais5WlNUeFNLREtZNTF4NG04ZHU0TXll?=
- =?utf-8?B?VTB3YjBZUnpyUEtiODM1YWZZdmJNZ3JYMlNVWDIvU01Jd2UwRURWdGlGOFQ2?=
- =?utf-8?B?Z1plSHNkaUFhZ01remNmTTFDeVNsQjF2RzI2bXM5MVc5UXFZMkk4OEU1Tk1N?=
- =?utf-8?B?Yk5LYnZLeGNqUmsrV0hibTljS2tKRmo4TEZUc3BYVy9vb3Q0UVV1dGZ3U0hX?=
- =?utf-8?B?RkxOVmxYVmRqdFNqM2pYNVdUR1pRVmdocy8vclZ6SzRaNUpuOXlPZ2o2NzBj?=
- =?utf-8?B?VDgyem1McXNOb1JUTTZ1K0pUaTMxMG40ZUtSVmpxanRTeWFVa0lPN0lVMFpU?=
- =?utf-8?B?ZDh5TThucmQzU2FvU1h1eFJGNmdBYzh6alIvdlJDRnZySTBqSVRzMUNKOVZJ?=
- =?utf-8?B?WnJPVkQ3YnhNK1hVK2N1QmwyVkFZM3p4V1V3TmUwZEh0aE8wSjNUcnQ1c1Vn?=
- =?utf-8?B?dlZwY1RQR1YrWmRielUwMFd6Vkt4UHJEZmhkdURQOGk5VXNGUHBUNHA3cEps?=
- =?utf-8?B?NmtkK1lFSkZDbmdEdmZIY1VwTjNaREFGUUxIUlpVSFByVnowdnVwd3FKZ0d1?=
- =?utf-8?B?VGZwMW8zTzlOOWk5VDVnKzg3WG14TFExWFBNbjhxWm5rSmhnKzZ5MWJXNTJz?=
- =?utf-8?B?YWltQVRWVTJMOC8xTjk3YW9icXJXTExsS0xDMW9RQisxK2FFclIwYXgxTDhC?=
- =?utf-8?B?MlBaekN0TFppbVdxWE4xVUhSWGtWdXZ4RE1wcWo1U0xaVEUrZVVGNmhEeEFY?=
- =?utf-8?B?UTlNMmF1UjBSWXByL3U4RFNETkZubjEvMm9xUGEwREdSREN5aWNtRXhYbmU2?=
- =?utf-8?B?b3FGZEFsUVZDQTFaWEt4QTdnOCtyNmFzNnI4SkFGa1BRV0RoQmNkTlJjdUly?=
- =?utf-8?B?bnBnOWtGOFROWVlhZnljejB0cVYvU21oNkY4SnJjb056a21SQUlCSjRRWksz?=
- =?utf-8?B?dlVRQjV4UHlNTjRkMGJaTHRhajdYQlBuQnRESmFwb3pRU3BiTDE0QVRhMS9u?=
- =?utf-8?B?M2pNUlQ0WFhvTWp4cnIrNXNoaS9yckRxNGUyUWwvalRaVnJEZW5NbS9ESEFu?=
- =?utf-8?B?VVBCQTJhMFNOMUljUmlUNFA5RW5mWi82QkJid2VhUHlyWS9lRkVZWkZ2SEI4?=
- =?utf-8?B?dXNQblRiYThnd1dqUlpIeTFVUDY2KzJKTjJRMHhWaUlqVVVoc1JmWnl1K0hv?=
- =?utf-8?B?L3h2WmwvSU9tZWwxU0xPbUI0SitydzhaOHhBMDQ4UklGSGU2OG4wVHZzNWdh?=
- =?utf-8?B?RVI5ZEMvdVhTeUlwWDlWNFZocFloSGZYUDB4cEwwVnpobDQzSnU4blgxMGx0?=
- =?utf-8?B?a0twdDVhL0VFZU0rU3lBZVI5WmxyTGM3NWNwUjZJLzEzdTYzU3k3Rm5ucnFk?=
- =?utf-8?B?WHY0Y3hUT3JBNkFCYXUyeUh6SXUzdHMxcVRpZXBOMDhMSnA5S2RlVWxKekxJ?=
- =?utf-8?B?UEpKSUtEU0ZjNHBXUkpJOGZxMUlJZ0tkZEVCS3Yva1hFSTBpVEZjYW9oMnhq?=
- =?utf-8?B?OW5JaWlhSGZPS2Y3ZDVsMmxIaFVYZVpaNWMwdTFxUjBWU2VHSEV5T0lPaU1r?=
- =?utf-8?B?Ky9EY1pBUXYydWFKVVQzV0xUbCtvRGlvUmlGNlRQbWxqZWptNlM1VDV6Q2ZP?=
- =?utf-8?B?dFZ1bjRYREYvN3o5Sm92VXhvS3NUR2QxTGpYdWN0UzdMRUhRd2N2bjY2eFlp?=
- =?utf-8?B?S1RhN3g0SkswN1ZOcTdLSTBHQWJ1NDE3d0xrZEpkMmgyeHgwQlRvS2s3SFpx?=
- =?utf-8?B?cG9iYjNraTJocFhkbEZtOFduNkt1U2hnOWFRTWFaQ0tPMitnM1hPUXl6RlhO?=
- =?utf-8?B?Yk5KTTY4L2lBR0xES0pYQmthVjd3SWF2SUFCcUJJeUZNc05rTUYwS3ZiL2l5?=
- =?utf-8?B?Uk9KTGQvWjBoUDNZSExLUVFCUWhubkFjcUZNRkZLTVVkQjNxRVNEd0h2TXpB?=
- =?utf-8?B?UUY5dkpFTUhKU2p1ME9kWEhlV1V5azMrejNrbUJRYSt2bjlWSk9YdFpPZmJR?=
- =?utf-8?B?RS9CeHo0WGQvcTlXNTJUMlJYY3BLSGNGRVVOQldwTjBiTXNwNitkaW56RHdB?=
- =?utf-8?Q?9CqmZBpmDWTJ1AFwsICQHSw=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <3F769FCF50BE29479B24F5AE4AF4DDBE@eurprd03.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S229786AbhLPXiQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Dec 2021 18:38:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59344 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229755AbhLPXiQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 18:38:16 -0500
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 945A4C061574;
+        Thu, 16 Dec 2021 15:38:15 -0800 (PST)
+Received: by mail-ed1-x52e.google.com with SMTP id z29so1297669edl.7;
+        Thu, 16 Dec 2021 15:38:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=jNeLCUag3zDQhC8g4uWlCYmA+rDqEKe64Wii3N+wdVY=;
+        b=Oqepd5U53mJgxnAU+aGwIrEqrZFnV21tc63s2tHpIdc5PlQ3tte44yYsjKJ5/qKF7v
+         uWbO46GfTpTIzFQvbmlZ+wmWcUVV/Nt3a8mQSz5SOHPv8QD7zD7Shzg1e6JLv8XVTbV+
+         8e8+O3D2UMMnxZ8mPguI1G0h7XyaLUckmRq4pbV3Z4pshPHN9Dj/gdnynuQzlabSHiOI
+         jeynE1Om1hl5u7g6sqCnFBvxjSHbAbJoLimcXIw6DLgiO1ZufWipz7pTUbqim1JSzpGn
+         owD6OSWJZaYuzB00DjtF6IAyg1yJIj2X04F63szWk8Y4hmoKtKqmZRyXhAUULjE5VO8R
+         h5mw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=jNeLCUag3zDQhC8g4uWlCYmA+rDqEKe64Wii3N+wdVY=;
+        b=ftMyHQ899f0yClIVWYC0BOEK7T0JH4QtKN18WFsfGvlSVqFo7chZuD4RBUJTAfgWrI
+         SzEDa4u2ymBvtdiWttSs+hEPFEoaMPkOH1oAQv2Btfcw4g7WiJ0JFfNxDwJXspCbr0vj
+         /hOvIbd2PPg3w/5EILDznxrpwlfRO9FxmuCwslxjxRRyMLv+FtvPRb8qCMrMxyq77Per
+         Klwxl6IcCvOwRXTGW8aSugiKWiHGhO6bQtRsq1b5MbZX3CZS7K2GtqGtOVjfd5qCqB6m
+         A3Vuo5BA2tRc+ft63Ltsul/YkHSdn6UMX8dElF8617rGnSDqXCHRTNaeS97Io5/ndzlu
+         Q+nQ==
+X-Gm-Message-State: AOAM531W9YFfVcP7SskkOZc4CpHntTveDP4AsOhnrYyyGLQIbv4PG/C/
+        iFP0OBjAEsf9IZPftqHAVo43iKtxhVI=
+X-Google-Smtp-Source: ABdhPJxBuqjKO2LwfkeBQbcTGWxeqIGxxo3WTzm0SK02HUrtohSpL6LIyKpWnsW8Xor1daKg071q2A==
+X-Received: by 2002:a17:906:730d:: with SMTP id di13mr308048ejc.557.1639697893987;
+        Thu, 16 Dec 2021 15:38:13 -0800 (PST)
+Received: from skbuf ([188.25.173.50])
+        by smtp.gmail.com with ESMTPSA id g15sm2308327ejt.10.2021.12.16.15.38.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Dec 2021 15:38:13 -0800 (PST)
+Date:   Fri, 17 Dec 2021 01:38:12 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [net-next PATCH RFC v6 00/16] Add support for qca8k mdio rw in
+ Ethernet packet
+Message-ID: <20211216233812.rpalegklcrd4ifzs@skbuf>
+References: <20211214224409.5770-1-ansuelsmth@gmail.com>
+ <20211215102629.75q6odnxetitfl3w@skbuf>
+ <61ba1928.1c69fb81.4ef9.360b@mx.google.com>
 MIME-Version: 1.0
-X-OriginatorOrg: bang-olufsen.dk
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AM6PR03MB3943.eurprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d2d319f2-5888-4320-900f-08d9c0ebec0f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Dec 2021 23:29:35.9116
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 210d08b8-83f7-470a-bc96-381193ca14a1
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Q5zH8KKnfYYTNWHhJzJzdX6qrcz1TBM7I9Elq5/0TfPtk2Dfi2twfphUZWUt1v3u8uQ9YSb+ZLM8GErUtFKwsA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR0302MB3382
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <61ba1928.1c69fb81.4ef9.360b@mx.google.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gMTIvMTYvMjEgMjE6MTMsIGx1aXpsdWNhQGdtYWlsLmNvbSB3cm90ZToNCj4gRnJvbTogTHVp
-eiBBbmdlbG8gRGFyb3MgZGUgTHVjYSA8bHVpemx1Y2FAZ21haWwuY29tPg0KPiANCj4gUHJlcGFy
-aW5nIGZvciBtdWx0aXBsZSBpbnRlcmZhY2VzIHN1cHBvcnQsIHRoZSBkcml2ZXJzDQo+IG11c3Qg
-YmUgaW5kZXBlbmRlbnQgb2YgcmVhbHRlay1zbWkuDQo+IA0KPiBUZXN0ZWQtYnk6IEFyxLFuw6cg
-w5xOQUwgPGFyaW5jLnVuYWxAYXJpbmM5LmNvbT4NCj4gU2lnbmVkLW9mZi1ieTogTHVpeiBBbmdl
-bG8gRGFyb3MgZGUgTHVjYSA8bHVpemx1Y2FAZ21haWwuY29tPg0KPiAtLS0NCj4gICBkcml2ZXJz
-L25ldC9kc2EvcmVhbHRlay9LY29uZmlnICAgICAgICAgICAgICAgfCAyMCArKysrKysrKysrKysr
-KysrKy0tDQo+ICAgZHJpdmVycy9uZXQvZHNhL3JlYWx0ZWsvTWFrZWZpbGUgICAgICAgICAgICAg
-IHwgIDQgKysrLQ0KPiAgIC4uLi97cmVhbHRlay1zbWktY29yZS5jID0+IHJlYWx0ZWstc21pLmN9
-ICAgICB8IDE1ICsrKysrKysrKystLS0tDQo+ICAgZHJpdmVycy9uZXQvZHNhL3JlYWx0ZWsvcnRs
-ODM2NW1iLmMgICAgICAgICAgIHwgIDIgKysNCj4gICAuLi4vZHNhL3JlYWx0ZWsve3J0bDgzNjYu
-YyA9PiBydGw4MzY2LWNvcmUuY30gfCAgMA0KPiAgIGRyaXZlcnMvbmV0L2RzYS9yZWFsdGVrL3J0
-bDgzNjZyYi5jICAgICAgICAgICB8ICAyICsrDQo+ICAgNiBmaWxlcyBjaGFuZ2VkLCAzNiBpbnNl
-cnRpb25zKCspLCA3IGRlbGV0aW9ucygtKQ0KPiAgIHJlbmFtZSBkcml2ZXJzL25ldC9kc2EvcmVh
-bHRlay97cmVhbHRlay1zbWktY29yZS5jID0+IHJlYWx0ZWstc21pLmN9ICg5NiUpDQo+ICAgcmVu
-YW1lIGRyaXZlcnMvbmV0L2RzYS9yZWFsdGVrL3tydGw4MzY2LmMgPT4gcnRsODM2Ni1jb3JlLmN9
-ICgxMDAlKQ0KPiANCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2RzYS9yZWFsdGVrL0tjb25m
-aWcgYi9kcml2ZXJzL25ldC9kc2EvcmVhbHRlay9LY29uZmlnDQo+IGluZGV4IGJiYzZlOTE4YmFh
-Ni4uYzAwMmE4NGEwMGY1IDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL25ldC9kc2EvcmVhbHRlay9L
-Y29uZmlnDQo+ICsrKyBiL2RyaXZlcnMvbmV0L2RzYS9yZWFsdGVrL0tjb25maWcNCj4gQEAgLTIs
-OCArMiw2IEBADQo+ICAgbWVudWNvbmZpZyBORVRfRFNBX1JFQUxURUsNCj4gICAJdHJpc3RhdGUg
-IlJlYWx0ZWsgRXRoZXJuZXQgc3dpdGNoIGZhbWlseSBzdXBwb3J0Ig0KPiAgIAlkZXBlbmRzIG9u
-IE5FVF9EU0ENCj4gLQlzZWxlY3QgTkVUX0RTQV9UQUdfUlRMNF9BDQo+IC0Jc2VsZWN0IE5FVF9E
-U0FfVEFHX1JUTDhfNA0KPiAgIAlzZWxlY3QgRklYRURfUEhZDQo+ICAgCXNlbGVjdCBJUlFfRE9N
-QUlODQo+ICAgCXNlbGVjdCBSRUFMVEVLX1BIWQ0KPiBAQCAtMTcsMyArMTUsMjEgQEAgY29uZmln
-IE5FVF9EU0FfUkVBTFRFS19TTUkNCj4gICAJZGVmYXVsdCB5DQo+ICAgCWhlbHANCj4gICAJICBT
-ZWxlY3QgdG8gZW5hYmxlIHN1cHBvcnQgZm9yIHJlZ2lzdGVyaW5nIHN3aXRjaGVzIGNvbm5lY3Rl
-ZCB0aHJvdWdoIFNNSS4NCj4gKw0KPiArY29uZmlnIE5FVF9EU0FfUkVBTFRFS19SVEw4MzY1TUIN
-Cj4gKwl0cmlzdGF0ZSAiUmVhbHRlayBSVEw4MzY1TUIgc3dpdGNoIHN1YmRyaXZlciINCj4gKwlk
-ZWZhdWx0IHkNCj4gKwlkZXBlbmRzIG9uIE5FVF9EU0FfUkVBTFRFSw0KPiArCWRlcGVuZHMgb24g
-TkVUX0RTQV9SRUFMVEVLX1NNSQ0KPiArCXNlbGVjdCBORVRfRFNBX1RBR19SVEw4XzQNCj4gKwlo
-ZWxwDQo+ICsJICBTZWxlY3QgdG8gZW5hYmxlIHN1cHBvcnQgZm9yIFJlYWx0ZWsgUlRMODM2NU1C
-DQo+ICsNCj4gK2NvbmZpZyBORVRfRFNBX1JFQUxURUtfUlRMODM2NlJCDQo+ICsJdHJpc3RhdGUg
-IlJlYWx0ZWsgUlRMODM2NlJCIHN3aXRjaCBzdWJkcml2ZXIiDQo+ICsJZGVmYXVsdCB5DQo+ICsJ
-ZGVwZW5kcyBvbiBORVRfRFNBX1JFQUxURUsNCj4gKwlkZXBlbmRzIG9uIE5FVF9EU0FfUkVBTFRF
-S19TTUkNCj4gKwlzZWxlY3QgTkVUX0RTQV9UQUdfUlRMNF9BDQo+ICsJaGVscA0KPiArCSAgU2Vs
-ZWN0IHRvIGVuYWJsZSBzdXBwb3J0IGZvciBSZWFsdGVrIFJUTDgzNjZSQg0KPiBkaWZmIC0tZ2l0
-IGEvZHJpdmVycy9uZXQvZHNhL3JlYWx0ZWsvTWFrZWZpbGUgYi9kcml2ZXJzL25ldC9kc2EvcmVh
-bHRlay9NYWtlZmlsZQ0KPiBpbmRleCAzMjNiOTIxYmZjZTAuLjhiNWE0YWJjZWRkMyAxMDA2NDQN
-Cj4gLS0tIGEvZHJpdmVycy9uZXQvZHNhL3JlYWx0ZWsvTWFrZWZpbGUNCj4gKysrIGIvZHJpdmVy
-cy9uZXQvZHNhL3JlYWx0ZWsvTWFrZWZpbGUNCj4gQEAgLTEsMyArMSw1IEBADQo+ICAgIyBTUERY
-LUxpY2Vuc2UtSWRlbnRpZmllcjogR1BMLTIuMA0KPiAgIG9iai0kKENPTkZJR19ORVRfRFNBX1JF
-QUxURUtfU01JKSAJKz0gcmVhbHRlay1zbWkubw0KPiAtcmVhbHRlay1zbWktb2JqcwkJCTo9IHJl
-YWx0ZWstc21pLWNvcmUubyBydGw4MzY2Lm8gcnRsODM2NnJiLm8gcnRsODM2NW1iLm8NCj4gK29i
-ai0kKENPTkZJR19ORVRfRFNBX1JFQUxURUtfUlRMODM2NlJCKSArPSBydGw4MzY2Lm8NCg0KTWF5
-YmUgdGhpcyBzaG91bGQgYmUgQ09ORklHX05FVF9EU0FfUkVBTFRFS19SVEw4MzY2IChubyBSQik/
-IE5vdCB0aGF0IEkgDQpwdXQgbXkgZmFpdGggaW4gUmVhbHRlaydzIG5hbWluZyBzY2hlbWUuLi4N
-Cg0KPiArcnRsODM2Ni1vYmpzIAkJCQk6PSBydGw4MzY2LWNvcmUubyBydGw4MzY2cmIubw0KPiAr
-b2JqLSQoQ09ORklHX05FVF9EU0FfUkVBTFRFS19SVEw4MzY1TUIpICs9IHJ0bDgzNjVtYi5vDQo+
-IGRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC9kc2EvcmVhbHRlay9yZWFsdGVrLXNtaS1jb3JlLmMg
-Yi9kcml2ZXJzL25ldC9kc2EvcmVhbHRlay9yZWFsdGVrLXNtaS5jDQo+IHNpbWlsYXJpdHkgaW5k
-ZXggOTYlDQo+IHJlbmFtZSBmcm9tIGRyaXZlcnMvbmV0L2RzYS9yZWFsdGVrL3JlYWx0ZWstc21p
-LWNvcmUuYw0KPiByZW5hbWUgdG8gZHJpdmVycy9uZXQvZHNhL3JlYWx0ZWsvcmVhbHRlay1zbWku
-Yw0KPiBpbmRleCAyYzc4ZWI1YzBiZGMuLjExNDQ3MDk2YzhkYyAxMDA2NDQNCj4gLS0tIGEvZHJp
-dmVycy9uZXQvZHNhL3JlYWx0ZWsvcmVhbHRlay1zbWktY29yZS5jDQo+ICsrKyBiL2RyaXZlcnMv
-bmV0L2RzYS9yZWFsdGVrL3JlYWx0ZWstc21pLmMNCj4gQEAgLTI5Nyw3ICsyOTcsNiBAQCBpbnQg
-cmVhbHRla19zbWlfd3JpdGVfcmVnX25vYWNrKHN0cnVjdCByZWFsdGVrX3ByaXYgKnByaXYsIHUz
-MiBhZGRyLA0KPiAgIHsNCj4gICAJcmV0dXJuIHJlYWx0ZWtfc21pX3dyaXRlX3JlZyhwcml2LCBh
-ZGRyLCBkYXRhLCBmYWxzZSk7DQo+ICAgfQ0KPiAtRVhQT1JUX1NZTUJPTF9HUEwocmVhbHRla19z
-bWlfd3JpdGVfcmVnX25vYWNrKTsNCj4gICANCj4gICAvKiBSZWdtYXAgYWNjZXNzb3JzICovDQo+
-ICAgDQo+IEBAIC0zNDIsOCArMzQxLDkgQEAgc3RhdGljIGludCByZWFsdGVrX3NtaV9tZGlvX3dy
-aXRlKHN0cnVjdCBtaWlfYnVzICpidXMsIGludCBhZGRyLCBpbnQgcmVnbnVtLA0KPiAgIAlyZXR1
-cm4gcHJpdi0+b3BzLT5waHlfd3JpdGUocHJpdiwgYWRkciwgcmVnbnVtLCB2YWwpOw0KPiAgIH0N
-Cj4gICANCj4gLWludCByZWFsdGVrX3NtaV9zZXR1cF9tZGlvKHN0cnVjdCByZWFsdGVrX3ByaXYg
-KnByaXYpDQo+ICtpbnQgcmVhbHRla19zbWlfc2V0dXBfbWRpbyhzdHJ1Y3QgZHNhX3N3aXRjaCAq
-ZHMpDQo+ICAgew0KPiArCXN0cnVjdCByZWFsdGVrX3ByaXYgKnByaXYgPSAgKHN0cnVjdCByZWFs
-dGVrX3ByaXYgKilkcy0+cHJpdjsNCj4gICAJc3RydWN0IGRldmljZV9ub2RlICptZGlvX25wOw0K
-PiAgIAlpbnQgcmV0Ow0KPiAgIA0KPiBAQCAtMzYzLDEwICszNjMsMTAgQEAgaW50IHJlYWx0ZWtf
-c21pX3NldHVwX21kaW8oc3RydWN0IHJlYWx0ZWtfcHJpdiAqcHJpdikNCj4gICAJcHJpdi0+c2xh
-dmVfbWlpX2J1cy0+cmVhZCA9IHJlYWx0ZWtfc21pX21kaW9fcmVhZDsNCj4gICAJcHJpdi0+c2xh
-dmVfbWlpX2J1cy0+d3JpdGUgPSByZWFsdGVrX3NtaV9tZGlvX3dyaXRlOw0KPiAgIAlzbnByaW50
-Zihwcml2LT5zbGF2ZV9taWlfYnVzLT5pZCwgTUlJX0JVU19JRF9TSVpFLCAiU01JLSVkIiwNCj4g
-LQkJIHByaXYtPmRzLT5pbmRleCk7DQo+ICsJCSBkcy0+aW5kZXgpOw0KPiAgIAlwcml2LT5zbGF2
-ZV9taWlfYnVzLT5kZXYub2Zfbm9kZSA9IG1kaW9fbnA7DQo+ICAgCXByaXYtPnNsYXZlX21paV9i
-dXMtPnBhcmVudCA9IHByaXYtPmRldjsNCj4gLQlwcml2LT5kcy0+c2xhdmVfbWlpX2J1cyA9IHBy
-aXYtPnNsYXZlX21paV9idXM7DQo+ICsJZHMtPnNsYXZlX21paV9idXMgPSBwcml2LT5zbGF2ZV9t
-aWlfYnVzOw0KPiAgIA0KPiAgIAlyZXQgPSBkZXZtX29mX21kaW9idXNfcmVnaXN0ZXIocHJpdi0+
-ZGV2LCBwcml2LT5zbGF2ZV9taWlfYnVzLCBtZGlvX25wKTsNCj4gICAJaWYgKHJldCkgew0KPiBA
-QCAtNDEzLDYgKzQxMyw5IEBAIHN0YXRpYyBpbnQgcmVhbHRla19zbWlfcHJvYmUoc3RydWN0IHBs
-YXRmb3JtX2RldmljZSAqcGRldikNCj4gICAJcHJpdi0+Y21kX3dyaXRlID0gdmFyLT5jbWRfd3Jp
-dGU7DQo+ICAgCXByaXYtPm9wcyA9IHZhci0+b3BzOw0KPiAgIA0KPiArCXByaXYtPnNldHVwX2lu
-dGVyZmFjZT1yZWFsdGVrX3NtaV9zZXR1cF9tZGlvOw0KPiArCXByaXYtPndyaXRlX3JlZ19ub2Fj
-az1yZWFsdGVrX3NtaV93cml0ZV9yZWdfbm9hY2s7DQoNCkZvcm1hdHRpbmc6IGEgPSBiLCBub3Qg
-YT1iLg0KDQo+ICsNCj4gICAJZGV2X3NldF9kcnZkYXRhKGRldiwgcHJpdik7DQo+ICAgCXNwaW5f
-bG9ja19pbml0KCZwcml2LT5sb2NrKTsNCj4gICANCj4gQEAgLTQ5MiwxOSArNDk1LDIzIEBAIHN0
-YXRpYyB2b2lkIHJlYWx0ZWtfc21pX3NodXRkb3duKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBk
-ZXYpDQo+ICAgfQ0KPiAgIA0KPiAgIHN0YXRpYyBjb25zdCBzdHJ1Y3Qgb2ZfZGV2aWNlX2lkIHJl
-YWx0ZWtfc21pX29mX21hdGNoW10gPSB7DQo+ICsjaWYgSVNfRU5BQkxFRChDT05GSUdfTkVUX0RT
-QV9SRUFMVEVLX1JUTDgzNjZSQikNCj4gICAJew0KPiAgIAkJLmNvbXBhdGlibGUgPSAicmVhbHRl
-ayxydGw4MzY2cmIiLA0KPiAgIAkJLmRhdGEgPSAmcnRsODM2NnJiX3ZhcmlhbnQsDQo+ICAgCX0s
-DQo+ICsjZW5kaWYNCj4gICAJew0KPiAgIAkJLyogRklYTUU6IGFkZCBzdXBwb3J0IGZvciBSVEw4
-MzY2UyBhbmQgbW9yZSAqLw0KPiAgIAkJLmNvbXBhdGlibGUgPSAicmVhbHRlayxydGw4MzY2cyIs
-DQo+ICAgCQkuZGF0YSA9IE5VTEwsDQo+ICAgCX0sDQo+ICsjaWYgSVNfRU5BQkxFRChDT05GSUdf
-TkVUX0RTQV9SRUFMVEVLX1JUTDgzNjVNQikNCj4gICAJew0KPiAgIAkJLmNvbXBhdGlibGUgPSAi
-cmVhbHRlayxydGw4MzY1bWIiLA0KPiAgIAkJLmRhdGEgPSAmcnRsODM2NW1iX3ZhcmlhbnQsDQo+
-ICAgCX0sDQo+ICsjZW5kaWYNCj4gICAJeyAvKiBzZW50aW5lbCAqLyB9LA0KPiAgIH07DQo+ICAg
-TU9EVUxFX0RFVklDRV9UQUJMRShvZiwgcmVhbHRla19zbWlfb2ZfbWF0Y2gpOw0KPiBkaWZmIC0t
-Z2l0IGEvZHJpdmVycy9uZXQvZHNhL3JlYWx0ZWsvcnRsODM2NW1iLmMgYi9kcml2ZXJzL25ldC9k
-c2EvcmVhbHRlay9ydGw4MzY1bWIuYw0KPiBpbmRleCBmNTYyYTZlZmI1NzQuLmQ2MDU0ZjYzZjIw
-NCAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy9uZXQvZHNhL3JlYWx0ZWsvcnRsODM2NW1iLmMNCj4g
-KysrIGIvZHJpdmVycy9uZXQvZHNhL3JlYWx0ZWsvcnRsODM2NW1iLmMNCj4gQEAgLTE5ODcsMyAr
-MTk4Nyw1IEBAIGNvbnN0IHN0cnVjdCByZWFsdGVrX3ZhcmlhbnQgcnRsODM2NW1iX3ZhcmlhbnQg
-PSB7DQo+ICAgCS5jaGlwX2RhdGFfc3ogPSBzaXplb2Yoc3RydWN0IHJ0bDgzNjVtYiksDQo+ICAg
-fTsNCj4gICBFWFBPUlRfU1lNQk9MX0dQTChydGw4MzY1bWJfdmFyaWFudCk7DQo+ICsNCj4gK01P
-RFVMRV9MSUNFTlNFKCJHUEwiKTsNCg0KWW91IGNvdWxkIGFsc28gYWRkIE1PRFVMRV9ERVNDUklQ
-VElPTi9NT0RVTEVfQVVUSE9ScyB0byB0aGVzZSBzdWJkcml2ZXJzIA0Kbm93IHRoYXQgdGhleSBh
-cmUgZnJlZSBmcm9tIHRoZSBjb3JlLg0KDQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC9kc2Ev
-cmVhbHRlay9ydGw4MzY2LmMgYi9kcml2ZXJzL25ldC9kc2EvcmVhbHRlay9ydGw4MzY2LWNvcmUu
-Yw0KPiBzaW1pbGFyaXR5IGluZGV4IDEwMCUNCj4gcmVuYW1lIGZyb20gZHJpdmVycy9uZXQvZHNh
-L3JlYWx0ZWsvcnRsODM2Ni5jDQo+IHJlbmFtZSB0byBkcml2ZXJzL25ldC9kc2EvcmVhbHRlay9y
-dGw4MzY2LWNvcmUuYw0KPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZHNhL3JlYWx0ZWsvcnRs
-ODM2NnJiLmMgYi9kcml2ZXJzL25ldC9kc2EvcmVhbHRlay9ydGw4MzY2cmIuYw0KPiBpbmRleCBi
-MTYzNWMyMDI3NmIuLjMxZjFhOTQ5YzhlNyAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy9uZXQvZHNh
-L3JlYWx0ZWsvcnRsODM2NnJiLmMNCj4gKysrIGIvZHJpdmVycy9uZXQvZHNhL3JlYWx0ZWsvcnRs
-ODM2NnJiLmMNCj4gQEAgLTE4MTIsMyArMTgxMiw1IEBAIGNvbnN0IHN0cnVjdCByZWFsdGVrX3Zh
-cmlhbnQgcnRsODM2NnJiX3ZhcmlhbnQgPSB7DQo+ICAgCS5jaGlwX2RhdGFfc3ogPSBzaXplb2Yo
-c3RydWN0IHJ0bDgzNjZyYiksDQo+ICAgfTsNCj4gICBFWFBPUlRfU1lNQk9MX0dQTChydGw4MzY2
-cmJfdmFyaWFudCk7DQo+ICsNCj4gK01PRFVMRV9MSUNFTlNFKCJHUEwiKTsNCg0K
+On Wed, Dec 15, 2021 at 05:34:45PM +0100, Ansuel Smith wrote:
+> > > I tested this with multicpu port and with port6 set as the unique port and
+> > > it's sad.
+> > > It seems they implemented this feature in a bad way and this is only
+> > > supported with cpu port0. When cpu port6 is the unique port, the switch
+> > > doesn't send ack packet. With multicpu port, packet ack are not duplicated
+> > > and only cpu port0 sends them. This is the same for the MIB counter.
+> > > For this reason this feature is enabled only when cpu port0 is enabled and
+> > > operational.
+> > 
+> > Let's discuss this a bit (not the hardware limitation, that one is what
+> > it is). When DSA has multiple CPU ports, right now both host-side
+> > Ethernet ports are set up as DSA masters. By being a DSA master, I mean
+> > that dev->dsa_ptr is a non-NULL pointer, so these interfaces expect to
+> > receive packets that are trapped by the DSA packet_type handlers.
+> > But due to the way in which dsa_tree_setup_default_cpu() is written,
+> > by default only the first CPU port will be used. So the host port
+> > attached to the second CPU port will be a DSA master technically, but it
+> > will be an inactive one and won't be anyone's master (no dp->cpu_dp will
+> > point to this master's dev->dsa_ptr). My idea of DSA support for
+> > multiple CPU ports would be to be able to change the dp->cpu_dp mapping
+> > through rtnetlink, on a per user port basis (yes, this implies we don't
+> > have a solution for DSA ports).
+> 
+> I have a similar implementation that was proposed as RFC many times ago.
+
+Yes, well, how to assign a user port to a CPU port seems not to be the
+biggest problem that needs to be solved before support for multiple CPU
+ports can fully go in.
+
+> > My second observation is based on the fact that some switches support a
+> > single CPU port, yet they are wired using two Ethernet ports towards the
+> > host. The Felix and Seville switches are structured this way. I think
+> > some Broadcom switches too.
+> > Using the rtnetlink user API, a user could be able to migrate all user
+> > ports between one CPU port and the other, and as long as the
+> > configuration is valid, the switch driver should accept this (we perform
+> > DSA master changing while all ports are down, and we could refuse going
+> > up if e.g. some user ports are assigned to CPU port A and some user
+> > ports to CPU port B). Nonetheless, the key point is that when a single
+> > CPU port is used, the other CPU port kinda sits there doing nothing. So
+> > I also have some patches that make the host port attached to this other
+> > CPU port be a normal interface (not a DSA master).
+> > The switch side of things is still a CPU port (not a user port, since
+> > there still isn't any net device registered for it), but nonetheless, it
+> > is a CPU port with no DSA tagging over it, hence the reason why the host
+> > port isn't a DSA master. The patch itself that changes this behavior
+> > sounds something like "only set up a host port as a DSA master if some
+> > user ports are assigned to it".
+> > As to why I'm doing it this way: the device tree should be fixed, and I
+> > do need to describe the connection between the switch CPU ports and the
+> > DSA masters via the 'ethernet = <&phandle>;' property. From a hardware
+> > perspective, both switch ports A and B are CPU ports, equally. But this
+> > means that DSA won't create a user port for the CPU port B, which would
+> > be the more natural way to use it.
+> > Now why this pertains to you: Vivien's initial stab at management over
+> > Ethernet wanted to decouple a bit the concept of a DSA master (used for
+> > the network stack) from the concept of a host port used for in-band
+> > management (used for register access). Whereas our approach here is to
+> > keep the two coupled, due to us saying "hey, if there's a direct
+> > connection to the switch, this is a DSA master anyway, is it not?".
+> > Well, here's one thing which you wouldn't be able to do if I pursue my
+> > idea with lazy DSA master setup: if you decide to move all your user
+> > ports using rtnetlink to CPU port 6, then the DSA master of CPU port 0
+> > will cease to be a DSA master. So that will also prevent the management
+> > protocol from working.
+> 
+> About the migration problem, wonder if we can just use a refcount that
+> would represent the user of the master port. The port won't be DSA
+> master anymore if no user are connected. A switch can increase this ref
+> if the port is mandatory for some operation. (qca8k on state change
+> operational would increase the ref and decrease and then the port can be
+> removed from a DSA master) That should handle all the other switch and
+> still permit a driver to ""bypass"" this behaviour.
+
+Maybe. Although not quite like the way in which you propose. Remember
+that the idea is for a DSA master to be a regular interface until it
+gains a user. So there's the chicken and egg problem if you want to
+become a user on ->master_state_change()... because it's not a master.
+You'd have to specify upfront.
+
+> > I don't want to break your use case, but then again, I'm wondering what
+> > we could do to support the second CPU port working without DSA tagging,
+> > without changing the device trees to declare it as a user port (which in
+> > itself isn't bad, it's just that we need to support all use cases with a
+> > single, unified device tree).
+> 
+> Just some info about the secondary CPU port.
+> From Documentation the second cpu port in sgmii mode can be used also for
+> other task so yes we should understand how to handle this. (base-x, mac
+> and phy) This mode is set based on the phy mode and if the dsa port is a
+> cpu port. Device tree changes can be accepted as AFAIK due to DSA not
+> supporting multi cpu, CPU port 6 was never used/defined. (But I'm
+> not sure... that is the case for all the device we have on openwrt)
+
+What do you mean exactly by "other tasks"?
+
+> Considering that introducing multicpu port would require a
+> bit of rework, wonder if we should introduce some new bindings/node and
+> fallback to a legacy (aka force first cpu port as the unique cpu port
+> and ignore others) in the absence of this new implementation. (Hoping I
+> didn't get all wrong with the main problem here)
+
+The defaults would stay the same. (I've no idea why we would introduce
+new device tree bindings? the only device tree change IMO would be to
+declare the link between the second CPU port and its DSA master, if you
+haven't done that already) But my key point was that, to some extent,
+some change to the current behavior will still be required. Like right
+now, a kernel 5.15 when it sees a device tree with 2 CPU ports will have
+2 DSA masters. Maybe kernel 5.17 will only start off with the first port
+as a DSA master, and the other just a candidate. I'm hoping this won't
+change observable behavior for the worse for anyone, because device
+trees are supposed to be there to stay, not change on a whim. My hope is
+based on the fact that as far as I can see, that second DSA master is
+effectively useless. Which in fact creates the second problem: exactly
+because the second host port is useless with the current code structure,
+I can see people describing it as a user rather than CPU port in current
+device trees, just to make some use out of it. But that restricts the
+potential user base (and therefore appeal) of my change of behavior or
+of multi-CPU port support in general, and this is a bit sad. I think we
+should be all spending a bit more time with current-generation kernels
+on "updated" device trees with multiple CPU ports defined, and see
+what's broken and what could be improved, because otherwise we could be
+leaving behind a huge mess when the device trees get updated, and we
+need to run the occasional old kernel on them.
+
+> But if I'm not wrong there was at the start some years ago an idea of a
+> node used to declare master port separate from the generic port node but
+> it was rejected?
+
+I don't know anything about this.
