@@ -2,228 +2,303 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CA33477FA5
-	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 22:57:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E17F477FFD
+	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 23:23:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237139AbhLPV5K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Dec 2021 16:57:10 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:59250 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234459AbhLPV5K (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Dec 2021 16:57:10 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=qQ2/GAJNApZFHJGvqhKZNxRu6RFm8epoh3iYjRz+zFM=; b=bhMhIuenPbSciuR7s8n23M6Fkf
-        KBdRg8NcPF4gbdnHciY9noS3hS9Gp3NqxRUmSQmKSRUkLILm4/v77ayfperbkV0UooiBKuGfu8wQR
-        wLpkfmaCaPZfzDgjWLbo29NolviolTVeeJWivGxV0yJJZYCpWYPgfhZ1d+oYanCWXYeo=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mxyk7-00GmM2-Nf; Thu, 16 Dec 2021 22:56:51 +0100
-Date:   Thu, 16 Dec 2021 22:56:51 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Joseph CHAMG <josright123@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, joseph_chang@davicom.com.tw,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6, 2/2] net: Add dm9051 driver
-Message-ID: <Ybu2I1iaSejwuMpI@lunn.ch>
-References: <20211216093246.23738-1-josright123@gmail.com>
- <20211216093246.23738-3-josright123@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+        id S233838AbhLPWXz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Dec 2021 17:23:55 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:25850 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S230462AbhLPWXy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 17:23:54 -0500
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.16.1.2/8.16.1.2) with ESMTP id 1BGHP0LY023220;
+        Thu, 16 Dec 2021 14:23:39 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=6C+8PU7a5i4Yh347KlG0lXRfTyLMDRzwekPmjHrqWso=;
+ b=Qq15pA8/QezA0uBgXgoqscs7g22Lv80igXpCSKxrZc+Id1nWmxJTKYmdhkqqIwCvPqNE
+ byuV9PSFwgpdK/bqnrNBT0kRFKjwZZKScqpjZgL9EmgpHOycx3QRDRKiadvYN/cNEchY
+ O0P6BNybOUC0VUfdhM8loNF4WFWKLlyZZwg= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by m0001303.ppops.net (PPS) with ESMTPS id 3d00nn682b-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 16 Dec 2021 14:23:38 -0800
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.230) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Thu, 16 Dec 2021 14:23:37 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=KLjQ3YvanWnBWD01vsMbfXCzZIHbMo5xxgrh9JnsM2ZoZAFuOVx0qSUKeBWC/2l0DGsQR7V9nfxfVhUc28jXnGt6QI5SKPnoHKA9UWpV606CnARK1rdq8nLuxkH/r6HRJQ/Kea2I27fOnt2dwg64wwtZ1zJzu0B8vFo+8Pg/5tqooZMyAVTYcks5LlzbSjylV6eqlaY/GTofH/SJ3qEOQ0Erq8C+uXoFbmDI/H1p8nN48j9nmq9VXH0LNtNvAcqXleGKuL4Lzk6fjomGp99zVTjS89JAg9yVi2dtApod5CMU6Ca4WUByO5sJ7nxCLdidGGN6S5lySueYjIcmzivjJA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=6C+8PU7a5i4Yh347KlG0lXRfTyLMDRzwekPmjHrqWso=;
+ b=X5K80L/l4EFIoq/sqhLCWVZkuOMjTANAW29bvdoxAVAn3BbN7Q4ilDuq94U1nJ0VQYgTeRUDB0+d3zPo/UOWXRT2aU8J5ptHBKKwLC1MG+LEHycxx83JwZIL8bHFu9zF44WkVVHAeZjm+00l65wPre/peWoEW63/u4oo+NGx7aogobVgsWp4eUTM/pRd9hPN9UPTHm3rGUWOlycEL5pFMytNh1ri9gAaNDgT78nsoFV41VC9cLKh9bdrz0pvZCm6rgvvpG9KviyDuV9uGL3/46mE1qVwvLb2m4Td2qBbpz0SJ2Uwpj5AUPaffNxbmHQfwUkxS9gM4FXG4jun4LQXmg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Received: from SA1PR15MB5016.namprd15.prod.outlook.com (2603:10b6:806:1db::19)
+ by SA1PR15MB4887.namprd15.prod.outlook.com (2603:10b6:806:1d2::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4778.17; Thu, 16 Dec
+ 2021 22:23:35 +0000
+Received: from SA1PR15MB5016.namprd15.prod.outlook.com
+ ([fe80::e589:cc2c:1c9c:8010]) by SA1PR15MB5016.namprd15.prod.outlook.com
+ ([fe80::e589:cc2c:1c9c:8010%8]) with mapi id 15.20.4801.015; Thu, 16 Dec 2021
+ 22:23:35 +0000
+Date:   Thu, 16 Dec 2021 14:23:32 -0800
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     Willem de Bruijn <willemb@google.com>
+CC:     <netdev@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, <kernel-team@fb.com>
+Subject: Re: [RFC PATCH v2 net-next] net: Preserve skb delivery time during
+ forward
+Message-ID: <20211216222332.fltkclu4x3udpomr@kafai-mbp.dhcp.thefacebook.com>
+References: <20211215201158.271976-1-kafai@fb.com>
+ <CA+FuTSdR0yPwXAZZjziGOeujJ_Ac19fX1DsqfRXX3Dsn1uFPAQ@mail.gmail.com>
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20211216093246.23738-3-josright123@gmail.com>
+In-Reply-To: <CA+FuTSdR0yPwXAZZjziGOeujJ_Ac19fX1DsqfRXX3Dsn1uFPAQ@mail.gmail.com>
+X-ClientProxiedBy: MW2PR16CA0065.namprd16.prod.outlook.com
+ (2603:10b6:907:1::42) To SA1PR15MB5016.namprd15.prod.outlook.com
+ (2603:10b6:806:1db::19)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 4ed36ecd-7fe7-4caf-1ff9-08d9c0e2b322
+X-MS-TrafficTypeDiagnostic: SA1PR15MB4887:EE_
+X-Microsoft-Antispam-PRVS: <SA1PR15MB4887A8068BB0C0A8DA3DFDFBD5779@SA1PR15MB4887.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: K+v5q3Ql4u3Rf4SlB8QSit81rReAOr/cCUxy1YPNIz2B0Fosz5fX6r8QEsyWiid4DB1Vbd1L0AHwZz0lZLbcXTeIMOEHpebFYBO3KIFQ2IpjrMO+jVYVfF9sxCPSF83ZkhxPd19Eao6EAUQT1V1MjigCPyLO2nApVP2zRqQGfscY7yoZKHMA7+yk39mNqxxVjuwJepF0zU5eGssL2rZrxSioT/c6REweqaff58GtnepiCta+8i9n8iAzkYPMkZ+UaBheQWqh9L068AkIWd8lT+jcoLkD0Dw/BkzCkbjLJ8ghKJ8KVzPMNDS8pXNK8jogU92apY6FLT2hGXHC4reSdKwFk2oChR6p44cd1JDgWPwJ0jSV88ABJ1qNP9Cu48eyDA9ymblslgXrpvmqKH45AU6Tm9aICgvCyOffpTGHDnU4ukkDF/R6BqqNDTOnKopvRgD5SKjDt7burAQ0bmVTqghi2/JZkhxYmELDqJTZpu2wkMlnPiSysxi3jes6qgM6/LWaWdBB3StuaGWRnNljTCsTvV/yJD+KO9WA7dqR6XJyyot+Qvn0KxaWJCIZMuOKe31kp9+bSz4rEPDLy2O78yTqRVNE4G26mFRT/quBu+oCt4VOqENDsjIHfbN7ck+sjVr3Shgax4vV4lIBihwHcA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR15MB5016.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(86362001)(186003)(1076003)(8936002)(9686003)(508600001)(5660300002)(6512007)(8676002)(52116002)(6486002)(54906003)(6506007)(38100700002)(4326008)(6916009)(66946007)(316002)(83380400001)(66556008)(6666004)(2906002)(66476007);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?HLgEOzPeH63D3ltXtlxl3PLt1I0rbggC+BWHMNfBdyWJZTF3SgBhR6+bizAQ?=
+ =?us-ascii?Q?ACGkuQzzkEvJWcUitRfqvLzV76MxJDVF9EaBa7euToFEWNjgoxgKVmLBKLo0?=
+ =?us-ascii?Q?X6XnqcSEIrfS4/nQgMjyslu4vcYREzaMGc1picGK2rw214h4cSo95sJIpkQU?=
+ =?us-ascii?Q?XLRYDQ1u5ICHRL7d0hC/DcAZ47zjr0Qrmr9Fzr49U3JdmySTpzceM/fmWc0b?=
+ =?us-ascii?Q?nrdugCiRre6hfrpkvTdhdwPodAK3pTWHtkXmw0dCAq/c1WzL8oQ99MGDdA8m?=
+ =?us-ascii?Q?6XTRFy3LW4ir+/DtU7GZAB42KG9I0RDnclRevsKgzuWHww9JjyvugmSykw25?=
+ =?us-ascii?Q?nYa29NHDDq7Fx1NH0CSHmNtowxzxuxSrPlnM1V0P9nd2aShei8R6QD0zV8lZ?=
+ =?us-ascii?Q?J16a7n6qoEHN5TbUxkeqarc8FU++MNyVeVjmIUqRTpo3CcrzDUkqVnFMLbGG?=
+ =?us-ascii?Q?f0seClgWIEqLm+TEI6GNnmvzi78ev5blyEA0H+bm+HmFgIIcki2CRh5gYhVq?=
+ =?us-ascii?Q?zgXJh0J/YDv7qDe6S5a6m9aiyxS7H9czxSSNCuf8R2ZLy8ydcLcsfiw8ygLM?=
+ =?us-ascii?Q?bgcLkt9F72VYu0ZS3V+RJhF6O4XZN/O8h9R0IQT747+kOFQ2yakB8hpBwj2/?=
+ =?us-ascii?Q?1NEF2tO+dCeMCGUMc5/BcEL+djNmSgmRi1zHfwLdpNvMwS7XreNs8Ie8e8cw?=
+ =?us-ascii?Q?aAdqqUu8z+REPigT9rgEIhfQGb9EXoKLYLUdo23lztB9At7rye24furASrIW?=
+ =?us-ascii?Q?smVcQBIEbubRjk8SdE5R8C2fcuqjNTV1uTC/X6GSXtFjfq0Y3ZzfAkFpvV/U?=
+ =?us-ascii?Q?b4XXesCIphoZ9LoSJlcnSNVh8kp04x/wBdWwuucmwy54Dv4hgGxGZ7/aSICt?=
+ =?us-ascii?Q?nWaC0z1WBcfRpnZzOas8iLjH2IJBJ9STCh15ORfXLgiBKJ+oui8r5mutdYGR?=
+ =?us-ascii?Q?UI6Q27weOJkjM9NmedNceqRZZ5f8KGNaQc4G0uEB2JU2J7j0hzTeEy/2U7ls?=
+ =?us-ascii?Q?rF83BEajnRcgyQKlxicsFH8rsiTlsv8dkMoCTiczfqhCTPAPLmKUUlZg9UB0?=
+ =?us-ascii?Q?qIJMSzn6GUr7vkqUorRG1dqxpzCEITama4mxvhq6gbSHfwmxMhWQBnJRwRl5?=
+ =?us-ascii?Q?71mxrn7exHMeeWg0VONWF1YtiPp+GtTt7C3oEXmu75khp21xv/MGfouKUtd0?=
+ =?us-ascii?Q?AMBL1HENx2bL8n45fapX0z3fYCnxyxVVmacuQR9yWPpz+z8jN9FDePVLFKup?=
+ =?us-ascii?Q?Bae9swLfea6b+aMb4OhEc1cHOa07A+6v1fuJ3Hx4ay5tCCqRG4HKXVY5LFUR?=
+ =?us-ascii?Q?w/m7u3B5J2M39+Ycd8l4fPoa+21o4EnD965lCU4kBR8+RYk8CCw6/gJrDlp2?=
+ =?us-ascii?Q?rugI7XNN0r/sekru+yJZNBqRQzu6iPeGQ+txTxByP0K2iLPm3u7RNnjvG/vS?=
+ =?us-ascii?Q?A0TPymLXVPDQpF0iPcSCTujIbKW9VTloXhtX7f1QI2unHijvseof5z9qDsR1?=
+ =?us-ascii?Q?fIOWrAVDsayW637Gwpw6pPEZ7JJXFC96SwVVy3oCV5KOaDtA26UdDcBDVRCp?=
+ =?us-ascii?Q?ym2xauNAHwNrG63+T6DlWQX0OtmhulCkVxS52pVb?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4ed36ecd-7fe7-4caf-1ff9-08d9c0e2b322
+X-MS-Exchange-CrossTenant-AuthSource: SA1PR15MB5016.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Dec 2021 22:23:35.7154
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: U/X1DbcnCgbTAqpX7S5pv9EGzLr1kT/YhurgA7C3n39+Ix0UjGQ4DCq0v5QB7Cnb
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR15MB4887
+X-OriginatorOrg: fb.com
+X-Proofpoint-GUID: ss-JArhBv645Rc5yTlFLS4OzcitVWoDU
+X-Proofpoint-ORIG-GUID: ss-JArhBv645Rc5yTlFLS4OzcitVWoDU
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2021-12-16_09,2021-12-16_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 malwarescore=0
+ bulkscore=0 impostorscore=0 lowpriorityscore=0 clxscore=1015 phishscore=0
+ mlxscore=0 adultscore=0 priorityscore=1501 mlxlogscore=999 spamscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2110150000 definitions=main-2112160117
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 16, 2021 at 05:32:46PM +0800, Joseph CHAMG wrote:
-> Add davicom dm9051 spi ethernet driver, The driver work with the
-> device platform's spi master
+On Thu, Dec 16, 2021 at 10:32:23AM -0500, Willem de Bruijn wrote:
+[ ... ]
+
+> >                                                                         (c: skb->tstamp = 0)
+> >                                                                          vv
+> > tcp-sender => veth@netns => veth@hostns(b: rx: skb->tstamp = real_clock) => fq@eth0
+> >                          ^^
+> >                         (a: skb->tstamp = 0)
+> >
+> > (a) veth@netns TX to veth@hostns:
+> >     skb->tstamp (mono clock) is a EDT and it is in future time.
+> >     Reset to 0 so that it won't skip the net_timestamp_check at the
+> >     RX side in (b).
+> > (b) RX (netif_rx) in veth@hostns:
+> >     net_timestamp_check puts a current time (real clock) in skb->tstamp.
+> > (c) veth@hostns forward to fq@eth0:
+> >     skb->tstamp is reset back to 0 again because fq is using
+> >     mono clock.
+> >
+> > This leads to an unstable TCP throughput issue described by Daniel in [0].
+> >
+> > We also have a use case that a bpf runs at ingress@veth@hostns
+> > to set EDT in skb->tstamp to limit the bandwidth usage
+> > of a particular netns.  This EDT currently also gets
+> > reset in step (c) as described above.
+
+[ ... ]
+
+> > diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+> > index 6535294f6a48..9bf0a1e2a1bd 100644
+> > --- a/include/linux/skbuff.h
+> > +++ b/include/linux/skbuff.h
+> > @@ -435,9 +435,17 @@ enum {
+> >         /* device driver is going to provide hardware time stamp */
+> >         SKBTX_IN_PROGRESS = 1 << 2,
+> >
+> > +       /* shinfo stores a future tx_delivery_tstamp instead of hwtstamps */
+> > +       SKBTX_DELIVERY_TSTAMP = 1 << 3,
+> > +
+> >         /* generate wifi status information (where possible) */
+> >         SKBTX_WIFI_STATUS = 1 << 4,
+> >
+> > +       /* skb->tstamp stored a future delivery time which
+> > +        * was set by a local sk and it can be fowarded.
+> > +        */
+> > +       SKBTX_DELIVERY_TSTAMP_ALLOW_FWD = 1 << 5,
+> > +
+> >         /* generate software time stamp when entering packet scheduling */
+> >         SKBTX_SCHED_TSTAMP = 1 << 6,
+> >  };
+> > @@ -530,7 +538,14 @@ struct skb_shared_info {
+> >         /* Warning: this field is not always filled in (UFO)! */
+> >         unsigned short  gso_segs;
+> >         struct sk_buff  *frag_list;
+> > -       struct skb_shared_hwtstamps hwtstamps;
+> > +       union {
+> > +               /* If SKBTX_DELIVERY_TSTAMP is set in tx_flags,
+> > +                * tx_delivery_tstamp is stored instead of
+> > +                * hwtstamps.
+> > +                */
 > 
-> remove the redundant code that phylib has support,
-> adjust to be the reasonable sequence,
-> fine tune comments, add comments for pause function support
+> Should we just encode the timebase and/or type { timestamp,
+> delivery_time } in th lower bits of the timestamp field? Its
+> resolution is higher than actual clock precision.
+In skb->tstamp ?
+
+> > +               struct skb_shared_hwtstamps hwtstamps;
+> > +               u64 tx_delivery_tstamp;
+> > +       };
+> >         unsigned int    gso_type;
+> >         u32             tskey;
+> >
+> > @@ -1463,9 +1478,44 @@ static inline unsigned int skb_end_offset(const struct sk_buff *skb)
+> >
+> >  static inline struct skb_shared_hwtstamps *skb_hwtstamps(struct sk_buff *skb)
+> >  {
+> > +       if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_DELIVERY_TSTAMP)) {
+> > +               skb_shinfo(skb)->tx_flags &= ~SKBTX_DELIVERY_TSTAMP;
+> > +               skb_shinfo(skb)->tx_delivery_tstamp = 0;
+> > +       }
+> >         return &skb_shinfo(skb)->hwtstamps;
+> >  }
+> >
+> > +/* Caller only needs to read the hwtstamps as ktime.
+> > + * To update hwtstamps,  HW device driver should call the writable
+> > + * version skb_hwtstamps() that returns a pointer.
+> > + */
+> > +static inline ktime_t skb_hwtstamps_ktime(const struct sk_buff *skb)
+> > +{
+> > +       if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_DELIVERY_TSTAMP))
+> > +               return 0;
+> > +       return skb_shinfo(skb)->hwtstamps.hwtstamp;
+> > +}
+> > +
+> > +static inline void skb_scrub_tstamp(struct sk_buff *skb)
 > 
-> Tested with raspberry pi 4. Test for netwroking function, CAT5
-> cable unplug/plug and also ethtool detect for link state, and
-> all are ok.
+> skb_save_delivery_time?
+yep. ok.
 
-You have been asked two or three times now to include a list of what
-you changed relative to the previous version. This is expected for
-kernel patches, just look at other submissions.
+> 
+> is non-zero skb->tstamp test not sufficient, instead of
+> SKBTX_DELIVERY_TSTAMP_ALLOW_FWD.
+>
+> It is if only called on the egress path. Is bpf on ingress the only
+> reason for this?
+Ah. ic.  meaning testing non-zero skb->tstamp and then call
+skb_save_delivery_time() only during the veth-egress-path:
+somewhere in veth_xmit() => veth_forward_skb() but before
+skb->tstamp was reset to 0 in __dev_forward_skb().
 
-> +/* spi low level code */
-> +static int
-> +dm9051_xfer(struct board_info *db, u8 cmdphase, u8 *txb, u8 *rxb, unsigned int len)
-> +{
-> +	struct device *dev = &db->spidev->dev;
-> +	int ret = 0;
-> +
-> +	db->cmd[0] = cmdphase;
-> +	db->spi_xfer2[0].tx_buf = &db->cmd[0];
-> +	db->spi_xfer2[0].rx_buf = NULL;
-> +	db->spi_xfer2[0].len = 1;
-> +	if (!rxb) {
-> +		db->spi_xfer2[1].tx_buf = txb;
-> +		db->spi_xfer2[1].rx_buf = NULL;
-> +		db->spi_xfer2[1].len = len;
-> +	} else {
-> +		db->spi_xfer2[1].tx_buf = txb;
-> +		db->spi_xfer2[1].rx_buf = rxb;
-> +		db->spi_xfer2[1].len = len;
-> +	}
-> +	ret = spi_sync(db->spidev, &db->spi_msg2);
-> +	if (ret < 0)
-> +		dev_err(dev, "dm9Err spi burst cmd 0x%02x, ret=%d\n", cmdphase, ret);
-> +	return ret;
-> +}
-> +
-> +static u8 dm9051_ior(struct board_info *db, unsigned int reg)
-> +{
-> +	u8 rxb[1];
-> +
-> +	dm9051_xfer(db, DM_SPI_RD | reg, NULL, rxb, 1);
+Keep *_forward() and bpf_out_*() unchanged (i.e. keep skb->tstamp = 0)
+because the skb->tstamp could be stamped by net_timestamp_check().
 
-dm9051_xfer() returns an error code. You should pass it up the call
-stack. We want to know about errors.
+Then SKBTX_DELIVERY_TSTAMP_ALLOW_FWD is not needed.
 
-> +/* basic read/write to phy
-> + */
-> +static int dm_phy_read(struct board_info *db, int reg)
+Did I understand your suggestion correctly?
 
-Does this comment have any value? From the function name i can see
-this is a PHY read.
+However, we still need a bit to distinguish tx_delivery_tstamp
+from hwtstamps.
 
-And you still don't have consistent prefix of dm9051_
+> 
+> > +{
+> > +       if (skb_shinfo(skb)->tx_flags & SKBTX_DELIVERY_TSTAMP_ALLOW_FWD) {
+> > +               skb_shinfo(skb)->tx_delivery_tstamp = skb->tstamp;
+> > +               skb_shinfo(skb)->tx_flags |= SKBTX_DELIVERY_TSTAMP;
+> > +               skb_shinfo(skb)->tx_flags &= ~SKBTX_DELIVERY_TSTAMP_ALLOW_FWD;
+> > +       }
+> 
+> Is this only called when there are no clones/shares?
+No, I don't think so.  TCP clone it.  I also started thinking about
+this after noticing a mistake in the change in  __tcp_transmit_skb().
 
-> +{
-> +	int ret;
-> +	u8 check_val;
-> +
-> +	dm9051_iow(db, DM9051_EPAR, DM9051_PHY | reg);
-> +	dm9051_iow(db, DM9051_EPCR, EPCR_ERPRR | EPCR_EPOS);
-> +	ret = read_poll_timeout(dm9051_ior, check_val, !(check_val & EPCR_ERRE), 100, 10000,
-> +				true, db, DM9051_EPCR);
-> +	dm9051_iow(db, DM9051_EPCR, 0x0);
-> +	if (ret) {
-> +		netdev_err(db->ndev, "timeout read phy register\n");
-> +		return DM9051_PHY_NULLVALUE;
+There are other places that change tx_flags, e.g. tcp_offload.c.
+It is not shared at those places or there is some specific points
+in the stack that is safe to change ?
 
-No, return whatever read_poll_timeout() returned, probably
--ETIMEDOUT. You need to report the error all the way up the call
-stack.
-
-> +	}
-> +	ret = (dm9051_ior(db, DM9051_EPDRH) << 8) | dm9051_ior(db, DM9051_EPDRL);
-> +	return ret;
-> +}
-> +
-> +static void dm_phy_write(struct board_info *db, int reg, int value)
-> +{
-> +	int ret;
-> +	u8 check_val;
-> +
-> +	dm9051_iow(db, DM9051_EPAR, DM9051_PHY | reg);
-> +	dm9051_iow(db, DM9051_EPDRL, value);
-> +	dm9051_iow(db, DM9051_EPDRH, value >> 8);
-> +	dm9051_iow(db, DM9051_EPCR, EPCR_EPOS | EPCR_ERPRW);
-> +	ret = read_poll_timeout(dm9051_ior, check_val, !(check_val & EPCR_ERRE), 100, 10000,
-> +				true, db, DM9051_EPCR);
-> +	dm9051_iow(db, DM9051_EPCR, 0x0);
-> +	if (ret)
-> +		netdev_err(db->ndev, "timeout write phy register\n");
-
-And you need to return ret to the caller.
-
-> +static int dm9051_mdio_read(struct mii_bus *mdiobus, int phy_id, int reg)
-> +{
-> +	struct board_info *db = mdiobus->priv;
-> +	int val;
-> +
-> +	if (phy_id == DM9051_PHY_ID) {
-> +		mutex_lock(&db->addr_lock);
-> +		val = dm_phy_read(db, reg);
-> +		mutex_unlock(&db->addr_lock);
-> +		return val;
-> +	}
-> +
-> +	return DM9051_PHY_NULLVALUE;
-
-Please just use 0xffff. Don't hide it.
-
-The MDIO bus has a pull up on the data line. So if you try to read
-from a device which does not exist, you get all 1s returned. Registers
-are 16 bit wide, so you get 0xffff. When the MDIO is registered the
-bus will be probed, and when the read returns 0xffff it knows there is
-no device at that address. This is the only time you should use
-0xffff. It is not an error, it simply indicates there is no device
-there.
-
-> +
-> +/* read chip id
-> + */
-> +static unsigned int dm9051_chipid(struct board_info *db)
-
-Don't you think we can work out this function reads the chip id from
-the name of the function. Please only have comments if they are
-actually useful.
-
-Useful comments tend to explain why something is being done, not what
-is being done.
-
-> +static void dm9051_fifo_reset(struct board_info *db)
-> +{
-> +	db->bc.DO_FIFO_RST_counter++;
-> +
-> +	dm9051_iow(db, DM9051_FCR, FCR_FLOW_ENABLE); /* FlowCtrl */
-> +	dm9051_iow(db, DM9051_PPCR, PPCR_PAUSE_COUNT); /* Pause Pkt Count */
-> +	dm9051_iow(db, DM9051_LMCR, db->lcr_all); /* LEDMode1 */
-> +	dm9051_iow(db, DM9051_INTCR, INTCR_POL_LOW); /* INTCR */
-> +}
-
-> +static void dm_handle_link_change(struct net_device *ndev)
-> +{
-> +	/* MAC and phy are integrated together, such as link state, speed,
-> +	 * and Duplex are sync inside
-> +	 */
-
-What about Pause?
-
-dm9051_fifo_reset() does:
-	dm9051_iow(db, DM9051_FCR, FCR_FLOW_ENABLE); /* FlowCtrl */
-
-Is this enabling Pause processing? Do you need to disable it if
-autoneg decided it is not wanted?
-
-> +static int dm9051_probe(struct spi_device *spi)
-> +{
-> +	struct device *dev = &spi->dev;
-> +	struct net_device *ndev;
-> +	struct board_info *db;
-> +	unsigned int id;
-> +	int ret = 0;
-> +
-> +	ndev = devm_alloc_etherdev(dev, sizeof(struct board_info));
-> +	if (!ndev)
-> +		return -ENOMEM;
-> +
-> +	SET_NETDEV_DEV(ndev, dev);
-> +	dev_set_drvdata(dev, ndev);
-> +	db = netdev_priv(ndev);
-> +	memset(db, 0, sizeof(struct board_info));
-
-No need to use memset. If you look at how
-
-devm_alloc_etherdev() is implemented you end up here:
-
-https://elixir.bootlin.com/linux/v5.16-rc5/source/net/core/dev.c#L10801
-
-The z in kvzalloc() means zero.
-
-    Andrew
+> 
+> > +       skb->tstamp = 0;
+> > +}
+> > +
+> > +static inline void skb_restore_delivery_time(struct sk_buff *skb)
+> > +{
+> > +       if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_DELIVERY_TSTAMP)) {
+> > +               skb->tstamp = skb_shinfo(skb)->tx_delivery_tstamp;
+> > +               skb_shinfo(skb)->tx_delivery_tstamp = 0;
+> > +               skb_shinfo(skb)->tx_flags &= ~SKBTX_DELIVERY_TSTAMP;
+> > +               skb_shinfo(skb)->tx_flags |= SKBTX_DELIVERY_TSTAMP_ALLOW_FWD;
+> > +       }
+> > +}
+> > +
+> >  static inline struct ubuf_info *skb_zcopy(struct sk_buff *skb)
+> >  {
+> >         bool is_zcopy = skb && skb_shinfo(skb)->flags & SKBFL_ZEROCOPY_ENABLE;
+> > diff --git a/net/bridge/br_forward.c b/net/bridge/br_forward.c
+> > index ec646656dbf1..a3ba6195f2e3 100644
+> > --- a/net/bridge/br_forward.c
+> > +++ b/net/bridge/br_forward.c
+> > @@ -62,7 +62,7 @@ EXPORT_SYMBOL_GPL(br_dev_queue_push_xmit);
+> >
+> >  int br_forward_finish(struct net *net, struct sock *sk, struct sk_buff *skb)
+> >  {
+> > -       skb->tstamp = 0;
+> > +       skb_scrub_tstamp(skb);
+> >         return NF_HOOK(NFPROTO_BRIDGE, NF_BR_POST_ROUTING,
+> >                        net, sk, skb, NULL, skb->dev,
+> >                        br_dev_queue_push_xmit);
+> > diff --git a/net/core/dev.c b/net/core/dev.c
+> > index a855e41bbe39..e9e7de758cba 100644
+> > --- a/net/core/dev.c
+> > +++ b/net/core/dev.c
