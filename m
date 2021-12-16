@@ -2,108 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A517476727
-	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 01:55:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CAA0B47673D
+	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 02:09:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229569AbhLPAzg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Dec 2021 19:55:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55212 "EHLO
+        id S229867AbhLPBJm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Dec 2021 20:09:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229441AbhLPAzg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Dec 2021 19:55:36 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 959FDC061574;
-        Wed, 15 Dec 2021 16:55:35 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3416A61B9D;
-        Thu, 16 Dec 2021 00:55:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 443D5C36AE0;
-        Thu, 16 Dec 2021 00:55:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1639616134;
-        bh=MgOVf7oYnbO0CV8WsVsPfMF9dAleUAT184aOIMZy4f4=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=i7UYbGhnM2WWxFyozM3Yk5g+dkhscighvYkcendwxWCXwNHRxO/fKDZJ+SoKFZRwm
-         Ix17TZNcLzmoO9OmkSF7pC6vGNTsBzLVqlZLOQL9JDOL5MmQZ0GIxN5hgm+XlWu0Im
-         VwuWSYKms5OVK6/nsYveCchm8eJOqXddmrvD6sgcy2upqAUATgTZevlOMVmL8rYbiZ
-         kuwMn3bnffq47rVq2BKide6O1H4bWyx8H6jcBz5jz/07NavRUXB41mWucSYQGwTp7O
-         xKcVvUV+a3SoFM9l+dUf3n8piXt11cvKicaSoVCLhzUJp7xxooRgCuXaQEwvQ8kxJ6
-         xKhFv7xN1PRTA==
-Message-ID: <e54c8c88254d7768ba7a7dfbdfc798ce90bf17ab.camel@kernel.org>
-Subject: Re: [pull-request] mlx5-next branch 2021-12-15
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Leon Romanovsky <leonro@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Date:   Wed, 15 Dec 2021 16:55:33 -0800
-In-Reply-To: <20211215154403.40563759@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20211215184945.185708-1-saeed@kernel.org>
-         <20211215112319.44d7daea@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-         <a0bf02eb4f7ca5501910521a0b32f18a0499cef9.camel@nvidia.com>
-         <20211215145856.4a29e48b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-         <2697f58ef720d6b8f9163ea1151a4daba7043e86.camel@kernel.org>
-         <20211215154403.40563759@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.2 (3.42.2-1.fc35) 
+        with ESMTP id S229801AbhLPBJm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Dec 2021 20:09:42 -0500
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9412C06173E
+        for <netdev@vger.kernel.org>; Wed, 15 Dec 2021 17:09:41 -0800 (PST)
+Received: by mail-ed1-x536.google.com with SMTP id z5so81653759edd.3
+        for <netdev@vger.kernel.org>; Wed, 15 Dec 2021 17:09:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=FHIyIUHgABGRTpG8w7V67GIZKBgX3nHebqZRmIuJJJY=;
+        b=xZviC8IdrUmSlO817ivxgFljCM7DPxP71a+pj6RNWpAcJDq7U/W1OtAw7pzbHfr4Mr
+         EEo7yepTBLG6hHAPdgAHpv5oxct3PqaNyzAIlEBnjoGUMAKWTg54SH+iwWxSblIOPgBN
+         MLrpVdIVEcLzErvfAhNjanJCOA6kUsTsVMqQY8Oo6Xq0Ys4Xrh1dltPo7eEdRpqZuLVL
+         Un07rN7ToSrdssNbUFUHd2CitTECcv+Qd3EC0Qiu7QhJ9C1AEaJ9yv47RhHHpJnCfecc
+         64+qrXWe0ypE9Yvo/5um3Guype3ZY4pI1UnIBki/egbTrjfixsGbfnkwmkXhF7j5zoE8
+         w1bw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=FHIyIUHgABGRTpG8w7V67GIZKBgX3nHebqZRmIuJJJY=;
+        b=Ds0BiJ7ab9u0CZB+ZOcCE2q140M9onrIAzxDoyXU2rA1KX09vW5VkDsZRcGJl9DkwA
+         WjvmUKrY64+Gr+flxdlKV3CHvV+aVkwbCDG7XhIVj8kP1moC9awL09IotyZj4ppMTqTk
+         whAlgWKNphuAQBNPbjUzizz1cY+oE5xDDe4GLbuhofGcJCBitemWRYDs5n95TD4UNb6Q
+         LiJdHoxJNSMPWTv0dnWziMv+cZZsLdt9J9VC01lw09qvDjO+lvWNUGesiAhAVzpcbjtr
+         1KPj0SVIOyFzfrswQTrQDIdrTDR47FaH9sJLDjMiRji2pKdYj6yLoyPtDzZbGo/HMxVt
+         OT5Q==
+X-Gm-Message-State: AOAM533wYA8y2NkCEgDkun+Pmg7HejuKEqYEXfVu4tyMha60VD/Z2AbM
+        pN0uHWLjb0D7OuoIHj3NKHDKtA==
+X-Google-Smtp-Source: ABdhPJyPpOoG+ITA8Qth7yHRJ0UTqZ40dsEmeR20fRaqJI6zWCUv/9fRlYGxnAJU6IyVVjyjP3sWkg==
+X-Received: by 2002:a17:907:72cf:: with SMTP id du15mr13282231ejc.167.1639616979968;
+        Wed, 15 Dec 2021 17:09:39 -0800 (PST)
+Received: from leoy-ThinkPad-X240s ([104.245.96.202])
+        by smtp.gmail.com with ESMTPSA id s16sm1615656edt.30.2021.12.15.17.09.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Dec 2021 17:09:39 -0800 (PST)
+Date:   Thu, 16 Dec 2021 09:09:32 +0800
+From:   Leo Yan <leo.yan@linaro.org>
+To:     Richard Guy Briggs <rgb@redhat.com>
+Cc:     Paul Moore <paul@paul-moore.com>,
+        codalist@telemann.coda.cs.cmu.edu,
+        Jan Harkes <jaharkes@cs.cmu.edu>,
+        Leon Romanovsky <leon@kernel.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        netdev@vger.kernel.org, Balbir Singh <bsingharora@gmail.com>,
+        linux-kernel@vger.kernel.org, Eric Paris <eparis@redhat.com>,
+        coda@cs.cmu.edu, linux-audit@redhat.com,
+        coresight@lists.linaro.org, Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-arm-kernel@lists.infradead.org,
+        Mike Leach <mike.leach@linaro.org>
+Subject: Re: [PATCH v2 6/7] audit: Use task_is_in_init_pid_ns()
+Message-ID: <20211216010932.GA2313631@leoy-ThinkPad-X240s>
+References: <20211208083320.472503-1-leo.yan@linaro.org>
+ <20211208083320.472503-7-leo.yan@linaro.org>
+ <CAHC9VhThB=kDsXr8Uc_65+gePucSstAbrab2TpLxcBSd0k39pQ@mail.gmail.com>
+ <20211215190912.GU1550715@madcap2.tricolour.ca>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211215190912.GU1550715@madcap2.tricolour.ca>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2021-12-15 at 15:44 -0800, Jakub Kicinski wrote:
-> On Wed, 15 Dec 2021 15:35:09 -0800 Saeed Mahameed wrote:
-> > On Wed, 2021-12-15 at 14:58 -0800, Jakub Kicinski wrote:
-> > > On Wed, 15 Dec 2021 22:14:11 +0000 Saeed Mahameed wrote:  
-> > > > already posted before :
-> > > > [1] https://lore.kernel.org/netdev/20211201193621.9129-1-
-> > > > saeed@kernel.org/
-> > > > [2] https://lore.kernel.org/lkml/20211208141722.13646-1-
-> > > > shayd@nvidia.com/ 
-> > > 
-> > > Post them as a reply to the pull request like you usually do,
-> > > please.  
+On Wed, Dec 15, 2021 at 02:09:12PM -0500, Richard Guy Briggs wrote:
+> On 2021-12-14 17:35, Paul Moore wrote:
+> > On Wed, Dec 8, 2021 at 3:33 AM Leo Yan <leo.yan@linaro.org> wrote:
+> > >
+> > > Replace open code with task_is_in_init_pid_ns() for checking root PID
+> > > namespace.
+> > >
+> > > Signed-off-by: Leo Yan <leo.yan@linaro.org>
+> > > ---
+> > >  kernel/audit.c | 2 +-
+> > >  1 file changed, 1 insertion(+), 1 deletion(-)
 > > 
-> > They were already posted, and reviewed, and all maintainers were
-> > CC'ed,
-> > including you, why do you want me to spam the mailing list over and
-> > over again with the same patches ?
+> > I'm not sure how necessary this is, but it looks correct to me.
 > 
-> You reposting measly 5 patches is hardly spamming. I have scripts
-> which
+> I had the same thought.  I looks correct to me.  I could see the value
+> if it permitted init_pid_ns to not be global.
 
-That's not the point, sometimes it is less or much more than 5.
-For mlx5-next (Shared branch between RDMA and netdev), I would like to
-submit standard clean PRs like all other maintainers.
+Just for a background info, we need to check root PID namespace in some
+drivers [1], to avoid introducing more open codes, we decided to refactor
+with helper task_is_in_init_pid_ns().
 
-> check if the contents of the PR match the posting, which obviously
-> can't follow random links from the email.
+[1] https://lore.kernel.org/lkml/20211213121323.1887180-1-leo.yan@linaro.org/
+
+> > Acked-by: Paul Moore <paul@paul-moore.com>
 > 
+> Reviewed-by: Richard Guy Briggs <rgb@redhat.com>
 
-The script is great to validate pseudo-PRs (netdev only) where we post
-patches for the first time in the PR.
+Thanks for review, Paul and Richard.
 
-but this is different, this is a true clean PR where all patches
-already posted and reviewed. the tree is already written genuinely in
-ink!
-
-> > This is not how genuine pull requests are supposed to work.
-> 
-> I'm not comfortable with blindly pulling patches from vendor trees.
-
-Good to know and very disappointing, is there anything i could do to
-make you better trust my mlx5-next PRs ? other than RE-posting ?
-
-Again I don't see any point of RE-posting the patches together with a
-clean PR, redundant and unnecessary and against all standards, it just
-cancels the whole process and duplicates my work, and will confuse
-other maintainers who might have already pulled part or all of the
-patches in the branch.
-
-
-
+Leo
