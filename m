@@ -2,166 +2,273 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E1E5476720
-	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 01:47:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E921147671F
+	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 01:47:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232433AbhLPArX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S229561AbhLPArX (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Wed, 15 Dec 2021 19:47:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53416 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232547AbhLPArU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Dec 2021 19:47:20 -0500
-Received: from mail-pf1-x449.google.com (mail-pf1-x449.google.com [IPv6:2607:f8b0:4864:20::449])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D884AC061574
-        for <netdev@vger.kernel.org>; Wed, 15 Dec 2021 16:47:19 -0800 (PST)
-Received: by mail-pf1-x449.google.com with SMTP id w2-20020a627b02000000b0049fa951281fso14396569pfc.9
-        for <netdev@vger.kernel.org>; Wed, 15 Dec 2021 16:47:19 -0800 (PST)
+        with ESMTP id S229626AbhLPArW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Dec 2021 19:47:22 -0500
+Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A5A5C06173E
+        for <netdev@vger.kernel.org>; Wed, 15 Dec 2021 16:47:21 -0800 (PST)
+Received: by mail-pg1-x549.google.com with SMTP id t28-20020a63955c000000b0033f3b16a931so554811pgn.4
+        for <netdev@vger.kernel.org>; Wed, 15 Dec 2021 16:47:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=5D+ShvjgcU7ed+hKOQlJMneE8N9UvAX/syZ4CjDlJA8=;
-        b=kmISZFcja7CJB/mbHsa0KiczBYaiSTqekNnkfkcB1ukOvtItbXO/HJKlaHD+bP0bqm
-         1jpQxCU0x1g+TmN5698ikbIv5Ae4Mj1y5W/VeTSsKgGY53jWFOUW9Xyh9iSMnUm6PUau
-         ogn/IavGzONbh84HGHuZNU7T5fJJE+ReX98derPKsR8NHDGfEcROPqbW9YXWSn0cBFu2
-         +tDo+5G/T8mbR+DI6DSb/gkkt8iIrgfr7yQJ8dhKOkTsD6cmfX6K/l+RO5H1qVyGsPZK
-         tp4t1UhYi6D3i9zDtdtgavloqos1rFT/Jw87daTk6NE7JjzZt9KdMNzRh61BWdzR3j5v
-         879g==
+        bh=s7W2tKKF1xH65WC9882sxiN25NTOC3PTlid+qix2NCM=;
+        b=HxTu0TF74jGLYISPCAHoJ7fHftpxT8kfkcrVLfB7NDzpjzdWwgZ9wd3nqOzbcM6Ell
+         EAKLmhIJDE49l5/jwaC74MzBmFeu7xqdHXUsUoEoALC7pLH3cWS1O5YBUhs+kaMMrjoz
+         0UzPoUOdAOPMBioOBPenG1uVgyXSwocnEWF73dVduEKc33thxO1Zwj3Km6+OuwG2BDPb
+         dKYsrqAPQqD51Y+2WFdp/6dk0zeqAEqSLna9Klo4OahocbEKPDgT3PElteXvKcK6Akh7
+         JHTlDm934MvyNoUHoYP/KKsFZMSUjPJ3rxOHyTycxxHutvSwcXhqgXQOSV38oSDwSvRY
+         rScQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=5D+ShvjgcU7ed+hKOQlJMneE8N9UvAX/syZ4CjDlJA8=;
-        b=t1JD67IBUSyo7R6BJkzqJCFy5e3T0LD0wwEIIut5kqiD22LHuQpcmG93XnlTyMb+gB
-         26WsTo/aqhscSd8Bp9zMwVTB5oPzGtXRhiy1dmrb5fY6XHozG1pnow6j59UfJmh95LLO
-         A+tTudHkXcxvLpxynbGzKauxMYu5YN1aAuVIbLCABz7IIPGvG208JozeOIbnQ0CbL/41
-         JmuUtWu72FoYUabo5LBOnow1SnONvk25gcFOAlVHkpTvSSxfTcpnUyYUpVK+nou1ouxX
-         UzX74nocT/lhzDbJJmW+gmOTjwSchRYvGjqz36owB0QM8JrEeXipgPBNBCKU0jRgwnTO
-         uzdQ==
-X-Gm-Message-State: AOAM532hhEc0WouppduynY9BWm9DwWP1fLEWE09XNSWpQSzGMcK0ygcS
-        hJ3w3ng7SSUOQUjBTSaeSFCPoxWmSqN5brgft25P205g3eyRD6uAV3QOsE6ExYNXxWEPJOxPsjs
-        i4m5LcOBjYnIUmGLatRVRnJatFPkWelYsvRzJAasqkNCRfY2AFd09YLBAt8tMMvoIQNk=
-X-Google-Smtp-Source: ABdhPJxFJDgtlzyNnK3CSja3Qqz2W/pGOQYcGZpxhvYxXNwmpx8ihzr/0JTdRiAukfFSkxLNHJFUje6jhguhrg==
+        bh=s7W2tKKF1xH65WC9882sxiN25NTOC3PTlid+qix2NCM=;
+        b=mqZ3WbwSiX5YGFBBQdx8o8x0fO3luYIMrzNGS/hBPs9+ZAM9UcmSjDgARmOF4hYoh4
+         qNf1SWigANiIZmlrRrdJFC+V7ZZ0Sk5AyP3116eeFicPsQYrhO0Z2PU8jw5lxX4xoRmU
+         rvmiga2KU6FkaPOK4lG30UaC94cmOAgrKwP/AsI95rehBa/cKbF5mH0liph9BsKe54hz
+         X1GUX3CkhGygA45DoauVo9pFewjykIjuSNS8Cd2rw+PFk2rbSR38pXboog6slnQudwSQ
+         E/oXntwQBH387WYS3GHNaco8PSePQoYiWqxc+FF5I0naoJBqpqGluw7koXikyx+AR4nB
+         764A==
+X-Gm-Message-State: AOAM530gk9oT9l1lUjzHVTIUICDPYgySBYyfv98dupYb9DqW41FamcQn
+        tgKSbjuCpzG2w9UeDBuDUXmsBRaiW0G6pJruHvwLqhnkQb9JSEo5MkUmn0eN7hYRp4YC9vgNuR3
+        qW20NtYmSY1tAhIID1foWB0BR8s0JHbD41d1sEkpIB5bvVQ2vBZVvn05O8L3+2gOVnXE=
+X-Google-Smtp-Source: ABdhPJzeq0FmvHfeDNn1s9dNDBJ8t4l558IMFxPGjh+fzeM4PZeL/8rmK8ADwR4Bnc3GervtS2MRTSlbfuQzwg==
 X-Received: from jeroendb.sea.corp.google.com ([2620:15c:100:202:964d:9084:bbdd:97a9])
- (user=jeroendb job=sendgmr) by 2002:a17:902:bd44:b0:148:a2e8:2c51 with SMTP
- id b4-20020a170902bd4400b00148a2e82c51mr7039696plx.160.1639615639318; Wed, 15
- Dec 2021 16:47:19 -0800 (PST)
-Date:   Wed, 15 Dec 2021 16:46:51 -0800
+ (user=jeroendb job=sendgmr) by 2002:a17:90a:3046:: with SMTP id
+ q6mr2234216pjl.208.1639615641033; Wed, 15 Dec 2021 16:47:21 -0800 (PST)
+Date:   Wed, 15 Dec 2021 16:46:52 -0800
 In-Reply-To: <20211216004652.1021911-1-jeroendb@google.com>
-Message-Id: <20211216004652.1021911-8-jeroendb@google.com>
+Message-Id: <20211216004652.1021911-9-jeroendb@google.com>
 Mime-Version: 1.0
 References: <20211216004652.1021911-1-jeroendb@google.com>
 X-Mailer: git-send-email 2.34.1.173.g76aa8bc2d0-goog
-Subject: [PATCH net-next 7/8] gve: Add consumed counts to ethtool stats
+Subject: [PATCH net-next 8/8] gve: Add tx|rx-coalesce-usec for DQO
 From:   Jeroen de Borst <jeroendb@google.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org,
-        Jordan Kim <jrkim@google.com>,
+        Tao Liu <xliutaox@google.com>,
         Jeroen de Borst <jeroendb@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jordan Kim <jrkim@google.com>
+From: Tao Liu <xliutaox@google.com>
 
-Being able to see how many descriptors are in-use is helpful
-when diagnosing certain issues.
+Adding ethtool support for changing rx-coalesce-usec and tx-coalesce-usec
+when using the DQO queue format.
 
+Signed-off-by: Tao Liu <xliutaox@google.com>
 Signed-off-by: Jeroen de Borst <jeroendb@google.com>
-Signed-off-by: Jordan Kim <jrkim@google.com>
 ---
- drivers/net/ethernet/google/gve/gve_ethtool.c | 21 +++++++++++--------
- 1 file changed, 12 insertions(+), 9 deletions(-)
+ drivers/net/ethernet/google/gve/gve.h         |  4 ++
+ drivers/net/ethernet/google/gve/gve_dqo.h     | 22 +++++--
+ drivers/net/ethernet/google/gve/gve_ethtool.c | 61 +++++++++++++++++++
+ drivers/net/ethernet/google/gve/gve_main.c    | 15 +++--
+ 4 files changed, 91 insertions(+), 11 deletions(-)
 
+diff --git a/drivers/net/ethernet/google/gve/gve.h b/drivers/net/ethernet/google/gve/gve.h
+index 950dff787269..5f5d4f7aa813 100644
+--- a/drivers/net/ethernet/google/gve/gve.h
++++ b/drivers/net/ethernet/google/gve/gve.h
+@@ -584,6 +584,10 @@ struct gve_priv {
+ 	int data_buffer_size_dqo;
+ 
+ 	enum gve_queue_format queue_format;
++
++	/* Interrupt coalescing settings */
++	u32 tx_coalesce_usecs;
++	u32 rx_coalesce_usecs;
+ };
+ 
+ enum gve_service_task_flags_bit {
+diff --git a/drivers/net/ethernet/google/gve/gve_dqo.h b/drivers/net/ethernet/google/gve/gve_dqo.h
+index b2e2fb015693..1eb4d5fd8561 100644
+--- a/drivers/net/ethernet/google/gve/gve_dqo.h
++++ b/drivers/net/ethernet/google/gve/gve_dqo.h
+@@ -18,6 +18,7 @@
+ 
+ #define GVE_TX_IRQ_RATELIMIT_US_DQO 50
+ #define GVE_RX_IRQ_RATELIMIT_US_DQO 20
++#define GVE_MAX_ITR_INTERVAL_DQO (GVE_ITR_INTERVAL_DQO_MASK * 2)
+ 
+ /* Timeout in seconds to wait for a reinjection completion after receiving
+  * its corresponding miss completion.
+@@ -54,17 +55,17 @@ gve_tx_put_doorbell_dqo(const struct gve_priv *priv,
+ }
+ 
+ /* Builds register value to write to DQO IRQ doorbell to enable with specified
+- * ratelimit.
++ * ITR interval.
+  */
+-static inline u32 gve_set_itr_ratelimit_dqo(u32 ratelimit_us)
++static inline u32 gve_setup_itr_interval_dqo(u32 interval_us)
+ {
+ 	u32 result = GVE_ITR_ENABLE_BIT_DQO;
+ 
+ 	/* Interval has 2us granularity. */
+-	ratelimit_us >>= 1;
++	interval_us >>= 1;
+ 
+-	ratelimit_us &= GVE_ITR_INTERVAL_DQO_MASK;
+-	result |= (ratelimit_us << GVE_ITR_INTERVAL_DQO_SHIFT);
++	interval_us &= GVE_ITR_INTERVAL_DQO_MASK;
++	result |= (interval_us << GVE_ITR_INTERVAL_DQO_SHIFT);
+ 
+ 	return result;
+ }
+@@ -78,4 +79,15 @@ gve_write_irq_doorbell_dqo(const struct gve_priv *priv,
+ 	iowrite32(val, &priv->db_bar2[index]);
+ }
+ 
++/* Sets interrupt throttling interval and enables interrupt
++ * by writing to IRQ doorbell.
++ */
++static inline void
++gve_set_itr_coalesce_usecs_dqo(struct gve_priv *priv,
++			       struct gve_notify_block *block,
++			       u32 usecs)
++{
++	gve_write_irq_doorbell_dqo(priv, block,
++				   gve_setup_itr_interval_dqo(usecs));
++}
+ #endif /* _GVE_DQO_H_ */
 diff --git a/drivers/net/ethernet/google/gve/gve_ethtool.c b/drivers/net/ethernet/google/gve/gve_ethtool.c
-index fd2d2c705391..e0815bb031e9 100644
+index e0815bb031e9..50b384910c83 100644
 --- a/drivers/net/ethernet/google/gve/gve_ethtool.c
 +++ b/drivers/net/ethernet/google/gve/gve_ethtool.c
-@@ -42,7 +42,7 @@ static const char gve_gstrings_main_stats[][ETH_GSTRING_LEN] = {
- };
+@@ -8,6 +8,7 @@
+ #include <linux/rtnetlink.h>
+ #include "gve.h"
+ #include "gve_adminq.h"
++#include "gve_dqo.h"
  
- static const char gve_gstrings_rx_stats[][ETH_GSTRING_LEN] = {
--	"rx_posted_desc[%u]", "rx_completed_desc[%u]", "rx_bytes[%u]",
-+	"rx_posted_desc[%u]", "rx_completed_desc[%u]", "rx_consumed_desc[%u]", "rx_bytes[%u]",
- 	"rx_cont_packet_cnt[%u]", "rx_frag_flip_cnt[%u]", "rx_frag_copy_cnt[%u]",
- 	"rx_dropped_pkt[%u]", "rx_copybreak_pkt[%u]", "rx_copied_pkt[%u]",
- 	"rx_queue_drop_cnt[%u]", "rx_no_buffers_posted[%u]",
-@@ -50,7 +50,7 @@ static const char gve_gstrings_rx_stats[][ETH_GSTRING_LEN] = {
- };
+ static void gve_get_drvinfo(struct net_device *netdev,
+ 			    struct ethtool_drvinfo *info)
+@@ -540,7 +541,65 @@ static int gve_get_link_ksettings(struct net_device *netdev,
+ 	return err;
+ }
  
- static const char gve_gstrings_tx_stats[][ETH_GSTRING_LEN] = {
--	"tx_posted_desc[%u]", "tx_completed_desc[%u]", "tx_bytes[%u]",
-+	"tx_posted_desc[%u]", "tx_completed_desc[%u]", "tx_consumed_desc[%u]", "tx_bytes[%u]",
- 	"tx_wake[%u]", "tx_stop[%u]", "tx_event_counter[%u]",
- 	"tx_dma_mapping_error[%u]",
- };
-@@ -139,10 +139,11 @@ static void
- gve_get_ethtool_stats(struct net_device *netdev,
- 		      struct ethtool_stats *stats, u64 *data)
- {
--	u64 tmp_rx_pkts, tmp_rx_bytes, tmp_rx_skb_alloc_fail,	tmp_rx_buf_alloc_fail,
--		tmp_rx_desc_err_dropped_pkt, tmp_tx_pkts, tmp_tx_bytes;
-+	u64 tmp_rx_pkts, tmp_rx_bytes, tmp_rx_skb_alloc_fail,
-+		tmp_rx_buf_alloc_fail, tmp_rx_desc_err_dropped_pkt,
-+		tmp_tx_pkts, tmp_tx_bytes;
- 	u64 rx_buf_alloc_fail, rx_desc_err_dropped_pkt, rx_pkts,
--		rx_skb_alloc_fail, rx_bytes, tx_pkts, tx_bytes;
-+		rx_skb_alloc_fail, rx_bytes, tx_pkts, tx_bytes, tx_dropped;
- 	int stats_idx, base_stats_idx, max_stats_idx;
- 	struct stats *report_stats;
- 	int *rx_qid_to_stats_idx;
-@@ -191,7 +192,7 @@ gve_get_ethtool_stats(struct net_device *netdev,
- 			rx_desc_err_dropped_pkt += tmp_rx_desc_err_dropped_pkt;
- 		}
- 	}
--	for (tx_pkts = 0, tx_bytes = 0, ring = 0;
-+	for (tx_pkts = 0, tx_bytes = 0, tx_dropped = 0, ring = 0;
- 	     ring < priv->tx_cfg.num_queues; ring++) {
- 		if (priv->tx) {
- 			do {
-@@ -203,6 +204,7 @@ gve_get_ethtool_stats(struct net_device *netdev,
- 						       start));
- 			tx_pkts += tmp_tx_pkts;
- 			tx_bytes += tmp_tx_bytes;
-+			tx_dropped += priv->tx[ring].dropped_pkt;
- 		}
- 	}
- 
-@@ -214,9 +216,7 @@ gve_get_ethtool_stats(struct net_device *netdev,
- 	/* total rx dropped packets */
- 	data[i++] = rx_skb_alloc_fail + rx_buf_alloc_fail +
- 		    rx_desc_err_dropped_pkt;
--	/* Skip tx_dropped */
--	i++;
++static int gve_get_coalesce(struct net_device *netdev,
++			    struct ethtool_coalesce *ec,
++			    struct kernel_ethtool_coalesce *kernel_ec,
++			    struct netlink_ext_ack *extack)
++{
++	struct gve_priv *priv = netdev_priv(netdev);
++
++	if (gve_is_gqi(priv))
++		return -EOPNOTSUPP;
++	ec->tx_coalesce_usecs = priv->tx_coalesce_usecs;
++	ec->rx_coalesce_usecs = priv->rx_coalesce_usecs;
++
++	return 0;
++}
++
++static int gve_set_coalesce(struct net_device *netdev,
++			    struct ethtool_coalesce *ec,
++			    struct kernel_ethtool_coalesce *kernel_ec,
++			    struct netlink_ext_ack *extack)
++{
++	struct gve_priv *priv = netdev_priv(netdev);
++	u32 tx_usecs_orig = priv->tx_coalesce_usecs;
++	u32 rx_usecs_orig = priv->rx_coalesce_usecs;
++	int idx;
++
++	if (gve_is_gqi(priv))
++		return -EOPNOTSUPP;
++
++	if (ec->tx_coalesce_usecs > GVE_MAX_ITR_INTERVAL_DQO ||
++	    ec->rx_coalesce_usecs > GVE_MAX_ITR_INTERVAL_DQO)
++		return -EINVAL;
++	priv->tx_coalesce_usecs = ec->tx_coalesce_usecs;
++	priv->rx_coalesce_usecs = ec->rx_coalesce_usecs;
++
++	if (tx_usecs_orig != priv->tx_coalesce_usecs) {
++		for (idx = 0; idx < priv->tx_cfg.num_queues; idx++) {
++			int ntfy_idx = gve_tx_idx_to_ntfy(priv, idx);
++			struct gve_notify_block *block = &priv->ntfy_blocks[ntfy_idx];
++
++			gve_set_itr_coalesce_usecs_dqo(priv, block,
++						       priv->tx_coalesce_usecs);
++		}
++	}
++
++	if (rx_usecs_orig != priv->rx_coalesce_usecs) {
++		for (idx = 0; idx < priv->rx_cfg.num_queues; idx++) {
++			int ntfy_idx = gve_rx_idx_to_ntfy(priv, idx);
++			struct gve_notify_block *block = &priv->ntfy_blocks[ntfy_idx];
++
++			gve_set_itr_coalesce_usecs_dqo(priv, block,
++						       priv->rx_coalesce_usecs);
++		}
++	}
++
++	return 0;
++}
++
+ const struct ethtool_ops gve_ethtool_ops = {
++	.supported_coalesce_params = ETHTOOL_COALESCE_USECS,
+ 	.get_drvinfo = gve_get_drvinfo,
+ 	.get_strings = gve_get_strings,
+ 	.get_sset_count = gve_get_sset_count,
+@@ -550,6 +609,8 @@ const struct ethtool_ops gve_ethtool_ops = {
+ 	.set_channels = gve_set_channels,
+ 	.get_channels = gve_get_channels,
+ 	.get_link = ethtool_op_get_link,
++	.get_coalesce = gve_get_coalesce,
++	.set_coalesce = gve_set_coalesce,
+ 	.get_ringparam = gve_get_ringparam,
+ 	.reset = gve_user_reset,
+ 	.get_tunable = gve_get_tunable,
+diff --git a/drivers/net/ethernet/google/gve/gve_main.c b/drivers/net/ethernet/google/gve/gve_main.c
+index e5456187b3f2..f7f65c4bf993 100644
+--- a/drivers/net/ethernet/google/gve/gve_main.c
++++ b/drivers/net/ethernet/google/gve/gve_main.c
+@@ -1113,9 +1113,8 @@ static void gve_turnup(struct gve_priv *priv)
+ 		if (gve_is_gqi(priv)) {
+ 			iowrite32be(0, gve_irq_doorbell(priv, block));
+ 		} else {
+-			u32 val = gve_set_itr_ratelimit_dqo(GVE_TX_IRQ_RATELIMIT_US_DQO);
 -
-+	data[i++] = tx_dropped;
- 	data[i++] = priv->tx_timeo_cnt;
- 	data[i++] = rx_skb_alloc_fail;
- 	data[i++] = rx_buf_alloc_fail;
-@@ -255,6 +255,7 @@ gve_get_ethtool_stats(struct net_device *netdev,
+-			gve_write_irq_doorbell_dqo(priv, block, val);
++			gve_set_itr_coalesce_usecs_dqo(priv, block,
++						       priv->tx_coalesce_usecs);
+ 		}
+ 	}
+ 	for (idx = 0; idx < priv->rx_cfg.num_queues; idx++) {
+@@ -1126,9 +1125,8 @@ static void gve_turnup(struct gve_priv *priv)
+ 		if (gve_is_gqi(priv)) {
+ 			iowrite32be(0, gve_irq_doorbell(priv, block));
+ 		} else {
+-			u32 val = gve_set_itr_ratelimit_dqo(GVE_RX_IRQ_RATELIMIT_US_DQO);
+-
+-			gve_write_irq_doorbell_dqo(priv, block, val);
++			gve_set_itr_coalesce_usecs_dqo(priv, block,
++						       priv->rx_coalesce_usecs);
+ 		}
+ 	}
  
- 			data[i++] = rx->fill_cnt;
- 			data[i++] = rx->cnt;
-+			data[i++] = rx->fill_cnt - rx->cnt;
- 			do {
- 				start =
- 				  u64_stats_fetch_begin(&priv->rx[ring].statss);
-@@ -318,12 +319,14 @@ gve_get_ethtool_stats(struct net_device *netdev,
- 			if (gve_is_gqi(priv)) {
- 				data[i++] = tx->req;
- 				data[i++] = tx->done;
-+				data[i++] = tx->req - tx->done;
- 			} else {
- 				/* DQO doesn't currently support
- 				 * posted/completed descriptor counts;
- 				 */
- 				data[i++] = 0;
- 				data[i++] = 0;
-+				data[i++] = tx->dqo_tx.tail - tx->dqo_tx.head;
- 			}
- 			do {
- 				start =
+@@ -1425,6 +1423,11 @@ static int gve_init_priv(struct gve_priv *priv, bool skip_describe_device)
+ 	dev_info(&priv->pdev->dev, "Max TX queues %d, Max RX queues %d\n",
+ 		 priv->tx_cfg.max_queues, priv->rx_cfg.max_queues);
+ 
++	if (!gve_is_gqi(priv)) {
++		priv->tx_coalesce_usecs = GVE_TX_IRQ_RATELIMIT_US_DQO;
++		priv->rx_coalesce_usecs = GVE_RX_IRQ_RATELIMIT_US_DQO;
++	}
++
+ setup_device:
+ 	err = gve_setup_device_resources(priv);
+ 	if (!err)
 -- 
 2.34.1.173.g76aa8bc2d0-goog
 
