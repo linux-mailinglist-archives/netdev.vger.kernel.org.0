@@ -2,116 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DF16B476849
-	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 03:46:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BF9047684F
+	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 03:50:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233057AbhLPCqy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Dec 2021 21:46:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51842 "EHLO
+        id S232936AbhLPCuM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Dec 2021 21:50:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233033AbhLPCqx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Dec 2021 21:46:53 -0500
-Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59874C061574
-        for <netdev@vger.kernel.org>; Wed, 15 Dec 2021 18:46:53 -0800 (PST)
-Received: by mail-oi1-x22d.google.com with SMTP id r26so34410343oiw.5
-        for <netdev@vger.kernel.org>; Wed, 15 Dec 2021 18:46:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=endlessos.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=6bVzvpheVBBIcY1ce58sxKYXE1wOehY4K20Ojvv4pk0=;
-        b=tvP/tqXZ5k2rFm+NIJh9lCHtTQIfkuLu8y2SdXjslo1QUBihcxdowh5DV+3N0M/Nw0
-         Qsh1/jI485BGm0NMimK0uN1TdBOAW0Ey3iHemyd2lQJ6V6JXk47xhcEk+yRXq8fI4Sms
-         9sORp4pnRH4bn9D+F/KnXKL9NXCx21JHIsdPHtRxdqNrr3rgDVHkai9Zea9YBvqJUInL
-         lbw47ZgWf2FFJ73IoR0IM1Syozs9u5QFgwvgWsTMQeZdk6GdTah+QbMrYu9lEFgIEdLB
-         d0jjVtpWrwGBv6+CT5udoQDdnSxHLnp0X/RJqmjRIttmUR3DGUXTxdzAaWcS9dTC5CyU
-         AiSw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=6bVzvpheVBBIcY1ce58sxKYXE1wOehY4K20Ojvv4pk0=;
-        b=DFJkt8B4A0HgB+9rHS20k2wy9Hr7+SSxNF0kPvKmM99yLR7udHGSDZS/XohJkxhBX1
-         hJjZGwNKY3625f+wiSWexat61Z05ShQgZCRfgywJM2NoOcUCl8hYolrF92xxdJUSEHjg
-         nvRbyMwRTmCBLMpUO4izfGlBTqdzEJtjhWrr4dEF1sQU2dTENISzcBNB/kiywAnedwXL
-         qm8Q/bhmXHSgutpcDGZFtJ2hXnn0c4SkJubyOQIztKNyM92uQlz2PKsjDlqiU1vljtjr
-         XLW9Y2bv1cA3b0g6AiXY6r+OPeV+Xp6SkyFa28+Kjf5t+lizsdPCBPDjQZtgOF2BG5yE
-         Tbwg==
-X-Gm-Message-State: AOAM530BfeOoC88c2HFtLu3AM7FJHUHuNMs/rmP3gbfQOa30mwcSKr57
-        C0v4K9VeJP4KJXxykKaK6hQLTVjlzANn8KO1Ev9JgQ==
-X-Google-Smtp-Source: ABdhPJy5KawtFidrvy0PFM5hXDFslMGNOj7QgkQ9XL5FdUUcGwFlx2VhiS+x0TXfg7Qx9As1kud+7KGGNqlKKDYU4EQ=
-X-Received: by 2002:a05:6808:d1:: with SMTP id t17mr2498324oic.161.1639622812691;
- Wed, 15 Dec 2021 18:46:52 -0800 (PST)
+        with ESMTP id S230192AbhLPCuL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Dec 2021 21:50:11 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B89BC061574
+        for <netdev@vger.kernel.org>; Wed, 15 Dec 2021 18:50:11 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C0A0461BCE
+        for <netdev@vger.kernel.org>; Thu, 16 Dec 2021 02:50:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 178B1C36AE1;
+        Thu, 16 Dec 2021 02:50:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1639623010;
+        bh=Kuh71+rmMKz4/3raDLHIix2cCC6IcAdXfy6waACvb8U=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=NSTfAg8jnWOROs83pMh3WlEP25aRRZ8GIIQTwAzHQ6d2KquLR5PVtqJdeelp7PdFg
+         dEDSrQ/BOroKGXntuZaKzaavuXPqtD086kYXxWyYk9h9SHBgymsOgjQblsX8LurR5g
+         nB/YTF0xguWcgdr6hlBm4dwTamJK6YX7CG75BFzIhQMq2XU4ohOMnasiW6jnqKIrYb
+         pUoX1LHm+BBeuR5d+IZG1TV0CLlPM5jytxpNEcZXCUlUNZB+L9Tc0nd6sSNdEjhRKX
+         ICN+DsBoyy9yw1bagd3oJft/56F7PAP3N3ngLbgqBnsDUMVhrc7xyxUaBgfSUzt9Z5
+         ZxLmUIYQHf2vA==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id EAFDF60984;
+        Thu, 16 Dec 2021 02:50:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20211215114635.333767-1-kai.heng.feng@canonical.com> <d2ddfaa035315ca91a2a05a8188810ff50db83c8.camel@realtek.com>
-In-Reply-To: <d2ddfaa035315ca91a2a05a8188810ff50db83c8.camel@realtek.com>
-From:   Jian-Hong Pan <jhp@endlessos.org>
-Date:   Thu, 16 Dec 2021 10:46:16 +0800
-Message-ID: <CAPpJ_ecgPDniiBWnZLfDuQSiW4rvHJ1f4++SsZ3=aTjy_B0Fjg@mail.gmail.com>
-Subject: Re: [PATCH v4] rtw88: Disable PCIe ASPM while doing NAPI poll on 8821CE
-To:     Pkshih <pkshih@realtek.com>
-Cc:     "kai.heng.feng@canonical.com" <kai.heng.feng@canonical.com>,
-        "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "jian-hong@endlessm.com" <jian-hong@endlessm.com>,
-        "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
-        Bernie Huang <phhuang@realtek.com>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "briannorris@chromium.org" <briannorris@chromium.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        linux@endlessos.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v4] netdevsim: Zero-initialize memory for new map's value in
+ function nsim_bpf_map_alloc
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163962300995.8380.8008869422888743193.git-patchwork-notify@kernel.org>
+Date:   Thu, 16 Dec 2021 02:50:09 +0000
+References: <20211215111530.72103-1-tcs.kernel@gmail.com>
+In-Reply-To: <20211215111530.72103-1-tcs.kernel@gmail.com>
+To:     Haimin Zhang <tcs.kernel@gmail.com>
+Cc:     greg@kroah.com, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, kuba@kernel.org, security@kernel.org,
+        elijahbai@tencent.com, netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Pkshih <pkshih@realtek.com> =E6=96=BC 2021=E5=B9=B412=E6=9C=8815=E6=97=A5 =
-=E9=80=B1=E4=B8=89 =E4=B8=8B=E5=8D=888:23=E5=AF=AB=E9=81=93=EF=BC=9A
->
-> On Wed, 2021-12-15 at 19:46 +0800, Kai-Heng Feng wrote:
-> > Many Intel based platforms face system random freeze after commit
-> > 9e2fd29864c5 ("rtw88: add napi support").
-> >
-> > The commit itself shouldn't be the culprit. My guess is that the 8821CE
-> > only leaves ASPM L1 for a short period when IRQ is raised. Since IRQ is
-> > masked during NAPI polling, the PCIe link stays at L1 and makes RX DMA
-> > extremely slow. Eventually the RX ring becomes messed up:
-> > [ 1133.194697] rtw_8821ce 0000:02:00.0: pci bus timeout, check dma stat=
-us
-> >
-> > Since the 8821CE hardware may fail to leave ASPM L1, manually do it in
-> > the driver to resolve the issue.
-> >
-> > Fixes: 9e2fd29864c5 ("rtw88: add napi support")
-> > Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=3D215131
-> > BugLink: https://bugs.launchpad.net/bugs/1927808
-> > Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
->
-> Reviewed-and-Tested-by: Ping-Ke Shih <pkshih@realtek.com>
+Hello:
 
-Acked-by: Jian-Hong Pan <jhp@endlessos.org>
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-> > ---
-> > v4:
-> >  - Rebase to the right tree.
-> >
-> > v3:
-> >  - Move the module parameter to be part of private struct.
-> >  - Ensure link_usage never goes below zero.
-> >
-> > v2:
-> >  - Add default value for module parameter.
-> >
-> >  drivers/net/wireless/realtek/rtw88/pci.c | 70 +++++++-----------------
-> >  drivers/net/wireless/realtek/rtw88/pci.h |  2 +
-> >  2 files changed, 21 insertions(+), 51 deletions(-)
-> >
-> >
->
+On Wed, 15 Dec 2021 19:15:30 +0800 you wrote:
+> Zero-initialize memory for new map's value in function nsim_bpf_map_alloc
+> since it may cause a potential kernel information leak issue, as follows:
+> 1. nsim_bpf_map_alloc calls nsim_map_alloc_elem to allocate elements for
+> a new map.
+> 2. nsim_map_alloc_elem uses kmalloc to allocate map's value, but doesn't
+> zero it.
+> 3. A user application can use IOCTL BPF_MAP_LOOKUP_ELEM to get specific
+> element's information in the map.
+> 4. The kernel function map_lookup_elem will call bpf_map_copy_value to get
+> the information allocated at step-2, then use copy_to_user to copy to the
+> user buffer.
+> This can only leak information for an array map.
+> 
 > [...]
->
->
+
+Here is the summary with links:
+  - [v4] netdevsim: Zero-initialize memory for new map's value in function nsim_bpf_map_alloc
+    https://git.kernel.org/netdev/net/c/481221775d53
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
