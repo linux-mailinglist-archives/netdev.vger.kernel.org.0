@@ -2,143 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A2671477013
-	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 12:17:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D0C7F477023
+	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 12:24:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236511AbhLPLRq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Dec 2021 06:17:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54336 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236483AbhLPLRq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 06:17:46 -0500
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58F77C06173E
-        for <netdev@vger.kernel.org>; Thu, 16 Dec 2021 03:17:46 -0800 (PST)
-Received: by mail-pj1-x102a.google.com with SMTP id gj24so6315448pjb.0
-        for <netdev@vger.kernel.org>; Thu, 16 Dec 2021 03:17:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=CWAy1WYqdSt/0YPoIzDdHpHS3ER1pM3RG8AZaTEmK8Q=;
-        b=iP/vFaZw8AT5iDkekLgQsiXmN97plx/rL1l4u2IMjlFpoFr82d5DidyAa3dwV6GdXV
-         nKhYx4su0u32MqiFwZTZmNvJrIBLs7IeaDrQesvvhsbq+ISrs4AG163d5Ig6hxNzEV3H
-         o22lDw6NQMabygysWYETtuOVu7CKUdIzZ8XvXmg+L6Yh2a96crVIoGfGaX8XB1IJwTDW
-         PaXik9aCYrGRLi+clmedNErdxPLstfB9Joq2Al+q9UL/ZX6kL6xOlj/niITJMcSgjApR
-         BGWqomI/nPJhZjRoc5dToMMooGbeVoF/huETpRG5DDEnv+qxVZQ1xMX12e+amUeyy5EY
-         Zgmw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=CWAy1WYqdSt/0YPoIzDdHpHS3ER1pM3RG8AZaTEmK8Q=;
-        b=67ZE9luaOoQICH9cBwkNtkDdFDafyxkZgZXZp8w1da2+Je0es/KsPlo3E82hJ59q8x
-         RtP7NLz4sC6oykKWNpkdtw6UxWCwrL3WjILlOgJLY7rvyafqnWlzNEJkGpVydk0B/m1Q
-         eH+4CgOv1Ywrgli+kPRXK5f3E14n30qxnRhVzn7lQndi0oEiZitb+14ld54Lw5G7sMms
-         8EcZp4azPvC+yuOlP565LczNse8wI74RO9ekoHmFycEAzIdBjHUNqLawt+AVPxm85t3B
-         Q+tUuoTorcAOB7FjGnMYEl5febWkZqGmJf2g2F008fr3cU2juugIP/G0gD5FnQKRLGdp
-         AfCA==
-X-Gm-Message-State: AOAM531GaF5lfSUIEh1+0VHr+LuyhhIU9BYXg94JU68iXv4p7zN+1jOS
-        cj1ZPvvnwNpkyfGNp+J/iWA=
-X-Google-Smtp-Source: ABdhPJyWSdbHmaOpCSOzru7qFfHQEpmAqu6bwQL20/JJGMXNeeDNbdEH7mLUqXUg5qR0EMCZBHe5Hg==
-X-Received: by 2002:a17:90b:4b01:: with SMTP id lx1mr5465469pjb.38.1639653465903;
-        Thu, 16 Dec 2021 03:17:45 -0800 (PST)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:df9f:324c:2f16:6a6b])
-        by smtp.gmail.com with ESMTPSA id k3sm5072589pgq.54.2021.12.16.03.17.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Dec 2021 03:17:45 -0800 (PST)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        syzbot <syzkaller@googlegroups.com>
-Subject: [PATCH net] sit: do not call ipip6_dev_free() from sit_init_net()
-Date:   Thu, 16 Dec 2021 03:17:41 -0800
-Message-Id: <20211216111741.1387540-1-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.34.1.173.g76aa8bc2d0-goog
+        id S236653AbhLPLYh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Dec 2021 06:24:37 -0500
+Received: from mail-gv0che01on2122.outbound.protection.outlook.com ([40.107.23.122]:24833
+        "EHLO CHE01-GV0-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S236588AbhLPLYg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Dec 2021 06:24:36 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=GM3lxvwVubLE/VleyT34rxrHItiBQWrkxSKzpxda5P7AoRL47BMJ2mjcc3ilQoVf/zmIFWzmWaJLV9cRFXra8pm3iPxb9igIFFfgwwctcXiuuv46JY3ZGQkl4z/pjJ2DFC4Spp5xhbSkujfO8ClSxz5G/cypSJAN4IdtXNFO/v28Q6wrYsOi/nUvPYFuDVfNKvr4/28ybXi57yY6qSNyYEpdfs3CdOPc2PwOOn20pc21btnzfum4nQxA8u2qIsH7xB83VQFS3mQAnEW34xdHeWNUBDO31LC+xyt5tOcQi2sg7APqd9UMl9CQrW1OImzNFDZduPwONFF/aCCnc6U0MQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=jG/DqJzHjGXmKDPLbV83zz8P3doff1ZEcJy2VmhCrEo=;
+ b=OwCUg8vtW1EWr2jS6sAuCHbKy2Ncmn2r3+nOrfaU/kbewA6uX/mE2k9c5IJzPo3+1P5dKOLREEHfDb7jNcIkBWsB6HmljzbaGjGuHOwbhR6zBuxUD4UJ/DdMT/aguEbdcCK4GEsamn95zJLxpIYQv2SSL6wjMEbHe6pshT13G5U7ydEW2EU9gwHmmBQaQBgntylxFTxCvuwz4bL+Fsm92HOYvFDXznK/aqcJ3rvmKbc8t6lLRJMNy/xaDXL0wVp6Ch9mInejuG2q4s7IW90CGmed9rQdwJ+S4+0Qhad3lOlJdV1RHWSopxipWTWJ+zLHbHx09iwQ0bKyVCmAUfHb7w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=toradex.com; dmarc=pass action=none header.from=toradex.com;
+ dkim=pass header.d=toradex.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=toradex.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jG/DqJzHjGXmKDPLbV83zz8P3doff1ZEcJy2VmhCrEo=;
+ b=dzGkW5+tSJCiQOViyQfOS73DY+jgZJ33o18VTNnJm/NSAavsiSRzEnRIA4rDNmEV5ggLjp40pjbuOZucH1j+lgtwWf1GGWZK4xIUKuA3gvAeEghJ/fhNr+8X73URtmtgxY2thGeydZOhLME+ScoyzWfEXudYCfkF1dfzvp06DvE=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=toradex.com;
+Received: from ZRAP278MB0642.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:3d::11)
+ by ZR0P278MB0250.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:35::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4778.17; Thu, 16 Dec
+ 2021 11:24:33 +0000
+Received: from ZRAP278MB0642.CHEP278.PROD.OUTLOOK.COM
+ ([fe80::d837:7398:e400:25f0]) by ZRAP278MB0642.CHEP278.PROD.OUTLOOK.COM
+ ([fe80::d837:7398:e400:25f0%2]) with mapi id 15.20.4801.014; Thu, 16 Dec 2021
+ 11:24:34 +0000
+Date:   Thu, 16 Dec 2021 12:24:33 +0100
+From:   Francesco Dolcini <francesco.dolcini@toradex.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Francesco Dolcini <francesco.dolcini@toradex.com>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Philippe Schenker <philippe.schenker@toradex.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Fabio Estevam <festevam@gmail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next 3/3] net: fec: reset phy on resume after power-up
+Message-ID: <20211216112433.GB4190@francesco-nb.int.toradex.com>
+References: <DB8PR04MB679570A356B655A5D6BFE818E6769@DB8PR04MB6795.eurprd04.prod.outlook.com>
+ <YbnDc/snmb1WYVCt@shell.armlinux.org.uk>
+ <Ybm3NDeq96TSjh+k@lunn.ch>
+ <20211215110139.GA64001@francesco-nb.int.toradex.com>
+ <DB8PR04MB67951CB5217193E4CBF73B26E6779@DB8PR04MB6795.eurprd04.prod.outlook.com>
+ <20211216075216.GA4190@francesco-nb.int.toradex.com>
+ <YbsT2G5oMoe4baCJ@lunn.ch>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YbsT2G5oMoe4baCJ@lunn.ch>
+X-ClientProxiedBy: GV0P278CA0001.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:710:26::11) To ZRAP278MB0642.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:910:3d::11)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: ce3530c9-b7a6-49c9-f0cd-08d9c086a2c9
+X-MS-TrafficTypeDiagnostic: ZR0P278MB0250:EE_
+X-Microsoft-Antispam-PRVS: <ZR0P278MB02503C56C5C6E31A9DDF2C05E2779@ZR0P278MB0250.CHEP278.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:3383;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: SaVtg3Oa6kBHZ6KB/c0qQag2uAZL9I+qEKFUzDeaHAzwn3tWweop8CsfbhGHn62FhgVRNCMoJDpzvUasTJLfx2HM5jWScmFy+kXfZAI9a2crfYM9rIbXKQAZYUBzfecylMgPSbUxdGiAaHk15YzKAPFnDyYpag3a9x19ApB/AEtc5NjXKoFqrRw9Fae7bmKuhnPkGEpQQUfMGjvLUDUIHVqpmFbCG3oyRcv9tt/QlVQ8+dg4VsBxE8awwQ/I4EmzevCXXAwIFQHuQruda+Heqi6Q9PS4eVzhrkEpEFMsK0/EgHwZgK8AQFxPT2BJf6xASdbkbTea80Y412MCPJKUU5Av3c5LJj6Q3DsnXu61GkcbiqY4L3RKl6a858LGz8NXx+46CYNkh+EmrLl/mlGYS4KWsLphuFOSRxF++8UnWAS8lk17HXCB/DBSq0mHme6DP0WyWdK8Bjl//doqCWPk6s30u3T8hphSC8jq6J80s/yIppIsUAr2egyC+IQzB71K0/jfNwOr2lqRb2kr1i/+6pefGfI0pptUBjALb5TinErEr03zoi3U9Wtu0HJ9+1XPT5X2Uopy/IPe80FHEjjFlPu5cuVTtsBuHRjKi58B9qy60Oo9TBOJ9a4GHhgeIwdrA9wcN+g2UiRzIyPOvCdG1DdezzWDzuOYdCNMWjDgI6p2v2JWWSHJCz2bR9S0FbTpEdRQD+L2CdHamgP4K8ja+g==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:ZRAP278MB0642.CHEP278.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(4636009)(39850400004)(366004)(136003)(376002)(346002)(396003)(38100700002)(2906002)(86362001)(66946007)(54906003)(6512007)(66556008)(66476007)(8936002)(52116002)(6486002)(38350700002)(33656002)(508600001)(8676002)(4326008)(5660300002)(44832011)(6506007)(316002)(110136005)(186003)(26005)(1076003)(4744005);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?jFqFKTXGZrva/nBw5gSbwY/A+4i55qbq5D31hIY+wQ7SfDtaKT1uo3Rtigea?=
+ =?us-ascii?Q?fbUa/rH6flkW8AzHFbm24spufGVMoLp+iv8swbD38Ynv5Yb4ip+mE0QYHo+9?=
+ =?us-ascii?Q?QzF8xBMrSXjt6/HjFDlAO1qKLnQaN8vAyVf1o6hvRIAskLpzWkDl47YGj6FF?=
+ =?us-ascii?Q?1UiDwUzcu3SAZGxRCv6H8U6HuA7XkyWaySV737CsybSm9jccBcNKU8DnvcDC?=
+ =?us-ascii?Q?2wUIzzZyHmYuao3Q/3hkycXCTO5NxcUfY2Vd/BK5NiU/zBvBYLdL6e5vNobJ?=
+ =?us-ascii?Q?88RLGRk9/RTjRFp+GN2tcpovzEIUwimt0jX/JrK76gOgk66W7TDMquIAiPRu?=
+ =?us-ascii?Q?2nuT30mAvN26T8hiA0Ecpy/qa0e6SOLYFIs4VcoPVY9mQqaEu0Gxjx7h3Rf+?=
+ =?us-ascii?Q?Cw+YBPOTD5agh/j+WLaIPEV+9g3RPVjC9YxTQGfKtN5botO9Cf7UQNTbyqQ9?=
+ =?us-ascii?Q?yojC9EMHzGTl7VTTSHlUNMAEAawLtTL40Ck+r+6U0N4xAq6yX40j2+nW6HbD?=
+ =?us-ascii?Q?CcaW8qaqOZXoBcLd7rItly7bxfWcKgB1sNu2jk529fle0wOhHf5EOGnjyqzX?=
+ =?us-ascii?Q?MoUka3YxuaJt3qjnsVHT068ZYY7rUbTVM0tOs7wPN2bCm3FptLt4R/G+tm0G?=
+ =?us-ascii?Q?47/rwJL3wYrv8lPNLomPd/t8Q8MVJ563Ho2BBtavNjP+VFNAsfqi69s+2y2y?=
+ =?us-ascii?Q?LSOng+BmlkmFDsdjTU0KXoULaXsGJbmla9zyNZGz1wJjb+cSe6ZGm/PCSjQK?=
+ =?us-ascii?Q?A2wYOnKeYfoSCuTu4GQ3Fek1H9uZFPAE0jkQz/dvGvB5VDcQoQFhlGu5lPwX?=
+ =?us-ascii?Q?7pSozEOdZ3bsWbIDUxIGoALxJb8j1TuIFivNyfd73G1t++9K8ZyD4CrprU2N?=
+ =?us-ascii?Q?9oKHF0pXCCoTkXA+gLYoHCyQFMGDsF3rAE2yWDTf/BnrOUJq/EjHXV85drBT?=
+ =?us-ascii?Q?1N2AnFWVHummuk1P+4HxUMci5PK1MGUzY3N+/je8vq31BjwLMcRWFQFDFxxQ?=
+ =?us-ascii?Q?HYByqpoYSNwotUjG+ASSLe79hQKLcNQ/sR+Ople1XHMwtoBr7QenZztEl4c3?=
+ =?us-ascii?Q?kgEEccQM1z9YMDlRI2Ief9YND0WQO1GIaXdMwGmeat/yqP2zZER9HekBrN+F?=
+ =?us-ascii?Q?EZ9/pLDV/dBVQ7B8ZGUTGmnYxsiaqbKam2pKsmlnAd0gras9Il5+VKonXI7b?=
+ =?us-ascii?Q?5zq1hPxyn31go+Do3JRuVqJAnUtKEqYWcOqV8wI5XBvy21JGn8HZYR1kBWNQ?=
+ =?us-ascii?Q?nhe6w3TCntWVrtDeUZrR8NNFs+IlqH8FTqHGbnlCha6cfcGjh1iLTXMeBu4v?=
+ =?us-ascii?Q?gaTBO0JR1o18izk7z1tcX1oopTpAtW63nnOTw1rIgwHVQGLurxpEEx8Hzq64?=
+ =?us-ascii?Q?StEAiKTLWkU/7LADPcIQ6K9w74z/Vb7quGgDcDPtcsNedSk5MOIeYmWd6/J/?=
+ =?us-ascii?Q?YK83MecZKOSg3r8UdGIx8Qr00nu9ga4c1Za1lySUa3vIZcPsvoe6oHvHbho3?=
+ =?us-ascii?Q?Mti6RTjDtWEvfLUtvZmXf/39V8oCK38ShbrpuWUcivDO76EKBH7JS634DCfm?=
+ =?us-ascii?Q?VkLwhaqogEeQ8HtqQc4+9CMGkCIDuc6vc/5Boez808iJtO/K15D4GnbL7VrD?=
+ =?us-ascii?Q?Ye023buZZIYXzK0v+tm1l0a2e7PUdoJMalqoNOaVqDKbyXWWt5q+m8Z4WkM1?=
+ =?us-ascii?Q?55Y4iA=3D=3D?=
+X-OriginatorOrg: toradex.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ce3530c9-b7a6-49c9-f0cd-08d9c086a2c9
+X-MS-Exchange-CrossTenant-AuthSource: ZRAP278MB0642.CHEP278.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Dec 2021 11:24:33.9616
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: d9995866-0d9b-4251-8315-093f062abab4
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ssmUqZnfosyRCG9ftKpNbdoscszTAsNfh6xxeOXXeosbvccGTuw530dcnZDIhRxx32oT/GMjArsFbp2jaNUJdxtKSRNGgGkqkF/qheGokiA=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: ZR0P278MB0250
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+On Thu, Dec 16, 2021 at 11:24:24AM +0100, Andrew Lunn wrote:
+> I think you need to move the regulator into phylib, so the PHY driver
+> can do the right thing. It is really the only entity which knows what
+> is the correct thing to do.
+Do you believe that the right place is the phylib and not the phy driver?
+Is this generic enough?
 
-ipip6_dev_free is sit dev->priv_destructor, already called
-by register_netdevice() if something goes wrong.
-
-Alternative would be to make ipip6_dev_free() robust against
-multiple invocations, but other drivers do not implement this
-strategy.
-
-syzbot reported:
-
-dst_release underflow
-WARNING: CPU: 0 PID: 5059 at net/core/dst.c:173 dst_release+0xd8/0xe0 net/core/dst.c:173
-Modules linked in:
-CPU: 1 PID: 5059 Comm: syz-executor.4 Not tainted 5.16.0-rc5-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:dst_release+0xd8/0xe0 net/core/dst.c:173
-Code: 4c 89 f2 89 d9 31 c0 5b 41 5e 5d e9 da d5 44 f9 e8 1d 90 5f f9 c6 05 87 48 c6 05 01 48 c7 c7 80 44 99 8b 31 c0 e8 e8 67 29 f9 <0f> 0b eb 85 0f 1f 40 00 53 48 89 fb e8 f7 8f 5f f9 48 83 c3 a8 48
-RSP: 0018:ffffc9000aa5faa0 EFLAGS: 00010246
-RAX: d6894a925dd15a00 RBX: 00000000ffffffff RCX: 0000000000040000
-RDX: ffffc90005e19000 RSI: 000000000003ffff RDI: 0000000000040000
-RBP: 0000000000000000 R08: ffffffff816a1f42 R09: ffffed1017344f2c
-R10: ffffed1017344f2c R11: 0000000000000000 R12: 0000607f462b1358
-R13: 1ffffffff1bfd305 R14: ffffe8ffffcb1358 R15: dffffc0000000000
-FS:  00007f66c71a2700(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f88aaed5058 CR3: 0000000023e0f000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- dst_cache_destroy+0x107/0x1e0 net/core/dst_cache.c:160
- ipip6_dev_free net/ipv6/sit.c:1414 [inline]
- sit_init_net+0x229/0x550 net/ipv6/sit.c:1936
- ops_init+0x313/0x430 net/core/net_namespace.c:140
- setup_net+0x35b/0x9d0 net/core/net_namespace.c:326
- copy_net_ns+0x359/0x5c0 net/core/net_namespace.c:470
- create_new_namespaces+0x4ce/0xa00 kernel/nsproxy.c:110
- unshare_nsproxy_namespaces+0x11e/0x180 kernel/nsproxy.c:226
- ksys_unshare+0x57d/0xb50 kernel/fork.c:3075
- __do_sys_unshare kernel/fork.c:3146 [inline]
- __se_sys_unshare kernel/fork.c:3144 [inline]
- __x64_sys_unshare+0x34/0x40 kernel/fork.c:3144
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7f66c882ce99
-Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f66c71a2168 EFLAGS: 00000246 ORIG_RAX: 0000000000000110
-RAX: ffffffffffffffda RBX: 00007f66c893ff60 RCX: 00007f66c882ce99
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000048040200
-RBP: 00007f66c8886ff1 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007fff6634832f R14: 00007f66c71a2300 R15: 0000000000022000
- </TASK>
-
-Fixes: cf124db566e6 ("net: Fix inconsistent teardown and release of private netdev state.")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
----
- net/ipv6/sit.c | 1 -
- 1 file changed, 1 deletion(-)
-
-diff --git a/net/ipv6/sit.c b/net/ipv6/sit.c
-index 1b57ee36d6682e04085aa271c6c5c09e6e3a7b7e..8a3618a30632a8fab997edff82065a194dcaac1b 100644
---- a/net/ipv6/sit.c
-+++ b/net/ipv6/sit.c
-@@ -1933,7 +1933,6 @@ static int __net_init sit_init_net(struct net *net)
- 	return 0;
- 
- err_reg_dev:
--	ipip6_dev_free(sitn->fb_tunnel_dev);
- 	free_netdev(sitn->fb_tunnel_dev);
- err_alloc_dev:
- 	return err;
--- 
-2.34.1.173.g76aa8bc2d0-goog
-
+Francesco
