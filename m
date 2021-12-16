@@ -2,74 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B7D147759E
-	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 16:17:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 311A24775B2
+	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 16:19:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238356AbhLPPRr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Dec 2021 10:17:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55008 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232605AbhLPPRr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 10:17:47 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0397FC061574;
-        Thu, 16 Dec 2021 07:17:47 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 63712B8247E;
-        Thu, 16 Dec 2021 15:17:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE855C36AE4;
-        Thu, 16 Dec 2021 15:17:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1639667864;
-        bh=e7mP1/gjH/BhHvugM3VkQWdiobAWdMElBh+OAKOqYu0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=cDNKmduyx1KMcGkxYJPkOWVnN1XG7b1aAlcG2ap/KJ7uVnFhoXNFgYeVaekrxPV/E
-         3lfTHExlipPBic/l3Ce5Y8Kax/eYevsLdtMnWwsm7IsP7aFL7Hz+Hx9xsK/NmKQg/C
-         2Uq0paX8TgGGIDpf7dmLug7EXVBYNceRVHt+R/NfCoKZGa57psM0WWg4n3m8VQFxO2
-         Xv2XSfwDiRnL+duOJFUhGttIG5pBC0DVEVuVo/QsW28CjY9/mKJKYru3dLHEIBa1VF
-         GpMdoVrp0k4N5qLxJXvun25P1xm0wrj7as/Rgj1ac5qRC71aYfPauhhYkQBQdp82kt
-         RswdaHuDlhlmA==
-Date:   Thu, 16 Dec 2021 07:17:43 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Joseph CHAMG <josright123@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>, joseph_chang@davicom.com.tw,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6, 2/2] net: Add dm9051 driver
-Message-ID: <20211216071743.1de51554@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211216093246.23738-3-josright123@gmail.com>
-References: <20211216093246.23738-1-josright123@gmail.com>
-        <20211216093246.23738-3-josright123@gmail.com>
+        id S238414AbhLPPTu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Dec 2021 10:19:50 -0500
+Received: from smtpbg127.qq.com ([109.244.180.96]:44601 "EHLO smtpbg.qq.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S232620AbhLPPTu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Dec 2021 10:19:50 -0500
+X-QQ-mid: bizesmtp47t1639667965tb49n6b3
+Received: from wangx.lan (unknown [218.88.124.63])
+        by esmtp6.qq.com (ESMTP) with 
+        id ; Thu, 16 Dec 2021 23:19:17 +0800 (CST)
+X-QQ-SSF: 01000000002000B0C000C00A0000000
+X-QQ-FEAT: k0yT7W7BRd1oP2mgzKNvYIIHDNH5omNVB0fr6Vf8qSVRWBjiOQog1PJ7oW31H
+        N/Ef8adxXS9Mds3iQqoF1pDV4G+XWlz0HkYPHlP54/8ET85Rnx2BpFM+EoGpNHxke0HGWja
+        V9GxN2oHPc72MNqOBOofap8aKTcQ3c+0YWZ9TCFhOuThu9x3HribIqkU4WOxiqcRhQ4V8G0
+        PciwbMR6AAthPTpvhe3nze0O6ofBbVOzdfZw/R2/vuIN2ukIjTXfNg9uBkDj/Wdvz8LuonL
+        qiXe+h5d8ZSDzZNyaBJkDpc9ef8TPU4/sjgq6GALBVvCSJt4HPLXaAQM0lBPawDaRn96V9V
+        arP3b0mqJfexnGBkmjH4aLWc/iQS11MWDu7SPR+
+X-QQ-GoodBg: 0
+From:   Xiang wangx <wangxiang@cdjrlc.com>
+To:     kuba@kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Xiang wangx <wangxiang@cdjrlc.com>
+Subject: [PATCH] net: fix typo in a comment
+Date:   Thu, 16 Dec 2021 23:19:16 +0800
+Message-Id: <20211216151916.12045-1-wangxiang@cdjrlc.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 16 Dec 2021 17:32:46 +0800 Joseph CHAMG wrote:
-> Add davicom dm9051 spi ethernet driver, The driver work with the
-> device platform's spi master
-> 
-> remove the redundant code that phylib has support,
-> adjust to be the reasonable sequence,
-> fine tune comments, add comments for pause function support
-> 
-> Tested with raspberry pi 4. Test for netwroking function, CAT5
-> cable unplug/plug and also ethtool detect for link state, and
-> all are ok.
+The double 'as' in a comment is repeated, thus it should be removed.
 
-Please install sparse and make sure the driver builds cleanly with W=1
-C=1 flags.
+Signed-off-by: Xiang wangx <wangxiang@cdjrlc.com>
+---
+ include/linux/netdevice.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-drivers/net/ethernet/davicom/dm9051.c:349:26: warning: symbol 'dm9051_ethtool_ops' was not declared. Should it be static?
-drivers/net/ethernet/davicom/dm9051.c:381:31: warning: incorrect type in initializer (different base types)
-drivers/net/ethernet/davicom/dm9051.c:381:31:    expected int rxlen
-drivers/net/ethernet/davicom/dm9051.c:381:31:    got restricted __le16 [usertype] rxlen
-drivers/net/ethernet/davicom/dm9051.c:421:31: warning: restricted __le16 degrades to integer
-drivers/net/ethernet/davicom/dm9051.c:426:23: warning: incorrect type in assignment (different base types)
-drivers/net/ethernet/davicom/dm9051.c:426:23:    expected int rxlen
-drivers/net/ethernet/davicom/dm9051.c:426:23:    got restricted __le16 [usertype] rxlen
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 65117f01d5f2..89d93939063b 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -1932,7 +1932,7 @@ enum netdev_ml_priv_type {
+  *	@udp_tunnel_nic:	UDP tunnel offload state
+  *	@xdp_state:		stores info on attached XDP BPF programs
+  *
+- *	@nested_level:	Used as as a parameter of spin_lock_nested() of
++ *	@nested_level:	Used as a parameter of spin_lock_nested() of
+  *			dev->addr_list_lock.
+  *	@unlink_list:	As netif_addr_lock() can be called recursively,
+  *			keep a list of interfaces to be deleted.
+-- 
+2.20.1
+
