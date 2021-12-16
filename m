@@ -2,104 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 985D04773A8
-	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 14:53:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CF9F54773D5
+	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 15:00:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237036AbhLPNxJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Dec 2021 08:53:09 -0500
-Received: from mail-oi1-f169.google.com ([209.85.167.169]:45777 "EHLO
-        mail-oi1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229453AbhLPNxH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 08:53:07 -0500
-Received: by mail-oi1-f169.google.com with SMTP id 7so36515154oip.12;
-        Thu, 16 Dec 2021 05:53:07 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=6fkUBesEK+ljm2rlPJZWtYPxz7Qh1jlpFH5iXSMcGv8=;
-        b=UVf6FCLqJBxFQFiqz41n97REGIYbL6r/AXZv2jRg7zV0RcaPQ+IKZW2VTNRZNM3It1
-         nS/yVTnTY9m2vLqoorvl16A3PdPzs1hewHYHeerv8LUzpZ4CcLiu581V8zWML7dPvwNZ
-         cS+ZKEUv2++iUNKS7yduZPI0fNPFy/oel/bjvBhyVo7j0xPrQPQ7WUKsH40cQbC/i6Vu
-         7u9IPNlTyAwrBUv8pNBHRmkL0zXgRJdeJMC1su87l3lGbwGg6VRODrdjbcfrgSCn3EAZ
-         Esll5yFmDrnqeRrvCC7cRAIkns2Op5pfva7qidbo3ebp1Us6zt3B26WLvJMkbjID67Q2
-         k31Q==
-X-Gm-Message-State: AOAM531Bk2vu34PeSeSETCm9WLoPqC+g1KW3LXLi6b13Zq/QS8VB1m82
-        EmEGzyhuTRIhFOu+pbb7W4O+W9evnQ==
-X-Google-Smtp-Source: ABdhPJw5upVfoScoQm9JMcGvL7W6litpwZZt9iGYREg40ouAGdsEx1RNm5o/nQz8hQBdqefWZlPU/w==
-X-Received: by 2002:aca:c650:: with SMTP id w77mr4205603oif.8.1639662787205;
-        Thu, 16 Dec 2021 05:53:07 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id i3sm1041907ooq.39.2021.12.16.05.53.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Dec 2021 05:53:06 -0800 (PST)
-Received: (nullmailer pid 4004891 invoked by uid 1000);
-        Thu, 16 Dec 2021 13:53:03 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Biao Huang <biao.huang@mediatek.com>
-Cc:     Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, srv_heupstream@mediatek.com,
-        macpaul.lin@mediatek.com, davem@davemloft.net,
-        Rob Herring <robh+dt@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Jose Abreu <joabreu@synopsys.com>,
-        linux-mediatek@lists.infradead.org, dkirjanov@suse.de,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        angelogioacchino.delregno@collabora.com,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>
-In-Reply-To: <20211216055328.15953-5-biao.huang@mediatek.com>
-References: <20211216055328.15953-1-biao.huang@mediatek.com> <20211216055328.15953-5-biao.huang@mediatek.com>
-Subject: Re: [PATCH net-next v10 4/6] net: dt-bindings: dwmac: Convert mediatek-dwmac to DT schema
-Date:   Thu, 16 Dec 2021 07:53:03 -0600
-Message-Id: <1639662783.037495.4004890.nullmailer@robh.at.kernel.org>
+        id S237430AbhLPOAI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Dec 2021 09:00:08 -0500
+Received: from mga02.intel.com ([134.134.136.20]:12132 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237350AbhLPOAD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Dec 2021 09:00:03 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1639663203; x=1671199203;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=xdKbtlL7ITOIX1JNCDs0U+JBIpXSsVmjnc4PePr4EnM=;
+  b=DAABFT391XXUAWUDC+K3d5tV4YTa8eKKA46J2FleXNr4SuJr5Cz2I1sI
+   yjoxF5J2+k3rvEJHwhSo6VRv7PqiDvQtW7m8MEKijv57uotGp7qJdIsvK
+   szVUCLdKVkJILgLJnol9suPazoDD0dZEK4hg+rG0TDyOasvvZKjvuc6Fc
+   kf0itWsKZH9pFvXUZ5lTK9BaOBQmbHhZosE8YfPP2lKcD5VMED4HTE7Rh
+   K/QrsGc5HTEsKnQ1BJGNcySNa58tJoDFrZ8JFpauw+WpgSwnhY9/+BNq/
+   X7HXlESHWDggSJsJpfGxq7mhXhmt0ntZDy66ExQ0ncYfYEsbUheqoATGn
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10199"; a="226779238"
+X-IronPort-AV: E=Sophos;i="5.88,211,1635231600"; 
+   d="scan'208";a="226779238"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Dec 2021 06:00:03 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,211,1635231600"; 
+   d="scan'208";a="545988157"
+Received: from boxer.igk.intel.com ([10.102.20.173])
+  by orsmga001.jf.intel.com with ESMTP; 16 Dec 2021 06:00:01 -0800
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net
+Cc:     netdev@vger.kernel.org, magnus.karlsson@intel.com,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Subject: [PATCH bpf-next v2 0/4] xsk: Tx improvements
+Date:   Thu, 16 Dec 2021 14:59:54 +0100
+Message-Id: <20211216135958.3434-1-maciej.fijalkowski@intel.com>
+X-Mailer: git-send-email 2.33.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 16 Dec 2021 13:53:26 +0800, Biao Huang wrote:
-> Convert mediatek-dwmac to DT schema, and delete old mediatek-dwmac.txt.
-> And there are some changes in .yaml than .txt, others almost keep the same:
->   1. compatible "const: snps,dwmac-4.20".
->   2. delete "snps,reset-active-low;" in example, since driver remove this
->      property long ago.
->   3. add "snps,reset-delay-us = <0 10000 10000>" in example.
->   4. the example is for rgmii interface, keep related properties only.
-> 
-> Signed-off-by: Biao Huang <biao.huang@mediatek.com>
-> ---
->  .../bindings/net/mediatek-dwmac.txt           |  91 ----------
->  .../bindings/net/mediatek-dwmac.yaml          | 155 ++++++++++++++++++
->  2 files changed, 155 insertions(+), 91 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/net/mediatek-dwmac.txt
->  create mode 100644 Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
-> 
+Hi,
+this time we're on Tx side of AF_XDP and we touch i40e and ice drivers.
+Unfortunately, similar scalability issues that were addressed for XDP
+processing in ice, exist on AF_XDP side. Let's resolve them in mostly
+the same way as we did on [0] and utilize the Tx batching API from xsk
+buffer pool.
 
-Running 'make dtbs_check' with the schema in this patch gives the
-following warnings. Consider if they are expected or the schema is
-incorrect. These may not be new warnings.
+Magnus moves the array of Tx descriptors that is used with batching
+approach to the xsk buffer pool. This means that future users of this
+API will not have carry the array on their own side, they can simple
+refer to pool's tx_desc array, which can be seen on patch from Magnus.
+Described patch is based on i40e as it is the only user of this API.
+Tx batching is still left to be tried out for ice, though.
 
-Note that it is not yet a requirement to have 0 warnings for dtbs_check.
-This will change in the future.
+v2:
+* introduce new patch that resets @next_dd and @next_rs fields
+* use batching API for AF_XDP Tx on ice side
 
-Full log is available here: https://patchwork.ozlabs.org/patch/1568901
+Thanks,
+Magnus & Maciej
 
+[0]: https://lore.kernel.org/bpf/20211015162908.145341-8-anthony.l.nguyen@intel.com/
 
-ethernet@1101c000: clock-names: ['axi', 'apb', 'mac_main', 'ptp_ref'] is too short
-	arch/arm64/boot/dts/mediatek/mt2712-evb.dt.yaml
+Maciej Fijalkowski (3):
+  ice: xsk: avoid potential dead AF_XDP Tx processing
+  ice: xsk: improve AF_XDP ZC Tx and use batching API
+  ice: xsk: borrow xdp_tx_active logic from i40e
 
-ethernet@1101c000: clocks: [[27, 34], [27, 37], [6, 154], [6, 155]] is too short
-	arch/arm64/boot/dts/mediatek/mt2712-evb.dt.yaml
+Magnus Karlsson (1):
+  i40e: xsk: move tmp desc array from driver to pool
 
-ethernet@1101c000: compatible: ['mediatek,mt2712-gmac'] does not contain items matching the given schema
-	arch/arm64/boot/dts/mediatek/mt2712-evb.dt.yaml
+ drivers/net/ethernet/intel/i40e/i40e_txrx.c   |  11 -
+ drivers/net/ethernet/intel/i40e/i40e_txrx.h   |   1 -
+ drivers/net/ethernet/intel/i40e/i40e_xsk.c    |   4 +-
+ drivers/net/ethernet/intel/ice/ice_txrx.c     |   4 +-
+ drivers/net/ethernet/intel/ice/ice_txrx.h     |   5 +-
+ drivers/net/ethernet/intel/ice/ice_txrx_lib.c |   1 +
+ drivers/net/ethernet/intel/ice/ice_xsk.c      | 255 ++++++++++++------
+ drivers/net/ethernet/intel/ice/ice_xsk.h      |  26 +-
+ include/net/xdp_sock_drv.h                    |   5 +-
+ include/net/xsk_buff_pool.h                   |   1 +
+ net/xdp/xsk.c                                 |  13 +-
+ net/xdp/xsk_buff_pool.c                       |   7 +
+ net/xdp/xsk_queue.h                           |  12 +-
+ 13 files changed, 216 insertions(+), 129 deletions(-)
 
-ethernet@1101c000: compatible: ['mediatek,mt2712-gmac'] is too short
-	arch/arm64/boot/dts/mediatek/mt2712-evb.dt.yaml
-
-ethernet@1101c000: Unevaluated properties are not allowed ('compatible', 'reg', 'interrupts', 'interrupt-names', 'mac-address', 'clock-names', 'clocks', 'power-domains', 'snps,axi-config', 'snps,mtl-rx-config', 'snps,mtl-tx-config', 'snps,txpbl', 'snps,rxpbl', 'clk_csr', 'phy-mode', 'phy-handle', 'snps,reset-gpio', 'mdio' were unexpected)
-	arch/arm64/boot/dts/mediatek/mt2712-evb.dt.yaml
+-- 
+2.33.1
 
