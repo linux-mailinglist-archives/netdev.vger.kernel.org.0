@@ -2,70 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 74896476ECC
-	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 11:24:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 08277476F02
+	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 11:40:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236023AbhLPKYh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Dec 2021 05:24:37 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:58218 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236019AbhLPKYh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Dec 2021 05:24:37 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=6BEIP/V3oqkY7sGdUunYItZjMJD8QvQE4qc4UzkQrQQ=; b=RFd2AhmvEchgikzhxwb7dgIcJu
-        tSSiKJBtqkdqcuj9ICCLswPDYUfLrkL3cYp0uB0+mw+hGGnCcWQsM21zmDClxtXg8qMrT68x3KRws
-        AIhFbk1QJ9zxtHBHE7goOeTjh3EmLuNFgDHHoxg/RlX32ivBOOThOrkqNvFD/bzfhM7Q=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mxnw0-00GjFa-J0; Thu, 16 Dec 2021 11:24:24 +0100
-Date:   Thu, 16 Dec 2021 11:24:24 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Francesco Dolcini <francesco.dolcini@toradex.com>
-Cc:     Joakim Zhang <qiangqing.zhang@nxp.com>,
-        "Russell King (Oracle)" <linux@armlinux.org.uk>,
-        Philippe Schenker <philippe.schenker@toradex.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Fabio Estevam <festevam@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next 3/3] net: fec: reset phy on resume after power-up
-Message-ID: <YbsT2G5oMoe4baCJ@lunn.ch>
-References: <DB8PR04MB679570A356B655A5D6BFE818E6769@DB8PR04MB6795.eurprd04.prod.outlook.com>
- <YbnDc/snmb1WYVCt@shell.armlinux.org.uk>
- <Ybm3NDeq96TSjh+k@lunn.ch>
- <20211215110139.GA64001@francesco-nb.int.toradex.com>
- <DB8PR04MB67951CB5217193E4CBF73B26E6779@DB8PR04MB6795.eurprd04.prod.outlook.com>
- <20211216075216.GA4190@francesco-nb.int.toradex.com>
+        id S236122AbhLPKkO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Dec 2021 05:40:14 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:45418 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230467AbhLPKkN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 05:40:13 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8CE34B82370
+        for <netdev@vger.kernel.org>; Thu, 16 Dec 2021 10:40:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 4CA08C36AE5;
+        Thu, 16 Dec 2021 10:40:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1639651211;
+        bh=A1XLnNa5mC2wB+huqC2oiQaQCudy3maKPeIVmMrcAss=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=A+3471yRZMASsPcIns9A/49nFi/A/O+h/RzRPjOKOWV/ZuS/5bHec7eHfDI+XZSPF
+         r19E877lJiEKkT338RbLdDwZcp0SlvcTKT4WUX/9ZMzGw3aiKP8affYooLp9ZmK8q4
+         ctXoQFfqbWx0IazduzM1kmzDllmF2fk1F8UF4rkMn6ZPj9rpVRRj9n3HzIFNxMqbsN
+         Gla7y2dT0R1TcySZjR0ZjpV5gAnEhakjM77rbISUFvGQW8pDflQP/5oVWdCzWtPdFe
+         CHcbJll6yQGnLqbedr2EAbEokUh+CmcTMOSzZCwpVDvIgGSZuiiraC9EjAZoPr2nVP
+         PXhedKDKo72ZA==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 2DE2060A39;
+        Thu, 16 Dec 2021 10:40:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211216075216.GA4190@francesco-nb.int.toradex.com>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net 0/5][pull request] Intel Wired LAN Driver Updates
+ 2021-12-15
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163965121118.25281.3094118012863012819.git-patchwork-notify@kernel.org>
+Date:   Thu, 16 Dec 2021 10:40:11 +0000
+References: <20211215193434.3253664-1-anthony.l.nguyen@intel.com>
+In-Reply-To: <20211215193434.3253664-1-anthony.l.nguyen@intel.com>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 16, 2021 at 08:52:16AM +0100, Francesco Dolcini wrote:
-> On Thu, Dec 16, 2021 at 04:52:39AM +0000, Joakim Zhang wrote:
-> > As I can see, when system suspended, PHY is totally powered down,
-> > since you disable the regulator. At this situation, if you
-> > assert reset signal, you mean it will increase the power
-> > consumption? PHY is totally powered down, why assert reset
-> > signal still affect PHY? 
+Hello:
 
-> In general there are *other* use cases in which the PHY is powered in
-> suspend. We should not create a regression there.
+This series was applied to netdev/net.git (master)
+by Tony Nguyen <anthony.l.nguyen@intel.com>:
 
-Yes, this is the sticking point. We can do what you want, but
-potentially, the change affects others.
+On Wed, 15 Dec 2021 11:34:29 -0800 you wrote:
+> This series contains updates to igb, igbvf, igc and ixgbe drivers.
+> 
+> Karen moves checks for invalid VF MAC filters to occur earlier for
+> igb.
+> 
+> Letu Ren fixes a double free issue in igbvf probe.
+> 
+> [...]
 
-I think you need to move the regulator into phylib, so the PHY driver
-can do the right thing. It is really the only entity which knows what
-is the correct thing to do.
+Here is the summary with links:
+  - [net,1/5] igb: Fix removal of unicast MAC filters of VFs
+    https://git.kernel.org/netdev/net/c/584af82154f5
+  - [net,2/5] igbvf: fix double free in `igbvf_probe`
+    https://git.kernel.org/netdev/net/c/b6d335a60dc6
+  - [net,3/5] igc: Fix typo in i225 LTR functions
+    https://git.kernel.org/netdev/net/c/0182d1f3fa64
+  - [net,4/5] ixgbe: Document how to enable NBASE-T support
+    https://git.kernel.org/netdev/net/c/271225fd57c2
+  - [net,5/5] ixgbe: set X550 MDIO speed before talking to PHY
+    https://git.kernel.org/netdev/net/c/bf0a375055bd
 
-   Andrew
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
