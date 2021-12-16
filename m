@@ -2,97 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 77DA6477391
-	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 14:50:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 424C84773A2
+	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 14:53:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235993AbhLPNuq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Dec 2021 08:50:46 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:42256 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236139AbhLPNug (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 08:50:36 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6DEF3B8242A;
-        Thu, 16 Dec 2021 13:50:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 714ACC36AE8;
-        Thu, 16 Dec 2021 13:50:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1639662633;
-        bh=AbhvMEHMWIrh7e9CWfIY2JYFJ5gwFAB2jgOuFsthmyo=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=TKA/FRmozr/tU9ROOvxVLYg3DipKuXOctyxmMbr+Y00XEedVcaedz+AU3/dozv3sZ
-         q/M2W8KveteIB15BVbsnZLQ6iMY1tlu0jZWs9oQSP5GS5wJE9aMLirA8VC7YaohsLa
-         rH6wpHX2MzlsX0T1V5qucjcz0zP91IkE3JwYNgWOis9h3wBVm8qRhejoeolUgVIfDy
-         PcKZ0bByGv1gqQ23Cu+HhYblN5jtReKBHx9BIKLqwRXj17EKkW5WJsaHOYmSCyQEsr
-         XkXQuKDFrinrS6WR7DTFRLraLADZUOa5Prd6/wxzbNH9cYLsziwhiZA9bILnWhCl/r
-         /Dz/zMWeaYFDw==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     linux-hardening@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, ath11k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 08/17] ath11k: Use memset_startat() for clearing queue descriptors
-References: <20211213223331.135412-1-keescook@chromium.org>
-        <20211213223331.135412-9-keescook@chromium.org>
-        <87v8zriv1c.fsf@codeaurora.org> <877dc7i3zc.fsf@codeaurora.org>
-        <202112140904.2D64E570@keescook>
-Date:   Thu, 16 Dec 2021 15:50:25 +0200
-In-Reply-To: <202112140904.2D64E570@keescook> (Kees Cook's message of "Tue, 14
-        Dec 2021 09:05:37 -0800")
-Message-ID: <875yrod5ge.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
-MIME-Version: 1.0
-Content-Type: text/plain
+        id S236932AbhLPNxG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Dec 2021 08:53:06 -0500
+Received: from mail-ot1-f44.google.com ([209.85.210.44]:35571 "EHLO
+        mail-ot1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229453AbhLPNxF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 08:53:05 -0500
+Received: by mail-ot1-f44.google.com with SMTP id x43-20020a056830246b00b00570d09d34ebso29057388otr.2;
+        Thu, 16 Dec 2021 05:53:05 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=K3q3sT5gz9V74YhNPyceV1V6wk4tRvJfYiaAGVR5wDk=;
+        b=IMA8mkxAucS94FUq4f/axGDQZ3HcUffRXG4DdymJUGQc6dKKPCuBUhTIEkdXWdjEkP
+         4k3G3yqLPyJmbBObIXL5OdH4e5gfU+Z1rceqYgzRJFnJlgwCzzFhvA79mEE51PSlMz6Q
+         ucoY4SUNLtq42LPXqmduJAZ74l/Ty3J7YeDtTxOjgH4HUdmX4h1YC7+Me1hAhV/92rLu
+         iMJvVWQTeFx4A1Mkc7dWHDfL2vdCba+Lk8muQcZaePzPZ3lV0V6x4PGbhAOYdWAvoJ/C
+         OmBi6dzaGDXz81BcFBqWGuGT/wBfS+3tL2pCYibh36MLL1WS0bm9qsrial0E7Buq0lzA
+         4E/g==
+X-Gm-Message-State: AOAM531UDfHb4QRmc1kxntU8DpPYSac7Sr9O9pukGjCfH3rkRolDNEzY
+        EVfKFGWsxbnD7TWBPuD42GRn8KbOzA==
+X-Google-Smtp-Source: ABdhPJwzi2LUj+RCSn0XStSyJDnnJAJ+K5H1xEp0vB1nUSgaPfqCMGLhpagEgc0ZOqdMMiDluU4UEg==
+X-Received: by 2002:a9d:461:: with SMTP id 88mr13058565otc.300.1639662785099;
+        Thu, 16 Dec 2021 05:53:05 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id 52sm381367oth.52.2021.12.16.05.53.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Dec 2021 05:53:04 -0800 (PST)
+Received: (nullmailer pid 4004876 invoked by uid 1000);
+        Thu, 16 Dec 2021 13:53:02 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Biao Huang <biao.huang@mediatek.com>
+Cc:     srv_heupstream@mediatek.com, linux-arm-kernel@lists.infradead.org,
+        davem@davemloft.net, linux-stm32@st-md-mailman.stormreply.com,
+        angelogioacchino.delregno@collabora.com,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-mediatek@lists.infradead.org,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Jose Abreu <joabreu@synopsys.com>, netdev@vger.kernel.org,
+        dkirjanov@suse.de, linux-kernel@vger.kernel.org,
+        macpaul.lin@mediatek.com,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        devicetree@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>
+In-Reply-To: <20211216055328.15953-7-biao.huang@mediatek.com>
+References: <20211216055328.15953-1-biao.huang@mediatek.com> <20211216055328.15953-7-biao.huang@mediatek.com>
+Subject: Re: [PATCH net-next v10 6/6] net: dt-bindings: dwmac: add support for mt8195
+Date:   Thu, 16 Dec 2021 07:53:02 -0600
+Message-Id: <1639662782.987227.4004875.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kees Cook <keescook@chromium.org> writes:
+On Thu, 16 Dec 2021 13:53:28 +0800, Biao Huang wrote:
+> Add binding document for the ethernet on mt8195.
+> 
+> Signed-off-by: Biao Huang <biao.huang@mediatek.com>
+> ---
+>  .../bindings/net/mediatek-dwmac.yaml          | 29 ++++++++++++++++---
+>  1 file changed, 25 insertions(+), 4 deletions(-)
+> 
 
-> On Tue, Dec 14, 2021 at 05:46:31PM +0200, Kalle Valo wrote:
->> Kalle Valo <kvalo@kernel.org> writes:
->> 
->> > Kees Cook <keescook@chromium.org> writes:
->> >
->> >> In preparation for FORTIFY_SOURCE performing compile-time and run-time
->> >> field bounds checking for memset(), avoid intentionally writing across
->> >> neighboring fields.
->> >>
->> >> Use memset_startat() so memset() doesn't get confused about writing
->> >> beyond the destination member that is intended to be the starting point
->> >> of zeroing through the end of the struct. Additionally split up a later
->> >> field-spanning memset() so that memset() can reason about the size.
->> >>
->> >> Cc: Kalle Valo <kvalo@codeaurora.org>
->> >> Cc: "David S. Miller" <davem@davemloft.net>
->> >> Cc: Jakub Kicinski <kuba@kernel.org>
->> >> Cc: ath11k@lists.infradead.org
->> >> Cc: linux-wireless@vger.kernel.org
->> >> Cc: netdev@vger.kernel.org
->> >> Signed-off-by: Kees Cook <keescook@chromium.org>
->> >
->> > What's the plan for this patch? I would like to take this via my ath
->> > tree to avoid conflicts.
->> 
->> Actually this has been already applied:
->> 
->> https://git.kernel.org/pub/scm/linux/kernel/git/kvalo/ath.git/commit/?h=ath-next&id=d5549e9a6b86
->> 
->> Why are you submitting the same patch twice?
->
-> These are all part of a topic branch, and the cover letter mentioned
-> that a set of them have already been taken but haven't appeared in -next
-> (which was delayed).
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-Do note that some wireless drivers (at least ath, mt76 and iwlwifi) are
-maintained in separate trees, so don't be surprised if it takes several
-weeks before they are visible in linux-next.
+yamllint warnings/errors:
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+dtschema/dtc warnings/errors:
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml: properties:clock-names: {'minItems': 5, 'maxItems': 6, 'items': [{'const': 'axi'}, {'const': 'apb'}, {'const': 'mac_main'}, {'const': 'ptp_ref'}, {'const': 'rmii_internal'}, {'const': 'mac_cg'}]} should not be valid under {'required': ['maxItems']}
+	hint: "maxItems" is not needed with an "items" list
+	from schema $id: http://devicetree.org/meta-schemas/items.yaml#
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml: ignoring, error in schema: properties: clock-names
+warning: no schema found in file: ./Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
+Documentation/devicetree/bindings/net/mediatek-dwmac.example.dt.yaml:0:0: /example-0/ethernet@1101c000: failed to match any schema with compatible: ['mediatek,mt2712-gmac', 'snps,dwmac-4.20a']
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/patch/1568902
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
+
