@@ -2,107 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D45D477D13
+	by mail.lfdr.de (Postfix) with ESMTP id F3E5B477D14
 	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 21:07:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238729AbhLPUHq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Dec 2021 15:07:46 -0500
-Received: from smtp8.emailarray.com ([65.39.216.67]:57063 "EHLO
-        smtp8.emailarray.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233367AbhLPUHq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 15:07:46 -0500
-X-Greylist: delayed 399 seconds by postgrey-1.27 at vger.kernel.org; Thu, 16 Dec 2021 15:07:45 EST
-Received: (qmail 80993 invoked by uid 89); 16 Dec 2021 20:01:05 -0000
+        id S241221AbhLPUHr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Dec 2021 15:07:47 -0500
+Received: from smtp5.emailarray.com ([65.39.216.39]:27082 "EHLO
+        smtp5.emailarray.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241099AbhLPUHr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 15:07:47 -0500
+Received: (qmail 30794 invoked by uid 89); 16 Dec 2021 20:01:06 -0000
 Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21ANzEuMjEyLjEzOC4zOQ==) (POLARISLOCAL)  
-  by smtp8.emailarray.com with SMTP; 16 Dec 2021 20:01:05 -0000
+  by smtp5.emailarray.com with SMTP; 16 Dec 2021 20:01:06 -0000
 From:   Jonathan Lemon <jonathan.lemon@gmail.com>
 To:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org
 Cc:     kernel-team@fb.com
-Subject: [PATCH 1/5] ptp: ocp: Add ptp_ocp_adjtime_coarse for large adjustments
-Date:   Thu, 16 Dec 2021 12:01:00 -0800
-Message-Id: <20211216200104.266433-1-jonathan.lemon@gmail.com>
+Subject: [PATCH 2/5] ptp: ocp: Expose clock status drift and offset
+Date:   Thu, 16 Dec 2021 12:01:01 -0800
+Message-Id: <20211216200104.266433-2-jonathan.lemon@gmail.com>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20211216200104.266433-1-jonathan.lemon@gmail.com>
+References: <20211216200104.266433-1-jonathan.lemon@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In ("ptp: ocp: Have FPGA fold in ns adjustment for adjtime."), the
-ns adjustment was written to the FPGA register, so the clock could
-accurately perform adjustments.
+From: Vadim Fedorenko <vadfed@fb.com>
 
-However, the adjtime() call passes in a s64, while the clock adjustment
-registers use a s32.  When trying to perform adjustments with a large
-value (37 sec), things fail.
+Monitoring of clock variance could be done through checking
+the offset and the drift updates that are applied to atomic
+clocks. Expose these values as attributes for timecard.
 
-Examine the incoming delta, and if larger than 1 sec, use the original
-(coarse) adjustment method.  If smaller than 1 sec, then allow the
-FPGA to fold in the changes over a 1 second window.
-
-Fixes: 2d97ed56f671 ("ptp: ocp: Have FPGA fold in ns adjustment for adjtime.")
+Signed-off-by: Vadim Fedorenko <vadfed@fb.com>
 Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
 ---
- drivers/ptp/ptp_ocp.c | 25 +++++++++++++++++++++++--
- 1 file changed, 23 insertions(+), 2 deletions(-)
+ drivers/ptp/ptp_ocp.c | 34 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 34 insertions(+)
 
 diff --git a/drivers/ptp/ptp_ocp.c b/drivers/ptp/ptp_ocp.c
-index 0f1b5a7d2a89..17ad5f0d13b2 100644
+index 17ad5f0d13b2..2ac5ef54fada 100644
 --- a/drivers/ptp/ptp_ocp.c
 +++ b/drivers/ptp/ptp_ocp.c
-@@ -607,7 +607,7 @@ ptp_ocp_settime(struct ptp_clock_info *ptp_info, const struct timespec64 *ts)
+@@ -52,6 +52,8 @@ struct ocp_reg {
+ 	u32	servo_offset_i;
+ 	u32	servo_drift_p;
+ 	u32	servo_drift_i;
++	u32	status_offset;
++	u32	status_drift;
+ };
+ 
+ #define OCP_CTRL_ENABLE		BIT(0)
+@@ -1974,6 +1976,36 @@ available_clock_sources_show(struct device *dev,
  }
+ static DEVICE_ATTR_RO(available_clock_sources);
  
- static void
--__ptp_ocp_adjtime_locked(struct ptp_ocp *bp, u64 adj_val)
-+__ptp_ocp_adjtime_locked(struct ptp_ocp *bp, u32 adj_val)
- {
- 	u32 select, ctrl;
- 
-@@ -615,7 +615,7 @@ __ptp_ocp_adjtime_locked(struct ptp_ocp *bp, u64 adj_val)
- 	iowrite32(OCP_SELECT_CLK_REG, &bp->reg->select);
- 
- 	iowrite32(adj_val, &bp->reg->offset_ns);
--	iowrite32(adj_val & 0x7f, &bp->reg->offset_window_ns);
-+	iowrite32(NSEC_PER_SEC, &bp->reg->offset_window_ns);
- 
- 	ctrl = OCP_CTRL_ADJUST_OFFSET | OCP_CTRL_ENABLE;
- 	iowrite32(ctrl, &bp->reg->ctrl);
-@@ -624,6 +624,22 @@ __ptp_ocp_adjtime_locked(struct ptp_ocp *bp, u64 adj_val)
- 	iowrite32(select >> 16, &bp->reg->select);
- }
- 
-+static void
-+ptp_ocp_adjtime_coarse(struct ptp_ocp *bp, u64 delta_ns)
++static ssize_t
++clock_status_drift_show(struct device *dev,
++			struct device_attribute *attr, char *buf)
 +{
-+	struct timespec64 ts;
-+	unsigned long flags;
-+	int err;
++	struct ptp_ocp *bp = dev_get_drvdata(dev);
++	u32 val;
++	int res;
 +
-+	spin_lock_irqsave(&bp->lock, flags);
-+	err = __ptp_ocp_gettime_locked(bp, &ts, NULL);
-+	if (likely(!err)) {
-+		timespec64_add_ns(&ts, delta_ns);
-+		__ptp_ocp_settime_locked(bp, &ts);
-+	}
-+	spin_unlock_irqrestore(&bp->lock, flags);
++	val = ioread32(&bp->reg->status_drift);
++	res = (val & ~INT_MAX) ? -1 : 1;
++	res *= (val & INT_MAX);
++	return sysfs_emit(buf, "%d\n", res);
 +}
++static DEVICE_ATTR_RO(clock_status_drift);
 +
- static int
- ptp_ocp_adjtime(struct ptp_clock_info *ptp_info, s64 delta_ns)
- {
-@@ -631,6 +647,11 @@ ptp_ocp_adjtime(struct ptp_clock_info *ptp_info, s64 delta_ns)
- 	unsigned long flags;
- 	u32 adj_ns, sign;
- 
-+	if (delta_ns > NSEC_PER_SEC || -delta_ns > NSEC_PER_SEC) {
-+		ptp_ocp_adjtime_coarse(bp, delta_ns);
-+		return 0;
-+	}
++static ssize_t
++clock_status_offset_show(struct device *dev,
++			 struct device_attribute *attr, char *buf)
++{
++	struct ptp_ocp *bp = dev_get_drvdata(dev);
++	u32 val;
++	int res;
 +
- 	sign = delta_ns < 0 ? BIT(31) : 0;
- 	adj_ns = sign ? -delta_ns : delta_ns;
- 
++	val = ioread32(&bp->reg->status_offset);
++	res = (val & ~INT_MAX) ? -1 : 1;
++	res *= (val & INT_MAX);
++	return sysfs_emit(buf, "%d\n", res);
++}
++static DEVICE_ATTR_RO(clock_status_offset);
++
+ static struct attribute *timecard_attrs[] = {
+ 	&dev_attr_serialnum.attr,
+ 	&dev_attr_gnss_sync.attr,
+@@ -1985,6 +2017,8 @@ static struct attribute *timecard_attrs[] = {
+ 	&dev_attr_sma4.attr,
+ 	&dev_attr_available_sma_inputs.attr,
+ 	&dev_attr_available_sma_outputs.attr,
++	&dev_attr_clock_status_drift.attr,
++	&dev_attr_clock_status_offset.attr,
+ 	&dev_attr_irig_b_mode.attr,
+ 	&dev_attr_utc_tai_offset.attr,
+ 	&dev_attr_ts_window_adjust.attr,
 -- 
 2.31.1
 
