@@ -2,46 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F76747763F
-	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 16:45:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A7D63477648
+	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 16:47:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233943AbhLPPpx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Dec 2021 10:45:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33386 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229704AbhLPPpv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 10:45:51 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA5B8C06173E
-        for <netdev@vger.kernel.org>; Thu, 16 Dec 2021 07:45:50 -0800 (PST)
+        id S238661AbhLPPrm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Dec 2021 10:47:42 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:44954 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232741AbhLPPrm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 10:47:42 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id D5643CE21C4
-        for <netdev@vger.kernel.org>; Thu, 16 Dec 2021 15:45:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95CF5C36AE0;
-        Thu, 16 Dec 2021 15:45:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D5D6661E74
+        for <netdev@vger.kernel.org>; Thu, 16 Dec 2021 15:47:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EA95C36AE0;
+        Thu, 16 Dec 2021 15:47:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1639669547;
-        bh=swrQv+Dg77aT1ZBQsKFX507kKA/X+/gI+NK/C8bHL3M=;
+        s=k20201202; t=1639669661;
+        bh=x2qJMultYb0EWrkj82u15b9av/t2/rtSDjR4mn0u0Uk=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=iVqlQ79AOtCwa3CxXCdxHAOhfc/mxg6x15+hQuigsraTaU2ED2cCGv2vEdNvfG3HG
-         HXjfa51ECAlnxqaPaOreh8AzwkmW7GcqPDjDW3s7p9MXgcu6cCvTDy81QS7cAlhtLi
-         jr52vQ/sNgp3LCZ/+AGesQbaY6SbkKDyv4HwP7uiy6WTLcUwGZay4y03RBQZJTo3VO
-         ykBu6Cj/WegJdIkAs2As2waMGMwIYeABQUIKR3DnmntjL0v/VYlKaLuA0oTDQx/eK0
-         hOUXc4oKw9rP1Yg47CrwFe6UesW/fOagqU/Cziuc8mPtTDrEhhp9+R3IgiMJVm744+
-         ArLUw87rFD0nA==
-Date:   Thu, 16 Dec 2021 07:45:45 -0800
+        b=tunHtGHWos3bTThh5Ctm7Tnr85bWh2tRT8T3YDY/E3KY1YNVuKmnBI098hBcWxzpu
+         JMgwPzZBfgHNWYbZ5hjVfcROCeGPRCvETfoIOkUK3qbERdIqMxtv8zsDNEom0VbkPe
+         uniM32V0tVcCwk9g6eLkaYgWch4B4O3WtcrHgYsNWc3jZVO2jcpHzDex+aEeMJlvD9
+         7dYxDc5prYcI4O34f+45vfWy9cXcDRG1EH+M1fJoRrIWCkC3//iXmPh/MUX1ylP++i
+         SoDobbtvH1oU0j7+4H89NcdyozkJXlABToKPJ8zihX+PEV0aDQW5NzMx6tkIlcbHcD
+         +mETeOr/eiGag==
+Date:   Thu, 16 Dec 2021 07:47:39 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Joe Damato <jdamato@fastly.com>
 Cc:     intel-wired-lan@lists.osuosl.org, davem@davemloft.net,
         netdev@vger.kernel.org, jesse.brandeburg@intel.com,
         anthony.l.nguyen@intel.com
-Subject: Re: [net-queue PATCH 1/5] i40e: Remove rx page reuse double count.
-Message-ID: <20211216074545.036ab8e3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <1639521730-57226-2-git-send-email-jdamato@fastly.com>
+Subject: Re: [net-queue PATCH 0/5] i40e: stat counter updates and additions
+Message-ID: <20211216074739.7f71a01b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <1639521730-57226-1-git-send-email-jdamato@fastly.com>
 References: <1639521730-57226-1-git-send-email-jdamato@fastly.com>
-        <1639521730-57226-2-git-send-email-jdamato@fastly.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -49,14 +45,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 14 Dec 2021 14:42:06 -0800 Joe Damato wrote:
-> Page reuse was being tracked from two locations:
->   - i40e_reuse_rx_page (via 40e_clean_rx_irq), and
->   - i40e_alloc_mapped_page
+On Tue, 14 Dec 2021 14:42:05 -0800 Joe Damato wrote:
+> This patch set makes several updates to the i40e driver stats collection
+> and reporting code to help users of i40e get a better sense of how the
+> driver is performing and interacting with the rest of the kernel.
 > 
-> Remove the double count and only count reuse from i40e_alloc_mapped_page
-> when the page is about to be reused.
+> These patches include some new stats (like waived and busy) which were
+> inspired by other drivers that track stats using the same nomenclature.
 > 
-> Signed-off-by: Joe Damato <jdamato@fastly.com>
+> The new stats and an existing stat, rx_reuse, are now accessible with
+> ethtool to make harvesting this data more convenient for users.
 
-Possibly a fix, this one?
+Looks good overall, thanks.
