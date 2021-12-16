@@ -2,123 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8954C4768A7
-	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 04:26:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F7454768AA
+	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 04:27:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233342AbhLPDX5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Dec 2021 22:23:57 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:43912 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230467AbhLPDX4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Dec 2021 22:23:56 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1639625036;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=NpP4+hk92r4w2B9+P9RZxFn4KHsmw9feHBEAh+dzxBI=;
-        b=ciZucP3fpuFk/k6QW8FK3ztj/sIuT8G5g2aYtjrvs+q+YUS38kNGwugQbR1NBjJON0cGB2
-        SzqChuAlPLV5XvfF0m6113299k3oHecODYvqa4fTnLEnRMZCFwQRlp3EfO7B7/hIPZ2d2F
-        RaOqoxNVuJ182C701sV70vGfMi4gNdA=
-Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
- [209.85.167.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-292-jbhXJ0qONLSOP93wmX3hAg-1; Wed, 15 Dec 2021 22:23:55 -0500
-X-MC-Unique: jbhXJ0qONLSOP93wmX3hAg-1
-Received: by mail-lf1-f71.google.com with SMTP id z30-20020a0565120c1e00b0041fcb7eaff3so7887239lfu.12
-        for <netdev@vger.kernel.org>; Wed, 15 Dec 2021 19:23:55 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=NpP4+hk92r4w2B9+P9RZxFn4KHsmw9feHBEAh+dzxBI=;
-        b=U4Ni5zvyW1FOZWXvWCvscgOUkCWBFexcZWYHyx1UUmkRMu24HANZURsUicG7SDaImX
-         NJ4588+AfnC4SuNAz0vREp6Ti7FXISJhAsHwOa/HHpU2HTEL5odrL/G26Dn2slsjl+MI
-         hqvmEC6Cw7Ugv6eEcKdgp/MB+ThEyy3jILDZ4pr2mVYEYosATXMkjVhKcaK+D6oh3quw
-         zUFpgM28rqNREf5XfVfYwICSlmNmoLl9sbN0pGg6t7NrQmO87L65z1umvaFRU7Gi5ody
-         11EeZFpuxYd+1z71OqCjmnOECeYSQq+MhW+3RlCHv03/aiKrYyEm6Mcf4It5syLtKb0d
-         mfCw==
-X-Gm-Message-State: AOAM532hf8v6pag71LfGk4YeEAE3U0l2Pv3ebdgqWBL2v1DzcJwYAdNo
-        7Hh/JltnfuiXm+etq3UZvXq+zgYK0gQUxylem8oZ/o9M2u2EPwoReJI0g1GS1GyxJwugb+STiIu
-        A4q6xiurSZl5xkYbcjjMpc/fWtE0KGgKv
-X-Received: by 2002:a2e:9f55:: with SMTP id v21mr13762190ljk.420.1639625033574;
-        Wed, 15 Dec 2021 19:23:53 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwBMixYaEZyd4edEWw5Bj/aizM8U5Uj0hSuNa6Ik2s82KlOktsgxUZAtKHuh6rOaExNcjN8fE1mOpyHnQE3Im8=
-X-Received: by 2002:a2e:9f55:: with SMTP id v21mr13762176ljk.420.1639625033370;
- Wed, 15 Dec 2021 19:23:53 -0800 (PST)
+        id S233353AbhLPD0c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Dec 2021 22:26:32 -0500
+Received: from o1.ptr2625.egauge.net ([167.89.112.53]:33740 "EHLO
+        o1.ptr2625.egauge.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233339AbhLPD00 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Dec 2021 22:26:26 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=egauge.net;
+        h=from:subject:mime-version:to:cc:content-transfer-encoding:
+        content-type;
+        s=sgd; bh=KRpEVBdV5fyCa6LhCrnHan24UbFb7eiesIdyenFXa7Y=;
+        b=vrzxiOGv3LXZ9VKE49ikXabLbdri6NRpcRJNvESo8vdYblH205CB1m0Mb7T2DD3dKFZk
+        FJrtbsObpkQc6pjlxYePUR+M/GcOcveepG0hBQMs1z04zTNRtEd5gnbMRJpZ/BmC53kOcY
+        8OwswO3ATqxPbx2cnPB4IJLn9/K6/W7JDxGZHcuxCgchcCPt0lw0LjuMz/2babccmmHRac
+        k18ADIRXXntkkX4yJD02IecllySf8wOdSIaEfHGoAm+VwUnHkJVLSb8oI60yQRRa2Y+Q5R
+        hpGcX4QshnS/cJyPvTM3bvNsr4wqg/QdOnO8pa019rs/MW00PJ1Q45mW3t4Dh52w==
+Received: by filterdrecv-75ff7b5ffb-96rhp with SMTP id filterdrecv-75ff7b5ffb-96rhp-1-61BAB1E0-2B
+        2021-12-16 03:26:24.932642305 +0000 UTC m=+9090364.813149035
+Received: from pearl.egauge.net (unknown)
+        by geopod-ismtpd-1-1 (SG)
+        with ESMTP
+        id nfkc_PERRVCbY_jCotLESg
+        Thu, 16 Dec 2021 03:26:24.779 +0000 (UTC)
+Received: by pearl.egauge.net (Postfix, from userid 1000)
+        id 03B46700E72; Wed, 15 Dec 2021 20:26:24 -0700 (MST)
+From:   David Mosberger-Tang <davidm@egauge.net>
+Subject: [PATCH] wilc1000: Convert static "chipid" variable to device-local
+ variable
+Date:   Thu, 16 Dec 2021 03:26:25 +0000 (UTC)
+Message-Id: <20211216032612.3798573-1-davidm@egauge.net>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20211216031135.3182660-1-wangwenliang.1995@bytedance.com>
-In-Reply-To: <20211216031135.3182660-1-wangwenliang.1995@bytedance.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Thu, 16 Dec 2021 11:23:42 +0800
-Message-ID: <CACGkMEtPkybSyPRXqcqtBGbEHvMEw04dcWpUDswuXgwEnshBSA@mail.gmail.com>
-Subject: Re: [PATCH] virtio_net: fix rx_drops stat for small pkts
-To:     Wenliang Wang <wangwenliang.1995@bytedance.com>
-Cc:     mst <mst@redhat.com>, davem <davem@davemloft.net>,
+X-SG-EID: =?us-ascii?Q?+kMxBqj35EdRUKoy8diX1j4AXmPtd302oan+iXZuF8m2Nw4HRW2irNspffT=2Fkh?=
+ =?us-ascii?Q?ET6RJF6+Prbl0h=2FEtF1rRLvBvrXi7igiw3S+MCi?=
+ =?us-ascii?Q?w8n5f20b4RWHzEw2hbU+cN3vLQB7L=2FZRmxUZZYa?=
+ =?us-ascii?Q?ONJ7E9hp73OJnR2yp4FRhnQ=2FZ5xror6KigESjXJ?=
+ =?us-ascii?Q?rG88vDe8mjVvSkJ6TKAUczSDLnmxrASQmmwYsav?=
+ =?us-ascii?Q?+47Hrpx0YejyrOAN33ZfKHjoG8HSpbyLHGngq0?=
+To:     Ajay Singh <ajay.kathat@microchip.com>
+Cc:     Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        David Mosberger-Tang <davidm@egauge.net>
+X-Entity-ID: Xg4JGAcGrJFIz2kDG9eoaQ==
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 16, 2021 at 11:12 AM Wenliang Wang
-<wangwenliang.1995@bytedance.com> wrote:
->
-> We found the stat of rx drops for small pkts does not increment when
-> build_skb fail, it's not coherent with other mode's rx drops stat.
->
-> Signed-off-by: Wenliang Wang <wangwenliang.1995@bytedance.com>
+Move "chipid" variable into the per-driver structure so the code
+doesn't break if more than one wilc1000 module is present.
 
-Acked-by: Jason Wang <jasowang@redhat.com>
+Signed-off-by: David Mosberger-Tang <davidm@egauge.net>
+---
+ .../net/wireless/microchip/wilc1000/netdev.h  |  1 +
+ .../net/wireless/microchip/wilc1000/wlan.c    | 27 +++++++++----------
+ 2 files changed, 14 insertions(+), 14 deletions(-)
 
-> ---
->  drivers/net/virtio_net.c | 9 +++------
->  1 file changed, 3 insertions(+), 6 deletions(-)
->
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index 55db6a336f7e..b107835242ad 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -733,7 +733,7 @@ static struct sk_buff *receive_small(struct net_device *dev,
->                 pr_debug("%s: rx error: len %u exceeds max size %d\n",
->                          dev->name, len, GOOD_PACKET_LEN);
->                 dev->stats.rx_length_errors++;
-> -               goto err_len;
-> +               goto err;
->         }
->
->         if (likely(!vi->xdp_enabled)) {
-> @@ -825,10 +825,8 @@ static struct sk_buff *receive_small(struct net_device *dev,
->
->  skip_xdp:
->         skb = build_skb(buf, buflen);
-> -       if (!skb) {
-> -               put_page(page);
-> +       if (!skb)
->                 goto err;
-> -       }
->         skb_reserve(skb, headroom - delta);
->         skb_put(skb, len);
->         if (!xdp_prog) {
-> @@ -839,13 +837,12 @@ static struct sk_buff *receive_small(struct net_device *dev,
->         if (metasize)
->                 skb_metadata_set(skb, metasize);
->
-> -err:
->         return skb;
->
->  err_xdp:
->         rcu_read_unlock();
->         stats->xdp_drops++;
-> -err_len:
-> +err:
->         stats->drops++;
->         put_page(page);
->  xdp_xmit:
-> --
-> 2.30.2
->
+diff --git a/drivers/net/wireless/microchip/wilc1000/netdev.h b/drivers/net/wireless/microchip/wilc1000/netdev.h
+index b9a88b3e322f..41a92a1368ab 100644
+--- a/drivers/net/wireless/microchip/wilc1000/netdev.h
++++ b/drivers/net/wireless/microchip/wilc1000/netdev.h
+@@ -212,6 +212,7 @@ struct wilc {
+ 	s8 mac_status;
+ 	struct clk *rtc_clk;
+ 	bool initialized;
++	u32 chipid;
+ 	int dev_irq_num;
+ 	int close;
+ 	u8 vif_num;
+diff --git a/drivers/net/wireless/microchip/wilc1000/wlan.c b/drivers/net/wireless/microchip/wilc1000/wlan.c
+index 1aa4236a2fe4..c8e103500235 100644
+--- a/drivers/net/wireless/microchip/wilc1000/wlan.c
++++ b/drivers/net/wireless/microchip/wilc1000/wlan.c
+@@ -1443,31 +1443,30 @@ static int init_chip(struct net_device *dev)
+ 
+ u32 wilc_get_chipid(struct wilc *wilc, bool update)
+ {
+-	static u32 chipid;
+-	u32 tempchipid = 0;
++	u32 chipid = 0;
+ 	u32 rfrevid = 0;
+ 
+-	if (chipid == 0 || update) {
+-		wilc->hif_func->hif_read_reg(wilc, WILC_CHIPID, &tempchipid);
++	if (wilc->chipid == 0 || update) {
++		wilc->hif_func->hif_read_reg(wilc, WILC_CHIPID, &chipid);
+ 		wilc->hif_func->hif_read_reg(wilc, WILC_RF_REVISION_ID,
+ 					     &rfrevid);
+-		if (!is_wilc1000(tempchipid)) {
+-			chipid = 0;
+-			return chipid;
++		if (!is_wilc1000(chipid)) {
++			wilc->chipid = 0;
++			return wilc->chipid;
+ 		}
+-		if (tempchipid == WILC_1000_BASE_ID_2A) { /* 0x1002A0 */
++		if (chipid == WILC_1000_BASE_ID_2A) { /* 0x1002A0 */
+ 			if (rfrevid != 0x1)
+-				tempchipid = WILC_1000_BASE_ID_2A_REV1;
+-		} else if (tempchipid == WILC_1000_BASE_ID_2B) { /* 0x1002B0 */
++				chipid = WILC_1000_BASE_ID_2A_REV1;
++		} else if (chipid == WILC_1000_BASE_ID_2B) { /* 0x1002B0 */
+ 			if (rfrevid == 0x4)
+-				tempchipid = WILC_1000_BASE_ID_2B_REV1;
++				chipid = WILC_1000_BASE_ID_2B_REV1;
+ 			else if (rfrevid != 0x3)
+-				tempchipid = WILC_1000_BASE_ID_2B_REV2;
++				chipid = WILC_1000_BASE_ID_2B_REV2;
+ 		}
+ 
+-		chipid = tempchipid;
++		wilc->chipid = chipid;
+ 	}
+-	return chipid;
++	return wilc->chipid;
+ }
+ 
+ int wilc_wlan_init(struct net_device *dev)
+-- 
+2.25.1
 
