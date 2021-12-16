@@ -2,129 +2,431 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 97FA4477307
-	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 14:22:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 659EE477323
+	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 14:30:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237229AbhLPNWG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Dec 2021 08:22:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55698 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232110AbhLPNWF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 08:22:05 -0500
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B1A4C061574;
-        Thu, 16 Dec 2021 05:22:05 -0800 (PST)
-Received: by mail-ed1-x52c.google.com with SMTP id x15so87838339edv.1;
-        Thu, 16 Dec 2021 05:22:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=60XSf9cHzUxT6ZkrcHjpgYMJcYBfPDQTULwlGLQzSnM=;
-        b=kCx+JYRzpt9IsbUnF/BkdXilxvx4imVH7NBWYFmU9VtfhpKLH1EM4q0RvV1irbcAt2
-         4OUo4eyzE7sMOK6tRXsc4xLVv/qtM792nz5NtADQWBjrap89Y/9E/DZxSBIHu7325r/R
-         hIC/sGcS9qEiPwBXZAW5NovkyMWfLumPUtQmunPWnVoQUBiERx3rk/VkbLYBfkwVGO9y
-         EsKuunqOtjcdR6HyMyyx/bPiRPdWzMwghOLxbC9p5Js1T6rGt75sjMvVBIJB63A2ZgLe
-         5aMLTapxYRh8oYTA1blPPWVmnTomQhw8jhKlzJ1REvymCEuTgBEiSQF+CTWuRXtm5xsl
-         2mGg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=60XSf9cHzUxT6ZkrcHjpgYMJcYBfPDQTULwlGLQzSnM=;
-        b=3F5Tup9UV2RED/P0mk5FA7AM5/ufsoxvyuKPjqylUTbFn7Mvgx82LG+2wzoJT/mKXo
-         xDMWxl0QgvNOnbc64WYV/5YdqLzYmrsfLpXo+lhV5hX03c0dcR3Yxujbj0DgwWwxvZKJ
-         kseEn2OxP+g0ThWs4gMx8USbqhAgmkFahl+GwNPRIWa8WGiC6ktBAHl41hgDpxNhO9f4
-         0D6ZoEzKYRKso9r2uktbC00fLcQOCjQ7v56MiXShu7AJNShQPRuPXOa5FSK0gd+XrfB+
-         SZ/2zYSVA6gPJHuPx/GzTevqvUZIcPRuCUTldA01u4qAKUXph+X2MwQVKMjOl/nDb9od
-         5Iyg==
-X-Gm-Message-State: AOAM533jfoUxBFP7DXZji6SqJrP5NcF3es96+NI9fuG40Mkfl6FJZvPU
-        opTYy7h01uH4MqaUfUcCfvs=
-X-Google-Smtp-Source: ABdhPJzNKXQY5diG8Cxb9pHPRUB7F1RD08f1ZucgR2b3lGFQEqnZF+Gahv7l9l3FM9jf/FfHySZvDQ==
-X-Received: by 2002:a05:6402:1768:: with SMTP id da8mr20810877edb.252.1639660923591;
-        Thu, 16 Dec 2021 05:22:03 -0800 (PST)
-Received: from [192.168.8.198] ([185.69.144.117])
-        by smtp.gmail.com with ESMTPSA id sd2sm1857108ejc.22.2021.12.16.05.22.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 16 Dec 2021 05:22:02 -0800 (PST)
-Message-ID: <7ca623df-73ed-9191-bec7-a4728f2f95e6@gmail.com>
-Date:   Thu, 16 Dec 2021 13:21:26 +0000
+        id S237543AbhLPNak (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Dec 2021 08:30:40 -0500
+Received: from mga02.intel.com ([134.134.136.20]:9678 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237535AbhLPNaj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Dec 2021 08:30:39 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10199"; a="226773928"
+X-IronPort-AV: E=Sophos;i="5.88,211,1635231600"; 
+   d="scan'208";a="226773928"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Dec 2021 05:30:39 -0800
+X-IronPort-AV: E=Sophos;i="5.88,211,1635231600"; 
+   d="scan'208";a="519251362"
+Received: from jetten-mobl.ger.corp.intel.com ([10.252.36.24])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Dec 2021 05:30:32 -0800
+Date:   Thu, 16 Dec 2021 15:30:30 +0200 (EET)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Ricardo Martinez <ricardo.martinez@linux.intel.com>
+cc:     Netdev <netdev@vger.kernel.org>, linux-wireless@vger.kernel.org,
+        kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
+        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
+        m.chetan.kumar@intel.com, chandrashekar.devegowda@intel.com,
+        linuxwwan@intel.com, chiranjeevi.rapolu@linux.intel.com,
+        haijun.liu@mediatek.com, amir.hanania@intel.com,
+        andriy.shevchenko@linux.intel.com, dinesh.sharma@intel.com,
+        eliot.lee@intel.com, mika.westerberg@linux.intel.com,
+        moises.veleta@intel.com, pierre-louis.bossart@intel.com,
+        muralidharan.sethuraman@intel.com, Soumya.Prakash.Mishra@intel.com,
+        sreehari.kancharla@intel.com, suresh.nagaraj@intel.com
+Subject: Re: [PATCH net-next v3 07/12] net: wwan: t7xx: Add data path
+ interface
+In-Reply-To: <20211207024711.2765-8-ricardo.martinez@linux.intel.com>
+Message-ID: <5154c2b5-4b94-fcfb-fbdc-8d3dcacc34de@linux.intel.com>
+References: <20211207024711.2765-1-ricardo.martinez@linux.intel.com> <20211207024711.2765-8-ricardo.martinez@linux.intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.2
-Subject: Re: [PATCH v3] cgroup/bpf: fast path skb BPF filtering
-Content-Language: en-US
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, linux-kernel@vger.kernel.org
-References: <462ce9402621f5e32f08cc8acbf3d9da4d7d69ca.1639579508.git.asml.silence@gmail.com>
- <Yboc/G18R1Vi1eQV@google.com>
- <b2af633d-aaae-d0c5-72f9-0688b76b4505@gmail.com>
- <Ybom69OyOjsR7kmZ@google.com>
- <634c2c87-84c9-0254-3f12-7d993037495c@gmail.com>
- <Yboy2WwaREgo95dy@google.com>
- <e729a63a-cded-da9c-3860-a90013b87e2d@gmail.com>
- <CAKH8qBv+GsPz3JTTmLZ+Q2iMSC3PS+bE1xOLbxZyjfno7hqpSA@mail.gmail.com>
- <92f69969-42dc-204a-4138-16fdaaebb78d@gmail.com>
- <CAKH8qBuZxBen871AWDK1eDcxJenK7UkSQCZQsHCPhk6nk9e=Ng@mail.gmail.com>
-From:   Pavel Begunkov <asml.silence@gmail.com>
-In-Reply-To: <CAKH8qBuZxBen871AWDK1eDcxJenK7UkSQCZQsHCPhk6nk9e=Ng@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/15/21 22:07, Stanislav Fomichev wrote:
-> On Wed, Dec 15, 2021 at 11:55 AM Pavel Begunkov <asml.silence@gmail.com> wrote:
->>
->> On 12/15/21 19:15, Stanislav Fomichev wrote:
->>> On Wed, Dec 15, 2021 at 10:54 AM Pavel Begunkov <asml.silence@gmail.com> wrote:
->>>>
->>>> On 12/15/21 18:24, sdf@google.com wrote:
-[...]
->>>>> I can probably do more experiments on my side once your patch is
->>>>> accepted. I'm mostly concerned with getsockopt(TCP_ZEROCOPY_RECEIVE).
->>>>> If you claim there is visible overhead for a direct call then there
->>>>> should be visible benefit to using CGROUP_BPF_TYPE_ENABLED there as
->>>>> well.
->>>>
->>>> Interesting, sounds getsockopt might be performance sensitive to
->>>> someone.
->>>>
->>>> FWIW, I forgot to mention that for testing tx I'm using io_uring
->>>> (for both zc and not) with good submission batching.
->>>
->>> Yeah, last time I saw 2-3% as well, but it was due to kmalloc, see
->>> more details in 9cacf81f8161, it was pretty visible under perf.
->>> That's why I'm a bit skeptical of your claims of direct calls being
->>> somehow visible in these 2-3% (even skb pulls/pushes are not 2-3%?).
->>
->> migrate_disable/enable together were taking somewhat in-between
->> 1% and 1.5% in profiling, don't remember the exact number. The rest
->> should be from rcu_read_lock/unlock() in BPF_PROG_RUN_ARRAY_CG_FLAGS()
->> and other extra bits on the way.
+On Mon, 6 Dec 2021, Ricardo Martinez wrote:
+
+> From: Haijun Liu <haijun.liu@mediatek.com>
 > 
-> You probably have a preemptiple kernel and preemptible rcu which most
-> likely explains why you see the overhead and I won't (non-preemptible
-> kernel in our env, rcu_read_lock is essentially a nop, just a compiler
-> barrier).
-
-Right. For reference tried out non-preemptible, perf shows the function
-taking 0.8% with a NIC and 1.2% with a dummy netdev.
-
-
->> I'm skeptical I'll be able to measure inlining one function,
->> variability between boots/runs is usually greater and would hide it.
+> Data Path Modem AP Interface (DPMAIF) HIF layer provides methods
+> for initialization, ISR, control and event handling of TX/RX flows.
 > 
-> Right, that's why I suggested to mirror what we do in set/getsockopt
-> instead of the new extra CGROUP_BPF_TYPE_ENABLED. But I'll leave it up
-> to you, Martin and the rest.
+> DPMAIF TX
+> Exposes the `dmpaif_tx_send_skb` function which can be used by the
+> network device to transmit packets.
+> The uplink data management uses a Descriptor Ring Buffer (DRB).
+> First DRB entry is a message type that will be followed by 1 or more
+> normal DRB entries. Message type DRB will hold the skb information
+> and each normal DRB entry holds a pointer to the skb payload.
+> 
+> DPMAIF RX
+> The downlink buffer management uses Buffer Address Table (BAT) and
+> Packet Information Table (PIT) rings.
+> The BAT ring holds the address of skb data buffer for the HW to use,
+> while the PIT contains metadata about a whole network packet including
+> a reference to the BAT entry holding the data buffer address.
+> The driver reads the PIT and BAT entries written by the modem, when
+> reaching a threshold, the driver will reload the PIT and BAT rings.
+> 
+> Signed-off-by: Haijun Liu <haijun.liu@mediatek.com>
+> Signed-off-by: Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>
+> Co-developed-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
+> Signed-off-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
+
++struct dpmaif_ctrl {
+...
++       unsigned char                   txq_select_times;
+
+txq_select_times value is never used.
+
+> +unsigned int t7xx_ring_buf_get_next_wrdx(unsigned int buf_len, unsigned int buf_idx)
+> +{
+> +	buf_idx++;
+> +
+> +	return buf_idx < buf_len ? buf_idx : 0;
+> +}
+> +
+> +unsigned int t7xx_ring_buf_rd_wr_count(unsigned int total_cnt, unsigned int rd_idx,
+> +				       unsigned int wrt_idx, enum dpmaif_rdwr rd_wr)
+> +{
+> +	int pkt_cnt;
+> +
+> +	if (rd_wr == DPMAIF_READ)
+> +		pkt_cnt = wrt_idx - rd_idx;
+> +	else
+> +		pkt_cnt = rd_idx - wrt_idx - 1;
+> +
+> +	if (pkt_cnt < 0)
+> +		pkt_cnt += total_cnt;
+> +
+> +	return (unsigned int)pkt_cnt;
+> +}
+
+Didn't the earlier patch use wridx and ridx for the same concept? It would 
+be useful to have consistency in variable naming.
+
+> +static inline unsigned int t7xx_normal_pit_bid(const struct dpmaif_normal_pit *pit_info)
+
+No inlines in .c files please. Please fix all of them, not just this one..
+
+> +	for (i = 0; i < alloc_cnt; i++) {
+> +		unsigned short cur_bat_idx = bat_start_idx + i;
+> +		struct dpmaif_bat_skb *cur_skb;
+> +		struct dpmaif_bat *cur_bat;
+> +
+> +		if (cur_bat_idx >= bat_max_cnt)
+> +			cur_bat_idx -= bat_max_cnt;
+> +
+> +		cur_skb = (struct dpmaif_bat_skb *)bat_req->bat_skb + cur_bat_idx;
+> +		if (!cur_skb->skb) {
+> +			struct dpmaif_skb_info *skb_info;
+> +
+> +			skb_info = t7xx_dpmaif_dev_alloc_skb(dpmaif_ctrl, bat_req->pkt_buf_sz);
+> +			if (!skb_info)
+> +				break;
+> +
+> +			cur_skb->skb = skb_info->skb;
+> +			cur_skb->data_bus_addr = skb_info->data_bus_addr;
+> +			cur_skb->data_len = skb_info->data_len;
+> +			kfree(skb_info);
+
+It seems that here you do an alloc that is immediately followed by kfree.
+Couldn't this be solved by passing cur_skb to a function which assigns 
+those values you want directly to it?
+
+> +	old_sw_rel_idx = rxq->pit_release_rd_idx;
+> +	new_sw_rel_idx = old_sw_rel_idx + rel_entry_num;
+> +	old_hw_wr_idx = rxq->pit_wr_idx;
+> +	if (old_hw_wr_idx < old_sw_rel_idx && new_sw_rel_idx >= rxq->pit_size_cnt)
+> +		new_sw_rel_idx = new_sw_rel_idx - rxq->pit_size_cnt;
+
+-=
+
+> +/**
+> + * t7xx_dpmaif_rx_frag_alloc() - Allocates buffers for the Fragment BAT ring.
+> + * @dpmaif_ctrl: Pointer to DPMAIF context structure.
+> + * @bat_req: Pointer to BAT request structure.
+> + * @buf_cnt: Number of buffers to allocate.
+> + * @initial: Indicates if the ring is being populated for the first time.
+> + *
+> + * Fragment BAT is used when the received packet does not fit in a normal BAT entry.
+> + * This function allocates a page fragment and stores the start address of the page
+> + * into the Fragment BAT ring.
+> + * If this is not the initial call, notify the HW about the new entries.
+> + *
+> + * Return:
+> + * * 0		- Success.
+> + * * -ERROR	- Error code from failure sub-initializations.
+> + */
+> +int t7xx_dpmaif_rx_frag_alloc(struct dpmaif_ctrl *dpmaif_ctrl, struct dpmaif_bat_request *bat_req,
+> +			      const unsigned int buf_cnt, const bool initial)
+> +{
+> +	struct dpmaif_bat_page *bat_skb = bat_req->bat_skb;
+> +	unsigned short cur_bat_idx = bat_req->bat_wr_idx;
+> +	unsigned int buf_space;
+> +	int i;
+> +
+> +	if (!buf_cnt || buf_cnt > bat_req->bat_size_cnt)
+> +		return -EINVAL;
+> +
+> +	buf_space = t7xx_ring_buf_rd_wr_count(bat_req->bat_size_cnt,
+> +					      bat_req->bat_release_rd_idx, bat_req->bat_wr_idx,
+> +					      DPMAIF_WRITE);
+> +	if (buf_cnt > buf_space) {
+> +		dev_err(dpmaif_ctrl->dev,
+> +			"Requested more buffers than the space available in RX frag ring\n");
+> +		return -EINVAL;
+> +	}
+> +
+> +	for (i = 0; i < buf_cnt; i++) {
+> +		struct dpmaif_bat_page *cur_page = bat_skb + cur_bat_idx;
+> +		struct dpmaif_bat *cur_bat;
+> +		dma_addr_t data_base_addr;
+> +
+> +		if (!cur_page->page) {
+> +			unsigned long offset;
+> +			struct page *page;
+> +			void *data;
+> +
+> +			data = netdev_alloc_frag(bat_req->pkt_buf_sz);
+> +			if (!data)
+> +				break;
+> +
+> +			page = virt_to_head_page(data);
+> +			offset = data - page_address(page);
+> +
+> +			data_base_addr = dma_map_page(dpmaif_ctrl->dev, page, offset,
+> +						      bat_req->pkt_buf_sz, DMA_FROM_DEVICE);
+> +			if (dma_mapping_error(dpmaif_ctrl->dev, data_base_addr)) {
+> +				dev_err(dpmaif_ctrl->dev, "DMA mapping fail\n");
+> +				put_page(virt_to_head_page(data));
+> +				break;
+> +			}
+> +
+> +			cur_page->page = page;
+> +			cur_page->data_bus_addr = data_base_addr;
+> +			cur_page->offset = offset;
+> +			cur_page->data_len = bat_req->pkt_buf_sz;
+> +		}
+> +
+> +		data_base_addr = cur_page->data_bus_addr;
+> +		cur_bat = (struct dpmaif_bat *)bat_req->bat_base + cur_bat_idx;
+> +		cur_bat->buffer_addr_ext = upper_32_bits(data_base_addr);
+> +		cur_bat->p_buffer_addr = lower_32_bits(data_base_addr);
+> +		cur_bat_idx = t7xx_ring_buf_get_next_wrdx(bat_req->bat_size_cnt, cur_bat_idx);
+> +	}
+> +
+> +	if (i < buf_cnt)
+> +		return -ENOMEM;
+> +	bat_req->bat_wr_idx = cur_bat_idx;
+
+Is there some leak if this early returns and does not update bat_wr_idx?
+One call path seems to eventually just ignore error code.
+
+
+> +static int t7xx_dpmaif_rx_start(struct dpmaif_rx_queue *rxq, const unsigned short pit_cnt,
+> +				const unsigned long timeout)
+> +{
+> +	struct device *dev = rxq->dpmaif_ctrl->dev;
+> +	struct dpmaif_cur_rx_skb_info *skb_info;
+> +	unsigned short rx_cnt, recv_skb_cnt = 0;
+> +	unsigned int cur_pit, pit_len;
+> +	int ret = 0, ret_hw = 0;
+> +
+> +	pit_len = rxq->pit_size_cnt;
+> +	skb_info = &rxq->rx_data_info;
+> +	cur_pit = rxq->pit_rd_idx;
+> +
+> +	for (rx_cnt = 0; rx_cnt < pit_cnt; rx_cnt++) {
+> +		struct dpmaif_normal_pit *pkt_info;
+> +		u32 val;
+> +
+> +		if (!skb_info->msg_pit_received && time_after_eq(jiffies, timeout))
+> +			break;
+> +
+> +		pkt_info = (struct dpmaif_normal_pit *)rxq->pit_base + cur_pit;
+> +		if (t7xx_dpmaif_check_pit_seq(rxq, pkt_info)) {
+> +			dev_err_ratelimited(dev, "RXQ%u checks PIT SEQ fail\n", rxq->index);
+> +			return -EAGAIN;
+> +		}
+> +
+> +		val = FIELD_GET(NORMAL_PIT_PACKET_TYPE, le32_to_cpu(pkt_info->pit_header));
+> +		if (val == DES_PT_MSG) {
+> +			if (skb_info->msg_pit_received)
+> +				dev_err(dev, "RXQ%u received repeated PIT\n", rxq->index);
+> +
+> +			skb_info->msg_pit_received = true;
+> +			t7xx_dpmaif_parse_msg_pit(rxq, (struct dpmaif_msg_pit *)pkt_info,
+> +						  skb_info);
+> +		} else { /* DES_PT_PD */
+> +			val = FIELD_GET(NORMAL_PIT_BUFFER_TYPE, le32_to_cpu(pkt_info->pit_header));
+> +			if (val != PKT_BUF_FRAG)
+> +				ret = t7xx_dpmaif_get_rx_pkt(rxq, pkt_info, skb_info);
+> +			else if (!skb_info->cur_skb)
+> +				ret = -EINVAL;
+> +			else
+> +				ret = t7xx_dpmaif_get_frag(rxq, pkt_info, skb_info);
+> +
+> +			if (ret < 0) {
+> +				skb_info->err_payload = 1;
+> +				dev_err_ratelimited(dev, "RXQ%u error payload\n", rxq->index);
+> +			}
+> +
+> +			val = FIELD_GET(NORMAL_PIT_CONT, le32_to_cpu(pkt_info->pit_header));
+> +			if (!val) {
+> +				if (!skb_info->err_payload) {
+> +					t7xx_dpmaif_rx_skb(rxq, skb_info);
+> +				} else if (skb_info->cur_skb) {
+> +					dev_kfree_skb_any(skb_info->cur_skb);
+> +					skb_info->cur_skb = NULL;
+> +				}
+> +
+> +				memset(skb_info, 0, sizeof(*skb_info));
+> +
+> +				recv_skb_cnt++;
+> +				if (!(recv_skb_cnt & DPMAIF_RX_PUSH_THRESHOLD_MASK)) {
+> +					wake_up_all(&rxq->rx_wq);
+> +					recv_skb_cnt = 0;
+> +				}
+> +			}
+> +		}
+> +
+> +		cur_pit = t7xx_ring_buf_get_next_wrdx(pit_len, cur_pit);
+> +		rxq->pit_rd_idx = cur_pit;
+> +		rxq->pit_remain_release_cnt++;
+> +
+> +		if (rx_cnt > 0 && !(rx_cnt % DPMAIF_NOTIFY_RELEASE_COUNT)) {
+> +			ret_hw = t7xx_dpmaifq_rx_notify_hw(rxq);
+> +			if (ret_hw < 0)
+> +				break;
+> +		}
+> +	}
+> +
+> +	if (recv_skb_cnt)
+> +		wake_up_all(&rxq->rx_wq);
+> +
+> +	if (!ret_hw)
+> +		ret_hw = t7xx_dpmaifq_rx_notify_hw(rxq);
+> +
+> +	if (ret_hw < 0 && !ret)
+> +		ret = ret_hw;
+> +
+> +	return ret < 0 ? ret : rx_cnt;
+> +}
+
+ret variable handling seems odd, loop overwrites prev errors. Is there
+perhaps a break missing from somewhere as post loop checks seem to care 
+about the value of ret variable?
+
+> +	return (real_rel_cnt < rel_cnt) ? -EAGAIN : 0;
+
+Extra ().
+
+> +static int t7xx_dpmaif_add_skb_to_ring(struct dpmaif_ctrl *dpmaif_ctrl, struct sk_buff *skb)
+> +{
+> +	unsigned int wr_cnt, send_cnt, payload_cnt;
+> +	bool is_frag, is_last_one = false;
+> +	int qtype = skb->cb[TX_CB_QTYPE];
+> +	struct skb_shared_info *info;
+> +	struct dpmaif_tx_queue *txq;
+> +	int drb_wr_idx_backup = -1;
+
+Redundant initialization.
+
+> +	unsigned short cur_idx;
+> +	unsigned int data_len;
+> +	dma_addr_t bus_addr;
+> +	unsigned long flags;
+> +	void *data_addr;
+> +	int ret = 0;
+> +
+> +	txq = &dpmaif_ctrl->txq[qtype];
+> +	if (!txq->que_started || dpmaif_ctrl->state != DPMAIF_STATE_PWRON)
+> +		return -ENODEV;
+> +
+> +	atomic_set(&txq->tx_processing, 1);
+> +	 /* Ensure tx_processing is changed to 1 before actually begin TX flow */
+> +	smp_mb();
+> +
+> +	info = skb_shinfo(skb);
+> +	if (info->frag_list)
+> +		dev_warn_ratelimited(dpmaif_ctrl->dev, "frag_list not supported\n");
+> +
+> +	payload_cnt = info->nr_frags + 1;
+> +	/* nr_frags: frag cnt, 1: skb->data, 1: msg DRB */
+> +	send_cnt = payload_cnt + 1;
+> +
+> +	spin_lock_irqsave(&txq->tx_lock, flags);
+> +	cur_idx = txq->drb_wr_idx;
+> +	drb_wr_idx_backup = cur_idx;
+> +
+> +	txq->drb_wr_idx += send_cnt;
+> +	if (txq->drb_wr_idx >= txq->drb_size_cnt)
+> +		txq->drb_wr_idx -= txq->drb_size_cnt;
+> +
+> +	t7xx_setup_msg_drb(dpmaif_ctrl, txq->index, cur_idx, skb->len, 0, skb->cb[TX_CB_NETIF_IDX]);
+> +	t7xx_record_drb_skb(dpmaif_ctrl, txq->index, cur_idx, skb, 1, 0, 0, 0, 0);
+> +	spin_unlock_irqrestore(&txq->tx_lock, flags);
+> +
+> +	cur_idx = t7xx_ring_buf_get_next_wrdx(txq->drb_size_cnt, cur_idx);
+> +
+> +	for (wr_cnt = 0; wr_cnt < payload_cnt; wr_cnt++) {
+> +		if (!wr_cnt) {
+> +			data_len = skb_headlen(skb);
+> +			data_addr = skb->data;
+> +			is_frag = false;
+> +		} else {
+> +			skb_frag_t *frag = info->frags + wr_cnt - 1;
+> +
+> +			data_len = skb_frag_size(frag);
+> +			data_addr = skb_frag_address(frag);
+> +			is_frag = true;
+> +		}
+> +
+> +		if (wr_cnt == payload_cnt - 1)
+> +			is_last_one = true;
+> +
+> +		/* TX mapping */
+> +		bus_addr = dma_map_single(dpmaif_ctrl->dev, data_addr, data_len, DMA_TO_DEVICE);
+> +		if (dma_mapping_error(dpmaif_ctrl->dev, bus_addr)) {
+> +			dev_err(dpmaif_ctrl->dev, "DMA mapping fail\n");
+> +			ret = -ENOMEM;
+> +			break;
+> +		}
+> +
+> +		spin_lock_irqsave(&txq->tx_lock, flags);
+> +		t7xx_setup_payload_drb(dpmaif_ctrl, txq->index, cur_idx, bus_addr, data_len,
+> +				       is_last_one);
+> +		t7xx_record_drb_skb(dpmaif_ctrl, txq->index, cur_idx, skb, 0, is_frag,
+> +				    is_last_one, bus_addr, data_len);
+> +		spin_unlock_irqrestore(&txq->tx_lock, flags);
+> +
+> +		cur_idx = t7xx_ring_buf_get_next_wrdx(txq->drb_size_cnt, cur_idx);
+> +	}
+> +
+> +	if (ret < 0) {
+> +		atomic_set(&txq->tx_processing, 0);
+> +
+> +		if (drb_wr_idx_backup >= 0) {
+
+Always true?
+
+> +		/* Confirm that SW will not transmit */
+> +		count = 0;
+> +
+> +		do {
+> +			if (++count >= DPMAIF_MAX_CHECK_COUNT) {
+> +				dev_err(dpmaif_ctrl->dev, "TX queue stop failed\n");
+> +				break;
+> +			}
+> +		} while (atomic_read(&txq->tx_processing));
+
+while (atomic_read(...)) {
+	...
+}
+
 
 -- 
-Pavel Begunkov
+ i.
+
