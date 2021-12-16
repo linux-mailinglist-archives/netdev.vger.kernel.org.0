@@ -2,244 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F2A2477B6B
-	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 19:22:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 453E9477B78
+	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 19:24:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240585AbhLPSWS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Dec 2021 13:22:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43788 "EHLO
+        id S240551AbhLPSYv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Dec 2021 13:24:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231292AbhLPSWR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 13:22:17 -0500
-Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BD06C061574;
-        Thu, 16 Dec 2021 10:22:17 -0800 (PST)
-Received: by mail-oi1-x22c.google.com with SMTP id bf8so111112oib.6;
-        Thu, 16 Dec 2021 10:22:17 -0800 (PST)
+        with ESMTP id S236244AbhLPSYv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 13:24:51 -0500
+Received: from mail-qv1-xf2d.google.com (mail-qv1-xf2d.google.com [IPv6:2607:f8b0:4864:20::f2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDD2EC061574
+        for <netdev@vger.kernel.org>; Thu, 16 Dec 2021 10:24:50 -0800 (PST)
+Received: by mail-qv1-xf2d.google.com with SMTP id kj6so105121qvb.2
+        for <netdev@vger.kernel.org>; Thu, 16 Dec 2021 10:24:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=+/y/44R+5YxgMSzOe/nu0eMT5/71CNxaGar8eA8Nm/g=;
-        b=Gu6Yjm9T9BlEUP1BozNFLGnraX0pNby3F9uUxdR3PMpZcpViSdV1XmUsEcGJQu+L8V
-         o//pVimMeEGMMqYJ1QiXqK2p30al9ng6mdoR2lhbtmyuLQWx7bXxDw9SkTzqnuyzd0zD
-         J2UrUKTrRoQWde5x7va5rQa99Z5eF1Jl6LDJk2fd9h6+wJ/uYk+9yEKi3E1aAD7Xvmrv
-         2XleZY+b6XQ36wQr+CPMI/oi5GeWjfA0ltH1hFQ7chQGgRN5rwfXBkGVaGyYN5SRVGI+
-         OD3Rfvzjg2mMhjOwuOPS5CHdQ9pwBdLOz07TRXlqBwK7JOxi0SZyap4x53ntoGA2DOU0
-         YcLA==
+         :cc;
+        bh=S3bQug7Q3Y8bGfDQ90oiL7YlAL/sesqoY0B+mdgASAE=;
+        b=ihLB1h+Rgl72xRpn+k9ZhT1kdNXT+Nqs4XGJHZ7OaLplnDAJe3aNTJ15nJd5m8VUmW
+         Wh1NoK7hOl/+m7vRS0rM3Ij/VbmElam8MPFWKTU5DMSYtWGozNwzKPoaGDR2duRt7UqG
+         mlATVlZmF1FM9zA8EwGpFzZG7TKPf3zCHULt4U6d8PGBKNsmXonALM5Q6QvNmHxbn31g
+         Db7ogFshTMtcoCF3OB2ohrUkCYJEs37POuMpJ5eiDyUwWG2t0niKCxQ0qk1TKj6cuuPu
+         BrdbI5MgXIRD5XP4giDSFdrjtsT3BcNMA9U2DMHRn5KnsyfSjIk047tb9taXZCBpBkSf
+         A/gw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=+/y/44R+5YxgMSzOe/nu0eMT5/71CNxaGar8eA8Nm/g=;
-        b=phkNKUswFIgK2Bz8krezsZSryX/6l5ALOpZYeJF8ssBlTK5AMJXeSlShMzKViZl06v
-         jGv6AtWObxJKhv9Sgdv+VE/37OJj10+y3Ozs4IYED696Dx/vjfPn4H8O2qz7djhVIJzM
-         gOmRT/v5anOLg39UDUEfjCKCM3RxrNgdGfJY8LbFwxbUQFRf280CbipOlGFUn3vu7i/v
-         8zqhi+RSX3ot1ltiTYsnlcBgkWIPVYGjBPaGGZVnZ/KlYZ9u9x+39mIo+vIRSbt6QzRL
-         KUA4W/wLkaYlZMukYszqB3f4FMsd0fldyLJoUWzP8+HSNoTjXOiTaKcbkmuVD9mFutFB
-         P1qQ==
-X-Gm-Message-State: AOAM531oroWEhq1fhXGyb6kg3pT9IyQ/3kra5O99i6czv6qt/lIW2Dy7
-        klKGqvFDh8kPngjwIOkyIhGW6tWSgZKImUmUorg=
-X-Google-Smtp-Source: ABdhPJyuqku/PJcEaFhoUbjY9eGQTzngMM1pszlWG5TdzymHX4wb5mzqbyT6CsEgCbAiA68p93W8U2yrhA/LLntNcKE=
-X-Received: by 2002:a05:6808:10c9:: with SMTP id s9mr5031186ois.23.1639678936900;
- Thu, 16 Dec 2021 10:22:16 -0800 (PST)
+         :message-id:subject:to:cc;
+        bh=S3bQug7Q3Y8bGfDQ90oiL7YlAL/sesqoY0B+mdgASAE=;
+        b=lqJOr8D9JCz6lC4q0932NGmhpaSHwG0pgrjn8ahG+G6wkDXlBmxuex3oLCrvG1ROFx
+         aU7XBfjR+1nIyKbHaLE2K7+pZG0T+XMRrl54nQl06x9QArVvyDsOXsCWEj/2r3YQqc2S
+         iEMPjLyDRjAaI7Ce4U27ksrZtmm3PRXEnMWFfoLVdaLNdryE6SpaQMth/vnB4vo6nrg6
+         USqZJGUzttgqqp1cWRShOUCBnytUh+3fjDC9pLrFOezf1K5023iPfvfjs9u7uU1mHcVl
+         HRgBK6Hq8YuA9A6Xlt9q0INpDeYfp8v9QsSurJwzyr2BeP1FwYAuT44p0UNuMtrfc6va
+         0Ccw==
+X-Gm-Message-State: AOAM53276uKDp4CjrqKbTO/cVZqHrGncy3zrxIcFRLRyBFBhpYDKKH0T
+        kcEAEmsN8Wm0HYynoWWPg13Tj5ylJKBKdf5X3ybxG2++0FwPpQ==
+X-Google-Smtp-Source: ABdhPJxmfD/HFoD7QRvwBZ38fcHdjZTFJJJt0+kkFuzoNVWsCXU+XmZlr3QxbwmDKkh25oZF5D6rr6K+FVIIqjnvfD4=
+X-Received: by 2002:a05:6214:d88:: with SMTP id e8mr7230680qve.80.1639679089762;
+ Thu, 16 Dec 2021 10:24:49 -0800 (PST)
 MIME-Version: 1.0
-References: <20211214215732.1507504-1-lee.jones@linaro.org>
- <20211214215732.1507504-2-lee.jones@linaro.org> <20211215174818.65f3af5e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CADvbK_emZsHVsBvNFk9B5kCZjmAQkMBAx1MtwusDJ-+vt0ukPA@mail.gmail.com>
- <Ybtrs56tSBbmyt5c@google.com> <CADvbK_cBBDkGt8XLJo6N5TX2YQATS+udVWm8_=8f96=0B9tnTA@mail.gmail.com>
- <Ybtzr5ZmD/IKjycz@google.com> <Ybtz/0gflbkG5Q/0@google.com> <CADvbK_cexKiVATn=dPrWqoS0qM-bM0UcSkx8Xqz5ibEKQizDVg@mail.gmail.com>
-In-Reply-To: <CADvbK_cexKiVATn=dPrWqoS0qM-bM0UcSkx8Xqz5ibEKQizDVg@mail.gmail.com>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Thu, 16 Dec 2021 13:22:05 -0500
-Message-ID: <CADvbK_cxMbYwkuN_ZUvHY-7ahc9ff+jbuPkKn6CA=yqMk=SKVw@mail.gmail.com>
-Subject: Re: [RESEND 2/2] sctp: hold cached endpoints to prevent possible UAF
-To:     Lee Jones <lee.jones@linaro.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Vlad Yasevich <vyasevich@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        lksctp developers <linux-sctp@vger.kernel.org>,
-        "H.P. Yarroll" <piggy@acm.org>,
-        Karl Knutson <karl@athena.chicago.il.us>,
-        Jon Grimm <jgrimm@us.ibm.com>,
-        Xingang Guo <xingang.guo@intel.com>,
-        Hui Huang <hui.huang@nokia.com>,
-        Sridhar Samudrala <sri@us.ibm.com>,
-        Daisy Chang <daisyc@us.ibm.com>,
-        Ryan Layer <rmlayer@us.ibm.com>,
-        Kevin Gao <kevin.gao@intel.com>,
-        network dev <netdev@vger.kernel.org>
+References: <Yboc/G18R1Vi1eQV@google.com> <b2af633d-aaae-d0c5-72f9-0688b76b4505@gmail.com>
+ <Ybom69OyOjsR7kmZ@google.com> <634c2c87-84c9-0254-3f12-7d993037495c@gmail.com>
+ <Yboy2WwaREgo95dy@google.com> <e729a63a-cded-da9c-3860-a90013b87e2d@gmail.com>
+ <CAKH8qBv+GsPz3JTTmLZ+Q2iMSC3PS+bE1xOLbxZyjfno7hqpSA@mail.gmail.com>
+ <92f69969-42dc-204a-4138-16fdaaebb78d@gmail.com> <CAKH8qBuZxBen871AWDK1eDcxJenK7UkSQCZQsHCPhk6nk9e=Ng@mail.gmail.com>
+ <7ca623df-73ed-9191-bec7-a4728f2f95e6@gmail.com> <20211216181449.p2izqxgzmfpknbsw@kafai-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20211216181449.p2izqxgzmfpknbsw@kafai-mbp.dhcp.thefacebook.com>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Thu, 16 Dec 2021 10:24:38 -0800
+Message-ID: <CAKH8qBuAZoVQddMUkyhur=WyQO5b=z9eom1RAwgwraXg2WTj5w@mail.gmail.com>
+Subject: Re: [PATCH v3] cgroup/bpf: fast path skb BPF filtering
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     Pavel Begunkov <asml.silence@gmail.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Song Liu <songliubraving@fb.com>, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-(
-
-On Thu, Dec 16, 2021 at 1:12 PM Xin Long <lucien.xin@gmail.com> wrote:
+On Thu, Dec 16, 2021 at 10:14 AM Martin KaFai Lau <kafai@fb.com> wrote:
 >
-> On Thu, Dec 16, 2021 at 12:14 PM Lee Jones <lee.jones@linaro.org> wrote:
-> >
-> > On Thu, 16 Dec 2021, Lee Jones wrote:
-> >
-> > > On Thu, 16 Dec 2021, Xin Long wrote:
-> > >
-> > > > On Thu, Dec 16, 2021 at 11:39 AM Lee Jones <lee.jones@linaro.org> w=
-rote:
-> > > > >
-> > > > > On Thu, 16 Dec 2021, Xin Long wrote:
-> > > > >
-> > > > > > On Wed, Dec 15, 2021 at 8:48 PM Jakub Kicinski <kuba@kernel.org=
-> wrote:
-> > > > > > >
-> > > > > > > On Tue, 14 Dec 2021 21:57:32 +0000 Lee Jones wrote:
-> > > > > > > > The cause of the resultant dump_stack() reported below is a
-> > > > > > > > dereference of a freed pointer to 'struct sctp_endpoint' in
-> > > > > > > > sctp_sock_dump().
-> > > > > > > >
-> > > > > > > > This race condition occurs when a transport is cached into =
-its
-> > > > > > > > associated hash table followed by an endpoint/sock migratio=
-n to a new
-> > > > > > > > association in sctp_assoc_migrate() prior to their subseque=
-nt use in
-> > > > > > > > sctp_diag_dump() which uses sctp_for_each_transport() to wa=
-lk the hash
-> > > > > > > > table calling into sctp_sock_dump() where the dereference o=
-ccurs.
-> > > > >
-> > > > > > in sctp_sock_dump():
-> > > > > >         struct sock *sk =3D ep->base.sk;
-> > > > > >         ... <--[1]
-> > > > > >         lock_sock(sk);
+> On Thu, Dec 16, 2021 at 01:21:26PM +0000, Pavel Begunkov wrote:
+> > On 12/15/21 22:07, Stanislav Fomichev wrote:
+> > > On Wed, Dec 15, 2021 at 11:55 AM Pavel Begunkov <asml.silence@gmail.com> wrote:
+> > > >
+> > > > On 12/15/21 19:15, Stanislav Fomichev wrote:
+> > > > > On Wed, Dec 15, 2021 at 10:54 AM Pavel Begunkov <asml.silence@gmail.com> wrote:
 > > > > > >
-> > > > > > Do you mean in [1], the sk is peeled off and gets freed elsewhe=
-re?
+> > > > > > On 12/15/21 18:24, sdf@google.com wrote:
+> > [...]
+> > > > > > > I can probably do more experiments on my side once your patch is
+> > > > > > > accepted. I'm mostly concerned with getsockopt(TCP_ZEROCOPY_RECEIVE).
+> > > > > > > If you claim there is visible overhead for a direct call then there
+> > > > > > > should be visible benefit to using CGROUP_BPF_TYPE_ENABLED there as
+> > > > > > > well.
+> > > > > >
+> > > > > > Interesting, sounds getsockopt might be performance sensitive to
+> > > > > > someone.
+> > > > > >
+> > > > > > FWIW, I forgot to mention that for testing tx I'm using io_uring
+> > > > > > (for both zc and not) with good submission batching.
 > > > > >
-> > > > > 'ep' and 'sk' are both switched out for new ones in sctp_sock_mig=
-rate().
-> > > > >
-> > > > > > if that's true, it's still late to do sock_hold(sk) in your thi=
-s patch.
-> > > > >
-> > > > > No, that's not right.
-> > > > >
-> > > > > The schedule happens *inside* the lock_sock() call.
-> > > > Sorry, I don't follow this.
-> > > > We can't expect when the schedule happens, why do you think this
-> > > > can never be scheduled before the lock_sock() call?
+> > > > > Yeah, last time I saw 2-3% as well, but it was due to kmalloc, see
+> > > > > more details in 9cacf81f8161, it was pretty visible under perf.
+> > > > > That's why I'm a bit skeptical of your claims of direct calls being
+> > > > > somehow visible in these 2-3% (even skb pulls/pushes are not 2-3%?).
+> > > >
+> > > > migrate_disable/enable together were taking somewhat in-between
+> > > > 1% and 1.5% in profiling, don't remember the exact number. The rest
+> > > > should be from rcu_read_lock/unlock() in BPF_PROG_RUN_ARRAY_CG_FLAGS()
+> > > > and other extra bits on the way.
 > > >
-> > > True, but I've had this running for hours and it hasn't reproduced.
-> I understand, but it's a crash, we shouldn't take any risk that it
-> will never happen.
-> you may try to add a usleep() before the lock_sock call to reproduce it.
->
-> > >
-> > > Without this patch, I can reproduce this in around 2 seconds.
-> > >
-> > > The C-repro for this is pretty intense!
-> > >
-> > > If you want to be *sure* that a schedule will never happen, we can
-> > > take a reference directly with:
-> > >
-> > >      ep =3D sctp_endpoint_hold(tsp->asoc->ep);
-> > >      sk =3D sock_hold(ep->base.sk);
-> > >
-> > > Which was my original plan before I soak tested this submitted patch
-> > > for hours without any sign of reproducing the issue.
-> we tried to not export sctp_obj_hold/put(), that's why we had
-> sctp_for_each_transport().
->
-> ep itself holds a reference of sk when it's alive, so it's weird to do
-> these 2 together.
->
-> > >
-> > > > If the sock is peeled off or is being freed, we shouldn't dump this=
- sock,
-> > > > and it's better to skip it.
-> > >
-> > > I guess we can do that too.
-> > >
-> > > Are you suggesting sctp_sock_migrate() as the call site?
-> diff --git a/net/sctp/socket.c b/net/sctp/socket.c
-> index 85ac2e901ffc..56ea7a0e2add 100644
-> --- a/net/sctp/socket.c
-> +++ b/net/sctp/socket.c
-> @@ -9868,6 +9868,7 @@ static int sctp_sock_migrate(struct sock *oldsk,
-> struct sock *newsk,
->                 inet_sk_set_state(newsk, SCTP_SS_ESTABLISHED);
->         }
->
-> +       sock_set_flag(oldsk, SOCK_RCU_FREE);
->         release_sock(newsk);
->
->         return 0;
->
-> SOCK_RCU_FREE is set to the previous sk, so that this sk will not
-> be freed between rcu_read_lock() and rcu_read_unlock().
->
+> > > You probably have a preemptiple kernel and preemptible rcu which most
+> > > likely explains why you see the overhead and I won't (non-preemptible
+> > > kernel in our env, rcu_read_lock is essentially a nop, just a compiler
+> > > barrier).
 > >
-> > Also, when are you planning on testing the flag?
-> SOCK_RCU_FREE flag is used when freeing sk in sk_destruct(),
-> and if it's set, it will be freed in the next grace period of RCU.
->
+> > Right. For reference tried out non-preemptible, perf shows the function
+> > taking 0.8% with a NIC and 1.2% with a dummy netdev.
 > >
-> > Won't that suffer with the same issue(s)?
-> diff --git a/net/sctp/diag.c b/net/sctp/diag.c
-> index 7970d786c4a2..b4c4acd9e67e 100644
-> --- a/net/sctp/diag.c
-> +++ b/net/sctp/diag.c
-> @@ -309,16 +309,21 @@ static int sctp_tsp_dump_one(struct
-> sctp_transport *tsp, void *p)
+> >
+> > > > I'm skeptical I'll be able to measure inlining one function,
+> > > > variability between boots/runs is usually greater and would hide it.
+> > >
+> > > Right, that's why I suggested to mirror what we do in set/getsockopt
+> > > instead of the new extra CGROUP_BPF_TYPE_ENABLED. But I'll leave it up
+> > > to you, Martin and the rest.
+> I also suggested to try to stay with one way for fullsock context in v2
+> but it is for code readability reason.
 >
->  static int sctp_sock_dump(struct sctp_transport *tsp, void *p)
->  {
-> -       struct sctp_endpoint *ep =3D tsp->asoc->ep;
->         struct sctp_comm_param *commp =3D p;
-> -       struct sock *sk =3D ep->base.sk;
->         struct sk_buff *skb =3D commp->skb;
->         struct netlink_callback *cb =3D commp->cb;
->         const struct inet_diag_req_v2 *r =3D commp->r;
->         struct sctp_association *assoc;
-> +       struct sctp_endpoint *ep;
-> +       struct sock *sk;
->         int err =3D 0;
->
-> +       rcu_read_lock();
-> +       ep =3D tsp->asoc->ep;
-> +       sk =3D ep->base.sk;
->         lock_sock(sk);
-Unfortunately, this isn't going to work, as lock_sock() may sleep,
-and is not allowed to be called understand rcu_read_lock() :(
+> How about calling CGROUP_BPF_TYPE_ENABLED() just next to cgroup_bpf_enabled()
+> in BPF_CGROUP_RUN_PROG_*SOCKOPT_*() instead ?
 
-> +       if (tsp->asoc->ep !=3D ep)
-> +               goto release;
->         list_for_each_entry(assoc, &ep->asocs, asocs) {
->                 if (cb->args[4] < cb->args[1])
->                         goto next;
-> @@ -358,6 +363,7 @@ static int sctp_sock_dump(struct sctp_transport
-> *tsp, void *p)
->         cb->args[4] =3D 0;
->  release:
->         release_sock(sk);
-> +       rcu_read_unlock();
->         return err;
->  }
+SG!
+
+> It is because both cgroup_bpf_enabled() and CGROUP_BPF_TYPE_ENABLED()
+> want to check if there is bpf to run before proceeding everything else
+> and then I don't need to jump to the non-inline function itself to see
+> if there is other prog array empty check.
 >
-> rcu_read_lock() will make sure sk from tsp->asoc->ep->base.sk will not
-> be freed until rcu_read_unlock().
->
-> That's all I have. Do you see any other way to fix this?
->
-> Thanks.
->
-> >
-> > --
-> > Lee Jones [=E6=9D=8E=E7=90=BC=E6=96=AF]
-> > Senior Technical Lead - Developer Services
-> > Linaro.org =E2=94=82 Open source software for Arm SoCs
-> > Follow Linaro: Facebook | Twitter | Blog
+> Stan, do you have concern on an extra inlined sock_cgroup_ptr()
+> when there is bpf prog to run for set/getsockopt()?  I think
+> it should be mostly noise from looking at
+> __cgroup_bpf_run_filter_*sockopt()?
+
+Yeah, my concern is also mostly about readability/consistency. Either
+__cgroup_bpf_prog_array_is_empty everywhere or this new
+CGROUP_BPF_TYPE_ENABLED everywhere. I'm slightly leaning towards
+__cgroup_bpf_prog_array_is_empty because I don't believe direct
+function calls add any visible overhead and macros are ugly :-) But
+either way is fine as long as it looks consistent.
