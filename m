@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D565476BA3
-	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 09:13:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 40658476BA5
+	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 09:13:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234885AbhLPINj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Dec 2021 03:13:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39532 "EHLO
+        id S234829AbhLPINr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Dec 2021 03:13:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234856AbhLPINh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 03:13:37 -0500
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29912C06173F
-        for <netdev@vger.kernel.org>; Thu, 16 Dec 2021 00:13:37 -0800 (PST)
-Received: by mail-pl1-x62b.google.com with SMTP id y8so18861059plg.1
-        for <netdev@vger.kernel.org>; Thu, 16 Dec 2021 00:13:37 -0800 (PST)
+        with ESMTP id S234854AbhLPINm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 03:13:42 -0500
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F42EC061401
+        for <netdev@vger.kernel.org>; Thu, 16 Dec 2021 00:13:42 -0800 (PST)
+Received: by mail-pf1-x42f.google.com with SMTP id i12so22998645pfd.6
+        for <netdev@vger.kernel.org>; Thu, 16 Dec 2021 00:13:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=hxZwgNBumLHqXO+2gnKFYa6p15JpU/b4UvoM1L0jYYQ=;
-        b=jEMZloFE35t3CKK9Q1XULRGALD0dQREkLaOh7FGrNslUiLggkSo+jnOg3w9HuvbcrZ
-         1AHTAwrUGRie+jK3GXWuyBb3P8wSk3rTI4CatI0Lb8ttohSHCE/mtHW5NfQgbJSctVuO
-         J1Jvv8Eo8oST1ffnNxcGaoWEciXBWRHhAvRB1pyV/QzhSn+sgXlKqBLQ3SrZT5vnzDPw
-         uzE4rZEBFWmk2O17DwJH7QAIOdtVRDkGaO2EJq2TTQ48WHLawG/rjCi+wDdlVXcZgZBF
-         LatkyxHKOx7YFGfa8PYIlu+CZHimVvZ/ica+0bDLG5Bg1VNUg9aR9Nfqszfeion8uuMX
-         clOQ==
+        bh=Abkw9MpZJDVgj/07ebB528CKEEcNXbkOFZr/WZxAfZQ=;
+        b=UhBopMewwWO/L2FDJKLSvlmHuz1ZR1y1w2l9SJoi0yacgw97RM7gkzKmpTYhmbcYhz
+         Vrcapj9393TYBWEzS5XX7eq1vUdI0ilGxjVQv0KGQiQejvJRHmSFv4o7BNU0WfL7I9wc
+         4ORu+giosQYPeFT+46L0bJMy9XPezcs9DofjgiA/IkEZ5N+UJMNaORun6+Yq0HKSC5kj
+         VpM4Z6VPYRyh6cFw9jSs1C1ejL1IOBp/ooleacSPsRxIn4bUdESkparVVAnzAiYCvXTw
+         rwu3OvfUiKhC375gr/bWVrXZjtql2CUobPeH2GbqJOT0X7Q3E6eXCymUfre4xIqzsC3K
+         b+fg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=hxZwgNBumLHqXO+2gnKFYa6p15JpU/b4UvoM1L0jYYQ=;
-        b=bjAaOsparPj4/EqITUTe73vKNcHwaPBxFm5QOJ28pF83dUxO8H9//SC0Ur5LPXCpcV
-         Cm4+uK53hTgmMdTkIlYeZOiZ8AQ6xkcrkGPUhBETal4MO6gtvoEjf6WhBX+PBoOMpy3e
-         l+6CpzdXdKiC0CFtOMq9ZZlAV/+2Gv4xmS+U+2xZBa+IBJEm65HcfDS6dkKBvs3g9x3Z
-         9tZYwVyAI7Qdpv0CJQ8cJAL3ofvbdt+x081TY8BuQ24AIWTdayq+R4EXYN5G6kkOdejj
-         wcYm66aOCvD/ptYXYKrn3ZLbrmsXyP3qgc88RRIo7lBFHEFiPXuHi+8Lx+E05ivKKeoG
-         30Wg==
-X-Gm-Message-State: AOAM533jRWdbZu0wf+bTR7HKjtVIpxjQWT7VXtow0Q+0vPqyTvnTdB4V
-        AYllKpsdN4pmGgMfQodkRSq2
-X-Google-Smtp-Source: ABdhPJxMap+dqOqwRpoo82JM7xEAD+1B483j3epvQBrDNW6ieQt84qKgjC3fi4v5xAP5aNs9Md3huA==
-X-Received: by 2002:a17:90b:1e04:: with SMTP id pg4mr4654111pjb.38.1639642416629;
-        Thu, 16 Dec 2021 00:13:36 -0800 (PST)
+        bh=Abkw9MpZJDVgj/07ebB528CKEEcNXbkOFZr/WZxAfZQ=;
+        b=R9uf/DVESSYpvu6RujBuo32QwlY4XgStxMxgv7nOBXUCSzFmJHd7aAeQ6rlxzys3be
+         XK0ixg5vOhcBgPF7edP/+qvyNf6gOrjdWx8YPgMzJbyU/845IwuDeK18j2CywnWGSDlm
+         EWGpacSI6qfC17eMrFKSjRkTLNoYH5tMik79ZjBAGXjpjzQrDyFoNGdzRVGE4rEwWbfz
+         k2nXTnwl/NcAt0TplNw8gLYo9AHiMw5cw5qMXHzu6yLKJf+AY9ze6r//zlAxxg7u0IAT
+         q88pcXk3fd9Xxt0KZhVYA+ScDfSuC+5OlPYm5lHTXSaCscBbg7kw/pWj4v6Wi6TszLsQ
+         eM6A==
+X-Gm-Message-State: AOAM531FzklCxAKY2rl20HOJBbmHoMqgrEyqbk20unbxZn1xbnoUU7XK
+        GguDb8hfG6G9ETVOSw6tzJNB
+X-Google-Smtp-Source: ABdhPJwux8mhduJxxxQTYn1hOULcyk0X2qXUvMCSXSzIK9j3ATjyNco6/rIJOpfoQ54yuZbBMAcauw==
+X-Received: by 2002:a05:6a00:15c7:b0:49f:f48b:f96e with SMTP id o7-20020a056a0015c700b0049ff48bf96emr12888994pfu.65.1639642422021;
+        Thu, 16 Dec 2021 00:13:42 -0800 (PST)
 Received: from localhost.localdomain ([117.193.208.121])
-        by smtp.gmail.com with ESMTPSA id u38sm326835pfg.4.2021.12.16.00.13.31
+        by smtp.gmail.com with ESMTPSA id u38sm326835pfg.4.2021.12.16.00.13.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Dec 2021 00:13:36 -0800 (PST)
+        Thu, 16 Dec 2021 00:13:41 -0800 (PST)
 From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 To:     gregkh@linuxfoundation.org
 Cc:     mhi@lists.linux.dev, hemantk@codeaurora.org, bbhatt@codeaurora.org,
@@ -56,9 +56,9 @@ Cc:     mhi@lists.linux.dev, hemantk@codeaurora.org, bbhatt@codeaurora.org,
         linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, Manivannan Sadhasivam <mani@kernel.org>,
         Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: [PATCH 09/10] bus: mhi: core: Use correctly sized arguments for bit field
-Date:   Thu, 16 Dec 2021 13:42:26 +0530
-Message-Id: <20211216081227.237749-10-manivannan.sadhasivam@linaro.org>
+Subject: [PATCH 10/10] bus: mhi: pci_generic: Introduce Sierra EM919X support
+Date:   Thu, 16 Dec 2021 13:42:27 +0530
+Message-Id: <20211216081227.237749-11-manivannan.sadhasivam@linaro.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211216081227.237749-1-manivannan.sadhasivam@linaro.org>
 References: <20211216081227.237749-1-manivannan.sadhasivam@linaro.org>
@@ -68,60 +68,77 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Kees Cook <keescook@chromium.org>
+From: Thomas Perrot <thomas.perrot@bootlin.com>
 
-The find.h APIs are designed to be used only on unsigned long arguments.
-This can technically result in a over-read, but it is harmless in this
-case. Regardless, fix it to avoid the warning seen under -Warray-bounds,
-which we'd like to enable globally:
+Add support for EM919X modems, this modem series is based on SDX55
+qcom chip.
 
-In file included from ./include/linux/bitmap.h:9,
-                 from ./include/linux/cpumask.h:12,
-                 from ./arch/x86/include/asm/cpumask.h:5,
-                 from ./arch/x86/include/asm/msr.h:11,
-                 from ./arch/x86/include/asm/processor.h:22,
-                 from ./arch/x86/include/asm/cpufeature.h:5,
-                 from ./arch/x86/include/asm/thread_info.h:53,
-                 from ./include/linux/thread_info.h:60,
-                 from ./arch/x86/include/asm/preempt.h:7,
-                 from ./include/linux/preempt.h:78,
-                 from ./include/linux/spinlock.h:55,
-                 from ./include/linux/wait.h:9,
-                 from ./include/linux/wait_bit.h:8,
-                 from ./include/linux/fs.h:6,
-                 from ./include/linux/debugfs.h:15,
-                 from drivers/bus/mhi/core/init.c:7:
-drivers/bus/mhi/core/init.c: In function 'to_mhi_pm_state_str':
-./include/linux/find.h:187:37: warning: array subscript 'long unsigned int[0]' is partly outside array bounds of 'enum mhi_pm_state[1]' [-Warray-bounds]
-  187 |                 unsigned long val = *addr & GENMASK(size - 1, 0);
-      |                                     ^~~~~
-drivers/bus/mhi/core/init.c:80:51: note: while referencing 'state'
-   80 | const char *to_mhi_pm_state_str(enum mhi_pm_state state)
-      |                                 ~~~~~~~~~~~~~~~~~~^~~~~
+It is mandatory to use the same ring for control+data and diag events.
 
-Signed-off-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Thomas Perrot <thomas.perrot@bootlin.com>
+Tested-by: Aleksander Morgado <aleksander@aleksander.es>
 Reviewed-by: Manivannan Sadhasivam <mani@kernel.org>
-Link: https://lore.kernel.org/r/20211215232446.2069794-1-keescook@chromium.org
-[mani: changed the variable name "bits" to "pm_state"]
+Link: https://lore.kernel.org/r/20211123081541.648426-1-thomas.perrot@bootlin.com
 Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 ---
- drivers/bus/mhi/core/init.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/bus/mhi/pci_generic.c | 43 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 43 insertions(+)
 
-diff --git a/drivers/bus/mhi/core/init.c b/drivers/bus/mhi/core/init.c
-index f1ec34417592..046f407dc5d6 100644
---- a/drivers/bus/mhi/core/init.c
-+++ b/drivers/bus/mhi/core/init.c
-@@ -79,7 +79,8 @@ static const char * const mhi_pm_state_str[] = {
+diff --git a/drivers/bus/mhi/pci_generic.c b/drivers/bus/mhi/pci_generic.c
+index 9ef41354237c..29607f7bc8da 100644
+--- a/drivers/bus/mhi/pci_generic.c
++++ b/drivers/bus/mhi/pci_generic.c
+@@ -403,7 +403,50 @@ static const struct mhi_pci_dev_info mhi_mv31_info = {
+ 	.dma_data_width = 32,
+ };
  
- const char *to_mhi_pm_state_str(enum mhi_pm_state state)
- {
--	int index = find_last_bit((unsigned long *)&state, 32);
-+	unsigned long pm_state = state;
-+	int index = find_last_bit(&pm_state, 32);
- 
- 	if (index >= ARRAY_SIZE(mhi_pm_state_str))
- 		return "Invalid State";
++static const struct mhi_channel_config mhi_sierra_em919x_channels[] = {
++	MHI_CHANNEL_CONFIG_UL_SBL(2, "SAHARA", 32, 0),
++	MHI_CHANNEL_CONFIG_DL_SBL(3, "SAHARA", 256, 0),
++	MHI_CHANNEL_CONFIG_UL(4, "DIAG", 32, 0),
++	MHI_CHANNEL_CONFIG_DL(5, "DIAG", 32, 0),
++	MHI_CHANNEL_CONFIG_UL(12, "MBIM", 128, 0),
++	MHI_CHANNEL_CONFIG_DL(13, "MBIM", 128, 0),
++	MHI_CHANNEL_CONFIG_UL(14, "QMI", 32, 0),
++	MHI_CHANNEL_CONFIG_DL(15, "QMI", 32, 0),
++	MHI_CHANNEL_CONFIG_UL(32, "DUN", 32, 0),
++	MHI_CHANNEL_CONFIG_DL(33, "DUN", 32, 0),
++	MHI_CHANNEL_CONFIG_HW_UL(100, "IP_HW0", 512, 1),
++	MHI_CHANNEL_CONFIG_HW_DL(101, "IP_HW0", 512, 2),
++};
++
++static struct mhi_event_config modem_sierra_em919x_mhi_events[] = {
++	/* first ring is control+data and DIAG ring */
++	MHI_EVENT_CONFIG_CTRL(0, 2048),
++	/* Hardware channels request dedicated hardware event rings */
++	MHI_EVENT_CONFIG_HW_DATA(1, 2048, 100),
++	MHI_EVENT_CONFIG_HW_DATA(2, 2048, 101)
++};
++
++static const struct mhi_controller_config modem_sierra_em919x_config = {
++	.max_channels = 128,
++	.timeout_ms = 24000,
++	.num_channels = ARRAY_SIZE(mhi_sierra_em919x_channels),
++	.ch_cfg = mhi_sierra_em919x_channels,
++	.num_events = ARRAY_SIZE(modem_sierra_em919x_mhi_events),
++	.event_cfg = modem_sierra_em919x_mhi_events,
++};
++
++static const struct mhi_pci_dev_info mhi_sierra_em919x_info = {
++	.name = "sierra-em919x",
++	.config = &modem_sierra_em919x_config,
++	.bar_num = MHI_PCI_DEFAULT_BAR_NUM,
++	.dma_data_width = 32,
++	.sideband_wake = false,
++};
++
+ static const struct pci_device_id mhi_pci_id_table[] = {
++	/* EM919x (sdx55), use the same vid:pid as qcom-sdx55m */
++	{ PCI_DEVICE_SUB(PCI_VENDOR_ID_QCOM, 0x0306, 0x18d7, 0x0200),
++		.driver_data = (kernel_ulong_t) &mhi_sierra_em919x_info },
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_QCOM, 0x0306),
+ 		.driver_data = (kernel_ulong_t) &mhi_qcom_sdx55_info },
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_QCOM, 0x0304),
 -- 
 2.25.1
 
