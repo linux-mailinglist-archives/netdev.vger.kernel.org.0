@@ -2,242 +2,331 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DF4F6477A85
-	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 18:26:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 85293477A94
+	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 18:29:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239919AbhLPR0a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Dec 2021 12:26:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59072 "EHLO
+        id S240166AbhLPR34 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Dec 2021 12:29:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235503AbhLPR02 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 12:26:28 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A418C061574;
-        Thu, 16 Dec 2021 09:26:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=AXHqZb7F90jYAXnOm9qgJgfgpP4oixmnye3L1wnbXrg=; b=heIdCK/yhXA9ZjcCML/f0ddaNN
-        k22r4mR3rJWF/D22yod5o8NukZmlt1IKgceVzMUI8oxcTaqP+iH0jdxYhLOwRorBos52lAdKijTFC
-        dqMeVT55Px9C/e5O6SQacAD6XUEKH6x/DaTOQELdoqrgb8s2kPza3XuCy7Efg7MPgDwoCwjlVkwJh
-        92C3PSA7b6ZaD68heyKc0NViyJIJzDDARHaK2IRLF7QAZS43NOxjN0vq3oj0S4s4p034+Dqs0XZfp
-        +5w0pBbqw4/sN70EItJjxYCbHLaL5E/seosvsCvZ0hSyCkf6pSHM1qXZgNkuob/NQjUOwhLXqKbhJ
-        UfGX6dYw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:56326)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1mxuWL-00088d-Q1; Thu, 16 Dec 2021 17:26:21 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1mxuWB-0005aD-Pt; Thu, 16 Dec 2021 17:26:11 +0000
-Date:   Thu, 16 Dec 2021 17:26:11 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Sean Anderson <sean.anderson@seco.com>
-Cc:     Jose Abreu <Jose.Abreu@synopsys.com>, Andrew Lunn <andrew@lunn.ch>,
-        linux-kernel@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        UNGLinuxDriver@microchip.com, netdev@vger.kernel.org,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH] net: phylink: Pass state to pcs_config
-Message-ID: <Ybt2syzCpjVDGQy7@shell.armlinux.org.uk>
-References: <20211214233450.1488736-1-sean.anderson@seco.com>
- <YbkshnqgXP7Gd188@shell.armlinux.org.uk>
- <de1f7214-58c8-cdc6-1d29-08c979ce68f1@seco.com>
- <Ybk7iuxdin69MjTo@shell.armlinux.org.uk>
- <YblA4E/InIAa0U1U@shell.armlinux.org.uk>
- <1a9de385-1eb9-510b-25f5-d970adfb124b@seco.com>
+        with ESMTP id S235619AbhLPR3y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 12:29:54 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A45A8C061574;
+        Thu, 16 Dec 2021 09:29:54 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2B10261EDB;
+        Thu, 16 Dec 2021 17:29:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73CCAC36AE6;
+        Thu, 16 Dec 2021 17:29:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1639675793;
+        bh=sZED9o+V6DY8SMm+Vs6+SPM0L4+1UTJmGboG9qTGk/k=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=jIHaJAtR5hcwMSRWFblUWN9WH3NxkejcVrC0IZZBMwA2IaYpFfWu0sOSxgAXrVMDJ
+         zGxUB/ll9oWwtmiZYDmLvKfMxfONSkb3ML+9TMnRF2T0OGc4CCPC+wFiljoDwGYEMJ
+         h2kKek5NQtAA6M4ON4ss9Own4Mfm/HqGoYE0pA+Tys5+3GQUg7cI+XGL9PedT3xCjs
+         XY11RhmahR6/Bd6VfT/2pKO4h3NQ/KLEKhnqotcAzPtGiYy16RwswQDeo+T40NynMv
+         OlQAF6NGF5DVUfVEtv2DPSDojNttmansbd7+ZdPRAZHK7rlTig2IYGxKnuaPtf+JeN
+         t6ISOj94r7Idg==
+Received: by mail-wm1-f43.google.com with SMTP id y83-20020a1c7d56000000b003456dfe7c5cso1345878wmc.1;
+        Thu, 16 Dec 2021 09:29:53 -0800 (PST)
+X-Gm-Message-State: AOAM532a9k5ScTLSZ9jHXNYecubuesqo8jO4+SMKNCkjB5wHgY8BlCvO
+        tZVZQL8TKi2Sv2yNErcTRHh/RGgbkBt9XPHVPU8=
+X-Google-Smtp-Source: ABdhPJzp0SU8actyldrvzX1x50riwocCH+uUo3Sc9tTPSiAj2RkG6W8raN6crfSV4FfRoxzwjsmq9fCJPMFefPzOiEI=
+X-Received: by 2002:a05:600c:3486:: with SMTP id a6mr5945559wmq.32.1639675791707;
+ Thu, 16 Dec 2021 09:29:51 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1a9de385-1eb9-510b-25f5-d970adfb124b@seco.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+References: <20210514100106.3404011-1-arnd@kernel.org>
+In-Reply-To: <20210514100106.3404011-1-arnd@kernel.org>
+From:   Ard Biesheuvel <ardb@kernel.org>
+Date:   Thu, 16 Dec 2021 18:29:40 +0100
+X-Gmail-Original-Message-ID: <CAMj1kXG0CNomZ0aXxh_4094fT+g4bVWFCkrd7QwgTQgiqoxMWA@mail.gmail.com>
+Message-ID: <CAMj1kXG0CNomZ0aXxh_4094fT+g4bVWFCkrd7QwgTQgiqoxMWA@mail.gmail.com>
+Subject: Re: [PATCH v2 00/13] Unify asm/unaligned.h around struct helper
+To:     Arnd Bergmann <arnd@kernel.org>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>, johannes@sipsolutions.net,
+        Kees Cook <keescook@chromium.org>,
+        Nick Desaulniers <ndesaulniers@google.com>
+Cc:     linux-arch <linux-arch@vger.kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Vineet Gupta <vgupta@synopsys.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Amitkumar Karwar <amitkarwar@gmail.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Borislav Petkov <bp@alien8.de>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ganapathi Bhat <ganapathi017@gmail.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        James Morris <jmorris@namei.org>, Jens Axboe <axboe@kernel.dk>,
+        John Johansen <john.johansen@canonical.com>,
+        Jonas Bonn <jonas@southpole.se>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Paul Mackerras <paulus@samba.org>,
+        Rich Felker <dalias@libc.org>,
+        "Richard Russon (FlatCap)" <ldm@flatcap.org>,
+        Russell King <linux@armlinux.org.uk>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        Sharvari Harisangam <sharvari.harisangam@nxp.com>,
+        Stafford Horne <shorne@gmail.com>,
+        Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        X86 ML <x86@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-m68k <linux-m68k@lists.linux-m68k.org>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        openrisc@lists.librecores.org,
+        "open list:LINUX FOR POWERPC (32-BIT AND 64-BIT)" 
+        <linuxppc-dev@lists.ozlabs.org>, linux-sh@vger.kernel.org,
+        "open list:SPARC + UltraSPARC (sparc/sparc64)" 
+        <sparclinux@vger.kernel.org>, linux-ntfs-dev@lists.sourceforge.net,
+        linux-block@vger.kernel.org, linux-wireless@vger.kernel.org,
+        "open list:BPF JIT for MIPS (32-BIT AND 64-BIT)" 
+        <netdev@vger.kernel.org>, linux-security-module@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 16, 2021 at 12:02:55PM -0500, Sean Anderson wrote:
-> On 12/14/21 8:12 PM, Russell King (Oracle) wrote:
-> > On Wed, Dec 15, 2021 at 12:49:14AM +0000, Russell King (Oracle) wrote:
-> > > On Tue, Dec 14, 2021 at 07:16:53PM -0500, Sean Anderson wrote:
-> > > > Ok, so let me clarify my understanding. Perhaps this can be eliminated
-> > > > through a different approach.
-> > > >
-> > > > When I read the datasheet for mvneta (which hopefully has the same
-> > > > logic here, since I could not find a datasheet for an mvpp2 device), I
-> > > > noticed that the Pause_Adv bit said
-> > > >
-> > > > > It is valid only if flow control mode is defined by Auto-Negotiation
-> > > > > (as defined by the <AnFcEn> bit).
-> > > >
-> > > > Which I interpreted to mean that if AnFcEn was clear, then no flow
-> > > > control was advertised. But perhaps it instead means that the logic is
-> > > > something like
-> > > >
-> > > > if (AnFcEn)
-> > > > 	Config_Reg.PAUSE = Pause_Adv;
-> > > > else
-> > > > 	Config_Reg.PAUSE = SetFcEn;
-> > > >
-> > > > which would mean that we can just clear AnFcEn in link_up if the
-> > > > autonegotiated pause settings are different from the configured pause
-> > > > settings.
-> > > 
-> > > Having actually played with this hardware quite a bit and observed what
-> > > it sends, what it implements for advertising is:
-> > > 
-> > > 	Config_Reg.PAUSE = Pause_Adv;
-> 
-> So the above note from the datasheet about Pause_Adv not being valid is
-> incorrect?
-> 
-> > > Config_Reg gets sent over the 1000BASE-X link to the link partner, and
-> > > we receive Remote_Reg from the link partner.
-> > > 
-> > > Then, the hardware implements:
-> > > 
-> > > 	if (AnFcEn)
-> > > 		MAC_PAUSE = Config_Reg.PAUSE & Remote_Reg.PAUSE;
-> > > 	else
-> > > 		MAC_PAUSE = SetFcEn;
-> > > 
-> > > In otherwords, AnFcEn controls whether the result of autonegotiation
-> > > or the value of SetFcEn controls whether the MAC enables symmetric
-> > > pause mode.
-> > 
-> > I should also note that in the Port Status register,
-> > 
-> > 	TxFcEn = RxFcEn = MAC_PAUSE;
-> > 
-> > So, the status register bits follow SetFcEn when AnFcEn is disabled.
-> > 
-> > However, these bits are the only way to report the result of the
-> > negotiation, which is why we use them to report back whether flow
-> > control was enabled in mvneta_pcs_get_state(). These bits will be
-> > ignored by phylink when ethtool -A has disabled pause negotiation,
-> > and in that situation there is no way as I said to be able to read
-> > the negotiation result.
-> 
-> Ok, how about
-> 
-> diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> index b1cce4425296..9b41d8ee71fb 100644
-> --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> @@ -6226,8 +6226,7 @@ static int mvpp2_gmac_pcs_config(struct phylink_pcs *pcs, unsigned int mode,
->                          * automatically or the bits in MVPP22_GMAC_CTRL_4_REG
->                          * manually controls the GMAC pause modes.
->                          */
-> -                       if (permit_pause_to_mac)
-> -                               val |= MVPP2_GMAC_FLOW_CTRL_AUTONEG;
-> +                       val |= MVPP2_GMAC_FLOW_CTRL_AUTONEG;
-> 
->                         /* Configure advertisement bits */
->                         mask |= MVPP2_GMAC_FC_ADV_EN | MVPP2_GMAC_FC_ADV_ASM_EN;
-> @@ -6525,6 +6524,9 @@ static void mvpp2_mac_link_up(struct phylink_config *config,
->                 }
->         } else {
->                 if (!phylink_autoneg_inband(mode)) {
-> +                       bool cur_tx_pause, cur_rx_pause;
-> +                       u32 status0 = readl(port->base + MVPP2_GMAC_STATUS0);
-> +
->                         val = MVPP2_GMAC_FORCE_LINK_PASS;
-> 
->                         if (speed == SPEED_1000 || speed == SPEED_2500)
-> @@ -6535,11 +6537,18 @@ static void mvpp2_mac_link_up(struct phylink_config *config,
->                         if (duplex == DUPLEX_FULL)
->                                 val |= MVPP2_GMAC_CONFIG_FULL_DUPLEX;
-> 
-> +                       cur_tx_pause = status0 & MVPP2_GMAC_STATUS0_TX_PAUSE;
-> +                       cur_rx_pause = status0 & MVPP2_GMAC_STATUS0_RX_PAUSE;
+Hi Arnd,
 
-I think you haven't understood everything I've said. These status bits
-report what the MAC is doing. They do not reflect what was negotiated
-_unless_ MVPP2_GMAC_FLOW_CTRL_AUTONEG was set.
+(replying to an old thread as this came up in the discussion regarding
+misaligned loads and stored in siphash() when compiled for ARM
+[f7e5b9bfa6c8820407b64eabc1f29c9a87e8993d])
 
-So, if we clear MVPP2_GMAC_FLOW_CTRL_AUTONEG, these bits will follow
-MVPP22_XLG_CTRL0_TX_FLOW_CTRL_EN and MVPP22_XLG_CTRL0_RX_FLOW_CTRL_EN.
+On Fri, 14 May 2021 at 12:02, Arnd Bergmann <arnd@kernel.org> wrote:
+>
+> From: Arnd Bergmann <arnd@arndb.de>
+>
+> The get_unaligned()/put_unaligned() helpers are traditionally architecture
+> specific, with the two main variants being the "access-ok.h" version
+> that assumes unaligned pointer accesses always work on a particular
+> architecture, and the "le-struct.h" version that casts the data to a
+> byte aligned type before dereferencing, for architectures that cannot
+> always do unaligned accesses in hardware.
+>
+> Based on the discussion linked below, it appears that the access-ok
+> version is not realiable on any architecture, but the struct version
+> probably has no downsides. This series changes the code to use the
+> same implementation on all architectures, addressing the few exceptions
+> separately.
+>
+> I've included this version in the asm-generic tree for 5.14 already,
+> addressing the few issues that were pointed out in the RFC. If there
+> are any remaining problems, I hope those can be addressed as follow-up
+> patches.
+>
 
-Let's say we apply this patch. tx/rx pause are negotiated and enabled.
-So cur_tx_pause and cur_rx_pause are both true.
+I think this series is a huge improvement, but it does not solve the
+UB problem completely. As we found, there are open issues in the GCC
+bugzilla regarding assumptions in the compiler that aligned quantities
+either overlap entirely or not at all. (e.g.,
+https://gcc.gnu.org/bugzilla/show_bug.cgi?id=100363)
 
-We change the pause settings, forcing tx pause only. This causes
-pcs_config to be called which sets MVPP2_GMAC_FLOW_CTRL_AUTONEG, and
-then link_up gets called with the differing settings. We clear
-MVPP2_GMAC_FLOW_CTRL_AUTONEG and force the pause settings. We now
-have the status register containing MVPP2_GMAC_STATUS0_TX_PAUSE set
-but MVPP2_GMAC_STATUS0_RX_PAUSE clear.
+CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS is used in many places to
+conditionally emit code that violates C alignment rules. E.g., there
+is this example in Documentation/core-api/unaligned-memory-access.rst:
 
-The link goes down e.g. because the remote end has changed and comes
-back. We read the status register and see MVPP2_GMAC_STATUS0_TX_PAUSE
-is set and MVPP2_GMAC_STATUS0_RX_PAUSE is still clear. tx_pause is
-true and rx_pause is false. These agree with the settings, so we
-then set MVPP2_GMAC_FLOW_CTRL_AUTONEG.
+bool ether_addr_equal(const u8 *addr1, const u8 *addr2)
+{
+#ifdef CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS
+  u32 fold = ((*(const u32 *)addr1) ^ (*(const u32 *)addr2)) |
+             ((*(const u16 *)(addr1 + 4)) ^ (*(const u16 *)(addr2 + 4)));
+  return fold == 0;
+#else
+...
 
-If the link goes down and up again, then this cycle repeats - the
-status register will now have both MVPP2_GMAC_STATUS0_TX_PAUSE and
-MVPP2_GMAC_STATUS0_RX_PAUSE set, so we clear
-MVPP2_GMAC_FLOW_CTRL_AUTONEG. If the link goes down/up again, we flip
-back to re-enabling MVPP2_GMAC_FLOW_CTRL_AUTONEG.
+(which now deviates from its actual implementation, but the point is
+the same) where CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS is used in the
+wrong way (IMHO).
 
-And we will toggle between these two states.
+The pattern seems to be
 
-Sorry, but this can't work.
+#ifdef CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS
+  // ignore alignment rules, just cast to a more aligned pointer type
+#else
+  // use unaligned accessors, which could be either cheap or expensive,
+  // depending on the architecture
+#endif
 
-> When we have MLO_PAUSE_AN, this is the same as before. For the other
-> case, consider the scenario where someone disables pause
-> autonegotiation, and then plugs in the cable. Here, we get the
-> negotiated pause from pcs_get_state, but it is overridden by
+whereas the following pattern makes more sense, I think, and does not
+violate any C rules in the common case:
 
-In mvneta and mvpp2, pcs_get_state() can only read the current settings
-that the PCS/MAC are currently using. There is no way to read purely
-the results of negotiation with this hardware.
+#ifdef CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS
+  // use unaligned accessors, which are cheap or even entirely free
+#else
+  // avoid unaligned accessors, as they are expensive; instead, reorganize
+  // the data so we don't need them (similar to setting NET_IP_ALIGN to 2)
+#endif
 
-E.g., if you force speed to 100Mbps, then pcs_get_state() will tell you
-that you're doing 100Mbps. If you force duplex, pcs_get_state() will
-tell you what's being forced. If you force pause, pcs_get_state() will
-tell you what pause settings are being forced.
+The only remaining problem here is reinterpreting a char* pointer to a
+u32*, e.g., for accessing the IP address in an Ethernet frame when
+NET_IP_ALIGN == 2, which could suffer from the same UB problem again,
+as I understand it.
 
-Sadly, this is the way Marvell designed this hardware, and it sucks,
-but we have to support it.
+In the 32-bit ARM case (v6+) [which is admittedly an outlier] this
+makes a substantial difference, as ARMv6 does have efficient unaligned
+accessors (load/store word or halfword may be used on misaligned
+addresses) but requires that load/store double-word and load/store
+multiple are only used on 32-bit aligned addresses. GCC does the right
+thing with the unaligned accessors, but blindly casting away
+misalignment may result in alignment traps if the compiler happened to
+emit load-double or load-multiple instructions for the memory access
+in question.
 
-> > permit_pause_to_mac exists precisely because of the limitions of this
-> > hardware, and having it costs virtually nothing to other network
-> > drivers... except a parameter that others ignore.
-> > 
-> > If we don't have permit_pause_to_mac in pcs_config() then we need to
-> > have it passed to the link_up() methods instead. There is no other
-> > option (other than breaking mvneta and mvpp2) here than to make the
-> > state of ethtool -A ... autoneg on|off known to the hardware.
-> 
-> Well, the original patch is primarily motivated by the terrible naming
-> and documentation regarding this parameter. I was only able to determine
-> the purpose of this parameter by reading the mvpp2 driver and consulting
-> the A370 datasheet. I think if it is possible to eliminate this
-> parameter (such as with the above patch), we should do so, since it will
-> make the API cleaner and easier to understand. Failing that, I will
-> submit a patch to improve the documentation (and perhaps rename the
-> parameter to something more descriptive).
+Jason already verifed that in the siphash() case, the aligned and
+unaligned versions of the code actually compile to the same machine
+code on x86, as the unaligned accessors just disappear. I suspect this
+to be the case for many instances where
+CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS is being used, mostly in the
+networking stack.
 
-I don't like having it either, but I've thought about it for a long
-time and haven't found any other acceptable solution.
+So I intend to dig a bit deeper into this, and perhaps propose some
+changes where the interpretation of
+CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS is documented more clearly, and
+tweaked according to my suggestion above (while ensuring that codegen
+does not suffer, of course)
 
-To me, the parameter name describes _exactly_ what it's about. It's
-about the PCS being permitted to forward the pause status to the MAC.
-Hence "permit" "pause" "to" "mac" and the PCS context comes from the
-fact that this is a PCS function. I really don't see what could be
-clearer about the name... and I get the impression this is a bit of
-a storm in a tea cup.
+Thoughts, concerns, objections?
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+
+--
+Ard.
+
+
+
+
+> Link: https://lore.kernel.org/lkml/75d07691-1e4f-741f-9852-38c0b4f520bc@synopsys.com/
+> Link: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=100363
+> Link: https://lore.kernel.org/lkml/20210507220813.365382-14-arnd@kernel.org/
+> Link: git://git.kernel.org/pub/scm/linux/kernel/git/arnd/asm-generic.git unaligned-rework-v2
+>
+>
+> Arnd Bergmann (13):
+>   asm-generic: use asm-generic/unaligned.h for most architectures
+>   openrisc: always use unaligned-struct header
+>   sh: remove unaligned access for sh4a
+>   m68k: select CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS
+>   powerpc: use linux/unaligned/le_struct.h on LE power7
+>   asm-generic: unaligned: remove byteshift helpers
+>   asm-generic: unaligned always use struct helpers
+>   partitions: msdos: fix one-byte get_unaligned()
+>   apparmor: use get_unaligned() only for multi-byte words
+>   mwifiex: re-fix for unaligned accesses
+>   netpoll: avoid put_unaligned() on single character
+>   asm-generic: uaccess: 1-byte access is always aligned
+>   asm-generic: simplify asm/unaligned.h
+>
+>  arch/alpha/include/asm/unaligned.h          |  12 --
+>  arch/arm/include/asm/unaligned.h            |  27 ---
+>  arch/ia64/include/asm/unaligned.h           |  12 --
+>  arch/m68k/Kconfig                           |   1 +
+>  arch/m68k/include/asm/unaligned.h           |  26 ---
+>  arch/microblaze/include/asm/unaligned.h     |  27 ---
+>  arch/mips/crypto/crc32-mips.c               |   2 +-
+>  arch/openrisc/include/asm/unaligned.h       |  47 -----
+>  arch/parisc/include/asm/unaligned.h         |   6 +-
+>  arch/powerpc/include/asm/unaligned.h        |  22 ---
+>  arch/sh/include/asm/unaligned-sh4a.h        | 199 --------------------
+>  arch/sh/include/asm/unaligned.h             |  13 --
+>  arch/sparc/include/asm/unaligned.h          |  11 --
+>  arch/x86/include/asm/unaligned.h            |  15 --
+>  arch/xtensa/include/asm/unaligned.h         |  29 ---
+>  block/partitions/ldm.h                      |   2 +-
+>  block/partitions/msdos.c                    |   2 +-
+>  drivers/net/wireless/marvell/mwifiex/pcie.c |  10 +-
+>  include/asm-generic/uaccess.h               |   4 +-
+>  include/asm-generic/unaligned.h             | 141 +++++++++++---
+>  include/linux/unaligned/access_ok.h         |  68 -------
+>  include/linux/unaligned/be_byteshift.h      |  71 -------
+>  include/linux/unaligned/be_memmove.h        |  37 ----
+>  include/linux/unaligned/be_struct.h         |  37 ----
+>  include/linux/unaligned/generic.h           | 115 -----------
+>  include/linux/unaligned/le_byteshift.h      |  71 -------
+>  include/linux/unaligned/le_memmove.h        |  37 ----
+>  include/linux/unaligned/le_struct.h         |  37 ----
+>  include/linux/unaligned/memmove.h           |  46 -----
+>  net/core/netpoll.c                          |   4 +-
+>  security/apparmor/policy_unpack.c           |   2 +-
+>  31 files changed, 131 insertions(+), 1002 deletions(-)
+>  delete mode 100644 arch/alpha/include/asm/unaligned.h
+>  delete mode 100644 arch/arm/include/asm/unaligned.h
+>  delete mode 100644 arch/ia64/include/asm/unaligned.h
+>  delete mode 100644 arch/m68k/include/asm/unaligned.h
+>  delete mode 100644 arch/microblaze/include/asm/unaligned.h
+>  delete mode 100644 arch/openrisc/include/asm/unaligned.h
+>  delete mode 100644 arch/powerpc/include/asm/unaligned.h
+>  delete mode 100644 arch/sh/include/asm/unaligned-sh4a.h
+>  delete mode 100644 arch/sh/include/asm/unaligned.h
+>  delete mode 100644 arch/sparc/include/asm/unaligned.h
+>  delete mode 100644 arch/x86/include/asm/unaligned.h
+>  delete mode 100644 arch/xtensa/include/asm/unaligned.h
+>  delete mode 100644 include/linux/unaligned/access_ok.h
+>  delete mode 100644 include/linux/unaligned/be_byteshift.h
+>  delete mode 100644 include/linux/unaligned/be_memmove.h
+>  delete mode 100644 include/linux/unaligned/be_struct.h
+>  delete mode 100644 include/linux/unaligned/generic.h
+>  delete mode 100644 include/linux/unaligned/le_byteshift.h
+>  delete mode 100644 include/linux/unaligned/le_memmove.h
+>  delete mode 100644 include/linux/unaligned/le_struct.h
+>  delete mode 100644 include/linux/unaligned/memmove.h
+>
+> --
+> 2.29.2
+>
+> Cc: Amitkumar Karwar <amitkarwar@gmail.com>
+> Cc: Arnd Bergmann <arnd@arndb.de>
+> Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+> Cc: Borislav Petkov <bp@alien8.de>
+> Cc: Eric Dumazet <edumazet@google.com>
+> Cc: Florian Fainelli <f.fainelli@gmail.com>
+> Cc: Ganapathi Bhat <ganapathi017@gmail.com>
+> Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+> Cc: "H. Peter Anvin" <hpa@zytor.com>
+> Cc: Ingo Molnar <mingo@redhat.com>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: James Morris <jmorris@namei.org>
+> Cc: Jens Axboe <axboe@kernel.dk>
+> Cc: John Johansen <john.johansen@canonical.com>
+> Cc: Jonas Bonn <jonas@southpole.se>
+> Cc: Kalle Valo <kvalo@codeaurora.org>
+> Cc: Michael Ellerman <mpe@ellerman.id.au>
+> Cc: Paul Mackerras <paulus@samba.org>
+> Cc: Rich Felker <dalias@libc.org>
+> Cc: "Richard Russon (FlatCap)" <ldm@flatcap.org>
+> Cc: Russell King <linux@armlinux.org.uk>
+> Cc: "Serge E. Hallyn" <serge@hallyn.com>
+> Cc: Sharvari Harisangam <sharvari.harisangam@nxp.com>
+> Cc: Stafford Horne <shorne@gmail.com>
+> Cc: Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>
+> Cc: Thomas Gleixner <tglx@linutronix.de>
+> Cc: Vladimir Oltean <vladimir.oltean@nxp.com>
+> Cc: Xinming Hu <huxinming820@gmail.com>
+> Cc: Yoshinori Sato <ysato@users.sourceforge.jp>
+> Cc: x86@kernel.org
+> Cc: linux-kernel@vger.kernel.org
+> Cc: linux-arm-kernel@lists.infradead.org
+> Cc: linux-m68k@lists.linux-m68k.org
+> Cc: linux-crypto@vger.kernel.org
+> Cc: openrisc@lists.librecores.org
+> Cc: linuxppc-dev@lists.ozlabs.org
+> Cc: linux-sh@vger.kernel.org
+> Cc: sparclinux@vger.kernel.org
+> Cc: linux-ntfs-dev@lists.sourceforge.net
+> Cc: linux-block@vger.kernel.org
+> Cc: linux-wireless@vger.kernel.org
+> Cc: netdev@vger.kernel.org
+> Cc: linux-arch@vger.kernel.org
+> Cc: linux-security-module@vger.kernel.org
+>
+>
