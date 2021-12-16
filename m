@@ -2,240 +2,373 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D8387477B7C
-	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 19:25:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8825E477B81
+	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 19:27:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240656AbhLPSZe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Dec 2021 13:25:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44572 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236282AbhLPSZe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 13:25:34 -0500
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1554C06173E
-        for <netdev@vger.kernel.org>; Thu, 16 Dec 2021 10:25:33 -0800 (PST)
-Received: by mail-wr1-x42b.google.com with SMTP id a9so45762887wrr.8
-        for <netdev@vger.kernel.org>; Thu, 16 Dec 2021 10:25:33 -0800 (PST)
+        id S239152AbhLPS1j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Dec 2021 13:27:39 -0500
+Received: from mx0b-00069f02.pphosted.com ([205.220.177.32]:58082 "EHLO
+        mx0b-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231582AbhLPS1i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 13:27:38 -0500
+Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1BGHV9Sw019014;
+        Thu, 16 Dec 2021 18:27:33 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : content-type : mime-version;
+ s=corp-2021-07-09; bh=2vF8Ar1SlFr3Wea0iq5bQmUEXQwzsaUzd0RTFphP0Cs=;
+ b=zZfTNXruToNMAl4c4Amru5H/SX9MsWoCbyc3P/YQ2g9mk3k7Uh7cwYo3/lqcXr9Kw9HF
+ Fq1eSkdZUt0PjHLi8KFHWIb/wZGn7g/RzBUz9dfUNUItwvCDaot/yw2pHuMUlyUnFmT0
+ fz4oZX+z0QOhvLEl6RV6S6UqiMDNrvxWwpZheaqi9cDXh4Sz42U9E1xQT91lPmBRarEs
+ E+MpLmlzve3LZMfyQWkpIEIR62Z+x8fGNL75dmXTwR03S6Pn9wqVAzJ0MLvu0AE+SGtT
+ wI6IDQSYkD+TAFvrolMuAfR+JIeGBZJ/ck857rS/d1B8Cj65G40f48og9ent0AF7oC0g xw== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3cyknc3nkf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 16 Dec 2021 18:27:33 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 1BGI9qxe124830;
+        Thu, 16 Dec 2021 18:27:32 GMT
+Received: from nam04-dm6-obe.outbound.protection.outlook.com (mail-dm6nam08lp2043.outbound.protection.outlook.com [104.47.73.43])
+        by userp3020.oracle.com with ESMTP id 3cvneu544r-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 16 Dec 2021 18:27:32 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=AAQBV6kUD18/W9NOZVe9epFm9BSRzbqklvfDGI3R6BRJG18L29SY+UqM8oJ/8cvnN7Z8kKFbu2U3BuZ7WiT21XP1i7mdgzryULuZjB3wV4CgvVyyIxMF31e3xS6PojrreKktJj27y2TwUFFDod2g38UZk9FV77t8/dPhj10ZSXNm/gpm7EK7w0Y7K3nUpi5TISr61HBc2BE4osxq02gmdxK+HDJIjLoMR46QXif6K2E7T5VV6G1iE5jGR3ZusAyhY/jGMv1eo90u+UdfcMqpTxii7UVw7IZUGsgwWZYm800+uMPQoQAHSsei8STmMCF1VZY+IMyZzK5SpURJBAzcTA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=2vF8Ar1SlFr3Wea0iq5bQmUEXQwzsaUzd0RTFphP0Cs=;
+ b=BCHb+z5WhXGOJ6NHYm2/DguNDZh3lALTeG6Ah3ywbJ+KVK0ODJBVGVfwlK7b3TsN26A980XEsXFg5PJTtva/fCv7OqmY0BUhw79ESpqAfLMtRX5pBr2l3zzeNxoNVODN18ABn9uVJvz6dwhpiGqUw8ibtxpRMp8a485FWDV3d13isCJnXBAybCKUv5dkz4YKrvpMns1jnW4IGgVtt3VealWZ3rR+4kG3qIll1Rw/VN/3/XmflhaKFnjn9wwYP/CbkosstNEyJbYDikNiBi27RdwqcDCWWxHRZByq57ljdCeZXM0GleXoKCGOM3KVXfZ3v/itkUbKh4JOw8bNZ4J+jQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=NmplNo6LGZjxjChzzqohfGooZObrNddOpc+RBE6l51Y=;
-        b=IBOqitDrVRs50lMpGiLZbn0AZg3wKo2VpvWmmQ6eohtZpA5gO+UeKHKUWbwJ7Wv7XB
-         +G2T+Z7fSObRRm0JiMQPZw5I3YPbiuTpSIzhv1ZVptCjo3Gp7bKto1g1KzISsUjB9z9E
-         18KgrEzVvdU1ZX73vQYQq3ryP5jtFy+6fG1Tfw0t5z28wFPgqfCKwnCwW9I69hcXtDEn
-         hUYRqaKOlDgwLkh3cm3kI4stMJdWfjuILwjf02xwSE3RlrkIubdF5a50e+K7IzMD0/qJ
-         CfGZ6KYA8EPBev57h56nekW1aloG19jX97Pb/tCqM+vcsig2E0tXAh/HoXtdVAb3iGGQ
-         wiJw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=NmplNo6LGZjxjChzzqohfGooZObrNddOpc+RBE6l51Y=;
-        b=V1IS5bwJkF99RcQ3h6oEbx+BRAkwBafnh4Oy8jjjK6RAU2eV503YJTmLQSXY4Aqr5/
-         xe62VbB2ELv49By/ZMX7s7rg5SNrNTj2Zx7cHu+Y6w1uO31619w0jQ1vrdg0gtByAAY9
-         I0LfRGgOI3OF0ImjSx8hSNuhLUVniKqHksoombJV4UoMxUodWipIsjcjEgD9oQhg/+mB
-         v0eWQ6b/y+mD/FWwI3SIcBftGFqb4L38rXZd9Kk+2Q0m6fCeAeeelOIR+ce+p9XLea6g
-         6fSas/aadaEYDSl7tf1j89+9HW8YOQ23eQlEuTf8Tv3SW2J6LDyv1Vk5Ad+omjvyRi2P
-         uNLA==
-X-Gm-Message-State: AOAM531st1VZcEdzU6g8jnLwAe/Jf91lE4AEM2XFbLiUoHtl3lTSQvzp
-        n2exLxKMjMLlvNI3QpICC/VtoA==
-X-Google-Smtp-Source: ABdhPJzZm8f0ZLiFn8xcClDEDYbpgwTFx+be3UAmNhJgcXB75SceojuFd1f/pPYEgHPfdgb5W6Q4Cg==
-X-Received: by 2002:adf:cf05:: with SMTP id o5mr10190078wrj.325.1639679132112;
-        Thu, 16 Dec 2021 10:25:32 -0800 (PST)
-Received: from google.com ([2.31.167.18])
-        by smtp.gmail.com with ESMTPSA id g3sm2392058wrd.112.2021.12.16.10.25.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Dec 2021 10:25:31 -0800 (PST)
-Date:   Thu, 16 Dec 2021 18:25:23 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Vlad Yasevich <vyasevich@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        lksctp developers <linux-sctp@vger.kernel.org>,
-        "H.P. Yarroll" <piggy@acm.org>,
-        Karl Knutson <karl@athena.chicago.il.us>,
-        Jon Grimm <jgrimm@us.ibm.com>,
-        Xingang Guo <xingang.guo@intel.com>,
-        Hui Huang <hui.huang@nokia.com>,
-        Sridhar Samudrala <sri@us.ibm.com>,
-        Daisy Chang <daisyc@us.ibm.com>,
-        Ryan Layer <rmlayer@us.ibm.com>,
-        Kevin Gao <kevin.gao@intel.com>,
-        network dev <netdev@vger.kernel.org>
-Subject: Re: [RESEND 2/2] sctp: hold cached endpoints to prevent possible UAF
-Message-ID: <YbuEk7Xc2hzek2jx@google.com>
-References: <20211214215732.1507504-1-lee.jones@linaro.org>
- <20211214215732.1507504-2-lee.jones@linaro.org>
- <20211215174818.65f3af5e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CADvbK_emZsHVsBvNFk9B5kCZjmAQkMBAx1MtwusDJ-+vt0ukPA@mail.gmail.com>
- <Ybtrs56tSBbmyt5c@google.com>
- <CADvbK_cBBDkGt8XLJo6N5TX2YQATS+udVWm8_=8f96=0B9tnTA@mail.gmail.com>
- <Ybtzr5ZmD/IKjycz@google.com>
- <Ybtz/0gflbkG5Q/0@google.com>
- <CADvbK_cexKiVATn=dPrWqoS0qM-bM0UcSkx8Xqz5ibEKQizDVg@mail.gmail.com>
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=2vF8Ar1SlFr3Wea0iq5bQmUEXQwzsaUzd0RTFphP0Cs=;
+ b=yGgWCjTK6gLwSreXQCAki82mP9fr6JsL761nCHryFxWIhtA9aPqg/ja6EQGtSO6ZBh+WMDC/+EfpTVNGSowDz3LKT6OzKM4xgFl94iV5P7NyLTbnWI89WcLOu51ITxp8rcs97Zzhib1sGACW5JIjsanEafutijBvhWQwrh6NTvA=
+Received: from BN0PR10MB5192.namprd10.prod.outlook.com (2603:10b6:408:115::8)
+ by BN0PR10MB5319.namprd10.prod.outlook.com (2603:10b6:408:129::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4778.17; Thu, 16 Dec
+ 2021 18:27:30 +0000
+Received: from BN0PR10MB5192.namprd10.prod.outlook.com
+ ([fe80::4440:4f39:6d92:a14c]) by BN0PR10MB5192.namprd10.prod.outlook.com
+ ([fe80::4440:4f39:6d92:a14c%8]) with mapi id 15.20.4801.014; Thu, 16 Dec 2021
+ 18:27:30 +0000
+From:   George Kennedy <george.kennedy@oracle.com>
+To:     kuba@kernel.org
+Cc:     george.kennedy@oracle.com, stephen@networkplumber.org,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v3] tun: avoid double free in tun_free_netdev
+Date:   Thu, 16 Dec 2021 13:25:32 -0500
+Message-Id: <1639679132-19884-1-git-send-email-george.kennedy@oracle.com>
+X-Mailer: git-send-email 1.8.3.1
+Content-Type: text/plain
+X-ClientProxiedBy: BYAPR07CA0033.namprd07.prod.outlook.com
+ (2603:10b6:a02:bc::46) To BN0PR10MB5192.namprd10.prod.outlook.com
+ (2603:10b6:408:115::8)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CADvbK_cexKiVATn=dPrWqoS0qM-bM0UcSkx8Xqz5ibEKQizDVg@mail.gmail.com>
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 34fc925f-44b4-42e0-e0b6-08d9c0c1b843
+X-MS-TrafficTypeDiagnostic: BN0PR10MB5319:EE_
+X-Microsoft-Antispam-PRVS: <BN0PR10MB53194C250D4900297372DD45E6779@BN0PR10MB5319.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: whBd0qEMTqlPChthYZ4hGSO1CVgx9SC7m0AGYF373iZnNx2W8TcW6isPIYShKu1oGfGoIH0FcvFCEdpXplCt107pf86G9sTPf6GwB680NxL1sbQRUh2bgr7E7AC7KRoSXO8KMTj45mYLWheWlPSUgwpulHCzaoWJszdUt+Gi0lkH9a1Q8BAWeTZll8kDpPECeNI9aF8IkNT4KS+9cEsMjweTM285c5LSU2TB6fougXpAoz3m+OvP3UbKNDg76gux9E2ETZ4A738TODEBy6wrx+54qlClwhDZETyySWpjTcQcnHq8sSzBSDvvrWUi4opMTGcgx/Bpp2fHPj9X1E74zrVOX8Zpz9BHDFZDlKxne2TBWdDdMFXAu4Zu5TnVl/GtiMoqIsfx4YfRT1chp2N22Hl5PXJsI1MmtxMAo3lEwQQVGvrBoOytkMXiz6XfMokauawytLEKgLtblwrcuXdJYtYS/0INXBULGBLS5RHH7IecVsoQKVmZYTwvOhS+Kn1aGglbI7g/TlVhV8KdquIsmep7p8f3TVtKPvz1R0mAlNka2LNBpO7/5NFRTN5Z+/7vc9CQIPM7kp2l3h2taYJJHjdh2ZAiC2oR/Fz0oYpI/hQ7qDIo0vGcrwzucI24PK3RvlWWMnn8Scyy0a8GmZkdLCvE+orNxCL/C/snn/pjsyoiBPOr5dsXcqPE/ixt3mYRVAsM/Xtc8K1U2YROfkiEHw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN0PR10MB5192.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(66476007)(316002)(86362001)(44832011)(36756003)(83380400001)(66556008)(66946007)(38100700002)(186003)(38350700002)(2906002)(6916009)(5660300002)(26005)(6486002)(508600001)(4326008)(6506007)(8936002)(8676002)(52116002)(2616005)(6512007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?iGrUgbLRe3JXO/GI7B3cZhpNWt6bbN/w9aTtwP5d/P1TIppi8yIIgpoPSp/u?=
+ =?us-ascii?Q?vXryC7DaNjDJwVVEMUKJn8fTTHK7Ape1zzv5IAX92Zg8ML6burGiZbplCeqm?=
+ =?us-ascii?Q?8D4XmA1+S0Greux3iwfI0fRWMsuEjjKxIVb8SXncFv280EXAbbqeCZkQJgtc?=
+ =?us-ascii?Q?2wxb06hMYXXrcjtwo9SaRdz2SbSzhd32C2fITMFYwQQAP8M1KQE0U00Afo3d?=
+ =?us-ascii?Q?/jfNZdPHhHaZM3FEgSsG/GWBZj83yAmvTaIjLb5VeNs4x2mt40hZZoTs6/5i?=
+ =?us-ascii?Q?IG/1X+1wNC7fEU8dIv5P7pnli3a792/e+ktiJcMSkxgovRvhXmzX1wK8iRfw?=
+ =?us-ascii?Q?0Sgv7QCYYb2szic/RrIEMP5RoIlAL9da1Fnn/HyBBsxmyYiqVkk9WwigKpg1?=
+ =?us-ascii?Q?8lT7w2uwAvGz6WeE5Z6IHFmb2YJI8PavQfGrK4fNAfDx++u4humw4PcHgAYS?=
+ =?us-ascii?Q?la3oeUBoDUSFW0hkZe+yz4WKiJinCCA4SiyMjb8RZPmrxoETYus8Uzdxd1L7?=
+ =?us-ascii?Q?C0Zg1SAlevWHQt7+yadm3vSk938Cyr+vkEMi08KR5Yj+D4aa0mfaSVZeN8W/?=
+ =?us-ascii?Q?Sl8oLOP00yMJBUNcQze74bdw4J5NN9P5+2n7G9SnsRQXxQZDoaTBwuFkzGV7?=
+ =?us-ascii?Q?wF7DoYpXAuWZlG+UFy3OuofRpNFfqhLuPjqoQLipVQQti+v4HcoFA8cJsSXt?=
+ =?us-ascii?Q?hWGd6zw+ePKfAl6Odf/g6gNACqkeqQ4OAlHNy08JHMbxdtIEZvLT7uzsaPM+?=
+ =?us-ascii?Q?0A1wHlbShGjEF2EI9Plh2N2zTduukk4uy8UcLwKUc1rMVfh6z/5dr/nzXR+o?=
+ =?us-ascii?Q?hBCLBx+SfBagdYc6qeXacYwSOE8ZPcWujt12yrb8jiUVKyPuV3GdNbHUbN8L?=
+ =?us-ascii?Q?bm7CD4UT3cND36PQqgAqgZRxuRLfAUOyD+VWLrXjlHxIJJd3c6Bq0Ys9HpW9?=
+ =?us-ascii?Q?8ZZ6b+QIKGw2XOt+sL/qafefxK9hqOuaUO0N3uzLHq9U2GmSwPO9ISeBh38O?=
+ =?us-ascii?Q?ZwbbcCIsTiSK8nsHI5ojfIerDxsPzkH2WxuRdwWaw3KDMLQbAT5QsEbvAL17?=
+ =?us-ascii?Q?MliYfNIOF5KxNONrzQUr6Ieiumdoa9GeQsMdXm8nJJphu5J3erRlffRfMgB+?=
+ =?us-ascii?Q?3oix+1JkflOdCTZjWtjxt3KvA3XbBJ6oU6Me5mJA59RhLYRBDfPsWCAd7XfA?=
+ =?us-ascii?Q?6+ZZD+Vvg2Ev1zDxagYs1ZBqB3JdjYnP2Zu7+XXm66hFw5NoSOvfaiXKGiBG?=
+ =?us-ascii?Q?BWZxT4XZVEtwclFG52BI9gEoVD9N8cWm28E811c+Wz1qpZRirmTu1ZsFZDFX?=
+ =?us-ascii?Q?32w3pk1iatMl8JbIkws484bqkihciSD16o3Dpd2EWiSULYbN3C2WCiWLM4sX?=
+ =?us-ascii?Q?VTGTxvD2/eBqOfyTW9b3RfBbIvfdHFtEKnVXpH9N5piCgGh7jc2oQ87e1bl8?=
+ =?us-ascii?Q?dp5qnhS+h3I8DcLpyN7rRQnvj829s85IyfjVL0laXpL+9YeWbK1iVMBsVhw1?=
+ =?us-ascii?Q?tapEfCm+WHqspGaUnHvi83octb5T3E20YpbrDGYknl9nkvhn7Qsoj50yPR3O?=
+ =?us-ascii?Q?Kz44Z9guifj2R07jHILTskLYzKKeL/gxyLnb+ssskFVhrC7Xh/6k8gCGxtvO?=
+ =?us-ascii?Q?re7gNxBEFX9A4Xycna3ANVmnPaET2/wE5HTaewxeOdL0uAGfyAyv33026mA3?=
+ =?us-ascii?Q?DYv6VQ=3D=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 34fc925f-44b4-42e0-e0b6-08d9c0c1b843
+X-MS-Exchange-CrossTenant-AuthSource: BN0PR10MB5192.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Dec 2021 18:27:30.3875
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 5JBNhw1tc9sUcDx7PsHIQ/U81orS/uLFwbTuTT0MR5M7IlpOtqApuuep4EK6gJprkPiGya0xCcs9RFQYnKcsFSTIxN3D11WedHVhRiG+JEg=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN0PR10MB5319
+X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10200 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 adultscore=0
+ malwarescore=0 bulkscore=0 spamscore=0 mlxlogscore=999 mlxscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2110150000 definitions=main-2112160103
+X-Proofpoint-ORIG-GUID: IqibyxfI-H25MKISp9STxmbZq64F2Gnn
+X-Proofpoint-GUID: IqibyxfI-H25MKISp9STxmbZq64F2Gnn
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 16 Dec 2021, Xin Long wrote:
+Avoid double free in tun_free_netdev() by moving the
+dev->tstats and tun->security allocs to a new ndo_init routine
+(tun_net_init()) that will be called by register_netdevice().
+ndo_init is paired with the desctructor (tun_free_netdev()),
+so if there's an error in register_netdevice() the destructor
+will handle the frees.
 
-> On Thu, Dec 16, 2021 at 12:14 PM Lee Jones <lee.jones@linaro.org> wrote:
-> >
-> > On Thu, 16 Dec 2021, Lee Jones wrote:
-> >
-> > > On Thu, 16 Dec 2021, Xin Long wrote:
-> > >
-> > > > On Thu, Dec 16, 2021 at 11:39 AM Lee Jones <lee.jones@linaro.org> wrote:
-> > > > >
-> > > > > On Thu, 16 Dec 2021, Xin Long wrote:
-> > > > >
-> > > > > > On Wed, Dec 15, 2021 at 8:48 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> > > > > > >
-> > > > > > > On Tue, 14 Dec 2021 21:57:32 +0000 Lee Jones wrote:
-> > > > > > > > The cause of the resultant dump_stack() reported below is a
-> > > > > > > > dereference of a freed pointer to 'struct sctp_endpoint' in
-> > > > > > > > sctp_sock_dump().
-> > > > > > > >
-> > > > > > > > This race condition occurs when a transport is cached into its
-> > > > > > > > associated hash table followed by an endpoint/sock migration to a new
-> > > > > > > > association in sctp_assoc_migrate() prior to their subsequent use in
-> > > > > > > > sctp_diag_dump() which uses sctp_for_each_transport() to walk the hash
-> > > > > > > > table calling into sctp_sock_dump() where the dereference occurs.
-> > > > >
-> > > > > > in sctp_sock_dump():
-> > > > > >         struct sock *sk = ep->base.sk;
-> > > > > >         ... <--[1]
-> > > > > >         lock_sock(sk);
-> > > > > >
-> > > > > > Do you mean in [1], the sk is peeled off and gets freed elsewhere?
-> > > > >
-> > > > > 'ep' and 'sk' are both switched out for new ones in sctp_sock_migrate().
-> > > > >
-> > > > > > if that's true, it's still late to do sock_hold(sk) in your this patch.
-> > > > >
-> > > > > No, that's not right.
-> > > > >
-> > > > > The schedule happens *inside* the lock_sock() call.
-> > > > Sorry, I don't follow this.
-> > > > We can't expect when the schedule happens, why do you think this
-> > > > can never be scheduled before the lock_sock() call?
-> > >
-> > > True, but I've had this running for hours and it hasn't reproduced.
-> I understand, but it's a crash, we shouldn't take any risk that it
-> will never happen.
-> you may try to add a usleep() before the lock_sock call to reproduce it.
-> 
-> > >
-> > > Without this patch, I can reproduce this in around 2 seconds.
-> > >
-> > > The C-repro for this is pretty intense!
-> > >
-> > > If you want to be *sure* that a schedule will never happen, we can
-> > > take a reference directly with:
-> > >
-> > >      ep = sctp_endpoint_hold(tsp->asoc->ep);
-> > >      sk = sock_hold(ep->base.sk);
-> > >
-> > > Which was my original plan before I soak tested this submitted patch
-> > > for hours without any sign of reproducing the issue.
-> we tried to not export sctp_obj_hold/put(), that's why we had
-> sctp_for_each_transport().
-> 
-> ep itself holds a reference of sk when it's alive, so it's weird to do
-> these 2 together.
-> 
-> > >
-> > > > If the sock is peeled off or is being freed, we shouldn't dump this sock,
-> > > > and it's better to skip it.
-> > >
-> > > I guess we can do that too.
-> > >
-> > > Are you suggesting sctp_sock_migrate() as the call site?
-> diff --git a/net/sctp/socket.c b/net/sctp/socket.c
-> index 85ac2e901ffc..56ea7a0e2add 100644
-> --- a/net/sctp/socket.c
-> +++ b/net/sctp/socket.c
-> @@ -9868,6 +9868,7 @@ static int sctp_sock_migrate(struct sock *oldsk,
-> struct sock *newsk,
->                 inet_sk_set_state(newsk, SCTP_SS_ESTABLISHED);
->         }
-> 
-> +       sock_set_flag(oldsk, SOCK_RCU_FREE);
->         release_sock(newsk);
-> 
->         return 0;
-> 
-> SOCK_RCU_FREE is set to the previous sk, so that this sk will not
-> be freed between rcu_read_lock() and rcu_read_unlock().
-> 
-> >
-> > Also, when are you planning on testing the flag?
-> SOCK_RCU_FREE flag is used when freeing sk in sk_destruct(),
-> and if it's set, it will be freed in the next grace period of RCU.
-> 
-> >
-> > Won't that suffer with the same issue(s)?
-> diff --git a/net/sctp/diag.c b/net/sctp/diag.c
-> index 7970d786c4a2..b4c4acd9e67e 100644
-> --- a/net/sctp/diag.c
-> +++ b/net/sctp/diag.c
-> @@ -309,16 +309,21 @@ static int sctp_tsp_dump_one(struct
-> sctp_transport *tsp, void *p)
-> 
->  static int sctp_sock_dump(struct sctp_transport *tsp, void *p)
->  {
-> -       struct sctp_endpoint *ep = tsp->asoc->ep;
->         struct sctp_comm_param *commp = p;
-> -       struct sock *sk = ep->base.sk;
->         struct sk_buff *skb = commp->skb;
->         struct netlink_callback *cb = commp->cb;
->         const struct inet_diag_req_v2 *r = commp->r;
->         struct sctp_association *assoc;
-> +       struct sctp_endpoint *ep;
-> +       struct sock *sk;
->         int err = 0;
-> 
-> +       rcu_read_lock();
-> +       ep = tsp->asoc->ep;
-> +       sk = ep->base.sk;
->         lock_sock(sk);
-> +       if (tsp->asoc->ep != ep)
-> +               goto release;
->         list_for_each_entry(assoc, &ep->asocs, asocs) {
->                 if (cb->args[4] < cb->args[1])
->                         goto next;
-> @@ -358,6 +363,7 @@ static int sctp_sock_dump(struct sctp_transport
-> *tsp, void *p)
->         cb->args[4] = 0;
->  release:
->         release_sock(sk);
-> +       rcu_read_unlock();
->         return err;
->  }
-> 
-> rcu_read_lock() will make sure sk from tsp->asoc->ep->base.sk will not
-> be freed until rcu_read_unlock().
-> 
-> That's all I have. Do you see any other way to fix this?
+BUG: KASAN: double-free or invalid-free in selinux_tun_dev_free_security+0x1a/0x20 security/selinux/hooks.c:5605
 
-No, that sounds reasonable enough.
+CPU: 0 PID: 25750 Comm: syz-executor416 Not tainted 5.16.0-rc2-syzk #1
+Hardware name: Red Hat KVM, BIOS
+Call Trace:
+<TASK>
+__dump_stack lib/dump_stack.c:88 [inline]
+dump_stack_lvl+0x89/0xb5 lib/dump_stack.c:106
+print_address_description.constprop.9+0x28/0x160 mm/kasan/report.c:247
+kasan_report_invalid_free+0x55/0x80 mm/kasan/report.c:372
+____kasan_slab_free mm/kasan/common.c:346 [inline]
+__kasan_slab_free+0x107/0x120 mm/kasan/common.c:374
+kasan_slab_free include/linux/kasan.h:235 [inline]
+slab_free_hook mm/slub.c:1723 [inline]
+slab_free_freelist_hook mm/slub.c:1749 [inline]
+slab_free mm/slub.c:3513 [inline]
+kfree+0xac/0x2d0 mm/slub.c:4561
+selinux_tun_dev_free_security+0x1a/0x20 security/selinux/hooks.c:5605
+security_tun_dev_free_security+0x4f/0x90 security/security.c:2342
+tun_free_netdev+0xe6/0x150 drivers/net/tun.c:2215
+netdev_run_todo+0x4df/0x840 net/core/dev.c:10627
+rtnl_unlock+0x13/0x20 net/core/rtnetlink.c:112
+__tun_chr_ioctl+0x80c/0x2870 drivers/net/tun.c:3302
+tun_chr_ioctl+0x2f/0x40 drivers/net/tun.c:3311
+vfs_ioctl fs/ioctl.c:51 [inline]
+__do_sys_ioctl fs/ioctl.c:874 [inline]
+__se_sys_ioctl fs/ioctl.c:860 [inline]
+__x64_sys_ioctl+0x19d/0x220 fs/ioctl.c:860
+do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+do_syscall_64+0x3a/0x80 arch/x86/entry/common.c:80
+entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-Do you want me to hack this up and test it, or are you planning on
-submitting a this?
+Reported-by: syzkaller <syzkaller@googlegroups.com>
+Signed-off-by: George Kennedy <george.kennedy@oracle.com>
+Suggested-by: Jakub Kicinski <kuba@kernel.org>
+---
+v3: added a new tun_net_init() routine called via ndo_init, which is
+called from register_netdevice(). tun_net_init() does the dev->tstats
+and tun->security allocs, which if there's an error in
+register_netdevice() will be freed by the destructor (tun_free_netdev()).
+---
+ drivers/net/tun.c | 115 ++++++++++++++++++++++++++++--------------------------
+ 1 file changed, 59 insertions(+), 56 deletions(-)
 
+diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+index 1572878..45a67e7 100644
+--- a/drivers/net/tun.c
++++ b/drivers/net/tun.c
+@@ -209,6 +209,9 @@ struct tun_struct {
+ 	struct tun_prog __rcu *steering_prog;
+ 	struct tun_prog __rcu *filter_prog;
+ 	struct ethtool_link_ksettings link_ksettings;
++	/* init args */
++	struct file *file;
++	struct ifreq *ifr;
+ };
+ 
+ struct veth {
+@@ -216,6 +219,9 @@ struct veth {
+ 	__be16 h_vlan_TCI;
+ };
+ 
++static void tun_flow_init(struct tun_struct *tun);
++static void tun_flow_uninit(struct tun_struct *tun);
++
+ static int tun_napi_receive(struct napi_struct *napi, int budget)
+ {
+ 	struct tun_file *tfile = container_of(napi, struct tun_file, napi);
+@@ -953,6 +959,49 @@ static int check_filter(struct tap_filter *filter, const struct sk_buff *skb)
+ 
+ static const struct ethtool_ops tun_ethtool_ops;
+ 
++static int tun_net_init(struct net_device *dev)
++{
++	struct tun_struct *tun = netdev_priv(dev);
++	struct ifreq *ifr = tun->ifr;
++	int err;
++
++	dev->tstats = netdev_alloc_pcpu_stats(struct pcpu_sw_netstats);
++	if (!dev->tstats)
++		return -ENOMEM;
++
++	spin_lock_init(&tun->lock);
++
++	err = security_tun_dev_alloc_security(&tun->security);
++	if (err < 0) {
++		free_percpu(dev->tstats);
++		return err;
++	}
++
++	tun_flow_init(tun);
++
++	dev->hw_features = NETIF_F_SG | NETIF_F_FRAGLIST |
++			   TUN_USER_FEATURES | NETIF_F_HW_VLAN_CTAG_TX |
++			   NETIF_F_HW_VLAN_STAG_TX;
++	dev->features = dev->hw_features | NETIF_F_LLTX;
++	dev->vlan_features = dev->features &
++			     ~(NETIF_F_HW_VLAN_CTAG_TX |
++			       NETIF_F_HW_VLAN_STAG_TX);
++
++	tun->flags = (tun->flags & ~TUN_FEATURES) |
++		      (ifr->ifr_flags & TUN_FEATURES);
++
++	INIT_LIST_HEAD(&tun->disabled);
++	err = tun_attach(tun, tun->file, false, ifr->ifr_flags & IFF_NAPI,
++			 ifr->ifr_flags & IFF_NAPI_FRAGS, false);
++	if (err < 0) {
++		tun_flow_uninit(tun);
++		security_tun_dev_free_security(tun->security);
++		free_percpu(dev->tstats);
++		return err;
++	}
++	return 0;
++}
++
+ /* Net device detach from fd. */
+ static void tun_net_uninit(struct net_device *dev)
+ {
+@@ -1169,6 +1218,7 @@ static int tun_net_change_carrier(struct net_device *dev, bool new_carrier)
+ }
+ 
+ static const struct net_device_ops tun_netdev_ops = {
++	.ndo_init		= tun_net_init,
+ 	.ndo_uninit		= tun_net_uninit,
+ 	.ndo_open		= tun_net_open,
+ 	.ndo_stop		= tun_net_close,
+@@ -1252,6 +1302,7 @@ static int tun_xdp_tx(struct net_device *dev, struct xdp_buff *xdp)
+ }
+ 
+ static const struct net_device_ops tap_netdev_ops = {
++	.ndo_init		= tun_net_init,
+ 	.ndo_uninit		= tun_net_uninit,
+ 	.ndo_open		= tun_net_open,
+ 	.ndo_stop		= tun_net_close,
+@@ -1292,7 +1343,7 @@ static void tun_flow_uninit(struct tun_struct *tun)
+ #define MAX_MTU 65535
+ 
+ /* Initialize net device. */
+-static void tun_net_init(struct net_device *dev)
++static void tun_net_initialize(struct net_device *dev)
+ {
+ 	struct tun_struct *tun = netdev_priv(dev);
+ 
+@@ -2206,11 +2257,6 @@ static void tun_free_netdev(struct net_device *dev)
+ 	BUG_ON(!(list_empty(&tun->disabled)));
+ 
+ 	free_percpu(dev->tstats);
+-	/* We clear tstats so that tun_set_iff() can tell if
+-	 * tun_free_netdev() has been called from register_netdevice().
+-	 */
+-	dev->tstats = NULL;
+-
+ 	tun_flow_uninit(tun);
+ 	security_tun_dev_free_security(tun->security);
+ 	__tun_set_ebpf(tun, &tun->steering_prog, NULL);
+@@ -2716,41 +2762,16 @@ static int tun_set_iff(struct net *net, struct file *file, struct ifreq *ifr)
+ 		tun->rx_batched = 0;
+ 		RCU_INIT_POINTER(tun->steering_prog, NULL);
+ 
+-		dev->tstats = netdev_alloc_pcpu_stats(struct pcpu_sw_netstats);
+-		if (!dev->tstats) {
+-			err = -ENOMEM;
+-			goto err_free_dev;
+-		}
+-
+-		spin_lock_init(&tun->lock);
+-
+-		err = security_tun_dev_alloc_security(&tun->security);
+-		if (err < 0)
+-			goto err_free_stat;
+-
+-		tun_net_init(dev);
+-		tun_flow_init(tun);
++		tun->ifr = ifr;
++		tun->file = file;
+ 
+-		dev->hw_features = NETIF_F_SG | NETIF_F_FRAGLIST |
+-				   TUN_USER_FEATURES | NETIF_F_HW_VLAN_CTAG_TX |
+-				   NETIF_F_HW_VLAN_STAG_TX;
+-		dev->features = dev->hw_features | NETIF_F_LLTX;
+-		dev->vlan_features = dev->features &
+-				     ~(NETIF_F_HW_VLAN_CTAG_TX |
+-				       NETIF_F_HW_VLAN_STAG_TX);
+-
+-		tun->flags = (tun->flags & ~TUN_FEATURES) |
+-			      (ifr->ifr_flags & TUN_FEATURES);
+-
+-		INIT_LIST_HEAD(&tun->disabled);
+-		err = tun_attach(tun, file, false, ifr->ifr_flags & IFF_NAPI,
+-				 ifr->ifr_flags & IFF_NAPI_FRAGS, false);
+-		if (err < 0)
+-			goto err_free_flow;
++		tun_net_initialize(dev);
+ 
+ 		err = register_netdevice(tun->dev);
+-		if (err < 0)
+-			goto err_detach;
++		if (err < 0) {
++			free_netdev(dev);
++			return err;
++		}
+ 		/* free_netdev() won't check refcnt, to avoid race
+ 		 * with dev_put() we need publish tun after registration.
+ 		 */
+@@ -2767,24 +2788,6 @@ static int tun_set_iff(struct net *net, struct file *file, struct ifreq *ifr)
+ 
+ 	strcpy(ifr->ifr_name, tun->dev->name);
+ 	return 0;
+-
+-err_detach:
+-	tun_detach_all(dev);
+-	/* We are here because register_netdevice() has failed.
+-	 * If register_netdevice() already called tun_free_netdev()
+-	 * while dealing with the error, dev->stats has been cleared.
+-	 */
+-	if (!dev->tstats)
+-		goto err_free_dev;
+-
+-err_free_flow:
+-	tun_flow_uninit(tun);
+-	security_tun_dev_free_security(tun->security);
+-err_free_stat:
+-	free_percpu(dev->tstats);
+-err_free_dev:
+-	free_netdev(dev);
+-	return err;
+ }
+ 
+ static void tun_get_iff(struct tun_struct *tun, struct ifreq *ifr)
 -- 
-Lee Jones [李琼斯]
-Senior Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+1.8.3.1
+
