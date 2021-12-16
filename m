@@ -2,60 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EDA56477D08
-	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 21:06:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D1425477D20
+	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 21:14:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237914AbhLPUGY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Dec 2021 15:06:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39554 "EHLO
+        id S241157AbhLPUOG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Dec 2021 15:14:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241217AbhLPUGV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 15:06:21 -0500
-Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCABBC061574
-        for <netdev@vger.kernel.org>; Thu, 16 Dec 2021 12:06:19 -0800 (PST)
-Received: by mail-ed1-x542.google.com with SMTP id x15so92000123edv.1
-        for <netdev@vger.kernel.org>; Thu, 16 Dec 2021 12:06:19 -0800 (PST)
+        with ESMTP id S239002AbhLPUOG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 15:14:06 -0500
+Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC6B0C061574
+        for <netdev@vger.kernel.org>; Thu, 16 Dec 2021 12:14:05 -0800 (PST)
+Received: by mail-qk1-x732.google.com with SMTP id a11so46333qkh.13
+        for <netdev@vger.kernel.org>; Thu, 16 Dec 2021 12:14:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=PA5Eb3SKatYFaqsO/40bx9AAytaL07oA6ydkj8EAbzQ=;
-        b=J37zBf4Zw2KP/sVD9Yyjpq4oWTdYAOHs2tWHvGRvYMXntYU/rciAPoUuQ9pry5qLKs
-         9Ifz1ta99wo3B1T9HYTnIAtRR2Q2Yl5N+UDQXyudTO2s/RmwHEXy24UK80XbprNpHMsm
-         BVR6NAPaLZcmpvm3Z9rPAxGuRtq6HZ1HIUZfckgNAYE0lHm+mFKtTNi8/2jW9xV2ABrv
-         tNj42RcTYfiEaFL2OD2iBoq+K6bMxNO3eMII2W9QLVMAg+9G87MWkAVssqn4TB3XK4tR
-         9UMxGF13JZwfOUCL1OHtpkTfGYKydgy8Sst5a4Tbu5vupGr5hBb/VOLU67Fp8GTz7mue
-         Lhmw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VgMGNu12b0u5EZLvIPKEEbjIjuc26Fwla3eujKVDpjc=;
+        b=MucdEfH1+kiOhl6/C+MEzEzvLVjbm3NWNxuNT8tlHsvWCcjNE9MWwrFPHfegsJYu/T
+         C89/hscz0sHJAyc85QKXuVEZz26p89EvhaS8oeWoHQnw29atrHgNre2vhOM8RBoeb4tm
+         836sntqfuGmpt/vVB1tFATMb5Wtc87Pe0X4qpi3axScbHkN2krvun9kaZNE4I/LlBlC6
+         PJs0tFYAl62XTwVxA424/OsTOXQqEJk0mP2Ki/2IvS6EbSmLg0bdbkS+j7CaquLBEhcA
+         Dbo2kwgH8ndkCtor/ecydMEbUFAVPA7Ep9SttlfI6k3uqo37mp9fn34qlm0ufkq3nsWO
+         Jo0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=PA5Eb3SKatYFaqsO/40bx9AAytaL07oA6ydkj8EAbzQ=;
-        b=kuCRlFr3HA/ICBwJyrI6ejHCPa9eS/EXepcBdpKVqzIshztQ8BtmZ1ZWPdk9s4hMRy
-         BenKNedWBKxKwtNIPA/QrCaa0wrld+KTRJa1iX45ecmCWtSIOU3U7c1ZDJ2qNPJAqaaW
-         AJB3HN70n2t90HNLoqLmbOSV962KEyoxR3eWLiR0RGaXRRgdU53ylnimtfLh3AfboTWE
-         AjlLLGiAN/bDPuSK0NNdVAUfja9zcfymA/8qlyyXJYtldiJ7epBZRzs0L0VWlOKskrk+
-         VHK3/HJZAHp2pU2GzE+iFnw6w7uP14QLwdVAKf/xjkTcwFBNY0inZkk7TODpJpglqMFd
-         OtPw==
-X-Gm-Message-State: AOAM530Aa4nYhp0NyWRMHdeOxDwld4c4XXco4aA0l+W0DOUKPWhcVY9C
-        jxUZ1uUiHUW+pNfv1rywE+c9v/4fDluoZ0Kxkms=
-X-Google-Smtp-Source: ABdhPJyWGFHj1av9CwatlJDPLKhm5Gr7/lgm388PprVM/AIKjGPTnMUm0LoXS2G28GxtnEJbIawrrgznUA7kHbvIP8Q=
-X-Received: by 2002:a17:906:d553:: with SMTP id cr19mr17849959ejc.140.1639685176814;
- Thu, 16 Dec 2021 12:06:16 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VgMGNu12b0u5EZLvIPKEEbjIjuc26Fwla3eujKVDpjc=;
+        b=pgzNP6mpQnijk4Y5/BLk1BuQA+8yB3vcG/PF6vHY4RdygjlZ7xvCXCimC+Stq/uq3v
+         lbv95TW2twkSTkLgbkhqTxMaaDrz4uakmA/0QF6RDXVamfR2gbPayRXAZESIokCnuP4z
+         ZjWBFd0dXUUelhD5XhjBoCwONW2dUk8XGYLj5+owA/s9TmlA1UTTohZj3IQSMJcZgHnX
+         EJbRPbd8KYUcBkjiFgg/ayFox/Wu1eiiW9zf3nh5+xHxT4GIgwnyX9foQWz4q6TW9dx2
+         RcMulkQ1F1CKJMRpDceiiR4iic31mQyiG5UzO2PbZfSZnVfnsD+rQrY6Q4cLVBicdFdf
+         UyIw==
+X-Gm-Message-State: AOAM530amfYh3ezYX4IJkVPPJhIs/tLPyW++jcAttLl1N5siX5ITAxl9
+        p8W+ifcNZ+8zylYqwp2upa0zvFdPRV3msQ==
+X-Google-Smtp-Source: ABdhPJzos/uj8d9e4SCWDrDOScIeswx5r91Q0sfEJ2JwpJg941hJPVkaNiKX1akBZgUtHn8AhGhsqg==
+X-Received: by 2002:a05:620a:1a92:: with SMTP id bl18mr13339381qkb.488.1639685644896;
+        Thu, 16 Dec 2021 12:14:04 -0800 (PST)
+Received: from tresc043793.tre-sc.gov.br (187-049-235-234.floripa.net.br. [187.49.235.234])
+        by smtp.gmail.com with ESMTPSA id a15sm5110266qtb.5.2021.12.16.12.14.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Dec 2021 12:14:04 -0800 (PST)
+From:   luizluca@gmail.com
+To:     netdev@vger.kernel.org
+Cc:     linus.walleij@linaro.org, andrew@lunn.ch, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, olteanv@gmail.com, alsi@bang-olufsen.dk,
+        arinc.unal@arinc9.com
+Subject: [PATCH net-next 00/13] net: dsa: realtek: MDIO interface and RTL8367S
+Date:   Thu, 16 Dec 2021 17:13:29 -0300
+Message-Id: <20211216201342.25587-1-luizluca@gmail.com>
+X-Mailer: git-send-email 2.34.0
 MIME-Version: 1.0
-Received: by 2002:a17:906:2c04:0:0:0:0 with HTTP; Thu, 16 Dec 2021 12:06:16
- -0800 (PST)
-Reply-To: revfrpaulwilliams2@gmail.com
-From:   "Rev. Fr. Paul Williams" <fatimamonge75@gmail.com>
-Date:   Fri, 17 Dec 2021 01:36:16 +0530
-Message-ID: <CANO8M72N5mfzXC5XoqThVkcKUreOGS=9dtaPLpjQpk+=7ZuvBg@mail.gmail.com>
-Subject: Donation From Williams Foundation.
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Contact Rev. Fr. Paul Williams Immediately For A Charity Donation Of
-$6,200,000.00 United States Dollars At E-Mail:
-revfrpaulwilliams2@gmail.com
+This series refactors the current Realtek DSA driver to support MDIO
+connected switchesand RTL8367S. RTL8367S is a 5+2 10/100/1000M Ethernet
+switch, with one of those 2 external ports supporting SGMII/High-SGMII. 
+
+The old realtek-smi driver was linking subdrivers into a single
+realtek-smi.ko After this series, each subdriver will be an independent
+module required by either realtek-smi (platform driver) or the new
+realtek-mdio (mdio driver). Both interface drivers (SMI or MDIO) are
+independent, and they might even work side-by-side, although it will be
+difficult to find such device. The subdriver can be individually
+selected but only at buildtime, saving some storage space for custom
+embedded systems. 
+
+The subdriver rtl8365mb was renamed to rtl8367c. rtl8367c is not a real
+model, but it is the name Realtek uses for their driver that supports
+RTL8365MB-VC, RTL8367S and other siblings. The subdriver name was not
+exposed to userland, but now it will be used as the module name. If
+there is a better name, this is the last opportunity to rename it again
+without affecting userland.
+
+Existing realtek-smi devices continue to work untouched during the
+tests. The realtek-smi was moved into a realtek subdirectory, but it
+normally does not break things. 
+
+I couldn't identify a fixed relation between port numbers (0..9) and
+external interfaces (0..2), and I'm not sure if it is fixed for each
+chip version or a device configuration. Until there is more info about
+it, there is a new port property "realtek,ext-int" that can inform the
+external interface. 
+
+The rtl8367c still can only use those external interface ports as a
+single CPU port. Eventually, a different device could use one of those
+ports as a downlink to a second switch or as a second CPU port. RTL8367S
+has an SGMII external interface, but my test device (TP-Link Archer
+C5v4) uses only the second RGMII interface. We need a test device with
+more external ports in use before implementing those features.
+
+The rtl8366rb subdriver was not tested with this patch series, but it
+was only slightly touched. It would be nice to test it, especially in an
+MDIO-connected switch.
+
+Best,
+
+Luiz
+
+
