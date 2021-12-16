@@ -2,122 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E92984769AB
-	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 06:38:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DF5FC4769E9
+	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 06:53:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233746AbhLPFiA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Dec 2021 00:38:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32774 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229617AbhLPFiA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 00:38:00 -0500
-Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9E32C06173F
-        for <netdev@vger.kernel.org>; Wed, 15 Dec 2021 21:37:59 -0800 (PST)
-Received: by mail-io1-xd31.google.com with SMTP id z18so33655976iof.5
-        for <netdev@vger.kernel.org>; Wed, 15 Dec 2021 21:37:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=egauge.net; s=google;
-        h=message-id:subject:from:to:cc:date:in-reply-to:references
-         :organization:user-agent:mime-version:content-transfer-encoding;
-        bh=6ScHdtKJBGLpSH1WCw4x7edbvBY4BLhz9TD1CTHUesQ=;
-        b=Rh1PMORQrWW3aNlpNq0Dm8K/gqfuz9eVKKNKV9XJrSPwONwKc6wvmSCpga9KxTHtIF
-         0zDQRp6e8rMAEsJPfx741s7DnmOiBbsRW6YAwEvrSELddQ0gyRxldzbAKmnTO0Kb9YT8
-         6Kx2cyY3ga33KeHXyXdWjd1LfbSrm1VNQT9KpJU4rU01YrhOXfvEiNreKw/IH71FwRpx
-         dQ14wH+ka46Xrt2Is05w0nkCxr6kj4oh7q4DKZn5rtUWC+sheS73CS/qYMhogfpxDXgP
-         Mvrf78K602or907qFpG4PZCIM5sauwUzH09VJGPDH9GDmE3E1QtdNV1bghGbJYoBB2Vl
-         58AA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:organization:user-agent:mime-version
-         :content-transfer-encoding;
-        bh=6ScHdtKJBGLpSH1WCw4x7edbvBY4BLhz9TD1CTHUesQ=;
-        b=hKKRySmiWqOROkfAAOwwPkYbIA7PxjD+E+M2p/vdxJtgzuYBjznuFDrdQGEUv+MQuw
-         4s1bTvclxwkIDD20ES0+DF7+PFkSoSI0A92dI01Syjj9z/lUAmGrBPH38PHiAVUy1qJe
-         2/65c2UgPvS4+MHoWQo3zRI9PbkdngpUn1/UWJwKSU2ZDWJ0la13/RCRy47KumwQGfam
-         d/1iiV+szgEIidAZyfEcEcu0N5RPYVL0fMNlTOXJJ8PZB038QWNxof2fy3fIuI1aaxBv
-         Q4WZNsA9Javlz8x7w0YFgh3qVwD9ZmA5tgnN5MxWlvHc9iTluyYgrsD4vYAWdXt4B7IG
-         IvfA==
-X-Gm-Message-State: AOAM530xZKAZIMlsvMPNBN3MPVXqd9QOXZUCC5mE7ZbT+uED1IA/4Z9B
-        49Qlrou2OOFbTVKNjjQm5Eix
-X-Google-Smtp-Source: ABdhPJwbhQHP0Lg2aI7V08adPfvImhPuENbAA3IxvfP5uS1vgnq3nu6gVTlG7wLNi6vDhA77D5jRzg==
-X-Received: by 2002:a05:6638:38a6:: with SMTP id b38mr8269875jav.233.1639633079157;
-        Wed, 15 Dec 2021 21:37:59 -0800 (PST)
-Received: from ?IPv6:2601:281:8300:4e0:2ba9:697d:eeec:13b? ([2601:281:8300:4e0:2ba9:697d:eeec:13b])
-        by smtp.gmail.com with ESMTPSA id l12sm2263692iow.23.2021.12.15.21.37.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Dec 2021 21:37:58 -0800 (PST)
-Message-ID: <31d5e7447e4574d0fcfc46019d7ca96a3db4ecb6.camel@egauge.net>
-Subject: Re: [PATCH] wilc1000: Allow setting power_save before driver is
- initialized
-From:   David Mosberger-Tang <davidm@egauge.net>
-To:     Ajay.Kathat@microchip.com
-Cc:     Claudiu.Beznea@microchip.com, kvalo@codeaurora.org,
-        davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Wed, 15 Dec 2021 22:37:47 -0700
-In-Reply-To: <5378e756-8173-4c63-1f0d-e5836b235a48@microchip.com>
-References: <20211212011835.3719001-1-davidm@egauge.net>
-         <6fc9f00aa0b0867029fb6406a55c1e72d4c13af6.camel@egauge.net>
-         <5378e756-8173-4c63-1f0d-e5836b235a48@microchip.com>
-Organization: eGauge Systems LLC
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5-0ubuntu1 
+        id S231229AbhLPFxd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Dec 2021 00:53:33 -0500
+Received: from mailgw01.mediatek.com ([60.244.123.138]:52838 "EHLO
+        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S229711AbhLPFxd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 00:53:33 -0500
+X-UUID: c61256ed9c834d5d9960755e2bf63d76-20211216
+X-UUID: c61256ed9c834d5d9960755e2bf63d76-20211216
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
+        (envelope-from <biao.huang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 113848959; Thu, 16 Dec 2021 13:53:30 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Thu, 16 Dec 2021 13:53:29 +0800
+Received: from mhfsdcap04.gcn.mediatek.inc (10.17.3.154) by
+ mtkcas10.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.0.1497.2 via Frontend Transport; Thu, 16 Dec 2021 13:53:28 +0800
+From:   Biao Huang <biao.huang@mediatek.com>
+To:     <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>
+CC:     Matthias Brugger <matthias.bgg@gmail.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Biao Huang <biao.huang@mediatek.com>, <netdev@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <srv_heupstream@mediatek.com>, <macpaul.lin@mediatek.com>,
+        <angelogioacchino.delregno@collabora.com>, <dkirjanov@suse.de>
+Subject: [PATCH net-next v10 0/6] MediaTek Ethernet Patches on MT8195 
+Date:   Thu, 16 Dec 2021 13:53:22 +0800
+Message-ID: <20211216055328.15953-1-biao.huang@mediatek.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-MTK:  N
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2021-12-15 at 13:01 +0000, Ajay.Kathat@microchip.com wrote:
-> On 13/12/21 02:50, David Mosberger-Tang wrote:
-> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> > 
-> > Unfortunately, this patch doesn't seem to be sufficient.  From what I
-> > can tell, if power-save mode is turned on before a station is
-> > associated with an access-point, there is no actual power savings.  If
-> > I issue the command after the station is associated, it works perfectly
-> > fine.
-> > 
-> > Ajay, does this make sense to you?
->   <snip>
-> Power-save mode is allowed to be enabled irrespective of station 
-> association state. Before association, the power consumption should be 
-> less with PSM enabled compared to PSM disabled. The WLAN automatic power 
-> save delivery gets enabled after the association with AP.
-> 
-> To check the power measurement before association,  test without 
-> wpa_supplicant.
-> 
-> 
-> Steps:
-> - load the module
-> - ifconfig wlan0 up
-> - iw dev wlan0 set power_save off (check the pwr measurement after PS 
-> mode disabled)
-> - iw dev wlan0 set power_save on (check the pwr measurement after PS 
-> mode enable)
+Changes in v10:
+1. add detailed description in "arm64: dts: mt2712: update ethernet
+   device node" to make the modifications clearer as Matthias's coments.
+2. modify dt-binding description as Rob's comments, and "make dtbs_check" runs
+   pass locally with "arm64: dts: mt2712: update ethernet device node"
+   in this series.
 
-It appears wpa_supplicant consistently renders PSM ineffective:
+Changes in v9:
+1. remove oneOf for 1 entry as Rob's comments.
+2. add new clocks to the end of existing clocks to simplify
+   the binding as Rob's comments.
 
-                                (current draw, 1 min avg):
-------------------------------  --------------------------
-- base case (no module loaded): 16.8 mA
-- module loaded & PSM on      : 16.8 mA
-- wpa_supplicant started      : 19.6 mA
-- PSM on                      : 19.6 mA (no change)
-- PSM off                     : 19.6 mA (no change)
-- PSM on                      : 15.4 mA
+Changes in v8:
+1. add acked-by in "stmmac: dwmac-mediatek: add platform level clocks
+   management" patch
 
-What's strange is when I try this sequence a couple of times in a row,
-the device gets into a state where after starting wpa_supplicant, no
-amount of PSM on/off commands will get it to enter power-savings mode
-any more.  When in that state, only removing wilc1000-spi.ko and adding
-it back gets it out of that state.  A power-cycle does not.  Very
-confusing.
+Changes in v7:
+1. fix uninitialized warning as Jakub's comments.
 
-  --david
+Changes in v6:
+1. update commit message as Jakub's comments.
+2. split mt8195 eth dts patch("arm64: dts: mt8195: add ethernet device
+   node") from this series, since mt8195 dtsi/dts basic patches is still
+   under reviewing.
+   https://patchwork.kernel.org/project/linux-mediatek/list/?series=579071
+   we'll resend mt8195 eth dts patch once all the dependent patches are
+   accepted.
+
+Changes in v5:
+1. remove useless inclusion in dwmac-mediatek.c as Angelo's comments.
+2. add acked-by in "net-next: stmmac: dwmac-mediatek: add support for
+   mt8195" patch
+
+Changes in v4:
+1. add changes in commit message in "net-next: dt-bindings: dwmac:
+   Convert mediatek-dwmac to DT schema" patch.
+2. remove ethernet-controller.yaml since snps,dwmac.yaml already include it.
+
+Changes in v3:
+1. Add prefix "net-next" to support new IC as Denis's suggestion.
+2. Split dt-bindings to two patches, one for conversion, and the other for
+   new IC.
+3. add a new patch to update device node in mt2712-evb.dts to accommodate to
+   changes in driver.
+4. remove unnecessary wrapper as Angelo's suggestion.
+5. Add acked-by in "net-next: stmmac: dwmac-mediatek: Reuse more common
+   features" patch.
+
+Changes in v2:
+1. fix errors/warnings in mediatek-dwmac.yaml with upgraded dtschema tools
+
+This series include 5 patches:
+1. add platform level clocks management for dwmac-mediatek
+2. resue more common features defined in stmmac_platform.c
+3. add ethernet entry for mt8195
+
+Biao Huang (6):
+  stmmac: dwmac-mediatek: add platform level clocks management
+  stmmac: dwmac-mediatek: Reuse more common features
+  arm64: dts: mt2712: update ethernet device node
+  net: dt-bindings: dwmac: Convert mediatek-dwmac to DT schema
+  stmmac: dwmac-mediatek: add support for mt8195
+  net: dt-bindings: dwmac: add support for mt8195
+
+ .../bindings/net/mediatek-dwmac.txt           |  91 ------
+ .../bindings/net/mediatek-dwmac.yaml          | 176 ++++++++++
+ arch/arm64/boot/dts/mediatek/mt2712-evb.dts   |   1 +
+ arch/arm64/boot/dts/mediatek/mt2712e.dtsi     |  14 +-
+ .../ethernet/stmicro/stmmac/dwmac-mediatek.c  | 306 ++++++++++++++++--
+ 5 files changed, 469 insertions(+), 119 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/net/mediatek-dwmac.txt
+ create mode 100644 Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
+
+--
+2.18.0
 
 
