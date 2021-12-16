@@ -2,237 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 622D74769A5
-	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 06:35:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E92984769AB
+	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 06:38:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233720AbhLPFfU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Dec 2021 00:35:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60394 "EHLO
+        id S233746AbhLPFiA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Dec 2021 00:38:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229617AbhLPFfT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 00:35:19 -0500
-Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 593BDC061574
-        for <netdev@vger.kernel.org>; Wed, 15 Dec 2021 21:35:19 -0800 (PST)
-Received: by mail-pg1-x52e.google.com with SMTP id d11so13398288pgl.1
-        for <netdev@vger.kernel.org>; Wed, 15 Dec 2021 21:35:19 -0800 (PST)
+        with ESMTP id S229617AbhLPFiA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 00:38:00 -0500
+Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9E32C06173F
+        for <netdev@vger.kernel.org>; Wed, 15 Dec 2021 21:37:59 -0800 (PST)
+Received: by mail-io1-xd31.google.com with SMTP id z18so33655976iof.5
+        for <netdev@vger.kernel.org>; Wed, 15 Dec 2021 21:37:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=xAUPKtHZ/cqip3q5aKQfZCHMrNxXrdQ/AfUvWj8BXC0=;
-        b=wHwXQzzywBprb31FoxwkrxpnFsD39NHv77EUAfDiIV60T5VCq4gdjm9nr7ux3gM66T
-         CC5QgxYPgbNaQV7JbJX5V1L105hE4Qqm5XFqT9R8y7sLxIpcxscRkZv02CBVFfEjplcM
-         AirvFnTDiTy/fmHej5+AZ0PCE7Pu3a7aH0vsQVL12GgfTy38zWOEqVPZNaD9pIBOoRF8
-         bDCaK9LUDVHpg5TUy8qj9CkiMO5AByL61fo9ljgdQpa6fSAL9zXhax94jyKN2M8ROLnt
-         nY5BFpRNBsx11pG1pr2Hh1mTaMyXfn5+JNQSdgO9yN/ohEAzZIs3VZmq4I3mopIBldcK
-         iKWA==
+        d=egauge.net; s=google;
+        h=message-id:subject:from:to:cc:date:in-reply-to:references
+         :organization:user-agent:mime-version:content-transfer-encoding;
+        bh=6ScHdtKJBGLpSH1WCw4x7edbvBY4BLhz9TD1CTHUesQ=;
+        b=Rh1PMORQrWW3aNlpNq0Dm8K/gqfuz9eVKKNKV9XJrSPwONwKc6wvmSCpga9KxTHtIF
+         0zDQRp6e8rMAEsJPfx741s7DnmOiBbsRW6YAwEvrSELddQ0gyRxldzbAKmnTO0Kb9YT8
+         6Kx2cyY3ga33KeHXyXdWjd1LfbSrm1VNQT9KpJU4rU01YrhOXfvEiNreKw/IH71FwRpx
+         dQ14wH+ka46Xrt2Is05w0nkCxr6kj4oh7q4DKZn5rtUWC+sheS73CS/qYMhogfpxDXgP
+         Mvrf78K602or907qFpG4PZCIM5sauwUzH09VJGPDH9GDmE3E1QtdNV1bghGbJYoBB2Vl
+         58AA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=xAUPKtHZ/cqip3q5aKQfZCHMrNxXrdQ/AfUvWj8BXC0=;
-        b=M7D8wXz6oWSqOlh5lrq66uiRHqnM9M4Xz79HlfgSp2XcWDI/JeO55dvg6a1oqmM1Hb
-         7k7RPz3ID1hPJ4mjAdPJAkwhEKiiHozDKzkVIRCuGu8129xv8JitV9hA8vZdGS2GzYjn
-         JsZo44yEt4qVRpnLfztlmcgbHtI3fR41hUBspmPaYGPnhVcUPHGgycZN2DDVZymby7c/
-         HLyBFoL45AP3jA2M8sa8NhsWZrON1ZV5LZezE0Tk7uer/uXG89ocdsbYYEDB2XJEQ0AX
-         FKd33tmH9XGJyBBEF/nqgT9c3vsSMVeL99s8pM0OnfTJBgcjuvlh4cKP/laM73acLuPu
-         42zw==
-X-Gm-Message-State: AOAM5313VnBfrrGxwyX7j1hSD0xqWtCs2SJPMI00dRI+JHfv2SqY83hc
-        3jTL6KWKr/fSPl3BGARZfrY037xwyv4B
-X-Google-Smtp-Source: ABdhPJwWgwWqnJqfrk7zPIVSoeCZxW3qcEmBoSg8LL687Mj2sffFemKpbMHq7tQO0c4v26/A/eIjwA==
-X-Received: by 2002:a05:6a00:1903:b0:47c:34c1:c6b6 with SMTP id y3-20020a056a00190300b0047c34c1c6b6mr12422821pfi.17.1639632918869;
-        Wed, 15 Dec 2021 21:35:18 -0800 (PST)
-Received: from thinkpad ([117.193.209.65])
-        by smtp.gmail.com with ESMTPSA id me7sm8589866pjb.9.2021.12.15.21.35.15
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:organization:user-agent:mime-version
+         :content-transfer-encoding;
+        bh=6ScHdtKJBGLpSH1WCw4x7edbvBY4BLhz9TD1CTHUesQ=;
+        b=hKKRySmiWqOROkfAAOwwPkYbIA7PxjD+E+M2p/vdxJtgzuYBjznuFDrdQGEUv+MQuw
+         4s1bTvclxwkIDD20ES0+DF7+PFkSoSI0A92dI01Syjj9z/lUAmGrBPH38PHiAVUy1qJe
+         2/65c2UgPvS4+MHoWQo3zRI9PbkdngpUn1/UWJwKSU2ZDWJ0la13/RCRy47KumwQGfam
+         d/1iiV+szgEIidAZyfEcEcu0N5RPYVL0fMNlTOXJJ8PZB038QWNxof2fy3fIuI1aaxBv
+         Q4WZNsA9Javlz8x7w0YFgh3qVwD9ZmA5tgnN5MxWlvHc9iTluyYgrsD4vYAWdXt4B7IG
+         IvfA==
+X-Gm-Message-State: AOAM530xZKAZIMlsvMPNBN3MPVXqd9QOXZUCC5mE7ZbT+uED1IA/4Z9B
+        49Qlrou2OOFbTVKNjjQm5Eix
+X-Google-Smtp-Source: ABdhPJwbhQHP0Lg2aI7V08adPfvImhPuENbAA3IxvfP5uS1vgnq3nu6gVTlG7wLNi6vDhA77D5jRzg==
+X-Received: by 2002:a05:6638:38a6:: with SMTP id b38mr8269875jav.233.1639633079157;
+        Wed, 15 Dec 2021 21:37:59 -0800 (PST)
+Received: from ?IPv6:2601:281:8300:4e0:2ba9:697d:eeec:13b? ([2601:281:8300:4e0:2ba9:697d:eeec:13b])
+        by smtp.gmail.com with ESMTPSA id l12sm2263692iow.23.2021.12.15.21.37.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Dec 2021 21:35:18 -0800 (PST)
-Date:   Thu, 16 Dec 2021 11:05:13 +0530
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     mhi@lists.linux.dev
-Cc:     loic.poulain@linaro.org, hemantk@codeaurora.org,
-        bbhatt@codeaurora.org, linux-arm-msm@vger.kernel.org,
-        netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v2] bus: mhi: core: Add an API for auto queueing buffers
- for DL channel
-Message-ID: <20211216053513.GC42608@thinkpad>
-References: <20211207071339.123794-1-manivannan.sadhasivam@linaro.org>
+        Wed, 15 Dec 2021 21:37:58 -0800 (PST)
+Message-ID: <31d5e7447e4574d0fcfc46019d7ca96a3db4ecb6.camel@egauge.net>
+Subject: Re: [PATCH] wilc1000: Allow setting power_save before driver is
+ initialized
+From:   David Mosberger-Tang <davidm@egauge.net>
+To:     Ajay.Kathat@microchip.com
+Cc:     Claudiu.Beznea@microchip.com, kvalo@codeaurora.org,
+        davem@davemloft.net, kuba@kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Wed, 15 Dec 2021 22:37:47 -0700
+In-Reply-To: <5378e756-8173-4c63-1f0d-e5836b235a48@microchip.com>
+References: <20211212011835.3719001-1-davidm@egauge.net>
+         <6fc9f00aa0b0867029fb6406a55c1e72d4c13af6.camel@egauge.net>
+         <5378e756-8173-4c63-1f0d-e5836b235a48@microchip.com>
+Organization: eGauge Systems LLC
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5-0ubuntu1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211207071339.123794-1-manivannan.sadhasivam@linaro.org>
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 07, 2021 at 12:43:39PM +0530, Manivannan Sadhasivam wrote:
-> Add a new API "mhi_prepare_for_transfer_autoqueue" for using with client
-> drivers like QRTR to request MHI core to autoqueue buffers for the DL
-> channel along with starting both UL and DL channels.
+On Wed, 2021-12-15 at 13:01 +0000, Ajay.Kathat@microchip.com wrote:
+> On 13/12/21 02:50, David Mosberger-Tang wrote:
+> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> > 
+> > Unfortunately, this patch doesn't seem to be sufficient.  From what I
+> > can tell, if power-save mode is turned on before a station is
+> > associated with an access-point, there is no actual power savings.  If
+> > I issue the command after the station is associated, it works perfectly
+> > fine.
+> > 
+> > Ajay, does this make sense to you?
+>   <snip>
+> Power-save mode is allowed to be enabled irrespective of station 
+> association state. Before association, the power consumption should be 
+> less with PSM enabled compared to PSM disabled. The WLAN automatic power 
+> save delivery gets enabled after the association with AP.
 > 
-> So far, the "auto_queue" flag specified by the controller drivers in
-> channel definition served this purpose but this will be removed at some
-> point in future.
+> To check the power measurement before association,  test without 
+> wpa_supplicant.
 > 
-> Cc: netdev@vger.kernel.org
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: David S. Miller <davem@davemloft.net>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Co-developed-by: Loic Poulain <loic.poulain@linaro.org>
-> Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
-> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+> 
+> Steps:
+> - load the module
+> - ifconfig wlan0 up
+> - iw dev wlan0 set power_save off (check the pwr measurement after PS 
+> mode disabled)
+> - iw dev wlan0 set power_save on (check the pwr measurement after PS 
+> mode enable)
 
-Applied to mhi-next with Ack from Jakub!
+It appears wpa_supplicant consistently renders PSM ineffective:
 
-Thanks,
-Mani
+                                (current draw, 1 min avg):
+------------------------------  --------------------------
+- base case (no module loaded): 16.8 mA
+- module loaded & PSM on      : 16.8 mA
+- wpa_supplicant started      : 19.6 mA
+- PSM on                      : 19.6 mA (no change)
+- PSM off                     : 19.6 mA (no change)
+- PSM on                      : 15.4 mA
 
-> ---
-> 
-> Changes in v2:
-> 
-> * Rebased on top of 5.16-rc1
-> * Fixed an issue reported by kernel test bot
-> * CCed netdev folks and Greg
-> * Slight change to the commit subject for reflecting "core" sub-directory
-> 
->  drivers/bus/mhi/core/internal.h |  6 +++++-
->  drivers/bus/mhi/core/main.c     | 21 +++++++++++++++++----
->  include/linux/mhi.h             | 21 ++++++++++++++++-----
->  net/qrtr/mhi.c                  |  2 +-
->  4 files changed, 39 insertions(+), 11 deletions(-)
-> 
-> diff --git a/drivers/bus/mhi/core/internal.h b/drivers/bus/mhi/core/internal.h
-> index 9d72b1d1e986..e2e10474a9d9 100644
-> --- a/drivers/bus/mhi/core/internal.h
-> +++ b/drivers/bus/mhi/core/internal.h
-> @@ -682,8 +682,12 @@ void mhi_deinit_free_irq(struct mhi_controller *mhi_cntrl);
->  void mhi_rddm_prepare(struct mhi_controller *mhi_cntrl,
->  		      struct image_info *img_info);
->  void mhi_fw_load_handler(struct mhi_controller *mhi_cntrl);
-> +
-> +/* Automatically allocate and queue inbound buffers */
-> +#define MHI_CH_INBOUND_ALLOC_BUFS BIT(0)
->  int mhi_prepare_channel(struct mhi_controller *mhi_cntrl,
-> -			struct mhi_chan *mhi_chan);
-> +			struct mhi_chan *mhi_chan, unsigned int flags);
-> +
->  int mhi_init_chan_ctxt(struct mhi_controller *mhi_cntrl,
->  		       struct mhi_chan *mhi_chan);
->  void mhi_deinit_chan_ctxt(struct mhi_controller *mhi_cntrl,
-> diff --git a/drivers/bus/mhi/core/main.c b/drivers/bus/mhi/core/main.c
-> index 930aba666b67..ffde617f93a3 100644
-> --- a/drivers/bus/mhi/core/main.c
-> +++ b/drivers/bus/mhi/core/main.c
-> @@ -1430,7 +1430,7 @@ static void mhi_unprepare_channel(struct mhi_controller *mhi_cntrl,
->  }
->  
->  int mhi_prepare_channel(struct mhi_controller *mhi_cntrl,
-> -			struct mhi_chan *mhi_chan)
-> +			struct mhi_chan *mhi_chan, unsigned int flags)
->  {
->  	int ret = 0;
->  	struct device *dev = &mhi_chan->mhi_dev->dev;
-> @@ -1455,6 +1455,9 @@ int mhi_prepare_channel(struct mhi_controller *mhi_cntrl,
->  	if (ret)
->  		goto error_pm_state;
->  
-> +	if (mhi_chan->dir == DMA_FROM_DEVICE)
-> +		mhi_chan->pre_alloc = !!(flags & MHI_CH_INBOUND_ALLOC_BUFS);
-> +
->  	/* Pre-allocate buffer for xfer ring */
->  	if (mhi_chan->pre_alloc) {
->  		int nr_el = get_nr_avail_ring_elements(mhi_cntrl,
-> @@ -1610,8 +1613,7 @@ void mhi_reset_chan(struct mhi_controller *mhi_cntrl, struct mhi_chan *mhi_chan)
->  	read_unlock_bh(&mhi_cntrl->pm_lock);
->  }
->  
-> -/* Move channel to start state */
-> -int mhi_prepare_for_transfer(struct mhi_device *mhi_dev)
-> +static int __mhi_prepare_for_transfer(struct mhi_device *mhi_dev, unsigned int flags)
->  {
->  	int ret, dir;
->  	struct mhi_controller *mhi_cntrl = mhi_dev->mhi_cntrl;
-> @@ -1622,7 +1624,7 @@ int mhi_prepare_for_transfer(struct mhi_device *mhi_dev)
->  		if (!mhi_chan)
->  			continue;
->  
-> -		ret = mhi_prepare_channel(mhi_cntrl, mhi_chan);
-> +		ret = mhi_prepare_channel(mhi_cntrl, mhi_chan, flags);
->  		if (ret)
->  			goto error_open_chan;
->  	}
-> @@ -1640,8 +1642,19 @@ int mhi_prepare_for_transfer(struct mhi_device *mhi_dev)
->  
->  	return ret;
->  }
-> +
-> +int mhi_prepare_for_transfer(struct mhi_device *mhi_dev)
-> +{
-> +	return __mhi_prepare_for_transfer(mhi_dev, 0);
-> +}
->  EXPORT_SYMBOL_GPL(mhi_prepare_for_transfer);
->  
-> +int mhi_prepare_for_transfer_autoqueue(struct mhi_device *mhi_dev)
-> +{
-> +	return __mhi_prepare_for_transfer(mhi_dev, MHI_CH_INBOUND_ALLOC_BUFS);
-> +}
-> +EXPORT_SYMBOL_GPL(mhi_prepare_for_transfer_autoqueue);
-> +
->  void mhi_unprepare_from_transfer(struct mhi_device *mhi_dev)
->  {
->  	struct mhi_controller *mhi_cntrl = mhi_dev->mhi_cntrl;
-> diff --git a/include/linux/mhi.h b/include/linux/mhi.h
-> index 723985879035..271db1d6da85 100644
-> --- a/include/linux/mhi.h
-> +++ b/include/linux/mhi.h
-> @@ -717,15 +717,26 @@ void mhi_device_put(struct mhi_device *mhi_dev);
->  
->  /**
->   * mhi_prepare_for_transfer - Setup UL and DL channels for data transfer.
-> - *                            Allocate and initialize the channel context and
-> - *                            also issue the START channel command to both
-> - *                            channels. Channels can be started only if both
-> - *                            host and device execution environments match and
-> - *                            channels are in a DISABLED state.
->   * @mhi_dev: Device associated with the channels
-> + *
-> + * Allocate and initialize the channel context and also issue the START channel
-> + * command to both channels. Channels can be started only if both host and
-> + * device execution environments match and channels are in a DISABLED state.
->   */
->  int mhi_prepare_for_transfer(struct mhi_device *mhi_dev);
->  
-> +/**
-> + * mhi_prepare_for_transfer_autoqueue - Setup UL and DL channels with auto queue
-> + *                                      buffers for DL traffic
-> + * @mhi_dev: Device associated with the channels
-> + *
-> + * Allocate and initialize the channel context and also issue the START channel
-> + * command to both channels. Channels can be started only if both host and
-> + * device execution environments match and channels are in a DISABLED state.
-> + * The MHI core will automatically allocate and queue buffers for the DL traffic.
-> + */
-> +int mhi_prepare_for_transfer_autoqueue(struct mhi_device *mhi_dev);
-> +
->  /**
->   * mhi_unprepare_from_transfer - Reset UL and DL channels for data transfer.
->   *                               Issue the RESET channel command and let the
-> diff --git a/net/qrtr/mhi.c b/net/qrtr/mhi.c
-> index fa611678af05..18196e1c8c2f 100644
-> --- a/net/qrtr/mhi.c
-> +++ b/net/qrtr/mhi.c
-> @@ -79,7 +79,7 @@ static int qcom_mhi_qrtr_probe(struct mhi_device *mhi_dev,
->  	int rc;
->  
->  	/* start channels */
-> -	rc = mhi_prepare_for_transfer(mhi_dev);
-> +	rc = mhi_prepare_for_transfer_autoqueue(mhi_dev);
->  	if (rc)
->  		return rc;
->  
-> -- 
-> 2.25.1
-> 
+What's strange is when I try this sequence a couple of times in a row,
+the device gets into a state where after starting wpa_supplicant, no
+amount of PSM on/off commands will get it to enter power-savings mode
+any more.  When in that state, only removing wilc1000-spi.ko and adding
+it back gets it out of that state.  A power-cycle does not.  Very
+confusing.
+
+  --david
+
+
