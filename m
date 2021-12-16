@@ -2,119 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 441E0476D66
-	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 10:29:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C2CE476D78
+	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 10:33:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235361AbhLPJ2n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Dec 2021 04:28:43 -0500
-Received: from mail-bn8nam08on2070.outbound.protection.outlook.com ([40.107.100.70]:44257
-        "EHLO NAM04-BN8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S235370AbhLPJ2l (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Dec 2021 04:28:41 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mjt45cpxiil02yHFtCshSQEQy1dn9hMrmyIdlDAmPkHOvaEaCMQUZY46PSA+bmY3xQeLymIlodHIPQbpTUsgkhIxI6lceBxRGor19QfGP9n12COWTo0gAiJkYUkYyv1peLs3vHMywyhJaQR1YOIezy6PRt+KDOR8D6yLgd5PD5Q+7ynksG9gc+b+nh/rtOaV0RYp9vg/LLqXiUmYqLEDvjJn+rxx+imz8ZAnqgGcuZ/v0jjumckZvLCc8Zzrf3WX6oRwCmpog9elApmlySp/vo6z50WoUW10Wo6OAPS22vFY/1aSwbArg9PNMck5AmL//7tNZX+Ya3VOenl9RA9Lyw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=wHMpq2G8xiS/OrJbFWjHlhZiuXZ+xZDQeBBq5MutwAI=;
- b=GK+b3+HHx3GbX7bGd8DeN23j5BbJ5Iwhd9wvYlUMHQ4O55oQwn6hvw/8z9QgQg2OV2kC94nbHW7ozii8YY5bn52oF3jecFLoQq4nvufrPenWtEbhKZJirGvHvldiDhO8ERBmnFnFoT09/m+IZ90CL5pbejouSrH+oM2xWEuDhj0Z9JO0g5M3DoK6lNymC+Z3m+4eLOC5ErgrvjYD9Uzl7SlQvA+Jx23NvsYgzFbDiKrOBoxc11gfJuNB9ciiRdiKPuT0yihkwLZbII75M/ZOLTbn7RnHRPGbTRfz0ktQ/3aZiSWjakJ7YxR4c40cv/NgD5nvc9ESdsyfthGje5qcbg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.238) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=nvidia.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wHMpq2G8xiS/OrJbFWjHlhZiuXZ+xZDQeBBq5MutwAI=;
- b=saV7oIkrTFhRMPhtVep8bbMYIgjQuGiX1BLMelyunSf2Dvt3faRk6xZlDALVPBtxrvKaeJPDbOTBx+Czx2rapuC9hnqeJrwGYgvL9jChlW3yCPi28qAPei549t8LAXmis3DWJlMuX4dQNJkVWL1Cm1tObnvmR3Jp7LCwItNZ1Ysn8+axTJNEyzBxl8i3u4etGLHzwXfSQvF6zWpIhsOP/kEi2TvE5DxfaxBCI/uc2B0Rnrji/eeL/ZnJegisBAvZaoFcUpDrVDa7ZfgO9ZyN9NhWl2yKGJBsykg3xSE9TcpcbFv0OcPr7XSUr7sKj2LJBj/ZfKRSiQWecHzrWUtZhg==
-Received: from MWHPR11CA0028.namprd11.prod.outlook.com (2603:10b6:300:115::14)
- by DM6PR12MB2841.namprd12.prod.outlook.com (2603:10b6:5:49::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4801.14; Thu, 16 Dec
- 2021 09:28:38 +0000
-Received: from CO1NAM11FT006.eop-nam11.prod.protection.outlook.com
- (2603:10b6:300:115:cafe::69) by MWHPR11CA0028.outlook.office365.com
- (2603:10b6:300:115::14) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4801.14 via Frontend
- Transport; Thu, 16 Dec 2021 09:28:38 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.238; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.238) by
- CO1NAM11FT006.mail.protection.outlook.com (10.13.174.246) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4778.13 via Frontend Transport; Thu, 16 Dec 2021 09:28:38 +0000
-Received: from HQMAIL109.nvidia.com (172.20.187.15) by DRHQMAIL105.nvidia.com
- (10.27.9.14) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 16 Dec
- 2021 09:28:36 +0000
-Received: from HQMAIL101.nvidia.com (172.20.187.10) by HQMAIL109.nvidia.com
- (172.20.187.15) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 16 Dec
- 2021 01:28:35 -0800
-Received: from vdi.nvidia.com (172.20.187.5) by mail.nvidia.com
- (172.20.187.10) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Thu, 16 Dec 2021 09:28:34 +0000
-From:   Gal Pressman <gal@nvidia.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, Gal Pressman <gal@nvidia.com>
-Subject: [PATCH net] net: Fix double 0x prefix print in SKB dump
-Date:   Thu, 16 Dec 2021 11:28:25 +0200
-Message-ID: <20211216092826.30068-1-gal@nvidia.com>
-X-Mailer: git-send-email 2.25.1
+        id S235377AbhLPJdK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Dec 2021 04:33:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58108 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230199AbhLPJdJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 04:33:09 -0500
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9124FC061574;
+        Thu, 16 Dec 2021 01:33:09 -0800 (PST)
+Received: by mail-pg1-x52b.google.com with SMTP id d11so13919050pgl.1;
+        Thu, 16 Dec 2021 01:33:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Zzf+LfImVidU5lTY4sFCzZF8SK63x8wA2LLDGZX7C/E=;
+        b=aIjvfWxLgGFEf3ii7PO5NC2ZnOXYnklepEMWQ0Veq+gaxMFI/vVcC1LQtsUtV3g8Ci
+         NjmXlSe+v1kQigTGj1h1gcqgsWLTRngGEZFIOMXLoopXwLONjpjaSSKqp2hCTGFuyIUB
+         dR5F14gvlVxLJeVlJqCNDbWqk1ZIkQWAND4lq0nMjvIu3kJ4/LPcvyKMgaRXAomNLauw
+         yOPHWqNpf/QkCzKF+shhrB0DvzRbtDa4bE/A/c7V5zrlo0rMzRqtNNU3Bs7qllVXt5jD
+         5xgtSvqCitRK4o6+BB2rEkRr+klPkspNQXJT503cW77gt4aqV/M6lSRrCfl5xwEJS7z5
+         E4Ag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Zzf+LfImVidU5lTY4sFCzZF8SK63x8wA2LLDGZX7C/E=;
+        b=z7yPhSE8d0etUxasrDK+FieH01NGbf/SB6VR+GpkA//8R4A6SEcNvbyyWngXKaM7jT
+         T4E0GeUMRaOIW7XrAMno27I5htUham9XU5eyhI2g5Qoxp2a1wV9KM4xfmBL31LQkfH/P
+         lcmEWnHLOEF4TqeY3GydOeXPYU4mCKBKWZKUjNyNGMLjrVkiCGeJSzBO3yHO+0WZ5pew
+         pE+rlaynMIhgraQ2tAVxAUUhMfaR+zVovMxJ+fa8SJuBw/eQc+3FeSN38Mn+CvLGqyRD
+         AhqsnrTZt8y9u54WjSBtB0lXzcndOXJKx9SLzYxx+QVJYmNKF1e6Hk0X3qKpnpdf6k3w
+         luMQ==
+X-Gm-Message-State: AOAM530dJqhn2pbxr9nZQkYLVR2rBaIduzWH7xrzeiYtflQc4m0YvegU
+        CYfaQ5HARLBniuyb0OoFgiU=
+X-Google-Smtp-Source: ABdhPJxj4ce5VZekWBXbcmtExKg1Q6y2JNq+fMqK1yabopOjvbUQD4AyPtK3tPj7EbQvYXfbZV1pIg==
+X-Received: by 2002:a63:1b02:: with SMTP id b2mr11296997pgb.263.1639647188950;
+        Thu, 16 Dec 2021 01:33:08 -0800 (PST)
+Received: from localhost.localdomain (61-231-67-10.dynamic-ip.hinet.net. [61.231.67.10])
+        by smtp.gmail.com with ESMTPSA id d9sm7033181pjs.2.2021.12.16.01.33.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Dec 2021 01:33:08 -0800 (PST)
+From:   Joseph CHAMG <josright123@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Joseph CHANG <josright123@gmail.com>,
+        joseph_chang@davicom.com.tw
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v6, 0/2] ADD DM9051 ETHERNET DRIVER
+Date:   Thu, 16 Dec 2021 17:32:44 +0800
+Message-Id: <20211216093246.23738-1-josright123@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 0caddd5e-7899-4fc6-5944-08d9c0767107
-X-MS-TrafficTypeDiagnostic: DM6PR12MB2841:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR12MB284154E8656D72D32AEE60AFC2779@DM6PR12MB2841.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:110;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 6x3drMIk35JEZjJ6UN+42aqtS4OqZlnJJRFr8rJ3+/3tZBXZQv34ukQnaoLn3z2wkC/KsJcEWAaBrW0AkFv29Xw0fGD3TWtKlSczcZ4eMej2qgdY2QeFrEeyj3aAifRTCiUr4s01+ravTeVm3/i8yviXvxMcXT2PXIacBaZG9jhDbeAhJvV3uSIR/EgQOkRWaNf5cyBomqyJCXtHEeEYIfqmzhXAt4wx6hc7OGWQmI9tA0Uo5e4jImgj6O2DzuevLEYkD13XJ6Xq4assHkuFQlGqiyBv/DUT502WgEWp/kYi5ot3vq9cvGHtBJiKefYpaV5LuozL18x/LGYSyFHCQrS1KWYf1jw4fH2ZnSRnSnQsc0Ke9UvZx123q4CBmUgBWSHBdQ4Hp28iJykUtoiyaf36ac23DzWLH8osY14moYrdjMEfjbry8g4mbyITTev/65WDBfc0gcK0vACUYCpg2HBvlF/fQzDFvoP4UKYH60noFc2o430c9PCLH1cJtgWzi9rll7Seq11v8eibxWEaiDkh13PamuXXcWDLLnUEQgXFUeeyjZZ2pzr+MTuYfCoZuvW69r3N6Yyp1x3+L+ofoULHSVYP5ivSi1Brz1mMFlgvYwMEr3dXSRXN6M6SiHzqQXeYgKmG6Hy3j+aGlKqS5/CuiCJLFVqpN7lqaq5VJ+y4HwMXmtEM1jlW+UeFfIq3Vko1nK/ez2GPEwR7SM14sZc3WAERSxMQaQZjnJ9ppXJgXG/j5d7050X5OlN68c+8HoCyTYf+Rnd3sMgGz/rpI/bkMTm/egLBiATU90gnrERUoG3mNuc38DiHsPgH/r9lQAB0NI0+81hqMIstvGJwmw==
-X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(4636009)(46966006)(36840700001)(40470700001)(6666004)(86362001)(36860700001)(7696005)(1076003)(70586007)(70206006)(5660300002)(356005)(81166007)(4744005)(36756003)(2906002)(107886003)(2616005)(4326008)(26005)(54906003)(8676002)(110136005)(316002)(83380400001)(508600001)(186003)(34020700004)(426003)(82310400004)(336012)(47076005)(8936002)(40460700001)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Dec 2021 09:28:38.3679
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0caddd5e-7899-4fc6-5944-08d9c0767107
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT006.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB2841
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When printing netdev features %pNF already takes care of the 0x prefix,
-remove the explicit one.
+remove the redundant code that phylib has support,
+adjust to be the reasonable sequence for init operations in
+dm9051_probe and phy_start
 
-Fixes: 6413139dfc64 ("skbuff: increase verbosity when dumping skb data")
-Signed-off-by: Gal Pressman <gal@nvidia.com>
----
- net/core/skbuff.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+DM9051 is a spi interface chip,
+need only cs/mosi/miso/clock with an interrupt gpio pin
 
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index a33247fdb8f5..275f7b8416fe 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -832,7 +832,7 @@ void skb_dump(const char *level, const struct sk_buff *skb, bool full_pkt)
- 	       ntohs(skb->protocol), skb->pkt_type, skb->skb_iif);
- 
- 	if (dev)
--		printk("%sdev name=%s feat=0x%pNF\n",
-+		printk("%sdev name=%s feat=%pNF\n",
- 		       level, dev->name, &dev->features);
- 	if (sk)
- 		printk("%ssk family=%hu type=%u proto=%u\n",
+Joseph CHAMG (1):
+  net: Add dm9051 driver
+
+JosephCHANG (1):
+  yaml: Add dm9051 SPI network yaml file
+
+ .../bindings/net/davicom,dm9051.yaml          |  62 ++
+ drivers/net/ethernet/davicom/Kconfig          |  30 +
+ drivers/net/ethernet/davicom/Makefile         |   1 +
+ drivers/net/ethernet/davicom/dm9051.c         | 898 ++++++++++++++++++
+ drivers/net/ethernet/davicom/dm9051.h         | 188 ++++
+ 5 files changed, 1179 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/davicom,dm9051.yaml
+ create mode 100644 drivers/net/ethernet/davicom/dm9051.c
+ create mode 100644 drivers/net/ethernet/davicom/dm9051.h
+
+
+base-commit: 9d922f5df53844228b9f7c62f2593f4f06c0b69b
 -- 
-2.25.1
+2.20.1
 
