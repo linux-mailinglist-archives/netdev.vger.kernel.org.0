@@ -2,182 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A9434772E3
-	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 14:15:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 97FA4477307
+	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 14:22:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237350AbhLPNPI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Dec 2021 08:15:08 -0500
-Received: from esa.microchip.iphmx.com ([68.232.154.123]:8417 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237401AbhLPNPH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 08:15:07 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1639660507; x=1671196507;
-  h=subject:to:cc:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=s33EBaXdszCdbhqMOmY9SCuEo5PNUN5kGbyjUWc0zqs=;
-  b=xylBNkUMopR7NBNtiAbKiC6AfwtYk9NRM+kzkGJzuJUWO1R1HHcN/dXP
-   7n+Hfl1LJuz2vEvBukfd5tIGO47gZo63yqaSf5n7cptXrV8vkShKtPJaJ
-   xqXBUA5U8PzKI9YjvUw7VVWX+VeusAKHk3AnRC9q5Svqv6rKFX7pCdfiG
-   8UGtXP4sinpIHIwjgZYEH/f08xEipFTPwkUP6l6pjr4edNPZYwoIy1GLx
-   AOQmDbeWtgDHw/v2qSI0Cl7w4xs1RPEKH5coJd5yGnyhZ+PZPw+lEq74I
-   WRMnUAKQz+NzDOx/UBHh10Yo1quO6wDual6Pp16zUUjGuvppLYaee4Ua1
-   g==;
-IronPort-SDR: iszirYNeSPiBx1h9bPO+otYTJgad0X+5W8ekkbh31OlVM+X++QXGNbloNGQSiLMbGYRrTuGKTI
- 6FYj158Fce4MZpFIY1MHbUIgAZGNVef66BWHIQX5RdNSND2u3ZLFBgPF0bP3AOG19ZV0Pr1+MK
- UL5RWjsr2oxNafEF+zsLmBNK2o+G5GfiDD0jDHncWzKwgyUfKqeOvuJijRQFv7xi0/5EfrKSKF
- kpGgE1lVpxuhfsa02EadkJ3ODD5DcDuORyIxq45cOHYi8Tyv9WITHB/4QBfhM3tF7DlRCUlF7f
- j5f9z3IQp8aJRdJPLiULjRFR
-X-IronPort-AV: E=Sophos;i="5.88,211,1635231600"; 
-   d="scan'208";a="79778095"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 16 Dec 2021 06:15:06 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 16 Dec 2021 06:15:06 -0700
-Received: from [10.159.245.112] (10.10.115.15) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Thu, 16 Dec 2021 06:15:05 -0700
-Subject: Re: [PATCH CFT net-next] net: macb: use .mac_select_pcs() interface
-To:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     Claudiu Beznea <claudiu.beznea@microchip.com>,
-        <netdev@vger.kernel.org>
-References: <E1mxq4w-00GWry-Lg@rmk-PC.armlinux.org.uk>
-From:   Nicolas Ferre <nicolas.ferre@microchip.com>
-Organization: microchip
-Message-ID: <e1e3e711-87bd-865c-5070-3349bb68f992@microchip.com>
-Date:   Thu, 16 Dec 2021 14:15:02 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S237229AbhLPNWG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Dec 2021 08:22:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55698 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232110AbhLPNWF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 08:22:05 -0500
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B1A4C061574;
+        Thu, 16 Dec 2021 05:22:05 -0800 (PST)
+Received: by mail-ed1-x52c.google.com with SMTP id x15so87838339edv.1;
+        Thu, 16 Dec 2021 05:22:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=60XSf9cHzUxT6ZkrcHjpgYMJcYBfPDQTULwlGLQzSnM=;
+        b=kCx+JYRzpt9IsbUnF/BkdXilxvx4imVH7NBWYFmU9VtfhpKLH1EM4q0RvV1irbcAt2
+         4OUo4eyzE7sMOK6tRXsc4xLVv/qtM792nz5NtADQWBjrap89Y/9E/DZxSBIHu7325r/R
+         hIC/sGcS9qEiPwBXZAW5NovkyMWfLumPUtQmunPWnVoQUBiERx3rk/VkbLYBfkwVGO9y
+         EsKuunqOtjcdR6HyMyyx/bPiRPdWzMwghOLxbC9p5Js1T6rGt75sjMvVBIJB63A2ZgLe
+         5aMLTapxYRh8oYTA1blPPWVmnTomQhw8jhKlzJ1REvymCEuTgBEiSQF+CTWuRXtm5xsl
+         2mGg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=60XSf9cHzUxT6ZkrcHjpgYMJcYBfPDQTULwlGLQzSnM=;
+        b=3F5Tup9UV2RED/P0mk5FA7AM5/ufsoxvyuKPjqylUTbFn7Mvgx82LG+2wzoJT/mKXo
+         xDMWxl0QgvNOnbc64WYV/5YdqLzYmrsfLpXo+lhV5hX03c0dcR3Yxujbj0DgwWwxvZKJ
+         kseEn2OxP+g0ThWs4gMx8USbqhAgmkFahl+GwNPRIWa8WGiC6ktBAHl41hgDpxNhO9f4
+         0D6ZoEzKYRKso9r2uktbC00fLcQOCjQ7v56MiXShu7AJNShQPRuPXOa5FSK0gd+XrfB+
+         SZ/2zYSVA6gPJHuPx/GzTevqvUZIcPRuCUTldA01u4qAKUXph+X2MwQVKMjOl/nDb9od
+         5Iyg==
+X-Gm-Message-State: AOAM533jfoUxBFP7DXZji6SqJrP5NcF3es96+NI9fuG40Mkfl6FJZvPU
+        opTYy7h01uH4MqaUfUcCfvs=
+X-Google-Smtp-Source: ABdhPJzNKXQY5diG8Cxb9pHPRUB7F1RD08f1ZucgR2b3lGFQEqnZF+Gahv7l9l3FM9jf/FfHySZvDQ==
+X-Received: by 2002:a05:6402:1768:: with SMTP id da8mr20810877edb.252.1639660923591;
+        Thu, 16 Dec 2021 05:22:03 -0800 (PST)
+Received: from [192.168.8.198] ([185.69.144.117])
+        by smtp.gmail.com with ESMTPSA id sd2sm1857108ejc.22.2021.12.16.05.22.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 16 Dec 2021 05:22:02 -0800 (PST)
+Message-ID: <7ca623df-73ed-9191-bec7-a4728f2f95e6@gmail.com>
+Date:   Thu, 16 Dec 2021 13:21:26 +0000
 MIME-Version: 1.0
-In-Reply-To: <E1mxq4w-00GWry-Lg@rmk-PC.armlinux.org.uk>
-Content-Type: text/plain; charset="utf-8"; format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.2
+Subject: Re: [PATCH v3] cgroup/bpf: fast path skb BPF filtering
 Content-Language: en-US
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, linux-kernel@vger.kernel.org
+References: <462ce9402621f5e32f08cc8acbf3d9da4d7d69ca.1639579508.git.asml.silence@gmail.com>
+ <Yboc/G18R1Vi1eQV@google.com>
+ <b2af633d-aaae-d0c5-72f9-0688b76b4505@gmail.com>
+ <Ybom69OyOjsR7kmZ@google.com>
+ <634c2c87-84c9-0254-3f12-7d993037495c@gmail.com>
+ <Yboy2WwaREgo95dy@google.com>
+ <e729a63a-cded-da9c-3860-a90013b87e2d@gmail.com>
+ <CAKH8qBv+GsPz3JTTmLZ+Q2iMSC3PS+bE1xOLbxZyjfno7hqpSA@mail.gmail.com>
+ <92f69969-42dc-204a-4138-16fdaaebb78d@gmail.com>
+ <CAKH8qBuZxBen871AWDK1eDcxJenK7UkSQCZQsHCPhk6nk9e=Ng@mail.gmail.com>
+From:   Pavel Begunkov <asml.silence@gmail.com>
+In-Reply-To: <CAKH8qBuZxBen871AWDK1eDcxJenK7UkSQCZQsHCPhk6nk9e=Ng@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 16/12/2021 at 13:41, Russell King (Oracle) wrote:
-> Convert the PCS selection to use mac_select_pcs, which allows the PCS
-> to perform any validation it needs.
+On 12/15/21 22:07, Stanislav Fomichev wrote:
+> On Wed, Dec 15, 2021 at 11:55 AM Pavel Begunkov <asml.silence@gmail.com> wrote:
+>>
+>> On 12/15/21 19:15, Stanislav Fomichev wrote:
+>>> On Wed, Dec 15, 2021 at 10:54 AM Pavel Begunkov <asml.silence@gmail.com> wrote:
+>>>>
+>>>> On 12/15/21 18:24, sdf@google.com wrote:
+[...]
+>>>>> I can probably do more experiments on my side once your patch is
+>>>>> accepted. I'm mostly concerned with getsockopt(TCP_ZEROCOPY_RECEIVE).
+>>>>> If you claim there is visible overhead for a direct call then there
+>>>>> should be visible benefit to using CGROUP_BPF_TYPE_ENABLED there as
+>>>>> well.
+>>>>
+>>>> Interesting, sounds getsockopt might be performance sensitive to
+>>>> someone.
+>>>>
+>>>> FWIW, I forgot to mention that for testing tx I'm using io_uring
+>>>> (for both zc and not) with good submission batching.
+>>>
+>>> Yeah, last time I saw 2-3% as well, but it was due to kmalloc, see
+>>> more details in 9cacf81f8161, it was pretty visible under perf.
+>>> That's why I'm a bit skeptical of your claims of direct calls being
+>>> somehow visible in these 2-3% (even skb pulls/pushes are not 2-3%?).
+>>
+>> migrate_disable/enable together were taking somewhat in-between
+>> 1% and 1.5% in profiling, don't remember the exact number. The rest
+>> should be from rcu_read_lock/unlock() in BPF_PROG_RUN_ARRAY_CG_FLAGS()
+>> and other extra bits on the way.
 > 
-> We must use separate phylink_pcs instances for the USX and SGMII PCS,
-> rather than just changing the "ops" pointer before re-setting it to
-> phylink as this interface queries the PCS, rather than requesting it
-> to be changed.
-> 
-> Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+> You probably have a preemptiple kernel and preemptible rcu which most
+> likely explains why you see the overhead and I won't (non-preemptible
+> kernel in our env, rcu_read_lock is essentially a nop, just a compiler
+> barrier).
 
-Looks good to me:
-Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+Right. For reference tried out non-preemptible, perf shows the function
+taking 0.8% with a NIC and 1.2% with a dummy netdev.
 
-Thanks Russell. Best regards,
-   Nicolas
 
-> ---
->   drivers/net/ethernet/cadence/macb.h      |  3 ++-
->   drivers/net/ethernet/cadence/macb_main.c | 26 +++++++++++-------------
->   2 files changed, 14 insertions(+), 15 deletions(-)
+>> I'm skeptical I'll be able to measure inlining one function,
+>> variability between boots/runs is usually greater and would hide it.
 > 
-> diff --git a/drivers/net/ethernet/cadence/macb.h b/drivers/net/ethernet/cadence/macb.h
-> index 5620b97b3482..9ddbee7de72b 100644
-> --- a/drivers/net/ethernet/cadence/macb.h
-> +++ b/drivers/net/ethernet/cadence/macb.h
-> @@ -1271,7 +1271,8 @@ struct macb {
->          struct mii_bus          *mii_bus;
->          struct phylink          *phylink;
->          struct phylink_config   phylink_config;
-> -       struct phylink_pcs      phylink_pcs;
-> +       struct phylink_pcs      phylink_usx_pcs;
-> +       struct phylink_pcs      phylink_sgmii_pcs;
-> 
->          u32                     caps;
->          unsigned int            dma_burst_length;
-> diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-> index d4da9adf6777..a363da928e8b 100644
-> --- a/drivers/net/ethernet/cadence/macb_main.c
-> +++ b/drivers/net/ethernet/cadence/macb_main.c
-> @@ -510,7 +510,7 @@ static void macb_usx_pcs_link_up(struct phylink_pcs *pcs, unsigned int mode,
->                                   phy_interface_t interface, int speed,
->                                   int duplex)
->   {
-> -       struct macb *bp = container_of(pcs, struct macb, phylink_pcs);
-> +       struct macb *bp = container_of(pcs, struct macb, phylink_usx_pcs);
->          u32 config;
-> 
->          config = gem_readl(bp, USX_CONTROL);
-> @@ -524,7 +524,7 @@ static void macb_usx_pcs_link_up(struct phylink_pcs *pcs, unsigned int mode,
->   static void macb_usx_pcs_get_state(struct phylink_pcs *pcs,
->                                     struct phylink_link_state *state)
->   {
-> -       struct macb *bp = container_of(pcs, struct macb, phylink_pcs);
-> +       struct macb *bp = container_of(pcs, struct macb, phylink_usx_pcs);
->          u32 val;
-> 
->          state->speed = SPEED_10000;
-> @@ -544,7 +544,7 @@ static int macb_usx_pcs_config(struct phylink_pcs *pcs,
->                                 const unsigned long *advertising,
->                                 bool permit_pause_to_mac)
->   {
-> -       struct macb *bp = container_of(pcs, struct macb, phylink_pcs);
-> +       struct macb *bp = container_of(pcs, struct macb, phylink_usx_pcs);
-> 
->          gem_writel(bp, USX_CONTROL, gem_readl(bp, USX_CONTROL) |
->                     GEM_BIT(SIGNAL_OK));
-> @@ -727,28 +727,23 @@ static void macb_mac_link_up(struct phylink_config *config,
->          netif_tx_wake_all_queues(ndev);
->   }
-> 
-> -static int macb_mac_prepare(struct phylink_config *config, unsigned int mode,
-> -                           phy_interface_t interface)
-> +static struct phylink_pcs *macb_mac_select_pcs(struct phylink_config *config,
-> +                                              phy_interface_t interface)
->   {
->          struct net_device *ndev = to_net_dev(config->dev);
->          struct macb *bp = netdev_priv(ndev);
-> 
->          if (interface == PHY_INTERFACE_MODE_10GBASER)
-> -               bp->phylink_pcs.ops = &macb_phylink_usx_pcs_ops;
-> +               return &bp->phylink_usx_pcs;
->          else if (interface == PHY_INTERFACE_MODE_SGMII)
-> -               bp->phylink_pcs.ops = &macb_phylink_pcs_ops;
-> +               return &bp->phylink_sgmii_pcs;
->          else
-> -               bp->phylink_pcs.ops = NULL;
-> -
-> -       if (bp->phylink_pcs.ops)
-> -               phylink_set_pcs(bp->phylink, &bp->phylink_pcs);
-> -
-> -       return 0;
-> +               return NULL;
->   }
-> 
->   static const struct phylink_mac_ops macb_phylink_ops = {
->          .validate = phylink_generic_validate,
-> -       .mac_prepare = macb_mac_prepare,
-> +       .mac_select_pcs = macb_mac_select_pcs,
->          .mac_config = macb_mac_config,
->          .mac_link_down = macb_mac_link_down,
->          .mac_link_up = macb_mac_link_up,
-> @@ -806,6 +801,9 @@ static int macb_mii_probe(struct net_device *dev)
->   {
->          struct macb *bp = netdev_priv(dev);
-> 
-> +       bp->phylink_sgmii_pcs.ops = &macb_phylink_pcs_ops;
-> +       bp->phylink_usx_pcs.ops = &macb_phylink_usx_pcs_ops;
-> +
->          bp->phylink_config.dev = &dev->dev;
->          bp->phylink_config.type = PHYLINK_NETDEV;
-> 
-> --
-> 2.30.2
-> 
-
+> Right, that's why I suggested to mirror what we do in set/getsockopt
+> instead of the new extra CGROUP_BPF_TYPE_ENABLED. But I'll leave it up
+> to you, Martin and the rest.
 
 -- 
-Nicolas Ferre
+Pavel Begunkov
