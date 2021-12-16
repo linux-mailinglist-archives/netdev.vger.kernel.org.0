@@ -2,73 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D79DF477DDB
-	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 21:51:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5973A477E03
+	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 22:00:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241469AbhLPUvn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Dec 2021 15:51:43 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:57512 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233982AbhLPUvl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 15:51:41 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 72EE461F7F;
-        Thu, 16 Dec 2021 20:51:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id BEAB1C36AE9;
-        Thu, 16 Dec 2021 20:51:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1639687900;
-        bh=r5wMr5uUY8+6xf4eaAkcI9HYvev3F4ejVh+OsQUArXI=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=DIzAzjO3TP2V+9Gy4Degbb2KtFqMB9NfCl+h4L44f0AgXg4g2SOu7ojxyzrcsTR/k
-         Cj5RY6/w/NFhmOh5876gsJFTIqEO8fjgP35+HzWYfkmeMW13gXi3/c40BJM0hB04ZX
-         VKigWYjZqvHrdm4eYeW/l9hv+LjvKs1VHKqJ4r3XxeSSgljKvFhrWagtuu2dkFcdxh
-         odnF8QMohSH240hEYk2F4tDLSVmZdg4P0OcIFLQgNMBPbGGgALD5qLzqCqgSOOKu5/
-         vZfUMo/yPsSZUWuthkYPex12ANVzFzON7jlwA4pzJThFwaRIsv8cQcmZxuHMBH5Zkr
-         7vWDgZOyg3Piw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 9C08260A0C;
-        Thu, 16 Dec 2021 20:51:40 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S241511AbhLPVAJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Dec 2021 16:00:09 -0500
+Received: from www62.your-server.de ([213.133.104.62]:47890 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231656AbhLPVAI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 16:00:08 -0500
+Received: from 226.206.1.85.dynamic.wline.res.cust.swisscom.ch ([85.1.206.226] helo=localhost)
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1mxxrC-000EsM-9L; Thu, 16 Dec 2021 22:00:06 +0100
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     davem@davemloft.net
+Cc:     kuba@kernel.org, daniel@iogearbox.net, ast@kernel.org,
+        andrii@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: pull-request: bpf 2021-12-16
+Date:   Thu, 16 Dec 2021 22:00:05 +0100
+Message-Id: <20211216210005.13815-1-daniel@iogearbox.net>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] virtio_net: fix rx_drops stat for small pkts
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163968790063.17466.13042729723769172955.git-patchwork-notify@kernel.org>
-Date:   Thu, 16 Dec 2021 20:51:40 +0000
-References: <20211216031135.3182660-1-wangwenliang.1995@bytedance.com>
-In-Reply-To: <20211216031135.3182660-1-wangwenliang.1995@bytedance.com>
-To:     Wenliang Wang <wangwenliang.1995@bytedance.com>
-Cc:     mst@redhat.com, jasowang@redhat.com, davem@davemloft.net,
-        kuba@kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.3/26389/Thu Dec 16 07:02:49 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Hi David, hi Jakub,
 
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
+The following pull-request contains BPF updates for your *net* tree.
 
-On Thu, 16 Dec 2021 11:11:35 +0800 you wrote:
-> We found the stat of rx drops for small pkts does not increment when
-> build_skb fail, it's not coherent with other mode's rx drops stat.
-> 
-> Signed-off-by: Wenliang Wang <wangwenliang.1995@bytedance.com>
-> ---
->  drivers/net/virtio_net.c | 9 +++------
->  1 file changed, 3 insertions(+), 6 deletions(-)
+We've added 15 non-merge commits during the last 7 day(s) which contain
+a total of 12 files changed, 434 insertions(+), 30 deletions(-).
 
-Here is the summary with links:
-  - virtio_net: fix rx_drops stat for small pkts
-    https://git.kernel.org/netdev/net/c/053c9e18c6f9
+The main changes are:
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+1) Fix incorrect verifier state pruning behavior for <8B register spill/fill,
+   from Paul Chaignon.
 
+2) Fix x86-64 JIT's extable handling for fentry/fexit when return pointer
+   is an ERR_PTR(), from Alexei Starovoitov.
 
+3) Fix 3 different possibilities that BPF verifier missed where unprivileged
+   could leak kernel addresses, from Daniel Borkmann.
+
+4) Fix xsk's poll behavior under need_wakeup flag, from Magnus Karlsson.
+
+5) Fix an oob-write in test_verifier due to a missed MAX_NR_MAPS bump,
+   from Kumar Kartikeya Dwivedi.
+
+6) Fix a race in test_btf_skc_cls_ingress selftest, from Martin KaFai Lau.
+
+Please consider pulling these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
+
+Thanks a lot!
+
+Also thanks to reporters, reviewers and testers of commits in this pull-request:
+
+Alexei Starovoitov, Andrii Nakryiko, Brendan Jackman, Daniel Borkmann, 
+John Fastabend, Keith Wiles, Kuee K1r0a, Lorenzo Fontana, Maciej 
+Fijalkowski, Ryota Shiga (Flatt Security)
+
+----------------------------------------------------------------
+
+The following changes since commit ab443c53916730862cec202078d36fd4008bea79:
+
+  sch_cake: do not call cake_destroy() from cake_init() (2021-12-10 08:11:36 -0800)
+
+are available in the Git repository at:
+
+  https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git 
+
+for you to fetch changes up to c2fcbf81c332b42382a0c439bfe2414a241e4f5b:
+
+  bpf, selftests: Fix racing issue in btf_skc_cls_ingress test (2021-12-16 21:41:18 +0100)
+
+----------------------------------------------------------------
+Alexei Starovoitov (3):
+      bpf: Fix extable fixup offset.
+      bpf: Fix extable address check.
+      selftest/bpf: Add a test that reads various addresses.
+
+Daniel Borkmann (7):
+      bpf: Fix kernel address leakage in atomic fetch
+      bpf, selftests: Add test case for atomic fetch on spilled pointer
+      bpf: Fix kernel address leakage in atomic cmpxchg's r0 aux reg
+      bpf, selftests: Update test case for atomic cmpxchg on r0 with pointer
+      bpf: Fix signed bounds propagation after mov32
+      bpf: Make 32->64 bounds propagation slightly more robust
+      bpf, selftests: Add test case trying to taint map value pointer
+
+Kumar Kartikeya Dwivedi (1):
+      selftests/bpf: Fix OOB write in test_verifier
+
+Magnus Karlsson (1):
+      xsk: Do not sleep in poll() when need_wakeup set
+
+Martin KaFai Lau (1):
+      bpf, selftests: Fix racing issue in btf_skc_cls_ingress test
+
+Paul Chaignon (2):
+      bpf: Fix incorrect state pruning for <8B spill/fill
+      selftests/bpf: Tests for state pruning with u32 spill/fill
+
+ arch/x86/net/bpf_jit_comp.c                        | 51 ++++++++++--
+ kernel/bpf/verifier.c                              | 53 ++++++++----
+ net/xdp/xsk.c                                      |  4 +-
+ .../selftests/bpf/bpf_testmod/bpf_testmod.c        | 20 +++++
+ .../selftests/bpf/prog_tests/btf_skc_cls_ingress.c | 16 +++-
+ .../selftests/bpf/progs/test_module_attach.c       | 12 +++
+ tools/testing/selftests/bpf/test_verifier.c        |  2 +-
+ .../selftests/bpf/verifier/atomic_cmpxchg.c        | 86 ++++++++++++++++++++
+ .../testing/selftests/bpf/verifier/atomic_fetch.c  | 94 ++++++++++++++++++++++
+ .../selftests/bpf/verifier/search_pruning.c        | 71 ++++++++++++++++
+ tools/testing/selftests/bpf/verifier/spill_fill.c  | 32 ++++++++
+ .../selftests/bpf/verifier/value_ptr_arith.c       | 23 ++++++
+ 12 files changed, 434 insertions(+), 30 deletions(-)
