@@ -2,82 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C56F6477684
-	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 17:01:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F092D477704
+	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 17:09:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238739AbhLPQBd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Dec 2021 11:01:33 -0500
-Received: from mail-oi1-f175.google.com ([209.85.167.175]:38554 "EHLO
-        mail-oi1-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233061AbhLPQBc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 11:01:32 -0500
-Received: by mail-oi1-f175.google.com with SMTP id r26so37032627oiw.5;
-        Thu, 16 Dec 2021 08:01:32 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=dbSG32y6ukLoqfqRo2sXQ+YKKGePZyrZXfU9tAawzpw=;
-        b=qUkDD6WsVl4msrfnNzQD/rDW3DAl9r/pW3JVPxl773gzU0aSJnHqEFmyIvRFbMWRo3
-         I7AtSr1XB3osR9XG5bjkAcMMwfXsokLo32X3T/rDCQVHTevpWqjEJQNQeQs6Lw2Xf+mp
-         +djnkCc+d3m56HrRjXK8ld0HEKvwwYjvQGArOtKyCaNq4uSrlyxS/jpf+x4EZbqw43OF
-         aqo+up9PgrvR4Kk+C/13dHh4MDtoZDrZeUSLdGefWK31xgdKSkRvQ23pVQBLwXJtkylc
-         M3GicbeTXkdPqcBn/tU30jjvJJeaz4fAsa33nrdw4ZmkWifIaFlvSwcz31DkClX6exQ2
-         XnRg==
-X-Gm-Message-State: AOAM533cvwLli2511FfGPTXDNEqgn86pCU93aBSQYf9E4vr4pWkRkF5B
-        unVt83mIbuEy915wy6RWrTXfzImSKA==
-X-Google-Smtp-Source: ABdhPJwT+stimIXyLjdj+CQr+hmRqN6GhTves5+Kg2E8pFUvFz/CQxyByaiN3nzlpTAMNrsQfGSp7A==
-X-Received: by 2002:a05:6808:697:: with SMTP id k23mr4663881oig.18.1639670491935;
-        Thu, 16 Dec 2021 08:01:31 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id x17sm1077566oot.30.2021.12.16.08.01.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Dec 2021 08:01:31 -0800 (PST)
-Received: (nullmailer pid 298545 invoked by uid 1000);
-        Thu, 16 Dec 2021 16:01:30 -0000
-Date:   Thu, 16 Dec 2021 10:01:30 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Biao Huang <biao.huang@mediatek.com>
-Cc:     davem@davemloft.net, Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        srv_heupstream@mediatek.com, macpaul.lin@mediatek.com,
-        angelogioacchino.delregno@collabora.com, dkirjanov@suse.de
-Subject: Re: [PATCH net-next v10 4/6] net: dt-bindings: dwmac: Convert
- mediatek-dwmac to DT schema
-Message-ID: <Ybti2mNfEVNWQWgM@robh.at.kernel.org>
-References: <20211216055328.15953-1-biao.huang@mediatek.com>
- <20211216055328.15953-5-biao.huang@mediatek.com>
+        id S238893AbhLPQIz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Dec 2021 11:08:55 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:53468 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238943AbhLPQIv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 11:08:51 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E820B61E8D;
+        Thu, 16 Dec 2021 16:08:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11C0FC36AE4;
+        Thu, 16 Dec 2021 16:08:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1639670930;
+        bh=3KxkF/ZqZ4ahlQR47wiwqxVbEXQUbtGMU5LaCAgj8KA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=pnrbd9u1FSZzygZRQMPGwZQ3Clb8DjT1qiICVXwOZ0P+87+M/mma4ERq6ebVuFG4z
+         qpNcCMU6EmCyakpissutysLfXHS2ROI6CzCFqZsA/40vDv0TmxgC1hmmWg0vU2NpIs
+         WtGLlTASTy0bXMznE6ijVStIdYj8TF5UOhqEACZxEjd8HEK7SXdJSKlzpD/e2NhcEX
+         14rpvj/1SNS8W7ZxBt+qgPtzF8zQ1AcS1C+jgmVrsoWoPX6mDYuqYbQPu14bLiDlrI
+         98fV2qD5tT6XiX/8I4T22cklVZfMN5ZIcwCjSKMCMFKOGlBjBx6lOCbcWzEcFiIj9K
+         zrZHsxGewagrg==
+Date:   Thu, 16 Dec 2021 08:08:49 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>
+Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, mickeyr@marvell.com,
+        serhiy.pshyk@plvision.eu, taras.chornyi@plvision.eu,
+        Volodymyr Mytnyk <vmytnyk@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v2] net: prestera: flower template support
+Message-ID: <20211216080849.714c3707@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <1639562850-24140-1-git-send-email-volodymyr.mytnyk@plvision.eu>
+References: <1639562850-24140-1-git-send-email-volodymyr.mytnyk@plvision.eu>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211216055328.15953-5-biao.huang@mediatek.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 16, 2021 at 01:53:26PM +0800, Biao Huang wrote:
-> Convert mediatek-dwmac to DT schema, and delete old mediatek-dwmac.txt.
-> And there are some changes in .yaml than .txt, others almost keep the same:
->   1. compatible "const: snps,dwmac-4.20".
->   2. delete "snps,reset-active-low;" in example, since driver remove this
->      property long ago.
->   3. add "snps,reset-delay-us = <0 10000 10000>" in example.
->   4. the example is for rgmii interface, keep related properties only.
+On Wed, 15 Dec 2021 12:07:30 +0200 Volodymyr Mytnyk wrote:
+> From: Volodymyr Mytnyk <vmytnyk@marvell.com>
 > 
-> Signed-off-by: Biao Huang <biao.huang@mediatek.com>
-> ---
->  .../bindings/net/mediatek-dwmac.txt           |  91 ----------
->  .../bindings/net/mediatek-dwmac.yaml          | 155 ++++++++++++++++++
->  2 files changed, 155 insertions(+), 91 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/net/mediatek-dwmac.txt
->  create mode 100644 Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
+> Add user template explicit support. At this moment, max
+> TCAM rule size is utilized for all rules, doesn't matter
+> which and how much flower matches are provided by user. It
+> means that some of TCAM space is wasted, which impacts
+> the number of filters that can be offloaded.
+> 
+> Introducing the template, allows to have more HW offloaded
+> filters by specifying the template explicitly.
+> 
+> Example:
+>   tc qd add dev PORT clsact
+>   tc chain add dev PORT ingress protocol ip \
+>     flower dst_ip 0.0.0.0/16
+>   tc filter add dev PORT ingress protocol ip \
+>     flower skip_sw dst_ip 1.2.3.4/16 action drop
+> 
+> NOTE: chain 0 is the default chain id for "tc chain" & "tc filter"
+>       command, so it is omitted in the example above.
+> 
+> This patch adds only template support for default chain 0 suppoerted
+> by prestera driver at this moment. Chains are not supported yet,
+> and will be added later.
+> 
+> Signed-off-by: Volodymyr Mytnyk <vmytnyk@marvell.com>
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+This was applied to net-next.
