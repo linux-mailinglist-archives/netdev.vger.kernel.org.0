@@ -2,114 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 037F94771FB
-	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 13:40:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 198D74771FF
+	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 13:41:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235920AbhLPMkI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Dec 2021 07:40:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45482 "EHLO
+        id S236821AbhLPMlt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Dec 2021 07:41:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229747AbhLPMkI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 07:40:08 -0500
-Received: from mail-ua1-x931.google.com (mail-ua1-x931.google.com [IPv6:2607:f8b0:4864:20::931])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29A71C061574;
-        Thu, 16 Dec 2021 04:40:08 -0800 (PST)
-Received: by mail-ua1-x931.google.com with SMTP id a14so47011003uak.0;
-        Thu, 16 Dec 2021 04:40:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9LY0dxvSwFaCXK5+F3DtxBhs3+f8dYEuoAu1fa5cGgw=;
-        b=bbSCTzKBHJ20vjO+luIqPO5W99jkWqEGCnGPRI3jzrmtb8+SHeCdP8KPecgTKfb7JN
-         nlgIEY53uMUR+PzJd1avLO4uGwANcoN2TT277gC43UAaqcyWt0kvd3VJ4Ly7ctICmPjT
-         y2i3E/nJDEUePfonweAokT8Vb1AzAr2u8AjgZuB/k5KH37xbGC649vdImKktOG+oa/WC
-         3ywKIE9IWmvzqivFI6mqE9xszdyLsS9B7mBXIvxeTILy0u7jrjtWaaoCwBJUKX038lwg
-         koyP/cvumxZ7eENIEUY3j5Cg3pxsDypxfFKQfJw3USOb1sfvcdzq/NfDfjE4hAXJLQN4
-         ZXRA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9LY0dxvSwFaCXK5+F3DtxBhs3+f8dYEuoAu1fa5cGgw=;
-        b=vv+Eyg4R/kPIjKSs+yy0ygr7QMXLbB0yqaiNmwCBbiRJ6nILMTjc9fOT5qnw5hEo4d
-         WgZCzczAYtCwVxoO0Ly0d6Ht6yw0RSWxAxaGE4vQcdNBeXek7xP+/f5NBOTwkmfYTTU7
-         ND/k3MrGQVxgG9ZHLMWyVV4awj/RV0XoLc3cl6Zq9Uf7wyChEL8DcS4bFCCgbak8I8Da
-         qvCNZq5XrxxxB+PAwtaGzUFZSXDyT2fY7R++lOg/Q+R4pMGGaI9MzyiFpk9YR5WefPDu
-         BS/hRbP//xL2vKGGTHgUSr5P7Rdsz/0EzsdG0h600i7IbTagp4KQNOHUMTMAItfs7Diw
-         KHAw==
-X-Gm-Message-State: AOAM5310nCo/kOLdL2mXGnXQzLKE6Jwn0Nmgni0Avr1Df7lx7JMNjBRN
-        Gm619vDlRalGm+MnlMJ7+2EviJhOsGV3JnCNkms=
-X-Google-Smtp-Source: ABdhPJxIyv3/JcMZJjOESMA1zP7RxGySnR3a5ZAOAMrFT8+JrZBQV41RRRgcOd53pP+KBoyZ7JRQriSxrxRb7HZBxyg=
-X-Received: by 2002:ab0:ef:: with SMTP id 102mr613103uaj.46.1639658407217;
- Thu, 16 Dec 2021 04:40:07 -0800 (PST)
+        with ESMTP id S229747AbhLPMlt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 07:41:49 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02CCBC061574
+        for <netdev@vger.kernel.org>; Thu, 16 Dec 2021 04:41:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
+        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
+        Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=/Ml/7j0E/1wT1AhdlTDB46KMQDUPmwPkFdD19ipTVIA=; b=NWqOG57sN5LmkTGqWHBoHD8wZT
+        8YbwUGVP1Yz5aN3W/StIUpA7Ex6jJnE4pMFnrwEb32/IdOvh80IVE7650KjcAFO96x+niC9YBDplU
+        HNm14Ly+1oH//Smk7P+oAWumEjc8wJZjhy1OVc8BfXkPSMqgMCkLOvVC5KDVn2lJIwGjbzw/6MzaJ
+        5S4TMDdP7IQNnSsHYMygpKKY0zXCSq8idfS0gAQuFNPn94vrWMkQdCd0Qw8BL6X7eDGhqxTV8GbWN
+        OyGMMQgGSQfBRKad1rvPo+zYjDMYT8yByjlbNvFgs6FNJP1ybixxmx6ZlTFIxri0Fthm3WRngPcYL
+        cPdxv1pg==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:49790 helo=rmk-PC.armlinux.org.uk)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1mxq4s-0007oH-1C; Thu, 16 Dec 2021 12:41:42 +0000
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1mxq4r-00GWrp-Ay; Thu, 16 Dec 2021 12:41:41 +0000
+From:   "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Claudiu Manoil <claudiu.manoil@nxp.com>, netdev@vger.kernel.org
+Subject: [PATCH CFT net-next] net: enetc: use .mac_select_pcs() interface
 MIME-Version: 1.0
-References: <20211208040414.151960-1-xiayu.zhang@mediatek.com>
- <CAHNKnsRZpYsiWORgAejYwQqP5P=PSt-V7_i73G1yfh-UR2zFjw@mail.gmail.com>
- <6f4ae1d8b1b53cf998eaa14260d93fd3f4c8d5ad.camel@mediatek.com>
- <CAHNKnsQ6qLcUTiTiPEAp+rmoVtrGOjoY98nQFsrwSWUu-v7wYQ@mail.gmail.com>
- <76bc0c0174edc3a0c89bb880a237c844d44ac46b.camel@mediatek.com>
- <CAHNKnsTWkiaKPmOghn_ztLDOcTbci8w4wkWhQ_EZPMNu0dRy3Q@mail.gmail.com> <0e7b0e3d5796bb13d5243df34163849f32e8dfb3.camel@mediatek.com>
-In-Reply-To: <0e7b0e3d5796bb13d5243df34163849f32e8dfb3.camel@mediatek.com>
-From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
-Date:   Thu, 16 Dec 2021 15:39:55 +0300
-Message-ID: <CAHNKnsTMCbjS_vRZ=-sbtu6fxeDFph=r9kVuqnOVm7Y4RRJHag@mail.gmail.com>
-Subject: Re: [PATCH] Add Multiple TX/RX Queues Support for WWAN Network Device
-To:     Xiayu Zhang <xiayu.zhang@mediatek.com>
-Cc:     Loic Poulain <loic.poulain@linaro.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        =?UTF-8?B?SGFpanVuIExpdSAo5YiY5rW35YabKQ==?= 
-        <haijun.liu@mediatek.com>,
-        =?UTF-8?B?Wmhhb3BpbmcgU2h1ICjoiJLlj6zlubMp?= 
-        <Zhaoping.Shu@mediatek.com>,
-        =?UTF-8?B?SFcgSGUgKOS9leS8nyk=?= <HW.He@mediatek.com>,
-        srv_heupstream <srv_heupstream@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1mxq4r-00GWrp-Ay@rmk-PC.armlinux.org.uk>
+Sender: Russell King <rmk@armlinux.org.uk>
+Date:   Thu, 16 Dec 2021 12:41:41 +0000
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 16, 2021 at 3:13 PM Xiayu Zhang <xiayu.zhang@mediatek.com> wrote:
-> Hi Sergey and Loic,
->
-> Really thank you for these information.
->
-> It seems that I need to submit another patch for discussion.
->
-> At the meantime, I have some questions below and hope you could do me a
-> favor.
->
-> On Wed, 2021-12-15 at 22:16 +0800, Sergey Ryazanov wrote:
->
-> > There are two things that trigger the discussion:
-> > 1) absence of users of the new API;
->
-> Can I choose WWAN device simulator (wwan_hwsim.c) as the in-tree user
-> for these new APIs? And, Can I submit new APIs and changes for the user
-> driver in a single patch?
+Convert the PCS selection to use mac_select_pcs, which allows the PCS
+to perform any validation it needs.
 
-This is not a good idea. Simulator is intended to test the API that is
-used by other drivers for real hardware. But not for experiments with
-an otherwise "userless" API.
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+---
+ drivers/net/ethernet/freescale/enetc/enetc_pf.c | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
 
-If you need to configure the number of queues for an already in-tree
-driver, then just submit a patch for it. If you plan to submit a new
-driver and you need an infrastructure for it, then include patches
-with a new API into a series with the driver.
-
->> 2) an attempt to silently correct a user choice instead of explicit
->> rejection of a wrong value.
->
-> I will try to follow this:
->    a. If user doesn't specify a number, use WWAN driver's default
->    number.
->    b. If user specifies an improper value, reject it explicitly.
-
-Yep, this would be a good solution at the moment.
-
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc_pf.c b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
+index fe6a544f37f0..1f5bc8fe0a3c 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc_pf.c
++++ b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
+@@ -930,18 +930,21 @@ static void enetc_mdiobus_destroy(struct enetc_pf *pf)
+ 	enetc_imdio_remove(pf);
+ }
+ 
++static struct phylink_pcs *
++enetc_pl_mac_select_pcs(struct phylink_config *config, phy_interface_t iface)
++{
++	struct enetc_pf *pf = phylink_to_enetc_pf(config);
++
++	return pf->pcs ? &pf->pcs->pcs : NULL;
++}
++
+ static void enetc_pl_mac_config(struct phylink_config *config,
+ 				unsigned int mode,
+ 				const struct phylink_link_state *state)
+ {
+ 	struct enetc_pf *pf = phylink_to_enetc_pf(config);
+-	struct enetc_ndev_priv *priv;
+ 
+ 	enetc_mac_config(&pf->si->hw, state->interface);
+-
+-	priv = netdev_priv(pf->si->ndev);
+-	if (pf->pcs)
+-		phylink_set_pcs(priv->phylink, &pf->pcs->pcs);
+ }
+ 
+ static void enetc_force_rgmii_mac(struct enetc_hw *hw, int speed, int duplex)
+@@ -1058,6 +1061,7 @@ static void enetc_pl_mac_link_down(struct phylink_config *config,
+ 
+ static const struct phylink_mac_ops enetc_mac_phylink_ops = {
+ 	.validate = phylink_generic_validate,
++	.mac_select_pcs = enetc_pl_mac_select_pcs,
+ 	.mac_config = enetc_pl_mac_config,
+ 	.mac_link_up = enetc_pl_mac_link_up,
+ 	.mac_link_down = enetc_pl_mac_link_down,
 -- 
-Sergey
+2.30.2
+
