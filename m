@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 66CB9477D2C
+	by mail.lfdr.de (Postfix) with ESMTP id AF6F6477D2D
 	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 21:15:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241258AbhLPUOk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Dec 2021 15:14:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41474 "EHLO
+        id S241253AbhLPUOq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Dec 2021 15:14:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241255AbhLPUOg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 15:14:36 -0500
-Received: from mail-qk1-x733.google.com (mail-qk1-x733.google.com [IPv6:2607:f8b0:4864:20::733])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C848C06173E
-        for <netdev@vger.kernel.org>; Thu, 16 Dec 2021 12:14:36 -0800 (PST)
-Received: by mail-qk1-x733.google.com with SMTP id d21so108617qkl.3
-        for <netdev@vger.kernel.org>; Thu, 16 Dec 2021 12:14:36 -0800 (PST)
+        with ESMTP id S241257AbhLPUOj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 15:14:39 -0500
+Received: from mail-qv1-xf33.google.com (mail-qv1-xf33.google.com [IPv6:2607:f8b0:4864:20::f33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68E10C061574
+        for <netdev@vger.kernel.org>; Thu, 16 Dec 2021 12:14:39 -0800 (PST)
+Received: by mail-qv1-xf33.google.com with SMTP id p3so346070qvj.9
+        for <netdev@vger.kernel.org>; Thu, 16 Dec 2021 12:14:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=VCgBh67zZ41fWJ3g8Xv+4p0gW/ow/SI9hyPq6qr3Qec=;
-        b=muCeJbbzuBrSjNusHimGa29Y1e+/iyvpBreFw/DUcNYcqwIVFnd7rJYJ4QTr1BhiR+
-         mUFGJrxCvjUD/FnaR3UhSHniy5qWdC2++T2MHeD+50fJWyfs2UI+IfBiOBSHj/Pud8OA
-         X61RaiRNp10EDpXWC4XQemM/DKZbKQRxVzeDGUKWbIxmOp3g88iTQ3i8ikCWD0FN9No7
-         vvujYzYK32QsYeP279KkwNo/Wte05BNHwGHZ5Qj4VFIoE5pW4Ap7jdUmb+SaE/FTB+Rb
-         fRjZJNOB+fVRxTwRrO6yz6x8ZYyX/wl1iQgt3xQi5OlhbX42+l9rXnNc+1QulqLSB4TH
-         RlCw==
+        bh=SOSz7rMupCFksrwJBW8UoZ28B1jBI4VrYHVrRF7aGbw=;
+        b=LSjeJ6ael/XAVlGHke/dM1eoNC58i7oPslHeKAVHrSQCEzXExsfFlPQocp0q+tHPYf
+         7qHEdHuc1AvYVISy59beDFXMnj8cLN657E+/T98JRb+ZF2FxypRI6ewHrUCc6UKHexDL
+         P77vAcU52v3XD6fIFZ9Jt4AW0DcSdkMsOvYxM3/6jaLR7whjUyPYtE1afS7DQSBsHYyi
+         l8DpjrczgPS362XDY0SbBqu+E4KRL04mCz4X6TZ934PhZmlnPQ9W3FO6KHfF+oh2yPAV
+         BH80x2OHkKxEPQScNnypq37UCyptKSI0zWH5saxUxHPlyqhIhoNkTBiTIu/TGKBYgEzc
+         K0Pw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=VCgBh67zZ41fWJ3g8Xv+4p0gW/ow/SI9hyPq6qr3Qec=;
-        b=dE10lEWIx9/wO9aRhywBn+cenkuKtEVz+G4uahOVowfT9hkeSHnv+GUA7wGfrxIM2q
-         YWqejp/eA1u3RJtZK34E1JdR5sjf88S+Wld2492BkzlwYGvcMfeV9De4bIQk+8OejcPT
-         LXQSAFv/wy/HAZvnj5fdf6sg3z0CJ8HDH6i+1n1EOPngAEX2YrHByrvatXX4+2XCNJE0
-         JzDjWgadYkNJ38tZOQ/Z/gbVze236Jq6hOUOlXuWzNpiDUm0a1xNMMq3ZYiVHxdUlX7r
-         T0Q68lbcjbiqa7jXlUqFMJwSUwGMmSLJwvDS1xFXDubhOFf3DYx2v80UX6fUtvptI9lj
-         OxTA==
-X-Gm-Message-State: AOAM530mQnkqo82iJoI6wutZWNZL0qnJ53nEMDyf+Qsp2XaNEvrM0kQS
-        +DSnY5uaJ3rxcfNuOGHOs+uPV9xeyCYqwQ==
-X-Google-Smtp-Source: ABdhPJwZ26z29JgS41BkMBOAbNub0pVpoioqh9Eb2oujGCoZWZ5X/OfpcFEyn1CsGDfq9YsBFB+ovw==
-X-Received: by 2002:a05:620a:754:: with SMTP id i20mr13266566qki.312.1639685675432;
-        Thu, 16 Dec 2021 12:14:35 -0800 (PST)
+        bh=SOSz7rMupCFksrwJBW8UoZ28B1jBI4VrYHVrRF7aGbw=;
+        b=BWuhfRcls37LCPvysjkk4sk+kB6iwMq7IkKh5P6TRgbXwMRbflnGPqVy2l8jn79DaM
+         oeQhop90cZbfRfuJxgqgX1ubyXvj+E92ggm2hd2MfoIYEGv9oSjuZuc23hQo8b56qIwV
+         Ff7OrqeR4JdSGzIwwtRbb90x1VB81dZnotIfDu8l+wtR9iBUSfBJSAbHTqF7WjOUpx0d
+         j+4YwA+zdwg8D1lTFxoTmhZ9UJL4wUPex3j8c2ZjHX8kHzaqouL2aB/f9zqssYO3WXh9
+         6G7rS5Pd8I7UOFr35yOVYIegiveL0WLRSCo0U0LHNE0COarwPMCI99TAfFvTMpLfMxQY
+         XQbg==
+X-Gm-Message-State: AOAM532kh0r2v9ffhmq2GcAjPHSs2Knlf7GxC/BsfqG3e5i/FHWDZM0T
+        Wn8tCqSuMx/w1jVa+NUaJslQ227ypLNIBg==
+X-Google-Smtp-Source: ABdhPJzJDbFUyyBCOeoopDgsPTwZLfNXRlpcXFJiuUXfS6DTq6D25UpLFrPZLRB6vqavHGlA+4toEA==
+X-Received: by 2002:a05:6214:528c:: with SMTP id kj12mr17363211qvb.4.1639685678322;
+        Thu, 16 Dec 2021 12:14:38 -0800 (PST)
 Received: from tresc043793.tre-sc.gov.br (187-049-235-234.floripa.net.br. [187.49.235.234])
-        by smtp.gmail.com with ESMTPSA id a15sm5110266qtb.5.2021.12.16.12.14.32
+        by smtp.gmail.com with ESMTPSA id a15sm5110266qtb.5.2021.12.16.12.14.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Dec 2021 12:14:35 -0800 (PST)
+        Thu, 16 Dec 2021 12:14:37 -0800 (PST)
 From:   luizluca@gmail.com
 To:     netdev@vger.kernel.org
 Cc:     linus.walleij@linaro.org, andrew@lunn.ch, vivien.didelot@gmail.com,
         f.fainelli@gmail.com, olteanv@gmail.com, alsi@bang-olufsen.dk,
         arinc.unal@arinc9.com,
         Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Subject: [PATCH net-next 08/13] net: dsa: realtek: add new mdio interface for drivers
-Date:   Thu, 16 Dec 2021 17:13:37 -0300
-Message-Id: <20211216201342.25587-9-luizluca@gmail.com>
+Subject: [PATCH net-next 09/13] dt-bindings: net: dsa: realtek-mdio: document new interface
+Date:   Thu, 16 Dec 2021 17:13:38 -0300
+Message-Id: <20211216201342.25587-10-luizluca@gmail.com>
 X-Mailer: git-send-email 2.34.0
 In-Reply-To: <20211216201342.25587-1-luizluca@gmail.com>
 References: <20211216201342.25587-1-luizluca@gmail.com>
@@ -68,376 +68,121 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Luiz Angelo Daros de Luca <luizluca@gmail.com>
 
-This driver is a mdio_driver instead of a platform driver (like
-realtek-smi).
+realtek-mdio is a new mdio driver for realtek switches that use
+mdio (instead of SMI) interface.
 
-Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+Reviewed-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
 ---
- drivers/net/dsa/realtek/Kconfig        |  11 +-
- drivers/net/dsa/realtek/Makefile       |   1 +
- drivers/net/dsa/realtek/realtek-mdio.c | 284 +++++++++++++++++++++++++
- drivers/net/dsa/realtek/realtek.h      |   3 +
- 4 files changed, 297 insertions(+), 2 deletions(-)
- create mode 100644 drivers/net/dsa/realtek/realtek-mdio.c
+ .../bindings/net/dsa/realtek-mdio.txt         | 85 +++++++++++++++++++
+ MAINTAINERS                                   |  2 +-
+ 2 files changed, 86 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/devicetree/bindings/net/dsa/realtek-mdio.txt
 
-diff --git a/drivers/net/dsa/realtek/Kconfig b/drivers/net/dsa/realtek/Kconfig
-index 874574db9177..48194d0dd51f 100644
---- a/drivers/net/dsa/realtek/Kconfig
-+++ b/drivers/net/dsa/realtek/Kconfig
-@@ -9,6 +9,13 @@ menuconfig NET_DSA_REALTEK
- 	help
- 	  Select to enable support for Realtek Ethernet switch chips.
- 
-+config NET_DSA_REALTEK_MDIO
-+	tristate "Realtek MDIO connected switch driver"
-+	depends on NET_DSA_REALTEK
-+	default y
-+	help
-+	  Select to enable support for registering switches configured through MDIO.
-+
- config NET_DSA_REALTEK_SMI
- 	tristate "Realtek SMI connected switch driver"
- 	depends on NET_DSA_REALTEK
-@@ -20,7 +27,7 @@ config NET_DSA_REALTEK_RTL8367C
- 	tristate "Realtek RTL8367C switch subdriver"
- 	default y
- 	depends on NET_DSA_REALTEK
--	depends on NET_DSA_REALTEK_SMI
-+	depends on NET_DSA_REALTEK_SMI || NET_DSA_REALTEK_MDIO
- 	select NET_DSA_TAG_RTL8_4
- 	help
- 	  Select to enable support for Realtek RTL8365MB-VC. This subdriver
-@@ -32,7 +39,7 @@ config NET_DSA_REALTEK_RTL8366RB
- 	tristate "Realtek RTL8366RB switch subdriver"
- 	default y
- 	depends on NET_DSA_REALTEK
--	depends on NET_DSA_REALTEK_SMI
-+	depends on NET_DSA_REALTEK_SMI || NET_DSA_REALTEK_MDIO
- 	select NET_DSA_TAG_RTL4_A
- 	help
- 	  Select to enable support for Realtek RTL8366RB
-diff --git a/drivers/net/dsa/realtek/Makefile b/drivers/net/dsa/realtek/Makefile
-index 84d5ab062c89..01df2ccbb77f 100644
---- a/drivers/net/dsa/realtek/Makefile
-+++ b/drivers/net/dsa/realtek/Makefile
-@@ -1,4 +1,5 @@
- # SPDX-License-Identifier: GPL-2.0
-+obj-$(CONFIG_NET_DSA_REALTEK_MDIO) 	+= realtek-mdio.o
- obj-$(CONFIG_NET_DSA_REALTEK_SMI) 	+= realtek-smi.o
- obj-$(CONFIG_NET_DSA_REALTEK_RTL8366RB) += rtl8366.o
- rtl8366-objs 				:= rtl8366-core.o rtl8366rb.o
-diff --git a/drivers/net/dsa/realtek/realtek-mdio.c b/drivers/net/dsa/realtek/realtek-mdio.c
+diff --git a/Documentation/devicetree/bindings/net/dsa/realtek-mdio.txt b/Documentation/devicetree/bindings/net/dsa/realtek-mdio.txt
 new file mode 100644
-index 000000000000..b7febd63e04f
+index 000000000000..01b0463b808f
 --- /dev/null
-+++ b/drivers/net/dsa/realtek/realtek-mdio.c
-@@ -0,0 +1,284 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+/* Realtek MDIO interface driver
-+ *
-+ *
-+ * ASICs we intend to support with this driver:
-+ *
-+ * RTL8366   - The original version, apparently
-+ * RTL8369   - Similar enough to have the same datsheet as RTL8366
-+ * RTL8366RB - Probably reads out "RTL8366 revision B", has a quite
-+ *             different register layout from the other two
-+ * RTL8366S  - Is this "RTL8366 super"?
-+ * RTL8367   - Has an OpenWRT driver as well
-+ * RTL8368S  - Seems to be an alternative name for RTL8366RB
-+ * RTL8370   - Also uses SMI
-+ *
-+ * Copyright (C) 2017 Linus Walleij <linus.walleij@linaro.org>
-+ * Copyright (C) 2010 Antti Seppälä <a.seppala@gmail.com>
-+ * Copyright (C) 2010 Roman Yeryomin <roman@advem.lv>
-+ * Copyright (C) 2011 Colin Leitner <colin.leitner@googlemail.com>
-+ * Copyright (C) 2009-2010 Gabor Juhos <juhosg@openwrt.org>
-+ */
++++ b/Documentation/devicetree/bindings/net/dsa/realtek-mdio.txt
+@@ -0,0 +1,85 @@
++Realtek MDIO-based Switches
++==========================
 +
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/device.h>
-+#include <linux/spinlock.h>
-+#include <linux/skbuff.h>
-+#include <linux/of.h>
-+#include <linux/of_device.h>
-+#include <linux/of_mdio.h>
-+#include <linux/delay.h>
-+#include <linux/gpio/consumer.h>
-+#include <linux/platform_device.h>
-+#include <linux/regmap.h>
-+#include <linux/bitops.h>
-+#include <linux/if_bridge.h>
++Realtek MDIO-based Switches uses MDIO protocol as opposed to realtek
++SMI-based switches. The realtek-mdio driver is an mdio driver and it must
++be inserted inside an mdio node.
 +
-+#include "realtek.h"
++Required properties:
 +
-+/* Read/write via mdiobus */
-+#define MDC_MDIO_CTRL0_REG              31
-+#define MDC_MDIO_START_REG              29
-+#define MDC_MDIO_CTRL1_REG              21
-+#define MDC_MDIO_ADDRESS_REG            23
-+#define MDC_MDIO_DATA_WRITE_REG         24
-+#define MDC_MDIO_DATA_READ_REG          25
++- compatible: must be exactly one of (same as realtek-smi):
++      "realtek,rtl8365mb" (4+1 ports)
++      "realtek,rtl8366rb" (4+1 ports)
++      "realtek,rtl8366s"  (4+1 ports)
 +
-+#define MDC_MDIO_START_OP               0xFFFF
-+#define MDC_MDIO_ADDR_OP                0x000E
-+#define MDC_MDIO_READ_OP                0x0001
-+#define MDC_MDIO_WRITE_OP               0x0003
-+#define MDC_REALTEK_DEFAULT_PHY_ADDR    0x0
++Required properties:
++- reg: MDIO PHY ID to access the switch
 +
-+int realtek_mdio_read_reg(struct realtek_priv *priv, u32 addr, u32 *data)
-+{
-+        u32 phy_id = priv->phy_id;
-+	struct mii_bus *bus = priv->bus;
++Optional properties:
++- realtek,disable-leds: if the LED drivers are not used in the
++  hardware design this will disable them so they are not turned on
++  and wasting power.
 +
-+        BUG_ON(in_interrupt());
++See net/dsa/dsa.txt for a list of additional required and optional properties
++and subnodes of DSA switches.
 +
-+        mutex_lock(&bus->mdio_lock);
-+        /* Write Start command to register 29 */
-+        bus->write(bus, phy_id, MDC_MDIO_START_REG, MDC_MDIO_START_OP);
++Optional properties of dsa port:
 +
-+        /* Write address control code to register 31 */
-+        bus->write(bus, phy_id, MDC_MDIO_CTRL0_REG, MDC_MDIO_ADDR_OP);
++- realtek,ext-int: defines the external interface number (0, 1, 2). By default, 1.
 +
-+        /* Write Start command to register 29 */
-+        bus->write(bus, phy_id, MDC_MDIO_START_REG, MDC_MDIO_START_OP);
++Examples:
 +
-+        /* Write address to register 23 */
-+        bus->write(bus, phy_id, MDC_MDIO_ADDRESS_REG, addr);
++An example for the RTL8367S:
 +
-+        /* Write Start command to register 29 */
-+        bus->write(bus, phy_id, MDC_MDIO_START_REG, MDC_MDIO_START_OP);
++&mdio0 {
++	switch {
++		compatible = "realtek,rtl8367s";
++		reg = <29>;
 +
-+        /* Write read control code to register 21 */
-+        bus->write(bus, phy_id, MDC_MDIO_CTRL1_REG, MDC_MDIO_READ_OP);
++		ports {
++			#address-cells = <1>;
++			#size-cells = <0>;
++			reg = <0>;
 +
-+        /* Write Start command to register 29 */
-+        bus->write(bus, phy_id, MDC_MDIO_START_REG, MDC_MDIO_START_OP);
++			port@0 {
++				reg = <0>;
++				label = "lan4";
++			};
 +
-+        /* Read data from register 25 */
-+        *data = bus->read(bus, phy_id, MDC_MDIO_DATA_READ_REG);
++			port@1 {
++				reg = <1>;
++				label = "lan3";
++			};
 +
-+        mutex_unlock(&bus->mdio_lock);
++			port@2 {
++				reg = <2>;
++				label = "lan2";
++			};
 +
-+        return 0;
-+}
++			port@3 {
++				reg = <3>;
++				label = "lan1";
++			};
 +
-+static int realtek_mdio_write_reg(struct realtek_priv *priv, u32 addr, u32 data)
-+{
-+        u32 phy_id = priv->phy_id;
-+        struct mii_bus *bus = priv->bus;
++			port@4 {
++				reg = <4>;
++				label = "wan";
++			};
 +
-+        BUG_ON(in_interrupt());
++			port@7 {
++				reg = <7>;
++				ethernet = <&ethernet>;
++				phy-mode = "rgmii";
++				realtek,ext-int = <2>;
++				tx-internal-delay-ps = <2000>;
++				rx-internal-delay-ps = <0>;
 +
-+        mutex_lock(&bus->mdio_lock);
-+
-+        /* Write Start command to register 29 */
-+        bus->write(bus, phy_id, MDC_MDIO_START_REG, MDC_MDIO_START_OP);
-+
-+        /* Write address control code to register 31 */
-+        bus->write(bus, phy_id, MDC_MDIO_CTRL0_REG, MDC_MDIO_ADDR_OP);
-+
-+        /* Write Start command to register 29 */
-+        bus->write(bus, phy_id, MDC_MDIO_START_REG, MDC_MDIO_START_OP);
-+
-+        /* Write address to register 23 */
-+        bus->write(bus, phy_id, MDC_MDIO_ADDRESS_REG, addr);
-+
-+        /* Write Start command to register 29 */
-+        bus->write(bus, phy_id, MDC_MDIO_START_REG, MDC_MDIO_START_OP);
-+
-+        /* Write data to register 24 */
-+        bus->write(bus, phy_id, MDC_MDIO_DATA_WRITE_REG, data);
-+
-+        /* Write Start command to register 29 */
-+        bus->write(bus, phy_id, MDC_MDIO_START_REG, MDC_MDIO_START_OP);
-+
-+        /* Write data control code to register 21 */
-+        bus->write(bus, phy_id, MDC_MDIO_CTRL1_REG, MDC_MDIO_WRITE_OP);
-+
-+        mutex_unlock(&bus->mdio_lock);
-+        return 0;
-+}
-+
-+
-+/* Regmap accessors */
-+
-+static int realtek_mdio_write(void *ctx, u32 reg, u32 val)
-+{
-+	struct realtek_priv *priv = ctx;
-+
-+	return realtek_mdio_write_reg(priv, reg, val);
-+}
-+
-+static int realtek_mdio_read(void *ctx, u32 reg, u32 *val)
-+{
-+	struct realtek_priv *priv = ctx;
-+
-+	return realtek_mdio_read_reg(priv, reg, val);
-+}
-+
-+static const struct regmap_config realtek_mdio_regmap_config = {
-+	.reg_bits = 10, /* A4..A0 R4..R0 */
-+	.val_bits = 16,
-+	.reg_stride = 1,
-+	/* PHY regs are at 0x8000 */
-+	.max_register = 0xffff,
-+	.reg_format_endian = REGMAP_ENDIAN_BIG,
-+	.reg_read = realtek_mdio_read,
-+	.reg_write = realtek_mdio_write,
-+	.cache_type = REGCACHE_NONE,
++				fixed-link {
++					speed = <1000>;
++					full-duplex;
++				};
++			};
++		};
++	};
 +};
 +
-+static int realtek_mdio_probe(struct mdio_device *mdiodev)
-+{
-+	struct realtek_priv *priv;
-+	struct device *dev = &mdiodev->dev;
-+	const struct realtek_variant *var;
-+	int ret;
-+	struct device_node *np;
-+
-+	var = of_device_get_match_data(dev);
-+	priv = devm_kzalloc(&mdiodev->dev, sizeof(*priv), GFP_KERNEL);
-+	if (!priv)
-+		return -ENOMEM;
-+
-+	priv->phy_id = mdiodev->addr;
-+
-+	// Start by setting up the register mapping
-+	priv->map = devm_regmap_init(dev, NULL, priv, &realtek_mdio_regmap_config);
-+
-+	priv->bus = mdiodev->bus;
-+	priv->dev = &mdiodev->dev;
-+	priv->chip_data = (void *)priv + sizeof(*priv);
-+
-+	priv->clk_delay = var->clk_delay;
-+	priv->cmd_read = var->cmd_read;
-+	priv->cmd_write = var->cmd_write;
-+	priv->ops = var->ops;
-+
-+	if (IS_ERR(priv->map))
-+		dev_warn(dev, "regmap initialization failed");
-+
-+	priv->write_reg_noack=realtek_mdio_write_reg;
-+
-+	np = dev->of_node;
-+
-+	dev_set_drvdata(dev, priv);
-+	spin_lock_init(&priv->lock);
-+
-+	/* TODO: if power is software controlled, set up any regulators here */
-+
-+	/* FIXME: maybe skip if no gpio but reset after the switch was detected */
-+	/* Assert then deassert RESET */
-+	/*
-+	priv->reset = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_HIGH);
-+	if (IS_ERR(priv->reset)) {
-+		dev_err(dev, "failed to get RESET GPIO\n");
-+		return PTR_ERR(priv->reset);
-+	}
-+	msleep(REALTEK_SMI_HW_STOP_DELAY);
-+	gpiod_set_value(priv->reset, 0);
-+	msleep(REALTEK_SMI_HW_START_DELAY);
-+	dev_info(dev, "deasserted RESET\n");
-+	*/
-+
-+	priv->leds_disabled = of_property_read_bool(np, "realtek,disable-leds");
-+
-+	ret = priv->ops->detect(priv);
-+	if (ret) {
-+		dev_err(dev, "unable to detect switch\n");
-+		return ret;
-+	}
-+
-+	priv->ds = devm_kzalloc(dev, sizeof(*priv->ds), GFP_KERNEL);
-+	if (!priv->ds)
-+		return -ENOMEM;
-+
-+	priv->ds->dev = dev;
-+	priv->ds->num_ports = priv->num_ports;
-+	priv->ds->priv = priv;
-+	priv->ds->ops = var->ds_ops;
-+
-+	ret = dsa_register_switch(priv->ds);
-+	if (ret) {
-+		dev_err(priv->dev, "unable to register switch ret = %d\n", ret);
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static void realtek_mdio_remove(struct mdio_device *mdiodev)
-+{
-+	struct realtek_priv *priv = dev_get_drvdata(&mdiodev->dev);
-+
-+	if (!priv)
-+		return;
-+
-+	dsa_unregister_switch(priv->ds);
-+	//gpiod_set_value(smi->reset, 1);
-+	dev_set_drvdata(&mdiodev->dev, NULL);
-+}
-+
-+static void realtek_mdio_shutdown(struct mdio_device *mdiodev)
-+{
-+	struct realtek_priv *priv = dev_get_drvdata(&mdiodev->dev);
-+
-+	if (!priv)
-+		return;
-+
-+        dsa_switch_shutdown(priv->ds);
-+
-+        dev_set_drvdata(&mdiodev->dev, NULL);
-+}
-+
-+static const struct of_device_id realtek_mdio_of_match[] = {
-+#if IS_ENABLED(CONFIG_NET_DSA_REALTEK_RTL8366RB)
-+	{ .compatible = "realtek,rtl8366rb", .data = &rtl8366rb_variant, },
-+#endif
-+	/* FIXME: add support for RTL8366S and more */
-+	{ .compatible = "realtek,rtl8366s", .data = NULL, },
-+#if IS_ENABLED(CONFIG_NET_DSA_REALTEK_RTL8367C)
-+	{ .compatible = "realtek,rtl8365mb", .data = &rtl8367c_variant, },
-+#endif
-+	{ /* sentinel */ },
-+};
-+MODULE_DEVICE_TABLE(of, realtek_mdio_of_match);
-+
-+static struct mdio_driver realtek_mdio_driver = {
-+	.mdiodrv.driver = {
-+		.name = "realtek-mdio",
-+		.of_match_table = of_match_ptr(realtek_mdio_of_match),
-+	},
-+	.probe  = realtek_mdio_probe,
-+	.remove = realtek_mdio_remove,
-+	.shutdown = realtek_mdio_shutdown,
-+};
-+mdio_module_driver(realtek_mdio_driver);
-+
-+MODULE_LICENSE("GPL");
-diff --git a/drivers/net/dsa/realtek/realtek.h b/drivers/net/dsa/realtek/realtek.h
-index 976cb7823c92..c1f20a23ab9e 100644
---- a/drivers/net/dsa/realtek/realtek.h
-+++ b/drivers/net/dsa/realtek/realtek.h
-@@ -50,6 +50,8 @@ struct realtek_priv {
- 	struct gpio_desc	*mdio;
- 	struct regmap		*map;
- 	struct mii_bus		*slave_mii_bus;
-+	struct mii_bus		*bus;
-+	int                     phy_id;
+diff --git a/MAINTAINERS b/MAINTAINERS
+index a8f949b368a8..750f5c68c5fa 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -16152,7 +16152,7 @@ F:	sound/soc/codecs/rt*
+ REALTEK RTL83xx SMI DSA ROUTER CHIPS
+ M:	Linus Walleij <linus.walleij@linaro.org>
+ S:	Maintained
+-F:	Documentation/devicetree/bindings/net/dsa/realtek-smi.txt
++F:	Documentation/devicetree/bindings/net/dsa/realtek-*.txt
+ F:	drivers/net/dsa/realtek/*
  
- 	unsigned int		clk_delay;
- 	u8			cmd_read;
-@@ -66,6 +68,7 @@ struct realtek_priv {
- 	struct rtl8366_mib_counter *mib_counters;
- 
- 	const struct realtek_ops *ops;
-+	int 		 	(*setup)(struct dsa_switch *ds);
- 	int 		 	(*setup_interface)(struct dsa_switch *ds);
- 	int 			(*write_reg_noack)(struct realtek_priv *priv, u32 addr, u32 data);
- 
+ REALTEK WIRELESS DRIVER (rtlwifi family)
 -- 
 2.34.0
 
