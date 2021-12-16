@@ -2,148 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6059E47803A
-	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 23:59:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 32AE947805C
+	for <lists+netdev@lfdr.de>; Fri, 17 Dec 2021 00:14:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234400AbhLPW73 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Dec 2021 17:59:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50628 "EHLO
+        id S237114AbhLPXOt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Dec 2021 18:14:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230092AbhLPW73 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 17:59:29 -0500
-Received: from mail-ua1-x933.google.com (mail-ua1-x933.google.com [IPv6:2607:f8b0:4864:20::933])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9EB1C061574
-        for <netdev@vger.kernel.org>; Thu, 16 Dec 2021 14:59:28 -0800 (PST)
-Received: by mail-ua1-x933.google.com with SMTP id o1so1085521uap.4
-        for <netdev@vger.kernel.org>; Thu, 16 Dec 2021 14:59:28 -0800 (PST)
+        with ESMTP id S237100AbhLPXOr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 18:14:47 -0500
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1019AC061574
+        for <netdev@vger.kernel.org>; Thu, 16 Dec 2021 15:14:47 -0800 (PST)
+Received: by mail-ed1-x532.google.com with SMTP id r11so1121190edd.9
+        for <netdev@vger.kernel.org>; Thu, 16 Dec 2021 15:14:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=linux-foundation.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=wRN6ctqfJu07LFQgpR9yoDGI7H+H4potHhtu0qRWigo=;
-        b=XawKOgSZQCZyyTEPVSOhJxt8nbh5TUWtM+LlLKX30HsdgaExKSnW8/FusXGiXfAb11
-         ehoirax81rss5xB99wqoig137Jbe89I9YGaUE61ztK+s1EwW/preoc68B6SCUZ7g9NCR
-         Ae9NM0XFaX9O0QoFH4SCGvnRa3B/2wGb69CCyilNJo+oBc+kfmCRz4VmYScI3nJAfzkS
-         7w+vMFlIcec+zkBGrU69+4w8r4mmB7QE0TfWda1Nx4lEVQByC8VHXcOfbA69VWabcaxn
-         boQA3F0tQbYokF6fJ9Pjms5x9FLgoc0Lt4Ct5MIBRSPFy4hY2ijEWo6wL8c/gUFK4v5w
-         4TOg==
+        bh=leN4ToUWeqVpg13p/IoYSSc9DyWGdv7mnjoOFy505fA=;
+        b=COuDndAPNxF03xXqhgRDDWsGpGVwE98zlgUtoZag+Bvzj95HCbj01dkwIw4vwaq6Ga
+         N90PFU8P57pDst3A16Zcjrgo4vCie/DI4eGMjE6d8Yz7eednpxuVTAwOpZT5P4Mm5gtS
+         FZasthLCwD2sDJi9uHxz6z7IxY1oGo92UTBL4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=wRN6ctqfJu07LFQgpR9yoDGI7H+H4potHhtu0qRWigo=;
-        b=BhSzYNRFqGH1Muo2sgUQP9NcqHkZF2Kub/wCEXKuiE/5bdMWRnHzURHcSlm3pGYDqj
-         m9kmRvH2tGkHiPf0BGfjY3Wn4hHuybmwAJcG0u8riejoRhZAQWHZYb9yvs91NJQXzNEE
-         lOzl0fa8XjC/7B0/5OBNrtUhkU2YGQtVrQocONF7miiJvh+uG5VfncnClHIDNjA7fE+q
-         0MngzEMQea3rYf93MtJPh/trXARYxmvymyyr1MF+zSqYBrJmWuxtqW6oCwf0+9W0cq5P
-         cgoV/7Qk1A20U5S4udbF7+g/3JxOmexIfpIrTGpzgDHTsy99gqs7MoNaHLOvvZlXUV7K
-         tCDw==
-X-Gm-Message-State: AOAM530WCuGIJmxxdkoiqkD5fQJ1vlACByx2E6QSLshudPJUg/U5ttKQ
-        IL+mjFg2fCbccGDb9d4j9R9lePTS1Bk=
-X-Google-Smtp-Source: ABdhPJwcplYKDF5Z16YATQUSIGzMa5hrM5dgsMY3aCH/FLrcz2M4tC2uzFvp+yzLNAKOSE1VkgJ/dQ==
-X-Received: by 2002:a67:ed8e:: with SMTP id d14mr61614vsp.33.1639695567995;
-        Thu, 16 Dec 2021 14:59:27 -0800 (PST)
-Received: from mail-ua1-f42.google.com (mail-ua1-f42.google.com. [209.85.222.42])
-        by smtp.gmail.com with ESMTPSA id i62sm338144vke.33.2021.12.16.14.59.26
+        bh=leN4ToUWeqVpg13p/IoYSSc9DyWGdv7mnjoOFy505fA=;
+        b=EyvLcs3gR65eSv+t+xswR1z6td7kEx3a1CaBIPhx3ElIyjEOXtKf//L7CvUaU7ChTU
+         N1TqY6tm6HFmDv1P9aaAq0vEPNlqSAMQsx6cILvi0f3zktuuBUzulKN4qaUt6NxgZas3
+         afwatB6sCGnNh1rNiW78loKHiFPQHMnQ26PIBaEPI1BVOTfJvBXDoZFcevQPXy0zEf8K
+         rIfF0Ps8uP8mYcAxQx/uny91a9Wk1j0DpIyZusZPfAxji9938dVzj1UBbpEnOY5Gh4jS
+         rtinuKh1zjbJb+LG1VTxSQtW07z6jTWz2UUEZAicqXYDGybgcDgkzuYw0qidRzqaSx8l
+         PzAw==
+X-Gm-Message-State: AOAM530tlPkkdhU5Grsd9Rjv+ejimtvg02i0tA9ftndOeB2AsP0WwQ7J
+        gFhXI9s2+RY/Ld/sDDj4/Mxj+0twgDlfrBb7bQU=
+X-Google-Smtp-Source: ABdhPJxmGvkrRChOGEsap4RDEaEfHFWBNRwEJSmDiapzD+y6Lq1bVe6qxhYa6EeyOj/BgvqsAmMfMA==
+X-Received: by 2002:a17:906:7688:: with SMTP id o8mr275977ejm.291.1639696485131;
+        Thu, 16 Dec 2021 15:14:45 -0800 (PST)
+Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com. [209.85.128.45])
+        by smtp.gmail.com with ESMTPSA id k21sm2792023edo.87.2021.12.16.15.14.44
         for <netdev@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 16 Dec 2021 14:59:27 -0800 (PST)
-Received: by mail-ua1-f42.google.com with SMTP id w23so1075053uao.5
-        for <netdev@vger.kernel.org>; Thu, 16 Dec 2021 14:59:26 -0800 (PST)
-X-Received: by 2002:a05:6102:31b3:: with SMTP id d19mr60954vsh.79.1639695566536;
- Thu, 16 Dec 2021 14:59:26 -0800 (PST)
+        Thu, 16 Dec 2021 15:14:44 -0800 (PST)
+Received: by mail-wm1-f45.google.com with SMTP id p18so437620wmq.5
+        for <netdev@vger.kernel.org>; Thu, 16 Dec 2021 15:14:44 -0800 (PST)
+X-Received: by 2002:a05:600c:1d97:: with SMTP id p23mr157474wms.144.1639696483940;
+ Thu, 16 Dec 2021 15:14:43 -0800 (PST)
 MIME-Version: 1.0
-References: <20211215201158.271976-1-kafai@fb.com> <CA+FuTSdR0yPwXAZZjziGOeujJ_Ac19fX1DsqfRXX3Dsn1uFPAQ@mail.gmail.com>
- <20211216222332.fltkclu4x3udpomr@kafai-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20211216222332.fltkclu4x3udpomr@kafai-mbp.dhcp.thefacebook.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Thu, 16 Dec 2021 17:58:49 -0500
-X-Gmail-Original-Message-ID: <CA+FuTSfsrMUAz-5Huf2j4f35ttqO5gpFKvsn4uJLXtRPqEaKEg@mail.gmail.com>
-Message-ID: <CA+FuTSfsrMUAz-5Huf2j4f35ttqO5gpFKvsn4uJLXtRPqEaKEg@mail.gmail.com>
-Subject: Re: [RFC PATCH v2 net-next] net: Preserve skb delivery time during forward
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+References: <20211216213207.839017-1-kuba@kernel.org>
+In-Reply-To: <20211216213207.839017-1-kuba@kernel.org>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Thu, 16 Dec 2021 15:14:27 -0800
+X-Gmail-Original-Message-ID: <CAHk-=whayMx6-Z7j7H1eAquy0Svv93Tyt7Wq6Efaogw8W+WpoQ@mail.gmail.com>
+Message-ID: <CAHk-=whayMx6-Z7j7H1eAquy0Svv93Tyt7Wq6Efaogw8W+WpoQ@mail.gmail.com>
+Subject: Re: [GIT PULL] Networking for 5.16-rc6
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     David Miller <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, kernel-team@fb.com
+        Johannes Berg <johannes@sipsolutions.net>,
+        Kalle Valo <kvalo@codeaurora.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > > @@ -530,7 +538,14 @@ struct skb_shared_info {
-> > >         /* Warning: this field is not always filled in (UFO)! */
-> > >         unsigned short  gso_segs;
-> > >         struct sk_buff  *frag_list;
-> > > -       struct skb_shared_hwtstamps hwtstamps;
-> > > +       union {
-> > > +               /* If SKBTX_DELIVERY_TSTAMP is set in tx_flags,
-> > > +                * tx_delivery_tstamp is stored instead of
-> > > +                * hwtstamps.
-> > > +                */
-> >
-> > Should we just encode the timebase and/or type { timestamp,
-> > delivery_time } in th lower bits of the timestamp field? Its
-> > resolution is higher than actual clock precision.
-> In skb->tstamp ?
-
-Yes. Arguably a hack, but those bits are in the noise now, and it
-avoids the clone issue with skb_shinfo (and scarcity of flag bits
-there).
-
-> >
-> > is non-zero skb->tstamp test not sufficient, instead of
-> > SKBTX_DELIVERY_TSTAMP_ALLOW_FWD.
-> >
-> > It is if only called on the egress path. Is bpf on ingress the only
-> > reason for this?
-> Ah. ic.  meaning testing non-zero skb->tstamp and then call
-> skb_save_delivery_time() only during the veth-egress-path:
-> somewhere in veth_xmit() => veth_forward_skb() but before
-> skb->tstamp was reset to 0 in __dev_forward_skb().
-
-Right. If delivery_time is the only use of skb->tstamp on egress, and
-timestamp is the only use on ingress, then the only time the
-delivery_time needs to be cached if when looping from egress to
-ingress and this field is non-zero.
-
+On Thu, Dec 16, 2021 at 1:32 PM Jakub Kicinski <kuba@kernel.org> wrote:
 >
-> Keep *_forward() and bpf_out_*() unchanged (i.e. keep skb->tstamp = 0)
-> because the skb->tstamp could be stamped by net_timestamp_check().
->
-> Then SKBTX_DELIVERY_TSTAMP_ALLOW_FWD is not needed.
->
-> Did I understand your suggestion correctly?
+> Relatively large batches of fixes from BPF and the WiFi stack,
+> calm in general networking.
 
-I think so.
+Hmm. I get a very different diffstat, and also a different shortlog
+than the one you quote.
 
-But the reality is complicated if something may be setting a delivery
-time on ingress (a BPF filter?)
->
-> However, we still need a bit to distinguish tx_delivery_tstamp
-> from hwtstamps.
->
-> >
-> > > +{
-> > > +       if (skb_shinfo(skb)->tx_flags & SKBTX_DELIVERY_TSTAMP_ALLOW_FWD) {
-> > > +               skb_shinfo(skb)->tx_delivery_tstamp = skb->tstamp;
-> > > +               skb_shinfo(skb)->tx_flags |= SKBTX_DELIVERY_TSTAMP;
-> > > +               skb_shinfo(skb)->tx_flags &= ~SKBTX_DELIVERY_TSTAMP_ALLOW_FWD;
-> > > +       }
-> >
-> > Is this only called when there are no clones/shares?
-> No, I don't think so.  TCP clone it.  I also started thinking about
-> this after noticing a mistake in the change in  __tcp_transmit_skb().
->
-> There are other places that change tx_flags, e.g. tcp_offload.c.
-> It is not shared at those places or there is some specific points
-> in the stack that is safe to change ?
+I do get the top commit you claim:
 
-The packet probably is not yet shared. Until the TCP stack gives a
-packet to the IP layer, it can treat it as exclusive.
+>   git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.16-rc6
+>
+> for you to fetch changes up to 0c3e2474605581375d808bb3b9ce0927ed3eef70:
+>
+>   Merge https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf (2021-12-16 13:06:49 -0800)
 
-Though it does seem that these fields are accessed in a possibly racy
-manner. Drivers with hardware tx timestamp offload may set
-skb_shinfo(orig_skb)->tx_flags & SKBTX_IN_PROGRESS without checking
-whether the skb may be cloned.
+But your shortlog doesn't contain
+
+  Alexei Starovoitov (3):
+        bpf: Fix extable fixup offset.
+        bpf: Fix extable address check.
+        selftest/bpf: Add a test that reads various addresses.
+
+  Daniel Borkmann (7):
+        bpf: Fix kernel address leakage in atomic fetch
+        bpf, selftests: Add test case for atomic fetch on spilled pointer
+        bpf: Fix kernel address leakage in atomic cmpxchg's r0 aux reg
+        bpf, selftests: Update test case for atomic cmpxchg on r0 with pointer
+        bpf: Fix signed bounds propagation after mov32
+        bpf: Make 32->64 bounds propagation slightly more robust
+        bpf, selftests: Add test case trying to taint map value pointer
+
+  Kumar Kartikeya Dwivedi (1):
+        selftests/bpf: Fix OOB write in test_verifier
+
+  Magnus Karlsson (1):
+        xsk: Do not sleep in poll() when need_wakeup set
+
+  Paul Chaignon (2):
+        bpf: Fix incorrect state pruning for <8B spill/fill
+        selftests/bpf: Tests for state pruning with u32 spill/fill
+
+and that seems to be the missing diffstat contents also.
+
+It looks like your pull request was done without that last merge, even
+though you do mention it as being the top of tree.
+
+I've pulled this, because that last merge looks fine and intentional,
+but I'd like you to double-check your workflow to see what happened to
+give a stale diffstat and shortlog...
+
+              Linus
