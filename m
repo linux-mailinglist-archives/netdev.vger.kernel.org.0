@@ -2,96 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CFA03476D34
-	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 10:17:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A64B476D3B
+	for <lists+netdev@lfdr.de>; Thu, 16 Dec 2021 10:18:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235166AbhLPJRW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Dec 2021 04:17:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54466 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235164AbhLPJRU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 04:17:20 -0500
-Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45DE2C06173E;
-        Thu, 16 Dec 2021 01:17:20 -0800 (PST)
-Received: by mail-qk1-x72b.google.com with SMTP id d21so15414552qkl.3;
-        Thu, 16 Dec 2021 01:17:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=WqQ0KJAV/sB2BrhVHdi1jGSeQPiM2L9NcTy4hRpXIq0=;
-        b=Q2NlOsPmRia8fogvyzJ8O4+S8/SSoC6qKL9pzJ1EQ2wRmeDAT57E4upsdqTBFu3Tot
-         uD4H5vaYO2GGxyBYP7ioeA1TggvRw1G5dOiTDltaho8fmhkh+VcuDjjLzjGILGgu0+hp
-         GoV426LwXjnVGgUICOxOZligXJ8C1cnSBLwrk1gOusU+ml5tsZKefiNgSkOFwunUFZtm
-         4Wy/5wszIqkC1ElWMWYbNYSYoXY3PxQium5u08Yxo3Qx2c7fUyNFyIj2C/qfo7gaXQG1
-         XQwL+LFtDBOU7ozXqnslibgwRXa9mwf+4KTVHiYV89F0I4TDO0wMWUEp8AskytLsScuZ
-         44lw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=WqQ0KJAV/sB2BrhVHdi1jGSeQPiM2L9NcTy4hRpXIq0=;
-        b=3PqdDfNHZRhNGb8v7AnusiyqaxuVZQ0nSXYfO0buhz4B4jJkGYC9X9IgwDglB1zeaS
-         sT3qqe1j4g4yz+iGNpOb8YLi0bvjeK4woOBcQYTP5V9ECtqHGkN5Ki1Gcm+avuRpZuw1
-         t3v3SLn8WOdvsc2E8Mg00MiaK1tzCzy7u+yswGPDmqLrB7P6fQUgkl7n1pXkVnPp+I8W
-         Yd7eOzkylQps9Y/K9JyswBIFZJ88qTsTCOP31vZD9Abo7tHn5TX4fe9vQ1BRyg9B/bL5
-         dAwtCsP26efeNqSMfofpsrGTI/vIhh0gYzRg8+2seoqa/OFeR4gqsguXab1O3H3o8I63
-         PX8w==
-X-Gm-Message-State: AOAM530BUDwiPUz7f9h1c04Fa/OJzrWeIeoyS2LZ99vfJr08VH9irE8C
-        VI7EobgtylAEFvKFNx4aAlk=
-X-Google-Smtp-Source: ABdhPJxQez2uKtCH1lS2Qr4sSt/5Q8RcxuKhMKuo/J5SeEmcu2wcApDpVIrZMbuwRV/bxX+tkrNyAA==
-X-Received: by 2002:a05:620a:4045:: with SMTP id i5mr11266578qko.592.1639646239514;
-        Thu, 16 Dec 2021 01:17:19 -0800 (PST)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id o10sm3698169qtx.33.2021.12.16.01.17.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Dec 2021 01:17:19 -0800 (PST)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: deng.changcheng@zte.com.cn
-To:     ajay.kathat@microchip.com
-Cc:     claudiu.beznea@microchip.com, kvalo@kernel.org,
-        davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Changcheng Deng <deng.changcheng@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] wilc1000: use min() to make code cleaner
-Date:   Thu, 16 Dec 2021 09:17:13 +0000
-Message-Id: <20211216091713.449841-1-deng.changcheng@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        id S235179AbhLPJSg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Dec 2021 04:18:36 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:40216 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235163AbhLPJSf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 04:18:35 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2DA1BB82273;
+        Thu, 16 Dec 2021 09:18:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C95CEC36AE2;
+        Thu, 16 Dec 2021 09:18:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1639646313;
+        bh=GemqB+hSqdhqV2+LmupsOCkmp2mc3s7bLwHxny7XjLo=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=SroI5Q8kNDDHIUnAZINLH9/KeaReyNJGfJ+oLwtW4MCVZ6qEKk6mQzC/atwU0PlkE
+         6dCbFyYX6v9qcbpsVVu7LEpQv9G9KGkDK8dFmthOJe7thWvkAn7V+fff7ql/YqR3em
+         W7bXgKXQ+avNH1kU9Y7zcMFcVBPwqZ26DjASnYo75aqhGSpfVSHZifw0nAZ8VUYX1a
+         ARPUbyiyNotkwoEPIWK0c4zKfnS8u1vAVzI37HBvKdaVd1wUYGB76pHSIuoChQrv2B
+         Y+hxK19Hf1MTuLLez2JkmBMjQOAN3N2YSkrWktfudBVQhovXp/rqUhrgSk+oVn+FWx
+         29bzH3kOnHV8Q==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Loic Poulain <loic.poulain@linaro.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org, Luciano Coelho <luca@coelho.fi>
+Subject: Re: pull-request: wireless-drivers-next-2021-12-07
+References: <20211207144211.A9949C341C1@smtp.kernel.org>
+        <20211207211412.13c78ace@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <87tufjfrw0.fsf@codeaurora.org>
+        <20211208065025.7060225d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <87zgpb83uz.fsf@codeaurora.org>
+        <CAMZdPi9eeVCakwQPnzvc-3BHo8ABv6=kb3VJj+FAXDZbz4R6bw@mail.gmail.com>
+Date:   Thu, 16 Dec 2021 11:18:30 +0200
+In-Reply-To: <CAMZdPi9eeVCakwQPnzvc-3BHo8ABv6=kb3VJj+FAXDZbz4R6bw@mail.gmail.com>
+        (Loic Poulain's message of "Wed, 8 Dec 2021 17:58:58 +0100")
+Message-ID: <87mtl0di1l.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Changcheng Deng <deng.changcheng@zte.com.cn>
+Loic Poulain <loic.poulain@linaro.org> writes:
 
-Use min() in order to make code cleaner.
+>> > drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c:3911:28:
+>> > warning: incorrect type in assignment (different base types)
+>> > drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c:3911:28:
+>> > expected restricted __le32 [assigned] [usertype] period_msec
+>> > drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c:3911:28:
+>> > got restricted __le16 [usertype]
+>> > drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c:3913:30:
+>> > warning: incorrect type in assignment (different base types)
+>> > drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c:3913:30:
+>> > expected unsigned char [assigned] [usertype] keep_alive_id
+>> > drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c:3913:30:
+>> > got restricted __le16 [usertype]
+>>
+>> Loic, your patch should fix these, right?
+>>
+>> https://patchwork.kernel.org/project/linux-wireless/patch/1638953708-29192-1-git-send-email-loic.poulain@linaro.org/
+>
+> Yes.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Changcheng Deng <deng.changcheng@zte.com.cn>
----
- drivers/net/wireless/microchip/wilc1000/spi.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+Thanks, this is now applied and will be part of next pull request,
+hopefully sent on Friday. iwlwifi fixes we are planning to submit next
+week.
 
-diff --git a/drivers/net/wireless/microchip/wilc1000/spi.c b/drivers/net/wireless/microchip/wilc1000/spi.c
-index 6e7fd18c14e7..629ba5d7a7df 100644
---- a/drivers/net/wireless/microchip/wilc1000/spi.c
-+++ b/drivers/net/wireless/microchip/wilc1000/spi.c
-@@ -675,10 +675,7 @@ static int wilc_spi_dma_rw(struct wilc *wilc, u8 cmd, u32 adr, u8 *b, u32 sz)
- 		int nbytes;
- 		u8 rsp;
- 
--		if (sz <= DATA_PKT_SZ)
--			nbytes = sz;
--		else
--			nbytes = DATA_PKT_SZ;
-+		nbytes = min(sz, DATA_PKT_SZ);
- 
- 		/*
- 		 * Data Response header
 -- 
-2.25.1
+https://patchwork.kernel.org/project/linux-wireless/list/
 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
