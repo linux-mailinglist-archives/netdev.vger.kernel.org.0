@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 283744785F2
-	for <lists+netdev@lfdr.de>; Fri, 17 Dec 2021 09:08:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 453184785F7
+	for <lists+netdev@lfdr.de>; Fri, 17 Dec 2021 09:09:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233624AbhLQIIu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Dec 2021 03:08:50 -0500
-Received: from mail-bn8nam11on2088.outbound.protection.outlook.com ([40.107.236.88]:22145
+        id S233660AbhLQIIz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Dec 2021 03:08:55 -0500
+Received: from mail-bn8nam11on2080.outbound.protection.outlook.com ([40.107.236.80]:15745
         "EHLO NAM11-BN8-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S233543AbhLQIIt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 17 Dec 2021 03:08:49 -0500
+        id S233643AbhLQIIu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 17 Dec 2021 03:08:50 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cvmM+vdO29aMclVVAY9guKoaDRToqzN6STo8rxCQ8knK57FPz63cMJrSeKp4ubIp6sSXhXpvn4D10lxemKTXZU5eV/iPC7sqjhWfhMHa6yZ1IkEa/WW9v+18OeITuwtd6u7N+ad22+QlTTRN9H6T2TYOzLTqQgcjArAYl2NCUeZbW9jzotRT/WP7CPqWzRdx4uq13vIJYBrMFQp+Dc6vBTCc0HC/xVWKr8OOkic6gCz0LyqvwaHLyZTQbNUaFhXxjKiT+MPQb6oH4XlXpyQE0MLAcCJNe10zNpA7Ny6KK3ezIA+/bwqoWC07sbEDPMqrQ07RsRgoyyc6anhXQic0bA==
+ b=KG/2dmZkZvnu2XKSIVFOGBgHBcK8rUA7BbzCTgtLe/Cda/VNXLhnSMIye0brZYQD7k4UjGOiS4+xcnXlEzXFeZyPw0A/LHLudyV/ZogrxK7ieBUh48MowbkDmGXvrxO4UfC/hTLf3ZoQUod8YHYUxgz2fxNcsck6XTeLU6EBTTjkWwGuuVRLsn0Fm/xto71carjtQmg0VUogUQH1G4pqzuLBWp1veNaT+o2oZLRCC/XM0dLDKYNE7DpVuFtQus1huvXS9K+opNC2m7ORD3ihcvDHF9EqcQeG13+D3f5CEE+FU9J3TMfB/wvbio0QVuvJ1FaeDB5Brsjd+GLAiYXzUQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=h07mXzYdi4TBMoea5nxyjBJeizkU0AsttHto9/x77eg=;
- b=Hl46BppavOHZn+h35QHxZZ1K+VPchh1VnhKwhLEDdNQhz5hrGPaCloehavNHthH2bHD2wftAE/N8O1hbl/RCvd2g2F9JvYpjJ1r5jYsj/0t/qVvmsfvvjqEXbKPif9AQb/itzW7u+/S50miAdZpNL0oaa2mILmwbst17UsAfqJltAu9kxmsO4vSvtAfibmSFnxsw9dHGN8Ry2Z4hKub7w69zTQg7YgOg2iCgWT1R83O2X9aThnNkIEh83UT/kIrHonvqxrjTbbe8z/CSkzVrUDzgl7x75lxVhWOefXaBPqyBrYmIIFvxYZ0WcMShQ8Jh+XpIAi1fLJS1Gq7YYNupdA==
+ bh=r3rTsevlOJ2SY3QEZxp9KkCgmpC9E6kYwZSWQ+XLqPM=;
+ b=bAmYvxAB0IOrvSJ5yYvTHmGo+RZ3cH08ptm9DpH+0hbWBJR13dCSLnGMdB/FCSFGgPJrxCbZffC9C0fBKckDYO8b+M3WwMlQ6TauN+bd/F8Ru6n/XHC+gWo8iDh9Ym63dhKMiyw9xViXRwNd1/dl4+F1m0oX/d8qApv3DL0l55TCGzDqr3LLwBSS/f0ooDCgwmTfwahk7qurbfwVSdsvmNbzHeklZmIYwE0JfF4F7tIf39Ii2HNJ+r5+HjrETaxDbzC3PiQF/fJHbNuv+VbiDfEQWpaGOSJY7v2sFiKLDY2Uu+7+kHY7qjsstnCYCPG+fCxRp5cF4MGyCF4K+KqfdQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  12.22.5.235) smtp.rcpttodomain=lists.linux-foundation.org
  smtp.mailfrom=nvidia.com; dmarc=pass (p=quarantine sp=quarantine pct=100)
@@ -26,17 +26,17 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=h07mXzYdi4TBMoea5nxyjBJeizkU0AsttHto9/x77eg=;
- b=Nlia548BagKfmREj383Hvz4hebW0tYlix2jP8oGw48QLk6Podi0GvggajBzPR3RC+dIsv7tyV4VfGtZdi2Q17HARgI5R4gjauONidTQw0xfSV/C9f7F/vcOmPxziQlORYqEpevmz+UKlMAv16dUlNo/hzdm5O7jAoD/oPoq0tNzri/84pt5vhX+31mm8VOuZLRs3MIVy44hAcALf3lTIRkw5Uovvw6bxR19QQftmD5GXGaXa3dY/ASTZzy+VLjGACEjOxzdvUk0n4KeviOC/0/lMITQCKpeaIVn5CcvY2PCDt+q8j65Gk3tiaKJnb3PdeJfchv7vzzQWBODIdYE6tQ==
+ bh=r3rTsevlOJ2SY3QEZxp9KkCgmpC9E6kYwZSWQ+XLqPM=;
+ b=RvPnBrhwGS52Wbnh/J6Hi9Rx3PD8JJvGJCJ7UN38ESwbxGGGncBFtk4dqIiB1Udn9JE5A5M7aSwfa1rF6Af5AsrOIXHuqJrVwlD/vu665UW88QvU+dQ6m0iegkx/8wBkdjj/2Syihv/LJQKnx0udbaXVhTjdbvuLNQE3o5en+9A+2RNWpUqK/TtbTgAT6qGe3Br3wFRUmE7OQt8HPkZZPZHT6crVIYHqTCWBPfUXi02BI60/lFkkvm4rCTza8kToWkYCiC2Ax6AXqVgX2+Lk2UqsLMjpu+njIxfxKamBgKciwZSNCzWFncYdW5lOKJzgm4A+fvyso5QLoZYCfCETAw==
 Received: from DM5PR13CA0039.namprd13.prod.outlook.com (2603:10b6:3:7b::25) by
- BYAPR12MB3638.namprd12.prod.outlook.com (2603:10b6:a03:dc::19) with Microsoft
+ MWHPR12MB1261.namprd12.prod.outlook.com (2603:10b6:300:10::9) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4801.14; Fri, 17 Dec 2021 08:08:46 +0000
+ 15.20.4778.17; Fri, 17 Dec 2021 08:08:47 +0000
 Received: from DM6NAM11FT003.eop-nam11.prod.protection.outlook.com
  (2603:10b6:3:7b:cafe::58) by DM5PR13CA0039.outlook.office365.com
  (2603:10b6:3:7b::25) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4823.8 via Frontend
- Transport; Fri, 17 Dec 2021 08:08:46 +0000
+ Transport; Fri, 17 Dec 2021 08:08:47 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
@@ -53,15 +53,15 @@ Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL107.nvidia.com
 Received: from sw-mtx-036.mtx.labs.mlnx (172.20.187.6) by
  rnnvmail201.nvidia.com (10.129.68.8) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.986.9;
- Fri, 17 Dec 2021 00:08:42 -0800
+ Fri, 17 Dec 2021 00:08:43 -0800
 From:   Parav Pandit <parav@nvidia.com>
 To:     <dsahern@gmail.com>, <stephen@networkplumber.org>,
         <netdev@vger.kernel.org>
 CC:     <virtualization@lists.linux-foundation.org>, <mst@redhat.com>,
         <jasowang@redhat.com>, Parav Pandit <parav@nvidia.com>
-Subject: [iproute2-next v2 3/4] vdpa: Enable user to set mac address of vdpa device
-Date:   Fri, 17 Dec 2021 10:08:26 +0200
-Message-ID: <20211217080827.266799-4-parav@nvidia.com>
+Subject: [iproute2-next v2 4/4] vdpa: Enable user to set mtu of the vdpa device
+Date:   Fri, 17 Dec 2021 10:08:27 +0200
+Message-ID: <20211217080827.266799-5-parav@nvidia.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20211217080827.266799-1-parav@nvidia.com>
 References: <20211217080827.266799-1-parav@nvidia.com>
@@ -73,30 +73,28 @@ X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
  rnnvmail201.nvidia.com (10.129.68.8)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3a681cf2-0a7a-45f2-3e07-08d9c134731d
-X-MS-TrafficTypeDiagnostic: BYAPR12MB3638:EE_
-X-Microsoft-Antispam-PRVS: <BYAPR12MB363897EC3DAF3DD666411F64DC789@BYAPR12MB3638.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4125;
+X-MS-Office365-Filtering-Correlation-Id: a4e84153-5ed9-42a7-8606-08d9c1347388
+X-MS-TrafficTypeDiagnostic: MWHPR12MB1261:EE_
+X-Microsoft-Antispam-PRVS: <MWHPR12MB126160BFFAC003D694B044CDDC789@MWHPR12MB1261.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 9JzEVstuTuCBxAwYun6XU0ilfLrTOBhtOR554RpET6L0RHBMimfn23D5WPLeeTFTI7VAW0CUXc6CL62/6+hgZ0284Lc9EZW2Z1lNf8225MwScENCeBF1imb9LNN3YEgsKdXVcoi7zWreT0Za+Q0k598d3jvdFukNdZnSHPOIYUGIBHwopTRsUq2kKLm8FM9ymAcq50NoZOwEHqBd3RT7ijd+BKZMsot0oe4qY0Hl2UC5ymm4jqmcSKIAjzeXtj0jkkxol3GRfqedm0R4+EJU62TV4nKizzRdbB16QX7kt1wnNuUeIboVUkK29EmnwC3k7lhowLEK2VCWnLL6WKSYpC2j92YLCZ1rjwZ08bvHJ9Bt80ear9ZEb5yD66QokNCOOICmLMkQiJM1xJCFa0kiVvH8l8eh0iUJJRoPoDddv2LTTRcH1sDeErfrDv0Ojfo6Fu5AIx7wXlHo0LuSIdXVDMM3BvytWTqiqC4/FUr1BdXWUQFT5qYIwS2W5460JEk5JGJuAfgijg5vh+BDdkYcugT/gwB89Jmb7sSHOd5mWhxA5HhcaBPPfsOKKuI/7Unw/WmfQk6oGh07IU5LctKgU4EiARN/egx4gOW7OqZowBTxrIBuC9C+l1sq/i9IzyiXNNB7ivshJP344SBXdo4OM/nS9+tUQHDBn84f/9JpWZ98oltj+nVp3S5IUpf5cP4rDAZGR1FU/BaaQvhvcZGa3z9D3Uk+1JUb+p8TeydQ/PhFNe4YKT/CftzbNMn9f4rLYNe60me+b+dbyGLnNZRwXxGanvCfZnvSz3BvGjmC8BQIq8t1yoL+wnpYH7vreZJ+TW963FWGcRXM3kSqdZtR0w==
-X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(4636009)(46966006)(36840700001)(40470700001)(70206006)(2906002)(36756003)(82310400004)(186003)(316002)(16526019)(86362001)(426003)(83380400001)(6666004)(336012)(26005)(1076003)(5660300002)(36860700001)(34020700004)(4326008)(8936002)(54906003)(81166007)(70586007)(110136005)(40460700001)(47076005)(356005)(2616005)(107886003)(8676002)(508600001)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: iZDzilkuHYwkFmcgfgM4hmcEfOtn5XAZhUQbNmZe67kEYiUEhcVGwHqiaEOyYiZwHRGgYNwcU2Dpt9i0MFe49mqckmk5ndrMwowvG111nH2iQM1oM7XdFJ6hn7vn5SmcLfOAiiTTXvC2XYbkzAW3lyskwL2hmWuFg9r6tSZeyboNJntCsOtWMSVAV3ZOuD1z2pqqAFPlnucnxzHIR1pPUTE+hBmtO5WRnfjBo+mKIxlG2nbK3aJunOVNvRlGb+DTliTeeJwqyPSt3R7UB5JrmOAMPhOpFfb+1dwjjQRhNu78r2m/dBtTj2WK3F2r/aPm7DcDETnwM2QNhfqJ/ql9hONoHjSJtKYSNHf5jnoUDPiod5y8Hu/90mRVxVmKbaJ5JaoeKB3+LZ+gUwKstR2SyVxU6pF4CxOFrnvTvmdZ5jboeH8XBdTwToaSpHv8uIGd86vdqDB81w3Cv9Kc7asl8l85wk9fAPB3K0Ewf59BRMYIyVsPnV+fFOyR5eqvp62jIyVAsyQ3JuJmibu1VZJBx75kVTjc/ZkLL7XzjU8qGA4WJRBKfk29RvqsIjAz/h96Np8JcubcqmPTpzMH2ufadMHRXIP/RNIySdllWtP/GAX92+wm1tZEvxwBLCJYg1J37werZDLRW5mFYfy79wIDGTLculvw1hJFDtdegYag3GNpDUny9lH2he/qdJNpLYFS9xOo6nIarITr96Lp19xFSojuozrBW6qGH8NsS8X3sz4FguqCl13SyEwC5APj7iPS2ECWViFcafYX3bA6o3qkA5cv8ymiVKsLgf3ySwkVpsX/ZRSHTWzeJfJ/Rtq/9K0J
+X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(4636009)(36840700001)(46966006)(40470700001)(356005)(186003)(70206006)(82310400004)(81166007)(16526019)(2616005)(70586007)(47076005)(316002)(2906002)(83380400001)(54906003)(508600001)(110136005)(40460700001)(8676002)(426003)(6666004)(34020700004)(4326008)(1076003)(336012)(107886003)(86362001)(26005)(36860700001)(36756003)(5660300002)(8936002)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Dec 2021 08:08:46.2142
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Dec 2021 08:08:46.9016
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3a681cf2-0a7a-45f2-3e07-08d9c134731d
+X-MS-Exchange-CrossTenant-Network-Message-Id: a4e84153-5ed9-42a7-8606-08d9c1347388
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
 X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT003.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3638
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR12MB1261
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
-
-vdpa: Enable user to set mtu of the vdpa device
 
 Implement mtu setting for vdpa device.
 
@@ -104,215 +102,143 @@ $ vdpa mgmtdev show
 vdpasim_net:
   supported_classes net
 
-Add the device with specified mac address:
-$ vdpa dev add name bar mgmtdev vdpasim_net mac 00:11:22:33:44:55
+Add the device with mac address and mtu:
+$ vdpa dev add name bar mgmtdev vdpasim_net mac 00:11:22:33:44:55 mtu 9000
+
+In above command only mac address or only mtu can also be set.
 
 View the config after setting:
 $ vdpa dev config show
-bar: mac 00:11:22:33:44:55 link up link_announce false mtu 1500
+bar: mac 00:11:22:33:44:55 link up link_announce false mtu 9000
 
 Signed-off-by: Parav Pandit <parav@nvidia.com>
 ---
 changelog:
 v1->v2:
+ - use get_u16
  - use strcmp() instead of matches()
  - added man page
 ---
- man/man8/vdpa-dev.8 | 11 ++++++++++
- vdpa/vdpa.c         | 52 ++++++++++++++++++++++++++++++++++++---------
- 2 files changed, 53 insertions(+), 10 deletions(-)
+ man/man8/vdpa-dev.8 | 10 ++++++++++
+ vdpa/vdpa.c         | 28 ++++++++++++++++++++++++++--
+ 2 files changed, 36 insertions(+), 2 deletions(-)
 
 diff --git a/man/man8/vdpa-dev.8 b/man/man8/vdpa-dev.8
-index 5d3a3f26..5c5ac469 100644
+index 5c5ac469..aa21ae3a 100644
 --- a/man/man8/vdpa-dev.8
 +++ b/man/man8/vdpa-dev.8
-@@ -31,6 +31,7 @@ vdpa-dev \- vdpa device configuration
- .I NAME
+@@ -32,6 +32,7 @@ vdpa-dev \- vdpa device configuration
  .B mgmtdev
  .I MGMTDEV
-+.RI "[ mac " MACADDR " ]"
+ .RI "[ mac " MACADDR " ]"
++.RI "[ mtu " MTU " ]"
  
  .ti -8
  .B vdpa dev del
-@@ -63,6 +64,11 @@ Name of the new vdpa device to add.
- .BI mgmtdev " MGMTDEV"
- Name of the management device to use for device addition.
+@@ -69,6 +70,10 @@ Name of the management device to use for device addition.
+ - specifies the mac address for the new vdpa device.
+ This is applicable only for the network type of vdpa device. This is optional.
  
-+.PP
-+.BI mac " MACADDR"
-+- specifies the mac address for the new vdpa device.
++.BI mtu " MTU"
++- specifies the mtu for the new vdpa device.
 +This is applicable only for the network type of vdpa device. This is optional.
 +
  .SS vdpa dev del - Delete the vdpa device.
  
  .PP
-@@ -98,6 +104,11 @@ vdpa dev add name foo mgmtdev vdpa_sim_net
- Add the vdpa device named foo on the management device vdpa_sim_net.
+@@ -109,6 +114,11 @@ vdpa dev add name foo mgmtdev vdpa_sim_net mac 00:11:22:33:44:55
+ Add the vdpa device named foo on the management device vdpa_sim_net with mac address of 00:11:22:33:44:55.
  .RE
  .PP
-+vdpa dev add name foo mgmtdev vdpa_sim_net mac 00:11:22:33:44:55
++vdpa dev add name foo mgmtdev vdpa_sim_net mac 00:11:22:33:44:55 mtu 9000
 +.RS 4
-+Add the vdpa device named foo on the management device vdpa_sim_net with mac address of 00:11:22:33:44:55.
++Add the vdpa device named foo on the management device vdpa_sim_net with mac address of 00:11:22:33:44:55 and mtu of 9000 bytes.
 +.RE
 +.PP
  vdpa dev del foo
  .RS 4
  Delete the vdpa device named foo which was previously created.
 diff --git a/vdpa/vdpa.c b/vdpa/vdpa.c
-index ba704254..63d464d1 100644
+index 63d464d1..f048e470 100644
 --- a/vdpa/vdpa.c
 +++ b/vdpa/vdpa.c
-@@ -4,6 +4,7 @@
- #include <getopt.h>
- #include <errno.h>
- #include <linux/genetlink.h>
-+#include <linux/if_ether.h>
- #include <linux/vdpa.h>
- #include <linux/virtio_ids.h>
- #include <linux/virtio_net.h>
-@@ -20,6 +21,7 @@
- #define VDPA_OPT_VDEV_MGMTDEV_HANDLE	BIT(1)
+@@ -22,6 +22,7 @@
  #define VDPA_OPT_VDEV_NAME		BIT(2)
  #define VDPA_OPT_VDEV_HANDLE		BIT(3)
-+#define VDPA_OPT_VDEV_MAC		BIT(4)
+ #define VDPA_OPT_VDEV_MAC		BIT(4)
++#define VDPA_OPT_VDEV_MTU		BIT(5)
  
  struct vdpa_opts {
  	uint64_t present; /* flags of present items */
-@@ -27,6 +29,7 @@ struct vdpa_opts {
- 	char *mdev_name;
+@@ -30,6 +31,7 @@ struct vdpa_opts {
  	const char *vdev_name;
  	unsigned int device_id;
-+	char mac[ETH_ALEN];
+ 	char mac[ETH_ALEN];
++	uint16_t mtu;
  };
  
  struct vdpa {
-@@ -136,6 +139,21 @@ static int vdpa_argv_str(struct vdpa *vdpa, int argc, char **argv,
+@@ -154,6 +156,17 @@ static int vdpa_argv_mac(struct vdpa *vdpa, int argc, char **argv, char *mac)
  	return 0;
  }
  
-+static int vdpa_argv_mac(struct vdpa *vdpa, int argc, char **argv, char *mac)
++static int vdpa_argv_u16(struct vdpa *vdpa, int argc, char **argv,
++			 uint16_t *result)
 +{
-+	int alen;
-+
 +	if (argc <= 0 || *argv == NULL) {
-+		fprintf(stderr, "String parameter expected\n");
++		fprintf(stderr, "number expected\n");
 +		return -EINVAL;
 +	}
 +
-+	alen = ll_addr_a2n(mac, ETH_ALEN, *argv);
-+	if (alen < 0)
-+		return -EINVAL;
-+	return 0;
++	return get_u16(result, *argv, 10);
 +}
 +
  struct vdpa_args_metadata {
  	uint64_t o_flag;
  	const char *err_msg;
-@@ -183,13 +201,16 @@ static void vdpa_opts_put(struct nlmsghdr *nlh, struct vdpa *vdpa)
- 	if ((opts->present & VDPA_OPT_VDEV_NAME) ||
- 	    (opts->present & VDPA_OPT_VDEV_HANDLE))
- 		mnl_attr_put_strz(nlh, VDPA_ATTR_DEV_NAME, opts->vdev_name);
-+	if (opts->present & VDPA_OPT_VDEV_MAC)
-+		mnl_attr_put(nlh, VDPA_ATTR_DEV_NET_CFG_MACADDR,
-+			     sizeof(opts->mac), opts->mac);
+@@ -204,6 +217,8 @@ static void vdpa_opts_put(struct nlmsghdr *nlh, struct vdpa *vdpa)
+ 	if (opts->present & VDPA_OPT_VDEV_MAC)
+ 		mnl_attr_put(nlh, VDPA_ATTR_DEV_NET_CFG_MACADDR,
+ 			     sizeof(opts->mac), opts->mac);
++	if (opts->present & VDPA_OPT_VDEV_MTU)
++		mnl_attr_put_u16(nlh, VDPA_ATTR_DEV_NET_CFG_MTU, opts->mtu);
  }
  
  static int vdpa_argv_parse(struct vdpa *vdpa, int argc, char **argv,
--			   uint64_t o_required)
-+			   uint64_t o_required, uint64_t o_optional)
- {
-+	uint64_t o_all = o_required | o_optional;
- 	struct vdpa_opts *opts = &vdpa->opts;
--	uint64_t o_all = o_required;
- 	uint64_t o_found = 0;
- 	int err;
- 
-@@ -233,6 +254,15 @@ static int vdpa_argv_parse(struct vdpa *vdpa, int argc, char **argv,
+@@ -263,6 +278,15 @@ static int vdpa_argv_parse(struct vdpa *vdpa, int argc, char **argv,
  
  			NEXT_ARG_FWD();
- 			o_found |= VDPA_OPT_VDEV_MGMTDEV_HANDLE;
-+		} else if ((strcmp(*argv, "mac") == 0) &&
-+			   (o_all & VDPA_OPT_VDEV_MAC)) {
+ 			o_found |= VDPA_OPT_VDEV_MAC;
++		} else if ((strcmp(*argv, "mtu") == 0) &&
++			   (o_all & VDPA_OPT_VDEV_MTU)) {
 +			NEXT_ARG_FWD();
-+			err = vdpa_argv_mac(vdpa, argc, argv, opts->mac);
++			err = vdpa_argv_u16(vdpa, argc, argv, &opts->mtu);
 +			if (err)
 +				return err;
 +
 +			NEXT_ARG_FWD();
-+			o_found |= VDPA_OPT_VDEV_MAC;
++			o_found |= VDPA_OPT_VDEV_MTU;
  		} else {
  			fprintf(stderr, "Unknown option \"%s\"\n", *argv);
  			return -EINVAL;
-@@ -246,11 +276,11 @@ static int vdpa_argv_parse(struct vdpa *vdpa, int argc, char **argv,
- 
- static int vdpa_argv_parse_put(struct nlmsghdr *nlh, struct vdpa *vdpa,
- 			       int argc, char **argv,
--			       uint64_t o_required)
-+			       uint64_t o_required, uint64_t o_optional)
- {
- 	int err;
- 
--	err = vdpa_argv_parse(vdpa, argc, argv, o_required);
-+	err = vdpa_argv_parse(vdpa, argc, argv, o_required, o_optional);
- 	if (err)
- 		return err;
- 	vdpa_opts_put(nlh, vdpa);
-@@ -386,7 +416,7 @@ static int cmd_mgmtdev_show(struct vdpa *vdpa, int argc, char **argv)
- 					  flags);
- 	if (argc > 0) {
- 		err = vdpa_argv_parse_put(nlh, vdpa, argc, argv,
--					  VDPA_OPT_MGMTDEV_HANDLE);
-+					  VDPA_OPT_MGMTDEV_HANDLE, 0);
- 		if (err)
- 			return err;
- 	}
-@@ -413,7 +443,7 @@ static int cmd_mgmtdev(struct vdpa *vdpa, int argc, char **argv)
+@@ -443,7 +467,7 @@ static int cmd_mgmtdev(struct vdpa *vdpa, int argc, char **argv)
  static void cmd_dev_help(void)
  {
  	fprintf(stderr, "Usage: vdpa dev show [ DEV ]\n");
--	fprintf(stderr, "       vdpa dev add name NAME mgmtdev MANAGEMENTDEV\n");
-+	fprintf(stderr, "       vdpa dev add name NAME mgmtdev MANAGEMENTDEV [ mac MACADDR ]\n");
+-	fprintf(stderr, "       vdpa dev add name NAME mgmtdev MANAGEMENTDEV [ mac MACADDR ]\n");
++	fprintf(stderr, "       vdpa dev add name NAME mgmtdev MANAGEMENTDEV [ mac MACADDR ] [ mtu MTU ]\n");
  	fprintf(stderr, "       vdpa dev del DEV\n");
  	fprintf(stderr, "Usage: vdpa dev config COMMAND [ OPTIONS ]\n");
  }
-@@ -483,7 +513,7 @@ static int cmd_dev_show(struct vdpa *vdpa, int argc, char **argv)
- 	nlh = mnlu_gen_socket_cmd_prepare(&vdpa->nlg, VDPA_CMD_DEV_GET, flags);
- 	if (argc > 0) {
- 		err = vdpa_argv_parse_put(nlh, vdpa, argc, argv,
--					  VDPA_OPT_VDEV_HANDLE);
-+					  VDPA_OPT_VDEV_HANDLE, 0);
- 		if (err)
- 			return err;
- 	}
-@@ -502,7 +532,8 @@ static int cmd_dev_add(struct vdpa *vdpa, int argc, char **argv)
- 	nlh = mnlu_gen_socket_cmd_prepare(&vdpa->nlg, VDPA_CMD_DEV_NEW,
+@@ -533,7 +557,7 @@ static int cmd_dev_add(struct vdpa *vdpa, int argc, char **argv)
  					  NLM_F_REQUEST | NLM_F_ACK);
  	err = vdpa_argv_parse_put(nlh, vdpa, argc, argv,
--				  VDPA_OPT_VDEV_MGMTDEV_HANDLE | VDPA_OPT_VDEV_NAME);
-+				  VDPA_OPT_VDEV_MGMTDEV_HANDLE | VDPA_OPT_VDEV_NAME,
-+				  VDPA_OPT_VDEV_MAC);
+ 				  VDPA_OPT_VDEV_MGMTDEV_HANDLE | VDPA_OPT_VDEV_NAME,
+-				  VDPA_OPT_VDEV_MAC);
++				  VDPA_OPT_VDEV_MAC | VDPA_OPT_VDEV_MTU);
  	if (err)
  		return err;
  
-@@ -516,7 +547,8 @@ static int cmd_dev_del(struct vdpa *vdpa,  int argc, char **argv)
- 
- 	nlh = mnlu_gen_socket_cmd_prepare(&vdpa->nlg, VDPA_CMD_DEV_DEL,
- 					  NLM_F_REQUEST | NLM_F_ACK);
--	err = vdpa_argv_parse_put(nlh, vdpa, argc, argv, VDPA_OPT_VDEV_HANDLE);
-+	err = vdpa_argv_parse_put(nlh, vdpa, argc, argv, VDPA_OPT_VDEV_HANDLE,
-+				  0);
- 	if (err)
- 		return err;
- 
-@@ -597,7 +629,7 @@ static int cmd_dev_config_show(struct vdpa *vdpa, int argc, char **argv)
- 					  flags);
- 	if (argc > 0) {
- 		err = vdpa_argv_parse_put(nlh, vdpa, argc, argv,
--					  VDPA_OPT_VDEV_HANDLE);
-+					  VDPA_OPT_VDEV_HANDLE, 0);
- 		if (err)
- 			return err;
- 	}
 -- 
 2.26.2
 
