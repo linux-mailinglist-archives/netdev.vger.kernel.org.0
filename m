@@ -2,69 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 915B34781BF
-	for <lists+netdev@lfdr.de>; Fri, 17 Dec 2021 01:47:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DF10E4781C6
+	for <lists+netdev@lfdr.de>; Fri, 17 Dec 2021 01:48:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230487AbhLQArO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Dec 2021 19:47:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47290 "EHLO
+        id S231211AbhLQAsE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Dec 2021 19:48:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230251AbhLQArN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 19:47:13 -0500
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4B04C061574
-        for <netdev@vger.kernel.org>; Thu, 16 Dec 2021 16:47:12 -0800 (PST)
-Received: by mail-ed1-x536.google.com with SMTP id b7so1751139edd.6
-        for <netdev@vger.kernel.org>; Thu, 16 Dec 2021 16:47:12 -0800 (PST)
+        with ESMTP id S229751AbhLQAsE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 19:48:04 -0500
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E83BCC061574;
+        Thu, 16 Dec 2021 16:48:03 -0800 (PST)
+Received: by mail-yb1-xb32.google.com with SMTP id v64so1801999ybi.5;
+        Thu, 16 Dec 2021 16:48:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=bJOWOUOD2GNI/L2WfI6zDQAH0JJ4fURbmjTsxtxR7wA=;
-        b=ElfXKpIo3lG12pNmKyHx6feTPuC5Ol/1xaNOVP0ypW49CgwJC/Ei7osDVjfB3Sl9Kq
-         JSQl+4OfBRXRABeDvGH7iSwrdNG+CxMxvHgdbc4kgiT+qIjDpBd/yzF4VGRMwq1Yvhwk
-         ERRs6a6ZL4bI0w0iS5piVFqyL8jXWESCI8n1j65lcBmPnZgJutAEVCS2FWBF38a9qAM4
-         1FoQaGJ79av9UDtlbR+Jllix86OPhbIQSJ9QIt1vDp2aTqr49+OA2+LIpuwfgeGELRSl
-         3KmAJf4i+jNqs7maD4638bRg6JnFYyJqobyfjOsIUhXStbvK0X/XjqCRwo+WdM+Eck0r
-         yjcA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=XYNusbjwkkYtN/QqZDFJGNCvR7j+Lfic/Sj6wFR/rlA=;
+        b=Fc74BzUP0DveI3XwHOmFP8RJsyGE+DkOpU1Xa86Kf5a7gRDpS6nD0yAF/z0/Yx376q
+         IwvvRbozHe5AlsXNhKTEaRSVh//gckNd6G90XqQS62512vWryB2CIvJeBuyjKE9taC5s
+         +z93K7jAvuvtC/DGNz0MOhArCdTVxT3bkPtzr61ztIcq5TKcMvC8BvxeHum+rLP9Cz6g
+         G85M08wLApbDMWTI2oOsjzFfb7VAve9L/qiQKBc7pLN+/C6a962hruRac1AcyJsAxr0a
+         RX93y5HVNB2HJ9EXWHELdOwC08mvScNMq0WuQnFYuzI1dwDM99XnhFdw4qaHyvS2xWrW
+         lGqw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=bJOWOUOD2GNI/L2WfI6zDQAH0JJ4fURbmjTsxtxR7wA=;
-        b=H7bXhUi2r9A+xf3Ivo2r/CTAM540kQHi+IKV8fB/x9tAwvjXFYms+TC/XFnOzWFdfX
-         nOugmWyIzSj1HD5AhN5X43NGByKHB8NF/+CB51ZoGnPyF4eAlvO84FRo5kyO67t76kUA
-         IqVCqovFMm84vYISwE0Xd0CxfJt/npfYSb5Z3V5uTNYZ4lTRMUcnWXiw9GiGDjfrXvT/
-         ZoOz6Kgq9DM2TTZnTv2DKQPo0ScqQJZVgCGGt9PCIZJDoh6HXyLGh++UuCW8WHzaoIhT
-         gKXxfnxZKukX1stFa8i50MfwkC1OOr8Gee6lVzhKXpGQrqomuY455FLWpQj0o0MLowgJ
-         JQ0A==
-X-Gm-Message-State: AOAM533Z532xyPXllOIWuy/XZ3RpWUcKPIJExAc1OYrfzUojQWZVcKhU
-        N75qs65amOwhaW/IWCFc2DmJYc75cxmF93K7rcc=
-X-Google-Smtp-Source: ABdhPJzFZAMePDfmMLhBhXRJ5i9dEuBQtSKQ+yDmJPUi092FLg1qEmZ3RKIXFRIcqsPV9Y/GjB4CgmfIyZ68zKXtxqk=
-X-Received: by 2002:a05:6402:4311:: with SMTP id m17mr485012edc.103.1639702031300;
- Thu, 16 Dec 2021 16:47:11 -0800 (PST)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=XYNusbjwkkYtN/QqZDFJGNCvR7j+Lfic/Sj6wFR/rlA=;
+        b=P1cDT6PvZkZuWJborzJogz9Us0AeAOtUPfOioJYuMgq7u/8uneYNROtqjl6TMUTuS2
+         lI4nrhwlaJpYCZoanw6fPM1QAPwEQH9EdQV78EdTOR3xIc1BY0qFGDNf5zw0MgAJFavH
+         u/dIW81tzAHJeMeJQl8IS5NkKNkVjqT5k8Mz4TEIzHe7RKBjoYQt2zZfRSblPtKYfW/I
+         Hb3B0wd7lhmcUt8byjxhFs2zGEBD9Evdg/Jlk1YiovbKwkOafjjs64w9uATrgUBAxpEz
+         l3chAAd49yCa2rmy94ZPCTJxKypsXO0IAu4I/yJC1WAuDFjmbjIlbumEfKllCdvR8BRM
+         HabA==
+X-Gm-Message-State: AOAM5304+BtxNt54ErxoCgEN62ktqfJ/W+GAtrFSiLAF0EvT7s+6A5fd
+        XT8EzKBp9MLcdSQufPYxIvt8YrZ2KulXfwgfUOs=
+X-Google-Smtp-Source: ABdhPJwpeglE9sHoAX5UTcJS8a4yEjrP4mkljRYPnLSOtbz6fsUoQrmEVVKwqbma0QvbY31yg+dpgqzLhDJYqPiswns=
+X-Received: by 2002:a25:1004:: with SMTP id 4mr934036ybq.669.1639702082961;
+ Thu, 16 Dec 2021 16:48:02 -0800 (PST)
 MIME-Version: 1.0
-Received: by 2002:ab4:a40a:0:0:0:0:0 with HTTP; Thu, 16 Dec 2021 16:47:08
- -0800 (PST)
-Reply-To: salemchantal@mail.ee
-From:   MRS Salem Chantal Lawrence <mrssalami.momodu1@gmail.com>
-Date:   Thu, 16 Dec 2021 16:47:08 -0800
-Message-ID: <CA+BXLfWAP7cF__hAdOqb_3VPY--MCjoOzFcurwR_n+=QDcJpPA@mail.gmail.com>
-Subject: ATM VISA DAPARTCARD
-To:     undisclosed-recipients:;
+References: <20211217003540.21344-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <20211217003540.21344-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
+Date:   Fri, 17 Dec 2021 00:47:37 +0000
+Message-ID: <CA+V-a8uuSRP8H9_kfUoy7+e9MJuwA7nP2w3PRDAm_2K7-x9uqw@mail.gmail.com>
+Subject: Re: [PATCH] net: mv643xx_eth: Propagate errors from of_irq_to_resource()
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc:     Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Attention
+Hi All,
 
+On Fri, Dec 17, 2021 at 12:35 AM Lad Prabhakar
+<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+>
+> The driver overrides the error code returned by of_irq_to_resource() to
+> -EINVAL. Switch to propagating the error code upstream so that errors
+> such as -EPROBE_DEFER are handled.
+>
+> While at it drop the memset() operation as of_irq_to_resource()
+> does call memset() before filling in the IRQ resource.
+>
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> ---
+>  drivers/net/ethernet/marvell/mv643xx_eth.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+>
+Please ignore this patch, as the plan is to drop all the users
+of_irq_to_resource() (see [0]). I'll send a new patch which uses the
+preferred way of platform_get_irq().
 
-You have Been Compensated with the sum of 4.6 million dollars in this
-United Nation the payment will be issue into Atm Visa Card and send to you
+[0] https://patchwork.ozlabs.org/project/linux-ide/patch/20211217001238.16298-1-prabhakar.mahadev-lad.rj@bp.renesas.com/
 
-from the Santander Bank of Spain we need your address, Passport and your
-whatsapp number.
+Cheers,
+Prabhakar
 
-
-THANKS
-MRS Salem Chantal Lawrence
+> diff --git a/drivers/net/ethernet/marvell/mv643xx_eth.c b/drivers/net/ethernet/marvell/mv643xx_eth.c
+> index 105247582684..7a5ff629d158 100644
+> --- a/drivers/net/ethernet/marvell/mv643xx_eth.c
+> +++ b/drivers/net/ethernet/marvell/mv643xx_eth.c
+> @@ -2716,10 +2716,10 @@ static int mv643xx_eth_shared_of_add_port(struct platform_device *pdev,
+>         memset(&ppd, 0, sizeof(ppd));
+>         ppd.shared = pdev;
+>
+> -       memset(&res, 0, sizeof(res));
+> -       if (of_irq_to_resource(pnp, 0, &res) <= 0) {
+> +       ret = of_irq_to_resource(pnp, 0, &res);
+> +       if (ret <= 0) {
+>                 dev_err(&pdev->dev, "missing interrupt on %pOFn\n", pnp);
+> -               return -EINVAL;
+> +               return ret ? ret : -ENXIO;
+>         }
+>
+>         if (of_property_read_u32(pnp, "reg", &ppd.port_number)) {
+> --
+> 2.17.1
+>
