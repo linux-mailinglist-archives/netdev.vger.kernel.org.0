@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03553479475
-	for <lists+netdev@lfdr.de>; Fri, 17 Dec 2021 19:57:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1EE48479477
+	for <lists+netdev@lfdr.de>; Fri, 17 Dec 2021 19:57:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240467AbhLQS5H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Dec 2021 13:57:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50378 "EHLO
+        id S240491AbhLQS5J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Dec 2021 13:57:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240567AbhLQS5F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Dec 2021 13:57:05 -0500
-Received: from mail-ua1-x935.google.com (mail-ua1-x935.google.com [IPv6:2607:f8b0:4864:20::935])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06C0FC06173F
-        for <netdev@vger.kernel.org>; Fri, 17 Dec 2021 10:57:05 -0800 (PST)
-Received: by mail-ua1-x935.google.com with SMTP id a14so6222609uak.0
-        for <netdev@vger.kernel.org>; Fri, 17 Dec 2021 10:57:04 -0800 (PST)
+        with ESMTP id S240415AbhLQS5I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Dec 2021 13:57:08 -0500
+Received: from mail-ua1-x931.google.com (mail-ua1-x931.google.com [IPv6:2607:f8b0:4864:20::931])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC5CDC061574
+        for <netdev@vger.kernel.org>; Fri, 17 Dec 2021 10:57:07 -0800 (PST)
+Received: by mail-ua1-x931.google.com with SMTP id 30so6036007uag.13
+        for <netdev@vger.kernel.org>; Fri, 17 Dec 2021 10:57:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=kinvolk.io; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=igWWpEe5MAQvcBbmdLN5vO3AN2tXnobBBKMBqsURkL4=;
-        b=bLaUqUKw5cpQ7ZnRNiuguWiqsSLk7bUF7lxRma0UDh+DTwXpEN4ZOOKJZK8wW2uJQ2
-         6XduWaqSUkbycqO3gLq5OyZVNrOZYrtMtYHeA6KSmCWWXFJFvDy0yZ/EQcgaoc5+VWtD
-         XDY8D/5zOKEswZM4505lDoGtcCfrAvjNw752U=
+        bh=la4UMxbRzz+SyDZQIeAeIOgzlTjSpc95saxXrGauGMA=;
+        b=ERVd4xEhnS+56XO2vjJOiZXyMBsOjkPHpXylDremrtalclMM9VkabF758ZmcNAEQxZ
+         10apOmHsm/0syfEUpP2jN4gGWvXh0SxZJmOlWhatfQazswziA33EQLBsFbKYJ7GBUjwo
+         LZ37WXp/UxtdRLHGEdmBqKzpRXshx9ADLifeU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=igWWpEe5MAQvcBbmdLN5vO3AN2tXnobBBKMBqsURkL4=;
-        b=DN0qbkSbnKm4l3pKvJg3R5w0UJEhqW9rvAMrHegmfzvL4jDPhKJRqhw8r8ssJAdR8J
-         LIJTW6y4sfseReBXUCkuvmj+qoltX7ZvMDjvD0nCYW3WBTEjyfEjfj+poMexxz7MDYVD
-         LZ2tcdolHJMKMFJiL6qw3shtmDIrcx/gY94Jy5XA3Lxh8qVjFpkPwcR6hHKyNTyuOt6u
-         d6oDOCKoO+gTJyRRH96eeafRGjiBkuttlvb8W7CbpDNwpa2dL8n2KJ71xNIKGVJzTs1r
-         v8AqEfQo8d+lpajiekFNcmg37+kedFaj0j93y7LT6uNqw9MD+SX1tN7ulbS6WB54e1sz
-         fLDA==
-X-Gm-Message-State: AOAM530opLiUqWab7YcDhiVkXtxxzv6WSKOC1ETWi+CFGl6QMfSEfgcS
-        OaqXL8PVx5RVGqhn7gEP87jSIPWkNHsIWhfXIqZJMgumME8KRYwTaU8v1vmtRC2SZc0qx6vS/9J
-        WF8zTYlPSq3PQ0K8lpt+Wn+whFqWSoSzd5IhuRVsI3cEE3GgLFfUkhBJJGN4B0zw6XG0iaA==
-X-Google-Smtp-Source: ABdhPJwzHi0uO/EaSJ9HgWYbGJ7ordqs0D4gI6+b8G3fsnin7TsZf/OrdEY4tQPJgCWlvzJA/k1mAA==
-X-Received: by 2002:ab0:15af:: with SMTP id i44mr1745086uae.17.1639767421492;
-        Fri, 17 Dec 2021 10:57:01 -0800 (PST)
+        bh=la4UMxbRzz+SyDZQIeAeIOgzlTjSpc95saxXrGauGMA=;
+        b=ngNSzcUeS9qo2/O9/KWGBfj6T39D1I5IaaxHUii0hBcFSIopvLxEOOUQ0Xj1aO1skA
+         CRfYvxjzzoReV8rXK8yATRBuKYhjompHFJvsLX9fipdp7Qic6HWV+ONfcIckYSMsaVrK
+         fUSVy/ZeAi/Yq1rPVcPu3oGrfq4irzAh5YLeBlp1ayYwI1KY2fAro4gqWKvd+NJ/R1mf
+         EC4uxybezo3Za5tALdFJKHxFZY2lnUazIcH9F2aOGjg/lSdbaQO954v3wi0nzm24PwMX
+         QqIkDCG03NvmCTQHX8l8CKmp2pD8Dn6a3oJ3tloODY7jE8/6bVlLjirwBq92N+6b0kS4
+         NVAw==
+X-Gm-Message-State: AOAM531CHtO0RAodaCuAxEoJg7AtrghlY9EyTGONrz5RH+SxJMhOQAfd
+        MZQs2CBBE0vX5YBDJj6zdMG3ueq2umSZMFMY0qN40SYUYbk7UEzb4X462bjKbV6hIeulyA6b1LK
+        qxVKE8WSvaeT75Rdl5V58ieMyk2u9TQir5ruenqDY1HGbT232JJBOZUN6OzQx3XT6zz2akA==
+X-Google-Smtp-Source: ABdhPJxqDw60rYotLE8GOS3dRY5pfSD3trdo5djRRKjfg7fQGlNDkS90kq9h0C7kMl1XYEBEwPguDQ==
+X-Received: by 2002:a05:6130:38e:: with SMTP id az14mr2057301uab.42.1639767424873;
+        Fri, 17 Dec 2021 10:57:04 -0800 (PST)
 Received: from localhost.localdomain ([181.136.110.101])
-        by smtp.gmail.com with ESMTPSA id l125sm1382575vke.40.2021.12.17.10.57.00
+        by smtp.gmail.com with ESMTPSA id l125sm1382575vke.40.2021.12.17.10.57.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Dec 2021 10:57:01 -0800 (PST)
+        Fri, 17 Dec 2021 10:57:03 -0800 (PST)
 From:   =?UTF-8?q?Mauricio=20V=C3=A1squez?= <mauricio@kinvolk.io>
 To:     netdev@vger.kernel.org, bpf@vger.kernel.org
 Cc:     Alexei Starovoitov <ast@kernel.org>,
@@ -54,9 +54,9 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         Rafael David Tinoco <rafaeldtinoco@gmail.com>,
         Lorenzo Fontana <lorenzo.fontana@elastic.co>,
         Leonardo Di Donato <leonardo.didonato@elastic.co>
-Subject: [PATCH bpf-next v3 1/3] libbpf: split bpf_core_apply_relo()
-Date:   Fri, 17 Dec 2021 13:56:52 -0500
-Message-Id: <20211217185654.311609-2-mauricio@kinvolk.io>
+Subject: [PATCH bpf-next v3 2/3] libbpf: Implement changes needed for BTFGen in bpftool
+Date:   Fri, 17 Dec 2021 13:56:53 -0500
+Message-Id: <20211217185654.311609-3-mauricio@kinvolk.io>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211217185654.311609-1-mauricio@kinvolk.io>
 References: <20211217185654.311609-1-mauricio@kinvolk.io>
@@ -67,368 +67,332 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-BTFGen needs to run the core relocation logic in order to understand
-what are the types in the target BTF that involved in a given
-relocation.
+Given that BTFGen is a so unique use case, let's expose some of the
+libbpf internal APIs to bpftool. This commit extends libbpf with the
+features that are needed to implement it.
 
-Currently bpf_core_apply_relo() calculates and **applies** a relocation
-to an instruction. Having both operations in the same function makes it
-difficult to only calculate the relocation without patching the
-instruction. This commit splits that logic in two different phases: (1)
-calculate the relocation and (2) patch the instruction.
-
-For the first phase bpf_core_apply_relo() is renamed to
-bpf_core_calc_relo_res() who is now only on charge of calculating the
-relocation, the second phase uses the already existing
-bpf_core_patch_insn(). bpf_object__relocate_core() uses both of them and
-the BTFGen will use only bpf_core_calc_relo_res().
+Specifically, this commit introduces the following functions:
+- bpf_object__btf_ext(): Public method to access the BTF.ext section of
+an bpf object.
+- bpf_program__sec_idx(): Public method to get the sec index of a
+program within the elf file.
+- Implement bpf_core_create_cand_cache() and bpf_core_free_cand_cache()
+to handle candidates cache.
+- Expose bpf_core_calc_relo_res() in libbpfinternal.h and add "struct
+bpf_core_spec *targ_spec" parameter.
+- bpf_object_set_vmlinux_override(): Internal function to set
+obj->btf_vmlinux_override.
+- bpf_object__get_nr_programs() and bpf_object__get_program(): To give
+access to the program inside an object. bpf_object__for_each_program
+is not good enough because BTFGen needs to access subprograms too.
 
 Signed-off-by: Mauricio Vásquez <mauricio@kinvolk.io>
 Signed-off-by: Rafael David Tinoco <rafael.tinoco@aquasec.com>
 Signed-off-by: Lorenzo Fontana <lorenzo.fontana@elastic.co>
 Signed-off-by: Leonardo Di Donato <leonardo.didonato@elastic.co>
 ---
- kernel/bpf/btf.c          | 11 +++++-
- tools/lib/bpf/libbpf.c    | 54 ++++++++++++++++-----------
- tools/lib/bpf/relo_core.c | 77 +++++++++++----------------------------
- tools/lib/bpf/relo_core.h | 42 ++++++++++++++++++---
- 4 files changed, 99 insertions(+), 85 deletions(-)
+ tools/lib/bpf/Makefile          |  2 +-
+ tools/lib/bpf/libbpf.c          | 88 ++++++++++++++++++++++++++-------
+ tools/lib/bpf/libbpf.h          |  3 ++
+ tools/lib/bpf/libbpf.map        |  2 +
+ tools/lib/bpf/libbpf_internal.h | 22 +++++++++
+ tools/lib/bpf/relo_core.c       |  6 +--
+ tools/lib/bpf/relo_core.h       |  4 ++
+ 7 files changed, 104 insertions(+), 23 deletions(-)
 
-diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-index a17de71abd2e..5a8f6ef6a341 100644
---- a/kernel/bpf/btf.c
-+++ b/kernel/bpf/btf.c
-@@ -6734,6 +6734,7 @@ int bpf_core_apply(struct bpf_core_ctx *ctx, const struct bpf_core_relo *relo,
- {
- 	bool need_cands = relo->kind != BPF_CORE_TYPE_ID_LOCAL;
- 	struct bpf_core_cand_list cands = {};
-+	struct bpf_core_relo_res targ_res;
- 	struct bpf_core_spec *specs;
- 	int err;
+diff --git a/tools/lib/bpf/Makefile b/tools/lib/bpf/Makefile
+index f947b61b2107..dba019ee2832 100644
+--- a/tools/lib/bpf/Makefile
++++ b/tools/lib/bpf/Makefile
+@@ -239,7 +239,7 @@ install_lib: all_cmd
  
-@@ -6778,8 +6779,14 @@ int bpf_core_apply(struct bpf_core_ctx *ctx, const struct bpf_core_relo *relo,
- 		 */
- 	}
+ SRC_HDRS := bpf.h libbpf.h btf.h libbpf_common.h libbpf_legacy.h xsk.h	     \
+ 	    bpf_helpers.h bpf_tracing.h bpf_endian.h bpf_core_read.h	     \
+-	    skel_internal.h libbpf_version.h
++	    skel_internal.h libbpf_version.h relo_core.h libbpf_internal.h
+ GEN_HDRS := $(BPF_GENERATED)
  
--	err = bpf_core_apply_relo_insn((void *)ctx->log, insn, relo->insn_off / 8,
--				       relo, relo_idx, ctx->btf, &cands, specs);
-+	err = bpf_core_calc_relo_insn((void *)ctx->log, relo, relo_idx, ctx->btf, &cands, specs,
-+				      &targ_res);
-+	if (err)
-+		goto out;
-+
-+	err = bpf_core_patch_insn((void *)ctx->log, insn, relo->insn_off / 8, relo, relo_idx,
-+				  &targ_res);
-+
- out:
- 	kfree(specs);
- 	if (need_cands) {
+ INSTALL_PFX := $(DESTDIR)$(prefix)/include/bpf
 diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index cf862a19222b..77e2df13715a 100644
+index 77e2df13715a..7c8f8797475f 100644
 --- a/tools/lib/bpf/libbpf.c
 +++ b/tools/lib/bpf/libbpf.c
-@@ -5498,11 +5498,12 @@ static int record_relo_core(struct bpf_program *prog,
+@@ -4027,8 +4027,8 @@ static bool prog_contains_insn(const struct bpf_program *prog, size_t insn_idx)
+ 	       insn_idx < prog->sec_insn_off + prog->sec_insn_cnt;
+ }
+ 
+-static struct bpf_program *find_prog_by_sec_insn(const struct bpf_object *obj,
+-						 size_t sec_idx, size_t insn_idx)
++struct bpf_program *find_prog_by_sec_insn(const struct bpf_object *obj,
++					  size_t sec_idx, size_t insn_idx)
+ {
+ 	int l = 0, r = obj->nr_programs - 1, m;
+ 	struct bpf_program *prog;
+@@ -5498,12 +5498,13 @@ static int record_relo_core(struct bpf_program *prog,
  	return 0;
  }
  
--static int bpf_core_apply_relo(struct bpf_program *prog,
--			       const struct bpf_core_relo *relo,
--			       int relo_idx,
--			       const struct btf *local_btf,
--			       struct hashmap *cand_cache)
-+static int bpf_core_calc_relo_res(struct bpf_program *prog,
-+				  const struct bpf_core_relo *relo,
-+				  int relo_idx,
-+				  const struct btf *local_btf,
-+				  struct hashmap *cand_cache,
-+				  struct bpf_core_relo_res *targ_res)
+-static int bpf_core_calc_relo_res(struct bpf_program *prog,
+-				  const struct bpf_core_relo *relo,
+-				  int relo_idx,
+-				  const struct btf *local_btf,
+-				  struct hashmap *cand_cache,
+-				  struct bpf_core_relo_res *targ_res)
++int bpf_core_calc_relo_res(struct bpf_program *prog,
++			   const struct bpf_core_relo *relo,
++			   int relo_idx,
++			   const struct btf *local_btf,
++			   struct hashmap *cand_cache,
++			   struct bpf_core_relo_res *targ_res,
++			   struct bpf_core_spec *targ_spec)
  {
  	struct bpf_core_spec specs_scratch[3] = {};
  	const void *type_key = u32_as_hash_key(relo->type_id);
-@@ -5511,20 +5512,7 @@ static int bpf_core_apply_relo(struct bpf_program *prog,
- 	const struct btf_type *local_type;
- 	const char *local_name;
- 	__u32 local_id = relo->type_id;
--	struct bpf_insn *insn;
--	int insn_idx, err;
--
--	if (relo->insn_off % BPF_INSN_SZ)
--		return -EINVAL;
--	insn_idx = relo->insn_off / BPF_INSN_SZ;
--	/* adjust insn_idx from section frame of reference to the local
--	 * program's frame of reference; (sub-)program code is not yet
--	 * relocated, so it's enough to just subtract in-section offset
--	 */
--	insn_idx = insn_idx - prog->sec_insn_off;
--	if (insn_idx >= prog->insns_cnt)
--		return -EINVAL;
--	insn = &prog->insns[insn_idx];
-+	int err;
- 
- 	local_type = btf__type_by_id(local_btf, local_id);
- 	if (!local_type)
-@@ -5536,6 +5524,7 @@ static int bpf_core_apply_relo(struct bpf_program *prog,
- 
- 	if (prog->obj->gen_loader) {
- 		const char *spec_str = btf__name_by_offset(local_btf, relo->access_str_off);
-+		int insn_idx = relo->insn_off / BPF_INSN_SZ;
- 
- 		pr_debug("record_relo_core: prog %td insn[%d] %s %s %s final insn_idx %d\n",
- 			prog - prog->obj->programs, relo->insn_off / 8,
-@@ -5559,19 +5548,21 @@ static int bpf_core_apply_relo(struct bpf_program *prog,
+@@ -5548,8 +5549,32 @@ static int bpf_core_calc_relo_res(struct bpf_program *prog,
  		}
  	}
  
--	return bpf_core_apply_relo_insn(prog_name, insn, insn_idx, relo,
--					relo_idx, local_btf, cands, specs_scratch);
-+	return bpf_core_calc_relo_insn(prog_name, relo, relo_idx, local_btf, cands,
-+				       specs_scratch, targ_res);
+-	return bpf_core_calc_relo_insn(prog_name, relo, relo_idx, local_btf, cands,
+-				       specs_scratch, targ_res);
++	err = bpf_core_calc_relo_insn(prog_name, relo, relo_idx, local_btf, cands,
++				      specs_scratch, targ_res);
++	if (err)
++		return err;
++
++	if (targ_spec)
++		*targ_spec = specs_scratch[2];
++	return 0;
++}
++
++struct hashmap *bpf_core_create_cand_cache(void)
++{
++	return hashmap__new(bpf_core_hash_fn, bpf_core_equal_fn, NULL);
++}
++
++void bpf_core_free_cand_cache(struct hashmap *cand_cache)
++{
++	struct hashmap_entry *entry;
++	int i;
++
++	if (!IS_ERR_OR_NULL(cand_cache)) {
++		hashmap__for_each_entry(cand_cache, entry, i) {
++			bpf_core_free_cands(entry->value);
++		}
++		hashmap__free(cand_cache);
++	}
  }
  
  static int
- bpf_object__relocate_core(struct bpf_object *obj, const char *targ_btf_path)
- {
- 	const struct btf_ext_info_sec *sec;
-+	struct bpf_core_relo_res targ_res;
+@@ -5559,7 +5584,6 @@ bpf_object__relocate_core(struct bpf_object *obj, const char *targ_btf_path)
+ 	struct bpf_core_relo_res targ_res;
  	const struct bpf_core_relo *rec;
  	const struct btf_ext_info *seg;
- 	struct hashmap_entry *entry;
+-	struct hashmap_entry *entry;
  	struct hashmap *cand_cache = NULL;
  	struct bpf_program *prog;
-+	struct bpf_insn *insn;
- 	const char *sec_name;
- 	int i, err = 0, insn_idx, sec_idx;
+ 	struct bpf_insn *insn;
+@@ -5578,7 +5602,7 @@ bpf_object__relocate_core(struct bpf_object *obj, const char *targ_btf_path)
+ 		}
+ 	}
  
-@@ -5636,12 +5627,31 @@ bpf_object__relocate_core(struct bpf_object *obj, const char *targ_btf_path)
+-	cand_cache = hashmap__new(bpf_core_hash_fn, bpf_core_equal_fn, NULL);
++	cand_cache = bpf_core_create_cand_cache();
+ 	if (IS_ERR(cand_cache)) {
+ 		err = PTR_ERR(cand_cache);
+ 		goto out;
+@@ -5627,7 +5651,8 @@ bpf_object__relocate_core(struct bpf_object *obj, const char *targ_btf_path)
  			if (!prog->load)
  				continue;
  
--			err = bpf_core_apply_relo(prog, rec, i, obj->btf, cand_cache);
-+			err = bpf_core_calc_relo_res(prog, rec, i, obj->btf, cand_cache, &targ_res);
+-			err = bpf_core_calc_relo_res(prog, rec, i, obj->btf, cand_cache, &targ_res);
++			err = bpf_core_calc_relo_res(prog, rec, i, obj->btf, cand_cache, &targ_res,
++						     NULL);
  			if (err) {
  				pr_warn("prog '%s': relo #%d: failed to relocate: %d\n",
  					prog->name, i, err);
- 				goto out;
- 			}
-+
-+			if (rec->insn_off % BPF_INSN_SZ)
-+				return -EINVAL;
-+			insn_idx = rec->insn_off / BPF_INSN_SZ;
-+			/* adjust insn_idx from section frame of reference to the local
-+			 * program's frame of reference; (sub-)program code is not yet
-+			 * relocated, so it's enough to just subtract in-section offset
-+			 */
-+			insn_idx = insn_idx - prog->sec_insn_off;
-+			if (insn_idx >= prog->insns_cnt)
-+				return -EINVAL;
-+			insn = &prog->insns[insn_idx];
-+
-+			err = bpf_core_patch_insn(prog->name, insn, insn_idx, rec, i, &targ_res);
-+			if (err) {
-+				pr_warn("prog '%s': relo #%d: failed to patch insn #%u: %d\n",
-+					prog->name, i, insn_idx, err);
-+				goto out;
-+			}
- 		}
- 	}
+@@ -5660,12 +5685,8 @@ bpf_object__relocate_core(struct bpf_object *obj, const char *targ_btf_path)
+ 	btf__free(obj->btf_vmlinux_override);
+ 	obj->btf_vmlinux_override = NULL;
  
+-	if (!IS_ERR_OR_NULL(cand_cache)) {
+-		hashmap__for_each_entry(cand_cache, entry, i) {
+-			bpf_core_free_cands(entry->value);
+-		}
+-		hashmap__free(cand_cache);
+-	}
++	bpf_core_free_cand_cache(cand_cache);
++
+ 	return err;
+ }
+ 
+@@ -8190,6 +8211,11 @@ struct btf *bpf_object__btf(const struct bpf_object *obj)
+ 	return obj ? obj->btf : NULL;
+ }
+ 
++struct btf_ext *bpf_object__btf_ext(const struct bpf_object *obj)
++{
++	return obj ? obj->btf_ext : NULL;
++}
++
+ int bpf_object__btf_fd(const struct bpf_object *obj)
+ {
+ 	return obj->btf ? btf__fd(obj->btf) : -1;
+@@ -8281,6 +8307,20 @@ bpf_object__next_program(const struct bpf_object *obj, struct bpf_program *prev)
+ 	return prog;
+ }
+ 
++size_t bpf_object__get_nr_programs(const struct bpf_object *obj)
++{
++	return obj->nr_programs;
++}
++
++struct bpf_program *
++bpf_object__get_program(const struct bpf_object *obj, unsigned int i)
++{
++	if (i >= obj->nr_programs)
++		return NULL;
++
++	return &obj->programs[i];
++}
++
+ struct bpf_program *
+ bpf_program__prev(struct bpf_program *next, const struct bpf_object *obj)
+ {
+@@ -8360,6 +8400,11 @@ int bpf_program__set_autoload(struct bpf_program *prog, bool autoload)
+ 	return 0;
+ }
+ 
++int bpf_program__sec_idx(const struct bpf_program *prog)
++{
++	return prog->sec_idx;
++}
++
+ static int bpf_program_nth_fd(const struct bpf_program *prog, int n);
+ 
+ int bpf_program__fd(const struct bpf_program *prog)
+@@ -11779,3 +11824,8 @@ void bpf_object__destroy_skeleton(struct bpf_object_skeleton *s)
+ 	free(s->progs);
+ 	free(s);
+ }
++
++void bpf_object_set_vmlinux_override(struct bpf_object *obj, struct btf *btf)
++{
++	obj->btf_vmlinux_override = btf;
++}
+diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
+index 42b2f36fd9f0..2b048ee5a9b2 100644
+--- a/tools/lib/bpf/libbpf.h
++++ b/tools/lib/bpf/libbpf.h
+@@ -225,6 +225,8 @@ LIBBPF_API int bpf_object__set_kversion(struct bpf_object *obj, __u32 kern_versi
+ 
+ struct btf;
+ LIBBPF_API struct btf *bpf_object__btf(const struct bpf_object *obj);
++struct btf_ext;
++LIBBPF_API struct btf_ext *bpf_object__btf_ext(const struct bpf_object *obj);
+ LIBBPF_API int bpf_object__btf_fd(const struct bpf_object *obj);
+ 
+ LIBBPF_DEPRECATED_SINCE(0, 7, "use bpf_object__find_program_by_name() instead")
+@@ -290,6 +292,7 @@ LIBBPF_API LIBBPF_DEPRECATED("BPF program title is confusing term; please use bp
+ const char *bpf_program__title(const struct bpf_program *prog, bool needs_copy);
+ LIBBPF_API bool bpf_program__autoload(const struct bpf_program *prog);
+ LIBBPF_API int bpf_program__set_autoload(struct bpf_program *prog, bool autoload);
++LIBBPF_API int bpf_program__sec_idx(const struct bpf_program *prog);
+ 
+ /* returns program size in bytes */
+ LIBBPF_DEPRECATED_SINCE(0, 7, "use bpf_program__insn_cnt() instead")
+diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
+index b3938b3f8fc9..15da4075e0b5 100644
+--- a/tools/lib/bpf/libbpf.map
++++ b/tools/lib/bpf/libbpf.map
+@@ -392,6 +392,7 @@ LIBBPF_0.6.0 {
+ 		bpf_map__map_extra;
+ 		bpf_map__set_map_extra;
+ 		bpf_map_create;
++		bpf_object__btf_ext;
+ 		bpf_object__next_map;
+ 		bpf_object__next_program;
+ 		bpf_object__prev_map;
+@@ -401,6 +402,7 @@ LIBBPF_0.6.0 {
+ 		bpf_program__flags;
+ 		bpf_program__insn_cnt;
+ 		bpf_program__insns;
++		bpf_program__sec_idx;
+ 		bpf_program__set_flags;
+ 		btf__add_btf;
+ 		btf__add_decl_tag;
+diff --git a/tools/lib/bpf/libbpf_internal.h b/tools/lib/bpf/libbpf_internal.h
+index 5dbe4f463880..b1962adb110c 100644
+--- a/tools/lib/bpf/libbpf_internal.h
++++ b/tools/lib/bpf/libbpf_internal.h
+@@ -524,4 +524,26 @@ static inline int ensure_good_fd(int fd)
+ 	return fd;
+ }
+ 
++struct hashmap;
++
++int bpf_core_calc_relo_res(struct bpf_program *prog,
++			   const struct bpf_core_relo *relo,
++			   int relo_idx,
++			   const struct btf *local_btf,
++			   struct hashmap *cand_cache,
++			   struct bpf_core_relo_res *targ_res,
++			   struct bpf_core_spec *targ_spec);
++void bpf_object_set_vmlinux_override(struct bpf_object *obj, struct btf *btf);
++struct hashmap *bpf_core_create_cand_cache(void);
++void bpf_core_free_cand_cache(struct hashmap *cand_cache);
++
++struct bpf_program *find_prog_by_sec_insn(const struct bpf_object *obj,
++					  size_t sec_idx, size_t insn_idx);
++
++size_t bpf_object__get_nr_programs(const struct bpf_object *obj);
++
++struct bpf_program *
++bpf_object__get_program(const struct bpf_object *obj, unsigned int n);
++
++
+ #endif /* __LIBBPF_LIBBPF_INTERNAL_H */
 diff --git a/tools/lib/bpf/relo_core.c b/tools/lib/bpf/relo_core.c
-index 910865e29edc..4f3552468624 100644
+index 4f3552468624..66dfb7fa89a2 100644
 --- a/tools/lib/bpf/relo_core.c
 +++ b/tools/lib/bpf/relo_core.c
-@@ -775,31 +775,6 @@ static int bpf_core_calc_enumval_relo(const struct bpf_core_relo *relo,
- 	return 0;
+@@ -102,7 +102,7 @@ static const char *core_relo_kind_str(enum bpf_core_relo_kind kind)
+ 	}
  }
  
--struct bpf_core_relo_res
--{
--	/* expected value in the instruction, unless validate == false */
--	__u32 orig_val;
--	/* new value that needs to be patched up to */
--	__u32 new_val;
--	/* relocation unsuccessful, poison instruction, but don't fail load */
--	bool poison;
--	/* some relocations can't be validated against orig_val */
--	bool validate;
--	/* for field byte offset relocations or the forms:
--	 *     *(T *)(rX + <off>) = rY
--	 *     rX = *(T *)(rY + <off>),
--	 * we remember original and resolved field size to adjust direct
--	 * memory loads of pointers and integers; this is necessary for 32-bit
--	 * host kernel architectures, but also allows to automatically
--	 * relocate fields that were resized from, e.g., u32 to u64, etc.
--	 */
--	bool fail_memsz_adjust;
--	__u32 orig_sz;
--	__u32 orig_type_id;
--	__u32 new_sz;
--	__u32 new_type_id;
--};
--
- /* Calculate original and target relocation values, given local and target
-  * specs and relocation kind. These values are calculated for each candidate.
-  * If there are multiple candidates, resulting values should all be consistent
-@@ -951,9 +926,9 @@ static int insn_bytes_to_bpf_size(__u32 sz)
-  * 5. *(T *)(rX + <off>) = rY, where T is one of {u8, u16, u32, u64};
-  * 6. *(T *)(rX + <off>) = <imm>, where T is one of {u8, u16, u32, u64}.
-  */
--static int bpf_core_patch_insn(const char *prog_name, struct bpf_insn *insn,
--			       int insn_idx, const struct bpf_core_relo *relo,
--			       int relo_idx, const struct bpf_core_relo_res *res)
-+int bpf_core_patch_insn(const char *prog_name, struct bpf_insn *insn,
-+			int insn_idx, const struct bpf_core_relo *relo,
-+			int relo_idx, const struct bpf_core_relo_res *res)
+-static bool core_relo_is_field_based(enum bpf_core_relo_kind kind)
++bool core_relo_is_field_based(enum bpf_core_relo_kind kind)
  {
- 	__u32 orig_val, new_val;
- 	__u8 class;
-@@ -1177,18 +1152,18 @@ static void bpf_core_dump_spec(const char *prog_name, int level, const struct bp
-  *    between multiple relocations for the same type ID and is updated as some
-  *    of the candidates are pruned due to structural incompatibility.
-  */
--int bpf_core_apply_relo_insn(const char *prog_name, struct bpf_insn *insn,
--			     int insn_idx,
--			     const struct bpf_core_relo *relo,
--			     int relo_idx,
--			     const struct btf *local_btf,
--			     struct bpf_core_cand_list *cands,
--			     struct bpf_core_spec *specs_scratch)
-+int bpf_core_calc_relo_insn(const char *prog_name,
-+			    const struct bpf_core_relo *relo,
-+			    int relo_idx,
-+			    const struct btf *local_btf,
-+			    struct bpf_core_cand_list *cands,
-+			    struct bpf_core_spec *specs_scratch,
-+			    struct bpf_core_relo_res *targ_res)
- {
- 	struct bpf_core_spec *local_spec = &specs_scratch[0];
- 	struct bpf_core_spec *cand_spec = &specs_scratch[1];
- 	struct bpf_core_spec *targ_spec = &specs_scratch[2];
--	struct bpf_core_relo_res cand_res, targ_res;
-+	struct bpf_core_relo_res cand_res;
- 	const struct btf_type *local_type;
- 	const char *local_name;
- 	__u32 local_id;
-@@ -1223,12 +1198,12 @@ int bpf_core_apply_relo_insn(const char *prog_name, struct bpf_insn *insn,
- 	/* TYPE_ID_LOCAL relo is special and doesn't need candidate search */
- 	if (relo->kind == BPF_CORE_TYPE_ID_LOCAL) {
- 		/* bpf_insn's imm value could get out of sync during linking */
--		memset(&targ_res, 0, sizeof(targ_res));
--		targ_res.validate = false;
--		targ_res.poison = false;
--		targ_res.orig_val = local_spec->root_type_id;
--		targ_res.new_val = local_spec->root_type_id;
--		goto patch_insn;
-+		memset(targ_res, 0, sizeof(*targ_res));
-+		targ_res->validate = true;
-+		targ_res->poison = false;
-+		targ_res->orig_val = local_spec->root_type_id;
-+		targ_res->new_val = local_spec->root_type_id;
-+		return 0;
+ 	switch (kind) {
+ 	case BPF_CORE_FIELD_BYTE_OFFSET:
+@@ -117,7 +117,7 @@ static bool core_relo_is_field_based(enum bpf_core_relo_kind kind)
  	}
- 
- 	/* libbpf doesn't support candidate search for anonymous types */
-@@ -1262,7 +1237,7 @@ int bpf_core_apply_relo_insn(const char *prog_name, struct bpf_insn *insn,
- 			return err;
- 
- 		if (j == 0) {
--			targ_res = cand_res;
-+			*targ_res = cand_res;
- 			*targ_spec = *cand_spec;
- 		} else if (cand_spec->bit_offset != targ_spec->bit_offset) {
- 			/* if there are many field relo candidates, they
-@@ -1272,7 +1247,8 @@ int bpf_core_apply_relo_insn(const char *prog_name, struct bpf_insn *insn,
- 				prog_name, relo_idx, cand_spec->bit_offset,
- 				targ_spec->bit_offset);
- 			return -EINVAL;
--		} else if (cand_res.poison != targ_res.poison || cand_res.new_val != targ_res.new_val) {
-+		} else if (cand_res.poison != targ_res->poison ||
-+			   cand_res.new_val != targ_res->new_val) {
- 			/* all candidates should result in the same relocation
- 			 * decision and value, otherwise it's dangerous to
- 			 * proceed due to ambiguity
-@@ -1280,7 +1256,7 @@ int bpf_core_apply_relo_insn(const char *prog_name, struct bpf_insn *insn,
- 			pr_warn("prog '%s': relo #%d: relocation decision ambiguity: %s %u != %s %u\n",
- 				prog_name, relo_idx,
- 				cand_res.poison ? "failure" : "success", cand_res.new_val,
--				targ_res.poison ? "failure" : "success", targ_res.new_val);
-+				targ_res->poison ? "failure" : "success", targ_res->new_val);
- 			return -EINVAL;
- 		}
- 
-@@ -1314,19 +1290,10 @@ int bpf_core_apply_relo_insn(const char *prog_name, struct bpf_insn *insn,
- 			 prog_name, relo_idx);
- 
- 		/* calculate single target relo result explicitly */
--		err = bpf_core_calc_relo(prog_name, relo, relo_idx, local_spec, NULL, &targ_res);
-+		err = bpf_core_calc_relo(prog_name, relo, relo_idx, local_spec, NULL, targ_res);
- 		if (err)
- 			return err;
- 	}
- 
--patch_insn:
--	/* bpf_core_patch_insn() should know how to handle missing targ_spec */
--	err = bpf_core_patch_insn(prog_name, insn, insn_idx, relo, relo_idx, &targ_res);
--	if (err) {
--		pr_warn("prog '%s': relo #%d: failed to patch insn #%u: %d\n",
--			prog_name, relo_idx, relo->insn_off / 8, err);
--		return -EINVAL;
--	}
--
- 	return 0;
  }
+ 
+-static bool core_relo_is_type_based(enum bpf_core_relo_kind kind)
++bool core_relo_is_type_based(enum bpf_core_relo_kind kind)
+ {
+ 	switch (kind) {
+ 	case BPF_CORE_TYPE_ID_LOCAL:
+@@ -130,7 +130,7 @@ static bool core_relo_is_type_based(enum bpf_core_relo_kind kind)
+ 	}
+ }
+ 
+-static bool core_relo_is_enumval_based(enum bpf_core_relo_kind kind)
++bool core_relo_is_enumval_based(enum bpf_core_relo_kind kind)
+ {
+ 	switch (kind) {
+ 	case BPF_CORE_ENUMVAL_EXISTS:
 diff --git a/tools/lib/bpf/relo_core.h b/tools/lib/bpf/relo_core.h
-index 17799819ad7c..a28bf3711ce2 100644
+index a28bf3711ce2..e969dfb032f4 100644
 --- a/tools/lib/bpf/relo_core.h
 +++ b/tools/lib/bpf/relo_core.h
-@@ -44,14 +44,44 @@ struct bpf_core_spec {
- 	__u32 bit_offset;
- };
+@@ -84,4 +84,8 @@ int bpf_core_patch_insn(const char *prog_name, struct bpf_insn *insn,
+ 			int insn_idx, const struct bpf_core_relo *relo,
+ 			int relo_idx, const struct bpf_core_relo_res *res);
  
--int bpf_core_apply_relo_insn(const char *prog_name,
--			     struct bpf_insn *insn, int insn_idx,
--			     const struct bpf_core_relo *relo, int relo_idx,
--			     const struct btf *local_btf,
--			     struct bpf_core_cand_list *cands,
--			     struct bpf_core_spec *specs_scratch);
-+struct bpf_core_relo_res {
-+	/* expected value in the instruction, unless validate == false */
-+	__u32 orig_val;
-+	/* new value that needs to be patched up to */
-+	__u32 new_val;
-+	/* relocation unsuccessful, poison instruction, but don't fail load */
-+	bool poison;
-+	/* some relocations can't be validated against orig_val */
-+	bool validate;
-+	/* for field byte offset relocations or the forms:
-+	 *     *(T *)(rX + <off>) = rY
-+	 *     rX = *(T *)(rY + <off>),
-+	 * we remember original and resolved field size to adjust direct
-+	 * memory loads of pointers and integers; this is necessary for 32-bit
-+	 * host kernel architectures, but also allows to automatically
-+	 * relocate fields that were resized from, e.g., u32 to u64, etc.
-+	 */
-+	bool fail_memsz_adjust;
-+	__u32 orig_sz;
-+	__u32 orig_type_id;
-+	__u32 new_sz;
-+	__u32 new_type_id;
-+};
-+
- int bpf_core_types_are_compat(const struct btf *local_btf, __u32 local_id,
- 			      const struct btf *targ_btf, __u32 targ_id);
- 
- size_t bpf_core_essential_name_len(const char *name);
-+
-+int bpf_core_calc_relo_insn(const char *prog_name,
-+			    const struct bpf_core_relo *relo, int relo_idx,
-+			    const struct btf *local_btf,
-+			    struct bpf_core_cand_list *cands,
-+			    struct bpf_core_spec *specs_scratch,
-+			    struct bpf_core_relo_res *targ_res);
-+
-+int bpf_core_patch_insn(const char *prog_name, struct bpf_insn *insn,
-+			int insn_idx, const struct bpf_core_relo *relo,
-+			int relo_idx, const struct bpf_core_relo_res *res);
++bool core_relo_is_field_based(enum bpf_core_relo_kind kind);
++bool core_relo_is_type_based(enum bpf_core_relo_kind kind);
++bool core_relo_is_enumval_based(enum bpf_core_relo_kind kind);
 +
  #endif
 -- 
