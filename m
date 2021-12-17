@@ -2,544 +2,202 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 77FD647828A
-	for <lists+netdev@lfdr.de>; Fri, 17 Dec 2021 02:51:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9682F47828D
+	for <lists+netdev@lfdr.de>; Fri, 17 Dec 2021 02:54:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232135AbhLQBvG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Dec 2021 20:51:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33474 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232134AbhLQBvE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 20:51:04 -0500
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D557C06173E;
-        Thu, 16 Dec 2021 17:51:04 -0800 (PST)
-Received: by mail-pj1-x1044.google.com with SMTP id np3so807101pjb.4;
-        Thu, 16 Dec 2021 17:51:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=evuqDhRMh8nTtLflLHMP9tpb91vOyLauiyU+QoRV6Ko=;
-        b=Mn3rTpgDY7Lv2O4MVMaGfdds8GgV9AmZNkR2DYymNGqDJgjOLXst/M0Plz5AX3HFTT
-         58qywJHece4g+TVfRMZydFcQWQsh7z/owx3efIQQM0D1obPmkJKOgzXzYkgAQyrixsxh
-         hAgKTXBLGZWXFGZXwrrodWd3KxIeQOaV5KrspBofckAAYGK3XgO75QGdJ3wCfmi8+Nn0
-         7t/2g3yhvyVHhgYFjYwpxt4D/FP2Rp2pnUX0Kv93zIjeX7ueJrFO/gcCRNzCk1K2ZcQx
-         AH6krj+arZkFNkwydp8nwafWSrN4ilUst5TVjrbZOHHi0etJoZ7zbXIbHifBx0ti8A7N
-         Z5Dg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=evuqDhRMh8nTtLflLHMP9tpb91vOyLauiyU+QoRV6Ko=;
-        b=EbAwdwM44kk9bcnbQPTzTVJQCNy2wbNJ3bUgeNF5gHPww+NL1ibESqp0dMDqRG+nLA
-         SGHfYlo9P9iGcMJx3tSP1BLU/9RhLkrZ6IFiwlYVBWeSdB9crufFn3d8AfsP23y001Mp
-         4WuH+y+NhfdqvBT1h/UYTm/39JwClJq3BVt7dJNYuzxj1WhKxwuLWPauyk9vPdRgzmk2
-         4jMYOZOI5ePBORcPu0Hdk/Y90caDWEY/yOe07eH5LU27YimZ5LlKmtUMoHX/pI1230ai
-         LaVH9zaYnEC+FKSGccBqfC7nT4Oe9loLNCUrzxbVpgvVOM2LndAkHCDAYf9uH2ngqCpD
-         BIow==
-X-Gm-Message-State: AOAM533TTSOp3W+pMQZEhdkasV3mwaRD+UfmF4TvzSKvtY8Oc1eINvb5
-        dnogSI+ulz8QwgM+20T/HwYoExxiDZg=
-X-Google-Smtp-Source: ABdhPJy5IHEJpIdkbbqcuccR+hCKUzPDj9zxb3eKhNQQvulHQk9jiDXq1hblYtGcyieh/5CAjUiFRA==
-X-Received: by 2002:a17:90b:38c4:: with SMTP id nn4mr9462133pjb.26.1639705863797;
-        Thu, 16 Dec 2021 17:51:03 -0800 (PST)
-Received: from localhost ([2405:201:6014:d064:3d4e:6265:800c:dc84])
-        by smtp.gmail.com with ESMTPSA id pi12sm3667281pjb.12.2021.12.16.17.51.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Dec 2021 17:51:03 -0800 (PST)
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-To:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
+        id S232154AbhLQByB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Dec 2021 20:54:01 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:62794 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S232143AbhLQByA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 20:54:00 -0500
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.16.1.2/8.16.1.2) with ESMTP id 1BH1qPGS024780;
+        Thu, 16 Dec 2021 17:53:59 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : mime-version; s=facebook;
+ bh=oMTB0deKg4+xt+f9fdrozLMHfy2sKYXhN8LRzcBon2U=;
+ b=YtU6PTjUmz1HLiuwNDHTg/CqjvXcg26d9O1wx+3QyfqEQIQtWhA8NNPt0jc+MTVZCOLc
+ Na9CcrqmLj44eZbxliyGeILI7dWO5ZlNoXSoFhUPSTALZ3i2RzkKhodgamc520BANNAZ
+ pmaX+nY3f2lZ/DASDbbRKjn5sV4LZG4KPFg= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by m0001303.ppops.net (PPS) with ESMTPS id 3d0h91r06j-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 16 Dec 2021 17:53:59 -0800
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.36.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Thu, 16 Dec 2021 17:53:58 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=cuQLAinuAOFFoZeKz7KXVWe7ioCWwRFUq4KVpbQDUg60CLFyu0LqZAHpEbCnd1/i60ooypqWg8UTpXtItXKBzQoiSGujZvJKKt4c4CmFCNk3+deQBP9N5vOz16x2ZxoaungISvRmPGuPuo13F0qThHL5Ch4hOA9ixeNFOkiwteqjRCf1uqhRLIgsQ1wzX23NuFOWOVrXeCxiytFYMtG3Jsjs4lBRyMSto13ucuh8CDaOnKXXGd/h1hKBXfj0OKwxHjHBOGarK8eaNDkrzmdkJ4+yytH5HWBep6CydZLWW2PGrgk6/VqiKCPd460r7xYAgYcbUHy0W2LxwUm1VcEuVQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=oMTB0deKg4+xt+f9fdrozLMHfy2sKYXhN8LRzcBon2U=;
+ b=cRy0u2g4avTSJXRFrwZAqhBFCmF98iWbAagKQ6O02kDMG53PsHFLzHMFbXXF5LF3CDKQoEwbjhv5d/uQvNhlK2kqaYyp/cpUXQN568TLHad0mV7JuP6sp5xfp+iFc/LiOtbopctcKfk58TDeh/dek9D6Ruwyk60rbqlEIXIjhecMc7498EwN9gsFiIUw4Z+5sCpCGktAsonQdUf5l6znWaoE5+K2hJFPU2DYwk2TClxO+upI/S3o7NapIJuqDw851UH7PSoojoufd/Zco3c1uzIMnD4zRXK9ty1yQCw52iG86AA16iMeWa6jJx/w+sLMoZjB66/1DwtpS66Cs35M8A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Received: from SA1PR15MB5109.namprd15.prod.outlook.com (2603:10b6:806:1dc::10)
+ by SA1PR15MB5283.namprd15.prod.outlook.com (2603:10b6:806:23b::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4778.17; Fri, 17 Dec
+ 2021 01:53:56 +0000
+Received: from SA1PR15MB5109.namprd15.prod.outlook.com
+ ([fe80::f826:e515:ee1a:a33]) by SA1PR15MB5109.namprd15.prod.outlook.com
+ ([fe80::f826:e515:ee1a:a33%6]) with mapi id 15.20.4801.015; Fri, 17 Dec 2021
+ 01:53:56 +0000
+From:   Song Liu <songliubraving@fb.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+CC:     Song Liu <song@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "Alexei Starovoitov" <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Maxim Mikityanskiy <maximmi@nvidia.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Subject: [PATCH bpf-next v4 10/10] selftests/bpf: Extend kfunc selftests
-Date:   Fri, 17 Dec 2021 07:20:31 +0530
-Message-Id: <20211217015031.1278167-11-memxor@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20211217015031.1278167-1-memxor@gmail.com>
-References: <20211217015031.1278167-1-memxor@gmail.com>
+        "Andrii Nakryiko" <andrii@kernel.org>,
+        Kernel Team <Kernel-team@fb.com>,
+        "Peter Ziljstra" <peterz@infradead.org>, X86 ML <x86@kernel.org>
+Subject: Re: [PATCH v2 bpf-next 0/7] bpf_prog_pack allocator
+Thread-Topic: [PATCH v2 bpf-next 0/7] bpf_prog_pack allocator
+Thread-Index: AQHX8Xkz/fv1YJcIlkCbgavAsgZfuqw1jcSAgABhLIA=
+Date:   Fri, 17 Dec 2021 01:53:56 +0000
+Message-ID: <DC857926-ECDA-4DF0-8058-C53DD15226AE@fb.com>
+References: <20211215060102.3793196-1-song@kernel.org>
+ <CAEf4BzaFYPWCycTx+pHefhRHgD2n1WPyy9-L9TDJ8rHyGTaQSQ@mail.gmail.com>
+In-Reply-To: <CAEf4BzaFYPWCycTx+pHefhRHgD2n1WPyy9-L9TDJ8rHyGTaQSQ@mail.gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Apple Mail (2.3693.20.0.1.32)
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: efdf04ef-2e3a-465a-9516-08d9c100165a
+x-ms-traffictypediagnostic: SA1PR15MB5283:EE_
+x-microsoft-antispam-prvs: <SA1PR15MB5283393F154D3969B2CCFEA3B3789@SA1PR15MB5283.namprd15.prod.outlook.com>
+x-fb-source: Internal
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: D5/gpCT7nNGF9iq4Ol/jhhEklwcNu/w6We/KbzBuwP8l8vkL1mdNaLlrdm2w50l8DwJVv49lae162RudsNRuDVvFOnFY85m9MlZdwhKobtfe3R+HM14LwOl4Ra6A0AMd/7GgEvbFR3ois8tPl/R10W5+JFeUjRka4RHcNj+exsUDBcztfVypUfyGayWEKwWWxi8cRU70SU6APyRu9t+r+L7M1vQObWC/9lUbm8sb7DULf4g22FdllV3TiDUMM/+pNaDVwt4HBITJpuap22Kb72nYnFh7KjsDhD7iu20tr20k7rNL5OnEWiT11OVNOsQYH1B3Q/R6QB/iW90t4xZtmP3mDKdBQnrRQitoYer1c2aKVj1ilFP6qOJ8exveG0sVbwkOA9gRMGAvIw+Km9wvr9hukbfX4jdhBTNvay0lMppBjaLwA3bJrumo76hxyGhr5205o3qBjiYnyQ6dsdPJXnNIaA7KXq/QCIDwl28ltZKlRpxs3ZejyziB3kOkcCUI8AP9EAXKktNEFAwpayPCE3KkFiM0X7WGiv7EVnSRd1zOMJj4BHXkMVXkxzJtnMHvNHVG3MrE1BL1BtWwj/5zSEU/J79wzbJMvsfkIfcrL2dZ1kK60ky4HJir8PuPMI/Y15LkCjtITyYzOVCblwJYnExiDJ0pArTXaw8ToGLvE06GqPJ1vOKzWdxOZYhM1b7F6+9nmKI0CgmlK5UyjsiQARRvY+P1hJppoPET78spur9bX4w/CKAOS3uBbKz+/u4kruXLAdk9FbcVMlYT2ckM7cJOlHHamUX0hn05AE4zkKfctEuMJFEVYc1ZTLpiDSKTnhDxNF8r9jTA9xd5OOmNSA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR15MB5109.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(6512007)(66556008)(64756008)(91956017)(8676002)(38100700002)(6916009)(2906002)(76116006)(8936002)(316002)(83380400001)(86362001)(71200400001)(7416002)(33656002)(966005)(186003)(508600001)(53546011)(6506007)(66946007)(122000001)(6486002)(4326008)(38070700005)(5660300002)(36756003)(66476007)(54906003)(2616005)(66446008)(45980500001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?snt/xZkQX/r60Si9COxGVyyfkcqOD1Spg4NizQi0wSpRJiGJ2F80YFQkhF9z?=
+ =?us-ascii?Q?+EUwYE9o9+31QEJ38xi7iP6pjyv53yd3vh9GcA6sB2p3rnP+YlE3EKzV+3LR?=
+ =?us-ascii?Q?LAuTL0imUe6B46TOLifVU5zgodiODKovckssxbR34xKl/Sl53oTtA3ZinTC/?=
+ =?us-ascii?Q?F2MxH2Pbx9G0c0gQvc/ZBZynV9gXYHDro0yjoL1QbXermtGxoRymDqi2rauj?=
+ =?us-ascii?Q?ZFPMASdTHoHcY9QM2NT8ISLEhZayUiZtzdIw4wxPk8EDW6zwNnCuCcTvfRFk?=
+ =?us-ascii?Q?0gnjsHY6U4DaGd9M1gTM0RJBLsEjzEJpnqSmEa/mIejtXKlwZrrr0Oy3m78k?=
+ =?us-ascii?Q?RDpZrvwlbosubvZTYqG708cP7YOexTAqwux+0LrYH3ZhC7ZA85FNefzi6KS6?=
+ =?us-ascii?Q?ooOyWx9sktkmtkidM0AnJChKBv1EY+R0mT5z+spQPm6/vyDjaJYdcKVOibNq?=
+ =?us-ascii?Q?6dDIDPuGzn2LujiKsYQ0dq/hlPe/BdfZ9LG+bhQ62WjHeAWmLnozorBu7NDk?=
+ =?us-ascii?Q?nDO2CJ7qLk1jABkruDyt6RGfH/E8VF3kqxVqw8p1SDqPmiuMT+1gb9jCOLTt?=
+ =?us-ascii?Q?ZjyRbiRBQUqvSG4w6K9AeInhrmKoLoJ6XUSB+EZlhjpQzQdAWDlW417pscsD?=
+ =?us-ascii?Q?Vb0guVpzIR7M1Wb9fyxiNW6t/HIGJ47ohhw4XarAwss9sav4RziKVISIJ8VM?=
+ =?us-ascii?Q?TP8wg+hxGUAWri19Ho14jAh8NcXPIBu3tJ7vIPi1RCgOgSO/wlv4TRkBiD3y?=
+ =?us-ascii?Q?MW/1sYBZWxFQFgHxfSain9AJEmpebdfzBshFumVgf6DF5Ob+lWdKIARZ5R7G?=
+ =?us-ascii?Q?OllfFnEEpY8JEu8vw5OQ9qTcU/92LSoF2JYoEtPxf2wNhZD3ZqJJ2i/44RoV?=
+ =?us-ascii?Q?ziAiRD4AuBc0gp5GylLrSi691qbC8AOk/44D6CBC+2mE+/DRZnrjht/Al97b?=
+ =?us-ascii?Q?OWt/boWcrX+1wD914Bfpcbrq3+FsLO3Vy6Uu9gc2STgwHUgFbmlvKkggNx62?=
+ =?us-ascii?Q?fKFpOm8wk/aw5MiDMX9mzUPnvBOZIDuNZm09ca66lO6u/b4YXUW5Q+FGsxwp?=
+ =?us-ascii?Q?X/MU8BtCudruRxaMM1+wXTKJyMKBsaZuUTT1/z+ZoHtUwDCENGwVCT8dPDcy?=
+ =?us-ascii?Q?09WtBIKr0jAFY1PACiZpbg4vrsBgjUx/SBpbEgGwKjmyfcPikb4pCysIcbRS?=
+ =?us-ascii?Q?QoMxlQpJQhDUonpf59RZsA+MXjTx6jJcjRa8dxB2vgvhnqoT1Uj7DXqZJmVb?=
+ =?us-ascii?Q?dVF//LGY86pos1+/bt6riVjBQjqWiM+9sj0p05NwpYyNTHM7rHSYsFmuw2Jb?=
+ =?us-ascii?Q?3us/fvgJ0rnPM1zxcAkFDqG7FIyNgBtoZZw+d8em1lqClqem4zvQ4Bs6s2sR?=
+ =?us-ascii?Q?c8Wfrr/5hYNsffFLcqZTs62WA62sZR1bLzylFma21YSHmAbTakcqbxILRC9G?=
+ =?us-ascii?Q?S4ti0NosUCK7/J2ZQq7qDeVDxKZenoI9iJbeuKezxbyak1KL61g+XCFbbrXG?=
+ =?us-ascii?Q?a/qsbktHzfwsXrNoSxtbqaaSRpjIhtqaXfW0fYY2oymIl/ErzunxC4Y6whxO?=
+ =?us-ascii?Q?YdSccy1usYRPryg3SWVF/cR7P70cS11O1q/oeq8cpqMdY3odY5uTHufohE3O?=
+ =?us-ascii?Q?8krtNO05PXY4BLEgRzaWsoGdRio/qKYWJUwotgxxDvPctC190V9bSoR+J67n?=
+ =?us-ascii?Q?CDgowg=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <E4CBFAED1DE0F5479CCF3C9C7B97EE61@namprd15.prod.outlook.com>
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SA1PR15MB5109.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: efdf04ef-2e3a-465a-9516-08d9c100165a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Dec 2021 01:53:56.7875
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: KlzZizBh0v0NOCcSUihxFFIQPvTZjn+by+V1TfY9KYNVD6IFlfwvWT2JdeR6ta2Al/nALq+k77/Euw23Foeo8g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR15MB5283
+X-OriginatorOrg: fb.com
+X-Proofpoint-ORIG-GUID: L95gel4FS8goozTbleMSLvxI-Cg0OvjF
+X-Proofpoint-GUID: L95gel4FS8goozTbleMSLvxI-Cg0OvjF
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=14854; h=from:subject; bh=vxGabSO4S3DWzZQFVI/SqvtWZkNgilU9tSs/jOHkMa8=; b=owEBbQKS/ZANAwAIAUzgyIZIvxHKAcsmYgBhu+vGtkub+yj/YTvAHxhgluBeFHCQHm/UMBpI1gyl TYfK6ECJAjMEAAEIAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYbvrxgAKCRBM4MiGSL8RymALD/ 4iyIbCP1CSRI9IhEgUwJb4khMpMHp0pJuLm8mOrZje2wN4/TX+Fs+0uzfhDTqqz0GSASI47dL+UxEJ VN7ohxjfcBG8RU8QWDTUaHI4wf+vVmXCY1NHL4ysIDADl7PYJpfeOxLkBCqry2sHwuuGRuX4Est3g7 89rbIJTYHbAIfiR4KGevaZqwREYW5xQBl0sVqy+4e+eTnVX7yvDEV+LzCJt28lafmdHc+G+x7mJG9J bGhotufT0K1as1By/9mOKx83MBGnq/emcv/PeJBugb/vIvBqE1dY1OMLzmM4PaCVDM1KaBXTuyidKH oEclSzDPu75rKIXd/QrH9+FulciKM+sfZ46xq6gEnRmXM/K9Ml4lrFnfUYNNjOa+A7nwdvtOMqE1or yFMltfH7QrDw45ek7ylL1BDyq4epGB8nzRgK6N2w128NWOzeQHewNDWFkEVhrw7GuVNa1Eq1r1SwAz fz0WA+rUVW0tRO05PdC+TmTRkUDQ+z8dGLI+qg21RiUHuErKKotbiW6csQsht/1RgFPABAgdTaESKn v03GJ0qNUIarjqjF/yT0AISpcGb/yiLvdLFGXBzF4PaFjdnNwnIUJ/AXcBQGd2tLeU1W9KZO2nH0kM /zELNtoOru0P2MHANI/qBiHwiQVSwhHnn9FpGLFHk+iDYWGizXLNyhW2+PUw==
-X-Developer-Key: i=memxor@gmail.com; a=openpgp; fpr=4BBE2A7E06ECF9D5823C61114CE0C88648BF11CA
-Content-Transfer-Encoding: 8bit
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2021-12-16_09,2021-12-16_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 spamscore=0
+ mlxlogscore=999 mlxscore=0 lowpriorityscore=0 suspectscore=0
+ malwarescore=0 adultscore=0 clxscore=1015 impostorscore=0
+ priorityscore=1501 phishscore=0 bulkscore=0 classifier=spam adjust=0
+ reason=mlx scancount=1 engine=8.12.0-2110150000
+ definitions=main-2112170007
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the prog_test kfuncs to test the referenced PTR_TO_BTF_ID kfunc
-support, and PTR_TO_CTX, PTR_TO_MEM argument passing support. Also
-testing the various failure cases for invalid kfunc prototypes.
 
-Also, exercise the two cases being solved by addition of
-parent_ref_obj_id in bpf_reg_state:
-- Invalidation of pointers formed by btf_struct_walk on
-  release_reference
-- Not being able to pass same BTF ID's PTR_TO_BTF_ID to the release
-  function, also formed by btf_struct_walk
 
-Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
----
- include/linux/bpf.h                           |  21 +++
- net/bpf/test_run.c                            | 135 ++++++++++++++++++
- net/core/filter.c                             |   3 +
- .../selftests/bpf/prog_tests/kfunc_call.c     |   6 +
- .../selftests/bpf/progs/kfunc_call_test.c     |  52 ++++++-
- tools/testing/selftests/bpf/verifier/calls.c  |  75 ++++++++++
- .../selftests/bpf/verifier/ref_tracking.c     |  44 ++++++
- 7 files changed, 334 insertions(+), 2 deletions(-)
+> On Dec 16, 2021, at 12:06 PM, Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
+> 
+> On Tue, Dec 14, 2021 at 10:01 PM Song Liu <song@kernel.org> wrote:
+>> 
+>> Changes v1 => v2:
+>> 1. Use text_poke instead of writing through linear mapping. (Peter)
+>> 2. Avoid making changes to non-x86_64 code.
+>> 
+>> Most BPF programs are small, but they consume a page each. For systems
+>> with busy traffic and many BPF programs, this could also add significant
+>> pressure to instruction TLB.
+>> 
+>> This set tries to solve this problem with customized allocator that pack
+>> multiple programs into a huge page.
+>> 
+>> Patches 1-5 prepare the work. Patch 6 contains key logic of the allocator.
+>> Patch 7 uses this allocator in x86_64 jit compiler.
+>> 
+> 
+> There are test failures, please see [0]. But I was also wondering if
+> there could be an explicit selftest added to validate that all this
+> huge page machinery is actually activated and working as expected?
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index 015cb633838b..2909608b2326 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -1670,6 +1670,9 @@ int bpf_prog_test_run_sk_lookup(struct bpf_prog *prog,
- 				const union bpf_attr *kattr,
- 				union bpf_attr __user *uattr);
- bool bpf_prog_test_check_kfunc_call(u32 kfunc_id, struct module *owner);
-+bool bpf_prog_test_is_acquire_kfunc(u32 kfunc_id, struct module *owner);
-+bool bpf_prog_test_is_release_kfunc(u32 kfunc_id, struct module *owner);
-+bool bpf_prog_test_is_kfunc_ret_type_null(u32 kfunc_id, struct module *owner);
- bool btf_ctx_access(int off, int size, enum bpf_access_type type,
- 		    const struct bpf_prog *prog,
- 		    struct bpf_insn_access_aux *info);
-@@ -1928,6 +1931,24 @@ static inline bool bpf_prog_test_check_kfunc_call(u32 kfunc_id,
- 	return false;
- }
- 
-+static inline bool bpf_prog_test_is_acquire_kfunc(u32 kfunc_id,
-+						  struct module *owner)
-+{
-+	return false;
-+}
-+
-+static inline bool bpf_prog_test_is_release_kfunc(u32 kfunc_id,
-+						  struct module *owner)
-+{
-+	return false;
-+}
-+
-+static inline bool bpf_prog_test_is_kfunc_ret_type_null(u32 kfunc_id,
-+							struct module *owner)
-+{
-+	return false;
-+}
-+
- static inline void bpf_map_put(struct bpf_map *map)
- {
- }
-diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-index 46dd95755967..c72e71ffdf22 100644
---- a/net/bpf/test_run.c
-+++ b/net/bpf/test_run.c
-@@ -232,6 +232,105 @@ struct sock * noinline bpf_kfunc_call_test3(struct sock *sk)
- 	return sk;
- }
- 
-+struct prog_test_ref_kfunc {
-+	int a;
-+	int b;
-+	struct prog_test_ref_kfunc *next;
-+};
-+
-+static struct prog_test_ref_kfunc prog_test_struct = {
-+	.a = 42,
-+	.b = 108,
-+	.next = &prog_test_struct,
-+};
-+
-+noinline struct prog_test_ref_kfunc *
-+bpf_kfunc_call_test_acquire(unsigned long *scalar_ptr)
-+{
-+	/* randomly return NULL */
-+	if (get_jiffies_64() % 2)
-+		return NULL;
-+	return &prog_test_struct;
-+}
-+
-+noinline void bpf_kfunc_call_test_release(struct prog_test_ref_kfunc *p)
-+{
-+}
-+
-+struct prog_test_pass1 {
-+	int x0;
-+	struct {
-+		int x1;
-+		struct {
-+			int x2;
-+			struct {
-+				int x3;
-+			};
-+		};
-+	};
-+};
-+
-+struct prog_test_pass2 {
-+	int len;
-+	short arr1[4];
-+	struct {
-+		char arr2[4];
-+		unsigned long arr3[8];
-+	} x;
-+};
-+
-+struct prog_test_fail1 {
-+	void *p;
-+	int x;
-+};
-+
-+struct prog_test_fail2 {
-+	int x8;
-+	struct prog_test_pass1 x;
-+};
-+
-+struct prog_test_fail3 {
-+	int len;
-+	char arr1[2];
-+	char arr2[0];
-+};
-+
-+noinline void bpf_kfunc_call_test_pass_ctx(struct __sk_buff *skb)
-+{
-+}
-+
-+noinline void bpf_kfunc_call_test_pass1(struct prog_test_pass1 *p)
-+{
-+}
-+
-+noinline void bpf_kfunc_call_test_pass2(struct prog_test_pass2 *p)
-+{
-+}
-+
-+noinline void bpf_kfunc_call_test_fail1(struct prog_test_fail1 *p)
-+{
-+}
-+
-+noinline void bpf_kfunc_call_test_fail2(struct prog_test_fail2 *p)
-+{
-+}
-+
-+noinline void bpf_kfunc_call_test_fail3(struct prog_test_fail3 *p)
-+{
-+}
-+
-+noinline void bpf_kfunc_call_test_mem_len_pass1(void *mem, int len__mem)
-+{
-+}
-+
-+noinline void bpf_kfunc_call_test_mem_len_fail1(void *mem, int len)
-+{
-+}
-+
-+noinline void bpf_kfunc_call_test_mem_len_fail2(u64 *mem, int len)
-+{
-+}
-+
- __diag_pop();
- 
- ALLOW_ERROR_INJECTION(bpf_modify_return_test, ERRNO);
-@@ -240,8 +339,23 @@ BTF_SET_START(test_sk_kfunc_ids)
- BTF_ID(func, bpf_kfunc_call_test1)
- BTF_ID(func, bpf_kfunc_call_test2)
- BTF_ID(func, bpf_kfunc_call_test3)
-+BTF_ID(func, bpf_kfunc_call_test_acquire)
-+BTF_ID(func, bpf_kfunc_call_test_release)
-+BTF_ID(func, bpf_kfunc_call_test_pass_ctx)
-+BTF_ID(func, bpf_kfunc_call_test_pass1)
-+BTF_ID(func, bpf_kfunc_call_test_pass2)
-+BTF_ID(func, bpf_kfunc_call_test_fail1)
-+BTF_ID(func, bpf_kfunc_call_test_fail2)
-+BTF_ID(func, bpf_kfunc_call_test_fail3)
-+BTF_ID(func, bpf_kfunc_call_test_mem_len_pass1)
-+BTF_ID(func, bpf_kfunc_call_test_mem_len_fail1)
-+BTF_ID(func, bpf_kfunc_call_test_mem_len_fail2)
- BTF_SET_END(test_sk_kfunc_ids)
- 
-+BTF_ID_LIST(test_sk_acq_rel)
-+BTF_ID(func, bpf_kfunc_call_test_acquire)
-+BTF_ID(func, bpf_kfunc_call_test_release)
-+
- bool bpf_prog_test_check_kfunc_call(u32 kfunc_id, struct module *owner)
- {
- 	if (btf_id_set_contains(&test_sk_kfunc_ids, kfunc_id))
-@@ -249,6 +363,27 @@ bool bpf_prog_test_check_kfunc_call(u32 kfunc_id, struct module *owner)
- 	return bpf_check_mod_kfunc_call(&prog_test_kfunc_list, kfunc_id, owner);
- }
- 
-+bool bpf_prog_test_is_acquire_kfunc(u32 kfunc_id, struct module *owner)
-+{
-+	if (kfunc_id == test_sk_acq_rel[0])
-+		return true;
-+	return bpf_is_mod_acquire_kfunc(&prog_test_kfunc_list, kfunc_id, owner);
-+}
-+
-+bool bpf_prog_test_is_release_kfunc(u32 kfunc_id, struct module *owner)
-+{
-+	if (kfunc_id == test_sk_acq_rel[1])
-+		return true;
-+	return bpf_is_mod_release_kfunc(&prog_test_kfunc_list, kfunc_id, owner);
-+}
-+
-+bool bpf_prog_test_is_kfunc_ret_type_null(u32 kfunc_id, struct module *owner)
-+{
-+	if (kfunc_id == test_sk_acq_rel[0])
-+		return true;
-+	return bpf_is_mod_kfunc_ret_type_null(&prog_test_kfunc_list, kfunc_id, owner);
-+}
-+
- static void *bpf_test_init(const union bpf_attr *kattr, u32 size,
- 			   u32 headroom, u32 tailroom)
- {
-diff --git a/net/core/filter.c b/net/core/filter.c
-index e5efacaa6175..271b89fe89f8 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -10002,6 +10002,9 @@ const struct bpf_verifier_ops tc_cls_act_verifier_ops = {
- 	.gen_prologue		= tc_cls_act_prologue,
- 	.gen_ld_abs		= bpf_gen_ld_abs,
- 	.check_kfunc_call	= bpf_prog_test_check_kfunc_call,
-+	.is_acquire_kfunc	= bpf_prog_test_is_acquire_kfunc,
-+	.is_release_kfunc	= bpf_prog_test_is_release_kfunc,
-+	.is_kfunc_ret_type_null = bpf_prog_test_is_kfunc_ret_type_null,
- };
- 
- const struct bpf_prog_ops tc_cls_act_prog_ops = {
-diff --git a/tools/testing/selftests/bpf/prog_tests/kfunc_call.c b/tools/testing/selftests/bpf/prog_tests/kfunc_call.c
-index 7d7445ccc141..b39a4f09aefd 100644
---- a/tools/testing/selftests/bpf/prog_tests/kfunc_call.c
-+++ b/tools/testing/selftests/bpf/prog_tests/kfunc_call.c
-@@ -27,6 +27,12 @@ static void test_main(void)
- 	ASSERT_OK(err, "bpf_prog_test_run(test2)");
- 	ASSERT_EQ(retval, 3, "test2-retval");
- 
-+	prog_fd = skel->progs.kfunc_call_test_ref_btf_id.prog_fd;
-+	err = bpf_prog_test_run(prog_fd, 1, &pkt_v4, sizeof(pkt_v4),
-+				NULL, NULL, (__u32 *)&retval, NULL);
-+	ASSERT_OK(err, "bpf_prog_test_run(test_ref_btf_id)");
-+	ASSERT_EQ(retval, 0, "test_ref_btf_id-retval");
-+
- 	kfunc_call_test_lskel__destroy(skel);
- }
- 
-diff --git a/tools/testing/selftests/bpf/progs/kfunc_call_test.c b/tools/testing/selftests/bpf/progs/kfunc_call_test.c
-index 8a8cf59017aa..5aecbb9fdc68 100644
---- a/tools/testing/selftests/bpf/progs/kfunc_call_test.c
-+++ b/tools/testing/selftests/bpf/progs/kfunc_call_test.c
-@@ -1,13 +1,20 @@
- // SPDX-License-Identifier: GPL-2.0
- /* Copyright (c) 2021 Facebook */
--#include <linux/bpf.h>
-+#include <vmlinux.h>
- #include <bpf/bpf_helpers.h>
--#include "bpf_tcp_helpers.h"
- 
- extern int bpf_kfunc_call_test2(struct sock *sk, __u32 a, __u32 b) __ksym;
- extern __u64 bpf_kfunc_call_test1(struct sock *sk, __u32 a, __u64 b,
- 				  __u32 c, __u64 d) __ksym;
- 
-+extern struct prog_test_ref_kfunc *bpf_kfunc_call_test_acquire(unsigned long *sp) __ksym;
-+extern void bpf_kfunc_call_test_release(struct prog_test_ref_kfunc *p) __ksym;
-+extern void bpf_kfunc_call_test_pass_ctx(struct __sk_buff *skb) __ksym;
-+extern void bpf_kfunc_call_test_pass1(struct prog_test_pass1 *p) __ksym;
-+extern void bpf_kfunc_call_test_pass2(struct prog_test_pass2 *p) __ksym;
-+extern void bpf_kfunc_call_test_mem_len_pass1(void *mem, int len) __ksym;
-+extern void bpf_kfunc_call_test_mem_len_fail2(__u64 *mem, int len) __ksym;
-+
- SEC("tc")
- int kfunc_call_test2(struct __sk_buff *skb)
- {
-@@ -44,4 +51,45 @@ int kfunc_call_test1(struct __sk_buff *skb)
- 	return ret;
- }
- 
-+SEC("tc")
-+int kfunc_call_test_ref_btf_id(struct __sk_buff *skb)
-+{
-+	struct prog_test_ref_kfunc *pt;
-+	unsigned long s = 0;
-+	int ret = 0;
-+
-+	pt = bpf_kfunc_call_test_acquire(&s);
-+	if (pt) {
-+		if (pt->a != 42 || pt->b != 108)
-+			ret = -1;
-+		bpf_kfunc_call_test_release(pt);
-+	}
-+	return ret;
-+}
-+
-+SEC("tc")
-+int kfunc_call_test_pass(struct __sk_buff *skb)
-+{
-+	struct prog_test_pass1 p1 = {};
-+	struct prog_test_pass2 p2 = {};
-+	short a = 0;
-+	__u64 b = 0;
-+	long c = 0;
-+	char d = 0;
-+	int e = 0;
-+
-+	bpf_kfunc_call_test_pass_ctx(skb);
-+	bpf_kfunc_call_test_pass1(&p1);
-+	bpf_kfunc_call_test_pass2(&p2);
-+
-+	bpf_kfunc_call_test_mem_len_pass1(&a, sizeof(a));
-+	bpf_kfunc_call_test_mem_len_pass1(&b, sizeof(b));
-+	bpf_kfunc_call_test_mem_len_pass1(&c, sizeof(c));
-+	bpf_kfunc_call_test_mem_len_pass1(&d, sizeof(d));
-+	bpf_kfunc_call_test_mem_len_pass1(&e, sizeof(e));
-+	bpf_kfunc_call_test_mem_len_fail2(&b, -1);
-+
-+	return 0;
-+}
-+
- char _license[] SEC("license") = "GPL";
-diff --git a/tools/testing/selftests/bpf/verifier/calls.c b/tools/testing/selftests/bpf/verifier/calls.c
-index d7b74eb28333..8fc4c91eb615 100644
---- a/tools/testing/selftests/bpf/verifier/calls.c
-+++ b/tools/testing/selftests/bpf/verifier/calls.c
-@@ -21,6 +21,81 @@
- 	.prog_type = BPF_PROG_TYPE_TRACEPOINT,
- 	.result  = ACCEPT,
- },
-+{
-+	"calls: invalid kfunc call: ptr_to_mem to struct with non-scalar",
-+	.insns = {
-+	BPF_MOV64_REG(BPF_REG_1, BPF_REG_10),
-+	BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, -8),
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, BPF_PSEUDO_KFUNC_CALL, 0, 0),
-+	BPF_EXIT_INSN(),
-+	},
-+	.prog_type = BPF_PROG_TYPE_SCHED_CLS,
-+	.result = REJECT,
-+	.errstr = "arg#0 pointer type STRUCT prog_test_fail1 must point to scalar",
-+	.fixup_kfunc_btf_id = {
-+		{ "bpf_kfunc_call_test_fail1", 2 },
-+	},
-+},
-+{
-+	"calls: invalid kfunc call: ptr_to_mem to struct with nesting depth > 4",
-+	.insns = {
-+	BPF_MOV64_REG(BPF_REG_1, BPF_REG_10),
-+	BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, -8),
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, BPF_PSEUDO_KFUNC_CALL, 0, 0),
-+	BPF_EXIT_INSN(),
-+	},
-+	.prog_type = BPF_PROG_TYPE_SCHED_CLS,
-+	.result = REJECT,
-+	.errstr = "max struct nesting depth 4 exceeded\narg#0 pointer type STRUCT prog_test_fail2",
-+	.fixup_kfunc_btf_id = {
-+		{ "bpf_kfunc_call_test_fail2", 2 },
-+	},
-+},
-+{
-+	"calls: invalid kfunc call: ptr_to_mem to struct with FAM",
-+	.insns = {
-+	BPF_MOV64_REG(BPF_REG_1, BPF_REG_10),
-+	BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, -8),
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, BPF_PSEUDO_KFUNC_CALL, 0, 0),
-+	BPF_EXIT_INSN(),
-+	},
-+	.prog_type = BPF_PROG_TYPE_SCHED_CLS,
-+	.result = REJECT,
-+	.errstr = "arg#0 pointer type STRUCT prog_test_fail3 must point to scalar",
-+	.fixup_kfunc_btf_id = {
-+		{ "bpf_kfunc_call_test_fail3", 2 },
-+	},
-+},
-+{
-+	"calls: invalid kfunc call: reg->type != PTR_TO_CTX",
-+	.insns = {
-+	BPF_MOV64_REG(BPF_REG_1, BPF_REG_10),
-+	BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, -8),
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, BPF_PSEUDO_KFUNC_CALL, 0, 0),
-+	BPF_EXIT_INSN(),
-+	},
-+	.prog_type = BPF_PROG_TYPE_SCHED_CLS,
-+	.result = REJECT,
-+	.errstr = "arg#0 expected pointer to ctx, but got PTR",
-+	.fixup_kfunc_btf_id = {
-+		{ "bpf_kfunc_call_test_pass_ctx", 2 },
-+	},
-+},
-+{
-+	"calls: invalid kfunc call: void * not allowed in func proto without mem size arg",
-+	.insns = {
-+	BPF_MOV64_REG(BPF_REG_1, BPF_REG_10),
-+	BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, -8),
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, BPF_PSEUDO_KFUNC_CALL, 0, 0),
-+	BPF_EXIT_INSN(),
-+	},
-+	.prog_type = BPF_PROG_TYPE_SCHED_CLS,
-+	.result = REJECT,
-+	.errstr = "arg#0 pointer type UNKNOWN  must point to scalar",
-+	.fixup_kfunc_btf_id = {
-+		{ "bpf_kfunc_call_test_mem_len_fail1", 2 },
-+	},
-+},
- {
- 	"calls: basic sanity",
- 	.insns = {
-diff --git a/tools/testing/selftests/bpf/verifier/ref_tracking.c b/tools/testing/selftests/bpf/verifier/ref_tracking.c
-index 3b6ee009c00b..acd35bdbdcf9 100644
---- a/tools/testing/selftests/bpf/verifier/ref_tracking.c
-+++ b/tools/testing/selftests/bpf/verifier/ref_tracking.c
-@@ -905,3 +905,47 @@
- 	.result_unpriv = REJECT,
- 	.errstr_unpriv = "unknown func",
- },
-+{
-+	"reference tracking: use ptr formed from referenced PTR_TO_BTF_ID after release",
-+	.insns = {
-+	BPF_MOV64_REG(BPF_REG_1, BPF_REG_10),
-+	BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, -8),
-+	BPF_ST_MEM(BPF_DW, BPF_REG_1, 0, 0),
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, BPF_PSEUDO_KFUNC_CALL, 0, 0),
-+	BPF_JMP_IMM(BPF_JEQ, BPF_REG_0, 0, 5),
-+	BPF_LDX_MEM(BPF_DW, BPF_REG_6, BPF_REG_0, 8),
-+	BPF_MOV64_REG(BPF_REG_1, BPF_REG_0),
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, BPF_PSEUDO_KFUNC_CALL, 0, 0),
-+	BPF_LDX_MEM(BPF_W, BPF_REG_6, BPF_REG_6, 0),
-+	BPF_MOV64_IMM(BPF_REG_0, 0),
-+	BPF_EXIT_INSN(),
-+	},
-+	.prog_type = BPF_PROG_TYPE_SCHED_CLS,
-+	.result = REJECT,
-+	.errstr = "R6 invalid mem access 'inv'",
-+	.fixup_kfunc_btf_id = {
-+		{ "bpf_kfunc_call_test_acquire", 3 },
-+		{ "bpf_kfunc_call_test_release", 7 },
-+	},
-+},
-+{
-+	"reference tracking: cannot release ptr formed from referenced PTR_TO_BTF_ID, same BTF ID",
-+	.insns = {
-+	BPF_MOV64_REG(BPF_REG_1, BPF_REG_10),
-+	BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, -8),
-+	BPF_ST_MEM(BPF_DW, BPF_REG_1, 0, 0),
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, BPF_PSEUDO_KFUNC_CALL, 0, 0),
-+	BPF_JMP_IMM(BPF_JEQ, BPF_REG_0, 0, 3),
-+	BPF_LDX_MEM(BPF_DW, BPF_REG_1, BPF_REG_0, 8),
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, BPF_PSEUDO_KFUNC_CALL, 0, 0),
-+	BPF_MOV64_IMM(BPF_REG_0, 0),
-+	BPF_EXIT_INSN(),
-+	},
-+	.prog_type = BPF_PROG_TYPE_SCHED_CLS,
-+	.result = REJECT,
-+	.errstr = "release kernel function bpf_kfunc_call_test_release expects refcounted",
-+	.fixup_kfunc_btf_id = {
-+		{ "bpf_kfunc_call_test_acquire", 3 },
-+		{ "bpf_kfunc_call_test_release", 6 },
-+	},
-+},
--- 
-2.34.1
+We can enable some debug option that dumps the page table. Then from the
+page table, we can confirm the programs are running on a huge page. This 
+only works on x86_64 though. WDYT?
+
+Thanks,
+Song
+
+
+> 
+>  [0] https://github.com/kernel-patches/bpf/runs/4530372387?check_suite_focus=true
+> 
+>> Song Liu (7):
+>>  x86/Kconfig: select HAVE_ARCH_HUGE_VMALLOC with HAVE_ARCH_HUGE_VMAP
+>>  bpf: use bytes instead of pages for bpf_jit_[charge|uncharge]_modmem
+>>  bpf: use size instead of pages in bpf_binary_header
+>>  bpf: add a pointer of bpf_binary_header to bpf_prog
+>>  x86/alternative: introduce text_poke_jit
+>>  bpf: introduce bpf_prog_pack allocator
+>>  bpf, x86_64: use bpf_prog_pack allocator
+>> 
+>> arch/x86/Kconfig                     |   1 +
+>> arch/x86/include/asm/text-patching.h |   1 +
+>> arch/x86/kernel/alternative.c        |  28 ++++
+>> arch/x86/net/bpf_jit_comp.c          |  93 ++++++++++--
+>> include/linux/bpf.h                  |   4 +-
+>> include/linux/filter.h               |  23 ++-
+>> kernel/bpf/core.c                    | 213 ++++++++++++++++++++++++---
+>> kernel/bpf/trampoline.c              |   6 +-
+>> 8 files changed, 328 insertions(+), 41 deletions(-)
+>> 
+>> --
+>> 2.30.2
 
