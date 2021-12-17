@@ -2,106 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB00B478EA7
-	for <lists+netdev@lfdr.de>; Fri, 17 Dec 2021 15:57:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DD696478EFE
+	for <lists+netdev@lfdr.de>; Fri, 17 Dec 2021 16:06:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237663AbhLQO51 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Dec 2021 09:57:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49088 "EHLO
+        id S237853AbhLQPG3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Dec 2021 10:06:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236556AbhLQO5Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Dec 2021 09:57:24 -0500
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74B02C061574;
-        Fri, 17 Dec 2021 06:57:24 -0800 (PST)
-Received: by mail-wr1-x435.google.com with SMTP id t18so4524406wrg.11;
-        Fri, 17 Dec 2021 06:57:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=SOW6uRhAhu6E0fNc47WgprJkrmQIdI9O2ko379Zcecs=;
-        b=YbDvuiGpRGqOccMRDZhC2ahWCAQWZD5+w1ak+xbSApdf2yFVgLaBC8GXpwUvnA0DyO
-         bztHPo9D6MG0GAbBsiSXS8SyqhdVzsnU62l2At5j0ma5czra0RTRtTFspiLsKG9i5BAd
-         YXKXeg2dCPWUSGMxlrnm2zg7doD+Z3QhkOp5L3PeGJL0QGPBHDAG5Bq7skcCEjint4O0
-         6V8I7b5/y8ph5e6dRSAoGhT4vIN3xIaqjewtQyPDxZZYiwVLv1rkCleDpf+R77Hh/F7L
-         iipKmJL62ZpArTZxLtud08sg8nARBfmkWe9t8vCfLCF7+mpfFnqPZJOU/KC6TAwMOZzW
-         3IOg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=SOW6uRhAhu6E0fNc47WgprJkrmQIdI9O2ko379Zcecs=;
-        b=L9g52rNJXmBpcmiK58VCN1QVKuMdygystxK+zEqdIfr98Ml79SnuyzhU3r630uCQBM
-         6/ZLka6syhgwQ8ZL302IHbYeocnmISak5aWzEEFVLJbZ0mKJg0brm9wmaLOp+qxGVEEn
-         etgBZYvyI2eo6hVqLlWSv+lAagJcTUyV44Q93hELmxEPXh+0JKwjBpFC94Z8eTn3icuN
-         Gw0ypj4c99lCRcJs+8B7uL+MJv2koj3WF335tncyIesOipSn4MZ3mZCRYLJOt/0e4lsj
-         eUcgNx/3Q9r5Q9CNPUICf4Q/dMzjjFBeJwp5KWe3gq3vrUWdF72EeqnrhucwrD6mIlM1
-         TEvA==
-X-Gm-Message-State: AOAM532PmYVIlQb10C6MSNekYxKWL1wcsXxfdjDSN0N/KbKa/tZunfxG
-        F3PzCz1+n0VdnRJOGnU7bu4QMYjWjco83scO
-X-Google-Smtp-Source: ABdhPJx5ssBPAw9dcwyDH7MsltTJMrlyJtRmvdfo0/FTERi4ucA9TW0zZOQSILrFamA62j+gtSLBow==
-X-Received: by 2002:adf:82f6:: with SMTP id 109mr357350wrc.169.1639753043036;
-        Fri, 17 Dec 2021 06:57:23 -0800 (PST)
-Received: from localhost.localdomain (h-46-59-47-246.A165.priv.bahnhof.se. [46.59.47.246])
-        by smtp.gmail.com with ESMTPSA id d2sm7268775wmb.31.2021.12.17.06.57.21
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 17 Dec 2021 06:57:22 -0800 (PST)
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-To:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, netdev@vger.kernel.org,
-        maciej.fijalkowski@intel.com
-Cc:     jonathan.lemon@gmail.com, bpf@vger.kernel.org
-Subject: [PATCH bpf] Revert "xsk: Do not sleep in poll() when need_wakeup set"
-Date:   Fri, 17 Dec 2021 15:56:46 +0100
-Message-Id: <20211217145646.26449-1-magnus.karlsson@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S237848AbhLQPG2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Dec 2021 10:06:28 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1EF0C061574;
+        Fri, 17 Dec 2021 07:06:28 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5014862258;
+        Fri, 17 Dec 2021 15:06:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02804C36AE7;
+        Fri, 17 Dec 2021 15:06:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1639753587;
+        bh=reSbYJsb2lp4YkJ36gpZzEnh+V1VGf/jaqK9usFoEPE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=jnTkSMMbUX0E4r7fq7fLheHX71+ibSEGk3+4BjQRMNluPyw8HQi0RLWXUlqPqOT5y
+         Pqj3qMedcF7cBPMtey0kEo9LB5eoxdBBzsxA1OvHDYZhxRaCpepAf5ec35tU89m2uY
+         5kw/217MJDC5GS9vGmS053m9XnjHueIwcnZLw13LiZtU+2P0EJLehLOM/vN5D1vLgY
+         7H5MDZ1Y21NSV+HxEBtYcdJuGvj7vkSoZAPlYJDiUEEUC1/P8Jb/kPr++rvDrzC4NK
+         0By1l2ewSIwogNC8udO0scT35o0X0VrJ2B4k6bkAw/S4W1U9F9aGMvwFcQIUeKUkCb
+         VuLvlY7Tln1UA==
+Date:   Fri, 17 Dec 2021 07:06:26 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Lee Jones <lee.jones@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, Vlad Yasevich <vyasevich@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        lksctp developers <linux-sctp@vger.kernel.org>,
+        "H.P. Yarroll" <piggy@acm.org>,
+        Karl Knutson <karl@athena.chicago.il.us>,
+        Jon Grimm <jgrimm@us.ibm.com>,
+        Xingang Guo <xingang.guo@intel.com>,
+        Hui Huang <hui.huang@nokia.com>,
+        Sridhar Samudrala <sri@us.ibm.com>,
+        Daisy Chang <daisyc@us.ibm.com>,
+        Ryan Layer <rmlayer@us.ibm.com>,
+        Kevin Gao <kevin.gao@intel.com>, netdev@vger.kernel.org,
+        stable@vger.kernel.org
+Subject: Re: [PATCH v2 1/2] sctp: export sctp_endpoint_{hold,put}() and
+ return incremented endpoint
+Message-ID: <20211217070626.790b8340@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211217134607.74983-1-lee.jones@linaro.org>
+References: <20211217134607.74983-1-lee.jones@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Magnus Karlsson <magnus.karlsson@intel.com>
+On Fri, 17 Dec 2021 13:46:06 +0000 Lee Jones wrote:
+> For example, in sctp_sock_dump(), we could have the following hunk:
+> 
+> 	sctp_endpoint_hold(tsp->asoc->ep);
+> 	ep = tsp->asoc->ep;
+> 	sk = ep->base.sk
+> 	lock_sock(ep->base.sk);
+> 
+> It is possible for this task to be swapped out immediately following
+> the call into sctp_endpoint_hold() that would change the address of
+> tsp->asoc->ep to point to a completely different endpoint.  This means
+> a reference could be taken to the old endpoint and the new one would
+> be processed without a reference taken, moreover the new endpoint
+> could then be freed whilst still processing as a result, causing a
+> use-after-free.
+> 
+> If we return the exact pointer that was held, we ensure this task
+> processes only the endpoint we have taken a reference to.  The
+> resultant hunk now looks like this:
+> 
+>       ep = sctp_endpoint_hold(tsp->asoc->ep);
+> 	sk = ep->base.sk
+> 	lock_sock(sk);
 
-This reverts commit bd0687c18e635b63233dc87f38058cd728802ab4.
+If you have to explain what the next patch will do to make sense 
+of this one it really is better to merge the two patches.
+Exporting something is not a functional change, nor does it make
+the changes easier to review, in fact the opposite is true.
 
-This patch causes a Tx only workload to go to sleep even when it does
-not have to, leading to misserable performance in skb mode. It fixed
-one rare problem but created a much worse one, so this need to be
-reverted while I try to craft a proper solution to the original
-problem.
+> Fixes: 8f840e47f190c ("sctp: add the sctp_diag.c file")
 
-Fixes: bd0687c18e63 ("xsk: Do not sleep in poll() when need_wakeup set")
-Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
----
- net/xdp/xsk.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-index 7a466ea962c5..f16074eb53c7 100644
---- a/net/xdp/xsk.c
-+++ b/net/xdp/xsk.c
-@@ -677,6 +677,8 @@ static __poll_t xsk_poll(struct file *file, struct socket *sock,
- 	struct xdp_sock *xs = xdp_sk(sk);
- 	struct xsk_buff_pool *pool;
- 
-+	sock_poll_wait(file, sock, wait);
-+
- 	if (unlikely(!xsk_is_bound(xs)))
- 		return mask;
- 
-@@ -688,8 +690,6 @@ static __poll_t xsk_poll(struct file *file, struct socket *sock,
- 		else
- 			/* Poll needs to drive Tx also in copy mode */
- 			__xsk_sendmsg(sk);
--	} else {
--		sock_poll_wait(file, sock, wait);
- 	}
- 
- 	if (xs->rx && !xskq_prod_is_empty(xs->rx))
-
-base-commit: 0c3e2474605581375d808bb3b9ce0927ed3eef70
--- 
-2.34.1
-
+This patch in itself fixes exactly nothing.
