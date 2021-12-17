@@ -2,50 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 411F2478315
-	for <lists+netdev@lfdr.de>; Fri, 17 Dec 2021 03:20:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EF493478322
+	for <lists+netdev@lfdr.de>; Fri, 17 Dec 2021 03:25:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230464AbhLQCUB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Dec 2021 21:20:01 -0500
-Received: from szxga01-in.huawei.com ([45.249.212.187]:15749 "EHLO
+        id S231418AbhLQCZD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Dec 2021 21:25:03 -0500
+Received: from szxga01-in.huawei.com ([45.249.212.187]:33861 "EHLO
         szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230416AbhLQCUB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 21:20:01 -0500
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4JFXfw3mcKzZdjG;
-        Fri, 17 Dec 2021 10:16:56 +0800 (CST)
+        with ESMTP id S231342AbhLQCZC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 21:25:02 -0500
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4JFXqs2v39zcbvS;
+        Fri, 17 Dec 2021 10:24:41 +0800 (CST)
 Received: from dggpemm500019.china.huawei.com (7.185.36.180) by
  dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Fri, 17 Dec 2021 10:19:51 +0800
+ 15.1.2308.20; Fri, 17 Dec 2021 10:25:00 +0800
 Received: from [10.67.109.184] (10.67.109.184) by
  dggpemm500019.china.huawei.com (7.185.36.180) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Fri, 17 Dec 2021 10:19:51 +0800
+ 15.1.2308.20; Fri, 17 Dec 2021 10:25:00 +0800
 Subject: Re: [PATCH bpf-next] selftests/bpf: Fix building error when using
  userspace pt_regs
-From:   Pu Lehui <pulehui@huawei.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>, <ast@kernel.org>,
-        <andrii@kernel.org>, <kafai@fb.com>, <songliubraving@fb.com>,
-        <yhs@fb.com>, <john.fastabend@gmail.com>, <kpsingh@kernel.org>,
-        <paul.walmsley@sifive.com>, <palmer@dabbelt.com>,
-        <aou@eecs.berkeley.edu>, <shuah@kernel.org>
-CC:     <linux-kselftest@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Shuah Khan <shuah@kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
 References: <20211214135555.125348-1-pulehui@huawei.com>
- <9063be69-fbd9-c0a5-9271-c6d4281c71ef@iogearbox.net>
- <30aa8ea2-3752-d711-50f8-4b3d49cad56f@huawei.com>
-Message-ID: <5525a45e-0f4a-f686-bfa9-c269321a8b86@huawei.com>
-Date:   Fri, 17 Dec 2021 10:19:51 +0800
+ <CAEf4BzaQcHV3iY5XqEbt3ptw+KejVVEZ8gSmW7u46=xHnsTaPA@mail.gmail.com>
+From:   Pu Lehui <pulehui@huawei.com>
+Message-ID: <a83777e4-528f-8adb-33e4-a0fea8d544a0@huawei.com>
+Date:   Fri, 17 Dec 2021 10:25:00 +0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Thunderbird/78.8.1
 MIME-Version: 1.0
-In-Reply-To: <30aa8ea2-3752-d711-50f8-4b3d49cad56f@huawei.com>
+In-Reply-To: <CAEf4BzaQcHV3iY5XqEbt3ptw+KejVVEZ8gSmW7u46=xHnsTaPA@mail.gmail.com>
 Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 X-Originating-IP: [10.67.109.184]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
  dggpemm500019.china.huawei.com (7.185.36.180)
 X-CFilter-Loop: Reflected
 Precedence: bulk
@@ -54,56 +61,25 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 2021/12/15 9:20, Pu Lehui wrote:
-> On 2021/12/15 4:01, Daniel Borkmann wrote:
->> On 12/14/21 2:55 PM, Pu Lehui wrote:
->>> When building bpf selftests on arm64, the following error will occur:
->>>
->>> progs/loop2.c:20:7: error: incomplete definition of type 'struct
->>> user_pt_regs'
->>>
->>> Some archs, like arm64 and riscv, use userspace pt_regs in
->>> bpf_tracing.h, which causes build failure when bpf prog use
->>> macro in bpf_tracing.h. So let's use vmlinux.h directly.
->>>
->>> Signed-off-by: Pu Lehui <pulehui@huawei.com>
+On 2021/12/16 12:06, Andrii Nakryiko wrote:
+> On Tue, Dec 14, 2021 at 5:54 AM Pu Lehui <pulehui@huawei.com> wrote:
 >>
->> Looks like this lets CI fail, did you run the selftests also with 
->> vmtest.sh to
->> double check?
+>> When building bpf selftests on arm64, the following error will occur:
 >>
->> https://github.com/kernel-patches/bpf/runs/4521708490?check_suite_focus=true 
->> :
+>> progs/loop2.c:20:7: error: incomplete definition of type 'struct
+>> user_pt_regs'
 >>
->> [...]
->> #189 verif_scale_loop6:FAIL
->> libbpf: prog 'trace_virtqueue_add_sgs': BPF program load failed: 
->> Argument list too long
->> libbpf: prog 'trace_virtqueue_add_sgs': -- BEGIN PROG LOAD LOG --
->> R1 type=ctx expected=fp
->> BPF program is too large. Processed 1000001 insn
->> verification time 12250995 usec
->> stack depth 88
->> processed 1000001 insns (limit 1000000) max_states_per_insn 107 
->> total_states 21739 peak_states 2271 mark_read 6
->> -- END PROG LOAD LOG --
->> libbpf: failed to load program 'trace_virtqueue_add_sgs'
->> libbpf: failed to load object 'loop6.o'
->> scale_test:FAIL:expect_success unexpected error: -7 (errno 7)
->> Summary: 221/986 PASSED, 8 SKIPPED, 1 FAILED
->> [...]
->>
->> Please take a look and fix in your patch, thanks!
->> .
-> Sorry for my negligence, I'll take a look and fix it.
-> .
-It seems strange that verifier think the loop can execute up to u64_max 
-while I just replace the header file.
-This looks very similar to the previous llvm issue, 
-https://github.com/iovisor/bcc/pull/3270, but I have no idea how to locate.
-
-Back to arm64 bpf selftest compiling problem, we can use header file 
-directory generated by "make headers_install" to fix it.
+>> Some archs, like arm64 and riscv, use userspace pt_regs in
+>> bpf_tracing.h, which causes build failure when bpf prog use
+>> macro in bpf_tracing.h. So let's use vmlinux.h directly.
+> 
+> We could probably also extend bpf_tracing.h to work with
+> kernel-defined pt_regs, just like we do for x86 (see __KERNEL__ and
+> __VMLINUX_H__ checks). It's more work, but will benefit other end
+> users, not just selftests.
+> 
+It might change a lot. We can use header file directory generated by 
+"make headers_install" to fix it.
 
 --- a/tools/testing/selftests/bpf/Makefile
 +++ b/tools/testing/selftests/bpf/Makefile
@@ -115,3 +91,18 @@ $(IS_LITTLE_ENDIAN),-mlittle-endian,-mbig-endian)
 -	     -I$(abspath $(OUTPUT)/../usr/include)
 +	     -I$(abspath $(OUTPUT)/../usr/include) \
 +	     -I../../../../usr/include
+>>
+>> Signed-off-by: Pu Lehui <pulehui@huawei.com>
+>> ---
+>>   tools/testing/selftests/bpf/progs/loop1.c     |  8 ++------
+>>   tools/testing/selftests/bpf/progs/loop2.c     |  8 ++------
+>>   tools/testing/selftests/bpf/progs/loop3.c     |  8 ++------
+>>   tools/testing/selftests/bpf/progs/loop6.c     | 20 ++++++-------------
+>>   .../selftests/bpf/progs/test_overhead.c       |  8 ++------
+>>   .../selftests/bpf/progs/test_probe_user.c     |  6 +-----
+>>   6 files changed, 15 insertions(+), 43 deletions(-)
+>>
+> 
+> [...]
+> .
+> 
