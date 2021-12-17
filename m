@@ -2,89 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DF110478691
-	for <lists+netdev@lfdr.de>; Fri, 17 Dec 2021 09:53:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8445A47868E
+	for <lists+netdev@lfdr.de>; Fri, 17 Dec 2021 09:53:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233954AbhLQIxT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S233951AbhLQIxT (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Fri, 17 Dec 2021 03:53:19 -0500
-Received: from mail.netfilter.org ([217.70.188.207]:60502 "EHLO
+Received: from mail.netfilter.org ([217.70.188.207]:60498 "EHLO
         mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233949AbhLQIxS (ORCPT
+        with ESMTP id S233947AbhLQIxS (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 17 Dec 2021 03:53:18 -0500
 Received: from localhost.localdomain (unknown [78.30.32.163])
-        by mail.netfilter.org (Postfix) with ESMTPSA id 2C7D3605C3;
+        by mail.netfilter.org (Postfix) with ESMTPSA id E1C31625C9;
         Fri, 17 Dec 2021 09:50:47 +0100 (CET)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net 2/3] netfilter: fix regression in looped (broad|multi)cast's MAC handling
-Date:   Fri, 17 Dec 2021 09:53:02 +0100
-Message-Id: <20211217085303.363401-3-pablo@netfilter.org>
+Subject: [PATCH net 3/3] netfilter: ctnetlink: remove expired entries first
+Date:   Fri, 17 Dec 2021 09:53:03 +0100
+Message-Id: <20211217085303.363401-4-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20211217085303.363401-1-pablo@netfilter.org>
 References: <20211217085303.363401-1-pablo@netfilter.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ignacy Gawędzki <ignacy.gawedzki@green-communications.fr>
+From: Florian Westphal <fw@strlen.de>
 
-In commit 5648b5e1169f ("netfilter: nfnetlink_queue: fix OOB when mac
-header was cleared"), the test for non-empty MAC header introduced in
-commit 2c38de4c1f8da7 ("netfilter: fix looped (broad|multi)cast's MAC
-handling") has been replaced with a test for a set MAC header.
+When dumping conntrack table to userspace via ctnetlink, check if the ct has
+already expired before doing any of the 'skip' checks.
 
-This breaks the case when the MAC header has been reset (using
-skb_reset_mac_header), as is the case with looped-back multicast
-packets.  As a result, the packets ending up in NFQUEUE get a bogus
-hwaddr interpreted from the first bytes of the IP header.
+This expires dead entries faster.
+/proc handler also removes outdated entries first.
 
-This patch adds a test for a non-empty MAC header in addition to the
-test for a set MAC header.  The same two tests are also implemented in
-nfnetlink_log.c, where the initial code of commit 2c38de4c1f8da7
-("netfilter: fix looped (broad|multi)cast's MAC handling") has not been
-touched, but where supposedly the same situation may happen.
-
-Fixes: 5648b5e1169f ("netfilter: nfnetlink_queue: fix OOB when mac header was cleared")
-Signed-off-by: Ignacy Gawędzki <ignacy.gawedzki@green-communications.fr>
-Reviewed-by: Florian Westphal <fw@strlen.de>
+Reported-by: Vitaly Zuevsky <vzuevsky@ns1.com>
+Signed-off-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- net/netfilter/nfnetlink_log.c   | 3 ++-
- net/netfilter/nfnetlink_queue.c | 3 ++-
- 2 files changed, 4 insertions(+), 2 deletions(-)
+ net/netfilter/nf_conntrack_netlink.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/net/netfilter/nfnetlink_log.c b/net/netfilter/nfnetlink_log.c
-index 691ef4cffdd9..7f83f9697fc1 100644
---- a/net/netfilter/nfnetlink_log.c
-+++ b/net/netfilter/nfnetlink_log.c
-@@ -556,7 +556,8 @@ __build_packet_message(struct nfnl_log_net *log,
- 		goto nla_put_failure;
+diff --git a/net/netfilter/nf_conntrack_netlink.c b/net/netfilter/nf_conntrack_netlink.c
+index 81d03acf68d4..ec4164c32d27 100644
+--- a/net/netfilter/nf_conntrack_netlink.c
++++ b/net/netfilter/nf_conntrack_netlink.c
+@@ -1195,8 +1195,6 @@ ctnetlink_dump_table(struct sk_buff *skb, struct netlink_callback *cb)
+ 		}
+ 		hlist_nulls_for_each_entry(h, n, &nf_conntrack_hash[cb->args[0]],
+ 					   hnnode) {
+-			if (NF_CT_DIRECTION(h) != IP_CT_DIR_ORIGINAL)
+-				continue;
+ 			ct = nf_ct_tuplehash_to_ctrack(h);
+ 			if (nf_ct_is_expired(ct)) {
+ 				if (i < ARRAY_SIZE(nf_ct_evict) &&
+@@ -1208,6 +1206,9 @@ ctnetlink_dump_table(struct sk_buff *skb, struct netlink_callback *cb)
+ 			if (!net_eq(net, nf_ct_net(ct)))
+ 				continue;
  
- 	if (indev && skb->dev &&
--	    skb->mac_header != skb->network_header) {
-+	    skb_mac_header_was_set(skb) &&
-+	    skb_mac_header_len(skb) != 0) {
- 		struct nfulnl_msg_packet_hw phw;
- 		int len;
- 
-diff --git a/net/netfilter/nfnetlink_queue.c b/net/netfilter/nfnetlink_queue.c
-index 5837e8efc9c2..f0b9e21a2452 100644
---- a/net/netfilter/nfnetlink_queue.c
-+++ b/net/netfilter/nfnetlink_queue.c
-@@ -560,7 +560,8 @@ nfqnl_build_packet_message(struct net *net, struct nfqnl_instance *queue,
- 		goto nla_put_failure;
- 
- 	if (indev && entskb->dev &&
--	    skb_mac_header_was_set(entskb)) {
-+	    skb_mac_header_was_set(entskb) &&
-+	    skb_mac_header_len(entskb) != 0) {
- 		struct nfqnl_msg_packet_hw phw;
- 		int len;
- 
++			if (NF_CT_DIRECTION(h) != IP_CT_DIR_ORIGINAL)
++				continue;
++
+ 			if (cb->args[1]) {
+ 				if (ct != last)
+ 					continue;
 -- 
 2.30.2
 
