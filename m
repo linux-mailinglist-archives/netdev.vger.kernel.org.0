@@ -2,140 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D0B534787E0
-	for <lists+netdev@lfdr.de>; Fri, 17 Dec 2021 10:39:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 28BC54787DB
+	for <lists+netdev@lfdr.de>; Fri, 17 Dec 2021 10:37:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233469AbhLQJjh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Dec 2021 04:39:37 -0500
-Received: from smtp25.cstnet.cn ([159.226.251.25]:58478 "EHLO cstnet.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231424AbhLQJjg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 17 Dec 2021 04:39:36 -0500
-Received: from localhost.localdomain (unknown [124.16.138.126])
-        by APP-05 (Coremail) with SMTP id zQCowADXtxTAWrxhKKCXAw--.31518S2;
-        Fri, 17 Dec 2021 17:39:12 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     shshaikh@marvell.com, manishc@marvell.com,
-        GR-Linux-NIC-Dev@marvell.com, davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: [PATCH] qlcnic: potential dereference null pointer of rx_queue->page_ring
-Date:   Fri, 17 Dec 2021 17:39:11 +0800
-Message-Id: <20211217093911.611537-1-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+        id S233400AbhLQJhQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Dec 2021 04:37:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59190 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233195AbhLQJhN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Dec 2021 04:37:13 -0500
+Received: from smtp-190f.mail.infomaniak.ch (smtp-190f.mail.infomaniak.ch [IPv6:2001:1600:3:17::190f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 209D7C06173E
+        for <netdev@vger.kernel.org>; Fri, 17 Dec 2021 01:37:13 -0800 (PST)
+Received: from smtp-3-0000.mail.infomaniak.ch (unknown [10.4.36.107])
+        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4JFkQs0fsQzMqGbj;
+        Fri, 17 Dec 2021 10:37:09 +0100 (CET)
+Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
+        by smtp-3-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4JFkQr41vPzlj4cc;
+        Fri, 17 Dec 2021 10:37:08 +0100 (CET)
+Message-ID: <c8588051-8795-9b8a-cb36-f5440b590581@digikod.net>
+Date:   Fri, 17 Dec 2021 10:39:23 +0100
 MIME-Version: 1.0
+User-Agent: 
+Content-Language: en-US
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+To:     Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+Cc:     yusongping <yusongping@huawei.com>,
+        Artem Kuzin <artem.kuzin@huawei.com>,
+        linux-security-module <linux-security-module@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        netfilter@vger.kernel.org
+References: <20211210072123.386713-1-konstantin.meskhidze@huawei.com>
+ <b50ed53a-683e-77cf-9dc2-f4ae1b5fa0fd@digikod.net>
+ <12467d8418f04fbf9fd4a456a2a999f1@huawei.com>
+ <b535d1d4-3564-b2af-a5e8-3ba6c0fa86c9@digikod.net>
+Subject: Re: [RFC PATCH 0/2] Landlock network PoC implementation
+In-Reply-To: <b535d1d4-3564-b2af-a5e8-3ba6c0fa86c9@digikod.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: zQCowADXtxTAWrxhKKCXAw--.31518S2
-X-Coremail-Antispam: 1UD129KBjvJXoWxAFWkXF1DJF45Xr4DKF13CFg_yoWrXF45pF
-        47ZFyUWr95tr1Fgw4kZw15Ar98C3y0y3sruFn3G39avryDtr4fGF15Ar1a9a1rArykGayU
-        trn8Z3WUXr1DAFUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUkv14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26r4j6ryUM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
-        6F4UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s
-        0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xII
-        jxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr
-        1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxkIecxEwVAFwVW8uwCF
-        04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r
-        18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vI
-        r41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr
-        1lIxAIcVCF04k26cxKx2IYs7xG6rWUJVWrZr1UMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF
-        0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUhNVgUUUUU=
-X-Originating-IP: [124.16.138.126]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The return value of kcalloc() needs to be checked.
-To avoid dereference of null pointer in case of the failure of alloc.
-Therefore, it might be better to change the return type of
-qlcnic_sriov_alloc_vlans() and return -ENOMEM when alloc fails and
-return 0 the others.
-Also, qlcnic_sriov_set_guest_vlan_mode() and __qlcnic_pci_sriov_enable()
-should deal with the return value of qlcnic_sriov_alloc_vlans().
+New discussions and RFCs should also include netdev and netfilter 
+mailing lists. For people new to Landlock, the goal is to enable 
+unprivileged processes (and then potentially malicious ones) to limit 
+their own network access (i.e. create a security sandbox for themselves).
 
-Fixes: 154d0c810c53 ("qlcnic: VLAN enhancement for 84XX adapters")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
----
- drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov.h    |  2 +-
- .../net/ethernet/qlogic/qlcnic/qlcnic_sriov_common.c | 12 +++++++++---
- drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov_pf.c |  4 +++-
- 3 files changed, 13 insertions(+), 5 deletions(-)
+Thinking more about network access control for Landlock use case, here 
+are better suggestions:
 
-diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov.h b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov.h
-index 7160b42f51dd..d0111cb3b40e 100644
---- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov.h
-+++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov.h
-@@ -201,7 +201,7 @@ int qlcnic_sriov_get_vf_vport_info(struct qlcnic_adapter *,
- 				   struct qlcnic_info *, u16);
- int qlcnic_sriov_cfg_vf_guest_vlan(struct qlcnic_adapter *, u16, u8);
- void qlcnic_sriov_free_vlans(struct qlcnic_adapter *);
--void qlcnic_sriov_alloc_vlans(struct qlcnic_adapter *);
-+int qlcnic_sriov_alloc_vlans(struct qlcnic_adapter *);
- bool qlcnic_sriov_check_any_vlan(struct qlcnic_vf_info *);
- void qlcnic_sriov_del_vlan_id(struct qlcnic_sriov *,
- 			      struct qlcnic_vf_info *, u16);
-diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov_common.c b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov_common.c
-index dd03be3fc82a..42a44c97572a 100644
---- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov_common.c
-+++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov_common.c
-@@ -432,7 +432,7 @@ static int qlcnic_sriov_set_guest_vlan_mode(struct qlcnic_adapter *adapter,
- 					    struct qlcnic_cmd_args *cmd)
- {
- 	struct qlcnic_sriov *sriov = adapter->ahw->sriov;
--	int i, num_vlans;
-+	int i, num_vlans, ret;
- 	u16 *vlans;
- 
- 	if (sriov->allowed_vlans)
-@@ -443,7 +443,9 @@ static int qlcnic_sriov_set_guest_vlan_mode(struct qlcnic_adapter *adapter,
- 	dev_info(&adapter->pdev->dev, "Number of allowed Guest VLANs = %d\n",
- 		 sriov->num_allowed_vlans);
- 
--	qlcnic_sriov_alloc_vlans(adapter);
-+	ret = qlcnic_sriov_alloc_vlans(adapter);
-+	if (ret)
-+		return ret;
- 
- 	if (!sriov->any_vlan)
- 		return 0;
-@@ -2154,7 +2156,7 @@ static int qlcnic_sriov_vf_resume(struct qlcnic_adapter *adapter)
- 	return err;
- }
- 
--void qlcnic_sriov_alloc_vlans(struct qlcnic_adapter *adapter)
-+int qlcnic_sriov_alloc_vlans(struct qlcnic_adapter *adapter)
- {
- 	struct qlcnic_sriov *sriov = adapter->ahw->sriov;
- 	struct qlcnic_vf_info *vf;
-@@ -2164,7 +2166,11 @@ void qlcnic_sriov_alloc_vlans(struct qlcnic_adapter *adapter)
- 		vf = &sriov->vf_info[i];
- 		vf->sriov_vlans = kcalloc(sriov->num_allowed_vlans,
- 					  sizeof(*vf->sriov_vlans), GFP_KERNEL);
-+		if (!vf->sriov_vlans)
-+			return -ENOMEM;
- 	}
-+
-+	return 0;
- }
- 
- void qlcnic_sriov_free_vlans(struct qlcnic_adapter *adapter)
-diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov_pf.c b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov_pf.c
-index 447720b93e5a..e90fa97c0ae6 100644
---- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov_pf.c
-+++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov_pf.c
-@@ -597,7 +597,9 @@ static int __qlcnic_pci_sriov_enable(struct qlcnic_adapter *adapter,
- 	if (err)
- 		goto del_flr_queue;
- 
--	qlcnic_sriov_alloc_vlans(adapter);
-+	err = qlcnic_sriov_alloc_vlans(adapter);
-+	if (err)
-+		goto del_flr_queue;
- 
- 	return err;
- 
--- 
-2.25.1
+On 14/12/2021 12:51, Mickaël Salaün wrote:
+> 
+> On 14/12/2021 04:49, Konstantin Meskhidze wrote:
+>> Hi Mickaёl.
+>> I've been thinking about your reply:
+>>
+>>> 4. Kernel objects.
+>>> For filesystem restrictions inodes objects are used to tie landlock 
+>>> rules.
+>>> But for socket operations it's preferred to use task_struct object of
+>>> a process, cause sockets' inodes are created just after
+>>> security_socket_create() hook is called, and if its needed to have
+>>> some restriction rule for creating sockets, this rule can't be tied
+>>> to a socket inode cause there is no any has been created at the hook's
+>>> catching moment, see the sock_create_lite() function below:
+>>
+>> - For the file system, we use inodes to identify hierarchies. We can't
+>> - safely rely on stateless objects (e.g. path strings) because the file
+>> - system changes, and then the rules must change with it.
+>>
+>> - To identify network objects (from the user point of view), we can rely
+>> - on stateless rule definitions because they may be absolute (i.e. IP
+>> - address), e.g. sandbox process creating a new connection or 
+>> receveing an
+>> - UDP packet. It is not be the case with UNIX socket if they are come 
+>> from
+>> - a path (i.e. inode) though. In this case we'll have to use the existing
+>> - file system identification mechanism and probably extend the current FS
+>> - access rights.
+>> - A sandbox is a set of processes handled as "subjects". Generic inet
+>> - rules should not be tied to processes (for now) but on 
+>> subnets/protocols.
+>>
+>> In current Landlock version inodes are the objects to tie rules to.
+>> For network you are saying that we can rely on stateless rule 
+>> definitions and
+>> rules should be tied to subnets/protocols, not to processes' 
+>> task_struct objects.
+>> Cause Landlock architecture requires all rules to be tied to a different
+>> kernel objects, and when LSM hooks are caught there must be search
+>> procedure completed in a ruleset's red-black tree structure:
+>>     kernel_object -> landlock_object <- landlock_rule 
+>> <-----landlock_ruleset
+>>
+>> What kind of kernel objects do you mean by subnets/protocols?
+>> Do you suggest using sockets' inodes in this case or using network rules
+>> without to be tied to any kernel object?
+> 
+> The subnets/protocols is the definition provided when creating a rule 
+> (i.e. the object from the user point of view), but the kernel may relies 
+> on other internal representations. I guess datagram packets would need 
+> to be matched against IP/port everytime they are received by a sandboxed 
+> process, but tagging sockets or their underlying inodes for stream 
+> connections make sense.
+> 
+> I don't have experience in the network LSM hooks though, any input is 
+> welcome.
+> 
+>>     socket_inode -> landlock_object <- landlock_rule 
+>> <-----landlock_ruleset
+>>              OR
+>>     landlock_object <- landlock_rule <-----landlock_ruleset
+>>
+>> -----Original Message-----
+>> From: Mickaël Salaün <mic@digikod.net>
+>> Sent: Monday, December 13, 2021 4:30 PM
+>> To: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+>> Cc: linux-security-module@vger.kernel.org; yusongping 
+>> <yusongping@huawei.com>; Artem Kuzin <artem.kuzin@huawei.com>
+>> Subject: Re: [RFC PATCH 0/2] Landlock network PoC implementation
+>>
+>> Hi Konstantin,
+>>
+>> On 10/12/2021 08:21, Konstantin Meskhidze wrote:
 
+[...]
+
+>>
+>> To sum up, for IPv4 restrictions, we need a new rule type identified
+>> with LANDLOCK_RULE_NET_CIDR4. This will handle a new
+>> struct landlock_net_cidr4_attr {
+>>       __u64 allowed_access;
+>>       __u32 address; // IPv4
+>>       __u8 prefix; // From 0 to 32
+>>       __u8 type; // SOCK_DGRAM, SOCK_STREAM
+>>       __u16 port;
+>> } __attribute__((packed));
+>> // https://datatracker.ietf.org/doc/html/rfc4632
+
+IP addresses (and subnets) should not be part of a rule, at least for 
+now. Indeed, IP addresses are tied either to the system architecture 
+(e.g. container configuration), the local network or Internet, hence 
+moving targets not controlled by application developers. Moreover, from 
+a kernel point of view, it is more complex to check and handle subnets, 
+which are most of the time tied to the Netfilter infrastructure, not 
+suitable for Landlock because of its unprivileged nature.
+
+On the other side, protocols such as TCP and their associated ports are 
+normalized and are tied to an application semantic (e.g. TCP/443 for HTTPS).
+
+There is other advantages to exclude subnets from this type of rules for 
+now (e.g. they could be composed with protocols/ports), but that may 
+come later.
+
+I then think that a first MVP to bring network access control support to 
+Landlock should focus only on TCP and related ports (i.e. services). I 
+propose to not use my previous definition of landlock_net_cidr4_attr but 
+to have a landlock_net_service_attr instead:
+
+struct landlock_net_service_attr {
+     __u64 allowed_access; // LANDLOCK_NET_*_TCP
+     __u16 port;
+} __attribute__((packed));
+
+This attribute should handle IPv4 and IPv6 indistinguishably.
+
+[...]
+
+>>
+>> Accesses/suffixes should be:
+>> - CREATE
+>> - ACCEPT
+>> - BIND
+>> - LISTEN
+>> - CONNECT
+>> - RECEIVE (RECEIVE_FROM and SEND_TO should not be needed)
+>> - SEND
+>> - SHUTDOWN
+>> - GET_OPTION (GETSOCKOPT)
+>> - SET_OPTION (SETSOCKOPT)
+
+For now, the only access rights should be LANDLOCK_ACCESS_NET_BIND_TCP 
+and LANDLOCK_ACCESS_NET_CONNECT_TCP (tie to two LSM hooks with struct 
+sockaddr).
+
+These attribute and access right changes reduce the scope of the network 
+access control and make it simpler but still really useful. Datagram 
+(e.g. UDP, which could add BIND_UDP and SEND_UDP) sockets will be more 
+complex to restrict correctly and should then come in another patch 
+series, once TCP is supported.
