@@ -2,72 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4711D479056
-	for <lists+netdev@lfdr.de>; Fri, 17 Dec 2021 16:50:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB863479060
+	for <lists+netdev@lfdr.de>; Fri, 17 Dec 2021 16:52:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237724AbhLQPuY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Dec 2021 10:50:24 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:41130 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229725AbhLQPuV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Dec 2021 10:50:21 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 678F2B828A1;
-        Fri, 17 Dec 2021 15:50:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 1DCB4C36AE7;
-        Fri, 17 Dec 2021 15:50:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1639756219;
-        bh=5db89TLrcxOzLB1ZRoBOcVkydUC+ZAuZYZ5v3VOZSF4=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=mvfkKrdsDyHuJKJNTPCRlZbh5YSE/kj1j2s9PudsTUpFo37SGE9gD9983nrLOsY2p
-         dv+XfE58X8jWona8t0SdIAQXOvxjboI1fLoy/ND43sgt3pW7XNxtY+3JNODgkT75gV
-         pOcDDbPkjeBaYT6alJ4op6A/LgdpZEZFHDdZFffKRS1SDjFYzHeT6RlMjBYdZ8HA3c
-         67KbPCP1rqCVLGdASCxcWiJnSgey+mCPN0UkowSuCawtCRstvKiSt6tbgP1HDq1e4U
-         TRZBgXdokeuIp0pVhhyZY+LC9fUMyiPOLDEXn75F4GeWIQGg64Du1J779h44tZnckm
-         um6jbA/C2V4ig==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id F0E1760A39;
-        Fri, 17 Dec 2021 15:50:18 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S238216AbhLQPw4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Dec 2021 10:52:56 -0500
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:62769 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235584AbhLQPwz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Dec 2021 10:52:55 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1639756375; x=1671292375;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=InU10E24+lGshKELizpD7YZkcfzwyzNUREpTdfkRygg=;
+  b=zuj3pnXJ0Xpkp8UkY0UfAmdVc2M4glJE0vgQvgh4xJucubMO+AjdDc1f
+   XjnuSmB4sPjmz67vvdB/8zOh9YifGpr+JPRzCFGIFSkp8OHYtLUw8/uKm
+   pttmu+Kt4ItrOSrUaRh23a5LPXBMc6gvFBh3R1q+VdPEo7nB5tFCr/k53
+   3a22kIKPadxeiceiD+wOuAfw5hJ9vpB/FA/dzkeXbntkxzUM4DJQmT8BI
+   y9TejouG/yTPBCp9CclU8FXVpLQ+kkpSJubmOtOADFN9qdxSCdPiVxzXc
+   8gOjPcJcv9BZ4n99ekHglS696QNDj1+4+0ocYOpkRc9JjKq+hoIv/Cd3J
+   w==;
+IronPort-SDR: qrAZB3ZA8/zhRFxvvwOG9TmHV+RVblXAE+ObKMYeagjQeUjzIY/QkenKEN5TB2dYFDM6pCmDch
+ mCzA/6VSMIwW70d565ATNsgBJ8c110+7qhXpCb/YZmvfBNH3gfyKMc7IYZ5TpKbeW36+CqpL0u
+ pDZcR8whuE6jP9rLt1TStI58Eym+1SJW8dP1B1FL8ztZ3Nk9fSPbHnNzLghl0S631/mp/a1OM4
+ WGst0P2M1WLOTNM5pWhcAgIIdodiqj9G5DW8am7hympNPOj74kFJXRx1vWJ5ZDRivqp9Vr+jj9
+ lyOMNWsJCVvEHk6erIm6Zx6S
+X-IronPort-AV: E=Sophos;i="5.88,213,1635231600"; 
+   d="scan'208";a="147607499"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Dec 2021 08:52:54 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Fri, 17 Dec 2021 08:52:54 -0700
+Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Fri, 17 Dec 2021 08:52:52 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <robh+dt@kernel.org>,
+        <UNGLinuxDriver@microchip.com>, <linux@armlinux.org.uk>,
+        <f.fainelli@gmail.com>, <vivien.didelot@gmail.com>,
+        <vladimir.oltean@nxp.com>, <andrew@lunn.ch>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH net-next v7 0/9] net: lan966x: Add switchdev and vlan support
+Date:   Fri, 17 Dec 2021 16:53:44 +0100
+Message-ID: <20211217155353.460594-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: pull-request: wireless-drivers-next-2021-12-17
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163975621898.29842.16396439740489235598.git-patchwork-notify@kernel.org>
-Date:   Fri, 17 Dec 2021 15:50:18 +0000
-References: <20211217130952.34887C36AE9@smtp.kernel.org>
-In-Reply-To: <20211217130952.34887C36AE9@smtp.kernel.org>
-To:     Kalle Valo <kvalo@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+This patch series extends lan966x with switchdev and vlan support.
+The first patches just adds new registers and extend the MAC table to
+handle the interrupts when a new address is learn/forget.
 
-This pull request was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+v6->v7:
+- fix build issues when compiling as a module
 
-On Fri, 17 Dec 2021 13:09:52 +0000 (UTC) you wrote:
-> Hi,
-> 
-> here's a pull request to net-next tree, more info below. Please let me know if
-> there are any problems.
-> 
-> Kalle
-> 
-> [...]
+v5->v6:
+- fix issues with the singletones, they were not really singletons
+- simplify the case where lan966x ports are added to bridges with foreign
+  ports
+- drop the cases NETDEV_PRE_UP and NETDEV_DOWN
+- fix the change of MAC address
+- drop the callbacks .ndo_set_features, .ndo_vlan_rx_add_vid,
+  .ndo_vlan_rx_kill_vid
+- remove duplicate code when port was added in a vlan, the MAC entries
+  will be added by the fdb
 
-Here is the summary with links:
-  - pull-request: wireless-drivers-next-2021-12-17
-    https://git.kernel.org/netdev/net-next/c/f75c1d55ecba
+v4->v5:
+- make the notifier_block from lan966x to be singletones
+- use switchdev_handle_port_obj_add and switchdev_handle_fdb_event_to_device
+  when getting callbacks in the lan966x
+- merge the two vlan patches in a single one
 
-You are awesome, thank you!
+v3->v4:
+- split the last patch in multiple patches
+- replace spin_lock_irqsave/restore with spin_lock/spin_unlock
+- remove lan966x_port_change_rx_flags because it was copying all the frames to
+  the CPU instead of removing all RX filters.
+- implement SWITCHDEV_ATTR_ID_PORT_PRE_BRIDGE_FLAGS
+- remove calls to __dev_mc_unsync/sync as they are not needed
+- replace 0/1 with false/true
+- make sure that the lan966x ports are not added to bridges that have other
+  interfaces except lan966x
+- and allow the lan966x ports to be part of only the same bridge.
+
+v2->v3:
+- separate the PVID used when the port is in host mode or vlan unaware
+- fix issue when the port was leaving the bridge
+
+v1->v2:
+- when allocating entries for the mac table use kzalloc instead of
+  devm_kzalloc
+- also use GFP_KERNEL instead of GFP_ATOMIC, because is never called
+  in atomic context
+- when deleting an mac table entry, the order of operations was wrong
+- if ana irq is enabled make sure it gets disabled when the driver is
+  removed
+
+
+Horatiu Vultur (9):
+  net: lan966x: Add registers that are used for switch and vlan
+    functionality
+  dt-bindings: net: lan966x: Extend with the analyzer interrupt
+  net: lan966x: add support for interrupts from analyzer
+  net: lan966x: More MAC table functionality
+  net: lan966x: Remove .ndo_change_rx_flags
+  net: lan966x: Add support to offload the forwarding.
+  net: lan966x: Add vlan support.
+  net: lan966x: Extend switchdev bridge flags
+  net: lan966x: Extend switchdev with fdb support
+
+ .../net/microchip,lan966x-switch.yaml         |   2 +
+ .../net/ethernet/microchip/lan966x/Kconfig    |   1 +
+ .../net/ethernet/microchip/lan966x/Makefile   |   3 +-
+ .../ethernet/microchip/lan966x/lan966x_fdb.c  | 244 +++++++++
+ .../ethernet/microchip/lan966x/lan966x_mac.c  | 342 +++++++++++++
+ .../ethernet/microchip/lan966x/lan966x_main.c | 103 +++-
+ .../ethernet/microchip/lan966x/lan966x_main.h |  64 ++-
+ .../ethernet/microchip/lan966x/lan966x_regs.h | 129 +++++
+ .../microchip/lan966x/lan966x_switchdev.c     | 468 ++++++++++++++++++
+ .../ethernet/microchip/lan966x/lan966x_vlan.c | 312 ++++++++++++
+ 10 files changed, 1639 insertions(+), 29 deletions(-)
+ create mode 100644 drivers/net/ethernet/microchip/lan966x/lan966x_fdb.c
+ create mode 100644 drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c
+ create mode 100644 drivers/net/ethernet/microchip/lan966x/lan966x_vlan.c
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.33.0
 
