@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 479CA478DAE
-	for <lists+netdev@lfdr.de>; Fri, 17 Dec 2021 15:23:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 91888478DB1
+	for <lists+netdev@lfdr.de>; Fri, 17 Dec 2021 15:23:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237166AbhLQOWw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Dec 2021 09:22:52 -0500
-Received: from mail-dm6nam12lp2172.outbound.protection.outlook.com ([104.47.59.172]:37698
+        id S237289AbhLQOXC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Dec 2021 09:23:02 -0500
+Received: from mail-dm6nam12lp2171.outbound.protection.outlook.com ([104.47.59.171]:28401
         "EHLO NAM12-DM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S237375AbhLQOWt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 17 Dec 2021 09:22:49 -0500
+        id S234648AbhLQOWy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 17 Dec 2021 09:22:54 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FRGVF3HAxMM5Y5gLjFZRqO6IPfZ82zImKfuLSiLQuzJ/yTZ4AO2FSSxK8486bOVecaLSJK4EFMX0K+bIdf5epz42tt4IVAklmtl3KXGU7HVi1YcEG00AaVMWoZyfcLmu0WoonLZhkfpI5J5bA1LRIDWmNnId3mjbmN4BBkrWAMiBcrmPZx2FkjxtH6o6uuivKA8WCspqEkVaekF3GebS+1FXl75dupGY3RQgn+7+lg3VnzEri/NqeBy7rFIuTKoln0INiPgQsobsYI2b103yQhhPcRxNAOHrJ00Exzv+Vpzi5MBgcPFOkQl36HaSINXAsQXdfXz164hqwmBZx8Novg==
+ b=jXn2ZLZ9iIn684MDVJrXhKm7NgyA0tdBqcCOaORgF8ja/+9KJgziFqrUXuVLBIuQbPIs1J4hVOfWL2F2yG0Pi5jjKr6uk1keTlz6pk6OdUeS5ffIG4VaqR/qXrSqdOpN5vjp7qju9yuFs2wdmRbKiiX3pX3a5Mu78AC6BUOfPHtk25VNxIlAx6r32qYhyjILJCPxhL15weBWytQ2TtAaV4nxzUFZRbyLJgJKqmMWyrFcV9BLY0HkjIJ9yRG+s3v1i6UwuiwXo5vqfT8W79Ufjey8OfXS4mzO52X3j+k0///oOrP1P88Km37armZngeJauVpZqDbKr1J8sVMAL0rHBw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=uwnbpnGQsujWzVpx0G3VIKNtNa/iDjgKdHVE5iByKUg=;
- b=F/vmF3ciSSdz/RTPKGw+mA7+9cBLy8h9XMhJfh3a/KKPOWnQ8+aq3tZ+1YgMhdyZY/WZkIn/piUv6TwIp3ZtSMOelmV6AnKfbCEBsLAXpocNeJwkln7lTNRVK4nIv1sKuq5aFIXi6P0nLCHFidgSKOODeVVOxktg8ajgMqla3CMXCB0fjRM7v16iPuh9VYld6fIbBfFbVl3F7HT5sVpOMp0phe2CT0Ol0MjaqIn0uD8qRqlAvpwaiamYTmmF76SEDb6mVhgGzrYOWG98uvtczQwiQq2slMm/6dapzcmG12hqYR/yiWTBHqmt6P6y94nYOv1Hs5qsZq3QEgdl5bRZWw==
+ bh=RPfU+Rnat6W5QW/UhiKUvJVvi9dDW8DWhD1LTx7oijg=;
+ b=eiRMjEJFfQhGKSa/wd8R/uNtYksE5odcdteA7MCVl3NW5ydPFJ+WYp48Jmf9EChxQReMg9hpHI8kobiKpGEMRPGOLXVCo+KmAXimR+gga/dZ4bDt8WrJ4FbartkADRdVBXMo2L6bPvycYX5spS3cqfdXaGM/7DV6yLxeR20QhhjnomDP07a8h0A8X2sTvR5d7A/sH2jp0xdEHDpYpjQ/5N7JtaQvYnhxMNJR5lY7IjSlll+LmyhLr0nGuhRnTLD+Y4QCh8bU2fVmFq0WOEafASjKP82OzVSpP38o9AsZdenkon0rrCh/1kjPON/AVJ/vT396CfW1JxlCv2bFamy34Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
  dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uwnbpnGQsujWzVpx0G3VIKNtNa/iDjgKdHVE5iByKUg=;
- b=Ca7RExL0cTWwnqEr4WJ5UtBblPdO95Di5OaDnuuJFlEhmllGLJ8p+klhkY3UxjCcG7jfqxHDdf0Oq/+73cT398CroahJXM5rvwOotOepsTWu+cotX0bVLA/2pPiLx9B1wHdc0yblDE6L3fRq3nk0aPHncHFhA6fVToSp/xSYHU8=
+ bh=RPfU+Rnat6W5QW/UhiKUvJVvi9dDW8DWhD1LTx7oijg=;
+ b=lsM5Q+mYAYcDrbXQNceRiCCZUU9+CbjCB+FhabFDLChOtO6eXa3faSYNWSO/mkWcAh/oqy1YvF1Xwy++pGxk8CB5z9ebtoDnfF7XyGvzkgw8GAPUafL/wPLNoJfQ393YZmTvuBFDwTxKjezT+vadjr6wesxJL/Bu1XMPQQa1ST4=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=corigine.com;
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
  by PH7PR13MB5595.namprd13.prod.outlook.com (2603:10b6:510:139::13) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4823.8; Fri, 17 Dec
- 2021 14:22:48 +0000
+ 2021 14:22:52 +0000
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::a01a:4940:c69a:e04c]) by PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::a01a:4940:c69a:e04c%9]) with mapi id 15.20.4801.014; Fri, 17 Dec 2021
- 14:22:48 +0000
+ 14:22:52 +0000
 From:   Simon Horman <simon.horman@corigine.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -62,9 +62,9 @@ Cc:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
         UNGLinuxDriver@microchip.com, linux-kernel@vger.kernel.org,
         linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
         oss-drivers@corigine.com, Simon Horman <simon.horman@corigine.com>
-Subject: [PATCH v7 net-next 09/12] net: sched: save full flags for tc action
-Date:   Fri, 17 Dec 2021 15:21:47 +0100
-Message-Id: <20211217142150.17838-10-simon.horman@corigine.com>
+Subject: [PATCH v7 net-next 10/12] flow_offload: add reoffload process to update hw_count
+Date:   Fri, 17 Dec 2021 15:21:48 +0100
+Message-Id: <20211217142150.17838-11-simon.horman@corigine.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20211217142150.17838-1-simon.horman@corigine.com>
 References: <20211217142150.17838-1-simon.horman@corigine.com>
@@ -75,56 +75,56 @@ X-ClientProxiedBy: AM3PR07CA0079.eurprd07.prod.outlook.com
  (2603:10b6:510:78::6)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 2f5c639e-914d-4f00-22f1-08d9c168b353
+X-MS-Office365-Filtering-Correlation-Id: bef68b1d-f2ed-4d23-ce0a-08d9c168b5fc
 X-MS-TrafficTypeDiagnostic: PH7PR13MB5595:EE_
-X-Microsoft-Antispam-PRVS: <PH7PR13MB5595F7E53447274EA2725EC6E8789@PH7PR13MB5595.namprd13.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:5236;
+X-Microsoft-Antispam-PRVS: <PH7PR13MB5595445989B94CB07F3C9B2DE8789@PH7PR13MB5595.namprd13.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: wKBYgCc0yBuYVu9hqJjd1IpwOs0t0eG5sAQd5FaNtIM2MZshqnSTGvD9sIABegoa60lxec4ncj/wdYi7GGUzPXqYciTr7/eDerj34YkIEcT0v95OaNogrWOS3bins7n/h7dfoHdlseXaRkwSskROVKM1n1b+Jnnue6hdRe1xQNXVwDwYKcbBFGMGFHY5TLZroFiDCVd0SYS9m5l7kFifI7bxuVyizO6HaXQowOdvEg1zjgZnl64e35nCGsroXP2EukO+ao/PF4wXf/zU2TKmrz1Thrmau/xZ+GnsM/8intE8EHpPGfXy3P8m+Mz3aFgkexD1pxy7eaBHEGC+sBYZEGV3+DYcvdl+5oeIx6qjeS4JzUzKjVbc6pPbFj32/T3F9Ck23eAAxBLBxKVw1eo5nHa81IrybA4losylxKX5X2p7ek/RUpQ2MM/WQUYT1IwyrGK23wZsrRwcwiXTOcu3qhXHWqJWS/OD4FLQRA+QAOHKcj/6kfUhMqpyr67dpnEPvKW6MxGTU7OcyPvN6EsqIA9XMcPxxH5Jl7cfiVJYZhcDB6ad6wA6JX7OQCf7F1omevHn7CRvtmuno9oBX3nqp5+R77BjpHGKqUjNX44LoajbthUdt7lTR2oaX+KYF0p0xpCY49NFTiFH1ZCpkkOHme7n4ekmeHPMN6BfvxyQsl9ybFcd0p7ZxLbXrN1rUNFy
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(396003)(366004)(39840400004)(346002)(376002)(136003)(110136005)(8936002)(54906003)(8676002)(316002)(66946007)(66476007)(7416002)(2906002)(66556008)(4326008)(86362001)(38100700002)(107886003)(83380400001)(508600001)(1076003)(6486002)(36756003)(6506007)(2616005)(52116002)(5660300002)(44832011)(186003)(6512007)(20210929001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: udeyNiR2EzbKiQdu3avXLkdXciOKoNH9coWLRnbSOmKn6uhFqp951aCLJQ4Fkn9eplQp2ELJYBBnoJtoUfOGa64L2WKy++pwP9y9D9ciG+GQl8FvOnI+XzCrcMejSYcx3JS9UpBXD3rUfdtzx1cZH2iD758EmZocMTgJHtMKzhKUlBi+yJriKVZOiaogqVzQ6XQQszW17gm7MkwBlExSxhJXrQwbemszmNeWdlcf/1wQ0SV1nwZvMwbzhboAOnf6eGIVzku23uBUgg75XUYTMJhWudUL9DzKtI7CQ2sxktO1RAPQ+9UeWjLm95msszKGBegerlLvUdMHgq2RXWs1By+CpTeKf3CWNeRrHsEDR8RI7yGlP7KmL6Np1lMtpoeJ6UyeA0g9r+kJNU4NStUXoUfOI2YAf4AY0BFd9npNIRRIngu3J8Xbqqc8a6IH10zqj/XV6BxcDYCu5OkT/spPN3dH9bwJXVjTFqaJ5OsWYcM0YgCnaP8OvSnA8zNuOVxAiadlPENODRDp82Trm8dGh0grpIPxuN8334dUMlMx8+4QtX3GcRJBrsSlPsvBOdiOIjRhtwvzBwOJBb0WaybXm+gTdtetOJTGlN8iGJqH3WLIQlRWoPft6Pn4KZVRKevQTsKAxhYvERWj+0SkzLLEOd6qtBgA8qvYfWgRyNfO94mGf9Pr5PG/1IV7sJODwYLs
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(396003)(366004)(39840400004)(346002)(376002)(136003)(110136005)(8936002)(54906003)(8676002)(316002)(66946007)(66476007)(7416002)(2906002)(66556008)(4326008)(30864003)(86362001)(38100700002)(107886003)(83380400001)(508600001)(1076003)(6486002)(36756003)(6506007)(2616005)(6666004)(52116002)(5660300002)(15650500001)(44832011)(186003)(6512007)(20210929001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?pFI6HdNln5kvgkB75CEEAWhvWUiePZRJNLF9+TNr4+NNWEr0sfvjCOc0SgwG?=
- =?us-ascii?Q?A19/xlIWPkB/1H9BziAFrmbsDlNWDPZ2JVtuLFNOXXxeixvng1cvgh4g/Pj6?=
- =?us-ascii?Q?0bsyj7zZ5bvpi/PPX85ybeWgGBxJb0RTJ30Is7n5C30KnNYVzfoJrSMSGXfq?=
- =?us-ascii?Q?obPR02KWZW04cccw+bG2GgY4Tp10X8/ErjCQhDs8rq4KsJeSfs0FTG2nshTq?=
- =?us-ascii?Q?XyNWb4DEU3M/FTo+komPfEf7i4TKRio2ojEdqDLg7MTzsKAtANYOX/qYwvJm?=
- =?us-ascii?Q?/J1LJk29sW5PtSiP9Caos+6EHDu0jLmC+nmVsQoM8NjkdjIZHnrcuRZi30R1?=
- =?us-ascii?Q?tpH51wd+JJP/rB71prjSRBqh4bujC1BTxwEpMB/RaG83zvAx7QI+b8O7Nhyp?=
- =?us-ascii?Q?qIbxswRs//WnavdynTXC3qGTw1sRoJP3XGLfWKuxbAfrAKsUwmUzzvNBJ1pg?=
- =?us-ascii?Q?9Kx1xhWSJgepzroKDaYbVdk7/Tn/y3IKeesEOXb/KLmdJQTBtdzbhPE63MID?=
- =?us-ascii?Q?FP2EnScEp2ulADtx7g/G9TGlqzrOD2e6wEqeSLU0q2+JXcuYZtMQZWLFWvUd?=
- =?us-ascii?Q?IUnDnwYvvuaX8sDQkOaEN6W0u3Dv+9yvno6y2+TQO6Sp4AltHPu4ebltXQ7L?=
- =?us-ascii?Q?jIX5qW61yM7h5Gl0KCgl2RkK451+/dDavKGjxw2q4WeQdi5L1/aw7KTZU5pk?=
- =?us-ascii?Q?r11+LrIQjWQW6qNq8xZ8dm+bSk5lZ6hh5u3S1giWYIo5ukWkXBUJS/ECMXwf?=
- =?us-ascii?Q?9LyiCSe/YCO5DFKq8Ia671mbtS0C+beOphsC/xoJa9pVC/yh3n5SxXPYlR9t?=
- =?us-ascii?Q?2QVRoizopePdN2pWuvgybuvvevCVL0WGsf2hx/fpRZIlaK1/NfsfW1xQJz8Z?=
- =?us-ascii?Q?CvYBMixa7DweeWF+uKJBvZ98/kt9q2AM9giTeYheLSuraGg4O5/iMvRlDv1Y?=
- =?us-ascii?Q?LVqlhd1Eoahd+0MISsEl8IPQyv0qmdecLKVbY+ENhE2tm3u+UP4dexFwOZGg?=
- =?us-ascii?Q?TAQ6b2IId+7aQYTZF48SOBBVLxtppDD/mDR8dhuT7wODpt+I6DTDauTndiHT?=
- =?us-ascii?Q?VWzw+YkUdNlESotKG/t1pkBEvyGRC4xRf7huLXIKqW8oiFC1C2OfMafyl4/N?=
- =?us-ascii?Q?JQbuoY6EYWlVAoTVYcFx/YyCstXPNn03xXWzRz4Yx0KxErgt1OjJe+IhL/Qz?=
- =?us-ascii?Q?OIqqq3nDQjQtw3obSVtsdo9aDp6I9HO07rkrBu8HdAJXrk+UWxQ7ZO7yyivK?=
- =?us-ascii?Q?07Dvrj8jfslgXneLSQUMvjeLzqzFmJNd09Mp96obmtw/qJKtjHDSiSIxjzT6?=
- =?us-ascii?Q?PyJNBesNDaJZ2cU6Vq4fI77ekeek+i3CApucQARd006LGLOzZBs+7TogbI6m?=
- =?us-ascii?Q?3tvMfk+31OVjrqFf0RAuR04Pf/iHuhX6K4aue9CRMd69bgFBZsELIa9i3a4u?=
- =?us-ascii?Q?tAJBTa/QaRz8Bf7lKBcmzuB5ufPoban7wgeIa79ihFSkVWJHsRwteJRyuQBV?=
- =?us-ascii?Q?yqmgvkkI3r2SLdml6REIryR/eyp54Ll2ShHV+s8AIr9wpNODKvwaztfh4rve?=
- =?us-ascii?Q?5JvaqCjnExH+M3wg+oQJ9FJzTKOGZ+0YyQ0bmrsfoa9Xy/EOqjRu0CGpEOhF?=
- =?us-ascii?Q?vATvHsmu/xRqFKslU+T/OQ0pphCfoNv/PtcrPGcPLzuXThz6VF+Builfayxa?=
- =?us-ascii?Q?Gk1VBNRrd6weho8hS19UpgTX9oTQnxLrdTSCJXHu6s4yfO/0HB+dr98HvioS?=
- =?us-ascii?Q?RUmlIvr0Ug=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?hBQwU6zrIpYyUvRPPo5A8xrz5ae0toJA2DecYIBdoYhUjcIzLzw13XEAcQMo?=
+ =?us-ascii?Q?VGonaI4aVItket4mQ8CVuMyTa8SD+vsCGUbJhbb3EuWEv2ntdsoEs7OS1jKg?=
+ =?us-ascii?Q?szyaVORrZRb90QVEUCQ10mJ6rMM9TomSIpup2GMnWWGALTLCKWuXK+OYTu/p?=
+ =?us-ascii?Q?sS5WZuX0DPKz3Jok3Q9XBSO1Fz5WODAL9LN6fPJQmIiGd1FTebfSHY4CJYM+?=
+ =?us-ascii?Q?q74cheTGpsu/fA1O+gJl5t+bQ/5N+mtRnc6CZIdiwyuFKCgJ7jgjd/NQawtb?=
+ =?us-ascii?Q?UuH5oYEr0m6/TYRe+MluFqXOuUbPS8YGb77J7hp/krCQhHAZHa35SLoxb7fU?=
+ =?us-ascii?Q?lu6djIlxTHx3X0tPYjYxn3M3oQJWYFZ95ZeD9dr9cWrCeJ9ElYzV60O5Yndf?=
+ =?us-ascii?Q?Lk8048Q2m7cSkz4ASxlE58v/viNFyn+5FK9uGT/MNZXssJfQoWqqwzSuy74W?=
+ =?us-ascii?Q?CZ7ZyEt1PsfuprkauIxsBF1K61ZrPfl20xsK07iQkj/er8B43beqk8Tkgb5f?=
+ =?us-ascii?Q?41d+pVKtunU9/72GFkz0qrNTRI/WCRvGkaBImL5GmP5MkQYX/vnDu55EbKXK?=
+ =?us-ascii?Q?iHgqZLxiG81/0H6y5gGzRhW8j7qcjgkd0Pmz/CAw9fFshb4ua8nQEfmF+Ndh?=
+ =?us-ascii?Q?i75eZjO4NApMApE/d34ftyU+DE9pFaoch+k/9LK+R8QWh+yK+FbfWPgLKHo8?=
+ =?us-ascii?Q?/6uNSAY8ozsDeE5wlYIcXounwOPrlMVR4lxzURLOMR4GthdqQKGBV2/cOhv4?=
+ =?us-ascii?Q?0Q0R7tCHsg+ZazoT87DAOk6E2GBcjk5xPRlXjWgcDG/QzHI0QZnm4mbQI748?=
+ =?us-ascii?Q?VPTC5lNf4Ju3ZIQVdrKNxcQboLQGAAIUlQ6vfHxuVcRlYa4l2QIKhby2OBC1?=
+ =?us-ascii?Q?TRnvk/nO8ayej2ITQxVSmA+AptV8/VBF+96/3dV28GbVOiGjbbLk3deZUQLi?=
+ =?us-ascii?Q?RKBTPvJ/ewXdvt2pyqk9iDiEZLJ5sGRNZgyjJTjUbDe+EfvGgKtI187tS45F?=
+ =?us-ascii?Q?XdvVBtYZAqX4ZUxnZgYeksCJyikX8XtQsW/pomAS7hxGXsX8ReU6cQgjvrFw?=
+ =?us-ascii?Q?8cAEwW5u/FWEmkgfpx1tBlfQLNpU5S+BexqlhGQcJ8wksIlFhwJCony1pfx1?=
+ =?us-ascii?Q?OrfhphitIOtkqw0QJm430qD4FIXHiOH4YAhsKLgin+s+EkvDsSVlFRHpw3tO?=
+ =?us-ascii?Q?h5oraMV+pohln1MCA8u+GMB/VNxNDg/4PzA3svfmwUeGWxfOYWkF0nMztY8h?=
+ =?us-ascii?Q?vO5923RlG/KdviVUe7Eu+mHQx2psky8CEeZ4r8V2CLBnLziNzfVzYK7gTtEg?=
+ =?us-ascii?Q?WMPQ2a6YhOMo6XNG/ogXBfAtT9RTEjSuV93hXLqAQP4MgnxITE8/LF6Ipu2C?=
+ =?us-ascii?Q?qGKAqrtqkLgmuCGCEghk70uPr2j9lNKIkuZ8EjN30KRgTBwJ/UdC9gS5Q7df?=
+ =?us-ascii?Q?nD2DGo51cFfCoqRKidFBOVbmoZ0qrgqRIqjqDo2pcf/56F9P5VyjUli6ok0D?=
+ =?us-ascii?Q?WeCdgyP7xqZ3Vxxfo9IPG3Rcl13tJ9HeqoAgdnBf/nBNJCM4hTrcJ53BC605?=
+ =?us-ascii?Q?+P7B/8Ac7dJTZ5fYz6Je67vxKPSXz6vA/zf/oE326j4S1vsSlFoBFEOPQych?=
+ =?us-ascii?Q?PWhmCy01RfRBRWNv/gltcZEy7VLgDVNnf6jXEuLgZe9/41q/pXLQeUiw7ono?=
+ =?us-ascii?Q?zPc7goSWcu3pjJBj7zjb0qGDOaqW3r6lwvJpSzYllNBU6Uif4EewuDWI/API?=
+ =?us-ascii?Q?fUL9eR020A=3D=3D?=
 X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2f5c639e-914d-4f00-22f1-08d9c168b353
+X-MS-Exchange-CrossTenant-Network-Message-Id: bef68b1d-f2ed-4d23-ce0a-08d9c168b5fc
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Dec 2021 14:22:48.0757
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Dec 2021 14:22:52.5889
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: dj8+Tzw8q7BduE4iXxtducAvSw/irg4WiIhKPq/34ONP6ANGjMdqCE9HUTep0bPTz4oMXGssveux88yzgBr0RDQgXKPj5q84EwKzjradWAo=
+X-MS-Exchange-CrossTenant-UserPrincipalName: Ri6sYQTDMbVtNAdv0vvzJ5ki/MImdnKT1qeUHNRmBHTsW6SdqKJBaiqhGUBUkR71ZlEOBBCm2i6H+tt4yAqW28vX5/UIwoiyjYp8qe+3dE8=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR13MB5595
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -132,55 +132,447 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Baowen Zheng <baowen.zheng@corigine.com>
 
-Save full action flags and return user flags when return flags to
-user space.
+Add reoffload process to update hw_count when driver
+is inserted or removed.
 
-Save full action flags to distinguish if the action is created
-independent from classifier.
+We will delete the action if it is with skip_sw flag and
+not offloaded to any hardware in reoffload process.
 
-We made this change mainly for further patch to reoffload tc actions.
+When reoffloading actions, we still offload the actions
+that are added independent of filters.
 
 Signed-off-by: Baowen Zheng <baowen.zheng@corigine.com>
+Signed-off-by: Louis Peens <louis.peens@corigine.com>
 Signed-off-by: Simon Horman <simon.horman@corigine.com>
-Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
 ---
- net/sched/act_api.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ include/net/act_api.h   |  11 ++
+ net/core/flow_offload.c |   4 +
+ net/sched/act_api.c     | 252 +++++++++++++++++++++++++++++++++++++---
+ 3 files changed, 250 insertions(+), 17 deletions(-)
 
+diff --git a/include/net/act_api.h b/include/net/act_api.h
+index 20104dfdd57c..0f5f69deb3ce 100644
+--- a/include/net/act_api.h
++++ b/include/net/act_api.h
+@@ -7,6 +7,7 @@
+ */
+ 
+ #include <linux/refcount.h>
++#include <net/flow_offload.h>
+ #include <net/sch_generic.h>
+ #include <net/pkt_sched.h>
+ #include <net/net_namespace.h>
+@@ -254,6 +255,8 @@ void tcf_action_update_stats(struct tc_action *a, u64 bytes, u64 packets,
+ int tcf_action_copy_stats(struct sk_buff *, struct tc_action *, int);
+ 
+ int tcf_action_update_hw_stats(struct tc_action *action);
++int tcf_action_reoffload_cb(flow_indr_block_bind_cb_t *cb,
++			    void *cb_priv, bool add);
+ int tcf_action_check_ctrlact(int action, struct tcf_proto *tp,
+ 			     struct tcf_chain **handle,
+ 			     struct netlink_ext_ack *newchain);
+@@ -265,6 +268,14 @@ DECLARE_STATIC_KEY_FALSE(tcf_frag_xmit_count);
+ #endif
+ 
+ int tcf_dev_queue_xmit(struct sk_buff *skb, int (*xmit)(struct sk_buff *skb));
++
++#else /* !CONFIG_NET_CLS_ACT */
++
++static inline int tcf_action_reoffload_cb(flow_indr_block_bind_cb_t *cb,
++					  void *cb_priv, bool add) {
++	return 0;
++}
++
+ #endif /* CONFIG_NET_CLS_ACT */
+ 
+ static inline void tcf_action_stats_update(struct tc_action *a, u64 bytes,
+diff --git a/net/core/flow_offload.c b/net/core/flow_offload.c
+index 022c945817fa..73f68d4625f3 100644
+--- a/net/core/flow_offload.c
++++ b/net/core/flow_offload.c
+@@ -1,6 +1,7 @@
+ /* SPDX-License-Identifier: GPL-2.0 */
+ #include <linux/kernel.h>
+ #include <linux/slab.h>
++#include <net/act_api.h>
+ #include <net/flow_offload.h>
+ #include <linux/rtnetlink.h>
+ #include <linux/mutex.h>
+@@ -417,6 +418,8 @@ int flow_indr_dev_register(flow_indr_block_bind_cb_t *cb, void *cb_priv)
+ 	existing_qdiscs_register(cb, cb_priv);
+ 	mutex_unlock(&flow_indr_block_lock);
+ 
++	tcf_action_reoffload_cb(cb, cb_priv, true);
++
+ 	return 0;
+ }
+ EXPORT_SYMBOL(flow_indr_dev_register);
+@@ -469,6 +472,7 @@ void flow_indr_dev_unregister(flow_indr_block_bind_cb_t *cb, void *cb_priv,
+ 	__flow_block_indr_cleanup(release, cb_priv, &cleanup_list);
+ 	mutex_unlock(&flow_indr_block_lock);
+ 
++	tcf_action_reoffload_cb(cb, cb_priv, false);
+ 	flow_block_indr_notify(&cleanup_list);
+ 	kfree(indr_dev);
+ }
 diff --git a/net/sched/act_api.c b/net/sched/act_api.c
-index ac6c2c396d4f..75f34e6fdea0 100644
+index 75f34e6fdea0..0103e44e241f 100644
 --- a/net/sched/act_api.c
 +++ b/net/sched/act_api.c
-@@ -669,7 +669,7 @@ int tcf_idr_create(struct tc_action_net *tn, u32 index, struct nlattr *est,
- 	p->tcfa_tm.install = jiffies;
- 	p->tcfa_tm.lastuse = jiffies;
- 	p->tcfa_tm.firstuse = 0;
--	p->tcfa_flags = flags & TCA_ACT_FLAGS_USER_MASK;
-+	p->tcfa_flags = flags;
- 	if (est) {
- 		err = gen_new_estimator(&p->tcfa_bstats, p->cpu_bstats,
- 					&p->tcfa_rate_est,
-@@ -996,6 +996,7 @@ tcf_action_dump_1(struct sk_buff *skb, struct tc_action *a, int bind, int ref)
- 	int err = -EINVAL;
- 	unsigned char *b = skb_tail_pointer(skb);
- 	struct nlattr *nest;
-+	u32 flags;
+@@ -137,6 +137,19 @@ static void offload_action_hw_count_set(struct tc_action *act,
+ 	act->in_hw_count = hw_count;
+ }
  
- 	if (tcf_action_dump_terse(skb, a, false))
- 		goto nla_put_failure;
-@@ -1010,9 +1011,10 @@ tcf_action_dump_1(struct sk_buff *skb, struct tc_action *a, int bind, int ref)
- 			       a->used_hw_stats, TCA_ACT_HW_STATS_ANY))
- 		goto nla_put_failure;
++static void offload_action_hw_count_inc(struct tc_action *act,
++					u32 hw_count)
++{
++	act->in_hw_count += hw_count;
++}
++
++static void offload_action_hw_count_dec(struct tc_action *act,
++					u32 hw_count)
++{
++	act->in_hw_count = act->in_hw_count > hw_count ?
++			   act->in_hw_count - hw_count : 0;
++}
++
+ static unsigned int tcf_offload_act_num_actions_single(struct tc_action *act)
+ {
+ 	if (is_tcf_pedit(act))
+@@ -183,9 +196,8 @@ static int offload_action_init(struct flow_offload_action *fl_action,
+ 	return -EOPNOTSUPP;
+ }
  
--	if (a->tcfa_flags &&
-+	flags = a->tcfa_flags & TCA_ACT_FLAGS_USER_MASK;
-+	if (flags &&
- 	    nla_put_bitfield32(skb, TCA_ACT_FLAGS,
--			       a->tcfa_flags, a->tcfa_flags))
-+			       flags, flags))
- 		goto nla_put_failure;
+-static int tcf_action_offload_cmd(struct flow_offload_action *fl_act,
+-				  u32 *hw_count,
+-				  struct netlink_ext_ack *extack)
++static int tcf_action_offload_cmd_ex(struct flow_offload_action *fl_act,
++				     u32 *hw_count)
+ {
+ 	int err;
  
- 	if (nla_put_u32(skb, TCA_ACT_IN_HW_COUNT, a->in_hw_count))
+@@ -200,9 +212,37 @@ static int tcf_action_offload_cmd(struct flow_offload_action *fl_act,
+ 	return 0;
+ }
+ 
+-/* offload the tc action after it is inserted */
+-static int tcf_action_offload_add(struct tc_action *action,
+-				  struct netlink_ext_ack *extack)
++static int tcf_action_offload_cmd_cb_ex(struct flow_offload_action *fl_act,
++					u32 *hw_count,
++					flow_indr_block_bind_cb_t *cb,
++					void *cb_priv)
++{
++	int err;
++
++	err = cb(NULL, NULL, cb_priv, TC_SETUP_ACT, NULL, fl_act, NULL);
++	if (err < 0)
++		return err;
++
++	if (hw_count)
++		*hw_count = 1;
++
++	return 0;
++}
++
++static int tcf_action_offload_cmd(struct flow_offload_action *fl_act,
++				  u32 *hw_count,
++				  flow_indr_block_bind_cb_t *cb,
++				  void *cb_priv)
++{
++	return cb ? tcf_action_offload_cmd_cb_ex(fl_act, hw_count,
++						 cb, cb_priv) :
++		    tcf_action_offload_cmd_ex(fl_act, hw_count);
++}
++
++static int tcf_action_offload_add_ex(struct tc_action *action,
++				     struct netlink_ext_ack *extack,
++				     flow_indr_block_bind_cb_t *cb,
++				     void *cb_priv)
+ {
+ 	bool skip_sw = tc_act_skip_sw(action->tcfa_flags);
+ 	struct tc_action *actions[TCA_ACT_MAX_PRIO] = {
+@@ -231,9 +271,10 @@ static int tcf_action_offload_add(struct tc_action *action,
+ 		goto fl_err;
+ 	}
+ 
+-	err = tcf_action_offload_cmd(fl_action, &in_hw_count, extack);
++	err = tcf_action_offload_cmd(fl_action, &in_hw_count, cb, cb_priv);
+ 	if (!err)
+-		offload_action_hw_count_set(action, in_hw_count);
++		cb ? offload_action_hw_count_inc(action, in_hw_count) :
++		     offload_action_hw_count_set(action, in_hw_count);
+ 
+ 	if (skip_sw && !tc_act_in_hw(action))
+ 		err = -EINVAL;
+@@ -246,6 +287,13 @@ static int tcf_action_offload_add(struct tc_action *action,
+ 	return err;
+ }
+ 
++/* offload the tc action after it is inserted */
++static int tcf_action_offload_add(struct tc_action *action,
++				  struct netlink_ext_ack *extack)
++{
++	return tcf_action_offload_add_ex(action, extack, NULL, NULL);
++}
++
+ int tcf_action_update_hw_stats(struct tc_action *action)
+ {
+ 	struct flow_offload_action fl_act = {};
+@@ -258,7 +306,7 @@ int tcf_action_update_hw_stats(struct tc_action *action)
+ 	if (err)
+ 		return err;
+ 
+-	err = tcf_action_offload_cmd(&fl_act, NULL, NULL);
++	err = tcf_action_offload_cmd(&fl_act, NULL, NULL, NULL);
+ 	if (!err) {
+ 		preempt_disable();
+ 		tcf_action_stats_update(action, fl_act.stats.bytes,
+@@ -277,7 +325,9 @@ int tcf_action_update_hw_stats(struct tc_action *action)
+ }
+ EXPORT_SYMBOL(tcf_action_update_hw_stats);
+ 
+-static int tcf_action_offload_del(struct tc_action *action)
++static int tcf_action_offload_del_ex(struct tc_action *action,
++				     flow_indr_block_bind_cb_t *cb,
++				     void *cb_priv)
+ {
+ 	struct flow_offload_action fl_act = {};
+ 	u32 in_hw_count = 0;
+@@ -290,16 +340,25 @@ static int tcf_action_offload_del(struct tc_action *action)
+ 	if (err)
+ 		return err;
+ 
+-	err = tcf_action_offload_cmd(&fl_act, &in_hw_count, NULL);
+-	if (err)
++	err = tcf_action_offload_cmd(&fl_act, &in_hw_count, cb, cb_priv);
++	if (err < 0)
+ 		return err;
+ 
+-	if (action->in_hw_count != in_hw_count)
++	if (!cb && action->in_hw_count != in_hw_count)
+ 		return -EINVAL;
+ 
++	/* do not need to update hw state when deleting action */
++	if (cb && in_hw_count)
++		offload_action_hw_count_dec(action, in_hw_count);
++
+ 	return 0;
+ }
+ 
++static int tcf_action_offload_del(struct tc_action *action)
++{
++	return tcf_action_offload_del_ex(action, NULL, NULL);
++}
++
+ static void tcf_action_cleanup(struct tc_action *p)
+ {
+ 	tcf_action_offload_del(p);
+@@ -794,6 +853,59 @@ EXPORT_SYMBOL(tcf_idrinfo_destroy);
+ 
+ static LIST_HEAD(act_base);
+ static DEFINE_RWLOCK(act_mod_lock);
++/* since act ops id is stored in pernet subsystem list,
++ * then there is no way to walk through only all the action
++ * subsystem, so we keep tc action pernet ops id for
++ * reoffload to walk through.
++ */
++static LIST_HEAD(act_pernet_id_list);
++static DEFINE_MUTEX(act_id_mutex);
++struct tc_act_pernet_id {
++	struct list_head list;
++	unsigned int id;
++};
++
++static int tcf_pernet_add_id_list(unsigned int id)
++{
++	struct tc_act_pernet_id *id_ptr;
++	int ret = 0;
++
++	mutex_lock(&act_id_mutex);
++	list_for_each_entry(id_ptr, &act_pernet_id_list, list) {
++		if (id_ptr->id == id) {
++			ret = -EEXIST;
++			goto err_out;
++		}
++	}
++
++	id_ptr = kzalloc(sizeof(*id_ptr), GFP_KERNEL);
++	if (!id_ptr) {
++		ret = -ENOMEM;
++		goto err_out;
++	}
++	id_ptr->id = id;
++
++	list_add_tail(&id_ptr->list, &act_pernet_id_list);
++
++err_out:
++	mutex_unlock(&act_id_mutex);
++	return ret;
++}
++
++static void tcf_pernet_del_id_list(unsigned int id)
++{
++	struct tc_act_pernet_id *id_ptr;
++
++	mutex_lock(&act_id_mutex);
++	list_for_each_entry(id_ptr, &act_pernet_id_list, list) {
++		if (id_ptr->id == id) {
++			list_del(&id_ptr->list);
++			kfree(id_ptr);
++			break;
++		}
++	}
++	mutex_unlock(&act_id_mutex);
++}
+ 
+ int tcf_register_action(struct tc_action_ops *act,
+ 			struct pernet_operations *ops)
+@@ -812,18 +924,31 @@ int tcf_register_action(struct tc_action_ops *act,
+ 	if (ret)
+ 		return ret;
+ 
++	if (ops->id) {
++		ret = tcf_pernet_add_id_list(*ops->id);
++		if (ret)
++			goto err_id;
++	}
++
+ 	write_lock(&act_mod_lock);
+ 	list_for_each_entry(a, &act_base, head) {
+ 		if (act->id == a->id || (strcmp(act->kind, a->kind) == 0)) {
+-			write_unlock(&act_mod_lock);
+-			unregister_pernet_subsys(ops);
+-			return -EEXIST;
++			ret = -EEXIST;
++			goto err_out;
+ 		}
+ 	}
+ 	list_add_tail(&act->head, &act_base);
+ 	write_unlock(&act_mod_lock);
+ 
+ 	return 0;
++
++err_out:
++	write_unlock(&act_mod_lock);
++	if (ops->id)
++		tcf_pernet_del_id_list(*ops->id);
++err_id:
++	unregister_pernet_subsys(ops);
++	return ret;
+ }
+ EXPORT_SYMBOL(tcf_register_action);
+ 
+@@ -842,8 +967,11 @@ int tcf_unregister_action(struct tc_action_ops *act,
+ 		}
+ 	}
+ 	write_unlock(&act_mod_lock);
+-	if (!err)
++	if (!err) {
+ 		unregister_pernet_subsys(ops);
++		if (ops->id)
++			tcf_pernet_del_id_list(*ops->id);
++	}
+ 	return err;
+ }
+ EXPORT_SYMBOL(tcf_unregister_action);
+@@ -1595,6 +1723,96 @@ static int tcf_action_delete(struct net *net, struct tc_action *actions[])
+ 	return 0;
+ }
+ 
++static int
++tcf_reoffload_del_notify(struct net *net, struct tc_action *action)
++{
++	size_t attr_size = tcf_action_fill_size(action);
++	struct tc_action *actions[TCA_ACT_MAX_PRIO] = {
++		[0] = action,
++	};
++	const struct tc_action_ops *ops = action->ops;
++	struct sk_buff *skb;
++	int ret;
++
++	skb = alloc_skb(attr_size <= NLMSG_GOODSIZE ? NLMSG_GOODSIZE : attr_size,
++			GFP_KERNEL);
++	if (!skb)
++		return -ENOBUFS;
++
++	if (tca_get_fill(skb, actions, 0, 0, 0, RTM_DELACTION, 0, 1) <= 0) {
++		kfree_skb(skb);
++		return -EINVAL;
++	}
++
++	ret = tcf_idr_release_unsafe(action);
++	if (ret == ACT_P_DELETED) {
++		module_put(ops->owner);
++		ret = rtnetlink_send(skb, net, 0, RTNLGRP_TC, 0);
++	} else {
++		kfree_skb(skb);
++	}
++
++	return ret;
++}
++
++int tcf_action_reoffload_cb(flow_indr_block_bind_cb_t *cb,
++			    void *cb_priv, bool add)
++{
++	struct tc_act_pernet_id *id_ptr;
++	struct tcf_idrinfo *idrinfo;
++	struct tc_action_net *tn;
++	struct tc_action *p;
++	unsigned int act_id;
++	unsigned long tmp;
++	unsigned long id;
++	struct idr *idr;
++	struct net *net;
++	int ret;
++
++	if (!cb)
++		return -EINVAL;
++
++	down_read(&net_rwsem);
++	mutex_lock(&act_id_mutex);
++
++	for_each_net(net) {
++		list_for_each_entry(id_ptr, &act_pernet_id_list, list) {
++			act_id = id_ptr->id;
++			tn = net_generic(net, act_id);
++			if (!tn)
++				continue;
++			idrinfo = tn->idrinfo;
++			if (!idrinfo)
++				continue;
++
++			mutex_lock(&idrinfo->lock);
++			idr = &idrinfo->action_idr;
++			idr_for_each_entry_ul(idr, p, tmp, id) {
++				if (IS_ERR(p) || tc_act_bind(p->tcfa_flags))
++					continue;
++				if (add) {
++					tcf_action_offload_add_ex(p, NULL, cb,
++								  cb_priv);
++					continue;
++				}
++
++				/* cb unregister to update hw count */
++				ret = tcf_action_offload_del_ex(p, cb, cb_priv);
++				if (ret < 0)
++					continue;
++				if (tc_act_skip_sw(p->tcfa_flags) &&
++				    !tc_act_in_hw(p))
++					tcf_reoffload_del_notify(net, p);
++			}
++			mutex_unlock(&idrinfo->lock);
++		}
++	}
++	mutex_unlock(&act_id_mutex);
++	up_read(&net_rwsem);
++
++	return 0;
++}
++
+ static int
+ tcf_del_notify(struct net *net, struct nlmsghdr *n, struct tc_action *actions[],
+ 	       u32 portid, size_t attr_size, struct netlink_ext_ack *extack)
 -- 
 2.20.1
 
