@@ -2,97 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E159E4784DB
-	for <lists+netdev@lfdr.de>; Fri, 17 Dec 2021 07:21:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E7D374784EE
+	for <lists+netdev@lfdr.de>; Fri, 17 Dec 2021 07:32:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233208AbhLQGVv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Dec 2021 01:21:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43414 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230405AbhLQGVu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Dec 2021 01:21:50 -0500
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4C91C061574
-        for <netdev@vger.kernel.org>; Thu, 16 Dec 2021 22:21:50 -0800 (PST)
-Received: by mail-pf1-x429.google.com with SMTP id x5so1451538pfr.0
-        for <netdev@vger.kernel.org>; Thu, 16 Dec 2021 22:21:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=Otjbg7mbo4OO8l2IAODMvRsvxwgUnHr5i5EoA3HmeX4=;
-        b=WimxT70A+cQGhGj2Ye67Kluh0CH797RY9cjn8XmnscCSFkYGf38jE3aTjNobIWf3W+
-         BJ5zfohblVjqDd5/yByijAlvVe/NygaQxjP0YBQTcsd6/+KotcrKonTHqaU68H1ftqgL
-         mTrPMZD6+ZbWRabRHI9OWUjaM6ubQWl5XKaW6k4gZasUNLnwkfDEYpZictcUwj16KsUy
-         srJ9zTR1BiJrdiT843iZPqZfCbDcbxmpxpbGBdcJnm70lu6UltVWbsp7pxeZVrvpJ9cV
-         YO3iDjL9dZb1sHKTsHo39dz8jwM0ysZXDxLqUvYWNZd8O5Bz/oxJ0IbgUYA7ES0HbPvf
-         73tg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Otjbg7mbo4OO8l2IAODMvRsvxwgUnHr5i5EoA3HmeX4=;
-        b=SGlhWSuLe80YdUjMy1KEinJhYhtS+xcmemcAkAHLLNRr7x/QkdiL+CS/3cErt6OO6K
-         DQJih6QQLD4TUcmJYDnB8bxzmK6IxJveQpfCHHahYozGyXLi1Iv9o5lgiMKSYNvaAdOc
-         pCalPxMQDWBlQ1r/nQPSs88boUjQlb08O4elmzr5l4i+qnA1K9B73lXzlntf6Ecbph1b
-         kNibOUx+JJCihZ5GP64/qthCnFPuqimnvRy0KClQxbOXyvSc6HxV8hE/JGqDl4hdQrEq
-         MeZR1dRCsmClcEbWwRskxB6CPGXlVWwagr5S9FeIwjbH+sw3B/g+SMi4MSgRvetq1fBD
-         kdOA==
-X-Gm-Message-State: AOAM531CyOagIr1c39CJVCBg8uZa7KQ2Fk5g75raMU4gl9wogfRmtLkg
-        s1oer4QIwv3VrlAbMkw9cOvQtTEljClSjqxTyWo=
-X-Google-Smtp-Source: ABdhPJzeZitYFft+5uI2VmyyUPxwDfFtfPQ8z8CLESRZxMYZbdqnlvlsL1UeKefyfel03/m6Vk5HHK9EWEMDVFW8tPg=
-X-Received: by 2002:a05:6a00:811:b0:4af:d1c9:fa3f with SMTP id
- m17-20020a056a00081100b004afd1c9fa3fmr1739335pfk.21.1639722110106; Thu, 16
- Dec 2021 22:21:50 -0800 (PST)
+        id S232146AbhLQGcx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Dec 2021 01:32:53 -0500
+Received: from out30-57.freemail.mail.aliyun.com ([115.124.30.57]:44040 "EHLO
+        out30-57.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232073AbhLQGcw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Dec 2021 01:32:52 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0V-tDLVp_1639722770;
+Received: from localhost(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0V-tDLVp_1639722770)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 17 Dec 2021 14:32:50 +0800
+Date:   Fri, 17 Dec 2021 14:32:50 +0800
+From:   "D. Wythe" <alibuda@linux.alibaba.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Karsten Graul <kgraul@linux.ibm.com>, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-rdma@vger.kernel.org
+Subject: Re: [PATCH net] net/smc: Prevent smc_release() from long blocking
+Message-ID: <20211217063249.GA116421@e02h04389.eu6sqa>
+Reply-To: "D. Wythe" <alibuda@linux.alibaba.com>
+References: <1639571361-101128-1-git-send-email-alibuda@linux.alibaba.com>
+ <2c8f208f-9b14-1c79-ae6a-0ef64010b70a@linux.ibm.com>
+ <20211216081331.4983d048@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-References: <20211216201342.25587-1-luizluca@gmail.com> <20211216201342.25587-4-luizluca@gmail.com>
- <4a95c493-5ea3-5f2d-b57a-70674b10a7f0@bang-olufsen.dk>
-In-Reply-To: <4a95c493-5ea3-5f2d-b57a-70674b10a7f0@bang-olufsen.dk>
-From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Date:   Fri, 17 Dec 2021 03:21:39 -0300
-Message-ID: <CAJq09z4NJhU7NgzHNg=jRhi1nZgpszPzCssb_z4h0qYUzcO_FQ@mail.gmail.com>
-Subject: Re: [PATCH net-next 03/13] net: dsa: realtek: rename realtek_smi to realtek_priv
-To:     =?UTF-8?Q?Alvin_=C5=A0ipraga?= <ALSI@bang-olufsen.dk>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "olteanv@gmail.com" <olteanv@gmail.com>,
-        "arinc.unal@arinc9.com" <arinc.unal@arinc9.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211216081331.4983d048@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Alvin,
 
-Em qui., 16 de dez. de 2021 =C3=A0s 20:22, Alvin =C5=A0ipraga
-<ALSI@bang-olufsen.dk> escreveu:
->
-> Hi Luiz,
->
-> On 12/16/21 21:13, luizluca@gmail.com wrote:
-> > From: Luiz Angelo Daros de Luca <luizluca@gmail.com>
-> >
-> > In preparation to adding other interfaces, the private data structure
-> > was renamed to priv. Also the only two direct calls from subdrivers
-> > to realtek-smi lib were converted into references inside priv.
->
-> Maybe split this patch to separate the churn from the more interesting
-> change, which I guess is needed to support different bus types for the
-> subdrivers.
->
+Sorry for this mistake, I'll pay more attention next time.
 
-Yes, it is better to split into two commits:
+Thanks.
 
-1) net: dsa: realtek: rename realtek_smi to realtek_priv (only string
-replace/file move)
-2) net: dsa: realtek: remove direct calls to realtek-smi (the good stuff)
-
-And yes, part of the issues you pointed out are just because some
-changes landed in the next commit.
-As I splitted the commit, I could see a bug in rtl8366rb driver, I
-didn't test if priv->setup_interface was set.
-It would call a NULL pointer for realtek-mdio interface.
+On Thu, Dec 16, 2021 at 08:13:31AM -0800, Jakub Kicinski wrote:
+> On Thu, 16 Dec 2021 11:08:13 +0100 Karsten Graul wrote:
+> > On 15/12/2021 13:29, D. Wythe wrote:
+> > > From: "D. Wythe" <alibuda@linux.alibaba.com>
+> > > 
+> > > In nginx/wrk benchmark, there's a hung problem with high probability
+> > > on case likes that: (client will last several minutes to exit)
+> > > 
+> > > server: smc_run nginx
+> > > 
+> > > client: smc_run wrk -c 10000 -t 1 http://server
+> > > 
+> > > Client hangs with the following backtrace:  
+> 
+> In the future please make sure to leave the commit title in the Fixes
+> tag exactly as is (you seem to have removed a "net/" prefix).
+> 
+> > Good finding, thank you!
+> > 
+> > Acked-by: Karsten Graul <kgraul@linux.ibm.com>
+> 
+> Applied, thanks.
