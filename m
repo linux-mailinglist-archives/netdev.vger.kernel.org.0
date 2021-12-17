@@ -2,163 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC4DC478118
-	for <lists+netdev@lfdr.de>; Fri, 17 Dec 2021 01:08:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DD0847811B
+	for <lists+netdev@lfdr.de>; Fri, 17 Dec 2021 01:09:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229755AbhLQAIl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Dec 2021 19:08:41 -0500
-Received: from mx3.wp.pl ([212.77.101.10]:51794 "EHLO mx3.wp.pl"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229681AbhLQAIl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Dec 2021 19:08:41 -0500
-Received: (wp-smtpd smtp.wp.pl 9914 invoked from network); 17 Dec 2021 01:08:39 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wp.pl; s=1024a;
-          t=1639699719; bh=/Pv2URbWjPOQ4YmrI18eVOUSMMZPdrpJxRSFPgN2zJw=;
-          h=From:To:Cc:Subject;
-          b=S1AXpdX/EbEt09BDpqH3JbkemL1DXWbaOGNPBLXW+V0LRxMyNIGsbtkm7bvGloqxe
-           8bn9REnu2H9Qn4Fx1NZrQM1seOBeOZBSDxomBIZoa+UOKvKujm2JhReMEQ4mPJmQaq
-           ShgZFGE6kqaaEf6vOej+pxedj7ckNYvnab+ZXah8=
-Received: from riviera.nat.ds.pw.edu.pl (HELO LAPTOP-OLEK.lan) (olek2@wp.pl@[194.29.137.1])
-          (envelope-sender <olek2@wp.pl>)
-          by smtp.wp.pl (WP-SMTPD) with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP
-          for <hauke@hauke-m.de>; 17 Dec 2021 01:08:39 +0100
-From:   Aleksander Jan Bajkowski <olek2@wp.pl>
-To:     hauke@hauke-m.de, davem@davemloft.net, kuba@kernel.org,
-        olek2@wp.pl, netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Thomas Nixon <tom@tomn.co.uk>
-Subject: [PATCH 1/1] net: lantiq_xrx200: increase buffer reservation
-Date:   Fri, 17 Dec 2021 01:07:40 +0100
-Message-Id: <20211217000740.683089-2-olek2@wp.pl>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20211217000740.683089-1-olek2@wp.pl>
-References: <20211217000740.683089-1-olek2@wp.pl>
+        id S229784AbhLQAJm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Dec 2021 19:09:42 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:38392 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229511AbhLQAJl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 19:09:41 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4E13261FCC;
+        Fri, 17 Dec 2021 00:09:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65693C36AE2;
+        Fri, 17 Dec 2021 00:09:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1639699780;
+        bh=C5x7dlzYqlBa9tkMwFYliVXcGc8Zs8qwaD1LORO8Sq4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=qTlQcZ93/PlxEkGzuJ48NDWvWjhP6fyey/QnfGCB2/IBB2Evw+7/cAw9BFhLs0WVY
+         Eg79NVI1Fyju6VRpwHcd3SU79jNP0rGTth80nvRQHmyF3lyg69PMI662U978oSAsmr
+         HW1zKWqo/tRuSZFGYd8Wq2xWEgbIa/KwZ+tpmgLkAFpE/odRjdzZMMrEbdSCXsmWO7
+         mMf0CIfH83NwehGY3sNK1SKEmhkeFKI7qHPodwlVbcgRLyPsS8mX/zff03CFrje7ei
+         7lR1hUwWQoryej1adPRMUC/S71I+WB92LSGvRbZg6DGcgUFTLs16EJ2NrUHMmYeJlG
+         HYzD4754Jn8WQ==
+Date:   Thu, 16 Dec 2021 16:09:39 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     David Miller <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Kalle Valo <kvalo@codeaurora.org>
+Subject: Re: [GIT PULL] Networking for 5.16-rc6
+Message-ID: <20211216160939.41e8a2d2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAHk-=wi6GaYPTHHAaNEUtg6m=L6L0qjmJoPiKA5gOWKtdcOt-A@mail.gmail.com>
+References: <20211216213207.839017-1-kuba@kernel.org>
+        <CAHk-=whayMx6-Z7j7H1eAquy0Svv93Tyt7Wq6Efaogw8W+WpoQ@mail.gmail.com>
+        <20211216154324.5adcd94d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CAHk-=wi6GaYPTHHAaNEUtg6m=L6L0qjmJoPiKA5gOWKtdcOt-A@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-WP-MailID: 3c382ff735c7f68dc8acbbd0526cf950
-X-WP-AV: skaner antywirusowy Poczty Wirtualnej Polski
-X-WP-SPAM: NO 0000000 [8VM0]                               
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If the user sets a lower mtu on the CPU port than on the switch,
-then DMA inserts a few more bytes into the buffer than expected.
-In the worst case, it may exceed the size of the buffer. The
-experiments showed that the buffer should be a multiple of the
-burst length value. This patch rounds the length of the rx buffer
-upwards and fixes this bug. The reservation of FCS space in the
-buffer has been removed as PMAC strips the FCS.
+On Thu, 16 Dec 2021 15:59:40 -0800 Linus Torvalds wrote:
+> On Thu, Dec 16, 2021 at 3:43 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> >
+> > Very strange, I didn't fix it up, redo or anything, push the tree,
+> > tag, push the tag, git request-pull >> email. And request-pull did
+> > not complain about anything.  
+> 
+> You hadn't pushed the previous case by any chance? 'git request-pull'
+> does actually end up going off to check the remote end, and maybe it
+> saw a stale state (because the mirroring to the public side isn't
+> immediate)?
 
-Fixes: 998ac358019e ("net: lantiq: add support for jumbo frames")
-Reported-by: Thomas Nixon <tom@tomn.co.uk>
-Signed-off-by: Aleksander Jan Bajkowski <olek2@wp.pl>
----
- drivers/net/ethernet/lantiq_xrx200.c | 34 ++++++++++++++++++++--------
- 1 file changed, 24 insertions(+), 10 deletions(-)
+Ah! I know.. I forgot to fetch your tree and used FETCH_HEAD 
+in git request-pull which was at bpf :/
 
-diff --git a/drivers/net/ethernet/lantiq_xrx200.c b/drivers/net/ethernet/lantiq_xrx200.c
-index 0da09ea81980..96bd6f2b21ed 100644
---- a/drivers/net/ethernet/lantiq_xrx200.c
-+++ b/drivers/net/ethernet/lantiq_xrx200.c
-@@ -71,6 +71,8 @@ struct xrx200_priv {
- 	struct xrx200_chan chan_tx;
- 	struct xrx200_chan chan_rx;
- 
-+	u16 rx_buf_size;
-+
- 	struct net_device *net_dev;
- 	struct device *dev;
- 
-@@ -97,6 +99,16 @@ static void xrx200_pmac_mask(struct xrx200_priv *priv, u32 clear, u32 set,
- 	xrx200_pmac_w32(priv, val, offset);
- }
- 
-+static int xrx200_max_frame_len(int mtu)
-+{
-+	return VLAN_ETH_HLEN + mtu;
-+}
-+
-+static int xrx200_buffer_size(int mtu)
-+{
-+	return round_up(xrx200_max_frame_len(mtu), 4 * XRX200_DMA_BURST_LEN);
-+}
-+
- /* drop all the packets from the DMA ring */
- static void xrx200_flush_dma(struct xrx200_chan *ch)
- {
-@@ -109,8 +121,7 @@ static void xrx200_flush_dma(struct xrx200_chan *ch)
- 			break;
- 
- 		desc->ctl = LTQ_DMA_OWN | LTQ_DMA_RX_OFFSET(NET_IP_ALIGN) |
--			    (ch->priv->net_dev->mtu + VLAN_ETH_HLEN +
--			     ETH_FCS_LEN);
-+			    ch->priv->rx_buf_size;
- 		ch->dma.desc++;
- 		ch->dma.desc %= LTQ_DESC_NUM;
- 	}
-@@ -158,21 +169,21 @@ static int xrx200_close(struct net_device *net_dev)
- 
- static int xrx200_alloc_skb(struct xrx200_chan *ch)
- {
--	int len = ch->priv->net_dev->mtu + VLAN_ETH_HLEN + ETH_FCS_LEN;
- 	struct sk_buff *skb = ch->skb[ch->dma.desc];
-+	struct xrx200_priv *priv = ch->priv;
- 	dma_addr_t mapping;
- 	int ret = 0;
- 
--	ch->skb[ch->dma.desc] = netdev_alloc_skb_ip_align(ch->priv->net_dev,
--							  len);
-+	ch->skb[ch->dma.desc] = netdev_alloc_skb_ip_align(priv->net_dev,
-+							  priv->rx_buf_size);
- 	if (!ch->skb[ch->dma.desc]) {
- 		ret = -ENOMEM;
- 		goto skip;
- 	}
- 
--	mapping = dma_map_single(ch->priv->dev, ch->skb[ch->dma.desc]->data,
--				 len, DMA_FROM_DEVICE);
--	if (unlikely(dma_mapping_error(ch->priv->dev, mapping))) {
-+	mapping = dma_map_single(priv->dev, ch->skb[ch->dma.desc]->data,
-+				 priv->rx_buf_size, DMA_FROM_DEVICE);
-+	if (unlikely(dma_mapping_error(priv->dev, mapping))) {
- 		dev_kfree_skb_any(ch->skb[ch->dma.desc]);
- 		ch->skb[ch->dma.desc] = skb;
- 		ret = -ENOMEM;
-@@ -184,7 +195,7 @@ static int xrx200_alloc_skb(struct xrx200_chan *ch)
- 	wmb();
- skip:
- 	ch->dma.desc_base[ch->dma.desc].ctl =
--		LTQ_DMA_OWN | LTQ_DMA_RX_OFFSET(NET_IP_ALIGN) | len;
-+		LTQ_DMA_OWN | LTQ_DMA_RX_OFFSET(NET_IP_ALIGN) | priv->rx_buf_size;
- 
- 	return ret;
- }
-@@ -356,6 +367,7 @@ xrx200_change_mtu(struct net_device *net_dev, int new_mtu)
- 	int ret = 0;
- 
- 	net_dev->mtu = new_mtu;
-+	priv->rx_buf_size = xrx200_buffer_size(new_mtu);
- 
- 	if (new_mtu <= old_mtu)
- 		return ret;
-@@ -375,6 +387,7 @@ xrx200_change_mtu(struct net_device *net_dev, int new_mtu)
- 		ret = xrx200_alloc_skb(ch_rx);
- 		if (ret) {
- 			net_dev->mtu = old_mtu;
-+			priv->rx_buf_size = xrx200_buffer_size(old_mtu);
- 			break;
- 		}
- 		dev_kfree_skb_any(skb);
-@@ -505,7 +518,8 @@ static int xrx200_probe(struct platform_device *pdev)
- 	net_dev->netdev_ops = &xrx200_netdev_ops;
- 	SET_NETDEV_DEV(net_dev, dev);
- 	net_dev->min_mtu = ETH_ZLEN;
--	net_dev->max_mtu = XRX200_DMA_DATA_LEN - VLAN_ETH_HLEN - ETH_FCS_LEN;
-+	net_dev->max_mtu = XRX200_DMA_DATA_LEN - xrx200_max_frame_len(0);
-+	priv->rx_buf_size = xrx200_buffer_size(ETH_DATA_LEN);
- 
- 	/* load the memory ranges */
- 	priv->pmac_reg = devm_platform_get_and_ioremap_resource(pdev, 0, NULL);
--- 
-2.30.2
+Sorry about that!
 
+> > While I have you - I see that you drop my SoB at the end of the merge
+> > message, usually. Should I not put it there?  I put it there because
+> > of something I read in Documentation/process/...  
+> 
+> No, I actually like seeing the sign-off from remote pulls -
+> particularly in the signed tags where they get saved in the git tree
+> anyway (you won't _see_ them with a normal 'git log', but you can see
+> how it's saved off if you do
+> 
+>     git cat-file commit 180f3bcfe3622bb78307dcc4fe1f8f4a717ee0ba
+> 
+> to see the raw commit data).
+> 
+> But I edit them out from the merge message because we haven't
+> standardized on a format for them, and I end up trying to make my
+> merges look fairly consistent (I edit just about all merge messages
+> for whitespace and formatting, as you've probably noticed).
+> 
+> Maybe we should standardize on sign-off messages for merges too, but
+> they really don't have much practical use.
+> 
+> For a patch, the sign-off chain is really important for when some
+> patch trouble happens, so that we can cc all the people involved in
+> merging the patch. And there's obviously the actual copyright part of
+> the sign-off too.
+> 
+> For a merge? Neither of those are really issues. The merge itself
+> doesn't add any new code - the sign-offs should be on the individual
+> commits that do. And if there is a merge problem, the blame for the
+> merge is solidly with the person who merged it, not some kind of
+> "merge chain".
+> 
+> So all the real meat is in the history, and the merge commit is about
+> explaining the high-level "what's going on".
+> 
+> End result: unlike a regular commit, there's not a lot of point for
+> posterity to have a sign-off chain (which would always be just the two
+> ends of the merge anyway). End result: I don't see much real reason to
+> keep the sign-offs in the merge log.
+> 
+> But I _do_ like seeing them in the pull request, because there it's
+> kind of the "super-sign-off" for the commits that I pull, if you see
+> what I mean...
+> 
+> Logical? I don't know. But hopefully the above explains my thinking.
+
+Yup, makes sense, thanks for explaining!
