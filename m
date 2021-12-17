@@ -2,368 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D3E9E47863F
-	for <lists+netdev@lfdr.de>; Fri, 17 Dec 2021 09:34:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB52E478663
+	for <lists+netdev@lfdr.de>; Fri, 17 Dec 2021 09:40:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233826AbhLQIea (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Dec 2021 03:34:30 -0500
-Received: from smtp21.cstnet.cn ([159.226.251.21]:34138 "EHLO cstnet.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231714AbhLQIea (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 17 Dec 2021 03:34:30 -0500
-Received: from localhost.localdomain (unknown [124.16.138.126])
-        by APP-01 (Coremail) with SMTP id qwCowACHjp53S7xhJSbCAw--.25597S2;
-        Fri, 17 Dec 2021 16:34:01 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com,
-        davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        kpsingh@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: [PATCH v2] sfc: potential dereference null pointer of rx_queue->page_ring
-Date:   Fri, 17 Dec 2021 16:33:58 +0800
-Message-Id: <20211217083358.564333-1-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+        id S233947AbhLQIkJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Dec 2021 03:40:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46044 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232353AbhLQIkH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Dec 2021 03:40:07 -0500
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5482CC061747;
+        Fri, 17 Dec 2021 00:40:07 -0800 (PST)
+Received: by mail-pj1-x1044.google.com with SMTP id v16so1637293pjn.1;
+        Fri, 17 Dec 2021 00:40:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=jAkmu0uJQg/B9pO7n5QymGcyVXcAft2zKtbo4iiM1U0=;
+        b=Gh/6WuWm9i8f2qct8kBrqxif8u7YCkAlX6mzWOTbFF8U2Zv68NgG6W+5Is5tbSI963
+         VzdCJ7o7ph6hXLM0jn4b6bzuCCk7++IHiI48vjZ/kKJ/mtRz+8/dxDY3d+LMwYJer/Kb
+         Zh+NONlkAcS5xADFW75arBsBCywwvXc1RIV3jTlRHmWbOBQoTNjxS2GakWe2h/SrHxn0
+         XOm0HlvfQql7VPASG0QLjVFo2dZdeQwoB8Ptnn2g2ScTj60ag4IUQyoYTxUV3GhCd+5t
+         /TJgEu8K3xF4/e5Bp5hGUwOvhCW+KcWlmgL9qlO96vsNMqcE276WSPR2GvXXV5BAGUEq
+         b5Sw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=jAkmu0uJQg/B9pO7n5QymGcyVXcAft2zKtbo4iiM1U0=;
+        b=Joi/kBNRIC9oUMAEqvoVhTJcLmdHNmbKl7O8WkbWs9uO6oFkXBiBZe2kBI55rucnmn
+         fVqurxYrQKyxL0GQDA2mmORKH8PxV4wrzrhlrbR8l4O3bIk56xevrkY1ekJh/C7yalOu
+         /nxvWxtsvzpymMer3Nj9WyR3CKyS/qbqPZjig7VDLmGw9Di/GSRqt0QRAhC5TiTzgt18
+         OmqNu0U4/JZJKrnWyk4cdPu5yyHjtRZI617HEjJJ0jk13boq8Lll8LazGBE23NGYqtKs
+         D08v/DMPozqYCpYEkqqpKejl+cPlsvqim+hL2HaRbob1AIRzY+iBLrLTVN7vdynJewqZ
+         55ig==
+X-Gm-Message-State: AOAM532yrMcfK/S6nELWS3dqShSaeqBlNXGJ+trA+l3nE/BMefdXd1py
+        f0nkl0jpPvZjJEDNjoDdrDA=
+X-Google-Smtp-Source: ABdhPJxuNuwX+LGwDgRD1tZJkgWulxgcZb2riEcvuuNzL2IVRHfP13vo9Copqms9BgJrRzovwFRMQg==
+X-Received: by 2002:a17:902:8c94:b0:148:a2e8:2c39 with SMTP id t20-20020a1709028c9400b00148a2e82c39mr2098279plo.136.1639730406752;
+        Fri, 17 Dec 2021 00:40:06 -0800 (PST)
+Received: from localhost ([2405:201:6014:d064:3d4e:6265:800c:dc84])
+        by smtp.gmail.com with ESMTPSA id p20sm8622146pfw.96.2021.12.17.00.40.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 17 Dec 2021 00:40:06 -0800 (PST)
+Date:   Fri, 17 Dec 2021 14:10:03 +0530
+From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Florian Westphal <fw@strlen.de>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+Subject: Re: [PATCH bpf-next v4 07/10] net/netfilter: Add unstable CT lookup
+ helpers for XDP and TC-BPF
+Message-ID: <20211217084003.dr2gv6hismpyib3y@apollo.legion>
+References: <20211217015031.1278167-1-memxor@gmail.com>
+ <20211217015031.1278167-8-memxor@gmail.com>
+ <YbxHy7yLwMQ7L0mN@salvia>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: qwCowACHjp53S7xhJSbCAw--.25597S2
-X-Coremail-Antispam: 1UD129KBjvJXoW3Zw18KFW7CF13KFy3Gr4rXwb_yoWkWw17pa
-        y2yrW7ur4Sqan8Ww1xGrZ7uF45trn5t342gryfK34Fvr98Ar1fZF1kt3Wj9rZ8JrW8Gr4a
-        yr12yan7Ga13JrJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUvK14x267AKxVW5JVWrJwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26ryj6F1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4j
-        6r4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
-        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
-        I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
-        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628v
-        n2kIc2xKxwCY02Avz4vE14v_GFyl42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr
-        0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY
-        17CE14v26r4a6rW5MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcV
-        C0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVWrZr1j6s0DMIIF
-        0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxh
-        VjvjDU0xZFpf9x0JUf9NsUUUUU=
-X-Originating-IP: [124.16.138.126]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YbxHy7yLwMQ7L0mN@salvia>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The return value of kcalloc() needs to be checked.
-To avoid dereference of null pointer in case of the failure of alloc.
-Therefore, it might be better to change the return type of
-efx_init_rx_recycle_ring(), efx_init_rx_queue(), efx_start_channels(),
-efx_start_datapath() and efx_start_all(), and return -ENOMEM when alloc
-fails and return 0 the others.
-Also, efx_net_open(), efx_pm_thaw(), efx_realloc_channels(),
-efx_reset_up() and efx_change_mtu() should deal with the return value of
-efx_start_all().
-By the way, I have no idea where the code come from, which does not
-mention in the commit message.
-But I find the same bug in another two places in the ethernet and I will
-then commit the patches to repair them.
-The Fixes tag below is the one I guess.
+On Fri, Dec 17, 2021 at 01:48:19PM IST, Pablo Neira Ayuso wrote:
+> On Fri, Dec 17, 2021 at 07:20:28AM +0530, Kumar Kartikeya Dwivedi wrote:
+> > This change adds conntrack lookup helpers using the unstable kfunc call
+> > interface for the XDP and TC-BPF hooks. The primary usecase is
+> > implementing a synproxy in XDP, see Maxim's patchset at [0].
+> >
+> > Export get_net_ns_by_id as nf_conntrack needs to call it.
+> >
+> > Note that we search for acquire, release, and null returning kfuncs in
+> > the intersection of those sets and main set.
+> >
+> > This implies that the kfunc_btf_id_list acq_set, rel_set, null_set may
+> > contain BTF ID not in main set, this is explicitly allowed and
+> > recommended (to save on definining more and more sets), since
+> > check_kfunc_call verifier operation would filter out the invalid BTF ID
+> > fairly early, so later checks for acquire, release, and ret_type_null
+> > kfunc will only consider allowed BTF IDs for that program that are
+> > allowed in main set. This is why the nf_conntrack_acq_ids set has BTF
+> > IDs for both xdp and tc hook kfuncs.
+> >
+> >   [0]: https://lore.kernel.org/bpf/20211019144655.3483197-1-maximmi@nvidia.com
+> >
+> > Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+> > ---
+> >  include/linux/btf.h               |   2 +
+> >  kernel/bpf/btf.c                  |   1 +
+> >  net/core/filter.c                 |  24 +++
+> >  net/core/net_namespace.c          |   1 +
+> >  net/netfilter/nf_conntrack_core.c | 278 ++++++++++++++++++++++++++++++
+>
+> Toke proposed to move it to net/netfilter/nf_conntrack_bpf.c
 
-Fixes: 5a6681e22c14 ("sfc: separate out SFC4000 ("Falcon") support into new sfc-falcon driver")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
----
-Changelog:
+Ugh, sorry. I think I completely missed that mail, but I see it now.
 
-v1 -> v2
+I'll wait for this review cycle to conclude, and then put the code in its own
+file in the next version.
 
-*Change 1. Casade return -ENOMEM when alloc fails and deal with the
-error.
----
- drivers/net/ethernet/sfc/ef100_netdev.c |  4 +++-
- drivers/net/ethernet/sfc/efx.c          |  9 ++++++--
- drivers/net/ethernet/sfc/efx_channels.c | 14 ++++++++++---
- drivers/net/ethernet/sfc/efx_channels.h |  2 +-
- drivers/net/ethernet/sfc/efx_common.c   | 28 ++++++++++++++++++-------
- drivers/net/ethernet/sfc/efx_common.h   |  2 +-
- drivers/net/ethernet/sfc/rx_common.c    | 14 ++++++++++---
- drivers/net/ethernet/sfc/rx_common.h    |  2 +-
- 8 files changed, 56 insertions(+), 19 deletions(-)
+Thanks.
 
-diff --git a/drivers/net/ethernet/sfc/ef100_netdev.c b/drivers/net/ethernet/sfc/ef100_netdev.c
-index 67fe44db6b61..aaba36e40446 100644
---- a/drivers/net/ethernet/sfc/ef100_netdev.c
-+++ b/drivers/net/ethernet/sfc/ef100_netdev.c
-@@ -162,7 +162,9 @@ static int ef100_net_open(struct net_device *net_dev)
- 	if (rc)
- 		goto fail;
- 
--	efx_start_all(efx);
-+	rc = efx_start_all(efx);
-+	if (rc)
-+		goto fail;
- 
- 	/* Link state detection is normally event-driven; we have
- 	 * to poll now because we could have missed a change
-diff --git a/drivers/net/ethernet/sfc/efx.c b/drivers/net/ethernet/sfc/efx.c
-index c746ca7235f1..874301cda686 100644
---- a/drivers/net/ethernet/sfc/efx.c
-+++ b/drivers/net/ethernet/sfc/efx.c
-@@ -540,7 +540,10 @@ int efx_net_open(struct net_device *net_dev)
- 	 * before the monitor starts running */
- 	efx_link_status_changed(efx);
- 
--	efx_start_all(efx);
-+	rc = efx_start_all(efx);
-+	if (rc)
-+		return rc;
-+
- 	if (efx->state == STATE_DISABLED || efx->reset_pending)
- 		netif_device_detach(efx->net_dev);
- 	efx_selftest_async_start(efx);
-@@ -1224,7 +1227,9 @@ static int efx_pm_thaw(struct device *dev)
- 		efx_mcdi_port_reconfigure(efx);
- 		mutex_unlock(&efx->mac_lock);
- 
--		efx_start_all(efx);
-+		rc = efx_start_all(efx);
-+		if (rc)
-+			goto fail;
- 
- 		efx_device_attach_if_not_resetting(efx);
- 
-diff --git a/drivers/net/ethernet/sfc/efx_channels.c b/drivers/net/ethernet/sfc/efx_channels.c
-index bb48a139dd15..451f7c6a7680 100644
---- a/drivers/net/ethernet/sfc/efx_channels.c
-+++ b/drivers/net/ethernet/sfc/efx_channels.c
-@@ -837,7 +837,10 @@ int efx_realloc_channels(struct efx_nic *efx, u32 rxq_entries, u32 txq_entries)
- 			  "unable to restart interrupts on channel reallocation\n");
- 		efx_schedule_reset(efx, RESET_TYPE_DISABLE);
- 	} else {
--		efx_start_all(efx);
-+		rc = efx_start_all(efx);
-+		if (rc)
-+			goto rollback;
-+
- 		efx_device_attach_if_not_resetting(efx);
- 	}
- 	return rc;
-@@ -1055,11 +1058,12 @@ void efx_disable_interrupts(struct efx_nic *efx)
- 	efx->type->irq_disable_non_ev(efx);
- }
- 
--void efx_start_channels(struct efx_nic *efx)
-+int efx_start_channels(struct efx_nic *efx)
- {
- 	struct efx_tx_queue *tx_queue;
- 	struct efx_rx_queue *rx_queue;
- 	struct efx_channel *channel;
-+	int ret;
- 
- 	efx_for_each_channel(channel, efx) {
- 		efx_for_each_channel_tx_queue(tx_queue, channel) {
-@@ -1068,7 +1072,10 @@ void efx_start_channels(struct efx_nic *efx)
- 		}
- 
- 		efx_for_each_channel_rx_queue(rx_queue, channel) {
--			efx_init_rx_queue(rx_queue);
-+			ret = efx_init_rx_queue(rx_queue);
-+			if (ret)
-+				return ret;
-+
- 			atomic_inc(&efx->active_queues);
- 			efx_stop_eventq(channel);
- 			efx_fast_push_rx_descriptors(rx_queue, false);
-@@ -1077,6 +1084,7 @@ void efx_start_channels(struct efx_nic *efx)
- 
- 		WARN_ON(channel->rx_pkt_n_frags);
- 	}
-+	return 0;
- }
- 
- void efx_stop_channels(struct efx_nic *efx)
-diff --git a/drivers/net/ethernet/sfc/efx_channels.h b/drivers/net/ethernet/sfc/efx_channels.h
-index d77ec1f77fb1..da38b6be5a45 100644
---- a/drivers/net/ethernet/sfc/efx_channels.h
-+++ b/drivers/net/ethernet/sfc/efx_channels.h
-@@ -42,7 +42,7 @@ void efx_remove_channel(struct efx_channel *channel);
- void efx_remove_channels(struct efx_nic *efx);
- void efx_fini_channels(struct efx_nic *efx);
- struct efx_channel *efx_copy_channel(const struct efx_channel *old_channel);
--void efx_start_channels(struct efx_nic *efx);
-+int efx_start_channels(struct efx_nic *efx);
- void efx_stop_channels(struct efx_nic *efx);
- 
- void efx_init_napi_channel(struct efx_channel *channel);
-diff --git a/drivers/net/ethernet/sfc/efx_common.c b/drivers/net/ethernet/sfc/efx_common.c
-index de797e1ac5a9..0b5fec7769ea 100644
---- a/drivers/net/ethernet/sfc/efx_common.c
-+++ b/drivers/net/ethernet/sfc/efx_common.c
-@@ -309,7 +309,10 @@ int efx_change_mtu(struct net_device *net_dev, int new_mtu)
- 	efx_mac_reconfigure(efx, true);
- 	mutex_unlock(&efx->mac_lock);
- 
--	efx_start_all(efx);
-+	rc = efx_start_all(efx);
-+	if (rc)
-+		return rc;
-+
- 	efx_device_attach_if_not_resetting(efx);
- 	return 0;
- }
-@@ -361,11 +364,12 @@ void efx_start_monitor(struct efx_nic *efx)
-  * to propagate configuration changes (mtu, checksum offload), or
-  * to clear hardware error conditions
-  */
--static void efx_start_datapath(struct efx_nic *efx)
-+static int efx_start_datapath(struct efx_nic *efx)
- {
- 	netdev_features_t old_features = efx->net_dev->features;
- 	bool old_rx_scatter = efx->rx_scatter;
- 	size_t rx_buf_len;
-+	int ret;
- 
- 	/* Calculate the rx buffer allocation parameters required to
- 	 * support the current MTU, including padding for header
-@@ -431,12 +435,15 @@ static void efx_start_datapath(struct efx_nic *efx)
- 	efx->txq_wake_thresh = efx->txq_stop_thresh / 2;
- 
- 	/* Initialise the channels */
--	efx_start_channels(efx);
-+	ret = efx_start_channels(efx);
-+	if (ret)
-+		return ret;
- 
- 	efx_ptp_start_datapath(efx);
- 
- 	if (netif_device_present(efx->net_dev))
- 		netif_tx_wake_all_queues(efx->net_dev);
-+	return 0;
- }
- 
- static void efx_stop_datapath(struct efx_nic *efx)
-@@ -524,8 +531,9 @@ static void efx_stop_port(struct efx_nic *efx)
-  * is safe to call multiple times, so long as the NIC is not disabled.
-  * Requires the RTNL lock.
-  */
--void efx_start_all(struct efx_nic *efx)
-+int efx_start_all(struct efx_nic *efx)
- {
-+	int ret;
- 	EFX_ASSERT_RESET_SERIALISED(efx);
- 	BUG_ON(efx->state == STATE_DISABLED);
- 
-@@ -534,10 +542,12 @@ void efx_start_all(struct efx_nic *efx)
- 	 */
- 	if (efx->port_enabled || !netif_running(efx->net_dev) ||
- 	    efx->reset_pending)
--		return;
-+		return 0;
- 
- 	efx_start_port(efx);
--	efx_start_datapath(efx);
-+	ret = efx_start_datapath(efx);
-+	if (ret)
-+		return ret;
- 
- 	/* Start the hardware monitor if there is one */
- 	efx_start_monitor(efx);
-@@ -557,6 +567,8 @@ void efx_start_all(struct efx_nic *efx)
- 		efx->type->update_stats(efx, NULL, NULL);
- 		spin_unlock_bh(&efx->stats_lock);
- 	}
-+
-+	return 0;
- }
- 
- /* Quiesce the hardware and software data path, and regular activity
-@@ -786,7 +798,9 @@ int efx_reset_up(struct efx_nic *efx, enum reset_type method, bool ok)
- 
- 	mutex_unlock(&efx->mac_lock);
- 
--	efx_start_all(efx);
-+	rc = efx_start_all(efx);
-+	if (rc)
-+		goto fail;
- 
- 	if (efx->type->udp_tnl_push_ports)
- 		efx->type->udp_tnl_push_ports(efx);
-diff --git a/drivers/net/ethernet/sfc/efx_common.h b/drivers/net/ethernet/sfc/efx_common.h
-index 65513fd0cf6c..adf84a64760b 100644
---- a/drivers/net/ethernet/sfc/efx_common.h
-+++ b/drivers/net/ethernet/sfc/efx_common.h
-@@ -28,7 +28,7 @@ void efx_fini_struct(struct efx_nic *efx);
- void efx_link_clear_advertising(struct efx_nic *efx);
- void efx_link_set_wanted_fc(struct efx_nic *efx, u8);
- 
--void efx_start_all(struct efx_nic *efx);
-+int efx_start_all(struct efx_nic *efx);
- void efx_stop_all(struct efx_nic *efx);
- 
- void efx_net_stats(struct net_device *net_dev, struct rtnl_link_stats64 *stats);
-diff --git a/drivers/net/ethernet/sfc/rx_common.c b/drivers/net/ethernet/sfc/rx_common.c
-index 68fc7d317693..b7d974e25a43 100644
---- a/drivers/net/ethernet/sfc/rx_common.c
-+++ b/drivers/net/ethernet/sfc/rx_common.c
-@@ -131,7 +131,7 @@ void efx_discard_rx_packet(struct efx_channel *channel,
- 	efx_free_rx_buffers(rx_queue, rx_buf, n_frags);
- }
- 
--static void efx_init_rx_recycle_ring(struct efx_rx_queue *rx_queue)
-+static int efx_init_rx_recycle_ring(struct efx_rx_queue *rx_queue)
- {
- 	unsigned int bufs_in_recycle_ring, page_ring_size;
- 	struct efx_nic *efx = rx_queue->efx;
-@@ -150,7 +150,11 @@ static void efx_init_rx_recycle_ring(struct efx_rx_queue *rx_queue)
- 					    efx->rx_bufs_per_page);
- 	rx_queue->page_ring = kcalloc(page_ring_size,
- 				      sizeof(*rx_queue->page_ring), GFP_KERNEL);
-+	if (!rx_queue->page_ring)
-+		return -ENOMEM;
-+
- 	rx_queue->page_ptr_mask = page_ring_size - 1;
-+	return 0;
- }
- 
- static void efx_fini_rx_recycle_ring(struct efx_rx_queue *rx_queue)
-@@ -222,7 +226,7 @@ int efx_probe_rx_queue(struct efx_rx_queue *rx_queue)
- 	return rc;
- }
- 
--void efx_init_rx_queue(struct efx_rx_queue *rx_queue)
-+int efx_init_rx_queue(struct efx_rx_queue *rx_queue)
- {
- 	unsigned int max_fill, trigger, max_trigger;
- 	struct efx_nic *efx = rx_queue->efx;
-@@ -236,7 +240,9 @@ void efx_init_rx_queue(struct efx_rx_queue *rx_queue)
- 	rx_queue->notified_count = 0;
- 	rx_queue->removed_count = 0;
- 	rx_queue->min_fill = -1U;
--	efx_init_rx_recycle_ring(rx_queue);
-+	rc = efx_init_rx_recycle_ring(rx_queue);
-+	if (rc)
-+		return rc;
- 
- 	rx_queue->page_remove = 0;
- 	rx_queue->page_add = rx_queue->page_ptr_mask + 1;
-@@ -275,6 +281,8 @@ void efx_init_rx_queue(struct efx_rx_queue *rx_queue)
- 
- 	/* Set up RX descriptor ring */
- 	efx_nic_init_rx(rx_queue);
-+
-+	return 0;
- }
- 
- void efx_fini_rx_queue(struct efx_rx_queue *rx_queue)
-diff --git a/drivers/net/ethernet/sfc/rx_common.h b/drivers/net/ethernet/sfc/rx_common.h
-index 207ccd8ba062..16133d3f46b2 100644
---- a/drivers/net/ethernet/sfc/rx_common.h
-+++ b/drivers/net/ethernet/sfc/rx_common.h
-@@ -47,7 +47,7 @@ void efx_discard_rx_packet(struct efx_channel *channel,
- 			   unsigned int n_frags);
- 
- int efx_probe_rx_queue(struct efx_rx_queue *rx_queue);
--void efx_init_rx_queue(struct efx_rx_queue *rx_queue);
-+int efx_init_rx_queue(struct efx_rx_queue *rx_queue);
- void efx_fini_rx_queue(struct efx_rx_queue *rx_queue);
- void efx_remove_rx_queue(struct efx_rx_queue *rx_queue);
- void efx_destroy_rx_queue(struct efx_rx_queue *rx_queue);
--- 
-2.25.1
-
+--
+Kartikeya
