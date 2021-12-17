@@ -2,126 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F366479197
-	for <lists+netdev@lfdr.de>; Fri, 17 Dec 2021 17:40:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BF434791AA
+	for <lists+netdev@lfdr.de>; Fri, 17 Dec 2021 17:42:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239109AbhLQQkv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Dec 2021 11:40:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46358 "EHLO
+        id S239216AbhLQQmp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Dec 2021 11:42:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230396AbhLQQku (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Dec 2021 11:40:50 -0500
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9462CC061574;
-        Fri, 17 Dec 2021 08:40:50 -0800 (PST)
-Received: by mail-yb1-xb29.google.com with SMTP id e136so8134552ybc.4;
-        Fri, 17 Dec 2021 08:40:50 -0800 (PST)
+        with ESMTP id S235796AbhLQQmp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Dec 2021 11:42:45 -0500
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C92C8C061574;
+        Fri, 17 Dec 2021 08:42:44 -0800 (PST)
+Received: by mail-yb1-xb2a.google.com with SMTP id 131so8079085ybc.7;
+        Fri, 17 Dec 2021 08:42:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=VuKy97n+pvrEyUjjZtn/z+TPlDe4v1Gy7paYi8bS/OU=;
-        b=jGDSmYtynlqbfI6TP8Mmls1coEQw7yJ3JaKCbgoeinwDynTv09pmZGJne2SMbiT1N8
-         oLE6ne/9pf0INlQhXo/1pVCFC3hyFaAPFFzmNbgtE2l2Lrs/Df50zS/XpbayFQAplQ/l
-         s0OhPIQ4dGYBLMhgzGsBc7FqV2U8i0F3qfT0vKmRR3cL2GdmtlHHMO4KWlCbP9qxL66i
-         2dJIwWmatqouSWHHj6E/Gof3WCE1ITfV9BEwn2o5Niz2BPmNRlY+jQlxShXmtwhMjWOH
-         lQSNiu7Pu1aeJZcFF63ZfxO3o1UgXI01qfq/fxb+r8dkyce7KR33JxrMKZAR43OE2t8V
-         jyJg==
+        bh=NuomcOiylsxyCYewcBs5cwYFl3sDS7oGrjyGq07kCFk=;
+        b=SSnBoElEP/qVPmxVCiWiNQZDq2JNIj3TlSMHtYw2hV0V0NB2c6JcjJREuJb2GAV25A
+         sI7FwCRusa61jOHFfYOX+OfL2sbWAuzVpBcQHJNpNaioYi7qHi71hCzETw96Duq5NahM
+         KWKm034T8GzX9AIG3pwo4yS3bs8mfpCen0m2iFYYxVOLgV7h5EMsyQSlsoY+KbT3FSUD
+         CLA2yWG3bKvmo5wGSPJRAFeVIGyYYA7l8SBo7ShQospFoYcHJq/BQxoKv9I5UoD3LZPN
+         d22BElorS9ncNWv0eLlt6BpCF5IaY4f/2P8gS+41QThl602pncEyccj2eO6TIVyPNXb2
+         GIiw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=VuKy97n+pvrEyUjjZtn/z+TPlDe4v1Gy7paYi8bS/OU=;
-        b=AMMFklos2YJz08DHyr62rLN2neR0j0kv8ZrMU8HjAQujgAqZQgl57+X7Ugq/rvbWaB
-         ouTbuwGyCpXdR+FXtw17TbTP9qVnjiJE1ANJnxXghYPPYDPm0m/Chdv3gWCJQgbY3pBQ
-         QQEkS3x951pKOEIjglZjhkLblfBdBMAo/LYRp3aDPe6ivLo2LlUGk2jIckZC+RhDxRjw
-         3EtKfb8QZ+AJOPM5RY/4nAVwI9SWmvytXpVBeXGz1ewW8xI7wTQ8NqVuCmGObOMlubfV
-         M+al33Vr3IN+e0p0S8jbMQOqlYYbwUNd5cb6HWOqAnUvGE1A3lt63W4kqEETXwloX/1D
-         YiDw==
-X-Gm-Message-State: AOAM532FLrsHqZoTLWlDLlf3On8TPnu4VCq6Jx7Gr4odiSRjVVSQmLEa
-        BvCVbVhuamREWxQ+LQX8YCwYe13dkBcGvjoRMzHVEDAjxMISEA==
-X-Google-Smtp-Source: ABdhPJzXsLZIbf31G51Rgfg9SNwXjGvtFAEG48ip1lMq18fCEY79SBz7u0Jv9fZfDGPkw4LyFFUUtFnQgOFH4QJZ858=
-X-Received: by 2002:a25:4cc5:: with SMTP id z188mr5492967yba.248.1639759249767;
- Fri, 17 Dec 2021 08:40:49 -0800 (PST)
+        bh=NuomcOiylsxyCYewcBs5cwYFl3sDS7oGrjyGq07kCFk=;
+        b=g+iFhyZKtZfmftfhH5S5FcJKALVBaAQQwCiTwdE6i+JOLMNLy1SD1Rdog4ZRPZUu/c
+         OlVjRchM8bcgaUUvWPa8q2FLTRKkzmSxhguaXs6k0y4TMGYenfSkUgoU9cu31bBJ6gcE
+         m7ookyYtkAmdXetPa6YGwL9yJ6mEyYQOMh1Ool5b+/K3xvl6uCsSiNNPhyHRBecKScMX
+         0/aeLXzY3eW/QKY7Lawwn7jYxx7ny8rglrr5stSLWZk8yI+ARxJiRn1ccI7DcbgQGkXC
+         oXTQqLYrfSk0U6aDDk3SUd804+WzPdYqGdQF3xJdRnaNkbClS+vlhIK0seVZZ/GE302p
+         1CkA==
+X-Gm-Message-State: AOAM533+rKj7EiXZaMRL0QORhwnuGqvLh4kHXY9y5kVjbGBTWwUiynSQ
+        qt7GScJeAV+/mIGh9RDYfjO8PzMSIOUbD8r4D28=
+X-Google-Smtp-Source: ABdhPJzRSCbDsa0g1flE49MkbM7YNoYsL6KFhNDq/vehQIv2zVgY6SpZ9O7tbAcbWqU6Rwdi8G5fJUd8z23UOCgldww=
+X-Received: by 2002:a25:3c9:: with SMTP id 192mr5483302ybd.766.1639759363594;
+ Fri, 17 Dec 2021 08:42:43 -0800 (PST)
 MIME-Version: 1.0
-References: <20211217015031.1278167-1-memxor@gmail.com> <20211217093612.wfsftv4kuqzotkmn@apollo.legion>
-In-Reply-To: <20211217093612.wfsftv4kuqzotkmn@apollo.legion>
+References: <20211215060102.3793196-1-song@kernel.org> <CAEf4BzaFYPWCycTx+pHefhRHgD2n1WPyy9-L9TDJ8rHyGTaQSQ@mail.gmail.com>
+ <DC857926-ECDA-4DF0-8058-C53DD15226AE@fb.com>
+In-Reply-To: <DC857926-ECDA-4DF0-8058-C53DD15226AE@fb.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 17 Dec 2021 08:40:38 -0800
-Message-ID: <CAEf4BzZzd7gzky1CJAFgG4m_VQ0nS05J_kSgEkcnBQiY0uuNOQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v4 00/10] Introduce unstable CT lookup helpers
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        netfilter-devel@vger.kernel.org,
+Date:   Fri, 17 Dec 2021 08:42:32 -0800
+Message-ID: <CAEf4BzbfqSGHCbG6-EC=DLd=yFCwDiKEFWMtG4hbY78dm2OA=Q@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 0/7] bpf_prog_pack allocator
+To:     Song Liu <songliubraving@fb.com>
+Cc:     Song Liu <song@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Maxim Mikityanskiy <maximmi@nvidia.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+        Kernel Team <Kernel-team@fb.com>,
+        Peter Ziljstra <peterz@infradead.org>, X86 ML <x86@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 17, 2021 at 1:36 AM Kumar Kartikeya Dwivedi
-<memxor@gmail.com> wrote:
+On Thu, Dec 16, 2021 at 5:53 PM Song Liu <songliubraving@fb.com> wrote:
 >
-> On Fri, Dec 17, 2021 at 07:20:21AM IST, Kumar Kartikeya Dwivedi wrote:
-> > This series adds unstable conntrack lookup helpers using BPF kfunc support.  The
-> > patch adding the lookup helper is based off of Maxim's recent patch to aid in
-> > rebasing their series on top of this, all adjusted to work with module kfuncs [0].
-> >
-> >   [0]: https://lore.kernel.org/bpf/20211019144655.3483197-8-maximmi@nvidia.com
-> >
-> > To enable returning a reference to struct nf_conn, the verifier is extended to
-> > support reference tracking for PTR_TO_BTF_ID, and kfunc is extended with support
-> > for working as acquire/release functions, similar to existing BPF helpers. kfunc
-> > returning pointer (limited to PTR_TO_BTF_ID in the kernel) can also return a
-> > PTR_TO_BTF_ID_OR_NULL now, typically needed when acquiring a resource can fail.
-> > kfunc can also receive PTR_TO_CTX and PTR_TO_MEM (with some limitations) as
-> > arguments now. There is also support for passing a mem, len pair as argument
-> > to kfunc now. In such cases, passing pointer to unsized type (void) is also
-> > permitted.
-> >
-> > Please see individual commits for details.
-> >
-> > Note: BPF CI needs to add the following to config to test the set. I did update
-> > the selftests config in patch 8, but not sure if that is enough.
-> >
-> >       CONFIG_NETFILTER=y
-> >       CONFIG_NF_DEFRAG_IPV4=y
-> >       CONFIG_NF_DEFRAG_IPV6=y
-> >       CONFIG_NF_CONNTRACK=y
-> >
 >
-> Hm, so this is not showing up in BPF CI, is it some mistake from my side? The
-> last couple of versions produced build time warnings in Patchwork, that I fixed,
-> which I suspected was the main cause.
+>
+> > On Dec 16, 2021, at 12:06 PM, Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
+> >
+> > On Tue, Dec 14, 2021 at 10:01 PM Song Liu <song@kernel.org> wrote:
+> >>
+> >> Changes v1 => v2:
+> >> 1. Use text_poke instead of writing through linear mapping. (Peter)
+> >> 2. Avoid making changes to non-x86_64 code.
+> >>
+> >> Most BPF programs are small, but they consume a page each. For systems
+> >> with busy traffic and many BPF programs, this could also add significant
+> >> pressure to instruction TLB.
+> >>
+> >> This set tries to solve this problem with customized allocator that pack
+> >> multiple programs into a huge page.
+> >>
+> >> Patches 1-5 prepare the work. Patch 6 contains key logic of the allocator.
+> >> Patch 7 uses this allocator in x86_64 jit compiler.
+> >>
+> >
+> > There are test failures, please see [0]. But I was also wondering if
+> > there could be an explicit selftest added to validate that all this
+> > huge page machinery is actually activated and working as expected?
+>
+> We can enable some debug option that dumps the page table. Then from the
+> page table, we can confirm the programs are running on a huge page. This
+> only works on x86_64 though. WDYT?
+>
 
-Not a mistake, for BPF CI there are separate configs that need to be
-updated manually:
-  - https://github.com/kernel-patches/vmtest/blob/master/.github/actions/vmtest/latest.config
-for kernel patches CI
-  - https://github.com/libbpf/libbpf/tree/master/travis-ci/vmtest/configs
-(there is x86-64 and s390x configs) for libbpf CI
+I don't know what exactly is involved, so it's hard to say. Ideally
+whatever we do doesn't complicate our CI setup. Can we use BPF tracing
+magic to check this from inside the kernel somehow?
 
+> Thanks,
+> Song
 >
-> There's still one coming from the last patch, but based on [0], I am not sure
-> whether I should be doing things any differently (and if I do fix it, it also
-> needs to be done for the functions added before). The warnings are from the 11
-> new kfuncs I added in net/bpf/test_run.c, for their missing declarations.
 >
-> Comments?
+> >
+> >  [0] https://github.com/kernel-patches/bpf/runs/4530372387?check_suite_focus=true
+> >
+> >> Song Liu (7):
+> >>  x86/Kconfig: select HAVE_ARCH_HUGE_VMALLOC with HAVE_ARCH_HUGE_VMAP
+> >>  bpf: use bytes instead of pages for bpf_jit_[charge|uncharge]_modmem
+> >>  bpf: use size instead of pages in bpf_binary_header
+> >>  bpf: add a pointer of bpf_binary_header to bpf_prog
+> >>  x86/alternative: introduce text_poke_jit
+> >>  bpf: introduce bpf_prog_pack allocator
+> >>  bpf, x86_64: use bpf_prog_pack allocator
+> >>
+> >> arch/x86/Kconfig                     |   1 +
+> >> arch/x86/include/asm/text-patching.h |   1 +
+> >> arch/x86/kernel/alternative.c        |  28 ++++
+> >> arch/x86/net/bpf_jit_comp.c          |  93 ++++++++++--
+> >> include/linux/bpf.h                  |   4 +-
+> >> include/linux/filter.h               |  23 ++-
+> >> kernel/bpf/core.c                    | 213 ++++++++++++++++++++++++---
+> >> kernel/bpf/trampoline.c              |   6 +-
+> >> 8 files changed, 328 insertions(+), 41 deletions(-)
+> >>
+> >> --
+> >> 2.30.2
 >
-> [0]: https://lore.kernel.org/bpf/20200326235426.ei6ae2z5ek6uq3tt@ast-mbp
->
-> > [...]
->
-> --
-> Kartikeya
