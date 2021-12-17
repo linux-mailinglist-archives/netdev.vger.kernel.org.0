@@ -2,197 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D8A624792F5
-	for <lists+netdev@lfdr.de>; Fri, 17 Dec 2021 18:40:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B4CC94792FC
+	for <lists+netdev@lfdr.de>; Fri, 17 Dec 2021 18:42:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237663AbhLQRkP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Dec 2021 12:40:15 -0500
-Received: from mail-eopbgr140057.outbound.protection.outlook.com ([40.107.14.57]:15233
-        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
+        id S238142AbhLQRmr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Dec 2021 12:42:47 -0500
+Received: from mail-am6eur05on2062.outbound.protection.outlook.com ([40.107.22.62]:6476
+        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230326AbhLQRkP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 17 Dec 2021 12:40:15 -0500
+        id S229694AbhLQRmr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 17 Dec 2021 12:42:47 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ki1y4bwksxf/uTAQUKXN6E+Fkw01S7XGZslDFsWFDR+wo6Q16UfqsWU1b9o8omRLqkcxdCXZbMwa9zck2u0Ca3765NeqSfOTBSEvfo2E3jn84Vw0YVh5T5WKicu0/ndVfm4r5B2cidnmAI/PB6UKLLipinTLxR0PpzfzW3hlKe4LxlRQENihbJy0jvtczNw+GZ5NG7OgpheP7BW7XzI5aPJlq3PTStm1MRTdXjgIiThK++xHGmM0RFxDkrZnUcFVMQQuyfnB1+1jueLpJ+fAvcSKIkffTCD25/aVTwgRR5NVyK0iTDbUQ9iEeJmK8w9EnwCinmq/CLU5MDLcoIHrTA==
+ b=DIOly2OTJ/9CUFJQWANcKGoXmiOtVWE/SK1F3AEAg2WjykJhDHNQvv7bAp98+NgPClMAdPPJ37/UePRyGlJQPs36Sblgg9KnCNw/3vMk8962vb0ljIOFOTRKonrQZuEvIqUCAcQsPhKhexCOAzYr/tbDmHbcqewofUOEeXYH+73rUoioHkwMBJfo5o9T8xJbPlvwzlhjGSFYS0taBlBYeiKCYSo5swi7mX8HGpcsFKVBrrzrTLx7NSMY833NnZ+/OArMIbVbpFhuyt5yEEom/mS+qqQlJbAJfuxXNBsSFMJtx/eO3zB9ZHt8xba05D0bc2VA5xvXmsyHTaLj3/lIwg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=AKFq1bgWeBJHiWpPBHZGGucTEqZHY+N3iIo8YxWO/+M=;
- b=joShVOsWuyfjpCcD0K7kYtVJpXdVTW0HvrnIAVfOIDUS3oRmrABB+rbLPfpsymMJBeeGGt63eT9fgJAcXBcl9ep1UxM41LBO/hdAyQ7iiqTJA8SNPb4CJKhkXq7ZH25hKQgwcO81GC7dEXco63e3qX1g+cbUeALT746KLaUorBKcKX77kQLEg0dqbDWWr5DDTMXe4+HYngbIPfgAF0tOMrNM71t55KPGRbdF9Xk7vQ8cUNO3UGErZSYkNK2wz3yluML/IWCnfCKhKWabrH2E1HxJKUZpTkpst1ojSemWjc/opSDZTjOkWv3TEI6qfbp0VOUXk386p1teeUKYF0RDjA==
+ bh=6A7cQN2tFBrg5zmhnNVaYTKH25VoZFa2CclqdWmOU5U=;
+ b=MMYWwkuJw2t1k8b0Glk7ueGxFXTEjs7MaOodUXvdgNqo60PyoUM0u5s0Zbau9/O2OZUkQ+odzPadbpZmqEnc/8ctxcq+bPJ8hmqalQQ2YoVBRrLkH8nVVYQsj7oDG7eoLJy8fHAX8QxYbo40hrIGFeXfV3b3TFfEcmHTboRiSpPaIuxdvLrTr2imsjL4N5Gmp3yVR9hw1ESu3WKp6g14MQ03e/Nyzoq2WYDeRrYu2Bz6RU+B+aTdXwLvc/LTyF/2AzxUBDcjC/dlwHOkJalpAu9R6a916SWu11t05ybwtDMoyDNdl/uXgnYezx6PuqUzoUZKnpvJJRDXCk8AYCzHYg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
+ dkim=pass header.d=seco.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=secospa.onmicrosoft.com; s=selector2-secospa-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=AKFq1bgWeBJHiWpPBHZGGucTEqZHY+N3iIo8YxWO/+M=;
- b=OuS4YtOS8NQvwYWAYQU9MjqTqhytqJRl+FM+cWaAOCRkGNq0ETLBL7aQaSfJcLrt/tFnvLh35ixu0cpqyNLjjmjvkHvICqETNlpcUeueDGfFd+A0Q3a1uSlbA2tOWT4tmOJd/4lyz7Gqi3XwehKCA1vlfTJo+Hd5JSPlZi4kwZE=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VI1PR04MB5294.eurprd04.prod.outlook.com (2603:10a6:803:5a::22) with
+ bh=6A7cQN2tFBrg5zmhnNVaYTKH25VoZFa2CclqdWmOU5U=;
+ b=Dz+25KQ9JOY5G11vRWexQz/r8cmiLpRU3svkzvu3nBSzNdS2P+7idFOBWuytzGwqCjR9aYzwa4yO2EWcHW8H3FbAuH1N/BP0FLwAdlYmslA6t6YGESVeMVbk5p1G6Y8xf/NEPnNjnNhDsCkxemkh0yW9D/vGmxMGdO2i9JzXxeI=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=seco.com;
+Received: from DB7PR03MB4523.eurprd03.prod.outlook.com (2603:10a6:10:19::27)
+ by DB6PR0302MB2630.eurprd03.prod.outlook.com (2603:10a6:4:ac::16) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4801.14; Fri, 17 Dec
- 2021 17:40:00 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::c84:1f0b:cc79:9226]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::c84:1f0b:cc79:9226%3]) with mapi id 15.20.4801.015; Fri, 17 Dec 2021
- 17:40:00 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>
-Subject: Re: [PATCH net-next v7 8/9] net: lan966x: Extend switchdev bridge
- flags
-Thread-Topic: [PATCH net-next v7 8/9] net: lan966x: Extend switchdev bridge
- flags
-Thread-Index: AQHX8143qV6KlHecU0+fH+ACGy7jyKw2834A
-Date:   Fri, 17 Dec 2021 17:40:00 +0000
-Message-ID: <20211217174000.febeewxdio6dbmb6@skbuf>
-References: <20211217155353.460594-1-horatiu.vultur@microchip.com>
- <20211217155353.460594-9-horatiu.vultur@microchip.com>
-In-Reply-To: <20211217155353.460594-9-horatiu.vultur@microchip.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: a64b751d-ca8e-44dd-dda3-08d9c184402c
-x-ms-traffictypediagnostic: VI1PR04MB5294:EE_
-x-microsoft-antispam-prvs: <VI1PR04MB5294AEAFB6D635D96707DD11E0789@VI1PR04MB5294.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2043;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: SXTuO+ILBXy631HAGzHAX2PcmVrR3QA+IYpoR5AcdIMcw65ocb7jEd+hhhCFgMNuiFehUr6yV06zvlbjvpeVyKgO/58qWDPVXdrl7/0CFeYHql8zpnJ1Aq/uKuiKmM9BF/mjIxPJXaqWVrePf1rHp+1T5vfoS9+1yJ+pBen/BShfPdSNJXtjCeNktdFRDYUSuwUL9T5yp+9EADZ5sGWZCbjoHJ4nuOlQ4TjKnMjdVNKBhXmxlYsaRCHy8Pta3itN2RYaBTMLi6D3eSAZMJlRNsy/io4MBMq7Zyr6NOC6QK8FwlTYQb/g4zNUA+f+tRa7AAlLgpoz0yxvYDmkatnGWMpVvedlOJ8Ggd24wpynQcz8U2cCJO2mcVzWY9m6vdc8APXKsPT3k6keUkt7Nzjn6y5D5mKfEDrxjUkqZCdRXksaLiQZyUQ4tpQxm1xW6Q6zOLWq5ErxMSeuv7xnL9kewF+YfM4aW18+JDYniSh+JFVhzsvre3wk0NwJsN4mb54CaXV/4mc1e2+ZYU/DZpNktoB2srlMh4rJVt2fdzHFTmmeZvo8DiplNrXGbPsku5Fk3/4tEEt6f0XfOLybSNwUErjU7oV0x1lGjP3BxSjiRQK/Is+GD31+9x5pE3tyLCHPJ7qCtCe6LWID8axNxO7+WZxQl+BaP/uALeTQW+4v1ybj0y5To2wZ4ERCpMz8UeK1ASbuYn/afqMxNL+EnX0vqA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(366004)(8676002)(6506007)(6486002)(71200400001)(38070700005)(26005)(186003)(9686003)(6512007)(54906003)(6916009)(86362001)(8936002)(508600001)(5660300002)(316002)(122000001)(38100700002)(7416002)(66446008)(64756008)(66476007)(44832011)(83380400001)(66556008)(66946007)(76116006)(4326008)(1076003)(33716001)(2906002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?pKLGi2HHr63A1ukJwp4mNbDaOswb3S57D1aRc6EK6/xPjROhO1bYpLzQ/UzF?=
- =?us-ascii?Q?l2e3TKRRYWvjHSiNXZtootXIKrNjrVazT5uOL8qL1hxf4QUOvFPnTrQ7Bga3?=
- =?us-ascii?Q?nOkJWNtq4O+AOU32BAuCmuKam3F11HkkDU2osNfz7960f9IW/QxtUIPJEJG8?=
- =?us-ascii?Q?CEP3fvFet0LnM4i+YaL75IQ12xzvfq/stFapXHLPH9+Pk57M8f4x6iwfBVqv?=
- =?us-ascii?Q?uetoAB3mwywiYl16AaFgCcQ58qTE5i1MjosEV9MaccQSj7JabzvNg2F0/doW?=
- =?us-ascii?Q?58UbVO7vTxs5zrxJYnijRTT7LV5f0QcWaYz09tZ+OcsDACUvLaTlaEbXPGpN?=
- =?us-ascii?Q?fiDHwSIv5hW1KGA5AkiJ9RTPvMhu5YgfKHzgSHLeRvu3TN7DWy/R2/nx5tI2?=
- =?us-ascii?Q?RkQWs1nFaaGZKu+m+d8b1WSaAqP9HLicwfMTwy4hv8u1a6xZaTW6B3pF7N1d?=
- =?us-ascii?Q?Ev7h3iYOMWluwr9uLRQifdWQzAdoHwzGVO27euvTjX0jHicYQZA6iVEmdMAM?=
- =?us-ascii?Q?saILQr6XSE7in5btZ8TDQpJuxcXScmlulbvNP8w8B1d0wS3PR2toFDFby5KE?=
- =?us-ascii?Q?Ld/TWvpJrwj1QbrL9fjlmHgY6jYESlHdLDA9YLADnutUsf/IwiGxb/3yM9Ln?=
- =?us-ascii?Q?B//KA25rT9lyzc6UergbLjgEYngXiTASHTuNGdzpchWziE+REyUG715GrLYU?=
- =?us-ascii?Q?TAQ+CT+d8ZyQ26qZueYcZDW21vZNsB2dYoExhDXjrqglBuDBX3vfLvWzgenp?=
- =?us-ascii?Q?3KrVZFbIRrVvs6zsGC0cQvngQwTnKXIX3luUNSC1xGn56K5/W2CJukmsuvQB?=
- =?us-ascii?Q?xQ9m7j2IvB97tfuTppC7ZOIsyTPg6zonh9xxIccnnk2p73gx8HmDUaeA7RWg?=
- =?us-ascii?Q?KHowgxqr3RksfekdT89AP/zFVUisDQxKZqntHS5WwgxqjG6XbNBQy6ssG/30?=
- =?us-ascii?Q?pDBklIaBiM+tRmtgoG2mgVtU8mQIANoMu4EO/b5G34HCELq4PQixJOHkD6gt?=
- =?us-ascii?Q?fmj+vbiz3rwALdZqw5qSxCzRjeUY9csZkLYKQSE1vo5nzbUJgLTGvt6UD9GX?=
- =?us-ascii?Q?HBbdg0Ly+c0QY4TYNNrhLKQltGnOynH/p2LhGuhJGY4x5T9HtvySif1+dBy/?=
- =?us-ascii?Q?DuyFw+tmslNCLHqgHnaqrDl/+nby6JnTc9UpsmYY9SP5g6xlgIx45DSPEdAk?=
- =?us-ascii?Q?XfvCckaz0ciD/lvDetevCj5YxC4TNMfJlUA9y787DsNTZ8+viIF/1kcd4F01?=
- =?us-ascii?Q?zqBef1FuTqcGoaNWSk69aviQjPSQ9VAo/9jiQZhEvAQijn7B/ghIBRObMivA?=
- =?us-ascii?Q?3XbyqDW6lAR6KN6vYWZrvRyi/lID/8nOrFjv6S5pRlj6uWozs2VDIA2fpaTd?=
- =?us-ascii?Q?Uw69z0uvcvUemXztCUQE3qysZIwFOgodhEZezK/suD7E3lxoQStaZAgFSMlD?=
- =?us-ascii?Q?s4RC9XIhB+baX6oTVzmAKnCKKfpW1wDh+oFl7QBeI/F/TaGr1ePyLC/KY0sy?=
- =?us-ascii?Q?lJ/yV/NhVa1e1uWhio1v8QBdIEeksru5SJCUeQPNjm7vCFadZKpo2Dok+JMS?=
- =?us-ascii?Q?BNk6mwV7oUyjb8WeAtvi8MQ7P4jPOOGN8ScIpvu6RymuDWTbExDh00aQBRmt?=
- =?us-ascii?Q?16Yyw3aJDFupLgXWKZFD9c4=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <981EE02D15E2C04CBD1AA5E638590CA1@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4778.17; Fri, 17 Dec
+ 2021 17:42:44 +0000
+Received: from DB7PR03MB4523.eurprd03.prod.outlook.com
+ ([fe80::9093:a60b:46b7:32ee]) by DB7PR03MB4523.eurprd03.prod.outlook.com
+ ([fe80::9093:a60b:46b7:32ee%4]) with mapi id 15.20.4778.019; Fri, 17 Dec 2021
+ 17:42:44 +0000
+From:   Sean Anderson <sean.anderson@seco.com>
+To:     Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org
+Cc:     Stuart Yoder <stuyoder@gmail.com>, netdev@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Sean Anderson <sean.anderson@seco.com>
+Subject: [PATCH] docs: networking: dpaa2: Fix DPNI header
+Date:   Fri, 17 Dec 2021 12:42:31 -0500
+Message-Id: <20211217174231.36419-1-sean.anderson@seco.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: MN2PR01CA0057.prod.exchangelabs.com (2603:10b6:208:23f::26)
+ To DB7PR03MB4523.eurprd03.prod.outlook.com (2603:10a6:10:19::27)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: c4962dae-d3e7-431d-f87a-08d9c184a1c2
+X-MS-TrafficTypeDiagnostic: DB6PR0302MB2630:EE_
+X-Microsoft-Antispam-PRVS: <DB6PR0302MB2630769BF2554B681516C80B96789@DB6PR0302MB2630.eurprd03.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4941;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 81UJgzcU3xtSTA0J5f7CDUokqsaZ5QmzDZCh71/fWeSBVwnMk2tKK2q8kFIyJ5u+2EghO8FdlogSNPEi1nikx3b6qxdawxhS5WWevTLj070w900yrJu2XVdbKXc7ljPsepKcCsTVdEvlX3Ocb37ngIVz0dkz4yKYH8ebBQpG5k7wZzaW6n5eu10jAZqTtu7LVar2c4cPNs5XGZl9eUqBM/HEezVYLbsD10J36I3+qJRysxGS1KzcjWGTIkO1OO76UhWBMRoP8Wi46QXfcY0BiwE2JIfaxMlBfhWIjBv2L5jjksP2gi3IoqVmoYdg6DA9cjL8YKyozWhl1b4SdoIClzYkdgnLazXJNNNswXgKoZ7mFg5sNChA07qEfAWaQaqhOxJgwgh8HoVqN+9fraPfdDUQ6GoSAElaamUR4PxztHxWzpxda+BOD1ul8qeiJLHM4Q6JQXGp8bvzrZ/RLz+nR3tHZlXMbfrF3VY4eCNj9nZ880V/+MGOr8+EUeAMndSQ/+LHFZFAV3vYAeLM8J0ut0mt1YxvYUreNJ0/Ny2uRFyXTfmhxJf0XaQLbB75/CPkewZ7ISy+Nokmc1R8vTfA/Ro5DUnEmOjylocpeURuWDnd/T/LAN8sJHZ5zw3ZrH2fYEDhTuv+LW7vx5SI5Do8f8nQ4+HT95wgx8ia+AhGgWKu/0q0u8YsDx+7DZPcIuV69ocUGKvtDx/qLEv2YsZd2A==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4523.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(8676002)(54906003)(6512007)(38100700002)(2906002)(2616005)(38350700002)(44832011)(8936002)(316002)(66476007)(6486002)(1076003)(6506007)(5660300002)(36756003)(6666004)(52116002)(508600001)(86362001)(66556008)(66946007)(26005)(4326008)(186003)(107886003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?BP98w6wN9c5H88/iZPSp32dCQ1ihq+DpHwmoFAxqptgB3uUGBO/jlPxPI8vY?=
+ =?us-ascii?Q?BteTlQ3HVx3DiyFTiSxNZzOROb+sePKgawMoZKffOtGwhX+7H8TdnJi+qP0q?=
+ =?us-ascii?Q?KE5lEn7vh0iywCd0ed4WrdM49hr9aEg+tvxMovguY8zye5C7WBCyvy+O493I?=
+ =?us-ascii?Q?lWSrva8iKLvyyPe0gXD2RPKnPSWhJHhytkPe0tN2UZxF4hLiXZyYfQdCuZRW?=
+ =?us-ascii?Q?aMKqWuxtpkbdO2wpdZ7W/y15u02mBzIbZir9OcDNdkJfiMZUeazMLOsV/oBM?=
+ =?us-ascii?Q?h6keDIdu3l73KGk71TwGRBCJEGMrByzF1F0NyeHTU1Xxj+sKPw2DBS9UmfZH?=
+ =?us-ascii?Q?J9Dqsxsd6OBsR8rjM+Tr1zj3llGAmlvESSe6FX9HHQ9dsJKUEvdcbEzhcWph?=
+ =?us-ascii?Q?pThmbBtFhhO2TFB6TL7oiNFTk9yW40nUKPmHHqcmeGe/MbAKoAykAA9FjjWP?=
+ =?us-ascii?Q?y1oGZGl1y1w352xyoJcXFzDOkSO5FocBpe9czx1+ehCEhvm1U554XpI6gMGg?=
+ =?us-ascii?Q?K5lcnwNzi+pqot32jIScQl7lkA3Fm+3hyKUvcXGcm2+T2V3i5l121sHs+YUD?=
+ =?us-ascii?Q?kaf5MehJTcV8oqrqer006CGavQI6NFTWfpDKc0bwDHgyxKhGJDuA6fYjlETe?=
+ =?us-ascii?Q?QxdduAvy85N2NOwer1jvNrsZ895jqg3ukk6V0dxulM1ibE4hQihAIraygfic?=
+ =?us-ascii?Q?NDGuEZ433P+XirBgNDGgctaWjEI9cIz6OPyjbvy10bF2MnX9Do8ZKIEMsbLm?=
+ =?us-ascii?Q?Eb3pFrTJJKYdge9Im6OY94EC+tJGtq/a6Z61Nq7ZFqpmWWazLWD+bPWTXCo4?=
+ =?us-ascii?Q?nDm0EiEowzcqa6cYJZXxhG503zV1E3YXBhJzvmzo4Y1N8PQjAplP6hpC/BI9?=
+ =?us-ascii?Q?UH6aVphZ/f8gOVfsWrHMnsG9ELB+xHsUtUnTP6OT/rgfMPPAdUHLA7gtoMof?=
+ =?us-ascii?Q?MrLSxdnRIbFynHTF3OcCyYCqHnrZ+KHFpVroUK/h+gVf2MIUBoxoEFiuyJoZ?=
+ =?us-ascii?Q?Ms/ukKPgfXS17mPyTip09s//hJs3BO3CeNkPfcE8OUYTCU1fS/NmlXGw/hBU?=
+ =?us-ascii?Q?7vH+p8RoHFAL2dAywiLmYglKl3ZH+CsMTDHSnKjC2E3eYXckbkp6lm+ZUW25?=
+ =?us-ascii?Q?5+tuAnICxmIkmunHTjiGl+DuJ4tddJp7uuDNT/RDTg97AaaEXTmsJKU6a/T9?=
+ =?us-ascii?Q?4xi8pdj0Vtxnr9bj7RrD17AsunhFN1B86BHKGy69FsbpKyftRgSqn9GmD5tw?=
+ =?us-ascii?Q?uqkKSYo0uY2BAbyB8v3N3UHsV9/BIEHk37XkBzoSMjYBmEVCCjSmRTKtEC/b?=
+ =?us-ascii?Q?hNl15mBo8e/ohEDWv8k5kd1kslVoDtu/IZLCZ3G19wBOACb6yCcGsmUkdn/l?=
+ =?us-ascii?Q?SR6H19xXzwAJK4xNlQkcNZBj4IEga8kANcz/0rrg+Owr4qvRpGxwFVmDVW6F?=
+ =?us-ascii?Q?XpflhAvAOTXl942fGBtYyU2xrxlXOwus9KO9tzCZRDaW0wKTUu463ycpodwq?=
+ =?us-ascii?Q?gVzwYm53dEl1wc+YHs+xZP+887iae6L24GS/P9F+14XPpfxnSs3hhonUIlws?=
+ =?us-ascii?Q?jm/73O0ScgDzQGkfwpX0K843IK3V9zP81kZvQ36mUO5beO4GyR3YMYFbFYMX?=
+ =?us-ascii?Q?insddazUPL3l2iJst2EFLAg=3D?=
+X-OriginatorOrg: seco.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c4962dae-d3e7-431d-f87a-08d9c184a1c2
+X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4523.eurprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a64b751d-ca8e-44dd-dda3-08d9c184402c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Dec 2021 17:40:00.5536
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Dec 2021 17:42:44.5637
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: rrLZlWFUVDRdTUB36RW8Svp4Ul5CMOz8cikh56UEbQ+mBIc2ImjcO0Nu3q5ZGRGhTiYfFfDYKZmG4BR13NYApg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5294
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: itjkDoBSUnw68LkKnC0Ax6/prjkMkOfJAcgD2zsZe0ZgIWjZuTWm/HBlTyQ3t1omfKfDFZIE6V63euybTD0yag==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0302MB2630
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 17, 2021 at 04:53:52PM +0100, Horatiu Vultur wrote:
-> Currently allow a port to be part or not of the multicast flooding mask.
-> By implementing the switchdev calls SWITCHDEV_ATTR_ID_PORT_BRIDGE_FLAGS
-> and SWITCHDEV_ATTR_ID_PORT_PRE_BRIDGE_FLAGS.
->=20
-> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-> ---
->  .../microchip/lan966x/lan966x_switchdev.c     | 34 +++++++++++++++++++
->  1 file changed, 34 insertions(+)
->=20
-> diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c b=
-/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c
-> index cef9e690fb82..af227b33cb3f 100644
-> --- a/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c
-> +++ b/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c
-> @@ -9,6 +9,34 @@ static struct notifier_block lan966x_netdevice_nb __read=
-_mostly;
->  static struct notifier_block lan966x_switchdev_nb __read_mostly;
->  static struct notifier_block lan966x_switchdev_blocking_nb __read_mostly=
-;
-> =20
-> +static void lan966x_port_bridge_flags(struct lan966x_port *port,
-> +				      struct switchdev_brport_flags flags)
-> +{
-> +	u32 val =3D lan_rd(port->lan966x, ANA_PGID(PGID_MC));
-> +
-> +	val =3D ANA_PGID_PGID_GET(val);
+The DPNI object should get its own header, like the rest of the objects.
 
-Ideally you'd want to read PGID_MC only if you know that BR_MCAST_FLOOD
-is the flag getting changed. Otherwise you'd have to refactor this when
-you add support for more brport flags.
+Fixes: 60b91319a349 ("staging: fsl-mc: Convert documentation to rst format")
+Signed-off-by: Sean Anderson <sean.anderson@seco.com>
+---
 
-> +
-> +	if (flags.mask & BR_MCAST_FLOOD) {
-> +		if (flags.val & BR_MCAST_FLOOD)
-> +			val |=3D BIT(port->chip_port);
-> +		else
-> +			val &=3D ~BIT(port->chip_port);
-> +	}
-> +
-> +	lan_rmw(ANA_PGID_PGID_SET(val),
-> +		ANA_PGID_PGID,
-> +		port->lan966x, ANA_PGID(PGID_MC));
-> +}
-> +
-> +static int lan966x_port_pre_bridge_flags(struct lan966x_port *port,
-> +					 struct switchdev_brport_flags flags)
-> +{
-> +	if (flags.mask & ~BR_MCAST_FLOOD)
-> +		return -EINVAL;
-> +
-> +	return 0;
-> +}
-> +
->  static void lan966x_update_fwd_mask(struct lan966x *lan966x)
->  {
->  	int i;
-> @@ -67,6 +95,12 @@ static int lan966x_port_attr_set(struct net_device *de=
-v, const void *ctx,
->  		return 0;
-> =20
->  	switch (attr->id) {
-> +	case SWITCHDEV_ATTR_ID_PORT_BRIDGE_FLAGS:
-> +		lan966x_port_bridge_flags(port, attr->u.brport_flags);
-> +		break;
-> +	case SWITCHDEV_ATTR_ID_PORT_PRE_BRIDGE_FLAGS:
-> +		err =3D lan966x_port_pre_bridge_flags(port, attr->u.brport_flags);
-> +		break;
->  	case SWITCHDEV_ATTR_ID_PORT_STP_STATE:
->  		lan966x_port_stp_state_set(port, attr->u.stp_state);
->  		break;
-> --=20
-> 2.33.0
->=
+ .../device_drivers/ethernet/freescale/dpaa2/overview.rst         | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Documentation/networking/device_drivers/ethernet/freescale/dpaa2/overview.rst b/Documentation/networking/device_drivers/ethernet/freescale/dpaa2/overview.rst
+index d638b5a8aadd..199647729251 100644
+--- a/Documentation/networking/device_drivers/ethernet/freescale/dpaa2/overview.rst
++++ b/Documentation/networking/device_drivers/ethernet/freescale/dpaa2/overview.rst
+@@ -183,6 +183,7 @@ PHY and allows physical transmission and reception of Ethernet frames.
+   IRQ config, enable, reset
+ 
+ DPNI (Datapath Network Interface)
++~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Contains TX/RX queues, network interface configuration, and RX buffer pool
+ configuration mechanisms.  The TX/RX queues are in memory and are identified
+ by queue number.
+-- 
+2.25.1
+
