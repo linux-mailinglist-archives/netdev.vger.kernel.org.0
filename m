@@ -2,82 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 134A347903A
-	for <lists+netdev@lfdr.de>; Fri, 17 Dec 2021 16:45:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4711D479056
+	for <lists+netdev@lfdr.de>; Fri, 17 Dec 2021 16:50:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235504AbhLQPpl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Dec 2021 10:45:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32926 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235522AbhLQPpk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Dec 2021 10:45:40 -0500
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24A5CC061574
-        for <netdev@vger.kernel.org>; Fri, 17 Dec 2021 07:45:40 -0800 (PST)
-Received: by mail-wm1-x341.google.com with SMTP id b73so1928921wmd.0
-        for <netdev@vger.kernel.org>; Fri, 17 Dec 2021 07:45:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=xQrYULKok+hL+AIRGJuG9CojAZcnV9Xr+it7yxQJVlY=;
-        b=e+YVkia2vCAAYdqgqhQLPb7lUyFBB2QpKbvpoKsZigSv164xK/HLphXfQTqP2FlM0O
-         PIURj9Ote5lb6RneQbGtgryCB6cXg9fKykkIHrgdQEMFteluWDivGbgJuUb3cqy/kgKD
-         YATN87khar/S50vT1+YbRglwfcE7K47KVJKXAPLMvfB+bowtHckHd2aq7sdMzlRe/RAb
-         oGhFj7kHN1N/lDN5B1LgqlFPj0wr6ximf7Dyx3P8EOgUQFbxTdVssO/c/4ZZAjjDeu3Y
-         Wp+W9Fm4yPgP0xW3dBu+ovpDHPRxEPU1nIZh5ZqGAgOcsM6inXBlW/5g9lbPO3B5N9EZ
-         gfig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=xQrYULKok+hL+AIRGJuG9CojAZcnV9Xr+it7yxQJVlY=;
-        b=2jj0ybPOoteD4oYK0zbQ0+FYhUN6742m/RcwLQWjMfBk6bgjC5rzIgbII082knjNmV
-         kkRfZdhcq0zSMUeQw9JWkF2VYrjOycH5mmAmxT+OivKzG7Rrz2d5j5CR9mGGXDVvfY4Y
-         N96dyBTRAeu4JKyi9pi9ija/h/tsP/PjnIn3Uaqw3Gf8Oc3CDPW/NFfgp2dUvHBKbAwR
-         jMjObgs/RzQVTqDuFb782WxnLK604Uq+7KtZwcT4i6nL0qQ8vvcEweegYvhTFtMZDCea
-         dlaCKGgJBtBnb2txCrtIzXD/WPJ1fOmKhNA9bxvLTijGooA1LHg3OPM10QNmY4qq90gS
-         TWAQ==
-X-Gm-Message-State: AOAM530bWgiZrE/71U5BAIF79QNomdLpMPZLdsNE2/UnsXzqqOrrj5fN
-        L49fQ/PD4RPUMMsZJsBFUtRL1DcB3qsMLH1ogto=
-X-Google-Smtp-Source: ABdhPJxJXKULMKphUbbtPJ3d2bP3bl/BEt5OpsoOajfk25zHYzoTLlYhq7Heuah6pzZYMe8+W6DW1m3hYnK4IS3Zm2w=
-X-Received: by 2002:a05:600c:3846:: with SMTP id s6mr3207366wmr.55.1639755938746;
- Fri, 17 Dec 2021 07:45:38 -0800 (PST)
+        id S237724AbhLQPuY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Dec 2021 10:50:24 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:41130 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229725AbhLQPuV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Dec 2021 10:50:21 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 678F2B828A1;
+        Fri, 17 Dec 2021 15:50:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 1DCB4C36AE7;
+        Fri, 17 Dec 2021 15:50:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1639756219;
+        bh=5db89TLrcxOzLB1ZRoBOcVkydUC+ZAuZYZ5v3VOZSF4=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=mvfkKrdsDyHuJKJNTPCRlZbh5YSE/kj1j2s9PudsTUpFo37SGE9gD9983nrLOsY2p
+         dv+XfE58X8jWona8t0SdIAQXOvxjboI1fLoy/ND43sgt3pW7XNxtY+3JNODgkT75gV
+         pOcDDbPkjeBaYT6alJ4op6A/LgdpZEZFHDdZFffKRS1SDjFYzHeT6RlMjBYdZ8HA3c
+         67KbPCP1rqCVLGdASCxcWiJnSgey+mCPN0UkowSuCawtCRstvKiSt6tbgP1HDq1e4U
+         TRZBgXdokeuIp0pVhhyZY+LC9fUMyiPOLDEXn75F4GeWIQGg64Du1J779h44tZnckm
+         um6jbA/C2V4ig==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id F0E1760A39;
+        Fri, 17 Dec 2021 15:50:18 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Received: by 2002:a5d:5284:0:0:0:0:0 with HTTP; Fri, 17 Dec 2021 07:45:38
- -0800 (PST)
-Reply-To: mrsaishag45@gmail.com
-From:   Mrs Aisha Al-Qaddafi <mrsaishag88@gmail.com>
-Date:   Fri, 17 Dec 2021 07:45:38 -0800
-Message-ID: <CAFGDMRspzHPfjOQzQtHcQBEms1aCu0WXVMrbZUYGzwR+xiDtuw@mail.gmail.com>
-Subject: Dear Friend,
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: pull-request: wireless-drivers-next-2021-12-17
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <163975621898.29842.16396439740489235598.git-patchwork-notify@kernel.org>
+Date:   Fri, 17 Dec 2021 15:50:18 +0000
+References: <20211217130952.34887C36AE9@smtp.kernel.org>
+In-Reply-To: <20211217130952.34887C36AE9@smtp.kernel.org>
+To:     Kalle Valo <kvalo@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Friend,
+Hello:
 
-I came across your e-mail contact prior to a private search while in
-need of your assistance. I am Aisha Al-Qaddafi, the only biological
-Daughter of Former President of Libya Col. Muammar Al-Qaddafi. Am a
-single Mother and a Widow with three Children.
+This pull request was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-I have investment funds worth Twenty Seven Million Five Hundred
-Thousand United State Dollar ($27.500.000.00 ) and i need a trusted
-investment Manager/Partner because of my current refugee status,
-however, I am interested in you for investment project assistance in
-your country, may be from there, we can build business relationship in
-the nearest future.
+On Fri, 17 Dec 2021 13:09:52 +0000 (UTC) you wrote:
+> Hi,
+> 
+> here's a pull request to net-next tree, more info below. Please let me know if
+> there are any problems.
+> 
+> Kalle
+> 
+> [...]
 
-I am willing to negotiate an investment/business profit sharing ratio
-with you based on the future investment earning profits.
+Here is the summary with links:
+  - pull-request: wireless-drivers-next-2021-12-17
+    https://git.kernel.org/netdev/net-next/c/f75c1d55ecba
 
-If you are willing to handle this project on my behalf kindly reply
-urgently to enable me to provide you more information about the
-investment funds.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-Your Urgent Reply Will Be Appreciated
 
-Best Regards
-Mrs Aisha Al-Qaddafi
