@@ -2,133 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 92CB34783AA
-	for <lists+netdev@lfdr.de>; Fri, 17 Dec 2021 04:33:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C438C4783EC
+	for <lists+netdev@lfdr.de>; Fri, 17 Dec 2021 05:19:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232492AbhLQDdj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Dec 2021 22:33:39 -0500
-Received: from mga04.intel.com ([192.55.52.120]:46469 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232444AbhLQDdj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Dec 2021 22:33:39 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1639712019; x=1671248019;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Tajfqun6szNw9LJdTzsf45Rc7oxTwt5fDuRrO2dd1No=;
-  b=ZV6ntsyGr90g0fnFjO0Ph2ycksiekdxqrBeOJeuWThDxcx2Ha8l8Olyd
-   +4SOEtDuvvs45gaVpE7+wmSz7bh0J4MrPgK9+VcydkYtJSWl5Hc1fOnhW
-   3hDOKjyJ4Sn1+Uc6mt/EdwUjbpByA2I4w3tiRRLYcdeQOStX8Nb77xlCN
-   PTIcQNT06lvJ5CJPjuh4SuGPwany3Ohks2pyLrUs/AeXUkAAo/NRAFDwj
-   crLDSfne9Y38vvHaj3wnxhjLHL9SxQZOSRVSs5htfv3odHen0tXtTL94/
-   uh7PsnofOTwY9I5jHrX2Bf9hl4uk/H/mg6f+9PLHpa3xlrOm+CSO7mGf7
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10200"; a="238413120"
-X-IronPort-AV: E=Sophos;i="5.88,213,1635231600"; 
-   d="scan'208";a="238413120"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Dec 2021 19:33:38 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,213,1635231600"; 
-   d="scan'208";a="464970411"
-Received: from lkp-server02.sh.intel.com (HELO 9f38c0981d9f) ([10.239.97.151])
-  by orsmga003.jf.intel.com with ESMTP; 16 Dec 2021 19:33:35 -0800
-Received: from kbuild by 9f38c0981d9f with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1my3zz-0004Av-1v; Fri, 17 Dec 2021 03:33:35 +0000
-Date:   Fri, 17 Dec 2021 11:33:20 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     luizluca@gmail.com, netdev@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, linus.walleij@linaro.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
-        alsi@bang-olufsen.dk, arinc.unal@arinc9.com,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Subject: Re: [PATCH net-next 08/13] net: dsa: realtek: add new mdio interface
- for drivers
-Message-ID: <202112171150.GzuAOv0N-lkp@intel.com>
-References: <20211216201342.25587-9-luizluca@gmail.com>
+        id S232634AbhLQETr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Dec 2021 23:19:47 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:60162 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232622AbhLQETr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 23:19:47 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B675BB826F4;
+        Fri, 17 Dec 2021 04:19:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8A77C36AE1;
+        Fri, 17 Dec 2021 04:19:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1639714784;
+        bh=x0hkHvk18e34yjLkRd7XIXuSC+n9Puz6Q2aRYGsQVRI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=TFQtas4OZYGvTi5Bgwg0pv15S1Y1H59H0oIUE3UP3boXf9oLjsPfuIij/kytUrm+n
+         luCfVwJcSCaSGoImKnlwl19zpl8sUta+vM1qNHxCBwvxNPbK6bZK6Lzj0sD0aupIU/
+         Sf4w3DJEHI3eaWSErMRI7ounkoWH8h09wXFCf8YCllka7L8Oo/qldVard1JdkJMGf2
+         IqPpamUVbcZ+GGsX8iGq+OyzB76NBT4gK1n0RCUIWePXZDSMVbHC8QoYOL6G27N9LF
+         Ifcom4THUD5c6nZScRg2ip/eAlkqE/OUotwSkGI2joKvfr183ct2eik0ad9c6g0DoA
+         4FfYwXzWr2fIw==
+Date:   Thu, 16 Dec 2021 20:19:42 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Cc:     ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com,
+        davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
+        hawk@kernel.org, john.fastabend@gmail.com, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        kpsingh@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [PATCH] sfc: potential dereference of null pointer
+Message-ID: <20211216201942.06e10166@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211216084902.329009-1-jiasheng@iscas.ac.cn>
+References: <20211216084902.329009-1-jiasheng@iscas.ac.cn>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211216201342.25587-9-luizluca@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Thu, 16 Dec 2021 16:49:02 +0800 Jiasheng Jiang wrote:
+> [PATCH] sfc: potential dereference of null pointer
 
-Thank you for the patch! Perhaps something to improve:
+Please give the commit a more unique name.
 
-[auto build test WARNING on net-next/master]
+> The return value of kcalloc() needs to be checked.
+> To avoid dereference of null pointer in case of the failure of alloc,
+> such as efx_fini_rx_recycle_ring().
+> Therefore, it should be better to change the definition of page_ptr_mask
+> to signed int and then assign the page_ptr_mask to -1 when page_ring is
+> NULL, in order to avoid the use in the loop in
+> efx_fini_rx_recycle_ring().
 
-url:    https://github.com/0day-ci/linux/commits/luizluca-gmail-com/net-dsa-realtek-MDIO-interface-and-RTL8367S/20211217-041735
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 0f473bb6ed2d0b8533a079ee133f625f83de5315
-config: arc-allyesconfig (https://download.01.org/0day-ci/archive/20211217/202112171150.GzuAOv0N-lkp@intel.com/config)
-compiler: arceb-elf-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/15bfe75ad3669cdcef7bfab281d7744c226fc503
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review luizluca-gmail-com/net-dsa-realtek-MDIO-interface-and-RTL8367S/20211217-041735
-        git checkout 15bfe75ad3669cdcef7bfab281d7744c226fc503
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arc SHELL=/bin/bash drivers/net/dsa/realtek/
+What about uses of this ring, you mention avoiding null-deref in the
+freeing function but presumably something is actually using this ring
+at runtime. Seems like we should return -ENOMEM.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+> Fixes: 3d95b884392f ("sfc: move more rx code")
 
-All warnings (new ones prefixed by >>):
+Moving buggy code does not introduce the problem, please find a Fixes
+tag referring to where the bad code was _introduced_.
 
->> drivers/net/dsa/realtek/realtek-mdio.c:54:5: warning: no previous prototype for 'realtek_mdio_read_reg' [-Wmissing-prototypes]
-      54 | int realtek_mdio_read_reg(struct realtek_priv *priv, u32 addr, u32 *data)
-         |     ^~~~~~~~~~~~~~~~~~~~~
+> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+> ---
+>  drivers/net/ethernet/sfc/net_driver.h | 2 +-
+>  drivers/net/ethernet/sfc/rx_common.c  | 5 ++++-
+>  2 files changed, 5 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/sfc/net_driver.h b/drivers/net/ethernet/sfc/net_driver.h
+> index 9b4b25704271..beba3e0a6027 100644
+> --- a/drivers/net/ethernet/sfc/net_driver.h
+> +++ b/drivers/net/ethernet/sfc/net_driver.h
+> @@ -407,7 +407,7 @@ struct efx_rx_queue {
+>  	unsigned int page_recycle_count;
+>  	unsigned int page_recycle_failed;
+>  	unsigned int page_recycle_full;
+> -	unsigned int page_ptr_mask;
+> +	int page_ptr_mask;
+>  	unsigned int max_fill;
+>  	unsigned int fast_fill_trigger;
+>  	unsigned int min_fill;
+> diff --git a/drivers/net/ethernet/sfc/rx_common.c b/drivers/net/ethernet/sfc/rx_common.c
+> index 68fc7d317693..d9d0a5805f1c 100644
+> --- a/drivers/net/ethernet/sfc/rx_common.c
+> +++ b/drivers/net/ethernet/sfc/rx_common.c
+> @@ -150,7 +150,10 @@ static void efx_init_rx_recycle_ring(struct efx_rx_queue *rx_queue)
+>  					    efx->rx_bufs_per_page);
+>  	rx_queue->page_ring = kcalloc(page_ring_size,
+>  				      sizeof(*rx_queue->page_ring), GFP_KERNEL);
+> -	rx_queue->page_ptr_mask = page_ring_size - 1;
+> +	if (!rx_queue->page_ring)
+> +		rx_queue->page_ptr_mask = -1;
+> +	else
+> +		rx_queue->page_ptr_mask = page_ring_size - 1;
+>  }
+>  
+>  static void efx_fini_rx_recycle_ring(struct efx_rx_queue *rx_queue)
 
-
-vim +/realtek_mdio_read_reg +54 drivers/net/dsa/realtek/realtek-mdio.c
-
-    53	
-  > 54	int realtek_mdio_read_reg(struct realtek_priv *priv, u32 addr, u32 *data)
-    55	{
-    56	        u32 phy_id = priv->phy_id;
-    57		struct mii_bus *bus = priv->bus;
-    58	
-    59	        BUG_ON(in_interrupt());
-    60	
-    61	        mutex_lock(&bus->mdio_lock);
-    62	        /* Write Start command to register 29 */
-    63	        bus->write(bus, phy_id, MDC_MDIO_START_REG, MDC_MDIO_START_OP);
-    64	
-    65	        /* Write address control code to register 31 */
-    66	        bus->write(bus, phy_id, MDC_MDIO_CTRL0_REG, MDC_MDIO_ADDR_OP);
-    67	
-    68	        /* Write Start command to register 29 */
-    69	        bus->write(bus, phy_id, MDC_MDIO_START_REG, MDC_MDIO_START_OP);
-    70	
-    71	        /* Write address to register 23 */
-    72	        bus->write(bus, phy_id, MDC_MDIO_ADDRESS_REG, addr);
-    73	
-    74	        /* Write Start command to register 29 */
-    75	        bus->write(bus, phy_id, MDC_MDIO_START_REG, MDC_MDIO_START_OP);
-    76	
-    77	        /* Write read control code to register 21 */
-    78	        bus->write(bus, phy_id, MDC_MDIO_CTRL1_REG, MDC_MDIO_READ_OP);
-    79	
-    80	        /* Write Start command to register 29 */
-    81	        bus->write(bus, phy_id, MDC_MDIO_START_REG, MDC_MDIO_START_OP);
-    82	
-    83	        /* Read data from register 25 */
-    84	        *data = bus->read(bus, phy_id, MDC_MDIO_DATA_READ_REG);
-    85	
-    86	        mutex_unlock(&bus->mdio_lock);
-    87	
-    88	        return 0;
-    89	}
-    90	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
