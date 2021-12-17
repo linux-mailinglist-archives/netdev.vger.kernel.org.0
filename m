@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 51595478A2A
+	by mail.lfdr.de (Postfix) with ESMTP id 08D15478A29
 	for <lists+netdev@lfdr.de>; Fri, 17 Dec 2021 12:39:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235569AbhLQLiw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S235587AbhLQLiw (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Fri, 17 Dec 2021 06:38:52 -0500
-Received: from mail.netfilter.org ([217.70.188.207]:60824 "EHLO
+Received: from mail.netfilter.org ([217.70.188.207]:60830 "EHLO
         mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235566AbhLQLit (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Dec 2021 06:38:49 -0500
+        with ESMTP id S235476AbhLQLiu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Dec 2021 06:38:50 -0500
 Received: from localhost.localdomain (unknown [78.30.32.163])
-        by mail.netfilter.org (Postfix) with ESMTPSA id 8A3AA605C3;
-        Fri, 17 Dec 2021 12:36:17 +0100 (CET)
+        by mail.netfilter.org (Postfix) with ESMTPSA id 40388607C1;
+        Fri, 17 Dec 2021 12:36:18 +0100 (CET)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH nf-next,v2 2/5] netfilter: nft_payload: WARN_ON_ONCE instead of BUG
-Date:   Fri, 17 Dec 2021 12:38:34 +0100
-Message-Id: <20211217113837.1253-2-pablo@netfilter.org>
+Subject: [PATCH nf-next,v2 3/5] netfilter: nf_tables: consolidate rule verdict trace call
+Date:   Fri, 17 Dec 2021 12:38:35 +0100
+Message-Id: <20211217113837.1253-3-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20211217113837.1253-1-pablo@netfilter.org>
 References: <20211217113837.1253-1-pablo@netfilter.org>
@@ -29,39 +29,88 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-BUG() is too harsh for unknown payload base, use WARN_ON_ONCE() instead.
+Add function to consolidate verdict tracing.
 
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
-v2: no changes.
+v2: no changes
 
- net/netfilter/nft_payload.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ net/netfilter/nf_tables_core.c | 39 ++++++++++++++++++++++++++++------
+ 1 file changed, 32 insertions(+), 7 deletions(-)
 
-diff --git a/net/netfilter/nft_payload.c b/net/netfilter/nft_payload.c
-index bd689938a2e0..f2e65df32a06 100644
---- a/net/netfilter/nft_payload.c
-+++ b/net/netfilter/nft_payload.c
-@@ -157,7 +157,8 @@ void nft_payload_eval(const struct nft_expr *expr,
- 			goto err;
+diff --git a/net/netfilter/nf_tables_core.c b/net/netfilter/nf_tables_core.c
+index 41c7509955e6..d026890a9842 100644
+--- a/net/netfilter/nf_tables_core.c
++++ b/net/netfilter/nf_tables_core.c
+@@ -67,6 +67,36 @@ static void nft_cmp_fast_eval(const struct nft_expr *expr,
+ 	regs->verdict.code = NFT_BREAK;
+ }
+ 
++static noinline void __nft_trace_verdict(struct nft_traceinfo *info,
++					 const struct nft_chain *chain,
++					 const struct nft_regs *regs)
++{
++	enum nft_trace_types type;
++
++	switch (regs->verdict.code) {
++	case NFT_CONTINUE:
++	case NFT_RETURN:
++		type = NFT_TRACETYPE_RETURN;
++		break;
++	default:
++		type = NFT_TRACETYPE_RULE;
++		break;
++	}
++
++	__nft_trace_packet(info, chain, type);
++}
++
++static inline void nft_trace_verdict(struct nft_traceinfo *info,
++				     const struct nft_chain *chain,
++				     const struct nft_rule *rule,
++				     const struct nft_regs *regs)
++{
++	if (static_branch_unlikely(&nft_trace_enabled)) {
++		info->rule = rule;
++		__nft_trace_verdict(info, chain, regs);
++	}
++}
++
+ static bool nft_payload_fast_eval(const struct nft_expr *expr,
+ 				  struct nft_regs *regs,
+ 				  const struct nft_pktinfo *pkt)
+@@ -205,13 +235,13 @@ nft_do_chain(struct nft_pktinfo *pkt, void *priv)
+ 		break;
+ 	}
+ 
++	nft_trace_verdict(&info, chain, rule, &regs);
++
+ 	switch (regs.verdict.code & NF_VERDICT_MASK) {
+ 	case NF_ACCEPT:
+ 	case NF_DROP:
+ 	case NF_QUEUE:
+ 	case NF_STOLEN:
+-		nft_trace_packet(&info, chain, rule,
+-				 NFT_TRACETYPE_RULE);
+ 		return regs.verdict.code;
+ 	}
+ 
+@@ -224,15 +254,10 @@ nft_do_chain(struct nft_pktinfo *pkt, void *priv)
+ 		stackptr++;
+ 		fallthrough;
+ 	case NFT_GOTO:
+-		nft_trace_packet(&info, chain, rule,
+-				 NFT_TRACETYPE_RULE);
+-
+ 		chain = regs.verdict.chain;
+ 		goto do_chain;
+ 	case NFT_CONTINUE:
+ 	case NFT_RETURN:
+-		nft_trace_packet(&info, chain, rule,
+-				 NFT_TRACETYPE_RETURN);
  		break;
  	default:
--		BUG();
-+		WARN_ON_ONCE(1);
-+		goto err;
- 	}
- 	offset += priv->offset;
- 
-@@ -664,7 +665,8 @@ static void nft_payload_set_eval(const struct nft_expr *expr,
- 			goto err;
- 		break;
- 	default:
--		BUG();
-+		WARN_ON_ONCE(1);
-+		goto err;
- 	}
- 
- 	csum_offset = offset + priv->csum_offset;
+ 		WARN_ON(1);
 -- 
 2.30.2
 
