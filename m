@@ -2,175 +2,300 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 887D1478DD0
-	for <lists+netdev@lfdr.de>; Fri, 17 Dec 2021 15:30:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B494A478DDA
+	for <lists+netdev@lfdr.de>; Fri, 17 Dec 2021 15:33:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236971AbhLQOaO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Dec 2021 09:30:14 -0500
-Received: from mail-bn8nam12on2078.outbound.protection.outlook.com ([40.107.237.78]:26465
-        "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
+        id S237138AbhLQOdh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Dec 2021 09:33:37 -0500
+Received: from smtp21.cstnet.cn ([159.226.251.21]:35652 "EHLO cstnet.cn"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S236899AbhLQOaN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 17 Dec 2021 09:30:13 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=auH7yoDnhoxBQ/dmgsamW+/wjXO9Y3QfJbdM74mZJnqgRuNDzjPu/lNbyUsccQh/QapFgp9yIC2ToqFDt14ekaC3iNooqHfc41tL8me36JXLbXbB1dcoAe7VA0p6TI2EuyZF0C8TSwEverlxKswGaX8V1IKccW+UVBvOWeT+65LZEN3RC+Cul3e/pi0g2bY+Thels7/+w8BehmYi5SRzcFAxg4rQtid4bS6/hKDVQagHQ705msSdd6FeXDYkOdjqO1KBr+FpM46yLqEEv3fY6DlUQ/80tTe1pJbX/GsfdEo+qmIjI16N+MtKQqrUFcQTT1UMshEzmp9lm5A6HwGJ9g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Ee59TcWm999VlmI1fs2ftoTaHI2mcmnRgUF+wWuwo08=;
- b=DePQlmQs6EnjNHysGSnNkT/jcJvbYW8f1aueK9qeytMk6myf3JuNuYA/WZkY62kuF56lq2dkzGaVojR+xsy8PTQq28xAGY5ISwmwisSCtNoBK1CXpSQwqscfAT8Lq1nVhZK/1FbjOKvH7ORrvLSRI0fzFIM093j9OuuYUiZVlYY7uX4epNIim5s4zvj/yt/OuljYVgOjLJxNglryrHbenO+xB3cP9ECz1M38HUWIshznv0HQvInM5Zr/5hRGaae3UiVDIxbuungj8vgIKL+fCBrPfoHtEQjp2zrhfqxOdrCJLi0dxzGvCn5CljwtwO4bOOTE2cXi3Fe0bcav7JLhAg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Ee59TcWm999VlmI1fs2ftoTaHI2mcmnRgUF+wWuwo08=;
- b=2/maikKxZM2kCNmzRlAv4UPlYHlRa7UwEdwGzUqqbqCqXf1Qh80sndGYpTdtXqHqut4R0gNPQTKQlkZqgYbINCc9la2VN3DQEGsPxbMrGgBXKH5Hs7gWX8bNRfAjjvsz+wSJlWeUnFpF6WDN9cd7bpBy+bgaRcZd6/qSz8xGXSM=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DM4PR12MB5229.namprd12.prod.outlook.com (2603:10b6:5:398::12)
- by DM4PR12MB5342.namprd12.prod.outlook.com (2603:10b6:5:39f::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4801.14; Fri, 17 Dec
- 2021 14:30:12 +0000
-Received: from DM4PR12MB5229.namprd12.prod.outlook.com
- ([fe80::1ddd:71e4:5803:e44a]) by DM4PR12MB5229.namprd12.prod.outlook.com
- ([fe80::1ddd:71e4:5803:e44a%3]) with mapi id 15.20.4734.028; Fri, 17 Dec 2021
- 14:30:12 +0000
-Subject: Re: [PATCH net-next 3/3] net: amd-xgbe: Disable the CDR workaround
- path for Yellow Carp Devices
-To:     Raju Rangoju <rrangoju@amd.com>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     netdev@vger.kernel.org, Shyam-sundar.S-k@amd.com,
-        Sudheesh.Mavila@amd.com, Raju.Rangoju@amd.com
-References: <20211217111557.1099919-1-rrangoju@amd.com>
- <20211217111557.1099919-4-rrangoju@amd.com>
-From:   Tom Lendacky <thomas.lendacky@amd.com>
-Message-ID: <85ffbb22-c808-b2f6-980e-4ee6a294ed98@amd.com>
-Date:   Fri, 17 Dec 2021 08:30:09 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
-In-Reply-To: <20211217111557.1099919-4-rrangoju@amd.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SA9P221CA0022.NAMP221.PROD.OUTLOOK.COM
- (2603:10b6:806:25::27) To DM4PR12MB5229.namprd12.prod.outlook.com
- (2603:10b6:5:398::12)
+        id S230248AbhLQOdh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 17 Dec 2021 09:33:37 -0500
+Received: from localhost.localdomain (unknown [124.16.138.126])
+        by APP-01 (Coremail) with SMTP id qwCowADn7p6ln7xhFybKAw--.32199S2;
+        Fri, 17 Dec 2021 22:33:09 +0800 (CST)
+From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
+To:     ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, bhelgaas@google.com,
+        hkallweit1@gmail.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Subject: [PATCH v2] sfc: falcon: potential dereference null pointer of rx_queue->page_ring
+Date:   Fri, 17 Dec 2021 22:33:08 +0800
+Message-Id: <20211217143308.675315-1-jiasheng@iscas.ac.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Received: from office-ryzen.texastahm.com (67.79.209.213) by SA9P221CA0022.NAMP221.PROD.OUTLOOK.COM (2603:10b6:806:25::27) with Microsoft SMTP Server (version=TLS1_2, cipher=) via Frontend Transport; Fri, 17 Dec 2021 14:30:11 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d810cac2-15ae-4b1b-82ad-08d9c169bc14
-X-MS-TrafficTypeDiagnostic: DM4PR12MB5342:EE_
-X-Microsoft-Antispam-PRVS: <DM4PR12MB53427E9326B258FAB8891661EC789@DM4PR12MB5342.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2582;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: drn8GgcGyoXJZmsrFOLWWi7pmIXluv731ys5VcladbtpHky7djT1TI58BMM99BwVIAKmyhNSJc6KSlHaXviGLILL3xJjeRhLGhumojS1rrBdBA0q6FsTnkE7Ffcp/dl0AO3DIPEN774+EsoKWwxOeah922FHsceFritEwTJZPOVd2S7nwSfoVzwspIuVzas8H3Jx9E8i7XcP59IFGGqH98O1rsHLrCvz10flVfW3656A0tqSGowuESb9TGeG5U+NpupMWuSqyrL2JgJzXcZPhvDs4uUayNxQrFCkuN5/fM7PHLRFzfPlNlbZP9JAVbldswn1nC0Vgi0P2/RKgX1xotToOMhYo8Q2dWmVNJZM1dq6v6+EgmfcL5/boWtt290SFCtdzf0BmrqMv9pHVCaaVfFJFtiC0Q582uq/pCpPvzLNFXlBga3ZN3+FFrFY122mokS3rBB2EmKT9lRHXsEkvnCM7E8F7PAGUVJxO+8HohIvU/GNYqvEDAK51FHA6iNbVcpfgo0VqmtX9LZXClCI8SgSfsjWR1vq6/amd8RyIvjNRU7M9yN9Zxyo827qwdAMCG+cLxrp7hBNQeAhhFLc7aHMAhsz90AVChjSXlDJktkFutJZt6ny5z4vTgrNP5+n+TAmSuvRfLscs46u5Oa4XV3YCGF4PwvXr7xthsUYt1qC3Y/bt5yr9xLhOWIGC7Wra0o6QlREpEvO0TuwYkRtT83cd1KRfREe2AGxhkjDZR8Ee/2hFhtKGyQ2oSNIDjfe
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5229.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(66476007)(38100700002)(2906002)(66556008)(186003)(316002)(31696002)(26005)(36756003)(6512007)(83380400001)(5660300002)(31686004)(86362001)(6486002)(4326008)(8676002)(6506007)(956004)(8936002)(66946007)(53546011)(508600001)(2616005)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Ync4ZTRoTG0xeW4wSGUvNDVkNCtQcllIbWNWcFQ2eDh3NDc5aTY5d2pIbXVi?=
- =?utf-8?B?T3BPaGYvWUQvakJoK1dNYWNwZURuNFNNKzFZVExjTGczSzZCalVyK1NZbGlp?=
- =?utf-8?B?c1A4VlVDblRpMlcxbjJQRXpDNThOK2IzM2FTdXo1YXVWeDFGZ3Z0UkdEQ2dN?=
- =?utf-8?B?YkNWeTFVNHFtMDlwM0FGdTYyU3JQTmpQMG9rZEthMEswQXRZZlBkWVBXZ0FJ?=
- =?utf-8?B?dzkzcFpZS3M3MGdtK0c5Y2xCd3UzRFhxdTZCQU85MkJzYnZBTzM0YkZCZWNR?=
- =?utf-8?B?WVFVL1pOSnRjdzFKb3FnYkRlK0FaN0EzSjVRc2YzdFU1UldVWlphYy9hUHNi?=
- =?utf-8?B?eGpGK2g5U0JramZQVHcwREUxNDFxcEd0VDBHelZKTyt4cEJmSFJrYi82aCtl?=
- =?utf-8?B?OEhYRlVRYXRZRnREejJabDRCL0FiNnZmWHlXeHRKWXNPcFRCQVpHeHpQUkJG?=
- =?utf-8?B?dXE4TTQySGpFNVZhY1JZdVA3WXBib0VGZkZyMlUxWExkdFBEZ0REdzB0UzdS?=
- =?utf-8?B?RjY4LzY0V0F4NHZUZ0tMTW5EM2orMzF2TUp5UUo4d3ZDTzVBZTNhYm1qeHoz?=
- =?utf-8?B?RXJxNnVkZlg0TnRyVHQrbThFVVFOSE5pSWFjOTVLNjE0dnhBUm5oTXEwOHhx?=
- =?utf-8?B?T1JTQTV2aFJsWlhqSXpxU2ZqK3lUM3pFazVIQTRzYUdaUy91YUl0T0IxUGdK?=
- =?utf-8?B?UjdTQzBDZWRPY3QxZ3REWmlCYkh6UUpCTURUNk5FTzhuWmtWdDAzeHlUSXZ5?=
- =?utf-8?B?QUw3SnlLeHc2T1BmR2hMb0RUMmVHdFhBaVprTnJxc01LaFNxZlN1WDZmVmRt?=
- =?utf-8?B?UDVaRFA0R2pqdytXUlA0eVU5cUVFbnA4T0Z0R0lPMHZFTGNKK3N3WVU2cVI3?=
- =?utf-8?B?QzV4N3FxS2ZyNk5kTUVON0prS3ZhQmI1RGhmeFhVVkxKR1Vqa2ZhTDhlTWZN?=
- =?utf-8?B?ZW5IOTJXUHlxWVJyUkdGc0VzcE1tNGdQUGIzVm9sZkNXT0dOWjd2Sjh3b3VQ?=
- =?utf-8?B?Y29hWEdkZnhZWjc3OEhucnlYanRBOFdybjREL3lGR1NkeVprZ3c2K0hySFhh?=
- =?utf-8?B?cnNKZUhrL1BtNzU0end0Y29jWTcycnlZNFZLRUlTNGtFS25HWFFWTk5vbHJN?=
- =?utf-8?B?dFc3OXl1eEhjd2JWUS9udjQ2TzBoUFk1NTExU1YraVdqKy83NSszTUhYWHpt?=
- =?utf-8?B?dmwzeDhHSVpwa3BRcDY5SnRpTGdwcjVHSU1vWVZ2TUljVkYzRWllUzJvUVpk?=
- =?utf-8?B?WmtnNy9qa0tsVFZEWUpXTy9mZEZHbGE0UlAvR3dJQWloVXZSNm1kdDYwQVl2?=
- =?utf-8?B?eXdhYTRZcDNqWFBadzJYd1lVaEhxRlNiTzA0WEFFZEpvQ1l6OTBXaXNXZ0JX?=
- =?utf-8?B?djNpaFhtRFoxS01zZ2sxWmZsR2RKZk1wbzlCbHZocFJuTFdod1JaaWJPWURj?=
- =?utf-8?B?OXdlUjZnRjRKKzdLVkhIVHJhSjgxOFZ1dkVaTXZlOUNRbjhkMlBBK3RVSmNY?=
- =?utf-8?B?TUU4S0xvbkZEaU5ybDlWVmkyQ3d1bGZqQ3dvTHAzNzVUaWF0UTZmODlMUkI4?=
- =?utf-8?B?REtmYnFyL3cxOG45Y2FIcFJFcHRCMjdwaWVtNXgyVnFFVmxOWUtTWmdtVTVP?=
- =?utf-8?B?a1o1aUE3Tm13azlOZ1JYTmVOR2FZRDVQK1hiY2lnZTRROVNaWFJjVW5xcE5T?=
- =?utf-8?B?UnBkY1RFeEpLMDlWdm43YWl4b2VlYlNWQVV3emRXTVY4K3ptY1pOVHYzaVVv?=
- =?utf-8?B?dU1kYTFWSWloZ1ZWdXpla1JiZnNMUlBidjhPMDE2TUhaTGorbTJjRjZqZWJY?=
- =?utf-8?B?em1udm40enNIeGh2RjhzMDdkcUhBZm04TWRWSmFCUjJqV0E1aTU1U3pwdWFT?=
- =?utf-8?B?bEpKY1JyaHk0OHlGSkR4Y09PT0E0bUtpVlVFQ2t6MFcvUElRRG5vMjBTbFF3?=
- =?utf-8?B?ZTliRU9yZG4rRThoMHRvOTBQNnJzelAwT25yS2RRd01GU0FGNkZHbG44RXZ4?=
- =?utf-8?B?dm1xY2FSN1NVVFNoSk1Ga1NIRWxUZjUyaElTdHNaS1FCcjU5TlRnVkU1Vkh6?=
- =?utf-8?B?Tkh2S3piUTlmdnYzMlgreGlaaTBwSUpRRk5vU1VNSXhXMEZpTmFjSy9xaERq?=
- =?utf-8?B?UGNBaDZhWnRrU20xeWNRZEdiYW04UlBadXA2NVpPY09VWnpiVDNBaEZZWXpQ?=
- =?utf-8?Q?Hcu27wYAgk1ojqYvY2gy5i8=3D?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d810cac2-15ae-4b1b-82ad-08d9c169bc14
-X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5229.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Dec 2021 14:30:12.2824
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: cTtau4uxBfHzAaPeRNLmQH74S4ynJ/Md2ZCk91WkL+jQQ35Mv3jwUMy9nk7mC68qOi+kd41DLkIEgkzz1ng/CA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5342
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: qwCowADn7p6ln7xhFybKAw--.32199S2
+X-Coremail-Antispam: 1UD129KBjvJXoWxKw1rZry7KFWkZr1rKF4UJwb_yoW3Kw4DpF
+        ZrKry7Zw4Fqan5WrWxKrZ7uF1ftr1rtryxWryfK34Fvry5Cr4DZF18tFyj9rs5KrykGF13
+        Ar4jyFsFgF47t3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUkv14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26r4j6ryUM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
+        6F4UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s
+        0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xII
+        jxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVW8JVWxJwAm72CE4IkC6x0Yz7v_Jr0_Gr
+        1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxkIecxEwVAFwVW5XwCF
+        04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r
+        18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vI
+        r41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr
+        1lIxAIcVCF04k26cxKx2IYs7xG6rWUJVWrZr1UMIIF0xvEx4A2jsIE14v26r4j6F4UMIIF
+        0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUS_M3UUUUU=
+X-Originating-IP: [124.16.138.126]
+X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/17/21 5:15 AM, Raju Rangoju wrote:
-> From: Raju Rangoju <Raju.Rangoju@amd.com>
-> 
-> Yellow Carp Ethernet devices do not require
-> Autonegotiation CDR workaround, hence disable the same.
-> 
-> Co-developed-by: Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
-> Signed-off-by: Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
-> Signed-off-by: Raju Rangoju <Raju.Rangoju@amd.com>
-> ---
->   drivers/net/ethernet/amd/xgbe/xgbe-pci.c | 6 ++++--
->   1 file changed, 4 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-pci.c b/drivers/net/ethernet/amd/xgbe/xgbe-pci.c
-> index 39e606c4d653..50ffaf30f3c7 100644
-> --- a/drivers/net/ethernet/amd/xgbe/xgbe-pci.c
-> +++ b/drivers/net/ethernet/amd/xgbe/xgbe-pci.c
-> @@ -281,6 +281,8 @@ static int xgbe_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
->   		} else if (rdev->device == 0x14b5) {
->   			pdata->xpcs_window_def_reg = PCS_V2_YC_WINDOW_DEF;
->   			pdata->xpcs_window_sel_reg = PCS_V2_YC_WINDOW_SELECT;
+The return value of kcalloc() needs to be checked.
+To avoid dereference of null pointer in case of the failure of alloc.
+Therefore, it might be better to change the return type of
+ef4_init_rx_recycle_ring(), ef4_init_rx_queue(), ef4_start_datapath(),
+ef4_start_all(), and return -ENOMEM when alloc fails and return 0 the
+others.
+Also, ef4_realloc_channels(), ef4_net_open(), ef4_change_mtu(),
+ef4_reset_up() and ef4_pm_thaw() should deal with the return value of
+ef4_start_all().
 
-Just add a blank line in between here so that the comment stands out a bit 
-more.
+Fixes: 5a6681e22c14 ("sfc: separate out SFC4000 ("Falcon") support into new sfc-falcon driver")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+---
+Changelog:
 
-Thanks,
-Tom
+v1 -> v2
 
-> +			/* Yellow Carp devices do not need cdr workaround */
-> +			pdata->vdata->an_cdr_workaround = 0;
->   		}
->   	} else {
->   		pdata->xpcs_window_def_reg = PCS_V2_WINDOW_DEF;
-> @@ -464,7 +466,7 @@ static int __maybe_unused xgbe_pci_resume(struct device *dev)
->   	return ret;
->   }
->   
-> -static const struct xgbe_version_data xgbe_v2a = {
-> +static struct xgbe_version_data xgbe_v2a = {
->   	.init_function_ptrs_phy_impl	= xgbe_init_function_ptrs_phy_v2,
->   	.xpcs_access			= XGBE_XPCS_ACCESS_V2,
->   	.mmc_64bit			= 1,
-> @@ -479,7 +481,7 @@ static const struct xgbe_version_data xgbe_v2a = {
->   	.an_cdr_workaround		= 1,
->   };
->   
-> -static const struct xgbe_version_data xgbe_v2b = {
-> +static struct xgbe_version_data xgbe_v2b = {
->   	.init_function_ptrs_phy_impl	= xgbe_init_function_ptrs_phy_v2,
->   	.xpcs_access			= XGBE_XPCS_ACCESS_V2,
->   	.mmc_64bit			= 1,
-> 
+*Change 1. Alter the "ret" to 'rc' and cleanup the rx_queue and tx_queue
+when alloc fails.
+---
+ drivers/net/ethernet/sfc/falcon/efx.c | 56 +++++++++++++++++++++------
+ drivers/net/ethernet/sfc/falcon/efx.h |  2 +-
+ drivers/net/ethernet/sfc/falcon/rx.c  | 18 +++++++--
+ 3 files changed, 60 insertions(+), 16 deletions(-)
+
+diff --git a/drivers/net/ethernet/sfc/falcon/efx.c b/drivers/net/ethernet/sfc/falcon/efx.c
+index 5e7a57b680ca..89b93ed08251 100644
+--- a/drivers/net/ethernet/sfc/falcon/efx.c
++++ b/drivers/net/ethernet/sfc/falcon/efx.c
+@@ -201,7 +201,7 @@ static void ef4_init_napi_channel(struct ef4_channel *channel);
+ static void ef4_fini_napi(struct ef4_nic *efx);
+ static void ef4_fini_napi_channel(struct ef4_channel *channel);
+ static void ef4_fini_struct(struct ef4_nic *efx);
+-static void ef4_start_all(struct ef4_nic *efx);
++static int ef4_start_all(struct ef4_nic *efx);
+ static void ef4_stop_all(struct ef4_nic *efx);
+ 
+ #define EF4_ASSERT_RESET_SERIALISED(efx)		\
+@@ -590,7 +590,7 @@ static int ef4_probe_channels(struct ef4_nic *efx)
+  * to propagate configuration changes (mtu, checksum offload), or
+  * to clear hardware error conditions
+  */
+-static void ef4_start_datapath(struct ef4_nic *efx)
++static int ef4_start_datapath(struct ef4_nic *efx)
+ {
+ 	netdev_features_t old_features = efx->net_dev->features;
+ 	bool old_rx_scatter = efx->rx_scatter;
+@@ -598,6 +598,7 @@ static void ef4_start_datapath(struct ef4_nic *efx)
+ 	struct ef4_rx_queue *rx_queue;
+ 	struct ef4_channel *channel;
+ 	size_t rx_buf_len;
++	int rc;
+ 
+ 	/* Calculate the rx buffer allocation parameters required to
+ 	 * support the current MTU, including padding for header
+@@ -668,7 +669,10 @@ static void ef4_start_datapath(struct ef4_nic *efx)
+ 		}
+ 
+ 		ef4_for_each_channel_rx_queue(rx_queue, channel) {
+-			ef4_init_rx_queue(rx_queue);
++			rc = ef4_init_rx_queue(rx_queue);
++			if (rc)
++				goto fail;
++
+ 			atomic_inc(&efx->active_queues);
+ 			ef4_stop_eventq(channel);
+ 			ef4_fast_push_rx_descriptors(rx_queue, false);
+@@ -680,6 +684,17 @@ static void ef4_start_datapath(struct ef4_nic *efx)
+ 
+ 	if (netif_device_present(efx->net_dev))
+ 		netif_tx_wake_all_queues(efx->net_dev);
++
++	return 0;
++
++fail:
++	ef4_for_each_channel(channel, efx) {
++		ef4_for_each_channel_rx_queue(rx_queue, channel)
++			ef4_fini_rx_queue(rx_queue);
++		ef4_for_each_possible_channel_tx_queue(tx_queue, channel)
++			ef4_fini_tx_queue(tx_queue);
++	}
++	return rc;
+ }
+ 
+ static void ef4_stop_datapath(struct ef4_nic *efx)
+@@ -853,7 +868,10 @@ ef4_realloc_channels(struct ef4_nic *efx, u32 rxq_entries, u32 txq_entries)
+ 			  "unable to restart interrupts on channel reallocation\n");
+ 		ef4_schedule_reset(efx, RESET_TYPE_DISABLE);
+ 	} else {
+-		ef4_start_all(efx);
++		rc = ef4_start_all(efx);
++		if (rc)
++			return rc;
++
+ 		netif_device_attach(efx->net_dev);
+ 	}
+ 	return rc;
+@@ -1814,8 +1832,10 @@ static int ef4_probe_all(struct ef4_nic *efx)
+  * is safe to call multiple times, so long as the NIC is not disabled.
+  * Requires the RTNL lock.
+  */
+-static void ef4_start_all(struct ef4_nic *efx)
++static int ef4_start_all(struct ef4_nic *efx)
+ {
++	int rc;
++
+ 	EF4_ASSERT_RESET_SERIALISED(efx);
+ 	BUG_ON(efx->state == STATE_DISABLED);
+ 
+@@ -1823,10 +1843,12 @@ static void ef4_start_all(struct ef4_nic *efx)
+ 	 * of these flags are safe to read under just the rtnl lock */
+ 	if (efx->port_enabled || !netif_running(efx->net_dev) ||
+ 	    efx->reset_pending)
+-		return;
++		return 0;
+ 
+ 	ef4_start_port(efx);
+-	ef4_start_datapath(efx);
++	rc = ef4_start_datapath(efx);
++	if (rc)
++		return rc;
+ 
+ 	/* Start the hardware monitor if there is one */
+ 	if (efx->type->monitor != NULL)
+@@ -1838,6 +1860,8 @@ static void ef4_start_all(struct ef4_nic *efx)
+ 	spin_lock_bh(&efx->stats_lock);
+ 	efx->type->update_stats(efx, NULL, NULL);
+ 	spin_unlock_bh(&efx->stats_lock);
++
++	return 0;
+ }
+ 
+ /* Quiesce the hardware and software data path, and regular activity
+@@ -2074,7 +2098,10 @@ int ef4_net_open(struct net_device *net_dev)
+ 	 * before the monitor starts running */
+ 	ef4_link_status_changed(efx);
+ 
+-	ef4_start_all(efx);
++	rc = ef4_start_all(efx);
++	if (rc)
++		return rc;
++
+ 	ef4_selftest_async_start(efx);
+ 	return 0;
+ }
+@@ -2140,7 +2167,10 @@ static int ef4_change_mtu(struct net_device *net_dev, int new_mtu)
+ 	ef4_mac_reconfigure(efx);
+ 	mutex_unlock(&efx->mac_lock);
+ 
+-	ef4_start_all(efx);
++	rc = ef4_start_all(efx);
++	if (rc)
++		return rc;
++
+ 	netif_device_attach(efx->net_dev);
+ 	return 0;
+ }
+@@ -2409,7 +2439,9 @@ int ef4_reset_up(struct ef4_nic *efx, enum reset_type method, bool ok)
+ 
+ 	mutex_unlock(&efx->mac_lock);
+ 
+-	ef4_start_all(efx);
++	rc = ef4_start_all(efx);
++	if (rc)
++		return rc;
+ 
+ 	return 0;
+ 
+@@ -3033,7 +3065,9 @@ static int ef4_pm_thaw(struct device *dev)
+ 		efx->phy_op->reconfigure(efx);
+ 		mutex_unlock(&efx->mac_lock);
+ 
+-		ef4_start_all(efx);
++		rc = ef4_start_all(efx);
++		if (rc)
++			goto fail;
+ 
+ 		netif_device_attach(efx->net_dev);
+ 
+diff --git a/drivers/net/ethernet/sfc/falcon/efx.h b/drivers/net/ethernet/sfc/falcon/efx.h
+index d3b4646545fa..483501b42667 100644
+--- a/drivers/net/ethernet/sfc/falcon/efx.h
++++ b/drivers/net/ethernet/sfc/falcon/efx.h
+@@ -39,7 +39,7 @@ void ef4_set_default_rx_indir_table(struct ef4_nic *efx);
+ void ef4_rx_config_page_split(struct ef4_nic *efx);
+ int ef4_probe_rx_queue(struct ef4_rx_queue *rx_queue);
+ void ef4_remove_rx_queue(struct ef4_rx_queue *rx_queue);
+-void ef4_init_rx_queue(struct ef4_rx_queue *rx_queue);
++int ef4_init_rx_queue(struct ef4_rx_queue *rx_queue);
+ void ef4_fini_rx_queue(struct ef4_rx_queue *rx_queue);
+ void ef4_fast_push_rx_descriptors(struct ef4_rx_queue *rx_queue, bool atomic);
+ void ef4_rx_slow_fill(struct timer_list *t);
+diff --git a/drivers/net/ethernet/sfc/falcon/rx.c b/drivers/net/ethernet/sfc/falcon/rx.c
+index 966f13e7475d..6042219ddb2f 100644
+--- a/drivers/net/ethernet/sfc/falcon/rx.c
++++ b/drivers/net/ethernet/sfc/falcon/rx.c
+@@ -709,8 +709,8 @@ int ef4_probe_rx_queue(struct ef4_rx_queue *rx_queue)
+ 	return rc;
+ }
+ 
+-static void ef4_init_rx_recycle_ring(struct ef4_nic *efx,
+-				     struct ef4_rx_queue *rx_queue)
++static int ef4_init_rx_recycle_ring(struct ef4_nic *efx,
++				    struct ef4_rx_queue *rx_queue)
+ {
+ 	unsigned int bufs_in_recycle_ring, page_ring_size;
+ 
+@@ -728,13 +728,19 @@ static void ef4_init_rx_recycle_ring(struct ef4_nic *efx,
+ 					    efx->rx_bufs_per_page);
+ 	rx_queue->page_ring = kcalloc(page_ring_size,
+ 				      sizeof(*rx_queue->page_ring), GFP_KERNEL);
++	if (!rx_queue->page_ring)
++		return -ENOMEM;
++
+ 	rx_queue->page_ptr_mask = page_ring_size - 1;
++
++	return 0;
+ }
+ 
+-void ef4_init_rx_queue(struct ef4_rx_queue *rx_queue)
++int ef4_init_rx_queue(struct ef4_rx_queue *rx_queue)
+ {
+ 	struct ef4_nic *efx = rx_queue->efx;
+ 	unsigned int max_fill, trigger, max_trigger;
++	int rc;
+ 
+ 	netif_dbg(rx_queue->efx, drv, rx_queue->efx->net_dev,
+ 		  "initialising RX queue %d\n", ef4_rx_queue_index(rx_queue));
+@@ -744,7 +750,9 @@ void ef4_init_rx_queue(struct ef4_rx_queue *rx_queue)
+ 	rx_queue->notified_count = 0;
+ 	rx_queue->removed_count = 0;
+ 	rx_queue->min_fill = -1U;
+-	ef4_init_rx_recycle_ring(efx, rx_queue);
++	rc = ef4_init_rx_recycle_ring(efx, rx_queue);
++	if (rc)
++		return rc;
+ 
+ 	rx_queue->page_remove = 0;
+ 	rx_queue->page_add = rx_queue->page_ptr_mask + 1;
+@@ -770,6 +778,8 @@ void ef4_init_rx_queue(struct ef4_rx_queue *rx_queue)
+ 
+ 	/* Set up RX descriptor ring */
+ 	ef4_nic_init_rx(rx_queue);
++
++	return 0;
+ }
+ 
+ void ef4_fini_rx_queue(struct ef4_rx_queue *rx_queue)
+-- 
+2.25.1
+
