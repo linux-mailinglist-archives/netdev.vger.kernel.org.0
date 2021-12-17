@@ -2,75 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B76214786F9
-	for <lists+netdev@lfdr.de>; Fri, 17 Dec 2021 10:21:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 64E95478708
+	for <lists+netdev@lfdr.de>; Fri, 17 Dec 2021 10:26:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234081AbhLQJVe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Dec 2021 04:21:34 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:59818 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234055AbhLQJVd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 17 Dec 2021 04:21:33 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
-        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
-        In-Reply-To:References; bh=lmmVZodH+XHI9GDoiWHcr0IkTJwRbmnhN5h+KNSpVpk=; b=BK
-        r1KVsosIdBw72VbeyknR6azh2mx+mr+Cbb/lFw6eSzntXZ52HlitBEb8RYR20Q44WNtH0GlbYPI9Y
-        TaDiUnS7+hnJ3tmBtxu/NCmvNW9pKOqibtaS6nT70T4uC+xIE5R70e8U/yMyLYLZ9rkWAZ0a0u1vb
-        Vh1GICp+yeaubws=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1my9Qf-00GofP-3D; Fri, 17 Dec 2021 10:21:29 +0100
-Date:   Fri, 17 Dec 2021 10:21:29 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Alvin =?utf-8?Q?=C5=A0ipraga?= <ALSI@bang-olufsen.dk>
-Cc:     "luizluca@gmail.com" <luizluca@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "olteanv@gmail.com" <olteanv@gmail.com>,
-        "arinc.unal@arinc9.com" <arinc.unal@arinc9.com>
-Subject: Re: [PATCH net-next 03/13] net: dsa: realtek: rename realtek_smi to
- realtek_priv
-Message-ID: <YbxWmbwrkSvuN4BZ@lunn.ch>
-References: <20211216201342.25587-1-luizluca@gmail.com>
- <20211216201342.25587-4-luizluca@gmail.com>
- <4a95c493-5ea3-5f2d-b57a-70674b10a7f0@bang-olufsen.dk>
+        id S234098AbhLQJ0l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Dec 2021 04:26:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56502 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232507AbhLQJ0k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Dec 2021 04:26:40 -0500
+Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5D78C061574;
+        Fri, 17 Dec 2021 01:26:40 -0800 (PST)
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1639733197;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=B7CcEKz1Bb1SpLsV9WHI5Sn4q4D3I2gK1U2uhyOlGyM=;
+        b=VUsleyxaeFiBXQ7O7pWQExVqwzOmqkEnFQ5Qka971rv9iyLdMDxKnjGeDBNR9QvLf2mR/9
+        W1sWEDark3KL10/qevAuLEkcBooY0JeOElALAMyFgoesJkv/UyxapbVYZx6OB1+WRzElSG
+        i0gMdo7xpFOsi/iPIvMBTlYLAIHB4/Y=
+From:   Yajun Deng <yajun.deng@linux.dev>
+To:     ast@kernel.org, daniel@iogearbox.net, davem@davemloft.net,
+        kuba@kernel.org, hawk@kernel.org, john.fastabend@gmail.com
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Yajun Deng <yajun.deng@linux.dev>
+Subject: [PATCH net-next] xdp: move the if dev statements to the first
+Date:   Fri, 17 Dec 2021 17:25:45 +0800
+Message-Id: <20211217092545.30204-1-yajun.deng@linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <4a95c493-5ea3-5f2d-b57a-70674b10a7f0@bang-olufsen.dk>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 16, 2021 at 11:22:33PM +0000, Alvin Šipraga wrote:
-> Hi Luiz,
-> 
-> On 12/16/21 21:13, luizluca@gmail.com wrote:
-> > From: Luiz Angelo Daros de Luca <luizluca@gmail.com>
-> > 
-> > In preparation to adding other interfaces, the private data structure
-> > was renamed to priv. Also the only two direct calls from subdrivers
-> > to realtek-smi lib were converted into references inside priv.
-> 
-> Maybe split this patch to separate the churn from the more interesting 
-> change, which I guess is needed to support different bus types for the 
-> subdrivers.
-> 
-> See some comments inline below, related to that latter change.
+The xdp_rxq_info_unreg() called by xdp_rxq_info_reg() is meaningless when
+dev is NULL, so move the if dev statements to the first.
 
-Hi Alvin
+Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
+---
+ net/core/xdp.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-Thanks for reviewing the patches.
+diff --git a/net/core/xdp.c b/net/core/xdp.c
+index 5ddc29f29bad..7fe1df85f505 100644
+--- a/net/core/xdp.c
++++ b/net/core/xdp.c
+@@ -159,6 +159,11 @@ static void xdp_rxq_info_init(struct xdp_rxq_info *xdp_rxq)
+ int xdp_rxq_info_reg(struct xdp_rxq_info *xdp_rxq,
+ 		     struct net_device *dev, u32 queue_index, unsigned int napi_id)
+ {
++	if (!dev) {
++		WARN(1, "Missing net_device from driver");
++		return -ENODEV;
++	}
++
+ 	if (xdp_rxq->reg_state == REG_STATE_UNUSED) {
+ 		WARN(1, "Driver promised not to register this");
+ 		return -EINVAL;
+@@ -169,11 +174,6 @@ int xdp_rxq_info_reg(struct xdp_rxq_info *xdp_rxq,
+ 		xdp_rxq_info_unreg(xdp_rxq);
+ 	}
+ 
+-	if (!dev) {
+-		WARN(1, "Missing net_device from driver");
+-		return -ENODEV;
+-	}
+-
+ 	/* State either UNREGISTERED or NEW */
+ 	xdp_rxq_info_init(xdp_rxq);
+ 	xdp_rxq->dev = dev;
+-- 
+2.32.0
 
-Please could you trim the email when replying. Just include enough of
-the original email to give context. Sometimes comments gets missed
-because of the continual page down, page down, page down....
-
-Thanks
-	Andrew
