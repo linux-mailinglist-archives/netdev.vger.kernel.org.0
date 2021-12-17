@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 88F37478AFF
-	for <lists+netdev@lfdr.de>; Fri, 17 Dec 2021 13:09:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EC808478B02
+	for <lists+netdev@lfdr.de>; Fri, 17 Dec 2021 13:09:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235938AbhLQMJK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Dec 2021 07:09:10 -0500
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:21941 "EHLO
+        id S236042AbhLQMJM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Dec 2021 07:09:12 -0500
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:9051 "EHLO
         esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235988AbhLQMJI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Dec 2021 07:09:08 -0500
+        with ESMTP id S236009AbhLQMJL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Dec 2021 07:09:11 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1639742949; x=1671278949;
+  t=1639742951; x=1671278951;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=4dr5CJLFKWVQrkJhrfDVafsYeo5cW6GO/ds1HbLxWGk=;
-  b=1jlS6Kp+p3aBFu1eUuqXjnbQUDpyn711Ez6zixm7d3X+NaMTA7UDx/19
-   L6azvIKbvDlfCcaOUopDx0f4h2RsqzXrhmTetTF8Y8G5qH0LoN4fpWiGH
-   PB3V05ww1EXHBUyGdTxkDyDECawgjw/V6DDMbCU7uA9LW0X+jsWMviyok
-   UC+dOI+txHz2aAC2185R+hkgjyFpjfgptwQFycZ3PqGTcGk4kq8chItYh
-   I7mu6VS1p/I1EfSw76rMcOW6Yp9PlakDcPyE4CtEG+s2LyfEpkIl9pa2+
-   oedHK5mlExsLSM+vkDJnUMwh/7GGcGpgdopKQ+t69ewO8UrBSE2nV5uHS
+  bh=VUU+4GyCpyEgeHzmSHp3p6f+/VZRvOBHNDru078eO2o=;
+  b=A5O5k3Umr6dSxpp4Au9oqPKTP2KsBiVMm/1kAvAOndBUEpwWDmS4ZawA
+   OW2DxFNhK88mXYrm3siFbImFx5Tiek60LH5s2uNZ0DGYytWObQHD1WIAM
+   lbLC8M/U34ipckH1lN5z00giAZopH8d1iuxTZgvEElF7R65En9QE239+M
+   HISy9+7TlvNXwKiyV6AMu33OA3UKTLBP+ERES/oxeJZQm95jr8oubGDk8
+   Wk1pcj/nKPUrKUOyuEJNP+dndufTHxnPtsK82/gR2F10mZS02w5/IdFZp
+   jv7PXLCDJE/APtsPwN4/hR9k6vb52lqcKnDGEYArVl7hAmsfhl601YMPM
    A==;
-IronPort-SDR: 6IPEaHMn3IfnuuWkMLgeQrK1Abon3obL2IkWTkgTyXPqO71UspT+bPEgRZvi3YVeSymYLrfy1q
- f7ELNWS0tYElfwZtZGDdA+27zeRj3tfrQwX2Jk8M/EEqfBRUtEfe3vsNmVEjXLpH5gadVaH1d6
- KQtUHyeK5ECGF9eqbq1h13pSbQ2nD4z1ntMG8I7+47gzAtqGaaaQLYDbzBM/DgFrv4lvfpAczp
- VCY/4Fc0Ju6hUyOlWaw0Mm2Yi9QvdqK3zX+ZUxS0zbFxSBut5/df1HV/rvtBs4hUIwYxMFXlZI
- kUcdtgLbkz3IjkbA28+gjQCK
+IronPort-SDR: V5aUkV14gZ2YTPtRmKEL50s74ufJL2YMKYvJNNMhFrRg/ehewo/N7WMhhE4TL3xqodNHBFct84
+ ZoyhmX28VhWByHPwK/LByJYV0FXrJ6iTkW8ymyG+aWfODdz+uOOQ4pq4vCltZ4IakNMgls4oct
+ KTX0jC3Xhf7NOtzktPFADLZQWQ6r83kHMKL9VTDaExnkjc71Jj9CTIDdc5z3CMhaK9PlDwr9JM
+ NooUj9//cprylsFtBMb6jT+3SoErCb3tYpRooD8CcMtjcD47rRVTsl2EOGuM2iXw6QlVXFKgy+
+ /7p3Y8jcP7j2EeKvKgu98er9
 X-IronPort-AV: E=Sophos;i="5.88,213,1635231600"; 
-   d="scan'208";a="147012726"
+   d="scan'208";a="155868874"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Dec 2021 05:09:08 -0700
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Dec 2021 05:09:10 -0700
 Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 17 Dec 2021 05:09:07 -0700
+ 15.1.2375.17; Fri, 17 Dec 2021 05:09:10 -0700
 Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Fri, 17 Dec 2021 05:09:05 -0700
+ 15.1.2375.17 via Frontend Transport; Fri, 17 Dec 2021 05:09:07 -0700
 From:   Horatiu Vultur <horatiu.vultur@microchip.com>
 To:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
@@ -47,11 +47,10 @@ CC:     <davem@davemloft.net>, <kuba@kernel.org>, <robh+dt@kernel.org>,
         <UNGLinuxDriver@microchip.com>, <linux@armlinux.org.uk>,
         <f.fainelli@gmail.com>, <vivien.didelot@gmail.com>,
         <vladimir.oltean@nxp.com>, <andrew@lunn.ch>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH net-next v6 2/9] dt-bindings: net: lan966x: Extend with the analyzer interrupt
-Date:   Fri, 17 Dec 2021 13:10:10 +0100
-Message-ID: <20211217121017.282481-3-horatiu.vultur@microchip.com>
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH net-next v6 3/9] net: lan966x: add support for interrupts from analyzer
+Date:   Fri, 17 Dec 2021 13:10:11 +0100
+Message-ID: <20211217121017.282481-4-horatiu.vultur@microchip.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211217121017.282481-1-horatiu.vultur@microchip.com>
 References: <20211217121017.282481-1-horatiu.vultur@microchip.com>
@@ -62,36 +61,364 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Extend dt-bindings for lan966x with analyzer interrupt.
-This interrupt can be generated for example when the HW learn/forgets
-an entry in the MAC table.
+This patch adds support for handling the interrupts generated by the
+analyzer. Currently, only the MAC table generates these interrupts.
+The MAC table will generate an interrupt whenever it learns or forgets
+an entry in the table. It is the SW responsibility figure out which
+entries were added/removed.
 
-Acked-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 ---
- .../devicetree/bindings/net/microchip,lan966x-switch.yaml       | 2 ++
- 1 file changed, 2 insertions(+)
+ .../ethernet/microchip/lan966x/lan966x_mac.c  | 237 ++++++++++++++++++
+ .../ethernet/microchip/lan966x/lan966x_main.c |  23 ++
+ .../ethernet/microchip/lan966x/lan966x_main.h |   6 +
+ 3 files changed, 266 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/net/microchip,lan966x-switch.yaml b/Documentation/devicetree/bindings/net/microchip,lan966x-switch.yaml
-index 5bee665d5fcf..e79e4e166ad8 100644
---- a/Documentation/devicetree/bindings/net/microchip,lan966x-switch.yaml
-+++ b/Documentation/devicetree/bindings/net/microchip,lan966x-switch.yaml
-@@ -37,12 +37,14 @@ properties:
-     items:
-       - description: register based extraction
-       - description: frame dma based extraction
-+      - description: analyzer interrupt
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c b/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c
+index f6878b9f57ef..855ea514f438 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c
+@@ -1,5 +1,6 @@
+ // SPDX-License-Identifier: GPL-2.0+
  
-   interrupt-names:
-     minItems: 1
-     items:
-       - const: xtr
-       - const: fdma
-+      - const: ana
++#include <net/switchdev.h>
+ #include "lan966x_main.h"
  
-   resets:
-     items:
+ #define LAN966X_MAC_COLUMNS		4
+@@ -13,6 +14,23 @@
+ #define MACACCESS_CMD_WRITE		7
+ #define MACACCESS_CMD_SYNC_GET_NEXT	8
+ 
++#define LAN966X_MAC_INVALID_ROW		-1
++
++struct lan966x_mac_entry {
++	struct list_head list;
++	unsigned char mac[ETH_ALEN] __aligned(2);
++	u16 vid;
++	u16 port_index;
++	int row;
++};
++
++struct lan966x_mac_raw_entry {
++	u32 mach;
++	u32 macl;
++	u32 maca;
++	bool processed;
++};
++
+ static int lan966x_mac_get_status(struct lan966x *lan966x)
+ {
+ 	return lan_rd(lan966x, ANA_MACACCESS);
+@@ -98,4 +116,223 @@ void lan966x_mac_init(struct lan966x *lan966x)
+ 	/* Clear the MAC table */
+ 	lan_wr(MACACCESS_CMD_INIT, lan966x, ANA_MACACCESS);
+ 	lan966x_mac_wait_for_completion(lan966x);
++
++	spin_lock_init(&lan966x->mac_lock);
++	INIT_LIST_HEAD(&lan966x->mac_entries);
++}
++
++static struct lan966x_mac_entry *lan966x_mac_alloc_entry(const unsigned char *mac,
++							 u16 vid, u16 port_index)
++{
++	struct lan966x_mac_entry *mac_entry;
++
++	mac_entry = kzalloc(sizeof(*mac_entry), GFP_KERNEL);
++	if (!mac_entry)
++		return NULL;
++
++	memcpy(mac_entry->mac, mac, ETH_ALEN);
++	mac_entry->vid = vid;
++	mac_entry->port_index = port_index;
++	mac_entry->row = LAN966X_MAC_INVALID_ROW;
++	return mac_entry;
++}
++
++static void lan966x_fdb_call_notifiers(enum switchdev_notifier_type type,
++				       const char *mac, u16 vid,
++				       struct net_device *dev)
++{
++	struct switchdev_notifier_fdb_info info = { 0 };
++
++	info.addr = mac;
++	info.vid = vid;
++	info.offloaded = true;
++	call_switchdev_notifiers(type, dev, &info.info, NULL);
++}
++
++void lan966x_mac_purge_entries(struct lan966x *lan966x)
++{
++	struct lan966x_mac_entry *mac_entry, *tmp;
++
++	spin_lock(&lan966x->mac_lock);
++	list_for_each_entry_safe(mac_entry, tmp, &lan966x->mac_entries,
++				 list) {
++		lan966x_mac_forget(lan966x, mac_entry->mac, mac_entry->vid,
++				   ENTRYTYPE_LOCKED);
++
++		list_del(&mac_entry->list);
++		kfree(mac_entry);
++	}
++	spin_unlock(&lan966x->mac_lock);
++}
++
++static void lan966x_mac_notifiers(enum switchdev_notifier_type type,
++				  unsigned char *mac, u32 vid,
++				  struct net_device *dev)
++{
++	rtnl_lock();
++	lan966x_fdb_call_notifiers(type, mac, vid, dev);
++	rtnl_unlock();
++}
++
++static void lan966x_mac_process_raw_entry(struct lan966x_mac_raw_entry *raw_entry,
++					  u8 *mac, u16 *vid, u32 *dest_idx)
++{
++	mac[0] = (raw_entry->mach >> 8)  & 0xff;
++	mac[1] = (raw_entry->mach >> 0)  & 0xff;
++	mac[2] = (raw_entry->macl >> 24) & 0xff;
++	mac[3] = (raw_entry->macl >> 16) & 0xff;
++	mac[4] = (raw_entry->macl >> 8)  & 0xff;
++	mac[5] = (raw_entry->macl >> 0)  & 0xff;
++
++	*vid = (raw_entry->mach >> 16) & 0xfff;
++	*dest_idx = ANA_MACACCESS_DEST_IDX_GET(raw_entry->maca);
++}
++
++static void lan966x_mac_irq_process(struct lan966x *lan966x, u32 row,
++				    struct lan966x_mac_raw_entry *raw_entries)
++{
++	struct lan966x_mac_entry *mac_entry, *tmp;
++	unsigned char mac[ETH_ALEN] __aligned(2);
++	u32 dest_idx;
++	u32 column;
++	u16 vid;
++
++	spin_lock(&lan966x->mac_lock);
++	list_for_each_entry_safe(mac_entry, tmp, &lan966x->mac_entries, list) {
++		bool found = false;
++
++		if (mac_entry->row != row)
++			continue;
++
++		for (column = 0; column < LAN966X_MAC_COLUMNS; ++column) {
++			/* All the valid entries are at the start of the row,
++			 * so when get one invalid entry it can just skip the
++			 * rest of the columns
++			 */
++			if (!ANA_MACACCESS_VALID_GET(raw_entries[column].maca))
++				break;
++
++			lan966x_mac_process_raw_entry(&raw_entries[column],
++						      mac, &vid, &dest_idx);
++			WARN_ON(dest_idx > lan966x->num_phys_ports);
++
++			/* If the entry in SW is found, then there is nothing
++			 * to do
++			 */
++			if (mac_entry->vid == vid &&
++			    ether_addr_equal(mac_entry->mac, mac) &&
++			    mac_entry->port_index == dest_idx) {
++				raw_entries[column].processed = true;
++				found = true;
++				break;
++			}
++		}
++
++		if (!found) {
++			/* Notify the bridge that the entry doesn't exist
++			 * anymore in the HW and remove the entry from the SW
++			 * list
++			 */
++			lan966x_mac_notifiers(SWITCHDEV_FDB_DEL_TO_BRIDGE,
++					      mac_entry->mac, mac_entry->vid,
++					      lan966x->ports[mac_entry->port_index]->dev);
++
++			list_del(&mac_entry->list);
++			kfree(mac_entry);
++		}
++	}
++	spin_unlock(&lan966x->mac_lock);
++
++	/* Now go to the list of columns and see if any entry was not in the SW
++	 * list, then that means that the entry is new so it needs to notify the
++	 * bridge.
++	 */
++	for (column = 0; column < LAN966X_MAC_COLUMNS; ++column) {
++		/* All the valid entries are at the start of the row, so when
++		 * get one invalid entry it can just skip the rest of the columns
++		 */
++		if (!ANA_MACACCESS_VALID_GET(raw_entries[column].maca))
++			break;
++
++		/* If the entry already exists then don't do anything */
++		if (raw_entries[column].processed)
++			continue;
++
++		lan966x_mac_process_raw_entry(&raw_entries[column],
++					      mac, &vid, &dest_idx);
++		WARN_ON(dest_idx > lan966x->num_phys_ports);
++
++		mac_entry = lan966x_mac_alloc_entry(mac, vid, dest_idx);
++		if (!mac_entry)
++			return;
++
++		mac_entry->row = row;
++
++		spin_lock(&lan966x->mac_lock);
++		list_add_tail(&mac_entry->list, &lan966x->mac_entries);
++		spin_unlock(&lan966x->mac_lock);
++
++		lan966x_mac_notifiers(SWITCHDEV_FDB_ADD_TO_BRIDGE,
++				      mac, vid, lan966x->ports[dest_idx]->dev);
++	}
++}
++
++irqreturn_t lan966x_mac_irq_handler(struct lan966x *lan966x)
++{
++	struct lan966x_mac_raw_entry entry[LAN966X_MAC_COLUMNS] = { 0 };
++	u32 index, column;
++	bool stop = true;
++	u32 val;
++
++	/* Start the scan from 0, 0 */
++	lan_wr(ANA_MACTINDX_M_INDEX_SET(0) |
++	       ANA_MACTINDX_BUCKET_SET(0),
++	       lan966x, ANA_MACTINDX);
++
++	while (1) {
++		lan_rmw(ANA_MACACCESS_MAC_TABLE_CMD_SET(MACACCESS_CMD_SYNC_GET_NEXT),
++			ANA_MACACCESS_MAC_TABLE_CMD,
++			lan966x, ANA_MACACCESS);
++		lan966x_mac_wait_for_completion(lan966x);
++
++		val = lan_rd(lan966x, ANA_MACTINDX);
++		index = ANA_MACTINDX_M_INDEX_GET(val);
++		column = ANA_MACTINDX_BUCKET_GET(val);
++
++		/* The SYNC-GET-NEXT returns all the entries(4) in a row in
++		 * which is suffered a change. By change it means that new entry
++		 * was added or an entry was removed because of ageing.
++		 * It would return all the columns for that row. And after that
++		 * it would return the next row The stop conditions of the
++		 * SYNC-GET-NEXT is when it reaches 'directly' to row 0
++		 * column 3. So if SYNC-GET-NEXT returns row 0 and column 0
++		 * then it is required to continue to read more even if it
++		 * reaches row 0 and column 3.
++		 */
++		if (index == 0 && column == 0)
++			stop = false;
++
++		if (column == LAN966X_MAC_COLUMNS - 1 &&
++		    index == 0 && stop)
++			break;
++
++		entry[column].mach = lan_rd(lan966x, ANA_MACHDATA);
++		entry[column].macl = lan_rd(lan966x, ANA_MACLDATA);
++		entry[column].maca = lan_rd(lan966x, ANA_MACACCESS);
++
++		/* Once all the columns are read process them */
++		if (column == LAN966X_MAC_COLUMNS - 1) {
++			lan966x_mac_irq_process(lan966x, index, entry);
++			/* A row was processed so it is safe to assume that the
++			 * next row/column can be the stop condition
++			 */
++			stop = true;
++		}
++	}
++
++	lan_rmw(ANA_ANAINTR_INTR_SET(0),
++		ANA_ANAINTR_INTR,
++		lan966x, ANA_ANAINTR);
++
++	return IRQ_HANDLED;
+ }
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+index 101c1f005baf..7c6d6293611a 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+@@ -527,6 +527,13 @@ static irqreturn_t lan966x_xtr_irq_handler(int irq, void *args)
+ 	return IRQ_HANDLED;
+ }
+ 
++static irqreturn_t lan966x_ana_irq_handler(int irq, void *args)
++{
++	struct lan966x *lan966x = args;
++
++	return lan966x_mac_irq_handler(lan966x);
++}
++
+ static void lan966x_cleanup_ports(struct lan966x *lan966x)
+ {
+ 	struct lan966x_port *port;
+@@ -554,6 +561,11 @@ static void lan966x_cleanup_ports(struct lan966x *lan966x)
+ 
+ 	disable_irq(lan966x->xtr_irq);
+ 	lan966x->xtr_irq = -ENXIO;
++
++	if (lan966x->ana_irq) {
++		disable_irq(lan966x->ana_irq);
++		lan966x->ana_irq = -ENXIO;
++	}
+ }
+ 
+ static int lan966x_probe_port(struct lan966x *lan966x, u32 p,
+@@ -870,6 +882,15 @@ static int lan966x_probe(struct platform_device *pdev)
+ 		return -ENODEV;
+ 	}
+ 
++	lan966x->ana_irq = platform_get_irq_byname(pdev, "ana");
++	if (lan966x->ana_irq) {
++		err = devm_request_threaded_irq(&pdev->dev, lan966x->ana_irq, NULL,
++						lan966x_ana_irq_handler, IRQF_ONESHOT,
++						"ana irq", lan966x);
++		if (err)
++			return dev_err_probe(&pdev->dev, err, "Unable to use ana irq");
++	}
++
+ 	/* init switch */
+ 	lan966x_init(lan966x);
+ 	lan966x_stats_init(lan966x);
+@@ -923,6 +944,8 @@ static int lan966x_remove(struct platform_device *pdev)
+ 	destroy_workqueue(lan966x->stats_queue);
+ 	mutex_destroy(&lan966x->stats_lock);
+ 
++	lan966x_mac_purge_entries(lan966x);
++
+ 	return 0;
+ }
+ 
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
+index 7e5a3b6f168d..ba548d65b58a 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
+@@ -75,6 +75,9 @@ struct lan966x {
+ 
+ 	u8 base_mac[ETH_ALEN];
+ 
++	struct list_head mac_entries;
++	spinlock_t mac_lock; /* lock for mac_entries list */
++
+ 	/* stats */
+ 	const struct lan966x_stat_layout *stats_layout;
+ 	u32 num_stats;
+@@ -87,6 +90,7 @@ struct lan966x {
+ 
+ 	/* interrupts */
+ 	int xtr_irq;
++	int ana_irq;
+ };
+ 
+ struct lan966x_port_config {
+@@ -141,6 +145,8 @@ int lan966x_mac_forget(struct lan966x *lan966x,
+ int lan966x_mac_cpu_learn(struct lan966x *lan966x, const char *addr, u16 vid);
+ int lan966x_mac_cpu_forget(struct lan966x *lan966x, const char *addr, u16 vid);
+ void lan966x_mac_init(struct lan966x *lan966x);
++void lan966x_mac_purge_entries(struct lan966x *lan966x);
++irqreturn_t lan966x_mac_irq_handler(struct lan966x *lan966x);
+ 
+ static inline void __iomem *lan_addr(void __iomem *base[],
+ 				     int id, int tinst, int tcnt,
 -- 
 2.33.0
 
