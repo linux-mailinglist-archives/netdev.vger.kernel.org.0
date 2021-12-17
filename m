@@ -2,94 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD696478EFE
-	for <lists+netdev@lfdr.de>; Fri, 17 Dec 2021 16:06:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 12C51478F06
+	for <lists+netdev@lfdr.de>; Fri, 17 Dec 2021 16:07:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237853AbhLQPG3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Dec 2021 10:06:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51286 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237848AbhLQPG2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Dec 2021 10:06:28 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1EF0C061574;
-        Fri, 17 Dec 2021 07:06:28 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5014862258;
-        Fri, 17 Dec 2021 15:06:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02804C36AE7;
-        Fri, 17 Dec 2021 15:06:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1639753587;
-        bh=reSbYJsb2lp4YkJ36gpZzEnh+V1VGf/jaqK9usFoEPE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=jnTkSMMbUX0E4r7fq7fLheHX71+ibSEGk3+4BjQRMNluPyw8HQi0RLWXUlqPqOT5y
-         Pqj3qMedcF7cBPMtey0kEo9LB5eoxdBBzsxA1OvHDYZhxRaCpepAf5ec35tU89m2uY
-         5kw/217MJDC5GS9vGmS053m9XnjHueIwcnZLw13LiZtU+2P0EJLehLOM/vN5D1vLgY
-         7H5MDZ1Y21NSV+HxEBtYcdJuGvj7vkSoZAPlYJDiUEEUC1/P8Jb/kPr++rvDrzC4NK
-         0By1l2ewSIwogNC8udO0scT35o0X0VrJ2B4k6bkAw/S4W1U9F9aGMvwFcQIUeKUkCb
-         VuLvlY7Tln1UA==
-Date:   Fri, 17 Dec 2021 07:06:26 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Lee Jones <lee.jones@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, Vlad Yasevich <vyasevich@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        lksctp developers <linux-sctp@vger.kernel.org>,
-        "H.P. Yarroll" <piggy@acm.org>,
-        Karl Knutson <karl@athena.chicago.il.us>,
-        Jon Grimm <jgrimm@us.ibm.com>,
-        Xingang Guo <xingang.guo@intel.com>,
-        Hui Huang <hui.huang@nokia.com>,
-        Sridhar Samudrala <sri@us.ibm.com>,
-        Daisy Chang <daisyc@us.ibm.com>,
-        Ryan Layer <rmlayer@us.ibm.com>,
-        Kevin Gao <kevin.gao@intel.com>, netdev@vger.kernel.org,
-        stable@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] sctp: export sctp_endpoint_{hold,put}() and
- return incremented endpoint
-Message-ID: <20211217070626.790b8340@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211217134607.74983-1-lee.jones@linaro.org>
-References: <20211217134607.74983-1-lee.jones@linaro.org>
+        id S237866AbhLQPHq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Dec 2021 10:07:46 -0500
+Received: from mail-oi1-f174.google.com ([209.85.167.174]:36836 "EHLO
+        mail-oi1-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237855AbhLQPHq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Dec 2021 10:07:46 -0500
+Received: by mail-oi1-f174.google.com with SMTP id t23so4021160oiw.3;
+        Fri, 17 Dec 2021 07:07:45 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=MbOJyx0ICqsDBsXqhrfTxawCvgzjFoYCCHF95Prip3E=;
+        b=RiDhcJMb78rRzBLmIxbP5OkQydXAjBA72RxB29xIUOpt1mXMykSZn6mCckNHkEwzPS
+         GQL6J66SU4X75b91WK8HeCgtaez2TjJ/UHOwXgM9pWI9r465Fa3ngUdKo7Wgi10hP/OH
+         KJKPS7UFIlQcHRrzfuY0NEinyMSUZQ4kUMv9Rw/X+E83fK1vnoWLi6Pu7FLYakRTLL3C
+         BlLNslq2d/KjdxmHx9U2FPiiNCiTmyBwaWNqAoGuUzEf3PshovvpbkdmYUvlYQ+5a8f2
+         2adkXUHo7sCIdUmoOv95OLzz5PSm9jMQfaHByvrunQRggT5jh50ikMh0pnensDt8ZShN
+         fxvA==
+X-Gm-Message-State: AOAM530SqCgXXA5nr1fq7vrgA/2WPyVOdewp9Kb/pm94JEkEV166MCzs
+        vLzRjXV0adm3p+Usa3xEiZNIL3DAIZukZfGc5vE=
+X-Google-Smtp-Source: ABdhPJzIcKm353itWUd26MvND37q/kv/4/a54huG34fc7b6KcS+FdmapZEPP8pthrG9sJ/xgldU8kp89r2g0YypaCFQ=
+X-Received: by 2002:aca:eb0b:: with SMTP id j11mr8185991oih.51.1639753665410;
+ Fri, 17 Dec 2021 07:07:45 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20211207002102.26414-1-paul@crapouillou.net> <CAK8P3a3xfuFN+0Gb694R_W2tpC7PfFEFcpsAyPdanqZ6FpVoxQ@mail.gmail.com>
+In-Reply-To: <CAK8P3a3xfuFN+0Gb694R_W2tpC7PfFEFcpsAyPdanqZ6FpVoxQ@mail.gmail.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Fri, 17 Dec 2021 16:07:34 +0100
+Message-ID: <CAJZ5v0jifFWLJgjJywGrjWgE9ZQkjD03rQDHw+4YL-VzkfL1Hg@mail.gmail.com>
+Subject: Re: [PATCH 0/5] Rework pm_ptr() and *_PM_OPS macros
+To:     Arnd Bergmann <arnd@arndb.de>, Paul Cercueil <paul@crapouillou.net>
+Cc:     "Rafael J . Wysocki" <rafael@kernel.org>,
+        Pavel Machek <pavel@ucw.cz>, Len Brown <len.brown@intel.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Jonathan Cameron <jic23@kernel.org>, list@opendingux.net,
+        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
+        linux-mmc <linux-mmc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Linux PM list <linux-pm@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 17 Dec 2021 13:46:06 +0000 Lee Jones wrote:
-> For example, in sctp_sock_dump(), we could have the following hunk:
-> 
-> 	sctp_endpoint_hold(tsp->asoc->ep);
-> 	ep = tsp->asoc->ep;
-> 	sk = ep->base.sk
-> 	lock_sock(ep->base.sk);
-> 
-> It is possible for this task to be swapped out immediately following
-> the call into sctp_endpoint_hold() that would change the address of
-> tsp->asoc->ep to point to a completely different endpoint.  This means
-> a reference could be taken to the old endpoint and the new one would
-> be processed without a reference taken, moreover the new endpoint
-> could then be freed whilst still processing as a result, causing a
-> use-after-free.
-> 
-> If we return the exact pointer that was held, we ensure this task
-> processes only the endpoint we have taken a reference to.  The
-> resultant hunk now looks like this:
-> 
->       ep = sctp_endpoint_hold(tsp->asoc->ep);
-> 	sk = ep->base.sk
-> 	lock_sock(sk);
+On Tue, Dec 7, 2021 at 10:22 AM Arnd Bergmann <arnd@arndb.de> wrote:
+>
+> On Tue, Dec 7, 2021 at 1:20 AM Paul Cercueil <paul@crapouillou.net> wrote:
+> >
+> > This patchset reworks the pm_ptr() macro I introduced a few versions
+> > ago, so that it is not conditionally defined.
+> >
+> > It applies the same treatment to the *_PM_OPS macros. Instead of
+> > modifying the existing ones, which would mean a 2000+ patch bomb, this
+> > patchset introduce two new macros to replace the now deprecated
+> > UNIVERSAL_DEV_PM_OPS() and SIMPLE_DEV_PM_OPS().
+> >
+> > The point of all of this, is to progressively switch from a code model
+> > where PM callbacks are all protected behind CONFIG_PM guards, to a code
+> > model where PM callbacks are always seen by the compiler, but discarded
+> > if not used.
+> >
+> > Patch [4/5] and [5/5] are just examples to illustrate the use of the new
+> > macros. As such they don't really have to be merged at the same time as
+> > the rest and can be delayed until a subsystem-wide patchset is proposed.
+> >
+> > - Patch [4/5] modifies a driver that already used the pm_ptr() macro,
+> >   but had to use the __maybe_unused flag to avoid compiler warnings;
+> > - Patch [5/5] modifies a driver that used a #ifdef CONFIG_PM guard
+> >   around its suspend/resume functions.
+>
+> This is fantastic, I love the new naming and it should provide a great path
+> towards converting all drivers eventually. I've added the patches to
+> my randconfig test build box to see if something breaks, but otherwise
+> I think these are ready to get into linux-next, at least patches 1-3,
+> so subsystem
+> maintainers can start queuing up the conversion patches once the
+> initial set is merged.
+>
+> Reviewed-by: Arnd Bergmann <arnd@arndb.de>
 
-If you have to explain what the next patch will do to make sense 
-of this one it really is better to merge the two patches.
-Exporting something is not a functional change, nor does it make
-the changes easier to review, in fact the opposite is true.
+Patches [0-3/5] applied as 5.17 material.
 
-> Fixes: 8f840e47f190c ("sctp: add the sctp_diag.c file")
-
-This patch in itself fixes exactly nothing.
+The mmc patches need ACKs, but I can take them too.
