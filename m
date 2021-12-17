@@ -2,194 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AD6347832E
-	for <lists+netdev@lfdr.de>; Fri, 17 Dec 2021 03:31:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 05114478328
+	for <lists+netdev@lfdr.de>; Fri, 17 Dec 2021 03:29:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231532AbhLQCbi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Dec 2021 21:31:38 -0500
-Received: from mga05.intel.com ([192.55.52.43]:43405 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229471AbhLQCbi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Dec 2021 21:31:38 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1639708298; x=1671244298;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=SPypHMHAv9NaHp5G6efoBQHfOLQ9Dr8bZYaNjglAphk=;
-  b=VpvpkhccMGCZZuQcLr28cJA15mEv9Cmjl4O1pb2eo5XUoWyGwYLDkMOw
-   g/wM6Qy1I9P4lf4tfetkDH4Dv7S4xwaz3c8M/y41DRfVmdzvu1sIseesQ
-   5G8U/M/tSvTucZc9QFNDbpFR1MPQLGpyKoldhjyvYBQxEGUQjviRDG8d1
-   m2/F6oiKPBQmoSVNoNUxVuX/r/odEnOABuKeARlls5awYgxfD/rLoJR/0
-   K7Z2imR6namleuRVdrEsgycrqyXcVxm3mwXKtTaHPPzJhJEXM3R5/HUXV
-   quN/Im1o4mmayaTJWuYCyXxxYYOn2PBG1m1Odt9vpiS3JPJJxmLpEzLU+
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10200"; a="325947193"
-X-IronPort-AV: E=Sophos;i="5.88,213,1635231600"; 
-   d="scan'208";a="325947193"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Dec 2021 18:31:37 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,213,1635231600"; 
-   d="scan'208";a="615403609"
-Received: from lkp-server02.sh.intel.com (HELO 9f38c0981d9f) ([10.239.97.151])
-  by orsmga004.jf.intel.com with ESMTP; 16 Dec 2021 18:31:34 -0800
-Received: from kbuild by 9f38c0981d9f with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1my31x-000477-Pm; Fri, 17 Dec 2021 02:31:33 +0000
-Date:   Fri, 17 Dec 2021 10:31:29 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     luizluca@gmail.com, netdev@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, linus.walleij@linaro.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
-        alsi@bang-olufsen.dk, arinc.unal@arinc9.com,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Subject: Re: [PATCH net-next 04/13] net: dsa: realtek: convert subdrivers
- into modules
-Message-ID: <202112171017.KRgToQQ1-lkp@intel.com>
-References: <20211216201342.25587-5-luizluca@gmail.com>
+        id S229893AbhLQC3u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Dec 2021 21:29:50 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:43494 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229471AbhLQC3u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Dec 2021 21:29:50 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1639708189;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=K2fGADr55yXo7f7TjPfBWN4ATcJQItvux9KNUU3Ewj8=;
+        b=asdN2kIyLFIe0sod0L8KkFDrMBOvD0V2Jgbh4nxGpe1Df72E+gfwuSvIrXkd7vjjXiiplg
+        Ss9GAN/f3TiYFur/9F28UKDt7OxexzP1SZK6visw/1Q1RmPcJue0WiLreIgiECaDrDF/HA
+        8e/Ko0RjRaX5eExI+r2wbLYxJDJwEi0=
+Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
+ [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-586-GM6NW1fYNVGVyC4vR0EVyw-1; Thu, 16 Dec 2021 21:29:48 -0500
+X-MC-Unique: GM6NW1fYNVGVyC4vR0EVyw-1
+Received: by mail-qt1-f200.google.com with SMTP id l15-20020a05622a050f00b002c09d62865fso1192983qtx.4
+        for <netdev@vger.kernel.org>; Thu, 16 Dec 2021 18:29:48 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=K2fGADr55yXo7f7TjPfBWN4ATcJQItvux9KNUU3Ewj8=;
+        b=TUf6tDDLgH3ZnHx7MJOoQSoGyGrELrx394s9APhqcVI2TimYvpK+/wSofFoF8SfphI
+         CaoihtYHLU6c8Zvl3sO00XeZB/Mj7hikz93wISrhMsUwwo2c1D/CPxCyi1c0aNKFKqVR
+         DycajcANTxStB8FKc7YhAqtqoY4obv8waO/gGRghFeJ62LN8E2Hyvf+G2Oa2qgK10TiI
+         QQEslYB/uATqK3gd+iJw0LD0Gz5eK6DDbs/XnfV7KJRzth5tTEKpv8T64u+57zubQdDI
+         GGiBmREHbE/bTwl/6B3u+WPd9xAKbR3rcirWMYySRFOf+7GD8MpnWOGfaDgP0pRGnJYc
+         059A==
+X-Gm-Message-State: AOAM533Nm5HECU4g+Vx3/lgwUW4p1TYjKWwTs08OfnnNAoId/RKwlEDE
+        GKD5leGIHCRZrnb8dQvPz96asIndRZXvcNM+JI7BDZyXlpuJAOq98bj+utAtLoSnkJmso4R12Wl
+        zLc1QNZCsJu9GAUIj
+X-Received: by 2002:ac8:5ccf:: with SMTP id s15mr772339qta.220.1639708187982;
+        Thu, 16 Dec 2021 18:29:47 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwyMiKUVxl4KMXbc95JFbcbDFOJQ+Z1UW+VAOiOB0714eV8fHUjPqfoJk+BVD648zdC5x4IOQ==
+X-Received: by 2002:ac8:5ccf:: with SMTP id s15mr772329qta.220.1639708187672;
+        Thu, 16 Dec 2021 18:29:47 -0800 (PST)
+Received: from [10.0.0.96] ([24.225.241.171])
+        by smtp.gmail.com with ESMTPSA id v1sm5958888qtw.65.2021.12.16.18.29.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 16 Dec 2021 18:29:47 -0800 (PST)
+Message-ID: <72c76cf5-b6c2-44a6-865c-deaf7cebf956@redhat.com>
+Date:   Thu, 16 Dec 2021 21:33:02 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211216201342.25587-5-luizluca@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH net-next] net: add net device refcount tracker to struct
+ packet_type
+Content-Language: en-US
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Ying Xue <ying.xue@windriver.com>
+References: <20211214150933.242895-1-eric.dumazet@gmail.com>
+From:   Jon Maloy <jmaloy@redhat.com>
+In-Reply-To: <20211214150933.242895-1-eric.dumazet@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-Thank you for the patch! Perhaps something to improve:
-
-[auto build test WARNING on net-next/master]
-
-url:    https://github.com/0day-ci/linux/commits/luizluca-gmail-com/net-dsa-realtek-MDIO-interface-and-RTL8367S/20211217-041735
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 0f473bb6ed2d0b8533a079ee133f625f83de5315
-config: arc-allyesconfig (https://download.01.org/0day-ci/archive/20211217/202112171017.KRgToQQ1-lkp@intel.com/config)
-compiler: arceb-elf-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/4bbfd185490b3b2fcc4e90a63d3137a812f03057
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review luizluca-gmail-com/net-dsa-realtek-MDIO-interface-and-RTL8367S/20211217-041735
-        git checkout 4bbfd185490b3b2fcc4e90a63d3137a812f03057
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arc SHELL=/bin/bash drivers/net/dsa/realtek/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> drivers/net/dsa/realtek/realtek-smi.c:295:5: warning: no previous prototype for 'realtek_smi_write_reg_noack' [-Wmissing-prototypes]
-     295 | int realtek_smi_write_reg_noack(struct realtek_priv *priv, u32 addr,
-         |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~
->> drivers/net/dsa/realtek/realtek-smi.c:344:5: warning: no previous prototype for 'realtek_smi_setup_mdio' [-Wmissing-prototypes]
-     344 | int realtek_smi_setup_mdio(struct dsa_switch *ds)
-         |     ^~~~~~~~~~~~~~~~~~~~~~
 
 
-vim +/realtek_smi_write_reg_noack +295 drivers/net/dsa/realtek/realtek-smi.c
+On 12/14/21 10:09, Eric Dumazet wrote:
+> From: Eric Dumazet <edumazet@google.com>
+>
+> Most notable changes are in af_packet, tipc ones are trivial.
+>
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Cc: Jon Maloy <jmaloy@redhat.com>
+> Cc: Ying Xue <ying.xue@windriver.com>
+> ---
+>   include/linux/netdevice.h |  1 +
+>   net/packet/af_packet.c    | 14 +++++++++++---
+>   net/tipc/bearer.c         |  4 ++--
+>   3 files changed, 14 insertions(+), 5 deletions(-)
+>
+> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> index 235d5d082f1a446c8d898ffcc5b1983df7c04f35..0ed0a6f0d69d3565c1db9203040838801cd71e99 100644
+> --- a/include/linux/netdevice.h
+> +++ b/include/linux/netdevice.h
+> @@ -2533,6 +2533,7 @@ struct packet_type {
+>   	__be16			type;	/* This is really htons(ether_type). */
+>   	bool			ignore_outgoing;
+>   	struct net_device	*dev;	/* NULL is wildcarded here	     */
+> +	netdevice_tracker	dev_tracker;
+>   	int			(*func) (struct sk_buff *,
+>   					 struct net_device *,
+>   					 struct packet_type *,
+> diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
+> index a1ffdb48cc474dcf91bddfd1ab96386a89c20375..71854a16afbbc1c06005e48a65cdb7007d61b019 100644
+> --- a/net/packet/af_packet.c
+> +++ b/net/packet/af_packet.c
+> @@ -3109,7 +3109,7 @@ static int packet_release(struct socket *sock)
+>   	packet_cached_dev_reset(po);
+>   
+>   	if (po->prot_hook.dev) {
+> -		dev_put(po->prot_hook.dev);
+> +		dev_put_track(po->prot_hook.dev, &po->prot_hook.dev_tracker);
+>   		po->prot_hook.dev = NULL;
+>   	}
+>   	spin_unlock(&po->bind_lock);
+> @@ -3217,18 +3217,25 @@ static int packet_do_bind(struct sock *sk, const char *name, int ifindex,
+>   		WRITE_ONCE(po->num, proto);
+>   		po->prot_hook.type = proto;
+>   
+> +		dev_put_track(dev_curr, &po->prot_hook.dev_tracker);
+> +		dev_curr = NULL;
+> +
+>   		if (unlikely(unlisted)) {
+>   			dev_put(dev);
+>   			po->prot_hook.dev = NULL;
+>   			WRITE_ONCE(po->ifindex, -1);
+>   			packet_cached_dev_reset(po);
+>   		} else {
+> +			if (dev)
+> +				netdev_tracker_alloc(dev,
+> +						     &po->prot_hook.dev_tracker,
+> +						     GFP_ATOMIC);
+>   			po->prot_hook.dev = dev;
+>   			WRITE_ONCE(po->ifindex, dev ? dev->ifindex : 0);
+>   			packet_cached_dev_assign(po, dev);
+>   		}
+>   	}
+> -	dev_put(dev_curr);
+> +	dev_put_track(dev_curr, &po->prot_hook.dev_tracker);
+>   
+>   	if (proto == 0 || !need_rehook)
+>   		goto out_unlock;
+> @@ -4138,7 +4145,8 @@ static int packet_notifier(struct notifier_block *this,
+>   				if (msg == NETDEV_UNREGISTER) {
+>   					packet_cached_dev_reset(po);
+>   					WRITE_ONCE(po->ifindex, -1);
+> -					dev_put(po->prot_hook.dev);
+> +					dev_put_track(po->prot_hook.dev,
+> +						      &po->prot_hook.dev_tracker);
+>   					po->prot_hook.dev = NULL;
+>   				}
+>   				spin_unlock(&po->bind_lock);
+> diff --git a/net/tipc/bearer.c b/net/tipc/bearer.c
+> index 60bc74b76adc5909fdb5294f205229682a09d031..473a790f58943537896c16c72b60061b5ffe6840 100644
+> --- a/net/tipc/bearer.c
+> +++ b/net/tipc/bearer.c
+> @@ -787,7 +787,7 @@ int tipc_attach_loopback(struct net *net)
+>   	if (!dev)
+>   		return -ENODEV;
+>   
+> -	dev_hold(dev);
+> +	dev_hold_track(dev, &tn->loopback_pt.dev_tracker, GFP_KERNEL);
+>   	tn->loopback_pt.dev = dev;
+>   	tn->loopback_pt.type = htons(ETH_P_TIPC);
+>   	tn->loopback_pt.func = tipc_loopback_rcv_pkt;
+> @@ -800,7 +800,7 @@ void tipc_detach_loopback(struct net *net)
+>   	struct tipc_net *tn = tipc_net(net);
+>   
+>   	dev_remove_pack(&tn->loopback_pt);
+> -	dev_put(net->loopback_dev);
+> +	dev_put_track(net->loopback_dev, &tn->loopback_pt.dev_tracker);
+>   }
+>   
+>   /* Caller should hold rtnl_lock to protect the bearer */
+Acked-by: Jon Maloy <jmaloy@redhat.com>
 
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  290  
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  291  /* There is one single case when we need to use this accessor and that
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  292   * is when issueing soft reset. Since the device reset as soon as we write
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  293   * that bit, no ACK will come back for natural reasons.
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  294   */
-4b42215ee71c0f drivers/net/dsa/realtek/realtek-smi-core.c Luiz Angelo Daros de Luca 2021-12-16 @295  int realtek_smi_write_reg_noack(struct realtek_priv *priv, u32 addr,
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  296  				u32 data)
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  297  {
-4b42215ee71c0f drivers/net/dsa/realtek/realtek-smi-core.c Luiz Angelo Daros de Luca 2021-12-16  298  	return realtek_smi_write_reg(priv, addr, data, false);
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  299  }
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  300  
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  301  /* Regmap accessors */
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  302  
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  303  static int realtek_smi_write(void *ctx, u32 reg, u32 val)
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  304  {
-4b42215ee71c0f drivers/net/dsa/realtek/realtek-smi-core.c Luiz Angelo Daros de Luca 2021-12-16  305  	struct realtek_priv *priv = ctx;
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  306  
-4b42215ee71c0f drivers/net/dsa/realtek/realtek-smi-core.c Luiz Angelo Daros de Luca 2021-12-16  307  	return realtek_smi_write_reg(priv, reg, val, true);
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  308  }
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  309  
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  310  static int realtek_smi_read(void *ctx, u32 reg, u32 *val)
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  311  {
-4b42215ee71c0f drivers/net/dsa/realtek/realtek-smi-core.c Luiz Angelo Daros de Luca 2021-12-16  312  	struct realtek_priv *priv = ctx;
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  313  
-4b42215ee71c0f drivers/net/dsa/realtek/realtek-smi-core.c Luiz Angelo Daros de Luca 2021-12-16  314  	return realtek_smi_read_reg(priv, reg, val);
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  315  }
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  316  
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  317  static const struct regmap_config realtek_smi_mdio_regmap_config = {
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  318  	.reg_bits = 10, /* A4..A0 R4..R0 */
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  319  	.val_bits = 16,
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  320  	.reg_stride = 1,
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  321  	/* PHY regs are at 0x8000 */
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  322  	.max_register = 0xffff,
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  323  	.reg_format_endian = REGMAP_ENDIAN_BIG,
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  324  	.reg_read = realtek_smi_read,
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  325  	.reg_write = realtek_smi_write,
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  326  	.cache_type = REGCACHE_NONE,
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  327  };
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  328  
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  329  static int realtek_smi_mdio_read(struct mii_bus *bus, int addr, int regnum)
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  330  {
-4b42215ee71c0f drivers/net/dsa/realtek/realtek-smi-core.c Luiz Angelo Daros de Luca 2021-12-16  331  	struct realtek_priv *priv = bus->priv;
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  332  
-4b42215ee71c0f drivers/net/dsa/realtek/realtek-smi-core.c Luiz Angelo Daros de Luca 2021-12-16  333  	return priv->ops->phy_read(priv, addr, regnum);
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  334  }
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  335  
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  336  static int realtek_smi_mdio_write(struct mii_bus *bus, int addr, int regnum,
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  337  				  u16 val)
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  338  {
-4b42215ee71c0f drivers/net/dsa/realtek/realtek-smi-core.c Luiz Angelo Daros de Luca 2021-12-16  339  	struct realtek_priv *priv = bus->priv;
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  340  
-4b42215ee71c0f drivers/net/dsa/realtek/realtek-smi-core.c Luiz Angelo Daros de Luca 2021-12-16  341  	return priv->ops->phy_write(priv, addr, regnum, val);
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  342  }
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  343  
-4bbfd185490b3b drivers/net/dsa/realtek/realtek-smi.c      Luiz Angelo Daros de Luca 2021-12-16 @344  int realtek_smi_setup_mdio(struct dsa_switch *ds)
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  345  {
-4bbfd185490b3b drivers/net/dsa/realtek/realtek-smi.c      Luiz Angelo Daros de Luca 2021-12-16  346  	struct realtek_priv *priv =  (struct realtek_priv *)ds->priv;
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  347  	struct device_node *mdio_np;
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  348  	int ret;
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  349  
-4b42215ee71c0f drivers/net/dsa/realtek/realtek-smi-core.c Luiz Angelo Daros de Luca 2021-12-16  350  	mdio_np = of_get_compatible_child(priv->dev->of_node, "realtek,smi-mdio");
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  351  	if (!mdio_np) {
-4b42215ee71c0f drivers/net/dsa/realtek/realtek-smi-core.c Luiz Angelo Daros de Luca 2021-12-16  352  		dev_err(priv->dev, "no MDIO bus node\n");
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  353  		return -ENODEV;
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  354  	}
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  355  
-4b42215ee71c0f drivers/net/dsa/realtek/realtek-smi-core.c Luiz Angelo Daros de Luca 2021-12-16  356  	priv->slave_mii_bus = devm_mdiobus_alloc(priv->dev);
-4b42215ee71c0f drivers/net/dsa/realtek/realtek-smi-core.c Luiz Angelo Daros de Luca 2021-12-16  357  	if (!priv->slave_mii_bus) {
-3f1bb6abdf19cf drivers/net/dsa/realtek-smi.c              Johan Hovold              2019-01-16  358  		ret = -ENOMEM;
-3f1bb6abdf19cf drivers/net/dsa/realtek-smi.c              Johan Hovold              2019-01-16  359  		goto err_put_node;
-3f1bb6abdf19cf drivers/net/dsa/realtek-smi.c              Johan Hovold              2019-01-16  360  	}
-4b42215ee71c0f drivers/net/dsa/realtek/realtek-smi-core.c Luiz Angelo Daros de Luca 2021-12-16  361  	priv->slave_mii_bus->priv = priv;
-4b42215ee71c0f drivers/net/dsa/realtek/realtek-smi-core.c Luiz Angelo Daros de Luca 2021-12-16  362  	priv->slave_mii_bus->name = "SMI slave MII";
-4b42215ee71c0f drivers/net/dsa/realtek/realtek-smi-core.c Luiz Angelo Daros de Luca 2021-12-16  363  	priv->slave_mii_bus->read = realtek_smi_mdio_read;
-4b42215ee71c0f drivers/net/dsa/realtek/realtek-smi-core.c Luiz Angelo Daros de Luca 2021-12-16  364  	priv->slave_mii_bus->write = realtek_smi_mdio_write;
-4b42215ee71c0f drivers/net/dsa/realtek/realtek-smi-core.c Luiz Angelo Daros de Luca 2021-12-16  365  	snprintf(priv->slave_mii_bus->id, MII_BUS_ID_SIZE, "SMI-%d",
-4bbfd185490b3b drivers/net/dsa/realtek/realtek-smi.c      Luiz Angelo Daros de Luca 2021-12-16  366  		 ds->index);
-4b42215ee71c0f drivers/net/dsa/realtek/realtek-smi-core.c Luiz Angelo Daros de Luca 2021-12-16  367  	priv->slave_mii_bus->dev.of_node = mdio_np;
-4b42215ee71c0f drivers/net/dsa/realtek/realtek-smi-core.c Luiz Angelo Daros de Luca 2021-12-16  368  	priv->slave_mii_bus->parent = priv->dev;
-4bbfd185490b3b drivers/net/dsa/realtek/realtek-smi.c      Luiz Angelo Daros de Luca 2021-12-16  369  	ds->slave_mii_bus = priv->slave_mii_bus;
-4b42215ee71c0f drivers/net/dsa/realtek/realtek-smi-core.c Luiz Angelo Daros de Luca 2021-12-16  370  
-4b42215ee71c0f drivers/net/dsa/realtek/realtek-smi-core.c Luiz Angelo Daros de Luca 2021-12-16  371  	ret = devm_of_mdiobus_register(priv->dev, priv->slave_mii_bus, mdio_np);
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  372  	if (ret) {
-4b42215ee71c0f drivers/net/dsa/realtek/realtek-smi-core.c Luiz Angelo Daros de Luca 2021-12-16  373  		dev_err(priv->dev, "unable to register MDIO bus %s\n",
-4b42215ee71c0f drivers/net/dsa/realtek/realtek-smi-core.c Luiz Angelo Daros de Luca 2021-12-16  374  			priv->slave_mii_bus->id);
-3f1bb6abdf19cf drivers/net/dsa/realtek-smi.c              Johan Hovold              2019-01-16  375  		goto err_put_node;
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  376  	}
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  377  
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  378  	return 0;
-3f1bb6abdf19cf drivers/net/dsa/realtek-smi.c              Johan Hovold              2019-01-16  379  
-3f1bb6abdf19cf drivers/net/dsa/realtek-smi.c              Johan Hovold              2019-01-16  380  err_put_node:
-3f1bb6abdf19cf drivers/net/dsa/realtek-smi.c              Johan Hovold              2019-01-16  381  	of_node_put(mdio_np);
-3f1bb6abdf19cf drivers/net/dsa/realtek-smi.c              Johan Hovold              2019-01-16  382  
-3f1bb6abdf19cf drivers/net/dsa/realtek-smi.c              Johan Hovold              2019-01-16  383  	return ret;
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  384  }
-d8652956cf37c5 drivers/net/dsa/realtek-smi.c              Linus Walleij             2018-07-14  385  
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
