@@ -2,101 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B7351479402
-	for <lists+netdev@lfdr.de>; Fri, 17 Dec 2021 19:22:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EEB6547940B
+	for <lists+netdev@lfdr.de>; Fri, 17 Dec 2021 19:24:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236660AbhLQSWr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Dec 2021 13:22:47 -0500
-Received: from mail-ot1-f52.google.com ([209.85.210.52]:43883 "EHLO
-        mail-ot1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229543AbhLQSWq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Dec 2021 13:22:46 -0500
-Received: by mail-ot1-f52.google.com with SMTP id i5-20020a05683033e500b0057a369ac614so3899522otu.10;
-        Fri, 17 Dec 2021 10:22:46 -0800 (PST)
+        id S240295AbhLQSYE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Dec 2021 13:24:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42864 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229543AbhLQSYD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Dec 2021 13:24:03 -0500
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B4DFC061574;
+        Fri, 17 Dec 2021 10:24:03 -0800 (PST)
+Received: by mail-wr1-x42a.google.com with SMTP id r17so5336274wrc.3;
+        Fri, 17 Dec 2021 10:24:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1DaKXL8orHozQmF64Lx5P0LmTQ5Gm5T6HjA9h/tMGP8=;
+        b=BsipFRerfGIbeJTeuRbVUn3UqG+64FCNItkHw9vUN1xUtYkwmFpROX+fv9Eilq+qp7
+         gns9xBw9nZZrqh/+sdZN6fmr1lxvZIl4N/UHYog9gLv54yldzSWj4a0K/MfIB622DQKx
+         2H4lemRpOOukPWNQST9JYB+Q0m871UzMN+AFEXHqfDWegjIxX2PWf0fRexRDcX8D3SKG
+         sWu/Kx+g05AUpBzeAWXvV3l/KOclFVpJyxto2ZExTDggkwBVYMkjZq+8tqqptamPspX9
+         KqieSXOyC7KmwoV3WnRNmN+d9kMmGhlRZ84w7HVVNOZslGEpScfBsZk/5C394TMGPjuy
+         bk5g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=iacQ2xq7pRu5pLbunKAx9x9AO22U2fvGNMTvcbJAoKY=;
-        b=xNn7oJtx0QjRWUCdgwuB43GTlFjTn4zTtquTx4SiQNsWPI9OfuRsBu5A91yq8tSV2q
-         9Se1qyfWUBqtj3/mfIRDuCeQuHlAcknVmqCzyKYRSvaURGHgULw6lLk0enhQvGZSa/CI
-         NF+2hd2Nwk3o+NDnVp1IqTLFX4iYzXPvrLLAldXuws1XZudaUW9u4rWWuZaEL9FC0j9o
-         wwBu7NjDnHKwc4ahvdVOCyGN4ESXMqcz9JpBr/uiw9VrkNlQ6wQtXvEJEcKmHJbqCU+H
-         FT2xDEBmglUELXCp3Cm/yKXKG+9EtT0nPai2hCWA1ME9yFhNh5pn3miz7B4Ctz0iCWJE
-         5DuA==
-X-Gm-Message-State: AOAM533n71aqDiVHAXFQSUCYduFrwrbwAYvy0U8s6qwogD0r61lVhp1A
-        KmPDlzW7ib3zhok0tman98r7knlaXbkuLIOyPzI=
-X-Google-Smtp-Source: ABdhPJxI12wARVUILH+ZCGLckVXEelIiMxBOxUhxY5dsu5jdzrnldizgAKVR1BVlGzCjq6KhCfNfsa2ikGJ0LMJBTng=
-X-Received: by 2002:a05:6830:348f:: with SMTP id c15mr3179707otu.254.1639765365912;
- Fri, 17 Dec 2021 10:22:45 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1DaKXL8orHozQmF64Lx5P0LmTQ5Gm5T6HjA9h/tMGP8=;
+        b=bbypZdo5ZVAHi5FIoC9kHzE6hS2v9sTgmIV+8+8dC6dc3UBfh3ABLsNiK9dypxlD3P
+         OF7zrDG4VcDwKoyY3+G8sRxr0G0hPF/uAqKztfaBJswRyJvyQgpRzfXmEHXLm56brUjH
+         +rfWDQSSn5nSWtnlDMWkDFX66BId3oCmrtqvcdxmzcMu8IaGcTUJtHqERBXs5O+KbdJw
+         IJP80A49TCXeUO+SZKplqjF7fAg0KrlPhFDzzgIjYdH5oAHUCaKzSCBMJvExMXZ2Gnth
+         upYkyADIHKEuG3l28cLZ36jFPFoboqmbmf6wH2g7d7+ka2DhixZ4il6H3RO0GpjEIOjo
+         uZJA==
+X-Gm-Message-State: AOAM531UXoU9E5n3XlSbsNAvWmJIIewC++KTu72Uu0j0EE6boiZmdPTt
+        u1AzvWi8e4cHMkZFUJxFWWM=
+X-Google-Smtp-Source: ABdhPJwzAPXhWGTvt6MEl6bjCoE4AGsG11ijHe8AsJObT74ax5zenkB6BRkQI/+L4y18/l4UW6Gh6Q==
+X-Received: by 2002:adf:9146:: with SMTP id j64mr3540685wrj.487.1639765441644;
+        Fri, 17 Dec 2021 10:24:01 -0800 (PST)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id q123sm10860191wma.30.2021.12.17.10.24.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 17 Dec 2021 10:24:01 -0800 (PST)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     Shuah Khan <shuah@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][next] bpf, selftests: Fix spelling mistake "tained" -> "tainted"
+Date:   Fri, 17 Dec 2021 18:24:00 +0000
+Message-Id: <20211217182400.39296-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-References: <20211207002102.26414-1-paul@crapouillou.net> <CAK8P3a3xfuFN+0Gb694R_W2tpC7PfFEFcpsAyPdanqZ6FpVoxQ@mail.gmail.com>
- <CAJZ5v0jifFWLJgjJywGrjWgE9ZQkjD03rQDHw+4YL-VzkfL1Hg@mail.gmail.com> <CAPDyKFpfWZsw+7aZdQVsCsTxoEfUqpkZM6Ozfr5COQNNaqhLhA@mail.gmail.com>
-In-Reply-To: <CAPDyKFpfWZsw+7aZdQVsCsTxoEfUqpkZM6Ozfr5COQNNaqhLhA@mail.gmail.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Fri, 17 Dec 2021 19:22:34 +0100
-Message-ID: <CAJZ5v0gqVtOhrC72ey8hPSCuP+DfHJk2qK_pemvpmHGLvPSFRQ@mail.gmail.com>
-Subject: Re: [PATCH 0/5] Rework pm_ptr() and *_PM_OPS macros
-To:     Ulf Hansson <ulf.hansson@linaro.org>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Pavel Machek <pavel@ucw.cz>, Len Brown <len.brown@intel.com>,
-        Jonathan Cameron <jic23@kernel.org>, list@opendingux.net,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        linux-mmc <linux-mmc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Linux PM list <linux-pm@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 17, 2021 at 6:17 PM Ulf Hansson <ulf.hansson@linaro.org> wrote:
->
-> On Fri, 17 Dec 2021 at 16:07, Rafael J. Wysocki <rafael@kernel.org> wrote:
-> >
-> > On Tue, Dec 7, 2021 at 10:22 AM Arnd Bergmann <arnd@arndb.de> wrote:
-> > >
-> > > On Tue, Dec 7, 2021 at 1:20 AM Paul Cercueil <paul@crapouillou.net> wrote:
-> > > >
-> > > > This patchset reworks the pm_ptr() macro I introduced a few versions
-> > > > ago, so that it is not conditionally defined.
-> > > >
-> > > > It applies the same treatment to the *_PM_OPS macros. Instead of
-> > > > modifying the existing ones, which would mean a 2000+ patch bomb, this
-> > > > patchset introduce two new macros to replace the now deprecated
-> > > > UNIVERSAL_DEV_PM_OPS() and SIMPLE_DEV_PM_OPS().
-> > > >
-> > > > The point of all of this, is to progressively switch from a code model
-> > > > where PM callbacks are all protected behind CONFIG_PM guards, to a code
-> > > > model where PM callbacks are always seen by the compiler, but discarded
-> > > > if not used.
-> > > >
-> > > > Patch [4/5] and [5/5] are just examples to illustrate the use of the new
-> > > > macros. As such they don't really have to be merged at the same time as
-> > > > the rest and can be delayed until a subsystem-wide patchset is proposed.
-> > > >
-> > > > - Patch [4/5] modifies a driver that already used the pm_ptr() macro,
-> > > >   but had to use the __maybe_unused flag to avoid compiler warnings;
-> > > > - Patch [5/5] modifies a driver that used a #ifdef CONFIG_PM guard
-> > > >   around its suspend/resume functions.
-> > >
-> > > This is fantastic, I love the new naming and it should provide a great path
-> > > towards converting all drivers eventually. I've added the patches to
-> > > my randconfig test build box to see if something breaks, but otherwise
-> > > I think these are ready to get into linux-next, at least patches 1-3,
-> > > so subsystem
-> > > maintainers can start queuing up the conversion patches once the
-> > > initial set is merged.
-> > >
-> > > Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-> >
-> > Patches [0-3/5] applied as 5.17 material.
-> >
-> > The mmc patches need ACKs, but I can take them too.
->
-> Sure, please add my ack for them!
+There appears to be a spelling mistake in a bpf test message. Fix it.
 
-Both applied as 5.17 material with your ACKs, thanks!
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+---
+ tools/testing/selftests/bpf/verifier/value_ptr_arith.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tools/testing/selftests/bpf/verifier/value_ptr_arith.c b/tools/testing/selftests/bpf/verifier/value_ptr_arith.c
+index 4d347bc53aa2..359f3e8f8b60 100644
+--- a/tools/testing/selftests/bpf/verifier/value_ptr_arith.c
++++ b/tools/testing/selftests/bpf/verifier/value_ptr_arith.c
+@@ -1078,7 +1078,7 @@
+ 	.errstr_unpriv = "R0 pointer -= pointer prohibited",
+ },
+ {
+-	"map access: trying to leak tained dst reg",
++	"map access: trying to leak tainted dst reg",
+ 	.insns = {
+ 	BPF_MOV64_IMM(BPF_REG_0, 0),
+ 	BPF_ST_MEM(BPF_DW, BPF_REG_10, -8, 0),
+-- 
+2.33.1
+
