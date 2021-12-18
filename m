@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ABCC3479E5B
-	for <lists+netdev@lfdr.de>; Sun, 19 Dec 2021 00:56:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 41510479E55
+	for <lists+netdev@lfdr.de>; Sun, 19 Dec 2021 00:56:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235209AbhLRXyu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Dec 2021 18:54:50 -0500
-Received: from o1.ptr2625.egauge.net ([167.89.112.53]:25742 "EHLO
+        id S235073AbhLRXyb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Dec 2021 18:54:31 -0500
+Received: from o1.ptr2625.egauge.net ([167.89.112.53]:25692 "EHLO
         o1.ptr2625.egauge.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234970AbhLRXy0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Dec 2021 18:54:26 -0500
+        with ESMTP id S234971AbhLRXy1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Dec 2021 18:54:27 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=egauge.net;
         h=from:subject:in-reply-to:references:mime-version:to:cc:
         content-transfer-encoding:content-type;
-        s=sgd; bh=jRNhAennxhSOZdi9qsIRPJJ4YYwbnqaPLGNJtjqVSho=;
-        b=uvgzfNW/cHH+zlnbyfof8acKjkqPEySKkSdHlxbm5FTSDMUpodiFhwgkT4O7CDKrH6nI
-        pWf2ph3QvPV593hi8G4SaqBwjbai5uW2C45v2YSaBMhJYtxSQxrilZoJitiUxX7+J1B6rG
-        Uidm0J8lXj3WpTtAy8MAmA17C87ZJWzOsGZNFsZ929HCywalkXbopv8iWvckPKFyIr+xuw
-        sBADbwclF3cVuU+wzAbHrklqNq5VFijViUPXJEAFDLU+/RdJtwF/rOqM0NH5+hFeRNtZiF
-        vzq4E6ASWhl98ke6r89Ni5MbhUmYY93R9BaPMAGAo/B+o2GZ/TaVSBcHF0qwqdgw==
-Received: by filterdrecv-656998cfdd-5st9z with SMTP id filterdrecv-656998cfdd-5st9z-1-61BE74A9-8
-        2021-12-18 23:54:17.245944614 +0000 UTC m=+7604801.208387376
+        s=sgd; bh=CGtla6DXX2NW6UxMvorEq0hg5En8baXls+s5VuU2yW4=;
+        b=ZT3DPigF+8Yzg//T+tvalTQV4U/iqz+uDPUDgYectHbd8Wz+Did4jaNjpb1YGt6K8Rqc
+        RgZb/DGQK7zMwVNzzNn1WsyuDe2ETacSJ/C3U/BS6wzMUpn+8ZTpISTYYc28E68DCIFgch
+        0loZmI1hf2frplbHUGPDkRsLy39w8cYEvX644u8W6bX8SPEThdb11Rdx19WNdvcFNhqwBs
+        znplANeHSIYiKHcS5cEobKbjl8ZVGi2DwV7Hf/Wm3GRLqpXDWCWc0hrgJNuyGz+Cg3N4ya
+        4/bbiDzuadYC0gAjkbA3smcEuQQ+/cunsH09Xs9z5/lS83iE3AlIN59zjTtZB71A==
+Received: by filterdrecv-75ff7b5ffb-bdt5z with SMTP id filterdrecv-75ff7b5ffb-bdt5z-1-61BE74A8-34
+        2021-12-18 23:54:16.964242185 +0000 UTC m=+9336801.486918079
 Received: from pearl.egauge.net (unknown)
-        by geopod-ismtpd-6-0 (SG)
+        by geopod-ismtpd-3-1 (SG)
         with ESMTP
-        id DVHNYCnNSJKWCPObHJ9w1Q
-        Sat, 18 Dec 2021 23:54:17.085 +0000 (UTC)
+        id wkYIxbwqTFmuQuj_BBAN5w
+        Sat, 18 Dec 2021 23:54:16.793 +0000 (UTC)
 Received: by pearl.egauge.net (Postfix, from userid 1000)
-        id D290970144A; Sat, 18 Dec 2021 16:54:15 -0700 (MST)
+        id AFA9870122E; Sat, 18 Dec 2021 16:54:15 -0700 (MST)
 From:   David Mosberger-Tang <davidm@egauge.net>
-Subject: [PATCH 20/23] wilc1000: eliminate "max_size_over" variable in
- fill_vmm_table
+Subject: [PATCH 14/23] wilc1000: if there is no tx packet, don't increment
+ packets-sent counter
 Date:   Sat, 18 Dec 2021 23:54:17 +0000 (UTC)
-Message-Id: <20211218235404.3963475-21-davidm@egauge.net>
+Message-Id: <20211218235404.3963475-15-davidm@egauge.net>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211218235404.3963475-1-davidm@egauge.net>
 References: <20211218235404.3963475-1-davidm@egauge.net>
 MIME-Version: 1.0
 X-SG-EID: =?us-ascii?Q?+kMxBqj35EdRUKoy8diX1j4AXmPtd302oan+iXZuF8m2Nw4HRW2irNspffT=2Fkh?=
- =?us-ascii?Q?ET6RJF6+Prbl0h=2FEtF1rRLvP5YoI1SZSYpzAPoR?=
- =?us-ascii?Q?7eME5H12K8x8BE2v0SzM9CHFoNuHjXtQfe0MZ7r?=
- =?us-ascii?Q?nuDn4joPDIcXw5mMeMKPXpUrEczzJfUNK4XEV25?=
- =?us-ascii?Q?XWIpeCkrP0mo4sMjaxuzUkp7oCPqbA1qGvimWwV?=
- =?us-ascii?Q?O4H+8u8DR0oOPz5nbdIgjbdASGcAuTMEw5PARb?=
+ =?us-ascii?Q?ET6RJF6+Prbl0h=2FEtF1rRLvIzRn4xIwWHyaaa0M?=
+ =?us-ascii?Q?uWcdn1anLz9y3H4r2KThLcMiVEY0EIxgr1EXfxo?=
+ =?us-ascii?Q?yFPRY3oI2uiNhcfBpx5zzTshO9hQbJngtu7RCDC?=
+ =?us-ascii?Q?nuKS4X2Ry+G7kFYyXUn7f4=2FyfmC6nUf=2FKrtRh6D?=
+ =?us-ascii?Q?qCA9Ixs7hgwSx7OGrsjormXz7GhwIbGyW5WC2l?=
 To:     Ajay Singh <ajay.kathat@microchip.com>
 Cc:     Claudiu Beznea <claudiu.beznea@microchip.com>,
         Kalle Valo <kvalo@codeaurora.org>,
@@ -59,71 +59,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This makes the code tighter and easier to understand.
+Granted, this case is mostly theoretical as the queue should never be
+empty in this place, and hence tqe should never be NULL, but it's
+still wrong to count a packet that doesn't exist.
 
 Signed-off-by: David Mosberger-Tang <davidm@egauge.net>
 ---
- drivers/net/wireless/microchip/wilc1000/wlan.c | 18 +++++++-----------
- 1 file changed, 7 insertions(+), 11 deletions(-)
+ drivers/net/wireless/microchip/wilc1000/wlan.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/net/wireless/microchip/wilc1000/wlan.c b/drivers/net/wireless/microchip/wilc1000/wlan.c
-index 8652ec9f6d9c8..88a981b00bda2 100644
+index 6484e4ab8e159..8e8f0e1de7c4c 100644
 --- a/drivers/net/wireless/microchip/wilc1000/wlan.c
 +++ b/drivers/net/wireless/microchip/wilc1000/wlan.c
-@@ -635,7 +635,7 @@ static int fill_vmm_table(const struct wilc *wilc,
- 	u32 sum;
- 	u8 ac_preserve_ratio[NQUEUES] = {1, 1, 1, 1};
- 	u8 *num_pkts_to_add;
--	bool max_size_over = 0, ac_exist = 0;
-+	bool ac_exist = 0;
- 	int vmm_sz = 0;
- 	struct sk_buff *tqe_q[NQUEUES];
- 	struct wilc_skb_tx_cb *tx_cb;
-@@ -645,20 +645,17 @@ static int fill_vmm_table(const struct wilc *wilc,
+@@ -893,10 +893,10 @@ int wilc_wlan_handle_txq(struct wilc *wilc, u32 *txq_count)
+ 		u8 mgmt_ptk = 0;
  
- 	i = 0;
- 	sum = 0;
--	max_size_over = 0;
- 	num_pkts_to_add = ac_desired_ratio;
- 	do {
- 		ac_exist = 0;
--		for (ac = 0; (ac < NQUEUES) && (!max_size_over); ac++) {
-+		for (ac = 0; ac < NQUEUES; ac++) {
- 			if (!tqe_q[ac])
- 				continue;
+ 		tqe = wilc_wlan_txq_remove_from_head(wilc, vmm_entries_ac[i]);
+-		ac_pkt_num_to_chip[vmm_entries_ac[i]]++;
+ 		if (!tqe)
+ 			break;
  
- 			ac_exist = 1;
--			for (k = 0; (k < num_pkts_to_add[ac]) &&
--			     (!max_size_over) && tqe_q[ac]; k++) {
-+			for (k = 0; (k < num_pkts_to_add[ac]) && tqe_q[ac]; k++) {
- 				if (i >= (WILC_VMM_TBL_SIZE - 1)) {
--					max_size_over = 1;
--					break;
-+					goto out;
- 				}
- 
- 				tx_cb = WILC_SKB_TX_CB(tqe_q[ac]);
-@@ -673,8 +670,7 @@ static int fill_vmm_table(const struct wilc *wilc,
- 				vmm_sz = ALIGN(vmm_sz, 4);
- 
- 				if ((sum + vmm_sz) > WILC_TX_BUFF_SIZE) {
--					max_size_over = 1;
--					break;
-+					goto out;
- 				}
- 				vmm_table[i] = vmm_sz / 4;
- 				if (tx_cb->type == WILC_CFG_PKT)
-@@ -690,8 +686,8 @@ static int fill_vmm_table(const struct wilc *wilc,
- 			}
- 		}
- 		num_pkts_to_add = ac_preserve_ratio;
--	} while (!max_size_over && ac_exist);
--
-+	} while (ac_exist);
-+out:
- 	vmm_table[i] = 0x0;
- 	return i;
- }
++		ac_pkt_num_to_chip[vmm_entries_ac[i]]++;
+ 		vif = tqe->vif;
+ 		if (vmm_table[i] == 0)
+ 			break;
 -- 
 2.25.1
 
