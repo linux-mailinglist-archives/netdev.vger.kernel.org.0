@@ -2,92 +2,261 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 362E4479ADC
-	for <lists+netdev@lfdr.de>; Sat, 18 Dec 2021 13:58:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CA85479BA7
+	for <lists+netdev@lfdr.de>; Sat, 18 Dec 2021 16:59:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233209AbhLRM6j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Dec 2021 07:58:39 -0500
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:17148 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231748AbhLRM6j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Dec 2021 07:58:39 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1639832319; x=1671368319;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=k8rUJHLOFqptEjRq5e0B1yL89lUJ1IVO33IrB6HwBuA=;
-  b=1pF+DFt2VFOTt38XQkCVmuSFXzZQ0ckiB4J/EZcNtRFJki2gGoHX3X4x
-   DUx6Mczyo+5g5UN0eeif/ZIM98mwoK+w4j+aOx7ZeVACvwAJzCY/JaSRR
-   77Me9VdJx2QdNLiCSz1rSOHs/GYFjzEZDMNQSJ+HOozk1gAgq85BbfjJx
-   d7zcRmC+wFPFAj8Pm+Dx1p8nyTw21zGjFgx3ZmMd0gi4VW3KTMaGPh0UH
-   zLQfvUI5i8c6uFsQ1PnQBi+cve6FzTI5Bif+k2X4CGHRpcbIKxZKMrYdC
-   +T3I1bL/Yb03Drih2hf+1dbNHzePf+WzbSD3FFZYC4Yv2w6/BBVujUKFg
-   g==;
-IronPort-SDR: rbLK/0/d2KyIkGCghYDqok6XLDgi72O6r6f/ixWK9g4Uzn4ZPsLHEpvQKO6tbJ95LG1vj0JNEI
- lZIvFRL2cB5G+EkLwP+2jTE4ZFYW7jux73eCHwCE5Ulo7kHaKKdabREXTcQElwoNdeCcUKRzXU
- zXAwG5rVTEAzMaua5Fqd9jbIwsCKz5WhIj+ffj0Af/P+TXCSXF/colyXatBTOpsOKFknY/nCOT
- Adr4sj4BTiHUvM0ohw4nftgXn9jy3XtzRFWNuznPQfp6EdMNsYQdC1PAVRdAOr/uEnFQOy0FxR
- u7xxThMCqshzod5eXiHqERbb
-X-IronPort-AV: E=Sophos;i="5.88,216,1635231600"; 
-   d="scan'208";a="147682204"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 18 Dec 2021 05:58:38 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Sat, 18 Dec 2021 05:58:37 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Sat, 18 Dec 2021 05:58:37 -0700
-Date:   Sat, 18 Dec 2021 14:00:42 +0100
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>
-Subject: Re: [PATCH net-next v7 7/9] net: lan966x: Add vlan support.
-Message-ID: <20211218130042.77ebu7otpqfpqq7x@soft-dev3-1.localhost>
-References: <20211217155353.460594-1-horatiu.vultur@microchip.com>
- <20211217155353.460594-8-horatiu.vultur@microchip.com>
- <20211217181434.mfnur3nucfiykgto@skbuf>
+        id S232268AbhLRP7d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Dec 2021 10:59:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43474 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229542AbhLRP7c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Dec 2021 10:59:32 -0500
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2C20C061574
+        for <netdev@vger.kernel.org>; Sat, 18 Dec 2021 07:59:31 -0800 (PST)
+Received: by mail-ed1-x52e.google.com with SMTP id g14so19765885edb.8
+        for <netdev@vger.kernel.org>; Sat, 18 Dec 2021 07:59:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=muGbYBIqLes8K+JtrsY2QZuMCdJdjHFrD12GFV27Y1I=;
+        b=CFsO8SQAI9llW571MNWLZeplecVummp3vcO7P8DZdoC1MYDU1qzDLTs5Y3U8iFRpEE
+         yhk+dESedzoXl4oouUvRWhjGJj9gJBSKsiCE9+3vjHxxGYz5KxzRlGViIkLlVKupdB0S
+         TP08kHOO+U7Uc9aHyNnsF9PI25/U2yzvwpfLVa0Wzjd+lEpEhELU7L3/O+HZrMYr1zzN
+         VSD16/lLD+KUNlrRA5h0rn4Z9j/zVFXrJl/jwWDCtP5WcMbQGVgbSsCYgnhVKMl9DnJ8
+         i/CZj/qrwTGS3CB+RZhTSGH3SFpTkhDvgKpsPp4AFpnoAnbiOqk6C6iBotxLShzMs2vL
+         fW4Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=muGbYBIqLes8K+JtrsY2QZuMCdJdjHFrD12GFV27Y1I=;
+        b=ATad4BjZDjZDJsht+m9igStQl054dynJpJ8FNvzQrKY8v/swg8z1YEe7sh5WfCQ+Sk
+         ddKEd9nvSUhVe+NrbGskmzGFL6XgDYiafwYsU3077CtXqr5fMWO+tNib9LG9AcWKdKXh
+         ULkNf5neX/MiZgemDtHS/pv93yhEXugDsviFyAiOAogQCdtyzwioMvuoP/OcBsq6YcaO
+         KAnB8lEYnV8/MwBi5egDPHcscaRys+oukyvP7OSoKF4RVT7qMYKVBrq2fLFm39NjKMAg
+         1R+OvcmNaHmkIWcVbs1GvE65kqidrDPmdHrA9cP+x4f+Dgl0Y+dPqcmyq0B4DXsdqUFD
+         55NQ==
+X-Gm-Message-State: AOAM532N/9rp1QeclmVEnE4rmbu1HPN/zQ0kWHFUxyDkwLOktNsxk4CF
+        3dL03ZBwiGPt8NSPRzk6SpEO5aU+7wEKSVJapn7gY4LuMCQ=
+X-Google-Smtp-Source: ABdhPJyn7XAebyDhQAdvLnBX7WmRuU2h2bOJdVno3SJcu/0x3ndIq5eXDeG2pudrO6nUTVLWvVt7O19UmygHmwJ1AsY=
+X-Received: by 2002:a17:906:1e05:: with SMTP id g5mr6505912ejj.552.1639843170300;
+ Sat, 18 Dec 2021 07:59:30 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <20211217181434.mfnur3nucfiykgto@skbuf>
+References: <20211217080103.35454-1-xiangxia.m.yue@gmail.com> <20211217080103.35454-2-xiangxia.m.yue@gmail.com>
+In-Reply-To: <20211217080103.35454-2-xiangxia.m.yue@gmail.com>
+From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Date:   Sat, 18 Dec 2021 23:58:54 +0800
+Message-ID: <CAMDZJNWL6uU0kWjJcLZKjfWx18O7=hmTHfvGw2khxQXro9=ukQ@mail.gmail.com>
+Subject: Re: [net-next v4 1/2] net: sched: use queue_mapping to pick tx queue
+To:     Linux Kernel Network Developers <netdev@vger.kernel.org>
+Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Talal Ahmad <talalahmad@google.com>,
+        Kevin Hao <haokexin@gmail.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Kees Cook <keescook@chromium.org>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Wei Wang <weiwan@google.com>, Arnd Bergmann <arnd@arndb.de>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 12/17/2021 18:14, Vladimir Oltean wrote:
-> 
-> On Fri, Dec 17, 2021 at 04:53:51PM +0100, Horatiu Vultur wrote:
-> > @@ -120,7 +124,12 @@ static void lan966x_port_bridge_leave(struct lan966x_port *port,
-> >       if (!lan966x->bridge_mask)
-> >               lan966x->bridge = NULL;
-> >
-> > -     lan966x_mac_cpu_learn(lan966x, port->dev->dev_addr, PORT_PVID);
-> > +     /* Set the port back to host mode */
-> > +     lan966x_vlan_port_set_vlan_aware(port, false);
-> > +     lan966x_vlan_port_set_vid(port, HOST_PVID, false, false);
-> > +     lan966x_vlan_port_apply(port);
-> > +
-> > +     lan966x_mac_cpu_learn(lan966x, port->dev->dev_addr, HOST_PVID);
-> 
-> Do you still need to re-learn the port MAC address?
+On Fri, Dec 17, 2021 at 4:01 PM <xiangxia.m.yue@gmail.com> wrote:
+>
+> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+>
+> This patch fixes issue:
+> * If we install tc filters with act_skbedit in clsact hook.
+>   It doesn't work, because netdev_core_pick_tx() overwrites
+>   queue_mapping.
+>
+>   $ tc filter ... action skbedit queue_mapping 1
+>
+> And this patch is useful:
+> * We can use FQ + EDT to implement efficient policies. Tx queues
+>   are picked by xps, ndo_select_queue of netdev driver, or skb hash
+>   in netdev_core_pick_tx(). In fact, the netdev driver, and skb
+>   hash are _not_ under control. xps uses the CPUs map to select Tx
+>   queues, but we can't figure out which task_struct of pod/containter
+>   running on this cpu in most case. We can use clsact filters to classify
+>   one pod/container traffic to one Tx queue. Why ?
+>
+>   In containter networking environment, there are two kinds of pod/
+>   containter/net-namespace. One kind (e.g. P1, P2), the high throughput
+>   is key in these applications. But avoid running out of network resource,
+>   the outbound traffic of these pods is limited, using or sharing one
+>   dedicated Tx queues assigned HTB/TBF/FQ Qdisc. Other kind of pods
+>   (e.g. Pn), the low latency of data access is key. And the traffic is not
+>   limited. Pods use or share other dedicated Tx queues assigned FIFO Qdisc.
+>   This choice provides two benefits. First, contention on the HTB/FQ Qdisc
+>   lock is significantly reduced since fewer CPUs contend for the same queue.
+>   More importantly, Qdisc contention can be eliminated completely if each
+>   CPU has its own FIFO Qdisc for the second kind of pods.
+>
+>   There must be a mechanism in place to support classifying traffic based on
+>   pods/container to different Tx queues. Note that clsact is outside of Qdisc
+>   while Qdisc can run a classifier to select a sub-queue under the lock.
+>
+>   In general recording the decision in the skb seems a little heavy handed.
+>   This patch introduces a per-CPU variable, suggested by Eric.
+>
+>   The xmit.skip_txqueue flag is firstly cleared in __dev_queue_xmit().
+>   - Tx Qdisc may install that skbedit actions, then xmit.skip_txqueue flag
+>     is set in qdisc->enqueue() though tx queue has been selected in
+>     netdev_tx_queue_mapping() or netdev_core_pick_tx(). That flag is cleared
+>     firstly in __dev_queue_xmit(), is useful:
+>   - Avoid picking Tx queue with netdev_tx_queue_mapping() in next netdev
+>     in such case: eth0 macvlan - eth0.3 vlan - eth0 ixgbe-phy:
+>     For example, eth0, macvlan in pod, which root Qdisc install skbedit
+>     queue_mapping, send packets to eth0.3, vlan in host. In __dev_queue_xmit() of
+>     eth0.3, clear the flag, does not select tx queue according to skb->queue_mapping
+>     because there is no filters in clsact or tx Qdisc of this netdev.
+>     Same action taked in eth0, ixgbe in Host.
+>   - Avoid picking Tx queue for next packet. If we set xmit.skip_txqueue
+>     in tx Qdisc (qdisc->enqueue()), the proper way to clear it is clearing it
+>     in __dev_queue_xmit when processing next packets.
+>
+>   +----+      +----+      +----+
+>   | P1 |      | P2 |      | Pn |
+>   +----+      +----+      +----+
+>     |           |           |
+>     +-----------+-----------+
+>                 |
+>                 | clsact/skbedit
+>                 |      MQ
+>                 v
+>     +-----------+-----------+
+>     | q0        | q1        | qn
+>     v           v           v
+>   HTB/FQ      HTB/FQ  ...  FIFO
+>
+> Cc: Jamal Hadi Salim <jhs@mojatatu.com>
+> Cc: Cong Wang <xiyou.wangcong@gmail.com>
+> Cc: Jiri Pirko <jiri@resnulli.us>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Jonathan Lemon <jonathan.lemon@gmail.com>
+> Cc: Eric Dumazet <edumazet@google.com>
+> Cc: Alexander Lobakin <alobakin@pm.me>
+> Cc: Paolo Abeni <pabeni@redhat.com>
+> Cc: Talal Ahmad <talalahmad@google.com>
+> Cc: Kevin Hao <haokexin@gmail.com>
+> Cc: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+> Cc: Kees Cook <keescook@chromium.org>
+> Cc: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+> Cc: Antoine Tenart <atenart@kernel.org>
+> Cc: Wei Wang <weiwan@google.com>
+> Cc: Arnd Bergmann <arnd@arndb.de>
+> Suggested-by: Eric Dumazet <edumazet@google.com>
+> Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> ---
+>  include/linux/netdevice.h | 24 ++++++++++++++++++++++++
+>  net/core/dev.c            |  7 ++++++-
+>  net/sched/act_skbedit.c   |  4 +++-
+>  3 files changed, 33 insertions(+), 2 deletions(-)
+>
+> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> index a419718612c6..ca1d17b5fd79 100644
+> --- a/include/linux/netdevice.h
+> +++ b/include/linux/netdevice.h
+> @@ -3008,6 +3008,7 @@ struct softnet_data {
+>         /* written and read only by owning cpu: */
+>         struct {
+>                 u16 recursion;
+> +               u8  skip_txqueue;
+>                 u8  more;
+>         } xmit;
+>  #ifdef CONFIG_RPS
+> @@ -4695,6 +4696,29 @@ static inline netdev_tx_t netdev_start_xmit(struct sk_buff *skb, struct net_devi
+>         return rc;
+>  }
+>
+> +static inline void netdev_xmit_skip_txqueue(void)
+> +{
+> +       __this_cpu_write(softnet_data.xmit.skip_txqueue, 1);
+> +}
+> +
+> +static inline void netdev_xmit_reset_txqueue(void)
+> +{
+> +       __this_cpu_write(softnet_data.xmit.skip_txqueue, 0);
+> +}
+Think twice, we can merge the netdev_xmit_skip_txqueue(void) and
+netdev_xmit_reset_txqueue(void)
+to netdev_xmit_skip_txqueue(bool skip). The codes are more simplified.
+> +static inline bool netdev_xmit_txqueue_skipped(void)
+> +{
+> +       return __this_cpu_read(softnet_data.xmit.skip_txqueue);
+> +}
+> +
+> +static inline struct netdev_queue *
+> +netdev_tx_queue_mapping(struct net_device *dev, struct sk_buff *skb)
+> +{
+> +       int qm = skb_get_queue_mapping(skb);
+> +
+> +       return netdev_get_tx_queue(dev, netdev_cap_txqueue(dev, qm));
+> +}
+> +
+>  int netdev_class_create_file_ns(const struct class_attribute *class_attr,
+>                                 const void *ns);
+>  void netdev_class_remove_file_ns(const struct class_attribute *class_attr,
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index a855e41bbe39..980f9981dbaa 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -4048,6 +4048,7 @@ static int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
+>         skb_update_prio(skb);
+>
+>         qdisc_pkt_len_init(skb);
+> +       netdev_xmit_reset_txqueue();
+netdev_xmit_skip_txqueue(false);
+>  #ifdef CONFIG_NET_CLS_ACT
+>         skb->tc_at_ingress = 0;
+>  #endif
+> @@ -4073,7 +4074,11 @@ static int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
+>         else
+>                 skb_dst_force(skb);
+>
+> -       txq = netdev_core_pick_tx(dev, skb, sb_dev);
+> +       if (netdev_xmit_txqueue_skipped())
+> +               txq = netdev_tx_queue_mapping(dev, skb);
+> +       else
+> +               txq = netdev_core_pick_tx(dev, skb, sb_dev);
+> +
+>         q = rcu_dereference_bh(txq->qdisc);
+>
+>         trace_net_dev_queue(skb);
+> diff --git a/net/sched/act_skbedit.c b/net/sched/act_skbedit.c
+> index d30ecbfc8f84..498feedad70a 100644
+> --- a/net/sched/act_skbedit.c
+> +++ b/net/sched/act_skbedit.c
+> @@ -58,8 +58,10 @@ static int tcf_skbedit_act(struct sk_buff *skb, const struct tc_action *a,
+>                 }
+>         }
+>         if (params->flags & SKBEDIT_F_QUEUE_MAPPING &&
+> -           skb->dev->real_num_tx_queues > params->queue_mapping)
+> +           skb->dev->real_num_tx_queues > params->queue_mapping) {
+> +               netdev_xmit_skip_txqueue();
+netdev_xmit_skip_txqueue(true);
+>                 skb_set_queue_mapping(skb, params->queue_mapping);
+> +       }
+>         if (params->flags & SKBEDIT_F_MARK) {
+>                 skb->mark &= ~params->mask;
+>                 skb->mark |= params->mark & params->mask;
+> --
+> 2.27.0
+>
 
-It is not needed. I will remove this in the next version.
-
-> 
-> >  }
 
 -- 
-/Horatiu
+Best regards, Tonghao
