@@ -2,261 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CA85479BA7
-	for <lists+netdev@lfdr.de>; Sat, 18 Dec 2021 16:59:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 85028479BC5
+	for <lists+netdev@lfdr.de>; Sat, 18 Dec 2021 17:45:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232268AbhLRP7d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Dec 2021 10:59:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43474 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229542AbhLRP7c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Dec 2021 10:59:32 -0500
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2C20C061574
-        for <netdev@vger.kernel.org>; Sat, 18 Dec 2021 07:59:31 -0800 (PST)
-Received: by mail-ed1-x52e.google.com with SMTP id g14so19765885edb.8
-        for <netdev@vger.kernel.org>; Sat, 18 Dec 2021 07:59:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=muGbYBIqLes8K+JtrsY2QZuMCdJdjHFrD12GFV27Y1I=;
-        b=CFsO8SQAI9llW571MNWLZeplecVummp3vcO7P8DZdoC1MYDU1qzDLTs5Y3U8iFRpEE
-         yhk+dESedzoXl4oouUvRWhjGJj9gJBSKsiCE9+3vjHxxGYz5KxzRlGViIkLlVKupdB0S
-         TP08kHOO+U7Uc9aHyNnsF9PI25/U2yzvwpfLVa0Wzjd+lEpEhELU7L3/O+HZrMYr1zzN
-         VSD16/lLD+KUNlrRA5h0rn4Z9j/zVFXrJl/jwWDCtP5WcMbQGVgbSsCYgnhVKMl9DnJ8
-         i/CZj/qrwTGS3CB+RZhTSGH3SFpTkhDvgKpsPp4AFpnoAnbiOqk6C6iBotxLShzMs2vL
-         fW4Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=muGbYBIqLes8K+JtrsY2QZuMCdJdjHFrD12GFV27Y1I=;
-        b=ATad4BjZDjZDJsht+m9igStQl054dynJpJ8FNvzQrKY8v/swg8z1YEe7sh5WfCQ+Sk
-         ddKEd9nvSUhVe+NrbGskmzGFL6XgDYiafwYsU3077CtXqr5fMWO+tNib9LG9AcWKdKXh
-         ULkNf5neX/MiZgemDtHS/pv93yhEXugDsviFyAiOAogQCdtyzwioMvuoP/OcBsq6YcaO
-         KAnB8lEYnV8/MwBi5egDPHcscaRys+oukyvP7OSoKF4RVT7qMYKVBrq2fLFm39NjKMAg
-         1R+OvcmNaHmkIWcVbs1GvE65kqidrDPmdHrA9cP+x4f+Dgl0Y+dPqcmyq0B4DXsdqUFD
-         55NQ==
-X-Gm-Message-State: AOAM532N/9rp1QeclmVEnE4rmbu1HPN/zQ0kWHFUxyDkwLOktNsxk4CF
-        3dL03ZBwiGPt8NSPRzk6SpEO5aU+7wEKSVJapn7gY4LuMCQ=
-X-Google-Smtp-Source: ABdhPJyn7XAebyDhQAdvLnBX7WmRuU2h2bOJdVno3SJcu/0x3ndIq5eXDeG2pudrO6nUTVLWvVt7O19UmygHmwJ1AsY=
-X-Received: by 2002:a17:906:1e05:: with SMTP id g5mr6505912ejj.552.1639843170300;
- Sat, 18 Dec 2021 07:59:30 -0800 (PST)
-MIME-Version: 1.0
-References: <20211217080103.35454-1-xiangxia.m.yue@gmail.com> <20211217080103.35454-2-xiangxia.m.yue@gmail.com>
-In-Reply-To: <20211217080103.35454-2-xiangxia.m.yue@gmail.com>
-From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Date:   Sat, 18 Dec 2021 23:58:54 +0800
-Message-ID: <CAMDZJNWL6uU0kWjJcLZKjfWx18O7=hmTHfvGw2khxQXro9=ukQ@mail.gmail.com>
-Subject: Re: [net-next v4 1/2] net: sched: use queue_mapping to pick tx queue
-To:     Linux Kernel Network Developers <netdev@vger.kernel.org>
-Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
+        id S233614AbhLRQpO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Dec 2021 11:45:14 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:33462 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229552AbhLRQpO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 18 Dec 2021 11:45:14 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=PR4ph8S8njbd3DQIRCqFxzRBA3eckMdxE8wDGpAEIFQ=; b=Scz6yxZBMYddPUUmsAaDxnuhy3
+        3+RBlJPLbZ06E6ARDEMvGGTa+NUTWxXsHukZEKFXgwjDTO4YoJZSzPrnLzQty08gP/u7czDfGAq6H
+        rg7j4hjbet6xMqUMbqA2urB75cqatqCFk1YUOfqrPFb8Uf634jOPtVKylV9ZsZaM7ff0=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mycpZ-00Guk2-0Q; Sat, 18 Dec 2021 17:45:09 +0100
+Date:   Sat, 18 Dec 2021 17:45:08 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Martyn Welch <martyn.welch@collabora.com>
+Cc:     netdev@vger.kernel.org, Krzysztof Kozlowski <krzk@kernel.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Gabriel Hojda <ghojda@yo2urs.ro>,
+        Markus Reichl <m.reichl@fivetechno.de>,
+        Steve Glendinning <steve.glendinning@shawell.net>,
+        UNGLinuxDriver@microchip.com,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Talal Ahmad <talalahmad@google.com>,
-        Kevin Hao <haokexin@gmail.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Kees Cook <keescook@chromium.org>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        Wei Wang <weiwan@google.com>, Arnd Bergmann <arnd@arndb.de>
-Content-Type: text/plain; charset="UTF-8"
+        Jakub Kicinski <kuba@kernel.org>, stable@kernel.org
+Subject: Re: Issues with smsc95xx driver since a049a30fc27c
+Message-ID: <Yb4QFDQ0rFfFsT+Y@lunn.ch>
+References: <199eebbd6b97f52b9119c9fa4fd8504f8a34de18.camel@collabora.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <199eebbd6b97f52b9119c9fa4fd8504f8a34de18.camel@collabora.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 17, 2021 at 4:01 PM <xiangxia.m.yue@gmail.com> wrote:
->
-> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
->
-> This patch fixes issue:
-> * If we install tc filters with act_skbedit in clsact hook.
->   It doesn't work, because netdev_core_pick_tx() overwrites
->   queue_mapping.
->
->   $ tc filter ... action skbedit queue_mapping 1
->
-> And this patch is useful:
-> * We can use FQ + EDT to implement efficient policies. Tx queues
->   are picked by xps, ndo_select_queue of netdev driver, or skb hash
->   in netdev_core_pick_tx(). In fact, the netdev driver, and skb
->   hash are _not_ under control. xps uses the CPUs map to select Tx
->   queues, but we can't figure out which task_struct of pod/containter
->   running on this cpu in most case. We can use clsact filters to classify
->   one pod/container traffic to one Tx queue. Why ?
->
->   In containter networking environment, there are two kinds of pod/
->   containter/net-namespace. One kind (e.g. P1, P2), the high throughput
->   is key in these applications. But avoid running out of network resource,
->   the outbound traffic of these pods is limited, using or sharing one
->   dedicated Tx queues assigned HTB/TBF/FQ Qdisc. Other kind of pods
->   (e.g. Pn), the low latency of data access is key. And the traffic is not
->   limited. Pods use or share other dedicated Tx queues assigned FIFO Qdisc.
->   This choice provides two benefits. First, contention on the HTB/FQ Qdisc
->   lock is significantly reduced since fewer CPUs contend for the same queue.
->   More importantly, Qdisc contention can be eliminated completely if each
->   CPU has its own FIFO Qdisc for the second kind of pods.
->
->   There must be a mechanism in place to support classifying traffic based on
->   pods/container to different Tx queues. Note that clsact is outside of Qdisc
->   while Qdisc can run a classifier to select a sub-queue under the lock.
->
->   In general recording the decision in the skb seems a little heavy handed.
->   This patch introduces a per-CPU variable, suggested by Eric.
->
->   The xmit.skip_txqueue flag is firstly cleared in __dev_queue_xmit().
->   - Tx Qdisc may install that skbedit actions, then xmit.skip_txqueue flag
->     is set in qdisc->enqueue() though tx queue has been selected in
->     netdev_tx_queue_mapping() or netdev_core_pick_tx(). That flag is cleared
->     firstly in __dev_queue_xmit(), is useful:
->   - Avoid picking Tx queue with netdev_tx_queue_mapping() in next netdev
->     in such case: eth0 macvlan - eth0.3 vlan - eth0 ixgbe-phy:
->     For example, eth0, macvlan in pod, which root Qdisc install skbedit
->     queue_mapping, send packets to eth0.3, vlan in host. In __dev_queue_xmit() of
->     eth0.3, clear the flag, does not select tx queue according to skb->queue_mapping
->     because there is no filters in clsact or tx Qdisc of this netdev.
->     Same action taked in eth0, ixgbe in Host.
->   - Avoid picking Tx queue for next packet. If we set xmit.skip_txqueue
->     in tx Qdisc (qdisc->enqueue()), the proper way to clear it is clearing it
->     in __dev_queue_xmit when processing next packets.
->
->   +----+      +----+      +----+
->   | P1 |      | P2 |      | Pn |
->   +----+      +----+      +----+
->     |           |           |
->     +-----------+-----------+
->                 |
->                 | clsact/skbedit
->                 |      MQ
->                 v
->     +-----------+-----------+
->     | q0        | q1        | qn
->     v           v           v
->   HTB/FQ      HTB/FQ  ...  FIFO
->
-> Cc: Jamal Hadi Salim <jhs@mojatatu.com>
-> Cc: Cong Wang <xiyou.wangcong@gmail.com>
-> Cc: Jiri Pirko <jiri@resnulli.us>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Jonathan Lemon <jonathan.lemon@gmail.com>
-> Cc: Eric Dumazet <edumazet@google.com>
-> Cc: Alexander Lobakin <alobakin@pm.me>
-> Cc: Paolo Abeni <pabeni@redhat.com>
-> Cc: Talal Ahmad <talalahmad@google.com>
-> Cc: Kevin Hao <haokexin@gmail.com>
-> Cc: Ilias Apalodimas <ilias.apalodimas@linaro.org>
-> Cc: Kees Cook <keescook@chromium.org>
-> Cc: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> Cc: Antoine Tenart <atenart@kernel.org>
-> Cc: Wei Wang <weiwan@google.com>
-> Cc: Arnd Bergmann <arnd@arndb.de>
-> Suggested-by: Eric Dumazet <edumazet@google.com>
-> Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
-> ---
->  include/linux/netdevice.h | 24 ++++++++++++++++++++++++
->  net/core/dev.c            |  7 ++++++-
->  net/sched/act_skbedit.c   |  4 +++-
->  3 files changed, 33 insertions(+), 2 deletions(-)
->
-> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-> index a419718612c6..ca1d17b5fd79 100644
-> --- a/include/linux/netdevice.h
-> +++ b/include/linux/netdevice.h
-> @@ -3008,6 +3008,7 @@ struct softnet_data {
->         /* written and read only by owning cpu: */
->         struct {
->                 u16 recursion;
-> +               u8  skip_txqueue;
->                 u8  more;
->         } xmit;
->  #ifdef CONFIG_RPS
-> @@ -4695,6 +4696,29 @@ static inline netdev_tx_t netdev_start_xmit(struct sk_buff *skb, struct net_devi
->         return rc;
->  }
->
-> +static inline void netdev_xmit_skip_txqueue(void)
-> +{
-> +       __this_cpu_write(softnet_data.xmit.skip_txqueue, 1);
-> +}
-> +
-> +static inline void netdev_xmit_reset_txqueue(void)
-> +{
-> +       __this_cpu_write(softnet_data.xmit.skip_txqueue, 0);
-> +}
-Think twice, we can merge the netdev_xmit_skip_txqueue(void) and
-netdev_xmit_reset_txqueue(void)
-to netdev_xmit_skip_txqueue(bool skip). The codes are more simplified.
-> +static inline bool netdev_xmit_txqueue_skipped(void)
-> +{
-> +       return __this_cpu_read(softnet_data.xmit.skip_txqueue);
-> +}
-> +
-> +static inline struct netdev_queue *
-> +netdev_tx_queue_mapping(struct net_device *dev, struct sk_buff *skb)
-> +{
-> +       int qm = skb_get_queue_mapping(skb);
-> +
-> +       return netdev_get_tx_queue(dev, netdev_cap_txqueue(dev, qm));
-> +}
-> +
->  int netdev_class_create_file_ns(const struct class_attribute *class_attr,
->                                 const void *ns);
->  void netdev_class_remove_file_ns(const struct class_attribute *class_attr,
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index a855e41bbe39..980f9981dbaa 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -4048,6 +4048,7 @@ static int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
->         skb_update_prio(skb);
->
->         qdisc_pkt_len_init(skb);
-> +       netdev_xmit_reset_txqueue();
-netdev_xmit_skip_txqueue(false);
->  #ifdef CONFIG_NET_CLS_ACT
->         skb->tc_at_ingress = 0;
->  #endif
-> @@ -4073,7 +4074,11 @@ static int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
->         else
->                 skb_dst_force(skb);
->
-> -       txq = netdev_core_pick_tx(dev, skb, sb_dev);
-> +       if (netdev_xmit_txqueue_skipped())
-> +               txq = netdev_tx_queue_mapping(dev, skb);
-> +       else
-> +               txq = netdev_core_pick_tx(dev, skb, sb_dev);
-> +
->         q = rcu_dereference_bh(txq->qdisc);
->
->         trace_net_dev_queue(skb);
-> diff --git a/net/sched/act_skbedit.c b/net/sched/act_skbedit.c
-> index d30ecbfc8f84..498feedad70a 100644
-> --- a/net/sched/act_skbedit.c
-> +++ b/net/sched/act_skbedit.c
-> @@ -58,8 +58,10 @@ static int tcf_skbedit_act(struct sk_buff *skb, const struct tc_action *a,
->                 }
->         }
->         if (params->flags & SKBEDIT_F_QUEUE_MAPPING &&
-> -           skb->dev->real_num_tx_queues > params->queue_mapping)
-> +           skb->dev->real_num_tx_queues > params->queue_mapping) {
-> +               netdev_xmit_skip_txqueue();
-netdev_xmit_skip_txqueue(true);
->                 skb_set_queue_mapping(skb, params->queue_mapping);
-> +       }
->         if (params->flags & SKBEDIT_F_MARK) {
->                 skb->mark &= ~params->mask;
->                 skb->mark |= params->mark & params->mask;
-> --
-> 2.27.0
->
+On Fri, Dec 17, 2021 at 03:45:08PM +0000, Martyn Welch wrote:
+> I've had some reports of the smsc95xx driver failing to work for the
+> ODROID-X2 and ODROID-U3 since a049a30fc27c was merged (also backported
+> to 5.15.y stable branch, which I believe is what those affected by this
+> are using).
+> 
+> Since then we have performed a number of tests, here's what we've found
+> so far:
+> 
+> ODROID-U3 (built-in LAN9730):
+> 
+>  - No errors reported from smsc95xx driver, however networking broken
+>    (can not perform DHCP via NetworkManager, Fedora user space).
+> 
+>  - Networking starts working if device forced into promiscuous mode
+>    (Gabriel noticed this whilst running tcpdump)
+> 
+> 
+> ODROID-X2 (built in LAN9514):
+> 
+>  - Networking not brought up (Using Debian Buster and Bullseye with
+> traditional `/etc/network/interfaces` approach).
+> 
+>  - As with Odroid-u3, works when running in promiscuous mode.
 
+Hi Martyn
 
--- 
-Best regards, Tonghao
+Promisc mode is really odd, given what
+
+commit a049a30fc27c1cb2e12889bbdbd463dbf750103a
+Author: Martyn Welch <martyn.welch@collabora.com>
+Date:   Mon Nov 22 18:44:45 2021 +0000
+
+    net: usb: Correct PHY handling of smsc95xx
+
+does. Has it been confirmed this is really the patch which causes
+the problem?
+
+Does mii-tool -vvv how any difference between the working and broken
+case?
+
+Can you also confirm the same PHY driver is used before/after this
+patch. There is a chance one is using a specific PHY driver and the
+other genphy.
+
+    Andrew
