@@ -2,47 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 67614479E62
-	for <lists+netdev@lfdr.de>; Sun, 19 Dec 2021 00:56:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ABCC3479E5B
+	for <lists+netdev@lfdr.de>; Sun, 19 Dec 2021 00:56:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235333AbhLRXy5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Dec 2021 18:54:57 -0500
-Received: from o1.ptr2625.egauge.net ([167.89.112.53]:25500 "EHLO
+        id S235209AbhLRXyu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Dec 2021 18:54:50 -0500
+Received: from o1.ptr2625.egauge.net ([167.89.112.53]:25742 "EHLO
         o1.ptr2625.egauge.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234910AbhLRXyT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Dec 2021 18:54:19 -0500
+        with ESMTP id S234970AbhLRXy0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Dec 2021 18:54:26 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=egauge.net;
         h=from:subject:in-reply-to:references:mime-version:to:cc:
         content-transfer-encoding:content-type;
-        s=sgd; bh=QAh24Ex5HQMwz2LcHEFWDu0hjRaIliWenvyP2BPryNQ=;
-        b=RihxgcCN7Rp8Skq01adkqBvOMORTUxGQHEzj0nnhO+qYCB4gwzn1n2npuBBAIlD5K+0A
-        DFs90Fovz24xQE5DLDpVZwP6I4wOcWTbuNu0AzOLV0L0cOLe+cIqPWmH3oHb0uZc/Xo7gL
-        dBmUcK5n30roGWdlMOK7GZKOVkH58opBaYQtAgsGlQZ/k+kIJbSqrvlBhgnYRPo77WjRO3
-        DNSHkCwwiObZpiv4fZ+Ac9TXR1YfbJxnJA0ht31E23poKCCqC8bArqBK5rjwa1fz7STIdR
-        Hht4S8gtMn69vJB/NhqhxMq1wXokSdqEvyy8F8cFNuPcxkSWXZtY2pLoC5kchrmA==
-Received: by filterdrecv-656998cfdd-phncc with SMTP id filterdrecv-656998cfdd-phncc-1-61BE74A8-1D
-        2021-12-18 23:54:16.838337232 +0000 UTC m=+7604818.024584014
+        s=sgd; bh=jRNhAennxhSOZdi9qsIRPJJ4YYwbnqaPLGNJtjqVSho=;
+        b=uvgzfNW/cHH+zlnbyfof8acKjkqPEySKkSdHlxbm5FTSDMUpodiFhwgkT4O7CDKrH6nI
+        pWf2ph3QvPV593hi8G4SaqBwjbai5uW2C45v2YSaBMhJYtxSQxrilZoJitiUxX7+J1B6rG
+        Uidm0J8lXj3WpTtAy8MAmA17C87ZJWzOsGZNFsZ929HCywalkXbopv8iWvckPKFyIr+xuw
+        sBADbwclF3cVuU+wzAbHrklqNq5VFijViUPXJEAFDLU+/RdJtwF/rOqM0NH5+hFeRNtZiF
+        vzq4E6ASWhl98ke6r89Ni5MbhUmYY93R9BaPMAGAo/B+o2GZ/TaVSBcHF0qwqdgw==
+Received: by filterdrecv-656998cfdd-5st9z with SMTP id filterdrecv-656998cfdd-5st9z-1-61BE74A9-8
+        2021-12-18 23:54:17.245944614 +0000 UTC m=+7604801.208387376
 Received: from pearl.egauge.net (unknown)
-        by geopod-ismtpd-5-1 (SG)
+        by geopod-ismtpd-6-0 (SG)
         with ESMTP
-        id MZ7uISucQJa4P7omMBWJmg
-        Sat, 18 Dec 2021 23:54:16.696 +0000 (UTC)
+        id DVHNYCnNSJKWCPObHJ9w1Q
+        Sat, 18 Dec 2021 23:54:17.085 +0000 (UTC)
 Received: by pearl.egauge.net (Postfix, from userid 1000)
-        id 99A23700F78; Sat, 18 Dec 2021 16:54:15 -0700 (MST)
+        id D290970144A; Sat, 18 Dec 2021 16:54:15 -0700 (MST)
 From:   David Mosberger-Tang <davidm@egauge.net>
-Subject: [PATCH 08/23] wilc1000: fix management packet type inconsistency
+Subject: [PATCH 20/23] wilc1000: eliminate "max_size_over" variable in
+ fill_vmm_table
 Date:   Sat, 18 Dec 2021 23:54:17 +0000 (UTC)
-Message-Id: <20211218235404.3963475-9-davidm@egauge.net>
+Message-Id: <20211218235404.3963475-21-davidm@egauge.net>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211218235404.3963475-1-davidm@egauge.net>
 References: <20211218235404.3963475-1-davidm@egauge.net>
 MIME-Version: 1.0
 X-SG-EID: =?us-ascii?Q?+kMxBqj35EdRUKoy8diX1j4AXmPtd302oan+iXZuF8m2Nw4HRW2irNspffT=2Fkh?=
- =?us-ascii?Q?ET6RJF6+Prbl0h=2FEtF1rRLvBgWXtrCB5OF5sDb1?=
- =?us-ascii?Q?M3PEtEXGAnFYO34+OEM+j2yxQqTLIGNhi5Sbe1v?=
- =?us-ascii?Q?3retJL1jACmWBuhInLXrqxzUtEf=2Fz7HdIU+T8f4?=
- =?us-ascii?Q?S+AvihUhTHi=2FwZd1t6c52wSZkaJPyUDya9W8Q+W?=
- =?us-ascii?Q?uUy3ffWOaGcoGre09jke6IBBFx5i=2Fz9GiJ3Kmt?=
+ =?us-ascii?Q?ET6RJF6+Prbl0h=2FEtF1rRLvP5YoI1SZSYpzAPoR?=
+ =?us-ascii?Q?7eME5H12K8x8BE2v0SzM9CHFoNuHjXtQfe0MZ7r?=
+ =?us-ascii?Q?nuDn4joPDIcXw5mMeMKPXpUrEczzJfUNK4XEV25?=
+ =?us-ascii?Q?XWIpeCkrP0mo4sMjaxuzUkp7oCPqbA1qGvimWwV?=
+ =?us-ascii?Q?O4H+8u8DR0oOPz5nbdIgjbdASGcAuTMEw5PARb?=
 To:     Ajay Singh <ajay.kathat@microchip.com>
 Cc:     Claudiu Beznea <claudiu.beznea@microchip.com>,
         Kalle Valo <kvalo@codeaurora.org>,
@@ -58,29 +59,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The queue type for management packets was initialized to AC_BE_Q
-(best-effort queue) but the packet was then actually added to the
-AC_VO_Q queue (voice, or highest-priority queue).  This fixes the
-inconsistency by setting the type to AC_VO_Q.
+This makes the code tighter and easier to understand.
 
 Signed-off-by: David Mosberger-Tang <davidm@egauge.net>
 ---
- drivers/net/wireless/microchip/wilc1000/wlan.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/microchip/wilc1000/wlan.c | 18 +++++++-----------
+ 1 file changed, 7 insertions(+), 11 deletions(-)
 
 diff --git a/drivers/net/wireless/microchip/wilc1000/wlan.c b/drivers/net/wireless/microchip/wilc1000/wlan.c
-index b85ceda8409e6..c72eb4244508c 100644
+index 8652ec9f6d9c8..88a981b00bda2 100644
 --- a/drivers/net/wireless/microchip/wilc1000/wlan.c
 +++ b/drivers/net/wireless/microchip/wilc1000/wlan.c
-@@ -507,7 +507,7 @@ int wilc_wlan_txq_add_mgmt_pkt(struct net_device *dev, void *priv, u8 *buffer,
- 	tqe->buffer_size = buffer_size;
- 	tqe->tx_complete_func = tx_complete_fn;
- 	tqe->priv = priv;
--	tqe->q_num = AC_BE_Q;
-+	tqe->q_num = AC_VO_Q;
- 	tqe->ack_idx = NOT_TCP_ACK;
- 	tqe->vif = vif;
- 	wilc_wlan_txq_add_to_tail(dev, AC_VO_Q, tqe);
+@@ -635,7 +635,7 @@ static int fill_vmm_table(const struct wilc *wilc,
+ 	u32 sum;
+ 	u8 ac_preserve_ratio[NQUEUES] = {1, 1, 1, 1};
+ 	u8 *num_pkts_to_add;
+-	bool max_size_over = 0, ac_exist = 0;
++	bool ac_exist = 0;
+ 	int vmm_sz = 0;
+ 	struct sk_buff *tqe_q[NQUEUES];
+ 	struct wilc_skb_tx_cb *tx_cb;
+@@ -645,20 +645,17 @@ static int fill_vmm_table(const struct wilc *wilc,
+ 
+ 	i = 0;
+ 	sum = 0;
+-	max_size_over = 0;
+ 	num_pkts_to_add = ac_desired_ratio;
+ 	do {
+ 		ac_exist = 0;
+-		for (ac = 0; (ac < NQUEUES) && (!max_size_over); ac++) {
++		for (ac = 0; ac < NQUEUES; ac++) {
+ 			if (!tqe_q[ac])
+ 				continue;
+ 
+ 			ac_exist = 1;
+-			for (k = 0; (k < num_pkts_to_add[ac]) &&
+-			     (!max_size_over) && tqe_q[ac]; k++) {
++			for (k = 0; (k < num_pkts_to_add[ac]) && tqe_q[ac]; k++) {
+ 				if (i >= (WILC_VMM_TBL_SIZE - 1)) {
+-					max_size_over = 1;
+-					break;
++					goto out;
+ 				}
+ 
+ 				tx_cb = WILC_SKB_TX_CB(tqe_q[ac]);
+@@ -673,8 +670,7 @@ static int fill_vmm_table(const struct wilc *wilc,
+ 				vmm_sz = ALIGN(vmm_sz, 4);
+ 
+ 				if ((sum + vmm_sz) > WILC_TX_BUFF_SIZE) {
+-					max_size_over = 1;
+-					break;
++					goto out;
+ 				}
+ 				vmm_table[i] = vmm_sz / 4;
+ 				if (tx_cb->type == WILC_CFG_PKT)
+@@ -690,8 +686,8 @@ static int fill_vmm_table(const struct wilc *wilc,
+ 			}
+ 		}
+ 		num_pkts_to_add = ac_preserve_ratio;
+-	} while (!max_size_over && ac_exist);
+-
++	} while (ac_exist);
++out:
+ 	vmm_table[i] = 0x0;
+ 	return i;
+ }
 -- 
 2.25.1
 
