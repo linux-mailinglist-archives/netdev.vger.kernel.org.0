@@ -2,79 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B4DC479859
-	for <lists+netdev@lfdr.de>; Sat, 18 Dec 2021 04:23:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 397C0479865
+	for <lists+netdev@lfdr.de>; Sat, 18 Dec 2021 04:30:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231758AbhLRDUQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Dec 2021 22:20:16 -0500
-Received: from sin.source.kernel.org ([145.40.73.55]:46434 "EHLO
-        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229580AbhLRDUQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Dec 2021 22:20:16 -0500
+        id S231773AbhLRDaQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Dec 2021 22:30:16 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:58472 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230057AbhLRDaQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Dec 2021 22:30:16 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id CA9DDCE2745
-        for <netdev@vger.kernel.org>; Sat, 18 Dec 2021 03:20:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id EF7B9C36AE7;
-        Sat, 18 Dec 2021 03:20:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D83D62481;
+        Sat, 18 Dec 2021 03:30:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id F2694C36AF1;
+        Sat, 18 Dec 2021 03:30:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1639797613;
-        bh=85OgP82oX9mnOVmW8d6QY4z6eocqyuVS0ltuD/JXEco=;
+        s=k20201202; t=1639798215;
+        bh=XZsPQ+WFvZkq7O/vkF/1tEa9sEMBdGhOUIw1DsgaugA=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=F3+tyfYOA9+MuXhX2AuSfNzi0f4qVaEjpo/6oyqunLNeiWEwb36O1u8j8pdmeXN5J
-         DREfYLNfY1awplT8N59eUS+tRnHQ5yuIiNfiTGhPTqTq9X2zfNWiB7ncsjVZlNHwfG
-         R1Vg/6oZs3a2jvrZbnKib0dcjafd2guOzX12ktjq+1opNk5Gd4scPF1ItTpA9yP0lO
-         QOhfV0B6WSwjZsbBPIvdjNPjPui0aAGtp6IZl81BYBJXaJQugPWFNVxoYquqkIVapb
-         mPIRIDwb+iTlLsYHzGqjVsnaIiiKJSlDtp6Q6wmKNlkaamNbrVN24FEDtoqAk6HPtC
-         DtNMn4/wLJSHQ==
+        b=aXopHg88CY5/hDSbJvS/fhvK3LmT8I30YzP92ha1S7AnKJDJpC84BUPULljHECu40
+         zLnE8f/L+kJB3P4USM6lFiq/40mbnqTWbmrVd5dpnfIi5yQ/P86IJUyOg/k2PxLLId
+         nJPYvH+OpptMxkwuMTbOocoZepDmRrD60nobpQ1kB89VfzC4wWEl+D6M11+XJlN2w4
+         t5YPqXYeYx0woQLi2QQfH18OnzsYwpu8F//m9GYklGSewWclNXaW2i7mdP5bue187p
+         7ub5fbCdJU2j+HdhXGrOtC3Kor/9VnMAthQqrjY7uHVxOkeKMRiU5/y5B/2FZaiQ8Y
+         AFZMSQNC4Ocgw==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id C895960A2F;
-        Sat, 18 Dec 2021 03:20:12 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id D230B609BB;
+        Sat, 18 Dec 2021 03:30:14 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v3 0/3] net/sched: Fix ct zone matching for invalid
- conntrack state
+Subject: Re: [PATCH net] net: marvell: prestera: fix incorrect return of port_find
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163979761281.13981.14649200407398672631.git-patchwork-notify@kernel.org>
-Date:   Sat, 18 Dec 2021 03:20:12 +0000
-References: <20211214172435.24207-1-paulb@nvidia.com>
-In-Reply-To: <20211214172435.24207-1-paulb@nvidia.com>
-To:     Paul Blakey <paulb@nvidia.com>
-Cc:     dev@openvswitch.org, netdev@vger.kernel.org, saeedm@nvidia.com,
-        xiyou.wangcong@gmail.com, jhs@mojatatu.com, pshelar@ovn.org,
-        davem@davemloft.net, jiri@nvidia.com, wenxu@ucloud.cn,
-        kuba@kernel.org, marcelo.leitner@gmail.com, ozsh@nvidia.com,
-        vladbu@nvidia.com, roid@nvidia.com
+Message-Id: <163979821485.17814.4905336985564462738.git-patchwork-notify@kernel.org>
+Date:   Sat, 18 Dec 2021 03:30:14 +0000
+References: <20211216170736.8851-1-yevhen.orlov@plvision.eu>
+In-Reply-To: <20211216170736.8851-1-yevhen.orlov@plvision.eu>
+To:     Yevhen Orlov <yevhen.orlov@plvision.eu>
+Cc:     netdev@vger.kernel.org, volodymyr.mytnyk@plvision.eu,
+        taras.chornyi@plvision.eu, mickeyr@marvell.com,
+        serhiy.pshyk@plvision.eu, tchornyi@marvell.com,
+        davem@davemloft.net, kuba@kernel.org, andrii.savka@plvision.eu,
+        oleksandr.mazur@plvision.eu, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net.git (master)
+This patch was applied to netdev/net.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Tue, 14 Dec 2021 19:24:32 +0200 you wrote:
-> Hi,
+On Thu, 16 Dec 2021 19:07:36 +0200 you wrote:
+> In case, when some ports is in list and we don't find requested - we
+> return last iterator state and not return NULL as expected.
 > 
-> Currently, when a packet is marked as invalid conntrack_in in act_ct,
-> post_ct will be set, and connection info (nf_conn) will be removed
-> from the skb. Later openvswitch and flower matching will parse this
-> as ct_state=+trk+inv. But because the connection info is missing,
-> there is also no zone info to match against even though the packet
-> is tracked.
-> 
-> [...]
+> Fixes: 501ef3066c89 ("net: marvell: prestera: Add driver for Prestera family ASIC devices")
+> Signed-off-by: Yevhen Orlov <yevhen.orlov@plvision.eu>
+> ---
+>  .../ethernet/marvell/prestera/prestera_main.c    | 16 ++++++++++------
+>  1 file changed, 10 insertions(+), 6 deletions(-)
 
 Here is the summary with links:
-  - [net,v3,1/3] net/sched: Extend qdisc control block with tc control block
-    https://git.kernel.org/netdev/net/c/ec624fe740b4
-  - [net,v3,2/3] net/sched: flow_dissector: Fix matching on zone id for invalid conns
-    https://git.kernel.org/netdev/net/c/384959586616
-  - [net,v3,3/3] net: openvswitch: Fix matching zone id for invalid conns arriving from tc
-    https://git.kernel.org/netdev/net/c/635d448a1cce
+  - [net] net: marvell: prestera: fix incorrect return of port_find
+    https://git.kernel.org/netdev/net/c/8b681bd7c301
 
 You are awesome, thank you!
 -- 
