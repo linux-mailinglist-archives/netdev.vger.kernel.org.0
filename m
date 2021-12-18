@@ -2,195 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B690E4799AF
-	for <lists+netdev@lfdr.de>; Sat, 18 Dec 2021 09:26:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E5004799C2
+	for <lists+netdev@lfdr.de>; Sat, 18 Dec 2021 09:46:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230152AbhLRI0S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Dec 2021 03:26:18 -0500
-Received: from frasgout.his.huawei.com ([185.176.79.56]:4306 "EHLO
-        frasgout.his.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229684AbhLRI0S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Dec 2021 03:26:18 -0500
-Received: from fraeml744-chm.china.huawei.com (unknown [172.18.147.200])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4JGJmk1rQpz67KPR;
-        Sat, 18 Dec 2021 16:24:38 +0800 (CST)
-Received: from lhreml738-chm.china.huawei.com (10.201.108.188) by
- fraeml744-chm.china.huawei.com (10.206.15.225) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Sat, 18 Dec 2021 09:26:15 +0100
-Received: from fraeml704-chm.china.huawei.com (10.206.15.53) by
- lhreml738-chm.china.huawei.com (10.201.108.188) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2308.20; Sat, 18 Dec 2021 08:26:14 +0000
-Received: from fraeml704-chm.china.huawei.com ([10.206.112.182]) by
- fraeml704-chm.china.huawei.com ([10.206.112.182]) with mapi id
- 15.01.2308.020; Sat, 18 Dec 2021 09:26:14 +0100
-From:   Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
-To:     =?utf-8?B?TWlja2HDq2wgU2FsYcO8bg==?= <mic@digikod.net>
-CC:     yusongping <yusongping@huawei.com>,
-        Artem Kuzin <artem.kuzin@huawei.com>,
-        linux-security-module <linux-security-module@vger.kernel.org>,
-        "Network Development" <netdev@vger.kernel.org>,
-        "netfilter@vger.kernel.org" <netfilter@vger.kernel.org>
-Subject: RE: [RFC PATCH 0/2] Landlock network PoC implementation
-Thread-Topic: [RFC PATCH 0/2] Landlock network PoC implementation
-Thread-Index: AQHX7/uQOxxQo4G2OECEIp7P5i26MqwxPnBQgACSyYCABJH+gIABge7g
-Date:   Sat, 18 Dec 2021 08:26:14 +0000
-Message-ID: <a1769c4239ee4e8aadb65f9ebb6061d8@huawei.com>
-References: <20211210072123.386713-1-konstantin.meskhidze@huawei.com>
- <b50ed53a-683e-77cf-9dc2-f4ae1b5fa0fd@digikod.net>
- <12467d8418f04fbf9fd4a456a2a999f1@huawei.com>
- <b535d1d4-3564-b2af-a5e8-3ba6c0fa86c9@digikod.net>
- <c8588051-8795-9b8a-cb36-f5440b590581@digikod.net>
-In-Reply-To: <c8588051-8795-9b8a-cb36-f5440b590581@digikod.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.146.86.144]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S232081AbhLRIqH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Dec 2021 03:46:07 -0500
+Received: from mail-io1-f72.google.com ([209.85.166.72]:53025 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231162AbhLRIqH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Dec 2021 03:46:07 -0500
+Received: by mail-io1-f72.google.com with SMTP id k12-20020a0566022a4c00b005ebe737d989so3031064iov.19
+        for <netdev@vger.kernel.org>; Sat, 18 Dec 2021 00:46:07 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=XVqEkA8WZDlDVVYlT+qQd4IsUmoT02f/Z2qlP0bG9gs=;
+        b=BQbW2je0/RhVThQfAYGZweLtIpPJeSxrDp2iZt6A1GQxlP7EFU4wAlXYVqgnwuHC/R
+         GlfymzVHi7nZ77Oc+eTS8SvjLwJ92k73CCYihZEC9YYMCyViFZW/zR1JJAq6yAzmbcDZ
+         7QX80QaETymp747m8F/p7jceTITODSi2sq6dzg8ryFS1DHCAfObacbuCvSGyx2i3dPIk
+         t2HNW8Wrk2SVy61MbCK7d2EBIfdS1yo1weYLChQKx0tdX6saub6uxdYbZkE/YhbFMmyx
+         8zf2OPmtzMnkDNvXXPuChEcreOHd6Hwd+g4SiJIoGiYTgb2XXRG9xj16+Z5o4lUmb5As
+         thcQ==
+X-Gm-Message-State: AOAM532HMHMZGelQoJ14RzG/j3RvvtNQivJyptExio9vxT9ksBbFsRuh
+        5o6YM2TMXbe2U30lg8HHwy0kjllA3llXZ8uwgmhfuGPPIG45
+X-Google-Smtp-Source: ABdhPJyuro0eRzCQRI0a07S5Fkm0NFBfzp5SGa8KoLpOL6oXDEfke4RSYwNg/MHcMlwLlcVDHcciurr9HDKnp4Wrp26MUekUa6GR
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+X-Received: by 2002:a05:6e02:1541:: with SMTP id j1mr3595398ilu.100.1639817166880;
+ Sat, 18 Dec 2021 00:46:06 -0800 (PST)
+Date:   Sat, 18 Dec 2021 00:46:06 -0800
+In-Reply-To: <0000000000000a337b05bb76ff8b@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000ba831905d367af3e@google.com>
+Subject: Re: [syzbot] INFO: task hung in disconnect_work
+From:   syzbot <syzbot+060f9ce2b428f88a288f@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, johannes.berg@intel.com,
+        johannes@sipsolutions.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, phind.uet@gmail.com,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGksIE1pY2th0ZFsDQpUaGFua3MgYWdhaW4gZm9yIHlvdXIgb3BpbmlvbiBhYm91dCBtaW5pbWFs
-IExhbmRsb2NrIElQdjQgbmV0d29yayB2ZXJzaW9uLg0KSSBoYXZlIGFscmVhZHkgc3RhcnRlZCBy
-ZWZhY3RvcmluZyB0aGUgY29kZS4NCkhlcmUgYXJlIHNvbWUgYWRkaXRpb25hbCB0aG91Z2h0cyBh
-Ym91dCB0aGUgZGVzaWduLg0KDQotLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KRnJvbTogTWlj
-a2HDq2wgU2FsYcO8biA8bWljQGRpZ2lrb2QubmV0PiANClNlbnQ6IEZyaWRheSwgRGVjZW1iZXIg
-MTcsIDIwMjEgNTozOSBQTQ0KVG86IEtvbnN0YW50aW4gTWVza2hpZHplIDxrb25zdGFudGluLm1l
-c2toaWR6ZUBodWF3ZWkuY29tPg0KQ2M6IHl1c29uZ3BpbmcgPHl1c29uZ3BpbmdAaHVhd2VpLmNv
-bT47IEFydGVtIEt1emluIDxhcnRlbS5rdXppbkBodWF3ZWkuY29tPjsgbGludXgtc2VjdXJpdHkt
-bW9kdWxlIDxsaW51eC1zZWN1cml0eS1tb2R1bGVAdmdlci5rZXJuZWwub3JnPjsgTmV0d29yayBE
-ZXZlbG9wbWVudCA8bmV0ZGV2QHZnZXIua2VybmVsLm9yZz47IG5ldGZpbHRlckB2Z2VyLmtlcm5l
-bC5vcmcNClN1YmplY3Q6IFJlOiBbUkZDIFBBVENIIDAvMl0gTGFuZGxvY2sgbmV0d29yayBQb0Mg
-aW1wbGVtZW50YXRpb24NCg0KTmV3IGRpc2N1c3Npb25zIGFuZCBSRkNzIHNob3VsZCBhbHNvIGlu
-Y2x1ZGUgbmV0ZGV2IGFuZCBuZXRmaWx0ZXIgbWFpbGluZyBsaXN0cy4gRm9yIHBlb3BsZSBuZXcg
-dG8gTGFuZGxvY2ssIHRoZSBnb2FsIGlzIHRvIGVuYWJsZSB1bnByaXZpbGVnZWQgcHJvY2Vzc2Vz
-IChhbmQgdGhlbiBwb3RlbnRpYWxseSBtYWxpY2lvdXMgb25lcykgdG8gbGltaXQgdGhlaXIgb3du
-IG5ldHdvcmsgYWNjZXNzIChpLmUuIGNyZWF0ZSBhIHNlY3VyaXR5IHNhbmRib3ggZm9yIHRoZW1z
-ZWx2ZXMpLg0KDQpUaGlua2luZyBtb3JlIGFib3V0IG5ldHdvcmsgYWNjZXNzIGNvbnRyb2wgZm9y
-IExhbmRsb2NrIHVzZSBjYXNlLCBoZXJlIGFyZSBiZXR0ZXIgc3VnZ2VzdGlvbnM6DQoNCk9uIDE0
-LzEyLzIwMjEgMTI6NTEsIE1pY2thw6tsIFNhbGHDvG4gd3JvdGU6DQo+IA0KPiBPbiAxNC8xMi8y
-MDIxIDA0OjQ5LCBLb25zdGFudGluIE1lc2toaWR6ZSB3cm90ZToNCj4+IEhpIE1pY2th0ZFsLg0K
-Pj4gSSd2ZSBiZWVuIHRoaW5raW5nIGFib3V0IHlvdXIgcmVwbHk6DQo+Pg0KPj4+IDQuIEtlcm5l
-bCBvYmplY3RzLg0KPj4+IEZvciBmaWxlc3lzdGVtIHJlc3RyaWN0aW9ucyBpbm9kZXMgb2JqZWN0
-cyBhcmUgdXNlZCB0byB0aWUgbGFuZGxvY2sgDQo+Pj4gcnVsZXMuDQo+Pj4gQnV0IGZvciBzb2Nr
-ZXQgb3BlcmF0aW9ucyBpdCdzIHByZWZlcnJlZCB0byB1c2UgdGFza19zdHJ1Y3Qgb2JqZWN0IA0K
-Pj4+IG9mIGEgcHJvY2VzcywgY2F1c2Ugc29ja2V0cycgaW5vZGVzIGFyZSBjcmVhdGVkIGp1c3Qg
-YWZ0ZXINCj4+PiBzZWN1cml0eV9zb2NrZXRfY3JlYXRlKCkgaG9vayBpcyBjYWxsZWQsIGFuZCBp
-ZiBpdHMgbmVlZGVkIHRvIGhhdmUgDQo+Pj4gc29tZSByZXN0cmljdGlvbiBydWxlIGZvciBjcmVh
-dGluZyBzb2NrZXRzLCB0aGlzIHJ1bGUgY2FuJ3QgYmUgdGllZCANCj4+PiB0byBhIHNvY2tldCBp
-bm9kZSBjYXVzZSB0aGVyZSBpcyBubyBhbnkgaGFzIGJlZW4gY3JlYXRlZCBhdCB0aGUgDQo+Pj4g
-aG9vaydzIGNhdGNoaW5nIG1vbWVudCwgc2VlIHRoZSBzb2NrX2NyZWF0ZV9saXRlKCkgZnVuY3Rp
-b24gYmVsb3c6DQo+Pg0KPj4gLSBGb3IgdGhlIGZpbGUgc3lzdGVtLCB3ZSB1c2UgaW5vZGVzIHRv
-IGlkZW50aWZ5IGhpZXJhcmNoaWVzLiBXZSANCj4+IGNhbid0DQo+PiAtIHNhZmVseSByZWx5IG9u
-IHN0YXRlbGVzcyBvYmplY3RzIChlLmcuIHBhdGggc3RyaW5ncykgYmVjYXVzZSB0aGUgDQo+PiBm
-aWxlDQo+PiAtIHN5c3RlbSBjaGFuZ2VzLCBhbmQgdGhlbiB0aGUgcnVsZXMgbXVzdCBjaGFuZ2Ug
-d2l0aCBpdC4NCj4+DQo+PiAtIFRvIGlkZW50aWZ5IG5ldHdvcmsgb2JqZWN0cyAoZnJvbSB0aGUg
-dXNlciBwb2ludCBvZiB2aWV3KSwgd2UgY2FuIA0KPj4gcmVseQ0KPj4gLSBvbiBzdGF0ZWxlc3Mg
-cnVsZSBkZWZpbml0aW9ucyBiZWNhdXNlIHRoZXkgbWF5IGJlIGFic29sdXRlIChpLmUuIElQDQo+
-PiAtIGFkZHJlc3MpLCBlLmcuIHNhbmRib3ggcHJvY2VzcyBjcmVhdGluZyBhIG5ldyBjb25uZWN0
-aW9uIG9yIA0KPj4gcmVjZXZlaW5nIGFuDQo+PiAtIFVEUCBwYWNrZXQuIEl0IGlzIG5vdCBiZSB0
-aGUgY2FzZSB3aXRoIFVOSVggc29ja2V0IGlmIHRoZXkgYXJlIGNvbWUgDQo+PiBmcm9tDQo+PiAt
-IGEgcGF0aCAoaS5lLiBpbm9kZSkgdGhvdWdoLiBJbiB0aGlzIGNhc2Ugd2UnbGwgaGF2ZSB0byB1
-c2UgdGhlIA0KPj4gZXhpc3RpbmcNCj4+IC0gZmlsZSBzeXN0ZW0gaWRlbnRpZmljYXRpb24gbWVj
-aGFuaXNtIGFuZCBwcm9iYWJseSBleHRlbmQgdGhlIA0KPj4gY3VycmVudCBGUw0KPj4gLSBhY2Nl
-c3MgcmlnaHRzLg0KPj4gLSBBIHNhbmRib3ggaXMgYSBzZXQgb2YgcHJvY2Vzc2VzIGhhbmRsZWQg
-YXMgInN1YmplY3RzIi4gR2VuZXJpYyBpbmV0DQo+PiAtIHJ1bGVzIHNob3VsZCBub3QgYmUgdGll
-ZCB0byBwcm9jZXNzZXMgKGZvciBub3cpIGJ1dCBvbiANCj4+IHN1Ym5ldHMvcHJvdG9jb2xzLg0K
-Pj4NCj4+IEluIGN1cnJlbnQgTGFuZGxvY2sgdmVyc2lvbiBpbm9kZXMgYXJlIHRoZSBvYmplY3Rz
-IHRvIHRpZSBydWxlcyB0by4NCj4+IEZvciBuZXR3b3JrIHlvdSBhcmUgc2F5aW5nIHRoYXQgd2Ug
-Y2FuIHJlbHkgb24gc3RhdGVsZXNzIHJ1bGUgDQo+PiBkZWZpbml0aW9ucyBhbmQgcnVsZXMgc2hv
-dWxkIGJlIHRpZWQgdG8gc3VibmV0cy9wcm90b2NvbHMsIG5vdCB0byANCj4+IHByb2Nlc3NlcycN
-Cj4+IHRhc2tfc3RydWN0IG9iamVjdHMuDQo+PiBDYXVzZSBMYW5kbG9jayBhcmNoaXRlY3R1cmUg
-cmVxdWlyZXMgYWxsIHJ1bGVzIHRvIGJlIHRpZWQgdG8gYSANCj4+IGRpZmZlcmVudCBrZXJuZWwg
-b2JqZWN0cywgYW5kIHdoZW4gTFNNIGhvb2tzIGFyZSBjYXVnaHQgdGhlcmUgbXVzdCBiZSANCj4+
-IHNlYXJjaCBwcm9jZWR1cmUgY29tcGxldGVkIGluIGEgcnVsZXNldCdzIHJlZC1ibGFjayB0cmVl
-IHN0cnVjdHVyZToNCj4+IMKgwqDCoMKga2VybmVsX29iamVjdCAtPiBsYW5kbG9ja19vYmplY3Qg
-PC0gbGFuZGxvY2tfcnVsZSANCj4+IDwtLS0tLWxhbmRsb2NrX3J1bGVzZXQNCj4+DQo+PiBXaGF0
-IGtpbmQgb2Yga2VybmVsIG9iamVjdHMgZG8geW91IG1lYW4gYnkgc3VibmV0cy9wcm90b2NvbHM/
-DQo+PiBEbyB5b3Ugc3VnZ2VzdCB1c2luZyBzb2NrZXRzJyBpbm9kZXMgaW4gdGhpcyBjYXNlIG9y
-IHVzaW5nIG5ldHdvcmsgDQo+PiBydWxlcyB3aXRob3V0IHRvIGJlIHRpZWQgdG8gYW55IGtlcm5l
-bCBvYmplY3Q/DQo+IA0KPiBUaGUgc3VibmV0cy9wcm90b2NvbHMgaXMgdGhlIGRlZmluaXRpb24g
-cHJvdmlkZWQgd2hlbiBjcmVhdGluZyBhIHJ1bGUgDQo+IChpLmUuIHRoZSBvYmplY3QgZnJvbSB0
-aGUgdXNlciBwb2ludCBvZiB2aWV3KSwgYnV0IHRoZSBrZXJuZWwgbWF5IA0KPiByZWxpZXMgb24g
-b3RoZXIgaW50ZXJuYWwgcmVwcmVzZW50YXRpb25zLiBJIGd1ZXNzIGRhdGFncmFtIHBhY2tldHMg
-DQo+IHdvdWxkIG5lZWQgdG8gYmUgbWF0Y2hlZCBhZ2FpbnN0IElQL3BvcnQgZXZlcnl0aW1lIHRo
-ZXkgYXJlIHJlY2VpdmVkIA0KPiBieSBhIHNhbmRib3hlZCBwcm9jZXNzLCBidXQgdGFnZ2luZyBz
-b2NrZXRzIG9yIHRoZWlyIHVuZGVybHlpbmcgaW5vZGVzIA0KPiBmb3Igc3RyZWFtIGNvbm5lY3Rp
-b25zIG1ha2Ugc2Vuc2UuDQo+IA0KPiBJIGRvbid0IGhhdmUgZXhwZXJpZW5jZSBpbiB0aGUgbmV0
-d29yayBMU00gaG9va3MgdGhvdWdoLCBhbnkgaW5wdXQgaXMgDQo+IHdlbGNvbWUuDQo+IA0KPj4g
-wqDCoMKgwqBzb2NrZXRfaW5vZGUgLT4gbGFuZGxvY2tfb2JqZWN0IDwtIGxhbmRsb2NrX3J1bGUg
-DQo+PiA8LS0tLS1sYW5kbG9ja19ydWxlc2V0DQo+PiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAg
-T1INCj4+IMKgwqDCoMKgbGFuZGxvY2tfb2JqZWN0IDwtIGxhbmRsb2NrX3J1bGUgPC0tLS0tbGFu
-ZGxvY2tfcnVsZXNldA0KPj4NCj4+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+PiBGcm9t
-OiBNaWNrYcOrbCBTYWxhw7xuIDxtaWNAZGlnaWtvZC5uZXQ+DQo+PiBTZW50OiBNb25kYXksIERl
-Y2VtYmVyIDEzLCAyMDIxIDQ6MzAgUE0NCj4+IFRvOiBLb25zdGFudGluIE1lc2toaWR6ZSA8a29u
-c3RhbnRpbi5tZXNraGlkemVAaHVhd2VpLmNvbT4NCj4+IENjOiBsaW51eC1zZWN1cml0eS1tb2R1
-bGVAdmdlci5rZXJuZWwub3JnOyB5dXNvbmdwaW5nIA0KPj4gPHl1c29uZ3BpbmdAaHVhd2VpLmNv
-bT47IEFydGVtIEt1emluIDxhcnRlbS5rdXppbkBodWF3ZWkuY29tPg0KPj4gU3ViamVjdDogUmU6
-IFtSRkMgUEFUQ0ggMC8yXSBMYW5kbG9jayBuZXR3b3JrIFBvQyBpbXBsZW1lbnRhdGlvbg0KPj4N
-Cj4+IEhpIEtvbnN0YW50aW4sDQo+Pg0KPj4gT24gMTAvMTIvMjAyMSAwODoyMSwgS29uc3RhbnRp
-biBNZXNraGlkemUgd3JvdGU6DQoNClsuLi5dDQoNCj4+DQo+PiBUbyBzdW0gdXAsIGZvciBJUHY0
-IHJlc3RyaWN0aW9ucywgd2UgbmVlZCBhIG5ldyBydWxlIHR5cGUgaWRlbnRpZmllZCANCj4+IHdp
-dGggTEFORExPQ0tfUlVMRV9ORVRfQ0lEUjQuIFRoaXMgd2lsbCBoYW5kbGUgYSBuZXcgc3RydWN0
-IA0KPj4gbGFuZGxvY2tfbmV0X2NpZHI0X2F0dHIgew0KPj4gwqDCoMKgwqDCoCBfX3U2NCBhbGxv
-d2VkX2FjY2VzczsNCj4+IMKgwqDCoMKgwqAgX191MzIgYWRkcmVzczsgLy8gSVB2NA0KPj4gwqDC
-oMKgwqDCoCBfX3U4IHByZWZpeDsgLy8gRnJvbSAwIHRvIDMyDQo+PiDCoMKgwqDCoMKgIF9fdTgg
-dHlwZTsgLy8gU09DS19ER1JBTSwgU09DS19TVFJFQU0NCj4+IMKgwqDCoMKgwqAgX191MTYgcG9y
-dDsNCj4+IH0gX19hdHRyaWJ1dGVfXygocGFja2VkKSk7DQo+PiAvLyBodHRwczovL2RhdGF0cmFj
-a2VyLmlldGYub3JnL2RvYy9odG1sL3JmYzQ2MzINCg0KPj4gSVAgYWRkcmVzc2VzIChhbmQgc3Vi
-bmV0cykgc2hvdWxkIG5vdCBiZSBwYXJ0IG9mIGEgcnVsZSwgYXQgbGVhc3QgZm9yIG5vdy4gSW5k
-ZWVkLCBJUCBhZGRyZXNzZXMgYXJlIHRpZWQgZWl0aGVyIHRvIHRoZSBzeXN0ZW0gYXJjaGl0ZWN0
-dXJlIChlLmcuIGNvbnRhaW5lciBjb25maWd1cmF0aW9uKSwgdGhlIGxvY2FsIG5ldHdvcmsgb3Ig
-SW50ZXJuZXQsIGhlbmNlIG1vdmluZyB0YXJnZXRzIG5vdCA+PiBjb250cm9sbGVkIGJ5IGFwcGxp
-Y2F0aW9uIGRldmVsb3BlcnMuIE1vcmVvdmVyLCBmcm9tIGEga2VybmVsIHBvaW50IG9mIHZpZXcs
-IGl0IGlzIG1vcmUgY29tcGxleCB0byBjaGVjayBhbmQgaGFuZGxlIHN1Ym5ldHMsIHdoaWNoIGFy
-ZSBtb3N0IG9mIHRoZSB0aW1lIHRpZWQgdG8gdGhlIE5ldGZpbHRlciBpbmZyYXN0cnVjdHVyZSwg
-bm90IHN1aXRhYmxlIGZvciBMYW5kbG9jayBiZWNhdXNlID4+IG9mIGl0cyB1bnByaXZpbGVnZWQg
-bmF0dXJlLg0KDQo+PiBPbiB0aGUgb3RoZXIgc2lkZSwgcHJvdG9jb2xzIHN1Y2ggYXMgVENQIGFu
-ZCB0aGVpciBhc3NvY2lhdGVkIHBvcnRzIGFyZSBub3JtYWxpemVkIGFuZCBhcmUgdGllZCB0byBh
-biBhcHBsaWNhdGlvbiBzZW1hbnRpYyAoZS5nLiBUQ1AvNDQzIGZvciBIVFRQUykuDQoNCj4+IFRo
-ZXJlIGlzIG90aGVyIGFkdmFudGFnZXMgdG8gZXhjbHVkZSBzdWJuZXRzIGZyb20gdGhpcyB0eXBl
-IG9mIHJ1bGVzIGZvciBub3cgKGUuZy4gdGhleSBjb3VsZCBiZSBjb21wb3NlZCB3aXRoIHByb3Rv
-Y29scy9wb3J0cyksIGJ1dCB0aGF0IG1heSBjb21lIGxhdGVyLg0KDQo+PiBJIHRoZW4gdGhpbmsg
-dGhhdCBhIGZpcnN0IE1WUCB0byBicmluZyBuZXR3b3JrIGFjY2VzcyBjb250cm9sIHN1cHBvcnQg
-dG8gTGFuZGxvY2sgc2hvdWxkIGZvY3VzIG9ubHkgb24gVENQIGFuZCByZWxhdGVkIHBvcnRzIChp
-LmUuIHNlcnZpY2VzKS4gSSBwcm9wb3NlIHRvIG5vdCB1c2UgbXkgcHJldmlvdXMgZGVmaW5pdGlv
-biBvZiBsYW5kbG9ja19uZXRfY2lkcjRfYXR0ciBidXQgdG8gaGF2ZSBhID4+IGxhbmRsb2NrX25l
-dF9zZXJ2aWNlX2F0dHIgaW5zdGVhZDoNCg0KPj4gc3RydWN0IGxhbmRsb2NrX25ldF9zZXJ2aWNl
-X2F0dHIgew0KPj4gICAgIF9fdTY0IGFsbG93ZWRfYWNjZXNzOyAvLyBMQU5ETE9DS19ORVRfKl9U
-Q1ANCj4+ICAgICBfX3UxNiBwb3J0Ow0KPj4gfSBfX2F0dHJpYnV0ZV9fKChwYWNrZWQpKTsNCg0K
-Pj4gVGhpcyBhdHRyaWJ1dGUgc2hvdWxkIGhhbmRsZSBJUHY0IGFuZCBJUHY2IGluZGlzdGluZ3Vp
-c2hhYmx5Lg0KDQpbLi4uXQ0KDQo+Pg0KPj4gQWNjZXNzZXMvc3VmZml4ZXMgc2hvdWxkIGJlOg0K
-Pj4gLSBDUkVBVEUNCj4+IC0gQUNDRVBUDQo+PiAtIEJJTkQNCj4+IC0gTElTVEVODQo+PiAtIENP
-Tk5FQ1QNCj4+IC0gUkVDRUlWRSAoUkVDRUlWRV9GUk9NIGFuZCBTRU5EX1RPIHNob3VsZCBub3Qg
-YmUgbmVlZGVkKQ0KPj4gLSBTRU5EDQo+PiAtIFNIVVRET1dODQo+PiAtIEdFVF9PUFRJT04gKEdF
-VFNPQ0tPUFQpDQo+PiAtIFNFVF9PUFRJT04gKFNFVFNPQ0tPUFQpDQoNCj4+IEZvciBub3csIHRo
-ZSBvbmx5IGFjY2VzcyByaWdodHMgc2hvdWxkIGJlIExBTkRMT0NLX0FDQ0VTU19ORVRfQklORF9U
-Q1AgYW5kIExBTkRMT0NLX0FDQ0VTU19ORVRfQ09OTkVDVF9UQ1AgKHRpZSB0byB0d28gTFNNIGhv
-b2tzIHdpdGggc3RydWN0IHNvY2thZGRyKS4NCg0KPj4gVGhlc2UgYXR0cmlidXRlIGFuZCBhY2Nl
-c3MgcmlnaHQgY2hhbmdlcyByZWR1Y2UgdGhlIHNjb3BlIG9mIHRoZSBuZXR3b3JrIGFjY2VzcyBj
-b250cm9sIGFuZCBtYWtlIGl0IHNpbXBsZXIgYnV0IHN0aWxsIHJlYWxseSB1c2VmdWwuIERhdGFn
-cmFtIChlLmcuIFVEUCwgd2hpY2ggY291bGQgYWRkIEJJTkRfVURQIGFuZCBTRU5EX1VEUCkgc29j
-a2V0cyB3aWxsIGJlIG1vcmUgDQo+PmNvbXBsZXggdG8gcmVzdHJpY3QgY29ycmVjdGx5IGFuZCBz
-aG91bGQgdGhlbiBjb21lIGluIGFub3RoZXIgcGF0Y2ggc2VyaWVzLCBvbmNlIFRDUCBpcyBzdXBw
-b3J0ZWQuDQoNCkkgdGhpbmsgdGhhdCBoYXZpbmcgYWNjZXNzIHJpZ2h0cyBsaWtlIExBTkRMT0NL
-X0FDQ0VTU19ORVRfQ1JFQVRFX1RDUF9TT0NLRVRfREVOWS9MQU5ETE9DS19BQ0NFU1NfTkVUX0NS
-RUFURV9VRFBfU09DS0VUX0RFTlkgbWlnaHQgYmUgdXNlZnVsIGR1cmluZyBpbml0aWFsaXphdGlv
-biBwaGFzZSBvZiBjb250YWluZXIvc2FuZGJveCwgY2F1c2UgYSB1c2VyIGNvdWxkIGhhdmUgdGhl
-IHBvc3NpYmlsaXR5IHRvIHJlc3RyaWN0IHRoZSBjcmVhdGlvbiBvZiBzb21lIHR5cGUgb2Ygc29j
-a2V0cyBhdCBhbGwsIGFuZCB0byByZWR1Y2UgdGhlIGF0dGFjayBzdXJmYWNlIHJlbGF0ZWQgdG8g
-c2VjdXJpdHkgYXNwZWN0Lg0KU28gdGhlIGxvZ2ljIGNvdWxkIGJlIHRoZSBmb2xsb3dpbmc6DQoJ
-MS4gUHJvY2VzcyByZXN0cmljdHMgY3JlYXRpb24gVURQIHNvY2tldHMsIGFsbG93cyBUQ1Agb25l
-LiAgDQoJCS0gTEFORExPQ0tfQUNDRVNTX05FVF9DUkVBVEVfKl9TT0NLRVRfREVOWSBydWxlcyBh
-cmUgdGllZCB0byBwcm9jZXNzIHRhc2tfc3RydWN0IGNhdXNlIHRoZXJlIGFyZSBubyBzb2NrZXRz
-IGlub2RlcyBjcmVhdGVkIGF0IHRoaXMgbW9tZW50Lg0KCTIuIENyZWF0ZXMgbmVjZXNzYXJ5IG51
-bWJlciBvZiBzb2NrZXRzLg0KCTMuIFJlc3RyaWN0cyBzb2NrZXRzJyBhY2Nlc3MgcmlnaHRzLiAN
-CgkJLSBMQU5ETE9DS19BQ0NFU1NfTkVUX0JJTkRfKiAvIExBTkRMT0NLX0FDQ0VTU19ORVRfQ09O
-TkVDVF8qIGFjY2VzcyByaWdodHMgYXJlIHRpZWQgdG8gc29ja2V0cyBpbm9kZXMgaW5kaXZpZHVh
-bGx5LgkNCg==
+syzbot suspects this issue was fixed by commit:
+
+commit 563fbefed46ae4c1f70cffb8eb54c02df480b2c2
+Author: Nguyen Dinh Phi <phind.uet@gmail.com>
+Date:   Wed Oct 27 17:37:22 2021 +0000
+
+    cfg80211: call cfg80211_stop_ap when switch from P2P_GO type
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=13ad179db00000
+start commit:   f40ddce88593 Linux 5.11
+git tree:       upstream
+kernel config:  https://syzkaller.appspot.com/x/.config?x=51ab7ccaffffc30c
+dashboard link: https://syzkaller.appspot.com/bug?extid=060f9ce2b428f88a288f
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1217953cd00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13baa822d00000
+
+If the result looks correct, please mark the issue as fixed by replying with:
+
+#syz fix: cfg80211: call cfg80211_stop_ap when switch from P2P_GO type
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
