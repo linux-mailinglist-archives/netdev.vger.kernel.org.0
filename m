@@ -2,65 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC29B479C0F
-	for <lists+netdev@lfdr.de>; Sat, 18 Dec 2021 19:32:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CFDF1479C7A
+	for <lists+netdev@lfdr.de>; Sat, 18 Dec 2021 21:00:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233807AbhLRScu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Dec 2021 13:32:50 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:33552 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232110AbhLRScu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 18 Dec 2021 13:32:50 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=xdAElQbK3eYxJSM8ns4jJZpeB2KYRyByv11FcMKhd4Y=; b=nLnQj0XQfG7MbbHrOxgWbbFuiF
-        bGbhDzXDE6ei5kAkgzD7+qFdmjgWjsgXDpFxpksEKvRq7PAeTnD5YYNHwsddlqUWS/Fo6cHEr1NpM
-        JErDKLZpbwpuPrSV7qG2/yL62kKtEH2GGcx3VpAtc8ypW3mOSv1NytiOQ05+lJxz8ILQ=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1myeVi-00GuxM-5k; Sat, 18 Dec 2021 19:32:46 +0100
-Date:   Sat, 18 Dec 2021 19:32:46 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Gabriel Hojda <ghojda@yo2urs.ro>
-Cc:     Martyn Welch <martyn.welch@collabora.com>, netdev@vger.kernel.org,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Markus Reichl <m.reichl@fivetechno.de>,
-        Steve Glendinning <steve.glendinning@shawell.net>,
-        UNGLinuxDriver@microchip.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, stable@kernel.org
-Subject: Re: Issues with smsc95xx driver since a049a30fc27c
-Message-ID: <Yb4pTu3FtkGPPpzb@lunn.ch>
-References: <199eebbd6b97f52b9119c9fa4fd8504f8a34de18.camel@collabora.com>
- <Yb4QFDQ0rFfFsT+Y@lunn.ch>
- <36f765d8450ba08cb3f8aecab0cadd89@yo2urs.ro>
- <Yb4m3xms1zMf5C3T@lunn.ch>
+        id S234073AbhLRT7U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Dec 2021 14:59:20 -0500
+Received: from mail-io1-f71.google.com ([209.85.166.71]:36637 "EHLO
+        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234035AbhLRT7S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Dec 2021 14:59:18 -0500
+Received: by mail-io1-f71.google.com with SMTP id w16-20020a5d8a10000000b005e241c13c7bso4042105iod.3
+        for <netdev@vger.kernel.org>; Sat, 18 Dec 2021 11:59:18 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=BYwp39HfkoKA0spS5iKDdSyw2i3LvTwEYaoIQ1fJH/I=;
+        b=HbKoQtznr/v/ySiAl4kT+OSTMJoAqsK/beXYrHVIr2+Tp0gGs+pR5oLI0bCFjMe7nR
+         qp4XUub2fPh59h0kFQg+oBFUEDouoz3M3QNbt9NlZTcNTxgz6+G5ZioEINmH4eFIj6I3
+         iI1cowgscIgYQOwTp2POpUCXav7eJ8ckup0+KjzS0q3wgqTXdFVRIpgEz3bMZbL6yyQy
+         tqE4ZGeJe+QMXwsS5Oj93LQxQDEEs/sf3kcJq4CbC6k7dJWEC/imzOQS44z2YbTAyl/Q
+         N6Jm37m2nbPaWqt2EcBhbZbYPlZfF9Jqk9ftjQvxzsxP6qwghC2vkemmo7E2nOF91pRy
+         4qng==
+X-Gm-Message-State: AOAM530w9WX+XfOGxwWgzaHaaaMBZh34GSHwL21gMxlVIkgaH5cFu9oI
+        ebgwcpykRMfMaWRrIYaYrJA5lSumddfbEvxXuGZi/aUi69YI
+X-Google-Smtp-Source: ABdhPJwtphcEpn94Y+GKY1ddbM7fL8AeKAWU5U3uy2A6xfXQnyUUGDnIRf4rsD452Bl9zZ3dM0mMHaUf7yhLWL7TBRJjz46LGT0b
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yb4m3xms1zMf5C3T@lunn.ch>
+X-Received: by 2002:a05:6638:140d:: with SMTP id k13mr5342747jad.37.1639857558522;
+ Sat, 18 Dec 2021 11:59:18 -0800 (PST)
+Date:   Sat, 18 Dec 2021 11:59:18 -0800
+In-Reply-To: <00000000000021bb9b05d14bf0c7@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000420dda05d37117f9@google.com>
+Subject: Re: [syzbot] WARNING in page_counter_cancel (3)
+From:   syzbot <syzbot+bc9e2d2dbcb347dd215a@syzkaller.appspotmail.com>
+To:     akpm@linux-foundation.org, davem@davemloft.net, jiri@nvidia.com,
+        kuba@kernel.org, leonro@nvidia.com, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> O.K, stab in the dark. Does the hardware need to be programmed with
-> the MAC address? When does this happen? If this is going wrong, it
-> could explain the promisc mode. If the MAC address has not been
-> programmed, it has no idea what packets are for itself. Put it into
-> promisc mode, and it will receive everything, including what it is
-> supposed to receive. But looking at the offending patch, it is not
-> obvious how it has anything to do with MAC addresses. The only
-> unbalanced change in that patch is that smsc95xx_reset(dev) has
-> disappeared, not moved to somewhere else.
+syzbot has bisected this issue to:
 
-Ah!
+commit 22849b5ea5952d853547cc5e0651f34a246b2a4f
+Author: Leon Romanovsky <leonro@nvidia.com>
+Date:   Thu Oct 21 14:16:14 2021 +0000
 
-smsc95xx_reset() calls smsc95xx_set_mac_address(). So that fits.
-smsc95xx_reset() is also called in smsc95xx_bind(), but maybe that is
-not enough?
+    devlink: Remove not-executed trap policer notifications
 
-	Andrew
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=16464095b00000
+start commit:   158b515f703e tun: avoid double free in tun_free_netdev
+git tree:       net
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=15464095b00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=11464095b00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=fa556098924b78f0
+dashboard link: https://syzkaller.appspot.com/bug?extid=bc9e2d2dbcb347dd215a
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13ff127eb00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11bedb6db00000
+
+Reported-by: syzbot+bc9e2d2dbcb347dd215a@syzkaller.appspotmail.com
+Fixes: 22849b5ea595 ("devlink: Remove not-executed trap policer notifications")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
