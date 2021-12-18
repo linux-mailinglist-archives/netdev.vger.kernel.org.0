@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA7CB479844
-	for <lists+netdev@lfdr.de>; Sat, 18 Dec 2021 03:57:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0ED7E479847
+	for <lists+netdev@lfdr.de>; Sat, 18 Dec 2021 03:59:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231764AbhLRC5s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Dec 2021 21:57:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44106 "EHLO
+        id S231779AbhLRC7R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Dec 2021 21:59:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230151AbhLRC5r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Dec 2021 21:57:47 -0500
-Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5367DC061574
-        for <netdev@vger.kernel.org>; Fri, 17 Dec 2021 18:57:47 -0800 (PST)
-Received: by mail-oi1-x22f.google.com with SMTP id 7so6387751oip.12
-        for <netdev@vger.kernel.org>; Fri, 17 Dec 2021 18:57:47 -0800 (PST)
+        with ESMTP id S229655AbhLRC7Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Dec 2021 21:59:16 -0500
+Received: from mail-ot1-x334.google.com (mail-ot1-x334.google.com [IPv6:2607:f8b0:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76E47C061574
+        for <netdev@vger.kernel.org>; Fri, 17 Dec 2021 18:59:16 -0800 (PST)
+Received: by mail-ot1-x334.google.com with SMTP id x3-20020a05683000c300b0057a5318c517so5125694oto.13
+        for <netdev@vger.kernel.org>; Fri, 17 Dec 2021 18:59:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=LPgAeF2XPufwew9hqyVx4BsEFDuGKIQokJtAGf28FvA=;
-        b=Y7XSURZh5zVrcPQbmRGqSEnUBJ9/4eQWLFaXX22kdLjA9bJg8QpLzvEVm8KE3NGqvV
-         2Guf4QHIhinycKSNEkLl9bDvLRY7Tcx7gZeWzv18zRRR3NselL/ghsGrSxN+AqTJtYIY
-         Ji1w3TbAX4RaA0oilS6Txq0s5vBWbkO7E+M4ZvvsxurTYUS0FMvF+iQr4Bs1DpKFUev0
-         Nucb07rZ+Qw1wb0GPnvu2bjHwWqd69u2pQQrtR8Qu/UgbBjfYikK0Em/DoemAFTZ4Hfn
-         94/hR7VCyKtIikWNu2hGycJeyIPXpx9mX7qAzW217/RmFQeYAYkS/DdwiHzFBsgrym2V
-         0N5w==
+        bh=O4bkZtAogb1N7n7U8/nfqUv5uVHGYTOshcCRiPCxQSk=;
+        b=u2zPKEBt3h0fbwul1U7ul1vhD81q2RYkrL5ZimezaZIuLwSjrcl/EJxwYBnxlNySvd
+         SLpFlvVGr61jJQjJapal8alo3I1alyuVuc74Yoj2/AbuYNJPzBhMEtKz8n4MPDbLeP+/
+         /T8dVD8gi+Cfj/t56o01UIddsEdczMfz5nu24/uLhXUTVLEJRZWANoN/EAnSWPdXdoKK
+         oZaVdM1jxQNd7V4uhTwhrr6afV6hBXWZ7eCfiR2Vpqgj9fCfzkssc9enCqcwNm4IcHxs
+         5gGnasL3QiwEjR7YY4Gw09ZJYgKE2m9vUt79oLkPhQXTnqbezhUm95q3a2D/oQJp41uR
+         Uq7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=LPgAeF2XPufwew9hqyVx4BsEFDuGKIQokJtAGf28FvA=;
-        b=VNSoD1hFA7fIVg+7MxA48cpiiw5KUDvItHXTVxQhbR1ODEYQFr3i0DYqrpvolaC/Hi
-         funOJtJY7p6Xgz4LWTB8xNotcPeKGGMWLauzDCKm4SbG6hVUHDDXaqicl42ZpMPj/i0U
-         gfXTQRWChInsM4xB3mdmu7Qqbib8SKyQmvPTipMPoMjnHJ6Tnolf2P10LWSfj3LXPnvF
-         +B8wIfuogVI19/dP5i+0lEL00PYlPgwLe7b9QedUXG+jd46DHGSSNeZNqeASdIkvzGjX
-         PLwp8omzicM+3Fg33yEHORRfXpKaomZrMLFreMeXeg2kWmgO94OOVl4wquWxhoEnK9hB
-         b+bA==
-X-Gm-Message-State: AOAM532W8Qtu7m9NYTP2yzfpJ2ShCt0qwFbqeDAgkZ5iV2IFdC8IxILf
-        aDwzZuf2m4eiPxnJvTNJE7Tas8Wb7V/jdtTMh3z8TQ==
-X-Google-Smtp-Source: ABdhPJyiIS4tiF9L4Mval2xTyqeGicZXxTPKYEz6kr/ft7sTkF3wYNO6rsJTBmhNCMsVTteQ9IqqBHLWHQ9CvSDv88g=
-X-Received: by 2002:a05:6808:60e:: with SMTP id y14mr4255048oih.162.1639796266755;
- Fri, 17 Dec 2021 18:57:46 -0800 (PST)
+        bh=O4bkZtAogb1N7n7U8/nfqUv5uVHGYTOshcCRiPCxQSk=;
+        b=Fap4VkSx9t6XtG3kQ0QoEHBJW5l9r2IEJigsFNejn3JmufvUKR/SN/8ehoctV2o49K
+         ZfmRgslI1SADcAtEfQo1JP1HiZjqsQ98ydMdIa32OkAUn08BnQWk7gzanj1r+gCW9pit
+         LJnyCao2rqjilPadO5bNrSWy0uh8lPfDumohR/N6V9OJegZj/5Wf6H/oaiuU1jkP4GhD
+         +V7DCkdEvGzmgv4jKmG7cLbnlcfANYhR0/iJYn1BR6xzEVpisfVz71PW6Pdn1J4bdSb0
+         xLgWNT9DRkH7E0pQZKMf7WmyhCbMgqP+WMsc0+7RDenKlLiUyO7psEk4fKY6NM4Hsb/M
+         +NBQ==
+X-Gm-Message-State: AOAM532OrPZ/Z2k3BFTZP160xqa2rRHkehLmQdd18pyYckgzBGFwwsit
+        PCwh4JVyywGOHTfMVYruqVlVGYo1q+V+4iaNbBjypA==
+X-Google-Smtp-Source: ABdhPJxMtYNH7zylVtocq3xTJsDc0fWeBrt5ejKKum2mUGDOCvziBxOoaLB3jtCHFFB+wspobWMqOkbPvSc1Gwl4y/k=
+X-Received: by 2002:a9d:ed6:: with SMTP id 80mr4216404otj.35.1639796355830;
+ Fri, 17 Dec 2021 18:59:15 -0800 (PST)
 MIME-Version: 1.0
-References: <20211216201342.25587-1-luizluca@gmail.com> <20211216201342.25587-10-luizluca@gmail.com>
-In-Reply-To: <20211216201342.25587-10-luizluca@gmail.com>
+References: <20211216201342.25587-1-luizluca@gmail.com> <20211216201342.25587-12-luizluca@gmail.com>
+In-Reply-To: <20211216201342.25587-12-luizluca@gmail.com>
 From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Sat, 18 Dec 2021 03:57:35 +0100
-Message-ID: <CACRpkdZP3jj45Q9Kaky63WfbDWyT1sT6PNSdrVEQ+PYhGmfP6w@mail.gmail.com>
-Subject: Re: [PATCH net-next 09/13] dt-bindings: net: dsa: realtek-mdio:
- document new interface
+Date:   Sat, 18 Dec 2021 03:59:04 +0100
+Message-ID: <CACRpkdaOJh70bGx2_FgDMQ6gf3_gh=hiSumdGLz=CDfspvY=gg@mail.gmail.com>
+Subject: Re: [PATCH net-next 11/13] net: dsa: realtek: rtl8367c: use
+ GENMASK(n-1,0) instead of BIT(n)-1
 To:     luizluca@gmail.com
 Cc:     netdev@vger.kernel.org, andrew@lunn.ch, vivien.didelot@gmail.com,
         f.fainelli@gmail.com, olteanv@gmail.com, ALSI@bang-olufsen.dk,
@@ -65,21 +65,10 @@ On Thu, Dec 16, 2021 at 9:14 PM <luizluca@gmail.com> wrote:
 
 > From: Luiz Angelo Daros de Luca <luizluca@gmail.com>
 >
-> realtek-mdio is a new mdio driver for realtek switches that use
-> mdio (instead of SMI) interface.
->
-> Reviewed-by: Ar=C4=B1n=C3=A7 =C3=9CNAL <arinc.unal@arinc9.com>
+> Tested-by: Ar=C4=B1n=C3=A7 =C3=9CNAL <arinc.unal@arinc9.com>
 > Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
 
-Binding patches need to be CC to devicetree@vger.kernel.org
-(also goes for patch 1 BTW).
-
-> +++ b/Documentation/devicetree/bindings/net/dsa/realtek-mdio.txt
-
-I think YAML schema is becoming mandatory for bindings, sorry.
-Are you experienced with this?
-
-Check the other .yaml bindings in DSA for examples.
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
 Yours,
 Linus Walleij
