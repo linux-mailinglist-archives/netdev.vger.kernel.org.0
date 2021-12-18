@@ -2,47 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EEC55479E52
-	for <lists+netdev@lfdr.de>; Sun, 19 Dec 2021 00:56:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 91B27479E3C
+	for <lists+netdev@lfdr.de>; Sun, 19 Dec 2021 00:54:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235025AbhLRXyY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Dec 2021 18:54:24 -0500
-Received: from o1.ptr2625.egauge.net ([167.89.112.53]:25288 "EHLO
+        id S235019AbhLRXyX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Dec 2021 18:54:23 -0500
+Received: from o1.ptr2625.egauge.net ([167.89.112.53]:25322 "EHLO
         o1.ptr2625.egauge.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234676AbhLRXyS (ORCPT
+        with ESMTP id S234835AbhLRXyS (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sat, 18 Dec 2021 18:54:18 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=egauge.net;
         h=from:subject:in-reply-to:references:mime-version:to:cc:
         content-transfer-encoding:content-type;
-        s=sgd; bh=lEJOszgCw0TFSxZvSVioKcU+0PoQE8Pc6r25UeeIg7A=;
-        b=S/B1mMakfozT+C0PYycwp9fQiE8/uAqHELHPIMeGMZV+snaVjZ0NTDJn3pPnWMziw3/5
-        m88sAqBYj6v9D2ZARJ+P7RJLv927q8ESqxGi+OIEWB02+RtC/Q/S+Fxn2kWsxzGMPsHYRB
-        00JYKb1A2bdrUKTnWOA28QN4AWMwYxDpUsntvqKycFliOOb/adXCwXH2NT+aHfx3NtN1S9
-        3zZoM7dYZMjI/+RXJNqZVLU+YQmUJo7ID7cH3OZ3Z6jdVPQyat87OHrfsKflWbZC+IZVKK
-        E9qDzoHYRJ1JYunc2W3zwsuQaoLxBcje+Z04v8lgZ/RWxQyTrRvuy9LHg3bkLiVQ==
-Received: by filterdrecv-7bf5c69d5-fb76v with SMTP id filterdrecv-7bf5c69d5-fb76v-1-61BE74A8-A
-        2021-12-18 23:54:16.307699886 +0000 UTC m=+1581798.970762200
+        s=sgd; bh=0hlvidBJdhIlrLaOHqRVQf+FcgIZ6mOxvt9oZ5jAdx0=;
+        b=vQ9EnhDfneo5BqECP/eh1ztxPZq24D5XUBEaQAsws/L7qQ1jRNwgl5i3Gt9LaGrt0Txq
+        p/bSHsC2I5KuElmBo/qIt/Da9Kx/KRpmMzXUT68KapI2JHMOmNGamups9cBzWd5R6DpEmC
+        97DzFXmAmYjTbOcY/ooOHab/jItIWv3rXLATYzeX7nwuvelkmWJRVAm8OOREo/F4jAhlnL
+        AflfqxNeopq11JwrY3EoJLKPZikm1H3vjW8sMw7Z7/xSK3BrmLxZGkmSiO99RmiwwNcswm
+        6PUqJmQTQaXL+9BZ0qhU45sZkiXpaPNMqhAEqPHaWDRfszCy5P1o+kcKLgrlT+hw==
+Received: by filterdrecv-75ff7b5ffb-wdd5z with SMTP id filterdrecv-75ff7b5ffb-wdd5z-1-61BE74A8-17
+        2021-12-18 23:54:16.568724745 +0000 UTC m=+9336864.670000613
 Received: from pearl.egauge.net (unknown)
         by geopod-ismtpd-1-1 (SG)
         with ESMTP
-        id BtctVw9tSLegk_x0es2y0w
-        Sat, 18 Dec 2021 23:54:16.141 +0000 (UTC)
+        id 6K7gRl6-Tv2qCxjFpmNq-A
+        Sat, 18 Dec 2021 23:54:16.367 +0000 (UTC)
 Received: by pearl.egauge.net (Postfix, from userid 1000)
-        id 8704D7005B6; Sat, 18 Dec 2021 16:54:15 -0700 (MST)
+        id 8D75D70086E; Sat, 18 Dec 2021 16:54:15 -0700 (MST)
 From:   David Mosberger-Tang <davidm@egauge.net>
-Subject: [PATCH 02/23] wilc1000: switch txq_event from completion to waitqueue
+Subject: [PATCH 04/23] wilc1000: factor common code in wilc_wlan_cfg_set() and
+ wilc_wlan_cfg_get()
 Date:   Sat, 18 Dec 2021 23:54:16 +0000 (UTC)
-Message-Id: <20211218235404.3963475-3-davidm@egauge.net>
+Message-Id: <20211218235404.3963475-5-davidm@egauge.net>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211218235404.3963475-1-davidm@egauge.net>
 References: <20211218235404.3963475-1-davidm@egauge.net>
 MIME-Version: 1.0
 X-SG-EID: =?us-ascii?Q?+kMxBqj35EdRUKoy8diX1j4AXmPtd302oan+iXZuF8m2Nw4HRW2irNspffT=2Fkh?=
- =?us-ascii?Q?ET6RJF6+Prbl0h=2FEtF1rRLvF2Lvk30d1zpJ0jP8?=
- =?us-ascii?Q?DPK7uiSg+PB55J4rl=2FXo2H8=2F0KuHpLlqO9wlby2?=
- =?us-ascii?Q?SgTh3Y8nZTUBZLKX+W8sCnEKQLRwfT+BtjDSedS?=
- =?us-ascii?Q?4s8HueRVrR+GKwMY3KhDcxdBb0yBaej8jdX0+YA?=
- =?us-ascii?Q?JIjAxGZpsYGPOrTBRtT0aXiwGG=2FYadGMtSloXb?=
+ =?us-ascii?Q?ET6RJF6+Prbl0h=2FEtF1rRLvE+Fbp=2FMICLbrzIyn?=
+ =?us-ascii?Q?lqvh2mpwH=2F4CJ7Fl+jG2+wFUWQcq78AkswDBm0M?=
+ =?us-ascii?Q?GRp9lFxQYYmrW1+AHjdJjCedyCNvjiM0P+1tk5q?=
+ =?us-ascii?Q?bv4DYM5ngcDR09SLY7Iw0FXD89zVWiRd+V5IpbX?=
+ =?us-ascii?Q?4ypYEvcs=2Flu6e6tulvi61egZD0APyUnMG4dKh9?=
 To:     Ajay Singh <ajay.kathat@microchip.com>
 Cc:     Claudiu Beznea <claudiu.beznea@microchip.com>,
         Kalle Valo <kvalo@codeaurora.org>,
@@ -58,169 +59,115 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Completion structs are essentially counting semaphores: every
-complete() call wakes up exactly one thread, either immediately (when
-there are waiters queued) or in the future (when a waiter arrives).
-This isn't really the appropriate synchronization structure for the
-wilc1000 transmit queue handler (wilc_wlan_handle_txq) because it will
-consume zero, one, or more packets on each call.  Instead, use a
-waitqueue as a condition variable: wake_up_interruptible() wakes up
-the tx queue handler from a call to wait_event_interruptible()
-whenever something interesting happens and it then takes the
-appropriate action.  This has a couple of benefits:
-
- - Since the transmit queue handler often transfers multiple packets
-   to the chip on each call, repeated calls to wait_for_completion()
-   when there is no actual work to do are avoided.
-
- - When the transmit queue handler cannot transfer any packets at all,
-   it'll simply give up the current time slice and then tries again.
-   Previously, the transmit would stall until a new packet showed up
-   (which potentially could cause extended stalls).  It would be even
-   better to wait for a "tx queue not full" interrupt but, sadly, I'm
-   told the wilc1000 firmware doesn't provide that.
-
- - There is no longer any need for wilc_wlan_txq_filter_dup_tcp_ack()
-   to adjust the completion structs wait count by calling
-   wait_for_completion_timeout() for each dropped packet.
+The functions are almost identical, so factor the common code into new
+function wilc_wlan_cfg_apply_wid().  No functional change.
 
 Signed-off-by: David Mosberger-Tang <davidm@egauge.net>
 ---
- drivers/net/wireless/microchip/wilc1000/cfg80211.c |  2 +-
- drivers/net/wireless/microchip/wilc1000/netdev.c   | 13 +++++++++----
- drivers/net/wireless/microchip/wilc1000/netdev.h   |  2 +-
- drivers/net/wireless/microchip/wilc1000/wlan.c     | 12 ++----------
- 4 files changed, 13 insertions(+), 16 deletions(-)
+ .../net/wireless/microchip/wilc1000/wlan.c    | 65 ++++++++-----------
+ 1 file changed, 27 insertions(+), 38 deletions(-)
 
-diff --git a/drivers/net/wireless/microchip/wilc1000/cfg80211.c b/drivers/net/wireless/microchip/wilc1000/cfg80211.c
-index 8d8378bafd9b0..be387a8abb6af 100644
---- a/drivers/net/wireless/microchip/wilc1000/cfg80211.c
-+++ b/drivers/net/wireless/microchip/wilc1000/cfg80211.c
-@@ -1692,7 +1692,7 @@ static void wlan_init_locks(struct wilc *wl)
- 	spin_lock_init(&wl->txq_spinlock);
- 	mutex_init(&wl->txq_add_to_head_cs);
- 
--	init_completion(&wl->txq_event);
-+	init_waitqueue_head(&wl->txq_event);
- 	init_completion(&wl->cfg_event);
- 	init_completion(&wl->sync_event);
- 	init_completion(&wl->txq_thread_started);
-diff --git a/drivers/net/wireless/microchip/wilc1000/netdev.c b/drivers/net/wireless/microchip/wilc1000/netdev.c
-index 03e3485d7e7fa..4dd7c8137c204 100644
---- a/drivers/net/wireless/microchip/wilc1000/netdev.c
-+++ b/drivers/net/wireless/microchip/wilc1000/netdev.c
-@@ -144,10 +144,12 @@ static int wilc_txq_task(void *vp)
- 	int ret;
- 	u32 txq_count;
- 	struct wilc *wl = vp;
-+	long timeout;
- 
- 	complete(&wl->txq_thread_started);
- 	while (1) {
--		wait_for_completion(&wl->txq_event);
-+		wait_event_interruptible(wl->txq_event,
-+					 (wl->txq_entries > 0 || wl->close));
- 
- 		if (wl->close) {
- 			complete(&wl->txq_thread_started);
-@@ -170,6 +172,11 @@ static int wilc_txq_task(void *vp)
- 				}
- 				srcu_read_unlock(&wl->srcu, srcu_idx);
- 			}
-+			if (ret == WILC_VMM_ENTRY_FULL_RETRY) {
-+				timeout = msecs_to_jiffies(1);
-+				set_current_state(TASK_INTERRUPTIBLE);
-+				schedule_timeout(timeout);
-+			}
- 		} while (ret == WILC_VMM_ENTRY_FULL_RETRY && !wl->close);
- 	}
- 	return 0;
-@@ -419,12 +426,11 @@ static void wlan_deinitialize_threads(struct net_device *dev)
- 
- 	wl->close = 1;
- 
--	complete(&wl->txq_event);
--
- 	if (wl->txq_thread) {
- 		kthread_stop(wl->txq_thread);
- 		wl->txq_thread = NULL;
- 	}
-+	wake_up_interruptible(&wl->txq_event);
- }
- 
- static void wilc_wlan_deinitialize(struct net_device *dev)
-@@ -446,7 +452,6 @@ static void wilc_wlan_deinitialize(struct net_device *dev)
- 			wl->hif_func->disable_interrupt(wl);
- 			mutex_unlock(&wl->hif_cs);
- 		}
--		complete(&wl->txq_event);
- 
- 		wlan_deinitialize_threads(dev);
- 		deinit_irq(dev);
-diff --git a/drivers/net/wireless/microchip/wilc1000/netdev.h b/drivers/net/wireless/microchip/wilc1000/netdev.h
-index fd0cb01e538a2..65cf296a8689e 100644
---- a/drivers/net/wireless/microchip/wilc1000/netdev.h
-+++ b/drivers/net/wireless/microchip/wilc1000/netdev.h
-@@ -235,7 +235,7 @@ struct wilc {
- 
- 	struct completion cfg_event;
- 	struct completion sync_event;
--	struct completion txq_event;
-+	wait_queue_head_t txq_event;
- 	struct completion txq_thread_started;
- 
- 	struct task_struct *txq_thread;
 diff --git a/drivers/net/wireless/microchip/wilc1000/wlan.c b/drivers/net/wireless/microchip/wilc1000/wlan.c
-index 721e6131125e8..fafeabe2537a3 100644
+index 2d103131b2e93..1c487342c1a88 100644
 --- a/drivers/net/wireless/microchip/wilc1000/wlan.c
 +++ b/drivers/net/wireless/microchip/wilc1000/wlan.c
-@@ -75,7 +75,7 @@ static void wilc_wlan_txq_add_to_tail(struct net_device *dev, u8 q_num,
- 
- 	spin_unlock_irqrestore(&wilc->txq_spinlock, flags);
- 
--	complete(&wilc->txq_event);
-+	wake_up_interruptible(&wilc->txq_event);
+@@ -1276,8 +1276,14 @@ static int wilc_wlan_cfg_commit(struct wilc_vif *vif, int type,
+ 	return 0;
  }
  
- static void wilc_wlan_txq_add_to_head(struct wilc_vif *vif, u8 q_num,
-@@ -94,7 +94,7 @@ static void wilc_wlan_txq_add_to_head(struct wilc_vif *vif, u8 q_num,
+-int wilc_wlan_cfg_set(struct wilc_vif *vif, int start, u16 wid, u8 *buffer,
+-		      u32 buffer_size, int commit, u32 drv_handler)
++/**
++ * Add a WID set/query to the current config packet and optionally
++ * submit the resulting packet to the chip and wait for its reply.
++ * Returns 0 on failure, positive number on success.
++ */
++static int wilc_wlan_cfg_apply_wid(struct wilc_vif *vif, int start, u16 wid,
++				   u8 *buffer, u32 buffer_size, int commit,
++				   u32 drv_handler, bool set)
+ {
+ 	u32 offset;
+ 	int ret_size;
+@@ -1289,8 +1295,12 @@ int wilc_wlan_cfg_set(struct wilc_vif *vif, int start, u16 wid, u8 *buffer,
+ 		wilc->cfg_frame_offset = 0;
  
- 	spin_unlock_irqrestore(&wilc->txq_spinlock, flags);
- 	mutex_unlock(&wilc->txq_add_to_head_cs);
--	complete(&wilc->txq_event);
-+	wake_up_interruptible(&wilc->txq_event);
- }
+ 	offset = wilc->cfg_frame_offset;
+-	ret_size = wilc_wlan_cfg_set_wid(wilc->cfg_frame.frame, offset,
+-					 wid, buffer, buffer_size);
++	if (set)
++		ret_size = wilc_wlan_cfg_set_wid(wilc->cfg_frame.frame, offset,
++						 wid, buffer, buffer_size);
++	else
++		ret_size = wilc_wlan_cfg_get_wid(wilc->cfg_frame.frame, offset,
++						 wid);
+ 	offset += ret_size;
+ 	wilc->cfg_frame_offset = offset;
  
- #define NOT_TCP_ACK			(-1)
-@@ -196,7 +196,6 @@ static void wilc_wlan_txq_filter_dup_tcp_ack(struct net_device *dev)
- 	struct wilc *wilc = vif->wilc;
- 	struct tcp_ack_filter *f = &vif->ack_filter;
- 	u32 i = 0;
--	u32 dropped = 0;
- 	unsigned long flags;
- 
- 	spin_lock_irqsave(&wilc->txq_spinlock, flags);
-@@ -226,7 +225,6 @@ static void wilc_wlan_txq_filter_dup_tcp_ack(struct net_device *dev)
- 					tqe->tx_complete_func(tqe->priv,
- 							      tqe->status);
- 				kfree(tqe);
--				dropped++;
- 			}
- 		}
+@@ -1299,9 +1309,11 @@ int wilc_wlan_cfg_set(struct wilc_vif *vif, int start, u16 wid, u8 *buffer,
+ 		return ret_size;
  	}
-@@ -239,12 +237,6 @@ static void wilc_wlan_txq_filter_dup_tcp_ack(struct net_device *dev)
- 		f->pending_base = 0;
  
- 	spin_unlock_irqrestore(&wilc->txq_spinlock, flags);
--
--	while (dropped > 0) {
--		wait_for_completion_timeout(&wilc->txq_event,
--					    msecs_to_jiffies(1));
--		dropped--;
--	}
+-	netdev_dbg(vif->ndev, "%s: seqno[%d]\n", __func__, wilc->cfg_seq_no);
++	netdev_dbg(vif->ndev, "%s: %s seqno[%d]\n",
++		   __func__, set ? "set" : "get", wilc->cfg_seq_no);
+ 
+-	if (wilc_wlan_cfg_commit(vif, WILC_CFG_SET, drv_handler))
++	if (wilc_wlan_cfg_commit(vif, set ? WILC_CFG_SET : WILC_CFG_QUERY,
++				 drv_handler))
+ 		ret_size = 0;
+ 
+ 	if (!wait_for_completion_timeout(&wilc->cfg_event,
+@@ -1317,41 +1329,18 @@ int wilc_wlan_cfg_set(struct wilc_vif *vif, int start, u16 wid, u8 *buffer,
+ 	return ret_size;
  }
  
- void wilc_enable_tcp_ack_filter(struct wilc_vif *vif, bool value)
++int wilc_wlan_cfg_set(struct wilc_vif *vif, int start, u16 wid, u8 *buffer,
++		      u32 buffer_size, int commit, u32 drv_handler)
++{
++	return wilc_wlan_cfg_apply_wid(vif, start, wid, buffer, buffer_size,
++				       commit, drv_handler, true);
++}
++
+ int wilc_wlan_cfg_get(struct wilc_vif *vif, int start, u16 wid, int commit,
+ 		      u32 drv_handler)
+ {
+-	u32 offset;
+-	int ret_size;
+-	struct wilc *wilc = vif->wilc;
+-
+-	mutex_lock(&wilc->cfg_cmd_lock);
+-
+-	if (start)
+-		wilc->cfg_frame_offset = 0;
+-
+-	offset = wilc->cfg_frame_offset;
+-	ret_size = wilc_wlan_cfg_get_wid(wilc->cfg_frame.frame, offset, wid);
+-	offset += ret_size;
+-	wilc->cfg_frame_offset = offset;
+-
+-	if (!commit) {
+-		mutex_unlock(&wilc->cfg_cmd_lock);
+-		return ret_size;
+-	}
+-
+-	if (wilc_wlan_cfg_commit(vif, WILC_CFG_QUERY, drv_handler))
+-		ret_size = 0;
+-
+-	if (!wait_for_completion_timeout(&wilc->cfg_event,
+-					 WILC_CFG_PKTS_TIMEOUT)) {
+-		netdev_dbg(vif->ndev, "%s: Timed Out\n", __func__);
+-		ret_size = 0;
+-	}
+-	wilc->cfg_frame_offset = 0;
+-	wilc->cfg_seq_no += 1;
+-	mutex_unlock(&wilc->cfg_cmd_lock);
+-
+-	return ret_size;
++	return wilc_wlan_cfg_apply_wid(vif, start, wid, NULL, 0,
++				       commit, drv_handler, false);
+ }
+ 
+ int wilc_send_config_pkt(struct wilc_vif *vif, u8 mode, struct wid *wids,
 -- 
 2.25.1
 
