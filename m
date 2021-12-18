@@ -2,45 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 24575479E33
-	for <lists+netdev@lfdr.de>; Sun, 19 Dec 2021 00:54:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EE8CF479E3A
+	for <lists+netdev@lfdr.de>; Sun, 19 Dec 2021 00:54:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234978AbhLRXyR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Dec 2021 18:54:17 -0500
-Received: from o1.ptr2625.egauge.net ([167.89.112.53]:25254 "EHLO
+        id S235043AbhLRXyZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Dec 2021 18:54:25 -0500
+Received: from o1.ptr2625.egauge.net ([167.89.112.53]:25324 "EHLO
         o1.ptr2625.egauge.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232799AbhLRXyR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Dec 2021 18:54:17 -0500
+        with ESMTP id S234897AbhLRXyS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Dec 2021 18:54:18 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=egauge.net;
-        h=from:subject:mime-version:to:cc:content-transfer-encoding:
-        content-type;
-        s=sgd; bh=wzP9DgYMpXKgYWsfuD1dK/4zmX3SgTAGErInexoo/KQ=;
-        b=gDPysHXYB/iATmWtUO1Ybe9qnHorO8Mpvalz5DHQBs8vb/+sCcgwIUw5xfITPmcfAFT2
-        J2z9y6k1Y6qeahSmmU7jXfPd+338+8ZTP79cXhV7GrbxD9Ei+HwYZ1ePnsJHO0WjDNwJJc
-        7XEt2yswC09ewvicROZtZ68GdPMMckOMpRgg8vwNp7bLgsTFZSpTtqDDqrk88dq9xwZMsK
-        GgI4/TzckUxdwlC12ICjNWeuvXJdr27JGzmTbhD1aA/SQve585Bsja7uPSFqJZ3dTx8X3P
-        8bKDNFev5vLD8Nm0aplNR8lDMZddhkuLGucgbPjDa6BGDyMYRZ1oekTLtAx83pfw==
-Received: by filterdrecv-64fcb979b9-x2652 with SMTP id filterdrecv-64fcb979b9-x2652-1-61BE74A8-19
-        2021-12-18 23:54:16.475973623 +0000 UTC m=+8294249.160301187
+        h=from:subject:in-reply-to:references:mime-version:to:cc:
+        content-transfer-encoding:content-type;
+        s=sgd; bh=gY5sGuQPIVMDU44/2pC7gMhps+WU8nE0gGBCpIqOlgQ=;
+        b=Ws9w0O5N+di9y39ZKUstO9eSg7fNXIaykYmg0CiUV4T+13FiJ7jKldoWOumuMetdS8t9
+        mV/gIH2DuvmiBlDIyHrGswIR+GzI0Xd7uFUJiyck/o5gNqaPXGwitQCWH4R9R4EFxwqWJK
+        No0GFevUCnPwPZv8oI17cDDLpSCHJogiTmBqbyztvNF84Xh0UhPMcxzSjZ8r3f50xgoLcx
+        1A2jTvafUo1F9ZOBQqO0/gt0VTBRuF/cWQO7ewosdj1fqZcgFPFltJ6VC5PYpitxwCSbI3
+        42qFFTwyhjO/Gcn50LOUdieqnjS8uTM39q74BB4gcmW3m/JeIH/EvcYERHi5fPYQ==
+Received: by filterdrecv-75ff7b5ffb-bcbbj with SMTP id filterdrecv-75ff7b5ffb-bcbbj-1-61BE74A8-17
+        2021-12-18 23:54:16.475387188 +0000 UTC m=+9336800.790258411
 Received: from pearl.egauge.net (unknown)
-        by geopod-ismtpd-4-1 (SG)
+        by geopod-ismtpd-2-1 (SG)
         with ESMTP
-        id r_NccQJDT_mpwXRgch3XiA
-        Sat, 18 Dec 2021 23:54:16.296 +0000 (UTC)
+        id CRHLIZYzR-6quDBgjG8pYQ
+        Sat, 18 Dec 2021 23:54:16.302 +0000 (UTC)
 Received: by pearl.egauge.net (Postfix, from userid 1000)
-        id 825627003AE; Sat, 18 Dec 2021 16:54:15 -0700 (MST)
+        id 8422570054A; Sat, 18 Dec 2021 16:54:15 -0700 (MST)
 From:   David Mosberger-Tang <davidm@egauge.net>
-Subject: [PATCH 00/23] wilc1000: rework tx path to use sk_buffs throughout
+Subject: [PATCH 01/23] wilc1000: don't hold txq_spinlock while initializing AC
+ queue limits
 Date:   Sat, 18 Dec 2021 23:54:16 +0000 (UTC)
-Message-Id: <20211218235404.3963475-1-davidm@egauge.net>
+Message-Id: <20211218235404.3963475-2-davidm@egauge.net>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20211218235404.3963475-1-davidm@egauge.net>
+References: <20211218235404.3963475-1-davidm@egauge.net>
 MIME-Version: 1.0
 X-SG-EID: =?us-ascii?Q?+kMxBqj35EdRUKoy8diX1j4AXmPtd302oan+iXZuF8m2Nw4HRW2irNspffT=2Fkh?=
- =?us-ascii?Q?ET6RJF6+Prbl0h=2FEtF1rRLvOFHE9PCYzQvZsVwd?=
- =?us-ascii?Q?WSSZ+IiAKcuygXdhofy425Aqh2rrAOH9u05cT8w?=
- =?us-ascii?Q?bhPNda82cAwYGzOSH4wb8=2FQsvubpKoI2u7ogRaR?=
- =?us-ascii?Q?jcUZBohAO6mBXJTuo5KADs70XvCZGPSbmDBufVH?=
- =?us-ascii?Q?BOJlWoiX3PNsPmVv4j+09t8LFhKTLVE+Nik+Tv?=
+ =?us-ascii?Q?ET6RJF6+Prbl0h=2FEtF1rRLvD47APGjFyEg=2F9qMg?=
+ =?us-ascii?Q?vPPi1SQklD09yHMagrC+uTlKXz5TBABfx8jUJaf?=
+ =?us-ascii?Q?CMbaOMKdvK0PKVlW4v9n1tSZ6MgedAB0ftly=2Fez?=
+ =?us-ascii?Q?3DhsghdQGrsdyXYdQfvTz5l6GeH3BBMNbaqVidy?=
+ =?us-ascii?Q?h3iQoRw6SIgSJapJ3oOXHPgPNliibG4Qnwqb5r?=
 To:     Ajay Singh <ajay.kathat@microchip.com>
 Cc:     Claudiu Beznea <claudiu.beznea@microchip.com>,
         Kalle Valo <kvalo@codeaurora.org>,
@@ -56,65 +59,93 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Based on the earlier discussion (RFC: wilc1000: refactor TX path to
-use sk_buff queue), here is the full patch series to clean up and
-simplify the TX path.
+The wilc_tx_queue_status queue is relatively large and there is
+absolutely no need to initialize it while holding a spinlock.
 
-The biggest patch is 0016, which is the one actually switching the
-queue data type, but I worked hard to minimize it to only direct
-changes due to the type changes.
+Signed-off-by: David Mosberger-Tang <davidm@egauge.net>
+---
+ .../net/wireless/microchip/wilc1000/netdev.h  |  1 -
+ .../net/wireless/microchip/wilc1000/wlan.c    | 32 +++++++++++--------
+ 2 files changed, 19 insertions(+), 14 deletions(-)
 
-There is no significant performance difference due to this patch.  I'd
-expect the new code to be slightly faster, but my WLAN
-test-environment is not sufficiently controlled to be sure of that.
-
-original iperf3 performance (duration 120 seconds):
-
-                TX [Mbps]	RX [Mbps]
-  PSM off:	14.8		18.9
-  PSM  on:	10.5		17.1
-
-iperf3 performance with this patch-series applied:
-
-		TX [Mbps]	RX [Mbps]
-  PSM off:	15.6		19.5
-  PSM  on:	11.2		17.7
-
-(PSM == power-save-mode; controlled by iw dev wlan0 set power_save on/off)
-
-David Mosberger-Tang (23):
-  wilc1000: don't hold txq_spinlock while initializing AC queue limits
-  wilc1000: switch txq_event from completion to waitqueue
-  wilc1000: move receive-queue stats from txq to wilc structure
-  wilc1000: factor common code in wilc_wlan_cfg_set() and wilc_wlan_cfg_get()
-  wilc1000: add wilc_wlan_tx_packet_done() function
-  wilc1000: move tx packet drop code into its own function
-  wilc1000: increment tx_dropped stat counter on tx packet drop
-  wilc1000: fix management packet type inconsistency
-  wilc1000: prepare wilc_wlan_tx_packet_done() for sk_buff changes
-  wilc1000: factor initialization of tx queue-specific packet fields
-  wilc1000: convert tqx_entries from "int" to "atomic_t"
-  wilc1000: refactor wilc_wlan_cfg_commit() a bit
-  wilc1000: sanitize config packet sequence number management a bit
-  wilc1000: if there is no tx packet, don't increment packets-sent counter
-  wilc1000: Add struct wilc_skb_tx_cb as an alias of struct txq_entry_t
-  wilc1000: switch tx queue to normal sk_buff entries
-  wilc1000: remove no longer used "vif" argument from init_txq_entry()
-  wilc1000: split huge tx handler into subfunctions
-  wilc1000: don't tell the chip to go to sleep while copying tx packets
-  wilc1000: eliminate "max_size_over" variable in fill_vmm_table
-  wilc1000: declare read-only ac_preserve_ratio as static and const
-  wilc1000: minor syntax cleanup
-  wilc1000: introduce symbolic names for two tx-related control bits
-
- .../wireless/microchip/wilc1000/cfg80211.c    |  37 +-
- drivers/net/wireless/microchip/wilc1000/mon.c |  36 +-
- .../net/wireless/microchip/wilc1000/netdev.c  |  40 +-
- .../net/wireless/microchip/wilc1000/netdev.h  |  13 +-
- .../net/wireless/microchip/wilc1000/wlan.c    | 755 +++++++++---------
- .../net/wireless/microchip/wilc1000/wlan.h    |  52 +-
- 6 files changed, 442 insertions(+), 491 deletions(-)
-
+diff --git a/drivers/net/wireless/microchip/wilc1000/netdev.h b/drivers/net/wireless/microchip/wilc1000/netdev.h
+index b9a88b3e322f1..fd0cb01e538a2 100644
+--- a/drivers/net/wireless/microchip/wilc1000/netdev.h
++++ b/drivers/net/wireless/microchip/wilc1000/netdev.h
+@@ -202,7 +202,6 @@ struct wilc_tx_queue_status {
+ 	u16 end_index;
+ 	u16 cnt[NQUEUES];
+ 	u16 sum;
+-	bool initialized;
+ };
+ 
+ struct wilc {
+diff --git a/drivers/net/wireless/microchip/wilc1000/wlan.c b/drivers/net/wireless/microchip/wilc1000/wlan.c
+index 1aa4236a2fe41..721e6131125e8 100644
+--- a/drivers/net/wireless/microchip/wilc1000/wlan.c
++++ b/drivers/net/wireless/microchip/wilc1000/wlan.c
+@@ -12,6 +12,8 @@
+ 
+ #define WAKE_UP_TRIAL_RETRY		10000
+ 
++static const u8 factors[NQUEUES] = {1, 1, 1, 1};
++
+ static inline bool is_wilc1000(u32 id)
+ {
+ 	return (id & (~WILC_CHIP_REV_FIELD)) == WILC_1000_BASE_ID;
+@@ -283,10 +285,23 @@ static int wilc_wlan_txq_add_cfg_pkt(struct wilc_vif *vif, u8 *buffer,
+ 	return 1;
+ }
+ 
++static void init_q_limits(struct wilc *wl)
++{
++	struct wilc_tx_queue_status *q = &wl->tx_q_limit;
++	int i;
++
++	for (i = 0; i < AC_BUFFER_SIZE; i++)
++		q->buffer[i] = i % NQUEUES;
++
++	for (i = 0; i < NQUEUES; i++) {
++		q->cnt[i] = AC_BUFFER_SIZE * factors[i] / NQUEUES;
++		q->sum += q->cnt[i];
++	}
++	q->end_index = AC_BUFFER_SIZE - 1;
++}
++
+ static bool is_ac_q_limit(struct wilc *wl, u8 q_num)
+ {
+-	u8 factors[NQUEUES] = {1, 1, 1, 1};
+-	u16 i;
+ 	unsigned long flags;
+ 	struct wilc_tx_queue_status *q = &wl->tx_q_limit;
+ 	u8 end_index;
+@@ -294,17 +309,6 @@ static bool is_ac_q_limit(struct wilc *wl, u8 q_num)
+ 	bool ret = false;
+ 
+ 	spin_lock_irqsave(&wl->txq_spinlock, flags);
+-	if (!q->initialized) {
+-		for (i = 0; i < AC_BUFFER_SIZE; i++)
+-			q->buffer[i] = i % NQUEUES;
+-
+-		for (i = 0; i < NQUEUES; i++) {
+-			q->cnt[i] = AC_BUFFER_SIZE * factors[i] / NQUEUES;
+-			q->sum += q->cnt[i];
+-		}
+-		q->end_index = AC_BUFFER_SIZE - 1;
+-		q->initialized = 1;
+-	}
+ 
+ 	end_index = q->end_index;
+ 	q->cnt[q->buffer[end_index]] -= factors[q->buffer[end_index]];
+@@ -1485,6 +1489,8 @@ int wilc_wlan_init(struct net_device *dev)
+ 		goto fail;
+ 	}
+ 
++	init_q_limits(wilc);
++
+ 	if (!wilc->tx_buffer)
+ 		wilc->tx_buffer = kmalloc(WILC_TX_BUFF_SIZE, GFP_KERNEL);
+ 
 -- 
 2.25.1
 
