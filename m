@@ -2,47 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 900CA479872
-	for <lists+netdev@lfdr.de>; Sat, 18 Dec 2021 04:30:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D08E479869
+	for <lists+netdev@lfdr.de>; Sat, 18 Dec 2021 04:30:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231993AbhLRDa0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Dec 2021 22:30:26 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:56448 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231880AbhLRDaR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Dec 2021 22:30:17 -0500
+        id S230057AbhLRDaR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Dec 2021 22:30:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51102 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231764AbhLRDaQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Dec 2021 22:30:16 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A1F3C061574;
+        Fri, 17 Dec 2021 19:30:16 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1CC1EB82B7F;
-        Sat, 18 Dec 2021 03:30:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id C8A3CC36AE1;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7498362477;
+        Sat, 18 Dec 2021 03:30:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id CDA79C36AE8;
         Sat, 18 Dec 2021 03:30:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1639798214;
-        bh=xrZ0IYl2uuYAgYqCCFXTCyMYOvziT+KCoxg11VRsNKI=;
+        bh=tGXWTkM7Uzb328e+eUeopkRtyGGMv0hFxb5AtH1+nA8=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=DEQ1/UBDTzFDY50A2L0kfRZ5Lr5gP0oC4hE9re47bMqR3eNPI7YuRI+XgLS+HBmTH
-         saSO4wUhTqiFIdaoaHdKH7qCztq0wpnsyhJeLX860GvceqGfDt7/olJ8gCBiEf4xrg
-         RCgQxjfj+Bm2rdbmWMtCzgzVuDW0rVUV1ZBqg7k9ltcyd8wcyg9tRc7WYt1+9zztea
-         MEhO0/v4uVE6joUHrlG6JfXzCCnjg8qdUbLhAf6/X+3remCdNz+0xHK8WJtQxwyDIJ
-         Cxevg3AHK872P0Kq0wIxaeTmsS2YxVNZL6/bVrHRdhG335/zQIjfgf4vLqe4h0iLkU
-         6QcG+9sAUc3DQ==
+        b=AlhQ5M4cGyVK8RadSLxXBBX1yQOYidu72pQazj7CxwFIkbfJAnrw13KlZ9pGhxdlL
+         dIISYs+wT1zEkvioARazRmR/Mj2LtGJG1U7XJWz5sV5rNbB2uSm4oO+atCt78CMLu/
+         Y9HtuSRjgEctKy8zO8k1zt6jFuyf4ckEF0hrzX9VTmkLOKn0OGZOZQO4Q2Tn4lFxVp
+         +kSu05VV37ufyCOT1XoJ7VbhPqHX8yluVLPxzggTeU+yNZw4GlJX7Rvmo8wYU9tKGD
+         XGRa8ssdNcm3bDfjOdShsU6dWpAZLVxmFnx56SJQJhR3IZylbSWEGAi9pWiDoL8ndZ
+         76UT8WrAHdmTA==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id A6C2660A25;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id B119960A2F;
         Sat, 18 Dec 2021 03:30:14 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH 0/1] net: lantiq_xrx200: increase buffer reservation
+Subject: Re: [PATCH net] net: marvell: prestera: fix incorrect structure access
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163979821467.17814.14848229230070411043.git-patchwork-notify@kernel.org>
+Message-Id: <163979821472.17814.11509702990078452116.git-patchwork-notify@kernel.org>
 Date:   Sat, 18 Dec 2021 03:30:14 +0000
-References: <20211217000740.683089-1-olek2@wp.pl>
-In-Reply-To: <20211217000740.683089-1-olek2@wp.pl>
-To:     Aleksander Jan Bajkowski <olek2@wp.pl>
-Cc:     hauke@hauke-m.de, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20211216171714.11341-1-yevhen.orlov@plvision.eu>
+In-Reply-To: <20211216171714.11341-1-yevhen.orlov@plvision.eu>
+To:     Yevhen Orlov <yevhen.orlov@plvision.eu>
+Cc:     netdev@vger.kernel.org, volodymyr.mytnyk@plvision.eu,
+        taras.chornyi@plvision.eu, mickeyr@marvell.com,
+        serhiy.pshyk@plvision.eu, tchornyi@marvell.com,
+        davem@davemloft.net, kuba@kernel.org, vkochan@marvell.com,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -52,20 +58,19 @@ Hello:
 This patch was applied to netdev/net.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Fri, 17 Dec 2021 01:07:39 +0100 you wrote:
-> Changes in v3:
->  - Removed -1 from the buffer size calculation
->  - Removed ETH_FCS_LEN from the buffer size calculation
->  - Writing rounded buffer size to descriptor
-> 
-> Changes in v2:
->  - Removed the inline keyword
+On Thu, 16 Dec 2021 19:17:14 +0200 you wrote:
+> In line:
+> 	upper = info->upper_dev;
+> We access upper_dev field, which is related only for particular events
+> (e.g. event == NETDEV_CHANGEUPPER). So, this line cause invalid memory
+> access for another events,
+> when ptr is not netdev_notifier_changeupper_info.
 > 
 > [...]
 
 Here is the summary with links:
-  - [1/1] net: lantiq_xrx200: increase buffer reservation
-    https://git.kernel.org/netdev/net/c/1488fc204568
+  - [net] net: marvell: prestera: fix incorrect structure access
+    https://git.kernel.org/netdev/net/c/2efc2256febf
 
 You are awesome, thank you!
 -- 
