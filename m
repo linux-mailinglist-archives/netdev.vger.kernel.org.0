@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 92BFC479F15
-	for <lists+netdev@lfdr.de>; Sun, 19 Dec 2021 05:06:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EE581479F17
+	for <lists+netdev@lfdr.de>; Sun, 19 Dec 2021 05:06:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235206AbhLSEGw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Dec 2021 23:06:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59434 "EHLO
+        id S235219AbhLSEGz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Dec 2021 23:06:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235197AbhLSEGv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Dec 2021 23:06:51 -0500
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FC29C061574;
-        Sat, 18 Dec 2021 20:06:51 -0800 (PST)
-Received: by mail-pj1-x1031.google.com with SMTP id gj24so6033919pjb.0;
-        Sat, 18 Dec 2021 20:06:51 -0800 (PST)
+        with ESMTP id S235197AbhLSEGz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Dec 2021 23:06:55 -0500
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C80FC06173E;
+        Sat, 18 Dec 2021 20:06:55 -0800 (PST)
+Received: by mail-pl1-x631.google.com with SMTP id p18so5283779pld.13;
+        Sat, 18 Dec 2021 20:06:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=6E/U5iniUcywCqJbrcoGtp6XLjkIdDnXTD4rB+ab2yc=;
-        b=kWzj2ouRCw/uZcU5+KHd3LH6CM3OYDPvYFq9IVes77p+RkYXQVrsKZw8yIlqBNCccy
-         BSnVNyQ6IrFdeQwsu4V2EmFyQ7UMB7sO0eNrufwV+f958hKf4oINZBiwlUZXXhnp1yHY
-         H2eIqx1/kmRnExcdgIqaF1O7WV1SaFMwhT6otfVv/L5FGCU2eNdspW3mfhhrzgNzV5uP
-         OzhUSCz36HnXXFuG00oaUrPUMdIEDVW1p9SPNkyCOLyXNJvNf56l8d1NVhXfkQzCNdYU
-         gD3S1ST5Fs2LP3w1MlbivmfF+kMhOoGhnaF/uPa0XiREyLlSr+5cpwcA0Li/gnhX9tgJ
-         SwFw==
+        bh=/P3EFPZBJVQEBZkUjmtwDarVt2254Pzb7CyVzWf8b6U=;
+        b=NdRagsE7Kdfm68/1xV4Py1wKIfHdBdz+FexoeRKlnH79nxoUI9DF+iDyWkVvKcoeKR
+         GIl6rUuFyMvKhkexB/rzwmoFPnLaNXmG2L8/RrcxPTSqSiJFrpJguk2lCFKbtKlC8ROx
+         BUa8I1qGDqZS4Gnxm4nZyvj8A/bVLe1eYgChZC823Cr4zbf2KwlWCl1WPTrRRMUuu4P6
+         ySpA7OTazM9yEeRGxOm+iy/C++M96QTrYgX+gjWDHfOvtJI/2FBmNahLHZIhE1y3sLJ7
+         TVr7BAIjaclL+7Qy7Fwt2YTt37+3qVxpv3jirbizJIMaF+R/YwyRukMCWW5enN/llh5S
+         kCXA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=6E/U5iniUcywCqJbrcoGtp6XLjkIdDnXTD4rB+ab2yc=;
-        b=7kpCyz4E115w1MA7elXLnpUzE42tyUlonIvtLdlXLGQAOI0xws0X6wBYh/xZuvUGTk
-         uLl9CgbSkEh4Ln11gPR7sQxVceLSbylzrRGmeiwTAsNYdRoCl+3Rn7f/YcwKse+cwgL1
-         XLVAryZFiQHX0ai9GqSZNlGKRDrrU3HTy4RRrYbDurNuMXc3You9dKE5kQ+cQ3GLE1bz
-         s0KF+9OXq7lwx8hmqhNXHkeAUiSKkboW1R1eik30OEExTy4QIJzxnsxUtJfWwHN+9Eac
-         9eJBfQkontC3ZDggjHKp2hgsOOnzFRUMMhgx8QUchbk4wQPiWq90SWQBnKfQVbKd/14i
-         SUhA==
-X-Gm-Message-State: AOAM5312qj9NNqZnwmBIkNSot7dZWbm5KAiaZJ1Wjsn7rSYDv+Dwvpal
-        H/OpEj22wz1GhxGeDC9vgt2iq6mKNWU=
-X-Google-Smtp-Source: ABdhPJwCLfFMXZo6tTUDGVf31Kv1SYfrMqAS1c/boxz+cTtdoCrIYtyjw5/QlueQqbxAL6Aun4OmaA==
-X-Received: by 2002:a17:90a:8914:: with SMTP id u20mr12633585pjn.98.1639886810621;
-        Sat, 18 Dec 2021 20:06:50 -0800 (PST)
+        bh=/P3EFPZBJVQEBZkUjmtwDarVt2254Pzb7CyVzWf8b6U=;
+        b=rU194Z0ted63Ry9lVpUgev/l2p9GkCwMBi8xbY7d8RAR3chLkagnS+8R7KDtWyoNt7
+         xBeU0MIw51l9jI6DHWLUVvSdcyHbd0Vv4mlPrMiuyDnZdV6mvekYczuAl/MAFLbZyheG
+         g1x3WRKGsY5MuIeCIIqh7hR0g5ID9LF09AlvWyC3VUuN7Wm/5Ea+1B7ljWJSVb+yCyXC
+         /HfxWd6ovKF+2waBpsnxtB4yjGAHMHsdGUM2ZV/eU+NrNXNf9x5wHy1zaImX7qp/frI+
+         c7Cbzbs4mDrWLP1J2v1HOQwD6aD5ePCCq2yoFGOVB2tskF1kSQJX88J2QLGhknJcXWfm
+         v4Fg==
+X-Gm-Message-State: AOAM531rUqclzZEvDGIYnqxY5/q4NMRDs/dqNP3SsZ0OdRFLKswZm1T6
+        H1o/wbAebJLl6iokt9dadhXjY3qHkOQ=
+X-Google-Smtp-Source: ABdhPJyHE+70jLIYTFcZ9PboulE4nV3ykgOKMLDY2giiJEio8FpSc8dUJG56Vw1JXObQYtJJUikZFw==
+X-Received: by 2002:a17:902:ea02:b0:149:927:7e66 with SMTP id s2-20020a170902ea0200b0014909277e66mr686218plg.70.1639886814255;
+        Sat, 18 Dec 2021 20:06:54 -0800 (PST)
 Received: from 7YHHR73.igp.broadcom.net (c-71-198-249-153.hsd1.ca.comcast.net. [71.198.249.153])
-        by smtp.gmail.com with ESMTPSA id o9sm13122186pgu.12.2021.12.18.20.06.48
+        by smtp.gmail.com with ESMTPSA id k2sm12306297pgh.11.2021.12.18.20.06.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 18 Dec 2021 20:06:49 -0800 (PST)
+        Sat, 18 Dec 2021 20:06:53 -0800 (PST)
 From:   Florian Fainelli <f.fainelli@gmail.com>
 To:     stable@vger.kernel.org
 Cc:     Florian Fainelli <f.fainelli@gmail.com>,
@@ -54,9 +54,9 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>,
         "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH stable 4.4] net: systemport: Add global locking for descriptor lifecycle
-Date:   Sat, 18 Dec 2021 18:49:12 -0800
-Message-Id: <20211219024912.18774-1-f.fainelli@gmail.com>
+Subject: [PATCH stable 4.9] net: systemport: Add global locking for descriptor lifecycle
+Date:   Sat, 18 Dec 2021 18:49:17 -0800
+Message-Id: <20211219024917.18828-1-f.fainelli@gmail.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -100,7 +100,7 @@ Signed-off-by: Jakub Kicinski <kuba@kernel.org>
  2 files changed, 6 insertions(+)
 
 diff --git a/drivers/net/ethernet/broadcom/bcmsysport.c b/drivers/net/ethernet/broadcom/bcmsysport.c
-index 94f06c35ad9c..c76102754c22 100644
+index 5d67dbdd943d..98392a069f2b 100644
 --- a/drivers/net/ethernet/broadcom/bcmsysport.c
 +++ b/drivers/net/ethernet/broadcom/bcmsysport.c
 @@ -90,9 +90,13 @@ static inline void tdma_port_write_desc_addr(struct bcm_sysport_priv *priv,
@@ -117,7 +117,7 @@ index 94f06c35ad9c..c76102754c22 100644
  }
  
  /* Ethtool operations */
-@@ -1608,6 +1612,7 @@ static int bcm_sysport_open(struct net_device *dev)
+@@ -1587,6 +1591,7 @@ static int bcm_sysport_open(struct net_device *dev)
  	}
  
  	/* Initialize both hardware and software ring */
@@ -126,7 +126,7 @@ index 94f06c35ad9c..c76102754c22 100644
  		ret = bcm_sysport_init_tx_ring(priv, i);
  		if (ret) {
 diff --git a/drivers/net/ethernet/broadcom/bcmsysport.h b/drivers/net/ethernet/broadcom/bcmsysport.h
-index e668b1ce5828..bb484c7faf67 100644
+index 0d3444f1d78a..1cf5af2b11e1 100644
 --- a/drivers/net/ethernet/broadcom/bcmsysport.h
 +++ b/drivers/net/ethernet/broadcom/bcmsysport.h
 @@ -660,6 +660,7 @@ struct bcm_sysport_priv {
