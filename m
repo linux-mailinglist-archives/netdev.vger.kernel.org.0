@@ -2,56 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BD6A5479F2F
-	for <lists+netdev@lfdr.de>; Sun, 19 Dec 2021 05:51:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D531479F37
+	for <lists+netdev@lfdr.de>; Sun, 19 Dec 2021 06:05:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233632AbhLSEvI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Dec 2021 23:51:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40644 "EHLO
+        id S232327AbhLSFFa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Dec 2021 00:05:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233303AbhLSEvI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Dec 2021 23:51:08 -0500
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F23FDC061574;
-        Sat, 18 Dec 2021 20:51:07 -0800 (PST)
-Received: by mail-pl1-x62c.google.com with SMTP id m24so5344630pls.10;
-        Sat, 18 Dec 2021 20:51:07 -0800 (PST)
+        with ESMTP id S229696AbhLSFFa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Dec 2021 00:05:30 -0500
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEFDEC061574;
+        Sat, 18 Dec 2021 21:05:29 -0800 (PST)
+Received: by mail-pl1-x636.google.com with SMTP id m24so5361457pls.10;
+        Sat, 18 Dec 2021 21:05:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=PVLOSEk62POTNKznm9WavggBFRCbVhfNidk+UUQ9Crw=;
-        b=KYmulpukQftZPIpsPFdiI1ieqnWKsWuOabFDzZWZ7YoROQL0XVZeAU3v+QzCREAqOu
-         DJbi+/KfIB//EseOmhbbwZdD1/xDJgNHJyqCVJeCFHrNbPNPFMgjsvSK2tFQcP5aqX+w
-         7F6O5m6/g5/35Ck/y1UFUpUIgJQQ220OnveTtUmfIyLMIv8VI7UenjwlvX2FlqeELh2X
-         AR6cPTYC5i2Ekepe1/ZrYN2vcBakh7j3Vdq+FxpxkmjT0ZTGTakgz/4AfntcHU6sz5T7
-         4BacDU634KZu/4bqoE3eJw74S4UKFVOQkq3hzO2kiXuET6nog7WgD0pGHLnKcM932w06
-         Uryg==
+        bh=CKlHcb/+a/+TIswdxAYFbQO/TW7Mb5GfbwGgKVPxekA=;
+        b=fNK8NXziUwUMfacYtFD8DxekMIpi/o6br4Kq5IkLXdtqVR+mgIesvYHMAs6H50hNEc
+         PNMTBQp3T+MyR1HxCC5ZNRFKY7O7mDQ8Iy74XPmOq56hZ/GHq5eA766+bQ1kPmGZxDTz
+         vTnCnB/CWtrupCqovqX1dddnfCbPw9Y2bDabf2W+cxSdgGjiNbXnm2ddrsfkjksPYS2W
+         RHKspWP3/ZMMewt8xM2MrbBmwVqWr7zA+U6hj9ar7D0a3VZr73E9Q+uraEHZEWGLYwdb
+         xxdoLU5yImYw57S+rjKl63VseTS3iAK2ZYON3w6Tg20Qzi7QMe7MhZQTOdM7EB7CUkJQ
+         5x2A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=PVLOSEk62POTNKznm9WavggBFRCbVhfNidk+UUQ9Crw=;
-        b=XBTFwtiJ1sj8XVz/Wwxb1P87QHL2/K7lE2EaTt3ADJHfIVsl40MLZHwSVfqGZbT+BU
-         DHghJe6NXh5dYmMsXURFCqN9KQTJRLhC1/jLMrW+sbhhOTep8d/Ic116K4VmsYI6wdOg
-         pSGKIwXZJyr+HDWBBWzD85kaFTyb1xMAAW+LVOHQzuaiM5q4yNpfFjCQasUBMdURIHk7
-         EsWXynCuJu6tkkZ2MGaF+WugV/r2ZS8K1u8a+aY9b3ecqCzDZ4GrhiGZ5MH15EaWwLj4
-         JBlI70wXLA8DFeOY0CPLyYD2uxD9u4RpPM2dAPNA3/M90dnR6puOb3YOxkNKeSvn6xfI
-         oSXA==
-X-Gm-Message-State: AOAM531D/ivhgss9AFNygJ4/cyY2jRh+j7Z6Ndj51UwrKO3sST2qn2Co
-        f3Dlx4XRqW/YIehTmzbKyHVY2/rkG6qHbAvAZvI=
-X-Google-Smtp-Source: ABdhPJxui2CAZ6/tvQ1M4zt2D+xxoLRPJRB72oPe6WMSFxo9gIfu50rKVVcUjRrDNTflp3RimmJfmfP6TgTjg7VuCAI=
-X-Received: by 2002:a17:90b:3b46:: with SMTP id ot6mr850541pjb.62.1639889467355;
- Sat, 18 Dec 2021 20:51:07 -0800 (PST)
+        bh=CKlHcb/+a/+TIswdxAYFbQO/TW7Mb5GfbwGgKVPxekA=;
+        b=m/nJxhSMq02Gq6mATsve5WfVHFgh8yR7lrIBOKVyOYmzFdU0HthWgosDCz+dEPCIya
+         DktwDeYUvc3CsP1rGP138lRV2rtNxGBit+9EhTIUUarg/NuCpBsCp3tqs8s+O4NoQ3cl
+         vmDVLRaSkb9w+xaHD4nbiPcyCT583nvDdupb9nShsY8lH9Iu7EgLh0eCFfx+aO5iaqDQ
+         02409aOr+TM6TuaoarjBL9JuT8dMgpZcg9bKz6CEO7lO/d1u9IE9Hr/fXkPUW9uZdO+E
+         MVoo/Yeq7gtB6jaWdtoz4rumh0VWTisxKK9I30ZM19XwSk3YqzRMDFC5JuiaWeKgVIgC
+         7aTQ==
+X-Gm-Message-State: AOAM531NCxdyTra1KLYypxmGPcxaISS6gbapE1/pccZGxYfiJFwiob34
+        B9wH+0H+pZ26aV1k/80B0Sxf/LfvXWL6tl33c0U=
+X-Google-Smtp-Source: ABdhPJzPBKpoYAI9l/FmEWILykSkdeIX+56IGgjKAsCKC1IU3AI8wndMrl/nr2NU02bf5XledeEmtzkKKIDPuaRKKes=
+X-Received: by 2002:a17:90b:798:: with SMTP id l24mr20970684pjz.122.1639890329314;
+ Sat, 18 Dec 2021 21:05:29 -0800 (PST)
 MIME-Version: 1.0
-References: <20211217015031.1278167-1-memxor@gmail.com> <20211217015031.1278167-6-memxor@gmail.com>
- <20211219022248.6hqp64a4nbhyyxeh@ast-mbp> <20211219030128.2s23lzhup6et4rsu@apollo.legion>
- <CAADnVQLz_JK6=6V=iVpT2BQKcKCSvOmJy6-KbTdMnbxBKu0EAg@mail.gmail.com> <20211219043837.27p3zvtdpozs7ep4@apollo.legion>
-In-Reply-To: <20211219043837.27p3zvtdpozs7ep4@apollo.legion>
+References: <20211217015031.1278167-1-memxor@gmail.com> <20211217015031.1278167-7-memxor@gmail.com>
+ <20211219022839.kdms7k3jte5ajubt@ast-mbp> <20211219031822.k2bfjhgazvvy5r7l@apollo.legion>
+ <CAADnVQJ43O-eavsMuqW0kCiBZMf4PFHbFhSPa7vRWY1cjwqFAg@mail.gmail.com> <20211219043349.mmycwjnxcqc7lc2c@apollo.legion>
+In-Reply-To: <20211219043349.mmycwjnxcqc7lc2c@apollo.legion>
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Sat, 18 Dec 2021 20:50:56 -0800
-Message-ID: <CAADnVQLKnG4yrDKEn5mBN8NSuD59ZdFQ0NvGq4U=V815b4Kftg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v4 05/10] bpf: Add reference tracking support to kfunc
+Date:   Sat, 18 Dec 2021 21:05:18 -0800
+Message-ID: <CAADnVQ+zWgUj5C=nJuzop2aOHj04eVH+Y4x+H3RyGwWjost9ZQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v4 06/10] bpf: Track provenance for pointers
+ formed from referenced PTR_TO_BTF_ID
 To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
 Cc:     bpf <bpf@vger.kernel.org>,
         Network Development <netdev@vger.kernel.org>,
@@ -72,62 +73,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Dec 18, 2021 at 8:38 PM Kumar Kartikeya Dwivedi
+On Sat, Dec 18, 2021 at 8:33 PM Kumar Kartikeya Dwivedi
 <memxor@gmail.com> wrote:
 >
-> On Sun, Dec 19, 2021 at 09:24:37AM IST, Alexei Starovoitov wrote:
-> > On Sat, Dec 18, 2021 at 7:01 PM Kumar Kartikeya Dwivedi
-> > <memxor@gmail.com> wrote:
-> > >
-> > > On Sun, Dec 19, 2021 at 07:52:48AM IST, Alexei Starovoitov wrote:
-> > > > On Fri, Dec 17, 2021 at 07:20:26AM +0530, Kumar Kartikeya Dwivedi wrote:
-> > > > >
-> > > > > diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> > > > > index 965fffaf0308..015cb633838b 100644
-> > > > > --- a/include/linux/bpf.h
-> > > > > +++ b/include/linux/bpf.h
-> > > > > @@ -521,6 +521,9 @@ struct bpf_verifier_ops {
-> > > > >                              enum bpf_access_type atype,
-> > > > >                              u32 *next_btf_id);
-> > > > >     bool (*check_kfunc_call)(u32 kfunc_btf_id, struct module *owner);
-> > > > > +   bool (*is_acquire_kfunc)(u32 kfunc_btf_id, struct module *owner);
-> > > > > +   bool (*is_release_kfunc)(u32 kfunc_btf_id, struct module *owner);
-> > > > > +   bool (*is_kfunc_ret_type_null)(u32 kfunc_btf_id, struct module *owner);
-> > > >
-> > > > Same feedback as before...
-> > > >
-> > > > Those callbacks are not necessary.
-> > > > The existing check_kfunc_call() is just as inconvenient.
-> > > > When module's BTF comes in could you add it to mod's info instead of
-> > > > introducing callbacks for every kind of data the module has.
-> > > > Those callbacks don't server any purpose other than passing the particular
-> > > > data set back. The verifier side should access those data sets directly.
-> > >
-> > > Ok, interesting idea. So these then go into the ".modinfo" section?
-> >
-> > It doesn't need to be a special section.
-> > The btf_module_notify() parses BTF.
-> > At the same time it can add a kfunc whitelist to "struct module".
-> > The btf_ids[ACQUIRE/RELEASE][] arrays will be a part of
-> > the "struct module" too.
-> > If we can do a btf name convention then this job can be
-> > performed generically by btf_module_notify().
-> > Otherwise __init of the module can populate arrays in "struct module".
-> >
+> It is, but into parent_ref_obj_id, to match during release_reference.
 >
-> Nice idea, I think this is better than what I am doing (it also prevents
-> constant researching into the list).
+> > Shouldn't r2 get a different ref_obj_id after r2 = r1->next ?
 >
-> But IIUC I think this btf_ids array needs to go into struct btf instead,
-> since if module is compiled as built-in, we will not have any struct module for
-> it.
+> It's ref_obj_id is still 0.
 >
-> Then we can concatenate all sets of same type (check/acquire/release etc.) and
-> sort them to directly search using a single btf_id_set_contains call, the code
-> becomes same for btf_vmlinux or module btf. struct module is not needed anymore.
->
-> WDYT?
+> Thinking about this more, we actually only need 1 extra bit of information in
+> reg_state, not even a new member. We can simply copy ref_obj_id and set this
+> bit, then we can reject this register during release but consider it during
+> release_reference.
 
-You mean that btf_parse_module() will do this?
-That would work for vmlinux's BTF too then?
-Makes sense to me!
+It seems to me that this patch created the problem and it's trying
+to fix it at the same time.
+
+mark_btf_ld_reg() shouldn't be copying ref_obj_id.
+If it keeps it as zero the problem will not happen, no?
