@@ -2,107 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 788DE479EEF
-	for <lists+netdev@lfdr.de>; Sun, 19 Dec 2021 04:01:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 92BFC479F15
+	for <lists+netdev@lfdr.de>; Sun, 19 Dec 2021 05:06:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230348AbhLSDBc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Dec 2021 22:01:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45324 "EHLO
+        id S235206AbhLSEGw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Dec 2021 23:06:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229804AbhLSDBb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Dec 2021 22:01:31 -0500
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C0E2C061574;
-        Sat, 18 Dec 2021 19:01:31 -0800 (PST)
-Received: by mail-pj1-x1044.google.com with SMTP id j6-20020a17090a588600b001a78a5ce46aso9485841pji.0;
-        Sat, 18 Dec 2021 19:01:31 -0800 (PST)
+        with ESMTP id S235197AbhLSEGv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Dec 2021 23:06:51 -0500
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FC29C061574;
+        Sat, 18 Dec 2021 20:06:51 -0800 (PST)
+Received: by mail-pj1-x1031.google.com with SMTP id gj24so6033919pjb.0;
+        Sat, 18 Dec 2021 20:06:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=fngRf2Md8koYZeb8D7KOm28z/NY6gvIrL1L5qAu1hDc=;
-        b=m7f+k+TgTgdHdFqqeo16zolcWGgIdr2Yd9oy38nbZH8e/uuQ0lsh/93EyBudOgUT7p
-         pfCBN6tnH0etdAGXQZmXJitKznEFAZKrSV0+fRBw7vhkL5L9tAzCKb5cX6jGEP+mcey6
-         +Of92tUuGGgt58D+v5IUXJgPkcUZb4o7DJTg7IJAnRGPK71ddHNh71l/WrKrYbJYgKXR
-         APak3XWHlrSDjPRiyFl1uGPqrjTYdUj16NTQ1tCKMFmuynBGYRG5aB+awd//3oyN9dpS
-         ScMlKefnvj2CbwEuEEqHrXVV8V0hppctAz607qCEMwFDW4BEH0mAxlgzndD/dw8mgBZM
-         cNsQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=6E/U5iniUcywCqJbrcoGtp6XLjkIdDnXTD4rB+ab2yc=;
+        b=kWzj2ouRCw/uZcU5+KHd3LH6CM3OYDPvYFq9IVes77p+RkYXQVrsKZw8yIlqBNCccy
+         BSnVNyQ6IrFdeQwsu4V2EmFyQ7UMB7sO0eNrufwV+f958hKf4oINZBiwlUZXXhnp1yHY
+         H2eIqx1/kmRnExcdgIqaF1O7WV1SaFMwhT6otfVv/L5FGCU2eNdspW3mfhhrzgNzV5uP
+         OzhUSCz36HnXXFuG00oaUrPUMdIEDVW1p9SPNkyCOLyXNJvNf56l8d1NVhXfkQzCNdYU
+         gD3S1ST5Fs2LP3w1MlbivmfF+kMhOoGhnaF/uPa0XiREyLlSr+5cpwcA0Li/gnhX9tgJ
+         SwFw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=fngRf2Md8koYZeb8D7KOm28z/NY6gvIrL1L5qAu1hDc=;
-        b=wHWNukTOmStXbuWDeo+MZlmXrrZQM2sXvuczeQ1cb7IfIwzIJtx8HgPG1bQJEpEaop
-         GyJVNgO6Ptzrei+ZeN9rFW1HwWd8tVCL76KE0XyBdyT8GDAuGWgf9hEMVkNtk7kv1VDO
-         2MaeZ0Hsvop3qONp2Yx8CHyw3FFVzoeSCkeZI+f/h0EEhcGXnL/MKZlWd1Brg//TVTls
-         hO23xuulWpS6ZrFmpBXHyyp34K1hKoVRwRl1WkOQMXc927oNHSPMZ0NWI2IYhiwh85j1
-         eiktvtkzd9Y1vo3zMG7fFc9fSfyATM3BpJ5RGJiTEMKXIf0LaS3RjrisffJI0JappRE1
-         NFGQ==
-X-Gm-Message-State: AOAM530aPGTfegZQRMS9HcnEfG5Y6OAxQk56r+FIjWGrieeyX6EMsktv
-        LsFg6KPG8ljyRswtxkiyVUs=
-X-Google-Smtp-Source: ABdhPJyjYg4T9Gs6+2xLWWK3QK5emmwhw+y70oO/N85uuh6dyYTVCllKwKA20Ci0e3CM2tRJ47vfvg==
-X-Received: by 2002:a17:90a:880a:: with SMTP id s10mr20505132pjn.214.1639882890621;
-        Sat, 18 Dec 2021 19:01:30 -0800 (PST)
-Received: from localhost ([2405:201:6014:d064:3d4e:6265:800c:dc84])
-        by smtp.gmail.com with ESMTPSA id n22sm14088709pfu.2.2021.12.18.19.01.29
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=6E/U5iniUcywCqJbrcoGtp6XLjkIdDnXTD4rB+ab2yc=;
+        b=7kpCyz4E115w1MA7elXLnpUzE42tyUlonIvtLdlXLGQAOI0xws0X6wBYh/xZuvUGTk
+         uLl9CgbSkEh4Ln11gPR7sQxVceLSbylzrRGmeiwTAsNYdRoCl+3Rn7f/YcwKse+cwgL1
+         XLVAryZFiQHX0ai9GqSZNlGKRDrrU3HTy4RRrYbDurNuMXc3You9dKE5kQ+cQ3GLE1bz
+         s0KF+9OXq7lwx8hmqhNXHkeAUiSKkboW1R1eik30OEExTy4QIJzxnsxUtJfWwHN+9Eac
+         9eJBfQkontC3ZDggjHKp2hgsOOnzFRUMMhgx8QUchbk4wQPiWq90SWQBnKfQVbKd/14i
+         SUhA==
+X-Gm-Message-State: AOAM5312qj9NNqZnwmBIkNSot7dZWbm5KAiaZJ1Wjsn7rSYDv+Dwvpal
+        H/OpEj22wz1GhxGeDC9vgt2iq6mKNWU=
+X-Google-Smtp-Source: ABdhPJwCLfFMXZo6tTUDGVf31Kv1SYfrMqAS1c/boxz+cTtdoCrIYtyjw5/QlueQqbxAL6Aun4OmaA==
+X-Received: by 2002:a17:90a:8914:: with SMTP id u20mr12633585pjn.98.1639886810621;
+        Sat, 18 Dec 2021 20:06:50 -0800 (PST)
+Received: from 7YHHR73.igp.broadcom.net (c-71-198-249-153.hsd1.ca.comcast.net. [71.198.249.153])
+        by smtp.gmail.com with ESMTPSA id o9sm13122186pgu.12.2021.12.18.20.06.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 18 Dec 2021 19:01:30 -0800 (PST)
-Date:   Sun, 19 Dec 2021 08:31:28 +0530
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Maxim Mikityanskiy <maximmi@nvidia.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Subject: Re: [PATCH bpf-next v4 05/10] bpf: Add reference tracking support to
- kfunc
-Message-ID: <20211219030128.2s23lzhup6et4rsu@apollo.legion>
-References: <20211217015031.1278167-1-memxor@gmail.com>
- <20211217015031.1278167-6-memxor@gmail.com>
- <20211219022248.6hqp64a4nbhyyxeh@ast-mbp>
+        Sat, 18 Dec 2021 20:06:49 -0800 (PST)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     stable@vger.kernel.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH stable 4.4] net: systemport: Add global locking for descriptor lifecycle
+Date:   Sat, 18 Dec 2021 18:49:12 -0800
+Message-Id: <20211219024912.18774-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211219022248.6hqp64a4nbhyyxeh@ast-mbp>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Dec 19, 2021 at 07:52:48AM IST, Alexei Starovoitov wrote:
-> On Fri, Dec 17, 2021 at 07:20:26AM +0530, Kumar Kartikeya Dwivedi wrote:
-> >
-> > diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> > index 965fffaf0308..015cb633838b 100644
-> > --- a/include/linux/bpf.h
-> > +++ b/include/linux/bpf.h
-> > @@ -521,6 +521,9 @@ struct bpf_verifier_ops {
-> >  				 enum bpf_access_type atype,
-> >  				 u32 *next_btf_id);
-> >  	bool (*check_kfunc_call)(u32 kfunc_btf_id, struct module *owner);
-> > +	bool (*is_acquire_kfunc)(u32 kfunc_btf_id, struct module *owner);
-> > +	bool (*is_release_kfunc)(u32 kfunc_btf_id, struct module *owner);
-> > +	bool (*is_kfunc_ret_type_null)(u32 kfunc_btf_id, struct module *owner);
->
-> Same feedback as before...
->
-> Those callbacks are not necessary.
-> The existing check_kfunc_call() is just as inconvenient.
-> When module's BTF comes in could you add it to mod's info instead of
-> introducing callbacks for every kind of data the module has.
-> Those callbacks don't server any purpose other than passing the particular
-> data set back. The verifier side should access those data sets directly.
+commit 8b8e6e782456f1ce02a7ae914bbd5b1053f0b034 upstream
 
-Ok, interesting idea. So these then go into the ".modinfo" section? I think then
-we can also drop the check_kfunc_call callback?
+The descriptor list is a shared resource across all of the transmit queues, and
+the locking mechanism used today only protects concurrency across a given
+transmit queue between the transmit and reclaiming. This creates an opportunity
+for the SYSTEMPORT hardware to work on corrupted descriptors if we have
+multiple producers at once which is the case when using multiple transmit
+queues.
 
---
-Kartikeya
+This was particularly noticeable when using multiple flows/transmit queues and
+it showed up in interesting ways in that UDP packets would get a correct UDP
+header checksum being calculated over an incorrect packet length. Similarly TCP
+packets would get an equally correct checksum computed by the hardware over an
+incorrect packet length.
+
+The SYSTEMPORT hardware maintains an internal descriptor list that it re-arranges
+when the driver produces a new descriptor anytime it writes to the
+WRITE_PORT_{HI,LO} registers, there is however some delay in the hardware to
+re-organize its descriptors and it is possible that concurrent TX queues
+eventually break this internal allocation scheme to the point where the
+length/status part of the descriptor gets used for an incorrect data buffer.
+
+The fix is to impose a global serialization for all TX queues in the short
+section where we are writing to the WRITE_PORT_{HI,LO} registers which solves
+the corruption even with multiple concurrent TX queues being used.
+
+Fixes: 80105befdb4b ("net: systemport: add Broadcom SYSTEMPORT Ethernet MAC driver")
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Link: https://lore.kernel.org/r/20211215202450.4086240-1-f.fainelli@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+ drivers/net/ethernet/broadcom/bcmsysport.c | 5 +++++
+ drivers/net/ethernet/broadcom/bcmsysport.h | 1 +
+ 2 files changed, 6 insertions(+)
+
+diff --git a/drivers/net/ethernet/broadcom/bcmsysport.c b/drivers/net/ethernet/broadcom/bcmsysport.c
+index 94f06c35ad9c..c76102754c22 100644
+--- a/drivers/net/ethernet/broadcom/bcmsysport.c
++++ b/drivers/net/ethernet/broadcom/bcmsysport.c
+@@ -90,9 +90,13 @@ static inline void tdma_port_write_desc_addr(struct bcm_sysport_priv *priv,
+ 					     struct dma_desc *desc,
+ 					     unsigned int port)
+ {
++	unsigned long desc_flags;
++
+ 	/* Ports are latched, so write upper address first */
++	spin_lock_irqsave(&priv->desc_lock, desc_flags);
+ 	tdma_writel(priv, desc->addr_status_len, TDMA_WRITE_PORT_HI(port));
+ 	tdma_writel(priv, desc->addr_lo, TDMA_WRITE_PORT_LO(port));
++	spin_unlock_irqrestore(&priv->desc_lock, desc_flags);
+ }
+ 
+ /* Ethtool operations */
+@@ -1608,6 +1612,7 @@ static int bcm_sysport_open(struct net_device *dev)
+ 	}
+ 
+ 	/* Initialize both hardware and software ring */
++	spin_lock_init(&priv->desc_lock);
+ 	for (i = 0; i < dev->num_tx_queues; i++) {
+ 		ret = bcm_sysport_init_tx_ring(priv, i);
+ 		if (ret) {
+diff --git a/drivers/net/ethernet/broadcom/bcmsysport.h b/drivers/net/ethernet/broadcom/bcmsysport.h
+index e668b1ce5828..bb484c7faf67 100644
+--- a/drivers/net/ethernet/broadcom/bcmsysport.h
++++ b/drivers/net/ethernet/broadcom/bcmsysport.h
+@@ -660,6 +660,7 @@ struct bcm_sysport_priv {
+ 	int			wol_irq;
+ 
+ 	/* Transmit rings */
++	spinlock_t		desc_lock;
+ 	struct bcm_sysport_tx_ring tx_rings[TDMA_NUM_RINGS];
+ 
+ 	/* Receive queue */
+-- 
+2.25.1
+
