@@ -2,331 +2,265 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4742B479E4B
-	for <lists+netdev@lfdr.de>; Sun, 19 Dec 2021 00:54:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F2B3479E8F
+	for <lists+netdev@lfdr.de>; Sun, 19 Dec 2021 01:28:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234923AbhLRXyf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Dec 2021 18:54:35 -0500
-Received: from o1.ptr2625.egauge.net ([167.89.112.53]:25714 "EHLO
-        o1.ptr2625.egauge.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234965AbhLRXy1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Dec 2021 18:54:27 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=egauge.net;
-        h=from:subject:in-reply-to:references:mime-version:to:cc:
-        content-transfer-encoding:content-type;
-        s=sgd; bh=5Pqwl63bHpqoLecNYX9M7YSYzft3PMq3Tp+Ku265mTY=;
-        b=R31qg4d/FC+Tyg4exwJVMuwogdfu/qX/5lV5bx4JCMnHIwRmt48WcjUmUj2VrH7YXatz
-        GQfZ0wOO6FQ+IS6W+ogSYfcpQHWbpm0Ef7wI9x4U6PLH0apkclP0Sn51G2vPzPl37IsRAx
-        Jt6cjEIB0F6GVITNC2vHYVEEke8x3e0ye7Hb/N1WM2228zUwnxAzqK1Q/+3+y9r7ucxTvB
-        hg8Bk0EAiSeVX4/8rUik1DqudIFFPHb8VAIeOoNiUTDnY4CxD3OhiRXlv9sVzZvsDnUdL3
-        n4EYIIY3o+8YUqBZ391bPCSRoF5lunwUUvdpnHAVz+MN5J3IcWtzOCD+mXyhkb/A==
-Received: by filterdrecv-75ff7b5ffb-wdd5z with SMTP id filterdrecv-75ff7b5ffb-wdd5z-1-61BE74A9-9
-        2021-12-18 23:54:17.132754881 +0000 UTC m=+9336865.234030658
-Received: from pearl.egauge.net (unknown)
-        by geopod-ismtpd-1-1 (SG)
-        with ESMTP
-        id 3JAEvuuJSgy3JFED5vCSbw
-        Sat, 18 Dec 2021 23:54:17.020 +0000 (UTC)
-Received: by pearl.egauge.net (Postfix, from userid 1000)
-        id C770770141C; Sat, 18 Dec 2021 16:54:15 -0700 (MST)
-From:   David Mosberger-Tang <davidm@egauge.net>
-Subject: [PATCH 18/23] wilc1000: split huge tx handler into subfunctions
-Date:   Sat, 18 Dec 2021 23:54:17 +0000 (UTC)
-Message-Id: <20211218235404.3963475-19-davidm@egauge.net>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20211218235404.3963475-1-davidm@egauge.net>
-References: <20211218235404.3963475-1-davidm@egauge.net>
+        id S231617AbhLSA21 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Dec 2021 19:28:27 -0500
+Received: from a.mx.secunet.com ([62.96.220.36]:58956 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229911AbhLSA21 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 18 Dec 2021 19:28:27 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id C1FF82058E;
+        Sun, 19 Dec 2021 01:28:25 +0100 (CET)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id G-NSGS0I67UO; Sun, 19 Dec 2021 01:28:25 +0100 (CET)
+Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 0AC0B2053D;
+        Sun, 19 Dec 2021 01:28:25 +0100 (CET)
+Received: from cas-essen-02.secunet.de (unknown [10.53.40.202])
+        by mailout1.secunet.com (Postfix) with ESMTP id EB08780004A;
+        Sun, 19 Dec 2021 01:28:24 +0100 (CET)
+Received: from mbx-essen-02.secunet.de (10.53.40.198) by
+ cas-essen-02.secunet.de (10.53.40.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Sun, 19 Dec 2021 01:28:24 +0100
+Received: from moon.secunet.de (172.18.149.1) by mbx-essen-02.secunet.de
+ (10.53.40.198) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.17; Sun, 19 Dec
+ 2021 01:28:24 +0100
+Date:   Sun, 19 Dec 2021 01:28:16 +0100
+From:   Antony Antony <antony.antony@secunet.com>
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+CC:     Herbert Xu <herbert@gondor.apana.org.au>,
+        Antony Antony <antony.antony@secunet.com>,
+        "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>
+Subject: [RFC PATCH ipsec-next] xfrm: add forwarding ICMP error message
+Message-ID: <e9b8e0f951662162cc761ee5473be7a3f54183a7.1639872656.git.antony.antony@secunet.com>
+Reply-To: <antony.antony@secunet.com>
+References: <YTXGGiMzsda6mcm2@AntonyAntony.local>
 MIME-Version: 1.0
-X-SG-EID: =?us-ascii?Q?+kMxBqj35EdRUKoy8diX1j4AXmPtd302oan+iXZuF8m2Nw4HRW2irNspffT=2Fkh?=
- =?us-ascii?Q?ET6RJF6+Prbl0h=2FEtF1rRLvHfkfcXBPrp40SERT?=
- =?us-ascii?Q?TQC6jUvlYfvdwJLiaQX72T07R=2FeSc78h7Dn=2F52c?=
- =?us-ascii?Q?nt8CvTM7fOpBtB6jG4FkVTHXMaNV7JBixYvCE=2F3?=
- =?us-ascii?Q?nptVdHgSvQpc4GpI0URhYrKAqUXP5md9z1Tov7f?=
- =?us-ascii?Q?NG4WfmmWSAk7vBCtMI5a+o07RKld8JmBKcWPU0?=
-To:     Ajay Singh <ajay.kathat@microchip.com>
-Cc:     Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        David Mosberger-Tang <davidm@egauge.net>
-X-Entity-ID: Xg4JGAcGrJFIz2kDG9eoaQ==
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <YTXGGiMzsda6mcm2@AntonyAntony.local>
+Organization: secunet
+X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
+ mbx-essen-02.secunet.de (10.53.40.198)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This makes the code easier to read and less error prone.  There are no
-functional changes in this patch.
+IETF RFC 4301, Section 6, requires a configurable option to forward
+unauthenticated ICMP error message that does not match any
+policies using. Use reverse of ICMP payload, which will be partial IP
+packet.
+Add this reverse lookup (using ICMP payload as skb) for xfrm forward path.
 
-Signed-off-by: David Mosberger-Tang <davidm@egauge.net>
+To enable this add the flag XFRM_POLICY_ICMP to fwd and out policy
+and the flag XFRM_STATE_ICMP on incoming SA.
+
+ip xfrm policy add flag icmp tmpl
+
+ip xfrm policy
+src 192.0.2.0/24 dst 192.0.1.0/25
+	dir fwd priority 2084302 ptype main flag icmp
+
+ip xfrm state add ...flag icmp
+
+ip xfrm state
+root@west:~#ip x s
+src 192.1.2.23 dst 192.1.2.45
+	proto esp spi 0xa7b76872 reqid 16389 mode tunnel
+	replay-window 32 flag icmp af-unspec
+
+Signed-off-by: Antony Antony <antony.antony@secunet.com>
 ---
- .../net/wireless/microchip/wilc1000/wlan.c    | 202 +++++++++++++-----
- 1 file changed, 153 insertions(+), 49 deletions(-)
+ net/xfrm/xfrm_policy.c | 137 ++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 135 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/microchip/wilc1000/wlan.c b/drivers/net/wireless/microchip/wilc1000/wlan.c
-index 286bbf9392165..b7c8ff95b646a 100644
---- a/drivers/net/wireless/microchip/wilc1000/wlan.c
-+++ b/drivers/net/wireless/microchip/wilc1000/wlan.c
-@@ -605,43 +605,40 @@ void host_sleep_notify(struct wilc *wilc)
+diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
+index 9341298b2a70..8505c36413c7 100644
+--- a/net/xfrm/xfrm_policy.c
++++ b/net/xfrm/xfrm_policy.c
+@@ -29,6 +29,7 @@
+ #include <linux/audit.h>
+ #include <linux/rhashtable.h>
+ #include <linux/if_tunnel.h>
++#include <linux/icmp.h>
+ #include <net/dst.h>
+ #include <net/flow.h>
+ #include <net/xfrm.h>
+@@ -3475,6 +3476,123 @@ static inline int secpath_has_nontransport(const struct sec_path *sp, int k, int
+ 	return 0;
  }
- EXPORT_SYMBOL_GPL(host_sleep_notify);
- 
--int wilc_wlan_handle_txq(struct wilc *wilc, u32 *txq_count)
-+/**
-+ * Fill VMM table with packets waiting to be sent.  The packets are
-+ * added based on access category (priority) but also balanced to
-+ * provide fairness.  Since this function peeks at the packet queues,
-+ * the txq_add_to_head_cs mutex must be acquired before calling this
-+ * function.
-+ *
-+ * @wilc - Pointer to the wilc structure.
-+ * @ac_desired_ratio: First-round limit on number of packets to add from the
-+ *	respective queue.
-+ * @vmm_table: Pointer to the VMM table to fill.
-+ * @vmm_entries_ac: Pointer to the queue-number table to fill.
-+ *	For each packet added to the VMM table, this will be filled in
-+ *	with the queue-number (access-category) that the packet is coming
-+ *	from.
-+ *
-+ * @return
-+ *	The number of VMM entries filled in.  The table is 0-terminated
-+ *	so the returned number is at most WILC_VMM_TBL_SIZE-1.
-+ */
-+static int fill_vmm_table(const struct wilc *wilc,
-+			  u8 ac_desired_ratio[NQUEUES],
-+			  u32 vmm_table[WILC_VMM_TBL_SIZE],
-+			  u8 vmm_entries_ac[WILC_VMM_TBL_SIZE])
- {
--	int i, entries = 0;
-+	int i;
- 	u8 k, ac;
- 	u32 sum;
--	u32 reg;
--	u8 ac_desired_ratio[NQUEUES] = {0, 0, 0, 0};
- 	u8 ac_preserve_ratio[NQUEUES] = {1, 1, 1, 1};
- 	u8 *num_pkts_to_add;
--	u8 vmm_entries_ac[WILC_VMM_TBL_SIZE];
--	u32 offset = 0;
- 	bool max_size_over = 0, ac_exist = 0;
- 	int vmm_sz = 0;
- 	struct sk_buff *tqe_q[NQUEUES];
- 	struct wilc_skb_tx_cb *tx_cb;
--	int ret = 0;
--	int counter;
--	int timeout;
--	u32 vmm_table[WILC_VMM_TBL_SIZE];
--	u8 ac_pkt_num_to_chip[NQUEUES] = {0, 0, 0, 0};
--	const struct wilc_hif_func *func;
--	int srcu_idx;
--	u8 *txb = wilc->tx_buffer;
--	struct wilc_vif *vif;
--
--	if (wilc->quit)
--		goto out_update_cnt;
--
--	if (ac_balance(wilc, ac_desired_ratio))
--		return -EINVAL;
--
--	mutex_lock(&wilc->txq_add_to_head_cs);
--
--	srcu_idx = srcu_read_lock(&wilc->srcu);
--	list_for_each_entry_rcu(vif, &wilc->vif_list, list)
--		wilc_wlan_txq_filter_dup_tcp_ack(vif->ndev);
--	srcu_read_unlock(&wilc->srcu, srcu_idx);
- 
- 	for (ac = 0; ac < NQUEUES; ac++)
- 		tqe_q[ac] = skb_peek(&wilc->txq[ac]);
-@@ -695,11 +692,28 @@ int wilc_wlan_handle_txq(struct wilc *wilc, u32 *txq_count)
- 		num_pkts_to_add = ac_preserve_ratio;
- 	} while (!max_size_over && ac_exist);
- 
--	if (i == 0)
--		goto out_unlock;
- 	vmm_table[i] = 0x0;
-+	return i;
+
++static bool icmp_err_packet(const struct flowi *fl, unsigned short family)
++{
++	const struct flowi6 *fl6 = &fl->u.ip6;
++	const struct flowi4 *fl4 = &fl->u.ip4;
++
++	if (family == AF_INET)
++		if (fl4->flowi4_proto == IPPROTO_ICMP &&
++		    (fl4->fl4_icmp_type == ICMP_DEST_UNREACH ||
++		      fl4->fl4_icmp_type == ICMP_TIME_EXCEEDED))
++			return false;
++
++#if IS_ENABLED(CONFIG_IPV6)
++	if (fl6->flowi6_proto == IPPROTO_ICMPV6 &&
++	    (fl6->fl6_icmp_type == ICMPV6_DEST_UNREACH ||
++	      fl6->fl6_icmp_type == ICMPV6_TIME_EXCEED))
++		return false;
++#endif
++	return true;
 +}
 +
-+/**
-+ * Send the VMM table to the chip and get back the number of entries
-+ * that the chip can accept.  The bus must have been acquired before
-+ * calling this function.
-+ *
-+ * @wilc: Pointer to the wilc structure.
-+ * @i: The number of entries in the VMM table.
-+ * @vmm_table: The VMM table to send.
-+ *
-+ * @return
-+ *	The number of VMM table entries the chip can accept.
-+ */
-+static int send_vmm_table(struct wilc *wilc, int i, const u32 *vmm_table)
++static struct sk_buff *xfrm_icmp_flow_decode(struct sk_buff *skb,
++					     unsigned short family,
++					     struct flowi *fl,
++					     struct flowi *fl1)
 +{
-+	const struct wilc_hif_func *func;
-+	int ret, counter, entries, timeout;
-+	u32 reg;
- 
--	acquire_bus(wilc, WILC_BUS_ACQUIRE_AND_WAKEUP);
- 	counter = 0;
- 	func = wilc->hif_func;
- 	do {
-@@ -721,7 +735,7 @@ int wilc_wlan_handle_txq(struct wilc *wilc, u32 *txq_count)
- 	} while (!wilc->quit);
- 
- 	if (ret)
--		goto out_release_bus;
-+		return ret;
- 
- 	timeout = 200;
- 	do {
-@@ -759,22 +773,36 @@ int wilc_wlan_handle_txq(struct wilc *wilc, u32 *txq_count)
- 				break;
- 			reg &= ~BIT(0);
- 			ret = func->hif_write_reg(wilc, WILC_HOST_TX_CTRL, reg);
-+		} else {
-+			ret = entries;
- 		}
- 	} while (0);
-+	return ret;
-+}
- 
--	if (ret)
--		goto out_release_bus;
--
--	if (entries == 0) {
--		/*
--		 * No VMM space available in firmware so retry to transmit
--		 * the packet from tx queue.
--		 */
--		ret = WILC_VMM_ENTRY_FULL_RETRY;
--		goto out_release_bus;
--	}
--
--	release_bus(wilc, WILC_BUS_RELEASE_ALLOW_SLEEP);
-+/**
-+ * Copy a set of packets to the transmit buffer.  The
-+ * txq_add_to_head_cs mutex must still be held when calling this
-+ * function.
-+ *
-+ * @wilc - Pointer to the wilc structure.
-+ * @entries: The number of packets to send from the VMM table.
-+ * @vmm_table: The VMM table to send.
-+ * @vmm_entries_ac: Table index i contains the number of the queue to
-+ *	take the i-th packet from.
-+ *
-+ * @return
-+ *	Negative number on error, 0 on success.
-+ */
-+static int copy_packets(struct wilc *wilc, int entries, u32 *vmm_table,
-+			u8 *vmm_entries_ac)
-+{
-+	u8 ac_pkt_num_to_chip[NQUEUES] = {0, 0, 0, 0};
-+	struct wilc_skb_tx_cb *tx_cb;
-+	u8 *txb = wilc->tx_buffer;
-+	struct wilc_vif *vif;
-+	int i, vmm_sz;
-+	u32 offset;
- 
- 	offset = 0;
- 	i = 0;
-@@ -829,16 +857,92 @@ int wilc_wlan_handle_txq(struct wilc *wilc, u32 *txq_count)
- 	} while (--entries);
- 	for (i = 0; i < NQUEUES; i++)
- 		wilc->fw[i].count += ac_pkt_num_to_chip[i];
-+	return offset;
-+}
- 
--	acquire_bus(wilc, WILC_BUS_ACQUIRE_AND_WAKEUP);
-+/**
-+ * Send the packets in the VMM table to the chip.  The bus must have
-+ * been acquired.
-+ *
-+ * @wilc - Pointer to the wilc structure.
-+ * @length: The length of the buffer containing the packets to be
-+ *	sent to the chip.
-+ *
-+ * @return
-+ *	Negative number on error, 0 on success.
-+ */
-+static int send_packets(struct wilc *wilc, int len)
-+{
-+	const struct wilc_hif_func *func = wilc->hif_func;
-+	int ret;
-+	u8 *txb = wilc->tx_buffer;
- 
- 	ret = func->hif_clear_int_ext(wilc, ENABLE_TX_VMM);
- 	if (ret)
--		goto out_release_bus;
-+		return ret;
++	struct net *net = dev_net(skb->dev);
++	struct sk_buff *newskb = skb_clone(skb, GFP_ATOMIC);
 +
-+	ret = func->hif_block_tx_ext(wilc, 0, txb, len);
-+	return ret;
-+}
++	if (!pskb_pull(newskb, (sizeof(struct iphdr) + sizeof(struct icmphdr))))
++		return NULL;
++	skb_reset_network_header(newskb);
 +
-+int wilc_wlan_handle_txq(struct wilc *wilc, u32 *txq_count)
-+{
-+	int i, entries, len;
-+	u8 ac;
-+	u8 ac_desired_ratio[NQUEUES] = {0, 0, 0, 0};
-+	u8 vmm_entries_ac[WILC_VMM_TBL_SIZE];
-+	struct sk_buff *tqe_q[NQUEUES];
-+	int ret = 0;
-+	u32 vmm_table[WILC_VMM_TBL_SIZE];
-+	int srcu_idx;
-+	struct wilc_vif *vif;
-+
-+	if (wilc->quit)
-+		goto out_update_cnt;
-+
-+	if (ac_balance(wilc, ac_desired_ratio))
-+		return -EINVAL;
-+
-+	mutex_lock(&wilc->txq_add_to_head_cs);
-+
-+	srcu_idx = srcu_read_lock(&wilc->srcu);
-+	list_for_each_entry_rcu(vif, &wilc->vif_list, list)
-+		wilc_wlan_txq_filter_dup_tcp_ack(vif->ndev);
-+	srcu_read_unlock(&wilc->srcu, srcu_idx);
-+
-+	for (ac = 0; ac < NQUEUES; ac++)
-+		tqe_q[ac] = skb_peek(&wilc->txq[ac]);
-+
-+	i = fill_vmm_table(wilc, ac_desired_ratio, vmm_table, vmm_entries_ac);
-+	if (i == 0)
-+		goto out_unlock;
-+
-+	acquire_bus(wilc, WILC_BUS_ACQUIRE_AND_WAKEUP);
-+
-+	ret = send_vmm_table(wilc, i, vmm_table);
-+
-+	release_bus(wilc, WILC_BUS_RELEASE_ALLOW_SLEEP);
-+
-+	if (ret < 0)
-+		goto out_unlock;
-+
-+	entries = ret;
-+	if (entries == 0) {
-+		/* No VMM space available in firmware.  Inform caller
-+		 * to retry later.
-+		 */
-+		ret = WILC_VMM_ENTRY_FULL_RETRY;
-+		goto out_unlock;
++	if (xfrm_decode_session_reverse(newskb, fl1, family) < 0) {
++		kfree_skb(newskb);
++		XFRM_INC_STATS(net, LINUX_MIB_XFRMINHDRERROR);
++		return NULL;
 +	}
 +
-+	len = copy_packets(wilc, entries, vmm_table, vmm_entries_ac);
-+	if (len <= 0)
-+		goto out_unlock;
++	/* inherit more from the old flow ???
++	 * the inner skb may have these values different from outer skb
++	 */
 +
-+	acquire_bus(wilc, WILC_BUS_ACQUIRE_AND_WAKEUP);
- 
--	ret = func->hif_block_tx_ext(wilc, 0, txb, offset);
-+	ret = send_packets(wilc, len);
- 
--out_release_bus:
- 	release_bus(wilc, WILC_BUS_RELEASE_ALLOW_SLEEP);
- 
- out_unlock:
--- 
-2.25.1
++	fl1->flowi_oif = fl->flowi_oif;
++	fl1->flowi_mark = fl->flowi_mark;
++	fl1->flowi_tos = fl->flowi_tos;
++	nf_nat_decode_session(newskb, fl1, family);
++
++	return newskb;
++}
++
++static bool xfrm_sa_icmp_flow(struct sk_buff *skb,
++			      unsigned short family, const struct xfrm_selector *sel,
++			      struct flowi *fl)
++{
++	bool ret = false;
++
++	if (!icmp_err_packet(fl, family)) {
++		struct flowi fl1;
++		struct sk_buff *newskb = xfrm_icmp_flow_decode(skb, family, fl, &fl1);
++
++		if (!newskb)
++			return ret;
++
++		ret = xfrm_selector_match(sel, &fl1, family);
++		kfree_skb(newskb);
++	}
++
++	return ret;
++}
++
++static inline
++struct xfrm_policy *xfrm_in_fwd_icmp(struct sk_buff *skb, struct flowi *fl,
++				     unsigned short family, u32 if_id)
++{
++	struct xfrm_policy *pol = NULL;
++
++	if (!icmp_err_packet(fl, family)) {
++		struct flowi fl1;
++		struct net *net = dev_net(skb->dev);
++		struct sk_buff *newskb = xfrm_icmp_flow_decode(skb, family, fl, &fl1);
++
++		if (!newskb)
++			return pol;
++		pol = xfrm_policy_lookup(net, &fl1, family, XFRM_POLICY_FWD, if_id);
++		kfree_skb(newskb);
++	}
++
++	return pol;
++}
++
++static inline
++struct dst_entry *xfrm_out_fwd_icmp(struct sk_buff *skb, struct flowi *fl,
++				    unsigned short family, struct dst_entry *dst)
++{
++	if (!icmp_err_packet(fl, family)) {
++		struct net *net = dev_net(skb->dev);
++		struct dst_entry *dst2;
++		struct flowi fl1;
++		struct sk_buff *newskb = xfrm_icmp_flow_decode(skb, family, fl, &fl1);
++
++		if (!newskb)
++			return dst;
++
++		dst2 = xfrm_lookup(net, dst, &fl1, NULL, XFRM_LOOKUP_QUEUE);
++
++		kfree_skb(newskb);
++
++		if (IS_ERR(dst2))
++			return dst;
++
++		if (dst2->xfrm)
++			dst = dst2;
++	}
++
++	return dst;
++}
++
+ int __xfrm_policy_check(struct sock *sk, int dir, struct sk_buff *skb,
+ 			unsigned short family)
+ {
+@@ -3521,9 +3639,17 @@ int __xfrm_policy_check(struct sock *sk, int dir, struct sk_buff *skb,
+
+ 		for (i = sp->len - 1; i >= 0; i--) {
+ 			struct xfrm_state *x = sp->xvec[i];
++			int ret = 0;
++
+ 			if (!xfrm_selector_match(&x->sel, &fl, family)) {
+-				XFRM_INC_STATS(net, LINUX_MIB_XFRMINSTATEMISMATCH);
+-				return 0;
++				ret = true;
++				if (x->props.flags & XFRM_STATE_ICMP &&
++				    xfrm_sa_icmp_flow(skb, family, &x->sel, &fl))
++					ret = false;
++				if (ret) {
++					XFRM_INC_STATS(net, LINUX_MIB_XFRMINSTATEMISMATCH);
++					return 0;
++				}
+ 			}
+ 		}
+ 	}
+@@ -3546,6 +3672,9 @@ int __xfrm_policy_check(struct sock *sk, int dir, struct sk_buff *skb,
+ 		return 0;
+ 	}
+
++	if (!pol && dir == XFRM_POLICY_FWD)
++		pol = xfrm_in_fwd_icmp(skb, &fl, family, if_id);
++
+ 	if (!pol) {
+ 		if (!xfrm_default_allow(net, dir)) {
+ 			XFRM_INC_STATS(net, LINUX_MIB_XFRMINNOPOLS);
+@@ -3675,6 +3804,10 @@ int __xfrm_route_forward(struct sk_buff *skb, unsigned short family)
+ 		res = 0;
+ 		dst = NULL;
+ 	}
++
++	if (dst && !dst->xfrm)
++		dst = xfrm_out_fwd_icmp(skb, &fl, family, dst);
++
+ 	skb_dst_set(skb, dst);
+ 	return res;
+ }
+--
+2.30.2
 
