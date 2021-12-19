@@ -2,256 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CA0F47A244
-	for <lists+netdev@lfdr.de>; Sun, 19 Dec 2021 22:20:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB77A47A255
+	for <lists+netdev@lfdr.de>; Sun, 19 Dec 2021 22:26:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233462AbhLSVU6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Dec 2021 16:20:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55404 "EHLO
+        id S233573AbhLSV0u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Dec 2021 16:26:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229589AbhLSVU5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Dec 2021 16:20:57 -0500
-Received: from mail-oi1-x233.google.com (mail-oi1-x233.google.com [IPv6:2607:f8b0:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D27DC061574;
-        Sun, 19 Dec 2021 13:20:57 -0800 (PST)
-Received: by mail-oi1-x233.google.com with SMTP id 7so12899999oip.12;
-        Sun, 19 Dec 2021 13:20:57 -0800 (PST)
+        with ESMTP id S230488AbhLSV0t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Dec 2021 16:26:49 -0500
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0362C061574;
+        Sun, 19 Dec 2021 13:26:49 -0800 (PST)
+Received: by mail-pl1-x62d.google.com with SMTP id x15so6137662plg.1;
+        Sun, 19 Dec 2021 13:26:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=z3zIo1BvdwoRAMOZ8KYLz/FcfKXj95eywc0B461CDjs=;
-        b=aH0Vx5ltWY+N//xW2dwnL9g1Pm92lrskHsfsUHqDDX6FRBwgITXKiY71kB4YYyP30q
-         RZqrVzSSNhKieW0esd9Fkp1dVlL6eydBM0b+dAdC/HNgWvqcqEzvYLkozPg2dY2XlTb6
-         9H7FP6NPiwyKmDxxyH1iI/4u8U/kBHWkOjaCorbtwelXEs1rDewXeDHNZQLBebuNiEWX
-         s2nO1gQmBD68OHxRk3hmISnl+Ckxh7n0BkxVOynp/KgNj2Wfh/OGQLypP8DL2yae11d6
-         BHivv0CqnB5o29ti+hr67KYfs86icFJvYUSkfKzasa0bx6I1DDp/yu6Pl+zc2++Lm546
-         OnDw==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=hZPQgrCumR+wPgggdKtvv/iYIkjgp4YaFkeT/TzLZdo=;
+        b=Hx4izuMBeuqkND1QIt+J3cZw8L12PQX/y8tTk7teym+rp5HzHimd1+U38OfJI9DxJs
+         kBlSzhwKxPbZ0SBKcVz91IGO54CaAV1WGriCz8baBj/NYiT9MJ2AMPXXzhM/lZ6eEMsZ
+         vpiYeTqzJvwiWAdH0h2h3nFCaTFc44773wWe5dVRLkKkNhFWy+UKxk58r8qY89cr98WB
+         ehjA2+VtX1r41z9+y5V6KfHUuRaVxk/a0Cvjb/tP9awEXrNuE8tDMRfW9I76YcmANBmD
+         ltDEwmsCQOQALMhoVaIOuLOP6DVsABktsG6l2FkInyN5AknugU+aNHhJlmRreHzCqwcx
+         Py9g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=z3zIo1BvdwoRAMOZ8KYLz/FcfKXj95eywc0B461CDjs=;
-        b=SkEtqGj6oqruGKj3Q4ZKtrqnJE8ic/+Z0m1FButYDAn/J94JrVU1kMZv9/hsUvi840
-         U7KnjOWQHVtE7HH6wOXtL+c35YUkHYqwzb17hmTmDXZk4eySsVOWQlyQiNHO3zjL5UQO
-         BEsjfQ/Lzj20fx/jn1jzG1WfDcY2cIQe44UIVWm6nVB+71mRJL+yVIbl6VX2Sl99X2pt
-         0Hhqr1WGIDKzKxvQ5XdBvHraIuDYrcYllcBW9Hd0r82OwMpnw5MY2eL+0oaBwjJE/pJW
-         zGphpRY76JRtoKgcZ9iDaEDY0RlNfDpeL+09yGS/QrmnLFQgPyeg9YJXCfYnqS8GA3sZ
-         2N0Q==
-X-Gm-Message-State: AOAM533AnywkJbK+cqD0q9wswsTzJg+IgQAMbRGLy991Rl/DLpfE4AQL
-        VHkWpmUIOZICcAiPNERin1e2QuDF5uEKovpneo/eTYDk
-X-Google-Smtp-Source: ABdhPJz+SzllFAWKYg3CHSrRkziogeBkR2fpGstGmhs1olMOtOQXQhf1wD+qvJSTUiVhGokLJAeayFpaYzHhQxNDDBk=
-X-Received: by 2002:a05:6808:150d:: with SMTP id u13mr9789575oiw.155.1639948856493;
- Sun, 19 Dec 2021 13:20:56 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=hZPQgrCumR+wPgggdKtvv/iYIkjgp4YaFkeT/TzLZdo=;
+        b=fs3rRBOe8twg6d4xFZS+5UPbYla6GuX7Y0rpRLIgCDlX3xxHuvtA6KIpf5eg6Y50HU
+         j6of4DHAaeeyyaXsWUmmuw8iUGTeIntJZgJvrRorIaXXtWOpdAxqT9CjOm/hJh2F5tai
+         DDTpuBy5lwK1PoC9vG8yxyoOV7Q32BtCkef0pLVkO1aav5aeTv9w3pUOdaNdDIICPgA9
+         auXFYf6Z1nIwtelGNTNQj5nOHAmwWB78wLNpMSpeAERdnuic2buyAsJYqSIoAr/lzHRs
+         Qm97L/GaJopcIe0s6FekH67q8zA+I5cAcpuTo2m1lV2SH/mpGW7vfAZEf4HybPpZ3A78
+         Hxkw==
+X-Gm-Message-State: AOAM532wEwsGRCKHSrfef3eu9tZHtfErr2Oa/XQIalOsLFPlqdRslCF4
+        Gf9ookCXuoYGNhPjtDejh5w=
+X-Google-Smtp-Source: ABdhPJwqztK2nhU3P1/ziv8oAoxGGt7n4S43f++NP0Eg5Zbj3GnuYdWaIrbLN/1/5l2Loegc8L9hjQ==
+X-Received: by 2002:a17:90a:7782:: with SMTP id v2mr16697127pjk.81.1639949209025;
+        Sun, 19 Dec 2021 13:26:49 -0800 (PST)
+Received: from ast-mbp ([2620:10d:c090:400::5:9874])
+        by smtp.gmail.com with ESMTPSA id b22sm572285pfv.107.2021.12.19.13.26.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 19 Dec 2021 13:26:48 -0800 (PST)
+Date:   Sun, 19 Dec 2021 13:26:45 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        netfilter-devel <netfilter-devel@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+Subject: Re: [PATCH bpf-next v4 06/10] bpf: Track provenance for pointers
+ formed from referenced PTR_TO_BTF_ID
+Message-ID: <20211219212645.5pqswdfay75vyify@ast-mbp>
+References: <20211219022839.kdms7k3jte5ajubt@ast-mbp>
+ <20211219031822.k2bfjhgazvvy5r7l@apollo.legion>
+ <CAADnVQJ43O-eavsMuqW0kCiBZMf4PFHbFhSPa7vRWY1cjwqFAg@mail.gmail.com>
+ <20211219043349.mmycwjnxcqc7lc2c@apollo.legion>
+ <CAADnVQ+zWgUj5C=nJuzop2aOHj04eVH+Y4x+H3RyGwWjost9ZQ@mail.gmail.com>
+ <20211219052540.yuqbxldypj4quhhd@apollo.legion>
+ <CAADnVQ+EtYjnH+=tZCOYX+ioyx=d4NAxFFpRpN2PVfvye6thTA@mail.gmail.com>
+ <20211219181044.5s2bopdn5gk7wwhz@apollo.legion>
+ <20211219190810.p3q52rrlchnokufo@ast-mbp>
+ <20211219195603.pta666hynpz45xlf@apollo.legion>
 MIME-Version: 1.0
-References: <20211214215732.1507504-1-lee.jones@linaro.org>
- <20211214215732.1507504-2-lee.jones@linaro.org> <20211215174818.65f3af5e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CADvbK_emZsHVsBvNFk9B5kCZjmAQkMBAx1MtwusDJ-+vt0ukPA@mail.gmail.com>
- <Ybtrs56tSBbmyt5c@google.com> <CADvbK_cBBDkGt8XLJo6N5TX2YQATS+udVWm8_=8f96=0B9tnTA@mail.gmail.com>
- <Ybtzr5ZmD/IKjycz@google.com> <Ybtz/0gflbkG5Q/0@google.com>
- <CADvbK_cexKiVATn=dPrWqoS0qM-bM0UcSkx8Xqz5ibEKQizDVg@mail.gmail.com>
- <CADvbK_cxMbYwkuN_ZUvHY-7ahc9ff+jbuPkKn6CA=yqMk=SKVw@mail.gmail.com> <YbuNZtV/pjDszTad@google.com>
-In-Reply-To: <YbuNZtV/pjDszTad@google.com>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Sun, 19 Dec 2021 16:20:45 -0500
-Message-ID: <CADvbK_f7wY_tknw5wTo369-2aRSvhhkETwmdu9tRbgfeyyTQng@mail.gmail.com>
-Subject: Re: [RESEND 2/2] sctp: hold cached endpoints to prevent possible UAF
-To:     Lee Jones <lee.jones@linaro.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Vlad Yasevich <vyasevich@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        lksctp developers <linux-sctp@vger.kernel.org>,
-        "H.P. Yarroll" <piggy@acm.org>,
-        Karl Knutson <karl@athena.chicago.il.us>,
-        Jon Grimm <jgrimm@us.ibm.com>,
-        Xingang Guo <xingang.guo@intel.com>,
-        Hui Huang <hui.huang@nokia.com>,
-        Sridhar Samudrala <sri@us.ibm.com>,
-        Daisy Chang <daisyc@us.ibm.com>,
-        Ryan Layer <rmlayer@us.ibm.com>,
-        Kevin Gao <kevin.gao@intel.com>,
-        network dev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211219195603.pta666hynpz45xlf@apollo.legion>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 16, 2021 at 2:03 PM Lee Jones <lee.jones@linaro.org> wrote:
->
-> On Thu, 16 Dec 2021, Xin Long wrote:
->
-> > (
+On Mon, Dec 20, 2021 at 01:26:03AM +0530, Kumar Kartikeya Dwivedi wrote:
 > >
-> > On Thu, Dec 16, 2021 at 1:12 PM Xin Long <lucien.xin@gmail.com> wrote:
-> > >
-> > > On Thu, Dec 16, 2021 at 12:14 PM Lee Jones <lee.jones@linaro.org> wro=
-te:
-> > > >
-> > > > On Thu, 16 Dec 2021, Lee Jones wrote:
-> > > >
-> > > > > On Thu, 16 Dec 2021, Xin Long wrote:
-> > > > >
-> > > > > > On Thu, Dec 16, 2021 at 11:39 AM Lee Jones <lee.jones@linaro.or=
-g> wrote:
-> > > > > > >
-> > > > > > > On Thu, 16 Dec 2021, Xin Long wrote:
-> > > > > > >
-> > > > > > > > On Wed, Dec 15, 2021 at 8:48 PM Jakub Kicinski <kuba@kernel=
-.org> wrote:
-> > > > > > > > >
-> > > > > > > > > On Tue, 14 Dec 2021 21:57:32 +0000 Lee Jones wrote:
-> > > > > > > > > > The cause of the resultant dump_stack() reported below =
-is a
-> > > > > > > > > > dereference of a freed pointer to 'struct sctp_endpoint=
-' in
-> > > > > > > > > > sctp_sock_dump().
-> > > > > > > > > >
-> > > > > > > > > > This race condition occurs when a transport is cached i=
-nto its
-> > > > > > > > > > associated hash table followed by an endpoint/sock migr=
-ation to a new
-> > > > > > > > > > association in sctp_assoc_migrate() prior to their subs=
-equent use in
-> > > > > > > > > > sctp_diag_dump() which uses sctp_for_each_transport() t=
-o walk the hash
-> > > > > > > > > > table calling into sctp_sock_dump() where the dereferen=
-ce occurs.
-> > > > > > >
-> > > > > > > > in sctp_sock_dump():
-> > > > > > > >         struct sock *sk =3D ep->base.sk;
-> > > > > > > >         ... <--[1]
-> > > > > > > >         lock_sock(sk);
-> > > > > > > >
-> > > > > > > > Do you mean in [1], the sk is peeled off and gets freed els=
-ewhere?
-> > > > > > >
-> > > > > > > 'ep' and 'sk' are both switched out for new ones in sctp_sock=
-_migrate().
-> > > > > > >
-> > > > > > > > if that's true, it's still late to do sock_hold(sk) in your=
- this patch.
-> > > > > > >
-> > > > > > > No, that's not right.
-> > > > > > >
-> > > > > > > The schedule happens *inside* the lock_sock() call.
-> > > > > > Sorry, I don't follow this.
-> > > > > > We can't expect when the schedule happens, why do you think thi=
-s
-> > > > > > can never be scheduled before the lock_sock() call?
-> > > > >
-> > > > > True, but I've had this running for hours and it hasn't reproduce=
-d.
-> > > I understand, but it's a crash, we shouldn't take any risk that it
-> > > will never happen.
-> > > you may try to add a usleep() before the lock_sock call to reproduce =
-it.
-> > >
-> > > > >
-> > > > > Without this patch, I can reproduce this in around 2 seconds.
-> > > > >
-> > > > > The C-repro for this is pretty intense!
-> > > > >
-> > > > > If you want to be *sure* that a schedule will never happen, we ca=
-n
-> > > > > take a reference directly with:
-> > > > >
-> > > > >      ep =3D sctp_endpoint_hold(tsp->asoc->ep);
-> > > > >      sk =3D sock_hold(ep->base.sk);
-> > > > >
-> > > > > Which was my original plan before I soak tested this submitted pa=
-tch
-> > > > > for hours without any sign of reproducing the issue.
-> > > we tried to not export sctp_obj_hold/put(), that's why we had
-> > > sctp_for_each_transport().
-> > >
-> > > ep itself holds a reference of sk when it's alive, so it's weird to d=
-o
-> > > these 2 together.
-> > >
-> > > > >
-> > > > > > If the sock is peeled off or is being freed, we shouldn't dump =
-this sock,
-> > > > > > and it's better to skip it.
-> > > > >
-> > > > > I guess we can do that too.
-> > > > >
-> > > > > Are you suggesting sctp_sock_migrate() as the call site?
-> > > diff --git a/net/sctp/socket.c b/net/sctp/socket.c
-> > > index 85ac2e901ffc..56ea7a0e2add 100644
-> > > --- a/net/sctp/socket.c
-> > > +++ b/net/sctp/socket.c
-> > > @@ -9868,6 +9868,7 @@ static int sctp_sock_migrate(struct sock *oldsk=
-,
-> > > struct sock *newsk,
-> > >                 inet_sk_set_state(newsk, SCTP_SS_ESTABLISHED);
-> > >         }
-> > >
-> > > +       sock_set_flag(oldsk, SOCK_RCU_FREE);
-> > >         release_sock(newsk);
-> > >
-> > >         return 0;
-> > >
-> > > SOCK_RCU_FREE is set to the previous sk, so that this sk will not
-> > > be freed between rcu_read_lock() and rcu_read_unlock().
-> > >
-> > > >
-> > > > Also, when are you planning on testing the flag?
-> > > SOCK_RCU_FREE flag is used when freeing sk in sk_destruct(),
-> > > and if it's set, it will be freed in the next grace period of RCU.
-> > >
-> > > >
-> > > > Won't that suffer with the same issue(s)?
-> > > diff --git a/net/sctp/diag.c b/net/sctp/diag.c
-> > > index 7970d786c4a2..b4c4acd9e67e 100644
-> > > --- a/net/sctp/diag.c
-> > > +++ b/net/sctp/diag.c
-> > > @@ -309,16 +309,21 @@ static int sctp_tsp_dump_one(struct
-> > > sctp_transport *tsp, void *p)
-> > >
-> > >  static int sctp_sock_dump(struct sctp_transport *tsp, void *p)
-> > >  {
-> > > -       struct sctp_endpoint *ep =3D tsp->asoc->ep;
-> > >         struct sctp_comm_param *commp =3D p;
-> > > -       struct sock *sk =3D ep->base.sk;
-> > >         struct sk_buff *skb =3D commp->skb;
-> > >         struct netlink_callback *cb =3D commp->cb;
-> > >         const struct inet_diag_req_v2 *r =3D commp->r;
-> > >         struct sctp_association *assoc;
-> > > +       struct sctp_endpoint *ep;
-> > > +       struct sock *sk;
-> > >         int err =3D 0;
-> > >
-> > > +       rcu_read_lock();
-> > > +       ep =3D tsp->asoc->ep;
-> > > +       sk =3D ep->base.sk;
-> > >         lock_sock(sk);
-> > Unfortunately, this isn't going to work, as lock_sock() may sleep,
-> > and is not allowed to be called understand rcu_read_lock() :(
->
-> Ah!
->
-> How about my original solution of taking:
->
->   tsp->asoc->ep
->
-> ... directly?
->
-> If it already holds the sk, we should be golden?
-Both ep and sk could be destroyed at this moment.
-you can't try to hold an object that has already been destroyed.
-It holds the sk only when ep is still alive.
+> > The goal is clear now, but look at it differently:
+> > struct nf_conn *ct = bpf_xdp_ct_lookup(...);
+> > if (ct) {
+> >   struct nf_conn *master = ct->master;
+> >   struct net *net = ct->ct_net.net;
+> >
+> >   bpf_ct_release(ct);
+> >   master->status; // prevent this ?
+> >   net->ifindex;   // but allow this ?
+> 
+> I think both will be prevented with the current logic, no?
+> net will be ct + offset, so if mark_btf_ld_reg writes PTR_TO_BTF_ID to dst_reg
+> for net, it will copy ct's reg's ref_obj_id to parent_ref_obj_id of dst_reg (net).
+> Then on release of ct, net's reg gets killed too since reg[ct]->ref_obj_id
+> matches its parent_ref_obj_id.
 
-I don't see a way to get this fix with the current transport hashtable.
-I will change to use port hashtable to dump sock/asocs for this.
+Excatly, but it should be allowed.
+There is nothing wrong with 'net' access after ct_release.
 
-Thanks.
->
-> --
-> Lee Jones [=E6=9D=8E=E7=90=BC=E6=96=AF]
-> Senior Technical Lead - Developer Services
-> Linaro.org =E2=94=82 Open source software for Arm SoCs
-> Follow Linaro: Facebook | Twitter | Blog
+> > }
+> > The verifier cannot statically check this. That's why all such deref
+> > are done via BPF_PROBE_MEM (which is the same as probe_read_kernel).
+> > We must disallow use after free when it can cause a crash.
+> > This case is not the one.
+> 
+> That is a valid point, this is certainly in 'nice to have/prevents obvious
+> misuse' territory, but if this can be done without introducing too much
+> complexity, I'd like us to do it.
+> 
+> A bit of a digression, but:
+> I'm afraid this patch is going to be brought up again for a future effort
+> related to XDP queueing that Toke is working on. We have a similar scenario
+> there, when xdp_md (aliasing xdp_frame) is dequeued from the PIFO map, and
+> PTR_TO_PACKET is obtained by reading xdp_md->data. The xdp_md is referenced, so
+> we need to invalidate these pkt pointers as well, in addition to killing xdp_md
+> copies. Also this parent_ref_obj_id state allows us to reject comparisons
+> between pkt pointers pointing into different xdp_md's (when you dequeue more
+> than one at once and form multiple pkt pointers pointing into different
+> xdp_mds).
+
+I cannot quite grasp the issue. Sounds orthogonal. The pkt pointers
+are not ptr_to_btf_id like. There is no PROBE_MEM there.
+
+> >   struct nf_conn *ct = bpf_xdp_ct_lookup(...);
+> >   struct nf_conn *master = ct->master;
+> >   bpf_ct_release(master);
+> > definitely has to be prevented, since it will cause a crash.
+> >
+> > As a follow up to this set would be great to allow ptr_to_btf_id
+> > pointers persist longer than program execution.
+> > Users already asked to allow the following:
+> >   map_value = bpf_map_lookup_elem(...);
+> >   struct nf_conn *ct = bpf_xdp_ct_lookup(...);
+> >   map_value->saved_ct = ct;
+> > and some time later in a different or the same program:
+> >   map_value = bpf_map_lookup_elem(...);
+> >   bpf_ct_release(map_value->saved_ct);
+> >
+> > Currently folks work around this deficiency by storing some
+> > sort of id and doing extra lookups while performance is suffering.
+> > wdyt?
+> 
+> Very interesting idea! I'm guessing we'll need something akin to bpf_timer
+> support, i.e. a dedicated type verified using BTF which can be embedded in
+> map_value? I'll be happy to work on enabling this.
+
+Thanks! Would be awesome.
+
+> One thought though (just confirming):
+> If user does map_value->saved_ct = ct, we have to ignore reference leak check
+> for ct's ref_id, but if they rewrite saved_ct, we would also have to unignore
+> it, correct?
+
+We cannot just ignore it :)
+I was thinking to borrow std::unique_ptr like semanitcs.
+
+struct nf_conn *ct = bpf_xdp_ct_lookup(...); // here ref checking logic tracks it as normal
+map_value->saved_ct = ct; // here it trasnfers the ref from Rx into map_value
+ct->status; // cannot be access here.
+
+It could look unnatural to typical C programmer, so we might need 
+explicit std::move-like helper, so the assignment will be:
+bpf_move_ptr(&map_value->saved_ct, &ct); // same as map_value->saved_ct = ct; ct = NULL;
+...
+bpf_move_ptr(&ct, &map_value->saved_ct); // would take the ownership back from the map
+// and the ref checking logic tracks 'ct' again as normal
+
+> I think we can make this tracking easier by limiting to one bpf_ptr_to_btf
+> struct in map_value, then it can simply be part of ptr_to_map_value's reg_state.
+
+Possible. Hopefully such limitiation will not be needed.
