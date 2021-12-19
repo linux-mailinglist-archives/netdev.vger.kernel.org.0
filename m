@@ -2,265 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F2B3479E8F
-	for <lists+netdev@lfdr.de>; Sun, 19 Dec 2021 01:28:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 70267479EA3
+	for <lists+netdev@lfdr.de>; Sun, 19 Dec 2021 02:03:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231617AbhLSA21 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Dec 2021 19:28:27 -0500
-Received: from a.mx.secunet.com ([62.96.220.36]:58956 "EHLO a.mx.secunet.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229911AbhLSA21 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 18 Dec 2021 19:28:27 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id C1FF82058E;
-        Sun, 19 Dec 2021 01:28:25 +0100 (CET)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id G-NSGS0I67UO; Sun, 19 Dec 2021 01:28:25 +0100 (CET)
-Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 0AC0B2053D;
-        Sun, 19 Dec 2021 01:28:25 +0100 (CET)
-Received: from cas-essen-02.secunet.de (unknown [10.53.40.202])
-        by mailout1.secunet.com (Postfix) with ESMTP id EB08780004A;
-        Sun, 19 Dec 2021 01:28:24 +0100 (CET)
-Received: from mbx-essen-02.secunet.de (10.53.40.198) by
- cas-essen-02.secunet.de (10.53.40.202) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Sun, 19 Dec 2021 01:28:24 +0100
-Received: from moon.secunet.de (172.18.149.1) by mbx-essen-02.secunet.de
- (10.53.40.198) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.17; Sun, 19 Dec
- 2021 01:28:24 +0100
-Date:   Sun, 19 Dec 2021 01:28:16 +0100
-From:   Antony Antony <antony.antony@secunet.com>
-To:     Steffen Klassert <steffen.klassert@secunet.com>
-CC:     Herbert Xu <herbert@gondor.apana.org.au>,
-        Antony Antony <antony.antony@secunet.com>,
-        "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>
-Subject: [RFC PATCH ipsec-next] xfrm: add forwarding ICMP error message
-Message-ID: <e9b8e0f951662162cc761ee5473be7a3f54183a7.1639872656.git.antony.antony@secunet.com>
-Reply-To: <antony.antony@secunet.com>
-References: <YTXGGiMzsda6mcm2@AntonyAntony.local>
+        id S232710AbhLSBDK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Dec 2021 20:03:10 -0500
+Received: from mail-io1-f69.google.com ([209.85.166.69]:43825 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232634AbhLSBDK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Dec 2021 20:03:10 -0500
+Received: by mail-io1-f69.google.com with SMTP id j13-20020a0566022ccd00b005e9684c80c6so4438755iow.10
+        for <netdev@vger.kernel.org>; Sat, 18 Dec 2021 17:03:09 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=CI48j3ubhiTdfUyLSvTdm3aMA4INZMzb9ghIYvLpbqM=;
+        b=i2bXJTDyh3h6LNBgU1QLOL4H2sQN1mAOJRer30A+sqF+tkizRRgBEtXgkZs6lpkYZA
+         980jPTi6NyVSM1Kdp9UNAHWKu4EMQ1cj3tixFhr5914Y5zoxt68m1NBMi7U5pQc37qpB
+         cEuvj6ezwhIrJ7Z6iluNO3THNVURaDcT1d503COnVx879LgZgpABLYzo6T915AYcE+XQ
+         HABPTiYkgfMElnb6dINbJHJVRgwjGjtGXXVKRK1efyGd0qkWtWguQEs+QRGwp2a6aB9N
+         xMzp3fHcNtZSPMzm033XKK0/XJaIByZizrqniT1S4N5/pR4negszUWxd/POEqWeyyFwh
+         XILQ==
+X-Gm-Message-State: AOAM532GJyEWPAAkc8+cADHH+FysNittH76FyacFzutVzrBCdn8Lfzlf
+        niukqVdHdmrPPf5TJwWbrPMhiFC+xmBAQI4keGPywL6A2uMw
+X-Google-Smtp-Source: ABdhPJyzClBydsueqtINlV1Pw/7cLJZN42JvPu3XVdTZ3uqKoF3ibacyZV2iu4orAFF+rRlqqX+NPfnRwy8brdkqy5vaoryv25Hw
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <YTXGGiMzsda6mcm2@AntonyAntony.local>
-Organization: secunet
-X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
- mbx-essen-02.secunet.de (10.53.40.198)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+X-Received: by 2002:a02:b707:: with SMTP id g7mr42266jam.86.1639875789559;
+ Sat, 18 Dec 2021 17:03:09 -0800 (PST)
+Date:   Sat, 18 Dec 2021 17:03:09 -0800
+In-Reply-To: <13821c8b-c809-c820-04f0-2eadfdef0296@gmail.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000e99dbc05d3755514@google.com>
+Subject: Re: [syzbot] KMSAN: uninit-value in asix_mdio_read (2)
+From:   syzbot <syzbot+f44badb06036334e867a@syzkaller.appspotmail.com>
+To:     andrew@lunn.ch, davem@davemloft.net, glider@google.com,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux@rempel-privat.de,
+        netdev@vger.kernel.org, paskripkin@gmail.com,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-IETF RFC 4301, Section 6, requires a configurable option to forward
-unauthenticated ICMP error message that does not match any
-policies using. Use reverse of ICMP payload, which will be partial IP
-packet.
-Add this reverse lookup (using ICMP payload as skb) for xfrm forward path.
+Hello,
 
-To enable this add the flag XFRM_POLICY_ICMP to fwd and out policy
-and the flag XFRM_STATE_ICMP on incoming SA.
+syzbot has tested the proposed patch and the reproducer did not trigger any issue:
 
-ip xfrm policy add flag icmp tmpl
+Reported-and-tested-by: syzbot+f44badb06036334e867a@syzkaller.appspotmail.com
 
-ip xfrm policy
-src 192.0.2.0/24 dst 192.0.1.0/25
-	dir fwd priority 2084302 ptype main flag icmp
+Tested on:
 
-ip xfrm state add ...flag icmp
+commit:         b0a8b505 kmsan: core: add dependency on DEBUG_KERNEL
+git tree:       https://github.com/google/kmsan.git master
+kernel config:  https://syzkaller.appspot.com/x/.config?x=46a956fc7a887c60
+dashboard link: https://syzkaller.appspot.com/bug?extid=f44badb06036334e867a
+compiler:       clang version 14.0.0 (/usr/local/google/src/llvm-git-monorepo 2b554920f11c8b763cd9ed9003f4e19b919b8e1f), GNU ld (GNU Binutils for Debian) 2.35.2
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=163c52a5b00000
 
-ip xfrm state
-root@west:~#ip x s
-src 192.1.2.23 dst 192.1.2.45
-	proto esp spi 0xa7b76872 reqid 16389 mode tunnel
-	replay-window 32 flag icmp af-unspec
-
-Signed-off-by: Antony Antony <antony.antony@secunet.com>
----
- net/xfrm/xfrm_policy.c | 137 ++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 135 insertions(+), 2 deletions(-)
-
-diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
-index 9341298b2a70..8505c36413c7 100644
---- a/net/xfrm/xfrm_policy.c
-+++ b/net/xfrm/xfrm_policy.c
-@@ -29,6 +29,7 @@
- #include <linux/audit.h>
- #include <linux/rhashtable.h>
- #include <linux/if_tunnel.h>
-+#include <linux/icmp.h>
- #include <net/dst.h>
- #include <net/flow.h>
- #include <net/xfrm.h>
-@@ -3475,6 +3476,123 @@ static inline int secpath_has_nontransport(const struct sec_path *sp, int k, int
- 	return 0;
- }
-
-+static bool icmp_err_packet(const struct flowi *fl, unsigned short family)
-+{
-+	const struct flowi6 *fl6 = &fl->u.ip6;
-+	const struct flowi4 *fl4 = &fl->u.ip4;
-+
-+	if (family == AF_INET)
-+		if (fl4->flowi4_proto == IPPROTO_ICMP &&
-+		    (fl4->fl4_icmp_type == ICMP_DEST_UNREACH ||
-+		      fl4->fl4_icmp_type == ICMP_TIME_EXCEEDED))
-+			return false;
-+
-+#if IS_ENABLED(CONFIG_IPV6)
-+	if (fl6->flowi6_proto == IPPROTO_ICMPV6 &&
-+	    (fl6->fl6_icmp_type == ICMPV6_DEST_UNREACH ||
-+	      fl6->fl6_icmp_type == ICMPV6_TIME_EXCEED))
-+		return false;
-+#endif
-+	return true;
-+}
-+
-+static struct sk_buff *xfrm_icmp_flow_decode(struct sk_buff *skb,
-+					     unsigned short family,
-+					     struct flowi *fl,
-+					     struct flowi *fl1)
-+{
-+	struct net *net = dev_net(skb->dev);
-+	struct sk_buff *newskb = skb_clone(skb, GFP_ATOMIC);
-+
-+	if (!pskb_pull(newskb, (sizeof(struct iphdr) + sizeof(struct icmphdr))))
-+		return NULL;
-+	skb_reset_network_header(newskb);
-+
-+	if (xfrm_decode_session_reverse(newskb, fl1, family) < 0) {
-+		kfree_skb(newskb);
-+		XFRM_INC_STATS(net, LINUX_MIB_XFRMINHDRERROR);
-+		return NULL;
-+	}
-+
-+	/* inherit more from the old flow ???
-+	 * the inner skb may have these values different from outer skb
-+	 */
-+
-+	fl1->flowi_oif = fl->flowi_oif;
-+	fl1->flowi_mark = fl->flowi_mark;
-+	fl1->flowi_tos = fl->flowi_tos;
-+	nf_nat_decode_session(newskb, fl1, family);
-+
-+	return newskb;
-+}
-+
-+static bool xfrm_sa_icmp_flow(struct sk_buff *skb,
-+			      unsigned short family, const struct xfrm_selector *sel,
-+			      struct flowi *fl)
-+{
-+	bool ret = false;
-+
-+	if (!icmp_err_packet(fl, family)) {
-+		struct flowi fl1;
-+		struct sk_buff *newskb = xfrm_icmp_flow_decode(skb, family, fl, &fl1);
-+
-+		if (!newskb)
-+			return ret;
-+
-+		ret = xfrm_selector_match(sel, &fl1, family);
-+		kfree_skb(newskb);
-+	}
-+
-+	return ret;
-+}
-+
-+static inline
-+struct xfrm_policy *xfrm_in_fwd_icmp(struct sk_buff *skb, struct flowi *fl,
-+				     unsigned short family, u32 if_id)
-+{
-+	struct xfrm_policy *pol = NULL;
-+
-+	if (!icmp_err_packet(fl, family)) {
-+		struct flowi fl1;
-+		struct net *net = dev_net(skb->dev);
-+		struct sk_buff *newskb = xfrm_icmp_flow_decode(skb, family, fl, &fl1);
-+
-+		if (!newskb)
-+			return pol;
-+		pol = xfrm_policy_lookup(net, &fl1, family, XFRM_POLICY_FWD, if_id);
-+		kfree_skb(newskb);
-+	}
-+
-+	return pol;
-+}
-+
-+static inline
-+struct dst_entry *xfrm_out_fwd_icmp(struct sk_buff *skb, struct flowi *fl,
-+				    unsigned short family, struct dst_entry *dst)
-+{
-+	if (!icmp_err_packet(fl, family)) {
-+		struct net *net = dev_net(skb->dev);
-+		struct dst_entry *dst2;
-+		struct flowi fl1;
-+		struct sk_buff *newskb = xfrm_icmp_flow_decode(skb, family, fl, &fl1);
-+
-+		if (!newskb)
-+			return dst;
-+
-+		dst2 = xfrm_lookup(net, dst, &fl1, NULL, XFRM_LOOKUP_QUEUE);
-+
-+		kfree_skb(newskb);
-+
-+		if (IS_ERR(dst2))
-+			return dst;
-+
-+		if (dst2->xfrm)
-+			dst = dst2;
-+	}
-+
-+	return dst;
-+}
-+
- int __xfrm_policy_check(struct sock *sk, int dir, struct sk_buff *skb,
- 			unsigned short family)
- {
-@@ -3521,9 +3639,17 @@ int __xfrm_policy_check(struct sock *sk, int dir, struct sk_buff *skb,
-
- 		for (i = sp->len - 1; i >= 0; i--) {
- 			struct xfrm_state *x = sp->xvec[i];
-+			int ret = 0;
-+
- 			if (!xfrm_selector_match(&x->sel, &fl, family)) {
--				XFRM_INC_STATS(net, LINUX_MIB_XFRMINSTATEMISMATCH);
--				return 0;
-+				ret = true;
-+				if (x->props.flags & XFRM_STATE_ICMP &&
-+				    xfrm_sa_icmp_flow(skb, family, &x->sel, &fl))
-+					ret = false;
-+				if (ret) {
-+					XFRM_INC_STATS(net, LINUX_MIB_XFRMINSTATEMISMATCH);
-+					return 0;
-+				}
- 			}
- 		}
- 	}
-@@ -3546,6 +3672,9 @@ int __xfrm_policy_check(struct sock *sk, int dir, struct sk_buff *skb,
- 		return 0;
- 	}
-
-+	if (!pol && dir == XFRM_POLICY_FWD)
-+		pol = xfrm_in_fwd_icmp(skb, &fl, family, if_id);
-+
- 	if (!pol) {
- 		if (!xfrm_default_allow(net, dir)) {
- 			XFRM_INC_STATS(net, LINUX_MIB_XFRMINNOPOLS);
-@@ -3675,6 +3804,10 @@ int __xfrm_route_forward(struct sk_buff *skb, unsigned short family)
- 		res = 0;
- 		dst = NULL;
- 	}
-+
-+	if (dst && !dst->xfrm)
-+		dst = xfrm_out_fwd_icmp(skb, &fl, family, dst);
-+
- 	skb_dst_set(skb, dst);
- 	return res;
- }
---
-2.30.2
-
+Note: testing is done by a robot and is best-effort only.
