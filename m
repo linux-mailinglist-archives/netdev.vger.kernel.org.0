@@ -2,141 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E583C479F1B
-	for <lists+netdev@lfdr.de>; Sun, 19 Dec 2021 05:07:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 76482479EFB
+	for <lists+netdev@lfdr.de>; Sun, 19 Dec 2021 04:18:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235236AbhLSEHD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Dec 2021 23:07:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59488 "EHLO
+        id S232884AbhLSDS1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Dec 2021 22:18:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235231AbhLSEHD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Dec 2021 23:07:03 -0500
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51078C061574;
-        Sat, 18 Dec 2021 20:07:03 -0800 (PST)
-Received: by mail-pj1-x1033.google.com with SMTP id co15so6003804pjb.2;
-        Sat, 18 Dec 2021 20:07:03 -0800 (PST)
+        with ESMTP id S229710AbhLSDS0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Dec 2021 22:18:26 -0500
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6336C061574;
+        Sat, 18 Dec 2021 19:18:25 -0800 (PST)
+Received: by mail-pg1-x542.google.com with SMTP id g2so3457781pgo.9;
+        Sat, 18 Dec 2021 19:18:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=zre9SQkvE3qSf/HrwAKjDc8PrWTsuqt4cqMd+Uqk3EY=;
-        b=QAovIdj/SwLgKoStCx1kuud/1kxsjyOVXs1xNSMbVX9jB4NwQX30kJIt8b1DaJzAMQ
-         gXeBtGZRfKcc/hvyg42N3+jh40l5kg3rBfDZr/cdpEJgnYI309L2bZuiqKtecS2Uyjfe
-         hf1ZVKispDZynOue+kAjuHMoMCV8ZWV0IORqH04UEfISZwt0Y82iU2cXygUIlvVixHw0
-         X15+GGfXytLeKmRfEMHuJsZJ9eQvA7h8XeYv4vUSjjwh3gkGCatfNeLnccPd5jsI1W1V
-         nl+rmVdiPxcuxjlGhOqeSemiiJdrue1ri9BEFe+5u/Bw5/YYhLc2p/8pOt7JiCVoq082
-         HkIw==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=HgO/AnLTebkvZgBliOdVUV9xb0z/JsGE4nYCPR0M4co=;
+        b=RRm4bIi22UPgJ3SR1WkTNHCGRFnxCVcyHCIs3CzGR9JMwSP2W5LJW5uEStvEWSM7gJ
+         kmk2e/6nouGdWNsCEnyIP0eb2AP9SjKeMiz5Lpeot7uH7qvPoMMNbtB0qzYWuuo2cSfb
+         wp0JZ9rstGMnUwyFyfopXvdEJvW3Re3RerXoVwQQYE+uytCJF/pfQGDXMCczyr5Np2fp
+         NNwad6hZMtSZ69ElrLVUQEcLqEmtUlNwzWt8hTTX5LIe1O7V1oBE4B2AY02RyDf7VkA1
+         xWDnm/8ooPJ6H2AZOlIYlSp9G1TAgPzbijLaoZ0lm4fSJGakf2gXTlz4xQd2CSQKu0as
+         6gpg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=zre9SQkvE3qSf/HrwAKjDc8PrWTsuqt4cqMd+Uqk3EY=;
-        b=Ske96XcqfWeJXloMq9jE6mdcalB2fOifbw02Ilzrcc4gJahV3hFI7VIy7mAbOSCc/o
-         QP60E4wv0dxqF8fkpX3sfxvIh/4i5tWmrt5EDgLvY80yMSeFQrp7vIAeYMixDuBuPVNs
-         /f7kWh0+hmXNsimJDSekiyLnRn420EFfPX0Aoj2mE+sVYfK607suuNkkvTH4cb7APCR9
-         W9gjx7fCpIWl65qb+q5Hv912y970YdcE3wRGJiHTqONj4h82seIXW2tOq2Q2HcE1SGRd
-         UQqfZbntJZ59TtJYjhO5bLABhswFuyQ0/SQjxXp3RWLkxSNF/8Ahwkh77DVX5xd5Zl9Z
-         lcvQ==
-X-Gm-Message-State: AOAM531MN3gbBQx8/37nLSX1zFbOWD431tVWYrnLbFf6XAI1mzXLJw6/
-        QizAhOu3xGjLltSMSRMyAjE/apGzt7M=
-X-Google-Smtp-Source: ABdhPJwwoSXjNao6Cl3y7QHAUVgAKM6Zy1TwfDFPxgVbkszphIvvuvYp4tey/MOoUybJ2T2JidY4yQ==
-X-Received: by 2002:a17:90b:20b:: with SMTP id fy11mr14454878pjb.238.1639886822467;
-        Sat, 18 Dec 2021 20:07:02 -0800 (PST)
-Received: from 7YHHR73.igp.broadcom.net (c-71-198-249-153.hsd1.ca.comcast.net. [71.198.249.153])
-        by smtp.gmail.com with ESMTPSA id y32sm3691100pfa.92.2021.12.18.20.07.01
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=HgO/AnLTebkvZgBliOdVUV9xb0z/JsGE4nYCPR0M4co=;
+        b=XMK9LeMHN+XzO8IRJYgwFdgyjuBK8QqUNRltGlTPK/WSoeB/QxoGI7UYRAbg59Cp79
+         h5nG7lWh3qraFldIoUMQn1ylj04AGSXqtyOk/WtQtmzu6HP9K7/Ij+bgePWODclLMu7F
+         HRWWpMFMxkJ3UcF3gmZQlURHuAZJnUPB61GEV7NGa8EET8E/zkDad9jO4kpesB99FG79
+         pFgQQXjXFhtpWpfLGXRzmOWz9q1KW3sgxAmiRAN4SFhcBx7/vTIqlRdT6fQYxWGGrQZa
+         0/vbVeynkum21WBDyXS9tZK/FU4ooeJo0nqtgqOPgVDr7uCcxY2Xf61+tEvSvBYP7xsC
+         PYtg==
+X-Gm-Message-State: AOAM530LjX5a2QRC+3u4hJTTZEko8C9WK9WTh6+vGY1Um0sNGbILFkow
+        kb7bwXhEkmV+0bOT69bzixU=
+X-Google-Smtp-Source: ABdhPJzBCopHFF+t0D1Kn63jUmkExQ8IQhfPqfA+PPyBgKrtkDh/1GLhXV934BzvpjtVZkaakX1V3g==
+X-Received: by 2002:a63:6a83:: with SMTP id f125mr9253534pgc.340.1639883904716;
+        Sat, 18 Dec 2021 19:18:24 -0800 (PST)
+Received: from localhost ([2405:201:6014:d064:3d4e:6265:800c:dc84])
+        by smtp.gmail.com with ESMTPSA id d12sm14971705pfu.91.2021.12.18.19.18.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 18 Dec 2021 20:07:01 -0800 (PST)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     stable@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH stable 4.19] net: systemport: Add global locking for descriptor lifecycle
-Date:   Sat, 18 Dec 2021 18:49:25 -0800
-Message-Id: <20211219024925.18936-1-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Sat, 18 Dec 2021 19:18:24 -0800 (PST)
+Date:   Sun, 19 Dec 2021 08:48:22 +0530
+From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+Subject: Re: [PATCH bpf-next v4 06/10] bpf: Track provenance for pointers
+ formed from referenced PTR_TO_BTF_ID
+Message-ID: <20211219031822.k2bfjhgazvvy5r7l@apollo.legion>
+References: <20211217015031.1278167-1-memxor@gmail.com>
+ <20211217015031.1278167-7-memxor@gmail.com>
+ <20211219022839.kdms7k3jte5ajubt@ast-mbp>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211219022839.kdms7k3jte5ajubt@ast-mbp>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-commit 8b8e6e782456f1ce02a7ae914bbd5b1053f0b034 upstream
+On Sun, Dec 19, 2021 at 07:58:39AM IST, Alexei Starovoitov wrote:
+> On Fri, Dec 17, 2021 at 07:20:27AM +0530, Kumar Kartikeya Dwivedi wrote:
+> > diff --git a/include/linux/bpf_verifier.h b/include/linux/bpf_verifier.h
+> > index b80fe5bf2a02..a6ef11db6823 100644
+> > --- a/include/linux/bpf_verifier.h
+> > +++ b/include/linux/bpf_verifier.h
+> > @@ -128,6 +128,16 @@ struct bpf_reg_state {
+> >  	 * allowed and has the same effect as bpf_sk_release(sk).
+> >  	 */
+> >  	u32 ref_obj_id;
+> > +	/* This is set for pointers which are derived from referenced
+> > +	 * pointer (e.g. PTR_TO_BTF_ID pointer walking), so that the
+> > +	 * pointers obtained by walking referenced PTR_TO_BTF_ID
+> > +	 * are appropriately invalidated when the lifetime of their
+> > +	 * parent object ends.
+> > +	 *
+> > +	 * Only one of ref_obj_id and parent_ref_obj_id can be set,
+> > +	 * never both at once.
+> > +	 */
+> > +	u32 parent_ref_obj_id;
+>
+> How would it handle parent of parent?
 
-The descriptor list is a shared resource across all of the transmit queues, and
-the locking mechanism used today only protects concurrency across a given
-transmit queue between the transmit and reclaiming. This creates an opportunity
-for the SYSTEMPORT hardware to work on corrupted descriptors if we have
-multiple producers at once which is the case when using multiple transmit
-queues.
+When you do:
 
-This was particularly noticeable when using multiple flows/transmit queues and
-it showed up in interesting ways in that UDP packets would get a correct UDP
-header checksum being calculated over an incorrect packet length. Similarly TCP
-packets would get an equally correct checksum computed by the hardware over an
-incorrect packet length.
+r1 = acquire();
 
-The SYSTEMPORT hardware maintains an internal descriptor list that it re-arranges
-when the driver produces a new descriptor anytime it writes to the
-WRITE_PORT_{HI,LO} registers, there is however some delay in the hardware to
-re-organize its descriptors and it is possible that concurrent TX queues
-eventually break this internal allocation scheme to the point where the
-length/status part of the descriptor gets used for an incorrect data buffer.
+it gets ref_obj_id as N, then when you load r1->next, it does mark_btf_ld_reg
+with reg->ref_obj_id ?: reg->parent_ref_obj_id, the latter is zero so it copies
+ref, but into parent_ref_obj_id.
 
-The fix is to impose a global serialization for all TX queues in the short
-section where we are writing to the WRITE_PORT_{HI,LO} registers which solves
-the corruption even with multiple concurrent TX queues being used.
+r2 = r1->next;
 
-Fixes: 80105befdb4b ("net: systemport: add Broadcom SYSTEMPORT Ethernet MAC driver")
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-Link: https://lore.kernel.org/r/20211215202450.4086240-1-f.fainelli@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
- drivers/net/ethernet/broadcom/bcmsysport.c | 5 +++++
- drivers/net/ethernet/broadcom/bcmsysport.h | 1 +
- 2 files changed, 6 insertions(+)
+From here on, parent_ref_obj_id is propagated into all further mark_btf_ld_reg,
+so if we do since ref_obj_id will be zero from previous mark_btf_ld_reg:
 
-diff --git a/drivers/net/ethernet/broadcom/bcmsysport.c b/drivers/net/ethernet/broadcom/bcmsysport.c
-index 0c69becc3c17..b3fc8745b580 100644
---- a/drivers/net/ethernet/broadcom/bcmsysport.c
-+++ b/drivers/net/ethernet/broadcom/bcmsysport.c
-@@ -120,9 +120,13 @@ static inline void tdma_port_write_desc_addr(struct bcm_sysport_priv *priv,
- 					     struct dma_desc *desc,
- 					     unsigned int port)
- {
-+	unsigned long desc_flags;
-+
- 	/* Ports are latched, so write upper address first */
-+	spin_lock_irqsave(&priv->desc_lock, desc_flags);
- 	tdma_writel(priv, desc->addr_status_len, TDMA_WRITE_PORT_HI(port));
- 	tdma_writel(priv, desc->addr_lo, TDMA_WRITE_PORT_LO(port));
-+	spin_unlock_irqrestore(&priv->desc_lock, desc_flags);
- }
- 
- /* Ethtool operations */
-@@ -2003,6 +2007,7 @@ static int bcm_sysport_open(struct net_device *dev)
- 	}
- 
- 	/* Initialize both hardware and software ring */
-+	spin_lock_init(&priv->desc_lock);
- 	for (i = 0; i < dev->num_tx_queues; i++) {
- 		ret = bcm_sysport_init_tx_ring(priv, i);
- 		if (ret) {
-diff --git a/drivers/net/ethernet/broadcom/bcmsysport.h b/drivers/net/ethernet/broadcom/bcmsysport.h
-index 36e0adf5c9b8..f438b818136a 100644
---- a/drivers/net/ethernet/broadcom/bcmsysport.h
-+++ b/drivers/net/ethernet/broadcom/bcmsysport.h
-@@ -751,6 +751,7 @@ struct bcm_sysport_priv {
- 	int			wol_irq;
- 
- 	/* Transmit rings */
-+	spinlock_t		desc_lock;
- 	struct bcm_sysport_tx_ring *tx_rings;
- 
- 	/* Receive queue */
--- 
-2.25.1
+r3 = r2->next; // it will copy parent_ref_obj_id
 
+I think it even works fine when you reach it indirectly, like foo->bar->foo,
+if first foo is referenced.
+
+... but maybe I missed some detail, do you see a problem in this approach?
+
+> Did you consider map_uid approach ?
+> Similar uid can be added for PTR_TO_BTF_ID.
+> Then every such pointer will be unique. Each deref will get its own uid.
+
+I'll look into it, I didn't consider it before. My idea was to invalidate
+pointers obtained from a referenced ptr_to_btf_id so I copied the same
+ref_obj_id into parent_ref_obj_id, so that it can be matched during release. How
+would that work in the btf_uid approach if they are unique? Do we copy the same
+ref_obj_id into btf_uid? Then it's not very different except being btf_id ptr
+specific state, right?
+
+Or we can copy ref_obj_id and also set uid to disallow it from being released,
+but still allow invalidation.
+
+> I think the advantage of parent_ref_obj_id approach is that the program
+> can acquire a pointer through one kernel type, do some deref, and then
+> release it through a deref of other type. I'm not sure how practical is that
+> and it feels a bit dangerous.
+
+I think I don't allow releasing when ref_obj_id is 0 (which would be the case
+when parent_ref_obj_id is set), only indirectly invalidating them.
+
+--
+Kartikeya
