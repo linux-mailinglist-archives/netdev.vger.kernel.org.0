@@ -2,74 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 61C6A47A08C
-	for <lists+netdev@lfdr.de>; Sun, 19 Dec 2021 14:03:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AEC1347A0B0
+	for <lists+netdev@lfdr.de>; Sun, 19 Dec 2021 14:38:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235692AbhLSNCk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Dec 2021 08:02:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60582 "EHLO
+        id S233165AbhLSNdc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Dec 2021 08:33:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235685AbhLSNCk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Dec 2021 08:02:40 -0500
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6698BC061574
-        for <netdev@vger.kernel.org>; Sun, 19 Dec 2021 05:02:39 -0800 (PST)
-Received: by mail-lj1-x236.google.com with SMTP id bn20so11365613ljb.8
-        for <netdev@vger.kernel.org>; Sun, 19 Dec 2021 05:02:39 -0800 (PST)
+        with ESMTP id S232097AbhLSNdc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Dec 2021 08:33:32 -0500
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00F5BC061574
+        for <netdev@vger.kernel.org>; Sun, 19 Dec 2021 05:33:32 -0800 (PST)
+Received: by mail-ed1-x533.google.com with SMTP id z5so27512319edd.3
+        for <netdev@vger.kernel.org>; Sun, 19 Dec 2021 05:33:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=L77wWZOzoJ83FWnS0rTBXLliJsYhOTdAIZIl+/oApzA=;
-        b=JS4QTjtJowQPXELh6fJ5zlfpU4X8RtlXaX0gv0csJlyND3NnWqy1uj6ySSQt8L6fRw
-         yQu2PzMKUbqBmxxl5tauISgnt5vavPiodncHsLpm6ypvxFNuwmhiLU2/jcC+bOawhe6t
-         PgRW37dt+dA1oaWI0CcmKXd+342gIf6Ccnn1jF4yhmEPtbfOGXwlGv+QPuVHAF3Ogzmc
-         1M+77Uc14GIMUqmGqCyiSMAYfN/0beait08r66zxp++bw2g2qLtbSX9XDZIN7n6cohC5
-         hlcQkK99cS0mD9aZTTcRVVQ0yLYOZsBAaAgvV1pIqtyW43Kh0buaDqO08EDcKEz/9uON
-         Wx5A==
+        bh=/xMnYTGHs7880NudUsG0XYLoKx2VdOWv03euebLD3Go=;
+        b=kBRpgDHYNl4gaLHSGlIT4h8gUDN04ZliO5HM+1j2uUxvTs4K8G0eeiPOEUA8OdPZ6r
+         dr3Oz7wObJKDAT0jsIGQATUw5yUZdiMcFB56Gon+xxIAeDefIMIHB/U5AC0Yf09pNdHe
+         A7v+rhWwNFHZ8eRRxbmolT1FUSmnaE+CJqlnx6Sc3/GRpZeNfIQSBseXhqtEct+KZ57Y
+         wXxDxtjmQfvEXQWJEQ+ul0l7gtplDN6NZMDosm1OU0RrZ6f2LVM11cyT/9GRBv7pR5Gf
+         IzdQDcVlIfPJokFGcowINFS9s424NYsDdOFibdLjkeyEJrLTUY3dEhyHqvE1E/6tPXgF
+         EWGA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:reply-to:from:date:message-id
          :subject:to;
-        bh=L77wWZOzoJ83FWnS0rTBXLliJsYhOTdAIZIl+/oApzA=;
-        b=ujN5H0ADn+SXVKfPKEmGKjJHJLipRX9VTBZuAVcFd70XFgWyHQR5BN1B2oQFI/4oCz
-         MFnGJjBb7GFiXreUL48ed5EkDuocmV2AhjOBb9amfWc/JG9fadkh85iw25dU29vzai9v
-         vAU9wtJ7wea8SCLjjNCBcLAoTeKhQjHiKNpvH1D+ydQMo9GPKfuc6vuy1aGoXFsiFp0r
-         E0g4Qdd2GmDUYhZyrvslYVI0Qs7jj+u5B4un0/+k1ajTYLFn84IM5NMRZBe70okJuOxh
-         cTg0avDOuqSVzWZ/IF5oMy4+sQcZhn3yEgO98HjcdSzmIXseAf6RosT8tXW60CvY++uF
-         dpoQ==
-X-Gm-Message-State: AOAM533r8c8lKeIvEGIyIE2V0yZxDRF5qQuxltkc/N4fzIS6+KuTqHt0
-        IfD5JnzSpfKzemmP1e3fP6OPZo+wpAx7UNzKLbU=
-X-Google-Smtp-Source: ABdhPJyc+C1HpIGHP2CLDsSuKfSkgIiZkJOu9ralXaMf1mfokDPAJM76YTxOMTyRgxKiWtL991kocZt3AYbaqPkK6Yw=
-X-Received: by 2002:a2e:b88c:: with SMTP id r12mr10630807ljp.294.1639918957398;
- Sun, 19 Dec 2021 05:02:37 -0800 (PST)
+        bh=/xMnYTGHs7880NudUsG0XYLoKx2VdOWv03euebLD3Go=;
+        b=qX3Ten+ott2p/W1SXU0nZb81M7iYcmUVFY7JhCYIM6mRe4lFORJx7bS4E0xhQ81NHy
+         MIzTxhqMP9Wb9NwUO9kiIqr/Px+LkkLMQyXUX/R9ZXHJ86xRm3URBKmc8oHMXa9WbQLd
+         pUc/II/P9nWp4leks3zk2TOAQvNylLRXNbVS3BRrDSEHvAwBv9ogqt61dagFapbqcBMC
+         NlMKHEooR6/ySsP4wpbDrtV89vtclsN1r0K3YE0trTX9GElrC1g4DmGrSvJ5W59Kxzpo
+         CfJEMbyVyX6aaPkRFVfAq1PXttpGeZClbxUKF065OizqT82mAflAMzUWoqR9Y3mLy21m
+         qRdw==
+X-Gm-Message-State: AOAM533D5JeLzkvcz7wRmyyA5y+yhJn0QGFWFqgd2fAsVqVFUSsybA+s
+        AFIY6f8GNueK3u1clPzRoURdpBk1wdy3rLSYwmk=
+X-Google-Smtp-Source: ABdhPJzTSiB/I1tVEO3bZWiQBobsupu08iL8y/czxcQnzz0PViKLKWRbpOfQL5QchgfE2cblHkWMxqRTfPxk+i1mRCc=
+X-Received: by 2002:a17:906:e208:: with SMTP id gf8mr9755494ejb.11.1639920810564;
+ Sun, 19 Dec 2021 05:33:30 -0800 (PST)
 MIME-Version: 1.0
-Received: by 2002:a05:6520:801:b0:16c:c398:22f0 with HTTP; Sun, 19 Dec 2021
- 05:02:36 -0800 (PST)
-Reply-To: gabrieledgal47@gmail.com
-From:   Gabriel Edgal <mrsrosekofa@gmail.com>
-Date:   Sun, 19 Dec 2021 05:02:36 -0800
-Message-ID: <CAGw6ttW5JQSAwiaogOO-ZrBjX_1zAOBXzCUEjuSKciLLHroAkA@mail.gmail.com>
-Subject: 
+Received: by 2002:ab4:a324:0:0:0:0:0 with HTTP; Sun, 19 Dec 2021 05:33:30
+ -0800 (PST)
+Reply-To: mrsmercyadams07@gmail.com
+From:   Miss Auel Adeline <jessiedaniel375@gmail.com>
+Date:   Sun, 19 Dec 2021 14:33:30 +0100
+Message-ID: <CANj4tAOQvVF8aeO7+WVDAHqhBzgcwdG5Mx3Da3A9s6scgRy6pQ@mail.gmail.com>
+Subject: Can I confide in you?
 To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
-Dear friend.
-
-I'm Mr. Gabriel Edgal, I'm the chief internal auditor of Btci Bank, I have
-an abandoned fund $ 9.5 million dollars to transfer to you, as we shall
-parts 50:50. You will only stand as a relative of my deceased client as
-bears the same surname as you, the fund was deposited in our bank for
-many years back by my deceased client who died with his whole
-family in a car accident in 2010. I would like to invite you as a foreigner
-partner to stand as the next of kin of the deceased client, so that we
-will place a claim on the deposited fund and divide it between the two
-of
-us 50:50 each. I want you to answer me immediately for more information
-
-
-With best regards,
-Mr. Gabriel Edgal
+My name is: Miss Auel Adeline.
+I'm contacting you because I want to be your friend and confide in
+you. I have in my possession now 227 KG of Gold Bars, Quality: 23
+carat, 95%pure that I inherited from my late mother. I want you to buy
+or help me to find a buyer who can buy the gold at a better price than
+the African price so you can help me to invest the money in your
+country since I have no business idea. I want to leave Cote d'Ivoire
+and relocate to your country to continue my education in your country.
+I want you to stand by me as my tutor to sell this gold and for
+investment in your country.I will be waiting for your response.
+Miss Auel Adeline.
