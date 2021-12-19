@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 95BF5479EE9
-	for <lists+netdev@lfdr.de>; Sun, 19 Dec 2021 03:53:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 788DE479EEF
+	for <lists+netdev@lfdr.de>; Sun, 19 Dec 2021 04:01:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230319AbhLSCx5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Dec 2021 21:53:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43706 "EHLO
+        id S230348AbhLSDBc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Dec 2021 22:01:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229804AbhLSCx5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Dec 2021 21:53:57 -0500
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0607C061574;
-        Sat, 18 Dec 2021 18:53:56 -0800 (PST)
-Received: by mail-pj1-x1041.google.com with SMTP id rj2-20020a17090b3e8200b001b1944bad25so980565pjb.5;
-        Sat, 18 Dec 2021 18:53:56 -0800 (PST)
+        with ESMTP id S229804AbhLSDBb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Dec 2021 22:01:31 -0500
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C0E2C061574;
+        Sat, 18 Dec 2021 19:01:31 -0800 (PST)
+Received: by mail-pj1-x1044.google.com with SMTP id j6-20020a17090a588600b001a78a5ce46aso9485841pji.0;
+        Sat, 18 Dec 2021 19:01:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=gbrmeFBoFbrrn63omNp3qbJEqmTy+45r2+/WHgmZII0=;
-        b=QdNCn79QRPHzFBTgiiYochOEebVSr+CnKy7rQNdVMD8+YLaOJEbO5Opk6cyqqRvDRZ
-         wvSu37KX8fSdeHff2+msg6r59fOJQJQSsNUlOzPqChf3HkxIfpfcCLbXs6nkmDFLXAO6
-         15LWl9LNjJ+/xUWko3zDsDj6uFBo++CsmMkNJ2hXEddGCcHvK3bEeyLrNCFQ7yqdaC/L
-         bXi0ZgFvh8HTyWEIL1uGdPgk05YuhIAotSvR0584EXwxCNDKFM+zQzGSZ6FNYIYCKtaj
-         2EFoIWnTGPKTCFigpPpKK2vouqW0tJABD022vn/PjCHUOar8Tfe1Qx6H07A5RFyrUN4r
-         +20Q==
+        bh=fngRf2Md8koYZeb8D7KOm28z/NY6gvIrL1L5qAu1hDc=;
+        b=m7f+k+TgTgdHdFqqeo16zolcWGgIdr2Yd9oy38nbZH8e/uuQ0lsh/93EyBudOgUT7p
+         pfCBN6tnH0etdAGXQZmXJitKznEFAZKrSV0+fRBw7vhkL5L9tAzCKb5cX6jGEP+mcey6
+         +Of92tUuGGgt58D+v5IUXJgPkcUZb4o7DJTg7IJAnRGPK71ddHNh71l/WrKrYbJYgKXR
+         APak3XWHlrSDjPRiyFl1uGPqrjTYdUj16NTQ1tCKMFmuynBGYRG5aB+awd//3oyN9dpS
+         ScMlKefnvj2CbwEuEEqHrXVV8V0hppctAz607qCEMwFDW4BEH0mAxlgzndD/dw8mgBZM
+         cNsQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=gbrmeFBoFbrrn63omNp3qbJEqmTy+45r2+/WHgmZII0=;
-        b=I2Nb/NfGoRZnh+qN4Uiv0ekG0PLvyr01GSyPem2EvgT+YRQz1GEVB9QMDaO94OjZn8
-         fajJC3gjfUcwxvldDT8QTUcOBOcn8HKzWPUJfEKZcF6CDUHUUl7wX7dle8stIgS0PdFe
-         bHXrR6aIkMkfPjTxhceZLnLTcapxnslkLtQXCzEPAGmJV5hu9/xfvcRrjRi2r5iCcYSO
-         Tf94Tzhy17UwCq92Mz9Dzf8fKl7WmtC4senjKLqPJBjiATHit8HyJAwDMFPPfY/VplKg
-         jsxYhADeM7YDgB0uOWPbLYyQP8G5EBdwnoPmw3ILCuOx1vrjwJmqlAWGYWb3E8H+o/vG
-         +tqA==
-X-Gm-Message-State: AOAM532H8/BSbJf9wYR/cz7ryIdc5S8j+fNKvq88sUCxN+zCbIdN2/NY
-        6UR6lE9c0Ntcd8kOs2nuUc4=
-X-Google-Smtp-Source: ABdhPJzSnTvg2yG+PiK1ktDEMTWLhiL3N3cZuvlg32zMFftsuszCC0+oOG/R2Z6CRfHiH4MtrrgwSg==
-X-Received: by 2002:a17:90b:f0b:: with SMTP id br11mr8422927pjb.39.1639882436418;
-        Sat, 18 Dec 2021 18:53:56 -0800 (PST)
+        bh=fngRf2Md8koYZeb8D7KOm28z/NY6gvIrL1L5qAu1hDc=;
+        b=wHWNukTOmStXbuWDeo+MZlmXrrZQM2sXvuczeQ1cb7IfIwzIJtx8HgPG1bQJEpEaop
+         GyJVNgO6Ptzrei+ZeN9rFW1HwWd8tVCL76KE0XyBdyT8GDAuGWgf9hEMVkNtk7kv1VDO
+         2MaeZ0Hsvop3qONp2Yx8CHyw3FFVzoeSCkeZI+f/h0EEhcGXnL/MKZlWd1Brg//TVTls
+         hO23xuulWpS6ZrFmpBXHyyp34K1hKoVRwRl1WkOQMXc927oNHSPMZ0NWI2IYhiwh85j1
+         eiktvtkzd9Y1vo3zMG7fFc9fSfyATM3BpJ5RGJiTEMKXIf0LaS3RjrisffJI0JappRE1
+         NFGQ==
+X-Gm-Message-State: AOAM530aPGTfegZQRMS9HcnEfG5Y6OAxQk56r+FIjWGrieeyX6EMsktv
+        LsFg6KPG8ljyRswtxkiyVUs=
+X-Google-Smtp-Source: ABdhPJyjYg4T9Gs6+2xLWWK3QK5emmwhw+y70oO/N85uuh6dyYTVCllKwKA20Ci0e3CM2tRJ47vfvg==
+X-Received: by 2002:a17:90a:880a:: with SMTP id s10mr20505132pjn.214.1639882890621;
+        Sat, 18 Dec 2021 19:01:30 -0800 (PST)
 Received: from localhost ([2405:201:6014:d064:3d4e:6265:800c:dc84])
-        by smtp.gmail.com with ESMTPSA id np1sm18146680pjb.22.2021.12.18.18.53.55
+        by smtp.gmail.com with ESMTPSA id n22sm14088709pfu.2.2021.12.18.19.01.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 18 Dec 2021 18:53:55 -0800 (PST)
-Date:   Sun, 19 Dec 2021 08:23:53 +0530
+        Sat, 18 Dec 2021 19:01:30 -0800 (PST)
+Date:   Sun, 19 Dec 2021 08:31:28 +0530
 From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
 To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
 Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
@@ -63,43 +63,46 @@ Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
         Florian Westphal <fw@strlen.de>,
         Jesper Dangaard Brouer <brouer@redhat.com>,
         Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Subject: Re: [PATCH bpf-next v4 04/10] bpf: Introduce mem, size argument pair
- support for kfunc
-Message-ID: <20211219025353.57iaosx5zrjqjtuo@apollo.legion>
+Subject: Re: [PATCH bpf-next v4 05/10] bpf: Add reference tracking support to
+ kfunc
+Message-ID: <20211219030128.2s23lzhup6et4rsu@apollo.legion>
 References: <20211217015031.1278167-1-memxor@gmail.com>
- <20211217015031.1278167-5-memxor@gmail.com>
- <20211219021922.2jhnvuhcg4zzcp32@ast-mbp>
+ <20211217015031.1278167-6-memxor@gmail.com>
+ <20211219022248.6hqp64a4nbhyyxeh@ast-mbp>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211219021922.2jhnvuhcg4zzcp32@ast-mbp>
+In-Reply-To: <20211219022248.6hqp64a4nbhyyxeh@ast-mbp>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Dec 19, 2021 at 07:49:22AM IST, Alexei Starovoitov wrote:
-> On Fri, Dec 17, 2021 at 07:20:25AM +0530, Kumar Kartikeya Dwivedi wrote:
-> > +static bool is_kfunc_arg_mem_size(const struct btf *btf,
-> > +				  const struct btf_param *arg,
-> > +				  const struct bpf_reg_state *reg)
-> > +{
-> > +	const struct btf_type *t;
-> > +	const char *param_name;
-> > +
-> > +	t = btf_type_skip_modifiers(btf, arg->type, NULL);
-> > +	if (!btf_type_is_scalar(t) || reg->type != SCALAR_VALUE)
-> > +		return false;
-> > +
-> > +	/* In the future, this can be ported to use BTF tagging */
-> > +	param_name = btf_name_by_offset(btf, arg->name_off);
-> > +	if (strncmp(param_name, "len__", sizeof("len__") - 1))
-> > +		return false;
+On Sun, Dec 19, 2021 at 07:52:48AM IST, Alexei Starovoitov wrote:
+> On Fri, Dec 17, 2021 at 07:20:26AM +0530, Kumar Kartikeya Dwivedi wrote:
+> >
+> > diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> > index 965fffaf0308..015cb633838b 100644
+> > --- a/include/linux/bpf.h
+> > +++ b/include/linux/bpf.h
+> > @@ -521,6 +521,9 @@ struct bpf_verifier_ops {
+> >  				 enum bpf_access_type atype,
+> >  				 u32 *next_btf_id);
+> >  	bool (*check_kfunc_call)(u32 kfunc_btf_id, struct module *owner);
+> > +	bool (*is_acquire_kfunc)(u32 kfunc_btf_id, struct module *owner);
+> > +	bool (*is_release_kfunc)(u32 kfunc_btf_id, struct module *owner);
+> > +	bool (*is_kfunc_ret_type_null)(u32 kfunc_btf_id, struct module *owner);
 >
-> I like the feature and approach, but have a suggestion:
-> The "__sz" suffix would be shorter and more readable.
-> wdyt?
+> Same feedback as before...
+>
+> Those callbacks are not necessary.
+> The existing check_kfunc_call() is just as inconvenient.
+> When module's BTF comes in could you add it to mod's info instead of
+> introducing callbacks for every kind of data the module has.
+> Those callbacks don't server any purpose other than passing the particular
+> data set back. The verifier side should access those data sets directly.
 
-Sounds good, I'll change this in v5.
+Ok, interesting idea. So these then go into the ".modinfo" section? I think then
+we can also drop the check_kfunc_call callback?
 
 --
 Kartikeya
