@@ -2,56 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D2E3A479EFF
-	for <lists+netdev@lfdr.de>; Sun, 19 Dec 2021 04:21:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 39FBF479F09
+	for <lists+netdev@lfdr.de>; Sun, 19 Dec 2021 05:00:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235113AbhLSDVd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Dec 2021 22:21:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49802 "EHLO
+        id S235174AbhLSDyt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Dec 2021 22:54:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229710AbhLSDVc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Dec 2021 22:21:32 -0500
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88E29C061574;
-        Sat, 18 Dec 2021 19:21:32 -0800 (PST)
-Received: by mail-pf1-x442.google.com with SMTP id 8so5657795pfo.4;
-        Sat, 18 Dec 2021 19:21:32 -0800 (PST)
+        with ESMTP id S229710AbhLSDyt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Dec 2021 22:54:49 -0500
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFDF8C061574;
+        Sat, 18 Dec 2021 19:54:48 -0800 (PST)
+Received: by mail-pl1-x636.google.com with SMTP id m24so5283492pls.10;
+        Sat, 18 Dec 2021 19:54:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=EyEKJq5v/rbw5tDKJvy6J6L6dJJmf/6d66RygYQe82U=;
-        b=Lg4N8fKFKJBQ+/0yfepVLcpxpTERHqL3HeLDTKGqs6N7Yt9ANwm8iHlcYvU4eK9mL/
-         WC6O0QKx5Uku1NDyYSApgjzfjJ1F0MHPVMgqSdSGByEfzsbW7DtkMfQkP7c9LlSQ2idj
-         fePrPW38ktfK6wd/Piiy79mgDtVQ6Hm+bQrlFBBOav69gPetrLDyYlX677N5d72XeThf
-         0iL/5rxme5LkagQo/Av//5BjqSZgWvlY2JYpb8ljmQ4PSXlRvski5r8V3YUzApPHEIV/
-         T2M1lasrraaIOkBpbYF3Hgg9SRDCl/BEBrsEf+iRIh2ERpEzyqtBIOocvu5EEt6OGfNg
-         MDUw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Zqlb4HpmQNg7uqO0QG2AmsmTLWjY8JeQizPCAlzzm5s=;
+        b=ZV7l6aHmQ5QfFKn8mbk6Bh7lGwbc/l7bhuiV++d8H0hXEevINVECFmlacUy666K+zB
+         cMy8YcijQ+fdMqxCHvoEU1Y2/lE2JdXxXxJZCbJUQ0PLEzVxKlHKimY2SyQToOlyvpE3
+         EIAdzkdKXSUekodbbtwHQDyQD+GRqpZPhLxFK5HIzJArXdhrj/TKgoNIWLpGZySIbP2v
+         ME/BnVbLJOHpiHlZbBdkAXhCyiiyoifC2N0NBOPXBjq/phIpIKfH2Y/tbTJx0wcw7jUX
+         lNRb2WSZnHeL6zTMxluhwJd+6iP3No27SbHaMEmnr5rpL74y0eNJLMnS5BY4hM2l5Odo
+         2FWQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=EyEKJq5v/rbw5tDKJvy6J6L6dJJmf/6d66RygYQe82U=;
-        b=LFSKPZL2m+ZQYcrv5NJyClYqiOhYg82P+Cm98GCivQUID2kLXKGPJvpFaOZxQkuyVU
-         DdlYl3BZv0cZm9RVCmZpqDaPLw1ZrW+OUKR5dHqb+GiDzSXqJQS6d7uebcpqMTLIuf6Q
-         PhNC4AgyfrOa8piQkf+nmwRav6QJyaIQMl/cAvi1KDmXATLGlpIvdIDVmp+8HQjXGMBD
-         4uZkrsbKytwGbIxnLOe42bzyKiA0ULw16wbJHTixtOCsReuAmuu/f2WZulZOkcuxqEB6
-         cmaE8aiSK/0Rbg4YhSt1XZB973dIUt4MKvPAV6elwog+4NeZ5Aio8Di9zOO20MTS4Ebl
-         IJCg==
-X-Gm-Message-State: AOAM533cgQdWG619uehgLWc8W4hGB9pylbzPnjntRylTJd1uO0EHCToB
-        pDDe86+11QOAdpNPqpQcBg8=
-X-Google-Smtp-Source: ABdhPJwv6+Kr7Z5H7DzdolpaJkhO3R/u0l2X1l7+S8hqyW/26xkWhi28E2lQP5lSG2r4o7+ZDVsRZQ==
-X-Received: by 2002:a63:6806:: with SMTP id d6mr9428367pgc.68.1639884092092;
-        Sat, 18 Dec 2021 19:21:32 -0800 (PST)
-Received: from localhost ([2405:201:6014:d064:3d4e:6265:800c:dc84])
-        by smtp.gmail.com with ESMTPSA id s30sm12962574pfw.57.2021.12.18.19.21.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 18 Dec 2021 19:21:31 -0800 (PST)
-Date:   Sun, 19 Dec 2021 08:51:29 +0530
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org,
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Zqlb4HpmQNg7uqO0QG2AmsmTLWjY8JeQizPCAlzzm5s=;
+        b=Qo3cuqBm1aTyLPtb5ft6f2zJ295z/BpN70aiRq9bCqALP4KwUE5Fv5XR/wRbbX3cKy
+         1xBWOG/TzDdJOvWKuL3JcENA7KFXhK4jpfXNYIzOzJU2zPjQsZwYeTnG+imOAtaMzPdE
+         2NzH4qYtAjONadZ23RwDXsmWlADx4XPWeQvN8gpHGQc2Ri0+Egyo4DeaZK/Ga4MZsH//
+         J1d4IvrOXhSQtG/asHNW1qBWAB1GMZZiISyMYqmoPwdkOiT/Szmv09jtXhK0R5e2uUx8
+         oBuHCjtXo8sUSFKzplf5ALzgBl3zmZvW7rdAibIH6XmdR4YUgS8WhR7xkTBrwNRjO1Fm
+         0thA==
+X-Gm-Message-State: AOAM530KAaj0OeH3ygmRm2Vq0X8R6ikUIo6P3CW812Tp3xPB6UvSli2X
+        j3kl4d14E3BIyspvYGqZMRoah1ExEPeKxQYD5lg=
+X-Google-Smtp-Source: ABdhPJyyhgaUN0Iw4t+qnvoOVxmpJHckkv9SAP/ItVHoXI6gFHEOMImlmQY7eu/PC5VSmArz38d3p0+6zg4DpRfv+GU=
+X-Received: by 2002:a17:90b:798:: with SMTP id l24mr20744114pjz.122.1639886088327;
+ Sat, 18 Dec 2021 19:54:48 -0800 (PST)
+MIME-Version: 1.0
+References: <20211217015031.1278167-1-memxor@gmail.com> <20211217015031.1278167-6-memxor@gmail.com>
+ <20211219022248.6hqp64a4nbhyyxeh@ast-mbp> <20211219030128.2s23lzhup6et4rsu@apollo.legion>
+In-Reply-To: <20211219030128.2s23lzhup6et4rsu@apollo.legion>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Sat, 18 Dec 2021 19:54:37 -0800
+Message-ID: <CAADnVQLz_JK6=6V=iVpT2BQKcKCSvOmJy6-KbTdMnbxBKu0EAg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v4 05/10] bpf: Add reference tracking support to kfunc
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        netfilter-devel <netfilter-devel@vger.kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
@@ -62,60 +65,51 @@ Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
         Pablo Neira Ayuso <pablo@netfilter.org>,
         Florian Westphal <fw@strlen.de>,
         Jesper Dangaard Brouer <brouer@redhat.com>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Subject: Re: [PATCH bpf-next v4 03/10] bpf: Extend kfunc with PTR_TO_CTX,
- PTR_TO_MEM argument support
-Message-ID: <20211219032129.e6sv73ycalnuvabv@apollo.legion>
-References: <20211217015031.1278167-1-memxor@gmail.com>
- <20211217015031.1278167-4-memxor@gmail.com>
- <20211219021722.yf4cnmar33lrpcje@ast-mbp>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211219021722.yf4cnmar33lrpcje@ast-mbp>
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Dec 19, 2021 at 07:47:22AM IST, Alexei Starovoitov wrote:
-> On Fri, Dec 17, 2021 at 07:20:24AM +0530, Kumar Kartikeya Dwivedi wrote:
+On Sat, Dec 18, 2021 at 7:01 PM Kumar Kartikeya Dwivedi
+<memxor@gmail.com> wrote:
+>
+> On Sun, Dec 19, 2021 at 07:52:48AM IST, Alexei Starovoitov wrote:
+> > On Fri, Dec 17, 2021 at 07:20:26AM +0530, Kumar Kartikeya Dwivedi wrote:
+> > >
+> > > diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> > > index 965fffaf0308..015cb633838b 100644
+> > > --- a/include/linux/bpf.h
+> > > +++ b/include/linux/bpf.h
+> > > @@ -521,6 +521,9 @@ struct bpf_verifier_ops {
+> > >                              enum bpf_access_type atype,
+> > >                              u32 *next_btf_id);
+> > >     bool (*check_kfunc_call)(u32 kfunc_btf_id, struct module *owner);
+> > > +   bool (*is_acquire_kfunc)(u32 kfunc_btf_id, struct module *owner);
+> > > +   bool (*is_release_kfunc)(u32 kfunc_btf_id, struct module *owner);
+> > > +   bool (*is_kfunc_ret_type_null)(u32 kfunc_btf_id, struct module *owner);
 > >
-> > +/* Returns true if struct is composed of scalars, 4 levels of nesting allowed */
-> > +static bool __btf_type_is_scalar_struct(struct bpf_verifier_log *log,
-> > +					const struct btf *btf,
-> > +					const struct btf_type *t, int rec)
-> > +{
-> > +	const struct btf_type *member_type;
-> > +	const struct btf_member *member;
-> > +	u16 i;
-> > +
-> > +	if (rec == 4) {
-> > +		bpf_log(log, "max struct nesting depth 4 exceeded\n");
-> > +		return false;
-> > +	}
+> > Same feedback as before...
+> >
+> > Those callbacks are not necessary.
+> > The existing check_kfunc_call() is just as inconvenient.
+> > When module's BTF comes in could you add it to mod's info instead of
+> > introducing callbacks for every kind of data the module has.
+> > Those callbacks don't server any purpose other than passing the particular
+> > data set back. The verifier side should access those data sets directly.
 >
-> As Matteo found out that saves stack with gcc only,
-> so I moved this check few lines below, just before recursive call.
->
-> > +			if (is_kfunc) {
-> > +				/* Permit pointer to mem, but only when argument
-> > +				 * type is pointer to scalar, or struct composed
-> > +				 * (recursively) of scalars.
-> > +				 */
-> > +				if (!btf_type_is_scalar(ref_t) && !__btf_type_is_scalar_struct(log, btf, ref_t, 0)) {
->
-> ... and reformatted this line to fit screen width.
->
-> ... and applied.
->
+> Ok, interesting idea. So these then go into the ".modinfo" section?
 
-Thanks.
+It doesn't need to be a special section.
+The btf_module_notify() parses BTF.
+At the same time it can add a kfunc whitelist to "struct module".
+The btf_ids[ACQUIRE/RELEASE][] arrays will be a part of
+the "struct module" too.
+If we can do a btf name convention then this job can be
+performed generically by btf_module_notify().
+Otherwise __init of the module can populate arrays in "struct module".
 
-> Please add individual selftest for this feature
-> (not tied into refcnted kfuncs and CT).
+> I think then
+> we can also drop the check_kfunc_call callback?
 
-Ok, I'll add more in v5, but the second one in calls.c in patch 10/10 does check
-it.
-
---
-Kartikeya
+Right. Would be great to remove that callback too.
