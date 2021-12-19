@@ -2,113 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D656747A0EF
-	for <lists+netdev@lfdr.de>; Sun, 19 Dec 2021 15:30:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 040F147A0F7
+	for <lists+netdev@lfdr.de>; Sun, 19 Dec 2021 15:33:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234849AbhLSOaO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Dec 2021 09:30:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51344 "EHLO
+        id S233109AbhLSOdh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Dec 2021 09:33:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230483AbhLSOaO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Dec 2021 09:30:14 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC8D0C061574;
-        Sun, 19 Dec 2021 06:30:13 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6B01060EB1;
-        Sun, 19 Dec 2021 14:30:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id B3EB1C36AE7;
-        Sun, 19 Dec 2021 14:30:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1639924212;
-        bh=Qny2sjQySbXk3dQjRlY8kV/10SyC62AaBUtkCv1exiU=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=rvhGQP2wNzSqYZj61e17VQn0J14Tq2dhga/DF3aiR6CwakL87MbsZEnV114gkM4xX
-         7anmzEBG/avsJLiC+gzG5wkKg02Bh39KpR7Cb2gZSlFOcSgJzmoyJvh4+/1vh+EVzl
-         gTnceXFKYDdTZ9fgEmVZFzxT5/P+BG4C3XUH4c3K7teGtMLpKuwK8KdbGtH6uZNYt2
-         NgczK9cJ8p3uj0lS+SbptixcDNq87u+TqSEBDjnDxM+lnz6lS9bV+EOATZYi70nMaf
-         kyC3tE9v1I1OgxlueKmMdElemxi4ryeqR2lrLx4sahRJGn+oLOZzIpUo29sdbOZ4sH
-         fQ6nmNeQVVFZg==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 9818060A9C;
-        Sun, 19 Dec 2021 14:30:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S230483AbhLSOdg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Dec 2021 09:33:36 -0500
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4BA9C061574;
+        Sun, 19 Dec 2021 06:33:36 -0800 (PST)
+Received: by mail-pj1-x102b.google.com with SMTP id rj2-20020a17090b3e8200b001b1944bad25so1943768pjb.5;
+        Sun, 19 Dec 2021 06:33:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bloZrCVqRUO0XWlsx8uFnJ5nfLTUAStdw+Bdzqr4Jpc=;
+        b=UR5JnfdwwpPad1keUL5xoiEe6qqpen8up2zUM/X0o/X3P3EwTuE1rgjQ0omqeQGzEk
+         aJDuPUiYK9h+hBZTVYu52/vyM8qE/gGz4xRhqCZODBiJqBXcJvs56FORs39AjAUNcdIZ
+         VO5dJDf/WEBUSfhCVpTp5WSZseN8yHCPz8pbDX8N6FihCTMDux5wmwTM15Ju/Hhgis66
+         JV/tKeL9RK5pXXu5BgdUWhuIjnPAJTjWU25uBDClSNbivldPcqwltKhMTwNa/hvdPX0q
+         KT+t4WbjFKpruPMnJh5X/2nULvJ7iJt4TNoepVpYsBZAlkaOia8MtRDAxLCMC21wXHPD
+         4qkg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bloZrCVqRUO0XWlsx8uFnJ5nfLTUAStdw+Bdzqr4Jpc=;
+        b=UWyZosltAd+fJvteIDsGmfGX/p6AYNngbHyZ4/qbkur9smw9L7GdqiWIz5a2HnI9RR
+         0g9yywFwglhkR6yXYx4Er4ZcmyYOs3DqAidpGArZvQNTtNkqVKEwLdFpFmTA+25SLW8F
+         vmmlN1hwwbFL41BZ7Kjkn9fdzSkgsWXszq+dR8nJPnaUbAE9XCvKATS1izGWko/GP81s
+         tUuJP+INv8B5h7tX17uPqqCEICY1rSG3yuZy5Z4RhLs7GgM4f7ZAxmejrTERWWU8l22c
+         1NWKK+63tZyognq4v3+lk6TMMlQEe09IponQBQzd0VqEdzUbCc0WW99AUc9TLZjWP+Xs
+         8XkA==
+X-Gm-Message-State: AOAM530+NFR5KBgq46nYBc6SgRwwhz3hPjcgnjA87964yJpPX5XmDpre
+        JnhTnkkF+qJjlpeKi/owtrRB3QOQbXMscw==
+X-Google-Smtp-Source: ABdhPJwanfxQfrGAVBEW1EKHePDcIFZS+W6lVDgWbZYKuwxwPvkB0jPn9e6KFijI5bYYFL8yp1LdUw==
+X-Received: by 2002:a17:902:bd94:b0:148:8b76:71e3 with SMTP id q20-20020a170902bd9400b001488b7671e3mr12281233pls.56.1639924415095;
+        Sun, 19 Dec 2021 06:33:35 -0800 (PST)
+Received: from ubuntu.. ([103.115.202.103])
+        by smtp.gmail.com with ESMTPSA id j7sm15690625pfu.164.2021.12.19.06.33.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 19 Dec 2021 06:33:34 -0800 (PST)
+From:   Rohit Chavan <roheetchavan@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Rohit Chavan <roheetchavan@gmail.com>
+Subject: [PATCH] staging: net: Fixing style problems suggested by checkpatch
+Date:   Sun, 19 Dec 2021 20:02:35 +0530
+Message-Id: <20211219143235.15995-1-roheetchavan@gmail.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v8 net-next 00/13] allow user to offload tc action to net
- device
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <163992421261.25478.13959206033604654129.git-patchwork-notify@kernel.org>
-Date:   Sun, 19 Dec 2021 14:30:12 +0000
-References: <20211217181629.28081-1-simon.horman@corigine.com>
-In-Reply-To: <20211217181629.28081-1-simon.horman@corigine.com>
-To:     Simon Horman <simon.horman@corigine.com>
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        alexandre.belloni@bootlin.com, andrew@lunn.ch,
-        claudiu.manoil@nxp.com, xiyou.wangcong@gmail.com,
-        f.fainelli@gmail.com, idosch@nvidia.com, jhs@mojatatu.com,
-        jiri@resnulli.us, leon@kernel.org, michael.chan@broadcom.com,
-        ozsh@nvidia.com, petrm@nvidia.com, roid@nvidia.com,
-        saeedm@nvidia.com, vivien.didelot@gmail.com, vladbu@nvidia.com,
-        vladimir.oltean@nxp.com, baowen.zheng@corigine.com,
-        louis.peens@corigine.com, UNGLinuxDriver@microchip.com,
-        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
-        netdev@vger.kernel.org, oss-drivers@corigine.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Signed-off-by: Rohit Chavan <roheetchavan@gmail.com>
+---
+ drivers/net/macvtap.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Fri, 17 Dec 2021 19:16:16 +0100 you wrote:
-> Baowen Zheng says:
-> 
-> Allow use of flow_indr_dev_register/flow_indr_dev_setup_offload to offload
-> tc actions independent of flows.
-> 
-> The motivation for this work is to prepare for using TC police action
-> instances to provide hardware offload of OVS metering feature - which calls
-> for policers that may be used by multiple flows and whose lifecycle is
-> independent of any flows that use them.
-> 
-> [...]
-
-Here is the summary with links:
-  - [v8,net-next,01/13] flow_offload: fill flags to action structure
-    https://git.kernel.org/netdev/net-next/c/40bd094d65fc
-  - [v8,net-next,02/13] flow_offload: reject to offload tc actions in offload drivers
-    https://git.kernel.org/netdev/net-next/c/144d4c9e800d
-  - [v8,net-next,03/13] flow_offload: add index to flow_action_entry structure
-    https://git.kernel.org/netdev/net-next/c/5a9959008fb6
-  - [v8,net-next,04/13] flow_offload: rename offload functions with offload instead of flow
-    https://git.kernel.org/netdev/net-next/c/9c1c0e124ca2
-  - [v8,net-next,05/13] flow_offload: add ops to tc_action_ops for flow action setup
-    https://git.kernel.org/netdev/net-next/c/c54e1d920f04
-  - [v8,net-next,06/13] flow_offload: allow user to offload tc action to net device
-    https://git.kernel.org/netdev/net-next/c/8cbfe939abe9
-  - [v8,net-next,07/13] flow_offload: add skip_hw and skip_sw to control if offload the action
-    https://git.kernel.org/netdev/net-next/c/7adc57651211
-  - [v8,net-next,08/13] flow_offload: rename exts stats update functions with hw
-    https://git.kernel.org/netdev/net-next/c/bcd64368584b
-  - [v8,net-next,09/13] flow_offload: add process to update action stats from hardware
-    https://git.kernel.org/netdev/net-next/c/c7a66f8d8a94
-  - [v8,net-next,10/13] net: sched: save full flags for tc action
-    https://git.kernel.org/netdev/net-next/c/e8cb5bcf6ed6
-  - [v8,net-next,11/13] flow_offload: add reoffload process to update hw_count
-    https://git.kernel.org/netdev/net-next/c/13926d19a11e
-  - [v8,net-next,12/13] flow_offload: validate flags of filter and actions
-    https://git.kernel.org/netdev/net-next/c/c86e0209dc77
-  - [v8,net-next,13/13] selftests: tc-testing: add action offload selftest for action and filter
-    https://git.kernel.org/netdev/net-next/c/eb473bac4a4b
-
-You are awesome, thank you!
+diff --git a/drivers/net/macvtap.c b/drivers/net/macvtap.c
+index 6b12902a803f..4e39792703a5 100644
+--- a/drivers/net/macvtap.c
++++ b/drivers/net/macvtap.c
+@@ -30,14 +30,13 @@ struct macvtap_dev {
+ 	struct tap_dev    tap;
+ };
+ 
+-/*
+- * Variables for dealing with macvtaps device numbers.
+- */
++/* Variables for dealing with macvtaps device numbers. */
+ static dev_t macvtap_major;
+ 
+ static const void *macvtap_net_namespace(struct device *d)
+ {
+ 	struct net_device *dev = to_net_dev(d->parent);
++
+ 	return dev_net(dev);
+ }
+ 
+@@ -47,6 +46,7 @@ static struct class macvtap_class = {
+ 	.ns_type = &net_ns_type_operations,
+ 	.namespace = macvtap_net_namespace,
+ };
++
+ static struct cdev macvtap_cdev;
+ 
+ #define TUN_OFFLOADS (NETIF_F_HW_CSUM | NETIF_F_TSO_ECN | NETIF_F_TSO | \
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.32.0
 
