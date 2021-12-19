@@ -2,115 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ABC4F47A2EA
-	for <lists+netdev@lfdr.de>; Sun, 19 Dec 2021 23:52:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C4DD47A2F6
+	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 00:02:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233716AbhLSWwZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Dec 2021 17:52:25 -0500
-Received: from mail-il1-f197.google.com ([209.85.166.197]:33558 "EHLO
-        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232114AbhLSWwY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Dec 2021 17:52:24 -0500
-Received: by mail-il1-f197.google.com with SMTP id w1-20020a056e021a6100b0029f42663adcso4094257ilv.0
-        for <netdev@vger.kernel.org>; Sun, 19 Dec 2021 14:52:24 -0800 (PST)
+        id S233734AbhLSXCZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Dec 2021 18:02:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49704 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233800AbhLSXCZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Dec 2021 18:02:25 -0500
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B65FC061746
+        for <netdev@vger.kernel.org>; Sun, 19 Dec 2021 15:02:24 -0800 (PST)
+Received: by mail-lf1-x12d.google.com with SMTP id k37so17701681lfv.3
+        for <netdev@vger.kernel.org>; Sun, 19 Dec 2021 15:02:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:sender:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=ZKJThcZfaOfQNEh7LqpI6ONZNtq+9AM3QGtSLIPGs8Y=;
+        b=qPnmjMZU3a9aRibOE+faf/O2QEKEOS1QoWq4yiAzIhyEaFc+YUMbK0L/XSzg0a0T11
+         i23nFeDb4Jp6/hruC90etUWQZuhLtf5IZXinIQ+kj+B2QiNU4ED6YcQsYkut2fpJMBsC
+         endnCWdQL+gJviiKMnKqiyZlTdRoY18omJiKyIIDdABnOPGNB/4VcduSI0301BLBZd00
+         oCEVF3eyzGQ6m9KfPGq/DBM1pbJF7PkLejqyKm8nHYuE1iy5s7Am/j++uA9n7glOvsc3
+         H93MyCsNkGqUiSfluV7TBYfN3s5kHa/Honj8avEhW6R6jVScbRBszKphD0eEElpiRHbE
+         sKiQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=4NH3sBvIMAeiYgbo5czpybq8fYvHsvr6r3AhzTfYRso=;
-        b=os8+FYdcWEM1kq2whuePWQjQUPgAZrnz/ydB1T6erjihYHB5zUyT91kyvcC5oWrKDp
-         2IEiL6M7O+wTVG2u806ud8kM9NjdPGU4bumi4LBFDmMmwCei9JwpPm+cx6tGAUPqFBle
-         o/uJ+ehzvY+fMevRVN9c7YyQNu4Z4kXuZOOewyj5fcaQ8jzfJCBC8m5CTTUraOfALjTC
-         GUYCM4VtRqQxCwJ612UQhyx0plFwkUgARbsZS6hdt93R85hqLPNf4B0DX65w2REqWNVw
-         LoX7XCCvnh5Upf1BVdoU5XTZoxYIROWLy3sBjdLHEC4xJhN/CKobsG2i7RjIvNsdyrKH
-         l7eQ==
-X-Gm-Message-State: AOAM530M7dJFZcp/zuGlFQTJv0uUjglOV9MTLKr2BBQ08UDxOQHTTHNP
-        cEqDQyARjn3JoragVcSenH18lklDmO76/iTIqPAAvpNhjfJx
-X-Google-Smtp-Source: ABdhPJx1aFF225Ckr+pUNw29VIPf9G58O7H8TvhDS4oWG+sCvyVO5St3aZsvQIOIf0wRZNwI4Yuo4eF5U1SnOf3jIAldddwHLIzJ
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to:content-transfer-encoding;
+        bh=ZKJThcZfaOfQNEh7LqpI6ONZNtq+9AM3QGtSLIPGs8Y=;
+        b=O+7/vrgN5Sl6PsX/wRiJhnKv19arinbrXZ8c79iOEg8VqEwUr/CpxhZlTDOFZ26yup
+         LK2Gr3Gm6y1VzOvJ/25hROsaXOTt2CeYe8TX2DXFqpY8GzxOYDGo5yg46ruU8io+syt/
+         06+zlEJvGqhZhGKpiHYVfwERvkTA0EM19CWI7qKEp73qPA3PqzNpN9jOTIlFFmVJvOwR
+         k18LjHkKyoz4ZQl8ZijlO8++2tXsDDcxmx4QbIeBU7hYAI0KjPpwX6wFngHdWl0l1Udf
+         CKxM4e31Z3AD9+hWkoe7dfFPfBdkwrvj78WzBH3oQz8yUF4Pa0OjSGkpxHSHMxT0Zbk2
+         kWaA==
+X-Gm-Message-State: AOAM532BZ208Z06ed+QXc9+VMlX9GSCN6+LlgP8OBOnvsuDLnC6dyzJA
+        JEl9InlFi698kJVgbanJA/uOHXvFM7QVnakO0X8=
+X-Google-Smtp-Source: ABdhPJzHrp8jnN7tONw/mNTpH1bVu/kZX2pkZzjVCTLhzxGme/JEWP+m+v+stBDgDbPEWJG/kXGblCu742QcwvxvrDU=
+X-Received: by 2002:a19:6a15:: with SMTP id u21mr10475741lfu.344.1639954942416;
+ Sun, 19 Dec 2021 15:02:22 -0800 (PST)
 MIME-Version: 1.0
-X-Received: by 2002:a02:c72e:: with SMTP id h14mr3969671jao.103.1639954344245;
- Sun, 19 Dec 2021 14:52:24 -0800 (PST)
-Date:   Sun, 19 Dec 2021 14:52:24 -0800
-In-Reply-To: <0000000000005fb57e05d1620da1@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000230b0d05d387a02f@google.com>
-Subject: Re: [syzbot] KMSAN: uninit-value in ax88772a_hw_reset
-From:   syzbot <syzbot+8d179821571093c5f928@syzkaller.appspotmail.com>
-To:     andrew@lunn.ch, davem@davemloft.net, glider@google.com,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux@rempel-privat.de,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Sender: dr.aishagaddafi2010@gmail.com
+Received: by 2002:ac2:51b8:0:0:0:0:0 with HTTP; Sun, 19 Dec 2021 15:02:21
+ -0800 (PST)
+From:   "MRS. Maya Olivia" <mrs.mayaolivia@gmail.com>
+Date:   Sun, 19 Dec 2021 23:02:21 +0000
+X-Google-Sender-Auth: WQeRuMZUFWMtalc4FiC27JC3xNY
+Message-ID: <CAEb-E0shNKzY_BZazcwr3GcLaScFGXEhc+1+CXtdaukHqx8P+A@mail.gmail.com>
+Subject: Hello My Dear friend.
+To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following issue on:
+Hello My Dear friend.
 
-HEAD commit:    b0a8b5053e8b kmsan: core: add dependency on DEBUG_KERNEL
-git tree:       https://github.com/google/kmsan.git master
-console output: https://syzkaller.appspot.com/x/log.txt?x=14ad9c43b00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=46a956fc7a887c60
-dashboard link: https://syzkaller.appspot.com/bug?extid=8d179821571093c5f928
-compiler:       clang version 14.0.0 (/usr/local/google/src/llvm-git-monorepo 2b554920f11c8b763cd9ed9003f4e19b919b8e1f), GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=101553cbb00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10187949b00000
+I am Mrs. Maya Oliver, from Norway
+. Firstly, I am married to Mr. Patrick Oliver, A diamond and gold
+merchant who owns a small gold Mine in Burkina Faso and Egypt Cairo;
+He died of Cardiovascular Disease in mid-March 2011. During his
+lifetime he deposited the sum of =E2=82=AC 18.5 Million Euro) Eighteen
+million, Five hundred thousand Euros in a bank in Ouagadougou the
+capital city of Burkina Faso. The deposited money was from the sale of
+the shares, death benefits payment and entitlements of my deceased
+husband by his company.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+8d179821571093c5f928@syzkaller.appspotmail.com
+Since his death I decided not to remarry, When my late husband was
+Alive he deposited the sum of =E2=82=AC 8.5 Million Euro) Eight million, Fi=
+ve hundred
+thousand Euro) in a bank in Burkina Faso, Presently this money is
+still in bank. And My Doctor told me that I don't have much time to
+live because of the cancer problem,
 
-asix 1-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0016: -71
-asix 1-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-asix 1-1:0.0 (unnamed net_device) (uninitialized): Failed to enable hardware MII access
-=====================================================
-BUG: KMSAN: uninit-value in ax88772a_hw_reset+0xc55/0x12e0 drivers/net/usb/asix_devices.c:523 drivers/net/usb/asix_devices.c:523
- ax88772a_hw_reset+0xc55/0x12e0 drivers/net/usb/asix_devices.c:523 drivers/net/usb/asix_devices.c:523
- ax88772_bind+0x750/0x1770 drivers/net/usb/asix_devices.c:762 drivers/net/usb/asix_devices.c:762
- usbnet_probe+0x1284/0x4140 drivers/net/usb/usbnet.c:1747 drivers/net/usb/usbnet.c:1747
- usb_probe_interface+0xf19/0x1600 drivers/usb/core/driver.c:396 drivers/usb/core/driver.c:396
- really_probe+0x67d/0x1510 drivers/base/dd.c:596 drivers/base/dd.c:596
- __driver_probe_device+0x3e9/0x530 drivers/base/dd.c:751 drivers/base/dd.c:751
- driver_probe_device drivers/base/dd.c:781 [inline]
- driver_probe_device drivers/base/dd.c:781 [inline] drivers/base/dd.c:898
- __device_attach_driver+0x79f/0x1120 drivers/base/dd.c:898 drivers/base/dd.c:898
- bus_for_each_drv+0x2d6/0x3f0 drivers/base/bus.c:427 drivers/base/bus.c:427
- __device_attach+0x593/0x8e0 drivers/base/dd.c:969 drivers/base/dd.c:969
- device_initial_probe+0x4a/0x60 drivers/base/dd.c:1016 drivers/base/dd.c:1016
- bus_probe_device+0x17b/0x3e0 drivers/base/bus.c:487 drivers/base/bus.c:487
- device_add+0x1d3e/0x2400 drivers/base/core.c:3394 drivers/base/core.c:3394
- usb_set_configuration+0x37e9/0x3ed0 drivers/usb/core/message.c:2170 drivers/usb/core/message.c:2170
- usb_generic_driver_probe+0x13c/0x300 drivers/usb/core/generic.c:238 drivers/usb/core/generic.c:238
- usb_probe_device+0x309/0x570 drivers/usb/core/driver.c:293 drivers/usb/core/driver.c:293
- really_probe+0x67d/0x1510 drivers/base/dd.c:596 drivers/base/dd.c:596
- __driver_probe_device+0x3e9/0x530 drivers/base/dd.c:751 drivers/base/dd.c:751
- driver_probe_device drivers/base/dd.c:781 [inline]
- driver_probe_device drivers/base/dd.c:781 [inline] drivers/base/dd.c:898
- __device_attach_driver+0x79f/0x1120 drivers/base/dd.c:898 drivers/base/dd.c:898
- bus_for_each_drv+0x2d6/0x3f0 drivers/base/bus.c:427 drivers/base/bus.c:427
- __device_attach+0x593/0x8e0 drivers/base/dd.c:969 drivers/base/dd.c:969
- device_initial_probe+0x4a/0x60 drivers/base/dd.c:1016 drivers/base/dd.c:1016
- bus_probe_device+0x17b/0x3e0 drivers/base/bus.c:487 drivers/base/bus.c:487
- device_add+0x1d3e/0x2400 drivers/base/core.c:3394 drivers/base/core.c:3394
- usb_new_device+0x1b8e/0x2950 drivers/usb/core/hub.c:2563 drivers/usb/core/hub.c:2563
- hub_port_connect drivers/usb/core/hub.c:5353 [inline]
- hub_port_connect_change drivers/usb/core/hub.c:5497 [inline]
- port_event drivers/usb/core/hub.c:5643 [inline]
- hub_port_connect drivers/usb/core/hub.c:5353 [inline] drivers/usb/core/hub.c:5725
- hub_port_connect_change drivers/usb/core/hub.c:5497 [inline] drivers/usb/core/hub.c:5725
- port_event drivers/usb/core/hub.c:5643 [inline] drivers/usb/core/hub.c:5725
- hub_event+0x5ad2/0x8910 drivers/usb/core/hub.c:5725 drivers/usb/core/hub.c:5725
- process_one_work+0xdb9/0x1820 kernel/workqueue.c:2298 kernel/workqueue.c:2298
- worker_thread+0x10bc/0x21f0 kernel/workqueue.c:2445 kernel/workqueue.c:2445
- kthread+0x721/0x850 kernel/kthread.c:327 kernel/kthread.c:327
- ret_from_fork+0x1f/0x30
+Having known my condition I decided to hand you over this fund to take
+care of the less-privileged people, you will utilize this money the
+way I am going to instruct herein. I want you to take 35% Percent of
+the total money for your personal use While 65% of the money will go
+to charity" people and helping the orphanage.
 
-Local variable smsr.i created at:
- asix_mdio_read_nopm+0xb9/0xa50 drivers/net/usb/asix_common.c:574 drivers/net/usb/asix_common.c:574
- ax88772a_hw_reset+0x83c/0x12e0 drivers/net/usb/asix_devices.c:511 drivers/net/usb/asix_devices.c:511
-
-CPU: 1 PID: 115 Comm: kworker/1:2 Not tainted 5.16.0-rc5-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: usb_hub_wq hub_event
-=====================================================
-
+I don't want my husband's efforts to be used by the Government. I grew
+up as an Orphan and I don't have anybody as my family member,
+I am expecting your respond. Through private email: (mrs.mayaolivia90@gmail=
+.com)
+Regards,
+Mrs. Maya Oliver,
+mrs.mayaolivia90@gmail.com
