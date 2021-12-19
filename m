@@ -2,128 +2,204 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 93EC7479F71
-	for <lists+netdev@lfdr.de>; Sun, 19 Dec 2021 06:25:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D0F0479FE4
+	for <lists+netdev@lfdr.de>; Sun, 19 Dec 2021 09:36:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235278AbhLSFZo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Dec 2021 00:25:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48010 "EHLO
+        id S235381AbhLSIbI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Dec 2021 03:31:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229759AbhLSFZo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Dec 2021 00:25:44 -0500
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F56BC061574;
-        Sat, 18 Dec 2021 21:25:44 -0800 (PST)
-Received: by mail-pf1-x444.google.com with SMTP id t123so4416880pfc.13;
-        Sat, 18 Dec 2021 21:25:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=2r/lAOam35UnbOPt91pIDkFkHoz+6a7gbjQzhnDEKE8=;
-        b=OF3Yx8XDZq/50DiljTpWlHNhcxXFsNV09eKYUvAgFgAgkdWG2Uai53x7fF4RcTS5RA
-         1iuLI0q6b5lqPfxXfoU4lFVs3MgM2z2m9hAbbRScGqu9eBUqxMIdNPLHQCHx0gqxl+Lh
-         +1V7Y8hewQKyCXo5hza30voU4g0E8YKujlJt/2c6Taudnfb4GpdtIxjikpi1bONWyhPV
-         9as0sQl13NMT2JKcYMAnyt0ZgjAlvD9e3EL1G4ahobqdWqEYO92QpuKL/pY6AsDMRpa2
-         W12IMjuIXJxyoEmy3N4n5qpqLB36kj5PYj0S3IJ92jPd/zj3bUn2PrkEZL9BbyXqUQbe
-         jBCg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=2r/lAOam35UnbOPt91pIDkFkHoz+6a7gbjQzhnDEKE8=;
-        b=lAxvEZL0avMtzK2QiA4ZzB2vGVcEJ4Oztm9n4PKYXUIEyFfuK9Uv7jNuiTLvbmJHEM
-         J8D0YL6YER/kNrKF+8FM3dm+APeSXWVvkMeJKTmX0Y3n0olAvoCGjtqxKH/DeFLJTeUt
-         uRZfy4c86MyXWjhY0FJ/JUFRH/0Xk4Bqpfbkes9mwjRsNp5BFPQnTORD7kcjh5GIxQCZ
-         n241lT1xk6fXu5Tu5vYupq9XWL0raboZyJnbFTiBsqi7RdaDdSJJZT9ySHlUyjurCvBE
-         2h5y1bA8v8zY89g/KHDczMjQTHeYVNPw9BXxb348TwFo3d4G2dGdNM/6i0ESQYZhlGNu
-         wqXg==
-X-Gm-Message-State: AOAM5338iMipE8bfI1RXyFi4MVabG9JYb2rU4jEWsmqpgTEqO1dIXE2Q
-        3jVXKrbDUj0/Vg/dUA1/mas=
-X-Google-Smtp-Source: ABdhPJzWsDq6+rJIlqkxJB4ftSm9nz9MvUq2tq8BizYY7Q8ktIEUCmEmfLiGVr1NpZdobKfnN9RM9A==
-X-Received: by 2002:a05:6a00:b49:b0:49f:c8e0:51ff with SMTP id p9-20020a056a000b4900b0049fc8e051ffmr10447848pfo.36.1639891543544;
-        Sat, 18 Dec 2021 21:25:43 -0800 (PST)
-Received: from localhost ([2405:201:6014:d064:3d4e:6265:800c:dc84])
-        by smtp.gmail.com with ESMTPSA id w7sm12806641pgo.56.2021.12.18.21.25.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 18 Dec 2021 21:25:43 -0800 (PST)
-Date:   Sun, 19 Dec 2021 10:55:40 +0530
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        netfilter-devel <netfilter-devel@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Maxim Mikityanskiy <maximmi@nvidia.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Subject: Re: [PATCH bpf-next v4 06/10] bpf: Track provenance for pointers
- formed from referenced PTR_TO_BTF_ID
-Message-ID: <20211219052540.yuqbxldypj4quhhd@apollo.legion>
-References: <20211217015031.1278167-1-memxor@gmail.com>
- <20211217015031.1278167-7-memxor@gmail.com>
- <20211219022839.kdms7k3jte5ajubt@ast-mbp>
- <20211219031822.k2bfjhgazvvy5r7l@apollo.legion>
- <CAADnVQJ43O-eavsMuqW0kCiBZMf4PFHbFhSPa7vRWY1cjwqFAg@mail.gmail.com>
- <20211219043349.mmycwjnxcqc7lc2c@apollo.legion>
- <CAADnVQ+zWgUj5C=nJuzop2aOHj04eVH+Y4x+H3RyGwWjost9ZQ@mail.gmail.com>
+        with ESMTP id S229585AbhLSIbH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Dec 2021 03:31:07 -0500
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4427AC061574
+        for <netdev@vger.kernel.org>; Sun, 19 Dec 2021 00:31:07 -0800 (PST)
+Received: from ip4d173d4a.dynamic.kabel-deutschland.de ([77.23.61.74] helo=[192.168.66.200]); authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1myrav-0002Qa-Uo; Sun, 19 Dec 2021 09:31:02 +0100
+Message-ID: <edb8c052-9d20-d190-54e2-ed9bb03ba204@leemhuis.info>
+Date:   Sun, 19 Dec 2021 09:31:01 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAADnVQ+zWgUj5C=nJuzop2aOHj04eVH+Y4x+H3RyGwWjost9ZQ@mail.gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH net] igb: fix deadlock caused by taking RTNL in RPM resume
+ path
+Content-Language: en-BW
+To:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+References: <6bb28d2f-4884-7696-0582-c26c35534bae@gmail.com>
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+In-Reply-To: <6bb28d2f-4884-7696-0582-c26c35534bae@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1639902667;10240f3d;
+X-HE-SMSGID: 1myrav-0002Qa-Uo
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Dec 19, 2021 at 10:35:18AM IST, Alexei Starovoitov wrote:
-> On Sat, Dec 18, 2021 at 8:33 PM Kumar Kartikeya Dwivedi
-> <memxor@gmail.com> wrote:
-> >
-> > It is, but into parent_ref_obj_id, to match during release_reference.
-> >
-> > > Shouldn't r2 get a different ref_obj_id after r2 = r1->next ?
-> >
-> > It's ref_obj_id is still 0.
-> >
-> > Thinking about this more, we actually only need 1 extra bit of information in
-> > reg_state, not even a new member. We can simply copy ref_obj_id and set this
-> > bit, then we can reject this register during release but consider it during
-> > release_reference.
->
-> It seems to me that this patch created the problem and it's trying
-> to fix it at the same time.
->
+Hi, this is your Linux kernel regression tracker speaking.
 
-Yes, sort of. Maybe I need to improve the commit message? I give an example
-below, and the first half of commit explains that if we simply did copy
-ref_obj_id, it would lead to the case in the previous mail (same BTF ID ptr can
-be passed), so we need to do something different.
+On 29.11.21 22:14, Heiner Kallweit wrote:
+> Recent net core changes caused an issue with few Intel drivers
+> (reportedly igb), where taking RTNL in RPM resume path results in a
+> deadlock. See [0] for a bug report. I don't think the core changes
+> are wrong, but taking RTNL in RPM resume path isn't needed.
+> The Intel drivers are the only ones doing this. See [1] for a
+> discussion on the issue. Following patch changes the RPM resume path
+> to not take RTNL.
+> 
+> [0] https://bugzilla.kernel.org/show_bug.cgi?id=215129
+> [1] https://lore.kernel.org/netdev/20211125074949.5f897431@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com/t/
+> 
+> Fixes: bd869245a3dc ("net: core: try to runtime-resume detached device in __dev_open")
+> Fixes: f32a21376573 ("ethtool: runtime-resume netdev parent before ethtool ioctl ops")
+> Tested-by: Martin Stolpe <martin.stolpe@gmail.com>
+> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 
-Maybe that is what is confusing you.
+Long story short: what is taken this fix so long to get mainlined? It to
+me seems progressing unnecessary slow, especially as it's a regression
+that made it into v5.15 and thus for weeks now seems to bug more and
+more people.
 
-> mark_btf_ld_reg() shouldn't be copying ref_obj_id.
-> If it keeps it as zero the problem will not happen, no?
 
-It is copying it but writing it to parent_ref_obj_id. It keeps ref_obj_id as 0
-for all deref pointers.
+The long story, starting with the background details:
 
-r1 = acq(); // r1.ref = acquire_reference_state();
- ref = N
-r2 = r1->a; // mark_btf_ld_reg -> copy r1.(ref ?: parent_ref) -> so r2.parent_ref = r1.ref
-r3 = r2->b; // mark_btf_ld_reg -> copy r2.(ref ?: parent_ref) -> so r3.parent_ref = r2.parent_ref
-r4 = r3->c; // mark_btf_ld_reg -> copy r3.(ref ?: parent_ref) -> so r4.parent_ref = r3.parent_ref
-rel(r1);    // if (reg.ref == r1.ref || reg.parent_ref == r1.ref) invalidate(reg)
+The quoted patch fixes a regression among others caused by f32a21376573
+("ethtool: runtime-resume netdev parent before ethtool ioctl ops"),
+which got merged for v5.15-rc1.
 
-As you see, mark_btf_ld_reg only ever writes to parent_ref_obj_id, not
-ref_obj_id. It just copies ref_obj_id when it is set, over parent_ref_obj_id,
-and only one of two can be set.
+The regression ("kernel hangs during power down") was afaik first
+reported on Wed, 24 Nov (IOW: nearly a month ago) and forwarded to the
+list shortly afterwards:
+https://bugzilla.kernel.org/show_bug.cgi?id=215129
+https://lore.kernel.org/netdev/20211124144505.31e15716@hermes.local/
 
---
-Kartikeya
+The quoted patch to fix the regression was posted on Mon, 29 Nov (thx
+Heiner for providing it!). Obviously reviewing patches can take a few
+days when they are complicated, as the other messages in this thread
+show. But according to
+https://bugzilla.kernel.org/show_bug.cgi?id=215129#c8 the patch was
+ACKed by Thu, 7 Dec. To quote: ```The patch is on its way via the Intel
+network driver tree:
+https://kernel.googlesource.com/pub/scm/linux/kernel/git/tnguy/net-queue/+/refs/heads/dev-queue```
+
+And that's where the patch afaics still is. It hasn't even reached
+linux-next yet, unless I'm missing something. A merge into mainline thus
+is not even in sight; this seems especially bad with the holiday season
+coming up, as getting the fix mainlined is a prerequisite to get it
+backported to 5.15.y, as our latest stable kernel is affected by this.
+
+Due to the slow progress we have other users that stumble about the
+regression and have to deal with it; some of them even track it down and
+report it again. This happened yesterday (and made me write this mail):
+https://bugzilla.kernel.org/show_bug.cgi?id=215359
+
+
+Given the "no regression" rule all this to me looks a lot like 'this is
+taken way to long without an obvious reason", as the goal of the rule
+round about is: "People should basically always feel like they can
+update their kernel and simply not have to worry about it." (Linus wrote
+that in
+https://lore.kernel.org/lkml/CA+55aFxW7NMAMvYhkvz1UPbUTUJewRt6Yb51QAx5RtrWOwjebg@mail.gmail.com/
+). But here we still let them run into a issue known for weeks now;
+everyone additionally hit due to unnecessary delays will thus be one
+more person that next time will worry when updating, which the "no
+regression" rule tries to prevent. :-/
+
+
+BTW: this is not the only regression in the network subsystem where
+regression fixes IMHO linger quite long in some tree below net. Here is
+another recent example:
+https://lore.kernel.org/linux-wireless/87y24on9m2.fsf@tynnyri.adurom.net/
+Fortunately that fix got mainlined last week, after the fix sat in next
+for two and a half weeks.
+
+Ciao, Thorsten
+
+P.S.: for completeness: f32a21376573 causes a similar regression ("When
+attempting to rise or shut down a NIC manually or via network-manager
+under 5.15, the machine reboots or freezes.") in a different driver for
+Intel NICs, which is fixed by this patch:
+https://lore.kernel.org/netdev/20211214003949.666642-1-vinicius.gomes@intel.com/
+It's not that old yet, but also sitting in the dev-queue of the intel
+network driver developers and hasn't reached linux-next yet :-/
+
+>  drivers/net/ethernet/intel/igb/igb_main.c | 19 +++++++++++++------
+>  1 file changed, 13 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
+> index dd208930f..8073cce73 100644
+> --- a/drivers/net/ethernet/intel/igb/igb_main.c
+> +++ b/drivers/net/ethernet/intel/igb/igb_main.c
+> @@ -9254,7 +9254,7 @@ static int __maybe_unused igb_suspend(struct device *dev)
+>  	return __igb_shutdown(to_pci_dev(dev), NULL, 0);
+>  }
+>  
+> -static int __maybe_unused igb_resume(struct device *dev)
+> +static int __maybe_unused __igb_resume(struct device *dev, bool rpm)
+>  {
+>  	struct pci_dev *pdev = to_pci_dev(dev);
+>  	struct net_device *netdev = pci_get_drvdata(pdev);
+> @@ -9297,17 +9297,24 @@ static int __maybe_unused igb_resume(struct device *dev)
+>  
+>  	wr32(E1000_WUS, ~0);
+>  
+> -	rtnl_lock();
+> +	if (!rpm)
+> +		rtnl_lock();
+>  	if (!err && netif_running(netdev))
+>  		err = __igb_open(netdev, true);
+>  
+>  	if (!err)
+>  		netif_device_attach(netdev);
+> -	rtnl_unlock();
+> +	if (!rpm)
+> +		rtnl_unlock();
+>  
+>  	return err;
+>  }
+>  
+> +static int __maybe_unused igb_resume(struct device *dev)
+> +{
+> +	return __igb_resume(dev, false);
+> +}
+> +
+>  static int __maybe_unused igb_runtime_idle(struct device *dev)
+>  {
+>  	struct net_device *netdev = dev_get_drvdata(dev);
+> @@ -9326,7 +9333,7 @@ static int __maybe_unused igb_runtime_suspend(struct device *dev)
+>  
+>  static int __maybe_unused igb_runtime_resume(struct device *dev)
+>  {
+> -	return igb_resume(dev);
+> +	return __igb_resume(dev, true);
+>  }
+>  
+>  static void igb_shutdown(struct pci_dev *pdev)
+> @@ -9442,7 +9449,7 @@ static pci_ers_result_t igb_io_error_detected(struct pci_dev *pdev,
+>   *  @pdev: Pointer to PCI device
+>   *
+>   *  Restart the card from scratch, as if from a cold-boot. Implementation
+> - *  resembles the first-half of the igb_resume routine.
+> + *  resembles the first-half of the __igb_resume routine.
+>   **/
+>  static pci_ers_result_t igb_io_slot_reset(struct pci_dev *pdev)
+>  {
+> @@ -9482,7 +9489,7 @@ static pci_ers_result_t igb_io_slot_reset(struct pci_dev *pdev)
+>   *
+>   *  This callback is called when the error recovery driver tells us that
+>   *  its OK to resume normal operation. Implementation resembles the
+> - *  second-half of the igb_resume routine.
+> + *  second-half of the __igb_resume routine.
+>   */
+>  static void igb_io_resume(struct pci_dev *pdev)
+>  {
+
