@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F97A479F3B
-	for <lists+netdev@lfdr.de>; Sun, 19 Dec 2021 06:07:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B986D479F3E
+	for <lists+netdev@lfdr.de>; Sun, 19 Dec 2021 06:07:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233987AbhLSFHe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Dec 2021 00:07:34 -0500
-Received: from szxga02-in.huawei.com ([45.249.212.188]:16830 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233545AbhLSFHd (ORCPT
+        id S234347AbhLSFHf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Dec 2021 00:07:35 -0500
+Received: from szxga01-in.huawei.com ([45.249.212.187]:33871 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230144AbhLSFHd (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sun, 19 Dec 2021 00:07:33 -0500
-Received: from dggpeml500025.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4JGrKv2dlGz90M0;
-        Sun, 19 Dec 2021 13:06:43 +0800 (CST)
+Received: from dggpeml500025.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4JGrLQ6WqWzcbs8;
+        Sun, 19 Dec 2021 13:07:10 +0800 (CST)
 Received: from huawei.com (10.175.124.27) by dggpeml500025.china.huawei.com
  (7.185.36.35) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.20; Sun, 19 Dec
- 2021 13:07:30 +0800
+ 2021 13:07:31 +0800
 From:   Hou Tao <houtao1@huawei.com>
 To:     Alexei Starovoitov <ast@kernel.org>
 CC:     Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
@@ -26,15 +26,15 @@ CC:     Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
         Andrii Nakryiko <andrii@kernel.org>, <netdev@vger.kernel.org>,
         <bpf@vger.kernel.org>, <houtao1@huawei.com>,
         <yunbo.xufeng@linux.alibaba.com>
-Subject: [RFC PATCH bpf-next 2/3] bpf: add BPF_F_STR_KEY to support string key in htab
-Date:   Sun, 19 Dec 2021 13:22:44 +0800
-Message-ID: <20211219052245.791605-3-houtao1@huawei.com>
+Subject: [RFC PATCH bpf-next 3/3] selftests/bpf: add benchmark for string-key hash-table
+Date:   Sun, 19 Dec 2021 13:22:45 +0800
+Message-ID: <20211219052245.791605-4-houtao1@huawei.com>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20211219052245.791605-1-houtao1@huawei.com>
 References: <20211219052245.791605-1-houtao1@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 X-Originating-IP: [10.175.124.27]
 X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
  dggpeml500025.china.huawei.com (7.185.36.35)
@@ -43,436 +43,573 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In order to use string as hash-table key, key_size must be the storage
-size of longest string. If there are large differencies in string
-length, the hash distribution will be sub-optimal due to the unused
-zero bytes in shorter strings and the lookup will be inefficient due to
-unnecessary memcpy().
+It defines two hash-tables: one with fixed-size bytes as key and another
+with string key. The content and the length of strings are constructed
+by using random().
 
-Also it is possible the unused part of string key returned from bpf helper
-(e.g. bpf_d_path) is not mem-zeroed and if using it directly as lookup key,
-the lookup will fail with -ENOENT.
+Four benchmarks are added to compare the lookup and update performances
+on bytes-hash and string-hash respectively. The performance win is about
+16% and 106% under x86-64 and arm64 when key_size is 256 and increase to
+45% and 161% when key_size is greater than 1024. The detailed results
+follows.
 
-So add BPF_F_STR_KEY to support string key in hash-table. The string key
-can not be empty and its storage size (includes the trailing zero byte)
-must not be greater than key_size. And it doesn't care about the values
-of unused bytes after the trailing zero byte.
+  N-bytes-lookup|update: lookup/update on normal htab with N-bytes key
+  N-str-lookup|update: lookup/update on string htab with N-bytes key
 
-Two changes are made to support string key. An extra field used_key_size
-is added in struct htab_element to describe the storage size of the
-string size. It is used in lookup_nulls_elem_raw() and lookup_elem_raw()
-to check whether the string length is the same before do memcmp(). The hash
-algorithm is also changed from jhash() to full_name_hash() for string key
-to reduce hash collision.
+Under x86-64:
+
+64-bytes-lookup      13.738 ± 0.018M/s (drops 0.000 ± 0.000M/s)
+64-bytes-update      7.313 ± 0.011M/s (drops 0.000 ± 0.000M/s)
+64-str-lookup        11.417 ± 0.334M/s (drops 0.000 ± 0.000M/s)
+64-str-update        6.866 ± 0.004M/s (drops 0.000 ± 0.000M/s)
+
+128-bytes-lookup     9.051 ± 0.005M/s (drops 0.000 ± 0.000M/s)
+128-bytes-update     5.713 ± 0.006M/s (drops 0.000 ± 0.000M/s)
+128-str-lookup       9.134 ± 0.002M/s (drops 0.000 ± 0.000M/s)
+128-str-update       5.719 ± 0.003M/s (drops 0.000 ± 0.000M/s)
+
+256-bytes-lookup     5.445 ± 0.002M/s (drops 0.000 ± 0.000M/s)
+256-bytes-update     4.052 ± 0.002M/s (drops 0.000 ± 0.000M/s)
+256-str-lookup       6.356 ± 0.020M/s (drops 0.000 ± 0.000M/s)
+256-str-update       4.504 ± 0.002M/s (drops 0.000 ± 0.000M/s)
+
+512-bytes-lookup     3.114 ± 0.001M/s (drops 0.000 ± 0.000M/s)
+512-bytes-update     2.579 ± 0.000M/s (drops 0.000 ± 0.000M/s)
+512-str-lookup       4.046 ± 0.001M/s (drops 0.000 ± 0.000M/s)
+512-str-update       3.149 ± 0.001M/s (drops 0.000 ± 0.000M/s)
+
+1024-bytes-lookup    1.639 ± 0.002M/s (drops 0.000 ± 0.000M/s)
+1024-bytes-update    1.467 ± 0.001M/s (drops 0.000 ± 0.000M/s)
+1024-str-lookup      2.386 ± 0.001M/s (drops 0.000 ± 0.000M/s)
+1024-str-update      1.980 ± 0.001M/s (drops 0.000 ± 0.000M/s)
+
+2048-bytes-lookup    0.863 ± 0.001M/s (drops 0.000 ± 0.000M/s)
+2048-bytes-update    0.798 ± 0.000M/s (drops 0.000 ± 0.000M/s)
+2048-str-lookup      1.246 ± 0.001M/s (drops 0.000 ± 0.000M/s)
+2048-str-update      1.116 ± 0.000M/s (drops 0.000 ± 0.000M/s)
+
+4096-bytes-lookup    0.451 ± 0.000M/s (drops 0.000 ± 0.000M/s)
+4096-bytes-update    0.424 ± 0.000M/s (drops 0.000 ± 0.000M/s)
+4096-str-lookup      0.653 ± 0.000M/s (drops 0.000 ± 0.000M/s)
+4096-str-update      0.622 ± 0.000M/s (drops 0.000 ± 0.000M/s)
+
+Under arm64:
+
+64-bytes-lookup      13.393 ± 0.021M/s (drops 0.000 ± 0.000M/s)
+64-bytes-update      4.174 ± 0.014M/s (drops 0.000 ± 0.000M/s)
+64-str-lookup        17.005 ± 0.016M/s (drops 0.000 ± 0.000M/s)
+64-str-update        4.357 ± 0.035M/s (drops 0.000 ± 0.000M/s)
+
+128-bytes-lookup     6.528 ± 0.014M/s (drops 0.000 ± 0.000M/s)
+128-bytes-update     3.335 ± 0.022M/s (drops 0.000 ± 0.000M/s)
+128-str-lookup       10.138 ± 0.092M/s (drops 0.000 ± 0.000M/s)
+128-str-update       4.034 ± 0.028M/s (drops 0.000 ± 0.000M/s)
+
+256-bytes-lookup     3.575 ± 0.019M/s (drops 0.000 ± 0.000M/s)
+256-bytes-update     2.286 ± 0.012M/s (drops 0.000 ± 0.000M/s)
+256-str-lookup       7.387 ± 0.010M/s (drops 0.000 ± 0.000M/s)
+256-str-update       3.348 ± 0.016M/s (drops 0.000 ± 0.000M/s)
+
+512-bytes-lookup     2.134 ± 0.003M/s (drops 0.000 ± 0.000M/s)
+512-bytes-update     1.668 ± 0.007M/s (drops 0.000 ± 0.000M/s)
+512-str-lookup       4.814 ± 0.002M/s (drops 0.000 ± 0.000M/s)
+512-str-update       2.715 ± 0.025M/s (drops 0.000 ± 0.000M/s)
+
+1024-bytes-lookup    1.119 ± 0.001M/s (drops 0.000 ± 0.000M/s)
+1024-bytes-update    0.920 ± 0.002M/s (drops 0.000 ± 0.000M/s)
+1024-str-lookup      2.928 ± 0.001M/s (drops 0.000 ± 0.000M/s)
+1024-str-update      1.878 ± 0.037M/s (drops 0.000 ± 0.000M/s)
+
+4096-bytes-lookup    0.312 ± 0.000M/s (drops 0.000 ± 0.000M/s)
+4096-bytes-update    0.269 ± 0.001M/s (drops 0.000 ± 0.000M/s)
+4096-str-lookup      1.010 ± 0.000M/s (drops 0.000 ± 0.000M/s)
+4096-str-update      0.670 ± 0.005M/s (drops 0.000 ± 0.000M/s)
 
 Signed-off-by: Hou Tao <houtao1@huawei.com>
 ---
- include/uapi/linux/bpf.h       |   3 +
- kernel/bpf/hashtab.c           | 140 ++++++++++++++++++++++++++-------
- tools/include/uapi/linux/bpf.h |   3 +
- 3 files changed, 118 insertions(+), 28 deletions(-)
+ tools/testing/selftests/bpf/Makefile          |   4 +-
+ tools/testing/selftests/bpf/bench.c           |  10 +
+ .../selftests/bpf/benchs/bench_str_htab.c     | 255 ++++++++++++++++++
+ .../testing/selftests/bpf/benchs/run_htab.sh  |  14 +
+ .../selftests/bpf/progs/str_htab_bench.c      | 123 +++++++++
+ 5 files changed, 405 insertions(+), 1 deletion(-)
+ create mode 100644 tools/testing/selftests/bpf/benchs/bench_str_htab.c
+ create mode 100755 tools/testing/selftests/bpf/benchs/run_htab.sh
+ create mode 100644 tools/testing/selftests/bpf/progs/str_htab_bench.c
 
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index b0383d371b9a..6c0bcec38100 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -1211,6 +1211,9 @@ enum {
+diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+index d46ed4dab0ab..f55d647ba091 100644
+--- a/tools/testing/selftests/bpf/Makefile
++++ b/tools/testing/selftests/bpf/Makefile
+@@ -538,6 +538,7 @@ $(OUTPUT)/bench_ringbufs.o: $(OUTPUT)/ringbuf_bench.skel.h \
+ $(OUTPUT)/bench_bloom_filter_map.o: $(OUTPUT)/bloom_filter_bench.skel.h
+ $(OUTPUT)/bench_bpf_loop.o: $(OUTPUT)/bpf_loop_bench.skel.h
+ $(OUTPUT)/bench_strncmp.o: $(OUTPUT)/strncmp_bench.skel.h
++$(OUTPUT)/bench_str_htab.o: $(OUTPUT)/str_htab_bench.skel.h
+ $(OUTPUT)/bench.o: bench.h testing_helpers.h $(BPFOBJ)
+ $(OUTPUT)/bench: LDLIBS += -lm
+ $(OUTPUT)/bench: $(OUTPUT)/bench.o \
+@@ -549,7 +550,8 @@ $(OUTPUT)/bench: $(OUTPUT)/bench.o \
+ 		 $(OUTPUT)/bench_ringbufs.o \
+ 		 $(OUTPUT)/bench_bloom_filter_map.o \
+ 		 $(OUTPUT)/bench_bpf_loop.o \
+-		 $(OUTPUT)/bench_strncmp.o
++		 $(OUTPUT)/bench_strncmp.o \
++		 $(OUTPUT)/bench_str_htab.o
+ 	$(call msg,BINARY,,$@)
+ 	$(Q)$(CC) $(CFLAGS) $(LDFLAGS) $(filter %.a %.o,$^) $(LDLIBS) -o $@
  
- /* Create a map that is suitable to be an inner map with dynamic max entries */
- 	BPF_F_INNER_MAP		= (1U << 12),
+diff --git a/tools/testing/selftests/bpf/bench.c b/tools/testing/selftests/bpf/bench.c
+index f973320e6dbf..86164ac86776 100644
+--- a/tools/testing/selftests/bpf/bench.c
++++ b/tools/testing/selftests/bpf/bench.c
+@@ -190,12 +190,14 @@ extern struct argp bench_ringbufs_argp;
+ extern struct argp bench_bloom_map_argp;
+ extern struct argp bench_bpf_loop_argp;
+ extern struct argp bench_strncmp_argp;
++extern struct argp bench_str_htab_argp;
+ 
+ static const struct argp_child bench_parsers[] = {
+ 	{ &bench_ringbufs_argp, 0, "Ring buffers benchmark", 0 },
+ 	{ &bench_bloom_map_argp, 0, "Bloom filter map benchmark", 0 },
+ 	{ &bench_bpf_loop_argp, 0, "bpf_loop helper benchmark", 0 },
+ 	{ &bench_strncmp_argp, 0, "bpf_strncmp helper benchmark", 0 },
++	{ &bench_str_htab_argp, 0, "string htab benchmark", 0 },
+ 	{},
+ };
+ 
+@@ -397,6 +399,10 @@ extern const struct bench bench_hashmap_with_bloom;
+ extern const struct bench bench_bpf_loop;
+ extern const struct bench bench_strncmp_no_helper;
+ extern const struct bench bench_strncmp_helper;
++extern const struct bench bench_htab_bytes_lookup;
++extern const struct bench bench_htab_str_lookup;
++extern const struct bench bench_htab_bytes_update;
++extern const struct bench bench_htab_str_update;
+ 
+ static const struct bench *benchs[] = {
+ 	&bench_count_global,
+@@ -431,6 +437,10 @@ static const struct bench *benchs[] = {
+ 	&bench_bpf_loop,
+ 	&bench_strncmp_no_helper,
+ 	&bench_strncmp_helper,
++	&bench_htab_bytes_lookup,
++	&bench_htab_str_lookup,
++	&bench_htab_bytes_update,
++	&bench_htab_str_update,
+ };
+ 
+ static void setup_benchmark()
+diff --git a/tools/testing/selftests/bpf/benchs/bench_str_htab.c b/tools/testing/selftests/bpf/benchs/bench_str_htab.c
+new file mode 100644
+index 000000000000..719d45cebb2b
+--- /dev/null
++++ b/tools/testing/selftests/bpf/benchs/bench_str_htab.c
+@@ -0,0 +1,255 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (C) 2021. Huawei Technologies Co., Ltd */
++#include <argp.h>
++#include <sys/random.h>
++#include "bench.h"
++#include "bpf_util.h"
++#include "str_htab_bench.skel.h"
 +
-+/* Flag for hash map, the key is string instead of fixed-size bytes */
-+	BPF_F_STR_KEY		= (1U << 13),
- };
- 
- /* Flags for BPF_PROG_QUERY. */
-diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
-index e21e27162e08..4604d11abad7 100644
---- a/kernel/bpf/hashtab.c
-+++ b/kernel/bpf/hashtab.c
-@@ -10,13 +10,14 @@
- #include <linux/random.h>
- #include <uapi/linux/btf.h>
- #include <linux/rcupdate_trace.h>
-+#include <linux/stringhash.h>
- #include "percpu_freelist.h"
- #include "bpf_lru_list.h"
- #include "map_in_map.h"
- 
- #define HTAB_CREATE_FLAG_MASK						\
- 	(BPF_F_NO_PREALLOC | BPF_F_NO_COMMON_LRU | BPF_F_NUMA_NODE |	\
--	 BPF_F_ACCESS_MASK | BPF_F_ZERO_SEED)
-+	 BPF_F_ACCESS_MASK | BPF_F_ZERO_SEED | BPF_F_STR_KEY)
- 
- #define BATCH_OPS(_name)			\
- 	.map_lookup_batch =			\
-@@ -124,12 +125,19 @@ struct htab_elem {
- 		struct bpf_lru_node lru_node;
- 	};
- 	u32 hash;
-+	/*
-+	 * For string key, used_key_size is in the range: [2, key_size] and
-+	 * includes the trailing zero byte. For no-string key, used_key_size
-+	 * is equal with key_size.
-+	 */
-+	u32 used_key_size;
- 	char key[] __aligned(8);
- };
- 
- struct nolock_lookup_elem_result {
- 	struct htab_elem *elem;
- 	u32 hash;
-+	u32 used;
- };
- 
- struct lock_lookup_elem_result {
-@@ -137,11 +145,13 @@ struct lock_lookup_elem_result {
- 	unsigned long flags;
- 	struct htab_elem *elem;
- 	u32 hash;
-+	u32 used;
- };
- 
- struct lookup_bucket_result {
- 	struct bucket *bucket;
- 	u32 hash;
-+	u32 used;
- };
- 
- static inline bool htab_is_prealloc(const struct bpf_htab *htab)
-@@ -154,6 +164,11 @@ static inline bool htab_use_raw_lock(const struct bpf_htab *htab)
- 	return (!IS_ENABLED(CONFIG_PREEMPT_RT) || htab_is_prealloc(htab));
- }
- 
-+static inline bool htab_is_str_key(const struct bpf_htab *htab)
++static struct str_htab_ctx {
++	struct str_htab_bench *skel;
++} ctx;
++
++static struct {
++	bool same_len;
++	__u32 key_size;
++	__u32 max_entries;
++} args = {
++	.same_len = false,
++	.key_size = 256,
++	.max_entries = 1000,
++};
++
++enum {
++	ARG_SAME_LEN = 6000,
++	ARG_KEY_SIZE = 6001,
++	ARG_MAX_ENTRIES = 6002,
++};
++
++static const struct argp_option opts[] = {
++	{ "same-len", ARG_SAME_LEN, NULL, 0,
++	  "Use the same length for string keys" },
++	{ "key-size", ARG_KEY_SIZE, "KEY_SIZE", 0,
++	  "Set the key size" },
++	{ "max-entries", ARG_MAX_ENTRIES, "MAX_ENTRIES", 0,
++	  "Set the max entries" },
++	{},
++};
++
++static error_t str_htab_parse_arg(int key, char *arg, struct argp_state *state)
 +{
-+	return htab->map.map_flags & BPF_F_STR_KEY;
-+}
-+
- static void htab_init_buckets(struct bpf_htab *htab)
- {
- 	unsigned i;
-@@ -596,9 +611,29 @@ static struct bpf_map *htab_map_alloc(union bpf_attr *attr)
- 	return ERR_PTR(err);
- }
- 
--static inline u32 htab_map_hash(const void *key, u32 key_len, u32 hashrnd)
-+/* Return 0 to indicate an invalid string key */
-+static inline u32 htab_used_key_size(bool str_key, const void *key,
-+				     u32 key_size)
- {
--	return jhash(key, key_len, hashrnd);
-+	u32 used;
-+
-+	if (!str_key)
-+		return key_size;
-+
-+	used = strnlen(key, key_size);
-+	if (!used || used >= key_size)
-+		return 0;
-+
-+	/* Include the trailing zero */
-+	return used + 1;
-+}
-+
-+static inline u32 htab_map_hash(bool str_key, const void *key, u32 key_len,
-+				u32 hashrnd)
-+{
-+	if (!str_key)
-+		return jhash(key, key_len, hashrnd);
-+	return full_name_hash((void *)(unsigned long)hashrnd, key, key_len);
- }
- 
- static inline struct bucket *__select_bucket(struct bpf_htab *htab, u32 hash)
-@@ -613,13 +648,15 @@ static inline struct hlist_nulls_head *select_bucket(struct bpf_htab *htab, u32
- 
- /* this lookup function can only be called with bucket lock taken */
- static struct htab_elem *lookup_elem_raw(struct hlist_nulls_head *head, u32 hash,
--					 void *key, u32 key_size)
-+					 bool str_key, void *key, u32 key_size)
- {
- 	struct hlist_nulls_node *n;
- 	struct htab_elem *l;
- 
- 	hlist_nulls_for_each_entry_rcu(l, n, head, hash_node)
--		if (l->hash == hash && !memcmp(&l->key, key, key_size))
-+		if (l->hash == hash &&
-+		    (!str_key || l->used_key_size == key_size) &&
-+		    !memcmp(&l->key, key, key_size))
- 			return l;
- 
- 	return NULL;
-@@ -630,15 +667,18 @@ static struct htab_elem *lookup_elem_raw(struct hlist_nulls_head *head, u32 hash
-  * while link list is being walked
-  */
- static struct htab_elem *lookup_nulls_elem_raw(struct hlist_nulls_head *head,
--					       u32 hash, void *key,
--					       u32 key_size, u32 n_buckets)
-+					       u32 hash, bool str_key,
-+					       void *key, u32 key_size,
-+					       u32 n_buckets)
- {
- 	struct hlist_nulls_node *n;
- 	struct htab_elem *l;
- 
- again:
- 	hlist_nulls_for_each_entry_rcu(l, n, head, hash_node)
--		if (l->hash == hash && !memcmp(&l->key, key, key_size))
-+		if (l->hash == hash &&
-+		    (!str_key || l->used_key_size == key_size) &&
-+		    !memcmp(&l->key, key, key_size))
- 			return l;
- 
- 	if (unlikely(get_nulls_value(n) != (hash & (n_buckets - 1))))
-@@ -647,33 +687,48 @@ static struct htab_elem *lookup_nulls_elem_raw(struct hlist_nulls_head *head,
- 	return NULL;
- }
- 
--static __always_inline void
-+static __always_inline int
- nolock_lookup_elem(struct bpf_htab *htab, void *key,
- 		   struct nolock_lookup_elem_result *e)
- {
- 	struct hlist_nulls_head *head;
--	u32 key_size, hash;
-+	u32 key_size, hash, used;
-+	bool str_key;
- 
-+	str_key = htab_is_str_key(htab);
- 	key_size = htab->map.key_size;
--	hash = htab_map_hash(key, key_size, htab->hashrnd);
-+	used = htab_used_key_size(str_key, key, key_size);
-+	if (!used)
-+		return -EINVAL;
-+
-+	hash = htab_map_hash(str_key, key, used, htab->hashrnd);
- 	head = select_bucket(htab, hash);
- 
--	e->elem = lookup_nulls_elem_raw(head, hash, key, key_size,
-+	e->elem = lookup_nulls_elem_raw(head, hash, str_key, key, used,
- 					htab->n_buckets);
- 	e->hash = hash;
-+	e->used = used;
++	switch (key) {
++	case ARG_SAME_LEN:
++		args.same_len = true;
++		break;
++	case ARG_KEY_SIZE:
++		args.key_size = strtoul(arg, NULL, 10);
++		break;
++	case ARG_MAX_ENTRIES:
++		args.max_entries = strtoul(arg, NULL, 10);
++		break;
++	default:
++		return ARGP_ERR_UNKNOWN;
++	}
 +
 +	return 0;
- }
- 
--static __always_inline void
-+static __always_inline int
- lock_lookup_elem(struct bpf_htab *htab, void *key,
- 		 struct lock_lookup_elem_result *e)
- {
--	u32 key_size, hash;
- 	struct bucket *b;
- 	unsigned long flags;
-+	u32 key_size, hash, used;
-+	bool str_key;
- 	int ret;
- 
-+	str_key = htab_is_str_key(htab);
- 	key_size = htab->map.key_size;
--	hash = htab_map_hash(key, key_size, htab->hashrnd);
-+	used = htab_used_key_size(str_key, key, key_size);
-+	if (!used)
-+		return -EINVAL;
++}
 +
-+	hash = htab_map_hash(str_key, key, used, htab->hashrnd);
- 	b = __select_bucket(htab, hash);
- 
- 	ret = htab_lock_bucket(htab, b, hash, &flags);
-@@ -682,22 +737,32 @@ lock_lookup_elem(struct bpf_htab *htab, void *key,
- 
- 	e->bucket = b;
- 	e->flags = flags;
--	e->elem = lookup_elem_raw(&b->head, hash, key, key_size);
-+	e->elem = lookup_elem_raw(&b->head, hash, str_key, key, used);
- 	e->hash = hash;
-+	e->used = used;
- 
- 	return 0;
- }
- 
--static __always_inline void
-+static __always_inline int
- lookup_bucket(struct bpf_htab *htab, void *key, struct lookup_bucket_result *b)
- {
--	u32 key_size, hash;
-+	u32 key_size, hash, used;
-+	bool str_key;
- 
-+	str_key = htab_is_str_key(htab);
- 	key_size = htab->map.key_size;
--	hash = htab_map_hash(key, key_size, htab->hashrnd);
-+	used = htab_used_key_size(str_key, key, key_size);
-+	if (!used)
-+		return -EINVAL;
++const struct argp bench_str_htab_argp = {
++	.options = opts,
++	.parser = str_htab_parse_arg,
++};
 +
-+	hash = htab_map_hash(str_key, key, used, htab->hashrnd);
- 
- 	b->bucket = __select_bucket(htab, hash);
- 	b->hash = hash;
-+	b->used = used;
++static void str_htab_validate(void)
++{
++	if (env.consumer_cnt != 1) {
++		fprintf(stderr, "str_htab benchmark doesn't support multi-consumer!\n");
++		exit(1);
++	}
 +
-+	return 0;
- }
- 
- /* Called from syscall or from eBPF program directly, so
-@@ -713,7 +778,8 @@ static void *__htab_map_lookup_elem(struct bpf_map *map, void *key)
- 	WARN_ON_ONCE(!rcu_read_lock_held() && !rcu_read_lock_trace_held() &&
- 		     !rcu_read_lock_bh_held());
- 
--	nolock_lookup_elem(htab, key, &e);
-+	if (nolock_lookup_elem(htab, key, &e))
-+		return NULL;
- 
- 	return e.elem;
- }
-@@ -852,6 +918,7 @@ static int htab_map_get_next_key(struct bpf_map *map, void *key, void *next_key)
- 	struct htab_elem *next_l;
- 	u32 key_size;
- 	int i = 0;
++	if (args.key_size < 2 ||
++	    args.key_size > sizeof(ctx.skel->rodata->keys[0])) {
++		fprintf(stderr, "invalid key size (max %zu)\n",
++			sizeof(ctx.skel->rodata->keys[0]));
++		exit(1);
++	}
++
++	if (!args.max_entries ||
++	    args.max_entries > ARRAY_SIZE(ctx.skel->rodata->keys)) {
++		fprintf(stderr, "invalid max entries (max %zu)\n",
++			ARRAY_SIZE(ctx.skel->rodata->keys));
++		exit(1);
++	}
++}
++
++static void str_htab_fill_map(struct str_htab_bench *skel, struct bpf_map *map,
++			      unsigned int nr)
++{
++	int fd = bpf_map__fd(map);
++	unsigned int value = 1;
++	unsigned int i = 0;
++
++	for (; i < nr; i++) {
++		int err;
++
++		err = bpf_map_update_elem(fd, skel->rodata->keys[i], &value, 0);
++		if (err) {
++			fprintf(stderr, "add #%u key on %s error %d\n",
++				i, bpf_map__name(map), err);
++			exit(1);
++		}
++	}
++}
++
++static void setup_keys(struct str_htab_bench *skel, u32 key_size)
++{
++	size_t i;
++
++	/* Generate in byte-granularity to avoid zero byte */
++	srandom(time(NULL));
++	for (i = 0; i < ARRAY_SIZE(skel->rodata->keys); i++) {
++		unsigned int len;
++		unsigned int j;
++
++		if (args.same_len)
++			len = key_size - 1;
++		else
++			len = random() % (key_size - 1) + 1;
++		for (j = 0; j < len; j++)
++			skel->rodata->keys[i][j] = random() % 255 + 1;
++		skel->rodata->keys[i][j] = 0;
++	}
++}
++
++static void str_htab_setup(void)
++{
++	struct str_htab_bench *skel;
 +	int err;
- 
- 	WARN_ON_ONCE(!rcu_read_lock_held());
- 
-@@ -859,7 +926,10 @@ static int htab_map_get_next_key(struct bpf_map *map, void *key, void *next_key)
- 	if (!key)
- 		goto find_first_elem;
- 
--	nolock_lookup_elem(htab, key, &e);
-+	err = nolock_lookup_elem(htab, key, &e);
-+	if (err)
-+		return err;
 +
- 	if (!e.elem)
- 		goto find_first_elem;
- 
-@@ -1093,6 +1163,7 @@ static int htab_map_update_elem(struct bpf_map *map, void *key, void *value,
- 	struct hlist_nulls_head *head;
- 	unsigned long flags;
- 	u32 key_size;
-+	bool str_key;
- 	int ret;
- 
- 	if (unlikely((map_flags & ~BPF_F_LOCK) > BPF_EXIST))
-@@ -1102,15 +1173,18 @@ static int htab_map_update_elem(struct bpf_map *map, void *key, void *value,
- 	WARN_ON_ONCE(!rcu_read_lock_held() && !rcu_read_lock_trace_held() &&
- 		     !rcu_read_lock_bh_held());
- 
--	lookup_bucket(htab, key, &b);
-+	ret = lookup_bucket(htab, key, &b);
-+	if (ret)
-+		return ret;
- 
-+	str_key = htab_is_str_key(htab);
- 	key_size = map->key_size;
- 	head = &b.bucket->head;
- 	if (unlikely(map_flags & BPF_F_LOCK)) {
- 		if (unlikely(!map_value_has_spin_lock(map)))
- 			return -EINVAL;
- 		/* find an element without taking the bucket lock */
--		l_old = lookup_nulls_elem_raw(head, b.hash, key, key_size,
-+		l_old = lookup_nulls_elem_raw(head, b.hash, str_key, key, b.used,
- 					      htab->n_buckets);
- 		ret = check_flags(htab, l_old, map_flags);
- 		if (ret)
-@@ -1132,7 +1206,7 @@ static int htab_map_update_elem(struct bpf_map *map, void *key, void *value,
- 	if (ret)
- 		return ret;
- 
--	l_old = lookup_elem_raw(head, b.hash, key, key_size);
-+	l_old = lookup_elem_raw(head, b.hash, str_key, key, b.used);
- 
- 	ret = check_flags(htab, l_old, map_flags);
- 	if (ret)
-@@ -1163,6 +1237,7 @@ static int htab_map_update_elem(struct bpf_map *map, void *key, void *value,
- 	/* add new element to the head of the list, so that
- 	 * concurrent search will find it before old elem
- 	 */
-+	l_new->used_key_size = b.used;
- 	hlist_nulls_add_head_rcu(&l_new->hash_node, head);
- 	if (l_old) {
- 		hlist_nulls_del_rcu(&l_old->hash_node);
-@@ -1200,7 +1275,9 @@ static int htab_lru_map_update_elem(struct bpf_map *map, void *key, void *value,
- 	WARN_ON_ONCE(!rcu_read_lock_held() && !rcu_read_lock_trace_held() &&
- 		     !rcu_read_lock_bh_held());
- 
--	lookup_bucket(htab, key, &b);
-+	ret = lookup_bucket(htab, key, &b);
-+	if (ret)
-+		return ret;
- 
- 	/* For LRU, we need to alloc before taking bucket's
- 	 * spinlock because getting free nodes from LRU may need
-@@ -1211,6 +1288,7 @@ static int htab_lru_map_update_elem(struct bpf_map *map, void *key, void *value,
- 	if (!l_new)
- 		return -ENOMEM;
- 
-+	l_new->used_key_size = b.used;
- 	copy_map_value(&htab->map,
- 		       l_new->key + round_up(map->key_size, 8), value);
- 
-@@ -1219,7 +1297,8 @@ static int htab_lru_map_update_elem(struct bpf_map *map, void *key, void *value,
- 		return ret;
- 
- 	head = &b.bucket->head;
--	l_old = lookup_elem_raw(head, b.hash, key, map->key_size);
-+	l_old = lookup_elem_raw(head, b.hash, htab_is_str_key(htab), key,
-+				b.used);
- 
- 	ret = check_flags(htab, l_old, map_flags);
- 	if (ret)
-@@ -1284,6 +1363,7 @@ static int __htab_percpu_map_update_elem(struct bpf_map *map, void *key,
- 			ret = PTR_ERR(l_new);
- 			goto err;
- 		}
-+		l_new->used_key_size = e.used;
- 		hlist_nulls_add_head_rcu(&l_new->hash_node, &e.bucket->head);
- 	}
- 	ret = 0;
-@@ -1311,7 +1391,9 @@ static int __htab_lru_percpu_map_update_elem(struct bpf_map *map, void *key,
- 	WARN_ON_ONCE(!rcu_read_lock_held() && !rcu_read_lock_trace_held() &&
- 		     !rcu_read_lock_bh_held());
- 
--	lookup_bucket(htab, key, &b);
-+	ret = lookup_bucket(htab, key, &b);
-+	if (ret)
-+		return ret;
- 
- 	/* For LRU, we need to alloc before taking bucket's
- 	 * spinlock because LRU's elem alloc may need
-@@ -1330,7 +1412,8 @@ static int __htab_lru_percpu_map_update_elem(struct bpf_map *map, void *key,
- 
- 	head = &b.bucket->head;
- 	key_size = map->key_size;
--	l_old = lookup_elem_raw(head, b.hash, key, key_size);
-+	l_old = lookup_elem_raw(head, b.hash, htab_is_str_key(htab), key,
-+				b.used);
- 
- 	ret = check_flags(htab, l_old, map_flags);
- 	if (ret)
-@@ -1343,6 +1426,7 @@ static int __htab_lru_percpu_map_update_elem(struct bpf_map *map, void *key,
- 		pcpu_copy_value(htab, htab_elem_get_ptr(l_old, key_size),
- 				value, onallcpus);
- 	} else {
-+		l_new->used_key_size = b.used;
- 		pcpu_init_value(htab, htab_elem_get_ptr(l_new, key_size),
- 				value, onallcpus);
- 		hlist_nulls_add_head_rcu(&l_new->hash_node, head);
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index b0383d371b9a..6c0bcec38100 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -1211,6 +1211,9 @@ enum {
- 
- /* Create a map that is suitable to be an inner map with dynamic max entries */
- 	BPF_F_INNER_MAP		= (1U << 12),
++	setup_libbpf();
 +
-+/* Flag for hash map, the key is string instead of fixed-size bytes */
-+	BPF_F_STR_KEY		= (1U << 13),
- };
- 
- /* Flags for BPF_PROG_QUERY. */
++	skel = str_htab_bench__open();
++	if (!skel) {
++		fprintf(stderr, "failed to open skeleton\n");
++		exit(1);
++	}
++
++	setup_keys(skel, args.key_size);
++
++	bpf_map__set_key_size(skel->maps.bytes_htab, args.key_size);
++	bpf_map__set_key_size(skel->maps.str_htab, args.key_size);
++
++	bpf_map__set_max_entries(skel->maps.bytes_htab, args.max_entries);
++	bpf_map__set_max_entries(skel->maps.str_htab, args.max_entries);
++
++	skel->bss->loops = args.max_entries;
++
++	err = str_htab_bench__load(skel);
++	if (err) {
++		fprintf(stderr, "failed to load skeleton\n");
++		str_htab_bench__destroy(skel);
++		exit(1);
++	}
++
++	str_htab_fill_map(skel, skel->maps.bytes_htab, args.max_entries);
++	str_htab_fill_map(skel, skel->maps.str_htab, args.max_entries);
++
++	ctx.skel = skel;
++}
++
++static void str_htab_attach_prog(struct bpf_program *prog)
++{
++	struct bpf_link *link;
++
++	link = bpf_program__attach(prog);
++	if (!link) {
++		fprintf(stderr, "failed to attach program!\n");
++		exit(1);
++	}
++}
++
++static void str_htab_bytes_lookup_setup(void)
++{
++	str_htab_setup();
++	str_htab_attach_prog(ctx.skel->progs.htab_bytes_lookup);
++}
++
++static void str_htab_str_lookup_setup(void)
++{
++	str_htab_setup();
++	str_htab_attach_prog(ctx.skel->progs.htab_str_lookup);
++}
++
++static void str_htab_bytes_update_setup(void)
++{
++	str_htab_setup();
++	str_htab_attach_prog(ctx.skel->progs.htab_bytes_update);
++}
++
++static void str_htab_str_update_setup(void)
++{
++	str_htab_setup();
++	str_htab_attach_prog(ctx.skel->progs.htab_str_update);
++}
++
++static void *str_htab_producer(void *ctx)
++{
++	while (true)
++		(void)syscall(__NR_getpgid);
++	return NULL;
++}
++
++static void *str_htab_consumer(void *ctx)
++{
++	return NULL;
++}
++
++static void str_htab_measure(struct bench_res *res)
++{
++	res->hits = atomic_swap(&ctx.skel->bss->hits, 0);
++	res->drops = atomic_swap(&ctx.skel->bss->drops, 0);
++}
++
++const struct bench bench_htab_bytes_lookup = {
++	.name = "htab-bytes-lookup",
++	.validate = str_htab_validate,
++	.setup = str_htab_bytes_lookup_setup,
++	.producer_thread = str_htab_producer,
++	.consumer_thread = str_htab_consumer,
++	.measure = str_htab_measure,
++	.report_progress = hits_drops_report_progress,
++	.report_final = hits_drops_report_final,
++};
++
++const struct bench bench_htab_str_lookup = {
++	.name = "htab-str-lookup",
++	.validate = str_htab_validate,
++	.setup = str_htab_str_lookup_setup,
++	.producer_thread = str_htab_producer,
++	.consumer_thread = str_htab_consumer,
++	.measure = str_htab_measure,
++	.report_progress = hits_drops_report_progress,
++	.report_final = hits_drops_report_final,
++};
++
++const struct bench bench_htab_bytes_update = {
++	.name = "htab-bytes-update",
++	.validate = str_htab_validate,
++	.setup = str_htab_bytes_update_setup,
++	.producer_thread = str_htab_producer,
++	.consumer_thread = str_htab_consumer,
++	.measure = str_htab_measure,
++	.report_progress = hits_drops_report_progress,
++	.report_final = hits_drops_report_final,
++};
++
++const struct bench bench_htab_str_update = {
++	.name = "htab-str-update",
++	.validate = str_htab_validate,
++	.setup = str_htab_str_update_setup,
++	.producer_thread = str_htab_producer,
++	.consumer_thread = str_htab_consumer,
++	.measure = str_htab_measure,
++	.report_progress = hits_drops_report_progress,
++	.report_final = hits_drops_report_final,
++};
+diff --git a/tools/testing/selftests/bpf/benchs/run_htab.sh b/tools/testing/selftests/bpf/benchs/run_htab.sh
+new file mode 100755
+index 000000000000..0a0bf98a05ab
+--- /dev/null
++++ b/tools/testing/selftests/bpf/benchs/run_htab.sh
+@@ -0,0 +1,14 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0
++
++source ./benchs/run_common.sh
++
++set -eufo pipefail
++
++for ks in 64 128 256 512 1024 2048 4096; do
++	for tp in bytes str; do
++		for op in lookup update; do
++			summarize ${ks}-${tp}-${op} "$($RUN_BENCH --key-size=$ks htab-${tp}-${op})"
++		done
++	done
++done
+diff --git a/tools/testing/selftests/bpf/progs/str_htab_bench.c b/tools/testing/selftests/bpf/progs/str_htab_bench.c
+new file mode 100644
+index 000000000000..c97070c648be
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/str_htab_bench.c
+@@ -0,0 +1,123 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (C) 2021. Huawei Technologies Co., Ltd */
++#include <linux/types.h>
++#include <linux/bpf.h>
++#include <bpf/bpf_helpers.h>
++#include <bpf/bpf_tracing.h>
++
++#define MAX_STR_KEY_SIZE 4096
++#define MAX_ENTRY_NR 1000
++
++/* key_size and max_entries will be set by htab benchmark */
++struct {
++	__uint(type, BPF_MAP_TYPE_HASH);
++	__uint(value_size, sizeof(__u32));
++} bytes_htab SEC(".maps");
++
++struct {
++	__uint(type, BPF_MAP_TYPE_HASH);
++	__uint(value_size, sizeof(__u32));
++	__uint(map_flags, BPF_F_STR_KEY);
++} str_htab SEC(".maps");
++
++char _license[] SEC("license") = "GPL";
++
++const char keys[MAX_ENTRY_NR][MAX_STR_KEY_SIZE];
++
++unsigned int loops = 0;
++long hits = 0;
++long drops = 0;
++
++static int lookup_bytes(__u32 index, void *data)
++{
++	unsigned int *value;
++
++	if (index >= MAX_ENTRY_NR)
++		return 1;
++
++	value = bpf_map_lookup_elem(&bytes_htab, keys[index]);
++	if (value)
++		__sync_add_and_fetch(&hits, 1);
++	else
++		__sync_add_and_fetch(&drops, 1);
++
++	return 0;
++}
++
++static int lookup_str(__u32 index, void *data)
++{
++	unsigned int *value;
++
++	if (index >= MAX_ENTRY_NR)
++		return 1;
++
++	value = bpf_map_lookup_elem(&str_htab, keys[index]);
++	if (value)
++		__sync_add_and_fetch(&hits, 1);
++	else
++		__sync_add_and_fetch(&drops, 1);
++
++	return 0;
++}
++
++static int update_bytes(__u32 index, void *data)
++{
++	unsigned int value = 2;
++	int err;
++
++	if (index >= MAX_ENTRY_NR)
++		return 1;
++
++	err = bpf_map_update_elem(&bytes_htab, keys[index], &value, BPF_EXIST);
++	if (!err)
++		__sync_add_and_fetch(&hits, 1);
++	else
++		__sync_add_and_fetch(&drops, 1);
++
++	return 0;
++}
++
++static int update_str(__u32 index, void *data)
++{
++	unsigned int value = 0;
++	int err;
++
++	if (index >= MAX_ENTRY_NR)
++		return 1;
++
++	err = bpf_map_update_elem(&str_htab, keys[index], &value, BPF_EXIST);
++	if (!err)
++		__sync_add_and_fetch(&hits, 1);
++	else
++		__sync_add_and_fetch(&drops, 1);
++
++	return 0;
++}
++
++SEC("tp/syscalls/sys_enter_getpgid")
++int htab_bytes_lookup(void *ctx)
++{
++	bpf_loop(loops, lookup_bytes, NULL, 0);
++	return 0;
++}
++
++SEC("tp/syscalls/sys_enter_getpgid")
++int htab_str_lookup(void *ctx)
++{
++	bpf_loop(loops, lookup_str, NULL, 0);
++	return 0;
++}
++
++SEC("tp/syscalls/sys_enter_getpgid")
++int htab_bytes_update(void *ctx)
++{
++	bpf_loop(loops, update_bytes, NULL, 0);
++	return 0;
++}
++
++SEC("tp/syscalls/sys_enter_getpgid")
++int htab_str_update(void *ctx)
++{
++	bpf_loop(loops, update_str, NULL, 0);
++	return 0;
++}
 -- 
 2.29.2
 
