@@ -2,75 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 11AC647A148
-	for <lists+netdev@lfdr.de>; Sun, 19 Dec 2021 17:32:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 13AB547A172
+	for <lists+netdev@lfdr.de>; Sun, 19 Dec 2021 17:56:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236105AbhLSQb4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Dec 2021 11:31:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49568 "EHLO
+        id S232988AbhLSQ4S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Dec 2021 11:56:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233228AbhLSQbz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Dec 2021 11:31:55 -0500
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61C12C061574
-        for <netdev@vger.kernel.org>; Sun, 19 Dec 2021 08:31:55 -0800 (PST)
-Received: by mail-ed1-x529.google.com with SMTP id f5so5684621edq.6
-        for <netdev@vger.kernel.org>; Sun, 19 Dec 2021 08:31:55 -0800 (PST)
+        with ESMTP id S229742AbhLSQ4R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Dec 2021 11:56:17 -0500
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B471C061574
+        for <netdev@vger.kernel.org>; Sun, 19 Dec 2021 08:56:17 -0800 (PST)
+Received: by mail-pj1-x1030.google.com with SMTP id a11-20020a17090a854b00b001b11aae38d6so7833526pjw.2
+        for <netdev@vger.kernel.org>; Sun, 19 Dec 2021 08:56:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:reply-to:sender:from:date:message-id:subject:to;
-        bh=y/WwzOufdV8bFjC2XhKxeIddPBCZMNKZVHLfMOMvj6I=;
-        b=K+h04FXwqLuOMsm5eGxOBZbmP7n16HKBRB+ayhz9q/p2sSgtu1XCoyTq83/RNg+ECd
-         XgPWzU2EnLHAihiDzi38SHVzKXqLfGFmzuEGbQQBC8vu6UMYuV9mYwKVL54IUOPxY0Cv
-         MxQiLP+eArCMHYx3aJ9O9JhQVEDCv+GZLYjuTyOpPWjp87CpQqXCpNGIWx19nB0sT/lQ
-         j0VU3YsyNqiyVJYn7hNWP9prorsdD+zcZruuBWC/UtZzGnvZ/yA/45WVQS8yKUsxSTM9
-         tX2aCclo/T+6CiMYYBWFzVxUppS4L6TuV9i8WX2+G+QgzSAPz+c1Smx/3ubU8cBAbB20
-         3Uxw==
+        h=mime-version:sender:from:date:message-id:subject:to;
+        bh=UrBhSSDbGBJb3L40+7f4vkbIDtPcUab8f9k44C3ah8Q=;
+        b=J7600C2VS3DCZB/+Nes+KpffRfOR9RMUf31dQSv2DOjNX04EliRGvrQYxPc7pIYR0T
+         qAynZDw4X0O9lfxWbpLuK+S5zqND3RDjqWNgptHzrkem0A6MfV5ltZ+MKs/AML/7SXz6
+         +877HAiCrqEI8y4X+eSnupr/0TAEr6WOswevCmYfdz2jyLwcRjXq5S9OebbhJ0eHw0Lc
+         Nw+yb/xz0NkLZ/O19df6ppodd2vtY7dwNq2+O1IiCsT8ws0bGl9+HOLtYL2hfeScTJJd
+         5N+AsTaSHySSprixJA0A1FeNKB2JXT50XkDOQ4+ed359rkiLIfNiMlGeNTEPC/cveu/o
+         Gp2Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:sender:from:date
-         :message-id:subject:to;
-        bh=y/WwzOufdV8bFjC2XhKxeIddPBCZMNKZVHLfMOMvj6I=;
-        b=Dbu1pknhLKAxURjux6o+wc/9KKVsWV5vUw7JT1ccvrYnqfiOLK+ugh++00CI1QKX4E
-         yXOQ2ymvXn9MDvot/Wh8/8pniQ1lKiT464eVBEASPrqs/02McUAIxeh/aBlvpuiMTs2I
-         66RiG6JJ4j6w/VilIl9p0+jzdlVqVFPjcDch1xC+P78iqjvUrCjMdRA9LoRd7cMJD33b
-         ozFHHMKaM3rr3rNW1H6etxYgbEVl/WY9keOCGU+e4EgFbsmZf7DVGSKOwi6qG2VKtr87
-         ysRGCOM9lRZPwbqsmKRLQPfDEe9F7oFG8+prGEAx0ZJb71FdxPj9IeCr6rBsZAKPwoLz
-         XAow==
-X-Gm-Message-State: AOAM5316N3PFBEViRN0UhfP0gu+DK+jTMuup7tLsZB2ICC989dOFb+31
-        OQfNq0WpFSlzi8P5sHgldb6EHTTlBa9Hh7lF0H4=
-X-Google-Smtp-Source: ABdhPJx3dokjuTlmX4aJz+2IrUFxl9r9Oj4J7ms5jCEMJN+JNDQh0UosBn7z256ISlAwb2KSagCxKpbvo9UlKNG2LXs=
-X-Received: by 2002:a05:6402:4c6:: with SMTP id n6mr11889072edw.230.1639931513684;
- Sun, 19 Dec 2021 08:31:53 -0800 (PST)
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to;
+        bh=UrBhSSDbGBJb3L40+7f4vkbIDtPcUab8f9k44C3ah8Q=;
+        b=MPzBgWtunKPgANkTHqjnb2RhDB6rTOK8VCj1uAl4re2IqidRT18Z+kyYizolQFLJfw
+         5M4RIV1axRpgb02AkIYMDF1uNPbBO1colxD/XH5COL+j4x3Gi6ENeoC8lukdzlOU7C6+
+         2HIxW/1sbP1UjuGbiw/5rcSr5StPd7H7LcnJJiwNn6AB7ZqbQVJZKH3W5AWokgNqociv
+         psf+H5XUUuOPngyDirkCmGVCwlWo1I4ww3uaYyyvpa0CnHRRGNt98i1AJmASxrwKZoh5
+         YV35vLWpxtPmZ8gTs6OBNNZ3v5tc0RCawkzBYN2stm79hVSwUD8oSERbIJf6D89n+gNQ
+         /wFg==
+X-Gm-Message-State: AOAM531RtoPe8xBCETVDWSizjshWQbhd/1dDe05mnr+CkglJdhMCiqND
+        fFM7Ny99+dGu5wf3zXjaBXvuNp+gg2UA3fkwAvE=
+X-Google-Smtp-Source: ABdhPJwCcTxypxBzIO7Lr5B1cyV3EpBTAGPd4Zwy+9vLCZZ/1myhENDH2v5yHDBL17fWB59w4vV/cZebMM2kK1ZcTE8=
+X-Received: by 2002:a17:90a:4f41:: with SMTP id w1mr11634435pjl.222.1639932976725;
+ Sun, 19 Dec 2021 08:56:16 -0800 (PST)
 MIME-Version: 1.0
-Reply-To: drtracywilliams89@gmail.com
-Sender: karimzongo8@gmail.com
-Received: by 2002:a17:907:60d5:0:0:0:0 with HTTP; Sun, 19 Dec 2021 08:31:53
+Sender: ekalu781@gmail.com
+Received: by 2002:a05:6a10:8e8f:0:0:0:0 with HTTP; Sun, 19 Dec 2021 08:56:14
  -0800 (PST)
-From:   "Dr. Tracy Williams" <tracy0wiliams@gmail.com>
-Date:   Sun, 19 Dec 2021 08:31:53 -0800
-X-Google-Sender-Auth: g0JHbfz4qDT8Jdrusz0RjYVKGGE
-Message-ID: <CACm4QYhRDtyjo1t2xKAF++ok7YasgF91f9vNQa0kCrzaH6VS=w@mail.gmail.com>
-Subject: From Dr. Tracy Williams.
+From:   Evelyn Philips <evelynphilips517@gmail.com>
+Date:   Sun, 19 Dec 2021 08:56:14 -0800
+X-Google-Sender-Auth: cF3ypTe-jTnL5w8W8bvRXxLyG_Q
+Message-ID: <CAMhqGO_UCJUruaVcbbRNcibHY6cSYYEWo7sPv44zNmc-9aAr7w@mail.gmail.com>
+Subject: Hello
 To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Dear,
+Hello,dear
+ I am sending the same message to you. My names are Mrs.Philips.
+Evelyn.a widow diagnosed with brain tumor disease which has gotten to
+a very bad stage, Please I want you to understand the most important
+reason why I am contacting you through this medium is because I need
+your sincerity and ability to carry out this transaction and fulfill
+my final wish in implementing the charitable investment project in
+your country as it requires absolute trust and devotion without any
+failure, which i believe that you will not expose this to anyone or
+betray this trust and confident that I am about to entrust on you for
+the mutual benefit of the orphans and the less privilege. I have some
+funds I inherited from my late husband, the sum of ($ 9,500,000.00
+Nine point five million dollars.) deposited with the Bank. Having
+known my present health condition, I decided to entrust this fund to
+you believing that you will utilize it the way i am going to instruct
+herein.
 
-how are you today,I hope you are doing great. It is my great pleasure
-to contact you,I want to make a new and special friend,I hope you
-don't mind. My name is Tracy Williams
-
-from the United States, Am a french and English nationality. I will
-give you pictures and more details about my self as soon as i hear
-from you in my email account bellow,
-Here is my email address; drtracywilliams89@gmail.com
-
-
-Please send your reply to my PRIVATE  mail box.
-Thanks,
-
-Tracy Williams.
+It will be my pleasure to compensate you as my Investment
+Manager/Partner with 35% percent of the total money for your effort in
+handling the transaction, 5% percent for any expenses or processing
+charges fee that will involve during this process while 60% of the
+fund will be Invested into the charity project there in your country.
+Therefore I am waiting for your prompt respond, if only you are
+interested in this humanitarian project for further details of the
+transaction and execution of this charitable project for the glory and
+honor of God the merciful compassionate. Your urgent reply will be
+appreciated.
+God bless you.
+Sincerely. Sister in Christ Mrs.Evelyn. Philips.
