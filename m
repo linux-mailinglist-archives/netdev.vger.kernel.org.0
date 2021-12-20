@@ -2,126 +2,304 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7678B47A313
-	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 01:19:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5335747A364
+	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 02:57:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236945AbhLTATW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Dec 2021 19:19:22 -0500
-Received: from mail-il1-f199.google.com ([209.85.166.199]:54094 "EHLO
-        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236924AbhLTATV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Dec 2021 19:19:21 -0500
-Received: by mail-il1-f199.google.com with SMTP id x8-20020a92dc48000000b002b2abc6e1cbso1371376ilq.20
-        for <netdev@vger.kernel.org>; Sun, 19 Dec 2021 16:19:21 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=l9fTUvv2W/zZfQTMkIdtNjjZgc0Pa7tFnb0ccwxYLoA=;
-        b=H2jvufn72h2gRkJh/cLJQ66+tmLHjwJJxz2CKaY/+mMFImiLBed5mJrvTw7twHf3kx
-         lqtSWFtK28L76CT3zmHi6efFUEeJmO9Vm+XNiUwky384kZpaXcF+2IYNQEZpk3yWL5A4
-         34B5odCMnq/2x8H6bmlCYxSCukS7rlz2pZtTSLTyiwZrcgma8CjB2x/XI6XBiDJUOdjd
-         dY3+uoWv0X5C5BDZYkGeE2C6meCq8U4ZRKovrRr/KvCGS2/vrW/RYoLnG52oL2cZ2eVG
-         SwdIR7Rt07nHbcOui+RBvvAf8xEjQjYOKu1qqNSkFnq5LJWIPbJXeNt9xRu6i6TUHc8o
-         GzdA==
-X-Gm-Message-State: AOAM533ZqXbhB5pA5h4NISBzyPCaT0lzSy9mpf0+vh43TcGo75uIq824
-        lrGuXNy3Bw/pZYefwpqrcL5ML0cwc2SJE8ppAj8/Jd2CTk74
-X-Google-Smtp-Source: ABdhPJxOGXB3IQKkBe2reRag0j8Rq6ERvZTRV6O7cNbr6KdgPOxJTSTD94OCKIG8rQvT1ZC7/hOsET7H6pUU7GB6/ETyoHXoyvHP
+        id S237117AbhLTB5W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Dec 2021 20:57:22 -0500
+Received: from prt-mail.chinatelecom.cn ([42.123.76.223]:38856 "EHLO
+        chinatelecom.cn" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S237009AbhLTB5V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Dec 2021 20:57:21 -0500
+HMM_SOURCE_IP: 172.18.0.48:41322.1319038439
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-10.133.11.244 (unknown [172.18.0.48])
+        by chinatelecom.cn (HERMES) with SMTP id 05C3D2800B0;
+        Mon, 20 Dec 2021 09:57:06 +0800 (CST)
+X-189-SAVE-TO-SEND: sunshouxin@chinatelecom.cn
+Received: from  ([172.18.0.48])
+        by app0024 with ESMTP id 5f4a6b2a3ed243a59ba8d22b833ad59b for eric.dumazet@gmail.com;
+        Mon, 20 Dec 2021 09:57:15 CST
+X-Transaction-ID: 5f4a6b2a3ed243a59ba8d22b833ad59b
+X-Real-From: sunshouxin@chinatelecom.cn
+X-Receive-IP: 172.18.0.48
+X-MEDUSA-Status: 0
+Sender: sunshouxin@chinatelecom.cn
+Message-ID: <eb4c1dfe-d7c6-3011-e550-7498ccd023d7@chinatelecom.cn>
+Date:   Mon, 20 Dec 2021 09:57:03 +0800
 MIME-Version: 1.0
-X-Received: by 2002:a92:c265:: with SMTP id h5mr1891529ild.36.1639959560697;
- Sun, 19 Dec 2021 16:19:20 -0800 (PST)
-Date:   Sun, 19 Dec 2021 16:19:20 -0800
-In-Reply-To: <0000000000007ea16705d0cfbb53@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000000fbea205d388d749@google.com>
-Subject: Re: [syzbot] kernel BUG in pskb_expand_head
-From:   syzbot <syzbot+4c63f36709a642f801c5@syzkaller.appspotmail.com>
-To:     anthony.l.nguyen@intel.com, davem@davemloft.net,
-        eric.dumazet@gmail.com, hawk@kernel.org,
-        intel-wired-lan-owner@osuosl.org, intel-wired-lan@lists.osuosl.org,
-        jesse.brandeburg@intel.com, kuba@kernel.org,
-        linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
-        mkl@pengutronix.de, netdev@vger.kernel.org, socketcan@hartkopp.net,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH V2] net: bonding: Add support for IPV6 ns/na
+To:     Eric Dumazet <eric.dumazet@gmail.com>, j.vosburgh@gmail.com,
+        vfalico@gmail.com, andy@greyhouse.net, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        huyd12@chinatelecom.cn
+References: <1639141691-3741-1-git-send-email-sunshouxin@chinatelecom.cn>
+ <dad92c6d-d5b2-38a9-a8ad-e36a6a987a79@gmail.com>
+From:   =?UTF-8?B?5a2Z5a6I6ZGr?= <sunshouxin@chinatelecom.cn>
+In-Reply-To: <dad92c6d-d5b2-38a9-a8ad-e36a6a987a79@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following issue on:
 
-HEAD commit:    434ed2138994 Merge branch 'tc-action-offload'
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=1722300db00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=7488eea316146357
-dashboard link: https://syzkaller.appspot.com/bug?extid=4c63f36709a642f801c5
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14141ca3b00000
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+4c63f36709a642f801c5@syzkaller.appspotmail.com
-
-skbuff: skb_over_panic: text:ffffffff88257728 len:4096 put:4096 head:ffff8880769c1400 data:ffff8880769c1400 tail:0x1000 end:0xc0 dev:<NULL>
-------------[ cut here ]------------
-kernel BUG at net/core/skbuff.c:113!
-invalid opcode: 0000 [#1] PREEMPT SMP KASAN
-CPU: 0 PID: 13 Comm: ksoftirqd/0 Not tainted 5.16.0-rc5-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:skb_panic+0x16c/0x16e net/core/skbuff.c:113 net/core/skbuff.c:113
-Code: f8 4c 8b 4c 24 10 8b 4b 70 41 56 45 89 e8 4c 89 e2 41 57 48 89 ee 48 c7 c7 a0 82 ad 8a ff 74 24 10 ff 74 24 20 e8 13 20 c2 ff <0f> 0b e8 6c 3d 35 f8 4c 8b 64 24 18 e8 f2 9e 7c f8 48 c7 c1 40 8f
-RSP: 0018:ffffc90000d279e0 EFLAGS: 00010286
-RAX: 000000000000008b RBX: ffff88801c5b8640 RCX: 0000000000000000
-RDX: ffff888011938000 RSI: ffffffff815f21d8 RDI: fffff520001a4f2e
-RBP: ffffffff8aad8f80 R08: 000000000000008b R09: 0000000000000000
-R10: ffffffff815ebf7e R11: 0000000000000000 R12: ffffffff88257728
-R13: 0000000000001000 R14: ffffffff8aad8260 R15: 00000000000000c0
-FS:  0000000000000000(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f14858bf718 CR3: 0000000072e5c000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- skb_over_panic net/core/skbuff.c:118 [inline]
- skb_over_panic net/core/skbuff.c:118 [inline] net/core/skbuff.c:1986
- skb_put.cold+0x24/0x24 net/core/skbuff.c:1986 net/core/skbuff.c:1986
- isotp_rcv_cf net/can/isotp.c:570 [inline]
- isotp_rcv_cf net/can/isotp.c:570 [inline] net/can/isotp.c:668
- isotp_rcv+0xa38/0x1e30 net/can/isotp.c:668 net/can/isotp.c:668
- deliver net/can/af_can.c:574 [inline]
- deliver net/can/af_can.c:574 [inline] net/can/af_can.c:635
- can_rcv_filter+0x445/0x8d0 net/can/af_can.c:635 net/can/af_can.c:635
- can_receive+0x31d/0x580 net/can/af_can.c:665 net/can/af_can.c:665
- can_rcv+0x120/0x1c0 net/can/af_can.c:696 net/can/af_can.c:696
- __netif_receive_skb_one_core+0x114/0x180 net/core/dev.c:5350 net/core/dev.c:5350
- __netif_receive_skb+0x24/0x1b0 net/core/dev.c:5464 net/core/dev.c:5464
- process_backlog+0x2a5/0x6c0 net/core/dev.c:5796 net/core/dev.c:5796
- __napi_poll+0xaf/0x440 net/core/dev.c:6364 net/core/dev.c:6364
- napi_poll net/core/dev.c:6431 [inline]
- napi_poll net/core/dev.c:6431 [inline] net/core/dev.c:6518
- net_rx_action+0x801/0xb40 net/core/dev.c:6518 net/core/dev.c:6518
- __do_softirq+0x29b/0x9c2 kernel/softirq.c:558 kernel/softirq.c:558
- run_ksoftirqd kernel/softirq.c:921 [inline]
- run_ksoftirqd kernel/softirq.c:921 [inline] kernel/softirq.c:913
- run_ksoftirqd+0x2d/0x60 kernel/softirq.c:913 kernel/softirq.c:913
- smpboot_thread_fn+0x645/0x9c0 kernel/smpboot.c:164 kernel/smpboot.c:164
- kthread+0x405/0x4f0 kernel/kthread.c:327 kernel/kthread.c:327
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295 arch/x86/entry/entry_64.S:295
- </TASK>
-Modules linked in:
----[ end trace 076cfcb09686117c ]---
-RIP: 0010:skb_panic+0x16c/0x16e net/core/skbuff.c:113 net/core/skbuff.c:113
-Code: f8 4c 8b 4c 24 10 8b 4b 70 41 56 45 89 e8 4c 89 e2 41 57 48 89 ee 48 c7 c7 a0 82 ad 8a ff 74 24 10 ff 74 24 20 e8 13 20 c2 ff <0f> 0b e8 6c 3d 35 f8 4c 8b 64 24 18 e8 f2 9e 7c f8 48 c7 c1 40 8f
-RSP: 0018:ffffc90000d279e0 EFLAGS: 00010286
-RAX: 000000000000008b RBX: ffff88801c5b8640 RCX: 0000000000000000
-RDX: ffff888011938000 RSI: ffffffff815f21d8 RDI: fffff520001a4f2e
-RBP: ffffffff8aad8f80 R08: 000000000000008b R09: 0000000000000000
-R10: ffffffff815ebf7e R11: 0000000000000000 R12: ffffffff88257728
-R13: 0000000000001000 R14: ffffffff8aad8260 R15: 00000000000000c0
-FS:  0000000000000000(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f14858bf718 CR3: 0000000072e5c000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-
+在 2021/12/14 16:05, Eric Dumazet 写道:
+>
+> On 12/10/21 5:08 AM, Sun Shouxin wrote:
+>> Since ipv6 neighbor solicitation and advertisement messages
+>> isn't handled gracefully in bonding6 driver, we can see packet
+>> drop due to inconsistency bewteen mac address in the option
+>> message and source MAC .
+>>
+>> Another examples is ipv6 neighbor solicitation and advertisement
+>> messages from VM via tap attached to host brighe, the src mac
+>> mighe be changed through balance-alb mode, but it is not synced
+>> with Link-layer address in the option message.
+>>
+>> The patch implements bond6's tx handle for ipv6 neighbor
+>> solicitation and advertisement messages.
+>>
+>>             Border-Leaf
+>>             /        \
+>>                /          \
+>>             Tunnel1    Tunnel2
+>>              /              \
+>>                 /                \
+>>           Leaf-1--Tunnel3--Leaf-2
+>>             \                /
+>>              \              /
+>>               \            /
+>>                \          /
+>>                NIC1    NIC2
+>>             \      /
+>>             server
+>>
+>> We can see in our lab the Border-Leaf receives occasionally
+>> a NA packet which is assigned to NIC1 mac in ND/NS option
+>> message, but actaully send out via NIC2 mac due to tx-alb,
+>> as a result, it will cause inconsistency between MAC table
+>> and ND Table in Border-Leaf, i.e, NIC1 = Tunnel2 in ND table
+>> and  NIC1 = Tunnel1 in mac table.
+>>
+>> And then, Border-Leaf starts to forward packet destinated
+>> to the Server, it will only check the ND table entry in some
+>> switch to encapsulate the destination MAC of the message as
+>> NIC1 MAC, and then send it out from Tunnel2 by ND table.
+>> Then, Leaf-2 receives the packet, it notices the destination
+>> MAC of message is NIC1 MAC and should forword it to Tunne1
+>> by Tunnel3.
+>>
+>> However, this traffic forward will be failure due to split
+>> horizon of VxLAN tunnels.
+>>
+>> Suggested-by: Hu Yadi <huyd12@chinatelecom.cn>
+>> Signed-off-by: Sun Shouxin <sunshouxin@chinatelecom.cn>
+>> ---
+>>   drivers/net/bonding/bond_alb.c | 131 
+>> +++++++++++++++++++++++++++++++++++++++++
+>>   1 file changed, 131 insertions(+)
+>>
+>> diff --git a/drivers/net/bonding/bond_alb.c 
+>> b/drivers/net/bonding/bond_alb.c
+>> index 533e476..afa386b 100644
+>> --- a/drivers/net/bonding/bond_alb.c
+>> +++ b/drivers/net/bonding/bond_alb.c
+>> @@ -22,6 +22,7 @@
+>>   #include <asm/byteorder.h>
+>>   #include <net/bonding.h>
+>>   #include <net/bond_alb.h>
+>> +#include <net/ndisc.h>
+>>     static const u8 mac_v6_allmcast[ETH_ALEN + 2] __long_aligned = {
+>>       0x33, 0x33, 0x00, 0x00, 0x00, 0x01
+>> @@ -1269,6 +1270,119 @@ static int alb_set_mac_address(struct bonding 
+>> *bond, void *addr)
+>>       return res;
+>>   }
+>>   +/*determine if the packet is NA or NS*/
+>> +static bool alb_determine_nd(struct icmp6hdr *hdr)
+>> +{
+>> +    if (hdr->icmp6_type == NDISC_NEIGHBOUR_ADVERTISEMENT ||
+>> +        hdr->icmp6_type == NDISC_NEIGHBOUR_SOLICITATION) {
+>> +        return true;
+>> +    }
+>> +
+>> +    return false;
+>> +}
+>> +
+>> +static void alb_change_nd_option(struct sk_buff *skb, void *data)
+>> +{
+>> +    struct nd_msg *msg = (struct nd_msg *)skb_transport_header(skb);
+>> +    struct nd_opt_hdr *nd_opt = (struct nd_opt_hdr *)msg->opt;
+>> +    struct net_device *dev = skb->dev;
+>> +    struct icmp6hdr *icmp6h = icmp6_hdr(skb);
+>> +    struct ipv6hdr *ip6hdr = ipv6_hdr(skb);
+>> +    u8 *lladdr = NULL;
+>> +    u32 ndoptlen = skb_tail_pointer(skb) - (skb_transport_header(skb) +
+>> +                offsetof(struct nd_msg, opt));
+>> +
+>> +    while (ndoptlen) {
+>> +        int l;
+>> +
+>> +        switch (nd_opt->nd_opt_type) {
+>> +        case ND_OPT_SOURCE_LL_ADDR:
+>> +        case ND_OPT_TARGET_LL_ADDR:
+>> +        lladdr = ndisc_opt_addr_data(nd_opt, dev);
+>> +        break;
+>> +
+>> +        default:
+>> +        lladdr = NULL;
+>> +        break;
+>> +        }
+>> +
+>> +        l = nd_opt->nd_opt_len << 3;
+>> +
+>> +        if (ndoptlen < l || l == 0)
+>> +            return;
+>> +
+>> +        if (lladdr) {
+>> +            memcpy(lladdr, data, dev->addr_len);
+>
+> I am not sure it is allowed to change skb content without
+>
+> making sure skb ->head is private.
+>
+> (Think of tcpdump -i slaveX : we want to see the packet content before 
+> your change)
+>
+> I would think skb_cow_head() or something similar is needed.
+>
+> This is tricky of course, since all cached pointers (icmp6h, ip6hdr, 
+> msg, nd_opt)
+>
+> would need to be fetched again, since skb->head/data might be changed
+>
+> by skb_cow_head().
+The tcpdump should show the last packet which sent off from NIC in the end.
+could you light me up specific conditions?
+>
+>
+>
+>
+>
+>> +            icmp6h->icmp6_cksum = 0;
+>> +
+>> +            icmp6h->icmp6_cksum = csum_ipv6_magic(&ip6hdr->saddr,
+>> +                                  &ip6hdr->daddr,
+>> +                        ntohs(ip6hdr->payload_len),
+>> +                        IPPROTO_ICMPV6,
+>> +                        csum_partial(icmp6h,
+>> +                                 ntohs(ip6hdr->payload_len), 0));
+>> +        }
+>> +        ndoptlen -= l;
+>> +        nd_opt = ((void *)nd_opt) + l;
+>> +    }
+>> +}
+>> +
+>> +static u8 *alb_get_lladdr(struct sk_buff *skb)
+>> +{
+>> +    struct nd_msg *msg = (struct nd_msg *)skb_transport_header(skb);
+>> +    struct nd_opt_hdr *nd_opt = (struct nd_opt_hdr *)msg->opt;
+>> +    struct net_device *dev = skb->dev;
+>> +    u8 *lladdr = NULL;
+>> +    u32 ndoptlen = skb_tail_pointer(skb) - (skb_transport_header(skb) +
+>> +                offsetof(struct nd_msg, opt));
+>> +
+>> +    while (ndoptlen) {
+>> +        int l;
+>> +
+>> +        switch (nd_opt->nd_opt_type) {
+>> +        case ND_OPT_SOURCE_LL_ADDR:
+>> +        case ND_OPT_TARGET_LL_ADDR:
+>> +            lladdr = ndisc_opt_addr_data(nd_opt, dev);
+>> +            break;
+>> +
+>> +        default:
+>> +            break;
+>> +        }
+>> +
+>> +        l = nd_opt->nd_opt_len << 3;
+>> +
+>> +        if (ndoptlen < l || l == 0)
+>> +            return lladdr;
+>
+>                          return NULL ?
+>
+>                     (or risk out-of-bound access ?)
+Thanks your comment, I'll adjust it and send out V4 soon.
+>
+>> +
+>> +        if (lladdr)
+>> +            return lladdr;
+>> +
+>> +        ndoptlen -= l;
+>> +        nd_opt = ((void *)nd_opt) + l;
+>> +    }
+>> +
+>> +    return lladdr;
+>> +}
+>> +
+>> +static void alb_set_nd_option(struct sk_buff *skb, struct bonding 
+>> *bond,
+>> +                  struct slave *tx_slave)
+>> +{
+>> +    struct ipv6hdr *ip6hdr;
+>> +    struct icmp6hdr *hdr = NULL;
+>> +
+>> +    if (skb->protocol == htons(ETH_P_IPV6)) {
+>> +        if (tx_slave && tx_slave !=
+>> +            rcu_access_pointer(bond->curr_active_slave)) {
+>> +            ip6hdr = ipv6_hdr(skb);
+>> +            if (ip6hdr->nexthdr == IPPROTO_ICMPV6) {
+>> +                hdr = icmp6_hdr(skb);
+>> +                if (alb_determine_nd(hdr))
+>> +                    alb_change_nd_option(skb, tx_slave->dev->dev_addr);
+>> +            }
+>> +        }
+>> +    }
+>> +}
+>> +
+>>   /************************ exported alb functions 
+>> ************************/
+>>     int bond_alb_initialize(struct bonding *bond, int rlb_enabled)
+>> @@ -1415,6 +1529,7 @@ struct slave *bond_xmit_alb_slave_get(struct 
+>> bonding *bond,
+>>       }
+>>       case ETH_P_IPV6: {
+>>           const struct ipv6hdr *ip6hdr;
+>> +        struct icmp6hdr *hdr = NULL;
+>>             /* IPv6 doesn't really use broadcast mac address, but leave
+>>            * that here just in case.
+>> @@ -1446,6 +1561,21 @@ struct slave *bond_xmit_alb_slave_get(struct 
+>> bonding *bond,
+>>               break;
+>>           }
+>>   +        if (ip6hdr->nexthdr == IPPROTO_ICMPV6) {
+>> +            hdr = icmp6_hdr(skb);
+>> +            if (alb_determine_nd(hdr)) {
+>> +                u8 *lladdr = NULL;
+>> +
+>> +                lladdr = alb_get_lladdr(skb);
+>> +                if (lladdr) {
+>> +                    if (!bond_slave_has_mac_rx(bond, lladdr)) {
+>> +                        do_tx_balance = false;
+>> +                        break;
+>> +                    }
+>> +                }
+>> +            }
+>> +        }
+>> +
+>>           hash_start = (char *)&ip6hdr->daddr;
+>>           hash_size = sizeof(ip6hdr->daddr);
+>>           break;
+>> @@ -1489,6 +1619,7 @@ netdev_tx_t bond_alb_xmit(struct sk_buff *skb, 
+>> struct net_device *bond_dev)
+>>       struct slave *tx_slave = NULL;
+>>         tx_slave = bond_xmit_alb_slave_get(bond, skb);
+>> +    alb_set_nd_option(skb, bond, tx_slave);
+>>       return bond_do_alb_xmit(skb, bond, tx_slave);
+>>   }
