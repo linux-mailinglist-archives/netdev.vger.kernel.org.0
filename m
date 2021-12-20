@@ -2,78 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EDA7047B449
-	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 21:21:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0200647B477
+	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 21:41:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230145AbhLTUVN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Dec 2021 15:21:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54324 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229531AbhLTUVM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Dec 2021 15:21:12 -0500
-Received: from mail-ua1-x92f.google.com (mail-ua1-x92f.google.com [IPv6:2607:f8b0:4864:20::92f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5B99C061574
-        for <netdev@vger.kernel.org>; Mon, 20 Dec 2021 12:21:12 -0800 (PST)
-Received: by mail-ua1-x92f.google.com with SMTP id a14so19917288uak.0
-        for <netdev@vger.kernel.org>; Mon, 20 Dec 2021 12:21:12 -0800 (PST)
+        id S229775AbhLTUk6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Dec 2021 15:40:58 -0500
+Received: from alexa-out.qualcomm.com ([129.46.98.28]:44270 "EHLO
+        alexa-out.qualcomm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229436AbhLTUk5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Dec 2021 15:40:57 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:sender:from:date:message-id:subject:to;
-        bh=7dkmx+X41ZzvkbxKZA6dYPVcqR/LnwZXMPscQj18tXQ=;
-        b=GO/omVliiM4bnSUMw56X4yQnIFl6etb7CmWJJE/rvV4k9tgrE6o87qRMCY0ejvsWQB
-         Y1UAUpHC1GkqELyb/8BiC+St0W4ds/Rxgdt+OJccNn5TydakeiH9sd5mXEVUyPHQE0pl
-         3/GeMvILuVh9BpHQzwfejyungFRbn/mTg1GCJjYR6hwxCGriWa8mCl0CzZd8GtVoNxeR
-         /KjDTB99/oUGrGz7xyYjdCRo3dBnjh2x8E+yz8k4YmwoAdedCcB7qTHOBt38z/IjF7Y1
-         lYBLvnBGsIPwr8Y6uUnyGePLr1L1jKWYlUshLPr5GQbsiUYtYxsQaKWuRSWbWwPaZzDW
-         /2XQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:sender:from:date
-         :message-id:subject:to;
-        bh=7dkmx+X41ZzvkbxKZA6dYPVcqR/LnwZXMPscQj18tXQ=;
-        b=fhVjD9gzQctmmxdrJ86EfBt58qw07pSZ+Ndq9dxFawljYESKAYP1nM7YyfAeWtkfxY
-         Xh5R/+JA3Qm6g2X6TTB28DWRAeRnSh+T2Kcm+h9RTRJLhE2J9Z4bnIqwsCWWoi/1Mfzi
-         CAzv99/fTv0FkLMvu06+6WS3KZPPJDZsymGJsCBoHM18RhPXkvF7vmn0lpmjaenlBnLg
-         H6Xh/Uc+hlbXoALdsNWtzjyRKest7WBil80lo6OgzQMzn5TI4Q907q9gynsUsfCHcDbx
-         iVlmkc3tGkpNJYA2USVFi02PF03kWl3pQeujYOK1fAAOywS5W0r+oBLd7yx41g4n9mRR
-         StYw==
-X-Gm-Message-State: AOAM533L9pC68Ay8Cs03cfOqVKpAUkvhwGpk5h5aMesyt9Mc3JAXB2/r
-        IFQLqfkvqmTX79XigcYA8XfH/1NfVGLYDeFlj1o=
-X-Google-Smtp-Source: ABdhPJxi+bsv1/vdGZiBhTdKNlaLfSzrRKjl1l8uCHikcfW1gfYpcmlrNZiuf2VCQ/MnaaEbue/U1o/F/52Pdc0y0BA=
-X-Received: by 2002:a67:2fc5:: with SMTP id v188mr5980492vsv.12.1640031671805;
- Mon, 20 Dec 2021 12:21:11 -0800 (PST)
-MIME-Version: 1.0
-Reply-To: fre0707lo@gmail.com
-Sender: miokholdme@gmail.com
-Received: by 2002:a59:a384:0:b0:246:1527:d7ca with HTTP; Mon, 20 Dec 2021
- 12:21:11 -0800 (PST)
-From:   "Ms. Lori" <udom4395@gmail.com>
-Date:   Mon, 20 Dec 2021 21:21:11 +0100
-X-Google-Sender-Auth: otPKZIFVfpGeGzv6w5U6B18VeNg
-Message-ID: <CAEfNbNMhJOPvhSpZS4wonyBcf==gzMPB=v1VUuhWMpSFyLTXCA@mail.gmail.com>
-Subject: Let's work together
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1640032857; x=1671568857;
+  h=from:to:cc:subject:date:message-id;
+  bh=7gcjqFEBl1z2FIEX9a6YE4vBVG8KWut/aOElnJSSrx4=;
+  b=YjVbEq+Uqn1vEafSbwy4Xfls3NO7LztXzhbStHJRf+b0NyWJJngbuHL/
+   TYE0yAh6tczk6MnT3Q4+wK2SCvsGH5oLhPLNKLaB69Dn4c9342DA/bwBU
+   jPDozy52UZnYWGtaRzHV/aC/SkepEBKtQXuxoFoOX1VIG2Gi2zKqxfned
+   w=;
+Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
+  by alexa-out.qualcomm.com with ESMTP; 20 Dec 2021 12:40:57 -0800
+X-QCInternal: smtphost
+Received: from hu-twear-lv.qualcomm.com (HELO hu-devc-lv-u18-c.qualcomm.com) ([10.47.234.142])
+  by ironmsg08-lv.qualcomm.com with ESMTP; 20 Dec 2021 12:40:56 -0800
+Received: by hu-devc-lv-u18-c.qualcomm.com (Postfix, from userid 202676)
+        id C5C4C500177; Mon, 20 Dec 2021 12:40:36 -0800 (PST)
+From:   Tyler Wear <quic_twear@quicinc.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     Tyler Wear <quic_twear@quicinc.com>
+Subject: [PATCH] Bpf Helper Function BPF_FUNC_skb_change_dsfield
+Date:   Mon, 20 Dec 2021 12:40:34 -0800
+Message-Id: <20211220204034.24443-1-quic_twear@quicinc.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear friend,
+New bpf helper function BPF_FUNC_skb_change_dsfield
+"int bpf_skb_change_dsfield(struct sk_buff *skb, u8 mask, u8 value)".
+BPF_PROG_TYPE_CGROUP_SKB typed bpf_prog which currently can
+be attached to the ingress and egress path. The helper is needed
+because this type of bpf_prog cannot modify the skb directly.
 
-My name is Ms. Lori from USA. I work as a Foreign Operations Manager
-at a reputable bank. I am the account manager for one of our deceased
-clients, an oil and gas contractor who died of a heart attack in 2012.
-He had a fixed deposit account with our bank worth $6.3 million. And
-he didn't specify a next heir when he opened the account. He died
-without any closest registered relative as he had been divorced for a
-long time and had no children. I decided to contact you for our mutual
-benefit, knowing that you have the same last name as my deceased
-client.
+Used by a bpf_prog to specify DS field values on egress or
+ingress.
 
-I am very pleased to see your name and I look forward to your
-cooperation in presenting you as the next successor to this fund and I
-guarantee that this will be done under a legitimate arrangement that
-will protect us from any breach of the law. And for your participation
-in this transaction, you will receive 50% after the money is
-transferred to you, and 50% for me. If you are interested, please
-contact me for more procedures.
+Signed-off-by: Tyler Wear <quic_twear@quicinc.com>
+---
+ include/uapi/linux/bpf.h |  9 ++++++++
+ net/core/filter.c        | 46 ++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 55 insertions(+)
+
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index 556216dc9703..742cea7dcf8c 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -3742,6 +3742,14 @@ union bpf_attr {
+  * 	Return
+  * 		The helper returns **TC_ACT_REDIRECT** on success or
+  * 		**TC_ACT_SHOT** on error.
++ *
++ * long bpf_skb_change_dsfield(struct sk_buff *skb, u8 mask, u8 value)
++ *	Description
++ *		Set DS field of IP header to the specified *value*. The *value*
++ *		is masked with the provided *mask* when ds field is updated.
++ *		Works with IPv6 and IPv4.
++ *	Return
++ *		1 if the DS field is set, 0 if it is not set.
+  */
+ #define __BPF_FUNC_MAPPER(FN)		\
+ 	FN(unspec),			\
+@@ -3900,6 +3908,7 @@ union bpf_attr {
+ 	FN(per_cpu_ptr),		\
+ 	FN(this_cpu_ptr),		\
+ 	FN(redirect_peer),		\
++	FN(skb_change_dsfield),		\
+ 	/* */
+ 
+ /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 035d66227ae2..71ea943c8059 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -6402,6 +6402,50 @@ BPF_CALL_1(bpf_skb_ecn_set_ce, struct sk_buff *, skb)
+ 	return INET_ECN_set_ce(skb);
+ }
+ 
++BPF_CALL_3(bpf_skb_change_dsfield, struct sk_buff *, skb, u8, mask, u8, value)
++{
++	unsigned int iphdr_len;
++
++	switch (skb_protocol(skb, true)) {
++	case cpu_to_be16(ETH_P_IP):
++		iphdr_len = sizeof(struct iphdr);
++		break;
++	case cpu_to_be16(ETH_P_IPV6):
++		iphdr_len = sizeof(struct ipv6hdr);
++		break;
++	default:
++		return 0;
++	}
++
++	if (skb_headlen(skb) < iphdr_len)
++		return 0;
++
++	if (skb_cloned(skb) && !skb_clone_writable(skb, iphdr_len))
++		return 0;
++
++	switch (skb_protocol(skb, true)) {
++	case cpu_to_be16(ETH_P_IP):
++		ipv4_change_dsfield(ipip_hdr(skb), mask, value);
++		break;
++	case cpu_to_be16(ETH_P_IPV6):
++		ipv6_change_dsfield(ipv6_hdr(skb), mask, value);
++		break;
++	default:
++		return 0;
++	}
++
++	return 1;
++}
++
++static const struct bpf_func_proto bpf_skb_change_dsfield_proto = {
++	.func           = bpf_skb_change_dsfield,
++	.gpl_only       = false,
++	.ret_type       = RET_INTEGER,
++	.arg1_type      = ARG_PTR_TO_CTX,
++	.arg2_type      = ARG_ANYTHING,
++	.arg3_type      = ARG_ANYTHING,
++};
++
+ bool bpf_xdp_sock_is_valid_access(int off, int size, enum bpf_access_type type,
+ 				  struct bpf_insn_access_aux *info)
+ {
+@@ -7057,6 +7101,8 @@ cg_skb_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+ 		return &bpf_get_listener_sock_proto;
+ 	case BPF_FUNC_skb_ecn_set_ce:
+ 		return &bpf_skb_ecn_set_ce_proto;
++	case BPF_FUNC_skb_change_dsfield:
++		return &bpf_skb_change_dsfield_proto;
+ #endif
+ 	default:
+ 		return sk_filter_func_proto(func_id, prog);
+-- 
+2.17.1
+
