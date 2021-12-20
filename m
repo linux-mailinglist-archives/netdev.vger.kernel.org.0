@@ -2,107 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CF0547A3AF
-	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 03:37:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2992D47A3BB
+	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 04:00:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237275AbhLTCho (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Dec 2021 21:37:44 -0500
-Received: from smtp23.cstnet.cn ([159.226.251.23]:43310 "EHLO cstnet.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231167AbhLTChn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 19 Dec 2021 21:37:43 -0500
-Received: from localhost.localdomain (unknown [124.16.138.126])
-        by APP-03 (Coremail) with SMTP id rQCowAAXHFhc7L9hSNLiAw--.45968S2;
-        Mon, 20 Dec 2021 10:37:16 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com,
-        davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        kpsingh@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: [PATCH v4] sfc: potential dereference null pointer of rx_queue->page_ring
-Date:   Mon, 20 Dec 2021 10:37:15 +0800
-Message-Id: <20211220023715.746815-1-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+        id S237301AbhLTDAR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Dec 2021 22:00:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44338 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231167AbhLTDAQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Dec 2021 22:00:16 -0500
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62499C061574;
+        Sun, 19 Dec 2021 19:00:16 -0800 (PST)
+Received: by mail-pl1-x62c.google.com with SMTP id m24so6919388pls.10;
+        Sun, 19 Dec 2021 19:00:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=uO7Nod4MihX5QhcjP+eT/44K4BJ2U8rVUr20mbnNgEk=;
+        b=PayumOENrgE4Xp9YQwwE8UjEpth3Z4kQdwF22tv12oWBgGYJLfZpq2OBSxCUuF63OK
+         szK0LRmzvWMvAZKM3XnlmmkTeU2n+HOxA75ihQ8/ie2mmT+Pgs0B3dyFzIf1ci3rgTaP
+         TPS3MVaLXlTFntOfN1YyJQYUsV0tpSLetOOcGbbzGvTWKMRerxrfb5hY+e6jsWbIcyQ4
+         nS0vIWyT1JnDZjHVoIBckdxH/A+z43cg4qs4c7umXebVgJ7+qbQSqbnYIR6WnnCRf3F0
+         uhwSd/9D+bM09dmG2h4crOxy4mVbMxWbrwN65SC0jTv2K8l8e56acnTYiAgA+vYcnD+M
+         AzqA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=uO7Nod4MihX5QhcjP+eT/44K4BJ2U8rVUr20mbnNgEk=;
+        b=M2HoNOqRreuWEdQY++xWeT/hULL1bKGoerCMz3AQlMTEz/+8OBrTKmxun2Lij4q7YE
+         yKp1iWm81p1qTY1zIpVlAUPhjJJrNRuny9VZyAYF/dXiLUSm6fdztJr9hrcedF9f/7oK
+         rBWx2UFztucbNNJ5H1YVDgPPz7Bt9YbkGuIcIAMT2rTBFKnViJkCJUApE6cDGNHKlM2/
+         DguYyRQnWNDNHOrLXFcMJXJCCFMVrX+XYyfUqPjW+35NV2SKEkA1wso2upOndcqg79oQ
+         LqFnf/10f8ZPYs/EsxaDIS26/KrjoDdW2d28RTTPEqkrZwXt2lpjn+4dOCTDrz3uIxx8
+         3jVA==
+X-Gm-Message-State: AOAM531dpbBef7+WVHW8lb3069nkDyJ0/VCJhFE2HGGGG8TFsPNBp3U0
+        HzauQzagi3DeyDTuVsoPIFw=
+X-Google-Smtp-Source: ABdhPJw6dInBNPmUcpWVUkd0PF7rjNIeHaUtRe9K6/aTcKNTYzAreBJFpyUkcI1mAOAcKV4bBPbOJg==
+X-Received: by 2002:a17:90b:4c11:: with SMTP id na17mr13766751pjb.136.1639969215885;
+        Sun, 19 Dec 2021 19:00:15 -0800 (PST)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:9150])
+        by smtp.gmail.com with ESMTPSA id p7sm2873018pjg.35.2021.12.19.19.00.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 19 Dec 2021 19:00:15 -0800 (PST)
+Date:   Sun, 19 Dec 2021 19:00:13 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Hou Tao <houtao1@huawei.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, yunbo.xufeng@linux.alibaba.com
+Subject: Re: [RFC PATCH bpf-next 0/3] support string key for hash-table
+Message-ID: <20211220030013.4jsnm367ckl5ksi5@ast-mbp.dhcp.thefacebook.com>
+References: <20211219052245.791605-1-houtao1@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: rQCowAAXHFhc7L9hSNLiAw--.45968S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7AFWUAw17KFWxJr1xJF1rXrb_yoW8uF4Upa
-        1xK3srZa1ktw45Za4kuw4kZF98AasxtFWxWrySk3yrZwn5AF1UZrnrtF98ur4vyrWDWF12
-        yrW3ZFnIyF4DJwUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUU9j14x267AKxVW5JVWrJwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26ryj6F1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
-        JVWxJr1l84ACjcxK6I8E87Iv67AKxVWxJr0_GcWl84ACjcxK6I8E87Iv6xkF7I0E14v26F
-        4UJVW0owAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv
-        7VC0I7IYx2IY67AKxVWUGVWUXwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r
-        1j6r4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02
-        628vn2kIc2xKxwCY02Avz4vE14v_Gr1l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7
-        v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF
-        1VAY17CE14v26r4a6rW5MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIx
-        AIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVW3JVWrJr1l
-        IxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvf
-        C2KfnxnUUI43ZEXa7VU1FAp5UUUUU==
-X-Originating-IP: [124.16.138.126]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211219052245.791605-1-houtao1@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The return value of kcalloc() needs to be checked.
-To avoid dereference of null pointer in case of the failure of alloc,
-such as efx_fini_rx_recycle_ring().
-Therefore, it should be better to change the definition of page_ptr_mask
-to signed int and then assign the page_ptr_mask to -1 when page_ring is
-NULL, in order to avoid the use in the loop.
+On Sun, Dec 19, 2021 at 01:22:42PM +0800, Hou Tao wrote:
+> Hi,
+> 
+> In order to use string as hash-table key, key_size must be the storage
+> size of longest string. If there are large differencies in string
+> length, the hash distribution will be sub-optimal due to the unused
+> zero bytes in shorter strings and the lookup will be inefficient due to
+> unnecessary memcpy().
+> 
+> Also it is possible the unused part of string key returned from bpf helper
+> (e.g. bpf_d_path) is not mem-zeroed and if using it directly as lookup key,
+> the lookup will fail with -ENOENT (as reported in [1]).
+> 
+> The patchset tries to address the inefficiency by adding support for
+> string key. During the key comparison, the string length is checked
+> first to reduce the uunecessary memcmp. Also update the hash function
+> from jhash() to full_name_hash() to reduce hash collision of string key.
+> 
+> There are about 16% and 106% improvment in benchmark under x86-64 and
+> arm64 when key_size is 256. About 45% and %161 when key size is greater
+> than 1024.
+> 
+> Also testing the performance improvment by using all files under linux
+> kernel sources as the string key input. There are about 74k files and the
+> maximum string length is 101. When key_size is 104, there are about 9%
+> and 35% win under x86-64 and arm64 in lookup performance, and when key_size
+> is 256, the win increases to 78% and 109% respectively.
+> 
+> Beside the optimization of lookup for string key, it seems that the
+> allocated space for BPF_F_NO_PREALLOC-case can also be optimized. More
+> trials and tests will be conducted if the idea of string key is accepted.
 
-Fixes: 5a6681e22c14 ("sfc: separate out SFC4000 ("Falcon") support into new sfc-falcon driver")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
----
-Changelog:
-
-v3 -> v4
-
-*Change 1. Casade return -ENOMEM when alloc fails and deal with the
-error.
-*Change 2. Set size to -1 instead of return error.
-*Change 3. Change the Fixes tag.
----
- drivers/net/ethernet/sfc/net_driver.h | 2 +-
- drivers/net/ethernet/sfc/rx_common.c  | 5 ++++-
- 2 files changed, 5 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/sfc/net_driver.h b/drivers/net/ethernet/sfc/net_driver.h
-index 9b4b25704271..beba3e0a6027 100644
---- a/drivers/net/ethernet/sfc/net_driver.h
-+++ b/drivers/net/ethernet/sfc/net_driver.h
-@@ -407,7 +407,7 @@ struct efx_rx_queue {
- 	unsigned int page_recycle_count;
- 	unsigned int page_recycle_failed;
- 	unsigned int page_recycle_full;
--	unsigned int page_ptr_mask;
-+	int page_ptr_mask;
- 	unsigned int max_fill;
- 	unsigned int fast_fill_trigger;
- 	unsigned int min_fill;
-diff --git a/drivers/net/ethernet/sfc/rx_common.c b/drivers/net/ethernet/sfc/rx_common.c
-index 68fc7d317693..d9d0a5805f1c 100644
---- a/drivers/net/ethernet/sfc/rx_common.c
-+++ b/drivers/net/ethernet/sfc/rx_common.c
-@@ -150,7 +150,10 @@ static void efx_init_rx_recycle_ring(struct efx_rx_queue *rx_queue)
- 					    efx->rx_bufs_per_page);
- 	rx_queue->page_ring = kcalloc(page_ring_size,
- 				      sizeof(*rx_queue->page_ring), GFP_KERNEL);
--	rx_queue->page_ptr_mask = page_ring_size - 1;
-+	if (!rx_queue->page_ring)
-+		rx_queue->page_ptr_mask = -1;
-+	else
-+		rx_queue->page_ptr_mask = page_ring_size - 1;
- }
- 
- static void efx_fini_rx_recycle_ring(struct efx_rx_queue *rx_queue)
--- 
-2.25.1
-
+It will work when the key is a string. Sooner or later somebody would need
+the key to be a string and few other integers or pointers.
+This approach will not be usable.
+Much worse, this approach will be impossible to extend.
+Have you considered a more generic string support?
+Make null terminated string to be a fist class citizen.
+wdyt?
