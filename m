@@ -2,156 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0481E47A3A8
-	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 03:31:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 084CF47A3AB
+	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 03:35:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237264AbhLTCbP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Dec 2021 21:31:15 -0500
-Received: from pi.codeconstruct.com.au ([203.29.241.158]:37288 "EHLO
-        codeconstruct.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230024AbhLTCbP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Dec 2021 21:31:15 -0500
-Received: by codeconstruct.com.au (Postfix, from userid 10001)
-        id E14EE2022C; Mon, 20 Dec 2021 10:31:13 +0800 (AWST)
-From:   Matt Johnston <matt@codeconstruct.com.au>
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jeremy Kerr <jk@codeconstruct.com.au>
-Subject: [PATCH net-next v3] mctp: emit RTM_NEWADDR and RTM_DELADDR
-Date:   Mon, 20 Dec 2021 10:31:04 +0800
-Message-Id: <20211220023104.1965509-1-matt@codeconstruct.com.au>
-X-Mailer: git-send-email 2.32.0
+        id S237277AbhLTCf2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Dec 2021 21:35:28 -0500
+Received: from smtp23.cstnet.cn ([159.226.251.23]:42644 "EHLO cstnet.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S237275AbhLTCf1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 19 Dec 2021 21:35:27 -0500
+Received: from localhost.localdomain (unknown [124.16.138.126])
+        by APP-03 (Coremail) with SMTP id rQCowAAnLlrY679hNsfiAw--.47507S2;
+        Mon, 20 Dec 2021 10:35:04 +0800 (CST)
+From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
+To:     ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, unixbhaskar@gmail.com,
+        rdunlap@infradead.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Subject: [PATCH v3] sfc: falcon: potential dereference null pointer of rx_queue->page_ring
+Date:   Mon, 20 Dec 2021 10:35:03 +0800
+Message-Id: <20211220023503.746762-1-jiasheng@iscas.ac.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+X-CM-TRANSID: rQCowAAnLlrY679hNsfiAw--.47507S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7AFWUAw17KFW7Kr1UtF13Jwb_yoW8uF18pa
+        1xK347Za18Jw4Yyas7Cw4kZFn8Jas3tFWxWF1Sk3yrZw15AF1UZr1kKFy5ur4IyrWDWF12
+        yrWYvFnFqF4DJw7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUkl14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26ryj6F1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
+        6F4UM28EF7xvwVC2z280aVAFwI0_Cr1j6rxdM28EF7xvwVC2z280aVCY1x0267AKxVWxJr
+        0_GcWle2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
+        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
+        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc2xSY4AK67AK6r4U
+        MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr
+        0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0E
+        wIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJV
+        W8JwCI42IY6xAIw20EY4v20xvaj40_Wr1j6rW3Jr1lIxAIcVC2z280aVAFwI0_Jr0_Gr1l
+        IxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUbpwZ7UUUU
+        U==
+X-Originating-IP: [124.16.138.126]
+X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Userspace can receive notification of MCTP address changes via
-RTNLGRP_MCTP_IFADDR rtnetlink multicast group.
+The return value of kcalloc() needs to be checked.
+To avoid dereference of null pointer in case of the failure of alloc,
+such as ef4_fini_rx_queue().
+Therefore, it should be better to change the definition of page_ptr_mask
+to signed int and then assign the page_ptr_mask to -1 when page_ring is
+NULL, in order to avoid the use in the loop.
 
-Signed-off-by: Matt Johnston <matt@codeconstruct.com.au>
+Fixes: 5a6681e22c14 ("sfc: separate out SFC4000 ("Falcon") support into new sfc-falcon driver")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 ---
-v2: Simplify error return path, fix local variable ordering
-v3: Fix address size for nlmsg allocation, warn on undersized
----
- include/uapi/linux/rtnetlink.h |  2 ++
- net/mctp/device.c              | 53 ++++++++++++++++++++++++++++++----
- 2 files changed, 50 insertions(+), 5 deletions(-)
+Changelog:
 
-diff --git a/include/uapi/linux/rtnetlink.h b/include/uapi/linux/rtnetlink.h
-index 5888492a5257..93d934cc4613 100644
---- a/include/uapi/linux/rtnetlink.h
-+++ b/include/uapi/linux/rtnetlink.h
-@@ -754,6 +754,8 @@ enum rtnetlink_groups {
- #define RTNLGRP_NEXTHOP		RTNLGRP_NEXTHOP
- 	RTNLGRP_BRVLAN,
- #define RTNLGRP_BRVLAN		RTNLGRP_BRVLAN
-+	RTNLGRP_MCTP_IFADDR,
-+#define RTNLGRP_MCTP_IFADDR	RTNLGRP_MCTP_IFADDR
- 	__RTNLGRP_MAX
- };
- #define RTNLGRP_MAX	(__RTNLGRP_MAX - 1)
-diff --git a/net/mctp/device.c b/net/mctp/device.c
-index 8799ee77e7b7..ef2755f82f87 100644
---- a/net/mctp/device.c
-+++ b/net/mctp/device.c
-@@ -35,14 +35,24 @@ struct mctp_dev *mctp_dev_get_rtnl(const struct net_device *dev)
- 	return rtnl_dereference(dev->mctp_ptr);
+v2 -> v3
+
+*Change 1. Alter the "ret" to 'rc' and cleanup the rx_queue and tx_queue when alloc fails.
+*Change 2. Set size to -1 instead of return error.
+---
+ drivers/net/ethernet/sfc/falcon/net_driver.h | 2 +-
+ drivers/net/ethernet/sfc/falcon/rx.c         | 5 ++++-
+ 2 files changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/sfc/falcon/net_driver.h b/drivers/net/ethernet/sfc/falcon/net_driver.h
+index a381cf9ec4f3..2990563c8832 100644
+--- a/drivers/net/ethernet/sfc/falcon/net_driver.h
++++ b/drivers/net/ethernet/sfc/falcon/net_driver.h
+@@ -345,7 +345,7 @@ struct ef4_rx_queue {
+ 	unsigned int page_recycle_count;
+ 	unsigned int page_recycle_failed;
+ 	unsigned int page_recycle_full;
+-	unsigned int page_ptr_mask;
++	int page_ptr_mask;
+ 	unsigned int max_fill;
+ 	unsigned int fast_fill_trigger;
+ 	unsigned int min_fill;
+diff --git a/drivers/net/ethernet/sfc/falcon/rx.c b/drivers/net/ethernet/sfc/falcon/rx.c
+index 966f13e7475d..328ad0685f59 100644
+--- a/drivers/net/ethernet/sfc/falcon/rx.c
++++ b/drivers/net/ethernet/sfc/falcon/rx.c
+@@ -728,7 +728,10 @@ static void ef4_init_rx_recycle_ring(struct ef4_nic *efx,
+ 					    efx->rx_bufs_per_page);
+ 	rx_queue->page_ring = kcalloc(page_ring_size,
+ 				      sizeof(*rx_queue->page_ring), GFP_KERNEL);
+-	rx_queue->page_ptr_mask = page_ring_size - 1;
++	if (!rx_queue->page_ring)
++		rx_queue->page_ptr_mask = -1;
++	else
++		rx_queue->page_ptr_mask = page_ring_size - 1;
  }
  
--static int mctp_fill_addrinfo(struct sk_buff *skb, struct netlink_callback *cb,
--			      struct mctp_dev *mdev, mctp_eid_t eid)
-+static int mctp_addrinfo_size(void)
-+{
-+	return NLMSG_ALIGN(sizeof(struct ifaddrmsg))
-+		+ nla_total_size(1) // IFA_LOCAL
-+		+ nla_total_size(1) // IFA_ADDRESS
-+		;
-+}
-+
-+/* flag should be NLM_F_MULTI for dump calls */
-+static int mctp_fill_addrinfo(struct sk_buff *skb,
-+			      struct mctp_dev *mdev, mctp_eid_t eid,
-+			      int msg_type, u32 portid, u32 seq, int flag)
- {
- 	struct ifaddrmsg *hdr;
- 	struct nlmsghdr *nlh;
- 
--	nlh = nlmsg_put(skb, NETLINK_CB(cb->skb).portid, cb->nlh->nlmsg_seq,
--			RTM_NEWADDR, sizeof(*hdr), NLM_F_MULTI);
-+	nlh = nlmsg_put(skb, portid, seq,
-+			msg_type, sizeof(*hdr), flag);
- 	if (!nlh)
- 		return -EMSGSIZE;
- 
-@@ -72,10 +82,14 @@ static int mctp_dump_dev_addrinfo(struct mctp_dev *mdev, struct sk_buff *skb,
- 				  struct netlink_callback *cb)
- {
- 	struct mctp_dump_cb *mcb = (void *)cb->ctx;
-+	u32 portid, seq;
- 	int rc = 0;
- 
-+	portid = NETLINK_CB(cb->skb).portid;
-+	seq = cb->nlh->nlmsg_seq;
- 	for (; mcb->a_idx < mdev->num_addrs; mcb->a_idx++) {
--		rc = mctp_fill_addrinfo(skb, cb, mdev, mdev->addrs[mcb->a_idx]);
-+		rc = mctp_fill_addrinfo(skb, mdev, mdev->addrs[mcb->a_idx],
-+					RTM_NEWADDR, portid, seq, NLM_F_MULTI);
- 		if (rc < 0)
- 			break;
- 	}
-@@ -127,6 +141,32 @@ static int mctp_dump_addrinfo(struct sk_buff *skb, struct netlink_callback *cb)
- 	return skb->len;
- }
- 
-+static void mctp_addr_notify(struct mctp_dev *mdev, mctp_eid_t eid, int msg_type,
-+			     struct sk_buff *req_skb, struct nlmsghdr *req_nlh)
-+{
-+	u32 portid = NETLINK_CB(req_skb).portid;
-+	struct net *net = dev_net(mdev->dev);
-+	struct sk_buff *skb;
-+	int rc = -ENOBUFS;
-+
-+	skb = nlmsg_new(mctp_addrinfo_size(), GFP_KERNEL);
-+	if (!skb)
-+		goto out;
-+
-+	rc = mctp_fill_addrinfo(skb, mdev, eid, msg_type,
-+				portid, req_nlh->nlmsg_seq, 0);
-+	if (rc < 0) {
-+		WARN_ON_ONCE(rc == -EMSGSIZE);
-+		goto out;
-+	}
-+
-+	rtnl_notify(skb, net, portid, RTNLGRP_MCTP_IFADDR, req_nlh, GFP_KERNEL);
-+	return;
-+out:
-+	kfree_skb(skb);
-+	rtnl_set_sk_err(net, RTNLGRP_MCTP_IFADDR, rc);
-+}
-+
- static const struct nla_policy ifa_mctp_policy[IFA_MAX + 1] = {
- 	[IFA_ADDRESS]		= { .type = NLA_U8 },
- 	[IFA_LOCAL]		= { .type = NLA_U8 },
-@@ -189,6 +229,7 @@ static int mctp_rtm_newaddr(struct sk_buff *skb, struct nlmsghdr *nlh,
- 
- 	kfree(tmp_addrs);
- 
-+	mctp_addr_notify(mdev, addr->s_addr, RTM_NEWADDR, skb, nlh);
- 	mctp_route_add_local(mdev, addr->s_addr);
- 
- 	return 0;
-@@ -244,6 +285,8 @@ static int mctp_rtm_deladdr(struct sk_buff *skb, struct nlmsghdr *nlh,
- 	mdev->num_addrs--;
- 	spin_unlock_irqrestore(&mdev->addrs_lock, flags);
- 
-+	mctp_addr_notify(mdev, addr->s_addr, RTM_DELADDR, skb, nlh);
-+
- 	return 0;
- }
- 
+ void ef4_init_rx_queue(struct ef4_rx_queue *rx_queue)
 -- 
-2.32.0
+2.25.1
 
