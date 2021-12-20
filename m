@@ -2,88 +2,285 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8390547B028
-	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 16:26:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 63EA647AF37
+	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 16:10:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240188AbhLTP0d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Dec 2021 10:26:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41838 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237887AbhLTPZx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Dec 2021 10:25:53 -0500
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26CB3C0613B5
-        for <netdev@vger.kernel.org>; Mon, 20 Dec 2021 07:08:28 -0800 (PST)
-Received: by mail-wr1-x435.google.com with SMTP id v7so13432383wrv.12
-        for <netdev@vger.kernel.org>; Mon, 20 Dec 2021 07:08:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=Mut6sTJqrmjkF+nczkzRDvMd7O7SVKNWZ6apQjw6YYM=;
-        b=qMA/fLPQbt6sbqhJ2lKB0kEwnUIyFJkt28sibRm/aMCLkmA6wXUeeri6UPpZx6DO+f
-         ZPLRSWm1acIkp7K4tZxkMMSuUlr8e2bfvAe9yGJwF48G2MfzC4G2T40sUIs/slAMT6mK
-         Fl6TFLU+pjZ9RZqSJGwt+roA3cAngHzeV9ZNIIF8ghVWobr48HQS8OHxUPWaaDbqpIU8
-         P0fp3P8s0dqmtC7Nz5/VTdaicmwTktGzM7Q/xonpIl7jfTzRG9zEmgn66/QibVAYwyXG
-         SYZG6LS5fs7BuzNDs0mI2K/Bn1SvaHdSJfhVYw5FUdCl4kHEXt7LenWZ4l7qNlSq2ipv
-         ExfA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=Mut6sTJqrmjkF+nczkzRDvMd7O7SVKNWZ6apQjw6YYM=;
-        b=DiIlOuXO+7Ssuj3ZkZk/mJZmXTOBrOrvOmYzj8oBB49Wo0/h4uNCp7Bnx+Mm7antBM
-         tJ4gaDA3dh0v7BvZFlllNMMYy+/bWUopbXh1JM5u2O1vGt7PjSRriunqIbJg0lrOiPmM
-         NXyzljxbXm4vQFoc3t8/BKUtI8xKIDmcF+3dLz4vn+GD/3Ad7Om1id4j7iuuCwv3guZV
-         jd74UT2ehZViaxz3a2G4hoZFdpiUIgYTXq2VgWMoitnk6Yj2T1MGETGmpK9GUKxBWowU
-         KvIIX7wCbF2XtEX+Hed/U9JmYEC9hRRQSy8ERRRMrTXtoeLlXJDrgix0cWcTy/IK4UU5
-         Sndg==
-X-Gm-Message-State: AOAM533vHoccc8aKIuO7gIPZbo7SsIExWS/8pmInc/+qYPB0CYN9jjqh
-        Vp0cal5h4uvCigcn4cY2g5d02fdktEcP6l5aRdc=
-X-Google-Smtp-Source: ABdhPJy3Gty5bjJX8bRj2lFHIFdMafD/tpprh1Hiv0ZgsvEGqFJzTIAi3smLztuKc6Ag3TEk/ADkEWpecCjiJnPAERY=
-X-Received: by 2002:a5d:5255:: with SMTP id k21mr13878736wrc.381.1640012906620;
- Mon, 20 Dec 2021 07:08:26 -0800 (PST)
+        id S239307AbhLTPKh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Dec 2021 10:10:37 -0500
+Received: from prt-mail.chinatelecom.cn ([42.123.76.227]:47099 "EHLO
+        chinatelecom.cn" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S238764AbhLTPJI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Dec 2021 10:09:08 -0500
+HMM_SOURCE_IP: 172.18.0.188:41400.2025081230
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-120.244.206.96 (unknown [172.18.0.188])
+        by chinatelecom.cn (HERMES) with SMTP id A71D3280098;
+        Mon, 20 Dec 2021 23:09:01 +0800 (CST)
+X-189-SAVE-TO-SEND: sunshouxin@chinatelecom.cn
+Received: from  ([172.18.0.188])
+        by app0023 with ESMTP id 448f2ce83d55476ebb2bb0b912c8404f for eric.dumazet@gmail.com;
+        Mon, 20 Dec 2021 23:09:04 CST
+X-Transaction-ID: 448f2ce83d55476ebb2bb0b912c8404f
+X-Real-From: sunshouxin@chinatelecom.cn
+X-Receive-IP: 172.18.0.188
+X-MEDUSA-Status: 0
+Sender: sunshouxin@chinatelecom.cn
+Message-ID: <e5815ae7-e716-95ab-72ef-2dbe6554968d@chinatelecom.cn>
+Date:   Mon, 20 Dec 2021 23:09:00 +0800
 MIME-Version: 1.0
-Received: by 2002:a1c:b:0:0:0:0:0 with HTTP; Mon, 20 Dec 2021 07:08:26 -0800 (PST)
-Reply-To: mrsrosebanneth19@gmail.com
-From:   Mrs Rose Banneth <nadia.yabre01@gmail.com>
-Date:   Mon, 20 Dec 2021 07:08:26 -0800
-Message-ID: <CALMTPv1+QCqTuavXaAH5vc43u5QUewD+EeuHmNfq7bzYj8n8-A@mail.gmail.com>
-Subject: From Mrs Rose,
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH v3] net: bonding: Add support for IPV6 ns/na
+To:     Eric Dumazet <eric.dumazet@gmail.com>, j.vosburgh@gmail.com,
+        vfalico@gmail.com, andy@greyhouse.net, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        huyd12@chinatelecom.cn
+References: <20211217164829.31388-1-sunshouxin@chinatelecom.cn>
+ <f35ef160-ffdb-e6de-6079-440cd72ab389@gmail.com>
+From:   =?UTF-8?B?5a2Z5a6I6ZGr?= <sunshouxin@chinatelecom.cn>
+In-Reply-To: <f35ef160-ffdb-e6de-6079-440cd72ab389@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear friend,
 
-I am Mrs. Rose Banneth a Norway Lady but my late husband is from
-France I live in Burkina Faso, please I want you to take this message
-very serious as I have already lost all my family by Covid.19 and now
-I am quarantine which I don=E2=80=99t also know what will happen to me next=
-, I
-lost my husband of covid-19 pandemic. last two year now it is my turn.
-
-Please can you join me and help people? Are you online? It is a really
-serious issue because there is something I want you to help me do as I
-don=E2=80=99t want to lost all my family money to the bank, and my last
-husband money is in my care and my own money in the bank, please I
-will like you to help me use this (=E2=82=AC6.2 million Euros) for orphans =
-and
-widows charity in your Country, it is what my spirit direct me to do.
-Can you be able to do this for me?
-
-On your return to handle this fund I will introduce you to my Nurse to
-follow up with you and the bank.i want you to contact me here my
-private email address ( mrsrosebanneth19@gmail.com )  to know on how
-the fund will be transferred to your bank account or online banking.
-
-I wait for your urgent respond and please this is really serious and
-urgent issue.
-
-Thanks
-My regards,
-Mrs. Rose Banneth
-Written from Hospital
+在 2021/12/20 23:03, Eric Dumazet 写道:
+>
+> On 12/17/21 8:48 AM, Sun Shouxin wrote:
+>> Since ipv6 neighbor solicitation and advertisement messages
+>> isn't handled gracefully in bonding6 driver, we can see packet
+>> drop due to inconsistency bewteen mac address in the option
+>> message and source MAC .
+>>
+>> Another examples is ipv6 neighbor solicitation and advertisement
+>> messages from VM via tap attached to host brighe, the src mac
+>> mighe be changed through balance-alb mode, but it is not synced
+>> with Link-layer address in the option message.
+>>
+>> The patch implements bond6's tx handle for ipv6 neighbor
+>> solicitation and advertisement messages.
+>>
+>>                          Border-Leaf
+>>                          /        \
+>>                         /          \
+>>                      Tunnel1    Tunnel2
+>>                       /              \
+>>                      /                \
+>>                    Leaf-1--Tunnel3--Leaf-2
+>>                      \                /
+>>                       \              /
+>>                        \            /
+>>                         \          /
+>>                         NIC1    NIC2
+>>                          \      /
+>>                          server
+>>
+>> We can see in our lab the Border-Leaf receives occasionally
+>> a NA packet which is assigned to NIC1 mac in ND/NS option
+>> message, but actaully send out via NIC2 mac due to tx-alb,
+>> as a result, it will cause inconsistency between MAC table
+>> and ND Table in Border-Leaf, i.e, NIC1 = Tunnel2 in ND table
+>> and  NIC1 = Tunnel1 in mac table.
+>>
+>> And then, Border-Leaf starts to forward packet destinated
+>> to the Server, it will only check the ND table entry in some
+>> switch to encapsulate the destination MAC of the message as
+>> NIC1 MAC, and then send it out from Tunnel2 by ND table.
+>> Then, Leaf-2 receives the packet, it notices the destination
+>> MAC of message is NIC1 MAC and should forword it to Tunne1
+>> by Tunnel3.
+>>
+>> However, this traffic forward will be failure due to split
+>> horizon of VxLAN tunnels.
+>>
+>> Suggested-by: Hu Yadi <huyd12@chinatelecom.cn>
+>> Reviewed-by: Jay Vosburgh<jay.vosburgh@canonical.com>
+>> Reviewed-by: Eric Dumazet<eric.dumazet@gmail.com>
+>
+>
+> ??? I do not recall giving my Reviewed-by:
+Thanks your comment, I'll adjust it and send out V4 soon.
+>
+>
+>> Reported-by: kernel test robot <lkp@intel.com>
+>> Signed-off-by: Sun Shouxin <sunshouxin@chinatelecom.cn>
+>> ---
+>>   drivers/net/bonding/bond_alb.c | 131 +++++++++++++++++++++++++++++++++
+>>   1 file changed, 131 insertions(+)
+>>
+>> diff --git a/drivers/net/bonding/bond_alb.c 
+>> b/drivers/net/bonding/bond_alb.c
+>> index 533e476988f2..b14017364594 100644
+>> --- a/drivers/net/bonding/bond_alb.c
+>> +++ b/drivers/net/bonding/bond_alb.c
+>> @@ -22,6 +22,7 @@
+>>   #include <asm/byteorder.h>
+>>   #include <net/bonding.h>
+>>   #include <net/bond_alb.h>
+>> +#include <net/ndisc.h>
+>>     static const u8 mac_v6_allmcast[ETH_ALEN + 2] __long_aligned = {
+>>       0x33, 0x33, 0x00, 0x00, 0x00, 0x01
+>> @@ -1269,6 +1270,119 @@ static int alb_set_mac_address(struct bonding 
+>> *bond, void *addr)
+>>       return res;
+>>   }
+>>   +/*determine if the packet is NA or NS*/
+>> +static bool alb_determine_nd(struct icmp6hdr *hdr)
+>> +{
+>> +    if (hdr->icmp6_type == NDISC_NEIGHBOUR_ADVERTISEMENT ||
+>> +        hdr->icmp6_type == NDISC_NEIGHBOUR_SOLICITATION) {
+>> +        return true;
+>> +    }
+>> +
+>> +    return false;
+>> +}
+>> +
+>> +static void alb_change_nd_option(struct sk_buff *skb, void *data)
+>> +{
+>> +    struct nd_msg *msg = (struct nd_msg *)skb_transport_header(skb);
+>> +    struct nd_opt_hdr *nd_opt = (struct nd_opt_hdr *)msg->opt;
+>> +    struct net_device *dev = skb->dev;
+>> +    struct icmp6hdr *icmp6h = icmp6_hdr(skb);
+>> +    struct ipv6hdr *ip6hdr = ipv6_hdr(skb);
+>> +    u8 *lladdr = NULL;
+>> +    u32 ndoptlen = skb_tail_pointer(skb) - (skb_transport_header(skb) +
+>> +                offsetof(struct nd_msg, opt));
+>> +
+>> +    while (ndoptlen) {
+>> +        int l;
+>> +
+>> +        switch (nd_opt->nd_opt_type) {
+>> +        case ND_OPT_SOURCE_LL_ADDR:
+>> +        case ND_OPT_TARGET_LL_ADDR:
+>> +        lladdr = ndisc_opt_addr_data(nd_opt, dev);
+>> +        break;
+>> +
+>> +        default:
+>> +        lladdr = NULL;
+>> +        break;
+>> +        }
+>> +
+>> +        l = nd_opt->nd_opt_len << 3;
+>> +
+>> +        if (ndoptlen < l || l == 0)
+>> +            return;
+>> +
+>> +        if (lladdr) {
+>> +            memcpy(lladdr, data, dev->addr_len);
+>> +            icmp6h->icmp6_cksum = 0;
+>> +
+>> +            icmp6h->icmp6_cksum = csum_ipv6_magic(&ip6hdr->saddr,
+>> +                                  &ip6hdr->daddr,
+>> +                        ntohs(ip6hdr->payload_len),
+>> +                        IPPROTO_ICMPV6,
+>> +                        csum_partial(icmp6h,
+>> +                                 ntohs(ip6hdr->payload_len), 0));
+>> +        }
+>> +        ndoptlen -= l;
+>> +        nd_opt = ((void *)nd_opt) + l;
+>> +    }
+>> +}
+>> +
+>> +static u8 *alb_get_lladdr(struct sk_buff *skb)
+>> +{
+>> +    struct nd_msg *msg = (struct nd_msg *)skb_transport_header(skb);
+>> +    struct nd_opt_hdr *nd_opt = (struct nd_opt_hdr *)msg->opt;
+>> +    struct net_device *dev = skb->dev;
+>> +    u8 *lladdr = NULL;
+>> +    u32 ndoptlen = skb_tail_pointer(skb) - (skb_transport_header(skb) +
+>> +                offsetof(struct nd_msg, opt));
+>> +
+>> +    while (ndoptlen) {
+>> +        int l;
+>> +
+>> +        switch (nd_opt->nd_opt_type) {
+>> +        case ND_OPT_SOURCE_LL_ADDR:
+>> +        case ND_OPT_TARGET_LL_ADDR:
+>> +            lladdr = ndisc_opt_addr_data(nd_opt, dev);
+>> +            break;
+>> +
+>> +        default:
+>> +            break;
+>> +        }
+>> +
+>> +        l = nd_opt->nd_opt_len << 3;
+>> +
+>> +        if (ndoptlen < l || l == 0)
+>> +            return NULL;
+>> +
+>> +        if (lladdr)
+>> +            return lladdr;
+>> +
+>> +        ndoptlen -= l;
+>> +        nd_opt = ((void *)nd_opt) + l;
+>> +    }
+>> +
+>> +    return lladdr;
+>> +}
+>> +
+>> +static void alb_set_nd_option(struct sk_buff *skb, struct bonding 
+>> *bond,
+>> +                  struct slave *tx_slave)
+>> +{
+>> +    struct ipv6hdr *ip6hdr;
+>> +    struct icmp6hdr *hdr = NULL;
+>> +
+>> +    if (skb->protocol == htons(ETH_P_IPV6)) {
+>> +        if (tx_slave && tx_slave !=
+>> +            rcu_access_pointer(bond->curr_active_slave)) {
+>> +            ip6hdr = ipv6_hdr(skb);
+>> +            if (ip6hdr->nexthdr == IPPROTO_ICMPV6) {
+>> +                hdr = icmp6_hdr(skb);
+>> +                if (alb_determine_nd(hdr))
+>> +                    alb_change_nd_option(skb, tx_slave->dev->dev_addr);
+>> +            }
+>> +        }
+>> +    }
+>> +}
+>> +
+>>   /************************ exported alb functions 
+>> ************************/
+>>     int bond_alb_initialize(struct bonding *bond, int rlb_enabled)
+>> @@ -1415,6 +1529,7 @@ struct slave *bond_xmit_alb_slave_get(struct 
+>> bonding *bond,
+>>       }
+>>       case ETH_P_IPV6: {
+>>           const struct ipv6hdr *ip6hdr;
+>> +        struct icmp6hdr *hdr = NULL;
+>>             /* IPv6 doesn't really use broadcast mac address, but leave
+>>            * that here just in case.
+>> @@ -1446,6 +1561,21 @@ struct slave *bond_xmit_alb_slave_get(struct 
+>> bonding *bond,
+>>               break;
+>>           }
+>>   +        if (ip6hdr->nexthdr == IPPROTO_ICMPV6) {
+>> +            hdr = icmp6_hdr(skb);
+>> +            if (alb_determine_nd(hdr)) {
+>> +                u8 *lladdr = NULL;
+>> +
+>> +                lladdr = alb_get_lladdr(skb);
+>> +                if (lladdr) {
+>> +                    if (!bond_slave_has_mac_rx(bond, lladdr)) {
+>> +                        do_tx_balance = false;
+>> +                        break;
+>> +                    }
+>> +                }
+>> +            }
+>> +        }
+>> +
+>>           hash_start = (char *)&ip6hdr->daddr;
+>>           hash_size = sizeof(ip6hdr->daddr);
+>>           break;
+>> @@ -1489,6 +1619,7 @@ netdev_tx_t bond_alb_xmit(struct sk_buff *skb, 
+>> struct net_device *bond_dev)
+>>       struct slave *tx_slave = NULL;
+>>         tx_slave = bond_xmit_alb_slave_get(bond, skb);
+>> +    alb_set_nd_option(skb, bond, tx_slave);
+>>       return bond_do_alb_xmit(skb, bond, tx_slave);
+>>   }
+>>
+>> base-commit: 6441998e2e37131b0a4c310af9156d79d3351c16
