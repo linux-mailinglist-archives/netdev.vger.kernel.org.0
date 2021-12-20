@@ -2,83 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F70B47B263
-	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 18:54:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CB7647B26F
+	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 18:57:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240298AbhLTRyA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Dec 2021 12:54:00 -0500
-Received: from mail-wm1-f43.google.com ([209.85.128.43]:38417 "EHLO
-        mail-wm1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240286AbhLTRyA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Dec 2021 12:54:00 -0500
-Received: by mail-wm1-f43.google.com with SMTP id 85-20020a1c0058000000b00345afe7e3c0so65558wma.3;
-        Mon, 20 Dec 2021 09:53:59 -0800 (PST)
+        id S233440AbhLTR5Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Dec 2021 12:57:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49932 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239565AbhLTR5V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Dec 2021 12:57:21 -0500
+Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EFE5C061574
+        for <netdev@vger.kernel.org>; Mon, 20 Dec 2021 09:57:20 -0800 (PST)
+Received: by mail-yb1-xb2d.google.com with SMTP id e136so31191233ybc.4
+        for <netdev@vger.kernel.org>; Mon, 20 Dec 2021 09:57:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=YPzQ8aKsf0Myz64J0BIQAjZ66MQeGyufJoS6fdeAggs=;
+        b=nrJDqua60hm2fPFU4Ad72zjnbqx9h9KIFvpj8SmgA7cs/WlHVsDDDqp2VCjdLd+Y+5
+         zoOFJw9VZt1mofAqR8PcelgbuxeZOEZaFBUeuwx4snsRhha3RG1wwQx3W7BqTcyOBGR6
+         wG+ivNS/WlgEoTGMHwe00ADXOt9BBY+/yxjSdQS1STSYVrkM+tQ+QqtExKaZvhePhsdh
+         K69vg0Ck1Kz7lIRRvpVTgQVHcqEwscO7H1tZH8se44jOSKh27RAKrEPxTci2vMoyGaej
+         wZ+Zqp+m+ZyjJqGBHaiVvlM8fQObRI0ovyRzMUUlDRUg2acXEnAGFgjgII+QEt2d9LwL
+         5ikg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=DKriEzh7Elx5Lb6bhAsX9FpEkdQAr11Q3q/0fePZh5Y=;
-        b=tJ/H+gGfi09mKQwzVO2Maoj73E2T2FeCmn7XQV/x2QM7DEGaDJD+/FhiXq+UqvcNTS
-         /hU0pd+7R5SC2wj9FP+FJfBiEdgol8k7iRu4TLPWvqJrl12VJM9XRJSpcGoNksVHH7/P
-         WVaCtyRn4/43wg0nRoBeigtSeL6Ev3SNBrBh5foE1+a4NzQG03871FIHNvD298TvZofd
-         I1U5hPqhHLwttC4HdQS8C4LDbkYPAW7nq5MeYIBOEGrJYKIO9+vv9B0Tz2nV502ZNyfO
-         5qGBy5BohE5t6D7NGVHpgC58pXr6wVSMcairXMGpwgZJ5fpMh6a9pxpVZ/8BxishqVhp
-         Vvjw==
-X-Gm-Message-State: AOAM530ItPjMszVYMSdzJq5HZTBe4QIUHSGComyccdFZok5//A47Vmk9
-        3NShD1B1ijD97ECCPYj4tG0=
-X-Google-Smtp-Source: ABdhPJzOsPyR4Sb8GC+RVCDt5KiGwvXOYrBIBmxLvLXlhA/HVLtYdo5Xqp1NgECyZ3RGAJWPE8Ui7A==
-X-Received: by 2002:a05:600c:600c:: with SMTP id az12mr81206wmb.86.1640022838674;
-        Mon, 20 Dec 2021 09:53:58 -0800 (PST)
-Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
-        by smtp.gmail.com with ESMTPSA id bd19sm35117wmb.23.2021.12.20.09.53.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Dec 2021 09:53:58 -0800 (PST)
-Date:   Mon, 20 Dec 2021 17:53:56 +0000
-From:   Wei Liu <wei.liu@kernel.org>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Wei Liu <wei.liu@kernel.org>, David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Tianyu Lan <Tianyu.Lan@microsoft.com>
-Subject: Re: linux-next: manual merge of the hyperv tree with the net-next
- tree
-Message-ID: <20211220175356.ozllm6jqid5zv7oe@liuwe-devbox-debian-v2>
-References: <20211220185139.034d8e15@canb.auug.org.au>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YPzQ8aKsf0Myz64J0BIQAjZ66MQeGyufJoS6fdeAggs=;
+        b=HKJE+Uj6oZhtrnX7UMrhhIh5OkYRzpBBFJZr1zreJEWowzqUtld/RUvGupVj+XeC10
+         WalMkpzWb/wyMN1i71kgIZMER86WfUKx4CM0QkbITw1f+cCxUzSrfFFfzm71Ib3NObY2
+         Ci7wFIvsfei3NOnrh9jnpBisMARwjWTs/eQ5WaIqDny7CtPg7JKTeLtvW8WMtCa9ONyI
+         06Z8vlKZ8lhJARp9fbdYcNJ3K4F3G1xII2iUVew8Ozx1JRUo2g0xJFw3m/ZFjbz5hbBx
+         YQ6khlzxwIVsAVDLfNpUXakT2rafWctY7G6JgOfhG+cmRH0e/u6YmYjTy2eulPiMQIa+
+         iYCA==
+X-Gm-Message-State: AOAM530sW3dxEGncPXHOR0ZTwBR/O6WWtdEBWGcnY97Akn5mldu8fh3o
+        ZnNqO9dm5gzGxdy+l0NARYMx7bo+eVQSkz6hMS4=
+X-Google-Smtp-Source: ABdhPJweHMTw+XZqt2yI8dRxiUqgwtXTV+l0QY1seS8Ic+y80k7o3MRH4MBfCSggrdAI81VPKmfouDzeacZOOwwwoH0=
+X-Received: by 2002:a25:73cc:: with SMTP id o195mr25370363ybc.740.1640023039300;
+ Mon, 20 Dec 2021 09:57:19 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211220185139.034d8e15@canb.auug.org.au>
+References: <20211220123839.54664-1-xiangxia.m.yue@gmail.com> <20211220123839.54664-3-xiangxia.m.yue@gmail.com>
+In-Reply-To: <20211220123839.54664-3-xiangxia.m.yue@gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Mon, 20 Dec 2021 09:57:08 -0800
+Message-ID: <CAM_iQpXfZq--ZCUQvggtqE7bEpZFRVcLTqN_R5kLiZj4Y75VAA@mail.gmail.com>
+Subject: Re: [net-next v5 2/2] net: sched: support hash/classid/cpuid
+ selecting tx queue
+To:     Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Talal Ahmad <talalahmad@google.com>,
+        Kevin Hao <haokexin@gmail.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Kees Cook <keescook@chromium.org>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Wei Wang <weiwan@google.com>, Arnd Bergmann <arnd@arndb.de>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 20, 2021 at 06:51:39PM +1100, Stephen Rothwell wrote:
-> Hi all,
-> 
-> Today's linux-next merge of the hyperv tree got a conflict in:
-> 
->   drivers/net/hyperv/netvsc.c
-> 
-> between commit:
-> 
->   e9268a943998 ("hv_netvsc: Use bitmap_zalloc() when applicable")
-> 
-> from the net-next tree and commit:
-> 
->   63cd06c67a2f ("net: netvsc: Add Isolation VM support for netvsc driver")
-> 
-> from the hyperv tree.
-> 
-> I fixed it up (see below) and can carry the fix as necessary. This
-> is now fixed as far as linux-next is concerned, but any non trivial
-> conflicts should be mentioned to your upstream maintainer when your tree
-> is submitted for merging.  You may also want to consider cooperating
-> with the maintainer of the conflicting tree to minimise any particularly
-> complex conflicts.
-> 
+On Mon, Dec 20, 2021 at 4:39 AM <xiangxia.m.yue@gmail.com> wrote:
+>
+> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+>
+> This patch allows user to select queue_mapping, range
+> from A to B. And user can use skbhash, cgroup classid
+> and cpuid to select Tx queues. Then we can load balance
+> packets from A to B queue. The range is an unsigned 16bit
+> value in decimal format.
+>
+> $ tc filter ... action skbedit queue_mapping skbhash A B
+>
+> "skbedit queue_mapping QUEUE_MAPPING" (from "man 8 tc-skbedit")
+> is enhanced with flags:
+> * SKBEDIT_F_TXQ_SKBHASH
+> * SKBEDIT_F_TXQ_CLASSID
+> * SKBEDIT_F_TXQ_CPUID
 
-The fix looks correct to me. Thanks.
+Once again, you are enforcing policies in kernel, which is not good.
+Kernel should just set whatever you give to it, not selecting policies
+like a menu.
 
-Wei.
+Any reason why you can't obtain these values in user-space?
