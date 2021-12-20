@@ -2,83 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EFE947B32B
-	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 19:48:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6714647B349
+	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 19:57:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240577AbhLTSs2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Dec 2021 13:48:28 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:54764 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239750AbhLTSs0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Dec 2021 13:48:26 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B29DBB80E4F;
-        Mon, 20 Dec 2021 18:48:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6E44C36AEA;
-        Mon, 20 Dec 2021 18:48:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1640026103;
-        bh=TOaC8RLdhcvB6ECmuBAReG8nP+L3K/DiJNXdeO8ZTsU=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=Z9sPAjfiXfdcJQREqqv1nsAvVDYXE8TcQVuZ9ODcSV9r1auqbjVAY5HMsWDHIRI/K
-         STzTN/S8HrptINF5JyWXv7J7q81Rz7nKxRE0/Us/bE5U1ejns9u8g87MShwe+9AfRL
-         B8Me+o0s9ih4tS9D0Ggk24z+X5OzLlTN46URVLY+n9l/isABwetUBHrfUlvW1JF5df
-         RS2bcLCqVyr1hiF8nEIhn8GaPpz7u+sRO/n0R4MShmy4MgI5y0LRfTdOMG21fKVRCi
-         fIo985zXgFwjPnPJr5/+xvWM/0uHsyY6jSeBjQFf1Opi9HrUiJfkY4rNdHwU05MvqQ
-         Icv7mFiKn96aQ==
-Content-Type: text/plain; charset="utf-8"
+        id S240622AbhLTS5V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Dec 2021 13:57:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35298 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240092AbhLTS5U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Dec 2021 13:57:20 -0500
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A061C061574
+        for <netdev@vger.kernel.org>; Mon, 20 Dec 2021 10:57:20 -0800 (PST)
+Received: by mail-ed1-x533.google.com with SMTP id x15so42428792edv.1
+        for <netdev@vger.kernel.org>; Mon, 20 Dec 2021 10:57:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=pLZggBUklJ+pgTfhLFwZMRngMrWq4IOaW/gfR4GGMZI=;
+        b=mp2v3RIBI9K9ZJ1Mw8PHWSO1a70OxARtws9GtSDQVDJ4wCLWfoyrzmYVKOCMKmp/RN
+         FbU9R41Mh7aKi0AmCnNzPnLCY2STIxnVUinq/RZFufk0fDrFJ+52qWVYXUUVcE+Vb60d
+         YH7UgUvtcW01POWKHss95WOsqooqxaqStrACzWiNbff6Q0XJRZfZ5VIOlW0ghQOAYQhD
+         TsX0vs+fGvJWXxCUL9snGswd+qr91dHnTaOfwILuBDI5zsUg8i2esEIQ2NzwAq2qWBjq
+         7xLdM72JIOLzqGLx/rZFMDcfm1rE+CLooTaQ8efa4PMV9fJIVP8J3tDmrgoY9kYTbR8r
+         Tfgw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=pLZggBUklJ+pgTfhLFwZMRngMrWq4IOaW/gfR4GGMZI=;
+        b=4IVUqOWwUeCdb/2turcDRJxQ6YpmWvq26LxpCm6SSfiQ5bi2EGBjmeThPgJrOuRE6N
+         UVcrczdxZEFvFqwoBfcbQBuYrNZO3kPV8u+g2sCZGDc2Phld+7RsR2IVdYUT1W5DFiwz
+         KGPW881WTLv45td4Gj0v/+8Cd07f/njnFgPu9KljwchsVBmcF1OPLOMWzAuXS9s8DlaN
+         zeZoWNM++xOmDIg3WCgquwxYyCaDbMwGgULdfK9rncvg0F7CDmGqabuI0ojW6Zsd/y9X
+         uaGHSAYUp2gZonTkqBvDL2IYZ8PWOSCHhfKTiRSx7MO6Gg9MLrVbZSRV5b/SyFU2Wj6y
+         iBKg==
+X-Gm-Message-State: AOAM530BDKLgSmIR3lDk77M6eX8SXw/M+5CCqgmWYft/di+aD4cMTcFR
+        GgriPit18xku8rOwqG+d+9pc48xbOWuPB/D994M=
+X-Google-Smtp-Source: ABdhPJwsIBlx/kAne02bKezzIppDqg8uqL0jEPiswGHNoUwnLLDhBQ9AEu8U2sbheQ3xIQqgJ1SvrzPQiYDoNmPSwuw=
+X-Received: by 2002:a17:907:6e15:: with SMTP id sd21mr13197782ejc.107.1640026638292;
+ Mon, 20 Dec 2021 10:57:18 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH v4] rtw88: Disable PCIe ASPM while doing NAPI poll on
- 8821CE
-From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <20211215114635.333767-1-kai.heng.feng@canonical.com>
-References: <20211215114635.333767-1-kai.heng.feng@canonical.com>
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc:     tony0620emma@gmail.com, pkshih@realtek.com, jian-hong@endlessm.com,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Po-Hao Huang <phhuang@realtek.com>,
-        Brian Norris <briannorris@chromium.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <164002609722.16553.11425068672466234976.kvalo@kernel.org>
-Date:   Mon, 20 Dec 2021 18:48:20 +0000 (UTC)
+Received: by 2002:a50:331:0:0:0:0:0 with HTTP; Mon, 20 Dec 2021 10:57:17 -0800 (PST)
+Reply-To: uchennailobitenone@gmail.com
+From:   uchenna <okeyyoyopa@gmail.com>
+Date:   Mon, 20 Dec 2021 10:57:17 -0800
+Message-ID: <CAHTws=Kd4mmXSFWpJYh2Ndirt7W-E9-_g=8VY1ipCsUyx=MjtA@mail.gmail.com>
+Subject: 
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kai-Heng Feng <kai.heng.feng@canonical.com> wrote:
+Nech je s vami V=C5=A1emoh=C3=BAci P=C3=A1n....
+Som VDOVA PO P=C3=81NOM Davidovi HOLLANDOVI, M=C3=81M 59 .ROKOV. Moje meno =
+je
+Jozef=C3=ADna HOLLANDOV=C3=81. Som vydat=C3=A1 za zosnul=C3=A9ho p=C3=A1na =
+Davida HOLLANDA,
+ktor=C3=BD pracoval
+dev=C3=A4=C5=A5 rokov na franc=C3=BAzskom ve=C4=BEvyslanectve a tu v Lome-T=
+ogo v z=C3=A1padnej Afrike
+predt=C3=BDm, ako zomrel v
+rok 2019.
 
-> Many Intel based platforms face system random freeze after commit
-> 9e2fd29864c5 ("rtw88: add napi support").
-> 
-> The commit itself shouldn't be the culprit. My guess is that the 8821CE
-> only leaves ASPM L1 for a short period when IRQ is raised. Since IRQ is
-> masked during NAPI polling, the PCIe link stays at L1 and makes RX DMA
-> extremely slow. Eventually the RX ring becomes messed up:
-> [ 1133.194697] rtw_8821ce 0000:02:00.0: pci bus timeout, check dma status
-> 
-> Since the 8821CE hardware may fail to leave ASPM L1, manually do it in
-> the driver to resolve the issue.
-> 
-> Fixes: 9e2fd29864c5 ("rtw88: add napi support")
-> Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=215131
-> BugLink: https://bugs.launchpad.net/bugs/1927808
-> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-> Acked-by: Jian-Hong Pan <jhp@endlessos.org>
+Boli ste vybran=C3=AD, aby ste dostali finan=C4=8Dn=C3=BD dar m=C3=B4jho zo=
+snul=C3=A9ho man=C5=BEela
+ktor=C3=BD financuje 5,7 000 000,00 dol=C3=A1rov (p=C3=A4=C5=A5 mili=C3=B3n=
+ov sedemstotis=C3=ADc
+americk=C3=BDch dol=C3=A1rov) na pomoc chudobn=C3=BDm a sirotincom prostred=
+n=C3=ADctvom v=C3=A1=C5=A1ho
+=C3=BAprimn=C3=BA pomoc pred mojou smr=C5=A5ou. Dlhodobo trp=C3=ADm rakovin=
+ou
+Prsia, zo v=C5=A1etk=C3=BDch indik=C3=A1ci=C3=AD sa m=C3=B4j stav naozaj zh=
+or=C5=A1uje
+a je =C3=BAplne zrejm=C3=A9, =C5=BEe by som u=C5=BE =C4=8Falej ne=C5=BEil
+m=C3=B4jmu lek=C3=A1rovi, preto=C5=BEe rakovina sa dostala do ve=C4=BEmi zl=
+=C3=A9ho =C5=A1t=C3=A1dia, =C5=BEe nie
+d=C3=BAfam, =C5=BEe budem op=C3=A4=C5=A5 =C5=BEivou osobou. V=C5=A1etko, =
+=C4=8Do od teba potrebujem, je tvoje
+=C3=BAprimnos=C5=A5 pou=C5=BEi=C5=A5 tieto prostriedky na realiz=C3=A1ciu t=
+ohto projektu tak,
+ako chcem a potrebujem
+va=C5=A1e inform=C3=A1cie o tom, kam bude moja banka posiela=C5=A5 prostrie=
+dky,
 
-Patch applied to wireless-drivers-next.git, thanks.
+ako napr=C3=ADklad:
+Meno pr=C3=ADjemcu: _ Adresa: _ Telef=C3=B3n
+=C4=8D=C3=ADslo: _ Krajina: _
 
-24f5e38a13b5 rtw88: Disable PCIe ASPM while doing NAPI poll on 8821CE
+Pros=C3=ADm, neur=C3=A1=C5=BEajte sa t=C3=BDm, ak=C3=BDm sp=C3=B4sobom som =
+k v=C3=A1m pri=C5=A1iel ako a
+cudzinec, aby som to urobil, je to jedin=C3=BD sp=C3=B4sob, ako sa k tebe p=
+otom dosta=C5=A5
+prejden=C3=ADm va=C5=A1ich kontaktov ID. D=C3=A1m v=C3=A1m kontakty na
+breh. Pre legitimitu s poveren=C3=ADm, ktor=C3=A9 zalo=C5=BE=C3=AD
+vy ako m=C3=B4j menovan=C3=BD pr=C3=ADjemca t=C3=BDchto pe=C5=88az=C3=AD.
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20211215114635.333767-1-kai.heng.feng@canonical.com/
+=C4=8Cak=C3=A1m na tvoju odpove=C4=8F.
+Od sestry Josephine HOLLAND.
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Mali by ste ma kontaktova=C5=A5 prostredn=C3=ADctvom mojej s=C3=BAkromnej e=
+-mailovej adresy:
 
+mrsjosephineoneholland@gmail.com
