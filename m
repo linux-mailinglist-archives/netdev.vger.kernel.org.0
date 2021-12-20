@@ -2,138 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 72B8D47B3B4
-	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 20:28:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D5B9247B3DD
+	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 20:42:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240816AbhLTT2D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Dec 2021 14:28:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42268 "EHLO
+        id S231411AbhLTTmB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Dec 2021 14:42:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234524AbhLTT2A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Dec 2021 14:28:00 -0500
-Received: from mail-il1-x133.google.com (mail-il1-x133.google.com [IPv6:2607:f8b0:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7206FC061574
-        for <netdev@vger.kernel.org>; Mon, 20 Dec 2021 11:28:00 -0800 (PST)
-Received: by mail-il1-x133.google.com with SMTP id r2so8415507ilb.10
-        for <netdev@vger.kernel.org>; Mon, 20 Dec 2021 11:28:00 -0800 (PST)
+        with ESMTP id S230519AbhLTTmB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Dec 2021 14:42:01 -0500
+Received: from mail-il1-x131.google.com (mail-il1-x131.google.com [IPv6:2607:f8b0:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09E51C061574
+        for <netdev@vger.kernel.org>; Mon, 20 Dec 2021 11:42:01 -0800 (PST)
+Received: by mail-il1-x131.google.com with SMTP id m12so8502219ild.0
+        for <netdev@vger.kernel.org>; Mon, 20 Dec 2021 11:42:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=cqQYwR83tYYqX9/SMgcfRUOxietuU7zLh8DSNEx/2qA=;
-        b=qflu2p8+4BSzw9JuqzDuhr4awm+jyC6t/lvzUhQUMl7p24U+HzxuOzS4m4dVwW+0WL
-         lr0bRYlHtA0wwYuzMZEqyZKa9vC+4+leL2KlM2tGbx20jLz0FWKoTkohEQ4hh4HYaxKp
-         CrDBOmti9QmW3P8BzESpgcZKmaRi5tPuQanf7JFc8MD7BHqY789Zt3y08urJEFEk+755
-         CgRO3VQfTKOPRW8jpWRFHfJL9X9KRwf8OEAZh0L6yEzVIjk+YFFaRQ5IXqMuFyM8rjFe
-         SZb2HOcQPiOqJ/0WcS2QhxVJvF6NFjvvA3yJzoSdhuNiO9JyMG+R2ODZaNXSCuwb/Jk0
-         djwA==
+        bh=dS0CqgnJ6a7PTI6ekIx5KsY/4VUMxVzGFajo8yFCnKo=;
+        b=l2Ps2y+ynpItPr8ACCEUfmFFniLt3WfQasaKeYZK3C+F/3PaFVx6BoHxGj1W2TEGMe
+         uxRMV8v0GGuZlHhdCMc4bQpbBeB+Qo9dJQx3pR5bXVFGmZe37zbS7vQ7GjYIjOPPfTFh
+         /Kg1bBOhjaVLJeKEVOOWd3S35cPec5Q0Eiol42ABJjyR9cGtILqgEDyesKzZ/skwrvVD
+         ZW9odsPIXfqKDFEX0xvfJMm3aPL1rFf4KO0A8ZLg3tNnFYmTQLvnzF6qa6xfOTMsNCyk
+         i7z09Erikwkn+ym5JhSOifc9AXI5wEDDCTd5S3UvmL4oNsFwWMUKnU49PQXRqjBClzAa
+         e1eA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=cqQYwR83tYYqX9/SMgcfRUOxietuU7zLh8DSNEx/2qA=;
-        b=4Jkkv5yYpsJzeCQ3CKuYma5MGKgxRI5SPx0DsKMvsKXjXmwiJI4UqqHULYJgac/v5S
-         1xU6iNyc6KyEZW8vFBmtpQyKoSVsTNopMv784t138juaI1yFStKzMyz67cKivBA+n+5H
-         KIQ4PY+BQv3YsJtRVCGTnEs/IsiyWXynIHcw51mY3bHDeCXijAcC1lVnpuOoRwLDMJmQ
-         sZ/0+oAYPfF7wTk61Q7epNX7lisr/IBaj5UkoEpZajcgX7Zwh3bRDCPP2faB1MBGDtMA
-         j2jQObKLWNhg5nlkKsuNXm3HErMPTm0I31/OH8/Ob6uGq+wSxajUdQAPPKzb4SKaKpth
-         3MtA==
-X-Gm-Message-State: AOAM532DMW4xEqo874IttLr/jY0Fs7R2ViQqOBBclTSsY13OMaFCuHlo
-        33ZUXLnSJe2AYKj78LFQr492DA==
-X-Google-Smtp-Source: ABdhPJywiphV4anxdY+jc7876EkncD5US6OlP55IHi0FLqz3xXm7YWbch9DlyiUE27JdVEVbcxQCjw==
-X-Received: by 2002:a92:c246:: with SMTP id k6mr8882990ilo.280.1640028479830;
-        Mon, 20 Dec 2021 11:27:59 -0800 (PST)
+        bh=dS0CqgnJ6a7PTI6ekIx5KsY/4VUMxVzGFajo8yFCnKo=;
+        b=jkuGuaDIddrmUZhto8wGSsQ34Ls62YXSnDuQT3GQFRSduBm2gpfmfZ0A4GKzuNJ8ye
+         61qsT8Kuts27Lc0SGQF3YPiV1F7K/Q8nN5q4sNC2yLneSCL0U43MFzGHDx7ZbZ0P2beb
+         jeKaTT7zyBoaXusqE6UWxjLtHd8ORLfbS43U6e4DrPSp65SnQ/u+T/yxzBBAWG4BI74O
+         nW9buiixjib1aj9wmfHcgQxL/qJwy5EhJApMhmtgouojly6YVYKlrA0EGj1GCRmQXKC/
+         +p6yAc3ac9mvyBbKAxwSSe67vPNkEIPkky38MPKRguo4kr5Odgyd0RKKJvbdu1LBKYIF
+         RveA==
+X-Gm-Message-State: AOAM532rqIg3V4VCsSptdc4YR1MQMef+xCByYSPFOVjDqpqnqyxmvtjo
+        VskCr4pxXlxChb5p0kth249I2Q==
+X-Google-Smtp-Source: ABdhPJzfpczAMLdMv4wYjhOJQeVr6hhAV56h6LUJSDFGv3vnNUnFEkeaRBVJWSkIHYnj1rqOwzIxGQ==
+X-Received: by 2002:a05:6e02:545:: with SMTP id i5mr8740333ils.128.1640029320335;
+        Mon, 20 Dec 2021 11:42:00 -0800 (PST)
 Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id k10sm11139412ilu.80.2021.12.20.11.27.58
+        by smtp.googlemail.com with ESMTPSA id g7sm9477208iln.67.2021.12.20.11.41.59
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 20 Dec 2021 11:27:59 -0800 (PST)
-Message-ID: <c71f1f98-13cc-ff82-7bf5-2c733de9ab2b@linaro.org>
-Date:   Mon, 20 Dec 2021 13:27:58 -0600
+        Mon, 20 Dec 2021 11:41:59 -0800 (PST)
+Message-ID: <041b479a-0812-f293-94ef-c6a11ba68a16@linaro.org>
+Date:   Mon, 20 Dec 2021 13:41:59 -0600
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.3.1
 Subject: Re: Port mirroring (RFC)
 Content-Language: en-US
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        "bjorn.andersson@linaro.org" <bjorn.andersson@linaro.org>
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        Network Development <netdev@vger.kernel.org>
+Cc:     "bjorn.andersson@linaro.org" <bjorn.andersson@linaro.org>
 References: <384e168b-8266-cb9b-196b-347a513c0d36@linaro.org>
- <YbjiCNRffWYEcWDt@lunn.ch> <3bd97657-7a33-71ce-b33a-e4eb02ee7e20@linaro.org>
- <YbmzAkE+5v7Mv89D@lunn.ch> <b00fb6e2-c923-39e9-f326-6ec485fcff21@linaro.org>
- <Yboo9PtNslU+Y4te@lunn.ch>
+ <7cf5a995-8e59-93cd-ccab-243a4c24cedc@gmail.com>
 From:   Alex Elder <elder@linaro.org>
-In-Reply-To: <Yboo9PtNslU+Y4te@lunn.ch>
+In-Reply-To: <7cf5a995-8e59-93cd-ccab-243a4c24cedc@gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/15/21 11:42 AM, Andrew Lunn wrote:
->>> Do you have netdevs for the modem, the wifi, and whatever other
->>> interfaces the hardware might have?
+On 12/15/21 11:48 AM, Florian Fainelli wrote:
+> On 12/14/21 6:47 AM, Alex Elder wrote:
+>> I am implementing what amounts to port mirroring functionality
+>> for the IPA driver.
 >>
->> Not yet, but yes I expect that's how it will work.
+>> The IPA hardware isn't exactly a network switch (it's sort of
+>> more than that), but it has the ability to supply replicas of
+>> packets transferred within it to a special (read only) interface.
 >>
->>> To setup a mirror you would do something like:
->>>
->>> sudo tc filter add dev eth0 parent ffff: protocol all u32 match u32 0 0 action mirred egress mirror dev tun0
+>> My plan is to implement this using a new "ipa_mirror" network
+>> device, so it could be used with a raw socket to capture the
+>> arriving packets.  There currently exists one other netdev,
+>> which represents access through a modem to a WWAN network.
 >>
->> OK so it sounds like the term "mirror" means mirroring using
->> Linux filtering.  And then I suppose "monitoring" is collecting
->> all "observed" traffic through an interface?
+>> I would like some advice on how to proceed with this.  I want
+>> the result to match "best practice" upstream, and would like
+>> this to be as well integrated possible with existing network
+>> tools.
+>>
+>> A few details about the stream of packets that arrive on
+>> this hardware interface:
+>> - Packet data is truncated if it's larger than a certain size
+>> - Each packet is preceded by a fixed-size header describing it
+>> - Packets (and their headers) are aggregated into a buffer; i.e.
+>>    a single receive might carry a dozen (truncated) packets
 > 
-> Yes, that seems like a good description of the difference.
->   
->> If that's the case, this seems to me more like monitoring, except
->> I suggested presenting the replicated data through a separate
->> netdev (rather than, for example, through the one for the modem).
+> Andrew has already responded, but there are currently sort of two ways
+> that mirroring is implemented in upstream supported drivers:
 > 
-> The wifi model allows you to dynamical add netdev on top of a physical
-> wireless LAN chipset. So you can have one netdev running as an access
-> point, and a second netdev running as a client, both sharing the
-> underlying hardware. And you should be able to add another netdev and
-> put it into monitor mode. So having a dedicated netdev for your
-> monitoring is not too far away from what you do with wifi.
+> - for "classic" Ethernet switches mirroring is typically from one port,
+> or a set of ports, to another with a choice in whether you want to
+> capture ingress, egress, or both towards that port. Because each port is
+> a netdev already you just run tcpdump/pcap the way you normally do on
+> your Ethernet NIC and get the captured packets. Configuration is via
+> offloading the tc_mired action.
 
-It sound to me like WiFi monitoring mode could very much be
-a model that would work.  I need to spend some time looking
-at that in a little more detail.  I don't think there's any
-reason the "dedicated" netdev couldn't be created dynamically.
+I read about switch port mirroring, and it sounded along the
+lines of what I'm trying to implement, which is why I suggested
+this might be a case of "port mirroring."  That said, it is
+not configurable in the same way.  Here, we really have a
+dedicated port through which replicated packets arrive.  It is
+not possible to just use one of the existing switch ports.  So
+it isn't really the same.
 
-I'll come back again after I've had a chance to look at these
-suggestions (yours and others'), possibly with something closer
-to a design to follow.
+> - mlxsw implements devlink traps which is not exaclty designed for
+> capturing mirrored packets but more like management events such as why
+> the packet was trapped etc. You could however imagine using devlink
+> traps for that purpose of capturing mirrored packets in the absence of a
+> suitable network device
 
-Thank you very much, this is a promising lead.
+Just your description tells me this approach is probably not right.
+But I'll look into it some more.
+
+> Not sure if this helps, but that is the situation.
+
+Right now I find it useful to hear about anything, even things
+I might not ultimately use.
+
+>> Here are a few specific questions, but I would love to get
+>> *any* feedback about what I'm doing.
+>> - Is representing this as a separate netdev a reasonable
+>>    thing to do?
+> 
+> I would think so, given this allows standard tools to work.
+
+It's reassuring knowing there isn't disagreement.
+
+>> - Is there anything wrong with making a netdev read-only?
+>>    (Any packets supplied for transmit would be dropped)
+> 
+> This looks reasonable.
+> 
+>> - Are there things I should do so it's clear this interface
+>>    does not carry IP traffic (or even UDP, etc.)?
+> 
+> There were various patches in the past to prevent a network device from
+> getting any IP stack to be configured:
+> 
+> https://yhbt.net/lore/all/20150825232021.GA8482@Alexeis-MacBook-Pro-2.local/t/
+> 
+> I forgot whether as a driver you can just refuse to have an IP address
+> assigned to your network device, AFAIR it requires changes to the
+> network stack as proposed in the patch set.
+
+Thanks, I'll follow up with that as well.
+
+>> - Should the driver de-aggregate the received packets, i.e.
+>>    separating each into a separate SKB for reading?
+> 
+> If this is truly a mirroring device, you would expect it to "render" the
+> mirrored packets exactly the way they are, maybe add an ethtool private
+> option to de-aggregate packets if this helps debugging?
+
+I have some details to work out before I can implement such a
+thing, but this would be helpful.
+
+Thanks a lot for your input.
 
 					-Alex
 
->> If it makes more sense, I could probably inject the replicated
->> packets received through this special interface into one or
->> another of the existing netdevs, rather than using a separate
->> one for this purpose.
-> 
->>> Do you have control over selecting egress and ingress packets to be
->>> mirrored?
+>> I might have *many* more questions, but I'd just like to make
+>> sure I'm on the right track, and would like both specific and
+>> general suggestions about how to do this the right way.
 >>
->> That I'm not sure about.  If it's possible, it would be controlling
->> which originators have their traffic replicated.
+>> Thanks.
+>>                      -Alex
 > 
-> You need this if you want to do mirroring, since the API requires to
-> say if you want to mirror ingress or egress. WiFi monitoring is less
-> specific as far as i understand. It is whatever is received on the
-> antenna.
-> 
->> I don't think it will take me all that long to implement this, but
->> my goal right now is to be sure that the design I implement is a good
->> solution.  I'm open to recommendations.
-> 
-> You probably want to look at what wifi monitor offers. And maybe check
-> with the WiFi people what they actually think about monitoring, or if
-> they have a better suggestion.
-> 
->       Andrew
 > 
 
