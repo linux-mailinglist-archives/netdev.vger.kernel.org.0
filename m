@@ -2,99 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CEF847AE84
-	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 16:01:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2292647ADB4
+	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 15:55:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238758AbhLTPBS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Dec 2021 10:01:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35420 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239301AbhLTO6c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Dec 2021 09:58:32 -0500
-Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6910EC061379
-        for <netdev@vger.kernel.org>; Mon, 20 Dec 2021 06:50:31 -0800 (PST)
-Received: by mail-qk1-x72a.google.com with SMTP id 193so9498991qkh.10
-        for <netdev@vger.kernel.org>; Mon, 20 Dec 2021 06:50:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=mDhxT8Hnj7gdcBCL0K+pdhDn9kvhoiJ03wVufpwf0qM=;
-        b=Lxw3o758FX5vV5HNs425cW4rx0MS+JIG3XnViQUsJFj35tbvmUlpsCjGp87BIx0zVB
-         +8LnXO3cWqC+5KiY5y338f1Hk0q58ZLVphqGgCvg8moKNJnjF0MfRQ8WjDtCqdvbv6jy
-         btUNCrhlwXztSuknfyouDWc9Xra+rCTjzigRzSboA5r3WpGc1Wkk/noouS/Ljbg/1Guc
-         Yg2wWyr7+0ryXKUcT1UCTW8HMbUoXwKpuI0IT4/89zB9h+0wyJMT2YUK6E5Fdctc6V+C
-         vp6lEjp72L5e5rY8nXpUYlU2+dL/166ObIqJM1X078lWoc7sfuN1wwHPkQTH6jUry9PU
-         Astw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=mDhxT8Hnj7gdcBCL0K+pdhDn9kvhoiJ03wVufpwf0qM=;
-        b=Xtp/ZWZlcYQUKwZPtFNX6P4ct5o+djVrresqVp+dwNsnp+F4oLqHJyFWtt3dyvMl9I
-         2imVgGZ3HNeOo6PxwUu97aFAN6G16X/q6ALSD1Q7KAb1riIMmxtF+9QSL9lV9SF+Yuiq
-         0fnRim8Ueqketucdr6J7XUFcv7YrPHLX1Lrrw4i8YMW19T8wdgzWYp7RIKL4iejqpyjl
-         7jb2xttP4tug7uveznXwrqiBoVA+gTxegbw26YlThGIiDWFD0GEN0QWHZxUN08KLdOmK
-         uPYRiech1H0WKuNJ18MAWF4uaPNIFzckvvp8r77tzdvPWxn7mDKFDrmi4NhULjJeQk18
-         nzzg==
-X-Gm-Message-State: AOAM532GWVg/Df5IBikes7+dRIXplY5LKQH3yvXdRwChKcdgry44LIoR
-        OOnUGpIDHCBY4n0pUnwC2rdyVUitdcM=
-X-Google-Smtp-Source: ABdhPJxka5xayh9UC2vXsR9kqRKxQjAof3th2kX9WcQRZipau3AqLuWnDC0sn6IZPfQw8CpJ+zhcQA==
-X-Received: by 2002:a05:620a:c4e:: with SMTP id u14mr9339195qki.714.1640011830611;
-        Mon, 20 Dec 2021 06:50:30 -0800 (PST)
-Received: from willemb.c.googlers.com.com (55.87.194.35.bc.googleusercontent.com. [35.194.87.55])
-        by smtp.gmail.com with ESMTPSA id l22sm14194939qtj.68.2021.12.20.06.50.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Dec 2021 06:50:30 -0800 (PST)
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        jianfeng.tan@linux.alibaba.com,
-        Willem de Bruijn <willemb@google.com>
-Subject: [PATCH net] net: skip virtio_net_hdr_set_proto if protocol already set
-Date:   Mon, 20 Dec 2021 09:50:27 -0500
-Message-Id: <20211220145027.2784293-1-willemdebruijn.kernel@gmail.com>
-X-Mailer: git-send-email 2.34.1.173.g76aa8bc2d0-goog
+        id S237045AbhLTOyD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Dec 2021 09:54:03 -0500
+Received: from smtp25.cstnet.cn ([159.226.251.25]:34906 "EHLO cstnet.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S233606AbhLTOwA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Dec 2021 09:52:00 -0500
+Received: from localhost.localdomain (unknown [124.16.138.126])
+        by APP-05 (Coremail) with SMTP id zQCowAB3WBV3mMBhi3w_BA--.56502S2;
+        Mon, 20 Dec 2021 22:51:35 +0800 (CST)
+From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
+To:     ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Subject: Re: Re: [PATCH] sfc: Check null pointer of rx_queue->page_ring
+Date:   Mon, 20 Dec 2021 22:51:34 +0800
+Message-Id: <20211220145134.978462-1-jiasheng@iscas.ac.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: zQCowAB3WBV3mMBhi3w_BA--.56502S2
+X-Coremail-Antispam: 1UD129KBjDUn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73
+        VFW2AGmfu7bjvjm3AaLaJ3UjIYCTnIWjp_UUUY67AC8VAFwI0_Gr0_Xr1l1xkIjI8I6I8E
+        6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28Cjx
+        kF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVWUCVW8JwA2z4x0Y4vE2Ix0cI8I
+        cVCY1x0267AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aV
+        CY1x0267AKxVW0oVCq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAq
+        x4xG6I80ewAv7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Gr0_Cr1lOx8S6x
+        CaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwAC
+        I402YVCY1x02628vn2kIc2xKxwCY02Avz4vE14v_Xryl42xK82IYc2Ij64vIr41l4I8I3I
+        0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWU
+        GVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI
+        0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0
+        rVWrJr0_WFyUJwCI42IY6I8E87Iv67AKxVW8JVWxJwCI42IY6I8E87Iv6xkF7I0E14v26r
+        4UJVWxJrUvcSsGvfC2KfnxnUUI43ZEXa7VUjuWlDUUUUU==
+X-Originating-IP: [124.16.138.126]
+X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Willem de Bruijn <willemb@google.com>
+On Mon, Dec 20, 2021 at 10:16:28PM +0800, Greg KH wrote:
+> Why not return an error?
 
-virtio_net_hdr_set_proto infers skb->protocol from the virtio_net_hdr
-gso_type, to avoid packets getting dropped for lack of a proto type.
+Because I have received the mail from Martin Habets that telling me
+it doesn't need to return error code.
+Here is the mail.
+https://lore.kernel.org/lkml/20211219092948.t2iprptmyfrzgthb@gmail.com/
+On Sun, Dec 19, 2021 at 05:29:48PM +0800, Martin Habets wrote:
+> Your predicate is wrong. The code that uses rx_queue->page_ring
+> can deal with it being NULL.
+> The only thing you might want to do is set rx_queue->page_ptr_mask
+> to 0.
 
-Its protocol choice is a guess, especially in the case of UFO, where
-the single VIRTIO_NET_HDR_GSO_UDP label covers both UFOv4 and UFOv6.
-
-Skip this best effort if the field is already initialized. Whether
-explicitly from userspace, or implicitly based on an earlier call to
-dev_parse_header_protocol (which is more robust, but was introduced
-after this patch).
-
-Fixes: 9d2f67e43b73 ("net/packet: fix packet drop as of virtio gso")
-Signed-off-by: Willem de Bruijn <willemb@google.com>
----
- include/linux/virtio_net.h | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/include/linux/virtio_net.h b/include/linux/virtio_net.h
-index 22dd48c82560..a960de68ac69 100644
---- a/include/linux/virtio_net.h
-+++ b/include/linux/virtio_net.h
-@@ -25,6 +25,9 @@ static inline bool virtio_net_hdr_match_proto(__be16 protocol, __u8 gso_type)
- static inline int virtio_net_hdr_set_proto(struct sk_buff *skb,
- 					   const struct virtio_net_hdr *hdr)
- {
-+	if (skb->protocol)
-+		return 0;
-+
- 	switch (hdr->gso_type & ~VIRTIO_NET_HDR_GSO_ECN) {
- 	case VIRTIO_NET_HDR_GSO_TCPV4:
- 	case VIRTIO_NET_HDR_GSO_UDP:
--- 
-2.34.1.173.g76aa8bc2d0-goog
+Jiasheng
 
