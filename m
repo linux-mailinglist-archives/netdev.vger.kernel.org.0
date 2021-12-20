@@ -2,59 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2710547A71A
-	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 10:33:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C55C747A747
+	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 10:38:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229644AbhLTJdO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Dec 2021 04:33:14 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:34624 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229513AbhLTJdN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Dec 2021 04:33:13 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=jySBOz6rFMfrLbqsSW79w7an4bctSYxUq7g2gQMmaXs=; b=IbQ1Sl2GOrfXkTDaltIy8PFkhE
-        YFQB3BmnLIEaUK5bnawZohheFFcQj0BeYPEp3vEQsGroiRu9B7CoqBuLLQcZyZtqBJB8wMZL+lCuQ
-        GSquNKK7LgDKoDg5V2MO15Yf2VO9xw5hw0RsCZcv0NYO3EcthlTTCUe7gH18oudmryTY=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1mzF2e-00H2DV-Fy; Mon, 20 Dec 2021 10:33:12 +0100
-Date:   Mon, 20 Dec 2021 10:33:12 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Lucian <l@vectormail.xyz>
-Cc:     netdev@vger.kernel.org
-Subject: Re: Maintainer Application
-Message-ID: <YcBN2BPMidu/Zkso@lunn.ch>
-References: <79e151cd-0527-ba56-a41a-7fe00e206558@vectormail.xyz>
- <97c5cf1d-be9f-0cf0-cd4d-9e04aa46294a@vectormail.xyz>
+        id S229841AbhLTJiX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Dec 2021 04:38:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46834 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229682AbhLTJiX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Dec 2021 04:38:23 -0500
+Received: from mail-ua1-x92f.google.com (mail-ua1-x92f.google.com [IPv6:2607:f8b0:4864:20::92f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BB64C061574
+        for <netdev@vger.kernel.org>; Mon, 20 Dec 2021 01:38:23 -0800 (PST)
+Received: by mail-ua1-x92f.google.com with SMTP id 107so16509058uaj.10
+        for <netdev@vger.kernel.org>; Mon, 20 Dec 2021 01:38:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=h8PSSRHrHL7EZamTJ1PmpoLIiZ6v+wZ4VV6s2+7PO3k=;
+        b=lGj9fcvW5k+4e41xnN9Pcka0hPx8Ckk8TbmypL4EY08nTiHOtCNgV417rZ0QmFJYpJ
+         +TN3s4sNpc5VaBR8eKhmOw8OvRvd6bcSRtUcAwBHgBRHlvIU5UA4L/oDKEM0ECabe7Nx
+         de7AdrwF0YM4v7FSRCyTUaFsYdWeDXLBweYEFMu+0QtW6M0KmOnkmtctiPnUG3co88Xe
+         ic7aaHdJkjhYg6FiGgMda6b3RjTw0MlxorGmxKJELcpAwuvQlZUpWL7cTC57yvPIOpQH
+         bY30j3dzZcmxTXJG0h76c3/aDhMdnIP9wDYLjMF+I75uSVCmijlFJ7+dlXTaniIKsBiZ
+         sW7g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=h8PSSRHrHL7EZamTJ1PmpoLIiZ6v+wZ4VV6s2+7PO3k=;
+        b=8Nk9ZMsgBA0bM+Gc/rUd3KwWdRFZlmPJBKTIKp98ULtRjCxzcaajJDSAzmRkoJIZPM
+         dhi+HJwDBm5fwFaMMqzb8dq0A7XV7TG+7yEIaJdvu86959NszZ/DPi8PZ1kD44F0LNpy
+         HDKGOqfY+OIelTS+sEm+lYmQaW5bitfwUREP8Ef7WwRtQVg5ymce58TWyEImi8BaT3TL
+         pDR9qGrQ+XLKsWTQ/aCikdSmgz4ubeP8JtQKp/zK1CTpvidy6WvKvGq6nphu4CoySjtt
+         P/uXlyBX+0v5LFax7Kt1FEsYtcyQQmmzhldqL7/FCq4l7CpzXQfYuzG69Rh40CGZj5vU
+         VBSQ==
+X-Gm-Message-State: AOAM531PKnJIFeSdRbIfdxKWb37OAPKXYaNsFhHMQPRVEYPkZb8vtUfI
+        3E6NcwbAno1an1JZqDCdfgGd5Y2Ohn3fFlVAXOI=
+X-Google-Smtp-Source: ABdhPJysA++dwKfm9LGtX0aA5b7FC6ePqlWlysIu9+JizDCFIv1TtuBexshoLZtsnQzFx+gkdjmDE7pra/E+KV88cIY=
+X-Received: by 2002:a05:6102:109:: with SMTP id z9mr2062641vsq.55.1639993101827;
+ Mon, 20 Dec 2021 01:38:21 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <97c5cf1d-be9f-0cf0-cd4d-9e04aa46294a@vectormail.xyz>
+Received: by 2002:ab0:7401:0:0:0:0:0 with HTTP; Mon, 20 Dec 2021 01:38:21
+ -0800 (PST)
+Reply-To: alahmedhassan5602@gmail.com
+From:   Ahmed Hassan <mrbubakar.omar0@gmail.com>
+Date:   Mon, 20 Dec 2021 10:38:21 +0100
+Message-ID: <CAJrYiOJDtpxT=sg=A1-S0NOWH7quQjapD-brf=yOGeCkCgYOoQ@mail.gmail.com>
+Subject: Please respond urgently
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 20, 2021 at 05:14:45PM +0800, Lucian wrote:
-> Hi,
-> 
-> Sorry to bother you guys again but I am still awaiting a reply from someone
-> regarding becoming a maintainer of the hsr network protocol in the linux
-> kernel.
+Greetings,
 
-Hi Lucian
+I am contacting you independently of my investigation and no one is
+informed of this communication. I need your urgent assistance in
+transferring the sum of $11.3million immediately to your private
+account.The money has been here in our Bank lying dormant for years
+now without anybody coming for the claim of it.
 
-You become a maintainer by being a maintainer. Review other peoples
-patches for HSR, test patches, give Reviewed-by, Tested-by etc. Show
-you know the code and you know the Linux processes for getting patches
-merged, dealing with regressions etc. Ideally you need other
-maintainers to trust your judgement, and you gain that trust by doing
-the job.
+I want to release the money to you as a relative to our deceased
+customer (the account owner) who died along with his supposed NEXT OF
+KIN on 16th October 2005. The Banking laws here do not allow such
+money to stay more than 17 years, because the money will be recalled
+to the Bank treasury account as unclaimed funds.
 
-So rather than asking to become a maintainer, just show you can be a
-maintainer.
+By indicating your interest I will send you the full details on how
+the business will be executed.
 
-       Andrew
+Please respond urgently and delete if you are not interested.
+
+Best Regards,
+Mr. Ahmed Hassan
