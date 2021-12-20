@@ -2,281 +2,495 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 254B647AB4D
-	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 15:32:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E98C47AB51
+	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 15:33:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233669AbhLTOc1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Dec 2021 09:32:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58156 "EHLO
+        id S233661AbhLTOdf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Dec 2021 09:33:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233666AbhLTOc0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Dec 2021 09:32:26 -0500
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A561C061574
-        for <netdev@vger.kernel.org>; Mon, 20 Dec 2021 06:32:26 -0800 (PST)
-Received: by mail-ed1-x52b.google.com with SMTP id w16so10667172edc.11
-        for <netdev@vger.kernel.org>; Mon, 20 Dec 2021 06:32:26 -0800 (PST)
+        with ESMTP id S233633AbhLTOdf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Dec 2021 09:33:35 -0500
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23995C061574
+        for <netdev@vger.kernel.org>; Mon, 20 Dec 2021 06:33:35 -0800 (PST)
+Received: by mail-pl1-x62a.google.com with SMTP id v19so8257075plo.7
+        for <netdev@vger.kernel.org>; Mon, 20 Dec 2021 06:33:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ZWHFxnAdlx7SUM4aneujVFnGt2hNYpm1dgWO2W1LkKM=;
-        b=CJ6h9bT8sVRvu2A5S95h8+vAMnhwsKwPSWRzwzo9l9kio7SzFFrvrEfrx151LmZQsG
-         b2TpXgNMlLRMW3ciiIm0BREt27kMxVikpyjZ1BN0Mtm9vcWoqy+q94JSXHCNj3UnWekM
-         m7TudAhBAodGeFmQssCgO8KUdFweqPLj1xB1ml7pemeb/GxUsL/9xZBhEnSjWh7dyBF8
-         pHNLJMMUiS9rt5rvzpwvOojtMK1AtdBc6eSaRqYgH7dRpPXF0NcivVqsvS/s3GKKG0hB
-         L2oclu5JDEYUUl1BJTeFWdQcKrz9ePGqlolZrcWtkyQ1YYIw7PtHsxTol3MUfiMhhC5d
-         koig==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=D/I8iz05mCtZZyqkNDzQpnvcU5WveUOnOl0HLSVWH+A=;
+        b=aUbAEbHAuYYxIF5+KXxQRTPRqCTooaQ6nAV/lD1nI1iwTVQDe3l/h/dnfRvG2oW2N0
+         Ohn6iXFdlJlSOaedQvJ2Ag7HG1eBfVjc6dxpQ7qxWHWL/Rxe8WsHNbpd/7JxlL+GLDsh
+         Ta8rwF3VrGPZe6i/hNzjGcoED2PomF6vJEZa9nX6Jb028hoSpmcHZxP73ECm/pYRFlJi
+         uZvwMDDkZZDlCfzi4nQAfCrtIlxKS9sU4zi6oqLG5h4sA685meoGdb0SyQGKUvqpRSTb
+         WtkkPt1oGr944K7J+NNUsaCIast5rVgCmRrZsgznj+FDaOSoYTIgYsaYkJQJT8wGPRqX
+         V4Bw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZWHFxnAdlx7SUM4aneujVFnGt2hNYpm1dgWO2W1LkKM=;
-        b=M/XrCAdVVTlRjzz/7gScvlnDiBo9k+NvoEIt3a/MEWITmxMHNrYVx0UoyQmTN0uY8y
-         bxKT3vPrSptgisEyDcYKND+pUVUKfxgaJm3i5F/tAE377bLnG+nf79okzGJEMfB/HWA3
-         ojKrLHRsGHNVTCqkGT5Dp6OPspyUlNsf6Wf7+fPqP8r27xNmklWqppgmCaQzbyrG74nP
-         4mtAbrN+lupw27QGIH5R8gAB0ILjrhXNESOGlRAYx7eZ8SZLhkYevLVYv9K46B/jsE79
-         EN71bhBH+VFvbBEVRSKsAJLx2dO1aQwFEg1C4SS7NjWaJqTiBZ94WLLDcnEWljHJSM+F
-         udhg==
-X-Gm-Message-State: AOAM531x842Ms3jetLbuvJyrRT4tGCc3wILn6pJbrbQkEGUpJJkEdlr8
-        3VhFFobV0HUQfzVia1YLVK3Pz5U+ZenKCDHoviU=
-X-Google-Smtp-Source: ABdhPJyBhRIxuU7gPkCBxwVTCSra+7sZiKJ1qq8z9T7fqEyCbkTkprdnUcBi45+IbGFAe5q4oQiXq6XYjB9UGYyHixM=
-X-Received: by 2002:a05:6402:74c:: with SMTP id p12mr162047edy.140.1640010744666;
- Mon, 20 Dec 2021 06:32:24 -0800 (PST)
-MIME-Version: 1.0
-References: <20211220123839.54664-1-xiangxia.m.yue@gmail.com>
- <20211220123839.54664-2-xiangxia.m.yue@gmail.com> <CANn89iLdP061LMUN-gRA8z4=YgMpbxTt7=3_Ny9ZWfKHTA2cpg@mail.gmail.com>
- <CAMDZJNUbJ39w3VTkJnwpRXewcaM-gM8kPck82ThxpAfTJKbGLw@mail.gmail.com>
-In-Reply-To: <CAMDZJNUbJ39w3VTkJnwpRXewcaM-gM8kPck82ThxpAfTJKbGLw@mail.gmail.com>
-From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Date:   Mon, 20 Dec 2021 22:31:48 +0800
-Message-ID: <CAMDZJNWLjvV_SfEmLr5FwLx2gcg4FrHqvp1q+fA2AXwAvTCLDg@mail.gmail.com>
-Subject: Re: [net-next v5 1/2] net: sched: use queue_mapping to pick tx queue
-To:     Eric Dumazet <edumazet@google.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=D/I8iz05mCtZZyqkNDzQpnvcU5WveUOnOl0HLSVWH+A=;
+        b=I2vWvJWX0rGTnK7Sez4e1ldbh0Skf6w4hhjkjpRl8LLwi4TfB8mYUDG45zx/k/UXZ/
+         3mknM21SrjPOrt/8sXIR3gxNcp9WFnotJ17MqhhhmTXzk8RIqqSuYVwczdPR3h6STo9e
+         bwRLeQ3FloQCcSgoGiPjaDZski4skWqIQTb9m9Zkp16FM5omjdi92kysAtlFBfXHoEql
+         kHFvCoJllMC1j8o46cxvBL8oR6WiTHP/cKMQlxXU9c7Pjlr1DYClwkbWgsReJV1llKEy
+         h36SUuGiyOeaboqKpuJtmMuZdsgCcKS6/UfKD5jrCu4AZ5Kvf1rGEICJ5Fua3bRplqRr
+         JopQ==
+X-Gm-Message-State: AOAM5305uIqwlI/erjOmi/I0762WeKPjyh2UId5iX0cw6NskwBIaBCH3
+        XIUenGkxr5+Y3yUAsh53JbngVAkJFNzPGg==
+X-Google-Smtp-Source: ABdhPJy4NUGiQfDFRWwbPymofvN/0ggDyFKD82Hzbf127dfmMzZWdCoM9gJY5mLOKsvaAhPzY/5lEg==
+X-Received: by 2002:a17:902:9f8e:b0:148:da0a:c838 with SMTP id g14-20020a1709029f8e00b00148da0ac838mr17037268plq.60.1640010814545;
+        Mon, 20 Dec 2021 06:33:34 -0800 (PST)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:8683:af1a:e763:a640])
+        by smtp.gmail.com with ESMTPSA id f2sm20420268pfe.132.2021.12.20.06.33.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Dec 2021 06:33:34 -0800 (PST)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev <netdev@vger.kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Talal Ahmad <talalahmad@google.com>,
-        Kevin Hao <haokexin@gmail.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Kees Cook <keescook@chromium.org>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        Wei Wang <weiwan@google.com>, Arnd Bergmann <arnd@arndb.de>
-Content-Type: text/plain; charset="UTF-8"
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Subject: [PATCH net] inet: fully convert sk->sk_rx_dst to RCU rules
+Date:   Mon, 20 Dec 2021 06:33:30 -0800
+Message-Id: <20211220143330.680945-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.34.1.173.g76aa8bc2d0-goog
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
- On Mon, Dec 20, 2021 at 10:21 PM Tonghao Zhang
-<xiangxia.m.yue@gmail.com> wrote:
->
-> On Mon, Dec 20, 2021 at 9:58 PM Eric Dumazet <edumazet@google.com> wrote:
-> >
-> > On Mon, Dec 20, 2021 at 4:38 AM <xiangxia.m.yue@gmail.com> wrote:
-> > >
-> > > From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
-> > >
-> > > This patch fixes issue:
-> > > * If we install tc filters with act_skbedit in clsact hook.
-> > >   It doesn't work, because netdev_core_pick_tx() overwrites
-> > >   queue_mapping.
-> > >
-> > >   $ tc filter ... action skbedit queue_mapping 1
-> > >
-> > > And this patch is useful:
-> > > * We can use FQ + EDT to implement efficient policies. Tx queues
-> > >   are picked by xps, ndo_select_queue of netdev driver, or skb hash
-> > >   in netdev_core_pick_tx(). In fact, the netdev driver, and skb
-> > >   hash are _not_ under control. xps uses the CPUs map to select Tx
-> > >   queues, but we can't figure out which task_struct of pod/containter
-> > >   running on this cpu in most case. We can use clsact filters to classify
-> > >   one pod/container traffic to one Tx queue. Why ?
-> > >
-> > >   In containter networking environment, there are two kinds of pod/
-> > >   containter/net-namespace. One kind (e.g. P1, P2), the high throughput
-> > >   is key in these applications. But avoid running out of network resource,
-> > >   the outbound traffic of these pods is limited, using or sharing one
-> > >   dedicated Tx queues assigned HTB/TBF/FQ Qdisc. Other kind of pods
-> > >   (e.g. Pn), the low latency of data access is key. And the traffic is not
-> > >   limited. Pods use or share other dedicated Tx queues assigned FIFO Qdisc.
-> > >   This choice provides two benefits. First, contention on the HTB/FQ Qdisc
-> > >   lock is significantly reduced since fewer CPUs contend for the same queue.
-> > >   More importantly, Qdisc contention can be eliminated completely if each
-> > >   CPU has its own FIFO Qdisc for the second kind of pods.
-> > >
-> > >   There must be a mechanism in place to support classifying traffic based on
-> > >   pods/container to different Tx queues. Note that clsact is outside of Qdisc
-> > >   while Qdisc can run a classifier to select a sub-queue under the lock.
-> > >
-> > >   In general recording the decision in the skb seems a little heavy handed.
-> > >   This patch introduces a per-CPU variable, suggested by Eric.
-> > >
-> > >   The xmit.skip_txqueue flag is firstly cleared in __dev_queue_xmit().
-> > >   - Tx Qdisc may install that skbedit actions, then xmit.skip_txqueue flag
-> > >     is set in qdisc->enqueue() though tx queue has been selected in
-> > >     netdev_tx_queue_mapping() or netdev_core_pick_tx(). That flag is cleared
-> > >     firstly in __dev_queue_xmit(), is useful:
-> > >   - Avoid picking Tx queue with netdev_tx_queue_mapping() in next netdev
-> > >     in such case: eth0 macvlan - eth0.3 vlan - eth0 ixgbe-phy:
-> > >     For example, eth0, macvlan in pod, which root Qdisc install skbedit
-> > >     queue_mapping, send packets to eth0.3, vlan in host. In __dev_queue_xmit() of
-> > >     eth0.3, clear the flag, does not select tx queue according to skb->queue_mapping
-> > >     because there is no filters in clsact or tx Qdisc of this netdev.
-> > >     Same action taked in eth0, ixgbe in Host.
-> > >   - Avoid picking Tx queue for next packet. If we set xmit.skip_txqueue
-> > >     in tx Qdisc (qdisc->enqueue()), the proper way to clear it is clearing it
-> > >     in __dev_queue_xmit when processing next packets.
-> > >
-> > >   +----+      +----+      +----+
-> > >   | P1 |      | P2 |      | Pn |
-> > >   +----+      +----+      +----+
-> > >     |           |           |
-> > >     +-----------+-----------+
-> > >                 |
-> > >                 | clsact/skbedit
-> > >                 |      MQ
-> > >                 v
-> > >     +-----------+-----------+
-> > >     | q0        | q1        | qn
-> > >     v           v           v
-> > >   HTB/FQ      HTB/FQ  ...  FIFO
-> > >
-> > > Cc: Jamal Hadi Salim <jhs@mojatatu.com>
-> > > Cc: Cong Wang <xiyou.wangcong@gmail.com>
-> > > Cc: Jiri Pirko <jiri@resnulli.us>
-> > > Cc: "David S. Miller" <davem@davemloft.net>
-> > > Cc: Jakub Kicinski <kuba@kernel.org>
-> > > Cc: Jonathan Lemon <jonathan.lemon@gmail.com>
-> > > Cc: Eric Dumazet <edumazet@google.com>
-> > > Cc: Alexander Lobakin <alobakin@pm.me>
-> > > Cc: Paolo Abeni <pabeni@redhat.com>
-> > > Cc: Talal Ahmad <talalahmad@google.com>
-> > > Cc: Kevin Hao <haokexin@gmail.com>
-> > > Cc: Ilias Apalodimas <ilias.apalodimas@linaro.org>
-> > > Cc: Kees Cook <keescook@chromium.org>
-> > > Cc: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> > > Cc: Antoine Tenart <atenart@kernel.org>
-> > > Cc: Wei Wang <weiwan@google.com>
-> > > Cc: Arnd Bergmann <arnd@arndb.de>
-> > > Suggested-by: Eric Dumazet <edumazet@google.com>
-> >
-> > I have not suggested this patch, only to not add yet another bit in sk_buff.
-> sorry for that
-> >
-> > > Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
-> > > ---
-> > >  include/linux/netdevice.h | 19 +++++++++++++++++++
-> > >  net/core/dev.c            |  7 ++++++-
-> > >  net/sched/act_skbedit.c   |  4 +++-
-> > >  3 files changed, 28 insertions(+), 2 deletions(-)
-> > >
-> > > diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-> > > index 8b0bdeb4734e..8d02dafb32ba 100644
-> > > --- a/include/linux/netdevice.h
-> > > +++ b/include/linux/netdevice.h
-> > > @@ -3009,6 +3009,7 @@ struct softnet_data {
-> > >         /* written and read only by owning cpu: */
-> > >         struct {
-> > >                 u16 recursion;
-> > > +               u8  skip_txqueue;
-> > >                 u8  more;
-> > >         } xmit;
-> > >  #ifdef CONFIG_RPS
-> > > @@ -4696,6 +4697,24 @@ static inline netdev_tx_t netdev_start_xmit(struct sk_buff *skb, struct net_devi
-> > >         return rc;
-> > >  }
-> > >
-> > > +static inline void netdev_xmit_skip_txqueue(bool skip)
-> > > +{
-> > > +       __this_cpu_write(softnet_data.xmit.skip_txqueue, skip);
-> > > +}
-> > > +
-> > > +static inline bool netdev_xmit_txqueue_skipped(void)
-> > > +{
-> > > +       return __this_cpu_read(softnet_data.xmit.skip_txqueue);
-> > > +}
-> > > +
-> > > +static inline struct netdev_queue *
-> > > +netdev_tx_queue_mapping(struct net_device *dev, struct sk_buff *skb)
-> > > +{
-> > > +       int qm = skb_get_queue_mapping(skb);
-> > > +
-> > > +       return netdev_get_tx_queue(dev, netdev_cap_txqueue(dev, qm));
-> > > +}
-> > > +
-> > >  int netdev_class_create_file_ns(const struct class_attribute *class_attr,
-> > >                                 const void *ns);
-> > >  void netdev_class_remove_file_ns(const struct class_attribute *class_attr,
-> > > diff --git a/net/core/dev.c b/net/core/dev.c
-> > > index a855e41bbe39..e3f548c54dda 100644
-> > > --- a/net/core/dev.c
-> > > +++ b/net/core/dev.c
-> > > @@ -4048,6 +4048,7 @@ static int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
-> > >         skb_update_prio(skb);
-> > >
-> > >         qdisc_pkt_len_init(skb);
-> > > +       netdev_xmit_skip_txqueue(false);
-> > >  #ifdef CONFIG_NET_CLS_ACT
-> > >         skb->tc_at_ingress = 0;
-> > >  #endif
-> > > @@ -4073,7 +4074,11 @@ static int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
-> > >         else
-> > >                 skb_dst_force(skb);
-> > >
-> > > -       txq = netdev_core_pick_tx(dev, skb, sb_dev);
-> > > +       if (netdev_xmit_txqueue_skipped())
-> > > +               txq = netdev_tx_queue_mapping(dev, skb);
-> > > +       else
-> > > +               txq = netdev_core_pick_tx(dev, skb, sb_dev);
-> > > +
-> >
-> > If we really need to add yet another conditional in fast path, I would
-> > suggest using a static key.
-> Thanks, I will add a static key for this patch.
-> > Only hosts where SKBEDIT_F_QUEUE_MAPPING is requested would pay the price.
-Hi Eirc
-Do you mean we need a static key, such as, egress_needed_key ?
-static DEFINE_STATIC_KEY_FALSE(egress_needed_key);
+From: Eric Dumazet <edumazet@google.com>
 
-and we also should use the per-cpu var to decide to select tx from
-netdev_tx_queue_mapping or netdev_core_pick_tx.
-> >
-> > >         q = rcu_dereference_bh(txq->qdisc);
-> > >
-> > >         trace_net_dev_queue(skb);
-> > > diff --git a/net/sched/act_skbedit.c b/net/sched/act_skbedit.c
-> > > index ceba11b198bb..48504ed3b280 100644
-> > > --- a/net/sched/act_skbedit.c
-> > > +++ b/net/sched/act_skbedit.c
-> > > @@ -58,8 +58,10 @@ static int tcf_skbedit_act(struct sk_buff *skb, const struct tc_action *a,
-> > >                 }
-> > >         }
-> > >         if (params->flags & SKBEDIT_F_QUEUE_MAPPING &&
-> > > -           skb->dev->real_num_tx_queues > params->queue_mapping)
-> > > +           skb->dev->real_num_tx_queues > params->queue_mapping) {
-> > > +               netdev_xmit_skip_txqueue(true);
-> > >                 skb_set_queue_mapping(skb, params->queue_mapping);
-> > > +       }
-> > >         if (params->flags & SKBEDIT_F_MARK) {
-> > >                 skb->mark &= ~params->mask;
-> > >                 skb->mark |= params->mark & params->mask;
-> > > --
-> > > 2.27.0
-> > >
->
->
->
-> --
-> Best regards, Tonghao
+syzbot reported various issues around early demux,
+one being included in this changelog [1]
 
+sk->sk_rx_dst is using RCU protection without clearly
+documenting it.
 
+And following sequences in tcp_v4_do_rcv()/tcp_v6_do_rcv()
+are not following standard RCU rules.
 
+[a]    dst_release(dst);
+[b]    sk->sk_rx_dst = NULL;
+
+They look wrong because a delete operation of RCU protected
+pointer is supposed to clear the pointer before
+the call_rcu()/synchronize_rcu() guarding actual memory freeing.
+
+In some cases indeed, dst could be freed before [b] is done.
+
+We could cheat by clearing sk_rx_dst before calling
+dst_release(), but this seems the right time to stick
+to standard RCU annotations and debugging facilities.
+
+[1]
+BUG: KASAN: use-after-free in dst_check include/net/dst.h:470 [inline]
+BUG: KASAN: use-after-free in tcp_v4_early_demux+0x95b/0x960 net/ipv4/tcp_ipv4.c:1792
+Read of size 2 at addr ffff88807f1cb73a by task syz-executor.5/9204
+
+CPU: 0 PID: 9204 Comm: syz-executor.5 Not tainted 5.16.0-rc5-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_address_description.constprop.0.cold+0x8d/0x320 mm/kasan/report.c:247
+ __kasan_report mm/kasan/report.c:433 [inline]
+ kasan_report.cold+0x83/0xdf mm/kasan/report.c:450
+ dst_check include/net/dst.h:470 [inline]
+ tcp_v4_early_demux+0x95b/0x960 net/ipv4/tcp_ipv4.c:1792
+ ip_rcv_finish_core.constprop.0+0x15de/0x1e80 net/ipv4/ip_input.c:340
+ ip_list_rcv_finish.constprop.0+0x1b2/0x6e0 net/ipv4/ip_input.c:583
+ ip_sublist_rcv net/ipv4/ip_input.c:609 [inline]
+ ip_list_rcv+0x34e/0x490 net/ipv4/ip_input.c:644
+ __netif_receive_skb_list_ptype net/core/dev.c:5508 [inline]
+ __netif_receive_skb_list_core+0x549/0x8e0 net/core/dev.c:5556
+ __netif_receive_skb_list net/core/dev.c:5608 [inline]
+ netif_receive_skb_list_internal+0x75e/0xd80 net/core/dev.c:5699
+ gro_normal_list net/core/dev.c:5853 [inline]
+ gro_normal_list net/core/dev.c:5849 [inline]
+ napi_complete_done+0x1f1/0x880 net/core/dev.c:6590
+ virtqueue_napi_complete drivers/net/virtio_net.c:339 [inline]
+ virtnet_poll+0xca2/0x11b0 drivers/net/virtio_net.c:1557
+ __napi_poll+0xaf/0x440 net/core/dev.c:7023
+ napi_poll net/core/dev.c:7090 [inline]
+ net_rx_action+0x801/0xb40 net/core/dev.c:7177
+ __do_softirq+0x29b/0x9c2 kernel/softirq.c:558
+ invoke_softirq kernel/softirq.c:432 [inline]
+ __irq_exit_rcu+0x123/0x180 kernel/softirq.c:637
+ irq_exit_rcu+0x5/0x20 kernel/softirq.c:649
+ common_interrupt+0x52/0xc0 arch/x86/kernel/irq.c:240
+ asm_common_interrupt+0x1e/0x40 arch/x86/include/asm/idtentry.h:629
+RIP: 0033:0x7f5e972bfd57
+Code: 39 d1 73 14 0f 1f 80 00 00 00 00 48 8b 50 f8 48 83 e8 08 48 39 ca 77 f3 48 39 c3 73 3e 48 89 13 48 8b 50 f8 48 89 38 49 8b 0e <48> 8b 3e 48 83 c3 08 48 83 c6 08 eb bc 48 39 d1 72 9e 48 39 d0 73
+RSP: 002b:00007fff8a413210 EFLAGS: 00000283
+RAX: 00007f5e97108990 RBX: 00007f5e97108338 RCX: ffffffff81d3aa45
+RDX: ffffffff81d3aa45 RSI: 00007f5e97108340 RDI: ffffffff81d3aa45
+RBP: 00007f5e97107eb8 R08: 00007f5e97108d88 R09: 0000000093c2e8d9
+R10: 0000000000000000 R11: 0000000000000000 R12: 00007f5e97107eb0
+R13: 00007f5e97108338 R14: 00007f5e97107ea8 R15: 0000000000000019
+ </TASK>
+
+Allocated by task 13:
+ kasan_save_stack+0x1e/0x50 mm/kasan/common.c:38
+ kasan_set_track mm/kasan/common.c:46 [inline]
+ set_alloc_info mm/kasan/common.c:434 [inline]
+ __kasan_slab_alloc+0x90/0xc0 mm/kasan/common.c:467
+ kasan_slab_alloc include/linux/kasan.h:259 [inline]
+ slab_post_alloc_hook mm/slab.h:519 [inline]
+ slab_alloc_node mm/slub.c:3234 [inline]
+ slab_alloc mm/slub.c:3242 [inline]
+ kmem_cache_alloc+0x202/0x3a0 mm/slub.c:3247
+ dst_alloc+0x146/0x1f0 net/core/dst.c:92
+ rt_dst_alloc+0x73/0x430 net/ipv4/route.c:1613
+ ip_route_input_slow+0x1817/0x3a20 net/ipv4/route.c:2340
+ ip_route_input_rcu net/ipv4/route.c:2470 [inline]
+ ip_route_input_noref+0x116/0x2a0 net/ipv4/route.c:2415
+ ip_rcv_finish_core.constprop.0+0x288/0x1e80 net/ipv4/ip_input.c:354
+ ip_list_rcv_finish.constprop.0+0x1b2/0x6e0 net/ipv4/ip_input.c:583
+ ip_sublist_rcv net/ipv4/ip_input.c:609 [inline]
+ ip_list_rcv+0x34e/0x490 net/ipv4/ip_input.c:644
+ __netif_receive_skb_list_ptype net/core/dev.c:5508 [inline]
+ __netif_receive_skb_list_core+0x549/0x8e0 net/core/dev.c:5556
+ __netif_receive_skb_list net/core/dev.c:5608 [inline]
+ netif_receive_skb_list_internal+0x75e/0xd80 net/core/dev.c:5699
+ gro_normal_list net/core/dev.c:5853 [inline]
+ gro_normal_list net/core/dev.c:5849 [inline]
+ napi_complete_done+0x1f1/0x880 net/core/dev.c:6590
+ virtqueue_napi_complete drivers/net/virtio_net.c:339 [inline]
+ virtnet_poll+0xca2/0x11b0 drivers/net/virtio_net.c:1557
+ __napi_poll+0xaf/0x440 net/core/dev.c:7023
+ napi_poll net/core/dev.c:7090 [inline]
+ net_rx_action+0x801/0xb40 net/core/dev.c:7177
+ __do_softirq+0x29b/0x9c2 kernel/softirq.c:558
+
+Freed by task 13:
+ kasan_save_stack+0x1e/0x50 mm/kasan/common.c:38
+ kasan_set_track+0x21/0x30 mm/kasan/common.c:46
+ kasan_set_free_info+0x20/0x30 mm/kasan/generic.c:370
+ ____kasan_slab_free mm/kasan/common.c:366 [inline]
+ ____kasan_slab_free mm/kasan/common.c:328 [inline]
+ __kasan_slab_free+0xff/0x130 mm/kasan/common.c:374
+ kasan_slab_free include/linux/kasan.h:235 [inline]
+ slab_free_hook mm/slub.c:1723 [inline]
+ slab_free_freelist_hook+0x8b/0x1c0 mm/slub.c:1749
+ slab_free mm/slub.c:3513 [inline]
+ kmem_cache_free+0xbd/0x5d0 mm/slub.c:3530
+ dst_destroy+0x2d6/0x3f0 net/core/dst.c:127
+ rcu_do_batch kernel/rcu/tree.c:2506 [inline]
+ rcu_core+0x7ab/0x1470 kernel/rcu/tree.c:2741
+ __do_softirq+0x29b/0x9c2 kernel/softirq.c:558
+
+Last potentially related work creation:
+ kasan_save_stack+0x1e/0x50 mm/kasan/common.c:38
+ __kasan_record_aux_stack+0xf5/0x120 mm/kasan/generic.c:348
+ __call_rcu kernel/rcu/tree.c:2985 [inline]
+ call_rcu+0xb1/0x740 kernel/rcu/tree.c:3065
+ dst_release net/core/dst.c:177 [inline]
+ dst_release+0x79/0xe0 net/core/dst.c:167
+ tcp_v4_do_rcv+0x612/0x8d0 net/ipv4/tcp_ipv4.c:1712
+ sk_backlog_rcv include/net/sock.h:1030 [inline]
+ __release_sock+0x134/0x3b0 net/core/sock.c:2768
+ release_sock+0x54/0x1b0 net/core/sock.c:3300
+ tcp_sendmsg+0x36/0x40 net/ipv4/tcp.c:1441
+ inet_sendmsg+0x99/0xe0 net/ipv4/af_inet.c:819
+ sock_sendmsg_nosec net/socket.c:704 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:724
+ sock_write_iter+0x289/0x3c0 net/socket.c:1057
+ call_write_iter include/linux/fs.h:2162 [inline]
+ new_sync_write+0x429/0x660 fs/read_write.c:503
+ vfs_write+0x7cd/0xae0 fs/read_write.c:590
+ ksys_write+0x1ee/0x250 fs/read_write.c:643
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+The buggy address belongs to the object at ffff88807f1cb700
+ which belongs to the cache ip_dst_cache of size 176
+The buggy address is located 58 bytes inside of
+ 176-byte region [ffff88807f1cb700, ffff88807f1cb7b0)
+The buggy address belongs to the page:
+page:ffffea0001fc72c0 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x7f1cb
+flags: 0xfff00000000200(slab|node=0|zone=1|lastcpupid=0x7ff)
+raw: 00fff00000000200 dead000000000100 dead000000000122 ffff8881413bb780
+raw: 0000000000000000 0000000000100010 00000001ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
+page_owner tracks the page as allocated
+page last allocated via order 0, migratetype Unmovable, gfp_mask 0x112a20(GFP_ATOMIC|__GFP_NOWARN|__GFP_NORETRY|__GFP_HARDWALL), pid 5, ts 108466983062, free_ts 108048976062
+ prep_new_page mm/page_alloc.c:2418 [inline]
+ get_page_from_freelist+0xa72/0x2f50 mm/page_alloc.c:4149
+ __alloc_pages+0x1b2/0x500 mm/page_alloc.c:5369
+ alloc_pages+0x1a7/0x300 mm/mempolicy.c:2191
+ alloc_slab_page mm/slub.c:1793 [inline]
+ allocate_slab mm/slub.c:1930 [inline]
+ new_slab+0x32d/0x4a0 mm/slub.c:1993
+ ___slab_alloc+0x918/0xfe0 mm/slub.c:3022
+ __slab_alloc.constprop.0+0x4d/0xa0 mm/slub.c:3109
+ slab_alloc_node mm/slub.c:3200 [inline]
+ slab_alloc mm/slub.c:3242 [inline]
+ kmem_cache_alloc+0x35c/0x3a0 mm/slub.c:3247
+ dst_alloc+0x146/0x1f0 net/core/dst.c:92
+ rt_dst_alloc+0x73/0x430 net/ipv4/route.c:1613
+ __mkroute_output net/ipv4/route.c:2564 [inline]
+ ip_route_output_key_hash_rcu+0x921/0x2d00 net/ipv4/route.c:2791
+ ip_route_output_key_hash+0x18b/0x300 net/ipv4/route.c:2619
+ __ip_route_output_key include/net/route.h:126 [inline]
+ ip_route_output_flow+0x23/0x150 net/ipv4/route.c:2850
+ ip_route_output_key include/net/route.h:142 [inline]
+ geneve_get_v4_rt+0x3a6/0x830 drivers/net/geneve.c:809
+ geneve_xmit_skb drivers/net/geneve.c:899 [inline]
+ geneve_xmit+0xc4a/0x3540 drivers/net/geneve.c:1082
+ __netdev_start_xmit include/linux/netdevice.h:4994 [inline]
+ netdev_start_xmit include/linux/netdevice.h:5008 [inline]
+ xmit_one net/core/dev.c:3590 [inline]
+ dev_hard_start_xmit+0x1eb/0x920 net/core/dev.c:3606
+ __dev_queue_xmit+0x299a/0x3650 net/core/dev.c:4229
+page last free stack trace:
+ reset_page_owner include/linux/page_owner.h:24 [inline]
+ free_pages_prepare mm/page_alloc.c:1338 [inline]
+ free_pcp_prepare+0x374/0x870 mm/page_alloc.c:1389
+ free_unref_page_prepare mm/page_alloc.c:3309 [inline]
+ free_unref_page+0x19/0x690 mm/page_alloc.c:3388
+ qlink_free mm/kasan/quarantine.c:146 [inline]
+ qlist_free_all+0x5a/0xc0 mm/kasan/quarantine.c:165
+ kasan_quarantine_reduce+0x180/0x200 mm/kasan/quarantine.c:272
+ __kasan_slab_alloc+0xa2/0xc0 mm/kasan/common.c:444
+ kasan_slab_alloc include/linux/kasan.h:259 [inline]
+ slab_post_alloc_hook mm/slab.h:519 [inline]
+ slab_alloc_node mm/slub.c:3234 [inline]
+ kmem_cache_alloc_node+0x255/0x3f0 mm/slub.c:3270
+ __alloc_skb+0x215/0x340 net/core/skbuff.c:414
+ alloc_skb include/linux/skbuff.h:1126 [inline]
+ alloc_skb_with_frags+0x93/0x620 net/core/skbuff.c:6078
+ sock_alloc_send_pskb+0x783/0x910 net/core/sock.c:2575
+ mld_newpack+0x1df/0x770 net/ipv6/mcast.c:1754
+ add_grhead+0x265/0x330 net/ipv6/mcast.c:1857
+ add_grec+0x1053/0x14e0 net/ipv6/mcast.c:1995
+ mld_send_initial_cr.part.0+0xf6/0x230 net/ipv6/mcast.c:2242
+ mld_send_initial_cr net/ipv6/mcast.c:1232 [inline]
+ mld_dad_work+0x1d3/0x690 net/ipv6/mcast.c:2268
+ process_one_work+0x9b2/0x1690 kernel/workqueue.c:2298
+ worker_thread+0x658/0x11f0 kernel/workqueue.c:2445
+
+Memory state around the buggy address:
+ ffff88807f1cb600: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff88807f1cb680: fb fb fb fb fb fb fc fc fc fc fc fc fc fc fc fc
+>ffff88807f1cb700: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                                        ^
+ ffff88807f1cb780: fb fb fb fb fb fb fc fc fc fc fc fc fc fc fc fc
+ ffff88807f1cb800: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+
+Fixes: 41063e9dd119 ("ipv4: Early TCP socket demux.")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+---
+ include/net/sock.h   |  2 +-
+ net/ipv4/af_inet.c   |  2 +-
+ net/ipv4/tcp.c       |  3 +--
+ net/ipv4/tcp_input.c |  2 +-
+ net/ipv4/tcp_ipv4.c  | 11 +++++++----
+ net/ipv4/udp.c       |  6 +++---
+ net/ipv6/tcp_ipv6.c  | 11 +++++++----
+ net/ipv6/udp.c       |  4 ++--
+ 8 files changed, 23 insertions(+), 18 deletions(-)
+
+diff --git a/include/net/sock.h b/include/net/sock.h
+index bea21ff70e74d906216f4eaa2d5a712d12551216..d47e9658da28545c1f6afd9db0cf136b3e13d7b6 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -431,7 +431,7 @@ struct sock {
+ #ifdef CONFIG_XFRM
+ 	struct xfrm_policy __rcu *sk_policy[2];
+ #endif
+-	struct dst_entry	*sk_rx_dst;
++	struct dst_entry __rcu	*sk_rx_dst;
+ 	int			sk_rx_dst_ifindex;
+ 	u32			sk_rx_dst_cookie;
+ 
+diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
+index 0189e3cd4a7df2dc2ea7121182ee290e0164df90..6b5956500436187d5e9b801ebb6f8f52ba0db090 100644
+--- a/net/ipv4/af_inet.c
++++ b/net/ipv4/af_inet.c
+@@ -154,7 +154,7 @@ void inet_sock_destruct(struct sock *sk)
+ 
+ 	kfree(rcu_dereference_protected(inet->inet_opt, 1));
+ 	dst_release(rcu_dereference_protected(sk->sk_dst_cache, 1));
+-	dst_release(sk->sk_rx_dst);
++	dst_release(rcu_dereference_protected(sk->sk_rx_dst, 1));
+ 	sk_refcnt_debug_dec(sk);
+ }
+ EXPORT_SYMBOL(inet_sock_destruct);
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index bbb3d39c69afc2d5a42c6ace8d473657861da61f..2bb28bfd83bf621b5d9f3fb7ce5695195697b43a 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -3012,8 +3012,7 @@ int tcp_disconnect(struct sock *sk, int flags)
+ 	icsk->icsk_ack.rcv_mss = TCP_MIN_MSS;
+ 	memset(&tp->rx_opt, 0, sizeof(tp->rx_opt));
+ 	__sk_dst_reset(sk);
+-	dst_release(sk->sk_rx_dst);
+-	sk->sk_rx_dst = NULL;
++	dst_release(xchg((__force struct dst_entry **)&sk->sk_rx_dst, NULL));
+ 	tcp_saved_syn_free(tp);
+ 	tp->compressed_ack = 0;
+ 	tp->segs_in = 0;
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index 246ab7b5e857eb9e802c4805075e89c98cf00636..0ce46849ec3d4595699dd54229919b2d66b70257 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -5787,7 +5787,7 @@ void tcp_rcv_established(struct sock *sk, struct sk_buff *skb)
+ 	trace_tcp_probe(sk, skb);
+ 
+ 	tcp_mstamp_refresh(tp);
+-	if (unlikely(!sk->sk_rx_dst))
++	if (unlikely(!rcu_access_pointer(sk->sk_rx_dst)))
+ 		inet_csk(sk)->icsk_af_ops->sk_rx_dst_set(sk, skb);
+ 	/*
+ 	 *	Header prediction.
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index 13d868c43284584ee0c58ddfd411bb52c8b0c830..084df223b5dff8089a615a4a8d392b620fc0a28a 100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -1701,7 +1701,10 @@ int tcp_v4_do_rcv(struct sock *sk, struct sk_buff *skb)
+ 	struct sock *rsk;
+ 
+ 	if (sk->sk_state == TCP_ESTABLISHED) { /* Fast path */
+-		struct dst_entry *dst = sk->sk_rx_dst;
++		struct dst_entry *dst;
++
++		dst = rcu_dereference_protected(sk->sk_rx_dst,
++						lockdep_sock_is_held(sk));
+ 
+ 		sock_rps_save_rxhash(sk, skb);
+ 		sk_mark_napi_id(sk, skb);
+@@ -1709,8 +1712,8 @@ int tcp_v4_do_rcv(struct sock *sk, struct sk_buff *skb)
+ 			if (sk->sk_rx_dst_ifindex != skb->skb_iif ||
+ 			    !INDIRECT_CALL_1(dst->ops->check, ipv4_dst_check,
+ 					     dst, 0)) {
++				RCU_INIT_POINTER(sk->sk_rx_dst, NULL);
+ 				dst_release(dst);
+-				sk->sk_rx_dst = NULL;
+ 			}
+ 		}
+ 		tcp_rcv_established(sk, skb);
+@@ -1786,7 +1789,7 @@ int tcp_v4_early_demux(struct sk_buff *skb)
+ 		skb->sk = sk;
+ 		skb->destructor = sock_edemux;
+ 		if (sk_fullsock(sk)) {
+-			struct dst_entry *dst = READ_ONCE(sk->sk_rx_dst);
++			struct dst_entry *dst = rcu_dereference(sk->sk_rx_dst);
+ 
+ 			if (dst)
+ 				dst = dst_check(dst, 0);
+@@ -2201,7 +2204,7 @@ void inet_sk_rx_dst_set(struct sock *sk, const struct sk_buff *skb)
+ 	struct dst_entry *dst = skb_dst(skb);
+ 
+ 	if (dst && dst_hold_safe(dst)) {
+-		sk->sk_rx_dst = dst;
++		rcu_assign_pointer(sk->sk_rx_dst, dst);
+ 		sk->sk_rx_dst_ifindex = skb->skb_iif;
+ 	}
+ }
+diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+index 23b05e28490b0a0a690a837027f26167e353f8ce..15c6b450b8dba44d5f344a554eea6b991c1ea5f1 100644
+--- a/net/ipv4/udp.c
++++ b/net/ipv4/udp.c
+@@ -2250,7 +2250,7 @@ bool udp_sk_rx_dst_set(struct sock *sk, struct dst_entry *dst)
+ 	struct dst_entry *old;
+ 
+ 	if (dst_hold_safe(dst)) {
+-		old = xchg(&sk->sk_rx_dst, dst);
++		old = xchg((__force struct dst_entry **)&sk->sk_rx_dst, dst);
+ 		dst_release(old);
+ 		return old != dst;
+ 	}
+@@ -2440,7 +2440,7 @@ int __udp4_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
+ 		struct dst_entry *dst = skb_dst(skb);
+ 		int ret;
+ 
+-		if (unlikely(sk->sk_rx_dst != dst))
++		if (unlikely(rcu_dereference(sk->sk_rx_dst) != dst))
+ 			udp_sk_rx_dst_set(sk, dst);
+ 
+ 		ret = udp_unicast_rcv_skb(sk, skb, uh);
+@@ -2599,7 +2599,7 @@ int udp_v4_early_demux(struct sk_buff *skb)
+ 
+ 	skb->sk = sk;
+ 	skb->destructor = sock_efree;
+-	dst = READ_ONCE(sk->sk_rx_dst);
++	dst = rcu_dereference(sk->sk_rx_dst);
+ 
+ 	if (dst)
+ 		dst = dst_check(dst, 0);
+diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
+index 551fce49841d7f53a111b0435855634cece2b40a..680e6481b9672040ccb41fd08ab80166575bef50 100644
+--- a/net/ipv6/tcp_ipv6.c
++++ b/net/ipv6/tcp_ipv6.c
+@@ -107,7 +107,7 @@ static void inet6_sk_rx_dst_set(struct sock *sk, const struct sk_buff *skb)
+ 	if (dst && dst_hold_safe(dst)) {
+ 		const struct rt6_info *rt = (const struct rt6_info *)dst;
+ 
+-		sk->sk_rx_dst = dst;
++		rcu_assign_pointer(sk->sk_rx_dst, dst);
+ 		sk->sk_rx_dst_ifindex = skb->skb_iif;
+ 		sk->sk_rx_dst_cookie = rt6_get_cookie(rt);
+ 	}
+@@ -1505,7 +1505,10 @@ static int tcp_v6_do_rcv(struct sock *sk, struct sk_buff *skb)
+ 		opt_skb = skb_clone(skb, sk_gfp_mask(sk, GFP_ATOMIC));
+ 
+ 	if (sk->sk_state == TCP_ESTABLISHED) { /* Fast path */
+-		struct dst_entry *dst = sk->sk_rx_dst;
++		struct dst_entry *dst;
++
++		dst = rcu_dereference_protected(sk->sk_rx_dst,
++						lockdep_sock_is_held(sk));
+ 
+ 		sock_rps_save_rxhash(sk, skb);
+ 		sk_mark_napi_id(sk, skb);
+@@ -1513,8 +1516,8 @@ static int tcp_v6_do_rcv(struct sock *sk, struct sk_buff *skb)
+ 			if (sk->sk_rx_dst_ifindex != skb->skb_iif ||
+ 			    INDIRECT_CALL_1(dst->ops->check, ip6_dst_check,
+ 					    dst, sk->sk_rx_dst_cookie) == NULL) {
++				RCU_INIT_POINTER(sk->sk_rx_dst, NULL);
+ 				dst_release(dst);
+-				sk->sk_rx_dst = NULL;
+ 			}
+ 		}
+ 
+@@ -1874,7 +1877,7 @@ INDIRECT_CALLABLE_SCOPE void tcp_v6_early_demux(struct sk_buff *skb)
+ 		skb->sk = sk;
+ 		skb->destructor = sock_edemux;
+ 		if (sk_fullsock(sk)) {
+-			struct dst_entry *dst = READ_ONCE(sk->sk_rx_dst);
++			struct dst_entry *dst = rcu_dereference(sk->sk_rx_dst);
+ 
+ 			if (dst)
+ 				dst = dst_check(dst, sk->sk_rx_dst_cookie);
+diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
+index e43b31d25fb61c7875f3bb8a93eb74da244d912a..a2caca6ccf114546f9e4ea854ad67208b2f3873e 100644
+--- a/net/ipv6/udp.c
++++ b/net/ipv6/udp.c
+@@ -956,7 +956,7 @@ int __udp6_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
+ 		struct dst_entry *dst = skb_dst(skb);
+ 		int ret;
+ 
+-		if (unlikely(sk->sk_rx_dst != dst))
++		if (unlikely(rcu_dereference(sk->sk_rx_dst) != dst))
+ 			udp6_sk_rx_dst_set(sk, dst);
+ 
+ 		if (!uh->check && !udp_sk(sk)->no_check6_rx) {
+@@ -1070,7 +1070,7 @@ INDIRECT_CALLABLE_SCOPE void udp_v6_early_demux(struct sk_buff *skb)
+ 
+ 	skb->sk = sk;
+ 	skb->destructor = sock_efree;
+-	dst = READ_ONCE(sk->sk_rx_dst);
++	dst = rcu_dereference(sk->sk_rx_dst);
+ 
+ 	if (dst)
+ 		dst = dst_check(dst, sk->sk_rx_dst_cookie);
 -- 
-Best regards, Tonghao
+2.34.1.173.g76aa8bc2d0-goog
+
