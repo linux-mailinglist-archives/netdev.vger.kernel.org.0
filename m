@@ -2,162 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 774CB47B1EC
-	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 18:13:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8964C47B21C
+	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 18:30:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240092AbhLTRNT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Dec 2021 12:13:19 -0500
-Received: from mga14.intel.com ([192.55.52.115]:37501 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233139AbhLTRNS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Dec 2021 12:13:18 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1640020398; x=1671556398;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=MqkVzxr9XhGz20O9djEWhlXF6L01WiGy/1aPYksMFb0=;
-  b=dN1sxUPVYmyw7zfJVbsQXzU6valwlzy1fhNFp9nLJBe8PM7EW3CdM1R0
-   0Hs6spA8kq9QqM8/+46HYLHiVkAvy7WBNaZx5UZBuKHmJuaf6UWpkpOBj
-   g8ZVvjomdAc+tbzugfMa4G4J/yApfd+edfHSBjhaVsK+JfJ98OevnY0FS
-   M5rBxaY7qglapFixPO/TAiRIMvu7REc0gXrw45I8gygwtgGDdI2O0b4nA
-   DNTfFw0b6elfOwaXBrh9jh74ByX7q+3DepCS4q6paRfccPDXExiVttIvJ
-   m1/7qcOB/hV/V5CI8x8mWlvvDHwfMhoBmUt64T/mxUnk6GYSllDZo1gxx
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10203"; a="240449641"
-X-IronPort-AV: E=Sophos;i="5.88,221,1635231600"; 
-   d="scan'208";a="240449641"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Dec 2021 09:13:17 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,221,1635231600"; 
-   d="scan'208";a="569923728"
-Received: from lkp-server02.sh.intel.com (HELO 9f38c0981d9f) ([10.239.97.151])
-  by fmsmga008.fm.intel.com with ESMTP; 20 Dec 2021 09:13:14 -0800
-Received: from kbuild by 9f38c0981d9f with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1mzMDp-00081r-I5; Mon, 20 Dec 2021 17:13:13 +0000
-Date:   Tue, 21 Dec 2021 01:12:15 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     cgel.zte@gmail.com, kvalo@kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org, davem@davemloft.net,
-        kuba@kernel.org, ath11k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Changcheng Deng <deng.changcheng@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: Re: [PATCH] ath11k: use min() to make code cleaner
-Message-ID: <202112210104.cbWjNxoN-lkp@intel.com>
-References: <20211220112133.472472-1-deng.changcheng@zte.com.cn>
+        id S239565AbhLTRaI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Dec 2021 12:30:08 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:50892 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229767AbhLTRaG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Dec 2021 12:30:06 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CF030B81038
+        for <netdev@vger.kernel.org>; Mon, 20 Dec 2021 17:30:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8837EC36AEA
+        for <netdev@vger.kernel.org>; Mon, 20 Dec 2021 17:30:04 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="fcKAqCWR"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1640021401;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=CQ5wki9NSFz2DpBh2GvNG6IMNVTU0HsTQD0ndUheZLc=;
+        b=fcKAqCWR+EZEp2aSy2BlFVynvDj2MtqASw80dJ79gCG7AP+VIFIyqaOzPJm9y7OV/7c+KN
+        LPFhSjV3yjjOw25MZsHrVKRskJnvs00wqdr87PSQpr9g1qlxQ4JTMe60lXFjVRs90Hmpz8
+        SVrxyGghDGO7G9SMFOcewUcpE2fQlXI=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 5e9d6903 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO)
+        for <netdev@vger.kernel.org>;
+        Mon, 20 Dec 2021 17:30:01 +0000 (UTC)
+Received: by mail-yb1-f169.google.com with SMTP id d10so31040948ybe.3
+        for <netdev@vger.kernel.org>; Mon, 20 Dec 2021 09:30:01 -0800 (PST)
+X-Gm-Message-State: AOAM533pka0ydd1szi3F+kF7NOyk+FpBoOFNmnmq8KLzmd22bHRUxRgi
+        5osHA6ViOFdvJXbTP20rlGZQxBrvNKsJN4Ty4lg=
+X-Google-Smtp-Source: ABdhPJzkyeDZgRyEC0yCam6TO1TdvDfCfRTZaVXXylNELqtxND9fGfN9jT+4DKjrODQxBLeqsgczMKTluKvP0vLdR/8=
+X-Received: by 2002:a25:2450:: with SMTP id k77mr24173867ybk.121.1640021400175;
+ Mon, 20 Dec 2021 09:30:00 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211220112133.472472-1-deng.changcheng@zte.com.cn>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20211208173205.zajfvg6zvi4g5kln@linutronix.de>
+In-Reply-To: <20211208173205.zajfvg6zvi4g5kln@linutronix.de>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Mon, 20 Dec 2021 18:29:49 +0100
+X-Gmail-Original-Message-ID: <CAHmME9rzEjKg41eq5jBtsLXF+vZSEnvdomZJ-rTzx8Q=ac1ayg@mail.gmail.com>
+Message-ID: <CAHmME9rzEjKg41eq5jBtsLXF+vZSEnvdomZJ-rTzx8Q=ac1ayg@mail.gmail.com>
+Subject: Re: [RFC] wiregard RX packet processing.
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     WireGuard mailing list <wireguard@lists.zx2c4.com>,
+        Netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Hi Sebastian,
 
-Thank you for the patch! Perhaps something to improve:
+Seems like you've identified two things, the use of need_resched, and
+potentially surrounding napi_schedule in local_bh_{disable,enable}.
 
-[auto build test WARNING on kvalo-ath/ath-next]
-[also build test WARNING on v5.16-rc6 next-20211220]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+Regarding need_resched, I pulled that out of other code that seemed to
+have the "same requirements", as vaguely conceived. It indeed might
+not be right. The intent is to have that worker running at maximum
+throughput for extended periods of time, but not preventing other
+threads from running elsewhere, so that, e.g., a user's machine
+doesn't have a jenky mouse when downloading a file.
 
-url:    https://github.com/0day-ci/linux/commits/cgel-zte-gmail-com/ath11k-use-min-to-make-code-cleaner/20211220-192326
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/kvalo/ath.git ath-next
-config: hexagon-randconfig-r001-20211220 (https://download.01.org/0day-ci/archive/20211221/202112210104.cbWjNxoN-lkp@intel.com/config)
-compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 555eacf75f21cd1dfc6363d73ad187b730349543)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/526b459a20794d7325764c3fea5fd3e0521d6084
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review cgel-zte-gmail-com/ath11k-use-min-to-make-code-cleaner/20211220-192326
-        git checkout 526b459a20794d7325764c3fea5fd3e0521d6084
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/net/wireless/ath/ath11k/
+What are the effects of unconditionally calling cond_resched() without
+checking for if (need_resched())? Sounds like you're saying none at
+all?
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Regarding napi_schedule, I actually wasn't aware that it's requirement
+to _only_ ever run from softirq was a strict one. When I switched to
+using napi_schedule in this way, throughput really jumped up
+significantly. Part of this indeed is from the batching, so that the
+napi callback can then handle more packets in one go later. But I
+assumed it was something inside of NAPI that was batching and
+scheduling it, rather than a mistake on my part to call this from a wq
+and not from a softirq.
 
-All warnings (new ones prefixed by >>):
+What, then, are the effects of surrounding that in
+local_bh_{disable,enable} as you've done in the patch? You mentioned
+one aspect is that it will "invoke wg_packet_rx_poll() where you see
+only one skb." It sounds like that'd be bad for performance, though,
+given that the design of napi is really geared toward batching.
 
->> drivers/net/wireless/ath/ath11k/wmi.c:617:12: warning: comparison of distinct pointer types ('typeof (frame->len) *' (aka 'unsigned int *') and 'typeof (64) *' (aka 'int *')) [-Wcompare-distinct-pointer-types]
-           buf_len = min(frame->len, WMI_MGMT_SEND_DOWNLD_LEN);
-                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/minmax.h:45:19: note: expanded from macro 'min'
-   #define min(x, y)       __careful_cmp(x, y, <)
-                           ^~~~~~~~~~~~~~~~~~~~~~
-   include/linux/minmax.h:36:24: note: expanded from macro '__careful_cmp'
-           __builtin_choose_expr(__safe_cmp(x, y), \
-                                 ^~~~~~~~~~~~~~~~
-   include/linux/minmax.h:26:4: note: expanded from macro '__safe_cmp'
-                   (__typecheck(x, y) && __no_side_effects(x, y))
-                    ^~~~~~~~~~~~~~~~~
-   include/linux/minmax.h:20:28: note: expanded from macro '__typecheck'
-           (!!(sizeof((typeof(x) *)1 == (typeof(y) *)1)))
-                      ~~~~~~~~~~~~~~ ^  ~~~~~~~~~~~~~~
-   1 warning generated.
-
-
-vim +617 drivers/net/wireless/ath/ath11k/wmi.c
-
-   606	
-   607	int ath11k_wmi_mgmt_send(struct ath11k *ar, u32 vdev_id, u32 buf_id,
-   608				 struct sk_buff *frame)
-   609	{
-   610		struct ath11k_pdev_wmi *wmi = ar->wmi;
-   611		struct wmi_mgmt_send_cmd *cmd;
-   612		struct wmi_tlv *frame_tlv;
-   613		struct sk_buff *skb;
-   614		u32 buf_len;
-   615		int ret, len;
-   616	
- > 617		buf_len = min(frame->len, WMI_MGMT_SEND_DOWNLD_LEN);
-   618	
-   619		len = sizeof(*cmd) + sizeof(*frame_tlv) + roundup(buf_len, 4);
-   620	
-   621		skb = ath11k_wmi_alloc_skb(wmi->wmi_ab, len);
-   622		if (!skb)
-   623			return -ENOMEM;
-   624	
-   625		cmd = (struct wmi_mgmt_send_cmd *)skb->data;
-   626		cmd->tlv_header = FIELD_PREP(WMI_TLV_TAG, WMI_TAG_MGMT_TX_SEND_CMD) |
-   627				  FIELD_PREP(WMI_TLV_LEN, sizeof(*cmd) - TLV_HDR_SIZE);
-   628		cmd->vdev_id = vdev_id;
-   629		cmd->desc_id = buf_id;
-   630		cmd->chanfreq = 0;
-   631		cmd->paddr_lo = lower_32_bits(ATH11K_SKB_CB(frame)->paddr);
-   632		cmd->paddr_hi = upper_32_bits(ATH11K_SKB_CB(frame)->paddr);
-   633		cmd->frame_len = frame->len;
-   634		cmd->buf_len = buf_len;
-   635		cmd->tx_params_valid = 0;
-   636	
-   637		frame_tlv = (struct wmi_tlv *)(skb->data + sizeof(*cmd));
-   638		frame_tlv->header = FIELD_PREP(WMI_TLV_TAG, WMI_TAG_ARRAY_BYTE) |
-   639				    FIELD_PREP(WMI_TLV_LEN, buf_len);
-   640	
-   641		memcpy(frame_tlv->value, frame->data, buf_len);
-   642	
-   643		ath11k_ce_byte_swap(frame_tlv->value, buf_len);
-   644	
-   645		ret = ath11k_wmi_cmd_send(wmi, skb, WMI_MGMT_TX_SEND_CMDID);
-   646		if (ret) {
-   647			ath11k_warn(ar->ab,
-   648				    "failed to submit WMI_MGMT_TX_SEND_CMDID cmd\n");
-   649			dev_kfree_skb(skb);
-   650		}
-   651	
-   652		return ret;
-   653	}
-   654	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Jason
