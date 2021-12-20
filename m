@@ -2,143 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 065F247B446
-	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 21:20:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EDA7047B449
+	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 21:21:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229970AbhLTUTm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Dec 2021 15:19:42 -0500
-Received: from mga03.intel.com ([134.134.136.65]:56197 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229531AbhLTUTm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Dec 2021 15:19:42 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1640031582; x=1671567582;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=a4VMoGHztcKfoljjEtCLwSrsbmVcdmXZ7bRU/8E6z6U=;
-  b=NJq5HvpcZ4PcgBmpSypGddzI68moiN/VtnYdT+cKtA5dN+t7ua1xlq+u
-   Oy2O16kE2wqYumwlhb4la78tSJWaCmkGKhzlBSL0H2t5G6RGmu0SYsxnE
-   iQ/6T2gW5hxwkir8UAMNdbu4BX2y3tqOh+ZNiyrTerjykX2ILE2D/gN0f
-   XWkU+xIDJ2YEUTYQ7rau3ZFOb8Noi/58CsZjkXR27pJmH14jWnavziWct
-   7caOgK+QgAG9bCuXEWXOhC1S3/Kc8bbEhDXzQb6lyvLZQLPwEnMKv1CNq
-   2ZOwWFNHtjM52ESpQt7KtjJzrmXgb3tddWg5i87ewn4n5qd3n8Gr9oOZp
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10204"; a="240216649"
-X-IronPort-AV: E=Sophos;i="5.88,221,1635231600"; 
-   d="scan'208";a="240216649"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Dec 2021 12:19:41 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,221,1635231600"; 
-   d="scan'208";a="755518406"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by fmsmga006.fm.intel.com with ESMTP; 20 Dec 2021 12:19:41 -0800
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
-        anthony.l.nguyen@intel.com, stable@vger.kernel.org,
-        Martin Stolpe <martin.stolpe@gmail.com>
-Subject: [PATCH net 1/1] igb: fix deadlock caused by taking RTNL in RPM resume path
-Date:   Mon, 20 Dec 2021 12:18:44 -0800
-Message-Id: <20211220201844.2714498-1-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.31.1
+        id S230145AbhLTUVN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Dec 2021 15:21:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54324 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229531AbhLTUVM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Dec 2021 15:21:12 -0500
+Received: from mail-ua1-x92f.google.com (mail-ua1-x92f.google.com [IPv6:2607:f8b0:4864:20::92f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5B99C061574
+        for <netdev@vger.kernel.org>; Mon, 20 Dec 2021 12:21:12 -0800 (PST)
+Received: by mail-ua1-x92f.google.com with SMTP id a14so19917288uak.0
+        for <netdev@vger.kernel.org>; Mon, 20 Dec 2021 12:21:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:sender:from:date:message-id:subject:to;
+        bh=7dkmx+X41ZzvkbxKZA6dYPVcqR/LnwZXMPscQj18tXQ=;
+        b=GO/omVliiM4bnSUMw56X4yQnIFl6etb7CmWJJE/rvV4k9tgrE6o87qRMCY0ejvsWQB
+         Y1UAUpHC1GkqELyb/8BiC+St0W4ds/Rxgdt+OJccNn5TydakeiH9sd5mXEVUyPHQE0pl
+         3/GeMvILuVh9BpHQzwfejyungFRbn/mTg1GCJjYR6hwxCGriWa8mCl0CzZd8GtVoNxeR
+         /KjDTB99/oUGrGz7xyYjdCRo3dBnjh2x8E+yz8k4YmwoAdedCcB7qTHOBt38z/IjF7Y1
+         lYBLvnBGsIPwr8Y6uUnyGePLr1L1jKWYlUshLPr5GQbsiUYtYxsQaKWuRSWbWwPaZzDW
+         /2XQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:sender:from:date
+         :message-id:subject:to;
+        bh=7dkmx+X41ZzvkbxKZA6dYPVcqR/LnwZXMPscQj18tXQ=;
+        b=fhVjD9gzQctmmxdrJ86EfBt58qw07pSZ+Ndq9dxFawljYESKAYP1nM7YyfAeWtkfxY
+         Xh5R/+JA3Qm6g2X6TTB28DWRAeRnSh+T2Kcm+h9RTRJLhE2J9Z4bnIqwsCWWoi/1Mfzi
+         CAzv99/fTv0FkLMvu06+6WS3KZPPJDZsymGJsCBoHM18RhPXkvF7vmn0lpmjaenlBnLg
+         H6Xh/Uc+hlbXoALdsNWtzjyRKest7WBil80lo6OgzQMzn5TI4Q907q9gynsUsfCHcDbx
+         iVlmkc3tGkpNJYA2USVFi02PF03kWl3pQeujYOK1fAAOywS5W0r+oBLd7yx41g4n9mRR
+         StYw==
+X-Gm-Message-State: AOAM533L9pC68Ay8Cs03cfOqVKpAUkvhwGpk5h5aMesyt9Mc3JAXB2/r
+        IFQLqfkvqmTX79XigcYA8XfH/1NfVGLYDeFlj1o=
+X-Google-Smtp-Source: ABdhPJxi+bsv1/vdGZiBhTdKNlaLfSzrRKjl1l8uCHikcfW1gfYpcmlrNZiuf2VCQ/MnaaEbue/U1o/F/52Pdc0y0BA=
+X-Received: by 2002:a67:2fc5:: with SMTP id v188mr5980492vsv.12.1640031671805;
+ Mon, 20 Dec 2021 12:21:11 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Reply-To: fre0707lo@gmail.com
+Sender: miokholdme@gmail.com
+Received: by 2002:a59:a384:0:b0:246:1527:d7ca with HTTP; Mon, 20 Dec 2021
+ 12:21:11 -0800 (PST)
+From:   "Ms. Lori" <udom4395@gmail.com>
+Date:   Mon, 20 Dec 2021 21:21:11 +0100
+X-Google-Sender-Auth: otPKZIFVfpGeGzv6w5U6B18VeNg
+Message-ID: <CAEfNbNMhJOPvhSpZS4wonyBcf==gzMPB=v1VUuhWMpSFyLTXCA@mail.gmail.com>
+Subject: Let's work together
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Heiner Kallweit <hkallweit1@gmail.com>
+Dear friend,
 
-Recent net core changes caused an issue with few Intel drivers
-(reportedly igb), where taking RTNL in RPM resume path results in a
-deadlock. See [0] for a bug report. I don't think the core changes
-are wrong, but taking RTNL in RPM resume path isn't needed.
-The Intel drivers are the only ones doing this. See [1] for a
-discussion on the issue. Following patch changes the RPM resume path
-to not take RTNL.
+My name is Ms. Lori from USA. I work as a Foreign Operations Manager
+at a reputable bank. I am the account manager for one of our deceased
+clients, an oil and gas contractor who died of a heart attack in 2012.
+He had a fixed deposit account with our bank worth $6.3 million. And
+he didn't specify a next heir when he opened the account. He died
+without any closest registered relative as he had been divorced for a
+long time and had no children. I decided to contact you for our mutual
+benefit, knowing that you have the same last name as my deceased
+client.
 
-[0] https://bugzilla.kernel.org/show_bug.cgi?id=215129
-[1] https://lore.kernel.org/netdev/20211125074949.5f897431@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com/t/
-
-Cc: stable@vger.kernel.org
-Fixes: bd869245a3dc ("net: core: try to runtime-resume detached device in __dev_open")
-Fixes: f32a21376573 ("ethtool: runtime-resume netdev parent before ethtool ioctl ops")
-Tested-by: Martin Stolpe <martin.stolpe@gmail.com>
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/igb/igb_main.c | 19 +++++++++++++------
- 1 file changed, 13 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-index b597b8bfb910..446894dde182 100644
---- a/drivers/net/ethernet/intel/igb/igb_main.c
-+++ b/drivers/net/ethernet/intel/igb/igb_main.c
-@@ -9254,7 +9254,7 @@ static int __maybe_unused igb_suspend(struct device *dev)
- 	return __igb_shutdown(to_pci_dev(dev), NULL, 0);
- }
- 
--static int __maybe_unused igb_resume(struct device *dev)
-+static int __maybe_unused __igb_resume(struct device *dev, bool rpm)
- {
- 	struct pci_dev *pdev = to_pci_dev(dev);
- 	struct net_device *netdev = pci_get_drvdata(pdev);
-@@ -9297,17 +9297,24 @@ static int __maybe_unused igb_resume(struct device *dev)
- 
- 	wr32(E1000_WUS, ~0);
- 
--	rtnl_lock();
-+	if (!rpm)
-+		rtnl_lock();
- 	if (!err && netif_running(netdev))
- 		err = __igb_open(netdev, true);
- 
- 	if (!err)
- 		netif_device_attach(netdev);
--	rtnl_unlock();
-+	if (!rpm)
-+		rtnl_unlock();
- 
- 	return err;
- }
- 
-+static int __maybe_unused igb_resume(struct device *dev)
-+{
-+	return __igb_resume(dev, false);
-+}
-+
- static int __maybe_unused igb_runtime_idle(struct device *dev)
- {
- 	struct net_device *netdev = dev_get_drvdata(dev);
-@@ -9326,7 +9333,7 @@ static int __maybe_unused igb_runtime_suspend(struct device *dev)
- 
- static int __maybe_unused igb_runtime_resume(struct device *dev)
- {
--	return igb_resume(dev);
-+	return __igb_resume(dev, true);
- }
- 
- static void igb_shutdown(struct pci_dev *pdev)
-@@ -9442,7 +9449,7 @@ static pci_ers_result_t igb_io_error_detected(struct pci_dev *pdev,
-  *  @pdev: Pointer to PCI device
-  *
-  *  Restart the card from scratch, as if from a cold-boot. Implementation
-- *  resembles the first-half of the igb_resume routine.
-+ *  resembles the first-half of the __igb_resume routine.
-  **/
- static pci_ers_result_t igb_io_slot_reset(struct pci_dev *pdev)
- {
-@@ -9482,7 +9489,7 @@ static pci_ers_result_t igb_io_slot_reset(struct pci_dev *pdev)
-  *
-  *  This callback is called when the error recovery driver tells us that
-  *  its OK to resume normal operation. Implementation resembles the
-- *  second-half of the igb_resume routine.
-+ *  second-half of the __igb_resume routine.
-  */
- static void igb_io_resume(struct pci_dev *pdev)
- {
--- 
-2.31.1
-
+I am very pleased to see your name and I look forward to your
+cooperation in presenting you as the next successor to this fund and I
+guarantee that this will be done under a legitimate arrangement that
+will protect us from any breach of the law. And for your participation
+in this transaction, you will receive 50% after the money is
+transferred to you, and 50% for me. If you are interested, please
+contact me for more procedures.
