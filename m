@@ -2,88 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F2C547A8AC
-	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 12:29:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CFDDE47A8C8
+	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 12:34:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231824AbhLTL3z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Dec 2021 06:29:55 -0500
-Received: from szxga02-in.huawei.com ([45.249.212.188]:28335 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230476AbhLTL3y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Dec 2021 06:29:54 -0500
-Received: from dggpeml500023.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4JHcn70QlvzbjSv;
-        Mon, 20 Dec 2021 19:29:31 +0800 (CST)
-Received: from ubuntu1804.huawei.com (10.67.174.58) by
- dggpeml500023.china.huawei.com (7.185.36.114) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Mon, 20 Dec 2021 19:29:52 +0800
-From:   Xiu Jianfeng <xiujianfeng@huawei.com>
-To:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
-        <kafai@fb.com>, <songliubraving@fb.com>, <yhs@fb.com>,
-        <john.fastabend@gmail.com>, <kpsingh@kernel.org>
-CC:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH bpf-next] bpf: Use struct_size() helper
-Date:   Mon, 20 Dec 2021 19:30:48 +0800
-Message-ID: <20211220113048.2859-1-xiujianfeng@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        id S231889AbhLTLeM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Dec 2021 06:34:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44882 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230287AbhLTLeL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Dec 2021 06:34:11 -0500
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7465FC061574;
+        Mon, 20 Dec 2021 03:34:11 -0800 (PST)
+Received: by mail-pj1-x102e.google.com with SMTP id j6-20020a17090a588600b001a78a5ce46aso12625249pji.0;
+        Mon, 20 Dec 2021 03:34:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4Y60QO7rqLiN4h5yN+WKQNMkIqYNHIuW9x8bPi58DNo=;
+        b=LbeqF7wwSKDibul8FVgX5K2uk3fnQmTwOUYLLkhjIeOjv/pvn6mss7+jaSK3DH33Ed
+         BSrmTcKFtbJ5Ric+EYTkm6k/0Jp6NsnEeBa1z3X8+DM/Ckft7KL1xu5slF6i1w5s0j2q
+         hLjMYyrrK9RlgbXdvVr7UUSYDyscSaOatUXoEuUORaTzxDJTl6u30lrkKg73eHMVmidq
+         atwOn54scOp1/ZrmwaE8q/HKpZ2j03wqVqKj9ZjCiWUdXjzQyjIrFYqgs7bS5xUVkTOG
+         hLHFjfE3/V5kVY2vRDu4Tgo0XsTf8S8ZtrmGRtiRobCEC2+mzW/ra6MLjggcr/ptF81G
+         oq3Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4Y60QO7rqLiN4h5yN+WKQNMkIqYNHIuW9x8bPi58DNo=;
+        b=2VT6kVDkHZ0ZIctBIpi9dyl+Zt9JpYBWyFsowLLDv0R7X6kh6/Q8o5DK/yykDH7Ab3
+         w/YpQ+TZ8O4GbZSCd5tWLIjxIfg/unOI6aXWAmbMh31F9JXNSW1JGNhWMsz5Gddso8MO
+         eSjrSlOWahBEFl0SJ8cNAXOQflRuE2/uoIkXQYrIO5q0lv4+2UytqIGnU7xBlmmJAXHZ
+         vIEMPuUYRZehXvFG5Nh99S9np5iu+Xrv4tKKHnPbov4IheVDJazBS/ckowfF/zx36JsI
+         PNNZJOjiKLQndCfyE8R6oWxwP+Sv92yJRkMM+MwsZq6CSoPvJosjscUieuEtv62ltUyy
+         wObw==
+X-Gm-Message-State: AOAM532BaEQpOt9m9qPGw3WtZE99E6IFuEFB2lJCzTehchilvL1U8lxS
+        xXk5s85iHMpu5MdoAsVQpo0=
+X-Google-Smtp-Source: ABdhPJyq3v2CF8Bvp/A+w6/slLlP4qI2gC86XTlf5Rxdur6B5QzxgySAt3oFFdZ/QwMLKmW1mdpkFg==
+X-Received: by 2002:a17:902:e751:b0:148:fb86:410a with SMTP id p17-20020a170902e75100b00148fb86410amr9028017plf.96.1640000050821;
+        Mon, 20 Dec 2021 03:34:10 -0800 (PST)
+Received: from localhost.localdomain (61-231-108-100.dynamic-ip.hinet.net. [61.231.108.100])
+        by smtp.gmail.com with ESMTPSA id 78sm16088152pgg.85.2021.12.20.03.34.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Dec 2021 03:34:10 -0800 (PST)
+From:   Joseph CHAMG <josright123@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Joseph CHANG <josright123@gmail.com>,
+        joseph_chang@davicom.com.tw
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v7, 0/2] ADD DM9051 ETHERNET DRIVER
+Date:   Mon, 20 Dec 2021 19:33:40 +0800
+Message-Id: <20211220113342.11437-1-josright123@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.174.58]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpeml500023.china.huawei.com (7.185.36.114)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In an effort to avoid open-coded arithmetic in the kernel, use the
-struct_size() helper instead of open-coded calculation.
+DM9051 is a spi interface chip,
+need only cs/mosi/miso/clock with an interrupt gpio pin
 
-Link: https://github.com/KSPP/linux/issues/160
-Signed-off-by: Xiu Jianfeng <xiujianfeng@huawei.com>
----
- kernel/bpf/local_storage.c   | 3 +--
- kernel/bpf/reuseport_array.c | 6 +-----
- 2 files changed, 2 insertions(+), 7 deletions(-)
+Joseph CHAMG (1):
+  net: Add dm9051 driver
 
-diff --git a/kernel/bpf/local_storage.c b/kernel/bpf/local_storage.c
-index 035e9e3a7132..23f7f9d08a62 100644
---- a/kernel/bpf/local_storage.c
-+++ b/kernel/bpf/local_storage.c
-@@ -163,8 +163,7 @@ static int cgroup_storage_update_elem(struct bpf_map *map, void *key,
- 		return 0;
- 	}
- 
--	new = bpf_map_kmalloc_node(map, sizeof(struct bpf_storage_buffer) +
--				   map->value_size,
-+	new = bpf_map_kmalloc_node(map, struct_size(new, data, map->value_size),
- 				   __GFP_ZERO | GFP_ATOMIC | __GFP_NOWARN,
- 				   map->numa_node);
- 	if (!new)
-diff --git a/kernel/bpf/reuseport_array.c b/kernel/bpf/reuseport_array.c
-index 93a55391791a..556a769b5b80 100644
---- a/kernel/bpf/reuseport_array.c
-+++ b/kernel/bpf/reuseport_array.c
-@@ -152,16 +152,12 @@ static struct bpf_map *reuseport_array_alloc(union bpf_attr *attr)
- {
- 	int numa_node = bpf_map_attr_numa_node(attr);
- 	struct reuseport_array *array;
--	u64 array_size;
- 
- 	if (!bpf_capable())
- 		return ERR_PTR(-EPERM);
- 
--	array_size = sizeof(*array);
--	array_size += (u64)attr->max_entries * sizeof(struct sock *);
--
- 	/* allocate all map elements and zero-initialize them */
--	array = bpf_map_area_alloc(array_size, numa_node);
-+	array = bpf_map_area_alloc(struct_size(array, ptrs, attr->max_entries), numa_node);
- 	if (!array)
- 		return ERR_PTR(-ENOMEM);
- 
+JosephCHANG (1):
+  yaml: Add dm9051 SPI network yaml file
+
+ .../bindings/net/davicom,dm9051.yaml          |  62 ++
+ drivers/net/ethernet/davicom/Kconfig          |  30 +
+ drivers/net/ethernet/davicom/Makefile         |   1 +
+ drivers/net/ethernet/davicom/dm9051.c         | 998 ++++++++++++++++++
+ drivers/net/ethernet/davicom/dm9051.h         | 194 ++++
+ 5 files changed, 1285 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/davicom,dm9051.yaml
+ create mode 100644 drivers/net/ethernet/davicom/dm9051.c
+ create mode 100644 drivers/net/ethernet/davicom/dm9051.h
+
+
+base-commit: 9d922f5df53844228b9f7c62f2593f4f06c0b69b
 -- 
-2.17.1
+2.20.1
 
