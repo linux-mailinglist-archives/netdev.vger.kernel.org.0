@@ -2,69 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A4F047A6AC
-	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 10:14:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 504AF47A6C2
+	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 10:23:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231146AbhLTJOw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Dec 2021 04:14:52 -0500
-Received: from 217.164.212.218.starhub.net.sg ([218.212.164.217]:41919 "EHLO
-        mail.vectormail.xyz" rhost-flags-OK-FAIL-OK-OK) by vger.kernel.org
-        with ESMTP id S230036AbhLTJOv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Dec 2021 04:14:51 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vectormail.xyz;
- q=dns/txt; s=oct2021; bh=6PFD2rQejmSNyq6yIB7TxfC6jNr5nFLKPl3SKrlHYPw=;
- h=from:subject:date:message-id:to:mime-version:content-type:content-transfer-encoding:in-reply-to:references;
- b=bTnUlMVzLHKH2i2HEszpkwPlkWeTNkZ4QnMjPn02mYBhhjGTaKdUBvbEKWaei64i2cVlcZ4zg
- uZXE5HRK9HPAvaJ6vFuhQITVPjJHT8y0fijmRkZn2AyfmXgFdmXDnwrT86Ftxz5vPPQQeQijms1
- 0igRZoKtfnh4G1LA3ZFUZWI=
-Received: from [192.168.0.134] ([192.168.0.1] dlinkrouter)
- (Authenticated sender: l[l@vectormail.xyz])
- by mail.vectormail.xyz (ZoneMTA) with ESMTPSA id 17dd71f34c800092c3.001
- for <netdev@vger.kernel.org>
- (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384);
- Mon, 20 Dec 2021 09:14:46 +0000
-X-Zone-Loop: 61dc5af5a8eab4642af94e9d9db8825a404606eb319b
-X-Originating-IP: [192.168.0.1]
-Message-ID: <97c5cf1d-be9f-0cf0-cd4d-9e04aa46294a@vectormail.xyz>
-Date:   Mon, 20 Dec 2021 17:14:45 +0800
+        id S231526AbhLTJXN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Dec 2021 04:23:13 -0500
+Received: from mx1.tq-group.com ([93.104.207.81]:58435 "EHLO mx1.tq-group.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229469AbhLTJXM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Dec 2021 04:23:12 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1639992192; x=1671528192;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=J/N6T0XS+9+Kg7P0fo6srIGD9A0kKRp7rVd/nxwC3qQ=;
+  b=KefvCXagENmhUvdR/dncF+inrrTNNb+ft9tJ1il6jpKgb9MnCYF4TCSB
+   3NEINno1v7hPXw47f//km3hBKHtHlgqRiQASHYdk9OLYgsK/UAp+ytDy0
+   R5v4II5lpWjPV5doA+CliOcihO9Qq82sasbzMcLGhowa+IPwIN3eCNuNc
+   znPrG5LXEOM3wteQLKMjDOpy7c1DBzSHymSs/72u4nlZ3cnUA4hbx8gAQ
+   hFyHRgyrLrDKxyNd7FiXuT8n0X+G4btB2ANqVWx4fHgAtXL4dA3vQNatP
+   VcrQGr+CEa1UnnEaROSTOURHbBkKoRJDVhlhvT4Pgejh9H9qBrWQ7O+Me
+   w==;
+X-IronPort-AV: E=Sophos;i="5.88,220,1635199200"; 
+   d="scan'208";a="21148419"
+Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
+  by mx1-pgp.tq-group.com with ESMTP; 20 Dec 2021 10:23:10 +0100
+Received: from mx1.tq-group.com ([192.168.6.7])
+  by tq-pgp-pr1.tq-net.de (PGP Universal service);
+  Mon, 20 Dec 2021 10:23:11 +0100
+X-PGP-Universal: processed;
+        by tq-pgp-pr1.tq-net.de on Mon, 20 Dec 2021 10:23:11 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1639992191; x=1671528191;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=J/N6T0XS+9+Kg7P0fo6srIGD9A0kKRp7rVd/nxwC3qQ=;
+  b=px8jZd1U8bfWm+1f0Q1Jc/SUiPowqmviJITT8EZ2t+WertlFaVfvENkd
+   2lcfYftcINmuntSlGrZGIAB62bOAXWTAz4yMKcmG+r5GjJWtXNwAXzny/
+   euqhbbUDFdVJAkkS+yhc0P9ldQ+4/g1/KXlRtWpOMKQgITmaEIg47SOhm
+   3zvOEGGX+mY7wqWcNoa0Y1O/KFZwsez9ZaqnqbijWyAUKtJel4crBfUfv
+   WoH11PooEy4++Yvm9MkfD90PELTePvmbzywwxNJ7hWOLyvsFs1iVDCQAi
+   7jfda71wF610X80XQDoTQZCpjc4YNTjNfZzCItRLxBN1d7o+Ol+O10GBo
+   w==;
+X-IronPort-AV: E=Sophos;i="5.88,220,1635199200"; 
+   d="scan'208";a="21148418"
+Received: from vtuxmail01.tq-net.de ([10.115.0.20])
+  by mx1.tq-group.com with ESMTP; 20 Dec 2021 10:23:10 +0100
+Received: from localhost.localdomain (SCHIFFERM-M2.tq-net.de [10.121.201.15])
+        by vtuxmail01.tq-net.de (Postfix) with ESMTPA id B0C83280065;
+        Mon, 20 Dec 2021 10:23:10 +0100 (CET)
+From:   Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+To:     stable@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-can@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
+        davem@davemloft.net, kuba@kernel.org,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Subject: [PATCH 5.15 0/3] m_can_pci bit timings for Elkhart Lake
+Date:   Mon, 20 Dec 2021 10:22:14 +0100
+Message-Id: <cover.1639990483.git.matthias.schiffer@ew.tq-group.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.3.2
-Subject: Re: Maintainer Application
-From:   Lucian <l@vectormail.xyz>
-To:     netdev@vger.kernel.org
-References: <79e151cd-0527-ba56-a41a-7fe00e206558@vectormail.xyz>
-In-Reply-To: <79e151cd-0527-ba56-a41a-7fe00e206558@vectormail.xyz>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+The automated backport of "can: m_can: pci: use custom bit timings for
+Elkhart Lake" failed because I neglected to add Fixes tags to the other
+two patches it depends on.
 
-Sorry to bother you guys again but I am still awaiting a reply from 
-someone regarding becoming a maintainer of the hsr network protocol in 
-the linux kernel.
+Matthias Schiffer (3):
+  Revert "can: m_can: remove support for custom bit timing"
+  can: m_can: make custom bittiming fields const
+  can: m_can: pci: use custom bit timings for Elkhart Lake
 
+ drivers/net/can/m_can/m_can.c     | 24 ++++++++++++----
+ drivers/net/can/m_can/m_can.h     |  3 ++
+ drivers/net/can/m_can/m_can_pci.c | 48 ++++++++++++++++++++++++++++---
+ 3 files changed, 65 insertions(+), 10 deletions(-)
 
-Kind Regards,
+-- 
+2.25.1
 
-Lucian
-
-On 7/12/21 11:37 pm, Lucian wrote:
-> Hi,
->
-> Sorry to bother you guys again but it turns out that my previous 
-> message had html inside of it and hence may have been sent to spam or 
-> rejected.  I was wondering if I could become a maintainer for the hsr 
-> protocol in the linux kernal. I have quite a lot of experience working 
-> with both linux and hsr networking. With the new revision of IEC 
-> 62439-3 coming soon I think it is very vital the linux kernal has an 
-> active maintainer for the hsr protocol. I am very suited for the role 
-> and am fully able to commit the necessary time to it.
->
->
->
-> Kind Regards,
-> Lucian
