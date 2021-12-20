@@ -2,109 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B704547A876
-	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 12:17:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 412C747A823
+	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 12:02:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231617AbhLTLRf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Dec 2021 06:17:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41048 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231171AbhLTLRe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Dec 2021 06:17:34 -0500
-X-Greylist: delayed 2374 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 20 Dec 2021 03:17:34 PST
-Received: from wp126.webpack.hosteurope.de (wp126.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8485::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CEE9C061574
-        for <netdev@vger.kernel.org>; Mon, 20 Dec 2021 03:17:34 -0800 (PST)
-Received: from [2003:a:659:3f00:1e6f:65ff:fe31:d1d5] (helo=hermes.fivetechno.de); authenticated
-        by wp126.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        id 1mzG3I-00012t-RW; Mon, 20 Dec 2021 11:37:56 +0100
-X-Virus-Scanned: by amavisd-new 2.12.1 using newest ClamAV at
-        linuxbbg.five-lan.de
-Received: from [192.168.34.101] (p5098d998.dip0.t-ipconnect.de [80.152.217.152])
-        (authenticated bits=0)
-        by hermes.fivetechno.de (8.16.1/8.16.1/SUSE Linux 0.8) with ESMTPSA id 1BKAbsBK015347
-        (version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NO);
-        Mon, 20 Dec 2021 11:37:54 +0100
-Subject: Re: Issues with smsc95xx driver since a049a30fc27c
-To:     Gabriel Hojda <ghojda@yo2urs.ro>, Andrew Lunn <andrew@lunn.ch>
-Cc:     Martyn Welch <martyn.welch@collabora.com>, netdev@vger.kernel.org,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Steve Glendinning <steve.glendinning@shawell.net>,
-        UNGLinuxDriver@microchip.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, stable@kernel.org
-References: <199eebbd6b97f52b9119c9fa4fd8504f8a34de18.camel@collabora.com>
- <Yb4QFDQ0rFfFsT+Y@lunn.ch> <36f765d8450ba08cb3f8aecab0cadd89@yo2urs.ro>
- <Yb4m3xms1zMf5C3T@lunn.ch> <Yb4pTu3FtkGPPpzb@lunn.ch>
- <459afb513515361c13816f753f493075@yo2urs.ro>
-From:   Markus Reichl <m.reichl@fivetechno.de>
-Organization: five technologies GmbH
-Message-ID: <63a32b0c-926c-9f8b-fd15-2d96fa258fcb@fivetechno.de>
-Date:   Mon, 20 Dec 2021 11:37:54 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        id S231448AbhLTLCn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Dec 2021 06:02:43 -0500
+Received: from new3-smtp.messagingengine.com ([66.111.4.229]:57267 "EHLO
+        new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230116AbhLTLCm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Dec 2021 06:02:42 -0500
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 4186F580726;
+        Mon, 20 Dec 2021 06:02:42 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute5.internal (MEProxy); Mon, 20 Dec 2021 06:02:42 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=
+        date:from:to:cc:subject:message-id:references:mime-version
+        :content-type:in-reply-to; s=fm2; bh=SYYa6YsTGSR/I0GH13kqb+HYdm9
+        OONiz3cbnv97oGII=; b=pq5JbqII0DG1nlui9KuHHJyFhoHCPhIpvInQXFreib4
+        MowLWD0PiKk1vOiclXL9SZwW132/0PB+0CM4QJEDFfZpJNu9pFb966Dduqkj1Gkm
+        aK4qAyukFOzaJBLaw4v6jSLBJiub/DzpTX6MCIDdgWKc7FxAY+3I3boq/TwyQvZI
+        COvclSMileKI0Lz/6mEELTzxc+nREe6wlgYRvEQvpJ5Mon+vNbeIi/jCvt4XpXDL
+        qT3Rghq6mxFyatdquMzqXODoazHkRzc+hxqpGtUg6UIV9BBPtWbwI1YXF0hQqU+Q
+        y1Zv3LaBSM+nd4BTeOUAJpAgOdEQoBAh+DtEuuKH8rw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=SYYa6Y
+        sTGSR/I0GH13kqb+HYdm9OONiz3cbnv97oGII=; b=m1JtNBB9nemQLbkYlGrcxI
+        OBaGF0rsA1hASxzSN1V10IFbJv/Dx4RMw+KeMMXdSVasFAgSCz1PJxe75PPDP43t
+        KyPqyzQKWDKlWqD6NJAPMrLqhdvHIsEyLYKOITIQ2SAMQmHwC9QTjfoxpIR3pq2z
+        a3/jcLMqeX7BtLOT0emtGRZTqXabX45AMhqQfaV6z4v6f22Zyg9oLx4YmFAJXUi3
+        a4klRtycrA6E+YxyaCwo+RzuwZiYqzU3EYD8/kpwpyMnea9qz+fLg0VOaWk+IcJH
+        94bsDJg4+LUzrGuRCdnTEIDwZqApBixEzz4AcfwEJ9rqT7K6R2+k0swwzT8cuBBA
+        ==
+X-ME-Sender: <xms:0WLAYcfjuXObVl3M3X7Gh9au2Ss-TnBV8AJOVkZQZa1q3_bMxazcOw>
+    <xme:0WLAYePhNB4_KhD9GFLFLLUveoUskTYnk84Qkdmfiwygd6FVWkHYbQiDR_LO9rJvW
+    oTUCYVJU6pe_w>
+X-ME-Received: <xmr:0WLAYdh3Gm5cMGIH4591Lt2biZZY9wozVVka7QKzx5h6BjuhCilFksci0VQdEV9j15uwJXUnnkijpxGisRDONtxlBCt-R8wi>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvuddruddtvddgvdefucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefirhgvghcu
+    mffjuceoghhrvghgsehkrhhorghhrdgtohhmqeenucggtffrrghtthgvrhhnpeevueehje
+    fgfffgiedvudekvdektdelleelgefhleejieeugeegveeuuddukedvteenucevlhhushht
+    vghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehgrhgvgheskhhrohgrhh
+    drtghomh
+X-ME-Proxy: <xmx:0mLAYR-D9LgAoe7wYKMKaD6mGls2HmgFsVnK5sJG--ENIDPjwN6wHw>
+    <xmx:0mLAYYtywWzCE8pXKBJqi_Qu7K6-WXlZJeZgrRztKz4T2OxY6aX2jQ>
+    <xmx:0mLAYYFDUb5wznYbnnp2iAL7kdy_cuRf1fmhi3Nt35qpSHBgJQw0mQ>
+    <xmx:0mLAYYEBnH74_aiAcNvkSAy5RtvsDJ5hMeZbXAsgKxnUKxwGCFil1A>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 20 Dec 2021 06:02:41 -0500 (EST)
+Date:   Mon, 20 Dec 2021 12:02:39 +0100
+From:   Greg KH <greg@kroah.com>
+To:     Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Cc:     stable@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-can@vger.kernel.org,
+        Marc Kleine-Budde <mkl@pengutronix.de>, davem@davemloft.net,
+        kuba@kernel.org
+Subject: Re: [PATCH 5.15 0/3] m_can_pci bit timings for Elkhart Lake
+Message-ID: <YcBiz/hxgxktWb2E@kroah.com>
+References: <cover.1639990483.git.matthias.schiffer@ew.tq-group.com>
 MIME-Version: 1.0
-In-Reply-To: <459afb513515361c13816f753f493075@yo2urs.ro>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: de-DE
-Content-Transfer-Encoding: 8bit
-X-bounce-key: webpack.hosteurope.de;m.reichl@fivetechno.de;1639999054;73d4a612;
-X-HE-SMSGID: 1mzG3I-00012t-RW
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1639990483.git.matthias.schiffer@ew.tq-group.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-Am 18.12.21 um 21:33 schrieb Gabriel Hojda:
-> On 2021-12-18 20:32, Andrew Lunn wrote:
->>> O.K, stab in the dark. Does the hardware need to be programmed with
->>> the MAC address? When does this happen? If this is going wrong, it
->>> could explain the promisc mode. If the MAC address has not been
->>> programmed, it has no idea what packets are for itself. Put it into
->>> promisc mode, and it will receive everything, including what it is
->>> supposed to receive. But looking at the offending patch, it is not
->>> obvious how it has anything to do with MAC addresses. The only
->>> unbalanced change in that patch is that smsc95xx_reset(dev) has
->>> disappeared, not moved to somewhere else.
->>
->> Ah!
->>
->> smsc95xx_reset() calls smsc95xx_set_mac_address(). So that fits.
->> smsc95xx_reset() is also called in smsc95xx_bind(), but maybe that is
->> not enough?
->>
->>     Andrew
-> hi Andrew,
+On Mon, Dec 20, 2021 at 10:22:14AM +0100, Matthias Schiffer wrote:
+> The automated backport of "can: m_can: pci: use custom bit timings for
+> Elkhart Lake" failed because I neglected to add Fixes tags to the other
+> two patches it depends on.
 > 
-> the odroid-u3 has no preconfigured mac address. the kernel from the vendor is 
-> patched to read a file in /etc and set the mac address read from it. with the 
-> mainline kernel the interface gets a random mac address that can later be changed 
-> by NetworkManager & Co. (as far as i know there's no 
-> "smsc95xx.macaddr=xx:xx:xx:xx:xx:xx" kernel boot parameter).
+> Matthias Schiffer (3):
+>   Revert "can: m_can: remove support for custom bit timing"
+>   can: m_can: make custom bittiming fields const
+>   can: m_can: pci: use custom bit timings for Elkhart Lake
 > 
-> u-boot should be able to set the mac addreess, but it doesn't even detect the 
-> network interface and i get a message like "No NET interface" (even though i've 
-> tried the steps at 
-> https://github.com/ARM-software/u-boot/blob/master/doc/README.odroid).
+>  drivers/net/can/m_can/m_can.c     | 24 ++++++++++++----
+>  drivers/net/can/m_can/m_can.h     |  3 ++
+>  drivers/net/can/m_can/m_can_pci.c | 48 ++++++++++++++++++++++++++++---
+>  3 files changed, 65 insertions(+), 10 deletions(-)
 > 
-> Gabriel
+> -- 
+> 2.25.1
+> 
 
-Hi,
+All now queued up, thanks.
 
-same issue on odroid-x2 which has no preconfigured mac address either.
-
-I use plain Debian buster and bullseye with traditional
-/etc/network/interfaces
-
-auto eth0
-     allow-hotplug eth0
-     iface eth0 inet dhcp
-         hwaddress ether c2:c5:aa:9e:aa:55
-     iface eth0 inet6 dhcp
-
-
-Gruß,
--- 
-Markus Reichl
+greg k-h
