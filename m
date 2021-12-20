@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 776AA47A80D
-	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 11:57:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE44C47A81C
+	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 11:59:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230050AbhLTK5s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Dec 2021 05:57:48 -0500
-Received: from new3-smtp.messagingengine.com ([66.111.4.229]:52239 "EHLO
+        id S230116AbhLTK7j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Dec 2021 05:59:39 -0500
+Received: from new3-smtp.messagingengine.com ([66.111.4.229]:37201 "EHLO
         new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229810AbhLTK5r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Dec 2021 05:57:47 -0500
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 5BC325801A4;
-        Mon, 20 Dec 2021 05:57:46 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Mon, 20 Dec 2021 05:57:46 -0500
+        by vger.kernel.org with ESMTP id S229766AbhLTK7j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Dec 2021 05:59:39 -0500
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 6BD435806B0;
+        Mon, 20 Dec 2021 05:59:38 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute6.internal (MEProxy); Mon, 20 Dec 2021 05:59:38 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=
         date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=fm2; bh=KuhQPJcPGkGOv91Y6afHIx9rUdF
-        GI8okUJ7zNSalflU=; b=nWJI7XVI5YIFchKfZ1TekjBbYfdPxHfaE23ESkVPY8F
-        ZDO4UUMfJeAeQJnK0cK5mH9coH9gRN2+Pt6BnR1jaJ6FILWZSy57bAL2EaGk3avN
-        8AAyUdUuFBKMVwUIukYI6K1H13CQUxe5kqLBG+wcn0xfmV8loTtNlgtMNGMI1ua9
-        1Tu5eRG0vPH5nN7Mwl13OohoOWBWDUO++CHkieOpoN6WXvjfpygDoB8f1J2FzL0c
-        e5Gm4Kg8tAEAwUCsCalaCW1rouQlrIolqnwYEOm3TYhgd+hVSbuRpG0NKWL08b/0
-        RDHBp6lfV6Hves8Jr8YneLCXe2rodbuxTnwg5bBvp0g==
+        :content-type:in-reply-to; s=fm2; bh=ZmOBdzc5KRY0yb6PF129oWRTs4g
+        SGAWR2I8msz7i93s=; b=MSBvzVlQ2DOGpUNDbRq6TkOaiDbnOfj0iRpTi+bXrN/
+        lq/XBZ4nhbr0UrBaOXTDwu0dVMq92HIjoIZzGjXdoYyV/kw2/Zg0UcHMTCHwxxj6
+        yhPG9dW7AODlbQqzVG5T/zqTK0xQ77+BhPq1bbpGSgdwn2yZs9l9RWEeSWnp2ojN
+        IDEoBKg7NBkITsdDmhscAmuOyATsCdpfYN3Bw4b6SsAEfuCbivS286IjRKNJc9Pq
+        OjA/RK7gEFOIb3NUCwfLjgiKi028o8a0IImM+NAdvH3LcvopHLNFkeIlyV7i3gFz
+        IJ8zVeyZaF9XPoYDue8icl2zJSNlvr568ePFoGbeKKw==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-type:date:from:in-reply-to
         :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=KuhQPJ
-        cPGkGOv91Y6afHIx9rUdFGI8okUJ7zNSalflU=; b=napt0aVxzC3L5ZZVEZNXGn
-        oG8Mk586SLucosFTD6AdtDnWx1LTYBoW2Hf23gDFIy2NUUtsk7Jf9N9GKydXXIpF
-        F7fnwi5wJLifVQVv4GHlloQIS1AY9/xBJ3icD/HlHTrutqFSQoarFNE0oE5kOIaQ
-        598rrCcmiHb0FeeSG7b/EfFURZySB+siy5AnuUtTgHLqHUeBxQJFULIxCbDTsAY+
-        R4M6AOQOod/tomeU8wrGzYi7m8dcAeAEWCurKoIDV738MAjfA3ftO98MqLpOiXW1
-        bTAf1EOQX1Dfh06E0LO9ACGE5klr73vwcsQISgYJx+N6dg7v6Eaz83+c89FcxbzA
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=ZmOBdz
+        c5KRY0yb6PF129oWRTs4gSGAWR2I8msz7i93s=; b=n69vDfmztBUE6+EiH/CRpa
+        F5A4Xy1MtFrftd2hORn5pM/MIJhqL/M85wz7tIDSW9wKJ2D0i63EJIv13jWMX0NR
+        R1xlK6Q2c1YQUxNs9sTuDmo8z+Gyz5sW4PPqcVpExt9d8xzDb7mRzyLTg/tCIhNU
+        58IhEdMU+e9SGCXYfXVjw2OJAwS+ZW9wE71UeHKP7Z2265K28J1sHobC+bmMuB1J
+        8q80F2hsrtdbSizZSgtvI2k9OoOiE/7Cd++5I2z2v6uedQX2GTtXXW1XGyfn13Pf
+        vyZ2EOxZULqLj74F8bmXd3K6JLnyIxwsg59bGc4Z5SqodEmspRnxEJZbX533EBYA
         ==
-X-ME-Sender: <xms:qmHAYVpPq8s52mpuWbreXJDrtb23RF-yaCQrDNOTyVBNknXnviJdhQ>
-    <xme:qmHAYXrBKRxtpZbSzyVQGuxjpTYlboUWERJHDe569iMYfDGnJv2g_ibZx7PY1AiHQ
-    DIWjdo4zOzN6A>
-X-ME-Received: <xmr:qmHAYSNVc6Fif7jSLeGBcm-vBEfCuu1mCJY1iv7wlzgOw8fLBbQmSxKY8QJxL6TSWhoF7ZKE3MW0ven9VB5mWI_S7LgCxd6k>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvuddruddtvddgvddvucetufdoteggodetrfdotf
+X-ME-Sender: <xms:GWLAYcofNXoLjYKFElsgwmNasPLfLJL7yNeGPsuDh2aC0EwhlzGm8A>
+    <xme:GWLAYSohXIVt6VREATy4BN9vZNqe-j2KfhxdkJIdiqfVB6hLDJuy9eeX-Ogr7m1xM
+    mBFpZNxcFj-2A>
+X-ME-Received: <xmr:GWLAYRMzHoR1nXOyoahqEYkOVxgWnaXAd11gUmHuxWKvm1cV742ePLX622tm0bL-hktukTS66gZBVY8-IYoNMmvXSVnpKYPi>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvuddruddtvddgvdefucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
     cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefirhgvghcu
-    mffjuceoghhrvghgsehkrhhorghhrdgtohhmqeenucggtffrrghtthgvrhhnpeevueehje
-    fgfffgiedvudekvdektdelleelgefhleejieeugeegveeuuddukedvteenucevlhhushht
-    vghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehgrhgvgheskhhrohgrhh
-    drtghomh
-X-ME-Proxy: <xmx:qmHAYQ4ewHehKtA_qm9PnK4f3ZKw-m9fpCGfcbydAgWeMPR_FPJR0Q>
-    <xmx:qmHAYU4k-ayhrh6yoFw8dD033gac8474E5IarGgGOkFEQd7zjnaFSw>
-    <xmx:qmHAYYglgRnaX4DE_Jrf4epwdUWpd9d1KiHoNlSiyQcb5_VOibE8Rg>
-    <xmx:qmHAYehLJ56pWSu8RP6j_9YdLy3zZ9LCtTKKXvWb1QaBXmRSbIZB4Q>
+    mffjuceoghhrvghgsehkrhhorghhrdgtohhmqeenucggtffrrghtthgvrhhnpeeuleeltd
+    ehkeeltefhleduuddvhfffuedvffduveegheekgeeiffevheegfeetgfenucffohhmrghi
+    nhepkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpe
+    hmrghilhhfrhhomhepghhrvghgsehkrhhorghhrdgtohhm
+X-ME-Proxy: <xmx:GWLAYT49JjfvdmIGaLIcT5-qHjRE6EfmcmcH6zHalkpRA87qSi4WiQ>
+    <xmx:GWLAYb6LuUvzZlzhTjjijU-3XZ-rKLjQTazrPIRl2Uv0QmEGwzyhfQ>
+    <xmx:GWLAYTjQmwnWChH06Hs6taD9V1dASEmnmkBmKf1Clog6tNAk39W72g>
+    <xmx:GmLAYeJ8a8fACbvHaFpncbIAzOfQaCGbBGbVfpSJ9dGAyg1HSmtcBw>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 20 Dec 2021 05:57:45 -0500 (EST)
-Date:   Mon, 20 Dec 2021 11:57:44 +0100
+ 20 Dec 2021 05:59:36 -0500 (EST)
+Date:   Mon, 20 Dec 2021 11:59:34 +0100
 From:   Greg KH <greg@kroah.com>
 To:     Anders Roxell <anders.roxell@linaro.org>
 Cc:     stable@vger.kernel.org, linux-kernel@vger.kernel.org,
@@ -67,33 +67,52 @@ Cc:     stable@vger.kernel.org, linux-kernel@vger.kernel.org,
         kvalo@codeaurora.org, linux-wireless@vger.kernel.org,
         rostedt@goodmis.org, mingo@redhat.com, dmitry.torokhov@gmail.com,
         ndesaulniers@google.com, nathan@kernel.org,
-        linux-input@vger.kernel.org, Stefan Agner <stefan@agner.ch>,
-        Russell King <rmk+kernel@armlinux.org.uk>
-Subject: Re: [PATCH 4.19 5/6] ARM: 8788/1: ftrace: remove old mcount support
-Message-ID: <YcBhqJMLdwieZa8X@kroah.com>
+        linux-input@vger.kernel.org
+Subject: Re: [PATCH 4.19 6/6] Input: touchscreen - avoid bitwise vs logical
+ OR warning
+Message-ID: <YcBiFomrxSw1eEUB@kroah.com>
 References: <20211217144119.2538175-1-anders.roxell@linaro.org>
- <20211217144119.2538175-6-anders.roxell@linaro.org>
+ <20211217144119.2538175-7-anders.roxell@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211217144119.2538175-6-anders.roxell@linaro.org>
+In-Reply-To: <20211217144119.2538175-7-anders.roxell@linaro.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 17, 2021 at 03:41:18PM +0100, Anders Roxell wrote:
-> From: Stefan Agner <stefan@agner.ch>
+On Fri, Dec 17, 2021 at 03:41:19PM +0100, Anders Roxell wrote:
+> From: Nathan Chancellor <nathan@kernel.org>
 > 
-> commit d3c61619568c88d48eccd5e74b4f84faa1440652 upstream.
+> commit a02dcde595f7cbd240ccd64de96034ad91cffc40 upstream.
 > 
-> Commit cafa0010cd51 ("Raise the minimum required gcc version to 4.6")
-> raised the minimum GCC version to 4.6. Old mcount is only required for
-> GCC versions older than 4.4.0. Hence old mcount support can be dropped
-> too.
+> A new warning in clang points out a few places in this driver where a
+> bitwise OR is being used with boolean types:
 > 
-> Signed-off-by: Stefan Agner <stefan@agner.ch>
-> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+> drivers/input/touchscreen.c:81:17: warning: use of bitwise '|' with boolean operands [-Wbitwise-instead-of-logical]
+>         data_present = touchscreen_get_prop_u32(dev, "touchscreen-min-x",
+>                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> 
+> This use of a bitwise OR is intentional, as bitwise operations do not
+> short circuit, which allows all the calls to touchscreen_get_prop_u32()
+> to happen so that the last parameter is initialized while coalescing the
+> results of the calls to make a decision after they are all evaluated.
+> 
+> To make this clearer to the compiler, use the '|=' operator to assign
+> the result of each touchscreen_get_prop_u32() call to data_present,
+> which keeps the meaning of the code the same but makes it obvious that
+> every one of these calls is expected to happen.
+> 
+> Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+> Reported-by: Nick Desaulniers <ndesaulniers@google.com>
+> Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+> Link: https://lore.kernel.org/r/20211014205757.3474635-1-nathan@kernel.org
+> Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 > Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
+> ---
+>  drivers/input/touchscreen/of_touchscreen.c | 18 +++++++++---------
+>  1 file changed, 9 insertions(+), 9 deletions(-)
 
-Why is this needed for clang builds in 4.19? 
+Also needed in 5.10.y and 5.4.y.
 
+Please be more careful next time.
