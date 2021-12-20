@@ -2,54 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E7EBB47B0AA
-	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 16:51:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9492847B0B3
+	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 16:53:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237287AbhLTPvN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Dec 2021 10:51:13 -0500
-Received: from s-terra.s-terra.com ([213.5.74.59]:43240 "EHLO
-        s-terra.s-terra.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237009AbhLTPvM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Dec 2021 10:51:12 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=s-terra.ru; s=mail;
-        t=1640015470; bh=d7yN5PIhbYqpDtPF3dHjEH3ucdSFdktzO9HLrdPhJjs=;
-        h=To:From:Subject:Date:From;
-        b=RVBr0zbaYJqEf8b2YkPY/8+9cBtbxLsB+RrH/ogxF+wH7P40x8l52yRKijhbd/dOx
-         RrSi62hMEJVsEH5Ktl0K16KA+9q9jgEIrUpBEY3RWuwM3zfbaX6gWJ65WKVZSauums
-         Ej89XeqG3NeIVlbrgDlunhm4ZiGUqWkwW/lmAmUM=
-To:     <netdev@vger.kernel.org>
-From:   =?UTF-8?B?0JzRg9GA0LDQstGM0LXQsiDQkNC70LXQutGB0LDQvdC00YA=?= 
-        <amuravyev@s-terra.ru>
-Subject: failed to set GRE remote IP address after interface was created
-Message-ID: <389196c8-1223-f996-3309-653b56fa4386@s-terra.ru>
-Date:   Mon, 20 Dec 2021 18:51:09 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        id S237290AbhLTPxM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Dec 2021 10:53:12 -0500
+Received: from mga17.intel.com ([192.55.52.151]:62764 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231790AbhLTPxM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Dec 2021 10:53:12 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1640015592; x=1671551592;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=nC6dj0eJwD1rfJcRXhiAdZ14NtyD+O21VfFsZ8MSDaU=;
+  b=Vzx0TOlyWu13+IT9gx/bs5IIGivUMzF6bnUEHzLqS0axRoXImaY+fOrN
+   0bu/U5XEMuY7uw3fJDB+3b4JEQVs+l7FkH1MIARKs4mLifFIBa2XtNq1Y
+   uz7/PcSB5nMTLkm+rgFh7cgH2kAVelzdmeaTddXsiC78Xwv7X9rE7VnaU
+   qkE+gIRr6D3LqVMFm+LpihTQVJnuVO4JRU6b0IGPygvuzcxrgLTPWd7Am
+   ENpXceZ0abhfuhHocx6FCbRHE7lCGmhJAR9huU+pJLqNBaVl/RYxe0pjJ
+   BxnHAUygqeMAe9WkYQgIYioa17EY+z+G89yt8h94GdTU7K5T7/HgU8AKe
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10203"; a="220883576"
+X-IronPort-AV: E=Sophos;i="5.88,220,1635231600"; 
+   d="scan'208";a="220883576"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Dec 2021 07:53:11 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,220,1635231600"; 
+   d="scan'208";a="507729813"
+Received: from silpixa00399839.ir.intel.com (HELO localhost.localdomain) ([10.237.222.139])
+  by orsmga007.jf.intel.com with ESMTP; 20 Dec 2021 07:53:09 -0800
+From:   Ciara Loftus <ciara.loftus@intel.com>
+To:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org,
+        maciej.fijalkowski@intel.com
+Cc:     bpf@vger.kernel.org, Ciara Loftus <ciara.loftus@intel.com>
+Subject: [PATCH bpf] xsk: Initialise xskb free_list_node
+Date:   Mon, 20 Dec 2021 15:52:50 +0000
+Message-Id: <20211220155250.2746-1-ciara.loftus@intel.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-ClientProxiedBy: EMX.sterracsp.s-terra.com (10.0.0.10) To
- EMX.sterracsp.s-terra.com (10.0.0.10)
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It is impossible to change a remote IP address for a GRE interface if it 
-was initially created without specifying a remote address.
+This commit initialises the xskb's free_list_node when the xskb is
+allocated. This prevents a potential false negative returned from a call
+to list_empty for that node, such as the one introduced in commit
+199d983bc015 ("xsk: Fix crash on double free in buffer pool")
 
-E.g. if the interface was created by command "ip tunnel add gre1 mode 
-gre key 123", it is impossible to specify a remote IP address:
+In my environment this issue caused packets to not be received by
+the xdpsock application if the traffic was running prior to application
+launch. This happened when the first batch of packets failed the xskmap
+lookup and XDP_PASS was returned from the bpf program. This action is
+handled in the i40e zc driver (and others) by allocating an skbuff,
+freeing the xdp_buff and adding the associated xskb to the
+xsk_buff_pool's free_list if it hadn't been added already. Without this
+fix, the xskb is not added to the free_list because the check to determine
+if it was added already returns an invalid positive result. Later, this
+caused allocation errors in the driver and the failure to receive packets.
 
-"ip tunnel change gre1 remote 1.1.1.1" gives invalid argument error.
+Fixes: 2b43470add8c ("xsk: Introduce AF_XDP buffer allocation API")
 
-I was able to reproduce the behavior in modern Debian and Ubuntu systems.
+Signed-off-by: Ciara Loftus <ciara.loftus@intel.com>
+---
+ net/xdp/xsk_buff_pool.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Is it impossible to change "point-to-point" GRE interface to 
-"point-to-multipoint" and vice versa? I just was unable to find this bug 
-description/ticket.
-
-
-Alexander Muravev
-
+diff --git a/net/xdp/xsk_buff_pool.c b/net/xdp/xsk_buff_pool.c
+index bc4ad48ea4f0..fd39bb660ebc 100644
+--- a/net/xdp/xsk_buff_pool.c
++++ b/net/xdp/xsk_buff_pool.c
+@@ -83,6 +83,7 @@ struct xsk_buff_pool *xp_create_and_assign_umem(struct xdp_sock *xs,
+ 		xskb = &pool->heads[i];
+ 		xskb->pool = pool;
+ 		xskb->xdp.frame_sz = umem->chunk_size - umem->headroom;
++		INIT_LIST_HEAD(&xskb->free_list_node);
+ 		if (pool->unaligned)
+ 			pool->free_heads[i] = xskb;
+ 		else
+-- 
+2.17.1
 
