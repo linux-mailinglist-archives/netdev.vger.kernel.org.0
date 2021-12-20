@@ -2,144 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 81FB247A87F
-	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 12:20:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 62E6447A885
+	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 12:21:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231670AbhLTLUV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Dec 2021 06:20:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41688 "EHLO
+        id S230469AbhLTLVl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Dec 2021 06:21:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230211AbhLTLUV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Dec 2021 06:20:21 -0500
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA688C061574;
-        Mon, 20 Dec 2021 03:20:20 -0800 (PST)
-Received: by mail-wr1-x42b.google.com with SMTP id e5so19326778wrc.5;
-        Mon, 20 Dec 2021 03:20:20 -0800 (PST)
+        with ESMTP id S230211AbhLTLVl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Dec 2021 06:21:41 -0500
+Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C83BDC061574;
+        Mon, 20 Dec 2021 03:21:40 -0800 (PST)
+Received: by mail-qt1-x835.google.com with SMTP id t34so9370083qtc.7;
+        Mon, 20 Dec 2021 03:21:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=EHCh6r9rSUzZ/WtBAei5gQAlNFlmbVYEHyjfRoUFZ7s=;
-        b=fEVWBffJru8IdLqq0/poRqBNYp9BdtpI7gmLYKwH2icX36GcB2UZ+XpIHHadAn1suM
-         OWKDH5Ch4A6Xu8NYopwoAKkWAK4cgy/ZenusZWIGKYKLqelwT3bpWfaFyu4+91/ZBVqy
-         SOrOeHHglpl6NcQ7ZDM92PiyUI2gCk145cnbQbekEkUcu5aFSs6DNq1EUksgodu4qesU
-         kyekcdTf6doPJH0+0/ZlAHLIUQ20SiJF3nQ/GOzRkq6xge618TG8BNQWLcaNlRlXQXFO
-         daqN+V55O7XaR9LFsTRCJfqLUkZm/zv/SB0tNQ/XXftV2hGQ1v9ZflW1JSu7B8mULkUH
-         AYUw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MBczxJm3I08jjd/QHRuYvFh7bIEcTce0GBizMJSEP8c=;
+        b=d1gSa9qhkemwcKujwOGSI9dzt9WFOOqxeh34+7xeJrowWMfJVVYGDxUvaP/s1dXTde
+         WEcPWmAe83rq8rFEyyYCc6YoWWFFE/5X0pZJA3vYAnfeNrF6N35X6aJx//4G2p3qGxwO
+         ZU0sOO9ThRkOZm1LMc4pmmonXPEO9LsfXYD40aYL/htTXNbf4nTpCjycyS+djxW01mmp
+         /3dMO7BkFW3cxjmIHTMPSkqgbJwyYVVe9zCJrnTl0yHrIwH1C8juqbiAXRDuG4LOoTJ7
+         wWftqOiYGjzblReWdiwVDSA+wMFvDKI5ZOj8dyN8Y61aTtUnwVa57sAFFxOX2h8b3kLI
+         dNeQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:references:mime-version:content-disposition
-         :in-reply-to:user-agent;
-        bh=EHCh6r9rSUzZ/WtBAei5gQAlNFlmbVYEHyjfRoUFZ7s=;
-        b=hO0Fnketcua7QGHUAz8zSxz63YDF75d/Ic2fbnvCHDs8oFrUB5Q9VPXOqN81zb1JGi
-         c/ZpKl5kwhUGZvtM7S6NphiafPExoDRRhsyNn2RPlxa1vEpLHldL2b4w7j8TspoR09ug
-         f40/HyJP557zX39WiY4E6qRQ9AKdFp2786BfZCb0El0IAXw82Vl2cxdgsPKsDH5x3T2Z
-         BOPur+5moUyyLwFPhr3nIAH2gkDvOvv+4VHPJwWUAyxkPmuzVb9xApKWHOYvmyqhFzZw
-         aKNAzOyT3VNR0erf272EBIoitqLZWdu/T1GrYRtltt4dN3jsqYTQLA88F/liMsR+m9x2
-         McWw==
-X-Gm-Message-State: AOAM531v9p/am0S2+6z1/FhYosHhnqQqnJ0H6si1e2AErgZvsuKxS2uq
-        xE0n3O7dnav5rZe6pOr33/E=
-X-Google-Smtp-Source: ABdhPJwKyZ0pbjgqzvj4ZR4Gv09Oi5kKYLzREwH1BaSi81GKh6DEMSmDI5X1l7G91KXKkLMXG/DmzQ==
-X-Received: by 2002:a5d:624f:: with SMTP id m15mr12176674wrv.13.1639999219382;
-        Mon, 20 Dec 2021 03:20:19 -0800 (PST)
-Received: from gmail.com ([81.168.73.77])
-        by smtp.gmail.com with ESMTPSA id m21sm15413494wrb.2.2021.12.20.03.20.18
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 20 Dec 2021 03:20:18 -0800 (PST)
-Date:   Mon, 20 Dec 2021 11:20:16 +0000
-From:   Martin Habets <habetsm.xilinx@gmail.com>
-To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Cc:     ecree.xilinx@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
-        john.fastabend@gmail.com, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, kpsingh@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH v4] sfc: potential dereference null pointer of
- rx_queue->page_ring
-Message-ID: <20211220112016.skhopsmnu6a4eapd@gmail.com>
-Mail-Followup-To: Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        ecree.xilinx@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
-        john.fastabend@gmail.com, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, kpsingh@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org
-References: <20211220023715.746815-1-jiasheng@iscas.ac.cn>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MBczxJm3I08jjd/QHRuYvFh7bIEcTce0GBizMJSEP8c=;
+        b=mqqkr4gMa+i/vDEyntNHolsahJYwLpXrhhompkw00K5o1ujdqvu1HEjlWmRZ9jGF7O
+         7onl6O4ryK3+73KN/ZMW9e5wI0rMgStFI6e0lVoVU1bmYvkhz5kh8RZ5ljAERn6iKvPd
+         Q6pZGFEUErAUkyCoy4ih25/9VXhhPCpMFapD/5cAVB3Zs2tSp4duSIKtzknYtELy/9Vk
+         vAyv4wHdt4NVxvbz74q36panu39P6Tq+JIe4TDjOsUWRXSqvrzGXj3jXqluAuDpUG+Iz
+         qRW2mGAxKUoTkTncO0Woa9Xjg1Y/WA5MXEq6j70+DCfZzgjt9R6B25B7+AjXWafY94wR
+         NaPQ==
+X-Gm-Message-State: AOAM530Q3yZ7YydMS3douYooILZRABGi+wBm8hHNS+WCNHf/xkPv1NjJ
+        9tS4DLWU0DoEkpwEW0NJ5sVWNjro3FU=
+X-Google-Smtp-Source: ABdhPJxiHawe3//spU8yo9RWOXKIfuZi4wTgQUI6t9d6+bgFUY8WNgGtZAIp8IuoiNwyWSV176A+3Q==
+X-Received: by 2002:a05:622a:170e:: with SMTP id h14mr1108255qtk.479.1639999299996;
+        Mon, 20 Dec 2021 03:21:39 -0800 (PST)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id o21sm14724301qta.89.2021.12.20.03.21.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Dec 2021 03:21:39 -0800 (PST)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: deng.changcheng@zte.com.cn
+To:     kvalo@kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, ath11k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Changcheng Deng <deng.changcheng@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] ath11k: use min() to make code cleaner
+Date:   Mon, 20 Dec 2021 11:21:33 +0000
+Message-Id: <20211220112133.472472-1-deng.changcheng@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211220023715.746815-1-jiasheng@iscas.ac.cn>
-User-Agent: NeoMutt/20170113 (1.7.2)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 20, 2021 at 10:37:15AM +0800, Jiasheng Jiang wrote:
-> The return value of kcalloc() needs to be checked.
+From: Changcheng Deng <deng.changcheng@zte.com.cn>
 
-Maybe my previous reply against v2 crossed with your later versions.
+Use min() in order to make code cleaner.
 
-Your predicate is wrong. The code that uses rx_queue->page_ring
-can deal with it being NULL.
-The only thing you might want to do is set rx_queue->page_ptr_mask
-to 0.
-It is a mask, never use a signed value for it.
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Changcheng Deng <deng.changcheng@zte.com.cn>
+---
+ drivers/net/wireless/ath/ath11k/wmi.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-Martin
+diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
+index 2b4d27d807ab..083856034136 100644
+--- a/drivers/net/wireless/ath/ath11k/wmi.c
++++ b/drivers/net/wireless/ath/ath11k/wmi.c
+@@ -614,8 +614,7 @@ int ath11k_wmi_mgmt_send(struct ath11k *ar, u32 vdev_id, u32 buf_id,
+ 	u32 buf_len;
+ 	int ret, len;
+ 
+-	buf_len = frame->len < WMI_MGMT_SEND_DOWNLD_LEN ?
+-		  frame->len : WMI_MGMT_SEND_DOWNLD_LEN;
++	buf_len = min(frame->len, WMI_MGMT_SEND_DOWNLD_LEN);
+ 
+ 	len = sizeof(*cmd) + sizeof(*frame_tlv) + roundup(buf_len, 4);
+ 
+-- 
+2.25.1
 
-> To avoid dereference of null pointer in case of the failure of alloc,
-> such as efx_fini_rx_recycle_ring().
-> Therefore, it should be better to change the definition of page_ptr_mask
-> to signed int and then assign the page_ptr_mask to -1 when page_ring is
-> NULL, in order to avoid the use in the loop.
-> 
-> Fixes: 5a6681e22c14 ("sfc: separate out SFC4000 ("Falcon") support into new sfc-falcon driver")
-> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-> ---
-> Changelog:
-> 
-> v3 -> v4
-> 
-> *Change 1. Casade return -ENOMEM when alloc fails and deal with the
-> error.
-> *Change 2. Set size to -1 instead of return error.
-> *Change 3. Change the Fixes tag.
-> ---
->  drivers/net/ethernet/sfc/net_driver.h | 2 +-
->  drivers/net/ethernet/sfc/rx_common.c  | 5 ++++-
->  2 files changed, 5 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/sfc/net_driver.h b/drivers/net/ethernet/sfc/net_driver.h
-> index 9b4b25704271..beba3e0a6027 100644
-> --- a/drivers/net/ethernet/sfc/net_driver.h
-> +++ b/drivers/net/ethernet/sfc/net_driver.h
-> @@ -407,7 +407,7 @@ struct efx_rx_queue {
->  	unsigned int page_recycle_count;
->  	unsigned int page_recycle_failed;
->  	unsigned int page_recycle_full;
-> -	unsigned int page_ptr_mask;
-> +	int page_ptr_mask;
->  	unsigned int max_fill;
->  	unsigned int fast_fill_trigger;
->  	unsigned int min_fill;
-> diff --git a/drivers/net/ethernet/sfc/rx_common.c b/drivers/net/ethernet/sfc/rx_common.c
-> index 68fc7d317693..d9d0a5805f1c 100644
-> --- a/drivers/net/ethernet/sfc/rx_common.c
-> +++ b/drivers/net/ethernet/sfc/rx_common.c
-> @@ -150,7 +150,10 @@ static void efx_init_rx_recycle_ring(struct efx_rx_queue *rx_queue)
->  					    efx->rx_bufs_per_page);
->  	rx_queue->page_ring = kcalloc(page_ring_size,
->  				      sizeof(*rx_queue->page_ring), GFP_KERNEL);
-> -	rx_queue->page_ptr_mask = page_ring_size - 1;
-> +	if (!rx_queue->page_ring)
-> +		rx_queue->page_ptr_mask = -1;
-> +	else
-> +		rx_queue->page_ptr_mask = page_ring_size - 1;
->  }
->  
->  static void efx_fini_rx_recycle_ring(struct efx_rx_queue *rx_queue)
-> -- 
-> 2.25.1
