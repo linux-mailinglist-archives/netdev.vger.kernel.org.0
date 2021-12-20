@@ -2,92 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9872E47A8D7
-	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 12:36:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 070D647A8DE
+	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 12:40:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231936AbhLTLgy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Dec 2021 06:36:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45810 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231239AbhLTLgy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Dec 2021 06:36:54 -0500
-Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03643C061574;
-        Mon, 20 Dec 2021 03:36:54 -0800 (PST)
-Received: by mail-qk1-x729.google.com with SMTP id l25so8992836qkl.5;
-        Mon, 20 Dec 2021 03:36:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=yJJiyjdfsULMBTvd0urPhrZDTQqpdHh9o/xRZvWxFmE=;
-        b=d5GusZXStbS810bb8KHJdLhAl7l+fY6sci/7mbz+JIlf1LYRjxPEPB2Oq4mB5k+VYg
-         gP4zgZQ15qRt+7oicAm1xuk9TK0mt5uR/5xSN56giCjyUsOr5aE/3mWoob8kMKImqAjN
-         foIngnoEp0VeclLqLAbFfptbqRSmh/X7NSKFuX8I+k7LF1v3ttkCcGkbIHcFjZgdpE8l
-         xezZ1GaX5tI80Dio/afrlP/Z+x2PZg9Avo09BJzpj/GCD6fw2I7mgyQSxLQlnANohyBI
-         EB212RSmB1EA85dJabYWK0LGSt/XB9VgjL0hUdWtfLJKoLb/pOjnGCWdOjbuoEf2UnNf
-         iwBA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=yJJiyjdfsULMBTvd0urPhrZDTQqpdHh9o/xRZvWxFmE=;
-        b=pA9FVq+VyFIUa5nf4/O3zMi8agbtY7wIs2ohj9JtiDbC8FFsLIqYx6gKc3DcTXnfV+
-         8oK4iSBId0L2vsu4Vy2YA+8UtcBRX7qMrpB8quxrsdTK1AYeBM0VJ89u4XMrfeFq06m8
-         IR2ZldoyIQ+JDrqoA3IdFMxmIJISGMfknCZyriYkXVvdbQMhLkdiaGZau7/3rXCbmOFy
-         XVcRd9DMHDTR6oDxADaA34kCm0knlBOJEbzhWcp9M0fMWyhCU7r59EZ0XRDR4xVgBeVq
-         gC0YyCcIVZi0riAyuCkDrq1T4Y7RmH69Rqovg6hQTogFsc7snrHj6Rb5B8+czFc6FPlD
-         ++yQ==
-X-Gm-Message-State: AOAM532BajLuSTere/kMN4G4xR2rJo99DsOMFGyoIEj33T1mUjwyEPbp
-        hZ9k7qV5jkVTZX7wrUAcfOE=
-X-Google-Smtp-Source: ABdhPJy7K4LCx5o2Y8bJc4yi92IeBdvZYlJ8WKbZib+ajSbh7CPKo6Z27pR6e1/1EurX/z2hhbM9tg==
-X-Received: by 2002:a05:620a:4445:: with SMTP id w5mr8909634qkp.617.1640000213234;
-        Mon, 20 Dec 2021 03:36:53 -0800 (PST)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id s6sm11553827qko.43.2021.12.20.03.36.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Dec 2021 03:36:52 -0800 (PST)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: deng.changcheng@zte.com.cn
-To:     thomas.petazzoni@bootlin.com
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Changcheng Deng <deng.changcheng@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] net: mvneta: use min() to make code cleaner
-Date:   Mon, 20 Dec 2021 11:36:48 +0000
-Message-Id: <20211220113648.473204-1-deng.changcheng@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        id S231921AbhLTLkM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Dec 2021 06:40:12 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:57740 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231950AbhLTLkK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Dec 2021 06:40:10 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D54260FF2;
+        Mon, 20 Dec 2021 11:40:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id DA236C36AE8;
+        Mon, 20 Dec 2021 11:40:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1640000409;
+        bh=xhQnf56bsaHJHJcBDmOwBiSBwGs6r1NJVkB3ZlKZuZU=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ICMDWwgmY7NiCacD+7UnoSA3elMhtXyLoxU507xVudm5bWyqaEfRQfZZprC5WQ8te
+         Co6/79D/Q9Yg+NcterUvuKsPIof7Aws3UMltQ6SLo4P1mq6JFHZIAz0sv+tUED1rqA
+         hVSibgOLH6KGsWHqTO8uHBGOwUHMbKyHmusVvHapo/DopLz7P1iD8g9MvSFX2IgFvF
+         5KVpPxVOWaP2OEgOgpHnABkN0I2Geg1U+PezpJlBkxrKky4IEtgTdDna5DUxb1Ax8T
+         HSwjWY1A4jiloFmJJMA9Y/GISulDW4AgusV1wGHGrtwhlL6uPEAl017J/RLEvnhLnz
+         QeC6GARrDNuIA==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id B333960A6F;
+        Mon, 20 Dec 2021 11:40:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] mac80211: fix locking in ieee80211_start_ap error path
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164000040972.26538.12878058842061474047.git-patchwork-notify@kernel.org>
+Date:   Mon, 20 Dec 2021 11:40:09 +0000
+References: <20211220092240.12768-1-johannes@sipsolutions.net>
+In-Reply-To: <20211220092240.12768-1-johannes@sipsolutions.net>
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        johannes.berg@intel.com, stable@vger.kernel.org,
+        syzbot+11c342e5e30e9539cabd@syzkaller.appspotmail.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Changcheng Deng <deng.changcheng@zte.com.cn>
+Hello:
 
-Use min() in order to make code cleaner.
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Changcheng Deng <deng.changcheng@zte.com.cn>
----
- drivers/net/ethernet/marvell/mvneta.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+On Mon, 20 Dec 2021 10:22:40 +0100 you wrote:
+> From: Johannes Berg <johannes.berg@intel.com>
+> 
+> We need to hold the local->mtx to release the channel context,
+> as even encoded by the lockdep_assert_held() there. Fix it.
+> 
+> Cc: stable@vger.kernel.org
+> Fixes: 295b02c4be74 ("mac80211: Add FILS discovery support")
+> Reported-and-tested-by: syzbot+11c342e5e30e9539cabd@syzkaller.appspotmail.com
+> Link: https://lore.kernel.org/r/20211220090836.cee3d59a1915.I36bba9b79dc2ff4d57c3c7aa30dff9a003fe8c5c@changeid
+> Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+> 
+> [...]
 
-diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-index 83c8908f0cc7..cf1319fe7b0f 100644
---- a/drivers/net/ethernet/marvell/mvneta.c
-+++ b/drivers/net/ethernet/marvell/mvneta.c
-@@ -4634,8 +4634,7 @@ mvneta_ethtool_set_ringparam(struct net_device *dev,
- 
- 	if ((ring->rx_pending == 0) || (ring->tx_pending == 0))
- 		return -EINVAL;
--	pp->rx_ring_size = ring->rx_pending < MVNETA_MAX_RXD ?
--		ring->rx_pending : MVNETA_MAX_RXD;
-+	pp->rx_ring_size = min(ring->rx_pending, MVNETA_MAX_RXD);
- 
- 	pp->tx_ring_size = clamp_t(u16, ring->tx_pending,
- 				   MVNETA_MAX_SKB_DESCS * 2, MVNETA_MAX_TXD);
+Here is the summary with links:
+  - [net] mac80211: fix locking in ieee80211_start_ap error path
+    https://git.kernel.org/netdev/net/c/87a270625a89
+
+You are awesome, thank you!
 -- 
-2.25.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
