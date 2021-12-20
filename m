@@ -2,63 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2292647ADB4
-	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 15:55:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 94C2347ADD4
+	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 15:56:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237045AbhLTOyD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Dec 2021 09:54:03 -0500
-Received: from smtp25.cstnet.cn ([159.226.251.25]:34906 "EHLO cstnet.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S233606AbhLTOwA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Dec 2021 09:52:00 -0500
-Received: from localhost.localdomain (unknown [124.16.138.126])
-        by APP-05 (Coremail) with SMTP id zQCowAB3WBV3mMBhi3w_BA--.56502S2;
-        Mon, 20 Dec 2021 22:51:35 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com,
-        davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: Re: Re: [PATCH] sfc: Check null pointer of rx_queue->page_ring
-Date:   Mon, 20 Dec 2021 22:51:34 +0800
-Message-Id: <20211220145134.978462-1-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+        id S236773AbhLTOz5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Dec 2021 09:55:57 -0500
+Received: from mx1.riseup.net ([198.252.153.129]:60268 "EHLO mx1.riseup.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S238354AbhLTOxb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Dec 2021 09:53:31 -0500
+Received: from fews2.riseup.net (fews2-pn.riseup.net [10.0.1.84])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256
+         client-signature RSA-PSS (2048 bits) client-digest SHA256)
+        (Client CN "mail.riseup.net", Issuer "R3" (not verified))
+        by mx1.riseup.net (Postfix) with ESMTPS id 4JHjJV2s6JzDxcd;
+        Mon, 20 Dec 2021 06:53:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=riseup.net; s=squak;
+        t=1640012010; bh=vSeIyAkhO0ZOW1WcxnogAz9c4X/ngALpMtGZbM94rGM=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=apFSa2DQ2uIoSzKaUdmEGaDd3wr/9bahPD0jPKjDW9p5jkNm/7UY8lb96C9RHOyJA
+         K2DWDwtdZlUM9gJvQzuvc9ZWWttPENA4E/Sr8nqBcFMkx1GsUcPnoYL9fNELfF2b+X
+         U7jaUb1levF0lSdb+H+51AVGC2Jqfuh7F/d8lCIA=
+X-Riseup-User-ID: DA881FE705E4AAF6BA1647C148B3DD7865ACFF5133E6C066DFDEB45BF6FC08B4
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+         by fews2.riseup.net (Postfix) with ESMTPSA id 4JHjJT5PYfz1y53;
+        Mon, 20 Dec 2021 06:53:29 -0800 (PST)
+Message-ID: <43648ff4-90f0-37d8-24c9-50f9b198a3bd@riseup.net>
+Date:   Mon, 20 Dec 2021 15:53:27 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: zQCowAB3WBV3mMBhi3w_BA--.56502S2
-X-Coremail-Antispam: 1UD129KBjDUn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73
-        VFW2AGmfu7bjvjm3AaLaJ3UjIYCTnIWjp_UUUY67AC8VAFwI0_Gr0_Xr1l1xkIjI8I6I8E
-        6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28Cjx
-        kF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVWUCVW8JwA2z4x0Y4vE2Ix0cI8I
-        cVCY1x0267AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aV
-        CY1x0267AKxVW0oVCq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAq
-        x4xG6I80ewAv7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Gr0_Cr1lOx8S6x
-        CaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwAC
-        I402YVCY1x02628vn2kIc2xKxwCY02Avz4vE14v_Xryl42xK82IYc2Ij64vIr41l4I8I3I
-        0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWU
-        GVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI
-        0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0
-        rVWrJr0_WFyUJwCI42IY6I8E87Iv67AKxVW8JVWxJwCI42IY6I8E87Iv6xkF7I0E14v26r
-        4UJVWxJrUvcSsGvfC2KfnxnUUI43ZEXa7VUjuWlDUUUUU==
-X-Originating-IP: [124.16.138.126]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
+Subject: Re: [PATCH net v3] bonding: fix ad_actor_system option setting to
+ default
+Content-Language: en-US
+To:     Jay Vosburgh <jay.vosburgh@canonical.com>
+Cc:     netdev@vger.kernel.org
+References: <20211218015001.1740-1-ffmancera@riseup.net>
+ <1323.1639794889@famine>
+From:   "Fernando F. Mancera" <ffmancera@riseup.net>
+In-Reply-To: <1323.1639794889@famine>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 20, 2021 at 10:16:28PM +0800, Greg KH wrote:
-> Why not return an error?
+On 12/18/21 03:34, Jay Vosburgh wrote:
+> Fernando Fernandez Mancera <ffmancera@riseup.net> wrote:
+> 
+>> When 802.3ad bond mode is configured the ad_actor_system option is set to
+>> "00:00:00:00:00:00". But when trying to set the all-zeroes MAC as actors'
+>> system address it was failing with EINVAL.
+>>
+>> An all-zeroes ethernet address is valid, only multicast addresses are not
+>> valid values.
+>>
+>> Signed-off-by: Fernando Fernandez Mancera <ffmancera@riseup.net>
+> 
+> Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
+> 
+>> ---
+>> v2: added documentation changes and modified commit message
+>> v3: fixed format warning on commit message
+>> ---
+>> Documentation/networking/bonding.rst | 11 ++++++-----
+>> drivers/net/bonding/bond_options.c   |  2 +-
+>> 2 files changed, 7 insertions(+), 6 deletions(-)
+>>
+>> diff --git a/Documentation/networking/bonding.rst b/Documentation/networking/bonding.rst
+>> index 31cfd7d674a6..c0a789b00806 100644
+>> --- a/Documentation/networking/bonding.rst
+>> +++ b/Documentation/networking/bonding.rst
+>> @@ -196,11 +196,12 @@ ad_actor_sys_prio
+>> ad_actor_system
+>>
+>> 	In an AD system, this specifies the mac-address for the actor in
+>> -	protocol packet exchanges (LACPDUs). The value cannot be NULL or
+>> -	multicast. It is preferred to have the local-admin bit set for this
+>> -	mac but driver does not enforce it. If the value is not given then
+>> -	system defaults to using the masters' mac address as actors' system
+>> -	address.
+>> +	protocol packet exchanges (LACPDUs). The value cannot be a multicast
+>> +	address. If the all-zeroes MAC is specified, bonding will internally
+>> +	use the MAC of the bond itself. It is preferred to have the
+>> +	local-admin bit set for this mac but driver does not enforce it. If
+>> +	the value is not given then system defaults to using the masters'
+>> +	mac address as actors' system address.
+>>
+>> 	This parameter has effect only in 802.3ad mode and is available through
+>> 	SysFs interface.
+>> diff --git a/drivers/net/bonding/bond_options.c b/drivers/net/bonding/bond_options.c
+>> index a8fde3bc458f..b93337b5a721 100644
+>> --- a/drivers/net/bonding/bond_options.c
+>> +++ b/drivers/net/bonding/bond_options.c
+>> @@ -1526,7 +1526,7 @@ static int bond_option_ad_actor_system_set(struct bonding *bond,
+>> 		mac = (u8 *)&newval->value;
+>> 	}
+>>
+>> -	if (!is_valid_ether_addr(mac))
+>> +	if (is_multicast_ether_addr(mac))
+>> 		goto err;
+>>
+>> 	netdev_dbg(bond->dev, "Setting ad_actor_system to %pM\n", mac);
+>> -- 
+>> 2.30.2
+>>
 
-Because I have received the mail from Martin Habets that telling me
-it doesn't need to return error code.
-Here is the mail.
-https://lore.kernel.org/lkml/20211219092948.t2iprptmyfrzgthb@gmail.com/
-On Sun, Dec 19, 2021 at 05:29:48PM +0800, Martin Habets wrote:
-> Your predicate is wrong. The code that uses rx_queue->page_ring
-> can deal with it being NULL.
-> The only thing you might want to do is set rx_queue->page_ptr_mask
-> to 0.
+I noticed this patch state in patchwork is "changes requested"[1]. But I 
+didn't get any reply or request. Is the state wrong? Should I ignore it? 
+If not, what is missing?
 
-Jiasheng
+Thanks,
+Fernando.
 
+[1] 
+https://patchwork.kernel.org/project/netdevbpf/patch/20211218015001.1740-1-ffmancera@riseup.net/
