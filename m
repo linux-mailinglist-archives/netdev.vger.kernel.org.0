@@ -2,99 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 43CF447A619
-	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 09:36:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7254747A613
+	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 09:35:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237937AbhLTIgs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Dec 2021 03:36:48 -0500
-Received: from szxga08-in.huawei.com ([45.249.212.255]:30075 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237925AbhLTIgr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Dec 2021 03:36:47 -0500
-Received: from kwepemi500006.china.huawei.com (unknown [172.30.72.53])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4JHXtC3TsMz1DJtQ;
-        Mon, 20 Dec 2021 16:33:39 +0800 (CST)
-Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- kwepemi500006.china.huawei.com (7.221.188.68) with Microsoft SMTP Server
+        id S234829AbhLTIfX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Dec 2021 03:35:23 -0500
+Received: from a.mx.secunet.com ([62.96.220.36]:51168 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234799AbhLTIfX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Dec 2021 03:35:23 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 5D8DB205A9;
+        Mon, 20 Dec 2021 09:35:21 +0100 (CET)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id Sp5MdHzHY7kJ; Mon, 20 Dec 2021 09:35:20 +0100 (CET)
+Received: from mailout2.secunet.com (mailout2.secunet.com [62.96.220.49])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id E580220504;
+        Mon, 20 Dec 2021 09:35:20 +0100 (CET)
+Received: from cas-essen-02.secunet.de (unknown [10.53.40.202])
+        by mailout2.secunet.com (Postfix) with ESMTP id DF4B180004A;
+        Mon, 20 Dec 2021 09:35:20 +0100 (CET)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-02.secunet.de (10.53.40.202) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Mon, 20 Dec 2021 16:36:45 +0800
-Received: from localhost.localdomain (10.67.165.24) by
- kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Mon, 20 Dec 2021 16:36:45 +0800
-From:   Guangbin Huang <huangguangbin2@huawei.com>
-To:     <mkubecek@suse.cz>, <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <lipeng321@huawei.com>,
-        <huangguangbin2@huawei.com>, <chenhao288@hisilicon.com>
-Subject: [PATCH ethtool-next 2/2] ethtool: netlink: add support to get/set tx copybreak buf size
-Date:   Mon, 20 Dec 2021 16:31:55 +0800
-Message-ID: <20211220083155.39882-3-huangguangbin2@huawei.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20211220083155.39882-1-huangguangbin2@huawei.com>
-References: <20211220083155.39882-1-huangguangbin2@huawei.com>
+ 15.1.2375.17; Mon, 20 Dec 2021 09:35:20 +0100
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.17; Mon, 20 Dec
+ 2021 09:35:20 +0100
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id 822C33182F8D; Mon, 20 Dec 2021 09:35:18 +0100 (CET)
+Date:   Mon, 20 Dec 2021 09:35:18 +0100
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Antony Antony <antony.antony@secunet.com>
+CC:     Eyal Birger <eyal.birger@gmail.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Jakub Kicinski" <kuba@kernel.org>, <netdev@vger.kernel.org>
+Subject: Re: [PATCH v2 ipsec-next 1/2] xfrm: interface with if_id 0 should
+ return error
+Message-ID: <20211220083518.GN427717@gauss3.secunet.de>
+References: <0bfebd4e5f317cbf301750d5dd5cc706d4385d7f.1639064087.git.antony.antony@secunet.com>
+ <ef942164e62ba3ba5850cb9ddf9416fa00a0515b.1639304726.git.antony.antony@secunet.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- kwepemm600016.china.huawei.com (7.193.23.20)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <ef942164e62ba3ba5850cb9ddf9416fa00a0515b.1639304726.git.antony.antony@secunet.com>
+X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Hao Chen <chenhao288@hisilicon.com>
+On Sun, Dec 12, 2021 at 11:34:30AM +0100, Antony Antony wrote:
+> xfrm interface if_id = 0 would cause xfrm policy lookup errors since
+> Commit 9f8550e4bd9d.
+> 
+> Now explicitly fail to create an xfrm interface when if_id = 0
+> 
+> With this commit:
+>  ip link add ipsec0  type xfrm dev lo  if_id 0
+>  Error: if_id must be non zero.
+> 
+> v1->v2 change:
+>  - add Fixes: tag
+> 
+> Fixes: 9f8550e4bd9d ("xfrm: fix disable_xfrm sysctl when used on xfrm interfaces")
+> Signed-off-by: Antony Antony <antony.antony@secunet.com>
 
-Add support for "ethtool --set-tunable <dev> tx-buf-size xxx"
-and "ethtool --get-tunable <dev> tx-buf-size" to set/get
-tx copybreak buf size.
-
-Signed-off-by: Hao Chen <chenhao288@hisilicon.com>
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
----
- ethtool.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
-
-diff --git a/ethtool.c b/ethtool.c
-index 0dc3559..5d718a2 100644
---- a/ethtool.c
-+++ b/ethtool.c
-@@ -5009,6 +5009,7 @@ tunable_strings[__ETHTOOL_TUNABLE_COUNT][ETH_GSTRING_LEN] = {
- 	[ETHTOOL_ID_UNSPEC]		= "Unspec",
- 	[ETHTOOL_RX_COPYBREAK]		= "rx-copybreak",
- 	[ETHTOOL_TX_COPYBREAK]		= "tx-copybreak",
-+	[ETHTOOL_TX_COPYBREAK_BUF_SIZE] = "tx-buf-size",
- 	[ETHTOOL_PFC_PREVENTION_TOUT]	= "pfc-prevention-tout",
- };
- 
-@@ -5048,6 +5049,11 @@ static struct ethtool_tunable_info tunables_info[] = {
- 	  .size		= sizeof(u16),
- 	  .type		= CMDL_U16,
- 	},
-+	{ .t_id         = ETHTOOL_TX_COPYBREAK_BUF_SIZE,
-+	  .t_type_id    = ETHTOOL_TUNABLE_U32,
-+	  .size         = sizeof(u32),
-+	  .type         = CMDL_U32,
-+	},
- };
- #define TUNABLES_INFO_SIZE	ARRAY_SIZE(tunables_info)
- 
-@@ -5961,6 +5967,7 @@ static const struct option args[] = {
- 		.help	= "Get tunable",
- 		.xhelp	= "		[ rx-copybreak ]\n"
- 			  "		[ tx-copybreak ]\n"
-+			  "		[ tx-buf-size ]\n"
- 			  "		[ pfc-precention-tout ]\n"
- 	},
- 	{
-@@ -5969,6 +5976,7 @@ static const struct option args[] = {
- 		.help	= "Set tunable",
- 		.xhelp	= "		[ rx-copybreak N]\n"
- 			  "		[ tx-copybreak N]\n"
-+			  "		[ tx-buf-size N]\n"
- 			  "		[ pfc-precention-tout N]\n"
- 	},
- 	{
--- 
-2.33.0
+Applied the ipsec tree, thanks Antony!
 
