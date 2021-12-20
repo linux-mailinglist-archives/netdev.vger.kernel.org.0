@@ -2,97 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CB7647B26F
-	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 18:57:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D6DC447B27B
+	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 19:03:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233440AbhLTR5Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Dec 2021 12:57:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49932 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239565AbhLTR5V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Dec 2021 12:57:21 -0500
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EFE5C061574
-        for <netdev@vger.kernel.org>; Mon, 20 Dec 2021 09:57:20 -0800 (PST)
-Received: by mail-yb1-xb2d.google.com with SMTP id e136so31191233ybc.4
-        for <netdev@vger.kernel.org>; Mon, 20 Dec 2021 09:57:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=YPzQ8aKsf0Myz64J0BIQAjZ66MQeGyufJoS6fdeAggs=;
-        b=nrJDqua60hm2fPFU4Ad72zjnbqx9h9KIFvpj8SmgA7cs/WlHVsDDDqp2VCjdLd+Y+5
-         zoOFJw9VZt1mofAqR8PcelgbuxeZOEZaFBUeuwx4snsRhha3RG1wwQx3W7BqTcyOBGR6
-         wG+ivNS/WlgEoTGMHwe00ADXOt9BBY+/yxjSdQS1STSYVrkM+tQ+QqtExKaZvhePhsdh
-         K69vg0Ck1Kz7lIRRvpVTgQVHcqEwscO7H1tZH8se44jOSKh27RAKrEPxTci2vMoyGaej
-         wZ+Zqp+m+ZyjJqGBHaiVvlM8fQObRI0ovyRzMUUlDRUg2acXEnAGFgjgII+QEt2d9LwL
-         5ikg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YPzQ8aKsf0Myz64J0BIQAjZ66MQeGyufJoS6fdeAggs=;
-        b=HKJE+Uj6oZhtrnX7UMrhhIh5OkYRzpBBFJZr1zreJEWowzqUtld/RUvGupVj+XeC10
-         WalMkpzWb/wyMN1i71kgIZMER86WfUKx4CM0QkbITw1f+cCxUzSrfFFfzm71Ib3NObY2
-         Ci7wFIvsfei3NOnrh9jnpBisMARwjWTs/eQ5WaIqDny7CtPg7JKTeLtvW8WMtCa9ONyI
-         06Z8vlKZ8lhJARp9fbdYcNJ3K4F3G1xII2iUVew8Ozx1JRUo2g0xJFw3m/ZFjbz5hbBx
-         YQ6khlzxwIVsAVDLfNpUXakT2rafWctY7G6JgOfhG+cmRH0e/u6YmYjTy2eulPiMQIa+
-         iYCA==
-X-Gm-Message-State: AOAM530sW3dxEGncPXHOR0ZTwBR/O6WWtdEBWGcnY97Akn5mldu8fh3o
-        ZnNqO9dm5gzGxdy+l0NARYMx7bo+eVQSkz6hMS4=
-X-Google-Smtp-Source: ABdhPJweHMTw+XZqt2yI8dRxiUqgwtXTV+l0QY1seS8Ic+y80k7o3MRH4MBfCSggrdAI81VPKmfouDzeacZOOwwwoH0=
-X-Received: by 2002:a25:73cc:: with SMTP id o195mr25370363ybc.740.1640023039300;
- Mon, 20 Dec 2021 09:57:19 -0800 (PST)
+        id S240313AbhLTSDm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Dec 2021 13:03:42 -0500
+Received: from o1.ptr2625.egauge.net ([167.89.112.53]:64018 "EHLO
+        o1.ptr2625.egauge.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238884AbhLTSDk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Dec 2021 13:03:40 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=egauge.net;
+        h=from:subject:mime-version:to:cc:content-transfer-encoding:
+        content-type;
+        s=sgd; bh=CfnGqaPvWPSL9O/lgob586ROT8ZgG94Plol0GBoWOSM=;
+        b=gf6JvNVbEti3SGVdH6udwWlVq1UcwUt2zKX3lZVt5LNfsYkN6ao/iftYWtRGhlfCwzdf
+        8uGW3alZrtvQVng+Si9VSF2HfZpxPo9T6x8wGSbcNTJ4MNKjnXkAnHnnlRNViDNlj76fCl
+        AUIxpL/zW4faAaIO4Brpq8D1bXqarZ2tRIk/wxQ1rpQPgtL6vm+Wt2XeHzguPpnKp/E1iy
+        yDfS5L5p1shrI9d9Z+s+KFc11k7t38qiziyzJiecyls8dzPKbJ/VBzB06XCYerDF3FTqX2
+        txYPqneo4C/pJozdBn0f5eeTLV8k/Bz0qsogNaGFufeP758Xq2wxpb+cu+XiHsGQ==
+Received: by filterdrecv-656998cfdd-ptr8m with SMTP id filterdrecv-656998cfdd-ptr8m-1-61C0C57A-2
+        2021-12-20 18:03:38.102772415 +0000 UTC m=+7756579.962355144
+Received: from pearl.egauge.net (unknown)
+        by geopod-ismtpd-4-1 (SG)
+        with ESMTP
+        id SIMuKpiiSYCqzf8bQuNJMA
+        Mon, 20 Dec 2021 18:03:37.872 +0000 (UTC)
+Received: by pearl.egauge.net (Postfix, from userid 1000)
+        id 4B6487003AA; Mon, 20 Dec 2021 11:03:37 -0700 (MST)
+From:   David Mosberger-Tang <davidm@egauge.net>
+Subject: [PATCH v6 0/2] wilc1000: Add reset/enable GPIO support to SPI driver
+Date:   Mon, 20 Dec 2021 18:03:38 +0000 (UTC)
+Message-Id: <20211220180334.3990693-1-davidm@egauge.net>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20211220123839.54664-1-xiangxia.m.yue@gmail.com> <20211220123839.54664-3-xiangxia.m.yue@gmail.com>
-In-Reply-To: <20211220123839.54664-3-xiangxia.m.yue@gmail.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Mon, 20 Dec 2021 09:57:08 -0800
-Message-ID: <CAM_iQpXfZq--ZCUQvggtqE7bEpZFRVcLTqN_R5kLiZj4Y75VAA@mail.gmail.com>
-Subject: Re: [net-next v5 2/2] net: sched: support hash/classid/cpuid
- selecting tx queue
-To:     Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>,
+X-SG-EID: =?us-ascii?Q?+kMxBqj35EdRUKoy8diX1j4AXmPtd302oan+iXZuF8m2Nw4HRW2irNspffT=2Fkh?=
+ =?us-ascii?Q?ET6RJF6+Prbl0h=2FEtF1rRLvFU2nunBDPBrWLBt7?=
+ =?us-ascii?Q?d71pPVerD0pCUy3SKVD5aCpCk6GnRjDcUvaoJsk?=
+ =?us-ascii?Q?iofAJrvpCOa3wbP4RC9cvmQVY+mXZVMGGVoqOhM?=
+ =?us-ascii?Q?B2SBYOcuOfuA3f2CYOV9VCLzwyI4Xu35r=2FDtzPc?=
+ =?us-ascii?Q?0x9zYkmWGzWvxrnhIy5v=2FISqW4NwWJhDWZqT7C?=
+To:     Ajay Singh <ajay.kathat@microchip.com>
+Cc:     Adham Abozaeid <adham.abozaeid@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Talal Ahmad <talalahmad@google.com>,
-        Kevin Hao <haokexin@gmail.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Kees Cook <keescook@chromium.org>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        Wei Wang <weiwan@google.com>, Arnd Bergmann <arnd@arndb.de>
-Content-Type: text/plain; charset="UTF-8"
+        devicetree@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        David Mosberger-Tang <davidm@egauge.net>
+X-Entity-ID: Xg4JGAcGrJFIz2kDG9eoaQ==
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 20, 2021 at 4:39 AM <xiangxia.m.yue@gmail.com> wrote:
->
-> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
->
-> This patch allows user to select queue_mapping, range
-> from A to B. And user can use skbhash, cgroup classid
-> and cpuid to select Tx queues. Then we can load balance
-> packets from A to B queue. The range is an unsigned 16bit
-> value in decimal format.
->
-> $ tc filter ... action skbedit queue_mapping skbhash A B
->
-> "skbedit queue_mapping QUEUE_MAPPING" (from "man 8 tc-skbedit")
-> is enhanced with flags:
-> * SKBEDIT_F_TXQ_SKBHASH
-> * SKBEDIT_F_TXQ_CLASSID
-> * SKBEDIT_F_TXQ_CPUID
+v6:
+	- Convert line comments to block comments.
+v5:
+	- Fix a dt_binding_check error by including
+	  <dt-bindings/gpio/gpio.h> in microchip,wilc1000.yaml.
+v4:
+	- Simplify wilc_wlan_power() by letting gpiod_set_value()
+	  handle NULL gpios.
+v3:
+	- Fix to include correct header file.
+	- Rename wilc_set_enable() to wilc_wlan_power().
+	- Use devm_gpiod_get{,_optional}() instead of of_get_named_gpio()
+	- Parse GPIO pins once at probe time.
+v2:
+	- Split documentation update and driver changes into seprate
+          patches.
 
-Once again, you are enforcing policies in kernel, which is not good.
-Kernel should just set whatever you give to it, not selecting policies
-like a menu.
+David Mosberger-Tang (2):
+  wilc1000: Add reset/enable GPIO support to SPI driver
+  wilc1000: Document enable-gpios and reset-gpios properties
 
-Any reason why you can't obtain these values in user-space?
+ .../net/wireless/microchip,wilc1000.yaml      | 19 ++++++
+ drivers/net/wireless/microchip/wilc1000/spi.c | 62 ++++++++++++++++++-
+ .../net/wireless/microchip/wilc1000/wlan.c    |  2 +-
+ 3 files changed, 79 insertions(+), 4 deletions(-)
+
+-- 
+2.25.1
+
