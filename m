@@ -2,79 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A018F47A92A
-	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 13:00:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AD06B47A92C
+	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 13:03:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232210AbhLTMAO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Dec 2021 07:00:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51250 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229533AbhLTMAN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Dec 2021 07:00:13 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AA1DC061574;
-        Mon, 20 Dec 2021 04:00:13 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 9BDFCCE100B;
-        Mon, 20 Dec 2021 12:00:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E94FCC36AE7;
-        Mon, 20 Dec 2021 12:00:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1640001610;
-        bh=ZtcNfJ9QHze5Cs4p6EF32hecNuXUQKei2jvQ8iljUGQ=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=M12ZLqaq2HPEIuv2yEbKeodkXCBx+aozANahhPj+0f741uE/9U7EdZGVvRHKlmbBF
-         hMnj/nShNmrMJb5qddZkOFOVau8TXd5e+0Nz7QkDkaULjt60btX5m8ShmC3YXZEj6A
-         2rKh97kKd4F3jythowEkasSMOFw1L3RdDS9oDshEqqzjuvlQatbV4YkvUdcyFDJOpJ
-         sCK7y3e5DHYbNCbEG9TqjjtngMrJUE/J2mTizRmuldxLiQEir2fH2yHp434I4pZrNI
-         Bx6iCn3Pr0B8HrMldNY+bVI7S4+4aQQVdlBWJB6PQHh4eSCJ/7aRRNm9FSaH1618Bx
-         /f5N7Yglxj0kw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id D234D60A6F;
-        Mon, 20 Dec 2021 12:00:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S232210AbhLTMDG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Dec 2021 07:03:06 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:51547 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229533AbhLTMDF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Dec 2021 07:03:05 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1640001784;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=KVbqaqKX4D74IoU7gZGZhJb64pFjSvVeEMSn+p05yzk=;
+        b=g/uud7FfnBM3NWRTcdMYQaLVk3rE0OgbCEv2Up4s/w1Px0AsxP8zvs6WHlBU7YxO2K2EQ/
+        I74I27eLyGxvf6L4Zu4ylVxJB0CkS1xFrsounhEmhmElfdNjGzpY6MatQSBTL22BxmeXXD
+        7VXW0fczqRzXO1JHpI+084fXq5FTIHk=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-400-V-hrW0YvO_OXfYCj27H6eA-1; Mon, 20 Dec 2021 07:03:03 -0500
+X-MC-Unique: V-hrW0YvO_OXfYCj27H6eA-1
+Received: by mail-wr1-f69.google.com with SMTP id v18-20020a5d5912000000b001815910d2c0so3707011wrd.1
+        for <netdev@vger.kernel.org>; Mon, 20 Dec 2021 04:03:03 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=KVbqaqKX4D74IoU7gZGZhJb64pFjSvVeEMSn+p05yzk=;
+        b=0ifF4Z1/ERavq/pIk1uHDMdaT3wsAMGNz00Jm2cSzGGcf2MxDx0QZnr6jn3st41C08
+         YipcbkVrTt0Fh6DidrkiaiqiIdKGUL9EU0ZHyVxtCfbN4xjGozeDhHIECk6pmNrffEI5
+         4p3ACK5faAg9/HnEy9/A56OpXLbeJereR/1paosaK8l2m+GHS/FnjYSKy9cmy4tuQaeh
+         VNfZuYwEK2cmOnuaxFruNsBIzrwWh66prGKTW1euBhMw7bVdODwM32vp7Bn556Bpb0Rs
+         7J2xAHs4s1Jyu+IoPplKcGYitwDt9g9+iigM3ANtwI02d+CblpwHaq+NqBKRDsGMrCSf
+         ojJw==
+X-Gm-Message-State: AOAM5321saIuMs9lBlH5net05Z4aCDLHOSGO8g9ED3+oLW4cwtOTY48O
+        MpJ9iwo4L5ya8HPmv7KVjxadG7iJLfQu/apKWWaJ6ARyVUuQ8cK6WK10VZOjKX9CsvY5X6rME7V
+        Yhz9S07JzFj68ddPx
+X-Received: by 2002:a05:600c:4ec7:: with SMTP id g7mr6690902wmq.152.1640001782470;
+        Mon, 20 Dec 2021 04:03:02 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxGNokA5dsQSDTergDRmkdfHGMbynaCcZpoaZd2fEWra/4z7gJowICfiJWDmDY7zWfIv5pj3A==
+X-Received: by 2002:a05:600c:4ec7:: with SMTP id g7mr6690874wmq.152.1640001782226;
+        Mon, 20 Dec 2021 04:03:02 -0800 (PST)
+Received: from redhat.com ([2.55.19.224])
+        by smtp.gmail.com with ESMTPSA id r7sm10224532wrt.77.2021.12.20.04.03.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Dec 2021 04:03:01 -0800 (PST)
+Date:   Mon, 20 Dec 2021 07:02:58 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Parav Pandit <parav@nvidia.com>
+Cc:     David Ahern <dsahern@gmail.com>,
+        "stephen@networkplumber.org" <stephen@networkplumber.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "jasowang@redhat.com" <jasowang@redhat.com>
+Subject: Re: [iproute2-next v2 4/4] vdpa: Enable user to set mtu of the vdpa
+ device
+Message-ID: <20211220070136-mutt-send-email-mst@kernel.org>
+References: <20211217080827.266799-1-parav@nvidia.com>
+ <20211217080827.266799-5-parav@nvidia.com>
+ <a38a9877-4b01-22b3-ac62-768265db0d5a@gmail.com>
+ <20211218170602-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB548189EBA8346A960A0A409FDC7B9@PH0PR12MB5481.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] phonet/pep: refuse to enable an unbound pipe
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164000160985.5339.1641032770799680140.git-patchwork-notify@kernel.org>
-Date:   Mon, 20 Dec 2021 12:00:09 +0000
-References: <20211219170339.630659-1-remi@remlab.net>
-In-Reply-To: <20211219170339.630659-1-remi@remlab.net>
-To:     =?utf-8?q?R=C3=A9mi_Denis-Courmont_=3Cremi=40remlab=2Enet=3E?=@ci.codeaurora.org
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <PH0PR12MB548189EBA8346A960A0A409FDC7B9@PH0PR12MB5481.namprd12.prod.outlook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Sun, 19 Dec 2021 19:03:39 +0200 you wrote:
-> From: Rémi Denis-Courmont <remi@remlab.net>
+On Mon, Dec 20, 2021 at 03:49:21AM +0000, Parav Pandit wrote:
 > 
-> This ioctl() implicitly assumed that the socket was already bound to
-> a valid local socket name, i.e. Phonet object. If the socket was not
-> bound, two separate problems would occur:
 > 
-> 1) We'd send an pipe enablement request with an invalid source object.
-> 2) Later socket calls could BUG on the socket unexpectedly being
->    connected yet not bound to a valid object.
+> > From: Michael S. Tsirkin <mst@redhat.com>
+> > Sent: Sunday, December 19, 2021 3:37 AM
+> > 
+> > On Sat, Dec 18, 2021 at 01:53:01PM -0700, David Ahern wrote:
+> > > On 12/17/21 1:08 AM, Parav Pandit wrote:
+> > > > @@ -204,6 +217,8 @@ static void vdpa_opts_put(struct nlmsghdr *nlh,
+> > struct vdpa *vdpa)
+> > > >  	if (opts->present & VDPA_OPT_VDEV_MAC)
+> > > >  		mnl_attr_put(nlh, VDPA_ATTR_DEV_NET_CFG_MACADDR,
+> > > >  			     sizeof(opts->mac), opts->mac);
+> > > > +	if (opts->present & VDPA_OPT_VDEV_MTU)
+> > > > +		mnl_attr_put_u16(nlh, VDPA_ATTR_DEV_NET_CFG_MTU,
+> > opts->mtu);
+> > >
+> > > Why limit the MTU to a u16? Eric for example is working on "Big TCP"
+> > > where IPv6 can work with Jumbograms where mtu can be > 64k.
+> > >
+> > > https://datatracker.ietf.org/doc/html/rfc2675
+> > 
+> > Well it's 16 bit at the virtio level, though we can extend that of course. Making
+> > it match for now removes need for validation.
+> > --
+> As Michael mentioned virtio specification limits the mtu to 64k-1. Hence 16-bit.
+> First we need to update the virtio spec to support > 64K mtu.
+> However, when/if (I don't know when) that happens, we need to make this also u32.
+> So may be we can make it u32 now, but still restrict the mtu value to 64k-1 in kernel, until the spec is updated.
 > 
-> [...]
+> Let me know, if you think that's future proofing is better, I first need to update the kernel to take nla u32.
+> 
+> > MST
 
-Here is the summary with links:
-  - phonet/pep: refuse to enable an unbound pipe
-    https://git.kernel.org/netdev/net/c/75a2f3152009
+After consideration, this future proofing seems like a good thing to have.
 
-You are awesome, thank you!
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+MST
 
