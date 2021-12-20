@@ -2,286 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3AB2647B5E8
-	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 23:32:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 18FB047B4C5
+	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 22:10:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229565AbhLTWck (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Dec 2021 17:32:40 -0500
-Received: from yo2urs.ro ([86.126.81.149]:35906 "EHLO mail.yo2urs.ro"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229474AbhLTWck (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Dec 2021 17:32:40 -0500
-Received: by mail.yo2urs.ro (Postfix, from userid 124)
-        id 532A33639; Mon, 20 Dec 2021 22:04:17 +0200 (EET)
-Received: from www.yo2urs.ro (localhost [127.0.0.1])
-        by mail.yo2urs.ro (Postfix) with ESMTP id 2BB8D33A1;
-        Mon, 20 Dec 2021 22:04:15 +0200 (EET)
+        id S230290AbhLTVKM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Dec 2021 16:10:12 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:48576 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230171AbhLTVKL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Dec 2021 16:10:11 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E80FB6130B;
+        Mon, 20 Dec 2021 21:10:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 4EFFCC36AEA;
+        Mon, 20 Dec 2021 21:10:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1640034610;
+        bh=yZmaZHdiwq2IgL+/TS0ifA/oIR8OHxhuTiOkzCgBHRw=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=avCPUbWWn1EzvAVFezAFXsnQF5czXwGdXF0tIve6THuptf5NwRmCxI2v8uKHZkZK6
+         BmWmE6yAWTZqEolxPTMTzEkbYzrue0aT7kggs/s59q14c/A5Yqp2hM5xXjby81Zzlg
+         jp475WvcuQdCE2MwPjcYpB6smXL53PupBoZIU5+l9jFA3VEJalKuzi0QGW6WlDItYf
+         ameKnN9eysncf49rx15nHfAQe4jl3qPZJG1hJ+9qWM+YSkw+e7TgfZRVYMvFO8KJn0
+         PhvAEYirW3nMtj/nXXSBdVPb6gfxJSmCx2b1oW76dE1GM9vrsNDXXN/UehPJ9lqEmb
+         zcrKgW4kYE20A==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 28647609B3;
+        Mon, 20 Dec 2021 21:10:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: multipart/mixed;
- boundary="=_7618c19c4a94934d4e6ea42bd22831dd"
-Content-Transfer-Encoding: 7bit
-Date:   Mon, 20 Dec 2021 22:04:15 +0200
-From:   Gabriel Hojda <ghojda@yo2urs.ro>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Martyn Welch <martyn.welch@collabora.com>,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: Issues with smsc95xx driver since a049a30fc27c
-In-Reply-To: <YcBEgE589cf5DhJd@lunn.ch>
-References: <199eebbd6b97f52b9119c9fa4fd8504f8a34de18.camel@collabora.com>
- <Yb4QFDQ0rFfFsT+Y@lunn.ch> <36f765d8450ba08cb3f8aecab0cadd89@yo2urs.ro>
- <Yb4m3xms1zMf5C3T@lunn.ch> <Yb4pTu3FtkGPPpzb@lunn.ch>
- <c95954ec12dfcf8877c1bf92047c0268@yo2urs.ro> <YcBEgE589cf5DhJd@lunn.ch>
-User-Agent: Roundcube Webmail/1.4.12
-Message-ID: <17c7d301d2c6e5307f1b0876c069e4f9@yo2urs.ro>
-X-Sender: ghojda@yo2urs.ro
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH bpf-next] selftests/bpf: Correct the INDEX address in
+ vmtest.sh
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164003461016.22825.8777048018858756034.git-patchwork-notify@kernel.org>
+Date:   Mon, 20 Dec 2021 21:10:10 +0000
+References: <20211220050803.2670677-1-pulehui@huawei.com>
+In-Reply-To: <20211220050803.2670677-1-pulehui@huawei.com>
+To:     Pu Lehui <pulehui@huawei.com>
+Cc:     shuah@kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=_7618c19c4a94934d4e6ea42bd22831dd
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
+Hello:
 
-On 2021-12-20 10:53, Andrew Lunn wrote:
->> # ip link set eth0 up
->> # ip link show eth0
->> 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel 
->> state UP
->> mode DEFAULT group default qlen 1000
->>     link/ether ee:f1:a8:e7:0c:8f brd ff:ff:ff:ff:ff:ff
->> 
->> ... now link is up with the same mac address
->> 
->> # ifconfig eth0
->> eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
->>         inet6 2a02:2f09:3d09:1b00:ecf1:a8ff:fee7:c8f  prefixlen 64  
->> scopeid
->> 0x0<global>
->>         inet6 fe80::ecf1:a8ff:fee7:c8f  prefixlen 64  scopeid 
->> 0x20<link>
->>         inet6 fd00:cafe::c772:d58f:1061:4df3  prefixlen 64  scopeid
->> 0x0<global>
->>         inet6 fd00:cafe::ecf1:a8ff:fee7:c8f  prefixlen 64  scopeid
->> 0x0<global>
->>         inet6 2a02:2f09:3d09:1b00:eef4:bb1d:f9d5:febc  prefixlen 64  
->> scopeid
->> 0x0<global>
+This patch was applied to bpf/bpf-next.git (master)
+by Andrii Nakryiko <andrii@kernel.org>:
+
+On Mon, 20 Dec 2021 05:08:03 +0000 you wrote:
+> Migration of vmtest to libbpf/ci will change the address
+> of INDEX in vmtest.sh, which will cause vmtest.sh to not
+> work due to the failure of rootfs fetching.
 > 
-> These make use of multicast. Router Advertisements are multicast, both
-> at L2 and L3, by the router to the Internet.
-> 
->> # ping -6 -c 10 ipv6.l.google.com
->> PING ipv6.l.google.com(ipv6.l.google.com (2a00:1450:400d:806::200e)) 
->> 56 data
->> bytes
->> From odroid (2a02:2f09:3d09:1b00:eef4:bb1d:f9d5:febc) icmp_seq=1 
->> Destination
->> unreachable: Address unreachable
->> ...
->> --- ipv6.l.google.com ping statistics ---
->> 10 packets transmitted, 0 received, +7 errors, 100% packet loss, time 
->> 9311ms
-> 
-> ping uses unicast.
-> 
->> ... neither does it work for my local router, so network layer 3 does 
->> not
->> seem to work
-> 
-> I think it is still pointing towards L2 unicast.
-> 
->> next, when i have time and if there's still no progress, i think i 
->> should
->> try to insert:
->> 
->>         ret = smsc95xx_reset(dev);
->> 	if (ret)
->> 		goto free_pdata;
->> 
->> before
->> 
->> 	ret = phy_connect_direct(dev->net, pdata->phydev,
->> 				 &smsc95xx_handle_link_change,
->> 				 PHY_INTERFACE_MODE_MII);
->> 
->> in smsc95xx_bind() to try to emulate the old behavior for the first 
->> call to
->> start_phy().
-> 
-> Yes, that will be in interesting experiment. Something in
-> smsc95xx_reset() is required.
-> 
-> 	Andrew
+> Signed-off-by: Pu Lehui <pulehui@huawei.com>
+> ---
+>  tools/testing/selftests/bpf/vmtest.sh | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-well, i recompiled 5.15.10 with that change and network is still not 
-working. then i disabled NetworkManager and rebooted. after boot i 
-issued following commands:
+Here is the summary with links:
+  - [bpf-next] selftests/bpf: Correct the INDEX address in vmtest.sh
+    https://git.kernel.org/bpf/bpf-next/c/426b87b111b0
 
-# ethtool -d eth0
-# ip link set dev eth0 up
-# ethtool -d eth0
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-for 5.15.5 (working kernel), 5.15.8 (unmodified, not working kernel), 
-5.15.10 (modified as above, not working kernel).
-
-obviously, in these register dumps there are 3 different mac addresses 
-(8 bytes at offset 0x0104) ... but the rest could provide a clue (for 
-someone who can make sense of those values).
-
-Gabriel
-
-
-
---=_7618c19c4a94934d4e6ea42bd22831dd
-Content-Transfer-Encoding: base64
-Content-Type: text/plain;
- name=5.15.5-test.txt
-Content-Disposition: attachment;
- filename=5.15.5-test.txt;
- size=2370
-
-IyBldGh0b29sIC1kIGV0aDAKT2Zmc2V0CQlWYWx1ZXMKLS0tLS0tCQktLS0tLS0KMHgwMDAwOgkJ
-MDAgMDAgMzAgOTcgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgCjB4MDAxMDoJ
-CTA0IDAwIDAwIDAwIDIyIDE0IDAwIDAwIDAwIDAwIDAwIDAwIDAwIDIwIDAwIDAwIAoweDAwMjA6
-CQk4MCAwMCAwMCAwMCAwMCAwMCAxMSAwMSA4ZiAwMCAwMCBmZiBhMSAzMCBmOCAwMCAKMHgwMDMw
-OgkJMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMjUgMDAgMDAgMDAgNTAgMDAgMDAgMDAgCjB4MDA0
-MDoJCTAwIDAwIDAwIDgwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIAoweDAw
-NTA6CQkwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAKMHgw
-MDYwOgkJMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgODAgMDAgMDAgMDAgMjAgMDAgMDAgCjB4
-MDA3MDoJCTAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIAow
-eDAwODA6CQkwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAK
-MHgwMDkwOgkJMDAgMDAgMDAgMDAgMDEgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAg
-CjB4MDBhMDoJCTAwIDAwIDA0IDAwIDAwIDAwIDAxIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAw
-IAoweDAwYjA6CQkwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAw
-MCAKMHgwMGMwOgkJMDAgMDAgMDAgMDAgMWUgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAg
-MDAgCjB4MDBkMDoJCTAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAw
-IDAwIAoweDAwZTA6CQkwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAw
-MCAwMCAKMHgwMGYwOgkJMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAg
-MDAgMDAgCjB4MDEwMDoJCTBjIDAwIDAwIDAwIGJkIDg5IDAwIDAwIGVlIDk3IDc4IDU4IDAwIDAw
-IDAwIDAwIAoweDAxMTA6CQkwMCAwMCAwMCAwMCBjMCAwOCAwMCAwMCAwMSBjMSAwMCAwMCAwMCAw
-MCAwMCAwMCAKMHgwMTIwOgkJMDAgODEgMDAgMDAgZmYgZmYgMDAgMDAgMDAgMDAgMDAgMDAgMDAg
-MDAgMDAgMDAgCjB4MDEzMDoJCTAxIDAwIDAxIDAwIAojIGlwIGxpbmsgc2V0IGRldiBldGgwIHVw
-CiMgZXRodG9vbCAtZCBldGgwCk9mZnNldAkJVmFsdWVzCi0tLS0tLQkJLS0tLS0tCjB4MDAwMDoJ
-CTAwIDAwIDMwIDk3IDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIAoweDAwMTA6
-CQkwNCAwMCAwMCAwMCAyMiAxNCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAyMCAwMCAwMCAKMHgwMDIw
-OgkJODAgMDAgMDAgMDAgMDAgMDAgMTEgMDEgOGYgMDAgMDAgZmYgYTEgMzAgZjggMDAgCjB4MDAz
-MDoJCTAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDI1IDAwIDAwIDAwIDUwIDAwIDAwIDAwIAoweDAw
-NDA6CQkwMCAwMCAwMCA4MCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAKMHgw
-MDUwOgkJMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgCjB4
-MDA2MDoJCTAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDgwIDAwIDAwIDAwIDIwIDAwIDAwIAow
-eDAwNzA6CQkwMCAwMCAwMCAwMCAzZCAwMCAzZCAwMCAwMCAwMCAwMCAwMCA1OSAwMSA1OSAwMSAK
-MHgwMDgwOgkJMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAg
-CjB4MDA5MDoJCTAwIDAwIDAwIDAwIDAxIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAw
-IAoweDAwYTA6CQkwMCAwMCAwNCAwMCAwMCAwMCAwMSAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAw
-MCAKMHgwMGIwOgkJMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAg
-MDAgCjB4MDBjMDoJCTAwIDAwIDAwIDAwIDFlIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAw
-IDAwIAoweDAwZDA6CQkwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAw
-MCAwMCAKMHgwMGUwOgkJMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAg
-MDAgMDAgCjB4MDBmMDoJCTAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAw
-IDAwIDAwIAoweDAxMDA6CQkwYyAyMCAwMCAwMCAwYyA4ZiAwMCAwMCBlZSBmMSBhOCBlNyAwMCAw
-MCA0MCA0MCAKMHgwMTEwOgkJMDIgMDEgMDQgODAgNDAgMDggMDAgMDAgMmQgNzggMDAgMDAgMDAg
-MDAgMDAgMDAgCjB4MDEyMDoJCTAwIDgxIDAwIDAwIGZmIGZmIDAwIDAwIDAwIDAwIDAwIDAwIDAw
-IDAwIDAwIDAwIAoweDAxMzA6CQkwMSAwMCAwMSAwMCAK
---=_7618c19c4a94934d4e6ea42bd22831dd
-Content-Transfer-Encoding: base64
-Content-Type: text/plain;
- name=5.15.8-test.txt
-Content-Disposition: attachment;
- filename=5.15.8-test.txt;
- size=2370
-
-IyBldGh0b29sIC1kIGV0aDAKT2Zmc2V0CQlWYWx1ZXMKLS0tLS0tCQktLS0tLS0KMHgwMDAwOgkJ
-MDAgMDAgMzAgOTcgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgCjB4MDAxMDoJ
-CTA0IDAwIDAwIDAwIDIyIDE0IDAwIDAwIDAwIDAwIDAwIDAwIDAwIDIwIDAwIDAwIAoweDAwMjA6
-CQk4MCAwMCAwMCAwMCAwMCAwMCAxMSAwMSA4ZiAwMCAwMCBmZiBhMSAzMCBmOCAwMCAKMHgwMDMw
-OgkJMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMjUgMDAgMDAgMDAgNTAgMDAgMDAgMDAgCjB4MDA0
-MDoJCTAwIDAwIDAwIDgwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIAoweDAw
-NTA6CQkwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAKMHgw
-MDYwOgkJMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgODAgMDAgMDAgMDAgMjAgMDAgMDAgCjB4
-MDA3MDoJCTAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIAow
-eDAwODA6CQkwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAK
-MHgwMDkwOgkJMDAgMDAgMDAgMDAgMDEgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAg
-CjB4MDBhMDoJCTAwIDAwIDA0IDAwIDAwIDAwIDAxIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAw
-IAoweDAwYjA6CQkwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAw
-MCAKMHgwMGMwOgkJMDAgMDAgMDAgMDAgMWUgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAg
-MDAgCjB4MDBkMDoJCTAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAw
-IDAwIAoweDAwZTA6CQkwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAw
-MCAwMCAKMHgwMGYwOgkJMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAg
-MDAgMDAgCjB4MDEwMDoJCTBjIDAwIDAwIDAwIDIzIDg0IDAwIDAwIDEyIGE4IDFjIDAwIDAwIDAw
-IDAwIDAwIAoweDAxMTA6CQkwMCAwMCAwMCAwMCAwMCAwOCAwMCAwMCAwMCAzMCAwMCAwMCAwMCAw
-MCAwMCAwMCAKMHgwMTIwOgkJMDAgODEgMDAgMDAgZmYgZmYgMDAgMDAgMDAgMDAgMDAgMDAgMDAg
-MDAgMDAgMDAgCjB4MDEzMDoJCTAxIDAwIDAxIDAwIAojIGlwIGxpbmsgc2V0IGRldiBldGgwIHVw
-CiMgZXRodG9vbCAtZCBldGgwCk9mZnNldAkJVmFsdWVzCi0tLS0tLQkJLS0tLS0tCjB4MDAwMDoJ
-CTAwIDAwIDMwIDk3IDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIAoweDAwMTA6
-CQkwNCAwMCAwMCAwMCAyMiAxNCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAyMCAwMCAwMCAKMHgwMDIw
-OgkJODAgMDAgMDAgMDAgMDAgMDAgMTEgMDEgOGYgMDAgMDAgZmYgYTEgMzAgZjggMDAgCjB4MDAz
-MDoJCTAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDI1IDAwIDAwIDAwIDUwIDAwIDAwIDAwIAoweDAw
-NDA6CQkwMCAwMCAwMCA4MCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAKMHgw
-MDUwOgkJMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgCjB4
-MDA2MDoJCTAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDgwIDAwIDAwIDAwIDIwIDAwIDAwIAow
-eDAwNzA6CQkwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMyAwMSAwMyAwMSAK
-MHgwMDgwOgkJMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAg
-CjB4MDA5MDoJCTAwIDAwIDAwIDAwIDAxIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAw
-IAoweDAwYTA6CQkwMCAwMCAwNCAwMCAwMCAwMCAwMSAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAw
-MCAKMHgwMGIwOgkJMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAg
-MDAgCjB4MDBjMDoJCTAwIDAwIDAwIDAwIDFlIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAw
-IDAwIAoweDAwZDA6CQkwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAw
-MCAwMCAKMHgwMGUwOgkJMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAg
-MDAgMDAgCjB4MDBmMDoJCTAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAw
-IDAwIDAwIAoweDAxMDA6CQkwYyAyMCAwMCAwMCAyMyA4NCAwMCAwMCAxMiBhOCAxYyAwMCAwMCAw
-MCAwMCA0MCAKMHgwMTEwOgkJMDIgMDEgMDAgODAgNDAgMDggMDAgMDAgMmQgNzggMDAgMDAgMDAg
-MDAgMDAgMDAgCjB4MDEyMDoJCTAwIDgxIDAwIDAwIGZmIGZmIDAwIDAwIDAwIDAwIDAwIDAwIDAw
-IDAwIDAwIDAwIAoweDAxMzA6CQkwMSAwMCAwMSAwMCAK
---=_7618c19c4a94934d4e6ea42bd22831dd
-Content-Transfer-Encoding: base64
-Content-Type: text/plain;
- name=5.15.10-test.txt
-Content-Disposition: attachment;
- filename=5.15.10-test.txt;
- size=2370
-
-IyBldGh0b29sIC1kIGV0aDAKT2Zmc2V0CQlWYWx1ZXMKLS0tLS0tCQktLS0tLS0KMHgwMDAwOgkJ
-MDAgMDAgMzAgOTcgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgCjB4MDAxMDoJ
-CTA0IDAwIDAwIDAwIDIyIDE0IDAwIDAwIDAwIDAwIDAwIDAwIDAwIDIwIDAwIDAwIAoweDAwMjA6
-CQk4MCAwMCAwMCAwMCAwMCAwMCAxMSAwMSA4ZiAwMCAwMCBmZiBhMSAzMCBmOCAwMCAKMHgwMDMw
-OgkJMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMjUgMDAgMDAgMDAgNTAgMDAgMDAgMDAgCjB4MDA0
-MDoJCTAwIDAwIDAwIDgwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIAoweDAw
-NTA6CQkwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAKMHgw
-MDYwOgkJMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgODAgMDAgMDAgMDAgMjAgMDAgMDAgCjB4
-MDA3MDoJCTAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIAow
-eDAwODA6CQkwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAK
-MHgwMDkwOgkJMDAgMDAgMDAgMDAgMDEgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAg
-CjB4MDBhMDoJCTAwIDAwIDA0IDAwIDAwIDAwIDAxIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAw
-IAoweDAwYjA6CQkwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAw
-MCAKMHgwMGMwOgkJMDAgMDAgMDAgMDAgMWUgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAg
-MDAgCjB4MDBkMDoJCTAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAw
-IDAwIAoweDAwZTA6CQkwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAw
-MCAwMCAKMHgwMGYwOgkJMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAg
-MDAgMDAgCjB4MDEwMDoJCTBjIDAwIDAwIDAwIDI2IDQ1IDAwIDAwIGQ2IDFiIDAwIGQyIDAwIDAw
-IDAwIDAwIAoweDAxMTA6CQkwMCAwMCAwMCAwMCAwMCAwOCAwMCAwMCAwMCAzMCAwMCAwMCAwMCAw
-MCAwMCAwMCAKMHgwMTIwOgkJMDAgODEgMDAgMDAgZmYgZmYgMDAgMDAgMDAgMDAgMDAgMDAgMDAg
-MDAgMDAgMDAgCjB4MDEzMDoJCTAxIDAwIDAxIDAwIAojIGlwIGxpbmsgc2V0IGRldiBldGgwIHVw
-CiMgZXRodG9vbCAtZCBldGgwCk9mZnNldAkJVmFsdWVzCi0tLS0tLQkJLS0tLS0tCjB4MDAwMDoJ
-CTAwIDAwIDMwIDk3IDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIAoweDAwMTA6
-CQkwNCAwMCAwMCAwMCAyMiAxNCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAyMCAwMCAwMCAKMHgwMDIw
-OgkJODAgMDAgMDAgMDAgMDAgMDAgMTEgMDEgOGYgMDAgMDAgZmYgYTEgMzAgZjggMDAgCjB4MDAz
-MDoJCTAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDI1IDAwIDAwIDAwIDUwIDAwIDAwIDAwIAoweDAw
-NDA6CQkwMCAwMCAwMCA4MCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAKMHgw
-MDUwOgkJMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgCjB4
-MDA2MDoJCTAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDgwIDAwIDAwIDAwIDIwIDAwIDAwIAow
-eDAwNzA6CQkwMCAwMCAwMCAwMCBkZiAwMCBkZiAwMCAwMCAwMCAwMCAwMCA5ZiAwMSA5ZiAwMSAK
-MHgwMDgwOgkJMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAg
-CjB4MDA5MDoJCTAwIDAwIDAwIDAwIDAxIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAw
-IAoweDAwYTA6CQkwMCAwMCAwNCAwMCAwMCAwMCAwMSAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAw
-MCAKMHgwMGIwOgkJMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAg
-MDAgCjB4MDBjMDoJCTAwIDAwIDAwIDAwIDFlIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAw
-IDAwIAoweDAwZDA6CQkwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAw
-MCAwMCAKMHgwMGUwOgkJMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAg
-MDAgMDAgCjB4MDBmMDoJCTAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAw
-IDAwIDAwIAoweDAxMDA6CQkwYyAyMCAwMCAwMCAyNiA0NSAwMCAwMCBkNiAxYiAwMCBkMiAwMCAw
-MCAwMCA0MCAKMHgwMTEwOgkJMDIgMDEgMzAgODAgNDAgMDggMDAgMDAgMmQgNzggMDAgMDAgMDAg
-MDAgMDAgMDAgCjB4MDEyMDoJCTAwIDgxIDAwIDAwIGZmIGZmIDAwIDAwIDAwIDAwIDAwIDAwIDAw
-IDAwIDAwIDAwIAoweDAxMzA6CQkwMSAwMCAwMSAwMCAK
---=_7618c19c4a94934d4e6ea42bd22831dd--
 
