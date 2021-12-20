@@ -2,75 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B826247B389
-	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 20:13:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0965747B395
+	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 20:17:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240570AbhLTTNk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Dec 2021 14:13:40 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:36322 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234420AbhLTTNk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Dec 2021 14:13:40 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C9DD8B8108B;
-        Mon, 20 Dec 2021 19:13:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EA75C36AE7;
-        Mon, 20 Dec 2021 19:13:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1640027617;
-        bh=EndenUleLx912elQEAFNcLtwinpgdbihZMGxoV4946c=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=XyRWTZXIGt5vp6SSo6un1R2GXoFSUGbPOBVkA2i1CuMZat7FSTKFQScMBIXGltC7R
-         1kzi8RJf3C4M4goBsd/Y3+tdnoJSQOOCuA4dI2393ZoEschCuXp8UUiTd/PjyvRbSR
-         MXe0gJ+MS8ik9cTRl3rtbnr5werdQIekn3uM3Kws7fpBsbM2C5BIven/3CLZhdimfs
-         BbvDSZaw1XRkmRpA+AKvKzmJI1zLjb7kcDE7YJZvSmkkzGQAiafrQBtUUAnM/FPdVn
-         +IBMBc0I10rxUDlkjffCXatRoUtO80KQHNo7slLVZo9J55rzaBQdshK0GMloNs2Xbs
-         XTrSRm4Jz+dUg==
-Content-Type: text/plain; charset="utf-8"
+        id S240755AbhLTTRi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Dec 2021 14:17:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39946 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234420AbhLTTRi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Dec 2021 14:17:38 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E9A8C061574;
+        Mon, 20 Dec 2021 11:17:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=v1BnDOOjmi6Wl4p4zOIVQT2pxsBdwziqXbHevL0KGX8=; b=hEThgjc0kNSzpiN47isLsjGIDj
+        iTeqGsq+NNhocjTVtBQU7zgGy9iWH3K5t07WzAJvwN6PClQIYsgmYxJewAfKVnjogqDLSO3UP/nJi
+        2uio8hzTbwgJDT/FoqiEDljqx57MfRLQAlqCOb7sJ4rdxYBe5zeGR3LhbNTNIoCXI7O9Pgi7rb0Tx
+        UMY2EaOZsJuB+KCHw0HrXSV2CLuAH7CacnJRmiPNZ8UJMjIOYg+kEvi/1BCVVQJdbJQ412JegS854
+        TNercXeDTQiSKzE3tKbIQP2n7CoTsotRcE/YwIdVGhtX0yh9OBCI7GXD5X41vx7VuxC4tEDpt7q26
+        benBq5/A==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1mzOA3-0042pi-Ky; Mon, 20 Dec 2021 19:17:27 +0000
+Date:   Mon, 20 Dec 2021 11:17:27 -0800
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Baokun Li <libaokun1@huawei.com>
+Cc:     akpm@linux-foundation.org, keescook@chromium.org,
+        yzaikin@google.com, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, yukuai3@huawei.com,
+        Hulk Robot <hulkci@huawei.com>
+Subject: Re: [PATCH -next V2] sysctl: returns -EINVAL when a negative value
+ is passed to proc_doulongvec_minmax
+Message-ID: <YcDWx1P1NdqgED1i@bombadil.infradead.org>
+References: <20211220092627.3744624-1-libaokun1@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH 2/2] wireless: Initial driver submission for pureLiFi STA
- devices
-From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <20211031131122.275386-3-srini.raju@purelifi.com>
-References: <20211031131122.275386-3-srini.raju@purelifi.com>
-To:     Srinivasan Raju <srini.raju@purelifi.com>
-Cc:     mostafa.afgani@purelifi.com,
-        Srinivasan Raju <srini.raju@purelifi.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-kernel@vger.kernel.org (open list),
-        linux-wireless@vger.kernel.org (open list:NETWORKING DRIVERS (WIRELESS)),
-        netdev@vger.kernel.org (open list:NETWORKING DRIVERS)
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <164002761326.16553.16032698017276446966.kvalo@kernel.org>
-Date:   Mon, 20 Dec 2021 19:13:35 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211220092627.3744624-1-libaokun1@huawei.com>
+Sender: Luis Chamberlain <mcgrof@infradead.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Srinivasan Raju <srini.raju@purelifi.com> wrote:
-
-> This driver implementation has been based on the zd1211rw driver
+On Mon, Dec 20, 2021 at 05:26:27PM +0800, Baokun Li wrote:
+> When we pass a negative value to the proc_doulongvec_minmax() function,
+> the function returns 0, but the corresponding interface value does not
+> change.
 > 
-> Driver is based on 802.11 softMAC Architecture and uses
-> native 802.11 for configuration and management
+> we can easily reproduce this problem with the following commands:
+>     `cd /proc/sys/fs/epoll`
+>     `echo -1 > max_user_watches; echo $?; cat max_user_watches`
 > 
-> The driver is compiled and tested in ARM, x86 architectures and
-> compiled in powerpc architecture
+> This function requires a non-negative number to be passed in, so when
+> a negative number is passed in, -EINVAL is returned.
 > 
-> Signed-off-by: Srinivasan Raju <srini.raju@purelifi.com>
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Baokun Li <libaokun1@huawei.com>
 
-I pushed this to the pending branch for build testing:
+Acked-by: Luis Chamberlain <mcgrof@kernel.org>
 
-https://git.kernel.org/pub/scm/linux/kernel/git/kvalo/wireless-drivers-next.git/commit/?h=pending&id=9d71991ef3e8e4c2e49063c8fee446b9d20f4c7d
-
--- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20211031131122.275386-3-srini.raju@purelifi.com/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
-
+ Luis
