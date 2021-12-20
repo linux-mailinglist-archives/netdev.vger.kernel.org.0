@@ -2,304 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5335747A364
-	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 02:57:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BCE847A394
+	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 03:18:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237117AbhLTB5W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Dec 2021 20:57:22 -0500
-Received: from prt-mail.chinatelecom.cn ([42.123.76.223]:38856 "EHLO
-        chinatelecom.cn" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S237009AbhLTB5V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Dec 2021 20:57:21 -0500
-HMM_SOURCE_IP: 172.18.0.48:41322.1319038439
-HMM_ATTACHE_NUM: 0000
-HMM_SOURCE_TYPE: SMTP
-Received: from clientip-10.133.11.244 (unknown [172.18.0.48])
-        by chinatelecom.cn (HERMES) with SMTP id 05C3D2800B0;
-        Mon, 20 Dec 2021 09:57:06 +0800 (CST)
-X-189-SAVE-TO-SEND: sunshouxin@chinatelecom.cn
-Received: from  ([172.18.0.48])
-        by app0024 with ESMTP id 5f4a6b2a3ed243a59ba8d22b833ad59b for eric.dumazet@gmail.com;
-        Mon, 20 Dec 2021 09:57:15 CST
-X-Transaction-ID: 5f4a6b2a3ed243a59ba8d22b833ad59b
-X-Real-From: sunshouxin@chinatelecom.cn
-X-Receive-IP: 172.18.0.48
-X-MEDUSA-Status: 0
-Sender: sunshouxin@chinatelecom.cn
-Message-ID: <eb4c1dfe-d7c6-3011-e550-7498ccd023d7@chinatelecom.cn>
-Date:   Mon, 20 Dec 2021 09:57:03 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [PATCH V2] net: bonding: Add support for IPV6 ns/na
-To:     Eric Dumazet <eric.dumazet@gmail.com>, j.vosburgh@gmail.com,
-        vfalico@gmail.com, andy@greyhouse.net, davem@davemloft.net,
-        kuba@kernel.org
+        id S237225AbhLTCS2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Dec 2021 21:18:28 -0500
+Received: from smtp23.cstnet.cn ([159.226.251.23]:33028 "EHLO cstnet.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S237200AbhLTCS0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 19 Dec 2021 21:18:26 -0500
+Received: from localhost.localdomain (unknown [124.16.138.126])
+        by APP-03 (Coremail) with SMTP id rQCowADX3S3S579hCULiAw--.4507S2;
+        Mon, 20 Dec 2021 10:17:55 +0800 (CST)
+From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
+To:     ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        kpsingh@kernel.org
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        huyd12@chinatelecom.cn
-References: <1639141691-3741-1-git-send-email-sunshouxin@chinatelecom.cn>
- <dad92c6d-d5b2-38a9-a8ad-e36a6a987a79@gmail.com>
-From:   =?UTF-8?B?5a2Z5a6I6ZGr?= <sunshouxin@chinatelecom.cn>
-In-Reply-To: <dad92c6d-d5b2-38a9-a8ad-e36a6a987a79@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+        bpf@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Subject: [PATCH v3] sfc: potential dereference null pointer of rx_queue->page_ring
+Date:   Mon, 20 Dec 2021 10:17:53 +0800
+Message-Id: <20211220021753.723161-1-jiasheng@iscas.ac.cn>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: rQCowADX3S3S579hCULiAw--.4507S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7AFWUAw17KFWxJr1xJF1rXrb_yoW8ZFWkpa
+        1xK347ua1ktw45Xas7Cw4kZF98JasxtFWxWrySk3yrZwn5AF15ZrsrtFW5uF4vyrWDWF42
+        yrWUZFnIyF4DJwUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUU9014x267AKxVW5JVWrJwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26ryj6F1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4j
+        6r4UJwA2z4x0Y4vEx4A2jsIE14v26r4UJVWxJr1l84ACjcxK6I8E87Iv6xkF7I0E14v26F
+        4UJVW0owAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv
+        7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r
+        1j6r4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02
+        628vn2kIc2xKxwCY02Avz4vE14v_Gr1l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7
+        v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF
+        1VAY17CE14v26r4a6rW5MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIx
+        AIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVWrZr1j6s0D
+        MIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIda
+        VFxhVjvjDU0xZFpf9x0JUmLvtUUUUU=
+X-Originating-IP: [124.16.138.126]
+X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The return value of kcalloc() needs to be checked.
+To avoid dereference of null pointer in case of the failure of alloc,
+such as efx_fini_rx_recycle_ring().
+Therefore, it should be better to change the definition of page_ptr_mask
+to signed int and then assign the page_ptr_mask to -1 when page_ring is
+NULL, in order to avoid the use in the loop.
 
-在 2021/12/14 16:05, Eric Dumazet 写道:
->
-> On 12/10/21 5:08 AM, Sun Shouxin wrote:
->> Since ipv6 neighbor solicitation and advertisement messages
->> isn't handled gracefully in bonding6 driver, we can see packet
->> drop due to inconsistency bewteen mac address in the option
->> message and source MAC .
->>
->> Another examples is ipv6 neighbor solicitation and advertisement
->> messages from VM via tap attached to host brighe, the src mac
->> mighe be changed through balance-alb mode, but it is not synced
->> with Link-layer address in the option message.
->>
->> The patch implements bond6's tx handle for ipv6 neighbor
->> solicitation and advertisement messages.
->>
->>             Border-Leaf
->>             /        \
->>                /          \
->>             Tunnel1    Tunnel2
->>              /              \
->>                 /                \
->>           Leaf-1--Tunnel3--Leaf-2
->>             \                /
->>              \              /
->>               \            /
->>                \          /
->>                NIC1    NIC2
->>             \      /
->>             server
->>
->> We can see in our lab the Border-Leaf receives occasionally
->> a NA packet which is assigned to NIC1 mac in ND/NS option
->> message, but actaully send out via NIC2 mac due to tx-alb,
->> as a result, it will cause inconsistency between MAC table
->> and ND Table in Border-Leaf, i.e, NIC1 = Tunnel2 in ND table
->> and  NIC1 = Tunnel1 in mac table.
->>
->> And then, Border-Leaf starts to forward packet destinated
->> to the Server, it will only check the ND table entry in some
->> switch to encapsulate the destination MAC of the message as
->> NIC1 MAC, and then send it out from Tunnel2 by ND table.
->> Then, Leaf-2 receives the packet, it notices the destination
->> MAC of message is NIC1 MAC and should forword it to Tunne1
->> by Tunnel3.
->>
->> However, this traffic forward will be failure due to split
->> horizon of VxLAN tunnels.
->>
->> Suggested-by: Hu Yadi <huyd12@chinatelecom.cn>
->> Signed-off-by: Sun Shouxin <sunshouxin@chinatelecom.cn>
->> ---
->>   drivers/net/bonding/bond_alb.c | 131 
->> +++++++++++++++++++++++++++++++++++++++++
->>   1 file changed, 131 insertions(+)
->>
->> diff --git a/drivers/net/bonding/bond_alb.c 
->> b/drivers/net/bonding/bond_alb.c
->> index 533e476..afa386b 100644
->> --- a/drivers/net/bonding/bond_alb.c
->> +++ b/drivers/net/bonding/bond_alb.c
->> @@ -22,6 +22,7 @@
->>   #include <asm/byteorder.h>
->>   #include <net/bonding.h>
->>   #include <net/bond_alb.h>
->> +#include <net/ndisc.h>
->>     static const u8 mac_v6_allmcast[ETH_ALEN + 2] __long_aligned = {
->>       0x33, 0x33, 0x00, 0x00, 0x00, 0x01
->> @@ -1269,6 +1270,119 @@ static int alb_set_mac_address(struct bonding 
->> *bond, void *addr)
->>       return res;
->>   }
->>   +/*determine if the packet is NA or NS*/
->> +static bool alb_determine_nd(struct icmp6hdr *hdr)
->> +{
->> +    if (hdr->icmp6_type == NDISC_NEIGHBOUR_ADVERTISEMENT ||
->> +        hdr->icmp6_type == NDISC_NEIGHBOUR_SOLICITATION) {
->> +        return true;
->> +    }
->> +
->> +    return false;
->> +}
->> +
->> +static void alb_change_nd_option(struct sk_buff *skb, void *data)
->> +{
->> +    struct nd_msg *msg = (struct nd_msg *)skb_transport_header(skb);
->> +    struct nd_opt_hdr *nd_opt = (struct nd_opt_hdr *)msg->opt;
->> +    struct net_device *dev = skb->dev;
->> +    struct icmp6hdr *icmp6h = icmp6_hdr(skb);
->> +    struct ipv6hdr *ip6hdr = ipv6_hdr(skb);
->> +    u8 *lladdr = NULL;
->> +    u32 ndoptlen = skb_tail_pointer(skb) - (skb_transport_header(skb) +
->> +                offsetof(struct nd_msg, opt));
->> +
->> +    while (ndoptlen) {
->> +        int l;
->> +
->> +        switch (nd_opt->nd_opt_type) {
->> +        case ND_OPT_SOURCE_LL_ADDR:
->> +        case ND_OPT_TARGET_LL_ADDR:
->> +        lladdr = ndisc_opt_addr_data(nd_opt, dev);
->> +        break;
->> +
->> +        default:
->> +        lladdr = NULL;
->> +        break;
->> +        }
->> +
->> +        l = nd_opt->nd_opt_len << 3;
->> +
->> +        if (ndoptlen < l || l == 0)
->> +            return;
->> +
->> +        if (lladdr) {
->> +            memcpy(lladdr, data, dev->addr_len);
->
-> I am not sure it is allowed to change skb content without
->
-> making sure skb ->head is private.
->
-> (Think of tcpdump -i slaveX : we want to see the packet content before 
-> your change)
->
-> I would think skb_cow_head() or something similar is needed.
->
-> This is tricky of course, since all cached pointers (icmp6h, ip6hdr, 
-> msg, nd_opt)
->
-> would need to be fetched again, since skb->head/data might be changed
->
-> by skb_cow_head().
-The tcpdump should show the last packet which sent off from NIC in the end.
-could you light me up specific conditions?
->
->
->
->
->
->> +            icmp6h->icmp6_cksum = 0;
->> +
->> +            icmp6h->icmp6_cksum = csum_ipv6_magic(&ip6hdr->saddr,
->> +                                  &ip6hdr->daddr,
->> +                        ntohs(ip6hdr->payload_len),
->> +                        IPPROTO_ICMPV6,
->> +                        csum_partial(icmp6h,
->> +                                 ntohs(ip6hdr->payload_len), 0));
->> +        }
->> +        ndoptlen -= l;
->> +        nd_opt = ((void *)nd_opt) + l;
->> +    }
->> +}
->> +
->> +static u8 *alb_get_lladdr(struct sk_buff *skb)
->> +{
->> +    struct nd_msg *msg = (struct nd_msg *)skb_transport_header(skb);
->> +    struct nd_opt_hdr *nd_opt = (struct nd_opt_hdr *)msg->opt;
->> +    struct net_device *dev = skb->dev;
->> +    u8 *lladdr = NULL;
->> +    u32 ndoptlen = skb_tail_pointer(skb) - (skb_transport_header(skb) +
->> +                offsetof(struct nd_msg, opt));
->> +
->> +    while (ndoptlen) {
->> +        int l;
->> +
->> +        switch (nd_opt->nd_opt_type) {
->> +        case ND_OPT_SOURCE_LL_ADDR:
->> +        case ND_OPT_TARGET_LL_ADDR:
->> +            lladdr = ndisc_opt_addr_data(nd_opt, dev);
->> +            break;
->> +
->> +        default:
->> +            break;
->> +        }
->> +
->> +        l = nd_opt->nd_opt_len << 3;
->> +
->> +        if (ndoptlen < l || l == 0)
->> +            return lladdr;
->
->                          return NULL ?
->
->                     (or risk out-of-bound access ?)
-Thanks your comment, I'll adjust it and send out V4 soon.
->
->> +
->> +        if (lladdr)
->> +            return lladdr;
->> +
->> +        ndoptlen -= l;
->> +        nd_opt = ((void *)nd_opt) + l;
->> +    }
->> +
->> +    return lladdr;
->> +}
->> +
->> +static void alb_set_nd_option(struct sk_buff *skb, struct bonding 
->> *bond,
->> +                  struct slave *tx_slave)
->> +{
->> +    struct ipv6hdr *ip6hdr;
->> +    struct icmp6hdr *hdr = NULL;
->> +
->> +    if (skb->protocol == htons(ETH_P_IPV6)) {
->> +        if (tx_slave && tx_slave !=
->> +            rcu_access_pointer(bond->curr_active_slave)) {
->> +            ip6hdr = ipv6_hdr(skb);
->> +            if (ip6hdr->nexthdr == IPPROTO_ICMPV6) {
->> +                hdr = icmp6_hdr(skb);
->> +                if (alb_determine_nd(hdr))
->> +                    alb_change_nd_option(skb, tx_slave->dev->dev_addr);
->> +            }
->> +        }
->> +    }
->> +}
->> +
->>   /************************ exported alb functions 
->> ************************/
->>     int bond_alb_initialize(struct bonding *bond, int rlb_enabled)
->> @@ -1415,6 +1529,7 @@ struct slave *bond_xmit_alb_slave_get(struct 
->> bonding *bond,
->>       }
->>       case ETH_P_IPV6: {
->>           const struct ipv6hdr *ip6hdr;
->> +        struct icmp6hdr *hdr = NULL;
->>             /* IPv6 doesn't really use broadcast mac address, but leave
->>            * that here just in case.
->> @@ -1446,6 +1561,21 @@ struct slave *bond_xmit_alb_slave_get(struct 
->> bonding *bond,
->>               break;
->>           }
->>   +        if (ip6hdr->nexthdr == IPPROTO_ICMPV6) {
->> +            hdr = icmp6_hdr(skb);
->> +            if (alb_determine_nd(hdr)) {
->> +                u8 *lladdr = NULL;
->> +
->> +                lladdr = alb_get_lladdr(skb);
->> +                if (lladdr) {
->> +                    if (!bond_slave_has_mac_rx(bond, lladdr)) {
->> +                        do_tx_balance = false;
->> +                        break;
->> +                    }
->> +                }
->> +            }
->> +        }
->> +
->>           hash_start = (char *)&ip6hdr->daddr;
->>           hash_size = sizeof(ip6hdr->daddr);
->>           break;
->> @@ -1489,6 +1619,7 @@ netdev_tx_t bond_alb_xmit(struct sk_buff *skb, 
->> struct net_device *bond_dev)
->>       struct slave *tx_slave = NULL;
->>         tx_slave = bond_xmit_alb_slave_get(bond, skb);
->> +    alb_set_nd_option(skb, bond, tx_slave);
->>       return bond_do_alb_xmit(skb, bond, tx_slave);
->>   }
+Fixes: 3d95b884392f ("sfc: move more rx code")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+---
+Changelog:
+
+v2 -> v3
+
+*Change 1. Casade return -ENOMEM when alloc fails and deal with the
+error.
+*Change 2. Set size to -1 instead of return error.
+---
+ drivers/net/ethernet/sfc/net_driver.h | 2 +-
+ drivers/net/ethernet/sfc/rx_common.c  | 5 ++++-
+ 2 files changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/sfc/net_driver.h b/drivers/net/ethernet/sfc/net_driver.h
+index 9b4b25704271..beba3e0a6027 100644
+--- a/drivers/net/ethernet/sfc/net_driver.h
++++ b/drivers/net/ethernet/sfc/net_driver.h
+@@ -407,7 +407,7 @@ struct efx_rx_queue {
+ 	unsigned int page_recycle_count;
+ 	unsigned int page_recycle_failed;
+ 	unsigned int page_recycle_full;
+-	unsigned int page_ptr_mask;
++	int page_ptr_mask;
+ 	unsigned int max_fill;
+ 	unsigned int fast_fill_trigger;
+ 	unsigned int min_fill;
+diff --git a/drivers/net/ethernet/sfc/rx_common.c b/drivers/net/ethernet/sfc/rx_common.c
+index 68fc7d317693..d9d0a5805f1c 100644
+--- a/drivers/net/ethernet/sfc/rx_common.c
++++ b/drivers/net/ethernet/sfc/rx_common.c
+@@ -150,7 +150,10 @@ static void efx_init_rx_recycle_ring(struct efx_rx_queue *rx_queue)
+ 					    efx->rx_bufs_per_page);
+ 	rx_queue->page_ring = kcalloc(page_ring_size,
+ 				      sizeof(*rx_queue->page_ring), GFP_KERNEL);
+-	rx_queue->page_ptr_mask = page_ring_size - 1;
++	if (!rx_queue->page_ring)
++		rx_queue->page_ptr_mask = -1;
++	else
++		rx_queue->page_ptr_mask = page_ring_size - 1;
+ }
+ 
+ static void efx_fini_rx_recycle_ring(struct efx_rx_queue *rx_queue)
+-- 
+2.25.1
+
