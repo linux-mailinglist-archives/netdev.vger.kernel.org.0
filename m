@@ -2,89 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9492847B0B3
-	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 16:53:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4885347B0E7
+	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 17:09:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237290AbhLTPxM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Dec 2021 10:53:12 -0500
-Received: from mga17.intel.com ([192.55.52.151]:62764 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231790AbhLTPxM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Dec 2021 10:53:12 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1640015592; x=1671551592;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=nC6dj0eJwD1rfJcRXhiAdZ14NtyD+O21VfFsZ8MSDaU=;
-  b=Vzx0TOlyWu13+IT9gx/bs5IIGivUMzF6bnUEHzLqS0axRoXImaY+fOrN
-   0bu/U5XEMuY7uw3fJDB+3b4JEQVs+l7FkH1MIARKs4mLifFIBa2XtNq1Y
-   uz7/PcSB5nMTLkm+rgFh7cgH2kAVelzdmeaTddXsiC78Xwv7X9rE7VnaU
-   qkE+gIRr6D3LqVMFm+LpihTQVJnuVO4JRU6b0IGPygvuzcxrgLTPWd7Am
-   ENpXceZ0abhfuhHocx6FCbRHE7lCGmhJAR9huU+pJLqNBaVl/RYxe0pjJ
-   BxnHAUygqeMAe9WkYQgIYioa17EY+z+G89yt8h94GdTU7K5T7/HgU8AKe
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10203"; a="220883576"
-X-IronPort-AV: E=Sophos;i="5.88,220,1635231600"; 
-   d="scan'208";a="220883576"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Dec 2021 07:53:11 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,220,1635231600"; 
-   d="scan'208";a="507729813"
-Received: from silpixa00399839.ir.intel.com (HELO localhost.localdomain) ([10.237.222.139])
-  by orsmga007.jf.intel.com with ESMTP; 20 Dec 2021 07:53:09 -0800
-From:   Ciara Loftus <ciara.loftus@intel.com>
-To:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, netdev@vger.kernel.org,
-        maciej.fijalkowski@intel.com
-Cc:     bpf@vger.kernel.org, Ciara Loftus <ciara.loftus@intel.com>
-Subject: [PATCH bpf] xsk: Initialise xskb free_list_node
-Date:   Mon, 20 Dec 2021 15:52:50 +0000
-Message-Id: <20211220155250.2746-1-ciara.loftus@intel.com>
-X-Mailer: git-send-email 2.17.1
-MIME-Version: 1.0
+        id S236341AbhLTQJN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Dec 2021 11:09:13 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:49576 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232628AbhLTQJM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Dec 2021 11:09:12 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5969C61221;
+        Mon, 20 Dec 2021 16:09:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36EE4C36AE7;
+        Mon, 20 Dec 2021 16:09:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1640016551;
+        bh=gzoRgQxpys+HNQmnuLWHS2lX5rCyeJ+e1FP5NKT14/Q=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=r4t8vvEVe+sy8r8YQqlTT18Gg786RZqjV9MomFT1Qc00T8pM7Erq4wxTHfzKnYv4E
+         kT08//W88lmcdB9X8MzsmO+AZM6J5iUBMwBnBlw45cppsbZM1nxTlqg4vYakiZrOte
+         oJ1ySee7bPDczSCHVD2GRmOmAy4fFARW5W39IYBr91Kbue52BcAYrVSNdFYvMt1W4V
+         VBV3UMPeRxyrqzNRhHdxivtP2saqFeVe4a+YFBEbIWx5bMT7rFXd6qZjncbQE5ftOB
+         rL/ID1kQ1eqVNkxI1CJawgP8RIekpss3J+HfCJWr3s/5yHcYitwTflNZxB4o9PX0XO
+         xnl0dADEO4lJw==
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH 1/2 (RESEND)] ath9k_htc: fix NULL pointer dereference at
+ ath9k_htc_rxep()
+From:   Kalle Valo <kvalo@kernel.org>
+In-Reply-To: <2b88f416-b2cb-7a18-d688-951e6dc3fe92@i-love.sakura.ne.jp>
+References: <2b88f416-b2cb-7a18-d688-951e6dc3fe92@i-love.sakura.ne.jp>
+To:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Cc:     Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, ath9k-devel@qca.qualcomm.com,
+        linux-wireless@vger.kernel.org,
+        Network Development <netdev@vger.kernel.org>
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-ID: <164001654478.2023.4087324781381514269.kvalo@kernel.org>
+Date:   Mon, 20 Dec 2021 16:09:10 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit initialises the xskb's free_list_node when the xskb is
-allocated. This prevents a potential false negative returned from a call
-to list_empty for that node, such as the one introduced in commit
-199d983bc015 ("xsk: Fix crash on double free in buffer pool")
+Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp> wrote:
 
-In my environment this issue caused packets to not be received by
-the xdpsock application if the traffic was running prior to application
-launch. This happened when the first batch of packets failed the xskmap
-lookup and XDP_PASS was returned from the bpf program. This action is
-handled in the i40e zc driver (and others) by allocating an skbuff,
-freeing the xdp_buff and adding the associated xskb to the
-xsk_buff_pool's free_list if it hadn't been added already. Without this
-fix, the xskb is not added to the free_list because the check to determine
-if it was added already returns an invalid positive result. Later, this
-caused allocation errors in the driver and the failure to receive packets.
+> syzbot is reporting lockdep warning followed by kernel panic at
+> ath9k_htc_rxep() [1], for ath9k_htc_rxep() depends on ath9k_rx_init()
+> being already completed.
+> 
+> Since ath9k_htc_rxep() is set by ath9k_htc_connect_svc(WMI_BEACON_SVC)
+>  from ath9k_init_htc_services(), it is possible that ath9k_htc_rxep() is
+> called via timer interrupt before ath9k_rx_init() from ath9k_init_device()
+> is called.
+> 
+> Since we can't call ath9k_init_device() before ath9k_init_htc_services(),
+> let's hold ath9k_htc_rxep() no-op until ath9k_rx_init() completes.
+> 
+> Link: https://syzkaller.appspot.com/bug?extid=4d2d56175b934b9a7bf9 [1]
+> Reported-by: syzbot <syzbot+4d2d56175b934b9a7bf9@syzkaller.appspotmail.com>
+> Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+> Tested-by: syzbot <syzbot+4d2d56175b934b9a7bf9@syzkaller.appspotmail.com>
+> Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
 
-Fixes: 2b43470add8c ("xsk: Introduce AF_XDP buffer allocation API")
+2 patches applied to ath-next branch of ath.git, thanks.
 
-Signed-off-by: Ciara Loftus <ciara.loftus@intel.com>
----
- net/xdp/xsk_buff_pool.c | 1 +
- 1 file changed, 1 insertion(+)
+b0ec7e55fce6 ath9k_htc: fix NULL pointer dereference at ath9k_htc_rxep()
+8b3046abc99e ath9k_htc: fix NULL pointer dereference at ath9k_htc_tx_get_packet()
 
-diff --git a/net/xdp/xsk_buff_pool.c b/net/xdp/xsk_buff_pool.c
-index bc4ad48ea4f0..fd39bb660ebc 100644
---- a/net/xdp/xsk_buff_pool.c
-+++ b/net/xdp/xsk_buff_pool.c
-@@ -83,6 +83,7 @@ struct xsk_buff_pool *xp_create_and_assign_umem(struct xdp_sock *xs,
- 		xskb = &pool->heads[i];
- 		xskb->pool = pool;
- 		xskb->xdp.frame_sz = umem->chunk_size - umem->headroom;
-+		INIT_LIST_HEAD(&xskb->free_list_node);
- 		if (pool->unaligned)
- 			pool->free_heads[i] = xskb;
- 		else
 -- 
-2.17.1
+https://patchwork.kernel.org/project/linux-wireless/patch/2b88f416-b2cb-7a18-d688-951e6dc3fe92@i-love.sakura.ne.jp/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
