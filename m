@@ -2,58 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E167C47AD77
-	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 15:53:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DBFAD47AE3D
+	for <lists+netdev@lfdr.de>; Mon, 20 Dec 2021 16:00:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237534AbhLTOwY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Dec 2021 09:52:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34112 "EHLO
+        id S238854AbhLTO7O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Dec 2021 09:59:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238273AbhLTOuX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Dec 2021 09:50:23 -0500
-Received: from mail-qv1-xf2d.google.com (mail-qv1-xf2d.google.com [IPv6:2607:f8b0:4864:20::f2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BDD2C08EA73
-        for <netdev@vger.kernel.org>; Mon, 20 Dec 2021 06:46:22 -0800 (PST)
-Received: by mail-qv1-xf2d.google.com with SMTP id o10so9529744qvc.5
-        for <netdev@vger.kernel.org>; Mon, 20 Dec 2021 06:46:22 -0800 (PST)
+        with ESMTP id S238321AbhLTO5K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Dec 2021 09:57:10 -0500
+Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 931EDC08ED36
+        for <netdev@vger.kernel.org>; Mon, 20 Dec 2021 06:49:13 -0800 (PST)
+Received: by mail-qt1-x82d.google.com with SMTP id n15so10004632qta.0
+        for <netdev@vger.kernel.org>; Mon, 20 Dec 2021 06:49:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=z6tliMnyhJ1OU6veIIRTxo0vN8f5agJ/oQ8/z3fOZwM=;
-        b=iNGokSc7XHPCOi/lvRBMtP2Htlw6qPevzIeete3ecngFjMGTf7hJJ8uTN3WBrrr9hk
-         e2a7i7k6TqUV85jBtsMh1ww34Z1GxcGXCOwnZqTRwFRjRBYo/ZgC6RY1bNTdizHx31iM
-         yWVrL2uB+cy8HRa7s8cN9vRHOrEe1l8ZtzOfKiZwDOKOJXA4aEBrNUjq2PZTjSjHJnlT
-         kDgoXTwgIcCykBJ5Es+vVBXwWsJ/PQn+f1cfA2SUm8je+dGzPk5+waK+lYqNfZcir5BM
-         KuM9oKDQxTFUTcUlcelZPl6VlHbZTE3Uz1ySs98dVvfi3fnC4+GwlRpigyW4joSEUc40
-         a4QA==
+        bh=pgiAL6+9Cn5VrMf5vyzz26rDBTaUVBJwEWdvD3nY96I=;
+        b=DSEvX1FCt4Wf1TBJVFCAfLzs9iAtZJBzV0LblrxqXiPLTMmShQcoBYucyfY6+VgOmI
+         qjsVJwZr5Y80xvPJjQX9ry/me+2XNnwXSZWWVwNLd7CibYZjMEuosbmmaDf/lQNANVOB
+         nHKA0n9BijT/5ojn7t83CSIHzKh5MImx1xwA17dfWiQ0HxTyKN2YA6am1vyAHZVy0c0j
+         KausprL7XRna9RDzu2k/IlP3Kh2LNtfgVZmD8P5IhS+uRbQGHfdRoHR9NY6FaWn2E2gW
+         NLMmZHk4m5GNjcPS3vaN4wsEkBXbX6nLPrUwWYsIP/d0qVPRE/XNtK+u6YCc4Lx0lQ8n
+         oGwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=z6tliMnyhJ1OU6veIIRTxo0vN8f5agJ/oQ8/z3fOZwM=;
-        b=K0+meYIrONnCSiDAwtkNngGJDtC7kQehlVgYeZ0x4R/ZcGpFddGjf8miyfuvXLrMx8
-         JHjG6PwAhYzo+nuLkeCtMELQsDCogNb18fyFPuw1H3J+CsL5Po1iJkMkYDUfyKdQrvgV
-         p00cDYPck/VQXqXGi2TVpVPL6mYqyKb7qEPh2BgUA1qkGNidjfzvpkiTXulx/afvoQZm
-         XmU07/IyybxPGOmfEj0iyW6gJuV2geExFkk5ezKb3Y5quWBoDmlfKawTOPTUJfqLjZWh
-         U6FKnPpp5+C28ALXrACOk+SHgUJo32NcABNMEOGo0etEYxB+j8FxDM4gN/78/sZ/6WcL
-         ESYg==
-X-Gm-Message-State: AOAM532zRAYhRyCUcKpo3X4ZT1QZD/W2sl+Q1smbleGIegHp1vxnZT5l
-        Wy2fqolVqnjvxgdqVsJLdXKomzv9IPM=
-X-Google-Smtp-Source: ABdhPJwmyf/iHbiIT3AhZyj5FPwo4bdaVcIKQlyJChEBxLlEDA5iXEdlH+QaEQ8wk1AKNlVqbRWQ2Q==
-X-Received: by 2002:ad4:5bca:: with SMTP id t10mr12986701qvt.35.1640011581289;
-        Mon, 20 Dec 2021 06:46:21 -0800 (PST)
+        bh=pgiAL6+9Cn5VrMf5vyzz26rDBTaUVBJwEWdvD3nY96I=;
+        b=L+K2FZi2BDiBjmFKcaTnAVkYN1V5Ny6vR2Tzo6KUjKDo1yPZLNaxURhOHD2hYgGSaL
+         kziUo/5dwAFJ0Fh2VajzdeCQdxDgtCglDj4LlZZ2d80IYlxWsoSU1e7CIK9yoLQ+vqx/
+         S+G6ckazDnFX6TUN3z5jasT2GmvBizc3sjb5rJ5gcDfbOk0YmgmB/nxKIzQNZz49dcIX
+         Ix0E1zTxkxqGMXryHwBW0OgPJvxRyDVZwjAMoYzZVURmMZwbTFVQ6E+O77VV7lRBx+Ue
+         vaG5Ti1HqwWl5WRhwIAwhCVs8cR57U71wtWrgvrCiUotLG4HzBZgFBxzqh5iokHtIEzg
+         Bwpg==
+X-Gm-Message-State: AOAM533CFACYDjEQyyXoHycR13eC/pjNwxisc+oO5/ScMVZamro2CVtt
+        jYeFoLGb3X4RAZINgxnq5hpiiTGbZoM=
+X-Google-Smtp-Source: ABdhPJyY9h6NYSBULKcNO7CTD7vetRIh5WciUfqBx1Xx89nonl0bn+TZEa2nBFr+bWJ+mByM8MVVHA==
+X-Received: by 2002:ac8:5f82:: with SMTP id j2mr12549284qta.572.1640011752699;
+        Mon, 20 Dec 2021 06:49:12 -0800 (PST)
 Received: from willemb.c.googlers.com.com (55.87.194.35.bc.googleusercontent.com. [35.194.87.55])
-        by smtp.gmail.com with ESMTPSA id l2sm14769163qtk.41.2021.12.20.06.46.20
+        by smtp.gmail.com with ESMTPSA id br13sm11983233qkb.10.2021.12.20.06.49.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Dec 2021 06:46:20 -0800 (PST)
+        Mon, 20 Dec 2021 06:49:12 -0800 (PST)
 From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
 To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, patrick.ohly@intel.com,
-        Willem de Bruijn <willemb@google.com>
-Subject: [PATCH net] docs: networking: replace skb_hwtstamp_tx with skb_tstamp_tx
-Date:   Mon, 20 Dec 2021 09:46:08 -0500
-Message-Id: <20211220144608.2783526-1-willemdebruijn.kernel@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, nemeth@redhat.com,
+        Willem de Bruijn <willemb@google.com>,
+        Andrew Melnichenko <andrew@daynix.com>
+Subject: [PATCH net] net: accept UFOv6 packages in virtio_net_hdr_to_skb
+Date:   Mon, 20 Dec 2021 09:49:01 -0500
+Message-Id: <20211220144901.2784030-1-willemdebruijn.kernel@gmail.com>
 X-Mailer: git-send-email 2.34.1.173.g76aa8bc2d0-goog
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -63,31 +64,66 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Willem de Bruijn <willemb@google.com>
 
-Tiny doc fix. The hardware transmit function was called skb_tstamp_tx
-from its introduction in commit ac45f602ee3d ("net: infrastructure for
-hardware time stamping") in the same series as this documentation.
+Skb with skb->protocol 0 at the time of virtio_net_hdr_to_skb may have
+a protocol inferred from virtio_net_hdr with virtio_net_hdr_set_proto.
 
-Fixes: cb9eff097831 ("net: new user space API for time stamping of incoming and outgoing packets")
+Unlike TCP, UDP does not have separate types for IPv4 and IPv6. Type
+VIRTIO_NET_HDR_GSO_UDP is guessed to be IPv4/UDP. As of the below
+commit, UFOv6 packets are dropped due to not matching the protocol as
+obtained from dev_parse_header_protocol.
+
+Invert the test to take that L2 protocol field as starting point and
+pass both UFOv4 and UFOv6 for VIRTIO_NET_HDR_GSO_UDP.
+
+Fixes: 924a9bc362a5 ("net: check if protocol extracted by virtio_net_hdr_set_proto is correct")
+Link: https://lore.kernel.org/netdev/CABcq3pG9GRCYqFDBAJ48H1vpnnX=41u+MhQnayF1ztLH4WX0Fw@mail.gmail.com/
+Reported-by: Andrew Melnichenko <andrew@daynix.com>
 Signed-off-by: Willem de Bruijn <willemb@google.com>
 ---
- Documentation/networking/timestamping.rst | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ include/linux/virtio_net.h | 22 ++++++++++++++++++++--
+ 1 file changed, 20 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/networking/timestamping.rst b/Documentation/networking/timestamping.rst
-index 80b13353254a..f5809206eb93 100644
---- a/Documentation/networking/timestamping.rst
-+++ b/Documentation/networking/timestamping.rst
-@@ -582,8 +582,8 @@ Time stamps for outgoing packets are to be generated as follows:
-   and hardware timestamping is not possible (SKBTX_IN_PROGRESS not set).
- - As soon as the driver has sent the packet and/or obtained a
-   hardware time stamp for it, it passes the time stamp back by
--  calling skb_hwtstamp_tx() with the original skb, the raw
--  hardware time stamp. skb_hwtstamp_tx() clones the original skb and
-+  calling skb_tstamp_tx() with the original skb, the raw
-+  hardware time stamp. skb_tstamp_tx() clones the original skb and
-   adds the timestamps, therefore the original skb has to be freed now.
-   If obtaining the hardware time stamp somehow fails, then the driver
-   should not fall back to software time stamping. The rationale is that
+diff --git a/include/linux/virtio_net.h b/include/linux/virtio_net.h
+index 04e87f4b9417..22dd48c82560 100644
+--- a/include/linux/virtio_net.h
++++ b/include/linux/virtio_net.h
+@@ -7,6 +7,21 @@
+ #include <uapi/linux/udp.h>
+ #include <uapi/linux/virtio_net.h>
+ 
++static inline bool virtio_net_hdr_match_proto(__be16 protocol, __u8 gso_type)
++{
++	switch (gso_type & ~VIRTIO_NET_HDR_GSO_ECN) {
++	case VIRTIO_NET_HDR_GSO_TCPV4:
++		return protocol == cpu_to_be16(ETH_P_IP);
++	case VIRTIO_NET_HDR_GSO_TCPV6:
++		return protocol == cpu_to_be16(ETH_P_IPV6);
++	case VIRTIO_NET_HDR_GSO_UDP:
++		return protocol == cpu_to_be16(ETH_P_IP) ||
++		       protocol == cpu_to_be16(ETH_P_IPV6);
++	default:
++		return false;
++	}
++}
++
+ static inline int virtio_net_hdr_set_proto(struct sk_buff *skb,
+ 					   const struct virtio_net_hdr *hdr)
+ {
+@@ -88,9 +103,12 @@ static inline int virtio_net_hdr_to_skb(struct sk_buff *skb,
+ 			if (!skb->protocol) {
+ 				__be16 protocol = dev_parse_header_protocol(skb);
+ 
+-				virtio_net_hdr_set_proto(skb, hdr);
+-				if (protocol && protocol != skb->protocol)
++				if (!protocol)
++					virtio_net_hdr_set_proto(skb, hdr);
++				else if (!virtio_net_hdr_match_proto(protocol, hdr->gso_type))
+ 					return -EINVAL;
++				else
++					skb->protocol = protocol;
+ 			}
+ retry:
+ 			if (!skb_flow_dissect_flow_keys_basic(NULL, skb, &keys,
 -- 
 2.34.1.173.g76aa8bc2d0-goog
 
