@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E21C47C5D0
+	by mail.lfdr.de (Postfix) with ESMTP id EC8B447C5D1
 	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 19:08:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236977AbhLUSIY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S240879AbhLUSIY (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Tue, 21 Dec 2021 13:08:24 -0500
 Received: from mga06.intel.com ([134.134.136.31]:51709 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236894AbhLUSIX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Dec 2021 13:08:23 -0500
+        id S236932AbhLUSIY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Dec 2021 13:08:24 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1640110103; x=1671646103;
+  t=1640110104; x=1671646104;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=XF6CEAp/7vfU0TSGWYKY/3DEQ2Om/3lVQA7DcH9EzBY=;
-  b=XAeuI1sk1NpzcpVHvlMqigilEOKweScCGD/7lFVURjRUMKUd4qoS0t3h
-   /aAmNtHNKGzB0kwVbnSL6V1NB6wQUAn6Sc5PFFdNX3wrP/1kMY96Csjub
-   3h53OHkHn/MJHe95xyAOSL1yYe8gRdIU7wtvWVWd5VQvH0k9G4kyOa4OB
-   K5nezG+mTym69gxDNNaJR9rdS9PwfuFp+gsgbHHIU89Qn7fAgTnk5i9JO
-   8NZHuKlEKZ0WvosMITLT6cp6zHhXZalw1ZyFtloDPEnfLfcRtdgX7kcO3
-   VqDQX9UNopnM2uUg1uprKO1SSPQPqbVIrBBfYuB/Q9UTnM/aOdeIJgmgz
+  bh=0R9Nr9Yz3D27/x+q+QDF5maNDT74SCV1e7Fugf+9b/w=;
+  b=Rv0pctk6gp12cMggANrKX2ewQq7l/2Y+/z1uMQhmNTw9CiNRvkKduQno
+   ZYoaAD+ImbxqmKDCZs8F+BZarZ5OKZngSoigJa7opZH78a/3PWQh8OJEL
+   jueuH/8ztokZnTKS7NlWKqgTy1iWFM2cLWNVORe+DbbL5TTWXk9T3KaNV
+   pA9iqtjxjMBoa1LHziPYKT4B8+Ei7xz2Xos9PjEOqI/V1aihp6wM2L79+
+   Q4yigl+blqRuTYhawKGn8Eh7UMa/kavKrZ0jvEeSbdalOTIxOo36wzS2+
+   59Q3FgEhPG5AxzbFakucVsfRgg33Y3dLjVgVMg0Jd8AlPnNn5jlucICyM
    g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10205"; a="301225601"
+X-IronPort-AV: E=McAfee;i="6200,9189,10205"; a="301225603"
 X-IronPort-AV: E=Sophos;i="5.88,224,1635231600"; 
-   d="scan'208";a="301225601"
+   d="scan'208";a="301225603"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
   by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Dec 2021 09:49:38 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,224,1635231600"; 
-   d="scan'208";a="521342501"
+   d="scan'208";a="521342503"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by orsmga008.jf.intel.com with ESMTP; 21 Dec 2021 09:49:37 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
@@ -39,9 +39,9 @@ To:     davem@davemloft.net, kuba@kernel.org
 Cc:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org,
         anthony.l.nguyen@intel.com, richardcochran@gmail.com,
         Gurucharan G <gurucharanx.g@intel.com>
-Subject: [PATCH net-next 08/10] ice: ensure the hardware Clock Generation Unit is configured
-Date:   Tue, 21 Dec 2021 09:48:43 -0800
-Message-Id: <20211221174845.3063640-9-anthony.l.nguyen@intel.com>
+Subject: [PATCH net-next 09/10] ice: exit bypass mode once hardware finishes timestamp calibration
+Date:   Tue, 21 Dec 2021 09:48:44 -0800
+Message-Id: <20211221174845.3063640-10-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211221174845.3063640-1-anthony.l.nguyen@intel.com>
 References: <20211221174845.3063640-1-anthony.l.nguyen@intel.com>
@@ -53,523 +53,390 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jacob Keller <jacob.e.keller@intel.com>
 
-The E822 device has a Clock Generation Unit (CGU) responsible for
-determining the clock frequency that drives the timers.
+Once the E822 device has sent and received one packet, the hardware
+computes the internal delay of the PHY using a process known as Vernier
+calibration. This calibration calculates a more accurate offset for the
+Tx and Rx timestamps. To make use of this offset, we need to exit the
+bypass mode. This cannot be done until the PHY has completed offset
+calibration, as indicated by the offset valid bits.
 
-Ensure this function is initialized when bringing up the PTP support, so
-that the clock has a known frequency.
+To handle this, introduce a kthread work item which will poll the offset
+valid bits every few milliseconds seeing if it is safe to exit bypass
+mode.
+
+Once we have finished calibrating the offsets, we can program the total
+Tx and Rx offset registers and turn off the bypass bit. This allows the
+hardware to include the more precise vernier calibration offset, and
+improves the timestamp precision.
 
 Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
 Tested-by: Gurucharan G <gurucharanx.g@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_cgu_regs.h | 116 +++++++
- .../net/ethernet/intel/ice/ice_ptp_consts.h   |  74 +++++
- drivers/net/ethernet/intel/ice/ice_ptp_hw.c   | 290 ++++++++++++++++++
- drivers/net/ethernet/intel/ice/ice_ptp_hw.h   |  20 ++
- 4 files changed, 500 insertions(+)
- create mode 100644 drivers/net/ethernet/intel/ice/ice_cgu_regs.h
+ drivers/net/ethernet/intel/ice/ice_ptp.c    | 202 +++++++++-
+ drivers/net/ethernet/intel/ice/ice_ptp.h    |   4 +
+ drivers/net/ethernet/intel/ice/ice_ptp_hw.c | 411 ++++++++++++++++++++
+ drivers/net/ethernet/intel/ice/ice_ptp_hw.h |   1 +
+ 4 files changed, 616 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_cgu_regs.h b/drivers/net/ethernet/intel/ice/ice_cgu_regs.h
-new file mode 100644
-index 000000000000..57abd52386d0
---- /dev/null
-+++ b/drivers/net/ethernet/intel/ice/ice_cgu_regs.h
-@@ -0,0 +1,116 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (C) 2018-2021, Intel Corporation. */
-+
-+#ifndef _ICE_CGU_REGS_H_
-+#define _ICE_CGU_REGS_H_
-+
-+#define NAC_CGU_DWORD9 0x24
-+union nac_cgu_dword9 {
-+	struct {
-+		u32 time_ref_freq_sel : 3;
-+		u32 clk_eref1_en : 1;
-+		u32 clk_eref0_en : 1;
-+		u32 time_ref_en : 1;
-+		u32 time_sync_en : 1;
-+		u32 one_pps_out_en : 1;
-+		u32 clk_ref_synce_en : 1;
-+		u32 clk_synce1_en : 1;
-+		u32 clk_synce0_en : 1;
-+		u32 net_clk_ref1_en : 1;
-+		u32 net_clk_ref0_en : 1;
-+		u32 clk_synce1_amp : 2;
-+		u32 misc6 : 1;
-+		u32 clk_synce0_amp : 2;
-+		u32 one_pps_out_amp : 2;
-+		u32 misc24 : 12;
-+	} field;
-+	u32 val;
-+};
-+
-+#define NAC_CGU_DWORD19 0x4c
-+union nac_cgu_dword19 {
-+	struct {
-+		u32 tspll_fbdiv_intgr : 8;
-+		u32 fdpll_ulck_thr : 5;
-+		u32 misc15 : 3;
-+		u32 tspll_ndivratio : 4;
-+		u32 tspll_iref_ndivratio : 3;
-+		u32 misc19 : 1;
-+		u32 japll_ndivratio : 4;
-+		u32 japll_iref_ndivratio : 3;
-+		u32 misc27 : 1;
-+	} field;
-+	u32 val;
-+};
-+
-+#define NAC_CGU_DWORD22 0x58
-+union nac_cgu_dword22 {
-+	struct {
-+		u32 fdpll_frac_div_out_nc : 2;
-+		u32 fdpll_lock_int_for : 1;
-+		u32 synce_hdov_int_for : 1;
-+		u32 synce_lock_int_for : 1;
-+		u32 fdpll_phlead_slip_nc : 1;
-+		u32 fdpll_acc1_ovfl_nc : 1;
-+		u32 fdpll_acc2_ovfl_nc : 1;
-+		u32 synce_status_nc : 6;
-+		u32 fdpll_acc1f_ovfl : 1;
-+		u32 misc18 : 1;
-+		u32 fdpllclk_div : 4;
-+		u32 time1588clk_div : 4;
-+		u32 synceclk_div : 4;
-+		u32 synceclk_sel_div2 : 1;
-+		u32 fdpllclk_sel_div2 : 1;
-+		u32 time1588clk_sel_div2 : 1;
-+		u32 misc3 : 1;
-+	} field;
-+	u32 val;
-+};
-+
-+#define NAC_CGU_DWORD24 0x60
-+union nac_cgu_dword24 {
-+	struct {
-+		u32 tspll_fbdiv_frac : 22;
-+		u32 misc20 : 2;
-+		u32 ts_pll_enable : 1;
-+		u32 time_sync_tspll_align_sel : 1;
-+		u32 ext_synce_sel : 1;
-+		u32 ref1588_ck_div : 4;
-+		u32 time_ref_sel : 1;
-+	} field;
-+	u32 val;
-+};
-+
-+#define TSPLL_CNTR_BIST_SETTINGS 0x344
-+union tspll_cntr_bist_settings {
-+	struct {
-+		u32 i_irefgen_settling_time_cntr_7_0 : 8;
-+		u32 i_irefgen_settling_time_ro_standby_1_0 : 2;
-+		u32 reserved195 : 5;
-+		u32 i_plllock_sel_0 : 1;
-+		u32 i_plllock_sel_1 : 1;
-+		u32 i_plllock_cnt_6_0 : 7;
-+		u32 i_plllock_cnt_10_7 : 4;
-+		u32 reserved200 : 4;
-+	} field;
-+	u32 val;
-+};
-+
-+#define TSPLL_RO_BWM_LF 0x370
-+union tspll_ro_bwm_lf {
-+	struct {
-+		u32 bw_freqov_high_cri_7_0 : 8;
-+		u32 bw_freqov_high_cri_9_8 : 2;
-+		u32 biascaldone_cri : 1;
-+		u32 plllock_gain_tran_cri : 1;
-+		u32 plllock_true_lock_cri : 1;
-+		u32 pllunlock_flag_cri : 1;
-+		u32 afcerr_cri : 1;
-+		u32 afcdone_cri : 1;
-+		u32 feedfwrdgain_cal_cri_7_0 : 8;
-+		u32 m2fbdivmod_cri_7_0 : 8;
-+	} field;
-+	u32 val;
-+};
-+
-+#endif /* _ICE_CGU_REGS_H_ */
-diff --git a/drivers/net/ethernet/intel/ice/ice_ptp_consts.h b/drivers/net/ethernet/intel/ice/ice_ptp_consts.h
-index 90e1e99de982..4109aa3b2fcd 100644
---- a/drivers/net/ethernet/intel/ice/ice_ptp_consts.h
-+++ b/drivers/net/ethernet/intel/ice/ice_ptp_consts.h
-@@ -81,6 +81,80 @@ const struct ice_time_ref_info_e822 e822_time_ref[NUM_ICE_TIME_REF_FREQ] = {
- 	},
- };
- 
-+const struct ice_cgu_pll_params_e822 e822_cgu_params[NUM_ICE_TIME_REF_FREQ] = {
-+	/* ICE_TIME_REF_FREQ_25_000 -> 25 MHz */
-+	{
-+		/* refclk_pre_div */
-+		1,
-+		/* feedback_div */
-+		197,
-+		/* frac_n_div */
-+		2621440,
-+		/* post_pll_div */
-+		6,
-+	},
-+
-+	/* ICE_TIME_REF_FREQ_122_880 -> 122.88 MHz */
-+	{
-+		/* refclk_pre_div */
-+		5,
-+		/* feedback_div */
-+		223,
-+		/* frac_n_div */
-+		524288,
-+		/* post_pll_div */
-+		7,
-+	},
-+
-+	/* ICE_TIME_REF_FREQ_125_000 -> 125 MHz */
-+	{
-+		/* refclk_pre_div */
-+		5,
-+		/* feedback_div */
-+		223,
-+		/* frac_n_div */
-+		524288,
-+		/* post_pll_div */
-+		7,
-+	},
-+
-+	/* ICE_TIME_REF_FREQ_153_600 -> 153.6 MHz */
-+	{
-+		/* refclk_pre_div */
-+		5,
-+		/* feedback_div */
-+		159,
-+		/* frac_n_div */
-+		1572864,
-+		/* post_pll_div */
-+		6,
-+	},
-+
-+	/* ICE_TIME_REF_FREQ_156_250 -> 156.25 MHz */
-+	{
-+		/* refclk_pre_div */
-+		5,
-+		/* feedback_div */
-+		159,
-+		/* frac_n_div */
-+		1572864,
-+		/* post_pll_div */
-+		6,
-+	},
-+
-+	/* ICE_TIME_REF_FREQ_245_760 -> 245.76 MHz */
-+	{
-+		/* refclk_pre_div */
-+		10,
-+		/* feedback_div */
-+		223,
-+		/* frac_n_div */
-+		524288,
-+		/* post_pll_div */
-+		7,
-+	},
-+};
-+
- /* struct ice_vernier_info_e822
-  *
-  * E822 hardware calibrates the delay of the timestamp indication from the
-diff --git a/drivers/net/ethernet/intel/ice/ice_ptp_hw.c b/drivers/net/ethernet/intel/ice/ice_ptp_hw.c
-index 87fd120ca0a6..20204bb5485d 100644
---- a/drivers/net/ethernet/intel/ice/ice_ptp_hw.c
-+++ b/drivers/net/ethernet/intel/ice/ice_ptp_hw.c
-@@ -4,6 +4,7 @@
- #include "ice_common.h"
- #include "ice_ptp_hw.h"
- #include "ice_ptp_consts.h"
-+#include "ice_cgu_regs.h"
- 
- /* Low level functions for interacting with and managing the device clock used
-  * for the Precision Time Protocol.
-@@ -653,6 +654,289 @@ ice_clear_phy_tstamp_e822(struct ice_hw *hw, u8 quad, u8 idx)
- 	return 0;
+diff --git a/drivers/net/ethernet/intel/ice/ice_ptp.c b/drivers/net/ethernet/intel/ice/ice_ptp.c
+index 50e82684980e..14b371a8f301 100644
+--- a/drivers/net/ethernet/intel/ice/ice_ptp.c
++++ b/drivers/net/ethernet/intel/ice/ice_ptp.c
+@@ -720,6 +720,192 @@ static void ice_ptp_reset_ts_memory_quad(struct ice_pf *pf, int quad)
+ 	ice_write_quad_reg_e822(hw, quad, Q_REG_TS_CTRL, ~(u32)Q_REG_TS_CTRL_M);
  }
  
 +/**
-+ * ice_read_cgu_reg_e822 - Read a CGU register
-+ * @hw: pointer to the HW struct
-+ * @addr: Register address to read
-+ * @val: storage for register value read
-+ *
-+ * Read the contents of a register of the Clock Generation Unit. Only
-+ * applicable to E822 devices.
++ * ice_ptp_check_tx_fifo - Check whether Tx FIFO is in an OK state
++ * @port: PTP port for which Tx FIFO is checked
 + */
-+static int
-+ice_read_cgu_reg_e822(struct ice_hw *hw, u32 addr, u32 *val)
++static int ice_ptp_check_tx_fifo(struct ice_ptp_port *port)
 +{
-+	struct ice_sbq_msg_input cgu_msg;
++	int quad = port->port_num / ICE_PORTS_PER_QUAD;
++	int offs = port->port_num % ICE_PORTS_PER_QUAD;
++	struct ice_pf *pf;
++	struct ice_hw *hw;
++	u32 val, phy_sts;
 +	int err;
 +
-+	cgu_msg.opcode = ice_sbq_msg_rd;
-+	cgu_msg.dest_dev = cgu;
-+	cgu_msg.msg_addr_low = addr;
-+	cgu_msg.msg_addr_high = 0x0;
++	pf = ptp_port_to_pf(port);
++	hw = &pf->hw;
 +
-+	err = ice_sbq_rw_reg(hw, &cgu_msg);
++	if (port->tx_fifo_busy_cnt == FIFO_OK)
++		return 0;
++
++	/* need to read FIFO state */
++	if (offs == 0 || offs == 1)
++		err = ice_read_quad_reg_e822(hw, quad, Q_REG_FIFO01_STATUS,
++					     &val);
++	else
++		err = ice_read_quad_reg_e822(hw, quad, Q_REG_FIFO23_STATUS,
++					     &val);
++
 +	if (err) {
-+		ice_debug(hw, ICE_DBG_PTP, "Failed to read CGU register 0x%04x, err %d\n",
-+			  addr, err);
++		dev_err(ice_pf_to_dev(pf), "PTP failed to check port %d Tx FIFO, err %d\n",
++			port->port_num, err);
 +		return err;
 +	}
 +
-+	*val = cgu_msg.data;
++	if (offs & 0x1)
++		phy_sts = (val & Q_REG_FIFO13_M) >> Q_REG_FIFO13_S;
++	else
++		phy_sts = (val & Q_REG_FIFO02_M) >> Q_REG_FIFO02_S;
 +
-+	return err;
++	if (phy_sts & FIFO_EMPTY) {
++		port->tx_fifo_busy_cnt = FIFO_OK;
++		return 0;
++	}
++
++	port->tx_fifo_busy_cnt++;
++
++	dev_dbg(ice_pf_to_dev(pf), "Try %d, port %d FIFO not empty\n",
++		port->tx_fifo_busy_cnt, port->port_num);
++
++	if (port->tx_fifo_busy_cnt == ICE_PTP_FIFO_NUM_CHECKS) {
++		dev_dbg(ice_pf_to_dev(pf),
++			"Port %d Tx FIFO still not empty; resetting quad %d\n",
++			port->port_num, quad);
++		ice_ptp_reset_ts_memory_quad(pf, quad);
++		port->tx_fifo_busy_cnt = FIFO_OK;
++		return 0;
++	}
++
++	return -EAGAIN;
 +}
 +
 +/**
-+ * ice_write_cgu_reg_e822 - Write a CGU register
-+ * @hw: pointer to the HW struct
-+ * @addr: Register address to write
-+ * @val: value to write into the register
++ * ice_ptp_check_tx_offset_valid - Check if the Tx PHY offset is valid
++ * @port: the PTP port to check
 + *
-+ * Write the specified value to a register of the Clock Generation Unit. Only
-+ * applicable to E822 devices.
++ * Checks whether the Tx offset for the PHY associated with this port is
++ * valid. Returns 0 if the offset is valid, and a non-zero error code if it is
++ * not.
 + */
-+static int
-+ice_write_cgu_reg_e822(struct ice_hw *hw, u32 addr, u32 val)
++static int ice_ptp_check_tx_offset_valid(struct ice_ptp_port *port)
 +{
-+	struct ice_sbq_msg_input cgu_msg;
++	struct ice_pf *pf = ptp_port_to_pf(port);
++	struct device *dev = ice_pf_to_dev(pf);
++	struct ice_hw *hw = &pf->hw;
++	u32 val;
 +	int err;
 +
-+	cgu_msg.opcode = ice_sbq_msg_wr;
-+	cgu_msg.dest_dev = cgu;
-+	cgu_msg.msg_addr_low = addr;
-+	cgu_msg.msg_addr_high = 0x0;
-+	cgu_msg.data = val;
++	err = ice_ptp_check_tx_fifo(port);
++	if (err)
++		return err;
 +
-+	err = ice_sbq_rw_reg(hw, &cgu_msg);
++	err = ice_read_phy_reg_e822(hw, port->port_num, P_REG_TX_OV_STATUS,
++				    &val);
 +	if (err) {
-+		ice_debug(hw, ICE_DBG_PTP, "Failed to write CGU register 0x%04x, err %d\n",
-+			  addr, err);
-+		return err;
++		dev_err(dev, "Failed to read TX_OV_STATUS for port %d, err %d\n",
++			port->port_num, err);
++		return -EAGAIN;
 +	}
 +
-+	return err;
-+}
-+
-+/**
-+ * ice_clk_freq_str - Convert time_ref_freq to string
-+ * @clk_freq: Clock frequency
-+ *
-+ * Convert the specified TIME_REF clock frequency to a string.
-+ */
-+static const char *ice_clk_freq_str(u8 clk_freq)
-+{
-+	switch ((enum ice_time_ref_freq)clk_freq) {
-+	case ICE_TIME_REF_FREQ_25_000:
-+		return "25 MHz";
-+	case ICE_TIME_REF_FREQ_122_880:
-+		return "122.88 MHz";
-+	case ICE_TIME_REF_FREQ_125_000:
-+		return "125 MHz";
-+	case ICE_TIME_REF_FREQ_153_600:
-+		return "153.6 MHz";
-+	case ICE_TIME_REF_FREQ_156_250:
-+		return "156.25 MHz";
-+	case ICE_TIME_REF_FREQ_245_760:
-+		return "245.76 MHz";
-+	default:
-+		return "Unknown";
-+	}
-+}
-+
-+/**
-+ * ice_clk_src_str - Convert time_ref_src to string
-+ * @clk_src: Clock source
-+ *
-+ * Convert the specified clock source to its string name.
-+ */
-+static const char *ice_clk_src_str(u8 clk_src)
-+{
-+	switch ((enum ice_clk_src)clk_src) {
-+	case ICE_CLK_SRC_TCX0:
-+		return "TCX0";
-+	case ICE_CLK_SRC_TIME_REF:
-+		return "TIME_REF";
-+	default:
-+		return "Unknown";
-+	}
-+}
-+
-+/**
-+ * ice_cfg_cgu_pll_e822 - Configure the Clock Generation Unit
-+ * @hw: pointer to the HW struct
-+ * @clk_freq: Clock frequency to program
-+ * @clk_src: Clock source to select (TIME_REF, or TCX0)
-+ *
-+ * Configure the Clock Generation Unit with the desired clock frequency and
-+ * time reference, enabling the PLL which drives the PTP hardware clock.
-+ */
-+static int
-+ice_cfg_cgu_pll_e822(struct ice_hw *hw, enum ice_time_ref_freq clk_freq,
-+		     enum ice_clk_src clk_src)
-+{
-+	union tspll_ro_bwm_lf bwm_lf;
-+	union nac_cgu_dword19 dw19;
-+	union nac_cgu_dword22 dw22;
-+	union nac_cgu_dword24 dw24;
-+	union nac_cgu_dword9 dw9;
-+	int err;
-+
-+	if (clk_freq >= NUM_ICE_TIME_REF_FREQ) {
-+		dev_warn(ice_hw_to_dev(hw), "Invalid TIME_REF frequency %u\n",
-+			 clk_freq);
-+		return -EINVAL;
-+	}
-+
-+	if (clk_src >= NUM_ICE_CLK_SRC) {
-+		dev_warn(ice_hw_to_dev(hw), "Invalid clock source %u\n",
-+			 clk_src);
-+		return -EINVAL;
-+	}
-+
-+	if (clk_src == ICE_CLK_SRC_TCX0 &&
-+	    clk_freq != ICE_TIME_REF_FREQ_25_000) {
-+		dev_warn(ice_hw_to_dev(hw),
-+			 "TCX0 only supports 25 MHz frequency\n");
-+		return -EINVAL;
-+	}
-+
-+	err = ice_read_cgu_reg_e822(hw, NAC_CGU_DWORD9, &dw9.val);
-+	if (err)
-+		return err;
-+
-+	err = ice_read_cgu_reg_e822(hw, NAC_CGU_DWORD24, &dw24.val);
-+	if (err)
-+		return err;
-+
-+	err = ice_read_cgu_reg_e822(hw, TSPLL_RO_BWM_LF, &bwm_lf.val);
-+	if (err)
-+		return err;
-+
-+	/* Log the current clock configuration */
-+	ice_debug(hw, ICE_DBG_PTP, "Current CGU configuration -- %s, clk_src %s, clk_freq %s, PLL %s\n",
-+		  dw24.field.ts_pll_enable ? "enabled" : "disabled",
-+		  ice_clk_src_str(dw24.field.time_ref_sel),
-+		  ice_clk_freq_str(dw9.field.time_ref_freq_sel),
-+		  bwm_lf.field.plllock_true_lock_cri ? "locked" : "unlocked");
-+
-+	/* Disable the PLL before changing the clock source or frequency */
-+	if (dw24.field.ts_pll_enable) {
-+		dw24.field.ts_pll_enable = 0;
-+
-+		err = ice_write_cgu_reg_e822(hw, NAC_CGU_DWORD24, dw24.val);
-+		if (err)
-+			return err;
-+	}
-+
-+	/* Set the frequency */
-+	dw9.field.time_ref_freq_sel = clk_freq;
-+	err = ice_write_cgu_reg_e822(hw, NAC_CGU_DWORD9, dw9.val);
-+	if (err)
-+		return err;
-+
-+	/* Configure the TS PLL feedback divisor */
-+	err = ice_read_cgu_reg_e822(hw, NAC_CGU_DWORD19, &dw19.val);
-+	if (err)
-+		return err;
-+
-+	dw19.field.tspll_fbdiv_intgr = e822_cgu_params[clk_freq].feedback_div;
-+	dw19.field.tspll_ndivratio = 1;
-+
-+	err = ice_write_cgu_reg_e822(hw, NAC_CGU_DWORD19, dw19.val);
-+	if (err)
-+		return err;
-+
-+	/* Configure the TS PLL post divisor */
-+	err = ice_read_cgu_reg_e822(hw, NAC_CGU_DWORD22, &dw22.val);
-+	if (err)
-+		return err;
-+
-+	dw22.field.time1588clk_div = e822_cgu_params[clk_freq].post_pll_div;
-+	dw22.field.time1588clk_sel_div2 = 0;
-+
-+	err = ice_write_cgu_reg_e822(hw, NAC_CGU_DWORD22, dw22.val);
-+	if (err)
-+		return err;
-+
-+	/* Configure the TS PLL pre divisor and clock source */
-+	err = ice_read_cgu_reg_e822(hw, NAC_CGU_DWORD24, &dw24.val);
-+	if (err)
-+		return err;
-+
-+	dw24.field.ref1588_ck_div = e822_cgu_params[clk_freq].refclk_pre_div;
-+	dw24.field.tspll_fbdiv_frac = e822_cgu_params[clk_freq].frac_n_div;
-+	dw24.field.time_ref_sel = clk_src;
-+
-+	err = ice_write_cgu_reg_e822(hw, NAC_CGU_DWORD24, dw24.val);
-+	if (err)
-+		return err;
-+
-+	/* Finally, enable the PLL */
-+	dw24.field.ts_pll_enable = 1;
-+
-+	err = ice_write_cgu_reg_e822(hw, NAC_CGU_DWORD24, dw24.val);
-+	if (err)
-+		return err;
-+
-+	/* Wait to verify if the PLL locks */
-+	usleep_range(1000, 5000);
-+
-+	err = ice_read_cgu_reg_e822(hw, TSPLL_RO_BWM_LF, &bwm_lf.val);
-+	if (err)
-+		return err;
-+
-+	if (!bwm_lf.field.plllock_true_lock_cri) {
-+		dev_warn(ice_hw_to_dev(hw), "CGU PLL failed to lock\n");
-+		return -EBUSY;
-+	}
-+
-+	/* Log the current clock configuration */
-+	ice_debug(hw, ICE_DBG_PTP, "New CGU configuration -- %s, clk_src %s, clk_freq %s, PLL %s\n",
-+		  dw24.field.ts_pll_enable ? "enabled" : "disabled",
-+		  ice_clk_src_str(dw24.field.time_ref_sel),
-+		  ice_clk_freq_str(dw9.field.time_ref_freq_sel),
-+		  bwm_lf.field.plllock_true_lock_cri ? "locked" : "unlocked");
++	if (!(val & P_REG_TX_OV_STATUS_OV_M))
++		return -EAGAIN;
 +
 +	return 0;
 +}
 +
 +/**
-+ * ice_init_cgu_e822 - Initialize CGU with settings from firmware
-+ * @hw: pointer to the HW structure
++ * ice_ptp_check_rx_offset_valid - Check if the Rx PHY offset is valid
++ * @port: the PTP port to check
 + *
-+ * Initialize the Clock Generation Unit of the E822 device.
++ * Checks whether the Rx offset for the PHY associated with this port is
++ * valid. Returns 0 if the offset is valid, and a non-zero error code if it is
++ * not.
 + */
-+static int ice_init_cgu_e822(struct ice_hw *hw)
++static int ice_ptp_check_rx_offset_valid(struct ice_ptp_port *port)
 +{
-+	struct ice_ts_func_info *ts_info = &hw->func_caps.ts_func_info;
-+	union tspll_cntr_bist_settings cntr_bist;
++	struct ice_pf *pf = ptp_port_to_pf(port);
++	struct device *dev = ice_pf_to_dev(pf);
++	struct ice_hw *hw = &pf->hw;
++	int err;
++	u32 val;
++
++	err = ice_read_phy_reg_e822(hw, port->port_num, P_REG_RX_OV_STATUS,
++				    &val);
++	if (err) {
++		dev_err(dev, "Failed to read RX_OV_STATUS for port %d, err %d\n",
++			port->port_num, err);
++		return err;
++	}
++
++	if (!(val & P_REG_RX_OV_STATUS_OV_M))
++		return -EAGAIN;
++
++	return 0;
++}
++
++/**
++ * ice_ptp_check_offset_valid - Check port offset valid bit
++ * @port: Port for which offset valid bit is checked
++ *
++ * Returns 0 if both Tx and Rx offset are valid, and -EAGAIN if one of the
++ * offset is not ready.
++ */
++static int ice_ptp_check_offset_valid(struct ice_ptp_port *port)
++{
++	int tx_err, rx_err;
++
++	/* always check both Tx and Rx offset validity */
++	tx_err = ice_ptp_check_tx_offset_valid(port);
++	rx_err = ice_ptp_check_rx_offset_valid(port);
++
++	if (tx_err || rx_err)
++		return -EAGAIN;
++
++	return 0;
++}
++
++/**
++ * ice_ptp_wait_for_offset_valid - Check for valid Tx and Rx offsets
++ * @work: Pointer to the kthread_work structure for this task
++ *
++ * Check whether both the Tx and Rx offsets are valid for enabling the vernier
++ * calibration.
++ *
++ * Once we have valid offsets from hardware, update the total Tx and Rx
++ * offsets, and exit bypass mode. This enables more precise timestamps using
++ * the extra data measured during the vernier calibration process.
++ */
++static void ice_ptp_wait_for_offset_valid(struct kthread_work *work)
++{
++	struct ice_ptp_port *port;
++	int err;
++	struct device *dev;
++	struct ice_pf *pf;
++	struct ice_hw *hw;
++
++	port = container_of(work, struct ice_ptp_port, ov_work.work);
++	pf = ptp_port_to_pf(port);
++	hw = &pf->hw;
++	dev = ice_pf_to_dev(pf);
++
++	if (ice_ptp_check_offset_valid(port)) {
++		/* Offsets not ready yet, try again later */
++		kthread_queue_delayed_work(pf->ptp.kworker,
++					   &port->ov_work,
++					   msecs_to_jiffies(100));
++		return;
++	}
++
++	/* Offsets are valid, so it is safe to exit bypass mode */
++	err = ice_phy_exit_bypass_e822(hw, port->port_num);
++	if (err) {
++		dev_warn(dev, "Failed to exit bypass mode for PHY port %u, err %d\n",
++			 port->port_num, err);
++		return;
++	}
++}
++
+ /**
+  * ice_ptp_port_phy_stop - Stop timestamping for a PHY port
+  * @ptp_port: PTP port to stop
+@@ -737,6 +923,8 @@ ice_ptp_port_phy_stop(struct ice_ptp_port *ptp_port)
+ 
+ 	mutex_lock(&ptp_port->ps_lock);
+ 
++	kthread_cancel_delayed_work_sync(&ptp_port->ov_work);
++
+ 	err = ice_stop_phy_timer_e822(hw, port, true);
+ 	if (err)
+ 		dev_err(ice_pf_to_dev(pf), "PTP failed to set PHY port %d down, err %d\n",
+@@ -771,8 +959,11 @@ ice_ptp_port_phy_restart(struct ice_ptp_port *ptp_port)
+ 
+ 	mutex_lock(&ptp_port->ps_lock);
+ 
++	kthread_cancel_delayed_work_sync(&ptp_port->ov_work);
++
+ 	/* temporarily disable Tx timestamps while calibrating PHY offset */
+ 	ptp_port->tx.calibrating = true;
++	ptp_port->tx_fifo_busy_cnt = 0;
+ 
+ 	/* Start the PHY timer in bypass mode */
+ 	err = ice_start_phy_timer_e822(hw, port, true);
+@@ -782,6 +973,8 @@ ice_ptp_port_phy_restart(struct ice_ptp_port *ptp_port)
+ 	/* Enable Tx timestamps right away */
+ 	ptp_port->tx.calibrating = false;
+ 
++	kthread_queue_delayed_work(pf->ptp.kworker, &ptp_port->ov_work, 0);
++
+ out_unlock:
+ 	if (err)
+ 		dev_err(ice_pf_to_dev(pf), "PTP failed to set PHY port %d up, err %d\n",
+@@ -2083,11 +2276,14 @@ void ice_ptp_reset(struct ice_pf *pf)
+ 
+ pfr:
+ 	/* Init Tx structures */
+-	if (ice_is_e810(&pf->hw))
++	if (ice_is_e810(&pf->hw)) {
+ 		err = ice_ptp_init_tx_e810(pf, &ptp->port.tx);
+-	else
++	} else {
++		kthread_init_delayed_work(&ptp->port.ov_work,
++					  ice_ptp_wait_for_offset_valid);
+ 		err = ice_ptp_init_tx_e822(pf, &ptp->port.tx,
+ 					   ptp->port.port_num);
++	}
+ 	if (err)
+ 		goto err;
+ 
+@@ -2246,6 +2442,8 @@ static int ice_ptp_init_port(struct ice_pf *pf, struct ice_ptp_port *ptp_port)
+ 	if (ice_is_e810(&pf->hw))
+ 		return ice_ptp_init_tx_e810(pf, &ptp_port->tx);
+ 
++	kthread_init_delayed_work(&ptp_port->ov_work,
++				  ice_ptp_wait_for_offset_valid);
+ 	return ice_ptp_init_tx_e822(pf, &ptp_port->tx, ptp_port->port_num);
+ }
+ 
+diff --git a/drivers/net/ethernet/intel/ice/ice_ptp.h b/drivers/net/ethernet/intel/ice/ice_ptp.h
+index a110c81d4772..afd048d69959 100644
+--- a/drivers/net/ethernet/intel/ice/ice_ptp.h
++++ b/drivers/net/ethernet/intel/ice/ice_ptp.h
+@@ -109,14 +109,18 @@ struct ice_ptp_tx {
+  * and determine when the port's PHY offset is valid.
+  *
+  * @tx: Tx timestamp tracking for this port
++ * @ov_work: delayed work task for tracking when PHY offset is valid
+  * @ps_lock: mutex used to protect the overall PTP PHY start procedure
+  * @link_up: indicates whether the link is up
++ * @tx_fifo_busy_cnt: number of times the Tx FIFO was busy
+  * @port_num: the port number this structure represents
+  */
+ struct ice_ptp_port {
+ 	struct ice_ptp_tx tx;
++	struct kthread_delayed_work ov_work;
+ 	struct mutex ps_lock; /* protects overall PTP PHY start procedure */
+ 	bool link_up;
++	u8 tx_fifo_busy_cnt;
+ 	u8 port_num;
+ };
+ 
+diff --git a/drivers/net/ethernet/intel/ice/ice_ptp_hw.c b/drivers/net/ethernet/intel/ice/ice_ptp_hw.c
+index 20204bb5485d..ec8450f034e6 100644
+--- a/drivers/net/ethernet/intel/ice/ice_ptp_hw.c
++++ b/drivers/net/ethernet/intel/ice/ice_ptp_hw.c
+@@ -1705,6 +1705,86 @@ ice_calc_fixed_tx_offset_e822(struct ice_hw *hw, enum ice_ptp_link_spd link_spd)
+ 	return fixed_offset;
+ }
+ 
++/**
++ * ice_phy_cfg_tx_offset_e822 - Configure total Tx timestamp offset
++ * @hw: pointer to the HW struct
++ * @port: the PHY port to configure
++ *
++ * Program the P_REG_TOTAL_TX_OFFSET register with the total number of TUs to
++ * adjust Tx timestamps by. This is calculated by combining some known static
++ * latency along with the Vernier offset computations done by hardware.
++ *
++ * This function must be called only after the offset registers are valid,
++ * i.e. after the Vernier calibration wait has passed, to ensure that the PHY
++ * has measured the offset.
++ *
++ * To avoid overflow, when calculating the offset based on the known static
++ * latency values, we use measurements in 1/100th of a nanosecond, and divide
++ * the TUs per second up front. This avoids overflow while allowing
++ * calculation of the adjustment using integer arithmetic.
++ */
++static int ice_phy_cfg_tx_offset_e822(struct ice_hw *hw, u8 port)
++{
++	enum ice_ptp_link_spd link_spd;
++	enum ice_ptp_fec_mode fec_mode;
++	u64 total_offset, val;
 +	int err;
 +
-+	err = ice_read_cgu_reg_e822(hw, TSPLL_CNTR_BIST_SETTINGS,
-+				    &cntr_bist.val);
++	err = ice_phy_get_speed_and_fec_e822(hw, port, &link_spd, &fec_mode);
 +	if (err)
 +		return err;
 +
-+	/* Disable sticky lock detection so lock err reported is accurate */
-+	cntr_bist.field.i_plllock_sel_0 = 0;
-+	cntr_bist.field.i_plllock_sel_1 = 0;
++	total_offset = ice_calc_fixed_tx_offset_e822(hw, link_spd);
 +
-+	err = ice_write_cgu_reg_e822(hw, TSPLL_CNTR_BIST_SETTINGS,
-+				     cntr_bist.val);
-+	if (err)
-+		return err;
-+
-+	/* Configure the CGU PLL using the parameters from the function
-+	 * capabilities.
++	/* Read the first Vernier offset from the PHY register and add it to
++	 * the total offset.
 +	 */
-+	err = ice_cfg_cgu_pll_e822(hw, ts_info->time_ref,
-+				   (enum ice_clk_src)ts_info->clk_src);
++	if (link_spd == ICE_PTP_LNK_SPD_1G ||
++	    link_spd == ICE_PTP_LNK_SPD_10G ||
++	    link_spd == ICE_PTP_LNK_SPD_25G ||
++	    link_spd == ICE_PTP_LNK_SPD_25G_RS ||
++	    link_spd == ICE_PTP_LNK_SPD_40G ||
++	    link_spd == ICE_PTP_LNK_SPD_50G) {
++		err = ice_read_64b_phy_reg_e822(hw, port,
++						P_REG_PAR_PCS_TX_OFFSET_L,
++						&val);
++		if (err)
++			return err;
++
++		total_offset += val;
++	}
++
++	/* For Tx, we only need to use the second Vernier offset for
++	 * multi-lane link speeds with RS-FEC. The lanes will always be
++	 * aligned.
++	 */
++	if (link_spd == ICE_PTP_LNK_SPD_50G_RS ||
++	    link_spd == ICE_PTP_LNK_SPD_100G_RS) {
++		err = ice_read_64b_phy_reg_e822(hw, port,
++						P_REG_PAR_TX_TIME_L,
++						&val);
++		if (err)
++			return err;
++
++		total_offset += val;
++	}
++
++	/* Now that the total offset has been calculated, program it to the
++	 * PHY and indicate that the Tx offset is ready. After this,
++	 * timestamps will be enabled.
++	 */
++	err = ice_write_64b_phy_reg_e822(hw, port, P_REG_TOTAL_TX_OFFSET_L,
++					 total_offset);
++	if (err)
++		return err;
++
++	err = ice_write_phy_reg_e822(hw, port, P_REG_TX_OR, 1);
 +	if (err)
 +		return err;
 +
@@ -577,59 +444,372 @@ index 87fd120ca0a6..20204bb5485d 100644
 +}
 +
  /**
-  * ice_ptp_set_vernier_wl - Set the window length for vernier calibration
+  * ice_phy_cfg_fixed_tx_offset_e822 - Configure Tx offset for bypass mode
   * @hw: pointer to the HW struct
-@@ -686,6 +970,7 @@ static int ice_ptp_set_vernier_wl(struct ice_hw *hw)
-  */
- static int ice_ptp_init_phc_e822(struct ice_hw *hw)
- {
+@@ -1746,6 +1826,164 @@ ice_phy_cfg_fixed_tx_offset_e822(struct ice_hw *hw, u8 port)
+ 	return 0;
+ }
+ 
++/**
++ * ice_phy_calc_pmd_adj_e822 - Calculate PMD adjustment for Rx
++ * @hw: pointer to the HW struct
++ * @port: the PHY port to adjust for
++ * @link_spd: the current link speed of the PHY
++ * @fec_mode: the current FEC mode of the PHY
++ * @pmd_adj: on return, the amount to adjust the Rx total offset by
++ *
++ * Calculates the adjustment to Rx timestamps due to PMD alignment in the PHY.
++ * This varies by link speed and FEC mode. The value calculated accounts for
++ * various delays caused when receiving a packet.
++ */
++static int
++ice_phy_calc_pmd_adj_e822(struct ice_hw *hw, u8 port,
++			  enum ice_ptp_link_spd link_spd,
++			  enum ice_ptp_fec_mode fec_mode, u64 *pmd_adj)
++{
++	u64 cur_freq, clk_incval, tu_per_sec, mult, adj;
++	u8 pmd_align;
++	u32 val;
 +	int err;
- 	u32 regval;
++
++	err = ice_read_phy_reg_e822(hw, port, P_REG_PMD_ALIGNMENT, &val);
++	if (err) {
++		ice_debug(hw, ICE_DBG_PTP, "Failed to read PMD alignment, err %d\n",
++			  err);
++		return err;
++	}
++
++	pmd_align = (u8)val;
++
++	cur_freq = ice_e822_pll_freq(ice_e822_time_ref(hw));
++	clk_incval = ice_ptp_read_src_incval(hw);
++
++	/* Calculate TUs per second */
++	tu_per_sec = cur_freq * clk_incval;
++
++	/* The PMD alignment adjustment measurement depends on the link speed,
++	 * and whether FEC is enabled. For each link speed, the alignment
++	 * adjustment is calculated by dividing a value by the length of
++	 * a Time Unit in nanoseconds.
++	 *
++	 * 1G: align == 4 ? 10 * 0.8 : (align + 6 % 10) * 0.8
++	 * 10G: align == 65 ? 0 : (align * 0.1 * 32/33)
++	 * 10G w/FEC: align * 0.1 * 32/33
++	 * 25G: align == 65 ? 0 : (align * 0.4 * 32/33)
++	 * 25G w/FEC: align * 0.4 * 32/33
++	 * 40G: align == 65 ? 0 : (align * 0.1 * 32/33)
++	 * 40G w/FEC: align * 0.1 * 32/33
++	 * 50G: align == 65 ? 0 : (align * 0.4 * 32/33)
++	 * 50G w/FEC: align * 0.8 * 32/33
++	 *
++	 * For RS-FEC, if align is < 17 then we must also add 1.6 * 32/33.
++	 *
++	 * To allow for calculating this value using integer arithmetic, we
++	 * instead start with the number of TUs per second, (inverse of the
++	 * length of a Time Unit in nanoseconds), multiply by a value based
++	 * on the PMD alignment register, and then divide by the right value
++	 * calculated based on the table above. To avoid integer overflow this
++	 * division is broken up into a step of dividing by 125 first.
++	 */
++	if (link_spd == ICE_PTP_LNK_SPD_1G) {
++		if (pmd_align == 4)
++			mult = 10;
++		else
++			mult = (pmd_align + 6) % 10;
++	} else if (link_spd == ICE_PTP_LNK_SPD_10G ||
++		   link_spd == ICE_PTP_LNK_SPD_25G ||
++		   link_spd == ICE_PTP_LNK_SPD_40G ||
++		   link_spd == ICE_PTP_LNK_SPD_50G) {
++		/* If Clause 74 FEC, always calculate PMD adjust */
++		if (pmd_align != 65 || fec_mode == ICE_PTP_FEC_MODE_CLAUSE74)
++			mult = pmd_align;
++		else
++			mult = 0;
++	} else if (link_spd == ICE_PTP_LNK_SPD_25G_RS ||
++		   link_spd == ICE_PTP_LNK_SPD_50G_RS ||
++		   link_spd == ICE_PTP_LNK_SPD_100G_RS) {
++		if (pmd_align < 17)
++			mult = pmd_align + 40;
++		else
++			mult = pmd_align;
++	} else {
++		ice_debug(hw, ICE_DBG_PTP, "Unknown link speed %d, skipping PMD adjustment\n",
++			  link_spd);
++		mult = 0;
++	}
++
++	/* In some cases, there's no need to adjust for the PMD alignment */
++	if (!mult) {
++		*pmd_adj = 0;
++		return 0;
++	}
++
++	/* Calculate the adjustment by multiplying TUs per second by the
++	 * appropriate multiplier and divisor. To avoid overflow, we first
++	 * divide by 125, and then handle remaining divisor based on the link
++	 * speed pmd_adj_divisor value.
++	 */
++	adj = div_u64(tu_per_sec, 125);
++	adj *= mult;
++	adj = div_u64(adj, e822_vernier[link_spd].pmd_adj_divisor);
++
++	/* Finally, for 25G-RS and 50G-RS, a further adjustment for the Rx
++	 * cycle count is necessary.
++	 */
++	if (link_spd == ICE_PTP_LNK_SPD_25G_RS) {
++		u64 cycle_adj;
++		u8 rx_cycle;
++
++		err = ice_read_phy_reg_e822(hw, port, P_REG_RX_40_TO_160_CNT,
++					    &val);
++		if (err) {
++			ice_debug(hw, ICE_DBG_PTP, "Failed to read 25G-RS Rx cycle count, err %d\n",
++				  err);
++			return err;
++		}
++
++		rx_cycle = val & P_REG_RX_40_TO_160_CNT_RXCYC_M;
++		if (rx_cycle) {
++			mult = (4 - rx_cycle) * 40;
++
++			cycle_adj = div_u64(tu_per_sec, 125);
++			cycle_adj *= mult;
++			cycle_adj = div_u64(cycle_adj, e822_vernier[link_spd].pmd_adj_divisor);
++
++			adj += cycle_adj;
++		}
++	} else if (link_spd == ICE_PTP_LNK_SPD_50G_RS) {
++		u64 cycle_adj;
++		u8 rx_cycle;
++
++		err = ice_read_phy_reg_e822(hw, port, P_REG_RX_80_TO_160_CNT,
++					    &val);
++		if (err) {
++			ice_debug(hw, ICE_DBG_PTP, "Failed to read 50G-RS Rx cycle count, err %d\n",
++				  err);
++			return err;
++		}
++
++		rx_cycle = val & P_REG_RX_80_TO_160_CNT_RXCYC_M;
++		if (rx_cycle) {
++			mult = rx_cycle * 40;
++
++			cycle_adj = div_u64(tu_per_sec, 125);
++			cycle_adj *= mult;
++			cycle_adj = div_u64(cycle_adj, e822_vernier[link_spd].pmd_adj_divisor);
++
++			adj += cycle_adj;
++		}
++	}
++
++	/* Return the calculated adjustment */
++	*pmd_adj = adj;
++
++	return 0;
++}
++
+ /**
+  * ice_calc_fixed_rx_offset_e822 - Calculated the fixed Rx offset for a port
+  * @hw: pointer to HW struct
+@@ -1777,6 +2015,94 @@ ice_calc_fixed_rx_offset_e822(struct ice_hw *hw, enum ice_ptp_link_spd link_spd)
+ 	return fixed_offset;
+ }
  
- 	/* Enable reading switch and PHY registers over the sideband queue */
-@@ -696,6 +981,11 @@ static int ice_ptp_init_phc_e822(struct ice_hw *hw)
- 		   PF_SB_REM_DEV_CTL_PHY0);
- 	wr32(hw, PF_SB_REM_DEV_CTL, regval);
- 
-+	/* Initialize the Clock Generation Unit */
-+	err = ice_init_cgu_e822(hw);
++/**
++ * ice_phy_cfg_rx_offset_e822 - Configure total Rx timestamp offset
++ * @hw: pointer to the HW struct
++ * @port: the PHY port to configure
++ *
++ * Program the P_REG_TOTAL_RX_OFFSET register with the number of Time Units to
++ * adjust Rx timestamps by. This combines calculations from the Vernier offset
++ * measurements taken in hardware with some data about known fixed delay as
++ * well as adjusting for multi-lane alignment delay.
++ *
++ * This function must be called only after the offset registers are valid,
++ * i.e. after the Vernier calibration wait has passed, to ensure that the PHY
++ * has measured the offset.
++ *
++ * To avoid overflow, when calculating the offset based on the known static
++ * latency values, we use measurements in 1/100th of a nanosecond, and divide
++ * the TUs per second up front. This avoids overflow while allowing
++ * calculation of the adjustment using integer arithmetic.
++ */
++static int ice_phy_cfg_rx_offset_e822(struct ice_hw *hw, u8 port)
++{
++	enum ice_ptp_link_spd link_spd;
++	enum ice_ptp_fec_mode fec_mode;
++	u64 total_offset, pmd, val;
++	int err;
++
++	err = ice_phy_get_speed_and_fec_e822(hw, port, &link_spd, &fec_mode);
 +	if (err)
 +		return err;
 +
- 	/* Set window length for all the ports */
- 	return ice_ptp_set_vernier_wl(hw);
++	total_offset = ice_calc_fixed_rx_offset_e822(hw, link_spd);
++
++	/* Read the first Vernier offset from the PHY register and add it to
++	 * the total offset.
++	 */
++	err = ice_read_64b_phy_reg_e822(hw, port,
++					P_REG_PAR_PCS_RX_OFFSET_L,
++					&val);
++	if (err)
++		return err;
++
++	total_offset += val;
++
++	/* For Rx, all multi-lane link speeds include a second Vernier
++	 * calibration, because the lanes might not be aligned.
++	 */
++	if (link_spd == ICE_PTP_LNK_SPD_40G ||
++	    link_spd == ICE_PTP_LNK_SPD_50G ||
++	    link_spd == ICE_PTP_LNK_SPD_50G_RS ||
++	    link_spd == ICE_PTP_LNK_SPD_100G_RS) {
++		err = ice_read_64b_phy_reg_e822(hw, port,
++						P_REG_PAR_RX_TIME_L,
++						&val);
++		if (err)
++			return err;
++
++		total_offset += val;
++	}
++
++	/* In addition, Rx must account for the PMD alignment */
++	err = ice_phy_calc_pmd_adj_e822(hw, port, link_spd, fec_mode, &pmd);
++	if (err)
++		return err;
++
++	/* For RS-FEC, this adjustment adds delay, but for other modes, it
++	 * subtracts delay.
++	 */
++	if (fec_mode == ICE_PTP_FEC_MODE_RS_FEC)
++		total_offset += pmd;
++	else
++		total_offset -= pmd;
++
++	/* Now that the total offset has been calculated, program it to the
++	 * PHY and indicate that the Rx offset is ready. After this,
++	 * timestamps will be enabled.
++	 */
++	err = ice_write_64b_phy_reg_e822(hw, port, P_REG_TOTAL_RX_OFFSET_L,
++					 total_offset);
++	if (err)
++		return err;
++
++	err = ice_write_phy_reg_e822(hw, port, P_REG_RX_OR, 1);
++	if (err)
++		return err;
++
++	return 0;
++}
++
+ /**
+  * ice_phy_cfg_fixed_rx_offset_e822 - Configure fixed Rx offset for bypass mode
+  * @hw: pointer to the HW struct
+@@ -2110,6 +2436,91 @@ ice_start_phy_timer_e822(struct ice_hw *hw, u8 port, bool bypass)
+ 	return 0;
  }
-diff --git a/drivers/net/ethernet/intel/ice/ice_ptp_hw.h b/drivers/net/ethernet/intel/ice/ice_ptp_hw.h
-index 2b6613a56c40..70b1aff14225 100644
---- a/drivers/net/ethernet/intel/ice/ice_ptp_hw.h
-+++ b/drivers/net/ethernet/intel/ice/ice_ptp_hw.h
-@@ -92,6 +92,26 @@ struct ice_vernier_info_e822 {
- 	u32 rx_fixed_delay;
- };
  
 +/**
-+ * struct ice_cgu_pll_params_e822
-+ * @refclk_pre_div: Reference clock pre-divisor
-+ * @feedback_div: Feedback divisor
-+ * @frac_n_div: Fractional divisor
-+ * @post_pll_div: Post PLL divisor
++ * ice_phy_exit_bypass_e822 - Exit bypass mode, after vernier calculations
++ * @hw: pointer to the HW struct
++ * @port: the PHY port to configure
 + *
-+ * Clock Generation Unit parameters used to program the PLL based on the
-+ * selected TIME_REF frequency.
++ * After hardware finishes vernier calculations for the Tx and Rx offset, this
++ * function can be used to exit bypass mode by updating the total Tx and Rx
++ * offsets, and then disabling bypass. This will enable hardware to include
++ * the more precise offset calibrations, increasing precision of the generated
++ * timestamps.
++ *
++ * This cannot be done until hardware has measured the offsets, which requires
++ * waiting until at least one packet has been sent and received by the device.
 + */
-+struct ice_cgu_pll_params_e822 {
-+	u32 refclk_pre_div;
-+	u32 feedback_div;
-+	u32 frac_n_div;
-+	u32 post_pll_div;
-+};
++int ice_phy_exit_bypass_e822(struct ice_hw *hw, u8 port)
++{
++	int err;
++	u32 val;
 +
-+extern const struct
-+ice_cgu_pll_params_e822 e822_cgu_params[NUM_ICE_TIME_REF_FREQ];
++	err = ice_read_phy_reg_e822(hw, port, P_REG_TX_OV_STATUS, &val);
++	if (err) {
++		ice_debug(hw, ICE_DBG_PTP, "Failed to read TX_OV_STATUS for port %u, err %d\n",
++			  port, err);
++		return err;
++	}
 +
- /* Table of constants related to possible TIME_REF sources */
- extern const struct ice_time_ref_info_e822 e822_time_ref[NUM_ICE_TIME_REF_FREQ];
++	if (!(val & P_REG_TX_OV_STATUS_OV_M)) {
++		ice_debug(hw, ICE_DBG_PTP, "Tx offset is not yet valid for port %u\n",
++			  port);
++		return -EBUSY;
++	}
++
++	err = ice_read_phy_reg_e822(hw, port, P_REG_RX_OV_STATUS, &val);
++	if (err) {
++		ice_debug(hw, ICE_DBG_PTP, "Failed to read RX_OV_STATUS for port %u, err %d\n",
++			  port, err);
++		return err;
++	}
++
++	if (!(val & P_REG_TX_OV_STATUS_OV_M)) {
++		ice_debug(hw, ICE_DBG_PTP, "Rx offset is not yet valid for port %u\n",
++			  port);
++		return -EBUSY;
++	}
++
++	err = ice_phy_cfg_tx_offset_e822(hw, port);
++	if (err) {
++		ice_debug(hw, ICE_DBG_PTP, "Failed to program total Tx offset for port %u, err %d\n",
++			  port, err);
++		return err;
++	}
++
++	err = ice_phy_cfg_rx_offset_e822(hw, port);
++	if (err) {
++		ice_debug(hw, ICE_DBG_PTP, "Failed to program total Rx offset for port %u, err %d\n",
++			  port, err);
++		return err;
++	}
++
++	/* Exit bypass mode now that the offset has been updated */
++	err = ice_read_phy_reg_e822(hw, port, P_REG_PS, &val);
++	if (err) {
++		ice_debug(hw, ICE_DBG_PTP, "Failed to read P_REG_PS for port %u, err %d\n",
++			  port, err);
++		return err;
++	}
++
++	if (!(val & P_REG_PS_BYPASS_MODE_M))
++		ice_debug(hw, ICE_DBG_PTP, "Port %u not in bypass mode\n",
++			  port);
++
++	val &= ~P_REG_PS_BYPASS_MODE_M;
++	err = ice_write_phy_reg_e822(hw, port, P_REG_PS, val);
++	if (err) {
++		ice_debug(hw, ICE_DBG_PTP, "Failed to disable bypass for port %u, err %d\n",
++			  port, err);
++		return err;
++	}
++
++	dev_info(ice_hw_to_dev(hw), "Exiting bypass mode on PHY port %u\n",
++		 port);
++
++	return 0;
++}
++
+ /* E810 functions
+  *
+  * The following functions operate on the E810 series devices which use
+diff --git a/drivers/net/ethernet/intel/ice/ice_ptp_hw.h b/drivers/net/ethernet/intel/ice/ice_ptp_hw.h
+index 70b1aff14225..519e75462e67 100644
+--- a/drivers/net/ethernet/intel/ice/ice_ptp_hw.h
++++ b/drivers/net/ethernet/intel/ice/ice_ptp_hw.h
+@@ -185,6 +185,7 @@ static inline u64 ice_e822_pps_delay(enum ice_time_ref_freq time_ref)
+ /* E822 Vernier calibration functions */
+ int ice_stop_phy_timer_e822(struct ice_hw *hw, u8 port, bool soft_reset);
+ int ice_start_phy_timer_e822(struct ice_hw *hw, u8 port, bool bypass);
++int ice_phy_exit_bypass_e822(struct ice_hw *hw, u8 port);
  
+ /* E810 family functions */
+ int ice_ptp_init_phy_e810(struct ice_hw *hw);
 -- 
 2.31.1
 
