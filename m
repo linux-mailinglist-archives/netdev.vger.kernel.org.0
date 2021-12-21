@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 298DE47B73A
-	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 02:58:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 530DB47B74F
+	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 03:00:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232869AbhLUB6d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Dec 2021 20:58:33 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:32972 "EHLO
+        id S233599AbhLUB6u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Dec 2021 20:58:50 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:33252 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232223AbhLUB6Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Dec 2021 20:58:24 -0500
+        with ESMTP id S233327AbhLUB6k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Dec 2021 20:58:40 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B2319B8110D;
-        Tue, 21 Dec 2021 01:58:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7991EC36AE9;
-        Tue, 21 Dec 2021 01:58:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B7F2EB81100;
+        Tue, 21 Dec 2021 01:58:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E82BC36AE9;
+        Tue, 21 Dec 2021 01:58:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1640051901;
-        bh=UfXfiVWd4sL96uM9J1OKaKgklJUfNgxFazZRw9HEmE0=;
+        s=k20201202; t=1640051917;
+        bh=n/rUwWJ3LQB60ekhP9iVKQtgrWaqWVmHs1u2BgQClbk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OwQTapm6L2RW/BHVWIJWWbEQLtHcHYbarMM+cN4AE63zOqtGofooPZgL5/Qifp8Sn
-         2zR4nKuCeO9qoI/O1L1/E5VBZKRLSK7XwJkgcpT9xy9dpe/L9bqqMCBnR2oNc/MrxZ
-         jL0uKe3VeVBcztqKG/6N3G6WIApZgfTqqQBmJ+MmRDjKjUHFH6LgxakZ/TwSqaUs9s
-         756e191tGiPI3KAaq4qPbU0s7RkFe/+E1GJy2O1Y3tzCmDZfJlDZHA8FfpoW20ohpI
-         yICtR9DyyH09MCFvM3kETdJvtixFzDtpaEhRuUKZ9jC/7uoa7Xo9yNQlN/BOc9V3bi
-         J9OCUSNHet43g==
+        b=LqEXuhBJE2U2jOXVZajtgcr8ACX453d+/ZEdCUo/Dd4frMWzA+n1qVnFTtFSr1b4P
+         XLAqtIY36vmKgN+Vny/m4uaqni/jiNG7FpRhrn6RFtsegh/5202vUuwJMW+je7sT22
+         ++GEUigU5uFjIPXLNqbEPrYpHsS0nhdlmpsVhAAmwGJSzghJ0Ds4LS/z02uUCmeZN+
+         HZ5T8OxpTnEDc5QfOsRzTEshJ6euSuhn9qYjX6K7IfVRnAqw+5s3jJ2c3FD1X03xer
+         jS7WYEGgbwP4sSqyE0933Eu+0mFJl2nis/EsauZL+QQEP8hkssI2LzZmcSAciVserV
+         QCEA8/zEaF8pw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Johannes Berg <johannes.berg@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Sasha Levin <sashal@kernel.org>, johannes@sipsolutions.net,
-        davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 17/29] mac80211: do drv_reconfig_complete() before restarting all
-Date:   Mon, 20 Dec 2021 20:57:38 -0500
-Message-Id: <20211221015751.116328-17-sashal@kernel.org>
+Cc:     Greg Jesionowski <jesionowskigreg@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, woojung.huh@microchip.com,
+        UNGLinuxDriver@microchip.com, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 21/29] net: usb: lan78xx: add Allied Telesis AT29M2-AF
+Date:   Mon, 20 Dec 2021 20:57:42 -0500
+Message-Id: <20211221015751.116328-21-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20211221015751.116328-1-sashal@kernel.org>
 References: <20211221015751.116328-1-sashal@kernel.org>
@@ -49,65 +49,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Greg Jesionowski <jesionowskigreg@gmail.com>
 
-[ Upstream commit 13dee10b30c058ee2c58c5da00339cc0d4201aa6 ]
+[ Upstream commit ef8a0f6eab1ca5d1a75c242c5c7b9d386735fa0a ]
 
-When we reconfigure, the driver might do some things to complete
-the reconfiguration. It's strange and could be broken in some
-cases because we restart other works (e.g. remain-on-channel and
-TX) before this happens, yet only start queues later.
+This adds the vendor and product IDs for the AT29M2-AF which is a
+lan7801-based device.
 
-Change this to do the reconfig complete when reconfiguration is
-actually complete, not when we've already started doing other
-things again.
-
-For iwlwifi, this should fix a race where the reconfig can race
-with TX, for ath10k and ath11k that also use this it won't make
-a difference because they just start queues there, and mac80211
-also stopped the queues and will restart them later as before.
-
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20211129152938.cab99f22fe19.Iefe494687f15fd85f77c1b989d1149c8efdfdc36@changeid
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Greg Jesionowski <jesionowskigreg@gmail.com>
+Link: https://lore.kernel.org/r/20211214221027.305784-1-jesionowskigreg@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mac80211/util.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ drivers/net/usb/lan78xx.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/net/mac80211/util.c b/net/mac80211/util.c
-index 39961a4f55d12..a94223710d48d 100644
---- a/net/mac80211/util.c
-+++ b/net/mac80211/util.c
-@@ -2644,6 +2644,13 @@ int ieee80211_reconfig(struct ieee80211_local *local)
- 		mutex_unlock(&local->sta_mtx);
- 	}
+diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
+index a0401a9dade5b..3e1a83a22fdd6 100644
+--- a/drivers/net/usb/lan78xx.c
++++ b/drivers/net/usb/lan78xx.c
+@@ -76,6 +76,8 @@
+ #define LAN7801_USB_PRODUCT_ID		(0x7801)
+ #define LAN78XX_EEPROM_MAGIC		(0x78A5)
+ #define LAN78XX_OTP_MAGIC		(0x78F3)
++#define AT29M2AF_USB_VENDOR_ID		(0x07C9)
++#define AT29M2AF_USB_PRODUCT_ID	(0x0012)
  
-+	/*
-+	 * If this is for hw restart things are still running.
-+	 * We may want to change that later, however.
-+	 */
-+	if (local->open_count && (!suspended || reconfig_due_to_wowlan))
-+		drv_reconfig_complete(local, IEEE80211_RECONFIG_TYPE_RESTART);
-+
- 	if (local->in_reconfig) {
- 		local->in_reconfig = false;
- 		barrier();
-@@ -2662,13 +2669,6 @@ int ieee80211_reconfig(struct ieee80211_local *local)
- 					IEEE80211_QUEUE_STOP_REASON_SUSPEND,
- 					false);
- 
--	/*
--	 * If this is for hw restart things are still running.
--	 * We may want to change that later, however.
--	 */
--	if (local->open_count && (!suspended || reconfig_due_to_wowlan))
--		drv_reconfig_complete(local, IEEE80211_RECONFIG_TYPE_RESTART);
--
- 	if (!suspended)
- 		return 0;
- 
+ #define	MII_READ			1
+ #define	MII_WRITE			0
+@@ -4734,6 +4736,10 @@ static const struct usb_device_id products[] = {
+ 	/* LAN7801 USB Gigabit Ethernet Device */
+ 	USB_DEVICE(LAN78XX_USB_VENDOR_ID, LAN7801_USB_PRODUCT_ID),
+ 	},
++	{
++	/* ATM2-AF USB Gigabit Ethernet Device */
++	USB_DEVICE(AT29M2AF_USB_VENDOR_ID, AT29M2AF_USB_PRODUCT_ID),
++	},
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(usb, products);
 -- 
 2.34.1
 
