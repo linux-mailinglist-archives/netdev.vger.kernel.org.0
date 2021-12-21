@@ -2,82 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CA00947C4AE
-	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 18:06:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2925847C4CF
+	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 18:16:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233429AbhLURGm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Dec 2021 12:06:42 -0500
-Received: from serv108.segi.ulg.ac.be ([139.165.32.111]:55118 "EHLO
-        serv108.segi.ulg.ac.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230361AbhLURGm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Dec 2021 12:06:42 -0500
-Received: from mbx12-zne.ulg.ac.be (serv470.segi.ulg.ac.be [139.165.32.199])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by serv108.segi.ulg.ac.be (Postfix) with ESMTPS id E632B200BE63;
-        Tue, 21 Dec 2021 18:06:39 +0100 (CET)
-DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be E632B200BE63
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uliege.be;
-        s=ulg20190529; t=1640106399;
-        bh=CqnTppCRL/Z3iguzsQkfLaxXmal+39aqeE7ldFtTgQI=;
-        h=Date:From:Reply-To:To:Cc:In-Reply-To:References:Subject:From;
-        b=giuH0XxfSdHffbcmLMHLKXCfnbus4h1hL/64gFa9pEFEEgMh6f8zW6sCktRyA+OX2
-         LaPhz8Ngqe9GeiVI+XgMJObu+LVZe4QCe8woeXFZa7/4rQPhC67QLwVt5z5Lttm7ks
-         eCOLsWwRSf9pn8lW6lV6WQkjzXz6zO3nKAG0RWBD9IWgId+diAAVJCHTkxoeHiSWC4
-         rTyI582pB3HAqunyyOY1007bL4ZLs1E3WVopl5QbGTEs0Z0G2XK/syOjnriIHovpUK
-         ekW/d6nBhkUWYhcbRfYocu9nBO++c0DzvQi6a0J+UoAFjZqPRCEm6dOZ5o7CrW55ES
-         +5neRAQDe/lew==
-Received: from localhost (localhost [127.0.0.1])
-        by mbx12-zne.ulg.ac.be (Postfix) with ESMTP id D3A0A603B0F5E;
-        Tue, 21 Dec 2021 18:06:39 +0100 (CET)
-Received: from mbx12-zne.ulg.ac.be ([127.0.0.1])
-        by localhost (mbx12-zne.ulg.ac.be [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id gTTgnXttnc-k; Tue, 21 Dec 2021 18:06:39 +0100 (CET)
-Received: from mbx12-zne.ulg.ac.be (mbx12-zne.ulg.ac.be [139.165.32.199])
-        by mbx12-zne.ulg.ac.be (Postfix) with ESMTP id ABD0D6008D821;
-        Tue, 21 Dec 2021 18:06:39 +0100 (CET)
-Date:   Tue, 21 Dec 2021 18:06:39 +0100 (CET)
-From:   Justin Iurman <justin.iurman@uliege.be>
-Reply-To: Justin Iurman <justin.iurman@uliege.be>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, dsahern@kernel.org,
-        yoshfuji@linux-ipv6.org, linux-mm@kvack.org, cl@linux.com,
-        penberg@kernel.org, rientjes@google.com,
-        iamjoonsoo kim <iamjoonsoo.kim@lge.com>,
-        akpm@linux-foundation.org, vbabka@suse.cz,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Florian Westphal <fw@strlen.de>,
-        Paolo Abeni <pabeni@redhat.com>
-Message-ID: <1065685246.241690721.1640106399663.JavaMail.zimbra@uliege.be>
-In-Reply-To: <20211209163828.223815bd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20211206211758.19057-1-justin.iurman@uliege.be> <20211207075037.6cda8832@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <1045511371.220520131.1638894949373.JavaMail.zimbra@uliege.be> <20211207090700.55725775@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <1665643630.220612437.1638900313011.JavaMail.zimbra@uliege.be> <20211208141825.3091923c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <1067680364.223350225.1639059024535.JavaMail.zimbra@uliege.be> <20211209163828.223815bd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Subject: Re: [RFC net-next 2/2] ipv6: ioam: Support for Buffer occupancy
- data field
+        id S240270AbhLURQS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Dec 2021 12:16:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57076 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240266AbhLURQR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Dec 2021 12:16:17 -0500
+Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68DA1C061574
+        for <netdev@vger.kernel.org>; Tue, 21 Dec 2021 09:16:17 -0800 (PST)
+Received: by mail-io1-xd30.google.com with SMTP id p65so18681560iof.3
+        for <netdev@vger.kernel.org>; Tue, 21 Dec 2021 09:16:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=7iAi+1KQSj2WDLXsuhbvVM2dw9p459FUJwwdd3KzsPk=;
+        b=h5mhknlxTZ70I69Lb9vxaxq7ZOOofgf84vxvpIU0xycrodZIuFN/+GWfkGWEpq3NnR
+         F657gj6v5nqOmBf0H7PIi7ZxjQzBz2KB/2z4XHy+xbsZFHK01gYgNCgg77tN6l8Uqpwe
+         jg8MYPIg0vA/jjCYoazzzy12DnHY2AZZtcBF8=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7iAi+1KQSj2WDLXsuhbvVM2dw9p459FUJwwdd3KzsPk=;
+        b=y1bjtnnSfRm8yDcoHayoQhsjGfpA0qy0VtYs5EyRLkVP19ABjhRI8wmVxBh94/zWpL
+         Faiz6bg9aWlvfDUQYFhgW/mo1gYd17vD+xOXnhBu8rKkfrn6j/nXFxAcLC9JAJRbqiDN
+         bE32PsqNfsLIK76eiRF9cqohYlGhfpDB/2nTlfgvCmCHk7BjmbyDXfRStGTvhDcqGbwR
+         rjpvCbxiqraxrH2Tt8u/qEtsOanw6bUDMvKquS8MQgre1M6gIAJA7SSjA7IRS1ubAWZZ
+         KrInDmO/wDRMBS8CPFtqZWZia7efyuzxncT0kCDGxCe90vInfmHbv1Et7CN/6LZCBncC
+         6EWw==
+X-Gm-Message-State: AOAM531/xJIv5VljORenj2ay7Uz7xTFzG4XDgm2DtgNv9ixquLkBu6NO
+        SYFr4tsUPGec6C7blY1uMHTCv3vcuFQtleFbq792IPO5ssQ=
+X-Google-Smtp-Source: ABdhPJyLIOuom7svtnn/+gdqOVsMjreCh59ssWSTQkJgEAZCWeTzAWWTnbE5MUKiD0FNto6CaopDUCPEMEWCD3bdwdk=
+X-Received: by 2002:a05:6638:d89:: with SMTP id l9mr2680694jaj.80.1640106975402;
+ Tue, 21 Dec 2021 09:16:15 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [81.240.24.148]
-X-Mailer: Zimbra 8.8.15_GA_4018 (ZimbraWebClient - FF95 (Linux)/8.8.15_GA_4026)
-Thread-Topic: ipv6: ioam: Support for Buffer occupancy data field
-Thread-Index: cXzyaHe7M6fBsCgL0fZBmOJtzfWNjg==
+References: <CALrw=nGtZbuQWdwh26qJA6HbbLsCNZjU4jaY78acbKfAAan+5w@mail.gmail.com>
+ <CANn89i+CF0G+Yx_aJMURxBbr0mqDzS5ytQY7RtYh_pY0cOh01A@mail.gmail.com> <cf25887f1321e9b346aa3bf487bd55802f7bca80.camel@redhat.com>
+In-Reply-To: <cf25887f1321e9b346aa3bf487bd55802f7bca80.camel@redhat.com>
+From:   Ignat Korchagin <ignat@cloudflare.com>
+Date:   Tue, 21 Dec 2021 17:16:04 +0000
+Message-ID: <CALrw=nG5-Qyi8f0j6-dmkVts4viX24j755gEiUNTQDoXzXv1XQ@mail.gmail.com>
+Subject: Re: tcp: kernel BUG at net/core/skbuff.c:3574!
+To:     Paolo Abeni <pabeni@redhat.com>, Eric Dumazet <edumazet@google.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Dec 10, 2021, at 1:38 AM, Jakub Kicinski kuba@kernel.org wrote:
-> [...]
-> I think we're on the same page, the main problem is I've not seen
-> anyone use the skbuff_head_cache occupancy as a signal in practice.
-> 
-> I'm adding a bunch of people to the CC list, hopefully someone has
-> an opinion one way or the other.
+On Tue, Dec 21, 2021 at 3:40 PM Paolo Abeni <pabeni@redhat.com> wrote:
+>
+> On Tue, 2021-12-21 at 06:16 -0800, Eric Dumazet wrote:
+> > On Tue, Dec 21, 2021 at 4:19 AM Ignat Korchagin <ignat@cloudflare.com> wrote:
+> > >
+> > > Hi netdev,
+> > >
+> > > While trying to reproduce a different rare bug we're seeing in
+> > > production I've triggered below on 5.15.9 kernel and confirmed on the
+> > > latest netdev master tree:
+> > >
+> >
+> > Nothing comes to mind. skb_shift() has not been recently changed.
+> >
+> > Why are you disabling TSO exactly ?
+> >
+> > Is GRO being used on veth needed to trigger the bug ?
+> > (GRO was added recently to veth, I confess I did not review the patches)
 
-It looks like we won't have more opinions on that, unfortunately.
+Yes, it seems enabling GRO for veth actually enables NAPI codepaths,
+which trigger this bug (and actually another one we're investigating).
+Through trial-and-error it seems disabling TSO is more likely to
+trigger it at least in my dev environment. I'm not sure if this bug is
+somehow related to the other one we're investigating, but once we have
+a fix here I can try to verify before posting it to the mailing list.
 
-@Jakub - Should I submit it as a PATCH and see if we receive more
-feedback there?
+> This is very likely my fault. I'm investigating it right now.
+
+Thank you very much! Let me know if I can help somehow.
+
+Ignat
+
+> Thanks for the head-up.
+>
+> Paolo
+>
