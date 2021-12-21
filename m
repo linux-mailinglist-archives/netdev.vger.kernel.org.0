@@ -2,447 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7181747C637
-	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 19:17:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AE7247C6D3
+	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 19:44:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241150AbhLUSRp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Dec 2021 13:17:45 -0500
-Received: from mx0b-00069f02.pphosted.com ([205.220.177.32]:19998 "EHLO
-        mx0b-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S240053AbhLUSRn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Dec 2021 13:17:43 -0500
-Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1BLHK7rA023709;
-        Tue, 21 Dec 2021 18:17:27 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
- subject : from : to : cc : references : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2021-07-09;
- bh=2Oao9GOk70AKGUIKx9nW2Y+iy3o/mJ6cjyAcgw2A9eg=;
- b=AiKYCWKZz0Z7lxZVx3shU4SRrHcx2Vfe19ncBNXp2hbavbd165hKnk3eeQgQZHB1MTDI
- EXV/fhCjLM4mgBe7LsvejIXeXikvXcNOkwC/1oNo7Ce/fiiT3RFF+10ByAs4+VeP67Pv
- lelJUKqTGZAhfr3qZLedWkXY0+X+kDLz9R1CDVeJleKb3kyUdSjBMRsvJsvLWLFAjb8v
- mnDPW3QuUMQrayp7bNvP5PidoPId6VV3P2YupkFUzQSFuOrlDW5taXETNfV9Bp89h8zl
- +9xdqLpVSbhswMqbA6gK0Jdy5/oNSU5Z5UcmLDYmtVZi2RmC78uuDyxQ/bX4gLAPEQyM Lg== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3d2qk2c2w4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 21 Dec 2021 18:17:27 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 1BLIGvkT138066;
-        Tue, 21 Dec 2021 18:17:26 GMT
-Received: from nam12-dm6-obe.outbound.protection.outlook.com (mail-dm6nam12lp2172.outbound.protection.outlook.com [104.47.59.172])
-        by userp3030.oracle.com with ESMTP id 3d14rvx4p5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 21 Dec 2021 18:17:25 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=k/J/JQfYCqq2LRnfXCrcBAz/wd8+vADo+rOAov2teaPZmFZtaLpyWHf0Oy7hdb/V07ncQSCcW586o7R/HLJ5Wek0RvCQ4VuDplfzZXngOnY2CRA9Uugz0ekUve3tx6ZqA6uAArbjOUk662XZ40IRQUYWqQYCaCHpt/ptXQ2j1H0HMDLLFQG0TcyyCn9qrD8Lq3aHC+mFJ7eLaYz9U2AXUFwkAVv3S/pelU6KD/IllTxmGixgRGwttFpyAFwiY3x8pX7djlq4EQHRMZApTOQmSQxfW7qeEDRUkOJ+waDhu/TU8iizo7r+r6UG6YelwBWVbH6/W6rMymYclN+vSVe0uw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=2Oao9GOk70AKGUIKx9nW2Y+iy3o/mJ6cjyAcgw2A9eg=;
- b=VI2SNzzn0emOMGHsawLK/UhqTkntVrUX+QvpCg4sTXrG0p+lPyXhozvpl9bs9g0hby6AqrUpYJVZRMdnnia7tYjgKW3ZtPRAe12mu7QWEeLU+7tUSok7MkPWqsyCauTAMgbKHP7CF/5IDX3vHORFwReGrzxW09spxM440vYkAtlYcD7guaojIxMIm6fEAb7rrGhSTByxzqXBb/8gknJlIu+rxkw9YJBW4XDGDlqy7ZFruCNfRVXpdBnlCumUyOkaovzu9q/pvzNn+U3WQ3aZBlsbDy8SqA2OXITo/YgsBqK1kS8t23K9J1lM5q2XCojhwnsM6Ntdb8RzNzkrVFfs+g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
+        id S241480AbhLUSoW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Dec 2021 13:44:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50070 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233752AbhLUSoV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Dec 2021 13:44:21 -0500
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C280FC06173F
+        for <netdev@vger.kernel.org>; Tue, 21 Dec 2021 10:44:21 -0800 (PST)
+Received: by mail-pl1-x630.google.com with SMTP id p18so11408904pld.13
+        for <netdev@vger.kernel.org>; Tue, 21 Dec 2021 10:44:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2Oao9GOk70AKGUIKx9nW2Y+iy3o/mJ6cjyAcgw2A9eg=;
- b=e05h32mlb8EkViOQ24l1dfmc1q7SpqkDMBrQ/GtrVTYvM0bV6Do6y43d+c7dFpZsFvwbidRlT1sXKZ8pKHWc+P5NXCtpSXjm/xRlftMrWm6FBNihZ5e5D2Cabouej+XbwyXJe4OCtaNpk0eZu8qD7wnYDQdOgCBVvRo0/eCuhbI=
-Received: from CH2PR10MB3752.namprd10.prod.outlook.com (2603:10b6:610:d::23)
- by CH2PR10MB4118.namprd10.prod.outlook.com (2603:10b6:610:a4::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4801.17; Tue, 21 Dec
- 2021 18:17:23 +0000
-Received: from CH2PR10MB3752.namprd10.prod.outlook.com
- ([fe80::b012:2fbd:f463:f5ae]) by CH2PR10MB3752.namprd10.prod.outlook.com
- ([fe80::b012:2fbd:f463:f5ae%4]) with mapi id 15.20.4801.022; Tue, 21 Dec 2021
- 18:17:23 +0000
-Message-ID: <dd139846-830e-9363-91d3-1dc31be7702c@oracle.com>
-Date:   Tue, 21 Dec 2021 13:17:20 -0500
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [PATCH] bpf: check size before calling kvmalloc
-Content-Language: en-US
-From:   George Kennedy <george.kennedy@oracle.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>, sdf@google.com,
-        ast@kernel.org
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <1639766884-1210-1-git-send-email-george.kennedy@oracle.com>
- <395e51ca-2274-26ea-baf5-6353b0247214@iogearbox.net>
- <a6cb8004-50de-bcec-1f1b-b61b341fd8f4@oracle.com>
-Organization: Oracle Corporation
-In-Reply-To: <a6cb8004-50de-bcec-1f1b-b61b341fd8f4@oracle.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: SN7PR18CA0015.namprd18.prod.outlook.com
- (2603:10b6:806:f3::6) To CH2PR10MB3752.namprd10.prod.outlook.com
- (2603:10b6:610:d::23)
+        d=intel-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dd1YoI2o4q02bX0x09QUIoR25zx0n5gG0OTjgIjYa4A=;
+        b=s/sPr7U9xGYzyJMQE0qYIe1yOPMvbI5S7pxeTRXZRN+8ulo7zhhEBr+EinZhbd2wsB
+         +2S+icfeTqoBxEAd2QjWENTBAlkEhZZXz5dQED0WWFJgD8C/fVjRMzqwGd8XhjWdSngN
+         SUtvqF+yNAlEHqMVQzucfApXae9hXkwRXdA+cjvKRheevl4mRwz5YtANamYhdyp2h1JX
+         AgBVzsRXkNhKlm33Z6JODZUzCzFkyDFlwuM5FWH600u1ODPjN7lqD4vevijk4TTEgnD/
+         Tw76j4EyeB68FuUN6V0q/6NApMoUNBt6U18mm4J1RW2/22BmU0QQd620jk6FWDQE9fhA
+         FUkg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dd1YoI2o4q02bX0x09QUIoR25zx0n5gG0OTjgIjYa4A=;
+        b=VPOGUGbgvtwRmgtwKi1sQ8ckmqSWE+XgOfYa2bUsGBg4UxSX2HzMCmrgPAlocQ7Qmk
+         vPphw5IwabgwJfs1zOQjsUd68t91wDewpTWL7dFKoryAa9ZNuXOe+utU/AlSqN+2+GVt
+         /EQX8d9mIjzxRYesWFPOxwxrJ/d4KbfzI0GF2Y2Xk3UcnU0WWgKxHASmd2ljBZnxs5LT
+         oeC6udM0i9sERwK/84HHD8SFGRhBfiFPhOObvbPpL5KgUdmQrreDp6UvUwIOc0AF4AHV
+         sSz2X2ojO66iVnJOBKAwltDDnTDVJSQyFECgMHeTMPGsTHb1ute46X2WjrpkyF6le3Ck
+         fY2A==
+X-Gm-Message-State: AOAM531apwRcOTn3L0Wx7mp42NaGHDLXYV6m8qY/0RYqv/AMuh7RE2VH
+        w+E1Jehyi6mucZlfjPIs3P6jRR3OZ87tlaarA4H27g==
+X-Google-Smtp-Source: ABdhPJzjPRcPF/ik1Xjt8WwlNpN9FxwJvvBTDlWX6Cjo6Bdo/nRhs+9FBh3YD9yKMrMDfctAhfF39xtetj2jg5KzQyU=
+X-Received: by 2002:a17:90a:7101:: with SMTP id h1mr5292434pjk.93.1640112261177;
+ Tue, 21 Dec 2021 10:44:21 -0800 (PST)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ecce68d9-903a-439a-6648-08d9c4ae2290
-X-MS-TrafficTypeDiagnostic: CH2PR10MB4118:EE_
-X-Microsoft-Antispam-PRVS: <CH2PR10MB4118439A024D70F99823E4A7E67C9@CH2PR10MB4118.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:1360;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Fv7GGGFljxHCEkcKynfvyhZN1G1mpUmpiczQnoRkolu4JeiVGlmEaQRG/wRAwc99BQAAmeI7XG06xd29CKEHOC8ZybxAW45Pb5afUQ74fpMjV6ZU8w8iE+HsW5iIhGJjg9ns5xMVEkbvZ+8R51bsC9wAjZA/dcIfMBdwhmnsWHUbxoA307+adgLtdEiqPjT/w+XXsJZ9UlaKl/OB55Lpjrv8Qjqn1us510JMkQ+98CWKdqb/J0OVvMPU5MW1gpEH5L0ccGXOnS5/04HF807M8rd7rKH4FPT7PEA3XVeKMpklc5QyAjex9mHd5FmyKOWtYPcbdB1pi6TfEV3ZFPnzL0mI4wtJHJG7q8s7HpLFyMol5Us0Tb1qDGOKMIJGGfulXNLWMSpUl96WneeCr5LbDtXkVVZyHiIZeEbCjK2/OLGuOnQbjr6v3cyqSvDRkju3oz7ztcqD5xzIrYrnRCTff2kp8Ifc7TJNGXh4ZSDMWl7tOTVrpIFzbV0TnOdqXViYeFed3WQwiKKsMSnqLHiW1RIugvd9g9mBCV5SQYuNAjBY05B10J6ugey5fKMnS3gjWFDPeSb+F9NVb3zQy48Uu0G3HZ0/U0GWdEMNTg+d0ToYyrerCOAl7mudU5Slp7p1i6r/Yz/Aic0VctR58a/zCSKzTP7R1fft5vy5elUhIbHFmvEi8tCjMBBo0n4Mc96EmnsPM25Lq9sg24lLXYi3ivMLYWGIhiw6X3azDrFIWuGWyF5RMuW8eIX0VwfMD5x6PcY2gT7SQPUfiJ02KzzvXgIvJkXpssoF97NrgXprs7uj6EEjeRZZzUOIhOJ6DOZ6
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH2PR10MB3752.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(36756003)(508600001)(30864003)(316002)(31686004)(31696002)(6506007)(2616005)(6512007)(45080400002)(4326008)(5660300002)(8936002)(44832011)(8676002)(6486002)(66556008)(36916002)(66946007)(86362001)(66476007)(83380400001)(186003)(53546011)(2906002)(26005)(38100700002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?SDhMOExKcGVlY1ZlVmVLTWhscXpZc0J2c1lPdmIrNFBUcndOSE8zejFKclEr?=
- =?utf-8?B?amVLOWFQOHMxT3VZUjZraFNyd3VXaDh1dmQwd3FtU2lDQ3UrK3lDV2xjWTl3?=
- =?utf-8?B?SG03c1NBV2ZwWHpJalRPQi9ua21SK3JYaWZOYWFmbHprdGdKRVRuby9hUkxw?=
- =?utf-8?B?b1ZLQkFJL0VjYmx2RFdlR0o2akcvTk94ZGx3VG16SUY1emx6ZmFLY0RHWXpr?=
- =?utf-8?B?blprWCtUM2VZQW5tMnBLU29YejhSY2YwTVdYTlF4bWFPL1kvdVd2VEVackhZ?=
- =?utf-8?B?SVhMQWI1ZHE2a0N4VkJzbm96YUhORHlpZmdMMVlPS2JvdXYrSG4vaFl0N2Zu?=
- =?utf-8?B?Q1FsVUVIMUpWRWwrcEJvK000NVBSWE9LOGxBNlRXTm5BMkd3c1E3SkZEcDBH?=
- =?utf-8?B?NXVEaURiS2psbE9oRGxxQitsb3A2cXdmbkFVa0IvQ2REOWRLZ0RpTjJ3UnVR?=
- =?utf-8?B?TUZ2dHY5bE9hMWp6cllBamNNeEVjQUpUZUluanZQNXpTaWtjS1BUeWhPTjN6?=
- =?utf-8?B?WUI4RHpjUnA4eWQrWEpjK3Q5N3c2NXFYM1V1R0JWK1NmMDBwajBkeVdWbVIy?=
- =?utf-8?B?eU9YVk5IMWxSdmoyMFZZQy9NL2FSZnhGdzR0L0JCL2gvTjN5UzBHWGswV2lR?=
- =?utf-8?B?MnV0Yisyb2ZYeGYvU2k5OVFsNFhPTjdoVmo3UU80QUVLU0dmTzZRUWd6c0tP?=
- =?utf-8?B?Z0NIWHJybk1WTjVOWkljdHorZ3JJdktBRkh5M0xEc2U5eHd5SXNGNjNaSFV4?=
- =?utf-8?B?NkdjN3N1ZjVBaFhnUVY3NjVIRFJETDhpVGsreDYzNlJNb0tSRGp5SUlZWXhZ?=
- =?utf-8?B?VWh5NUtRanVGUzkyZ3lId3JxVVhYNU9CNVExZ0FvNzRGdDNjbytVSDlsWFlU?=
- =?utf-8?B?TTA2T0pUOUxoZmJjczlYcyt0cFkzUkxtN09maVg5cmtvVjErUmJGNTFFbktS?=
- =?utf-8?B?RldXUTFFM2hCR2VyVEx1RFBpbC9vUHJrOVZuY1VFT1ZOOFhZeWk1RCt5UUYr?=
- =?utf-8?B?b0ZHbHRLZ0pxRXExR1h5ZG5QbTVKMEs4eU4yVjI5ejMrbzVNNk41YXl0cXVT?=
- =?utf-8?B?aFZZK0Z6clluL0l5U3M1VEY4WFVsL0s4MU5HUjVTTTFvcXdERHBSK0xDUzdo?=
- =?utf-8?B?U2lDZkZDUStiS2pFS3RwRUxFSVRjbjNmRjNBby93bjBaSEVxV2xsb2pxYkwr?=
- =?utf-8?B?VlgvYUpmdEJvOENRZHR5dVE5ZUZpMU9VMFR4N0FHL2t3SVdaN1h0dlpBbHZJ?=
- =?utf-8?B?eElmNmJlVVhFcCtrZllzZS9IS0YwRjJDbktzSlVCb2V6ZjJQSlVwclBKWTFz?=
- =?utf-8?B?M2wvRWNIbHB6aGdwUWE1ZVhYT0hCYnZLSEZ4YTZDL1lYdjVBRlV4Q3lsSVFE?=
- =?utf-8?B?b1J6d0ZLd3EyU29pem1BUFZueDl2Y1dYWDFMMXBaQXdHTFFuRG4xcHdMZkd5?=
- =?utf-8?B?SFZGUUt3ZXN6b0ZneHlFMlRITlhOL0plb0hvN0hUUnZKT3lvZkpMMk0xSjV0?=
- =?utf-8?B?eWxGOTREZVlRWndUNlpkblR2UGFyRlJOTzdsRGNMSENFN0ZYYndNamIzblkw?=
- =?utf-8?B?UnhXTmU4NTVrRE9JNUlTTzJ3WUxzbUJ4SE9zSHNMdlhrZ1R2YlFMeWVVS3ZZ?=
- =?utf-8?B?RGtLOTQrTk5LWGhLd2pOWTBlZzdHS04rQ0NjdW9VaGtEYlFvU0g5U29yRnla?=
- =?utf-8?B?a2hSYkltMjk2MXBrbUtKQzBubi9qbDQxLzM2dGtsaW5jUUdVaWNkRDBHa0dn?=
- =?utf-8?B?UkhRczVFS1R1Uy9xSDlOWEZWcTRIUWhtRCtXT2VkVEIrU2l2SGRJK3NidVky?=
- =?utf-8?B?a2hWcU5iNWJNdWlxczNoZ25Ec1RYRTg4SkRCY1VtcXBERUJZdW11cHo4UjRo?=
- =?utf-8?B?aEhUM2NvMVZqb1h3NVN3Uk5ON3hLYmd3RlRPZ3N5TGdQbGlrR0tZNVpNditX?=
- =?utf-8?B?MmgyS1Mvb0xMT3hzOGtMcEU2YkJNZndLd1dmREhVVGZReGxsaGhUdms5RnlW?=
- =?utf-8?B?Y3pWN1pqSER3R2xFaGN6RmhneDJreWtkUUZyMEI5aitHQjZrKzN1MU4rajJO?=
- =?utf-8?B?N011L2huRUhHNThnZkVCQXo4WW5la085MG43MTJBOVdVeVVvdW1obHV0Wktv?=
- =?utf-8?B?Z0NDWU5UZmxreUw1YWZnQU9nSXB1MC9qVXp0aXlsWmpzK252L2piS0NRUWNl?=
- =?utf-8?B?cysySmFFQmxCZGRMMUluR1Qvd1hQTkR0RThWVnpoWFFybTlLWFFKcW5oN29C?=
- =?utf-8?B?SmowZVZTalZINjhadzU0a1Rjbmd3PT0=?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ecce68d9-903a-439a-6648-08d9c4ae2290
-X-MS-Exchange-CrossTenant-AuthSource: CH2PR10MB3752.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Dec 2021 18:17:23.5690
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: xyQ4USV5X+5uKtGMxc9bOdMEJHvRhdMapFIO99njyEhiqYpnK9aO+HVIcZXJjk//9mG1CZG+nK8WQyOTlGmxl4e/oU/3sOhD/6dqd2iqhYQ=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR10MB4118
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10205 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 malwarescore=0 adultscore=0
- phishscore=0 suspectscore=0 mlxscore=0 mlxlogscore=999 spamscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2110150000
- definitions=main-2112210090
-X-Proofpoint-GUID: gwcv-KyDsqQveui60YgOUyR79JSHklUY
-X-Proofpoint-ORIG-GUID: gwcv-KyDsqQveui60YgOUyR79JSHklUY
+References: <20211221065047.290182-1-mike.ximing.chen@intel.com>
+ <YcF9rRTVzrbCyOtq@kroah.com> <CO1PR11MB51700037C8A23B19C0DCF5CAD97C9@CO1PR11MB5170.namprd11.prod.outlook.com>
+ <YcHlQH0gXTHh4cjV@kroah.com>
+In-Reply-To: <YcHlQH0gXTHh4cjV@kroah.com>
+From:   Dan Williams <dan.j.williams@intel.com>
+Date:   Tue, 21 Dec 2021 10:44:11 -0800
+Message-ID: <CAPcyv4hoo=qBLC9d_VYHwCErE5ngsONgQPa45-K4c-GVfFJhsw@mail.gmail.com>
+Subject: Re: [RFC PATCH v12 00/17] dlb: introduce DLB device driver
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     "Chen, Mike Ximing" <mike.ximing.chen@intel.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "arnd@arndb.de" <arnd@arndb.de>,
+        "pierre-louis.bossart@linux.intel.com" 
+        <pierre-louis.bossart@linux.intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>, Christoph Hellwig <hch@lst.de>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+[ add Christoph for configfs feedback ]
 
-
-On 12/20/2021 8:50 AM, George Kennedy wrote:
+On Tue, Dec 21, 2021 at 7:03 AM Greg KH <gregkh@linuxfoundation.org> wrote:
 >
+> On Tue, Dec 21, 2021 at 02:03:38PM +0000, Chen, Mike Ximing wrote:
+> >
+> > > -----Original Message-----
+> > > From: Greg KH <gregkh@linuxfoundation.org>
+> > > Sent: Tuesday, December 21, 2021 2:10 AM
+> > > To: Chen, Mike Ximing <mike.ximing.chen@intel.com>
+> > > Cc: linux-kernel@vger.kernel.org; arnd@arndb.de; Williams, Dan J <dan.j.williams@intel.com>; pierre-
+> > > louis.bossart@linux.intel.com; netdev@vger.kernel.org; davem@davemloft.net; kuba@kernel.org
+> > > Subject: Re: [RFC PATCH v12 00/17] dlb: introduce DLB device driver
+> > >
+> > > On Tue, Dec 21, 2021 at 12:50:30AM -0600, Mike Ximing Chen wrote:
+> > > > v12:
+> > >
+> > > <snip>
+> > >
+> > > How is a "RFC" series on version 12?  "RFC" means "I do not think this should be merged, please give me
+> > > some comments on how this is all structured" which I think is not the case here.
+> >
+> > Hi Greg,
+> >
+> > "RFC" here means exactly what you referred to. As you know we have made many changes since your
+> > last review of the patch set (which was v10).  At this point we are not sure if we are on the right track in
+> > terms of some configfs implementation, and would like some comments from the community. I stated
+> > this in the cover letter before the change log: " This submission is still a work in progress.... , a couple of
+> > issues that we would like to get help and suggestions from reviewers and community". I presented two
+> > issues/questions we are facing, and would like to get comments.
+> >
+> > The code on the other hand are tested and validated on our hardware platforms. I kept the version number
+> > in series (using v12, instead v1) so that reviewers can track the old submissions and have a better
+> > understanding of the patch set's history.
 >
-> On 12/17/2021 5:45 PM, Daniel Borkmann wrote:
->> On 12/17/21 7:48 PM, George Kennedy wrote:
->>> ZERO_SIZE_PTR ((void *)16) is returned by kvmalloc() instead of NULL
->>> if size is zero. Currently, return values from kvmalloc() are only
->>> checked for NULL. Before calling kvmalloc() check for size of zero
->>> and return error if size is zero to avoid the following crash.
->>>
->>> BUG: kernel NULL pointer dereference, address: 0000000000000000
->>> PGD 1030bd067 P4D 1030bd067 PUD 103497067 PMD 0
->>> Oops: 0010 [#1] PREEMPT SMP KASAN NOPTI
->>> CPU: 1 PID: 15094 Comm: syz-executor344 Not tainted 5.16.0-rc1-syzk #1
->>> Hardware name: Red Hat KVM, BIOS
->>> RIP: 0010:0x0
->>> Code: Unable to access opcode bytes at RIP 0xffffffffffffffd6.
->>> RSP: 0018:ffff888017627b78 EFLAGS: 00010246
->>> RAX: 0000000000000000 RBX: ffff8880215d0780 RCX: ffffffff81b63c60
->>> RDX: 0000000000000010 RSI: 0000000000000000 RDI: ffff8881035db400
->>> RBP: ffff888017627f08 R08: ffffed1003697209 R09: ffffed1003697209
->>> R10: ffff88801b4b9043 R11: ffffed1003697208 R12: ffffffff8f15d580
->>> R13: 1ffff11002ec4f77 R14: ffff8881035db400 R15: 0000000000000000
->>> FS:  00007f62bca78740(0000) GS:ffff888107880000(0000) 
->>> knlGS:0000000000000000
->>> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->>> CR2: ffffffffffffffd6 CR3: 000000002282a000 CR4: 00000000000006e0
->>> Call Trace:
->>>   <TASK>
->>>   map_get_next_key kernel/bpf/syscall.c:1279 [inline]
->>>   __sys_bpf+0x384d/0x5b30 kernel/bpf/syscall.c:4612
->>>   __do_sys_bpf kernel/bpf/syscall.c:4722 [inline]
->>>   __se_sys_bpf kernel/bpf/syscall.c:4720 [inline]
->>>   __x64_sys_bpf+0x7a/0xc0 kernel/bpf/syscall.c:4720
->>>   do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->>>   do_syscall_64+0x3a/0x80 arch/x86/entry/common.c:80
->>>   entry_SYSCALL_64_after_hwframe+0x44/0xae
->>>
->>> Reported-by: syzkaller <syzkaller@googlegroups.com>
->>> Signed-off-by: George Kennedy <george.kennedy@oracle.com>
->>
->> Could you provide some more details, e.g. which map type is this 
->> where we
->> have to assume zero-sized keys everywhere?
->>
->> (Or link to syzkaller report could also work alternatively if public.)
+> "RFC" means "I have no idea if this is correct, I am throwing it out
+> there and anyone who also cares about this type of thing, please
+> comment".
 >
-> I don't think the report is public. Here's the report and C reproducer:
+> A patch that is on "RFC 12" means, "We all have no clue how to do this,
+> we give up and hope you all will do it for us."
 >
-> #ifdef REF
-> Syzkaller hit 'BUG: unable to handle kernel NULL pointer dereference 
-> in bpf' bug.
+> I almost never comment on RFC patch series, except for portions of the
+> kernel that I really care about.  For a brand-new subsystem like this,
+> that I still do not understand who needs it, that is not the case.
 >
-> BUG: kernel NULL pointer dereference, address: 0000000000000000
-> #PF: supervisor instruction fetch in kernel mode
-> #PF: error_code(0x0010) - not-present page
-> PGD 1030bd067 P4D 1030bd067 PUD 103497067 PMD 0
-> Oops: 0010 [#1] PREEMPT SMP KASAN NOPTI
-> CPU: 1 PID: 15094 Comm: syz-executor344 Not tainted 5.16.0-rc1-syzk #1
-> Hardware name: Red Hat KVM, BIOS 1.13.0-2.module+el8.3.0+7860+a7792d29 
-> 04/01/2014
-> RIP: 0010:0x0
-> Code: Unable to access opcode bytes at RIP 0xffffffffffffffd6.
-> RSP: 0018:ffff888017627b78 EFLAGS: 00010246
-> RAX: 0000000000000000 RBX: ffff8880215d0780 RCX: ffffffff81b63c60
-> RDX: 0000000000000010 RSI: 0000000000000000 RDI: ffff8881035db400
-> RBP: ffff888017627f08 R08: ffffed1003697209 R09: ffffed1003697209
-> R10: ffff88801b4b9043 R11: ffffed1003697208 R12: ffffffff8f15d580
-> R13: 1ffff11002ec4f77 R14: ffff8881035db400 R15: 0000000000000000
-> FS:  00007f62bca78740(0000) GS:ffff888107880000(0000) 
-> knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: ffffffffffffffd6 CR3: 000000002282a000 CR4: 00000000000006e0
-> Call Trace:
->  <TASK>
->  map_get_next_key kernel/bpf/syscall.c:1279 [inline]
->  __sys_bpf+0x384d/0x5b30 kernel/bpf/syscall.c:4612
->  __do_sys_bpf kernel/bpf/syscall.c:4722 [inline]
->  __se_sys_bpf kernel/bpf/syscall.c:4720 [inline]
->  __x64_sys_bpf+0x7a/0xc0 kernel/bpf/syscall.c:4720
->  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->  do_syscall_64+0x3a/0x80 arch/x86/entry/common.c:80
->  entry_SYSCALL_64_after_hwframe+0x44/0xae
-> RIP: 0033:0x7f62bc36f289
-> Code: 01 00 48 81 c4 80 00 00 00 e9 f1 fe ff ff 0f 1f 00 48 89 f8 48 
-> 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 
-> 01 f0 ff ff 73 01 c3 48 8b 0d b7 db 2c 00 f7 d8 64 89 01 48
-> RSP: 002b:00007ffccaa211e8 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
-> RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f62bc36f289
-> RDX: 0000000000000020 RSI: 0000000020000080 RDI: 0000000000000004
-> RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
-> R10: 0000000000000000 R11: 0000000000000246 R12: 00000000004006d0
-> R13: 00007ffccaa212d0 R14: 0000000000000000 R15: 0000000000000000
->  </TASK>
-> Modules linked in:
-> CR2: 0000000000000000
-> ---[ end trace d203e5a1836d64aa ]---
-> RIP: 0010:0x0
-> Code: Unable to access opcode bytes at RIP 0xffffffffffffffd6.
-> RSP: 0018:ffff888017627b78 EFLAGS: 00010246
-> RAX: 0000000000000000 RBX: ffff8880215d0780 RCX: ffffffff81b63c60
-> RDX: 0000000000000010 RSI: 0000000000000000 RDI: ffff8881035db400
-> RBP: ffff888017627f08 R08: ffffed1003697209 R09: ffffed1003697209
-> R10: ffff88801b4b9043 R11: ffffed1003697208 R12: ffffffff8f15d580
-> R13: 1ffff11002ec4f77 R14: ffff8881035db400 R15: 0000000000000000
-> FS:  00007f62bca78740(0000) GS:ffff888107880000(0000) 
-> knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: ffffffffffffffd6 CR3: 000000002282a000 CR4: 00000000000006e0
+> I'm going to stop reviewing this patch series until you at least follow
+> the Intel required rules for sending kernel patches like this out.  To
+> not do so would be unfair to your coworkers who _DO_ follow the rules.
 >
+> > > > - The following coding style changes suggested by Dan will be implemented
+> > > >   in the next revision
+> > > > -- Replace DLB_CSR_RD() and DLB_CSR_WR() with direct ioread32() and
+> > > >    iowrite32() call.
+> > > > -- Remove bitmap wrappers and use linux bitmap functions directly.
+> > > > -- Use trace_event in configfs attribute file update.
+> > >
+> > > Why submit a patch series that you know will be changed?  Just do the work, don't ask anyone to review
+> > > stuff you know is incorrect, that just wastes our time and ensures that we never want to review it again.
+> > >
+> > Since this is a RFC, and is not for merging or a full review, we though it was OK to log the pending coding
+> > style changes. The patch set was submitted and reviewed by the community before, and there was no
+> > complains on using macros like DLB_CSR_RD(), etc, but we think we can replace them for better
+> > readability of the code.
 >
-> Syzkaller reproducer:
-> # {Threaded:false Collide:false Repeat:false RepeatTimes:0 Procs:1 
-> Slowdown:1 Sandbox: Fault:false FaultCall:-1 FaultNth:0 Leak:false 
-> NetInjection:false NetDevices:false NetReset:false Cgroups:false 
-> BinfmtMisc:false CloseFDs:false KCSAN:false DevlinkPCI:false USB:false 
-> VhciInjection:false Wifi:false IEEE802154:false Sysctl:false 
-> UseTmpDir:false HandleSegv:false Repro:false Trace:false}
-> r0 = bpf$MAP_CREATE(0x0, &(0x7f0000001480)={0x1e, 0x0, 0x2, 0x2, 0x0, 
-> 0x1}, 0x40)
-> bpf$MAP_GET_NEXT_KEY(0x4, &(0x7f0000000080)={r0, 0x0, 0x0}, 0x20)
->
->
-> C reproducer:
-> #endif /* REF */
-> // autogenerated by syzkaller (https://github.com/google/syzkaller)
->
-> #define _GNU_SOURCE
->
-> #include <endian.h>
-> #include <stdint.h>
-> #include <stdio.h>
-> #include <stdlib.h>
-> #include <string.h>
-> #include <sys/syscall.h>
-> #include <sys/types.h>
-> #include <unistd.h>
->
-> #ifndef __NR_bpf
-> #define __NR_bpf 321
-> #endif
->
-> uint64_t r[1] = {0xffffffffffffffff};
->
-> int main(void)
-> {
->         syscall(__NR_mmap, 0x1ffff000ul, 0x1000ul, 0ul, 0x32ul, -1, 0ul);
->     syscall(__NR_mmap, 0x20000000ul, 0x1000000ul, 7ul, 0x32ul, -1, 0ul);
->     syscall(__NR_mmap, 0x21000000ul, 0x1000ul, 0ul, 0x32ul, -1, 0ul);
->                 intptr_t res = 0;
-> *(uint32_t*)0x20001480 = 0x1e;
-> *(uint32_t*)0x20001484 = 0;
-> *(uint32_t*)0x20001488 = 2;
-> *(uint32_t*)0x2000148c = 2;
-> *(uint32_t*)0x20001490 = 0;
-> *(uint32_t*)0x20001494 = 1;
-> *(uint32_t*)0x20001498 = 0;
-> memset((void*)0x2000149c, 0, 16);
-> *(uint32_t*)0x200014ac = 0;
-> *(uint32_t*)0x200014b0 = -1;
-> *(uint32_t*)0x200014b4 = 0;
-> *(uint32_t*)0x200014b8 = 0;
-> *(uint32_t*)0x200014bc = 0;
->     res = syscall(__NR_bpf, 0ul, 0x20001480ul, 0x40ul);
->     if (res != -1)
->         r[0] = res;
-> *(uint32_t*)0x20000080 = r[0];
-> *(uint64_t*)0x20000088 = 0;
-> *(uint64_t*)0x20000090 = 0;
-> *(uint64_t*)0x20000098 = 0;
->     syscall(__NR_bpf, 4ul, 0x20000080ul, 0x20ul);
->     return 0;
-> }
->
-> George
->
-Hi Daniel,
+> Coding style changes should NEVER be ignored and put off for later.
+> To do so means you do not care about the brains of anyone who you are
+> wanting to read this code.  We have a coding style because of brains and
+> pattern matching, not because we are being mean.
 
-I missed another set of kvmallocs. Here's another report and reproducer:
+Hey Greg,
 
-Syzkaller hit 'WARNING: kmalloc bug in bpf' bug.
+This is my fault.
 
-------------[ cut here ]------------
-WARNING: CPU: 1 PID: 15091 at mm/util.c:597 kvmalloc_node+0x11d/0x130 mm/util.c:597
-Modules linked in:
-CPU: 1 PID: 15091 Comm: syz-executor949 Not tainted 5.16.0-rc5-syzk #1
-Hardware name: Red Hat KVM, BIOS 1.13.0-2.module+el8.3.0+7860+a7792d29 04/01/2014
-RIP: 0010:kvmalloc_node+0x11d/0x130 mm/util.c:597
-Code: 01 00 00 00 48 89 df e8 01 4f 0c 00 49 89 c5 e9 68 ff ff ff e8 b4 82 ca ff 45 89 e5 41 81 cd 00 20 01 00 eb 95 e8 a3 82 ca ff <0f> 0b e9 4b ff ff ff 66 66 2e 0f 1f 84 00 00 00 00 00 90 0f 1f 44
-RSP: 0018:ffff888017687b50 EFLAGS: 00010246
-RAX: 0000000000000000 RBX: 0000000080000001 RCX: ffffffff81b63b8a
-RDX: 0000000000000000 RSI: ffff888101916500 RDI: 0000000000000002
-RBP: ffff888017687b70 R08: 0000000000112cc0 R09: 00000000ffffffff
-R10: 0000000000000000 R11: ffffed1004a71db0 R12: 0000000000102cc0
-R13: 0000000000000000 R14: 00000000ffffffff R15: ffff888025092800
-FS:  00007f0794bc3740(0000) GS:ffff888107880000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000020000500 CR3: 00000000299d0000 CR4: 00000000000006e0
-Call Trace:
-  <TASK>
-  kvmalloc include/linux/slab.h:741 [inline]
-  map_lookup_elem kernel/bpf/syscall.c:1099 [inline]
-  __sys_bpf+0x415b/0x5a80 kernel/bpf/syscall.c:4618
-  __do_sys_bpf kernel/bpf/syscall.c:4737 [inline]
-  __se_sys_bpf kernel/bpf/syscall.c:4735 [inline]
-  __x64_sys_bpf+0x7a/0xc0 kernel/bpf/syscall.c:4735
-  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-  do_syscall_64+0x3a/0x80 arch/x86/entry/common.c:80
-  entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7f07944ba289
-Code: 01 00 48 81 c4 80 00 00 00 e9 f1 fe ff ff 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d b7 db 2c 00 f7 d8 64 89 01 48
-RSP: 002b:00007ffc3a07dcd8 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f07944ba289
-RDX: 0000000000000020 RSI: 0000000020000240 RDI: 0000000000000001
-RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00000000004006d0
-R13: 00007ffc3a07ddc0 R14: 0000000000000000 R15: 0000000000000000
-  </TASK>
----[ end trace 67ed3be15b904c13 ]---
+To date Mike has been patiently and diligently following my review
+feedback to continue to make the driver smaller and more Linux
+idiomatic. Primarily this has been ripping and replacing a pile of
+object configuration ioctls with configfs. While my confidence in that
+review feedback was high, my confidence in the current round of deeper
+architecture reworks is lower and they seemed to raise questions that
+are likely FAQs with using configfs. Specifically the observation that
+configfs, like sysfs, lacks an "atomically update multiple attributes"
+capability. To my knowledge that's just the expected tradeoff with
+pseudo-fs based configuration and it is up to userspace to coordinate
+multiple configuration writers.
 
+The other question is the use of anon_inode_getfd(). To me that
+mechanism is reserved for syscall and ioctl based architectures, and
+in this case it was only being used as a mechanism to get an automatic
+teardown action at process exit. Again, my inclination is that configs
+requires userspace to clean up anything it created. If "tear down on
+last close" behavior is needed that would either need to come from a
+userspace daemon to watch clients, or another character device that
+clients could open to represent the active users of the configuration.
+My preference is for the former.
 
-Syzkaller reproducer:
-# {Threaded:false Collide:false Repeat:false RepeatTimes:0 Procs:1 Slowdown:1 Sandbox: Fault:false FaultCall:-1 FaultNth:0 Leak:false NetInjection:false NetDevices:false NetReset:false Cgroups:false BinfmtMisc:false CloseFDs:false KCSAN:false DevlinkPCI:false USB:false VhciInjection:false Wifi:false IEEE802154:false Sysctl:false UseTmpDir:false HandleSegv:false Repro:false Trace:false}
-r0 = bpf$MAP_CREATE(0x0, &(0x7f0000000500)={0x1e, 0x0, 0x80000001, 0x1, 0x0, 0x1}, 0x40)
-bpf$MAP_LOOKUP_ELEM(0x1, &(0x7f0000000240)={r0, 0x0, 0x0}, 0x20)
-
-
-C reproducer:
-// autogenerated by syzkaller (https://github.com/google/syzkaller)
-
-#define _GNU_SOURCE
-
-#include <endian.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/syscall.h>
-#include <sys/types.h>
-#include <unistd.h>
-
-#ifndef __NR_bpf
-#define __NR_bpf 321
-#endif
-
-uint64_t r[1] = {0xffffffffffffffff};
-
-int main(void)
-{
-		syscall(__NR_mmap, 0x1ffff000ul, 0x1000ul, 0ul, 0x32ul, -1, 0ul);
-	syscall(__NR_mmap, 0x20000000ul, 0x1000000ul, 7ul, 0x32ul, -1, 0ul);
-	syscall(__NR_mmap, 0x21000000ul, 0x1000ul, 0ul, 0x32ul, -1, 0ul);
-				intptr_t res = 0;
-*(uint32_t*)0x20000500 = 0x1e;
-*(uint32_t*)0x20000504 = 0;
-*(uint32_t*)0x20000508 = 0x80000001;
-*(uint32_t*)0x2000050c = 1;
-*(uint32_t*)0x20000510 = 0;
-*(uint32_t*)0x20000514 = 1;
-*(uint32_t*)0x20000518 = 0;
-memset((void*)0x2000051c, 0, 16);
-*(uint32_t*)0x2000052c = 0;
-*(uint32_t*)0x20000530 = -1;
-*(uint32_t*)0x20000534 = 0;
-*(uint32_t*)0x20000538 = 0;
-*(uint32_t*)0x2000053c = 0;
-	res = syscall(__NR_bpf, 0ul, 0x20000500ul, 0x40ul);
-	if (res != -1)
-		r[0] = res;
-*(uint32_t*)0x20000240 = r[0];
-*(uint64_t*)0x20000248 = 0;
-*(uint64_t*)0x20000250 = 0;
-*(uint64_t*)0x20000258 = 0;
-	syscall(__NR_bpf, 1ul, 0x20000240ul, 0x20ul);
-	return 0;
-}
-
-
-It seems like kvmalloc and its friends are used with no size check
-throughout the kernel. It seems like the commit that returned
-ZERO_SIZE_PTR ((void *)16) should be backed out.
-
-Should I send out a v2 of the patch including the other kvmalloc
-calls or do you have a suggested fix?
-
-Thanks,
-George
-
->>
->> Thanks,
->> Daniel
->
-
+I green-lighted the work-in-progress / RFC posting  (with the known
+style warts) to get momentum on just those questions. I thought it
+better to not polish this driver to a shine and get some mid-rework
+feedback. Mike continues to be a pleasure to work with, please take
+any frustrations on how this was presented out on me, I'll do better
+next time for these types of questions. DLB is unlike anything I have
+reviewed previously.
