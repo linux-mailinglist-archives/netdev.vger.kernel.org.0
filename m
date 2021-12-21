@@ -2,45 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BD4947B70F
-	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 02:58:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 24CCB47B725
+	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 02:58:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232024AbhLUB6G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Dec 2021 20:58:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44474 "EHLO
+        id S232622AbhLUB6S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Dec 2021 20:58:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231685AbhLUB6F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Dec 2021 20:58:05 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86A12C061401;
-        Mon, 20 Dec 2021 17:58:04 -0800 (PST)
+        with ESMTP id S232223AbhLUB6H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Dec 2021 20:58:07 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79F25C061574;
+        Mon, 20 Dec 2021 17:58:07 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D618961166;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3F6D6B810D9;
+        Tue, 21 Dec 2021 01:58:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAE86C36AE5;
         Tue, 21 Dec 2021 01:58:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3213DC36AE8;
-        Tue, 21 Dec 2021 01:58:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1640051883;
-        bh=gmLE0LVLJMSf9iak4ept8gBoFfqJIY2RETT5um8tWHs=;
+        s=k20201202; t=1640051885;
+        bh=dPkDGzeocqgxsXdr5ixQYGslgMy9wJ6IbtCezWjiNsg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ayw4gzKrXlB+CxPZoXSWiZZmOXDdY2OZ7BpOgnDRG70pmkqEOGRjgfT28y5ozp+Ll
-         mhrbUbFO3dp4hTflqLkhOiNy88B91KRgHSj06YBorbgnzxcVm4kGnxdu0PSecmEuWH
-         gaK5hIDxQgg7tfKAB+icw3TQHG8tn60GUVA5j5HxiKiIKvOVIqU4nHBkupfXK1cKSG
-         kG7GCBO79ZaTuuUPTQvq5KzRZPkfdEGHsiT+qBBqv7d0J2Lf1Amp8zObZ5cbY+ITgw
-         v65atrJoswzZcXW7gOSJFiWRRNd0wf16ONOhTO7wh/tWWzl5WgXZHdLBRdfML1YVaz
-         C+qtJndVkVPPA==
+        b=tum+DbKClQyplIt/lo8M9Po9mRPMXQRHuEIKP3/hz1wmOCos2GTpYF3iEX26pb4P9
+         iKAgcjfcizKhad7JLb+N9BkV74Bj9icYg8OkkVJno5FyQpTsDbGrjITxMGqBXdAoRq
+         R8xASjleJnvbdOHlbNkhuDC5l4XsLKYoijPE8R2lv5S0uwlNSZGd72cZjfGLLqE49E
+         ST3UGJ8TUYAR2JxeRfNdPBSj5ihGSdna3+EhogfDE2blOa/SHlt2MF3aDW3h+tPo0P
+         V1UxXFtFJyvfIxMAybnV3LTeK4DM5ZSVi5aCqBCVDpcqrLRp0Hvnq7HXuRRy3t5Cxn
+         kJorEWwY3RdHA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Finn Behrens <me@kloenk.dev>, Finn Behrens <fin@nyantec.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        kuba@kernel.org, johannes@sipsolutions.net, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 07/29] nl80211: reset regdom when reloading regdb
-Date:   Mon, 20 Dec 2021 20:57:28 -0500
-Message-Id: <20211221015751.116328-7-sashal@kernel.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        stf_xl@wp.pl, kvalo@codeaurora.org, davem@davemloft.net,
+        kuba@kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 08/29] iwlwifi: fix LED dependencies
+Date:   Mon, 20 Dec 2021 20:57:29 -0500
+Message-Id: <20211221015751.116328-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20211221015751.116328-1-sashal@kernel.org>
 References: <20211221015751.116328-1-sashal@kernel.org>
@@ -52,98 +53,89 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Finn Behrens <me@kloenk.dev>
+From: Arnd Bergmann <arnd@arndb.de>
 
-[ Upstream commit 1eda919126b420fee6b8d546f7f728fbbd4b8f11 ]
+[ Upstream commit efdbfa0ad03e764419378485d1b8f6e7706fb1a3 ]
 
-Reload the regdom when the regulatory db is reloaded.
-Otherwise, the user had to change the regulatoy domain
-to a different one and then reset it to the correct
-one to have a new regulatory db take effect after a
-reload.
+The dependencies for LED configuration are highly inconsistent and too
+complicated at the moment. One of the results is a randconfig failure I
+get very rarely when LEDS_CLASS is in a loadable module, but the wireless
+core is built-in:
 
-Signed-off-by: Finn Behrens <fin@nyantec.com>
-Link: https://lore.kernel.org/r/YaIIZfxHgqc/UTA7@gimli.kloenk.dev
-[edit commit message]
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+WARNING: unmet direct dependencies detected for MAC80211_LEDS
+  Depends on [n]: NET [=y] && WIRELESS [=y] && MAC80211 [=y] && (LEDS_CLASS [=m]=y || LEDS_CLASS [=m]=MAC80211 [=y])
+  Selected by [m]:
+  - IWLEGACY [=m] && NETDEVICES [=y] && WLAN [=y] && WLAN_VENDOR_INTEL [=y]
+  - IWLWIFI_LEDS [=y] && NETDEVICES [=y] && WLAN [=y] && WLAN_VENDOR_INTEL [=y] && IWLWIFI [=m] && (LEDS_CLASS [=m]=y || LEDS_CLASS [=m]=IWLWIFI [=m]) && (IWLMVM [=m] || IWLDVM [=m])
+
+aarch64-linux-ld: drivers/net/wireless/ath/ath5k/led.o: in function `ath5k_register_led':
+led.c:(.text+0x60): undefined reference to `led_classdev_register_ext'
+aarch64-linux-ld: drivers/net/wireless/ath/ath5k/led.o: in function `ath5k_unregister_leds':
+led.c:(.text+0x200): undefined reference to `led_classdev_unregister'
+
+For iwlwifi, the dependency is wrong, since this config prevents the
+MAC80211_LEDS code from being part of a built-in MAC80211 driver.
+
+For iwlegacy, this is worse because the driver tries to force-enable
+the other subsystems, which is both a layering violation and a bug
+because it will still fail with MAC80211=y and IWLEGACY=m, leading
+to LEDS_CLASS being a module as well.
+
+The actual link failure in the ath5k driver is a result of MAC80211_LEDS
+being enabled but not usable. With the Kconfig logic fixed in the
+Intel drivers, the ath5k driver works as expected again.
+
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Acked-by: Luca Coelho <luciano.coelho@intel.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20211204173848.873293-1-arnd@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/regulatory.h |  1 +
- net/wireless/reg.c       | 27 +++++++++++++++++++++++++--
- 2 files changed, 26 insertions(+), 2 deletions(-)
+ drivers/net/wireless/intel/iwlegacy/Kconfig | 4 ++--
+ drivers/net/wireless/intel/iwlwifi/Kconfig  | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/include/net/regulatory.h b/include/net/regulatory.h
-index 47f06f6f5a67c..0cf9335431e07 100644
---- a/include/net/regulatory.h
-+++ b/include/net/regulatory.h
-@@ -83,6 +83,7 @@ struct regulatory_request {
- 	enum nl80211_dfs_regions dfs_region;
- 	bool intersect;
- 	bool processed;
-+	bool reload;
- 	enum environment_cap country_ie_env;
- 	struct list_head list;
- };
-diff --git a/net/wireless/reg.c b/net/wireless/reg.c
-index df87c7f3a0492..61f1bf1bc4a73 100644
---- a/net/wireless/reg.c
-+++ b/net/wireless/reg.c
-@@ -133,6 +133,7 @@ static u32 reg_is_indoor_portid;
+diff --git a/drivers/net/wireless/intel/iwlegacy/Kconfig b/drivers/net/wireless/intel/iwlegacy/Kconfig
+index 24fe3f63c3215..7eacc8e58ee14 100644
+--- a/drivers/net/wireless/intel/iwlegacy/Kconfig
++++ b/drivers/net/wireless/intel/iwlegacy/Kconfig
+@@ -2,14 +2,13 @@
+ config IWLEGACY
+ 	tristate
+ 	select FW_LOADER
+-	select NEW_LEDS
+-	select LEDS_CLASS
+ 	select LEDS_TRIGGERS
+ 	select MAC80211_LEDS
  
- static void restore_regulatory_settings(bool reset_user, bool cached);
- static void print_regdomain(const struct ieee80211_regdomain *rd);
-+static void reg_process_hint(struct regulatory_request *reg_request);
+ config IWL4965
+ 	tristate "Intel Wireless WiFi 4965AGN (iwl4965)"
+ 	depends on PCI && MAC80211
++	depends on LEDS_CLASS=y || LEDS_CLASS=MAC80211
+ 	select IWLEGACY
+ 	help
+ 	  This option enables support for
+@@ -38,6 +37,7 @@ config IWL4965
+ config IWL3945
+ 	tristate "Intel PRO/Wireless 3945ABG/BG Network Connection (iwl3945)"
+ 	depends on PCI && MAC80211
++	depends on LEDS_CLASS=y || LEDS_CLASS=MAC80211
+ 	select IWLEGACY
+ 	help
+ 	  Select to build the driver supporting the:
+diff --git a/drivers/net/wireless/intel/iwlwifi/Kconfig b/drivers/net/wireless/intel/iwlwifi/Kconfig
+index 1085afbefba87..418ae4f870ab7 100644
+--- a/drivers/net/wireless/intel/iwlwifi/Kconfig
++++ b/drivers/net/wireless/intel/iwlwifi/Kconfig
+@@ -47,7 +47,7 @@ if IWLWIFI
  
- static const struct ieee80211_regdomain *get_cfg80211_regdom(void)
- {
-@@ -1098,6 +1099,8 @@ int reg_reload_regdb(void)
- 	const struct firmware *fw;
- 	void *db;
- 	int err;
-+	const struct ieee80211_regdomain *current_regdomain;
-+	struct regulatory_request *request;
- 
- 	err = request_firmware(&fw, "regulatory.db", &reg_pdev->dev);
- 	if (err)
-@@ -1118,8 +1121,27 @@ int reg_reload_regdb(void)
- 	if (!IS_ERR_OR_NULL(regdb))
- 		kfree(regdb);
- 	regdb = db;
--	rtnl_unlock();
- 
-+	/* reset regulatory domain */
-+	current_regdomain = get_cfg80211_regdom();
-+
-+	request = kzalloc(sizeof(*request), GFP_KERNEL);
-+	if (!request) {
-+		err = -ENOMEM;
-+		goto out_unlock;
-+	}
-+
-+	request->wiphy_idx = WIPHY_IDX_INVALID;
-+	request->alpha2[0] = current_regdomain->alpha2[0];
-+	request->alpha2[1] = current_regdomain->alpha2[1];
-+	request->initiator = NL80211_USER_REG_HINT_USER;
-+	request->user_reg_hint_type = NL80211_USER_REG_HINT_USER;
-+	request->reload = true;
-+
-+	reg_process_hint(request);
-+
-+out_unlock:
-+	rtnl_unlock();
-  out:
- 	release_firmware(fw);
- 	return err;
-@@ -2690,7 +2712,8 @@ reg_process_hint_user(struct regulatory_request *user_request)
- 
- 	treatment = __reg_process_hint_user(user_request);
- 	if (treatment == REG_REQ_IGNORE ||
--	    treatment == REG_REQ_ALREADY_SET)
-+	    (treatment == REG_REQ_ALREADY_SET &&
-+	     !user_request->reload))
- 		return REG_REQ_IGNORE;
- 
- 	user_request->intersect = treatment == REG_REQ_INTERSECT;
+ config IWLWIFI_LEDS
+ 	bool
+-	depends on LEDS_CLASS=y || LEDS_CLASS=IWLWIFI
++	depends on LEDS_CLASS=y || LEDS_CLASS=MAC80211
+ 	depends on IWLMVM || IWLDVM
+ 	select LEDS_TRIGGERS
+ 	select MAC80211_LEDS
 -- 
 2.34.1
 
