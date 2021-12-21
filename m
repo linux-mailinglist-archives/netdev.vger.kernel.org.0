@@ -2,82 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C0B547C832
-	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 21:21:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 020F247C845
+	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 21:34:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233976AbhLUUVz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Dec 2021 15:21:55 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:34116 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233108AbhLUUVy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Dec 2021 15:21:54 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DF989B817D0;
-        Tue, 21 Dec 2021 20:21:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2A1CC36AE8;
-        Tue, 21 Dec 2021 20:21:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1640118110;
-        bh=W/xKcGz9hVPblpB16ROkpU7To/atMV0hIDh0EVixtyo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=gz5azwoxr7sGkGC+0101GVwj274sxuy/RA+nYITuVhwO82lBdQ4nrk4vaL4YfQFlx
-         QZEDUoGjCs2elTk/H/DHfF1fM8czfn7h4Q99mbyPYowVzOzd63/umqGhvxy8QXgqsr
-         Z4E7CT1ydRP3riG1J99+hRLJHl3n+eSMceHJ7n5X9wLkJUZAvHdUCIGWUqTRqbzDZ6
-         XCIzfaljiXVdBKCNDMJc37pMsqVN66icduO3tk0KbrnPJWqU6c9FkzrcA9H4s+D8ew
-         omRHNvrJGVtWDCm6cHABxWs6V7lhVuJ7ARXlvgAR+8QS+XXysPZ8/pluKAy3ssnBIM
-         7tLD2liFKWS7w==
-Date:   Tue, 21 Dec 2021 12:21:49 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>
-Cc:     "Loftus, Ciara" <ciara.loftus@intel.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
-        bpf <bpf@vger.kernel.org>
-Subject: Re: [PATCH bpf] xsk: Initialise xskb free_list_node
-Message-ID: <20211221122149.72160edc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CAJ8uoz3HYUO_NK+GCHtDWiczp-pDqpk6V+f5X5KkAJqN70nAnQ@mail.gmail.com>
-References: <20211220155250.2746-1-ciara.loftus@intel.com>
-        <CAJ8uoz2-jZTqT_XkP6T2c0VAzC=QcENr2dJrE5ZivUx8Ak_6ZA@mail.gmail.com>
-        <PH0PR11MB479171AF2D4CE0B118B47A208E7C9@PH0PR11MB4791.namprd11.prod.outlook.com>
-        <CAJ8uoz3HYUO_NK+GCHtDWiczp-pDqpk6V+f5X5KkAJqN70nAnQ@mail.gmail.com>
+        id S234161AbhLUUd3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Dec 2021 15:33:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46556 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234018AbhLUUd2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Dec 2021 15:33:28 -0500
+Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13B7BC061574;
+        Tue, 21 Dec 2021 12:33:28 -0800 (PST)
+Received: by mail-lj1-x22e.google.com with SMTP id k27so230996ljc.4;
+        Tue, 21 Dec 2021 12:33:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=iokYFGKFWpGgvc/wPLQmXmpqVjhnO7U9sL1ZKTvaFWI=;
+        b=HHZ/X/6O5lQgivi5y0CrwYhM5dQubJ5BQSrmiy6NJUD8xZx1P/YSTwrE3ygXNF8EbZ
+         hbdfpd707EIZ+3sIlslMdaHrCy/E4Fztji7wtwF38MXLykunX5VzB27FI6A8WVA+oUvZ
+         p4F/DYhif6avS0jv2Etjtx68TVAYOM5S/lp6JufuM7+KGrM3B4wopKIskhu6c+uMrjwW
+         iEFOIow7QwdG73WGPOth87Gx0g0uDyEtCotQq35eQ1p7NaQEbv4+1+ZA1plVfyY/xphv
+         RJdTY8IbLwVsGPIKhDWtI95RgI1kB1FCoilwnzDvyxYMsjlemV2pzn+o3nJAQZpGSVWd
+         Qe8A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=iokYFGKFWpGgvc/wPLQmXmpqVjhnO7U9sL1ZKTvaFWI=;
+        b=Ucy8Xk6cfOFuC+PupsAOtGK8eHeGv5pn7w/nTCPQ8/bwOOe71dXI611JJHYTo0itYC
+         5DEaElH2pIOoSsNImfk92+7yoN2LQBejrD5ab217KTsRpmAPOlj2rpGgfjPs9LiP9MC9
+         Eigq8BY+K/HIzmZmWCZvZB/s0GV3O+WYCC7zkkqLG+63NHEBUNhUjtoL8McipdSa7mhD
+         /Ti5wxBVkYBM11ffZyovXx64zid+kja1f8aqmCftIPF2vjt/RY5L2lEvk1ylZQT2xa+r
+         KKf242VOYC6CD/2wf25Q26ZdW3fOy58yCp+R1x32kgVMKuCWv0ObaMb+18oYjFWsUU85
+         6PCQ==
+X-Gm-Message-State: AOAM532CTuLRmXSAheGep4NKBlBLX5JZwLE5isb7rRjRSG20XL/KLSs/
+        i95eOpf8lkU+ZGPAF0CXpTQ=
+X-Google-Smtp-Source: ABdhPJwlMXRHHrTmQaGpPimrm3/zWiEoy5ytXUE9y6iAn8EcmEZasQz63goneksz/qe5hO0hMYYauA==
+X-Received: by 2002:a2e:b177:: with SMTP id a23mr78834ljm.2.1640118806149;
+        Tue, 21 Dec 2021 12:33:26 -0800 (PST)
+Received: from [192.168.1.11] ([94.103.235.97])
+        by smtp.gmail.com with ESMTPSA id y36sm4373lfa.75.2021.12.21.12.33.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 21 Dec 2021 12:33:25 -0800 (PST)
+Message-ID: <24253b93-66f0-15b7-a3b1-f1ffacb86116@gmail.com>
+Date:   Tue, 21 Dec 2021 23:33:24 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [syzbot] KMSAN: kernel-infoleak in move_addr_to_user (6)
+Content-Language: en-US
+To:     syzbot <syzbot+cdbd40e0c3ca02cae3b7@syzkaller.appspotmail.com>,
+        andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, davem@davemloft.net, glider@google.com,
+        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, yhs@fb.com
+References: <000000000000a8a64205d39672b8@google.com>
+From:   Pavel Skripkin <paskripkin@gmail.com>
+In-Reply-To: <000000000000a8a64205d39672b8@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 21 Dec 2021 10:00:13 +0100 Magnus Karlsson wrote:
-> On Tue, Dec 21, 2021 at 9:32 AM Loftus, Ciara <ciara.loftus@intel.com> wrote:
-> > > Thank you for this fix Ciara! Though I do think the Fixes tag should
-> > > be the one above: 199d983bc015 ("xsk: Fix crash on double free in
-> > > buffer pool"). Before that commit, there was no test for an empty list
-> > > in the xp_free path. The entry was unconditionally put on the list and
-> > > "initialized" in that way, so that code will work without this patch.
-> > > What do you think?  
-> >
-> > Agree - that makes sense.
-> > Can the fixes tag be updated when pulled into the tree with:
-> > Fixes: 199d983bc015 ("xsk: Fix crash on double free in buffer pool")  
+On 12/20/21 19:33, syzbot wrote:
+> Hello,
 > 
-> On the other hand, this was a fix for 2b43470add8c ("xsk: Introduce
-> AF_XDP buffer allocation API"), the original tag you have in your
-> patch. What should the Fixes tag point to in this case? Need some
-> advice please.
+> syzbot found the following issue on:
+> 
+> HEAD commit:    b0a8b5053e8b kmsan: core: add dependency on DEBUG_KERNEL
+> git tree:       https://github.com/google/kmsan.git master
+> console output: https://syzkaller.appspot.com/x/log.txt?x=14a45071b00000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=46a956fc7a887c60
+> dashboard link: https://syzkaller.appspot.com/bug?extid=cdbd40e0c3ca02cae3b7
+> compiler:       clang version 14.0.0 (/usr/local/google/src/llvm-git-monorepo 2b554920f11c8b763cd9ed9003f4e19b919b8e1f), GNU ld (GNU Binutils for Debian) 2.35.2
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1343f443b00000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16efa493b00000
+> 
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+cdbd40e0c3ca02cae3b7@syzkaller.appspotmail.com
+> 
 
-My $0.02 would be that if all relevant commits form a chain of fixes
-it doesn't matter much which one you put in the tag. To me your
-suggestion of going with 199d983bc015 makes most sense since from a
-cursory look the direct issue doesn't really exist without that commit.
+Looks like missing memset(0). tipc_nametbl_lookup_anycast() may return 
+before initializing sk.ref
 
-Plus we probably don't want 199d983bc015 to be backported until we
-apply this fix, so it'd be good if "Fixes: 199d983bc015" appeared in
-linux-next.
+>  * On exit:
+>  *
+>  * - If lookup is deferred to another node, leave 'sk->node' unchanged and
+>  *   return 'true'.
 
-You can always put multiple Fixes tags on the commit, if you're unsure.
+And then sk.ref is passed to msg_set_destport().
+
+There is also one more place with similar possible uninit-value in 
+tipc_msg_lookup_dest().
+
+
+
+With regards,
+Pavel Skripkin
