@@ -2,99 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF7DF47C79C
-	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 20:40:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A55B847C795
+	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 20:39:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241846AbhLUTkF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Dec 2021 14:40:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34514 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237467AbhLUTkD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Dec 2021 14:40:03 -0500
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53524C061574;
-        Tue, 21 Dec 2021 11:40:03 -0800 (PST)
-Received: by mail-lf1-x133.google.com with SMTP id i31so120909lfv.10;
-        Tue, 21 Dec 2021 11:40:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=X+qQ8cOWr3KYDLsqh+E8A3qJbCcPj8hXX9NXQmQghMw=;
-        b=IOh1sSAi35BrRDyT2BlikmB1kEuAJLWXMHKnQ5egM133fsVbRUwZrbL8GzMG1WdWyz
-         lUR/VXFc1/sC4h9Kmv4tH4YXzBue1EEXp8YZTb0sfqQJwIGeap2S4ukbBvtDTnovRsAw
-         kXMvMOJqamHKy/pzrvOF5oR1ZvdflKwSfbrNI8WV+CH0MZ8PA9siP1QiIlLU4/d1Tko3
-         CFVEtDtmUi6kzyss2xIpEkJES7rxOWwFktkFVU8F1q/INoZtj/NQH+pi9rxbM6HxG7DH
-         9YNssPt9pTO9LaNRReO6qlASl6nA9iClNSg4hKKzuogHlmioiKdFq/I9trDBXM6RATHL
-         6A7Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=X+qQ8cOWr3KYDLsqh+E8A3qJbCcPj8hXX9NXQmQghMw=;
-        b=XxL/ZYgTpkyu0jpZuxXIkbbK31QV1VpGpcHwqE12O9XthzsCuGVcsd10FeVbDQ2CuJ
-         F8LkpCnkc7p6UZB5alIZsAEf+LnL9BmccbO2MsRBHMxMGHuaPG9WpF7OqLcCXm+5f1iS
-         ZWcUNXmzJ8BvNSlth0re0V0JqZnyoqb/iiMccsMiN93IE1OufzjyewiVNdqAh36nD7Bk
-         2eY/lGz5MoaM/HRDyetMpr5wcSMagRc+LqCeoG/5rjMitpHzVOAy1n+r8k8OLAU08M+1
-         SKPj0P+ZAsGkjNuFGfP/R14iuMsQZUop6ladOpt3mpwX3rbNPAXXcVi2EXwyqfcRO+Qc
-         E2Dg==
-X-Gm-Message-State: AOAM531eeRoi/s8ksGHO3cQvfIV/EOjIFb2AB9TTuXlJGLMq6qxngYtb
-        zxXt+VtKLAO/U/Aj6VO05Dk=
-X-Google-Smtp-Source: ABdhPJyiWYtCRiDHXtbL3FNBAPDPseFmLc0mG9mUtTOEL9oDneTuykecD30kXs+F2wE2ie8XpjqfXg==
-X-Received: by 2002:a05:6512:3e28:: with SMTP id i40mr4084008lfv.436.1640115601549;
-        Tue, 21 Dec 2021 11:40:01 -0800 (PST)
-Received: from localhost.localdomain ([94.103.235.97])
-        by smtp.gmail.com with ESMTPSA id d5sm662799lfv.83.2021.12.21.11.40.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Dec 2021 11:40:01 -0800 (PST)
-From:   Pavel Skripkin <paskripkin@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, linux@rempel-privat.de,
-        andrew@lunn.ch, robert.foss@collabora.com, freddy@asix.com.tw
-Cc:     linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        syzbot+f44badb06036334e867a@syzkaller.appspotmail.com
-Subject: [PATCH 1/2] asix: fix uninit-value in asix_mdio_read()
-Date:   Tue, 21 Dec 2021 22:39:32 +0300
-Message-Id: <bd6a7e1779ba97a300650e8e23b69ecffb3b4236.1640115493.git.paskripkin@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        id S241834AbhLUTjv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Dec 2021 14:39:51 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:46792 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234416AbhLUTju (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Dec 2021 14:39:50 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6CEB6B816B3;
+        Tue, 21 Dec 2021 19:39:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D628C36AE8;
+        Tue, 21 Dec 2021 19:39:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1640115588;
+        bh=bNfUoZedx6yXkJHuvzaeMl8iyE0ktEf9fQ6+7LtJZWY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Spc7MnxE9o+x2TwYu/sgN3HGbzPb2DbsH5IuMZ1mG/w/Rc0CgIoCSbjnojjU/DCOz
+         e629SJi+PZ0hkbd6SBkv6L2qxDBTlCDYYNuJ9qgITj4w0EJe5oxqDy1tqBefpfAJ9h
+         mqejR2NhJCQdhnu3LRPqw68lN1IC2ABUViqkkDq+FExPz6BNTyEhS/74anffxCB5Cp
+         XuXfXQk3QB6Nxu7xNKq0VLpkQkfWAZRL0XfJZpFdol4lLFlZf6wcperMVrWDSRAVFh
+         vryUXC9MaoAtAwBXW2raStQbRrC5AuqTceH7D2y0mN5UqV4cLGxrlWZldyY1I8P4R8
+         /Ne1WXyWW9YkA==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        kvalo@kernel.org, pkshih@realtek.com, ath11k@lists.infradead.org,
+        linux-wireless@vger.kernel.org
+Subject: [PATCH net-next 1/2] codel: remove unnecessary sock.h include
+Date:   Tue, 21 Dec 2021 11:39:40 -0800
+Message-Id: <20211221193941.3805147-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-asix_read_cmd() may read less than sizeof(smsr) bytes and in this case
-smsr will be uninitialized.
+Since sock.h is modified relatively often (60 times in the last
+12 months) it seems worthwhile to decrease the incremental build
+work.
 
-Fail log:
-BUG: KMSAN: uninit-value in asix_check_host_enable drivers/net/usb/asix_common.c:82 [inline]
-BUG: KMSAN: uninit-value in asix_check_host_enable drivers/net/usb/asix_common.c:82 [inline] drivers/net/usb/asix_common.c:497
-BUG: KMSAN: uninit-value in asix_mdio_read+0x3c1/0xb00 drivers/net/usb/asix_common.c:497 drivers/net/usb/asix_common.c:497
- asix_check_host_enable drivers/net/usb/asix_common.c:82 [inline]
- asix_check_host_enable drivers/net/usb/asix_common.c:82 [inline] drivers/net/usb/asix_common.c:497
- asix_mdio_read+0x3c1/0xb00 drivers/net/usb/asix_common.c:497 drivers/net/usb/asix_common.c:497
+CoDel's header includes net/inet_ecn.h which in turn includes net/sock.h.
+codel.h is itself included by mac80211 which is included by much of
+the WiFi stack and drivers. Removing the net/inet_ecn.h include from
+CoDel breaks the dependecy between WiFi and sock.h.
 
-Fixes: d9fe64e51114 ("net: asix: Add in_pm parameter")
-Reported-and-tested-by: syzbot+f44badb06036334e867a@syzkaller.appspotmail.com
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Commit d068ca2ae2e6 ("codel: split into multiple files") moved all
+the code which actually needs ECN helpers out to net/codel_impl.h,
+the include can be moved there as well.
+
+This decreases the incremental build size after touching sock.h
+from 4999 objects to 4051 objects.
+
+Fix unmasked missing includes in WiFi drivers.
+
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- drivers/net/usb/asix_common.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+CC: kvalo@kernel.org
+CC: pkshih@realtek.com
+CC: ath11k@lists.infradead.org
+CC: linux-wireless@vger.kernel.org
+---
+ drivers/net/wireless/ath/ath11k/debugfs.c  | 2 ++
+ drivers/net/wireless/realtek/rtw89/core.c  | 2 ++
+ drivers/net/wireless/realtek/rtw89/debug.c | 2 ++
+ include/net/codel.h                        | 1 -
+ include/net/codel_impl.h                   | 2 ++
+ 5 files changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/usb/asix_common.c b/drivers/net/usb/asix_common.c
-index 42ba4af68090..06823d7141b6 100644
---- a/drivers/net/usb/asix_common.c
-+++ b/drivers/net/usb/asix_common.c
-@@ -77,7 +77,7 @@ static int asix_check_host_enable(struct usbnet *dev, int in_pm)
- 				    0, 0, 1, &smsr, in_pm);
- 		if (ret == -ENODEV)
- 			break;
--		else if (ret < 0)
-+		else if (ret < sizeof(smsr))
- 			continue;
- 		else if (smsr & AX_HOST_EN)
- 			break;
+diff --git a/drivers/net/wireless/ath/ath11k/debugfs.c b/drivers/net/wireless/ath/ath11k/debugfs.c
+index dba055d085be..eb8b4f20c95e 100644
+--- a/drivers/net/wireless/ath/ath11k/debugfs.c
++++ b/drivers/net/wireless/ath/ath11k/debugfs.c
+@@ -3,6 +3,8 @@
+  * Copyright (c) 2018-2020 The Linux Foundation. All rights reserved.
+  */
+ 
++#include <linux/vmalloc.h>
++
+ #include "debugfs.h"
+ 
+ #include "core.h"
+diff --git a/drivers/net/wireless/realtek/rtw89/core.c b/drivers/net/wireless/realtek/rtw89/core.c
+index cf05baf88640..a0737eea9f81 100644
+--- a/drivers/net/wireless/realtek/rtw89/core.c
++++ b/drivers/net/wireless/realtek/rtw89/core.c
+@@ -1,6 +1,8 @@
+ // SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
+ /* Copyright(c) 2019-2020  Realtek Corporation
+  */
++#include <linux/ip.h>
++#include <linux/udp.h>
+ 
+ #include "coex.h"
+ #include "core.h"
+diff --git a/drivers/net/wireless/realtek/rtw89/debug.c b/drivers/net/wireless/realtek/rtw89/debug.c
+index 9756d75ef24e..22bd1d03e722 100644
+--- a/drivers/net/wireless/realtek/rtw89/debug.c
++++ b/drivers/net/wireless/realtek/rtw89/debug.c
+@@ -2,6 +2,8 @@
+ /* Copyright(c) 2019-2020  Realtek Corporation
+  */
+ 
++#include <linux/vmalloc.h>
++
+ #include "coex.h"
+ #include "debug.h"
+ #include "fw.h"
+diff --git a/include/net/codel.h b/include/net/codel.h
+index a6c9e34e62b8..d74dd8fda54e 100644
+--- a/include/net/codel.h
++++ b/include/net/codel.h
+@@ -45,7 +45,6 @@
+ #include <linux/ktime.h>
+ #include <linux/skbuff.h>
+ #include <net/pkt_sched.h>
+-#include <net/inet_ecn.h>
+ 
+ /* Controlling Queue Delay (CoDel) algorithm
+  * =========================================
+diff --git a/include/net/codel_impl.h b/include/net/codel_impl.h
+index 137d40d8cbeb..78a27ac73070 100644
+--- a/include/net/codel_impl.h
++++ b/include/net/codel_impl.h
+@@ -49,6 +49,8 @@
+  * Implemented on linux by Dave Taht and Eric Dumazet
+  */
+ 
++#include <net/inet_ecn.h>
++
+ static void codel_params_init(struct codel_params *params)
+ {
+ 	params->interval = MS2TIME(100);
 -- 
-2.34.1
+2.31.1
 
