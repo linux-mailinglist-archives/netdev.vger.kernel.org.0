@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC8B447C5D1
-	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 19:08:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B6EE47C5D2
+	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 19:08:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240879AbhLUSIY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Dec 2021 13:08:24 -0500
+        id S236932AbhLUSI2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Dec 2021 13:08:28 -0500
 Received: from mga06.intel.com ([134.134.136.31]:51709 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236932AbhLUSIY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Dec 2021 13:08:24 -0500
+        id S240858AbhLUSIZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Dec 2021 13:08:25 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1640110104; x=1671646104;
+  t=1640110105; x=1671646105;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=0R9Nr9Yz3D27/x+q+QDF5maNDT74SCV1e7Fugf+9b/w=;
-  b=Rv0pctk6gp12cMggANrKX2ewQq7l/2Y+/z1uMQhmNTw9CiNRvkKduQno
-   ZYoaAD+ImbxqmKDCZs8F+BZarZ5OKZngSoigJa7opZH78a/3PWQh8OJEL
-   jueuH/8ztokZnTKS7NlWKqgTy1iWFM2cLWNVORe+DbbL5TTWXk9T3KaNV
-   pA9iqtjxjMBoa1LHziPYKT4B8+Ei7xz2Xos9PjEOqI/V1aihp6wM2L79+
-   Q4yigl+blqRuTYhawKGn8Eh7UMa/kavKrZ0jvEeSbdalOTIxOo36wzS2+
-   59Q3FgEhPG5AxzbFakucVsfRgg33Y3dLjVgVMg0Jd8AlPnNn5jlucICyM
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10205"; a="301225603"
+  bh=efBLSd3OsOMmQYjP8U3tNwlBwu25Q5aDA85N0l8NJr8=;
+  b=OYj3KZs6LShb0arY8XzFP9JcmpizO2hOxcncJmuvOT3f+ZuadexRbUc4
+   KvsWcph7gOpCUlQPBeg2kO5TAsT15J2GoyEj/8Zx6w5C4eI/ad5d6BgxT
+   1tJCH++hoZXkw3kbC9Rc1JjNQotuRhcIvma6e+K6qITi64fSP2EOj3fJr
+   1A32FNroYgh+Tl1Qh1/FA6b/e0hp0XItR2A20Lkx0A0Wg3Sntdjlqc8Uw
+   2SnCRi2Y4zo2fqskqexeZZP0d0yy2a17Np/kXtVPoupzfSv95a/V5C8s/
+   3b5n7t5bWi5k08Z+R8PhUFBUnVpby1eUNl0ewFxG95vvuaTYaF+tj5Ie9
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10205"; a="301225605"
 X-IronPort-AV: E=Sophos;i="5.88,224,1635231600"; 
-   d="scan'208";a="301225603"
+   d="scan'208";a="301225605"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
   by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Dec 2021 09:49:38 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,224,1635231600"; 
-   d="scan'208";a="521342503"
+   d="scan'208";a="521342505"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by orsmga008.jf.intel.com with ESMTP; 21 Dec 2021 09:49:37 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
@@ -39,9 +39,9 @@ To:     davem@davemloft.net, kuba@kernel.org
 Cc:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org,
         anthony.l.nguyen@intel.com, richardcochran@gmail.com,
         Gurucharan G <gurucharanx.g@intel.com>
-Subject: [PATCH net-next 09/10] ice: exit bypass mode once hardware finishes timestamp calibration
-Date:   Tue, 21 Dec 2021 09:48:44 -0800
-Message-Id: <20211221174845.3063640-10-anthony.l.nguyen@intel.com>
+Subject: [PATCH net-next 10/10] ice: support crosstimestamping on E822 devices if supported
+Date:   Tue, 21 Dec 2021 09:48:45 -0800
+Message-Id: <20211221174845.3063640-11-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211221174845.3063640-1-anthony.l.nguyen@intel.com>
 References: <20211221174845.3063640-1-anthony.l.nguyen@intel.com>
@@ -53,763 +53,224 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jacob Keller <jacob.e.keller@intel.com>
 
-Once the E822 device has sent and received one packet, the hardware
-computes the internal delay of the PHY using a process known as Vernier
-calibration. This calibration calculates a more accurate offset for the
-Tx and Rx timestamps. To make use of this offset, we need to exit the
-bypass mode. This cannot be done until the PHY has completed offset
-calibration, as indicated by the offset valid bits.
+E822 devices on supported platforms can generate a cross timestamp
+between the platform ART and the device time. This process allows for
+very precise measurement of the difference between the PTP hardware
+clock and the platform time.
 
-To handle this, introduce a kthread work item which will poll the offset
-valid bits every few milliseconds seeing if it is safe to exit bypass
-mode.
+This is only supported if we know the TSC frequency relative to ART, so
+we do not enable this unless the boot CPU has a known TSC frequency (as
+required by convert_art_ns_to_tsc).
 
-Once we have finished calibrating the offsets, we can program the total
-Tx and Rx offset registers and turn off the bypass bit. This allows the
-hardware to include the more precise vernier calibration offset, and
-improves the timestamp precision.
+Because PCIe PTM support is not available on all platforms, introduce
+CONFIG_ICE_HWTS and make it depend on X86 where we know the support
+exists.
 
 Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
 Tested-by: Gurucharan G <gurucharanx.g@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_ptp.c    | 202 +++++++++-
- drivers/net/ethernet/intel/ice/ice_ptp.h    |   4 +
- drivers/net/ethernet/intel/ice/ice_ptp_hw.c | 411 ++++++++++++++++++++
- drivers/net/ethernet/intel/ice/ice_ptp_hw.h |   1 +
- 4 files changed, 616 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/intel/Kconfig            |  10 ++
+ .../net/ethernet/intel/ice/ice_hw_autogen.h   |   8 ++
+ drivers/net/ethernet/intel/ice/ice_ptp.c      | 117 ++++++++++++++++++
+ 3 files changed, 135 insertions(+)
 
+diff --git a/drivers/net/ethernet/intel/Kconfig b/drivers/net/ethernet/intel/Kconfig
+index 0b274d8fa45b..3facb55b7161 100644
+--- a/drivers/net/ethernet/intel/Kconfig
++++ b/drivers/net/ethernet/intel/Kconfig
+@@ -327,6 +327,16 @@ config ICE_SWITCHDEV
+ 
+ 	  If unsure, say N.
+ 
++config ICE_HWTS
++	bool "Support HW cross-timestamp on platforms with PTM support"
++	default y
++	depends on ICE && X86
++	help
++	  Say Y to enable hardware supported cross-timestamping on platforms
++	  with PCIe PTM support. The cross-timestamp is available through
++	  the PTP clock driver precise cross-timestamp ioctl
++	  (PTP_SYS_OFFSET_PRECISE).
++
+ config FM10K
+ 	tristate "Intel(R) FM10000 Ethernet Switch Host Interface Support"
+ 	default n
+diff --git a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
+index 7bff0450b76c..d16738a3d3a7 100644
+--- a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
++++ b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
+@@ -441,6 +441,10 @@
+ #define GLV_UPRCL(_i)				(0x003B2000 + ((_i) * 8))
+ #define GLV_UPTCL(_i)				(0x0030A000 + ((_i) * 8))
+ #define PRTRPB_RDPC				0x000AC260
++#define GLHH_ART_CTL				0x000A41D4
++#define GLHH_ART_CTL_ACTIVE_M			BIT(0)
++#define GLHH_ART_TIME_H				0x000A41D8
++#define GLHH_ART_TIME_L				0x000A41DC
+ #define GLTSYN_AUX_IN_0(_i)			(0x000889D8 + ((_i) * 4))
+ #define GLTSYN_AUX_IN_0_INT_ENA_M		BIT(4)
+ #define GLTSYN_AUX_OUT_0(_i)			(0x00088998 + ((_i) * 4))
+@@ -453,6 +457,8 @@
+ #define GLTSYN_ENA_TSYN_ENA_M			BIT(0)
+ #define GLTSYN_EVNT_H_0(_i)			(0x00088970 + ((_i) * 4))
+ #define GLTSYN_EVNT_L_0(_i)			(0x00088968 + ((_i) * 4))
++#define GLTSYN_HHTIME_H(_i)			(0x00088900 + ((_i) * 4))
++#define GLTSYN_HHTIME_L(_i)			(0x000888F8 + ((_i) * 4))
+ #define GLTSYN_INCVAL_H(_i)			(0x00088920 + ((_i) * 4))
+ #define GLTSYN_INCVAL_L(_i)			(0x00088918 + ((_i) * 4))
+ #define GLTSYN_SHADJ_H(_i)			(0x00088910 + ((_i) * 4))
+@@ -469,6 +475,8 @@
+ #define GLTSYN_TGT_L_0(_i)			(0x00088928 + ((_i) * 4))
+ #define GLTSYN_TIME_H(_i)			(0x000888D8 + ((_i) * 4))
+ #define GLTSYN_TIME_L(_i)			(0x000888D0 + ((_i) * 4))
++#define PFHH_SEM				0x000A4200 /* Reset Source: PFR */
++#define PFHH_SEM_BUSY_M				BIT(0)
+ #define PFTSYN_SEM				0x00088880
+ #define PFTSYN_SEM_BUSY_M			BIT(0)
+ #define VSIQF_FD_CNT(_VSI)			(0x00464000 + ((_VSI) * 4))
 diff --git a/drivers/net/ethernet/intel/ice/ice_ptp.c b/drivers/net/ethernet/intel/ice/ice_ptp.c
-index 50e82684980e..14b371a8f301 100644
+index 14b371a8f301..d3f65e061a62 100644
 --- a/drivers/net/ethernet/intel/ice/ice_ptp.c
 +++ b/drivers/net/ethernet/intel/ice/ice_ptp.c
-@@ -720,6 +720,192 @@ static void ice_ptp_reset_ts_memory_quad(struct ice_pf *pf, int quad)
- 	ice_write_quad_reg_e822(hw, quad, Q_REG_TS_CTRL, ~(u32)Q_REG_TS_CTRL_M);
- }
- 
-+/**
-+ * ice_ptp_check_tx_fifo - Check whether Tx FIFO is in an OK state
-+ * @port: PTP port for which Tx FIFO is checked
-+ */
-+static int ice_ptp_check_tx_fifo(struct ice_ptp_port *port)
-+{
-+	int quad = port->port_num / ICE_PORTS_PER_QUAD;
-+	int offs = port->port_num % ICE_PORTS_PER_QUAD;
-+	struct ice_pf *pf;
-+	struct ice_hw *hw;
-+	u32 val, phy_sts;
-+	int err;
-+
-+	pf = ptp_port_to_pf(port);
-+	hw = &pf->hw;
-+
-+	if (port->tx_fifo_busy_cnt == FIFO_OK)
-+		return 0;
-+
-+	/* need to read FIFO state */
-+	if (offs == 0 || offs == 1)
-+		err = ice_read_quad_reg_e822(hw, quad, Q_REG_FIFO01_STATUS,
-+					     &val);
-+	else
-+		err = ice_read_quad_reg_e822(hw, quad, Q_REG_FIFO23_STATUS,
-+					     &val);
-+
-+	if (err) {
-+		dev_err(ice_pf_to_dev(pf), "PTP failed to check port %d Tx FIFO, err %d\n",
-+			port->port_num, err);
-+		return err;
-+	}
-+
-+	if (offs & 0x1)
-+		phy_sts = (val & Q_REG_FIFO13_M) >> Q_REG_FIFO13_S;
-+	else
-+		phy_sts = (val & Q_REG_FIFO02_M) >> Q_REG_FIFO02_S;
-+
-+	if (phy_sts & FIFO_EMPTY) {
-+		port->tx_fifo_busy_cnt = FIFO_OK;
-+		return 0;
-+	}
-+
-+	port->tx_fifo_busy_cnt++;
-+
-+	dev_dbg(ice_pf_to_dev(pf), "Try %d, port %d FIFO not empty\n",
-+		port->tx_fifo_busy_cnt, port->port_num);
-+
-+	if (port->tx_fifo_busy_cnt == ICE_PTP_FIFO_NUM_CHECKS) {
-+		dev_dbg(ice_pf_to_dev(pf),
-+			"Port %d Tx FIFO still not empty; resetting quad %d\n",
-+			port->port_num, quad);
-+		ice_ptp_reset_ts_memory_quad(pf, quad);
-+		port->tx_fifo_busy_cnt = FIFO_OK;
-+		return 0;
-+	}
-+
-+	return -EAGAIN;
-+}
-+
-+/**
-+ * ice_ptp_check_tx_offset_valid - Check if the Tx PHY offset is valid
-+ * @port: the PTP port to check
-+ *
-+ * Checks whether the Tx offset for the PHY associated with this port is
-+ * valid. Returns 0 if the offset is valid, and a non-zero error code if it is
-+ * not.
-+ */
-+static int ice_ptp_check_tx_offset_valid(struct ice_ptp_port *port)
-+{
-+	struct ice_pf *pf = ptp_port_to_pf(port);
-+	struct device *dev = ice_pf_to_dev(pf);
-+	struct ice_hw *hw = &pf->hw;
-+	u32 val;
-+	int err;
-+
-+	err = ice_ptp_check_tx_fifo(port);
-+	if (err)
-+		return err;
-+
-+	err = ice_read_phy_reg_e822(hw, port->port_num, P_REG_TX_OV_STATUS,
-+				    &val);
-+	if (err) {
-+		dev_err(dev, "Failed to read TX_OV_STATUS for port %d, err %d\n",
-+			port->port_num, err);
-+		return -EAGAIN;
-+	}
-+
-+	if (!(val & P_REG_TX_OV_STATUS_OV_M))
-+		return -EAGAIN;
-+
-+	return 0;
-+}
-+
-+/**
-+ * ice_ptp_check_rx_offset_valid - Check if the Rx PHY offset is valid
-+ * @port: the PTP port to check
-+ *
-+ * Checks whether the Rx offset for the PHY associated with this port is
-+ * valid. Returns 0 if the offset is valid, and a non-zero error code if it is
-+ * not.
-+ */
-+static int ice_ptp_check_rx_offset_valid(struct ice_ptp_port *port)
-+{
-+	struct ice_pf *pf = ptp_port_to_pf(port);
-+	struct device *dev = ice_pf_to_dev(pf);
-+	struct ice_hw *hw = &pf->hw;
-+	int err;
-+	u32 val;
-+
-+	err = ice_read_phy_reg_e822(hw, port->port_num, P_REG_RX_OV_STATUS,
-+				    &val);
-+	if (err) {
-+		dev_err(dev, "Failed to read RX_OV_STATUS for port %d, err %d\n",
-+			port->port_num, err);
-+		return err;
-+	}
-+
-+	if (!(val & P_REG_RX_OV_STATUS_OV_M))
-+		return -EAGAIN;
-+
-+	return 0;
-+}
-+
-+/**
-+ * ice_ptp_check_offset_valid - Check port offset valid bit
-+ * @port: Port for which offset valid bit is checked
-+ *
-+ * Returns 0 if both Tx and Rx offset are valid, and -EAGAIN if one of the
-+ * offset is not ready.
-+ */
-+static int ice_ptp_check_offset_valid(struct ice_ptp_port *port)
-+{
-+	int tx_err, rx_err;
-+
-+	/* always check both Tx and Rx offset validity */
-+	tx_err = ice_ptp_check_tx_offset_valid(port);
-+	rx_err = ice_ptp_check_rx_offset_valid(port);
-+
-+	if (tx_err || rx_err)
-+		return -EAGAIN;
-+
-+	return 0;
-+}
-+
-+/**
-+ * ice_ptp_wait_for_offset_valid - Check for valid Tx and Rx offsets
-+ * @work: Pointer to the kthread_work structure for this task
-+ *
-+ * Check whether both the Tx and Rx offsets are valid for enabling the vernier
-+ * calibration.
-+ *
-+ * Once we have valid offsets from hardware, update the total Tx and Rx
-+ * offsets, and exit bypass mode. This enables more precise timestamps using
-+ * the extra data measured during the vernier calibration process.
-+ */
-+static void ice_ptp_wait_for_offset_valid(struct kthread_work *work)
-+{
-+	struct ice_ptp_port *port;
-+	int err;
-+	struct device *dev;
-+	struct ice_pf *pf;
-+	struct ice_hw *hw;
-+
-+	port = container_of(work, struct ice_ptp_port, ov_work.work);
-+	pf = ptp_port_to_pf(port);
-+	hw = &pf->hw;
-+	dev = ice_pf_to_dev(pf);
-+
-+	if (ice_ptp_check_offset_valid(port)) {
-+		/* Offsets not ready yet, try again later */
-+		kthread_queue_delayed_work(pf->ptp.kworker,
-+					   &port->ov_work,
-+					   msecs_to_jiffies(100));
-+		return;
-+	}
-+
-+	/* Offsets are valid, so it is safe to exit bypass mode */
-+	err = ice_phy_exit_bypass_e822(hw, port->port_num);
-+	if (err) {
-+		dev_warn(dev, "Failed to exit bypass mode for PHY port %u, err %d\n",
-+			 port->port_num, err);
-+		return;
-+	}
-+}
-+
- /**
-  * ice_ptp_port_phy_stop - Stop timestamping for a PHY port
-  * @ptp_port: PTP port to stop
-@@ -737,6 +923,8 @@ ice_ptp_port_phy_stop(struct ice_ptp_port *ptp_port)
- 
- 	mutex_lock(&ptp_port->ps_lock);
- 
-+	kthread_cancel_delayed_work_sync(&ptp_port->ov_work);
-+
- 	err = ice_stop_phy_timer_e822(hw, port, true);
- 	if (err)
- 		dev_err(ice_pf_to_dev(pf), "PTP failed to set PHY port %d down, err %d\n",
-@@ -771,8 +959,11 @@ ice_ptp_port_phy_restart(struct ice_ptp_port *ptp_port)
- 
- 	mutex_lock(&ptp_port->ps_lock);
- 
-+	kthread_cancel_delayed_work_sync(&ptp_port->ov_work);
-+
- 	/* temporarily disable Tx timestamps while calibrating PHY offset */
- 	ptp_port->tx.calibrating = true;
-+	ptp_port->tx_fifo_busy_cnt = 0;
- 
- 	/* Start the PHY timer in bypass mode */
- 	err = ice_start_phy_timer_e822(hw, port, true);
-@@ -782,6 +973,8 @@ ice_ptp_port_phy_restart(struct ice_ptp_port *ptp_port)
- 	/* Enable Tx timestamps right away */
- 	ptp_port->tx.calibrating = false;
- 
-+	kthread_queue_delayed_work(pf->ptp.kworker, &ptp_port->ov_work, 0);
-+
- out_unlock:
- 	if (err)
- 		dev_err(ice_pf_to_dev(pf), "PTP failed to set PHY port %d up, err %d\n",
-@@ -2083,11 +2276,14 @@ void ice_ptp_reset(struct ice_pf *pf)
- 
- pfr:
- 	/* Init Tx structures */
--	if (ice_is_e810(&pf->hw))
-+	if (ice_is_e810(&pf->hw)) {
- 		err = ice_ptp_init_tx_e810(pf, &ptp->port.tx);
--	else
-+	} else {
-+		kthread_init_delayed_work(&ptp->port.ov_work,
-+					  ice_ptp_wait_for_offset_valid);
- 		err = ice_ptp_init_tx_e822(pf, &ptp->port.tx,
- 					   ptp->port.port_num);
-+	}
- 	if (err)
- 		goto err;
- 
-@@ -2246,6 +2442,8 @@ static int ice_ptp_init_port(struct ice_pf *pf, struct ice_ptp_port *ptp_port)
- 	if (ice_is_e810(&pf->hw))
- 		return ice_ptp_init_tx_e810(pf, &ptp_port->tx);
- 
-+	kthread_init_delayed_work(&ptp_port->ov_work,
-+				  ice_ptp_wait_for_offset_valid);
- 	return ice_ptp_init_tx_e822(pf, &ptp_port->tx, ptp_port->port_num);
- }
- 
-diff --git a/drivers/net/ethernet/intel/ice/ice_ptp.h b/drivers/net/ethernet/intel/ice/ice_ptp.h
-index a110c81d4772..afd048d69959 100644
---- a/drivers/net/ethernet/intel/ice/ice_ptp.h
-+++ b/drivers/net/ethernet/intel/ice/ice_ptp.h
-@@ -109,14 +109,18 @@ struct ice_ptp_tx {
-  * and determine when the port's PHY offset is valid.
-  *
-  * @tx: Tx timestamp tracking for this port
-+ * @ov_work: delayed work task for tracking when PHY offset is valid
-  * @ps_lock: mutex used to protect the overall PTP PHY start procedure
-  * @link_up: indicates whether the link is up
-+ * @tx_fifo_busy_cnt: number of times the Tx FIFO was busy
-  * @port_num: the port number this structure represents
-  */
- struct ice_ptp_port {
- 	struct ice_ptp_tx tx;
-+	struct kthread_delayed_work ov_work;
- 	struct mutex ps_lock; /* protects overall PTP PHY start procedure */
- 	bool link_up;
-+	u8 tx_fifo_busy_cnt;
- 	u8 port_num;
- };
- 
-diff --git a/drivers/net/ethernet/intel/ice/ice_ptp_hw.c b/drivers/net/ethernet/intel/ice/ice_ptp_hw.c
-index 20204bb5485d..ec8450f034e6 100644
---- a/drivers/net/ethernet/intel/ice/ice_ptp_hw.c
-+++ b/drivers/net/ethernet/intel/ice/ice_ptp_hw.c
-@@ -1705,6 +1705,86 @@ ice_calc_fixed_tx_offset_e822(struct ice_hw *hw, enum ice_ptp_link_spd link_spd)
- 	return fixed_offset;
- }
- 
-+/**
-+ * ice_phy_cfg_tx_offset_e822 - Configure total Tx timestamp offset
-+ * @hw: pointer to the HW struct
-+ * @port: the PHY port to configure
-+ *
-+ * Program the P_REG_TOTAL_TX_OFFSET register with the total number of TUs to
-+ * adjust Tx timestamps by. This is calculated by combining some known static
-+ * latency along with the Vernier offset computations done by hardware.
-+ *
-+ * This function must be called only after the offset registers are valid,
-+ * i.e. after the Vernier calibration wait has passed, to ensure that the PHY
-+ * has measured the offset.
-+ *
-+ * To avoid overflow, when calculating the offset based on the known static
-+ * latency values, we use measurements in 1/100th of a nanosecond, and divide
-+ * the TUs per second up front. This avoids overflow while allowing
-+ * calculation of the adjustment using integer arithmetic.
-+ */
-+static int ice_phy_cfg_tx_offset_e822(struct ice_hw *hw, u8 port)
-+{
-+	enum ice_ptp_link_spd link_spd;
-+	enum ice_ptp_fec_mode fec_mode;
-+	u64 total_offset, val;
-+	int err;
-+
-+	err = ice_phy_get_speed_and_fec_e822(hw, port, &link_spd, &fec_mode);
-+	if (err)
-+		return err;
-+
-+	total_offset = ice_calc_fixed_tx_offset_e822(hw, link_spd);
-+
-+	/* Read the first Vernier offset from the PHY register and add it to
-+	 * the total offset.
-+	 */
-+	if (link_spd == ICE_PTP_LNK_SPD_1G ||
-+	    link_spd == ICE_PTP_LNK_SPD_10G ||
-+	    link_spd == ICE_PTP_LNK_SPD_25G ||
-+	    link_spd == ICE_PTP_LNK_SPD_25G_RS ||
-+	    link_spd == ICE_PTP_LNK_SPD_40G ||
-+	    link_spd == ICE_PTP_LNK_SPD_50G) {
-+		err = ice_read_64b_phy_reg_e822(hw, port,
-+						P_REG_PAR_PCS_TX_OFFSET_L,
-+						&val);
-+		if (err)
-+			return err;
-+
-+		total_offset += val;
-+	}
-+
-+	/* For Tx, we only need to use the second Vernier offset for
-+	 * multi-lane link speeds with RS-FEC. The lanes will always be
-+	 * aligned.
-+	 */
-+	if (link_spd == ICE_PTP_LNK_SPD_50G_RS ||
-+	    link_spd == ICE_PTP_LNK_SPD_100G_RS) {
-+		err = ice_read_64b_phy_reg_e822(hw, port,
-+						P_REG_PAR_TX_TIME_L,
-+						&val);
-+		if (err)
-+			return err;
-+
-+		total_offset += val;
-+	}
-+
-+	/* Now that the total offset has been calculated, program it to the
-+	 * PHY and indicate that the Tx offset is ready. After this,
-+	 * timestamps will be enabled.
-+	 */
-+	err = ice_write_64b_phy_reg_e822(hw, port, P_REG_TOTAL_TX_OFFSET_L,
-+					 total_offset);
-+	if (err)
-+		return err;
-+
-+	err = ice_write_phy_reg_e822(hw, port, P_REG_TX_OR, 1);
-+	if (err)
-+		return err;
-+
-+	return 0;
-+}
-+
- /**
-  * ice_phy_cfg_fixed_tx_offset_e822 - Configure Tx offset for bypass mode
-  * @hw: pointer to the HW struct
-@@ -1746,6 +1826,164 @@ ice_phy_cfg_fixed_tx_offset_e822(struct ice_hw *hw, u8 port)
+@@ -1589,6 +1589,101 @@ static int ice_ptp_adjtime(struct ptp_clock_info *info, s64 delta)
  	return 0;
  }
  
++#ifdef CONFIG_ICE_HWTS
 +/**
-+ * ice_phy_calc_pmd_adj_e822 - Calculate PMD adjustment for Rx
-+ * @hw: pointer to the HW struct
-+ * @port: the PHY port to adjust for
-+ * @link_spd: the current link speed of the PHY
-+ * @fec_mode: the current FEC mode of the PHY
-+ * @pmd_adj: on return, the amount to adjust the Rx total offset by
++ * ice_ptp_get_syncdevicetime - Get the cross time stamp info
++ * @device: Current device time
++ * @system: System counter value read synchronously with device time
++ * @ctx: Context provided by timekeeping code
 + *
-+ * Calculates the adjustment to Rx timestamps due to PMD alignment in the PHY.
-+ * This varies by link speed and FEC mode. The value calculated accounts for
-+ * various delays caused when receiving a packet.
++ * Read device and system (ART) clock simultaneously and return the corrected
++ * clock values in ns.
 + */
 +static int
-+ice_phy_calc_pmd_adj_e822(struct ice_hw *hw, u8 port,
-+			  enum ice_ptp_link_spd link_spd,
-+			  enum ice_ptp_fec_mode fec_mode, u64 *pmd_adj)
++ice_ptp_get_syncdevicetime(ktime_t *device,
++			   struct system_counterval_t *system,
++			   void *ctx)
 +{
-+	u64 cur_freq, clk_incval, tu_per_sec, mult, adj;
-+	u8 pmd_align;
-+	u32 val;
-+	int err;
++	struct ice_pf *pf = (struct ice_pf *)ctx;
++	struct ice_hw *hw = &pf->hw;
++	u32 hh_lock, hh_art_ctl;
++	int i;
 +
-+	err = ice_read_phy_reg_e822(hw, port, P_REG_PMD_ALIGNMENT, &val);
-+	if (err) {
-+		ice_debug(hw, ICE_DBG_PTP, "Failed to read PMD alignment, err %d\n",
-+			  err);
-+		return err;
++	/* Get the HW lock */
++	hh_lock = rd32(hw, PFHH_SEM + (PFTSYN_SEM_BYTES * hw->pf_id));
++	if (hh_lock & PFHH_SEM_BUSY_M) {
++		dev_err(ice_pf_to_dev(pf), "PTP failed to get hh lock\n");
++		return -EFAULT;
 +	}
 +
-+	pmd_align = (u8)val;
++	/* Start the ART and device clock sync sequence */
++	hh_art_ctl = rd32(hw, GLHH_ART_CTL);
++	hh_art_ctl = hh_art_ctl | GLHH_ART_CTL_ACTIVE_M;
++	wr32(hw, GLHH_ART_CTL, hh_art_ctl);
 +
-+	cur_freq = ice_e822_pll_freq(ice_e822_time_ref(hw));
-+	clk_incval = ice_ptp_read_src_incval(hw);
++#define MAX_HH_LOCK_TRIES 100
 +
-+	/* Calculate TUs per second */
-+	tu_per_sec = cur_freq * clk_incval;
++	for (i = 0; i < MAX_HH_LOCK_TRIES; i++) {
++		/* Wait for sync to complete */
++		hh_art_ctl = rd32(hw, GLHH_ART_CTL);
++		if (hh_art_ctl & GLHH_ART_CTL_ACTIVE_M) {
++			udelay(1);
++			continue;
++		} else {
++			u32 hh_ts_lo, hh_ts_hi, tmr_idx;
++			u64 hh_ts;
 +
-+	/* The PMD alignment adjustment measurement depends on the link speed,
-+	 * and whether FEC is enabled. For each link speed, the alignment
-+	 * adjustment is calculated by dividing a value by the length of
-+	 * a Time Unit in nanoseconds.
-+	 *
-+	 * 1G: align == 4 ? 10 * 0.8 : (align + 6 % 10) * 0.8
-+	 * 10G: align == 65 ? 0 : (align * 0.1 * 32/33)
-+	 * 10G w/FEC: align * 0.1 * 32/33
-+	 * 25G: align == 65 ? 0 : (align * 0.4 * 32/33)
-+	 * 25G w/FEC: align * 0.4 * 32/33
-+	 * 40G: align == 65 ? 0 : (align * 0.1 * 32/33)
-+	 * 40G w/FEC: align * 0.1 * 32/33
-+	 * 50G: align == 65 ? 0 : (align * 0.4 * 32/33)
-+	 * 50G w/FEC: align * 0.8 * 32/33
-+	 *
-+	 * For RS-FEC, if align is < 17 then we must also add 1.6 * 32/33.
-+	 *
-+	 * To allow for calculating this value using integer arithmetic, we
-+	 * instead start with the number of TUs per second, (inverse of the
-+	 * length of a Time Unit in nanoseconds), multiply by a value based
-+	 * on the PMD alignment register, and then divide by the right value
-+	 * calculated based on the table above. To avoid integer overflow this
-+	 * division is broken up into a step of dividing by 125 first.
-+	 */
-+	if (link_spd == ICE_PTP_LNK_SPD_1G) {
-+		if (pmd_align == 4)
-+			mult = 10;
-+		else
-+			mult = (pmd_align + 6) % 10;
-+	} else if (link_spd == ICE_PTP_LNK_SPD_10G ||
-+		   link_spd == ICE_PTP_LNK_SPD_25G ||
-+		   link_spd == ICE_PTP_LNK_SPD_40G ||
-+		   link_spd == ICE_PTP_LNK_SPD_50G) {
-+		/* If Clause 74 FEC, always calculate PMD adjust */
-+		if (pmd_align != 65 || fec_mode == ICE_PTP_FEC_MODE_CLAUSE74)
-+			mult = pmd_align;
-+		else
-+			mult = 0;
-+	} else if (link_spd == ICE_PTP_LNK_SPD_25G_RS ||
-+		   link_spd == ICE_PTP_LNK_SPD_50G_RS ||
-+		   link_spd == ICE_PTP_LNK_SPD_100G_RS) {
-+		if (pmd_align < 17)
-+			mult = pmd_align + 40;
-+		else
-+			mult = pmd_align;
-+	} else {
-+		ice_debug(hw, ICE_DBG_PTP, "Unknown link speed %d, skipping PMD adjustment\n",
-+			  link_spd);
-+		mult = 0;
-+	}
-+
-+	/* In some cases, there's no need to adjust for the PMD alignment */
-+	if (!mult) {
-+		*pmd_adj = 0;
-+		return 0;
-+	}
-+
-+	/* Calculate the adjustment by multiplying TUs per second by the
-+	 * appropriate multiplier and divisor. To avoid overflow, we first
-+	 * divide by 125, and then handle remaining divisor based on the link
-+	 * speed pmd_adj_divisor value.
-+	 */
-+	adj = div_u64(tu_per_sec, 125);
-+	adj *= mult;
-+	adj = div_u64(adj, e822_vernier[link_spd].pmd_adj_divisor);
-+
-+	/* Finally, for 25G-RS and 50G-RS, a further adjustment for the Rx
-+	 * cycle count is necessary.
-+	 */
-+	if (link_spd == ICE_PTP_LNK_SPD_25G_RS) {
-+		u64 cycle_adj;
-+		u8 rx_cycle;
-+
-+		err = ice_read_phy_reg_e822(hw, port, P_REG_RX_40_TO_160_CNT,
-+					    &val);
-+		if (err) {
-+			ice_debug(hw, ICE_DBG_PTP, "Failed to read 25G-RS Rx cycle count, err %d\n",
-+				  err);
-+			return err;
-+		}
-+
-+		rx_cycle = val & P_REG_RX_40_TO_160_CNT_RXCYC_M;
-+		if (rx_cycle) {
-+			mult = (4 - rx_cycle) * 40;
-+
-+			cycle_adj = div_u64(tu_per_sec, 125);
-+			cycle_adj *= mult;
-+			cycle_adj = div_u64(cycle_adj, e822_vernier[link_spd].pmd_adj_divisor);
-+
-+			adj += cycle_adj;
-+		}
-+	} else if (link_spd == ICE_PTP_LNK_SPD_50G_RS) {
-+		u64 cycle_adj;
-+		u8 rx_cycle;
-+
-+		err = ice_read_phy_reg_e822(hw, port, P_REG_RX_80_TO_160_CNT,
-+					    &val);
-+		if (err) {
-+			ice_debug(hw, ICE_DBG_PTP, "Failed to read 50G-RS Rx cycle count, err %d\n",
-+				  err);
-+			return err;
-+		}
-+
-+		rx_cycle = val & P_REG_RX_80_TO_160_CNT_RXCYC_M;
-+		if (rx_cycle) {
-+			mult = rx_cycle * 40;
-+
-+			cycle_adj = div_u64(tu_per_sec, 125);
-+			cycle_adj *= mult;
-+			cycle_adj = div_u64(cycle_adj, e822_vernier[link_spd].pmd_adj_divisor);
-+
-+			adj += cycle_adj;
++			tmr_idx = hw->func_caps.ts_func_info.tmr_index_assoc;
++			/* Read ART time */
++			hh_ts_lo = rd32(hw, GLHH_ART_TIME_L);
++			hh_ts_hi = rd32(hw, GLHH_ART_TIME_H);
++			hh_ts = ((u64)hh_ts_hi << 32) | hh_ts_lo;
++			*system = convert_art_ns_to_tsc(hh_ts);
++			/* Read Device source clock time */
++			hh_ts_lo = rd32(hw, GLTSYN_HHTIME_L(tmr_idx));
++			hh_ts_hi = rd32(hw, GLTSYN_HHTIME_H(tmr_idx));
++			hh_ts = ((u64)hh_ts_hi << 32) | hh_ts_lo;
++			*device = ns_to_ktime(hh_ts);
++			break;
 +		}
 +	}
++	/* Release HW lock */
++	hh_lock = rd32(hw, PFHH_SEM + (PFTSYN_SEM_BYTES * hw->pf_id));
++	hh_lock = hh_lock & ~PFHH_SEM_BUSY_M;
++	wr32(hw, PFHH_SEM + (PFTSYN_SEM_BYTES * hw->pf_id), hh_lock);
 +
-+	/* Return the calculated adjustment */
-+	*pmd_adj = adj;
++	if (i == MAX_HH_LOCK_TRIES)
++		return -ETIMEDOUT;
 +
 +	return 0;
 +}
 +
++/**
++ * ice_ptp_getcrosststamp_e822 - Capture a device cross timestamp
++ * @info: the driver's PTP info structure
++ * @cts: The memory to fill the cross timestamp info
++ *
++ * Capture a cross timestamp between the ART and the device PTP hardware
++ * clock. Fill the cross timestamp information and report it back to the
++ * caller.
++ *
++ * This is only valid for E822 devices which have support for generating the
++ * cross timestamp via PCIe PTM.
++ *
++ * In order to correctly correlate the ART timestamp back to the TSC time, the
++ * CPU must have X86_FEATURE_TSC_KNOWN_FREQ.
++ */
++static int
++ice_ptp_getcrosststamp_e822(struct ptp_clock_info *info,
++			    struct system_device_crosststamp *cts)
++{
++	struct ice_pf *pf = ptp_info_to_pf(info);
++
++	return get_device_system_crosststamp(ice_ptp_get_syncdevicetime,
++					     pf, NULL, cts);
++}
++#endif /* CONFIG_ICE_HWTS */
++
  /**
-  * ice_calc_fixed_rx_offset_e822 - Calculated the fixed Rx offset for a port
-  * @hw: pointer to HW struct
-@@ -1777,6 +2015,94 @@ ice_calc_fixed_rx_offset_e822(struct ice_hw *hw, enum ice_ptp_link_spd link_spd)
- 	return fixed_offset;
+  * ice_ptp_get_ts_config - ioctl interface to read the timestamping config
+  * @pf: Board private structure
+@@ -1809,6 +1904,26 @@ static void ice_ptp_setup_pins_e810(struct ptp_clock_info *info)
+ 	info->n_ext_ts = N_EXT_TS_E810;
  }
  
 +/**
-+ * ice_phy_cfg_rx_offset_e822 - Configure total Rx timestamp offset
-+ * @hw: pointer to the HW struct
-+ * @port: the PHY port to configure
++ * ice_ptp_set_funcs_e822 - Set specialized functions for E822 support
++ * @pf: Board private structure
++ * @info: PTP info to fill
 + *
-+ * Program the P_REG_TOTAL_RX_OFFSET register with the number of Time Units to
-+ * adjust Rx timestamps by. This combines calculations from the Vernier offset
-+ * measurements taken in hardware with some data about known fixed delay as
-+ * well as adjusting for multi-lane alignment delay.
-+ *
-+ * This function must be called only after the offset registers are valid,
-+ * i.e. after the Vernier calibration wait has passed, to ensure that the PHY
-+ * has measured the offset.
-+ *
-+ * To avoid overflow, when calculating the offset based on the known static
-+ * latency values, we use measurements in 1/100th of a nanosecond, and divide
-+ * the TUs per second up front. This avoids overflow while allowing
-+ * calculation of the adjustment using integer arithmetic.
++ * Assign functions to the PTP capabiltiies structure for E822 devices.
++ * Functions which operate across all device families should be set directly
++ * in ice_ptp_set_caps. Only add functions here which are distinct for E822
++ * devices.
 + */
-+static int ice_phy_cfg_rx_offset_e822(struct ice_hw *hw, u8 port)
++static void
++ice_ptp_set_funcs_e822(struct ice_pf *pf, struct ptp_clock_info *info)
 +{
-+	enum ice_ptp_link_spd link_spd;
-+	enum ice_ptp_fec_mode fec_mode;
-+	u64 total_offset, pmd, val;
-+	int err;
++#ifdef CONFIG_ICE_HWTS
++	if (boot_cpu_has(X86_FEATURE_ART) &&
++	    boot_cpu_has(X86_FEATURE_TSC_KNOWN_FREQ))
++		info->getcrosststamp = ice_ptp_getcrosststamp_e822;
++#endif /* CONFIG_ICE_HWTS */
++}
 +
-+	err = ice_phy_get_speed_and_fec_e822(hw, port, &link_spd, &fec_mode);
-+	if (err)
-+		return err;
-+
-+	total_offset = ice_calc_fixed_rx_offset_e822(hw, link_spd);
-+
-+	/* Read the first Vernier offset from the PHY register and add it to
-+	 * the total offset.
-+	 */
-+	err = ice_read_64b_phy_reg_e822(hw, port,
-+					P_REG_PAR_PCS_RX_OFFSET_L,
-+					&val);
-+	if (err)
-+		return err;
-+
-+	total_offset += val;
-+
-+	/* For Rx, all multi-lane link speeds include a second Vernier
-+	 * calibration, because the lanes might not be aligned.
-+	 */
-+	if (link_spd == ICE_PTP_LNK_SPD_40G ||
-+	    link_spd == ICE_PTP_LNK_SPD_50G ||
-+	    link_spd == ICE_PTP_LNK_SPD_50G_RS ||
-+	    link_spd == ICE_PTP_LNK_SPD_100G_RS) {
-+		err = ice_read_64b_phy_reg_e822(hw, port,
-+						P_REG_PAR_RX_TIME_L,
-+						&val);
-+		if (err)
-+			return err;
-+
-+		total_offset += val;
-+	}
-+
-+	/* In addition, Rx must account for the PMD alignment */
-+	err = ice_phy_calc_pmd_adj_e822(hw, port, link_spd, fec_mode, &pmd);
-+	if (err)
-+		return err;
-+
-+	/* For RS-FEC, this adjustment adds delay, but for other modes, it
-+	 * subtracts delay.
-+	 */
-+	if (fec_mode == ICE_PTP_FEC_MODE_RS_FEC)
-+		total_offset += pmd;
+ /**
+  * ice_ptp_set_funcs_e810 - Set specialized functions for E810 support
+  * @pf: Board private structure
+@@ -1850,6 +1965,8 @@ static void ice_ptp_set_caps(struct ice_pf *pf)
+ 
+ 	if (ice_is_e810(&pf->hw))
+ 		ice_ptp_set_funcs_e810(pf, info);
 +	else
-+		total_offset -= pmd;
-+
-+	/* Now that the total offset has been calculated, program it to the
-+	 * PHY and indicate that the Rx offset is ready. After this,
-+	 * timestamps will be enabled.
-+	 */
-+	err = ice_write_64b_phy_reg_e822(hw, port, P_REG_TOTAL_RX_OFFSET_L,
-+					 total_offset);
-+	if (err)
-+		return err;
-+
-+	err = ice_write_phy_reg_e822(hw, port, P_REG_RX_OR, 1);
-+	if (err)
-+		return err;
-+
-+	return 0;
-+}
-+
- /**
-  * ice_phy_cfg_fixed_rx_offset_e822 - Configure fixed Rx offset for bypass mode
-  * @hw: pointer to the HW struct
-@@ -2110,6 +2436,91 @@ ice_start_phy_timer_e822(struct ice_hw *hw, u8 port, bool bypass)
- 	return 0;
++		ice_ptp_set_funcs_e822(pf, info);
  }
  
-+/**
-+ * ice_phy_exit_bypass_e822 - Exit bypass mode, after vernier calculations
-+ * @hw: pointer to the HW struct
-+ * @port: the PHY port to configure
-+ *
-+ * After hardware finishes vernier calculations for the Tx and Rx offset, this
-+ * function can be used to exit bypass mode by updating the total Tx and Rx
-+ * offsets, and then disabling bypass. This will enable hardware to include
-+ * the more precise offset calibrations, increasing precision of the generated
-+ * timestamps.
-+ *
-+ * This cannot be done until hardware has measured the offsets, which requires
-+ * waiting until at least one packet has been sent and received by the device.
-+ */
-+int ice_phy_exit_bypass_e822(struct ice_hw *hw, u8 port)
-+{
-+	int err;
-+	u32 val;
-+
-+	err = ice_read_phy_reg_e822(hw, port, P_REG_TX_OV_STATUS, &val);
-+	if (err) {
-+		ice_debug(hw, ICE_DBG_PTP, "Failed to read TX_OV_STATUS for port %u, err %d\n",
-+			  port, err);
-+		return err;
-+	}
-+
-+	if (!(val & P_REG_TX_OV_STATUS_OV_M)) {
-+		ice_debug(hw, ICE_DBG_PTP, "Tx offset is not yet valid for port %u\n",
-+			  port);
-+		return -EBUSY;
-+	}
-+
-+	err = ice_read_phy_reg_e822(hw, port, P_REG_RX_OV_STATUS, &val);
-+	if (err) {
-+		ice_debug(hw, ICE_DBG_PTP, "Failed to read RX_OV_STATUS for port %u, err %d\n",
-+			  port, err);
-+		return err;
-+	}
-+
-+	if (!(val & P_REG_TX_OV_STATUS_OV_M)) {
-+		ice_debug(hw, ICE_DBG_PTP, "Rx offset is not yet valid for port %u\n",
-+			  port);
-+		return -EBUSY;
-+	}
-+
-+	err = ice_phy_cfg_tx_offset_e822(hw, port);
-+	if (err) {
-+		ice_debug(hw, ICE_DBG_PTP, "Failed to program total Tx offset for port %u, err %d\n",
-+			  port, err);
-+		return err;
-+	}
-+
-+	err = ice_phy_cfg_rx_offset_e822(hw, port);
-+	if (err) {
-+		ice_debug(hw, ICE_DBG_PTP, "Failed to program total Rx offset for port %u, err %d\n",
-+			  port, err);
-+		return err;
-+	}
-+
-+	/* Exit bypass mode now that the offset has been updated */
-+	err = ice_read_phy_reg_e822(hw, port, P_REG_PS, &val);
-+	if (err) {
-+		ice_debug(hw, ICE_DBG_PTP, "Failed to read P_REG_PS for port %u, err %d\n",
-+			  port, err);
-+		return err;
-+	}
-+
-+	if (!(val & P_REG_PS_BYPASS_MODE_M))
-+		ice_debug(hw, ICE_DBG_PTP, "Port %u not in bypass mode\n",
-+			  port);
-+
-+	val &= ~P_REG_PS_BYPASS_MODE_M;
-+	err = ice_write_phy_reg_e822(hw, port, P_REG_PS, val);
-+	if (err) {
-+		ice_debug(hw, ICE_DBG_PTP, "Failed to disable bypass for port %u, err %d\n",
-+			  port, err);
-+		return err;
-+	}
-+
-+	dev_info(ice_hw_to_dev(hw), "Exiting bypass mode on PHY port %u\n",
-+		 port);
-+
-+	return 0;
-+}
-+
- /* E810 functions
-  *
-  * The following functions operate on the E810 series devices which use
-diff --git a/drivers/net/ethernet/intel/ice/ice_ptp_hw.h b/drivers/net/ethernet/intel/ice/ice_ptp_hw.h
-index 70b1aff14225..519e75462e67 100644
---- a/drivers/net/ethernet/intel/ice/ice_ptp_hw.h
-+++ b/drivers/net/ethernet/intel/ice/ice_ptp_hw.h
-@@ -185,6 +185,7 @@ static inline u64 ice_e822_pps_delay(enum ice_time_ref_freq time_ref)
- /* E822 Vernier calibration functions */
- int ice_stop_phy_timer_e822(struct ice_hw *hw, u8 port, bool soft_reset);
- int ice_start_phy_timer_e822(struct ice_hw *hw, u8 port, bool bypass);
-+int ice_phy_exit_bypass_e822(struct ice_hw *hw, u8 port);
- 
- /* E810 family functions */
- int ice_ptp_init_phy_e810(struct ice_hw *hw);
+ /**
 -- 
 2.31.1
 
