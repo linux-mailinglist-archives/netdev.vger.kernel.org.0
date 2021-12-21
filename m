@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 509A147BA28
-	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 07:50:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CEBF47BA2B
+	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 07:50:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234243AbhLUGuS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Dec 2021 01:50:18 -0500
+        id S234397AbhLUGuX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Dec 2021 01:50:23 -0500
 Received: from mga06.intel.com ([134.134.136.31]:29879 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234151AbhLUGuR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Dec 2021 01:50:17 -0500
+        id S234238AbhLUGuS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Dec 2021 01:50:18 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1640069416; x=1671605416;
+  t=1640069418; x=1671605418;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=6Bo3IhyZyGFFcKO7ox3FUoXM88KNn1ugCizs6oTmd1U=;
-  b=jhapZzIgXMzXb1hB1YaTRK6uwW5Jv2N6pyA6k5tzyXFr7uixVUkZR4X+
-   X27PQGiIrrEitWDHdGvt11ZhOsqBIuZPcOwQqaTLt1Q4SPgCq0jb1C+Py
-   8rgJdDsmMFuvM/MH5XYdI1j+ZSvxh6XBHbaaT+PRhThwfJa3ChMpKJe0R
-   DxNvhj662TPebccbc+iOXYX+tIznlWqc+KetUWf5xUrKZH+p2F8J4+4bY
-   gOMCcySWWRJF+yiZbUQ6cjFM+RQEIsew2Hi3haZ01UeOWanJIFEl6PCJl
-   uX1EmfFNab0DXtTYoGQEg7S+EUy3UweQCR5pB8BX4heWZNuMj/SQnn3f4
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10204"; a="301107467"
+  bh=l4XQdmvnmgYwDvAzizZrcppUYqNiCALJIK53TGVh5XA=;
+  b=U3WiTbC6H0N+apyO03sklfK2JRACXQSjtQEum5OZtndm/TMzeNd4wKYz
+   NMucPYIQCokV43gf+5nkAXpwka9dF4UlqvABMOp6zOVH/dwg0S89h+oj9
+   uOxfOVLCpwmg77wcXi4b0gLXngBOzPJQGz+fCFPjAFRgEh1x039AcQ0+p
+   cL21gUUcV6dprAeJomWKsiIAoyiixOAWsxEjtIcRiYFRm+pHWqBHB9VYD
+   l2CDifkpULwyUc7pvpnQLy1rTf57pqeJhqPccp0duVDdExsq66OJnn60W
+   c1dgiLwBKrq/Ug1cFFirMT+Yn2t5zWtPCwBwtsasuBr6pT5fvEDCufrUN
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10204"; a="301107469"
 X-IronPort-AV: E=Sophos;i="5.88,222,1635231600"; 
-   d="scan'208";a="301107467"
+   d="scan'208";a="301107469"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Dec 2021 22:50:16 -0800
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Dec 2021 22:50:17 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,222,1635231600"; 
-   d="scan'208";a="570118992"
+   d="scan'208";a="570118998"
 Received: from unknown (HELO localhost.localdomain) ([10.228.150.100])
-  by fmsmga008.fm.intel.com with ESMTP; 20 Dec 2021 22:50:15 -0800
+  by fmsmga008.fm.intel.com with ESMTP; 20 Dec 2021 22:50:17 -0800
 From:   Mike Ximing Chen <mike.ximing.chen@intel.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     arnd@arndb.de, gregkh@linuxfoundation.org,
         dan.j.williams@intel.com, pierre-louis.bossart@linux.intel.com,
         netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org
-Subject: [RFC PATCH v12 03/17] dlb: add resource and device initialization
-Date:   Tue, 21 Dec 2021 00:50:33 -0600
-Message-Id: <20211221065047.290182-4-mike.ximing.chen@intel.com>
+Subject: [RFC PATCH v12 04/17] dlb: add configfs interface and scheduling domain directory
+Date:   Tue, 21 Dec 2021 00:50:34 -0600
+Message-Id: <20211221065047.290182-5-mike.ximing.chen@intel.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20211221065047.290182-1-mike.ximing.chen@intel.com>
 References: <20211221065047.290182-1-mike.ximing.chen@intel.com>
@@ -51,820 +51,556 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the hardware resource data structures, functions for
-their initialization/teardown, and a function for device power-on. In
-subsequent commits, dlb_resource.c will be expanded to hold the dlb
-resource-management and configuration logic (using the data structures
-defined in dlb_main.h).
+Introduce the dlb device level configfs interface. Each dlb device has a
+configfs node at /sys/kernel/config/dlb/dlb%N, which is used to control
+and configure the device.
 
-There is a resource data structure for each system level: device/function,
-scheduling domain, port and queue. At the device/function level, this
-data structure is struct dlb_function_resources, which holds used and
-avialable domains/ports/queues/history lists for the device function
-(either physical or virtual).
+Also add the scheduling domain directory in the device node of configfs.
+A scheduling domain serves as a HW container of DLB resources -- e.g.
+ports, queues, and credits -- with the property that a port can only
+enqueue to and dequeue from queues within its domain. A scheduling domain
+is created on-demand by a user-space application, whose request includes
+the DLB resource allocation.
+
+To create a HW scheduling domain, a user creates a domain directory using
+"mkdir" in the configfs, and configure the resources needed (such as number
+of ports and queues, and credits, etc)  by writing to the attribute files
+in the directory. A final write of "1" to "create" file triggers creation
+of a scheduling domain in DLB.
+
+The hardware operation for scheduling domain creation will be added in a
+subsequent commit.
 
 Signed-off-by: Mike Ximing Chen <mike.ximing.chen@intel.com>
 ---
  drivers/misc/dlb/Makefile       |   2 +-
- drivers/misc/dlb/dlb_main.c     |  46 ++++++
- drivers/misc/dlb/dlb_main.h     | 249 ++++++++++++++++++++++++++++++++
- drivers/misc/dlb/dlb_pf_ops.c   |  56 +++++++
- drivers/misc/dlb/dlb_regs.h     | 119 +++++++++++++++
- drivers/misc/dlb/dlb_resource.c | 210 +++++++++++++++++++++++++++
- 6 files changed, 681 insertions(+), 1 deletion(-)
- create mode 100644 drivers/misc/dlb/dlb_regs.h
- create mode 100644 drivers/misc/dlb/dlb_resource.c
+ drivers/misc/dlb/dlb_args.h     |  60 +++++++
+ drivers/misc/dlb/dlb_configfs.c | 299 ++++++++++++++++++++++++++++++++
+ drivers/misc/dlb/dlb_configfs.h |  39 +++++
+ drivers/misc/dlb/dlb_main.c     |   9 +
+ drivers/misc/dlb/dlb_main.h     |  10 ++
+ drivers/misc/dlb/dlb_resource.c |  10 ++
+ 7 files changed, 428 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/misc/dlb/dlb_args.h
+ create mode 100644 drivers/misc/dlb/dlb_configfs.c
+ create mode 100644 drivers/misc/dlb/dlb_configfs.h
 
 diff --git a/drivers/misc/dlb/Makefile b/drivers/misc/dlb/Makefile
-index 027556fd3f1f..66d885619e66 100644
+index 66d885619e66..1567bfdfc7a7 100644
 --- a/drivers/misc/dlb/Makefile
 +++ b/drivers/misc/dlb/Makefile
 @@ -3,4 +3,4 @@
  obj-$(CONFIG_INTEL_DLB) := dlb.o
  
  dlb-objs := dlb_main.o
--dlb-objs += dlb_pf_ops.o
-+dlb-objs += dlb_pf_ops.o dlb_resource.o
-diff --git a/drivers/misc/dlb/dlb_main.c b/drivers/misc/dlb/dlb_main.c
-index 00f7949e4d95..136e8b54ea2b 100644
---- a/drivers/misc/dlb/dlb_main.c
-+++ b/drivers/misc/dlb/dlb_main.c
-@@ -21,6 +21,23 @@ static dev_t dlb_devt;
- static DEFINE_IDR(dlb_ids);
- static DEFINE_MUTEX(dlb_ids_lock);
- 
-+static int dlb_reset_device(struct pci_dev *pdev)
-+{
-+	int ret;
-+
-+	ret = pci_save_state(pdev);
-+	if (ret)
-+		return ret;
-+
-+	ret = __pci_reset_function_locked(pdev);
-+	if (ret)
-+		return ret;
-+
-+	pci_restore_state(pdev);
-+
-+	return 0;
-+}
-+
- static int dlb_device_create(struct dlb *dlb, struct pci_dev *pdev)
- {
- 	/*
-@@ -111,8 +128,35 @@ static int dlb_probe(struct pci_dev *pdev, const struct pci_device_id *pdev_id)
- 	if (ret)
- 		goto dma_set_mask_fail;
- 
-+	/*
-+	 * PM enable must be done before any other MMIO accesses, and this
-+	 * setting is persistent across device reset.
-+	 */
-+	dlb_pf_enable_pm(dlb);
-+
-+	ret = dlb_pf_wait_for_device_ready(dlb, pdev);
-+	if (ret)
-+		goto wait_for_device_ready_fail;
-+
-+	ret = dlb_reset_device(pdev);
-+	if (ret)
-+		goto dlb_reset_fail;
-+
-+	ret = dlb_resource_init(&dlb->hw);
-+	if (ret)
-+		goto resource_init_fail;
-+
-+	ret = dlb_pf_init_driver_state(dlb);
-+	if (ret)
-+		goto init_driver_state_fail;
-+
- 	return 0;
- 
-+init_driver_state_fail:
-+	dlb_resource_free(&dlb->hw);
-+resource_init_fail:
-+dlb_reset_fail:
-+wait_for_device_ready_fail:
- dma_set_mask_fail:
- 	device_destroy(dlb_class, dlb->dev_number);
- map_pci_bar_fail:
-@@ -129,6 +173,8 @@ static void dlb_remove(struct pci_dev *pdev)
- {
- 	struct dlb *dlb = pci_get_drvdata(pdev);
- 
-+	dlb_resource_free(&dlb->hw);
-+
- 	device_destroy(dlb_class, dlb->dev_number);
- 
- 	pci_disable_pcie_error_reporting(pdev);
-diff --git a/drivers/misc/dlb/dlb_main.h b/drivers/misc/dlb/dlb_main.h
-index efe74ffcbf0c..a65b12b75b4c 100644
---- a/drivers/misc/dlb/dlb_main.h
-+++ b/drivers/misc/dlb/dlb_main.h
-@@ -11,11 +11,23 @@
- #include <linux/mutex.h>
- #include <linux/pci.h>
- #include <linux/types.h>
-+#include <linux/bitfield.h>
- 
- /*
-  * Hardware related #defines and data structures.
-  *
-  */
-+/* Read/write register 'reg' in the CSR BAR space */
-+#define DLB_CSR_REG_ADDR(a, reg)   ((a)->csr_kva + (reg))
-+#define DLB_CSR_RD(hw, reg)	    ioread32(DLB_CSR_REG_ADDR((hw), (reg)))
-+#define DLB_CSR_WR(hw, reg, value) iowrite32((value), \
-+					      DLB_CSR_REG_ADDR((hw), (reg)))
-+
-+/* Read/write register 'reg' in the func BAR space */
-+#define DLB_FUNC_REG_ADDR(a, reg)   ((a)->func_kva + (reg))
-+#define DLB_FUNC_RD(hw, reg)	     ioread32(DLB_FUNC_REG_ADDR((hw), (reg)))
-+#define DLB_FUNC_WR(hw, reg, value) iowrite32((value), \
-+					       DLB_FUNC_REG_ADDR((hw), (reg)))
- 
- #define DLB_MAX_NUM_VDEVS			16
- #define DLB_MAX_NUM_DOMAINS			32
-@@ -42,6 +54,159 @@
- 
- #define PCI_DEVICE_ID_INTEL_DLB_PF		0x2710
- 
-+struct dlb_ldb_queue {
-+	struct list_head domain_list;
-+	struct list_head func_list;
-+	u32 id;
-+	u32 domain_id;
-+	u32 num_qid_inflights;
-+	u32 aqed_limit;
-+	u32 sn_group; /* sn == sequence number */
-+	u32 sn_slot;
-+	u32 num_mappings;
-+	u8 sn_cfg_valid;
-+	u8 num_pending_additions;
-+	u8 owned;
-+	u8 configured;
-+};
-+
-+/*
-+ * Directed ports and queues are paired by nature, so the driver tracks them
-+ * with a single data structure.
-+ */
-+struct dlb_dir_pq_pair {
-+	struct list_head domain_list;
-+	struct list_head func_list;
-+	u32 id;
-+	u32 domain_id;
-+	u32 ref_cnt;
-+	u8 init_tkn_cnt;
-+	u8 queue_configured;
-+	u8 port_configured;
-+	u8 owned;
-+	u8 enabled;
-+};
-+
-+enum dlb_qid_map_state {
-+	/* The slot doesn't contain a valid queue mapping */
-+	DLB_QUEUE_UNMAPPED,
-+	/* The slot contains a valid queue mapping */
-+	DLB_QUEUE_MAPPED,
-+	/* The driver is mapping a queue into this slot */
-+	DLB_QUEUE_MAP_IN_PROG,
-+	/* The driver is unmapping a queue from this slot */
-+	DLB_QUEUE_UNMAP_IN_PROG,
-+	/*
-+	 * The driver is unmapping a queue from this slot, and once complete
-+	 * will replace it with another mapping.
-+	 */
-+	DLB_QUEUE_UNMAP_IN_PROG_PENDING_MAP,
-+};
-+
-+struct dlb_ldb_port_qid_map {
-+	enum dlb_qid_map_state state;
-+	u16 qid;
-+	u16 pending_qid;
-+	u8 priority;
-+	u8 pending_priority;
-+};
-+
-+struct dlb_ldb_port {
-+	struct list_head domain_list;
-+	struct list_head func_list;
-+	u32 id;
-+	u32 domain_id;
-+	/* The qid_map represents the hardware QID mapping state. */
-+	struct dlb_ldb_port_qid_map qid_map[DLB_MAX_NUM_QIDS_PER_LDB_CQ];
-+	u32 hist_list_entry_base;
-+	u32 hist_list_entry_limit;
-+	u32 ref_cnt;
-+	u8 init_tkn_cnt;
-+	u8 num_pending_removals;
-+	u8 num_mappings;
-+	u8 owned;
-+	u8 enabled;
-+	u8 configured;
-+};
-+
-+struct dlb_sn_group {
-+	u32 mode;
-+	u32 sequence_numbers_per_queue;
-+	u32 slot_use_bitmap;
-+	u32 id;
-+};
-+
-+/*
-+ * Scheduling domain level resource data structure.
-+ *
-+ */
-+struct dlb_hw_domain {
-+	struct dlb_function_resources *parent_func;
-+	struct list_head func_list;
-+	struct list_head used_ldb_queues;
-+	struct list_head used_ldb_ports[DLB_NUM_COS_DOMAINS];
-+	struct list_head used_dir_pq_pairs;
-+	struct list_head avail_ldb_queues;
-+	struct list_head avail_ldb_ports[DLB_NUM_COS_DOMAINS];
-+	struct list_head avail_dir_pq_pairs;
-+	u32 total_hist_list_entries;
-+	u32 avail_hist_list_entries;
-+	u32 hist_list_entry_base;
-+	u32 hist_list_entry_offset;
-+	u32 num_ldb_credits;
-+	u32 num_dir_credits;
-+	u32 num_avail_aqed_entries;
-+	u32 num_used_aqed_entries;
-+	u32 id;
-+	int num_pending_removals;
-+	int num_pending_additions;
-+	u8 configured;
-+	u8 started;
-+};
-+
-+/*
-+ * Device function (either PF or VF) level resource data structure.
-+ *
-+ */
-+struct dlb_function_resources {
-+	struct list_head avail_domains;
-+	struct list_head used_domains;
-+	struct list_head avail_ldb_queues;
-+	struct list_head avail_ldb_ports[DLB_NUM_COS_DOMAINS];
-+	struct list_head avail_dir_pq_pairs;
-+	struct dlb_bitmap *avail_hist_list_entries;
-+	u32 num_avail_domains;
-+	u32 num_avail_ldb_queues;
-+	u32 num_avail_ldb_ports[DLB_NUM_COS_DOMAINS];
-+	u32 num_avail_dir_pq_pairs;
-+	u32 num_avail_qed_entries;
-+	u32 num_avail_dqed_entries;
-+	u32 num_avail_aqed_entries;
-+	u8 locked; /* (VDEV only) */
-+};
-+
-+/*
-+ * After initialization, each resource in dlb_hw_resources is located in one
-+ * of the following lists:
-+ * -- The PF's available resources list. These are unconfigured resources owned
-+ *	by the PF and not allocated to a dlb scheduling domain.
-+ * -- A VDEV's available resources list. These are VDEV-owned unconfigured
-+ *	resources not allocated to a dlb scheduling domain.
-+ * -- A domain's available resources list. These are domain-owned unconfigured
-+ *	resources.
-+ * -- A domain's used resources list. These are domain-owned configured
-+ *	resources.
-+ *
-+ * A resource moves to a new list when a VDEV or domain is created or destroyed,
-+ * or when the resource is configured.
-+ */
-+struct dlb_hw_resources {
-+	struct dlb_ldb_queue ldb_queues[DLB_MAX_NUM_LDB_QUEUES];
-+	struct dlb_ldb_port ldb_ports[DLB_MAX_NUM_LDB_PORTS];
-+	struct dlb_dir_pq_pair dir_pq_pairs[DLB_MAX_NUM_DIR_PORTS];
-+	struct dlb_sn_group sn_groups[DLB_MAX_NUM_SEQUENCE_NUMBER_GROUPS];
-+};
-+
- struct dlb_hw {
- 	/* BAR 0 address */
- 	void __iomem *csr_kva;
-@@ -49,6 +214,13 @@ struct dlb_hw {
- 	/* BAR 2 address */
- 	void __iomem *func_kva;
- 	unsigned long func_phys_addr;
-+
-+	/* Resource tracking */
-+	struct dlb_hw_resources rsrcs;
-+	struct dlb_function_resources pf;
-+	struct dlb_function_resources vdev[DLB_MAX_NUM_VDEVS];
-+	struct dlb_hw_domain domains[DLB_MAX_NUM_DOMAINS];
-+	u8 cos_reservation[DLB_NUM_COS_DOMAINS];
- };
- 
- /*
-@@ -70,14 +242,91 @@ struct dlb;
- 
- int dlb_pf_map_pci_bar_space(struct dlb *dlb, struct pci_dev *pdev);
- void dlb_pf_unmap_pci_bar_space(struct dlb *dlb, struct pci_dev *pdev);
-+int dlb_pf_init_driver_state(struct dlb *dlb);
-+void dlb_pf_enable_pm(struct dlb *dlb);
-+int dlb_pf_wait_for_device_ready(struct dlb *dlb, struct pci_dev *pdev);
- 
- struct dlb {
- 	struct pci_dev *pdev;
- 	struct dlb_hw hw;
- 	struct device *dev;
-+	/*
-+	 * The resource mutex serializes access to driver data structures and
-+	 * hardware registers.
-+	 */
-+	struct mutex resource_mutex;
- 	enum dlb_device_type type;
- 	int id;
- 	dev_t dev_number;
- };
- 
-+/*************************/
-+/*** Bitmap operations ***/
-+/*************************/
-+struct dlb_bitmap {
-+	unsigned long *map;
-+	unsigned int len;
-+};
-+
-+/**
-+ * dlb_bitmap_alloc() - alloc a bitmap data structure
-+ * @bitmap: pointer to dlb_bitmap structure pointer.
-+ * @len: number of entries in the bitmap.
-+ *
-+ * This function allocates a bitmap and initializes it with length @len. All
-+ * entries are initially zero.
-+ *
-+ * Return:
-+ * Returns 0 upon success, < 0 otherwise.
-+ *
-+ * Errors:
-+ * EINVAL - bitmap is NULL or len is 0.
-+ * ENOMEM - could not allocate memory for the bitmap data structure.
-+ */
-+static inline int dlb_bitmap_alloc(struct dlb_bitmap **bitmap,
-+				   unsigned int len)
-+{
-+	struct dlb_bitmap *bm;
-+
-+	if (!bitmap || len == 0)
-+		return -EINVAL;
-+
-+	bm = kzalloc(sizeof(*bm), GFP_KERNEL);
-+	if (!bm)
-+		return -ENOMEM;
-+
-+	bm->map = bitmap_zalloc(len, GFP_KERNEL);
-+	if (!bm->map) {
-+		kfree(bm);
-+		return -ENOMEM;
-+	}
-+
-+	bm->len = len;
-+
-+	*bitmap = bm;
-+
-+	return 0;
-+}
-+
-+/**
-+ * dlb_bitmap_free() - free a previously allocated bitmap data structure
-+ * @bitmap: pointer to dlb_bitmap structure.
-+ *
-+ * This function frees a bitmap that was allocated with dlb_bitmap_alloc().
-+ */
-+static inline void dlb_bitmap_free(struct dlb_bitmap *bitmap)
-+{
-+	if (!bitmap)
-+		return;
-+
-+	bitmap_free(bitmap->map);
-+
-+	kfree(bitmap);
-+}
-+
-+/* Prototypes for dlb_resource.c */
-+int dlb_resource_init(struct dlb_hw *hw);
-+void dlb_resource_free(struct dlb_hw *hw);
-+void dlb_clr_pmcsr_disable(struct dlb_hw *hw);
-+
- #endif /* __DLB_MAIN_H */
-diff --git a/drivers/misc/dlb/dlb_pf_ops.c b/drivers/misc/dlb/dlb_pf_ops.c
-index 77ca7bf2d961..8d179beb9d5b 100644
---- a/drivers/misc/dlb/dlb_pf_ops.c
-+++ b/drivers/misc/dlb/dlb_pf_ops.c
-@@ -1,7 +1,10 @@
- // SPDX-License-Identifier: GPL-2.0-only
- /* Copyright(C) 2016-2020 Intel Corporation. All rights reserved. */
- 
-+#include <linux/delay.h>
-+
- #include "dlb_main.h"
-+#include "dlb_regs.h"
- 
- /********************************/
- /****** PCI BAR management ******/
-@@ -31,3 +34,56 @@ int dlb_pf_map_pci_bar_space(struct dlb *dlb, struct pci_dev *pdev)
- 
- 	return 0;
- }
-+
-+/*******************************/
-+/****** Driver management ******/
-+/*******************************/
-+
-+int dlb_pf_init_driver_state(struct dlb *dlb)
-+{
-+	mutex_init(&dlb->resource_mutex);
-+
-+	return 0;
-+}
-+
-+void dlb_pf_enable_pm(struct dlb *dlb)
-+{
-+	/*
-+	 * Clear the power-management-disable register to power on the bulk of
-+	 * the device's hardware.
-+	 */
-+	dlb_clr_pmcsr_disable(&dlb->hw);
-+}
-+
-+#define DLB_READY_RETRY_LIMIT 1000
-+int dlb_pf_wait_for_device_ready(struct dlb *dlb, struct pci_dev *pdev)
-+{
-+	u32 retries = DLB_READY_RETRY_LIMIT;
-+
-+	/* Allow at least 1s for the device to become active after power-on */
-+	do {
-+		u32 idle, pm_st, addr;
-+
-+		addr = CM_CFG_PM_STATUS;
-+
-+		pm_st = DLB_CSR_RD(&dlb->hw, addr);
-+
-+		addr = CM_CFG_DIAGNOSTIC_IDLE_STATUS;
-+
-+		idle = DLB_CSR_RD(&dlb->hw, addr);
-+
-+		if (FIELD_GET(CM_CFG_PM_STATUS_PMSM, pm_st) == 1 &&
-+		    FIELD_GET(CM_CFG_DIAGNOSTIC_IDLE_STATUS_DLB_FUNC_IDLE, idle)
-+		    == 1)
-+			break;
-+
-+		usleep_range(1000, 2000);
-+	} while (--retries);
-+
-+	if (!retries) {
-+		dev_err(&pdev->dev, "Device idle test failed\n");
-+		return -EIO;
-+	}
-+
-+	return 0;
-+}
-diff --git a/drivers/misc/dlb/dlb_regs.h b/drivers/misc/dlb/dlb_regs.h
+-dlb-objs += dlb_pf_ops.o dlb_resource.o
++dlb-objs += dlb_pf_ops.o dlb_resource.o dlb_configfs.o
+diff --git a/drivers/misc/dlb/dlb_args.h b/drivers/misc/dlb/dlb_args.h
 new file mode 100644
-index 000000000000..72f3cb22b933
+index 000000000000..a7541a6b0ebe
 --- /dev/null
-+++ b/drivers/misc/dlb/dlb_regs.h
-@@ -0,0 +1,119 @@
++++ b/drivers/misc/dlb/dlb_args.h
+@@ -0,0 +1,60 @@
 +/* SPDX-License-Identifier: GPL-2.0-only */
 +/* Copyright(C) 2016-2020 Intel Corporation. All rights reserved. */
 +
-+#ifndef __DLB_REGS_H
-+#define __DLB_REGS_H
++#ifndef __DLB_ARGS_H
++#define __DLB_ARGS_H
 +
-+#include <linux/types.h>
++struct dlb_cmd_response {
++	__u32 status; /* Interpret using enum dlb_error */
++	__u32 id;
++};
 +
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS 0xb4000004
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_RST 0x9d0fffff
++#define DLB_DEVICE_VERSION(x) (((x) >> 8) & 0xFF)
++#define DLB_DEVICE_REVISION(x) ((x) & 0xFF)
 +
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_CHP_PIPEIDLE		0x00000001
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_ROP_PIPEIDLE		0x00000002
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_LSP_PIPEIDLE		0x00000004
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_NALB_PIPEIDLE		0x00000008
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_AP_PIPEIDLE		0x00000010
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_DP_PIPEIDLE		0x00000020
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_QED_PIPEIDLE		0x00000040
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_DQED_PIPEIDLE		0x00000080
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_AQED_PIPEIDLE		0x00000100
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_SYS_PIPEIDLE		0x00000200
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_CHP_UNIT_IDLE		0x00000400
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_ROP_UNIT_IDLE		0x00000800
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_LSP_UNIT_IDLE		0x00001000
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_NALB_UNIT_IDLE		0x00002000
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_AP_UNIT_IDLE		0x00004000
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_DP_UNIT_IDLE		0x00008000
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_QED_UNIT_IDLE		0x00010000
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_DQED_UNIT_IDLE		0x00020000
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_AQED_UNIT_IDLE		0x00040000
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_SYS_UNIT_IDLE		0x00080000
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_RSVD1			0x00F00000
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_MSTR_CFG_RING_IDLE	0x01000000
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_MSTR_CFG_MSTR_IDLE	0x02000000
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_MSTR_FLR_CLKREQ_B		0x04000000
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_MSTR_PROC_IDLE		0x08000000
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_MSTR_PROC_IDLE_MASKED	0x10000000
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_RSVD0			0x60000000
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_DLB_FUNC_IDLE		0x80000000
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_CHP_PIPEIDLE_LOC		0
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_ROP_PIPEIDLE_LOC		1
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_LSP_PIPEIDLE_LOC		2
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_NALB_PIPEIDLE_LOC		3
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_AP_PIPEIDLE_LOC		4
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_DP_PIPEIDLE_LOC		5
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_QED_PIPEIDLE_LOC		6
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_DQED_PIPEIDLE_LOC		7
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_AQED_PIPEIDLE_LOC		8
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_SYS_PIPEIDLE_LOC		9
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_CHP_UNIT_IDLE_LOC		10
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_ROP_UNIT_IDLE_LOC		11
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_LSP_UNIT_IDLE_LOC		12
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_NALB_UNIT_IDLE_LOC	13
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_AP_UNIT_IDLE_LOC		14
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_DP_UNIT_IDLE_LOC		15
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_QED_UNIT_IDLE_LOC		16
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_DQED_UNIT_IDLE_LOC	17
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_AQED_UNIT_IDLE_LOC	18
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_SYS_UNIT_IDLE_LOC		19
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_RSVD1_LOC			20
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_MSTR_CFG_RING_IDLE_LOC	24
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_MSTR_CFG_MSTR_IDLE_LOC	25
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_MSTR_FLR_CLKREQ_B_LOC	26
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_MSTR_PROC_IDLE_LOC	27
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_MSTR_PROC_IDLE_MASKED_LOC	28
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_RSVD0_LOC			29
-+#define CM_CFG_DIAGNOSTIC_IDLE_STATUS_DLB_FUNC_IDLE_LOC		31
++/*****************************************************/
++/* 'dlb' device level control/access data structures */
++/*****************************************************/
 +
-+#define CM_CFG_PM_STATUS 0xb4000014
-+#define CM_CFG_PM_STATUS_RST 0x100403e
-+
-+#define CM_CFG_PM_STATUS_PROCHOT		0x00000001
-+#define CM_CFG_PM_STATUS_PGCB_DLB_IDLE		0x00000002
-+#define CM_CFG_PM_STATUS_PGCB_DLB_PG_RDY_ACK_B	0x00000004
-+#define CM_CFG_PM_STATUS_PMSM_PGCB_REQ_B	0x00000008
-+#define CM_CFG_PM_STATUS_PGBC_PMC_PG_REQ_B	0x00000010
-+#define CM_CFG_PM_STATUS_PMC_PGCB_PG_ACK_B	0x00000020
-+#define CM_CFG_PM_STATUS_PMC_PGCB_FET_EN_B	0x00000040
-+#define CM_CFG_PM_STATUS_PGCB_FET_EN_B		0x00000080
-+#define CM_CFG_PM_STATUS_RSVZ0			0x00000100
-+#define CM_CFG_PM_STATUS_RSVZ1			0x00000200
-+#define CM_CFG_PM_STATUS_FUSE_FORCE_ON		0x00000400
-+#define CM_CFG_PM_STATUS_FUSE_PROC_DISABLE	0x00000800
-+#define CM_CFG_PM_STATUS_RSVZ2			0x00001000
-+#define CM_CFG_PM_STATUS_RSVZ3			0x00002000
-+#define CM_CFG_PM_STATUS_PM_FSM_D0TOD3_OK	0x00004000
-+#define CM_CFG_PM_STATUS_PM_FSM_D3TOD0_OK	0x00008000
-+#define CM_CFG_PM_STATUS_DLB_IN_D3		0x00010000
-+#define CM_CFG_PM_STATUS_RSVZ4			0x00FE0000
-+#define CM_CFG_PM_STATUS_PMSM			0xFF000000
-+#define CM_CFG_PM_STATUS_PROCHOT_LOC			0
-+#define CM_CFG_PM_STATUS_PGCB_DLB_IDLE_LOC		1
-+#define CM_CFG_PM_STATUS_PGCB_DLB_PG_RDY_ACK_B_LOC	2
-+#define CM_CFG_PM_STATUS_PMSM_PGCB_REQ_B_LOC		3
-+#define CM_CFG_PM_STATUS_PGBC_PMC_PG_REQ_B_LOC		4
-+#define CM_CFG_PM_STATUS_PMC_PGCB_PG_ACK_B_LOC		5
-+#define CM_CFG_PM_STATUS_PMC_PGCB_FET_EN_B_LOC		6
-+#define CM_CFG_PM_STATUS_PGCB_FET_EN_B_LOC		7
-+#define CM_CFG_PM_STATUS_RSVZ0_LOC			8
-+#define CM_CFG_PM_STATUS_RSVZ1_LOC			9
-+#define CM_CFG_PM_STATUS_FUSE_FORCE_ON_LOC		10
-+#define CM_CFG_PM_STATUS_FUSE_PROC_DISABLE_LOC		11
-+#define CM_CFG_PM_STATUS_RSVZ2_LOC			12
-+#define CM_CFG_PM_STATUS_RSVZ3_LOC			13
-+#define CM_CFG_PM_STATUS_PM_FSM_D0TOD3_OK_LOC		14
-+#define CM_CFG_PM_STATUS_PM_FSM_D3TOD0_OK_LOC		15
-+#define CM_CFG_PM_STATUS_DLB_IN_D3_LOC			16
-+#define CM_CFG_PM_STATUS_RSVZ4_LOC			17
-+#define CM_CFG_PM_STATUS_PMSM_LOC			24
-+
-+#define CM_CFG_PM_PMCSR_DISABLE 0xb4000018
-+#define CM_CFG_PM_PMCSR_DISABLE_RST 0x1
-+
-+#define CM_CFG_PM_PMCSR_DISABLE_DISABLE	0x00000001
-+#define CM_CFG_PM_PMCSR_DISABLE_RSVZ0	0xFFFFFFFE
-+#define CM_CFG_PM_PMCSR_DISABLE_DISABLE_LOC	0
-+#define CM_CFG_PM_PMCSR_DISABLE_RSVZ0_LOC	1
-+
-+#endif /* __DLB_REGS_H */
-diff --git a/drivers/misc/dlb/dlb_resource.c b/drivers/misc/dlb/dlb_resource.c
++/*
++ * dlb_create_sched_domain_args: Used to create a DLB 2.0 scheduling domain
++ *	and reserve its hardware resources.
++ *
++ * Output parameters:
++ * @response.status: Detailed error code. In certain cases, such as if the
++ *	request arg is invalid, the driver won't set status.
++ * @response.id: domain ID.
++ * @domain_fd: file descriptor for performing the domain's reset operation.
++ *
++ * Input parameters:
++ * @num_ldb_queues: Number of load-balanced queues.
++ * @num_ldb_ports: Number of load-balanced ports that can be allocated from
++ *	any class-of-service with available ports.
++ * @num_dir_ports: Number of directed ports. A directed port has one directed
++ *	queue, so no num_dir_queues argument is necessary.
++ * @num_atomic_inflights: This specifies the amount of temporary atomic QE
++ *	storage for the domain. This storage is divided among the domain's
++ *	load-balanced queues that are configured for atomic scheduling.
++ * @num_hist_list_entries: Amount of history list storage. This is divided
++ *	among the domain's CQs.
++ * @num_ldb_credits: Amount of load-balanced QE storage (QED). QEs occupy this
++ *	space until they are scheduled to a load-balanced CQ. One credit
++ *	represents the storage for one QE.
++ * @num_dir_credits: Amount of directed QE storage (DQED). QEs occupy this
++ *	space until they are scheduled to a directed CQ. One credit represents
++ *	the storage for one QE.
++ */
++struct dlb_create_sched_domain_args {
++	/* Output parameters */
++	struct dlb_cmd_response response;
++	__u32 domain_fd;
++	/* Input parameters */
++	__u32 num_ldb_queues;
++	__u32 num_ldb_ports;
++	__u32 num_dir_ports;
++	__u32 num_atomic_inflights;
++	__u32 num_hist_list_entries;
++	__u32 num_ldb_credits;
++	__u32 num_dir_credits;
++};
++#endif /* DLB_ARGS_H */
+diff --git a/drivers/misc/dlb/dlb_configfs.c b/drivers/misc/dlb/dlb_configfs.c
 new file mode 100644
-index 000000000000..c192d4fb8463
+index 000000000000..bdabf3c6444f
 --- /dev/null
-+++ b/drivers/misc/dlb/dlb_resource.c
-@@ -0,0 +1,210 @@
++++ b/drivers/misc/dlb/dlb_configfs.c
+@@ -0,0 +1,299 @@
 +// SPDX-License-Identifier: GPL-2.0-only
-+/* Copyright(C) 2016-2020 Intel Corporation. All rights reserved. */
++// Copyright(c) 2017-2020 Intel Corporation
 +
-+#include "dlb_regs.h"
-+#include "dlb_main.h"
++#include <linux/configfs.h>
++#include "dlb_configfs.h"
 +
-+static void dlb_init_fn_rsrc_lists(struct dlb_function_resources *rsrc)
++struct dlb_device_configfs dlb_dev_configfs[16];
++
++static int dlb_configfs_create_sched_domain(struct dlb *dlb,
++					    void *karg)
 +{
-+	int i;
-+
-+	INIT_LIST_HEAD(&rsrc->avail_domains);
-+	INIT_LIST_HEAD(&rsrc->used_domains);
-+	INIT_LIST_HEAD(&rsrc->avail_ldb_queues);
-+	INIT_LIST_HEAD(&rsrc->avail_dir_pq_pairs);
-+
-+	for (i = 0; i < DLB_NUM_COS_DOMAINS; i++)
-+		INIT_LIST_HEAD(&rsrc->avail_ldb_ports[i]);
-+}
-+
-+static void dlb_init_domain_rsrc_lists(struct dlb_hw_domain *domain)
-+{
-+	int i;
-+
-+	INIT_LIST_HEAD(&domain->used_ldb_queues);
-+	INIT_LIST_HEAD(&domain->used_dir_pq_pairs);
-+	INIT_LIST_HEAD(&domain->avail_ldb_queues);
-+	INIT_LIST_HEAD(&domain->avail_dir_pq_pairs);
-+
-+	for (i = 0; i < DLB_NUM_COS_DOMAINS; i++)
-+		INIT_LIST_HEAD(&domain->used_ldb_ports[i]);
-+	for (i = 0; i < DLB_NUM_COS_DOMAINS; i++)
-+		INIT_LIST_HEAD(&domain->avail_ldb_ports[i]);
-+}
-+
-+/**
-+ * dlb_resource_free() - free device state memory
-+ * @hw: dlb_hw handle for a particular device.
-+ *
-+ * This function frees software state pointed to by dlb_hw. This function
-+ * should be called when resetting the device or unloading the driver.
-+ */
-+void dlb_resource_free(struct dlb_hw *hw)
-+{
-+	int i;
-+
-+	if (hw->pf.avail_hist_list_entries)
-+		dlb_bitmap_free(hw->pf.avail_hist_list_entries);
-+
-+	for (i = 0; i < DLB_MAX_NUM_VDEVS; i++) {
-+		if (hw->vdev[i].avail_hist_list_entries)
-+			dlb_bitmap_free(hw->vdev[i].avail_hist_list_entries);
-+	}
-+}
-+
-+/**
-+ * dlb_resource_init() - initialize the device
-+ * @hw: pointer to struct dlb_hw.
-+ *
-+ * This function initializes the device's software state (pointed to by the hw
-+ * argument) and programs global scheduling QoS registers. This function should
-+ * be called during driver initialization, and the dlb_hw structure should
-+ * be zero-initialized before calling the function.
-+ *
-+ * The dlb_hw struct must be unique per DLB 2.0 device and persist until the
-+ * device is reset.
-+ *
-+ * Return:
-+ * Returns 0 upon success, <0 otherwise.
-+ */
-+int dlb_resource_init(struct dlb_hw *hw)
-+{
-+	struct dlb_bitmap *map;
-+	struct list_head *list;
-+	unsigned int i;
++	struct dlb_create_sched_domain_args *arg = karg;
++	struct dlb_cmd_response response = {0};
 +	int ret;
 +
-+	/*
-+	 * For optimal load-balancing, ports that map to one or more QIDs in
-+	 * common should not be in numerical sequence. The port->QID mapping is
-+	 * application dependent, but the driver interleaves port IDs as much
-+	 * as possible to reduce the likelihood of sequential ports mapping to
-+	 * the same QID(s). This initial allocation of port IDs maximizes the
-+	 * average distance between an ID and its immediate neighbors (i.e.
-+	 * the distance from 1 to 0 and to 2, the distance from 2 to 1 and to
-+	 * 3, etc.).
-+	 */
-+	const u8 init_ldb_port_allocation[DLB_MAX_NUM_LDB_PORTS] = {
-+		0,  7,  14,  5, 12,  3, 10,  1,  8, 15,  6, 13,  4, 11,  2,  9,
-+		16, 23, 30, 21, 28, 19, 26, 17, 24, 31, 22, 29, 20, 27, 18, 25,
-+		32, 39, 46, 37, 44, 35, 42, 33, 40, 47, 38, 45, 36, 43, 34, 41,
-+		48, 55, 62, 53, 60, 51, 58, 49, 56, 63, 54, 61, 52, 59, 50, 57,
-+	};
++	mutex_lock(&dlb->resource_mutex);
 +
-+	dlb_init_fn_rsrc_lists(&hw->pf);
++	ret = dlb_hw_create_sched_domain(&dlb->hw, arg, &response);
 +
-+	for (i = 0; i < DLB_MAX_NUM_VDEVS; i++)
-+		dlb_init_fn_rsrc_lists(&hw->vdev[i]);
++	mutex_unlock(&dlb->resource_mutex);
 +
-+	for (i = 0; i < DLB_MAX_NUM_DOMAINS; i++) {
-+		dlb_init_domain_rsrc_lists(&hw->domains[i]);
-+		hw->domains[i].parent_func = &hw->pf;
-+	}
-+
-+	/* Give all resources to the PF driver */
-+	hw->pf.num_avail_domains = DLB_MAX_NUM_DOMAINS;
-+	for (i = 0; i < hw->pf.num_avail_domains; i++) {
-+		list = &hw->domains[i].func_list;
-+
-+		list_add(list, &hw->pf.avail_domains);
-+	}
-+
-+	hw->pf.num_avail_ldb_queues = DLB_MAX_NUM_LDB_QUEUES;
-+	for (i = 0; i < hw->pf.num_avail_ldb_queues; i++) {
-+		list = &hw->rsrcs.ldb_queues[i].func_list;
-+
-+		list_add(list, &hw->pf.avail_ldb_queues);
-+	}
-+
-+	for (i = 0; i < DLB_NUM_COS_DOMAINS; i++)
-+		hw->pf.num_avail_ldb_ports[i] =
-+			DLB_MAX_NUM_LDB_PORTS / DLB_NUM_COS_DOMAINS;
-+
-+	for (i = 0; i < DLB_MAX_NUM_LDB_PORTS; i++) {
-+		int cos_id = i >> DLB_NUM_COS_DOMAINS;
-+		struct dlb_ldb_port *port;
-+
-+		port = &hw->rsrcs.ldb_ports[init_ldb_port_allocation[i]];
-+
-+		list_add(&port->func_list, &hw->pf.avail_ldb_ports[cos_id]);
-+	}
-+
-+	hw->pf.num_avail_dir_pq_pairs = DLB_MAX_NUM_DIR_PORTS;
-+	for (i = 0; i < hw->pf.num_avail_dir_pq_pairs; i++) {
-+		list = &hw->rsrcs.dir_pq_pairs[i].func_list;
-+
-+		list_add(list, &hw->pf.avail_dir_pq_pairs);
-+	}
-+
-+	hw->pf.num_avail_qed_entries = DLB_MAX_NUM_LDB_CREDITS;
-+	hw->pf.num_avail_dqed_entries = DLB_MAX_NUM_DIR_CREDITS;
-+	hw->pf.num_avail_aqed_entries = DLB_MAX_NUM_AQED_ENTRIES;
-+
-+	ret = dlb_bitmap_alloc(&hw->pf.avail_hist_list_entries,
-+			       DLB_MAX_NUM_HIST_LIST_ENTRIES);
-+	if (ret)
-+		goto unwind;
-+
-+	map = hw->pf.avail_hist_list_entries;
-+	bitmap_fill(map->map, map->len);
-+
-+	for (i = 0; i < DLB_MAX_NUM_VDEVS; i++) {
-+		ret = dlb_bitmap_alloc(&hw->vdev[i].avail_hist_list_entries,
-+				       DLB_MAX_NUM_HIST_LIST_ENTRIES);
-+		if (ret)
-+			goto unwind;
-+
-+		map = hw->vdev[i].avail_hist_list_entries;
-+		bitmap_zero(map->map, map->len);
-+	}
-+
-+	/* Initialize the hardware resource IDs */
-+	for (i = 0; i < DLB_MAX_NUM_DOMAINS; i++)
-+		hw->domains[i].id = i;
-+
-+	for (i = 0; i < DLB_MAX_NUM_LDB_QUEUES; i++)
-+		hw->rsrcs.ldb_queues[i].id = i;
-+
-+	for (i = 0; i < DLB_MAX_NUM_LDB_PORTS; i++)
-+		hw->rsrcs.ldb_ports[i].id = i;
-+
-+	for (i = 0; i < DLB_MAX_NUM_DIR_PORTS; i++)
-+		hw->rsrcs.dir_pq_pairs[i].id = i;
-+
-+	for (i = 0; i < DLB_MAX_NUM_SEQUENCE_NUMBER_GROUPS; i++) {
-+		hw->rsrcs.sn_groups[i].id = i;
-+		/* Default mode (0) is 64 sequence numbers per queue */
-+		hw->rsrcs.sn_groups[i].mode = 0;
-+		hw->rsrcs.sn_groups[i].sequence_numbers_per_queue = 64;
-+		hw->rsrcs.sn_groups[i].slot_use_bitmap = 0;
-+	}
-+
-+	for (i = 0; i < DLB_NUM_COS_DOMAINS; i++)
-+		hw->cos_reservation[i] = 100 / DLB_NUM_COS_DOMAINS;
-+
-+	return 0;
-+
-+unwind:
-+	dlb_resource_free(hw);
++	memcpy(karg, &response, sizeof(response));
 +
 +	return ret;
 +}
 +
-+/**
-+ * dlb_clr_pmcsr_disable() - power on bulk of DLB 2.0 logic
-+ * @hw: dlb_hw handle for a particular device.
++/*
++ * Configfs directory structure for dlb driver implementation:
 + *
-+ * Clearing the PMCSR must be done at initialization to make the device fully
-+ * operational.
++ *                             config
++ *                                |
++ *                               dlb
++ *                                |
++ *                        +------+------+------+------
++ *                        |      |      |      |
++ *                       dlb0   dlb1   dlb2   dlb3  ...
++ *                        |
++ *                +-----------+--+--------+-------
++ *                |           |           |
++ *             domain0     domain1     domain2   ...
++ *                |
++ *        +-------+-----+------------+---------------+------------+----------
++ *        |             |            |               |            |
++ * num_ldb_queues     port0         port1   ...    queue0       queue1   ...
++ * num_ldb_ports        |		             |
++ * ...                is_ldb                   num_sequence_numbers
++ * create             cq_depth                 num_qid_inflights
++ * start              ...                      num_atomic_iflights
++ *                    enable                   ...
++ *                    ...
 + */
-+void dlb_clr_pmcsr_disable(struct dlb_hw *hw)
++
++/*
++ * ------ Configfs for dlb domains---------
++ *
++ * These are the templates for show and store functions in domain
++ * groups/directories, which minimizes replication of boilerplate
++ * code to copy arguments. Most attributes, use the simple template.
++ * "name" is the attribute name in the group.
++ */
++#define DLB_CONFIGFS_DOMAIN_SHOW(name)				\
++static ssize_t dlb_cfs_domain_##name##_show(			\
++	struct config_item *item,				\
++	char *page)						\
++{								\
++	return sprintf(page, "%u\n",				\
++		       to_dlb_cfs_domain(item)->name);		\
++}								\
++
++#define DLB_CONFIGFS_DOMAIN_STORE(name)				\
++static ssize_t dlb_cfs_domain_##name##_store(			\
++	struct config_item *item,				\
++	const char *page,					\
++	size_t count)						\
++{								\
++	int ret;						\
++	struct dlb_cfs_domain *dlb_cfs_domain =			\
++				to_dlb_cfs_domain(item);	\
++								\
++	ret = kstrtoint(page, 10, &dlb_cfs_domain->name);	\
++	if (ret)						\
++		return ret;					\
++								\
++	return count;						\
++}								\
++
++DLB_CONFIGFS_DOMAIN_SHOW(status)
++DLB_CONFIGFS_DOMAIN_SHOW(domain_id)
++DLB_CONFIGFS_DOMAIN_SHOW(num_ldb_queues)
++DLB_CONFIGFS_DOMAIN_SHOW(num_ldb_ports)
++DLB_CONFIGFS_DOMAIN_SHOW(num_dir_ports)
++DLB_CONFIGFS_DOMAIN_SHOW(num_atomic_inflights)
++DLB_CONFIGFS_DOMAIN_SHOW(num_hist_list_entries)
++DLB_CONFIGFS_DOMAIN_SHOW(num_ldb_credits)
++DLB_CONFIGFS_DOMAIN_SHOW(num_dir_credits)
++DLB_CONFIGFS_DOMAIN_SHOW(create)
++
++DLB_CONFIGFS_DOMAIN_STORE(num_ldb_queues)
++DLB_CONFIGFS_DOMAIN_STORE(num_ldb_ports)
++DLB_CONFIGFS_DOMAIN_STORE(num_dir_ports)
++DLB_CONFIGFS_DOMAIN_STORE(num_atomic_inflights)
++DLB_CONFIGFS_DOMAIN_STORE(num_hist_list_entries)
++DLB_CONFIGFS_DOMAIN_STORE(num_ldb_credits)
++DLB_CONFIGFS_DOMAIN_STORE(num_dir_credits)
++
++static ssize_t dlb_cfs_domain_create_store(struct config_item *item,
++					   const char *page, size_t count)
 +{
-+	u32 pmcsr_dis;
++	struct dlb_cfs_domain *dlb_cfs_domain = to_dlb_cfs_domain(item);
++	struct dlb_device_configfs *dlb_dev_configfs;
++	struct dlb *dlb;
++	int ret, create_in;
 +
-+	pmcsr_dis = DLB_CSR_RD(hw, CM_CFG_PM_PMCSR_DISABLE);
++	dlb_dev_configfs = container_of(dlb_cfs_domain->dev_grp,
++					struct dlb_device_configfs,
++					dev_group);
++	dlb = dlb_dev_configfs->dlb;
++	if (!dlb)
++		return -EINVAL;
 +
-+	/* Clear register bits */
-+	pmcsr_dis &= ~CM_CFG_PM_PMCSR_DISABLE_DISABLE;
++	ret = kstrtoint(page, 10, &create_in);
++	if (ret)
++		return ret;
 +
-+	DLB_CSR_WR(hw, CM_CFG_PM_PMCSR_DISABLE, pmcsr_dis);
++	/* Writing 1 to the 'create' triggers scheduling domain creation */
++	if (create_in == 1 && dlb_cfs_domain->create == 0) {
++		struct dlb_create_sched_domain_args args = {0};
++
++		memcpy(&args.response, &dlb_cfs_domain->status,
++		       sizeof(struct dlb_create_sched_domain_args));
++
++		dev_dbg(dlb->dev,
++			"Create domain: %s\n",
++			dlb_cfs_domain->group.cg_item.ci_namebuf);
++
++		ret = dlb_configfs_create_sched_domain(dlb, &args);
++
++		dlb_cfs_domain->status = args.response.status;
++		dlb_cfs_domain->domain_id = args.response.id;
++
++		if (ret) {
++			dev_err(dlb->dev,
++				"create sched domain failed: ret=%d\n", ret);
++			return ret;
++		}
++
++		dlb_cfs_domain->create = 1;
++	}
++
++	return count;
 +}
++
++CONFIGFS_ATTR_RO(dlb_cfs_domain_, status);
++CONFIGFS_ATTR_RO(dlb_cfs_domain_, domain_id);
++CONFIGFS_ATTR(dlb_cfs_domain_, num_ldb_queues);
++CONFIGFS_ATTR(dlb_cfs_domain_, num_ldb_ports);
++CONFIGFS_ATTR(dlb_cfs_domain_, num_dir_ports);
++CONFIGFS_ATTR(dlb_cfs_domain_, num_atomic_inflights);
++CONFIGFS_ATTR(dlb_cfs_domain_, num_hist_list_entries);
++CONFIGFS_ATTR(dlb_cfs_domain_, num_ldb_credits);
++CONFIGFS_ATTR(dlb_cfs_domain_, num_dir_credits);
++CONFIGFS_ATTR(dlb_cfs_domain_, create);
++
++static struct configfs_attribute *dlb_cfs_domain_attrs[] = {
++	&dlb_cfs_domain_attr_status,
++	&dlb_cfs_domain_attr_domain_id,
++	&dlb_cfs_domain_attr_num_ldb_queues,
++	&dlb_cfs_domain_attr_num_ldb_ports,
++	&dlb_cfs_domain_attr_num_dir_ports,
++	&dlb_cfs_domain_attr_num_atomic_inflights,
++	&dlb_cfs_domain_attr_num_hist_list_entries,
++	&dlb_cfs_domain_attr_num_ldb_credits,
++	&dlb_cfs_domain_attr_num_dir_credits,
++	&dlb_cfs_domain_attr_create,
++
++	NULL,
++};
++
++static void dlb_cfs_domain_release(struct config_item *item)
++{
++	kfree(to_dlb_cfs_domain(item));
++}
++
++static struct configfs_item_operations dlb_cfs_domain_item_ops = {
++	.release	= dlb_cfs_domain_release,
++};
++
++static const struct config_item_type dlb_cfs_domain_type = {
++	.ct_item_ops	= &dlb_cfs_domain_item_ops,
++	.ct_attrs	= dlb_cfs_domain_attrs,
++	.ct_owner	= THIS_MODULE,
++};
++
++/*
++ *--------- dlb device level configfs -----------
++ *
++ * Scheduling domains are created in the device-level configfs driectory.
++ */
++static struct config_group *dlb_cfs_device_make_domain(struct config_group *group,
++						       const char *name)
++{
++	struct dlb_cfs_domain *dlb_cfs_domain;
++
++	dlb_cfs_domain = kzalloc(sizeof(*dlb_cfs_domain), GFP_KERNEL);
++	if (!dlb_cfs_domain)
++		return ERR_PTR(-ENOMEM);
++
++	dlb_cfs_domain->dev_grp = group;
++
++	config_group_init_type_name(&dlb_cfs_domain->group, name,
++				    &dlb_cfs_domain_type);
++
++	return &dlb_cfs_domain->group;
++}
++
++static struct configfs_group_operations dlb_cfs_device_group_ops = {
++	.make_group     = dlb_cfs_device_make_domain,
++};
++
++static const struct config_item_type dlb_cfs_device_type = {
++	/* No need for _item_ops() at the device-level, and default
++	 * attribute.
++	 * .ct_item_ops	= &dlb_cfs_device_item_ops,
++	 * .ct_attrs	= dlb_cfs_device_attrs,
++	 */
++
++	.ct_group_ops	= &dlb_cfs_device_group_ops,
++	.ct_owner	= THIS_MODULE,
++};
++
++/*------------------- dlb group subsystem for configfs ----------------
++ *
++ * we only need a simple configfs item type here that does not let
++ * user to create new entry. The group for each dlb device will be
++ * generated when the device is detected in dlb_probe().
++ */
++
++static const struct config_item_type dlb_device_group_type = {
++	.ct_owner	= THIS_MODULE,
++};
++
++/* dlb group subsys in configfs */
++static struct configfs_subsystem dlb_device_group_subsys = {
++	.su_group = {
++		.cg_item = {
++			.ci_namebuf = "dlb",
++			.ci_type = &dlb_device_group_type,
++		},
++	},
++};
++
++/* Create a configfs directory dlbN for each dlb device probed
++ * in dlb_probe()
++ */
++int dlb_configfs_create_device(struct dlb *dlb)
++{
++	struct config_group *parent_group, *dev_grp;
++	char device_name[16];
++	int ret = 0;
++
++	snprintf(device_name, 6, "dlb%d", dlb->id);
++	parent_group = &dlb_device_group_subsys.su_group;
++
++	dev_grp = &dlb_dev_configfs[dlb->id].dev_group;
++	config_group_init_type_name(dev_grp,
++				    device_name,
++				    &dlb_cfs_device_type);
++	ret = configfs_register_group(parent_group, dev_grp);
++
++	if (ret)
++		return ret;
++
++	dlb_dev_configfs[dlb->id].dlb = dlb;
++
++	return ret;
++}
++
++int configfs_dlb_init(void)
++{
++	struct configfs_subsystem *subsys;
++	int ret;
++
++	/* set up and register configfs subsystem for dlb */
++	subsys = &dlb_device_group_subsys;
++	config_group_init(&subsys->su_group);
++	mutex_init(&subsys->su_mutex);
++	ret = configfs_register_subsystem(subsys);
++	if (ret) {
++		pr_err("Error %d while registering subsystem %s\n",
++		       ret, subsys->su_group.cg_item.ci_namebuf);
++	}
++
++	return ret;
++}
++
++void configfs_dlb_exit(void)
++{
++	configfs_unregister_subsystem(&dlb_device_group_subsys);
++}
+diff --git a/drivers/misc/dlb/dlb_configfs.h b/drivers/misc/dlb/dlb_configfs.h
+new file mode 100644
+index 000000000000..03019e046429
+--- /dev/null
++++ b/drivers/misc/dlb/dlb_configfs.h
+@@ -0,0 +1,39 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/* Copyright(C) 2016-2020 Intel Corporation. All rights reserved. */
++
++#ifndef __DLB_CONFIGFS_H
++#define __DLB_CONFIGFS_H
++
++#include "dlb_main.h"
++
++struct dlb_device_configfs {
++	struct config_group dev_group;
++	struct dlb *dlb;
++};
++
++struct dlb_cfs_domain {
++	struct config_group group;
++	struct config_group *dev_grp;
++	unsigned int status;
++	unsigned int domain_id;
++	/* Input parameters */
++	unsigned int domain_fd;
++	unsigned int num_ldb_queues;
++	unsigned int num_ldb_ports;
++	unsigned int num_dir_ports;
++	unsigned int num_atomic_inflights;
++	unsigned int num_hist_list_entries;
++	unsigned int num_ldb_credits;
++	unsigned int num_dir_credits;
++	unsigned int create;
++
++};
++
++static inline
++struct dlb_cfs_domain *to_dlb_cfs_domain(struct config_item *item)
++{
++	return container_of(to_config_group(item),
++			    struct dlb_cfs_domain, group);
++}
++
++#endif /* DLB_CONFIGFS_H */
+diff --git a/drivers/misc/dlb/dlb_main.c b/drivers/misc/dlb/dlb_main.c
+index 136e8b54ea2b..1bd9ca7772a9 100644
+--- a/drivers/misc/dlb/dlb_main.c
++++ b/drivers/misc/dlb/dlb_main.c
+@@ -128,6 +128,10 @@ static int dlb_probe(struct pci_dev *pdev, const struct pci_device_id *pdev_id)
+ 	if (ret)
+ 		goto dma_set_mask_fail;
+ 
++	ret = dlb_configfs_create_device(dlb);
++	if (ret)
++		goto configfs_create_fail;
++
+ 	/*
+ 	 * PM enable must be done before any other MMIO accesses, and this
+ 	 * setting is persistent across device reset.
+@@ -157,6 +161,7 @@ static int dlb_probe(struct pci_dev *pdev, const struct pci_device_id *pdev_id)
+ resource_init_fail:
+ dlb_reset_fail:
+ wait_for_device_ready_fail:
++configfs_create_fail:
+ dma_set_mask_fail:
+ 	device_destroy(dlb_class, dlb->dev_number);
+ map_pci_bar_fail:
+@@ -225,6 +230,8 @@ static int __init dlb_init_module(void)
+ 	if (err)
+ 		goto cdev_add_fail;
+ 
++	configfs_dlb_init();
++
+ 	err = pci_register_driver(&dlb_pci_driver);
+ 	if (err < 0) {
+ 		pr_err("dlb: pci_register_driver() returned %d\n", err);
+@@ -248,6 +255,8 @@ static void __exit dlb_exit_module(void)
+ {
+ 	pci_unregister_driver(&dlb_pci_driver);
+ 
++	configfs_dlb_exit();
++
+ 	cdev_del(&dlb_cdev);
+ 
+ 	unregister_chrdev_region(dlb_devt, DLB_MAX_NUM_DEVICES);
+diff --git a/drivers/misc/dlb/dlb_main.h b/drivers/misc/dlb/dlb_main.h
+index a65b12b75b4c..4921333a6ec3 100644
+--- a/drivers/misc/dlb/dlb_main.h
++++ b/drivers/misc/dlb/dlb_main.h
+@@ -13,6 +13,8 @@
+ #include <linux/types.h>
+ #include <linux/bitfield.h>
+ 
++#include "dlb_args.h"
++
+ /*
+  * Hardware related #defines and data structures.
+  *
+@@ -327,6 +329,14 @@ static inline void dlb_bitmap_free(struct dlb_bitmap *bitmap)
+ /* Prototypes for dlb_resource.c */
+ int dlb_resource_init(struct dlb_hw *hw);
+ void dlb_resource_free(struct dlb_hw *hw);
++int dlb_hw_create_sched_domain(struct dlb_hw *hw,
++			       struct dlb_create_sched_domain_args *args,
++			       struct dlb_cmd_response *resp);
+ void dlb_clr_pmcsr_disable(struct dlb_hw *hw);
+ 
++/* Prototypes for dlb_configfs.c */
++int dlb_configfs_create_device(struct dlb *dlb);
++int configfs_dlb_init(void);
++void configfs_dlb_exit(void);
++
+ #endif /* __DLB_MAIN_H */
+diff --git a/drivers/misc/dlb/dlb_resource.c b/drivers/misc/dlb/dlb_resource.c
+index c192d4fb8463..7d7ebf3db292 100644
+--- a/drivers/misc/dlb/dlb_resource.c
++++ b/drivers/misc/dlb/dlb_resource.c
+@@ -190,6 +190,16 @@ int dlb_resource_init(struct dlb_hw *hw)
+ 	return ret;
+ }
+ 
++int dlb_hw_create_sched_domain(struct dlb_hw *hw,
++			       struct dlb_create_sched_domain_args *args,
++			       struct dlb_cmd_response *resp)
++{
++	resp->id = 0;
++	resp->status = 0;
++
++	return 0;
++}
++
+ /**
+  * dlb_clr_pmcsr_disable() - power on bulk of DLB 2.0 logic
+  * @hw: dlb_hw handle for a particular device.
 -- 
 2.27.0
 
