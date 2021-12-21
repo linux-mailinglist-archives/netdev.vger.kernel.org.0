@@ -2,92 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 912E447C79F
-	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 20:40:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 51A7747C7AE
+	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 20:43:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241857AbhLUTkK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Dec 2021 14:40:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34546 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241842AbhLUTkJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Dec 2021 14:40:09 -0500
-Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BEA2C061574;
-        Tue, 21 Dec 2021 11:40:09 -0800 (PST)
-Received: by mail-lj1-x22d.google.com with SMTP id p8so21510ljo.5;
-        Tue, 21 Dec 2021 11:40:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=/uKyyOqK31yVvTxepIWf3C0/nG0qY+9vHEVmcazif6A=;
-        b=mDwpKytDas5WfYtyTNm4aXCVrv1Kd6hSyQs6O1BA538BAsxZY8NtZgVeZShQZSi+PL
-         Upe8i69lpPviyuHiY8D+DBnvF45fWgVNKhIaOoqnVWBmnEBhIFw1VyqZRNzTFRW/rlwH
-         DrB1ZGxIIs+29C99QacgeQpeqpl/C12yHB6hwrs990lx2fx8yAfoCt1W1R86Q+7foYM9
-         D9jcfsfW2gohC/FVxcAP58zLL/JuSN+Kn6YVcQKuizG00o187cNbD11I7AD7puhIhFNK
-         6A5IgcYpjyI4bc262CsymBb3DoBZhILlrNaRnWA0jiVI2EB4yr7asIFLCPCAjqY5czRl
-         7H4Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=/uKyyOqK31yVvTxepIWf3C0/nG0qY+9vHEVmcazif6A=;
-        b=Q1Yi4VXEW5XO1+QFtcKN0XZ8Q0SlSsa0l4T++C9mIEZyNnm/UigWih7WIPrd8lcnYh
-         C6rwie5ybMgBdg/COgksTyAJqTTNmODY4oOr0rpAgtMIw+hGRjCIrG/77m3YhLSEGi9f
-         /fTgq3yQH4hhcEfJBgVGDPwYtrEMliNfaGjKQyvcKmOo6cN+mSsZbKsCs6bRsUGotz0c
-         6YMXV+3L/YM9PNmQ8VFmbnojHQE1wiBpsgK1XACilLreXkXeC89bJkHtCmbd9jTVjaUa
-         RZtwC+MzoaLhuXKrlKUvHIAF6FX/UAidKbi9yRsHNijxDJ8yhOvY6yt4+lrB/dzMMWgx
-         Vqow==
-X-Gm-Message-State: AOAM530SJevlhxgdw792XijLWTm3MdMCwQhoFVTuJ0jGmjXzTYpWLsaQ
-        zwBJQ28GdC088MwfwOsCz7M=
-X-Google-Smtp-Source: ABdhPJxCT5s/kKAWn+YxAhCAhMXMP3dAl+/J/UAgVhopQojePuKy41uetIeiPF5CNpqFiUhXZIUnUg==
-X-Received: by 2002:a2e:8e88:: with SMTP id z8mr3540873ljk.197.1640115607420;
-        Tue, 21 Dec 2021 11:40:07 -0800 (PST)
-Received: from localhost.localdomain ([94.103.235.97])
-        by smtp.gmail.com with ESMTPSA id j21sm2819061lji.88.2021.12.21.11.40.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Dec 2021 11:40:07 -0800 (PST)
-From:   Pavel Skripkin <paskripkin@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, linux@rempel-privat.de,
-        andrew@lunn.ch, robert.foss@collabora.com, freddy@asix.com.tw
-Cc:     linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>
-Subject: [PATCH 2/2] asix: fix wrong return value in asix_check_host_enable()
-Date:   Tue, 21 Dec 2021 22:40:05 +0300
-Message-Id: <989915c5f8887e4a0281ed87325277aa8c997291.1640115493.git.paskripkin@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <bd6a7e1779ba97a300650e8e23b69ecffb3b4236.1640115493.git.paskripkin@gmail.com>
+        id S241883AbhLUTnC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Dec 2021 14:43:02 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:37606 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234440AbhLUTnC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Dec 2021 14:43:02 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=v4cRE+dqB1kREJhaOpxiR5eVM67UdnPFH7HkElyMAlA=; b=nJwQ/tXvJOPYP9PcPUlCeb6K4X
+        JmUtizN76tn5AS5arX8QKgXOj79IUtl6ZdtySMq3uUcnoVYHsQgxhHgvDtdVmJtEyT/+SCQwdhTbd
+        wtRxWxJw2Dbgwr3rZdEbqONwp0kfFC2CxLh4INmjC2B8TgvBq6g26KkPRCMHRpVwi9eY=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mzl23-00HA80-M2; Tue, 21 Dec 2021 20:42:43 +0100
+Date:   Tue, 21 Dec 2021 20:42:43 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Pavel Skripkin <paskripkin@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, linux@rempel-privat.de,
+        robert.foss@collabora.com, freddy@asix.com.tw,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        syzbot+f44badb06036334e867a@syzkaller.appspotmail.com
+Subject: Re: [PATCH 1/2] asix: fix uninit-value in asix_mdio_read()
+Message-ID: <YcIuM05AO8CN1pxD@lunn.ch>
 References: <bd6a7e1779ba97a300650e8e23b69ecffb3b4236.1640115493.git.paskripkin@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <bd6a7e1779ba97a300650e8e23b69ecffb3b4236.1640115493.git.paskripkin@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If asix_read_cmd() returns 0 on 30th interation, 0 will be returned from
-asix_check_host_enable(), which is logically wrong. Fix it by returning
--ETIMEDOUT explicitly if we have exceeded 30 iterations
+On Tue, Dec 21, 2021 at 10:39:32PM +0300, Pavel Skripkin wrote:
+> asix_read_cmd() may read less than sizeof(smsr) bytes and in this case
+> smsr will be uninitialized.
+> 
+> Fail log:
+> BUG: KMSAN: uninit-value in asix_check_host_enable drivers/net/usb/asix_common.c:82 [inline]
+> BUG: KMSAN: uninit-value in asix_check_host_enable drivers/net/usb/asix_common.c:82 [inline] drivers/net/usb/asix_common.c:497
+> BUG: KMSAN: uninit-value in asix_mdio_read+0x3c1/0xb00 drivers/net/usb/asix_common.c:497 drivers/net/usb/asix_common.c:497
+>  asix_check_host_enable drivers/net/usb/asix_common.c:82 [inline]
+>  asix_check_host_enable drivers/net/usb/asix_common.c:82 [inline] drivers/net/usb/asix_common.c:497
+>  asix_mdio_read+0x3c1/0xb00 drivers/net/usb/asix_common.c:497 drivers/net/usb/asix_common.c:497
+> 
+> Fixes: d9fe64e51114 ("net: asix: Add in_pm parameter")
+> Reported-and-tested-by: syzbot+f44badb06036334e867a@syzkaller.appspotmail.com
+> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
 
-Fixes: a786e3195d6a ("net: asix: fix uninit value bugs")
-Reported-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
----
- drivers/net/usb/asix_common.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-diff --git a/drivers/net/usb/asix_common.c b/drivers/net/usb/asix_common.c
-index 06823d7141b6..8c61d410a123 100644
---- a/drivers/net/usb/asix_common.c
-+++ b/drivers/net/usb/asix_common.c
-@@ -83,7 +83,7 @@ static int asix_check_host_enable(struct usbnet *dev, int in_pm)
- 			break;
- 	}
- 
--	return ret;
-+	return i >= 30? -ETIMEDOUT: ret;
- }
- 
- static void reset_asix_rx_fixup_info(struct asix_rx_fixup_info *rx)
--- 
-2.34.1
-
+    Andrew
