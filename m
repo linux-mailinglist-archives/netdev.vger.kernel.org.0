@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D218347BA48
-	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 07:52:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B53C47BA49
+	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 07:52:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234517AbhLUGvt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S230057AbhLUGvt (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Tue, 21 Dec 2021 01:51:49 -0500
-Received: from mga06.intel.com ([134.134.136.31]:29910 "EHLO mga06.intel.com"
+Received: from mga06.intel.com ([134.134.136.31]:29913 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231254AbhLUGvo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S234488AbhLUGvo (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 21 Dec 2021 01:51:44 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1640069503; x=1671605503;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=cH8ImR6Xy7UR4WcxJWNL2L6hJoGFrhT5iMhaSKpaui4=;
-  b=jqKM0YsL94brcR6M8lFaYFezqAySZ1HqGEoePQWbv6g8mtM0+Lkg4xG0
-   dz+zBb5CD7TdUn+HP3/4BC31tEKBBd2c9wb7SjwEa0kchGzsR1Sx0OpgQ
-   4IN3AE2PDKyF11bUDyQnpnBCbvGXFXtynPVI2mOKCHpuPgGRCD/vaiEfQ
-   Glar+MxoY+mI95C2hIvpyJye2dnL4qDD6Tt11vFrgDqF9kFgajX/dNESs
-   ye92jqLt3yTUMEtUjIIutY04eWSzGQAjd7Lnrzs0dp6gL8R4Dc/OXJfGP
-   jsQwE+3gHq59X2MOEvnxezajzPaK6k2fmbCMOdP+EEUXk6Y4jHBEtiyxT
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10204"; a="301107541"
+  bh=BCNruAfSXqdAUXzRbLuYxwWyv2sObYjixtukUjnMrug=;
+  b=HHP32kqG0vj1+6mVBfk3FJB6drWri8Ofu71zIQtGX8Fhk+qsGR/pbE2/
+   HC3JT5jODa5+zXITMtts7yYshjEj2hRgHslRFwpIic/kDTOzxZdqmPBGB
+   LjRfxMknvisARnWL1SE0zocgpcDAhS3HXWU0S+A0xs5uUWLhwm1w7Lyw2
+   ua0MGO1bNwr6BhvyLllQawPO+vSY5kV9QfhEdJANomG25yxXqdElE7zfz
+   FPSAgphTI+qdt5/4zuX1qxV3Tk1IDMHDedd76Kbd72PjYYfuyAK07qJU/
+   hSu3NbfVRD1Far4vESNvUSK6osy/d0ZhOYe7I/pGQH/brGZ7jRmdp8gHf
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10204"; a="301107546"
 X-IronPort-AV: E=Sophos;i="5.88,222,1635231600"; 
-   d="scan'208";a="301107541"
+   d="scan'208";a="301107546"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Dec 2021 22:50:41 -0800
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Dec 2021 22:50:43 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,222,1635231600"; 
-   d="scan'208";a="570119111"
+   d="scan'208";a="570119131"
 Received: from unknown (HELO localhost.localdomain) ([10.228.150.100])
-  by fmsmga008.fm.intel.com with ESMTP; 20 Dec 2021 22:50:40 -0800
+  by fmsmga008.fm.intel.com with ESMTP; 20 Dec 2021 22:50:42 -0800
 From:   Mike Ximing Chen <mike.ximing.chen@intel.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     arnd@arndb.de, gregkh@linuxfoundation.org,
         dan.j.williams@intel.com, pierre-louis.bossart@linux.intel.com,
         netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org
-Subject: [RFC PATCH v12 15/17] dlb: add queue map, unmap, and pending unmap
-Date:   Tue, 21 Dec 2021 00:50:45 -0600
-Message-Id: <20211221065047.290182-16-mike.ximing.chen@intel.com>
+Subject: [RFC PATCH v12 16/17] dlb: add static queue map register operations
+Date:   Tue, 21 Dec 2021 00:50:46 -0600
+Message-Id: <20211221065047.290182-17-mike.ximing.chen@intel.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20211221065047.290182-1-mike.ximing.chen@intel.com>
 References: <20211221065047.290182-1-mike.ximing.chen@intel.com>
@@ -51,704 +51,214 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the high-level code for queue map, unmap, and pending unmap query
-configfs interface and argument verification -- with stubs for the
-low-level register accesses and the queue map/unmap state machine, to be
-filled in a later commit.
+Add the register accesses that implement the static queue map operation and
+handle an unmap request when a queue map operation is in progress.
 
-The queue map/unmap in this commit refers to link/unlink between DLB's
-load-balanced queues (internal) and consumer ports.See Documentation/
-misc-devices/dlb.rst for details.
-
-Load-balanced queues can be "mapped" to any number of load-balanced ports.
-Once mapped, the port becomes a candidate to which the device can schedule
-queue entries from the queue. If a port is unmapped from a queue, it is no
-longer a candidate for scheduling from that queue.
-
-The pending unmaps function queries how many unmap operations are
-in-progress for a given port. These operations are asynchronous, so
-multiple may be in-flight at any given time.
+If a queue map operation is requested before the domain is started, it is a
+synchronous procedure on "static"/unchanging hardware. (The "dynamic"
+operation, when traffic is flowing in the device, will be added in a later
+commit.)
 
 Signed-off-by: Mike Ximing Chen <mike.ximing.chen@intel.com>
 ---
- drivers/misc/dlb/dlb_args.h     |  63 ++++++
- drivers/misc/dlb/dlb_configfs.c | 101 ++++++++++
- drivers/misc/dlb/dlb_configfs.h |   3 +
- drivers/misc/dlb/dlb_main.h     |   9 +
- drivers/misc/dlb/dlb_resource.c | 330 ++++++++++++++++++++++++++++++++
- include/uapi/linux/dlb.h        |   2 +
- 6 files changed, 508 insertions(+)
+ drivers/misc/dlb/dlb_resource.c | 163 ++++++++++++++++++++++++++++++++
+ 1 file changed, 163 insertions(+)
 
-diff --git a/drivers/misc/dlb/dlb_args.h b/drivers/misc/dlb/dlb_args.h
-index 7c3e7794efee..eac8890c3a70 100644
---- a/drivers/misc/dlb/dlb_args.h
-+++ b/drivers/misc/dlb/dlb_args.h
-@@ -265,6 +265,69 @@ struct dlb_start_domain_args {
- 	struct dlb_cmd_response response;
- };
- 
-+/*
-+ * dlb_map_qid_args: Used to map a load-balanced queue to a load-balanced port.
-+ *
-+ * Output parameters:
-+ * @response.status: Detailed error code. In certain cases, such as if the
-+ *	request arg is invalid, the driver won't set status.
-+ *
-+ * Input parameters:
-+ * @port_id: Load-balanced port ID.
-+ * @qid: Load-balanced queue ID.
-+ * @priority: Queue->port service priority.
-+ */
-+struct dlb_map_qid_args {
-+	/* Output parameters */
-+	struct dlb_cmd_response response;
-+	/* Input parameters */
-+	__u32 port_id;
-+	__u32 qid;
-+	__u32 priority;
-+};
-+
-+/*
-+ * dlb_unmap_qid_args: Used to nnmap a load-balanced queue to a load-balanced
-+ *	port.
-+ *
-+ * Output parameters:
-+ * @response.status: Detailed error code. In certain cases, such as if the
-+ *	request arg is invalid, the driver won't set status.
-+ *
-+ * Input parameters:
-+ * @port_id: Load-balanced port ID.
-+ * @qid: Load-balanced queue ID.
-+ */
-+struct dlb_unmap_qid_args {
-+	/* Output parameters */
-+	struct dlb_cmd_response response;
-+	/* Input parameters */
-+	__u32 port_id;
-+	__u32 qid;
-+};
-+
-+/*
-+ * dlb_pending_port_unmaps_args: Used to get number of queue unmap operations in
-+ *	progress for a load-balanced port.
-+ *
-+ *	Note: This is a snapshot; the number of unmap operations in progress
-+ *	is subject to change at any time.
-+ *
-+ * Output parameters:
-+ * @response.status: Detailed error code. In certain cases, such as if the
-+ *	request arg is invalid, the driver won't set status.
-+ * @response.id: number of unmaps in progress.
-+ *
-+ * Input parameters:
-+ * @port_id: Load-balanced port ID.
-+ */
-+struct dlb_pending_port_unmaps_args {
-+	/* Output parameters */
-+	struct dlb_cmd_response response;
-+	/* Input parameters */
-+	__u32 port_id;
-+};
-+
- /*
-  * Mapping sizes for memory mapping the consumer queue (CQ) memory space, and
-  * producer port (PP) MMIO space.
-diff --git a/drivers/misc/dlb/dlb_configfs.c b/drivers/misc/dlb/dlb_configfs.c
-index 1f7e8a293594..3f279c81fbbb 100644
---- a/drivers/misc/dlb/dlb_configfs.c
-+++ b/drivers/misc/dlb/dlb_configfs.c
-@@ -45,6 +45,8 @@ DLB_DOMAIN_CONFIGFS_CALLBACK_TEMPLATE(create_dir_queue)
- DLB_DOMAIN_CONFIGFS_CALLBACK_TEMPLATE(get_ldb_queue_depth)
- DLB_DOMAIN_CONFIGFS_CALLBACK_TEMPLATE(get_dir_queue_depth)
- DLB_DOMAIN_CONFIGFS_CALLBACK_TEMPLATE(start_domain)
-+DLB_DOMAIN_CONFIGFS_CALLBACK_TEMPLATE(map_qid)
-+DLB_DOMAIN_CONFIGFS_CALLBACK_TEMPLATE(unmap_qid)
- 
- static int dlb_create_port_fd(struct dlb *dlb,
- 			      const char *prefix,
-@@ -611,6 +613,15 @@ end:									\
- 	return sprintf(page, "%u\n", to_dlb_cfs_port(item)->name);	\
- }									\
- 
-+#define DLB_CONFIGFS_PORT_LINK_SHOW(name, port)				\
-+static ssize_t dlb_cfs_port_##name##_##port##_show(			\
-+	struct config_item *item,					\
-+	char *page)							\
-+{									\
-+	return sprintf(page, "Ox%08x\n",				\
-+	       to_dlb_cfs_port(item)->name[port]);			\
-+}
-+
- #define DLB_CONFIGFS_PORT_STORE(name)					\
- static ssize_t dlb_cfs_port_##name##_store(				\
- 	struct config_item *item,					\
-@@ -643,6 +654,55 @@ static ssize_t dlb_cfs_port_##name##_store(				\
- 	return count;							\
- }									\
- 
-+#define DLB_CONFIGFS_PORT_LINK_STORE(name, port)			\
-+static ssize_t dlb_cfs_port_##name##_##port##_store(			\
-+	struct config_item *item,					\
-+	const char *page,						\
-+	size_t count)							\
-+{									\
-+	struct dlb_cfs_port *dlb_cfs_port = to_dlb_cfs_port(item);	\
-+	struct dlb_domain *dlb_domain;					\
-+	struct dlb *dlb = NULL;						\
-+	int ret;							\
-+									\
-+	ret = dlb_configfs_get_dlb_domain(dlb_cfs_port->domain_grp,	\
-+					  &dlb, &dlb_domain);		\
-+	if (ret)							\
-+		return ret;						\
-+									\
-+	ret = kstrtoint(page, 16, &dlb_cfs_port->name[port]);		\
-+	if (ret)							\
-+		return ret;						\
-+									\
-+	if (dlb_cfs_port->name[port] & 0x10000) {			\
-+		struct dlb_map_qid_args args;				\
-+									\
-+		args.port_id = dlb_cfs_port->port_id;			\
-+		args.qid = dlb_cfs_port->name[port] & 0xff;		\
-+		args.priority = (dlb_cfs_port->name[port] >> 8) & 0xff;	\
-+									\
-+		ret = dlb_domain_configfs_map_qid(dlb, dlb_domain,	\
-+						  &args);		\
-+									\
-+		dlb_cfs_port->status = args.response.status;		\
-+	} else {							\
-+		struct dlb_unmap_qid_args args;				\
-+									\
-+		args.port_id = dlb_cfs_port->port_id;			\
-+		args.qid = dlb_cfs_port->name[port] & 0xff;		\
-+									\
-+		ret = dlb_domain_configfs_unmap_qid(dlb, dlb_domain,	\
-+						    &args);		\
-+									\
-+		dlb_cfs_port->status = args.response.status;		\
-+	}								\
-+									\
-+	if (ret)							\
-+		return ret;						\
-+									\
-+	return count;							\
-+}
-+
- DLB_CONFIGFS_PORT_SHOW_FD(pp_fd)
- DLB_CONFIGFS_PORT_SHOW_FD(cq_fd)
- DLB_CONFIGFS_PORT_SHOW(status)
-@@ -652,12 +712,28 @@ DLB_CONFIGFS_PORT_SHOW(cq_depth)
- DLB_CONFIGFS_PORT_SHOW(cq_depth_threshold)
- DLB_CONFIGFS_PORT_SHOW(cq_history_list_size)
- DLB_CONFIGFS_PORT_SHOW(create)
-+DLB_CONFIGFS_PORT_LINK_SHOW(queue_link, 0)
-+DLB_CONFIGFS_PORT_LINK_SHOW(queue_link, 1)
-+DLB_CONFIGFS_PORT_LINK_SHOW(queue_link, 2)
-+DLB_CONFIGFS_PORT_LINK_SHOW(queue_link, 3)
-+DLB_CONFIGFS_PORT_LINK_SHOW(queue_link, 4)
-+DLB_CONFIGFS_PORT_LINK_SHOW(queue_link, 5)
-+DLB_CONFIGFS_PORT_LINK_SHOW(queue_link, 6)
-+DLB_CONFIGFS_PORT_LINK_SHOW(queue_link, 7)
- DLB_CONFIGFS_PORT_SHOW(queue_id)
- 
- DLB_CONFIGFS_PORT_STORE(is_ldb)
- DLB_CONFIGFS_PORT_STORE(cq_depth)
- DLB_CONFIGFS_PORT_STORE(cq_depth_threshold)
- DLB_CONFIGFS_PORT_STORE(cq_history_list_size)
-+DLB_CONFIGFS_PORT_LINK_STORE(queue_link, 0)
-+DLB_CONFIGFS_PORT_LINK_STORE(queue_link, 1)
-+DLB_CONFIGFS_PORT_LINK_STORE(queue_link, 2)
-+DLB_CONFIGFS_PORT_LINK_STORE(queue_link, 3)
-+DLB_CONFIGFS_PORT_LINK_STORE(queue_link, 4)
-+DLB_CONFIGFS_PORT_LINK_STORE(queue_link, 5)
-+DLB_CONFIGFS_PORT_LINK_STORE(queue_link, 6)
-+DLB_CONFIGFS_PORT_LINK_STORE(queue_link, 7)
- DLB_CONFIGFS_PORT_STORE(queue_id)
- 
- static ssize_t dlb_cfs_port_create_store(struct config_item *item,
-@@ -682,6 +758,7 @@ static ssize_t dlb_cfs_port_create_store(struct config_item *item,
- 
- 	if (dlb_cfs_port->is_ldb) {
- 		struct dlb_create_ldb_port_args args = {0};
-+		int i;
- 
- 		args.cq_depth = dlb_cfs_port->cq_depth;
- 		args.cq_depth_threshold = dlb_cfs_port->cq_depth_threshold;
-@@ -695,6 +772,10 @@ static ssize_t dlb_cfs_port_create_store(struct config_item *item,
- 
- 		dlb_cfs_port->status = args.response.status;
- 		dlb_cfs_port->port_id = args.response.id;
-+
-+		/* reset the links */
-+		for (i = 0; i < DLB_MAX_NUM_QIDS_PER_LDB_CQ; i++)
-+			dlb_cfs_port->queue_link[i] = 0x1ffff;
- 	} else {
- 		struct dlb_create_dir_port_args args = {0};
- 
-@@ -734,6 +815,14 @@ CONFIGFS_ATTR(dlb_cfs_port_, cq_depth);
- CONFIGFS_ATTR(dlb_cfs_port_, cq_depth_threshold);
- CONFIGFS_ATTR(dlb_cfs_port_, cq_history_list_size);
- CONFIGFS_ATTR(dlb_cfs_port_, create);
-+CONFIGFS_ATTR(dlb_cfs_port_, queue_link_0);
-+CONFIGFS_ATTR(dlb_cfs_port_, queue_link_1);
-+CONFIGFS_ATTR(dlb_cfs_port_, queue_link_2);
-+CONFIGFS_ATTR(dlb_cfs_port_, queue_link_3);
-+CONFIGFS_ATTR(dlb_cfs_port_, queue_link_4);
-+CONFIGFS_ATTR(dlb_cfs_port_, queue_link_5);
-+CONFIGFS_ATTR(dlb_cfs_port_, queue_link_6);
-+CONFIGFS_ATTR(dlb_cfs_port_, queue_link_7);
- CONFIGFS_ATTR(dlb_cfs_port_, queue_id);
- 
- static struct configfs_attribute *dlb_cfs_port_attrs[] = {
-@@ -746,6 +835,14 @@ static struct configfs_attribute *dlb_cfs_port_attrs[] = {
- 	&dlb_cfs_port_attr_cq_depth_threshold,
- 	&dlb_cfs_port_attr_cq_history_list_size,
- 	&dlb_cfs_port_attr_create,
-+	&dlb_cfs_port_attr_queue_link_0,
-+	&dlb_cfs_port_attr_queue_link_1,
-+	&dlb_cfs_port_attr_queue_link_2,
-+	&dlb_cfs_port_attr_queue_link_3,
-+	&dlb_cfs_port_attr_queue_link_4,
-+	&dlb_cfs_port_attr_queue_link_5,
-+	&dlb_cfs_port_attr_queue_link_6,
-+	&dlb_cfs_port_attr_queue_link_7,
- 	&dlb_cfs_port_attr_queue_id,
- 
- 	NULL,
-@@ -957,6 +1054,7 @@ static struct config_group *dlb_cfs_domain_make_queue_port(struct config_group *
- {
- 	if (strstr(name, "port")) {
- 		struct dlb_cfs_port *dlb_cfs_port;
-+		int i;
- 
- 		dlb_cfs_port = kzalloc(sizeof(*dlb_cfs_port), GFP_KERNEL);
- 		if (!dlb_cfs_port)
-@@ -967,6 +1065,9 @@ static struct config_group *dlb_cfs_domain_make_queue_port(struct config_group *
- 		config_group_init_type_name(&dlb_cfs_port->group, name,
- 					    &dlb_cfs_port_type);
- 
-+		for (i = 0; i < 8; i++)
-+			dlb_cfs_port->queue_link[i] = 0xffffffff;
-+
- 		dlb_cfs_port->queue_id = 0xffffffff;
- 		dlb_cfs_port->port_id = 0xffffffff;
- 
-diff --git a/drivers/misc/dlb/dlb_configfs.h b/drivers/misc/dlb/dlb_configfs.h
-index 2503d0242399..91cc7d829f9a 100644
---- a/drivers/misc/dlb/dlb_configfs.h
-+++ b/drivers/misc/dlb/dlb_configfs.h
-@@ -68,6 +68,9 @@ struct dlb_cfs_port {
- 	unsigned int cq_history_list_size;
- 	unsigned int create;
- 
-+	/* For LDB port only */
-+	unsigned int queue_link[DLB_MAX_NUM_QIDS_PER_LDB_CQ];
-+
- 	/* For DIR port only, default = 0xffffffff */
- 	unsigned int queue_id;
- 
-diff --git a/drivers/misc/dlb/dlb_main.h b/drivers/misc/dlb/dlb_main.h
-index bff006e2dc8d..f410e7307c12 100644
---- a/drivers/misc/dlb/dlb_main.h
-+++ b/drivers/misc/dlb/dlb_main.h
-@@ -616,6 +616,12 @@ int dlb_hw_create_ldb_port(struct dlb_hw *hw, u32 domain_id,
- 			   struct dlb_cmd_response *resp);
- int dlb_hw_start_domain(struct dlb_hw *hw, u32 domain_id, void *unused,
- 			struct dlb_cmd_response *resp);
-+int dlb_hw_map_qid(struct dlb_hw *hw, u32 domain_id,
-+		   struct dlb_map_qid_args *args,
-+		   struct dlb_cmd_response *resp);
-+int dlb_hw_unmap_qid(struct dlb_hw *hw, u32 domain_id,
-+		     struct dlb_unmap_qid_args *args,
-+		     struct dlb_cmd_response *resp);
- int dlb_reset_domain(struct dlb_hw *hw, u32 domain_id);
- int dlb_ldb_port_owned_by_domain(struct dlb_hw *hw, u32 domain_id, u32 port_id);
- int dlb_dir_port_owned_by_domain(struct dlb_hw *hw, u32 domain_id, u32 port_id);
-@@ -626,6 +632,9 @@ int dlb_hw_get_ldb_queue_depth(struct dlb_hw *hw, u32 domain_id,
- int dlb_hw_get_dir_queue_depth(struct dlb_hw *hw, u32 domain_id,
- 			       struct dlb_get_dir_queue_depth_args *args,
- 			       struct dlb_cmd_response *resp);
-+int dlb_hw_pending_port_unmaps(struct dlb_hw *hw, u32 domain_id,
-+			       struct dlb_pending_port_unmaps_args *args,
-+			       struct dlb_cmd_response *resp);
- void dlb_hw_enable_sparse_ldb_cq_mode(struct dlb_hw *hw);
- void dlb_hw_enable_sparse_dir_cq_mode(struct dlb_hw *hw);
- 
 diff --git a/drivers/misc/dlb/dlb_resource.c b/drivers/misc/dlb/dlb_resource.c
-index 9e38fa850e5c..5d4ffdab69b5 100644
+index 5d4ffdab69b5..e19c0f6cc321 100644
 --- a/drivers/misc/dlb/dlb_resource.c
 +++ b/drivers/misc/dlb/dlb_resource.c
-@@ -210,6 +210,30 @@ static struct dlb_hw_domain *dlb_get_domain_from_id(struct dlb_hw *hw, u32 id)
- 	return &hw->domains[id];
+@@ -1200,6 +1200,38 @@ static int dlb_verify_map_qid_args(struct dlb_hw *hw, u32 domain_id,
+ 	return 0;
  }
  
-+static struct dlb_ldb_port *
-+dlb_get_domain_used_ldb_port(u32 id, bool vdev_req, struct dlb_hw_domain *domain)
++static bool dlb_port_find_slot(struct dlb_ldb_port *port,
++			       enum dlb_qid_map_state state, int *slot)
 +{
-+	struct dlb_ldb_port *port;
 +	int i;
 +
-+	if (id >= DLB_MAX_NUM_LDB_PORTS)
-+		return NULL;
-+
-+	for (i = 0; i < DLB_NUM_COS_DOMAINS; i++) {
-+		list_for_each_entry(port, &domain->used_ldb_ports[i], domain_list) {
-+			if (!vdev_req && port->id == id)
-+				return port;
-+		}
-+
-+		list_for_each_entry(port, &domain->avail_ldb_ports[i], domain_list) {
-+			if (!vdev_req && port->id == id)
-+				return port;
-+		}
++	for (i = 0; i < DLB_MAX_NUM_QIDS_PER_LDB_CQ; i++) {
++		if (port->qid_map[i].state == state)
++			break;
 +	}
 +
-+	return NULL;
++	*slot = i;
++
++	return (i < DLB_MAX_NUM_QIDS_PER_LDB_CQ);
 +}
 +
- static struct dlb_ldb_port *
- dlb_get_domain_ldb_port(u32 id, bool vdev_req, struct dlb_hw_domain *domain)
- {
-@@ -1114,6 +1138,122 @@ static int dlb_verify_start_domain_args(struct dlb_hw *hw, u32 domain_id,
++static bool dlb_port_find_slot_queue(struct dlb_ldb_port *port,
++				     enum dlb_qid_map_state state,
++				     struct dlb_ldb_queue *queue, int *slot)
++{
++	int i;
++
++	for (i = 0; i < DLB_MAX_NUM_QIDS_PER_LDB_CQ; i++) {
++		if (port->qid_map[i].state == state &&
++		    port->qid_map[i].qid == queue->id)
++			break;
++	}
++
++	*slot = i;
++
++	return (i < DLB_MAX_NUM_QIDS_PER_LDB_CQ);
++}
++
+ static int dlb_verify_unmap_qid_args(struct dlb_hw *hw, u32 domain_id,
+ 				     struct dlb_unmap_qid_args *args,
+ 				     struct dlb_cmd_response *resp,
+@@ -1720,6 +1752,125 @@ static int dlb_configure_dir_port(struct dlb_hw *hw, struct dlb_hw_domain *domai
  	return 0;
  }
  
-+static int dlb_verify_map_qid_args(struct dlb_hw *hw, u32 domain_id,
-+				   struct dlb_map_qid_args *args,
-+				   struct dlb_cmd_response *resp,
-+				   struct dlb_hw_domain **out_domain,
-+				   struct dlb_ldb_port **out_port,
-+				   struct dlb_ldb_queue **out_queue)
++static int dlb_ldb_port_map_qid_static(struct dlb_hw *hw, struct dlb_ldb_port *p,
++				       struct dlb_ldb_queue *q, u8 priority)
 +{
-+	struct dlb_hw_domain *domain;
-+	struct dlb_ldb_queue *queue;
-+	struct dlb_ldb_port *port;
-+	int id;
++	u32 lsp_qid2cq2;
++	u32 lsp_qid2cq;
++	u32 atm_qid2cq;
++	u32 cq2priov;
++	u32 cq2qid;
++	int i;
 +
-+	domain = dlb_get_domain_from_id(hw, domain_id);
-+
-+	if (!domain) {
-+		resp->status = DLB_ST_INVALID_DOMAIN_ID;
-+		return -EINVAL;
++	/* Look for a pending or already mapped slot, else an unused slot */
++	if (!dlb_port_find_slot_queue(p, DLB_QUEUE_MAP_IN_PROG, q, &i) &&
++	    !dlb_port_find_slot_queue(p, DLB_QUEUE_MAPPED, q, &i) &&
++	    !dlb_port_find_slot(p, DLB_QUEUE_UNMAPPED, &i)) {
++		dev_err(hw_to_dev(hw),
++			"[%s():%d] Internal error: CQ has no available QID mapping slots\n",
++			__func__, __LINE__);
++		return -EFAULT;
 +	}
 +
-+	if (!domain->configured) {
-+		resp->status = DLB_ST_DOMAIN_NOT_CONFIGURED;
-+		return -EINVAL;
++	/* Read-modify-write the priority and valid bit register */
++	cq2priov = DLB_CSR_RD(hw, LSP_CQ2PRIOV(p->id));
++
++	cq2priov |= (1U << (i + LSP_CQ2PRIOV_V_LOC)) & LSP_CQ2PRIOV_V;
++	cq2priov |= ((priority & 0x7) << (i + LSP_CQ2PRIOV_PRIO_LOC) * 3)
++		    & LSP_CQ2PRIOV_PRIO;
++
++	DLB_CSR_WR(hw, LSP_CQ2PRIOV(p->id), cq2priov);
++
++	/* Read-modify-write the QID map register */
++	if (i < 4)
++		cq2qid = DLB_CSR_RD(hw, LSP_CQ2QID0(p->id));
++	else
++		cq2qid = DLB_CSR_RD(hw, LSP_CQ2QID1(p->id));
++
++	if (i == 0 || i == 4) {
++		cq2qid &= ~LSP_CQ2QID0_QID_P0;
++		cq2qid |= FIELD_PREP(LSP_CQ2QID0_QID_P0, q->id);
++	} else if (i == 1 || i == 5) {
++		cq2qid &= ~LSP_CQ2QID0_QID_P1;
++		cq2qid |= FIELD_PREP(LSP_CQ2QID0_QID_P1, q->id);
++	} else if (i == 2 || i == 6) {
++		cq2qid &= ~LSP_CQ2QID0_QID_P2;
++		cq2qid |= FIELD_PREP(LSP_CQ2QID0_QID_P2, q->id);
++	} else if (i == 3 || i == 7) {
++		cq2qid &= ~LSP_CQ2QID0_QID_P3;
++		cq2qid |= FIELD_PREP(LSP_CQ2QID0_QID_P3, q->id);
 +	}
 +
-+	id = args->port_id;
++	if (i < 4)
++		DLB_CSR_WR(hw, LSP_CQ2QID0(p->id), cq2qid);
++	else
++		DLB_CSR_WR(hw, LSP_CQ2QID1(p->id), cq2qid);
 +
-+	port = dlb_get_domain_used_ldb_port(id, false, domain);
++	atm_qid2cq = DLB_CSR_RD(hw,
++				ATM_QID2CQIDIX(q->id,
++					       p->id / 4));
 +
-+	if (!port || !port->configured) {
-+		resp->status = DLB_ST_INVALID_PORT_ID;
-+		return -EINVAL;
++	lsp_qid2cq = DLB_CSR_RD(hw,
++				LSP_QID2CQIDIX(q->id,
++					       p->id / 4));
++
++	lsp_qid2cq2 = DLB_CSR_RD(hw,
++				 LSP_QID2CQIDIX2(q->id,
++						 p->id / 4));
++
++	switch (p->id % 4) {
++	case 0:
++		atm_qid2cq |= (1 << (i + ATM_QID2CQIDIX_00_CQ_P0_LOC));
++		lsp_qid2cq |= (1 << (i + LSP_QID2CQIDIX_00_CQ_P0_LOC));
++		lsp_qid2cq2 |= (1 << (i + LSP_QID2CQIDIX2_00_CQ_P0_LOC));
++		break;
++
++	case 1:
++		atm_qid2cq |= (1 << (i + ATM_QID2CQIDIX_00_CQ_P1_LOC));
++		lsp_qid2cq |= (1 << (i + LSP_QID2CQIDIX_00_CQ_P1_LOC));
++		lsp_qid2cq2 |= (1 << (i + LSP_QID2CQIDIX2_00_CQ_P1_LOC));
++		break;
++
++	case 2:
++		atm_qid2cq |= (1 << (i + ATM_QID2CQIDIX_00_CQ_P2_LOC));
++		lsp_qid2cq |= (1 << (i + LSP_QID2CQIDIX_00_CQ_P2_LOC));
++		lsp_qid2cq2 |= (1 << (i + LSP_QID2CQIDIX2_00_CQ_P2_LOC));
++		break;
++
++	case 3:
++		atm_qid2cq |= (1 << (i + ATM_QID2CQIDIX_00_CQ_P3_LOC));
++		lsp_qid2cq |= (1 << (i + LSP_QID2CQIDIX_00_CQ_P3_LOC));
++		lsp_qid2cq2 |= (1 << (i + LSP_QID2CQIDIX2_00_CQ_P3_LOC));
++		break;
 +	}
 +
-+	if (args->priority >= DLB_QID_PRIORITIES) {
-+		resp->status = DLB_ST_INVALID_PRIORITY;
-+		return -EINVAL;
-+	}
++	DLB_CSR_WR(hw,
++		   ATM_QID2CQIDIX(q->id, p->id / 4),
++		   atm_qid2cq);
 +
-+	queue = dlb_get_domain_ldb_queue(args->qid, false, domain);
++	DLB_CSR_WR(hw,
++		   LSP_QID2CQIDIX(q->id, p->id / 4),
++		   lsp_qid2cq);
 +
-+	if (!queue || !queue->configured) {
-+		resp->status = DLB_ST_INVALID_QID;
-+		return -EINVAL;
-+	}
++	DLB_CSR_WR(hw,
++		   LSP_QID2CQIDIX2(q->id, p->id / 4),
++		   lsp_qid2cq2);
 +
-+	if (queue->domain_id != domain->id) {
-+		resp->status = DLB_ST_INVALID_QID;
-+		return -EINVAL;
-+	}
++	dlb_flush_csr(hw);
 +
-+	if (port->domain_id != domain->id) {
-+		resp->status = DLB_ST_INVALID_PORT_ID;
-+		return -EINVAL;
-+	}
-+
-+	*out_domain = domain;
-+	*out_queue = queue;
-+	*out_port = port;
++	p->qid_map[i].qid = q->id;
++	p->qid_map[i].priority = priority;
 +
 +	return 0;
 +}
 +
-+static int dlb_verify_unmap_qid_args(struct dlb_hw *hw, u32 domain_id,
-+				     struct dlb_unmap_qid_args *args,
-+				     struct dlb_cmd_response *resp,
-+				     struct dlb_hw_domain **out_domain,
-+				     struct dlb_ldb_port **out_port,
-+				     struct dlb_ldb_queue **out_queue)
++static int dlb_ldb_port_map_qid(struct dlb_hw *hw, struct dlb_hw_domain *domain,
++				struct dlb_ldb_port *port,
++				struct dlb_ldb_queue *queue, u8 prio)
 +{
-+	struct dlb_hw_domain *domain;
-+	struct dlb_ldb_queue *queue;
-+	struct dlb_ldb_port *port;
-+	int id;
-+
-+	domain = dlb_get_domain_from_id(hw, domain_id);
-+
-+	if (!domain) {
-+		resp->status = DLB_ST_INVALID_DOMAIN_ID;
-+		return -EINVAL;
-+	}
-+
-+	if (!domain->configured) {
-+		resp->status = DLB_ST_DOMAIN_NOT_CONFIGURED;
-+		return -EINVAL;
-+	}
-+
-+	id = args->port_id;
-+
-+	port = dlb_get_domain_used_ldb_port(id, false, domain);
-+
-+	if (!port || !port->configured) {
-+		resp->status = DLB_ST_INVALID_PORT_ID;
-+		return -EINVAL;
-+	}
-+
-+	if (port->domain_id != domain->id) {
-+		resp->status = DLB_ST_INVALID_PORT_ID;
-+		return -EINVAL;
-+	}
-+
-+	queue = dlb_get_domain_ldb_queue(args->qid, false, domain);
-+
-+	if (!queue || !queue->configured) {
-+		dev_err(hw_to_dev(hw), "[%s()] Can't unmap unconfigured queue %d\n",
-+			__func__, args->qid);
-+		resp->status = DLB_ST_INVALID_QID;
-+		return -EINVAL;
-+	}
-+
-+	*out_domain = domain;
-+	*out_port = port;
-+	*out_queue = queue;
-+
-+	return 0;
++	return dlb_ldb_port_map_qid_static(hw, port, queue, prio);
 +}
 +
- static void dlb_configure_domain_credits(struct dlb_hw *hw,
- 					 struct dlb_hw_domain *domain)
- {
-@@ -1957,6 +2097,145 @@ int dlb_hw_create_dir_port(struct dlb_hw *hw, u32 domain_id,
- 	return 0;
- }
+ static void
+ dlb_log_create_sched_domain_args(struct dlb_hw *hw,
+ 				 struct dlb_create_sched_domain_args *args)
+@@ -2155,6 +2306,7 @@ int dlb_hw_map_qid(struct dlb_hw *hw, u32 domain_id,
+ 	struct dlb_ldb_queue *queue;
+ 	struct dlb_ldb_port *port;
+ 	int ret;
++	u8 prio;
  
-+static void dlb_log_map_qid(struct dlb_hw *hw, u32 domain_id,
-+			    struct dlb_map_qid_args *args)
-+{
-+	dev_dbg(hw_to_dev(hw), "DLB map QID arguments:\n");
-+	dev_dbg(hw_to_dev(hw), "\tDomain ID: %d\n",
-+		domain_id);
-+	dev_dbg(hw_to_dev(hw), "\tPort ID:   %d\n",
-+		args->port_id);
-+	dev_dbg(hw_to_dev(hw), "\tQueue ID:  %d\n",
-+		args->qid);
-+	dev_dbg(hw_to_dev(hw), "\tPriority:  %d\n",
-+		args->priority);
-+}
+ 	dlb_log_map_qid(hw, domain_id, args);
+ 
+@@ -2167,6 +2319,17 @@ int dlb_hw_map_qid(struct dlb_hw *hw, u32 domain_id,
+ 	if (ret)
+ 		return ret;
+ 
++	prio = args->priority;
 +
-+/**
-+ * dlb_hw_map_qid() - map a load-balanced queue to a load-balanced port
-+ * @hw: dlb_hw handle for a particular device.
-+ * @domain_id: domain ID.
-+ * @args: map QID arguments.
-+ * @resp: response structure.
-+ *
-+ * This function configures the DLB to schedule QEs from the specified queue
-+ * to the specified port. Each load-balanced port can be mapped to up to 8
-+ * queues; each load-balanced queue can potentially map to all the
-+ * load-balanced ports.
-+ *
-+ * A successful return does not necessarily mean the mapping was configured. If
-+ * this function is unable to immediately map the queue to the port, it will
-+ * add the requested operation to a per-port list of pending map/unmap
-+ * operations, and (if it's not already running) launch a kernel thread that
-+ * periodically attempts to process all pending operations. In a sense, this is
-+ * an asynchronous function.
-+ *
-+ * This asynchronicity creates two views of the state of hardware: the actual
-+ * hardware state and the requested state (as if every request completed
-+ * immediately). If there are any pending map/unmap operations, the requested
-+ * state will differ from the actual state. All validation is performed with
-+ * respect to the pending state; for instance, if there are 8 pending map
-+ * operations for port X, a request for a 9th will fail because a load-balanced
-+ * port can only map up to 8 queues.
-+ *
-+ * Return:
-+ * Returns 0 upon success, < 0 otherwise. If an error occurs, resp->status is
-+ * assigned a detailed error code from enum dlb_error.
-+ *
-+ * Errors:
-+ * EINVAL - A requested resource is unavailable, invalid port or queue ID, or
-+ *	    the domain is not configured.
-+ * EFAULT - Internal error (resp->status not set).
-+ */
-+int dlb_hw_map_qid(struct dlb_hw *hw, u32 domain_id,
-+		   struct dlb_map_qid_args *args,
-+		   struct dlb_cmd_response *resp)
-+{
-+	struct dlb_hw_domain *domain;
-+	struct dlb_ldb_queue *queue;
-+	struct dlb_ldb_port *port;
-+	int ret;
++	ret = dlb_ldb_port_map_qid(hw, domain, port, queue, prio);
 +
-+	dlb_log_map_qid(hw, domain_id, args);
-+
-+	/*
-+	 * Verify that hardware resources are available before attempting to
-+	 * satisfy the request. This simplifies the error unwinding code.
-+	 */
-+	ret = dlb_verify_map_qid_args(hw, domain_id, args, resp,
-+				      &domain, &port, &queue);
-+	if (ret)
++	/* If ret is less than zero, it's due to an internal error */
++	if (ret < 0)
 +		return ret;
 +
-+	resp->status = 0;
++	if (port->enabled)
++		dlb_ldb_port_cq_enable(hw, port);
 +
-+	return 0;
-+}
-+
-+static void dlb_log_unmap_qid(struct dlb_hw *hw, u32 domain_id,
-+			      struct dlb_unmap_qid_args *args)
-+{
-+	dev_dbg(hw_to_dev(hw), "DLB unmap QID arguments:\n");
-+	dev_dbg(hw_to_dev(hw), "\tDomain ID: %d\n",
-+		domain_id);
-+	dev_dbg(hw_to_dev(hw), "\tPort ID:   %d\n",
-+		args->port_id);
-+	dev_dbg(hw_to_dev(hw), "\tQueue ID:  %d\n",
-+		args->qid);
-+	if (args->qid < DLB_MAX_NUM_LDB_QUEUES)
-+		dev_dbg(hw_to_dev(hw), "\tQueue's num mappings:  %d\n",
-+			hw->rsrcs.ldb_queues[args->qid].num_mappings);
-+}
-+
-+/**
-+ * dlb_hw_unmap_qid() - Unmap a load-balanced queue from a load-balanced port
-+ * @hw: dlb_hw handle for a particular device.
-+ * @domain_id: domain ID.
-+ * @args: unmap QID arguments.
-+ * @resp: response structure.
-+ *
-+ * This function configures the DLB to stop scheduling QEs from the specified
-+ * queue to the specified port.
-+ *
-+ * A successful return does not necessarily mean the mapping was removed. If
-+ * this function is unable to immediately unmap the queue from the port, it
-+ * will add the requested operation to a per-port list of pending map/unmap
-+ * operations, and (if it's not already running) launch a kernel thread that
-+ * periodically attempts to process all pending operations. See
-+ * dlb_hw_map_qid() for more details.
-+ *
-+ * Return:
-+ * Returns 0 upon success, < 0 otherwise. If an error occurs, resp->status is
-+ * assigned a detailed error code from enum dlb_error.
-+ *
-+ * Errors:
-+ * EINVAL - A requested resource is unavailable, invalid port or queue ID, or
-+ *	    the domain is not configured.
-+ * EFAULT - Internal error (resp->status not set).
-+ */
-+int dlb_hw_unmap_qid(struct dlb_hw *hw, u32 domain_id,
-+		     struct dlb_unmap_qid_args *args,
-+		     struct dlb_cmd_response *resp)
-+{
-+	struct dlb_hw_domain *domain;
-+	struct dlb_ldb_queue *queue;
-+	struct dlb_ldb_port *port;
-+	int ret;
-+
-+	dlb_log_unmap_qid(hw, domain_id, args);
-+
-+	/*
-+	 * Verify that hardware resources are available before attempting to
-+	 * satisfy the request. This simplifies the error unwinding code.
-+	 */
-+	ret = dlb_verify_unmap_qid_args(hw, domain_id, args, resp,
-+					&domain, &port, &queue);
-+	if (ret)
-+		return ret;
-+
-+	return 0;
-+}
-+
- static u32 dlb_ldb_cq_inflight_count(struct dlb_hw *hw,
- 				     struct dlb_ldb_port *port)
- {
-@@ -2297,6 +2576,57 @@ int dlb_hw_get_dir_queue_depth(struct dlb_hw *hw, u32 domain_id,
- 	return 0;
- }
+ 	resp->status = 0;
  
-+static void
-+dlb_log_pending_port_unmaps_args(struct dlb_hw *hw,
-+				 struct dlb_pending_port_unmaps_args *args)
-+{
-+	dev_dbg(hw_to_dev(hw), "DLB unmaps in progress arguments:\n");
-+	dev_dbg(hw_to_dev(hw), "\tPort ID: %d\n", args->port_id);
-+}
-+
-+/**
-+ * dlb_hw_pending_port_unmaps() - returns the number of unmap operations in
-+ *	progress.
-+ * @hw: dlb_hw handle for a particular device.
-+ * @domain_id: domain ID.
-+ * @args: number of unmaps in progress args
-+ * @resp: response structure.
-+ *
-+ * Return:
-+ * Returns 0 upon success, < 0 otherwise. If an error occurs, resp->status is
-+ * assigned a detailed error code from enum dlb_error. If successful, resp->id
-+ * contains the number of unmaps in progress.
-+ *
-+ * Errors:
-+ * EINVAL - Invalid port ID.
-+ */
-+int dlb_hw_pending_port_unmaps(struct dlb_hw *hw, u32 domain_id,
-+			       struct dlb_pending_port_unmaps_args *args,
-+			       struct dlb_cmd_response *resp)
-+{
-+	struct dlb_hw_domain *domain;
-+	struct dlb_ldb_port *port;
-+
-+	dlb_log_pending_port_unmaps_args(hw, args);
-+
-+	domain = dlb_get_domain_from_id(hw, domain_id);
-+
-+	if (!domain) {
-+		resp->status = DLB_ST_INVALID_DOMAIN_ID;
-+		return -EINVAL;
-+	}
-+
-+	port = dlb_get_domain_used_ldb_port(args->port_id, false, domain);
-+	if (!port || !port->configured) {
-+		resp->status = DLB_ST_INVALID_PORT_ID;
-+		return -EINVAL;
-+	}
-+
-+	resp->id = port->num_pending_removals;
-+
-+	return 0;
-+}
-+
- static u32 dlb_ldb_queue_depth(struct dlb_hw *hw, struct dlb_ldb_queue *queue)
- {
- 	u32 aqed, ldb, atm;
-diff --git a/include/uapi/linux/dlb.h b/include/uapi/linux/dlb.h
-index e8a629f2d10b..a946f9c5e387 100644
---- a/include/uapi/linux/dlb.h
-+++ b/include/uapi/linux/dlb.h
-@@ -34,5 +34,7 @@ enum dlb_error {
- 	DLB_ST_INVALID_CQ_DEPTH,
- 	DLB_ST_INVALID_HIST_LIST_DEPTH,
- 	DLB_ST_INVALID_DIR_QUEUE_ID,
-+	DLB_ST_INVALID_PRIORITY,
-+	DLB_ST_NO_QID_SLOTS_AVAILABLE,
- };
- #endif /* __DLB_H */
+ 	return 0;
 -- 
 2.27.0
 
