@@ -2,111 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E70547BFAC
-	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 13:25:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ABF6A47BFB9
+	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 13:31:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237570AbhLUMYv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Dec 2021 07:24:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44966 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237552AbhLUMYu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Dec 2021 07:24:50 -0500
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B898C061401
-        for <netdev@vger.kernel.org>; Tue, 21 Dec 2021 04:24:50 -0800 (PST)
-Received: by mail-ed1-x532.google.com with SMTP id b13so22750295edd.8
-        for <netdev@vger.kernel.org>; Tue, 21 Dec 2021 04:24:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MoTPJgJK0kZOerSu3Jp9Zb+6CJ0WBkqc48qX6OzMzxM=;
-        b=AcXpAvYJL3+SogW72d+2cvTlPfSSLhUoTiSJYa5yyLkarMdsABl5w9RwhqH0iPoECC
-         4p4Q/mmwahrfYNtqZ12rTk4/hzDdYnB55guBF4Q44fZDtSe82RNItbEG9yOy+0b3Ot7G
-         qEJ2+P1ufHfLZti3MBwimSl/Xv7XCf8L4E1vk/mSyf5G5pW3ZNVxeQe6GCdBwFAv8cXO
-         Ha/XIeQUkHoCvCpoAFWSKHdRfSekatwAOQaOyBqL2oo32p4dX7sWGj5vkdnQrFCcxWHV
-         mRx7IzyAqKAOkfXnI9i/Gh5F0ZjhRjTSPnNljSTs/5BwuhtBlFmckI+QXGH5ohKnmIDo
-         b9/w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MoTPJgJK0kZOerSu3Jp9Zb+6CJ0WBkqc48qX6OzMzxM=;
-        b=ncIK3q9nm1an8tP8E8MWUY+2d0HazfcVDSg1Cq/baXVHWRC08lQJ3wLCUUB+fwqpIb
-         6IIsP5qKmUQ0AWJcEdSFFBeYHQ435+uSH4Xo6Vdlt0KSBAOuIcORBkmp1pAZk+aRAoxd
-         EZWFsv9QlGcZBAAANIEVKQHmcJBHT3/VPFN8629f5EQ9mlf1PXI+fjvIk/7FPLv72PP5
-         fGXslGat/YOqZukSJO5j2aciDkY7BWUH8RgIruXFsFH3OwfdzQlZlZrKyn+r1O9pWioM
-         LFgNRkW6NUw69CL3qK9tOgTI9FYsfCl2H+UKlxXphdEwGhv/lMrDICVTeq8bDMBXATDs
-         mhxQ==
-X-Gm-Message-State: AOAM5324/sjC1U9EprqzBv/kM56hvmEcW6KmstxTpJFnf4wqiMDXO7gk
-        x2NVyqUJm1pv9S2RjEujVMCKCVAKj+XSXgknhKmMTg==
-X-Google-Smtp-Source: ABdhPJyj+NVUeXk90XBlkTzieM83fRys2s8IsWREHaLZ7Vl5Sxqah7M8SCVRkQ/IZz/fkjggv7qm9GS6vSi+KHPu/y8=
-X-Received: by 2002:a17:906:4904:: with SMTP id b4mr2606178ejq.174.1640089488801;
- Tue, 21 Dec 2021 04:24:48 -0800 (PST)
+        id S237583AbhLUMbj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Dec 2021 07:31:39 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:60536 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229779AbhLUMbj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Dec 2021 07:31:39 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 81582B8167A;
+        Tue, 21 Dec 2021 12:31:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67246C36AE2;
+        Tue, 21 Dec 2021 12:31:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1640089896;
+        bh=aRJ72Tt/74M53TxT2OxpczsMwM+tVhnGCLhStYmdK/k=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=IJBirJBSycKfJ4lUKJrrxZxSzLZkwUAq0ACEDvV8ExcILnan4u+0BBUTcLn9TFkqq
+         ROWCarGa1JebcuK58DHn/YEufZ/E4Wvk60GE+N/+7258YhqIs47Y9GyLzRwe+45EhO
+         hRcVP7brTIM078SJo4/Na1e67bK4dsLsVwruz0cT1DtUbVXzXq7l29Yz+/uKkNsBH0
+         9UEm6LIdF8DzY2qNsw/aE93856Vgj/FzYgwozsJqaCxaE1mJN2cZ1nzFFJwr4f8mtB
+         qby1l/K1PxCO+er7akG6mgi98NKtiyeRJ0ze949WgytylPmphYNY0oovS+JNemufHu
+         jUQn26FZbEwjA==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Johannes Berg <johannes@sipsolutions.net>,
+        Wireless <linux-wireless@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Wen Gong <quic_wgong@quicinc.com>,
+        Ayala Beker <ayala.beker@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: build failure after merge of the mac80211-next tree
+References: <20211221115004.1cd6b262@canb.auug.org.au>
+Date:   Tue, 21 Dec 2021 14:31:31 +0200
+In-Reply-To: <20211221115004.1cd6b262@canb.auug.org.au> (Stephen Rothwell's
+        message of "Tue, 21 Dec 2021 11:50:04 +1100")
+Message-ID: <8735mmm95o.fsf@tynnyri.adurom.net>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-References: <20211217144119.2538175-1-anders.roxell@linaro.org>
- <20211217144119.2538175-7-anders.roxell@linaro.org> <YcBiFomrxSw1eEUB@kroah.com>
-In-Reply-To: <YcBiFomrxSw1eEUB@kroah.com>
-From:   Anders Roxell <anders.roxell@linaro.org>
-Date:   Tue, 21 Dec 2021 13:24:38 +0100
-Message-ID: <CADYN=9K8fD7sSdTy+mCY6dvjutabLnibs3BoAmv1W4sKcPLpXw@mail.gmail.com>
-Subject: Re: [PATCH 4.19 6/6] Input: touchscreen - avoid bitwise vs logical OR warning
-To:     Greg KH <greg@kroah.com>
-Cc:     stable@vger.kernel.org, linux-kernel@vger.kernel.org,
-        woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org, clang-built-linux@googlegroups.com,
-        ulli.kroll@googlemail.com, linux@armlinux.org.uk,
-        linux-arm-kernel@lists.infradead.org, amitkarwar@gmail.com,
-        nishants@marvell.com, gbhat@marvell.com, huxinming820@gmail.com,
-        kvalo@codeaurora.org, linux-wireless@vger.kernel.org,
-        rostedt@goodmis.org, mingo@redhat.com, dmitry.torokhov@gmail.com,
-        ndesaulniers@google.com, nathan@kernel.org,
-        linux-input@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 20 Dec 2021 at 11:59, Greg KH <greg@kroah.com> wrote:
->
-> On Fri, Dec 17, 2021 at 03:41:19PM +0100, Anders Roxell wrote:
-> > From: Nathan Chancellor <nathan@kernel.org>
-> >
-> > commit a02dcde595f7cbd240ccd64de96034ad91cffc40 upstream.
-> >
-> > A new warning in clang points out a few places in this driver where a
-> > bitwise OR is being used with boolean types:
-> >
-> > drivers/input/touchscreen.c:81:17: warning: use of bitwise '|' with boolean operands [-Wbitwise-instead-of-logical]
-> >         data_present = touchscreen_get_prop_u32(dev, "touchscreen-min-x",
-> >                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> >
-> > This use of a bitwise OR is intentional, as bitwise operations do not
-> > short circuit, which allows all the calls to touchscreen_get_prop_u32()
-> > to happen so that the last parameter is initialized while coalescing the
-> > results of the calls to make a decision after they are all evaluated.
-> >
-> > To make this clearer to the compiler, use the '|=' operator to assign
-> > the result of each touchscreen_get_prop_u32() call to data_present,
-> > which keeps the meaning of the code the same but makes it obvious that
-> > every one of these calls is expected to happen.
-> >
-> > Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-> > Reported-by: Nick Desaulniers <ndesaulniers@google.com>
-> > Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
-> > Link: https://lore.kernel.org/r/20211014205757.3474635-1-nathan@kernel.org
-> > Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-> > Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
-> > ---
-> >  drivers/input/touchscreen/of_touchscreen.c | 18 +++++++++---------
-> >  1 file changed, 9 insertions(+), 9 deletions(-)
->
-> Also needed in 5.10.y and 5.4.y.
->
-> Please be more careful next time.
+Stephen Rothwell <sfr@canb.auug.org.au> writes:
 
-Yes I will, I'm sorry.
+> Hi all,
+>
+> After merging the mac80211-next tree, today's linux-next build (x86_64
+> allmodconfig) failed like this:
+>
+> drivers/net/wireless/ath/ath10k/wmi.c: In function 'ath10k_wmi_event_mgmt_rx':
+> drivers/net/wireless/ath/ath10k/wmi.c:2626:12: error: too few
+> arguments to function 'cfg80211_get_ies_channel_number'
+>  2626 |   ies_ch = cfg80211_get_ies_channel_number(mgmt->u.beacon.variable,
+>       |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> In file included from include/net/mac80211.h:21,
+>                  from drivers/net/wireless/ath/ath10k/htt.h:16,
+>                  from drivers/net/wireless/ath/ath10k/core.h:18,
+>                  from drivers/net/wireless/ath/ath10k/wmi.c:11:
+> include/net/cfg80211.h:6421:5: note: declared here
+>  6421 | int cfg80211_get_ies_channel_number(const u8 *ie, size_t ielen,
+>       |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>
+> Caused by commit
+>
+>   7f599aeccbd2 ("cfg80211: Use the HE operation IE to determine a 6GHz BSS channel")
+>
+> interacting with commit
+>
+>   3bf2537ec2e3 ("ath10k: drop beacon and probe response which leak from other channel")
+>
+> from the net-next tree.
+>
+> I have applied the following merge fix patch for today (which, on
+> reflection, may not be correct, but builds).
+>
+> From: Stephen Rothwell <sfr@canb.auug.org.au>
+> Date: Tue, 21 Dec 2021 11:40:49 +1100
+> Subject: [PATCH] fixup for "cfg80211: Use the HE operation IE to determine a 6GHz BSS channel"
+>
+> Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
+> ---
+>  drivers/net/wireless/ath/ath10k/wmi.c | 8 +++++++-
+>  1 file changed, 7 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/net/wireless/ath/ath10k/wmi.c b/drivers/net/wireless/ath/ath10k/wmi.c
+> index 4733fd7fb169..657bd6a32a36 100644
+> --- a/drivers/net/wireless/ath/ath10k/wmi.c
+> +++ b/drivers/net/wireless/ath/ath10k/wmi.c
+> @@ -2613,6 +2613,7 @@ int ath10k_wmi_event_mgmt_rx(struct ath10k *ar, struct sk_buff *skb)
+>  	if (ieee80211_is_beacon(hdr->frame_control) ||
+>  	    ieee80211_is_probe_resp(hdr->frame_control)) {
+>  		struct ieee80211_mgmt *mgmt = (void *)skb->data;
+> +		enum cfg80211_bss_frame_type ftype;
+>  		u8 *ies;
+>  		int ies_ch;
+>  
+> @@ -2623,9 +2624,14 @@ int ath10k_wmi_event_mgmt_rx(struct ath10k *ar, struct sk_buff *skb)
+>  
+>  		ies = mgmt->u.beacon.variable;
+>  
+> +		if (ieee80211_is_beacon(mgmt->frame_control))
+> +			ftype = CFG80211_BSS_FTYPE_BEACON;
+> +		else /* if (ieee80211_is_probe_resp(mgmt->frame_control)) */
+> +			ftype = CFG80211_BSS_FTYPE_PRESP;
+> +
+>  		ies_ch = cfg80211_get_ies_channel_number(mgmt->u.beacon.variable,
+>  							 skb_tail_pointer(skb) - ies,
+> -							 sband->band);
+> +							 sband->band, ftype);
 
-Cheers,
-Anders
+I would remove the commented out code '/* if
+(ieee80211_is_probe_resp(mgmt->frame_control)) */', otherwise looks good
+to me.
+
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
