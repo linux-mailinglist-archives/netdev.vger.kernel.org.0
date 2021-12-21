@@ -2,46 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D272A47B827
-	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 03:06:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7730847B837
+	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 03:07:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234310AbhLUCEc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Dec 2021 21:04:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45270 "EHLO
+        id S233534AbhLUCGj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Dec 2021 21:06:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234338AbhLUCDV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Dec 2021 21:03:21 -0500
+        with ESMTP id S234490AbhLUCDw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Dec 2021 21:03:52 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6309C07E5F4;
-        Mon, 20 Dec 2021 18:01:54 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E568C08C5D1;
+        Mon, 20 Dec 2021 18:01:57 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4EAC861376;
-        Tue, 21 Dec 2021 02:01:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D580C36AE5;
-        Tue, 21 Dec 2021 02:01:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 232C361362;
+        Tue, 21 Dec 2021 02:01:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A530C36AE5;
+        Tue, 21 Dec 2021 02:01:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1640052113;
-        bh=84KaSOMzoHm5K29GasXo/b52Xm3od8IA95wX1I3yXXw=;
+        s=k20201202; t=1640052116;
+        bh=gUYiOe2W9fOWmiSuSneBgJNt6HfaOsj+OcYlnUJjZqQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qlZhnLoSin1zKfUyVSan9jCqRdhi8e2AJd91qCIr9e3Wa/MlN4GAZWfyo4i+ieWYm
-         bHXoonr1UGhC3ZGC8pg+kOH456Vy+mymKxEBiSz6gRarjTsWqspiG7pExKmRaMPWLl
-         9XHXohlWVMeeEXAma3CEK11LiW9wyJnvOGTUraBGH0uoHm4qFscqXyMoGnVAqHjumi
-         xB1sMfCYAfoH2gn2yTz5tWLpDfMoNcrPY41bp7TW9oJPW6FZehehX4mhvtPGOdWszk
-         MyC8URPwlo5hhkeVIugEtg0aTXlOSKYTf940W6BRJj7ONNBnRDzxlvZFRYzaaXuJqY
-         8e4Jx2jLhDMzg==
+        b=ejtRzi6070sbWQtLrJ3Plj9TX0RGPX0wMl93bnB9WgJZz6W0TIlMsdyhJsXr0Gncp
+         lyNN89EtWEokfXPYDUkFigPnzzX6HCBQoZ3/llKA3TClDempVPCgAhbEz4+4NItaAu
+         O9L94OXPEeuh6PeHDYp+obaHXqFllQ9WzvKuwMCkKoXECHq0UcJDPNJxcIV1s+SsHA
+         xTkMd1rhukmKNMs1InFJP7AfyI+2AuYsTLUp5YA+kbgNQt3LyFQPoopO41YidOt3Ri
+         5kF4mxkzA/OKc1LlrnsG7RrO4NpsneAkddrBMZqMrx69tQx0Nb9WDsIjdsjHI4mhTW
+         h9o62UpzkbInQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ilan Peer <ilan.peer@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>, johannes@sipsolutions.net,
-        davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 6/9] mac80211: Fix the size used for building probe request
-Date:   Mon, 20 Dec 2021 21:01:20 -0500
-Message-Id: <20211221020123.117380-6-sashal@kernel.org>
+Cc:     Greg Jesionowski <jesionowskigreg@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, woojung.huh@microchip.com,
+        UNGLinuxDriver@microchip.com, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 8/9] net: usb: lan78xx: add Allied Telesis AT29M2-AF
+Date:   Mon, 20 Dec 2021 21:01:22 -0500
+Message-Id: <20211221020123.117380-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20211221020123.117380-1-sashal@kernel.org>
 References: <20211221020123.117380-1-sashal@kernel.org>
@@ -53,35 +52,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ilan Peer <ilan.peer@intel.com>
+From: Greg Jesionowski <jesionowskigreg@gmail.com>
 
-[ Upstream commit f22d981386d12d1513bd2720fb4387b469124d4b ]
+[ Upstream commit ef8a0f6eab1ca5d1a75c242c5c7b9d386735fa0a ]
 
-Instead of using the hard-coded value of '100' use the correct
-scan IEs length as calculated during HW registration to mac80211.
+This adds the vendor and product IDs for the AT29M2-AF which is a
+lan7801-based device.
 
-Signed-off-by: Ilan Peer <ilan.peer@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20211129152938.0a82d6891719.I8ded1f2e0bccb9e71222c945666bcd86537f2e35@changeid
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Greg Jesionowski <jesionowskigreg@gmail.com>
+Link: https://lore.kernel.org/r/20211214221027.305784-1-jesionowskigreg@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mac80211/util.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/usb/lan78xx.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/net/mac80211/util.c b/net/mac80211/util.c
-index cd3cdd1a0b576..e25d570479bf6 100644
---- a/net/mac80211/util.c
-+++ b/net/mac80211/util.c
-@@ -1548,7 +1548,7 @@ struct sk_buff *ieee80211_build_probe_req(struct ieee80211_sub_if_data *sdata,
- 		chandef.chan = chan;
+diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
+index 838b6fe9dfaaf..dc8afd5575fe2 100644
+--- a/drivers/net/usb/lan78xx.c
++++ b/drivers/net/usb/lan78xx.c
+@@ -74,6 +74,8 @@
+ #define LAN7801_USB_PRODUCT_ID		(0x7801)
+ #define LAN78XX_EEPROM_MAGIC		(0x78A5)
+ #define LAN78XX_OTP_MAGIC		(0x78F3)
++#define AT29M2AF_USB_VENDOR_ID		(0x07C9)
++#define AT29M2AF_USB_PRODUCT_ID	(0x0012)
  
- 	skb = ieee80211_probereq_get(&local->hw, src, ssid, ssid_len,
--				     100 + ie_len);
-+				     local->scan_ies_len + ie_len);
- 	if (!skb)
- 		return NULL;
- 
+ #define	MII_READ			1
+ #define	MII_WRITE			0
+@@ -4015,6 +4017,10 @@ static const struct usb_device_id products[] = {
+ 	/* LAN7801 USB Gigabit Ethernet Device */
+ 	USB_DEVICE(LAN78XX_USB_VENDOR_ID, LAN7801_USB_PRODUCT_ID),
+ 	},
++	{
++	/* ATM2-AF USB Gigabit Ethernet Device */
++	USB_DEVICE(AT29M2AF_USB_VENDOR_ID, AT29M2AF_USB_PRODUCT_ID),
++	},
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(usb, products);
 -- 
 2.34.1
 
