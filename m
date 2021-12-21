@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B53C47BA49
-	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 07:52:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D17547BA4C
+	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 07:52:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230057AbhLUGvt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Dec 2021 01:51:49 -0500
-Received: from mga06.intel.com ([134.134.136.31]:29913 "EHLO mga06.intel.com"
+        id S234566AbhLUGv6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Dec 2021 01:51:58 -0500
+Received: from mga06.intel.com ([134.134.136.31]:29894 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234488AbhLUGvo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Dec 2021 01:51:44 -0500
+        id S229947AbhLUGvs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Dec 2021 01:51:48 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1640069503; x=1671605503;
+  t=1640069508; x=1671605508;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=BCNruAfSXqdAUXzRbLuYxwWyv2sObYjixtukUjnMrug=;
-  b=HHP32kqG0vj1+6mVBfk3FJB6drWri8Ofu71zIQtGX8Fhk+qsGR/pbE2/
-   HC3JT5jODa5+zXITMtts7yYshjEj2hRgHslRFwpIic/kDTOzxZdqmPBGB
-   LjRfxMknvisARnWL1SE0zocgpcDAhS3HXWU0S+A0xs5uUWLhwm1w7Lyw2
-   ua0MGO1bNwr6BhvyLllQawPO+vSY5kV9QfhEdJANomG25yxXqdElE7zfz
-   FPSAgphTI+qdt5/4zuX1qxV3Tk1IDMHDedd76Kbd72PjYYfuyAK07qJU/
-   hSu3NbfVRD1Far4vESNvUSK6osy/d0ZhOYe7I/pGQH/brGZ7jRmdp8gHf
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10204"; a="301107546"
+  bh=nWH8n9kTyD2iwRgGuJa9kqNKiX43tG/cyKOmbrL67wY=;
+  b=AGnq7i6EDxRCpkJka3KtwCmlha3s1s0xITavCwoe5kjaBgUBx2qgN9ht
+   6ghyjgH3uJ1Ecgc1V5hDYnrL21dAHNlZGyw0oFhQFC5aqgLwVA7gL+s/T
+   Yj6RIYW7KojSTIa3sR9yvoTJFbcN4PWC4BRuHKyaZsGHZgDWvJhc0099M
+   BrtnOULbHrpVHL7KPY9tez+vxYHkiYL5DNANrUqgAoJFhZrz+REOLj6RB
+   2lc8VXlTH8iQyF7LtT5kaprwfEO6Jb45nwt4UYDx2ZqrIBO+c/pcc54x1
+   Ab6ZF+dlIc6Kn2brVS+IsCuJ6GVUkza+bt0DX9NB2pmqw8Z6/01GWcG8/
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10204"; a="301107553"
 X-IronPort-AV: E=Sophos;i="5.88,222,1635231600"; 
-   d="scan'208";a="301107546"
+   d="scan'208";a="301107553"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Dec 2021 22:50:43 -0800
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Dec 2021 22:50:45 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,222,1635231600"; 
-   d="scan'208";a="570119131"
+   d="scan'208";a="570119141"
 Received: from unknown (HELO localhost.localdomain) ([10.228.150.100])
-  by fmsmga008.fm.intel.com with ESMTP; 20 Dec 2021 22:50:42 -0800
+  by fmsmga008.fm.intel.com with ESMTP; 20 Dec 2021 22:50:44 -0800
 From:   Mike Ximing Chen <mike.ximing.chen@intel.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     arnd@arndb.de, gregkh@linuxfoundation.org,
         dan.j.williams@intel.com, pierre-louis.bossart@linux.intel.com,
         netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org
-Subject: [RFC PATCH v12 16/17] dlb: add static queue map register operations
-Date:   Tue, 21 Dec 2021 00:50:46 -0600
-Message-Id: <20211221065047.290182-17-mike.ximing.chen@intel.com>
+Subject: [RFC PATCH v12 17/17] dlb: add basic sysfs interfaces
+Date:   Tue, 21 Dec 2021 00:50:47 -0600
+Message-Id: <20211221065047.290182-18-mike.ximing.chen@intel.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20211221065047.290182-1-mike.ximing.chen@intel.com>
 References: <20211221065047.290182-1-mike.ximing.chen@intel.com>
@@ -51,214 +51,497 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the register accesses that implement the static queue map operation and
-handle an unmap request when a queue map operation is in progress.
-
-If a queue map operation is requested before the domain is started, it is a
-synchronous procedure on "static"/unchanging hardware. (The "dynamic"
-operation, when traffic is flowing in the device, will be added in a later
-commit.)
+The dlb sysfs interfaces include files for reading the total and
+available device resources, and reading the device ID and version. The
+interfaces are used for device level configurations and resource
+inquiries.
 
 Signed-off-by: Mike Ximing Chen <mike.ximing.chen@intel.com>
 ---
- drivers/misc/dlb/dlb_resource.c | 163 ++++++++++++++++++++++++++++++++
- 1 file changed, 163 insertions(+)
+ Documentation/ABI/testing/sysfs-driver-dlb | 116 ++++++++++++
+ drivers/misc/dlb/dlb_args.h                |  34 ++++
+ drivers/misc/dlb/dlb_main.c                |   5 +
+ drivers/misc/dlb/dlb_main.h                |   3 +
+ drivers/misc/dlb/dlb_pf_ops.c              | 195 +++++++++++++++++++++
+ drivers/misc/dlb/dlb_resource.c            |  50 ++++++
+ 6 files changed, 403 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-driver-dlb
 
+diff --git a/Documentation/ABI/testing/sysfs-driver-dlb b/Documentation/ABI/testing/sysfs-driver-dlb
+new file mode 100644
+index 000000000000..bf09ef6f8a3a
+--- /dev/null
++++ b/Documentation/ABI/testing/sysfs-driver-dlb
+@@ -0,0 +1,116 @@
++What:		/sys/bus/pci/devices/.../total_resources/num_atomic_inflights
++What:		/sys/bus/pci/devices/.../total_resources/num_dir_credits
++What:		/sys/bus/pci/devices/.../total_resources/num_dir_ports
++What:		/sys/bus/pci/devices/.../total_resources/num_hist_list_entries
++What:		/sys/bus/pci/devices/.../total_resources/num_ldb_credits
++What:		/sys/bus/pci/devices/.../total_resources/num_ldb_ports
++What:		/sys/bus/pci/devices/.../total_resources/num_cos0_ldb_ports
++What:		/sys/bus/pci/devices/.../total_resources/num_cos1_ldb_ports
++What:		/sys/bus/pci/devices/.../total_resources/num_cos2_ldb_ports
++What:		/sys/bus/pci/devices/.../total_resources/num_cos3_ldb_ports
++What:		/sys/bus/pci/devices/.../total_resources/num_ldb_queues
++What:		/sys/bus/pci/devices/.../total_resources/num_sched_domains
++Date:		Oct 15, 2021
++KernelVersion:	5.15
++Contact:	mike.ximing.chen@intel.com
++Description:
++		The total_resources subdirectory contains read-only files that
++		indicate the total number of resources in the device.
++
++		num_atomic_inflights:  Total number of atomic inflights in the
++				       device. Atomic inflights refers to the
++				       on-device storage used by the atomic
++				       scheduler.
++
++		num_dir_credits:       Total number of directed credits in the
++				       device.
++
++		num_dir_ports:	       Total number of directed ports (and
++				       queues) in the device.
++
++		num_hist_list_entries: Total number of history list entries in
++				       the device.
++
++		num_ldb_credits:       Total number of load-balanced credits in
++				       the device.
++
++		num_ldb_ports:	       Total number of load-balanced ports in
++				       the device.
++
++		num_cos<M>_ldb_ports:  Total number of load-balanced ports
++				       belonging to class-of-service M in the
++				       device.
++
++		num_ldb_queues:	       Total number of load-balanced queues in
++				       the device.
++
++		num_sched_domains:     Total number of scheduling domains in the
++				       device.
++
++What:		/sys/bus/pci/devices/.../avail_resources/num_atomic_inflights
++What:		/sys/bus/pci/devices/.../avail_resources/num_dir_credits
++What:		/sys/bus/pci/devices/.../avail_resources/num_dir_ports
++What:		/sys/bus/pci/devices/.../avail_resources/num_hist_list_entries
++What:		/sys/bus/pci/devices/.../avail_resources/num_ldb_credits
++What:		/sys/bus/pci/devices/.../avail_resources/num_ldb_ports
++What:		/sys/bus/pci/devices/.../avail_resources/num_cos0_ldb_ports
++What:		/sys/bus/pci/devices/.../avail_resources/num_cos1_ldb_ports
++What:		/sys/bus/pci/devices/.../avail_resources/num_cos2_ldb_ports
++What:		/sys/bus/pci/devices/.../avail_resources/num_cos3_ldb_ports
++What:		/sys/bus/pci/devices/.../avail_resources/num_ldb_queues
++What:		/sys/bus/pci/devices/.../avail_resources/num_sched_domains
++What:		/sys/bus/pci/devices/.../avail_resources/max_ctg_hl_entries
++Date:		Oct 15, 2021
++KernelVersion:	5.15
++Contact:	mike.ximing.chen@intel.com
++Description:
++		The avail_resources subdirectory contains read-only files that
++		indicate the available number of resources in the device.
++		"Available" here means resources that are not currently in use
++		by an application or, in the case of a physical function
++		device, assigned to a virtual function.
++
++		num_atomic_inflights:  Available number of atomic inflights in
++				       the device.
++
++		num_dir_ports:	       Available number of directed ports (and
++				       queues) in the device.
++
++		num_hist_list_entries: Available number of history list entries
++				       in the device.
++
++		num_ldb_credits:       Available number of load-balanced credits
++				       in the device.
++
++		num_ldb_ports:	       Available number of load-balanced ports
++				       in the device.
++
++		num_cos<M>_ldb_ports:  Available number of load-balanced ports
++				       belonging to class-of-service M in the
++				       device.
++
++		num_ldb_queues:	       Available number of load-balanced queues
++				       in the device.
++
++		num_sched_domains:     Available number of scheduling domains in
++				       the device.
++
++		max_ctg_hl_entries:    Maximum contiguous history list entries
++				       available in the device.
++
++				       Each scheduling domain is created with
++				       an allocation of history list entries,
++				       and each domain's allocation of entries
++				       must be contiguous.
++
++What:		/sys/bus/pci/devices/.../dev_id
++Date:		Oct 15, 2021
++KernelVersion:	5.15
++Contact:	mike.ximing.chen@intel.com
++Description:	Device ID used in /dev, i.e. /dev/dlb<device ID>
++
++		Each DLB 2.0 PF and VF device is granted a unique ID by the
++		kernel driver, and this ID is used to construct the device's
++		/dev directory: /dev/dlb<device ID>. This sysfs file can be read
++		to determine a device's ID, which allows the user to map a
++		device file to a PCI BDF.
+diff --git a/drivers/misc/dlb/dlb_args.h b/drivers/misc/dlb/dlb_args.h
+index eac8890c3a70..7a48751f4b56 100644
+--- a/drivers/misc/dlb/dlb_args.h
++++ b/drivers/misc/dlb/dlb_args.h
+@@ -58,6 +58,40 @@ struct dlb_create_sched_domain_args {
+ 	__u32 num_dir_credits;
+ };
+ 
++/*
++ * dlb_get_num_resources_args: Used to get the number of available resources
++ *      (queues, ports, etc.) that this device owns.
++ *
++ * Output parameters:
++ * @response.status: Detailed error code. In certain cases, such as if the
++ *	request arg is invalid, the driver won't set status.
++ * @num_domains: Number of available scheduling domains.
++ * @num_ldb_queues: Number of available load-balanced queues.
++ * @num_ldb_ports: Total number of available load-balanced ports.
++ * @num_dir_ports: Number of available directed ports. There is one directed
++ *	queue for every directed port.
++ * @num_atomic_inflights: Amount of available temporary atomic QE storage.
++ * @num_hist_list_entries: Amount of history list storage.
++ * @max_contiguous_hist_list_entries: History list storage is allocated in
++ *	a contiguous chunk, and this return value is the longest available
++ *	contiguous range of history list entries.
++ * @num_ldb_credits: Amount of available load-balanced QE storage.
++ * @num_dir_credits: Amount of available directed QE storage.
++ */
++struct dlb_get_num_resources_args {
++	/* Output parameters */
++	struct dlb_cmd_response response;
++	__u32 num_sched_domains;
++	__u32 num_ldb_queues;
++	__u32 num_ldb_ports;
++	__u32 num_dir_ports;
++	__u32 num_atomic_inflights;
++	__u32 num_hist_list_entries;
++	__u32 max_contiguous_hist_list_entries;
++	__u32 num_ldb_credits;
++	__u32 num_dir_credits;
++};
++
+ /*************************************************/
+ /* 'domain' level control/access data structures */
+ /*************************************************/
+diff --git a/drivers/misc/dlb/dlb_main.c b/drivers/misc/dlb/dlb_main.c
+index ce3cbe15e198..ea2139462602 100644
+--- a/drivers/misc/dlb/dlb_main.c
++++ b/drivers/misc/dlb/dlb_main.c
+@@ -409,6 +409,10 @@ static int dlb_probe(struct pci_dev *pdev, const struct pci_device_id *pdev_id)
+ 	if (ret)
+ 		goto dma_set_mask_fail;
+ 
++	ret = dlb_pf_sysfs_create(dlb);
++	if (ret)
++		goto sysfs_create_fail;
++
+ 	ret = dlb_configfs_create_device(dlb);
+ 	if (ret)
+ 		goto configfs_create_fail;
+@@ -453,6 +457,7 @@ static int dlb_probe(struct pci_dev *pdev, const struct pci_device_id *pdev_id)
+ dlb_reset_fail:
+ wait_for_device_ready_fail:
+ configfs_create_fail:
++sysfs_create_fail:
+ dma_set_mask_fail:
+ 	device_destroy(dlb_class, dlb->dev_number);
+ map_pci_bar_fail:
+diff --git a/drivers/misc/dlb/dlb_main.h b/drivers/misc/dlb/dlb_main.h
+index f410e7307c12..2c1401532496 100644
+--- a/drivers/misc/dlb/dlb_main.h
++++ b/drivers/misc/dlb/dlb_main.h
+@@ -330,6 +330,7 @@ struct dlb;
+ int dlb_pf_map_pci_bar_space(struct dlb *dlb, struct pci_dev *pdev);
+ void dlb_pf_unmap_pci_bar_space(struct dlb *dlb, struct pci_dev *pdev);
+ int dlb_pf_init_driver_state(struct dlb *dlb);
++int dlb_pf_sysfs_create(struct dlb *dlb);
+ void dlb_pf_enable_pm(struct dlb *dlb);
+ int dlb_pf_wait_for_device_ready(struct dlb *dlb, struct pci_dev *pdev);
+ void dlb_pf_init_hardware(struct dlb *dlb);
+@@ -625,6 +626,8 @@ int dlb_hw_unmap_qid(struct dlb_hw *hw, u32 domain_id,
+ int dlb_reset_domain(struct dlb_hw *hw, u32 domain_id);
+ int dlb_ldb_port_owned_by_domain(struct dlb_hw *hw, u32 domain_id, u32 port_id);
+ int dlb_dir_port_owned_by_domain(struct dlb_hw *hw, u32 domain_id, u32 port_id);
++int dlb_hw_get_num_resources(struct dlb_hw *hw,
++			     struct dlb_get_num_resources_args *arg);
+ void dlb_clr_pmcsr_disable(struct dlb_hw *hw);
+ int dlb_hw_get_ldb_queue_depth(struct dlb_hw *hw, u32 domain_id,
+ 			       struct dlb_get_ldb_queue_depth_args *args,
+diff --git a/drivers/misc/dlb/dlb_pf_ops.c b/drivers/misc/dlb/dlb_pf_ops.c
+index 66fb4ffae939..4dde46642d6e 100644
+--- a/drivers/misc/dlb/dlb_pf_ops.c
++++ b/drivers/misc/dlb/dlb_pf_ops.c
+@@ -102,3 +102,198 @@ void dlb_pf_init_hardware(struct dlb *dlb)
+ 	dlb_hw_enable_sparse_ldb_cq_mode(&dlb->hw);
+ 	dlb_hw_enable_sparse_dir_cq_mode(&dlb->hw);
+ }
++
++/*****************************/
++/****** Sysfs callbacks ******/
++/*****************************/
++
++#define DLB_TOTAL_SYSFS_SHOW(name, macro)		\
++static ssize_t total_##name##_show(			\
++	struct device *dev,				\
++	struct device_attribute *attr,			\
++	char *buf)					\
++{							\
++	int val = DLB_MAX_NUM_##macro;			\
++							\
++	return scnprintf(buf, PAGE_SIZE, "%d\n", val);	\
++}
++
++DLB_TOTAL_SYSFS_SHOW(num_sched_domains, DOMAINS)
++DLB_TOTAL_SYSFS_SHOW(num_ldb_queues, LDB_QUEUES)
++DLB_TOTAL_SYSFS_SHOW(num_ldb_ports, LDB_PORTS)
++DLB_TOTAL_SYSFS_SHOW(num_dir_ports, DIR_PORTS)
++DLB_TOTAL_SYSFS_SHOW(num_ldb_credits, LDB_CREDITS)
++DLB_TOTAL_SYSFS_SHOW(num_dir_credits, DIR_CREDITS)
++DLB_TOTAL_SYSFS_SHOW(num_atomic_inflights, AQED_ENTRIES)
++DLB_TOTAL_SYSFS_SHOW(num_hist_list_entries, HIST_LIST_ENTRIES)
++
++#define DLB_AVAIL_SYSFS_SHOW(name)			     \
++static ssize_t avail_##name##_show(			     \
++	struct device *dev,				     \
++	struct device_attribute *attr,			     \
++	char *buf)					     \
++{							     \
++	struct dlb *dlb = dev_get_drvdata(dev);		     \
++	struct dlb_get_num_resources_args arg;		     \
++	struct dlb_hw *hw = &dlb->hw;			     \
++	int val;					     \
++							     \
++	mutex_lock(&dlb->resource_mutex);		     \
++							     \
++	val = dlb_hw_get_num_resources(hw, &arg);	     \
++							     \
++	mutex_unlock(&dlb->resource_mutex);		     \
++							     \
++	if (val)					     \
++		return -1;				     \
++							     \
++	val = arg.name;					     \
++							     \
++	return scnprintf(buf, PAGE_SIZE, "%d\n", val);	     \
++}
++
++DLB_AVAIL_SYSFS_SHOW(num_sched_domains)
++DLB_AVAIL_SYSFS_SHOW(num_ldb_queues)
++DLB_AVAIL_SYSFS_SHOW(num_ldb_ports)
++DLB_AVAIL_SYSFS_SHOW(num_dir_ports)
++DLB_AVAIL_SYSFS_SHOW(num_ldb_credits)
++DLB_AVAIL_SYSFS_SHOW(num_dir_credits)
++DLB_AVAIL_SYSFS_SHOW(num_atomic_inflights)
++DLB_AVAIL_SYSFS_SHOW(num_hist_list_entries)
++
++static ssize_t max_ctg_hl_entries_show(struct device *dev,
++				       struct device_attribute *attr,
++				       char *buf)
++{
++	struct dlb *dlb = dev_get_drvdata(dev);
++	struct dlb_get_num_resources_args arg;
++	struct dlb_hw *hw = &dlb->hw;
++	int val;
++
++	mutex_lock(&dlb->resource_mutex);
++
++	val = dlb_hw_get_num_resources(hw, &arg);
++
++	mutex_unlock(&dlb->resource_mutex);
++
++	if (val)
++		return -1;
++
++	val = arg.max_contiguous_hist_list_entries;
++
++	return scnprintf(buf, PAGE_SIZE, "%d\n", val);
++}
++
++/*
++ * Device attribute name doesn't match the show function name, so we define our
++ * own DEVICE_ATTR macro.
++ */
++#define DLB_DEVICE_ATTR_RO(_prefix, _name) \
++struct device_attribute dev_attr_##_prefix##_##_name = {\
++	.attr = { .name = __stringify(_name), .mode = 0444 },\
++	.show = _prefix##_##_name##_show,\
++}
++
++static DLB_DEVICE_ATTR_RO(total, num_sched_domains);
++static DLB_DEVICE_ATTR_RO(total, num_ldb_queues);
++static DLB_DEVICE_ATTR_RO(total, num_ldb_ports);
++static DLB_DEVICE_ATTR_RO(total, num_dir_ports);
++static DLB_DEVICE_ATTR_RO(total, num_ldb_credits);
++static DLB_DEVICE_ATTR_RO(total, num_dir_credits);
++static DLB_DEVICE_ATTR_RO(total, num_atomic_inflights);
++static DLB_DEVICE_ATTR_RO(total, num_hist_list_entries);
++
++static struct attribute *dlb_total_attrs[] = {
++	&dev_attr_total_num_sched_domains.attr,
++	&dev_attr_total_num_ldb_queues.attr,
++	&dev_attr_total_num_ldb_ports.attr,
++	&dev_attr_total_num_dir_ports.attr,
++	&dev_attr_total_num_ldb_credits.attr,
++	&dev_attr_total_num_dir_credits.attr,
++	&dev_attr_total_num_atomic_inflights.attr,
++	&dev_attr_total_num_hist_list_entries.attr,
++	NULL
++};
++
++static const struct attribute_group dlb_total_attr_group = {
++	.attrs = dlb_total_attrs,
++	.name = "total_resources",
++};
++
++static DLB_DEVICE_ATTR_RO(avail, num_sched_domains);
++static DLB_DEVICE_ATTR_RO(avail, num_ldb_queues);
++static DLB_DEVICE_ATTR_RO(avail, num_ldb_ports);
++static DLB_DEVICE_ATTR_RO(avail, num_dir_ports);
++static DLB_DEVICE_ATTR_RO(avail, num_ldb_credits);
++static DLB_DEVICE_ATTR_RO(avail, num_dir_credits);
++static DLB_DEVICE_ATTR_RO(avail, num_atomic_inflights);
++static DLB_DEVICE_ATTR_RO(avail, num_hist_list_entries);
++static DEVICE_ATTR_RO(max_ctg_hl_entries);
++
++static struct attribute *dlb_avail_attrs[] = {
++	&dev_attr_avail_num_sched_domains.attr,
++	&dev_attr_avail_num_ldb_queues.attr,
++	&dev_attr_avail_num_ldb_ports.attr,
++	&dev_attr_avail_num_dir_ports.attr,
++	&dev_attr_avail_num_ldb_credits.attr,
++	&dev_attr_avail_num_dir_credits.attr,
++	&dev_attr_avail_num_atomic_inflights.attr,
++	&dev_attr_avail_num_hist_list_entries.attr,
++	&dev_attr_max_ctg_hl_entries.attr,
++	NULL
++};
++
++static const struct attribute_group dlb_avail_attr_group = {
++	.attrs = dlb_avail_attrs,
++	.name = "avail_resources",
++};
++
++static ssize_t dev_id_show(struct device *dev,
++			   struct device_attribute *attr,
++			   char *buf)
++{
++	struct dlb *dlb = dev_get_drvdata(dev);
++
++	return scnprintf(buf, PAGE_SIZE, "%d\n", dlb->id);
++}
++
++/* [7:0]: device revision, [15:8]: device version */
++#define DLB_SET_DEVICE_VERSION(ver, rev) (((ver) << 8) | (rev))
++
++static ssize_t dev_ver_show(struct device *dev,
++			    struct device_attribute *attr,
++			    char *buf)
++{
++	int ver;
++
++	ver = DLB_SET_DEVICE_VERSION(2, 0);
++
++	return scnprintf(buf, PAGE_SIZE, "%d\n", ver);
++}
++
++static DEVICE_ATTR_RO(dev_id);
++static DEVICE_ATTR_RO(dev_ver);
++
++static struct attribute *dlb_dev_id_attr[] = {
++	&dev_attr_dev_id.attr,
++	&dev_attr_dev_ver.attr,
++	NULL
++};
++
++static const struct attribute_group dlb_dev_id_attr_group = {
++	.attrs = dlb_dev_id_attr,
++};
++
++static const struct attribute_group *dlb_pf_attr_groups[] = {
++	&dlb_dev_id_attr_group,
++	&dlb_total_attr_group,
++	&dlb_avail_attr_group,
++	NULL,
++};
++
++int dlb_pf_sysfs_create(struct dlb *dlb)
++{
++	struct device *dev = &dlb->pdev->dev;
++
++	return devm_device_add_groups(dev, dlb_pf_attr_groups);
++}
 diff --git a/drivers/misc/dlb/dlb_resource.c b/drivers/misc/dlb/dlb_resource.c
-index 5d4ffdab69b5..e19c0f6cc321 100644
+index e19c0f6cc321..6926ad95d9e2 100644
 --- a/drivers/misc/dlb/dlb_resource.c
 +++ b/drivers/misc/dlb/dlb_resource.c
-@@ -1200,6 +1200,38 @@ static int dlb_verify_map_qid_args(struct dlb_hw *hw, u32 domain_id,
- 	return 0;
+@@ -3855,6 +3855,56 @@ int dlb_dir_port_owned_by_domain(struct dlb_hw *hw, u32 domain_id, u32 port_id)
+ 	return port->domain_id == domain->id;
  }
  
-+static bool dlb_port_find_slot(struct dlb_ldb_port *port,
-+			       enum dlb_qid_map_state state, int *slot)
++/**
++ * dlb_hw_get_num_resources() - query the PCI function's available resources
++ * @hw: dlb_hw handle for a particular device.
++ * @arg: pointer to resource counts.
++ *
++ * This function returns the number of available resources for the PF or for a
++ * VF.
++ *
++ * Return:
++ * Returns 0 upon success, -EINVAL if input argument is
++ * invalid.
++ */
++int dlb_hw_get_num_resources(struct dlb_hw *hw,
++			     struct dlb_get_num_resources_args *arg)
 +{
++	struct dlb_function_resources *rsrcs;
++	struct dlb_bitmap *map;
 +	int i;
 +
-+	for (i = 0; i < DLB_MAX_NUM_QIDS_PER_LDB_CQ; i++) {
-+		if (port->qid_map[i].state == state)
-+			break;
-+	}
++	if (!hw || !arg)
++		return -EINVAL;
 +
-+	*slot = i;
++	rsrcs = &hw->pf;
 +
-+	return (i < DLB_MAX_NUM_QIDS_PER_LDB_CQ);
-+}
++	arg->num_sched_domains = rsrcs->num_avail_domains;
 +
-+static bool dlb_port_find_slot_queue(struct dlb_ldb_port *port,
-+				     enum dlb_qid_map_state state,
-+				     struct dlb_ldb_queue *queue, int *slot)
-+{
-+	int i;
++	arg->num_ldb_queues = rsrcs->num_avail_ldb_queues;
 +
-+	for (i = 0; i < DLB_MAX_NUM_QIDS_PER_LDB_CQ; i++) {
-+		if (port->qid_map[i].state == state &&
-+		    port->qid_map[i].qid == queue->id)
-+			break;
-+	}
++	arg->num_ldb_ports = 0;
++	for (i = 0; i < DLB_NUM_COS_DOMAINS; i++)
++		arg->num_ldb_ports += rsrcs->num_avail_ldb_ports[i];
 +
-+	*slot = i;
++	arg->num_dir_ports = rsrcs->num_avail_dir_pq_pairs;
 +
-+	return (i < DLB_MAX_NUM_QIDS_PER_LDB_CQ);
-+}
++	arg->num_atomic_inflights = rsrcs->num_avail_aqed_entries;
 +
- static int dlb_verify_unmap_qid_args(struct dlb_hw *hw, u32 domain_id,
- 				     struct dlb_unmap_qid_args *args,
- 				     struct dlb_cmd_response *resp,
-@@ -1720,6 +1752,125 @@ static int dlb_configure_dir_port(struct dlb_hw *hw, struct dlb_hw_domain *domai
- 	return 0;
- }
- 
-+static int dlb_ldb_port_map_qid_static(struct dlb_hw *hw, struct dlb_ldb_port *p,
-+				       struct dlb_ldb_queue *q, u8 priority)
-+{
-+	u32 lsp_qid2cq2;
-+	u32 lsp_qid2cq;
-+	u32 atm_qid2cq;
-+	u32 cq2priov;
-+	u32 cq2qid;
-+	int i;
++	map = rsrcs->avail_hist_list_entries;
 +
-+	/* Look for a pending or already mapped slot, else an unused slot */
-+	if (!dlb_port_find_slot_queue(p, DLB_QUEUE_MAP_IN_PROG, q, &i) &&
-+	    !dlb_port_find_slot_queue(p, DLB_QUEUE_MAPPED, q, &i) &&
-+	    !dlb_port_find_slot(p, DLB_QUEUE_UNMAPPED, &i)) {
-+		dev_err(hw_to_dev(hw),
-+			"[%s():%d] Internal error: CQ has no available QID mapping slots\n",
-+			__func__, __LINE__);
-+		return -EFAULT;
-+	}
++	arg->num_hist_list_entries = bitmap_weight(map->map, map->len);
 +
-+	/* Read-modify-write the priority and valid bit register */
-+	cq2priov = DLB_CSR_RD(hw, LSP_CQ2PRIOV(p->id));
++	arg->max_contiguous_hist_list_entries =
++		dlb_bitmap_longest_set_range(map);
 +
-+	cq2priov |= (1U << (i + LSP_CQ2PRIOV_V_LOC)) & LSP_CQ2PRIOV_V;
-+	cq2priov |= ((priority & 0x7) << (i + LSP_CQ2PRIOV_PRIO_LOC) * 3)
-+		    & LSP_CQ2PRIOV_PRIO;
++	arg->num_ldb_credits = rsrcs->num_avail_qed_entries;
 +
-+	DLB_CSR_WR(hw, LSP_CQ2PRIOV(p->id), cq2priov);
-+
-+	/* Read-modify-write the QID map register */
-+	if (i < 4)
-+		cq2qid = DLB_CSR_RD(hw, LSP_CQ2QID0(p->id));
-+	else
-+		cq2qid = DLB_CSR_RD(hw, LSP_CQ2QID1(p->id));
-+
-+	if (i == 0 || i == 4) {
-+		cq2qid &= ~LSP_CQ2QID0_QID_P0;
-+		cq2qid |= FIELD_PREP(LSP_CQ2QID0_QID_P0, q->id);
-+	} else if (i == 1 || i == 5) {
-+		cq2qid &= ~LSP_CQ2QID0_QID_P1;
-+		cq2qid |= FIELD_PREP(LSP_CQ2QID0_QID_P1, q->id);
-+	} else if (i == 2 || i == 6) {
-+		cq2qid &= ~LSP_CQ2QID0_QID_P2;
-+		cq2qid |= FIELD_PREP(LSP_CQ2QID0_QID_P2, q->id);
-+	} else if (i == 3 || i == 7) {
-+		cq2qid &= ~LSP_CQ2QID0_QID_P3;
-+		cq2qid |= FIELD_PREP(LSP_CQ2QID0_QID_P3, q->id);
-+	}
-+
-+	if (i < 4)
-+		DLB_CSR_WR(hw, LSP_CQ2QID0(p->id), cq2qid);
-+	else
-+		DLB_CSR_WR(hw, LSP_CQ2QID1(p->id), cq2qid);
-+
-+	atm_qid2cq = DLB_CSR_RD(hw,
-+				ATM_QID2CQIDIX(q->id,
-+					       p->id / 4));
-+
-+	lsp_qid2cq = DLB_CSR_RD(hw,
-+				LSP_QID2CQIDIX(q->id,
-+					       p->id / 4));
-+
-+	lsp_qid2cq2 = DLB_CSR_RD(hw,
-+				 LSP_QID2CQIDIX2(q->id,
-+						 p->id / 4));
-+
-+	switch (p->id % 4) {
-+	case 0:
-+		atm_qid2cq |= (1 << (i + ATM_QID2CQIDIX_00_CQ_P0_LOC));
-+		lsp_qid2cq |= (1 << (i + LSP_QID2CQIDIX_00_CQ_P0_LOC));
-+		lsp_qid2cq2 |= (1 << (i + LSP_QID2CQIDIX2_00_CQ_P0_LOC));
-+		break;
-+
-+	case 1:
-+		atm_qid2cq |= (1 << (i + ATM_QID2CQIDIX_00_CQ_P1_LOC));
-+		lsp_qid2cq |= (1 << (i + LSP_QID2CQIDIX_00_CQ_P1_LOC));
-+		lsp_qid2cq2 |= (1 << (i + LSP_QID2CQIDIX2_00_CQ_P1_LOC));
-+		break;
-+
-+	case 2:
-+		atm_qid2cq |= (1 << (i + ATM_QID2CQIDIX_00_CQ_P2_LOC));
-+		lsp_qid2cq |= (1 << (i + LSP_QID2CQIDIX_00_CQ_P2_LOC));
-+		lsp_qid2cq2 |= (1 << (i + LSP_QID2CQIDIX2_00_CQ_P2_LOC));
-+		break;
-+
-+	case 3:
-+		atm_qid2cq |= (1 << (i + ATM_QID2CQIDIX_00_CQ_P3_LOC));
-+		lsp_qid2cq |= (1 << (i + LSP_QID2CQIDIX_00_CQ_P3_LOC));
-+		lsp_qid2cq2 |= (1 << (i + LSP_QID2CQIDIX2_00_CQ_P3_LOC));
-+		break;
-+	}
-+
-+	DLB_CSR_WR(hw,
-+		   ATM_QID2CQIDIX(q->id, p->id / 4),
-+		   atm_qid2cq);
-+
-+	DLB_CSR_WR(hw,
-+		   LSP_QID2CQIDIX(q->id, p->id / 4),
-+		   lsp_qid2cq);
-+
-+	DLB_CSR_WR(hw,
-+		   LSP_QID2CQIDIX2(q->id, p->id / 4),
-+		   lsp_qid2cq2);
-+
-+	dlb_flush_csr(hw);
-+
-+	p->qid_map[i].qid = q->id;
-+	p->qid_map[i].priority = priority;
++	arg->num_dir_credits = rsrcs->num_avail_dqed_entries;
 +
 +	return 0;
 +}
 +
-+static int dlb_ldb_port_map_qid(struct dlb_hw *hw, struct dlb_hw_domain *domain,
-+				struct dlb_ldb_port *port,
-+				struct dlb_ldb_queue *queue, u8 prio)
-+{
-+	return dlb_ldb_port_map_qid_static(hw, port, queue, prio);
-+}
-+
- static void
- dlb_log_create_sched_domain_args(struct dlb_hw *hw,
- 				 struct dlb_create_sched_domain_args *args)
-@@ -2155,6 +2306,7 @@ int dlb_hw_map_qid(struct dlb_hw *hw, u32 domain_id,
- 	struct dlb_ldb_queue *queue;
- 	struct dlb_ldb_port *port;
- 	int ret;
-+	u8 prio;
- 
- 	dlb_log_map_qid(hw, domain_id, args);
- 
-@@ -2167,6 +2319,17 @@ int dlb_hw_map_qid(struct dlb_hw *hw, u32 domain_id,
- 	if (ret)
- 		return ret;
- 
-+	prio = args->priority;
-+
-+	ret = dlb_ldb_port_map_qid(hw, domain, port, queue, prio);
-+
-+	/* If ret is less than zero, it's due to an internal error */
-+	if (ret < 0)
-+		return ret;
-+
-+	if (port->enabled)
-+		dlb_ldb_port_cq_enable(hw, port);
-+
- 	resp->status = 0;
- 
- 	return 0;
+ /**
+  * dlb_clr_pmcsr_disable() - power on bulk of DLB 2.0 logic
+  * @hw: dlb_hw handle for a particular device.
 -- 
 2.27.0
 
