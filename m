@@ -2,75 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E4F8347B6C7
-	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 02:21:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 07BCC47B70A
+	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 02:58:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229933AbhLUBVM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Dec 2021 20:21:12 -0500
-Received: from szxga02-in.huawei.com ([45.249.212.188]:29271 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229596AbhLUBVL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Dec 2021 20:21:11 -0500
-Received: from dggpeml500020.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4JHzDH03rRzbjVM;
-        Tue, 21 Dec 2021 09:20:47 +0800 (CST)
-Received: from [10.174.177.174] (10.174.177.174) by
- dggpeml500020.china.huawei.com (7.185.36.88) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Tue, 21 Dec 2021 09:21:08 +0800
-Subject: Re: [PATCH -next V2] sysctl: returns -EINVAL when a negative value is
- passed to proc_doulongvec_minmax
-To:     Luis Chamberlain <mcgrof@kernel.org>
-CC:     <akpm@linux-foundation.org>, <keescook@chromium.org>,
-        <yzaikin@google.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
-        <andrii@kernel.org>, <kafai@fb.com>, <songliubraving@fb.com>,
-        <yhs@fb.com>, <john.fastabend@gmail.com>, <kpsingh@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
-        <yukuai3@huawei.com>, Hulk Robot <hulkci@huawei.com>,
-        Baokun Li <libaokun1@huawei.com>
-References: <20211220092627.3744624-1-libaokun1@huawei.com>
- <YcDWx1P1NdqgED1i@bombadil.infradead.org>
-From:   "libaokun (A)" <libaokun1@huawei.com>
-Message-ID: <6ec2155c-c976-4c9b-1975-c28792bb3144@huawei.com>
-Date:   Tue, 21 Dec 2021 09:21:08 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.9.0
+        id S231766AbhLUB6A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Dec 2021 20:58:00 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:52840 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231685AbhLUB57 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Dec 2021 20:57:59 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ECD7D61357;
+        Tue, 21 Dec 2021 01:57:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75FA6C36AE8;
+        Tue, 21 Dec 2021 01:57:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1640051878;
+        bh=aRUHdHSWaXffdISJhdg9J3a6d/P90K9Yf16lmAoJoMM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=JK7OOK6j0Q78VfpH3GSWb6J1UOS1+4qjIFfFp9z/I1Szcmyw8gRjZqjTqmAuf73uS
+         iidysibF/XXiu8iwx/TzRvDQtatGJVYFI4hJqPIiK6yZRprhrczk67Ae3QbD4SxG9i
+         W5wB2g58/GypPUyhomNljHsg52olEPHKNMUypU1ARLQqPyxeeHShhJ6LRYRRjBMI3c
+         HOWxid8XerVk4whhJZO4wlfV2jYOX4zQiFuSQt73g4jDWtn9LYcxxaw4OJ1EMrn0f+
+         vpPwbmpaX/RkYNjEOaUioV1VoVgBrlVNz5pHFIdRnSohd3o6BPDpNbXbiSlo7uqWLt
+         twL0CVaQrCGzA==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Maxime Bizon <mbizon@freebox.fr>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Sasha Levin <sashal@kernel.org>, johannes@sipsolutions.net,
+        davem@davemloft.net, kuba@kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 04/29] mac80211: fix TCP performance on mesh interface
+Date:   Mon, 20 Dec 2021 20:57:25 -0500
+Message-Id: <20211221015751.116328-4-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20211221015751.116328-1-sashal@kernel.org>
+References: <20211221015751.116328-1-sashal@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <YcDWx1P1NdqgED1i@bombadil.infradead.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.177.174]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpeml500020.china.huawei.com (7.185.36.88)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-在 2021/12/21 3:17, Luis Chamberlain 写道:
-> On Mon, Dec 20, 2021 at 05:26:27PM +0800, Baokun Li wrote:
->> When we pass a negative value to the proc_doulongvec_minmax() function,
->> the function returns 0, but the corresponding interface value does not
->> change.
->>
->> we can easily reproduce this problem with the following commands:
->>      `cd /proc/sys/fs/epoll`
->>      `echo -1 > max_user_watches; echo $?; cat max_user_watches`
->>
->> This function requires a non-negative number to be passed in, so when
->> a negative number is passed in, -EINVAL is returned.
->>
->> Reported-by: Hulk Robot <hulkci@huawei.com>
->> Signed-off-by: Baokun Li <libaokun1@huawei.com>
-> Acked-by: Luis Chamberlain <mcgrof@kernel.org>
->
->   Luis
-> .
+From: Maxime Bizon <mbizon@freebox.fr>
 
-Thank you for your Ack.
+[ Upstream commit 48c06708e63e71b4395e4159797366aa03be10ff ]
 
+sta is NULL for mesh point (resolved later), so sk pacing parameters
+were not applied.
+
+Signed-off-by: Maxime Bizon <mbizon@freebox.fr>
+Link: https://lore.kernel.org/r/66f51659416ac35d6b11a313bd3ffe8b8a43dd55.camel@freebox.fr
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/mac80211/tx.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/net/mac80211/tx.c b/net/mac80211/tx.c
+index 0527bf41a32c7..0613b3ab523a5 100644
+--- a/net/mac80211/tx.c
++++ b/net/mac80211/tx.c
+@@ -4190,11 +4190,11 @@ void __ieee80211_subif_start_xmit(struct sk_buff *skb,
+ 
+ 	ieee80211_aggr_check(sdata, sta, skb);
+ 
++	sk_pacing_shift_update(skb->sk, sdata->local->hw.tx_sk_pacing_shift);
++
+ 	if (sta) {
+ 		struct ieee80211_fast_tx *fast_tx;
+ 
+-		sk_pacing_shift_update(skb->sk, sdata->local->hw.tx_sk_pacing_shift);
+-
+ 		fast_tx = rcu_dereference(sta->fast_tx);
+ 
+ 		if (fast_tx &&
 -- 
-With Best Regards,
-Baokun Li
+2.34.1
 
