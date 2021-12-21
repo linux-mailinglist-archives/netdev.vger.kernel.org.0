@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E05CB47C2ED
-	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 16:36:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EBA7447C2EA
+	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 16:36:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239444AbhLUPgB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Dec 2021 10:36:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33634 "EHLO
+        id S239439AbhLUPgA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Dec 2021 10:36:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239400AbhLUPf4 (ORCPT
+        with ESMTP id S239410AbhLUPf4 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 21 Dec 2021 10:35:56 -0500
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98530C061574;
-        Tue, 21 Dec 2021 07:35:55 -0800 (PST)
-Received: by mail-wr1-x430.google.com with SMTP id r17so27375656wrc.3;
-        Tue, 21 Dec 2021 07:35:55 -0800 (PST)
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92A7FC061401;
+        Tue, 21 Dec 2021 07:35:56 -0800 (PST)
+Received: by mail-wr1-x436.google.com with SMTP id e5so27695561wrc.5;
+        Tue, 21 Dec 2021 07:35:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=dPSlVpr7txUPmQgAHE8W7WBCYuNNpGMD5iocgyvoTWA=;
-        b=KtT4yTdaGYMM2K8v0RtSMUOk/6W3ELsHAkE662xdRsmOGdpceVDrVoAvQGdq4xtyRL
-         4f5Kibf+ms2jCHgHxkl1UnyTlyee0ddndSR20egA9NEoLx2q64ecpERRAbXLuxu/pqK2
-         EXmePyJ9U61RSKC18rEmXHsQTBwuYzYjEKkatCWn9LjduRwG3F/kHBoi7UUzz3+pzrl0
-         khUzYFSVxV2Ko3RsqFSZ/llfyLhFx7whdXUpKrN38PwopgTG1EBkBkHOVcg1A0TMc+Wq
-         IXU3QKbOqxcFrWX5OHBfnb0IyHy/jdcac6p7st5czHYKB+QGEtd+HtLHup1rvdc5THyE
-         EtKw==
+        bh=LPkWHJSnV5nNM7itLbmwC1bFPV13/RJSG50oK6FXZpk=;
+        b=aP99VNZHpGh/sW7pp/qKJsclA1Fn5ykT6uWK+h4+RjpoU2C5Qdk2J8LD660Y+bzBhN
+         LBhqGRyfX20Zur2HNee0txnRfNBFNd7u11PN9t95MuiaqZXvRP/2gjZEL9Qix7+DG7Xw
+         dYDo+O8B3XqMQbZpfY565K/0mZzfV9A/93O2VVfGMjYFQDHAkidzMEJYn+pnhfbZmcz4
+         lmU8g8fzPrTABKZIT31H/IxBDLXmSyj2UNKLxvr46Oel9Q/kCL+8r3DeVt9eyWW9Nrlx
+         JKb/Tx0DCYRReZhM6eNipu4HzKiLRE7lbno6Z54bLe2YNZ4hbjZl7M5C0rLHDCkINbNk
+         qL/Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=dPSlVpr7txUPmQgAHE8W7WBCYuNNpGMD5iocgyvoTWA=;
-        b=zWQ/i1k/84JnQVfTm5lv2qI/vy/rLRzeSjrzkOVbLeslvWh+6GjQsb6xz80QjbjKj6
-         YD4oY5TLnEDvWTtALK9gxXV2FVVLMNWxJdhBKtEU44DMQsLca1kdCefCAHLUc+oPl2nb
-         dw6j2Iw8paq6bklxklytA3RSy4Nii60mTpUwQzWDugtd66tmiG8ZzXUjf40Y4H3AFP8B
-         lA3GgU2KGIPEnI3OSOFwaXoHoCDX4BsVHF2+MaB9rKdYO8SS8jYDMkCY0wcC6ubMWCF/
-         q9LsqH9oKGpT2DxiAPzoFw+h7FBJ4kJ3bsE14PlAFf/dkaVkBUF6x2KVR7qdjm1Gtv/G
-         /4tw==
-X-Gm-Message-State: AOAM530ebiA1ze/t3bf+veFqU/qbqrnM+fak0ZyBuhWjHSZDNXWqUelr
-        CLoeaSFHyiCLW/u18ei2dvUjgIOG0Dg=
-X-Google-Smtp-Source: ABdhPJx6vPTXtXPaU+lTMdgO0I0/v13+zI5/SuAU7CIhKZunOTh+dW6yumzbdv2kSQN1HhUK5X1D8w==
-X-Received: by 2002:adf:e791:: with SMTP id n17mr2907897wrm.719.1640100954090;
-        Tue, 21 Dec 2021 07:35:54 -0800 (PST)
+        bh=LPkWHJSnV5nNM7itLbmwC1bFPV13/RJSG50oK6FXZpk=;
+        b=3VKfIPsKov8cP1Ex+5jASbNq0am0TBc1L4Z25AZcxjSaoRy522Q/jXb1XKV0I8hdxT
+         YJQTJ6LU7vBtyZaFnCf51rtuTzD3Of3m8kKgGpP50MX3OIMiEgP2eDHRFgCTmBtjNoxS
+         2zlUu9Cix52Ykm+MB7xInF+3oV7dR0zpR22E2PHr7J6xrvdO03PpbO9biiql+RRu2ty4
+         4zBwWOAgIlRrhUwr6Sdhhe3CbdBJU40n5lJpmu+NNQXdI0O1Yje5WhLpdyLwGokw42gP
+         MOfLpYW/KKCBMn5BixYtbvrvZenVe5IAbt+yom9RNtfU9y+iI74wiNHr/rLaG2/G5hEm
+         TSLw==
+X-Gm-Message-State: AOAM533AgRRZzobHrf0r+Zy9ls01lBB51fKvFSyl73PzcUEG3YfkjLuq
+        3y7mLvP3IBlz71Lu/SXVrmYK0AMnhxw=
+X-Google-Smtp-Source: ABdhPJzhh+SYfefwdTfRXydLxmvAmvewcVnrFwXXe1Aq14C06o7daYcskdkAbxXrxd46+cNI/mJkxg==
+X-Received: by 2002:adf:e109:: with SMTP id t9mr2985003wrz.387.1640100955072;
+        Tue, 21 Dec 2021 07:35:55 -0800 (PST)
 Received: from 127.0.0.1localhost ([148.252.128.24])
-        by smtp.gmail.com with ESMTPSA id z11sm2946019wmf.9.2021.12.21.07.35.53
+        by smtp.gmail.com with ESMTPSA id z11sm2946019wmf.9.2021.12.21.07.35.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Dec 2021 07:35:53 -0800 (PST)
+        Tue, 21 Dec 2021 07:35:54 -0800 (PST)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     io-uring@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
@@ -57,9 +57,9 @@ Cc:     Jakub Kicinski <kuba@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         David Ahern <dsahern@kernel.org>, Jens Axboe <axboe@kernel.dk>,
         Pavel Begunkov <asml.silence@gmail.com>
-Subject: [RFC v2 02/19] skbuff: pass a struct ubuf_info in msghdr
-Date:   Tue, 21 Dec 2021 15:35:24 +0000
-Message-Id: <7dae2f61ee9a1ad38822870764fcafad43a3fe4e.1640029579.git.asml.silence@gmail.com>
+Subject: [RFC v2 03/19] net: add zerocopy_sg_from_iter for bvec
+Date:   Tue, 21 Dec 2021 15:35:25 +0000
+Message-Id: <162b7096c1a8e31743b692a229bac0c06a64c75c.1640029579.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <cover.1640029579.git.asml.silence@gmail.com>
 References: <cover.1640029579.git.asml.silence@gmail.com>
@@ -69,90 +69,81 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Instead of the net stack managing ubuf_info, allow to pass it in from
-outside in a struct msghdr (in-kernel structure), so io_uring can make
-use of it.
+Add a separate path for bvec iterators in __zerocopy_sg_from_iter, first
+it's quite faster but also will be needed to optimise out
+get/put_page()
 
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 ---
- fs/io_uring.c          | 2 ++
- include/linux/socket.h | 1 +
- net/compat.c           | 1 +
- net/socket.c           | 3 +++
- 4 files changed, 7 insertions(+)
+ net/core/datagram.c | 50 +++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 50 insertions(+)
 
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index 72da3a75521a..59380e3454ad 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -4911,6 +4911,7 @@ static int io_send(struct io_kiocb *req, unsigned int issue_flags)
- 	msg.msg_control = NULL;
- 	msg.msg_controllen = 0;
- 	msg.msg_namelen = 0;
-+	msg.msg_ubuf = NULL;
+diff --git a/net/core/datagram.c b/net/core/datagram.c
+index ee290776c661..cb1e34fbcd44 100644
+--- a/net/core/datagram.c
++++ b/net/core/datagram.c
+@@ -616,11 +616,61 @@ int skb_copy_datagram_from_iter(struct sk_buff *skb, int offset,
+ }
+ EXPORT_SYMBOL(skb_copy_datagram_from_iter);
  
- 	flags = req->sr_msg.msg_flags;
- 	if (issue_flags & IO_URING_F_NONBLOCK)
-@@ -5157,6 +5158,7 @@ static int io_recv(struct io_kiocb *req, unsigned int issue_flags)
- 	msg.msg_namelen = 0;
- 	msg.msg_iocb = NULL;
- 	msg.msg_flags = 0;
-+	msg.msg_ubuf = NULL;
++static int __zerocopy_sg_from_bvec(struct sock *sk, struct sk_buff *skb,
++				   struct iov_iter *from, size_t length)
++{
++	int ret, frag = skb_shinfo(skb)->nr_frags;
++	struct bvec_iter bi;
++	struct bio_vec v;
++	ssize_t copied = 0;
++	unsigned long truesize = 0;
++
++	bi.bi_size = min(from->count, length);
++	bi.bi_bvec_done = from->iov_offset;
++	bi.bi_idx = 0;
++
++	while (bi.bi_size) {
++		if (frag == MAX_SKB_FRAGS) {
++			ret = -EMSGSIZE;
++			goto out;
++		}
++
++		v = mp_bvec_iter_bvec(from->bvec, bi);
++		copied += v.bv_len;
++		truesize += PAGE_ALIGN(v.bv_len + v.bv_offset);
++		get_page(v.bv_page);
++		skb_fill_page_desc(skb, frag++, v.bv_page, v.bv_offset, v.bv_len);
++		bvec_iter_advance_single(from->bvec, &bi, v.bv_len);
++	}
++	ret = 0;
++out:
++	skb->data_len += copied;
++	skb->len += copied;
++	skb->truesize += truesize;
++
++	if (sk && sk->sk_type == SOCK_STREAM) {
++		sk_wmem_queued_add(sk, truesize);
++		if (!skb_zcopy_pure(skb))
++			sk_mem_charge(sk, truesize);
++	} else {
++		refcount_add(truesize, &skb->sk->sk_wmem_alloc);
++	}
++
++	from->bvec += bi.bi_idx;
++	from->nr_segs -= bi.bi_idx;
++	from->count = bi.bi_size;
++	from->iov_offset = bi.bi_bvec_done;
++	return ret;
++}
++
+ int __zerocopy_sg_from_iter(struct sock *sk, struct sk_buff *skb,
+ 			    struct iov_iter *from, size_t length)
+ {
+ 	int frag = skb_shinfo(skb)->nr_frags;
  
- 	flags = req->sr_msg.msg_flags;
- 	if (force_nonblock)
-diff --git a/include/linux/socket.h b/include/linux/socket.h
-index 8ef26d89ef49..6bd2c6b0c6f2 100644
---- a/include/linux/socket.h
-+++ b/include/linux/socket.h
-@@ -65,6 +65,7 @@ struct msghdr {
- 	__kernel_size_t	msg_controllen;	/* ancillary data buffer length */
- 	unsigned int	msg_flags;	/* flags on received message */
- 	struct kiocb	*msg_iocb;	/* ptr to iocb for async requests */
-+	struct ubuf_info *msg_ubuf;
- };
- 
- struct user_msghdr {
-diff --git a/net/compat.c b/net/compat.c
-index 210fc3b4d0d8..6cd2e7683dd0 100644
---- a/net/compat.c
-+++ b/net/compat.c
-@@ -80,6 +80,7 @@ int __get_compat_msghdr(struct msghdr *kmsg,
- 		return -EMSGSIZE;
- 
- 	kmsg->msg_iocb = NULL;
-+	kmsg->msg_ubuf = NULL;
- 	*ptr = msg.msg_iov;
- 	*len = msg.msg_iovlen;
- 	return 0;
-diff --git a/net/socket.c b/net/socket.c
-index 7f64a6eccf63..0a29b616a38c 100644
---- a/net/socket.c
-+++ b/net/socket.c
-@@ -2023,6 +2023,7 @@ int __sys_sendto(int fd, void __user *buff, size_t len, unsigned int flags,
- 	msg.msg_control = NULL;
- 	msg.msg_controllen = 0;
- 	msg.msg_namelen = 0;
-+	msg.msg_ubuf = NULL;
- 	if (addr) {
- 		err = move_addr_to_kernel(addr, addr_len, &address);
- 		if (err < 0)
-@@ -2088,6 +2089,7 @@ int __sys_recvfrom(int fd, void __user *ubuf, size_t size, unsigned int flags,
- 	msg.msg_namelen = 0;
- 	msg.msg_iocb = NULL;
- 	msg.msg_flags = 0;
-+	msg.msg_ubuf = NULL;
- 	if (sock->file->f_flags & O_NONBLOCK)
- 		flags |= MSG_DONTWAIT;
- 	err = sock_recvmsg(sock, &msg, flags);
-@@ -2326,6 +2328,7 @@ int __copy_msghdr_from_user(struct msghdr *kmsg,
- 		return -EMSGSIZE;
- 
- 	kmsg->msg_iocb = NULL;
-+	kmsg->msg_ubuf = NULL;
- 	*uiov = msg.msg_iov;
- 	*nsegs = msg.msg_iovlen;
- 	return 0;
++	if (iov_iter_is_bvec(from))
++		return __zerocopy_sg_from_bvec(sk, skb, from, length);
++
+ 	while (length && iov_iter_count(from)) {
+ 		struct page *pages[MAX_SKB_FRAGS];
+ 		struct page *last_head = NULL;
 -- 
 2.34.1
 
