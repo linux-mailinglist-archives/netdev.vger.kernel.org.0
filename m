@@ -2,30 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E9BA647C229
-	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 16:02:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 54EDC47C22B
+	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 16:03:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238862AbhLUPCv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Dec 2021 10:02:51 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:40964 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234288AbhLUPCv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Dec 2021 10:02:51 -0500
+        id S238877AbhLUPCy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Dec 2021 10:02:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53602 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234288AbhLUPCw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Dec 2021 10:02:52 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F3F5C061574;
+        Tue, 21 Dec 2021 07:02:52 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D60DDB8168A;
-        Tue, 21 Dec 2021 15:02:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 231C4C36AEA;
-        Tue, 21 Dec 2021 15:02:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E59C6162A;
+        Tue, 21 Dec 2021 15:02:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02074C36AE8;
+        Tue, 21 Dec 2021 15:02:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1640098968;
-        bh=1t9qj7e3Z95P0zEiXesN2Vc0H7GLvLh5b4UtFAPW0n4=;
+        s=korg; t=1640098971;
+        bh=LlzjFDFyeYsNvKei/p4c++vqP/wlNDuge3mZPC23l9w=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=fDAo3jyDmER1ygquBEqbhCacRdr2IvNgM10of2izQhWVJ92P91C1K60Ww9VdK14Kv
-         Ri8retngaNKxJ5iaZDSBLUZiHb/Bf9YKg/VcqeTz2V6/pP2YKzoB+O/lSOWAA0WUka
-         LwLFSG5e1j5KC0Sp4WNHkaELl+y8d1TTmBPiIPzw=
-Date:   Tue, 21 Dec 2021 15:31:28 +0100
+        b=0aoiRiJnxJWC22KFSrpe1VpWybQ9Q3XnpcRvQn/heaECXNBkLUSsJobIAP01hWm4W
+         +34v9YOrEATVgzVFfhH2AUbaitZZBpHNFDTjFN/4x5GdCkWUVWE7f+3gdkrJwmDdYZ
+         PNxALTwN/RfOklFxL9ulWTdy2bgJJruNfCsQpl5A=
+Date:   Tue, 21 Dec 2021 16:02:42 +0100
 From:   Greg KH <gregkh@linuxfoundation.org>
 To:     "Chen, Mike Ximing" <mike.ximing.chen@intel.com>
 Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
@@ -36,85 +39,83 @@ Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "davem@davemloft.net" <davem@davemloft.net>,
         "kuba@kernel.org" <kuba@kernel.org>
-Subject: Re: [RFC PATCH v12 00/17] dlb: introduce DLB device driver
-Message-ID: <YcHlQH0gXTHh4cjV@kroah.com>
+Subject: Re: [RFC PATCH v12 01/17] dlb: add skeleton for DLB driver
+Message-ID: <YcHskr0KSFSR35xY@kroah.com>
 References: <20211221065047.290182-1-mike.ximing.chen@intel.com>
- <YcF9rRTVzrbCyOtq@kroah.com>
- <CO1PR11MB51700037C8A23B19C0DCF5CAD97C9@CO1PR11MB5170.namprd11.prod.outlook.com>
+ <20211221065047.290182-2-mike.ximing.chen@intel.com>
+ <YcF+QIHKgNLJOxUh@kroah.com>
+ <YcGW3lm4UBbDHURW@kroah.com>
+ <CO1PR11MB51707B01007B77CEF4F1640BD97C9@CO1PR11MB5170.namprd11.prod.outlook.com>
+ <CO1PR11MB5170FB6317CE0A8ECBD0436ED97C9@CO1PR11MB5170.namprd11.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CO1PR11MB51700037C8A23B19C0DCF5CAD97C9@CO1PR11MB5170.namprd11.prod.outlook.com>
+In-Reply-To: <CO1PR11MB5170FB6317CE0A8ECBD0436ED97C9@CO1PR11MB5170.namprd11.prod.outlook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 21, 2021 at 02:03:38PM +0000, Chen, Mike Ximing wrote:
+On Tue, Dec 21, 2021 at 02:42:10PM +0000, Chen, Mike Ximing wrote:
+> 
 > 
 > > -----Original Message-----
-> > From: Greg KH <gregkh@linuxfoundation.org>
-> > Sent: Tuesday, December 21, 2021 2:10 AM
-> > To: Chen, Mike Ximing <mike.ximing.chen@intel.com>
+> > From: Chen, Mike Ximing <mike.ximing.chen@intel.com>
+> > Sent: Tuesday, December 21, 2021 9:26 AM
+> > To: Greg KH <gregkh@linuxfoundation.org>
 > > Cc: linux-kernel@vger.kernel.org; arnd@arndb.de; Williams, Dan J <dan.j.williams@intel.com>; pierre-
 > > louis.bossart@linux.intel.com; netdev@vger.kernel.org; davem@davemloft.net; kuba@kernel.org
-> > Subject: Re: [RFC PATCH v12 00/17] dlb: introduce DLB device driver
+> > Subject: RE: [RFC PATCH v12 01/17] dlb: add skeleton for DLB driver
 > > 
-> > On Tue, Dec 21, 2021 at 12:50:30AM -0600, Mike Ximing Chen wrote:
-> > > v12:
 > > 
-> > <snip>
+> > > -----Original Message-----
+> > > From: Greg KH <gregkh@linuxfoundation.org>
+> > > Sent: Tuesday, December 21, 2021 3:57 AM
+> > > To: Chen, Mike Ximing <mike.ximing.chen@intel.com>
+> > > Cc: linux-kernel@vger.kernel.org; arnd@arndb.de; Williams, Dan J
+> > > <dan.j.williams@intel.com>; pierre- louis.bossart@linux.intel.com;
+> > > netdev@vger.kernel.org; davem@davemloft.net; kuba@kernel.org
+> > > Subject: Re: [RFC PATCH v12 01/17] dlb: add skeleton for DLB driver
+> > >
+> > > On Tue, Dec 21, 2021 at 08:12:00AM +0100, Greg KH wrote:
+> > > > On Tue, Dec 21, 2021 at 12:50:31AM -0600, Mike Ximing Chen wrote:
+> > > > > +/* Copyright(C) 2016-2020 Intel Corporation. All rights reserved.
+> > > > > +*/
+> > > >
+> > > > So you did not touch this at all in 2021?  And it had a
+> > > > copyrightable changed added to it for every year, inclusive, from 2016-2020?
+> > > >
+> > > > Please run this past your lawyers on how to do this properly.
+> > >
+> > > Ah, this was a "throw it over the fence at the community to handle for
+> > > me before I go on vacation" type of posting, based on your autoresponse email that happened when I
+> > sent this.
+> > >
+> > > That too isn't the most kind thing, would you want to be the reviewer
+> > > of this if it were sent to you?  Please take some time and start doing
+> > > patch reviews for the char/misc drivers on the mailing list before submitting any more new code.
+> > >
+> > > Also, this patch series goes agains the internal rules that I know
+> > > your company has, why is that?  Those rules are there for a good
+> > > reason, and by ignoring them, it's going to make it much harder to get patches to be reviewed.
+> > >
 > > 
-> > How is a "RFC" series on version 12?  "RFC" means "I do not think this should be merged, please give me
-> > some comments on how this is all structured" which I think is not the case here.
-> 
-> Hi Greg,
-> 
-> "RFC" here means exactly what you referred to. As you know we have made many changes since your
-> last review of the patch set (which was v10).  At this point we are not sure if we are on the right track in
-> terms of some configfs implementation, and would like some comments from the community. I stated
-> this in the cover letter before the change log: " This submission is still a work in progress.... , a couple of
-> issues that we would like to get help and suggestions from reviewers and community". I presented two
-> issues/questions we are facing, and would like to get comments. 
-> 
-> The code on the other hand are tested and validated on our hardware platforms. I kept the version number
-> in series (using v12, instead v1) so that reviewers can track the old submissions and have a better
-> understanding of the patch set's history.
+> > I assume that you referred to the "Reviewed-by" rule from Intel. Since this is a RFC and we are seeking for
+> > comments and guidance on our code structure, we thought it was appropriate to send out patch set out
+> > with a full endorsement from our internal reviewers. The questions I posted in the cover letter (patch
+> > 00/17) are from the discussions with our internal reviewers.
+> .
+> "we thought it was appropriate to send out the patch set out without* a full endorsement from our
+> Internal reviewers"  --- sorry for misspelling.
 
-"RFC" means "I have no idea if this is correct, I am throwing it out
-there and anyone who also cares about this type of thing, please
-comment".
+I think you mean something like "we had an internal deadline to meet so
+we are willing to ignore our rules and throw it over the wall and let
+the community worry about it."
 
-A patch that is on "RFC 12" means, "We all have no clue how to do this,
-we give up and hope you all will do it for us."
+Congratulations, I now feel like the hours I spent last week talking to
+hundreds of Intel developers about this very topic were totally wasted.
 
-I almost never comment on RFC patch series, except for portions of the
-kernel that I really care about.  For a brand-new subsystem like this,
-that I still do not understand who needs it, that is not the case.
+{sigh}
 
-I'm going to stop reviewing this patch series until you at least follow
-the Intel required rules for sending kernel patches like this out.  To
-not do so would be unfair to your coworkers who _DO_ follow the rules.
-
-> > > - The following coding style changes suggested by Dan will be implemented
-> > >   in the next revision
-> > > -- Replace DLB_CSR_RD() and DLB_CSR_WR() with direct ioread32() and
-> > >    iowrite32() call.
-> > > -- Remove bitmap wrappers and use linux bitmap functions directly.
-> > > -- Use trace_event in configfs attribute file update.
-> > 
-> > Why submit a patch series that you know will be changed?  Just do the work, don't ask anyone to review
-> > stuff you know is incorrect, that just wastes our time and ensures that we never want to review it again.
-> >
-> Since this is a RFC, and is not for merging or a full review, we though it was OK to log the pending coding
-> style changes. The patch set was submitted and reviewed by the community before, and there was no
-> complains on using macros like DLB_CSR_RD(), etc, but we think we can replace them for better
-> readability of the code.
-
-Coding style changes should NEVER be ignored and put off for later.
-To do so means you do not care about the brains of anyone who you are
-wanting to read this code.  We have a coding style because of brains and
-pattern matching, not because we are being mean.
-
-good luck,
+Intel now owes me another bottle of liquor...
 
 greg k-h
