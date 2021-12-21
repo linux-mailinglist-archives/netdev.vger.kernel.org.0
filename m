@@ -2,148 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E87747C9C3
-	for <lists+netdev@lfdr.de>; Wed, 22 Dec 2021 00:35:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C09547C9CC
+	for <lists+netdev@lfdr.de>; Wed, 22 Dec 2021 00:40:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237936AbhLUXfC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Dec 2021 18:35:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58830 "EHLO
+        id S238051AbhLUXkN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Dec 2021 18:40:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237518AbhLUXfB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Dec 2021 18:35:01 -0500
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7879FC06173F
-        for <netdev@vger.kernel.org>; Tue, 21 Dec 2021 15:35:01 -0800 (PST)
-Received: by mail-pj1-x1035.google.com with SMTP id k6-20020a17090a7f0600b001ad9d73b20bso718532pjl.3
-        for <netdev@vger.kernel.org>; Tue, 21 Dec 2021 15:35:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=pOFga3csMzqxlQmjAN5qzbbbVuYOWHf63es+b6CDNAc=;
-        b=AWem4FFWepHI4GiG1vYWPraJqQUiTomICNrapdxKgXw5RiWlc2qnmWxmfYwryjrz9H
-         ry7VY7ErAoRwxYa+v/F7++t1ymF8xTqaHJqwBwvPOmdTqwicW2GLbpWt9tAFPpvVo9ZC
-         itkkdLosZknu7CUrfzqdhVonTuzJaRTCtexVNvlSQ57BTut71N+ikFJQhkcnm/iYRzFf
-         m5DDP1CS8Pr+PjWDEubKWtXpeuwIeKMriGQViKqK6jQwG/yIrK99W4YP9JmADxKFkFR/
-         RMqEhCYMyii5RsjVK/Zxce07N447Wr2PkWL7kQdJ87omhEQJtFAsxPGD540Fjb7SWbSi
-         r+gw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=pOFga3csMzqxlQmjAN5qzbbbVuYOWHf63es+b6CDNAc=;
-        b=SZVt6+8dNtWxCn+VNgg+qqKCWfLy0hJfeT4cvjjG/mPN+J77mxex5gkwfuV0BC4G6L
-         ErbP/TTYKHWpXSdvC9HY51yG2KTGqUDz9lgv3FgTJvOblNgR4xYhn+tBVExA/ntEb03X
-         r2Zblhz85w2yzNf05R2yAyHTrRUIAB48hvV3GCHn96MX5L7mM7tO1MGi6/Sp9wkN63yF
-         Sn1Ua05ypES1+ICS29AeTgQWHZVO8fJCH3xD3VpD4k+Z05KdzVvs0nvvcvoN6ejFrkfo
-         YO/dWO9PGakfr8fJ+xRJTRjLFE96FRIyMA0QF7LJiO1ZhGyLyfRRiFiNchRD9qDH0Hgq
-         1lAw==
-X-Gm-Message-State: AOAM53001RZT4mcAKHT+ASTf9vXj0T7A+pTn5EGJRZlOKle9ibR2gbD9
-        Qkyc1BQXFkJzcq/TCGuwo0ZBvEEISn7Mfg==
-X-Google-Smtp-Source: ABdhPJwE8pf9uY9sS7o5GbRV0wFt25q+iILI8BQPj/jnVtmFK5YsySB0BCDIR5vGr62+1SGA0r60ZA==
-X-Received: by 2002:a17:902:d2d2:b0:148:f7d1:6315 with SMTP id n18-20020a170902d2d200b00148f7d16315mr628476plc.10.1640129700992;
-        Tue, 21 Dec 2021 15:35:00 -0800 (PST)
-Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
-        by smtp.gmail.com with ESMTPSA id u2sm126412pjc.23.2021.12.21.15.35.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Dec 2021 15:35:00 -0800 (PST)
-Date:   Tue, 21 Dec 2021 15:34:58 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Mike Ximing Chen <mike.ximing.chen@intel.com>
-Cc:     linux-kernel@vger.kernel.org, arnd@arndb.de,
-        gregkh@linuxfoundation.org, dan.j.williams@intel.com,
-        pierre-louis.bossart@linux.intel.com, netdev@vger.kernel.org,
-        davem@davemloft.net, kuba@kernel.org
-Subject: Re: [RFC PATCH v12 17/17] dlb: add basic sysfs interfaces
-Message-ID: <20211221153458.51710479@hermes.local>
-In-Reply-To: <20211221065047.290182-18-mike.ximing.chen@intel.com>
-References: <20211221065047.290182-1-mike.ximing.chen@intel.com>
-        <20211221065047.290182-18-mike.ximing.chen@intel.com>
+        with ESMTP id S237268AbhLUXkN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Dec 2021 18:40:13 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2B6AC061574;
+        Tue, 21 Dec 2021 15:40:12 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 80730B81A1A;
+        Tue, 21 Dec 2021 23:40:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 4871BC36AE9;
+        Tue, 21 Dec 2021 23:40:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1640130010;
+        bh=jVNHRStyiVY0Sjnk9dkkVva59KRAM1l4OOZqiqsDIy4=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=k6cZ5m1sjrwKvLLoE/bOW9LNd0Y1zETT3lb1AR7rO7RAJ/n3G99FbSOpExVOSgy43
+         n92L+i6a0XGOtVxsBCeQC7FHlm+0Dj99ow5ik19ps3V2NsRG21JTwjVtTaTzKS3E4j
+         dPzF2ZHqT7eUxvyqqy9Rxqk+m699YCBO7P1u5xuf5Nh7NePgJxkHqBcsxqKAdjpgP4
+         Fno1Z+ObnkZQxSPikQ452kLf+Fq+CKJenj3M6s0gVdG48IR8UGinKyC4P/+abLJE8U
+         4LkXL1Kq/uP9adx4k5ba62icDlp9O1qse6DL+oEQw7CWnshYgF81Ikp0LHk1/BPjLy
+         brCSRCfEG4rLg==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 152BE609CC;
+        Tue, 21 Dec 2021 23:40:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH bpf-next] bpf: Use struct_size() helper
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164013001008.21551.5732842230936261495.git-patchwork-notify@kernel.org>
+Date:   Tue, 21 Dec 2021 23:40:10 +0000
+References: <20211220113048.2859-1-xiujianfeng@huawei.com>
+In-Reply-To: <20211220113048.2859-1-xiujianfeng@huawei.com>
+To:     Xiu Jianfeng <xiujianfeng@huawei.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 21 Dec 2021 00:50:47 -0600
-Mike Ximing Chen <mike.ximing.chen@intel.com> wrote:
+Hello:
 
-> The dlb sysfs interfaces include files for reading the total and
-> available device resources, and reading the device ID and version. The
-> interfaces are used for device level configurations and resource
-> inquiries.
+This patch was applied to bpf/bpf-next.git (master)
+by Andrii Nakryiko <andrii@kernel.org>:
+
+On Mon, 20 Dec 2021 19:30:48 +0800 you wrote:
+> In an effort to avoid open-coded arithmetic in the kernel, use the
+> struct_size() helper instead of open-coded calculation.
 > 
-> Signed-off-by: Mike Ximing Chen <mike.ximing.chen@intel.com>
+> Link: https://github.com/KSPP/linux/issues/160
+> Signed-off-by: Xiu Jianfeng <xiujianfeng@huawei.com>
 > ---
->  Documentation/ABI/testing/sysfs-driver-dlb | 116 ++++++++++++
->  drivers/misc/dlb/dlb_args.h                |  34 ++++
->  drivers/misc/dlb/dlb_main.c                |   5 +
->  drivers/misc/dlb/dlb_main.h                |   3 +
->  drivers/misc/dlb/dlb_pf_ops.c              | 195 +++++++++++++++++++++
->  drivers/misc/dlb/dlb_resource.c            |  50 ++++++
->  6 files changed, 403 insertions(+)
->  create mode 100644 Documentation/ABI/testing/sysfs-driver-dlb
-> 
-> diff --git a/Documentation/ABI/testing/sysfs-driver-dlb b/Documentation/ABI/testing/sysfs-driver-dlb
-> new file mode 100644
-> index 000000000000..bf09ef6f8a3a
-> --- /dev/null
-> +++ b/Documentation/ABI/testing/sysfs-driver-dlb
-> @@ -0,0 +1,116 @@
-> +What:		/sys/bus/pci/devices/.../total_resources/num_atomic_inflights
-> +What:		/sys/bus/pci/devices/.../total_resources/num_dir_credits
-> +What:		/sys/bus/pci/devices/.../total_resources/num_dir_ports
-> +What:		/sys/bus/pci/devices/.../total_resources/num_hist_list_entries
-> +What:		/sys/bus/pci/devices/.../total_resources/num_ldb_credits
-> +What:		/sys/bus/pci/devices/.../total_resources/num_ldb_ports
-> +What:		/sys/bus/pci/devices/.../total_resources/num_cos0_ldb_ports
-> +What:		/sys/bus/pci/devices/.../total_resources/num_cos1_ldb_ports
-> +What:		/sys/bus/pci/devices/.../total_resources/num_cos2_ldb_ports
-> +What:		/sys/bus/pci/devices/.../total_resources/num_cos3_ldb_ports
-> +What:		/sys/bus/pci/devices/.../total_resources/num_ldb_queues
-> +What:		/sys/bus/pci/devices/.../total_resources/num_sched_domains
-> +Date:		Oct 15, 2021
-> +KernelVersion:	5.15
-> +Contact:	mike.ximing.chen@intel.com
-> +Description:
-> +		The total_resources subdirectory contains read-only files that
-> +		indicate the total number of resources in the device.
-> +
-> +		num_atomic_inflights:  Total number of atomic inflights in the
-> +				       device. Atomic inflights refers to the
-> +				       on-device storage used by the atomic
-> +				       scheduler.
-> +
-> +		num_dir_credits:       Total number of directed credits in the
-> +				       device.
-> +
-> +		num_dir_ports:	       Total number of directed ports (and
-> +				       queues) in the device.
-> +
-> +		num_hist_list_entries: Total number of history list entries in
-> +				       the device.
-> +
-> +		num_ldb_credits:       Total number of load-balanced credits in
-> +				       the device.
-> +
-> +		num_ldb_ports:	       Total number of load-balanced ports in
-> +				       the device.
-> +
-> +		num_cos<M>_ldb_ports:  Total number of load-balanced ports
-> +				       belonging to class-of-service M in the
-> +				       device.
-> +
-> +		num_ldb_queues:	       Total number of load-balanced queues in
-> +				       the device.
-> +
-> +		num_sched_domains:     Total number of scheduling domains in the
-> +				       device.
-> +
+>  kernel/bpf/local_storage.c   | 3 +--
+>  kernel/bpf/reuseport_array.c | 6 +-----
+>  2 files changed, 2 insertions(+), 7 deletions(-)
 
-Sysfs is only slightly better than /proc as an API.
-If it is just for testing than debugfs might be better.
+Here is the summary with links:
+  - [bpf-next] bpf: Use struct_size() helper
+    https://git.kernel.org/bpf/bpf-next/c/0dd668d2080c
 
-Could this be done with a real netlink interface?
-Maybe as part of devlink?
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
