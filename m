@@ -2,71 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BEB4647BDBD
-	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 10:52:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 878DF47BDC2
+	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 10:53:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230018AbhLUJwK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Dec 2021 04:52:10 -0500
-Received: from mail-il1-f200.google.com ([209.85.166.200]:54152 "EHLO
-        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229660AbhLUJwJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Dec 2021 04:52:09 -0500
-Received: by mail-il1-f200.google.com with SMTP id x8-20020a92dc48000000b002b2abc6e1cbso3913083ilq.20
-        for <netdev@vger.kernel.org>; Tue, 21 Dec 2021 01:52:09 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=gtMOeWgOjqpxf3UJsdLLfE47QPkTrgfO0H8YEz5DRG8=;
-        b=AIBAcI6nIKcDMUVZWZ3qBrpQkKQMXnVjDQFuJFhb4XFR2XF4eRH4zljQ6KyO+IBACY
-         enmb+6GVFN4MG+mRJO8a+1SRS7Ho7epNKpZF/aAfrCBlrBxFPMtFMYzDorFs9fw6yYEI
-         Qxr2Hi7NYDxtShYBae3wqgthiKmNCkWWWrUHhLOB1Bs1vhza2NS3cwgVgcNBOskJDDRb
-         FRIhggPdzchFfFKLwi8TENoo7/cP2UCZIrmdAucqkkv1YlPIHIolAen+lK95uydz6kcX
-         PAAyL/w93+WJ0PsaMoNmmN16CyoDrCF6xhLSUq3wdC5CbLdYfJOuwJw/Zy29+I84qbQ0
-         l/Sg==
-X-Gm-Message-State: AOAM531EzLKq08cKpr5X0cFXhrNqrWQ2FfVuA9JkqW+GAMff51r6Set1
-        rOYFJB7gOd/y0iY8MOv6PjzQzAhNgfjdSgzb2sxLwEuJnE2D
-X-Google-Smtp-Source: ABdhPJx6QiXqNu7Hfc+O/DrzAKwtgSlzMWab3H3rNwlyXnrdxwZcfwS7rfCEn4d1tGHD0uzTYSEiyrI+miyx42y9AEkxASphiUL7
+        id S230465AbhLUJxn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Dec 2021 04:53:43 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:36906 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230302AbhLUJxn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Dec 2021 04:53:43 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=/zhb72PIpmMP/0f9ZICy5PiOV32parsA7zs1T2++Su8=; b=vV/PvZ5J+yf/eBz9TxQN5C6547
+        jTVoOQe42AfClJxVu6AsIj1JIsdrzKYbHYpeEOHhNX+m9SaaxUMEys4rRXqMORKeJpcCFsD5wqV5y
+        CxZUlwigKsVwN/SaCr6DbNaOuo29WeXVkLLXT6k1YIzy2/VFQZraAc5aSm+xoyc7LSLI=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1mzbpw-00H7Hz-Ez; Tue, 21 Dec 2021 10:53:36 +0100
+Date:   Tue, 21 Dec 2021 10:53:36 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Mike Ximing Chen <mike.ximing.chen@intel.com>
+Cc:     linux-kernel@vger.kernel.org, arnd@arndb.de,
+        gregkh@linuxfoundation.org, dan.j.williams@intel.com,
+        pierre-louis.bossart@linux.intel.com, netdev@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org
+Subject: Re: [RFC PATCH v12 01/17] dlb: add skeleton for DLB driver
+Message-ID: <YcGkILZxGLEUVVgU@lunn.ch>
+References: <20211221065047.290182-1-mike.ximing.chen@intel.com>
+ <20211221065047.290182-2-mike.ximing.chen@intel.com>
 MIME-Version: 1.0
-X-Received: by 2002:a6b:a10:: with SMTP id z16mr1105244ioi.204.1640080328753;
- Tue, 21 Dec 2021 01:52:08 -0800 (PST)
-Date:   Tue, 21 Dec 2021 01:52:08 -0800
-In-Reply-To: <000000000000c70eef05d39f42a5@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000066073805d3a4f598@google.com>
-Subject: Re: [syzbot] general protection fault in set_task_ioprio
-From:   syzbot <syzbot+8836466a79f4175961b0@syzkaller.appspotmail.com>
-To:     axboe@kernel.dk, changbin.du@intel.com,
-        christian.brauner@ubuntu.com, daniel@iogearbox.net,
-        davem@davemloft.net, edumazet@google.com, hkallweit1@gmail.com,
-        kuba@kernel.org, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, yajun.deng@linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211221065047.290182-2-mike.ximing.chen@intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this issue to:
+> +The following diagram shows a typical packet processing pipeline with the Intel DLB.
+> +
+> +                              WC1              WC4
+> + +-----+   +----+   +---+  /      \  +---+  /      \  +---+   +----+   +-----+
+> + |NIC  |   |Rx  |   |DLB| /        \ |DLB| /        \ |DLB|   |Tx  |   |NIC  |
+> + |Ports|---|Core|---|   |-----WC2----|   |-----WC5----|   |---|Core|---|Ports|
+> + +-----+   -----+   +---+ \        / +---+ \        / +---+   +----+   ------+
+> +                           \      /         \      /
+> +                              WC3              WC6
 
-commit e4b8954074f6d0db01c8c97d338a67f9389c042f
-Author: Eric Dumazet <edumazet@google.com>
-Date:   Tue Dec 7 01:30:37 2021 +0000
+This is the only mention of NIC here. Does the application interface
+to the network stack in the usual way to receive packets from the
+TCP/IP stack up into user space and then copy it back down into the
+MMIO block for it to enter the DLB for the first time? And at the end
+of the path, does the application copy it from the MMIO into a
+standard socket for TCP/IP processing to be send out the NIC?
 
-    netlink: add net device refcount tracker to struct ethnl_req_info
+Do you even needs NICs here? Could the data be coming of a video
+camera and you are distributing image processing over a number of
+cores?
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=10620fcdb00000
-start commit:   07f8c60fe60f Add linux-next specific files for 20211220
-git tree:       linux-next
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=12620fcdb00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=14620fcdb00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=2060504830b9124a
-dashboard link: https://syzkaller.appspot.com/bug?extid=8836466a79f4175961b0
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12058fcbb00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=17141adbb00000
-
-Reported-by: syzbot+8836466a79f4175961b0@syzkaller.appspotmail.com
-Fixes: e4b8954074f6 ("netlink: add net device refcount tracker to struct ethnl_req_info")
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+	 Andrew
