@@ -2,99 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 83F1947BE61
-	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 11:47:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 775E347BE75
+	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 11:50:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231815AbhLUKru (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Dec 2021 05:47:50 -0500
-Received: from relay036.a.hostedemail.com ([64.99.140.36]:13133 "EHLO
-        relay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S230089AbhLUKrt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Dec 2021 05:47:49 -0500
-Received: from omf01.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay07.hostedemail.com (Postfix) with ESMTP id BE3F320C16;
-        Tue, 21 Dec 2021 10:47:47 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf01.hostedemail.com (Postfix) with ESMTPA id AACBC60016;
-        Tue, 21 Dec 2021 10:47:43 +0000 (UTC)
-Message-ID: <3f89cfece748d661cc0dc32b29704a3c0fa17fe4.camel@perches.com>
-Subject: Re: [PATCH -next] net/sched: use min() macro instead of doing it
- manually
-From:   Joe Perches <joe@perches.com>
-To:     patchwork-bot+netdevbpf@kernel.org,
-        Yang Li <yang.lee@linux.alibaba.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, abaci@linux.alibaba.com
-Date:   Tue, 21 Dec 2021 02:47:44 -0800
-In-Reply-To: <164008201003.19926.3019516223695943322.git-patchwork-notify@kernel.org>
-References: <20211221011455.10163-1-yang.lee@linux.alibaba.com>
-         <164008201003.19926.3019516223695943322.git-patchwork-notify@kernel.org>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.4-1ubuntu2 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Stat-Signature: i4qetnwc3jkcpp1wzyjjdbkwiy1bhoxh
-X-Rspamd-Server: rspamout04
-X-Rspamd-Queue-Id: AACBC60016
-X-Spam-Status: No, score=-3.38
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX19PyI4ue8fD55pNeJGQd5g2Br5l0PF3sps=
-X-HE-Tag: 1640083663-484633
+        id S236774AbhLUKut (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Dec 2021 05:50:49 -0500
+Received: from inva021.nxp.com ([92.121.34.21]:59802 "EHLO inva021.nxp.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229761AbhLUKus (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Dec 2021 05:50:48 -0500
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 7AB14201A00;
+        Tue, 21 Dec 2021 11:50:47 +0100 (CET)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 428352019FE;
+        Tue, 21 Dec 2021 11:50:47 +0100 (CET)
+Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 81357183AC4F;
+        Tue, 21 Dec 2021 18:50:45 +0800 (+08)
+From:   Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
+To:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     UNGLinuxDriver@microchip.com, kuba@kernel.org,
+        vladimir.oltean@nxp.com, claudiu.manoil@nxp.com,
+        alexandre.belloni@bootlin.com, f.fainelli@gmail.com,
+        andrew@lunn.ch, vivien.didelot@gmail.com, xiaoliang.yang_1@nxp.com,
+        marouen.ghodhbane@nxp.com
+Subject: [PATCH net-next] net: dsa: tag_ocelot: use traffic class to map priority on injected header
+Date:   Tue, 21 Dec 2021 19:02:09 +0800
+Message-Id: <20211221110209.31309-1-xiaoliang.yang_1@nxp.com>
+X-Mailer: git-send-email 2.17.1
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2021-12-21 at 10:20 +0000, patchwork-bot+netdevbpf@kernel.org
-wrote:
-> Hello:
-> 
-> This patch was applied to netdev/net-next.git (master)
-> by David S. Miller <davem@davemloft.net>:
-> 
-> On Tue, 21 Dec 2021 09:14:55 +0800 you wrote:
-> > Fix following coccicheck warnings:
-> > ./net/sched/cls_api.c:3333:17-18: WARNING opportunity for min()
-> > ./net/sched/cls_api.c:3389:17-18: WARNING opportunity for min()
-> > ./net/sched/cls_api.c:3427:17-18: WARNING opportunity for min()
-> > 
-> > Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> > Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
-> > 
-> > [...]
-> 
-> Here is the summary with links:
->   - [-next] net/sched: use min() macro instead of doing it manually
->     https://git.kernel.org/netdev/net-next/c/c48c94b0ab75
-> 
-> You are awesome, thank you!
+For Ocelot switches, the CPU injected frames have an injection header
+where it can specify the QoS class of the packet and the DSA tag, now it
+uses the SKB priority to set that. If a traffic class to priority
+mapping is configured on the netdevice (with mqprio for example ...), it
+won't be considered for CPU injected headers. This patch make the QoS
+class aligned to the priority to traffic class mapping if it exists.
 
-The patch contained instances like:
-
+Signed-off-by: Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
+Signed-off-by: Marouen Ghodhbane <marouen.ghodhbane@nxp.com>
 ---
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-[]
-@@ -3333,7 +3333,7 @@ int tc_setup_cb_add(struct tcf_block *block, struct tcf_proto *tp,
- 	up_read(&block->cb_lock);
- 	if (take_rtnl)
- 		rtnl_unlock();
--	return ok_count < 0 ? ok_count : 0;
-+	return min(ok_count, 0);
- }
----
+ net/dsa/tag_ocelot.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-I think all of these min uses are somewhat obfuscating and not the
-typically used kernel pattern.
-
-If count is negative, it's an error return.
-
-I believe the code would be clearer and more typical if written as:
-
-	if (ok_count < 0)
-		return ok_count;
-
-	return 0;
-}
-
-The compiler should produce the same object code.
-
+diff --git a/net/dsa/tag_ocelot.c b/net/dsa/tag_ocelot.c
+index 4ba460c5a880..0d81f172b7a6 100644
+--- a/net/dsa/tag_ocelot.c
++++ b/net/dsa/tag_ocelot.c
+@@ -47,9 +47,13 @@ static void ocelot_xmit_common(struct sk_buff *skb, struct net_device *netdev,
+ 	void *injection;
+ 	__be32 *prefix;
+ 	u32 rew_op = 0;
++	u64 qos_class;
+ 
+ 	ocelot_xmit_get_vlan_info(skb, dp, &vlan_tci, &tag_type);
+ 
++	qos_class = netdev_get_num_tc(netdev) ?
++		    netdev_get_prio_tc_map(netdev, skb->priority) : skb->priority;
++
+ 	injection = skb_push(skb, OCELOT_TAG_LEN);
+ 	prefix = skb_push(skb, OCELOT_SHORT_PREFIX_LEN);
+ 
+@@ -57,7 +61,7 @@ static void ocelot_xmit_common(struct sk_buff *skb, struct net_device *netdev,
+ 	memset(injection, 0, OCELOT_TAG_LEN);
+ 	ocelot_ifh_set_bypass(injection, 1);
+ 	ocelot_ifh_set_src(injection, ds->num_ports);
+-	ocelot_ifh_set_qos_class(injection, skb->priority);
++	ocelot_ifh_set_qos_class(injection, qos_class);
+ 	ocelot_ifh_set_vlan_tci(injection, vlan_tci);
+ 	ocelot_ifh_set_tag_type(injection, tag_type);
+ 
+-- 
+2.17.1
 
