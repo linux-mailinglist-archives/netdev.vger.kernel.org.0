@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD36A47C30C
+	by mail.lfdr.de (Postfix) with ESMTP id 3B15447C309
 	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 16:36:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239509AbhLUPgg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Dec 2021 10:36:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33734 "EHLO
+        id S239589AbhLUPgf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Dec 2021 10:36:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239428AbhLUPgT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Dec 2021 10:36:19 -0500
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11EBFC061398;
-        Tue, 21 Dec 2021 07:36:10 -0800 (PST)
-Received: by mail-wr1-x433.google.com with SMTP id s1so22327014wra.6;
-        Tue, 21 Dec 2021 07:36:10 -0800 (PST)
+        with ESMTP id S239593AbhLUPgU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Dec 2021 10:36:20 -0500
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36C24C06139B;
+        Tue, 21 Dec 2021 07:36:11 -0800 (PST)
+Received: by mail-wr1-x42f.google.com with SMTP id s1so27794706wrg.1;
+        Tue, 21 Dec 2021 07:36:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=X+6VtJkR3VMuMq3+b2gwsMV704hlEufeWq+iIvQzNDs=;
-        b=TSHWX7NDcSGSfQEIvmvElnqi946tL+U/oVHP114lPaKADFyR2dvWkPBoQUT9Xmr53a
-         /ja3U+Z7JYCNmR9tMw4AajR7zDVEjmiizjRIHaJwdE+pziRSF+ItBY1qkNd5AMjEZH/K
-         eJVRI0zPmP3ApLN64BTjADvEK5Q/G2BYtYhOT5KxFPjSHVlmLAXDZdHYzwKfUtztQkpX
-         tvpBBIlG3C0xKS77t55cctLW6v1VXgC7QEXj0uK3/YD3FJc8qc1JKRXI8RqCZ8l5CEtl
-         pz+9Kdt3w3Zxv2BQAOZ13QBF1ooy9ErLj6N56XAoAArMdXPQwRpFqJGm/uvKgX1Gysre
-         51HA==
+        bh=e3GJ/1g8n4eGzQHYyUbOm+L11c82sD3eIdcK9sXM3cs=;
+        b=Gf0c7lR7X3eg4NF/QjFVp4loJSvohG1TjxVrgzGtzyKlcx+BWv4xzPYSWIpsLE3EHq
+         0cPxnF2jF48aPulfzCnKVTbT204anUebWv+8g1al26o8B+GKDuOoAB5XmKH55QhPPSpo
+         0P5yDya6skYWF+hh4CWjhqB4yLO3UpqYf1YUBdQKwuPkRFLdBtLHzAFX4yyRLuoHkEAj
+         2/T8zbsn4bdvddy+Ha79j1T1+v4KnK9H+V4nuvQtOZHIZZAW979hZtnJnSZSSjkNedHl
+         C4bYnCzsgGrjW/hRHK3KrzRWgCWNXTTM3tACW2a0yS+VniXMkuzWqqF/huRK9NJ3tQSp
+         CW/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=X+6VtJkR3VMuMq3+b2gwsMV704hlEufeWq+iIvQzNDs=;
-        b=KCB3dPueg2D2paCiJymAbuMx7ArmbEZCfuMf9iOPrmiKXcEEWWkXgv7XwWON7u0Cxb
-         5ziR29cI3qKZbBSdtGqtk1bQc4SvhIk+tmxvGNgCZ3/wJ9/9YNcDWQv/nj0S0oCsQyIJ
-         Tg3cCdQSbMw5EWtXx4u8lc5RQ9qV0Nn6bctvqguwVv2FX/LrxK0liRECMDuwzxY8Xjfu
-         EUmiDPEzTzJehk2H/k4QtDkc+TO2DPLAqSTbV54XVadUV2nP9FrQpK607iUyR2NjKQBO
-         ELr36M941cAvFe2dpp0Gl3SNgjhdQ8PT6oa+9KDfs1EW1621jRYKXGPlpKs37rRh37Jv
-         TvOQ==
-X-Gm-Message-State: AOAM531N6y9JAKh+QESLWyXMhDZH0E80EBYejeEW88GtXn1UyQPy+hkR
-        19pq6G9vcZVFWhWoPpB4OkQXPZeMcRM=
-X-Google-Smtp-Source: ABdhPJz9wmIfpBK627vI8d2owN4QYbpLc3jwZ3G9EsyEV4A22XcwN0QmF5WhpmT1GNKyBBxQn51Yzg==
-X-Received: by 2002:a5d:64c3:: with SMTP id f3mr3003911wri.295.1640100968525;
-        Tue, 21 Dec 2021 07:36:08 -0800 (PST)
+        bh=e3GJ/1g8n4eGzQHYyUbOm+L11c82sD3eIdcK9sXM3cs=;
+        b=dstq1hQudy0CtuVia6KeQuXYb9bjLn3GLvJcybaM7Q1WEsdOWeIwB21dJYVeF9d9Xj
+         jhoGIXGqdYSV1FO5dwEwlfPq0V62OyRV48j8OGMiQHzxs8U1krNNgvMii/itE9yfH3Zf
+         tRb8VFR8ZMTb2lG3lZB2k0aavCKh6VratQdKbMFWTmEqVOMF8eQKRvhgQjThjcpERImo
+         G/xS4Wkd/qKUfCxpzaaHJxYhJoDrnN6TkCsd37ABF40ctQdLhpzmSOEfzB8M8XOmrSJB
+         +i0J34GRelemOGMGEgdNJBFOX1y/3z2lUZFthUl2nejkkceYmy+o1ihnbQjYCJKijIYZ
+         bfeQ==
+X-Gm-Message-State: AOAM532y/+lGvbd+7nt6IG3iJi0WKJ7ZfzRwv7eT3XHq3zuR6leoudMr
+        z6otZrF0b9i4OModaKaethIgPeaRPOg=
+X-Google-Smtp-Source: ABdhPJxtkeDI3RwrW+z6fOVZ5f+C+Xe/VX2k0cpzAAasKiwrcmSKak1exY831XmeeioiWotsOVwnAw==
+X-Received: by 2002:a5d:64ee:: with SMTP id g14mr3081526wri.52.1640100969695;
+        Tue, 21 Dec 2021 07:36:09 -0800 (PST)
 Received: from 127.0.0.1localhost ([148.252.128.24])
-        by smtp.gmail.com with ESMTPSA id z11sm2946019wmf.9.2021.12.21.07.36.07
+        by smtp.gmail.com with ESMTPSA id z11sm2946019wmf.9.2021.12.21.07.36.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Dec 2021 07:36:08 -0800 (PST)
+        Tue, 21 Dec 2021 07:36:09 -0800 (PST)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     io-uring@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
@@ -57,9 +57,9 @@ Cc:     Jakub Kicinski <kuba@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         David Ahern <dsahern@kernel.org>, Jens Axboe <axboe@kernel.dk>,
         Pavel Begunkov <asml.silence@gmail.com>
-Subject: [RFC v2 14/19] io_uring: opcode independent fixed buf import
-Date:   Tue, 21 Dec 2021 15:35:36 +0000
-Message-Id: <014cf9d888bb9531742ba53ecabbf8e586ac6f0b.1640029579.git.asml.silence@gmail.com>
+Subject: [RFC v2 15/19] io_uring: sendzc with fixed buffers
+Date:   Tue, 21 Dec 2021 15:35:37 +0000
+Message-Id: <ddc564fc92abfd13bfac2f6d9aa118ac15e8f078.1640029579.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <cover.1640029579.git.asml.silence@gmail.com>
 References: <cover.1640029579.git.asml.silence@gmail.com>
@@ -69,43 +69,70 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Extract an opcode independent helper from io_import_fixed for
-initialising an iov_iter with a fixed buffer with
+Allow zerocopy sends to use fixed buffers.
 
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 ---
- fs/io_uring.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ fs/io_uring.c                 | 19 +++++++++++++++++--
+ include/uapi/linux/io_uring.h |  1 +
+ 2 files changed, 18 insertions(+), 2 deletions(-)
 
 diff --git a/fs/io_uring.c b/fs/io_uring.c
-index ec1f6c60a14c..40a8d7799be3 100644
+index 40a8d7799be3..654023ba0b91 100644
 --- a/fs/io_uring.c
 +++ b/fs/io_uring.c
-@@ -3152,11 +3152,11 @@ static void kiocb_done(struct io_kiocb *req, ssize_t ret,
- 	}
+@@ -5048,7 +5048,7 @@ static int io_send(struct io_kiocb *req, unsigned int issue_flags)
+ 	return 0;
  }
  
--static int __io_import_fixed(struct io_kiocb *req, int rw, struct iov_iter *iter,
--			     struct io_mapped_ubuf *imu)
-+static int __io_import_fixed(int rw, struct iov_iter *iter,
-+			     struct io_mapped_ubuf *imu,
-+			     u64 buf_addr, size_t len)
+-#define IO_SENDZC_VALID_FLAGS IORING_SENDZC_FLUSH
++#define IO_SENDZC_VALID_FLAGS (IORING_SENDZC_FLUSH | IORING_SENDZC_FIXED_BUF)
+ 
+ static int io_sendzc_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
  {
--	size_t len = req->rw.len;
--	u64 buf_end, buf_addr = req->rw.addr;
-+	u64 buf_end;
- 	size_t offset;
+@@ -5078,6 +5078,15 @@ static int io_sendzc_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
+ 	if (req->msgzc.zc_flags & ~IO_SENDZC_VALID_FLAGS)
+ 		return -EINVAL;
  
- 	if (unlikely(check_add_overflow(buf_addr, (u64)len, &buf_end)))
-@@ -3225,7 +3225,7 @@ static int io_import_fixed(struct io_kiocb *req, int rw, struct iov_iter *iter)
- 		imu = READ_ONCE(ctx->user_bufs[index]);
- 		req->imu = imu;
- 	}
--	return __io_import_fixed(req, rw, iter, imu);
-+	return __io_import_fixed(rw, iter, imu, req->rw.addr, req->rw.len);
- }
++	if (req->msgzc.zc_flags & IORING_SENDZC_FIXED_BUF) {
++		idx = READ_ONCE(sqe->buf_index);
++		if (unlikely(idx >= ctx->nr_user_bufs))
++			return -EFAULT;
++		idx = array_index_nospec(idx, ctx->nr_user_bufs);
++		req->imu = READ_ONCE(ctx->user_bufs[idx]);
++		io_req_set_rsrc_node(req, ctx);
++	}
++
+ #ifdef CONFIG_COMPAT
+ 	if (req->ctx->compat)
+ 		sr->msg_flags |= MSG_CMSG_COMPAT;
+@@ -5101,7 +5110,13 @@ static int io_sendzc(struct io_kiocb *req, unsigned int issue_flags)
+ 	if (unlikely(!sock))
+ 		return -ENOTSOCK;
  
- static void io_ring_submit_unlock(struct io_ring_ctx *ctx, bool needs_lock)
+-	ret = import_single_range(WRITE, sr->buf, sr->len, &iov, &msg.msg_iter);
++	if (req->msgzc.zc_flags & IORING_SENDZC_FIXED_BUF) {
++		ret = __io_import_fixed(WRITE, &msg.msg_iter, req->imu,
++					(u64)sr->buf, sr->len);
++	} else {
++		ret = import_single_range(WRITE, sr->buf, sr->len, &iov,
++					  &msg.msg_iter);
++	}
+ 	if (unlikely(ret))
+ 		return ret;
+ 
+diff --git a/include/uapi/linux/io_uring.h b/include/uapi/linux/io_uring.h
+index ac18e8e6f86f..740af1d0409f 100644
+--- a/include/uapi/linux/io_uring.h
++++ b/include/uapi/linux/io_uring.h
+@@ -189,6 +189,7 @@ enum {
+ 
+ enum {
+ 	IORING_SENDZC_FLUSH		= (1U << 0),
++	IORING_SENDZC_FIXED_BUF		= (1U << 1),
+ };
+ 
+ /*
 -- 
 2.34.1
 
