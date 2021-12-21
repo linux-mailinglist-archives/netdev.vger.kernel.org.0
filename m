@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D44947C9FB
-	for <lists+netdev@lfdr.de>; Wed, 22 Dec 2021 00:59:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 70B9A47CA03
+	for <lists+netdev@lfdr.de>; Wed, 22 Dec 2021 00:59:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238534AbhLUX64 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Dec 2021 18:58:56 -0500
-Received: from mga12.intel.com ([192.55.52.136]:13562 "EHLO mga12.intel.com"
+        id S238730AbhLUX7A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Dec 2021 18:59:00 -0500
+Received: from mga02.intel.com ([134.134.136.20]:33887 "EHLO mga02.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238387AbhLUX6z (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S230020AbhLUX6z (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 21 Dec 2021 18:58:55 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1640131135; x=1671667135;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=uCa5cZIlL8taJeMROqQYvFIGIwU4M7AqBFLrdzGAITk=;
-  b=Jql15cj37nHoXifjn7eb0bUVVLwpf2UmJuu4ObrayMIGTLpjqTsDv/mn
-   OMnoZC/o3DlmgLkviXPF7NuyvJp5R+VOeL/fre0tn1TOrwj8ykV1vEUKR
-   MKJbC7lSohKx4Q/87Lp1QzZ2VTLaEFGNLYrSR5HgETnlwl0IfYs9TekKa
-   hTADHiGWXFxcOQR38Fparh5ae+Qf7thPuPRGid0yOrwGCzJBUG2J5mbHu
-   317ihAfCR54fDXMggAaCSCxtYSudpbQwhahxjk7RN3sNmiaR1AqvHli1j
-   FbCPHIVVleDuViN2tbGp/0wR6J1hzNn//bYPOQoLQR31wkov+dy62ihby
+  bh=HmRnjSHEImGDIXi5qjv2Qcg1JIBqpB9eFo+S1hSnOUM=;
+  b=kmo5lYdC8o3K1lTpp5ZKefvL1TSIE54N0fPlb1rVGrJgJDJ003IBYEol
+   8ekqhPWzruUHMeq0vMpeL96eo20u/FOjQTOOMxhg97X2IM+uBAZrn0j/u
+   8/bin3aXbQ7NEQJ6vIEBvQwbcYmjDeE4Rk42YzgSEyW61ypJToiHjmNmA
+   6y2+Yy3kuPoXPIfOvPa01dxbGNWizKhFdWXuJ2dUSZ5VMXhj0ifD132v/
+   p+TBfViJ28qSnJHEA4K9aXnSwVFMFw/cNbzzpqKvPYcS/qWjWtGhutdYl
+   ob9DEd7qI8Eqrpw2QfVTWwZJji+OZ9Wxlz69sd9+XREfDftD2d3GZ1XSa
    g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10205"; a="220524630"
+X-IronPort-AV: E=McAfee;i="6200,9189,10205"; a="227808274"
 X-IronPort-AV: E=Sophos;i="5.88,224,1635231600"; 
-   d="scan'208";a="220524630"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Dec 2021 15:58:54 -0800
+   d="scan'208";a="227808274"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Dec 2021 15:58:55 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,224,1635231600"; 
-   d="scan'208";a="467976751"
+   d="scan'208";a="756027347"
 Received: from linux.intel.com ([10.54.29.200])
-  by orsmga006.jf.intel.com with ESMTP; 21 Dec 2021 15:58:53 -0800
+  by fmsmga006.fm.intel.com with ESMTP; 21 Dec 2021 15:58:54 -0800
 Received: from debox1-desk4.intel.com (unknown [10.209.90.33])
-        by linux.intel.com (Postfix) with ESMTP id 6FBA7580AA4;
+        by linux.intel.com (Postfix) with ESMTP id ECAF4580684;
         Tue, 21 Dec 2021 15:58:53 -0800 (PST)
 From:   "David E. Box" <david.e.box@linux.intel.com>
 To:     gregkh@linuxfoundation.org, mustafa.ismail@intel.com,
@@ -49,9 +49,9 @@ Cc:     "David E. Box" <david.e.box@linux.intel.com>,
         virtualization@lists.linux-foundation.org,
         alsa-devel@alsa-project.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org
-Subject: [PATCH 2/4] soundwire: intel: Use auxiliary_device driver data helpers
-Date:   Tue, 21 Dec 2021 15:58:50 -0800
-Message-Id: <20211221235852.323752-3-david.e.box@linux.intel.com>
+Subject: [PATCH 3/4] net/mlx5e: Use auxiliary_device driver data helpers
+Date:   Tue, 21 Dec 2021 15:58:51 -0800
+Message-Id: <20211221235852.323752-4-david.e.box@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211221235852.323752-1-david.e.box@linux.intel.com>
 References: <20211221235852.323752-1-david.e.box@linux.intel.com>
@@ -65,63 +65,49 @@ Use auxiliary_get_drvdata and auxiliary_set_drvdata helpers.
 
 Signed-off-by: David E. Box <david.e.box@linux.intel.com>
 ---
- drivers/soundwire/intel.c      | 8 ++++----
- drivers/soundwire/intel_init.c | 2 +-
- 2 files changed, 5 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/soundwire/intel.c b/drivers/soundwire/intel.c
-index 78037ffdb09b..d082d18e41a9 100644
---- a/drivers/soundwire/intel.c
-+++ b/drivers/soundwire/intel.c
-@@ -1293,7 +1293,7 @@ static int intel_link_probe(struct auxiliary_device *auxdev,
- 	bus->ops = &sdw_intel_ops;
- 
- 	/* set driver data, accessed by snd_soc_dai_get_drvdata() */
--	dev_set_drvdata(dev, cdns);
-+	auxiliary_set_drvdata(auxdev, cdns);
- 
- 	/* use generic bandwidth allocation algorithm */
- 	sdw->cdns.bus.compute_params = sdw_compute_params;
-@@ -1321,7 +1321,7 @@ int intel_link_startup(struct auxiliary_device *auxdev)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+index 65571593ec5c..244ce8f4e286 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+@@ -5389,7 +5389,7 @@ void mlx5e_destroy_netdev(struct mlx5e_priv *priv)
+ static int mlx5e_resume(struct auxiliary_device *adev)
  {
- 	struct sdw_cdns_stream_config config;
- 	struct device *dev = &auxdev->dev;
--	struct sdw_cdns *cdns = dev_get_drvdata(dev);
-+	struct sdw_cdns *cdns = auxiliary_get_drvdata(auxdev);
- 	struct sdw_intel *sdw = cdns_to_intel(cdns);
- 	struct sdw_bus *bus = &cdns->bus;
- 	int link_flags;
-@@ -1463,7 +1463,7 @@ int intel_link_startup(struct auxiliary_device *auxdev)
- static void intel_link_remove(struct auxiliary_device *auxdev)
+ 	struct mlx5_adev *edev = container_of(adev, struct mlx5_adev, adev);
+-	struct mlx5e_priv *priv = dev_get_drvdata(&adev->dev);
++	struct mlx5e_priv *priv = auxiliary_get_drvdata(adev);
+ 	struct net_device *netdev = priv->netdev;
+ 	struct mlx5_core_dev *mdev = edev->mdev;
+ 	int err;
+@@ -5412,7 +5412,7 @@ static int mlx5e_resume(struct auxiliary_device *adev)
+ 
+ static int mlx5e_suspend(struct auxiliary_device *adev, pm_message_t state)
  {
- 	struct device *dev = &auxdev->dev;
--	struct sdw_cdns *cdns = dev_get_drvdata(dev);
-+	struct sdw_cdns *cdns = auxiliary_get_drvdata(auxdev);
- 	struct sdw_intel *sdw = cdns_to_intel(cdns);
- 	struct sdw_bus *bus = &cdns->bus;
+-	struct mlx5e_priv *priv = dev_get_drvdata(&adev->dev);
++	struct mlx5e_priv *priv = auxiliary_get_drvdata(adev);
+ 	struct net_device *netdev = priv->netdev;
+ 	struct mlx5_core_dev *mdev = priv->mdev;
  
-@@ -1488,7 +1488,7 @@ int intel_link_process_wakeen_event(struct auxiliary_device *auxdev)
- 	void __iomem *shim;
- 	u16 wake_sts;
+@@ -5456,7 +5456,7 @@ static int mlx5e_probe(struct auxiliary_device *adev,
+ 	mlx5e_build_nic_netdev(netdev);
  
--	sdw = dev_get_drvdata(dev);
-+	sdw = auxiliary_get_drvdata(auxdev);
- 	bus = &sdw->cdns.bus;
+ 	priv = netdev_priv(netdev);
+-	dev_set_drvdata(&adev->dev, priv);
++	auxiliary_set_drvdata(adev, priv);
  
- 	if (bus->prop.hw_disabled || !sdw->startup_done) {
-diff --git a/drivers/soundwire/intel_init.c b/drivers/soundwire/intel_init.c
-index e329022e1669..d99807765dfe 100644
---- a/drivers/soundwire/intel_init.c
-+++ b/drivers/soundwire/intel_init.c
-@@ -244,7 +244,7 @@ static struct sdw_intel_ctx
- 			goto err;
+ 	priv->profile = profile;
+ 	priv->ppriv = NULL;
+@@ -5504,7 +5504,7 @@ static int mlx5e_probe(struct auxiliary_device *adev,
  
- 		link = &ldev->link_res;
--		link->cdns = dev_get_drvdata(&ldev->auxdev.dev);
-+		link->cdns = auxiliary_get_drvdata(&ldev->auxdev);
+ static void mlx5e_remove(struct auxiliary_device *adev)
+ {
+-	struct mlx5e_priv *priv = dev_get_drvdata(&adev->dev);
++	struct mlx5e_priv *priv = auxiliary_get_drvdata(adev);
+ 	pm_message_t state = {};
  
- 		if (!link->cdns) {
- 			dev_err(&adev->dev, "failed to get link->cdns\n");
+ 	mlx5e_dcbnl_delete_app(priv);
 -- 
 2.25.1
 
