@@ -2,56 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 332AC47BA7D
-	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 08:12:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4841C47BA8F
+	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 08:14:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234582AbhLUHMG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Dec 2021 02:12:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57986 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231305AbhLUHMG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Dec 2021 02:12:06 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 059D5C061574;
-        Mon, 20 Dec 2021 23:12:05 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B7634B810DC;
-        Tue, 21 Dec 2021 07:12:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6B4DC36AE9;
-        Tue, 21 Dec 2021 07:12:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1640070723;
-        bh=fQt/CiyDY99RKB4xmUXQXd505qrSBvHhfBUnu3o5RsI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Bb3oJckgBMwVoUfrY6zZndbQi03vmRlwmHzlLnFUqoM04vpMCJ1Lq9Jl684k08W9G
-         oDYAjaoxyg/KEiJuO585NZhRjTEYebQgclZ4brJgBgWnZ8Fy5WMMwHgm22F2HjGm9+
-         b+2GgXtbcYeqzhmRVJH6+BcktZqRiDIsGSkEW7oU=
-Date:   Tue, 21 Dec 2021 08:12:00 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Mike Ximing Chen <mike.ximing.chen@intel.com>
-Cc:     linux-kernel@vger.kernel.org, arnd@arndb.de,
-        dan.j.williams@intel.com, pierre-louis.bossart@linux.intel.com,
-        netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org
-Subject: Re: [RFC PATCH v12 01/17] dlb: add skeleton for DLB driver
-Message-ID: <YcF+QIHKgNLJOxUh@kroah.com>
-References: <20211221065047.290182-1-mike.ximing.chen@intel.com>
- <20211221065047.290182-2-mike.ximing.chen@intel.com>
+        id S234762AbhLUHOw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Dec 2021 02:14:52 -0500
+Received: from smtpbg128.qq.com ([106.55.201.39]:54429 "EHLO smtpbg587.qq.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229999AbhLUHOw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Dec 2021 02:14:52 -0500
+X-QQ-mid: bizesmtp42t1640070871txh3hbcu
+Received: from localhost.localdomain (unknown [118.121.67.96])
+        by esmtp6.qq.com (ESMTP) with 
+        id ; Tue, 21 Dec 2021 15:14:29 +0800 (CST)
+X-QQ-SSF: 01000000002000D0K000B00A0000000
+X-QQ-FEAT: Lg5IqoGaTUhVQ2PxsNgh24m9G4JSUp6rcIlsD2Oot6qF+nC9j4GJ6erQryVdw
+        hJrJdwy67hmHc4b6Hz833B2nlD0BLoXntdwuTcL66KrdrqIuG8/NYO/Ry8TX2fqXRf6ttCm
+        oHQIvnCAUx0MZV+Jt2FV6TLRFwNGOF7FT5GQju90xxrXPWcUgkvTAlSrNJ/NtpDkYxBYhro
+        NAvipqhD/LHO23bcub/aGAChkq7Upcip2LAC9ieLjDQ4H6dRMkwzM1BTSPyiidMpA2sUvzJ
+        9wfhtU5NQElgZ62VxIC3BQp3eGEu8x6jpZTtccKbSr7zK26y/tHb7kqw6B+KWXinQx3fBUJ
+        fwa04gk6cgkTi0e8VJOBDAHdZ0gGFAK8IQncC4gDjI9WOwoljQ=
+X-QQ-GoodBg: 0
+From:   Jason Wang <wangborong@cdjrlc.com>
+To:     kuba@kernel.org
+Cc:     davem@davemloft.net, arnd@arndb.de, wangborong@cdjrlc.com,
+        jgg@ziepe.ca, netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] net: dl2k: replace strlcpy with strscpy
+Date:   Tue, 21 Dec 2021 15:14:26 +0800
+Message-Id: <20211221071426.733023-1-wangborong@cdjrlc.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211221065047.290182-2-mike.ximing.chen@intel.com>
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam5
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 21, 2021 at 12:50:31AM -0600, Mike Ximing Chen wrote:
-> +/* Copyright(C) 2016-2020 Intel Corporation. All rights reserved. */
+The strlcpy should not be used because it doesn't limit the source
+length. So that it will lead some potential bugs.
 
-So you did not touch this at all in 2021?  And it had a copyrightable
-changed added to it for every year, inclusive, from 2016-2020?
+But the strscpy doesn't require reading memory from the src string
+beyond the specified "count" bytes, and since the return value is
+easier to error-check than strlcpy()'s. In addition, the implementation
+is robust to the string changing out from underneath it, unlike the
+current strlcpy() implementation.
 
-Please run this past your lawyers on how to do this properly.
+Thus, replace strlcpy with strscpy.
 
-greg k-h
+Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
+---
+ drivers/net/ethernet/dlink/dl2k.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/dlink/dl2k.c b/drivers/net/ethernet/dlink/dl2k.c
+index a301f7e6a440..2c67a857a42f 100644
+--- a/drivers/net/ethernet/dlink/dl2k.c
++++ b/drivers/net/ethernet/dlink/dl2k.c
+@@ -1235,8 +1235,8 @@ static void rio_get_drvinfo(struct net_device *dev, struct ethtool_drvinfo *info
+ {
+ 	struct netdev_private *np = netdev_priv(dev);
+ 
+-	strlcpy(info->driver, "dl2k", sizeof(info->driver));
+-	strlcpy(info->bus_info, pci_name(np->pdev), sizeof(info->bus_info));
++	strscpy(info->driver, "dl2k", sizeof(info->driver));
++	strscpy(info->bus_info, pci_name(np->pdev), sizeof(info->bus_info));
+ }
+ 
+ static int rio_get_link_ksettings(struct net_device *dev,
+-- 
+2.34.1
+
