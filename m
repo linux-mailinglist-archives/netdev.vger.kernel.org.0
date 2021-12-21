@@ -2,82 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D273547C966
-	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 23:50:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FE9E47C976
+	for <lists+netdev@lfdr.de>; Wed, 22 Dec 2021 00:07:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234465AbhLUWuR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Dec 2021 17:50:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48832 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229732AbhLUWuR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Dec 2021 17:50:17 -0500
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42F28C061574
-        for <netdev@vger.kernel.org>; Tue, 21 Dec 2021 14:50:17 -0800 (PST)
-Received: by mail-pj1-x102e.google.com with SMTP id n15-20020a17090a394f00b001b0f6d6468eso3928470pjf.3
-        for <netdev@vger.kernel.org>; Tue, 21 Dec 2021 14:50:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=NxZswluoRX+ZI8aq6fWIPiuL1wxchiVZwc8+dTIgVp0=;
-        b=Klk9qAaHLPeML3+Et4b1nYcqNrpqFFEqXI0G8Qmy9Z0mAk3Eq/OFFFW5OLFXw6HXL9
-         UPFAR7nKcdH9GUHlZhy65pzCbD1GAjDgC4X8s2HVd4jTldwbt81lIzJUmpr0k0aeQlMN
-         /qfc5c/0vLdauQ2wDjfFVn4cjkEx9AdCxy1KOpLzgUOtlP45l6I2we1hsjgTyERH+pwv
-         OHVQoSixqMw9Cy1hA1mfQ3loVJdnhYwoSGzX5augR5f7C/vSfd4dZohWyMeMa/d7Zi38
-         jjibs22YNJuGzifOHo+KNOJo5EBZY1hW5UpyWVHUAtMrf3DSRg2RGpiGEicf0mloc8LL
-         UYaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=NxZswluoRX+ZI8aq6fWIPiuL1wxchiVZwc8+dTIgVp0=;
-        b=8QMJ5iwbaFuBl7tLMwZG8V9yX59Jz8+SUlvwV8fSY9HQY5jG/PvWG1qBWzes2sYON+
-         IN16Cv1J9rOQgGxkX5c3gwYb4HJRdAoFAP4xy1p9rmu2vtpe086JPA88p9xOFcMQCFTv
-         wxOiRnxEg+S3AS9bi9bbmE7YgoWrmtzZJfhWxJnHUYqJQCLS0OkKlMCKI4pQyf1jXFry
-         Xglq7Kyjdqdrlw80ku1Y7Kwi3RGpKLLFd56qwp9nsJeOA/iKSoPHX6uqc717PZz6XdXY
-         bfWcDXdrb59VuGdmxJy6rBhbO7O2YvTUMy28g8QRRxla1WMENpYz/Y+qUhYiIo+2UDM3
-         D4Kw==
-X-Gm-Message-State: AOAM5303eOk+dqc8/e2cQvaoQWVHpkboasDVzxSRK2Ms5bmheXPtWppN
-        2nHEOKF4ikz+T24gZ9rcM7YwAg==
-X-Google-Smtp-Source: ABdhPJxveFDM8k9eey/9hZKZP+GYG1ExibVwCeOy4G9h2mq8Gsb2BJChRwIKni6FWSxNuVhUQUKdTw==
-X-Received: by 2002:a17:90b:19d4:: with SMTP id nm20mr669257pjb.106.1640127016721;
-        Tue, 21 Dec 2021 14:50:16 -0800 (PST)
-Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
-        by smtp.gmail.com with ESMTPSA id l1sm50165pgn.35.2021.12.21.14.50.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Dec 2021 14:50:16 -0800 (PST)
-Date:   Tue, 21 Dec 2021 14:50:13 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     in Long <lucien.xin@gmail.com>, vyasevich@gmail.com,
-        nhorman@tuxdriver.com, marcelo.leitner@gmail.com,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     linux-sctp@vger.kernel.org, netdev@vger.kernel.org
-Subject: SCTP ABI breakage?
-Message-ID: <20211221145013.767d833b@hermes.local>
+        id S234684AbhLUXFt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Dec 2021 18:05:49 -0500
+Received: from mga02.intel.com ([134.134.136.20]:30772 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231946AbhLUXFt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Dec 2021 18:05:49 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1640127949; x=1671663949;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=7JEQXRqhakQoYH1NLAJzMvdcHSrC5MswZCNjBVdbvMs=;
+  b=R/q/TWTtTqcOlmMVYjcqOb3TaTaEiymvK6lfqc9Cimt3TRhozBNm4RwK
+   9toPTQOlQguIM+naTdBQkCGxLZYJ0273v0Amef45h5bMiRfYrdc4Ic351
+   otfgdS2PSsWJTNWGIj7n32ljn9uZHyWf5YgUoC3/0Rop0np0jzKBe1pth
+   FoyydGPqlt8+2ULz1y6kxJVYq1nQyylhwcnuKG3zEvpLWgDW5O0k0LGYn
+   JNW5DdcDmWNe10aD0KK/nwDjYIAg3kJ6yQwZ1Xe09oo+Yq42CYcTo2YG/
+   WIr7kkxku6kwgk9DoWLEJHjIti97O6CAczz+4YFKRfVqV1LEGKdlIuy/h
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10205"; a="227802478"
+X-IronPort-AV: E=Sophos;i="5.88,224,1635231600"; 
+   d="scan'208";a="227802478"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Dec 2021 15:05:46 -0800
+X-IronPort-AV: E=Sophos;i="5.88,224,1635231600"; 
+   d="scan'208";a="756005031"
+Received: from jbrandeb-saw1.jf.intel.com ([10.166.28.56])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Dec 2021 15:05:46 -0800
+From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        netdev@vger.kernel.org, anthony.l.nguyen@intel.com
+Subject: [PATCH net-next v1] ice: trivial: fix odd indenting
+Date:   Tue, 21 Dec 2021 15:05:38 -0800
+Message-Id: <20211221230538.2546315-1-jesse.brandeburg@intel.com>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Looks like changes to SCTP events create kernel ABI breakage in applications.
+Fix an odd indent where some code was left indented, and causes smatch
+to warn:
+ice_log_pkg_init() warn: inconsistent indenting
 
-If application is compiled with new header but attempts to run on older kernel, it doesn't work:
+While here, for consistency, add a break after the default case.
 
-Reported here: https://osmocom.org/issues/5366
+This commit has a Fixes: but we caught this while it was only in net-next.
 
-Looks like bad design assumptions about how setsockopt here:
-static int sctp_setsockopt_events(struct sock *sk, __u8 *sn_type,
-				  unsigned int optlen)
-{
-	struct sctp_sock *sp = sctp_sk(sk);
-	struct sctp_association *asoc;
-	int i;
+Fixes: 247dd97d713c ("ice: Refactor status flow for DDP load")
+Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+---
+ drivers/net/ethernet/intel/ice/ice_main.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-	if (optlen > sizeof(struct sctp_event_subscribe))
-		return -EINVAL;
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index 865f2231bb24..661b59456742 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -4123,13 +4123,14 @@ static void ice_log_pkg_init(struct ice_hw *hw, enum ice_ddp_state state)
+ 		break;
+ 	case ICE_DDP_PKG_LOAD_ERROR:
+ 		dev_err(dev, "An error occurred on the device while loading the DDP package.  The device will be reset.\n");
+-			/* poll for reset to complete */
+-			if (ice_check_reset(hw))
+-				dev_err(dev, "Error resetting device. Please reload the driver\n");
++		/* poll for reset to complete */
++		if (ice_check_reset(hw))
++			dev_err(dev, "Error resetting device. Please reload the driver\n");
+ 		break;
+ 	case ICE_DDP_PKG_ERR:
+ 	default:
+ 		dev_err(dev, "An unknown error occurred when loading the DDP package.  Entering Safe Mode.\n");
++		break;
+ 	}
+ }
+ 
+-- 
+2.33.1
 
-Because of that the commits that add new events cause code built with the new
-header to not run on older kernels.
