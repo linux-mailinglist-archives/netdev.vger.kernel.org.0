@@ -2,136 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 680A647C50C
-	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 18:31:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 511FF47C5D5
+	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 19:09:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233723AbhLURbZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Dec 2021 12:31:25 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:55244 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229925AbhLURbZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Dec 2021 12:31:25 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1640107884;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=oaxIuP+AGT0eUo4EQT5o99NhD9i1dyTpvZjVc0Vc7OQ=;
-        b=F9VT1Jh5tZHUYiaDjg+uSnsT1j10zsa9BAbzZutlqwutfMm8cu4vCF9mjocI1xHGpDTOEi
-        WGlv5p1YhT7HSJFDETRDGXvizvo5iVGybWGYlyH/tTJpTmDV2yAq2lWrYFXWyZSgfw13Dq
-        +mxA+XGrtj3G02fcwfvipGOLa+D9UlE=
-Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
- [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-110-PdvHZME3NJu8XLklz46l3A-1; Tue, 21 Dec 2021 12:31:23 -0500
-X-MC-Unique: PdvHZME3NJu8XLklz46l3A-1
-Received: by mail-qv1-f70.google.com with SMTP id fw10-20020a056214238a00b003c05d328ad2so13332143qvb.2
-        for <netdev@vger.kernel.org>; Tue, 21 Dec 2021 09:31:23 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=oaxIuP+AGT0eUo4EQT5o99NhD9i1dyTpvZjVc0Vc7OQ=;
-        b=ryOBYevJ9sJ5Hu3hy7LMviCewc9OiuGyVADnAOcn9lq45BtSPpFpgXv4Oln1PgchtA
-         Wi4BKe36rn96tQWdg3v+1jKuEHWxONKkqGHOQV4YnYJhVS3/JhQSK6NsbLvq61pexksF
-         8MrdCmhSQJKs3lUPURpwUcgpE3zOadaBKUcumgawcaQwI0Mv7OGgBjRRkEIbhy0IpWt1
-         SFBl86S6/A/3JSDpRrU5Ca7s+wJLrpfxZ4hwgSuPNw5QKzIfWdOKH8jTfvGmc8gnuFEK
-         U4XaElBcw7HDEnjHf4f382IU81yXKFvn+pVkK1AB9O1QkqZdwyUtWzpo4kWbDZwJCpWe
-         P7Xw==
-X-Gm-Message-State: AOAM531sBSsD1yQ/qWs4Lm947bu8yOTh8uiwEJtRL4GFHqQy4qZ+Aoox
-        hTZK4dtaaAjPyjWjDoPTQrAQtpf8TPmkCkusdGBL6iBROe09MUEISIJzqXtmzpMSyCsizL9auuT
-        XKZfiRGXh0cN7DAV1
-X-Received: by 2002:a05:6214:c2d:: with SMTP id a13mr3574984qvd.28.1640107882839;
-        Tue, 21 Dec 2021 09:31:22 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzLWQsfeg63A/7HY/XCcu/wuoKWgDeNdVXDGdsjAktAK4PjjLNyEbN8o0AB/g+Lcr/vS7DFww==
-X-Received: by 2002:a05:6214:c2d:: with SMTP id a13mr3574953qvd.28.1640107882596;
-        Tue, 21 Dec 2021 09:31:22 -0800 (PST)
-Received: from gerbillo.redhat.com (146-241-225-60.dyn.eolo.it. [146.241.225.60])
-        by smtp.gmail.com with ESMTPSA id h2sm14914216qkn.136.2021.12.21.09.31.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Dec 2021 09:31:22 -0800 (PST)
-Message-ID: <3d6d818ff01b363ae7ec6740dc3cd3e62aa16682.camel@redhat.com>
-Subject: Re: tcp: kernel BUG at net/core/skbuff.c:3574!
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Ignat Korchagin <ignat@cloudflare.com>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        kernel-team <kernel-team@cloudflare.com>
-Date:   Tue, 21 Dec 2021 18:31:19 +0100
-In-Reply-To: <CALrw=nG5-Qyi8f0j6-dmkVts4viX24j755gEiUNTQDoXzXv1XQ@mail.gmail.com>
-References: <CALrw=nGtZbuQWdwh26qJA6HbbLsCNZjU4jaY78acbKfAAan+5w@mail.gmail.com>
-         <CANn89i+CF0G+Yx_aJMURxBbr0mqDzS5ytQY7RtYh_pY0cOh01A@mail.gmail.com>
-         <cf25887f1321e9b346aa3bf487bd55802f7bca80.camel@redhat.com>
-         <CALrw=nG5-Qyi8f0j6-dmkVts4viX24j755gEiUNTQDoXzXv1XQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.2 (3.42.2-1.fc35) 
+        id S236910AbhLUSJE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Dec 2021 13:09:04 -0500
+Received: from mga09.intel.com ([134.134.136.24]:9404 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236990AbhLUSJD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Dec 2021 13:09:03 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1640110143; x=1671646143;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=3cPi1KAh3T7NJbD1mUxn1C80VNeFN9OZ23XXYJ7EJ5E=;
+  b=Q62NLDG1QEPYXd2offvNm0QJUNCKJU1EyCliETaC2ohFhVhU8cy5riGR
+   UoAGCM7bmIqD6y2wtw4V+9T2mVOiJju2nnc0gO1ShSCJxwj0dN0Vemd7q
+   yIfNubudyFLJ1BwgSoGVHvsiwnv/sFbzXksK2xjyYfoU+hCC15s6Nt4wM
+   t3AwnCa1zQUd4jULtBOaQoBniUH4pz6UHgcfN5L2dn+Vg2IoxzAS6UciR
+   GPo6evGLwAAdXm9ULaVm7UVqyabn+mkPpRrcdARVwhRVchcPYM5JZ0jRK
+   +qfq+tzPig9dj/KvHLnxA50fPU5ZoE00oJ30MncrWyc6mR9eRC4o1gaSR
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10205"; a="240264831"
+X-IronPort-AV: E=Sophos;i="5.88,224,1635231600"; 
+   d="scan'208";a="240264831"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Dec 2021 09:49:37 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,224,1635231600"; 
+   d="scan'208";a="521342474"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by orsmga008.jf.intel.com with ESMTP; 21 Dec 2021 09:49:36 -0800
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        richardcochran@gmail.com
+Subject: [PATCH net-next 00/10][pull request] 100GbE Intel Wired LAN Driver Updates 2021-12-21
+Date:   Tue, 21 Dec 2021 09:48:35 -0800
+Message-Id: <20211221174845.3063640-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2021-12-21 at 17:16 +0000, Ignat Korchagin wrote:
-> On Tue, Dec 21, 2021 at 3:40 PM Paolo Abeni <pabeni@redhat.com> wrote:
-> > 
-> > On Tue, 2021-12-21 at 06:16 -0800, Eric Dumazet wrote:
-> > > On Tue, Dec 21, 2021 at 4:19 AM Ignat Korchagin <ignat@cloudflare.com> wrote:
-> > > > 
-> > > > Hi netdev,
-> > > > 
-> > > > While trying to reproduce a different rare bug we're seeing in
-> > > > production I've triggered below on 5.15.9 kernel and confirmed on the
-> > > > latest netdev master tree:
-> > > > 
-> > > 
-> > > Nothing comes to mind. skb_shift() has not been recently changed.
-> > > 
-> > > Why are you disabling TSO exactly ?
-> > > 
-> > > Is GRO being used on veth needed to trigger the bug ?
-> > > (GRO was added recently to veth, I confess I did not review the patches)
-> 
-> Yes, it seems enabling GRO for veth actually enables NAPI codepaths,
-> which trigger this bug (and actually another one we're investigating).
-> Through trial-and-error it seems disabling TSO is more likely to
-> trigger it at least in my dev environment. I'm not sure if this bug is
-> somehow related to the other one we're investigating, but once we have
-> a fix here I can try to verify before posting it to the mailing list.
-> 
-> > This is very likely my fault. I'm investigating it right now.
-> 
-> Thank you very much! Let me know if I can help somehow.
+This series contains updates to ice driver only.
 
-I'm testing the following patch. Could you please have a spin in your
-testbed, too?
+Karol modifies the reset flow to correct issues with PTP reset.
 
-Thanks!
+Jake extends PTP support for E822 based devices. This includes a few
+cleanup patches, that fix some minor issues. In addition, there are some
+slight refactors to ease the addition of E822 support, followed by adding
+the new hardware implementation ice_ptp_hw.c.
 
-Paolo
----
-diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-index 38f6da24f460..b490448ca42c 100644
---- a/drivers/net/veth.c
-+++ b/drivers/net/veth.c
-@@ -711,6 +711,14 @@ static struct sk_buff *veth_xdp_rcv_skb(struct veth_rq *rq,
- 	rcu_read_lock();
- 	xdp_prog = rcu_dereference(rq->xdp_prog);
- 	if (unlikely(!xdp_prog)) {
-+		if (unlikely(skb_shared(skb) || skb_head_is_locked(skb))) {
-+			struct sk_buff *nskb = skb_copy(skb, GFP_ATOMIC | __GFP_NOWARN);
-+
-+			if (!nskb)
-+				goto drop;
-+			consume_skb(skb);
-+			skb = nskb;
-+		}
- 		rcu_read_unlock();
- 		goto out;
- 	}
+There are a few major differences with E822 support compared to E810
+support:
 
+*) The E822 device has a Clock Generation Unit which must be initialized in
+order to generate proper clock frequencies on the output that drives the PTP
+hardware clock registers
 
+*) The E822 PHY is a bit different and requires a more complex
+initialization procedure which must be rerun any time the link configuration
+changes.
+
+*) The E822 devices support enhanced timestamp calibration by making use of
+a process called Vernier offset measurement. This allows the hardware to
+measure phase offset related to the PHY clocks for Serdes and FEC, reducing
+the inaccuracy of the timestamp relative to the actual packet transmission
+and receipt. Making use of this requires data gathered from the first
+transmitted and received packets, and waiting for the PHY to complete the
+calibration measurements. This is done as part of a new kthread, ov_work.
+Note that to avoid delay in enabling timestamps, we start the PHY in
+'bypass' mode which allows timestamps to be captured without the Vernier
+calibration measurement. Once the first packets have been sent and received,
+we then complete the calibration setup and exit bypass mode and begin using
+the more precise timestamps. According to the datasheet, timestamps without
+calibration data can be incorrect relative to actual receipt or transmission
+by up to 1 clock cycle (~1.25 nanoseconds), while calibrated timestamps
+should be correct to within 1/8th of a clock cycle (~0.15 nanoseconds).
+
+*) E822 devices support crosstimestamping via PCIe PTM, which we enable when
+available on the platform.
+
+There is a fair amount of logic required to perform PHY and CGU
+initialization, which is the vast majority of the new code, but it is fairly
+self contained within ice_ptp_hw.c, with the exception of monitoring for
+offset validity being handled by a kthread.
+
+The following are changes since commit 294e70c952b494918f139670cf5a89839a2e03e6:
+  Merge tag 'mac80211-next-for-net-next-2021-12-21' of git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211-next
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue 100GbE
+
+Jacob Keller (9):
+  ice: introduce ice_base_incval function
+  ice: PTP: move setting of tstamp_config
+  ice: use 'int err' instead of 'int status' in ice_ptp_hw.c
+  ice: introduce ice_ptp_init_phc function
+  ice: convert clk_freq capability into time_ref
+  ice: implement basic E822 PTP support
+  ice: ensure the hardware Clock Generation Unit is configured
+  ice: exit bypass mode once hardware finishes timestamp calibration
+  ice: support crosstimestamping on E822 devices if supported
+
+Karol Kolacinski (1):
+  ice: Fix E810 PTP reset flow
+
+ drivers/net/ethernet/intel/Kconfig            |   10 +
+ drivers/net/ethernet/intel/ice/ice_cgu_regs.h |  116 +
+ drivers/net/ethernet/intel/ice/ice_common.c   |   12 +
+ .../net/ethernet/intel/ice/ice_hw_autogen.h   |    9 +
+ drivers/net/ethernet/intel/ice/ice_main.c     |   15 +-
+ drivers/net/ethernet/intel/ice/ice_ptp.c      |  854 ++++-
+ drivers/net/ethernet/intel/ice/ice_ptp.h      |   38 +-
+ .../net/ethernet/intel/ice/ice_ptp_consts.h   |  374 +++
+ drivers/net/ethernet/intel/ice/ice_ptp_hw.c   | 2814 ++++++++++++++++-
+ drivers/net/ethernet/intel/ice/ice_ptp_hw.h   |  345 ++
+ drivers/net/ethernet/intel/ice/ice_type.h     |   23 +-
+ 11 files changed, 4367 insertions(+), 243 deletions(-)
+ create mode 100644 drivers/net/ethernet/intel/ice/ice_cgu_regs.h
+ create mode 100644 drivers/net/ethernet/intel/ice/ice_ptp_consts.h
+
+-- 
+2.31.1
 
