@@ -2,45 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03E2047B754
-	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 03:00:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B7C3E47B76D
+	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 03:00:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231964AbhLUB65 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Dec 2021 20:58:57 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:53724 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233039AbhLUB6m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Dec 2021 20:58:42 -0500
+        id S232918AbhLUB77 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Dec 2021 20:59:59 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:33760 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229663AbhLUB7W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Dec 2021 20:59:22 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 18B3961361;
-        Tue, 21 Dec 2021 01:58:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DCC0C36AE9;
-        Tue, 21 Dec 2021 01:58:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3607DB8110D;
+        Tue, 21 Dec 2021 01:59:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B51DC36AE8;
+        Tue, 21 Dec 2021 01:59:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1640051920;
-        bh=m3xYOY40sGGEAEGJONdxUth2xOPLby9qLPaqbvBZe/I=;
+        s=k20201202; t=1640051960;
+        bh=Dycq9D8DmO8KqMNU/ICQMGiSE2saUHVDC6QIkY/9UM0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lRKuf2p43WlpkadV9hlqDY18gHOmAuw08V9LsjlgpeMIxku2V34iiMll4XeT1R4S2
-         rV/okwgCFQfRl/YLUEOI/MG3IjzmGGgrn7nQsTPHaCUmtPLR1Y6QFtBVBTMr0zNe34
-         jjaa2GZIyEE7cPVBQw+3dJiTmakYYO/nyrU//Teh1tEwlit/n/d/dwhFFwY93tbfHI
-         EpgVE+zCecSH6+j1i7Q/jlrmvvQe/o7bqlUPTf24HrrlaInIApbPaONj1KNRMgZMEW
-         IXRozFIvSdj/0MVNi8xlnDGgQslRA7gYm6NXe98hGWA9EDEoPW25LZJmjDw0mg5H0e
-         er/e4RIvpuUZg==
+        b=IvMU032ttTL/ms8mRFtWe/AMyBmwdP/cl7CVkSdyBB73Jf782GcXGnHf1QTdp8yeP
+         wvYdRqqg5tfuxI6KSvRiDjuYViB8SnWoGziooGUqoy5eQ1CuxQk9YrKvl4hK9wmW8W
+         XLOWLnuM+T0A/YGnyl6MNDshoZzvAzcPDewOU1TRytxvhrh2ZdkexJj4XjbtL4HD3O
+         x2D54HkEgRsoqJimMTMYdEoTMCSJU1a6VhsI62WRMJ4R64/JLv/CEBeN5246/grv7a
+         ge20XYpZJWaVBsQtPh/CsQYwJiM3MhO3vvwj2KWvEx8/UUKCFaBwWvmpP74e3AB4yQ
+         AfJl4cFvjVPJQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, andrii@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 23/29] bpf: Make 32->64 bounds propagation slightly more robust
-Date:   Mon, 20 Dec 2021 20:57:44 -0500
-Message-Id: <20211221015751.116328-23-sashal@kernel.org>
+Cc:     Xing Song <xing.song@mediatek.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Sasha Levin <sashal@kernel.org>, johannes@sipsolutions.net,
+        davem@davemloft.net, kuba@kernel.org, matthias.bgg@gmail.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.10 03/19] mac80211: set up the fwd_skb->dev for mesh forwarding
+Date:   Mon, 20 Dec 2021 20:58:58 -0500
+Message-Id: <20211221015914.116767-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20211221015751.116328-1-sashal@kernel.org>
-References: <20211221015751.116328-1-sashal@kernel.org>
+In-Reply-To: <20211221015914.116767-1-sashal@kernel.org>
+References: <20211221015914.116767-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -49,65 +52,76 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Daniel Borkmann <daniel@iogearbox.net>
+From: Xing Song <xing.song@mediatek.com>
 
-[ Upstream commit e572ff80f05c33cd0cb4860f864f5c9c044280b6 ]
+[ Upstream commit 942bd1070c3a39d1302fc5db73d60c86e3033c81 ]
 
-Make the bounds propagation in __reg_assign_32_into_64() slightly more
-robust and readable by aligning it similarly as we did back in the
-__reg_combine_64_into_32() counterpart. Meaning, only propagate or
-pessimize them as a smin/smax pair.
+Mesh forwarding requires that the fwd_skb->dev is set up for TX handling,
+otherwise the following warning will be generated, so set it up for the
+pending frames.
 
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Reviewed-by: John Fastabend <john.fastabend@gmail.com>
-Acked-by: Alexei Starovoitov <ast@kernel.org>
+[   72.835674 ] WARNING: CPU: 0 PID: 1193 at __skb_flow_dissect+0x284/0x1298
+[   72.842379 ] Modules linked in: ksmbd pppoe ppp_async l2tp_ppp ...
+[   72.962020 ] CPU: 0 PID: 1193 Comm: kworker/u5:1 Tainted: P S 5.4.137 #0
+[   72.969938 ] Hardware name: MT7622_MT7531 RFB (DT)
+[   72.974659 ] Workqueue: napi_workq napi_workfn
+[   72.979025 ] pstate: 60000005 (nZCv daif -PAN -UAO)
+[   72.983822 ] pc : __skb_flow_dissect+0x284/0x1298
+[   72.988444 ] lr : __skb_flow_dissect+0x54/0x1298
+[   72.992977 ] sp : ffffffc010c738c0
+[   72.996293 ] x29: ffffffc010c738c0 x28: 0000000000000000
+[   73.001615 ] x27: 000000000000ffc2 x26: ffffff800c2eb818
+[   73.006937 ] x25: ffffffc010a987c8 x24: 00000000000000ce
+[   73.012259 ] x23: ffffffc010c73a28 x22: ffffffc010a99c60
+[   73.017581 ] x21: 000000000000ffc2 x20: ffffff80094da800
+[   73.022903 ] x19: 0000000000000000 x18: 0000000000000014
+[   73.028226 ] x17: 00000000084d16af x16: 00000000d1fc0bab
+[   73.033548 ] x15: 00000000715f6034 x14: 000000009dbdd301
+[   73.038870 ] x13: 00000000ea4dcbc3 x12: 0000000000000040
+[   73.044192 ] x11: 000000000eb00ff0 x10: 0000000000000000
+[   73.049513 ] x9 : 000000000eb00073 x8 : 0000000000000088
+[   73.054834 ] x7 : 0000000000000000 x6 : 0000000000000001
+[   73.060155 ] x5 : 0000000000000000 x4 : 0000000000000000
+[   73.065476 ] x3 : ffffffc010a98000 x2 : 0000000000000000
+[   73.070797 ] x1 : 0000000000000000 x0 : 0000000000000000
+[   73.076120 ] Call trace:
+[   73.078572 ]  __skb_flow_dissect+0x284/0x1298
+[   73.082846 ]  __skb_get_hash+0x7c/0x228
+[   73.086629 ]  ieee80211_txq_may_transmit+0x7fc/0x17b8 [mac80211]
+[   73.092564 ]  ieee80211_tx_prepare_skb+0x20c/0x268 [mac80211]
+[   73.098238 ]  ieee80211_tx_pending+0x144/0x330 [mac80211]
+[   73.103560 ]  tasklet_action_common.isra.16+0xb4/0x158
+[   73.108618 ]  tasklet_action+0x2c/0x38
+[   73.112286 ]  __do_softirq+0x168/0x3b0
+[   73.115954 ]  do_softirq.part.15+0x88/0x98
+[   73.119969 ]  __local_bh_enable_ip+0xb0/0xb8
+[   73.124156 ]  napi_workfn+0x58/0x90
+[   73.127565 ]  process_one_work+0x20c/0x478
+[   73.131579 ]  worker_thread+0x50/0x4f0
+[   73.135249 ]  kthread+0x124/0x128
+[   73.138484 ]  ret_from_fork+0x10/0x1c
+
+Signed-off-by: Xing Song <xing.song@mediatek.com>
+Tested-By: Frank Wunderlich <frank-w@public-files.de>
+Link: https://lore.kernel.org/r/20211123033123.2684-1-xing.song@mediatek.com
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/bpf/verifier.c | 24 +++++++++++++++---------
- 1 file changed, 15 insertions(+), 9 deletions(-)
+ net/mac80211/rx.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 8a0b4879790e5..03f627e7e233b 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -1358,22 +1358,28 @@ static void __reg_bound_offset(struct bpf_reg_state *reg)
- 	reg->var_off = tnum_or(tnum_clear_subreg(var64_off), var32_off);
- }
+diff --git a/net/mac80211/rx.c b/net/mac80211/rx.c
+index 6a24431b90095..b4de573730b26 100644
+--- a/net/mac80211/rx.c
++++ b/net/mac80211/rx.c
+@@ -2937,6 +2937,7 @@ ieee80211_rx_h_mesh_fwding(struct ieee80211_rx_data *rx)
+ 	if (!fwd_skb)
+ 		goto out;
  
-+static bool __reg32_bound_s64(s32 a)
-+{
-+	return a >= 0 && a <= S32_MAX;
-+}
-+
- static void __reg_assign_32_into_64(struct bpf_reg_state *reg)
- {
- 	reg->umin_value = reg->u32_min_value;
- 	reg->umax_value = reg->u32_max_value;
--	/* Attempt to pull 32-bit signed bounds into 64-bit bounds
--	 * but must be positive otherwise set to worse case bounds
--	 * and refine later from tnum.
-+
-+	/* Attempt to pull 32-bit signed bounds into 64-bit bounds but must
-+	 * be positive otherwise set to worse case bounds and refine later
-+	 * from tnum.
- 	 */
--	if (reg->s32_min_value >= 0 && reg->s32_max_value >= 0)
--		reg->smax_value = reg->s32_max_value;
--	else
--		reg->smax_value = U32_MAX;
--	if (reg->s32_min_value >= 0)
-+	if (__reg32_bound_s64(reg->s32_min_value) &&
-+	    __reg32_bound_s64(reg->s32_max_value)) {
- 		reg->smin_value = reg->s32_min_value;
--	else
-+		reg->smax_value = reg->s32_max_value;
-+	} else {
- 		reg->smin_value = 0;
-+		reg->smax_value = U32_MAX;
-+	}
- }
- 
- static void __reg_combine_32_into_64(struct bpf_reg_state *reg)
++	fwd_skb->dev = sdata->dev;
+ 	fwd_hdr =  (struct ieee80211_hdr *) fwd_skb->data;
+ 	fwd_hdr->frame_control &= ~cpu_to_le16(IEEE80211_FCTL_RETRY);
+ 	info = IEEE80211_SKB_CB(fwd_skb);
 -- 
 2.34.1
 
