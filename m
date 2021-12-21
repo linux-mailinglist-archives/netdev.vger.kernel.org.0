@@ -2,120 +2,220 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DDA0D47C2C4
-	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 16:25:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 360F047C2E2
+	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 16:35:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239307AbhLUPZI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Dec 2021 10:25:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59204 "EHLO
+        id S239393AbhLUPfy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Dec 2021 10:35:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239300AbhLUPZH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Dec 2021 10:25:07 -0500
-Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB85AC06173F
-        for <netdev@vger.kernel.org>; Tue, 21 Dec 2021 07:25:06 -0800 (PST)
-Received: by mail-io1-xd33.google.com with SMTP id q72so18094615iod.12
-        for <netdev@vger.kernel.org>; Tue, 21 Dec 2021 07:25:06 -0800 (PST)
+        with ESMTP id S234178AbhLUPfx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Dec 2021 10:35:53 -0500
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BE7DC061574;
+        Tue, 21 Dec 2021 07:35:53 -0800 (PST)
+Received: by mail-wr1-x430.google.com with SMTP id e5so27695276wrc.5;
+        Tue, 21 Dec 2021 07:35:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=1nswmIXvkrgdGsozU3iZx920lgYKsqE2KdHTmx1sEkY=;
-        b=tlEICRYnaczk+jXexMQbyT6UB86cUJhvbNq6yjDPnzv8/uG1ta2zkMxPBmL5I6ildh
-         /t8JmErPIszZfzjnxhOgktmM9nnSaLgUbHk5KmKEdQkc6KDfLBma4yBZpNwt0Hfvhtvc
-         smp2HPUxWngwO/s5rMo5kWXNMBcQCqWkZa2z6vH3VtdCrZbB17YdeZxrQdf9cdcLNSQ+
-         P+cQBs7uCSzQHKNNT3nwFl01CEN4Qlm6cq/rYnZ1Vprhd0daXmj0huImLelXjBVKE3Bj
-         1wBFKAE51b/Hpu5+LUs6vFASW3WJwgvhq3naazQLVNTQd9vFC2su+MiDs4SnOL+uZBpH
-         m6Xg==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=yc56LLfXK6SYtMIN4zcrimz/IY8lh9/epsMY2SVJP4w=;
+        b=jNDG0OsRpy+KIkvl4S0uzuIzyXZWtlTzbZ52XviZymSrXjzak1kxnRLBvxEvL8zJfT
+         YKMTBk/8e5BC0snq3n+H69CJuB683lkndx6D3M/4wiII2QlinjYxKDXe5MWRcf43ZgU0
+         xFT5Mn6K6qY5yCrCmNUt6vO/jPrL8zmkA29rqqzDZi3/U1nExpMj6pD3q+z0HZ1eQe6V
+         TxDdqHW8Ych7tq9rwFvEUufhpvJLyTl3uZVHpn78UFN6QduLndkkGeXqkuymbNEPARJT
+         wWHvaJeEYCSEBINFJIA8587dAVtHQvQ17Gt7fKqdwmB7jeLIb4z+6Xnkb5o5u7EVL9bx
+         H6Dg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=1nswmIXvkrgdGsozU3iZx920lgYKsqE2KdHTmx1sEkY=;
-        b=OnTtcpQ9ZSIZeXxLVHbNCxjcA8feytGftxBfsD1b1oRYcyaJh2afyHJtgIknnCO6l+
-         b2Vmi5Wb6xELaDpwTznzqV036953+wqzSIEOPxwtGXSfQkuX8EL0IxPk0JiKk4aiXqO6
-         rQ22mRfMtpQQjv+uzbPLFNDnWFKmuxi1pMh/Kz0VEgenNEO9SPFFVziixCF1BMBB0tmF
-         kfkoblx+lpS5fXwGb57WrxiPYwpOsMpxQi0yPAYJX4S4hEDRwqZmpxTMiMbWYpANzp9B
-         NL7cENBqt07wRlzWZKGWN/MO/PjXKSUZ1cZomNudn0g0L6yCESR+F4HpD2sBaYZac9Vq
-         ftvw==
-X-Gm-Message-State: AOAM530ElZR/gEFK4Fb0N/+pP+c2DXqzAbeMpOww0zhTFfAD5OitWPol
-        ZJbafAM2jr3SjUX6rvEnpET8tQ==
-X-Google-Smtp-Source: ABdhPJxK104GzhXJnT+gHzCxZmWtbC6T7ciYqYcYMTLp6Mxau8YEuA532kQe83FSc/UZ+crXL0wcPg==
-X-Received: by 2002:a05:6638:4129:: with SMTP id ay41mr2154729jab.23.1640100306190;
-        Tue, 21 Dec 2021 07:25:06 -0800 (PST)
-Received: from [192.168.1.30] ([207.135.234.126])
-        by smtp.gmail.com with ESMTPSA id c22sm10425970ioz.15.2021.12.21.07.25.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 21 Dec 2021 07:25:05 -0800 (PST)
-Subject: Re: [syzbot] general protection fault in set_task_ioprio
-To:     Eric Dumazet <edumazet@google.com>,
-        syzbot <syzbot+8836466a79f4175961b0@syzkaller.appspotmail.com>,
-        Christoph Hellwig <hch@lst.de>
-Cc:     changbin.du@intel.com,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-block@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Yajun Deng <yajun.deng@linux.dev>
-References: <000000000000c70eef05d39f42a5@google.com>
- <00000000000066073805d3a4f598@google.com>
- <CANn89i++5O_4_j3KO0wAiJHkEj=1zAeAHv=s9Lub_B6=cguwXQ@mail.gmail.com>
-From:   Jens Axboe <axboe@kernel.dk>
-Message-ID: <e3a30c8c-3f1a-47b5-57e7-1b456bbc8719@kernel.dk>
-Date:   Tue, 21 Dec 2021 08:25:04 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        bh=yc56LLfXK6SYtMIN4zcrimz/IY8lh9/epsMY2SVJP4w=;
+        b=nr+1m6eS7GKkBugjvxHM1b1vF5tn7AW9gwPyO2Ilq2XZAOhImNVvrAdZ8iDNovK9ub
+         Rrb+wh+tB9BRdhv6M6gen7IPHDpzeNIVs93V0Q7iUr2NLdgNCMtUu/kzgEpxRt7moHn8
+         KTMEnOWtx3iP216FovyqFx4y25LRxqCebMm/dubZynhVig5hLfCVLVIANrRkWZXUErw4
+         iKZ54fKFWjD4Ma1gskV7x+r+oPnMYvDq36mqW6iKKL/ZrBPCkGrYqPYD+VCAl+KzvS4O
+         bbmHjnEpb3ADTVh0el6PbkUyqDEXyvPwkKQX8W60WvLZSdQkMzlM0x+vAEueNoK10sxk
+         NeTw==
+X-Gm-Message-State: AOAM530KmURgS9qrl/h6OAfwIffNYoZ7oLrY0Eqj5oGtBq90BOkoA+fA
+        X8z0z9vGmTK1p2zfuGHeok5eGMPmdHU=
+X-Google-Smtp-Source: ABdhPJwx+J/hSTikbl8ZWQrnGgLilkieScBUVKA3zN780q75A91P/vA6O+3m3Hx5PNm00hmqR/yCQw==
+X-Received: by 2002:a5d:66d2:: with SMTP id k18mr3136399wrw.430.1640100951867;
+        Tue, 21 Dec 2021 07:35:51 -0800 (PST)
+Received: from 127.0.0.1localhost ([148.252.128.24])
+        by smtp.gmail.com with ESMTPSA id z11sm2946019wmf.9.2021.12.21.07.35.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Dec 2021 07:35:51 -0800 (PST)
+From:   Pavel Begunkov <asml.silence@gmail.com>
+To:     io-uring@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Willem de Bruijn <willemb@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        David Ahern <dsahern@kernel.org>, Jens Axboe <axboe@kernel.dk>,
+        Pavel Begunkov <asml.silence@gmail.com>
+Subject: [RFC v2 00/19] io_uring zerocopy tx
+Date:   Tue, 21 Dec 2021 15:35:22 +0000
+Message-Id: <cover.1640029579.git.asml.silence@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-In-Reply-To: <CANn89i++5O_4_j3KO0wAiJHkEj=1zAeAHv=s9Lub_B6=cguwXQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/21/21 3:44 AM, Eric Dumazet wrote:
-> On Tue, Dec 21, 2021 at 1:52 AM syzbot
-> <syzbot+8836466a79f4175961b0@syzkaller.appspotmail.com> wrote:
->>
->> syzbot has bisected this issue to:
->>
->> commit e4b8954074f6d0db01c8c97d338a67f9389c042f
->> Author: Eric Dumazet <edumazet@google.com>
->> Date:   Tue Dec 7 01:30:37 2021 +0000
->>
->>     netlink: add net device refcount tracker to struct ethnl_req_info
->>
-> 
-> Unfortunately this commit will be in the way of many bisections.
-> 
-> Real bug was added in
-> 
-> commit 5fc11eebb4a98df5324a4de369bb5ab7f0007ff7
-> Author: Christoph Hellwig <hch@lst.de>
-> Date:   Thu Dec 9 07:31:29 2021 +0100
-> 
->     block: open code create_task_io_context in set_task_ioprio
-> 
->     The flow in set_task_ioprio can be simplified by simply open coding
->     create_task_io_context, which removes a refcount roundtrip on the I/O
->     context.
-> 
->     Signed-off-by: Christoph Hellwig <hch@lst.de>
->     Reviewed-by: Jan Kara <jack@suse.cz>
->     Link: https://lore.kernel.org/r/20211209063131.18537-10-hch@lst.de
->     Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Update on io_uring zerocopy tx, still RFC. For v1 and design notes see
 
-There are only really 5 patches in between the broken commit and the one
-that fixes it, and it only affects things trying to set the ioprio with
-a dead task. Is this a huge issue? I don't see why this would cause a
-lot of bisection headaches.
+https://lore.kernel.org/io-uring/cover.1638282789.git.asml.silence@gmail.com/
+
+Absolute numbers (against dummy) got higher since v1, + ~10-12% requests/s for
+the peak performance case. 5/19 brought a couple of percents, but most of it
+came with 8/19 and 9/19 (+8-11% in numbers, 5-7% in profiles). It will also
+be needed in the future for p2p. Any reason not to do alike for paged non-zc?
+Small (under 100-150B) packets?
+
+Most of checks are removed from non-zc paths. Implemented a bit trickier in
+__ip_append_data(), but considering already existing assumptions around "from"
+argument it should be fine.
+
+Benchmarks for dummy netdev, UDP/IPv4, payload size=4096:
+ -n<N> is how many requests we submit per syscall. From io_uring perspective -n1
+       is wasteful and far from optimal, but included for comparison.
+ -z0   disables zerocopy, just normal io_uring send requests
+ -f    makes to flush "buffer free" notifications for every request
+
+                        | K reqs/s | speedup
+msg_zerocopy (non-zc)   | 1120     | 1.12
+msg_zerocopy (zc)       | 997      | 1
+io_uring -n1 -z0        | 1469     | 1.47
+io_uring -n8 -z0        | 1780     | 1.78
+io_uring -n1 -f         | 1688     | 1.69
+io_uring -n1            | 1774     | 1.77
+io_uring -n8 -f         | 2075     | 2.08
+io_uring -n8            | 2265     | 2.27
+
+note: it might be not too interesting to compare zc vs non-zc, the performance
+relative difference can be shifted in favour of zerocopy by cutting constant
+per-request overhead, and there are easy ways of doing that, e.g. by compiling
+out unused features. Even more true for the table below as there was additional
+noise taking a good quarter of CPU cycles.
+
+Some data for UDP/IPv6 between a pair of NICs. 9/19 wasn't there at the time of
+testing. All tests are CPU bound and so as expected reqs/s for zerocopy doesn't
+vary much between different payload sizes. io_uring to msg_zerocopy ratio is not
+too representative for reasons similar to described above.
+
+payload | test                   | K reqs/s
+___________________________________________ 
+ 8192   | io_uring -n8 (dummy)   | 599
+        | io_uring -n1 -z0       | 264
+        | io_uring -n8 -z0       | 302
+        | msg_zerocopy           | 248
+        | msg_zerocopy -z        | 183
+        | io_uring -n1 -f        | 306
+        | io_uring -n1           | 318
+        | io_uring -n8 -f        | 373
+        | io_uring -n8           | 401
+
+ 4096   | io_uring -n8 (dummy)   | 601
+        | io_uring -n1 -z0       | 303
+        | io_uring -n8 -z0       | 366
+        | msg_zerocopy           | 278
+        | msg_zerocopy -z        | 187
+        | io_uring -n1 -f        | 317
+        | io_uring -n1           | 325
+        | io_uring -n8 -f        | 387
+        | io_uring -n8           | 405
+
+ 1024   | io_uring -n8 (dummy)   | 601
+        | io_uring -n1 -z0       | 329
+        | io_uring -n8 -z0       | 407
+        | msg_zerocopy           | 301
+        | msg_zerocopy -z        | 186
+        | io_uring -n1 -f        | 317
+        | io_uring -n1           | 327
+        | io_uring -n8 -f        | 390
+        | io_uring -n8           | 403
+
+ 512    | io_uring -n8 (dummy)   | 601
+        | io_uring -n1 -z0       | 340
+        | io_uring -n8 -z0       | 417
+        | msg_zerocopy           | 310
+        | msg_zerocopy -z        | 186
+        | io_uring -n1 -f        | 317
+        | io_uring -n1           | 328
+        | io_uring -n8 -f        | 392
+        | io_uring -n8           | 406
+
+ 128    | io_uring -n8 (dummy)   | 602
+        | io_uring -n1 -z0       | 341
+        | io_uring -n8 -z0       | 428
+        | msg_zerocopy           | 317
+        | msg_zerocopy -z        | 188
+        | io_uring -n1 -f        | 318
+        | io_uring -n1           | 331
+        | io_uring -n8 -f        | 391
+        | io_uring -n8           | 408
+
+https://github.com/isilence/linux/tree/zc_v2
+https://github.com/isilence/liburing/tree/zc_v2
+
+The Benchmark is <liburing>/test/send-zc,
+
+send-zc [-f] [-n<N>] [-z0] -s<payload size> -D<dst ip> (-6|-4) [-t<sec>] udp
+
+As a server you can use msg_zerocopy from in kernel's selftests, or a copy of
+it at <liburing>/test/msg_zerocopy. No server is needed for dummy testing.
+
+dummy setup:
+sudo ip li add dummy0 type dummy && sudo ip li set dummy0 up mtu 65536
+# make traffic for the specified IP to go through dummy0
+sudo ip route add <ip_address> dev dummy0
+
+v2: remove additional overhead for non-zc from skb_release_data() (Jonathan)
+    avoid msg propagation, hide extra bits of non-zc overhead
+    task_work based "buffer free" notifications
+    improve io_uring's notification refcounting
+    added 5/19, (no pfmemalloc tracking)
+    added 8/19 and 9/19 preventing small copies with zc
+    misc small changes
+
+Pavel Begunkov (19):
+  skbuff: add SKBFL_DONT_ORPHAN flag
+  skbuff: pass a struct ubuf_info in msghdr
+  net: add zerocopy_sg_from_iter for bvec
+  net: optimise page get/free for bvec zc
+  net: don't track pfmemalloc for zc registered mem
+  ipv4/udp: add support msgdr::msg_ubuf
+  ipv6/udp: add support msgdr::msg_ubuf
+  ipv4: avoid partial copy for zc
+  ipv6: avoid partial copy for zc
+  io_uring: add send notifiers registration
+  io_uring: infrastructure for send zc notifications
+  io_uring: wire send zc request type
+  io_uring: add an option to flush zc notifications
+  io_uring: opcode independent fixed buf import
+  io_uring: sendzc with fixed buffers
+  io_uring: cache struct ubuf_info
+  io_uring: unclog ctx refs waiting with zc notifiers
+  io_uring: task_work for notification delivery
+  io_uring: optimise task referencing by notifiers
+
+ fs/io_uring.c                 | 440 +++++++++++++++++++++++++++++++++-
+ include/linux/skbuff.h        |  46 ++--
+ include/linux/socket.h        |   1 +
+ include/uapi/linux/io_uring.h |  14 ++
+ net/compat.c                  |   1 +
+ net/core/datagram.c           |  58 +++++
+ net/core/skbuff.c             |  16 +-
+ net/ipv4/ip_output.c          |  55 +++--
+ net/ipv6/ip6_output.c         |  54 ++++-
+ net/socket.c                  |   3 +
+ 10 files changed, 633 insertions(+), 55 deletions(-)
 
 -- 
-Jens Axboe
+2.34.1
 
