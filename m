@@ -2,46 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 24CCB47B725
-	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 02:58:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 626D047B717
+	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 02:58:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232622AbhLUB6S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Dec 2021 20:58:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44488 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232223AbhLUB6H (ORCPT
+        id S232301AbhLUB6K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Dec 2021 20:58:10 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:53084 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232156AbhLUB6H (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 20 Dec 2021 20:58:07 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79F25C061574;
-        Mon, 20 Dec 2021 17:58:07 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3F6D6B810D9;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D5D9661348;
         Tue, 21 Dec 2021 01:58:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAE86C36AE5;
-        Tue, 21 Dec 2021 01:58:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84FE7C36AE8;
+        Tue, 21 Dec 2021 01:58:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1640051885;
-        bh=dPkDGzeocqgxsXdr5ixQYGslgMy9wJ6IbtCezWjiNsg=;
+        s=k20201202; t=1640051886;
+        bh=tJH4H5zTzNrqnjrO2Tw50hPNLhCg4XrsktNjPT8WKXo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tum+DbKClQyplIt/lo8M9Po9mRPMXQRHuEIKP3/hz1wmOCos2GTpYF3iEX26pb4P9
-         iKAgcjfcizKhad7JLb+N9BkV74Bj9icYg8OkkVJno5FyQpTsDbGrjITxMGqBXdAoRq
-         R8xASjleJnvbdOHlbNkhuDC5l4XsLKYoijPE8R2lv5S0uwlNSZGd72cZjfGLLqE49E
-         ST3UGJ8TUYAR2JxeRfNdPBSj5ihGSdna3+EhogfDE2blOa/SHlt2MF3aDW3h+tPo0P
-         V1UxXFtFJyvfIxMAybnV3LTeK4DM5ZSVi5aCqBCVDpcqrLRp0Hvnq7HXuRRy3t5Cxn
-         kJorEWwY3RdHA==
+        b=KLRHLU8M76niNd+4VTu5f2DjZLRclQMkKyRendqEyzAiWS29Eubwd+DvjEdOv3llH
+         OPqQCj462Xj8gC+ScqXxm5NT0xhqM59Y0Iff0mods3TTPAeUbV3mM0WaMKeGqUs71Z
+         o5ZVW/j+boPmSoxeQ6TEABiJe2lKQA9N1+tVTgSirVMOQMfOHi9a2ilKZDH7wBb8iM
+         VLxb2fz7lIKWPRnt5lThBOxxmGc4bWfIQpc9kNNI8xojuH5JEzi5nYSiR6aekc3yZr
+         UTvRM3FKUoZxdA4+CdbUILWk70QjvtvJflNjc4SVPz9gIVjS7oKrz+6pGaRLTU31v/
+         bqZiAGoxJlvRw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        stf_xl@wp.pl, kvalo@codeaurora.org, davem@davemloft.net,
-        kuba@kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 08/29] iwlwifi: fix LED dependencies
-Date:   Mon, 20 Dec 2021 20:57:29 -0500
-Message-Id: <20211221015751.116328-8-sashal@kernel.org>
+Cc:     Hangyu Hua <hbh25y@gmail.com>, Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, courmisch@gmail.com,
+        davem@davemloft.net, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 09/29] phonet: refcount leak in pep_sock_accep
+Date:   Mon, 20 Dec 2021 20:57:30 -0500
+Message-Id: <20211221015751.116328-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20211221015751.116328-1-sashal@kernel.org>
 References: <20211221015751.116328-1-sashal@kernel.org>
@@ -53,89 +47,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-[ Upstream commit efdbfa0ad03e764419378485d1b8f6e7706fb1a3 ]
+[ Upstream commit bcd0f93353326954817a4f9fa55ec57fb38acbb0 ]
 
-The dependencies for LED configuration are highly inconsistent and too
-complicated at the moment. One of the results is a randconfig failure I
-get very rarely when LEDS_CLASS is in a loadable module, but the wireless
-core is built-in:
+sock_hold(sk) is invoked in pep_sock_accept(), but __sock_put(sk) is not
+invoked in subsequent failure branches(pep_accept_conn() != 0).
 
-WARNING: unmet direct dependencies detected for MAC80211_LEDS
-  Depends on [n]: NET [=y] && WIRELESS [=y] && MAC80211 [=y] && (LEDS_CLASS [=m]=y || LEDS_CLASS [=m]=MAC80211 [=y])
-  Selected by [m]:
-  - IWLEGACY [=m] && NETDEVICES [=y] && WLAN [=y] && WLAN_VENDOR_INTEL [=y]
-  - IWLWIFI_LEDS [=y] && NETDEVICES [=y] && WLAN [=y] && WLAN_VENDOR_INTEL [=y] && IWLWIFI [=m] && (LEDS_CLASS [=m]=y || LEDS_CLASS [=m]=IWLWIFI [=m]) && (IWLMVM [=m] || IWLDVM [=m])
-
-aarch64-linux-ld: drivers/net/wireless/ath/ath5k/led.o: in function `ath5k_register_led':
-led.c:(.text+0x60): undefined reference to `led_classdev_register_ext'
-aarch64-linux-ld: drivers/net/wireless/ath/ath5k/led.o: in function `ath5k_unregister_leds':
-led.c:(.text+0x200): undefined reference to `led_classdev_unregister'
-
-For iwlwifi, the dependency is wrong, since this config prevents the
-MAC80211_LEDS code from being part of a built-in MAC80211 driver.
-
-For iwlegacy, this is worse because the driver tries to force-enable
-the other subsystems, which is both a layering violation and a bug
-because it will still fail with MAC80211=y and IWLEGACY=m, leading
-to LEDS_CLASS being a module as well.
-
-The actual link failure in the ath5k driver is a result of MAC80211_LEDS
-being enabled but not usable. With the Kconfig logic fixed in the
-Intel drivers, the ath5k driver works as expected again.
-
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Acked-by: Luca Coelho <luciano.coelho@intel.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20211204173848.873293-1-arnd@kernel.org
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Link: https://lore.kernel.org/r/20211209082839.33985-1-hbh25y@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlegacy/Kconfig | 4 ++--
- drivers/net/wireless/intel/iwlwifi/Kconfig  | 2 +-
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ net/phonet/pep.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/wireless/intel/iwlegacy/Kconfig b/drivers/net/wireless/intel/iwlegacy/Kconfig
-index 24fe3f63c3215..7eacc8e58ee14 100644
---- a/drivers/net/wireless/intel/iwlegacy/Kconfig
-+++ b/drivers/net/wireless/intel/iwlegacy/Kconfig
-@@ -2,14 +2,13 @@
- config IWLEGACY
- 	tristate
- 	select FW_LOADER
--	select NEW_LEDS
--	select LEDS_CLASS
- 	select LEDS_TRIGGERS
- 	select MAC80211_LEDS
+diff --git a/net/phonet/pep.c b/net/phonet/pep.c
+index a1525916885ae..b4f90afb0638b 100644
+--- a/net/phonet/pep.c
++++ b/net/phonet/pep.c
+@@ -868,6 +868,7 @@ static struct sock *pep_sock_accept(struct sock *sk, int flags, int *errp,
  
- config IWL4965
- 	tristate "Intel Wireless WiFi 4965AGN (iwl4965)"
- 	depends on PCI && MAC80211
-+	depends on LEDS_CLASS=y || LEDS_CLASS=MAC80211
- 	select IWLEGACY
- 	help
- 	  This option enables support for
-@@ -38,6 +37,7 @@ config IWL4965
- config IWL3945
- 	tristate "Intel PRO/Wireless 3945ABG/BG Network Connection (iwl3945)"
- 	depends on PCI && MAC80211
-+	depends on LEDS_CLASS=y || LEDS_CLASS=MAC80211
- 	select IWLEGACY
- 	help
- 	  Select to build the driver supporting the:
-diff --git a/drivers/net/wireless/intel/iwlwifi/Kconfig b/drivers/net/wireless/intel/iwlwifi/Kconfig
-index 1085afbefba87..418ae4f870ab7 100644
---- a/drivers/net/wireless/intel/iwlwifi/Kconfig
-+++ b/drivers/net/wireless/intel/iwlwifi/Kconfig
-@@ -47,7 +47,7 @@ if IWLWIFI
- 
- config IWLWIFI_LEDS
- 	bool
--	depends on LEDS_CLASS=y || LEDS_CLASS=IWLWIFI
-+	depends on LEDS_CLASS=y || LEDS_CLASS=MAC80211
- 	depends on IWLMVM || IWLDVM
- 	select LEDS_TRIGGERS
- 	select MAC80211_LEDS
+ 	err = pep_accept_conn(newsk, skb);
+ 	if (err) {
++		__sock_put(sk);
+ 		sock_put(newsk);
+ 		newsk = NULL;
+ 		goto drop;
 -- 
 2.34.1
 
