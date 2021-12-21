@@ -2,46 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B7BA347B795
-	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 03:01:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5364547B78C
+	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 03:00:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233325AbhLUCAf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Dec 2021 21:00:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44812 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233846AbhLUB7d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Dec 2021 20:59:33 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CC19C0698C5;
-        Mon, 20 Dec 2021 17:59:31 -0800 (PST)
+        id S234419AbhLUCA2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Dec 2021 21:00:28 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:33912 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233848AbhLUB7e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Dec 2021 20:59:34 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E73546134A;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 35E84B81112;
+        Tue, 21 Dec 2021 01:59:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE450C36AE9;
         Tue, 21 Dec 2021 01:59:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 556C8C36AEA;
-        Tue, 21 Dec 2021 01:59:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1640051970;
-        bh=eqWTnAp3ia26EsQ3I4FpKK4gnacNjnVF8JJ5oq1EA+c=;
+        s=k20201202; t=1640051972;
+        bh=QMYg3T/QRIFGtWXwvilAzeDh03fXhnKQ/aPEChnnvM0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EnCu+uyR++1ud2nni7tRfIPLktE3FpLW7Xf11U6U6L7IgTLPpQOequdKaXu6v4Tgz
-         ljd/HQdnqxJS3HDJG2GvHUxZbdXYllB0Cn25g0tSGmAF4NSW/Z/46TVIGGL0VZXaf7
-         gU5DxR3LR2X+XpELAMoF65XsxmE+fJdBRMQUE4gD0qOwT3Bqd4mV0kj7XnDhzUv9Z7
-         W4waYGTgqL4VYJi0784Z+U/5sQlwL9a1Nkm/oldmYhTM5tIIhCQdiTxr0pG/eDR6b5
-         SI1BZz86feUlvdwQqHkG8G9jHNiMp+8wiq9AMKCpSk+uyatFtHek4Sp8ig4lRWqq/T
-         A1IS6a3yIiLkQ==
+        b=GO7BPGS2mMokulqrh4luH1VIZui54EYfpUmM4lk0m+5VpBfylD/A19H/bqT3cPvL7
+         L/Q0Uph4o+eDcUAVvLZvAy+irniW+nUVIHtRhLE36T6ZKyBhIkNJeP37gbivC0OiW7
+         bE5jQPq7KUqu72mqBOsvlsNM5MwUwoFih4d+HQe126G2rOgmYcDVgtSKfZCUOYhZuX
+         Z8msCOTDvkPWG8GXZO0pcyzTIIdgayMLrqV8Nmh3JIGeuuj00272tcfkTCTWEQAqcF
+         wbIzxgF1twZ1aCd/OWK+DbljZujjh/4nr5J/t75K19SaD2xtT07eQFXCRVbIVBPxsG
+         3Rfmj0wB2AIaA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ilan Peer <ilan.peer@intel.com>,
+Cc:     Mordechay Goodstein <mordechay.goodstein@intel.com>,
         Luca Coelho <luciano.coelho@intel.com>,
         Johannes Berg <johannes.berg@intel.com>,
         Sasha Levin <sashal@kernel.org>, johannes@sipsolutions.net,
         davem@davemloft.net, kuba@kernel.org,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 10/19] mac80211: Fix the size used for building probe request
-Date:   Mon, 20 Dec 2021 20:59:05 -0500
-Message-Id: <20211221015914.116767-10-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.10 11/19] mac80211: update channel context before station state
+Date:   Mon, 20 Dec 2021 20:59:06 -0500
+Message-Id: <20211221015914.116767-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20211221015914.116767-1-sashal@kernel.org>
 References: <20211221015914.116767-1-sashal@kernel.org>
@@ -53,34 +50,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ilan Peer <ilan.peer@intel.com>
+From: Mordechay Goodstein <mordechay.goodstein@intel.com>
 
-[ Upstream commit f22d981386d12d1513bd2720fb4387b469124d4b ]
+[ Upstream commit 4dde3c3627b52ca515a34f6f4de3898224aa1dd3 ]
 
-Instead of using the hard-coded value of '100' use the correct
-scan IEs length as calculated during HW registration to mac80211.
+Currently channel context is updated only after station got an update about
+new assoc state, this results in station using the old channel context.
 
-Signed-off-by: Ilan Peer <ilan.peer@intel.com>
+Fix this by moving the update channel context before updating station,
+enabling the driver to immediately use the updated channel context in
+the new assoc state.
+
+Signed-off-by: Mordechay Goodstein <mordechay.goodstein@intel.com>
 Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20211129152938.0a82d6891719.I8ded1f2e0bccb9e71222c945666bcd86537f2e35@changeid
+Link: https://lore.kernel.org/r/iwlwifi.20211129152938.1c80c17ffd8a.I94ae31378b363c1182cfdca46c4b7e7165cff984@changeid
 Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mac80211/util.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/mac80211/sta_info.c | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
 
-diff --git a/net/mac80211/util.c b/net/mac80211/util.c
-index fbf56a203c0e8..5dfa26b533802 100644
---- a/net/mac80211/util.c
-+++ b/net/mac80211/util.c
-@@ -2040,7 +2040,7 @@ struct sk_buff *ieee80211_build_probe_req(struct ieee80211_sub_if_data *sdata,
- 		chandef.chan = chan;
+diff --git a/net/mac80211/sta_info.c b/net/mac80211/sta_info.c
+index 461c03737da8d..3ccd1a311ff9c 100644
+--- a/net/mac80211/sta_info.c
++++ b/net/mac80211/sta_info.c
+@@ -668,6 +668,15 @@ static int sta_info_insert_finish(struct sta_info *sta) __acquires(RCU)
  
- 	skb = ieee80211_probereq_get(&local->hw, src, ssid, ssid_len,
--				     100 + ie_len);
-+				     local->scan_ies_len + ie_len);
- 	if (!skb)
- 		return NULL;
+ 	list_add_tail_rcu(&sta->list, &local->sta_list);
+ 
++	/* update channel context before notifying the driver about state
++	 * change, this enables driver using the updated channel context right away.
++	 */
++	if (sta->sta_state >= IEEE80211_STA_ASSOC) {
++		ieee80211_recalc_min_chandef(sta->sdata);
++		if (!sta->sta.support_p2p_ps)
++			ieee80211_recalc_p2p_go_ps_allowed(sta->sdata);
++	}
++
+ 	/* notify driver */
+ 	err = sta_info_insert_drv_state(local, sdata, sta);
+ 	if (err)
+@@ -675,12 +684,6 @@ static int sta_info_insert_finish(struct sta_info *sta) __acquires(RCU)
+ 
+ 	set_sta_flag(sta, WLAN_STA_INSERTED);
+ 
+-	if (sta->sta_state >= IEEE80211_STA_ASSOC) {
+-		ieee80211_recalc_min_chandef(sta->sdata);
+-		if (!sta->sta.support_p2p_ps)
+-			ieee80211_recalc_p2p_go_ps_allowed(sta->sdata);
+-	}
+-
+ 	/* accept BA sessions now */
+ 	clear_sta_flag(sta, WLAN_STA_BLOCK_BA);
  
 -- 
 2.34.1
