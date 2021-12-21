@@ -2,77 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3391447C7FE
-	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 21:03:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1072C47C80E
+	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 21:10:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230350AbhLUUDL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Dec 2021 15:03:11 -0500
-Received: from mail-io1-f71.google.com ([209.85.166.71]:43926 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231327AbhLUUDL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Dec 2021 15:03:11 -0500
-Received: by mail-io1-f71.google.com with SMTP id j13-20020a0566022ccd00b005e9684c80c6so9671109iow.10
-        for <netdev@vger.kernel.org>; Tue, 21 Dec 2021 12:03:10 -0800 (PST)
+        id S232466AbhLUUKl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Dec 2021 15:10:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41486 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229916AbhLUUKl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Dec 2021 15:10:41 -0500
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D993C061574;
+        Tue, 21 Dec 2021 12:10:40 -0800 (PST)
+Received: by mail-lf1-x136.google.com with SMTP id x7so301012lfu.8;
+        Tue, 21 Dec 2021 12:10:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0cKZHJkPtzwEhRTiRmUXANni1yKXuwEjVCb2Xms6TAU=;
+        b=KJG6BJN0R8MJXdhvIn4MCmCuT8qmr6VgESkJb4wzLJFaNHl8EUsuCUMrQB2GpDkpan
+         LOO/TBC0v0sdKJHsFzGTfSKnqtulqVKqhXzWfGIoBwCCs+bv39JfJYzQGGVYrOu616JS
+         hKi4g0+/LHj6cuecUioGCCkFALLp6YUBR7XuGJxv2PbgA+ACpuaUD4kEGx6Abp/1aCVr
+         t+AyM6JD711Bg87NjrbDvH5FhdvsjCGY+XvU1mBmzE12sfvEI6BPZqLpuAKQcGL1Vax+
+         FIvABmgsiT2kgS8EYNi0nrxY6OQzyGwJMsctN2xcD7eyL6u2/QLVv7OLv877H5I/EKg0
+         7jUA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=8iSm/uBCJS86MMzYSjFmW+WAPKaAxHZfRlpQj+zoC0w=;
-        b=fl/y4ohcw+hh+jAUabj3hjcki1/FzfXGmxAcyeDKA9tz3c948WFnQyORIh+st+S0os
-         k88H7JIPieYyNJAqHXwrwoT+Jz5qnLdoegjahE5gnxGkvv4luOkB7E9shismfSuINMmZ
-         6TvUMRiKZpgfBKrYv1u5gDyH/uj/P8ZW1pMYKwDRvmqll8p54C9qE9Nmpg4XtMgaT4TI
-         UgseMXuPV8J+Ge+2soe3RvVVywa8siW+OTz3cJydvyIlFu3ZRel8tGivoXSFAcSHHIEX
-         IPc5GWWLAjhvElDoJ6ZsaAM63NMlU49I8PLCJ2TkLXkoymqsLGb8Y4w2wroL4Zg3K4CW
-         3cBA==
-X-Gm-Message-State: AOAM532vys0F5858ArIK5ltmv/dZrFRUDkzaBHXtDdjDJaNCdcWlXeI8
-        RLXzXtRuvUaX0ghEb8CA/LJABleG+ozTOHviCde/4lV/njwJ
-X-Google-Smtp-Source: ABdhPJwBGif4rE5qZfX9H5rQEEUY/wa5xt8kUHMqK4v6JPgw1H7L9BJMJGq439Fy7XcYqKFPEGMYB7MBEEY/tZhlGymGgb4m2tQH
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0cKZHJkPtzwEhRTiRmUXANni1yKXuwEjVCb2Xms6TAU=;
+        b=EUtZKc6Ze8cPBAtF3VWPDWvZnuSjQjzuoH9UmrEZAUYm5OdFYvjRUfN0vKB2g5+7n2
+         yQK+xchIuEfko+6eKqF4vadfdWy+zI2rM/WR3xOvfVWf8n/lXFNdJtwyAAtb8N6gGa1X
+         vA5+pUwcBg8/RsdMD3eHAlt+1CQ0dOfgQ4UceobwkHAyYwmEjLKaqcV8zYdB1NwSgio0
+         3FblKoTFLsp5PPJjy/fHdkgFciu1YIs8MAYInqotXQxA9r/Y6xYCFG4C7xQphnfNe8e6
+         6yX9sXdQ4Vn1uhuoMgougSQilEHJhi8wfEu390/0Vdm6dF7vEpeBUKr0ILLJktdVsc2r
+         Calw==
+X-Gm-Message-State: AOAM532ETJpgMkyIFgDeh9aJiZrwKr2mMq4cM5hLRhMq6vEKlmth6/X3
+        rx8wS2azPsGGKOE3P7VqeF4=
+X-Google-Smtp-Source: ABdhPJyhC0bELhI5zFh7JQNzua+yk9bIMHrmsuCIQQJf1Dc78/w+y1anvkekQvPWS4aqejWNl9RbdQ==
+X-Received: by 2002:a05:6512:1312:: with SMTP id x18mr4406802lfu.587.1640117438793;
+        Tue, 21 Dec 2021 12:10:38 -0800 (PST)
+Received: from localhost.localdomain ([94.103.235.97])
+        by smtp.gmail.com with ESMTPSA id s13sm2804805lfg.126.2021.12.21.12.10.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Dec 2021 12:10:38 -0800 (PST)
+From:   Pavel Skripkin <paskripkin@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, linux@rempel-privat.de,
+        andrew@lunn.ch, robert.foss@collabora.com, freddy@asix.com.tw
+Cc:     linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        syzbot+f44badb06036334e867a@syzkaller.appspotmail.com
+Subject: [PATCH v2 1/2] asix: fix uninit-value in asix_mdio_read()
+Date:   Tue, 21 Dec 2021 23:10:36 +0300
+Message-Id: <8966e3b514edf39857dd93603fc79ec02e000a75.1640117288.git.paskripkin@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:1410:: with SMTP id k16mr3199061jad.253.1640116990561;
- Tue, 21 Dec 2021 12:03:10 -0800 (PST)
-Date:   Tue, 21 Dec 2021 12:03:10 -0800
-In-Reply-To: <000000000000c54420059e4f08ff@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000009cd20305d3ad7e8d@google.com>
-Subject: Re: [syzbot] WARNING in dev_change_net_namespace
-From:   syzbot <syzbot+830c6dbfc71edc4f0b8f@syzkaller.appspotmail.com>
-To:     andriin@fb.com, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, davem@davemloft.net, dsahern@gmail.com,
-        dsahern@kernel.org, ebiederm@xmission.com, edumazet@google.com,
-        eric.dumazet@gmail.com, fw@strlen.de,
-        harshit.m.mogalapalli@oracle.com, hawk@kernel.org,
-        jiri@mellanox.com, johannes.berg@intel.com,
-        john.fastabend@gmail.com, kafai@fb.com, kpsingh@chromium.org,
-        kuba@kernel.org, leon@kernel.org, linux-kernel@vger.kernel.org,
-        marcelo.leitner@gmail.com, mkubecek@suse.cz,
-        netdev@vger.kernel.org, roopa@cumulusnetworks.com,
-        saiprakash.ranjan@codeaurora.org, songliubraving@fb.com,
-        suzuki.poulose@arm.com, syzkaller-bugs@googlegroups.com,
-        tonymarislogistics@yandex.com, will@kernel.org,
-        yajun.deng@linux.dev, yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot suspects this issue was fixed by commit:
+asix_read_cmd() may read less than sizeof(smsr) bytes and in this case
+smsr will be uninitialized.
 
-commit f123cffdd8fe8ea6c7fded4b88516a42798797d0
-Author: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-Date:   Mon Nov 29 17:53:27 2021 +0000
+Fail log:
+BUG: KMSAN: uninit-value in asix_check_host_enable drivers/net/usb/asix_common.c:82 [inline]
+BUG: KMSAN: uninit-value in asix_check_host_enable drivers/net/usb/asix_common.c:82 [inline] drivers/net/usb/asix_common.c:497
+BUG: KMSAN: uninit-value in asix_mdio_read+0x3c1/0xb00 drivers/net/usb/asix_common.c:497 drivers/net/usb/asix_common.c:497
+ asix_check_host_enable drivers/net/usb/asix_common.c:82 [inline]
+ asix_check_host_enable drivers/net/usb/asix_common.c:82 [inline] drivers/net/usb/asix_common.c:497
+ asix_mdio_read+0x3c1/0xb00 drivers/net/usb/asix_common.c:497 drivers/net/usb/asix_common.c:497
 
-    net: netlink: af_netlink: Prevent empty skb by adding a check on len.
+Fixes: d9fe64e51114 ("net: asix: Add in_pm parameter")
+Reported-and-tested-by: syzbot+f44badb06036334e867a@syzkaller.appspotmail.com
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+---
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=168acc95b00000
-start commit:   990f227371a4 Merge tag 's390-5.9-2' of git://git.kernel.or..
-git tree:       upstream
-kernel config:  https://syzkaller.appspot.com/x/.config?x=21f0d1d2df6d5fc
-dashboard link: https://syzkaller.appspot.com/bug?extid=830c6dbfc71edc4f0b8f
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=101761e2900000
+Changes in v2:
+	- Added Reviewed-by tag
 
-If the result looks correct, please mark the issue as fixed by replying with:
+---
+ drivers/net/usb/asix_common.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-#syz fix: net: netlink: af_netlink: Prevent empty skb by adding a check on len.
+diff --git a/drivers/net/usb/asix_common.c b/drivers/net/usb/asix_common.c
+index 42ba4af68090..06823d7141b6 100644
+--- a/drivers/net/usb/asix_common.c
++++ b/drivers/net/usb/asix_common.c
+@@ -77,7 +77,7 @@ static int asix_check_host_enable(struct usbnet *dev, int in_pm)
+ 				    0, 0, 1, &smsr, in_pm);
+ 		if (ret == -ENODEV)
+ 			break;
+-		else if (ret < 0)
++		else if (ret < sizeof(smsr))
+ 			continue;
+ 		else if (smsr & AX_HOST_EN)
+ 			break;
+-- 
+2.34.1
 
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
