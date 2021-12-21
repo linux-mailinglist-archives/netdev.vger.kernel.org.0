@@ -2,285 +2,246 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB9A947C977
-	for <lists+netdev@lfdr.de>; Wed, 22 Dec 2021 00:07:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E67E47C97B
+	for <lists+netdev@lfdr.de>; Wed, 22 Dec 2021 00:07:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234959AbhLUXFy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Dec 2021 18:05:54 -0500
-Received: from mga18.intel.com ([134.134.136.126]:23598 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234752AbhLUXFx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Dec 2021 18:05:53 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1640127953; x=1671663953;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=t2JBIIcxnFSJoQGa/ggKeSXRFBZ4JkKTw37IWmtxmTs=;
-  b=U8zT0PWoBX23zDoVNFmC15uJyrLLa623gbm4ZhRr6XI8LGsEH2z2Pj5P
-   RadSCzIIbssz/QPMFpPcNSJsoSD7vIXOElHDiZWCc4pczDv6JeKZpVUBo
-   O/+Zqun0XRnspuX7iGVgxgxZT5I5HNvwxb+4i/7uBIJ46TkF8PYjRRDp/
-   nblijJK3ArX5AsyFojQ/swv0ymKLFir/bcRcPklGy80JlGB3Ix6xeu1eW
-   EUzwp1T4ISrn8IyVnD+f+cRd0DgzyUaQe/zKvYDm384UJAMzL/hobNt8S
-   K1xIqoOOtxhwUBq6XTNNVW/UQY4O91cxPeM9gdR6gnqtZ8rSAbQSQJdJx
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10205"; a="227357642"
-X-IronPort-AV: E=Sophos;i="5.88,224,1635231600"; 
-   d="scan'208";a="227357642"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Dec 2021 15:05:43 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,224,1635231600"; 
-   d="scan'208";a="521445797"
-Received: from orsmsx606.amr.corp.intel.com ([10.22.229.19])
-  by orsmga008.jf.intel.com with ESMTP; 21 Dec 2021 15:05:43 -0800
-Received: from orsmsx609.amr.corp.intel.com (10.22.229.22) by
- ORSMSX606.amr.corp.intel.com (10.22.229.19) with Microsoft SMTP Server
+        id S235236AbhLUXHh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Dec 2021 18:07:37 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:23102 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235079AbhLUXHh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Dec 2021 18:07:37 -0500
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 1BLJ0uER007454;
+        Tue, 21 Dec 2021 15:07:34 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type :
+ content-transfer-encoding : in-reply-to : mime-version; s=facebook;
+ bh=5lPZqm5Xs7+kHVs9uMqPUi0Y2b7OLoGdxP8KFyzac6g=;
+ b=LZxFVLYRKyXJk8mPL/od4OqlS0v9DZPkfnxXZdA3OktFBDJoFMk0TyvBXbqqjBOXcb5A
+ XMe++38ePsBkUFQ0zZhkTFnhGkRySmXHr8Jrh7Dnw8LghHVlDKfLkv2D2L6K2xBIexdT
+ YY4vc4DHg77mbNqZ0gS54QR/mobZA2i8wkk= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3d3mq3hpmn-8
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 21 Dec 2021 15:07:33 -0800
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.36.100) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Tue, 21 Dec 2021 15:05:43 -0800
-Received: from orsmsx603.amr.corp.intel.com (10.22.229.16) by
- ORSMSX609.amr.corp.intel.com (10.22.229.22) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Tue, 21 Dec 2021 15:05:42 -0800
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20 via Frontend Transport; Tue, 21 Dec 2021 15:05:42 -0800
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.44) by
- edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.20; Tue, 21 Dec 2021 15:05:42 -0800
+ 15.1.2308.20; Tue, 21 Dec 2021 15:07:29 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gNXypQDmB70Wa6dJkRq76G46fULT5fZW2O1BNKUDAYLJYkaTA1iTLkmoduIjYzFqYUWayYZXvuyPLTdOZlkmhV9saT20cePBJDTLdNUxXFvoXB0aRyHPzkWHQjN2SX4Roxk+MSHTJyEjuM/Dm2MryGtoqXA+yiZvmib5Eh784DovX0UH3XEATGOyJULzpIvWpRo5PT3ECmmHsXTqEpoDno5wM363UL3nVToY4CnOEbMoQpSrqthW9c++V7UvrxQk3bXTofo0eiAGaefx/LA2jYXHWgk4lpBtqulVIF4rE7LBjKbi6oDs3nUe4Ov4zBAGhfm2azBNrSD5v49pcj+TrQ==
+ b=XbJSj5NlYqeH4Vi2EMawQkLtfGPfCMkQmpeGqJhakpR6WcDu2s4SSVSlxmw8hwnLZr35UwxbT3TEPnvNSulbHFPPPZgFptChJY+1YKIlih9mVUGSC+l/iLXrHY1iZ47ZwNvEVoMYWBDu4YZKLsMDvPkcA1igq9zeVZQY90NtCkdP+qgxLrMAAVnaCTVx/d3TmZfDKFAJg7cLEoOrc+/Ly7uPtyGkU9AC8Ngey2QHbb9iGrSENvkA81+9R8tKsRKj4/knQypXjf68sVGyXCRrIT2LCFIaDd50rIc6l59u8sosm6kbOMC90G8Ww8E/MEZo0PBFDwdlcEhM6RQ2fSwg0w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=s37vW40wURzRjY3SOFAH4EqhqHNlwHrHJ61L2m8N9Ss=;
- b=hSudxnCZ3SXaSJ1qQXhMS07dAWyP4/L2mJ2gMjlDL4XywAcipbVCdmUt1bJXCjUgRH1N4vudtIPhXPCizmVeUtS12hF5s+Kx5LeaNpas4t7/35cM6d0gKn1Cr8lThNW2olCVWMHIPVsw8nTIm15Wvo4Zf7jGcxxPyEa6rketqloaLsXXO8nwh6vIQvekkuhq44eArHuK17FYY1JKr0ijD6PIYxQNJ569fmpewH6MOP3Yh7axuharB1gFMNK5bdvX3dQ1Z9ZqCSM1fFrqQDokhwzfYl03emWnoEkl/n+DDKSPVszYIF6X5OxB7j9nvBwKRe8M/o66nqyBkUX1lrAm/A==
+ bh=5lPZqm5Xs7+kHVs9uMqPUi0Y2b7OLoGdxP8KFyzac6g=;
+ b=O+2vz++VWITKmbSUX+VnpAgYlPuQSUdIiLXN1nVw5i2RDYLWEOQKa5PrfaSgE8cR4Wrf+BhzS7RhX2dAr+GlWq/A/3riZnfomD4v1RfsPMUnOOBQTdWLrQb4CmFFVavyFTr2ay+DkB9BpPhsCYf4UcJpSAEsbKKp1NHu08DPzpuMtcXTmCVZPJ4wD8d355ckD/XloWLEuUdT/8SdRsDID7uRK6Tk9m3FoHUWd33vTOdTsOWCbSj3GMqPn68p4pAuJcjMNCD8TSbeiYWVUd75g/CaG0vs1O4HnBS3zcuuHTh0kByBAvwfeitf6NSaU/FbTwHBEKNbe9sFmyDWHVYQkQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from CO1PR11MB5170.namprd11.prod.outlook.com (2603:10b6:303:95::10)
- by MWHPR11MB1376.namprd11.prod.outlook.com (2603:10b6:300:1d::12) with
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Received: from SA1PR15MB5016.namprd15.prod.outlook.com (2603:10b6:806:1db::19)
+ by SA1PR15MB5013.namprd15.prod.outlook.com (2603:10b6:806:1d8::8) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4801.14; Tue, 21 Dec
- 2021 23:05:41 +0000
-Received: from CO1PR11MB5170.namprd11.prod.outlook.com
- ([fe80::4c2a:62a1:d6e5:b67b]) by CO1PR11MB5170.namprd11.prod.outlook.com
- ([fe80::4c2a:62a1:d6e5:b67b%6]) with mapi id 15.20.4801.022; Tue, 21 Dec 2021
- 23:05:41 +0000
-From:   "Chen, Mike Ximing" <mike.ximing.chen@intel.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "arnd@arndb.de" <arnd@arndb.de>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "Williams, Dan J" <dan.j.williams@intel.com>,
-        "pierre-louis.bossart@linux.intel.com" 
-        <pierre-louis.bossart@linux.intel.com>,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4801.15; Tue, 21 Dec
+ 2021 23:07:28 +0000
+Received: from SA1PR15MB5016.namprd15.prod.outlook.com
+ ([fe80::e589:cc2c:1c9c:8010]) by SA1PR15MB5016.namprd15.prod.outlook.com
+ ([fe80::e589:cc2c:1c9c:8010%8]) with mapi id 15.20.4801.020; Tue, 21 Dec 2021
+ 23:07:28 +0000
+Date:   Tue, 21 Dec 2021 15:07:25 -0800
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     Maciej =?utf-8?Q?=C5=BBenczykowski?= <maze@google.com>
+CC:     "Tyler Wear (QUIC)" <quic_twear@quicinc.com>,
+        Yonghong Song <yhs@fb.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>
-Subject: RE: [RFC PATCH v12 01/17] dlb: add skeleton for DLB driver
-Thread-Topic: [RFC PATCH v12 01/17] dlb: add skeleton for DLB driver
-Thread-Index: AQHX9jcKOP1y1O92CEC3pIeygh1pI6w8tNAAgACRSSCAADPkgIAABxag
-Date:   Tue, 21 Dec 2021 23:05:41 +0000
-Message-ID: <CO1PR11MB5170C1925DFB4BFE4B7819F5D97C9@CO1PR11MB5170.namprd11.prod.outlook.com>
-References: <20211221065047.290182-1-mike.ximing.chen@intel.com>
- <20211221065047.290182-2-mike.ximing.chen@intel.com>
- <YcGkILZxGLEUVVgU@lunn.ch>
- <CO1PR11MB51705AE8B072576F31FEC18CD97C9@CO1PR11MB5170.namprd11.prod.outlook.com>
- <YcJJh9e2QCJOoEB/@lunn.ch>
-In-Reply-To: <YcJJh9e2QCJOoEB/@lunn.ch>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-version: 11.6.200.16
-dlp-reaction: no-action
-dlp-product: dlpe-windows
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 0165319e-c816-441a-c5d8-08d9c4d668f4
-x-ms-traffictypediagnostic: MWHPR11MB1376:EE_
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr,ExtFwd
-x-microsoft-antispam-prvs: <MWHPR11MB137640C7519973DE06B5F9BAD97C9@MWHPR11MB1376.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: YGzZxoLCgszE0uG4Lx5golksh7DTbVOinn6qIDSQzkq88w0+dmP3sBaxlUiZOc4ywdU5KiFd1OVOEuSWzUseNvx7CbIavA3eSOx/T5N5OcUDO81IMAPCj3cMoY+t2fxhavUrSgMENfsEPAOhI+rMlKe+eihOG5NYvtmUg8SBPBk0/z/2gM1QVIG9U+20fOHJOBhzp6TCRl5x03AuOYd8FzN6c17f0U0tK11TF/iUQJe2kSude/2+zOEgvq1W2ysLxr6iEdNb9G6fqd3vKFrxLz6An7EvRQ+wJK4JYDgifglVOoHoWQjBt7LgIdmjWNwxXMEttlG/hpwU8VzBSBnmxWpB5tUcKmldkRHvl6BVS+IG4khSk+AE1b42lNMi7Jtg56TUKdY7t6S4pwsX4EHH8CTHpy9f85FckaZPaOQf15TufyKcpbPIXWjlJUlue92Wh5Gl8MURsQciTTpBYrw23MRGFVnDg7C95N7z7xlhMalT1wsvgPpr7gesVkfBFlGidA0zeRP9p8wLcEMVB8j4c4DBb7mHvgYhhxS8Reik8lD1D0a/bj3BB04hnFmqWGRfSRddC5xhm0hz+8V+WUgYgLU21+XNTg6LF7h/ahoJJfcPP3OjMDXcg6wKyai7UUzfu93j/EWZ9hW3d6CQVft4d9t4Jitwk/Ok9ywAdqASpCU737U2s5qkpG9SK8pSBrq13TVmZYXdbftsc5evOBMEhQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5170.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(7696005)(53546011)(52536014)(6916009)(508600001)(66556008)(122000001)(5660300002)(38100700002)(26005)(82960400001)(55016003)(66476007)(6506007)(9686003)(38070700005)(2906002)(66946007)(54906003)(71200400001)(83380400001)(186003)(4326008)(76116006)(64756008)(316002)(33656002)(8936002)(86362001)(8676002)(66446008);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?OJ3oVfJIj2dHCxb+h3Gj+cuqctz71580dYWLquPHpEHGHlaCMe6z+Nx7hPTQ?=
- =?us-ascii?Q?leriTpVWQKZjUkLug2M0nppBSYu+UpAWt7pekloMtk99LFAG5Jsax01riyb/?=
- =?us-ascii?Q?blbfSxr5+B0iP7hHU03f4UoLp9UIJpCLg/RYpP7OPBLht5lbWeXz3Ul01lvs?=
- =?us-ascii?Q?+ySunZTCGK3S0mU/8o8BmMcBOKTO/M2QfiMsl1YqcMdfmW0lDU6g8g3SqNXb?=
- =?us-ascii?Q?SyZx5D/jEMojI011hTDWODvTkprgsf0bTHnH3Gfd9wu/82BNjKoSSHOFPsZW?=
- =?us-ascii?Q?lGu9uHynCPoqi7jU431nEu0KqmqM9riJhLou7c+rXGZHOc93ToWNkg/bhysU?=
- =?us-ascii?Q?8DG7wNB1OWZiXKshzec+3ybjPWnGhvKNuY+1qRSmk4Bg46qsMzNTNNVYkFrp?=
- =?us-ascii?Q?h/yNXoJLPvsV01t/5DkEaf2jMz1c/0lc3jWRkMFUE6nTEtC5/x3UeKlIhCgj?=
- =?us-ascii?Q?OvUH2mIl4BEZbQahgarg46HyCFTqrIGsz8a/XQWOjIuyFdZws7wjospAUqGv?=
- =?us-ascii?Q?LUufhix9B4ASLqU7XThAwO/x/QJD4qNuaOaNOx+/HDbGUj9i2glVJr/7OHvu?=
- =?us-ascii?Q?HJogudxadJ5jGbEzNxOV5nP5aGlms4kRwBkVd4v9UpJpSTHMAVf7DRneCq1+?=
- =?us-ascii?Q?NKziTw3NZ9a9eSh60A3i6ZWLR6q4Y8UZl5aX9RvjKQbuAdBPZBatw2qmM1Ol?=
- =?us-ascii?Q?srx4Qxr3UymOxz8CLETGsWq0CoDr8hRsYh+Mkl0CTbnTOsta9YHrBQTFxadL?=
- =?us-ascii?Q?7ZU7o4KcAwarS0qcRm1CzBvj03CvEvALgBAscEQnR+vCmlURWcgR48CPqQwV?=
- =?us-ascii?Q?ZjQbs7RaZeVM8hyM9ZVScbGG5gdmXfIKuo29+9QFuWug+OU6nL7tw+dg1vJc?=
- =?us-ascii?Q?lC73Ph0OpEmDUzTUbdVzAb4VDkv4d5lB8tZBi/YzDAM8YJZjbJp5OsqTJ04Q?=
- =?us-ascii?Q?zHmH020eilTZ35UmP+4vpUEO2GeldIt8JpMaOpwqEqcT9kbzbGACRbRKBZ+s?=
- =?us-ascii?Q?I09w9V8Xr5lM46lc/Pou8sbE+hgfvZh4E7NQ4kxeTHi+kGJGnkGx5+6kJuZ0?=
- =?us-ascii?Q?pYODpzgvmB/ZNP1K1cXWI/K2+fy/egrmf+MfdZ9rQg4qbrKHjgQQv1woJNuC?=
- =?us-ascii?Q?JYkSvJ7bsomNzudsw4enO7SYwqVXRVB8m0kZlMRx0t+knflYQ3U3/oMNxuXP?=
- =?us-ascii?Q?KcYWQuPkBTqcyfu43vam7s1K6k5od/+D54JFGmorui8Epn7pRHOqu+pvqXWA?=
- =?us-ascii?Q?hwLNb6Ymeb8GxjFXdxlIxTbAzywLsdk6zBifYEH4Mloek2D1t2spUvdc7gus?=
- =?us-ascii?Q?iJb96ZTn+JSFs3Su8aZYjBH8psYDUiP365ih7iOghKJAY6pGl1kNHbLPOXHo?=
- =?us-ascii?Q?JQL0cPTyJ50E/ph6/EzjgoRp2DDJt5dBNCzRspa0X8UrCytjEeNiIU8LCllo?=
- =?us-ascii?Q?srwWP5WV1561kVtVH5EVmAqfOjLRsIN+no01b/9J4n6kF82gjohIDjuIZ9Vg?=
- =?us-ascii?Q?HYMoGc407mbz7G9Zulzqzyp/lBLydR8L0Fjd4bm6Wi2wCiRH3paRaEs73CB3?=
- =?us-ascii?Q?KkiqtGtbHPFnKqMmSozL+slpNt7UbRTNp8SujdtBnyf8lXUte6TlAj+Oo5UJ?=
- =?us-ascii?Q?YY2LZSZe7XZIa+OLB6cqswObFOTWB3PX2sQmxAldhOMPwO6FsxxauD3GBxRg?=
- =?us-ascii?Q?YNZVbg=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
+Subject: Re: [PATCH] Bpf Helper Function BPF_FUNC_skb_change_dsfield
+Message-ID: <20211221230725.mm5ycvkof3sgihh6@kafai-mbp.dhcp.thefacebook.com>
+References: <20211220204034.24443-1-quic_twear@quicinc.com>
+ <41e6f9da-a375-3e72-aed3-f3b76b134d9b@fb.com>
+ <20211221061652.n4f47xh67uxqq5p4@kafai-mbp.dhcp.thefacebook.com>
+ <BYAPR02MB5238740A681CD4E64D1EE0F0AA7C9@BYAPR02MB5238.namprd02.prod.outlook.com>
+ <CANP3RGeNVSwSfb9T_6Xp8GyggbwnY7YQjv1Fw5L2wTtqiFJbpw@mail.gmail.com>
+ <20211221215227.4kpw65oeusfskenx@kafai-mbp.dhcp.thefacebook.com>
+ <CANP3RGdbYsue7xiYgVavnq2ysg6N6bWpFKnHxg4YkpQF9gv4oA@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CANP3RGdbYsue7xiYgVavnq2ysg6N6bWpFKnHxg4YkpQF9gv4oA@mail.gmail.com>
+X-ClientProxiedBy: MWHPR1401CA0004.namprd14.prod.outlook.com
+ (2603:10b6:301:4b::14) To SA1PR15MB5016.namprd15.prod.outlook.com
+ (2603:10b6:806:1db::19)
 MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: da6756c9-5688-40b0-3d60-08d9c4d6a89b
+X-MS-TrafficTypeDiagnostic: SA1PR15MB5013:EE_
+X-Microsoft-Antispam-PRVS: <SA1PR15MB50138A03704ACD19D0FD59DCD57C9@SA1PR15MB5013.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: EskZhj/9lhuemN8FR17kY1Bjm5os5UNejg5r3Q1oAZ0Q3AYD4zepo8hJz7Fwnc5skjfN3zCoQ8+6sF33Pr01anO584rbTedzEnNndpcvGltBZ+IZCiMrZEqXlODtDUzaX4Rh+eTDMYmPEuvAyH8Mx7AbrWTXvNWbeGJ8q/W1yoxKDGEVUGDi6R2vIYePw3ENcsZV8S5mEYza3/5gIUUFigIVQW5y9We5aTkZWXpsU+DTARmlgJnXm0yoeiX21Fvyah/Z03THDGjMle545FHpYXCbNpJNisKADboJutY6/TpYm1ivxUuCZ7iN0zA9vNy5OjWZC1fmKFdXpRXdt4NQI/xPJSmfOxifzvzm8F318eaa635BsIlkGQK9N1Akv7t9Xy6vlDASOE+rEwmebeKgH1wJZfIvVewxuUG2dw0s5OzvUrdb7JJZXZMc6mKjrXWTVv5rcStT58ds2acXQCXivvC0imAl37+PUMQqrOlI5UpSE39ZWn92mee8F/Qy3K5EL4FbEN2EEXdvJguq2oymBnGo4nYqR88zfhlqP6ZdYJR2VAcDa7XoHcVjJub8UisDgbm+JLOCbmiHc0VQx7y+TtjiKEnCFSB+tWqo5Mu/yNICE/Ie1kkCXnwH0kTR5nQlllaDgrae15JcsLrUOrFsTg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR15MB5016.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(316002)(1076003)(6666004)(66946007)(9686003)(5660300002)(6916009)(2906002)(52116002)(54906003)(6512007)(66556008)(6486002)(86362001)(4326008)(508600001)(38100700002)(8936002)(66574015)(6506007)(186003)(8676002)(83380400001)(66476007);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Z2VjQ2V2OEVmOFU0YUhPQksrc0tsb2Z5b3pQRHVReXdrVlJNaVNSWWZUMWdB?=
+ =?utf-8?B?L3cwQnpsU3RNVmwybnJtYzhjRTZLVGdXaDBOUEcwNWpySDl5ZUllazhvNzZH?=
+ =?utf-8?B?Z1V2bm9sclhHa2xCdzVHODIwOWpad01NZ2NGTDIweDBlMkZsUU8yY0UwWml3?=
+ =?utf-8?B?T3NqamJVRUp4OGtVdlJML05mSEVnNmRtekRjZE15THREaHNMcisyeVlJRmt4?=
+ =?utf-8?B?OG5oZHZhZnpubEVvaHF4cTEvQk1udjRaVVp0djUvN0hIb084bnQ1U1hnS3p5?=
+ =?utf-8?B?MFplb0RBZmdQL1p5NWVUV1dXZTVzU2s5YWZZTU5qckVHYnNqOEdEU0FkN3p3?=
+ =?utf-8?B?bTFxdzdhQ3M5bzFXYXhIZzRUQXRkYkJjTWtPdElITGREeWhIZW5NSVl0ZjA3?=
+ =?utf-8?B?SW5sb1UxWE5mUFMrNXNrZXNkWUVPQWlwQ3hCblJjZzNSU1YzbXg2Z3FsSVBw?=
+ =?utf-8?B?dWZJVkZKa094VjlGQy9sWFFzTlNHNEpHSU8vWkcwY1FjMXprTWlDU1I5UlJ3?=
+ =?utf-8?B?MzFpL1FKT3Z4SldMamluTkwwc3RmVUV3UFgzRGtGK0ZpMUZpWWZxK0d2bHIy?=
+ =?utf-8?B?bE5DRElRdUlUbG5aRndvckJzamN0N21VUE5WaHVla0pOa2c2MCtLNGhIQWdj?=
+ =?utf-8?B?YmNHU2Vob2ZQMG1SM3pMZ09JWFo5aXZycXNHT3JsTDJhUTRVbFlEcThBTHZo?=
+ =?utf-8?B?d3A4Z1daUlFWWGxMNTVZb2tlTDAycjZHY1A4ZzJaT3F6N3E4NWJyUEExUHlN?=
+ =?utf-8?B?dlZOWkppTzd2a0lHTWVhRVFCeXpDaHpnaFIvUzU4QmNSRWIwUUVKVjJ4Ykxu?=
+ =?utf-8?B?MXlNVnZuN1Z4cnI1eE55bktoU21YNk1BTm1xcHcrb0Q0d2RrdTN3UFZueUxB?=
+ =?utf-8?B?QXdsU2l4SUM2QVBIcGdDT0FDdWNnOXlhM211Mms1Nk1ROUtjWGJUK2ZrKzlu?=
+ =?utf-8?B?UTRnMzFldXkwbFN5L0gwcGtqSmJFaHR2VjhBMVBLL0lKbmprYkl2aDg3WjNC?=
+ =?utf-8?B?RDZoUVFFMUlMU0V5QStoa0RFN3NzVHRJci9DRDVzM29Hb1NmSWo2YitJUXRH?=
+ =?utf-8?B?a2drcklCZ21JYjA2WFl3Z1MwSXYzdjRHNHFXWllmNFV4Q29sSzdHUUdwckdt?=
+ =?utf-8?B?Um5lT2pOeHpISE12NVFXMG44WEREa1VWRWdMZXdLMUJuNmlGM3o5Nlh1WkNn?=
+ =?utf-8?B?QW90S1NXdFJ6L1EzNFZ2WE9aYktuTStFREJYdzlNUGtsckhjQmhiYnJjSXZz?=
+ =?utf-8?B?OFpUazE5ellUNjVjVjJJUjhMcDFtY1E4eEtlMDlMN0pVMytpNG5heHVXVkJ0?=
+ =?utf-8?B?MGExS1AyZUJuSmo0K1pkSm5GKzdUODkxcDZTTHQrRVZZK1dQMlJ2Z1VaZXkz?=
+ =?utf-8?B?RjFlaUlrQjJpYUI1NWdUQ3hyWHkvS0NqcUxYM3liS1o5OW5WblB1Q1JwVjRJ?=
+ =?utf-8?B?d2Jmb1hVcW1iWW5QN0FKMTZ6SnRxYjdESVNuTUwrQzVqTDQyT09NS29HcGtH?=
+ =?utf-8?B?Z1JmOFpudk5EUEsxOVRyNytpZEozZ0ZYR1J3V20yTVdjcUc5Ty9JNVVwL1lY?=
+ =?utf-8?B?Y3BsRVhIOG03TVg0THZjSVJxT25qWm44cTZwMmU2VTIyUDR0WnJJTzZncVk2?=
+ =?utf-8?B?WGIvVXVxSDArNmlhOG9JVHdGREhBc25pL0trdFJQbGd3WkJ5RDB6ajZZQXAr?=
+ =?utf-8?B?ZGtPV3dPWEZvR3BhWFd1NjVJck9nUmpqU2xtOVA4Y09aOGp0K3QwT3c2T0lX?=
+ =?utf-8?B?eG4rT2ZMK1pJalpRMFc1Wkh0Z0NPYVBzYVo3cXlTODRBRDc4VU9vMDREQ09j?=
+ =?utf-8?B?b09YdEViNUczaHhXbEJuc1Q1QmZLdTNNdVBjcHhhTTNpT0lpYnBEK0hoRkE3?=
+ =?utf-8?B?VUpGMmxxMnZLQlJRUXBxQU45VUxQMnRjQUEvZGJFa2V1ZGg3VmJQWWJVbHd6?=
+ =?utf-8?B?eS83VHZmQnRqck1tTzl5OEFWUjRkRnBRR3VyMEJ1WkRzOG1FWTd1RXBqVjhw?=
+ =?utf-8?B?NmRwMG1pNUgzV1VCV3d4Rkp0ejk2VmhEZkZINVRxY1Z3SjJ0QTlGWW40Ym43?=
+ =?utf-8?B?d1Y5YzFEaEJ0Vnp4ck5tMmFNVjIrNFRSSzhsdEtnVUliR1NKUTJlalBuRk1L?=
+ =?utf-8?Q?LR+rtMYmapVBFxA3pBHPzNGZJ?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: da6756c9-5688-40b0-3d60-08d9c4d6a89b
+X-MS-Exchange-CrossTenant-AuthSource: SA1PR15MB5016.namprd15.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5170.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0165319e-c816-441a-c5d8-08d9c4d668f4
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Dec 2021 23:05:41.1139
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Dec 2021 23:07:28.3135
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 4PPfZqsjtbDrV90nQXP4ZJAZhB5Zll+zno6wctkJsMChNexkgMM0Fdwk4c2fXtYSahpzmzl6H4Lx4l2gDiUGGmNVsvrjpqWf/3lpgIvKObM=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR11MB1376
-X-OriginatorOrg: intel.com
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: CWyoBFft9+NggZc6WZO38HHaNg3Ke96bbp4+9VhFXgmZHVE1vsLvpxPd39YdUjm1
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR15MB5013
+X-OriginatorOrg: fb.com
+X-Proofpoint-ORIG-GUID: NzWnSlnsPUpM2PQlojRo4X5Zm6PAn64d
+X-Proofpoint-GUID: NzWnSlnsPUpM2PQlojRo4X5Zm6PAn64d
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2021-12-21_07,2021-12-21_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 lowpriorityscore=0
+ malwarescore=0 adultscore=0 clxscore=1015 priorityscore=1501
+ suspectscore=0 spamscore=0 impostorscore=0 mlxscore=0 bulkscore=0
+ phishscore=0 mlxlogscore=999 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2110150000 definitions=main-2112210116
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Dec 21, 2021 at 02:13:04PM -0800, Maciej Żenczykowski wrote:
+> > > ad 1) AFAIK if bpf calls bpf_setsockopt on the socket in question,
+> > > then userspace's view of the socket settings via
+> > > getsockopt(IP_TOS/IPV6_TCLASS) will also be affected - this may be
+> > > undesirable (it's technically userspace visible change in behaviour
+> > > and could, as unlikely as it is, lead to application misbehaviour).
+> > > This can be worked around via also overriding getsockopt/setsockopt
+> > > with bpf, but then you need to store the value to return to userspace
+> > > somewhere... AFAICT it all ends up being pretty ugly and very complex.
+> > CGROUP_(SET|GET)SOCKOPT is created for that.
+> > The user's value can be stored in bpf_sk_storage.
+> 
+> Yes, it can be done, it's very complex to do so.
+> 
+> The policy can change during run time (indeed that's probably a
+> relatively likely situation,
+> network gear notices a new high bandwidth connection and provides out
+> of band feedback
+> that it should be using a different dscp code point - we probably
+> don't want the full policy to
+> be present in the device because it might be a huge number of entries,
+> with wildcards).
+ic. got it. The value is very dynamic, so changing tos/tclass of a sock
+in a more static hook like bind won't work well.
 
+Details like this should have been in the commit message.
 
-> -----Original Message-----
-> From: Andrew Lunn <andrew@lunn.ch>
-> Sent: Tuesday, December 21, 2021 4:39 PM
-> To: Chen, Mike Ximing <mike.ximing.chen@intel.com>
-> Cc: linux-kernel@vger.kernel.org; arnd@arndb.de; gregkh@linuxfoundation.o=
-rg; Williams, Dan J
-> <dan.j.williams@intel.com>; pierre-louis.bossart@linux.intel.com; netdev@=
-vger.kernel.org;
-> davem@davemloft.net; kuba@kernel.org
-> Subject: Re: [RFC PATCH v12 01/17] dlb: add skeleton for DLB driver
->=20
-> On Tue, Dec 21, 2021 at 08:56:42PM +0000, Chen, Mike Ximing wrote:
+> > > I wouldn't be worried about needing to override each individual field,
+> > > as the only other field that looks likely to be potentially beneficial
+> > > to override would be the ipv6 flowlabel.
+> > >
+> > > ad 2) I don't think the bpf_setsockopt(IP_TOS/IPV6_TCLASS) approach
+> > > works for packets generated via udp sendmsg where cmsg is being used
+> > > to set tos.
+> > There is CGROUP_UDP[4|6]_SENDMSG.  Right now, it can only change the addr.
+> > tos/tclass support could be added.
+> 
+> It could, that doesn't seem easier to do than this approach though.
+> 
+
+[ ... ]
+
+> > > Technically this could be done by attaching the programs to tc egress
+> > > instead of the cgroup hook, but then it's per interface, which is
+> > > potentially the wrong granularity...
+> 
+> > Right, there is advantage to do it at higher layer,
+> > and earlier also.
 > >
+> > If the tos/tclass value can be changed early on, the correct
+> > ip[6] header can be written at the beginning instead
+> > of redoing it later and need to worry about the skb_clone_writable(),
+> > rewriting it, do iph->check..etc.
+> 
+> I would indeed like it if we could decouple what userspace wants,
+> from what the kernel/network actually uses.  There would need to be
+> some sort of bpf hook,
+> that takes a socket/flow and returns the tos/dscp to actually use
+> (based on 5-tuple and other information).
+> 
+> But again, this would be *much* more complex.
+In terms of the bpf prog doing the dscp-logic, it should be
+pretty much the same.  Getting the 5-tuple, lookup from a map
+and return the dscp value.
+
+> > > As for what is driving this?  Upcoming wifi standard to allow access
+> > > points to inform client devices how to dscp mark individual flows.
+> > Interesting.
 > >
-> > > -----Original Message-----
-> > > From: Andrew Lunn <andrew@lunn.ch>
-> > > Sent: Tuesday, December 21, 2021 4:54 AM
-> > > To: Chen, Mike Ximing <mike.ximing.chen@intel.com>
-> > > Cc: linux-kernel@vger.kernel.org; arnd@arndb.de;
-> > > gregkh@linuxfoundation.org; Williams, Dan J
-> > > <dan.j.williams@intel.com>; pierre-louis.bossart@linux.intel.com;
-> > > netdev@vger.kernel.org; davem@davemloft.net; kuba@kernel.org
-> > > Subject: Re: [RFC PATCH v12 01/17] dlb: add skeleton for DLB driver
-> > >
-> > > > +The following diagram shows a typical packet processing pipeline w=
-ith the Intel DLB.
-> > > > +
-> > > > +                              WC1              WC4
-> > > > + +-----+   +----+   +---+  /      \  +---+  /      \  +---+   +---=
--+   +-----+
-> > > > + |NIC  |   |Rx  |   |DLB| /        \ |DLB| /        \ |DLB|   |Tx =
- |   |NIC  |
-> > > > + |Ports|---|Core|---|   |-----WC2----|   |-----WC5----|   |---|Cor=
-e|---|Ports|
-> > > > + +-----+   -----+   +---+ \        / +---+ \        / +---+   +---=
--+   ------+
-> > > > +                           \      /         \      /
-> > > > +                              WC3              WC6
-> > >
-> > > This is the only mention of NIC here. Does the application interface
-> > > to the network stack in the usual way to receive packets from the
-> > > TCP/IP stack up into user space and then copy it back down into the
-> > > MMIO block for it to enter the DLB for the first time? And at the end=
- of the path, does the application
-> copy it from the MMIO into a standard socket for TCP/IP processing to be =
-send out the NIC?
-> > >
-> > For load balancing and distribution purposes, we do not handle packets
-> > directly in DLB. Instead, we only send QEs (queue events) to MMIO for
-> > DLB to process. In an network application, QEs (64 bytes each) can
-> > contain pointers to the actual packets. The worker cores can use these =
-pointers to process packets and
-> forward them to the next stage. At the end of the path, the last work cor=
-e can send the packets out to NIC.
->=20
-> Sorry for asking so many questions, but i'm trying to understand the arch=
-itecture. As a network maintainer,
-> and somebody who reviews network drivers, i was trying to be sure there i=
-s not an actual network MAC
-> and PHY driver hiding in this code.
->=20
-> So you talk about packets. Do you actually mean frames? As in Ethernet fr=
-ames? TCP/IP processing has not
-> occurred? Or does this plug into the network stack at some level? After T=
-CP reassembly has occurred? Are
-> these pointers to skbufs?
->=20
-There is no network MAC or PHY driver in the code. Actually DLB and the dri=
-ver does not have any direct access to
-the network ports/sockets. In the above diagram, the Rx/Tx CPU core receive=
-s/transmits packet (or frames)
-from/to the NIC. These can be either L2 or L3 packets/frames. The Rx CPU co=
-re sends corresponding QEs with
-proper meta data (such as pointers to packets/frames) to DLB, which distrib=
-utes QEs to a set of worker cores.
-the worker cores receive QEs, process the corresponding packets/frames, and=
- send QEs back to DLB for
-the next stage processing. After several stages of processing, the worker c=
-ores in the last stage send the QEs
-to Tx core, which then transmits the packets/frames to NIC ports. So betwee=
-n the Rx core and Tx core is where
-DLB and the driver operates. The DLB operation itself does not involve any =
-network access.
+> > How does the sending host get this dscp value from wifi
+> > and then affect the dscp of a particular flow?  Is the dscp
+> > going to be stored in a bpf map for the bpf prog to use?
+> 
+> It gets it out of band via some wifi signaling mechanism.
+> Tyler probably knows the details.
+> 
+> Storing flow match information to dscp mapping in a bpf map is indeed the plan.
+> 
+> > Are you testing on TCP also?
+> >
+> > > As for the patch itself, I wonder if the return value shouldn't be
+> > > reversed, currently '1 if the DS field is set, 0 if it is not set.'
+> > > But I think returning 0 on success and an error on failure is more in
+> > > line with what other bpf helpers do?
+> > > OTOH, it does match bpf_skb_ecn_set_ce() returning 0 on failure...
+> 
+> > If adding a helper , how about making the bpf_skb_store_bytes()
+> > available to BPF_PROG_TYPE_CGROUP_SKB?  Then it will be
+> > more flexible to change other fields in the future in
+> > the network and transport header.
+> 
+> I assume there's some reason why it's not available?
+Not that I am aware of.  There was just no use case for it.
+The static case is handled in socket bind/creation time.
+The more dynamic case is handled in the udp_sendmsg which so
+far the use case is changing the address only.
 
-I am not very familiar with skbufs, but they sound like queue buffers in th=
-e kernel. Most of the DLB applications
-are in user space. So these pointers can be for any buffers that an applica=
-tion uses. DLB does not process any
-packets/frames, it distributes QEs to worker cores which process the corres=
-ponding packets/frames.
-
-> > > Do you even needs NICs here? Could the data be coming of a video
-> > > camera and you are distributing image processing over a number of cor=
-es?
-> > No, the diagram is just an example for packet processing applications.
-> > The data can come from other sources such video cameras. The DLB can
-> > schedule up to 100 million packets/events per seconds. The frame rate f=
-rom a single camera is normally
-> much, much lower than that.
->=20
-> So i'm trying to understand the scope of this accelerator. Is it just a n=
-etwork accelerator? If so, are you
-> pointing to skbufs? How are the lifetimes of skbufs managed? How do you g=
-et skbufs out of the NIC? Are
-> you using XDP?
-
-This is not a network accelerator in the sense that it does not have direct=
- access to the network sockets/ports. We do not use XDP.
-What it does is to effectively distribute workloads (such as packet process=
-ing) among CPU cores and therefore
-increases the total packet/frame processing throughput of the CPU processor=
-s (such as Intel's Xeon processors).
-Imagine, for example, that the Rx core receives 1000 packets/frames in a bu=
-rst with random payloads, how to
-distribute the packet processing to (say) 16 CPU cores is the job of the DL=
-B hardware. The driver is responsible
-for the resource management, system configuration and reset, multiple user/=
-application support, and virtualization
-enablement.
-
-Thanks
-Mike
-
+I don't mind adding bpf_skb_store_bytes() which could be useful
+for other header's fields.
