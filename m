@@ -2,119 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 71F2747C36D
-	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 17:04:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2791B47C37A
+	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 17:06:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237931AbhLUQEJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Dec 2021 11:04:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40374 "EHLO
+        id S239450AbhLUQGz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Dec 2021 11:06:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229978AbhLUQEJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Dec 2021 11:04:09 -0500
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2314C061574
-        for <netdev@vger.kernel.org>; Tue, 21 Dec 2021 08:04:08 -0800 (PST)
-Received: by mail-yb1-xb35.google.com with SMTP id y68so40287414ybe.1
-        for <netdev@vger.kernel.org>; Tue, 21 Dec 2021 08:04:08 -0800 (PST)
+        with ESMTP id S239444AbhLUQGy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Dec 2021 11:06:54 -0500
+Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66439C06173F
+        for <netdev@vger.kernel.org>; Tue, 21 Dec 2021 08:06:54 -0800 (PST)
+Received: by mail-qk1-x735.google.com with SMTP id 69so479741qkd.6
+        for <netdev@vger.kernel.org>; Tue, 21 Dec 2021 08:06:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0roCqRwBVDlG3ZY65wGgF0zPM6igK5cwoWbgit1/YI4=;
-        b=ivqIGI/KEh3aqvtfjIDOc/Es6avHmhJ8sdvnEc9Ai/lVNTM6sXIhd7yyVJkd0zJfVc
-         Gj7NjooTymJGQ++gTM7x7xQxtsN+uvQD1TfM9U2SaNJozKgKseF+z4aC3zPe/Hiyo1lA
-         xo0oYvohryFUtbZJh61O2widNyobZBGA1oAQVnjMM7imhIOoUpP/Er2U0o5jv2M9zyMH
-         OuM0PviL4m8wy30aSqh0E31abJOKeh2RH71+HAV/ZujEV9zwL6QcT7x4I15HgAiCQjyi
-         lbWZpWxs2LVQj4rLzZznhPun9nh+JqmejVgHODL/amc2mt6HqijdOs8eQJAEZrSY0SiS
-         T6DA==
+        d=egauge.net; s=google;
+        h=message-id:subject:from:to:cc:date:in-reply-to:references
+         :organization:user-agent:mime-version:content-transfer-encoding;
+        bh=CA0vEmK4VuD0G874S6BcBlFV/fcXlZJ0vIg3qiYKRtE=;
+        b=qOIVe/Ulrw9M0ql12nQM/iQjHwp0KJnIxM9TgARluh2svI6qk9dSBSboo9pua1hOoR
+         jUsxmOzEVEFx4EzAcyVWC0ZA+ndcS6+sBpbGJ5VyTH7DRyDXo3Q7VT3HtXy4bxi3s+MV
+         yWeof3dsaDfLiZydW3qhODT6lz3X7RKu1FkvfPnvUDtvUQo7y+D49vSVxSeuQnp5nOvz
+         HCTVFaspA9npKQ2+SvimAumqTYCp4V8UJ1l/dE3/QD1nPB2IK2ENRrfoo/DcHVx9w5j3
+         UubJs6ATzXZFi00dP8k0ZOVE+n4E3EzdUhPEif/Po+dM45o+7GvVulrBFO/uMV1Xk5su
+         9BvA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0roCqRwBVDlG3ZY65wGgF0zPM6igK5cwoWbgit1/YI4=;
-        b=JMPYeGiOFm5ZUw9kYPj5RsjD2bM1rHPS0J2Elcd2fnp+h6eGVcdGzRfmSZOz0eE1GR
-         AQmby/70aNg3HBP3U/CpGEfN3t9wGRaOvL1qKPdcah+LisbUCyavwDDumRvVcZ2/NxxL
-         ha91ygAb4kltwbpYEyit6u+T9fTd6gqFzTs312sqR3m4jqgZ+NOzJgww0eX/Sq3nEYkV
-         +rRrd5ky6Ow4meYpfO8i9M3KqcQvMe2H6Amhk60sUpiftcGDY47AOTTj6ydLh/SJTbON
-         vVjp9NlV/j8NXOB8PvqUyybQstVy98kkuClypBrl8VU94G4vjOydhnaGZJTxPhmRp9Vd
-         MKMw==
-X-Gm-Message-State: AOAM5322vhIQyN9cfTAWQO/D04XVgT9cLWgvaoTv9iXo0oLZGkHHwkGA
-        fwR55aCDsNsvHcGQdTrONoSAzL96WImrKqkPRXLMQQ==
-X-Google-Smtp-Source: ABdhPJzzns+hChUDZbOHQEm/E9TmmuZM8sZ7oacian8uS0tNDMDu1xMFR62ZsNiEzzke81Jc3knotpgxEeZ8ttZAfl4=
-X-Received: by 2002:a05:6902:1025:: with SMTP id x5mr5545758ybt.156.1640102647638;
- Tue, 21 Dec 2021 08:04:07 -0800 (PST)
-MIME-Version: 1.0
-References: <000000000000c70eef05d39f42a5@google.com> <00000000000066073805d3a4f598@google.com>
- <CANn89i++5O_4_j3KO0wAiJHkEj=1zAeAHv=s9Lub_B6=cguwXQ@mail.gmail.com> <e3a30c8c-3f1a-47b5-57e7-1b456bbc8719@kernel.dk>
-In-Reply-To: <e3a30c8c-3f1a-47b5-57e7-1b456bbc8719@kernel.dk>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 21 Dec 2021 08:03:56 -0800
-Message-ID: <CANn89iJfEgkJCBqO9d7t9BHHMEh-6DQ1BJkqkiOQ59dxSHB2EQ@mail.gmail.com>
-Subject: Re: [syzbot] general protection fault in set_task_ioprio
-To:     Jens Axboe <axboe@kernel.dk>
-Cc:     syzbot <syzbot+8836466a79f4175961b0@syzkaller.appspotmail.com>,
-        Christoph Hellwig <hch@lst.de>, changbin.du@intel.com,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-block@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Yajun Deng <yajun.deng@linux.dev>
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:organization:user-agent:mime-version
+         :content-transfer-encoding;
+        bh=CA0vEmK4VuD0G874S6BcBlFV/fcXlZJ0vIg3qiYKRtE=;
+        b=3fIqRbwHAgCrjqd3t4ksNUHugebXENCnkVmPKINC0Bfft4m0oo81kIvXAR3n4Va7Da
+         iF2H/IHsCBMXMNPHBdPnvt/7k0FWc20Q8dKe8SzkTiHAcUzhRoAejuBnDl9M4IqjMCw5
+         kmm3RKQVZWulfoX9slEQCUo5T0i0gKWfMUyRF9eUxf5SfQDFCIvXe4cDUD4SH0YBL2PT
+         bd6/gYwJ6OLwNSdb8xmjwdcZvc4jm22Y6Q9ZMK3yZUitzq1xKcbSFIbq1CWOqbFnNX0k
+         XrqiYrN01OEzuPzj9D9xyUCj3MJX/B+shPvBc3lmEDGvM/pjx0I2oj+U9Iskxxw++Zqp
+         LZ/g==
+X-Gm-Message-State: AOAM531Pn69udjItMdNr4XxzKXq43kl4mv+KS3CJUqXqTEhHQbSNBhsM
+        ww2Bxb8ZxRY1zySp8pUJDlQO
+X-Google-Smtp-Source: ABdhPJwY/i2y/TBE4bud79JOMazs61JlNK44ovTedNtrgQW3IL7WCnnDmTktbDvmJaqxOyESEh8t3Q==
+X-Received: by 2002:a05:620a:4301:: with SMTP id u1mr2533209qko.134.1640102813467;
+        Tue, 21 Dec 2021 08:06:53 -0800 (PST)
+Received: from sloth ([2607:fb90:ac99:dad1:b58:661c:23ad:781e])
+        by smtp.gmail.com with ESMTPSA id 196sm13506624qkd.61.2021.12.21.08.06.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Dec 2021 08:06:52 -0800 (PST)
+Message-ID: <5f4ab50b4773effafd0a43c8c541d49621f78980.camel@egauge.net>
+Subject: Re: [PATCH v6 2/2] wilc1000: Document enable-gpios and reset-gpios
+ properties
+From:   David Mosberger-Tang <davidm@egauge.net>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Ajay Singh <ajay.kathat@microchip.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Kalle Valo <kvalo@codeaurora.org>, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Adham Abozaeid <adham.abozaeid@microchip.com>
+Date:   Tue, 21 Dec 2021 09:06:48 -0700
+In-Reply-To: <YcHu8qkzguAPZcKx@robh.at.kernel.org>
+References: <20211220180334.3990693-1-davidm@egauge.net>
+         <20211220180334.3990693-3-davidm@egauge.net>
+         <YcHu8qkzguAPZcKx@robh.at.kernel.org>
+Organization: eGauge Systems LLC
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5-0ubuntu1 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 21, 2021 at 7:25 AM Jens Axboe <axboe@kernel.dk> wrote:
->
-> On 12/21/21 3:44 AM, Eric Dumazet wrote:
-> > On Tue, Dec 21, 2021 at 1:52 AM syzbot
-> > <syzbot+8836466a79f4175961b0@syzkaller.appspotmail.com> wrote:
-> >>
-> >> syzbot has bisected this issue to:
-> >>
-> >> commit e4b8954074f6d0db01c8c97d338a67f9389c042f
-> >> Author: Eric Dumazet <edumazet@google.com>
-> >> Date:   Tue Dec 7 01:30:37 2021 +0000
-> >>
-> >>     netlink: add net device refcount tracker to struct ethnl_req_info
-> >>
-> >
-> > Unfortunately this commit will be in the way of many bisections.
-> >
-> > Real bug was added in
-> >
-> > commit 5fc11eebb4a98df5324a4de369bb5ab7f0007ff7
-> > Author: Christoph Hellwig <hch@lst.de>
-> > Date:   Thu Dec 9 07:31:29 2021 +0100
-> >
-> >     block: open code create_task_io_context in set_task_ioprio
-> >
-> >     The flow in set_task_ioprio can be simplified by simply open coding
-> >     create_task_io_context, which removes a refcount roundtrip on the I/O
-> >     context.
-> >
-> >     Signed-off-by: Christoph Hellwig <hch@lst.de>
-> >     Reviewed-by: Jan Kara <jack@suse.cz>
-> >     Link: https://lore.kernel.org/r/20211209063131.18537-10-hch@lst.de
-> >     Signed-off-by: Jens Axboe <axboe@kernel.dk>
->
-> There are only really 5 patches in between the broken commit and the one
-> that fixes it, and it only affects things trying to set the ioprio with
-> a dead task. Is this a huge issue? I don't see why this would cause a
-> lot of bisection headaches.
->
+On Tue, 2021-12-21 at 11:12 -0400, Rob Herring wrote:
+> On Mon, 20 Dec 2021 18:03:38 +0000, David Mosberger-Tang wrote:
+> > Add documentation for the ENABLE and RESET GPIOs that may be needed
+> > by
+> > wilc1000-spi.
+> > 
+> > Signed-off-by: David Mosberger-Tang <davidm@egauge.net>
+> > ---
+> >  .../net/wireless/microchip,wilc1000.yaml      | 19
+> > +++++++++++++++++++
+> >  1 file changed, 19 insertions(+)
+> > 
+> 
+> Please add Acked-by/Reviewed-by tags when posting new versions. 
 
-I was saying that my commit was polluting syzbot bisection, this is a
-distraction in this report.
-(Or if you prefer, please ignore syzbot bisection)
+Ah, sorry about that.
 
-linux-next has still this bug in set_task_ioprio()
+> However,
+> there's no need to repost patches *only* to add the tags. The
+> upstream
+> maintainer will do that for acks received on the version they apply.
+> 
+> If a tag was not added on purpose, please state why and what changed.
 
+Not on purpose.  I just didn't know how this is handled.
 
-> --
-> Jens Axboe
->
+Thanks and best regards,
+
+  --david
+
