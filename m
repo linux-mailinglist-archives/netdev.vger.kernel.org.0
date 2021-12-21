@@ -2,61 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A0A9E47C826
-	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 21:13:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C0B547C832
+	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 21:21:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233839AbhLUUNL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Dec 2021 15:13:11 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:59606 "EHLO
+        id S233976AbhLUUVz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Dec 2021 15:21:55 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:34116 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233582AbhLUUNK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Dec 2021 15:13:10 -0500
+        with ESMTP id S233108AbhLUUVy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Dec 2021 15:21:54 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C1476B819CB
-        for <netdev@vger.kernel.org>; Tue, 21 Dec 2021 20:13:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC307C36AE8;
-        Tue, 21 Dec 2021 20:13:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DF989B817D0;
+        Tue, 21 Dec 2021 20:21:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2A1CC36AE8;
+        Tue, 21 Dec 2021 20:21:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1640117588;
-        bh=NdnUAoqQwJKijxwrJbnAwiMROZ0LA6bBUFaKxwVopMM=;
+        s=k20201202; t=1640118110;
+        bh=W/xKcGz9hVPblpB16ROkpU7To/atMV0hIDh0EVixtyo=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Tpxtdi4gjIBqfAwnjjSizZTGpP26++pDQ5s20F2tcXDuJJWOPFvIs+DrVZPxG/HfP
-         SFdc4w6iDW9H/QVs0QwldELu2/4zsXQVBQMv8Q/JNB2YJ0gkTeUigrhEwM8FUJn7Ww
-         JF9O1vmjr1P8k7jj/gUHj9XpIKV3jrn39BHsD24++C7bncdFMZ3K4PBKw46LtoHWs7
-         WgF0e8gUBpqS8sM4mY+/Vj2Pgcjx5WtuklcopmgwLVNXAI+f3uQSvSpvHgWH93XxOY
-         CmU6gE6WBduBmfCucRVtKHB6xSgDXb+2PhkiJw6mwt9FIfDF3YTtv55HoiPa8ViOH1
-         lo4/NjrKJpAPg==
-Date:   Tue, 21 Dec 2021 12:13:06 -0800
+        b=gz5azwoxr7sGkGC+0101GVwj274sxuy/RA+nYITuVhwO82lBdQ4nrk4vaL4YfQFlx
+         QZEDUoGjCs2elTk/H/DHfF1fM8czfn7h4Q99mbyPYowVzOzd63/umqGhvxy8QXgqsr
+         Z4E7CT1ydRP3riG1J99+hRLJHl3n+eSMceHJ7n5X9wLkJUZAvHdUCIGWUqTRqbzDZ6
+         XCIzfaljiXVdBKCNDMJc37pMsqVN66icduO3tk0KbrnPJWqU6c9FkzrcA9H4s+D8ew
+         omRHNvrJGVtWDCm6cHABxWs6V7lhVuJ7ARXlvgAR+8QS+XXysPZ8/pluKAy3ssnBIM
+         7tLD2liFKWS7w==
+Date:   Tue, 21 Dec 2021 12:21:49 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Justin Iurman <justin.iurman@uliege.be>
-Cc:     Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org,
-        davem@davemloft.net, dsahern@kernel.org, yoshfuji@linux-ipv6.org,
-        linux-mm@kvack.org, cl@linux.com, penberg@kernel.org,
-        rientjes@google.com, iamjoonsoo kim <iamjoonsoo.kim@lge.com>,
-        akpm@linux-foundation.org, vbabka@suse.cz,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Florian Westphal <fw@strlen.de>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [RFC net-next 2/2] ipv6: ioam: Support for Buffer occupancy
- data field
-Message-ID: <20211221121306.487799cb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211221172337.kvqlkf3jqx2uqclm@skbuf>
-References: <20211206211758.19057-1-justin.iurman@uliege.be>
-        <20211207075037.6cda8832@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <1045511371.220520131.1638894949373.JavaMail.zimbra@uliege.be>
-        <20211207090700.55725775@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <1665643630.220612437.1638900313011.JavaMail.zimbra@uliege.be>
-        <20211208141825.3091923c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <1067680364.223350225.1639059024535.JavaMail.zimbra@uliege.be>
-        <20211209163828.223815bd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <1065685246.241690721.1640106399663.JavaMail.zimbra@uliege.be>
-        <20211221172337.kvqlkf3jqx2uqclm@skbuf>
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>
+Cc:     "Loftus, Ciara" <ciara.loftus@intel.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
+        bpf <bpf@vger.kernel.org>
+Subject: Re: [PATCH bpf] xsk: Initialise xskb free_list_node
+Message-ID: <20211221122149.72160edc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAJ8uoz3HYUO_NK+GCHtDWiczp-pDqpk6V+f5X5KkAJqN70nAnQ@mail.gmail.com>
+References: <20211220155250.2746-1-ciara.loftus@intel.com>
+        <CAJ8uoz2-jZTqT_XkP6T2c0VAzC=QcENr2dJrE5ZivUx8Ak_6ZA@mail.gmail.com>
+        <PH0PR11MB479171AF2D4CE0B118B47A208E7C9@PH0PR11MB4791.namprd11.prod.outlook.com>
+        <CAJ8uoz3HYUO_NK+GCHtDWiczp-pDqpk6V+f5X5KkAJqN70nAnQ@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -64,45 +53,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 21 Dec 2021 19:23:37 +0200 Vladimir Oltean wrote:
-> On Tue, Dec 21, 2021 at 06:06:39PM +0100, Justin Iurman wrote:
-> > On Dec 10, 2021, at 1:38 AM, Jakub Kicinski kuba@kernel.org wrote:  
-> > > I think we're on the same page, the main problem is I've not seen
-> > > anyone use the skbuff_head_cache occupancy as a signal in practice.
-> > > 
-> > > I'm adding a bunch of people to the CC list, hopefully someone has
-> > > an opinion one way or the other.  
-> > 
-> > It looks like we won't have more opinions on that, unfortunately.
-> > 
-> > @Jakub - Should I submit it as a PATCH and see if we receive more
-> > feedback there?  
+On Tue, 21 Dec 2021 10:00:13 +0100 Magnus Karlsson wrote:
+> On Tue, Dec 21, 2021 at 9:32 AM Loftus, Ciara <ciara.loftus@intel.com> wrote:
+> > > Thank you for this fix Ciara! Though I do think the Fixes tag should
+> > > be the one above: 199d983bc015 ("xsk: Fix crash on double free in
+> > > buffer pool"). Before that commit, there was no test for an empty list
+> > > in the xp_free path. The entry was unconditionally put on the list and
+> > > "initialized" in that way, so that code will work without this patch.
+> > > What do you think?  
+> >
+> > Agree - that makes sense.
+> > Can the fixes tag be updated when pulled into the tree with:
+> > Fixes: 199d983bc015 ("xsk: Fix crash on double free in buffer pool")  
 > 
-> I know nothing about OAM and therefore did not want to comment, but I
-> think the point raised about the metric you propose being irrelevant in
-> the context of offloaded data paths is quite important. The "devlink-sb"
-> proposal was dismissed very quickly on grounds of requiring sleepable
-> context, is that a deal breaker, and if it is, why? Not only offloaded
-> interfaces like switches/routers can report buffer occupancy. Plain NICs
-> also have buffer pools, DMA RX/TX rings, MAC FIFOs, etc, that could
-> indicate congestion or otherwise high load. Maybe slab information could
-> be relevant, for lack of a better option, on virtual interfaces, but if
-> they're physical, why limit ourselves on reporting that? The IETF draft
-> you present says "This field indicates the current status of the
-> occupancy of the common buffer pool used by a set of queues." It appears
-> to me that we could try to get a reporting that has better granularity
-> (per interface, per queue) than just something based on
-> skbuff_head_cache. What if someone will need that finer granularity in
-> the future.
+> On the other hand, this was a fix for 2b43470add8c ("xsk: Introduce
+> AF_XDP buffer allocation API"), the original tag you have in your
+> patch. What should the Fixes tag point to in this case? Need some
+> advice please.
 
-Indeed.
+My $0.02 would be that if all relevant commits form a chain of fixes
+it doesn't matter much which one you put in the tag. To me your
+suggestion of going with 199d983bc015 makes most sense since from a
+cursory look the direct issue doesn't really exist without that commit.
 
-In my experience finding meaningful metrics is heard, the chances that
-something that seems useful on the surface actually provides meaningful
-signal in deployments is a lot lower than one may expect. And the
-commit message reads as if the objective was checking a box in the
-implemented IOAM metrics, rather exporting relevant information. 
+Plus we probably don't want 199d983bc015 to be backported until we
+apply this fix, so it'd be good if "Fixes: 199d983bc015" appeared in
+linux-next.
 
-We can do a roll call on people CCed but I read their silence as nobody
-thinks this metric is useful. Is there any experimental data you can
-point to which proves the signal strength?
+You can always put multiple Fixes tags on the commit, if you're unsure.
