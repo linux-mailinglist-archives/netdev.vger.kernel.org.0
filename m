@@ -2,79 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A79647BA82
-	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 08:12:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 332AC47BA7D
+	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 08:12:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234762AbhLUHMg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Dec 2021 02:12:36 -0500
-Received: from smtpbg128.qq.com ([106.55.201.39]:37749 "EHLO smtpbg587.qq.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S234743AbhLUHMg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Dec 2021 02:12:36 -0500
-X-QQ-mid: bizesmtp39t1640070724tej8l5fr
-Received: from localhost.localdomain (unknown [118.121.67.96])
-        by esmtp6.qq.com (ESMTP) with 
-        id ; Tue, 21 Dec 2021 15:12:02 +0800 (CST)
-X-QQ-SSF: 01000000002000D0K000B00A0000000
-X-QQ-FEAT: 3u0oYPVhaeMuRPB0Xqzd/w4o3OO6lXBAlWAfvA8AcdvTZYMUBeN15dLIO8TVW
-        CuGhu0G1cGgkn+EqmhBgPksUThch5I4JXj3y1efVCSfJcTQWdduS7mGN/jPCfl8hFFdTwQE
-        Qq1HGg60X9IjS5LYWnMREdZ2Fs6oaPLph0AerfiI2DS3YYf3oMX2wIUwsghVgZ1cpj9Afz5
-        N1YC2Y3j94j/uKo/4XsD6AotfR4JMjIozqowoi/Yh084c12q9+0lEL0x3UU+2jvJLttEVB5
-        xrHxLm9R6pLHfGmb6KVgSglsUAZ1qQcKTsU1/aNJW8GECEI/b4mB42gZ9S6A4G1xFF0jWxk
-        XgbFxVNajroxwKJFqNeG1yOzG0PJta9c8SzJw9zM0ubw2GOaOEQ8yBukOxLZA==
-X-QQ-GoodBg: 0
-From:   Jason Wang <wangborong@cdjrlc.com>
-To:     davem@davemloft.net
-Cc:     chessman@tux.org, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jason Wang <wangborong@cdjrlc.com>
-Subject: [PATCH] net: tlan: replace strlcpy with strscpy
-Date:   Tue, 21 Dec 2021 15:11:54 +0800
-Message-Id: <20211221071154.729300-1-wangborong@cdjrlc.com>
-X-Mailer: git-send-email 2.34.1
+        id S234582AbhLUHMG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Dec 2021 02:12:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57986 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231305AbhLUHMG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Dec 2021 02:12:06 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 059D5C061574;
+        Mon, 20 Dec 2021 23:12:05 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B7634B810DC;
+        Tue, 21 Dec 2021 07:12:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6B4DC36AE9;
+        Tue, 21 Dec 2021 07:12:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1640070723;
+        bh=fQt/CiyDY99RKB4xmUXQXd505qrSBvHhfBUnu3o5RsI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Bb3oJckgBMwVoUfrY6zZndbQi03vmRlwmHzlLnFUqoM04vpMCJ1Lq9Jl684k08W9G
+         oDYAjaoxyg/KEiJuO585NZhRjTEYebQgclZ4brJgBgWnZ8Fy5WMMwHgm22F2HjGm9+
+         b+2GgXtbcYeqzhmRVJH6+BcktZqRiDIsGSkEW7oU=
+Date:   Tue, 21 Dec 2021 08:12:00 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Mike Ximing Chen <mike.ximing.chen@intel.com>
+Cc:     linux-kernel@vger.kernel.org, arnd@arndb.de,
+        dan.j.williams@intel.com, pierre-louis.bossart@linux.intel.com,
+        netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org
+Subject: Re: [RFC PATCH v12 01/17] dlb: add skeleton for DLB driver
+Message-ID: <YcF+QIHKgNLJOxUh@kroah.com>
+References: <20211221065047.290182-1-mike.ximing.chen@intel.com>
+ <20211221065047.290182-2-mike.ximing.chen@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam5
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211221065047.290182-2-mike.ximing.chen@intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The strlcpy should not be used because it doesn't limit the source
-length. So that it will lead some potential bugs.
+On Tue, Dec 21, 2021 at 12:50:31AM -0600, Mike Ximing Chen wrote:
+> +/* Copyright(C) 2016-2020 Intel Corporation. All rights reserved. */
 
-But the strscpy doesn't require reading memory from the src string
-beyond the specified "count" bytes, and since the return value is
-easier to error-check than strlcpy()'s. In addition, the implementation
-is robust to the string changing out from underneath it, unlike the
-current strlcpy() implementation.
+So you did not touch this at all in 2021?  And it had a copyrightable
+changed added to it for every year, inclusive, from 2016-2020?
 
-Thus, replace strlcpy with strscpy.
+Please run this past your lawyers on how to do this properly.
 
-Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
----
- drivers/net/ethernet/ti/tlan.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/ethernet/ti/tlan.c b/drivers/net/ethernet/ti/tlan.c
-index 741c42c6a417..b3da76efa8f5 100644
---- a/drivers/net/ethernet/ti/tlan.c
-+++ b/drivers/net/ethernet/ti/tlan.c
-@@ -762,12 +762,12 @@ static void tlan_get_drvinfo(struct net_device *dev,
- {
- 	struct tlan_priv *priv = netdev_priv(dev);
- 
--	strlcpy(info->driver, KBUILD_MODNAME, sizeof(info->driver));
-+	strscpy(info->driver, KBUILD_MODNAME, sizeof(info->driver));
- 	if (priv->pci_dev)
--		strlcpy(info->bus_info, pci_name(priv->pci_dev),
-+		strscpy(info->bus_info, pci_name(priv->pci_dev),
- 			sizeof(info->bus_info));
- 	else
--		strlcpy(info->bus_info, "EISA",	sizeof(info->bus_info));
-+		strscpy(info->bus_info, "EISA",	sizeof(info->bus_info));
- }
- 
- static int tlan_get_eeprom_len(struct net_device *dev)
--- 
-2.34.1
-
+greg k-h
