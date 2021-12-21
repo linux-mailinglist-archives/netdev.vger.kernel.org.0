@@ -2,107 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FE9547BEBE
-	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 12:17:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 20EAB47BECE
+	for <lists+netdev@lfdr.de>; Tue, 21 Dec 2021 12:22:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237014AbhLULR3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Dec 2021 06:17:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57804 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232127AbhLULR2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Dec 2021 06:17:28 -0500
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F7EDC061574;
-        Tue, 21 Dec 2021 03:17:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Type:References:
-        In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Content-Transfer-Encoding:
-        Sender:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-To:Resent-Cc:Resent-Message-ID;
-        bh=gRG6JY48L9ROunICAHJ4xCJZ15g9dEgpL3TQjx//E5g=; t=1640085448; x=1641295048; 
-        b=EEwiqd5jqdbAkbm74PAPiJtqoGWj3rukvo3XFMp8lA2iFGNBilAJwzes9w6Lm9nR+MgZTbkRsgb
-        V2sMtJiLD+sfetdrdW0gRuV2lfkGXNcBhvaAFapxQpoa2HUnGGG2KiOjujVCum1+YBynRhRtJbFHZ
-        rk705+H0U3tiPLRSND2wYxFm0GFci9M0T/7+vtqDMvYWs2KWfFXkhBahBnI2gNpIXgw8ecVbfk1x+
-        Tef/hMXHbyQUpoWT0gE/WMGIJrGdmIofHOAvCtP5m+UrlYNVyBQv4BQLFthD9o1EC8U084Qk3BNAb
-        IPbxJtPSEotKm/OiGS/b1qtoyT5AMrmc7igg==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.95)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1mzd8w-00EXWu-6S;
-        Tue, 21 Dec 2021 12:17:18 +0100
-Message-ID: <13ca3acf1107cd08b87f5d6adf93a06b5f9663f2.camel@sipsolutions.net>
-Subject: Re: linux-next: build failure after merge of the mac80211-next tree
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Wireless <linux-wireless@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
-        Wen Gong <quic_wgong@quicinc.com>,
-        Ayala Beker <ayala.beker@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Date:   Tue, 21 Dec 2021 12:17:12 +0100
-In-Reply-To: <20211221221519.75dff443@canb.auug.org.au>
-References: <20211221115004.1cd6b262@canb.auug.org.au>
-         <82d41a8b2c236fa40697094a3d4a325865bde2b2.camel@sipsolutions.net>
-         <20211221221519.75dff443@canb.auug.org.au>
-Content-Type: multipart/signed; micalg="pgp-sha512";
-        protocol="application/pgp-signature"; boundary="=-ZVfJ6yLK0Qqn2YWp4vgG"
-User-Agent: Evolution 3.42.2 (3.42.2-1.fc35) 
+        id S237074AbhLULWZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Dec 2021 06:22:25 -0500
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:25992 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230391AbhLULWY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Dec 2021 06:22:24 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1640085745; x=1671621745;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=xXxa9lxh+lcHQD/PM+FEPQljZ3NTW38sGBoGucSqFLg=;
+  b=kqkFjHGvtY6KWWM6dbo8BN2UX0YMLc2MSY21puunpAiY0hNBiO7hsbTU
+   sfZcjNcIpLMCiDONYIjp7BqVmxBrU25u6E6Er2/wMIOn27zAWJJZy9Tc3
+   6NnYV2hIAdwW2aIivpLhMFmR/2kEfqenCL/4+qxn6Chps8qcy3JL3if07
+   mZ4EJbVF9fhN/3jc2Bh9HD/JY5wm2tFcLemeIzpBzAuIUqiUibUuiZNgp
+   B6GRECI1FHowJJ9C953dKf99WvJ1rhLy3u6fz/Z+rs+PlEMOYGjESIgl4
+   rcZ2CBY1ayrMk4EISomnTJ6QatFGZQ3cQsNS8CH19Yvoy+8Z1sqChmRSf
+   A==;
+IronPort-SDR: hwrpSQBm71ZkeVij1/i15FECQaLCKoMatKhW/qhgDMBlqKABR6QchprxedpzMGTKjAf9uxZrtX
+ DiVDx0L8S6sJdbnSuxTA9Lz9UgO7UjtVqYo1sLPdcwp1QvwnwmM6edk0zn2ufSrBxtITdlGqh7
+ j8WF7SSAi+sextZti36oGbGYgXYTJ5jfZ1TXFQJ8ODmoIUN8dP+XiZb+5p8eQ9emesB+qP+pYv
+ N/WeJCqF6dLxDc/55XJ4uZ4ar3DXZusxL0e3UMwbZTly0em1e8jFEcxWj6GBc+SGpqdeHlRoZY
+ 1qAFcT73M3hZHcUo0h6hQ7zX
+X-IronPort-AV: E=Sophos;i="5.88,223,1635231600"; 
+   d="scan'208";a="147359666"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 21 Dec 2021 04:22:24 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Tue, 21 Dec 2021 04:22:23 -0700
+Received: from training-HP-280-G1-MT-PC.microchip.com (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Tue, 21 Dec 2021 04:22:20 -0700
+From:   Divya Koppera <Divya.Koppera@microchip.com>
+To:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+        <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <UNGLinuxDriver@microchip.com>
+Subject: [PATCH v2 net-next] net: phy: micrel: Adding interrupt support for Link up/Link down in LAN8814 Quad phy
+Date:   Tue, 21 Dec 2021 16:52:17 +0530
+Message-ID: <20211221112217.9502-1-Divya.Koppera@microchip.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-X-malware-bazaar: not-scanned
-X-malware-bazaar-2: OK
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This patch add support for Link up or Link down
+interrupt support in LAN8814 Quad phy
 
---=-ZVfJ6yLK0Qqn2YWp4vgG
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Divya Koppera <Divya.Koppera@microchip.com>
+---
+v1 -> v2
+* Defining Common Macro for Control and status bits of
+  Link up, Link Down and sharing them across Interrupt
+  control and Interrupt status registers.
+---
+ drivers/net/phy/micrel.c | 67 ++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 67 insertions(+)
 
-On Tue, 2021-12-21 at 22:15 +1100, Stephen Rothwell wrote:
-> Hi Johannes,
->=20
-> On Tue, 21 Dec 2021 12:02:57 +0100 Johannes Berg <johannes@sipsolutions.n=
-et> wrote:
-> >=20
-> > Thanks for the heads-up, also on the merge issue.
-> >=20
-> > I'll pull back net-next and fix this.
->=20
-> Or just let Dave know when you ask him to merge your tree ...
->=20
+diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
+index 44a24b99c894..c6a97fcca0e6 100644
+--- a/drivers/net/phy/micrel.c
++++ b/drivers/net/phy/micrel.c
+@@ -66,6 +66,19 @@
+ #define KSZ8081_LMD_SHORT_INDICATOR		BIT(12)
+ #define KSZ8081_LMD_DELTA_TIME_MASK		GENMASK(8, 0)
+ 
++/* Lan8814 general Interrupt control/status reg in GPHY specific block. */
++#define LAN8814_INTC				0x18
++#define LAN8814_INTS				0x1B
++
++#define LAN8814_INT_LINK_DOWN			BIT(2)
++#define LAN8814_INT_LINK_UP			BIT(0)
++#define LAN8814_INT_LINK			(LAN8814_INT_LINK_UP |\
++						 LAN8814_INT_LINK_DOWN)
++
++#define LAN8814_INTR_CTRL_REG			0x34
++#define LAN8814_INTR_CTRL_REG_POLARITY		BIT(1)
++#define LAN8814_INTR_CTRL_REG_INTR_ENABLE	BIT(0)
++
+ /* PHY Control 1 */
+ #define MII_KSZPHY_CTRL_1			0x1e
+ #define KSZ8081_CTRL1_MDIX_STAT			BIT(4)
+@@ -1620,6 +1633,58 @@ static int lan8804_config_init(struct phy_device *phydev)
+ 	return 0;
+ }
+ 
++static irqreturn_t lan8814_handle_interrupt(struct phy_device *phydev)
++{
++	int irq_status;
++
++	irq_status = phy_read(phydev, LAN8814_INTS);
++	if (irq_status < 0)
++		return IRQ_NONE;
++
++	if (!(irq_status & LAN8814_INT_LINK))
++		return IRQ_NONE;
++
++	phy_trigger_machine(phydev);
++
++	return IRQ_HANDLED;
++}
++
++static int lan8814_ack_interrupt(struct phy_device *phydev)
++{
++	/* bit[12..0] int status, which is a read and clear register. */
++	int rc;
++
++	rc = phy_read(phydev, LAN8814_INTS);
++
++	return (rc < 0) ? rc : 0;
++}
++
++static int lan8814_config_intr(struct phy_device *phydev)
++{
++	int err;
++
++	lanphy_write_page_reg(phydev, 4, LAN8814_INTR_CTRL_REG,
++			      LAN8814_INTR_CTRL_REG_POLARITY |
++			      LAN8814_INTR_CTRL_REG_INTR_ENABLE);
++
++	/* enable / disable interrupts */
++	if (phydev->interrupts == PHY_INTERRUPT_ENABLED) {
++		err = lan8814_ack_interrupt(phydev);
++		if (err)
++			return err;
++
++		err =  phy_write(phydev, LAN8814_INTC, LAN8814_INT_LINK);
++	} else {
++		err =  phy_write(phydev, LAN8814_INTC, 0);
++		if (err)
++			return err;
++
++		err = lan8814_ack_interrupt(phydev);
++	}
++
++	return err;
++}
++
+ static struct phy_driver ksphy_driver[] = {
+ {
+ 	.phy_id		= PHY_ID_KS8737,
+@@ -1802,6 +1867,8 @@ static struct phy_driver ksphy_driver[] = {
+ 	.get_stats	= kszphy_get_stats,
+ 	.suspend	= genphy_suspend,
+ 	.resume		= kszphy_resume,
++	.config_intr	= lan8814_config_intr,
++	.handle_interrupt = lan8814_handle_interrupt,
+ }, {
+ 	.phy_id		= PHY_ID_LAN8804,
+ 	.phy_id_mask	= MICREL_PHY_ID_MASK,
+-- 
+2.17.1
 
-Yeah, I guess I can do that too.
-
-Maybe I'll do that and link to both of your resolutions, they both look
-good :)
-
-johannes
-
---=-ZVfJ6yLK0Qqn2YWp4vgG
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEH1e1rEeCd0AIMq6MB8qZga/fl8QFAmHBt7gACgkQB8qZga/f
-l8Rhig//XH2Dd8PYtvFdzwZzlxoo/xWQEpGrC4WSLgjiv4Xg3mno66CQtgmTOfEg
-SPl+NLDlrWYVHcuYfDMxY1abQQR5mCMtTMv7l2a5s4zuA5KBbDHH8bGhF5AGbcDT
-sT6tgzWcsk1nw5i+1qeYZF/U0JWY8Hq7HG0xADayQMsoQIewEustVNl4yGHJLXeF
-uVgJ/uxCto2wHRUgWSrLD25TFn+NorxvAwoOmUETFD4V51YA3vhanoHVp1Fl6oWa
-nbc20sSCHJQEYYxK/jH0w+Hxbn878vHCb7lTUhb7+JoccgRZ4VuGZyzZkbgfwkUj
-QarY196zrH+IyW8nauF7qvjqiFbAN3zJHorj/IbGgxGCHjTTzL2sq2kgbpS89LEa
-a9FTovnMI39qginbsi1rGKoen/b8eQvnpK8tTaKF2J7IAECR71t8BHQRvLE1mF8o
-L9RxuzQVc4GXP9KGEj9//seKcw6ApB1w4oCO6p2MFmg6aX1eH11ogsZhHQxoDDMH
-ez8Te1dyrU8YqQDvMi/WSU5xA17403J31X5d7fgzEXUOD99lV7ZXtoGcr1vuLThv
-R0hOMZgT3SH/f2C0zYvGGpoU/qvXZgPEgWPp7YMRSCqnzeziDlbaWhjGfHAfGz9V
-iQRPAMz0iX2pXssw4GM8feXWdJQiX3heBov+MfWkrbUnkylbnZw=
-=fzz/
------END PGP SIGNATURE-----
-
---=-ZVfJ6yLK0Qqn2YWp4vgG--
