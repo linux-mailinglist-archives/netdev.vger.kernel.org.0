@@ -2,254 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 15F9D47D063
-	for <lists+netdev@lfdr.de>; Wed, 22 Dec 2021 11:58:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5573647D069
+	for <lists+netdev@lfdr.de>; Wed, 22 Dec 2021 12:00:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244319AbhLVK6Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Dec 2021 05:58:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41878 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240085AbhLVK6Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Dec 2021 05:58:24 -0500
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B547C061574
-        for <netdev@vger.kernel.org>; Wed, 22 Dec 2021 02:58:24 -0800 (PST)
-Received: by mail-wr1-x436.google.com with SMTP id q16so4070639wrg.7
-        for <netdev@vger.kernel.org>; Wed, 22 Dec 2021 02:58:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=U6h7YYcmCz5aSPslRAoWARbne1uxxYH871pKs16mGxI=;
-        b=HNZ6vYXZWGcMzsyVNenb3KauQgqFVyS/CLuy1hRAJASHNvkfSJy6+hZaYDEAyrKTS6
-         r9Z2fXTiUIAXMqx/K9BqkKUrcRtSm5o4t4muQiXlq8+Jv+r5VQpy9q4wleVOz/Q44CX6
-         u2owH4RvjqBI1VZyEGfzwrv7yqoqOA2/LrT5IvV7e1ufkzkUOZR9ljDxoW449ga3g6Sk
-         nkBz1sSpufObR3J/ZED7CSeiKvCZj7J6+OpJlXCP1TrDlYCdSm2xv7svTE8tV4aMpVYW
-         GZ42qMv2So7dp6zpuwg1N5mtFunZqMsqWw7h3vNo+YJk0LYKpP3d12rg+qG4lqGDcnzF
-         bA9Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=U6h7YYcmCz5aSPslRAoWARbne1uxxYH871pKs16mGxI=;
-        b=DyLYjjAlxVCzvQbF6SRg9UGoxTXwFKoe3hzIjdRYoSZ/Tuq7ADMcQNPS6lS3kh12zj
-         ZRElEfj4qUVMJPx8WW957e3mnerngPc2HtI6wSshv/SsI83u4vu+tULi1IIRtBACInYk
-         tIaVTtmF/S+J4ABrsNLjB4n1bTEuNjWLLetmqa17IliJUbn2Ustkcl28DnVffDv80EFT
-         9PiiFnbUGB9La74gADOy3xAHjY9xRP9awrmt4KmeRDRhUu7BSABr73B1q2OmKZ9vl115
-         qytHGagt6cyGr/+lKDTi5g0z5TgM31P09HcW0JjILcr0GeJ0JBjoKaZApX+y5+SX3sYg
-         LtTQ==
-X-Gm-Message-State: AOAM533+2TzyaFWoNrA1oH+Ps0Ck9xwt1rF0+weh4rPVUVRg/Th8H3MP
-        53vsF4ZRkcZ/y7Fhuw/bh7J3QA==
-X-Google-Smtp-Source: ABdhPJyOSVp8sAj2OcAANzZqIahTuMFEy50QW3HzbkXKtDFt2Nce5vaZ46zJGUzIOPX4msbYj8Yq2A==
-X-Received: by 2002:adf:e751:: with SMTP id c17mr1752270wrn.402.1640170702955;
-        Wed, 22 Dec 2021 02:58:22 -0800 (PST)
-Received: from google.com ([2.31.167.18])
-        by smtp.gmail.com with ESMTPSA id v6sm4949293wmh.8.2021.12.22.02.58.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Dec 2021 02:58:22 -0800 (PST)
-Date:   Wed, 22 Dec 2021 10:58:20 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Vlad Yasevich <vyasevich@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        lksctp developers <linux-sctp@vger.kernel.org>,
-        "H.P. Yarroll" <piggy@acm.org>, Hui Huang <hui.huang@nokia.com>,
-        network dev <netdev@vger.kernel.org>
-Subject: Re: [RESEND 2/2] sctp: hold cached endpoints to prevent possible UAF
-Message-ID: <YcMEzMHuCmvlQQpa@google.com>
-References: <Ybtrs56tSBbmyt5c@google.com>
- <CADvbK_cBBDkGt8XLJo6N5TX2YQATS+udVWm8_=8f96=0B9tnTA@mail.gmail.com>
- <Ybtzr5ZmD/IKjycz@google.com>
- <Ybtz/0gflbkG5Q/0@google.com>
- <CADvbK_cexKiVATn=dPrWqoS0qM-bM0UcSkx8Xqz5ibEKQizDVg@mail.gmail.com>
- <CADvbK_cxMbYwkuN_ZUvHY-7ahc9ff+jbuPkKn6CA=yqMk=SKVw@mail.gmail.com>
- <YbuNZtV/pjDszTad@google.com>
- <CADvbK_f7wY_tknw5wTo369-2aRSvhhkETwmdu9tRbgfeyyTQng@mail.gmail.com>
- <YcBFSo/4WsMOls8Y@google.com>
- <CADvbK_dF-+3J5HOGsmmvA4by=STNLEaWszZjNOOAdEkrstpYEQ@mail.gmail.com>
+        id S244349AbhLVLAN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Dec 2021 06:00:13 -0500
+Received: from mga03.intel.com ([134.134.136.65]:61238 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S244340AbhLVLAM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 Dec 2021 06:00:12 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1640170812; x=1671706812;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=zi1uEhMnlliGJTqxmrLw7OEJxiLpW7cbq2AkLTS3YM0=;
+  b=FoyNZd3ex1yFDd4gDFB0t/CcVu3DVVdGL5qpL1mPB1k0j6FLeaDIG+7T
+   sA1HyjTDrQ9g5TxFexOOR2gpksW/MoBqgOjrlcQmZM0cFEETI8EQ4JVv7
+   vbtF+kK6KSpOy9HNRs4ceWM09j2gn/QKsZBVulsETAccPAluMvtFzG09V
+   4gfGtmufH1vv6e98Vv4TwtH+DZa5igdNPPKxuJVhpvNPN9OclyPRdSZr3
+   I4p6cBi/RT05BHcymqz+WEyB8B9/45xbuO1vXtAS7xJdsJy3OMts9TTlO
+   QylRtYhEuZQlN+5nnozAUgz2ncwOsfSaZCCcZ8UgxhbzaBeOl6aw/QvGn
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10205"; a="240549073"
+X-IronPort-AV: E=Sophos;i="5.88,226,1635231600"; 
+   d="scan'208";a="240549073"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Dec 2021 03:00:11 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,226,1635231600"; 
+   d="scan'208";a="758389600"
+Received: from orsmsx606.amr.corp.intel.com ([10.22.229.19])
+  by fmsmga005.fm.intel.com with ESMTP; 22 Dec 2021 03:00:10 -0800
+Received: from orsmsx607.amr.corp.intel.com (10.22.229.20) by
+ ORSMSX606.amr.corp.intel.com (10.22.229.19) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Wed, 22 Dec 2021 03:00:10 -0800
+Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
+ ORSMSX607.amr.corp.intel.com (10.22.229.20) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Wed, 22 Dec 2021 03:00:10 -0800
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20 via Frontend Transport; Wed, 22 Dec 2021 03:00:10 -0800
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (104.47.74.44) by
+ edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.20; Wed, 22 Dec 2021 03:00:09 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YUx03W35Myd1Fb20Y5yLtU3LNrdoZGtTOlBEC7lVqn3xJHmGFDl0p/A24f34CD0a4SmjdfU6aD8yYnH9CAnKQB9PbsK2c7xp6TUVtcjGo7p4l+52ZYG7mhpb5eIgUbM11yvt7pCx/KzhpDFCvHyPkmcGei3b5y5QJtmbhUJUWQokdE6SrfO8x4SLzYkz+L2oWMXQzK74gnbwslK5N0sS7X4QxgFFnCfMjdbUF2gEWiDnCcmYh+RBlVng8D2BtZ5eq6UeobRnoueV/+f9GpzQ9rdeCVbKAe7XuVSsmtnd0MsyW5DqCQ/U8CJDv6WzpugGm0o6o+QlxmQ0t19Hh0X5Kw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Notx98Lb9QrnTRbsKmd70xO0756EnpbCpSLbagv805k=;
+ b=HutNJx2odWnmbvoRhOBWDFohwXXs57It8l29iLMdeKsSe4Ymfk9Nhd/q1F/sIWKyAxSUAKouZVSAJnKjKsErEhrikqYsETrIXZQf26q00bjV3QrnUOLgsIPanpzSLud5UEcQbE1wROVcmqaI8HlYTh+o+UzXEl1rODOjWsA4KitqNpoH5XD233Qu6curyxRV6Hdloth8uROhSAsjteePLW24R97Tpw+ziUPbG6SxkcAayEk+Kjsy1J3oklQTKaXkubluYzVZ3Zj1iDQOTS93zxJwYbVohi9jNm9vVu04qntKgteMmVMjUtcHC0V0patABrwVNUCI0QQUN6YjX9FQ3w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BYAPR11MB3367.namprd11.prod.outlook.com (2603:10b6:a03:79::29)
+ by SJ0PR11MB5087.namprd11.prod.outlook.com (2603:10b6:a03:2ad::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4801.17; Wed, 22 Dec
+ 2021 11:00:08 +0000
+Received: from BYAPR11MB3367.namprd11.prod.outlook.com
+ ([fe80::bc02:db0b:b6b9:4b81]) by BYAPR11MB3367.namprd11.prod.outlook.com
+ ([fe80::bc02:db0b:b6b9:4b81%5]) with mapi id 15.20.4801.020; Wed, 22 Dec 2021
+ 11:00:08 +0000
+From:   "G, GurucharanX" <gurucharanx.g@intel.com>
+To:     Yang Li <yang.lee@linux.alibaba.com>,
+        "davem@davemloft.net" <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "llvm@lists.linux.dev" <llvm@lists.linux.dev>,
+        "ndesaulniers@google.com" <ndesaulniers@google.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "nathan@kernel.org" <nathan@kernel.org>,
+        Abaci Robot <abaci@linux.alibaba.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
+Subject: RE: [Intel-wired-lan] [PATCH -next] i40e: remove variables set but
+ not used
+Thread-Topic: [Intel-wired-lan] [PATCH -next] i40e: remove variables set but
+ not used
+Thread-Index: AQHX8D510leJSDY7zEydjsNb2ccmC6w+ZYyw
+Date:   Wed, 22 Dec 2021 11:00:08 +0000
+Message-ID: <BYAPR11MB336744DCED9E187D5051F81CFC7D9@BYAPR11MB3367.namprd11.prod.outlook.com>
+References: <20211213031107.52438-1-yang.lee@linux.alibaba.com>
+In-Reply-To: <20211213031107.52438-1-yang.lee@linux.alibaba.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 5a6f6be0-3a70-401d-e6be-08d9c53a37d8
+x-ms-traffictypediagnostic: SJ0PR11MB5087:EE_
+x-microsoft-antispam-prvs: <SJ0PR11MB5087A98FF3A19D1F9719EDF1FC7D9@SJ0PR11MB5087.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:2089;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: ZRYj3tsRta/662Ngk5/1D4Gu5bvQQYf19pdsz0W5G1yWKuIEZXOpJr94SYS5IOkedeGQTddA113iAUjQMpjgP3INswoZAiGIl+NP6EhrB3v+2Dhy8UVfExQORRyDMvP8Fn1ezsTzzfkdAde17gCM45yFr/H5CvpJiM1YWG1l8UOSq8fH31QC+GSXLswTmyXDlBxAZ8P78BhlnEISe88ORXD+CzS3vHEGV4Paif1vmutagdBkqeuzESlR30D7Y70CDnLvoE+cJkZ/vUiRDIPH8Xo52OVwtz4DX2SjuWNrDSpIWekXXf0Tj7MsW+4cyAZF+PvknyKBFeiFrKwmNFCcdWBdrLl3NxEf0Vx/P+IFOzZ7Y2LWNpZG6VNAeME9AUBEiO4IiTyIPFyGCielfV4+aVQLRDvdATLaJMtkuWIug1hX5FmaV08k2RjSVGgRLX6yANSWjki+jClFbdXnA5uexSP0fA1eiVl8R/UelkkXil9cPgPRFBBQS9JFAtAlTVNEQ5A84clvzyhA9/oCAJeMNmvTCcRa5U5Q4vdljhCPbs+Gy5/2F8ykXp+78w1jNwIiOZ3TgOL++E/qy/svBzV1ktv6YC0pdogkrkMCYXR8nPcY+oMlwXakjNgPj9cnW+H2mSz4NsXDQI1MpAvfk9e4gBajYuCaE3TxrFz3bHW4iOpy4gZRQCTVCzzoRfYA/76sjY4QSiNViBk/fJYBtAJRYw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR11MB3367.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(38100700002)(86362001)(4326008)(122000001)(53546011)(5660300002)(82960400001)(33656002)(7416002)(8676002)(38070700005)(8936002)(26005)(55016003)(52536014)(2906002)(66446008)(66946007)(66556008)(76116006)(83380400001)(6506007)(71200400001)(64756008)(186003)(54906003)(7696005)(9686003)(508600001)(316002)(110136005)(66476007);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?fN4uSmtLWSlattJmWZ40Ss1mNsDxq6RJx7Rhs4pY5VTl+BOfLYAwVw8LyOx5?=
+ =?us-ascii?Q?mJRAt6QA0twjzjetyBXuiS/5fXWHzWBt0EiQO77wwDfPMjN38DAdzWVNPt1C?=
+ =?us-ascii?Q?7i7C8wQqz9FTfQ/skWzc5G83JKDJuh2X3rgKnUVqcIdxdZcwQx/MEO/DPYus?=
+ =?us-ascii?Q?UNixvGBMr+1quwK0yH4FkeOBiSpFKbd8M6OA03+5I8fjPJhLl4n/fo2EAvo6?=
+ =?us-ascii?Q?24SdHwwlz6b94ckt/OUgs7TSWSAsCoZzyZJhlPxhOBKm3kgrBa3XNliW7hvm?=
+ =?us-ascii?Q?IrN8hlKjcp7jegj+6jkmGwPQed7B8JlPdrp8AwVeU9qHAFvrgXGG9ii/wdin?=
+ =?us-ascii?Q?LNxQbA8aSNmUx+vuT5XkLF3whZIF8sd0sy6IzwmL6lKAHlTlHdRvSeyi53qV?=
+ =?us-ascii?Q?incEKniy2eNiqqp60MeCT7aTVlmL9R7aNRlmSrbh1qeorjn8Pkb3/ZtjD1Nl?=
+ =?us-ascii?Q?cv2pLoKBnXFED72sUJfzS4zbBoaS1Dw8SBXmKV4DAwMNwZ7f2WCtEWsaQrCN?=
+ =?us-ascii?Q?hnrcnLPjh/321u3ePKZW03odY+JGKiUO8vjIQfAMP+/1WGzK3fZ+u9nzwbdy?=
+ =?us-ascii?Q?o8O4HNvkVZ/E0iBy1otVesxLLBAtArNHhRIn7go136oJEZYQwgNzwwrHtIE4?=
+ =?us-ascii?Q?HFQHHcpqy+wIDOuDtJ3TFfSnusUjS2IvqLdrSWKo6xt+Q9UbSEdHymNa7cPP?=
+ =?us-ascii?Q?zTQ/kcshsfDnp9A9FRYL9IaxUnSD6jJmDezUEHoh307u+cS7Lj8wG8VhyiR4?=
+ =?us-ascii?Q?+9rj9/1t/geL1cV5B+SiyoVP23MLK6+eTOOrYIFWYe2+jHvx/WIyYpATUSHr?=
+ =?us-ascii?Q?pHcRD7F+o/ln2RgzjHZawbPGrFIrNtLVLK15HEFsbbwqAPi48jCtSPKbi0HX?=
+ =?us-ascii?Q?OMBKv3dmtPb2tCDm451XpGXZaJFb0RbCnm7vFlVfTbVAr/Ou7oO2u4aVFLCv?=
+ =?us-ascii?Q?e2GtVUvrTkMW/AivLfVmG7Oh6XDnjqm18khHTKgpuf5B5ueVyi9RAZe9eGYK?=
+ =?us-ascii?Q?o0szSgvKKAr6b/DY2NHs41/iVemKpXuKisAw+EaohOe36CVs5lGXYpDHsCeh?=
+ =?us-ascii?Q?tX3oGmLWbndJFTLddJyIvT2eCHApZayvGCjxP9pv9ldpaHsdFZEU0LuVP5jY?=
+ =?us-ascii?Q?KTY+04nI21kjaHxakDutKuNOlZALpzbvAbGEoEwtNQizvFhTcHGdng5cqg8j?=
+ =?us-ascii?Q?58w+VnE2WpWe01pRDv0xJg2hKa6y3DpyaMdZZzKiosRfD0gkGbmIcE+0pQvi?=
+ =?us-ascii?Q?HMyjwKuuIMfjVYhAW86+xSOTbGTqZ8cKRnVo0Os/h/iN8Zk826uOz8RFStoo?=
+ =?us-ascii?Q?NeGep/I3XnY7kl94CCRoZigoxT9Sc2Zzo2XEpEZ2+np+x6y3n/eRUBg1uFIQ?=
+ =?us-ascii?Q?xL5H6mPwRCheP27IOcEY3fPrJhjCFF9zgePrg5QpyC2T5dihOx00Idz3Agb0?=
+ =?us-ascii?Q?vMGSQ1n/WFr7Pod9NoeHam7OS/gviYKbzgZw/pFAXT5mhjC4ELxpsVogOp3x?=
+ =?us-ascii?Q?1NefQ2dr+OrwAF1jUJ3QpQD0q42IKgimdkUi/cTB65xYadzIy6p0Yzsberey?=
+ =?us-ascii?Q?EDvvpGBMaigQSg5lDY44hnTAcJeTtHFWIG4RJmFuZp83yAyeKLfJE4xJz83H?=
+ =?us-ascii?Q?qoG/+CTGdpbFrEnkNPOq1H8=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CADvbK_dF-+3J5HOGsmmvA4by=STNLEaWszZjNOOAdEkrstpYEQ@mail.gmail.com>
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR11MB3367.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5a6f6be0-3a70-401d-e6be-08d9c53a37d8
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Dec 2021 11:00:08.4435
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: to2uwMJ3KKOjoPoh6ipY84XIEsOB9h6DHET/ZIQfl0uub/XBXJ38UHJc9csd09QbYNNW0iG3AvfS6rziiMiSEg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR11MB5087
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 21 Dec 2021, Xin Long wrote:
 
-> On Mon, Dec 20, 2021 at 3:56 AM Lee Jones <lee.jones@linaro.org> wrote:
-> >
-> > On Sun, 19 Dec 2021, Xin Long wrote:
-> >
-> > > On Thu, Dec 16, 2021 at 2:03 PM Lee Jones <lee.jones@linaro.org> wrote:
-> > > >
-> > > > On Thu, 16 Dec 2021, Xin Long wrote:
-> > > >
-> > > > > (
-> > > > >
-> > > > > On Thu, Dec 16, 2021 at 1:12 PM Xin Long <lucien.xin@gmail.com> wrote:
-> > > > > >
-> > > > > > On Thu, Dec 16, 2021 at 12:14 PM Lee Jones <lee.jones@linaro.org> wrote:
-> > > > > > >
-> > > > > > > On Thu, 16 Dec 2021, Lee Jones wrote:
-> > > > > > >
-> > > > > > > > On Thu, 16 Dec 2021, Xin Long wrote:
-> > > > > > > >
-> > > > > > > > > On Thu, Dec 16, 2021 at 11:39 AM Lee Jones <lee.jones@linaro.org> wrote:
-> > > > > > > > > >
-> > > > > > > > > > On Thu, 16 Dec 2021, Xin Long wrote:
-> > > > > > > > > >
-> > > > > > > > > > > On Wed, Dec 15, 2021 at 8:48 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> > > > > > > > > > > >
-> > > > > > > > > > > > On Tue, 14 Dec 2021 21:57:32 +0000 Lee Jones wrote:
-> > > > > > > > > > > > > The cause of the resultant dump_stack() reported below is a
-> > > > > > > > > > > > > dereference of a freed pointer to 'struct sctp_endpoint' in
-> > > > > > > > > > > > > sctp_sock_dump().
-> > > > > > > > > > > > >
-> > > > > > > > > > > > > This race condition occurs when a transport is cached into its
-> > > > > > > > > > > > > associated hash table followed by an endpoint/sock migration to a new
-> > > > > > > > > > > > > association in sctp_assoc_migrate() prior to their subsequent use in
-> > > > > > > > > > > > > sctp_diag_dump() which uses sctp_for_each_transport() to walk the hash
-> > > > > > > > > > > > > table calling into sctp_sock_dump() where the dereference occurs.
-> > > > > > > > > >
-> > > > > > > > > > > in sctp_sock_dump():
-> > > > > > > > > > >         struct sock *sk = ep->base.sk;
-> > > > > > > > > > >         ... <--[1]
-> > > > > > > > > > >         lock_sock(sk);
-> > > > > > > > > > >
-> > > > > > > > > > > Do you mean in [1], the sk is peeled off and gets freed elsewhere?
-> > > > > > > > > >
-> > > > > > > > > > 'ep' and 'sk' are both switched out for new ones in sctp_sock_migrate().
-> > > > > > > > > >
-> > > > > > > > > > > if that's true, it's still late to do sock_hold(sk) in your this patch.
-> > > > > > > > > >
-> > > > > > > > > > No, that's not right.
-> > > > > > > > > >
-> > > > > > > > > > The schedule happens *inside* the lock_sock() call.
-> > > > > > > > > Sorry, I don't follow this.
-> > > > > > > > > We can't expect when the schedule happens, why do you think this
-> > > > > > > > > can never be scheduled before the lock_sock() call?
-> > > > > > > >
-> > > > > > > > True, but I've had this running for hours and it hasn't reproduced.
-> > > > > > I understand, but it's a crash, we shouldn't take any risk that it
-> > > > > > will never happen.
-> > > > > > you may try to add a usleep() before the lock_sock call to reproduce it.
-> > > > > >
-> > > > > > > >
-> > > > > > > > Without this patch, I can reproduce this in around 2 seconds.
-> > > > > > > >
-> > > > > > > > The C-repro for this is pretty intense!
-> > > > > > > >
-> > > > > > > > If you want to be *sure* that a schedule will never happen, we can
-> > > > > > > > take a reference directly with:
-> > > > > > > >
-> > > > > > > >      ep = sctp_endpoint_hold(tsp->asoc->ep);
-> > > > > > > >      sk = sock_hold(ep->base.sk);
-> > > > > > > >
-> > > > > > > > Which was my original plan before I soak tested this submitted patch
-> > > > > > > > for hours without any sign of reproducing the issue.
-> > > > > > we tried to not export sctp_obj_hold/put(), that's why we had
-> > > > > > sctp_for_each_transport().
-> > > > > >
-> > > > > > ep itself holds a reference of sk when it's alive, so it's weird to do
-> > > > > > these 2 together.
-> > > > > >
-> > > > > > > >
-> > > > > > > > > If the sock is peeled off or is being freed, we shouldn't dump this sock,
-> > > > > > > > > and it's better to skip it.
-> > > > > > > >
-> > > > > > > > I guess we can do that too.
-> > > > > > > >
-> > > > > > > > Are you suggesting sctp_sock_migrate() as the call site?
-> > > > > > diff --git a/net/sctp/socket.c b/net/sctp/socket.c
-> > > > > > index 85ac2e901ffc..56ea7a0e2add 100644
-> > > > > > --- a/net/sctp/socket.c
-> > > > > > +++ b/net/sctp/socket.c
-> > > > > > @@ -9868,6 +9868,7 @@ static int sctp_sock_migrate(struct sock *oldsk,
-> > > > > > struct sock *newsk,
-> > > > > >                 inet_sk_set_state(newsk, SCTP_SS_ESTABLISHED);
-> > > > > >         }
-> > > > > >
-> > > > > > +       sock_set_flag(oldsk, SOCK_RCU_FREE);
-> > > > > >         release_sock(newsk);
-> > > > > >
-> > > > > >         return 0;
-> > > > > >
-> > > > > > SOCK_RCU_FREE is set to the previous sk, so that this sk will not
-> > > > > > be freed between rcu_read_lock() and rcu_read_unlock().
-> > > > > >
-> > > > > > >
-> > > > > > > Also, when are you planning on testing the flag?
-> > > > > > SOCK_RCU_FREE flag is used when freeing sk in sk_destruct(),
-> > > > > > and if it's set, it will be freed in the next grace period of RCU.
-> > > > > >
-> > > > > > >
-> > > > > > > Won't that suffer with the same issue(s)?
-> > > > > > diff --git a/net/sctp/diag.c b/net/sctp/diag.c
-> > > > > > index 7970d786c4a2..b4c4acd9e67e 100644
-> > > > > > --- a/net/sctp/diag.c
-> > > > > > +++ b/net/sctp/diag.c
-> > > > > > @@ -309,16 +309,21 @@ static int sctp_tsp_dump_one(struct
-> > > > > > sctp_transport *tsp, void *p)
-> > > > > >
-> > > > > >  static int sctp_sock_dump(struct sctp_transport *tsp, void *p)
-> > > > > >  {
-> > > > > > -       struct sctp_endpoint *ep = tsp->asoc->ep;
-> > > > > >         struct sctp_comm_param *commp = p;
-> > > > > > -       struct sock *sk = ep->base.sk;
-> > > > > >         struct sk_buff *skb = commp->skb;
-> > > > > >         struct netlink_callback *cb = commp->cb;
-> > > > > >         const struct inet_diag_req_v2 *r = commp->r;
-> > > > > >         struct sctp_association *assoc;
-> > > > > > +       struct sctp_endpoint *ep;
-> > > > > > +       struct sock *sk;
-> > > > > >         int err = 0;
-> > > > > >
-> > > > > > +       rcu_read_lock();
-> > > > > > +       ep = tsp->asoc->ep;
-> > > > > > +       sk = ep->base.sk;
-> > > > > >         lock_sock(sk);
-> > > > > Unfortunately, this isn't going to work, as lock_sock() may sleep,
-> > > > > and is not allowed to be called understand rcu_read_lock() :(
-> > > >
-> > > > Ah!
-> > > >
-> > > > How about my original solution of taking:
-> > > >
-> > > >   tsp->asoc->ep
-> > > >
-> > > > ... directly?
-> > > >
-> > > > If it already holds the sk, we should be golden?
-> > > Both ep and sk could be destroyed at this moment.
-> > > you can't try to hold an object that has already been destroyed.
-> > > It holds the sk only when ep is still alive.
-> > >
-> > > I don't see a way to get this fix with the current transport hashtable.
-> > > I will change to use port hashtable to dump sock/asocs for this.
-> >
-> > Right.  Cache invalidation is hard!
-> >
-> > Sure, if there is a better way, please go ahead.
-> Hi, Jones,
-> 
-> Port hashtable doesn't work either as lock_sock can not be called
-> under spin_lock().
-> 
-> I posted another patch where this issue can be fixed by moving ep free
-> to call_rcu().
-> It will be great if you are able to test it.
 
-I certainly will.
+> -----Original Message-----
+> From: Intel-wired-lan <intel-wired-lan-bounces@osuosl.org> On Behalf Of Y=
+ang
+> Li
+> Sent: Monday, December 13, 2021 8:41 AM
+> To: davem@davemloft.net
+> Cc: Yang Li <yang.lee@linux.alibaba.com>; netdev@vger.kernel.org;
+> llvm@lists.linux.dev; ndesaulniers@google.com; linux-kernel@vger.kernel.o=
+rg;
+> nathan@kernel.org; Abaci Robot <abaci@linux.alibaba.com>;
+> kuba@kernel.org; intel-wired-lan@lists.osuosl.org
+> Subject: [Intel-wired-lan] [PATCH -next] i40e: remove variables set but n=
+ot used
+>=20
+> The code that uses variables pe_cntx_size and pe_filt_size has been remov=
+ed,
+> so they should be removed as well.
+>=20
+> Eliminate the following clang warnings:
+> drivers/net/ethernet/intel/i40e/i40e_common.c:4139:20:
+> warning: variable 'pe_filt_size' set but not used.
+> drivers/net/ethernet/intel/i40e/i40e_common.c:4139:6:
+> warning: variable 'pe_cntx_size' set but not used.
+>=20
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Fixes: 467d729abb72 ("i40e/i40evf: Fix code to accommodate i40e_register.=
+h
+> changes")
+> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+> ---
+>  drivers/net/ethernet/intel/i40e/i40e_common.c | 5 -----
+>  1 file changed, 5 deletions(-)
+>=20
 
--- 
-Lee Jones [李琼斯]
-Senior Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+Tested-by: Gurucharan G <gurucharanx.g@intel.com> (A Contingent worker at I=
+ntel)
