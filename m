@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B4C6747D4A4
-	for <lists+netdev@lfdr.de>; Wed, 22 Dec 2021 16:59:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F43047D4A9
+	for <lists+netdev@lfdr.de>; Wed, 22 Dec 2021 16:59:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343987AbhLVP6d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Dec 2021 10:58:33 -0500
-Received: from relay3-d.mail.gandi.net ([217.70.183.195]:56615 "EHLO
+        id S1343813AbhLVP6k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Dec 2021 10:58:40 -0500
+Received: from relay3-d.mail.gandi.net ([217.70.183.195]:32853 "EHLO
         relay3-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343967AbhLVP6M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Dec 2021 10:58:12 -0500
+        with ESMTP id S1343986AbhLVP6N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Dec 2021 10:58:13 -0500
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by relay3-d.mail.gandi.net (Postfix) with ESMTPSA id B9E3E60012;
-        Wed, 22 Dec 2021 15:58:09 +0000 (UTC)
+        by relay3-d.mail.gandi.net (Postfix) with ESMTPSA id 22D2660010;
+        Wed, 22 Dec 2021 15:58:11 +0000 (UTC)
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
@@ -26,9 +26,9 @@ Cc:     David Girault <david.girault@qorvo.com>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         <linux-kernel@vger.kernel.org>,
         Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [net-next 17/18] net: mac802154: Let drivers provide their own beacons implementation
-Date:   Wed, 22 Dec 2021 16:57:42 +0100
-Message-Id: <20211222155743.256280-18-miquel.raynal@bootlin.com>
+Subject: [net-next 18/18] net: ieee802154: Trace the registration of new PANs
+Date:   Wed, 22 Dec 2021 16:57:43 +0100
+Message-Id: <20211222155743.256280-19-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20211222155743.256280-1-miquel.raynal@bootlin.com>
 References: <20211222155743.256280-1-miquel.raynal@bootlin.com>
@@ -39,179 +39,74 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-So far only a pure software procedure for sending beacons was possible.
-Let's create a couple of driver's hooks in order to allow the device
-drivers to provide their own implementation. If not provided, fallback
-to the pure software logic.
+From: David Girault <david.girault@qorvo.com>
 
-It is possible for device drivers to only support a specific type of
-request and return -EOPNOTSUPP otherwise, this will have the same effect
-as not providing any hooks for these specific cases.
+Add an internal trace when new PANs get discovered.
 
-Co-developed-by: David Girault <david.girault@qorvo.com>
 Signed-off-by: David Girault <david.girault@qorvo.com>
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 ---
- include/net/mac802154.h    | 13 +++++++++++++
- net/mac802154/driver-ops.h | 33 +++++++++++++++++++++++++++++++++
- net/mac802154/scan.c       | 17 +++++++++++++++++
- net/mac802154/trace.h      | 21 +++++++++++++++++++++
- 4 files changed, 84 insertions(+)
+ net/ieee802154/pan.c   |  3 +++
+ net/ieee802154/trace.h | 25 +++++++++++++++++++++++++
+ 2 files changed, 28 insertions(+)
 
-diff --git a/include/net/mac802154.h b/include/net/mac802154.h
-index 97aefba7bf96..72978fb72a3a 100644
---- a/include/net/mac802154.h
-+++ b/include/net/mac802154.h
-@@ -214,6 +214,16 @@ enum ieee802154_hw_flags {
-  *	  Exits the scan mode and returns to a fully functioning state.
-  *	  Should only be provided if ->enter_scan_mode() is populated.
-  *	  Returns either zero, or negative errno.
-+ *
-+ * send_beacons
-+ *	  Send beacons at a fixed rate over the current channel.
-+ *	  Can be NULL, if the driver doesn't support sending beacons by itself.
-+ *	  Returns either zero, or negative errno.
-+ *
-+ * stop_beacons
-+ *	  Stops sending beacons.
-+ *	  Should only be provided if ->send_beacons() is populated.
-+ *	  Returns either zero, or negative errno.
-  */
- struct ieee802154_ops {
- 	struct module	*owner;
-@@ -243,6 +253,9 @@ struct ieee802154_ops {
- 	int		(*enter_scan_mode)(struct ieee802154_hw *hw,
- 					   struct cfg802154_scan_request *request);
- 	int		(*exit_scan_mode)(struct ieee802154_hw *hw);
-+	int		(*send_beacons)(struct ieee802154_hw *hw,
-+					struct cfg802154_beacons_request *request);
-+	int		(*stop_beacons)(struct ieee802154_hw *hw);
- };
+diff --git a/net/ieee802154/pan.c b/net/ieee802154/pan.c
+index c71a3664d5c3..451576d9ab41 100644
+--- a/net/ieee802154/pan.c
++++ b/net/ieee802154/pan.c
+@@ -18,6 +18,7 @@
  
- /**
-diff --git a/net/mac802154/driver-ops.h b/net/mac802154/driver-ops.h
-index 2f5650f7bf91..003e6edee049 100644
---- a/net/mac802154/driver-ops.h
-+++ b/net/mac802154/driver-ops.h
-@@ -315,4 +315,37 @@ static inline int drv_exit_scan_mode(struct ieee802154_local *local)
- 	return ret;
- }
+ #include "ieee802154.h"
+ #include "core.h"
++#include "trace.h"
  
-+static inline int drv_send_beacons(struct ieee802154_local *local,
-+				   struct cfg802154_beacons_request *request)
-+{
-+	int ret;
-+
-+	might_sleep();
-+
-+	if (!local->ops->send_beacons || !local->ops->stop_beacons)
-+		return -EOPNOTSUPP;
-+
-+	trace_802154_drv_send_beacons(local, request);
-+	ret = local->ops->send_beacons(&local->hw, request);
-+	trace_802154_drv_return_int(local, ret);
-+
-+	return ret;
-+}
-+
-+static inline int drv_stop_beacons(struct ieee802154_local *local)
-+{
-+	int ret;
-+
-+	might_sleep();
-+
-+	if (!local->ops->send_beacons || !local->ops->stop_beacons)
-+		return -EOPNOTSUPP;
-+
-+	trace_802154_drv_stop_beacons(local);
-+	ret = local->ops->stop_beacons(&local->hw);
-+	trace_802154_drv_return_int(local, ret);
-+
-+	return ret;
-+}
-+
- #endif /* __MAC802154_DRIVER_OPS */
-diff --git a/net/mac802154/scan.c b/net/mac802154/scan.c
-index b334fa856c00..55af9d16744a 100644
---- a/net/mac802154/scan.c
-+++ b/net/mac802154/scan.c
-@@ -109,6 +109,7 @@ int mac802154_send_beacons_locked(struct ieee802154_sub_if_data *sdata,
- {
- 	struct ieee802154_local *local = sdata->local;
- 	unsigned int interval;
-+	int ret;
+ /* Maximum number of PAN entries to store */
+ static int max_pan_entries = 100;
+@@ -182,6 +183,8 @@ static void cfg802154_pan_update(struct cfg802154_registered_device *rdev,
+ 	found = cfg802154_find_matching_pan(rdev, new);
+ 	if (found)
+ 		cfg802154_unlink_pan(rdev, found);
++	else
++		trace_802154_new_pan(&new->desc);
  
- 	lockdep_assert_held(&local->beacons_lock);
- 
-@@ -117,6 +118,14 @@ int mac802154_send_beacons_locked(struct ieee802154_sub_if_data *sdata,
- 
- 	local->ongoing_beacons_request = true;
- 
-+	/* Either let the hardware handle the beacons or handle them manually */
-+	ret = drv_send_beacons(local, request);
-+	if (ret != -EOPNOTSUPP) {
-+		if (ret)
-+			local->ongoing_beacons_request = false;
-+		return ret;
-+	}
-+
- 	interval = mac802154_scan_get_channel_time(request->interval,
- 						   request->wpan_phy->symbol_duration);
- 
-@@ -151,6 +160,8 @@ int mac802154_send_beacons_locked(struct ieee802154_sub_if_data *sdata,
- 
- int mac802154_stop_beacons_locked(struct ieee802154_local *local)
- {
-+	int ret;
-+
- 	lockdep_assert_held(&local->beacons_lock);
- 
- 	if (!local->ongoing_beacons_request)
-@@ -159,6 +170,12 @@ int mac802154_stop_beacons_locked(struct ieee802154_local *local)
- 	local->ongoing_beacons_request = false;
- 	cancel_delayed_work(&local->beacons_work);
- 
-+	ret = drv_stop_beacons(local);
-+	if (ret != -EOPNOTSUPP)
-+		return ret;
-+
-+	cancel_delayed_work(&local->beacons_work);
-+
- 	return 0;
- }
- 
-diff --git a/net/mac802154/trace.h b/net/mac802154/trace.h
-index 9c0a4f07ced1..b487523f83c3 100644
---- a/net/mac802154/trace.h
-+++ b/net/mac802154/trace.h
-@@ -292,6 +292,27 @@ DEFINE_EVENT(local_only_evt4, 802154_drv_exit_scan_mode,
- 	TP_ARGS(local)
+ 	if (unlikely(rdev->pan_entries >= max_pan_entries))
+ 		cfg802154_expire_oldest_pan(rdev);
+diff --git a/net/ieee802154/trace.h b/net/ieee802154/trace.h
+index 353ba799244f..506fe4930440 100644
+--- a/net/ieee802154/trace.h
++++ b/net/ieee802154/trace.h
+@@ -356,6 +356,31 @@ DEFINE_EVENT(802154_wdev_template, 802154_rdev_stop_beacons,
+ 	TP_ARGS(wpan_phy, wpan_dev)
  );
  
-+TRACE_EVENT(802154_drv_send_beacons,
-+	TP_PROTO(struct ieee802154_local *local,
-+		 struct cfg802154_beacons_request *request),
-+	TP_ARGS(local, request),
++DECLARE_EVENT_CLASS(802154_pan_evt,
++	TP_PROTO(struct ieee802154_pan_desc *desc),
++	TP_ARGS(desc),
 +	TP_STRUCT__entry(
-+		LOCAL_ENTRY
-+		__field(u8, interval)
++		__field(u16, pan_id)
++		__field(__le64, coord_addr)
++		__field(u8, channel)
++		__field(u8, page)
 +	),
 +	TP_fast_assign(
-+		LOCAL_ASSIGN;
-+		__entry->interval = request->interval;
++		__entry->page = desc->page;
++		__entry->channel = desc->channel;
++		memcpy(&__entry->pan_id, &desc->coord->pan_id, 2);
++		memcpy(&__entry->coord_addr, &desc->coord->extended_addr, 8);
 +	),
-+	TP_printk(LOCAL_PR_FMT ", send beacons at interval: %d",
-+		  LOCAL_PR_ARG, __entry->interval)
++	TP_printk("panid: %u, coord_addr: 0x%llx, page: %u, channel: %u",
++		  __entry->pan_id, __le64_to_cpu(__entry->coord_addr),
++		  __entry->page, __entry->channel)
 +);
 +
-+DEFINE_EVENT(local_only_evt4, 802154_drv_stop_beacons,
-+	TP_PROTO(struct ieee802154_local *local),
-+	TP_ARGS(local)
++DEFINE_EVENT(802154_pan_evt, 802154_new_pan,
++	TP_PROTO(struct ieee802154_pan_desc *desc),
++	TP_ARGS(desc)
 +);
 +
- #endif /* !__MAC802154_DRIVER_TRACE || TRACE_HEADER_MULTI_READ */
- 
- #undef TRACE_INCLUDE_PATH
+ TRACE_EVENT(802154_rdev_return_int,
+ 	TP_PROTO(struct wpan_phy *wpan_phy, int ret),
+ 	TP_ARGS(wpan_phy, ret),
 -- 
 2.27.0
 
