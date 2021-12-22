@@ -2,90 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D3F9547CAC6
-	for <lists+netdev@lfdr.de>; Wed, 22 Dec 2021 02:30:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 59A2647CACF
+	for <lists+netdev@lfdr.de>; Wed, 22 Dec 2021 02:33:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235193AbhLVBaN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Dec 2021 20:30:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56320 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233887AbhLVBaN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Dec 2021 20:30:13 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9259C061574
-        for <netdev@vger.kernel.org>; Tue, 21 Dec 2021 17:30:12 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A6AD617D4
-        for <netdev@vger.kernel.org>; Wed, 22 Dec 2021 01:30:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id C080AC36AE8;
-        Wed, 22 Dec 2021 01:30:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1640136611;
-        bh=Xobj2PHbRe+a5JT58+ujfnqZKHFw1W/2AVOm/Wqs0+c=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=L/TpBdn7tCSEzEuetWCcNGOo1NGVPhoAXpVkCSWQLr4jHSScGFTySAy/v+py5xFvA
-         cVONo0wEH3oIWAEeRWjA61iOlGeTIqt+HznCLx0xwQDhR+XfE4hrZ3uUz0XCMVbfVZ
-         BYqpBc3asf0vehpcxG1NVeYgLJ0zVL1bRzyq4SwId1sQ8K5j91Jk6TshxK06aSqnIG
-         1Gnd4PlqiWL+MAbm+3hO/hUZS3biVb0O4ZOtjQ7RYnF3s9jr/l/T9LzzUkPyfudmJY
-         gBKsjU+y1YYxHxtcbgiesBVtM5k2HdbUAv7ggQW8RTvSREr7DXpD/+tS3EVgGI7Ove
-         XjT50+SBcBsTg==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 990A760A49;
-        Wed, 22 Dec 2021 01:30:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S241056AbhLVBda (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Dec 2021 20:33:30 -0500
+Received: from szxga03-in.huawei.com ([45.249.212.189]:30157 "EHLO
+        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233887AbhLVBda (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Dec 2021 20:33:30 -0500
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.56])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4JJbPl4d1lz8vyq;
+        Wed, 22 Dec 2021 09:31:07 +0800 (CST)
+Received: from dggpemm500019.china.huawei.com (7.185.36.180) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Wed, 22 Dec 2021 09:33:27 +0800
+Received: from [10.67.109.184] (10.67.109.184) by
+ dggpemm500019.china.huawei.com (7.185.36.180) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Wed, 22 Dec 2021 09:33:27 +0800
+Subject: Re: [PATCH bpf-next] selftests/bpf: Fix building error when using
+ userspace pt_regs
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Shuah Khan <shuah@kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+References: <20211214135555.125348-1-pulehui@huawei.com>
+ <CAEf4BzaQcHV3iY5XqEbt3ptw+KejVVEZ8gSmW7u46=xHnsTaPA@mail.gmail.com>
+ <a83777e4-528f-8adb-33e4-a0fea8d544a0@huawei.com>
+ <CAEf4BzZf2UBgO=uaOOhPFEdJV9Jo7x3KAC3G9Wa1RVdmOD35nA@mail.gmail.com>
+ <50d81d9c-2b5f-9dfd-a284-9778e6273725@huawei.com>
+ <88aa98df-b566-d031-b9f9-2b88a437a810@huawei.com>
+ <CAEf4BzbJsmKiZHrnEZUZxCL_7PP2w3K5-VabP1bcsoyKogiypw@mail.gmail.com>
+From:   Pu Lehui <pulehui@huawei.com>
+Message-ID: <bd0a5dff-7ada-4ff3-8fda-89e69254c2c4@huawei.com>
+Date:   Wed, 22 Dec 2021 09:33:27 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/8][pull request] 1GbE Intel Wired LAN Driver
- Updates 2021-12-21
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164013661162.32287.10479969997787761237.git-patchwork-notify@kernel.org>
-Date:   Wed, 22 Dec 2021 01:30:11 +0000
-References: <20211221180200.3176851-1-anthony.l.nguyen@intel.com>
-In-Reply-To: <20211221180200.3176851-1-anthony.l.nguyen@intel.com>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
+In-Reply-To: <CAEf4BzbJsmKiZHrnEZUZxCL_7PP2w3K5-VabP1bcsoyKogiypw@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.109.184]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpemm500019.china.huawei.com (7.185.36.180)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
 
-This series was applied to netdev/net-next.git (master)
-by Tony Nguyen <anthony.l.nguyen@intel.com>:
 
-On Tue, 21 Dec 2021 10:01:52 -0800 you wrote:
-> This series contains updates to igc, igb, igbvf, and fm10k drivers.
+On 2021/12/22 7:52, Andrii Nakryiko wrote:
+> On Mon, Dec 20, 2021 at 4:58 PM Pu Lehui <pulehui@huawei.com> wrote:
+>>
+>>
+>>
+>> On 2021/12/20 22:02, Pu Lehui wrote:
+>>>
+>>>
+>>> On 2021/12/18 0:45, Andrii Nakryiko wrote:
+>>>> On Thu, Dec 16, 2021 at 6:25 PM Pu Lehui <pulehui@huawei.com> wrote:
+>>>>>
+>>>>>
+>>>>>
+>>>>> On 2021/12/16 12:06, Andrii Nakryiko wrote:
+>>>>>> On Tue, Dec 14, 2021 at 5:54 AM Pu Lehui <pulehui@huawei.com> wrote:
+>>>>>>>
+>>>>>>> When building bpf selftests on arm64, the following error will occur:
+>>>>>>>
+>>>>>>> progs/loop2.c:20:7: error: incomplete definition of type 'struct
+>>>>>>> user_pt_regs'
+>>>>>>>
+>>>>>>> Some archs, like arm64 and riscv, use userspace pt_regs in
+>>>>>>> bpf_tracing.h, which causes build failure when bpf prog use
+>>>>>>> macro in bpf_tracing.h. So let's use vmlinux.h directly.
+>>>>>>
+>>>>>> We could probably also extend bpf_tracing.h to work with
+>>>>>> kernel-defined pt_regs, just like we do for x86 (see __KERNEL__ and
+>>>>>> __VMLINUX_H__ checks). It's more work, but will benefit other end
+>>>>>> users, not just selftests.
+>>>>>>
+>>>>> It might change a lot. We can use header file directory generated by
+>>>>> "make headers_install" to fix it.
+>>>>
+>>>> We don't have dependency on "make headers_install" and I'd rather not
+>>>> add it.
+>>>>
+>>>> What do you mean by "change a lot"?
+>>>>
+>>> Maybe I misunderstood your advice. Your suggestion might be to extend
+>>> bpf_tracing.h to kernel-space pt_regs, while some archs, like arm64,
 > 
-> Sasha removes unused defines and enum values from igc driver.
+> yes
 > 
-> Jason Wang removes a variable whose value never changes and, instead,
-> returns the value directly for igb.
+>>> only support user-space. So the patch might be like this:
+>>>
+>>> diff --git a/tools/lib/bpf/bpf_tracing.h b/tools/lib/bpf/bpf_tracing.h
+>>> index db05a5937105..2c3cb8e9ae92 100644
+>>> --- a/tools/lib/bpf/bpf_tracing.h
+>>> +++ b/tools/lib/bpf/bpf_tracing.h
+>>> @@ -195,9 +195,13 @@ struct pt_regs;
+>>>
+>>>    #elif defined(bpf_target_arm64)
+>>>
+>>> -struct pt_regs;
+>>> +#if defined(__KERNEL__)
+>>> +#define PT_REGS_ARM64 const volatile struct pt_regs
+>>> +#else
+>>>    /* arm64 provides struct user_pt_regs instead of struct pt_regs to
+>>> userspace */
+>>>    #define PT_REGS_ARM64 const volatile struct user_pt_regs
+>>> +#endif
+>>> +
+>>>    #define PT_REGS_PARM1(x) (((PT_REGS_ARM64 *)(x))->regs[0])
+>>>    #define PT_REGS_PARM2(x) (((PT_REGS_ARM64 *)(x))->regs[1])
+>>>    #define PT_REGS_PARM3(x) (((PT_REGS_ARM64 *)(x))->regs[2])
+>>>
+>> Please ignore the last reply. User-space pt_regs of arm64/s390 is the
+>> first part of the kernel-space's, it should has covered both kernel and
+>> userspace.
 > 
-> [...]
-
-Here is the summary with links:
-  - [net-next,1/8] igc: Remove unused _I_PHY_ID define
-    https://git.kernel.org/netdev/net-next/c/7a34cda1ee8a
-  - [net-next,2/8] igc: Remove unused phy type
-    https://git.kernel.org/netdev/net-next/c/8e153faf5827
-  - [net-next,3/8] igc: Remove obsolete nvm type
-    https://git.kernel.org/netdev/net-next/c/2a8807a76589
-  - [net-next,4/8] igc: Remove obsolete mask
-    https://git.kernel.org/netdev/net-next/c/d2a66dd3fdd6
-  - [net-next,5/8] igc: Remove obsolete define
-    https://git.kernel.org/netdev/net-next/c/b8773a66f651
-  - [net-next,6/8] igb: remove never changed variable `ret_val'
-    https://git.kernel.org/netdev/net-next/c/890781af31a0
-  - [net-next,7/8] igbvf: Refactor trace
-    https://git.kernel.org/netdev/net-next/c/630f6edc4851
-  - [net-next,8/8] fm10k: Fix syntax errors in comments
-    https://git.kernel.org/netdev/net-next/c/37cf276df101
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+> Alright, so is there still a problem or not? Looking at the definition
+> of struct pt_regs for arm64, just casting struct pt_regs to struct
+> user_pt_regs will indeed just work. So in that case, what was your
+> original issue?
+> 
+Thanks for your reply. The original issue is, when arm64 bpf selftests 
+cross compiling in x86_64 host, clang cannot find the arch specific uapi 
+ptrace.h, and then the above error occur. Of course it works when 
+compiling in arm64 host for it owns the corresponding uapi ptrace.h. So 
+my suggestion is to add arch specific use header file directory 
+generated by "make headers_install" for the cross compiling issue.
+>>>>>
+>>>>> --- a/tools/testing/selftests/bpf/Makefile
+>>>>> +++ b/tools/testing/selftests/bpf/Makefile
+>>>>> @@ -294,7 +294,8 @@ MENDIAN=$(if
+>>>>> $(IS_LITTLE_ENDIAN),-mlittle-endian,-mbig-endian)
+>>>>>     CLANG_SYS_INCLUDES = $(call get_sys_includes,$(CLANG))
+>>>>>     BPF_CFLAGS = -g -D__TARGET_ARCH_$(SRCARCH) $(MENDIAN) \
+>>>>>                -I$(INCLUDE_DIR) -I$(CURDIR) -I$(APIDIR) \
+>>>>> -            -I$(abspath $(OUTPUT)/../usr/include)
+>>>>> +            -I$(abspath $(OUTPUT)/../usr/include) \
+>>>>> +            -I../../../../usr/include
+>>>>>>>
+>>>>>>> Signed-off-by: Pu Lehui <pulehui@huawei.com>
+>>>>>>> ---
+>>>>>>>     tools/testing/selftests/bpf/progs/loop1.c     |  8 ++------
+>>>>>>>     tools/testing/selftests/bpf/progs/loop2.c     |  8 ++------
+>>>>>>>     tools/testing/selftests/bpf/progs/loop3.c     |  8 ++------
+>>>>>>>     tools/testing/selftests/bpf/progs/loop6.c     | 20
+>>>>>>> ++++++-------------
+>>>>>>>     .../selftests/bpf/progs/test_overhead.c       |  8 ++------
+>>>>>>>     .../selftests/bpf/progs/test_probe_user.c     |  6 +-----
+>>>>>>>     6 files changed, 15 insertions(+), 43 deletions(-)
+>>>>>>>
+>>>>>>
+>>>>>> [...]
+>>>>>> .
+>>>>>>
+>>>> .
+>>>>
+>>> .
+> .
+> 
