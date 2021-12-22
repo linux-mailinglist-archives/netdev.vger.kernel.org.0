@@ -2,59 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D33547D439
-	for <lists+netdev@lfdr.de>; Wed, 22 Dec 2021 16:23:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C062D47D454
+	for <lists+netdev@lfdr.de>; Wed, 22 Dec 2021 16:39:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343703AbhLVPXT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Dec 2021 10:23:19 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:39722 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237912AbhLVPXS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Dec 2021 10:23:18 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D6357B81D0D;
-        Wed, 22 Dec 2021 15:23:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E41AC36AE5;
-        Wed, 22 Dec 2021 15:23:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1640186595;
-        bh=7suHNeZ0PFDbQZf4bG8MVJTVRqukHkRZ203fI09Smxw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=X64BJkEgsi/rjNV6CGwHlrl6+3m9sKmtET6gjDb8gngLRa+ESP+I+N7Qm3mkDkFeD
-         cO/T/FCA+XxR08S2aRquqgRg+I9gq9Xtq4D/2+4RCIokZgqxLWcYNHwt1yxaPYnWM2
-         VvKofO2psiS2OVvsLsEaqxaNCJhfnYmAydm8s5mf0fUkg/7247g4C8TttVusdDQBzT
-         2eEq5G+QTYWGFpvOU/MfcnLGs2UxJLOT6r9Vh31cTc8ahMeswqn56jhbt+9jFSNytm
-         xZHqeifeNLgBXg/U7ewHa0TZRsXaNxrjaIezdGD9knWqXaNxWIcHa27xsgnoRWs/m0
-         s/1eVvRJa7ktw==
-Date:   Wed, 22 Dec 2021 07:23:14 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
-        <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next] net: phy: micrel: Add config_init for LAN8814
-Message-ID: <20211222072314.51294237@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20211222114820.vj4obabkytuljqq6@soft-dev3-1.localhost>
-References: <20211126103833.3609945-1-horatiu.vultur@microchip.com>
-        <20211222114820.vj4obabkytuljqq6@soft-dev3-1.localhost>
+        id S1343737AbhLVPjy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Dec 2021 10:39:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49914 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1343729AbhLVPjx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Dec 2021 10:39:53 -0500
+Received: from mail-ua1-x930.google.com (mail-ua1-x930.google.com [IPv6:2607:f8b0:4864:20::930])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9647FC061574
+        for <netdev@vger.kernel.org>; Wed, 22 Dec 2021 07:39:53 -0800 (PST)
+Received: by mail-ua1-x930.google.com with SMTP id p37so4856579uae.8
+        for <netdev@vger.kernel.org>; Wed, 22 Dec 2021 07:39:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=hQ5DbP4MITHgtHViXOya0lanhcMqZ8b4WidUu29kIn4=;
+        b=Yg40izjAF+qGSYJh7fIre88MZSYu9ARUv/xQ6vjZCyNVJT1RhRfjG6g7S1VsgeK6rI
+         42lngz5rygExOouu1p++z/0r4YJaFMqUV8Wkh4gG3WvgiCwMWmGlRBMGaHJFJtzIkZDZ
+         1++Igh2KhjiEQWrhmOEb8qPAUKYI4CTux+3bi8TbaRZz6ufvDTeq4upv1qrsMEY0IJu8
+         Y6kmLrDEwmOBwpSlIm8n+i1mH84wjkrpjXH2kbQ9uRnLCd50qnAaPZu7SB9KkhIr6u0I
+         FCLI1Y1xyNRzXeFqtPv+1mKvM1jsfqKGb7/a/NSu/xXDQqfcyJgY6SUTSYVBcu09UK1W
+         76Mw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=hQ5DbP4MITHgtHViXOya0lanhcMqZ8b4WidUu29kIn4=;
+        b=LefsaSmlaZoXYPfRth1qs93aGiv8t/NA5sEC16Jy4B9TfVxEu4eSx+3BeqHWtWrJwr
+         IKF7yxxOM2+rL1u2Lvxye1Qn/t1k3/mUj48n+qzkCiphePDDmRd3NgOLzgCFT0uiF4LT
+         sVPMsA9AbVn9wUEnQXJp43FT2Vqjss7oMUb/s/vpvX1YvwrGv3QMKpV41KPWagIqDidV
+         kZGVptulFEsly/hg+lWAl2sbO+i2MfsKwLauVTnZoXbS63VE8voH09qA6wSz941cwqRi
+         V+O5K83i4LZBrS3EH1563UifB4NIRMXnisdaTCaTRq6olDMctEmlF3PCx6yVkkKl4AZT
+         lsZA==
+X-Gm-Message-State: AOAM532qZPNXIkKi1F9T/FmBJi9bX3gYIMOk2p8l2vMDvOSHLTtmEwy4
+        JMarx+ytAkp8kk73raFFU8qrFgQvBvPeaQwlnw==
+X-Google-Smtp-Source: ABdhPJzLOmr3CZH8A3UiA5N4FUCQBQLvzbwBg0pCi8UAcb0l0uBOiFi8Jk54hH3UKLSsj6TEED47id5o+wcq55R7uOk=
+X-Received: by 2002:ab0:3055:: with SMTP id x21mr1145956ual.97.1640187592510;
+ Wed, 22 Dec 2021 07:39:52 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Received: by 2002:a9f:2005:0:0:0:0:0 with HTTP; Wed, 22 Dec 2021 07:39:52
+ -0800 (PST)
+Reply-To: mrsaishag45@gmail.com
+From:   Mrs Aisha Al-Qaddafi <mrsaishag8@gmail.com>
+Date:   Wed, 22 Dec 2021 07:39:52 -0800
+Message-ID: <CAMoG4bVRuwWuYS8SoVPdyrTWKHswjwDTcyNd7cStPRB83OHdNA@mail.gmail.com>
+Subject: Dear Friend,
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 22 Dec 2021 12:48:20 +0100 Horatiu Vultur wrote:
-> The 11/26/2021 11:38, Horatiu Vultur wrote:
-> 
-> Sorry for reviving this old thread. I can see this patch was marked as
-> "Changes Requested" [1]. The change that Heiner proposed, will not worked as
-> we already discussed. It is using a different mechanism to access extend
-> pages.
-> Should I just try to resend the patch or is possible to get this one?
-> 
-> [1] https://patchwork.kernel.org/project/netdevbpf/patch/20211126103833.3609945-1-horatiu.vultur@microchip.com/
+Dear Friend,
 
-Please resend (preferably with a short note on why in the change log).
+I came across your e-mail contact prior a private search while in need
+of your assistance. My name is Aisha Gaddafi a single Mother and a
+Widow with three Children. I am the only biological Daughter of late
+Libyan President (Late Colonel Muammar Gaddafi).
+
+I have investment funds worth Twenty Seven Million Five Hundred
+Thousand United State Dollar ($27.500.000.00 ) and i need a trusted
+investment Manager/Partner because of my current refugee status,
+however, I am interested in you for investment project assistance in
+your country, may be from there, we can build business relationship in
+the nearest future.
+
+I am willing to negotiate investment/business profit sharing ratio
+with you base on the future investment earning profits.
+Best Regards
+Mrs Aisha Gaddafi
