@@ -2,122 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 05BD147D7DB
-	for <lists+netdev@lfdr.de>; Wed, 22 Dec 2021 20:38:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4348A47D7E0
+	for <lists+netdev@lfdr.de>; Wed, 22 Dec 2021 20:40:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345293AbhLVThx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Dec 2021 14:37:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47846 "EHLO
+        id S232808AbhLVTkJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Dec 2021 14:40:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232808AbhLVThv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Dec 2021 14:37:51 -0500
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7323EC061574;
-        Wed, 22 Dec 2021 11:37:51 -0800 (PST)
-Received: by mail-yb1-xb36.google.com with SMTP id q74so9639404ybq.11;
-        Wed, 22 Dec 2021 11:37:51 -0800 (PST)
+        with ESMTP id S230430AbhLVTkI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Dec 2021 14:40:08 -0500
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1472C061574
+        for <netdev@vger.kernel.org>; Wed, 22 Dec 2021 11:40:08 -0800 (PST)
+Received: by mail-yb1-xb2f.google.com with SMTP id q74so9655898ybq.11
+        for <netdev@vger.kernel.org>; Wed, 22 Dec 2021 11:40:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=JdkYvs20BpJlttg/sO+h+d7jCfULBOe8+I92ZlF90H0=;
-        b=Q1SAHaetYjQ/EOwOdwCaMPzNpCC+yMulPpy3xC4P1n19cq+11tylhwX0k6W8UYmDEB
-         qJG3I7vxY3wzMJ9uCaj3zIrN7J93ORZKhnFpqpUaUK0hklS7plLdvDwdhP5WBiwtaYPz
-         CyyAkv4ltoO09LoarJUNRgGQW2vpi2PucDuLFLyfrXv2v8WGI2UMC5Oh09LslXPY/cMk
-         9kjVER97cD+wAeNdu3Xx2lH2SZeOKDlLO3Upv/1uW3Ya1MvNwgP3UIMZAMN2qILUuiYR
-         8gKNpomh6OKHjbCMWpCK1W2kK3fcMXcEf2pPNUpWEhhYc/eADZNhg5E2ZRiSia6njllX
-         QVbA==
+        bh=ByhyrA+gQN1smj3CEydGN1iM8/bcHpzwjcby6Oy7els=;
+        b=eNbI+3wQCScMjqijgh5lW5BxvhViVNBiAu9usnz9dlZ6o0cDVlU+mXSkU9MGM7/uBi
+         DJ8Ins1mk5VI3C+LUtiMIvByVuLC4mOagdJCbXoiyejkQMyl2IP8t8zQKGC19/XkZa6O
+         Hn82luU/RbiOPqm8YL0b+cdxU5oNjlwr+JTBF5gYClGmB2zdMJM+jmlAHG1XBWQaHHlN
+         KzfiRQovOqUoaPNAJP2+dRZtn8wfZWR1QNixwwSugKUuCNM2/E0SEJPDppm6LHikpJrv
+         XfpJaBkt6sIp9zI04Yff3L9Crzqj8/PtbzoEjpxMYWFcc16Bf5x/zMUmK2235Re96+NV
+         1Jrg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=JdkYvs20BpJlttg/sO+h+d7jCfULBOe8+I92ZlF90H0=;
-        b=WclQ4xllO6XTd1+Yk0uqVyhVcRGCTORLVTO3ayrQfNeLU8iSmjTn56LOQNVyHqYn77
-         pkWcqqNSCgV9qZaz/IH54m+/kWsnTpmpciS4TqjoD4d364ZeSakj1nC1Vba5uPJSsHyT
-         CrLuiOHU2lsw9viqsBty6pEj+QLFX/qG3YtZVs/eqbUol5FegIDA45T2GM74t9B+ekDb
-         XvzQFxde9SQwvA+tw8qfgx9MNDiY+qP90sbB1O63f9cyybdGCuwHEAkkpLZniubzYS1v
-         nFV/xHsUdEoez9hFkQgzyL17lokvdObUnBFUeYW2MxUpHMGYf/BT7iwjzeQS3qDCtTkw
-         GeWg==
-X-Gm-Message-State: AOAM531AJ4Hef8fdw3YeQwTtfyiXMiyt5W/9yBohu9XnBWlpOc5xdV6z
-        kNnJx4Eo9jR8ZOaGa8P6GeZCvFp8drGpzGxbwWM=
-X-Google-Smtp-Source: ABdhPJzdVT+SQRtJbDPy9fx/RFt9bR29nRb5pHIcRNYiRMiQ6ON6WRwM9HPCPHaWh3ZtBJTxcH+1lkFSG0nAeaKi6ro=
-X-Received: by 2002:a25:98c4:: with SMTP id m4mr6431027ybo.613.1640201870647;
- Wed, 22 Dec 2021 11:37:50 -0800 (PST)
+        bh=ByhyrA+gQN1smj3CEydGN1iM8/bcHpzwjcby6Oy7els=;
+        b=GCFxn2mVakySC7TsxRrCrb6jAv6tlwe2cQ/CtLsujL2q1Ur4pl+D3R40QhoOlKI0Av
+         HSI/YHGeOHiqZkbZaAEGM0eRrrG6vlUxDsTNynWF2Rn7h2zubLDQG+ccld0LKm4Sul9b
+         C1I/xh5CoBz3N0Myyjo5gDBM9Xhy3nVIsztZOb45qy0/EACVky7/rgffkixVn0arjzW+
+         T+DM9JysSIWlm8AplP96vVBNzwl3mZjPbfUF+aXghKR01+Y8ezIM6T8lJJSrPF5oQHbv
+         7OeXu0i+BeLKxOvnsKNb4CevW6KKCjyxTjIhkRk6GdY1cyDPV1cIa9gMCsAVB1Mxzhzr
+         3o6A==
+X-Gm-Message-State: AOAM533oHAfLS4Rf1HBINhMHP7hn1yCRhGnL83Mo3bXdvsbgnJzyV+sv
+        j7BZQdgGepXTrslD9D+VgIXVoaqeNxtKFkq60dwcFqSjgMf5jQ==
+X-Google-Smtp-Source: ABdhPJww8xGO72cFzm1Lzdj9IOhwj3yMrD1aQ9Cv/yoYaJ1FwZhjaJJyEw07G9bxzObsMsG9B0Cv81i36rfUmUhDLN0=
+X-Received: by 2002:a25:9d82:: with SMTP id v2mr6308487ybp.383.1640202007355;
+ Wed, 22 Dec 2021 11:40:07 -0800 (PST)
 MIME-Version: 1.0
-References: <20211221094717.16187-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20211221094717.16187-3-prabhakar.mahadev-lad.rj@bp.renesas.com> <YcNtMMNKHIgGFZ+V@robh.at.kernel.org>
-In-Reply-To: <YcNtMMNKHIgGFZ+V@robh.at.kernel.org>
-From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date:   Wed, 22 Dec 2021 19:37:24 +0000
-Message-ID: <CA+V-a8tUyRUaEVhh9_xdHEzYnuYTaj2M6dqqvQGYOgoXOjWxxQ@mail.gmail.com>
-Subject: Re: [PATCH 02/16] dt-bindings: arm: renesas: Document SMARC EVK
-To:     Rob Herring <robh@kernel.org>
-Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, Vinod Koul <vkoul@kernel.org>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        dmaengine <dmaengine@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
+References: <b5f61c5602aab01bac8d711d8d1bfab0a4817db7.1640197544.git.pabeni@redhat.com>
+In-Reply-To: <b5f61c5602aab01bac8d711d8d1bfab0a4817db7.1640197544.git.pabeni@redhat.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 22 Dec 2021 11:39:56 -0800
+Message-ID: <CANn89i+QsBm=BLmU8t=_0+4=WRNS=S1+DcUeL=+CMc44bixK9w@mail.gmail.com>
+Subject: Re: [PATCH v2 net] veth: ensure skb entering GRO are not cloned.
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Ignat Korchagin <ignat@cloudflare.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Rob,
-
-Thank you for the review.
-
-On Wed, Dec 22, 2021 at 6:23 PM Rob Herring <robh@kernel.org> wrote:
+On Wed, Dec 22, 2021 at 10:40 AM Paolo Abeni <pabeni@redhat.com> wrote:
 >
-> On Tue, Dec 21, 2021 at 09:47:03AM +0000, Lad Prabhakar wrote:
-> > From: Biju Das <biju.das.jz@bp.renesas.com>
-> >
-> > Document Renesas SMARC EVK board which is based on RZ/V2L (R9A07G054)
-> > SoC. The SMARC EVK consists of RZ/V2L SoM module and SMARC carrier board,
-> > the SoM module sits on top of the carrier board.
-> >
-> > Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-> > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> > ---
-> >  Documentation/devicetree/bindings/arm/renesas.yaml | 2 ++
-> >  1 file changed, 2 insertions(+)
-> >
-> > diff --git a/Documentation/devicetree/bindings/arm/renesas.yaml b/Documentation/devicetree/bindings/arm/renesas.yaml
-> > index 55a5aec418ab..fa435d6fda77 100644
-> > --- a/Documentation/devicetree/bindings/arm/renesas.yaml
-> > +++ b/Documentation/devicetree/bindings/arm/renesas.yaml
-> > @@ -423,6 +423,8 @@ properties:
-> >
-> >        - description: RZ/V2L (R9A07G054)
-> >          items:
-> > +          - enum:
-> > +              - renesas,smarc-evk # SMARC EVK
+> After commit d3256efd8e8b ("veth: allow enabling NAPI even without XDP"),
+> if GRO is enabled on a veth device and TSO is disabled on the peer
+> device, TCP skbs will go through the NAPI callback. If there is no XDP
+> program attached, the veth code does not perform any share check, and
+> shared/cloned skbs could enter the GRO engine.
 >
-> This and patch 1 should be combined. Changing the number of compatible
-> entries doesn't make sense.
+> Ignat reported a BUG triggered later-on due to the above condition:
 >
-Will merge this with patch 1. Is it OK if I include your Ack when merged?
+> [   53.970529][    C1] kernel BUG at net/core/skbuff.c:3574!
+> [   53.981755][    C1] invalid opcode: 0000 [#1] PREEMPT SMP KASAN PTI
+> [   53.982634][    C1] CPU: 1 PID: 19 Comm: ksoftirqd/1 Not tainted 5.16.0-rc5+ #25
+> [   53.982634][    C1] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 0.0.0 02/06/2015
+> [   53.982634][    C1] RIP: 0010:skb_shift+0x13ef/0x23b0
+> [   53.982634][    C1] Code: ea 03 0f b6 04 02 48 89 fa 83 e2 07 38 d0
+> 7f 08 84 c0 0f 85 41 0c 00 00 41 80 7f 02 00 4d 8d b5 d0 00 00 00 0f
+> 85 74 f5 ff ff <0f> 0b 4d 8d 77 20 be 04 00 00 00 4c 89 44 24 78 4c 89
+> f7 4c 89 8c
+> [   53.982634][    C1] RSP: 0018:ffff8881008f7008 EFLAGS: 00010246
+> [   53.982634][    C1] RAX: 0000000000000000 RBX: ffff8881180b4c80 RCX: 0000000000000000
+> [   53.982634][    C1] RDX: 0000000000000002 RSI: ffff8881180b4d3c RDI: ffff88810bc9cac2
+> [   53.982634][    C1] RBP: ffff8881008f70b8 R08: ffff8881180b4cf4 R09: ffff8881180b4cf0
+> [   53.982634][    C1] R10: ffffed1022999e5c R11: 0000000000000002 R12: 0000000000000590
+> [   53.982634][    C1] R13: ffff88810f940c80 R14: ffff88810f940d50 R15: ffff88810bc9cac0
+> [   53.982634][    C1] FS:  0000000000000000(0000) GS:ffff888235880000(0000) knlGS:0000000000000000
+> [   53.982634][    C1] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [   53.982634][    C1] CR2: 00007ff5f9b86680 CR3: 0000000108ce8004 CR4: 0000000000170ee0
+> [   53.982634][    C1] Call Trace:
+> [   53.982634][    C1]  <TASK>
+> [   53.982634][    C1]  tcp_sacktag_walk+0xaba/0x18e0
+> [   53.982634][    C1]  tcp_sacktag_write_queue+0xe7b/0x3460
+> [   53.982634][    C1]  tcp_ack+0x2666/0x54b0
+> [   53.982634][    C1]  tcp_rcv_established+0x4d9/0x20f0
+> [   53.982634][    C1]  tcp_v4_do_rcv+0x551/0x810
+> [   53.982634][    C1]  tcp_v4_rcv+0x22ed/0x2ed0
+> [   53.982634][    C1]  ip_protocol_deliver_rcu+0x96/0xaf0
+> [   53.982634][    C1]  ip_local_deliver_finish+0x1e0/0x2f0
+> [   53.982634][    C1]  ip_sublist_rcv_finish+0x211/0x440
+> [   53.982634][    C1]  ip_list_rcv_finish.constprop.0+0x424/0x660
+> [   53.982634][    C1]  ip_list_rcv+0x2c8/0x410
+> [   53.982634][    C1]  __netif_receive_skb_list_core+0x65c/0x910
+> [   53.982634][    C1]  netif_receive_skb_list_internal+0x5f9/0xcb0
+> [   53.982634][    C1]  napi_complete_done+0x188/0x6e0
+> [   53.982634][    C1]  gro_cell_poll+0x10c/0x1d0
+> [   53.982634][    C1]  __napi_poll+0xa1/0x530
+> [   53.982634][    C1]  net_rx_action+0x567/0x1270
+> [   53.982634][    C1]  __do_softirq+0x28a/0x9ba
+> [   53.982634][    C1]  run_ksoftirqd+0x32/0x60
+> [   53.982634][    C1]  smpboot_thread_fn+0x559/0x8c0
+> [   53.982634][    C1]  kthread+0x3b9/0x490
+> [   53.982634][    C1]  ret_from_fork+0x22/0x30
+> [   53.982634][    C1]  </TASK>
+>
+> Address the issue by skipping the GRO stage for shared or cloned skbs.
+> To reduce the chance of OoO, try to unclone the skbs before giving up.
+>
+> v1 -> v2:
+>  - use avoid skb_copy and fallback to netif_receive_skb  - Eric
+>
+> Reported-by: Ignat Korchagin <ignat@cloudflare.com>
+> Fixes: d3256efd8e8b ("veth: allow enabling NAPI even without XDP")
+> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+> ---
+>  drivers/net/veth.c | 8 ++++++--
+>  1 file changed, 6 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/net/veth.c b/drivers/net/veth.c
+> index b78894c38933..117526f2437d 100644
+> --- a/drivers/net/veth.c
+> +++ b/drivers/net/veth.c
+> @@ -879,8 +879,12 @@ static int veth_xdp_rcv(struct veth_rq *rq, int budget,
+>
+>                         stats->xdp_bytes += skb->len;
+>                         skb = veth_xdp_rcv_skb(rq, skb, bq, stats);
+> -                       if (skb)
+> -                               napi_gro_receive(&rq->xdp_napi, skb);
+> +                       if (skb) {
+> +                               if (skb_shared(skb) || skb_unclone(skb, GFP_ATOMIC))
+> +                                       netif_receive_skb(skb);
+> +                               else
+> +                                       napi_gro_receive(&rq->xdp_napi, skb);
+> +                       }
 
-Cheers,
-Prabhakar
+Reviewed-by: Eric Dumazet <edumazet@google.com>
 
-> >            - enum:
-> >                - renesas,r9a07g054l1 # Single Cortex-A55 RZ/V2L
-> >                - renesas,r9a07g054l2 # Dual Cortex-A55 RZ/V2L
-> > --
-> > 2.17.1
-> >
-> >
+Note that the skb_shared(skb) case seems not practical :
+This would imply the same skb could be queued multiple times,
+meaning no skb field could be changed (skb->next, skb->prev....)
+
+veth clears IFF_TX_SKB_SHARING after all.
+
+>                 }
+>                 done++;
+>         }
+> --
+> 2.33.1
+>
