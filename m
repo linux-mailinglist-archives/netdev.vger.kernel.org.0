@@ -2,41 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A81EE47D890
-	for <lists+netdev@lfdr.de>; Wed, 22 Dec 2021 22:12:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7487447D892
+	for <lists+netdev@lfdr.de>; Wed, 22 Dec 2021 22:12:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237896AbhLVVMJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Dec 2021 16:12:09 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:41280 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238079AbhLVVMI (ORCPT
+        id S238328AbhLVVML (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Dec 2021 16:12:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40242 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238012AbhLVVMI (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 22 Dec 2021 16:12:08 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 909EFC06173F
+        for <netdev@vger.kernel.org>; Wed, 22 Dec 2021 13:12:08 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0EBB161CFD
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 30E7461C5E
         for <netdev@vger.kernel.org>; Wed, 22 Dec 2021 21:12:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D588C36AEB;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6796C36AE8;
         Wed, 22 Dec 2021 21:12:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1640207527;
-        bh=05kx9K7jSc6HCojxjT4pjAmVe6YMIYCxEQyAgR7RkDM=;
+        s=k20201202; t=1640207528;
+        bh=R54urKv5SKkq9+4bwdg/bmaYR+eb1LICW5jKG402pso=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FR0plPibLDWbIMi+8pku4oAgWWxCjjc2tMkUPpdMKuulmEqOgg60JlLEPe1ZlM9Po
-         /JiHzngMGfSINVa96b/lp35kJ3NSXbXFsg9Xg8MGdarypZOUA3cWctgfqcv0S7dQYm
-         lROWX77SzL8whR0CrBzD1ewUf3ZGMq//ExqJH5PzXCQ+e0p0UZWCwqIWbNFm4Ar7bA
-         GNxwhxLnNIYIeN5WoD/n/pmFyrpJpbakVoC3/LHCBPRo6ev1TabDtj28nND9J2xuVD
-         fhu+8YYcH/H65ZoH6kH1GPLYSMPpbWub8uCWl4qJCYci8l9gGi+gFFZLer8Pk5vFeR
-         ImSge9BaXAsAw==
+        b=CondwWs7qFNrAQ3N3AgUUE7kRKIV5dMELC87bHpv8QM8URR6NcjlwCtMM+vtAPujk
+         ugZWhiBmZuqLhA/jDBQ9WaPnIpswbcGSujtji3oetWE+ExaDzw6IRqu793feQRDNdX
+         1/0gw38sADED/grW7yh8PZzuE29JvdrMVwrnz97eIxCIXfeVJoet6emLCidF8VBh/2
+         H+uF1omS2L+MO0UdPp/LF4zTs/3Y0YwUXwcyTl/YENKRLtKscMWzk4sGbfUXCWH9sy
+         OD0ER43qPtoA4Mo3DHF5x6Y5ipz6FhFwpceLsrOf1a5GV2INuUNV6tnvKSiw8ooMPY
+         oS6or7eL1tjNA==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Roi Dayan <roid@nvidia.com>,
-        Moshe Shemesh <moshe@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net 05/11] net/mlx5: Fix SF health recovery flow
-Date:   Wed, 22 Dec 2021 13:11:55 -0800
-Message-Id: <20211222211201.77469-6-saeed@kernel.org>
+        Chris Mi <cmi@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>
+Subject: [net 06/11] net/mlx5: Fix tc max supported prio for nic mode
+Date:   Wed, 22 Dec 2021 13:11:56 -0800
+Message-Id: <20211222211201.77469-7-saeed@kernel.org>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20211222211201.77469-1-saeed@kernel.org>
 References: <20211222211201.77469-1-saeed@kernel.org>
@@ -46,55 +48,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Moshe Shemesh <moshe@nvidia.com>
+From: Chris Mi <cmi@nvidia.com>
 
-SF do not directly control the PCI device. During recovery flow SF
-should not be allowed to do pci disable or pci reset, its PF will do it.
+Only prio 1 is supported if firmware doesn't support ignore flow
+level for nic mode. The offending commit removed the check wrongly.
+Add it back.
 
-It fixes the following kernel trace:
-mlx5_core.sf mlx5_core.sf.25: mlx5_health_try_recover:387:(pid 40948): starting health recovery flow
-mlx5_core 0000:03:00.0: mlx5_pci_slot_reset was called
-mlx5_core 0000:03:00.0: wait vital counter value 0xab175 after 1 iterations
-mlx5_core.sf mlx5_core.sf.25: firmware version: 24.32.532
-mlx5_core.sf mlx5_core.sf.23: mlx5_health_try_recover:387:(pid 40946): starting health recovery flow
-mlx5_core 0000:03:00.0: mlx5_pci_slot_reset was called
-mlx5_core 0000:03:00.0: wait vital counter value 0xab193 after 1 iterations
-mlx5_core.sf mlx5_core.sf.23: firmware version: 24.32.532
-mlx5_core.sf mlx5_core.sf.25: mlx5_cmd_check:813:(pid 40948): ENABLE_HCA(0x104) op_mod(0x0) failed,
-status bad resource state(0x9), syndrome (0x658908)
-mlx5_core.sf mlx5_core.sf.25: mlx5_function_setup:1292:(pid 40948): enable hca failed
-mlx5_core.sf mlx5_core.sf.25: mlx5_health_try_recover:389:(pid 40948): health recovery failed
-
-Fixes: 1958fc2f0712 ("net/mlx5: SF, Add auxiliary device driver")
-Signed-off-by: Moshe Shemesh <moshe@nvidia.com>
+Fixes: 9a99c8f1253a ("net/mlx5e: E-Switch, Offload all chain 0 priorities when modify header and forward action is not supported")
+Signed-off-by: Chris Mi <cmi@nvidia.com>
+Reviewed-by: Roi Dayan <roid@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/main.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/lib/fs_chains.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-index 7df9c7f8d9c8..65083496f913 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-@@ -1809,12 +1809,13 @@ void mlx5_disable_device(struct mlx5_core_dev *dev)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/fs_chains.c b/drivers/net/ethernet/mellanox/mlx5/core/lib/fs_chains.c
+index 97e5845b4cfd..d5e47630e284 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lib/fs_chains.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/fs_chains.c
+@@ -121,6 +121,9 @@ u32 mlx5_chains_get_nf_ft_chain(struct mlx5_fs_chains *chains)
  
- int mlx5_recover_device(struct mlx5_core_dev *dev)
+ u32 mlx5_chains_get_prio_range(struct mlx5_fs_chains *chains)
  {
--	int ret = -EIO;
-+	if (!mlx5_core_is_sf(dev)) {
-+		mlx5_pci_disable_device(dev);
-+		if (mlx5_pci_slot_reset(dev->pdev) != PCI_ERS_RESULT_RECOVERED)
-+			return -EIO;
-+	}
++	if (!mlx5_chains_prios_supported(chains))
++		return 1;
++
+ 	if (mlx5_chains_ignore_flow_level_supported(chains))
+ 		return UINT_MAX;
  
--	mlx5_pci_disable_device(dev);
--	if (mlx5_pci_slot_reset(dev->pdev) == PCI_ERS_RESULT_RECOVERED)
--		ret = mlx5_load_one(dev);
--	return ret;
-+	return mlx5_load_one(dev);
- }
- 
- static struct pci_driver mlx5_core_driver = {
 -- 
 2.33.1
 
