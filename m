@@ -2,259 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E330C47CC0B
-	for <lists+netdev@lfdr.de>; Wed, 22 Dec 2021 05:21:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AD26D47CC17
+	for <lists+netdev@lfdr.de>; Wed, 22 Dec 2021 05:26:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242328AbhLVEVL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Dec 2021 23:21:11 -0500
-Received: from mga03.intel.com ([134.134.136.65]:50506 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238768AbhLVEVK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Dec 2021 23:21:10 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1640146870; x=1671682870;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=39lhxRLm8Nl6jT84yB4QdHrnK6gEf8FSo+9OOojKUk4=;
-  b=A05OHbJ3ZVvEl4ZDnkwcSH5ewo6dMCU9fGI8Rj+4JG4MuTomCOqaGV7c
-   zSCj2K9z3/xZJ4W3qKq7iEADvuIPr1SPFoMVgtDXnZkmeFgw0y2LW7Vry
-   0NExJgLaZrqfb1agJSaG2rWzYK9UpvFkIH+QUYopj1gLQ4YS3PKdUqDXi
-   enH8iUR7UEhvFVHsxbaTP3R0RP2lewZTYRzyEu1ZFR7dRZW/O2DSUt6J9
-   6EnjIsEKpk2C23seOZI/dYmGYLP6FEhH0nZ3wrh6f/8oDngmLFAOen+cg
-   QzuKW2iCOhLy4VepgXGZso2g3I7WpRAKNBslFNAbrVT414QmzoWZeVxA6
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10205"; a="240495907"
-X-IronPort-AV: E=Sophos;i="5.88,225,1635231600"; 
-   d="scan'208";a="240495907"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Dec 2021 20:21:10 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,225,1635231600"; 
-   d="scan'208";a="617002664"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by orsmga004.jf.intel.com with ESMTP; 21 Dec 2021 20:21:10 -0800
-Received: from fmsmsx609.amr.corp.intel.com (10.18.126.89) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Tue, 21 Dec 2021 20:21:09 -0800
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx609.amr.corp.intel.com (10.18.126.89) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20 via Frontend Transport; Tue, 21 Dec 2021 20:21:09 -0800
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.175)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.20; Tue, 21 Dec 2021 20:21:09 -0800
+        id S242379AbhLVE0F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Dec 2021 23:26:05 -0500
+Received: from mail-mw2nam10on2111.outbound.protection.outlook.com ([40.107.94.111]:53446
+        "EHLO NAM10-MW2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S242366AbhLVE0A (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Dec 2021 23:26:00 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Vd4mI74qCHUqCnaSvEEdWPB5ga1pzNnZrBRYf7zSoiMJNbRZYa66MQFwjppUK+SFkPzJoOlHCxqJjmCOFXp3xmC3Rqcka/Oxj6XknVoDsNKOA7FwBVrNLPAFYFftziIvtJiVBk2pebFGvUlq9aSOAbi328pje3xcB27YZ9g4AV29xemN6iTSDKt+ScYB4GL4370Wn/i59kI9tUGJQ8CbzTsD9NdmQnZGY6FrwIFfO/L/Ji/1AAJpK+hoPuQ2dZ22KoE4/8u/ZmtZnyTWUMqojTuX6q9WIrR8OTFLnnPWFtJUinuDIPItA8PsvfEZsLH5yBGGeTGwzaQXGIP2BKX3IA==
+ b=QVuE57GuZpu0PcoNDJ9Jw5viteTNJPG8fZXCXZAaBA7tdvnXCtrMsIKrWUnNy0zrHjZgRqzNLf9Pv8KMZIZAEZA3NtA/9eC6pj6tLeWiaHB4VCljF3b9PebUdhdPutjbPe35gXwyV9RjQmDc2bkXW24TU8nDsH5DpUxTCyncr01RROHRiXHlafq548iXjpAowkVeAJIRP7wCDENUG1y9UsYxG6fOysRhuNkD1Oe6i2RFFYgdhzV115uCrhEwiGJZzgM3bQpCkbqJnU6nInohZcwumH6lpeRgCn4IpSMznG4YzkgfBr4nFgSGtWvXUzADbLOSleheRoFul/gzLR8wSw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=peH1BJpW2vn4DiOBO1hFYY3wIM40LSa4FeQaHWuYn9k=;
- b=WG2zwCA481zhQxiV813gt38fXhmdN8TlvIKy87RF/8/nj4psLMC2/Wh9NPkyI63dxPUnRDeq0pxsL3m0Mt7P7gVCFpmpkwtyWCS2oMWME0EBHavwVUPsqYFUrhGAN18xVgSt9lalvj7KVfVE5kGN+X3Oodx8xr85VHlNFDMycns7uC5cf6OJ3sPCsQDUC8dZSScpJa3S6oNW4OPzsKGtYHQjHIwNITH9yC3O2A8OT/VN6g5Lj53ZuaG9u9Qz55Az5H7svBlUyPB6Dxtr7bZ0JN14Syf7DjNcJkzSXz33zMHpTXuAOgGuBNQYnEbeRmdr8iOxkAlSXLQ4DIalixZsCw==
+ bh=MFfrY2/rVSGSyevDFGiT+2M2NlcGD8ZcZmowqnkbxjw=;
+ b=bbz3zNNw95HvNpcu9AERR3FlnTZm4pB93Pik338w2nLl49m+DIiOBMPLVKnoMpWcB1CL8TdX+gaHmRRQbmwo65NV4HYX7x0v1tSKRaMDNMvYUzeHrdhfdn2bjrgWgviZ297lGTKVwBzx429ZxS5JEPErC0TtwbEVNrNafaPIsguMyK4NJ/l8EWlHxlqKReG9LM1mKfhwZbiMeUETFE+SAHm99TVC5NJBa66DW7qA2Kn7Q3R2doZj0J88SYFuUS8a+yaqP8rQYrpnXlFodvpNDN7mDm6JLA8Kb0uWdEVrayx28H9wSRehqQM2URuQtynJpE2h5lj0gm7idEaPY9+GkQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from CO1PR11MB5170.namprd11.prod.outlook.com (2603:10b6:303:95::10)
- by MWHPR11MB1743.namprd11.prod.outlook.com (2603:10b6:300:114::8) with
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=MFfrY2/rVSGSyevDFGiT+2M2NlcGD8ZcZmowqnkbxjw=;
+ b=sm2GVCz9wOMzLAGcVu3RfnPQDOHNDi99vvs5CBnlWpRMD4fuHRhj4+950Q3DG6o4ZQsCj9a4c5oQtrUgf0GODgs5sK5QgDiXk7pCaZ2P4ChCb8SSVvkRIjLL5EZ+IzRdh/gPTw9buT8f2/yDfv79UAWUNxE1bnAS8PQs8wBFkZw=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from DM5PR1301MB2172.namprd13.prod.outlook.com (2603:10b6:4:2d::21)
+ by BN6PR1301MB2050.namprd13.prod.outlook.com (2603:10b6:405:33::34) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4823.18; Wed, 22 Dec
- 2021 04:21:06 +0000
-Received: from CO1PR11MB5170.namprd11.prod.outlook.com
- ([fe80::4c2a:62a1:d6e5:b67b]) by CO1PR11MB5170.namprd11.prod.outlook.com
- ([fe80::4c2a:62a1:d6e5:b67b%7]) with mapi id 15.20.4823.018; Wed, 22 Dec 2021
- 04:21:06 +0000
-From:   "Chen, Mike Ximing" <mike.ximing.chen@intel.com>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "arnd@arndb.de" <arnd@arndb.de>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "Williams, Dan J" <dan.j.williams@intel.com>,
-        "pierre-louis.bossart@linux.intel.com" 
-        <pierre-louis.bossart@linux.intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>
-Subject: RE: [RFC PATCH v12 17/17] dlb: add basic sysfs interfaces
-Thread-Topic: [RFC PATCH v12 17/17] dlb: add basic sysfs interfaces
-Thread-Index: AQHX9jdp8zCLYq9nh0Woi5QXeJNDCaw9mkwAgABNtGA=
-Date:   Wed, 22 Dec 2021 04:21:06 +0000
-Message-ID: <CO1PR11MB5170DC5C16ADE17DA4C5AD0FD97D9@CO1PR11MB5170.namprd11.prod.outlook.com>
-References: <20211221065047.290182-1-mike.ximing.chen@intel.com>
-        <20211221065047.290182-18-mike.ximing.chen@intel.com>
- <20211221153458.51710479@hermes.local>
-In-Reply-To: <20211221153458.51710479@hermes.local>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-version: 11.6.200.16
-dlp-reaction: no-action
-dlp-product: dlpe-windows
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 869a9a07-3c2f-4c2e-2b46-08d9c5027925
-x-ms-traffictypediagnostic: MWHPR11MB1743:EE_
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr,ExtFwd
-x-microsoft-antispam-prvs: <MWHPR11MB174393F1F28194C02807FDC3D97D9@MWHPR11MB1743.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: a9VoJyoy3LC6kx/z38Cm83oNlRvyRZ8JIQqJWtTNw2qb0V5hu8g7naATnB6uY7Ao98qalZiqORdL2z3BU8eMdJGh0dNbyk9kLzjm3fkCdLiQTt0YeKHItFtrGuQ5dSI5V40jpo9kaESwO172NwOvc/ugZ/lN0qro01R0T265SUJCbGSjuc7uxsjK4qK9DdViPnwcXy82VV9mmVzGdfPFp5wHPyKmhvk1AXml4joqRMYD/Tj+IuajcvIjJUvducYsAiz0FbbGgFTj/9l9R71TVeYdVgbMC2Q82UBsUVSWSaYOq2bxb1uvCktOfeSA38pU8bxLOsZtcPjtX1C05ygQhjOOTTwow8d4XQ97vwGHkgz+eBaRL8Ys3L8alG6NcnfX4FTb4rbYsJpjUWWNda8gMd+ErnqH060xqJgcgCuneak5FrRHwLykLrkCjZgHEiC92xc/rLnzPw4Dt1+RsqFsqzrgVp+km83zbRQitKFsC+fnsGtfQ3QCmrp7KYbZxUNUn7UsasQk2uuiCvxLM0/DsQnZqgwL5J/yevpl4P6361J+CpCo2UyI5AF75UQciazaG50it/pUrp0q1JLcMX/Ysi/dg1rlLl4j719r3RO1x9MT8CJ8BofQJtSQuDathSs95vL41V/xfrjwuApS44GEw4kv3GPa0d9k+AsuTL9mLWB9+KIXrrLefpPKx8hZISDoL4ai73eE958RPU3bY6zc/g==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5170.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(186003)(33656002)(508600001)(7696005)(8676002)(38100700002)(4326008)(55016003)(2906002)(5660300002)(86362001)(26005)(9686003)(76116006)(66556008)(66476007)(66946007)(66446008)(316002)(64756008)(6506007)(38070700005)(53546011)(54906003)(8936002)(6916009)(83380400001)(71200400001)(52536014)(122000001)(82960400001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?BX8qNY+VBOdRftM1JP1TpfG+ybUfWtgMqLD+Kq8rHg1aUUH91zWoDKneNWVI?=
- =?us-ascii?Q?hSqV9sQt6IiRYIJt7aPx0qbTr4DLCoi5mWxVzBijRXdOdpTcyze4irAo4bLl?=
- =?us-ascii?Q?xdcEpsgqCZgBAEHOTo/GCcDEi8RueD7LKl42HqNZqpG61lEBxq5ii4BB2Zzy?=
- =?us-ascii?Q?uHpLGgLPPemio+QJf9RbhBCFENemUhKfGy7iP/SWN7ok4hidbaRKOsnKO9t0?=
- =?us-ascii?Q?I6/jiXDsK2XVo0VrDImfzr4kn9D8dCLebG4V1f266IAbr6O35XFi/tEBusOF?=
- =?us-ascii?Q?RaLPjeGIF0O4ss4AH7ftJLR/GfPodkMW7DXpRXH9NOcYq6N+wDtLk8cSHUj8?=
- =?us-ascii?Q?u5dEPGLYFTyjIyDnn2FGJSAohiK0IxoO2Mp37wh6nRL0K/aUzLNftOepYuwv?=
- =?us-ascii?Q?9a6GC2XQlTs81YHQULcnBlFtSS9IgxW+C0E5lvjbgUqXJlwX42eU4VYUxTrZ?=
- =?us-ascii?Q?/HD9zWXql6UJbi4rsGPcAGkqJQucb1YOcVzHP4REPaIfG9yqdWLzo7iM/8j4?=
- =?us-ascii?Q?wcAt6mYrGdEMKGlvGaLM4/7lt2HIMnYyLXjerDNhAlbh81YzmpEx2dO9URdW?=
- =?us-ascii?Q?moHUgJV8Pu2mFfG7eSO+zYYx6++nQ2s4qAjcIDGlOnrq9A0RJW3daxefD7Mi?=
- =?us-ascii?Q?EHrgjUAGq2HceC5rluOSJ+3vjghMoukf/B2Hye4B8x/J83Be6be3GNo9OKsb?=
- =?us-ascii?Q?YWNmxRvY0yH3jJExJ7pt4l/2resGQ9YWaZ2avnw//UXnlBemJ7Oy/EN6oHfU?=
- =?us-ascii?Q?1XhRXeKS4qD11XtmCpSjNCH8PQ6WY5+xJLyjMt0+otnxZKlAD8O2+LQKWKBO?=
- =?us-ascii?Q?VNIVB0d+lXiiLzbbk12TJJ1E4kyQIoia5/BnG8bxUlSD2JN14NzJN8cVSJDd?=
- =?us-ascii?Q?I0jmLUgN+8VDhp8uFfw6nxJ3vxl/v86E+nu/tWkix2l2TO1WvMMEk7bCspcZ?=
- =?us-ascii?Q?GG1dx3l691hXN4aPDe7+uA7VpoG3clnbFzqKaNKXgEeAV2AtKV88LEoJyQiS?=
- =?us-ascii?Q?KgqKoaexZHu0ui/CYk5IksvL0f47CxK/E+e+i7AZqO+C85kw1wxhnEBjbD0L?=
- =?us-ascii?Q?b9ihigxP5gxziqJcCb79VBzZZxOUo5YwFB+oi/mzaDcvVQHGVJb9rf4qraAM?=
- =?us-ascii?Q?oI5raT8nzim47SwyPlwd7PPzHvpN1gPgfOrh/fQmye4WX+pgmYKRXcr+s3o1?=
- =?us-ascii?Q?nxtp+xLNYAPc6YcRNJhmzrW7MnqJ7xA4BR33gFweHxibpi2Kl7NAHfmKNvBA?=
- =?us-ascii?Q?LNMTzXKtf7wMhvznuTBJs+WvexjSXPHhI/2TrDnvMWAqr1NMczVnxrm/3QzW?=
- =?us-ascii?Q?33Ua3GR266C8pwfKX6KCdWqQlVRXrp/yujFWGMn/rLSxbhYeVjNUIO11wtsE?=
- =?us-ascii?Q?A3cUX5PF9TwgpG7VCZkiqSHJcvAN3LgQat4qRSyxrDLrgJEihUgQ3YEHtUVv?=
- =?us-ascii?Q?wbQs15k8OJh1uHP+/LrjpB4w+mNzWARpiGZXDF1NjJnur9EJCAXMbQJRkLFC?=
- =?us-ascii?Q?AaeS4PryMnITE7m1CP+lwc/WPAzm9EWP84cboxDRlyEoSdG5kUOy6NWgo/rC?=
- =?us-ascii?Q?Y8SieGVNr3tnCkJeD4zHTFFzcGMq82DUDPMBQDNyOS9eFHRum9Bwqz3Cf4zL?=
- =?us-ascii?Q?kIgXf9cy7qGnjSho/pnQH08rL8dBxiOVynp75sascFNjxcRBY6S7Iec8lrjd?=
- =?us-ascii?Q?XgIxtQ=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4823.16; Wed, 22 Dec
+ 2021 04:25:58 +0000
+Received: from DM5PR1301MB2172.namprd13.prod.outlook.com
+ ([fe80::44c:707:8db:4e15]) by DM5PR1301MB2172.namprd13.prod.outlook.com
+ ([fe80::44c:707:8db:4e15%4]) with mapi id 15.20.4823.016; Wed, 22 Dec 2021
+ 04:25:58 +0000
+From:   Baowen Zheng <baowen.zheng@corigine.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     xiyou.wangcong@gmail.com, jhs@mojatatu.com, jiri@resnulli.us,
+        netdev@vger.kernel.org, louis.peens@corigine.com,
+        oss-drivers@corigine.com, eric.dumazet@gmail.com,
+        simon.horman@corigine.com
+Subject: [PATCH net-next v1] flow_offload: fix suspicious RCU usage when offloading tc action
+Date:   Wed, 22 Dec 2021 12:25:46 +0800
+Message-Id: <1640147146-4294-1-git-send-email-baowen.zheng@corigine.com>
+X-Mailer: git-send-email 1.8.3.1
+Content-Type: text/plain
+X-ClientProxiedBy: HK0PR01CA0054.apcprd01.prod.exchangelabs.com
+ (2603:1096:203:a6::18) To DM5PR1301MB2172.namprd13.prod.outlook.com
+ (2603:10b6:4:2d::21)
 MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: a71d6b4a-e336-4d5d-b3b8-08d9c50326d7
+X-MS-TrafficTypeDiagnostic: BN6PR1301MB2050:EE_
+X-Microsoft-Antispam-PRVS: <BN6PR1301MB2050625F923A45F2C7FA9FBFE77D9@BN6PR1301MB2050.namprd13.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:337;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: EqYzKgo3jiRK1ZerfJizIXSbWKZniM3wnvv+2BQKVgq7g2T+Uj1SUtKSet2tX9AwwXL2e5iyrCR/OtjT9+JUp1NEt227HTcYI6E8t45vikuiJ3Mh7Bmia+kHVRrznOGe9a7xzZ9VDFrWikv0AAoWDWlL20v2+NBqcyOK8n09zuLp2pAtjuLiGxi9cgZJ5G2p0zu6FLKZfBybbZojWelKINveiGsKKQT9u6cWRCZaGlVVRx6Ei1QsTeO+MxFNKk1/OVmaY5/pFXEzMmW+hGL+FbzXQB27bPxSIRxUylAX8qpPtfRA6LWTOSmye265QrYNK4M/18nzOQZ6QvxqZO4vheyDmOll6Htyl5UpY9g7ibLqKI6FNzUTe8uHegt/868gzYWWQ5lUPHCnXD6OG9t2+YJM3VLkW6PiH3n6TojOR1mEtTzfUnjtBNO75GjGsAqGJH7eVJuAWSKbU4l63bkPOjWFMOE5yY4TAaZs0RMMX5kTJ779xLtfWd5VcJxDp934tFYmCKqMnu1sQO5q/P/sblRhAYEdr3rnSpUaio0Ai/8Z3gIVO4laddn6S4Hb/RC1Rvx/ZYFgPoycgfB3VOWcWkYetF4r7xfsbZKujdY2KAQ25KlBTa2aXaq8Esnjl1x+JecSELBKpD5ATqnHzugvvV6ANlx7nn6iO4D0idEWWex0AZm05OPoLDbcrPJK3ICC3z2f29wVlAYVk3aWLy4QAA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR1301MB2172.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(136003)(366004)(396003)(346002)(376002)(39830400003)(5660300002)(316002)(8676002)(8936002)(66556008)(4326008)(66476007)(2906002)(44832011)(66946007)(86362001)(36756003)(38100700002)(6666004)(38350700002)(508600001)(6512007)(6506007)(6486002)(52116002)(83380400001)(2616005)(107886003)(186003)(26005)(20210929001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?C7sMt52QDxm4VXE5TdOxvGSoHcg9eq7bwivqh21aUfXcs3fWzGNK9d4uwXYq?=
+ =?us-ascii?Q?T5+0W2q3fbpwAqvp5P9Vzm8bS39inE8YvgAOcP1AkRWtSbnRhyQK1TQ1D7P6?=
+ =?us-ascii?Q?oyQZTUehcMxZmRKdqE7R5XPGH/Yxz03qlKmVYrU/nU6TERioULCvQiS5i6Sx?=
+ =?us-ascii?Q?XlIWpPVVWhXNJyxuOuE3y1NeAF12K6ipJd2Xe4V2eR0/9QKsUOCoJ+cBgwOa?=
+ =?us-ascii?Q?Til+CNAJbHyCSICQagFpY7gzeT+KrqVjNPxs3S6/XMAieutZF8w2hKuJKZoX?=
+ =?us-ascii?Q?fpC5A83u4P8j1W/H4gCAm3tv/252FL2lYPf696WneDPrK4vf2a/O+L9r+hcE?=
+ =?us-ascii?Q?bN44ZuDHRW+02nWb3DCWZx7le5PjiN8lOuK0MHkfiWAN82iCjsAFgPKQQNd8?=
+ =?us-ascii?Q?HF2D0lgeAf4n6yB9ueT3lDLbonc8g2XTGu5dsI8AS96p3UtW1/pumHgrnQJQ?=
+ =?us-ascii?Q?1aMh/cbirW4BQMsy3pY8lvuTKGWWnBRFQ2lcIm4p5gfIywz2GauPIacVxh3I?=
+ =?us-ascii?Q?BxyYvBZD34AFjjFJRwtMlYXe9GAXVMcBb8KkEjLRfW2l533mZTUTk/UXZrZS?=
+ =?us-ascii?Q?XEfTIsICZUECO6zGe/+BI6YKutcnUOikzww9lUZ25YQKhZhbWfO53Q2y+7Le?=
+ =?us-ascii?Q?TngbNhCJnBP4piI+cMduu8e24qLGOV0oe2KoKDDJyNes/1AL4MF7/6zWYYji?=
+ =?us-ascii?Q?vsDA5BdFolxsHnULk41AYouTUSjte4UAWh7bjWcvThvYjGVbsr6lkd9d9kLZ?=
+ =?us-ascii?Q?Fu7RWwq79vIV6hokxkDRMJRsvxAPabnLCt5J7FEclqunL6PWs2a7FpJrrYl4?=
+ =?us-ascii?Q?wFyq6YdJaazXmpXRFvl064HWZJubU7FHgyj85ox6QEy41Qf7TWUzJvV0+9pr?=
+ =?us-ascii?Q?+J+IuUim7uwRcCIGztKOtH2ORTJQ8vS6FS5k0lnHoKBnMleQWp0GfjMo2lxP?=
+ =?us-ascii?Q?TbF+vJH1FCmcqwEY7BJsbg1SeOH7UH4MUJl8U/9VAgElOV2ZaUcn8WEhzaUS?=
+ =?us-ascii?Q?giIaEKXQj8cNzSCQBkCzBO+tKX0xxYM0S+BKes7aWCHrNtbwqnIGnrRiLzTU?=
+ =?us-ascii?Q?gSvPGGWpuwomF45U7BHCUPABNp0WQsmnbA4R1MRodR8MEuwpo3AtttanIeCw?=
+ =?us-ascii?Q?Z6UiFjIVit6M0gdDiiaiU/oa/D/+QOSfXhOfyWBLNhKRsuKsKgjP5AG/a3/w?=
+ =?us-ascii?Q?9KV0ZLJkhHrpAK2cQCF2iOGVNmU4HRm7R/cwG4Ud3kQdKDix5U2f7eBMZ1Qa?=
+ =?us-ascii?Q?qHF68/wo6aJId/8TozOliqVI7ODEQXlQn01F8mUzIQDThQY08arprhpqN8Aq?=
+ =?us-ascii?Q?uQ/u3rGz0JzOdouyqssx+nESTTK+slj3rYTC6E1WWeJ55M9/IUE9WRWcGBJm?=
+ =?us-ascii?Q?7CZC7QdZ5JsyEhiFv14u8BVnpwuJzTG1GdTYPZZ1qaTVMpy8al9L+p5MsgwO?=
+ =?us-ascii?Q?t9P4b85VJnIn1mLDfciW5+A5uBIcEOczkGtTM+Aq5csQNFBCy6BFMt33WrF6?=
+ =?us-ascii?Q?RxvRhHHZ+pB8FDy3+IzU63gqQnf3wap9PwGKRtKpm4MTr4Dv619sc+MG7HrO?=
+ =?us-ascii?Q?YB0a8A0M21UI1pVgSEEsAI+cUIkFyGS0X4gkeeqZtEpMa3hdqPflA3MlGAOg?=
+ =?us-ascii?Q?DJYxQgwj4Da0/EasAV/C3Sqpqh2WPud1XXX31q7hXS0yeIPbzagNOYIKL41C?=
+ =?us-ascii?Q?BrX1lKyVoiLLT7TdOWP2cxPKy9E=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a71d6b4a-e336-4d5d-b3b8-08d9c50326d7
+X-MS-Exchange-CrossTenant-AuthSource: DM5PR1301MB2172.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5170.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 869a9a07-3c2f-4c2e-2b46-08d9c5027925
-X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Dec 2021 04:21:06.0988
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Dec 2021 04:25:58.0648
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: WlriGxS4IrLH0OtG3mYxIe5G54yiO3zg82ZGEE0GvQKV4Dpz8FurDKg1yYeOVFE+GIUMQBOZ4XUHzbDcUnsUzU40Upm3Ca1kk43Z1VWbwDI=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR11MB1743
-X-OriginatorOrg: intel.com
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ogLbKKA74mu526Vxl3F9Jz3LzLIAUk8neq0dzJd7iGv/24p7BP33yClJoPscmHYoYaPv9EjpOT96ulWJNgq4uQ3j2u1EFYLfUaL9D/badzY=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR1301MB2050
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Fix suspicious rcu_dereference_protected() usage when offloading tc action.
 
+We should hold tcfa_lock to offload tc action in action initiation.
 
-> -----Original Message-----
-> From: Stephen Hemminger <stephen@networkplumber.org>
-> Sent: Tuesday, December 21, 2021 6:35 PM
-> To: Chen, Mike Ximing <mike.ximing.chen@intel.com>
-> Cc: linux-kernel@vger.kernel.org; arnd@arndb.de; gregkh@linuxfoundation.o=
-rg; Williams, Dan J
-> <dan.j.williams@intel.com>; pierre-louis.bossart@linux.intel.com; netdev@=
-vger.kernel.org;
-> davem@davemloft.net; kuba@kernel.org
-> Subject: Re: [RFC PATCH v12 17/17] dlb: add basic sysfs interfaces
->=20
-> On Tue, 21 Dec 2021 00:50:47 -0600
-> Mike Ximing Chen <mike.ximing.chen@intel.com> wrote:
->=20
-> > The dlb sysfs interfaces include files for reading the total and
-> > available device resources, and reading the device ID and version. The
-> > interfaces are used for device level configurations and resource
-> > inquiries.
-> >
-> > Signed-off-by: Mike Ximing Chen <mike.ximing.chen@intel.com>
-> > ---
-> >  Documentation/ABI/testing/sysfs-driver-dlb | 116 ++++++++++++
-> >  drivers/misc/dlb/dlb_args.h                |  34 ++++
-> >  drivers/misc/dlb/dlb_main.c                |   5 +
-> >  drivers/misc/dlb/dlb_main.h                |   3 +
-> >  drivers/misc/dlb/dlb_pf_ops.c              | 195 +++++++++++++++++++++
-> >  drivers/misc/dlb/dlb_resource.c            |  50 ++++++
-> >  6 files changed, 403 insertions(+)
-> >  create mode 100644 Documentation/ABI/testing/sysfs-driver-dlb
-> >
-> > diff --git a/Documentation/ABI/testing/sysfs-driver-dlb
-> > b/Documentation/ABI/testing/sysfs-driver-dlb
-> > new file mode 100644
-> > index 000000000000..bf09ef6f8a3a
-> > --- /dev/null
-> > +++ b/Documentation/ABI/testing/sysfs-driver-dlb
-> > @@ -0,0 +1,116 @@
-> > +What:		/sys/bus/pci/devices/.../total_resources/num_atomic_inflights
-> > +What:		/sys/bus/pci/devices/.../total_resources/num_dir_credits
-> > +What:		/sys/bus/pci/devices/.../total_resources/num_dir_ports
-> > +What:		/sys/bus/pci/devices/.../total_resources/num_hist_list_entries
-> > +What:		/sys/bus/pci/devices/.../total_resources/num_ldb_credits
-> > +What:		/sys/bus/pci/devices/.../total_resources/num_ldb_ports
-> > +What:		/sys/bus/pci/devices/.../total_resources/num_cos0_ldb_ports
-> > +What:		/sys/bus/pci/devices/.../total_resources/num_cos1_ldb_ports
-> > +What:		/sys/bus/pci/devices/.../total_resources/num_cos2_ldb_ports
-> > +What:		/sys/bus/pci/devices/.../total_resources/num_cos3_ldb_ports
-> > +What:		/sys/bus/pci/devices/.../total_resources/num_ldb_queues
-> > +What:		/sys/bus/pci/devices/.../total_resources/num_sched_domains
-> > +Date:		Oct 15, 2021
-> > +KernelVersion:	5.15
-> > +Contact:	mike.ximing.chen@intel.com
-> > +Description:
-> > +		The total_resources subdirectory contains read-only files that
-> > +		indicate the total number of resources in the device.
-> > +
-> > +		num_atomic_inflights:  Total number of atomic inflights in the
-> > +				       device. Atomic inflights refers to the
-> > +				       on-device storage used by the atomic
-> > +				       scheduler.
-> > +
-> > +		num_dir_credits:       Total number of directed credits in the
-> > +				       device.
-> > +
-> > +		num_dir_ports:	       Total number of directed ports (and
-> > +				       queues) in the device.
-> > +
-> > +		num_hist_list_entries: Total number of history list entries in
-> > +				       the device.
-> > +
-> > +		num_ldb_credits:       Total number of load-balanced credits in
-> > +				       the device.
-> > +
-> > +		num_ldb_ports:	       Total number of load-balanced ports in
-> > +				       the device.
-> > +
-> > +		num_cos<M>_ldb_ports:  Total number of load-balanced ports
-> > +				       belonging to class-of-service M in the
-> > +				       device.
-> > +
-> > +		num_ldb_queues:	       Total number of load-balanced queues in
-> > +				       the device.
-> > +
-> > +		num_sched_domains:     Total number of scheduling domains in the
-> > +				       device.
-> > +
->=20
-> Sysfs is only slightly better than /proc as an API.
-> If it is just for testing than debugfs might be better.
->=20
-Sysfs in our driver is not only for testing. It is used for the system conf=
-iguration
-at run time.
+Without these changes, the following warning will be observed:
 
-> Could this be done with a real netlink interface?
-> Maybe as part of devlink?
-Thanks for the suggestion. I will look into some sample implementations of
-devlink/netlink. Our current plan is to stay with the configfs interface, a=
-nd
-find ways to resolve issues related to atomic update and resource reset at
-tear-down time.
+WARNING: suspicious RCU usage
+5.16.0-rc5-net-next-01504-g7d1f236dcffa-dirty #50 Tainted: G          I
+-----------------------------
+include/net/tc_act/tc_tunnel_key.h:33 suspicious rcu_dereference_protected() usage!
+1 lock held by tc/12108:
+CPU: 4 PID: 12108 Comm: tc Tainted: G
+Hardware name: Dell Inc. PowerEdge R740/07WCGN, BIOS 1.6.11 11/20/2018
+Call Trace:
+<TASK>
+dump_stack_lvl+0x49/0x5e
+dump_stack+0x10/0x12
+lockdep_rcu_suspicious+0xed/0xf8
+tcf_tunnel_key_offload_act_setup+0x1de/0x300 [act_tunnel_key]
+tcf_action_offload_add_ex+0xc0/0x1f0
+tcf_action_init+0x26a/0x2f0
+tcf_action_add+0xa9/0x1f0
+tc_ctl_action+0xfb/0x170
+rtnetlink_rcv_msg+0x169/0x510
+? sched_clock+0x9/0x10
+? rtnl_newlink+0x70/0x70
+netlink_rcv_skb+0x55/0x100
+rtnetlink_rcv+0x15/0x20
+netlink_unicast+0x1a8/0x270
+netlink_sendmsg+0x245/0x490
+sock_sendmsg+0x65/0x70
+____sys_sendmsg+0x219/0x260
+? __import_iovec+0x2c/0x150
+___sys_sendmsg+0xb7/0x100
+? __lock_acquire+0x3d5/0x1f40
+? __this_cpu_preempt_check+0x13/0x20
+? lock_is_held_type+0xe4/0x140
+? sched_clock+0x9/0x10
+? ktime_get_coarse_real_ts64+0xbe/0xd0
+? __this_cpu_preempt_check+0x13/0x20
+? lockdep_hardirqs_on+0x7e/0x100
+? ktime_get_coarse_real_ts64+0xbe/0xd0
+? trace_hardirqs_on+0x2a/0xf0
+__sys_sendmsg+0x5a/0xa0
+? syscall_trace_enter.constprop.0+0x1dd/0x220
+__x64_sys_sendmsg+0x1f/0x30
+do_syscall_64+0x3b/0x90
+entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f4db7bb7a60
 
-Mike=20
+Fixes: 8cbfe939abe9 ("flow_offload: allow user to offload tc action to net device")
+Reported-by: Eric Dumazet <eric.dumazet@gmail.com>
+Signed-off-by: Baowen Zheng <baowen.zheng@corigine.com>
+Signed-off-by: Louis Peens <louis.peens@corigine.com>
+---
+ net/sched/act_api.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
+
+diff --git a/net/sched/act_api.c b/net/sched/act_api.c
+index b2f8a39..32563ce 100644
+--- a/net/sched/act_api.c
++++ b/net/sched/act_api.c
+@@ -186,12 +186,19 @@ static int offload_action_init(struct flow_offload_action *fl_action,
+ 			       enum offload_act_command  cmd,
+ 			       struct netlink_ext_ack *extack)
+ {
++	int err;
++
+ 	fl_action->extack = extack;
+ 	fl_action->command = cmd;
+ 	fl_action->index = act->tcfa_index;
+ 
+-	if (act->ops->offload_act_setup)
+-		return act->ops->offload_act_setup(act, fl_action, NULL, false);
++	if (act->ops->offload_act_setup) {
++		spin_lock_bh(&act->tcfa_lock);
++		err = act->ops->offload_act_setup(act, fl_action, NULL,
++						  false);
++		spin_unlock_bh(&act->tcfa_lock);
++		return err;
++	}
+ 
+ 	return -EOPNOTSUPP;
+ }
+-- 
+1.8.3.1
+
