@@ -2,74 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA67047D856
-	for <lists+netdev@lfdr.de>; Wed, 22 Dec 2021 21:38:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B9DD347D869
+	for <lists+netdev@lfdr.de>; Wed, 22 Dec 2021 21:56:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231962AbhLVUiu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Dec 2021 15:38:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33068 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229548AbhLVUiu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Dec 2021 15:38:50 -0500
-Received: from mail-vk1-xa35.google.com (mail-vk1-xa35.google.com [IPv6:2607:f8b0:4864:20::a35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09E14C061574;
-        Wed, 22 Dec 2021 12:38:50 -0800 (PST)
-Received: by mail-vk1-xa35.google.com with SMTP id j10so1989516vkk.12;
-        Wed, 22 Dec 2021 12:38:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=m0KHFHynG/Cv5zTmabkUB5fH/sivVPFmBLyvsRt42No=;
-        b=Ybjbj0UO1bMSxVm24s+VgWqgDQVInB1dFf7a72G3NQHBi25DaAocVC2JDtmy8lX1VZ
-         CNzW22BLdboUkKJk3oIWctUtHYs4zCdzf4mxBRIi1KSpBwypt7ojpL/aFQCve5wFT2u4
-         2iWjQRZpa1eZndK3lyMDvHIR/KKO9NfAL9k1clSdEySqA9S7T9ADRKZ2mrPUqEMBnQC3
-         0aoBPMp32YhNhsYXyQwdeO81D40noGhm192M3etGVF6VU0tqE0OdYkdNyzlo9xKSdNJo
-         x6wCL7SWtafoBjBGTFX9YgD5M2VXBIUC0Ra8FeKgWbMQV7dZGAtuLaSFK4NalLBMXuvL
-         dNjg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=m0KHFHynG/Cv5zTmabkUB5fH/sivVPFmBLyvsRt42No=;
-        b=w5HTJyNX1idKBUjPw1aSo3rjdcylE18gmq52PvEk0Br7/joUfQfnqXSmAhm85+59hS
-         dvOdbjG8ZyGNKf+TdHBdi4T/35vVHnPx0WoDxEQMACFQLtOOmfzqkc9jc+uF3EXSge3l
-         mYte2dtsCFx1/39mDdEWvfiOXusvKKOvz+LeGLLezUMzApbmAh3IoqmxKF+q8rzKfg6D
-         TtM2NncuUEm8dRfb5wN/S8En8OW5ZIMmArcUsO7gdB2tPEgIHxX7EW+kF3kXSVpt8Woq
-         Npf0q5EycjhJszIdUYsWXTZ/PpvzofVaBLzudxTg7JYJ/6P5EGjqjU58XYtTf0lRJaEb
-         BF9g==
-X-Gm-Message-State: AOAM530OMt8ir50mWJmkdaehAigS5MqVjzGvhjI9a9gFr19YlAumalm6
-        Vm3Pd7BW7eMaTj/3g0TLjOihP5q3Fn39YKn9+6g=
-X-Google-Smtp-Source: ABdhPJyhRZ7yQ+kQtC7Eai0wKzixB4C3bCIj6QEUj7+m+Z8K3puQJOAO5xu+EJmR31kQtsDZBXp42BINhE0czYeEILc=
-X-Received: by 2002:a05:6122:912:: with SMTP id j18mr1710393vka.41.1640205529214;
- Wed, 22 Dec 2021 12:38:49 -0800 (PST)
-MIME-Version: 1.0
-References: <20211222163256.66270-1-andriy.shevchenko@linux.intel.com>
-In-Reply-To: <20211222163256.66270-1-andriy.shevchenko@linux.intel.com>
-From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
-Date:   Wed, 22 Dec 2021 23:38:44 +0300
-Message-ID: <CAHNKnsS_1fQh1UL-VX0kXfDp_umMtfSnDwJXWxiBXFdyrK1pYA@mail.gmail.com>
-Subject: Re: [PATCH v1 1/1] wwan: Replace kernel.h with the necessary inclusions
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+        id S236321AbhLVU4A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Dec 2021 15:56:00 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:50824 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229491AbhLVU4A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Dec 2021 15:56:00 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A7831B81DA9;
+        Wed, 22 Dec 2021 20:55:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B894C36AE8;
+        Wed, 22 Dec 2021 20:55:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1640206557;
+        bh=PIW6wwqIOxe4oZtT//vimt3dQLuUmUszra79YvipIKc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=caEy7wNxFUmKoTHPTDG32oHoGU/DhhYcLdFXPWc5gY6hKlDlSIV/TUEbvOIKJjyAr
+         rnKO8dmcAebYMsatl8CkW9tUDAz+ZMaAEGgab+rdtpj0mhbjmfO+EsqhLcXiT6RNVz
+         0YaBXJ6ikGkrADCE1sngt36DzyVdhHbmLuNcdUiIHzQic4j4QS2TnoKe3AhateSny9
+         NVGiRrYh2Xj70sCD8moG3BAff9a2ftPVHSoV0A7R55bbyhr96dG2RTHdfVvD1ykEU1
+         u7n80KIpS5XbdXAiUuFFmw8NvKQhipru6o1u+H/5KCJ7omVdXdk9nrKtr/SXawmhmW
+         pRUpIooyoNNjg==
+Date:   Wed, 22 Dec 2021 12:55:55 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Miquel Raynal <miquel.raynal@bootlin.com>
 Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        open list <linux-kernel@vger.kernel.org>,
-        Loic Poulain <loic.poulain@linaro.org>,
-        Johannes Berg <johannes@sipsolutions.net>
-Content-Type: text/plain; charset="UTF-8"
+        Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan@vger.kernel.org,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [net-next 08/18] net: ieee802154: Add support for internal PAN
+ management
+Message-ID: <20211222125555.576e60b3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211222155743.256280-9-miquel.raynal@bootlin.com>
+References: <20211222155743.256280-1-miquel.raynal@bootlin.com>
+        <20211222155743.256280-9-miquel.raynal@bootlin.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 22, 2021 at 7:32 PM Andy Shevchenko
-<andriy.shevchenko@linux.intel.com> wrote:
-> When kernel.h is used in the headers it adds a lot into dependency hell,
-> especially when there are circular dependencies are involved.
->
-> Replace kernel.h inclusion with the list of what is really being used.
->
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+On Wed, 22 Dec 2021 16:57:33 +0100 Miquel Raynal wrote:
+> +/* Maximum number of PAN entries to store */
+> +static int max_pan_entries = 100;
+> +module_param(max_pan_entries, uint, 0644);
+> +MODULE_PARM_DESC(max_pan_entries,
+> +		 "Maximum number of PANs to discover per scan (default is 100)");
+> +
+> +static int pan_expiration = 60;
+> +module_param(pan_expiration, uint, 0644);
+> +MODULE_PARM_DESC(pan_expiration,
+> +		 "Expiration of the scan validity in seconds (default is 60s)");
 
-Subject and description do not cover cleanup of includes besides the
-kernel.h. But that does not seem like a big issue, so:
-
-Reviewed-by: Sergey Ryazanov <ryazanov.s.a@gmail.com>
+Can these be per-device control knobs? Module params are rarely the
+best answer.
