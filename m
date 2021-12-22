@@ -2,125 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 93DA947D07B
-	for <lists+netdev@lfdr.de>; Wed, 22 Dec 2021 12:05:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2450147D082
+	for <lists+netdev@lfdr.de>; Wed, 22 Dec 2021 12:06:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240137AbhLVLFu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Dec 2021 06:05:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43624 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244383AbhLVLFt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Dec 2021 06:05:49 -0500
-Received: from mail-ot1-x329.google.com (mail-ot1-x329.google.com [IPv6:2607:f8b0:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4082C06173F
-        for <netdev@vger.kernel.org>; Wed, 22 Dec 2021 03:05:49 -0800 (PST)
-Received: by mail-ot1-x329.google.com with SMTP id 47-20020a9d0332000000b005798ac20d72so2349838otv.9
-        for <netdev@vger.kernel.org>; Wed, 22 Dec 2021 03:05:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=EnmkjG/M/mYPKhrbxJWx86dk/HHC8CyIdBk3edxvaYk=;
-        b=iHO0C9290gjwIMXxBN9AdHEdMYecNXex8Tk/moQ0q/oN0EucJpu0GL5L13Fyn5dOOS
-         fFG5jPrC6VPJmJ5fqPwD5nhDjKgpPe77n7May885zLnJACgENDaIqUGxPz6G9yxH1xXL
-         WBcB8Lv/ztzK+PsWhQBRiq//bGTwXfZeXUtbfAQAVcL5KrZgZzLcgiYf97k08W/qI4oT
-         2Sw9FDyX81gTwmBuuOnV0OIRkSLbuyInwfViXZ9vhZRIkFsp5sh9QgdTPvERowtzFTX3
-         mMZaE4FlPsfmS/C80OToTv8DIGgPLb33hgLb4JxOqGcH17ETeNXOZlfJJqS5UKKPCHdy
-         jRnA==
+        id S240157AbhLVLGj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Dec 2021 06:06:39 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:49397 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S240151AbhLVLGi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Dec 2021 06:06:38 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1640171198;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ceCWycWRHrWKCZY6dAAESWQ7r47FSVaC7YZyAMeDDKk=;
+        b=fETKXgF/5YzTZq0oV55N52sjc86nFHA2rk5EGzfaLVxzBBk1O6GJyYx88mo3cfdNRovr76
+        /NobX+dHUSNtsAyJrQNTH5AT40dWh333F0w9FXl7QoyX7XC2p5JZ4V8aK8HkBDq/mRUIGk
+        JCd3aTY8f7WGCDA1805+owmDjA8pEWo=
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
+ [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-675-bLDulFogM3atBzaAz_0clw-1; Wed, 22 Dec 2021 06:06:37 -0500
+X-MC-Unique: bLDulFogM3atBzaAz_0clw-1
+Received: by mail-qk1-f197.google.com with SMTP id p18-20020a05620a057200b00467bc32b45aso1472718qkp.12
+        for <netdev@vger.kernel.org>; Wed, 22 Dec 2021 03:06:36 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=EnmkjG/M/mYPKhrbxJWx86dk/HHC8CyIdBk3edxvaYk=;
-        b=UIW6hI7EHQc71tWzSM4QfNlMUcgkVBe9NoaY9yj8/jGRlCQPh/zoyt555NRy/wCJMt
-         kEnzv9pXPWIiTh7Ygnl7m6wjcJBQYdP1YZaiZGrMX6vDq+Lyt5O+G/HdVC7CTnMoIrxe
-         urQmXVtcN1wJy5qGZYjvLQjqWzOe93nA/iYQNTTaf4PgDUwEHs8yYFoDWuNVzmkuK2Ll
-         4FkjPGgu5BrhZhMsqfgzMg1Luz8nqr9mz4bvtaRcJm9PjKbAp7k39OhE4xaLlgIOXvE/
-         wVKwNQK/+VeQg000qbk+6ulsE4YqLweeDDsMar0YsFJmxgw5DXjNzF3khRR+TqYYBCPT
-         FNOQ==
-X-Gm-Message-State: AOAM5305No1c0SDtJBG6BB8j20nW1kMGj7zv5spdv0Xi0meSYffdmEdA
-        MyB1/38esFQTavaethCG4zG2QSkVuY+ocaJSHmTd1xGDMEw=
-X-Google-Smtp-Source: ABdhPJw9eMDSPntvwjGka/b5RaL2w5vOnmKsIigdnepkScH4comDmsL4ABQXq6ujGWw6a//qQdZOaskw1iXxUQcxOEw=
-X-Received: by 2002:a05:6830:1e8f:: with SMTP id n15mr1646087otr.259.1640171149062;
- Wed, 22 Dec 2021 03:05:49 -0800 (PST)
-MIME-Version: 1.0
-References: <CAMeyCbj93LvTu9RjVXD+NcT0JYoA42BC7pSHumtNJfniSobAqA@mail.gmail.com>
- <DB8PR04MB679571AF60C377BB1242D26BE67D9@DB8PR04MB6795.eurprd04.prod.outlook.com>
-In-Reply-To: <DB8PR04MB679571AF60C377BB1242D26BE67D9@DB8PR04MB6795.eurprd04.prod.outlook.com>
-From:   Kegl Rohit <keglrohit@gmail.com>
-Date:   Wed, 22 Dec 2021 12:05:38 +0100
-Message-ID: <CAMeyCbiYwB=SK3vvqdTEWhbnHwee8U6rfxzNs9B8-hyr45GhOw@mail.gmail.com>
-Subject: Re: net: fec: memory corruption caused by err_enet_mii_probe error path
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>
-Cc:     netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=ceCWycWRHrWKCZY6dAAESWQ7r47FSVaC7YZyAMeDDKk=;
+        b=VX+NAYl8JZOE9CDV3F/F3XHu44MWf9mq2Fi1wYs5rDKV6aWLrCQRMG/6K2DJwUcItc
+         gEgSkDKPztsayS6crt/ZFyr1oIc5M16QRkWUtxq6j1XnAGMWfiyh9OWXd8lgoOLhS1P7
+         8VKBn6FgD8Hi7Ef+IjuCJvjLaPwYYd+ED1XcreNQq7X64tJqh3k3i+lvGsKhaVJ52iAG
+         B3M5wQjL8h35uPtcqKsBKza0BYq/rivMlKa7pcaDxC1MP0dM0b1Cqp+Apzk1skCcIWGP
+         q8xHdOD6fJXeOtlIBQF4wvnabfnX8f7OlcBtAcB7M7fVTqcKdVGIshCbI8rHcHKdHSyF
+         LtXw==
+X-Gm-Message-State: AOAM530BAqjdzl8abDEQTxsCrzBnfjLMFi0aboQ0wB9OSu8W0tYhuAl0
+        0ICd88twZ3BkLq1PJbglsHzVEFYugHt4Z1JavXf368uzzy7dumct3Khv4HYucqlH76YKeR/V8qc
+        stnoy+VA97QWkagTg
+X-Received: by 2002:a37:8684:: with SMTP id i126mr636448qkd.436.1640171196437;
+        Wed, 22 Dec 2021 03:06:36 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxMicG0r6dSeRYSbToqb6O6HBC61TxfWFrjgk0pImfFkS+SB/o4SyZvBse0tKyn9xBeK2S0EQ==
+X-Received: by 2002:a37:8684:: with SMTP id i126mr636434qkd.436.1640171196108;
+        Wed, 22 Dec 2021 03:06:36 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-225-60.dyn.eolo.it. [146.241.225.60])
+        by smtp.gmail.com with ESMTPSA id x62sm1439965qkb.70.2021.12.22.03.06.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Dec 2021 03:06:35 -0800 (PST)
+Message-ID: <dad55584ad20723f1579475a09ef7b3a3607e087.camel@redhat.com>
+Subject: Re: [PATCH net] veth: ensure skb entering GRO are not cloned.
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Ignat Korchagin <ignat@cloudflare.com>
+Date:   Wed, 22 Dec 2021 12:06:31 +0100
+In-Reply-To: <CANn89iKpiQzW1UnsQSYzULJ8d-QHsy7Wz=NtgvVXBqh-iuNptQ@mail.gmail.com>
+References: <26109603287b4d21545bec125e43b218b545b746.1640111022.git.pabeni@redhat.com>
+         <CANn89iKpiQzW1UnsQSYzULJ8d-QHsy7Wz=NtgvVXBqh-iuNptQ@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.2 (3.42.2-1.fc35) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 22, 2021 at 9:01 AM Joakim Zhang <qiangqing.zhang@nxp.com> wrote:
+Hello,
 
-> > This error path frees the DMA buffers, BUT as far I could see it does not stop
-> > the DMA engines.
-> > => open() fails => frees buffers => DMA still active => MAC receives network
-> > packet => DMA starts => random memory corruption (use after
-> > free) => random kernel panics
->
-> A question here, why receive path still active? MAC has not connected to PHY when this failure happened, should not see network activities.
+On Tue, 2021-12-21 at 20:31 -0800, Eric Dumazet wrote:
+> On Tue, Dec 21, 2021 at 1:34 PM Paolo Abeni <pabeni@redhat.com> wrote:
+> > 
+> > After commit d3256efd8e8b ("veth: allow enabling NAPI even without XDP"),
+> > if GRO is enabled on a veth device and TSO is disabled on the peer
+> > device, TCP skbs will go through the NAPI callback. If there is no XDP
+> > program attached, the veth code does not perform any share check, and
+> > shared/cloned skbs could enter the GRO engine.
+> > 
+> > 
+> 
+> ...
+> 
+> > Address the issue checking for cloned skbs even in the GRO-without-XDP
+> > input path.
+> > 
+> > Reported-and-tested-by: Ignat Korchagin <ignat@cloudflare.com>
+> > Fixes: d3256efd8e8b ("veth: allow enabling NAPI even without XDP")
+> > Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+> > ---
+> >  drivers/net/veth.c | 8 ++++++++
+> >  1 file changed, 8 insertions(+)
+> > 
+> > diff --git a/drivers/net/veth.c b/drivers/net/veth.c
+> > index b78894c38933..abd1f949b2f5 100644
+> > --- a/drivers/net/veth.c
+> > +++ b/drivers/net/veth.c
+> > @@ -718,6 +718,14 @@ static struct sk_buff *veth_xdp_rcv_skb(struct veth_rq *rq,
+> >         rcu_read_lock();
+> >         xdp_prog = rcu_dereference(rq->xdp_prog);
+> >         if (unlikely(!xdp_prog)) {
+> > +               if (unlikely(skb_shared(skb) || skb_head_is_locked(skb))) {
+> 
+> Why skb_head_is_locked() needed here ?
+> I would think skb_cloned() is enough for the problem we want to address.
 
-It is a imx.28 platform using the fec for dual ethernet eth0 & eth1.
+Thank you for the feedback.
 
-One of our devices (out of 10) eth1 did not detect a phy for eth1 on
-ifup ( fec_open() ) => mdio error path => random system crashes
-But the phy is there and the link is good, only MDIO access failed.
-phys have autoneg activated after reset. So the RX path is active,
-even if the fec driver says that there is no phy.
+I double checked the above: in my test even skb_cloned() suffice.
 
-Without attached ethernet cable the phy was also not detected, BUT the
-system did not crash. => Because no packets will arrive without
-attached cable.
+> > +                       struct sk_buff *nskb = skb_copy(skb, GFP_ATOMIC | __GFP_NOWARN);
+> > +
+> > +                       if (!nskb)
+> > +                               goto drop;
+> > +                       consume_skb(skb);
+> > +                       skb = nskb;
+> > +               }
+> >                 rcu_read_unlock();
+> >                 goto out;
+> >         }
+> > --
+> > 2.33.1
+> > 
+> 
+> - It seems adding yet memory alloc/free and copies is defeating GRO purpose.
+> - After skb_copy(), GRO is forced to use the expensive frag_list way
+> for aggregation anyway.
+> - veth mtu could be set to 64KB, so we could have order-4 allocation
+> attempts here.
+> 
+> Would the following fix [1] be better maybe, in terms of efficiency,
+> and keeping around skb EDT/tstamp
+> information (see recent thread with Martin and Daniel )
+> 
+> I think it also focuses more on the problem (GRO is not capable of
+> dealing with cloned skb yet).
+> Who knows, maybe in the future we will _have_ to add more checks in
+> GRO fast path for some other reason,
+> since it is becoming the Swiss army knife of networking :)
 
-So the main issue on our side is the not detected phy. And the other
-issue is the use after free in the error path.
+Only vaguely related: I have a bunch of micro optimizations for the GRO
+engine. I did not submit the patches because I can observe the gain
+only in micro-benchmarks, but I'm wondering if that could be visible
+with very high speed TCP stream? I can share the code if that could be
+of general interest (after some rebasing, the patches predates gro.c)
 
-I think the main issue has something to do with phy reset handling.
-On a cold boot the eth1 phy is detected successfully. A warm restart (
-reboot -f ) will always lead to a not detected eth1 phy. The eth0 phy
-is always detected.
-From past experience the dual ethernet implementation in the driver
-was not the most stable one. Maybe because of a smaller user base.
-In our setup both phy reset lines are connected to gpios with the
-correct entry in the mac0 & mac1 DT entry.
-Revert of https://github.com/torvalds/linux/commit/7705b5ed8adccd921423019e870df672fa423279#diff-655f306656e7bccbec8fe6ebff2adf466bb8133f5bcb551112d3fe37e50b1a15
-seems to get the phys in a correct state before the fec driver is
-probed and both phys are detected.
+> Although I guess this whole case (disabling TSO) is moot, I have no
+> idea why anyone would do that :)
+> 
+> [1]
+> diff --git a/drivers/net/veth.c b/drivers/net/veth.c
+> index 50eb43e5bf459bb998e264d399bc85d4e9d73594..fe7a4d2f7bfc834ea56d1da185c0f53bfbd22ad0
+> 100644
+> --- a/drivers/net/veth.c
+> +++ b/drivers/net/veth.c
+> @@ -879,8 +879,12 @@ static int veth_xdp_rcv(struct veth_rq *rq, int budget,
+> 
+>                         stats->xdp_bytes += skb->len;
+>                         skb = veth_xdp_rcv_skb(rq, skb, bq, stats);
+> -                       if (skb)
+> -                               napi_gro_receive(&rq->xdp_napi, skb);
+> +                       if (skb) {
+> +                               if (skb_shared(skb) || skb_cloned(skb))
+> +                                       netif_receive_skb(skb);
+> +                               else
+> +                                       napi_gro_receive(&rq->xdp_napi, skb);
+> +                       }
+>                 }
+>                 done++;
+>         }
 
-> > So maybe fec_stop() as counterpart to fec_restart() is missing before freeing
-> > the buffers?
-> > err_enet_mii_probe:
-> > fec_stop(ndev);
-> > fec_enet_free_buffers(ndev);
-> >
-> > Issue happend with 5.10.83 and should also also happen with current master.
->
-> It's fine for me, please see if anyone else has some comments. If not, please cook a formal patch, thanks.
-So fec_stop is the right guess to stop the rx/tx dma rings.
+I tested the above, and it works, too.
 
-Other paths use netif_tx_lock_bh before calling fec_stop().
-I don't think this is necessary because netif_tx_start_all_queues()
-was not called before in this error path case?
-https://github.com/torvalds/linux/blob/master/drivers/net/ethernet/freescale/fec_main.c#L3207
+I thought about something similar, but I overlooked possible OoO or
+behaviour changes when a packet socket is attached to the paired device
+(as it would disable GRO).
 
-index 1b1f7f2a6..8f208b4a9 100644
---- a/drivers/net/ethernet/freescale/fec_main.c
-+++ b/drivers/net/ethernet/freescale/fec_main.c
-@@ -3211,8 +3211,9 @@ fec_enet_open(struct net_device *ndev)
+It looks like tcpdump should have not ill-effects (the mmap rx-path
+releases the skb clone before the orig packet reaches the other end),
+so I guess the above is fine (and sure is better to avoid more
+timestamp related problem).
 
-        return 0;
+Do you prefer to submit it formally, or do you prefer I'll send a v2
+with the latter code?
 
- err_enet_mii_probe:
-+       fec_stop(ndev);
-        fec_enet_free_buffers(ndev);
- err_enet_alloc:
-        fec_enet_clk_enable(ndev, false);
- clk_enable:
+Thanks!
+
+Paolo
+
+
