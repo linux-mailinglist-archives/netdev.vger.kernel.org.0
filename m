@@ -2,192 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D71EC47D164
-	for <lists+netdev@lfdr.de>; Wed, 22 Dec 2021 12:58:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6AD6E47D183
+	for <lists+netdev@lfdr.de>; Wed, 22 Dec 2021 13:09:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235474AbhLVL61 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Dec 2021 06:58:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55904 "EHLO
+        id S240420AbhLVMJ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Dec 2021 07:09:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232302AbhLVL60 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Dec 2021 06:58:26 -0500
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A69CC061574
-        for <netdev@vger.kernel.org>; Wed, 22 Dec 2021 03:58:26 -0800 (PST)
-Received: by mail-yb1-xb32.google.com with SMTP id f186so5925488ybg.2
-        for <netdev@vger.kernel.org>; Wed, 22 Dec 2021 03:58:26 -0800 (PST)
+        with ESMTP id S240406AbhLVMJZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Dec 2021 07:09:25 -0500
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B08E9C061574
+        for <netdev@vger.kernel.org>; Wed, 22 Dec 2021 04:09:25 -0800 (PST)
+Received: by mail-pj1-x1030.google.com with SMTP id jw3so2095993pjb.4
+        for <netdev@vger.kernel.org>; Wed, 22 Dec 2021 04:09:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Iq7Beh/zr9UfMju4UgWIYfulv3+Lyolf0V5hgZcgiro=;
-        b=op5kuTaF5y17SQ0rqkyuX8iGdDzuXw5tRqY0xj1mFpbv0zb2MASJwgUajwGpQ+CLz9
-         aJK/ClKHoJMF8xU4YvbfJ0O9SSPLACg/zty4t4CL4QjUyJHsltzkPTLtnid7OSnp1fyg
-         mtskXUAJU+5gNwaYTYHFl+ZqBCVcYEF2FNeoDCV++q8Zgjxc2wHcaO0HSWShKbYNc+In
-         Ggkbygp/LEWXEqKOAO7+Qx2jt4BF3w5xkIdYazSOA9XFdOmFHansEffjP1t0iWWUWeC2
-         3NvTn+qVkjKHOMIVOgMKrbVjXQadaLBVYdxz5C4mGWgJNurGvj9DDyGtXBJzZiid+VAS
-         oyYg==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=H+kXtJN5JJLYKoRL+qD56ox9HqWFLkIJqJ3Ly2YFzJ4=;
+        b=Id9RmZoeR1NZZI7Aglru7Sm3y5eZhT50jNTvBDNV0BoqzuxaGDlKbtEzqRdmWAgwu8
+         UOay/f8jaaRTe8vnt1vucFBod/SYyyDWNBesi0Atam7fpCwO9kDMV23EMLrEoKeNpO6U
+         Ld38uxU729yfikNKUUHxgIMfr5XQZhzFAqwCv/x9hcoDHzuZf+0IpKQDvyT8apbRl9kJ
+         EnRN4KEZiU4uT89MbuUQI9T5OhMoBqnrNQHbrkQr2q7vqXZJven8IaeInJRuNxEWjtjZ
+         e6BChK5Mnn8xrv+6DHY0unHB0QiHD6iT2KuNAVQdjunGeZC85BLCnxo77sGmjTXU4UTG
+         P47w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Iq7Beh/zr9UfMju4UgWIYfulv3+Lyolf0V5hgZcgiro=;
-        b=EWHpLvSEHgwApftBpuXsg+vCn7rmfLoDIEyoG7IHxx7mY3WJ4PqUVr1iDgzBkemTlh
-         wP9OAQyudwMdRdKM+TCrJUpLw287gai0UttTK2EPmCMgiVQ+pu7vrGwSqyLFjhWwuqA5
-         fZs8BAe3kJMG5sxtMrFSh9LVZ+xRJ/t1M0fY/6ByLiQhOFShmoWXU+ESzLKTQoGIYcEs
-         iw9X9gvHqyGfKaavdWFXU5kPTQnnRDiLmjMINrj1+KxBKk//QvXRcygmXiPVgX6S2seH
-         90Ke6ssasreDNYoUCiPeTQFyLwgeP1oBHlc4+YdV96tv0uGY4e/9AZhCXxhsVE3SzAhh
-         Yg5g==
-X-Gm-Message-State: AOAM532fXk1Xoe7NvSGhStwG0AGEYhHHDTZgzb8ULcapO+FpsPJ1Bizv
-        RoEsOfq1OngHb744acTcT4bseJV8atZRf5/bqH9NmiEs2lQ=
-X-Google-Smtp-Source: ABdhPJw8GDefovTtZ+vH5DVFoS/vfUPwMQGY4iw/KUQK3Z5PEUw0ReDXq9WfAiizBNrwV3RSmFAy5jm4gdi+Y9OzpqQ=
-X-Received: by 2002:a25:df4f:: with SMTP id w76mr4260067ybg.711.1640174304993;
- Wed, 22 Dec 2021 03:58:24 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=H+kXtJN5JJLYKoRL+qD56ox9HqWFLkIJqJ3Ly2YFzJ4=;
+        b=bv3lM5zr4e8115oibivqpog3UjfcWVy4+rPVGdkF1EDbb3dfX3dGAy5+KPdUvOycqR
+         zbAaXThujqFTpUqpRJThj+TLN7iq1x63TZhvkLw+VaHKq0XYUSI0Mp/Z/KlqJ3rZJR7w
+         PRWlEHiTlLlnsbdZJycFO76yuuUgumD1bGxi3XR1IpOI3pYc0U0IraHsTqAIkLZSor7i
+         so3R3A2ZReX22Ext+UksiqrTk+zQcRbC7EQbaBlcPtrTz8OIdT/r/FBIjYBXHDusex5N
+         dNC2Z7qWuogXYqj6mrcVi0InBakgVPtbP5clFFEyRzs55b93DMltDe1RPJYtOqIBYVcl
+         laWQ==
+X-Gm-Message-State: AOAM533IAE2BCS92knVrvIMkTLE02CYdUyjKXmrONY1Q5NN7SbrmmufY
+        ef6FRJ55Mgt3kaAwwWjHk901vuPb+THeXA==
+X-Google-Smtp-Source: ABdhPJwgBQ0dRWQ0s6L6e5XyDe7g1wumCiTIBk0UXE/KL+bKsnte3hDVuZxFVF+/ZoC38RY65miPvw==
+X-Received: by 2002:a17:90b:4ace:: with SMTP id mh14mr1004142pjb.164.1640174964962;
+        Wed, 22 Dec 2021 04:09:24 -0800 (PST)
+Received: from localhost.localdomain ([111.201.150.233])
+        by smtp.gmail.com with ESMTPSA id y128sm2598517pfb.24.2021.12.22.04.09.20
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 22 Dec 2021 04:09:24 -0800 (PST)
+From:   xiangxia.m.yue@gmail.com
+To:     netdev@vger.kernel.org
+Cc:     Tonghao Zhang <xiangxia.m.yue@gmail.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Talal Ahmad <talalahmad@google.com>,
+        Kevin Hao <haokexin@gmail.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Kees Cook <keescook@chromium.org>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Wei Wang <weiwan@google.com>, Arnd Bergmann <arnd@arndb.de>
+Subject: [net-next v6 0/2] net: sched: allow user to select txqueue
+Date:   Wed, 22 Dec 2021 20:08:07 +0800
+Message-Id: <20211222120809.2222-1-xiangxia.m.yue@gmail.com>
+X-Mailer: git-send-email 2.30.1 (Apple Git-130)
 MIME-Version: 1.0
-References: <26109603287b4d21545bec125e43b218b545b746.1640111022.git.pabeni@redhat.com>
- <CANn89iKpiQzW1UnsQSYzULJ8d-QHsy7Wz=NtgvVXBqh-iuNptQ@mail.gmail.com> <dad55584ad20723f1579475a09ef7b3a3607e087.camel@redhat.com>
-In-Reply-To: <dad55584ad20723f1579475a09ef7b3a3607e087.camel@redhat.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 22 Dec 2021 03:58:13 -0800
-Message-ID: <CANn89iKDA4TMpQeQoxicd8rkph5+Am2iuoSDETvFn03CiQQV3g@mail.gmail.com>
-Subject: Re: [PATCH net] veth: ensure skb entering GRO are not cloned.
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Ignat Korchagin <ignat@cloudflare.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 22, 2021 at 3:06 AM Paolo Abeni <pabeni@redhat.com> wrote:
->
-> Hello,
->
-> On Tue, 2021-12-21 at 20:31 -0800, Eric Dumazet wrote:
-> > On Tue, Dec 21, 2021 at 1:34 PM Paolo Abeni <pabeni@redhat.com> wrote:
-> > >
-> > > After commit d3256efd8e8b ("veth: allow enabling NAPI even without XDP"),
-> > > if GRO is enabled on a veth device and TSO is disabled on the peer
-> > > device, TCP skbs will go through the NAPI callback. If there is no XDP
-> > > program attached, the veth code does not perform any share check, and
-> > > shared/cloned skbs could enter the GRO engine.
-> > >
-> > >
-> >
-> > ...
-> >
-> > > Address the issue checking for cloned skbs even in the GRO-without-XDP
-> > > input path.
-> > >
-> > > Reported-and-tested-by: Ignat Korchagin <ignat@cloudflare.com>
-> > > Fixes: d3256efd8e8b ("veth: allow enabling NAPI even without XDP")
-> > > Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-> > > ---
-> > >  drivers/net/veth.c | 8 ++++++++
-> > >  1 file changed, 8 insertions(+)
-> > >
-> > > diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-> > > index b78894c38933..abd1f949b2f5 100644
-> > > --- a/drivers/net/veth.c
-> > > +++ b/drivers/net/veth.c
-> > > @@ -718,6 +718,14 @@ static struct sk_buff *veth_xdp_rcv_skb(struct veth_rq *rq,
-> > >         rcu_read_lock();
-> > >         xdp_prog = rcu_dereference(rq->xdp_prog);
-> > >         if (unlikely(!xdp_prog)) {
-> > > +               if (unlikely(skb_shared(skb) || skb_head_is_locked(skb))) {
-> >
-> > Why skb_head_is_locked() needed here ?
-> > I would think skb_cloned() is enough for the problem we want to address.
->
-> Thank you for the feedback.
->
-> I double checked the above: in my test even skb_cloned() suffice.
->
-> > > +                       struct sk_buff *nskb = skb_copy(skb, GFP_ATOMIC | __GFP_NOWARN);
-> > > +
-> > > +                       if (!nskb)
-> > > +                               goto drop;
-> > > +                       consume_skb(skb);
-> > > +                       skb = nskb;
-> > > +               }
-> > >                 rcu_read_unlock();
-> > >                 goto out;
-> > >         }
-> > > --
-> > > 2.33.1
-> > >
-> >
-> > - It seems adding yet memory alloc/free and copies is defeating GRO purpose.
-> > - After skb_copy(), GRO is forced to use the expensive frag_list way
-> > for aggregation anyway.
-> > - veth mtu could be set to 64KB, so we could have order-4 allocation
-> > attempts here.
-> >
-> > Would the following fix [1] be better maybe, in terms of efficiency,
-> > and keeping around skb EDT/tstamp
-> > information (see recent thread with Martin and Daniel )
-> >
-> > I think it also focuses more on the problem (GRO is not capable of
-> > dealing with cloned skb yet).
-> > Who knows, maybe in the future we will _have_ to add more checks in
-> > GRO fast path for some other reason,
-> > since it is becoming the Swiss army knife of networking :)
->
-> Only vaguely related: I have a bunch of micro optimizations for the GRO
-> engine. I did not submit the patches because I can observe the gain
-> only in micro-benchmarks, but I'm wondering if that could be visible
-> with very high speed TCP stream? I can share the code if that could be
-> of general interest (after some rebasing, the patches predates gro.c)
->
-> > Although I guess this whole case (disabling TSO) is moot, I have no
-> > idea why anyone would do that :)
-> >
-> > [1]
-> > diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-> > index 50eb43e5bf459bb998e264d399bc85d4e9d73594..fe7a4d2f7bfc834ea56d1da185c0f53bfbd22ad0
-> > 100644
-> > --- a/drivers/net/veth.c
-> > +++ b/drivers/net/veth.c
-> > @@ -879,8 +879,12 @@ static int veth_xdp_rcv(struct veth_rq *rq, int budget,
-> >
-> >                         stats->xdp_bytes += skb->len;
-> >                         skb = veth_xdp_rcv_skb(rq, skb, bq, stats);
-> > -                       if (skb)
-> > -                               napi_gro_receive(&rq->xdp_napi, skb);
-> > +                       if (skb) {
-> > +                               if (skb_shared(skb) || skb_cloned(skb))
-> > +                                       netif_receive_skb(skb);
-> > +                               else
-> > +                                       napi_gro_receive(&rq->xdp_napi, skb);
-> > +                       }
-> >                 }
-> >                 done++;
-> >         }
->
-> I tested the above, and it works, too.
->
-> I thought about something similar, but I overlooked possible OoO or
-> behaviour changes when a packet socket is attached to the paired device
-> (as it would disable GRO).
+From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 
-Have you tried a pskb_expand_head() instead of a full copy ?
-Perhaps that would be enough, and keep all packets going through GRO to
-make sure OOO is covered.
+Patch 1 allow user to select txqueue in clsact hook.
+Patch 2 support skbhash, classid, cpuid to select txqueue.
 
->
-> It looks like tcpdump should have not ill-effects (the mmap rx-path
-> releases the skb clone before the orig packet reaches the other end),
-> so I guess the above is fine (and sure is better to avoid more
-> timestamp related problem).
->
-> Do you prefer to submit it formally, or do you prefer I'll send a v2
-> with the latter code?
+Tonghao Zhang (2):
+  net: sched: use queue_mapping to pick tx queue
+  net: sched: support hash/classid/cpuid selecting tx queue
 
-Sure, please submit a V2.
+ include/linux/netdevice.h              |  3 +
+ include/linux/rtnetlink.h              |  3 +
+ include/net/tc_act/tc_skbedit.h        |  1 +
+ include/uapi/linux/tc_act/tc_skbedit.h |  8 +++
+ net/core/dev.c                         | 44 +++++++++++-
+ net/sched/act_skbedit.c                | 96 ++++++++++++++++++++++++--
+ 6 files changed, 149 insertions(+), 6 deletions(-)
 
->
-> Thanks!
->
-> Paolo
->
->
+-- 
+v6:
+* 1/2 use static key and compiled when CONFIG_NET_EGRESS configured.
+v5:
+* 1/2 merge netdev_xmit_reset_txqueue(void),
+  netdev_xmit_skip_txqueue(void), to netdev_xmit_skip_txqueue(bool skip). 
+v4:
+* 1/2 introduce netdev_xmit_reset_txqueue() and invoked in
+  __dev_queue_xmit(), so ximt.skip_txqueue will not affect
+  selecting tx queue in next netdev, or next packets.
+  more details, see commit log.
+* 2/2 fix the coding style, rename:
+  SKBEDIT_F_QUEUE_MAPPING_HASH -> SKBEDIT_F_TXQ_SKBHASH
+  SKBEDIT_F_QUEUE_MAPPING_CLASSID -> SKBEDIT_F_TXQ_CLASSID
+  SKBEDIT_F_QUEUE_MAPPING_CPUID -> SKBEDIT_F_TXQ_CPUID
+* 2/2 refactor tcf_skbedit_hash, if type of hash is not specified, use
+  the queue_mapping, because hash % mapping_mod == 0 in "case 0:"
+* 2/2 merge the check and add extack
+v3:
+* 2/2 fix the warning, add cpuid hash type.
+v2:
+* 1/2 change skb->tc_skip_txqueue to per-cpu var, add more commit message.
+* 2/2 optmize the codes.
+
+Cc: Jamal Hadi Salim <jhs@mojatatu.com>
+Cc: Cong Wang <xiyou.wangcong@gmail.com>
+Cc: Jiri Pirko <jiri@resnulli.us>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Jonathan Lemon <jonathan.lemon@gmail.com>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Alexander Lobakin <alobakin@pm.me>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: Talal Ahmad <talalahmad@google.com>
+Cc: Kevin Hao <haokexin@gmail.com>
+Cc: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Cc: Kees Cook <keescook@chromium.org>
+Cc: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Cc: Antoine Tenart <atenart@kernel.org>
+Cc: Wei Wang <weiwan@google.com>
+Cc: Arnd Bergmann <arnd@arndb.de>
+--
+2.27.0
+
