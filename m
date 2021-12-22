@@ -2,85 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B34C47D6D5
-	for <lists+netdev@lfdr.de>; Wed, 22 Dec 2021 19:28:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B95E47D701
+	for <lists+netdev@lfdr.de>; Wed, 22 Dec 2021 19:40:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344742AbhLVS2T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Dec 2021 13:28:19 -0500
-Received: from mail-qk1-f180.google.com ([209.85.222.180]:43810 "EHLO
-        mail-qk1-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236475AbhLVS2S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Dec 2021 13:28:18 -0500
-Received: by mail-qk1-f180.google.com with SMTP id f138so3148494qke.10;
-        Wed, 22 Dec 2021 10:28:17 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=BQVHinv4Cgd22h/GWeg09N0p9AK9353UAAMDL16H6IM=;
-        b=pqUxQE3X0CtYNXz5C2fDZN9vaC7fdCsHa3AIL0uzThZG+AwMzk2/Fo0rdoK4ZtUEuM
-         /n4jViGRF4qyaSNjkYIXG93IbHld2vaJe/o9Q7jnhocuF0tonG1tU0RLnoGbLoqvyiwj
-         2Z3lkK0VW7mwMFqWH563qep4HobgHdXoeQ68vwlhE3m3nM6js8WUfZ+NSC+KCYp81nlm
-         0yf0VvfN3nKSqt/y5Iwiv3WgHQ8jIgFR/tu8ejRS8UYXVF3ksWbH2c6aPU3VHPsPLzRQ
-         CeRNg/VXyRdBT6ZUUc7oNQqnClEHfCfBoWJ1EqcTrtXTC1BgOiuo13RdrB1pg6+RIAr1
-         crUA==
-X-Gm-Message-State: AOAM530PY4R7UTPbYX7jNkwDmvH5GFYkI/cRXxrr/fyMpY9vImGXKchJ
-        804/sLrs01oGuXy7hnMm/g==
-X-Google-Smtp-Source: ABdhPJyTGIBihg0G/yVtVYX1Gz0fkM6asEfTlgU/B6KKvYzxPNc4S5SjaaGD5r8Uu2e3WnF02Fhg0w==
-X-Received: by 2002:a37:94c2:: with SMTP id w185mr2854133qkd.666.1640197697351;
-        Wed, 22 Dec 2021 10:28:17 -0800 (PST)
-Received: from robh.at.kernel.org ([24.55.105.145])
-        by smtp.gmail.com with ESMTPSA id y18sm2492143qtx.19.2021.12.22.10.28.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Dec 2021 10:28:16 -0800 (PST)
-Received: (nullmailer pid 2463743 invoked by uid 1000);
-        Wed, 22 Dec 2021 18:28:14 -0000
-Date:   Wed, 22 Dec 2021 14:28:14 -0400
-From:   Rob Herring <robh@kernel.org>
-To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Cc:     linux-serial@vger.kernel.org, Magnus Damm <magnus.damm@gmail.com>,
-        netdev@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
-        Michael Turquette <mturquette@baylibre.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        linux-kernel@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        "David S. Miller" <davem@davemloft.net>,
-        Vinod Koul <vkoul@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        linux-renesas-soc@vger.kernel.org, dmaengine@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH 14/16] dt-bindings: net: renesas,etheravb: Document
- RZ/V2L SoC
-Message-ID: <YcNuPnkXLBBjFRG0@robh.at.kernel.org>
-References: <20211221094717.16187-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20211221094717.16187-15-prabhakar.mahadev-lad.rj@bp.renesas.com>
+        id S1344795AbhLVSkb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Dec 2021 13:40:31 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:59480 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233997AbhLVSkb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Dec 2021 13:40:31 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1640198430;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=ySpXghckTIR6Je88cZ+15Iyqmh2IUdb9LKR8n2opWx0=;
+        b=KQ6h0staY0/DaAmpevYBcgQ0WSYRKeu4sBYna/DCXb1j5e9ziP75A3En29aiC3xJfypbaC
+        qzmyhVC2B0DAbyccZd4zBkIAjEyOmyh06EDW0+2plWAXNImL34zn+M2VNIoKitTWKP6nUB
+        zEQfQxDP3mC3Kt4eBbu3g4H1HYUxyjU=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-532-fgR-doybMAyt869yikx2Mg-1; Wed, 22 Dec 2021 13:40:25 -0500
+X-MC-Unique: fgR-doybMAyt869yikx2Mg-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7CE761923E42;
+        Wed, 22 Dec 2021 18:40:24 +0000 (UTC)
+Received: from gerbillo.redhat.com (unknown [10.39.194.47])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8183B72414;
+        Wed, 22 Dec 2021 18:40:23 +0000 (UTC)
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     Ignat Korchagin <ignat@cloudflare.com>,
+        Eric Dumazet <edumazet@google.com>
+Subject: [PATCH v2 net] veth: ensure skb entering GRO are not cloned.
+Date:   Wed, 22 Dec 2021 19:39:52 +0100
+Message-Id: <b5f61c5602aab01bac8d711d8d1bfab0a4817db7.1640197544.git.pabeni@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211221094717.16187-15-prabhakar.mahadev-lad.rj@bp.renesas.com>
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 21 Dec 2021 09:47:15 +0000, Lad Prabhakar wrote:
-> From: Biju Das <biju.das.jz@bp.renesas.com>
-> 
-> Document Gigabit Ethernet IP found on RZ/V2L SoC. Gigabit Ethernet
-> Interface is identical to one found on the RZ/G2L SoC. No driver changes
-> are required as generic compatible string "renesas,rzg2l-gbeth" will be
-> used as a fallback.
-> 
-> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> ---
->  Documentation/devicetree/bindings/net/renesas,etheravb.yaml | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
+After commit d3256efd8e8b ("veth: allow enabling NAPI even without XDP"),
+if GRO is enabled on a veth device and TSO is disabled on the peer
+device, TCP skbs will go through the NAPI callback. If there is no XDP
+program attached, the veth code does not perform any share check, and
+shared/cloned skbs could enter the GRO engine.
 
-Acked-by: Rob Herring <robh@kernel.org>
+Ignat reported a BUG triggered later-on due to the above condition:
+
+[   53.970529][    C1] kernel BUG at net/core/skbuff.c:3574!
+[   53.981755][    C1] invalid opcode: 0000 [#1] PREEMPT SMP KASAN PTI
+[   53.982634][    C1] CPU: 1 PID: 19 Comm: ksoftirqd/1 Not tainted 5.16.0-rc5+ #25
+[   53.982634][    C1] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 0.0.0 02/06/2015
+[   53.982634][    C1] RIP: 0010:skb_shift+0x13ef/0x23b0
+[   53.982634][    C1] Code: ea 03 0f b6 04 02 48 89 fa 83 e2 07 38 d0
+7f 08 84 c0 0f 85 41 0c 00 00 41 80 7f 02 00 4d 8d b5 d0 00 00 00 0f
+85 74 f5 ff ff <0f> 0b 4d 8d 77 20 be 04 00 00 00 4c 89 44 24 78 4c 89
+f7 4c 89 8c
+[   53.982634][    C1] RSP: 0018:ffff8881008f7008 EFLAGS: 00010246
+[   53.982634][    C1] RAX: 0000000000000000 RBX: ffff8881180b4c80 RCX: 0000000000000000
+[   53.982634][    C1] RDX: 0000000000000002 RSI: ffff8881180b4d3c RDI: ffff88810bc9cac2
+[   53.982634][    C1] RBP: ffff8881008f70b8 R08: ffff8881180b4cf4 R09: ffff8881180b4cf0
+[   53.982634][    C1] R10: ffffed1022999e5c R11: 0000000000000002 R12: 0000000000000590
+[   53.982634][    C1] R13: ffff88810f940c80 R14: ffff88810f940d50 R15: ffff88810bc9cac0
+[   53.982634][    C1] FS:  0000000000000000(0000) GS:ffff888235880000(0000) knlGS:0000000000000000
+[   53.982634][    C1] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   53.982634][    C1] CR2: 00007ff5f9b86680 CR3: 0000000108ce8004 CR4: 0000000000170ee0
+[   53.982634][    C1] Call Trace:
+[   53.982634][    C1]  <TASK>
+[   53.982634][    C1]  tcp_sacktag_walk+0xaba/0x18e0
+[   53.982634][    C1]  tcp_sacktag_write_queue+0xe7b/0x3460
+[   53.982634][    C1]  tcp_ack+0x2666/0x54b0
+[   53.982634][    C1]  tcp_rcv_established+0x4d9/0x20f0
+[   53.982634][    C1]  tcp_v4_do_rcv+0x551/0x810
+[   53.982634][    C1]  tcp_v4_rcv+0x22ed/0x2ed0
+[   53.982634][    C1]  ip_protocol_deliver_rcu+0x96/0xaf0
+[   53.982634][    C1]  ip_local_deliver_finish+0x1e0/0x2f0
+[   53.982634][    C1]  ip_sublist_rcv_finish+0x211/0x440
+[   53.982634][    C1]  ip_list_rcv_finish.constprop.0+0x424/0x660
+[   53.982634][    C1]  ip_list_rcv+0x2c8/0x410
+[   53.982634][    C1]  __netif_receive_skb_list_core+0x65c/0x910
+[   53.982634][    C1]  netif_receive_skb_list_internal+0x5f9/0xcb0
+[   53.982634][    C1]  napi_complete_done+0x188/0x6e0
+[   53.982634][    C1]  gro_cell_poll+0x10c/0x1d0
+[   53.982634][    C1]  __napi_poll+0xa1/0x530
+[   53.982634][    C1]  net_rx_action+0x567/0x1270
+[   53.982634][    C1]  __do_softirq+0x28a/0x9ba
+[   53.982634][    C1]  run_ksoftirqd+0x32/0x60
+[   53.982634][    C1]  smpboot_thread_fn+0x559/0x8c0
+[   53.982634][    C1]  kthread+0x3b9/0x490
+[   53.982634][    C1]  ret_from_fork+0x22/0x30
+[   53.982634][    C1]  </TASK>
+
+Address the issue by skipping the GRO stage for shared or cloned skbs.
+To reduce the chance of OoO, try to unclone the skbs before giving up.
+
+v1 -> v2:
+ - use avoid skb_copy and fallback to netif_receive_skb  - Eric
+
+Reported-by: Ignat Korchagin <ignat@cloudflare.com>
+Fixes: d3256efd8e8b ("veth: allow enabling NAPI even without XDP")
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+---
+ drivers/net/veth.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/veth.c b/drivers/net/veth.c
+index b78894c38933..117526f2437d 100644
+--- a/drivers/net/veth.c
++++ b/drivers/net/veth.c
+@@ -879,8 +879,12 @@ static int veth_xdp_rcv(struct veth_rq *rq, int budget,
+ 
+ 			stats->xdp_bytes += skb->len;
+ 			skb = veth_xdp_rcv_skb(rq, skb, bq, stats);
+-			if (skb)
+-				napi_gro_receive(&rq->xdp_napi, skb);
++			if (skb) {
++				if (skb_shared(skb) || skb_unclone(skb, GFP_ATOMIC))
++					netif_receive_skb(skb);
++				else
++					napi_gro_receive(&rq->xdp_napi, skb);
++			}
+ 		}
+ 		done++;
+ 	}
+-- 
+2.33.1
+
