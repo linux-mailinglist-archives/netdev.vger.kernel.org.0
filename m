@@ -2,98 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E7A7E47CE87
-	for <lists+netdev@lfdr.de>; Wed, 22 Dec 2021 09:56:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 07A5947CFFE
+	for <lists+netdev@lfdr.de>; Wed, 22 Dec 2021 11:30:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243523AbhLVI4f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Dec 2021 03:56:35 -0500
-Received: from szxga01-in.huawei.com ([45.249.212.187]:15959 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243503AbhLVI4d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Dec 2021 03:56:33 -0500
-Received: from kwepemi500007.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4JJnD23SCyzZdm0;
-        Wed, 22 Dec 2021 16:53:22 +0800 (CST)
-Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
- kwepemi500007.china.huawei.com (7.221.188.207) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Wed, 22 Dec 2021 16:56:31 +0800
-Received: from compute.localdomain (10.175.112.70) by
- kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Wed, 22 Dec 2021 16:56:30 +0800
-From:   Xu Jia <xujia39@huawei.com>
-To:     <steffen.klassert@secunet.com>, <herbert@gondor.apana.org.au>,
-        <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-Subject: [PATCH net-next 2/2] xfrm: Add support for SM4 symmetric cipher algorithm
-Date:   Wed, 22 Dec 2021 17:06:59 +0800
-Message-ID: <1640164019-42341-3-git-send-email-xujia39@huawei.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1640164019-42341-1-git-send-email-xujia39@huawei.com>
-References: <1640164019-42341-1-git-send-email-xujia39@huawei.com>
+        id S244180AbhLVKaQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Dec 2021 05:30:16 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:39500 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244163AbhLVKaM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Dec 2021 05:30:12 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 84919B81054;
+        Wed, 22 Dec 2021 10:30:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 44564C36AE8;
+        Wed, 22 Dec 2021 10:30:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1640169010;
+        bh=d6enVSt23pIXhK+rZx1sR40kWpnw6LTgNRrXNoq46yI=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=hCmT5lEXIyv2Bdsg7RCMzaDHs6Aav66tjOPQ3kwzW34o1Ay7VkO4rg/Wh6mEF+j43
+         impfMSSgXX464uv15xpyMGFT52GydDFI4BvIVR4A+5f5IuFvtdKJUWKb4w58WhH3Vk
+         fD6VNEjgo9eKhh56jieFZvaxDV5LiNxIyfGbFlj+7D4x1zW/gpyWLp16P9Dp4WqsK9
+         tYTwZl7hwrFFLHI3xdE6Rf+ypdUK1ILqCxb0ChiZ0bmGyIg8ckWROK4w59PxESjQJg
+         m8PalqaCllGq1qfpK4PB+e4Q6X5EdyQhWk8AEex1W268kJQvnlFvWjnBYc3ek0A/zi
+         U9gJN+oaiMeLQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 23F2960AA5;
+        Wed, 22 Dec 2021 10:30:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.112.70]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- kwepemm600017.china.huawei.com (7.193.23.234)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] drivers: net: smc911x: Check for error irq
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164016901014.30322.14444262139066973120.git-patchwork-notify@kernel.org>
+Date:   Wed, 22 Dec 2021 10:30:10 +0000
+References: <20211222074112.1119564-1-jiasheng@iscas.ac.cn>
+In-Reply-To: <20211222074112.1119564-1-jiasheng@iscas.ac.cn>
+To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds SM4 encryption algorithm entry to ealg_list.
+Hello:
 
-Signed-off-by: Xu Jia <xujia39@huawei.com>
----
- include/uapi/linux/pfkeyv2.h |  1 +
- net/xfrm/xfrm_algo.c         | 21 +++++++++++++++++++++
- 2 files changed, 22 insertions(+)
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-diff --git a/include/uapi/linux/pfkeyv2.h b/include/uapi/linux/pfkeyv2.h
-index 798ba9f..8abae1f 100644
---- a/include/uapi/linux/pfkeyv2.h
-+++ b/include/uapi/linux/pfkeyv2.h
-@@ -330,6 +330,7 @@ struct sadb_x_filter {
- #define SADB_X_EALG_AES_GCM_ICV16	20
- #define SADB_X_EALG_CAMELLIACBC		22
- #define SADB_X_EALG_NULL_AES_GMAC	23
-+#define SADB_X_EALG_SM4CBC		24
- #define SADB_EALG_MAX                   253 /* last EALG */
- /* private allocations should use 249-255 (RFC2407) */
- #define SADB_X_EALG_SERPENTCBC  252     /* draft-ietf-ipsec-ciph-aes-cbc-00 */
-diff --git a/net/xfrm/xfrm_algo.c b/net/xfrm/xfrm_algo.c
-index 00b5444..094734f 100644
---- a/net/xfrm/xfrm_algo.c
-+++ b/net/xfrm/xfrm_algo.c
-@@ -572,6 +572,27 @@
- 		.sadb_alg_maxbits = 288
- 	}
- },
-+{
-+	.name = "cbc(sm4)",
-+	.compat = "sm4",
-+
-+	.uinfo = {
-+		.encr = {
-+			.geniv = "echainiv",
-+			.blockbits = 128,
-+			.defkeybits = 128,
-+		}
-+	},
-+
-+	.pfkey_supported = 1,
-+
-+	.desc = {
-+		.sadb_alg_id = SADB_X_EALG_SM4CBC,
-+		.sadb_alg_ivlen	= 16,
-+		.sadb_alg_minbits = 128,
-+		.sadb_alg_maxbits = 256
-+	}
-+},
- };
- 
- static struct xfrm_algo_desc calg_list[] = {
+On Wed, 22 Dec 2021 15:41:12 +0800 you wrote:
+> Because platform_get_irq() could fail and return error irq.
+> Therefore, it might be better to check it if order to avoid the use of
+> error irq.
+> 
+> Fixes: ae150435b59e ("smsc: Move the SMC (SMSC) drivers")
+> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+> 
+> [...]
+
+Here is the summary with links:
+  - drivers: net: smc911x: Check for error irq
+    https://git.kernel.org/netdev/net/c/cb93b3e11d40
+
+You are awesome, thank you!
 -- 
-1.8.3.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
