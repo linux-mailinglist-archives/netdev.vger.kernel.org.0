@@ -2,93 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5538F47CD41
-	for <lists+netdev@lfdr.de>; Wed, 22 Dec 2021 08:06:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E3C9047CD49
+	for <lists+netdev@lfdr.de>; Wed, 22 Dec 2021 08:08:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242879AbhLVHGZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Dec 2021 02:06:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45822 "EHLO
+        id S242888AbhLVHIl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Dec 2021 02:08:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233983AbhLVHGX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Dec 2021 02:06:23 -0500
-Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AF5CC061574
-        for <netdev@vger.kernel.org>; Tue, 21 Dec 2021 23:06:23 -0800 (PST)
-Received: by mail-oi1-x230.google.com with SMTP id s73so2625064oie.5
-        for <netdev@vger.kernel.org>; Tue, 21 Dec 2021 23:06:23 -0800 (PST)
+        with ESMTP id S233983AbhLVHIl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Dec 2021 02:08:41 -0500
+Received: from mail-qv1-xf2c.google.com (mail-qv1-xf2c.google.com [IPv6:2607:f8b0:4864:20::f2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36E11C061574;
+        Tue, 21 Dec 2021 23:08:41 -0800 (PST)
+Received: by mail-qv1-xf2c.google.com with SMTP id a9so1537447qvd.12;
+        Tue, 21 Dec 2021 23:08:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=znL6gPoBAiKsZIWIkNXi0kaaKLN9p5bWHU/s9NqLSjU=;
-        b=NRJPjjc8RG5sziUSLjzr/NcBMUQ9Vw8W7iPPY0PhJOJFKn+EuGLLjS5qx/wRhFT7Mm
-         Lnh0NJLgEMEddPEAD07TXHiC7w49dd8gf+fuIUhOBMPE7QAqQzlYSaRHaPOpRIf/ES1r
-         ZWWT+ZkPQCIXBrHKZvxG/8ILWI+bHhUwMy3CuboJQ1hGtQ+yhRU5mYEJVR2wftdk5lxT
-         0MPOhW0SfAno+hXJH6LBRuZ1+KRulHY3+SmES/Esa+crFKMIW6y7nTipHzo7F5nnzYI/
-         VXOtHLzYgm7FeGgS1+sPCAZEE3m/6UuQNXeYLbpELAOpHzsk812beELe3hH2ihA8Nxul
-         Hqmw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=+4MJW7EYeQHdXBq8fuiaiXyr4Eoc+IH0oj+VCDJk7v4=;
+        b=RdYFOp1H/dzVftbwpZI0Z7aD4Iao8f/aMrVo9kgh7jAe/tfW9IP4rwsG3xez0bOLn7
+         uPxQeapHzHRMOf2NoYMnUdGIE8GTDt2/vNcw40m/Zo1EJ+zUH+p9Ia238STB2n9f7WnG
+         OPpIAXS9rkuqugaaUBmW1B5Uuob4us0p7cNeEAHlj5uk52s4Qqvqey+P6k/uZGfmZFrY
+         fA2BIKhnvTL3Pq9vNq3y9CBl7XqX0XO1NzKPxS2FTWn0nsco0YwR/NNpWn/nQwnsbhHU
+         qlCjfkHBkIkVuOlHE4/dKIDl47wqB5xdORga/RCKzXWQGPL9EOlwt8OEv7zVaRF+T6H7
+         YZZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=znL6gPoBAiKsZIWIkNXi0kaaKLN9p5bWHU/s9NqLSjU=;
-        b=t1LBmnZq1PxrR89bbMALAVIMcmwl5zUzP78mDnbpJHW0d/sOuCBPpqUtj41sw3s7QF
-         EHWWwOeLpDiC9Ob/ObntD7p9RiqZTTYiFPUrhNmpJK1aaLJRg6WwGpmMI8qQjdWNjHQo
-         e0CV5Cy0xOFm6L+dwCR5vu0+w+ySTtrY9/JCFxqECHlQub+jZC+UrIx1b2a4WT8zGF/r
-         7wlDr8YOp4zfSVxqaCzEstqCxnoh+cV6xJhSb4snuLrPkW9c/MgfZRzsfJBD58dNSpZw
-         xjwxi7mfLPbywGMOHRsGpg1XUnt915ujD/ZtrfrTyQKRJs+wtHl/WUGIF4Js3z7q5x+Z
-         xmhg==
-X-Gm-Message-State: AOAM530Br8JvNqK0MMNfATf4AdWx5R82fJ8/v65NA1Yy8UpdhsMwihiq
-        jotlXafe96HasUHNpURXoX6eHx400ocTyJP9auGlBxZU66M=
-X-Google-Smtp-Source: ABdhPJwrvF+W+Nbhqak4NpKfNVJI78U4X6NGDEBSdqMT8Pi//bQaMdtdgUFqR+tXnyFSflVrXIF2npeZUJj4GMzHC+8=
-X-Received: by 2002:aca:4283:: with SMTP id p125mr1144402oia.35.1640156782532;
- Tue, 21 Dec 2021 23:06:22 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=+4MJW7EYeQHdXBq8fuiaiXyr4Eoc+IH0oj+VCDJk7v4=;
+        b=RfAstlceABPYdvRlx/o5X+p94rl6Qdwx016UYp6WVvn7pfxFeoIb8+Q5S1Vpjs+7Ep
+         GiIE7GJrWqDMTiHAPHhw3CNoBumKzfhGMXq391xIWlJyyf8/HlFiNO31xiywPxwCZL9N
+         q5nAYyJwlPjsNtmmvuBQOokHjcXpoeQimvsj0JvX2XOXjHnApLmaamONwJCeU/4mI27D
+         vD79nEiI+QTGii2V7jk04RDvv/spNE1fVGVDMbf2OVbgIWChaPo/m+rVWOz43PlVV3Zu
+         ak/tdveld1N8pnvM7O5TowHFBJ+F8UO8WDKW3r5quibnXf44Zii6NqiwBvYLIuSJhLDo
+         iq9A==
+X-Gm-Message-State: AOAM530ukqPOHTBmJxTL+tW2VLDR1oQ9bbQn9fQpAUqQOiazSN3cTC/m
+        /wol2pyhj8m/Nn1Yy0CCuZs=
+X-Google-Smtp-Source: ABdhPJyelLbKC0kyiz9F4RZeKMmEV3QXFd9sVgMH3N4W2+t5Y1UD+x2qQMtMeif1fgxUVcLpcbGuDA==
+X-Received: by 2002:ad4:4027:: with SMTP id q7mr1379019qvp.117.1640156920410;
+        Tue, 21 Dec 2021 23:08:40 -0800 (PST)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id c1sm1034997qte.79.2021.12.21.23.08.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Dec 2021 23:08:39 -0800 (PST)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: deng.changcheng@zte.com.cn
+To:     kvalo@kernel.org
+Cc:     ajay.kathat@microchip.com, cgel.zte@gmail.com,
+        claudiu.beznea@microchip.com, davem@davemloft.net,
+        deng.changcheng@zte.com.cn, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, zealci@zte.com.cn
+Subject: [PATCH v2] wilc1000: use min_t() to make code cleaner
+Date:   Wed, 22 Dec 2021 07:08:15 +0000
+Message-Id: <20211222070815.483009-1-deng.changcheng@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <164011040619.7951.14619016402908057909.kvalo@kernel.org>
+References: <164011040619.7951.14619016402908057909.kvalo@kernel.org>
 MIME-Version: 1.0
-From:   Kegl Rohit <keglrohit@gmail.com>
-Date:   Wed, 22 Dec 2021 08:06:11 +0100
-Message-ID: <CAMeyCbj93LvTu9RjVXD+NcT0JYoA42BC7pSHumtNJfniSobAqA@mail.gmail.com>
-Subject: net: fec: memory corruption caused by err_enet_mii_probe error path
-To:     netdev <netdev@vger.kernel.org>
-Cc:     Andy Duan <fugang.duan@nxp.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello!
+From: Changcheng Deng <deng.changcheng@zte.com.cn>
 
-There is an issue with the error path of fec_enet_mii_probe in
-fec_enet_open(struct net_device *ndev) which leads to random memory
-corruption.
+Use min_t() in order to make code cleaner.
 
-In open() the buffers are initialized:
-https://github.com/torvalds/linux/blob/v5.10/drivers/net/ethernet/freescale/fec_main.c#L3001
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Changcheng Deng <deng.changcheng@zte.com.cn>
+---
+ drivers/net/wireless/microchip/wilc1000/spi.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-Then fec_restart will start the DMA engines.
-https://github.com/torvalds/linux/blob/v5.10/drivers/net/ethernet/freescale/fec_main.c#L3006
+diff --git a/drivers/net/wireless/microchip/wilc1000/spi.c b/drivers/net/wireless/microchip/wilc1000/spi.c
+index 5ace9e3a56fc..1057573d086b 100644
+--- a/drivers/net/wireless/microchip/wilc1000/spi.c
++++ b/drivers/net/wireless/microchip/wilc1000/spi.c
+@@ -674,10 +674,7 @@ static int wilc_spi_dma_rw(struct wilc *wilc, u8 cmd, u32 adr, u8 *b, u32 sz)
+ 		int nbytes;
+ 		u8 rsp;
+ 
+-		if (sz <= DATA_PKT_SZ)
+-			nbytes = sz;
+-		else
+-			nbytes = DATA_PKT_SZ;
++		nbytes = min_t(u32, sz, DATA_PKT_SZ);
+ 
+ 		/*
+ 		 * Data Response header
+-- 
+2.25.1
 
-Now if fec_enet_mii_probe fails (e.g. phy did not respond via mii) the
-err_enet_mii_probe error path will be used
-https://github.com/torvalds/linux/blob/v5.10/drivers/net/ethernet/freescale/fec_main.c#L3031
-
-err_enet_mii_probe:
-fec_enet_free_buffers(ndev);
-err_enet_alloc:
-fec_enet_clk_enable(ndev, false);
-clk_enable:
-pm_runtime_mark_last_busy(&fep->pdev->dev);
-pm_runtime_put_autosuspend(&fep->pdev->dev);
-pinctrl_pm_select_sleep_state(&fep->pdev->dev);
-return ret;
-
-This error path frees the DMA buffers, BUT as far I could see it does
-not stop the DMA engines.
-=> open() fails => frees buffers => DMA still active => MAC receives
-network packet => DMA starts => random memory corruption (use after
-free) => random kernel panics
-
-So maybe fec_stop() as counterpart to fec_restart() is missing before
-freeing the buffers?
-err_enet_mii_probe:
-fec_stop(ndev);
-fec_enet_free_buffers(ndev);
-
-Issue happend with 5.10.83 and should also also happen with current master.
