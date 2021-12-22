@@ -2,238 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3458F47D962
-	for <lists+netdev@lfdr.de>; Wed, 22 Dec 2021 23:45:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 83DAA47D968
+	for <lists+netdev@lfdr.de>; Wed, 22 Dec 2021 23:49:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241825AbhLVWpI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Dec 2021 17:45:08 -0500
-Received: from mga12.intel.com ([192.55.52.136]:54452 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229665AbhLVWpI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 Dec 2021 17:45:08 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1640213107; x=1671749107;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=s+c+JTerOGh/4zsRfyWprt9/kpfHuhQZiUXD+ZUFe8k=;
-  b=OcMW+zyOIPlRygNRO1hTQFfb4ZNYPky+ZX3WLiNuSGKPFxntE/0GrUXG
-   +2LTxjb+StkAnmu4MXNUfh+eKpwuR+x5jTidzkTrxiUBRY5aADg9l8AY6
-   u9O/G6hJaB4c62M+Ce5dk+SGxFGDi4sgzu5XzHj0TwpPWDit3FZcOG3n6
-   BA1gf01KzE5P8Ja7ZjeHctSqcyVh7VbPyBQDjGCfFvXbtijwOScxfqZH8
-   NFWcCwu7+cTQ2ZorlhJe3v+pXA60QnOfzRBTndamNqcdfMBGrTZ/8LMrU
-   GCKOSRCw07Ks6Y7EY3JqEqv0+snb8sNZsjPVOaIKmfI/mL0tESCcadouc
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10206"; a="220729715"
-X-IronPort-AV: E=Sophos;i="5.88,227,1635231600"; 
-   d="scan'208";a="220729715"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Dec 2021 14:45:07 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,227,1635231600"; 
-   d="scan'208";a="550025759"
-Received: from lkp-server01.sh.intel.com (HELO e357b3ef1427) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 22 Dec 2021 14:45:04 -0800
-Received: from kbuild by e357b3ef1427 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n0AM3-00011m-EE; Wed, 22 Dec 2021 22:45:03 +0000
-Date:   Thu, 23 Dec 2021 06:44:48 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     xiangxia.m.yue@gmail.com, netdev@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, Tonghao Zhang <xiangxia.m.yue@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [net-next v6 1/2] net: sched: use queue_mapping to pick tx queue
-Message-ID: <202112230652.grNJivfH-lkp@intel.com>
-References: <20211222120809.2222-2-xiangxia.m.yue@gmail.com>
+        id S241866AbhLVWtt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Dec 2021 17:49:49 -0500
+Received: from esa.hc3962-90.iphmx.com ([216.71.142.165]:12371 "EHLO
+        esa.hc3962-90.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229665AbhLVWts (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Dec 2021 17:49:48 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qccesdkim1;
+  t=1640213388; x=1640818188;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=K/79TTsRuphS065Q9inqvhuK9t9DSYg9Uq8QsfkHyqc=;
+  b=e1Qjz2hj8oVVNn1pM+6H4IY1GYqgsSvSnAKRDnieet9iab3DJUQMdBRn
+   gBf2KbIespEZkvVobKtAg3EThyofa9jC+vAQeePiWi4jsQSXOy+pMgfi4
+   66T+1kAmHSA7+LiG7Ba1wR3flZCuKe1/BPYZc/FCOcVXaAlmwu4eBQAJX
+   Y=;
+Received: from mail-dm6nam08lp2045.outbound.protection.outlook.com (HELO NAM04-DM6-obe.outbound.protection.outlook.com) ([104.47.73.45])
+  by ob1.hc3962-90.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Dec 2021 22:49:47 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=P8AtjaC979661E+NII0xh5fhJHCF/mRgj3XtWamGjt/Vqut55yaMmqyIfvFxy5QVH1xHNK79XXPXWMDnPM2zKyqeIeFHWI+fX1HkmYMvTTj46UunGoioeeutktKH129bCb85IXf+ZxL9Ea0tD6v/u3YUV+o/tt+f6th+OdFrP7TUerMoJ+JePXbDWkDlT6aN3ikxLcZKPSut/f1IfSN8z/LPx8xavtSfRfmMNdci2MKMHHvdTtrriA65SS5gV6WT5zUXIr89d4EgPQyCczqKoCM3Q6tbCSeBUDw3tP0OChzQYkMxWKSbiY1HQ+DuF9wkCbHx0jlWNi3/w36md5rrGA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=K/79TTsRuphS065Q9inqvhuK9t9DSYg9Uq8QsfkHyqc=;
+ b=DSMwVW7QVlKPN6qEq6zEo9qZ2Du4s5YViJiiiAiagKIXHVGxuoovc/uyG7A3tiasyq6uBXZVhDW6nU1UatiD0/C30h2Wxzf4kKJFsQUXrRdDQbDICVxjkvZHH688n0MATIWtk+PmjDbC2jelG7HWdStjS4ctH7XfJ4E5AW3rSjakj2ucidmu2w5HsBvpz3ro7Qp8bzPghLuPUOiCHvpIZGrrl96Hk0RhoRe6nqtQOMUFD9iGBiL2JdaqTUG9BC4NgbUjMp4lQYjnFUbFGL5QC6p2NBdm7HOJnnVr6TPUUe1AdennW72Yih6QtIcWx7p6oZDtQt/FOyQKuZpsW+ms0w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=quicinc.com; dmarc=pass action=none header.from=quicinc.com;
+ dkim=pass header.d=quicinc.com; arc=none
+Received: from BYAPR02MB5238.namprd02.prod.outlook.com (2603:10b6:a03:71::17)
+ by BYAPR02MB5368.namprd02.prod.outlook.com (2603:10b6:a03:71::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4823.14; Wed, 22 Dec
+ 2021 22:49:45 +0000
+Received: from BYAPR02MB5238.namprd02.prod.outlook.com
+ ([fe80::8802:ab1b:7465:4b07]) by BYAPR02MB5238.namprd02.prod.outlook.com
+ ([fe80::8802:ab1b:7465:4b07%5]) with mapi id 15.20.4801.023; Wed, 22 Dec 2021
+ 22:49:45 +0000
+From:   Tyler Wear <twear@quicinc.com>
+To:     Yonghong Song <yhs@fb.com>,
+        "Tyler Wear (QUIC)" <quic_twear@quicinc.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
+CC:     "kafai@fb.com" <kafai@fb.com>, "maze@google.com" <maze@google.com>
+Subject: RE: [PATCH] Add skb_store_bytes() for BPF_PROG_TYPE_CGROUP_SKB
+Thread-Topic: [PATCH] Add skb_store_bytes() for BPF_PROG_TYPE_CGROUP_SKB
+Thread-Index: AQHX9tuyjzikyJjagEKGz1loPsx8d6w93owAgAE+o3A=
+Date:   Wed, 22 Dec 2021 22:49:45 +0000
+Message-ID: <BYAPR02MB52384D4B920EE2DB7C6D0F89AA7D9@BYAPR02MB5238.namprd02.prod.outlook.com>
+References: <20211222022737.7369-1-quic_twear@quicinc.com>
+ <1bb2ac91-d47c-82c2-41bd-cad0cc96e505@fb.com>
+In-Reply-To: <1bb2ac91-d47c-82c2-41bd-cad0cc96e505@fb.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=quicinc.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: d8b30fe2-1072-4f4b-6d9c-08d9c59d59d3
+x-ms-traffictypediagnostic: BYAPR02MB5368:EE_
+x-ld-processed: 98e9ba89-e1a1-4e38-9007-8bdabc25de1d,ExtAddr
+x-microsoft-antispam-prvs: <BYAPR02MB536810903403095A6B766054AA7D9@BYAPR02MB5368.namprd02.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1751;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: WTvdPIRBRsJGdxyrW3r3e59zzL/eAriPxbeJjeHm20z6QY57i4K/n7jF010846+cxseVNSgNf8Lrdlw36T2iE2WHgiOPoyyoxXMtolniHFxXS6LbiLMgWo7DPmVLsejdS/hdre9/lxorGUIfYuZ5qGYrNHPA7RMJvjh4xIy2NjhA4lAlpenyLF0AQVpqHzPiuIPxAjFfJCfWDpFr/RSMQxbh3TGrb4VzXmclG/iKOgqILSS2pvzbNapBC5i2RFaLjs7SNNMDMRogWgIlHDhXPyfk+0LekftEiB2kSM/X6DlAT2PNxRvqYHgTbgXCQdrnsO4+EW7bKuh0sZOUOATGZ2J7dnCAOwZ2B964NifcqhEDuZr7IUrbTBHFOmkPkEVNyY22FqEkq7WhwjsIduBPoEleXqs4v3LlWp2rG/LdchlEVEQnGo97ozrGjCamy6poOD9jMXTgubRhyjc6G1xSduzlJRKfiR1pOk2mTh3veXdq/9wBxpakH/tZX15fRzun2dL3azoilJ0A6SSuTeo8THBwLRwGJ3vWvT2YSLueO6jMiBunC9U+EOreVe/mVCfKrEAJbrUE904N1asG7uQznDk+QUwXj1O6t0EHhd6MqTtpjNTX0bAfJmmrCo+BsLO0pYUyORl4CGqyV3K8wOqtnx8U1HvcGRW2e4ghetMIW51BcP/cheqHB5oN1IF3MdVJHFxzF4w1QZQJGifjw8X0Qg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR02MB5238.namprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(508600001)(4326008)(38100700002)(53546011)(26005)(38070700005)(186003)(6506007)(76116006)(122000001)(86362001)(66446008)(7696005)(64756008)(66476007)(66556008)(2906002)(66946007)(33656002)(52536014)(9686003)(5660300002)(55016003)(83380400001)(8676002)(316002)(110136005)(54906003)(8936002)(71200400001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?TU5LbXBMOXZTTmpuQ2NPTlNXanI4VHU4c3lISkFtU1dONVB1Ym9rVytqUEJR?=
+ =?utf-8?B?SE5IWkF6RjdpNTJJSmVVUkh6UHF1MEl5ZmxHdHo2K3NhOWVDL1d3T3FuclZI?=
+ =?utf-8?B?SDRBdjZDL3pLN1JxSHFIdkZrVXo2S044UGNOY2VEUjZMN2RVNmFrNUpaci9S?=
+ =?utf-8?B?emZ2VWljUWF3SEc1a2FXNmF4U0p4dFlTTTI5UXg4bEgrdWo5VzZUS3EvTEdn?=
+ =?utf-8?B?K1lnVmQycmNFMFAzellDanYwVUpCOGNsQXRTWWtlNmVFdnEyNE9GMDluU3Ex?=
+ =?utf-8?B?dmE1TU9MbStra0l6TE01VkJQZ0VMRUVsbXpGWkJlYnZGRWRxWTFMRTlRNHV5?=
+ =?utf-8?B?QTVkYWtOdmRydmxyRlpDRU5TNk01NnN3cTRZZDVWU1E1Z0JweE9LVmZMaDhs?=
+ =?utf-8?B?eGNPR0VLWTBUNHZBV0xybFJDU01RajlDRmJXNGova0lsTDl2YmpmaHhNUFpv?=
+ =?utf-8?B?NUxzRnk2KzJOQ3E2eHRsZGJyM1kxTnJ6eTNwUlFJZWJVbGY2eGVTQW1tQXcv?=
+ =?utf-8?B?bW8xbUNTTG92Ri9sS3Bma2VDTWZwTG1aYm5icHpVVFY3dWpzUDgreitMY3ky?=
+ =?utf-8?B?ditiWVFTSmtSamJFcmhyUFN1cHJEQ3VvV1QweGdqSUF1b3ZQSHJDUzMxdEs1?=
+ =?utf-8?B?WVFnUE5HR1BQT0Rwa0NlUFBFa1Uva2Z5a0pndGFLK05jSzhuY2d0dElNdkdQ?=
+ =?utf-8?B?ejlZYkxOck5ocEdNQ0ZSTnV3b0pubFVMN0Fmc3NReGVDZElBUmtOUWtoYkFW?=
+ =?utf-8?B?YWx6bFNyTWVkQVhoOWt3bHlDNlhveGxPVkpWaFhYMGlFSE90aG1QT1lyTWNi?=
+ =?utf-8?B?eFhTRTFuRWlpL1k3U1Q1Q3d5dkFmanpOYWpzVm5KYU42bU9sN3VZK3V1akti?=
+ =?utf-8?B?WGp1UHdDRjFsRmVOQVIyOE0xODFUNlpZM3NmV0FBQTlTQStsM0FOZ21xTDZk?=
+ =?utf-8?B?NWhzVDhZcWN5S01nVjQ4bFhBRDNnUU5JK2sxVjRjYS9aVm54OFhkbjMzRHBa?=
+ =?utf-8?B?dTlvQlgyMEhuTFl0MVFiZ1R6bFRrYWx6bkRudjVNY3hwaGl1MUhiK0pha1FJ?=
+ =?utf-8?B?V1p5VkNOZ3V0dk1hdFpsbVFKUjVWeU5Sc1dZeDNMZVN4a3BFTVhDNzVpQ2Q2?=
+ =?utf-8?B?SDMyRSsxT0QzNm9nVnRhTHVhbitEZ05UMW9iWjNDMTNVcGZFbVBGTTRJODd4?=
+ =?utf-8?B?SmlZUFFkUVJaQUlFK0dkSnBiNHFhWmpHME8vcUhuRDVVaExhYkY5WktoZEhL?=
+ =?utf-8?B?QVp5cTFRQXpiV21EM1R0bDBHZjgveCtmOXJHNldwZXZYa0pjNFlUUk1NM0FY?=
+ =?utf-8?B?SllteVA2bXZiT1VuRXZBYzlwZzVHeG1pQTR2emhvbWt1MHMrNmxSK1h0ZVlZ?=
+ =?utf-8?B?OGorZEtNekRab2NkdlBTcDJkWnhYcG5oengxRjdIQTBjNGFoaXYrSGczV0kw?=
+ =?utf-8?B?OE4vZ1J1bjJYUGRLWmErb0JYMEQvMldMODNqQlA3NXdpejRudW5BWkwrV3gx?=
+ =?utf-8?B?emJqZUlKNEVLdFB1ZjcxVzJtNWc0VUNxeFpHVUoyMDk1ZmNpN0F2bnBIVndH?=
+ =?utf-8?B?RkJpZFFzdzVIbllGaUdZU1BmL3RqN0QyNDl6SU1IMGdUQjVKbSt4YzVCNXlN?=
+ =?utf-8?B?YURSS0s0dkpuT3NndHgzaEVvM0pvQnhXUlNONEVpd2VWTm1kVm5zeHM5QU5E?=
+ =?utf-8?B?Rnh1QVhyZVNUWE5uOHNtTDg0bHVqeXNzck9TRWp6ZW9od2l0NWJ3NkZpZzYw?=
+ =?utf-8?B?UGpOMFI2am1reHYxY2pYYmlTR3lIOU1qeWNKWC9NMVJiM1NtbzljOEwrcVkx?=
+ =?utf-8?B?NWpVSXNHN2t2dHUzcHlCSVA2bTZCSDJ0QVJCUmRhMnFURy9lUE95NzhGTndB?=
+ =?utf-8?B?ejU5OU9wOG1CMWJrRGhBYWhBRWRtMnpsZXdpQThpQzBBbzNicmNpOWw4QUox?=
+ =?utf-8?B?RlQ3NzY0d292N1hxV3F6dmdoc1Q4cVFKdmNNa1F6TjJOb2psMDNZd09rV2Vy?=
+ =?utf-8?B?WVhkSVNmSWFzSlNza3I0c1hObGMxcE1lbmtBTEhLc1FrZGNiT1hNYjMwVVpt?=
+ =?utf-8?B?SUJoWll2dy9jTEcxa1ZNRVBwMmNIcGFyaFZuLzJwZUdMd2FTczg4OG5zQkZw?=
+ =?utf-8?B?bVYwT3VDTHVCczAzWnBNL3M5b0xCTGZoZ1Z5R2d1MDNhaDFrSFNhL25hdkxk?=
+ =?utf-8?B?R0E9PQ==?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211222120809.2222-2-xiangxia.m.yue@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-OriginatorOrg: quicinc.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR02MB5238.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d8b30fe2-1072-4f4b-6d9c-08d9c59d59d3
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Dec 2021 22:49:45.6107
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 98e9ba89-e1a1-4e38-9007-8bdabc25de1d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: AU3u6YR2/FUUuJ3rXWke702VCy73mDm/DlOb0eh/vxWU5T9kTvlx/LvEzBobZTLy5I9HuGruGU0a35MblWbf+A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR02MB5368
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-Thank you for the patch! Perhaps something to improve:
-
-[auto build test WARNING on net-next/master]
-
-url:    https://github.com/0day-ci/linux/commits/xiangxia-m-yue-gmail-com/net-sched-allow-user-to-select-txqueue/20211222-201128
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git f4f2970dfd87e5132c436e6125148914596a9863
-config: i386-randconfig-m031-20211222 (https://download.01.org/0day-ci/archive/20211223/202112230652.grNJivfH-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-smatch warnings:
-net/core/dev.c:4114 __dev_queue_xmit() warn: inconsistent indenting
-
-vim +4114 net/core/dev.c
-
-638b2a699fd3ec9 Jiri Pirko             2015-05-12  4036  
-d29f749e252bcdb Dave Jones             2008-07-22  4037  /**
-9d08dd3d320fab4 Jason Wang             2014-01-20  4038   *	__dev_queue_xmit - transmit a buffer
-d29f749e252bcdb Dave Jones             2008-07-22  4039   *	@skb: buffer to transmit
-eadec877ce9ca46 Alexander Duyck        2018-07-09  4040   *	@sb_dev: suboordinate device used for L2 forwarding offload
-d29f749e252bcdb Dave Jones             2008-07-22  4041   *
-d29f749e252bcdb Dave Jones             2008-07-22  4042   *	Queue a buffer for transmission to a network device. The caller must
-d29f749e252bcdb Dave Jones             2008-07-22  4043   *	have set the device and priority and built the buffer before calling
-d29f749e252bcdb Dave Jones             2008-07-22  4044   *	this function. The function can be called from an interrupt.
-d29f749e252bcdb Dave Jones             2008-07-22  4045   *
-d29f749e252bcdb Dave Jones             2008-07-22  4046   *	A negative errno code is returned on a failure. A success does not
-d29f749e252bcdb Dave Jones             2008-07-22  4047   *	guarantee the frame will be transmitted as it may be dropped due
-d29f749e252bcdb Dave Jones             2008-07-22  4048   *	to congestion or traffic shaping.
-d29f749e252bcdb Dave Jones             2008-07-22  4049   *
-d29f749e252bcdb Dave Jones             2008-07-22  4050   * -----------------------------------------------------------------------------------
-d29f749e252bcdb Dave Jones             2008-07-22  4051   *      I notice this method can also return errors from the queue disciplines,
-d29f749e252bcdb Dave Jones             2008-07-22  4052   *      including NET_XMIT_DROP, which is a positive value.  So, errors can also
-d29f749e252bcdb Dave Jones             2008-07-22  4053   *      be positive.
-d29f749e252bcdb Dave Jones             2008-07-22  4054   *
-d29f749e252bcdb Dave Jones             2008-07-22  4055   *      Regardless of the return value, the skb is consumed, so it is currently
-d29f749e252bcdb Dave Jones             2008-07-22  4056   *      difficult to retry a send to this method.  (You can bump the ref count
-d29f749e252bcdb Dave Jones             2008-07-22  4057   *      before sending to hold a reference for retry if you are careful.)
-d29f749e252bcdb Dave Jones             2008-07-22  4058   *
-d29f749e252bcdb Dave Jones             2008-07-22  4059   *      When calling this method, interrupts MUST be enabled.  This is because
-d29f749e252bcdb Dave Jones             2008-07-22  4060   *      the BH enable code must have IRQs enabled so that it will not deadlock.
-d29f749e252bcdb Dave Jones             2008-07-22  4061   *          --BLG
-d29f749e252bcdb Dave Jones             2008-07-22  4062   */
-eadec877ce9ca46 Alexander Duyck        2018-07-09  4063  static int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
-^1da177e4c3f415 Linus Torvalds         2005-04-16  4064  {
-^1da177e4c3f415 Linus Torvalds         2005-04-16  4065  	struct net_device *dev = skb->dev;
-dc2b48475a0a36f David S. Miller        2008-07-08  4066  	struct netdev_queue *txq;
-^1da177e4c3f415 Linus Torvalds         2005-04-16  4067  	struct Qdisc *q;
-^1da177e4c3f415 Linus Torvalds         2005-04-16  4068  	int rc = -ENOMEM;
-f53c723902d1ac5 Steffen Klassert       2017-12-20  4069  	bool again = false;
-^1da177e4c3f415 Linus Torvalds         2005-04-16  4070  
-6d1ccff62780682 Eric Dumazet           2013-02-05  4071  	skb_reset_mac_header(skb);
-6d1ccff62780682 Eric Dumazet           2013-02-05  4072  
-e7fd2885385157d Willem de Bruijn       2014-08-04  4073  	if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_SCHED_TSTAMP))
-e7ed11ee945438b Yousuk Seung           2021-01-20  4074  		__skb_tstamp_tx(skb, NULL, NULL, skb->sk, SCM_TSTAMP_SCHED);
-e7fd2885385157d Willem de Bruijn       2014-08-04  4075  
-^1da177e4c3f415 Linus Torvalds         2005-04-16  4076  	/* Disable soft irqs for various locks below. Also
-^1da177e4c3f415 Linus Torvalds         2005-04-16  4077  	 * stops preemption for RCU.
-^1da177e4c3f415 Linus Torvalds         2005-04-16  4078  	 */
-d4828d85d188dc7 Herbert Xu             2006-06-22  4079  	rcu_read_lock_bh();
-^1da177e4c3f415 Linus Torvalds         2005-04-16  4080  
-5bc1421e34ecfe0 Neil Horman            2011-11-22  4081  	skb_update_prio(skb);
-5bc1421e34ecfe0 Neil Horman            2011-11-22  4082  
-1f211a1b929c804 Daniel Borkmann        2016-01-07  4083  	qdisc_pkt_len_init(skb);
-1f211a1b929c804 Daniel Borkmann        2016-01-07  4084  #ifdef CONFIG_NET_CLS_ACT
-8dc07fdbf2054f1 Willem de Bruijn       2017-01-07  4085  	skb->tc_at_ingress = 0;
-42df6e1d221dddc Lukas Wunner           2021-10-08  4086  #endif
-1f211a1b929c804 Daniel Borkmann        2016-01-07  4087  #ifdef CONFIG_NET_EGRESS
-3435309167e51b1 Tonghao Zhang          2021-12-22  4088  	if (static_branch_unlikely(&txqueue_needed_key))
-3435309167e51b1 Tonghao Zhang          2021-12-22  4089  		netdev_xmit_skip_txqueue(false);
-3435309167e51b1 Tonghao Zhang          2021-12-22  4090  
-aabf6772cc745f9 Davidlohr Bueso        2018-05-08  4091  	if (static_branch_unlikely(&egress_needed_key)) {
-42df6e1d221dddc Lukas Wunner           2021-10-08  4092  		if (nf_hook_egress_active()) {
-42df6e1d221dddc Lukas Wunner           2021-10-08  4093  			skb = nf_hook_egress(skb, &rc, dev);
-42df6e1d221dddc Lukas Wunner           2021-10-08  4094  			if (!skb)
-42df6e1d221dddc Lukas Wunner           2021-10-08  4095  				goto out;
-42df6e1d221dddc Lukas Wunner           2021-10-08  4096  		}
-42df6e1d221dddc Lukas Wunner           2021-10-08  4097  		nf_skip_egress(skb, true);
-1f211a1b929c804 Daniel Borkmann        2016-01-07  4098  		skb = sch_handle_egress(skb, &rc, dev);
-1f211a1b929c804 Daniel Borkmann        2016-01-07  4099  		if (!skb)
-1f211a1b929c804 Daniel Borkmann        2016-01-07  4100  			goto out;
-42df6e1d221dddc Lukas Wunner           2021-10-08  4101  		nf_skip_egress(skb, false);
-1f211a1b929c804 Daniel Borkmann        2016-01-07  4102  	}
-3435309167e51b1 Tonghao Zhang          2021-12-22  4103  
-3435309167e51b1 Tonghao Zhang          2021-12-22  4104  	if (static_branch_unlikely(&txqueue_needed_key) &&
-3435309167e51b1 Tonghao Zhang          2021-12-22  4105  	    netdev_xmit_txqueue_skipped())
-3435309167e51b1 Tonghao Zhang          2021-12-22  4106  		txq = netdev_tx_queue_mapping(dev, skb);
-3435309167e51b1 Tonghao Zhang          2021-12-22  4107  	else
-1f211a1b929c804 Daniel Borkmann        2016-01-07  4108  #endif
-3435309167e51b1 Tonghao Zhang          2021-12-22  4109  		txq = netdev_core_pick_tx(dev, skb, sb_dev);
-3435309167e51b1 Tonghao Zhang          2021-12-22  4110  
-0287587884b1504 Eric Dumazet           2014-10-05  4111  	/* If device/qdisc don't need skb->dst, release it right now while
-0287587884b1504 Eric Dumazet           2014-10-05  4112  	 * its hot in this cpu cache.
-0287587884b1504 Eric Dumazet           2014-10-05  4113  	 */
-0287587884b1504 Eric Dumazet           2014-10-05 @4114  	if (dev->priv_flags & IFF_XMIT_DST_RELEASE)
-0287587884b1504 Eric Dumazet           2014-10-05  4115  		skb_dst_drop(skb);
-0287587884b1504 Eric Dumazet           2014-10-05  4116  	else
-0287587884b1504 Eric Dumazet           2014-10-05  4117  		skb_dst_force(skb);
-0287587884b1504 Eric Dumazet           2014-10-05  4118  
-a898def29e4119b Paul E. McKenney       2010-02-22  4119  	q = rcu_dereference_bh(txq->qdisc);
-37437bb2e1ae8af David S. Miller        2008-07-16  4120  
-cf66ba58b5cb8b1 Koki Sanagi            2010-08-23  4121  	trace_net_dev_queue(skb);
-^1da177e4c3f415 Linus Torvalds         2005-04-16  4122  	if (q->enqueue) {
-bbd8a0d3a3b65d3 Krishna Kumar          2009-08-06  4123  		rc = __dev_xmit_skb(skb, q, dev, txq);
-^1da177e4c3f415 Linus Torvalds         2005-04-16  4124  		goto out;
-^1da177e4c3f415 Linus Torvalds         2005-04-16  4125  	}
-^1da177e4c3f415 Linus Torvalds         2005-04-16  4126  
-^1da177e4c3f415 Linus Torvalds         2005-04-16  4127  	/* The device has no queue. Common case for software devices:
-eb13da1a103a808 tcharding              2017-02-09  4128  	 * loopback, all the sorts of tunnels...
-^1da177e4c3f415 Linus Torvalds         2005-04-16  4129  
-eb13da1a103a808 tcharding              2017-02-09  4130  	 * Really, it is unlikely that netif_tx_lock protection is necessary
-eb13da1a103a808 tcharding              2017-02-09  4131  	 * here.  (f.e. loopback and IP tunnels are clean ignoring statistics
-eb13da1a103a808 tcharding              2017-02-09  4132  	 * counters.)
-eb13da1a103a808 tcharding              2017-02-09  4133  	 * However, it is possible, that they rely on protection
-eb13da1a103a808 tcharding              2017-02-09  4134  	 * made by us here.
-^1da177e4c3f415 Linus Torvalds         2005-04-16  4135  
-eb13da1a103a808 tcharding              2017-02-09  4136  	 * Check this and shot the lock. It is not prone from deadlocks.
-eb13da1a103a808 tcharding              2017-02-09  4137  	 *Either shot noqueue qdisc, it is even simpler 8)
-^1da177e4c3f415 Linus Torvalds         2005-04-16  4138  	 */
-^1da177e4c3f415 Linus Torvalds         2005-04-16  4139  	if (dev->flags & IFF_UP) {
-^1da177e4c3f415 Linus Torvalds         2005-04-16  4140  		int cpu = smp_processor_id(); /* ok because BHs are off */
-^1da177e4c3f415 Linus Torvalds         2005-04-16  4141  
-7a10d8c810cfad3 Eric Dumazet           2021-11-30  4142  		/* Other cpus might concurrently change txq->xmit_lock_owner
-7a10d8c810cfad3 Eric Dumazet           2021-11-30  4143  		 * to -1 or to their cpu id, but not to our id.
-7a10d8c810cfad3 Eric Dumazet           2021-11-30  4144  		 */
-7a10d8c810cfad3 Eric Dumazet           2021-11-30  4145  		if (READ_ONCE(txq->xmit_lock_owner) != cpu) {
-97cdcf37b57e3f2 Florian Westphal       2019-04-01  4146  			if (dev_xmit_recursion())
-745e20f1b626b1b Eric Dumazet           2010-09-29  4147  				goto recursion_alert;
-745e20f1b626b1b Eric Dumazet           2010-09-29  4148  
-f53c723902d1ac5 Steffen Klassert       2017-12-20  4149  			skb = validate_xmit_skb(skb, dev, &again);
-1f59533f9ca5634 Jesper Dangaard Brouer 2014-09-03  4150  			if (!skb)
-d21fd63ea385620 Eric Dumazet           2016-04-12  4151  				goto out;
-1f59533f9ca5634 Jesper Dangaard Brouer 2014-09-03  4152  
-3744741adab6d91 Willy Tarreau          2020-08-10  4153  			PRANDOM_ADD_NOISE(skb, dev, txq, jiffies);
-c773e847ea8f681 David S. Miller        2008-07-08  4154  			HARD_TX_LOCK(dev, txq, cpu);
-^1da177e4c3f415 Linus Torvalds         2005-04-16  4155  
-7346649826382b7 Tom Herbert            2011-11-28  4156  			if (!netif_xmit_stopped(txq)) {
-97cdcf37b57e3f2 Florian Westphal       2019-04-01  4157  				dev_xmit_recursion_inc();
-ce93718fb7cdbc0 David S. Miller        2014-08-30  4158  				skb = dev_hard_start_xmit(skb, dev, txq, &rc);
-97cdcf37b57e3f2 Florian Westphal       2019-04-01  4159  				dev_xmit_recursion_dec();
-572a9d7b6fc7f20 Patrick McHardy        2009-11-10  4160  				if (dev_xmit_complete(rc)) {
-c773e847ea8f681 David S. Miller        2008-07-08  4161  					HARD_TX_UNLOCK(dev, txq);
-^1da177e4c3f415 Linus Torvalds         2005-04-16  4162  					goto out;
-^1da177e4c3f415 Linus Torvalds         2005-04-16  4163  				}
-^1da177e4c3f415 Linus Torvalds         2005-04-16  4164  			}
-c773e847ea8f681 David S. Miller        2008-07-08  4165  			HARD_TX_UNLOCK(dev, txq);
-e87cc4728f0e2fb Joe Perches            2012-05-13  4166  			net_crit_ratelimited("Virtual device %s asks to queue packet!\n",
-7b6cd1ce72176e2 Joe Perches            2012-02-01  4167  					     dev->name);
-^1da177e4c3f415 Linus Torvalds         2005-04-16  4168  		} else {
-^1da177e4c3f415 Linus Torvalds         2005-04-16  4169  			/* Recursion is detected! It is possible,
-745e20f1b626b1b Eric Dumazet           2010-09-29  4170  			 * unfortunately
-745e20f1b626b1b Eric Dumazet           2010-09-29  4171  			 */
-745e20f1b626b1b Eric Dumazet           2010-09-29  4172  recursion_alert:
-e87cc4728f0e2fb Joe Perches            2012-05-13  4173  			net_crit_ratelimited("Dead loop on virtual device %s, fix it urgently!\n",
-7b6cd1ce72176e2 Joe Perches            2012-02-01  4174  					     dev->name);
-^1da177e4c3f415 Linus Torvalds         2005-04-16  4175  		}
-^1da177e4c3f415 Linus Torvalds         2005-04-16  4176  	}
-^1da177e4c3f415 Linus Torvalds         2005-04-16  4177  
-^1da177e4c3f415 Linus Torvalds         2005-04-16  4178  	rc = -ENETDOWN;
-d4828d85d188dc7 Herbert Xu             2006-06-22  4179  	rcu_read_unlock_bh();
-^1da177e4c3f415 Linus Torvalds         2005-04-16  4180  
-015f0688f57ca4d Eric Dumazet           2014-03-27  4181  	atomic_long_inc(&dev->tx_dropped);
-1f59533f9ca5634 Jesper Dangaard Brouer 2014-09-03  4182  	kfree_skb_list(skb);
-^1da177e4c3f415 Linus Torvalds         2005-04-16  4183  	return rc;
-^1da177e4c3f415 Linus Torvalds         2005-04-16  4184  out:
-d4828d85d188dc7 Herbert Xu             2006-06-22  4185  	rcu_read_unlock_bh();
-^1da177e4c3f415 Linus Torvalds         2005-04-16  4186  	return rc;
-^1da177e4c3f415 Linus Torvalds         2005-04-16  4187  }
-f663dd9aaf9ed12 Jason Wang             2014-01-10  4188  
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+PiBPbiAxMi8yMS8yMSA2OjI3IFBNLCBUeWxlciBXZWFyIHdyb3RlOg0KPiA+IE5lZWQgdG8gbW9k
+aWZ5IHRoZSBkcyBmaWVsZCB0byBzdXBwb3J0IHVwY29taW5nIFdpZmkgUW9TIEFsbGlhbmNlDQo+
+ID4gc3BlYy4gSW5zdGVhZCBvZiBhZGRpbmcgZ2VuZXJpYyBmdW5jdGlvbiBmb3IganVzdCBtb2Rp
+ZnlpbmcgdGhlIGRzDQo+ID4gZmllbGQsIGFkZCBza2Jfc3RvcmVfYnl0ZXMgZm9yIEJQRl9QUk9H
+X1RZUEVfQ0dST1VQX1NLQi4gVGhpcyBhbGxvd3MNCj4gPiBvdGhlciBmaWVsZHMgaW4gdGhlIG5l
+dHdvcmsgYW5kIHRyYW5zcG9ydCBoZWFkZXIgdG8gYmUgbW9kaWZpZWQgaW4gdGhlDQo+ID4gZnV0
+dXJlLg0KPiANCj4gQ291bGQgY2hhbmdlIHRhZyBmcm9tICJbUEFUQ0hdIiB0byAiW1BBVENIIGJw
+Zi1uZXh0XSI/DQo+IFBsZWFzZSBhbHNvIGluZGljYXRlIHRoZSB2ZXJzaW9uIG9mIHRoZSBwYXRj
+aCwgc28gaW4gdGhpcyBjYXNlLCBpdCBzaG91bGQgYmUgIltQQVRDSCBicGYtbmV4dCB2Ml0iLg0K
+PiANCj4gSSB0aGluayB5b3UgY2FuIGFkZCBtb3JlIGNvbnRlbnRzIGluIHRoZSBjb21taXQgbWVz
+c2FnZSBhYm91dCB3aHkgZXhpc3RpbmcgYnBmX3NldHNvY2tvcHQoKSB3b24ndCB3b3JrIGFuZCB3
+aHkNCj4gQ0dST1VQX1VEUFs0fDZdX1NFTkRNU0cgaXMgbm90IHByZWZlcnJlZC4NCj4gVGhlc2Ug
+aGF2ZSBiZWVuIGRpc2N1c3NlZCBpbiB2MSBvZiB0aGlzIHBhdGNoIGFuZCB0aGV5IGFyZSB2YWx1
+YWJsZSBmb3IgcGVvcGxlIHRvIHVuZGVyc3RhbmQgZnVsbCBjb250ZXh0IGFuZCByZWFzb25pbmcu
+DQo+IA0KPiA+DQo+ID4gU2lnbmVkLW9mZi1ieTogVHlsZXIgV2VhciA8cXVpY190d2VhckBxdWlj
+aW5jLmNvbT4NCj4gPiAtLS0NCj4gPiAgIG5ldC9jb3JlL2ZpbHRlci5jIHwgMiArKw0KPiA+ICAg
+MSBmaWxlIGNoYW5nZWQsIDIgaW5zZXJ0aW9ucygrKQ0KPiA+DQo+ID4gZGlmZiAtLWdpdCBhL25l
+dC9jb3JlL2ZpbHRlci5jIGIvbmV0L2NvcmUvZmlsdGVyLmMgaW5kZXgNCj4gPiA2MTAyZjA5M2Q1
+OWEuLjBjMjVhYTIyMTJhMiAxMDA2NDQNCj4gPiAtLS0gYS9uZXQvY29yZS9maWx0ZXIuYw0KPiA+
+ICsrKyBiL25ldC9jb3JlL2ZpbHRlci5jDQo+ID4gQEAgLTcyODksNiArNzI4OSw4IEBAIHN0YXRp
+YyBjb25zdCBzdHJ1Y3QgYnBmX2Z1bmNfcHJvdG8gKg0KPiA+ICAgY2dfc2tiX2Z1bmNfcHJvdG8o
+ZW51bSBicGZfZnVuY19pZCBmdW5jX2lkLCBjb25zdCBzdHJ1Y3QgYnBmX3Byb2cgKnByb2cpDQo+
+ID4gICB7DQo+ID4gICAgICAgc3dpdGNoIChmdW5jX2lkKSB7DQo+ID4gKyAgICAgY2FzZSBCUEZf
+RlVOQ19za2Jfc3RvcmVfYnl0ZXM6DQo+ID4gKyAgICAgICAgICAgICByZXR1cm4gJmJwZl9za2Jf
+c3RvcmVfYnl0ZXNfcHJvdG87DQo+IA0KPiBUeXBpY2FsbHkgZGlmZmVyZW50ICdjYXNlJ3MgYXJl
+IGFkZGVkIGluIGNocm9ub2xvZ2ljYWwgb3JkZXIgdG8gcGVvcGxlIGNhbiBndWVzcyB3aGF0IGlz
+IGFkZGVkIGVhcmxpZXIgYW5kIHdoYXQgaXMgYWRkZWQgbGF0ZXIuIE1heWJlDQo+IGFkZCB0aGUg
+bmV3IGhlbHBlciBhZnRlciBCUEZfRlVOQ19wZXJmX2V2ZW50X291dHB1dD8NCj4gDQo+ID4gICAg
+ICAgY2FzZSBCUEZfRlVOQ19nZXRfbG9jYWxfc3RvcmFnZToNCj4gPiAgICAgICAgICAgICAgIHJl
+dHVybiAmYnBmX2dldF9sb2NhbF9zdG9yYWdlX3Byb3RvOw0KPiA+ICAgICAgIGNhc2UgQlBGX0ZV
+TkNfc2tfZnVsbHNvY2s6DQo+IA0KPiBQbGVhc2UgYWRkIGEgdGVzdCBjYXNlIHRvIGV4ZXJjaXNl
+IHRoZSBuZXcgdXNhZ2Ugb2YNCj4gYnBmX3NrYl9zdG9yZV9ieXRlcygpIGhlbHBlci4gWW91IG1h
+eSBwaWdneSBiYWNrIG9uIHNvbWUgZXhpc3RpbmcgY2dfc2tiIHByb2dzIGlmIGl0IGlzIGVhc2ll
+ciB0byBkby4NCg0KV291bGQgaXQgYmUgc3VmZmljaWVudCB0byBjaGFuZ2UgdGhlIGRzY3AgdmFs
+dWUgaW4gdG9vbHMvdGVzdGluZy9zZWxmdGVzdHMvYnBmL3Byb2dzL3Rlc3Rfc29ja19maWVsZHMu
+YyB2aWEgYnBmX3NrYl9zdG9yZV9ieXRlcygpDQo=
