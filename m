@@ -2,192 +2,249 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2450147D082
-	for <lists+netdev@lfdr.de>; Wed, 22 Dec 2021 12:06:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 22D6B47D07F
+	for <lists+netdev@lfdr.de>; Wed, 22 Dec 2021 12:06:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240157AbhLVLGj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Dec 2021 06:06:39 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:49397 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S240151AbhLVLGi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Dec 2021 06:06:38 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1640171198;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ceCWycWRHrWKCZY6dAAESWQ7r47FSVaC7YZyAMeDDKk=;
-        b=fETKXgF/5YzTZq0oV55N52sjc86nFHA2rk5EGzfaLVxzBBk1O6GJyYx88mo3cfdNRovr76
-        /NobX+dHUSNtsAyJrQNTH5AT40dWh333F0w9FXl7QoyX7XC2p5JZ4V8aK8HkBDq/mRUIGk
-        JCd3aTY8f7WGCDA1805+owmDjA8pEWo=
-Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
- [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-675-bLDulFogM3atBzaAz_0clw-1; Wed, 22 Dec 2021 06:06:37 -0500
-X-MC-Unique: bLDulFogM3atBzaAz_0clw-1
-Received: by mail-qk1-f197.google.com with SMTP id p18-20020a05620a057200b00467bc32b45aso1472718qkp.12
-        for <netdev@vger.kernel.org>; Wed, 22 Dec 2021 03:06:36 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=ceCWycWRHrWKCZY6dAAESWQ7r47FSVaC7YZyAMeDDKk=;
-        b=VX+NAYl8JZOE9CDV3F/F3XHu44MWf9mq2Fi1wYs5rDKV6aWLrCQRMG/6K2DJwUcItc
-         gEgSkDKPztsayS6crt/ZFyr1oIc5M16QRkWUtxq6j1XnAGMWfiyh9OWXd8lgoOLhS1P7
-         8VKBn6FgD8Hi7Ef+IjuCJvjLaPwYYd+ED1XcreNQq7X64tJqh3k3i+lvGsKhaVJ52iAG
-         B3M5wQjL8h35uPtcqKsBKza0BYq/rivMlKa7pcaDxC1MP0dM0b1Cqp+Apzk1skCcIWGP
-         q8xHdOD6fJXeOtlIBQF4wvnabfnX8f7OlcBtAcB7M7fVTqcKdVGIshCbI8rHcHKdHSyF
-         LtXw==
-X-Gm-Message-State: AOAM530BAqjdzl8abDEQTxsCrzBnfjLMFi0aboQ0wB9OSu8W0tYhuAl0
-        0ICd88twZ3BkLq1PJbglsHzVEFYugHt4Z1JavXf368uzzy7dumct3Khv4HYucqlH76YKeR/V8qc
-        stnoy+VA97QWkagTg
-X-Received: by 2002:a37:8684:: with SMTP id i126mr636448qkd.436.1640171196437;
-        Wed, 22 Dec 2021 03:06:36 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxMicG0r6dSeRYSbToqb6O6HBC61TxfWFrjgk0pImfFkS+SB/o4SyZvBse0tKyn9xBeK2S0EQ==
-X-Received: by 2002:a37:8684:: with SMTP id i126mr636434qkd.436.1640171196108;
-        Wed, 22 Dec 2021 03:06:36 -0800 (PST)
-Received: from gerbillo.redhat.com (146-241-225-60.dyn.eolo.it. [146.241.225.60])
-        by smtp.gmail.com with ESMTPSA id x62sm1439965qkb.70.2021.12.22.03.06.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Dec 2021 03:06:35 -0800 (PST)
-Message-ID: <dad55584ad20723f1579475a09ef7b3a3607e087.camel@redhat.com>
-Subject: Re: [PATCH net] veth: ensure skb entering GRO are not cloned.
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Ignat Korchagin <ignat@cloudflare.com>
-Date:   Wed, 22 Dec 2021 12:06:31 +0100
-In-Reply-To: <CANn89iKpiQzW1UnsQSYzULJ8d-QHsy7Wz=NtgvVXBqh-iuNptQ@mail.gmail.com>
-References: <26109603287b4d21545bec125e43b218b545b746.1640111022.git.pabeni@redhat.com>
-         <CANn89iKpiQzW1UnsQSYzULJ8d-QHsy7Wz=NtgvVXBqh-iuNptQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.2 (3.42.2-1.fc35) 
+        id S244409AbhLVLGI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Dec 2021 06:06:08 -0500
+Received: from esa.microchip.iphmx.com ([68.232.154.123]:21325 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244393AbhLVLGG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Dec 2021 06:06:06 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1640171165; x=1671707165;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=g5J3Rh22DQzCivBDmFhnr6iSZpsLXO0SLAoKTREpPtE=;
+  b=x7LRDP52cb7ETB0UKP4GkpuJzxijyvbZ3KBujBoqsKvdTUitXE14ie9/
+   w+24/9H8NfWYvyxqL0gAEa+xm5F+mZhC5Xiyt89HyYOhETwwPUlyMv/B6
+   1cvzZqPZIZm7NYYdScL4nE7m2fjMrD5h0AQnQNO7c1LGWJRAqxJavZ8YO
+   IT7erFBfwl5WNRZOyRft+/wqOAmlnPCXM4RZAo4GmigMdjTOFiEPhpsst
+   sT86HfGtz/D6jsS9m/sT5rw4//UBxUGHw0f3M7pQlOvCwwl1RY4FKKqlw
+   SGx0aU1dCCCAK1jPbnjmiw9nUkhSadhZWUvXh7o6inr1dDvL17QJ0MwNP
+   g==;
+IronPort-SDR: 9VuNPD3oF1kIHsRfBokY8y/DAOkKLuzIVzTVRnwQxIhQArzwDydHhQR2bYEILrdQ4kj8USmx5C
+ pyLqaA+V3bIhhjEfyx8ZhvDy+xQhLo7AI7JhMUwr0PHC1gr7gzyvQ3/Xu5bnArUsqY0/eP4K+A
+ 2rb5qR9tjHkuBhyoe5tZFNveDTJxBgrD/y+EedMN8e0Zo1nqOQbnkKl82K8ONJIZjnFnlJawB2
+ OihsAd1R3z4cvWGMptaBbLp5gTOwe9VKVkghmhF4dyYOXZ0mSKt5Q23WyKpGXrUO7smgTY8OCM
+ fdHAKjwQTQU7E/L+XPbrXsOg
+X-IronPort-AV: E=Sophos;i="5.88,226,1635231600"; 
+   d="scan'208";a="140583721"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 Dec 2021 04:06:02 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Wed, 22 Dec 2021 04:06:01 -0700
+Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Wed, 22 Dec 2021 04:05:59 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <linux@armlinux.org.uk>,
+        <f.fainelli@gmail.com>, <vivien.didelot@gmail.com>,
+        <vladimir.oltean@nxp.com>, <andrew@lunn.ch>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH net-next] net: lan966x: Add support for multiple bridge flags
+Date:   Wed, 22 Dec 2021 12:07:59 +0100
+Message-ID: <20211222110759.1404383-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+This patch series extends the current supported bridge flags with the
+following flags: BR_FLOOD, BR_BCAST_FLOOD and BR_LEARNING.
 
-On Tue, 2021-12-21 at 20:31 -0800, Eric Dumazet wrote:
-> On Tue, Dec 21, 2021 at 1:34 PM Paolo Abeni <pabeni@redhat.com> wrote:
-> > 
-> > After commit d3256efd8e8b ("veth: allow enabling NAPI even without XDP"),
-> > if GRO is enabled on a veth device and TSO is disabled on the peer
-> > device, TCP skbs will go through the NAPI callback. If there is no XDP
-> > program attached, the veth code does not perform any share check, and
-> > shared/cloned skbs could enter the GRO engine.
-> > 
-> > 
-> 
-> ...
-> 
-> > Address the issue checking for cloned skbs even in the GRO-without-XDP
-> > input path.
-> > 
-> > Reported-and-tested-by: Ignat Korchagin <ignat@cloudflare.com>
-> > Fixes: d3256efd8e8b ("veth: allow enabling NAPI even without XDP")
-> > Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-> > ---
-> >  drivers/net/veth.c | 8 ++++++++
-> >  1 file changed, 8 insertions(+)
-> > 
-> > diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-> > index b78894c38933..abd1f949b2f5 100644
-> > --- a/drivers/net/veth.c
-> > +++ b/drivers/net/veth.c
-> > @@ -718,6 +718,14 @@ static struct sk_buff *veth_xdp_rcv_skb(struct veth_rq *rq,
-> >         rcu_read_lock();
-> >         xdp_prog = rcu_dereference(rq->xdp_prog);
-> >         if (unlikely(!xdp_prog)) {
-> > +               if (unlikely(skb_shared(skb) || skb_head_is_locked(skb))) {
-> 
-> Why skb_head_is_locked() needed here ?
-> I would think skb_cloned() is enough for the problem we want to address.
+Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+---
+ .../ethernet/microchip/lan966x/lan966x_main.c |  7 ++
+ .../ethernet/microchip/lan966x/lan966x_main.h |  2 +
+ .../ethernet/microchip/lan966x/lan966x_regs.h |  6 ++
+ .../microchip/lan966x/lan966x_switchdev.c     | 69 ++++++++++++++++++-
+ 4 files changed, 82 insertions(+), 2 deletions(-)
 
-Thank you for the feedback.
-
-I double checked the above: in my test even skb_cloned() suffice.
-
-> > +                       struct sk_buff *nskb = skb_copy(skb, GFP_ATOMIC | __GFP_NOWARN);
-> > +
-> > +                       if (!nskb)
-> > +                               goto drop;
-> > +                       consume_skb(skb);
-> > +                       skb = nskb;
-> > +               }
-> >                 rcu_read_unlock();
-> >                 goto out;
-> >         }
-> > --
-> > 2.33.1
-> > 
-> 
-> - It seems adding yet memory alloc/free and copies is defeating GRO purpose.
-> - After skb_copy(), GRO is forced to use the expensive frag_list way
-> for aggregation anyway.
-> - veth mtu could be set to 64KB, so we could have order-4 allocation
-> attempts here.
-> 
-> Would the following fix [1] be better maybe, in terms of efficiency,
-> and keeping around skb EDT/tstamp
-> information (see recent thread with Martin and Daniel )
-> 
-> I think it also focuses more on the problem (GRO is not capable of
-> dealing with cloned skb yet).
-> Who knows, maybe in the future we will _have_ to add more checks in
-> GRO fast path for some other reason,
-> since it is becoming the Swiss army knife of networking :)
-
-Only vaguely related: I have a bunch of micro optimizations for the GRO
-engine. I did not submit the patches because I can observe the gain
-only in micro-benchmarks, but I'm wondering if that could be visible
-with very high speed TCP stream? I can share the code if that could be
-of general interest (after some rebasing, the patches predates gro.c)
-
-> Although I guess this whole case (disabling TSO) is moot, I have no
-> idea why anyone would do that :)
-> 
-> [1]
-> diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-> index 50eb43e5bf459bb998e264d399bc85d4e9d73594..fe7a4d2f7bfc834ea56d1da185c0f53bfbd22ad0
-> 100644
-> --- a/drivers/net/veth.c
-> +++ b/drivers/net/veth.c
-> @@ -879,8 +879,12 @@ static int veth_xdp_rcv(struct veth_rq *rq, int budget,
-> 
->                         stats->xdp_bytes += skb->len;
->                         skb = veth_xdp_rcv_skb(rq, skb, bq, stats);
-> -                       if (skb)
-> -                               napi_gro_receive(&rq->xdp_napi, skb);
-> +                       if (skb) {
-> +                               if (skb_shared(skb) || skb_cloned(skb))
-> +                                       netif_receive_skb(skb);
-> +                               else
-> +                                       napi_gro_receive(&rq->xdp_napi, skb);
-> +                       }
->                 }
->                 done++;
->         }
-
-I tested the above, and it works, too.
-
-I thought about something similar, but I overlooked possible OoO or
-behaviour changes when a packet socket is attached to the paired device
-(as it would disable GRO).
-
-It looks like tcpdump should have not ill-effects (the mmap rx-path
-releases the skb clone before the orig packet reaches the other end),
-so I guess the above is fine (and sure is better to avoid more
-timestamp related problem).
-
-Do you prefer to submit it formally, or do you prefer I'll send a v2
-with the latter code?
-
-Thanks!
-
-Paolo
-
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+index 5b9f004ad902..16f4d8737d7b 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+@@ -715,8 +715,10 @@ static void lan966x_init(struct lan966x *lan966x)
+ 	/* There are 8 priorities */
+ 	for (i = 0; i < 8; ++i)
+ 		lan_rmw(ANA_FLOODING_FLD_MULTICAST_SET(PGID_MC) |
++			ANA_FLOODING_FLD_UNICAST_SET(PGID_UC) |
+ 			ANA_FLOODING_FLD_BROADCAST_SET(PGID_BC),
+ 			ANA_FLOODING_FLD_MULTICAST |
++			ANA_FLOODING_FLD_UNICAST |
+ 			ANA_FLOODING_FLD_BROADCAST,
+ 			lan966x, ANA_FLOODING(i));
+ 
+@@ -768,6 +770,11 @@ static void lan966x_init(struct lan966x *lan966x)
+ 		ANA_PGID_PGID,
+ 		lan966x, ANA_PGID(PGID_MCIPV4));
+ 
++	/* Unicast to all other ports */
++	lan_rmw(GENMASK(lan966x->num_phys_ports - 1, 0),
++		ANA_PGID_PGID,
++		lan966x, ANA_PGID(PGID_UC));
++
+ 	/* Broadcast to the CPU port and to other ports */
+ 	lan_rmw(ANA_PGID_PGID_SET(BIT(CPU_PORT) | GENMASK(lan966x->num_phys_ports - 1, 0)),
+ 		ANA_PGID_PGID,
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
+index 051182890237..c399b1256edc 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
+@@ -126,6 +126,8 @@ struct lan966x_port {
+ 	u16 vid;
+ 	bool vlan_aware;
+ 
++	bool learn_ena;
++
+ 	struct phylink_config phylink_config;
+ 	struct phylink_pcs phylink_pcs;
+ 	struct lan966x_port_config config;
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_regs.h b/drivers/net/ethernet/microchip/lan966x/lan966x_regs.h
+index 2f2b26b9f8c6..a13c469e139a 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_regs.h
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_regs.h
+@@ -91,6 +91,12 @@ enum lan966x_target {
+ /*      ANA:ANA:FLOODING */
+ #define ANA_FLOODING(r)           __REG(TARGET_ANA, 0, 1, 29824, 0, 1, 244, 68, r, 8, 4)
+ 
++#define ANA_FLOODING_FLD_UNICAST                 GENMASK(17, 12)
++#define ANA_FLOODING_FLD_UNICAST_SET(x)\
++	FIELD_PREP(ANA_FLOODING_FLD_UNICAST, x)
++#define ANA_FLOODING_FLD_UNICAST_GET(x)\
++	FIELD_GET(ANA_FLOODING_FLD_UNICAST, x)
++
+ #define ANA_FLOODING_FLD_BROADCAST               GENMASK(11, 6)
+ #define ANA_FLOODING_FLD_BROADCAST_SET(x)\
+ 	FIELD_PREP(ANA_FLOODING_FLD_BROADCAST, x)
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c b/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c
+index 42c3170030d0..deb3dd5be67a 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c
+@@ -25,18 +25,72 @@ static void lan966x_port_set_mcast_flood(struct lan966x_port *port,
+ 		port->lan966x, ANA_PGID(PGID_MC));
+ }
+ 
++static void lan966x_port_set_ucast_flood(struct lan966x_port *port,
++					 bool enabled)
++{
++	u32 val = lan_rd(port->lan966x, ANA_PGID(PGID_UC));
++
++	val = ANA_PGID_PGID_GET(val);
++	if (enabled)
++		val |= BIT(port->chip_port);
++	else
++		val &= ~BIT(port->chip_port);
++
++	lan_rmw(ANA_PGID_PGID_SET(val),
++		ANA_PGID_PGID,
++		port->lan966x, ANA_PGID(PGID_UC));
++}
++
++static void lan966x_port_set_bcast_flood(struct lan966x_port *port,
++					 bool enabled)
++{
++	u32 val = lan_rd(port->lan966x, ANA_PGID(PGID_BC));
++
++	val = ANA_PGID_PGID_GET(val);
++	if (enabled)
++		val |= BIT(port->chip_port);
++	else
++		val &= ~BIT(port->chip_port);
++
++	lan_rmw(ANA_PGID_PGID_SET(val),
++		ANA_PGID_PGID,
++		port->lan966x, ANA_PGID(PGID_BC));
++}
++
++static void lan966x_port_set_learning(struct lan966x_port *port, bool enabled)
++{
++	lan_rmw(ANA_PORT_CFG_LEARN_ENA_SET(enabled),
++		ANA_PORT_CFG_LEARN_ENA,
++		port->lan966x, ANA_PORT_CFG(port->chip_port));
++
++	port->learn_ena = enabled;
++}
++
+ static void lan966x_port_bridge_flags(struct lan966x_port *port,
+ 				      struct switchdev_brport_flags flags)
+ {
+ 	if (flags.mask & BR_MCAST_FLOOD)
+ 		lan966x_port_set_mcast_flood(port,
+ 					     !!(flags.val & BR_MCAST_FLOOD));
++
++	if (flags.mask & BR_FLOOD)
++		lan966x_port_set_ucast_flood(port,
++					     !!(flags.val & BR_FLOOD));
++
++	if (flags.mask & BR_BCAST_FLOOD)
++		lan966x_port_set_bcast_flood(port,
++					     !!(flags.val & BR_BCAST_FLOOD));
++
++	if (flags.mask & BR_LEARNING)
++		lan966x_port_set_learning(port,
++					  !!(flags.val & BR_LEARNING));
+ }
+ 
+ static int lan966x_port_pre_bridge_flags(struct lan966x_port *port,
+ 					 struct switchdev_brport_flags flags)
+ {
+-	if (flags.mask & ~BR_MCAST_FLOOD)
++	if (flags.mask & ~(BR_MCAST_FLOOD | BR_FLOOD | BR_BCAST_FLOOD |
++			   BR_LEARNING))
+ 		return -EINVAL;
+ 
+ 	return 0;
+@@ -65,7 +119,8 @@ static void lan966x_port_stp_state_set(struct lan966x_port *port, u8 state)
+ 	struct lan966x *lan966x = port->lan966x;
+ 	bool learn_ena = false;
+ 
+-	if (state == BR_STATE_FORWARDING || state == BR_STATE_LEARNING)
++	if ((state == BR_STATE_FORWARDING || state == BR_STATE_LEARNING) &&
++	    port->learn_ena)
+ 		learn_ena = true;
+ 
+ 	if (state == BR_STATE_FORWARDING)
+@@ -128,6 +183,7 @@ static int lan966x_port_bridge_join(struct lan966x_port *port,
+ 				    struct net_device *bridge,
+ 				    struct netlink_ext_ack *extack)
+ {
++	struct switchdev_brport_flags flags = {0};
+ 	struct lan966x *lan966x = port->lan966x;
+ 	struct net_device *dev = port->dev;
+ 	int err;
+@@ -150,14 +206,23 @@ static int lan966x_port_bridge_join(struct lan966x_port *port,
+ 
+ 	lan966x->bridge_mask |= BIT(port->chip_port);
+ 
++	flags.mask = BR_LEARNING | BR_FLOOD | BR_MCAST_FLOOD | BR_BCAST_FLOOD;
++	flags.val = flags.mask;
++	lan966x_port_bridge_flags(port, flags);
++
+ 	return 0;
+ }
+ 
+ static void lan966x_port_bridge_leave(struct lan966x_port *port,
+ 				      struct net_device *bridge)
+ {
++	struct switchdev_brport_flags flags = {0};
+ 	struct lan966x *lan966x = port->lan966x;
+ 
++	flags.mask = BR_LEARNING | BR_FLOOD | BR_MCAST_FLOOD | BR_BCAST_FLOOD;
++	flags.val = flags.mask & ~BR_LEARNING;
++	lan966x_port_bridge_flags(port, flags);
++
+ 	lan966x->bridge_mask &= ~BIT(port->chip_port);
+ 
+ 	if (!lan966x->bridge_mask)
+-- 
+2.33.0
 
