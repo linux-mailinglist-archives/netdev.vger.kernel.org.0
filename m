@@ -2,140 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB84147CB95
-	for <lists+netdev@lfdr.de>; Wed, 22 Dec 2021 04:16:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C7D047CB97
+	for <lists+netdev@lfdr.de>; Wed, 22 Dec 2021 04:16:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242093AbhLVDQN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Dec 2021 22:16:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51440 "EHLO
+        id S242101AbhLVDQR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Dec 2021 22:16:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238645AbhLVDQM (ORCPT
+        with ESMTP id S242087AbhLVDQM (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 21 Dec 2021 22:16:12 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D33E7C061574
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC342C06173F
         for <netdev@vger.kernel.org>; Tue, 21 Dec 2021 19:16:11 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EE0BB617F8
-        for <netdev@vger.kernel.org>; Wed, 22 Dec 2021 03:16:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5266C36AE8;
-        Wed, 22 Dec 2021 03:16:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 88C0861853
+        for <netdev@vger.kernel.org>; Wed, 22 Dec 2021 03:16:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F208C36AEB;
+        Wed, 22 Dec 2021 03:16:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1640142970;
-        bh=jBg2wS4CInYoxlSNYcDXeb6JVdpY5+JtY+D55w5uFdc=;
-        h=From:To:Cc:Subject:Date:From;
-        b=LVT5R91aChWn2xObcUOBETRSdk4nleucdKX3p18/E1QWxR6p3i6azON5S3AhSRgsq
-         jD7KmsHFjt8tUcbEC8UMIzXcuY6kZ0Ulc6L4ZcjiMrvJMtvmwGEOZ+dAHL7ellit/2
-         Bepd6QqxCYznyUjIBYIws1J2n3h6oRbsPWgsggOsTEtTBjAWrtf4x1J3dc29fvjlfc
-         BJ7vtWeuRaM01Tudhq2s7IBmnx4Z7I9/1NMC1gbUIGXcS/dqp/ax7I17pffQisS7MZ
-         p97llaneFJbQXgOgZ5Ur6cNftiTm1JEIhWRLxgQtaXaQ9jaocidSSjSuiDj0IQpAmf
-         +UtUB5VXhYy1Q==
+        s=k20201202; t=1640142971;
+        bh=ifc8PY2lWsyQ1x6cN/ZGu860rsfTHXZ2qcxOHJ6wVHY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=K1lJPpzHr6g8xO+sHG3kafCqBAMoF32r5SrlED7MIyC+NDfJ8Ii/wfskPBkGVB+Km
+         8Zs261L9dF4MxpdFQ8jT1BYSyokeyORA23JcZBpP620iZAVoSkgGzLoEwlFaTuzIBe
+         NFYe+rnvO/sLMJgH0GZXkXt0RfIKXLx/uuxdzMg6nlBuWs/xuHVGalA1WOudNpYU9q
+         Mg2LIou6BQH0fwyFhvIbMvIuTx2v2o1DwztPS756nXKt5UD2fK3mYbMZK4RgmlhOdZ
+         UQ2I6Ytw0ffeeHi+xpoMe4OrtNOXqyGn8z0Y5aQY3WB8CpbC3Wl7KUhyFrOWsIdITE
+         vyUxaP18QiqAw==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>
-Subject: [pull request][net-next v0 00/14] mlx5 updates 2021-12-21
-Date:   Tue, 21 Dec 2021 19:15:50 -0800
-Message-Id: <20211222031604.14540-1-saeed@kernel.org>
+Cc:     netdev@vger.kernel.org, Shay Drory <shayd@nvidia.com>,
+        Moshe Shemesh <moshe@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [net-next v0 01/14] devlink: Add new "io_eq_size" generic device param
+Date:   Tue, 21 Dec 2021 19:15:51 -0800
+Message-Id: <20211222031604.14540-2-saeed@kernel.org>
 X-Mailer: git-send-email 2.33.1
+In-Reply-To: <20211222031604.14540-1-saeed@kernel.org>
+References: <20211222031604.14540-1-saeed@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Saeed Mahameed <saeedm@nvidia.com>
+From: Shay Drory <shayd@nvidia.com>
 
-Hi Dave, Hi Jakub,
+Add new device generic parameter to determine the size of the
+I/O completion EQs.
 
-This series adds 2 main changes to mlx5
-1) New Devlink knobs to control EQ sizes, already acked by Jiri and
-Jakub. first 6 commits.
+For example, to reduce I/O EQ size to 64, execute:
+$ devlink dev param set pci/0000:06:00.0 \
+              name io_eq_size value 64 cmode driverinit
+$ devlink dev reload pci/0000:06:00.0
 
-Link: https://lore.kernel.org/netdev/20211208141722.13646-1-shayd@nvidia.com/
+Signed-off-by: Shay Drory <shayd@nvidia.com>
+Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+---
+ Documentation/networking/devlink/devlink-params.rst | 3 +++
+ include/net/devlink.h                               | 4 ++++
+ net/core/devlink.c                                  | 5 +++++
+ 3 files changed, 12 insertions(+)
 
-2) Memory optimization of netdev's channels data.
+diff --git a/Documentation/networking/devlink/devlink-params.rst b/Documentation/networking/devlink/devlink-params.rst
+index b7dfe693a332..547c0b430c9e 100644
+--- a/Documentation/networking/devlink/devlink-params.rst
++++ b/Documentation/networking/devlink/devlink-params.rst
+@@ -129,3 +129,6 @@ own name.
+        will NACK any attempt of other host to reset the device. This parameter
+        is useful for setups where a device is shared by different hosts, such
+        as multi-host setup.
++   * - ``io_eq_size``
++     - u32
++     - Control the size of I/O completion EQs.
+diff --git a/include/net/devlink.h b/include/net/devlink.h
+index 3276a29f2b81..b5f4acd0e0cd 100644
+--- a/include/net/devlink.h
++++ b/include/net/devlink.h
+@@ -459,6 +459,7 @@ enum devlink_param_generic_id {
+ 	DEVLINK_PARAM_GENERIC_ID_ENABLE_RDMA,
+ 	DEVLINK_PARAM_GENERIC_ID_ENABLE_VNET,
+ 	DEVLINK_PARAM_GENERIC_ID_ENABLE_IWARP,
++	DEVLINK_PARAM_GENERIC_ID_IO_EQ_SIZE,
+ 
+ 	/* add new param generic ids above here*/
+ 	__DEVLINK_PARAM_GENERIC_ID_MAX,
+@@ -511,6 +512,9 @@ enum devlink_param_generic_id {
+ #define DEVLINK_PARAM_GENERIC_ENABLE_IWARP_NAME "enable_iwarp"
+ #define DEVLINK_PARAM_GENERIC_ENABLE_IWARP_TYPE DEVLINK_PARAM_TYPE_BOOL
+ 
++#define DEVLINK_PARAM_GENERIC_IO_EQ_SIZE_NAME "io_eq_size"
++#define DEVLINK_PARAM_GENERIC_IO_EQ_SIZE_TYPE DEVLINK_PARAM_TYPE_U32
++
+ #define DEVLINK_PARAM_GENERIC(_id, _cmodes, _get, _set, _validate)	\
+ {									\
+ 	.id = DEVLINK_PARAM_GENERIC_ID_##_id,				\
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index 0a9349a02cad..e2e38b8872c8 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -4466,6 +4466,11 @@ static const struct devlink_param devlink_param_generic[] = {
+ 		.name = DEVLINK_PARAM_GENERIC_ENABLE_IWARP_NAME,
+ 		.type = DEVLINK_PARAM_GENERIC_ENABLE_IWARP_TYPE,
+ 	},
++	{
++		.id = DEVLINK_PARAM_GENERIC_ID_IO_EQ_SIZE,
++		.name = DEVLINK_PARAM_GENERIC_IO_EQ_SIZE_NAME,
++		.type = DEVLINK_PARAM_GENERIC_IO_EQ_SIZE_TYPE,
++	},
+ };
+ 
+ static int devlink_param_generic_verify(const struct devlink_param *param)
+-- 
+2.33.1
 
-For more information please see tag log below.
-
-Please pull and let me know if there is any problem.
-
-Thanks,
-Saeed.
-
-
-The following changes since commit f4f2970dfd87e5132c436e6125148914596a9863:
-
-  Merge branch '1GbE' of git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue (2021-12-21 17:20:31 -0800)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2021-12-21
-
-for you to fetch changes up to 1f08917ab929a6939cb0c95d47f928db43f6d3c9:
-
-  net/mlx5e: Take packet_merge params directly from the RX res struct (2021-12-21 19:08:58 -0800)
-
-----------------------------------------------------------------
-mlx5-updates-2021-12-21
-
-1) From Shay Drory: Devlink user knobs to control device's EQ size
-
-This series provides knobs which will enable users to
-minimize memory consumption of mlx5 Functions (PF/VF/SF).
-mlx5 exposes two new generic devlink params for EQ size
-configuration and uses devlink generic param max_macs.
-
-LINK: https://lore.kernel.org/netdev/20211208141722.13646-1-shayd@nvidia.com/
-
-2) From Tariq and Lama, allocate software channel objects and statistics
-  of a mlx5 netdevice private data dynamically upon first demand to save on
-  memory.
-
-----------------------------------------------------------------
-Lama Kayal (1):
-      net/mlx5e: Allocate per-channel stats dynamically at first usage
-
-Shaokun Zhang (1):
-      net/mlx5: Remove the repeated declaration
-
-Shay Drory (6):
-      devlink: Add new "io_eq_size" generic device param
-      net/mlx5: Let user configure io_eq_size param
-      devlink: Add new "event_eq_size" generic device param
-      net/mlx5: Let user configure event_eq_size param
-      devlink: Clarifies max_macs generic devlink param
-      net/mlx5: Let user configure max_macs generic param
-
-Tariq Toukan (6):
-      net/mlx5e: Use bitmap field for profile features
-      net/mlx5e: Add profile indications for PTP and QOS HTB features
-      net/mlx5e: Save memory by using dynamic allocation in netdev priv
-      net/mlx5e: Allow profile-specific limitation on max num of channels
-      net/mlx5e: Use dynamic per-channel allocations in stats
-      net/mlx5e: Take packet_merge params directly from the RX res struct
-
- .../networking/devlink/devlink-params.rst          |  12 +-
- Documentation/networking/devlink/mlx5.rst          |  10 ++
- drivers/net/ethernet/mellanox/mlx5/core/devlink.c  |  88 +++++++++++
- drivers/net/ethernet/mellanox/mlx5/core/en.h       |  26 ++--
- .../ethernet/mellanox/mlx5/core/en/hv_vhca_stats.c |   2 +-
- drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c   |   6 +-
- .../net/ethernet/mellanox/mlx5/core/en/rx_res.c    |  14 +-
- .../net/ethernet/mellanox/mlx5/core/en/xsk/setup.c |   2 +-
- .../ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c |   2 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_arfs.c  |   2 +-
- .../net/ethernet/mellanox/mlx5/core/en_ethtool.c   |   2 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c  | 165 +++++++++++++++++----
- drivers/net/ethernet/mellanox/mlx5/core/en_rep.c   |  17 ++-
- drivers/net/ethernet/mellanox/mlx5/core/en_rx.c    |   2 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_stats.c |  16 +-
- drivers/net/ethernet/mellanox/mlx5/core/eq.c       |  34 ++++-
- drivers/net/ethernet/mellanox/mlx5/core/eswitch.h  |   3 -
- .../net/ethernet/mellanox/mlx5/core/ipoib/ipoib.c  |   3 +-
- .../ethernet/mellanox/mlx5/core/ipoib/ipoib_vlan.c |   1 -
- drivers/net/ethernet/mellanox/mlx5/core/main.c     |  21 +++
- include/net/devlink.h                              |   8 +
- net/core/devlink.c                                 |  10 ++
- 22 files changed, 365 insertions(+), 81 deletions(-)
