@@ -2,330 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB6B447D4BD
-	for <lists+netdev@lfdr.de>; Wed, 22 Dec 2021 16:59:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 84A7D47D4E5
+	for <lists+netdev@lfdr.de>; Wed, 22 Dec 2021 17:10:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344041AbhLVP7C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Dec 2021 10:59:02 -0500
-Received: from relay4-d.mail.gandi.net ([217.70.183.196]:40329 "EHLO
-        relay4-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344070AbhLVP62 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Dec 2021 10:58:28 -0500
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by relay4-d.mail.gandi.net (Postfix) with ESMTPSA id 79011E000D;
-        Wed, 22 Dec 2021 15:58:26 +0000 (UTC)
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan@vger.kernel.org
-Cc:     David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        netdev@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [wpan-tools 7/7] iwpan: Add events support
-Date:   Wed, 22 Dec 2021 16:58:16 +0100
-Message-Id: <20211222155816.256405-8-miquel.raynal@bootlin.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20211222155816.256405-1-miquel.raynal@bootlin.com>
-References: <20211222155816.256405-1-miquel.raynal@bootlin.com>
+        id S236333AbhLVQKg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Dec 2021 11:10:36 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:43438 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234238AbhLVQKg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Dec 2021 11:10:36 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1640189435;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=cSO/frr+yiJfn8XpssQknCjCYorZHXgFUrngudXM3qo=;
+        b=LHR4Ho8g8cafRd91HNp89xSFQG1LFmFC5/1p4W/W6QPCE3MnimO3h1b4Iy2nQiju0+EWsw
+        JehSghBWOwEzBvOFtwi6UyUj09OGnWMRmh5J1gIIbMc3YDZ90C96asbNpykw5WYTwWoSrH
+        TM+pSoJ9RpuvGaDvlV8vXovbWdm6BoI=
+Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
+ [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-621-2EMtEeHRM2eIQJ826DdYRQ-1; Wed, 22 Dec 2021 11:10:34 -0500
+X-MC-Unique: 2EMtEeHRM2eIQJ826DdYRQ-1
+Received: by mail-qv1-f71.google.com with SMTP id 13-20020a0562140d0d00b00411590233e8so2389903qvh.15
+        for <netdev@vger.kernel.org>; Wed, 22 Dec 2021 08:10:34 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=cSO/frr+yiJfn8XpssQknCjCYorZHXgFUrngudXM3qo=;
+        b=wrm0ukcXIAg4vgLilAcIJU0+nvvdVagbIkaoQK4sJb2ZS+XDWjxpzcudUF6SU0MFvh
+         RSypkPVbDNR8fAxPagDFZakjndQOp2rBIkAba10B5Prx4at1kbLVCK9P7ERXLzL6RaR+
+         oGsPI0xO/Zi7o2YBen7a+9zddL5920JFmtmSzHmeGYNjuX3IUD8Sx0Q534C97uqgFJBU
+         TXshYh8ldI7ArAvSkwXTwbKe9e8aCg9stdOJgZOWNR3pOf+Qf88Cd5KNyyYNM4mn/yhA
+         uVWUUWlpm3Ad9ryFN7ejMMFcVg5cCMN9pchCUy0HMKqDWVxYv3LueVQjZOS5YKNJbUz0
+         FsFQ==
+X-Gm-Message-State: AOAM531zJm0LxpVqomrBxPwGlia+eEo3/FLXevqPqhhERp+hmpzXs2XB
+        b89qtRAjVrMlkHrUU6bG5Pc9IJTdjrq4ssTFzcTUBETdYeMt4IE9EDuIEn8kMHi1pmLUHhoGC5w
+        qz9kNgCvgpz8cQKP3
+X-Received: by 2002:a05:6214:1c84:: with SMTP id ib4mr3092071qvb.76.1640189433442;
+        Wed, 22 Dec 2021 08:10:33 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyGEGSIDaw+VdXwpMQa4cQEWHZB+eG/WW3RLlt43u/9ipkg72epSBrb8LFoVn+8RbDIEUyKVA==
+X-Received: by 2002:a05:6214:1c84:: with SMTP id ib4mr3092048qvb.76.1640189433149;
+        Wed, 22 Dec 2021 08:10:33 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-225-60.dyn.eolo.it. [146.241.225.60])
+        by smtp.gmail.com with ESMTPSA id u10sm2165725qkp.104.2021.12.22.08.10.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Dec 2021 08:10:32 -0800 (PST)
+Message-ID: <20210d650ebf79c8989365d1e426f814dbd61716.camel@redhat.com>
+Subject: Re: [PATCH net] veth: ensure skb entering GRO are not cloned.
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Ignat Korchagin <ignat@cloudflare.com>
+Date:   Wed, 22 Dec 2021 17:10:30 +0100
+In-Reply-To: <CANn89iKDA4TMpQeQoxicd8rkph5+Am2iuoSDETvFn03CiQQV3g@mail.gmail.com>
+References: <26109603287b4d21545bec125e43b218b545b746.1640111022.git.pabeni@redhat.com>
+         <CANn89iKpiQzW1UnsQSYzULJ8d-QHsy7Wz=NtgvVXBqh-iuNptQ@mail.gmail.com>
+         <dad55584ad20723f1579475a09ef7b3a3607e087.camel@redhat.com>
+         <CANn89iKDA4TMpQeQoxicd8rkph5+Am2iuoSDETvFn03CiQQV3g@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.2 (3.42.2-1.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Girault <david.girault@qorvo.com>
+On Wed, 2021-12-22 at 03:58 -0800, Eric Dumazet wrote:
+> On Wed, Dec 22, 2021 at 3:06 AM Paolo Abeni <pabeni@redhat.com> wrote:
+> > I thought about something similar, but I overlooked possible OoO or
+> > behaviour changes when a packet socket is attached to the paired device
+> > (as it would disable GRO).
+> 
+> Have you tried a pskb_expand_head() instead of a full copy ?
+> Perhaps that would be enough, and keep all packets going through GRO to
+> make sure OOO is covered.
 
-Add the possibility to listen to the scan multicast netlink family in
-order to print all the events happening in the 802.15.4 stack.
+Indeed it looks like it's enough. I'll do some more testing and I'll
+send a v2 using pskb_expand_head().
 
-Signed-off-by: David Girault <david.girault@qorvo.com>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
----
- src/Makefile.am |   1 +
- src/event.c     | 221 ++++++++++++++++++++++++++++++++++++++++++++++++
- src/iwpan.h     |   3 +
- src/scan.c      |   4 +-
- 4 files changed, 227 insertions(+), 2 deletions(-)
- create mode 100644 src/event.c
+Many thanks!
 
-diff --git a/src/Makefile.am b/src/Makefile.am
-index 18b3569..7933daf 100644
---- a/src/Makefile.am
-+++ b/src/Makefile.am
-@@ -10,6 +10,7 @@ iwpan_SOURCES = \
- 	phy.c \
- 	mac.c \
- 	scan.c \
-+	event.c \
- 	nl_extras.h \
- 	nl802154.h
- 
-diff --git a/src/event.c b/src/event.c
-new file mode 100644
-index 0000000..0c5450b
---- /dev/null
-+++ b/src/event.c
-@@ -0,0 +1,221 @@
-+#include <net/if.h>
-+#include <errno.h>
-+#include <stdint.h>
-+#include <stdbool.h>
-+#include <inttypes.h>
-+
-+#include <netlink/genl/genl.h>
-+#include <netlink/genl/family.h>
-+#include <netlink/genl/ctrl.h>
-+#include <netlink/msg.h>
-+#include <netlink/attr.h>
-+
-+#include "nl802154.h"
-+#include "nl_extras.h"
-+#include "iwpan.h"
-+
-+struct print_event_args {
-+	struct timeval ts; /* internal */
-+	bool have_ts; /* must be set false */
-+	bool frame, time, reltime;
-+};
-+
-+static void parse_scan_terminated(struct nlattr **tb)
-+{
-+	struct nlattr *a;
-+	if ((a = tb[NL802154_ATTR_SCAN_TYPE])) {
-+		enum nl802154_scan_types st =
-+			(enum nl802154_scan_types)nla_get_u8(a);
-+		const char *stn = scantype_name(st);
-+		printf(" type %s,", stn);
-+	}
-+	if ((a = tb[NL802154_ATTR_SCAN_FLAGS])) {
-+		printf(" flags 0x%x,", nla_get_u32(a));
-+	}
-+	if ((a = tb[NL802154_ATTR_PAGE])) {
-+		printf(" page %u,", nla_get_u8(a));
-+	}
-+	if ((a = tb[NL802154_ATTR_SCAN_CHANNELS])) {
-+		printf(" channels mask 0x%x,", nla_get_u32(a));
-+	}
-+	/* TODO: show requested IEs */
-+	if ((a = tb[NL802154_ATTR_PAN])) {
-+		parse_scan_result_pan(a, tb[NL802154_ATTR_IFINDEX]);
-+	}
-+}
-+
-+static int print_event(struct nl_msg *msg, void *arg)
-+{
-+	struct genlmsghdr *gnlh = nlmsg_data(nlmsg_hdr(msg));
-+	struct nlattr *tb[NL802154_ATTR_MAX + 1], *nst;
-+	struct print_event_args *args = arg;
-+	char ifname[100];
-+
-+	uint8_t reg_type;
-+	uint32_t wpan_phy_idx = 0;
-+	int rem_nst;
-+	uint16_t status;
-+
-+	if (args->time || args->reltime) {
-+		unsigned long long usecs, previous;
-+
-+		previous = 1000000ULL * args->ts.tv_sec + args->ts.tv_usec;
-+		gettimeofday(&args->ts, NULL);
-+		usecs = 1000000ULL * args->ts.tv_sec + args->ts.tv_usec;
-+		if (args->reltime) {
-+			if (!args->have_ts) {
-+				usecs = 0;
-+				args->have_ts = true;
-+			} else
-+				usecs -= previous;
-+		}
-+		printf("%llu.%06llu: ", usecs/1000000, usecs % 1000000);
-+	}
-+
-+	nla_parse(tb, NL802154_ATTR_MAX, genlmsg_attrdata(gnlh, 0),
-+		  genlmsg_attrlen(gnlh, 0), NULL);
-+
-+	if (tb[NL802154_ATTR_IFINDEX] && tb[NL802154_ATTR_WPAN_PHY]) {
-+		if_indextoname(nla_get_u32(tb[NL802154_ATTR_IFINDEX]), ifname);
-+		printf("%s (phy #%d): ", ifname, nla_get_u32(tb[NL802154_ATTR_WPAN_PHY]));
-+	} else if (tb[NL802154_ATTR_WPAN_DEV] && tb[NL802154_ATTR_WPAN_PHY]) {
-+		printf("wdev 0x%llx (phy #%d): ",
-+			(unsigned long long)nla_get_u64(tb[NL802154_ATTR_WPAN_DEV]),
-+			nla_get_u32(tb[NL802154_ATTR_WPAN_PHY]));
-+	} else if (tb[NL802154_ATTR_IFINDEX]) {
-+		if_indextoname(nla_get_u32(tb[NL802154_ATTR_IFINDEX]), ifname);
-+		printf("%s: ", ifname);
-+	} else if (tb[NL802154_ATTR_WPAN_DEV]) {
-+		printf("wdev 0x%llx: ", (unsigned long long)nla_get_u64(tb[NL802154_ATTR_WPAN_DEV]));
-+	} else if (tb[NL802154_ATTR_WPAN_PHY]) {
-+		printf("phy #%d: ", nla_get_u32(tb[NL802154_ATTR_WPAN_PHY]));
-+	}
-+
-+	switch (gnlh->cmd) {
-+	case NL802154_CMD_NEW_WPAN_PHY:
-+		printf("renamed to %s\n", nla_get_string(tb[NL802154_ATTR_WPAN_PHY_NAME]));
-+		break;
-+	case NL802154_CMD_DEL_WPAN_PHY:
-+		printf("delete wpan_phy\n");
-+		break;
-+	case NL802154_CMD_TRIGGER_SCAN:
-+		printf("scan started\n");
-+		break;
-+	case NL802154_CMD_SCAN_DONE:
-+		printf("scan finished:");
-+		parse_scan_terminated(tb);
-+		printf("\n");
-+		break;
-+	default:
-+		printf("unknown event %d\n", gnlh->cmd);
-+		break;
-+	}
-+	fflush(stdout);
-+	return NL_SKIP;
-+}
-+
-+static int __prepare_listen_events(struct nl802154_state *state)
-+{
-+	int mcid, ret;
-+
-+	/* Configuration multicast group */
-+	mcid = genl_ctrl_resolve_grp(state->nl_sock, NL802154_GENL_NAME,
-+				     "config");
-+	if (mcid < 0)
-+		return mcid;
-+	ret = nl_socket_add_membership(state->nl_sock, mcid);
-+	if (ret)
-+		return ret;
-+
-+	/* Scan multicast group */
-+	mcid = genl_ctrl_resolve_grp(state->nl_sock, NL802154_GENL_NAME,
-+				     "scan");
-+	if (mcid >= 0) {
-+		ret = nl_socket_add_membership(state->nl_sock, mcid);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	/* MLME multicast group */
-+	mcid = genl_ctrl_resolve_grp(state->nl_sock, NL802154_GENL_NAME,
-+				     "mlme");
-+	if (mcid >= 0) {
-+		ret = nl_socket_add_membership(state->nl_sock, mcid);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static int __do_listen_events(struct nl802154_state *state,
-+			      struct print_event_args *args)
-+{
-+	struct nl_cb *cb = nl_cb_alloc(iwpan_debug ? NL_CB_DEBUG : NL_CB_DEFAULT);
-+	if (!cb) {
-+		fprintf(stderr, "failed to allocate netlink callbacks\n");
-+		return -ENOMEM;
-+	}
-+	nl_socket_set_cb(state->nl_sock, cb);
-+	/* No sequence checking for multicast messages */
-+	nl_socket_disable_seq_check(state->nl_sock);
-+	/* Install print_event message handler */
-+	nl_cb_set(cb, NL_CB_VALID, NL_CB_CUSTOM, print_event, args);
-+
-+	/* Loop waiting until interrupted by signal */
-+	while (1) {
-+		int ret = nl_recvmsgs(state->nl_sock, cb);
-+		if (ret) {
-+			fprintf(stderr, "nl_recvmsgs return error %d\n", ret);
-+			break;
-+		}
-+	}
-+	/* Free allocated nl_cb structure */
-+	nl_cb_put(cb);
-+	return 0;
-+}
-+
-+static int print_events(struct nl802154_state *state,
-+			struct nl_cb *cb,
-+			struct nl_msg *msg,
-+			int argc, char **argv,
-+			enum id_input id)
-+{
-+	struct print_event_args args;
-+	int ret;
-+
-+	memset(&args, 0, sizeof(args));
-+
-+	argc--;
-+	argv++;
-+
-+	while (argc > 0) {
-+		if (strcmp(argv[0], "-f") == 0)
-+			args.frame = true;
-+		else if (strcmp(argv[0], "-t") == 0)
-+			args.time = true;
-+		else if (strcmp(argv[0], "-r") == 0)
-+			args.reltime = true;
-+		else
-+			return 1;
-+		argc--;
-+		argv++;
-+	}
-+	if (args.time && args.reltime)
-+		return 1;
-+	if (argc)
-+		return 1;
-+
-+	/* Prepare reception of all multicast messages */
-+	ret = __prepare_listen_events(state);
-+	if (ret)
-+		return ret;
-+
-+	/* Read message loop */
-+	return __do_listen_events(state, &args);
-+}
-+TOPLEVEL(event, "[-t|-r] [-f]", 0, 0, CIB_NONE, print_events,
-+	"Monitor events from the kernel.\n"
-+	"-t - print timestamp\n"
-+	"-r - print relative timestamp\n"
-+	"-f - print full frame for auth/assoc etc.");
-diff --git a/src/iwpan.h b/src/iwpan.h
-index 406940a..a71b991 100644
---- a/src/iwpan.h
-+++ b/src/iwpan.h
-@@ -114,6 +114,9 @@ DECLARE_SECTION(get);
- 
- const char *iftype_name(enum nl802154_iftype iftype);
- 
-+const char *scantype_name(enum nl802154_scan_types scantype);
-+int parse_scan_result_pan(struct nlattr *nestedpan, struct nlattr *ifattr);
-+
- extern int iwpan_debug;
- 
- #endif /* __IWPAN_H */
-diff --git a/src/scan.c b/src/scan.c
-index ec91c7c..a557e09 100644
---- a/src/scan.c
-+++ b/src/scan.c
-@@ -16,7 +16,7 @@
- 
- static char scantypebuf[100];
- 
--static const char *scantype_name(enum nl802154_scan_types scantype)
-+const char *scantype_name(enum nl802154_scan_types scantype)
- {
- 	switch (scantype) {
- 	case NL802154_SCAN_ED:
-@@ -168,7 +168,7 @@ static int scan_abort_handler(struct nl802154_state *state,
- }
- 
- 
--static int parse_scan_result_pan(struct nlattr *nestedpan, struct nlattr *ifattr)
-+int parse_scan_result_pan(struct nlattr *nestedpan, struct nlattr *ifattr)
- {
- 	struct nlattr *pan[NL802154_PAN_MAX + 1];
- 	static struct nla_policy pan_policy[NL802154_PAN_MAX + 1] = {
--- 
-2.27.0
+Paolo
 
