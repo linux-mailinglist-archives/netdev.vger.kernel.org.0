@@ -2,142 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9712347E443
-	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 14:58:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CDC247E446
+	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 14:59:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348717AbhLWN6g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Dec 2021 08:58:36 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:40431 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S239681AbhLWN6e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Dec 2021 08:58:34 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1640267914;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=CpQJOwyNtlX1Mdolftn4RcdaD2Hy2yaictkseWrq6SQ=;
-        b=WC+HRHghFO0Cp11U8xdsBhUHmvrkcHVAlb5g5QqZD15q+giYDGkBBRyaiECzUtHRT7AFZS
-        +IutR5xkZ3kRpkx1TY7Bg4k9ZU2sLvhcAxRMAVc557vDcBoNVBTsTD3cnkbPNSq1dVlUUk
-        9gOcfysFthsCnWoNltRI2yJlUx94BPc=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-28-jTDrBz12Mwmvz7711mquUA-1; Thu, 23 Dec 2021 08:58:33 -0500
-X-MC-Unique: jTDrBz12Mwmvz7711mquUA-1
-Received: by mail-wm1-f71.google.com with SMTP id g189-20020a1c20c6000000b00345bf554707so3900054wmg.4
-        for <netdev@vger.kernel.org>; Thu, 23 Dec 2021 05:58:32 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=CpQJOwyNtlX1Mdolftn4RcdaD2Hy2yaictkseWrq6SQ=;
-        b=gDRvjol7PwoCi9BI6wulN2a5qUNOuj7RkChp8ipolCe+DjOHGzYWG7Z6MG85/A+2bS
-         tF1EY90Uf6CFTXjWdQ4rrsH6B5yrDjrR5kuotYWxkG0ipLh8TcVoEFO4wMiO2vVyTGhh
-         8g3vv8UGyZ6fbGqbFfowgoUaOi2dOcxtvllyRahGdQ1UBAG6O6UpfTITAB2iYXKBQjRC
-         /pZ9ByrnKzCBeTWERTPbTX+Tp92WVUuSnBsPxdO9tIst5wU0znaTA74JBYCeNn40b6yP
-         w0IXzL41JC9nSGKmGrcf/gy9CgdvgGcE+Vg5pKQvl30P9IevwJU6BM6gh8Dh5R6+jgS+
-         svow==
-X-Gm-Message-State: AOAM533UhC9E/I3BiE4gV6LWfY9qNuyZNTmU1CtRy1Qff6cOvnU+cDzd
-        YYuU7nzKurbT9ahRedoYr4QcW6X/40BngGeMLvfXJZJf1KmGqnt1pIYhzhsNdw2x9Pfq/jAowH5
-        Q6QSMIhF52fGgC6xw
-X-Received: by 2002:a05:600c:1f0f:: with SMTP id bd15mr1897617wmb.2.1640267911073;
-        Thu, 23 Dec 2021 05:58:31 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxdZ+swrtLCADcHVBsqJwj8tIlyAIce/Bk5kJZdXg7yhPIcNXyeP1RJ9MxfrD4FnxzIoU/LvQ==
-X-Received: by 2002:a05:600c:1f0f:: with SMTP id bd15mr1897604wmb.2.1640267910875;
-        Thu, 23 Dec 2021 05:58:30 -0800 (PST)
-Received: from redhat.com ([2.55.1.37])
-        by smtp.gmail.com with ESMTPSA id r8sm5096452wru.107.2021.12.23.05.58.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Dec 2021 05:58:30 -0800 (PST)
-Date:   Thu, 23 Dec 2021 08:58:26 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Yi Wang <wang.yi59@zte.com.cn>
-Cc:     jasowang@redhat.com, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, xue.zhihong@zte.com.cn,
-        wang.liang82@zte.com.cn, Zhang Min <zhang.min9@zte.com.cn>
-Subject: Re: [PATCH] vdpa: regist vhost-vdpa dev class
-Message-ID: <20211223085634-mutt-send-email-mst@kernel.org>
-References: <20211223073145.35363-1-wang.yi59@zte.com.cn>
+        id S1348721AbhLWN7O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Dec 2021 08:59:14 -0500
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:58427 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239681AbhLWN7N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Dec 2021 08:59:13 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1640267953; x=1671803953;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=EXB69/bWWg70XkQ6UZyKSNhZ7G2hQHP0uxwU+r44LAk=;
+  b=qz0L2F0Tm/XgGk0KmxF/xpOFCNH45XzoBDKpzsSWYiFzrFnht24fHEEm
+   B0+ZFXXIawOiLP9GX8CpTDCrVAPXHE99kAPj9YonuBOKNihC6gxy2kcMn
+   6+SWM56govfBcjpE8y8crrhALlcPBaruBrXDQhxyvtmCSymx9U8crLhau
+   13aa/ssRo2lzcWWVX+ZJY7/mjvxU8I5IT9JeYVA36y8LswaztcudRlemK
+   Kp8S4dTMHmbC76fmLS9bxSgfUz4zshFCI8aJdFHl2/FHYQ0qav4A8qJ5P
+   x7+i7eSV9YEfc/Vua9rBXLSNWYocX+HsFC4Nv2EXDSzEf570QP84QYH+M
+   g==;
+IronPort-SDR: wEO5UEw5N7pnqGV+rL5O4q6uhB5wHKPiPcIBloq2I0zw3OqR+EaOmklXewrxMG2CrLEYYUURMG
+ Wsw2TbfgPEy+kXogyU4R3fnS5kkpHmMPiPTwiYozUZ887djrryfPvBi52bGXwYQCI6mD2IIqub
+ Z9JeiGO0+R6P6J4IwOn7sZfE0o0DJHRLMHIioIc3lyXF0om3oPyRLFB45qJ8QrvSte6/uJRqfg
+ h72ZrAP6tICE7wvslDkkcvZaVY78kIVvciR2UJJVHELWiygP+tBjWOBeVkeD0OnuxiT+wUAKpT
+ CUum+l9QysfNpwKSGswz8qN4
+X-IronPort-AV: E=Sophos;i="5.88,229,1635231600"; 
+   d="scan'208";a="148180140"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 23 Dec 2021 06:59:13 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Thu, 23 Dec 2021 06:59:13 -0700
+Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Thu, 23 Dec 2021 06:59:09 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <UNGLinuxDriver@microchip.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <linux@armlinux.org.uk>, <f.fainelli@gmail.com>,
+        <vivien.didelot@gmail.com>, <vladimir.oltean@nxp.com>,
+        <andrew@lunn.ch>, Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH net-next] net: lan966x: Fix the vlan used by host ports
+Date:   Thu, 23 Dec 2021 15:01:13 +0100
+Message-ID: <20211223140113.1954778-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211223073145.35363-1-wang.yi59@zte.com.cn>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-typo in subject
+The blamed commit changed the vlan used by the host ports to be 4095
+instead of 0.
+Because of this change the following issues are seen:
+- when the port is probed first it was adding an entry in the MAC table
+  with the wrong vlan (port->pvid which is default 0) and not HOST_PVID
+- when the port is removed from a bridge, it was using the wrong vlan to
+  add entries in the MAC table. It was using the old PVID and not the
+  HOST_PVID
 
-On Thu, Dec 23, 2021 at 03:31:45PM +0800, Yi Wang wrote:
-> From: Zhang Min <zhang.min9@zte.com.cn>
-> 
-> Some applications like kata-containers need to acquire MAJOR/MINOR/DEVNAME
-> for devInfo [1], so regist vhost-vdpa dev class to expose uevent.
-> 
-> 1. https://github.com/kata-containers/kata-containers/blob/main/src/runtime/virtcontainers/device/config/config.go
-> 
-> Signed-off-by: Zhang Min <zhang.min9@zte.com.cn>
-> Signed-off-by: Yi Wang <wang.yi59@zte.com.cn>
-> ---
->  drivers/vhost/vdpa.c | 12 ++++++++++++
->  1 file changed, 12 insertions(+)
-> 
-> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-> index fb41db3da611..90fbad93e7a2 100644
-> --- a/drivers/vhost/vdpa.c
-> +++ b/drivers/vhost/vdpa.c
-> @@ -1012,6 +1012,7 @@ static void vhost_vdpa_release_dev(struct device *device)
->  	kfree(v);
->  }
->  
-> +static struct class *vhost_vdpa_class;
->  static int vhost_vdpa_probe(struct vdpa_device *vdpa)
->  {
->  	const struct vdpa_config_ops *ops = vdpa->config;
-> @@ -1040,6 +1041,7 @@ static int vhost_vdpa_probe(struct vdpa_device *vdpa)
->  	v->dev.release = vhost_vdpa_release_dev;
->  	v->dev.parent = &vdpa->dev;
->  	v->dev.devt = MKDEV(MAJOR(vhost_vdpa_major), minor);
-> +	v->dev.class = vhost_vdpa_class;
->  	v->vqs = kmalloc_array(v->nvqs, sizeof(struct vhost_virtqueue),
->  			       GFP_KERNEL);
->  	if (!v->vqs) {
-> @@ -1097,6 +1099,14 @@ static int __init vhost_vdpa_init(void)
->  {
->  	int r;
->  
-> +	vhost_vdpa_class = class_create(THIS_MODULE, "vhost-vdpa");
-> +	if (IS_ERR(vhost_vdpa_class)) {
-> +		r = PTR_ERR(vhost_vdpa_class);
-> +		pr_warn("vhost vdpa class create error %d,  maybe mod reinserted\n", r);
+This patch fixes this two issues by using the HOST_PVID instead of
+port->pvid.
 
-what's mod reinserted? why warn not error?
+Fixes: 6d2c186afa5d5d ("net: lan966x: Add vlan support.")
+Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+---
+ drivers/net/ethernet/microchip/lan966x/lan966x_main.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-> +		vhost_vdpa_class = NULL;
-> +		return r;
-> +	}
-> +
->  	r = alloc_chrdev_region(&vhost_vdpa_major, 0, VHOST_VDPA_DEV_MAX,
->  				"vhost-vdpa");
->  	if (r)
-> @@ -1111,6 +1121,7 @@ static int __init vhost_vdpa_init(void)
->  err_vdpa_register_driver:
->  	unregister_chrdev_region(vhost_vdpa_major, VHOST_VDPA_DEV_MAX);
->  err_alloc_chrdev:
-> +	class_destroy(vhost_vdpa_class);
->  	return r;
->  }
->  module_init(vhost_vdpa_init);
-> @@ -1118,6 +1129,7 @@ module_init(vhost_vdpa_init);
->  static void __exit vhost_vdpa_exit(void)
->  {
->  	vdpa_unregister_driver(&vhost_vdpa_driver);
-> +	class_destroy(vhost_vdpa_class);
->  	unregister_chrdev_region(vhost_vdpa_major, VHOST_VDPA_DEV_MAX);
->  }
->  module_exit(vhost_vdpa_exit);
-> -- 
-> 2.27.0
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+index 54097247c7a7..2cb70da63db3 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+@@ -322,7 +322,7 @@ static int lan966x_mc_unsync(struct net_device *dev, const unsigned char *addr)
+ 	struct lan966x_port *port = netdev_priv(dev);
+ 	struct lan966x *lan966x = port->lan966x;
+ 
+-	return lan966x_mac_forget(lan966x, addr, port->pvid, ENTRYTYPE_LOCKED);
++	return lan966x_mac_forget(lan966x, addr, HOST_PVID, ENTRYTYPE_LOCKED);
+ }
+ 
+ static int lan966x_mc_sync(struct net_device *dev, const unsigned char *addr)
+@@ -330,7 +330,7 @@ static int lan966x_mc_sync(struct net_device *dev, const unsigned char *addr)
+ 	struct lan966x_port *port = netdev_priv(dev);
+ 	struct lan966x *lan966x = port->lan966x;
+ 
+-	return lan966x_mac_cpu_learn(lan966x, addr, port->pvid);
++	return lan966x_mac_cpu_learn(lan966x, addr, HOST_PVID);
+ }
+ 
+ static void lan966x_port_set_rx_mode(struct net_device *dev)
+@@ -594,7 +594,7 @@ static int lan966x_probe_port(struct lan966x *lan966x, u32 p,
+ 
+ 	eth_hw_addr_gen(dev, lan966x->base_mac, p + 1);
+ 
+-	lan966x_mac_learn(lan966x, PGID_CPU, dev->dev_addr, port->pvid,
++	lan966x_mac_learn(lan966x, PGID_CPU, dev->dev_addr, HOST_PVID,
+ 			  ENTRYTYPE_LOCKED);
+ 
+ 	port->phylink_config.dev = &port->dev->dev;
+-- 
+2.33.0
 
