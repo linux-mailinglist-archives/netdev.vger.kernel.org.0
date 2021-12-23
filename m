@@ -2,81 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D60E47E39D
-	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 13:39:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E8CE47E3A9
+	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 13:44:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243721AbhLWMjH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Dec 2021 07:39:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49802 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239727AbhLWMjG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Dec 2021 07:39:06 -0500
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF23EC061401;
-        Thu, 23 Dec 2021 04:39:05 -0800 (PST)
-Received: by mail-ed1-x52d.google.com with SMTP id j6so20767383edw.12;
-        Thu, 23 Dec 2021 04:39:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=CTz+WzOPPv+J3NG9b5Kt944FkWQA/8CWT9C+npA8ORo=;
-        b=E6mN1rW41RakQLpi8CVFnf5wBkV8HhU9TSrPvRv1x6zTrXBCvR3eLUpSvrw8KGgvrn
-         scPeTZVTDQaQVmhhRyadEK7G91kM9IfI3ABPNL9PytMOjMgqfoNoh0NeKIUG9wEYEhxI
-         rzxIeudkYeSIUFlctRyhiYfppffbsUZrxBZLAju3nH+k4c4j9WR9cQOW2uSYmEmSu6PB
-         +4XR492FBzayYRaoEDALm5L1ihvfx/q4tTEG5vzxjiw6bBui8l0cGAv7XTwQ9qRaWMGC
-         +u3K1QVL9HQecP45uuY4ePm9LT36tP/R+drgHupKokHeKTK4M4MCGujSCP0pvCmZnV+8
-         S24A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CTz+WzOPPv+J3NG9b5Kt944FkWQA/8CWT9C+npA8ORo=;
-        b=IXZ2Ud2YZCo+93k7XWWHnwyaElHWzYgsYkFhNLo4omrrzDMmjEk8OuI6xh+GlacQwr
-         1wfiaHmn63UroQF3TDw0bkf1ADvO2LuYr5rghEhNExvAqOLX1Jvjh6os+EJ5d3/5qpSa
-         5sFb2wZsweyY56s/HDI49ZPdMRIfSDQ2rdAqeSIFT+q1msS5cJ8IE4mv3ATMMiMX4Kn3
-         unSHSDyS3KwZIM+rUiwT+SlOVKTEU/2TVcWRETNxfVLLNp8t1NMKcstq2OWj2k78uyK+
-         KnJdliXZyI9SL1tCmQqhcrDVAI/LViIQ49ZpJNYUHyH6neRS7v54xMSOzqZ4E4bVrjP8
-         hnFg==
-X-Gm-Message-State: AOAM530ecFltjA35zv67YOzXRTZiFWULMb1iDRX5Ci5Hdieb1IxoT1SL
-        ILYoXIa/0U9g/EDqbH+rg5cNF1il1NpCLfgRMFw=
-X-Google-Smtp-Source: ABdhPJzTk1oaxfNvGK2XQBZb0LI9+ErDnsXn/cLbG7wT5aFtzoTuAWuyzyTUiMn0XTB4JJfYGjG9FsApf0zLNEm9t6k=
-X-Received: by 2002:aa7:cd75:: with SMTP id ca21mr1860304edb.242.1640263144114;
- Thu, 23 Dec 2021 04:39:04 -0800 (PST)
+        id S243742AbhLWMoG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Dec 2021 07:44:06 -0500
+Received: from smtp23.cstnet.cn ([159.226.251.23]:49512 "EHLO cstnet.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S233015AbhLWMoG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 Dec 2021 07:44:06 -0500
+Received: from localhost.localdomain (unknown [124.16.138.126])
+        by APP-03 (Coremail) with SMTP id rQCowAAnLy8Bb8RhZVpoBA--.50184S2;
+        Thu, 23 Dec 2021 20:43:46 +0800 (CST)
+From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
+To:     andy.shevchenko@gmail.com, davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Subject: [PATCH v3] drivers: net: smc911x: Check for error irq
+Date:   Thu, 23 Dec 2021 20:43:45 +0800
+Message-Id: <20211223124345.1400194-1-jiasheng@iscas.ac.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20211223123232.1353785-1-jiasheng@iscas.ac.cn>
-In-Reply-To: <20211223123232.1353785-1-jiasheng@iscas.ac.cn>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 23 Dec 2021 14:37:06 +0200
-Message-ID: <CAHp75VcuXAiLGy7p+2A1839x=9-L=E71xkTaRncx0-Jf2Fh_mg@mail.gmail.com>
-Subject: Re: [PATCH v2] drivers: net: smc911x: Check for error irq
-To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: rQCowAAnLy8Bb8RhZVpoBA--.50184S2
+X-Coremail-Antispam: 1UD129KBjvdXoW7JrW8tF18Zr1rCr45GFWkXrb_yoWDKwc_Kr
+        4v9F43GaykXr1v9F43tr4Sk34IvFn8XF4ruFZ2gFWSq34DAryUXr4Dur48Aw17u34DKF9r
+        Gry3WFZrA34SyjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbcxFF20E14v26r1j6r4UM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Gr0_Xr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr0_
+        Cr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s
+        1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0
+        cI8IcVAFwI0_JrI_JrylYx0Ex4A2jsIE14v26r4j6F4UMcvjeVCFs4IE7xkEbVWUJVW8Jw
+        ACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc2xSY4AK67AK6ryUMxAI
+        w28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr
+        4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWUtwCIc40Y0x0EwIxG
+        rwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVW8JVWxJw
+        CI42IY6xAIw20EY4v20xvaj40_Wr1j6rW3Jr1lIxAIcVC2z280aVAFwI0_Gr0_Cr1lIxAI
+        cVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUjVOJ5UUUUU==
+X-Originating-IP: [124.16.138.126]
+X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 23, 2021 at 2:33 PM Jiasheng Jiang <jiasheng@iscas.ac.cn> wrote:
-> On Thursday, December 23, 2021, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-> > Do other way around.
-> > ret = ...
-> > if (ret < 0)
-> >   ...
-> > irq = ret;
->
-> This version I correct the patch by using error variable, too.
-> And the commit message is as follow.
->
-> Because platform_get_irq() could fail and return error irq.
-> Therefore, it might be better to check it in order to avoid the use of
-> error irq.
+As platform_get_irq() could fail and return error irq number.
+Therefore, it might be better to check it in order to avoid the use of
+error irq.
 
-Fix commit message and send v3.
+Fixes: ae150435b59e ("smsc: Move the SMC (SMSC) drivers")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+---
+Changlog:
 
+v2 -> v3
+
+*Change 1. Using error varaible to check.
+*Change 2. Fix commit message.
+---
+ drivers/net/ethernet/smsc/smc911x.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/smsc/smc911x.c b/drivers/net/ethernet/smsc/smc911x.c
+index 22cdbf12c823..9470d9c07fed 100644
+--- a/drivers/net/ethernet/smsc/smc911x.c
++++ b/drivers/net/ethernet/smsc/smc911x.c
+@@ -2069,7 +2069,12 @@ static int smc911x_drv_probe(struct platform_device *pdev)
+ 	SET_NETDEV_DEV(ndev, &pdev->dev);
+ 
+ 	ndev->dma = (unsigned char)-1;
+-	ndev->irq = platform_get_irq(pdev, 0);
++
++	ret = platform_get_irq(pdev, 0);
++	if (ret < 0)
++		goto release_both;
++	ndev->irq = ret;
++
+ 	lp = netdev_priv(ndev);
+ 	lp->netdev = ndev;
+ #ifdef SMC_DYNAMIC_BUS_CONFIG
 -- 
-With Best Regards,
-Andy Shevchenko
+2.25.1
+
