@@ -2,53 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C8BFA47E984
-	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 23:27:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B4CE47E985
+	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 23:27:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350578AbhLWW1W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Dec 2021 17:27:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38796 "EHLO
+        id S1350463AbhLWW12 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Dec 2021 17:27:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350812AbhLWW0L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Dec 2021 17:26:11 -0500
+        with ESMTP id S1350617AbhLWW0T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Dec 2021 17:26:19 -0500
 Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6F1EC0698E1
-        for <netdev@vger.kernel.org>; Thu, 23 Dec 2021 14:24:46 -0800 (PST)
-Received: by mail-pj1-x104a.google.com with SMTP id v1-20020a17090a6b0100b001b12c84a1b7so5013170pjj.0
-        for <netdev@vger.kernel.org>; Thu, 23 Dec 2021 14:24:46 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FA33C0698E5
+        for <netdev@vger.kernel.org>; Thu, 23 Dec 2021 14:24:50 -0800 (PST)
+Received: by mail-pj1-x104a.google.com with SMTP id s16-20020a17090a881000b001b179d3fbf3so4222730pjn.4
+        for <netdev@vger.kernel.org>; Thu, 23 Dec 2021 14:24:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=7JAsMzI/xyXeS8mjzvdmC639EA7v2UpQEtBKKluUX/g=;
-        b=OP2W3j77iNB3uUHuQlng1JV1keYNfkTz0Sy0Kvqkp9sCAeDTAOamUMUCO9QdhCzm48
-         5met2fjSGHbwyqXJGVFnBmTzkNVsILz7a1aVxGDxDk30vf8USoOkjYeM6GOYmUAOuiqS
-         7uZxBTY6SL+azsP24z49/oTidKkojpSHUBuukdSeJK9h/ivI/INBTH//pPGxlKcH/+rf
-         nII9jFkvlL5XxGTIPgos2M9hgWw7t74+9y/WLmJCWihp8FeEZJPQjT+SZz9qMiqgz7LY
-         t0xSeIMSqD/brmjcp7m1Iyr5D7Rt37xrRlVQQYa+35Bg6vpfi5bKOagx8s6ndCJ6HXP5
-         6Dww==
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=tpM3RVmbzhTcEvjWc4fMD4AvByCzQpfmOFOfWA2dO5w=;
+        b=lbzsQAeJwfFPTpQIFSZ1MrmCtu4BiWzo+HbzIzAr4CMKoTU4V+FgpsOFoZNlSv445X
+         x43bfVsCaf6IPMXwRKslXA/K7ZwZxMs20HAMHgUNHAZ3wa5SGs3RwpZ0Ppzqubs4FMzP
+         9IdkkgKZimkjcDAOtuVt42NqJkpAam0F8GICdftiOUwpoXk8qZM4datGhKIswddxmUYM
+         UPhsJLqYPnggXt8m9GINyBVv0Y6gY/fbujQeU2fnvrw7bCb9AMTKRdRa27qDIXHGJ78R
+         N9SxnnksecuATXHC9UsaTgsKtTxCpguW8b8uhl5iUWGtWUeS0mYTmmiHQEKAPObX3On/
+         fc6Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=7JAsMzI/xyXeS8mjzvdmC639EA7v2UpQEtBKKluUX/g=;
-        b=nqF6HL5XT3UuT7CaYL5Bcfd6BiwNdb/XfriodQv5wmtrb/QXV9L30vDyhKMzjMUVYa
-         3PRIWzzwikFcpWINIM9+ySr1uA55MI9fsdQQO8bjt7Bot4ZzJpnyUzophv7BbSaorepQ
-         iICqqrEhjssqzfOo8JoKjn6lyIZp/RbRqTqy+fAswOkp+thTaF/KE4kUweS8F9dJAAMp
-         ahAGcew2MGQZRLMrdVAHc0BfmVlow87bmIUE6TwhrgYZj87gNyit5Eo6h4FuLKmRAcoJ
-         Qak0N7rX5GfBMFYTMDzcc2PnEzhkFAzIpGmK8gbC7zESFjErFquCX7wiVzS4wuVFAnLv
-         Ra8g==
-X-Gm-Message-State: AOAM533H6Rq3M4hMFXn8AV8CFxGza9wS7TdtXZz4My0X0lqOo991tNBi
-        C+olNfPhc2ykE9nOHdnfrSwzc3F62fxd3fqhKe4JabizMxjuOzeF9XFzzRuYXIK2tzASt8XUs6f
-        0Le0oKqrW4U0RRPTWG7uAWigOGX+GTg9FDR8xvbFhFDFM8YeEoPt5I9O3mPQLr99Vc+jkgA==
-X-Google-Smtp-Source: ABdhPJxLAWE3bDq8JURNCdZCW7sz74Ba0Sqcdow8Xqh9NCOHCw8xNhCg6jgJfTLQqb5Hv9aycftTnIuhpCZ8+m4=
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=tpM3RVmbzhTcEvjWc4fMD4AvByCzQpfmOFOfWA2dO5w=;
+        b=O4iJrtjErp25A96KeuwayBb2IfEGQZv5N2OBMkykULXYM2dgQrcHrwProUGrs5GwfZ
+         e/zqAAa8q+svy90pGwNQ4TUpWO4RHJy8VJBwn156+a3GjYZ3nFQTxE0rYwnJ776it7RX
+         P4mNe3mAeyMJbyIHaPEn00awX81ElRJLFOFWEL7g62/UHF/DwmFRTR4pE5tdxu5VzbQa
+         +ULOLX7FOUjbwTuFDbIkWaRNu3hyUYA1iWuyXNverBm6sX0Hs0eNv7wlQtgBebxXgqk/
+         h6aX6PS8yzbG9amduEqlOjGQgqUsZ2HnPlm22/kJZGScMrZxpD1AQns2h8juecTU+jQh
+         Ed/g==
+X-Gm-Message-State: AOAM5330ov0iljpVRG+mXbn0Pw7tzGGe4iJ/+k/A6NbeN5AfWF4LCB7u
+        VU0VjoTZ3dsWtfqmbo/o9B8vKifOr66WYkf1gugnsYdLhrJzai10Fh3ClOGnLy9zSh4MEjw36XE
+        hUzbfN5bk2yr0Q8CT4y4w2bCm7ZfIfd7wvO2m7AJdMGmVeA6Ijs0BABuPwG0OSDjBDgSzpQ==
+X-Google-Smtp-Source: ABdhPJxsS5wWX7pV/cdP7ayYnMUh4iNIflXFepEu7BO8GNisYcVAeNnHEuW+ASkaAcgmwRutapxV4r5u7e60ZEg=
 X-Received: from coco0920.c.googlers.com ([fda3:e722:ac3:cc00:24:72f4:c0a8:5738])
- (user=lixiaoyan job=sendgmr) by 2002:a17:902:b695:b0:148:a2f7:9d76 with SMTP
- id c21-20020a170902b69500b00148a2f79d76mr4142939pls.149.1640298286100; Thu,
- 23 Dec 2021 14:24:46 -0800 (PST)
-Date:   Thu, 23 Dec 2021 22:24:40 +0000
-Message-Id: <20211223222441.2975883-1-lixiaoyan@google.com>
+ (user=lixiaoyan job=sendgmr) by 2002:a17:90a:c203:: with SMTP id
+ e3mr739963pjt.0.1640298289369; Thu, 23 Dec 2021 14:24:49 -0800 (PST)
+Date:   Thu, 23 Dec 2021 22:24:41 +0000
+In-Reply-To: <20211223222441.2975883-1-lixiaoyan@google.com>
+Message-Id: <20211223222441.2975883-2-lixiaoyan@google.com>
 Mime-Version: 1.0
+References: <20211223222441.2975883-1-lixiaoyan@google.com>
 X-Mailer: git-send-email 2.34.1.448.ga2b2bfdf31-goog
-Subject: [PATCH net 1/2] udp: using datalen to cap ipv6 udp max gso segments
+Subject: [PATCH net 2/2] selftests: Calculate udpgso segment count without
+ header adjustment
 From:   Coco Li <lixiaoyan@google.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S . Miller" <davem@davemloft.net>,
@@ -59,35 +63,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The max number of UDP gso segments is intended to cap to
-UDP_MAX_SEGMENTS, this is checked in udp_send_skb().
+The below referenced commit correctly updated the computation of number
+of segments (gso_size) by using only the gso payload size and
+removing the header lengths.
 
-skb->len contains network and transport header len here, we should use
-only data len instead.
+With this change the regression test started failing. Update
+the tests to match this new behavior.
 
-This is the ipv6 counterpart to the below referenced commit,
-which missed the ipv6 change
+Both IPv4 and IPv6 tests are updated, as a separate patch in this series
+will update udp_v6_send_skb to match this change in udp_send_skb.
 
 Fixes: 158390e45612 ("udp: using datalen to cap max gso segments")
 Signed-off-by: Coco Li <lixiaoyan@google.com>
 Reviewed-by: Willem de Bruijn <willemb@google.com>
 ---
- net/ipv6/udp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/testing/selftests/net/udpgso.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-index a2caca6ccf11..8cde9efd7919 100644
---- a/net/ipv6/udp.c
-+++ b/net/ipv6/udp.c
-@@ -1204,7 +1204,7 @@ static int udp_v6_send_skb(struct sk_buff *skb, struct flowi6 *fl6,
- 			kfree_skb(skb);
- 			return -EINVAL;
- 		}
--		if (skb->len > cork->gso_size * UDP_MAX_SEGMENTS) {
-+		if (datalen > cork->gso_size * UDP_MAX_SEGMENTS) {
- 			kfree_skb(skb);
- 			return -EINVAL;
- 		}
+diff --git a/tools/testing/selftests/net/udpgso.c b/tools/testing/selftests/net/udpgso.c
+index c66da6ffd6d8..7badaf215de2 100644
+--- a/tools/testing/selftests/net/udpgso.c
++++ b/tools/testing/selftests/net/udpgso.c
+@@ -156,13 +156,13 @@ struct testcase testcases_v4[] = {
+ 	},
+ 	{
+ 		/* send max number of min sized segments */
+-		.tlen = UDP_MAX_SEGMENTS - CONST_HDRLEN_V4,
++		.tlen = UDP_MAX_SEGMENTS,
+ 		.gso_len = 1,
+-		.r_num_mss = UDP_MAX_SEGMENTS - CONST_HDRLEN_V4,
++		.r_num_mss = UDP_MAX_SEGMENTS,
+ 	},
+ 	{
+ 		/* send max number + 1 of min sized segments: fail */
+-		.tlen = UDP_MAX_SEGMENTS - CONST_HDRLEN_V4 + 1,
++		.tlen = UDP_MAX_SEGMENTS + 1,
+ 		.gso_len = 1,
+ 		.tfail = true,
+ 	},
+@@ -259,13 +259,13 @@ struct testcase testcases_v6[] = {
+ 	},
+ 	{
+ 		/* send max number of min sized segments */
+-		.tlen = UDP_MAX_SEGMENTS - CONST_HDRLEN_V6,
++		.tlen = UDP_MAX_SEGMENTS,
+ 		.gso_len = 1,
+-		.r_num_mss = UDP_MAX_SEGMENTS - CONST_HDRLEN_V6,
++		.r_num_mss = UDP_MAX_SEGMENTS,
+ 	},
+ 	{
+ 		/* send max number + 1 of min sized segments: fail */
+-		.tlen = UDP_MAX_SEGMENTS - CONST_HDRLEN_V6 + 1,
++		.tlen = UDP_MAX_SEGMENTS + 1,
+ 		.gso_len = 1,
+ 		.tfail = true,
+ 	},
 -- 
 2.34.1.448.ga2b2bfdf31-goog
 
