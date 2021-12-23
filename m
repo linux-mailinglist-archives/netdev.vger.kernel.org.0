@@ -2,47 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DA7047DD0A
-	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 02:18:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C8BBB47DD21
+	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 02:18:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345922AbhLWBPj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Dec 2021 20:15:39 -0500
-Received: from o1.ptr2625.egauge.net ([167.89.112.53]:27544 "EHLO
+        id S1346708AbhLWBQD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Dec 2021 20:16:03 -0500
+Received: from o1.ptr2625.egauge.net ([167.89.112.53]:27408 "EHLO
         o1.ptr2625.egauge.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346279AbhLWBOz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Dec 2021 20:14:55 -0500
+        with ESMTP id S1346249AbhLWBOq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Dec 2021 20:14:46 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=egauge.net;
         h=from:subject:in-reply-to:references:mime-version:to:cc:
         content-transfer-encoding:content-type;
-        s=sgd; bh=K3gvUb3OfxsaOhe9tlq0tGnjjw1iUXxBhXljWscLEpA=;
-        b=EyL6nlfgr9jVdtVhMT6au8qt34Za+LdjzKKipZCKpqlgz6G1wl5F3+25Hbw0xEDLe2wu
-        FrihvBjOH6zXmTgA3DRnJftUG5FCjuj5rCxeHcC251pZQuyGFJCwfV5v7gDc1e/y/avUCB
-        0UO1lhho1nSvG87xayM8xWqixfBePLN9481Ei9NJQ53z6p07N2K4bk1XHoWIKjhnDSnikd
-        6bOlQ5ulnfrVrLW5DvvVKo4ESFryeS2RHRZcYuHoU/LyoDffXjFEEavVG+/Ri/6snSR7Ul
-        NGt1Q+S0RbMcoGGgtYpyydfsRRVmyTHAieajpg3t3EgvBkqMFC0e4bMSQph529TA==
-Received: by filterdrecv-75ff7b5ffb-ndqvq with SMTP id filterdrecv-75ff7b5ffb-ndqvq-1-61C3CD5F-F
-        2021-12-23 01:14:07.170941284 +0000 UTC m=+9687225.771336929
+        s=sgd; bh=yps8dWzMUKU9RpPhjdHxIE2MYXvMyKmHNVpEu8C+Av8=;
+        b=YDmkak+OJEFHYXe/bj0Hi6XL2ELKUc4fCQN0z5nFM2oYV6GPyJxBnSq9OPl6vD1wKRHA
+        cOcYfPSCr3Eckn5sQ4WMg/PwZIf6yjIPG9KgH8qSbL3TfcKGTfo3mIrcm/KuaUg+Fww3ch
+        M03YDD0sBTbfHuCZFpFHard5V3ByPZK66/6RACPSdLgc6lgNBuBOu38VdUbEfrIUR4jNXc
+        WVC+ivPgLdV6s7LL1FPa1EHQ5Pu05r+Ry5C7lBNumIwlMeHLccJ7hl0A1x2uon7n6DF4ZP
+        vlRBywOeK3Atj11UpaYoWdlKgueDtgXMsgbDFpwAzU9oVNjYWTRd9iiBK9jUQG2Q==
+Received: by filterdrecv-656998cfdd-phncc with SMTP id filterdrecv-656998cfdd-phncc-1-61C3CD5F-4
+        2021-12-23 01:14:07.130091855 +0000 UTC m=+7955208.316338637
 Received: from pearl.egauge.net (unknown)
-        by geopod-ismtpd-2-0 (SG)
+        by geopod-ismtpd-6-0 (SG)
         with ESMTP
-        id IA6WsOnwRGSzJ75Zl9-9BQ
-        Thu, 23 Dec 2021 01:14:07.020 +0000 (UTC)
+        id cnVlM2Y7Qw-Hv8JFSNpx_A
+        Thu, 23 Dec 2021 01:14:06.990 +0000 (UTC)
 Received: by pearl.egauge.net (Postfix, from userid 1000)
-        id EE86B70152F; Wed, 22 Dec 2021 18:14:05 -0700 (MST)
+        id 20C9E700BFC; Wed, 22 Dec 2021 18:14:06 -0700 (MST)
 From:   David Mosberger-Tang <davidm@egauge.net>
-Subject: [PATCH v2 46/50] wilc1000: remove duplicate CRC calculation code
+Subject: [PATCH v2 50/50] wilc1000: add module parameter
+ "disable_zero_copy_tx" to SPI driver
 Date:   Thu, 23 Dec 2021 01:14:07 +0000 (UTC)
-Message-Id: <20211223011358.4031459-47-davidm@egauge.net>
+Message-Id: <20211223011358.4031459-51-davidm@egauge.net>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211223011358.4031459-1-davidm@egauge.net>
 References: <20211223011358.4031459-1-davidm@egauge.net>
 MIME-Version: 1.0
 X-SG-EID: =?us-ascii?Q?+kMxBqj35EdRUKoy8diX1j4AXmPtd302oan+iXZuF8m2Nw4HRW2irNspffT=2Fkh?=
- =?us-ascii?Q?ET6RJF6+Prbl0h=2FEtF1rRLvCNKwj+DYMFZnlIhP?=
- =?us-ascii?Q?R3K1iY1ejP=2F1ZZy1gRWB3YD8=2FXZCKVGtzkSucLw?=
- =?us-ascii?Q?WRtW7fomsuWltgqRjiEBKbxvD+9e=2Fp132d6pwH6?=
- =?us-ascii?Q?1Qao59pVs+WRvAZYsHo7cuhrDvbvOIpCz4NSaqQ?=
- =?us-ascii?Q?f3D=2FiC1tSuShhdzeShsLBv4nScpyWhQ5Nld97u?=
+ =?us-ascii?Q?ET6RJF6+Prbl0h=2FEtF1rRLvNU=2FAiSwPXGwNeF4R?=
+ =?us-ascii?Q?8pktv6qIQV9=2FvaYSYgd73qzUc+WcF+3KTLAn0Dz?=
+ =?us-ascii?Q?BHXeSqbDC7G4R7ZfYu1EAHyy3Sq2tG4ZV5WlYOQ?=
+ =?us-ascii?Q?9WcEpI8mc=2FcJxod2R537Lha1AodTa5W6TVWmKjK?=
+ =?us-ascii?Q?rtnn5DEaNrWz5M6RHqHuhGYx03zVkgXBQHsPUR?=
 To:     Ajay Singh <ajay.kathat@microchip.com>
 Cc:     Claudiu Beznea <claudiu.beznea@microchip.com>,
         Kalle Valo <kvalo@kernel.org>,
@@ -58,55 +59,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Factor two copies of the same calculation into a single instance.
+Add a module parameter to disable the zero-copy transmit path.  This
+is useful for testing and performance measurement, for example.
 
 Signed-off-by: David Mosberger-Tang <davidm@egauge.net>
 ---
- drivers/net/wireless/microchip/wilc1000/spi.c | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+ drivers/net/wireless/microchip/wilc1000/spi.c | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/net/wireless/microchip/wilc1000/spi.c b/drivers/net/wireless/microchip/wilc1000/spi.c
-index 5f73b3d2d2112..189907580d921 100644
+index 8d94f111ffc49..588cec326a74b 100644
 --- a/drivers/net/wireless/microchip/wilc1000/spi.c
 +++ b/drivers/net/wireless/microchip/wilc1000/spi.c
-@@ -658,7 +658,7 @@ static int wilc_spi_dma_rw(struct wilc *wilc, u8 cmd, u32 adr, u8 *b, u32 sz)
- 	u8 wb[32], rb[32];
- 	int cmd_len, resp_len;
- 	int retry, ix = 0;
--	u8 crc[2];
-+	u8 crc[2], *crc7;
- 	struct wilc_spi_cmd *c;
- 	struct wilc_spi_rsp_data *r;
+@@ -31,6 +31,11 @@ MODULE_PARM_DESC(enable_crc16,
+ 		 "\t\t\tData transfers can be large and the CPU-cycle cost\n"
+ 		 "\t\t\tof enabling this may be substantial.");
  
-@@ -673,8 +673,6 @@ static int wilc_spi_dma_rw(struct wilc *wilc, u8 cmd, u32 adr, u8 *b, u32 sz)
- 		c->u.dma_cmd.size[0] = sz >> 8;
- 		c->u.dma_cmd.size[1] = sz;
- 		cmd_len = offsetof(struct wilc_spi_cmd, u.dma_cmd.crc);
--		if (spi_priv->crc7_enabled)
--			c->u.dma_cmd.crc[0] = wilc_get_crc7(wb, cmd_len);
- 	} else if (cmd == CMD_DMA_EXT_WRITE || cmd == CMD_DMA_EXT_READ) {
- 		c->u.dma_cmd_ext.addr[0] = adr >> 16;
- 		c->u.dma_cmd_ext.addr[1] = adr >> 8;
-@@ -683,15 +681,16 @@ static int wilc_spi_dma_rw(struct wilc *wilc, u8 cmd, u32 adr, u8 *b, u32 sz)
- 		c->u.dma_cmd_ext.size[1] = sz >> 8;
- 		c->u.dma_cmd_ext.size[2] = sz;
- 		cmd_len = offsetof(struct wilc_spi_cmd, u.dma_cmd_ext.crc);
--		if (spi_priv->crc7_enabled)
--			c->u.dma_cmd_ext.crc[0] = wilc_get_crc7(wb, cmd_len);
- 	} else {
- 		dev_err(&spi->dev, "dma read write cmd [%x] not supported\n",
- 			cmd);
- 		return -EINVAL;
- 	}
--	if (spi_priv->crc7_enabled)
-+	if (spi_priv->crc7_enabled) {
-+		crc7 = wb + cmd_len;
-+		*crc7 = wilc_get_crc7(wb, cmd_len);
- 		cmd_len += 1;
-+	}
++static bool disable_zero_copy_tx;
++module_param(disable_zero_copy_tx, bool, 0644);
++MODULE_PARM_DESC(disable_zero_copy_tx,
++		 "Disable zero-copy when sending packets.");
++
+ /*
+  * For CMD_SINGLE_READ and CMD_INTERNAL_READ, WILC may insert one or
+  * more zero bytes between the command response and the DATA Start tag
+@@ -41,7 +46,7 @@ MODULE_PARM_DESC(enable_crc16,
+  */
+ #define WILC_SPI_RSP_HDR_EXTRA_DATA	8
  
- 	resp_len = sizeof(*r);
+-static const struct wilc_hif_func wilc_hif_spi;
++static struct wilc_hif_func wilc_hif_spi;
  
+ static int wilc_spi_reset(struct wilc *wilc);
+ static int wilc_spi_write_sk_buffs(struct wilc *wilc, u32 addr,
+@@ -254,6 +259,9 @@ static int wilc_bus_probe(struct spi_device *spi)
+ 	if (!spi_priv)
+ 		return -ENOMEM;
+ 
++	if (!disable_zero_copy_tx)
++		wilc_hif_spi.hif_sk_buffs_tx = wilc_spi_write_sk_buffs;
++
+ 	ret = wilc_cfg80211_init(&wilc, &spi->dev, WILC_HIF_SPI, &wilc_hif_spi);
+ 	if (ret)
+ 		goto free;
+@@ -1424,7 +1432,7 @@ static int wilc_spi_sync_ext(struct wilc *wilc, int nint)
+ }
+ 
+ /* Global spi HIF function table */
+-static const struct wilc_hif_func wilc_hif_spi = {
++static struct wilc_hif_func wilc_hif_spi = {
+ 	.hif_init = wilc_spi_init,
+ 	.hif_deinit = wilc_spi_deinit,
+ 	.hif_read_reg = wilc_spi_read_reg,
+@@ -1436,7 +1444,6 @@ static const struct wilc_hif_func wilc_hif_spi = {
+ 	.hif_read_size = wilc_spi_read_size,
+ 	.hif_block_tx_ext = wilc_spi_write,
+ 	.hif_block_rx_ext = wilc_spi_read,
+-	.hif_sk_buffs_tx = wilc_spi_write_sk_buffs,
+ 	.hif_sync_ext = wilc_spi_sync_ext,
+ 	.hif_reset = wilc_spi_reset,
+ };
 -- 
 2.25.1
 
