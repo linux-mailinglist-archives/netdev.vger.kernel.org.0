@@ -2,47 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF6E047DCD8
-	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 02:15:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D536B47DCC5
+	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 02:15:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346057AbhLWBO2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Dec 2021 20:14:28 -0500
-Received: from o1.ptr2625.egauge.net ([167.89.112.53]:18420 "EHLO
+        id S1345672AbhLWBOK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Dec 2021 20:14:10 -0500
+Received: from o1.ptr2625.egauge.net ([167.89.112.53]:17822 "EHLO
         o1.ptr2625.egauge.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345806AbhLWBOU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Dec 2021 20:14:20 -0500
+        with ESMTP id S238565AbhLWBOI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Dec 2021 20:14:08 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=egauge.net;
         h=from:subject:in-reply-to:references:mime-version:to:cc:
         content-transfer-encoding:content-type;
-        s=sgd; bh=VdSmr7LcH0rW8kHWmZpoh/Ig1LSGlhHmXHB0t3cqZGc=;
-        b=AGJAB9NF2r1y61gG1NFibLyjYqebZYsKzYQcyhYBEKFYqqWwu8BuwSFhK0VCpq+UoUxt
-        Fgfp5X8r6vQtUrMwJp0elicdllDHKLvt1X7EGdEuT0VRQYDHOdRYmpuZHKGWYytmh7nhrg
-        hRMcbf+nteyrDWlChGGdXIyMLM+oYUTGSYy7nDrqIf7DW74x8qEoHJs9AHz+jFRha8lz2A
-        tsJj6HzeIfuluuFGT+CUAwMxLaKtxLJRVkxU7ukN9K2xEdsvXTr/g6so2joTiiveH9o4/F
-        8sawsJ7aa84oUE3iqZkpuMvkg5C79l8hC6IEfUGQsD0exT3joAie/Pq2I2WiDbFw==
-Received: by filterdrecv-64fcb979b9-6vbpf with SMTP id filterdrecv-64fcb979b9-6vbpf-1-61C3CD5E-35
-        2021-12-23 01:14:06.683709228 +0000 UTC m=+8644637.687945467
+        s=sgd; bh=TCoMVHSYVhkJgtIGjOgzk6pH7Tut5PTIvOcUiLqFDQU=;
+        b=f5ysdqv03gdXWYFLzx74xdkovU0c7CKKXPvqkekpBCrwEMB9/+9R6qW7EHY+OqCnaFk6
+        cOu8o/9ghIl4ftlm7BGiET/IntCN8AbdIcFPYfYsyNesRji2py+vKnwVQtjadoGRW/JTFW
+        dS1y4cfWVCd+vynlPiRnL3iXhotce/qtpTyWTsZ8VC+64Uyn/w9AcTrvP3lsnQir+71t7l
+        CoYtq5UnA6Nx37k9MQbZSj1k9c3PyrxrwNlF6CjgeTGMLwTSqZJlvtS7lkwsTGsrfU6ui0
+        Z1Rds78oIkt2VGGZ9uCDHYXI+jnMKDqsLNOx/1G63CyukueLg6OcMeeK7qLvZodw==
+Received: by filterdrecv-7bf5c69d5-88tll with SMTP id filterdrecv-7bf5c69d5-88tll-1-61C3CD5D-46
+        2021-12-23 01:14:05.78637051 +0000 UTC m=+9687224.636323211
 Received: from pearl.egauge.net (unknown)
-        by geopod-ismtpd-6-0 (SG)
+        by geopod-ismtpd-3-1 (SG)
         with ESMTP
-        id OwzaDxMVSaWpyCRXrQezBA
-        Thu, 23 Dec 2021 01:14:06.542 +0000 (UTC)
+        id hdnbALfbTKOlXMkxIs8p2g
+        Thu, 23 Dec 2021 01:14:05.582 +0000 (UTC)
 Received: by pearl.egauge.net (Postfix, from userid 1000)
-        id 73DAF701488; Wed, 22 Dec 2021 18:14:05 -0700 (MST)
+        id D75527009E9; Wed, 22 Dec 2021 18:14:04 -0700 (MST)
 From:   David Mosberger-Tang <davidm@egauge.net>
-Subject: [PATCH v2 27/50] wilc1000: simplify ac_balance() a bit
+Subject: [PATCH v2 03/50] wilc1000: move receive-queue stats from txq to wilc
+ structure
 Date:   Thu, 23 Dec 2021 01:14:06 +0000 (UTC)
-Message-Id: <20211223011358.4031459-28-davidm@egauge.net>
+Message-Id: <20211223011358.4031459-4-davidm@egauge.net>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211223011358.4031459-1-davidm@egauge.net>
 References: <20211223011358.4031459-1-davidm@egauge.net>
 MIME-Version: 1.0
 X-SG-EID: =?us-ascii?Q?+kMxBqj35EdRUKoy8diX1j4AXmPtd302oan+iXZuF8m2Nw4HRW2irNspffT=2Fkh?=
- =?us-ascii?Q?ET6RJF6+Prbl0h=2FEtF1rRLvFH5jXK85cQtbtZt7?=
- =?us-ascii?Q?SL3jCjJD5yamKyyCopUd3NzO3D=2FhuQ5uOd=2Fdefx?=
- =?us-ascii?Q?Rnh5BvGJtoyo9c8YpecROwyRILZQe2KyhrLaSoH?=
- =?us-ascii?Q?iIFYB0rWwNcSYZezVDMcPV425VYVAjNYg5TQye4?=
- =?us-ascii?Q?ctBjHI0WQqiYGl5WfCFqyP3gRPmCuBvKRWAyk4?=
+ =?us-ascii?Q?ET6RJF6+Prbl0h=2FEtF1rRLvHpcdJyjK68kH7Sar?=
+ =?us-ascii?Q?FuF+9wd2pQ9CycCQS3psyU5a2BgiM9NfanPTTGn?=
+ =?us-ascii?Q?r3zYONbprcPrw1z=2FH8X3gZmbkZcyk3dg=2Fs7VQHJ?=
+ =?us-ascii?Q?8RL2MyolwdEDrKPjgmSnmyFxcjAwkS56DB5z1dM?=
+ =?us-ascii?Q?STQQcWnFGoiIZJjzZadq7CVNokJ96Bg3tymUab?=
 To:     Ajay Singh <ajay.kathat@microchip.com>
 Cc:     Claudiu Beznea <claudiu.beznea@microchip.com>,
         Kalle Valo <kvalo@kernel.org>,
@@ -58,58 +59,100 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ac_balance() is never going to fail ("ratio" is always non-NULL), so
-there is no reason to pretend otherwise.
+This is in preparation of switching the transmit queue to struct
+sk_buffs.  There is no functional change other than moving the
+location of the structure.
 
 Signed-off-by: David Mosberger-Tang <davidm@egauge.net>
 ---
- drivers/net/wireless/microchip/wilc1000/wlan.c | 17 +++++++++--------
- 1 file changed, 9 insertions(+), 8 deletions(-)
+ .../net/wireless/microchip/wilc1000/netdev.h  |  1 +
+ .../net/wireless/microchip/wilc1000/wlan.c    | 28 +++++++++----------
+ .../net/wireless/microchip/wilc1000/wlan.h    |  1 -
+ 3 files changed, 15 insertions(+), 15 deletions(-)
 
+diff --git a/drivers/net/wireless/microchip/wilc1000/netdev.h b/drivers/net/wireless/microchip/wilc1000/netdev.h
+index c07f58a86bc76..d88fee8f9a6b0 100644
+--- a/drivers/net/wireless/microchip/wilc1000/netdev.h
++++ b/drivers/net/wireless/microchip/wilc1000/netdev.h
+@@ -256,6 +256,7 @@ struct wilc {
+ 
+ 	struct txq_handle txq[NQUEUES];
+ 	int txq_entries;
++	struct txq_fw_recv_queue_stat fw[NQUEUES];
+ 
+ 	struct wilc_tx_queue_status tx_q_limit;
+ 	struct rxq_entry_t rxq_head;
 diff --git a/drivers/net/wireless/microchip/wilc1000/wlan.c b/drivers/net/wireless/microchip/wilc1000/wlan.c
-index 5ea9129b36925..287c0843ba152 100644
+index 26fa7078acffd..d1f68df1dbeef 100644
 --- a/drivers/net/wireless/microchip/wilc1000/wlan.c
 +++ b/drivers/net/wireless/microchip/wilc1000/wlan.c
-@@ -345,21 +345,23 @@ static inline u8 ac_classify(struct wilc *wilc, struct sk_buff *skb)
- 	return q_num;
- }
- 
--static inline int ac_balance(struct wilc *wl, u8 *ratio)
-+/**
-+ * ac_balance() - balance queues by favoring ones with fewer packets pending
-+ * @wl: Pointer to the wilc structure.
-+ * @ratio: Pointer to array of length NQUEUES in which this function
-+ *	returns the number of packets that may be scheduled for each
-+ *	access category.
-+ */
-+static inline void ac_balance(const struct wilc *wl, u8 *ratio)
- {
- 	u8 i, max_count = 0;
- 
--	if (!ratio)
--		return -EINVAL;
--
- 	for (i = 0; i < NQUEUES; i++)
- 		if (wl->fw[i].count > max_count)
- 			max_count = wl->fw[i].count;
+@@ -373,32 +373,32 @@ static inline int ac_balance(struct wilc *wl, u8 *ratio)
+ 		return -EINVAL;
  
  	for (i = 0; i < NQUEUES; i++)
- 		ratio[i] = max_count - wl->fw[i].count;
--
--	return 0;
+-		if (wl->txq[i].fw.count > max_count)
+-			max_count = wl->txq[i].fw.count;
++		if (wl->fw[i].count > max_count)
++			max_count = wl->fw[i].count;
+ 
+ 	for (i = 0; i < NQUEUES; i++)
+-		ratio[i] = max_count - wl->txq[i].fw.count;
++		ratio[i] = max_count - wl->fw[i].count;
+ 
+ 	return 0;
  }
  
  static inline void ac_update_fw_ac_pkt_info(struct wilc *wl, u32 reg)
-@@ -894,8 +896,7 @@ int wilc_wlan_handle_txq(struct wilc *wilc, u32 *txq_count)
- 	if (wilc->quit)
- 		goto out_update_cnt;
+ {
+-	wl->txq[AC_BK_Q].fw.count = FIELD_GET(BK_AC_COUNT_FIELD, reg);
+-	wl->txq[AC_BE_Q].fw.count = FIELD_GET(BE_AC_COUNT_FIELD, reg);
+-	wl->txq[AC_VI_Q].fw.count = FIELD_GET(VI_AC_COUNT_FIELD, reg);
+-	wl->txq[AC_VO_Q].fw.count = FIELD_GET(VO_AC_COUNT_FIELD, reg);
+-
+-	wl->txq[AC_BK_Q].fw.acm = FIELD_GET(BK_AC_ACM_STAT_FIELD, reg);
+-	wl->txq[AC_BE_Q].fw.acm = FIELD_GET(BE_AC_ACM_STAT_FIELD, reg);
+-	wl->txq[AC_VI_Q].fw.acm = FIELD_GET(VI_AC_ACM_STAT_FIELD, reg);
+-	wl->txq[AC_VO_Q].fw.acm = FIELD_GET(VO_AC_ACM_STAT_FIELD, reg);
++	wl->fw[AC_BK_Q].count = FIELD_GET(BK_AC_COUNT_FIELD, reg);
++	wl->fw[AC_BE_Q].count = FIELD_GET(BE_AC_COUNT_FIELD, reg);
++	wl->fw[AC_VI_Q].count = FIELD_GET(VI_AC_COUNT_FIELD, reg);
++	wl->fw[AC_VO_Q].count = FIELD_GET(VO_AC_COUNT_FIELD, reg);
++
++	wl->fw[AC_BK_Q].acm = FIELD_GET(BK_AC_ACM_STAT_FIELD, reg);
++	wl->fw[AC_BE_Q].acm = FIELD_GET(BE_AC_ACM_STAT_FIELD, reg);
++	wl->fw[AC_VI_Q].acm = FIELD_GET(VI_AC_ACM_STAT_FIELD, reg);
++	wl->fw[AC_VO_Q].acm = FIELD_GET(VO_AC_ACM_STAT_FIELD, reg);
+ }
  
--	if (ac_balance(wilc, ac_desired_ratio))
--		return -EINVAL;
-+	ac_balance(wilc, ac_desired_ratio);
+ static inline u8 ac_change(struct wilc *wilc, u8 *ac)
+ {
+ 	do {
+-		if (wilc->txq[*ac].fw.acm == 0)
++		if (wilc->fw[*ac].acm == 0)
+ 			return 0;
+ 		(*ac)++;
+ 	} while (*ac < NQUEUES);
+@@ -920,7 +920,7 @@ int wilc_wlan_handle_txq(struct wilc *wilc, u32 *txq_count)
+ 		kfree(tqe);
+ 	} while (--entries);
+ 	for (i = 0; i < NQUEUES; i++)
+-		wilc->txq[i].fw.count += ac_pkt_num_to_chip[i];
++		wilc->fw[i].count += ac_pkt_num_to_chip[i];
  
- 	mutex_lock(&wilc->txq_add_to_head_cs);
+ 	acquire_bus(wilc, WILC_BUS_ACQUIRE_AND_WAKEUP);
  
+diff --git a/drivers/net/wireless/microchip/wilc1000/wlan.h b/drivers/net/wireless/microchip/wilc1000/wlan.h
+index eb7978166d73e..9b33262909e2f 100644
+--- a/drivers/net/wireless/microchip/wilc1000/wlan.h
++++ b/drivers/net/wireless/microchip/wilc1000/wlan.h
+@@ -341,7 +341,6 @@ struct txq_fw_recv_queue_stat {
+ struct txq_handle {
+ 	struct txq_entry_t txq_head;
+ 	u16 count;
+-	struct txq_fw_recv_queue_stat fw;
+ };
+ 
+ struct rxq_entry_t {
 -- 
 2.25.1
 
