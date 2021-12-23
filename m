@@ -2,116 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E3C747DCE9
-	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 02:15:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 059CF47DD5E
+	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 02:30:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345727AbhLWBPF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Dec 2021 20:15:05 -0500
-Received: from o1.ptr2625.egauge.net ([167.89.112.53]:27238 "EHLO
-        o1.ptr2625.egauge.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346214AbhLWBOj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Dec 2021 20:14:39 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=egauge.net;
-        h=from:subject:in-reply-to:references:mime-version:to:cc:
-        content-transfer-encoding:content-type;
-        s=sgd; bh=6N7dj4qJUKtMM/lJa8tbpsQXTpV3hh508uNFMCeLTmw=;
-        b=vr+cyHY2pvPEH42hDN8WIQdKRBy7fQiQTie0z7EgQ7iJcIbs1LSTZYR7mEUfwFqWDZDh
-        5eh39xKSQJsPmXg0qm9SZecMP4+N2M3Dsp4XOZI2ureZ36yZWB1L4zPYkQBy/FIabKx85L
-        WhAbvaYhcxqjFoUA6Ig/vFhMhvANjYyAoNnQjaqctzadT252UF1LaXebuRIj3dtOt3jU4y
-        sTPETVrmyUPUDm2UDsUewXIa4bqSiZoVm/LnZcQiqsfCiIGH4mydq+a9v6GhInK6h8K6dA
-        oGM7H7iq6m9YlvrN9ndnefOeUCQExmMlHsHa0kGZvOn4g0oWBiFMo3zSggd5ZCTg==
-Received: by filterdrecv-64fcb979b9-4vrtk with SMTP id filterdrecv-64fcb979b9-4vrtk-1-61C3CD5E-33
-        2021-12-23 01:14:06.639603191 +0000 UTC m=+8644640.706394453
-Received: from pearl.egauge.net (unknown)
-        by geopod-ismtpd-4-1 (SG)
-        with ESMTP
-        id XtinkhGEQb2hIYycvpVgXQ
-        Thu, 23 Dec 2021 01:14:06.505 +0000 (UTC)
-Received: by pearl.egauge.net (Postfix, from userid 1000)
-        id 6AE00701474; Wed, 22 Dec 2021 18:14:05 -0700 (MST)
-From:   David Mosberger-Tang <davidm@egauge.net>
-Subject: [PATCH v2 26/50] wilc1000: reduce amount of time ack_filter_lock is
- held
-Date:   Thu, 23 Dec 2021 01:14:07 +0000 (UTC)
-Message-Id: <20211223011358.4031459-27-davidm@egauge.net>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20211223011358.4031459-1-davidm@egauge.net>
-References: <20211223011358.4031459-1-davidm@egauge.net>
+        id S235957AbhLWBaP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Dec 2021 20:30:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42850 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229590AbhLWBaP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Dec 2021 20:30:15 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26FB5C061574
+        for <netdev@vger.kernel.org>; Wed, 22 Dec 2021 17:30:15 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A106261CF6
+        for <netdev@vger.kernel.org>; Thu, 23 Dec 2021 01:30:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id EE57CC36AEA;
+        Thu, 23 Dec 2021 01:30:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1640223014;
+        bh=7sTLxtMK7fkcs7ph0qhZy9WTvX5iM4KqbfuROM4S9Pc=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=im7ptt3l8BnXP9sng32WPtUEkHCsqnclgeCgndkNdYftSoTxU7Cvxon+NyZXlu5er
+         embvlWMHgEzn/TFCs1BPoc5+ygRtftcEM7uD2mPnkWeildKBgEvzylWcbA0vo85CED
+         g1LUJqJGvISGBXILNdg3ZHF0ChD4naFRtngx7gZQUwRpMCxRDZMZBi6CCVcHMLV40b
+         n+sr7idHRMJCagxy2KVerMOK0vgW4ZmB6JnTXpOvCgLMqRJuu2wHjO6b27GiK9ZD/K
+         g+3BCrPYl82cUIMgtfUyCtkJ8J6GJHhEcptHlpda7LZE3IM3A64OSrf5uVbZ82GHSq
+         U5QjInl3Ex+Fg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D1991FE55A6;
+        Thu, 23 Dec 2021 01:30:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-X-SG-EID: =?us-ascii?Q?+kMxBqj35EdRUKoy8diX1j4AXmPtd302oan+iXZuF8m2Nw4HRW2irNspffT=2Fkh?=
- =?us-ascii?Q?ET6RJF6+Prbl0h=2FEtF1rRLvGGquUt9ycIje3WqF?=
- =?us-ascii?Q?lCafr+1TG2O9DDHkxjFYdcB99nE90QGpbToWeya?=
- =?us-ascii?Q?nt9YrHssVEPslyq=2FMdXIm7BTKB7tj7ZG1=2FB+zLm?=
- =?us-ascii?Q?XBeklScss=2FUVy=2Fn3+qcqKqzMQzpYZYdaHZx8edF?=
- =?us-ascii?Q?CXBhuiDrMeXoamh0JD4Q6NNJKDEKIX3oEt1kEY?=
-To:     Ajay Singh <ajay.kathat@microchip.com>
-Cc:     Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        David Mosberger-Tang <davidm@egauge.net>
-X-Entity-ID: Xg4JGAcGrJFIz2kDG9eoaQ==
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next 0/8] Add tests for VxLAN with IPv6 underlay
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164022301385.9224.9125052732945014616.git-patchwork-notify@kernel.org>
+Date:   Thu, 23 Dec 2021 01:30:13 +0000
+References: <20211221144949.2527545-1-amcohen@nvidia.com>
+In-Reply-To: <20211221144949.2527545-1-amcohen@nvidia.com>
+To:     Amit Cohen <amcohen@nvidia.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        mlxsw@nvidia.com, idosch@nvidia.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In tcp_process(), only hold the ack_filter_lock while accessing the
-ack_filter state.
+Hello:
 
-Signed-off-by: David Mosberger-Tang <davidm@egauge.net>
----
- drivers/net/wireless/microchip/wilc1000/wlan.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+This series was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-diff --git a/drivers/net/wireless/microchip/wilc1000/wlan.c b/drivers/net/wireless/microchip/wilc1000/wlan.c
-index 81180b2f9f4e1..5ea9129b36925 100644
---- a/drivers/net/wireless/microchip/wilc1000/wlan.c
-+++ b/drivers/net/wireless/microchip/wilc1000/wlan.c
-@@ -130,15 +130,13 @@ static inline void tcp_process(struct net_device *dev, struct sk_buff *tqe)
- 	const struct tcphdr *tcp_hdr_ptr;
- 	u32 ihl, total_length, data_offset;
- 
--	mutex_lock(&vif->ack_filter_lock);
--
- 	if (eth_hdr_ptr->h_proto != htons(ETH_P_IP))
--		goto out;
-+		return;
- 
- 	ip_hdr_ptr = buffer + ETH_HLEN;
- 
- 	if (ip_hdr_ptr->protocol != IPPROTO_TCP)
--		goto out;
-+		return;
- 
- 	ihl = ip_hdr_ptr->ihl << 2;
- 	tcp_hdr_ptr = buffer + ETH_HLEN + ihl;
-@@ -150,6 +148,9 @@ static inline void tcp_process(struct net_device *dev, struct sk_buff *tqe)
- 
- 		seq_no = ntohl(tcp_hdr_ptr->seq);
- 		ack_no = ntohl(tcp_hdr_ptr->ack_seq);
-+
-+		mutex_lock(&vif->ack_filter_lock);
-+
- 		for (i = 0; i < f->tcp_session; i++) {
- 			u32 j = f->ack_session_info[i].seq_num;
- 
-@@ -163,10 +164,9 @@ static inline void tcp_process(struct net_device *dev, struct sk_buff *tqe)
- 			add_tcp_session(vif, 0, 0, seq_no);
- 
- 		add_tcp_pending_ack(vif, ack_no, i, tqe);
--	}
- 
--out:
--	mutex_unlock(&vif->ack_filter_lock);
-+		mutex_unlock(&vif->ack_filter_lock);
-+	}
- }
- 
- static void wilc_wlan_tx_packet_done(struct sk_buff *tqe, int status)
+On Tue, 21 Dec 2021 16:49:41 +0200 you wrote:
+> mlxsw driver lately added support for VxLAN with IPv6 underlay.
+> This set adds the relevant tests for IPv6, most of them are same to
+> IPv4 tests with the required changes.
+> 
+> Patch set overview:
+> Patch #1 relaxes requirements for offloading TC filters that
+> match on 802.1q fields. The following selftests make use of these
+> newly-relaxed filters.
+> Patch #2 adds preparation as part of selftests API, which will be used
+> later.
+> Patches #3-#4 add tests for VxLAN with bridge aware and unaware.
+> Patche #5 cleans unused function.
+> Patches #6-#7 add tests for VxLAN symmetric and asymmetric.
+> Patch #8 adds test for Q-in-VNI.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next,1/8] mlxsw: spectrum_flower: Make vlan_id limitation more specific
+    https://git.kernel.org/netdev/net-next/c/70ec72d5b6c2
+  - [net-next,2/8] selftests: lib.sh: Add PING_COUNT to allow sending configurable amount of packets
+    https://git.kernel.org/netdev/net-next/c/0cd0b1f7a6e4
+  - [net-next,3/8] selftests: forwarding: Add VxLAN tests with a VLAN-unaware bridge for IPv6
+    https://git.kernel.org/netdev/net-next/c/b07e9957f220
+  - [net-next,4/8] selftests: forwarding: Add VxLAN tests with a VLAN-aware bridge for IPv6
+    https://git.kernel.org/netdev/net-next/c/728b35259e28
+  - [net-next,5/8] selftests: forwarding: vxlan_bridge_1q: Remove unused function
+    https://git.kernel.org/netdev/net-next/c/dc498cdda0ce
+  - [net-next,6/8] selftests: forwarding: Add a test for VxLAN asymmetric routing with IPv6
+    https://git.kernel.org/netdev/net-next/c/2902bae465c0
+  - [net-next,7/8] selftests: forwarding: Add a test for VxLAN symmetric routing with IPv6
+    https://git.kernel.org/netdev/net-next/c/6c6ea78a1161
+  - [net-next,8/8] selftests: forwarding: Add Q-in-VNI test for IPv6
+    https://git.kernel.org/netdev/net-next/c/bf0a8b9bf2c3
+
+You are awesome, thank you!
 -- 
-2.25.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
