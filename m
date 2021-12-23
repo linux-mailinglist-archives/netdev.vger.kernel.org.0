@@ -2,120 +2,262 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EFE247E7AF
-	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 19:36:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 21BAE47E7B5
+	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 19:43:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349851AbhLWSgw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Dec 2021 13:36:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45254 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349815AbhLWSgv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Dec 2021 13:36:51 -0500
-Received: from mail-vk1-xa2d.google.com (mail-vk1-xa2d.google.com [IPv6:2607:f8b0:4864:20::a2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A9F3C061756
-        for <netdev@vger.kernel.org>; Thu, 23 Dec 2021 10:36:50 -0800 (PST)
-Received: by mail-vk1-xa2d.google.com with SMTP id s144so3709520vkb.8
-        for <netdev@vger.kernel.org>; Thu, 23 Dec 2021 10:36:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=MWnMtKUTA+pdFLxssTMYrvKW+kgDVKLhBQGvMTDtV9c=;
-        b=XlWD+aT1d/zCA2MoCJjWJPwmZ/779N52rkYEDn1hBANMankZEebY9s2QejjXUJRouw
-         MLFH0hizvAEw6AzBZj9ZYjHf1ARv7bmY6d1cGF9CHmZI8DeRpzn+YgVtiHArTLTP8Ne0
-         j9xE/a7mo9ImnNpztlCsKu28VvxMpjoCOyci/ARo3HBrBQ7xVy7JlcQH7iENAWeeGQhu
-         zmL9l/xPFAQvmKs9lttkFEONak+/60RAmbmUk4/K34wLbs6Y9iWgJhcOw1WStce38ODm
-         dkkY7TSqLqz9+bUE1dj3q9pZIa+VMG0jOb9dQAMYSq49qU/Kc5RPGAQy7Jvq2a7fKfyk
-         Wjcw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=MWnMtKUTA+pdFLxssTMYrvKW+kgDVKLhBQGvMTDtV9c=;
-        b=zUok04ilSbHBHVTcyH5siOyIbdbPMoOW0nyHNRx8psD4taIuFn0nFXJ16o1n6s9Yr2
-         Hd59mmIzlj9TiCY+p6UZ4+JfYWlR7K6VBKjt5MxLrsREyZeAebbPe+I4FIVQltSjh+0f
-         W62F4OwT1umLngbAFlFnDOGLuF9rOWQLT4SMoiGHILuw9hWs3NyFLypTTYXx++2vCZVn
-         Q8KRVi3mAJVOcR+7XBiT78zWew1yroGnrX5BBBhwbR5X0kJMVo6y/RWRulodnb/s7IX+
-         X8iHFOdDYKpwZYOWuMVL4PN10hutnc/S4f/3HB/d2/NNFe9f81q5q+JFCv2+LcUYNJbL
-         EVeQ==
-X-Gm-Message-State: AOAM531jO9ZbX+/hC89YkDkrgcUdIBovybKiHFKr7YV1lMbfJK1SRH7K
-        mBV6bP9nATQMUk+G5iUP1nyxmRFrXqg/AWpNxOkVCg==
-X-Google-Smtp-Source: ABdhPJzUHSBqRJvO39+xoKI18fvmsn8JWj592gdkYxAJvEn2tQ2Vje4KIB3Cj8+SyLRx3cQsV31A1iP0NC9rTESl5dI=
-X-Received: by 2002:a1f:bf81:: with SMTP id p123mr1174324vkf.27.1640284609505;
- Thu, 23 Dec 2021 10:36:49 -0800 (PST)
+        id S1349869AbhLWSnU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Dec 2021 13:43:20 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:54996 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244754AbhLWSnT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Dec 2021 13:43:19 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B6993B81094;
+        Thu, 23 Dec 2021 18:43:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CB60C36AE9;
+        Thu, 23 Dec 2021 18:43:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1640284997;
+        bh=C31ZIEfBdG0jwSBwBBaHDjlPdBYPENbeZQHFIjtNgLo=;
+        h=From:To:Cc:Subject:Date:From;
+        b=rWdWrcVx69LyvyMBacclq+Zw5NR8b5l9BffnIO1NTKtNXOD7IELYGbTAik8wSNVjd
+         RIIrZA+jE9/ugVbtmxlsa5DoHHGTkGMuEzDUDJqDM16GZCaZj32jQMw5h9NlLH7V5J
+         HpA2VT2QIVMxYhDcQ4WJ/aHBUUGhmQJLTOipH8pptm/7nr+MMelPhNmbonOnbm8CPR
+         xgYRvvya/Zl7KKctAw/fMQ1KwOPTRSYgsOZ8v+iLMGx3Akob8fTGXMjr+MlSm6Dzv8
+         XECboLHQ726SERTJnZOzpsxGRKpn1d8PitFAMOFAqBiaxkwsRDD4YW184o6TjanLel
+         Ow2upMUsCMYfg==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     torvalds@linux-foundation.org
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, pablo@netfilter.org
+Subject: [GIT PULL] Networking for 5.16-rc7
+Date:   Thu, 23 Dec 2021 10:43:16 -0800
+Message-Id: <20211223184316.3916057-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-References: <20211223070642.499278-1-zenczykowski@gmail.com> <1nrqq669-2r5o-qq5o-207r-p6pnr614s769@vanv.qr>
-In-Reply-To: <1nrqq669-2r5o-qq5o-207r-p6pnr614s769@vanv.qr>
-From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
-Date:   Thu, 23 Dec 2021 10:36:38 -0800
-Message-ID: <CANP3RGct11+Cu0z-ksEMcpQGyFp5Ek-99+z6qEFc1FFh0xUt7Q@mail.gmail.com>
-Subject: Re: [PATCH netfilter] netfilter: xt_owner: use sk->sk_uid for owner lookup
-To:     Jan Engelhardt <jengelh@inai.de>
-Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Linux Network Development Mailing List 
-        <netdev@vger.kernel.org>,
-        Netfilter Development Mailing List 
-        <netfilter-devel@vger.kernel.org>,
-        Lorenzo Colitti <lorenzo@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 23, 2021 at 2:35 AM Jan Engelhardt <jengelh@inai.de> wrote:
-> On Thursday 2021-12-23 08:06, Maciej =C5=BBenczykowski wrote:
->
-> >diff --git a/net/netfilter/xt_owner.c b/net/netfilter/xt_owner.c
-> >index e85ce69924ae..3eebd9c7ea4b 100644
-> >--- a/net/netfilter/xt_owner.c
-> >+++ b/net/netfilter/xt_owner.c
-> >@@ -84,8 +84,8 @@ owner_mt(const struct sk_buff *skb, struct xt_action_p=
-aram *par)
-> >       if (info->match & XT_OWNER_UID) {
-> >               kuid_t uid_min =3D make_kuid(net->user_ns, info->uid_min)=
-;
-> >               kuid_t uid_max =3D make_kuid(net->user_ns, info->uid_max)=
-;
-> >-              if ((uid_gte(filp->f_cred->fsuid, uid_min) &&
-> >-                   uid_lte(filp->f_cred->fsuid, uid_max)) ^
-> >+              if ((uid_gte(sk->sk_uid, uid_min) &&
-> >+                   uid_lte(sk->sk_uid, uid_max)) ^
->
-> I have a "d=C3=A9j=C3=A0 rencontr=C3=A9" moment about these lines...
->
-> filp->f_cred->fsuid should be the EUID which performed the access (after
-> peeling away the setfsuid(2) logic...), and sk_uid has a value that the
-> original author of ipt_owner did not find useful. I think that was the
-> motivation. listen(80) then drop privileges by set(e)uid. sk_uid would be=
- 0,
-> and thus not useful.
+Hi Linus!
 
-Ugh!  Well, that's certainly interesting to hear...
+The following changes since commit 6441998e2e37131b0a4c310af9156d79d3351c16:
 
-There's like 6 different uids associated with a socket (sk_uid, inode
-uid, f_cred->uid/euid/suid/fsuid)
-- and I guess it might also matter whether we're talking about at
-socket() [or accept()] creation time, or currently...
-it's a mess.  [and 5 gids + supplemental groups]
+  Merge tag 'audit-pr-20211216' of git://git.kernel.org/pub/scm/linux/kernel/git/pcmoore/audit (2021-12-16 15:24:46 -0800)
 
-I'm not really certain which of these have which meaning.  I don't
-really understand the meaning of filp->f_cred.
+are available in the Git repository at:
 
-I guess it's back to the drawing board.  The Android DNS resolver uses
-fchown() on the dns sockets it creates
-to 'impersonate' the clients on whose behalf it's doing dns queries.
-This works for bpf, because:
+  git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.16-rc7
 
-bpf_get_socket_uid(skb) returns (roughly) skb->sk->sk_uid
-[and there's simply no bpf helper that deals with gids]
+for you to fetch changes up to 391e5975c0208ce3739587b33eba08be3e473d79:
 
-but this of course results in -m owner --uid-owner seeing root while
-bpf sees something else.
+  net: stmmac: dwmac-visconti: Fix value of ETHER_CLK_SEL_FREQ_SEL_2P5M (2021-12-23 09:58:13 -0800)
 
-I wonder if the solution is to add -m owner --sk-uid X (or
---socket-uid) syntax instead... ?!?
+----------------------------------------------------------------
+Networking fixes for 5.16-rc7, including fixes from netfilter.
 
-I'm not sure if it would be safe (or even desirable) to get fchown()
-to modify the existing f_cred->fsuid field...
+Current release - regressions:
+
+ - revert "tipc: use consistent GFP flags"
+
+Previous releases - regressions:
+
+ - igb: fix deadlock caused by taking RTNL in runtime resume path
+
+ - accept UFOv6 packages in virtio_net_hdr_to_skb
+
+ - netfilter: fix regression in looped (broad|multi)cast's MAC handling
+
+ - bridge: fix ioctl old_deviceless bridge argument
+
+ - ice: xsk: do not clear status_error0 for ntu + nb_buffs descriptor,
+	avoid stalls when multiple sockets use an interface
+
+Previous releases - always broken:
+
+ - inet: fully convert sk->sk_rx_dst to RCU rules
+
+ - veth: ensure skb entering GRO are not cloned
+
+ - sched: fix zone matching for invalid conntrack state
+
+ - bonding: fix ad_actor_system option setting to default
+
+ - nf_tables: fix use-after-free in nft_set_catchall_destroy()
+
+ - lantiq_xrx200: increase buffer reservation to avoid mem corruption
+
+ - ice: xsk: avoid leaking app buffers during clean up
+
+ - tun: avoid double free in tun_free_netdev
+
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+
+----------------------------------------------------------------
+Aleksander Jan Bajkowski (1):
+      net: lantiq_xrx200: increase buffer reservation
+
+Alexander Lobakin (1):
+      ice: remove dead store on XSK hotpath
+
+David S. Miller (2):
+      Merge git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf
+      Merge branch '100GbE' of git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue
+
+Eric Dumazet (2):
+      netfilter: nf_tables: fix use-after-free in nft_set_catchall_destroy()
+      inet: fully convert sk->sk_rx_dst to RCU rules
+
+Fernando Fernandez Mancera (1):
+      bonding: fix ad_actor_system option setting to default
+
+Florian Westphal (1):
+      netfilter: ctnetlink: remove expired entries first
+
+George Kennedy (1):
+      tun: avoid double free in tun_free_netdev
+
+Hayes Wang (2):
+      r8152: fix the force speed doesn't work for RTL8156
+      r8152: sync ocp base
+
+Heiner Kallweit (1):
+      igb: fix deadlock caused by taking RTNL in RPM resume path
+
+Hoang Le (1):
+      Revert "tipc: use consistent GFP flags"
+
+Ignacy Gawędzki (1):
+      netfilter: fix regression in looped (broad|multi)cast's MAC handling
+
+Jakub Kicinski (2):
+      Merge branch 'net-sched-fix-ct-zone-matching-for-invalid-conntrack-state'
+      Merge branch 'r8152-fix-bugs'
+
+Jeroen de Borst (1):
+      gve: Correct order of processing device options
+
+Jiasheng Jiang (6):
+      qlcnic: potential dereference null pointer of rx_queue->page_ring
+      fjes: Check for error irq
+      drivers: net: smc911x: Check for error irq
+      net: ks8851: Check for error irq
+      sfc: Check null pointer of rx_queue->page_ring
+      sfc: falcon: Check null pointer of rx_queue->page_ring
+
+Johannes Berg (1):
+      mac80211: fix locking in ieee80211_start_ap error path
+
+Lin Ma (2):
+      hamradio: improve the incomplete fix to avoid NPD
+      ax25: NPD bug when detaching AX25 device
+
+Maciej Fijalkowski (5):
+      ice: xsk: return xsk buffers back to pool when cleaning the ring
+      ice: xsk: allocate separate memory for XDP SW ring
+      ice: xsk: do not clear status_error0 for ntu + nb_buffs descriptor
+      ice: xsk: allow empty Rx descriptors on XSK ZC data path
+      ice: xsk: fix cleaned_count setting
+
+Nobuhiro Iwamatsu (1):
+      net: stmmac: dwmac-visconti: Fix value of ETHER_CLK_SEL_FREQ_SEL_2P5M
+
+Paolo Abeni (1):
+      veth: ensure skb entering GRO are not cloned.
+
+Paul Blakey (3):
+      net/sched: Extend qdisc control block with tc control block
+      net/sched: flow_dissector: Fix matching on zone id for invalid conns
+      net: openvswitch: Fix matching zone id for invalid conns arriving from tc
+
+Pavel Skripkin (2):
+      asix: fix uninit-value in asix_mdio_read()
+      asix: fix wrong return value in asix_check_host_enable()
+
+Remi Pommarel (1):
+      net: bridge: fix ioctl old_deviceless bridge argument
+
+Rémi Denis-Courmont (1):
+      phonet/pep: refuse to enable an unbound pipe
+
+Sean Anderson (1):
+      docs: networking: dpaa2: Fix DPNI header
+
+Willem de Bruijn (3):
+      docs: networking: replace skb_hwtstamp_tx with skb_tstamp_tx
+      net: accept UFOv6 packages in virtio_net_hdr_to_skb
+      net: skip virtio_net_hdr_set_proto if protocol already set
+
+Xiang wangx (1):
+      net: fix typo in a comment
+
+Xiaoliang Yang (2):
+      net: dsa: tag_ocelot: use traffic class to map priority on injected header
+      net: stmmac: ptp: fix potentially overflowing expression
+
+Yevhen Orlov (2):
+      net: marvell: prestera: fix incorrect return of port_find
+      net: marvell: prestera: fix incorrect structure access
+
+ Documentation/networking/bonding.rst               |  11 +-
+ .../ethernet/freescale/dpaa2/overview.rst          |   1 +
+ Documentation/networking/timestamping.rst          |   4 +-
+ drivers/net/bonding/bond_options.c                 |   2 +-
+ drivers/net/ethernet/google/gve/gve_adminq.c       |   8 +-
+ drivers/net/ethernet/intel/ice/ice_base.c          |  17 +++
+ drivers/net/ethernet/intel/ice/ice_txrx.c          |  19 ++--
+ drivers/net/ethernet/intel/ice/ice_txrx.h          |   1 -
+ drivers/net/ethernet/intel/ice/ice_xsk.c           |  66 ++++++------
+ drivers/net/ethernet/intel/igb/igb_main.c          |  19 ++--
+ drivers/net/ethernet/lantiq_xrx200.c               |  34 ++++--
+ .../net/ethernet/marvell/prestera/prestera_main.c  |  35 ++++---
+ drivers/net/ethernet/micrel/ks8851_par.c           |   2 +
+ drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov.h  |   2 +-
+ .../ethernet/qlogic/qlcnic/qlcnic_sriov_common.c   |  12 ++-
+ .../net/ethernet/qlogic/qlcnic/qlcnic_sriov_pf.c   |   4 +-
+ drivers/net/ethernet/sfc/falcon/rx.c               |   5 +-
+ drivers/net/ethernet/sfc/rx_common.c               |   5 +-
+ drivers/net/ethernet/smsc/smc911x.c                |   5 +
+ .../net/ethernet/stmicro/stmmac/dwmac-visconti.c   |   2 +-
+ drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c   |   2 +-
+ drivers/net/fjes/fjes_main.c                       |   5 +
+ drivers/net/hamradio/mkiss.c                       |   4 +-
+ drivers/net/tun.c                                  | 115 +++++++++++----------
+ drivers/net/usb/asix_common.c                      |   8 +-
+ drivers/net/usb/r8152.c                            |  43 +++++++-
+ drivers/net/veth.c                                 |   8 +-
+ include/linux/netdevice.h                          |   2 +-
+ include/linux/skbuff.h                             |   3 +-
+ include/linux/virtio_net.h                         |  25 ++++-
+ include/net/pkt_sched.h                            |  16 +++
+ include/net/sch_generic.h                          |   2 -
+ include/net/sock.h                                 |   2 +-
+ net/ax25/af_ax25.c                                 |   4 +-
+ net/bridge/br_ioctl.c                              |   2 +-
+ net/core/dev.c                                     |   8 +-
+ net/core/flow_dissector.c                          |   3 +-
+ net/dsa/tag_ocelot.c                               |   6 +-
+ net/ipv4/af_inet.c                                 |   2 +-
+ net/ipv4/tcp.c                                     |   3 +-
+ net/ipv4/tcp_input.c                               |   2 +-
+ net/ipv4/tcp_ipv4.c                                |  11 +-
+ net/ipv4/udp.c                                     |   6 +-
+ net/ipv6/tcp_ipv6.c                                |  11 +-
+ net/ipv6/udp.c                                     |   4 +-
+ net/mac80211/cfg.c                                 |   3 +
+ net/netfilter/nf_conntrack_netlink.c               |   5 +-
+ net/netfilter/nf_tables_api.c                      |   4 +-
+ net/netfilter/nfnetlink_log.c                      |   3 +-
+ net/netfilter/nfnetlink_queue.c                    |   3 +-
+ net/openvswitch/flow.c                             |   8 +-
+ net/phonet/pep.c                                   |   2 +
+ net/sched/act_ct.c                                 |  15 +--
+ net/sched/cls_api.c                                |   7 +-
+ net/sched/cls_flower.c                             |   6 +-
+ net/sched/sch_frag.c                               |   3 +-
+ net/tipc/crypto.c                                  |   8 +-
+ 57 files changed, 405 insertions(+), 213 deletions(-)
