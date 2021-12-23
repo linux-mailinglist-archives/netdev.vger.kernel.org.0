@@ -2,206 +2,376 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 26B7547DE88
-	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 06:15:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B531447DEF8
+	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 07:14:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234134AbhLWFPp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Dec 2021 00:15:45 -0500
-Received: from mga05.intel.com ([192.55.52.43]:65003 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230035AbhLWFPo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 23 Dec 2021 00:15:44 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1640236544; x=1671772544;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=9kVRc6bfb0+KBwojcUII5cWmQ3BwvMWUBbH8fIQGYBw=;
-  b=is2wK7jHo+f5U4o+9qROkw3m1mFJh0neSm5x7Z7I5Yx6bkOzRT5TYuvy
-   Kjju85BATlN7n+rsYGIFBA9uFcxgj+cPpMeRrUmy2pT8G9+X3B9UNRuMV
-   iVC4vc/aOZbcOYk39B4UjscsA79bGHUEgBT5ld5c6pOyM6qJ/4IZF5d2t
-   SZE4GQTgnY5WMJWc0WWyBtC80PedEZkbNX+kbHhDMgWorKL5VDFK2YWY3
-   5j2Ct9JcfyCb6OjWp2GwAH+qXsRRdqnklFEmwIrXCkLO59k0bM0QCxZ3+
-   OZWjNcfYOmBJPDPl/xi1c/VAcz9989FBJ+8p8xjsDyHzznE/uGMmSjh8a
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10206"; a="327066517"
-X-IronPort-AV: E=Sophos;i="5.88,228,1635231600"; 
-   d="scan'208";a="327066517"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Dec 2021 21:15:38 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,228,1635231600"; 
-   d="scan'208";a="521954664"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by orsmga008.jf.intel.com with ESMTP; 22 Dec 2021 21:15:37 -0800
-Received: from orsmsx608.amr.corp.intel.com (10.22.229.21) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Wed, 22 Dec 2021 21:15:37 -0800
-Received: from orsmsx604.amr.corp.intel.com (10.22.229.17) by
- ORSMSX608.amr.corp.intel.com (10.22.229.21) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Wed, 22 Dec 2021 21:15:37 -0800
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx604.amr.corp.intel.com (10.22.229.17) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20 via Frontend Transport; Wed, 22 Dec 2021 21:15:37 -0800
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.101)
- by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.20; Wed, 22 Dec 2021 21:15:37 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=niTXlFTG+wSJxb8smfVEucmypovfGMXdbumcycvJYFGN3ToFOqWwqoU7BjU3tVXwuCWG9Q0P60/4sjpeigSOXSzAyQaY0GBR3f0aLbWgNZe2/8+2I4JB7x1BOqlRld+pc23X3aIw8sYTOk4GD80vDZcZ5ULcWVW51q53D9ue822KAsJ1wWGfz9em+7D6pcVvrqz06/n1lxAN5U1a7ncQpgxtPNgacs6HsPS9eRbaPDR9LHGABjOOYyVUfexjm/Hn8SUyCFmOaY74V7S1oKOZlLco1NeF8lYnWh+PEqvwkxtyg5CCxeoYkL9ghPLhstwJaVZwTRPixQl8xCkzsuu2ag==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=9kVRc6bfb0+KBwojcUII5cWmQ3BwvMWUBbH8fIQGYBw=;
- b=LJ00fLGEurHAEVoorlRMmsBtvUhs5C6Mwqg/RttYiWWGZISyfEcVFPS9mTSSKBdo6c87+tkbAK9S3Mz0jSvC0nCT0CZVlx5YENkdxSj9vY9gkMmubYOxrCVVeea+wexQHyqF2x0Gaysezvm8Dvr/Rna2WXKUyGtgUoKY/swXwbyvJ1/8qmqoPuowl6LAKa6d50qRcHYY1abT2M2FtvzjKD406XZ8Du2f6TwvpUNAorLiy2nO3uPWtnUVCtKpeNkBerpcon3yuymumUAlyzWLF2RNE+p/XD+BS+bjqqAqBnv7x/Wn0UybFFywPu/RurJJ/4GHAD+OXaEO9DR3+hkn7w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from CO1PR11MB5170.namprd11.prod.outlook.com (2603:10b6:303:95::10)
- by MWHPR1101MB2240.namprd11.prod.outlook.com (2603:10b6:301:52::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4823.19; Thu, 23 Dec
- 2021 05:15:35 +0000
-Received: from CO1PR11MB5170.namprd11.prod.outlook.com
- ([fe80::4c2a:62a1:d6e5:b67b]) by CO1PR11MB5170.namprd11.prod.outlook.com
- ([fe80::4c2a:62a1:d6e5:b67b%7]) with mapi id 15.20.4823.019; Thu, 23 Dec 2021
- 05:15:35 +0000
-From:   "Chen, Mike Ximing" <mike.ximing.chen@intel.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "arnd@arndb.de" <arnd@arndb.de>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "Williams, Dan J" <dan.j.williams@intel.com>,
-        "pierre-louis.bossart@linux.intel.com" 
-        <pierre-louis.bossart@linux.intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>
-Subject: RE: [RFC PATCH v12 01/17] dlb: add skeleton for DLB driver
-Thread-Topic: [RFC PATCH v12 01/17] dlb: add skeleton for DLB driver
-Thread-Index: AQHX9jcKOP1y1O92CEC3pIeygh1pI6w8tNAAgACRSSCAADPkgIAABxaggAGHswCAAHiSsA==
-Date:   Thu, 23 Dec 2021 05:15:34 +0000
-Message-ID: <CO1PR11MB5170B7667FD1C091E1946CEDD97E9@CO1PR11MB5170.namprd11.prod.outlook.com>
-References: <20211221065047.290182-1-mike.ximing.chen@intel.com>
- <20211221065047.290182-2-mike.ximing.chen@intel.com>
- <YcGkILZxGLEUVVgU@lunn.ch>
- <CO1PR11MB51705AE8B072576F31FEC18CD97C9@CO1PR11MB5170.namprd11.prod.outlook.com>
- <YcJJh9e2QCJOoEB/@lunn.ch>
- <CO1PR11MB5170C1925DFB4BFE4B7819F5D97C9@CO1PR11MB5170.namprd11.prod.outlook.com>
- <YcOYDi1s5x5gU/5w@lunn.ch>
-In-Reply-To: <YcOYDi1s5x5gU/5w@lunn.ch>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-version: 11.6.200.16
-dlp-reaction: no-action
-dlp-product: dlpe-windows
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: d3cd59d5-5fb9-40af-65ff-08d9c5d33fef
-x-ms-traffictypediagnostic: MWHPR1101MB2240:EE_
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr,ExtFwd
-x-microsoft-antispam-prvs: <MWHPR1101MB224026476C8B162F9333D307D97E9@MWHPR1101MB2240.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: iADDWGYfI+A30HAjulS/XeJYs9XbS8u4QNU574hohBhCgcK1MyVfIZ01yxDKEQ4onY1yIjn3+XmQn6QIHiZEDL7Bev6t+6Dm4zXO68fdDiLSZIvbVgROuIh1oWQaGjxdQwNJKfzx/S8ToZwUHD+zB3v3c9237AOnjkWa7ORqBUJnCFc5xXU5crxxB/r5r/ZK4NpcL4VDPzQBNpfevX7/2ZyXutdMK9rjkp966fa8QKuHjDJgRorWCc02ySXY9fAUWDMI1CTcNY7IcgZhaSVAiqk/I0Vmnqy+Ff+pONsPBuUFpc+ebA9syRAdWk1IBpYl3LFe/KCt5Y5SJgG3Nrbd6yNhOpveiX2qtUpIRpsLI3rYXblwfHK19QmEL3VO47WqvQ8PGchjnbggF05+GsealCysac5xJdCOdol5r1wjLPkMq/YqrCiRZsW/VNWJpCWgfO1iS06+KuCkO+zhxHj+slMevr83qNdNGnP/cAIOd2Khjk+NcqH4Fmfm0FzG1K6cSntGLSDbAzIp+i/Jjdk0x+5zIL+TKYVxE2FGI0KQh8N/qjJnuDklS24IyDX+p6Dkd3sTulEU5MYJyYtZt5iUfHb7TGwfkTtgaX/EN7UVWM9bT1HlnyAuRlmq3+4/3z0O+f9v2yD1lOSy+dmzHOKViiCmNSMEJkjWE0c/xrTJRbTJm1XRN9fckFGX+NdVyC/TyER2mxIxY8twFVSnlpaoMA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5170.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(86362001)(52536014)(122000001)(4326008)(82960400001)(9686003)(6916009)(8676002)(33656002)(26005)(66446008)(64756008)(66476007)(66556008)(66946007)(55016003)(71200400001)(76116006)(8936002)(186003)(7696005)(38100700002)(316002)(38070700005)(508600001)(53546011)(2906002)(5660300002)(6506007)(54906003)(83380400001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?rnzr/9uoE1u3F9PnwOt+KS50fcIpgIUAKj0ytWPOfWrzW1F+wJ+u1IS2axQe?=
- =?us-ascii?Q?jGWQo4fSyhsFOUb0iuzmJIHlp5nS/kBc3hdoy9SqxpNC/pZsSucSdkO/fvar?=
- =?us-ascii?Q?ECnSXta93R/bzg+Ndp4VwwZ42lZ4/z/4JlB1rPdYrjKJ5EKv+SETYGmN8z3w?=
- =?us-ascii?Q?C0c41mXjHp3k5g2cnRc43Sgk833S0wqEljdELhLsKZEjm6q4cEQF1x8w2Z6o?=
- =?us-ascii?Q?0Av8kmLOwjICOh9b846v3uM9N8E+XgOAnXmwqXZVlL9ExVxzHgsxwclq3Lq+?=
- =?us-ascii?Q?sKQCE0kl7lXrcYbv3zzemF/YlZNPEs1Mv+WPeIWIOFlEOp0g+XBrfyrtiTC4?=
- =?us-ascii?Q?/PWJpmoEAeTBl9BlPMATOJsgEAGP5F7QESymOcmK51OUrfxRDsUe/KyyB3nF?=
- =?us-ascii?Q?bZw0vSiSQcxcVD1YpMqhh6JGz3sgJ6IZ3M+0RtRlMtHkmEeKu3dTNfv/ywDV?=
- =?us-ascii?Q?FNbD51pXXWQJUqHC0nMkc2x3Xdlu9EfmtdWqXoMfXo5bIxZZUHURg1DxjEl2?=
- =?us-ascii?Q?KHc06+z3428YHUGM5B+tdI4uXJQP8Vrc4eMBXvireSkdsaV7e1+2337rsoii?=
- =?us-ascii?Q?sUodC3mnIyKWBbHnkYQponHomEMET0JWbDHWp4FAqT+NksGidpTh93YkGmF/?=
- =?us-ascii?Q?hmeBb7YQveva2s9Y9LCWNuPb0O0JKtLvfLZplX1ArQYWQUUnqHdFq7eu3kUs?=
- =?us-ascii?Q?Q67+xmGnGVBTnqPiC5VdB2f1orxMJJ3vDYgADVxsZFG3oQK2+lIx7Zc24og/?=
- =?us-ascii?Q?VTOxJBj30nCDH8IRiyufDevU9DyrbAiOUaivlzuGla9ST44BNRK224QLxJU8?=
- =?us-ascii?Q?hm33qIZ+1hlxNFrZsMn/B8rV/K1qcqQ1nDeTx5eC+zxPnpD4YfO6TZgbUlxk?=
- =?us-ascii?Q?h0nB7lhRQqABbSMwCcefiH9YMq4BpL+XsHtDbhhVECTrrGi/0QzWxQ3TFc1K?=
- =?us-ascii?Q?7cPheK9+ZiNQqRKraWVxQdtim+FV1Seuh5mdbZnG/BZXSlPIh237o3qiDN5F?=
- =?us-ascii?Q?Dblk/l2l0Tt3A9HZxsUWZZFfbc46l56NCw90OfbBsFlXpre0OcZtUJCeCmuJ?=
- =?us-ascii?Q?1Eix3TeT5sS1TjG9Pe/Fx1BKYzs2VuCZv7OXWnMk9K2UxkeQBAri1SQxmhLW?=
- =?us-ascii?Q?Y6xG0C/2YVD4v27crEWm7fCvJiivJ6e3ydNzCv86fTgPMxsu85yX1XrP63FZ?=
- =?us-ascii?Q?ULUO14BV4lNHxmRPwPb5A5njY7pDTyyXLw45ww/DulJ/jMciWDWWWA1FNayI?=
- =?us-ascii?Q?9roMbXV5CTPKz7ShuOLHa1vHO27qrnpfO+r8amkiwVtsi+CYYCWtPK/lFzcx?=
- =?us-ascii?Q?6gbzx7jydIcJnlslBoRwuwsQNNvPJptiWlq6xeB6m7PcK2CVcVW/on++Le9m?=
- =?us-ascii?Q?t84EteOKuhSrexqtgyGbi6BdUatFIBLUYSfmmAhop86dhk4YQt8n9CFuEsqZ?=
- =?us-ascii?Q?z7NFtuIL5psBgNL3QP0qZl1RKfCaE1hG0bvvhwLzP4RCFp8dkzdUpuX38GpD?=
- =?us-ascii?Q?VOcBKOVw3VMHsGt+ZKGxvh1+RHKPJHib7aMb8dwHjQIyDEUkvpv3UVQk8hHY?=
- =?us-ascii?Q?kfUsDaCvK0h5YeDex5z3BLCjFNIuMMLIP4yRJBoBEzDgrWwSiRNkYB4kfoqq?=
- =?us-ascii?Q?ulV93sNu7h/+QotDGZuFermXfnxxAd7SQZcWg1MWQJg1MmHcjeWPZeOBru7A?=
- =?us-ascii?Q?F6BXBg=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S232395AbhLWGO5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Dec 2021 01:14:57 -0500
+Received: from out162-62-57-210.mail.qq.com ([162.62.57.210]:46171 "EHLO
+        out162-62-57-210.mail.qq.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232070AbhLWGOy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Dec 2021 01:14:54 -0500
+X-Greylist: delayed 12913 seconds by postgrey-1.27 at vger.kernel.org; Thu, 23 Dec 2021 01:14:53 EST
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+        s=s201512; t=1640240086;
+        bh=hoEccdzgT+hTFuDDMPF0ayD1KF9Q5Q3E+vRq58AJges=;
+        h=From:To:Cc:Subject:Date;
+        b=f3Vd1gikPWdNnF3x3BBHW507AeVchzllYQlcxaCbW7PtyFU4KEYGuG+4qUp9yDIcg
+         oYxQoC4pL2dCR2zM+2mLvplhl5KJKl0YCtnDqE9rjdnBxRsFib0S9p2LlSWxmDWkDV
+         QkjcsbI97CHW6WdXsKlUFEWgQj47hlnX+B8NDCIM=
+Received: from localhost.localdomain ([116.199.80.130])
+        by newxmesmtplogicsvrszb6.qq.com (NewEsmtp) with SMTP
+        id 2DAA1E6A; Thu, 23 Dec 2021 14:11:26 +0800
+X-QQ-mid: xmsmtpt1640239886thy6d3jfr
+Message-ID: <tencent_4535911418B2B9790CBC57166C94A26F650A@qq.com>
+X-QQ-XMAILINFO: NzOHSugmTg7Xb44ONWmkLAsu4mEYmHxACTmqKQ8p8OnfwLofN2F46lqDK86gPQ
+         X0nevqbDzjr/33mHsNXr8Wg4jBxQo89hTpgINLFjx7QqP9P/zc0DrZwSBVJ0fkoXnaI+LEZYcsID
+         PGjEfjQlxEZR1RMPQ2+ooR4hwc5i/qxfmEOpLCAc+cgaowwOQCXy6QyvhIzrX0C2loxMwLO964or
+         V8US9VCsgWvOpHs40bmyFGA8LxWBnJywmi9SccCztCrAyA9Ov9mzycoYSaFwzdAMdCelXGRJICYJ
+         xw+ALM3FK0YTut+tNvHWUN/InNEGlxx6yGH8B/FtWb4Osy4/HNh8A3EHX6EUSNzcj2YuYZIXwCv4
+         qEtedShAaG7gjwOFuRFg4Nz88wWTZI3KxvP7DiFnui/yLWANDlJSaqdtT7r2QG/2VZJNQojgle/Y
+         O1zJXWv0cVvN2yubbfLZq6zM7Y+rpcNrFY1nTns6POAiNiqAqvBMTuciFYn6u/VXuGrELlzc0HjK
+         iDiixdwOqk2lrG2JmlRX7AW2e7btY8rKhWQ67l3eFGfKTm7EgrfH3gZx/RlI5bIqQVlUQeLze3yP
+         8jSyiYFJFD1Gun3TSB/qaAH1EjGtwLEUxZKu7DmpuUF5q+/X/NLu2eDQvcAHVHUGFGCqIHdiVe18
+         Yg7tdBPIT999UGV0eZM15Pf7DFJ5IbrEBWTrsMRRxbNCjiN3Pguyxj2xhuMJJj81dYv2cWTufDjL
+         L30oAEYehJmAjCUDWG0jpKX2dhhu7efCKFwtgoxMZhsnWBLdRKhEVWzENiewXxLbX422UJ/PdE5i
+         9kmNOZeClZTjpi6ux/61+g7mnGf3NRQ9I0Ob66Cw/ZaNvLFSqq3WW4wulVBoQySofTqPQ1HMJCRK
+         kbfk64yU1r3NigVtD6GWKPyZ7lrlVnqgfaXvjhz6Wxh2rAs5QFg5Y=
+From:   conleylee@foxmail.com
+To:     davem@davemloft.net, kuba@kernel.org, mripard@kernel.org,
+        wens@csie.org
+Cc:     netdev@vger.kernel.org, Conley Lee <conleylee@foxmail.com>
+Subject: [PATCH v3] sun4i-emac.c: add dma support
+Date:   Thu, 23 Dec 2021 14:11:22 +0800
+X-OQ-MSGID: <20211223061122.14975-1-conleylee@foxmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5170.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d3cd59d5-5fb9-40af-65ff-08d9c5d33fef
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Dec 2021 05:15:34.9886
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ks122s1cIdO4GWrd0LWtdVd1qbssECyKT8fbZo9BsP6wADZJ50Y3XNom4elLbbz3TUiNkLs6pNAMYqSSf0/tQZCEHs/YWwCuPY20CzzZRxU=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR1101MB2240
-X-OriginatorOrg: intel.com
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Conley Lee <conleylee@foxmail.com>
 
+This patch adds support for the emac rx dma present on sun4i.
+The emac is able to move packets from rx fifo to RAM by using dma.
 
-> -----Original Message-----
-> From: Andrew Lunn <andrew@lunn.ch>
-> Sent: Wednesday, December 22, 2021 4:27 PM
-> To: Chen, Mike Ximing <mike.ximing.chen@intel.com>
-> Cc: linux-kernel@vger.kernel.org; arnd@arndb.de; gregkh@linuxfoundation.o=
-rg; Williams, Dan J
-> <dan.j.williams@intel.com>; pierre-louis.bossart@linux.intel.com; netdev@=
-vger.kernel.org;
-> davem@davemloft.net; kuba@kernel.org
-> Subject: Re: [RFC PATCH v12 01/17] dlb: add skeleton for DLB driver
->=20
-> > > pointing to skbufs? How are the lifetimes of skbufs managed? How do
-> > > you get skbufs out of the NIC? Are you using XDP?
-> >
-> > This is not a network accelerator in the sense that it does not have
-> > direct access to the network sockets/ports. We do not use XDP.
->=20
-> So not using XDP is a problem. I looked at previous versions of this patc=
-h, and it is all DPDK. But DPDK is
-> not in mainline, XDP is. In order for this to be merged into mainline you=
- need a mainline user of it.
->=20
-> Maybe you should abandon mainline, and just get this driver merged into t=
-he DPDK fork of Linux?
->=20
-Hi Andrew,
+Signed-off-by: Conley Lee <conleylee@foxmail.com>
+---
+ drivers/net/ethernet/allwinner/sun4i-emac.c | 224 +++++++++++++++++---
+ 1 file changed, 197 insertions(+), 27 deletions(-)
 
-I am not sure why not using XDP is a problem. As mentioned earlier, the
-DLB driver is not a part of network stack. =20
+diff --git a/drivers/net/ethernet/allwinner/sun4i-emac.c b/drivers/net/ethernet/allwinner/sun4i-emac.c
+index 800ee022388f..f86a4a02157b 100644
+--- a/drivers/net/ethernet/allwinner/sun4i-emac.c
++++ b/drivers/net/ethernet/allwinner/sun4i-emac.c
+@@ -29,6 +29,7 @@
+ #include <linux/platform_device.h>
+ #include <linux/phy.h>
+ #include <linux/soc/sunxi/sunxi_sram.h>
++#include <linux/dmaengine.h>
+ 
+ #include "sun4i-emac.h"
+ 
+@@ -76,7 +77,6 @@ struct emac_board_info {
+ 	void __iomem		*membase;
+ 	u32			msg_enable;
+ 	struct net_device	*ndev;
+-	struct sk_buff		*skb_last;
+ 	u16			tx_fifo_stat;
+ 
+ 	int			emacrx_completed_flag;
+@@ -87,6 +87,16 @@ struct emac_board_info {
+ 	unsigned int		duplex;
+ 
+ 	phy_interface_t		phy_interface;
++	struct dma_chan	*rx_chan;
++	phys_addr_t emac_rx_fifo;
++};
++
++struct emac_dma_req {
++	struct emac_board_info *db;
++	struct dma_async_tx_descriptor *desc;
++	struct sk_buff *sbk;
++	dma_addr_t rxbuf;
++	int count;
+ };
+ 
+ static void emac_update_speed(struct net_device *dev)
+@@ -206,6 +216,110 @@ static void emac_inblk_32bit(void __iomem *reg, void *data, int count)
+ 	readsl(reg, data, round_up(count, 4) / 4);
+ }
+ 
++static struct emac_dma_req *
++alloc_emac_dma_req(struct emac_board_info *db,
++		   struct dma_async_tx_descriptor *desc, struct sk_buff *skb,
++		   dma_addr_t rxbuf, int count)
++{
++	struct emac_dma_req *req =
++		kzalloc(sizeof(struct emac_dma_req), GFP_KERNEL);
++	if (!req)
++		return NULL;
++
++	req->db = db;
++	req->desc = desc;
++	req->sbk = skb;
++	req->rxbuf = rxbuf;
++	req->count = count;
++	return req;
++}
++
++static void free_emac_dma_req(struct emac_dma_req *req)
++{
++	kfree(req);
++}
++
++static void emac_dma_done_callback(void *arg)
++{
++	struct emac_dma_req *req = arg;
++	struct emac_board_info *db = req->db;
++	struct sk_buff *skb = req->sbk;
++	struct net_device *dev = db->ndev;
++	int rxlen = req->count;
++	u32 reg_val;
++
++	dma_unmap_single(db->dev, req->rxbuf, rxlen, DMA_FROM_DEVICE);
++
++	skb->protocol = eth_type_trans(skb, dev);
++	netif_rx(skb);
++	dev->stats.rx_bytes += rxlen;
++	/* Pass to upper layer */
++	dev->stats.rx_packets++;
++
++	//re enable cpu receive
++	reg_val = readl(db->membase + EMAC_RX_CTL_REG);
++	reg_val &= ~EMAC_RX_CTL_DMA_EN;
++	writel(reg_val, db->membase + EMAC_RX_CTL_REG);
++
++	//re enable interrupt
++	reg_val = readl(db->membase + EMAC_INT_CTL_REG);
++	reg_val |= (0x01 << 8);
++	writel(reg_val, db->membase + EMAC_INT_CTL_REG);
++
++	db->emacrx_completed_flag = 1;
++	free_emac_dma_req(req);
++}
++
++static void emac_dma_inblk_32bit(struct emac_board_info *db,
++				 struct sk_buff *skb, int count)
++{
++	struct dma_async_tx_descriptor *desc;
++	dma_cookie_t cookie;
++	dma_addr_t rxbuf;
++	void *rdptr;
++	struct emac_dma_req *req;
++
++	rdptr = skb_put(skb, count - 4);
++	rxbuf = dma_map_single(db->dev, rdptr, count, DMA_FROM_DEVICE);
++
++	if (dma_mapping_error(db->dev, rxbuf)) {
++		dev_err(db->dev, "dma mapping error.\n");
++		return;
++	}
++
++	desc = dmaengine_prep_slave_single(db->rx_chan, rxbuf, count,
++					   DMA_DEV_TO_MEM,
++					   DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
++	if (!desc) {
++		dev_err(db->dev, "prepare slave single failed\n");
++		goto prepare_err;
++	}
++
++	req = alloc_emac_dma_req(db, desc, skb, rxbuf, count);
++	if (!req) {
++		dev_err(db->dev, "alloc emac dma req error.\n");
++		goto prepare_err;
++	}
++
++	desc->callback_param = req;
++	desc->callback = emac_dma_done_callback;
++
++	cookie = dmaengine_submit(desc);
++	if (dma_submit_error(cookie)) {
++		dev_err(db->dev, "dma submit error.\n");
++		goto submit_err;
++	}
++
++	dma_async_issue_pending(db->rx_chan);
++	return;
++
++submit_err:
++	free_emac_dma_req(req);
++
++prepare_err:
++	dma_unmap_single(db->dev, rxbuf, count, DMA_FROM_DEVICE);
++}
++
+ /* ethtool ops */
+ static void emac_get_drvinfo(struct net_device *dev,
+ 			      struct ethtool_drvinfo *info)
+@@ -499,7 +613,6 @@ static void emac_rx(struct net_device *dev)
+ 	struct sk_buff *skb;
+ 	u8 *rdptr;
+ 	bool good_packet;
+-	static int rxlen_last;
+ 	unsigned int reg_val;
+ 	u32 rxhdr, rxstatus, rxcount, rxlen;
+ 
+@@ -514,22 +627,6 @@ static void emac_rx(struct net_device *dev)
+ 		if (netif_msg_rx_status(db))
+ 			dev_dbg(db->dev, "RXCount: %x\n", rxcount);
+ 
+-		if ((db->skb_last != NULL) && (rxlen_last > 0)) {
+-			dev->stats.rx_bytes += rxlen_last;
+-
+-			/* Pass to upper layer */
+-			db->skb_last->protocol = eth_type_trans(db->skb_last,
+-								dev);
+-			netif_rx(db->skb_last);
+-			dev->stats.rx_packets++;
+-			db->skb_last = NULL;
+-			rxlen_last = 0;
+-
+-			reg_val = readl(db->membase + EMAC_RX_CTL_REG);
+-			reg_val &= ~EMAC_RX_CTL_DMA_EN;
+-			writel(reg_val, db->membase + EMAC_RX_CTL_REG);
+-		}
+-
+ 		if (!rxcount) {
+ 			db->emacrx_completed_flag = 1;
+ 			reg_val = readl(db->membase + EMAC_INT_CTL_REG);
+@@ -617,20 +714,28 @@ static void emac_rx(struct net_device *dev)
+ 			if (!skb)
+ 				continue;
+ 			skb_reserve(skb, 2);
+-			rdptr = skb_put(skb, rxlen - 4);
+ 
+ 			/* Read received packet from RX SRAM */
+ 			if (netif_msg_rx_status(db))
+ 				dev_dbg(db->dev, "RxLen %x\n", rxlen);
+ 
+-			emac_inblk_32bit(db->membase + EMAC_RX_IO_DATA_REG,
+-					rdptr, rxlen);
+-			dev->stats.rx_bytes += rxlen;
+-
+-			/* Pass to upper layer */
+-			skb->protocol = eth_type_trans(skb, dev);
+-			netif_rx(skb);
+-			dev->stats.rx_packets++;
++			if (rxlen < dev->mtu || !db->rx_chan) {
++				rdptr = skb_put(skb, rxlen - 4);
++				emac_inblk_32bit(db->membase + EMAC_RX_IO_DATA_REG,
++						rdptr, rxlen);
++				dev->stats.rx_bytes += rxlen;
++
++				/* Pass to upper layer */
++				skb->protocol = eth_type_trans(skb, dev);
++				netif_rx(skb);
++				dev->stats.rx_packets++;
++			} else {
++				reg_val = readl(db->membase + EMAC_RX_CTL_REG);
++				reg_val |= EMAC_RX_CTL_DMA_EN;
++				writel(reg_val, db->membase + EMAC_RX_CTL_REG);
++				emac_dma_inblk_32bit(db, skb, rxlen);
++				break;
++			}
+ 		}
+ 	}
+ }
+@@ -677,7 +782,12 @@ static irqreturn_t emac_interrupt(int irq, void *dev_id)
+ 		reg_val = readl(db->membase + EMAC_INT_CTL_REG);
+ 		reg_val |= (0xf << 0) | (0x01 << 8);
+ 		writel(reg_val, db->membase + EMAC_INT_CTL_REG);
++	} else {
++		reg_val = readl(db->membase + EMAC_INT_CTL_REG);
++		reg_val |= (0xf << 0);
++		writel(reg_val, db->membase + EMAC_INT_CTL_REG);
+ 	}
++
+ 	spin_unlock(&db->lock);
+ 
+ 	return IRQ_HANDLED;
+@@ -782,6 +892,58 @@ static const struct net_device_ops emac_netdev_ops = {
+ #endif
+ };
+ 
++static int emac_configure_dma(struct emac_board_info *db)
++{
++	struct platform_device *pdev = db->pdev;
++	struct net_device *ndev = db->ndev;
++	struct dma_slave_config conf = {};
++	struct resource *regs;
++	int err = 0;
++
++	regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	if (!regs) {
++		netdev_err(ndev, "get io resource from device failed.\n");
++		err = -ENOMEM;
++		goto out_clear_chan;
++	}
++
++	netdev_info(ndev, "get io resource from device: 0x%x, size = %u\n",
++		    regs->start, resource_size(regs));
++	db->emac_rx_fifo = regs->start + EMAC_RX_IO_DATA_REG;
++
++	db->rx_chan = dma_request_chan(&pdev->dev, "rx");
++	if (IS_ERR(db->rx_chan)) {
++		netdev_err(ndev,
++			   "failed to request dma channel. dma is disabled");
++		err = PTR_ERR(db->rx_chan);
++		goto out_clear_chan;
++	}
++
++	conf.direction = DMA_DEV_TO_MEM;
++	conf.dst_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
++	conf.src_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
++	conf.src_addr = db->emac_rx_fifo;
++	conf.dst_maxburst = 4;
++	conf.src_maxburst = 4;
++	conf.device_fc = false;
++
++	err = dmaengine_slave_config(db->rx_chan, &conf);
++	if (err) {
++		netdev_err(ndev, "config dma slave failed\n");
++		err = -EINVAL;
++		goto out_slave_configure_err;
++	}
++
++	return err;
++
++out_slave_configure_err:
++	dma_release_channel(db->rx_chan);
++
++out_clear_chan:
++	db->rx_chan = NULL;
++	return err;
++}
++
+ /* Search EMAC board, allocate space and register it
+  */
+ static int emac_probe(struct platform_device *pdev)
+@@ -824,6 +986,9 @@ static int emac_probe(struct platform_device *pdev)
+ 		goto out_iounmap;
+ 	}
+ 
++	if (emac_configure_dma(db))
++		netdev_info(ndev, "configure dma failed. disable dma.\n");
++
+ 	db->clk = devm_clk_get(&pdev->dev, NULL);
+ 	if (IS_ERR(db->clk)) {
+ 		ret = PTR_ERR(db->clk);
+@@ -906,6 +1071,11 @@ static int emac_remove(struct platform_device *pdev)
+ 	struct net_device *ndev = platform_get_drvdata(pdev);
+ 	struct emac_board_info *db = netdev_priv(ndev);
+ 
++	if (db->rx_chan) {
++		dmaengine_terminate_all(db->rx_chan);
++		dma_release_channel(db->rx_chan);
++	}
++
+ 	unregister_netdev(ndev);
+ 	sunxi_sram_release(&pdev->dev);
+ 	clk_disable_unprepare(db->clk);
+-- 
+2.34.1
 
-DPDK is one of applications that can make a good use of DLB, but is not the
-only one. We have applications that access DLB directly via the kernel driv=
-er API
-without using DPDK. Even in a DPDK application, the only part that involves
-DLB is the eventdev poll mod driver module, in which we can replace a
-traditional software base queue manager with DLB. The network access and
-receiving/transmitting data from/to NIC is, on the other hand, handled by
-the ethdev in DPDK. The eventdev (and DLB) distributes packet processing
-over multiple worker cores.
-
-Thanks
-Mike
