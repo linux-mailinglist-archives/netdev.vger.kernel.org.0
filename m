@@ -2,67 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D66547DF9D
-	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 08:32:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D93647DF9E
+	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 08:32:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346856AbhLWHcD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Dec 2021 02:32:03 -0500
-Received: from mail-bn1nam07on2043.outbound.protection.outlook.com ([40.107.212.43]:11246
-        "EHLO NAM02-BN1-obe.outbound.protection.outlook.com"
+        id S1346867AbhLWHcJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Dec 2021 02:32:09 -0500
+Received: from mail-bn8nam12on2074.outbound.protection.outlook.com ([40.107.237.74]:38400
+        "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1346855AbhLWHcD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 23 Dec 2021 02:32:03 -0500
+        id S1346855AbhLWHcG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 Dec 2021 02:32:06 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=itMpXicL0GTrsLKqtOA+Lrn/wLnuIaCeKgAv2f3YZU2sbPDwGPL2IrknXyrBzhuVz9JvaZfRlFfpI/yrhJK0WW+q6wN7/q57HxJoqKodWaRP+TEKTdSo8+iL7FAUqpJz72FhuyR40zG2QDq7NX61+XWVnebMGhUakirgZ24SV0ruc3bY0oO1p1wo5S4nHSzjSHWwG0JdGxIdP4zl7/I/8b9J3gSGGlBWyqYu1E4sUP6TOUtXh9vxAO7BErNdpyd3qBBgbB8mDwo5KHk895kgi5H0/PxmgE1k5+yAFhDC55LqV8TlzK6Lgk2aeVYofmgxR1RVd1eGS7P0oTSzeLiU7A==
+ b=NBZGBt8EexFwoeL+yFWCvpK+TVR0swb7lijJ2/1tJ0y1E+NYrG+PLv/I3BnFfukCA2ZjGWO3MpcWAWB2Q2/CD6TxRCrAhX3dZ5h5pQ5CfgRZd/CHUOxm0iwDs6tuIIbeCCL6XhmJexwlpmn17KoO8g0v9M9Rs6RQXVZdI1BIG1UoQ58atMJ2szLeJ/CzDAW5ZTkmrfRbwRFqlbW8DNhfpFdx03u61qlNZ9cFYW6IKw5HwUXFiRpox9PLm/BlyhJzPGJX+SofXwcwBNHiSJYTyRjt1toUouZteXspLysLgbfPLH+gCh1KBlXTqDoRFuX12mzeJ9A8Uy+Vxwp6WCg72g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=QM737E7ipdTYX2l9XxFYY0SYcgMt7kmHi4wSSrU5rjw=;
- b=lqJArMp58wj7SQMg91eSDIinCQNwjo+15aiZzhfwQPUfLBrePb3P2GVEG8OuAbuoV8R/OJxPi0Qv1m34cQMxYn6gYC4g2Hn4UEUDTEYMRf9jct2n2V6cM7OKfo+z/P0Ap1WBtZ9ER7lDRGOPg69NRLVEblcITREDQcdTG46uGrX1zRKxpm565gJIlrbglHySt+ODifD9SakH54B4OaBfYDmwtlXw4qCv0xuHgHKukaWELPlF/J7jkTuN0pNDFYFbQFQh5bU8t1ozpVoVCHrrrMqQ0bLdCICsEoEAOUtLRalkuJW11oN6xmgcLACTkwzO+pD77fZgOb/tjaffUzWT3Q==
+ bh=8GpGuhTs8GuQzmMtdGBR94I1a8i4zIIvJy+UbfBIRGc=;
+ b=KIZRlEfMlRmelK+ZwkzB9TqrVAQwD36zzEZPIClsrZc5ny9pKf7qutXHTdC0FxPbNBmmQtZ7I/ykNbZUnnxlJwjOlFbNgsAeHbwTtSqgTssfYGwG2J1a2qKWENqgpTx/2nRs6MA4gBUX9l9oHsDXGkm7ezurCwbv3KgWKeENZ8J+7l16PwksVbHI4hjXi2vfJjnhVg10mqT4rGyOX9288X0asoMh2ZjrZ3b2KIFgFXmOKSw7BliqBd2lprwQV5QtIbhbv2ZctWcltbBz0zJkVrWBqNwAyuJewsQS6R7c/0HRVGf+aEPntO9XD0vZ35Trw7tWz7zsq1u8s5nqR4vusw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.238) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ 12.22.5.234) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QM737E7ipdTYX2l9XxFYY0SYcgMt7kmHi4wSSrU5rjw=;
- b=mIuHW4l72Rr+7Tlsyfyl6jqXHVBjgzHszGvItQ+n5SKd5z4vBkCX6ctCN5FAp+ksOCKd/n1umzNnxAnr+ztnE7v7oSTKg2BaZAkeldqQ0wsIO/He89TRnZ6nr0pIH9hPpxqVn0DUxZdccUWU5LKS8hQ2fM0nG4X6gpMToZ+4l/krDbAXmbX0jL6Iamcs+myUmFreqGNKmLPSfXsC8Jf+E+W3Be02N9KxCEfpGx4lTBJlSbCBEmpEy9qMUmy7W9floNr8jfK4m7z+LzDYplAMVV5Ao9I4jW1rNsPw5+J4yqGSyU/Yo7051/U2aML7CD/5PaHnPrPVtrHcfjSuCDBlEg==
-Received: from MWHPR14CA0044.namprd14.prod.outlook.com (2603:10b6:300:12b::30)
- by CH0PR12MB5234.namprd12.prod.outlook.com (2603:10b6:610:d1::24) with
+ bh=8GpGuhTs8GuQzmMtdGBR94I1a8i4zIIvJy+UbfBIRGc=;
+ b=g/yjh3fndRerqNNPPlZkXSnvYU534SWudMo/FtzZPbmwhW0fdqEdnjG71rpFNdCUzEdSZsT9MOGXVAlW0gO6itRNgp0bMwehHoFK42kx26HeHOBVDGwIzQm8bg/cZb0xn15EX3OB77G5xf2Asvkopr3DGfFGe0ifqSu/pMG/bCSZ47zaWCxyImB4qslEs6GOLiTld5IWRIB+cNwD0ZWA4PIKZbUvp6TOd1yDkYvuEgDkbsK2EF0aUfU0ZmrGuFc8NrCpwKSnWhTQzLFoz3ArhVdimHrelk/RwMjtmaRgYFIYVKqmTfq/8KwKWk3oiqPFUYFMN2eEn1SCk5VRpQexkg==
+Received: from DM6PR14CA0053.namprd14.prod.outlook.com (2603:10b6:5:18f::30)
+ by CY4PR12MB1303.namprd12.prod.outlook.com (2603:10b6:903:40::12) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4823.17; Thu, 23 Dec
- 2021 07:32:01 +0000
-Received: from CO1NAM11FT019.eop-nam11.prod.protection.outlook.com
- (2603:10b6:300:12b:cafe::c) by MWHPR14CA0044.outlook.office365.com
- (2603:10b6:300:12b::30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4823.19; Thu, 23 Dec
+ 2021 07:32:04 +0000
+Received: from DM6NAM11FT017.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:18f:cafe::9) by DM6PR14CA0053.outlook.office365.com
+ (2603:10b6:5:18f::30) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4801.17 via Frontend
- Transport; Thu, 23 Dec 2021 07:32:01 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
+ Transport; Thu, 23 Dec 2021 07:32:03 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.238; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.238) by
- CO1NAM11FT019.mail.protection.outlook.com (10.13.175.57) with Microsoft SMTP
+ 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.234; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.234) by
+ DM6NAM11FT017.mail.protection.outlook.com (10.13.172.145) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4823.18 via Frontend Transport; Thu, 23 Dec 2021 07:32:00 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL105.nvidia.com
- (10.27.9.14) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 23 Dec
- 2021 07:32:00 +0000
+ 15.20.4823.18 via Frontend Transport; Thu, 23 Dec 2021 07:32:03 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL101.nvidia.com
+ (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 23 Dec
+ 2021 07:32:02 +0000
 Received: from dev-r-vrt-155.mtr.labs.mlnx (172.20.187.5) by
  rnnvmail201.nvidia.com (10.129.68.8) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.986.9;
- Wed, 22 Dec 2021 23:31:57 -0800
+ Wed, 22 Dec 2021 23:32:00 -0800
 From:   Amit Cohen <amcohen@nvidia.com>
 To:     <netdev@vger.kernel.org>
 CC:     <davem@davemloft.net>, <kuba@kernel.org>, <mlxsw@nvidia.com>,
         <idosch@nvidia.com>, Amit Cohen <amcohen@nvidia.com>,
         Petr Machata <petrm@nvidia.com>
-Subject: [PATCH net-next 6/8] selftests: mlxsw: spectrum-2: Add a test for VxLAN flooding with IPv6
-Date:   Thu, 23 Dec 2021 09:30:00 +0200
-Message-ID: <20211223073002.3733510-7-amcohen@nvidia.com>
+Subject: [PATCH net-next 7/8] selftests: mlxsw: Add test for VxLAN related traps for IPv6
+Date:   Thu, 23 Dec 2021 09:30:01 +0200
+Message-ID: <20211223073002.3733510-8-amcohen@nvidia.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211223073002.3733510-1-amcohen@nvidia.com>
 References: <20211223073002.3733510-1-amcohen@nvidia.com>
@@ -74,99 +74,95 @@ X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
  rnnvmail201.nvidia.com (10.129.68.8)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 0f5696c2-e8d0-436e-9a77-08d9c5e64f12
-X-MS-TrafficTypeDiagnostic: CH0PR12MB5234:EE_
-X-Microsoft-Antispam-PRVS: <CH0PR12MB523445E558035084A672294CCB7E9@CH0PR12MB5234.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:5797;
+X-MS-Office365-Filtering-Correlation-Id: f96fb9ed-d6c5-414b-915e-08d9c5e650af
+X-MS-TrafficTypeDiagnostic: CY4PR12MB1303:EE_
+X-Microsoft-Antispam-PRVS: <CY4PR12MB1303E1205D34992300203896CB7E9@CY4PR12MB1303.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:3044;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: C+p2pA9cv5HNflaSrcdFB7Xi/bYikcxNZj9CDwmg9bgqXHLYXCgdCvjKAUIZP/qaXrpPXQrxuODore1DTp2m/1TNxHta8souRBbSK+vAAfMs9+HbM96kHaRffkWSzFm78HA4jfL0FTP2A6mYC1i7xjl60tKYEvXC1P5oPvRM727OF0Xo9BGk65VJpttUaOwN9IDyBJk26iB4WVcfHku1RdJFY2GZNyey5BHHblflLAZwECEYQxj/rB/9LJK/UInPAVBIaQJu+5zuJlw52rHgKg/6gM44N34Nv1gsiyaBJxEDGtvCASsy/LVSEZ+5LJ53EWRkKKABAspUzgdOYwcPBQW+qcXFX16EK0vWwvzSkigbUIhdBFhFvwQ5nS9xGngUXla0LEvUM/9Vs2m1pMv/7lKmqfz7lb3sm1rnQSzSnpQPvXVhC/2fLHdYS9qa7p+1LV1VeRNtX5BPALTI7v0NjJBRqvII/Foxc4exSo3UNmIYFrFINNEz8W5YBmln86knMcyo4jPAFBS2LGZq9o0URQRrba95c0wJ8edtW/lRy2ZMongw+UxBdOcpZIEx9ZsYoYIwMC9PqLU9dYYZ00fuLgoOMj9DHsauLZtZwFR3vSzwxoyUTLQ8oXmFLhG5sXEiYWycf144kRVDn8jZNaRjOD9ecDohRGJsv1Qha7VditpZ9bfYy+5RiuSTCz0tgQoFlhGentFWoj/1my6xrP3BVN9kJxQ16U/mqD/9ljO8f6iL7p7GDeRA+bP1hHcslCqnEyE9Yu4q2fV28mLwrw0DJ369LPAPooFfavf1Np6PuA4=
-X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(4636009)(40470700002)(36840700001)(46966006)(2906002)(2616005)(26005)(186003)(508600001)(107886003)(16526019)(426003)(40460700001)(36860700001)(316002)(336012)(66574015)(54906003)(82310400004)(4326008)(86362001)(1076003)(6666004)(6916009)(83380400001)(356005)(5660300002)(47076005)(8676002)(81166007)(8936002)(36756003)(70586007)(70206006)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: KR25GeBThZ/H52Ef3Z07j0TzZAbxZXPv+nGmOFHuwekuemqrNTFZnbPjPGHQzrbni8zWCYuSyFOlLZSFhQzfxrBSW+pwpPLZ36tNzrYW2I4HmX6tG928ZII7fC/lD0j/yldhW9jvJCZKhgYcPrplQzvIlFagEMn8ijgpQKD77nbarJRu/+/HDqkr4j7CwXVdIqCTXFE+SHjb0qmACpZMoJRwKloIKcXvVnTXI8TyR1f8wrG+V9V8zakjZf5B24/cvP8zdAF9B1JqgR94ORqHSfPsZf0/PV6ZWNLgstFh3XSU/KySGdD65Ms6Dv5f4GjkSdNuPAjQd2F8GemZ8l7AbPsA4xitph388e2N3NzQ8K4HcwSbEyQH541Y4svoExWQL0r7YLOZ/dsovMtDq40tvmrgqzu+hJkwKha5ee81sp3Btg33ua8wUEsk30br25jGs55a8sjce+uYqDbQfO+ejwK0SSEt3/1OSzKqmHWG3SjoZ4SSnsLDXA8PWuldSAeuR5fD6hA/65c5YVDlbLjPxEivi24ays5WZz6fBkxWyDC2bFCaYOIVrH6YxNEWJHJOswhxam+ub8FCelOjq+e+nHx5aYa+NnhDG2HdaUmlpTK3uWPCnLQ6IHHJpEW2yw8evU85TjRcas6SLI9XnF0Ug8dO65cnOtGsiV/Sc7OoZ6nCIksS0Ok+uXNwa8dyXbhKS/bIvHerCLECeO6FlMOuVol3q3HR+6xtkO4vI1CRzbzcG86tc3pBVfHbYOdPzBjQIDK4lGnIxZPG580ShZaKoBvvBdEjiLVjZOPcPBuqWkM=
+X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(4636009)(40470700002)(46966006)(36840700001)(2616005)(40460700001)(356005)(83380400001)(82310400004)(6916009)(186003)(26005)(16526019)(1076003)(54906003)(5660300002)(36756003)(8936002)(426003)(8676002)(47076005)(81166007)(336012)(316002)(508600001)(36860700001)(4326008)(2906002)(86362001)(70586007)(70206006)(107886003)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Dec 2021 07:32:00.7842
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Dec 2021 07:32:03.4594
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0f5696c2-e8d0-436e-9a77-08d9c5e64f12
+X-MS-Exchange-CrossTenant-Network-Message-Id: f96fb9ed-d6c5-414b-915e-08d9c5e650af
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT019.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT017.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR12MB5234
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR12MB1303
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The device stores flood records in a singly linked list where each
-record stores up to X IP addresses of remote VTEPs.
+The test configures VxLAN with IPv6 underlay and verifies that the
+expected traps are triggered under the right conditions.
 
-The number of records is changed according to ASIC type and address
-family.
-
-Add a test which is similar to the existing IPv4 test to check IPv6.
-The test is dedicated for Spectrum-2 and above, which support up to four
-IPv6 addresses in one record.
-
-The test verifies that packets are correctly flooded in various cases such
-as deletion of a record in the middle of the list.
+The test is similar to the existing IPv4 test.
 
 Signed-off-by: Amit Cohen <amcohen@nvidia.com>
 Reviewed-by: Petr Machata <petrm@nvidia.com>
 ---
- .../mlxsw/spectrum-2/vxlan_flooding_ipv6.sh   | 322 ++++++++++++++++++
- 1 file changed, 322 insertions(+)
- create mode 100755 tools/testing/selftests/drivers/net/mlxsw/spectrum-2/vxlan_flooding_ipv6.sh
+ .../mlxsw/devlink_trap_tunnel_vxlan_ipv6.sh   | 342 ++++++++++++++++++
+ 1 file changed, 342 insertions(+)
+ create mode 100755 tools/testing/selftests/drivers/net/mlxsw/devlink_trap_tunnel_vxlan_ipv6.sh
 
-diff --git a/tools/testing/selftests/drivers/net/mlxsw/spectrum-2/vxlan_flooding_ipv6.sh b/tools/testing/selftests/drivers/net/mlxsw/spectrum-2/vxlan_flooding_ipv6.sh
+diff --git a/tools/testing/selftests/drivers/net/mlxsw/devlink_trap_tunnel_vxlan_ipv6.sh b/tools/testing/selftests/drivers/net/mlxsw/devlink_trap_tunnel_vxlan_ipv6.sh
 new file mode 100755
-index 000000000000..429f7ee735cf
+index 000000000000..f6c16cbb6cf7
 --- /dev/null
-+++ b/tools/testing/selftests/drivers/net/mlxsw/spectrum-2/vxlan_flooding_ipv6.sh
-@@ -0,0 +1,322 @@
++++ b/tools/testing/selftests/drivers/net/mlxsw/devlink_trap_tunnel_vxlan_ipv6.sh
+@@ -0,0 +1,342 @@
 +#!/bin/bash
 +# SPDX-License-Identifier: GPL-2.0
 +#
-+# Test VxLAN flooding. The device stores flood records in a singly linked list
-+# where each record stores up to four IPv6 addresses of remote VTEPs. The test
-+# verifies that packets are correctly flooded in various cases such as deletion
-+# of a record in the middle of the list.
-+#
-+# +-----------------------+
-+# | H1 (vrf)              |
-+# |    + $h1              |
-+# |    | 2001:db8:1::1/64 |
-+# +----|------------------+
++# Test devlink-trap tunnel drops and exceptions functionality over mlxsw.
++# Check all traps to make sure they are triggered under the right
++# conditions.
++
++# +------------------------+
++# | H1 (vrf)               |
++# |    + $h1               |
++# |    | 2001:db8:1::1/64  |
++# +----|-------------------+
 +#      |
 +# +----|----------------------------------------------------------------------+
 +# | SW |                                                                      |
 +# | +--|--------------------------------------------------------------------+ |
-+# | |  + $swp1                   BR0 (802.1d)                               | |
++# | |  + $swp1                   BR1 (802.1d)                               | |
 +# | |                                                                       | |
-+# | |  + vxlan0 (vxlan)                                                     | |
-+# | |    local 2001:db8:2::1                                                | |
-+# | |    remote 2001:db8:2::{2..17}                                         | |
-+# | |    id 10 dstport 4789                                                 | |
++# | |  + vx1 (vxlan)                                                        | |
++# | |    local 2001:db8:3::1                                                | |
++# | |    id 1000 dstport $VXPORT                                            | |
 +# | +-----------------------------------------------------------------------+ |
-+# |                                                                           |
-+# |  2001:db8:2::0/64 via 2001:db8:3::2                                       |
 +# |                                                                           |
 +# |    + $rp1                                                                 |
 +# |    | 2001:db8:3::1/64                                                     |
 +# +----|----------------------------------------------------------------------+
 +#      |
 +# +----|--------------------------------------------------------+
-+# |    |                                               R2 (vrf) |
++# |    |                                             VRF2       |
 +# |    + $rp2                                                   |
 +# |      2001:db8:3::2/64                                       |
 +# |                                                             |
 +# +-------------------------------------------------------------+
 +
-+lib_dir=$(dirname $0)/../../../../net/forwarding
++lib_dir=$(dirname $0)/../../../net/forwarding
 +
-+ALL_TESTS="flooding_test"
++ALL_TESTS="
++	decap_error_test
++	overlay_smac_is_mc_test
++"
++
 +NUM_NETIFS=4
-+source $lib_dir/tc_common.sh
 +source $lib_dir/lib.sh
++source $lib_dir/tc_common.sh
++source $lib_dir/devlink_lib.sh
++
++: ${VXPORT:=4789}
++export VXPORT
 +
 +h1_create()
 +{
@@ -180,64 +176,49 @@ index 000000000000..429f7ee735cf
 +
 +switch_create()
 +{
-+	# Make sure the bridge uses the MAC address of the local port and
-+	# not that of the VxLAN's device
-+	ip link add dev br0 type bridge mcast_snooping 0
-+	ip link set dev br0 address $(mac_get $swp1)
++	ip link add name br1 type bridge vlan_filtering 0 mcast_snooping 0
++	# Make sure the bridge uses the MAC address of the local port and not
++	# that of the VxLAN's device.
++	ip link set dev br1 address $(mac_get $swp1)
++	ip link set dev br1 up
 +
-+	ip link add name vxlan0 type vxlan id 10 nolearning \
-+		udp6zerocsumrx udp6zerocsumtx ttl 20 tos inherit \
-+		local 2001:db8:2::1 dstport 4789
-+
-+	ip address add 2001:db8:2::1/128 dev lo
-+
-+	ip link set dev $swp1 master br0
-+	ip link set dev vxlan0 master br0
-+
-+	ip link set dev br0 up
++	tc qdisc add dev $swp1 clsact
++	ip link set dev $swp1 master br1
 +	ip link set dev $swp1 up
-+	ip link set dev vxlan0 up
++
++	ip link add name vx1 type vxlan id 1000 local 2001:db8:3::1 \
++		dstport "$VXPORT" nolearning udp6zerocsumrx udp6zerocsumtx \
++		tos inherit ttl 100
++	ip link set dev vx1 master br1
++	ip link set dev vx1 up
++
++	ip link set dev $rp1 up
++	ip address add dev $rp1 2001:db8:3::1/64
 +}
 +
 +switch_destroy()
 +{
-+	ip link set dev vxlan0 down
-+	ip link set dev $swp1 down
-+	ip link set dev br0 down
-+
-+	ip link set dev vxlan0 nomaster
-+	ip link set dev $swp1 nomaster
-+
-+	ip address del 2001:db8:2::1/128 dev lo
-+
-+	ip link del dev vxlan0
-+
-+	ip link del dev br0
-+}
-+
-+router1_create()
-+{
-+	# This router is in the default VRF, where the VxLAN device is
-+	# performing the L3 lookup
-+	ip link set dev $rp1 up
-+	ip address add 2001:db8:3::1/64 dev $rp1
-+	ip route add 2001:db8:2::0/64 via 2001:db8:3::2
-+}
-+
-+router1_destroy()
-+{
-+	ip route del 2001:db8:2::0/64 via 2001:db8:3::2
-+	ip address del 2001:db8:3::1/64 dev $rp1
++	ip address del dev $rp1 2001:db8:3::1/64
 +	ip link set dev $rp1 down
++
++	ip link set dev vx1 down
++	ip link set dev vx1 nomaster
++	ip link del dev vx1
++
++	ip link set dev $swp1 down
++	ip link set dev $swp1 nomaster
++	tc qdisc del dev $swp1 clsact
++
++	ip link set dev br1 down
++	ip link del dev br1
 +}
 +
-+router2_create()
++vrf2_create()
 +{
-+	# This router is not in the default VRF, so use simple_if_init()
 +	simple_if_init $rp2 2001:db8:3::2/64
 +}
 +
-+router2_destroy()
++vrf2_destroy()
 +{
 +	simple_if_fini $rp2 2001:db8:3::2/64
 +}
@@ -251,197 +232,228 @@ index 000000000000..429f7ee735cf
 +	rp2=${NETIFS[p4]}
 +
 +	vrf_prepare
-+
-+	h1_create
-+
-+	switch_create
-+
-+	router1_create
-+	router2_create
-+
 +	forwarding_enable
++	h1_create
++	switch_create
++	vrf2_create
 +}
 +
 +cleanup()
 +{
 +	pre_cleanup
 +
-+	forwarding_restore
-+
-+	router2_destroy
-+	router1_destroy
-+
++	vrf2_destroy
 +	switch_destroy
-+
 +	h1_destroy
-+
++	forwarding_restore
 +	vrf_cleanup
 +}
 +
-+flooding_remotes_add()
++ecn_payload_get()
 +{
-+	local num_remotes=$1
-+	local lsb
-+	local i
-+
-+	for i in $(eval echo {1..$num_remotes}); do
-+		lsb=$((i + 1))
-+
-+		bridge fdb append 00:00:00:00:00:00 dev vxlan0 self \
-+			dst 2001:db8:2::$lsb
-+	done
++	local dest_mac=$(mac_get $h1)
++	local saddr="20:01:0d:b8:00:01:00:00:00:00:00:00:00:00:00:03"
++	local daddr="20:01:0d:b8:00:01:00:00:00:00:00:00:00:00:00:01"
++	p=$(:
++		)"08:"$(                      : VXLAN flags
++		)"00:00:00:"$(                : VXLAN reserved
++		)"00:03:e8:"$(                : VXLAN VNI : 1000
++		)"00:"$(                      : VXLAN reserved
++		)"$dest_mac:"$(               : ETH daddr
++		)"00:00:00:00:00:00:"$(       : ETH saddr
++		)"86:dd:"$(                   : ETH type
++		)"6"$(                        : IP version
++		)"0:0"$(		      : Traffic class
++		)"0:00:00:"$(                 : Flow label
++		)"00:08:"$(                   : Payload length
++		)"3a:"$(                      : Next header
++		)"04:"$(                      : Hop limit
++		)"$saddr:"$(                  : IP saddr
++		)"$daddr:"$(		      : IP daddr
++		)"80:"$(                      : ICMPv6.type
++		)"00:"$(                      : ICMPv6.code
++		)"00:"$(                      : ICMPv6.checksum
++		)
++	echo $p
 +}
 +
-+flooding_filters_add()
++ecn_decap_test()
 +{
-+	local num_remotes=$1
-+	local lsb
-+	local i
++	local trap_name="decap_error"
++	local desc=$1; shift
++	local ecn_desc=$1; shift
++	local outer_tos=$1; shift
++	local mz_pid
 +
-+	tc qdisc add dev $rp2 clsact
++	RET=0
 +
-+	for i in $(eval echo {1..$num_remotes}); do
-+		lsb=$((i + 1))
++	tc filter add dev $swp1 egress protocol ipv6 pref 1 handle 101 \
++		flower src_ip 2001:db8:1::3 dst_ip 2001:db8:1::1 action pass
 +
-+		tc filter add dev $rp2 ingress protocol ipv6 pref $i handle $i \
-+			flower ip_proto udp dst_ip 2001:db8:2::$lsb \
-+			dst_port 4789 skip_sw action drop
-+	done
++	rp1_mac=$(mac_get $rp1)
++	payload=$(ecn_payload_get)
++
++	ip vrf exec v$rp2 $MZ -6 $rp2 -c 0 -d 1msec -b $rp1_mac \
++		-B 2001:db8:3::1 -t udp \
++		sp=12345,dp=$VXPORT,tos=$outer_tos,p=$payload -q &
++	mz_pid=$!
++
++	devlink_trap_exception_test $trap_name
++
++	tc_check_packets "dev $swp1 egress" 101 0
++	check_err $? "Packets were not dropped"
++
++	log_test "$desc: Inner ECN is not ECT and outer is $ecn_desc"
++
++	kill $mz_pid && wait $mz_pid &> /dev/null
++	tc filter del dev $swp1 egress protocol ipv6 pref 1 handle 101 flower
 +}
 +
-+flooding_filters_del()
++reserved_bits_payload_get()
 +{
-+	local num_remotes=$1
-+	local i
-+
-+	for i in $(eval echo {1..$num_remotes}); do
-+		tc filter del dev $rp2 ingress protocol ipv6 pref $i \
-+			handle $i flower
-+	done
-+
-+	tc qdisc del dev $rp2 clsact
++	local dest_mac=$(mac_get $h1)
++	local saddr="20:01:0d:b8:00:01:00:00:00:00:00:00:00:00:00:03"
++	local daddr="20:01:0d:b8:00:01:00:00:00:00:00:00:00:00:00:01"
++	p=$(:
++		)"08:"$(                      : VXLAN flags
++		)"01:00:00:"$(                : VXLAN reserved
++		)"00:03:e8:"$(                : VXLAN VNI : 1000
++		)"00:"$(                      : VXLAN reserved
++		)"$dest_mac:"$(               : ETH daddr
++		)"00:00:00:00:00:00:"$(       : ETH saddr
++		)"86:dd:"$(                   : ETH type
++		)"6"$(                        : IP version
++		)"0:0"$(		      : Traffic class
++		)"0:00:00:"$(                 : Flow label
++		)"00:08:"$(                   : Payload length
++		)"3a:"$(                      : Next header
++		)"04:"$(                      : Hop limit
++		)"$saddr:"$(                  : IP saddr
++		)"$daddr:"$(		      : IP daddr
++		)"80:"$(                      : ICMPv6.type
++		)"00:"$(                      : ICMPv6.code
++		)"00:"$(                      : ICMPv6.checksum
++		)
++	echo $p
 +}
 +
-+flooding_check_packets()
++short_payload_get()
 +{
-+	local packets=("$@")
-+	local num_remotes=${#packets[@]}
-+	local i
-+
-+	for i in $(eval echo {1..$num_remotes}); do
-+		tc_check_packets "dev $rp2 ingress" $i ${packets[i - 1]}
-+		check_err $? "remote $i - did not get expected number of packets"
-+	done
++        dest_mac=$(mac_get $h1)
++        p=$(:
++		)"08:"$(                      : VXLAN flags
++		)"00:00:00:"$(                : VXLAN reserved
++		)"00:03:e8:"$(                : VXLAN VNI : 1000
++		)"00:"$(                      : VXLAN reserved
++		)"$dest_mac:"$(               : ETH daddr
++		)"00:00:00:00:00:00:"$(       : ETH saddr
++		)
++        echo $p
 +}
 +
-+flooding_test()
++corrupted_packet_test()
 +{
-+	# Use 16 remote VTEPs that will be stored in 4 records. The array
-+	# 'packets' will store how many packets are expected to be received
-+	# by each remote VTEP at each stage of the test
-+	declare -a packets=(1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1)
-+	local num_remotes=16
++	local trap_name="decap_error"
++	local desc=$1; shift
++	local payload_get=$1; shift
++	local mz_pid
 +
 +	RET=0
 +
-+	# Add FDB entries for remote VTEPs and corresponding tc filters on the
-+	# ingress of the nexthop router. These filters will count how many
-+	# packets were flooded to each remote VTEP
-+	flooding_remotes_add $num_remotes
-+	flooding_filters_add $num_remotes
++	# In case of too short packet, there is no any inner packet,
++	# so the matching will always succeed
++	tc filter add dev $swp1 egress protocol ipv6 pref 1 handle 101 \
++		flower skip_hw src_ip 2001:db8:3::1 dst_ip 2001:db8:1::1 \
++		action pass
 +
-+	# Send one packet and make sure it is flooded to all the remote VTEPs
-+	$MZ $h1 -q -p 64 -b de:ad:be:ef:13:37 -t ip -c 1
-+	flooding_check_packets "${packets[@]}"
-+	log_test "flood after 1 packet"
++	rp1_mac=$(mac_get $rp1)
++	payload=$($payload_get)
++	ip vrf exec v$rp2 $MZ -6 $rp2 -c 0 -d 1msec -b $rp1_mac \
++		-B 2001:db8:3::1 -t udp sp=12345,dp=$VXPORT,p=$payload -q &
++	mz_pid=$!
 +
-+	# Delete the third record which corresponds to VTEPs with LSB 10..13
-+	# and check that packet is flooded correctly when we remove a record
-+	# from the middle of the list
-+	RET=0
++	devlink_trap_exception_test $trap_name
 +
-+	packets=(2 2 2 2 2 2 2 2 1 1 1 1 2 2 2 2)
-+	bridge fdb del 00:00:00:00:00:00 dev vxlan0 self dst 2001:db8:2::10
-+	bridge fdb del 00:00:00:00:00:00 dev vxlan0 self dst 2001:db8:2::11
-+	bridge fdb del 00:00:00:00:00:00 dev vxlan0 self dst 2001:db8:2::12
-+	bridge fdb del 00:00:00:00:00:00 dev vxlan0 self dst 2001:db8:2::13
++	tc_check_packets "dev $swp1 egress" 101 0
++	check_err $? "Packets were not dropped"
 +
-+	$MZ $h1 -q -p 64 -b de:ad:be:ef:13:37 -t ip -c 1
-+	flooding_check_packets "${packets[@]}"
-+	log_test "flood after 2 packets"
++	log_test "$desc"
 +
-+	# Delete the first record and make sure the packet is flooded correctly
-+	RET=0
++	kill $mz_pid && wait $mz_pid &> /dev/null
++	tc filter del dev $swp1 egress protocol ipv6 pref 1 handle 101 flower
++}
 +
-+	packets=(2 2 2 2 3 3 3 3 1 1 1 1 3 3 3 3)
-+	bridge fdb del 00:00:00:00:00:00 dev vxlan0 self dst 2001:db8:2::2
-+	bridge fdb del 00:00:00:00:00:00 dev vxlan0 self dst 2001:db8:2::3
-+	bridge fdb del 00:00:00:00:00:00 dev vxlan0 self dst 2001:db8:2::4
-+	bridge fdb del 00:00:00:00:00:00 dev vxlan0 self dst 2001:db8:2::5
++decap_error_test()
++{
++	ecn_decap_test "Decap error" "ECT(1)" 01
++	ecn_decap_test "Decap error" "ECT(0)" 02
++	ecn_decap_test "Decap error" "CE" 03
 +
-+	$MZ $h1 -q -p 64 -b de:ad:be:ef:13:37 -t ip -c 1
-+	flooding_check_packets "${packets[@]}"
-+	log_test "flood after 3 packets"
++	corrupted_packet_test "Decap error: Reserved bits in use" \
++		"reserved_bits_payload_get"
++	corrupted_packet_test "Decap error: Too short inner packet" \
++		"short_payload_get"
++}
 +
-+	# Delete the last record and make sure the packet is flooded correctly
-+	RET=0
++mc_smac_payload_get()
++{
++	local dest_mac=$(mac_get $h1)
++	local source_mac="01:02:03:04:05:06"
++	local saddr="20:01:0d:b8:00:01:00:00:00:00:00:00:00:00:00:03"
++	local daddr="20:01:0d:b8:00:01:00:00:00:00:00:00:00:00:00:01"
++	p=$(:
++		)"08:"$(                      : VXLAN flags
++		)"00:00:00:"$(                : VXLAN reserved
++		)"00:03:e8:"$(                : VXLAN VNI : 1000
++		)"00:"$(                      : VXLAN reserved
++		)"$dest_mac:"$(               : ETH daddr
++		)"$source_mac:"$(	      : ETH saddr
++		)"86:dd:"$(                   : ETH type
++		)"6"$(                        : IP version
++		)"0:0"$(		      : Traffic class
++		)"0:00:00:"$(                 : Flow label
++		)"00:08:"$(                   : Payload length
++		)"3a:"$(                      : Next header
++		)"04:"$(                      : Hop limit
++		)"$saddr:"$(                  : IP saddr
++		)"$daddr:"$(		      : IP daddr
++		)"80:"$(                      : ICMPv6.type
++		)"00:"$(                      : ICMPv6.code
++		)"00:"$(                      : ICMPv6.checksum
++		)
++	echo $p
++}
 +
-+	packets=(2 2 2 2 4 4 4 4 1 1 1 1 3 3 3 3)
-+	bridge fdb del 00:00:00:00:00:00 dev vxlan0 self dst 2001:db8:2::14
-+	bridge fdb del 00:00:00:00:00:00 dev vxlan0 self dst 2001:db8:2::15
-+	bridge fdb del 00:00:00:00:00:00 dev vxlan0 self dst 2001:db8:2::16
-+	bridge fdb del 00:00:00:00:00:00 dev vxlan0 self dst 2001:db8:2::17
-+
-+	$MZ -6 $h1 -q -p 64 -b de:ad:be:ef:13:37 -t ip -c 1
-+	flooding_check_packets "${packets[@]}"
-+	log_test "flood after 4 packets"
-+
-+	# Delete the last record, one entry at a time and make sure single
-+	# entries are correctly removed
-+	RET=0
-+
-+	packets=(2 2 2 2 4 5 5 5 1 1 1 1 3 3 3 3)
-+	bridge fdb del 00:00:00:00:00:00 dev vxlan0 self dst 2001:db8:2::6
-+
-+	$MZ -6 $h1 -q -p 64 -b de:ad:be:ef:13:37 -t ip -c 1
-+	flooding_check_packets "${packets[@]}"
-+	log_test "flood after 5 packets"
-+
-+	RET=0
-+
-+	packets=(2 2 2 2 4 5 6 6 1 1 1 1 3 3 3 3)
-+	bridge fdb del 00:00:00:00:00:00 dev vxlan0 self dst 2001:db8:2::7
-+
-+	$MZ -6 $h1 -q -p 64 -b de:ad:be:ef:13:37 -t ip -c 1
-+	flooding_check_packets "${packets[@]}"
-+	log_test "flood after 6 packets"
++overlay_smac_is_mc_test()
++{
++	local trap_name="overlay_smac_is_mc"
++	local mz_pid
 +
 +	RET=0
 +
-+	packets=(2 2 2 2 4 5 6 7 1 1 1 1 3 3 3 3)
-+	bridge fdb del 00:00:00:00:00:00 dev vxlan0 self dst 2001:db8:2::8
++	# The matching will be checked on devlink_trap_drop_test()
++	# and the filter will be removed on devlink_trap_drop_cleanup()
++	tc filter add dev $swp1 egress protocol ipv6 pref 1 handle 101 \
++		flower src_mac 01:02:03:04:05:06 action pass
 +
-+	$MZ -6 $h1 -q -p 64 -b de:ad:be:ef:13:37 -t ip -c 1
-+	flooding_check_packets "${packets[@]}"
-+	log_test "flood after 7 packets"
++	rp1_mac=$(mac_get $rp1)
++	payload=$(mc_smac_payload_get)
 +
-+	RET=0
++	ip vrf exec v$rp2 $MZ -6 $rp2 -c 0 -d 1msec -b $rp1_mac \
++		-B 2001:db8:3::1 -t udp sp=12345,dp=$VXPORT,p=$payload -q &
++	mz_pid=$!
 +
-+	packets=(2 2 2 2 4 5 6 7 1 1 1 1 3 3 3 3)
-+	bridge fdb del 00:00:00:00:00:00 dev vxlan0 self dst 2001:db8:2::9
++	devlink_trap_drop_test $trap_name $swp1 101
 +
-+	$MZ -6 $h1 -q -p 64 -b de:ad:be:ef:13:37 -t ip -c 1
-+	flooding_check_packets "${packets[@]}"
-+	log_test "flood after 8 packets"
++	log_test "Overlay source MAC is multicast"
 +
-+	flooding_filters_del $num_remotes
++	devlink_trap_drop_cleanup $mz_pid $swp1 "ipv6" 1 101
 +}
 +
 +trap cleanup EXIT
 +
 +setup_prepare
 +setup_wait
-+
 +tests_run
 +
 +exit $EXIT_STATUS
