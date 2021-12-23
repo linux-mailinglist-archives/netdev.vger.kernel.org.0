@@ -2,87 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB7DD47E30F
-	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 13:17:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DEC0E47E31F
+	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 13:20:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348167AbhLWMRB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Dec 2021 07:17:01 -0500
-Received: from smtp23.cstnet.cn ([159.226.251.23]:45222 "EHLO cstnet.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S243479AbhLWMRA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 23 Dec 2021 07:17:00 -0500
-Received: from localhost.localdomain (unknown [124.16.138.126])
-        by APP-03 (Coremail) with SMTP id rQCowADX3FinaMRhtdFnBA--.41853S2;
-        Thu, 23 Dec 2021 20:16:40 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     andy.shevchenko@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        yangyingliang@huawei.com, sashal@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: [PATCH v4] fjes: Check for error irq
-Date:   Thu, 23 Dec 2021 20:16:39 +0800
-Message-Id: <20211223121639.1330292-1-jiasheng@iscas.ac.cn>
+        id S243429AbhLWMUV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Dec 2021 07:20:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45244 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243392AbhLWMUU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Dec 2021 07:20:20 -0500
+Received: from mail-qv1-xf33.google.com (mail-qv1-xf33.google.com [IPv6:2607:f8b0:4864:20::f33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E47A2C061401;
+        Thu, 23 Dec 2021 04:20:19 -0800 (PST)
+Received: by mail-qv1-xf33.google.com with SMTP id kj16so5035250qvb.2;
+        Thu, 23 Dec 2021 04:20:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=D25qNoe4b7BBiu4Ck6a2DRt+tC1EyAJXN/9/wN6Ogas=;
+        b=oLMVM6+CfmHKb66YeDM2kN9LZIPmQ5UeTEcplp9zYVane9j3B9fpFusve+/zueLD40
+         0rjuEILZnffXLC+q9xe972AsrAw6F5SoyCLBXJchV9to5lkfVehUAwhSfQmQPYxxYn1l
+         yP1KOgbznFTYg2Lk4CS17CMvqj4S7BlKuBIsUEKR5UqO5VQVV56LtxXcP6x4Jm9MccLO
+         AO5otGilgGG7OyWt+GMxrYMY8SqpMPHc0yS6VVIycCtXeYpIrqDjX0mr2ZrVGMsikBk6
+         Sf+NuD3i7h4QYjSlMDkllLJkxQKezImHFQdpxCx6iTTtfpzPxLbkc7dOkEwxud1GPQ/k
+         FteQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=D25qNoe4b7BBiu4Ck6a2DRt+tC1EyAJXN/9/wN6Ogas=;
+        b=WjeFnXNzIbDI24YzDWOJcCNEgGcpfIDBRGIYFOs7A1orPsLpPOXzv69NWGqxJ0AC7r
+         Yz9qa9IXlo1nGSivpdyLlFb9NBBBVQywBtWxWryPg2rYOYm5T/VgqyDqJjMJRuB5rtmp
+         LENN86X6pOHncPTnO7+wDuREEMPgkPI6i65BQMNgBqI+daOL+D2re6x3JaALXMDKDLHw
+         8XB1SNfbV8HZcRevXIgdRNBdWsivKku157+0m6mK5Vy3necfFqBxoNbyi88t3dw/YEY7
+         eo9jp0plgcLcITjTPvnyzuKg+kBeyhlzhgeNQqueob3FJ7Pqj+Ppob8L+5fD6QxKvCMU
+         /nFg==
+X-Gm-Message-State: AOAM532YOimPo/KmsWlBReLxOWbSh3f62y2H/wEAB83yOGRsHaMXZJWX
+        Nea8F/7/Ee+2w7Sx3lCzAFc=
+X-Google-Smtp-Source: ABdhPJxk5k7wRYR4P38HkdeoaGEawThlY3IMj5+NGdyxH1F8lmgcafhl/rKYY9qrObru/vRyfhqBng==
+X-Received: by 2002:a05:6214:29e7:: with SMTP id jv7mr1354077qvb.16.1640262019074;
+        Thu, 23 Dec 2021 04:20:19 -0800 (PST)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id o9sm4001967qtk.81.2021.12.23.04.20.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Dec 2021 04:20:18 -0800 (PST)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: xu.xin16@zte.com.cn
+To:     davem@davemloft.net
+Cc:     yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
+        prestwoj@gmail.com, xu.xin16@zte.com.cn, zxu@linkedin.com,
+        praveen5582@gmail.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH net-next] ipv4: delete sysctls about routing cache
+Date:   Thu, 23 Dec 2021 12:20:10 +0000
+Message-Id: <20211223122010.569553-1-xu.xin16@zte.com.cn>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: rQCowADX3FinaMRhtdFnBA--.41853S2
-X-Coremail-Antispam: 1UD129KBjvdXoW7XFyUKw48XF4DWw4fKw45KFg_yoWkXrg_Cr
-        n2va17Ww409ryvkF1DGr43Z3W2kr1qqr10gas2yaySq398Ca47XryDZrs8J3y5W34YyF9F
-        kr9xXr43A343AjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUb2AFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-        A2z4x0Y4vE2Ix0cI8IcVAFwI0_JFI_Gr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr0_
-        Cr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s
-        1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0
-        cI8IcVAFwI0_JrI_JrylYx0Ex4A2jsIE14v26r4j6F4UMcvjeVCFs4IE7xkEbVWUJVW8Jw
-        ACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc2xSY4AK67AK6ryUMxAI
-        w28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr
-        4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxG
-        rwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVW8JVWxJw
-        CI42IY6xAIw20EY4v20xvaj40_Zr0_Wr1UMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvE
-        x4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JU6wZcUUUUU=
-X-Originating-IP: [124.16.138.126]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The platform_get_irq() is possible to fail.
-So the return value needs to check to prevent the use of error irq
-number.
+From: xu xin <xu.xin16@zte.com.cn>
 
-Fixes: 658d439b2292 ("fjes: Introduce FUJITSU Extended Socket Network Device driver")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Since routing cache in ipv4 has been deleted in 2012, the sysctls about
+it are useless.
+
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: xu xin <xu.xin16@zte.com.cn>
 ---
-Changelog:
+ include/uapi/linux/sysctl.h | 10 ++++----
+ net/ipv4/route.c            | 48 -------------------------------------
+ 2 files changed, 5 insertions(+), 53 deletions(-)
 
-v3 -> v4
-
-*Change 1. Using error variable to check.
-*Change 2. Correct the word.
-*Change 3. Add new commit message.
----
- drivers/net/fjes/fjes_main.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/fjes/fjes_main.c b/drivers/net/fjes/fjes_main.c
-index e449d9466122..17f2fd937e4d 100644
---- a/drivers/net/fjes/fjes_main.c
-+++ b/drivers/net/fjes/fjes_main.c
-@@ -1268,7 +1268,12 @@ static int fjes_probe(struct platform_device *plat_dev)
- 	}
- 	hw->hw_res.start = res->start;
- 	hw->hw_res.size = resource_size(res);
--	hw->hw_res.irq = platform_get_irq(plat_dev, 0);
-+
-+	err = platform_get_irq(plat_dev, 0);
-+	if (err < 0)
-+		goto err_free_control_wq;
-+	hw->hw_res.irq = err;
-+
- 	err = fjes_hw_init(&adapter->hw);
- 	if (err)
- 		goto err_free_control_wq;
+diff --git a/include/uapi/linux/sysctl.h b/include/uapi/linux/sysctl.h
+index 6a3b194c50fe..72ecdf38c4ed 100644
+--- a/include/uapi/linux/sysctl.h
++++ b/include/uapi/linux/sysctl.h
+@@ -432,9 +432,9 @@ enum {
+ 	NET_IPV4_ROUTE_FLUSH=1,
+ 	NET_IPV4_ROUTE_MIN_DELAY=2, /* obsolete since 2.6.25 */
+ 	NET_IPV4_ROUTE_MAX_DELAY=3, /* obsolete since 2.6.25 */
+-	NET_IPV4_ROUTE_GC_THRESH=4,
+-	NET_IPV4_ROUTE_MAX_SIZE=5,
+-	NET_IPV4_ROUTE_GC_MIN_INTERVAL=6,
++	NET_IPV4_ROUTE_GC_THRESH=4, /* obsolete */
++	NET_IPV4_ROUTE_MAX_SIZE=5,  /* obsolete */
++	NET_IPV4_ROUTE_GC_MIN_INTERVAL=6, /* obsolete */
+ 	NET_IPV4_ROUTE_GC_TIMEOUT=7,
+ 	NET_IPV4_ROUTE_GC_INTERVAL=8, /* obsolete since 2.6.38 */
+ 	NET_IPV4_ROUTE_REDIRECT_LOAD=9,
+@@ -442,12 +442,12 @@ enum {
+ 	NET_IPV4_ROUTE_REDIRECT_SILENCE=11,
+ 	NET_IPV4_ROUTE_ERROR_COST=12,
+ 	NET_IPV4_ROUTE_ERROR_BURST=13,
+-	NET_IPV4_ROUTE_GC_ELASTICITY=14,
++	NET_IPV4_ROUTE_GC_ELASTICITY=14, /* obsolete */
+ 	NET_IPV4_ROUTE_MTU_EXPIRES=15,
+ 	NET_IPV4_ROUTE_MIN_PMTU=16,
+ 	NET_IPV4_ROUTE_MIN_ADVMSS=17,
+ 	NET_IPV4_ROUTE_SECRET_INTERVAL=18,
+-	NET_IPV4_ROUTE_GC_MIN_INTERVAL_MS=19,
++	NET_IPV4_ROUTE_GC_MIN_INTERVAL_MS=19, /* obsolete */
+ };
+ 
+ enum
+diff --git a/net/ipv4/route.c b/net/ipv4/route.c
+index 843a7a3699fe..4b0d7d654859 100644
+--- a/net/ipv4/route.c
++++ b/net/ipv4/route.c
+@@ -110,7 +110,6 @@
+ 
+ #define RT_GC_TIMEOUT (300*HZ)
+ 
+-static int ip_rt_max_size;
+ static int ip_rt_redirect_number __read_mostly	= 9;
+ static int ip_rt_redirect_load __read_mostly	= HZ / 50;
+ static int ip_rt_redirect_silence __read_mostly	= ((HZ / 50) << (9 + 1));
+@@ -3428,8 +3427,6 @@ void ip_rt_multicast_event(struct in_device *in_dev)
+ }
+ 
+ #ifdef CONFIG_SYSCTL
+-static int ip_rt_gc_interval __read_mostly  = 60 * HZ;
+-static int ip_rt_gc_min_interval __read_mostly	= HZ / 2;
+ static int ip_rt_gc_elasticity __read_mostly	= 8;
+ static int ip_min_valid_pmtu __read_mostly	= IPV4_MIN_MTU;
+ 
+@@ -3448,36 +3445,6 @@ static int ipv4_sysctl_rtcache_flush(struct ctl_table *__ctl, int write,
+ }
+ 
+ static struct ctl_table ipv4_route_table[] = {
+-	{
+-		.procname	= "gc_thresh",
+-		.data		= &ipv4_dst_ops.gc_thresh,
+-		.maxlen		= sizeof(int),
+-		.mode		= 0644,
+-		.proc_handler	= proc_dointvec,
+-	},
+-	{
+-		.procname	= "max_size",
+-		.data		= &ip_rt_max_size,
+-		.maxlen		= sizeof(int),
+-		.mode		= 0644,
+-		.proc_handler	= proc_dointvec,
+-	},
+-	{
+-		/*  Deprecated. Use gc_min_interval_ms */
+-
+-		.procname	= "gc_min_interval",
+-		.data		= &ip_rt_gc_min_interval,
+-		.maxlen		= sizeof(int),
+-		.mode		= 0644,
+-		.proc_handler	= proc_dointvec_jiffies,
+-	},
+-	{
+-		.procname	= "gc_min_interval_ms",
+-		.data		= &ip_rt_gc_min_interval,
+-		.maxlen		= sizeof(int),
+-		.mode		= 0644,
+-		.proc_handler	= proc_dointvec_ms_jiffies,
+-	},
+ 	{
+ 		.procname	= "gc_timeout",
+ 		.data		= &ip_rt_gc_timeout,
+@@ -3485,13 +3452,6 @@ static struct ctl_table ipv4_route_table[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dointvec_jiffies,
+ 	},
+-	{
+-		.procname	= "gc_interval",
+-		.data		= &ip_rt_gc_interval,
+-		.maxlen		= sizeof(int),
+-		.mode		= 0644,
+-		.proc_handler	= proc_dointvec_jiffies,
+-	},
+ 	{
+ 		.procname	= "redirect_load",
+ 		.data		= &ip_rt_redirect_load,
+@@ -3527,13 +3487,6 @@ static struct ctl_table ipv4_route_table[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dointvec,
+ 	},
+-	{
+-		.procname	= "gc_elasticity",
+-		.data		= &ip_rt_gc_elasticity,
+-		.maxlen		= sizeof(int),
+-		.mode		= 0644,
+-		.proc_handler	= proc_dointvec,
+-	},
+ 	{
+ 		.procname	= "mtu_expires",
+ 		.data		= &ip_rt_mtu_expires,
+@@ -3705,7 +3658,6 @@ int __init ip_rt_init(void)
+ 		panic("IP: failed to allocate ipv4_dst_blackhole_ops counter\n");
+ 
+ 	ipv4_dst_ops.gc_thresh = ~0;
+-	ip_rt_max_size = INT_MAX;
+ 
+ 	devinet_init();
+ 	ip_fib_init();
 -- 
 2.25.1
 
