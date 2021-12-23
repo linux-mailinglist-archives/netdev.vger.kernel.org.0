@@ -2,83 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6ED0147DE3D
-	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 05:28:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6683747DE65
+	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 05:52:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346322AbhLWE2U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Dec 2021 23:28:20 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:57492 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346298AbhLWE2U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Dec 2021 23:28:20 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9DE02B81E6C
-        for <netdev@vger.kernel.org>; Thu, 23 Dec 2021 04:28:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1731DC36AE9;
-        Thu, 23 Dec 2021 04:28:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1640233697;
-        bh=CoHpzMjnGK6vS2/zfy56qlmOfOBtiXIxh5+OBgkZ6lU=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=Ay5kZZR2tFFPeBOLEs7auGzXP4VRbG4UHq0T+qTJzAJGQ/SGq/9qbBqEJvUT3d1Fd
-         pjQieZGbY4N9O2lhqtv6EIbJIf2zSZVkm5czEdbI9RA6beParVRwvT/dQ5qJzuiqqx
-         o5aQmM1BiYRJMVF19TzKNhcIOr95rZYRNN0TSA6ijqETwIR7FdUpeYFBCG5W+/UFSE
-         1p2KUEVZj58DbFBW1FTL0m7x54/+SMIb5s7gs7VjOdPAlnqwj5VXJasP2EVOV2X98y
-         veesbVFGssGCXN3AlQKt5IffrBURkBnVb7Eqx8DTvLkz9HFU8bBXU1Z6AtcNAHqioM
-         5fe8XoNOrhYAw==
-Message-ID: <eaa0dfacd5df9ac76469575ddb8bbbcfae21ad25.camel@kernel.org>
-Subject: Re: [net 01/11] net/mlx5: DR, Fix NULL vs IS_ERR checking in
- dr_domain_init_resources
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Roi Dayan <roid@nvidia.com>, Miaoqian Lin <linmq006@gmail.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Date:   Wed, 22 Dec 2021 20:28:16 -0800
-In-Reply-To: <20211222170932.1773d408@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20211222211201.77469-1-saeed@kernel.org>
-         <20211222211201.77469-2-saeed@kernel.org>
-         <20211222170403.3ec2fe91@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-         <20211222170932.1773d408@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.2 (3.42.2-1.fc35) 
+        id S236857AbhLWEwS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Dec 2021 23:52:18 -0500
+Received: from szxga01-in.huawei.com ([45.249.212.187]:33903 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229704AbhLWEwR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Dec 2021 23:52:17 -0500
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4JKHpv0nWXzcc4N;
+        Thu, 23 Dec 2021 12:51:51 +0800 (CST)
+Received: from dggpemm500019.china.huawei.com (7.185.36.180) by
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Thu, 23 Dec 2021 12:52:14 +0800
+Received: from [10.67.109.184] (10.67.109.184) by
+ dggpemm500019.china.huawei.com (7.185.36.180) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Thu, 23 Dec 2021 12:52:14 +0800
+Subject: Re: [PATCH bpf-next] selftests/bpf: Fix building error when using
+ userspace pt_regs
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Shuah Khan <shuah@kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+References: <20211214135555.125348-1-pulehui@huawei.com>
+ <CAEf4BzaQcHV3iY5XqEbt3ptw+KejVVEZ8gSmW7u46=xHnsTaPA@mail.gmail.com>
+ <a83777e4-528f-8adb-33e4-a0fea8d544a0@huawei.com>
+ <CAEf4BzZf2UBgO=uaOOhPFEdJV9Jo7x3KAC3G9Wa1RVdmOD35nA@mail.gmail.com>
+ <50d81d9c-2b5f-9dfd-a284-9778e6273725@huawei.com>
+ <88aa98df-b566-d031-b9f9-2b88a437a810@huawei.com>
+ <CAEf4BzbJsmKiZHrnEZUZxCL_7PP2w3K5-VabP1bcsoyKogiypw@mail.gmail.com>
+ <bd0a5dff-7ada-4ff3-8fda-89e69254c2c4@huawei.com>
+ <CAEf4BzZjoDH1ko7-wMPN6kquq-5dAnWAAqLfheRgKdQP8Mg7fQ@mail.gmail.com>
+From:   Pu Lehui <pulehui@huawei.com>
+Message-ID: <133520cb-fd10-1822-047f-ea9e8765de1e@huawei.com>
+Date:   Thu, 23 Dec 2021 12:52:14 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAEf4BzZjoDH1ko7-wMPN6kquq-5dAnWAAqLfheRgKdQP8Mg7fQ@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.109.184]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500019.china.huawei.com (7.185.36.180)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2021-12-22 at 17:09 -0800, Jakub Kicinski wrote:
-> On Wed, 22 Dec 2021 17:04:03 -0800 Jakub Kicinski wrote:
-> > On Wed, 22 Dec 2021 13:11:51 -0800 Saeed Mahameed wrote:
-> > > From: Miaoqian Lin <linmq006@gmail.com>
-> > > 
-> > > The mlx5_get_uars_page() function  returns error pointers.
-> > > Using IS_ERR() to check the return value to fix this.
-> > > 
-> > > Fixes: 4ec9e7b02697("net/mlx5: DR, Expose steering domain
-> > > functionality")  
-> > 
-> > Do you mind fixing this missing space? I'll cherry pick the change
-> > from
 
-Sure, I will submit v2.
 
-> > net-next in the meantime.
+On 2021/12/23 7:17, Andrii Nakryiko wrote:
+> On Tue, Dec 21, 2021 at 5:33 PM Pu Lehui <pulehui@huawei.com> wrote:
+>>
+>>
+>>
+>> On 2021/12/22 7:52, Andrii Nakryiko wrote:
+>>> On Mon, Dec 20, 2021 at 4:58 PM Pu Lehui <pulehui@huawei.com> wrote:
+>>>>
+>>>>
+>>>>
+>>>> On 2021/12/20 22:02, Pu Lehui wrote:
+>>>>>
+>>>>>
+>>>>> On 2021/12/18 0:45, Andrii Nakryiko wrote:
+>>>>>> On Thu, Dec 16, 2021 at 6:25 PM Pu Lehui <pulehui@huawei.com> wrote:
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>> On 2021/12/16 12:06, Andrii Nakryiko wrote:
+>>>>>>>> On Tue, Dec 14, 2021 at 5:54 AM Pu Lehui <pulehui@huawei.com> wrote:
+>>>>>>>>>
+>>>>>>>>> When building bpf selftests on arm64, the following error will occur:
+>>>>>>>>>
+>>>>>>>>> progs/loop2.c:20:7: error: incomplete definition of type 'struct
+>>>>>>>>> user_pt_regs'
+>>>>>>>>>
+>>>>>>>>> Some archs, like arm64 and riscv, use userspace pt_regs in
+>>>>>>>>> bpf_tracing.h, which causes build failure when bpf prog use
+>>>>>>>>> macro in bpf_tracing.h. So let's use vmlinux.h directly.
+>>>>>>>>
+>>>>>>>> We could probably also extend bpf_tracing.h to work with
+>>>>>>>> kernel-defined pt_regs, just like we do for x86 (see __KERNEL__ and
+>>>>>>>> __VMLINUX_H__ checks). It's more work, but will benefit other end
+>>>>>>>> users, not just selftests.
+>>>>>>>>
+>>>>>>> It might change a lot. We can use header file directory generated by
+>>>>>>> "make headers_install" to fix it.
+>>>>>>
+>>>>>> We don't have dependency on "make headers_install" and I'd rather not
+>>>>>> add it.
+>>>>>>
+>>>>>> What do you mean by "change a lot"?
+>>>>>>
+>>>>> Maybe I misunderstood your advice. Your suggestion might be to extend
+>>>>> bpf_tracing.h to kernel-space pt_regs, while some archs, like arm64,
+>>>
+>>> yes
+>>>
+>>>>> only support user-space. So the patch might be like this:
+>>>>>
+>>>>> diff --git a/tools/lib/bpf/bpf_tracing.h b/tools/lib/bpf/bpf_tracing.h
+>>>>> index db05a5937105..2c3cb8e9ae92 100644
+>>>>> --- a/tools/lib/bpf/bpf_tracing.h
+>>>>> +++ b/tools/lib/bpf/bpf_tracing.h
+>>>>> @@ -195,9 +195,13 @@ struct pt_regs;
+>>>>>
+>>>>>     #elif defined(bpf_target_arm64)
+>>>>>
+>>>>> -struct pt_regs;
+>>>>> +#if defined(__KERNEL__)
+>>>>> +#define PT_REGS_ARM64 const volatile struct pt_regs
+>>>>> +#else
+>>>>>     /* arm64 provides struct user_pt_regs instead of struct pt_regs to
+>>>>> userspace */
+>>>>>     #define PT_REGS_ARM64 const volatile struct user_pt_regs
+>>>>> +#endif
+>>>>> +
+>>>>>     #define PT_REGS_PARM1(x) (((PT_REGS_ARM64 *)(x))->regs[0])
+>>>>>     #define PT_REGS_PARM2(x) (((PT_REGS_ARM64 *)(x))->regs[1])
+>>>>>     #define PT_REGS_PARM3(x) (((PT_REGS_ARM64 *)(x))->regs[2])
+>>>>>
+>>>> Please ignore the last reply. User-space pt_regs of arm64/s390 is the
+>>>> first part of the kernel-space's, it should has covered both kernel and
+>>>> userspace.
+>>>
+>>> Alright, so is there still a problem or not? Looking at the definition
+>>> of struct pt_regs for arm64, just casting struct pt_regs to struct
+>>> user_pt_regs will indeed just work. So in that case, what was your
+>>> original issue?
+>>>
+>> Thanks for your reply. The original issue is, when arm64 bpf selftests
+>> cross compiling in x86_64 host, clang cannot find the arch specific uapi
+>> ptrace.h, and then the above error occur. Of course it works when
+>> compiling in arm64 host for it owns the corresponding uapi ptrace.h. So
+>> my suggestion is to add arch specific use header file directory
+>> generated by "make headers_install" for the cross compiling issue.
 > 
-> I take that back, I thought the error was on our side but looks like
-> the patch was put in the wrong PR. Why not put it in the net PR
-
-Yes, my mistake, the bug only existed in net-next when I accepted the
-patch, I mistakenly left it in my net-next tree after rc1 was out.
-
-> yourself? We'll handle the unavoidable conflict, but I don't see any
-> advantage to me cherry picking here (which I can't do directly
-> anyway,
-
-This how I remember we used to do it.
-Sure i will attach it in v2. I already checked, there will be no
-conflicts.
-
+> I see. Can you try adding something like:
+> 
+> ARCH_APIDIR := $(abspath ../../../../arch/$(SRCARCH)/include/uapi)
+> 
+> and then add -I$(ARCH_APIDIR) to BPF_CFLAGS?
+> 
+> Please let me know if that works for your cross-compilation case.
+> 
+It works, thanks. I will add it to v2.
+>>>>>>>
+>>>>>>> --- a/tools/testing/selftests/bpf/Makefile
+>>>>>>> +++ b/tools/testing/selftests/bpf/Makefile
+>>>>>>> @@ -294,7 +294,8 @@ MENDIAN=$(if
+>>>>>>> $(IS_LITTLE_ENDIAN),-mlittle-endian,-mbig-endian)
+>>>>>>>      CLANG_SYS_INCLUDES = $(call get_sys_includes,$(CLANG))
+>>>>>>>      BPF_CFLAGS = -g -D__TARGET_ARCH_$(SRCARCH) $(MENDIAN) \
+>>>>>>>                 -I$(INCLUDE_DIR) -I$(CURDIR) -I$(APIDIR) \
+>>>>>>> -            -I$(abspath $(OUTPUT)/../usr/include)
+>>>>>>> +            -I$(abspath $(OUTPUT)/../usr/include) \
+>>>>>>> +            -I../../../../usr/include
+>>>>>>>>>
+>>>>>>>>> Signed-off-by: Pu Lehui <pulehui@huawei.com>
+>>>>>>>>> ---
+>>>>>>>>>      tools/testing/selftests/bpf/progs/loop1.c     |  8 ++------
+>>>>>>>>>      tools/testing/selftests/bpf/progs/loop2.c     |  8 ++------
+>>>>>>>>>      tools/testing/selftests/bpf/progs/loop3.c     |  8 ++------
+>>>>>>>>>      tools/testing/selftests/bpf/progs/loop6.c     | 20
+>>>>>>>>> ++++++-------------
+>>>>>>>>>      .../selftests/bpf/progs/test_overhead.c       |  8 ++------
+>>>>>>>>>      .../selftests/bpf/progs/test_probe_user.c     |  6 +-----
+>>>>>>>>>      6 files changed, 15 insertions(+), 43 deletions(-)
+>>>>>>>>>
+>>>>>>>>
+>>>>>>>> [...]
+>>>>>>>> .
+>>>>>>>>
+>>>>>> .
+>>>>>>
+>>>>> .
+>>> .
+>>>
+> .
+> 
