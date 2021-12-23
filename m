@@ -2,109 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C2EB47E56B
-	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 16:24:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4875747E56E
+	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 16:27:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233687AbhLWPYN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Dec 2021 10:24:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58354 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230156AbhLWPYM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Dec 2021 10:24:12 -0500
-Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 302E9C061401
-        for <netdev@vger.kernel.org>; Thu, 23 Dec 2021 07:24:12 -0800 (PST)
-Received: by mail-io1-xd30.google.com with SMTP id y16so7524375ioc.8
-        for <netdev@vger.kernel.org>; Thu, 23 Dec 2021 07:24:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=egauge.net; s=google;
-        h=message-id:subject:from:to:cc:date:in-reply-to:references
-         :organization:user-agent:mime-version:content-transfer-encoding;
-        bh=4zVajV20KPdu35E00sbLWdAM4v9gyfqdQSaA3gZjTR4=;
-        b=TwFLoxLFOztBwNFjsxZWAfCmiUj1qLcH59zeFdKKNAMYZsbepHXZm9TsMibwJg4beO
-         9snaDSBShu+v9uYTtopaTAdos6yOG/+TYWKYu30pI+Lv9pX3BCNJ9w9lEp5P/OY5q4G9
-         Yoz75RrkSRPQX8NVLHvfxekF9y2dPgciNMzdJJvFxDNzmcx5oaUfaabY4DBbHHlxr8hk
-         WizyYO503AZDSzu5BH+YRh6BM8LcJquWJdqcUbWLDB+UINWgm4R+sN9yIj/ZBlWm2kQZ
-         4eDTk9sEf6xE8GCKsy90Az5L72zxhoCE601XfMBvKajAI5P4xnQMHXHNHFtU0k+53QK9
-         PBUQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:organization:user-agent:mime-version
-         :content-transfer-encoding;
-        bh=4zVajV20KPdu35E00sbLWdAM4v9gyfqdQSaA3gZjTR4=;
-        b=C+w/gL+HyvryKQgHPCw/OjG16mHa2zGHpAWmjM7VDMYDqr93gzAuwcMe8eD6H4ItMN
-         VP7Kk3QFYXiiZtdX/jYbl1ovm/68EzQhoHxZBagRNV6qysqac9CEuBwj/UfvZThSVHSP
-         SbOQyrpcy12NkvlHCU/FPvie9k9nhVT7nD/1je/fJCWTvOyeY2oX/YMoiswxXYXncwO8
-         m2pLVWCYiyHspF/qNfSCNyesQtsD4puvetuqtw0btuFHYzgmTGRMLYwsk7V2I5PCJlfw
-         2dzbl00aUcHGWZ8nlMwA1VseXXBBqQKy0/fH9//2ntjkphd3GXhNBnpFExBvwvD2y8Mg
-         UQEA==
-X-Gm-Message-State: AOAM531tFZjBd3ATre1p7bl9d152xb7IPgf7hzZhE50kNPwDFmfsFBAz
-        Ud7X5Ij9L2/KW+PHJ3UlfbRNT/GOjNK6eUo=
-X-Google-Smtp-Source: ABdhPJz3spx+ZRSfVyyYfskEe9qB3cMmiKbQXp22JTrUVK6hxwOrWxKfXuCSXD5Qk3A3rZGlMq+pqQ==
-X-Received: by 2002:a02:cf39:: with SMTP id s25mr1401366jar.17.1640273051175;
-        Thu, 23 Dec 2021 07:24:11 -0800 (PST)
-Received: from ?IPv6:2601:281:8300:4e0:2ba9:697d:eeec:13b? ([2601:281:8300:4e0:2ba9:697d:eeec:13b])
-        by smtp.gmail.com with ESMTPSA id x5sm3558270iov.50.2021.12.23.07.24.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Dec 2021 07:24:10 -0800 (PST)
-Message-ID: <18a0da3ad5d5a2aba9b7c35907b227e6ad5620f3.camel@egauge.net>
-Subject: Re: [PATCH v2 00/50] wilc1000: rework tx path to use sk_buffs
- throughout
-From:   David Mosberger-Tang <davidm@egauge.net>
-To:     Ajay.Kathat@microchip.com
-Cc:     Claudiu.Beznea@microchip.com, kvalo@kernel.org,
-        davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Thu, 23 Dec 2021 08:23:59 -0700
-In-Reply-To: <adce9591-0cf2-f771-25b9-2eebea05f1bc@microchip.com>
-References: <20211223011358.4031459-1-davidm@egauge.net>
-         <adce9591-0cf2-f771-25b9-2eebea05f1bc@microchip.com>
-Organization: eGauge Systems LLC
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5-0ubuntu1 
+        id S235510AbhLWP1H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Dec 2021 10:27:07 -0500
+Received: from relay5-d.mail.gandi.net ([217.70.183.197]:34005 "EHLO
+        relay5-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234595AbhLWP1E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Dec 2021 10:27:04 -0500
+Received: (Authenticated sender: repk@triplefau.lt)
+        by relay5-d.mail.gandi.net (Postfix) with ESMTPSA id CDBCA1C0004;
+        Thu, 23 Dec 2021 15:27:00 +0000 (UTC)
+From:   Remi Pommarel <repk@triplefau.lt>
+To:     netdev@vger.kernel.org
+Cc:     Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        bridge@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+        Remi Pommarel <repk@triplefau.lt>
+Subject: [PATCH net 0/2] Fix SIOCGIFBR/SIOCSIFBR ioctl
+Date:   Thu, 23 Dec 2021 16:31:37 +0100
+Message-Id: <20211223153139.7661-1-repk@triplefau.lt>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2021-12-23 at 06:16 +0000, Ajay.Kathat@microchip.com wrote:
-> On 23/12/21 06:44, David Mosberger-Tang wrote:
-> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> > 
-> > OK, so I'm nervous about such a large patch series, but it took a lot
-> > of work to break things down into atomic changes.  This should be it
-> > for the transmit path as far as I'm concerned.
-> 
-> Thanks David for the efforts to break down the changes. I am still 
-> reviewing and testing the previous series and found some inconsistent 
-> results. I am not sure about the cause of the difference. For some 
-> tests, the throughput is improved(~1Mbps) but for some CI tests, the 
-> throughput is less compared(~1Mbps in same range) to the previous. 
-> Though not observed much difference.
+SIOC{G,S}IFBR ioctls have been broken since [0], as discussed here [1]
+the intent was to get them working in compat mode.
 
-There shouldn't be any significant performance regressions.  From my
-observations, +/-1Mbps in throughput is quite possible due to cache-
-effects.
+This serie is gathering patch from [2] with the one from [3].
 
-> Now the new patches are added to the same series so it is difficult to 
-> review them in one go.
+The first patch fixes the ioctl usage so it can be backported to stable
+kernel while the second one adds proper support for those ioctl in
+compat mode.
 
-Ah, OK, sorry about that.  After the automated error reports, I waited
-for a day or two and after not seeing any further feedback, I figured
-it'd be fine to add to the series.
+This has been tested with busybox's brctl as below.
 
-I take it that as long as a patch shows up in patchworks with a
-state==Action required, I should assume the patch is being worked on
-(or will be worked on).
+Before this serie
 
-> I have a request, incase there are new patches please include them in 
-> separate series.
+- 64-bit brctl:
+  $ brctl show
+  bridge name     bridge id               STP enabled     interfaces
+  brctl: can't get bridge name for index 0: No such device or address
 
-I'm not planning on adding more patches.
+- 32-bit brctl on CONFIG_COMPAT=y kernel:
+  $ brctl show
+  brctl: SIOCGIFBR: Invalid argument
 
-  --david
+With first patch of this serie
 
+- 64-bit brctl
+  $ brctl show
+  bridge name     bridge id               STP enabled     interfaces
+  br0             8000.000000000000       no
+
+- 32-bit brctl on CONFIG_COMPAT=y kernel
+  $ brctl show
+    brctl: SIOCGIFBR: Invalid argument
+
+With both patches
+
+- 64-bit brctl
+  $ brctl show
+  bridge name     bridge id               STP enabled     interfaces
+  br0             8000.000000000000       no
+
+- 32-bit brctl on CONFIG_COMPAT=y kernel
+  $ brctl show
+  bridge name     bridge id               STP enabled     interfaces
+  br0             8000.000000000000       no
+
+[0] commit 561d8352818f ("bridge: use ndo_siocdevprivate")
+[1] https://lkml.org/lkml/2021/12/22/805
+[2] https://lkml.org/lkml/2021/12/22/743
+[3] https://lkml.org/lkml/2021/12/23/212
+
+Thanks,
+
+Remi Pommarel (2):
+  net: bridge: fix ioctl old_deviceless bridge argument
+  net: bridge: Get SIOCGIFBR/SIOCSIFBR ioctl working in compat mode
+
+ net/bridge/br_ioctl.c | 75 ++++++++++++++++++++++++++++---------------
+ net/socket.c          | 20 ++----------
+ 2 files changed, 52 insertions(+), 43 deletions(-)
+
+-- 
+2.33.0
 
