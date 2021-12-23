@@ -2,83 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D07C447E8BE
-	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 21:24:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A64D47E8CA
+	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 21:30:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245188AbhLWUYV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Dec 2021 15:24:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41060 "EHLO
+        id S1350260AbhLWUaQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Dec 2021 15:30:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240774AbhLWUYV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Dec 2021 15:24:21 -0500
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26B36C061401;
-        Thu, 23 Dec 2021 12:24:21 -0800 (PST)
-Received: by mail-pg1-x530.google.com with SMTP id 2so5813649pgb.12;
-        Thu, 23 Dec 2021 12:24:21 -0800 (PST)
+        with ESMTP id S1350259AbhLWUaP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Dec 2021 15:30:15 -0500
+Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25C03C061757
+        for <netdev@vger.kernel.org>; Thu, 23 Dec 2021 12:30:15 -0800 (PST)
+Received: by mail-lj1-x234.google.com with SMTP id by39so10836027ljb.2
+        for <netdev@vger.kernel.org>; Thu, 23 Dec 2021 12:30:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=SyEnL/SLKTuhUBnGBnB+zNmKPnzomX5LZd6Xaw6ZYA4=;
-        b=XNIAbtQ9zSvmB+cSd1swu2CsO0udyu3/ujd4Qw+yaIjtSDx4NJkYTcch0ZmrajtIZe
-         C5ZqMvih/dRvsOf9A/AUKgLPP1HBmYg3PrINw1/gLdndNVoFMZYu1/xLZz+wSeVSNypy
-         rPWFFO40sV6f5Y+r/IohFuo3HAv7qN5ed3LzWX5ZKhIitEH2Fcpr26373KtNKbdQ1lCT
-         ZZGOpKB/OkixruWembTraZlKoa2L4hhSNecsWIDQPFnRF9jF9LJTbPUVZuSWSmWdv6J/
-         /y5FiAYh9Y8MRwRJIRiZ+a+0hZJyuVpei2wq/HhL6RRSCY7pCmsB3QEjVkkIIcThWY71
-         OOQw==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Odt0JsRPKSwzZrSogY/TSKmJxhU81pD7uS/KWPJG7aw=;
+        b=AgIToA7aaUbbuygVsn68Z8gYx2R+pQYR1IGhjy1yu+LyX5dNysFzXbkdgswMVTwTep
+         0hI1Ae/3TaPJPhWnCgvYHJ1VxnHq4l/eFg5e3kj/JRuOb7mac6NKG5+ybt3ENDX/mSaq
+         0xzI/qhLfARJdv2pkCjradsG9Wzj6pj4xZ8TfjQHTecXRkE4KDhq9AUTCvqpomHD7nct
+         wHr7wkKfJp2gGHQWmp3oI6tTwBS2Vz6LouKFC6ASCZELLqgy8+qcg8nboxxGhWJcEIzj
+         dWufJ966D9lg/OGYmwR5V+BL41B2Pi6FMkc2jhL5RAoV/B9HXcKhRs6Rytt/j7+GidI2
+         UWIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=SyEnL/SLKTuhUBnGBnB+zNmKPnzomX5LZd6Xaw6ZYA4=;
-        b=pYYtzlY0yizIxgLSkdEphsCENnQG/LHuRnfMnLgCn4jSFCFeLZCWnsvUveCcLV9WuQ
-         2ywJV+ioTns14dptXKdXSwoKZZ7LLOPQW7+xytmoTS9YF+wMqCKgtaJjgEDmBKvy7+M/
-         GE70ZkKCO5e17O+4NXEQkDXQSx89lL7fMyfKAsMdYCpy8DzsR1icSJHeEaPY/gLTTvT4
-         1S1Q2uIDLYVVk6pmgMPaM1GOJouNi6a+e3ii1ulMKniYJHVJIQcA33Dlqb5Eatsu+8Zw
-         tB1UtIr7l1WxRkraQDQbfU7u032im+OOHwd4G4UWgYwbWOPZaO+qFLVVf+elGXHJOljq
-         1oqw==
-X-Gm-Message-State: AOAM532qtTEw6eaTghSp6fBnPjOPAOX2k1+yg75gPdYNc/byUoHA2JcK
-        9xbPpEGlctoc8NThnT/912A=
-X-Google-Smtp-Source: ABdhPJxrTqw1dJQx8wlNzyAtKFnxBYn0JA3Ho+8h6oyCHJRDwg6cfdWApru1d6YMHkEP9H4QRH4X6Q==
-X-Received: by 2002:a63:2166:: with SMTP id s38mr3394922pgm.125.1640291060659;
-        Thu, 23 Dec 2021 12:24:20 -0800 (PST)
-Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id e24sm9440247pjt.45.2021.12.23.12.24.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Dec 2021 12:24:20 -0800 (PST)
-Date:   Thu, 23 Dec 2021 12:24:17 -0800
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     "Radu Pirea (NXP OSS)" <radu-nicolae.pirea@oss.nxp.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        christian.herber@nxp.com, andrew@lunn.ch, hkallweit1@gmail.com,
-        linux@armlinux.org.uk, davem@davemloft.net, kuba@kernel.org
-Subject: Re: [PATCH v2 2/2] phy: nxp-c45-tja11xx: read the tx timestamp
- without lock
-Message-ID: <20211223202417.GC29492@hoboy.vegasvil.org>
-References: <20211222213453.969005-1-radu-nicolae.pirea@oss.nxp.com>
- <20211222213453.969005-3-radu-nicolae.pirea@oss.nxp.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Odt0JsRPKSwzZrSogY/TSKmJxhU81pD7uS/KWPJG7aw=;
+        b=QO/VdsQ7uHEOCV3Xc0gSv9wZkUEfIT0L52vpPMyegZnpQMMekdyBvJuKmxqByBhAxH
+         IzYd3B6FiqURsolFH4wdfJc2SwdeCe28yETVTWr7ifeXijqckRc9lqjtNkeAvkPiurr2
+         0zlw9wxN072FL3RLlHB/CZBAFdI0AB3RHNyUNWIzWd0yHebP5UaY33LHpq5TPm83DhiG
+         kRgO5ydM7DiyxpcfQ5azmKX/AXwBrLr1ka5gW5vbrYyPi4TJswx5WUYDCILxDIDmZjyB
+         CIDm3Ok6pSuV5Lwq7UYZa6Q72dFB63A9H4D1dygx4glcf4y87VF+1EDUWES7bj5pUWR4
+         yOig==
+X-Gm-Message-State: AOAM533xswPV7k0FRv9UtVHYaoNFZvUR/lnEhLCzQxu/qsvcGUp2lUA9
+        GMtQDn5WyJTHuXQVtRtHyiMNhl1nRHEZAS4LV8xImQ==
+X-Google-Smtp-Source: ABdhPJyYWN/xeRMF+9Dfpv8zcB/XlMiakJ1FyMZHUYzjhf10Y8zM74gGT8+Mckyyk2oE+tUZO5jm/ikoSyjgvNoCFBc=
+X-Received: by 2002:a2e:908b:: with SMTP id l11mr2705599ljg.62.1640291413074;
+ Thu, 23 Dec 2021 12:30:13 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211222213453.969005-3-radu-nicolae.pirea@oss.nxp.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20211223162848.3243702-1-trix@redhat.com>
+In-Reply-To: <20211223162848.3243702-1-trix@redhat.com>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Thu, 23 Dec 2021 12:30:01 -0800
+Message-ID: <CAKwvOd=dLjMAim_FRNyWegzEjy0_1vF2xVW1hNPQ55=32qO4Wg@mail.gmail.com>
+Subject: Re: [PATCH] mac80211: initialize variable have_higher_than_11mbit
+To:     trix@redhat.com
+Cc:     johannes@sipsolutions.net, davem@davemloft.net, kuba@kernel.org,
+        nathan@kernel.org, linville@tuxdriver.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 22, 2021 at 11:34:53PM +0200, Radu Pirea (NXP OSS) wrote:
-> Reading the tx timestamps can be done in parallel with adjusting the LTC
-> value.
-> 
-> Calls to nxp_c45_get_hwtxts() are always serialised. If the phy
-> interrupt is enabled, .do_aux_work() will not call nxp_c45_get_hwtxts.
+On Thu, Dec 23, 2021 at 8:29 AM <trix@redhat.com> wrote:
+>
+> From: Tom Rix <trix@redhat.com>
+>
+> Clang static analysis reports this warnings
+>
+> mlme.c:5332:7: warning: Branch condition evaluates to a
+>   garbage value
+>     have_higher_than_11mbit)
+>     ^~~~~~~~~~~~~~~~~~~~~~~
+>
+> have_higher_than_11mbit is only set to true some of the time in
+> ieee80211_get_rates() but is checked all of the time.  So
+> have_higher_than_11mbit needs to be initialized to false.
 
-Reviewing the code, I see what you mean.  However, the serialization
-is completely non-obvious, and future changes to the driver could
-easily spoil the implicit serialization.  Given that the mutex is not
-highly contended, I suggest dropping this patch in order to
-future-proof the driver.
+LGTM. There's only one caller of ieee80211_get_rates() today; if there
+were others, they could make a similar mistake in the future. An
+alternate approach: ieee80211_get_rates() could unconditionally write
+false before the loop that could later write true. Then call sites
+don't need to worry about this conditional assignment. Perhaps that
+would be preferable? If not:
 
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+
+>
+> Fixes: 5d6a1b069b7f ("mac80211: set basic rates earlier")
+> Signed-off-by: Tom Rix <trix@redhat.com>
+> ---
+>  net/mac80211/mlme.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/net/mac80211/mlme.c b/net/mac80211/mlme.c
+> index 51f55c4ee3c6e..766cbbc9c3a72 100644
+> --- a/net/mac80211/mlme.c
+> +++ b/net/mac80211/mlme.c
+> @@ -5279,7 +5279,7 @@ static int ieee80211_prep_connection(struct ieee80211_sub_if_data *sdata,
+>          */
+>         if (new_sta) {
+>                 u32 rates = 0, basic_rates = 0;
+> -               bool have_higher_than_11mbit;
+> +               bool have_higher_than_11mbit = false;
+>                 int min_rate = INT_MAX, min_rate_index = -1;
+>                 const struct cfg80211_bss_ies *ies;
+>                 int shift = ieee80211_vif_get_shift(&sdata->vif);
+> --
+> 2.26.3
+>
+
+
+-- 
 Thanks,
-Richard
+~Nick Desaulniers
