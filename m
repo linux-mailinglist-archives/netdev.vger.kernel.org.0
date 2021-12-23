@@ -2,115 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C41847E404
-	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 14:17:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5059147E407
+	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 14:18:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348619AbhLWNRt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Dec 2021 08:17:49 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:39733 "EHLO
+        id S1348617AbhLWNSR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Dec 2021 08:18:17 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:35199 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1348613AbhLWNRt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Dec 2021 08:17:49 -0500
+        by vger.kernel.org with ESMTP id S1348613AbhLWNSQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Dec 2021 08:18:16 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1640265468;
+        s=mimecast20190719; t=1640265496;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=vNaSb3OMoRE9wcAdQ3zOWspvi+wy5zT/zyfsdS3SflI=;
-        b=D/bETRX7Meu+pb3uasCt2Kx7shhwL2CRF3uDiuc8z+gifjBJQZl+zJH/KMJ3hhOuBW4xGj
-        AMB17JaC/kXxQdt2Uv3mr/9g4abwYfE/moGJK5vOJrt2+I7jzA0a2kqrLw7uINmTUUrzIc
-        tXu3wL76WTibKn6JvnlRB8UcOwyhxMY=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=oWXug9XOKWSU/12+6kVzArJmbV7ilOvZ5ITUhG4ThUA=;
+        b=Eiu5bUl8YS6DB2cg1AACd9+J3EHUI6I81mGJItxMjQX7P71SWn9Q21DCRFXHMPZKgtHWs3
+        gGCt973uxLe5wIvKxphlLXicAyiwVqXUV6e+chioO729uybsAuL935TXFkAhuXMta8ikmY
+        zJDHbPfYCWJRIOb5ljC4ud5F2h6bYiU=
+Received: from mail-io1-f69.google.com (mail-io1-f69.google.com
+ [209.85.166.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-552-y3O-JKGjOb-R8_9WETXIDQ-1; Thu, 23 Dec 2021 08:17:45 -0500
-X-MC-Unique: y3O-JKGjOb-R8_9WETXIDQ-1
-Received: by mail-ed1-f71.google.com with SMTP id eg23-20020a056402289700b003f80a27ca2bso4475140edb.14
-        for <netdev@vger.kernel.org>; Thu, 23 Dec 2021 05:17:45 -0800 (PST)
+ us-mta-447-vDYflINROvmt2AfOSlqiKA-1; Thu, 23 Dec 2021 08:18:15 -0500
+X-MC-Unique: vDYflINROvmt2AfOSlqiKA-1
+Received: by mail-io1-f69.google.com with SMTP id ay10-20020a5d9d8a000000b005e238eaeaa9so3130045iob.12
+        for <netdev@vger.kernel.org>; Thu, 23 Dec 2021 05:18:15 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=vNaSb3OMoRE9wcAdQ3zOWspvi+wy5zT/zyfsdS3SflI=;
-        b=bO2xgA4RHtxbM8pNxrUpduuJ0wFwILSFLsz+7z9b4KlE2S/2c8EygHDp/kxC2uancN
-         uVKTeyuN3QurcFzDcSkSyUqOt6ypHZfA8XnKK5udT2XC+AFtL4SLQ246x5wWOkF440T+
-         vKAj4MdxC7EGDzSiImAnU1UkWEU2Qqhz9WOYsTeuBg0hmh8denw7cyeUWk6UZ/wXa57Y
-         evlIKwdNsoVdDtagamaupO8UmKefqkyihLtyWY5qQMVIwJkeHMqKTaNeQUaPMwpEdjr2
-         EUnI5gAJ16mS6X7chCUPin26pmwHd8KWpVbDgptkU8ur+9VYss5gaZrvyMU6yYiAqrEI
-         tMhA==
-X-Gm-Message-State: AOAM5312WKpnfTQYtPrdCNmU3STP52MCaG2EwFe71GCESG/1PHVuTZkQ
-        9rMd+xEOhfU221Dwx/hqdpIlNkh+1QhJDPTzsX+JIus+XIleby6MwzFbs4bUPkFSz1OfwUedikO
-        bojIpYHWdWs2fjnpG
-X-Received: by 2002:a17:906:b18c:: with SMTP id w12mr1840151ejy.645.1640265464178;
-        Thu, 23 Dec 2021 05:17:44 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwC8968YE5ZR7LaPJnT75CxVmirtTVTSYzqV7G4OHSGq9VKb4UBEdVcbZQ/RxmUk787d2O6lw==
-X-Received: by 2002:a17:906:b18c:: with SMTP id w12mr1840136ejy.645.1640265464048;
-        Thu, 23 Dec 2021 05:17:44 -0800 (PST)
-Received: from krava.redhat.com ([83.240.60.218])
-        by smtp.gmail.com with ESMTPSA id 6sm1743743ejj.164.2021.12.23.05.17.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Dec 2021 05:17:43 -0800 (PST)
-From:   Jiri Olsa <jolsa@redhat.com>
-X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>
-Subject: [PATCH bpf-next 2/2] selftests/bpf: Add btf_dump__new to test_cpp
-Date:   Thu, 23 Dec 2021 14:17:36 +0100
-Message-Id: <20211223131736.483956-2-jolsa@kernel.org>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20211223131736.483956-1-jolsa@kernel.org>
-References: <20211223131736.483956-1-jolsa@kernel.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=oWXug9XOKWSU/12+6kVzArJmbV7ilOvZ5ITUhG4ThUA=;
+        b=D6G42/szHWMWK88RhncS9Fp8FEbQgY0W43Xvotwx34T17vVWr3bprCXs+wu00+qUEc
+         rxB3Yi8S94zdU8y5aUUrf8meamJivASH3TRLq4AvdsAnUuQcIEP/3i2gxGqb3UJIqUpL
+         hqnTPprlGb9gHH5cMMz0MCkz/0cxKaE0esHIcbGmTaKwOe8I7fC4E63phQ3gv18fCgwg
+         R7/sEgz64au8wochoyip4VtLmKdhVPLpr/DU49pwSwa5GPDZTYx0BbkWMlx/t6IdBV8V
+         1t2r4Xorb+4JtOYQrSExw3oca+8PJE8on2QltwzYUQ2zh997yathZBxW18WKJAwozx7G
+         eZtw==
+X-Gm-Message-State: AOAM530Bk8NFd9gBUmYWQDRB9KuCxWQK24Ug9himti38M5wnY+nTbucg
+        q3IbOYQ/OE0FJrp3xfi9zwt2BujCj6gii2aPs2lo9Zj3PWBgktrlURWEq6SFMPIkvMpXdDi3EIE
+        yXYZbUwJeGnCY01wpMttVFFWZ1EVUZzx1
+X-Received: by 2002:a05:6e02:1528:: with SMTP id i8mr1012856ilu.312.1640265494562;
+        Thu, 23 Dec 2021 05:18:14 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJz2ieHLybgJ35RhS/0meW79Aq5j6+U2Jp3pvSTNJuZMvmVzRiI+0xzHxuu82D4vjtQlJoNaVukfMMs22n5JIkw=
+X-Received: by 2002:a05:6e02:1528:: with SMTP id i8mr1012837ilu.312.1640265494344;
+ Thu, 23 Dec 2021 05:18:14 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <CACT4oudChHDKecLfDdA7R8jpQv2Nmz5xBS3hH_jFWeS37CnQGg@mail.gmail.com>
+ <20211120083107.z2cm7tkl2rsri2v7@gmail.com> <CACT4oufpvQ1Qzg3eC6wDu33_xBo5tVghr9G7Q=d-7F=bZbW4Vg@mail.gmail.com>
+In-Reply-To: <CACT4oufpvQ1Qzg3eC6wDu33_xBo5tVghr9G7Q=d-7F=bZbW4Vg@mail.gmail.com>
+From:   =?UTF-8?B?w43DsWlnbyBIdWd1ZXQ=?= <ihuguet@redhat.com>
+Date:   Thu, 23 Dec 2021 14:18:03 +0100
+Message-ID: <CACT4ouc=LNnrTdz37YEOAkm3G+02vrmJ5Sxk0JwKSMoCGnLs-w@mail.gmail.com>
+Subject: Re: Bad performance in RX with sfc 40G
+To:     habetsm.xilinx@gmail.com
+Cc:     Edward Cree <ecree.xilinx@gmail.com>, netdev@vger.kernel.org,
+        Dinan Gunawardena <dinang@xilinx.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding btf_dump__new call to test_cpp, so we can
-test C++ compilation with that.
+Hi Martin,
 
-Signed-off-by: Jiri Olsa <jolsa@kernel.org>
----
- tools/testing/selftests/bpf/test_cpp.cpp | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+I replied this a few weeks ago, but it seems that, for some reason, I
+didn't CCd you.
 
-diff --git a/tools/testing/selftests/bpf/test_cpp.cpp b/tools/testing/selftests/bpf/test_cpp.cpp
-index a8d2e9a87fbf..e00201de2890 100644
---- a/tools/testing/selftests/bpf/test_cpp.cpp
-+++ b/tools/testing/selftests/bpf/test_cpp.cpp
-@@ -7,9 +7,15 @@
- 
- /* do nothing, just make sure we can link successfully */
- 
-+static void dump_printf(void *ctx, const char *fmt, va_list args)
-+{
-+}
-+
- int main(int argc, char *argv[])
- {
-+	struct btf_dump_opts opts = { };
- 	struct test_core_extern *skel;
-+	struct btf *btf;
- 
- 	/* libbpf.h */
- 	libbpf_set_print(NULL);
-@@ -18,7 +24,8 @@ int main(int argc, char *argv[])
- 	bpf_prog_get_fd_by_id(0);
- 
- 	/* btf.h */
--	btf__new(NULL, 0);
-+	btf = btf__new(NULL, 0);
-+	btf_dump__new(btf, dump_printf, nullptr, &opts);
- 
- 	/* BPF skeleton */
- 	skel = test_core_extern__open_and_load();
--- 
-2.33.1
+On Thu, Dec 9, 2021 at 1:06 PM =C3=8D=C3=B1igo Huguet <ihuguet@redhat.com> =
+wrote:
+>
+> Hi,
+>
+> On Sat, Nov 20, 2021 at 9:31 AM Martin Habets <habetsm.xilinx@gmail.com> =
+wrote:
+> > If you're testing without the IOMMU enabled I suspect the recycle ring
+> > size may be too small. Can your try the patch below?
+>
+> Sorry for the very late reply, but I've had to be out of work for many da=
+ys.
+>
+> This patch has improved the performance a lot, reaching the same
+> 30Gbps than in TX. However, it seems sometimes a bit erratic, still
+> dropping to 15Gbps sometimes, specially after module remove & probe,
+> or from one iperf call to another. But not being all the times, I
+> didn't found a clear pattern. Anyway, it clearly improves things.
+>
+> Can this patch be applied as is or it's just a test?
+>
+> --
+> =C3=8D=C3=B1igo Huguet
+
+
+
+--=20
+=C3=8D=C3=B1igo Huguet
 
