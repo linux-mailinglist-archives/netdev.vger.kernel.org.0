@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A18CD47E58C
-	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 16:40:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E87047E590
+	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 16:41:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349031AbhLWPko (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Dec 2021 10:40:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33794 "EHLO
+        id S1349035AbhLWPk5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Dec 2021 10:40:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349013AbhLWPkm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Dec 2021 10:40:42 -0500
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E79ABC061757;
-        Thu, 23 Dec 2021 07:40:41 -0800 (PST)
-Received: by mail-ed1-x52f.google.com with SMTP id o6so22972532edc.4;
-        Thu, 23 Dec 2021 07:40:41 -0800 (PST)
+        with ESMTP id S1349022AbhLWPko (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Dec 2021 10:40:44 -0500
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAC4FC061756;
+        Thu, 23 Dec 2021 07:40:43 -0800 (PST)
+Received: by mail-ed1-x52d.google.com with SMTP id j21so22918646edt.9;
+        Thu, 23 Dec 2021 07:40:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=dkmS0Cn+xGZLK+jdSmt5kOascj8B8GCiGD14/T3W7CI=;
-        b=T9lR1BqjJlLABep1NTKOI6UKfJb9U+22sWOMnYNzIdJM5fRvvnC1GNrrb0pw0RzFgz
-         yjgz+o4y8jEl2p6hgEJgarlhrVB9wJT1XZq32PdiRuBRXaF1MoJDI8s33ddtUb7FqzUG
-         7vlJsXevJ3whHk+UWV1sf5s9NJPqh54AmDdK7uqL3uRrcIwpgGS3cTCE36fg58yyP0pV
-         VK0aSNsqeWctt15JrI7UTTv0PtvlGZDP2dgokjq3mDP2N6iDzjFfyvalomZV6bzTfCUA
-         2juXiqh5U+h4eBOXP7XS3vvOMCQJ0E9xBf8+GIZXg0wPyMKLjRucKnPdyW/zJNlDT1Cs
-         +0hQ==
+        bh=0XF4BCcCfYprTbmAK9I4jxJwe4NvjnyiY/HJigZj5DE=;
+        b=fuPjVdHJjDD8gfhEGJoCVPhGJmsmGWklbAt5SrzDIsN2mRLsxI15eJH5QDOFfR5Dks
+         ZwYWCKRG6dUGFVUVLaUlUemQySZtR4aKgOjmcuS4nWZbN2LUP3X1pw0n4dFZi++Cn05Z
+         RDL5ldd9hV3SVZ4+lff50dowJ97lzKsY+rDd6o3jhVHGkbplv0LOQ540LmNSpJ841W5z
+         p0SVHGhbhthgsO/mskdYLaJ+BsKc37l3Ze0ayMgk9gNXBWElVBd+ZrsjSDsP8qPQgSNd
+         EVK8FKCWNwny5RdPsb9pUl0Y//n0Zu07oudvjVYNfP6NHuNfOQU3aZzrb/LqBTNqUfqM
+         3YEg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=dkmS0Cn+xGZLK+jdSmt5kOascj8B8GCiGD14/T3W7CI=;
-        b=elZP4w2Paa/inXVG2JiN5QhEG3FfBgmlXsUpdphQm31XJjQ2/6PMTbkECVBAd7SKB6
-         9LosS2CSFbne87hW20D7Ibwh5AFF3P9UaHC7nhw7lSDwBTesz6T+Om38AuyCSeevAxIS
-         eliZTwCwg8Oo9D4dg4d9mmmi7Idbza1ToPkNaeZ9kMi5vb8Dkp5Zp/lApHSGoNYdZIcL
-         P7ogUEYvyK6PenbBqEc/21xZ5FQo8LN4QyVdWpvJ/76BiXtNre7W7QWsfAuR4XQy5z0d
-         m1VXf2VCvKQS7Quehwvo7BAOX2IgmJ3yklQKdgegh3vgqQ9TLZCD6A8UZTYSFaJJbRhe
-         n+tg==
-X-Gm-Message-State: AOAM530qs7fkbNXoobQHc2aFkJRcIAy8tMYuyPHm5sA03sYxK1T7W3J6
-        B7noSXFPKcL27RlEn3yOh5Y=
-X-Google-Smtp-Source: ABdhPJx+PaQa0e19Kafpqo5KgHmsytvqhKFXKZIMk4610aJntPYi1bjuNgzeKI1ey547amYqbqOo9Q==
-X-Received: by 2002:a17:906:5208:: with SMTP id g8mr2312261ejm.634.1640274040511;
-        Thu, 23 Dec 2021 07:40:40 -0800 (PST)
+        bh=0XF4BCcCfYprTbmAK9I4jxJwe4NvjnyiY/HJigZj5DE=;
+        b=FBJJFHbrYkqAJGtX4/EtVX7nMrHF/FLuDaCkVPVRcYbaxxbsxXxR+kxe7aGGn6Ud+P
+         DAgBsTbnUogeuG0y81OFywgq4rkZtWoebfFPz55h2XvZZPcUzz4e4Frg1KTa9LNLztnx
+         WXX3gYv9fc9JJU/7nkz6/nKaEQ+nw6Wlttun7SN8L5QRfXNU3rgqwfLk7Sg2IM3io7Vx
+         Np55WyEAq85llMeF++caWaRo+lTNHUNEcuXwuo0NKSTqnyCpYp6eWzv3/2uAPg+z767C
+         qJvjOnPcHOML8mWq2ZOrKRrUTKpYFnMhRQMGg22JGTqyIQgWpy/MXETLsaZ3M1a2TaNZ
+         hkXg==
+X-Gm-Message-State: AOAM531dKrP2iM/OLydrpvjKW6zvp91yV2puioyN/C6oKA83haGjWPrl
+        G+izAf4iqi/UHuPFnV11bfI=
+X-Google-Smtp-Source: ABdhPJxNOk2AlCxI/HfohKxFgaIY4DVgDibl4FNXpxSJtlFJSpuIyFeWc6zs3yO8WfzYYZ5YcWnIPA==
+X-Received: by 2002:a17:906:8607:: with SMTP id o7mr2487098ejx.334.1640274042184;
+        Thu, 23 Dec 2021 07:40:42 -0800 (PST)
 Received: from ponky.lan ([2a04:241e:501:3870:7c02:dfc6:b554:ab10])
-        by smtp.gmail.com with ESMTPSA id bx6sm2088617edb.78.2021.12.23.07.40.38
+        by smtp.gmail.com with ESMTPSA id bx6sm2088617edb.78.2021.12.23.07.40.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Dec 2021 07:40:39 -0800 (PST)
+        Thu, 23 Dec 2021 07:40:41 -0800 (PST)
 From:   Leonard Crestez <cdleonard@gmail.com>
 To:     David Ahern <dsahern@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
@@ -66,9 +66,9 @@ Cc:     Shuah Khan <shuah@kernel.org>,
         Priyaranjan Jha <priyarjha@google.com>, netdev@vger.kernel.org,
         linux-crypto@vger.kernel.org, linux-kselftest@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v4 02/19] docs: Add user documentation for tcp_authopt
-Date:   Thu, 23 Dec 2021 17:39:57 +0200
-Message-Id: <68b9a766f7ea045f0ea56f27d7523abb41daab37.1640273966.git.cdleonard@gmail.com>
+Subject: [PATCH v4 03/19] tcp: authopt: Add crypto initialization
+Date:   Thu, 23 Dec 2021 17:39:58 +0200
+Message-Id: <99d7d0c53277c758be73c15d58849eb6358e79d0.1640273966.git.cdleonard@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1640273966.git.cdleonard@gmail.com>
 References: <cover.1640273966.git.cdleonard@gmail.com>
@@ -78,89 +78,319 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The .rst documentation contains a brief description of the user
-interface and includes kernel-doc generated from uapi header.
+The crypto_shash API is used in order to compute packet signatures. The
+API comes with several unfortunate limitations:
+
+1) Allocating a crypto_shash can sleep and must be done in user context.
+2) Packet signatures must be computed in softirq context
+3) Packet signatures use dynamic "traffic keys" which require exclusive
+access to crypto_shash for crypto_setkey.
+
+The solution is to allocate one crypto_shash for each possible cpu for
+each algorithm at setsockopt time. The per-cpu tfm is then borrowed from
+softirq context, signatures are computed and the tfm is returned.
+
+The pool for each algorithm is allocated on first use.
 
 Signed-off-by: Leonard Crestez <cdleonard@gmail.com>
 ---
- Documentation/networking/index.rst       |  1 +
- Documentation/networking/tcp_authopt.rst | 51 ++++++++++++++++++++++++
- 2 files changed, 52 insertions(+)
- create mode 100644 Documentation/networking/tcp_authopt.rst
+ include/net/tcp_authopt.h |  16 ++++
+ net/ipv4/tcp_authopt.c    | 192 +++++++++++++++++++++++++++++++++++++-
+ 2 files changed, 207 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/networking/index.rst b/Documentation/networking/index.rst
-index 58bc8cd367c6..f5c324a060d8 100644
---- a/Documentation/networking/index.rst
-+++ b/Documentation/networking/index.rst
-@@ -100,10 +100,11 @@ Contents:
-    strparser
-    switchdev
-    sysfs-tagging
-    tc-actions-env-rules
-    tcp-thin
-+   tcp_authopt
-    team
-    timestamping
-    tipc
-    tproxy
-    tuntap
-diff --git a/Documentation/networking/tcp_authopt.rst b/Documentation/networking/tcp_authopt.rst
-new file mode 100644
-index 000000000000..72adb7a891ce
---- /dev/null
-+++ b/Documentation/networking/tcp_authopt.rst
-@@ -0,0 +1,51 @@
-+.. SPDX-License-Identifier: GPL-2.0
+diff --git a/include/net/tcp_authopt.h b/include/net/tcp_authopt.h
+index 0d9cab459d10..bbd0c0977954 100644
+--- a/include/net/tcp_authopt.h
++++ b/include/net/tcp_authopt.h
+@@ -4,10 +4,24 @@
+ 
+ #include <uapi/linux/tcp.h>
+ #include <net/netns/tcp_authopt.h>
+ #include <linux/tcp.h>
+ 
++/* According to RFC5925 the length of the authentication option varies based on
++ * the signature algorithm. Linux only implements the algorithms defined in
++ * RFC5926 which have a constant length of 16.
++ *
++ * This is used in stack allocation of tcp option buffers for output. It is
++ * shorter than the length of the MD5 option.
++ *
++ * Input packets can have authentication options of different lengths but they
++ * will always be flagged as invalid (since no such algorithms are supported).
++ */
++#define TCPOLEN_AUTHOPT_OUTPUT	16
 +
-+=========================
-+TCP Authentication Option
-+=========================
++struct tcp_authopt_alg_imp;
 +
-+The TCP Authentication option specified by RFC5925 replaces the TCP MD5
-+Signature option. It similar in goals but not compatible in either wire formats
-+or ABI.
+ /**
+  * struct tcp_authopt_key_info - Representation of a Master Key Tuple as per RFC5925
+  *
+  * Key structure lifetime is protected by RCU so send/recv code needs to hold a
+  * single rcu_read_lock until they're done with the key.
+@@ -33,10 +47,12 @@ struct tcp_authopt_key_info {
+ 	u8 keylen;
+ 	/** @key: Same as &tcp_authopt_key.key */
+ 	u8 key[TCP_AUTHOPT_MAXKEYLEN];
+ 	/** @addr: Same as &tcp_authopt_key.addr */
+ 	struct sockaddr_storage addr;
++	/** @alg: Algorithm implementation matching alg_id */
++	struct tcp_authopt_alg_imp *alg;
+ };
+ 
+ /**
+  * struct tcp_authopt_info - Per-socket information regarding tcp_authopt
+  *
+diff --git a/net/ipv4/tcp_authopt.c b/net/ipv4/tcp_authopt.c
+index 17392c42e99f..8d04ececf09f 100644
+--- a/net/ipv4/tcp_authopt.c
++++ b/net/ipv4/tcp_authopt.c
+@@ -2,10 +2,189 @@
+ 
+ #include <net/tcp_authopt.h>
+ #include <net/ipv6.h>
+ #include <net/tcp.h>
+ #include <linux/kref.h>
++#include <crypto/hash.h>
 +
-+Interface
-+=========
++/* All current algorithms have a mac length of 12 but crypto API digestsize can be larger */
++#define TCP_AUTHOPT_MAXMACBUF			20
++#define TCP_AUTHOPT_MAX_TRAFFIC_KEY_LEN		20
++#define TCP_AUTHOPT_MACLEN			12
 +
-+Individual keys can be added to or removed through an TCP socket by using
-+TCP_AUTHOPT_KEY setsockopt and a struct tcp_authopt_key. There is no
-+support for reading back keys and updates always replace the old key. These
-+structures represent "Master Key Tuples (MKTs)" as described by the RFC.
++struct tcp_authopt_alg_pool {
++	struct crypto_ahash *tfm;
++	struct ahash_request *req;
++};
 +
-+Per-socket options can set or read using the TCP_AUTHOPT sockopt and a struct
-+tcp_authopt. This is optional: doing setsockopt TCP_AUTHOPT_KEY is sufficient to
-+enable the feature.
++/* Constant data with per-algorithm information from RFC5926
++ * The "KDF" and "MAC" happen to be the same for both algorithms.
++ */
++struct tcp_authopt_alg_imp {
++	/* Name of algorithm in crypto-api */
++	const char *alg_name;
++	/* One of the TCP_AUTHOPT_ALG_* constants from uapi */
++	u8 alg_id;
++	/* Length of traffic key */
++	u8 traffic_key_len;
 +
-+Configuration associated with TCP Authentication is global for each network
-+namespace, this means that all sockets for which TCP_AUTHOPT is enabled will
-+be affected by the same set of keys.
++	/* shared crypto_ahash */
++	struct mutex init_mutex;
++	bool init_done;
++	struct tcp_authopt_alg_pool __percpu *pool;
++};
 +
-+Manipulating keys requires ``CAP_NET_ADMIN``.
++static struct tcp_authopt_alg_imp tcp_authopt_alg_list[] = {
++	{
++		.alg_id = TCP_AUTHOPT_ALG_HMAC_SHA_1_96,
++		.alg_name = "hmac(sha1)",
++		.traffic_key_len = 20,
++		.init_mutex = __MUTEX_INITIALIZER(tcp_authopt_alg_list[0].init_mutex),
++	},
++	{
++		.alg_id = TCP_AUTHOPT_ALG_AES_128_CMAC_96,
++		.alg_name = "cmac(aes)",
++		.traffic_key_len = 16,
++		.init_mutex = __MUTEX_INITIALIZER(tcp_authopt_alg_list[1].init_mutex),
++	},
++};
 +
-+Key binding
-+-----------
++/* get a pointer to the tcp_authopt_alg instance or NULL if id invalid */
++static inline struct tcp_authopt_alg_imp *tcp_authopt_alg_get(int alg_num)
++{
++	if (alg_num <= 0 || alg_num > 2)
++		return NULL;
++	return &tcp_authopt_alg_list[alg_num - 1];
++}
 +
-+Keys can be bound to remote addresses in a way that is somewhat similar to
-+``TCP_MD5SIG``. By default a key matches all connections but matching criteria can
-+be specified as fields inside struct tcp_authopt_key together with matching
-+flags in tcp_authopt_key.flags. The sort of these "matching criteria" can
-+expand over time by increasing the size of `struct tcp_authopt_key` and adding
-+new flags.
++static int tcp_authopt_alg_pool_init(struct tcp_authopt_alg_imp *alg,
++				     struct tcp_authopt_alg_pool *pool)
++{
++	pool->tfm = crypto_alloc_ahash(alg->alg_name, 0, CRYPTO_ALG_ASYNC);
++	if (IS_ERR(pool->tfm))
++		return PTR_ERR(pool->tfm);
 +
-+ * Address binding is optional, by default keys match all addresses
-+ * Local address is ignored, matching is done by remote address
-+ * Ports are ignored
++	pool->req = ahash_request_alloc(pool->tfm, GFP_ATOMIC);
++	if (IS_ERR(pool->req))
++		return PTR_ERR(pool->req);
++	ahash_request_set_callback(pool->req, 0, NULL, NULL);
 +
-+RFC5925 requires that key ids do not overlap when tcp identifiers (addr/port)
-+overlap. This is not enforced by linux, configuring ambiguous keys will result
-+in packet drops and lost connections.
++	return 0;
++}
 +
-+ABI Reference
-+=============
++static void tcp_authopt_alg_pool_free(struct tcp_authopt_alg_pool *pool)
++{
++	ahash_request_free(pool->req);
++	pool->req = NULL;
++	crypto_free_ahash(pool->tfm);
++	pool->tfm = NULL;
++}
 +
-+.. kernel-doc:: include/uapi/linux/tcp.h
-+   :identifiers: tcp_authopt tcp_authopt_flag tcp_authopt_key tcp_authopt_key_flag tcp_authopt_alg
++static void __tcp_authopt_alg_free(struct tcp_authopt_alg_imp *alg)
++{
++	int cpu;
++	struct tcp_authopt_alg_pool *pool;
++
++	if (!alg->pool)
++		return;
++	for_each_possible_cpu(cpu) {
++		pool = per_cpu_ptr(alg->pool, cpu);
++		tcp_authopt_alg_pool_free(pool);
++	}
++	free_percpu(alg->pool);
++	alg->pool = NULL;
++}
++
++static int __tcp_authopt_alg_init(struct tcp_authopt_alg_imp *alg)
++{
++	struct tcp_authopt_alg_pool *pool;
++	int cpu;
++	int err;
++
++	BUILD_BUG_ON(TCP_AUTHOPT_MAXMACBUF < TCPOLEN_AUTHOPT_OUTPUT);
++	if (WARN_ON_ONCE(alg->traffic_key_len > TCP_AUTHOPT_MAX_TRAFFIC_KEY_LEN))
++		return -ENOBUFS;
++
++	alg->pool = alloc_percpu(struct tcp_authopt_alg_pool);
++	if (!alg->pool)
++		return -ENOMEM;
++	for_each_possible_cpu(cpu) {
++		pool = per_cpu_ptr(alg->pool, cpu);
++		err = tcp_authopt_alg_pool_init(alg, pool);
++		if (err)
++			goto out_err;
++
++		pool = per_cpu_ptr(alg->pool, cpu);
++		/* sanity checks: */
++		if (WARN_ON_ONCE(crypto_ahash_digestsize(pool->tfm) != alg->traffic_key_len)) {
++			err = -EINVAL;
++			goto out_err;
++		}
++		if (WARN_ON_ONCE(crypto_ahash_digestsize(pool->tfm) > TCP_AUTHOPT_MAXMACBUF)) {
++			err = -EINVAL;
++			goto out_err;
++		}
++	}
++	return 0;
++
++out_err:
++	__tcp_authopt_alg_free(alg);
++	return err;
++}
++
++static int tcp_authopt_alg_require(struct tcp_authopt_alg_imp *alg)
++{
++	int err = 0;
++
++	mutex_lock(&alg->init_mutex);
++	if (alg->init_done)
++		goto out;
++	err = __tcp_authopt_alg_init(alg);
++	if (err)
++		goto out;
++	pr_info("initialized tcp-ao algorithm %s", alg->alg_name);
++	alg->init_done = true;
++
++out:
++	mutex_unlock(&alg->init_mutex);
++	return err;
++}
++
++static struct tcp_authopt_alg_pool *tcp_authopt_alg_get_pool(struct tcp_authopt_alg_imp *alg)
++{
++	local_bh_disable();
++	return this_cpu_ptr(alg->pool);
++}
++
++static void tcp_authopt_alg_put_pool(struct tcp_authopt_alg_imp *alg,
++				     struct tcp_authopt_alg_pool *pool)
++{
++	WARN_ON(pool != this_cpu_ptr(alg->pool));
++	local_bh_enable();
++}
++
++static struct tcp_authopt_alg_pool *tcp_authopt_get_kdf_pool(struct tcp_authopt_key_info *key)
++{
++	return tcp_authopt_alg_get_pool(key->alg);
++}
++
++static void tcp_authopt_put_kdf_pool(struct tcp_authopt_key_info *key,
++				     struct tcp_authopt_alg_pool *pool)
++{
++	return tcp_authopt_alg_put_pool(key->alg, pool);
++}
++
++static struct tcp_authopt_alg_pool *tcp_authopt_get_mac_pool(struct tcp_authopt_key_info *key)
++{
++	return tcp_authopt_alg_get_pool(key->alg);
++}
++
++static void tcp_authopt_put_mac_pool(struct tcp_authopt_key_info *key,
++				     struct tcp_authopt_alg_pool *pool)
++{
++	return tcp_authopt_alg_put_pool(key->alg, pool);
++}
+ 
+ static inline struct netns_tcp_authopt *sock_net_tcp_authopt(const struct sock *sk)
+ {
+ 	return &sock_net(sk)->tcp_authopt;
+ }
+@@ -49,11 +228,10 @@ void tcp_authopt_clear(struct sock *sk)
+ 	if (info) {
+ 		tcp_authopt_free(sk, info);
+ 		tcp_sk(sk)->authopt_info = NULL;
+ 	}
+ }
+-
+ /* checks that ipv4 or ipv6 addr matches. */
+ static bool ipvx_addr_match(struct sockaddr_storage *a1,
+ 			    struct sockaddr_storage *a2)
+ {
+ 	if (a1->ss_family != a2->ss_family)
+@@ -206,10 +384,11 @@ int tcp_set_authopt_key(struct sock *sk, sockptr_t optval, unsigned int optlen)
+ {
+ 	struct tcp_authopt_key opt;
+ 	struct tcp_authopt_info *info;
+ 	struct tcp_authopt_key_info *key_info, *old_key_info;
+ 	struct netns_tcp_authopt *net = sock_net_tcp_authopt(sk);
++	struct tcp_authopt_alg_imp *alg;
+ 	int err;
+ 
+ 	sock_owned_by_me(sk);
+ 	if (!ns_capable(sock_net(sk)->user_ns, CAP_NET_ADMIN))
+ 		return -EPERM;
+@@ -247,10 +426,20 @@ int tcp_set_authopt_key(struct sock *sk, sockptr_t optval, unsigned int optlen)
+ 	/* Initialize tcp_authopt_info if not already set */
+ 	info = __tcp_authopt_info_get_or_create(sk);
+ 	if (IS_ERR(info))
+ 		return PTR_ERR(info);
+ 
++	/* check the algorithm */
++	alg = tcp_authopt_alg_get(opt.alg);
++	if (!alg)
++		return -EINVAL;
++	if (WARN_ON_ONCE(alg->alg_id != opt.alg))
++		return -EINVAL;
++	err = tcp_authopt_alg_require(alg);
++	if (err)
++		return err;
++
+ 	key_info = sock_kmalloc(sk, sizeof(*key_info), GFP_KERNEL | __GFP_ZERO);
+ 	if (!key_info)
+ 		return -ENOMEM;
+ 	mutex_lock(&net->mutex);
+ 	kref_init(&key_info->ref);
+@@ -262,10 +451,11 @@ int tcp_set_authopt_key(struct sock *sk, sockptr_t optval, unsigned int optlen)
+ 		tcp_authopt_key_del(net, old_key_info);
+ 	key_info->flags = opt.flags & TCP_AUTHOPT_KEY_KNOWN_FLAGS;
+ 	key_info->send_id = opt.send_id;
+ 	key_info->recv_id = opt.recv_id;
+ 	key_info->alg_id = opt.alg;
++	key_info->alg = alg;
+ 	key_info->keylen = opt.keylen;
+ 	memcpy(key_info->key, opt.key, opt.keylen);
+ 	memcpy(&key_info->addr, &opt.addr, sizeof(key_info->addr));
+ 	hlist_add_head_rcu(&key_info->node, &net->head);
+ 	mutex_unlock(&net->mutex);
 -- 
 2.25.1
 
