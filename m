@@ -2,61 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 98B8347E1F9
-	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 12:08:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A6BA47E1FA
+	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 12:08:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347858AbhLWLIG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Dec 2021 06:08:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57214 "EHLO
+        id S1347867AbhLWLIH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Dec 2021 06:08:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232847AbhLWLIF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Dec 2021 06:08:05 -0500
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90AE9C061401;
-        Thu, 23 Dec 2021 03:08:04 -0800 (PST)
-Received: by mail-lf1-x132.google.com with SMTP id j11so9875027lfg.3;
-        Thu, 23 Dec 2021 03:08:04 -0800 (PST)
+        with ESMTP id S1347859AbhLWLIG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Dec 2021 06:08:06 -0500
+Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B213C061401;
+        Thu, 23 Dec 2021 03:08:06 -0800 (PST)
+Received: by mail-lj1-x231.google.com with SMTP id p7so7714354ljj.1;
+        Thu, 23 Dec 2021 03:08:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=f78OHizdSqkieU+gvXnx+72ezSg/jv19k6AuheS2zOU=;
-        b=Pj9UG/Y/o9c5+eqHC9KA0Q3ImqEcmX212ft2GGDPqHPP0BsAdNehTZDL1/mWZ00uwo
-         l26BdFsSn3UulVGtOIm7lYoCjYWmCKKJXIcN2q87vCZf75QXAVJVqBjexZNmHIcJ7/2a
-         PNGX7mhqBCIVNyROpSAuEHqpq87tToN9B7S3HIbNdR3rXfKZrC/bKLKA0y//fA66NaJA
-         q5g/YwzQj0noSth6tvc/mYkNK6HJZz5l7PmQwqE6H6oO51aDQy9aiLcEtKk2MrZ5rGkr
-         AZ9FfTXAtuqEnLqOJRyvdXoEt9saJrKjb1R/ssHa4CEz8HQAb8v0TF+/DEf80hxzKNbk
-         T/Ug==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=NwiKmETSPCmVX7lPyPmwbKvzH3QbmKWwfTWUmPe7S4Y=;
+        b=nQ2KcNvEoz4rICj8RmIV40zF7KqyLlhxvx7ZSsHn24ttAW6l48FaLxsT/tI4+BS8ly
+         UTX7lcKxGQx4v59MtfWHVSzeXxJayOr4eeEHja2Rq/bS/Ooefj47oQ4xPAftbgQC6a11
+         lSJxPfKz2TZOVoWnpf5dOg8kBz5/UAOxWOHf55gXPdnzz9Q2O2b3A8SynHsvHaAAvVva
+         jR4YClO7ZtkasYKBpJYtYEEanqTx8pTn8V3NXMyIfypo5RdIAfqz9Ei/K4pfeFwZ3BPv
+         87HppKGYbjk0Ypy5saHuV51KoQs3nCakKjg/9DWEY5dE+DoPZmMS1s4zZZUlHYaxPBev
+         D91w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=f78OHizdSqkieU+gvXnx+72ezSg/jv19k6AuheS2zOU=;
-        b=VJu9Sp7VqS6J3/1zBxfam8Ro+B9KcFmDnwKbAvJ3ZGQSxOrAAXEzQDSErr9UhdK9ux
-         KOrpLSsthNrkkuAXe9ut+HF79cwFBl6+ZRg/6E0W6D+zWvBVEsScVdFq5SKXBMg5fic2
-         3P6AwAvlocEragqtoJMVM9leP/Dfe082fNx0XeAoZJ8MA8xK+XW1QMjaf4jIWKvF3bp9
-         02JgNjptEEBu4LGXPLxpFePUXz4D4Z5MpybuFSuMLvckSpyp/NRPoBMfLSV0VSSztHFn
-         rB5hZefQpMZWqg3AIQD7SSu7QRBGGATfS3RLEhppH843jygweQywMxIRPYMAplAcM4Gm
-         5Htw==
-X-Gm-Message-State: AOAM530m8QdtMl4QOHOlrM9RaQ1Ok1rAuLB7CRMfPl98ezyTg6JqzGeR
-        HPqA9Vs5Ryc5/WL4LwWSNMQBoxY/pyQ=
-X-Google-Smtp-Source: ABdhPJxecF5JpqY7/M1nkQeaOEzcwPAwxa5Kq4FhuIrvPbIRM8kCyxGvjwonGUfdwYaHFPKLZ0j6hA==
-X-Received: by 2002:a05:6512:1395:: with SMTP id p21mr1584374lfa.98.1640257682906;
-        Thu, 23 Dec 2021 03:08:02 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=NwiKmETSPCmVX7lPyPmwbKvzH3QbmKWwfTWUmPe7S4Y=;
+        b=awn01f4W5qMAD4Ejx8HZv/pwhWBhO6WRoeFom/tiKUiX0yvBetDMHjjxhWjvDiHpIn
+         WSs1Wl5Zyx0iAsGR2Sca0Znhy+uYh3lonkvEkjwFgFlEOJy/3yY65bP50nVwK86BXwRe
+         3Mm7GPXAK8k20zMdrJjYD+fEp530UmTzPmyk16ccrYZSb530LQ6T3+mz28Kmtt1XbdGv
+         0+WZeQ1lUTLp25KeE9DPIKw6FvWAa5jfLnR3hFsYFGlDyq7mQdjMZNkb8M0rF+gsPjgJ
+         BKyW6zlUpUKKr/BsmnsQnPmWYgOL55CA/r01SOzbtt1JXzwrc8dkNgqO3OJSRRg2B5Pt
+         zY/Q==
+X-Gm-Message-State: AOAM533sWldDtxinEBdXl5Mz8lPncxqQp7EE48WurcdWiuaF2jeq0vMP
+        bS5BJdbsFMIpNNinJCgK3ss=
+X-Google-Smtp-Source: ABdhPJxEh5gjL3BaNJkFvEhL/qh93ZA3qEmy0VIAiCWn3r6UT2AIgNOC4HR+h9KEAMmBgeQexfMf4g==
+X-Received: by 2002:a05:651c:2123:: with SMTP id a35mr1402949ljq.285.1640257684316;
+        Thu, 23 Dec 2021 03:08:04 -0800 (PST)
 Received: from localhost.lan (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
-        by smtp.gmail.com with ESMTPSA id t7sm473047lfg.115.2021.12.23.03.08.02
+        by smtp.gmail.com with ESMTPSA id t7sm473047lfg.115.2021.12.23.03.08.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Dec 2021 03:08:02 -0800 (PST)
+        Thu, 23 Dec 2021 03:08:04 -0800 (PST)
 From:   =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
 To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
         Rob Herring <robh+dt@kernel.org>
 Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org,
         =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>
-Subject: [PATCH 0/5] nvmem: support more NVMEM cells variants
-Date:   Thu, 23 Dec 2021 12:07:50 +0100
-Message-Id: <20211223110755.22722-1-zajec5@gmail.com>
+Subject: [PATCH 1/5] dt-bindings: nvmem: add "label" property to allow more flexible cells names
+Date:   Thu, 23 Dec 2021 12:07:51 +0100
+Message-Id: <20211223110755.22722-2-zajec5@gmail.com>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20211223110755.22722-1-zajec5@gmail.com>
+References: <20211223110755.22722-1-zajec5@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -66,43 +68,35 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Rafał Miłecki <rafal@milecki.pl>
 
-Some NVMEM devices don't have NVMEM cells at hardcoded offsets and they
-can't be strictly specified in a binding. Those devices usually store
-NVMEM cells in some internal format. We still need a way of referencing
-such hidden / dynamic NVMEM cells.
+So far NVMEM cells names were indicated by DT $nodename. That didn't
+allow fancy names with characters that are not allowed there.
 
-This patchset adds support for bindings like:
+That wasn't a big problem for cells fully defined in DT. One could just
+adjust a name slightly if needed.
 
-nvram@1eff0000 {
-	compatible = "brcm,nvram";
-	reg = <0x1eff0000 0x10000>;
+This is a problem a however for NVMEM devices with cells defined at
+device level. Such vendor defined names can be more fancy and DT needs a
+way to match them strictly.
 
-	mac_addr: cell-0 {
-		label = "et0macaddr";
-	};
-};
+Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+---
+ Documentation/devicetree/bindings/nvmem/nvmem.yaml | 3 +++
+ 1 file changed, 3 insertions(+)
 
-ethernet@18024000 {
-	compatible = "brcm,amac";
-	reg = <0x18024000 0x800>;
-
-	nvmem-cells = <&mac_addr>;
-	nvmem-cell-names = "mac-address";
-};
-
-Rafał Miłecki (5):
-  dt-bindings: nvmem: add "label" property to allow more flexible cells
-    names
-  nvmem: core: read OF defined NVMEM cell name from "label" property
-  dt-bindings: nvmem: allow referencing device defined cells by names
-  dt-bindings: nvmem: brcm,nvram: add NVMEM cell to example
-  nvmem: core: add cell name based matching of DT cell nodes
-
- .../devicetree/bindings/nvmem/brcm,nvram.yaml |  8 +++--
- .../devicetree/bindings/nvmem/nvmem.yaml      | 16 +++++++--
- drivers/nvmem/core.c                          | 36 ++++++++++++++++++-
- 3 files changed, 55 insertions(+), 5 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/nvmem/nvmem.yaml b/Documentation/devicetree/bindings/nvmem/nvmem.yaml
+index 456fb808100a..3392405ee010 100644
+--- a/Documentation/devicetree/bindings/nvmem/nvmem.yaml
++++ b/Documentation/devicetree/bindings/nvmem/nvmem.yaml
+@@ -49,6 +49,9 @@ patternProperties:
+         description:
+           Offset and size in bytes within the storage device.
+ 
++      label:
++        description: name of NVMEM cell
++
+       bits:
+         maxItems: 1
+         items:
 -- 
 2.31.1
 
