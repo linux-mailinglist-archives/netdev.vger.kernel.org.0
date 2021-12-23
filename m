@@ -2,70 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5360147E6A5
-	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 18:11:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1662747E71F
+	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 18:34:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349407AbhLWRLE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Dec 2021 12:11:04 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:49016 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349380AbhLWRLE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Dec 2021 12:11:04 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S244476AbhLWRdr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Dec 2021 12:33:47 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:40822 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235976AbhLWRdp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Dec 2021 12:33:45 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1640280825;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=jOV9AA0TQCjyahzHmdUlQVGoQTJzgx1YP7UeqttO4xI=;
+        b=TxdMvS52JQcTu1WIhnbZBO3AobFxC3HuIRS9CsIJdVCzoDeKS5LZpDScldIUMhvpmWeXvq
+        Ho48rDfUQDCt7TLnruwJ9dcpslp1r0zbcKHGwR3RfyMCP8VIL3IjOKx6gpuj0fHwvV0zb9
+        Cm6bHBC+WbF+X6LPT11L0fzS7vlk5z4=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-651-VQp2u5UjNw-feBhNNAP2lw-1; Thu, 23 Dec 2021 12:33:42 -0500
+X-MC-Unique: VQp2u5UjNw-feBhNNAP2lw-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D256EB80780;
-        Thu, 23 Dec 2021 17:11:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77A9FC36AE5;
-        Thu, 23 Dec 2021 17:11:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1640279461;
-        bh=NVrm8QQrQKQ04bfitFX3knY/SkSL31uGMA/v6Uz+VLU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=UwnENRbV0tKoLctuPqFpO2NQMV2EVgiNkB45xBdv06zteSWVqcIoboLaJxkRGRp6H
-         GATR0kQqnB+fpMuGk27uOg2HfivR5sQ17rfJb6sno2LelfOUfZgQrkwoxbT+m1Gkfq
-         wnHC2cvnoLmvzcRzpqXbnjNuoIRb0aEGLj8cT47k/6hPs76cwqmips4j980bBsLO4x
-         h2gaSkpKeFRd64llKrvAUpTnW4hmHflSqf01GMTEJk20wxL7QbFlIb7k6z8/slhoSR
-         M0LfQkYHYvplzAJgzMHkQFKHIloUWFnw/DDEoSV28pTuIxBltzkV89CVViDofsGjUB
-         VotwzEeJ6KZYQ==
-Date:   Thu, 23 Dec 2021 09:11:00 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Huangzhaoyang <huangzhaoyang@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Zhaoyang Huang <zhaoyang.huang@unisoc.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: remove judgement based on gfp_flags
-Message-ID: <20211223091100.4a86188f@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <1640224567-3014-1-git-send-email-huangzhaoyang@gmail.com>
-References: <1640224567-3014-1-git-send-email-huangzhaoyang@gmail.com>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 283B619251A0;
+        Thu, 23 Dec 2021 17:33:34 +0000 (UTC)
+Received: from wsfd-netdev76.ntdv.lab.eng.bos.redhat.com (wsfd-netdev76.ntdv.lab.eng.bos.redhat.com [10.19.188.157])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id CA34F5C2F1;
+        Thu, 23 Dec 2021 17:33:32 +0000 (UTC)
+From:   William Zhao <wizhao@redhat.com>
+To:     steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
+        davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, wizhao@redhat.com
+Subject: [PATCH] ip6_vti: initialize __ip6_tnl_parm struct in vti6_siocdevprivate
+Date:   Thu, 23 Dec 2021 12:33:16 -0500
+Message-Id: <20211223173316.779982-1-wizhao@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 23 Dec 2021 09:56:07 +0800 Huangzhaoyang wrote:
-> From: Zhaoyang Huang <zhaoyang.huang@unisoc.com>
-> 
-> The parameter allocation here is used for indicating if the memory
-> allocation can stall or not. Since we have got the skb buffer, it
-> doesn't make sense to check if we can yield on the net's congested
-> via gfp_flags. Remove it now.
+The "__ip6_tnl_parm" struct was left uninitialized causing an invalid
+load of random data when the "__ip6_tnl_parm" struct was used elsewhere.
+As an example, in the function "ip6_tnl_xmit_ctl()", it tries to access
+the "collect_md" member. With "__ip6_tnl_parm" being uninitialized and
+containing random data, the UBSAN detected that "collect_md" held a
+non-boolean value.
 
-This is checking if we can sleep AFAICT. What are you trying to fix?
+The UBSAN issue is as follows:
+===============================================================
+UBSAN: invalid-load in net/ipv6/ip6_tunnel.c:1025:14
+load of value 30 is not a valid value for type '_Bool'
+CPU: 1 PID: 228 Comm: kworker/1:3 Not tainted 5.16.0-rc4+ #8
+Hardware name: Red Hat KVM, BIOS 0.5.1 01/01/2011
+Workqueue: ipv6_addrconf addrconf_dad_work
+Call Trace:
+<TASK>
+dump_stack_lvl+0x44/0x57
+ubsan_epilogue+0x5/0x40
+__ubsan_handle_load_invalid_value+0x66/0x70
+? __cpuhp_setup_state+0x1d3/0x210
+ip6_tnl_xmit_ctl.cold.52+0x2c/0x6f [ip6_tunnel]
+vti6_tnl_xmit+0x79c/0x1e96 [ip6_vti]
+? lock_is_held_type+0xd9/0x130
+? vti6_rcv+0x100/0x100 [ip6_vti]
+? lock_is_held_type+0xd9/0x130
+? rcu_read_lock_bh_held+0xc0/0xc0
+? lock_acquired+0x262/0xb10
+dev_hard_start_xmit+0x1e6/0x820
+__dev_queue_xmit+0x2079/0x3340
+? mark_lock.part.52+0xf7/0x1050
+? netdev_core_pick_tx+0x290/0x290
+? kvm_clock_read+0x14/0x30
+? kvm_sched_clock_read+0x5/0x10
+? sched_clock_cpu+0x15/0x200
+? find_held_lock+0x3a/0x1c0
+? lock_release+0x42f/0xc90
+? lock_downgrade+0x6b0/0x6b0
+? mark_held_locks+0xb7/0x120
+? neigh_connected_output+0x31f/0x470
+? lockdep_hardirqs_on+0x79/0x100
+? neigh_connected_output+0x31f/0x470
+? ip6_finish_output2+0x9b0/0x1d90
+? rcu_read_lock_bh_held+0x62/0xc0
+? ip6_finish_output2+0x9b0/0x1d90
+ip6_finish_output2+0x9b0/0x1d90
+? ip6_append_data+0x330/0x330
+? ip6_mtu+0x166/0x370
+? __ip6_finish_output+0x1ad/0xfb0
+? nf_hook_slow+0xa6/0x170
+ip6_output+0x1fb/0x710
+? nf_hook.constprop.32+0x317/0x430
+? ip6_finish_output+0x180/0x180
+? __ip6_finish_output+0xfb0/0xfb0
+? lock_is_held_type+0xd9/0x130
+ndisc_send_skb+0xb33/0x1590
+? __sk_mem_raise_allocated+0x11cf/0x1560
+? dst_output+0x4a0/0x4a0
+? ndisc_send_rs+0x432/0x610
+addrconf_dad_completed+0x30c/0xbb0
+? addrconf_rs_timer+0x650/0x650
+? addrconf_dad_work+0x73c/0x10e0
+addrconf_dad_work+0x73c/0x10e0
+? addrconf_dad_completed+0xbb0/0xbb0
+? rcu_read_lock_sched_held+0xaf/0xe0
+? rcu_read_lock_bh_held+0xc0/0xc0
+process_one_work+0x97b/0x1740
+? pwq_dec_nr_in_flight+0x270/0x270
+worker_thread+0x87/0xbf0
+? process_one_work+0x1740/0x1740
+kthread+0x3ac/0x490
+? set_kthread_struct+0x100/0x100
+ret_from_fork+0x22/0x30
+</TASK>
+===============================================================
 
-> diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
-> index 4c57532..af5b6af 100644
-> --- a/net/netlink/af_netlink.c
-> +++ b/net/netlink/af_netlink.c
-> @@ -1526,7 +1526,7 @@ int netlink_broadcast(struct sock *ssk, struct sk_buff *skb, u32 portid,
->  	consume_skb(info.skb2);
->  
->  	if (info.delivered) {
-> -		if (info.congested && gfpflags_allow_blocking(allocation))
-> +		if (info.congested)
->  			yield();
->  		return 0;
->  	}
+The solution is to initialize "__ip6_tnl_parm" struct to zeros in the
+"vti6_siocdevprivate()" function.
+
+Signed-off-by: William Zhao <wizhao@redhat.com>
+---
+ net/ipv6/ip6_vti.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/net/ipv6/ip6_vti.c b/net/ipv6/ip6_vti.c
+index 527e9ead7449..5e9474bc54fc 100644
+--- a/net/ipv6/ip6_vti.c
++++ b/net/ipv6/ip6_vti.c
+@@ -808,6 +808,8 @@ vti6_siocdevprivate(struct net_device *dev, struct ifreq *ifr, void __user *data
+ 	struct net *net = dev_net(dev);
+ 	struct vti6_net *ip6n = net_generic(net, vti6_net_id);
+ 
++	memset(&p1, 0, sizeof(p1));
++
+ 	switch (cmd) {
+ 	case SIOCGETTUNNEL:
+ 		if (dev == ip6n->fb_tnl_dev) {
+
+base-commit: b8a98b6bf66ae35361e987333233d07241642909
+-- 
+2.27.0
 
