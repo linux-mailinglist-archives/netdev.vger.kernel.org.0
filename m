@@ -2,74 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 15C6847E778
-	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 19:10:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8ABCE47E776
+	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 19:10:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349709AbhLWSKN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1349691AbhLWSKN (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Thu, 23 Dec 2021 13:10:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39234 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349687AbhLWSKM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Dec 2021 13:10:12 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B152AC061401;
-        Thu, 23 Dec 2021 10:10:11 -0800 (PST)
+Received: from dfw.source.kernel.org ([139.178.84.217]:46866 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244679AbhLWSKL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Dec 2021 13:10:11 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 40C7961F37;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 40CBA61F41;
         Thu, 23 Dec 2021 18:10:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 7A8C3C36AEA;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 83803C36AE9;
         Thu, 23 Dec 2021 18:10:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1640283010;
-        bh=5N12wpUVVlUF+lgYrmW85trx2vz1plPgCZ17M9hBlF0=;
+        bh=oyh+QBfNI/GMX9Lq6AawFnQWCAFkjjqO6uAUCAtczVA=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=m8wbiZ2iB3C0TxqspSIROhr/uw60kJJSQk86jsOhiw9t1tpj26HsRKlWJ1bkz/m6a
-         XZjW4oDBNROHPVprfec0dxIrMj+9Ofx1G2SfeD/N0NQ51e6xnCTYRyTw+GgZe8GQlW
-         F32o3aEmdbX+4Z3Ma9H21piPjG8BmpSb13rI2eghuLgKc+sYenEv9EqNUSW7fs+St1
-         F8CehYXEwwKDkxB5LHbKrZwxABeR+/6Yz1ZCds21Qpq2Nu/mZP5wdIHD/lzrAT9Dx6
-         fyjkcr4HIKHDM74u0kYmktLmohlnSYdAoRk/DwHxnGZ/VDsAepmhvx7fFQDRy+Q+1R
-         hy/YqBq+sFZBw==
+        b=vL58s+QGCC49AR9aFgbj996Q8JloiwBecYYNRV+G3ws3FU7kOjPe4SVrVLAGLv0PW
+         n2YjXmNCpdXwaEyWFzTcMhhpc/r4FWNAczmmkyLj1x1qOg5VEuHgoHFmP6ztXDn7aK
+         nQuhCDfIFD8hgXQ8i9s25METHzsd8nEbwX2Mgh3dim9sMM+UU3ZqKATBnM2kxNYn+G
+         cq0Gmh0JnqemQwP4q03xdaxXc1WYnDrXjszIKFbHmnorSzNpUywM/YCEHaGfpl3J9M
+         RgkPSNpu820hUQXpHutCPw2Tf9BFfPnpOPzBRqd6SCcCQIgx9QGUA9XiV10mZdNAx1
+         IB8GsmybKTqHQ==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 630DDEAC060;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6CF4CEAC06B;
         Thu, 23 Dec 2021 18:10:10 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/2] r8152: fix bugs
+Subject: Re: [PATCH net] net: bridge: fix ioctl old_deviceless bridge argument
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164028301040.27483.12308120575205386465.git-patchwork-notify@kernel.org>
+Message-Id: <164028301044.27483.17708005720486132473.git-patchwork-notify@kernel.org>
 Date:   Thu, 23 Dec 2021 18:10:10 +0000
-References: <20211223092702.23841-386-nic_swsd@realtek.com>
-In-Reply-To: <20211223092702.23841-386-nic_swsd@realtek.com>
-To:     Hayes Wang <hayeswang@realtek.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        nic_swsd@realtek.com, linux-kernel@vger.kernel.org
+References: <20211222191320.17662-1-repk@triplefau.lt>
+In-Reply-To: <20211222191320.17662-1-repk@triplefau.lt>
+To:     Remi Pommarel <repk@triplefau.lt>
+Cc:     netdev@vger.kernel.org, roopa@nvidia.com, nikolay@nvidia.com,
+        arnd@arndb.de, davem@davemloft.net, kuba@kernel.org,
+        bridge@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net.git (master)
+This patch was applied to netdev/net.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Thu, 23 Dec 2021 17:27:00 +0800 you wrote:
-> Patch #1 fix the issue of force speed mode for RTL8156.
-> Patch #2 fix the issue of unexpected ocp_base.
+On Wed, 22 Dec 2021 20:13:20 +0100 you wrote:
+> Commit 561d8352818f ("bridge: use ndo_siocdevprivate") changed the
+> source and destination arguments of copy_{to,from}_user in bridge's
+> old_deviceless() from args[1] to uarg breaking SIOC{G,S}IFBR ioctls.
 > 
-> Hayes Wang (2):
->   r8152: fix the force speed doesn't work for RTL8156
->   r8152: sync ocp base
+> Commit cbd7ad29a507 ("net: bridge: fix ioctl old_deviceless bridge
+> argument") fixed only BRCTL_{ADD,DEL}_BRIDGES commands leaving
+> BRCTL_GET_BRIDGES one untouched.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,1/2] r8152: fix the force speed doesn't work for RTL8156
-    https://git.kernel.org/netdev/net/c/45bf944e6703
-  - [net,2/2] r8152: sync ocp base
-    https://git.kernel.org/netdev/net/c/b24edca30953
+  - [net] net: bridge: fix ioctl old_deviceless bridge argument
+    https://git.kernel.org/netdev/net/c/d95a56207c07
 
 You are awesome, thank you!
 -- 
