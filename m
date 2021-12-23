@@ -2,99 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5059147E407
-	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 14:18:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EA4947E418
+	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 14:28:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348617AbhLWNSR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Dec 2021 08:18:17 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:35199 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1348613AbhLWNSQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Dec 2021 08:18:16 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1640265496;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=oWXug9XOKWSU/12+6kVzArJmbV7ilOvZ5ITUhG4ThUA=;
-        b=Eiu5bUl8YS6DB2cg1AACd9+J3EHUI6I81mGJItxMjQX7P71SWn9Q21DCRFXHMPZKgtHWs3
-        gGCt973uxLe5wIvKxphlLXicAyiwVqXUV6e+chioO729uybsAuL935TXFkAhuXMta8ikmY
-        zJDHbPfYCWJRIOb5ljC4ud5F2h6bYiU=
-Received: from mail-io1-f69.google.com (mail-io1-f69.google.com
- [209.85.166.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-447-vDYflINROvmt2AfOSlqiKA-1; Thu, 23 Dec 2021 08:18:15 -0500
-X-MC-Unique: vDYflINROvmt2AfOSlqiKA-1
-Received: by mail-io1-f69.google.com with SMTP id ay10-20020a5d9d8a000000b005e238eaeaa9so3130045iob.12
-        for <netdev@vger.kernel.org>; Thu, 23 Dec 2021 05:18:15 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=oWXug9XOKWSU/12+6kVzArJmbV7ilOvZ5ITUhG4ThUA=;
-        b=D6G42/szHWMWK88RhncS9Fp8FEbQgY0W43Xvotwx34T17vVWr3bprCXs+wu00+qUEc
-         rxB3Yi8S94zdU8y5aUUrf8meamJivASH3TRLq4AvdsAnUuQcIEP/3i2gxGqb3UJIqUpL
-         hqnTPprlGb9gHH5cMMz0MCkz/0cxKaE0esHIcbGmTaKwOe8I7fC4E63phQ3gv18fCgwg
-         R7/sEgz64au8wochoyip4VtLmKdhVPLpr/DU49pwSwa5GPDZTYx0BbkWMlx/t6IdBV8V
-         1t2r4Xorb+4JtOYQrSExw3oca+8PJE8on2QltwzYUQ2zh997yathZBxW18WKJAwozx7G
-         eZtw==
-X-Gm-Message-State: AOAM530Bk8NFd9gBUmYWQDRB9KuCxWQK24Ug9himti38M5wnY+nTbucg
-        q3IbOYQ/OE0FJrp3xfi9zwt2BujCj6gii2aPs2lo9Zj3PWBgktrlURWEq6SFMPIkvMpXdDi3EIE
-        yXYZbUwJeGnCY01wpMttVFFWZ1EVUZzx1
-X-Received: by 2002:a05:6e02:1528:: with SMTP id i8mr1012856ilu.312.1640265494562;
-        Thu, 23 Dec 2021 05:18:14 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJz2ieHLybgJ35RhS/0meW79Aq5j6+U2Jp3pvSTNJuZMvmVzRiI+0xzHxuu82D4vjtQlJoNaVukfMMs22n5JIkw=
-X-Received: by 2002:a05:6e02:1528:: with SMTP id i8mr1012837ilu.312.1640265494344;
- Thu, 23 Dec 2021 05:18:14 -0800 (PST)
+        id S1348645AbhLWN2q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Dec 2021 08:28:46 -0500
+Received: from relay8-d.mail.gandi.net ([217.70.183.201]:40261 "EHLO
+        relay8-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348650AbhLWN2p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Dec 2021 08:28:45 -0500
+Received: (Authenticated sender: repk@triplefau.lt)
+        by relay8-d.mail.gandi.net (Postfix) with ESMTPSA id BDC531BF20E;
+        Thu, 23 Dec 2021 13:28:42 +0000 (UTC)
+Date:   Thu, 23 Dec 2021 14:33:40 +0100
+From:   Remi Pommarel <repk@triplefau.lt>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Networking <netdev@vger.kernel.org>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        bridge@lists.linux-foundation.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net] net: bridge: fix ioctl old_deviceless bridge argument
+Message-ID: <YcR6tAsH9/+sAawW@pilgrim>
+References: <20211222191320.17662-1-repk@triplefau.lt>
+ <CAK8P3a18b63GoPKiTey8KpEusyffbN97gxP+NM3fyZnOYXv5zg@mail.gmail.com>
+ <YcRW1ckSr3ZSCDf9@pilgrim>
+ <CAK8P3a0PTu2qCHGr63TBMgnjL9fQwn4=7CrURKMHQufffwOg9Q@mail.gmail.com>
 MIME-Version: 1.0
-References: <CACT4oudChHDKecLfDdA7R8jpQv2Nmz5xBS3hH_jFWeS37CnQGg@mail.gmail.com>
- <20211120083107.z2cm7tkl2rsri2v7@gmail.com> <CACT4oufpvQ1Qzg3eC6wDu33_xBo5tVghr9G7Q=d-7F=bZbW4Vg@mail.gmail.com>
-In-Reply-To: <CACT4oufpvQ1Qzg3eC6wDu33_xBo5tVghr9G7Q=d-7F=bZbW4Vg@mail.gmail.com>
-From:   =?UTF-8?B?w43DsWlnbyBIdWd1ZXQ=?= <ihuguet@redhat.com>
-Date:   Thu, 23 Dec 2021 14:18:03 +0100
-Message-ID: <CACT4ouc=LNnrTdz37YEOAkm3G+02vrmJ5Sxk0JwKSMoCGnLs-w@mail.gmail.com>
-Subject: Re: Bad performance in RX with sfc 40G
-To:     habetsm.xilinx@gmail.com
-Cc:     Edward Cree <ecree.xilinx@gmail.com>, netdev@vger.kernel.org,
-        Dinan Gunawardena <dinang@xilinx.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAK8P3a0PTu2qCHGr63TBMgnjL9fQwn4=7CrURKMHQufffwOg9Q@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Martin,
+On Thu, Dec 23, 2021 at 12:38:14PM +0100, Arnd Bergmann wrote:
+> On Thu, Dec 23, 2021 at 12:00 PM Remi Pommarel <repk@triplefau.lt> wrote:
+> >
+> > On Wed, Dec 22, 2021 at 10:52:20PM +0100, Arnd Bergmann wrote:
+> > > On Wed, Dec 22, 2021 at 8:13 PM Remi Pommarel <repk@triplefau.lt> wrote:
+> > [...]
+> > >
+> > > The intention of my broken patch was to make it work for compat mode as I did
+> > > in br_dev_siocdevprivate(), as this is now the only bit that remains broken.
+> > >
+> > > This could be done along the lines of the patch below, if you see any value in
+> > > it. (not tested, probably not quite right).
+> >
+> > Oh ok, because SIOC{S,G}IFBR compat ioctl was painfully done with
+> > old_bridge_ioctl() I didn't think those needed compat. So I adapted and
+> > fixed your patch to get that working.
+> 
+> Ok, thanks!
+> 
+> > Here is my test results.
+> >
+> > With my initial patch only :
+> >   - 64bit busybox's brctl (working)
+> >     # brctl show
+> >     bridge name     bridge id               STP enabled     interfaces
+> >     br0             8000.000000000000       n
+> >
+> >   - CONFIG_COMPAT=y + 32bit busybox's brctl (not working)
+> >     # brctl show
+> >     brctl: SIOCGIFBR: Invalid argument
+> >
+> > With both my intial patch and the one below :
+> >   - 64bit busybox's brctl (working)
+> >     # brctl show
+> >     bridge name     bridge id               STP enabled     interfaces
+> >     br0             8000.000000000000       n
+> >
+> >   - CONFIG_COMPAT=y + 32bit busybox's brctl (working)
+> >     # brctl show
+> >     bridge name     bridge id               STP enabled     interfaces
+> >     br0             8000.000000000000       n
+> >
+> > If you think this has enough value to fix those compatility issues I can
+> > either send the below patch as a V2 replacing my initial one for net
+> > or sending it as a separate patch for net-next. What would you rather
+> > like ?
+> 
+> If 32-bit busybox still uses those ioctls in moderately recent
+> versions, then it's probably worth doing this, but that would
+> be up to the bridge maintainers.
+> 
+> Your patch looks good to me, I see you caught a few mistakes
+> in my prototype. I would however suggest basing it on top of
+> your original fix, so that can be applied first and backported
+> to stable kernels, while the new patch would go on top and
+> not get backported.
+> 
+> If that works with everyone, please submit those two, and add
+> these tags to the second patch:
+> 
+> Co-developed-by: Arnd Bergmann <arnd@arndb.de>
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
-I replied this a few weeks ago, but it seems that, for some reason, I
-didn't CCd you.
+Ok thanks a lot, will send a new patch serie with both patches so
+that bridge maintainers could only pick one or both patches.
 
-On Thu, Dec 9, 2021 at 1:06 PM =C3=8D=C3=B1igo Huguet <ihuguet@redhat.com> =
-wrote:
->
-> Hi,
->
-> On Sat, Nov 20, 2021 at 9:31 AM Martin Habets <habetsm.xilinx@gmail.com> =
-wrote:
-> > If you're testing without the IOMMU enabled I suspect the recycle ring
-> > size may be too small. Can your try the patch below?
->
-> Sorry for the very late reply, but I've had to be out of work for many da=
-ys.
->
-> This patch has improved the performance a lot, reaching the same
-> 30Gbps than in TX. However, it seems sometimes a bit erratic, still
-> dropping to 15Gbps sometimes, specially after module remove & probe,
-> or from one iperf call to another. But not being all the times, I
-> didn't found a clear pattern. Anyway, it clearly improves things.
->
-> Can this patch be applied as is or it's just a test?
->
-> --
-> =C3=8D=C3=B1igo Huguet
-
-
-
---=20
-=C3=8D=C3=B1igo Huguet
-
+-- 
+Remi
