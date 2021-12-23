@@ -2,376 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B531447DEF8
-	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 07:14:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2773A47DEFB
+	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 07:16:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232395AbhLWGO5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Dec 2021 01:14:57 -0500
-Received: from out162-62-57-210.mail.qq.com ([162.62.57.210]:46171 "EHLO
-        out162-62-57-210.mail.qq.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232070AbhLWGOy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Dec 2021 01:14:54 -0500
-X-Greylist: delayed 12913 seconds by postgrey-1.27 at vger.kernel.org; Thu, 23 Dec 2021 01:14:53 EST
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-        s=s201512; t=1640240086;
-        bh=hoEccdzgT+hTFuDDMPF0ayD1KF9Q5Q3E+vRq58AJges=;
-        h=From:To:Cc:Subject:Date;
-        b=f3Vd1gikPWdNnF3x3BBHW507AeVchzllYQlcxaCbW7PtyFU4KEYGuG+4qUp9yDIcg
-         oYxQoC4pL2dCR2zM+2mLvplhl5KJKl0YCtnDqE9rjdnBxRsFib0S9p2LlSWxmDWkDV
-         QkjcsbI97CHW6WdXsKlUFEWgQj47hlnX+B8NDCIM=
-Received: from localhost.localdomain ([116.199.80.130])
-        by newxmesmtplogicsvrszb6.qq.com (NewEsmtp) with SMTP
-        id 2DAA1E6A; Thu, 23 Dec 2021 14:11:26 +0800
-X-QQ-mid: xmsmtpt1640239886thy6d3jfr
-Message-ID: <tencent_4535911418B2B9790CBC57166C94A26F650A@qq.com>
-X-QQ-XMAILINFO: NzOHSugmTg7Xb44ONWmkLAsu4mEYmHxACTmqKQ8p8OnfwLofN2F46lqDK86gPQ
-         X0nevqbDzjr/33mHsNXr8Wg4jBxQo89hTpgINLFjx7QqP9P/zc0DrZwSBVJ0fkoXnaI+LEZYcsID
-         PGjEfjQlxEZR1RMPQ2+ooR4hwc5i/qxfmEOpLCAc+cgaowwOQCXy6QyvhIzrX0C2loxMwLO964or
-         V8US9VCsgWvOpHs40bmyFGA8LxWBnJywmi9SccCztCrAyA9Ov9mzycoYSaFwzdAMdCelXGRJICYJ
-         xw+ALM3FK0YTut+tNvHWUN/InNEGlxx6yGH8B/FtWb4Osy4/HNh8A3EHX6EUSNzcj2YuYZIXwCv4
-         qEtedShAaG7gjwOFuRFg4Nz88wWTZI3KxvP7DiFnui/yLWANDlJSaqdtT7r2QG/2VZJNQojgle/Y
-         O1zJXWv0cVvN2yubbfLZq6zM7Y+rpcNrFY1nTns6POAiNiqAqvBMTuciFYn6u/VXuGrELlzc0HjK
-         iDiixdwOqk2lrG2JmlRX7AW2e7btY8rKhWQ67l3eFGfKTm7EgrfH3gZx/RlI5bIqQVlUQeLze3yP
-         8jSyiYFJFD1Gun3TSB/qaAH1EjGtwLEUxZKu7DmpuUF5q+/X/NLu2eDQvcAHVHUGFGCqIHdiVe18
-         Yg7tdBPIT999UGV0eZM15Pf7DFJ5IbrEBWTrsMRRxbNCjiN3Pguyxj2xhuMJJj81dYv2cWTufDjL
-         L30oAEYehJmAjCUDWG0jpKX2dhhu7efCKFwtgoxMZhsnWBLdRKhEVWzENiewXxLbX422UJ/PdE5i
-         9kmNOZeClZTjpi6ux/61+g7mnGf3NRQ9I0Ob66Cw/ZaNvLFSqq3WW4wulVBoQySofTqPQ1HMJCRK
-         kbfk64yU1r3NigVtD6GWKPyZ7lrlVnqgfaXvjhz6Wxh2rAs5QFg5Y=
-From:   conleylee@foxmail.com
-To:     davem@davemloft.net, kuba@kernel.org, mripard@kernel.org,
-        wens@csie.org
-Cc:     netdev@vger.kernel.org, Conley Lee <conleylee@foxmail.com>
-Subject: [PATCH v3] sun4i-emac.c: add dma support
-Date:   Thu, 23 Dec 2021 14:11:22 +0800
-X-OQ-MSGID: <20211223061122.14975-1-conleylee@foxmail.com>
-X-Mailer: git-send-email 2.34.1
+        id S1346587AbhLWGQY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Dec 2021 01:16:24 -0500
+Received: from esa.microchip.iphmx.com ([68.232.154.123]:31185 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232070AbhLWGQY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Dec 2021 01:16:24 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1640240183; x=1671776183;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-id:content-transfer-encoding:
+   mime-version;
+  bh=GVitA5QEbF0ZrjzHTrpIDFbkATDtvbvoZTe2RFkotgc=;
+  b=EyQO47C19uKXD5EQVKidmCIqPioF1aNzik8e+zZeZQZu4Z+9zyyYQjoz
+   69PRE2Ntu/JTnBvxTbWGO6ntn1nWurcZEPXtW1TMKWB91Wc32Tq+ugFUq
+   6FgiirJGiWzJQAGYz3IK9u74McgadA+uutMvtS6oJ+Bq/cQk34mhF4iG2
+   +DPYesKifEbjBGA7iWfebmtsZ4uykev1oRtPIK0DeK1FnDatB+YI7LeG3
+   OHs806iEo4FGIHHXZSbIy5MrGV4mhGEVxBNwbi2gVpmKZnAwTi3u/niMe
+   z2V3EEvhQbTLEtz/kbgsw0cpk77Rgwpq9tUDO8S+Yi+9IusPdobWcnB62
+   A==;
+IronPort-SDR: AIvBnlg/+UQsFWn1ul1vXdCtZjsNxCAHFfFNsYCutgc9sADiECXApaaOFVl9hm3d2yx7GkHkKM
+ xNqCBfa9NN34wMndbIQ4O9qUlP6o+q5NDQnPJx7pFULjPVdj1aauRgCbEnZMKcntVkWY4u3y3e
+ NYWp0TtrCbutx/dazaEyyg/IuKIYCS2xNm3ILnjeMwcN0K6bN8AYn5rboapm5ISLX54COS8MZP
+ c5sRpxp8bT8HXm4liFYA+ShEiACT23wnkhc2Rwx2GSGkAyG5+744icxEKEn2a5FkzpfVrPqRk9
+ 6XdyjiKd5o2S6qnK9PaZ2R/2
+X-IronPort-AV: E=Sophos;i="5.88,228,1635231600"; 
+   d="scan'208";a="140676230"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 Dec 2021 23:16:22 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Wed, 22 Dec 2021 23:16:22 -0700
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17 via Frontend Transport; Wed, 22 Dec 2021 23:16:22 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=CPlIz/5GroDYL10PhZpZJ1fWyLck2zLN5JIwfhizHwP0k6+bpBF11utQ6wgH7deWO/MWLvc2Zl5eWfCfTQyRIgoDgJer8DRrrZaLvQJCI2lKWhFnw24zQaXYgVhlfGzkfDfFf/eyDZf4lxJc9dFgFKIn8KY7lWpDJjy/VQIkocljLbPbS8HnkKJWBcOWwtBMO8ygXKgrsfkQSSYxE2UE6tCVIDiRTM7U55k7AKk8VByjJpMOF6u/sf642GU3uk9UdeI9Npm+foyZYv8wj+8XltAl4VrSnTxEYoWyvjIzHUhXAXgYrPGZ1ZO0JknS8FrruOc4fmaLlXc7MINaMQpn4w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=GVitA5QEbF0ZrjzHTrpIDFbkATDtvbvoZTe2RFkotgc=;
+ b=J9ncdIU+eZALuBnzT3iGM4NiP3V2VCVMF2sCvcu4Y7wzIm/d0HUwl4q/cEzDVfAAJK4vqXkZ4Ko4OxacBn7DJk9Imt6HCSDhjMSNC3ztKjJ2GDVtcGAby2VpzUorwSmQ783QVB4b9xKGYfDVlv7eqcclj2R62zm0UO5qWCNqx8FtOGHcfVrZgGIBv8NyAlmZB7phiUYLcGmGE+a8RxosUoArWGLOgjOf/MK1WA0EyKddSn98Ms+hvZYfWBGT6uvTBV0JXP5Ds3V0KtJsoY2HOxULDN2Oe52PGLr3HQwclfAT0El40k90SZCnSeq5dikXhYqsFikmQ47342uih4b6RQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GVitA5QEbF0ZrjzHTrpIDFbkATDtvbvoZTe2RFkotgc=;
+ b=DJvy8DGZpdL1uKeHFpHJEbfdCWu1TWkjy5i1CtrxSJ5smnQV8uB9J10acTbAopp+Xi1cnzOI1Zmbgeq8U+trdm8cCyg5HL1mrEWnNb6WZx8f03UbnOLTLbkJzJ3FFgqXDlK90/mMI9YbHgNAS3jCmjJvKYPXuHscFzg6oZ3kISM=
+Received: from SJ0PR11MB4943.namprd11.prod.outlook.com (2603:10b6:a03:2ad::17)
+ by BY5PR11MB4276.namprd11.prod.outlook.com (2603:10b6:a03:1b9::27) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4823.19; Thu, 23 Dec
+ 2021 06:16:17 +0000
+Received: from SJ0PR11MB4943.namprd11.prod.outlook.com
+ ([fe80::b481:2fde:536c:20a0]) by SJ0PR11MB4943.namprd11.prod.outlook.com
+ ([fe80::b481:2fde:536c:20a0%8]) with mapi id 15.20.4801.020; Thu, 23 Dec 2021
+ 06:16:17 +0000
+From:   <Ajay.Kathat@microchip.com>
+To:     <davidm@egauge.net>
+CC:     <Claudiu.Beznea@microchip.com>, <kvalo@kernel.org>,
+        <davem@davemloft.net>, <kuba@kernel.org>,
+        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 00/50] wilc1000: rework tx path to use sk_buffs
+ throughout
+Thread-Topic: [PATCH v2 00/50] wilc1000: rework tx path to use sk_buffs
+ throughout
+Thread-Index: AQHX95pt5gQke/CIVkahHDmyKBCK26w/mfoA
+Date:   Thu, 23 Dec 2021 06:16:17 +0000
+Message-ID: <adce9591-0cf2-f771-25b9-2eebea05f1bc@microchip.com>
+References: <20211223011358.4031459-1-davidm@egauge.net>
+In-Reply-To: <20211223011358.4031459-1-davidm@egauge.net>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microchip.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: c30daa07-9a56-4db5-ac3a-08d9c5dbbaf2
+x-ms-traffictypediagnostic: BY5PR11MB4276:EE_
+x-microsoft-antispam-prvs: <BY5PR11MB42768D9B50ADBD82FFB31A46E37E9@BY5PR11MB4276.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: Q0TRBn4YpbvdH70t6N7t/ibT01YFGjFg4ZkzMEj6FlhAYw3h30B67INdbpIWywx6rxpadJTO3TQeg6CezCWOKrk9xOf/orMlZZcasSWvv6AloNy2+4lcYQ4JzzVN6VuNXweMZl4IFDrb/QAisJKPxhfLMXbfYyhaQ6k9TNbTkYfxGhe9hRzCfF47aIlE9D/AZ0iDYNbE8PlmcisTyoBtVVPVjIQnF08eaC8EZhs1tb8R4gHcBh9YsH3v1FXYGeSkcfwb3doyZ4Mk6mOW1lzP3B1978sq1ZcXlnHVMQsmSbMxiy/ZNH6SNjuMk8hXwqNtBy9Omt8QehHQWVOBJ7og1kjUzoEp0yiGUpfCDkSwYh9OA4amr8E0YnmPV8gHowVSijCdl/E9+et2bYCizHVVE8Suf6HF7LTXRfxmwB3Jq8NgPcJk4B/UsFCFIly+zRGeyZyiAfKgDX4fQOkCDVe48dve/6IxLRCOI7j+e63DHVAMVq8682qPyYxkyvu7YroiZPZPkMguGWi8fImioe3HDfGOnlSiQcK4pTzP5V2nHxyopNbJq8gqEq8GZRTPZ8zvOh7j8YbfHRrSbpeg50sTc1WB6amUL3eUJGlAPEF2v+jP0LqFkfub/OGQkqh/Scy/Mqh+TOBolHdOvlXTVlAqrdUzD42BwUps/zIzce7EQnorYuqM26JDy4v2iDDUxTTN05qJ/GS2DTXd4xlwsphkDihntJYwCEk3n3bUoe9ab67R0FMK5fKOsu/XO54lISDNZ9CqZ7wRIOPC0roMS61JtQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR11MB4943.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(83380400001)(6486002)(6506007)(55236004)(38070700005)(53546011)(2906002)(122000001)(31696002)(6916009)(36756003)(38100700002)(316002)(2616005)(5660300002)(4326008)(8676002)(6512007)(76116006)(86362001)(186003)(66946007)(66556008)(66476007)(91956017)(54906003)(508600001)(8936002)(26005)(31686004)(71200400001)(64756008)(66446008)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?c3FQVkVXQzg5dGZqNGhhNjZhOC9sMlZFbU5IcHJJaFB6V2hFR3JnbVJ3QTR3?=
+ =?utf-8?B?NWxXVVZpbWZrVGd2RXRDcnZCTmM3N0Y2QWxjUzdVWWhVUnBBYXN5RjVDWVpW?=
+ =?utf-8?B?R2ZRV1BvTWd0N1B3ZXBCRXV1RkpWNjU0MDJYcElWOTVwNnVTWDJBdnNnY1Zw?=
+ =?utf-8?B?cFk3MU01OExkR2NQU1ZaWFRUZk1YL2JhcVFmNGtIeEROeG03WHBqSHNaaDlK?=
+ =?utf-8?B?cUl0TGFiK3d3citkeUF1a29XSTU4R2lhOGxyWThBVmRGM3dweUZKK0FuYXlk?=
+ =?utf-8?B?cVYwV2RDMS80bUNoNW5RaFJuMlpTcVJUa21OZCt4YkpUUDk4aDEzZmVFRTFJ?=
+ =?utf-8?B?aXRIV1RrY0xiZFpmbXJmVU5NZnB4ZjVySDNXQjFCTHc4S3ErNFF6TkpHNlMr?=
+ =?utf-8?B?V2RSbHJwZFd1bXVmUzR3bDFueEtXY251VlgyU3NYTzBFcnp1LzY2dzR1SUw5?=
+ =?utf-8?B?bWJBRU9kQ2h1MFBvYmNkeFh0Q2gyZjAzaXh3am1adHRNbTlwZDg4K01LR1Fn?=
+ =?utf-8?B?bzFDZTdJbFZRVG11KytZZldjSjZPd2MyQVVkbTQ2d3pKUEJqYmgyOFdCYnEw?=
+ =?utf-8?B?T0YxS1cxWnQzUHVsN2IxaGdhTUs3eExnbmg5T2JwMHVXMm1BeFYwMnJFbkdM?=
+ =?utf-8?B?ckZabm1tczE3Smo5cTNpZGxFaVFoL0dLOG03Y2pLTXpwQm9MZW9EenJkUnlJ?=
+ =?utf-8?B?dG01VDYyNzBpWWdUeU1NU05zSjN2RndlMWU2UzNueTJodXp4azY4NUZ5Skti?=
+ =?utf-8?B?R0g5dGp3MWdXVXVQdDFyZkgvWUl5TksyTDFDTnE5QUROdHdnVXlkNW05NWdJ?=
+ =?utf-8?B?aWtHRkV5OThBdkowUzFIT2lKYkdBdC9BdU9NWXZLakl0SmZYb0RPR1hqUnZB?=
+ =?utf-8?B?ZGVweElydUtYUnJQOEdwbkdoVmhXeUQzSWJlQUdieXZHU3pzekpXeklEYzQ1?=
+ =?utf-8?B?TTRFSXRvaytqR2ZoSnM1aXBDNHl1VG9IOW9mZmhSRnR2RktIRVB1cFIzUS9I?=
+ =?utf-8?B?MFl3WkFNMWhHTU1STG84OW40di95OXQ2UEZNOVVma1gva2c2QUtzYVArQ2JY?=
+ =?utf-8?B?M1M1S1lFa1lFdG40Zk9GQlJZMk5scWpGdHFNbjlsZWpJSDJtZmNCcEJkVWl2?=
+ =?utf-8?B?QlQ0MkNUZmwyeWlMOXJVL1hSTHBtQXJHUnJSTDUxdUYvOXdwUWRMSFRsWUFR?=
+ =?utf-8?B?TmpYNGlYbzhhWEhJSlFRb3I3eVdUK3hXTXlSUzYwY1liRTlhNE1lRUFWVWxn?=
+ =?utf-8?B?M01hTnVnMnZMeTVoUUE2MW5BQldlNWZUdnluTGkvMGtQbU5WT2diUHJsNXZK?=
+ =?utf-8?B?T0RDaU5RZTNCOFhyT3VhM0J0VC9rR2tEQ2lOWXlxcjh2VGZRQ2JkajBTbTlN?=
+ =?utf-8?B?WnV0bjVuVzNRZFV1V0VSK25Bb3dOUFE0SEpydi9KY1gvdUwvYWxZbFkrU0VZ?=
+ =?utf-8?B?RFFiZUFuWGVEUTVPUDRVNDZtVDhtTWJiZjN1a3Z0eHkzaTAwTWlPRVF2TnF0?=
+ =?utf-8?B?VHl5WGx4SHVzZmVENG9CYVplNm12U0RmaHFraTU5L1AwTU9KSGo0N2Naa2Zo?=
+ =?utf-8?B?am5wREh5VzMwTjhOT0svSnh0L0VJWW02QnFsRE1BL01Pa3BpRm1LWG1GZW5a?=
+ =?utf-8?B?T2JOQktOWWF3dm5jWjNYY2w0Szd3czAyMFNLdDlHb1U0WTNmbWVCQnF0STJo?=
+ =?utf-8?B?ZzhzT3dvdE1FUFF4bDkxZ2dMOGhpT29WVDFyV1ZnWXUwK3BIQlQ5L0g4SCth?=
+ =?utf-8?B?VWNpQUtMMVdQWVBkQXh2WTFhVHVjZjVFV1JpRHJuOVlISmd4S0Q5aWxlNng4?=
+ =?utf-8?B?Snk2WHZYVm5mL1F3cGdOWDNVNEVhR2JxMlYyU3BUb0dqRkQ1ak04ajFPcmlI?=
+ =?utf-8?B?ZHN6bHFGU3BoVWQrSmV0NmViTlJpVjlRdWZ4bDE2Qlppd1duV3NwTDFmNnRG?=
+ =?utf-8?B?eVd1WE5ESnRyTUkrbE5uZnBkdG5oSDFyelI4L3lpcUFlYkRpaWhrY2J2NFJL?=
+ =?utf-8?B?cVhsaTVaVW5qeEdzVDA5T01UL3ZYcjU5TEZRMFE4SWhlRXpNSjcvQzlCaVU4?=
+ =?utf-8?B?dXRLdExwK3IxTWVQMXJCYms3ZWU3Mkt6cEw3OWhKS3licjZmNjJSYlFhdzRK?=
+ =?utf-8?B?dG9GZmF1Tm44Z0lSR1MzaWdKNVBLeG5vbTBJY28wTlZXcld6ZytBWGRBTUVI?=
+ =?utf-8?B?dllsVUZmcFlCRUZUanNCOXd1TDJtRWpQSWxnOVhqUnFpNnZxMkhiK3Z0WWJL?=
+ =?utf-8?B?RTREVU1acitEdEZ2akNyOHdiODV3PT0=?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <52830BB48CD00043AC02DB6A615C68B4@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SJ0PR11MB4943.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c30daa07-9a56-4db5-ac3a-08d9c5dbbaf2
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Dec 2021 06:16:17.3247
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: DhXVzMYqmGCKJuoufz5K4o1Ytm8oU035S/wg6UQZP0snXkW9oeNDRY5RqrGHisqHYyS2ddBMwAvXb1AK7kHf2ZdgGfo6FIw72dBt9g1AH+0=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR11MB4276
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Conley Lee <conleylee@foxmail.com>
-
-This patch adds support for the emac rx dma present on sun4i.
-The emac is able to move packets from rx fifo to RAM by using dma.
-
-Signed-off-by: Conley Lee <conleylee@foxmail.com>
----
- drivers/net/ethernet/allwinner/sun4i-emac.c | 224 +++++++++++++++++---
- 1 file changed, 197 insertions(+), 27 deletions(-)
-
-diff --git a/drivers/net/ethernet/allwinner/sun4i-emac.c b/drivers/net/ethernet/allwinner/sun4i-emac.c
-index 800ee022388f..f86a4a02157b 100644
---- a/drivers/net/ethernet/allwinner/sun4i-emac.c
-+++ b/drivers/net/ethernet/allwinner/sun4i-emac.c
-@@ -29,6 +29,7 @@
- #include <linux/platform_device.h>
- #include <linux/phy.h>
- #include <linux/soc/sunxi/sunxi_sram.h>
-+#include <linux/dmaengine.h>
- 
- #include "sun4i-emac.h"
- 
-@@ -76,7 +77,6 @@ struct emac_board_info {
- 	void __iomem		*membase;
- 	u32			msg_enable;
- 	struct net_device	*ndev;
--	struct sk_buff		*skb_last;
- 	u16			tx_fifo_stat;
- 
- 	int			emacrx_completed_flag;
-@@ -87,6 +87,16 @@ struct emac_board_info {
- 	unsigned int		duplex;
- 
- 	phy_interface_t		phy_interface;
-+	struct dma_chan	*rx_chan;
-+	phys_addr_t emac_rx_fifo;
-+};
-+
-+struct emac_dma_req {
-+	struct emac_board_info *db;
-+	struct dma_async_tx_descriptor *desc;
-+	struct sk_buff *sbk;
-+	dma_addr_t rxbuf;
-+	int count;
- };
- 
- static void emac_update_speed(struct net_device *dev)
-@@ -206,6 +216,110 @@ static void emac_inblk_32bit(void __iomem *reg, void *data, int count)
- 	readsl(reg, data, round_up(count, 4) / 4);
- }
- 
-+static struct emac_dma_req *
-+alloc_emac_dma_req(struct emac_board_info *db,
-+		   struct dma_async_tx_descriptor *desc, struct sk_buff *skb,
-+		   dma_addr_t rxbuf, int count)
-+{
-+	struct emac_dma_req *req =
-+		kzalloc(sizeof(struct emac_dma_req), GFP_KERNEL);
-+	if (!req)
-+		return NULL;
-+
-+	req->db = db;
-+	req->desc = desc;
-+	req->sbk = skb;
-+	req->rxbuf = rxbuf;
-+	req->count = count;
-+	return req;
-+}
-+
-+static void free_emac_dma_req(struct emac_dma_req *req)
-+{
-+	kfree(req);
-+}
-+
-+static void emac_dma_done_callback(void *arg)
-+{
-+	struct emac_dma_req *req = arg;
-+	struct emac_board_info *db = req->db;
-+	struct sk_buff *skb = req->sbk;
-+	struct net_device *dev = db->ndev;
-+	int rxlen = req->count;
-+	u32 reg_val;
-+
-+	dma_unmap_single(db->dev, req->rxbuf, rxlen, DMA_FROM_DEVICE);
-+
-+	skb->protocol = eth_type_trans(skb, dev);
-+	netif_rx(skb);
-+	dev->stats.rx_bytes += rxlen;
-+	/* Pass to upper layer */
-+	dev->stats.rx_packets++;
-+
-+	//re enable cpu receive
-+	reg_val = readl(db->membase + EMAC_RX_CTL_REG);
-+	reg_val &= ~EMAC_RX_CTL_DMA_EN;
-+	writel(reg_val, db->membase + EMAC_RX_CTL_REG);
-+
-+	//re enable interrupt
-+	reg_val = readl(db->membase + EMAC_INT_CTL_REG);
-+	reg_val |= (0x01 << 8);
-+	writel(reg_val, db->membase + EMAC_INT_CTL_REG);
-+
-+	db->emacrx_completed_flag = 1;
-+	free_emac_dma_req(req);
-+}
-+
-+static void emac_dma_inblk_32bit(struct emac_board_info *db,
-+				 struct sk_buff *skb, int count)
-+{
-+	struct dma_async_tx_descriptor *desc;
-+	dma_cookie_t cookie;
-+	dma_addr_t rxbuf;
-+	void *rdptr;
-+	struct emac_dma_req *req;
-+
-+	rdptr = skb_put(skb, count - 4);
-+	rxbuf = dma_map_single(db->dev, rdptr, count, DMA_FROM_DEVICE);
-+
-+	if (dma_mapping_error(db->dev, rxbuf)) {
-+		dev_err(db->dev, "dma mapping error.\n");
-+		return;
-+	}
-+
-+	desc = dmaengine_prep_slave_single(db->rx_chan, rxbuf, count,
-+					   DMA_DEV_TO_MEM,
-+					   DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
-+	if (!desc) {
-+		dev_err(db->dev, "prepare slave single failed\n");
-+		goto prepare_err;
-+	}
-+
-+	req = alloc_emac_dma_req(db, desc, skb, rxbuf, count);
-+	if (!req) {
-+		dev_err(db->dev, "alloc emac dma req error.\n");
-+		goto prepare_err;
-+	}
-+
-+	desc->callback_param = req;
-+	desc->callback = emac_dma_done_callback;
-+
-+	cookie = dmaengine_submit(desc);
-+	if (dma_submit_error(cookie)) {
-+		dev_err(db->dev, "dma submit error.\n");
-+		goto submit_err;
-+	}
-+
-+	dma_async_issue_pending(db->rx_chan);
-+	return;
-+
-+submit_err:
-+	free_emac_dma_req(req);
-+
-+prepare_err:
-+	dma_unmap_single(db->dev, rxbuf, count, DMA_FROM_DEVICE);
-+}
-+
- /* ethtool ops */
- static void emac_get_drvinfo(struct net_device *dev,
- 			      struct ethtool_drvinfo *info)
-@@ -499,7 +613,6 @@ static void emac_rx(struct net_device *dev)
- 	struct sk_buff *skb;
- 	u8 *rdptr;
- 	bool good_packet;
--	static int rxlen_last;
- 	unsigned int reg_val;
- 	u32 rxhdr, rxstatus, rxcount, rxlen;
- 
-@@ -514,22 +627,6 @@ static void emac_rx(struct net_device *dev)
- 		if (netif_msg_rx_status(db))
- 			dev_dbg(db->dev, "RXCount: %x\n", rxcount);
- 
--		if ((db->skb_last != NULL) && (rxlen_last > 0)) {
--			dev->stats.rx_bytes += rxlen_last;
--
--			/* Pass to upper layer */
--			db->skb_last->protocol = eth_type_trans(db->skb_last,
--								dev);
--			netif_rx(db->skb_last);
--			dev->stats.rx_packets++;
--			db->skb_last = NULL;
--			rxlen_last = 0;
--
--			reg_val = readl(db->membase + EMAC_RX_CTL_REG);
--			reg_val &= ~EMAC_RX_CTL_DMA_EN;
--			writel(reg_val, db->membase + EMAC_RX_CTL_REG);
--		}
--
- 		if (!rxcount) {
- 			db->emacrx_completed_flag = 1;
- 			reg_val = readl(db->membase + EMAC_INT_CTL_REG);
-@@ -617,20 +714,28 @@ static void emac_rx(struct net_device *dev)
- 			if (!skb)
- 				continue;
- 			skb_reserve(skb, 2);
--			rdptr = skb_put(skb, rxlen - 4);
- 
- 			/* Read received packet from RX SRAM */
- 			if (netif_msg_rx_status(db))
- 				dev_dbg(db->dev, "RxLen %x\n", rxlen);
- 
--			emac_inblk_32bit(db->membase + EMAC_RX_IO_DATA_REG,
--					rdptr, rxlen);
--			dev->stats.rx_bytes += rxlen;
--
--			/* Pass to upper layer */
--			skb->protocol = eth_type_trans(skb, dev);
--			netif_rx(skb);
--			dev->stats.rx_packets++;
-+			if (rxlen < dev->mtu || !db->rx_chan) {
-+				rdptr = skb_put(skb, rxlen - 4);
-+				emac_inblk_32bit(db->membase + EMAC_RX_IO_DATA_REG,
-+						rdptr, rxlen);
-+				dev->stats.rx_bytes += rxlen;
-+
-+				/* Pass to upper layer */
-+				skb->protocol = eth_type_trans(skb, dev);
-+				netif_rx(skb);
-+				dev->stats.rx_packets++;
-+			} else {
-+				reg_val = readl(db->membase + EMAC_RX_CTL_REG);
-+				reg_val |= EMAC_RX_CTL_DMA_EN;
-+				writel(reg_val, db->membase + EMAC_RX_CTL_REG);
-+				emac_dma_inblk_32bit(db, skb, rxlen);
-+				break;
-+			}
- 		}
- 	}
- }
-@@ -677,7 +782,12 @@ static irqreturn_t emac_interrupt(int irq, void *dev_id)
- 		reg_val = readl(db->membase + EMAC_INT_CTL_REG);
- 		reg_val |= (0xf << 0) | (0x01 << 8);
- 		writel(reg_val, db->membase + EMAC_INT_CTL_REG);
-+	} else {
-+		reg_val = readl(db->membase + EMAC_INT_CTL_REG);
-+		reg_val |= (0xf << 0);
-+		writel(reg_val, db->membase + EMAC_INT_CTL_REG);
- 	}
-+
- 	spin_unlock(&db->lock);
- 
- 	return IRQ_HANDLED;
-@@ -782,6 +892,58 @@ static const struct net_device_ops emac_netdev_ops = {
- #endif
- };
- 
-+static int emac_configure_dma(struct emac_board_info *db)
-+{
-+	struct platform_device *pdev = db->pdev;
-+	struct net_device *ndev = db->ndev;
-+	struct dma_slave_config conf = {};
-+	struct resource *regs;
-+	int err = 0;
-+
-+	regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	if (!regs) {
-+		netdev_err(ndev, "get io resource from device failed.\n");
-+		err = -ENOMEM;
-+		goto out_clear_chan;
-+	}
-+
-+	netdev_info(ndev, "get io resource from device: 0x%x, size = %u\n",
-+		    regs->start, resource_size(regs));
-+	db->emac_rx_fifo = regs->start + EMAC_RX_IO_DATA_REG;
-+
-+	db->rx_chan = dma_request_chan(&pdev->dev, "rx");
-+	if (IS_ERR(db->rx_chan)) {
-+		netdev_err(ndev,
-+			   "failed to request dma channel. dma is disabled");
-+		err = PTR_ERR(db->rx_chan);
-+		goto out_clear_chan;
-+	}
-+
-+	conf.direction = DMA_DEV_TO_MEM;
-+	conf.dst_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
-+	conf.src_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
-+	conf.src_addr = db->emac_rx_fifo;
-+	conf.dst_maxburst = 4;
-+	conf.src_maxburst = 4;
-+	conf.device_fc = false;
-+
-+	err = dmaengine_slave_config(db->rx_chan, &conf);
-+	if (err) {
-+		netdev_err(ndev, "config dma slave failed\n");
-+		err = -EINVAL;
-+		goto out_slave_configure_err;
-+	}
-+
-+	return err;
-+
-+out_slave_configure_err:
-+	dma_release_channel(db->rx_chan);
-+
-+out_clear_chan:
-+	db->rx_chan = NULL;
-+	return err;
-+}
-+
- /* Search EMAC board, allocate space and register it
-  */
- static int emac_probe(struct platform_device *pdev)
-@@ -824,6 +986,9 @@ static int emac_probe(struct platform_device *pdev)
- 		goto out_iounmap;
- 	}
- 
-+	if (emac_configure_dma(db))
-+		netdev_info(ndev, "configure dma failed. disable dma.\n");
-+
- 	db->clk = devm_clk_get(&pdev->dev, NULL);
- 	if (IS_ERR(db->clk)) {
- 		ret = PTR_ERR(db->clk);
-@@ -906,6 +1071,11 @@ static int emac_remove(struct platform_device *pdev)
- 	struct net_device *ndev = platform_get_drvdata(pdev);
- 	struct emac_board_info *db = netdev_priv(ndev);
- 
-+	if (db->rx_chan) {
-+		dmaengine_terminate_all(db->rx_chan);
-+		dma_release_channel(db->rx_chan);
-+	}
-+
- 	unregister_netdev(ndev);
- 	sunxi_sram_release(&pdev->dev);
- 	clk_disable_unprepare(db->clk);
--- 
-2.34.1
-
+T24gMjMvMTIvMjEgMDY6NDQsIERhdmlkIE1vc2Jlcmdlci1UYW5nIHdyb3RlOg0KPiBFWFRFUk5B
+TCBFTUFJTDogRG8gbm90IGNsaWNrIGxpbmtzIG9yIG9wZW4gYXR0YWNobWVudHMgdW5sZXNzIHlv
+dSBrbm93IHRoZSBjb250ZW50IGlzIHNhZmUNCj4NCj4gT0ssIHNvIEknbSBuZXJ2b3VzIGFib3V0
+IHN1Y2ggYSBsYXJnZSBwYXRjaCBzZXJpZXMsIGJ1dCBpdCB0b29rIGEgbG90DQo+IG9mIHdvcmsg
+dG8gYnJlYWsgdGhpbmdzIGRvd24gaW50byBhdG9taWMgY2hhbmdlcy4gIFRoaXMgc2hvdWxkIGJl
+IGl0DQo+IGZvciB0aGUgdHJhbnNtaXQgcGF0aCBhcyBmYXIgYXMgSSdtIGNvbmNlcm5lZC4NCg0K
+DQpUaGFua3MgRGF2aWQgZm9yIHRoZSBlZmZvcnRzIHRvIGJyZWFrIGRvd24gdGhlIGNoYW5nZXMu
+IEkgYW0gc3RpbGwgDQpyZXZpZXdpbmcgYW5kIHRlc3RpbmcgdGhlIHByZXZpb3VzIHNlcmllcyBh
+bmQgZm91bmQgc29tZSBpbmNvbnNpc3RlbnQgDQpyZXN1bHRzLiBJIGFtIG5vdCBzdXJlIGFib3V0
+IHRoZSBjYXVzZSBvZiB0aGUgZGlmZmVyZW5jZS4gRm9yIHNvbWUgDQp0ZXN0cywgdGhlIHRocm91
+Z2hwdXQgaXMgaW1wcm92ZWQofjFNYnBzKSBidXQgZm9yIHNvbWUgQ0kgdGVzdHMsIHRoZSANCnRo
+cm91Z2hwdXQgaXMgbGVzcyBjb21wYXJlZCh+MU1icHMgaW4gc2FtZSByYW5nZSkgdG8gdGhlIHBy
+ZXZpb3VzLiANClRob3VnaCBub3Qgb2JzZXJ2ZWQgbXVjaCBkaWZmZXJlbmNlLg0KDQpOb3cgdGhl
+IG5ldyBwYXRjaGVzIGFyZSBhZGRlZCB0byB0aGUgc2FtZSBzZXJpZXMgc28gaXQgaXMgZGlmZmlj
+dWx0IHRvIA0KcmV2aWV3IHRoZW0gaW4gb25lIGdvLg0KDQpJIGhhdmUgYSByZXF1ZXN0LCBpbmNh
+c2UgdGhlcmUgYXJlIG5ldyBwYXRjaGVzIHBsZWFzZSBpbmNsdWRlIHRoZW0gaW4gDQpzZXBhcmF0
+ZSBzZXJpZXMuIEJyZWFraW5nIGRvd24gdGhlIHBhdGNoIGhlbHBzIHRvIGlkZW50aWZ5IHRoZSBu
+b24gDQpyZWxhdGVkIGNoYW5nZXMgd2hpY2ggY2FuIGdvIGluIHNlcGFyYXRlIHNlcmllcy4gVGhl
+IHBhdGNoZXMoY2hhbmdlKSBtYXkgDQpiZSByZWxhdGVkIHRvIFRYIHBhdGggZmxvdyBidXQgY2Fu
+IGdvIGluIHNlcGFyYXRlIHNlcmllcy4NCg0KDQpSZWdhcmRzLA0KQWpheQ0KDQo=
