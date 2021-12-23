@@ -2,134 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 249CB47DDE1
-	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 03:55:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CFD5047DE3B
+	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 05:28:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242498AbhLWCz3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Dec 2021 21:55:29 -0500
-Received: from mga05.intel.com ([192.55.52.43]:61444 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229788AbhLWCz3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 Dec 2021 21:55:29 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1640228129; x=1671764129;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=G87KUt6i7K66GwuWvCDQqDz2ZNFtFO6Fz15I0vXXysg=;
-  b=FCkAYBqnwTyAfjIOg/xliYNi/DD9RX3IBIJUaAVAwI6bct+rLrertFX9
-   4xCM9M6KWGd8uZKmWzoeVI7RG+lK5X1QzBAd5/9sdYYddbswgPEy7CzJV
-   OlB9iHSFLDGPITc22NiO8SqTETPxh9KHAiQk+CyL6F2l59JWiGciDmzs8
-   7/w2GDVQ27N6cbOOshVclxnTPwZxbrRGeKlArGWJTMHfOawhKFqzzo6xM
-   eo+4Htz3+0wDlvrK351xNI2OtbLMRmptb6BFdWo+wxl23Nb6bxop/Lv/g
-   TTcHW02GU+y71JHExb0bf9PznG+H5OT7iuBJuzQ8kCZ1gAMyEBwCD/eYl
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10206"; a="327051091"
-X-IronPort-AV: E=Sophos;i="5.88,228,1635231600"; 
-   d="scan'208";a="327051091"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Dec 2021 18:55:16 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,228,1635231600"; 
-   d="scan'208";a="664453047"
-Received: from lkp-server01.sh.intel.com (HELO e357b3ef1427) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 22 Dec 2021 18:55:14 -0800
-Received: from kbuild by e357b3ef1427 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n0EGA-0001Hw-51; Thu, 23 Dec 2021 02:55:14 +0000
-Date:   Thu, 23 Dec 2021 10:54:34 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     cgel.zte@gmail.com, thomas.petazzoni@bootlin.com
-Cc:     kbuild-all@lists.01.org, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Changcheng Deng <deng.changcheng@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: Re: [PATCH] net: mvneta: use min() to make code cleaner
-Message-ID: <202112231021.c93ilPDO-lkp@intel.com>
-References: <20211220113648.473204-1-deng.changcheng@zte.com.cn>
+        id S1346306AbhLWE1d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Dec 2021 23:27:33 -0500
+Received: from mail-eopbgr70057.outbound.protection.outlook.com ([40.107.7.57]:53571
+        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1346298AbhLWE1c (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 Dec 2021 23:27:32 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=L3/RSCMNmcBf3rZkOQteD1IzKM43OPDYP0KztFQLnhj5+UR9HQ9pdtnZMUDxybKU/k+h5+7xm/1f5sJJNr0qHHtRThvVPZ8r/PHrptEIFtY0yXoZsoYy7RNTY+h1iQVp0fewgqRNyleh8gLezaNcxMF6cBMZnT+PSDRowKh9PjZzQKmcYaHJq5E/Ru9tMJPU/jnds9/froRttHVpmvrOLy211l1zlCc9G8z5hQOhfJx0pdy1medxHiPEkvvvWnVFqJbyihXzu48an5dSYhOHYtnWsMeBqXtZuIZ6oo0LSKIOtKHaMJQqSYnlxxCkLB7LLzC9TM78e9WTmU2Kfow2qQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=qP7kJL8f5musNTN+Ac5Uufmc3TG+UxZD6yHd/ou2HOY=;
+ b=ogHDb1D4F7J5jdtYpnlDsSevegVg5Vpo8t2eVAtHO8DP1UB2SdKd0v998XbLYdxj2zyHerOzoxfCOhrHdWh5cpoGehTtPtFvpDCh0aWtp2bKaIux5AosyaehwAeEH6ryYxR/dEFwPR7/EeHpRxz/dCgS5PZqivhn6fhv37gAJadhWDKZPcCdPLEiabJz7nOV8ebPfB++15NRZTw/YUpjWGJrYZ0S3i5z3qx5YYacHIm+xiuYEtgk7g8BSoTT7mdjr/guoqAqriGt2LQFyaxkaciX3Hd4aZLVoelJ2kjQJt5z9HGwiAlx3/rriJ5N74Li1DBk4VHZFVyMmicJp1o/dQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qP7kJL8f5musNTN+Ac5Uufmc3TG+UxZD6yHd/ou2HOY=;
+ b=oE8g3GitWCgJTXl7KoJPg0Uf7JH1tR3P+zRsoca0N6ypmTG8fN1iR0UWiyDZmXDD7W00fqLq0WnNX/+eTlKfme73evzUpO/fXMOfzIivjWg/zykqUOp+7p8sXTfFgwmw3cjq1rFBKw6EZHgW8fKZCrltPRQQqG9AzTlUjdOszbc=
+Received: from AM6PR04MB5782.eurprd04.prod.outlook.com (2603:10a6:20b:aa::17)
+ by AM6PR0402MB3733.eurprd04.prod.outlook.com (2603:10a6:209:1c::25) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4801.20; Thu, 23 Dec
+ 2021 04:27:29 +0000
+Received: from AM6PR04MB5782.eurprd04.prod.outlook.com
+ ([fe80::b4f8:a657:de20:c04b]) by AM6PR04MB5782.eurprd04.prod.outlook.com
+ ([fe80::b4f8:a657:de20:c04b%3]) with mapi id 15.20.4823.019; Thu, 23 Dec 2021
+ 04:27:29 +0000
+From:   Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
+        Marouen Ghodhbane <marouen.ghodhbane@nxp.com>
+Subject: RE: [EXT] Re: [PATCH net-next] net: dsa: tag_ocelot: use traffic
+ class to map priority on injected header
+Thread-Topic: [EXT] Re: [PATCH net-next] net: dsa: tag_ocelot: use traffic
+ class to map priority on injected header
+Thread-Index: AQHX9lieJJXBj9Ptw0OYJnrgFnlWoqw/GG+AgABhZpA=
+Date:   Thu, 23 Dec 2021 04:27:29 +0000
+Message-ID: <AM6PR04MB5782E1EDD9F0FAF06E7D691AF07E9@AM6PR04MB5782.eurprd04.prod.outlook.com>
+References: <20211221110209.31309-1-xiaoliang.yang_1@nxp.com>
+ <20211222142337.0325219b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20211222142337.0325219b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Accept-Language: zh-CN, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 0ada0cfd-b6bf-48fd-500d-08d9c5cc87e3
+x-ms-traffictypediagnostic: AM6PR0402MB3733:EE_
+x-microsoft-antispam-prvs: <AM6PR0402MB3733B27C5C2E94D26A0F2F56F07E9@AM6PR0402MB3733.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: J/ZhazIqzeoYLoo1ySpouSyGxWVCJcfFTi3yglxYbj1tsFnCh/4nzH53xHTMfRilOXnScXz7CptdhMUf5UEnafz7yX1+Y/8snjTnKamm9EFTP+ePZatfmWmt+bvdQJHnyFAfvtxiCl+/y8M21zsDKfCm1ESfC+rfnIt9cZ31rv36xrrGDViTPNpRvIdBpFqpHzAFHpue8Ff6q9WVMqILTucMcTulMwMTzeTeVI+25I2Y2wpP6bG99TJMDAwg4cS6n2x1fNQ6soobvw+g6fUOMWnFPYfUaorocPyWoOMQ6dqsWGrnMwHgqaZEyrvS3OetDaXmjIhsvGyMeTJ0ErRvz65JR2RsWrr7wbpTCykJ0Bo2c5P04WeuNpR5YM6+Y7WWQIjiwXMIrN5L2hNgpF3fIk5agO6r6m8CynboOtw0wZfN4B09idXt/nTnFfpD1/shbzZhrwu3KzagDTy9ZIUBj5ZCIwVAbs0nPuUBIZrnw39gLbIWuFfKNurSF8ogm0kA/a4deljvYDYDAPlzaNhTduuAq9N2on8eS3OVFh6Xg21BfjESQ1+kfmayu03TEDv7ZsswLfIaFEs+P9Q42dfI4iO/A9alnn2QJ0DUJtX9pA1nydsPFDTfR0nC6TH2t/OHXn9DcC+kb6j4LDj02jvKSpZaKzgDpxgx38im3mX8mAd8aBBkl6R0JGiAlg8HF2OGhGxUCgC1nnMQ4nausGySsg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR04MB5782.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(186003)(33656002)(66946007)(6506007)(66446008)(38100700002)(55016003)(52536014)(66556008)(4744005)(8676002)(64756008)(2906002)(316002)(86362001)(4326008)(7696005)(26005)(76116006)(508600001)(8936002)(9686003)(122000001)(71200400001)(5660300002)(38070700005)(6916009)(54906003)(66476007);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?ns2JyTatHyiTGMwPjTm2AzBbVrauqZ8B3ja756Oo3V3+V678XPOAvAKQRpEj?=
+ =?us-ascii?Q?Uo/p4iuh8DjgUEi8CjUFooOGuIOPGssGf8Xvww3ZCY4auBA5KN9WzI4JsOVB?=
+ =?us-ascii?Q?bIAzY6BNGSJiORzBSj1juISuwW+g4bk3qFvaf2v7PzY2o3vvlKmX6i5rMfn9?=
+ =?us-ascii?Q?qWg2jwv5IoxXKYKEA37cmhAsRAm3gViKvi7bw02zl9Z0cTKJJ/ZgT2PbnwwZ?=
+ =?us-ascii?Q?r+x7S/Qs6exwCBPUYvXJAYRq2smlDyNtk1HfgFEQWBJA87xtcZLg4fh849SS?=
+ =?us-ascii?Q?Rgm0j9KLrhfVOxLCtfC4QbwnrtXnouNctNdX636g3XlB5ggfPpaLe4SSc460?=
+ =?us-ascii?Q?595G0fyd/rs44Tn9vdyFjlqPeUeUmmYq5g6p938WT42ehhxe6YW48dpOBGpj?=
+ =?us-ascii?Q?uHuMlm+4PUKCfIm7ifDlqnCcxccw18FM8eBQXXKbIinfDgwhFeTtEy/Z90VY?=
+ =?us-ascii?Q?gomtzjx3x9hhUf98LPPanLeub/kKxqnnhjs+j0BYYTl+onlSZB6sBSgXJ0We?=
+ =?us-ascii?Q?I0RUtilWdU8wad6o1nskGTs4quPQjSL7bpFD87sNk0gTWULy+XWcO1MPMciS?=
+ =?us-ascii?Q?p8/2ZmCjaeYXi4mxSmUSnteDffqMNaaL8YseP4D9DesEEYJcZwNZMP8tugEq?=
+ =?us-ascii?Q?3g2IyP1OWoTL/5b2823V5Q6/JNirD/d94VOjoFxZzkjpVgj3OJAOQ5eOlaI/?=
+ =?us-ascii?Q?h7AIEGdqQepAj7xbdy94JKqDylLkRon1AqK/mkUIWB5/QA4aZcgJCYJleI+b?=
+ =?us-ascii?Q?RZGY7VmYf0hxqAvcu0WnJfcoY87hYzXbKoZ196WeIHJ/OH8G3NaFXKfBdbav?=
+ =?us-ascii?Q?DedChrm4TzcdipYGblENbtpZxOlcMH4I9p6e3wERyWn7RFbFp1FVm7gzP4Fu?=
+ =?us-ascii?Q?0hzq7RSZ39YG3N8y7dVcy9N9Ny7nhKh2BiNKnlSYi7vNgaxZcVEnxFtQeNih?=
+ =?us-ascii?Q?kmGF2KQLLryTaMuNFla/onaBc4cAaDFVf1RJbYQNGMxFiy5hY0aUo+7+wQ1l?=
+ =?us-ascii?Q?JvnC4w9jvZdl4Lcn0/GlxPh7fknLAocEDCwOoAgEHalLuCeeGYuzO9vHP2kp?=
+ =?us-ascii?Q?m1GrfA8ftTo/mlNYIf7yFAHOSMxEXMWNu3nqLBMWQjyeSywba2EEEa2rceFZ?=
+ =?us-ascii?Q?FrZOmLQRAnbHB+xcgDJyPk3+u/ZV5Tfn80Ur/dM3R62LYg26ubgOM2Jl4uSX?=
+ =?us-ascii?Q?LnvMLKvgKvM2uA3yIy+Iz85QRg7iDj+lHlsE+y0vFlfNzVWhphFVPhBgMKCs?=
+ =?us-ascii?Q?Gg8zPK+IwjC8eh5R7ihlryJwlwEs98kGA/tur8ohLBP5ehBWpG68q+JcKJCL?=
+ =?us-ascii?Q?iSupRsDsYYzawM9NRlsuEu3dTvDizK5z5dxZ41dI5yh3u2h8W0/ej7FvckSz?=
+ =?us-ascii?Q?Sg71M5tDHHVNgV0zC55J77QChWrzMoD3OBoVhxsUcAx7dJkJo1Nmh4rigK9G?=
+ =?us-ascii?Q?iLKh2PGqz7uADObdInMmCDq1qz1TeEMu38iziDx7XiqJG07XqsJWx+DpIZtf?=
+ =?us-ascii?Q?jTrVn4+R11jD019nicSlrVOel+ye/9yqEPyAO7ygo7Zb8S8Tnso8emQ0zndX?=
+ =?us-ascii?Q?TcK8hYDUPJpRLAhAihj2gVi14FuKEpuam0BekOaAv86mAg1gmGEKttbJeddV?=
+ =?us-ascii?Q?y1EwwgYbUA+TUen5cknb029mKPJ1d0m7sm7TT8krSZOKMfYH+t0DldnwRa0B?=
+ =?us-ascii?Q?GfnnZQ=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211220113648.473204-1-deng.changcheng@zte.com.cn>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AM6PR04MB5782.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0ada0cfd-b6bf-48fd-500d-08d9c5cc87e3
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Dec 2021 04:27:29.2707
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: PzQMfc6Lnva8v16G2HT52KEzVE031jCAXePi3R/qcG9nzwFxV4bHhaU2sxY6NJaMKlh/qLTvIwYqTvbHyKHyCoB70vUN+ODXjzfPcril5Yw=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR0402MB3733
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
 
-Thank you for the patch! Perhaps something to improve:
+On Wed, 23 Dec 2021 06:24 Jakub Kicinski wrote:
+> > For Ocelot switches, the CPU injected frames have an injection header
+> > where it can specify the QoS class of the packet and the DSA tag, now
+> > it uses the SKB priority to set that. If a traffic class to priority
+> > mapping is configured on the netdevice (with mqprio for example ...),
+> > it won't be considered for CPU injected headers. This patch make the
+> > QoS class aligned to the priority to traffic class mapping if it exists=
+.
+> >
+> > Signed-off-by: Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
+> > Signed-off-by: Marouen Ghodhbane <marouen.ghodhbane@nxp.com>
+>=20
+> Is this a fix? Looks like one.
+Yes, It can be seen as a fix, I will add fix tag and resend to net, thanks.
 
-[auto build test WARNING on net-next/master]
-[also build test WARNING on net/master horms-ipvs/master linus/master v5.16-rc6 next-20211222]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/0day-ci/linux/commits/cgel-zte-gmail-com/net-mvneta-use-min-to-make-code-cleaner/20211220-193846
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 434ed21389948a45c238f63258bd5aae4237e20b
-config: sh-randconfig-s032-20211222 (https://download.01.org/0day-ci/archive/20211223/202112231021.c93ilPDO-lkp@intel.com/config)
-compiler: sh4-linux-gcc (GCC) 11.2.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://github.com/0day-ci/linux/commit/be0462f87c94afd5304c286f4b7041e92f5df0bd
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review cgel-zte-gmail-com/net-mvneta-use-min-to-make-code-cleaner/20211220-193846
-        git checkout be0462f87c94afd5304c286f4b7041e92f5df0bd
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=sh SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-
-sparse warnings: (new ones prefixed by >>)
-   drivers/net/ethernet/marvell/mvneta.c:1787:25: sparse: sparse: restricted __be16 degrades to integer
-   drivers/net/ethernet/marvell/mvneta.c:1969:45: sparse: sparse: incorrect type in argument 2 (different base types) @@     expected int l3_proto @@     got restricted __be16 [usertype] l3_proto @@
-   drivers/net/ethernet/marvell/mvneta.c:1969:45: sparse:     expected int l3_proto
-   drivers/net/ethernet/marvell/mvneta.c:1969:45: sparse:     got restricted __be16 [usertype] l3_proto
->> drivers/net/ethernet/marvell/mvneta.c:4637:28: sparse: sparse: incompatible types in comparison expression (different signedness):
->> drivers/net/ethernet/marvell/mvneta.c:4637:28: sparse:    unsigned int *
->> drivers/net/ethernet/marvell/mvneta.c:4637:28: sparse:    int *
-
-vim +4637 drivers/net/ethernet/marvell/mvneta.c
-
-  4626	
-  4627	static int
-  4628	mvneta_ethtool_set_ringparam(struct net_device *dev,
-  4629				     struct ethtool_ringparam *ring,
-  4630				     struct kernel_ethtool_ringparam *kernel_ring,
-  4631				     struct netlink_ext_ack *extack)
-  4632	{
-  4633		struct mvneta_port *pp = netdev_priv(dev);
-  4634	
-  4635		if ((ring->rx_pending == 0) || (ring->tx_pending == 0))
-  4636			return -EINVAL;
-> 4637		pp->rx_ring_size = min(ring->rx_pending, MVNETA_MAX_RXD);
-  4638	
-  4639		pp->tx_ring_size = clamp_t(u16, ring->tx_pending,
-  4640					   MVNETA_MAX_SKB_DESCS * 2, MVNETA_MAX_TXD);
-  4641		if (pp->tx_ring_size != ring->tx_pending)
-  4642			netdev_warn(dev, "TX queue size set to %u (requested %u)\n",
-  4643				    pp->tx_ring_size, ring->tx_pending);
-  4644	
-  4645		if (netif_running(dev)) {
-  4646			mvneta_stop(dev);
-  4647			if (mvneta_open(dev)) {
-  4648				netdev_err(dev,
-  4649					   "error on opening device after ring param change\n");
-  4650				return -ENOMEM;
-  4651			}
-  4652		}
-  4653	
-  4654		return 0;
-  4655	}
-  4656	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
