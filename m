@@ -2,75 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A59147E8FD
-	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 22:19:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6293E47E91A
+	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 22:34:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350324AbhLWVTH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Dec 2021 16:19:07 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:40356 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233222AbhLWVTG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Dec 2021 16:19:06 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 40DD061F91;
-        Thu, 23 Dec 2021 21:19:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FA63C36AE9;
-        Thu, 23 Dec 2021 21:19:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1640294345;
-        bh=RHwR7WJnTDGHXUR+NlikicbsjnB3cUEtRLcjjNBCDdI=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=ms47wMwQ5bSMZzlGNt1qIns2K5kVThKoXd7e938Yd+RYxGappMdZ9P9hGHax/vz0c
-         so3KAjEt9dAtJ1+Jr4sxu1o+7Nj/tBwFtkeq1ZWaEpu6+IIuAGo0ng1lfSvR4CdlJB
-         8LIsm9OOuMseMIMRf7LUulx2OfCAua1Rnq0HRKpnt+P4QnFoHI4KbpoQnOTvPHzDm7
-         pHgiavo3NAJACrgVglfxzthKmVe5DmWsSvX8neOfCRgytf8Gq6h/uwaIRKLqOA33tm
-         AxCB2aJi6bXQBnzQ1y0Wi5bULn/DUeWIt+/Ag18gm9iRxaaIOcgLiK4D9XuspQIUPN
-         NWKsE2mbCbjiA==
-Received: by mail-ed1-f43.google.com with SMTP id z29so26038699edl.7;
-        Thu, 23 Dec 2021 13:19:05 -0800 (PST)
-X-Gm-Message-State: AOAM5330ESLaUH5UIVAUgCWbJso4y4FtV4a1zVGizZG1SfIWKVt4SZLc
-        gSTFXfglANfZJo+x9hDVpoGS2NKYqiyrL76rxg==
-X-Google-Smtp-Source: ABdhPJzi5ldYUkBvCrQJ/P23jc2Mhr2nETWi9GjrXsmkOXNTU7ndvABfAN+OgXiAUuPyp+SfEtlmtIzFARpBZb0X6rw=
-X-Received: by 2002:a17:907:3d94:: with SMTP id he20mr3155428ejc.14.1640294343703;
- Thu, 23 Dec 2021 13:19:03 -0800 (PST)
+        id S1350354AbhLWVds (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Dec 2021 16:33:48 -0500
+Received: from smtp08.smtpout.orange.fr ([80.12.242.130]:51466 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1350348AbhLWVds (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Dec 2021 16:33:48 -0500
+Received: from pop-os.home ([86.243.171.122])
+        by smtp.orange.fr with ESMTPA
+        id 0VianGsLVbyf90VibnnW85; Thu, 23 Dec 2021 22:33:45 +0100
+X-ME-Helo: pop-os.home
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Thu, 23 Dec 2021 22:33:45 +0100
+X-ME-IP: 86.243.171.122
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     jiri@nvidia.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH] lib: objagg: Use the bitmap API when applicable
+Date:   Thu, 23 Dec 2021 22:33:42 +0100
+Message-Id: <f9541b085ec68e573004e1be200c11c9c901181a.1640295165.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-References: <20211223110755.22722-1-zajec5@gmail.com> <20211223110755.22722-4-zajec5@gmail.com>
-In-Reply-To: <20211223110755.22722-4-zajec5@gmail.com>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Thu, 23 Dec 2021 17:18:52 -0400
-X-Gmail-Original-Message-ID: <CAL_JsqK2TMu+h4MgQqjN0bvEzqdhsEviBwWiiR9hfNbC5eOCKg@mail.gmail.com>
-Message-ID: <CAL_JsqK2TMu+h4MgQqjN0bvEzqdhsEviBwWiiR9hfNbC5eOCKg@mail.gmail.com>
-Subject: Re: [PATCH 3/5] dt-bindings: nvmem: allow referencing device defined
- cells by names
-To:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
-Cc:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        devicetree@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 23, 2021 at 7:08 AM Rafa=C5=82 Mi=C5=82ecki <zajec5@gmail.com> =
-wrote:
->
-> From: Rafa=C5=82 Mi=C5=82ecki <rafal@milecki.pl>
->
-> Not every NVMEM has predefined cells at hardcoded addresses. Some
-> devices store cells in internal structs and custom formats. Referencing
-> such cells is still required to let other bindings use them.
->
-> Modify binding to require "reg" xor "label". The later one can be used
-> to match "dynamic" NVMEM cells by their names.
+Use 'bitmap_zalloc()' to simplify code, improve the semantic and reduce
+some open-coded arithmetic in allocator arguments.
 
-'label' is supposed to correspond to a sticker on a port or something
-human identifiable. It generally should be something optional to
-making the OS functional. Yes, there are already some abuses of that,
-but this case is too far for me.
+Also change the corresponding 'kfree()' into 'bitmap_free()' to keep
+consistency.
 
-Rob
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+ lib/objagg.c | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
+
+diff --git a/lib/objagg.c b/lib/objagg.c
+index 5e1676ccdadd..1e248629ed64 100644
+--- a/lib/objagg.c
++++ b/lib/objagg.c
+@@ -781,7 +781,6 @@ static struct objagg_tmp_graph *objagg_tmp_graph_create(struct objagg *objagg)
+ 	struct objagg_tmp_node *node;
+ 	struct objagg_tmp_node *pnode;
+ 	struct objagg_obj *objagg_obj;
+-	size_t alloc_size;
+ 	int i, j;
+ 
+ 	graph = kzalloc(sizeof(*graph), GFP_KERNEL);
+@@ -793,9 +792,7 @@ static struct objagg_tmp_graph *objagg_tmp_graph_create(struct objagg *objagg)
+ 		goto err_nodes_alloc;
+ 	graph->nodes_count = nodes_count;
+ 
+-	alloc_size = BITS_TO_LONGS(nodes_count * nodes_count) *
+-		     sizeof(unsigned long);
+-	graph->edges = kzalloc(alloc_size, GFP_KERNEL);
++	graph->edges = bitmap_zalloc(nodes_count * nodes_count, GFP_KERNEL);
+ 	if (!graph->edges)
+ 		goto err_edges_alloc;
+ 
+@@ -833,7 +830,7 @@ static struct objagg_tmp_graph *objagg_tmp_graph_create(struct objagg *objagg)
+ 
+ static void objagg_tmp_graph_destroy(struct objagg_tmp_graph *graph)
+ {
+-	kfree(graph->edges);
++	bitmap_free(graph->edges);
+ 	kfree(graph->nodes);
+ 	kfree(graph);
+ }
+-- 
+2.32.0
+
