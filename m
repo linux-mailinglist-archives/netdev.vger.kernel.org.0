@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F29F47E1FE
-	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 12:08:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FA0747E202
+	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 12:08:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347871AbhLWLIJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Dec 2021 06:08:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57230 "EHLO
+        id S1347883AbhLWLIP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Dec 2021 06:08:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347870AbhLWLII (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Dec 2021 06:08:08 -0500
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F6B6C061401;
-        Thu, 23 Dec 2021 03:08:07 -0800 (PST)
-Received: by mail-lf1-x134.google.com with SMTP id i31so11561045lfv.10;
-        Thu, 23 Dec 2021 03:08:07 -0800 (PST)
+        with ESMTP id S1347881AbhLWLIJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Dec 2021 06:08:09 -0500
+Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CAF5C061756;
+        Thu, 23 Dec 2021 03:08:09 -0800 (PST)
+Received: by mail-lj1-x234.google.com with SMTP id p7so7714600ljj.1;
+        Thu, 23 Dec 2021 03:08:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=1Q2sDj8vBUbZIesYQrujYlWmiKDT0P354Oapa4ONG34=;
-        b=g3aYWmCexve9yEciuzZeNB9QdT9WkllhzHhrFMmmkLaHuq/k/YZdxtMhy1c8TnN0Q2
-         vxh7vVZXJth6rkJWQ8nwD7112UkXMrZ067dGk1Tm3/6+JEBb5t7zHQuWCffxLeav8o+t
-         dCFyYc1CRE/2T/imtoxz1YzMS9eev4Qj7BmwlUaUi78abwQGIE6ys2Iu3SLtfBLVM4z9
-         Lfi4e99FutwWBVD7c9durybCIMHtAHNsimVy2ELOJtjOUShqelg+7FFAz/62H/iqhE12
-         0Y2wWrT790fmU9r4R9LFOliRiGlIWhrAKsxAyT3vwx8szgON2LgHF7kqiIuMvRRQdTGu
-         myZA==
+        bh=AIxig2RTBFVfYYo4FfiMlQHzX8KyhSHk6+94kt28iGg=;
+        b=gMCx5RVpM32NN7w2NYmYUxYXwhoEhd4MjYxU+eKuI2A5dBkdYinO+Cur5UAk8X+f5n
+         W2QwQu/4SgHiAmC58cPDmpRg3HgS+w91jz0/TYal2hzYJ67AKihM7nihEeik0MmWGCPn
+         qCJMZPOxY34rvYSGcwK6TehYh2KDEID84D0IPJkKBkgPLt35ihmGTZ53Nwy3nMQBxkEV
+         5iEGajcP6Myhsgprkg4UB56U8+LRHo/83JP96bQyD+ecHXkQ6LLval5oH80JAlEGxWmD
+         j9FhP9LV/miVnExuUdInTwNF6iQGQ0CbzPq2ruhesSYub53tfXANe3TIxezUhKKMTDP+
+         Gg9g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=1Q2sDj8vBUbZIesYQrujYlWmiKDT0P354Oapa4ONG34=;
-        b=F26K/eqpvvr77m3k7Vo+Pccb7TIziPsdLWOGwp/H8RvS2X0+URthDtjNRkYrN6Ip6a
-         MZMXThkH+c30PrVdIEa05WehIl27qVg9GxocTdHIRZqRkstC8SD5RHE4K0jLcJrpi0sc
-         HfMH66QLYGZi7YWi4mYfAajKuyubQrCCaLGUI776eefrA6BFa+VIOiqWK6YVrWdD2QIk
-         I2qBgBtZA4RdhxW58iHVaYsaaD5ksgHY1VdkM6vwJTjQDzMEk7joOSCJWwZEibuvCiB3
-         q6F6XJGpgiSL+OXljJvJh7VimEfwxKxjIBiLZr7eYsx2Lc3At41JIhOWJ8u7d6VTKEla
-         A54Q==
-X-Gm-Message-State: AOAM533Yfr3Yxf9yi6ACr2/yBaNxLpCYr9JhKdQ+3WB0o1daA0ndK2b3
-        gDFLx7JOEr+ar2BSDAMKb6HDGgaITgc=
-X-Google-Smtp-Source: ABdhPJzGNI930rsD+erY1tcIyxPvd4M5jaZyrpQINFCweZG3cd5Pkri6K8w5ykWmSOlxi2h3/EOxAw==
-X-Received: by 2002:a05:6512:3b14:: with SMTP id f20mr1452307lfv.410.1640257685904;
-        Thu, 23 Dec 2021 03:08:05 -0800 (PST)
+        bh=AIxig2RTBFVfYYo4FfiMlQHzX8KyhSHk6+94kt28iGg=;
+        b=juuKsTnifPyXLJ9/+aGKWjx53js0GbzG2svJTtO6JucvLRCts/hEOWXoqB/JgxbdOG
+         XNQnsXolhAQV9+UsJiNfh81x7r30W92NYKAeQg63DpKGhsL1OQuLWm3ZkUFJiW7wgh+z
+         uK2Iy+umAUGK7bxd4J6hx9EYfXUK/eWl5+kCTE0jgx8CQGGnObjAnEe7VsO4RoHooUPo
+         Oew8lWdjLIaVHNWolbo6diDSKgx/8EIQxFKmfnS0tMCGVWJ0HNhxTkiJnNn/mN/ppAl/
+         d4uxLRjEDfkfY7K6PYSOEsWu6zcntQHYnUmN/GTZejiDzyIXNsbyXO7BuLt19IGRcuhp
+         ZJHA==
+X-Gm-Message-State: AOAM532FcSKfcvSI9XQNRfXD+t6gaiKuSWPspWueivAG37ibztHwcdnX
+        fgjT43T4MeBfO/BQe97ckyk=
+X-Google-Smtp-Source: ABdhPJwuuf+vvycPVuTIuDiqX5ygVekHwb6hCOfnl/98iXEYjWJmMl2UW8tR5YZBfv0BKZi20LVndw==
+X-Received: by 2002:a2e:6e0d:: with SMTP id j13mr1294170ljc.124.1640257687427;
+        Thu, 23 Dec 2021 03:08:07 -0800 (PST)
 Received: from localhost.lan (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
-        by smtp.gmail.com with ESMTPSA id t7sm473047lfg.115.2021.12.23.03.08.05
+        by smtp.gmail.com with ESMTPSA id t7sm473047lfg.115.2021.12.23.03.08.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Dec 2021 03:08:05 -0800 (PST)
+        Thu, 23 Dec 2021 03:08:07 -0800 (PST)
 From:   =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
 To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
         Rob Herring <robh+dt@kernel.org>
 Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org,
         =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>
-Subject: [PATCH 2/5] nvmem: core: read OF defined NVMEM cell name from "label" property
-Date:   Thu, 23 Dec 2021 12:07:52 +0100
-Message-Id: <20211223110755.22722-3-zajec5@gmail.com>
+Subject: [PATCH 3/5] dt-bindings: nvmem: allow referencing device defined cells by names
+Date:   Thu, 23 Dec 2021 12:07:53 +0100
+Message-Id: <20211223110755.22722-4-zajec5@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211223110755.22722-1-zajec5@gmail.com>
 References: <20211223110755.22722-1-zajec5@gmail.com>
@@ -68,39 +68,49 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Rafał Miłecki <rafal@milecki.pl>
 
-Prefer it over $nodename. Property "label" allows more fancy /
-customized names with special characters.
+Not every NVMEM has predefined cells at hardcoded addresses. Some
+devices store cells in internal structs and custom formats. Referencing
+such cells is still required to let other bindings use them.
+
+Modify binding to require "reg" xor "label". The later one can be used
+to match "dynamic" NVMEM cells by their names.
 
 Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
 ---
- drivers/nvmem/core.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ Documentation/devicetree/bindings/nvmem/nvmem.yaml | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/nvmem/core.c b/drivers/nvmem/core.c
-index 23a38dcf0fc4..45c39ac401bd 100644
---- a/drivers/nvmem/core.c
-+++ b/drivers/nvmem/core.c
-@@ -685,6 +685,7 @@ static int nvmem_add_cells_from_of(struct nvmem_device *nvmem)
- 	struct device *dev = &nvmem->dev;
- 	struct nvmem_cell_entry *cell;
- 	const __be32 *addr;
-+	const char *label;
- 	int len;
+diff --git a/Documentation/devicetree/bindings/nvmem/nvmem.yaml b/Documentation/devicetree/bindings/nvmem/nvmem.yaml
+index 3392405ee010..83154df25c27 100644
+--- a/Documentation/devicetree/bindings/nvmem/nvmem.yaml
++++ b/Documentation/devicetree/bindings/nvmem/nvmem.yaml
+@@ -43,6 +43,12 @@ patternProperties:
+   "@[0-9a-f]+(,[0-7])?$":
+     type: object
  
- 	parent = dev->of_node;
-@@ -708,7 +709,11 @@ static int nvmem_add_cells_from_of(struct nvmem_device *nvmem)
- 		cell->nvmem = nvmem;
- 		cell->offset = be32_to_cpup(addr++);
- 		cell->bytes = be32_to_cpup(addr);
--		cell->name = kasprintf(GFP_KERNEL, "%pOFn", child);
++    description: |
++      NVMEM cell - a part of NVMEM containing one specific information.
 +
-+		if (!of_property_read_string(child, "label", &label))
-+			cell->name = kasprintf(GFP_KERNEL, "%s", label);
-+		else
-+			cell->name = kasprintf(GFP_KERNEL, "%pOFn", child);
++      Cells can be fully defined by a binding or stored in NVMEM device specific
++      data and just referenced in DT by a name (label).
++
+     properties:
+       reg:
+         maxItems: 1
+@@ -64,8 +70,11 @@ patternProperties:
+               description:
+                 Size in bit within the address range specified by reg.
  
- 		addr = of_get_property(child, "bits", &len);
- 		if (addr && len == (2 * sizeof(u32))) {
+-    required:
+-      - reg
++    oneOf:
++      - required:
++          - reg
++      - required:
++          - label
+ 
+ additionalProperties: true
+ 
 -- 
 2.31.1
 
