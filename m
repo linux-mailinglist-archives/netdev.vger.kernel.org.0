@@ -2,86 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B5E2B47E137
-	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 11:18:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C3D647E13E
+	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 11:19:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243097AbhLWKSW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Dec 2021 05:18:22 -0500
-Received: from mga01.intel.com ([192.55.52.88]:29551 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229713AbhLWKSV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 23 Dec 2021 05:18:21 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1640254701; x=1671790701;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=GzB/NR4iClizQsqPjrZZWaIkksTdxNwLazxBvftmulA=;
-  b=NCYn018HvVrfCG9T2kCDQEIZZnr5j7j9c4Xr2n66JMH7iOc1JJ85xFSH
-   CmGXspJZ3S/KjsdtqJdDte9y18wx6YeCjR0a5YPIWRqMz//IE0l3u/hNp
-   LET6VVfXDUGQiMQtJzNYzAZf0qHK+7F+yXXHfcnoHgyvstl/20dPtqvLM
-   0O06Gnt7ljututbGRdZyugTAhCgpTAPmpGcQNOkO4n0bozpg3wWQmJx8C
-   W00ZswI8FnbNG+YR0iKwY8x29b3NYsGIB7AkXLkt6tz1UkxGYFcjQTLpb
-   qJotTUSapxgTvNVt6myCFxEY42nZvy14hOByJ0YP0eH6sr+FLB9O5EA2G
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10206"; a="265009965"
-X-IronPort-AV: E=Sophos;i="5.88,229,1635231600"; 
-   d="scan'208";a="265009965"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Dec 2021 02:18:21 -0800
-X-IronPort-AV: E=Sophos;i="5.88,229,1635231600"; 
-   d="scan'208";a="685334990"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Dec 2021 02:18:19 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1n0L9a-001BAi-Te;
-        Thu, 23 Dec 2021 12:16:54 +0200
-Date:   Thu, 23 Dec 2021 12:16:54 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Sergey Ryazanov <ryazanov.s.a@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        open list <linux-kernel@vger.kernel.org>,
-        Loic Poulain <loic.poulain@linaro.org>,
-        Johannes Berg <johannes@sipsolutions.net>
-Subject: Re: [PATCH v1 1/1] wwan: Replace kernel.h with the necessary
- inclusions
-Message-ID: <YcRMlp6ux+R0op3Q@smile.fi.intel.com>
-References: <20211222163256.66270-1-andriy.shevchenko@linux.intel.com>
- <CAHNKnsS_1fQh1UL-VX0kXfDp_umMtfSnDwJXWxiBXFdyrK1pYA@mail.gmail.com>
- <YcRL8Ttxm8yMj77U@smile.fi.intel.com>
+        id S1347653AbhLWKTX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Dec 2021 05:19:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46344 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229713AbhLWKTW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Dec 2021 05:19:22 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D49EC061401;
+        Thu, 23 Dec 2021 02:19:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+        Content-ID:Content-Description:In-Reply-To:References;
+        bh=VHzQbI+tDjPBjgZdxLqZI7T6VrPoD6xS4Gsf5ogXyeQ=; b=CaxRVHjVl67BAiv245QvOsbIPP
+        MCMjB5jQ9KMoUqIIaFjEtbqXpE4X1u8jh/CdFVSONFc4M3pms5yVPIKYPG2OfrDqhp7Wmm0LnHP+W
+        aP0jFQ7yzxiOEKY+chDWQQOSfktAiaf1XMhwm56eCApPqaepQtelsXUdEV8cBBarArBA8wXLceU0n
+        O2SZ7hPGOKlk6MinIml4LuovCgxiN5Qze4LA12QeK2QxV4cpqcBUsmzLv4CszhZqX+YmCI0oENxWA
+        bneOIGZqn3rUBlE56BPQc0zq9WLc3sGSp1t5r3otTWXSOQ21RjXt/NvTOPlK9wM4wt1qL6Z+SxXVt
+        JXLPcVCg==;
+Received: from [46.183.103.8] (helo=localhost)
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1n0LBk-00CTku-Fk; Thu, 23 Dec 2021 10:19:08 +0000
+From:   Christoph Hellwig <hch@lst.de>
+To:     Jonathan Corbet <corbet@lwn.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
+        Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, linux-doc@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: improve the eBPF documentation v2
+Date:   Thu, 23 Dec 2021 11:19:02 +0100
+Message-Id: <20211223101906.977624-1-hch@lst.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YcRL8Ttxm8yMj77U@smile.fi.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 23, 2021 at 12:14:09PM +0200, Andy Shevchenko wrote:
-> On Wed, Dec 22, 2021 at 11:38:44PM +0300, Sergey Ryazanov wrote:
-> > On Wed, Dec 22, 2021 at 7:32 PM Andy Shevchenko
-> > <andriy.shevchenko@linux.intel.com> wrote:
+Hi all,
 
-...
+this series first splits the eBPF introductions from the
+instruction set document to then drop the classic BPF
+documentation from this file to focus on eBPF and to
+cleanup the structure and rendering of this file a bit.
 
-> Not sure what it's supposed from me to do. The forward declarations are
-> the tighten part of the cleanup (*) and it's exactly what is happening here,
-> i.e.  replacing kernel.h "with the list of what is really being used".
-> 
-> *) Either you need a header, or you need a forward declaration, or rely on
->    the compiler not to be so strict. I prefer the second option out of three.
+Changes since v1:
+ - rename intro.rst to classic_vs_extended.rst
+ - keep the class vs eBPF tabls in classic_vs_extended.rst
+ - a few more editorial tidyups
+ - move the packet access instructions last in instruction-set.rst
 
-Ah, seems indeed the skbuf and netdevice ones can be split. Do you want me to
-resend as series of two?
-
-(Sorry I have sent many similar changes and haven't remembered by heart where
- I did what exactly, but here it looks natural to cleanup that stuff at the
- same time, so the question is if it should be a separate change or not)
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Diffstat:
+ classic_vs_extended.rst |  376 +++++++++++++++++++++++++++++++++++
+ index.rst               |    1 
+ instruction-set.rst     |  514 ++++++++++++++----------------------------------
+ 3 files changed, 527 insertions(+), 364 deletions(-)
