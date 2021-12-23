@@ -2,133 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FB9B47E14E
-	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 11:20:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C45A347E158
+	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 11:23:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347671AbhLWKUb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Dec 2021 05:20:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46412 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347682AbhLWKTf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Dec 2021 05:19:35 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA087C061401;
-        Thu, 23 Dec 2021 02:19:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
-        :Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=YXA9bNbu70qCMUKMU1gqidDciHX65bz6vVCKVKz0r7I=; b=FVOVE7Nb0V3sHmy/eGPPRBgkp6
-        9IWtM+8HfpxA2qXkQWiH1oyRZYZMEuKIXxr8RaYxoZGH5R5h/iCD2npy6/rX0ILPwxn7ovuv9X8XA
-        hw9TODB5mQeUpqr0sc0WZ+k1bJpoZZB7tdSMUlOWDsS+nimGFGdpp8SR29AcbzWrFAQs1N3Vrdtgz
-        6VD/KPLRhZ8pSr1gmy3tQx6JtTUrfXpUwGs4UYcL456PZh0rfj6f4A19ZvfmvpGN1+zveiXqwrhaO
-        YyaCcRlWKvQsL3m+7zS4zq0iiQYxwA18KNu13hk9VnonGDBQAd+vsxVoxuTxAnOnv/Ji/fZcUdscS
-        8QfVjyQA==;
-Received: from [46.183.103.8] (helo=localhost)
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1n0LC3-00CTmy-3G; Thu, 23 Dec 2021 10:19:27 +0000
-From:   Christoph Hellwig <hch@lst.de>
-To:     Jonathan Corbet <corbet@lwn.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, linux-doc@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH 4/4] bpf, docs: Move the packet access instructions last in instruction-set.rst
-Date:   Thu, 23 Dec 2021 11:19:06 +0100
-Message-Id: <20211223101906.977624-5-hch@lst.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20211223101906.977624-1-hch@lst.de>
-References: <20211223101906.977624-1-hch@lst.de>
+        id S1347617AbhLWKXA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Dec 2021 05:23:00 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:40262 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S239344AbhLWKXA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 Dec 2021 05:23:00 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=MArMGCZ4sp/C4MYnm4nxg0qh/KUio32K5/XLn829OC4=; b=yHriCuq6dBzpNIqFXAdbo5c3Yf
+        cWXwyhvSIsctu+7luYSCSZ3VRVV/mUkYGEJb4Eux8jgc3VV2TzSA3lUAWk2gj//+iEyCBwj64sszC
+        xCOqar5Xwru2jRtwq0DbOTN1XodyufQzOC9C6paj7g8zBt0gJmwQ0U9JuH+OUf1BZ5Uw=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1n0LFH-00HIMl-KR; Thu, 23 Dec 2021 11:22:47 +0100
+Date:   Thu, 23 Dec 2021 11:22:47 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     "Chen, Mike Ximing" <mike.ximing.chen@intel.com>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "arnd@arndb.de" <arnd@arndb.de>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "Williams, Dan J" <dan.j.williams@intel.com>,
+        "pierre-louis.bossart@linux.intel.com" 
+        <pierre-louis.bossart@linux.intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>
+Subject: Re: [RFC PATCH v12 01/17] dlb: add skeleton for DLB driver
+Message-ID: <YcRN9zwkP4nw4Dh8@lunn.ch>
+References: <20211221065047.290182-1-mike.ximing.chen@intel.com>
+ <20211221065047.290182-2-mike.ximing.chen@intel.com>
+ <YcGkILZxGLEUVVgU@lunn.ch>
+ <CO1PR11MB51705AE8B072576F31FEC18CD97C9@CO1PR11MB5170.namprd11.prod.outlook.com>
+ <YcJJh9e2QCJOoEB/@lunn.ch>
+ <CO1PR11MB5170C1925DFB4BFE4B7819F5D97C9@CO1PR11MB5170.namprd11.prod.outlook.com>
+ <YcOYDi1s5x5gU/5w@lunn.ch>
+ <CO1PR11MB5170B7667FD1C091E1946CEDD97E9@CO1PR11MB5170.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CO1PR11MB5170B7667FD1C091E1946CEDD97E9@CO1PR11MB5170.namprd11.prod.outlook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The packet access instructions are a convoluted leftover from classic
-BPF.  Move them last past the much more important atomic operations,
-and improve the rendering of the code example.
+On Thu, Dec 23, 2021 at 05:15:34AM +0000, Chen, Mike Ximing wrote:
+> 
+> 
+> > -----Original Message-----
+> > From: Andrew Lunn <andrew@lunn.ch>
+> > Sent: Wednesday, December 22, 2021 4:27 PM
+> > To: Chen, Mike Ximing <mike.ximing.chen@intel.com>
+> > Cc: linux-kernel@vger.kernel.org; arnd@arndb.de; gregkh@linuxfoundation.org; Williams, Dan J
+> > <dan.j.williams@intel.com>; pierre-louis.bossart@linux.intel.com; netdev@vger.kernel.org;
+> > davem@davemloft.net; kuba@kernel.org
+> > Subject: Re: [RFC PATCH v12 01/17] dlb: add skeleton for DLB driver
+> > 
+> > > > pointing to skbufs? How are the lifetimes of skbufs managed? How do
+> > > > you get skbufs out of the NIC? Are you using XDP?
+> > >
+> > > This is not a network accelerator in the sense that it does not have
+> > > direct access to the network sockets/ports. We do not use XDP.
+> > 
+> > So not using XDP is a problem. I looked at previous versions of this patch, and it is all DPDK. But DPDK is
+> > not in mainline, XDP is. In order for this to be merged into mainline you need a mainline user of it.
+> > 
+> > Maybe you should abandon mainline, and just get this driver merged into the DPDK fork of Linux?
+> > 
+> Hi Andrew,
+> 
+> I am not sure why not using XDP is a problem. As mentioned earlier, the
+> DLB driver is not a part of network stack.  
+> 
+> DPDK is one of applications that can make a good use of DLB, but is not the
+> only one. We have applications that access DLB directly via the kernel driver API
+> without using DPDK.
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- Documentation/bpf/instruction-set.rst | 55 +++++++++++++--------------
- 1 file changed, 27 insertions(+), 28 deletions(-)
+Cool. Please can you point at a repo for the code? As i said, we just
+need a userspace user, which gives us a good idea how the hardware is
+supposed to be used, how the kAPI is to be used, and act as a good
+test case for when kernel modifications are made. But it needs to be
+pure mainline.
 
-diff --git a/Documentation/bpf/instruction-set.rst b/Documentation/bpf/instruction-set.rst
-index 4e3041cf04325..922635f0c18b7 100644
---- a/Documentation/bpf/instruction-set.rst
-+++ b/Documentation/bpf/instruction-set.rst
-@@ -171,34 +171,6 @@ BPF_MEM | <size> | BPF_LDX means::
- 
- Where size is one of: BPF_B or BPF_H or BPF_W or BPF_DW.
- 
--Packet access instructions
----------------------------
--
--eBPF has two non-generic instructions: (BPF_ABS | <size> | BPF_LD) and
--(BPF_IND | <size> | BPF_LD) which are used to access packet data.
--
--They had to be carried over from classic BPF to have strong performance of
--socket filters running in eBPF interpreter. These instructions can only
--be used when interpreter context is a pointer to ``struct sk_buff`` and
--have seven implicit operands. Register R6 is an implicit input that must
--contain pointer to sk_buff. Register R0 is an implicit output which contains
--the data fetched from the packet. Registers R1-R5 are scratch registers
--and must not be used to store the data across BPF_ABS | BPF_LD or
--BPF_IND | BPF_LD instructions.
--
--These instructions have implicit program exit condition as well. When
--eBPF program is trying to access the data beyond the packet boundary,
--the interpreter will abort the execution of the program. JIT compilers
--therefore must preserve this property. src_reg and imm32 fields are
--explicit inputs to these instructions.
--
--For example::
--
--  BPF_IND | BPF_W | BPF_LD means:
--
--    R0 = ntohl(*(u32 *) (((struct sk_buff *) R6)->data + src_reg + imm32))
--    and R1 - R5 were scratched.
--
- Atomic operations
- -----------------
- 
-@@ -252,3 +224,30 @@ zero.
- eBPF has one 16-byte instruction: ``BPF_LD | BPF_DW | BPF_IMM`` which consists
- of two consecutive ``struct bpf_insn`` 8-byte blocks and interpreted as single
- instruction that loads 64-bit immediate value into a dst_reg.
-+
-+Packet access instructions
-+--------------------------
-+
-+eBPF has two non-generic instructions: (BPF_ABS | <size> | BPF_LD) and
-+(BPF_IND | <size> | BPF_LD) which are used to access packet data.
-+
-+They had to be carried over from classic BPF to have strong performance of
-+socket filters running in eBPF interpreter. These instructions can only
-+be used when interpreter context is a pointer to ``struct sk_buff`` and
-+have seven implicit operands. Register R6 is an implicit input that must
-+contain pointer to sk_buff. Register R0 is an implicit output which contains
-+the data fetched from the packet. Registers R1-R5 are scratch registers
-+and must not be used to store the data across BPF_ABS | BPF_LD or
-+BPF_IND | BPF_LD instructions.
-+
-+These instructions have implicit program exit condition as well. When
-+eBPF program is trying to access the data beyond the packet boundary,
-+the interpreter will abort the execution of the program. JIT compilers
-+therefore must preserve this property. src_reg and imm32 fields are
-+explicit inputs to these instructions.
-+
-+For example, BPF_IND | BPF_W | BPF_LD means::
-+
-+  R0 = ntohl(*(u32 *) (((struct sk_buff *) R6)->data + src_reg + imm32))
-+
-+and R1 - R5 are clobbered.
--- 
-2.30.2
+There have been a few good discussion on LWN about accelerators
+recently. Worth reading.
 
+	  Andrew
