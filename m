@@ -2,48 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D9B0547DD07
-	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 02:18:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A84747DCE6
+	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 02:15:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345883AbhLWBOM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Dec 2021 20:14:12 -0500
-Received: from o1.ptr2625.egauge.net ([167.89.112.53]:18064 "EHLO
+        id S1346047AbhLWBPE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Dec 2021 20:15:04 -0500
+Received: from o1.ptr2625.egauge.net ([167.89.112.53]:27198 "EHLO
         o1.ptr2625.egauge.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241466AbhLWBOK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Dec 2021 20:14:10 -0500
+        with ESMTP id S1346216AbhLWBOj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Dec 2021 20:14:39 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=egauge.net;
         h=from:subject:in-reply-to:references:mime-version:to:cc:
         content-transfer-encoding:content-type;
-        s=sgd; bh=umwnLomDnL8JV4cAJEilJ/xdGNnjtl/WMw/dTXYXnHw=;
-        b=XaMT+NPDkMBwRbNRZ5nRuZewLyDWkWRsKt0OjjotqbZA5gZ/4Mr952ZLdrWQlkAWkT22
-        3ep1d56SkgTGHRdHk942/yDUNP/FvzId1G2ygcDXyq84vd+gePBibmJKVeXV9YwBfYZcNV
-        gQdSChdqCVd6rOG2KEHP2lmIa5Yo/JgyrJ1uu/++8vIvVEUTrfDP9whKL6AtZH32LX0nmv
-        vtMNkh6n2lAqaGZF9QAvunsif6eXLFVbvA8sRUe8REk4j875uz5OfiZwjHq7ysBusRsKZA
-        sL3lh45yxbtwUA6U1QNx6Xcu1Z7M/egVgOABzz3q51G5VQoNxN0ee+e6SKZ+zXSw==
-Received: by filterdrecv-75ff7b5ffb-w7hgd with SMTP id filterdrecv-75ff7b5ffb-w7hgd-1-61C3CD5E-9
-        2021-12-23 01:14:06.198059899 +0000 UTC m=+9687226.166389619
+        s=sgd; bh=yVIQwUE9JRNbIa/ZfSEZSItfnS3OUxif3uKX0p0Ts4Q=;
+        b=rImcg9Iom5wm2dvirQ5mQuphAMZvnGxdeOhd39ze3yjq4jLPi/gxhVf0fOgBnqVwiR2N
+        Qos7mDvDdO1g0HDa6zLKJTwsRBVjLHtZzfdlnDr6lYcP7NZ1ly11vtTxmFsNPyvoWbFHKA
+        vfAdL9L1lUTbIPmJOkyJ0o2Ctt57qfaWDiBMXRxjJcjS7KbhyfbKXxUljMbpDfNV8nd3Zo
+        RIzpiJgXE2zsjf0i/VuLQCOngjIDnhdRhz6SzXHbybtvnxmSmYTRt+Apx0zq8vLhJg7ToJ
+        x8p4hZLjgs9mJpHzl5N1rvFtTSH22JBUsWT40BraJy1Cw0CIQvROShStiVgt1E0w==
+Received: by filterdrecv-75ff7b5ffb-bcbbj with SMTP id filterdrecv-75ff7b5ffb-bcbbj-1-61C3CD5E-1A
+        2021-12-23 01:14:06.714544574 +0000 UTC m=+9687191.029415880
 Received: from pearl.egauge.net (unknown)
         by geopod-ismtpd-3-0 (SG)
         with ESMTP
-        id j-W6BjeiQ9uWp7sLPSK6Ng
-        Thu, 23 Dec 2021 01:14:06.044 +0000 (UTC)
+        id 2tIlyEXETV22Sdh0w6UE5A
+        Thu, 23 Dec 2021 01:14:06.581 +0000 (UTC)
 Received: by pearl.egauge.net (Postfix, from userid 1000)
-        id 1B3B97011B9; Wed, 22 Dec 2021 18:14:05 -0700 (MST)
+        id 7CD5B7014A3; Wed, 22 Dec 2021 18:14:05 -0700 (MST)
 From:   David Mosberger-Tang <davidm@egauge.net>
-Subject: [PATCH v2 14/50] wilc1000: if there is no tx packet, don't increment
- packets-sent counter
+Subject: [PATCH v2 28/50] wilc1000: improve send_packets() a bit
 Date:   Thu, 23 Dec 2021 01:14:06 +0000 (UTC)
-Message-Id: <20211223011358.4031459-15-davidm@egauge.net>
+Message-Id: <20211223011358.4031459-29-davidm@egauge.net>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211223011358.4031459-1-davidm@egauge.net>
 References: <20211223011358.4031459-1-davidm@egauge.net>
 MIME-Version: 1.0
 X-SG-EID: =?us-ascii?Q?+kMxBqj35EdRUKoy8diX1j4AXmPtd302oan+iXZuF8m2Nw4HRW2irNspffT=2Fkh?=
- =?us-ascii?Q?ET6RJF6+Prbl0h=2FEtF1rRLvOR25dwhR8xVxUiJR?=
- =?us-ascii?Q?PvfwopFiHKgJmz5nG7pPD2E+83y=2Fm+RHtKjsCtp?=
- =?us-ascii?Q?gPwMsMrHiC8Af1aM9ryNHWuHG4x4Wz2GyUEQIBD?=
- =?us-ascii?Q?i2+5kSvvgCCLrZidcLd9VFMgC=2FEWIehLtgHFUOy?=
- =?us-ascii?Q?jHvQs8SzYfEDzhkTgFLCJDv=2FSmhkOIswdEw69E?=
+ =?us-ascii?Q?ET6RJF6+Prbl0h=2FEtF1rRLvH7VqQfef+8M9fWl+?=
+ =?us-ascii?Q?BgjYTNO1iE732BTkQPVhTFQ+A1qQ3TSiRj3VpHa?=
+ =?us-ascii?Q?EhNKjRi77SgeRSGIId18kL=2FiLTtApC4Ky6i9WRI?=
+ =?us-ascii?Q?wNptcYi5IdLvf5U7uj4OHTAqjxOBO9a40umDoIm?=
+ =?us-ascii?Q?dp5+9p7bcVhMU=2FhKft5pO0Rx+7BlHuRlaS=2FzaK?=
 To:     Ajay Singh <ajay.kathat@microchip.com>
 Cc:     Claudiu Beznea <claudiu.beznea@microchip.com>,
         Kalle Valo <kvalo@kernel.org>,
@@ -59,31 +58,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Granted, this case is mostly theoretical as the queue should never be
-empty in this place, and hence tqe should never be NULL, but it's
-still wrong to count a packet that doesn't exist.
+Improve the documentation and simplify the code a bit.
 
 Signed-off-by: David Mosberger-Tang <davidm@egauge.net>
 ---
- drivers/net/wireless/microchip/wilc1000/wlan.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/microchip/wilc1000/wlan.c | 13 +++++--------
+ 1 file changed, 5 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/net/wireless/microchip/wilc1000/wlan.c b/drivers/net/wireless/microchip/wilc1000/wlan.c
-index 979615914d420..7106e6be719c1 100644
+index 287c0843ba152..033979cc85b43 100644
 --- a/drivers/net/wireless/microchip/wilc1000/wlan.c
 +++ b/drivers/net/wireless/microchip/wilc1000/wlan.c
-@@ -893,10 +893,10 @@ int wilc_wlan_handle_txq(struct wilc *wilc, u32 *txq_count)
- 		u8 mgmt_ptk = 0;
+@@ -858,29 +858,26 @@ static int copy_packets(struct wilc *wilc, int entries, u32 *vmm_table,
+ }
  
- 		tqe = wilc_wlan_txq_remove_from_head(wilc, vmm_entries_ac[i]);
--		ac_pkt_num_to_chip[vmm_entries_ac[i]]++;
- 		if (!tqe)
- 			break;
+ /**
+- * send_packets() - Send packets to the chip
++ * send_packets() - send the transmit buffer to the chip
+  * @wilc: Pointer to the wilc structure.
+- * @len: The length of the buffer containing the packets to be sent to
+- *	the chip.
++ * @len: The length of the buffer containing the packets to be to the chip.
+  *
+- * Send the packets in the VMM table to the chip.
++ * Send the packets in the transmit buffer to the chip.
+  *
+  * Context: The bus must have been acquired.
+  *
+- * Return:
+- *	Negative number on error, 0 on success.
++ * Return: Negative number on error, 0 on success.
+  */
+ static int send_packets(struct wilc *wilc, int len)
+ {
+ 	const struct wilc_hif_func *func = wilc->hif_func;
+ 	int ret;
+-	u8 *txb = wilc->tx_buffer;
  
-+		ac_pkt_num_to_chip[vmm_entries_ac[i]]++;
- 		vif = tqe->vif;
- 		if (vmm_table[i] == 0)
- 			break;
+ 	ret = func->hif_clear_int_ext(wilc, ENABLE_TX_VMM);
+ 	if (ret)
+ 		return ret;
+ 
+-	return func->hif_block_tx_ext(wilc, 0, txb, len);
++	return func->hif_block_tx_ext(wilc, 0, wilc->tx_buffer, len);
+ }
+ 
+ int wilc_wlan_handle_txq(struct wilc *wilc, u32 *txq_count)
 -- 
 2.25.1
 
