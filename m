@@ -2,77 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E1C0347E0A8
-	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 10:03:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1AFF547E0D8
+	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 10:28:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347349AbhLWJDo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Dec 2021 04:03:44 -0500
-Received: from smtp02.smtpout.orange.fr ([80.12.242.124]:60854 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232848AbhLWJDn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Dec 2021 04:03:43 -0500
-Received: from pop-os.home ([86.243.171.122])
-        by smtp.orange.fr with ESMTPA
-        id 0K0hniYVYS9NT0K0hnoUUg; Thu, 23 Dec 2021 10:03:41 +0100
-X-ME-Helo: pop-os.home
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Thu, 23 Dec 2021 10:03:41 +0100
-X-ME-IP: 86.243.171.122
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH] ice: Optimize a few bitmap operations
-Date:   Thu, 23 Dec 2021 10:03:37 +0100
-Message-Id: <b0cf67c12895e40b403a435192d47b0ac1a00def.1640250120.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.32.0
+        id S1347456AbhLWJ2G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Dec 2021 04:28:06 -0500
+Received: from rtits2.realtek.com ([211.75.126.72]:54605 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235992AbhLWJ2G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Dec 2021 04:28:06 -0500
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 1BN9RlvE6024106, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
+        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 1BN9RlvE6024106
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 23 Dec 2021 17:27:47 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Thu, 23 Dec 2021 17:27:46 +0800
+Received: from fc34.localdomain (172.21.177.102) by RTEXMBS04.realtek.com.tw
+ (172.21.6.97) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.20; Thu, 23 Dec
+ 2021 17:27:46 +0800
+From:   Hayes Wang <hayeswang@realtek.com>
+To:     <kuba@kernel.org>, <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <nic_swsd@realtek.com>,
+        <linux-kernel@vger.kernel.org>, Hayes Wang <hayeswang@realtek.com>
+Subject: [PATCH net 0/2] r8152: fix bugs
+Date:   Thu, 23 Dec 2021 17:27:00 +0800
+Message-ID: <20211223092702.23841-386-nic_swsd@realtek.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [172.21.177.102]
+X-ClientProxiedBy: RTEXH36504.realtek.com.tw (172.21.6.27) To
+ RTEXMBS04.realtek.com.tw (172.21.6.97)
+X-KSE-ServerInfo: RTEXMBS04.realtek.com.tw, 9
+X-KSE-AntiSpam-Interceptor-Info: trusted connection
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Deterministic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 12/23/2021 09:07:00
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: =?big5?B?Q2xlYW4sIGJhc2VzOiAyMDIxLzEyLzIzIKRXpMggMDc6MTU6MDA=?=
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When a bitmap is local to a function, it is safe to use the non-atomic
-__[set|clear]_bit(). No concurrent accesses can occur.
+Patch #1 fix the issue of force speed mode for RTL8156.
+Patch #2 fix the issue of unexpected ocp_base.
 
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
- drivers/net/ethernet/intel/ice/ice_flex_pipe.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+Hayes Wang (2):
+  r8152: fix the force speed doesn't work for RTL8156
+  r8152: sync ocp base
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_flex_pipe.c b/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
-index d29197ab3d02..4deb2c9446ec 100644
---- a/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
-+++ b/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
-@@ -4440,7 +4440,7 @@ ice_update_fd_swap(struct ice_hw *hw, u16 prof_id, struct ice_fv_word *es)
- 		for (j = 0; j < ICE_FD_SRC_DST_PAIR_COUNT; j++)
- 			if (es[i].prot_id == ice_fd_pairs[j].prot_id &&
- 			    es[i].off == ice_fd_pairs[j].off) {
--				set_bit(j, pair_list);
-+				__set_bit(j, pair_list);
- 				pair_start[j] = i;
- 			}
- 	}
-@@ -4710,7 +4710,7 @@ ice_add_prof(struct ice_hw *hw, enum ice_block blk, u64 id, u8 ptypes[],
- 			if (test_bit(ptg, ptgs_used))
- 				continue;
- 
--			set_bit(ptg, ptgs_used);
-+			__set_bit(ptg, ptgs_used);
- 			/* Check to see there are any attributes for
- 			 * this PTYPE, and add them if found.
- 			 */
-@@ -5339,7 +5339,7 @@ ice_adj_prof_priorities(struct ice_hw *hw, enum ice_block blk, u16 vsig,
- 			}
- 
- 			/* keep track of used ptgs */
--			set_bit(t->tcam[i].ptg, ptgs_used);
-+			__set_bit(t->tcam[i].ptg, ptgs_used);
- 		}
- 	}
- 
+ drivers/net/usb/r8152.c | 43 +++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 39 insertions(+), 4 deletions(-)
+
 -- 
-2.32.0
+2.31.1
 
