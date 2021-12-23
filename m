@@ -2,113 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A64D47E8CA
-	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 21:30:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A59147E8FD
+	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 22:19:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350260AbhLWUaQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Dec 2021 15:30:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42370 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350259AbhLWUaP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Dec 2021 15:30:15 -0500
-Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25C03C061757
-        for <netdev@vger.kernel.org>; Thu, 23 Dec 2021 12:30:15 -0800 (PST)
-Received: by mail-lj1-x234.google.com with SMTP id by39so10836027ljb.2
-        for <netdev@vger.kernel.org>; Thu, 23 Dec 2021 12:30:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Odt0JsRPKSwzZrSogY/TSKmJxhU81pD7uS/KWPJG7aw=;
-        b=AgIToA7aaUbbuygVsn68Z8gYx2R+pQYR1IGhjy1yu+LyX5dNysFzXbkdgswMVTwTep
-         0hI1Ae/3TaPJPhWnCgvYHJ1VxnHq4l/eFg5e3kj/JRuOb7mac6NKG5+ybt3ENDX/mSaq
-         0xzI/qhLfARJdv2pkCjradsG9Wzj6pj4xZ8TfjQHTecXRkE4KDhq9AUTCvqpomHD7nct
-         wHr7wkKfJp2gGHQWmp3oI6tTwBS2Vz6LouKFC6ASCZELLqgy8+qcg8nboxxGhWJcEIzj
-         dWufJ966D9lg/OGYmwR5V+BL41B2Pi6FMkc2jhL5RAoV/B9HXcKhRs6Rytt/j7+GidI2
-         UWIA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Odt0JsRPKSwzZrSogY/TSKmJxhU81pD7uS/KWPJG7aw=;
-        b=QO/VdsQ7uHEOCV3Xc0gSv9wZkUEfIT0L52vpPMyegZnpQMMekdyBvJuKmxqByBhAxH
-         IzYd3B6FiqURsolFH4wdfJc2SwdeCe28yETVTWr7ifeXijqckRc9lqjtNkeAvkPiurr2
-         0zlw9wxN072FL3RLlHB/CZBAFdI0AB3RHNyUNWIzWd0yHebP5UaY33LHpq5TPm83DhiG
-         kRgO5ydM7DiyxpcfQ5azmKX/AXwBrLr1ka5gW5vbrYyPi4TJswx5WUYDCILxDIDmZjyB
-         CIDm3Ok6pSuV5Lwq7UYZa6Q72dFB63A9H4D1dygx4glcf4y87VF+1EDUWES7bj5pUWR4
-         yOig==
-X-Gm-Message-State: AOAM533xswPV7k0FRv9UtVHYaoNFZvUR/lnEhLCzQxu/qsvcGUp2lUA9
-        GMtQDn5WyJTHuXQVtRtHyiMNhl1nRHEZAS4LV8xImQ==
-X-Google-Smtp-Source: ABdhPJyYWN/xeRMF+9Dfpv8zcB/XlMiakJ1FyMZHUYzjhf10Y8zM74gGT8+Mckyyk2oE+tUZO5jm/ikoSyjgvNoCFBc=
-X-Received: by 2002:a2e:908b:: with SMTP id l11mr2705599ljg.62.1640291413074;
- Thu, 23 Dec 2021 12:30:13 -0800 (PST)
+        id S1350324AbhLWVTH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Dec 2021 16:19:07 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:40356 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233222AbhLWVTG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Dec 2021 16:19:06 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 40DD061F91;
+        Thu, 23 Dec 2021 21:19:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FA63C36AE9;
+        Thu, 23 Dec 2021 21:19:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1640294345;
+        bh=RHwR7WJnTDGHXUR+NlikicbsjnB3cUEtRLcjjNBCDdI=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=ms47wMwQ5bSMZzlGNt1qIns2K5kVThKoXd7e938Yd+RYxGappMdZ9P9hGHax/vz0c
+         so3KAjEt9dAtJ1+Jr4sxu1o+7Nj/tBwFtkeq1ZWaEpu6+IIuAGo0ng1lfSvR4CdlJB
+         8LIsm9OOuMseMIMRf7LUulx2OfCAua1Rnq0HRKpnt+P4QnFoHI4KbpoQnOTvPHzDm7
+         pHgiavo3NAJACrgVglfxzthKmVe5DmWsSvX8neOfCRgytf8Gq6h/uwaIRKLqOA33tm
+         AxCB2aJi6bXQBnzQ1y0Wi5bULn/DUeWIt+/Ag18gm9iRxaaIOcgLiK4D9XuspQIUPN
+         NWKsE2mbCbjiA==
+Received: by mail-ed1-f43.google.com with SMTP id z29so26038699edl.7;
+        Thu, 23 Dec 2021 13:19:05 -0800 (PST)
+X-Gm-Message-State: AOAM5330ESLaUH5UIVAUgCWbJso4y4FtV4a1zVGizZG1SfIWKVt4SZLc
+        gSTFXfglANfZJo+x9hDVpoGS2NKYqiyrL76rxg==
+X-Google-Smtp-Source: ABdhPJzi5ldYUkBvCrQJ/P23jc2Mhr2nETWi9GjrXsmkOXNTU7ndvABfAN+OgXiAUuPyp+SfEtlmtIzFARpBZb0X6rw=
+X-Received: by 2002:a17:907:3d94:: with SMTP id he20mr3155428ejc.14.1640294343703;
+ Thu, 23 Dec 2021 13:19:03 -0800 (PST)
 MIME-Version: 1.0
-References: <20211223162848.3243702-1-trix@redhat.com>
-In-Reply-To: <20211223162848.3243702-1-trix@redhat.com>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Thu, 23 Dec 2021 12:30:01 -0800
-Message-ID: <CAKwvOd=dLjMAim_FRNyWegzEjy0_1vF2xVW1hNPQ55=32qO4Wg@mail.gmail.com>
-Subject: Re: [PATCH] mac80211: initialize variable have_higher_than_11mbit
-To:     trix@redhat.com
-Cc:     johannes@sipsolutions.net, davem@davemloft.net, kuba@kernel.org,
-        nathan@kernel.org, linville@tuxdriver.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
+References: <20211223110755.22722-1-zajec5@gmail.com> <20211223110755.22722-4-zajec5@gmail.com>
+In-Reply-To: <20211223110755.22722-4-zajec5@gmail.com>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Thu, 23 Dec 2021 17:18:52 -0400
+X-Gmail-Original-Message-ID: <CAL_JsqK2TMu+h4MgQqjN0bvEzqdhsEviBwWiiR9hfNbC5eOCKg@mail.gmail.com>
+Message-ID: <CAL_JsqK2TMu+h4MgQqjN0bvEzqdhsEviBwWiiR9hfNbC5eOCKg@mail.gmail.com>
+Subject: Re: [PATCH 3/5] dt-bindings: nvmem: allow referencing device defined
+ cells by names
+To:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
+Cc:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        devicetree@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 23, 2021 at 8:29 AM <trix@redhat.com> wrote:
+On Thu, Dec 23, 2021 at 7:08 AM Rafa=C5=82 Mi=C5=82ecki <zajec5@gmail.com> =
+wrote:
 >
-> From: Tom Rix <trix@redhat.com>
+> From: Rafa=C5=82 Mi=C5=82ecki <rafal@milecki.pl>
 >
-> Clang static analysis reports this warnings
+> Not every NVMEM has predefined cells at hardcoded addresses. Some
+> devices store cells in internal structs and custom formats. Referencing
+> such cells is still required to let other bindings use them.
 >
-> mlme.c:5332:7: warning: Branch condition evaluates to a
->   garbage value
->     have_higher_than_11mbit)
->     ^~~~~~~~~~~~~~~~~~~~~~~
->
-> have_higher_than_11mbit is only set to true some of the time in
-> ieee80211_get_rates() but is checked all of the time.  So
-> have_higher_than_11mbit needs to be initialized to false.
+> Modify binding to require "reg" xor "label". The later one can be used
+> to match "dynamic" NVMEM cells by their names.
 
-LGTM. There's only one caller of ieee80211_get_rates() today; if there
-were others, they could make a similar mistake in the future. An
-alternate approach: ieee80211_get_rates() could unconditionally write
-false before the loop that could later write true. Then call sites
-don't need to worry about this conditional assignment. Perhaps that
-would be preferable? If not:
+'label' is supposed to correspond to a sticker on a port or something
+human identifiable. It generally should be something optional to
+making the OS functional. Yes, there are already some abuses of that,
+but this case is too far for me.
 
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
-
->
-> Fixes: 5d6a1b069b7f ("mac80211: set basic rates earlier")
-> Signed-off-by: Tom Rix <trix@redhat.com>
-> ---
->  net/mac80211/mlme.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/net/mac80211/mlme.c b/net/mac80211/mlme.c
-> index 51f55c4ee3c6e..766cbbc9c3a72 100644
-> --- a/net/mac80211/mlme.c
-> +++ b/net/mac80211/mlme.c
-> @@ -5279,7 +5279,7 @@ static int ieee80211_prep_connection(struct ieee80211_sub_if_data *sdata,
->          */
->         if (new_sta) {
->                 u32 rates = 0, basic_rates = 0;
-> -               bool have_higher_than_11mbit;
-> +               bool have_higher_than_11mbit = false;
->                 int min_rate = INT_MAX, min_rate_index = -1;
->                 const struct cfg80211_bss_ies *ies;
->                 int shift = ieee80211_vif_get_shift(&sdata->vif);
-> --
-> 2.26.3
->
-
-
--- 
-Thanks,
-~Nick Desaulniers
+Rob
