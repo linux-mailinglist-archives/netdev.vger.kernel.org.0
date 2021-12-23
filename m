@@ -2,104 +2,217 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 34DFA47DD5F
-	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 02:30:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EDAC547DD8A
+	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 02:54:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238160AbhLWBaT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Dec 2021 20:30:19 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:56270 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229590AbhLWBaQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Dec 2021 20:30:16 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 58FEAB81F4C
-        for <netdev@vger.kernel.org>; Thu, 23 Dec 2021 01:30:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 0236CC36AEB;
-        Thu, 23 Dec 2021 01:30:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1640223014;
-        bh=ju7+eXK0UlK1ukVnstEVDckJjjqSsqhXDu4C+9tGqzs=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=pMYyIsejR2gu+IJx7b5MYSeFgvqJypfBpqDWb9tDwbSBfFzLuZxeAlqc+xpkxVWui
-         YN8BCx7DEDGD73i296v1mwOHhxn/as8x8pJNb5YO2oU2yEtV91o/iRSBtPYi32e9+X
-         jCNmeEWstb3gBpWS0jspau4gTCQvsGBnGCRydnj1rccQ+stSLi5HB/NbUAMb3qW1SH
-         OVjYbqnpvnZeN9XEg47LRB0ahTqSLX3QVluqqTj00vq4x00UkFAg0F3LXZ0H81ezfi
-         ggbtKhdTCwXHB1hz4R/uhRq9XLF3cgfRs16rbTwpQez8PGBldw7NxeDKM53y+X3Wh/
-         VIfhkycFynhPg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DB645FE55BD;
-        Thu, 23 Dec 2021 01:30:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S232040AbhLWBx7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Dec 2021 20:53:59 -0500
+Received: from mail-eopbgr00076.outbound.protection.outlook.com ([40.107.0.76]:45124
+        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229788AbhLWBx6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 Dec 2021 20:53:58 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YJhLIfcO/yEBryuQJEpJsxLQ+oyYnA6nLocKXJi4S/k57v4cVaEhRs57GcFan5pS5uQDN0g7O/yyh8drZGTLCd2XHyAsOiqg3zirsD0iiwCjOGTNPdxtUswdUiWHg0IgoHxTwgich0tXE/jieJoT+zLxOmadcprriqBkRjdJN0t67KSzRuQxoP4+gZyr/tJlByb+94PVT84LF51yeStOXdtcZr7JV+FQG3WYIa/FhRyspISWWysUr7EPD6rP9gplY+5G2eT395sYYSPegM5dtogLD6cVnCaIfWdCvQWvIGWlsCH9OtT1LcyDJE9qNXCK3wOFkBlJB5cxgwLoL2K+DQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Fo/vpy9VvZ/bY4lrUirsG+NRCtPd9IgRg+rQwh9bNFM=;
+ b=NJmuFWl1xrpRjCt0IFwXIUIqNip+zF/bjKavpNRNjAtya8HJjUDFaNRm7FrxFLc3NcNDxC5Nec637q1j4f8gcUPhHjoHcAsEN0PcB1sHz+9VUcB/Hp64JY9qkiIztfh3ANxMUnJjnKvOMYvWSH0Q03nWdYq4CCShqvjE5Mvj5Zs6E+yDBgHkZCHPohrBJnUKCG5YaZI5kdN+GbE3nxUeQ0aeBuWrtbH+O7OazBmzmOt/fHypjxKAWE0uIS0OAR1KGfBDy01ySjPPGrfF6KNcojtVoRZciwuWIOtcrGw2epStk/96ZrlJKMkJR2JBwPBChNle/yJQak+jJmvrSyuGAg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Fo/vpy9VvZ/bY4lrUirsG+NRCtPd9IgRg+rQwh9bNFM=;
+ b=d9L/UrdRss1VNy7ZJTetUq36V98o3uq3l+eEFpNtMruyPBQi4wUtwcaa39UxmbJ8el/toGWNKStFI84aEEM5w8WEUz1+FnvrY/LQKr3oeD3RVflDuLWDfcnHus9Tb70aUtBmDV3Ont46o3fvrs3ybCT+ZmFUtL4bX7XUxcZzy+Q=
+Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
+ by DBAPR04MB7429.eurprd04.prod.outlook.com (2603:10a6:10:1a2::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4823.19; Thu, 23 Dec
+ 2021 01:53:53 +0000
+Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
+ ([fe80::c005:8cdc:9d35:4079]) by DB8PR04MB6795.eurprd04.prod.outlook.com
+ ([fe80::c005:8cdc:9d35:4079%5]) with mapi id 15.20.4801.024; Thu, 23 Dec 2021
+ 01:53:53 +0000
+From:   Joakim Zhang <qiangqing.zhang@nxp.com>
+To:     Kegl Rohit <keglrohit@gmail.com>
+CC:     netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>
+Subject: RE: net: fec: memory corruption caused by err_enet_mii_probe error
+ path
+Thread-Topic: net: fec: memory corruption caused by err_enet_mii_probe error
+ path
+Thread-Index: AQHX9wJwpZa+NCOeL0CnUi9XwRhob6w+IuGggAA2zQCAAPLjYA==
+Date:   Thu, 23 Dec 2021 01:53:53 +0000
+Message-ID: <DB8PR04MB6795B2D48F4B5FDC8BA4EBC0E67E9@DB8PR04MB6795.eurprd04.prod.outlook.com>
+References: <CAMeyCbj93LvTu9RjVXD+NcT0JYoA42BC7pSHumtNJfniSobAqA@mail.gmail.com>
+ <DB8PR04MB679571AF60C377BB1242D26BE67D9@DB8PR04MB6795.eurprd04.prod.outlook.com>
+ <CAMeyCbiYwB=SK3vvqdTEWhbnHwee8U6rfxzNs9B8-hyr45GhOw@mail.gmail.com>
+In-Reply-To: <CAMeyCbiYwB=SK3vvqdTEWhbnHwee8U6rfxzNs9B8-hyr45GhOw@mail.gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 696bcb22-5a78-42ad-a7f1-08d9c5b712ba
+x-ms-traffictypediagnostic: DBAPR04MB7429:EE_
+x-microsoft-antispam-prvs: <DBAPR04MB74295A511485A4C970C59E08E67E9@DBAPR04MB7429.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: AEaSCImRnjonr0YMGNgQL9Btl2YLYQnWwR9hwbCPWyi5cN2m6Xt2dnz5Rahqd5m0PNecCoMbIGS58xNsq3wTrQQlGwNjGTVPe9vNdkhBXmLjBPN9XVfY0uBbNydcmEu/1WCClCGY3HPzPCirBgXqYUQ053yIdUqakdrAD+V0Uq+Ig7MB+7wuI8PdLbYGOGpci68RtfdeoeSlOgSYco0zKf41JmflhgUFxucXjh+8eJrqOrEzIozJ5NZxGI1QsefhNNrZo+9hEaYwhSuc5FGT88s+YsE6Wq+Dol0EQF2vYODAihMINdsswkZ6nLX4aSlivv7o+8S1acXH7l4qbTmXShJlQ35BJ73oOcKGjaUL5t9dens6+sEh5JymeyfW1GcYI20iatktYIKlP9Kw1Nj/uhKvRP9qMf0G1RZZcxPhvIbZ8DED+jq5LWIFOgL/vtu/5dTP8DexWEAlYDX0GdjSDoZYbvI7b0aRZcOA5FebYXrpdYzmwuubwaxfQKoHkqFmKw/HV1vjC0KNCNgERPEtEmVofFQUiqnKKdNqucP2MV9q6+OpPCx9AariJEbjqUhy3PuEhROxFdLNTkFkilIigP4B6p9rmdqQOTQJPqZXUwkv9OiX/kpgxCnUl3Ho4zz/c55XBf8fVm6sZYWUuvhcCkOswKDDdvRK4hlgF8kLZwJeIUyDP3BN2AHx2tWtWSrF7Yx4+iAfD5PVCBkAUdh4/y2rMoUUnCuq7aZS0QXteU6dWmKppCjiuYX9Rcj2SERdVYxPoH/LhzYhlKSbfydIXNMgmG2DMasVakaNF4syjbk=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(5660300002)(8676002)(33656002)(55016003)(45080400002)(86362001)(38100700002)(122000001)(38070700005)(8936002)(9686003)(64756008)(53546011)(6506007)(52536014)(66556008)(66446008)(186003)(71200400001)(6916009)(7696005)(66946007)(2906002)(4326008)(83380400001)(316002)(966005)(508600001)(54906003)(76116006)(66476007)(26005);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?gb2312?B?M0hJVVpZYjYxbHNXUDZmUStwUTZQUDFHTTI0bVhWbW5kZlJXS0w1VG5WenIy?=
+ =?gb2312?B?UEJFS1l2TlU4QXJtM0VPNlZ4eDJpRVo2Q0Y4ODI4Umc3U29yUGdySlJ5QTR2?=
+ =?gb2312?B?Ui9YMUZ5SU85MjdHVURpdlVQZVFEQUdKMU9VTUVWOXJpT0J1M3lncnRTSDJG?=
+ =?gb2312?B?dXl3eUtUbnJ1a3hVV3ViV01aZjRhb1B4UGZNaEJjQS91VG5NRm9uNzR2OGlo?=
+ =?gb2312?B?dmowRjRtbkJLVXdsVjdKYjFFWW9xQmsvV0VQT3hSSWVvcXZyUEdma2o3b0hT?=
+ =?gb2312?B?dWpUZGJaMUlSU010RGZuc2lWOGdqcVRNbTJYbXZkT1BsQkF4cnN1ekhtY1l2?=
+ =?gb2312?B?bnhEQzk0MmZTY2x4M2tkUDdHNXNqWDRKamtUNVNydmJMbkpvOHlPeDZsUTVT?=
+ =?gb2312?B?NzhyV1ZCRUpwRDRHV1d3Y1pJR0NobGdmMVV3YXFUSlIvVFVvbWNiSXZ0c3Ny?=
+ =?gb2312?B?OENtRFBRUk05em1xbWhpeDZKTEZvcnRuU2xwNEZva1dtY3hTZ1JkT3A5Rlpt?=
+ =?gb2312?B?ajFFa3NoOFRCSFAwTU4ycWlPcEVZbW5nNjRsdW5VSDZPKy9Uc043ODU2Njc0?=
+ =?gb2312?B?QmJlMTN1MXF2ajlsRms2YjhBek1BWk9DOGwycmo4VUE3K2VMWW9sV0lzYkpw?=
+ =?gb2312?B?NXN3SEt3ZFFjNW11NXlwZndlUXdOOEdlSFduYThmeEpvUDA4R0ZybFF3WWdy?=
+ =?gb2312?B?WnV5akV5eTVqZkFucGwva2RoOEhIejFUKy9HREw1MU5sYUMrNDFORjZxcXVH?=
+ =?gb2312?B?TVdhWmRxS2EraFFkYWdNWTRIQlF2aG1ZZHRrUEs0VldYK2c0MElDOVpWL1dU?=
+ =?gb2312?B?MktjeEorR2tUTEloUWdRN0NoNVlKaGxHNXZyRjJJTmwwUjBMRndDZk1SZ2FH?=
+ =?gb2312?B?VzJCYXhYLzV2dWRkUzU3NFFFTmtiZ2lhRTU4WFZtTFp6c29HYW0zTXJ4ZUpt?=
+ =?gb2312?B?dWxId0VJSnF6enF6ZGw3Z3pKNUMxWmlZd1NWTUFTalQ0NWtKVWFhQ2NEaW9G?=
+ =?gb2312?B?MXQxY3kxSmduK29GdnA5NXQ2VGhwOGQ5KzkwOXNCMk50SVJVb210YkpkeDgx?=
+ =?gb2312?B?SmYyV0t0N1NlamdvUE85UGY4NUpNWGlWTTVacXBHVHQ0OEIrUDFxN0pTZ2dP?=
+ =?gb2312?B?cjJIN3l3RkEzdnZLYndFZkN3ZXNVZzcrY3I4cThYTndqV2QvZ0N1RXlKOFpG?=
+ =?gb2312?B?ZWh3VVhtU2VHTmZnYjVxQ080cURRN3FEM2NJSzBlY1R4cHp6MjhIbW9yRVl3?=
+ =?gb2312?B?MkorRVAyd2hhNXVUL204bitnUDJRRWJpNnJVYXVJSnIvd0U0OFp5OWY2aisr?=
+ =?gb2312?B?Ui9MNWM0UFZlTWIvNGlJTENBWEJTMVEwTThWdDgweHdBWHFrSEIvMDdQY1hU?=
+ =?gb2312?B?dXBxWC94djNndThtR05naEpTNnl4TVVVb0liR3pxckxRYmc3UGhhUWFEZVFT?=
+ =?gb2312?B?My9LZXFoazVqYkluaWZSL1BKY3hTbEFQeklUbWRZOSttdUNON1hnUU9leXJX?=
+ =?gb2312?B?N09HSVBBWllLNDFNd2xHVkJjbHA4RWppNnI3UTdEcmsrUnBYY2MwdHFESW9N?=
+ =?gb2312?B?UmU1SmtnMDhYYzNLdTdVNldsMjhoL1o5eEIwby9TRXRYc2Fadi9wd0JvYUMy?=
+ =?gb2312?B?L0RkNjhhb0sxS2RIbHBST2NoTVFvUVU4U2c2ZTJvWlFIZkprWEFZTUFSL0hU?=
+ =?gb2312?B?ZUxXRG9LdERtMDg3UXRjV0tENXIxNFR2OFhXaUtQSEx0QUpFZ3JDUzF0MTJa?=
+ =?gb2312?B?dWw1VFhvVTZLaDFQYmNwdmQ1NjNnY2RyeHRuVzduU3RPWk1EWU5KcEQ4RkdV?=
+ =?gb2312?B?VVR6UGd5OGJlM2dRcUJRVUtwU1ZmSlFLRGFtZm5WWnVtZkJuT3VLck8reXZC?=
+ =?gb2312?B?NFQ2cVA3aUU2Wml5RTN3UkdMSDNCZ3J2dndtMjFZbUpyQm5NM21FR0oxcHE3?=
+ =?gb2312?B?ZHZQekt4UzNqNS9ReVZYelpNOEh4dWdlbXV0T1NaVzV6cGgwbFhVYW9uNFlM?=
+ =?gb2312?B?N0ZRM3RGS2dWbE9iK09JK0xrenVUNWdTVGNRSnRUVll0OU5sYzZyTEZQbnFK?=
+ =?gb2312?B?WGZiakhmQmsvWUo3N3ZXV2NHa2dyZmJBM0tjZ0hzbUNCTUFHUnl3K0ZLYTVq?=
+ =?gb2312?B?QzRwbUJFTi9WL0gyUDhSNVg3WDV2S3pObHVrN252UXQyQ1B1cjQ0SkVHZVNx?=
+ =?gb2312?B?bGc9PQ==?=
+Content-Type: text/plain; charset="gb2312"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [net-next v0 01/14] devlink: Add new "io_eq_size" generic device
- param
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164022301389.9224.3690440369480515941.git-patchwork-notify@kernel.org>
-Date:   Thu, 23 Dec 2021 01:30:13 +0000
-References: <20211222031604.14540-2-saeed@kernel.org>
-In-Reply-To: <20211222031604.14540-2-saeed@kernel.org>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        shayd@nvidia.com, moshe@nvidia.com, jiri@nvidia.com,
-        saeedm@nvidia.com
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 696bcb22-5a78-42ad-a7f1-08d9c5b712ba
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Dec 2021 01:53:53.1404
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: h+53kdXezL1x14DYFLpaA5BDcS2e5Xi2JoYjxR9Dgx5G7VMxQMjdD4ZxOC7LkBQC5JJSy14M98gjxNzi+HTlJA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBAPR04MB7429
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (master)
-by Saeed Mahameed <saeedm@nvidia.com>:
-
-On Tue, 21 Dec 2021 19:15:51 -0800 you wrote:
-> From: Shay Drory <shayd@nvidia.com>
-> 
-> Add new device generic parameter to determine the size of the
-> I/O completion EQs.
-> 
-> For example, to reduce I/O EQ size to 64, execute:
-> $ devlink dev param set pci/0000:06:00.0 \
->               name io_eq_size value 64 cmode driverinit
-> $ devlink dev reload pci/0000:06:00.0
-> 
-> [...]
-
-Here is the summary with links:
-  - [net-next,v0,01/14] devlink: Add new "io_eq_size" generic device param
-    https://git.kernel.org/netdev/net-next/c/47402385d0b1
-  - [net-next,v0,02/14] net/mlx5: Let user configure io_eq_size param
-    https://git.kernel.org/netdev/net-next/c/0844fa5f7b89
-  - [net-next,v0,03/14] devlink: Add new "event_eq_size" generic device param
-    https://git.kernel.org/netdev/net-next/c/0b5705ebc355
-  - [net-next,v0,04/14] net/mlx5: Let user configure event_eq_size param
-    https://git.kernel.org/netdev/net-next/c/57ca767820ad
-  - [net-next,v0,05/14] devlink: Clarifies max_macs generic devlink param
-    https://git.kernel.org/netdev/net-next/c/0ad598d0be22
-  - [net-next,v0,06/14] net/mlx5: Let user configure max_macs generic param
-    https://git.kernel.org/netdev/net-next/c/8680a60fc1fc
-  - [net-next,v0,07/14] net/mlx5: Remove the repeated declaration
-    https://git.kernel.org/netdev/net-next/c/08ab0ff47bf7
-  - [net-next,v0,08/14] net/mlx5e: Use bitmap field for profile features
-    https://git.kernel.org/netdev/net-next/c/6c72cb05d4b8
-  - [net-next,v0,09/14] net/mlx5e: Add profile indications for PTP and QOS HTB features
-    https://git.kernel.org/netdev/net-next/c/1958c2bddfa2
-  - [net-next,v0,10/14] net/mlx5e: Save memory by using dynamic allocation in netdev priv
-    https://git.kernel.org/netdev/net-next/c/0246a57ab517
-  - [net-next,v0,11/14] net/mlx5e: Allow profile-specific limitation on max num of channels
-    https://git.kernel.org/netdev/net-next/c/473baf2e9e8c
-  - [net-next,v0,12/14] net/mlx5e: Use dynamic per-channel allocations in stats
-    https://git.kernel.org/netdev/net-next/c/be98737a4faa
-  - [net-next,v0,13/14] net/mlx5e: Allocate per-channel stats dynamically at first usage
-    https://git.kernel.org/netdev/net-next/c/fa691d0c9c08
-  - [net-next,v0,14/14] net/mlx5e: Take packet_merge params directly from the RX res struct
-    https://git.kernel.org/netdev/net-next/c/1f08917ab929
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+DQpIaSBLZWdsLA0KDQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IEtlZ2wg
+Um9oaXQgPGtlZ2xyb2hpdEBnbWFpbC5jb20+DQo+IFNlbnQ6IDIwMjHE6jEy1MIyMsjVIDE5OjA2
+DQo+IFRvOiBKb2FraW0gWmhhbmcgPHFpYW5ncWluZy56aGFuZ0BueHAuY29tPg0KPiBDYzogbmV0
+ZGV2IDxuZXRkZXZAdmdlci5rZXJuZWwub3JnPjsgQW5kcmV3IEx1bm4gPGFuZHJld0BsdW5uLmNo
+Pg0KPiBTdWJqZWN0OiBSZTogbmV0OiBmZWM6IG1lbW9yeSBjb3JydXB0aW9uIGNhdXNlZCBieSBl
+cnJfZW5ldF9taWlfcHJvYmUNCj4gZXJyb3IgcGF0aA0KPiANCj4gT24gV2VkLCBEZWMgMjIsIDIw
+MjEgYXQgOTowMSBBTSBKb2FraW0gWmhhbmcgPHFpYW5ncWluZy56aGFuZ0BueHAuY29tPg0KPiB3
+cm90ZToNCj4gDQo+ID4gPiBUaGlzIGVycm9yIHBhdGggZnJlZXMgdGhlIERNQSBidWZmZXJzLCBC
+VVQgYXMgZmFyIEkgY291bGQgc2VlIGl0DQo+ID4gPiBkb2VzIG5vdCBzdG9wIHRoZSBETUEgZW5n
+aW5lcy4NCj4gPiA+ID0+IG9wZW4oKSBmYWlscyA9PiBmcmVlcyBidWZmZXJzID0+IERNQSBzdGls
+bCBhY3RpdmUgPT4gTUFDIHJlY2VpdmVzDQo+ID4gPiBuZXR3b3JrIHBhY2tldCA9PiBETUEgc3Rh
+cnRzID0+IHJhbmRvbSBtZW1vcnkgY29ycnVwdGlvbiAodXNlIGFmdGVyDQo+ID4gPiBmcmVlKSA9
+PiByYW5kb20ga2VybmVsIHBhbmljcw0KPiA+DQo+ID4gQSBxdWVzdGlvbiBoZXJlLCB3aHkgcmVj
+ZWl2ZSBwYXRoIHN0aWxsIGFjdGl2ZT8gTUFDIGhhcyBub3QgY29ubmVjdGVkIHRvDQo+IFBIWSB3
+aGVuIHRoaXMgZmFpbHVyZSBoYXBwZW5lZCwgc2hvdWxkIG5vdCBzZWUgbmV0d29yayBhY3Rpdml0
+aWVzLg0KPiANCj4gSXQgaXMgYSBpbXguMjggcGxhdGZvcm0gdXNpbmcgdGhlIGZlYyBmb3IgZHVh
+bCBldGhlcm5ldCBldGgwICYgZXRoMS4NCj4gDQo+IE9uZSBvZiBvdXIgZGV2aWNlcyAob3V0IG9m
+IDEwKSBldGgxIGRpZCBub3QgZGV0ZWN0IGEgcGh5IGZvciBldGgxIG9uIGlmdXANCj4gKCBmZWNf
+b3BlbigpICkgPT4gbWRpbyBlcnJvciBwYXRoID0+IHJhbmRvbSBzeXN0ZW0gY3Jhc2hlcyBCdXQg
+dGhlIHBoeSBpcw0KPiB0aGVyZSBhbmQgdGhlIGxpbmsgaXMgZ29vZCwgb25seSBNRElPIGFjY2Vz
+cyBmYWlsZWQuDQo+IHBoeXMgaGF2ZSBhdXRvbmVnIGFjdGl2YXRlZCBhZnRlciByZXNldC4gU28g
+dGhlIFJYIHBhdGggaXMgYWN0aXZlLCBldmVuIGlmIHRoZQ0KPiBmZWMgZHJpdmVyIHNheXMgdGhh
+dCB0aGVyZSBpcyBubyBwaHkuDQo+IA0KPiBXaXRob3V0IGF0dGFjaGVkIGV0aGVybmV0IGNhYmxl
+IHRoZSBwaHkgd2FzIGFsc28gbm90IGRldGVjdGVkLCBCVVQgdGhlDQo+IHN5c3RlbSBkaWQgbm90
+IGNyYXNoLiA9PiBCZWNhdXNlIG5vIHBhY2tldHMgd2lsbCBhcnJpdmUgd2l0aG91dCBhdHRhY2hl
+ZA0KPiBjYWJsZS4NCj4gDQo+IFNvIHRoZSBtYWluIGlzc3VlIG9uIG91ciBzaWRlIGlzIHRoZSBu
+b3QgZGV0ZWN0ZWQgcGh5LiBBbmQgdGhlIG90aGVyIGlzc3VlIGlzDQo+IHRoZSB1c2UgYWZ0ZXIg
+ZnJlZSBpbiB0aGUgZXJyb3IgcGF0aC4NCg0KVGhhbmtzIGZvciB5b3UgZGV0YWlsZWQgZXhwbGFu
+YXRpb24gOikNCg0KPiBJIHRoaW5rIHRoZSBtYWluIGlzc3VlIGhhcyBzb21ldGhpbmcgdG8gZG8g
+d2l0aCBwaHkgcmVzZXQgaGFuZGxpbmcuDQo+IE9uIGEgY29sZCBib290IHRoZSBldGgxIHBoeSBp
+cyBkZXRlY3RlZCBzdWNjZXNzZnVsbHkuIEEgd2FybSByZXN0YXJ0ICggcmVib290DQo+IC1mICkg
+d2lsbCBhbHdheXMgbGVhZCB0byBhIG5vdCBkZXRlY3RlZCBldGgxIHBoeS4gVGhlIGV0aDAgcGh5
+IGlzIGFsd2F5cw0KPiBkZXRlY3RlZC4NCj4gRnJvbSBwYXN0IGV4cGVyaWVuY2UgdGhlIGR1YWwg
+ZXRoZXJuZXQgaW1wbGVtZW50YXRpb24gaW4gdGhlIGRyaXZlciB3YXMNCj4gbm90IHRoZSBtb3N0
+IHN0YWJsZSBvbmUuIE1heWJlIGJlY2F1c2Ugb2YgYSBzbWFsbGVyIHVzZXIgYmFzZS4NCj4gSW4g
+b3VyIHNldHVwIGJvdGggcGh5IHJlc2V0IGxpbmVzIGFyZSBjb25uZWN0ZWQgdG8gZ3Bpb3Mgd2l0
+aCB0aGUgY29ycmVjdA0KPiBlbnRyeSBpbiB0aGUgbWFjMCAmIG1hYzEgRFQgZW50cnkuDQo+IFJl
+dmVydCBvZg0KPiBodHRwczovL2V1cjAxLnNhZmVsaW5rcy5wcm90ZWN0aW9uLm91dGxvb2suY29t
+Lz91cmw9aHR0cHMlM0ElMkYlMkZnaXRodQ0KPiBiLmNvbSUyRnRvcnZhbGRzJTJGbGludXglMkZj
+b21taXQlMkY3NzA1YjVlZDhhZGNjZDkyMTQyMzAxOWU4NzBkZg0KPiA2NzJmYTQyMzI3OSUyM2Rp
+ZmYtNjU1ZjMwNjY1NmU3YmNjYmVjOGZlNmViZmYyYWRmNDY2YmI4MTMzZjViY2I1NTExMQ0KPiAy
+ZDNmZTM3ZTUwYjFhMTUmYW1wO2RhdGE9MDQlN0MwMSU3Q3FpYW5ncWluZy56aGFuZyU0MG54cC5j
+b20lN0MNCj4gMmYxMGMzZmY0M2RlNGNjY2NjODcwOGQ5YzUzYjAzN2UlN0M2ODZlYTFkM2JjMmI0
+YzZmYTkyY2Q5OWM1YzMwMTYzNQ0KPiAlN0MwJTdDMSU3QzYzNzc1NzY3OTUxODIyNDE4MSU3Q1Vu
+a25vd24lN0NUV0ZwYkdac2IzZDhleUpXSWoNCj4gb2lNQzR3TGpBd01EQWlMQ0pRSWpvaVYybHVN
+eklpTENKQlRpSTZJazFoYVd3aUxDSlhWQ0k2TW4wJTNEJTdDMQ0KPiAwMDAmYW1wO3NkYXRhPXlJ
+UUJYM3Y2UFJ2UGVyVkJoZERjUkpwanQxYUlpcSUyQnRMOFJYZk5tS3MlMkZBJTMNCj4gRCZhbXA7
+cmVzZXJ2ZWQ9MA0KPiBzZWVtcyB0byBnZXQgdGhlIHBoeXMgaW4gYSBjb3JyZWN0IHN0YXRlIGJl
+Zm9yZSB0aGUgZmVjIGRyaXZlciBpcyBwcm9iZWQgYW5kDQo+IGJvdGggcGh5cyBhcmUgZGV0ZWN0
+ZWQuDQoNCllvdSBtZWFuIGl0IGFsd2F5cyBjYW4gZGV0ZWN0IGJvdGggZXRoMCBhbmQgZXRoMSBQ
+SFkgb24gYSBjb2RlIGJvb3QsIGJ1dCBldGgxIFBIWSBmYWlsZWQgd2hlbiBkbw0Kd2FybSByZXNl
+dCwgaXQgbWF5IGRlc2VydmUgYSBmdXJ0aGVyIGFuYWx5emUgdGhlIGRpZmZlcmVudCBmb3IgdGhl
+c2UgdHdvIHNjZW5hcmlvcy4NCg0KSSBhbSBub3Qgc3VyZSB3aGVuIHlvdSB3aWxsIGhhcmR3YXJl
+IHJlc2V0IFBIWSBvbiB5b3UgcGxhdGZvcm1zLiBGb3IgRkVDIGRyaXZlciwgaXQgc2VlbXMgb25s
+eSBoYXJkd2FyZQ0KcmVzZXQgUEhZIHdoZW4gcHJvYmUgTUFDIChwbGVhc2Ugbm90ZSBQSFkgcmVz
+ZXQgaGFzIG1vdmVkIHRvIHBoeWxpYiwgbm90IHJlY29tbWVuZCB0byBkbyBpdCBpbiBNQUMgZHJp
+dmVyKSwNCmZlY19wcm9iZS0+b2ZfbWRpb2J1c19yZWdpc3Rlci0+b2ZfbWRpb2J1c19yZWdpc3Rl
+cl9waHktPm9mX21kaW9idXNfcGh5X2RldmljZV9yZWdpc3Rlci0+cGh5X2RldmljZV9yZWdpc3Rl
+cg0KDQpHZW5lcmFsbHksIGEgaGFyZHdhcmUgcmVzZXQgd2lsbCB0cmlnZ2VyIGFuIGF1dG8tbmVn
+byB0b2dldGhlciwgc28gSSB0aGluayBQSFkgc2hvdWxkIGluIGEgY29ycmVjdCBzdGF0ZSB3aGVu
+IHlvdSBpZnVwIHRoZSBkZXZpY2UsDQphbHRob3VnaCwgaXQgd2lsbCBhbHNvIHRyaWdnZXIgYXV0
+by1uZWdvIHdoZW4gY29ubmVjdGVkIFBIWS4gV2hhdCBJIHdhbnQgdG8gc2F5IGlzIHRoYXQgeW91
+IG1heSBuZWVkIHRvIGNoZWNrIGlmIHRoZSBoYXJkd2FyZSByZXNldA0KYXQgeW91IHNpZGUgaXMg
+c3VpdGFibGU/IE5vdCBzdXJlIHlvdSB1c2Ugc2luZ2xlIEdQSU8gdG8gY29udHJvbCB0d28gUEhZ
+cyByZXNldD8NCg0KSnVzdCBzb21lIGFuYWx5c2lzLCBob3BlIHRoaXMgY2FuIGdpdmUgeW91IHNv
+bWUgaGludHMuDQogDQo+ID4gPiBTbyBtYXliZSBmZWNfc3RvcCgpIGFzIGNvdW50ZXJwYXJ0IHRv
+IGZlY19yZXN0YXJ0KCkgaXMgbWlzc2luZw0KPiA+ID4gYmVmb3JlIGZyZWVpbmcgdGhlIGJ1ZmZl
+cnM/DQo+ID4gPiBlcnJfZW5ldF9taWlfcHJvYmU6DQo+ID4gPiBmZWNfc3RvcChuZGV2KTsNCj4g
+PiA+IGZlY19lbmV0X2ZyZWVfYnVmZmVycyhuZGV2KTsNCj4gPiA+DQo+ID4gPiBJc3N1ZSBoYXBw
+ZW5kIHdpdGggNS4xMC44MyBhbmQgc2hvdWxkIGFsc28gYWxzbyBoYXBwZW4gd2l0aCBjdXJyZW50
+DQo+IG1hc3Rlci4NCj4gPg0KPiA+IEl0J3MgZmluZSBmb3IgbWUsIHBsZWFzZSBzZWUgaWYgYW55
+b25lIGVsc2UgaGFzIHNvbWUgY29tbWVudHMuIElmIG5vdCwNCj4gcGxlYXNlIGNvb2sgYSBmb3Jt
+YWwgcGF0Y2gsIHRoYW5rcy4NCj4gU28gZmVjX3N0b3AgaXMgdGhlIHJpZ2h0IGd1ZXNzIHRvIHN0
+b3AgdGhlIHJ4L3R4IGRtYSByaW5ncy4NCj4gDQo+IE90aGVyIHBhdGhzIHVzZSBuZXRpZl90eF9s
+b2NrX2JoIGJlZm9yZSBjYWxsaW5nIGZlY19zdG9wKCkuDQo+IEkgZG9uJ3QgdGhpbmsgdGhpcyBp
+cyBuZWNlc3NhcnkgYmVjYXVzZSBuZXRpZl90eF9zdGFydF9hbGxfcXVldWVzKCkgd2FzIG5vdA0K
+PiBjYWxsZWQgYmVmb3JlIGluIHRoaXMgZXJyb3IgcGF0aCBjYXNlPw0KPiBodHRwczovL2V1cjAx
+LnNhZmVsaW5rcy5wcm90ZWN0aW9uLm91dGxvb2suY29tLz91cmw9aHR0cHMlM0ElMkYlMkZnaXRo
+dQ0KPiBiLmNvbSUyRnRvcnZhbGRzJTJGbGludXglMkZibG9iJTJGbWFzdGVyJTJGZHJpdmVycyUy
+Rm5ldCUyRmV0aGVybg0KPiBldCUyRmZyZWVzY2FsZSUyRmZlY19tYWluLmMlMjNMMzIwNyZhbXA7
+ZGF0YT0wNCU3QzAxJTdDcWlhbmdxaW5nLnoNCj4gaGFuZyU0MG54cC5jb20lN0MyZjEwYzNmZjQz
+ZGU0Y2NjY2M4NzA4ZDljNTNiMDM3ZSU3QzY4NmVhMWQzYmMyYjQNCj4gYzZmYTkyY2Q5OWM1YzMw
+MTYzNSU3QzAlN0MxJTdDNjM3NzU3Njc5NTE4MjI0MTgxJTdDVW5rbm93biU3Q1QNCj4gV0ZwYkda
+c2IzZDhleUpXSWpvaU1DNHdMakF3TURBaUxDSlFJam9pVjJsdU16SWlMQ0pCVGlJNklrMWhhV3dp
+TEMNCj4gSlhWQ0k2TW4wJTNEJTdDMTAwMCZhbXA7c2RhdGE9S2ZEZFdrSjc2VHZzZDdubVhwTmhk
+clklMkZ6OXgyNA0KPiBVWUpsNmZ4and2cXRZQSUzRCZhbXA7cmVzZXJ2ZWQ9MA0KDQpBQ0ssIHBs
+ZWFzZSBzdWJtaXQgYSBwYXRjaCBpZiB5b3UgdGVzdCB0aGVyZSBpcyBubyByZWdyZXNzaW9ucy4N
+Cg0KQmVzdCBSZWdhcmRzLA0KSm9ha2ltIFpoYW5nDQo+IGluZGV4IDFiMWY3ZjJhNi4uOGYyMDhi
+NGE5IDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9mcmVlc2NhbGUvZmVjX21h
+aW4uYw0KPiArKysgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9mcmVlc2NhbGUvZmVjX21haW4uYw0K
+PiBAQCAtMzIxMSw4ICszMjExLDkgQEAgZmVjX2VuZXRfb3BlbihzdHJ1Y3QgbmV0X2RldmljZSAq
+bmRldikNCj4gDQo+ICAgICAgICAgcmV0dXJuIDA7DQo+IA0KPiAgZXJyX2VuZXRfbWlpX3Byb2Jl
+Og0KPiArICAgICAgIGZlY19zdG9wKG5kZXYpOw0KPiAgICAgICAgIGZlY19lbmV0X2ZyZWVfYnVm
+ZmVycyhuZGV2KTsNCj4gIGVycl9lbmV0X2FsbG9jOg0KPiAgICAgICAgIGZlY19lbmV0X2Nsa19l
+bmFibGUobmRldiwgZmFsc2UpOw0KPiAgY2xrX2VuYWJsZToNCg==
