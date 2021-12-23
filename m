@@ -2,70 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA5FE47E861
-	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 20:32:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D70E247E865
+	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 20:35:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350047AbhLWTcC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Dec 2021 14:32:02 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:40820 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1350022AbhLWTcB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 23 Dec 2021 14:32:01 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=GTJhaj2XCJscWkNa8lKeeUxD0omZidYOBZ+2c/Vg/no=; b=1/yxUF96lAwfOfZzel2ujl/6ug
-        aZx4seCY/5ibhrMZ+mEdvMlMN5+tVOhjVYxQNqqInie4nk+K61GS85UJXRGT9LWFNWDx8etExiSEZ
-        Qay0a7rnCaGunGW3SBkZR1nukreOndyGkNNL5SwlToEmXTMqq8BgPP9+ZK1cjIUJLM8g=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1n0ToT-00HJzO-HZ; Thu, 23 Dec 2021 20:31:41 +0100
-Date:   Thu, 23 Dec 2021 20:31:41 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     devicetree@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Olof Johansson <olof@lixom.net>,
-        =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+        id S1350100AbhLWTe7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Dec 2021 14:34:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58432 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1350022AbhLWTe6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Dec 2021 14:34:58 -0500
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E8ABC061401;
+        Thu, 23 Dec 2021 11:34:58 -0800 (PST)
+Received: by mail-pl1-x62d.google.com with SMTP id w24so5075240ply.12;
+        Thu, 23 Dec 2021 11:34:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:subject:from:to:date:in-reply-to:references:user-agent
+         :mime-version:content-transfer-encoding;
+        bh=gfqJf7SzIqbcHPeGopiBGrOBFpo1yLWHJgtQyrjtfMY=;
+        b=TcE1IvMrcW0NGYIvwnazCqtyBlz4RlhZYGOGu5TtQ20BhpOzZD57qxc1wuZzOqHIgY
+         X4+Jwa40ZqUzo/zGlhh8VHdPIRgleOaLLXhbqi0gv6YtxM54DBNwlZ947nvGKa0C75gd
+         +t1wkPQXiaS0167CMDjS+rc2b/Lj1UYOzGURWJfA+L6wmmzAxQ86bn40RHUSgf64mK0V
+         1CkxGBVV0KOP5P7KYrrddGRvTiVo4UFVZ1EQtON5dX5aQe8CYIxXuRSapZchWMiHYdQp
+         FxJEOsa4KWIZw/TzXN3FkVushZTQPipN3PowhfKbAd6bRLdOLrGNYyJ0jK7cemr7GgWZ
+         pLLQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=gfqJf7SzIqbcHPeGopiBGrOBFpo1yLWHJgtQyrjtfMY=;
+        b=mUUAAZRSo/qGNvJN2ouzTP+lvUiN0fs+iWMUL7gaRBKE4I5gkJf2KG8Qy0VE+Pn1MY
+         vnCVm4YSeyC3kzhto0CoZpsTBy/rA1QQPOi+6xCsFqWaB5VwNp69AZU4xNIKRrkh2ZJa
+         aTyOAWC64RmZIpzDYZuYnEH8qHeFBxGWF3+QasIg/7hvAbnshdu6xBabRbSkejhv3zxi
+         Unan3mC9ua2gSyyuCWhwfxz7x4gy4cFv6ignyuXFAdMfWFXHH39Cl5msU9CGVpoFyVFo
+         ewKXM2LaHhd0881p5I+z8tBVvoc0DxI/6Q3wXcGcpZKfVLp0EfsYn68kyPuhbk56VsHr
+         72zg==
+X-Gm-Message-State: AOAM532G9yvymL7T2UbrEgXfTowY8BYCR5dC2sbzs2EU/LIVqYx+4aZF
+        bYyNCcNu7EW8V1hGxCYh1tU=
+X-Google-Smtp-Source: ABdhPJx8VCGJ20VqDfKx0XJ2RzpGIAoKL9LsmWga+flt80us4x7/eBQQ2xQW6YrYBZOKIKUgAGDVlg==
+X-Received: by 2002:a17:90b:30c9:: with SMTP id hi9mr4166574pjb.216.1640288097932;
+        Thu, 23 Dec 2021 11:34:57 -0800 (PST)
+Received: from [10.2.59.154] (searspoint.nvidia.com. [216.228.112.21])
+        by smtp.gmail.com with ESMTPSA id ot6sm7116933pjb.32.2021.12.23.11.34.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Dec 2021 11:34:57 -0800 (PST)
+Message-ID: <d8cf5bd620e65351dbd82d18b0426a22ea77eae2.camel@gmail.com>
+Subject: Re: [PATCH] net: ethernet: mellanox: return errno instead of 1
+From:   Saeed Mahameed <saeed.kernel@gmail.com>
+To:     Qing Wang <wangqing@vivo.com>, Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] dt-bindings: net: dsa: Fix realtek-smi example
-Message-ID: <YcTOnYFKpYOYiRrN@lunn.ch>
-References: <20211223181741.3999-1-f.fainelli@gmail.com>
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Thu, 23 Dec 2021 11:34:55 -0800
+In-Reply-To: <1640226277-32786-1-git-send-email-wangqing@vivo.com>
+References: <1640226277-32786-1-git-send-email-wangqing@vivo.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.2 (3.42.2-1.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211223181741.3999-1-f.fainelli@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 23, 2021 at 10:17:41AM -0800, Florian Fainelli wrote:
-> The 'ports' node is not supposed to have a 'reg' property at all, in
-> fact, doing so will lead to dtc issuing warnings looking like these:
+On Wed, 2021-12-22 at 18:24 -0800, Qing Wang wrote:
+> From: Wang Qing <wangqing@vivo.com>
 > 
-> arch/arm/boot/dts/bcm47094-asus-rt-ac88u.dts:109.4-14: Warning (reg_format): /switch/ports:reg: property has invalid length (4 bytes) (#address-cells == 2, #size-cells == 1)
-> arch/arm/boot/dts/bcm47094-asus-rt-ac88u.dtb: Warning (pci_device_reg): Failed prerequisite 'reg_format'
-> arch/arm/boot/dts/bcm47094-asus-rt-ac88u.dtb: Warning (pci_device_bus_num): Failed prerequisite 'reg_format'
-> arch/arm/boot/dts/bcm47094-asus-rt-ac88u.dtb: Warning (i2c_bus_reg): Failed prerequisite 'reg_format'
-> arch/arm/boot/dts/bcm47094-asus-rt-ac88u.dtb: Warning (spi_bus_reg): Failed prerequisite 'reg_format'
-> arch/arm/boot/dts/bcm47094-asus-rt-ac88u.dts:106.9-149.5: Warning (avoid_default_addr_size): /switch/ports: Relying on default #address-cells value
-> arch/arm/boot/dts/bcm47094-asus-rt-ac88u.dts:106.9-149.5: Warning (avoid_default_addr_size): /switch/ports: Relying on default #size-cells value
+> mlx5e_hv_vhca_stats_create() better return specific error than 1
 > 
-> Fix the example by remove the stray 'reg' property.
+> Signed-off-by: Wang Qing <wangqing@vivo.com>
+> ---
+>  drivers/net/ethernet/mellanox/mlx5/core/en/hv_vhca_stats.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-> Fixes: 3b3b6b460f78 ("net: dsa: Add bindings for Realtek SMI DSAs")
-> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+> diff --git
+> a/drivers/net/ethernet/mellanox/mlx5/core/en/hv_vhca_stats.c
+> b/drivers/net/ethernet/mellanox/mlx5/core/en/hv_vhca_stats.c
+> index d290d72..04cda3d
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/en/hv_vhca_stats.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/hv_vhca_stats.c
+> @@ -142,7 +142,7 @@ int mlx5e_hv_vhca_stats_create(struct mlx5e_priv
+> *priv)
+>                                     PTR_ERR(agent));
+>  
+>                 kvfree(priv->stats_agent.buf);
+> -               return IS_ERR_OR_NULL(agent);
+> +               return agent ? PTR_ERR(agent) : -ENODEV;
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+the single caller of this function ignores the return value,
+I just made a patch to void the return value and added you as Reported-
+by.
 
-    Andrew
+Thanks !
+
+
