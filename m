@@ -2,80 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6293E47E91A
-	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 22:34:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D75DE47E93D
+	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 22:59:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350354AbhLWVds (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Dec 2021 16:33:48 -0500
-Received: from smtp08.smtpout.orange.fr ([80.12.242.130]:51466 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350348AbhLWVds (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Dec 2021 16:33:48 -0500
-Received: from pop-os.home ([86.243.171.122])
-        by smtp.orange.fr with ESMTPA
-        id 0VianGsLVbyf90VibnnW85; Thu, 23 Dec 2021 22:33:45 +0100
-X-ME-Helo: pop-os.home
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Thu, 23 Dec 2021 22:33:45 +0100
-X-ME-IP: 86.243.171.122
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     jiri@nvidia.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH] lib: objagg: Use the bitmap API when applicable
-Date:   Thu, 23 Dec 2021 22:33:42 +0100
-Message-Id: <f9541b085ec68e573004e1be200c11c9c901181a.1640295165.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.32.0
+        id S244957AbhLWV67 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Dec 2021 16:58:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33344 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240782AbhLWV67 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Dec 2021 16:58:59 -0500
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C116C061401;
+        Thu, 23 Dec 2021 13:58:59 -0800 (PST)
+Received: by mail-ed1-x52f.google.com with SMTP id y22so26426123edq.2;
+        Thu, 23 Dec 2021 13:58:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:to:cc:references
+         :from:in-reply-to:content-transfer-encoding;
+        bh=tHmZrintmsfr/VUUizaz4/mfgzPKrPwPFlMKH0k4wW8=;
+        b=ipD+HLnlhbtF6BV3FwaIg6tOcqXdp69mRp4zQVgF2PPERKLDZvuhKmjRZVzdMxAvY5
+         d+8U6MMfdpx5w13OLnFpn9dDTFWTckl4I1cAxClgpuSB7y3F6HeBe3toAhnvyWP5UNZu
+         5hojP4ilGIcfK5AyhYWN5uaZbv4PTCGLZqCO3zlShYz8LvoKdx9AgqqyoNltCp7Sj6H9
+         JCXGKIJcJ4VtIon+I93Do/vBx1UCZnSJQZkoLKtQW256JYL6pTcAWG1pEYtEwp4+W9cw
+         qYDs22587Fedpgyp0ci35fRY8wGxC5hpEjU1xFlv6uiyUsgQ0kA4RxyUKHngMvWahvNS
+         gFZg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :to:cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=tHmZrintmsfr/VUUizaz4/mfgzPKrPwPFlMKH0k4wW8=;
+        b=iZDDVWvUNDcs6h+GTwGDQVPNH8ESnZnf+1JrNeWcuEqOKaxHSspvuucrBfMjXLaJJ+
+         Fm44sXXfp35QQrYEEEv0oc/T8KVWQpnnvHwTT6nJAr3MfzYBnQESf4Cx2drfGAfqptWp
+         3dNchokqhad7WqjqHkV/y+hu3W/4CTOMeT+0S07dH1kQi4SAG3lxy90Zmeq/i5s1wXSN
+         dCxbi/8kNKL+uumilMLKxg1+yBASB/sCMP/Jw/nVgheN619wVHamvuixIgvRELLVHTsC
+         JGq5W+VOVpFQoJpcOzxm7/hbc4W6kHDT7Cd+8gV3cwlbrZ2RLWC7z/FUb93lo9feoIya
+         Ewfg==
+X-Gm-Message-State: AOAM530GEP77JMbhf2XeUIf2R2ppMTM2tBW/fKA0vX7+ZK8zmGdxH7Ev
+        hdp6oOGJTDCYy34RITOffxbOssF6Tlk=
+X-Google-Smtp-Source: ABdhPJzBQxAu318JRQ9x+W/KUbHqz2Qhd+rfY/gTD5nSlsGqJ/FRrGyV/k+ErGGpME4ZLkuB4rzx6g==
+X-Received: by 2002:aa7:d2d1:: with SMTP id k17mr3650108edr.250.1640296737531;
+        Thu, 23 Dec 2021 13:58:57 -0800 (PST)
+Received: from [192.168.1.41] (83.25.198.180.ipv4.supernova.orange.pl. [83.25.198.180])
+        by smtp.googlemail.com with ESMTPSA id gt17sm2116379ejc.151.2021.12.23.13.58.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 23 Dec 2021 13:58:57 -0800 (PST)
+Message-ID: <f173d7a6-70e7-498f-8a04-b025c75f2b66@gmail.com>
+Date:   Thu, 23 Dec 2021 22:58:56 +0100
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:96.0) Gecko/20100101
+ Thunderbird/96.0
+Subject: Re: [PATCH 3/5] dt-bindings: nvmem: allow referencing device defined
+ cells by names
+To:     Rob Herring <robh+dt@kernel.org>
+Cc:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        devicetree@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
+References: <20211223110755.22722-1-zajec5@gmail.com>
+ <20211223110755.22722-4-zajec5@gmail.com>
+ <CAL_JsqK2TMu+h4MgQqjN0bvEzqdhsEviBwWiiR9hfNbC5eOCKg@mail.gmail.com>
+From:   =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
+In-Reply-To: <CAL_JsqK2TMu+h4MgQqjN0bvEzqdhsEviBwWiiR9hfNbC5eOCKg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use 'bitmap_zalloc()' to simplify code, improve the semantic and reduce
-some open-coded arithmetic in allocator arguments.
+On 23.12.2021 22:18, Rob Herring wrote:
+> On Thu, Dec 23, 2021 at 7:08 AM Rafał Miłecki <zajec5@gmail.com> wrote:
+>>
+>> From: Rafał Miłecki <rafal@milecki.pl>
+>>
+>> Not every NVMEM has predefined cells at hardcoded addresses. Some
+>> devices store cells in internal structs and custom formats. Referencing
+>> such cells is still required to let other bindings use them.
+>>
+>> Modify binding to require "reg" xor "label". The later one can be used
+>> to match "dynamic" NVMEM cells by their names.
+> 
+> 'label' is supposed to correspond to a sticker on a port or something
+> human identifiable. It generally should be something optional to
+> making the OS functional. Yes, there are already some abuses of that,
+> but this case is too far for me.
 
-Also change the corresponding 'kfree()' into 'bitmap_free()' to keep
-consistency.
+Good to learn that!
 
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
- lib/objagg.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+"name" is special & not allowed I think.
 
-diff --git a/lib/objagg.c b/lib/objagg.c
-index 5e1676ccdadd..1e248629ed64 100644
---- a/lib/objagg.c
-+++ b/lib/objagg.c
-@@ -781,7 +781,6 @@ static struct objagg_tmp_graph *objagg_tmp_graph_create(struct objagg *objagg)
- 	struct objagg_tmp_node *node;
- 	struct objagg_tmp_node *pnode;
- 	struct objagg_obj *objagg_obj;
--	size_t alloc_size;
- 	int i, j;
- 
- 	graph = kzalloc(sizeof(*graph), GFP_KERNEL);
-@@ -793,9 +792,7 @@ static struct objagg_tmp_graph *objagg_tmp_graph_create(struct objagg *objagg)
- 		goto err_nodes_alloc;
- 	graph->nodes_count = nodes_count;
- 
--	alloc_size = BITS_TO_LONGS(nodes_count * nodes_count) *
--		     sizeof(unsigned long);
--	graph->edges = kzalloc(alloc_size, GFP_KERNEL);
-+	graph->edges = bitmap_zalloc(nodes_count * nodes_count, GFP_KERNEL);
- 	if (!graph->edges)
- 		goto err_edges_alloc;
- 
-@@ -833,7 +830,7 @@ static struct objagg_tmp_graph *objagg_tmp_graph_create(struct objagg *objagg)
- 
- static void objagg_tmp_graph_destroy(struct objagg_tmp_graph *graph)
- {
--	kfree(graph->edges);
-+	bitmap_free(graph->edges);
- 	kfree(graph->nodes);
- 	kfree(graph);
- }
--- 
-2.32.0
+Any suggestion what to use? I'm not native. What about "title"? Or maybe
+"term", "entity", "tag"?
 
