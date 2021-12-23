@@ -2,127 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 30C2947DFEB
-	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 08:50:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F49647DFF5
+	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 08:55:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242926AbhLWHuE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Dec 2021 02:50:04 -0500
-Received: from mxus.zte.com.cn ([20.69.78.39]:56764 "EHLO mxus.zte.com.cn"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1347199AbhLWHtg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 23 Dec 2021 02:49:36 -0500
-X-Greylist: delayed 373 seconds by postgrey-1.27 at vger.kernel.org; Thu, 23 Dec 2021 02:49:33 EST
-Received: from mxhk.zte.com.cn (unknown [192.168.250.137])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mxus.zte.com.cn (FangMail) with ESMTPS id 4JKMcg4qd2zdmXY5;
-        Thu, 23 Dec 2021 15:43:15 +0800 (CST)
-Received: from mxct.zte.com.cn (unknown [192.168.251.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mxhk.zte.com.cn (FangMail) with ESMTPS id 4JKMcb4cWhz7jYM7;
-        Thu, 23 Dec 2021 15:43:11 +0800 (CST)
-Received: from mse-fl1.zte.com.cn (unknown [10.30.14.238])
+        id S233197AbhLWHzt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Dec 2021 02:55:49 -0500
+Received: from mo-csw-fb1115.securemx.jp ([210.130.202.174]:53982 "EHLO
+        mo-csw-fb.securemx.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231422AbhLWHzt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Dec 2021 02:55:49 -0500
+X-Greylist: delayed 1111 seconds by postgrey-1.27 at vger.kernel.org; Thu, 23 Dec 2021 02:55:48 EST
+Received: by mo-csw-fb.securemx.jp (mx-mo-csw-fb1115) id 1BN7bHj7026402; Thu, 23 Dec 2021 16:37:18 +0900
+Received: by mo-csw.securemx.jp (mx-mo-csw1116) id 1BN7adcW008795; Thu, 23 Dec 2021 16:36:40 +0900
+X-Iguazu-Qid: 2wHI0yQhQ8hP2HHHqV
+X-Iguazu-QSIG: v=2; s=0; t=1640244999; q=2wHI0yQhQ8hP2HHHqV; m=qKf+CMBUuKdT3FU747l1zYcu/o0MDRoKty3UCBazYIc=
+Received: from imx2-a.toshiba.co.jp (imx2-a.toshiba.co.jp [106.186.93.35])
+        by relay.securemx.jp (mx-mr1112) id 1BN7abRJ007928
+        (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 23 Dec 2021 16:36:38 +0900
+Received: from enc01.toshiba.co.jp (enc01.toshiba.co.jp [106.186.93.100])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mxct.zte.com.cn (FangMail) with ESMTPS id 4JKMcX0KgVz6DjmB;
-        Thu, 23 Dec 2021 15:43:08 +0800 (CST)
-Received: from kjyxapp03.zte.com.cn ([10.30.12.202])
-        by mse-fl1.zte.com.cn with SMTP id 1BN7eYfH012388;
-        Thu, 23 Dec 2021 15:40:34 +0800 (GMT-8)
-        (envelope-from wang.yi59@zte.com.cn)
-Received: from fox-cloudhost8.localdomain (unknown [10.234.72.110])
-        by smtp (Zmail) with SMTP;
-        Thu, 23 Dec 2021 15:40:34 +0800
-X-Zmail-TransId: 3e8861c427f1016-c1630
-From:   Yi Wang <wang.yi59@zte.com.cn>
-To:     mst@redhat.com
-Cc:     jasowang@redhat.com, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, xue.zhihong@zte.com.cn,
-        wang.yi59@zte.com.cn, wang.liang82@zte.com.cn,
-        Zhang Min <zhang.min9@zte.com.cn>
-Subject: [PATCH] vdpa: regist vhost-vdpa dev class
-Date:   Thu, 23 Dec 2021 15:31:45 +0800
-Message-Id: <20211223073145.35363-1-wang.yi59@zte.com.cn>
-X-Mailer: git-send-email 2.33.0.rc0.dirty
+        by imx2-a.toshiba.co.jp (Postfix) with ESMTPS id 824B81000FC;
+        Thu, 23 Dec 2021 16:36:37 +0900 (JST)
+Received: from hop001.toshiba.co.jp ([133.199.164.63])
+        by enc01.toshiba.co.jp  with ESMTP id 1BN7aYCi017417;
+        Thu, 23 Dec 2021 16:36:37 +0900
+From:   Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>, netdev@vger.kernel.org,
+        yuji2.ishikawa@toshiba.co.jp, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org,
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
+Subject: [PATCH] net: stmmac: dwmac-visconti: Fix value of ETHER_CLK_SEL_FREQ_SEL_2P5M
+Date:   Thu, 23 Dec 2021 16:36:33 +0900
+X-TSB-HOP: ON
+Message-Id: <20211223073633.101306-1-nobuhiro1.iwamatsu@toshiba.co.jp>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain;
-        charset="UTF-8"
-X-MAIL: mse-fl1.zte.com.cn 1BN7eYfH012388
-X-Fangmail-Gw-Spam-Type: 0
-X-FangMail-Miltered: at 10-207-168-8 with ID 61C42892.000 by FangMail milter!
-X-FangMail-Envelope: 1640245396/4JKMcg4qd2zdmXY5/61C42892.000/192.168.250.137/[192.168.250.137]/mxhk.zte.com.cn/<wang.yi59@zte.com.cn>
-X-Fangmail-Anti-Spam-Filtered: true
-X-Fangmail-MID-QID: 61C42892.000/4JKMcg4qd2zdmXY5
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Zhang Min <zhang.min9@zte.com.cn>
+ETHER_CLK_SEL_FREQ_SEL_2P5M is not 0 bit of the register. This is a
+value, which is 0. Fix from BIT(0) to 0.
 
-Some applications like kata-containers need to acquire MAJOR/MINOR/DEVNAME
-for devInfo [1], so regist vhost-vdpa dev class to expose uevent.
-
-1. https://github.com/kata-containers/kata-containers/blob/main/src/runtime/virtcontainers/device/config/config.go
-
-Signed-off-by: Zhang Min <zhang.min9@zte.com.cn>
-Signed-off-by: Yi Wang <wang.yi59@zte.com.cn>
+Reported-by: Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>
+Signed-off-by: Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
 ---
- drivers/vhost/vdpa.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ drivers/net/ethernet/stmicro/stmmac/dwmac-visconti.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-index fb41db3da611..90fbad93e7a2 100644
---- a/drivers/vhost/vdpa.c
-+++ b/drivers/vhost/vdpa.c
-@@ -1012,6 +1012,7 @@ static void vhost_vdpa_release_dev(struct device *device)
- 	kfree(v);
- }
- 
-+static struct class *vhost_vdpa_class;
- static int vhost_vdpa_probe(struct vdpa_device *vdpa)
- {
- 	const struct vdpa_config_ops *ops = vdpa->config;
-@@ -1040,6 +1041,7 @@ static int vhost_vdpa_probe(struct vdpa_device *vdpa)
- 	v->dev.release = vhost_vdpa_release_dev;
- 	v->dev.parent = &vdpa->dev;
- 	v->dev.devt = MKDEV(MAJOR(vhost_vdpa_major), minor);
-+	v->dev.class = vhost_vdpa_class;
- 	v->vqs = kmalloc_array(v->nvqs, sizeof(struct vhost_virtqueue),
- 			       GFP_KERNEL);
- 	if (!v->vqs) {
-@@ -1097,6 +1099,14 @@ static int __init vhost_vdpa_init(void)
- {
- 	int r;
- 
-+	vhost_vdpa_class = class_create(THIS_MODULE, "vhost-vdpa");
-+	if (IS_ERR(vhost_vdpa_class)) {
-+		r = PTR_ERR(vhost_vdpa_class);
-+		pr_warn("vhost vdpa class create error %d,  maybe mod reinserted\n", r);
-+		vhost_vdpa_class = NULL;
-+		return r;
-+	}
-+
- 	r = alloc_chrdev_region(&vhost_vdpa_major, 0, VHOST_VDPA_DEV_MAX,
- 				"vhost-vdpa");
- 	if (r)
-@@ -1111,6 +1121,7 @@ static int __init vhost_vdpa_init(void)
- err_vdpa_register_driver:
- 	unregister_chrdev_region(vhost_vdpa_major, VHOST_VDPA_DEV_MAX);
- err_alloc_chrdev:
-+	class_destroy(vhost_vdpa_class);
- 	return r;
- }
- module_init(vhost_vdpa_init);
-@@ -1118,6 +1129,7 @@ module_init(vhost_vdpa_init);
- static void __exit vhost_vdpa_exit(void)
- {
- 	vdpa_unregister_driver(&vhost_vdpa_driver);
-+	class_destroy(vhost_vdpa_class);
- 	unregister_chrdev_region(vhost_vdpa_major, VHOST_VDPA_DEV_MAX);
- }
- module_exit(vhost_vdpa_exit);
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-visconti.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-visconti.c
+index 66fc8be34bb7..e2e0f977875d 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-visconti.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-visconti.c
+@@ -26,7 +26,7 @@
+ #define ETHER_CLK_SEL_FREQ_SEL_125M	(BIT(9) | BIT(8))
+ #define ETHER_CLK_SEL_FREQ_SEL_50M	BIT(9)
+ #define ETHER_CLK_SEL_FREQ_SEL_25M	BIT(8)
+-#define ETHER_CLK_SEL_FREQ_SEL_2P5M	BIT(0)
++#define ETHER_CLK_SEL_FREQ_SEL_2P5M	0
+ #define ETHER_CLK_SEL_TX_CLK_EXT_SEL_IN BIT(0)
+ #define ETHER_CLK_SEL_TX_CLK_EXT_SEL_TXC BIT(10)
+ #define ETHER_CLK_SEL_TX_CLK_EXT_SEL_DIV BIT(11)
 -- 
-2.27.0
+2.34.1
+
+
