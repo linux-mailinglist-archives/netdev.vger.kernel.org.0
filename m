@@ -2,55 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 836BC47DC0B
-	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 01:33:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 09A6D47DC0D
+	for <lists+netdev@lfdr.de>; Thu, 23 Dec 2021 01:33:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233394AbhLWAdf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Dec 2021 19:33:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57784 "EHLO
+        id S234006AbhLWAdi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Dec 2021 19:33:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233361AbhLWAdd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Dec 2021 19:33:33 -0500
-Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5F01C061574;
-        Wed, 22 Dec 2021 16:33:33 -0800 (PST)
-Received: by mail-io1-xd2a.google.com with SMTP id b187so4980495iof.11;
-        Wed, 22 Dec 2021 16:33:33 -0800 (PST)
+        with ESMTP id S233361AbhLWAdi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Dec 2021 19:33:38 -0500
+Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C9A4C061574;
+        Wed, 22 Dec 2021 16:33:38 -0800 (PST)
+Received: by mail-io1-xd30.google.com with SMTP id o7so3200081ioo.9;
+        Wed, 22 Dec 2021 16:33:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=gY9LjUHmpsMeed/h1Vvemd1F4/+mT2RTFdkKZKRXxEs=;
-        b=n7b7ROksTDmpt0JaI7ISo8QfsjBA4iiRcJDrw7bb41vHGJmIhlSHvG5UZ29v+MjjF7
-         OgH4fieiJC5+S1aBlLRFp9NU/dusuLdga23WV3GBl1K9cK4pgwH1A6AjFPAGW3R91NBH
-         01BgYxp4AujHmcnJLxdHCoymuWaJOT5LJGXPoHTBDP6pbkte3zCmfSLydfnlGkWqzuZe
-         THnY/ugYigHgtZv9Cr6CzYFIiVt4p8dL2j9b3H70UmchsDYHo46Jivkl/JwfhCPKSJDL
-         3nsJVfoKUT2iqfC4HwBUmdX5gJat+gpj0XXkZGTLZ5qowhqi+D61UpN7kcFI/RkBChUI
-         mEvg==
+        bh=T7TDR+rBDs36WUAy25gQk92HXXkSG9z80Fet8bRwtzM=;
+        b=F/2p+EV4t07ly6zlat2oVSrKPXmE3zf87Ps364/sRqi+TAnOZoxKAAjfD7zQSz8X9S
+         YXYyZjhsORBCaEN8OBlmWIyWrS7129/RtW1k1M72eWCn2yFq/kTF2toBVOrzH9rP8/4v
+         q2MFMi+zPtKAgnVAc+wbJJvAogSO1thH3dXpoRrny+87RRAKQk+5Y1pZcteHKr56LMRA
+         u/elGrY1LtOyB+Mh5o2hJvwS07Kvh1j0VJ8Q9bDKtQeBb3JbbwrKJFXWKv6go/r7Jobe
+         WtYFaBo1KqSGkTytVpOo5TQ+MuzceAMJIqgsrGF5vy6Imy5JWbNmuJ5S/a7XYLm8SYMq
+         u7Nw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=gY9LjUHmpsMeed/h1Vvemd1F4/+mT2RTFdkKZKRXxEs=;
-        b=HJ+Kum74uBMJ+OE12zWM9tSZg2dqsiuHLxUQpG5SEsvolW5jCrY0Bn7tHCuz0y2F1v
-         n0lp+kfZ3YDS39lgztk15Fjf+FbC7A8D6KO3eBMfIoyHiBQeN9qoS77+XbGNWIE9sV1Z
-         3VzzXNfTfipas1sEa7fJgV5bUwTTngpbCScpkGe2zniPEQwO8Euq1Ptq2KJ6VKlGQLti
-         e8Lm8+IGg8W6b9y0Kt62+0U7epZTKLMjSdvBIWbviJ4iVnEpvjkfl2Pgag9dkg4aeo6I
-         AobZbgGazhzp4TiMa+REor3ui9jxgF1QMFkUwUhJydnkKzkXg9Z8L9evKYrL7pCiFWU3
-         nZ4Q==
-X-Gm-Message-State: AOAM533GERPzeKERuf4bJaUJBElUrnUOZcXMSuA5W8u2p2+aeqFdTSBW
-        WVzSGZ2clvJlnHe1sn2gd4FJgh31FFLXooV+8/4=
-X-Google-Smtp-Source: ABdhPJxvqgFbVf1ZFjiP4lQZ4j/FfbadIQssH7vGkJBU3EvlswsNWq03tHWpZ1aTUz9hUJ29QBTUP5a0Qm+qvmNkBJc=
-X-Received: by 2002:a5d:9f01:: with SMTP id q1mr83175iot.144.1640219612894;
- Wed, 22 Dec 2021 16:33:32 -0800 (PST)
+        bh=T7TDR+rBDs36WUAy25gQk92HXXkSG9z80Fet8bRwtzM=;
+        b=4DUT3JIP0yJ5pXe/wmyta4qbOt+m8NVcpJHRPYR0LUQzEhylT8DiIvUhUp05t2SDQU
+         G7sxgA1GE+1bGKKCwM0cTlqSFTR0ZmFRWndr3It1vLPoOIF9TVT/cL4Tiy9YwkrO6864
+         PJDs6v2Ngy41tKqCEX+cB35bhxp+VYDdXBJjwpTZEti/p1buAu9H4oC1ptQDZrkXUPgW
+         pJGi6j1QA7G88+t2GitUGRF4PZRC2+H9W5IPXAmylBp9/k79PUAdcCx3p2j7M7suhAHz
+         gQlE7C0FZVx+JjUUIiiBv9gN/8rwlrdxHkxkrA76n5KNJVRYXHBTJTXKQEZbWmDtVYkn
+         3FBA==
+X-Gm-Message-State: AOAM530o+T96vasW4FmBeWrBkTGjLUhaNC4+/88zJeEn5cmlKXw4fgrZ
+        HTgvv2FK8/tKMYEgECscrKn7BpgibyEYFoo1zLQ=
+X-Google-Smtp-Source: ABdhPJzgS9tN/KXZAVoyR+P9zcqhUo0uw8o18klYT3SNmIn0v7/m2FSbxwQqHvtC5ODKhT650hXQv0LPMefL9ugUOkU=
+X-Received: by 2002:a02:c6a5:: with SMTP id o5mr3037802jan.145.1640219617371;
+ Wed, 22 Dec 2021 16:33:37 -0800 (PST)
 MIME-Version: 1.0
-References: <20211217185654.311609-1-mauricio@kinvolk.io> <20211217185654.311609-3-mauricio@kinvolk.io>
-In-Reply-To: <20211217185654.311609-3-mauricio@kinvolk.io>
+References: <20211217185654.311609-1-mauricio@kinvolk.io> <20211217185654.311609-2-mauricio@kinvolk.io>
+In-Reply-To: <20211217185654.311609-2-mauricio@kinvolk.io>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 22 Dec 2021 16:33:21 -0800
-Message-ID: <CAEf4BzbtbxkPZKUEye9=CbOtR-e25cv_5_FyH_Qd8hk9TtsiJQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 2/3] libbpf: Implement changes needed for
- BTFGen in bpftool
+Date:   Wed, 22 Dec 2021 16:33:26 -0800
+Message-ID: <CAEf4BzZw2RBPSxE0j8uQd8-75qOfq=iPnhB73ONErsHYUaF+pg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 1/3] libbpf: split bpf_core_apply_relo()
 To:     =?UTF-8?Q?Mauricio_V=C3=A1squez?= <mauricio@kinvolk.io>
 Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
@@ -69,396 +68,221 @@ X-Mailing-List: netdev@vger.kernel.org
 On Fri, Dec 17, 2021 at 10:57 AM Mauricio V=C3=A1squez <mauricio@kinvolk.io=
 > wrote:
 >
-> Given that BTFGen is a so unique use case, let's expose some of the
-> libbpf internal APIs to bpftool. This commit extends libbpf with the
-> features that are needed to implement it.
+> BTFGen needs to run the core relocation logic in order to understand
+> what are the types in the target BTF that involved in a given
+> relocation.
 >
-> Specifically, this commit introduces the following functions:
-> - bpf_object__btf_ext(): Public method to access the BTF.ext section of
-> an bpf object.
-> - bpf_program__sec_idx(): Public method to get the sec index of a
-> program within the elf file.
-> - Implement bpf_core_create_cand_cache() and bpf_core_free_cand_cache()
-> to handle candidates cache.
-> - Expose bpf_core_calc_relo_res() in libbpfinternal.h and add "struct
-> bpf_core_spec *targ_spec" parameter.
-> - bpf_object_set_vmlinux_override(): Internal function to set
-> obj->btf_vmlinux_override.
-> - bpf_object__get_nr_programs() and bpf_object__get_program(): To give
-> access to the program inside an object. bpf_object__for_each_program
-> is not good enough because BTFGen needs to access subprograms too.
+> Currently bpf_core_apply_relo() calculates and **applies** a relocation
+> to an instruction. Having both operations in the same function makes it
+> difficult to only calculate the relocation without patching the
+> instruction. This commit splits that logic in two different phases: (1)
+> calculate the relocation and (2) patch the instruction.
+>
+> For the first phase bpf_core_apply_relo() is renamed to
+> bpf_core_calc_relo_res() who is now only on charge of calculating the
+> relocation, the second phase uses the already existing
+> bpf_core_patch_insn(). bpf_object__relocate_core() uses both of them and
+> the BTFGen will use only bpf_core_calc_relo_res().
 >
 > Signed-off-by: Mauricio V=C3=A1squez <mauricio@kinvolk.io>
 > Signed-off-by: Rafael David Tinoco <rafael.tinoco@aquasec.com>
 > Signed-off-by: Lorenzo Fontana <lorenzo.fontana@elastic.co>
 > Signed-off-by: Leonardo Di Donato <leonardo.didonato@elastic.co>
 > ---
->  tools/lib/bpf/Makefile          |  2 +-
->  tools/lib/bpf/libbpf.c          | 88 ++++++++++++++++++++++++++-------
->  tools/lib/bpf/libbpf.h          |  3 ++
->  tools/lib/bpf/libbpf.map        |  2 +
->  tools/lib/bpf/libbpf_internal.h | 22 +++++++++
->  tools/lib/bpf/relo_core.c       |  6 +--
->  tools/lib/bpf/relo_core.h       |  4 ++
->  7 files changed, 104 insertions(+), 23 deletions(-)
+>  kernel/bpf/btf.c          | 11 +++++-
+>  tools/lib/bpf/libbpf.c    | 54 ++++++++++++++++-----------
+>  tools/lib/bpf/relo_core.c | 77 +++++++++++----------------------------
+>  tools/lib/bpf/relo_core.h | 42 ++++++++++++++++++---
+>  4 files changed, 99 insertions(+), 85 deletions(-)
 >
-> diff --git a/tools/lib/bpf/Makefile b/tools/lib/bpf/Makefile
-> index f947b61b2107..dba019ee2832 100644
-> --- a/tools/lib/bpf/Makefile
-> +++ b/tools/lib/bpf/Makefile
-> @@ -239,7 +239,7 @@ install_lib: all_cmd
+> diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+> index a17de71abd2e..5a8f6ef6a341 100644
+> --- a/kernel/bpf/btf.c
+> +++ b/kernel/bpf/btf.c
+> @@ -6734,6 +6734,7 @@ int bpf_core_apply(struct bpf_core_ctx *ctx, const =
+struct bpf_core_relo *relo,
+>  {
+>         bool need_cands =3D relo->kind !=3D BPF_CORE_TYPE_ID_LOCAL;
+>         struct bpf_core_cand_list cands =3D {};
+> +       struct bpf_core_relo_res targ_res;
+>         struct bpf_core_spec *specs;
+>         int err;
 >
->  SRC_HDRS :=3D bpf.h libbpf.h btf.h libbpf_common.h libbpf_legacy.h xsk.h=
-      \
->             bpf_helpers.h bpf_tracing.h bpf_endian.h bpf_core_read.h     =
-    \
-> -           skel_internal.h libbpf_version.h
-> +           skel_internal.h libbpf_version.h relo_core.h libbpf_internal.=
-h
->  GEN_HDRS :=3D $(BPF_GENERATED)
+> @@ -6778,8 +6779,14 @@ int bpf_core_apply(struct bpf_core_ctx *ctx, const=
+ struct bpf_core_relo *relo,
+>                  */
+>         }
 >
->  INSTALL_PFX :=3D $(DESTDIR)$(prefix)/include/bpf
+> -       err =3D bpf_core_apply_relo_insn((void *)ctx->log, insn, relo->in=
+sn_off / 8,
+> -                                      relo, relo_idx, ctx->btf, &cands, =
+specs);
+> +       err =3D bpf_core_calc_relo_insn((void *)ctx->log, relo, relo_idx,=
+ ctx->btf, &cands, specs,
+> +                                     &targ_res);
+> +       if (err)
+> +               goto out;
+> +
+> +       err =3D bpf_core_patch_insn((void *)ctx->log, insn, relo->insn_of=
+f / 8, relo, relo_idx,
+> +                                 &targ_res);
+> +
+>  out:
+>         kfree(specs);
+>         if (need_cands) {
 > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> index 77e2df13715a..7c8f8797475f 100644
+> index cf862a19222b..77e2df13715a 100644
 > --- a/tools/lib/bpf/libbpf.c
 > +++ b/tools/lib/bpf/libbpf.c
-> @@ -4027,8 +4027,8 @@ static bool prog_contains_insn(const struct bpf_pro=
-gram *prog, size_t insn_idx)
->                insn_idx < prog->sec_insn_off + prog->sec_insn_cnt;
->  }
->
-> -static struct bpf_program *find_prog_by_sec_insn(const struct bpf_object=
- *obj,
-> -                                                size_t sec_idx, size_t i=
-nsn_idx)
-> +struct bpf_program *find_prog_by_sec_insn(const struct bpf_object *obj,
-> +                                         size_t sec_idx, size_t insn_idx=
-)
->  {
->         int l =3D 0, r =3D obj->nr_programs - 1, m;
->         struct bpf_program *prog;
-> @@ -5498,12 +5498,13 @@ static int record_relo_core(struct bpf_program *p=
+> @@ -5498,11 +5498,12 @@ static int record_relo_core(struct bpf_program *p=
 rog,
 >         return 0;
 >  }
 >
-> -static int bpf_core_calc_relo_res(struct bpf_program *prog,
-> -                                 const struct bpf_core_relo *relo,
-> -                                 int relo_idx,
-> -                                 const struct btf *local_btf,
-> -                                 struct hashmap *cand_cache,
-> -                                 struct bpf_core_relo_res *targ_res)
-> +int bpf_core_calc_relo_res(struct bpf_program *prog,
-> +                          const struct bpf_core_relo *relo,
-> +                          int relo_idx,
-> +                          const struct btf *local_btf,
-> +                          struct hashmap *cand_cache,
-> +                          struct bpf_core_relo_res *targ_res,
-> +                          struct bpf_core_spec *targ_spec)
+> -static int bpf_core_apply_relo(struct bpf_program *prog,
+> -                              const struct bpf_core_relo *relo,
+> -                              int relo_idx,
+> -                              const struct btf *local_btf,
+> -                              struct hashmap *cand_cache)
+> +static int bpf_core_calc_relo_res(struct bpf_program *prog,
 
-maybe let's add targ_spec and local_spec into bpf_core_relo_res? that
-way bpf_core_relo_res contains all the relevant information around
-CO-RE relo resolution?
+bpf_core_calc_relo_res is almost indistinguishable from
+bpf_core_calc_relo... Let's call this one bpf_core_resolve_relo()?
 
->  {
->         struct bpf_core_spec specs_scratch[3] =3D {};
->         const void *type_key =3D u32_as_hash_key(relo->type_id);
-> @@ -5548,8 +5549,32 @@ static int bpf_core_calc_relo_res(struct bpf_progr=
-am *prog,
->                 }
->         }
->
-> -       return bpf_core_calc_relo_insn(prog_name, relo, relo_idx, local_b=
-tf, cands,
-> -                                      specs_scratch, targ_res);
-> +       err =3D bpf_core_calc_relo_insn(prog_name, relo, relo_idx, local_=
-btf, cands,
-> +                                     specs_scratch, targ_res);
-> +       if (err)
-> +               return err;
-> +
-> +       if (targ_spec)
-> +               *targ_spec =3D specs_scratch[2];
+> +                                 const struct bpf_core_relo *relo,
+> +                                 int relo_idx,
+> +                                 const struct btf *local_btf,
+> +                                 struct hashmap *cand_cache,
+> +                                 struct bpf_core_relo_res *targ_res)
 
-and then we'll avoid this ugliness
+[...]
 
-> +       return 0;
-> +}
-> +
-> +struct hashmap *bpf_core_create_cand_cache(void)
-> +{
-> +       return hashmap__new(bpf_core_hash_fn, bpf_core_equal_fn, NULL);
-> +}
-> +
-> +void bpf_core_free_cand_cache(struct hashmap *cand_cache)
-> +{
-> +       struct hashmap_entry *entry;
-> +       int i;
-> +
-> +       if (!IS_ERR_OR_NULL(cand_cache)) {
-> +               hashmap__for_each_entry(cand_cache, entry, i) {
-> +                       bpf_core_free_cands(entry->value);
-> +               }
-> +               hashmap__free(cand_cache);
-> +       }
->  }
->
 >  static int
-> @@ -5559,7 +5584,6 @@ bpf_object__relocate_core(struct bpf_object *obj, c=
-onst char *targ_btf_path)
->         struct bpf_core_relo_res targ_res;
+>  bpf_object__relocate_core(struct bpf_object *obj, const char *targ_btf_p=
+ath)
+>  {
+>         const struct btf_ext_info_sec *sec;
+> +       struct bpf_core_relo_res targ_res;
 >         const struct bpf_core_relo *rec;
 >         const struct btf_ext_info *seg;
-> -       struct hashmap_entry *entry;
+>         struct hashmap_entry *entry;
 >         struct hashmap *cand_cache =3D NULL;
 >         struct bpf_program *prog;
->         struct bpf_insn *insn;
-> @@ -5578,7 +5602,7 @@ bpf_object__relocate_core(struct bpf_object *obj, c=
-onst char *targ_btf_path)
->                 }
->         }
+> +       struct bpf_insn *insn;
+>         const char *sec_name;
+>         int i, err =3D 0, insn_idx, sec_idx;
 >
-> -       cand_cache =3D hashmap__new(bpf_core_hash_fn, bpf_core_equal_fn, =
-NULL);
-> +       cand_cache =3D bpf_core_create_cand_cache();
->         if (IS_ERR(cand_cache)) {
->                 err =3D PTR_ERR(cand_cache);
->                 goto out;
-> @@ -5627,7 +5651,8 @@ bpf_object__relocate_core(struct bpf_object *obj, c=
-onst char *targ_btf_path)
+> @@ -5636,12 +5627,31 @@ bpf_object__relocate_core(struct bpf_object *obj,=
+ const char *targ_btf_path)
 >                         if (!prog->load)
 >                                 continue;
 >
-> -                       err =3D bpf_core_calc_relo_res(prog, rec, i, obj-=
->btf, cand_cache, &targ_res);
+> -                       err =3D bpf_core_apply_relo(prog, rec, i, obj->bt=
+f, cand_cache);
 > +                       err =3D bpf_core_calc_relo_res(prog, rec, i, obj-=
->btf, cand_cache, &targ_res,
-> +                                                    NULL);
+>btf, cand_cache, &targ_res);
 >                         if (err) {
 >                                 pr_warn("prog '%s': relo #%d: failed to r=
 elocate: %d\n",
 >                                         prog->name, i, err);
-> @@ -5660,12 +5685,8 @@ bpf_object__relocate_core(struct bpf_object *obj, =
-const char *targ_btf_path)
->         btf__free(obj->btf_vmlinux_override);
->         obj->btf_vmlinux_override =3D NULL;
->
-> -       if (!IS_ERR_OR_NULL(cand_cache)) {
-> -               hashmap__for_each_entry(cand_cache, entry, i) {
-> -                       bpf_core_free_cands(entry->value);
-> -               }
-> -               hashmap__free(cand_cache);
-> -       }
-> +       bpf_core_free_cand_cache(cand_cache);
+>                                 goto out;
+>                         }
 > +
->         return err;
->  }
->
-> @@ -8190,6 +8211,11 @@ struct btf *bpf_object__btf(const struct bpf_objec=
-t *obj)
->         return obj ? obj->btf : NULL;
->  }
->
-> +struct btf_ext *bpf_object__btf_ext(const struct bpf_object *obj)
-> +{
-> +       return obj ? obj->btf_ext : NULL;
+> +                       if (rec->insn_off % BPF_INSN_SZ)
+> +                               return -EINVAL;
+> +                       insn_idx =3D rec->insn_off / BPF_INSN_SZ;
+> +                       /* adjust insn_idx from section frame of referenc=
+e to the local
+> +                        * program's frame of reference; (sub-)program co=
+de is not yet
+> +                        * relocated, so it's enough to just subtract in-=
+section offset
+> +                        */
+> +                       insn_idx =3D insn_idx - prog->sec_insn_off;
+> +                       if (insn_idx >=3D prog->insns_cnt)
+> +                               return -EINVAL;
+> +                       insn =3D &prog->insns[insn_idx];
 
-just return obj->btf_ext, no one should be passing NULL for those getters
-
-> +}
-> +
->  int bpf_object__btf_fd(const struct bpf_object *obj)
->  {
->         return obj->btf ? btf__fd(obj->btf) : -1;
-> @@ -8281,6 +8307,20 @@ bpf_object__next_program(const struct bpf_object *=
-obj, struct bpf_program *prev)
->         return prog;
->  }
->
-> +size_t bpf_object__get_nr_programs(const struct bpf_object *obj)
-> +{
-> +       return obj->nr_programs;
-> +}
-> +
-> +struct bpf_program *
-> +bpf_object__get_program(const struct bpf_object *obj, unsigned int i)
-> +{
-> +       if (i >=3D obj->nr_programs)
-> +               return NULL;
-> +
-> +       return &obj->programs[i];
-> +}
-> +
->  struct bpf_program *
->  bpf_program__prev(struct bpf_program *next, const struct bpf_object *obj=
-)
->  {
-> @@ -8360,6 +8400,11 @@ int bpf_program__set_autoload(struct bpf_program *=
-prog, bool autoload)
->         return 0;
->  }
->
-> +int bpf_program__sec_idx(const struct bpf_program *prog)
-> +{
-> +       return prog->sec_idx;
-> +}
-> +
->  static int bpf_program_nth_fd(const struct bpf_program *prog, int n);
->
->  int bpf_program__fd(const struct bpf_program *prog)
-> @@ -11779,3 +11824,8 @@ void bpf_object__destroy_skeleton(struct bpf_obje=
-ct_skeleton *s)
->         free(s->progs);
->         free(s);
->  }
-> +
-> +void bpf_object_set_vmlinux_override(struct bpf_object *obj, struct btf =
-*btf)
-> +{
-> +       obj->btf_vmlinux_override =3D btf;
-> +}
-
-I don't think we need this, see comments in next patch
-
-
-> diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-> index 42b2f36fd9f0..2b048ee5a9b2 100644
-> --- a/tools/lib/bpf/libbpf.h
-> +++ b/tools/lib/bpf/libbpf.h
-> @@ -225,6 +225,8 @@ LIBBPF_API int bpf_object__set_kversion(struct bpf_ob=
-ject *obj, __u32 kern_versi
->
->  struct btf;
->  LIBBPF_API struct btf *bpf_object__btf(const struct bpf_object *obj);
-> +struct btf_ext;
-> +LIBBPF_API struct btf_ext *bpf_object__btf_ext(const struct bpf_object *=
-obj);
->  LIBBPF_API int bpf_object__btf_fd(const struct bpf_object *obj);
->
->  LIBBPF_DEPRECATED_SINCE(0, 7, "use bpf_object__find_program_by_name() in=
-stead")
-> @@ -290,6 +292,7 @@ LIBBPF_API LIBBPF_DEPRECATED("BPF program title is co=
-nfusing term; please use bp
->  const char *bpf_program__title(const struct bpf_program *prog, bool need=
-s_copy);
->  LIBBPF_API bool bpf_program__autoload(const struct bpf_program *prog);
->  LIBBPF_API int bpf_program__set_autoload(struct bpf_program *prog, bool =
-autoload);
-> +LIBBPF_API int bpf_program__sec_idx(const struct bpf_program *prog);
->
->  /* returns program size in bytes */
->  LIBBPF_DEPRECATED_SINCE(0, 7, "use bpf_program__insn_cnt() instead")
-> diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-> index b3938b3f8fc9..15da4075e0b5 100644
-> --- a/tools/lib/bpf/libbpf.map
-> +++ b/tools/lib/bpf/libbpf.map
-> @@ -392,6 +392,7 @@ LIBBPF_0.6.0 {
->                 bpf_map__map_extra;
->                 bpf_map__set_map_extra;
->                 bpf_map_create;
-> +               bpf_object__btf_ext;
->                 bpf_object__next_map;
->                 bpf_object__next_program;
->                 bpf_object__prev_map;
-> @@ -401,6 +402,7 @@ LIBBPF_0.6.0 {
->                 bpf_program__flags;
->                 bpf_program__insn_cnt;
->                 bpf_program__insns;
-> +               bpf_program__sec_idx;
->                 bpf_program__set_flags;
->                 btf__add_btf;
->                 btf__add_decl_tag;
-> diff --git a/tools/lib/bpf/libbpf_internal.h b/tools/lib/bpf/libbpf_inter=
-nal.h
-> index 5dbe4f463880..b1962adb110c 100644
-> --- a/tools/lib/bpf/libbpf_internal.h
-> +++ b/tools/lib/bpf/libbpf_internal.h
-> @@ -524,4 +524,26 @@ static inline int ensure_good_fd(int fd)
->         return fd;
->  }
->
-> +struct hashmap;
-> +
-> +int bpf_core_calc_relo_res(struct bpf_program *prog,
-> +                          const struct bpf_core_relo *relo,
-> +                          int relo_idx,
-> +                          const struct btf *local_btf,
-> +                          struct hashmap *cand_cache,
-> +                          struct bpf_core_relo_res *targ_res,
-> +                          struct bpf_core_spec *targ_spec);
-> +void bpf_object_set_vmlinux_override(struct bpf_object *obj, struct btf =
-*btf);
-> +struct hashmap *bpf_core_create_cand_cache(void);
-> +void bpf_core_free_cand_cache(struct hashmap *cand_cache);
-> +
-> +struct bpf_program *find_prog_by_sec_insn(const struct bpf_object *obj,
-> +                                         size_t sec_idx, size_t insn_idx=
-);
-> +
-> +size_t bpf_object__get_nr_programs(const struct bpf_object *obj);
-> +
-> +struct bpf_program *
-> +bpf_object__get_program(const struct bpf_object *obj, unsigned int n);
-> +
-
-that's too much, I don't think you need bpf_program and all the things
-around it (sec_idx, look up, etc). As for core_relo_is_field_based and
-co, bpftool can do those simple checks on their own, no need to make
-all the "internal API", don't overdo it with "let's expose internals
-of libbpf to bpftool".
-
+this is sort of like sanity checks, let's do them before the core_calc
+step, so after that it's a clean sequence of calc_relo + pathc_insn?
 
 > +
->  #endif /* __LIBBPF_LIBBPF_INTERNAL_H */
-> diff --git a/tools/lib/bpf/relo_core.c b/tools/lib/bpf/relo_core.c
-> index 4f3552468624..66dfb7fa89a2 100644
-> --- a/tools/lib/bpf/relo_core.c
-> +++ b/tools/lib/bpf/relo_core.c
-> @@ -102,7 +102,7 @@ static const char *core_relo_kind_str(enum bpf_core_r=
-elo_kind kind)
+> +                       err =3D bpf_core_patch_insn(prog->name, insn, ins=
+n_idx, rec, i, &targ_res);
+> +                       if (err) {
+> +                               pr_warn("prog '%s': relo #%d: failed to p=
+atch insn #%u: %d\n",
+> +                                       prog->name, i, insn_idx, err);
+> +                               goto out;
+> +                       }
+>                 }
 >         }
->  }
 >
-> -static bool core_relo_is_field_based(enum bpf_core_relo_kind kind)
-> +bool core_relo_is_field_based(enum bpf_core_relo_kind kind)
+
+[...]
+
 >  {
->         switch (kind) {
->         case BPF_CORE_FIELD_BYTE_OFFSET:
-> @@ -117,7 +117,7 @@ static bool core_relo_is_field_based(enum bpf_core_re=
-lo_kind kind)
+>         __u32 orig_val, new_val;
+>         __u8 class;
+> @@ -1177,18 +1152,18 @@ static void bpf_core_dump_spec(const char *prog_n=
+ame, int level, const struct bp
+>   *    between multiple relocations for the same type ID and is updated a=
+s some
+>   *    of the candidates are pruned due to structural incompatibility.
+>   */
+> -int bpf_core_apply_relo_insn(const char *prog_name, struct bpf_insn *ins=
+n,
+> -                            int insn_idx,
+> -                            const struct bpf_core_relo *relo,
+> -                            int relo_idx,
+> -                            const struct btf *local_btf,
+> -                            struct bpf_core_cand_list *cands,
+> -                            struct bpf_core_spec *specs_scratch)
+> +int bpf_core_calc_relo_insn(const char *prog_name,
+
+please update the comment for this function, it's not "CO-RE relocate
+single instruction" anymore, it's more like "Calculate CO-RE
+relocation target result" or something along those lines.
+
+> +                           const struct bpf_core_relo *relo,
+> +                           int relo_idx,
+> +                           const struct btf *local_btf,
+> +                           struct bpf_core_cand_list *cands,
+> +                           struct bpf_core_spec *specs_scratch,
+> +                           struct bpf_core_relo_res *targ_res)
+>  {
+>         struct bpf_core_spec *local_spec =3D &specs_scratch[0];
+>         struct bpf_core_spec *cand_spec =3D &specs_scratch[1];
+>         struct bpf_core_spec *targ_spec =3D &specs_scratch[2];
+> -       struct bpf_core_relo_res cand_res, targ_res;
+> +       struct bpf_core_relo_res cand_res;
+>         const struct btf_type *local_type;
+>         const char *local_name;
+>         __u32 local_id;
+> @@ -1223,12 +1198,12 @@ int bpf_core_apply_relo_insn(const char *prog_nam=
+e, struct bpf_insn *insn,
+>         /* TYPE_ID_LOCAL relo is special and doesn't need candidate searc=
+h */
+>         if (relo->kind =3D=3D BPF_CORE_TYPE_ID_LOCAL) {
+>                 /* bpf_insn's imm value could get out of sync during link=
+ing */
+> -               memset(&targ_res, 0, sizeof(targ_res));
+> -               targ_res.validate =3D false;
+> -               targ_res.poison =3D false;
+> -               targ_res.orig_val =3D local_spec->root_type_id;
+> -               targ_res.new_val =3D local_spec->root_type_id;
+> -               goto patch_insn;
+> +               memset(targ_res, 0, sizeof(*targ_res));
+> +               targ_res->validate =3D true;
+
+hm.. original code sets it to false here, please don't regress the logic
+
+> +               targ_res->poison =3D false;
+> +               targ_res->orig_val =3D local_spec->root_type_id;
+> +               targ_res->new_val =3D local_spec->root_type_id;
+> +               return 0;
 >         }
->  }
 >
-> -static bool core_relo_is_type_based(enum bpf_core_relo_kind kind)
-> +bool core_relo_is_type_based(enum bpf_core_relo_kind kind)
->  {
->         switch (kind) {
->         case BPF_CORE_TYPE_ID_LOCAL:
-> @@ -130,7 +130,7 @@ static bool core_relo_is_type_based(enum bpf_core_rel=
-o_kind kind)
->         }
->  }
->
-> -static bool core_relo_is_enumval_based(enum bpf_core_relo_kind kind)
-> +bool core_relo_is_enumval_based(enum bpf_core_relo_kind kind)
->  {
->         switch (kind) {
->         case BPF_CORE_ENUMVAL_EXISTS:
-> diff --git a/tools/lib/bpf/relo_core.h b/tools/lib/bpf/relo_core.h
-> index a28bf3711ce2..e969dfb032f4 100644
-> --- a/tools/lib/bpf/relo_core.h
-> +++ b/tools/lib/bpf/relo_core.h
-> @@ -84,4 +84,8 @@ int bpf_core_patch_insn(const char *prog_name, struct b=
-pf_insn *insn,
->                         int insn_idx, const struct bpf_core_relo *relo,
->                         int relo_idx, const struct bpf_core_relo_res *res=
-);
->
-> +bool core_relo_is_field_based(enum bpf_core_relo_kind kind);
-> +bool core_relo_is_type_based(enum bpf_core_relo_kind kind);
-> +bool core_relo_is_enumval_based(enum bpf_core_relo_kind kind);
-> +
->  #endif
-> --
-> 2.25.1
->
+>         /* libbpf doesn't support candidate search for anonymous types */
+
+[...]
