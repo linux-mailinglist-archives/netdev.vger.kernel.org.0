@@ -2,149 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DB3A47F069
-	for <lists+netdev@lfdr.de>; Fri, 24 Dec 2021 18:38:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8545B47F074
+	for <lists+netdev@lfdr.de>; Fri, 24 Dec 2021 18:53:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353351AbhLXRin (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Dec 2021 12:38:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36286 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353339AbhLXRil (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Dec 2021 12:38:41 -0500
-Received: from mail-il1-x12f.google.com (mail-il1-x12f.google.com [IPv6:2607:f8b0:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72FA4C061759
-        for <netdev@vger.kernel.org>; Fri, 24 Dec 2021 09:38:41 -0800 (PST)
-Received: by mail-il1-x12f.google.com with SMTP id d14so7054464ila.1
-        for <netdev@vger.kernel.org>; Fri, 24 Dec 2021 09:38:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=egauge.net; s=google;
-        h=message-id:subject:from:to:cc:date:in-reply-to:references
-         :organization:user-agent:mime-version:content-transfer-encoding;
-        bh=U47rTAPXH+aLFRV5bwaR5qoQIKBvtt8C4VdyaJsNXDc=;
-        b=YT53nncZQkXbKVlUkM490Q/adPXhTSoawpsSGMxPGkw2Hgz3QHlCS1hD0/tBG8zQ6F
-         AzWS4093FHsc897g452gLe9pUqRHXitZTCZlvI5JxM3q8u8pJOh+2NwoRrGFDJaZ1Enu
-         H/+a45kB87oTu99tP/wh+ZfDY1OzWMiVSGnINGplU55dQb3PL/m9f7nU+l5BUhv3DgTo
-         lYm8a/wz8HQ33jpBwaUtUhMupOb2aaCt9NNwt9JMXXgD5INW2HhLZQ3NgiYqtcw0dFpn
-         EFFSlA7DT+qm1aigkwJsXgMuRZQpaYU4bsJEWyM1YvFS5E11kQ+RyzEpN3q9cJGxvA9/
-         Q9Rw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:organization:user-agent:mime-version
-         :content-transfer-encoding;
-        bh=U47rTAPXH+aLFRV5bwaR5qoQIKBvtt8C4VdyaJsNXDc=;
-        b=NIQyenUomFxaP0tw7ZOF6+8NUMc2Q/X0j0vtiNLUcFYjS2018PDSP4dJZ5tCm19M1B
-         BluB18J/GaUbv3unKZFClCwdp+Lduc58Gos+bOI5B3LKC2xlIHbRnVQLe0GJheuaN1Gp
-         TrPi/HT0bF2172ucbvvH9BOHz33UHB6XYsSJ6DclRKKiiNr46J18kjokaxMqi6vUd4gi
-         nIyrDA3h5APwZwsoBAEZmAYP1EVTBApoeOJ9uVaCb1ApoIwsg8pUp7XxblrtO54XM4MI
-         jCGgXyE+2f6x4tbSgYihdCD12vl6jQh/grYt7gxkmW6R88eqFzr5YNzR0u0kkQEJ2WuV
-         YOGw==
-X-Gm-Message-State: AOAM532lcc5NQ6q7fU28g5VB41jZc2iwZ/O2QlXq99uddbcQivm+YKuV
-        jqjO8TpNP4NTt//MiTRGfk/z
-X-Google-Smtp-Source: ABdhPJwsSrpQmBjHLE7h+SrvCAYWvXBcLL6X7fPC9nsRP+9XodzueLnH/Y5A0hSfBSPJLAhheZn6xg==
-X-Received: by 2002:a92:c681:: with SMTP id o1mr3342064ilg.23.1640367520820;
-        Fri, 24 Dec 2021 09:38:40 -0800 (PST)
-Received: from ?IPv6:2601:281:8300:4e0:2ba9:697d:eeec:13b? ([2601:281:8300:4e0:2ba9:697d:eeec:13b])
-        by smtp.gmail.com with ESMTPSA id j5sm4687504ilo.77.2021.12.24.09.38.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Dec 2021 09:38:40 -0800 (PST)
-Message-ID: <e7247265d5309165140d7a9a3af646129a789d58.camel@egauge.net>
-Subject: Re: [PATCH] wilc1000: Allow setting power_save before driver is
- initialized
-From:   David Mosberger-Tang <davidm@egauge.net>
-To:     Ajay.Kathat@microchip.com
-Cc:     Claudiu.Beznea@microchip.com, kvalo@codeaurora.org,
-        davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Fri, 24 Dec 2021 10:38:37 -0700
-In-Reply-To: <9272b86e-61ab-1c25-0efb-3cdd2c590db8@microchip.com>
-References: <20211212011835.3719001-1-davidm@egauge.net>
-         <6fc9f00aa0b0867029fb6406a55c1e72d4c13af6.camel@egauge.net>
-         <5378e756-8173-4c63-1f0d-e5836b235a48@microchip.com>
-         <31d5e7447e4574d0fcfc46019d7ca96a3db4ecb6.camel@egauge.net>
-         <49a5456d-6a63-652e-d356-9678f6a9b266@microchip.com>
-         <523698d845e0b235e4cbb2a0f3cfaa0f5ed98ec0.camel@egauge.net>
-         <122f79b7-7936-325c-b2d9-e15db6642d0f@microchip.com>
-         <be3c95c8310504222e88c602a937b7f05cc01286.camel@egauge.net>
-         <9272b86e-61ab-1c25-0efb-3cdd2c590db8@microchip.com>
-Organization: eGauge Systems LLC
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5-0ubuntu1 
+        id S1353354AbhLXRx1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Dec 2021 12:53:27 -0500
+Received: from wout2-smtp.messagingengine.com ([64.147.123.25]:44499 "EHLO
+        wout2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S239382AbhLXRx0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Dec 2021 12:53:26 -0500
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
+        by mailout.west.internal (Postfix) with ESMTP id 427253200B8B;
+        Fri, 24 Dec 2021 12:53:25 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute6.internal (MEProxy); Fri, 24 Dec 2021 12:53:25 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=GG1Rit
+        L4molciScCodlUjFQUN/pf331CAmK5cSaQq4k=; b=biVAsxnhwZQjMYBkIjsqQA
+        ipqt3iHHlwf7Il1o5cQ+Y73MOEayap+ntxGXyTRivNGV27z74GRYJqPOMtz7HaTO
+        p3vxC6jkDDf03S2uBiTuvYRZ/trVOIJL+m/o2OOH6TZCoOdzoeHNtdPdOXlqePoi
+        aHs6gG1mLAEFRQGiJBN8fI0/26T8HVKI+LBFL/feSSwuT7yDp5kR6vPev51zcPXg
+        t7/4J2ICtdO+leH0/VemDV0ZzajcyE0ysey8YuY0IXE2T14FU1iaMFsJ6mVGKYSJ
+        YfSlS3XbzTkE+XrznxQbASqzjfdBeTeoK6y6zg2qGM2hTcFW0+TPYWrRcsGylwgg
+        ==
+X-ME-Sender: <xms:FAnGYT_cITTmfjWDW5rDUEWRs1uC9kfFU2qZKsZxA20b6mnJekw3ig>
+    <xme:FAnGYft8VZJBMui6lXTa1_uGvJTQzLIfKU152GNlbLl09AgvRockBtIo4j5rfNK9D
+    t3heM-j6_Evj7k>
+X-ME-Received: <xmr:FAnGYRARdPXx3QBn56Fe6z6yL4NUoLluQe4CrZKI9DF3W6VoaYLTM3SgBZM7StR5iSj5-s5-HzghkX-ExYc42tYvZ_gc6A>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvuddruddutddguddtjecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
+    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
+    htvghrnhepgeevfeejleffhfdtffeitefhjeeuteffffekjeeggfdtkeeikedtueevtdeg
+    hfevnecuffhomhgrihhnpehivghtfhdrohhrghenucevlhhushhtvghrufhiiigvpedtne
+    curfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:FAnGYfcPY6nwtZfLoz_1zbBSq3hJhMkuZO0T6RgL7yVu4YsYcLdGCQ>
+    <xmx:FAnGYYN6fUWs9Sd1_KI-33Lc3nn2L35EMLIo-lksvNihRwcayqVRzA>
+    <xmx:FAnGYRl4KV4-HTmfCE6wDvbWa_VBcygZy394Jg11sNu5RqlvYwuFGg>
+    <xmx:FAnGYdpnNa02WHnvAzcZMEL6K5S_8QRjgobAxP_6Mxynb2bMOKhbqw>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
+ 24 Dec 2021 12:53:23 -0500 (EST)
+Date:   Fri, 24 Dec 2021 19:53:19 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Justin Iurman <justin.iurman@uliege.be>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        dsahern@kernel.org, yoshfuji@linux-ipv6.org
+Subject: Re: [PATCH net-next v2] ipv6: ioam: Support for Queue depth data
+ field
+Message-ID: <YcYJD2trOaoc5y7Z@shredder>
+References: <20211224135000.9291-1-justin.iurman@uliege.be>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211224135000.9291-1-justin.iurman@uliege.be>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Ajay,
-
-On Fri, 2021-12-24 at 16:20 +0000, Ajay.Kathat@microchip.com wrote:
-> On 23/12/21 22:38, David Mosberger-Tang wrote:
-> > First, on a freshly booted system and with wilc1000-spi autoloaded by
-> > the kernel, try this sequence (copy & paste the commands):
-> > 
-> >     /usr/sbin/wpa_supplicant -Bs -iwlan0 -c/etc/wpa_supplicant.conf
-> >     sleep 10
-> >     iw dev wlan0 set power_save on
-> > 
-> > The above yields a power consumption of 1.4W reliably.  The "sleep 10"
-> > doesn't matter here; the behavior is the same with or without it.  I
-> > tried waiting up to 120 seconds with no difference.
+On Fri, Dec 24, 2021 at 02:50:00PM +0100, Justin Iurman wrote:
+> v2:
+>  - Fix sparse warning (use rcu_dereference)
 > 
-> I have tested by making the WILC as build-in module to insert driver 
-> automatically at boot-up. I hope it should be fine. Because I have 
-> already tested as loadable module earlier.
+> This patch adds support for the queue depth in IOAM trace data fields.
 > 
-> Below are the number observed
-> ------------------------------ --------------------------
-> - before starting wpa_supplicant             : ~16.3 mA
-> - wpa_supplicant started                         : ~40 mA
-> - PSM on                                                  :  ~6 mA
+> The draft [1] says the following:
 > 
+>    The "queue depth" field is a 4-octet unsigned integer field.  This
+>    field indicates the current length of the egress interface queue of
+>    the interface from where the packet is forwarded out.  The queue
+>    depth is expressed as the current amount of memory buffers used by
+>    the queue (a packet could consume one or more memory buffers,
+>    depending on its size).
 > 
-> The 'sleep 10' would have no impact in my setup because I have measured 
-> the current consumption for wilc1000 chip.
+> An existing function (i.e., qdisc_qstats_qlen_backlog) is used to
+> retrieve the current queue length without reinventing the wheel.
 > 
-> I have shared the screenshot at https://postimg.cc/67S41dkb
+> Note: it was tested and qlen is increasing when an artificial delay is
+> added on the egress with tc.
+> 
+>   [1] https://datatracker.ietf.org/doc/html/draft-ietf-ippm-ioam-data#section-5.4.2.7
+> 
+> Signed-off-by: Justin Iurman <justin.iurman@uliege.be>
+> ---
+>  net/ipv6/ioam6.c | 16 +++++++++++++++-
+>  1 file changed, 15 insertions(+), 1 deletion(-)
+> 
+> diff --git a/net/ipv6/ioam6.c b/net/ipv6/ioam6.c
+> index 122a3d47424c..969a5adbaf5c 100644
+> --- a/net/ipv6/ioam6.c
+> +++ b/net/ipv6/ioam6.c
+> @@ -13,10 +13,12 @@
+>  #include <linux/ioam6.h>
+>  #include <linux/ioam6_genl.h>
+>  #include <linux/rhashtable.h>
+> +#include <linux/netdevice.h>
+>  
+>  #include <net/addrconf.h>
+>  #include <net/genetlink.h>
+>  #include <net/ioam6.h>
+> +#include <net/sch_generic.h>
+>  
+>  static void ioam6_ns_release(struct ioam6_namespace *ns)
+>  {
+> @@ -717,7 +719,19 @@ static void __ioam6_fill_trace_data(struct sk_buff *skb,
+>  
+>  	/* queue depth */
+>  	if (trace->type.bit6) {
+> -		*(__be32 *)data = cpu_to_be32(IOAM6_U32_UNAVAILABLE);
+> +		struct netdev_queue *queue;
+> +		struct Qdisc *qdisc;
+> +		__u32 qlen, backlog;
+> +
+> +		if (skb_dst(skb)->dev->flags & IFF_LOOPBACK) {
+> +			*(__be32 *)data = cpu_to_be32(IOAM6_U32_UNAVAILABLE);
+> +		} else {
+> +			queue = skb_get_tx_queue(skb_dst(skb)->dev, skb);
+> +			qdisc = rcu_dereference(queue->qdisc);
+> +			qdisc_qstats_qlen_backlog(qdisc, &qlen, &backlog);
+> +
+> +			*(__be32 *)data = cpu_to_be32(qlen);
 
-Huh, that's curious.  I definitely cannot reproduce this.  To match
-your setup as closely as possibly, I also built wilc1000-spi into the
-kernel, but that makes no difference (as expected).
+Why 'qlen' is used and not 'backlog'? From the paragraph you quoted it
+seems that queue depth needs to take into account the size of the
+enqueued packets, not only their number.
 
-What kernel version are you on?  I switched to wireless-drivers-next as
-of today (latest commit d430dffbe9dd30759f3c64b65bf85b0245c8d8ab).
+Did you check what other IOAM implementations (SW/HW) report for queue
+depth? I would assume that they report bytes.
 
-With this kernel, the numbers are about 100mW lower than reported
-before, but the relative behavior is the same: about 300mW higher
-power-consumption when PSM is not taking effect properly.
-
-To recap, back with wilc1000-spi being a module again, after freshly
-booting the system and issuing this commands:
-
-   /usr/sbin/wpa_supplicant -Bs -iwlan0 -c/etc/wpa_supplicant.conf
-   /usr/sbin/iw dev wlan0 set power_save on
-
-I see a power-consumption of about 1.25W.  PSM on/off makes no
-difference in this state.  Then, if I issue the commands:
-
-rmmod wilc1000-spi
-modprobe wilc1000-spi
-sleep 10
-iw dev wlan0 set power_save on
-
-power-consumption drops to about 0.9W.
-
-Here is a screenshot that shows the annotated power-measurements:
-
-   https://postimg.cc/3dbKSGht
-
-Apart from kernel version, the only things that I can think of that'd
-be different is that we don't have the ENABLE pin wired to a GPIO.
- Instead, the chip is always enabled.  I doubt this would explain the
-difference (~RESET is wired to a GPIO).
-
-
-  --david
-
-
+> +		}
+>  		data += sizeof(__be32);
+>  	}
+>  
+> -- 
+> 2.25.1
+> 
