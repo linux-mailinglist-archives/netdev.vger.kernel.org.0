@@ -2,68 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CA8FC47EE15
-	for <lists+netdev@lfdr.de>; Fri, 24 Dec 2021 10:53:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C6D1947EE21
+	for <lists+netdev@lfdr.de>; Fri, 24 Dec 2021 11:00:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352360AbhLXJxY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Dec 2021 04:53:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48472 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352359AbhLXJxV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Dec 2021 04:53:21 -0500
-Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA0D3C061401
-        for <netdev@vger.kernel.org>; Fri, 24 Dec 2021 01:53:19 -0800 (PST)
-Received: by mail-ed1-x543.google.com with SMTP id b13so31554232edd.8
-        for <netdev@vger.kernel.org>; Fri, 24 Dec 2021 01:53:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=QU+cbZmU18+dqFnGocwGCLSMZiezXCdYalW0v8ApfXA=;
-        b=MxaKRBscomZsbg+OjmemOhZ8x/+wvRkRVoUzhIAmApM1Vr0dUBwDH3r8PDSzLWLD6G
-         FXIYYFGj54xDDDG8PlBkxzwWz6VwMXX/Z9EA/CCxnuGqDeENfWSvubp4tRpmgom0/F+o
-         UaFoFNnAZXtxSrMMYVWUYeh53KOeoeKM8Dr0NDpphqYarWhcP21OYah4LFC+owUTmETO
-         KW22x7xbvVmYuGIJBBfX53aBPKf6XT3YQlCeDgR7VNO04V4I8Ngd8nj/9fp/PuGxHqw7
-         V0SKFJwux9/ilBT7pUlmtlbmJsws1cbP4QZYVkVr0b4faUDbbvFkW56iM0phQl8w9U2F
-         GOqQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=QU+cbZmU18+dqFnGocwGCLSMZiezXCdYalW0v8ApfXA=;
-        b=0AtgGl22xHaNNcPHtsln0IjDV521+dZoDeteda5dODlnqQLSeKfo/MEReudyrSgFjx
-         6BnK1x6MHTYuDHN4Mt6TF0fUlb8w/3mD1Wx7yNAv9ZZu9tL05VDR5nM3cSG0HHBHxo95
-         3DMuhPCRXz/f5zkAtXVXjCQFgveaYGiwn9CJRpcROPlp+yj9cqnNa/vuJlSY9en9KOSA
-         FBGykFXw3p1lyCYO5DWmKOag9Wk+RCj5gnXjuUafokppwaXYK8UGWaRCwHRQlDgwxmS9
-         sEtKUTgHhFUM5dGTdeoh32FI8/O2eXkxEsF2wyRfVCM8azRw70ORwuDIs8iQxwFaK2El
-         uEOQ==
-X-Gm-Message-State: AOAM532c2FaxKlmTg/j7cUrknC1RjsYOo63xZnlIdL42ZujltmCQXph2
-        4RAACGhSNzAddpm/q70YD+Ljo9m2jiCfGZTqU6o=
-X-Google-Smtp-Source: ABdhPJyx8A/QpO24k6ByFPkJTS+y2+8mA0O3fnJVJvqbMfJfgZxSFdmgI6dP6ycWyxAZDzAdtwI6usn15TeZeEexu5g=
-X-Received: by 2002:a17:906:b1d6:: with SMTP id bv22mr4869068ejb.181.1640339598243;
- Fri, 24 Dec 2021 01:53:18 -0800 (PST)
+        id S1352379AbhLXKAU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Dec 2021 05:00:20 -0500
+Received: from mga09.intel.com ([134.134.136.24]:18401 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1352377AbhLXKAT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 Dec 2021 05:00:19 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1640340019; x=1671876019;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Sn9zgDOv7uci6noFgnd4KAaBkeLNUIRege9DyPDdM2U=;
+  b=gOvZFECYNSRh8eP6CnOr7/jOaLujh5a+R6d5jPzs2HtGE74gsau7AfPk
+   9HSuN61trGVxZmCcEK1d1J6EESZRR8qk44wgmlgU85Xgm9Gs+3DhtD/EV
+   unDY+9s9p61N0lHnxF9a4oDXzuG+95GzJ6GIyOkK8nRSREREpIaXd2h+h
+   Bms+TV1OjQdsUIVUHUWG57ddOKTQFqAUZeU4HllMsbYeek8T0tdb/+4q0
+   sYSHbt1He+sOX0vSIZey+vaGKE+0bGtnPxOwa6pLEtOSydOZPjjus2THg
+   5d01sjisjICN4bfwl7eoAES8lITCnElcEQKVJafLn5pw5lPHXC7qQ1GII
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10207"; a="240760275"
+X-IronPort-AV: E=Sophos;i="5.88,232,1635231600"; 
+   d="scan'208";a="240760275"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Dec 2021 02:00:19 -0800
+X-IronPort-AV: E=Sophos;i="5.88,232,1635231600"; 
+   d="scan'208";a="522397580"
+Received: from jzhao8-mobl1.ccr.corp.intel.com (HELO mxinjiax-mobl1.ccr.corp.intel.com) ([10.255.28.232])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Dec 2021 02:00:16 -0800
+From:   Ma Xinjian <xinjianx.ma@intel.com>
+To:     Mat Martineau <mathew.j.martineau@linux.intel.com>
+Cc:     Matthieu Baerts <matthieu.baerts@tessares.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        mptcp@lists.linux.dev, Philip Li <philip.li@intel.com>,
+        kernel test robot <lkp@intel.com>,
+        Ma Xinjian <xinjianx.ma@intel.com>
+Subject: [PATCH] selftests: mptcp: Remove the deprecated config NFT_COUNTER
+Date:   Fri, 24 Dec 2021 17:59:28 +0800
+Message-Id: <20211224095928.60584-1-xinjianx.ma@intel.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Received: by 2002:ab4:a4ab:0:0:0:0:0 with HTTP; Fri, 24 Dec 2021 01:53:17
- -0800 (PST)
-Reply-To: hari_kunda1@hotmail.fr
-From:   Mr hary kunda <khanadbul01@gmail.com>
-Date:   Fri, 24 Dec 2021 01:53:17 -0800
-Message-ID: <CALr78wXKq+1N29c3-cQRtRYE4buMtTMJkuHdSzwhsXaF=+nz6w@mail.gmail.com>
-Subject: Greetings from Mr.Hary Kunda
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+NFT_COUNTER was removed since
+390ad4295aa ("netfilter: nf_tables: make counter support built-in")
+LKP/0Day will check if all configs listing under selftests are able to
+be enabled properly.
+
+For the missing configs, it will report something like:
+LKP WARN miss config CONFIG_NFT_COUNTER= of net/mptcp/config
+
+- it's not reasonable to keep the deprecated configs.
+- configs under kselftests are recommended by corresponding tests.
+So if some configs are missing, it will impact the testing results
+
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Ma Xinjian <xinjianx.ma@intel.com>
+---
+ tools/testing/selftests/net/mptcp/config | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/tools/testing/selftests/net/mptcp/config b/tools/testing/selftests/net/mptcp/config
+index 0faaccd21447..2b82628decb1 100644
+--- a/tools/testing/selftests/net/mptcp/config
++++ b/tools/testing/selftests/net/mptcp/config
+@@ -9,7 +9,6 @@ CONFIG_NETFILTER=y
+ CONFIG_NETFILTER_ADVANCED=y
+ CONFIG_NETFILTER_NETLINK=m
+ CONFIG_NF_TABLES=m
+-CONFIG_NFT_COUNTER=m
+ CONFIG_NFT_COMPAT=m
+ CONFIG_NETFILTER_XTABLES=m
+ CONFIG_NETFILTER_XT_MATCH_BPF=m
 -- 
-Greetings from Mr.Hary Kunda
+2.20.1
 
-How are you and your family?
-There is a business deal I would like to introduce to you. There is no
-risk involved.
-The deal is worth $10.5 million. We split it in half - 50% each.
-Revert to me asap if you are interested.
-Regards,
-
-Mr. Hary Kunda
