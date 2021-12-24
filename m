@@ -2,78 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A9F5C47F163
-	for <lists+netdev@lfdr.de>; Sat, 25 Dec 2021 00:00:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FAE147F165
+	for <lists+netdev@lfdr.de>; Sat, 25 Dec 2021 00:01:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230350AbhLXXAN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Dec 2021 18:00:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49010 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229464AbhLXXAN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Dec 2021 18:00:13 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7200C061401;
-        Fri, 24 Dec 2021 15:00:12 -0800 (PST)
+        id S231202AbhLXXBV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Dec 2021 18:01:21 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:41004 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230441AbhLXXBU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Dec 2021 18:01:20 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 02E5CB8234D;
-        Fri, 24 Dec 2021 23:00:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id B69D6C36AEC;
-        Fri, 24 Dec 2021 23:00:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 47CBC620DB;
+        Fri, 24 Dec 2021 23:01:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D457C36AE8;
+        Fri, 24 Dec 2021 23:01:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1640386809;
-        bh=pIE1wVV5FBZbGAYH/4kt/cNIGYApjrutCawBkgG4yYg=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=YzXVKAVgGO/QTuE5Sk1JUKQWjQwBU+e7kxrYMYDG87wRtPoWad5GBPJ+laTgTGh0U
-         CpzUMmUNyP7K+CSwOjEj/o+WPndOfp2ULVzr1zPRcJ8NzwtcusIMJbQrVehyGgGBaK
-         Un+wmEVVuLoDITolk56ZcKf5fzZ7Dkrkd3/+naJd0Taa+ns7+0iz8lEGDPPzMU7LAS
-         DajVR/YlPKCYrVLD9xTa7xGPQENqIt0iaXQQHSSX5flLFYeVIP7nPFAIMpH9iCrxyY
-         gLXi/IjSAh5ttXBr2hmWmA/bsviRJUSK/5b1HinZWZEu4/do40/cL+oRQtEy6u1kxq
-         3TVnJtdikQYMw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A1DE1EAC068;
-        Fri, 24 Dec 2021 23:00:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1640386879;
+        bh=nuJKknkW46ZYkyeyo4TJBnHqTQW4tQQyj2wh1vwIHoA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=kTdes8FgvpVBnRwtbpNUrFF/jWyw1vvNk+I9wDiwRY3r3KYgKGR+gMNdREAWoaEUL
+         GBjb/9s3jIGNggbBCWrTuUQE3SmExLacqliF3EeTeg62nRYCNzAmLCoDfDl6vyw9QN
+         4kiqBURqfiysFFuEqRox0HMS4/at+Rrd+OXafeYcIVBrYM6j7Zlfsd/Sdm7kaOkCzh
+         JYlDIufgSxV0xT68JxoxwtPqK7v4aR74UeE2Ow/XnfZhdS/wSDhd+fkYVoi+JLg3WK
+         TWxacrfEx153c9DvkeHc+DiYeQtkJladIhF+6LTtKe65N1FZpXzQfqEq80crKDI/a1
+         mPUiSUTn7VpHQ==
+Date:   Fri, 24 Dec 2021 15:01:18 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Cc:     davem@davemloft.net, u.kleine-koenig@pengutronix.de, marex@denx.de,
+        trix@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: ks8851: Fix wrong check for irq
+Message-ID: <20211224150118.17e24b88@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20211224051753.1565175-1-jiasheng@iscas.ac.cn>
+References: <20211224051753.1565175-1-jiasheng@iscas.ac.cn>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: phy: fixed_phy: Fix NULL vs IS_ERR() checking in
- __fixed_phy_register
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164038680965.25397.3716151863541011855.git-patchwork-notify@kernel.org>
-Date:   Fri, 24 Dec 2021 23:00:09 +0000
-References: <20211224021500.10362-1-linmq006@gmail.com>
-In-Reply-To: <20211224021500.10362-1-linmq006@gmail.com>
-To:     Miaoqian Lin <linmq006@gmail.com>
-Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        davem@davemloft.net, kuba@kernel.org, linus.walleij@linaro.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Fri, 24 Dec 2021 13:17:53 +0800 Jiasheng Jiang wrote:
+> Because netdev->irq is unsigned
 
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Fri, 24 Dec 2021 02:14:59 +0000 you wrote:
-> The fixed_phy_get_gpiod function() returns NULL, it doesn't return error
-> pointers, using NULL checking to fix this.i
-> 
-> Fixes: 5468e82f7034 ("net: phy: fixed-phy: Drop GPIO from fixed_phy_add()")
-> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-> ---
->  drivers/net/phy/fixed_phy.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-
-Here is the summary with links:
-  - net: phy: fixed_phy: Fix NULL vs IS_ERR() checking in __fixed_phy_register
-    https://git.kernel.org/netdev/net/c/b45396afa417
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+It is not.
