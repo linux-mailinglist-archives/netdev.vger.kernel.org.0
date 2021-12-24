@@ -2,84 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C71747ED08
-	for <lists+netdev@lfdr.de>; Fri, 24 Dec 2021 09:19:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 06C3647ED85
+	for <lists+netdev@lfdr.de>; Fri, 24 Dec 2021 09:55:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351929AbhLXITi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Dec 2021 03:19:38 -0500
-Received: from smtp-relay-canonical-1.canonical.com ([185.125.188.121]:48406
-        "EHLO smtp-relay-canonical-1.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235362AbhLXITh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Dec 2021 03:19:37 -0500
-Received: from HP-EliteBook-840-G7.. (223-136-216-233.emome-ip.hinet.net [223.136.216.233])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id 3BD0E3F15D;
-        Fri, 24 Dec 2021 08:19:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1640333975;
-        bh=z4d47WAXt8lxW9JLIGaWJ2E54ayVDgeNLwPy3mvdFmU=;
-        h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-         MIME-Version;
-        b=bO4g8OXXisCbls7zT3GAgwL17didHBsIG3yQH9V2eMWeilwCdcyqTw4tqwtHESqTV
-         j4JsVeCzA8IlK8s1I3+VGpT063+g+joJt3ASp6JuMwpYL/+9j9f14J5WlrUdcR8Muq
-         R2spST8IS0WNFYF/i6CWom4+7W4rAyXd7ACdjjsLh1AeiH76ekYdS8ZfAQimWKRuDX
-         nr9uJJF0Jg1J9F5SYJiaJsqfiLIdAPkXtYBEaL8A/TAY8FGbsiAWZwejvREYwoOS48
-         /Vh9/L3SvIkzV09pEDse5og2QVPC9apG56GfOXunmWZqHw4/O/BCWz8G266zqif3XE
-         YJBArwUb3WJGQ==
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-To:     m.chetan.kumar@intel.com, linuxwwan@intel.com
-Cc:     linux-pci@vger.kernel.org, linux-pm@vger.kernel.org,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Loic Poulain <loic.poulain@linaro.org>,
-        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
+        id S1343732AbhLXIy6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Dec 2021 03:54:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35536 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238166AbhLXIy4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Dec 2021 03:54:56 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 972C4C061401;
+        Fri, 24 Dec 2021 00:54:56 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: usama.anjum)
+        with ESMTPSA id AD4C21F41522
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1640336094;
+        bh=HYXUD2wnC2nF4d9aLRWZznmW4plKGdtTk8jipb8l4G4=;
+        h=Date:From:To:Cc:Subject:From;
+        b=NnkOxKJEBhFI0hM3hgO9HogchwfXxb8jS/LjlM36wHc/cOc1xmyup+sPdL/K5B9Es
+         qCK1gqTBjmyMXPJP2f3sJjk+JAJ47at7XcNiHvY68uiGnWjitWFwa/9t7iSa3gXzlw
+         kChQVei5Yv/eiOCPf5tCHk2fOnlklu8uKNcPFaahQixRXbSUSmCN5eRxw4kcjjtm/o
+         XNSM/yB3ahPPCRP02H8MOmstkxps+F/Wr5MmcsbOFMG7qb9j01nekBV3pVItfnpTZX
+         c/G/tORm5xjGOI+ISvQwFTh+GTYVQovFI+XbA3xFb37NNGKM3NmFGEGY2wIuhr3IhG
+         V3eZ6XqLlnmnQ==
+Date:   Fri, 24 Dec 2021 13:54:46 +0500
+From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
+To:     Yan-Hsuan Chuang <tony0620emma@gmail.com>,
+        Kalle Valo <kvalo@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] net: wwan: iosm: Keep device at D0 for s2idle case
-Date:   Fri, 24 Dec 2021 16:19:14 +0800
-Message-Id: <20211224081914.345292-2-kai.heng.feng@canonical.com>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20211224081914.345292-1-kai.heng.feng@canonical.com>
-References: <20211224081914.345292-1-kai.heng.feng@canonical.com>
+        Jakub Kicinski <kuba@kernel.org>,
+        Ping-Ke Shih <pkshih@realtek.com>,
+        Po-Hao Huang <phhuang@realtek.com>,
+        "open list:REALTEK WIRELESS DRIVER (rtw88)" 
+        <linux-wireless@vger.kernel.org>,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Cc:     usama.anjum@collabora.com, kernel@collabora.com
+Subject: [PATCH v3] rtw88: check for validity before using a pointer
+Message-ID: <YcWK1jxnd3vGdmCq@debian-BULLSEYE-live-builder-AMD64>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We are seeing spurious wakeup caused by Intel 7560 WWAN on AMD laptops.
-This prevent those laptops to stay in s2idle state.
+ieee80211_probereq_get() can return NULL. Pointer skb should be checked
+for validty before use. If it is not valid, list of skbs needs to be
+freed.
 
-From what I can understand, the intention of ipc_pcie_suspend() is to
-put the device to D3cold, and ipc_pcie_suspend_s2idle() is to keep the
-device at D0. However, the device can still be put to D3hot/D3cold by
-PCI core.
+Fixes: 10d162b2ed39 ("rtw88: 8822c: add ieee80211_ops::hw_scan")
+Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
 
-So explicitly let PCI core know this device should stay at D0, to solve
-the spurious wakeup.
-
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
 ---
- drivers/net/wwan/iosm/iosm_ipc_pcie.c | 3 +++
- 1 file changed, 3 insertions(+)
+v3:
+Use skb_queue_walk instead of skb_queue_walk_safe
+v2:
+Free the list in case of error
+---
+ drivers/net/wireless/realtek/rtw88/fw.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/net/wwan/iosm/iosm_ipc_pcie.c b/drivers/net/wwan/iosm/iosm_ipc_pcie.c
-index d73894e2a84ed..af1d0e837fe99 100644
---- a/drivers/net/wwan/iosm/iosm_ipc_pcie.c
-+++ b/drivers/net/wwan/iosm/iosm_ipc_pcie.c
-@@ -340,6 +340,9 @@ static int __maybe_unused ipc_pcie_suspend_s2idle(struct iosm_pcie *ipc_pcie)
+diff --git a/drivers/net/wireless/realtek/rtw88/fw.c b/drivers/net/wireless/realtek/rtw88/fw.c
+index 2f7c036f9022..b56dc43229d2 100644
+--- a/drivers/net/wireless/realtek/rtw88/fw.c
++++ b/drivers/net/wireless/realtek/rtw88/fw.c
+@@ -1866,11 +1866,19 @@ static int rtw_hw_scan_update_probe_req(struct rtw_dev *rtwdev,
+ 					     req->ssids[i].ssid,
+ 					     req->ssids[i].ssid_len,
+ 					     req->ie_len);
++		if (!skb)
++			goto out;
+ 		rtw_append_probe_req_ie(rtwdev, skb, &list, rtwvif);
+ 		kfree_skb(skb);
+ 	}
  
- 	ipc_imem_pm_s2idle_sleep(ipc_pcie->imem, true);
- 
-+	/* Let PCI core know this device should stay at D0 */
-+	pci_save_state(ipc_pcie->pci);
+ 	return _rtw_hw_scan_update_probe_req(rtwdev, num, &list);
 +
- 	return 0;
++out:
++	skb_queue_walk(&list, skb)
++		kfree_skb(skb);
++
++	return -ENOMEM;
  }
  
+ static int rtw_add_chan_info(struct rtw_dev *rtwdev, struct rtw_chan_info *info,
 -- 
-2.33.1
+2.30.2
 
