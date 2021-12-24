@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 854CA47F0B3
-	for <lists+netdev@lfdr.de>; Fri, 24 Dec 2021 20:28:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B47EA47F0B7
+	for <lists+netdev@lfdr.de>; Fri, 24 Dec 2021 20:28:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353504AbhLXT0v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Dec 2021 14:26:51 -0500
-Received: from relmlor1.renesas.com ([210.160.252.171]:13679 "EHLO
+        id S1353551AbhLXT04 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Dec 2021 14:26:56 -0500
+Received: from relmlor1.renesas.com ([210.160.252.171]:32129 "EHLO
         relmlie5.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1344305AbhLXT0q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Dec 2021 14:26:46 -0500
+        by vger.kernel.org with ESMTP id S1353470AbhLXT0t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Dec 2021 14:26:49 -0500
 X-IronPort-AV: E=Sophos;i="5.88,233,1635174000"; 
-   d="scan'208";a="104635854"
+   d="scan'208";a="104635857"
 Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
-  by relmlie5.idc.renesas.com with ESMTP; 25 Dec 2021 04:26:45 +0900
+  by relmlie5.idc.renesas.com with ESMTP; 25 Dec 2021 04:26:48 +0900
 Received: from localhost.localdomain (unknown [10.226.36.204])
-        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 00BC940F5214;
-        Sat, 25 Dec 2021 04:26:43 +0900 (JST)
+        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 9B29440F520F;
+        Sat, 25 Dec 2021 04:26:46 +0900 (JST)
 From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-To:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Michal Simek <michal.simek@xilinx.com>
+To:     netdev@vger.kernel.org, Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
 Cc:     Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
         Prabhakar <prabhakar.csengg@gmail.com>,
         Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH 5/8] net: xilinx: emaclite: Use platform_get_irq() to get the interrupt
-Date:   Fri, 24 Dec 2021 19:26:23 +0000
-Message-Id: <20211224192626.15843-6-prabhakar.mahadev-lad.rj@bp.renesas.com>
+        wcn36xx@lists.infradead.org, linux-wireless@vger.kernel.org
+Subject: [PATCH 6/8] wcn36xx: Use platform_get_irq_byname() to get the interrupt
+Date:   Fri, 24 Dec 2021 19:26:24 +0000
+Message-Id: <20211224192626.15843-7-prabhakar.mahadev-lad.rj@bp.renesas.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20211224192626.15843-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
 References: <20211224192626.15843-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
@@ -36,42 +36,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-platform_get_resource(pdev, IORESOURCE_IRQ, ..) relies on static
+platform_get_resource_byname(pdev, IORESOURCE_IRQ, ..) relies on static
 allocation of IRQ resources in DT core code, this causes an issue
 when using hierarchical interrupt domains using "interrupts" property
 in the node as this bypasses the hierarchical setup and messes up the
 irq chaining.
 
 In preparation for removal of static setup of IRQ resource from DT core
-code use platform_get_irq().
+code use platform_get_irq_byname().
 
 Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 ---
- drivers/net/ethernet/xilinx/xilinx_emaclite.c | 9 +++------
- 1 file changed, 3 insertions(+), 6 deletions(-)
+ drivers/net/wireless/ath/wcn36xx/main.c | 21 ++++++++-------------
+ 1 file changed, 8 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/net/ethernet/xilinx/xilinx_emaclite.c b/drivers/net/ethernet/xilinx/xilinx_emaclite.c
-index 0815de581c7f..519599480b15 100644
---- a/drivers/net/ethernet/xilinx/xilinx_emaclite.c
-+++ b/drivers/net/ethernet/xilinx/xilinx_emaclite.c
-@@ -1133,14 +1133,11 @@ static int xemaclite_of_probe(struct platform_device *ofdev)
- 	lp->ndev = ndev;
+diff --git a/drivers/net/wireless/ath/wcn36xx/main.c b/drivers/net/wireless/ath/wcn36xx/main.c
+index 9575d7373bf2..bd334a302057 100644
+--- a/drivers/net/wireless/ath/wcn36xx/main.c
++++ b/drivers/net/wireless/ath/wcn36xx/main.c
+@@ -1446,25 +1446,20 @@ static int wcn36xx_platform_get_resources(struct wcn36xx *wcn,
+ {
+ 	struct device_node *mmio_node;
+ 	struct device_node *iris_node;
+-	struct resource *res;
+ 	int index;
+ 	int ret;
  
- 	/* Get IRQ for the device */
--	res = platform_get_resource(ofdev, IORESOURCE_IRQ, 0);
+ 	/* Set TX IRQ */
+-	res = platform_get_resource_byname(pdev, IORESOURCE_IRQ, "tx");
 -	if (!res) {
--		dev_err(dev, "no IRQ found\n");
--		rc = -ENXIO;
-+	rc = platform_get_irq(ofdev, 0);
-+	if (rc < 0)
- 		goto error;
+-		wcn36xx_err("failed to get tx_irq\n");
+-		return -ENOENT;
 -	}
+-	wcn->tx_irq = res->start;
++	ret = platform_get_irq_byname(pdev, "tx");
++	if (ret < 0)
++		return ret;
++	wcn->tx_irq = ret;
  
--	ndev->irq = res->start;
-+	ndev->irq = rc;
+ 	/* Set RX IRQ */
+-	res = platform_get_resource_byname(pdev, IORESOURCE_IRQ, "rx");
+-	if (!res) {
+-		wcn36xx_err("failed to get rx_irq\n");
+-		return -ENOENT;
+-	}
+-	wcn->rx_irq = res->start;
++	ret = platform_get_irq_byname(pdev, "rx");
++	if (ret < 0)
++		return ret;
++	wcn->rx_irq = ret;
  
- 	res = platform_get_resource(ofdev, IORESOURCE_MEM, 0);
- 	lp->base_addr = devm_ioremap_resource(&ofdev->dev, res);
+ 	/* Acquire SMSM tx enable handle */
+ 	wcn->tx_enable_state = qcom_smem_state_get(&pdev->dev,
 -- 
 2.17.1
 
