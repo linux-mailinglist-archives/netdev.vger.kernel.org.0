@@ -2,65 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D63CF47F15F
-	for <lists+netdev@lfdr.de>; Fri, 24 Dec 2021 23:57:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A9F5C47F163
+	for <lists+netdev@lfdr.de>; Sat, 25 Dec 2021 00:00:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230207AbhLXW5T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Dec 2021 17:57:19 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:39024 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229464AbhLXW5T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Dec 2021 17:57:19 -0500
+        id S230350AbhLXXAN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Dec 2021 18:00:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49010 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229464AbhLXXAN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Dec 2021 18:00:13 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7200C061401;
+        Fri, 24 Dec 2021 15:00:12 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E47D8612BE;
-        Fri, 24 Dec 2021 22:57:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2605C36AE5;
-        Fri, 24 Dec 2021 22:57:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 02E5CB8234D;
+        Fri, 24 Dec 2021 23:00:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id B69D6C36AEC;
+        Fri, 24 Dec 2021 23:00:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1640386638;
-        bh=d3Uuu33b1tz/huT+/Fpn2SEBaYlEn9thzNHCSyBG/1M=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=mNM+FhYQQdDd5NKoUSAdELWgMM5yEQA66fjh2mUcWoSlTBRIAnHCDNuFPmD2tIsQj
-         T76D/FkyxfLihW8ckvDTZaYdpxTadvqrGdGeMtdRpKWL/1YBRSqVaVyKFaN5C3PkNI
-         ZvUjU9KjKXzYcSeQoa2GKlcZ7zOubUOKZmMWIpaE7oLbKqc1lVeUCxyGeAGHBfwSlX
-         AkXatZ4F27FDd1TePKJbarU5HShBqktg73ydYlLdATHQ55Sgcl/mMjo1ct5u7jZp/c
-         qdXU4C/Mr6YC0FogX779GUS3nZxUxKaYqM06X1Nxvrq3kwxESTF2vSAT0uoXqCFDtt
-         TWx0vABgzhXAQ==
-Date:   Fri, 24 Dec 2021 14:57:17 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Sun Shouxin <sunshouxin@chinatelecom.cn>
-Cc:     j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, huyd12@chinatelecom.cn
-Subject: Re: [PATCH v5] net: bonding: Add support for IPV6 ns/na to
- balance-alb/balance-tlb mode
-Message-ID: <20211224145717.7aebc89f@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20211224142512.44182-1-sunshouxin@chinatelecom.cn>
-References: <20211224142512.44182-1-sunshouxin@chinatelecom.cn>
+        s=k20201202; t=1640386809;
+        bh=pIE1wVV5FBZbGAYH/4kt/cNIGYApjrutCawBkgG4yYg=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=YzXVKAVgGO/QTuE5Sk1JUKQWjQwBU+e7kxrYMYDG87wRtPoWad5GBPJ+laTgTGh0U
+         CpzUMmUNyP7K+CSwOjEj/o+WPndOfp2ULVzr1zPRcJ8NzwtcusIMJbQrVehyGgGBaK
+         Un+wmEVVuLoDITolk56ZcKf5fzZ7Dkrkd3/+naJd0Taa+ns7+0iz8lEGDPPzMU7LAS
+         DajVR/YlPKCYrVLD9xTa7xGPQENqIt0iaXQQHSSX5flLFYeVIP7nPFAIMpH9iCrxyY
+         gLXi/IjSAh5ttXBr2hmWmA/bsviRJUSK/5b1HinZWZEu4/do40/cL+oRQtEy6u1kxq
+         3TVnJtdikQYMw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A1DE1EAC068;
+        Fri, 24 Dec 2021 23:00:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] net: phy: fixed_phy: Fix NULL vs IS_ERR() checking in
+ __fixed_phy_register
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164038680965.25397.3716151863541011855.git-patchwork-notify@kernel.org>
+Date:   Fri, 24 Dec 2021 23:00:09 +0000
+References: <20211224021500.10362-1-linmq006@gmail.com>
+In-Reply-To: <20211224021500.10362-1-linmq006@gmail.com>
+To:     Miaoqian Lin <linmq006@gmail.com>
+Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        davem@davemloft.net, kuba@kernel.org, linus.walleij@linaro.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 24 Dec 2021 09:25:12 -0500 Sun Shouxin wrote:
-> Since ipv6 neighbor solicitation and advertisement messages
-> isn't handled gracefully in bonding6 driver, we can see packet
-> drop due to inconsistency bewteen mac address in the option
-> message and source MAC .
-> 
-> Another examples is ipv6 neighbor solicitation and advertisement
-> messages from VM via tap attached to host brighe, the src mac
-> mighe be changed through balance-alb mode, but it is not synced
-> with Link-layer address in the option message.
-> 
-> The patch implements bond6's tx handle for ipv6 neighbor
-> solicitation and advertisement messages.
-> 
-> Suggested-by: Hu Yadi <huyd12@chinatelecom.cn>
-> Reported-by: kernel test robot <lkp@intel.com>
+Hello:
 
-Still breaks allmodconfig build.
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Fri, 24 Dec 2021 02:14:59 +0000 you wrote:
+> The fixed_phy_get_gpiod function() returns NULL, it doesn't return error
+> pointers, using NULL checking to fix this.i
+> 
+> Fixes: 5468e82f7034 ("net: phy: fixed-phy: Drop GPIO from fixed_phy_add()")
+> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+> ---
+>  drivers/net/phy/fixed_phy.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+
+Here is the summary with links:
+  - net: phy: fixed_phy: Fix NULL vs IS_ERR() checking in __fixed_phy_register
+    https://git.kernel.org/netdev/net/c/b45396afa417
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
