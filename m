@@ -2,316 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E69A747F03C
-	for <lists+netdev@lfdr.de>; Fri, 24 Dec 2021 17:50:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DB3A47F069
+	for <lists+netdev@lfdr.de>; Fri, 24 Dec 2021 18:38:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352296AbhLXQtv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Dec 2021 11:49:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53868 "EHLO
+        id S1353351AbhLXRin (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Dec 2021 12:38:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236414AbhLXQtu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Dec 2021 11:49:50 -0500
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48F52C061401
-        for <netdev@vger.kernel.org>; Fri, 24 Dec 2021 08:49:50 -0800 (PST)
-Received: by mail-pj1-x1035.google.com with SMTP id y16-20020a17090a6c9000b001b13ffaa625so12032390pjj.2
-        for <netdev@vger.kernel.org>; Fri, 24 Dec 2021 08:49:50 -0800 (PST)
+        with ESMTP id S1353339AbhLXRil (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Dec 2021 12:38:41 -0500
+Received: from mail-il1-x12f.google.com (mail-il1-x12f.google.com [IPv6:2607:f8b0:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72FA4C061759
+        for <netdev@vger.kernel.org>; Fri, 24 Dec 2021 09:38:41 -0800 (PST)
+Received: by mail-il1-x12f.google.com with SMTP id d14so7054464ila.1
+        for <netdev@vger.kernel.org>; Fri, 24 Dec 2021 09:38:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=e50/ZIMQaxDCbsjkCHIbFxxG7HiJC0StWx+ig1pfA54=;
-        b=nqKzPbQS4g/reIODImf/r9MQMkezBum39OeDBC0OTRP72w1idSPaWHnz8wOAhy0XRZ
-         Z2+FNy3gUg5+CCeWmpZFOiVwcYrcRp7LZDvGMUEwGFOG1wedNtPOCZPf++h4Ixvq1NH3
-         voAsj8xv9J7o9NdWp9sAsG3NEx/eIvId9E+LtHuWcwQO83nTvAukrJy7mQ/PepsHOMUb
-         8AQVrN1ELQICFG8DhD44gubuGwQS4FN8f7aYLLDKUFSiBuQ2R9wQ7PhAneYjNWrX4stV
-         BAOh8say6fTlLqGtDzeBS2mqHjuqXjdgBCygG7ramL2OxeFTDtSI0b224HdeeeAat54n
-         2A2g==
+        d=egauge.net; s=google;
+        h=message-id:subject:from:to:cc:date:in-reply-to:references
+         :organization:user-agent:mime-version:content-transfer-encoding;
+        bh=U47rTAPXH+aLFRV5bwaR5qoQIKBvtt8C4VdyaJsNXDc=;
+        b=YT53nncZQkXbKVlUkM490Q/adPXhTSoawpsSGMxPGkw2Hgz3QHlCS1hD0/tBG8zQ6F
+         AzWS4093FHsc897g452gLe9pUqRHXitZTCZlvI5JxM3q8u8pJOh+2NwoRrGFDJaZ1Enu
+         H/+a45kB87oTu99tP/wh+ZfDY1OzWMiVSGnINGplU55dQb3PL/m9f7nU+l5BUhv3DgTo
+         lYm8a/wz8HQ33jpBwaUtUhMupOb2aaCt9NNwt9JMXXgD5INW2HhLZQ3NgiYqtcw0dFpn
+         EFFSlA7DT+qm1aigkwJsXgMuRZQpaYU4bsJEWyM1YvFS5E11kQ+RyzEpN3q9cJGxvA9/
+         Q9Rw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=e50/ZIMQaxDCbsjkCHIbFxxG7HiJC0StWx+ig1pfA54=;
-        b=p1z92OYIUPkBB2W7u42arqace5xftjtgBzGjF7IPTWLpkBv1mgK4b8TxYmRL8QupWO
-         y6qUABYbJsGhhOdlcFHHQKQLiCpO3g8leTZn2J1CUxLTQuxDpBORsHgQtCjkvjkorwiu
-         j8iK4gRVtvpXekYbJfOyVUtC34W0HMGsO8llgwexlG6B0EL4BI66ybL1VqTXiKEuUAur
-         OA4fXtmWadS7vUp5IC93g+iRE3OwisTYhWGk5IsFeWfJutrv5V/xfhKczlpTpyetQXi2
-         2+dAWgWwV4z7UKnyq6uxbEDewJqZVPyrrnouSEZcZO2LamNkurxFhZq/mU04ydCCHHcG
-         ovDA==
-X-Gm-Message-State: AOAM533GwaX909hgEV6DGbuZsoJZBokjwuvXZuMVOcc8I4A4DX/sOr7Y
-        ANYG6PHdsY7ANicBeTaHGMc0YBJV2YXqjw==
-X-Google-Smtp-Source: ABdhPJy5kDDZ5Iurv+kIPKv+Y3ntsNZoVOexbWVZ4aC29QSsxPi/0qVp+bGD7IJrH9H3P+jKHooSRQ==
-X-Received: by 2002:a17:902:b189:b0:143:8079:3d3b with SMTP id s9-20020a170902b18900b0014380793d3bmr7417779plr.71.1640364589507;
-        Fri, 24 Dec 2021 08:49:49 -0800 (PST)
-Received: from bogon.xiaojukeji.com ([111.201.150.233])
-        by smtp.gmail.com with ESMTPSA id z14sm10122231pfh.60.2021.12.24.08.49.43
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 24 Dec 2021 08:49:49 -0800 (PST)
-From:   xiangxia.m.yue@gmail.com
-To:     netdev@vger.kernel.org
-Cc:     Tonghao Zhang <xiangxia.m.yue@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Talal Ahmad <talalahmad@google.com>,
-        Kevin Hao <haokexin@gmail.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Kees Cook <keescook@chromium.org>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        Wei Wang <weiwan@google.com>, Arnd Bergmann <arnd@arndb.de>
-Subject: [net-next v7 2/2] net: sched: support hash/classid/cpuid selecting tx queue
-Date:   Sat, 25 Dec 2021 00:49:26 +0800
-Message-Id: <20211224164926.80733-3-xiangxia.m.yue@gmail.com>
-X-Mailer: git-send-email 2.30.1 (Apple Git-130)
-In-Reply-To: <20211224164926.80733-1-xiangxia.m.yue@gmail.com>
-References: <20211224164926.80733-1-xiangxia.m.yue@gmail.com>
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:organization:user-agent:mime-version
+         :content-transfer-encoding;
+        bh=U47rTAPXH+aLFRV5bwaR5qoQIKBvtt8C4VdyaJsNXDc=;
+        b=NIQyenUomFxaP0tw7ZOF6+8NUMc2Q/X0j0vtiNLUcFYjS2018PDSP4dJZ5tCm19M1B
+         BluB18J/GaUbv3unKZFClCwdp+Lduc58Gos+bOI5B3LKC2xlIHbRnVQLe0GJheuaN1Gp
+         TrPi/HT0bF2172ucbvvH9BOHz33UHB6XYsSJ6DclRKKiiNr46J18kjokaxMqi6vUd4gi
+         nIyrDA3h5APwZwsoBAEZmAYP1EVTBApoeOJ9uVaCb1ApoIwsg8pUp7XxblrtO54XM4MI
+         jCGgXyE+2f6x4tbSgYihdCD12vl6jQh/grYt7gxkmW6R88eqFzr5YNzR0u0kkQEJ2WuV
+         YOGw==
+X-Gm-Message-State: AOAM532lcc5NQ6q7fU28g5VB41jZc2iwZ/O2QlXq99uddbcQivm+YKuV
+        jqjO8TpNP4NTt//MiTRGfk/z
+X-Google-Smtp-Source: ABdhPJwsSrpQmBjHLE7h+SrvCAYWvXBcLL6X7fPC9nsRP+9XodzueLnH/Y5A0hSfBSPJLAhheZn6xg==
+X-Received: by 2002:a92:c681:: with SMTP id o1mr3342064ilg.23.1640367520820;
+        Fri, 24 Dec 2021 09:38:40 -0800 (PST)
+Received: from ?IPv6:2601:281:8300:4e0:2ba9:697d:eeec:13b? ([2601:281:8300:4e0:2ba9:697d:eeec:13b])
+        by smtp.gmail.com with ESMTPSA id j5sm4687504ilo.77.2021.12.24.09.38.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 24 Dec 2021 09:38:40 -0800 (PST)
+Message-ID: <e7247265d5309165140d7a9a3af646129a789d58.camel@egauge.net>
+Subject: Re: [PATCH] wilc1000: Allow setting power_save before driver is
+ initialized
+From:   David Mosberger-Tang <davidm@egauge.net>
+To:     Ajay.Kathat@microchip.com
+Cc:     Claudiu.Beznea@microchip.com, kvalo@codeaurora.org,
+        davem@davemloft.net, kuba@kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Fri, 24 Dec 2021 10:38:37 -0700
+In-Reply-To: <9272b86e-61ab-1c25-0efb-3cdd2c590db8@microchip.com>
+References: <20211212011835.3719001-1-davidm@egauge.net>
+         <6fc9f00aa0b0867029fb6406a55c1e72d4c13af6.camel@egauge.net>
+         <5378e756-8173-4c63-1f0d-e5836b235a48@microchip.com>
+         <31d5e7447e4574d0fcfc46019d7ca96a3db4ecb6.camel@egauge.net>
+         <49a5456d-6a63-652e-d356-9678f6a9b266@microchip.com>
+         <523698d845e0b235e4cbb2a0f3cfaa0f5ed98ec0.camel@egauge.net>
+         <122f79b7-7936-325c-b2d9-e15db6642d0f@microchip.com>
+         <be3c95c8310504222e88c602a937b7f05cc01286.camel@egauge.net>
+         <9272b86e-61ab-1c25-0efb-3cdd2c590db8@microchip.com>
+Organization: eGauge Systems LLC
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5-0ubuntu1 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Ajay,
 
-This patch allows user to select queue_mapping, range
-from A to B. And user can use skbhash, cgroup classid
-and cpuid to select Tx queues. Then we can load balance
-packets from A to B queue. The range is an unsigned 16bit
-value in decimal format.
+On Fri, 2021-12-24 at 16:20 +0000, Ajay.Kathat@microchip.com wrote:
+> On 23/12/21 22:38, David Mosberger-Tang wrote:
+> > First, on a freshly booted system and with wilc1000-spi autoloaded by
+> > the kernel, try this sequence (copy & paste the commands):
+> > 
+> >     /usr/sbin/wpa_supplicant -Bs -iwlan0 -c/etc/wpa_supplicant.conf
+> >     sleep 10
+> >     iw dev wlan0 set power_save on
+> > 
+> > The above yields a power consumption of 1.4W reliably.  The "sleep 10"
+> > doesn't matter here; the behavior is the same with or without it.  I
+> > tried waiting up to 120 seconds with no difference.
+> 
+> I have tested by making the WILC as build-in module to insert driver 
+> automatically at boot-up. I hope it should be fine. Because I have 
+> already tested as loadable module earlier.
+> 
+> Below are the number observed
+> ------------------------------ --------------------------
+> - before starting wpa_supplicant             : ~16.3 mA
+> - wpa_supplicant started                         : ~40 mA
+> - PSM on                                                  :  ~6 mA
+> 
+> 
+> The 'sleep 10' would have no impact in my setup because I have measured 
+> the current consumption for wilc1000 chip.
+> 
+> I have shared the screenshot at https://postimg.cc/67S41dkb
 
-$ tc filter ... action skbedit queue_mapping skbhash A B
+Huh, that's curious.  I definitely cannot reproduce this.  To match
+your setup as closely as possibly, I also built wilc1000-spi into the
+kernel, but that makes no difference (as expected).
 
-"skbedit queue_mapping QUEUE_MAPPING" (from "man 8 tc-skbedit")
-is enhanced with flags:
-* SKBEDIT_F_TXQ_SKBHASH
-* SKBEDIT_F_TXQ_CLASSID
-* SKBEDIT_F_TXQ_CPUID
+What kernel version are you on?  I switched to wireless-drivers-next as
+of today (latest commit d430dffbe9dd30759f3c64b65bf85b0245c8d8ab).
 
-Use skb->hash, cgroup classid, or cpuid to distribute packets.
-Then same range of tx queues can be shared for different flows,
-cgroups, or CPUs in a variety of scenarios.
+With this kernel, the numbers are about 100mW lower than reported
+before, but the relative behavior is the same: about 300mW higher
+power-consumption when PSM is not taking effect properly.
 
-For example, F1 may share range R1 with F2. The best way to do
-that is to set flag to SKBEDIT_F_TXQ_HASH, using skb->hash to
-share the queues. If cgroup C1 want to share the R1 with cgroup
-C2 .. Cn, use the SKBEDIT_F_TXQ_CLASSID. Of course, in some other
-scenario, C1 use R1, while Cn can use the Rn.
+To recap, back with wilc1000-spi being a module again, after freshly
+booting the system and issuing this commands:
 
-Cc: Jamal Hadi Salim <jhs@mojatatu.com>
-Cc: Cong Wang <xiyou.wangcong@gmail.com>
-Cc: Jiri Pirko <jiri@resnulli.us>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Jonathan Lemon <jonathan.lemon@gmail.com>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Alexander Lobakin <alobakin@pm.me>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: Talal Ahmad <talalahmad@google.com>
-Cc: Kevin Hao <haokexin@gmail.com>
-Cc: Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Cc: Kees Cook <keescook@chromium.org>
-Cc: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Cc: Antoine Tenart <atenart@kernel.org>
-Cc: Wei Wang <weiwan@google.com>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
----
- include/net/tc_act/tc_skbedit.h        |  1 +
- include/uapi/linux/tc_act/tc_skbedit.h |  8 +++
- net/sched/act_skbedit.c                | 78 +++++++++++++++++++++++++-
- 3 files changed, 84 insertions(+), 3 deletions(-)
+   /usr/sbin/wpa_supplicant -Bs -iwlan0 -c/etc/wpa_supplicant.conf
+   /usr/sbin/iw dev wlan0 set power_save on
 
-diff --git a/include/net/tc_act/tc_skbedit.h b/include/net/tc_act/tc_skbedit.h
-index 00bfee70609e..ee96e0fa6566 100644
---- a/include/net/tc_act/tc_skbedit.h
-+++ b/include/net/tc_act/tc_skbedit.h
-@@ -17,6 +17,7 @@ struct tcf_skbedit_params {
- 	u32 mark;
- 	u32 mask;
- 	u16 queue_mapping;
-+	u16 mapping_mod;
- 	u16 ptype;
- 	struct rcu_head rcu;
- };
-diff --git a/include/uapi/linux/tc_act/tc_skbedit.h b/include/uapi/linux/tc_act/tc_skbedit.h
-index 800e93377218..5ea1438a4d88 100644
---- a/include/uapi/linux/tc_act/tc_skbedit.h
-+++ b/include/uapi/linux/tc_act/tc_skbedit.h
-@@ -29,6 +29,13 @@
- #define SKBEDIT_F_PTYPE			0x8
- #define SKBEDIT_F_MASK			0x10
- #define SKBEDIT_F_INHERITDSFIELD	0x20
-+#define SKBEDIT_F_TXQ_SKBHASH		0x40
-+#define SKBEDIT_F_TXQ_CLASSID		0x80
-+#define SKBEDIT_F_TXQ_CPUID		0x100
-+
-+#define SKBEDIT_F_TXQ_HASH_MASK (SKBEDIT_F_TXQ_SKBHASH | \
-+				 SKBEDIT_F_TXQ_CLASSID | \
-+				 SKBEDIT_F_TXQ_CPUID)
- 
- struct tc_skbedit {
- 	tc_gen;
-@@ -45,6 +52,7 @@ enum {
- 	TCA_SKBEDIT_PTYPE,
- 	TCA_SKBEDIT_MASK,
- 	TCA_SKBEDIT_FLAGS,
-+	TCA_SKBEDIT_QUEUE_MAPPING_MAX,
- 	__TCA_SKBEDIT_MAX
- };
- #define TCA_SKBEDIT_MAX (__TCA_SKBEDIT_MAX - 1)
-diff --git a/net/sched/act_skbedit.c b/net/sched/act_skbedit.c
-index d5799b4fc499..4c209689f8de 100644
---- a/net/sched/act_skbedit.c
-+++ b/net/sched/act_skbedit.c
-@@ -10,6 +10,7 @@
- #include <linux/kernel.h>
- #include <linux/skbuff.h>
- #include <linux/rtnetlink.h>
-+#include <net/cls_cgroup.h>
- #include <net/netlink.h>
- #include <net/pkt_sched.h>
- #include <net/ip.h>
-@@ -23,6 +24,38 @@
- static unsigned int skbedit_net_id;
- static struct tc_action_ops act_skbedit_ops;
- 
-+static u16 tcf_skbedit_hash(struct tcf_skbedit_params *params,
-+			    struct sk_buff *skb)
-+{
-+	u32 mapping_hash_type = params->flags & SKBEDIT_F_TXQ_HASH_MASK;
-+	u16 queue_mapping = params->queue_mapping;
-+	u16 mapping_mod = params->mapping_mod;
-+	u32 hash = 0;
-+
-+	switch (mapping_hash_type) {
-+	case SKBEDIT_F_TXQ_CLASSID:
-+		hash = task_get_classid(skb);
-+		break;
-+	case SKBEDIT_F_TXQ_SKBHASH:
-+		hash = skb_get_hash(skb);
-+		break;
-+	case SKBEDIT_F_TXQ_CPUID:
-+		hash = raw_smp_processor_id();
-+		break;
-+	case 0:
-+		/* Hash type isn't specified. In this case:
-+		 * hash % mapping_mod == 0
-+		 */
-+		break;
-+	default:
-+		net_warn_ratelimited("The type of queue_mapping hash is not supported. 0x%x\n",
-+				     mapping_hash_type);
-+	}
-+
-+	queue_mapping = queue_mapping + hash % mapping_mod;
-+	return netdev_cap_txqueue(skb->dev, queue_mapping);
-+}
-+
- static int tcf_skbedit_act(struct sk_buff *skb, const struct tc_action *a,
- 			   struct tcf_result *res)
- {
-@@ -62,7 +95,7 @@ static int tcf_skbedit_act(struct sk_buff *skb, const struct tc_action *a,
- #ifdef CONFIG_NET_EGRESS
- 		netdev_xmit_skip_txqueue(true);
- #endif
--		skb_set_queue_mapping(skb, params->queue_mapping);
-+		skb_set_queue_mapping(skb, tcf_skbedit_hash(params, skb));
- 	}
- 	if (params->flags & SKBEDIT_F_MARK) {
- 		skb->mark &= ~params->mask;
-@@ -96,6 +129,7 @@ static const struct nla_policy skbedit_policy[TCA_SKBEDIT_MAX + 1] = {
- 	[TCA_SKBEDIT_PTYPE]		= { .len = sizeof(u16) },
- 	[TCA_SKBEDIT_MASK]		= { .len = sizeof(u32) },
- 	[TCA_SKBEDIT_FLAGS]		= { .len = sizeof(u64) },
-+	[TCA_SKBEDIT_QUEUE_MAPPING_MAX]	= { .len = sizeof(u16) },
- };
- 
- static int tcf_skbedit_init(struct net *net, struct nlattr *nla,
-@@ -112,6 +146,7 @@ static int tcf_skbedit_init(struct net *net, struct nlattr *nla,
- 	struct tcf_skbedit *d;
- 	u32 flags = 0, *priority = NULL, *mark = NULL, *mask = NULL;
- 	u16 *queue_mapping = NULL, *ptype = NULL;
-+	u16 mapping_mod = 1;
- 	bool exists = false;
- 	int ret = 0, err;
- 	u32 index;
-@@ -156,7 +191,34 @@ static int tcf_skbedit_init(struct net *net, struct nlattr *nla,
- 
- 	if (tb[TCA_SKBEDIT_FLAGS] != NULL) {
- 		u64 *pure_flags = nla_data(tb[TCA_SKBEDIT_FLAGS]);
--
-+		u64 mapping_hash_type;
-+
-+		mapping_hash_type = *pure_flags & SKBEDIT_F_TXQ_HASH_MASK;
-+		if (mapping_hash_type) {
-+			u16 *queue_mapping_max;
-+
-+			/* Hash types are mutually exclusive. */
-+			if (mapping_hash_type & (mapping_hash_type - 1)) {
-+				NL_SET_ERR_MSG_MOD(extack, "Multi types of hash are specified.");
-+				return -EINVAL;
-+			}
-+
-+			if (!tb[TCA_SKBEDIT_QUEUE_MAPPING] ||
-+			    !tb[TCA_SKBEDIT_QUEUE_MAPPING_MAX]) {
-+				NL_SET_ERR_MSG_MOD(extack, "Missing required range of queue_mapping.");
-+				return -EINVAL;
-+			}
-+
-+			queue_mapping_max =
-+				nla_data(tb[TCA_SKBEDIT_QUEUE_MAPPING_MAX]);
-+			if (*queue_mapping_max < *queue_mapping) {
-+				NL_SET_ERR_MSG_MOD(extack, "The range of queue_mapping is invalid, max < min.");
-+				return -EINVAL;
-+			}
-+
-+			mapping_mod = *queue_mapping_max - *queue_mapping + 1;
-+			flags |= mapping_hash_type;
-+		}
- 		if (*pure_flags & SKBEDIT_F_INHERITDSFIELD)
- 			flags |= SKBEDIT_F_INHERITDSFIELD;
- 	}
-@@ -208,8 +270,10 @@ static int tcf_skbedit_init(struct net *net, struct nlattr *nla,
- 	params_new->flags = flags;
- 	if (flags & SKBEDIT_F_PRIORITY)
- 		params_new->priority = *priority;
--	if (flags & SKBEDIT_F_QUEUE_MAPPING)
-+	if (flags & SKBEDIT_F_QUEUE_MAPPING) {
- 		params_new->queue_mapping = *queue_mapping;
-+		params_new->mapping_mod = mapping_mod;
-+	}
- 	if (flags & SKBEDIT_F_MARK)
- 		params_new->mark = *mark;
- 	if (flags & SKBEDIT_F_PTYPE)
-@@ -276,6 +340,13 @@ static int tcf_skbedit_dump(struct sk_buff *skb, struct tc_action *a,
- 		goto nla_put_failure;
- 	if (params->flags & SKBEDIT_F_INHERITDSFIELD)
- 		pure_flags |= SKBEDIT_F_INHERITDSFIELD;
-+	if (params->flags & SKBEDIT_F_TXQ_HASH_MASK) {
-+		if (nla_put_u16(skb, TCA_SKBEDIT_QUEUE_MAPPING_MAX,
-+				params->queue_mapping + params->mapping_mod - 1))
-+			goto nla_put_failure;
-+
-+		pure_flags |= params->flags & SKBEDIT_F_TXQ_HASH_MASK;
-+	}
- 	if (pure_flags != 0 &&
- 	    nla_put(skb, TCA_SKBEDIT_FLAGS, sizeof(pure_flags), &pure_flags))
- 		goto nla_put_failure;
-@@ -325,6 +396,7 @@ static size_t tcf_skbedit_get_fill_size(const struct tc_action *act)
- 	return nla_total_size(sizeof(struct tc_skbedit))
- 		+ nla_total_size(sizeof(u32)) /* TCA_SKBEDIT_PRIORITY */
- 		+ nla_total_size(sizeof(u16)) /* TCA_SKBEDIT_QUEUE_MAPPING */
-+		+ nla_total_size(sizeof(u16)) /* TCA_SKBEDIT_QUEUE_MAPPING_MAX */
- 		+ nla_total_size(sizeof(u32)) /* TCA_SKBEDIT_MARK */
- 		+ nla_total_size(sizeof(u16)) /* TCA_SKBEDIT_PTYPE */
- 		+ nla_total_size(sizeof(u32)) /* TCA_SKBEDIT_MASK */
--- 
-2.27.0
+I see a power-consumption of about 1.25W.  PSM on/off makes no
+difference in this state.  Then, if I issue the commands:
+
+rmmod wilc1000-spi
+modprobe wilc1000-spi
+sleep 10
+iw dev wlan0 set power_save on
+
+power-consumption drops to about 0.9W.
+
+Here is a screenshot that shows the annotated power-measurements:
+
+   https://postimg.cc/3dbKSGht
+
+Apart from kernel version, the only things that I can think of that'd
+be different is that we don't have the ENABLE pin wired to a GPIO.
+ Instead, the chip is always enabled.  I doubt this would explain the
+difference (~RESET is wired to a GPIO).
+
+
+  --david
+
 
