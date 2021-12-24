@@ -2,125 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0353E47EBC4
-	for <lists+netdev@lfdr.de>; Fri, 24 Dec 2021 06:26:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 85FAA47EC3D
+	for <lists+netdev@lfdr.de>; Fri, 24 Dec 2021 07:49:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351360AbhLXF0v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Dec 2021 00:26:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46256 "EHLO
+        id S1351531AbhLXGs6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Dec 2021 01:48:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245618AbhLXF0t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Dec 2021 00:26:49 -0500
-Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED139C061757
-        for <netdev@vger.kernel.org>; Thu, 23 Dec 2021 21:26:48 -0800 (PST)
-Received: by mail-il1-x12b.google.com with SMTP id v10so5848966ilj.3
-        for <netdev@vger.kernel.org>; Thu, 23 Dec 2021 21:26:48 -0800 (PST)
+        with ESMTP id S229832AbhLXGs5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Dec 2021 01:48:57 -0500
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74353C061401;
+        Thu, 23 Dec 2021 22:48:57 -0800 (PST)
+Received: by mail-pj1-x1033.google.com with SMTP id y16-20020a17090a6c9000b001b13ffaa625so10798351pjj.2;
+        Thu, 23 Dec 2021 22:48:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sladewatkins.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=kidXoHFYkT/EcDpKPw9KOkyRrXXqBBDOQdea3bdYgM4=;
-        b=ek+FCr7sjm1ubPRSRFQijMKrgo3c06JT/gDeRkG5APtXUP6TxQMeXnaPlXLF8q5MBz
-         K60fI1CTzAtQp54JQ8+wZNuTPVp03XVUM5pJIzDJ6pjO3/uv9p8l/h889cq3u9lThDII
-         aXnVyjS3iSLOBKJynZr+xRKLqpoc2iHcs4u2To5dSXvIZ9HJeYS7wD2yL8oO8sy7s6me
-         m197kYSCpUNY4T1cwn9xoo7o0ulkjPUF7cJVYWl9PxPIolixQBKBiTl2E6SgXEcbpD2M
-         rYt/wM3+Sb85q6wP4ZPLy83EXGa4aV/AKFO9lgAZt87gjcsMbahIln/tUXYdxwhbp+6I
-         gMkg==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=H0q+XDRfnZXxgq12FkhmCb0ciBJ4BstWZtud1YzQGTo=;
+        b=Kn/iAchpftdVczpWSjgc9ps3mXs4dI7cdL9/2qUaQPakfcnjLt2EgPYohgeYtyatZ+
+         dhMlqNDkPxfhzK24dYpvrDQJ8PFkP5as0i9VikD3C6rqnrvWTriesAYT4MEvVDIEM7Os
+         A1pGE6aV/+4Vm4pnU4ESBe/QUKwcHnYwS3yV9C9W+XfSBuZLvjaMnRZBuQxipCrom0BV
+         w2kjvwxN9mL2cSSye6sy7MM+iJphTzc0/LNJORtmBU23nd94gtdUOixdW8zMW/A7Kf9P
+         wdoOVzuWpLezqn7+y/Idi0q4WOvbag45naQbqbEy17pLtinPb5BoGIQZNfrMNDV1zDSC
+         RR3Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=kidXoHFYkT/EcDpKPw9KOkyRrXXqBBDOQdea3bdYgM4=;
-        b=g/xGF2mN/hl6flwz4vUb86oxfKvRZKDOtty+3rR6J+UXAc3Bn8M59zhhIxxJqpwD30
-         vLorNEPFOQniJzFOwSBIE2+hFTy9Rx4WtXQ0MOR6At+Odp3B9zolCp3rx5/4Wq6Kkogh
-         ctfy1cMHYq+PM7VRlv405KoOs//nrJO6T6qed2hwO+V2a4aJ6Q5ThhZPA3uTCMLz8RW0
-         RNM4ASd0nMzmllSjiEf8KMrfDbQ6nC0RKLHWrWypKSg9aau+vUobkWyV9t7vle2R+/Ws
-         S1uMGCKuvUNv5p36AVVu7wt/qUv2W5QS+VkfCbOSjiBm76N1E4OLsw5LpdgxRhcUI4fD
-         CJkQ==
-X-Gm-Message-State: AOAM533DR+qxrWw7vedmXfA5oosI/59uqzamrkd5+JMeXU3ucSndEXEL
-        6izBbMsFMWGNsmcJckh8uU87EG2jJGjFMIm9Z83N1ku8KtZDzYAX
-X-Google-Smtp-Source: ABdhPJxvcgZCTKdh52s1CyfM1zqXYElZ058SO/hYaLMbTsqmJWpqhBmtzBbU2Iz72WBPbUuTmj5BEKYWW/Xy+vdEeAI=
-X-Received: by 2002:a05:6e02:973:: with SMTP id q19mr2265756ilt.206.1640323608180;
- Thu, 23 Dec 2021 21:26:48 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=H0q+XDRfnZXxgq12FkhmCb0ciBJ4BstWZtud1YzQGTo=;
+        b=MOqcButx7W/LUBA/28RamzNAKQ4hj+/6iYYFQdTprPq8aoaikxVyoYXXXSRFLBwGX/
+         sMofJcnnxy8QynOaDAMRUbncfAbXH+t9z/DHDjx21H9VXA9YXNWxi7RaBFE9QPVjlzT8
+         ZmlI7k2BDK2tigF7EuL5/rYz38iIt0yC9dOA3sigGqOMTMED3o8RmcB3y2izltZqeUBz
+         vdSlBqnTSjrRCUPNJsbcwruI7BToITMr/uTfyhJxy+oz2d/gs0HQ2GHRqiosjoSuyeqi
+         fniK0qyC/hgZn+NTlM5t+F0JQE5edpWoDPfyMCDgmGbjHEPGwWJXPP3j1OGoljrrvdkU
+         s9Hw==
+X-Gm-Message-State: AOAM5336WGahjh7meNlHdbaY1y1SoQlZMgnFkaZyaAsd7IH4xNiPfc6x
+        jXQYdYbu/qNiz8nj/nC1yrnJV3xtzx/aSUJ6
+X-Google-Smtp-Source: ABdhPJx1Jwh0/c7vIVV9uaa+8rFODIi0ETGFnueus2zFfFrTNmqTpjRelv7AkPp8uuy4CJTL589EPQ==
+X-Received: by 2002:a17:90b:3507:: with SMTP id ls7mr6516834pjb.220.1640328537105;
+        Thu, 23 Dec 2021 22:48:57 -0800 (PST)
+Received: from ruantu-linux-2.. ([174.139.180.74])
+        by smtp.gmail.com with ESMTPSA id w7sm8653393pfu.180.2021.12.23.22.48.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Dec 2021 22:48:56 -0800 (PST)
+From:   Yu-Tung Chang <mtwget@gmail.com>
+To:     tony0620emma@gmail.com
+Cc:     kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Yu-Tung Chang <mtwget@gmail.com>
+Subject: [PATCH] rtw88: add quirk to disable pci caps on HP Slim Desktop S01-pF1000i
+Date:   Fri, 24 Dec 2021 14:48:46 +0800
+Message-Id: <20211224064846.1171-1-mtwget@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <20210419212525.12894-1-ljp@linux.ibm.com> <161887560929.13803.2397044457894925895.git-patchwork-notify@kernel.org>
- <CAOhMmr7MSQvHkFucvF-5fvNsm7PCJt_UVEjhuTvSnjHOypvh1g@mail.gmail.com>
-In-Reply-To: <CAOhMmr7MSQvHkFucvF-5fvNsm7PCJt_UVEjhuTvSnjHOypvh1g@mail.gmail.com>
-From:   Slade Watkins <slade@sladewatkins.com>
-Date:   Fri, 24 Dec 2021 00:26:37 -0500
-Message-ID: <CA+pv=HMqeEUnCs3waDKitgmRn=xXX-_AFAOY2ve1zVqQtX0sag@mail.gmail.com>
-Subject: Re: [PATCH net] MAINTAINERS: update
-To:     Lijun Pan <lijunp213@gmail.com>
-Cc:     Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 24, 2021 at 12:19 AM Lijun Pan <lijunp213@gmail.com> wrote:
->
-> On Mon, Apr 19, 2021 at 6:40 PM <patchwork-bot+netdevbpf@kernel.org> wrot=
-e:
-> >
-> > Hello:
-> >
-> > This patch was applied to netdev/net.git (refs/heads/master):
-> >
-> > On Mon, 19 Apr 2021 16:25:25 -0500 you wrote:
-> > > I am making this change again since I received the following instruct=
-ion.
-> > >
-> > > "As an IBM employee, you are not allowed to use your gmail account to=
- work
-> > > in any way on VNIC. You are not allowed to use your personal email ac=
-count
-> > > as a "hobby". You are an IBM employee 100% of the time.
-> > > Please remove yourself completely from the maintainers file.
-> > > I grant you a 1 time exception on contributions to VNIC to make this
-> > > change."
-> > >
-> > > [...]
-> >
-> > Here is the summary with links:
-> >   - [net] MAINTAINERS: update
-> >     https://git.kernel.org/netdev/net/c/4acd47644ef1
->
->
-> In the past 8 months I have received many emails from you, asking me
-> about my current status. I am sorry that I did not have a chance to
-> answer all of them.
->
-> The most questions being asked were =E2=80=9CAre you still with IBM? Did =
-they
-> restore you to the previous job?=E2=80=9D. I think I can answer these
-> questions now. I am not with IBM anymore. I was terminated this month.
-> I wasn=E2=80=99t able to work on ibmvnic since June, even as a hobby, whi=
-ch
-> you can figure out from the mailing list traffic. The last 8 months
-> was tough for me. But I am very thankful to all of you for your
-> kindness and support.
+8821CE causes random freezes on HP Slim Desktop S01-pF1000i. Add a quirk
+to disable pci ASPM capability.
 
-hi Lijun,
-just wanted to pop in for a sec.
+Signed-off-by: Yu-Tung Chang <mtwget@gmail.com>
+---
+ drivers/net/wireless/realtek/rtw88/pci.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-I am so sorry to hear about this and I sincerely hope that you are
-doing better now.
+diff --git a/drivers/net/wireless/realtek/rtw88/pci.c b/drivers/net/wireless/realtek/rtw88/pci.c
+index a7a6ebfaa203..f8999d7dee61 100644
+--- a/drivers/net/wireless/realtek/rtw88/pci.c
++++ b/drivers/net/wireless/realtek/rtw88/pci.c
+@@ -1738,6 +1738,15 @@ static const struct dmi_system_id rtw88_pci_quirks[] = {
+ 		},
+ 		.driver_data = (void *)BIT(QUIRK_DIS_PCI_CAP_ASPM),
+ 	},
++	{
++		.callback = disable_pci_caps,
++		.ident = "HP HP Slim Desktop S01-pF1xxx",
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "HP"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "HP Slim Desktop S01-pF1xxx"),
++		},
++		.driver_data = (void *)BIT(QUIRK_DIS_PCI_CAP_ASPM),
++	},
+ 	{}
+ };
+ 
+-- 
+2.34.1
 
->
-> I will be celebrating the holiday with my family for the rest of the
-> year. I would be happy to find something worth my time (vs. arguing
-> about the open source way of doing things with an entity). I would
-> rather just have a break and relax myself than do something completely
-> mundane for another company. Thank you in advance for any connections,
-> advice or opportunities that you can offer.
-
-please do! relax and don't burn yourself out. everything will be okay with =
-time!
-
-Merry Christmas and happy holidays to you, and your family! :)
-
-best,
-slade
