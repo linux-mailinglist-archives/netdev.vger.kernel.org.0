@@ -2,81 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 20CB247EB00
-	for <lists+netdev@lfdr.de>; Fri, 24 Dec 2021 04:56:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D53647EB0B
+	for <lists+netdev@lfdr.de>; Fri, 24 Dec 2021 05:01:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351206AbhLXD4F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Dec 2021 22:56:05 -0500
-Received: from smtp23.cstnet.cn ([159.226.251.23]:60738 "EHLO cstnet.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S235118AbhLXD4E (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 23 Dec 2021 22:56:04 -0500
-Received: from localhost.localdomain (unknown [124.16.138.126])
-        by APP-03 (Coremail) with SMTP id rQCowABXXVm+RMVhrsR5BA--.63259S2;
-        Fri, 24 Dec 2021 11:55:42 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     davem@davemloft.net, kuba@kernel.org, thunder.leizhen@huawei.com,
-        yangyingliang@huawei.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: [PATCH] fjes: Fix wrong check for irq
-Date:   Fri, 24 Dec 2021 11:55:39 +0800
-Message-Id: <20211224035539.1564861-1-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+        id S1351218AbhLXEBQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Dec 2021 23:01:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55802 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1351212AbhLXEBQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Dec 2021 23:01:16 -0500
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C92A1C061757
+        for <netdev@vger.kernel.org>; Thu, 23 Dec 2021 20:01:15 -0800 (PST)
+Received: by mail-pj1-x1033.google.com with SMTP id v16so6637424pjn.1
+        for <netdev@vger.kernel.org>; Thu, 23 Dec 2021 20:01:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:to:cc:from:subject
+         :content-transfer-encoding;
+        bh=qfXaFkYb/kIfBlrpBQ69YN33YWc3HqccGvv48B9wnL4=;
+        b=HXx6JpwtqCLLrbnXWhRAPBLv2nc67Twc0DEQ1Q0nmKlKLwfcCYtsohNSDvwLcvhtf/
+         rWCqdmHw71ASDkmxIS4mQPOnXy7oQSGSHXXGbQsEw4GO0X0cFwaqFAzZdaKdvIYl7vJc
+         1ustjDt89hrYZmW6mXOOMMHSG6S2K2SKxBc7OGmls8stT4BXuzrPzxHLiLAL57vPxhMz
+         Fw8u/BRQUz9M6OMwHDeyKzutCtm0LMAP4EUaImwhm92ufF9YoQ7FwxjNlBt1sy1l9j7M
+         FQynvd87T5gm97wzIBWmaqR7Usihmon/AylZ6JUOev3git7WooIXbHWc/4sbKodtvEaV
+         tvJg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:to:cc
+         :from:subject:content-transfer-encoding;
+        bh=qfXaFkYb/kIfBlrpBQ69YN33YWc3HqccGvv48B9wnL4=;
+        b=d6bI2tp8In10BCYhdF9gSEztCrDwUIN1Gpb+5mn9SaGuq632XvCqV8uuz+Hmb4F9Hn
+         HTEsdqn1Rd1xvdIC1n4/vuPH4spP0s0l+p2DeZlB4jp1QQH/xA+4L34fuOwECMZBpKe+
+         Abxb88qiIrzc2SZc/q6eHkfhwpLeW3xqEeF9YrvASc3aYhWxstE2ZCiPAz1WQYu6haYK
+         D3LPRsiWLj3HTdxr10elYeBf03RllGWczKmY7KCxw7WbFL6UWtk7sQV/3w3F9AHcS+Vx
+         rv7ixtMYX+SFByNGtU/TK1SVeYDHZPWwrx4Zfld4gBfNYizVR16u22Syb0ztK5IowH+b
+         F2hQ==
+X-Gm-Message-State: AOAM530DMq0y8ZsJdkNQyR8bi3lFBYsftFd8U3eAigunuTpvFKcVqs52
+        zGPr4wkAMr+co/j2R+vJW0Z7hw==
+X-Google-Smtp-Source: ABdhPJzvsV6EHsBpCX/vAdUSZ0zjgMK6bB8WNv08m8ZCvBCO0pUVYuneu07DKOLIt3xSrRG+R/ptEw==
+X-Received: by 2002:a17:902:e552:b0:148:a2e8:277a with SMTP id n18-20020a170902e55200b00148a2e8277amr5165877plf.129.1640318475205;
+        Thu, 23 Dec 2021 20:01:15 -0800 (PST)
+Received: from [10.69.75.97] ([139.177.225.244])
+        by smtp.gmail.com with ESMTPSA id r11sm7138132pff.81.2021.12.23.20.01.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 23 Dec 2021 20:01:14 -0800 (PST)
+Message-ID: <c84094d2-75c1-a50d-ea9e-9dded5f01fb9@bytedance.com>
+Date:   Fri, 24 Dec 2021 12:01:06 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.4.0
+To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        zhouchengming@bytedance.com, songmuchun@bytedance.com,
+        duanxiongchun@bytedance.com, shekairui@bytedance.com
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+From:   Qiang Wang <wangqiang.wq.frank@bytedance.com>
+Subject: Fix repeated legacy kprobes on same function
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: rQCowABXXVm+RMVhrsR5BA--.63259S2
-X-Coremail-Antispam: 1UD129KBjvdXoWrKry5WFWkZFWxGF1rAFy7KFg_yoWDJwc_Cr
-        1Iqa17Ww4UuryqkF17Kr43ZF929r4qgr10gw1vya9Yq395CasrXryDuF13Xw4UWayYyF9F
-        kr9rXF1ay345AjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUb48FF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j
-        6F4UJwA2z4x0Y4vEx4A2jsIE14v26F4UJVW0owA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
-        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
-        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r4j6F4UMcvjeVCFs4IE7xkEbVWUJV
-        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc2xSY4AK67AK6r48
-        MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr
-        0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWUtwCIc40Y0x0E
-        wIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJV
-        W8JwCI42IY6xAIw20EY4v20xvaj40_Wr1j6rW3Jr1lIxAIcVC2z280aVAFwI0_Gr0_Cr1l
-        IxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUUEfO7UUUU
-        U==
-X-Originating-IP: [124.16.138.126]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Because hw->hw_res.irq is unsigned, the check is useless.
-Therefore, we need to correct the check by using error variable.
+If repeated legacy kprobes on same function in one process,
+libbpf will register using the same probe name and got -EBUSY
+error. So append index to the probe name format to fix this
+problem.
 
-Fixes: db6d6afe382d ("fjes: Check for error irq")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+And fix a bug in commit 46ed5fc33db9, which wrongly used the
+func_name instead of probe_name to register.
+
+Fixes: 46ed5fc33db9 ("libbpf: Refactor and simplify legacy kprobe code")
+Co-developed-by: Chengming Zhou <zhouchengming@bytedance.com>
+Signed-off-by: Qiang Wang <wangqiang.wq.frank@bytedance.com>
+Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
+
 ---
- drivers/net/fjes/fjes_main.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+  tools/lib/bpf/libbpf.c | 5 +++--
+  1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/fjes/fjes_main.c b/drivers/net/fjes/fjes_main.c
-index ebd287039a54..70fbe40a598c 100644
---- a/drivers/net/fjes/fjes_main.c
-+++ b/drivers/net/fjes/fjes_main.c
-@@ -1261,11 +1261,11 @@ static int fjes_probe(struct platform_device *plat_dev)
- 	}
- 	hw->hw_res.start = res->start;
- 	hw->hw_res.size = resource_size(res);
--	hw->hw_res.irq = platform_get_irq(plat_dev, 0);
--	if (hw->hw_res.irq < 0) {
--		err = hw->hw_res.irq;
-+
-+	err = platform_get_irq(plat_dev, 0);
-+	if (err < 0)
- 		goto err_free_control_wq;
--	}
-+	hw->hw_res.irq = err;
- 
- 	err = fjes_hw_init(&adapter->hw);
- 	if (err)
--- 
-2.25.1
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 7c74342bb668..7d1097958459 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -9634,7 +9634,8 @@ static int append_to_file(const char *file, const 
+char *fmt, ...)
+  static void gen_kprobe_legacy_event_name(char *buf, size_t buf_sz,
+                                          const char *kfunc_name, size_t 
+offset)
+  {
+-       snprintf(buf, buf_sz, "libbpf_%u_%s_0x%zx", getpid(), 
+kfunc_name, offset);
++       static int index = 0;
++       snprintf(buf, buf_sz, "libbpf_%u_%s_0x%zx_%d", getpid(), 
+kfunc_name, offset, index++);
+  }
+
+  static int add_kprobe_event_legacy(const char *probe_name, bool retprobe,
+@@ -9735,7 +9736,7 @@ bpf_program__attach_kprobe_opts(const struct 
+bpf_program *prog,
+                 gen_kprobe_legacy_event_name(probe_name, 
+sizeof(probe_name),
+                                              func_name, offset);
+
+-               legacy_probe = strdup(func_name);
++               legacy_probe = strdup(probe_name);
+                 if (!legacy_probe)
+                         return libbpf_err_ptr(-ENOMEM);
+
+--
+2.20.1
 
