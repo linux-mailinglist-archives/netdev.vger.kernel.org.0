@@ -2,124 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B635947E9E2
-	for <lists+netdev@lfdr.de>; Fri, 24 Dec 2021 01:28:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C9CC047EA59
+	for <lists+netdev@lfdr.de>; Fri, 24 Dec 2021 02:35:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241150AbhLXA26 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 23 Dec 2021 19:28:58 -0500
-Received: from rtits2.realtek.com ([211.75.126.72]:38060 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229995AbhLXA2z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Dec 2021 19:28:55 -0500
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 1BO0SYiH4000307, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 1BO0SYiH4000307
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 24 Dec 2021 08:28:34 +0800
-Received: from RTEXMBS02.realtek.com.tw (172.21.6.95) by
- RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 24 Dec 2021 08:28:34 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS02.realtek.com.tw (172.21.6.95) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.15; Fri, 24 Dec 2021 08:28:34 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::65a3:1e23:d911:4b01]) by
- RTEXMBS04.realtek.com.tw ([fe80::65a3:1e23:d911:4b01%5]) with mapi id
- 15.01.2308.020; Fri, 24 Dec 2021 08:28:33 +0800
-From:   Pkshih <pkshih@realtek.com>
-To:     Muhammad Usama Anjum <usama.anjum@collabora.com>,
-        Yan-Hsuan Chuang <tony0620emma@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Bernie Huang <phhuang@realtek.com>,
-        "open list:REALTEK WIRELESS DRIVER (rtw88)" 
-        <linux-wireless@vger.kernel.org>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-CC:     "kernel@collabora.com" <kernel@collabora.com>
-Subject: RE: [PATCH] rtw88: check for validity before using pointer
-Thread-Topic: [PATCH] rtw88: check for validity before using pointer
-Thread-Index: AQHX+CW4CiEO5Mr47Uyo81NvZcLlw6xAwyPg
-Date:   Fri, 24 Dec 2021 00:28:33 +0000
-Message-ID: <100d06e2398742bb82bd5300ce70d900@realtek.com>
-References: <YcS3D2lwMd0Kox3z@debian-BULLSEYE-live-builder-AMD64>
-In-Reply-To: <YcS3D2lwMd0Kox3z@debian-BULLSEYE-live-builder-AMD64>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.69.188]
-x-kse-serverinfo: RTEXMBS02.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2021/12/23_=3F=3F_07:48:00?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S1350687AbhLXBfN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Dec 2021 20:35:13 -0500
+Received: from smtp25.cstnet.cn ([159.226.251.25]:48806 "EHLO cstnet.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S245122AbhLXBfM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 Dec 2021 20:35:12 -0500
+Received: from localhost.localdomain (unknown [124.16.138.126])
+        by APP-05 (Coremail) with SMTP id zQCowAA3FxS3I8VhQ4LFBA--.65364S2;
+        Fri, 24 Dec 2021 09:34:48 +0800 (CST)
+From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
+To:     robin.murphy@arm.com, andy.shevchenko@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, yangyingliang@huawei.com,
+        sashal@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Subject: [PATCH v5] fjes: Check for error irq
+Date:   Fri, 24 Dec 2021 09:34:45 +0800
+Message-Id: <20211224013445.1400507-1-jiasheng@iscas.ac.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: zQCowAA3FxS3I8VhQ4LFBA--.65364S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7uFyrJw1xGF17uF4kXrW5Jrb_yoW8Xr17pF
+        4UKasxZrWkJay0ka12yr48ZF9Iva18tw4UC390k3Wfu3sYqFsxAFy5tFW0qrs7XrZ5X3Wa
+        ya1YvrW8uFn8uFUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUkm14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26ryj6F1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4j
+        6r4UJwA2z4x0Y4vEx4A2jsIE14v26r4UJVWxJr1l84ACjcxK6I8E87Iv6xkF7I0E14v26F
+        4UJVW0owAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv
+        7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r
+        1j6r4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY02Avz4vE14v_
+        KwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r
+        1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij
+        64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr
+        0_Gr1lIxAIcVCF04k26cxKx2IYs7xG6rW3Jr0E3s1lIxAIcVC2z280aVAFwI0_Jr0_Gr1l
+        IxAIcVC2z280aVCY1x0267AKxVWUJVW8JbIYCTnIWIevJa73UjIFyTuYvjfUOMKZDUUUU
+X-Originating-IP: [124.16.138.126]
+X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The platform_get_irq() is possible to fail.
+And the returned irq could be error number and will finally cause the
+failure of the request_irq().
+Consider that platform_get_irq() can now in certain cases return
+-EPROBE_DEFER, and the consequences of letting request_irq() effectively
+convert that into -EINVAL, even at probe time rather than later on.
+So it might be better to check just now.
 
+Fixes: 658d439b2292 ("fjes: Introduce FUJITSU Extended Socket Network Device driver")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+---
+Changelog:
 
-> -----Original Message-----
-> From: Muhammad Usama Anjum <usama.anjum@collabora.com>
-> Sent: Friday, December 24, 2021 1:51 AM
-> To: Yan-Hsuan Chuang <tony0620emma@gmail.com>; Kalle Valo <kvalo@kernel.org>; David S. Miller
-> <davem@davemloft.net>; Jakub Kicinski <kuba@kernel.org>; Pkshih <pkshih@realtek.com>; Bernie Huang
-> <phhuang@realtek.com>; open list:REALTEK WIRELESS DRIVER (rtw88) <linux-wireless@vger.kernel.org>; open
-> list:NETWORKING DRIVERS <netdev@vger.kernel.org>; open list <linux-kernel@vger.kernel.org>
-> Cc: usama.anjum@collabora.com; kernel@collabora.com
-> Subject: [PATCH] rtw88: check for validity before using pointer
-> 
-> ieee80211_probereq_get() can return NULL. Pointer skb should be checked
-> for validty before use.
-> 
-> Fixes: 10d162b2ed39 ("rtw88: 8822c: add ieee80211_ops::hw_scan")
-> Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
-> ---
->  drivers/net/wireless/realtek/rtw88/fw.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/net/wireless/realtek/rtw88/fw.c b/drivers/net/wireless/realtek/rtw88/fw.c
-> index 2f7c036f9022..0fc05a810d05 100644
-> --- a/drivers/net/wireless/realtek/rtw88/fw.c
-> +++ b/drivers/net/wireless/realtek/rtw88/fw.c
-> @@ -1866,6 +1866,8 @@ static int rtw_hw_scan_update_probe_req(struct rtw_dev *rtwdev,
->  					     req->ssids[i].ssid,
->  					     req->ssids[i].ssid_len,
->  					     req->ie_len);
-> +		if (!skb)
-> +			return -ENOMEM;
->  		rtw_append_probe_req_ie(rtwdev, skb, &list, rtwvif);
->  		kfree_skb(skb);
->  	}
+v4 -> v5
 
-Without properly freeing skb(s) in list, it leads memory leak.
-We need something below to free them:
+*Change 1. Using error variable to check.
+*Change 2. Correct the word.
+*Change 3. Add new commit message.
+*Change 4. Refine the commit message to be more reasonable.
+---
+ drivers/net/fjes/fjes_main.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-	if (!skb)
-		goto out;
-
-	[...]
-
-out:
-	skb_queue_walk(&list, skb)
-		kfree_skb(skb);
-
-	return -ENOMEM;
-
-So, NACK this patch.
-
---
-Ping-Ke
+diff --git a/drivers/net/fjes/fjes_main.c b/drivers/net/fjes/fjes_main.c
+index e449d9466122..17f2fd937e4d 100644
+--- a/drivers/net/fjes/fjes_main.c
++++ b/drivers/net/fjes/fjes_main.c
+@@ -1268,7 +1268,12 @@ static int fjes_probe(struct platform_device *plat_dev)
+ 	}
+ 	hw->hw_res.start = res->start;
+ 	hw->hw_res.size = resource_size(res);
+-	hw->hw_res.irq = platform_get_irq(plat_dev, 0);
++
++	err = platform_get_irq(plat_dev, 0);
++	if (err < 0)
++		goto err_free_control_wq;
++	hw->hw_res.irq = err;
++
+ 	err = fjes_hw_init(&adapter->hw);
+ 	if (err)
+ 		goto err_free_control_wq;
+-- 
+2.25.1
 
