@@ -2,69 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 91BF547F115
-	for <lists+netdev@lfdr.de>; Fri, 24 Dec 2021 21:36:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DE9A47F158
+	for <lists+netdev@lfdr.de>; Fri, 24 Dec 2021 23:45:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234478AbhLXUgi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Dec 2021 15:36:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46510 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229683AbhLXUgi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Dec 2021 15:36:38 -0500
-X-Greylist: delayed 375 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 24 Dec 2021 12:36:38 PST
-Received: from kurisu.lahfa.xyz (unknown [IPv6:2001:bc8:38ee::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F90DC061401
-        for <netdev@vger.kernel.org>; Fri, 24 Dec 2021 12:36:37 -0800 (PST)
-Date:   Fri, 24 Dec 2021 21:30:18 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lahfa.xyz; s=kurisu;
-        t=1640377818; bh=p5tu/bfL8pnwemIKX/azppThCLnKKAoOdcfJVZL1VcQ=;
-        h=Date:From:To:Subject;
-        b=KouwyGiBz//B9EJuSnxaqFjNpTvR0dKKtfprPlNnPsxyKf1YPJmnbEfze8oxfyaab
-         eO1zxTfg9KFHb7LtjVeHyiu/fhEuVZFUUsUkdpoE6HK6EYHyjJHV0kkbw71IgzmIpb
-         Qzvoo/3d9oijHcgs8xbb9Uw0XsgURTI4gx0DRW9M=
-From:   Ryan Lahfa <ryan@lahfa.xyz>
-To:     netdev@vger.kernel.org
-Subject: RTL8156(A|B) chip requires r8156 to be force loaded to operate
-Message-ID: <20211224203018.z2n7sylht47ownga@Thors>
+        id S229719AbhLXWed (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Dec 2021 17:34:33 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:50594 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229464AbhLXWec (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Dec 2021 17:34:32 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 40B1FB8233D;
+        Fri, 24 Dec 2021 22:34:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09799C36AE8;
+        Fri, 24 Dec 2021 22:34:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1640385269;
+        bh=NMGUhYwV4WBlPsAMtZhQzx0ZP9lDdLJBtFIBPXnnSaA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=EiseSKytRuFT/o7uqe+d3ncxZr0HeZI5Qrw7lgGJs2Imsv44IRYPocGVtueaSq9nU
+         oE4tWx+ehO1tcUJGVllFEB2HfySVlS2+OqjIPCegSLxmMKYr9KHN2yp6WkVm3x/u7y
+         jEAKvT9x9bLo01x+D4ZwANRKgJuWwA7I2D1C/Vo2aLlgptbU7KfORJeHs0gF+Lb6lX
+         et51nt+L81TRxsCiY4aJa7B4Foa1WdtEE9Tc+juRAliDUJkg5tltZ2HcB3cPs1/1K1
+         3Pm1iAxO6sW2th1UY1YoYjLSG2qpxbqqLJsGveAUYMAwcP5I8NyR2H8xqVGKt3r1tJ
+         2+4YDFEhFM9TQ==
+Date:   Fri, 24 Dec 2021 14:34:27 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Cc:     jmaloy@redhat.com, ying.xue@windriver.com, davem@davemloft.net,
+        netdev@vger.kernel.org, tipc-discussion@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net/tipc: Check null mem pointer
+Message-ID: <20211224143427.6aeebb8f@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20211224074646.1588903-1-jiasheng@iscas.ac.cn>
+References: <20211224074646.1588903-1-jiasheng@iscas.ac.cn>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi all,
+On Fri, 24 Dec 2021 15:46:46 +0800 Jiasheng Jiang wrote:
+> For the possible alloc failure of the kmemdup(), it may return null
+> pointer.
+> Therefore, the returned pointer should be checked to guarantee the
+> success of the init.
+> 
+> Fixes: fc1b6d6de220 ("tipc: introduce TIPC encryption & authentication")
+> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+> ---
+>  net/tipc/crypto.c | 7 +++++++
+>  1 file changed, 7 insertions(+)
+> 
+> diff --git a/net/tipc/crypto.c b/net/tipc/crypto.c
+> index c9391d38de85..19015e08e750 100644
+> --- a/net/tipc/crypto.c
+> +++ b/net/tipc/crypto.c
+> @@ -596,7 +596,14 @@ static int tipc_aead_init(struct tipc_aead **aead, struct tipc_aead_key *ukey,
+>  	tmp->mode = mode;
+>  	tmp->cloned = NULL;
+>  	tmp->authsize = TIPC_AES_GCM_TAG_SIZE;
+> +
+>  	tmp->key = kmemdup(ukey, tipc_aead_key_size(ukey), GFP_KERNEL);
+> +	if (!tmp->key) {
+> +		free_percpu(tmp->tfm_entry);
+> +		kfree_sensitive(tmp);
+> +		return -ENOMEM;
+> +	}
+> +
+>  	memcpy(&tmp->salt, ukey->key + keylen, TIPC_AES_GCM_SALT_SIZE);
+>  	atomic_set(&tmp->users, 0);
+>  	atomic64_set(&tmp->seqno, 0);
 
-I recently bought an USB-C 2.5Gbps external network card, which shows in
-`lsusb` as:
-
-> Bus 002 Device 003: ID 0bda:8156 Realtek Semiconductor Corp. USB 10/100/1G/2.5G LAN
-
-By default, on my distribution (NixOS "21.11pre319254.b5182c214fa")'s
-latest kernel (`pkgs.linuxPackages_latest`) which shows in `uname -nar`
-as:
-
-> Linux $machine 5.15.10 #1-NixOS SMP Fri Dec 17 09:30:17 UTC 2021 x86_64 GNU/Linux
-
-The network card is loaded with `cdc_ncm` driver and is unable to detect
-any carrier even when one is actually plugged in, I tried multiple
-things, I confirmed independently that the carrier is working.
-
-Through further investigations and with the help of a user on
-Libera.Chat #networking channel, we blacklisted `cdc_ncm`, but nothing
-get loaded in turn.
-
-Then, I forced the usage of r8152 for the device 0bda:8156 using `echo
-0bda 8156 > /sys/bus/usb/drivers/r8152/new_id`, and... miracle.
-Everything just worked.
-
-I am uncertain whether this falls in kernel's responsibility or not, it
-seems indeed that my device is listed for r8152: https://github.com/torvalds/linux/blob/master/drivers/net/usb/r8152.c#L9790 introduced by this commit https://github.com/torvalds/linux/commit/195aae321c829dd1945900d75561e6aa79cce208 if I understand well, which is tagged for 5.15.
-
-I am curious to see how difficult would that be to write a patch for
-this and fix it, meanwhile, here is my modest contribution with this bug
-report, hopefully, this is the right place for them.
-
-Kind regards,
--- 
-Ryan Lahfa
+Fixed over a month ago 3e6db079751a ("tipc: check for null after calling
+kmemdup")
