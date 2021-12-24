@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B779547EAC6
-	for <lists+netdev@lfdr.de>; Fri, 24 Dec 2021 04:15:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BF45647EACC
+	for <lists+netdev@lfdr.de>; Fri, 24 Dec 2021 04:19:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351107AbhLXDOT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Dec 2021 22:14:19 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:59156 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351103AbhLXDOS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Dec 2021 22:14:18 -0500
+        id S1351117AbhLXDTY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Dec 2021 22:19:24 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:50310 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1350989AbhLXDTY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Dec 2021 22:19:24 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6CF8CB82253;
-        Fri, 24 Dec 2021 03:14:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8FE1C36AE9;
-        Fri, 24 Dec 2021 03:14:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0626D61F3B
+        for <netdev@vger.kernel.org>; Fri, 24 Dec 2021 03:19:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03815C36AE5;
+        Fri, 24 Dec 2021 03:19:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1640315656;
-        bh=ZXAyYys/9i+dLIp80SuILsfSAiF5yaCmgcI3+0FvJSM=;
+        s=k20201202; t=1640315963;
+        bh=f6J21/rOFUwCUU/Q/VM8YydqYFl4BWGqVzZqC0ZNdc0=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=nTwOJKHMTATySU/Q77sNpnZKbdcN42Aes9Q6mo50uwMPPw9aqwa0eShgqseQT3TsZ
-         yQAhh8AW5JwJp4/1q9UNTmMuIgHzr6sZOPSUAnVdISFTnH9hJNetK0eEH77MD/cwCi
-         ZLX8BW1rZ4LrcuYUf1T5uNnivXQKn7IkNfFXW1glomv1njyoPjOT3RphSnNbm6O7uK
-         Lhoz5jO86R2LLuqcy0pq0Hy00r2X5hW4ymAo43P7fEYqaQl/mimpSX75sPLzD2vcGt
-         sk3CDu7sGsYQz+DsxF11tsC1JyHzcGmIvXQh/cDIGyakdd4oph9JS/JWhLAe8bJBVA
-         x3hr0a6PbvdCg==
-Date:   Thu, 23 Dec 2021 19:14:14 -0800
+        b=Jzb3nXtFqjY/xF1wLN4NRDvPzDRWYHDWEQYQmGje/jBpAtP4XRKM2YY+scpdqcm3x
+         NIiHNmhJqUJjDBXt9MBhwu1CaXfERcxm6SxZTd4ir/6TOjqSVqNNGUzcoeN66NXFsx
+         3KwmvvjkydXWSWX30Kkca+suz19wJ7+V3WSvmX9KVbP8pU4xCuGyOlaL4qEiRVcbRa
+         EVwLqjYdZygGEZYQ+V8aXduntmnHKsS7Q3ZwUJ+sRy/VW2odsu5j4ZB2O5jNHkJg8Q
+         M8VgpZgWlPztwiKFUI+24va6tAdNGkw2NKifprMMmwlj6SqyT3nfRW6wT+ID75WPdx
+         kMiphwvMacPRA==
+Date:   Thu, 23 Dec 2021 19:19:22 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Cc:     robin.murphy@arm.com, andy.shevchenko@gmail.com,
-        davem@davemloft.net, yangyingliang@huawei.com, sashal@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5] fjes: Check for error irq
-Message-ID: <20211223191414.1328c7be@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20211224013445.1400507-1-jiasheng@iscas.ac.cn>
-References: <20211224013445.1400507-1-jiasheng@iscas.ac.cn>
+To:     Coco Li <lixiaoyan@google.com>,
+        Willem de Bruijn <willemb@google.com>
+Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net 1/2] udp: using datalen to cap ipv6 udp max gso
+ segments
+Message-ID: <20211223191922.4a5cabc4@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20211223222441.2975883-1-lixiaoyan@google.com>
+References: <20211223222441.2975883-1-lixiaoyan@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -45,23 +45,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 24 Dec 2021 09:34:45 +0800 Jiasheng Jiang wrote:
-> The platform_get_irq() is possible to fail.
-> And the returned irq could be error number and will finally cause the
-> failure of the request_irq().
-> Consider that platform_get_irq() can now in certain cases return
-> -EPROBE_DEFER, and the consequences of letting request_irq() effectively
-> convert that into -EINVAL, even at probe time rather than later on.
-> So it might be better to check just now.
+On Thu, 23 Dec 2021 22:24:40 +0000 Coco Li wrote:
+> The max number of UDP gso segments is intended to cap to
+> UDP_MAX_SEGMENTS, this is checked in udp_send_skb().
 > 
-> Fixes: 658d439b2292 ("fjes: Introduce FUJITSU Extended Socket Network Device driver")
-> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+> skb->len contains network and transport header len here, we should use
+> only data len instead.
+> 
+> This is the ipv6 counterpart to the below referenced commit,
+> which missed the ipv6 change
+> 
+> Fixes: 158390e45612 ("udp: using datalen to cap max gso segments")
 
-Please take note of the notifications you're getting. The previous
-versions of this and the other two patches you posted shortly after
-were already merged into the net tree:
+I'm gonna replace the Fixes tag with:
 
-https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/?id=db6d6afe382de5a65d6ccf51253ab48b8e8336c3
+Fixes: bec1f6f69736 ("udp: generate gso with UDP_SEGMENT")
 
-If you want to refactor the check you need to send an incremental
-change (IOW diff against the previously applied patch).
+hope that's okay.
+
+> Signed-off-by: Coco Li <lixiaoyan@google.com>
+> Reviewed-by: Willem de Bruijn <willemb@google.com>
+> ---
+>  net/ipv6/udp.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
+> index a2caca6ccf11..8cde9efd7919 100644
+> --- a/net/ipv6/udp.c
+> +++ b/net/ipv6/udp.c
+> @@ -1204,7 +1204,7 @@ static int udp_v6_send_skb(struct sk_buff *skb, struct flowi6 *fl6,
+>  			kfree_skb(skb);
+>  			return -EINVAL;
+>  		}
+> -		if (skb->len > cork->gso_size * UDP_MAX_SEGMENTS) {
+> +		if (datalen > cork->gso_size * UDP_MAX_SEGMENTS) {
+>  			kfree_skb(skb);
+>  			return -EINVAL;
+>  		}
+
