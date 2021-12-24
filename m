@@ -2,86 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D86A47EAC0
-	for <lists+netdev@lfdr.de>; Fri, 24 Dec 2021 04:09:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B779547EAC6
+	for <lists+netdev@lfdr.de>; Fri, 24 Dec 2021 04:15:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351089AbhLXDJO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Dec 2021 22:09:14 -0500
-Received: from mail-m965.mail.126.com ([123.126.96.5]:48346 "EHLO
-        mail-m965.mail.126.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351076AbhLXDJO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Dec 2021 22:09:14 -0500
-X-Greylist: delayed 1868 seconds by postgrey-1.27 at vger.kernel.org; Thu, 23 Dec 2021 22:09:12 EST
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id; bh=KoDSO7RRSOeNU3vg8r
-        6/Hs8GY7UKm0pUledHd5dTthw=; b=Bu6XMGk13KFmg9Ht5ph/waHAXJuIUNaM5b
-        oNk2AGSoMyRT0D1gbKcgnx+2l3E62vgzt1so5PWWJ4nNKBhqEveC4L8KP+aNoPiW
-        iFtxZaHHfi36NAea9WFEaqEwS/vPUwPiFQafp739yUoVjK6lBcAKSVx5T0wEpzLF
-        3a2m1iHqA=
-Received: from localhost.localdomain (unknown [61.149.132.128])
-        by smtp10 (Coremail) with SMTP id NuRpCgBnbFRqMsVhMvm4Aw--.46407S4;
-        Fri, 24 Dec 2021 10:37:32 +0800 (CST)
-From:   zhang kai <zhangkaiheb@126.com>
-To:     pablo@netfilter.org, kadlec@netfilter.org, fw@strlen.de,
-        davem@davemloft.net, kuba@kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        id S1351107AbhLXDOT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Dec 2021 22:14:19 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:59156 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1351103AbhLXDOS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Dec 2021 22:14:18 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6CF8CB82253;
+        Fri, 24 Dec 2021 03:14:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8FE1C36AE9;
+        Fri, 24 Dec 2021 03:14:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1640315656;
+        bh=ZXAyYys/9i+dLIp80SuILsfSAiF5yaCmgcI3+0FvJSM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=nTwOJKHMTATySU/Q77sNpnZKbdcN42Aes9Q6mo50uwMPPw9aqwa0eShgqseQT3TsZ
+         yQAhh8AW5JwJp4/1q9UNTmMuIgHzr6sZOPSUAnVdISFTnH9hJNetK0eEH77MD/cwCi
+         ZLX8BW1rZ4LrcuYUf1T5uNnivXQKn7IkNfFXW1glomv1njyoPjOT3RphSnNbm6O7uK
+         Lhoz5jO86R2LLuqcy0pq0Hy00r2X5hW4ymAo43P7fEYqaQl/mimpSX75sPLzD2vcGt
+         sk3CDu7sGsYQz+DsxF11tsC1JyHzcGmIvXQh/cDIGyakdd4oph9JS/JWhLAe8bJBVA
+         x3hr0a6PbvdCg==
+Date:   Thu, 23 Dec 2021 19:14:14 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Cc:     robin.murphy@arm.com, andy.shevchenko@gmail.com,
+        davem@davemloft.net, yangyingliang@huawei.com, sashal@kernel.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     zhang kai <zhangkaiheb@126.com>
-Subject: [PATCH] netfilter: seqadj: check seq offset before update
-Date:   Fri, 24 Dec 2021 10:37:13 +0800
-Message-Id: <20211224023713.9260-1-zhangkaiheb@126.com>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: NuRpCgBnbFRqMsVhMvm4Aw--.46407S4
-X-Coremail-Antispam: 1Uf129KBjvJXoW7tFW8XF4xCr18ZFy3Cw1DGFg_yoW8GF1rpa
-        9Ykryayr17XryIya1xWryvy3Wavws3Gr4UWF9xZayfZ39FqF48KF43tryjgF1rXrs5AF13
-        KF4aqFsFgFn5A3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zRW5lnUUUUU=
-X-Originating-IP: [61.149.132.128]
-X-CM-SenderInfo: x2kd0wxndlxvbe6rjloofrz/1tbi5BNz-lpECeFWtwABss
+Subject: Re: [PATCH v5] fjes: Check for error irq
+Message-ID: <20211223191414.1328c7be@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20211224013445.1400507-1-jiasheng@iscas.ac.cn>
+References: <20211224013445.1400507-1-jiasheng@iscas.ac.cn>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-if seq/ack offset is zero, don't update
+On Fri, 24 Dec 2021 09:34:45 +0800 Jiasheng Jiang wrote:
+> The platform_get_irq() is possible to fail.
+> And the returned irq could be error number and will finally cause the
+> failure of the request_irq().
+> Consider that platform_get_irq() can now in certain cases return
+> -EPROBE_DEFER, and the consequences of letting request_irq() effectively
+> convert that into -EINVAL, even at probe time rather than later on.
+> So it might be better to check just now.
+> 
+> Fixes: 658d439b2292 ("fjes: Introduce FUJITSU Extended Socket Network Device driver")
+> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-Signed-off-by: zhang kai <zhangkaiheb@126.com>
----
- net/netfilter/nf_conntrack_seqadj.c | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+Please take note of the notifications you're getting. The previous
+versions of this and the other two patches you posted shortly after
+were already merged into the net tree:
 
-diff --git a/net/netfilter/nf_conntrack_seqadj.c b/net/netfilter/nf_conntrack_seqadj.c
-index 3066449f8bd8..d35e272a2e36 100644
---- a/net/netfilter/nf_conntrack_seqadj.c
-+++ b/net/netfilter/nf_conntrack_seqadj.c
-@@ -186,11 +186,13 @@ int nf_ct_seq_adjust(struct sk_buff *skb,
- 	else
- 		seqoff = this_way->offset_before;
- 
--	newseq = htonl(ntohl(tcph->seq) + seqoff);
--	inet_proto_csum_replace4(&tcph->check, skb, tcph->seq, newseq, false);
--	pr_debug("Adjusting sequence number from %u->%u\n",
--		 ntohl(tcph->seq), ntohl(newseq));
--	tcph->seq = newseq;
-+	if (seqoff) {
-+		newseq = htonl(ntohl(tcph->seq) + seqoff);
-+		inet_proto_csum_replace4(&tcph->check, skb, tcph->seq, newseq, false);
-+		pr_debug("Adjusting sequence number from %u->%u\n",
-+			 ntohl(tcph->seq), ntohl(newseq));
-+		tcph->seq = newseq;
-+	}
- 
- 	if (!tcph->ack)
- 		goto out;
-@@ -201,6 +203,9 @@ int nf_ct_seq_adjust(struct sk_buff *skb,
- 	else
- 		ackoff = other_way->offset_before;
- 
-+	if (!ackoff)
-+		goto out;
-+
- 	newack = htonl(ntohl(tcph->ack_seq) - ackoff);
- 	inet_proto_csum_replace4(&tcph->check, skb, tcph->ack_seq, newack,
- 				 false);
--- 
-2.17.1
+https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/?id=db6d6afe382de5a65d6ccf51253ab48b8e8336c3
 
+If you want to refactor the check you need to send an incremental
+change (IOW diff against the previously applied patch).
