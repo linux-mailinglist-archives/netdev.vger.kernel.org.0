@@ -2,117 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D53647EB0B
-	for <lists+netdev@lfdr.de>; Fri, 24 Dec 2021 05:01:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C3F747EB80
+	for <lists+netdev@lfdr.de>; Fri, 24 Dec 2021 06:13:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351218AbhLXEBQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Dec 2021 23:01:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55802 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351212AbhLXEBQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Dec 2021 23:01:16 -0500
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C92A1C061757
-        for <netdev@vger.kernel.org>; Thu, 23 Dec 2021 20:01:15 -0800 (PST)
-Received: by mail-pj1-x1033.google.com with SMTP id v16so6637424pjn.1
-        for <netdev@vger.kernel.org>; Thu, 23 Dec 2021 20:01:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:to:cc:from:subject
-         :content-transfer-encoding;
-        bh=qfXaFkYb/kIfBlrpBQ69YN33YWc3HqccGvv48B9wnL4=;
-        b=HXx6JpwtqCLLrbnXWhRAPBLv2nc67Twc0DEQ1Q0nmKlKLwfcCYtsohNSDvwLcvhtf/
-         rWCqdmHw71ASDkmxIS4mQPOnXy7oQSGSHXXGbQsEw4GO0X0cFwaqFAzZdaKdvIYl7vJc
-         1ustjDt89hrYZmW6mXOOMMHSG6S2K2SKxBc7OGmls8stT4BXuzrPzxHLiLAL57vPxhMz
-         Fw8u/BRQUz9M6OMwHDeyKzutCtm0LMAP4EUaImwhm92ufF9YoQ7FwxjNlBt1sy1l9j7M
-         FQynvd87T5gm97wzIBWmaqR7Usihmon/AylZ6JUOev3git7WooIXbHWc/4sbKodtvEaV
-         tvJg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:to:cc
-         :from:subject:content-transfer-encoding;
-        bh=qfXaFkYb/kIfBlrpBQ69YN33YWc3HqccGvv48B9wnL4=;
-        b=d6bI2tp8In10BCYhdF9gSEztCrDwUIN1Gpb+5mn9SaGuq632XvCqV8uuz+Hmb4F9Hn
-         HTEsdqn1Rd1xvdIC1n4/vuPH4spP0s0l+p2DeZlB4jp1QQH/xA+4L34fuOwECMZBpKe+
-         Abxb88qiIrzc2SZc/q6eHkfhwpLeW3xqEeF9YrvASc3aYhWxstE2ZCiPAz1WQYu6haYK
-         D3LPRsiWLj3HTdxr10elYeBf03RllGWczKmY7KCxw7WbFL6UWtk7sQV/3w3F9AHcS+Vx
-         rv7ixtMYX+SFByNGtU/TK1SVeYDHZPWwrx4Zfld4gBfNYizVR16u22Syb0ztK5IowH+b
-         F2hQ==
-X-Gm-Message-State: AOAM530DMq0y8ZsJdkNQyR8bi3lFBYsftFd8U3eAigunuTpvFKcVqs52
-        zGPr4wkAMr+co/j2R+vJW0Z7hw==
-X-Google-Smtp-Source: ABdhPJzvsV6EHsBpCX/vAdUSZ0zjgMK6bB8WNv08m8ZCvBCO0pUVYuneu07DKOLIt3xSrRG+R/ptEw==
-X-Received: by 2002:a17:902:e552:b0:148:a2e8:277a with SMTP id n18-20020a170902e55200b00148a2e8277amr5165877plf.129.1640318475205;
-        Thu, 23 Dec 2021 20:01:15 -0800 (PST)
-Received: from [10.69.75.97] ([139.177.225.244])
-        by smtp.gmail.com with ESMTPSA id r11sm7138132pff.81.2021.12.23.20.01.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 23 Dec 2021 20:01:14 -0800 (PST)
-Message-ID: <c84094d2-75c1-a50d-ea9e-9dded5f01fb9@bytedance.com>
-Date:   Fri, 24 Dec 2021 12:01:06 +0800
+        id S236414AbhLXFNV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Dec 2021 00:13:21 -0500
+Received: from smtp21.cstnet.cn ([159.226.251.21]:53086 "EHLO cstnet.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229946AbhLXFNV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 Dec 2021 00:13:21 -0500
+Received: from localhost.localdomain (unknown [124.16.138.126])
+        by APP-01 (Coremail) with SMTP id qwCowACnrZ3XVsVh5R4BBQ--.5214S2;
+        Fri, 24 Dec 2021 13:12:55 +0800 (CST)
+From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
+To:     davem@davemloft.net, kuba@kernel.org, colin.king@intel.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Subject: [PATCH] drivers: net: smc911x: Fix wrong check for irq
+Date:   Fri, 24 Dec 2021 13:12:54 +0800
+Message-Id: <20211224051254.1565040-1-jiasheng@iscas.ac.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.4.0
-To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        zhouchengming@bytedance.com, songmuchun@bytedance.com,
-        duanxiongchun@bytedance.com, shekairui@bytedance.com
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-From:   Qiang Wang <wangqiang.wq.frank@bytedance.com>
-Subject: Fix repeated legacy kprobes on same function
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: qwCowACnrZ3XVsVh5R4BBQ--.5214S2
+X-Coremail-Antispam: 1UD129KBjvdXoWrKr4rKrWxAF17Zw1kZF1rCrg_yoWDGFg_Kr
+        4FvFsxJF4kXrs09w18Jr1SyrySvFn8XF4ruF1qqFWYq34DAryUXr4Dur1fAw4Uu34DCFyD
+        G343WFW3C343KjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbcxFF20E14v26r1j6r4UM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Gr0_Xr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr0_
+        Cr1l84ACjcxK6I8E87Iv67AKxVWxJr0_GcWl84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s
+        0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xII
+        jxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVW8JVWxJwAm72CE4IkC6x0Yz7v_Jr0_Gr
+        1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxkIecxEwVAFwVW8WwCF
+        04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r
+        18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_JF0_Jw1lIxkGc2Ij64vI
+        r41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr
+        1lIxAIcVCF04k26cxKx2IYs7xG6rW3Jr0E3s1lIxAIcVC2z280aVAFwI0_Gr0_Cr1lIxAI
+        cVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUjFks3UUUUU==
+X-Originating-IP: [124.16.138.126]
+X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If repeated legacy kprobes on same function in one process,
-libbpf will register using the same probe name and got -EBUSY
-error. So append index to the probe name format to fix this
-problem.
+Because ndev->irq is unsigned, the check is useless.
+Therefore, we need to correct the check by using error variable.
 
-And fix a bug in commit 46ed5fc33db9, which wrongly used the
-func_name instead of probe_name to register.
-
-Fixes: 46ed5fc33db9 ("libbpf: Refactor and simplify legacy kprobe code")
-Co-developed-by: Chengming Zhou <zhouchengming@bytedance.com>
-Signed-off-by: Qiang Wang <wangqiang.wq.frank@bytedance.com>
-Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
-
+Fixes: cb93b3e11d40 ("drivers: net: smc911x: Check for error irq")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 ---
-  tools/lib/bpf/libbpf.c | 5 +++--
-  1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/smsc/smc911x.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 7c74342bb668..7d1097958459 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -9634,7 +9634,8 @@ static int append_to_file(const char *file, const 
-char *fmt, ...)
-  static void gen_kprobe_legacy_event_name(char *buf, size_t buf_sz,
-                                          const char *kfunc_name, size_t 
-offset)
-  {
--       snprintf(buf, buf_sz, "libbpf_%u_%s_0x%zx", getpid(), 
-kfunc_name, offset);
-+       static int index = 0;
-+       snprintf(buf, buf_sz, "libbpf_%u_%s_0x%zx_%d", getpid(), 
-kfunc_name, offset, index++);
-  }
-
-  static int add_kprobe_event_legacy(const char *probe_name, bool retprobe,
-@@ -9735,7 +9736,7 @@ bpf_program__attach_kprobe_opts(const struct 
-bpf_program *prog,
-                 gen_kprobe_legacy_event_name(probe_name, 
-sizeof(probe_name),
-                                              func_name, offset);
-
--               legacy_probe = strdup(func_name);
-+               legacy_probe = strdup(probe_name);
-                 if (!legacy_probe)
-                         return libbpf_err_ptr(-ENOMEM);
-
---
-2.20.1
+diff --git a/drivers/net/ethernet/smsc/smc911x.c b/drivers/net/ethernet/smsc/smc911x.c
+index dd6f69ced4ee..3118c8b7a8c3 100644
+--- a/drivers/net/ethernet/smsc/smc911x.c
++++ b/drivers/net/ethernet/smsc/smc911x.c
+@@ -2071,11 +2071,11 @@ static int smc911x_drv_probe(struct platform_device *pdev)
+ 	SET_NETDEV_DEV(ndev, &pdev->dev);
+ 
+ 	ndev->dma = (unsigned char)-1;
+-	ndev->irq = platform_get_irq(pdev, 0);
+-	if (ndev->irq < 0) {
+-		ret = ndev->irq;
++
++	ret = platform_get_irq(pdev, 0);
++	if (ret < 0)
+ 		goto release_both;
+-	}
++	ndev->irq = ret;
+ 
+ 	lp = netdev_priv(ndev);
+ 	lp->netdev = ndev;
+-- 
+2.25.1
 
