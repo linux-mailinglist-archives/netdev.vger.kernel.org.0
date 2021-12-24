@@ -2,42 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2DE9A47F158
+	by mail.lfdr.de (Postfix) with ESMTP id C81B047F15A
 	for <lists+netdev@lfdr.de>; Fri, 24 Dec 2021 23:45:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229719AbhLXWed (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Dec 2021 17:34:33 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:50594 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229464AbhLXWec (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Dec 2021 17:34:32 -0500
+        id S230185AbhLXWop (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Dec 2021 17:44:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45722 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229464AbhLXWoo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Dec 2021 17:44:44 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EF1AC061401
+        for <netdev@vger.kernel.org>; Fri, 24 Dec 2021 14:44:44 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 40B1FB8233D;
-        Fri, 24 Dec 2021 22:34:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09799C36AE8;
-        Fri, 24 Dec 2021 22:34:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 23F0A612BE
+        for <netdev@vger.kernel.org>; Fri, 24 Dec 2021 22:44:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBAB9C36AE8;
+        Fri, 24 Dec 2021 22:44:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1640385269;
-        bh=NMGUhYwV4WBlPsAMtZhQzx0ZP9lDdLJBtFIBPXnnSaA=;
+        s=k20201202; t=1640385882;
+        bh=kSRGkQxqetJL9SOE+CQCHr70XtSxVdOEWuWZzZvyyVg=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=EiseSKytRuFT/o7uqe+d3ncxZr0HeZI5Qrw7lgGJs2Imsv44IRYPocGVtueaSq9nU
-         oE4tWx+ehO1tcUJGVllFEB2HfySVlS2+OqjIPCegSLxmMKYr9KHN2yp6WkVm3x/u7y
-         jEAKvT9x9bLo01x+D4ZwANRKgJuWwA7I2D1C/Vo2aLlgptbU7KfORJeHs0gF+Lb6lX
-         et51nt+L81TRxsCiY4aJa7B4Foa1WdtEE9Tc+juRAliDUJkg5tltZ2HcB3cPs1/1K1
-         3Pm1iAxO6sW2th1UY1YoYjLSG2qpxbqqLJsGveAUYMAwcP5I8NyR2H8xqVGKt3r1tJ
-         2+4YDFEhFM9TQ==
-Date:   Fri, 24 Dec 2021 14:34:27 -0800
+        b=Q33+MMMCB+LFTbPc0QaFrgcUuDZXOBDAcocZBtyqTsgnggUZxZbBgXBEIomr9Nhnb
+         FULkUEZwdV1SXUFap62bEYBxDlEcdmjoq76z62P8oRLjSbOLkjUQaNfN672UoKnR/6
+         fgqPUopyAFq/9mD63tdljNKBq+FK2oWC8kwcl19GS6pLmXB9SjfIQVUaagsyPg1JsR
+         ++QGlt5BwbcSnUnsusZmDR0ZlsHJrjmTtF2RRK7wfxL4B/Cwdska4eQc9TY/AIBTXK
+         eyM7/FNBxAYob4sufpObYiXp8r6CXGTlkSYVcNtMZVuXs8NGJIOOq9Gx8L/3Omr2ej
+         sAV9390D2K+9Q==
+Date:   Fri, 24 Dec 2021 14:44:41 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Cc:     jmaloy@redhat.com, ying.xue@windriver.com, davem@davemloft.net,
-        netdev@vger.kernel.org, tipc-discussion@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net/tipc: Check null mem pointer
-Message-ID: <20211224143427.6aeebb8f@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20211224074646.1588903-1-jiasheng@iscas.ac.cn>
-References: <20211224074646.1588903-1-jiasheng@iscas.ac.cn>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Tonghao Zhang <xiangxia.m.yue@gmail.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Talal Ahmad <talalahmad@google.com>,
+        Kevin Hao <haokexin@gmail.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Kees Cook <keescook@chromium.org>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Wei Wang <weiwan@google.com>, Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [net-next v7 2/2] net: sched: support hash/classid/cpuid
+ selecting tx queue
+Message-ID: <20211224144441.534559e8@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <CAM_iQpUhNmmxyPXjyRBKzjVkreu0WXvoyOTdxT0pdjUBsFkx6A@mail.gmail.com>
+References: <20211224164926.80733-1-xiangxia.m.yue@gmail.com>
+        <20211224164926.80733-3-xiangxia.m.yue@gmail.com>
+        <CAM_iQpUhNmmxyPXjyRBKzjVkreu0WXvoyOTdxT0pdjUBsFkx6A@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -45,37 +64,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 24 Dec 2021 15:46:46 +0800 Jiasheng Jiang wrote:
-> For the possible alloc failure of the kmemdup(), it may return null
-> pointer.
-> Therefore, the returned pointer should be checked to guarantee the
-> success of the init.
+On Fri, 24 Dec 2021 11:28:45 -0800 Cong Wang wrote:
+> On Fri, Dec 24, 2021 at 8:49 AM <xiangxia.m.yue@gmail.com> wrote:
+> > From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> >
+> > This patch allows user to select queue_mapping, range
+> > from A to B. And user can use skbhash, cgroup classid
+> > and cpuid to select Tx queues. Then we can load balance
+> > packets from A to B queue. The range is an unsigned 16bit
+> > value in decimal format.
+> >
+> > $ tc filter ... action skbedit queue_mapping skbhash A B
+> >
+> > "skbedit queue_mapping QUEUE_MAPPING" (from "man 8 tc-skbedit")
+> > is enhanced with flags:
+> > * SKBEDIT_F_TXQ_SKBHASH
+> > * SKBEDIT_F_TXQ_CLASSID
+> > * SKBEDIT_F_TXQ_CPUID  
 > 
-> Fixes: fc1b6d6de220 ("tipc: introduce TIPC encryption & authentication")
-> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-> ---
->  net/tipc/crypto.c | 7 +++++++
->  1 file changed, 7 insertions(+)
+> NACK.
 > 
-> diff --git a/net/tipc/crypto.c b/net/tipc/crypto.c
-> index c9391d38de85..19015e08e750 100644
-> --- a/net/tipc/crypto.c
-> +++ b/net/tipc/crypto.c
-> @@ -596,7 +596,14 @@ static int tipc_aead_init(struct tipc_aead **aead, struct tipc_aead_key *ukey,
->  	tmp->mode = mode;
->  	tmp->cloned = NULL;
->  	tmp->authsize = TIPC_AES_GCM_TAG_SIZE;
-> +
->  	tmp->key = kmemdup(ukey, tipc_aead_key_size(ukey), GFP_KERNEL);
-> +	if (!tmp->key) {
-> +		free_percpu(tmp->tfm_entry);
-> +		kfree_sensitive(tmp);
-> +		return -ENOMEM;
-> +	}
-> +
->  	memcpy(&tmp->salt, ukey->key + keylen, TIPC_AES_GCM_SALT_SIZE);
->  	atomic_set(&tmp->users, 0);
->  	atomic64_set(&tmp->seqno, 0);
+> These values can either obtained from user-space, or is nonsense
+> at all.
 
-Fixed over a month ago 3e6db079751a ("tipc: check for null after calling
-kmemdup")
+Can you elaborate? What values can be obtained from user space?
+What is nonsense?
+
+> Sorry, we don't accept enforcing such bad policies in kernel. Please
+> drop this patch.
+
+Again, unclear what your objection is. There's plenty similar
+functionality in TC. Please be more specific.
