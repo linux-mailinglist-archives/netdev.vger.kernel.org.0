@@ -2,98 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C1D6547F2AA
-	for <lists+netdev@lfdr.de>; Sat, 25 Dec 2021 09:33:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A2AA47F30E
+	for <lists+netdev@lfdr.de>; Sat, 25 Dec 2021 12:16:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231184AbhLYIc5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Dec 2021 03:32:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58788 "EHLO
+        id S231494AbhLYLQC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Dec 2021 06:16:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231173AbhLYIc4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Dec 2021 03:32:56 -0500
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99C6EC061759
-        for <netdev@vger.kernel.org>; Sat, 25 Dec 2021 00:32:56 -0800 (PST)
-Received: by mail-pf1-x434.google.com with SMTP id c2so9415986pfc.1
-        for <netdev@vger.kernel.org>; Sat, 25 Dec 2021 00:32:56 -0800 (PST)
+        with ESMTP id S231484AbhLYLQC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Dec 2021 06:16:02 -0500
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A680EC061401;
+        Sat, 25 Dec 2021 03:16:01 -0800 (PST)
+Received: by mail-lf1-x12b.google.com with SMTP id x21so24025426lfa.5;
+        Sat, 25 Dec 2021 03:16:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=6OvxUrQQkCom57wUVJl60P0MeViWixpOkxhe4s/JMMc=;
-        b=RqringsfiLKfKcM47FFkD6KrLPItmi7FABgsNk/148heTtAR1r/ygCEQMT+/2uksHW
-         4gdnT0zNnd71ljvF9FZ0ufnsFtJ3ivmBwMaJ/2Xg60m3U/b0n3zKkf3iScJQy3lX4GrL
-         wdb1UkwHzAZh/fKs1n9SdhjnjRwCV4ztudLq6nXx2k4n13mddDnzjKrCVktZ6OGhb3FX
-         mVrn2rP0ONBRN/imaEfE+gyjFxx3yH0BSm2PPFfnhvmyYMoHo3VlW1FWg40yXh6+nXtv
-         IV+Im24G5A1FspoDPx/gcyopsZLL7t2RSJZeJjYMvInTKiQW3aJs5B84PbOkxETbjqkR
-         6PbQ==
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=jD3Ho49ZXVfN6HlbKxzdGSI6sz6nWNyLf9zcGh6i8pk=;
+        b=bvQ1dMcEqw0yfAIAJZhBI4hSQrXQDRvrQdCHqD1vyeg/pceL0cduJSPLXOwW7MDAOx
+         IUIt6P1SmR9bBsd0sDlno33k5NMM/ohOOd6sEnBFldx+lzb5pAItCz/cnlz7FJCUek/o
+         /p12JJStViW5vfzuS1qXXof0SShP1I70C2rGFXJIlM3t52A0nnOs5sTRhBJBlUTbA9f/
+         ms1KuDX+I8v2FUkBH6KgwppAbeg5SysCfzbQiFRmVfRXKUuJl2vei+lVebl5+7tqTj43
+         YxDPoQ9ZUfXcm3g4K0H7Lpv++J+bRM+OqvM9/4FP1ZIPGaDPsvRCvcdNCB2aHeSbjmX0
+         UjZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=6OvxUrQQkCom57wUVJl60P0MeViWixpOkxhe4s/JMMc=;
-        b=f19Gcgz1wnUdFM15C8YTTcjJX3XV69O+sQfLPH+R3LvtqNXw6erL04z9bs/O14yB+J
-         ASiGqS4rf6RUuiRdGz/GQvVdhy8yZo5Bs+4Sxm4IlC+qe1YJDlxByKAw3sZnc9JgFANE
-         N74M9NYMmKEKf6289t7gR5rzG8ffhMomi/I6tS1F7XB4TObd2YVDYt8SJE3g7qT+BEAo
-         /u4eWhSB0dBjrTA+Npwu2f/XYFXRe29tFpLUgPQzAcyxg/vgGbOPJD8AAhxbrSlu+ywk
-         9clPfcIeJuAPab9iTfW9/76qu2G8IGvp2yfN233YwZWe8EKPVgiorXoEcKSxGHiiDfMi
-         GBzw==
-X-Gm-Message-State: AOAM531C7Lx8M8E6jOKJ/wrxX4k8jkgcFF8u+OhLjaBThsDAVNPFiLuf
-        ZNoj5m4S5q0TtW3StGKkbdP9ew==
-X-Google-Smtp-Source: ABdhPJznlmyOBW5dwARFvPNmx4v4bpPjIaj+WRiRkAKwfVZTF2LDG1F5Wg2BL3O2dQ3s7Xucyt7aQg==
-X-Received: by 2002:a63:6603:: with SMTP id a3mr8460664pgc.578.1640421176186;
-        Sat, 25 Dec 2021 00:32:56 -0800 (PST)
-Received: from localhost.localdomain ([122.14.229.79])
-        by smtp.googlemail.com with ESMTPSA id cx5sm10181713pjb.22.2021.12.25.00.32.51
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 25 Dec 2021 00:32:55 -0800 (PST)
-From:   Qiang Wang <wangqiang.wq.frank@bytedance.com>
-To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, zhouchengming@bytedance.com,
-        songmuchun@bytedance.com, duanxiongchun@bytedance.com,
-        shekairui@bytedance.com
-Subject: [PATCH 2/2] libbpf: Support repeated legacy kprobes on same function
-Date:   Sat, 25 Dec 2021 16:32:42 +0800
-Message-Id: <20211225083242.38498-2-wangqiang.wq.frank@bytedance.com>
-X-Mailer: git-send-email 2.30.1 (Apple Git-130)
-In-Reply-To: <20211225083242.38498-1-wangqiang.wq.frank@bytedance.com>
-References: <20211225083242.38498-1-wangqiang.wq.frank@bytedance.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=jD3Ho49ZXVfN6HlbKxzdGSI6sz6nWNyLf9zcGh6i8pk=;
+        b=axvOD2Fp72Te4MlRnPsyrF48TxxZxjSd8lpxRDVWEYO/S6TZEDJiIl+jxiBWgdvgP7
+         21mZMefgZ1YtFA2GdVVMqbqTlSL1Pkc4RHj+ZR+VanaJokoIGpSDh0Igcn1Yl3jzYdxS
+         Cyu6mJR854PMxkQXsSjaJPScCDBR3z+YbZaybYyru4QY9M/MitfXCHnJKaQaqwGz3w4f
+         AJ/VWkEbDcJTooqUp1bGtMnZGls96s3wS20RtxckbF00w+23/Kccw9iYxTmAY15gG24n
+         Rpws00ugzM3lKgHv6QddaZvhQa4mxSXtsgcKK4k/OYAU+ViAt/2nUbfY6SIlsv1Ubkpt
+         V+vQ==
+X-Gm-Message-State: AOAM5326dtnQhIroshZIt5YWKvER1nAVHu5fZmKZHI+0cVvInjd7IwXG
+        ZhYVFzMy/BJuuv035VmMCbw=
+X-Google-Smtp-Source: ABdhPJwvYB0w3n8Ru3efRBiK7m5ojAAr3OM0vWrkkFa2fkcpgQfKuQ3nnAJlFknilSRiF+cdPZVAcw==
+X-Received: by 2002:a05:6512:30f:: with SMTP id t15mr5280604lfp.650.1640430959306;
+        Sat, 25 Dec 2021 03:15:59 -0800 (PST)
+Received: from [192.168.1.11] ([94.103.235.97])
+        by smtp.gmail.com with ESMTPSA id s4sm1016787ljp.40.2021.12.25.03.15.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 25 Dec 2021 03:15:58 -0800 (PST)
+Message-ID: <45e8c415-8aa1-7a2a-c435-3e014f3856eb@gmail.com>
+Date:   Sat, 25 Dec 2021 14:15:57 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [syzbot] KMSAN: uninit-value in ax88772a_hw_reset
+Content-Language: en-US
+To:     syzbot <syzbot+8d179821571093c5f928@syzkaller.appspotmail.com>,
+        andrew@lunn.ch, davem@davemloft.net, glider@google.com,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux@rempel-privat.de,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+References: <0000000000005fb57e05d1620da1@google.com>
+From:   Pavel Skripkin <paskripkin@gmail.com>
+In-Reply-To: <0000000000005fb57e05d1620da1@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If repeated legacy kprobes on same function in one process,
-libbpf will register using the same probe name and got -EBUSY
-error. So append index to the probe name format to fix this
-problem.
+On 11/22/21 18:12, syzbot wrote:
+> Hello,
+> 
+> syzbot found the following issue on:
+> 
+> HEAD commit:    412af9cd936d ioremap.c: move an #include around
+> git tree:       https://github.com/google/kmsan.git master
+> console output: https://syzkaller.appspot.com/x/log.txt?x=136fb126b00000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=2d142cdf4204061
+> dashboard link: https://syzkaller.appspot.com/bug?extid=8d179821571093c5f928
+> compiler:       clang version 14.0.0 (git@github.com:llvm/llvm-project.git 0996585c8e3b3d409494eb5f1cad714b9e1f7fb5), GNU ld (GNU Binutils for Debian) 2.35.2
+> 
+> Unfortunately, I don't have any reproducer for this issue yet.
+> 
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+8d179821571093c5f928@syzkaller.appspotmail.com
+> 
+> asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
+> asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
+> asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0016: -71
+> asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
+> asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable hardware MII access
 
-Co-developed-by: Chengming Zhou <zhouchengming@bytedance.com>
-Signed-off-by: Qiang Wang <wangqiang.wq.frank@bytedance.com>
-Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
----
- tools/lib/bpf/libbpf.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index b7d6c951fa09..0c41a45ffd54 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -9634,7 +9634,9 @@ static int append_to_file(const char *file, const char *fmt, ...)
- static void gen_kprobe_legacy_event_name(char *buf, size_t buf_sz,
- 					 const char *kfunc_name, size_t offset)
- {
--	snprintf(buf, buf_sz, "libbpf_%u_%s_0x%zx", getpid(), kfunc_name, offset);
-+	static int index = 0;
-+	snprintf(buf, buf_sz, "libbpf_%u_%s_0x%zx_%d", getpid(), kfunc_name, offset
-+		 __sync_fetch_and_add(&index, 1));
- }
- 
- static int add_kprobe_event_legacy(const char *probe_name, bool retprobe,
--- 
-2.20.1
+#syz fix: asix: fix uninit-value in asix_mdio_read()
 
+
+With regards,
+Pavel Skripkin
