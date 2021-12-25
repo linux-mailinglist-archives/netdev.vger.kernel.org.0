@@ -2,174 +2,202 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 52F5C47F43A
-	for <lists+netdev@lfdr.de>; Sat, 25 Dec 2021 19:24:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 73E7047F43E
+	for <lists+netdev@lfdr.de>; Sat, 25 Dec 2021 19:31:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232653AbhLYSX6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Dec 2021 13:23:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44376 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229488AbhLYSX5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Dec 2021 13:23:57 -0500
-Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57F1EC061401;
-        Sat, 25 Dec 2021 10:23:57 -0800 (PST)
-Received: by mail-io1-xd36.google.com with SMTP id e128so14360244iof.1;
-        Sat, 25 Dec 2021 10:23:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
-         :subject:to:cc;
-        bh=76GQIt0sZ1We5Jshemf66kFRSNu6kCz1Xq1pIPR9qK0=;
-        b=AGpOyQ7LoDyVAAKtGuejoG/4bZAVsFUFaq6dt3Gm71r9Oacr9Cz9it/BV6II7ygRiC
-         FUKBMAVj8A5WIaCItvTALfMZXSKB07PBZHvo6oxSgNNKz0gf37MgxBEh0Wdni+CaR+QI
-         LeBtPqARd4uMucPtmSVIlY6FHDt+jGu2EyBojq/bmVTZTKQ/KLQDqVfBfs4WKTKKSow3
-         tyGxnuBCrANzBVCSrfP2wihDcF+/EGOKjI1jEhNyndqLs2UTLCVCEEYFqHUgSet8D+QD
-         peGCwR/I4wlEoBaazeRKw/7OgMSzKJW79GlESuD/yjfBVgXQ49uEJnoDI2iq8s3sbcMn
-         cahQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
-         :from:date:message-id:subject:to:cc;
-        bh=76GQIt0sZ1We5Jshemf66kFRSNu6kCz1Xq1pIPR9qK0=;
-        b=V1+h0A5bEjP3gnUWVKOtNbYqvtb09oq6hMq+yJtg4rVGpDvjBgA/XkbIjWzw4FaXZB
-         qelRNm3S4Px0TYHIzzcBrjmMmz7TdxeMidRZ/AZ0BQkZPietrj02tHVPmgdnzG2qnfR5
-         QkS/WWjWzwBvme88Y6KYWAdV4+68fR3+Bi9Mq22rzbmJFPBLKlmkalK78aMT0a+1k1zF
-         ozAW7qcDHGo2zxJi2VqAZLWkhnoSkRwLtl23UlLC3WXxy/IEmoQSPuiz53ovh3mtVWHI
-         h2w12+ZMEhR7TIJnO8c2HV4yBiFGsY4xAVKj+Vde4RrrWAq6OVJyIdIBHAap4pqY9lAz
-         beoQ==
-X-Gm-Message-State: AOAM533shO9RdXdW0+nnXpgkdbF7GFnd9oYlMWOEAYycwVDr27GL5GFQ
-        Kp18XPZzT6FlnbacggKqcrca7uR34hManLxZex/Kb3MAOOO3nw==
-X-Google-Smtp-Source: ABdhPJw5R8R8n+cHJuC6jOxQ4tFL1IHe1BHVHu2GEmwDcwEWZlVnosK4C9bANjTaOdKc3crMLwGnTJXU3JV9nPs9wbg=
-X-Received: by 2002:a05:6638:1456:: with SMTP id l22mr4841012jad.306.1640456636186;
- Sat, 25 Dec 2021 10:23:56 -0800 (PST)
+        id S232677AbhLYSau (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Dec 2021 13:30:50 -0500
+Received: from mga05.intel.com ([192.55.52.43]:41701 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229488AbhLYSat (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 25 Dec 2021 13:30:49 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1640457049; x=1671993049;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=OVE9TRA+bNJZniOgx5+yTsSXDdWXbWMruv+MitYmk0o=;
+  b=idDyo/5LM8Pe/Dq9KBafz+X4Bjebx9dbYbifzgkR+Xg+IABno6Q05r1V
+   Lmpz1m9uog29ub7z7CppXfOEJOYmO7FwjaHVSgtExtnTdTzR3YSYz92Zo
+   xCvJmKjClzFPkHBfg9PuvrCT+QkU5lmmKGhCzgI3IsPdeGbkuZavzQzK7
+   M4zKy8vXLRist9rOo3dFg2EpBMRJp3mgoBHF68aPirmt8GOKlq3V+5Jp2
+   ENdF8CEB4gf0dRyeliCPsv0m0uNuaIAq51Uuav1BZRbOx1NcuFpAtTy3q
+   BiTgN1zkXMBIhQOvDTQRYp+QjosZ4m8m9hKtCo8NzTivBk5B7cTlNLZIn
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10208"; a="327387539"
+X-IronPort-AV: E=Sophos;i="5.88,235,1635231600"; 
+   d="scan'208";a="327387539"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Dec 2021 10:30:49 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,235,1635231600"; 
+   d="scan'208";a="588035340"
+Received: from lkp-server01.sh.intel.com (HELO e357b3ef1427) ([10.239.97.150])
+  by fmsmga004.fm.intel.com with ESMTP; 25 Dec 2021 10:30:46 -0800
+Received: from kbuild by e357b3ef1427 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1n1Bob-0004bW-ST; Sat, 25 Dec 2021 18:30:45 +0000
+Date:   Sun, 26 Dec 2021 02:30:15 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Yan Yan <evitayan@google.com>, steffen.klassert@secunet.com
+Cc:     kbuild-all@lists.01.org, herbert@gondor.apana.org.au,
+        davem@davemloft.net, netdev@vger.kernel.org, nharold@google.com,
+        benedictwong@google.com, maze@google.com, lorenzo@google.com,
+        Yan Yan <evitayan@google.com>
+Subject: Re: [PATCH v1 1/2] xfrm: Check if_id in xfrm_migrate
+Message-ID: <202112260218.oyI4rj2f-lkp@intel.com>
+References: <20211223004555.1284666-2-evitayan@google.com>
 MIME-Version: 1.0
-References: <20211221015751.116328-1-sashal@kernel.org> <20211221015751.116328-7-sashal@kernel.org>
-In-Reply-To: <20211221015751.116328-7-sashal@kernel.org>
-Reply-To: sedat.dilek@gmail.com
-From:   Sedat Dilek <sedat.dilek@gmail.com>
-Date:   Sat, 25 Dec 2021 19:23:19 +0100
-Message-ID: <CA+icZUXqtz5CbuC_gOMgJRCuLbsnSO0gsB7zS0ZwMQW3PBOCAw@mail.gmail.com>
-Subject: Re: [PATCH AUTOSEL 5.15 07/29] nl80211: reset regdom when reloading regdb
-To:     Sasha Levin <sashal@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Finn Behrens <me@kloenk.dev>, Finn Behrens <fin@nyantec.com>,
-        Johannes Berg <johannes.berg@intel.com>, davem@davemloft.net,
-        kuba@kernel.org, Johannes Berg <johannes@sipsolutions.net>,
-        netdev@vger.kernel.org, linux-wireless@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211223004555.1284666-2-evitayan@google.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 21, 2021 at 2:58 AM Sasha Levin <sashal@kernel.org> wrote:
->
-> From: Finn Behrens <me@kloenk.dev>
->
-> [ Upstream commit 1eda919126b420fee6b8d546f7f728fbbd4b8f11 ]
->
-> Reload the regdom when the regulatory db is reloaded.
-> Otherwise, the user had to change the regulatoy domain
-> to a different one and then reset it to the correct
-> one to have a new regulatory db take effect after a
-> reload.
->
-> Signed-off-by: Finn Behrens <fin@nyantec.com>
-> Link: https://lore.kernel.org/r/YaIIZfxHgqc/UTA7@gimli.kloenk.dev
-> [edit commit message]
-> Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-> Signed-off-by: Sasha Levin <sashal@kernel.org>
+Hi Yan,
 
-This requires [1] to fix this warning:
+Thank you for the patch! Yet something to improve:
 
-net/wireless/reg.c:1137:23: warning: implicit conversion from
-enumeration type 'enum nl80211_user_reg_hint_type' to different
-enumeration type 'enum nl80211_reg_
-initiator' [-Wenum-conversion]
+[auto build test ERROR on klassert-ipsec-next/master]
+[also build test ERROR on klassert-ipsec/master net-next/master net/master v5.16-rc6 next-20211224]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-[PATCH] nl80211: remove reload flag from regulatory_request
+url:    https://github.com/0day-ci/linux/commits/Yan-Yan/Fix-issues-in-xfrm_migrate/20211223-084725
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/klassert/ipsec-next.git master
+config: x86_64-rhel-8.3 (https://download.01.org/0day-ci/archive/20211226/202112260218.oyI4rj2f-lkp@intel.com/config)
+compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/0day-ci/linux/commit/a1b1a05814d4ac913aa4af753da7e116a3d58342
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Yan-Yan/Fix-issues-in-xfrm_migrate/20211223-084725
+        git checkout a1b1a05814d4ac913aa4af753da7e116a3d58342
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/gpio/ net/key/
 
-- Sedat -
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211.git/patch/?id=37d33114240ede043c42463a6347f68ed72d6904
+All errors (new ones prefixed by >>):
 
-> ---
->  include/net/regulatory.h |  1 +
->  net/wireless/reg.c       | 27 +++++++++++++++++++++++++--
->  2 files changed, 26 insertions(+), 2 deletions(-)
->
-> diff --git a/include/net/regulatory.h b/include/net/regulatory.h
-> index 47f06f6f5a67c..0cf9335431e07 100644
-> --- a/include/net/regulatory.h
-> +++ b/include/net/regulatory.h
-> @@ -83,6 +83,7 @@ struct regulatory_request {
->         enum nl80211_dfs_regions dfs_region;
->         bool intersect;
->         bool processed;
-> +       bool reload;
->         enum environment_cap country_ie_env;
->         struct list_head list;
->  };
-> diff --git a/net/wireless/reg.c b/net/wireless/reg.c
-> index df87c7f3a0492..61f1bf1bc4a73 100644
-> --- a/net/wireless/reg.c
-> +++ b/net/wireless/reg.c
-> @@ -133,6 +133,7 @@ static u32 reg_is_indoor_portid;
->
->  static void restore_regulatory_settings(bool reset_user, bool cached);
->  static void print_regdomain(const struct ieee80211_regdomain *rd);
-> +static void reg_process_hint(struct regulatory_request *reg_request);
->
->  static const struct ieee80211_regdomain *get_cfg80211_regdom(void)
->  {
-> @@ -1098,6 +1099,8 @@ int reg_reload_regdb(void)
->         const struct firmware *fw;
->         void *db;
->         int err;
-> +       const struct ieee80211_regdomain *current_regdomain;
-> +       struct regulatory_request *request;
->
->         err = request_firmware(&fw, "regulatory.db", &reg_pdev->dev);
->         if (err)
-> @@ -1118,8 +1121,27 @@ int reg_reload_regdb(void)
->         if (!IS_ERR_OR_NULL(regdb))
->                 kfree(regdb);
->         regdb = db;
-> -       rtnl_unlock();
->
-> +       /* reset regulatory domain */
-> +       current_regdomain = get_cfg80211_regdom();
-> +
-> +       request = kzalloc(sizeof(*request), GFP_KERNEL);
-> +       if (!request) {
-> +               err = -ENOMEM;
-> +               goto out_unlock;
-> +       }
-> +
-> +       request->wiphy_idx = WIPHY_IDX_INVALID;
-> +       request->alpha2[0] = current_regdomain->alpha2[0];
-> +       request->alpha2[1] = current_regdomain->alpha2[1];
-> +       request->initiator = NL80211_USER_REG_HINT_USER;
-> +       request->user_reg_hint_type = NL80211_USER_REG_HINT_USER;
-> +       request->reload = true;
-> +
-> +       reg_process_hint(request);
-> +
-> +out_unlock:
-> +       rtnl_unlock();
->   out:
->         release_firmware(fw);
->         return err;
-> @@ -2690,7 +2712,8 @@ reg_process_hint_user(struct regulatory_request *user_request)
->
->         treatment = __reg_process_hint_user(user_request);
->         if (treatment == REG_REQ_IGNORE ||
-> -           treatment == REG_REQ_ALREADY_SET)
-> +           (treatment == REG_REQ_ALREADY_SET &&
-> +            !user_request->reload))
->                 return REG_REQ_IGNORE;
->
->         user_request->intersect = treatment == REG_REQ_INTERSECT;
-> --
-> 2.34.1
->
+   net/key/af_key.c: In function 'pfkey_migrate':
+>> net/key/af_key.c:2625:9: error: too few arguments to function 'xfrm_migrate'
+    2625 |  return xfrm_migrate(&sel, dir, XFRM_POLICY_TYPE_MAIN, m, i,
+         |         ^~~~~~~~~~~~
+   In file included from net/key/af_key.c:28:
+   include/net/xfrm.h:1683:5: note: declared here
+    1683 | int xfrm_migrate(const struct xfrm_selector *sel, u8 dir, u8 type,
+         |     ^~~~~~~~~~~~
+
+
+vim +/xfrm_migrate +2625 net/key/af_key.c
+
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2539  
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2540  static int pfkey_migrate(struct sock *sk, struct sk_buff *skb,
+4c93fbb0626080 David S. Miller   2011-02-25  2541  			 const struct sadb_msg *hdr, void * const *ext_hdrs)
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2542  {
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2543  	int i, len, ret, err = -EINVAL;
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2544  	u8 dir;
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2545  	struct sadb_address *sa;
+13c1d18931ebb5 Arnaud Ebalard    2008-10-05  2546  	struct sadb_x_kmaddress *kma;
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2547  	struct sadb_x_policy *pol;
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2548  	struct sadb_x_ipsecrequest *rq;
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2549  	struct xfrm_selector sel;
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2550  	struct xfrm_migrate m[XFRM_MAX_DEPTH];
+13c1d18931ebb5 Arnaud Ebalard    2008-10-05  2551  	struct xfrm_kmaddress k;
+8d549c4f5d92d8 Fan Du            2013-11-07  2552  	struct net *net = sock_net(sk);
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2553  
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2554  	if (!present_and_same_family(ext_hdrs[SADB_EXT_ADDRESS_SRC - 1],
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2555  				     ext_hdrs[SADB_EXT_ADDRESS_DST - 1]) ||
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2556  	    !ext_hdrs[SADB_X_EXT_POLICY - 1]) {
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2557  		err = -EINVAL;
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2558  		goto out;
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2559  	}
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2560  
+13c1d18931ebb5 Arnaud Ebalard    2008-10-05  2561  	kma = ext_hdrs[SADB_X_EXT_KMADDRESS - 1];
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2562  	pol = ext_hdrs[SADB_X_EXT_POLICY - 1];
+13c1d18931ebb5 Arnaud Ebalard    2008-10-05  2563  
+13c1d18931ebb5 Arnaud Ebalard    2008-10-05  2564  	if (pol->sadb_x_policy_dir >= IPSEC_DIR_MAX) {
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2565  		err = -EINVAL;
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2566  		goto out;
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2567  	}
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2568  
+13c1d18931ebb5 Arnaud Ebalard    2008-10-05  2569  	if (kma) {
+13c1d18931ebb5 Arnaud Ebalard    2008-10-05  2570  		/* convert sadb_x_kmaddress to xfrm_kmaddress */
+13c1d18931ebb5 Arnaud Ebalard    2008-10-05  2571  		k.reserved = kma->sadb_x_kmaddress_reserved;
+13c1d18931ebb5 Arnaud Ebalard    2008-10-05  2572  		ret = parse_sockaddr_pair((struct sockaddr *)(kma + 1),
+13c1d18931ebb5 Arnaud Ebalard    2008-10-05  2573  					  8*(kma->sadb_x_kmaddress_len) - sizeof(*kma),
+13c1d18931ebb5 Arnaud Ebalard    2008-10-05  2574  					  &k.local, &k.remote, &k.family);
+13c1d18931ebb5 Arnaud Ebalard    2008-10-05  2575  		if (ret < 0) {
+13c1d18931ebb5 Arnaud Ebalard    2008-10-05  2576  			err = ret;
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2577  			goto out;
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2578  		}
+13c1d18931ebb5 Arnaud Ebalard    2008-10-05  2579  	}
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2580  
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2581  	dir = pol->sadb_x_policy_dir - 1;
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2582  	memset(&sel, 0, sizeof(sel));
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2583  
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2584  	/* set source address info of selector */
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2585  	sa = ext_hdrs[SADB_EXT_ADDRESS_SRC - 1];
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2586  	sel.family = pfkey_sadb_addr2xfrm_addr(sa, &sel.saddr);
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2587  	sel.prefixlen_s = sa->sadb_address_prefixlen;
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2588  	sel.proto = pfkey_proto_to_xfrm(sa->sadb_address_proto);
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2589  	sel.sport = ((struct sockaddr_in *)(sa + 1))->sin_port;
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2590  	if (sel.sport)
+582ee43dad8e41 Al Viro           2007-07-26  2591  		sel.sport_mask = htons(0xffff);
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2592  
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2593  	/* set destination address info of selector */
+47162c0b7e26ef Himangi Saraogi   2014-05-30  2594  	sa = ext_hdrs[SADB_EXT_ADDRESS_DST - 1];
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2595  	pfkey_sadb_addr2xfrm_addr(sa, &sel.daddr);
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2596  	sel.prefixlen_d = sa->sadb_address_prefixlen;
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2597  	sel.proto = pfkey_proto_to_xfrm(sa->sadb_address_proto);
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2598  	sel.dport = ((struct sockaddr_in *)(sa + 1))->sin_port;
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2599  	if (sel.dport)
+582ee43dad8e41 Al Viro           2007-07-26  2600  		sel.dport_mask = htons(0xffff);
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2601  
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2602  	rq = (struct sadb_x_ipsecrequest *)(pol + 1);
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2603  
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2604  	/* extract ipsecrequests */
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2605  	i = 0;
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2606  	len = pol->sadb_x_policy_len * 8 - sizeof(struct sadb_x_policy);
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2607  
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2608  	while (len > 0 && i < XFRM_MAX_DEPTH) {
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2609  		ret = ipsecrequests_to_migrate(rq, len, &m[i]);
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2610  		if (ret < 0) {
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2611  			err = ret;
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2612  			goto out;
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2613  		} else {
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2614  			rq = (struct sadb_x_ipsecrequest *)((u8 *)rq + ret);
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2615  			len -= ret;
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2616  			i++;
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2617  		}
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2618  	}
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2619  
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2620  	if (!i || len > 0) {
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2621  		err = -EINVAL;
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2622  		goto out;
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2623  	}
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2624  
+13c1d18931ebb5 Arnaud Ebalard    2008-10-05 @2625  	return xfrm_migrate(&sel, dir, XFRM_POLICY_TYPE_MAIN, m, i,
+4ab47d47af20ad Antony Antony     2017-06-06  2626  			    kma ? &k : NULL, net, NULL);
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2627  
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2628   out:
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2629  	return err;
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2630  }
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2631  #else
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2632  static int pfkey_migrate(struct sock *sk, struct sk_buff *skb,
+7f6daa635c28ed Stephen Hemminger 2011-03-01  2633  			 const struct sadb_msg *hdr, void * const *ext_hdrs)
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2634  {
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2635  	return -ENOPROTOOPT;
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2636  }
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2637  #endif
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2638  
+08de61beab8a21 Shinta Sugimoto   2007-02-08  2639  
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
