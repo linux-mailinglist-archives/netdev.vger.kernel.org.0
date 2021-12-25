@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B79F447F2A7
-	for <lists+netdev@lfdr.de>; Sat, 25 Dec 2021 09:32:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C1D6547F2AA
+	for <lists+netdev@lfdr.de>; Sat, 25 Dec 2021 09:33:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231165AbhLYIcw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Dec 2021 03:32:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58764 "EHLO
+        id S231184AbhLYIc5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Dec 2021 03:32:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229473AbhLYIcw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Dec 2021 03:32:52 -0500
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7802AC061759
-        for <netdev@vger.kernel.org>; Sat, 25 Dec 2021 00:32:51 -0800 (PST)
-Received: by mail-pg1-x536.google.com with SMTP id g22so9334244pgn.1
-        for <netdev@vger.kernel.org>; Sat, 25 Dec 2021 00:32:51 -0800 (PST)
+        with ESMTP id S231173AbhLYIc4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Dec 2021 03:32:56 -0500
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99C6EC061759
+        for <netdev@vger.kernel.org>; Sat, 25 Dec 2021 00:32:56 -0800 (PST)
+Received: by mail-pf1-x434.google.com with SMTP id c2so9415986pfc.1
+        for <netdev@vger.kernel.org>; Sat, 25 Dec 2021 00:32:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=lWMCAQ/ELS6pWLfQV3hyvc38bw087MkSRm6yfp27vxQ=;
-        b=o+ZqbPnZR8aM1dgDhKDQtHYcqhPFqFV38ZLN06FNblSIaHBdJwKwLBEL7BPG9ro413
-         p0hcGnTIkzT4+JefXQxTNtvmb5U3x2EgjO30AcBHP8oS+zULjKFYrMkLqFeuGgaeX7ob
-         t5Ku3Z14+9eEgZMJThem3gzPxWiTBxeo9qix695VCQE4BfWXd5gm6VY3JNh9pPDL/0rB
-         T5wabALShMl20+Z0/MDaU9tZ39Zmso2gzrnei5kvpHcUZkKq9BG3GnRK6mGVqWoz7bf5
-         2GotynHjfYVA7+eat8V480AsSeIqSRk5wtKGfI3W1AZK14ZVkN+1oVV1Olz0sxbTquAf
-         nHeg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=6OvxUrQQkCom57wUVJl60P0MeViWixpOkxhe4s/JMMc=;
+        b=RqringsfiLKfKcM47FFkD6KrLPItmi7FABgsNk/148heTtAR1r/ygCEQMT+/2uksHW
+         4gdnT0zNnd71ljvF9FZ0ufnsFtJ3ivmBwMaJ/2Xg60m3U/b0n3zKkf3iScJQy3lX4GrL
+         wdb1UkwHzAZh/fKs1n9SdhjnjRwCV4ztudLq6nXx2k4n13mddDnzjKrCVktZ6OGhb3FX
+         mVrn2rP0ONBRN/imaEfE+gyjFxx3yH0BSm2PPFfnhvmyYMoHo3VlW1FWg40yXh6+nXtv
+         IV+Im24G5A1FspoDPx/gcyopsZLL7t2RSJZeJjYMvInTKiQW3aJs5B84PbOkxETbjqkR
+         6PbQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=lWMCAQ/ELS6pWLfQV3hyvc38bw087MkSRm6yfp27vxQ=;
-        b=T0fWLsM8PpQ+GSD76ZiXiIxn21OFPT5PMaAx/02bTAP1lv7KmUr9sPD0SMb3iHfqcc
-         4qGPaws+k+QasxsDgIevkDk+69Q7M9ugYq0C9VPzdG5Ven7nT5+gM8J0vrfDsLP2GMru
-         vnNLuLIsOtH/+V7NFueKr27GYVSZRIPzYFuyqeLR249C18xJA7G2JZt235to83BTEg7q
-         +J2FdLh9GlH9R2pfRQMRpofPx+4WXGbh5gGzuBIKMzxVZJFVX3DLJUDyheRd46hKRwzl
-         TWfnULwtQ+4Befmn2fA2w7xIci9T/duk9x21vnA9AWcDtKWVIoJA+gGXkl8cqLoYh0sE
-         Pa3A==
-X-Gm-Message-State: AOAM532cSpwKKUwaxX69FQ7G/ALcNUZDLq8wUXAn2vQE6WxBjM5yo2Ik
-        Ucpsr9oECAcsHfOdLes+Bh4yNw==
-X-Google-Smtp-Source: ABdhPJx1BGLZJiZFW6RLAggN+qGKrN9KnEub1Uj1fcKLlJaRhZ/LdUbxiM0aXW4HQ9+90As6menNTA==
-X-Received: by 2002:a05:6a00:2151:b0:4a2:5c9a:f0a9 with SMTP id o17-20020a056a00215100b004a25c9af0a9mr10074807pfk.39.1640421170937;
-        Sat, 25 Dec 2021 00:32:50 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=6OvxUrQQkCom57wUVJl60P0MeViWixpOkxhe4s/JMMc=;
+        b=f19Gcgz1wnUdFM15C8YTTcjJX3XV69O+sQfLPH+R3LvtqNXw6erL04z9bs/O14yB+J
+         ASiGqS4rf6RUuiRdGz/GQvVdhy8yZo5Bs+4Sxm4IlC+qe1YJDlxByKAw3sZnc9JgFANE
+         N74M9NYMmKEKf6289t7gR5rzG8ffhMomi/I6tS1F7XB4TObd2YVDYt8SJE3g7qT+BEAo
+         /u4eWhSB0dBjrTA+Npwu2f/XYFXRe29tFpLUgPQzAcyxg/vgGbOPJD8AAhxbrSlu+ywk
+         9clPfcIeJuAPab9iTfW9/76qu2G8IGvp2yfN233YwZWe8EKPVgiorXoEcKSxGHiiDfMi
+         GBzw==
+X-Gm-Message-State: AOAM531C7Lx8M8E6jOKJ/wrxX4k8jkgcFF8u+OhLjaBThsDAVNPFiLuf
+        ZNoj5m4S5q0TtW3StGKkbdP9ew==
+X-Google-Smtp-Source: ABdhPJznlmyOBW5dwARFvPNmx4v4bpPjIaj+WRiRkAKwfVZTF2LDG1F5Wg2BL3O2dQ3s7Xucyt7aQg==
+X-Received: by 2002:a63:6603:: with SMTP id a3mr8460664pgc.578.1640421176186;
+        Sat, 25 Dec 2021 00:32:56 -0800 (PST)
 Received: from localhost.localdomain ([122.14.229.79])
-        by smtp.googlemail.com with ESMTPSA id cx5sm10181713pjb.22.2021.12.25.00.32.45
+        by smtp.googlemail.com with ESMTPSA id cx5sm10181713pjb.22.2021.12.25.00.32.51
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 25 Dec 2021 00:32:50 -0800 (PST)
+        Sat, 25 Dec 2021 00:32:55 -0800 (PST)
 From:   Qiang Wang <wangqiang.wq.frank@bytedance.com>
 To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
         kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
@@ -55,40 +55,45 @@ Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         linux-kernel@vger.kernel.org, zhouchengming@bytedance.com,
         songmuchun@bytedance.com, duanxiongchun@bytedance.com,
         shekairui@bytedance.com
-Subject: [PATCH 1/2] libbpf: Use probe_name for legacy kprobe
-Date:   Sat, 25 Dec 2021 16:32:41 +0800
-Message-Id: <20211225083242.38498-1-wangqiang.wq.frank@bytedance.com>
+Subject: [PATCH 2/2] libbpf: Support repeated legacy kprobes on same function
+Date:   Sat, 25 Dec 2021 16:32:42 +0800
+Message-Id: <20211225083242.38498-2-wangqiang.wq.frank@bytedance.com>
 X-Mailer: git-send-email 2.30.1 (Apple Git-130)
+In-Reply-To: <20211225083242.38498-1-wangqiang.wq.frank@bytedance.com>
+References: <20211225083242.38498-1-wangqiang.wq.frank@bytedance.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix a bug in commit 46ed5fc33db9, which wrongly used the
-func_name instead of probe_name to register legacy kprobe.
+If repeated legacy kprobes on same function in one process,
+libbpf will register using the same probe name and got -EBUSY
+error. So append index to the probe name format to fix this
+problem.
 
-Fixes: 46ed5fc33db9 ("libbpf: Refactor and simplify legacy kprobe code")
 Co-developed-by: Chengming Zhou <zhouchengming@bytedance.com>
 Signed-off-by: Qiang Wang <wangqiang.wq.frank@bytedance.com>
 Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
 ---
- tools/lib/bpf/libbpf.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/lib/bpf/libbpf.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 7c74342bb668..b7d6c951fa09 100644
+index b7d6c951fa09..0c41a45ffd54 100644
 --- a/tools/lib/bpf/libbpf.c
 +++ b/tools/lib/bpf/libbpf.c
-@@ -9735,7 +9735,7 @@ bpf_program__attach_kprobe_opts(const struct bpf_program *prog,
- 		gen_kprobe_legacy_event_name(probe_name, sizeof(probe_name),
- 					     func_name, offset);
+@@ -9634,7 +9634,9 @@ static int append_to_file(const char *file, const char *fmt, ...)
+ static void gen_kprobe_legacy_event_name(char *buf, size_t buf_sz,
+ 					 const char *kfunc_name, size_t offset)
+ {
+-	snprintf(buf, buf_sz, "libbpf_%u_%s_0x%zx", getpid(), kfunc_name, offset);
++	static int index = 0;
++	snprintf(buf, buf_sz, "libbpf_%u_%s_0x%zx_%d", getpid(), kfunc_name, offset
++		 __sync_fetch_and_add(&index, 1));
+ }
  
--		legacy_probe = strdup(func_name);
-+		legacy_probe = strdup(probe_name);
- 		if (!legacy_probe)
- 			return libbpf_err_ptr(-ENOMEM);
- 
+ static int add_kprobe_event_legacy(const char *probe_name, bool retprobe,
 -- 
 2.20.1
 
