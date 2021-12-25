@@ -2,217 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FDF547F419
-	for <lists+netdev@lfdr.de>; Sat, 25 Dec 2021 18:37:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 52F5C47F43A
+	for <lists+netdev@lfdr.de>; Sat, 25 Dec 2021 19:24:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232545AbhLYRhw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Dec 2021 12:37:52 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:52062 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230103AbhLYRhw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Dec 2021 12:37:52 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1640453871;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=PfLJ4QS3XWM5eK1msunIWbFBBtS4PdHQDRSrD6MoMIQ=;
-        b=hEMdLU1XsmSNYmzDEPfA5ViuHjzaPZQNnVVBs/8lZ9J6pfhs8/BA8vLAXpWbT925ZHcKJZ
-        rqiEwXRduXccS4kdPXx4GJU4e+qIDlJ8TKiyyEh6VN7V6aPtu2pEoN8SWeBYGXFb95rl6G
-        /Eoo0sJP5erk/x9Kjuwi44ZgPL4nBbA=
-Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
- [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-494-_8Yk8oWXPXyji_ls39MzNg-1; Sat, 25 Dec 2021 12:37:50 -0500
-X-MC-Unique: _8Yk8oWXPXyji_ls39MzNg-1
-Received: by mail-qt1-f199.google.com with SMTP id o12-20020a05622a008c00b002aff5552c89so8168772qtw.23
-        for <netdev@vger.kernel.org>; Sat, 25 Dec 2021 09:37:50 -0800 (PST)
+        id S232653AbhLYSX6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Dec 2021 13:23:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44376 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229488AbhLYSX5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Dec 2021 13:23:57 -0500
+Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57F1EC061401;
+        Sat, 25 Dec 2021 10:23:57 -0800 (PST)
+Received: by mail-io1-xd36.google.com with SMTP id e128so14360244iof.1;
+        Sat, 25 Dec 2021 10:23:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
+         :subject:to:cc;
+        bh=76GQIt0sZ1We5Jshemf66kFRSNu6kCz1Xq1pIPR9qK0=;
+        b=AGpOyQ7LoDyVAAKtGuejoG/4bZAVsFUFaq6dt3Gm71r9Oacr9Cz9it/BV6II7ygRiC
+         FUKBMAVj8A5WIaCItvTALfMZXSKB07PBZHvo6oxSgNNKz0gf37MgxBEh0Wdni+CaR+QI
+         LeBtPqARd4uMucPtmSVIlY6FHDt+jGu2EyBojq/bmVTZTKQ/KLQDqVfBfs4WKTKKSow3
+         tyGxnuBCrANzBVCSrfP2wihDcF+/EGOKjI1jEhNyndqLs2UTLCVCEEYFqHUgSet8D+QD
+         peGCwR/I4wlEoBaazeRKw/7OgMSzKJW79GlESuD/yjfBVgXQ49uEJnoDI2iq8s3sbcMn
+         cahQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=PfLJ4QS3XWM5eK1msunIWbFBBtS4PdHQDRSrD6MoMIQ=;
-        b=oCR2/BVVx29uAvW9PSvnJr3G0FCvtYWlnrC9MZgiMLeLSyYLZdNF7uAu6/N0zj+OI7
-         5F872phxzkZDhRJvtEbbCqGcU8hqN3kvOpHpbDXDAhJ7WMDaokh3NW4anurEMUf/D7c8
-         F6/7etBUkF5ocKSLRA/0GZWHg49O1wkfxBiPaTgBNX6Ac0+LgRQ8N6K3kx5tx5jf6nOy
-         ZuU3iHcdZ0tMgpXAOIXZJSnlnFZEeYKYEw7EWxmwlzqDKP6jTPLYTNvigHXzRvZlcQVc
-         e0+cSC0vDWHU095Sbrf98lBi7H8ggoZz14NP0b69eMrqZVhcHulYTSIpV+dLN0IXL2TM
-         ebGA==
-X-Gm-Message-State: AOAM532lMiUj9LZigXd5p6m+dM4AZg0NC3yGyFhJn4YdjGlNhEAPOMtk
-        YcJYxozTPYquMHuUESPewbvVmMpw8AkRqwSrDMazqG5mTdxqLaeBReHxnJ+iXRia/xVJHeIaN+/
-        cCztBZ+db9aj/c5uf
-X-Received: by 2002:a05:620a:28d3:: with SMTP id l19mr7881248qkp.675.1640453870030;
-        Sat, 25 Dec 2021 09:37:50 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzuz8tvTMB4bLDfW0C5YAfFnb48WucYFQPi8z7cn1vFPp20Nl24sKrKoPFWCh7qrmcYrRCnew==
-X-Received: by 2002:a05:620a:28d3:: with SMTP id l19mr7881238qkp.675.1640453869787;
-        Sat, 25 Dec 2021 09:37:49 -0800 (PST)
-Received: from localhost.localdomain.com (075-142-250-213.res.spectrum.com. [75.142.250.213])
-        by smtp.gmail.com with ESMTPSA id q196sm6036372qke.18.2021.12.25.09.37.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 25 Dec 2021 09:37:49 -0800 (PST)
-From:   trix@redhat.com
-To:     pablo@netfilter.org, kadlec@netfilter.org, fw@strlen.de,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Tom Rix <trix@redhat.com>
-Subject: [PATCH] netfilter: extend CONFIG_NF_CONNTRACK compile time checks
-Date:   Sat, 25 Dec 2021 09:37:44 -0800
-Message-Id: <20211225173744.3318250-1-trix@redhat.com>
-X-Mailer: git-send-email 2.26.3
+        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
+         :from:date:message-id:subject:to:cc;
+        bh=76GQIt0sZ1We5Jshemf66kFRSNu6kCz1Xq1pIPR9qK0=;
+        b=V1+h0A5bEjP3gnUWVKOtNbYqvtb09oq6hMq+yJtg4rVGpDvjBgA/XkbIjWzw4FaXZB
+         qelRNm3S4Px0TYHIzzcBrjmMmz7TdxeMidRZ/AZ0BQkZPietrj02tHVPmgdnzG2qnfR5
+         QkS/WWjWzwBvme88Y6KYWAdV4+68fR3+Bi9Mq22rzbmJFPBLKlmkalK78aMT0a+1k1zF
+         ozAW7qcDHGo2zxJi2VqAZLWkhnoSkRwLtl23UlLC3WXxy/IEmoQSPuiz53ovh3mtVWHI
+         h2w12+ZMEhR7TIJnO8c2HV4yBiFGsY4xAVKj+Vde4RrrWAq6OVJyIdIBHAap4pqY9lAz
+         beoQ==
+X-Gm-Message-State: AOAM533shO9RdXdW0+nnXpgkdbF7GFnd9oYlMWOEAYycwVDr27GL5GFQ
+        Kp18XPZzT6FlnbacggKqcrca7uR34hManLxZex/Kb3MAOOO3nw==
+X-Google-Smtp-Source: ABdhPJw5R8R8n+cHJuC6jOxQ4tFL1IHe1BHVHu2GEmwDcwEWZlVnosK4C9bANjTaOdKc3crMLwGnTJXU3JV9nPs9wbg=
+X-Received: by 2002:a05:6638:1456:: with SMTP id l22mr4841012jad.306.1640456636186;
+ Sat, 25 Dec 2021 10:23:56 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20211221015751.116328-1-sashal@kernel.org> <20211221015751.116328-7-sashal@kernel.org>
+In-Reply-To: <20211221015751.116328-7-sashal@kernel.org>
+Reply-To: sedat.dilek@gmail.com
+From:   Sedat Dilek <sedat.dilek@gmail.com>
+Date:   Sat, 25 Dec 2021 19:23:19 +0100
+Message-ID: <CA+icZUXqtz5CbuC_gOMgJRCuLbsnSO0gsB7zS0ZwMQW3PBOCAw@mail.gmail.com>
+Subject: Re: [PATCH AUTOSEL 5.15 07/29] nl80211: reset regdom when reloading regdb
+To:     Sasha Levin <sashal@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Finn Behrens <me@kloenk.dev>, Finn Behrens <fin@nyantec.com>,
+        Johannes Berg <johannes.berg@intel.com>, davem@davemloft.net,
+        kuba@kernel.org, Johannes Berg <johannes@sipsolutions.net>,
+        netdev@vger.kernel.org, linux-wireless@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+On Tue, Dec 21, 2021 at 2:58 AM Sasha Levin <sashal@kernel.org> wrote:
+>
+> From: Finn Behrens <me@kloenk.dev>
+>
+> [ Upstream commit 1eda919126b420fee6b8d546f7f728fbbd4b8f11 ]
+>
+> Reload the regdom when the regulatory db is reloaded.
+> Otherwise, the user had to change the regulatoy domain
+> to a different one and then reset it to the correct
+> one to have a new regulatory db take effect after a
+> reload.
+>
+> Signed-off-by: Finn Behrens <fin@nyantec.com>
+> Link: https://lore.kernel.org/r/YaIIZfxHgqc/UTA7@gimli.kloenk.dev
+> [edit commit message]
+> Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+> Signed-off-by: Sasha Levin <sashal@kernel.org>
 
-Extends
-commit 83ace77f5117 ("netfilter: ctnetlink: remove get_ct indirection")
+This requires [1] to fix this warning:
 
-Add some compile time checks by following the ct and ctinfo variables
-that are only set when CONFIG_NF_CONNTRACK is enabled.
+net/wireless/reg.c:1137:23: warning: implicit conversion from
+enumeration type 'enum nl80211_user_reg_hint_type' to different
+enumeration type 'enum nl80211_reg_
+initiator' [-Wenum-conversion]
 
-In nfulnl_log_packet(), ct is only set when CONFIG_NF_CONNTRACK
-is enabled. ct's later use in __build_packet_message() is only
-meaningful when CONFIG_NF_CONNTRACK is enabled, so add a check.
+[PATCH] nl80211: remove reload flag from regulatory_request
 
-In nfqnl_build_packet_message(), ct and ctinfo are only set when
-CONFIG_NF_CONNTRACK is enabled.  Add a check for their decl and use.
+- Sedat -
 
-nfqnl_ct_parse() is a static function, move the check to the whole
-function.
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211.git/patch/?id=37d33114240ede043c42463a6347f68ed72d6904
 
-In nfqa_parse_bridge(), ct and ctinfo are only set by the only
-call to nfqnl_ct_parse(), so add a check for their decl and use.
-
-Consistently initialize ctinfo to 0.
-
-Signed-off-by: Tom Rix <trix@redhat.com>
----
- net/netfilter/nfnetlink_log.c   |  4 +++-
- net/netfilter/nfnetlink_queue.c | 18 +++++++++++++-----
- 2 files changed, 16 insertions(+), 6 deletions(-)
-
-diff --git a/net/netfilter/nfnetlink_log.c b/net/netfilter/nfnetlink_log.c
-index ae9c0756bba59..e79d152184b71 100644
---- a/net/netfilter/nfnetlink_log.c
-+++ b/net/netfilter/nfnetlink_log.c
-@@ -627,9 +627,11 @@ __build_packet_message(struct nfnl_log_net *log,
- 			 htonl(atomic_inc_return(&log->global_seq))))
- 		goto nla_put_failure;
- 
-+#if IS_ENABLED(CONFIG_NF_CONNTRACK)
- 	if (ct && nfnl_ct->build(inst->skb, ct, ctinfo,
- 				 NFULA_CT, NFULA_CT_INFO) < 0)
- 		goto nla_put_failure;
-+#endif
- 
- 	if ((pf == NFPROTO_NETDEV || pf == NFPROTO_BRIDGE) &&
- 	    nfulnl_put_bridge(inst, skb) < 0)
-@@ -689,7 +691,7 @@ nfulnl_log_packet(struct net *net,
- 	struct nfnl_log_net *log = nfnl_log_pernet(net);
- 	const struct nfnl_ct_hook *nfnl_ct = NULL;
- 	struct nf_conn *ct = NULL;
--	enum ip_conntrack_info ctinfo;
-+	enum ip_conntrack_info ctinfo = 0;
- 
- 	if (li_user && li_user->type == NF_LOG_TYPE_ULOG)
- 		li = li_user;
-diff --git a/net/netfilter/nfnetlink_queue.c b/net/netfilter/nfnetlink_queue.c
-index 44c3de176d186..d59cae7561bf8 100644
---- a/net/netfilter/nfnetlink_queue.c
-+++ b/net/netfilter/nfnetlink_queue.c
-@@ -386,8 +386,10 @@ nfqnl_build_packet_message(struct net *net, struct nfqnl_instance *queue,
- 	struct sk_buff *entskb = entry->skb;
- 	struct net_device *indev;
- 	struct net_device *outdev;
-+#if IS_ENABLED(CONFIG_NF_CONNTRACK)
- 	struct nf_conn *ct = NULL;
- 	enum ip_conntrack_info ctinfo = 0;
-+#endif
- 	struct nfnl_ct_hook *nfnl_ct;
- 	bool csum_verify;
- 	char *secdata = NULL;
-@@ -595,8 +597,10 @@ nfqnl_build_packet_message(struct net *net, struct nfqnl_instance *queue,
- 	if (seclen && nla_put(skb, NFQA_SECCTX, seclen, secdata))
- 		goto nla_put_failure;
- 
-+#if IS_ENABLED(CONFIG_NF_CONNTRACK)
- 	if (ct && nfnl_ct->build(skb, ct, ctinfo, NFQA_CT, NFQA_CT_INFO) < 0)
- 		goto nla_put_failure;
-+#endif
- 
- 	if (cap_len > data_len &&
- 	    nla_put_be32(skb, NFQA_CAP_LEN, htonl(cap_len)))
-@@ -1104,13 +1108,13 @@ static int nfqnl_recv_verdict_batch(struct sk_buff *skb,
- 	return 0;
- }
- 
-+#if IS_ENABLED(CONFIG_NF_CONNTRACK)
- static struct nf_conn *nfqnl_ct_parse(struct nfnl_ct_hook *nfnl_ct,
- 				      const struct nlmsghdr *nlh,
- 				      const struct nlattr * const nfqa[],
- 				      struct nf_queue_entry *entry,
- 				      enum ip_conntrack_info *ctinfo)
- {
--#if IS_ENABLED(CONFIG_NF_CONNTRACK)
- 	struct nf_conn *ct;
- 
- 	ct = nf_ct_get(entry->skb, ctinfo);
-@@ -1125,10 +1129,8 @@ static struct nf_conn *nfqnl_ct_parse(struct nfnl_ct_hook *nfnl_ct,
- 				      NETLINK_CB(entry->skb).portid,
- 				      nlmsg_report(nlh));
- 	return ct;
--#else
--	return NULL;
--#endif
- }
-+#endif
- 
- static int nfqa_parse_bridge(struct nf_queue_entry *entry,
- 			     const struct nlattr * const nfqa[])
-@@ -1172,11 +1174,13 @@ static int nfqnl_recv_verdict(struct sk_buff *skb, const struct nfnl_info *info,
- 	struct nfnl_queue_net *q = nfnl_queue_pernet(info->net);
- 	u_int16_t queue_num = ntohs(info->nfmsg->res_id);
- 	struct nfqnl_msg_verdict_hdr *vhdr;
--	enum ip_conntrack_info ctinfo;
- 	struct nfqnl_instance *queue;
- 	struct nf_queue_entry *entry;
- 	struct nfnl_ct_hook *nfnl_ct;
-+#if IS_ENABLED(CONFIG_NF_CONNTRACK)
- 	struct nf_conn *ct = NULL;
-+	enum ip_conntrack_info ctinfo = 0;
-+#endif
- 	unsigned int verdict;
- 	int err;
- 
-@@ -1198,11 +1202,13 @@ static int nfqnl_recv_verdict(struct sk_buff *skb, const struct nfnl_info *info,
- 	/* rcu lock already held from nfnl->call_rcu. */
- 	nfnl_ct = rcu_dereference(nfnl_ct_hook);
- 
-+#if IS_ENABLED(CONFIG_NF_CONNTRACK)
- 	if (nfqa[NFQA_CT]) {
- 		if (nfnl_ct != NULL)
- 			ct = nfqnl_ct_parse(nfnl_ct, info->nlh, nfqa, entry,
- 					    &ctinfo);
- 	}
-+#endif
- 
- 	if (entry->state.pf == PF_BRIDGE) {
- 		err = nfqa_parse_bridge(entry, nfqa);
-@@ -1218,8 +1224,10 @@ static int nfqnl_recv_verdict(struct sk_buff *skb, const struct nfnl_info *info,
- 				 payload_len, entry, diff) < 0)
- 			verdict = NF_DROP;
- 
-+#if IS_ENABLED(CONFIG_NF_CONNTRACK)
- 		if (ct && diff)
- 			nfnl_ct->seq_adjust(entry->skb, ct, ctinfo, diff);
-+#endif
- 	}
- 
- 	if (nfqa[NFQA_MARK])
--- 
-2.26.3
-
+> ---
+>  include/net/regulatory.h |  1 +
+>  net/wireless/reg.c       | 27 +++++++++++++++++++++++++--
+>  2 files changed, 26 insertions(+), 2 deletions(-)
+>
+> diff --git a/include/net/regulatory.h b/include/net/regulatory.h
+> index 47f06f6f5a67c..0cf9335431e07 100644
+> --- a/include/net/regulatory.h
+> +++ b/include/net/regulatory.h
+> @@ -83,6 +83,7 @@ struct regulatory_request {
+>         enum nl80211_dfs_regions dfs_region;
+>         bool intersect;
+>         bool processed;
+> +       bool reload;
+>         enum environment_cap country_ie_env;
+>         struct list_head list;
+>  };
+> diff --git a/net/wireless/reg.c b/net/wireless/reg.c
+> index df87c7f3a0492..61f1bf1bc4a73 100644
+> --- a/net/wireless/reg.c
+> +++ b/net/wireless/reg.c
+> @@ -133,6 +133,7 @@ static u32 reg_is_indoor_portid;
+>
+>  static void restore_regulatory_settings(bool reset_user, bool cached);
+>  static void print_regdomain(const struct ieee80211_regdomain *rd);
+> +static void reg_process_hint(struct regulatory_request *reg_request);
+>
+>  static const struct ieee80211_regdomain *get_cfg80211_regdom(void)
+>  {
+> @@ -1098,6 +1099,8 @@ int reg_reload_regdb(void)
+>         const struct firmware *fw;
+>         void *db;
+>         int err;
+> +       const struct ieee80211_regdomain *current_regdomain;
+> +       struct regulatory_request *request;
+>
+>         err = request_firmware(&fw, "regulatory.db", &reg_pdev->dev);
+>         if (err)
+> @@ -1118,8 +1121,27 @@ int reg_reload_regdb(void)
+>         if (!IS_ERR_OR_NULL(regdb))
+>                 kfree(regdb);
+>         regdb = db;
+> -       rtnl_unlock();
+>
+> +       /* reset regulatory domain */
+> +       current_regdomain = get_cfg80211_regdom();
+> +
+> +       request = kzalloc(sizeof(*request), GFP_KERNEL);
+> +       if (!request) {
+> +               err = -ENOMEM;
+> +               goto out_unlock;
+> +       }
+> +
+> +       request->wiphy_idx = WIPHY_IDX_INVALID;
+> +       request->alpha2[0] = current_regdomain->alpha2[0];
+> +       request->alpha2[1] = current_regdomain->alpha2[1];
+> +       request->initiator = NL80211_USER_REG_HINT_USER;
+> +       request->user_reg_hint_type = NL80211_USER_REG_HINT_USER;
+> +       request->reload = true;
+> +
+> +       reg_process_hint(request);
+> +
+> +out_unlock:
+> +       rtnl_unlock();
+>   out:
+>         release_firmware(fw);
+>         return err;
+> @@ -2690,7 +2712,8 @@ reg_process_hint_user(struct regulatory_request *user_request)
+>
+>         treatment = __reg_process_hint_user(user_request);
+>         if (treatment == REG_REQ_IGNORE ||
+> -           treatment == REG_REQ_ALREADY_SET)
+> +           (treatment == REG_REQ_ALREADY_SET &&
+> +            !user_request->reload))
+>                 return REG_REQ_IGNORE;
+>
+>         user_request->intersect = treatment == REG_REQ_INTERSECT;
+> --
+> 2.34.1
+>
