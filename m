@@ -2,99 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A2AA47F30E
-	for <lists+netdev@lfdr.de>; Sat, 25 Dec 2021 12:16:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DF2D47F33A
+	for <lists+netdev@lfdr.de>; Sat, 25 Dec 2021 13:20:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231494AbhLYLQC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Dec 2021 06:16:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37186 "EHLO
+        id S231668AbhLYMTh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Dec 2021 07:19:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231484AbhLYLQC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Dec 2021 06:16:02 -0500
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A680EC061401;
-        Sat, 25 Dec 2021 03:16:01 -0800 (PST)
-Received: by mail-lf1-x12b.google.com with SMTP id x21so24025426lfa.5;
-        Sat, 25 Dec 2021 03:16:01 -0800 (PST)
+        with ESMTP id S229828AbhLYMTg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Dec 2021 07:19:36 -0500
+Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA96EC061401;
+        Sat, 25 Dec 2021 04:19:36 -0800 (PST)
+Received: by mail-yb1-xb30.google.com with SMTP id k69so14582040ybf.1;
+        Sat, 25 Dec 2021 04:19:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=jD3Ho49ZXVfN6HlbKxzdGSI6sz6nWNyLf9zcGh6i8pk=;
-        b=bvQ1dMcEqw0yfAIAJZhBI4hSQrXQDRvrQdCHqD1vyeg/pceL0cduJSPLXOwW7MDAOx
-         IUIt6P1SmR9bBsd0sDlno33k5NMM/ohOOd6sEnBFldx+lzb5pAItCz/cnlz7FJCUek/o
-         /p12JJStViW5vfzuS1qXXof0SShP1I70C2rGFXJIlM3t52A0nnOs5sTRhBJBlUTbA9f/
-         ms1KuDX+I8v2FUkBH6KgwppAbeg5SysCfzbQiFRmVfRXKUuJl2vei+lVebl5+7tqTj43
-         YxDPoQ9ZUfXcm3g4K0H7Lpv++J+bRM+OqvM9/4FP1ZIPGaDPsvRCvcdNCB2aHeSbjmX0
-         UjZA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=kx+36xsr0Ny2N7LS8kpmmApX5XKoC8oiXANGbtnyyDA=;
+        b=PRjiA6HCvaAn0PACGcBU9DJT7nVBbcPAuVOxVtsPUXIFcTnE4axx4aTEULvrFHDoyT
+         MFX3sTHuFkEsKdOI2OnKKZSngVkub+MkLGUYrQzbZ1IqCWDM/SD18rsHpOzk+iG/+2aM
+         6slt7lu+tbTEE+TNRrySq+HRx0kMlCoGG/wqAXwM8uPxaw+P+ZqbJel2uCJgqkglZUEH
+         xBW58pN9Mn/c7TofZoPQcuNnarwJTrNGmanZzCNTu/CojP4z9ewN/vwZTkeJat/B1G5H
+         XOTb0a+2yMjQiWtgeJBX6Jku8YDvZ8uGlLNde4W1eI0lzDoqTPrXgTPH/AwCqb84nrwc
+         /2aw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=jD3Ho49ZXVfN6HlbKxzdGSI6sz6nWNyLf9zcGh6i8pk=;
-        b=axvOD2Fp72Te4MlRnPsyrF48TxxZxjSd8lpxRDVWEYO/S6TZEDJiIl+jxiBWgdvgP7
-         21mZMefgZ1YtFA2GdVVMqbqTlSL1Pkc4RHj+ZR+VanaJokoIGpSDh0Igcn1Yl3jzYdxS
-         Cyu6mJR854PMxkQXsSjaJPScCDBR3z+YbZaybYyru4QY9M/MitfXCHnJKaQaqwGz3w4f
-         AJ/VWkEbDcJTooqUp1bGtMnZGls96s3wS20RtxckbF00w+23/Kccw9iYxTmAY15gG24n
-         Rpws00ugzM3lKgHv6QddaZvhQa4mxSXtsgcKK4k/OYAU+ViAt/2nUbfY6SIlsv1Ubkpt
-         V+vQ==
-X-Gm-Message-State: AOAM5326dtnQhIroshZIt5YWKvER1nAVHu5fZmKZHI+0cVvInjd7IwXG
-        ZhYVFzMy/BJuuv035VmMCbw=
-X-Google-Smtp-Source: ABdhPJwvYB0w3n8Ru3efRBiK7m5ojAAr3OM0vWrkkFa2fkcpgQfKuQ3nnAJlFknilSRiF+cdPZVAcw==
-X-Received: by 2002:a05:6512:30f:: with SMTP id t15mr5280604lfp.650.1640430959306;
-        Sat, 25 Dec 2021 03:15:59 -0800 (PST)
-Received: from [192.168.1.11] ([94.103.235.97])
-        by smtp.gmail.com with ESMTPSA id s4sm1016787ljp.40.2021.12.25.03.15.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 25 Dec 2021 03:15:58 -0800 (PST)
-Message-ID: <45e8c415-8aa1-7a2a-c435-3e014f3856eb@gmail.com>
-Date:   Sat, 25 Dec 2021 14:15:57 +0300
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=kx+36xsr0Ny2N7LS8kpmmApX5XKoC8oiXANGbtnyyDA=;
+        b=5qcrb/dfFhght7CN+uSTNSf2uSXrN5Oq9Sxh+XaS/fF0k7t/pZc6KYD99S/HdIU853
+         wtqMhZhekm++QL61iE4rIyppJ/vd7uZWZVDxz+emp5dBmvXhq8SAu8RYg9DHw3fiKBpq
+         WFnuMthyuKg4XlqsBoLdqmIda2hQAY5kgeZwGXCZ5PVjBspKFuSEzb6XmmypUbEiKmfD
+         TkaiASubLjzzJDoVQ79ACoJODKfVnY4GO+UsNdrP2gSqn4Dd9IpCIWA9gkyuNAyRXKBV
+         K2RJRSfhtajbxv0Y/K7rSqmRepilK7/iql7tnNFatXTOGPD9Tfc1DdDdlKQwsB1zps7T
+         z5vA==
+X-Gm-Message-State: AOAM533Y4vk9bP1sbkue65RlTyVnUaSpaU3IDwyfTC2+OM8d7mz7nh2O
+        sZ67ym8AbxSX24MGJCsC3RfByFyT3+q+70lCVRgxMHObXOouAQ==
+X-Google-Smtp-Source: ABdhPJzWPnf1J0cQdExxgB+EfJZiasfQNGIO8fpp8WmWtWW54AXDzPVelHTOckdMZ8zFeBDgPuqpLhHnsDdWnqdk2JU=
+X-Received: by 2002:a25:dc4d:: with SMTP id y74mr13112043ybe.422.1640434775870;
+ Sat, 25 Dec 2021 04:19:35 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [syzbot] KMSAN: uninit-value in ax88772a_hw_reset
-Content-Language: en-US
-To:     syzbot <syzbot+8d179821571093c5f928@syzkaller.appspotmail.com>,
-        andrew@lunn.ch, davem@davemloft.net, glider@google.com,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux@rempel-privat.de,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-References: <0000000000005fb57e05d1620da1@google.com>
-From:   Pavel Skripkin <paskripkin@gmail.com>
-In-Reply-To: <0000000000005fb57e05d1620da1@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20211224192626.15843-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20211224192626.15843-3-prabhakar.mahadev-lad.rj@bp.renesas.com> <CAHp75VcurBNEcMFnAHTg8PTbJOhO7QA4iv1t4W=siC=D-AkHAw@mail.gmail.com>
+In-Reply-To: <CAHp75VcurBNEcMFnAHTg8PTbJOhO7QA4iv1t4W=siC=D-AkHAw@mail.gmail.com>
+From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
+Date:   Sat, 25 Dec 2021 12:19:09 +0000
+Message-ID: <CA+V-a8tuD-WKyRL_kwitqOyxJDMu1J14AtZ12LbSF9+8mj+=FQ@mail.gmail.com>
+Subject: Re: [PATCH 2/8] net: pxa168_eth: Use platform_get_irq() to get the interrupt
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/22/21 18:12, syzbot wrote:
-> Hello,
-> 
-> syzbot found the following issue on:
-> 
-> HEAD commit:    412af9cd936d ioremap.c: move an #include around
-> git tree:       https://github.com/google/kmsan.git master
-> console output: https://syzkaller.appspot.com/x/log.txt?x=136fb126b00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=2d142cdf4204061
-> dashboard link: https://syzkaller.appspot.com/bug?extid=8d179821571093c5f928
-> compiler:       clang version 14.0.0 (git@github.com:llvm/llvm-project.git 0996585c8e3b3d409494eb5f1cad714b9e1f7fb5), GNU ld (GNU Binutils for Debian) 2.35.2
-> 
-> Unfortunately, I don't have any reproducer for this issue yet.
-> 
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+8d179821571093c5f928@syzkaller.appspotmail.com
-> 
-> asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-> asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-> asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0016: -71
-> asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to write reg index 0x0000: -71
-> asix 4-1:0.0 (unnamed net_device) (uninitialized): Failed to enable hardware MII access
+Hi Andy,
 
+Thank you for the review.
 
-#syz fix: asix: fix uninit-value in asix_mdio_read()
+On Sat, Dec 25, 2021 at 11:24 AM Andy Shevchenko
+<andy.shevchenko@gmail.com> wrote:
+>
+>
+>
+> On Friday, December 24, 2021, Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+>>
+>> platform_get_resource(pdev, IORESOURCE_IRQ, ..) relies on static
+>> allocation of IRQ resources in DT core code, this causes an issue
+>> when using hierarchical interrupt domains using "interrupts" property
+>> in the node as this bypasses the hierarchical setup and messes up the
+>> irq chaining.
+>>
+>> In preparation for removal of static setup of IRQ resource from DT core
+>> code use platform_get_irq().
+>>
+>> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+>> ---
+>>  drivers/net/ethernet/marvell/pxa168_eth.c | 9 +++++----
+>>  1 file changed, 5 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/drivers/net/ethernet/marvell/pxa168_eth.c b/drivers/net/ethernet/marvell/pxa168_eth.c
+>> index 1d607bc6b59e..52bef50f5a0d 100644
+>> --- a/drivers/net/ethernet/marvell/pxa168_eth.c
+>> +++ b/drivers/net/ethernet/marvell/pxa168_eth.c
+>> @@ -1388,7 +1388,6 @@ static int pxa168_eth_probe(struct platform_device *pdev)
+>>  {
+>>         struct pxa168_eth_private *pep = NULL;
+>>         struct net_device *dev = NULL;
+>> -       struct resource *res;
+>>         struct clk *clk;
+>>         struct device_node *np;
+>>         int err;
+>> @@ -1419,9 +1418,11 @@ static int pxa168_eth_probe(struct platform_device *pdev)
+>>                 goto err_netdev;
+>>         }
+>>
+>> -       res = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
+>> -       BUG_ON(!res);
+>> -       dev->irq = res->start;
+>> +       err = platform_get_irq(pdev, 0);
+>> +       if (err == -EPROBE_DEFER)
+>
+>
+>  What about other errors?
+>
+Ouch I missed it...
+>
+>>
+>> +               goto err_netdev;
+>> +       BUG_ON(dev->irq < 0);
+>
+>
+> ??? What is this and how it supposed to work?
+>
+.. should have been BUG_ON(dev->irq < 0);
 
-
-With regards,
-Pavel Skripkin
+Cheers,
+Prabhakar
+>>
+>> +       dev->irq = err;
+>>         dev->netdev_ops = &pxa168_eth_netdev_ops;
+>>         dev->watchdog_timeo = 2 * HZ;
+>>         dev->base_addr = 0;
+>> --
+>> 2.17.1
+>>
+>
+>
+> --
+> With Best Regards,
+> Andy Shevchenko
+>
+>
