@@ -2,25 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC80D47F7FA
-	for <lists+netdev@lfdr.de>; Sun, 26 Dec 2021 16:41:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 64E2547F808
+	for <lists+netdev@lfdr.de>; Sun, 26 Dec 2021 16:41:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234280AbhLZPkf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Dec 2021 10:40:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35264 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232545AbhLZPkX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Dec 2021 10:40:23 -0500
-Received: from mail.marcansoft.com (marcansoft.com [IPv6:2a01:298:fe:f::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08674C06175B;
-        Sun, 26 Dec 2021 07:40:23 -0800 (PST)
+        id S234295AbhLZPkw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Dec 2021 10:40:52 -0500
+Received: from marcansoft.com ([212.63.210.85]:57190 "EHLO mail.marcansoft.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232743AbhLZPkb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 26 Dec 2021 10:40:31 -0500
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: hector@marcansoft.com)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id 30CBE44B24;
-        Sun, 26 Dec 2021 15:40:13 +0000 (UTC)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id 3511544B2A;
+        Sun, 26 Dec 2021 15:40:21 +0000 (UTC)
 From:   Hector Martin <marcan@marcan.st>
 To:     Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
@@ -48,9 +45,9 @@ Cc:     Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-acpi@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com,
         SHA-cyfmac-dev-list@infineon.com
-Subject: [PATCH 28/34] brcmfmac: pcie: Replace brcmf_pcie_copy_mem_todev with memcpy_toio
-Date:   Mon, 27 Dec 2021 00:36:18 +0900
-Message-Id: <20211226153624.162281-29-marcan@marcan.st>
+Subject: [PATCH 29/34] brcmfmac: pcie: Read the console on init and shutdown
+Date:   Mon, 27 Dec 2021 00:36:19 +0900
+Message-Id: <20211226153624.162281-30-marcan@marcan.st>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211226153624.162281-1-marcan@marcan.st>
 References: <20211226153624.162281-1-marcan@marcan.st>
@@ -60,116 +57,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The alignment check was wrong (e.g. & 4 instead of & 3), and the logic
-was also inefficient if the length was not a multiple of 4, since it
-would needlessly fall back to copying the entire buffer bytewise.
+This allows us to get console messages if the firmware crashed during
+early init, or if an operation failed and we're about to shut down.
 
-We already have a perfectly good memcpy_toio function, so just call that
-instead of rolling our own copy logic here. brcmf_pcie_init_ringbuffers
-was already using it anyway.
-
-Fixes: 9e37f045d5e7 ("brcmfmac: Adding PCIe bus layer support.")
 Signed-off-by: Hector Martin <marcan@marcan.st>
 ---
- .../broadcom/brcm80211/brcmfmac/pcie.c        | 53 +++----------------
- 1 file changed, 6 insertions(+), 47 deletions(-)
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
 diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-index 0d073087b01b..6cf55027e0d7 100644
+index 6cf55027e0d7..4202ca2e9381 100644
 --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
 +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-@@ -13,6 +13,7 @@
- #include <linux/bcma/bcma.h>
- #include <linux/sched.h>
- #include <linux/random.h>
-+#include <linux/io.h>
- #include <asm/unaligned.h>
+@@ -851,6 +851,8 @@ static void brcmf_pcie_bus_console_read(struct brcmf_pciedev_info *devinfo,
+ 		return;
  
- #include <soc.h>
-@@ -559,47 +560,6 @@ brcmf_pcie_write_ram32(struct brcmf_pciedev_info *devinfo, u32 mem_offset,
+ 	console = &devinfo->shared.console;
++	if (!console->base_addr)
++		return;
+ 	addr = console->base_addr + BRCMF_CONSOLE_WRITEIDX_OFFSET;
+ 	newidx = brcmf_pcie_read_tcm32(devinfo, addr);
+ 	while (newidx != console->read_idx) {
+@@ -1627,6 +1629,7 @@ brcmf_pcie_init_share_ram_info(struct brcmf_pciedev_info *devinfo,
+ 		  shared->max_rxbufpost, shared->rx_dataoffset);
+ 
+ 	brcmf_pcie_bus_console_init(devinfo);
++	brcmf_pcie_bus_console_read(devinfo, false);
+ 
+ 	return 0;
  }
+@@ -2394,6 +2397,7 @@ brcmf_pcie_remove(struct pci_dev *pdev)
+ 		return;
  
+ 	devinfo = bus->bus_priv.pcie->devinfo;
++	brcmf_pcie_bus_console_read(devinfo, false);
  
--static void
--brcmf_pcie_copy_mem_todev(struct brcmf_pciedev_info *devinfo, u32 mem_offset,
--			  void *srcaddr, u32 len)
--{
--	void __iomem *address = devinfo->tcm + mem_offset;
--	__le32 *src32;
--	__le16 *src16;
--	u8 *src8;
--
--	if (((ulong)address & 4) || ((ulong)srcaddr & 4) || (len & 4)) {
--		if (((ulong)address & 2) || ((ulong)srcaddr & 2) || (len & 2)) {
--			src8 = (u8 *)srcaddr;
--			while (len) {
--				iowrite8(*src8, address);
--				address++;
--				src8++;
--				len--;
--			}
--		} else {
--			len = len / 2;
--			src16 = (__le16 *)srcaddr;
--			while (len) {
--				iowrite16(le16_to_cpu(*src16), address);
--				address += 2;
--				src16++;
--				len--;
--			}
--		}
--	} else {
--		len = len / 4;
--		src32 = (__le32 *)srcaddr;
--		while (len) {
--			iowrite32(le32_to_cpu(*src32), address);
--			address += 4;
--			src32++;
--			len--;
--		}
--	}
--}
--
--
- static void
- brcmf_pcie_copy_dev_tomem(struct brcmf_pciedev_info *devinfo, u32 mem_offset,
- 			  void *dstaddr, u32 len)
-@@ -1697,8 +1657,8 @@ static int brcmf_pcie_download_fw_nvram(struct brcmf_pciedev_info *devinfo,
- 		return err;
- 
- 	brcmf_dbg(PCIE, "Download FW %s\n", devinfo->fw_name);
--	brcmf_pcie_copy_mem_todev(devinfo, devinfo->ci->rambase,
--				  (void *)fw->data, fw->size);
-+	memcpy_toio(devinfo->tcm + devinfo->ci->rambase,
-+		    (void *)fw->data, fw->size);
- 
- 	resetintr = get_unaligned_le32(fw->data);
- 	release_firmware(fw);
-@@ -1719,7 +1679,7 @@ static int brcmf_pcie_download_fw_nvram(struct brcmf_pciedev_info *devinfo,
- 		brcmf_dbg(PCIE, "Download NVRAM %s\n", devinfo->nvram_name);
- 		address = devinfo->ci->rambase + devinfo->ci->ramsize -
- 			  nvram_len;
--		brcmf_pcie_copy_mem_todev(devinfo, address, nvram, nvram_len);
-+		memcpy_toio(devinfo->tcm + address, nvram, nvram_len);
- 		brcmf_fw_nvram_free(nvram);
- 
- 		/* Some Apple chips/firmwares expect a buffer of random data
-@@ -1728,13 +1688,12 @@ static int brcmf_pcie_download_fw_nvram(struct brcmf_pciedev_info *devinfo,
- 		brcmf_dbg(PCIE, "Download random seed\n");
- 
- 		address -= sizeof(footer);
--		brcmf_pcie_copy_mem_todev(devinfo, address, &footer,
--					  sizeof(footer));
-+		memcpy_toio(devinfo->tcm + address, &footer, sizeof(footer));
- 
- 		address -= rand_len;
- 		randbuf = kzalloc(rand_len, GFP_KERNEL);
- 		get_random_bytes(randbuf, rand_len);
--		brcmf_pcie_copy_mem_todev(devinfo, address, randbuf, rand_len);
-+		memcpy_toio(devinfo->tcm + address, randbuf, rand_len);
- 		kfree(randbuf);
- 	} else {
- 		brcmf_dbg(PCIE, "No matching NVRAM file found %s\n",
+ 	devinfo->state = BRCMFMAC_PCIE_STATE_DOWN;
+ 	if (devinfo->ci)
 -- 
 2.33.0
 
