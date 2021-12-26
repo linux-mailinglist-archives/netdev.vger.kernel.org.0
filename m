@@ -2,91 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 674E147F928
-	for <lists+netdev@lfdr.de>; Sun, 26 Dec 2021 22:57:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E1C7947F93A
+	for <lists+netdev@lfdr.de>; Sun, 26 Dec 2021 23:13:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234648AbhLZV5Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Dec 2021 16:57:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60028 "EHLO
+        id S234700AbhLZWNG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Dec 2021 17:13:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234606AbhLZV5Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Dec 2021 16:57:16 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87E71C06173E;
-        Sun, 26 Dec 2021 13:57:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=ZgoXuaZYiF+8e1hdm/07nW5qxeTxUuvpPxUwfPpfj8g=; b=Em7+b/9yc9xPRzljsvC06Wvd48
-        tJqpLeedC6jDkjp843UhO0SoAnkTxZ3d7f/iGQR6cplk54QgZ/K7yp81GF/YQ1VbadZWIfAJ4vLCM
-        ST9LULm/kBvEcUucuDzuMOgC39RMwEzrzFEwhKERIH8KJFsr/cx3JThFMqI8HdqpvOFSkdsvUDYlJ
-        JVu2yN4EAw0QOl+3fCbwQia4iKAmgwJ0d1I7pLcX6vrFjuSAd9W6P6T90CHoGfXRodo0wK0sso3t7
-        2nrExSjG35DhwrELoD2VDZfrMguIIMn3JEySM3YduLNKcPdovL1jQj6ezssVMR+BSdJ+4oy8rje48
-        hh2xZyXg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:56452)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1n1bVs-0000ex-AQ; Sun, 26 Dec 2021 21:57:08 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1n1bVp-0007Xm-0U; Sun, 26 Dec 2021 21:57:05 +0000
-Date:   Sun, 26 Dec 2021 21:57:04 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Daniel Golle <daniel@makrotopia.org>,
-        linux-mediatek@lists.infradead.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Subject: Re: [PATCH] net: ethernet: mtk_eth_soc: implement Clause 45 MDIO
- access
-Message-ID: <YcjlMCacTTJ4RsSA@shell.armlinux.org.uk>
-References: <YcjepQ2fmkPZ2+pE@makrotopia.org>
- <YcjjzNJ159Bo1xk7@lunn.ch>
+        with ESMTP id S231752AbhLZWNG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Dec 2021 17:13:06 -0500
+Received: from mirix.in-vpn.de (mirix.in-vpn.de [IPv6:2001:67c:1407:a0::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A61DCC06173E;
+        Sun, 26 Dec 2021 14:13:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mirix.org;
+        s=43974b1a7d21b2cf; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:
+        Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=tgHGPu1ikQudG7nsJV4X7OT8YW5c+BIQSOLKgW7XdCU=; b=lASxZIVI4ur23ykWb/n/H3r1Gd
+        +iGHsiLSDM3+4FI8ZBEyqixkPNbkvHUaQ/gB9lVUiXjhwc2Q/B514TdyajfLIgSHK0Z8E5AUH5FlV
+        3ZDok+H556RQKX8aHnzi0s7yajXklNNzOpJ0WFJCUxcVUB5zB4+uNWhPTtrj5IKr7imtjSm4iQlSN
+        mLYcRkd5tSHIr1KVlM/kGLeQudtIRIvxXVUM1Sp8h4Cq5Fs2+qne7eoUSSHIjnPkZImg7OqnsSGaR
+        m+DyiIFwSdDE3VMoW4B9NIK5J4zpfKHuipAeIs70D4TT6puij5ZBwkENJcSt6XKAXchgc4QIZDhVk
+        RjLRdwXg==;
+Received: from [::1] (helo=localhost.localdomain)
+        by mirix.in-vpn.de with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim)
+        id 1n1blG-00064h-RU; Sun, 26 Dec 2021 22:13:02 +0000
+From:   Matthias-Christian Ott <ott@mirix.org>
+To:     Petko Manolov <petkan@nucleusys.com>
+Cc:     linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        Matthias-Christian Ott <ott@mirix.org>
+Subject: [PATCH net v2] net: usb: pegasus: Do not drop long Ethernet frames
+Date:   Sun, 26 Dec 2021 23:12:08 +0100
+Message-Id: <20211226221208.2583-1-ott@mirix.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YcjjzNJ159Bo1xk7@lunn.ch>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Dec 26, 2021 at 10:51:08PM +0100, Andrew Lunn wrote:
-> > +	if (phy_register & MII_ADDR_C45) {
-> > +		u8 dev_num = (phy_register >> 16) & 0x1f;
-> > +		u16 reg = (u16)(phy_register & 0xffff);
-> 
-> Hi Daniel
-> 
-> You can use the helpers
-> 
-> mdio_phy_id_is_c45()
-> mdio_phy_id_prtad()
-> mdio_phy_id_devad()
+The D-Link DSB-650TX (2001:4002) is unable to receive Ethernet frames
+that are longer than 1518 octets, for example, Ethernet frames that
+contain 802.1Q VLAN tags.
 
-Before someone makes a mistake with this... no, don't use these. These
-are for the userspace MII ioctl API, not for drivers.
+The frames are sent to the pegasus driver via USB but the driver
+discards them because they have the Long_pkt field set to 1 in the
+received status report. The function read_bulk_callback of the pegasus
+driver treats such received "packets" (in the terminology of the
+hardware) as errors but the field simply does just indicate that the
+Ethernet frame (MAC destination to FCS) is longer than 1518 octets.
 
-The MII ioctl API passes the prtad and devad via the PHY ID field, and
-is decoded by the above macros.
+It seems that in the 1990s there was a distinction between
+"giant" (> 1518) and "runt" (< 64) frames and the hardware includes
+flags to indicate this distinction. It seems that the purpose of the
+distinction "giant" frames was to not allow infinitely long frames due
+to transmission errors and to allow hardware to have an upper limit of
+the frame size. However, the hardware already has such limit with its
+2048 octet receive buffer and, therefore, Long_pkt is merely a
+convention and should not be treated as a receive error.
 
-The internal API passes the prtad as the PHY ID and merges the devad
-into the register address.
+Actually, the hardware is even able to receive Ethernet frames with 2048
+octets which exceeds the claimed limit frame size limit of the driver of
+1536 octets (PEGASUS_MTU).
 
-The C45 register address can be extracted by masking with
-MII_REGADDR_C45_MASK. The C45 devad can be extracted by shifting right
-by MII_DEVADDR_C45_SHIFT and masking 5 bits. We don't have helpers for
-this.
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Matthias-Christian Ott <ott@mirix.org>
+---
+V1 -> V2: Included "Fixes:" tag
 
+ drivers/net/usb/pegasus.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/usb/pegasus.c b/drivers/net/usb/pegasus.c
+index 140d11ae6688..2582daf23015 100644
+--- a/drivers/net/usb/pegasus.c
++++ b/drivers/net/usb/pegasus.c
+@@ -499,11 +499,11 @@ static void read_bulk_callback(struct urb *urb)
+ 		goto goon;
+ 
+ 	rx_status = buf[count - 2];
+-	if (rx_status & 0x1e) {
++	if (rx_status & 0x1c) {
+ 		netif_dbg(pegasus, rx_err, net,
+ 			  "RX packet error %x\n", rx_status);
+ 		net->stats.rx_errors++;
+-		if (rx_status & 0x06)	/* long or runt	*/
++		if (rx_status & 0x04)	/* runt	*/
+ 			net->stats.rx_length_errors++;
+ 		if (rx_status & 0x08)
+ 			net->stats.rx_crc_errors++;
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.30.2
+
