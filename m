@@ -2,101 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EAC5747F85E
-	for <lists+netdev@lfdr.de>; Sun, 26 Dec 2021 18:18:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F226E47F86D
+	for <lists+netdev@lfdr.de>; Sun, 26 Dec 2021 18:51:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232915AbhLZRSv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Dec 2021 12:18:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56502 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232879AbhLZRSu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Dec 2021 12:18:50 -0500
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9E64C06173E;
-        Sun, 26 Dec 2021 09:18:49 -0800 (PST)
-Received: by mail-wr1-x435.google.com with SMTP id v11so27985254wrw.10;
-        Sun, 26 Dec 2021 09:18:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=1EClICUpUVp7JRzRETO30oZAi2IbL/s2jOAI8KmoP/s=;
-        b=PVvdgG7/iAkFCiGqMvdM5biN6wEGYaD26FdaaEXPh7DT3bp0McXrj6meqDSXhKZhRo
-         fb23/cijTUNGNep4cS5vv69d+19mP/1AoSsItlutRXx20VKqCYSfEPXu+I+XXzBlGoxL
-         G+WlYT1G5TxrJcDRQfTMZ97pIV9/yoJUhecWmD0wf8Zsdwq8idGXA0oix2CDE8Rvh3mm
-         OigOSRDYMx9vGAm5sBPVr9LoXHzn/u79xA3BIzA+DmuSaU6FkHVSkYfZdGMvXyk/lWhn
-         YH7Sxu5IRZiuWtbcYmmuUbWNCLjIMvr72ul6+ZBMZbscmRSDn1jg68bWFULkYqgNBvrv
-         LQUw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=1EClICUpUVp7JRzRETO30oZAi2IbL/s2jOAI8KmoP/s=;
-        b=WEg4pMz1U5JUMrmLVlhjo/W45Dkmm8OfkTglHeKHrFFjQga8PhbZzfhWMf4WgnSIpF
-         27XEEzgtptS4avvjGzXRo+CFkNXfE+6N4lYLY/ktHyF1+5TCDxvqZsLBDK4YRt4niOQz
-         7GHbEPftpMylFzVXgEI64UBATE8EnvCeVLb2LbuKatBB/uUGJUtERfBG8OP0xl0LUAEI
-         sFqL0RDavqYjqybqDS8kkgDux2aG2s/sdwC1noemxgoIJ2lNk4mRwplRXqpIlSuEBL5X
-         RK1VMZrPApI/wWfQ+v15PE1pz9F7KIAsuwDzKyWihodS/d3ewuSEqudqRZmrtUspYuPV
-         /F5Q==
-X-Gm-Message-State: AOAM532lt7M40nbfb8548afW27p1btOl7T9vgfEwL0nCRM/YvHG5YAIw
-        SI0UIsc5Z6k0a1SCIayszRc=
-X-Google-Smtp-Source: ABdhPJypH3Y45uPEWflKChXzACmOud0odMSb6aX+7dJIbQbMmLuw0zZ5j/8Op+0qMr/HN5obcQzyiw==
-X-Received: by 2002:adf:fe0f:: with SMTP id n15mr10152332wrr.705.1640539128035;
-        Sun, 26 Dec 2021 09:18:48 -0800 (PST)
-Received: from ?IPV6:2003:ea:8f24:fd00:c9a7:2d21:f9c0:60ee? (p200300ea8f24fd00c9a72d21f9c060ee.dip0.t-ipconnect.de. [2003:ea:8f24:fd00:c9a7:2d21:f9c0:60ee])
-        by smtp.googlemail.com with ESMTPSA id k31sm13665265wms.21.2021.12.26.09.18.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 26 Dec 2021 09:18:47 -0800 (PST)
-Message-ID: <a82b56dc-8a74-cd6e-cfcb-9a16b858b21a@gmail.com>
-Date:   Sun, 26 Dec 2021 18:18:42 +0100
+        id S233862AbhLZRvt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Dec 2021 12:51:49 -0500
+Received: from smtp10.smtpout.orange.fr ([80.12.242.132]:52582 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233721AbhLZRvt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Dec 2021 12:51:49 -0500
+Received: from pop-os.home ([86.243.171.122])
+        by smtp.orange.fr with ESMTPA
+        id 1XgPnz7tj3ptZ1XgQnZJF6; Sun, 26 Dec 2021 18:51:47 +0100
+X-ME-Helo: pop-os.home
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Sun, 26 Dec 2021 18:51:47 +0100
+X-ME-IP: 86.243.171.122
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     chris.snook@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        andrew@lunn.ch, linux@rempel-privat.de
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH] net: ag71xx: Fix a potential double free in error handling paths
+Date:   Sun, 26 Dec 2021 18:51:44 +0100
+Message-Id: <b2da37192380cdb9e81cad6484754b3159d12400.1640541019.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH] asix: Use min() instead of doing it manually
-Content-Language: en-US
-To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
-        davem@davemloft.net
-Cc:     kuba@kernel.org, linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>
-References: <20211225170847.115298-1-jiapeng.chong@linux.alibaba.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-In-Reply-To: <20211225170847.115298-1-jiapeng.chong@linux.alibaba.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 25.12.2021 18:08, Jiapeng Chong wrote:
-> Fix following coccicheck warning:
-> 
-> ./drivers/net/usb/asix_common.c:545:12-13: WARNING opportunity for
-> min().
-> 
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-> ---
->  drivers/net/usb/asix_common.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/usb/asix_common.c b/drivers/net/usb/asix_common.c
-> index 71682970be58..da5a7df312d2 100644
-> --- a/drivers/net/usb/asix_common.c
-> +++ b/drivers/net/usb/asix_common.c
-> @@ -542,7 +542,7 @@ static int __asix_mdio_write(struct net_device *netdev, int phy_id, int loc,
->  out:
->  	mutex_unlock(&dev->phy_mutex);
->  
-> -	return ret < 0 ? ret : 0;
-> +	return min(ret, 0);
+'ndev' is a managed resource allocated with devm_alloc_etherdev(), so there
+is no need to call free_netdev() explicitly or there will be a double
+free().
 
-Same comment as for a previous such patch. It doesn't make sense.
-Also coccicheck isn't always right, please check whether a warning
-is justified before sending a "fix".
+Simplify all error handling paths accordingly.
 
+Fixes: d51b6ce441d3 ("net: ethernet: add ag71xx driver")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+This is only compile tested.
 
->  }
->  
->  void asix_mdio_write(struct net_device *netdev, int phy_id, int loc, int val)
+I don't have the needed toolchain and when I modify KConfig to try to
+compile, I get some errors that look unrelated to this patch:
+
+error: passing argument 2 of ‘ag71xx_hw_set_macaddr’ discards ‘const’ qualifier from pointer target type [-Werror=discarded-qualifiers]
+
+Changing the prototype of ag71xx_hw_set_macaddr() to:
+static void ag71xx_hw_set_macaddr(struct ag71xx *ag, const unsigned char *mac)
+                                                     ^^^^^
+makes it work for me, but I don't know if it is the right way to fix this
+build issue.
+---
+ drivers/net/ethernet/atheros/ag71xx.c | 23 ++++++++---------------
+ 1 file changed, 8 insertions(+), 15 deletions(-)
+
+diff --git a/drivers/net/ethernet/atheros/ag71xx.c b/drivers/net/ethernet/atheros/ag71xx.c
+index 270c2935591b..ec167af0e3b2 100644
+--- a/drivers/net/ethernet/atheros/ag71xx.c
++++ b/drivers/net/ethernet/atheros/ag71xx.c
+@@ -1862,15 +1862,12 @@ static int ag71xx_probe(struct platform_device *pdev)
+ 	ag->mac_reset = devm_reset_control_get(&pdev->dev, "mac");
+ 	if (IS_ERR(ag->mac_reset)) {
+ 		netif_err(ag, probe, ndev, "missing mac reset\n");
+-		err = PTR_ERR(ag->mac_reset);
+-		goto err_free;
++		return PTR_ERR(ag->mac_reset);
+ 	}
+ 
+ 	ag->mac_base = devm_ioremap(&pdev->dev, res->start, resource_size(res));
+-	if (!ag->mac_base) {
+-		err = -ENOMEM;
+-		goto err_free;
+-	}
++	if (!ag->mac_base)
++		return -ENOMEM;
+ 
+ 	ndev->irq = platform_get_irq(pdev, 0);
+ 	err = devm_request_irq(&pdev->dev, ndev->irq, ag71xx_interrupt,
+@@ -1878,7 +1875,7 @@ static int ag71xx_probe(struct platform_device *pdev)
+ 	if (err) {
+ 		netif_err(ag, probe, ndev, "unable to request IRQ %d\n",
+ 			  ndev->irq);
+-		goto err_free;
++		return err;
+ 	}
+ 
+ 	ndev->netdev_ops = &ag71xx_netdev_ops;
+@@ -1906,10 +1903,8 @@ static int ag71xx_probe(struct platform_device *pdev)
+ 	ag->stop_desc = dmam_alloc_coherent(&pdev->dev,
+ 					    sizeof(struct ag71xx_desc),
+ 					    &ag->stop_desc_dma, GFP_KERNEL);
+-	if (!ag->stop_desc) {
+-		err = -ENOMEM;
+-		goto err_free;
+-	}
++	if (!ag->stop_desc)
++		return -ENOMEM;
+ 
+ 	ag->stop_desc->data = 0;
+ 	ag->stop_desc->ctrl = 0;
+@@ -1924,7 +1919,7 @@ static int ag71xx_probe(struct platform_device *pdev)
+ 	err = of_get_phy_mode(np, &ag->phy_if_mode);
+ 	if (err) {
+ 		netif_err(ag, probe, ndev, "missing phy-mode property in DT\n");
+-		goto err_free;
++		return err;
+ 	}
+ 
+ 	netif_napi_add(ndev, &ag->napi, ag71xx_poll, AG71XX_NAPI_WEIGHT);
+@@ -1932,7 +1927,7 @@ static int ag71xx_probe(struct platform_device *pdev)
+ 	err = clk_prepare_enable(ag->clk_eth);
+ 	if (err) {
+ 		netif_err(ag, probe, ndev, "Failed to enable eth clk.\n");
+-		goto err_free;
++		return err;
+ 	}
+ 
+ 	ag71xx_wr(ag, AG71XX_REG_MAC_CFG1, 0);
+@@ -1968,8 +1963,6 @@ static int ag71xx_probe(struct platform_device *pdev)
+ 	ag71xx_mdio_remove(ag);
+ err_put_clk:
+ 	clk_disable_unprepare(ag->clk_eth);
+-err_free:
+-	free_netdev(ndev);
+ 	return err;
+ }
+ 
+-- 
+2.32.0
 
