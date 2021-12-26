@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 55A9947F778
-	for <lists+netdev@lfdr.de>; Sun, 26 Dec 2021 16:36:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D025C47F77D
+	for <lists+netdev@lfdr.de>; Sun, 26 Dec 2021 16:37:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233862AbhLZPgw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Dec 2021 10:36:52 -0500
-Received: from marcansoft.com ([212.63.210.85]:55456 "EHLO mail.marcansoft.com"
+        id S233858AbhLZPg7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Dec 2021 10:36:59 -0500
+Received: from marcansoft.com ([212.63.210.85]:55522 "EHLO mail.marcansoft.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233821AbhLZPgs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 26 Dec 2021 10:36:48 -0500
+        id S233841AbhLZPg4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 26 Dec 2021 10:36:56 -0500
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: hector@marcansoft.com)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id 02B16425F0;
-        Sun, 26 Dec 2021 15:36:36 +0000 (UTC)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id 21DCE4264E;
+        Sun, 26 Dec 2021 15:36:44 +0000 (UTC)
 From:   Hector Martin <marcan@marcan.st>
 To:     Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
@@ -45,9 +45,9 @@ Cc:     Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-acpi@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com,
         SHA-cyfmac-dev-list@infineon.com
-Subject: [PATCH 01/34] dt-bindings: net: bcm4329-fmac: Add Apple properties & chips
-Date:   Mon, 27 Dec 2021 00:35:51 +0900
-Message-Id: <20211226153624.162281-2-marcan@marcan.st>
+Subject: [PATCH 02/34] brcmfmac: pcie: Declare missing firmware files in pcie.c
+Date:   Mon, 27 Dec 2021 00:35:52 +0900
+Message-Id: <20211226153624.162281-3-marcan@marcan.st>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211226153624.162281-1-marcan@marcan.st>
 References: <20211226153624.162281-1-marcan@marcan.st>
@@ -57,85 +57,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This binding is currently used for SDIO devices, but these chips are
-also used as PCIe devices on DT platforms and may be represented in the
-DT. Re-use the existing binding and add chip compatibles used by Apple
-T2 and M1 platforms (the T2 ones are not known to be used in DT
-platforms, but we might as well document them).
-
-Then, add properties required for firmware selection and calibration on
-M1 machines.
+Move one of the declarations from sdio.c to pcie.c, since it makes no
+sense in the former (SDIO support is optional), and add missing ones.
 
 Signed-off-by: Hector Martin <marcan@marcan.st>
+Fixes: 75729e110e68 ("brcmfmac: expose firmware config files through modinfo")
 ---
- .../net/wireless/brcm,bcm4329-fmac.yaml       | 32 +++++++++++++++++--
- 1 file changed, 29 insertions(+), 3 deletions(-)
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c | 7 +++++++
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c | 1 -
+ 2 files changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/net/wireless/brcm,bcm4329-fmac.yaml b/Documentation/devicetree/bindings/net/wireless/brcm,bcm4329-fmac.yaml
-index c11f23b20c4c..2530ff3e7b90 100644
---- a/Documentation/devicetree/bindings/net/wireless/brcm,bcm4329-fmac.yaml
-+++ b/Documentation/devicetree/bindings/net/wireless/brcm,bcm4329-fmac.yaml
-@@ -4,7 +4,7 @@
- $id: http://devicetree.org/schemas/net/wireless/brcm,bcm4329-fmac.yaml#
- $schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
+index 8b149996fc00..aed49416c434 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
+@@ -59,6 +59,13 @@ BRCMF_FW_DEF(4366B, "brcmfmac4366b-pcie");
+ BRCMF_FW_DEF(4366C, "brcmfmac4366c-pcie");
+ BRCMF_FW_DEF(4371, "brcmfmac4371-pcie");
  
--title: Broadcom BCM4329 family fullmac wireless SDIO devices
-+title: Broadcom BCM4329 family fullmac wireless SDIO/PCIE devices
- 
- maintainers:
-   - Arend van Spriel <arend@broadcom.com>
-@@ -36,16 +36,22 @@ properties:
-               - brcm,bcm43455-fmac
-               - brcm,bcm43456-fmac
-               - brcm,bcm4354-fmac
-+              - brcm,bcm4355c1-fmac
-               - brcm,bcm4356-fmac
-               - brcm,bcm4359-fmac
-+              - brcm,bcm4364b2-fmac
-+              - brcm,bcm4364b3-fmac
-+              - brcm,bcm4377b3-fmac
-+              - brcm,bcm4378b1-fmac
-+              - brcm,bcm4387c2-fmac
-               - cypress,cyw4373-fmac
-               - cypress,cyw43012-fmac
-           - const: brcm,bcm4329-fmac
-       - const: brcm,bcm4329-fmac
- 
-   reg:
--    description: SDIO function number for the device, for most cases
--      this will be 1.
-+    description: SDIO function number for the device (for most cases
-+      this will be 1) or PCI device identifier.
- 
-   interrupts:
-     maxItems: 1
-@@ -75,6 +81,26 @@ properties:
-     items:
-       pattern: '^[A-Z][A-Z]-[A-Z][0-9A-Z]-[0-9]+$'
- 
-+  brcm,cal-blob:
-+    $ref: /schemas/types.yaml#/definitions/uint8-array
-+    description: A per-device calibration blob for the Wi-Fi radio. This
-+      should be filled in by the bootloader from platform configuration
-+      data, if necessary, and will be uploaded to the device if present.
++/* firmware config files */
++MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcmfmac*-pcie.txt");
++MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcmfmac*-pcie.*.txt");
 +
-+  apple,module-instance:
-+    $ref: /schemas/types.yaml#/definitions/string
-+    description: Module codename used to identify a specific board on
-+      Apple platforms. This is used to build the firmware filenames, to allow
-+      different platforms to have different firmware and/or NVRAM config.
++/* per-board firmware binaries */
++MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcmfmac*-pcie.*.bin");
 +
-+  apple,antenna-sku:
-+    $def: /schemas/types.yaml#/definitions/string
-+    description: Antenna SKU used to identify a specific antenna configuration
-+      on Apple platforms. This is use to build firmware filenames, to allow
-+      platforms with different antenna configs to have different firmware and/or
-+      NVRAM. This would normally be filled in by the bootloader from platform
-+      configuration data.
-+
- required:
-   - compatible
-   - reg
+ static const struct brcmf_firmware_mapping brcmf_pcie_fwnames[] = {
+ 	BRCMF_FW_ENTRY(BRCM_CC_43602_CHIP_ID, 0xFFFFFFFF, 43602),
+ 	BRCMF_FW_ENTRY(BRCM_CC_43465_CHIP_ID, 0xFFFFFFF0, 4366C),
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+index 8effeb7a7269..5d156e591b35 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+@@ -629,7 +629,6 @@ BRCMF_FW_CLM_DEF(43752, "brcmfmac43752-sdio");
+ 
+ /* firmware config files */
+ MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcmfmac*-sdio.*.txt");
+-MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcmfmac*-pcie.*.txt");
+ 
+ /* per-board firmware binaries */
+ MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcmfmac*-sdio.*.bin");
 -- 
 2.33.0
 
