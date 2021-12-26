@@ -2,96 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DA2647F6F9
-	for <lists+netdev@lfdr.de>; Sun, 26 Dec 2021 14:30:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AA4147F6FC
+	for <lists+netdev@lfdr.de>; Sun, 26 Dec 2021 14:33:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233571AbhLZN3n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Dec 2021 08:29:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35066 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232345AbhLZN3m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Dec 2021 08:29:42 -0500
-X-Greylist: delayed 254 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 26 Dec 2021 05:29:42 PST
-Received: from mirix.in-vpn.de (mirix.in-vpn.de [IPv6:2001:67c:1407:a0::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FE35C06173E;
-        Sun, 26 Dec 2021 05:29:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mirix.org;
-        s=43974b1a7d21b2cf; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:
-        Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=htuYveoisK6rglAz8iXUOUxqkcJZuLcbQvz/xoYi8kM=; b=P/A6jJjv0gkVDD+z5y10YSfPaS
-        1SAOT61mHF8RUIQlVxE+TdZNnssy2KBu9fHdxmUhjz9/lfNihojrzHjreU+GsNM6DoW8Pat/RD7ph
-        melBp0FWSfdaw2cly/OU8eOTTWq8Q7agFv9RUCpZ+fl8HAwdFjuROnMPxGRLUAdySJhGCDCvRb1Rw
-        WPyYXL/lyN+i/PwwD6osMuutYwpHv8DGZnU50nUos1NoxaNCa9+ypItfUmLWogg14yD5wAA1Qfrr4
-        25ftZCBqrRR0XIZXzw/R5RtmvZuez16SCW/n432lggFC6sMPJBnXEl6jbw6/3DHCoP+Ak+rEBGNyB
-        TLEzMv7Q==;
-Received: from [::1] (helo=localhost.localdomain)
-        by mirix.in-vpn.de with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim)
-        id 1n1Tal-0005oZ-OR; Sun, 26 Dec 2021 13:29:39 +0000
-From:   Matthias-Christian Ott <ott@mirix.org>
-To:     Petko Manolov <petkan@nucleusys.com>
-Cc:     linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        Matthias-Christian Ott <ott@mirix.org>
-Subject: [PATCH] net: usb: pegasus: Do not drop long Ethernet frames
-Date:   Sun, 26 Dec 2021 14:29:30 +0100
-Message-Id: <20211226132930.7220-1-ott@mirix.org>
-X-Mailer: git-send-email 2.30.2
+        id S233588AbhLZNdI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Dec 2021 08:33:08 -0500
+Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:43762
+        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233585AbhLZNdH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Dec 2021 08:33:07 -0500
+Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com [209.85.167.72])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 747F13F1AA
+        for <netdev@vger.kernel.org>; Sun, 26 Dec 2021 13:33:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1640525581;
+        bh=5hl8fZhsVpBo1XUxuN05cyNpu1ppwDrJbSBSw880EBI=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=VOceXwIh2AJP2LaKdAmUoKTgOCRgckIx77112ASqa2uNlHLS4nfYYnRgN1bb/Yy+p
+         g8umpUSMzuxzaYkJ6AlrazLtPswk0GucVvGNnpQrt6HID1IDzNoBAsIqX7Y0ZI0a5C
+         HuGQn7QdlIp7tI31F+unDh7vGN+XpBAPfZIXM/hDVjPpPaOiGvKL6vJzPi/iHvP8xK
+         o1vo/8qFV4GUecJswTP7+MI/hU/9Gty8j+0cUMiNyKb92SjTluM40CA1vxE0/20WWo
+         8QaVLrAtMukiHfW6Skdq+bfACHQU26Y0LnqTb7C2cqKRL0WEcz6DA6Vv9P1QBuaiuW
+         8JhTXZWLHxwjA==
+Received: by mail-lf1-f72.google.com with SMTP id a28-20020ac2505c000000b0042524c397cfso3465132lfm.1
+        for <netdev@vger.kernel.org>; Sun, 26 Dec 2021 05:33:01 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=5hl8fZhsVpBo1XUxuN05cyNpu1ppwDrJbSBSw880EBI=;
+        b=0X0xFgyYJp3qjLS31lKQ0NX0er2ZT/F6KF/DgrKpblnRM607H5CSHF8KQTvERNhwgr
+         ln3HDPspvNzZMrKc5XhJZOqXrOyDlcepcYZOJe+Lo/QRMMBKUCTQgh/V2T46CYKzAwdY
+         Av8n0w9rMxNYfuzSO481b+EqrrQq28h86MaHtSTZr3zqxirKoWEm/eBkgZqcuiK1FXZh
+         PccQQYeuMLtwx8O6RfZVHIbr0/JjKRcPpRnrrmMES8FPm25svw88u2AbEL3t/yuVadzE
+         Zeby1wfrTAvUmkaQYGcuKnjEFIUOEbJKayfMLSaSwDQGit2awfU6k3jol+wfgiB3NpGi
+         uqlg==
+X-Gm-Message-State: AOAM5316+xL31Q1V69ZOvCukBWS3PznjU0ia3NauhKuDjO4LmsdS+Lnv
+        NCtbDzWC2USFRbEFXZRFRuTsov7aHPD7F4fTqT28+irr7hsz/fIVFzq7BtvAXx0xhgwxwClenun
+        7Y2Ioi2dOeYk8Y+ybaOAecYkgDTEVi39dng==
+X-Received: by 2002:a05:6512:3c93:: with SMTP id h19mr12361354lfv.350.1640525580814;
+        Sun, 26 Dec 2021 05:33:00 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxaPO0IrZ0edRf135q1LSfrH5OTCn59pP04BFRwnjsK6lZ/3wxZtc7qEyXX30WwELODNuDMEw==
+X-Received: by 2002:a05:6512:3c93:: with SMTP id h19mr12361347lfv.350.1640525580653;
+        Sun, 26 Dec 2021 05:33:00 -0800 (PST)
+Received: from [192.168.3.67] (89-77-68-124.dynamic.chello.pl. [89.77.68.124])
+        by smtp.gmail.com with ESMTPSA id q5sm434393lji.57.2021.12.26.05.32.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 26 Dec 2021 05:33:00 -0800 (PST)
+Message-ID: <dc0bbdcf-fa5b-7af1-db4d-2ceb422027bf@canonical.com>
+Date:   Sun, 26 Dec 2021 14:32:59 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.1
+Subject: Re: [PATCH v2] uapi: fix linux/nfc.h userspace compilation errors
+Content-Language: en-US
+To:     "Dmitry V. Levin" <ldv@altlinux.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20170220181613.GB11185@altlinux.org>
+ <20211225234229.GA5025@altlinux.org>
+ <3d0af5ae-0510-8610-dfc2-b8e5ff682959@canonical.com>
+ <3a89b2cf-33e4-7938-08e3-348b655493d7@canonical.com>
+ <20211226130126.GA13003@altlinux.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20211226130126.GA13003@altlinux.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The D-Link DSB-650TX (2001:4002) is unable to receive Ethernet frames
-that are longer than 1518 octets, for example, Ethernet frames that
-contain 802.1Q VLAN tags.
+On 26/12/2021 14:01, Dmitry V. Levin wrote:
+> Replace sa_family_t with __kernel_sa_family_t to fix the following
+> linux/nfc.h userspace compilation errors:
+> 
+> /usr/include/linux/nfc.h:266:2: error: unknown type name 'sa_family_t'
+>   sa_family_t sa_family;
+> /usr/include/linux/nfc.h:274:2: error: unknown type name 'sa_family_t'
+>   sa_family_t sa_family;
+> 
+> Fixes: 23b7869c0fd0 ("NFC: add the NFC socket raw protocol")
+> Fixes: d646960f7986 ("NFC: Initial LLCP support")
+> Cc: <stable@vger.kernel.org>
+> Signed-off-by: Dmitry V. Levin <ldv@altlinux.org>
+> ---
+>  v2: Removed Link tag, added Fixes and Cc tags.
+> 
+>  include/uapi/linux/nfc.h | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
 
-The frames are sent to the pegasus driver via USB but the driver
-discards them because they have the Long_pkt field set to 1 in the
-received status report. The function read_bulk_callback of the pegasus
-driver treats such received "packets" (in the terminology of the
-hardware) as errors but the field simply does just indicate that the
-Ethernet frame (MAC destination to FCS) is longer than 1518 octets.
 
-It seems that in the 1990s there was a distinction between
-"giant" (> 1518) and "runt" (< 64) frames and the hardware includes
-flags to indicate this distinction. It seems that the purpose of the
-distinction "giant" frames was to not allow infinitely long frames due
-to transmission errors and to allow hardware to have an upper limit of
-the frame size. However, the hardware already has such limit with its
-2048 octet receive buffer and, therefore, Long_pkt is merely a
-convention and should not be treated as a receive error.
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
-Actually, the hardware is even able to receive Ethernet frames with 2048
-octets which exceeds the claimed limit frame size limit of the driver of
-1536 octets (PEGASUS_MTU).
 
-Signed-off-by: Matthias-Christian Ott <ott@mirix.org>
----
- drivers/net/usb/pegasus.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/usb/pegasus.c b/drivers/net/usb/pegasus.c
-index 140d11ae6688..2582daf23015 100644
---- a/drivers/net/usb/pegasus.c
-+++ b/drivers/net/usb/pegasus.c
-@@ -499,11 +499,11 @@ static void read_bulk_callback(struct urb *urb)
- 		goto goon;
- 
- 	rx_status = buf[count - 2];
--	if (rx_status & 0x1e) {
-+	if (rx_status & 0x1c) {
- 		netif_dbg(pegasus, rx_err, net,
- 			  "RX packet error %x\n", rx_status);
- 		net->stats.rx_errors++;
--		if (rx_status & 0x06)	/* long or runt	*/
-+		if (rx_status & 0x04)	/* runt	*/
- 			net->stats.rx_length_errors++;
- 		if (rx_status & 0x08)
- 			net->stats.rx_crc_errors++;
--- 
-2.30.2
-
+Best regards,
+Krzysztof
