@@ -2,94 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E6BA47F507
-	for <lists+netdev@lfdr.de>; Sun, 26 Dec 2021 04:30:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2120147F5B2
+	for <lists+netdev@lfdr.de>; Sun, 26 Dec 2021 08:47:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230401AbhLZDaE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Dec 2021 22:30:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47826 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229460AbhLZDaE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Dec 2021 22:30:04 -0500
-Received: from mail-ot1-x330.google.com (mail-ot1-x330.google.com [IPv6:2607:f8b0:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F08FC061401
-        for <netdev@vger.kernel.org>; Sat, 25 Dec 2021 19:30:04 -0800 (PST)
-Received: by mail-ot1-x330.google.com with SMTP id a23-20020a9d4717000000b0056c15d6d0caso15964184otf.12
-        for <netdev@vger.kernel.org>; Sat, 25 Dec 2021 19:30:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=YmEWLgcwPX/M/aA7pjXCRvXDNINS6I3lsTZEUUwzH6Y=;
-        b=KfUZB/fRaCyYZetpaRnu3K1awKQjhlrJhT3OoaLsokHmjz9GO0xkTc2uLp8I7rpAk4
-         sbvr1+DNIn1uRKhMH9xm7au/m3O+dj33/oLGfivsAXwLq64zYLNEFXewK4isCNt34pxc
-         JWL2JKfdXdmZP/6aZhUWpbtvN9eizF3CF3jhIuJy/YK9kwZq0b5wEtui9gHgpxZyKjuk
-         pTku0FX89mYdxXIpKsF4b7UTvIy63uj/EIv35A1bl51YgPuGX9UDIqop5Y5enPC8myv3
-         DLtDikk9y4hYUutPMAoQjE2O2lVovEPnOaSi7JijvisR3jPQ87faTxAe9KMfvGnR1at5
-         VzeA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YmEWLgcwPX/M/aA7pjXCRvXDNINS6I3lsTZEUUwzH6Y=;
-        b=lpqCeEeiun8U4l4DbCDVhPmojD545zcs9ImgauMtK78zyBtCwWTjgIePSwMtuGuanD
-         3uPoldzWUpYRyHSli07LFwindSuRF6RoMkiqbrRkrpZRGzYxlUUsqXlizZ7k4KjGZuJ+
-         QanrSqvnWDBvUT+n88Pzjonuw0qHAKSkcMkPT5CjGUW0nPzgx/XPXrv52YPNVqnOwnTN
-         5m62o+g5g7Z9xrv1Q/35gwLfcS5YMl3HhvEntkv1DFVzTeQc0r4rqdcM0f30IX6mCNpm
-         vVpMpSKL0jMt/ESIaonTST0vUKb9iLl00+bXaOUJKu9cAJ2tSn5ULGcrBKTPc/8hrHPM
-         PoZQ==
-X-Gm-Message-State: AOAM5331rHiLoJuxjLuvMOxxfrj8BvGT8BjNUWRMQQWPMl5idC9rE/Zq
-        6FZuAUYOHdmoXtUrNuKYnOkfu0dzZPI+c2NtzXFIzg==
-X-Google-Smtp-Source: ABdhPJyYVyfe6hGE0NMy3yrkHpyDOj9Ksh8PUStF6RXF6p4WpJrbiEZkOIQOSQxopbzZSN8TDgso2M99kWfJWDgLuxw=
-X-Received: by 2002:a9d:a42:: with SMTP id 60mr8961227otg.179.1640489403276;
- Sat, 25 Dec 2021 19:30:03 -0800 (PST)
+        id S229771AbhLZHPM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Dec 2021 02:15:12 -0500
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:19650 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229451AbhLZHPL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Dec 2021 02:15:11 -0500
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 1BQ2k2UT015493;
+        Sat, 25 Dec 2021 23:15:02 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=pfpt0220; bh=8Frq4rzjiBbH3777wRC0yaH8oszauaJ+gzbEiv/Jteo=;
+ b=TjHHHDCK06D1RrluW0Mak+5s49EQbPIAKEcS6AqgAh/ESCRjdCK71/t2aK42GjcBrdui
+ xu81ZpMotusQXjxos1bsTaJu7jz/a2DK7hofNW+aORRqmABq1apWMPWwPxFVEH0AJydF
+ JGnmmIPNZne31AKlw5P4cBsQUC44g5XKonnBjuQO19FK6JvHBWuFOUGi/uUl3bibaAQ7
+ qSxg2qYv6aEqC5VxnvvBCCsCs1/r9ztcSEvfmTHZO6AwQ4+dAjFLB2U8/+Lp2dasYdBW
+ W+50i2oQCtm0RUC9XKSt2jg9cwvBG2rlk+Ydb8AkJDnCkVWv1PfuHfywyUmbdenxqPKI Ew== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3d67u0998j-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Sat, 25 Dec 2021 23:15:02 -0800
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sat, 25 Dec
+ 2021 23:15:00 -0800
+Received: from ahp-hp.devlab.local (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
+ Transport; Sat, 25 Dec 2021 23:14:59 -0800
+From:   Venkata Sudheer Kumar Bhavaraju <vbhavaraju@marvell.com>
+To:     <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>,
+        Venkata Sudheer Kumar Bhavaraju <vbhavaraju@marvell.com>,
+        Ariel Elior <aelior@marvell.com>,
+        Alok Prasad <palok@marvell.com>
+Subject: [PATCH net-next 1/1] qed: add prints if request_firmware() failed
+Date:   Sat, 25 Dec 2021 16:14:08 -0800
+Message-ID: <20211226001408.107851-1-vbhavaraju@marvell.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-References: <20211223181741.3999-1-f.fainelli@gmail.com>
-In-Reply-To: <20211223181741.3999-1-f.fainelli@gmail.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Sun, 26 Dec 2021 04:29:51 +0100
-Message-ID: <CACRpkda_6Uwzoxiq=vpftusKFtQ8_Qbtoau9Wtm_AM8p3BqpVg@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: net: dsa: Fix realtek-smi example
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     devicetree@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Olof Johansson <olof@lixom.net>,
-        =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-GUID: csque5n0iA6oatfweGlEa0Q878GETmvA
+X-Proofpoint-ORIG-GUID: csque5n0iA6oatfweGlEa0Q878GETmvA
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2021-12-26_02,2021-12-24_01,2021-12-02_01
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 23, 2021 at 7:17 PM Florian Fainelli <f.fainelli@gmail.com> wrote:
+If driver load failed due to request_firmware() not finding the device
+firmware file, add prints that help remedy the situation.
 
-> The 'ports' node is not supposed to have a 'reg' property at all, in
-> fact, doing so will lead to dtc issuing warnings looking like these:
->
-> arch/arm/boot/dts/bcm47094-asus-rt-ac88u.dts:109.4-14: Warning (reg_format): /switch/ports:reg: property has invalid length (4 bytes) (#address-cells == 2, #size-cells == 1)
-> arch/arm/boot/dts/bcm47094-asus-rt-ac88u.dtb: Warning (pci_device_reg): Failed prerequisite 'reg_format'
-> arch/arm/boot/dts/bcm47094-asus-rt-ac88u.dtb: Warning (pci_device_bus_num): Failed prerequisite 'reg_format'
-> arch/arm/boot/dts/bcm47094-asus-rt-ac88u.dtb: Warning (i2c_bus_reg): Failed prerequisite 'reg_format'
-> arch/arm/boot/dts/bcm47094-asus-rt-ac88u.dtb: Warning (spi_bus_reg): Failed prerequisite 'reg_format'
-> arch/arm/boot/dts/bcm47094-asus-rt-ac88u.dts:106.9-149.5: Warning (avoid_default_addr_size): /switch/ports: Relying on default #address-cells value
-> arch/arm/boot/dts/bcm47094-asus-rt-ac88u.dts:106.9-149.5: Warning (avoid_default_addr_size): /switch/ports: Relying on default #size-cells value
->
-> Fix the example by remove the stray 'reg' property.
->
-> Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-> Fixes: 3b3b6b460f78 ("net: dsa: Add bindings for Realtek SMI DSAs")
-> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Ariel Elior <aelior@marvell.com>
+Signed-off-by: Alok Prasad <palok@marvell.com>
+Signed-off-by: Venkata Sudheer Kumar Bhavaraju <vbhavaraju@marvell.com>
+---
+ drivers/net/ethernet/qlogic/qed/qed_main.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-Ooops thanks for fixing this! (Wouldn't happen if we converted
-it to YAML...)
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_main.c b/drivers/net/ethernet/qlogic/qed/qed_main.c
+index 46d4207f22a3..4f5d5a1e786c 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_main.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_main.c
+@@ -65,6 +65,9 @@ MODULE_LICENSE("GPL");
+ 
+ MODULE_FIRMWARE(QED_FW_FILE_NAME);
+ 
++#define QED_FW_REPO		\
++	"https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git"
++
+ /* MFW speed capabilities maps */
+ 
+ struct qed_mfw_speed_map {
+@@ -1285,6 +1288,9 @@ static int qed_slowpath_start(struct qed_dev *cdev,
+ 			DP_NOTICE(cdev,
+ 				  "Failed to find fw file - /lib/firmware/%s\n",
+ 				  QED_FW_FILE_NAME);
++			DP_NOTICE(cdev,
++				  "you may need to download firmware from %s",
++				  QED_FW_REPO);
+ 			goto err;
+ 		}
+ 
+-- 
+2.27.0
 
-Yours,
-Linus Walleij
