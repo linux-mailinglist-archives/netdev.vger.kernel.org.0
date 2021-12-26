@@ -2,25 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B6E7C47F80B
-	for <lists+netdev@lfdr.de>; Sun, 26 Dec 2021 16:41:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 16C9E47F811
+	for <lists+netdev@lfdr.de>; Sun, 26 Dec 2021 16:41:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234327AbhLZPky (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Dec 2021 10:40:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35312 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234084AbhLZPkj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Dec 2021 10:40:39 -0500
-Received: from mail.marcansoft.com (marcansoft.com [IPv6:2a01:298:fe:f::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24112C061799;
-        Sun, 26 Dec 2021 07:40:39 -0800 (PST)
+        id S232927AbhLZPlK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Dec 2021 10:41:10 -0500
+Received: from marcansoft.com ([212.63.210.85]:57320 "EHLO mail.marcansoft.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234360AbhLZPkr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 26 Dec 2021 10:40:47 -0500
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: hector@marcansoft.com)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id 3810A44B48;
-        Sun, 26 Dec 2021 15:40:29 +0000 (UTC)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id 3A8F5419BC;
+        Sun, 26 Dec 2021 15:40:38 +0000 (UTC)
 From:   Hector Martin <marcan@marcan.st>
 To:     Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
@@ -48,9 +45,9 @@ Cc:     Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-acpi@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com,
         SHA-cyfmac-dev-list@infineon.com
-Subject: [PATCH 30/34] brcmfmac: pcie: Release firmwares in the brcmf_pcie_setup error path
-Date:   Mon, 27 Dec 2021 00:36:20 +0900
-Message-Id: <20211226153624.162281-31-marcan@marcan.st>
+Subject: [PATCH 31/34] brcmfmac: fwil: Constify iovar name arguments
+Date:   Mon, 27 Dec 2021 00:36:21 +0900
+Message-Id: <20211226153624.162281-32-marcan@marcan.st>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211226153624.162281-1-marcan@marcan.st>
 References: <20211226153624.162281-1-marcan@marcan.st>
@@ -60,28 +57,213 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This avoids leaking memory if brcmf_chip_get_raminfo fails. Note that
-the CLM blob is released in the device remove path.
+Make all the iovar name arguments const char * instead of just char *.
 
-Fixes: 82f93cf46d60 ("brcmfmac: get chip's default RAM info during PCIe setup")
 Signed-off-by: Hector Martin <marcan@marcan.st>
 ---
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c | 2 ++
- 1 file changed, 2 insertions(+)
+ .../broadcom/brcm80211/brcmfmac/fwil.c        | 34 +++++++++----------
+ .../broadcom/brcm80211/brcmfmac/fwil.h        | 28 +++++++--------
+ 2 files changed, 31 insertions(+), 31 deletions(-)
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-index 4202ca2e9381..6f483d25f7a1 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-@@ -2118,6 +2118,8 @@ static void brcmf_pcie_setup(struct device *dev, int ret,
- 	ret = brcmf_chip_get_raminfo(devinfo->ci);
- 	if (ret) {
- 		brcmf_err(bus, "Failed to get RAM info\n");
-+		release_firmware(fw);
-+		brcmf_fw_nvram_free(nvram);
- 		goto fail;
- 	}
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwil.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwil.c
+index d5578ca681bb..72fe8bce6eaf 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwil.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwil.c
+@@ -192,7 +192,7 @@ brcmf_fil_cmd_int_get(struct brcmf_if *ifp, u32 cmd, u32 *data)
+ }
  
+ static u32
+-brcmf_create_iovar(char *name, const char *data, u32 datalen,
++brcmf_create_iovar(const char *name, const char *data, u32 datalen,
+ 		   char *buf, u32 buflen)
+ {
+ 	u32 len;
+@@ -213,7 +213,7 @@ brcmf_create_iovar(char *name, const char *data, u32 datalen,
+ 
+ 
+ s32
+-brcmf_fil_iovar_data_set(struct brcmf_if *ifp, char *name, const void *data,
++brcmf_fil_iovar_data_set(struct brcmf_if *ifp, const char *name, const void *data,
+ 			 u32 len)
+ {
+ 	struct brcmf_pub *drvr = ifp->drvr;
+@@ -241,7 +241,7 @@ brcmf_fil_iovar_data_set(struct brcmf_if *ifp, char *name, const void *data,
+ }
+ 
+ s32
+-brcmf_fil_iovar_data_get(struct brcmf_if *ifp, char *name, void *data,
++brcmf_fil_iovar_data_get(struct brcmf_if *ifp, const char *name, void *data,
+ 			 u32 len)
+ {
+ 	struct brcmf_pub *drvr = ifp->drvr;
+@@ -272,7 +272,7 @@ brcmf_fil_iovar_data_get(struct brcmf_if *ifp, char *name, void *data,
+ }
+ 
+ s32
+-brcmf_fil_iovar_int_set(struct brcmf_if *ifp, char *name, u32 data)
++brcmf_fil_iovar_int_set(struct brcmf_if *ifp, const char *name, u32 data)
+ {
+ 	__le32 data_le = cpu_to_le32(data);
+ 
+@@ -280,7 +280,7 @@ brcmf_fil_iovar_int_set(struct brcmf_if *ifp, char *name, u32 data)
+ }
+ 
+ s32
+-brcmf_fil_iovar_int_get(struct brcmf_if *ifp, char *name, u32 *data)
++brcmf_fil_iovar_int_get(struct brcmf_if *ifp, const char *name, u32 *data)
+ {
+ 	__le32 data_le = cpu_to_le32(*data);
+ 	s32 err;
+@@ -292,7 +292,7 @@ brcmf_fil_iovar_int_get(struct brcmf_if *ifp, char *name, u32 *data)
+ }
+ 
+ static u32
+-brcmf_create_bsscfg(s32 bsscfgidx, char *name, char *data, u32 datalen,
++brcmf_create_bsscfg(s32 bsscfgidx, const char *name, char *data, u32 datalen,
+ 		    char *buf, u32 buflen)
+ {
+ 	const s8 *prefix = "bsscfg:";
+@@ -337,7 +337,7 @@ brcmf_create_bsscfg(s32 bsscfgidx, char *name, char *data, u32 datalen,
+ }
+ 
+ s32
+-brcmf_fil_bsscfg_data_set(struct brcmf_if *ifp, char *name,
++brcmf_fil_bsscfg_data_set(struct brcmf_if *ifp, const char *name,
+ 			  void *data, u32 len)
+ {
+ 	struct brcmf_pub *drvr = ifp->drvr;
+@@ -366,7 +366,7 @@ brcmf_fil_bsscfg_data_set(struct brcmf_if *ifp, char *name,
+ }
+ 
+ s32
+-brcmf_fil_bsscfg_data_get(struct brcmf_if *ifp, char *name,
++brcmf_fil_bsscfg_data_get(struct brcmf_if *ifp, const char *name,
+ 			  void *data, u32 len)
+ {
+ 	struct brcmf_pub *drvr = ifp->drvr;
+@@ -396,7 +396,7 @@ brcmf_fil_bsscfg_data_get(struct brcmf_if *ifp, char *name,
+ }
+ 
+ s32
+-brcmf_fil_bsscfg_int_set(struct brcmf_if *ifp, char *name, u32 data)
++brcmf_fil_bsscfg_int_set(struct brcmf_if *ifp, const char *name, u32 data)
+ {
+ 	__le32 data_le = cpu_to_le32(data);
+ 
+@@ -405,7 +405,7 @@ brcmf_fil_bsscfg_int_set(struct brcmf_if *ifp, char *name, u32 data)
+ }
+ 
+ s32
+-brcmf_fil_bsscfg_int_get(struct brcmf_if *ifp, char *name, u32 *data)
++brcmf_fil_bsscfg_int_get(struct brcmf_if *ifp, const char *name, u32 *data)
+ {
+ 	__le32 data_le = cpu_to_le32(*data);
+ 	s32 err;
+@@ -417,7 +417,7 @@ brcmf_fil_bsscfg_int_get(struct brcmf_if *ifp, char *name, u32 *data)
+ 	return err;
+ }
+ 
+-static u32 brcmf_create_xtlv(char *name, u16 id, char *data, u32 len,
++static u32 brcmf_create_xtlv(const char *name, u16 id, char *data, u32 len,
+ 			     char *buf, u32 buflen)
+ {
+ 	u32 iolen;
+@@ -438,7 +438,7 @@ static u32 brcmf_create_xtlv(char *name, u16 id, char *data, u32 len,
+ 	return iolen;
+ }
+ 
+-s32 brcmf_fil_xtlv_data_set(struct brcmf_if *ifp, char *name, u16 id,
++s32 brcmf_fil_xtlv_data_set(struct brcmf_if *ifp, const char *name, u16 id,
+ 			    void *data, u32 len)
+ {
+ 	struct brcmf_pub *drvr = ifp->drvr;
+@@ -466,7 +466,7 @@ s32 brcmf_fil_xtlv_data_set(struct brcmf_if *ifp, char *name, u16 id,
+ 	return err;
+ }
+ 
+-s32 brcmf_fil_xtlv_data_get(struct brcmf_if *ifp, char *name, u16 id,
++s32 brcmf_fil_xtlv_data_get(struct brcmf_if *ifp, const char *name, u16 id,
+ 			    void *data, u32 len)
+ {
+ 	struct brcmf_pub *drvr = ifp->drvr;
+@@ -495,7 +495,7 @@ s32 brcmf_fil_xtlv_data_get(struct brcmf_if *ifp, char *name, u16 id,
+ 	return err;
+ }
+ 
+-s32 brcmf_fil_xtlv_int_set(struct brcmf_if *ifp, char *name, u16 id, u32 data)
++s32 brcmf_fil_xtlv_int_set(struct brcmf_if *ifp, const char *name, u16 id, u32 data)
+ {
+ 	__le32 data_le = cpu_to_le32(data);
+ 
+@@ -503,7 +503,7 @@ s32 brcmf_fil_xtlv_int_set(struct brcmf_if *ifp, char *name, u16 id, u32 data)
+ 					 sizeof(data_le));
+ }
+ 
+-s32 brcmf_fil_xtlv_int_get(struct brcmf_if *ifp, char *name, u16 id, u32 *data)
++s32 brcmf_fil_xtlv_int_get(struct brcmf_if *ifp, const char *name, u16 id, u32 *data)
+ {
+ 	__le32 data_le = cpu_to_le32(*data);
+ 	s32 err;
+@@ -514,12 +514,12 @@ s32 brcmf_fil_xtlv_int_get(struct brcmf_if *ifp, char *name, u16 id, u32 *data)
+ 	return err;
+ }
+ 
+-s32 brcmf_fil_xtlv_int8_get(struct brcmf_if *ifp, char *name, u16 id, u8 *data)
++s32 brcmf_fil_xtlv_int8_get(struct brcmf_if *ifp, const char *name, u16 id, u8 *data)
+ {
+ 	return brcmf_fil_xtlv_data_get(ifp, name, id, data, sizeof(*data));
+ }
+ 
+-s32 brcmf_fil_xtlv_int16_get(struct brcmf_if *ifp, char *name, u16 id, u16 *data)
++s32 brcmf_fil_xtlv_int16_get(struct brcmf_if *ifp, const char *name, u16 id, u16 *data)
+ {
+ 	__le16 data_le = cpu_to_le16(*data);
+ 	s32 err;
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwil.h b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwil.h
+index cb26f8c59c21..bc693157c4b1 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwil.h
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwil.h
+@@ -84,26 +84,26 @@ s32 brcmf_fil_cmd_data_get(struct brcmf_if *ifp, u32 cmd, void *data, u32 len);
+ s32 brcmf_fil_cmd_int_set(struct brcmf_if *ifp, u32 cmd, u32 data);
+ s32 brcmf_fil_cmd_int_get(struct brcmf_if *ifp, u32 cmd, u32 *data);
+ 
+-s32 brcmf_fil_iovar_data_set(struct brcmf_if *ifp, char *name, const void *data,
++s32 brcmf_fil_iovar_data_set(struct brcmf_if *ifp, const char *name, const void *data,
+ 			     u32 len);
+-s32 brcmf_fil_iovar_data_get(struct brcmf_if *ifp, char *name, void *data,
++s32 brcmf_fil_iovar_data_get(struct brcmf_if *ifp, const char *name, void *data,
+ 			     u32 len);
+-s32 brcmf_fil_iovar_int_set(struct brcmf_if *ifp, char *name, u32 data);
+-s32 brcmf_fil_iovar_int_get(struct brcmf_if *ifp, char *name, u32 *data);
++s32 brcmf_fil_iovar_int_set(struct brcmf_if *ifp, const char *name, u32 data);
++s32 brcmf_fil_iovar_int_get(struct brcmf_if *ifp, const char *name, u32 *data);
+ 
+-s32 brcmf_fil_bsscfg_data_set(struct brcmf_if *ifp, char *name, void *data,
++s32 brcmf_fil_bsscfg_data_set(struct brcmf_if *ifp, const char *name, void *data,
+ 			      u32 len);
+-s32 brcmf_fil_bsscfg_data_get(struct brcmf_if *ifp, char *name, void *data,
++s32 brcmf_fil_bsscfg_data_get(struct brcmf_if *ifp, const char *name, void *data,
+ 			      u32 len);
+-s32 brcmf_fil_bsscfg_int_set(struct brcmf_if *ifp, char *name, u32 data);
+-s32 brcmf_fil_bsscfg_int_get(struct brcmf_if *ifp, char *name, u32 *data);
+-s32 brcmf_fil_xtlv_data_set(struct brcmf_if *ifp, char *name, u16 id,
++s32 brcmf_fil_bsscfg_int_set(struct brcmf_if *ifp, const char *name, u32 data);
++s32 brcmf_fil_bsscfg_int_get(struct brcmf_if *ifp, const char *name, u32 *data);
++s32 brcmf_fil_xtlv_data_set(struct brcmf_if *ifp, const char *name, u16 id,
+ 			    void *data, u32 len);
+-s32 brcmf_fil_xtlv_data_get(struct brcmf_if *ifp, char *name, u16 id,
++s32 brcmf_fil_xtlv_data_get(struct brcmf_if *ifp, const char *name, u16 id,
+ 			    void *data, u32 len);
+-s32 brcmf_fil_xtlv_int_set(struct brcmf_if *ifp, char *name, u16 id, u32 data);
+-s32 brcmf_fil_xtlv_int_get(struct brcmf_if *ifp, char *name, u16 id, u32 *data);
+-s32 brcmf_fil_xtlv_int8_get(struct brcmf_if *ifp, char *name, u16 id, u8 *data);
+-s32 brcmf_fil_xtlv_int16_get(struct brcmf_if *ifp, char *name, u16 id, u16 *data);
++s32 brcmf_fil_xtlv_int_set(struct brcmf_if *ifp, const char *name, u16 id, u32 data);
++s32 brcmf_fil_xtlv_int_get(struct brcmf_if *ifp, const char *name, u16 id, u32 *data);
++s32 brcmf_fil_xtlv_int8_get(struct brcmf_if *ifp, const char *name, u16 id, u8 *data);
++s32 brcmf_fil_xtlv_int16_get(struct brcmf_if *ifp, const char *name, u16 id, u16 *data);
+ 
+ #endif /* _fwil_h_ */
 -- 
 2.33.0
 
