@@ -2,25 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 459D647F88B
-	for <lists+netdev@lfdr.de>; Sun, 26 Dec 2021 20:17:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB23147F8EC
+	for <lists+netdev@lfdr.de>; Sun, 26 Dec 2021 22:02:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234209AbhLZTRc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Dec 2021 14:17:32 -0500
-Received: from bmailout1.hostsharing.net ([83.223.95.100]:35727 "EHLO
-        bmailout1.hostsharing.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229549AbhLZTRb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Dec 2021 14:17:31 -0500
-X-Greylist: delayed 3433 seconds by postgrey-1.27 at vger.kernel.org; Sun, 26 Dec 2021 14:17:29 EST
-Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
-        by bmailout1.hostsharing.net (Postfix) with ESMTPS id A52F230001184;
-        Sun, 26 Dec 2021 20:17:28 +0100 (CET)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-        id 9395D2ECFEC; Sun, 26 Dec 2021 20:17:28 +0100 (CET)
-Date:   Sun, 26 Dec 2021 20:17:28 +0100
-From:   Lukas Wunner <lukas@wunner.de>
+        id S234390AbhLZVCf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Dec 2021 16:02:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48114 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231889AbhLZVCf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Dec 2021 16:02:35 -0500
+Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8E79C06173E
+        for <netdev@vger.kernel.org>; Sun, 26 Dec 2021 13:02:34 -0800 (PST)
+Received: by mail-oi1-x230.google.com with SMTP id j124so22647298oih.12
+        for <netdev@vger.kernel.org>; Sun, 26 Dec 2021 13:02:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=eoKOFZqYbYv+X+woTmlFO64pUuH2MUVQ7sZJSSV9Cfo=;
+        b=BswxkzUe9gg/ulOJpUucoDuUhmuRfURv7trDNw/xGp0trtwlmrQu7s7D1jwCxCMejF
+         M1PViAp0EYb6+kyYM51DGkOT66zTdrO/F7Un5xXMQtZkmtnE95BXgA/49WbCrdc1G6ea
+         Reips8FJ0hy+Qyjdr2go+ctZu7Rixl9UWaSi6dUHSeS4nSOS+fhhHALoXxD9hoXEwecL
+         YMjECjmq10bBaKbD/scTR4R6r+l8ezNWbCHsBLEj5CKpG58+vuFuNFMAsvbq4+KXNNcD
+         NadLS6bB+I3+ePkRhWLxQ9LGcI/t3ezHOChvF11bZywOO1QCqUtS+AY62kdfJC30Vw1B
+         wK1Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=eoKOFZqYbYv+X+woTmlFO64pUuH2MUVQ7sZJSSV9Cfo=;
+        b=FcASPdl/nrNR5RrjfVZudj9FJ4cIJhK9u6JF6Nr2uD5IbrOeHiQyY5lmMR+Dj1LD7n
+         PYUWc/9pk+HXR5rQGbYGhh9Sh+icw5vRK+nZH/DTkNktDaXEVrkCFQ+Su17hjRw3oyFG
+         rRHARTTJo1RdjJUYXv74Ml6KDR+2kF3TAf7zgVgIPMlWekWn7Ij/w2vRfMYFKMxToyD7
+         G1h6avx5RqNW0B1e2Pv4YeQdniqtS0SmA+TkFwochxBD8nrFmnMh5sILx4HfCJK9O6FH
+         /PTrHmasVmPyfpgVoPKuTQ2CioJB+bOU6DHkKjNT59AsZhXLkwqja3G8Gc6Ru6kbPwZh
+         P+mg==
+X-Gm-Message-State: AOAM531bXXv2DzDC3CGYwJGTJMHU7FSQpBPBt4Eu2m/l3Axwru0h2zQM
+        7FwlFEVjOfkaBZWLOnJj+L7ttT+u12oQzESmJX71rA==
+X-Google-Smtp-Source: ABdhPJysHej/1ZW0CGCLjGcDWMDxb/FXOm00MSyVswZ6tq+EHi5QK7iKehjci8VGehCjX0PfnY+97cxAyPy6Moi/zNw=
+X-Received: by 2002:aca:5a87:: with SMTP id o129mr11644967oib.114.1640552552719;
+ Sun, 26 Dec 2021 13:02:32 -0800 (PST)
+MIME-Version: 1.0
+References: <20211226153624.162281-1-marcan@marcan.st> <20211226153624.162281-2-marcan@marcan.st>
+In-Reply-To: <20211226153624.162281-2-marcan@marcan.st>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Sun, 26 Dec 2021 22:02:21 +0100
+Message-ID: <CACRpkdZP0Y5FPBjSZRNFxT7m-Thek6m83r07J5KBY=ekwMuMVQ@mail.gmail.com>
+Subject: Re: [PATCH 01/34] dt-bindings: net: bcm4329-fmac: Add Apple
+ properties & chips
 To:     Hector Martin <marcan@marcan.st>
 Cc:     Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
@@ -37,9 +67,8 @@ Cc:     Kalle Valo <kvalo@codeaurora.org>,
         Sven Peter <sven@svenpeter.dev>,
         Alyssa Rosenzweig <alyssa@rosenzweig.io>,
         Mark Kettenis <kettenis@openbsd.org>,
-        Rafa?? Mi??ecki <zajec5@gmail.com>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
         Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
         Hans de Goede <hdegoede@redhat.com>,
         "John W. Linville" <linville@tuxdriver.com>,
         "Daniel (Deognyoun) Kim" <dekim@broadcom.com>,
@@ -47,43 +76,40 @@ Cc:     Kalle Valo <kvalo@codeaurora.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-acpi@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com
-Subject: Re: [RFC PATCH 00/34] brcmfmac: Support Apple T2 and M1 platforms
-Message-ID: <20211226191728.GA687@wunner.de>
-References: <20211226153624.162281-1-marcan@marcan.st>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211226153624.162281-1-marcan@marcan.st>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        SHA-cyfmac-dev-list@infineon.com,
+        Stephan Gerhold <stephan@gerhold.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 27, 2021 at 12:35:50AM +0900, Hector Martin wrote:
-> # On firmware
-> 
-> As you might expect, the firmware for these machines is not available
-> under a redistributable license; however, every owner of one of these
-> machines *is* implicitly licensed to posess the firmware, and the OS
-> packages containing it are available under well-known URLs on Apple's
-> CDN with no authentication.
+On Sun, Dec 26, 2021 at 4:36 PM Hector Martin <marcan@marcan.st> wrote:
 
-Apple's EFI firmware contains a full-fledged network stack for
-downloading macOS images from osrecovery.apple.com.  I suspect
-that it also contains wifi firmware.
+> This binding is currently used for SDIO devices, but these chips are
+> also used as PCIe devices on DT platforms and may be represented in the
+> DT. Re-use the existing binding and add chip compatibles used by Apple
+> T2 and M1 platforms (the T2 ones are not known to be used in DT
+> platforms, but we might as well document them).
+>
+> Then, add properties required for firmware selection and calibration on
+> M1 machines.
+>
+> Signed-off-by: Hector Martin <marcan@marcan.st>
 
-You may want to check if it's passed to the OS as an EFI property.
-Using that would sidestep license issues.  There's EDID data,
-Thunderbolt DROM data and whatnot in those properties, so I
-wouldn't be surprised if it contained wifi stuff as well.
+Makes sense to me!
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
-Enable CONFIG_APPLE_PROPERTIES and pass "dump_apple_properties"
-on the command line to see all EFI properties in dmesg.
-Alternatively, check "ioreg -l" on macOS.  Generally, what's
-available in the I/O registry should also be available on Linux
-either as an ACPI or EFI property.
+> +  brcm,cal-blob:
+> +    $ref: /schemas/types.yaml#/definitions/uint8-array
+> +    description: A per-device calibration blob for the Wi-Fi radio. This
+> +      should be filled in by the bootloader from platform configuration
+> +      data, if necessary, and will be uploaded to the device if present.
 
-Thanks,
+This is especially nice. This way on other systems U-Boot can read the
+calibration file (usually stored in a special partition) and modify the
+device tree to include this, then we don't need the driver to learn
+about any specific file locations for calibrations or worry about
+inserting it from userspace.
 
-Lukas
+Yours,
+Linus Walleij
