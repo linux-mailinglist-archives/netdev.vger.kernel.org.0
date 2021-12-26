@@ -2,77 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C39847F947
-	for <lists+netdev@lfdr.de>; Sun, 26 Dec 2021 23:21:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CE2647F95B
+	for <lists+netdev@lfdr.de>; Sun, 26 Dec 2021 23:26:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234724AbhLZWVZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Dec 2021 17:21:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36950 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232727AbhLZWVY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Dec 2021 17:21:24 -0500
-Received: from mirix.in-vpn.de (mirix.in-vpn.de [IPv6:2001:67c:1407:a0::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 615E9C06173E;
-        Sun, 26 Dec 2021 14:21:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mirix.org;
-        s=43974b1a7d21b2cf; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:
-        MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=7De30OQXHXn/EwHrALqoLTxxV5a/BJPIL1qEA+ZZFZw=; b=HlzBxIxra9A5qgDYiHoODsriNI
-        5khyRlJdmCbnXzfK2nc4aXWvRMUh3AJMoO3wSFw/8McSepBm46UksH6odYkk0auBED7XlE6jdlJH8
-        tLosoORDBhnu9104940r+nWV+zmL6ZFXSHdBA4vd/wbj6rlO4g92XRzc40RAEEttwDGGOIkrnio7o
-        J2hN53jg5XxnqlcC0DG+YLiMIxPkFrbsA3TZevqVEANXA26DfoQf1WCQkgYo3mz7o8J8tMd2h5XmT
-        hKBQWZny/5A6wcLamcnDXRH7UDqcZ7YVRiIPSHvNBe++gkPpgBxZXwvu0YnDxnGibbFjkOrb+ItRl
-        SlDWp4XA==;
-Received: from [::1] (helo=localhost.localdomain)
-        by mirix.in-vpn.de with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128)
-        (Exim)
-        id 1n1btJ-00065U-Gl; Sun, 26 Dec 2021 22:21:21 +0000
-Subject: Re: [PATCH] net: usb: pegasus: Do not drop long Ethernet frames
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Petko Manolov <petkan@nucleusys.com>, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20211226132930.7220-1-ott@mirix.org> <YciMrJBDk6bA5+Nv@lunn.ch>
- <a87c4ea5-72ef-8dd3-de98-01f799d627ef@mirix.org> <YciY8Useao5hfIAF@lunn.ch>
-From:   Matthias-Christian Ott <ott@mirix.org>
-Message-ID: <e8c4c087-f6f1-eb41-e433-6a73264281b7@mirix.org>
-Date:   Sun, 26 Dec 2021 23:21:19 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        id S234729AbhLZW0i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Dec 2021 17:26:38 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:42154 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232727AbhLZW0h (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 26 Dec 2021 17:26:37 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=Ruwqd3R8hjH2U0DTpsHDY4KKMtPY7Qqnmy4Da5pTtCA=; b=LUf7Pp9I+k2KsTDL8n7IJ+fDPH
+        jzWhSPbnowCaw8bdW1LR6Cpku/pkvhLFOsig4PPIKwWhKu5zxSz7BCklQ9Q51LClqsc2yRzm4lw2U
+        IBAfGVtJbf2ls4QINwv3rYxYyYOcrKgiSyTfyit88ONnUxFTvVd0oeEwKoLYvhYCXjFA=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1n1byI-00HX2c-UI; Sun, 26 Dec 2021 23:26:30 +0100
+Date:   Sun, 26 Dec 2021 23:26:30 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Daniel Golle <daniel@makrotopia.org>,
+        linux-mediatek@lists.infradead.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Subject: Re: [PATCH] net: ethernet: mtk_eth_soc: implement Clause 45 MDIO
+ access
+Message-ID: <YcjsFnbg87o45ltd@lunn.ch>
+References: <YcjepQ2fmkPZ2+pE@makrotopia.org>
+ <YcjjzNJ159Bo1xk7@lunn.ch>
+ <YcjlMCacTTJ4RsSA@shell.armlinux.org.uk>
 MIME-Version: 1.0
-In-Reply-To: <YciY8Useao5hfIAF@lunn.ch>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YcjlMCacTTJ4RsSA@shell.armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 26/12/2021 17:31, Andrew Lunn wrote:
->>> I've nothing against this patch, but if you are working on the driver,
->>> it would be nice to replace these hex numbers with #defines using BIT,
->>> or FIELD. It will make the code more readable.
->>
->> Replacing the constants with macros is on my list of things that I want
->> to do. In this case, I did not do it because I wanted to a have small
->> patch that gets easily accepted and allows me to figure out the current
->> process to submit patches after years of inactivity.
+On Sun, Dec 26, 2021 at 09:57:04PM +0000, Russell King (Oracle) wrote:
+> On Sun, Dec 26, 2021 at 10:51:08PM +0100, Andrew Lunn wrote:
+> > > +	if (phy_register & MII_ADDR_C45) {
+> > > +		u8 dev_num = (phy_register >> 16) & 0x1f;
+> > > +		u16 reg = (u16)(phy_register & 0xffff);
+> > 
+> > Hi Daniel
+> > 
+> > You can use the helpers
+> > 
+> > mdio_phy_id_is_c45()
+> > mdio_phy_id_prtad()
+> > mdio_phy_id_devad()
 > 
-> Agreed, keep fixes simple.
-> 
-> A few other hints. If you consider this a fix which should be back
-> ported, please add a Fixes: tag, where the issue started. This can be
-> back as far as the first commit for the driver. Fixes should also be
-> sent to the net tree, not net-next. See the netdev FAQ about the two
-> different trees.
+> Before someone makes a mistake with this... no, don't use these. These
+> are for the userspace MII ioctl API, not for drivers.
 
-I made a v2 of the patch and also added the prefix flag to indicate that
-the patch is destined for the "next" tree. There is still something that
-can be improved a about it, please let me know. Otherwise, I will also
-resend the other patch that I sent for the driver to indicate that it is
-destined for the "next" tree.
+Ah, Sorry.
 
-Kind regards,
-Matthias-Christian Ott
+Thanks Russell, i got this wrong. I though there was some helpers for
+this, and happened to land on bnxt_hwrm_port_phy_read(), without
+checking what it was actually used for.
+
+> The C45 register address can be extracted by masking with
+> MII_REGADDR_C45_MASK. The C45 devad can be extracted by shifting right
+> by MII_DEVADDR_C45_SHIFT and masking 5 bits. We don't have helpers for
+> this.
+
+Maybe we should have helpers.
+
+      Andrew
