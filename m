@@ -2,71 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BADAE47F962
-	for <lists+netdev@lfdr.de>; Sun, 26 Dec 2021 23:35:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1424247F97B
+	for <lists+netdev@lfdr.de>; Mon, 27 Dec 2021 00:34:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234749AbhLZWfv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Dec 2021 17:35:51 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:42180 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229792AbhLZWfv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 26 Dec 2021 17:35:51 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=EYEfWSOxjEQsctTy+DTqVGmo79pAz+gWiP7UIaIjswQ=; b=ndALQLoqXD/NCjvgb3K/mWQv08
-        flD0WfvvrB4AtrWeARuJgcHtRibCIFa7pkydvqpcLIyO35XdZQRMx/hYJwM0EV1U58U5ofPYKMGf6
-        HpP7cIw3F65FeYqFU9pcWlZCvxU6xPPvzs5DsMAJ1KQ/Xd9H+fcDTTNQpFb4zyAD0Kf8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1n1c7I-00HX4W-WC; Sun, 26 Dec 2021 23:35:49 +0100
-Date:   Sun, 26 Dec 2021 23:35:48 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Matthias-Christian Ott <ott@mirix.org>
-Cc:     Petko Manolov <petkan@nucleusys.com>, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net v2] net: usb: pegasus: Do not drop long Ethernet
- frames
-Message-ID: <YcjuRJ5H+RzUDteL@lunn.ch>
-References: <20211226221208.2583-1-ott@mirix.org>
+        id S234812AbhLZXXb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Dec 2021 18:23:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50254 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234793AbhLZXXb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Dec 2021 18:23:31 -0500
+Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5F3EC06173E;
+        Sun, 26 Dec 2021 15:23:30 -0800 (PST)
+Received: from local
+        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
+         (Exim 4.94.2)
+        (envelope-from <daniel@makrotopia.org>)
+        id 1n1crM-0006XO-LC; Mon, 27 Dec 2021 00:23:25 +0100
+Date:   Sun, 26 Dec 2021 23:23:15 +0000
+From:   Daniel Golle <daniel@makrotopia.org>
+To:     linux-mediatek@lists.infradead.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: [PATCH v2] net: ethernet: mtk_eth_soc: implement Clause 45 MDIO
+ access
+Message-ID: <Ycj5Y0ETW+cNkSU4@makrotopia.org>
+References: <YcjsFnbg87o45ltd@lunn.ch>
+ <YcjjzNJ159Bo1xk7@lunn.ch>
+ <YcjlMCacTTJ4RsSA@shell.armlinux.org.uk>
+ <YcjepQ2fmkPZ2+pE@makrotopia.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211226221208.2583-1-ott@mirix.org>
+In-Reply-To: <YcjsFnbg87o45ltd@lunn.ch>
+ <YcjjzNJ159Bo1xk7@lunn.ch>
+ <YcjlMCacTTJ4RsSA@shell.armlinux.org.uk>
+ <YcjepQ2fmkPZ2+pE@makrotopia.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Dec 26, 2021 at 11:12:08PM +0100, Matthias-Christian Ott wrote:
-> The D-Link DSB-650TX (2001:4002) is unable to receive Ethernet frames
-> that are longer than 1518 octets, for example, Ethernet frames that
-> contain 802.1Q VLAN tags.
-> 
-> The frames are sent to the pegasus driver via USB but the driver
-> discards them because they have the Long_pkt field set to 1 in the
-> received status report. The function read_bulk_callback of the pegasus
-> driver treats such received "packets" (in the terminology of the
-> hardware) as errors but the field simply does just indicate that the
-> Ethernet frame (MAC destination to FCS) is longer than 1518 octets.
-> 
-> It seems that in the 1990s there was a distinction between
-> "giant" (> 1518) and "runt" (< 64) frames and the hardware includes
-> flags to indicate this distinction. It seems that the purpose of the
-> distinction "giant" frames was to not allow infinitely long frames due
-> to transmission errors and to allow hardware to have an upper limit of
-> the frame size. However, the hardware already has such limit with its
-> 2048 octet receive buffer and, therefore, Long_pkt is merely a
-> convention and should not be treated as a receive error.
-> 
-> Actually, the hardware is even able to receive Ethernet frames with 2048
-> octets which exceeds the claimed limit frame size limit of the driver of
-> 1536 octets (PEGASUS_MTU).
-> 
-> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-> Signed-off-by: Matthias-Christian Ott <ott@mirix.org>
+Implement read and write access to IEEE 802.3 Clause 45 Ethernet
+phy registers.
+Tested on the Ubiquiti UniFi 6 LR access point featuring
+MediaTek MT7622BV WiSoC with Aquantia AQR112C.
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Daniel Golle <daniel@makrotopia.org>
+---
+v2: use MII_DEVADDR_C45_SHIFT and MII_REGADDR_C45_MASK to extract
+    device id and register address. Unify read and write functions to
+    have identical types and parameter names where possible as we are
+    anyway already replacing both function bodies.
 
-    Andrew
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c | 62 +++++++++++++++++----
+ drivers/net/ethernet/mediatek/mtk_eth_soc.h |  3 +
+ 2 files changed, 54 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+index bcb91b01e69f5..fdb1c7958e79c 100644
+--- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
++++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+@@ -94,18 +94,38 @@ static int mtk_mdio_busy_wait(struct mtk_eth *eth)
+ 	return -1;
+ }
+ 
+-static u32 _mtk_mdio_write(struct mtk_eth *eth, u32 phy_addr,
+-			   u32 phy_register, u32 write_data)
++static u32 _mtk_mdio_write(struct mtk_eth *eth, u32 phy_addr, u32 phy_reg,
++			   u32 write_data)
+ {
+ 	if (mtk_mdio_busy_wait(eth))
+ 		return -1;
+ 
+ 	write_data &= 0xffff;
+ 
+-	mtk_w32(eth, PHY_IAC_ACCESS | PHY_IAC_START | PHY_IAC_WRITE |
+-		(phy_register << PHY_IAC_REG_SHIFT) |
+-		(phy_addr << PHY_IAC_ADDR_SHIFT) | write_data,
+-		MTK_PHY_IAC);
++	if (phy_reg & MII_ADDR_C45) {
++		u8 dev_num = (phy_reg >> MII_DEVADDR_C45_SHIFT) & GENMASK(4, 0);
++		u16 reg = (u16)(phy_reg & MII_REGADDR_C45_MASK);
++
++		mtk_w32(eth, PHY_IAC_ACCESS | PHY_IAC_START_C45 | PHY_IAC_SET_ADDR |
++			(phy_addr << PHY_IAC_ADDR_SHIFT) |
++			(dev_num << PHY_IAC_REG_SHIFT) |
++			reg,
++			MTK_PHY_IAC);
++
++		if (mtk_mdio_busy_wait(eth))
++			return 0xffff;
++
++		mtk_w32(eth, PHY_IAC_ACCESS | PHY_IAC_START_C45 | PHY_IAC_WRITE |
++			(phy_addr << PHY_IAC_ADDR_SHIFT) |
++			(dev_num << PHY_IAC_REG_SHIFT) |
++			write_data,
++			MTK_PHY_IAC);
++	} else {
++		mtk_w32(eth, PHY_IAC_ACCESS | PHY_IAC_START | PHY_IAC_WRITE |
++			(phy_reg << PHY_IAC_REG_SHIFT) |
++			(phy_addr << PHY_IAC_ADDR_SHIFT) | write_data,
++			MTK_PHY_IAC);
++	}
+ 
+ 	if (mtk_mdio_busy_wait(eth))
+ 		return -1;
+@@ -113,17 +133,36 @@ static u32 _mtk_mdio_write(struct mtk_eth *eth, u32 phy_addr,
+ 	return 0;
+ }
+ 
+-static u32 _mtk_mdio_read(struct mtk_eth *eth, int phy_addr, int phy_reg)
++static u32 _mtk_mdio_read(struct mtk_eth *eth, u32 phy_addr, u32 phy_reg)
+ {
+ 	u32 d;
+ 
+ 	if (mtk_mdio_busy_wait(eth))
+ 		return 0xffff;
+ 
+-	mtk_w32(eth, PHY_IAC_ACCESS | PHY_IAC_START | PHY_IAC_READ |
+-		(phy_reg << PHY_IAC_REG_SHIFT) |
+-		(phy_addr << PHY_IAC_ADDR_SHIFT),
+-		MTK_PHY_IAC);
++	if (phy_reg & MII_ADDR_C45) {
++		u8 dev_num = (phy_reg >> MII_DEVADDR_C45_SHIFT) & GENMASK(4, 0);
++		u16 reg = (u16)(phy_reg & MII_REGADDR_C45_MASK);
++
++		mtk_w32(eth, PHY_IAC_ACCESS | PHY_IAC_START_C45 | PHY_IAC_SET_ADDR |
++			(phy_addr << PHY_IAC_ADDR_SHIFT) |
++			(dev_num << PHY_IAC_REG_SHIFT) |
++			reg,
++			MTK_PHY_IAC);
++
++		if (mtk_mdio_busy_wait(eth))
++			return 0xffff;
++
++		mtk_w32(eth, PHY_IAC_ACCESS | PHY_IAC_START_C45 | PHY_IAC_READ_C45 |
++			(phy_addr << PHY_IAC_ADDR_SHIFT) |
++			(dev_num << PHY_IAC_REG_SHIFT),
++			MTK_PHY_IAC);
++	} else {
++		mtk_w32(eth, PHY_IAC_ACCESS | PHY_IAC_START | PHY_IAC_READ |
++			(phy_reg << PHY_IAC_REG_SHIFT) |
++			(phy_addr << PHY_IAC_ADDR_SHIFT),
++			MTK_PHY_IAC);
++	}
+ 
+ 	if (mtk_mdio_busy_wait(eth))
+ 		return 0xffff;
+@@ -497,6 +536,7 @@ static int mtk_mdio_init(struct mtk_eth *eth)
+ 	eth->mii_bus->name = "mdio";
+ 	eth->mii_bus->read = mtk_mdio_read;
+ 	eth->mii_bus->write = mtk_mdio_write;
++	eth->mii_bus->probe_capabilities = MDIOBUS_C22_C45;
+ 	eth->mii_bus->priv = eth;
+ 	eth->mii_bus->parent = eth->dev;
+ 
+diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+index 5ef70dd8b49c6..b73d8adc9d24c 100644
+--- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
++++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+@@ -341,9 +341,12 @@
+ /* PHY Indirect Access Control registers */
+ #define MTK_PHY_IAC		0x10004
+ #define PHY_IAC_ACCESS		BIT(31)
++#define PHY_IAC_SET_ADDR	0
+ #define PHY_IAC_READ		BIT(19)
++#define PHY_IAC_READ_C45	(BIT(18) | BIT(19))
+ #define PHY_IAC_WRITE		BIT(18)
+ #define PHY_IAC_START		BIT(16)
++#define PHY_IAC_START_C45	0
+ #define PHY_IAC_ADDR_SHIFT	20
+ #define PHY_IAC_REG_SHIFT	25
+ #define PHY_IAC_TIMEOUT		HZ
+-- 
+2.34.1
+
