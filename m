@@ -2,22 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E76747F7F7
-	for <lists+netdev@lfdr.de>; Sun, 26 Dec 2021 16:41:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AC80D47F7FA
+	for <lists+netdev@lfdr.de>; Sun, 26 Dec 2021 16:41:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234286AbhLZPk1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Dec 2021 10:40:27 -0500
-Received: from marcansoft.com ([212.63.210.85]:57066 "EHLO mail.marcansoft.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234306AbhLZPkP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 26 Dec 2021 10:40:15 -0500
+        id S234280AbhLZPkf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Dec 2021 10:40:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35264 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232545AbhLZPkX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Dec 2021 10:40:23 -0500
+Received: from mail.marcansoft.com (marcansoft.com [IPv6:2a01:298:fe:f::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08674C06175B;
+        Sun, 26 Dec 2021 07:40:23 -0800 (PST)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: hector@marcansoft.com)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id 1E96844B42;
-        Sun, 26 Dec 2021 15:40:05 +0000 (UTC)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id 30CBE44B24;
+        Sun, 26 Dec 2021 15:40:13 +0000 (UTC)
 From:   Hector Martin <marcan@marcan.st>
 To:     Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
@@ -45,9 +48,9 @@ Cc:     Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-acpi@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com,
         SHA-cyfmac-dev-list@infineon.com
-Subject: [PATCH 27/34] brcmfmac: pcie: Add IDs/properties for BCM4387
-Date:   Mon, 27 Dec 2021 00:36:17 +0900
-Message-Id: <20211226153624.162281-28-marcan@marcan.st>
+Subject: [PATCH 28/34] brcmfmac: pcie: Replace brcmf_pcie_copy_mem_todev with memcpy_toio
+Date:   Mon, 27 Dec 2021 00:36:18 +0900
+Message-Id: <20211226153624.162281-29-marcan@marcan.st>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211226153624.162281-1-marcan@marcan.st>
 References: <20211226153624.162281-1-marcan@marcan.st>
@@ -57,93 +60,116 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This chip is present on Apple M1 Pro/Max (t600x) platforms:
+The alignment check was wrong (e.g. & 4 instead of & 3), and the logic
+was also inefficient if the length was not a multiple of 4, since it
+would needlessly fall back to copying the entire buffer bytewise.
 
-* maldives   (apple,j314s): MacBook Pro (14-inch, M1 Pro, 2021)
-* maldives   (apple,j314c): MacBook Pro (14-inch, M1 Max, 2021)
-* madagascar (apple,j316s): MacBook Pro (16-inch, M1 Pro, 2021)
-* madagascar (apple,j316c): MacBook Pro (16-inch, M1 Max, 2021)
+We already have a perfectly good memcpy_toio function, so just call that
+instead of rolling our own copy logic here. brcmf_pcie_init_ringbuffers
+was already using it anyway.
 
+Fixes: 9e37f045d5e7 ("brcmfmac: Adding PCIe bus layer support.")
 Signed-off-by: Hector Martin <marcan@marcan.st>
 ---
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c   | 2 ++
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c   | 8 ++++++++
- .../net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h | 2 ++
- 3 files changed, 12 insertions(+)
+ .../broadcom/brcm80211/brcmfmac/pcie.c        | 53 +++----------------
+ 1 file changed, 6 insertions(+), 47 deletions(-)
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c
-index cfa93e3ef1a1..3958fc4450ca 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c
-@@ -742,6 +742,8 @@ static u32 brcmf_chip_tcm_rambase(struct brcmf_chip_priv *ci)
- 		return 0x170000;
- 	case BRCM_CC_4378_CHIP_ID:
- 		return 0x352000;
-+	case BRCM_CC_4387_CHIP_ID:
-+		return 0x740000;
- 	default:
- 		brcmf_err("unknown chip: %s\n", ci->pub.name);
- 		break;
 diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-index b94c68bf9d28..0d073087b01b 100644
+index 0d073087b01b..6cf55027e0d7 100644
 --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
 +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-@@ -63,6 +63,7 @@ BRCMF_FW_DEF(4366C, "brcmfmac4366c-pcie");
- BRCMF_FW_DEF(4371, "brcmfmac4371-pcie");
- BRCMF_FW_CLM_DEF(4377B3, "brcmfmac4377b3-pcie");
- BRCMF_FW_CLM_DEF(4378B1, "brcmfmac4378b1-pcie");
-+BRCMF_FW_CLM_DEF(4387C2, "brcmfmac4387c2-pcie");
+@@ -13,6 +13,7 @@
+ #include <linux/bcma/bcma.h>
+ #include <linux/sched.h>
+ #include <linux/random.h>
++#include <linux/io.h>
+ #include <asm/unaligned.h>
  
- /* firmware config files */
- MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcmfmac*-pcie.txt");
-@@ -96,6 +97,7 @@ static const struct brcmf_firmware_mapping brcmf_pcie_fwnames[] = {
- 	BRCMF_FW_ENTRY(BRCM_CC_4371_CHIP_ID, 0xFFFFFFFF, 4371),
- 	BRCMF_FW_ENTRY(BRCM_CC_4377_CHIP_ID, 0xFFFFFFFF, 4377B3), /* 4 */
- 	BRCMF_FW_ENTRY(BRCM_CC_4378_CHIP_ID, 0xFFFFFFFF, 4378B1), /* 3 */
-+	BRCMF_FW_ENTRY(BRCM_CC_4387_CHIP_ID, 0xFFFFFFFF, 4387C2), /* 7 */
- };
- 
- #define BRCMF_PCIE_FW_UP_TIMEOUT		5000 /* msec */
-@@ -2064,6 +2066,11 @@ static int brcmf_pcie_read_otp(struct brcmf_pciedev_info *devinfo)
- 		base = 0x1120;
- 		words = 0x170;
- 		break;
-+	case BRCM_CC_4387_CHIP_ID:
-+		coreid = BCMA_CORE_GCI;
-+		base = 0x113c;
-+		words = 0x170;
-+		break;
- 	default:
- 		/* OTP not supported on this chip */
- 		return 0;
-@@ -2573,6 +2580,7 @@ static const struct pci_device_id brcmf_pcie_devid_table[] = {
- 	BRCMF_PCIE_DEVICE(BRCM_PCIE_4371_DEVICE_ID),
- 	BRCMF_PCIE_DEVICE(BRCM_PCIE_4377_DEVICE_ID),
- 	BRCMF_PCIE_DEVICE(BRCM_PCIE_4378_DEVICE_ID),
-+	BRCMF_PCIE_DEVICE(BRCM_PCIE_4387_DEVICE_ID),
- 	{ /* end: all zeroes */ }
- };
- 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h b/drivers/net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h
-index 54d7ec515e1d..3d6c803fbec5 100644
---- a/drivers/net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h
-+++ b/drivers/net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h
-@@ -53,6 +53,7 @@
- #define BRCM_CC_4371_CHIP_ID		0x4371
- #define BRCM_CC_4377_CHIP_ID		0x4377
- #define BRCM_CC_4378_CHIP_ID		0x4378
-+#define BRCM_CC_4387_CHIP_ID		0x4387
- #define CY_CC_4373_CHIP_ID		0x4373
- #define CY_CC_43012_CHIP_ID		43012
- #define CY_CC_43752_CHIP_ID		43752
-@@ -91,6 +92,7 @@
- #define BRCM_PCIE_4371_DEVICE_ID	0x440d
- #define BRCM_PCIE_4377_DEVICE_ID	0x4488
- #define BRCM_PCIE_4378_DEVICE_ID	0x4425
-+#define BRCM_PCIE_4387_DEVICE_ID	0x4433
+ #include <soc.h>
+@@ -559,47 +560,6 @@ brcmf_pcie_write_ram32(struct brcmf_pciedev_info *devinfo, u32 mem_offset,
+ }
  
  
- /* brcmsmac IDs */
+-static void
+-brcmf_pcie_copy_mem_todev(struct brcmf_pciedev_info *devinfo, u32 mem_offset,
+-			  void *srcaddr, u32 len)
+-{
+-	void __iomem *address = devinfo->tcm + mem_offset;
+-	__le32 *src32;
+-	__le16 *src16;
+-	u8 *src8;
+-
+-	if (((ulong)address & 4) || ((ulong)srcaddr & 4) || (len & 4)) {
+-		if (((ulong)address & 2) || ((ulong)srcaddr & 2) || (len & 2)) {
+-			src8 = (u8 *)srcaddr;
+-			while (len) {
+-				iowrite8(*src8, address);
+-				address++;
+-				src8++;
+-				len--;
+-			}
+-		} else {
+-			len = len / 2;
+-			src16 = (__le16 *)srcaddr;
+-			while (len) {
+-				iowrite16(le16_to_cpu(*src16), address);
+-				address += 2;
+-				src16++;
+-				len--;
+-			}
+-		}
+-	} else {
+-		len = len / 4;
+-		src32 = (__le32 *)srcaddr;
+-		while (len) {
+-			iowrite32(le32_to_cpu(*src32), address);
+-			address += 4;
+-			src32++;
+-			len--;
+-		}
+-	}
+-}
+-
+-
+ static void
+ brcmf_pcie_copy_dev_tomem(struct brcmf_pciedev_info *devinfo, u32 mem_offset,
+ 			  void *dstaddr, u32 len)
+@@ -1697,8 +1657,8 @@ static int brcmf_pcie_download_fw_nvram(struct brcmf_pciedev_info *devinfo,
+ 		return err;
+ 
+ 	brcmf_dbg(PCIE, "Download FW %s\n", devinfo->fw_name);
+-	brcmf_pcie_copy_mem_todev(devinfo, devinfo->ci->rambase,
+-				  (void *)fw->data, fw->size);
++	memcpy_toio(devinfo->tcm + devinfo->ci->rambase,
++		    (void *)fw->data, fw->size);
+ 
+ 	resetintr = get_unaligned_le32(fw->data);
+ 	release_firmware(fw);
+@@ -1719,7 +1679,7 @@ static int brcmf_pcie_download_fw_nvram(struct brcmf_pciedev_info *devinfo,
+ 		brcmf_dbg(PCIE, "Download NVRAM %s\n", devinfo->nvram_name);
+ 		address = devinfo->ci->rambase + devinfo->ci->ramsize -
+ 			  nvram_len;
+-		brcmf_pcie_copy_mem_todev(devinfo, address, nvram, nvram_len);
++		memcpy_toio(devinfo->tcm + address, nvram, nvram_len);
+ 		brcmf_fw_nvram_free(nvram);
+ 
+ 		/* Some Apple chips/firmwares expect a buffer of random data
+@@ -1728,13 +1688,12 @@ static int brcmf_pcie_download_fw_nvram(struct brcmf_pciedev_info *devinfo,
+ 		brcmf_dbg(PCIE, "Download random seed\n");
+ 
+ 		address -= sizeof(footer);
+-		brcmf_pcie_copy_mem_todev(devinfo, address, &footer,
+-					  sizeof(footer));
++		memcpy_toio(devinfo->tcm + address, &footer, sizeof(footer));
+ 
+ 		address -= rand_len;
+ 		randbuf = kzalloc(rand_len, GFP_KERNEL);
+ 		get_random_bytes(randbuf, rand_len);
+-		brcmf_pcie_copy_mem_todev(devinfo, address, randbuf, rand_len);
++		memcpy_toio(devinfo->tcm + address, randbuf, rand_len);
+ 		kfree(randbuf);
+ 	} else {
+ 		brcmf_dbg(PCIE, "No matching NVRAM file found %s\n",
 -- 
 2.33.0
 
