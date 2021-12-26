@@ -2,108 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 85C0547F82C
-	for <lists+netdev@lfdr.de>; Sun, 26 Dec 2021 17:01:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CDCFE47F835
+	for <lists+netdev@lfdr.de>; Sun, 26 Dec 2021 17:25:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230484AbhLZQBa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Dec 2021 11:01:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40034 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229711AbhLZQBa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Dec 2021 11:01:30 -0500
-Received: from mirix.in-vpn.de (mirix.in-vpn.de [IPv6:2001:67c:1407:a0::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE61EC06173E;
-        Sun, 26 Dec 2021 08:01:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mirix.org;
-        s=43974b1a7d21b2cf; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:
-        MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender:Reply-To:
+        id S230510AbhLZQZH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Dec 2021 11:25:07 -0500
+Received: from lan.nucleusys.com ([92.247.61.126]:46564 "EHLO
+        mail.nucleusys.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229987AbhLZQZH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Dec 2021 11:25:07 -0500
+X-Greylist: delayed 1335 seconds by postgrey-1.27 at vger.kernel.org; Sun, 26 Dec 2021 11:25:06 EST
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=nucleusys.com; s=x; h=In-Reply-To:Content-Type:MIME-Version:References:
+        Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:
         Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
         Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
         List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=rg0k5zhAPFc7Pi9ts554EK56qLUcykuskxNyvxU80Bk=; b=eCQLWvKu49U6CKhi8hg4YJF5uv
-        pP94Fd4Tjag5xKRYUMaGrRXCqg9JvkUfsmh+88pHlPmgV+k195BTQ1iN6pLCiYhL/mykfHGrQVXCj
-        TafLCLA890WLVicjto6J38bTMIHj4g6y39CgClaiSQyWlUbFYeMjUp7yNsMt7s6ZdGJesAcls5I+I
-        7Ix7y5Hoxe1dqLnrR/ZlXLtjM6CS0Yz2h+lZ4pf5iwpisX3zG+oTannpu9IU3sfXpp7QglC/9//2M
-        Yq1XQUatXbrEMks13oZV4NSWZaeixbM+5Ev2hk5IxyoBzqlf3KQ9+rU4y/QUV73Lw+qjNnmiLJgad
-        vTB5qrrg==;
-Received: from [::1] (helo=localhost.localdomain)
-        by mirix.in-vpn.de with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128)
-        (Exim)
-        id 1n1Vxe-0005vb-Jl; Sun, 26 Dec 2021 16:01:26 +0000
-Subject: Re: [PATCH] net: usb: pegasus: Do not drop long Ethernet frames
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Petko Manolov <petkan@nucleusys.com>, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20211226132930.7220-1-ott@mirix.org> <YciMrJBDk6bA5+Nv@lunn.ch>
-From:   Matthias-Christian Ott <ott@mirix.org>
-Message-ID: <a87c4ea5-72ef-8dd3-de98-01f799d627ef@mirix.org>
-Date:   Sun, 26 Dec 2021 17:01:24 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        bh=BqoF6YmajCOcmtPAa/sWQfS/yAhq10wHNsmBgrksCTo=; b=WS+k3vvtnc1l6VtkC43CQd3ua4
+        plDGbWckaKwKiyi+AHy+tstvTJWsomuwex91PeWgvdYxJybteSJh12VOl2bpyySqFqSafaz5RvAJa
+        7O6NUwJ4cJforE1gg8peTSXHkM+XMTmIP8F5GoKtGR/GAVulhzYCX+NaJjYEwoWbfXI0=;
+Received: from 78-83-68-78.spectrumnet.bg ([78.83.68.78] helo=karbon.k.g)
+        by mail.nucleusys.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <petkan@nucleusys.com>)
+        id 1n1Vyw-001bsb-BI; Sun, 26 Dec 2021 18:02:48 +0200
+Date:   Sun, 26 Dec 2021 18:02:45 +0200
+From:   Petko Manolov <petkan@nucleusys.com>
+To:     Matthias-Christian Ott <ott@mirix.org>
+Cc:     linux-usb@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH] net: usb: pegasus: Request Ethernet FCS from hardware
+Message-ID: <YciSJYMgyHtvyPc6@karbon.k.g>
+References: <20211226132502.7056-1-ott@mirix.org>
 MIME-Version: 1.0
-In-Reply-To: <YciMrJBDk6bA5+Nv@lunn.ch>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211226132502.7056-1-ott@mirix.org>
+X-Spam_score: -1.0
+X-Spam_bar: -
+X-Spam_report: Spam detection software, running on the system "zztop",
+ has NOT identified this incoming email as spam.  The original
+ message has been attached to this so you can view it or label
+ similar future email.  If you have any questions, see
+ @@CONTACT_ADDRESS@@ for details.
+ Content preview:  On 21-12-26 14:25:02, Matthias-Christian Ott wrote: > Commit
+    1a8deec09d12 ("pegasus: fixes reported packet length") tried to > configure
+    the hardware to not include the FCS/CRC of Ethernet frames. > U [...] 
+ Content analysis details:   (-1.0 points, 5.0 required)
+  pts rule name              description
+ ---- ---------------------- --------------------------------------------------
+ -1.0 ALL_TRUSTED            Passed through trusted hosts only via SMTP
+  0.0 TVD_RCVD_IP            Message was received from an IP address
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 26/12/2021 16:39, Andrew Lunn wrote:
-> On Sun, Dec 26, 2021 at 02:29:30PM +0100, Matthias-Christian Ott wrote:
->> The D-Link DSB-650TX (2001:4002) is unable to receive Ethernet frames
->> that are longer than 1518 octets, for example, Ethernet frames that
->> contain 802.1Q VLAN tags.
->>
->> The frames are sent to the pegasus driver via USB but the driver
->> discards them because they have the Long_pkt field set to 1 in the
->> received status report. The function read_bulk_callback of the pegasus
->> driver treats such received "packets" (in the terminology of the
->> hardware) as errors but the field simply does just indicate that the
->> Ethernet frame (MAC destination to FCS) is longer than 1518 octets.
->>
->> It seems that in the 1990s there was a distinction between
->> "giant" (> 1518) and "runt" (< 64) frames and the hardware includes
->> flags to indicate this distinction. It seems that the purpose of the
->> distinction "giant" frames was to not allow infinitely long frames due
->> to transmission errors and to allow hardware to have an upper limit of
->> the frame size. However, the hardware already has such limit with its
->> 2048 octet receive buffer and, therefore, Long_pkt is merely a
->> convention and should not be treated as a receive error.
->>
->> Actually, the hardware is even able to receive Ethernet frames with 2048
->> octets which exceeds the claimed limit frame size limit of the driver of
->> 1536 octets (PEGASUS_MTU).
->>
->> Signed-off-by: Matthias-Christian Ott <ott@mirix.org>
->> ---
->>  drivers/net/usb/pegasus.c | 4 ++--
->>  1 file changed, 2 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/net/usb/pegasus.c b/drivers/net/usb/pegasus.c
->> index 140d11ae6688..2582daf23015 100644
->> --- a/drivers/net/usb/pegasus.c
->> +++ b/drivers/net/usb/pegasus.c
->> @@ -499,11 +499,11 @@ static void read_bulk_callback(struct urb *urb)
->>  		goto goon;
->>  
->>  	rx_status = buf[count - 2];
->> -	if (rx_status & 0x1e) {
->> +	if (rx_status & 0x1c) {
->>  		netif_dbg(pegasus, rx_err, net,
->>  			  "RX packet error %x\n", rx_status);
->>  		net->stats.rx_errors++;
->> -		if (rx_status & 0x06)	/* long or runt	*/
->> +		if (rx_status & 0x04)	/* runt	*/
+On 21-12-26 14:25:02, Matthias-Christian Ott wrote:
+> Commit 1a8deec09d12 ("pegasus: fixes reported packet length") tried to
+> configure the hardware to not include the FCS/CRC of Ethernet frames.
+> Unfortunately, this does not work with the D-Link DSB-650TX (USB IDs
+> 2001:4002 and 2001:400b): the transferred "packets" (in the terminology
+> of the hardware) still contain 4 additional octets. For IP packets in
+> Ethernet this is not a problem as IP packets contain their own lengths
+> fields but other protocols also see Ethernet frames that include the FCS
+> in the payload which might be a problem for some protocols.
 > 
-> I've nothing against this patch, but if you are working on the driver,
-> it would be nice to replace these hex numbers with #defines using BIT,
-> or FIELD. It will make the code more readable.
+> I was not able to open the D-Link DSB-650TX as the case is a very tight
+> press fit and opening it would likely destroy it. However, according to
+> the source code the earlier revision of the D-Link DSB-650TX (USB ID
+> 2001:4002) is a Pegasus (possibly AN986) and not Pegasus II (AN8511)
+> device. I also tried it with the later revision of the D-Link DSB-650TX
+> (USB ID 2001:400b) which is a Pegasus II device according to the source
+> code and had the same results. Therefore, I'm not sure whether the RXCS
+> (rx_crc_sent) field of the EC0 (Ethernet control_0) register has any
+> effect or in which revision of the hardware it is usable and has an
+> effect. As a result, it seems best to me to revert commit
+> 1a8deec09d12 ("pegasus: fixes reported packet length") and to set the
+> RXCS (rx_crc_sent) field of the EC0 (Ethernet control_0) register so
+> that the FCS/CRC is always included.
+> 
+> Fixes: 1a8deec09d12 ("pegasus: fixes reported packet length")
+> Signed-off-by: Matthias-Christian Ott <ott@mirix.org>
+> ---
+>  drivers/net/usb/pegasus.c | 15 ++++++++++++++-
+>  1 file changed, 14 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/usb/pegasus.c b/drivers/net/usb/pegasus.c
+> index c4cd40b090fd..140d11ae6688 100644
+> --- a/drivers/net/usb/pegasus.c
+> +++ b/drivers/net/usb/pegasus.c
+> @@ -422,7 +422,13 @@ static int enable_net_traffic(struct net_device *dev, struct usb_device *usb)
+>  	ret = read_mii_word(pegasus, pegasus->phy, MII_LPA, &linkpart);
+>  	if (ret < 0)
+>  		goto fail;
+> -	data[0] = 0xc8; /* TX & RX enable, append status, no CRC */
+> +	/* At least two hardware revisions of the D-Link DSB-650TX (USB IDs
+> +	 * 2001:4002 and 2001:400b) include the Ethernet FCS in the packets,
+> +	 * even if RXCS is set to 0 in the EC0 register and the hardware is
+> +	 * instructed to not include the Ethernet FCS in the packet.Therefore,
+> +	 * it seems best to set RXCS to 1 and later ignore the Ethernet FCS.
+> +	 */
+> +	data[0] = 0xc9; /* TX & RX enable, append status, CRC */
+>  	data[1] = 0;
+>  	if (linkpart & (ADVERTISE_100FULL | ADVERTISE_10FULL))
+>  		data[1] |= 0x20;	/* set full duplex */
+> @@ -513,6 +519,13 @@ static void read_bulk_callback(struct urb *urb)
+>  		pkt_len = buf[count - 3] << 8;
+>  		pkt_len += buf[count - 4];
+>  		pkt_len &= 0xfff;
+> +		/* The FCS at the end of the packet is ignored. So subtract
+> +		 * its length to ignore it.
+> +		 */
+> +		pkt_len -= ETH_FCS_LEN;
+> +		/* Subtract the length of the received status at the end of the
+> +		 * packet as it is not part of the Ethernet frame.
+> +		 */
+>  		pkt_len -= 4;
+>  	}
 
-Replacing the constants with macros is on my list of things that I want
-to do. In this case, I did not do it because I wanted to a have small
-patch that gets easily accepted and allows me to figure out the current
-process to submit patches after years of inactivity.
+Nice catch.  However, changing these constants for all devices isn't such a good
+idea.  I'd rather use vendor and device IDs to distinguish these two cases in
+the above code.
 
-Kind regards,
-Matthias-Christian Ott
+
+cheers,
+Petko
