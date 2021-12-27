@@ -2,89 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E5AD4804A1
-	for <lists+netdev@lfdr.de>; Mon, 27 Dec 2021 21:41:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E1DD54804F3
+	for <lists+netdev@lfdr.de>; Mon, 27 Dec 2021 22:53:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233067AbhL0Ulg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Dec 2021 15:41:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49788 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231414AbhL0Ulf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Dec 2021 15:41:35 -0500
-Received: from mail-qv1-xf33.google.com (mail-qv1-xf33.google.com [IPv6:2607:f8b0:4864:20::f33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B8B7C06173E
-        for <netdev@vger.kernel.org>; Mon, 27 Dec 2021 12:41:35 -0800 (PST)
-Received: by mail-qv1-xf33.google.com with SMTP id a9so14677524qvd.12
-        for <netdev@vger.kernel.org>; Mon, 27 Dec 2021 12:41:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sladewatkins.com; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=HEblb4NcyHjgy+hG9JwZ6BIZVjaEPFiRSkzq3qx7O5s=;
-        b=M/svcAs3jlY7Prg+Rl0odk2/+T3H8QS/j5nMgvetdX84NaIF7xbTfhi4VdGuYCX9+A
-         VmmiFd6D/iJBKddKyF3YLVsIgv4bL8pVAupR4aaqdh6guUyltbRs3/GSQec43AhLZQkw
-         beoYT6ZrH8VZJm4n3ifkfmUnpGVYBswrtMuYJ3dqVz3+GUPXKSBmWw7S6vwTmp1PF1Y0
-         zonOjmtfnwMbZn0Ly1s3Prg56tt2yfLJ+C14D0Vrb+QTgcDuIZf2+jd3OfY0RFuKKP2N
-         +zySZ6jZoHt1igci4tJB3eLLAcDV013yfLCyK7CEZXDjF1loBKwTviRNZ5T0s0AwEPhy
-         ymaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=HEblb4NcyHjgy+hG9JwZ6BIZVjaEPFiRSkzq3qx7O5s=;
-        b=os7Iqg8QoQnnLn92Agr+2PhltLQRsifO7DP2n9IPbBSavFAyJFBD/Rt+xMotaSU+p9
-         XMFITWvC6Pf5/+3QR7PPbwKLeJKkTNDNcrW9oFiiCf7U6AWxqZ3ASHmXqn70vyKN66X4
-         mNSK65Le/08hAu8HDQP1LjMUWLLi6Oe/98+2btu2LZR3vLAlGq3SWdPaAjFKbtMVgOij
-         YeMfxaP5JHIYw9trwxVjvckfwg2ExFXgyOjkihIM6vQEMYaqoJZjnndKHCWzqhWh1q+v
-         xwbQghuXdFj9tDfXsAZmatsY+lztZsAoJhPOMVJrsds/wfkD/TtVlrVg4/NsqK2q883Y
-         ANtQ==
-X-Gm-Message-State: AOAM533Pl2M1UOrFQiPWarbqO6dsv0hnKStjoq3x0IJw+4l1hOq4WJDm
-        YEbyVyblBYVC7F3+I8Q06XxmCQ==
-X-Google-Smtp-Source: ABdhPJypWnA4YaLiN2H5DrhKGjxH1UB/Yn66D6fjJc5aYNghXRDHGDaSbM+RG1KrwWk07f3qu059QA==
-X-Received: by 2002:a05:6214:4019:: with SMTP id kd25mr16808588qvb.59.1640637694032;
-        Mon, 27 Dec 2021 12:41:34 -0800 (PST)
-Received: from [10.0.0.29] (pool-96-236-39-10.albyny.fios.verizon.net. [96.236.39.10])
-        by smtp.gmail.com with ESMTPSA id b6sm14125137qtk.91.2021.12.27.12.41.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 27 Dec 2021 12:41:33 -0800 (PST)
-Message-ID: <4cdfcc90-67c4-1cf2-1fca-76376a122454@sladewatkins.com>
-Date:   Mon, 27 Dec 2021 15:41:32 -0500
+        id S233598AbhL0Vxi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Dec 2021 16:53:38 -0500
+Received: from mail-eopbgr80124.outbound.protection.outlook.com ([40.107.8.124]:45430
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229728AbhL0Vxh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Dec 2021 16:53:37 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=H/oRCfQOb8tGNkFjxo5mNahsBaAmToTkwgrTv+1qANicP5UgoW+9IMVB1vAlYKvJE16tw/19JezbxSbwBIt2jLHz8k73WrVrj3ifU65D5V3tjc4RA9MMo+JKSqVOdYeB5G9+wwPfaoTOisyDqkrAjv4pdH/m4Ho0W9vXz8Lj7Z5wb7bxwPh17TVTqbzPfSI2btxIM/lcVucB9NaXJz3MjB4FNhPEBvysQE9/kyBKMQOf62R9FCFyRYF4gvMBOO3XGEa/GJrWd8kcytwwPgSGWPD9IXEsFYRf39mt+X4i5SVfnkMeMPoD1Ahe0cGm2l6qJqx6lueAMfoMDZdXcuObgw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=wOu7w4KMNi0U+FWoY36QVH9Jvq1QrgAeqBGrZ2o94Kk=;
+ b=Ookd0jOdcKnXZJMgQu66C/m1oHBlEBoQt15XlEnd6XPKZqB/aq5E4KT9NNPZ/OVvg5mDn8lgrsFAH/01ym/8qYnKgfrxswgQ0TyAqu2vG+DCUb8ydqZiLr4v8/hsYrbN5CtPDlk/XDxcG1E7CPcTmGYdJeme1A4JYbTvtbMh8U7lFF+g6gzXcXyAZUAOBc0xJpFUMJ5QmuTFojF+64xStrd6zeRhsm+7qiuEousnI+wTWoUFGSJ/LBw00RB6wSaCyVHnBoIF8Pe++SLKYM0jlo69Iv7Hyg2cdZav1Op6djJDw4PDY4GI7tPlwCAZsXGcgIuzzc0xQRrUPppRALRLxg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
+ dkim=pass header.d=plvision.eu; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=wOu7w4KMNi0U+FWoY36QVH9Jvq1QrgAeqBGrZ2o94Kk=;
+ b=lXj4dxrIvOPNGrAV0C9p7GAy1G4RHuTR8QZunbIJtvVYbTmhWs6krBRVwh3P9I7+LiCdYRvK27S3IigcdKyRz5YsB1rpmaoaWZuuxU6O37YsMjO4dqseAJ7d11WrwaM3JA/RiWQlfY64x/Utik+ROxbtIsA6gmXBXwtUsTnFoJQ=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=plvision.eu;
+Received: from AM9P190MB1122.EURP190.PROD.OUTLOOK.COM (2603:10a6:20b:262::24)
+ by AM4P190MB0145.EURP190.PROD.OUTLOOK.COM (2603:10a6:200:62::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4823.21; Mon, 27 Dec
+ 2021 21:53:34 +0000
+Received: from AM9P190MB1122.EURP190.PROD.OUTLOOK.COM
+ ([fe80::b93b:8d91:d56a:8256]) by AM9P190MB1122.EURP190.PROD.OUTLOOK.COM
+ ([fe80::b93b:8d91:d56a:8256%5]) with mapi id 15.20.4823.023; Mon, 27 Dec 2021
+ 21:53:34 +0000
+From:   Yevhen Orlov <yevhen.orlov@plvision.eu>
+To:     netdev@vger.kernel.org, stephen@networkplumber.org, andrew@lunn.ch
+Cc:     Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
+        Taras Chornyi <taras.chornyi@plvision.eu>,
+        Mickey Rachamim <mickeyr@marvell.com>,
+        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
+        Yevhen Orlov <yevhen.orlov@plvision.eu>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next v2 0/6] prestera: add basic router driver support
+Date:   Mon, 27 Dec 2021 23:52:25 +0200
+Message-Id: <20211227215233.31220-1-yevhen.orlov@plvision.eu>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-ClientProxiedBy: FR3P281CA0035.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:1c::8) To AM9P190MB1122.EURP190.PROD.OUTLOOK.COM
+ (2603:10a6:20b:262::24)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH] qlge: rewrite qlge_change_rx_buffers()
-Content-Language: en-US
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Adam Kandur <sys.arch.adam@gmail.com>, netdev@vger.kernel.org,
-        linux-staging@lists.linux.dev
-References: <CAE28pkNNsUnp4UiaKX-OjAQHPGjSNY6+hn-oK39m8w=ybXSO6Q@mail.gmail.com>
- <YcnA8LBwH1X/xqKt@kroah.com>
- <152c8d76-af2b-2ea3-4f15-faf2670d8e73@sladewatkins.com>
- <YcnRg9AYfSgC1pBE@kroah.com>
-From:   Slade Watkins <slade@sladewatkins.com>
-In-Reply-To: <YcnRg9AYfSgC1pBE@kroah.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 3bed5155-cf75-4384-bff0-08d9c983540d
+X-MS-TrafficTypeDiagnostic: AM4P190MB0145:EE_
+X-Microsoft-Antispam-PRVS: <AM4P190MB01458030AA32BAEFB276F19493429@AM4P190MB0145.EURP190.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:3968;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: T8f02mh+kOlrXwaDaarPpZrrIeu98vgIa7yrILAScbI/C1cJ6vfdBSRne6x8+lmjCxIBt2v6SfSzqSRgVtQEp3ZtckBUygQ/Lv/0PrkOroukuwmzN0m2jEf3Kapv5fkN527DUuCDMrQ5z8W4OZ8vt2sMOUsK1+LxTic7lz+l8asPFk8vn+3Ph22Si63DIeKjPjFyr2zLMlxQ7oF6B+I333BduEQ8EQ4jPbg0l2TwUDEaNL50v5SAgBPcpNV/evUv/N+DBohkd2itOMlhLJUVChHdKU9HjXp1xci1d+ZbhN4woigN81OovJNsVDBt4lgYtCJS6hPOV+WrvarNcaN+69UW1WRvLZ35u3YWzsjrXDlF1cK7bCpF0P/6eod2LV5LglRN6Rpo1KoKmc1nHKMwGis+bGPqDFH+vuXX1yG+ZxrzEi3vmJSNT4kbm3Qeqej5tvvQQ2BicabQozbYbUROcIU87O62YCMv6C8QFh4rSZDVD068k5XzFoT/mrUAp7+i/B4wc/2T+DxLAEJc7yx+QWWkum7RhglKDNf+N38KnQ1ftSlXd8RrFLMAsKpqgqfDSTYqIz6TdgqtTJB3Yba/M0rd0pkNgIp+eMdFcMUP2an9I9hoJ8b9/UQjA0h5CAthSVAOaRhnKTpVxsajP43wH/yajWsug2t6KbvoZOQp9IKCA7KaYwrjwJHhRQEEauwIUDK9Dv+vW+4gwzykR4Qvbg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9P190MB1122.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(136003)(396003)(366004)(346002)(376002)(39830400003)(5660300002)(83380400001)(26005)(1076003)(54906003)(316002)(186003)(2906002)(6506007)(8936002)(4326008)(8676002)(2616005)(508600001)(38350700002)(38100700002)(66574015)(36756003)(6666004)(52116002)(86362001)(6486002)(6512007)(66556008)(66476007)(44832011)(66946007);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?AHpYpeLZD6fA1y+9gFz81zgh/XzIwhBUCLSzBjdLOTx4NLXTX9Ly7pEJxFfy?=
+ =?us-ascii?Q?LZYS589yCdBZBDSo4ftk44g/dXmhSjzBX+JYhcIgJRHYmHfAqjWiRtEAuYy4?=
+ =?us-ascii?Q?/Bc6SIDX8gOnLQmaNVJS6KkdvqCzYYcFwF9o1XOllMOgVZpIg14tpeLL3P95?=
+ =?us-ascii?Q?p3KO/X0624G2Nd1w9ecXmsU8pULDAycQpM/6phQ7A2t5H1d+PUDvTM9GW5Vr?=
+ =?us-ascii?Q?KpahrvufTn1u6s532lRH/gOkv3jJzG4DDN3BdJ2Jx2r/wXITTPiNtCiWgC1e?=
+ =?us-ascii?Q?/fNkkeGFP9ALiFrL2BLl5cL7X0GfYEFMDQ1kS5cjU5MgwwFBeJ7IpLKwQAuW?=
+ =?us-ascii?Q?nMDGYDGvN04MPwCK7OFR2Xod9QAfpGN8wiVrA/OEL5OVZ5QxpQxZCzLepmWu?=
+ =?us-ascii?Q?cDdLBHe9SfJMP+gAYLFPaHqEe18Rb4NHWVer1RH0M4Qx0dklCz8dy0T1zcXf?=
+ =?us-ascii?Q?X7kDv1e2SjpJWdb7PdcW5ONxwbfwicqI6JC0wp60+C20GnQ/MjrDSY2/noig?=
+ =?us-ascii?Q?672/rVLWNufBiS3oo40vKzL1fwlnyXY8JhtzPr3MWXqyeHfjlJ9hI7o+0urs?=
+ =?us-ascii?Q?KLhbG69J01pOiwBdOj0CKY47EO/r/kAvlVmkCNRdR7u2bhBToarc2to/5CaK?=
+ =?us-ascii?Q?2D3KcE+NFGQGZypEF37zosvGRgciU1We7zOa+SLvfNXixWDuB7TAhozab4au?=
+ =?us-ascii?Q?DS02jWtSYtoxpD5sCgl0ndMED86NbssyJ5s/a2aTT5WbJRYFJ3ueqDM68Zct?=
+ =?us-ascii?Q?kyAksXu64N2CwQW8ieSVIuwjRaNTHHCJn6eRsEkkKWaxcAZEyIqloAASpTNn?=
+ =?us-ascii?Q?v/tObwl9RAx2g6btgXzqqDfnpOwpW+UYcnJFLA2kMm1IGi/o/9BzMODMUkjb?=
+ =?us-ascii?Q?YOyYhWlvDvL/lUm40vJezTxfKiv2I+SJaMEK3em6FqNg6vCEowWWSghcA9qx?=
+ =?us-ascii?Q?mQsOcKl8CaaSpBbMXIkMpLA7qvJkACgiFLaoWyEDqYm68/XG0J8410oCu/N2?=
+ =?us-ascii?Q?zRG9zw+b3OF1MnZbgS2horK6SKpAvQPmyJtHxxM2RIjAj//99D8LW6TV8CjS?=
+ =?us-ascii?Q?rXw3wvh9W4LEdxIvwRQ561OEIRWKAGhd/Q9vGbAqyfgzubBFU6RsawCygoQD?=
+ =?us-ascii?Q?pSh1WqLkPGKX7LSWUH5UITJqnyYuCvFKscFoI6gtP9f+SasIkUV/65rzsMBk?=
+ =?us-ascii?Q?HD5htxCeDiBZcmt/ZmgHTb6sJt7AcQEVfOyDzIDsEBLMnSw/PhsPNtsXmZB5?=
+ =?us-ascii?Q?gaH5RoYRAgMtZ+erGfrKEC3C0KZAci5bpIIm7kVu01ifX/mQqJnP1dII9CRs?=
+ =?us-ascii?Q?Odxb6PtGOxDtRIvH7HuMhWlnDd8ySE82+JV7BEM97fcF885+Pjn44OzCdILR?=
+ =?us-ascii?Q?od20E9/+ZEej6I4aCw3nUHywZEjuiWZcpRG5ekh3dEoyX1uSeNLvhMFhYNqi?=
+ =?us-ascii?Q?7GWC9BHmxlq2Fmm6EM889DQdQSNV6NMnzrW+wgNK+oz7OxEDtpNMGAMdop48?=
+ =?us-ascii?Q?KxyaOSeAMioW7gTcOwlac8UP9B0NbmekQJdWm/8mP0ii9fJgOUevhdeuliPZ?=
+ =?us-ascii?Q?39UtS5rFOI40ou7pY++mPf3fiBdxsjPyAiAgaqiRj7Xdf/+lKXR/MrJWTEh9?=
+ =?us-ascii?Q?3S3rsz1JNrWVJAjV0n9aKcS4Reqc0qhrUO4tQvSdCNA/UMxD8ifpemzan+a3?=
+ =?us-ascii?Q?6rXePw=3D=3D?=
+X-OriginatorOrg: plvision.eu
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3bed5155-cf75-4384-bff0-08d9c983540d
+X-MS-Exchange-CrossTenant-AuthSource: AM9P190MB1122.EURP190.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Dec 2021 21:53:33.9596
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: uh019XbRGgtLOxuAl2xBAPHYDL7YhdLKoiddJwUdUwI79fmNB4K1Uo81G+YmHM2FwucRDvbFTvhtB2HoHx2NcliGHe5HCxm6BAw/WmNvJoA=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4P190MB0145
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/27/2021 9:45 AM, Greg KH wrote:
-> On Mon, Dec 27, 2021 at 09:15:36AM -0500, Slade Watkins wrote:
->> --
->> This email message may contain sensitive or otherwise confidential
->> information and is intended for the addressee(s) only. If you believe
->> to have received this message in error, please let the sender know
->> *immediately* and delete the message. Thank you for your cooperation!
->>
-> 
-> Now deleted.
+Add initial router support for Marvell Prestera driver.
+Subscribe on inetaddr notifications. TRAP packets, that has to be routed
+(if packet has router's destination MAC address).
 
-my bad! I have separate signatures set for mailing lists but for some
-reason it didn't remove that blurb.
+Add features:
+ - Support ip address adding on port.
+   e.g.: "ip address add PORT 1.1.1.1/24"
 
-it's fixed for the future.
+Limitations:
+ - Only regular port supported. Vlan will be added soon.
+ - It is routing through CPU. Offloading will be added in
+   next patches.
 
-sorry about that.
-slade
+Co-developed-by: Taras Chornyi <tchornyi@marvell.com>
+Signed-off-by: Taras Chornyi <tchornyi@marvell.com>
+Co-developed-by: Oleksandr Mazur <oleksandr.mazur@plvision.eu>
+Signed-off-by: Oleksandr Mazur <oleksandr.mazur@plvision.eu>
+Signed-off-by: Yevhen Orlov <yevhen.orlov@plvision.eu>
+
+Changes for v2:
+* Remove useless assignment
+
+Yevhen Orlov (6):
+  net: marvell: prestera: add virtual router ABI
+  net: marvell: prestera: Add router interface ABI
+  net: marvell: prestera: Add prestera router infra
+  net: marvell: prestera: add hardware router objects accounting
+  net: marvell: prestera: Register inetaddr stub notifiers
+  net: marvell: prestera: Implement initial inetaddr notifiers
+
+ .../net/ethernet/marvell/prestera/Makefile    |   3 +-
+ .../net/ethernet/marvell/prestera/prestera.h  |  38 ++++
+ .../ethernet/marvell/prestera/prestera_hw.c   | 139 ++++++++++++
+ .../ethernet/marvell/prestera/prestera_hw.h   |  11 +
+ .../ethernet/marvell/prestera/prestera_main.c |   8 +-
+ .../marvell/prestera/prestera_router.c        | 183 +++++++++++++++
+ .../marvell/prestera/prestera_router_hw.c     | 209 ++++++++++++++++++
+ .../marvell/prestera/prestera_router_hw.h     |  36 +++
+ 8 files changed, 625 insertions(+), 2 deletions(-)
+ create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_router.c
+ create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_router_hw.c
+ create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_router_hw.h
+
+-- 
+2.17.1
+
