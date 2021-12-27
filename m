@@ -2,124 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CAAE547FDB9
-	for <lists+netdev@lfdr.de>; Mon, 27 Dec 2021 14:54:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 00AE847FDBF
+	for <lists+netdev@lfdr.de>; Mon, 27 Dec 2021 15:06:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236934AbhL0NyV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Dec 2021 08:54:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42054 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232865AbhL0NyU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Dec 2021 08:54:20 -0500
-Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 159BEC06173E;
-        Mon, 27 Dec 2021 05:54:20 -0800 (PST)
-Received: by mail-qt1-x831.google.com with SMTP id v22so13500165qtx.8;
-        Mon, 27 Dec 2021 05:54:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=g4y3DBv8I9/0Er3TE7fJ214VmxYgDZBGADuJ1pOAYnU=;
-        b=BxivrrOfzULF2mVtGM2hK0E9oESuSo6z279/7yvKG3e0Eh2Mm8fIjK+z3mgIT61OJh
-         UPDxmXRnjN6Y3A49p/I59LMNtPt0mTBdbzfWs7WFFp9nAy6955T5Exhj3OHQ8eW1RrQ6
-         osj2tIrQrdC6eVn+naHOTDEw6dDbOFXtpLl0mh0Vd/WJreaE/yVZqD5DE/TYLKmfibVv
-         2km9qtbzlmXL62tl6+7mit7gZpaTQItuGmJ9huSfM2YQPoOZk1Hjun1zGrRfMevpfm/m
-         hdoUIU7zB0koHkq2d2Fl6c1pgQYDFKagVLad/p4ubf0rJTearttmHLrGDxYZyDXLxODf
-         I59A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=g4y3DBv8I9/0Er3TE7fJ214VmxYgDZBGADuJ1pOAYnU=;
-        b=46M581VJgoXQLGJaJADJ8d12q9MXB1tE+XtuWDBztnqr+vGNrPPSh2X3FGGRARFBL+
-         GNtpheGO+sxxIvNe30BSFuKQvsQ9Yf3IrGh6iYzSODxJiBUeLcmzKBjIIoC9H/H8k0Kc
-         ECyqBWq0Z5iaab9IUeUCs+wSkplRdgGBvrVbm4uqWWrGdVXYdfr9vbStyeGT9ume/DhE
-         osc8ItpJvNRMcHsTclIFtI+amfLuBaVO3Sx/l9y7r5c8BT++M7l+hfZFJ6J7CGYVLG1O
-         7pdlOdv2wl+oq0jrf53gshn4iD+8LGWJ9fZfLdTaTo+EZCwNWOjhqo1isAYRhPzeQXZ+
-         BKGg==
-X-Gm-Message-State: AOAM5302QuOblI4xa09//kTLTP1ov70FRFywPdAsdHzx1xJEyp8tiwn8
-        PioeRc9k4uuBYIivf6zcl96pRWEa+q6+xOMd
-X-Google-Smtp-Source: ABdhPJwHbKxrwsNQiSO6jlHZFlPW9xCob2KiJg27u3ACtMEOsJoM0kgyNYnr8TaFUkh61qYSfHwwzA==
-X-Received: by 2002:a05:622a:193:: with SMTP id s19mr12068795qtw.266.1640613259204;
-        Mon, 27 Dec 2021 05:54:19 -0800 (PST)
-Received: from b-10-27-92-143.dynapool.vpn.nyu.edu (vpnrasb-10wp-pat-01.natpool.nyu.edu. [216.165.95.86])
-        by smtp.gmail.com with ESMTPSA id y5sm12766210qkp.103.2021.12.27.05.54.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Dec 2021 05:54:18 -0800 (PST)
-Date:   Mon, 27 Dec 2021 08:54:16 -0500
-From:   Zekun Shen <bruceshenzk@gmail.com>
-To:     bruceshenzk@gmail.com
-Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
-        Siva Rebbagondla <siva8118@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, brendandg@nyu.edu
-Subject: [PATCH] rsi: fix oob in rsi_prepare_skb
-Message-ID: <YcnFiGzk67p0PSgd@b-10-27-92-143.dynapool.vpn.nyu.edu>
+        id S237030AbhL0OGp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Dec 2021 09:06:45 -0500
+Received: from serv108.segi.ulg.ac.be ([139.165.32.111]:55287 "EHLO
+        serv108.segi.ulg.ac.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237016AbhL0OGo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Dec 2021 09:06:44 -0500
+Received: from mbx12-zne.ulg.ac.be (serv470.segi.ulg.ac.be [139.165.32.199])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by serv108.segi.ulg.ac.be (Postfix) with ESMTPS id 7721D202A099;
+        Mon, 27 Dec 2021 15:06:42 +0100 (CET)
+DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be 7721D202A099
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uliege.be;
+        s=ulg20190529; t=1640614002;
+        bh=yAH4rcsrFmP3VdV5raZyRcOdJnOE/9Nar4aaT8EA57o=;
+        h=Date:From:Reply-To:To:Cc:In-Reply-To:References:Subject:From;
+        b=wFLt8odRisTEnySyrIzWGLWZtvEZDQRFfAVPALY7ntSoo36Nm9FU5esj2gzu7amT1
+         VN8gPHiLzpEtNeGnzYdHhTWVfqoxh+IjwwACiDpzvfMqsrKH9Glu7n1Bwwjpw7v1FX
+         XbfT/zYaZqTs4XTp/lWZHYs7im5biGRlKhmXY31jyWUCuJh2O69TzETqCyMr2yW+Gm
+         BHB5beEF2H2dRpvPF3Iv3uvs18sp/k+p/us9CJ0YLiLSalwZywYhvAUcum7DOskLSt
+         /zkw+dXerRQ1litqyuwi+JBG3enduUHwPjhIyfMN6Rs8i1yoEvBNbXmKjFJ0sW6Zdh
+         BtzIig6d31ljw==
+Received: from localhost (localhost [127.0.0.1])
+        by mbx12-zne.ulg.ac.be (Postfix) with ESMTP id 6D35F60606A5B;
+        Mon, 27 Dec 2021 15:06:42 +0100 (CET)
+Received: from mbx12-zne.ulg.ac.be ([127.0.0.1])
+        by localhost (mbx12-zne.ulg.ac.be [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id hZU-VbNCOFcl; Mon, 27 Dec 2021 15:06:42 +0100 (CET)
+Received: from mbx12-zne.ulg.ac.be (mbx12-zne.ulg.ac.be [139.165.32.199])
+        by mbx12-zne.ulg.ac.be (Postfix) with ESMTP id 5495560309F42;
+        Mon, 27 Dec 2021 15:06:42 +0100 (CET)
+Date:   Mon, 27 Dec 2021 15:06:42 +0100 (CET)
+From:   Justin Iurman <justin.iurman@uliege.be>
+Reply-To: Justin Iurman <justin.iurman@uliege.be>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        dsahern@kernel.org, yoshfuji@linux-ipv6.org
+Message-ID: <751671897.247201108.1640614002305.JavaMail.zimbra@uliege.be>
+In-Reply-To: <Ychq4ggTdpVG24Zp@shredder>
+References: <20211224135000.9291-1-justin.iurman@uliege.be> <YcYJD2trOaoc5y7Z@shredder> <331558573.246297129.1640519271432.JavaMail.zimbra@uliege.be> <Ychiyd0AgeLspEvP@shredder> <462116834.246327590.1640523548154.JavaMail.zimbra@uliege.be> <Ychq4ggTdpVG24Zp@shredder>
+Subject: Re: [PATCH net-next v2] ipv6: ioam: Support for Queue depth data
+ field
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [81.240.24.148]
+X-Mailer: Zimbra 8.8.15_GA_4018 (ZimbraWebClient - FF95 (Linux)/8.8.15_GA_4026)
+Thread-Topic: ipv6: ioam: Support for Queue depth data field
+Thread-Index: wTVy0jFpVgbQC/mhmb/yW883zAIEDg==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We found this bug while fuzzing the rsi_usb driver.
-rsi_prepare_skb does not check for OOB memcpy. We
-add the check in the caller to fix.
+On Dec 26, 2021, at 2:15 PM, Ido Schimmel idosch@idosch.org wrote:
+> On Sun, Dec 26, 2021 at 01:59:08PM +0100, Justin Iurman wrote:
+>> On Dec 26, 2021, at 1:40 PM, Ido Schimmel idosch@idosch.org wrote:
+>> > On Sun, Dec 26, 2021 at 12:47:51PM +0100, Justin Iurman wrote:
+>> >> On Dec 24, 2021, at 6:53 PM, Ido Schimmel idosch@idosch.org wrote:
+>> >> > Why 'qlen' is used and not 'backlog'? From the paragraph you quoted it
+>> >> > seems that queue depth needs to take into account the size of the
+>> >> > enqueued packets, not only their number.
+>> >> 
+>> >> The quoted paragraph contains the following sentence:
+>> >> 
+>> >>    "The queue depth is expressed as the current amount of memory
+>> >>     buffers used by the queue"
+>> >> 
+>> >> So my understanding is that we need their number, not their size.
+>> > 
+>> > It also says "a packet could consume one or more memory buffers,
+>> > depending on its size". If, for example, you define tc-red limit as 1M,
+>> > then it makes a lot of difference if the 1,000 packets you have in the
+>> > queue are 9,000 bytes in size or 64 bytes.
+>> 
+>> Agree. We probably could use 'backlog' instead, regarding this
+>> statement:
+>> 
+>>   "It should be noted that the semantics of some of the node data fields
+>>    that are defined below, such as the queue depth and buffer occupancy,
+>>    are implementation specific.  This approach is intended to allow IOAM
+>>    nodes with various different architectures."
+>> 
+>> It would indeed make more sense, based on your example. However, the
+>> limit (32 bits) could be reached faster using 'backlog' rather than
+>> 'qlen'. But I guess this tradeoff is the price to pay to be as close
+>> as possible to the spec.
+> 
+> At least in Linux 'backlog' is 32 bits so we are OK :)
+> We don't have such big buffers in hardware and I'm not sure what
+> insights an operator will get from a queue depth larger than 4GB...
 
-Although rsi_prepare_skb checks if length is larger
-than (4 * RSI_RCV_BUFFER_LEN), it really can't because
-length is 0xfff maximum. So the check in patch is sufficient.
+Indeed :-)
 
-This patch is created upon ath-next branch. It is
-NOT tested with real device, but with QEMU emulator.
+> I just got an OOO auto-reply from my colleague so I'm not sure I will be
+> able to share his input before next week. Anyway, reporting 'backlog'
+> makes sense to me, FWIW.
 
-Following is the bug report
-
-BUG: KASAN: use-after-free in rsi_read_pkt
-(/linux/drivers/net/wireless/rsi/rsi_91x_main.c:206) rsi_91x
-Read of size 3815 at addr ffff888031da736d by task RX-Thread/204
-
-CPU: 0 PID: 204 Comm: RX-Thread Not tainted 5.6.0 #5
-Call Trace:
-dump_stack (/linux/lib/dump_stack.c:120)
- ? rsi_read_pkt (/linux/drivers/net/wireless/rsi/rsi_91x_main.c:206) rsi_91x
- print_address_description.constprop.6 (/linux/mm/kasan/report.c:377)
- ? rsi_read_pkt (/linux/drivers/net/wireless/rsi/rsi_91x_main.c:206) rsi_91x
- ? rsi_read_pkt (/linux/drivers/net/wireless/rsi/rsi_91x_main.c:206) rsi_91x
- __kasan_report.cold.9 (/linux/mm/kasan/report.c:510)
- ? syscall_return_via_sysret (/linux/arch/x86/entry/entry_64.S:253)
- ? rsi_read_pkt (/linux/drivers/net/wireless/rsi/rsi_91x_main.c:206) rsi_91x
- kasan_report (/linux/arch/x86/include/asm/smap.h:69 /linux/mm/kasan/common.c:644)
- check_memory_region (/linux/mm/kasan/generic.c:186 /linux/mm/kasan/generic.c:192)
- memcpy (/linux/mm/kasan/common.c:130)
- rsi_read_pkt (/linux/drivers/net/wireless/rsi/rsi_91x_main.c:206) rsi_91x
- ? skb_dequeue (/linux/net/core/skbuff.c:3042)
- rsi_usb_rx_thread (/linux/drivers/net/wireless/rsi/rsi_91x_usb_ops.c:47) rsi_usb
-
-Reported-by: Brendan Dolan-Gavitt <brendandg@nyu.edu>
-Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
----
- drivers/net/wireless/rsi/rsi_91x_main.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/drivers/net/wireless/rsi/rsi_91x_main.c b/drivers/net/wireless/rsi/rsi_91x_main.c
-index 5d1490fc3..41d3c12e0 100644
---- a/drivers/net/wireless/rsi/rsi_91x_main.c
-+++ b/drivers/net/wireless/rsi/rsi_91x_main.c
-@@ -193,6 +193,10 @@ int rsi_read_pkt(struct rsi_common *common, u8 *rx_pkt, s32 rcv_pkt_len)
- 			break;
- 
- 		case RSI_WIFI_DATA_Q:
-+			if (!rcv_pkt_len && offset + length >
-+				RSI_MAX_RX_USB_PKT_SIZE)
-+				goto fail;
-+
- 			skb = rsi_prepare_skb(common,
- 					      (frame_desc + offset),
- 					      length,
--- 
-2.25.1
-
+Right. I read that Linus is planning to release a -rc8 so I think I can
+wait another week before posting -v3.
