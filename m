@@ -2,59 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 169A847F9C8
-	for <lists+netdev@lfdr.de>; Mon, 27 Dec 2021 03:32:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DF4B47F9DF
+	for <lists+netdev@lfdr.de>; Mon, 27 Dec 2021 04:14:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235006AbhL0Cct (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Dec 2021 21:32:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34352 "EHLO
+        id S235162AbhL0DMW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Dec 2021 22:12:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229637AbhL0Ccs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Dec 2021 21:32:48 -0500
-Received: from mail-qv1-xf31.google.com (mail-qv1-xf31.google.com [IPv6:2607:f8b0:4864:20::f31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B87FBC06173E;
-        Sun, 26 Dec 2021 18:32:48 -0800 (PST)
-Received: by mail-qv1-xf31.google.com with SMTP id fo11so12799254qvb.4;
-        Sun, 26 Dec 2021 18:32:48 -0800 (PST)
+        with ESMTP id S235086AbhL0DMR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Dec 2021 22:12:17 -0500
+Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 163ADC06175C;
+        Sun, 26 Dec 2021 19:12:17 -0800 (PST)
+Received: by mail-qt1-x834.google.com with SMTP id v22so12527528qtx.8;
+        Sun, 26 Dec 2021 19:12:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=EYfLYXJYtyGpTQDC9WA1MsCy/obwJTVAmoI4gHLrI8w=;
-        b=arjF7gOn+JD8NLOPcRNug+lcH6ZDadxZPVQM5UzFD4Ijb+d0d8jnrF2Ei3lVrFg7vh
-         9BPA3c+mq1vRFoPjXTBMW3SJfZQtR6b5IttSFcLj/LUOynSLRkRYKB/IhWWICf1oZJgF
-         5z2agkgKhK+rH7ySX8AKrsCbECqVknS4dOMJEx1WP55IZuvresbHdUpzLcq8jgDxS+jm
-         vnVLKpdqXRMxjkDC4Wwa812bXz+1BOj9OPEL2YZiaIqy2r67+qXq4/JgA6/4hLiHUFeq
-         dIeMTZFyFJgT03+jyGN7YfOG7PMldP5xrGnI0MEx0ngcNjmcxlrNUz9bxtOpkCZqHlu2
-         xYCA==
+        bh=TnbDwenis0DSVok+PgiD3nCGmJt+xEi6EV/3sU9Vggk=;
+        b=daEwbdkIMCdYpd33oLolUKQq2eSOwdIv7yuWfQMY4MlqHCVdsCobIkrx9azhrvhM/J
+         Qb2Hv96anByxXTfvvGinwMF2T3AOxqdd/8jMgmbDZc3rNTji6a4vwNjQwFhOKOIz7bUx
+         iaV6J+k+CvMuNzfsHES2te+wHG5H0QvpEc/AlUsKodQ/YrtzzYPyqUlB4bPbtaczNyaa
+         q0EHtWRh2htqT86KHm9U3CRavNpuqISNWr3tBFGrlj14R+7dmhYM5QEiGSvY0/dpq79g
+         TuJHEJh4UcF7EyfKQK+HzIX9PEUE8fh+CThuGmMckZe/r8iQ0uSWiHRQw16Fs9gfDNuq
+         F0dA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
          :content-disposition;
-        bh=EYfLYXJYtyGpTQDC9WA1MsCy/obwJTVAmoI4gHLrI8w=;
-        b=NluOHccQY7J0adseyXgaeBdaQXVQlAMVIxE0M6ZbtIFCsFyEybJFewdiQ9i5hM7T+i
-         KywMFtB6W8zHNxQhNK4kinx0hERlqPq04vroeb9PUdeLVD2018k77r14fjJy9p+u4Acg
-         vcGGG6IQMCibJijhCTRfhNSFnAfoO/PmT2pTszxDJm7aBJy7fIT9MLNV8yEffSBlwuuu
-         5Ow7/+EWsnjZwGEPYSb1jYJIL2Ip6aKcBjld5OZHJxDlrt9w4jFoZnxjyqffgtrDx71S
-         QRWN/Aq8syffXpb3C9fkU0/eWJIH+ehCVQwrmiP9+KvdUv2cPYzQ/3rA+4LrKDgWCBIg
-         54hQ==
-X-Gm-Message-State: AOAM532oqMAgRpxxDhEY76Sp1Wv5ZNLtEpBtrsj1Z60UEhDz0Hd59USq
-        OkIpTf8HhdfRviiozc1WkBNBnxVWRn+U6g==
-X-Google-Smtp-Source: ABdhPJxUGzmlfdKJV/FWOzzRcubohNM9tuGO/IsrodLI/O6E7JwMPzRxK/MLh8Eiu6ljACN9WMPROw==
-X-Received: by 2002:ad4:5bc6:: with SMTP id t6mr13623395qvt.102.1640572367868;
-        Sun, 26 Dec 2021 18:32:47 -0800 (PST)
+        bh=TnbDwenis0DSVok+PgiD3nCGmJt+xEi6EV/3sU9Vggk=;
+        b=XKENqVTiCF8D2Bd3XtO7nakZmomZ/qtJjqMDG3F5MYRuXG5KTBCOJg3CorJJegbjQB
+         Kp96jvKcJzGCss/3kL+85g7wlLK+cAJIccdlfIENbCXo+AyrFx/4vVijsQmXlKlHRT+D
+         nS4qK0SerrZDtRkIQNTi9XWVXRgfOPJEekbqb9fFSd5f1YhTDYxiYOdTvl7SENraad0Z
+         Hz4mqnAnKZvg/nHhF9EqFY/l0KkHD4Zs9aqZuC6LGunojjOPPN6EQ3XLpm2iEScxcJJ/
+         Ttlha+k9x9ope395YvBB2gb4zkZlUMS3G6TeRBWbptyg2uQdN0CRt7D4Q6w797ormPnK
+         nvuw==
+X-Gm-Message-State: AOAM532SfuXlXF3YntS1VPVNa6hkSm4SnfecUuqOFUkVH73H/nVQSsFs
+        puITDQLEsAIRRc3/4hVNZZk=
+X-Google-Smtp-Source: ABdhPJx+swC7W5NZGQJcYNvt/9+LilJ6br2YetTnjSKOFAzV2SOsILxqKcvgDD5K6ENec4HbmkF1UA==
+X-Received: by 2002:ac8:5816:: with SMTP id g22mr13429789qtg.515.1640574736116;
+        Sun, 26 Dec 2021 19:12:16 -0800 (PST)
 Received: from a-10-27-26-18.dynapool.vpn.nyu.edu (vpnrasa-wwh-pat-01.natpool.nyu.edu. [216.165.95.84])
-        by smtp.gmail.com with ESMTPSA id u28sm6466299qke.12.2021.12.26.18.32.47
+        by smtp.gmail.com with ESMTPSA id j13sm8099707qta.76.2021.12.26.19.12.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 26 Dec 2021 18:32:47 -0800 (PST)
-Date:   Sun, 26 Dec 2021 21:32:45 -0500
+        Sun, 26 Dec 2021 19:12:15 -0800 (PST)
+Date:   Sun, 26 Dec 2021 22:12:13 -0500
 From:   Zekun Shen <bruceshenzk@gmail.com>
 To:     bruceshenzk@gmail.com
-Cc:     Igor Russkikh <irusskikh@marvell.com>,
+Cc:     Jiri Slaby <jirislaby@kernel.org>,
+        Nick Kossifidis <mickflemm@gmail.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Kalle Valo <kvalo@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] [PATCH v2] atlantic: Fix buff_ring OOB in aq_ring_rx_clean
-Message-ID: <YcklzW522Gkew1zI@a-10-27-26-18.dynapool.vpn.nyu.edu>
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, brendandg@nyu.edu
+Subject: [PATCH] ath5k: fix OOB in ath5k_eeprom_read_pcal_info_5111
+Message-ID: <YckvDdj3mtCkDRIt@a-10-27-26-18.dynapool.vpn.nyu.edu>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -62,78 +66,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The function obtain the next buffer without boundary check.
-We should return with I/O error code.
+The bug was found during fuzzing. Stacktrace locates it in
+ath5k_eeprom_convert_pcal_info_5111.
+When none of the curve is selected in the loop, idx can go
+up to AR5K_EEPROM_N_PD_CURVES. The line makes pd out of bound.
+pd = &chinfo[pier].pd_curves[idx];
 
-The bug is found by fuzzing and the crash report is attached.
-It is an OOB bug although reported as use-after-free.
+There are many OOB writes using pd later in the code. So I
+added a sanity check for idx. Checks for other loops involving
+AR5K_EEPROM_N_PD_CURVES are not needed as the loop index is not
+used outside the loops.
 
-[    4.804724] BUG: KASAN: use-after-free in aq_ring_rx_clean+0x1e88/0x2730 [atlantic]
-[    4.805661] Read of size 4 at addr ffff888034fe93a8 by task ksoftirqd/0/9
-[    4.806505]
-[    4.806703] CPU: 0 PID: 9 Comm: ksoftirqd/0 Tainted: G        W         5.6.0 #34
-[    4.809030] Call Trace:
-[    4.809343]  dump_stack+0x76/0xa0
-[    4.809755]  print_address_description.constprop.0+0x16/0x200
-[    4.810455]  ? aq_ring_rx_clean+0x1e88/0x2730 [atlantic]
-[    4.811234]  ? aq_ring_rx_clean+0x1e88/0x2730 [atlantic]
-[    4.813183]  __kasan_report.cold+0x37/0x7c
-[    4.813715]  ? aq_ring_rx_clean+0x1e88/0x2730 [atlantic]
-[    4.814393]  kasan_report+0xe/0x20
-[    4.814837]  aq_ring_rx_clean+0x1e88/0x2730 [atlantic]
-[    4.815499]  ? hw_atl_b0_hw_ring_rx_receive+0x9a5/0xb90 [atlantic]
-[    4.816290]  aq_vec_poll+0x179/0x5d0 [atlantic]
-[    4.816870]  ? _GLOBAL__sub_I_65535_1_aq_pci_func_init+0x20/0x20 [atlantic]
-[    4.817746]  ? __next_timer_interrupt+0xba/0xf0
-[    4.818322]  net_rx_action+0x363/0xbd0
-[    4.818803]  ? call_timer_fn+0x240/0x240
-[    4.819302]  ? __switch_to_asm+0x40/0x70
-[    4.819809]  ? napi_busy_loop+0x520/0x520
-[    4.820324]  __do_softirq+0x18c/0x634
-[    4.820797]  ? takeover_tasklets+0x5f0/0x5f0
-[    4.821343]  run_ksoftirqd+0x15/0x20
-[    4.821804]  smpboot_thread_fn+0x2f1/0x6b0
-[    4.822331]  ? smpboot_unregister_percpu_thread+0x160/0x160
-[    4.823041]  ? __kthread_parkme+0x80/0x100
-[    4.823571]  ? smpboot_unregister_percpu_thread+0x160/0x160
-[    4.824301]  kthread+0x2b5/0x3b0
-[    4.824723]  ? kthread_create_on_node+0xd0/0xd0
-[    4.825304]  ret_from_fork+0x35/0x40
+The patch is NOT tested with real device.
 
+The following is the fuzzing report
+
+BUG: KASAN: slab-out-of-bounds in ath5k_eeprom_read_pcal_info_5111+0x126a/0x1390 [ath5k]
+Write of size 1 at addr ffff8880174a4d60 by task modprobe/214
+
+CPU: 0 PID: 214 Comm: modprobe Not tainted 5.6.0 #1
+Call Trace:
+ dump_stack+0x76/0xa0
+ print_address_description.constprop.0+0x16/0x200
+ ? ath5k_eeprom_read_pcal_info_5111+0x126a/0x1390 [ath5k]
+ ? ath5k_eeprom_read_pcal_info_5111+0x126a/0x1390 [ath5k]
+ __kasan_report.cold+0x37/0x7c
+ ? ath5k_eeprom_read_pcal_info_5111+0x126a/0x1390 [ath5k]
+ kasan_report+0xe/0x20
+ ath5k_eeprom_read_pcal_info_5111+0x126a/0x1390 [ath5k]
+ ? apic_timer_interrupt+0xa/0x20
+ ? ath5k_eeprom_init_11a_pcal_freq+0xbc0/0xbc0 [ath5k]
+ ? ath5k_pci_eeprom_read+0x228/0x3c0 [ath5k]
+ ath5k_eeprom_init+0x2513/0x6290 [ath5k]
+ ? ath5k_eeprom_init_11a_pcal_freq+0xbc0/0xbc0 [ath5k]
+ ? usleep_range+0xb8/0x100
+ ? apic_timer_interrupt+0xa/0x20
+ ? ath5k_eeprom_read_pcal_info_2413+0x2f20/0x2f20 [ath5k]
+ ath5k_hw_init+0xb60/0x1970 [ath5k]
+ ath5k_init_ah+0x6fe/0x2530 [ath5k]
+ ? kasprintf+0xa6/0xe0
+ ? ath5k_stop+0x140/0x140 [ath5k]
+ ? _dev_notice+0xf6/0xf6
+ ? apic_timer_interrupt+0xa/0x20
+ ath5k_pci_probe.cold+0x29a/0x3d6 [ath5k]
+ ? ath5k_pci_eeprom_read+0x3c0/0x3c0 [ath5k]
+ ? mutex_lock+0x89/0xd0
+ ? ath5k_pci_eeprom_read+0x3c0/0x3c0 [ath5k]
+ local_pci_probe+0xd3/0x160
+ pci_device_probe+0x23f/0x3e0
+ ? pci_device_remove+0x280/0x280
+ ? pci_device_remove+0x280/0x280
+ really_probe+0x209/0x5d0
+
+Reported-by: Brendan Dolan-Gavitt <brendandg@nyu.edu>
 Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
 ---
-Changes in v2:
- - Add similar check in the second loop
----
- drivers/net/ethernet/aquantia/atlantic/aq_ring.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/net/wireless/ath/ath5k/eeprom.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c b/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
-index 81b375641..77e76c9ef 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
-@@ -366,6 +366,10 @@ int aq_ring_rx_clean(struct aq_ring_s *self,
- 		if (!buff->is_eop) {
- 			buff_ = buff;
- 			do {
-+				if (buff_->next >= self->size) {
-+					err = -EIO;
-+					goto err_exit;
-+				}
- 				next_ = buff_->next,
- 				buff_ = &self->buff_ring[next_];
- 				is_rsc_completed =
-@@ -389,6 +393,10 @@ int aq_ring_rx_clean(struct aq_ring_s *self,
- 			    (buff->is_lro && buff->is_cso_err)) {
- 				buff_ = buff;
- 				do {
-+					if (buff_->next >= self->size) {
-+						err = -EIO;
-+						goto err_exit;
-+					}
- 					next_ = buff_->next,
- 					buff_ = &self->buff_ring[next_];
+diff --git a/drivers/net/wireless/ath/ath5k/eeprom.c b/drivers/net/wireless/ath/ath5k/eeprom.c
+index 1fbc2c198..d444b3d70 100644
+--- a/drivers/net/wireless/ath/ath5k/eeprom.c
++++ b/drivers/net/wireless/ath/ath5k/eeprom.c
+@@ -746,6 +746,9 @@ ath5k_eeprom_convert_pcal_info_5111(struct ath5k_hw *ah, int mode,
+ 			}
+ 		}
  
++		if (idx == AR5K_EEPROM_N_PD_CURVES)
++			goto err_out;
++
+ 		ee->ee_pd_gains[mode] = 1;
+ 
+ 		pd = &chinfo[pier].pd_curves[idx];
 -- 
 2.25.1
 
