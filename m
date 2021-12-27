@@ -2,266 +2,279 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D4A848037F
-	for <lists+netdev@lfdr.de>; Mon, 27 Dec 2021 20:03:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 579FA4803A1
+	for <lists+netdev@lfdr.de>; Mon, 27 Dec 2021 20:04:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231161AbhL0TDE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Dec 2021 14:03:04 -0500
-Received: from mga04.intel.com ([192.55.52.120]:16648 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229603AbhL0TDE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Dec 2021 14:03:04 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1640631784; x=1672167784;
-  h=from:to:cc:subject:in-reply-to:references:date:
-   message-id:mime-version;
-  bh=QcpaNcEk8+Y0B3vOJBPhWf2eHfd5WqopAIz9z3P4daI=;
-  b=Z1mUcG0aRX41hyADX30jwLD2BiUMPV3SgibHtoeCopfi5hjgJCzEXkd9
-   ynj/c/YSyMN79MQbbtjeXcA0JPPd8mwsUiFMDfDz0cAiYBbR7oG9VIOJX
-   hU77zQ1Vw28JmHyjwVyNlHvFLTvpgjytySkMCpGzz92mFKRhsHSFDMExt
-   KZppmvTZkV09lZ+k06sXVMZ6MAH9Q5Cyq0VBgId3FYRd/uav1GQfP5R+a
-   RWuKfL6NcU2inzItKZTUj7mZCoPMqxH2y907Ebe467z4H1O0Hj5DKHrwN
-   SY1UfdVIj78av39mKEXoGZFaNJFLm5X3DhrlRcleBEl88vNi/pIdPT7wj
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10210"; a="240040969"
-X-IronPort-AV: E=Sophos;i="5.88,240,1635231600"; 
-   d="scan'208";a="240040969"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Dec 2021 11:03:03 -0800
-X-IronPort-AV: E=Sophos;i="5.88,240,1635231600"; 
-   d="scan'208";a="486101001"
-Received: from djpacher-mobl3.amr.corp.intel.com (HELO vcostago-mobl3) ([10.212.60.200])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Dec 2021 11:02:59 -0800
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     Gerhard Engleder <gerhard@engleder-embedded.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, bjorn@kernel.org,
-        magnus.karlsson@intel.com, gregkh@linuxfoundation.org,
-        Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev <netdev@vger.kernel.org>
-Subject: Re: RFC: tsnep: ETF, AF_XDP, UIO or driver specific interface for
- real-time
-In-Reply-To: <CANr-f5x0_RDAfVQiqpcWOG2iVAtson0F6arQMSbrBXjB73kw+A@mail.gmail.com>
-References: <CANr-f5x0_RDAfVQiqpcWOG2iVAtson0F6arQMSbrBXjB73kw+A@mail.gmail.com>
-Date:   Mon, 27 Dec 2021 11:02:56 -0800
-Message-ID: <87bl1150rj.fsf@intel.com>
+        id S232133AbhL0TEa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Dec 2021 14:04:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56558 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232187AbhL0TEY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Dec 2021 14:04:24 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0151EC061759;
+        Mon, 27 Dec 2021 11:04:24 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D5EC61166;
+        Mon, 27 Dec 2021 19:04:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07C40C36AEA;
+        Mon, 27 Dec 2021 19:04:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1640631863;
+        bh=1S1pXxl8X8fzXObz19Z4j1I/DpxR1980B1Nvvn/jqeQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=dGKNImSsmkgFWCdsXzammpWKKgfirae92whktp17vwlZRwy3thdHFrpC0BuEhCeds
+         vNvYn/VygeZ4qQ9IUhLzBtoESSHZbSsFayMHXRpLyN22kTnzgbL4AbgIgkFfwh2H3J
+         z/y7T6zXD9y646zv0fim0WfGTntRCsAx0xP2GJbkNw/7IaRX7CVKeIRCUaYmfEsqC7
+         wLo0eetgrtg1988M4PEtOWVFZecQA9It673MiSZHQuj7wikjOnCwrvz+/6xj8+rQsu
+         WB4p8yhtdeWboz2md5l9K/pa2hQH9gMizVhzWM701Dc7KVI1qlY6XR1fnf9geZeyji
+         XT2JLeJ6WnMzw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Paul Blakey <paulb@nvidia.com>, Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us, davem@davemloft.net,
+        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        edumazet@google.com, atenart@kernel.org,
+        alexandr.lobakin@intel.com, weiwan@google.com, arnd@arndb.de,
+        memxor@gmail.com, netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 15/26] net/sched: Extend qdisc control block with tc control block
+Date:   Mon, 27 Dec 2021 14:03:16 -0500
+Message-Id: <20211227190327.1042326-15-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20211227190327.1042326-1-sashal@kernel.org>
+References: <20211227190327.1042326-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Gerhard,
+From: Paul Blakey <paulb@nvidia.com>
 
-Gerhard Engleder <gerhard@engleder-embedded.com> writes:
+[ Upstream commit ec624fe740b416fb68d536b37fb8eef46f90b5c2 ]
 
-> Hello,
->
-> the driver for my FPGA based TSN endpoint Ethernet MAC is now in net-next. As
-> a first step, it supports a single TX/RX queue pair for normal Ethernet
-> communication. For TSN it supports hardware timestamps (PTP) and TAPRIO (gate
-> control). The next step is the user space interface for real-time communication
-> over additional TX/RX queue pairs.
->
-> Multiple interfaces are used for real-time communication in user space:
-> A) ETF for timed transmit
-> B) AF_XDP for direct access omitting the network stack
-> C) UIO for mapping devices to user space
-> D) driver specific interfaces for direct access to DMA buffers and IO memory
->    (out of tree)
->
-> The additional TX/RX queue pairs of my Ethernet MAC are optimized for real-time
-> communication. The mapping to ETF or AF_XDP is not straightforward. I know a
-> little about UIO and ETF and I have read Documentation/networking/af_xdp.rst,
-> but that does not qualify me as an expert. So I want to discuss if ETF, AF_XDP,
-> UIO or any other standard Linux user space interface is the right choice for my
-> driver?
->
-> First I want to describe the main real-time feature of the device, the periodic
-> TX schedule:
->
-> The data exchange between hardware and software is done similarly to other
-> Ethernet MACs. Descriptor rings are used and the ownership of descriptors
-> is transferred from software to hardware and vice versa during operation.
->
-> Usually TX descriptor rings are queues, which transfer data from RAM to
-> Ethernet MAC as fast as possible. This is the case for the first TX/RX queue
-> pair, which is used by the Ethernet driver. For real-time communication
-> transmission at defined points in time is a requirement. Additionally, the
-> transmitted data shall be as up-to-data as possible. Therefore, the data shall
-> be transferred to the Ethernet MAC as late as possible. This enables minimal
-> reaction time for closed loop control. So there are actually two points in time.
-> First, the start of the DMA transfer of data from RAM to Ethernet MAC. Second,
-> the start of the transmission over Ethernet.
->
-> Therefore, the TX descriptor ring of additional TX/RX queue pairs is enhanced
-> with timing information. This timing information defines both points in time.
-> As a result, the TX descriptor ring is processed at defined points in time and
-> not as fast as possible.
->
-> Real-time communication is usually periodic. The timing pattern repeats after
-> the least common multiple of all cycle times. The relative timing information
-> of two consecutive TX descriptors is constant. So relative timing information
-> is used within the TX descriptor ring. There is no need to update this relative
-> timing information during operation. Only transmitted data and ownership must
-> be updated. The TAPRIO gate control list is good example for a periodic
-> schedule.
->
-> The periodic nature of real-time communication has another side effect. The
-> timing is known in advance. So a TX descriptor is able to define the timing of
-> the next TX descriptor. As a result, the hardware knows the timing of the next
-> TX descriptor without fetching it from RAM. This prevents a chicken egg problem:
-> the TX descriptor cannot define its own DMA timing, because DMA would be needed
-> to read this timing.
->
-> All these properties lead to a periodic TX schedule implemented with an
-> enhanced TX descriptor ring. Let's describe the details with an example:
->
-> - two cycle times
->   - single Ethernet frame every 100us, first TX at absolute time 7000us
->     - TX times: 7000us, 7100us, 7200us, ...
->   - single Ethernet frame every 200us, first TX at absolute time 7050us
->     - TX times: 7050us, 7250us, 7450us, ...
-> - DMA shall be done as late as possible for 100us cycle time
-> - DMA of 200us cycle time shall be done directly after DMA of 100us cycle time
->
-> The perdiodic TX schedule for this example looks like this:
->
-> +-------------<-------------------------<-------------------------<------------+
-> |                                                                              |
-> +-->+-------------------+---->+-------------------+---->+-------------------+->+
->     | TX desc 1 @0x1000 |     | TX desc 2 @0x2000 |     | TX desc 3 @0x3000 |
->     |                   |     |                   |     |                   |
->     | next_desc=0x2000  |     | next_desc=0x3000  |     | next_desc=0x1000  |
->     | dma_incr=10us     |     | dma_incr=90us     |     | dma_incr=100us    |
->     | tx_incr=50us      |     | tx_incr=50us      |     | tx_incr=100us     |
->     +-------------------+     +-------------------+     +-------------------+
->
-> "next_desc" is the address of the next TX descriptor. "dma_incr" defines the
-> DMA start time of the next TX descriptor:
->
-> "DMA start time" = "Current DMA start time" + dma_incr
->
-> Similar "tx_incr" defines the Ethernet TX start time of the next TX descriptor:
->
-> "Ethernet TX start time" = "Current Ethernet TX start time" + tx_incr
->
-> The TX descriptor processing needs initial values for the address of the first
-> descriptor, the DMA start time of the first descriptor, and the Ethernet TX
-> start time of the first descriptor. These initial values are written to
-> registers:
->
-> - "TX descriptor address" register  = 0x1000
-> - "DMA start time" register         =   6980us
-> - "Ethernet TX start time" register =   7000us
->
-> These three registers always hold information about the next TX descriptor. The
-> location in the RAM, the point it time when it shall be read by DMA, the point
-> in time when it shall be transmitted.
->
-> The least common multiple of the cycle times is 200us. Thus, the sum of all
-> "tx_incr" values must be 200us. Also the sum of all "dma_incr" values must be
-> 200us. Otherwise DMA and TX timing would drift away from each other.
->
-> TX descriptors 1 and 3 belong to the 100us cycle time. TX descriptor 2
-> belongs to
-> the 200us cycle time. The TX schedule is processed in the following steps:
->
->               cycle time | DMA read | Ethernet TX
-> 1) TX desc 1       100us |  @6980us |     @7000us
-> 2) TX desc 2       200us |  @6990us |     @7050us
-> 3) TX desc 3       100us |  @7080us |     @7100us
-> 4) TX desc 1       100us |  @7180us |     @7200us
-> 5) TX desc 2       200us |  @7190us |     @7250us
-> 6) TX desc 3       100us |  @7280us |     @7300us
-> 7) TX desc 1       100us |  @7380us |     @7400us
-> 8) TX desc 2       200us |  @7390us |     @7450us
-> 9) TX desc 3       100us |  @7480us |     @7500us
-> ...
->
-> First DMA read is done at 6980us. This point in time is defined with the initial
-> value of the "DMA start time" register. The following DMA reads are
-> determined by
-> the "dma_incr" values of the TX descriptors. Every DMA read is started before
-> the Ethernet TX.
->
-> First Ethernet TX is done at 7000us. This point in time is defined with the
-> initial value of the "Ethernet TX start time" register. The following Ethernet
-> TX times are determined by the "tx_incr" values of the TX descriptors.
->
-> So the periodic TX schedule actually contains two schedules. One for DMA read
-> and another one for Ethernet TX. As a result, the timing of DMA and Ethernet TX
-> can be optimized independently from each other. The only restriction is that
-> DMA has to be done before the corresponding Ethernet TX.
+BPF layer extends the qdisc control block via struct bpf_skb_data_end
+and because of that there is no more room to add variables to the
+qdisc layer control block without going over the skb->cb size.
 
-At the risk of repeating what you said, here's what I could gather that
-you would need.
+Extend the qdisc control block with a tc control block,
+and move all tc related variables to there as a pre-step for
+extending the tc control block with additional members.
 
- 1. Exclusive access of one application (or closely cooperating group of
-    applications) to one TX ring;
- 2. Direct access to the device DMA mapped memory;
- 3. A way to configure the {DMA,TX} start times and the {DMA,TX}
-    increments;
+Signed-off-by: Paul Blakey <paulb@nvidia.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ include/net/pkt_sched.h   | 15 +++++++++++++++
+ include/net/sch_generic.h |  2 --
+ net/core/dev.c            |  8 ++++----
+ net/sched/act_ct.c        | 14 +++++++-------
+ net/sched/cls_api.c       |  6 ++++--
+ net/sched/cls_flower.c    |  3 ++-
+ net/sched/sch_frag.c      |  3 ++-
+ 7 files changed, 34 insertions(+), 17 deletions(-)
 
->
-> This periodic TX schedule has been used in a similar way for the
-> EtherCAT fieldbus
-> for nearly 10 years with positive experience. So for OPC UA Pub/Sub TSN it
-> shall be used again.
->
-> This periodic TX schedule does not fit to ETF, because ETF uses absolute time
-> stamps and the timing is not known in advance. Additionally, the intention of
-> the periodic TX schedule is that the real-time application writes the data
-> directly to the TX descriptor ring. AF_XDP has a similar direction, but does
-> not support any TX timing.
-
-That's the magic of AF_XDP, as it is only a data path abstraction, you
-can move the control path somewhere else. One idea below.
-
->
-> I have no knowledge about any other Ethernet MAC which supports timed TX in
-> a similar way like this device.
->
-> Currently a simple device/driver specific interface is used. Similar to UIO it
-> supports the mapping of registers of TX/RX queue pairs to user space. Every
-> additional TX/RX queue pair has its own register set within a separate 4kB
-> IO-memory. Thus, only the register sets of the additional TX/RX queue pairs are
-> mapped to user space. Every TX/RX queue pair is more less a separate device,
-> which can be operated independent of any other TX/RX queue pair. Additionally,
-> this device/driver specific interface supports the mapping of DMA buffers.
->
-> A similar approach has been used for years for the periodic TX schedule in
-> combination with the EtherCAT fieldbus (out of tree driver). The main advantage
-> of this approach is that no hard or soft IRQs are needed for operation. There is
-> no need to increase to priority of soft IRQs, which can lead to real-time
-> problems.
->
-> Which user space interface shall be used for this periodic TX schedule? Is
-> ETF or XDP an option? Shall UIO be used like for other real-time controllers?
-> Is a device/driver specific interface the way to go, because no other Ethernet
-> MAC has an interface like this?
-
-I think that AF_XDP (with zero copy) already has everything you need for
-the data plane, (1) and (2) above. 
-
-So what's seems to be really missing is the control plane, (3).
-
-What I would do is something like this, I would add a few debugfs
-entries to the driver allowing me to configure the "extra" per ring
-parameters. This also gives some chance to see what is best format for
-communicating those parameters to the driver.
-
-With that I could see if something is not quite working from the AF_XDP
-side, fix those (I think the community will have some interest in having
-these cases fixed) while discussing where is the best place to put those
-configuration knobs. My first shot would be ethtool.
-
->
-> I'm looking forward to your comments.
->
-> Gerhard
-
-Cheers,
+diff --git a/include/net/pkt_sched.h b/include/net/pkt_sched.h
+index bf79f3a890af2..05f18e81f3e87 100644
+--- a/include/net/pkt_sched.h
++++ b/include/net/pkt_sched.h
+@@ -193,4 +193,19 @@ static inline void skb_txtime_consumed(struct sk_buff *skb)
+ 	skb->tstamp = ktime_set(0, 0);
+ }
+ 
++struct tc_skb_cb {
++	struct qdisc_skb_cb qdisc_cb;
++
++	u16 mru;
++	bool post_ct;
++};
++
++static inline struct tc_skb_cb *tc_skb_cb(const struct sk_buff *skb)
++{
++	struct tc_skb_cb *cb = (struct tc_skb_cb *)skb->cb;
++
++	BUILD_BUG_ON(sizeof(*cb) > sizeof_field(struct sk_buff, cb));
++	return cb;
++}
++
+ #endif
+diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
+index 8c2d611639fca..6e7cd00333577 100644
+--- a/include/net/sch_generic.h
++++ b/include/net/sch_generic.h
+@@ -440,8 +440,6 @@ struct qdisc_skb_cb {
+ 	};
+ #define QDISC_CB_PRIV_LEN 20
+ 	unsigned char		data[QDISC_CB_PRIV_LEN];
+-	u16			mru;
+-	bool			post_ct;
+ };
+ 
+ typedef void tcf_chain_head_change_t(struct tcf_proto *tp_head, void *priv);
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 91f53eeb0e79f..e0878a500aa92 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -3934,8 +3934,8 @@ sch_handle_egress(struct sk_buff *skb, int *ret, struct net_device *dev)
+ 		return skb;
+ 
+ 	/* qdisc_skb_cb(skb)->pkt_len was already set by the caller. */
+-	qdisc_skb_cb(skb)->mru = 0;
+-	qdisc_skb_cb(skb)->post_ct = false;
++	tc_skb_cb(skb)->mru = 0;
++	tc_skb_cb(skb)->post_ct = false;
+ 	mini_qdisc_bstats_cpu_update(miniq, skb);
+ 
+ 	switch (tcf_classify(skb, miniq->block, miniq->filter_list, &cl_res, false)) {
+@@ -5088,8 +5088,8 @@ sch_handle_ingress(struct sk_buff *skb, struct packet_type **pt_prev, int *ret,
+ 	}
+ 
+ 	qdisc_skb_cb(skb)->pkt_len = skb->len;
+-	qdisc_skb_cb(skb)->mru = 0;
+-	qdisc_skb_cb(skb)->post_ct = false;
++	tc_skb_cb(skb)->mru = 0;
++	tc_skb_cb(skb)->post_ct = false;
+ 	skb->tc_at_ingress = 1;
+ 	mini_qdisc_bstats_cpu_update(miniq, skb);
+ 
+diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
+index 90866ae45573a..98e248b9c0b17 100644
+--- a/net/sched/act_ct.c
++++ b/net/sched/act_ct.c
+@@ -690,10 +690,10 @@ static int tcf_ct_handle_fragments(struct net *net, struct sk_buff *skb,
+ 				   u8 family, u16 zone, bool *defrag)
+ {
+ 	enum ip_conntrack_info ctinfo;
+-	struct qdisc_skb_cb cb;
+ 	struct nf_conn *ct;
+ 	int err = 0;
+ 	bool frag;
++	u16 mru;
+ 
+ 	/* Previously seen (loopback)? Ignore. */
+ 	ct = nf_ct_get(skb, &ctinfo);
+@@ -708,7 +708,7 @@ static int tcf_ct_handle_fragments(struct net *net, struct sk_buff *skb,
+ 		return err;
+ 
+ 	skb_get(skb);
+-	cb = *qdisc_skb_cb(skb);
++	mru = tc_skb_cb(skb)->mru;
+ 
+ 	if (family == NFPROTO_IPV4) {
+ 		enum ip_defrag_users user = IP_DEFRAG_CONNTRACK_IN + zone;
+@@ -722,7 +722,7 @@ static int tcf_ct_handle_fragments(struct net *net, struct sk_buff *skb,
+ 
+ 		if (!err) {
+ 			*defrag = true;
+-			cb.mru = IPCB(skb)->frag_max_size;
++			mru = IPCB(skb)->frag_max_size;
+ 		}
+ 	} else { /* NFPROTO_IPV6 */
+ #if IS_ENABLED(CONFIG_NF_DEFRAG_IPV6)
+@@ -735,7 +735,7 @@ static int tcf_ct_handle_fragments(struct net *net, struct sk_buff *skb,
+ 
+ 		if (!err) {
+ 			*defrag = true;
+-			cb.mru = IP6CB(skb)->frag_max_size;
++			mru = IP6CB(skb)->frag_max_size;
+ 		}
+ #else
+ 		err = -EOPNOTSUPP;
+@@ -744,7 +744,7 @@ static int tcf_ct_handle_fragments(struct net *net, struct sk_buff *skb,
+ 	}
+ 
+ 	if (err != -EINPROGRESS)
+-		*qdisc_skb_cb(skb) = cb;
++		tc_skb_cb(skb)->mru = mru;
+ 	skb_clear_hash(skb);
+ 	skb->ignore_df = 1;
+ 	return err;
+@@ -963,7 +963,7 @@ static int tcf_ct_act(struct sk_buff *skb, const struct tc_action *a,
+ 	tcf_action_update_bstats(&c->common, skb);
+ 
+ 	if (clear) {
+-		qdisc_skb_cb(skb)->post_ct = false;
++		tc_skb_cb(skb)->post_ct = false;
+ 		ct = nf_ct_get(skb, &ctinfo);
+ 		if (ct) {
+ 			nf_conntrack_put(&ct->ct_general);
+@@ -1048,7 +1048,7 @@ static int tcf_ct_act(struct sk_buff *skb, const struct tc_action *a,
+ out_push:
+ 	skb_push_rcsum(skb, nh_ofs);
+ 
+-	qdisc_skb_cb(skb)->post_ct = true;
++	tc_skb_cb(skb)->post_ct = true;
+ out_clear:
+ 	if (defrag)
+ 		qdisc_skb_cb(skb)->pkt_len = skb->len;
+diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+index e54f0a42270c1..ff8a9383bf1c4 100644
+--- a/net/sched/cls_api.c
++++ b/net/sched/cls_api.c
+@@ -1617,12 +1617,14 @@ int tcf_classify(struct sk_buff *skb,
+ 
+ 	/* If we missed on some chain */
+ 	if (ret == TC_ACT_UNSPEC && last_executed_chain) {
++		struct tc_skb_cb *cb = tc_skb_cb(skb);
++
+ 		ext = tc_skb_ext_alloc(skb);
+ 		if (WARN_ON_ONCE(!ext))
+ 			return TC_ACT_SHOT;
+ 		ext->chain = last_executed_chain;
+-		ext->mru = qdisc_skb_cb(skb)->mru;
+-		ext->post_ct = qdisc_skb_cb(skb)->post_ct;
++		ext->mru = cb->mru;
++		ext->post_ct = cb->post_ct;
+ 	}
+ 
+ 	return ret;
+diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
+index eb6345a027e13..161bd91c8c6b0 100644
+--- a/net/sched/cls_flower.c
++++ b/net/sched/cls_flower.c
+@@ -19,6 +19,7 @@
+ 
+ #include <net/sch_generic.h>
+ #include <net/pkt_cls.h>
++#include <net/pkt_sched.h>
+ #include <net/ip.h>
+ #include <net/flow_dissector.h>
+ #include <net/geneve.h>
+@@ -309,7 +310,7 @@ static int fl_classify(struct sk_buff *skb, const struct tcf_proto *tp,
+ 		       struct tcf_result *res)
+ {
+ 	struct cls_fl_head *head = rcu_dereference_bh(tp->root);
+-	bool post_ct = qdisc_skb_cb(skb)->post_ct;
++	bool post_ct = tc_skb_cb(skb)->post_ct;
+ 	struct fl_flow_key skb_key;
+ 	struct fl_flow_mask *mask;
+ 	struct cls_fl_filter *f;
+diff --git a/net/sched/sch_frag.c b/net/sched/sch_frag.c
+index 8c06381391d6f..5ded4c8672a64 100644
+--- a/net/sched/sch_frag.c
++++ b/net/sched/sch_frag.c
+@@ -1,6 +1,7 @@
+ // SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
+ #include <net/netlink.h>
+ #include <net/sch_generic.h>
++#include <net/pkt_sched.h>
+ #include <net/dst.h>
+ #include <net/ip.h>
+ #include <net/ip6_fib.h>
+@@ -137,7 +138,7 @@ static int sch_fragment(struct net *net, struct sk_buff *skb,
+ 
+ int sch_frag_xmit_hook(struct sk_buff *skb, int (*xmit)(struct sk_buff *skb))
+ {
+-	u16 mru = qdisc_skb_cb(skb)->mru;
++	u16 mru = tc_skb_cb(skb)->mru;
+ 	int err;
+ 
+ 	if (mru && skb->len > mru + skb->dev->hard_header_len)
 -- 
-Vinicius
+2.34.1
+
