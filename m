@@ -2,90 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EF2B480449
-	for <lists+netdev@lfdr.de>; Mon, 27 Dec 2021 20:08:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D1C71480461
+	for <lists+netdev@lfdr.de>; Mon, 27 Dec 2021 20:18:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233408AbhL0TIL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Dec 2021 14:08:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57120 "EHLO
+        id S232114AbhL0TSK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Dec 2021 14:18:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233464AbhL0THO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Dec 2021 14:07:14 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4629AC0698D7;
-        Mon, 27 Dec 2021 11:07:00 -0800 (PST)
+        with ESMTP id S231442AbhL0TSK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Dec 2021 14:18:10 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3B2BC06173E;
+        Mon, 27 Dec 2021 11:18:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 11EFEB8113A;
-        Mon, 27 Dec 2021 19:06:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00947C36AED;
-        Mon, 27 Dec 2021 19:06:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 859FD6112D;
+        Mon, 27 Dec 2021 19:18:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44B2CC36AEA;
+        Mon, 27 Dec 2021 19:18:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1640632017;
-        bh=7v65NIKYKLtqaCIPUqAhVcawDbEbdJ2lZkTee9dCzF4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uW6hdwV/Px0lfZoPLHBfjn1U+fqDcIiIOJzkP92tbIGhaifwWaxl+BnYMVMvPbQMO
-         LxgyMnTSXzMs0HeRv1XiAX5viMvig5riJQcVK0jsnXvmmUqUx5o72nhn8UrmDpfGVd
-         Jf0g+OCXfRMlKb47GrnCsRAf9q9LDY73AOSEvXxuTAya++8ZrKgPkrY7Ns1O6njF/1
-         Qc+PPiHhOl/CyBvOptajrnWVkGqEDw1/F7uzwNmEaxqZ77yVelljrI511tEFwlj/ag
-         vzmFzsl+ssaxKoZBbZxSE1ygFyjI0z2vJ++kWJ/0IZbH/Sp3YEnmH/9+w/ACTlWVMy
-         GqqgKZADI57lA==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?R=C3=A9mi=20Denis-Courmont?= <remi@remlab.net>,
-        syzbot+2dc91e7fc3dea88b1e8a@syzkaller.appspotmail.com,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, courmisch@gmail.com,
-        kuba@kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 2/3] phonet/pep: refuse to enable an unbound pipe
-Date:   Mon, 27 Dec 2021 14:06:52 -0500
-Message-Id: <20211227190653.1043578-2-sashal@kernel.org>
+        s=k20201202; t=1640632688;
+        bh=n5gKVOMAx5d3Lm9+UJVfBhmS+gppM0kjtgJrzvZySQo=;
+        h=From:To:Cc:Subject:Date:From;
+        b=OTn+aDN93CQcpoBpQH7fKL7Vmm2o6JTMsGal7zmx0Cqd5+RTzsx3or0rwT81VTax7
+         gNXTetjD0PhVDRZ8HgczJElJfhJ9udTr1WZT85l9KtbUlsY10MCuWFQx/hi6qzps3d
+         nOKQ1R792h/KbDpgxpasvUR8uCVR88hWpp9WQ/HBbJb+ChtYWIm0CerPv02cQBST8K
+         ITORhEg5MnPFq6w8mp8jFji6v8BGr9tKqERDtjh+6GPlpuyEDsYiHyvgp+DEr/3zf+
+         Fl1j/n7teqF2tWXjl8tBiHwUmlcReQz7v1KvkabTwOn0iE5dKBmurJi2uNWzqLWSoV
+         uBgljiECpFiZg==
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Luca Coelho <luciano.coelho@intel.com>
+Cc:     Kalle Valo <kvalo@codeaurora.org>,
+        Johannes Berg <johannes.berg@intel.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>
+Subject: [PATCH] iwlwifi: mvm: Use div_s64 instead of do_div in iwl_mvm_ftm_rtt_smoothing()
+Date:   Mon, 27 Dec 2021 12:17:57 -0700
+Message-Id: <20211227191757.2354329-1-nathan@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20211227190653.1043578-1-sashal@kernel.org>
-References: <20211227190653.1043578-1-sashal@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Rémi Denis-Courmont <remi@remlab.net>
+When building ARCH=arm allmodconfig:
 
-[ Upstream commit 75a2f31520095600f650597c0ac41f48b5ba0068 ]
+drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c: In function ‘iwl_mvm_ftm_rtt_smoothing’:
+./include/asm-generic/div64.h:222:35: error: comparison of distinct pointer types lacks a cast [-Werror]
+  222 |         (void)(((typeof((n)) *)0) == ((uint64_t *)0));  \
+      |                                   ^~
+drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c:1070:9: note: in expansion of macro ‘do_div’
+ 1070 |         do_div(rtt_avg, 100);
+      |         ^~~~~~
 
-This ioctl() implicitly assumed that the socket was already bound to
-a valid local socket name, i.e. Phonet object. If the socket was not
-bound, two separate problems would occur:
+do_div() has to be used with an unsigned 64-bit integer dividend but
+rtt_avg is a signed 64-bit integer.
 
-1) We'd send an pipe enablement request with an invalid source object.
-2) Later socket calls could BUG on the socket unexpectedly being
-   connected yet not bound to a valid object.
+div_s64() expects a signed 64-bit integer dividend and signed 32-bit
+divisor, which fits this scenario, so use that function here to fix the
+warning.
 
-Reported-by: syzbot+2dc91e7fc3dea88b1e8a@syzkaller.appspotmail.com
-Signed-off-by: Rémi Denis-Courmont <remi@remlab.net>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 8b0f92549f2c ("iwlwifi: mvm: fix 32-bit build in FTM")
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
 ---
- net/phonet/pep.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/net/phonet/pep.c b/net/phonet/pep.c
-index f6aa532bcbf64..1e7945df39928 100644
---- a/net/phonet/pep.c
-+++ b/net/phonet/pep.c
-@@ -956,6 +956,8 @@ static int pep_ioctl(struct sock *sk, int cmd, unsigned long arg)
- 			ret =  -EBUSY;
- 		else if (sk->sk_state == TCP_ESTABLISHED)
- 			ret = -EISCONN;
-+		else if (!pn->pn_sk.sobject)
-+			ret = -EADDRNOTAVAIL;
- 		else
- 			ret = pep_sock_enable(sk, NULL, 0);
- 		release_sock(sk);
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c b/drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c
+index 9449d1af3c11..628aee634b2a 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c
+@@ -1066,8 +1066,7 @@ static void iwl_mvm_ftm_rtt_smoothing(struct iwl_mvm *mvm,
+ 	overshoot = IWL_MVM_FTM_INITIATOR_SMOOTH_OVERSHOOT;
+ 	alpha = IWL_MVM_FTM_INITIATOR_SMOOTH_ALPHA;
+ 
+-	rtt_avg = alpha * rtt + (100 - alpha) * resp->rtt_avg;
+-	do_div(rtt_avg, 100);
++	rtt_avg = div_s64(alpha * rtt + (100 - alpha) * resp->rtt_avg, 100);
+ 
+ 	IWL_DEBUG_INFO(mvm,
+ 		       "%pM: prev rtt_avg=%lld, new rtt_avg=%lld, rtt=%lld\n",
+
+base-commit: bcbddc4f9d020a4a0b881cc065729c3aaeb28098
 -- 
 2.34.1
 
