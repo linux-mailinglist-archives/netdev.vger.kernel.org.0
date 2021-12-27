@@ -2,106 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 564FC47FAD7
+	by mail.lfdr.de (Postfix) with ESMTP id 9F05B47FAD8
 	for <lists+netdev@lfdr.de>; Mon, 27 Dec 2021 09:01:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231484AbhL0IAx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Dec 2021 03:00:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48460 "EHLO
+        id S231486AbhL0IAz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Dec 2021 03:00:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231146AbhL0IAw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Dec 2021 03:00:52 -0500
-Received: from mail-ua1-x935.google.com (mail-ua1-x935.google.com [IPv6:2607:f8b0:4864:20::935])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E0CFC06173E
-        for <netdev@vger.kernel.org>; Mon, 27 Dec 2021 00:00:52 -0800 (PST)
-Received: by mail-ua1-x935.google.com with SMTP id v12so13805415uar.7
-        for <netdev@vger.kernel.org>; Mon, 27 Dec 2021 00:00:52 -0800 (PST)
+        with ESMTP id S231469AbhL0IAy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Dec 2021 03:00:54 -0500
+Received: from mail-vk1-xa36.google.com (mail-vk1-xa36.google.com [IPv6:2607:f8b0:4864:20::a36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A535C06173E
+        for <netdev@vger.kernel.org>; Mon, 27 Dec 2021 00:00:53 -0800 (PST)
+Received: by mail-vk1-xa36.google.com with SMTP id c10so8060368vkn.2
+        for <netdev@vger.kernel.org>; Mon, 27 Dec 2021 00:00:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=bX99B9F2Plzl2HdNd9guHkkpbB45Va/ck9nixgyGEMc=;
-        b=KDgy/TKBqVidNyPgGnhnvrH49OGzYsBjNnFZqQ4PSjcWR1alwxifKrKBik+MnkPlhF
-         tloM2mhx9dqyhVNlJnBp+v7fix/4zYGbm7JYxDAYpiL00h1zzKn33Wq7X/DoayY/RFG8
-         MUbCuhB8LPe3Kir6vJxD63Cp0oFpKm1ATy++w=
+        bh=dRxzgutPaQTL/WfU6FZJSbzbe7oatnNbXSwAWEml6M0=;
+        b=XIGdCcxyYtkp8lpuyY66GolnpfLQDH/vMTK3SlmxLkLGUpPQ0oVPhuUSTkOKVY7osj
+         4Hz2bbHGTrWUHPE6f82SNJwe7u8CAZhbBTog5edvybbX/M5dTmDXSwY7WLtu4zE/18W9
+         S+fIkuL0JQEHY2EvxAKi5y4YcUCXOPAWeKvjI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=bX99B9F2Plzl2HdNd9guHkkpbB45Va/ck9nixgyGEMc=;
-        b=gSXfaA+84Zb9+JRG6cFjzvbaTV3pWP3Pp8jIZWMT1GW1yDMswX5PmJZqpvgT8/2jJc
-         JGQVnBJ9p5/7R8lhhPsuOJCPtTcAABDaJqW1sr3MDc2DrBHoZ0WzJa8bAIlPIkVVgTNG
-         GEA0bEtXhCx2NO38dmiT5pdJEzYrJb5ntuxHfXYQCxnHnGOM44TSUQI+IbiJrswT4Laj
-         nR7HCA7OLB2oDKb1DswCBMaUBbTTijuL5DLKo6T8RCGepTu76rXn6AgknIltFdJtg+TU
-         8ln1SG0LN7jcqqfkcW4xB+SWo5Kl2n3MePVNjvjGrL+b1bmC9Ac5Icj3X5XkRK5Jv3hG
-         jQXw==
-X-Gm-Message-State: AOAM53298rpg0c67SMvKlLN0FuNMEfxPYMceE1mzZXNMTOHWVseyTygk
-        AxSG9UHZBwJILhhmAsz7WPfaMil+lwoyBU2M
-X-Google-Smtp-Source: ABdhPJx9wHjOUGRzB859qYuS2Nq5Giav5vRjIqfq4K7VYmAKsESUzJW2wrNoTNVT/8Ab4OTwvC1iog==
-X-Received: by 2002:a05:6102:3714:: with SMTP id s20mr4018500vst.3.1640592051356;
-        Mon, 27 Dec 2021 00:00:51 -0800 (PST)
+        bh=dRxzgutPaQTL/WfU6FZJSbzbe7oatnNbXSwAWEml6M0=;
+        b=jl0wkJdUWWf9JeH6+cKNfl41Xvxh0+3nfdw8Tsncqmh5kZLifHFfSz61JITaw0/VOM
+         QLGbNnKqJZeyF1xp5onAAVBTndBWvGu+JHdWW17ePkCwjgYajKn+4s5WpSuaf63QAQ3R
+         PmHYoPrG+FgMUnIjdBS6DMNIgkp/PwTLfTss1MsyGHayG25oD0/vw2W7DSq8BmotWvuM
+         XWUdjeq7cofiA+v3GGZmO3Khgx8V6MJoUZfXt8Uuq7q32VlbSpHOC3PNHI2/FvWug/ks
+         ZQiuedyD226vP37mHr2UtQysLQZOnGnEj4pekNu5B58176WY6vCXEyPSmHfmhZ+rXcB0
+         htIQ==
+X-Gm-Message-State: AOAM531kxMXnt8+XuHQbbFnpCqMDtni+/3Z2jy+rjdKNS4i/n1E/N3bI
+        KC/4JqcNwePh7nLHSmSKhze0LA==
+X-Google-Smtp-Source: ABdhPJx5/vcC7VFtDzhUXb+hKkVZ2uAwbXP2Ouo9D74ZjiHIo6ojwSEVA/+4wiCcmpEmduPkZb61Kg==
+X-Received: by 2002:a05:6122:a17:: with SMTP id 23mr4589064vkn.8.1640592052554;
+        Mon, 27 Dec 2021 00:00:52 -0800 (PST)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id o1sm2907587vkc.35.2021.12.27.00.00.50
+        by smtp.gmail.com with ESMTPSA id o1sm2907587vkc.35.2021.12.27.00.00.51
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 27 Dec 2021 00:00:51 -0800 (PST)
+        Mon, 27 Dec 2021 00:00:52 -0800 (PST)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
-Subject: [PATCH net-next 2/7] bnxt_en: Log error report for dropped doorbell
-Date:   Mon, 27 Dec 2021 03:00:27 -0500
-Message-Id: <1640592032-8927-3-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next 3/7] bnxt_en: enable interrupt sampling on 5750X for DIM
+Date:   Mon, 27 Dec 2021 03:00:28 -0500
+Message-Id: <1640592032-8927-4-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1640592032-8927-1-git-send-email-michael.chan@broadcom.com>
 References: <1640592032-8927-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="00000000000078a4d305d41c1a99"
+        boundary="00000000000088bd1205d41c1ac9"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---00000000000078a4d305d41c1a99
+--00000000000088bd1205d41c1ac9
 
-Log the unrecognized error report type value as well.
+From: Andy Gospodarek <gospo@broadcom.com>
 
-Reviewed-by: Andy Gospodarek <gospo@broadcom.com>
+5750X (P5) chips handle receiving packets on the NQ rather than the main
+completion queue so we need to get and set stats from the correct spots
+for dynamic interrupt moderation.
+
+Signed-off-by: Andy Gospodarek <gospo@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 11255131abbc..53101d00768c 100644
+index 53101d00768c..11df2fc05f6a 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -2044,7 +2044,9 @@ static u16 bnxt_agg_ring_id_to_grp_idx(struct bnxt *bp, u16 ring_id)
- 
- static void bnxt_event_error_report(struct bnxt *bp, u32 data1, u32 data2)
+@@ -2632,6 +2632,7 @@ static int bnxt_poll_p5(struct napi_struct *napi, int budget)
  {
--	switch (BNXT_EVENT_ERROR_REPORT_TYPE(data1)) {
-+	u32 err_type = BNXT_EVENT_ERROR_REPORT_TYPE(data1);
-+
-+	switch (err_type) {
- 	case ASYNC_EVENT_CMPL_ERROR_REPORT_BASE_EVENT_DATA1_ERROR_TYPE_INVALID_SIGNAL:
- 		netdev_err(bp->dev, "1PPS: Received invalid signal on pin%lu from the external source. Please fix the signal and reconfigure the pin\n",
- 			   BNXT_EVENT_INVALID_SIGNAL_DATA(data2));
-@@ -2052,8 +2054,12 @@ static void bnxt_event_error_report(struct bnxt *bp, u32 data1, u32 data2)
- 	case ASYNC_EVENT_CMPL_ERROR_REPORT_BASE_EVENT_DATA1_ERROR_TYPE_PAUSE_STORM:
- 		netdev_warn(bp->dev, "Pause Storm detected!\n");
- 		break;
-+	case ASYNC_EVENT_CMPL_ERROR_REPORT_BASE_EVENT_DATA1_ERROR_TYPE_DOORBELL_DROP_THRESHOLD:
-+		netdev_warn(bp->dev, "One or more MMIO doorbells dropped by the device!\n");
-+		break;
- 	default:
--		netdev_err(bp->dev, "FW reported unknown error type\n");
-+		netdev_err(bp->dev, "FW reported unknown error type %u\n",
-+			   err_type);
- 		break;
+ 	struct bnxt_napi *bnapi = container_of(napi, struct bnxt_napi, napi);
+ 	struct bnxt_cp_ring_info *cpr = &bnapi->cp_ring;
++	struct bnxt_cp_ring_info *cpr_rx;
+ 	u32 raw_cons = cpr->cp_raw_cons;
+ 	struct bnxt *bp = bnapi->bp;
+ 	struct nqe_cn *nqcmp;
+@@ -2659,7 +2660,7 @@ static int bnxt_poll_p5(struct napi_struct *napi, int budget)
+ 			if (napi_complete_done(napi, work_done))
+ 				BNXT_DB_NQ_ARM_P5(&cpr->cp_db,
+ 						  cpr->cp_raw_cons);
+-			return work_done;
++			goto poll_done;
+ 		}
+ 
+ 		/* The valid test of the entry must be done first before
+@@ -2685,6 +2686,17 @@ static int bnxt_poll_p5(struct napi_struct *napi, int budget)
+ 		cpr->cp_raw_cons = raw_cons;
+ 		BNXT_DB_NQ_P5(&cpr->cp_db, raw_cons);
  	}
++poll_done:
++	cpr_rx = cpr->cp_ring_arr[BNXT_RX_HDL];
++	if (cpr_rx && (bp->flags & BNXT_FLAG_DIM)) {
++		struct dim_sample dim_sample = {};
++
++		dim_update_sample(cpr->event_ctr,
++				  cpr_rx->rx_packets,
++				  cpr_rx->rx_bytes,
++				  &dim_sample);
++		net_dim(&cpr->dim, dim_sample);
++	}
+ 	return work_done;
  }
+ 
 -- 
 2.18.1
 
 
---00000000000078a4d305d41c1a99
+--00000000000088bd1205d41c1ac9
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -172,13 +186,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEILxzTU4vxYMP2iZvqv1nr9LyUSyAf4N6
-PWw315tmU9CeMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMTIy
-NzA4MDA1MVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIISEbqbckqk3kYUoHffJMVUVQZrclpBt
+Jk2efKsUeAJeMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMTIy
+NzA4MDA1MlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQAJ1VEquyTkqv+TQ712ktq44pAJPdDURZxeh8iz3LDIU488OSpz
-aY3T48TE9UfEPUIn4TU+jrFrtmdA9scuLh7iGprjbAnjW6u9qRwljcZJIv0X7nRracKhPtZ0qWlN
-puDSi/QX4HA8CgmVHnvzX/NW4ZFsjeN1c2Mc8maltSFjVLpu/Xk+OSPEjH4SLS1273Jb9TG+11g4
-f1RSgERmy9e5bXpxaTviQ1eOxIDhzsGb7ZC5RJBluVm5ipIWlmLvNuEFpVI4JvX8kzg4eMhbrJxp
-mIwxy1r967h6q3ExGRBhoaS6/wMA3qYKd5fVioUHWrR7nMovk/Z59FBDLv03RfDe
---00000000000078a4d305d41c1a99--
+ATANBgkqhkiG9w0BAQEFAASCAQCzkHGYH42fWiCJCz+5k/FM/vF1pptvnjVCAgRQ36XFUE2WGvjI
+8uawkITaE9ag33HlWMMvKWEJetrnfoujGVVBdC4h+53uAhrFbIkTUXDj/oa0lTZ8pjwDw8eCkoPW
+RlwYxmWRNYhX5eQSP8wHLR5SLo45qIBKiqQKLCLIU7Y6sHkABLER3jOFOJ9KLRmEp+vqFTg6tU1Z
+e3SyOZ8Ey5vA5+/mruDN/tI8ENyuyz6zWsMozM34oWa0Hoq/j/ty9fv5hxEldOmdoLgiqB2AGRIg
+CS6+GzLe7X5dqWvSkfe5QFUpXVfxil+/IFZ36D93GTKgX4UGBQEplli2Q/7+v57c
+--00000000000088bd1205d41c1ac9--
