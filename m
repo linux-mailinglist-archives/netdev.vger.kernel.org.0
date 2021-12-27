@@ -2,146 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 60E9947FADA
+	by mail.lfdr.de (Postfix) with ESMTP id AA1E647FADB
 	for <lists+netdev@lfdr.de>; Mon, 27 Dec 2021 09:01:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231485AbhL0IA5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Dec 2021 03:00:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48484 "EHLO
+        id S231620AbhL0IBB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Dec 2021 03:01:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231511AbhL0IA4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Dec 2021 03:00:56 -0500
-Received: from mail-ua1-x935.google.com (mail-ua1-x935.google.com [IPv6:2607:f8b0:4864:20::935])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF764C061401
-        for <netdev@vger.kernel.org>; Mon, 27 Dec 2021 00:00:55 -0800 (PST)
-Received: by mail-ua1-x935.google.com with SMTP id p2so25467188uad.11
-        for <netdev@vger.kernel.org>; Mon, 27 Dec 2021 00:00:55 -0800 (PST)
+        with ESMTP id S231636AbhL0IA5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Dec 2021 03:00:57 -0500
+Received: from mail-vk1-xa2b.google.com (mail-vk1-xa2b.google.com [IPv6:2607:f8b0:4864:20::a2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1299C06173E
+        for <netdev@vger.kernel.org>; Mon, 27 Dec 2021 00:00:56 -0800 (PST)
+Received: by mail-vk1-xa2b.google.com with SMTP id h5so29712vkp.5
+        for <netdev@vger.kernel.org>; Mon, 27 Dec 2021 00:00:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=nnqV4ObCCLDtcS4bKq1q29Z32WjO6VcN+IcwORBLa/0=;
-        b=YYpLZAj46C5SIsmmz1FSBxgTWhpcx6Ls90hhGp2WEPS6s+Wq6smQFZeBPzNZDSWPAD
-         GPPwc8p64D1YAzGD9n8b3UUrTMKxmPpRmoQjlTmZcxYFqLBGG7rxaB6bMLYCrfjea96Z
-         J2eHOsA+t3BOf8V4Qbg9onILSICW9SvXsWCx8=
+        bh=4RKSOTRrMkqrtJyZWXv6wz2/LLnRjZJjA6dq6sZqh1Y=;
+        b=W72pWNBrQ3gb8Ksrc8Z2UCVQ/66AF1BUNWkdh4GcBMGzMZQC79vkegR32uXjWuS1LX
+         L44D4zbneZZa1z5KihRmD1+dgxwlsI25rBiZ0gmiDjg1B0VZXouoKJQ5gVtBHOmniEAQ
+         n5SIbtQ/BwT28tGNjtJ6osj4fVJ/g1vI7fohg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=nnqV4ObCCLDtcS4bKq1q29Z32WjO6VcN+IcwORBLa/0=;
-        b=6+bgDrZZMhVX8EidcZmEDq3t1xq5Ix+GtsRhct1DBcPg+NrhgLkwy45sjwFJE76HWh
-         7Opgc4zDJGFEvMVLVmCaSIUxdec90o+3Bm9aSagk9x79ZM4bWKejDt0reu4uv4oxBCeM
-         e1u3Qal+ny5FOOKBlj+YX8pqLzibNsWOxnIp8gTkMngAlpD/GrHxC+GUfhMXjeTDUqu9
-         fobYPvugQvBRQpMmgL4S0+h6YgPWueaP6cjhUbqCuYqRYR9V1QKDwct89MJCB8Xeq1ZC
-         Uq9t1JMiU9l7rSWntJOd+5QlI7+Iwn6D1jREw5NJqJZwLfrUdBFRF9TYlNFMtts20/8l
-         LCrg==
-X-Gm-Message-State: AOAM5319dmkZHYtCOHFotgx0XZxfNn0iTMMTQvmlbQWDIwvA6vVjmvPK
-        AYbgiWUqWZ/cBPVJajNOqJqnxQ==
-X-Google-Smtp-Source: ABdhPJwoZYUD1Xll9wr1BmBINyTRcUd+OeY55AwXGqfxNsKLcArmDl7mJlqJcLbKmo9uwH5RJBEHYA==
-X-Received: by 2002:a05:6102:dc9:: with SMTP id e9mr4104368vst.17.1640592054754;
-        Mon, 27 Dec 2021 00:00:54 -0800 (PST)
+        bh=4RKSOTRrMkqrtJyZWXv6wz2/LLnRjZJjA6dq6sZqh1Y=;
+        b=jRmRV0rzBDVSgw4pWXX87Wmm9uIUHQ1k8VD/9LHAWbpg604sIgnXSMlyR1CsETirG4
+         AUZlYM5EmHxJtoT8ySRZVbQXGngh3Uv++O0l8pEYtofq/ZxvLFG2HcQPv519Coi2WR0d
+         Bd/bYKhdnoxraTtrEGt3xcEqpZONrS7Je+RBwz3WUgu6dk/vjBdzgafE92cvA3DKORAf
+         PMp2l3OhT7cc4H0/43LasSaPUGec44W7r8xVasroF1Iy6gMZPGGvcn8EcWBQSMvtXyeu
+         6FcHXjbLn86vrHjNUWj3FnJhNJhszueaaJcdIvi2FsgjT1iiGZG+kh3iLGuwmME3EDRP
+         2IgQ==
+X-Gm-Message-State: AOAM531q1IRSdsECfjNFLzEffIBf+FC4t6DCYXuxlc+LGYMbYkG/JFjR
+        LjrDOJhmQA9eOEvPU4PJzFduNg==
+X-Google-Smtp-Source: ABdhPJxFdgnBm8eyVOBnJX0S7Y6XqqrT6DxNFlpQdutlgGc1yLtJhpIFsqSCuLuefVL8rNOZhy2SWA==
+X-Received: by 2002:a05:6122:201e:: with SMTP id l30mr4487237vkd.10.1640592055990;
+        Mon, 27 Dec 2021 00:00:55 -0800 (PST)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id o1sm2907587vkc.35.2021.12.27.00.00.53
+        by smtp.gmail.com with ESMTPSA id o1sm2907587vkc.35.2021.12.27.00.00.54
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 27 Dec 2021 00:00:54 -0800 (PST)
+        Mon, 27 Dec 2021 00:00:55 -0800 (PST)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
-Subject: [PATCH net-next 5/7] bnxt_en: Support CQE coalescing mode in ethtool
-Date:   Mon, 27 Dec 2021 03:00:30 -0500
-Message-Id: <1640592032-8927-6-git-send-email-michael.chan@broadcom.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com,
+        Edwin Peer <edwin.peer@broadcom.com>
+Subject: [PATCH net-next 6/7] bnxt_en: convert to xdp_do_flush
+Date:   Mon, 27 Dec 2021 03:00:31 -0500
+Message-Id: <1640592032-8927-7-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1640592032-8927-1-git-send-email-michael.chan@broadcom.com>
 References: <1640592032-8927-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000aa176305d41c1ac9"
+        boundary="000000000000bceda905d41c1a49"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000aa176305d41c1ac9
+--000000000000bceda905d41c1a49
 
-Support showing and setting the CQE mode in ethtool.
+From: Edwin Peer <edwin.peer@broadcom.com>
 
-Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
+The xdp_do_flush_map function has been replaced with the more general
+xdp_do_flush().
+
+Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 24 ++++++++++++++++++-
- 1 file changed, 23 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-index 15253396096a..46859d9a01eb 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-@@ -68,6 +68,9 @@ static int bnxt_get_coalesce(struct net_device *dev,
- 	coal->rx_max_coalesced_frames = hw_coal->coal_bufs / mult;
- 	coal->rx_coalesce_usecs_irq = hw_coal->coal_ticks_irq;
- 	coal->rx_max_coalesced_frames_irq = hw_coal->coal_bufs_irq / mult;
-+	if (hw_coal->flags &
-+	    RING_CMPL_RING_CFG_AGGINT_PARAMS_REQ_FLAGS_TIMER_RESET)
-+		kernel_coal->use_cqe_mode_rx = true;
- 
- 	hw_coal = &bp->tx_coal;
- 	mult = hw_coal->bufs_per_record;
-@@ -75,6 +78,9 @@ static int bnxt_get_coalesce(struct net_device *dev,
- 	coal->tx_max_coalesced_frames = hw_coal->coal_bufs / mult;
- 	coal->tx_coalesce_usecs_irq = hw_coal->coal_ticks_irq;
- 	coal->tx_max_coalesced_frames_irq = hw_coal->coal_bufs_irq / mult;
-+	if (hw_coal->flags &
-+	    RING_CMPL_RING_CFG_AGGINT_PARAMS_REQ_FLAGS_TIMER_RESET)
-+		kernel_coal->use_cqe_mode_tx = true;
- 
- 	coal->stats_block_coalesce_usecs = bp->stats_coal_ticks;
- 
-@@ -101,12 +107,22 @@ static int bnxt_set_coalesce(struct net_device *dev,
- 		}
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index 48e61355ca00..ea5b072ba292 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -2429,7 +2429,7 @@ static int __bnxt_poll_work(struct bnxt *bp, struct bnxt_cp_ring_info *cpr,
  	}
  
-+	if ((kernel_coal->use_cqe_mode_rx || kernel_coal->use_cqe_mode_tx) &&
-+	    !(bp->coal_cap.cmpl_params &
-+	      RING_AGGINT_QCAPS_RESP_CMPL_PARAMS_TIMER_RESET))
-+		return -EOPNOTSUPP;
-+
- 	hw_coal = &bp->rx_coal;
- 	mult = hw_coal->bufs_per_record;
- 	hw_coal->coal_ticks = coal->rx_coalesce_usecs;
- 	hw_coal->coal_bufs = coal->rx_max_coalesced_frames * mult;
- 	hw_coal->coal_ticks_irq = coal->rx_coalesce_usecs_irq;
- 	hw_coal->coal_bufs_irq = coal->rx_max_coalesced_frames_irq * mult;
-+	hw_coal->flags &=
-+		~RING_CMPL_RING_CFG_AGGINT_PARAMS_REQ_FLAGS_TIMER_RESET;
-+	if (kernel_coal->use_cqe_mode_rx)
-+		hw_coal->flags |=
-+			RING_CMPL_RING_CFG_AGGINT_PARAMS_REQ_FLAGS_TIMER_RESET;
+ 	if (event & BNXT_REDIRECT_EVENT)
+-		xdp_do_flush_map();
++		xdp_do_flush();
  
- 	hw_coal = &bp->tx_coal;
- 	mult = hw_coal->bufs_per_record;
-@@ -114,6 +130,11 @@ static int bnxt_set_coalesce(struct net_device *dev,
- 	hw_coal->coal_bufs = coal->tx_max_coalesced_frames * mult;
- 	hw_coal->coal_ticks_irq = coal->tx_coalesce_usecs_irq;
- 	hw_coal->coal_bufs_irq = coal->tx_max_coalesced_frames_irq * mult;
-+	hw_coal->flags &=
-+		~RING_CMPL_RING_CFG_AGGINT_PARAMS_REQ_FLAGS_TIMER_RESET;
-+	if (kernel_coal->use_cqe_mode_tx)
-+		hw_coal->flags |=
-+			RING_CMPL_RING_CFG_AGGINT_PARAMS_REQ_FLAGS_TIMER_RESET;
- 
- 	if (bp->stats_coal_ticks != coal->stats_block_coalesce_usecs) {
- 		u32 stats_ticks = coal->stats_block_coalesce_usecs;
-@@ -3921,7 +3942,8 @@ const struct ethtool_ops bnxt_ethtool_ops = {
- 				     ETHTOOL_COALESCE_USECS_IRQ |
- 				     ETHTOOL_COALESCE_MAX_FRAMES_IRQ |
- 				     ETHTOOL_COALESCE_STATS_BLOCK_USECS |
--				     ETHTOOL_COALESCE_USE_ADAPTIVE_RX,
-+				     ETHTOOL_COALESCE_USE_ADAPTIVE_RX |
-+				     ETHTOOL_COALESCE_USE_CQE,
- 	.get_link_ksettings	= bnxt_get_link_ksettings,
- 	.set_link_ksettings	= bnxt_set_link_ksettings,
- 	.get_fec_stats		= bnxt_get_fec_stats,
+ 	if (event & BNXT_TX_EVENT) {
+ 		struct bnxt_tx_ring_info *txr = bnapi->tx_ring;
 -- 
 2.18.1
 
 
---000000000000aa176305d41c1ac9
+--000000000000bceda905d41c1a49
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -212,13 +160,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIGrw1vCHxsSD2zojP7I3ESE4te/FzCV0
-FJPqBgg7Zu2oMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMTIy
-NzA4MDA1NVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEINjW1cBH4MJLBDuMvLOttQlY9sQmPza9
+vavOMBBSHpJdMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMTIy
+NzA4MDA1NlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQBZ3XOHg5vKDRSr7rSwivF5hbSNeUxsrujAMw8ZVRbBBhLhLQF9
-gSsWURPrRhnkPSSZT2quj86M2584ZPXy6ztT6gM8pDW9O3O/h45RawxXOb9kXc3JpyiS1J6TGckd
-isM26ZMjZ9LyqILuyW/AHbh6MGKJ4VddXhLHwd8DKYohOiz//WuLGuQEhqhpljdvuilWDruEKUr6
-4EpG/jHzNRY79jqNc7tEnR+9nUL0JXEw22dfPjsxskj9Xrv8uh+65KSaT1mryPk9JR0bqN5MOuio
-LOB/m0KMwm1Z/iCXVgRPR0CsPYytmzcKFu8fGT9OrgyPPZ7IXCsx8ssivSuvR9tA
---000000000000aa176305d41c1ac9--
+ATANBgkqhkiG9w0BAQEFAASCAQBap+Foy1Ssu8Cl546afEN4Ey/7xAuMOR25B7kx9UBFuxrfvsVK
+EDSwgfwzPhu3IpQdq15k5LBK5127zRBcflQk4/ajxUm0yU89xuRyDKOfoaPEYgifRRT/OWWB0npN
+v16xlWN4vM83TyAEjVam3kHMKok9sXlPBt6iR/e+9ggW/MAgBxnaXQQi7eosS3nWQPZnB/kW0Shd
+C0i5fA30RDk5Q+ExQOMLTJKsVy4RBax8ZIVRUskN6IaiP5QxXEf+nJ7Ns711PFtdOXKtHhIFfu4Y
+rjIXCDWhgqyvIN8ryr3nZoAsEW65L9elSn934XM8+Y1zdKp+5JLKCD/EM0TOy1qA
+--000000000000bceda905d41c1a49--
