@@ -2,73 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C7A9548049A
-	for <lists+netdev@lfdr.de>; Mon, 27 Dec 2021 21:38:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E5AD4804A1
+	for <lists+netdev@lfdr.de>; Mon, 27 Dec 2021 21:41:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232972AbhL0Uio (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Dec 2021 15:38:44 -0500
-Received: from mga12.intel.com ([192.55.52.136]:41424 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231131AbhL0Uin (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Dec 2021 15:38:43 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1640637523; x=1672173523;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=+s36H9N9lS5geSmQnAeo3ibbRrDHDIjsI845MawbcsU=;
-  b=QNUW7UqcYpeqoTwwY3PqF4/6bviV9+d3yrpFebgo3YDoAjvw3jW5eNd9
-   hNu3Aq8SkRoPqnUaskrf0SpG4iGNpAJVUWAt4AoVo1dHJfdFnYBELvszE
-   y//bETyq5ucFH6dUIRW6fNtuJqrzUmk4/k1+JmJ1viouKkEl7oE95IS1D
-   8EuoCuw9wenR4NmOllmPVdCR9vZk5fcPAb7k4wQFFdc4OXTFFc/nmmTBs
-   WeO4kAjly4PlXytYz3Jc6IP4582TeTfVBsU0wqFHbDREv8e92bR0eVuV4
-   G+m48WJRkYwp4x9gALUllJgd65nukgo/633NFDwtbWgl8IP9TzPn8Wd4r
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10210"; a="221267053"
-X-IronPort-AV: E=Sophos;i="5.88,240,1635231600"; 
-   d="scan'208";a="221267053"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Dec 2021 12:38:42 -0800
-X-IronPort-AV: E=Sophos;i="5.88,240,1635231600"; 
-   d="scan'208";a="523406864"
-Received: from krausnex-mobl.ger.corp.intel.com (HELO [10.255.195.237]) ([10.255.195.237])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Dec 2021 12:38:40 -0800
-Message-ID: <1d2b0af5-540c-df14-2f78-9698f7055e5a@linux.intel.com>
-Date:   Mon, 27 Dec 2021 22:38:38 +0200
+        id S233067AbhL0Ulg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Dec 2021 15:41:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49788 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231414AbhL0Ulf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Dec 2021 15:41:35 -0500
+Received: from mail-qv1-xf33.google.com (mail-qv1-xf33.google.com [IPv6:2607:f8b0:4864:20::f33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B8B7C06173E
+        for <netdev@vger.kernel.org>; Mon, 27 Dec 2021 12:41:35 -0800 (PST)
+Received: by mail-qv1-xf33.google.com with SMTP id a9so14677524qvd.12
+        for <netdev@vger.kernel.org>; Mon, 27 Dec 2021 12:41:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sladewatkins.com; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=HEblb4NcyHjgy+hG9JwZ6BIZVjaEPFiRSkzq3qx7O5s=;
+        b=M/svcAs3jlY7Prg+Rl0odk2/+T3H8QS/j5nMgvetdX84NaIF7xbTfhi4VdGuYCX9+A
+         VmmiFd6D/iJBKddKyF3YLVsIgv4bL8pVAupR4aaqdh6guUyltbRs3/GSQec43AhLZQkw
+         beoYT6ZrH8VZJm4n3ifkfmUnpGVYBswrtMuYJ3dqVz3+GUPXKSBmWw7S6vwTmp1PF1Y0
+         zonOjmtfnwMbZn0Ly1s3Prg56tt2yfLJ+C14D0Vrb+QTgcDuIZf2+jd3OfY0RFuKKP2N
+         +zySZ6jZoHt1igci4tJB3eLLAcDV013yfLCyK7CEZXDjF1loBKwTviRNZ5T0s0AwEPhy
+         ymaA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=HEblb4NcyHjgy+hG9JwZ6BIZVjaEPFiRSkzq3qx7O5s=;
+        b=os7Iqg8QoQnnLn92Agr+2PhltLQRsifO7DP2n9IPbBSavFAyJFBD/Rt+xMotaSU+p9
+         XMFITWvC6Pf5/+3QR7PPbwKLeJKkTNDNcrW9oFiiCf7U6AWxqZ3ASHmXqn70vyKN66X4
+         mNSK65Le/08hAu8HDQP1LjMUWLLi6Oe/98+2btu2LZR3vLAlGq3SWdPaAjFKbtMVgOij
+         YeMfxaP5JHIYw9trwxVjvckfwg2ExFXgyOjkihIM6vQEMYaqoJZjnndKHCWzqhWh1q+v
+         xwbQghuXdFj9tDfXsAZmatsY+lztZsAoJhPOMVJrsds/wfkD/TtVlrVg4/NsqK2q883Y
+         ANtQ==
+X-Gm-Message-State: AOAM533Pl2M1UOrFQiPWarbqO6dsv0hnKStjoq3x0IJw+4l1hOq4WJDm
+        YEbyVyblBYVC7F3+I8Q06XxmCQ==
+X-Google-Smtp-Source: ABdhPJypWnA4YaLiN2H5DrhKGjxH1UB/Yn66D6fjJc5aYNghXRDHGDaSbM+RG1KrwWk07f3qu059QA==
+X-Received: by 2002:a05:6214:4019:: with SMTP id kd25mr16808588qvb.59.1640637694032;
+        Mon, 27 Dec 2021 12:41:34 -0800 (PST)
+Received: from [10.0.0.29] (pool-96-236-39-10.albyny.fios.verizon.net. [96.236.39.10])
+        by smtp.gmail.com with ESMTPSA id b6sm14125137qtk.91.2021.12.27.12.41.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 27 Dec 2021 12:41:33 -0800 (PST)
+Message-ID: <4cdfcc90-67c4-1cf2-1fca-76376a122454@sladewatkins.com>
+Date:   Mon, 27 Dec 2021 15:41:32 -0500
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.2
-Subject: Re: [Intel-wired-lan] [PATCH v2] igc: Fix TX timestamp support for
- non-MSI-X platforms
+ Thunderbird/91.4.1
+Subject: Re: [PATCH] qlge: rewrite qlge_change_rx_buffers()
 Content-Language: en-US
-To:     James McLaughlin <james.mclaughlin@qsc.com>, davem@davemloft.net,
-        kuba@kernel.org, jesse.brandeburg@intel.com,
-        anthony.l.nguyen@intel.com
-Cc:     netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        linux-kernel@vger.kernel.org
-References: <20211217234310.740255-1-james.mclaughlin@qsc.com>
-From:   "Kraus, NechamaX" <nechamax.kraus@linux.intel.com>
-In-Reply-To: <20211217234310.740255-1-james.mclaughlin@qsc.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Adam Kandur <sys.arch.adam@gmail.com>, netdev@vger.kernel.org,
+        linux-staging@lists.linux.dev
+References: <CAE28pkNNsUnp4UiaKX-OjAQHPGjSNY6+hn-oK39m8w=ybXSO6Q@mail.gmail.com>
+ <YcnA8LBwH1X/xqKt@kroah.com>
+ <152c8d76-af2b-2ea3-4f15-faf2670d8e73@sladewatkins.com>
+ <YcnRg9AYfSgC1pBE@kroah.com>
+From:   Slade Watkins <slade@sladewatkins.com>
+In-Reply-To: <YcnRg9AYfSgC1pBE@kroah.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/18/2021 01:43, James McLaughlin wrote:
-> Time synchronization was not properly enabled on non-MSI-X platforms.
+On 12/27/2021 9:45 AM, Greg KH wrote:
+> On Mon, Dec 27, 2021 at 09:15:36AM -0500, Slade Watkins wrote:
+>> --
+>> This email message may contain sensitive or otherwise confidential
+>> information and is intended for the addressee(s) only. If you believe
+>> to have received this message in error, please let the sender know
+>> *immediately* and delete the message. Thank you for your cooperation!
+>>
 > 
-> Fixes: 2c344ae24501 ("igc: Add support for TX timestamping")
-> 
-> Signed-off-by: James McLaughlin <james.mclaughlin@qsc.com>
-> Reviewed-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
-> ---
-> 
-> Having trouble with work email client, understand and agree with comments from Vinicius.
-> v1->v2 updated commit message, email subject, and reference original commit this is fixing.
-> 
->   drivers/net/ethernet/intel/igc/igc_main.c | 6 ++++++
->   1 file changed, 6 insertions(+)
-> 
-Tested-by: Nechama Kraus <nechamax.kraus@linux.intel.com>
+> Now deleted.
 
+my bad! I have separate signatures set for mailing lists but for some
+reason it didn't remove that blurb.
+
+it's fixed for the future.
+
+sorry about that.
+slade
