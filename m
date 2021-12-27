@@ -2,94 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C2AC47FD4B
-	for <lists+netdev@lfdr.de>; Mon, 27 Dec 2021 14:19:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 119CD47FD6D
+	for <lists+netdev@lfdr.de>; Mon, 27 Dec 2021 14:34:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233864AbhL0NTX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Dec 2021 08:19:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34202 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230090AbhL0NTW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Dec 2021 08:19:22 -0500
-Received: from mail-vk1-xa2f.google.com (mail-vk1-xa2f.google.com [IPv6:2607:f8b0:4864:20::a2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3205DC06173E
-        for <netdev@vger.kernel.org>; Mon, 27 Dec 2021 05:19:21 -0800 (PST)
-Received: by mail-vk1-xa2f.google.com with SMTP id m200so8572859vka.6
-        for <netdev@vger.kernel.org>; Mon, 27 Dec 2021 05:19:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=a38JSinn6KGDl7s2dZ5j9DvJA5cTm6pRNLn1Do3OpbM=;
-        b=Td9zBgf+8LvoYGqM1W1HTekFTTSf5ZLojhZlPd1gOuSmOlralfxnewnCu9/57IyXQC
-         htUK71RuhW1e+WC7G/K/vxZ6AGGQ13f2m9+yTiitCwmcA3Mph2lqTERZC8bjMCLdBAlz
-         y6gqTqPIq46bjMxYj5uZSoqOVPmaOld+DgO8gIJW0RpUBu/UUSkdqVnSPZNSKfesLCNo
-         dtdMvL4+Zzjc66O0KXodrywD4eyumjcE9V6Nak0jshBfeD/y+4Mlbv+5EQliHOVPQnFy
-         ci8LVRb7i2Kz/34fQn0uDpiNUb9pyskRP0WZp6KS01C6ZQSmabEl12CEUVNyzOLR25+X
-         YNHw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=a38JSinn6KGDl7s2dZ5j9DvJA5cTm6pRNLn1Do3OpbM=;
-        b=HYgcTrkCytbMjvXxmUT0UZJbtBrZLQJCpjsx8UBH/lHSq+SfmExtZVj1F2HzyQt3vb
-         0x0H1dF7gBBVdFej1gwqeRB5hwc0pMLErmwbzjdu7MmNKcm+UIB6dVWqpMlCYHHzuwFQ
-         40Zsy4zWMvLXWuBCDqVG453Vnsr2M7G2djZEuWbIPIn/x7xB+QOY0g9JoA4t3XT+GBYI
-         vuRtdKNL2bqd5UBaVNKn4p8jU6KjWMCAbXU1lt1CnZ66m6w8Ka9nlgso9MCbJHMM/XH1
-         r5x8Ya08/v+DVx2u/6Dfkom15Rbs5L3dNRYDxf+iuJQNzlSWzb6kw88vk6N/r2UyTA5J
-         qiWw==
-X-Gm-Message-State: AOAM533k/yLpDzRLUJcniTerb23hnR6UWObO/Ouia3xAfh+0WEa16tMA
-        DndAVvuRVFw9C1l6LMHxOsYxPOKnYqGKI2LRUTnJVyuGMdU=
-X-Google-Smtp-Source: ABdhPJxOlPkSAUR0PoLL5+VRcmCBcY35kR+I9xvdCz17NSXH1FlWClSZH1LvpwpXp67hHa5swHQNQsrd8pGtxsIMM1E=
-X-Received: by 2002:a05:6122:178d:: with SMTP id o13mr4725985vkf.15.1640611160867;
- Mon, 27 Dec 2021 05:19:20 -0800 (PST)
+        id S233801AbhL0Nen (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Dec 2021 08:34:43 -0500
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:49697 "EHLO
+        out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232207AbhL0Nen (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Dec 2021 08:34:43 -0500
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
+        by mailout.nyi.internal (Postfix) with ESMTP id 6B1F85C02F9;
+        Mon, 27 Dec 2021 08:34:42 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute6.internal (MEProxy); Mon, 27 Dec 2021 08:34:42 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=
+        date:from:to:cc:subject:message-id:references:mime-version
+        :content-type:in-reply-to; s=fm2; bh=eccas9txqRwzn420RGikmBO1/MZ
+        DbjZfs4wleP6OsIM=; b=ZgsNEY4++wR5G04uS8sN8hd6DQV3i0jkHjaIo4gnRwF
+        DAflW3o5AbucVwGR+3R6FBmqbTrI3od1pLdb95xxfZMIwhxGeuEI+ZBNzE4Ygpj6
+        MmZcEJ1fGTn0P9pNFOdm3GN2tqj/FP+MkPJmWZP9OEdPYolcsgCaCAEjG/hek1b+
+        BhBZMgdQOeKJBPK2luLtb5WJgUAMI55TOMBmiyTqQoDXxAVgCzaMzSmgo/+sY7oi
+        hPyxTFoesKn6wUfIDScbIQhmb0+bzAQ2MxswrE0Uuj/77dZFR3pgi/OePXsglcFR
+        jSswb9CShezR7IKghvC072ufnn+Hy7XcNtdBEdDarLQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=eccas9
+        txqRwzn420RGikmBO1/MZDbjZfs4wleP6OsIM=; b=ZU7J9hWtuOKV/8JJK3tNdh
+        Op/Ilj+OpLZxPHJb/hM/QCeni97pFBVnSPOQPoIgsQMHRVWcaf7f/zoGhTbinn8P
+        eLa5l/907sgwJgNXQCrF0yvoRdbszlOzjCCTcS1lqOm4QKXvFMYai8rjtx/sN7g8
+        NkZNbVaSlVhxr3qezULj3/6076XotRKrTNSwhr1O3tbYyyHROQs0E9PAbLH53fSy
+        w8mOWzkXsurZ++diujuCl+W557xZS4wzgjizP2h96aayvaJnrzURbyhlXBp9rySV
+        7BEYauPFGUzCOCbt2WKLdSznJmNFPq54cAP0EIllc4uzAGKGX8dfu/iW5l6uyduQ
+        ==
+X-ME-Sender: <xms:8sDJYdZ5dBQF1YYJyyeiKcF7OIhcSEeomSJLuXxcHm63OCqo4w2cfg>
+    <xme:8sDJYUZATIgZvFoHnxCtMLjiCi9mt1vLzItzSD5p8ds6xcIzfvMkHAMUBUnW0N5Jk
+    C6OrNKsW6vC0g>
+X-ME-Received: <xmr:8sDJYf-ZHnb0GzH2Pnhw9v79IJxAJYGGHjh-pxDSlFXMG6xnwTRgdTZPDNS2kQdXnOpgbApdBd7V06YeTjnnjwlRsL-dTPog>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvuddruddujedggeelucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpeffhffvuffkfhggtggujgesthdtre
+    dttddtvdenucfhrhhomhepifhrvghgucfmjfcuoehgrhgvgheskhhrohgrhhdrtghomheq
+    necuggftrfgrthhtvghrnhepveeuheejgfffgfeivddukedvkedtleelleeghfeljeeiue
+    eggeevueduudekvdetnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghi
+    lhhfrhhomhepghhrvghgsehkrhhorghhrdgtohhm
+X-ME-Proxy: <xmx:8sDJYboXWieQS8LFk_J_IPnVQM4Clh8pOObiWQwPoaaEEpomqXdWuQ>
+    <xmx:8sDJYYr6aBqT1AswuXP4QFmPxqcyN-WMQSO8189NansCMRnnM6B9Cg>
+    <xmx:8sDJYRRF6bOYyMSXCEg085ngujmdxycOilb_f-JjJAlNDPweBR61vA>
+    <xmx:8sDJYRkZxcj76a71TNKu6fTHKOC2DA534qY1zOSgeCyzpl-yURFySg>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 27 Dec 2021 08:34:41 -0500 (EST)
+Date:   Mon, 27 Dec 2021 14:34:40 +0100
+From:   Greg KH <greg@kroah.com>
+To:     Adam Kandur <sys.arch.adam@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-staging@lists.linux.dev
+Subject: Re: [PATCH] qlge: rewrite qlge_change_rx_buffers()
+Message-ID: <YcnA8LBwH1X/xqKt@kroah.com>
+References: <CAE28pkNNsUnp4UiaKX-OjAQHPGjSNY6+hn-oK39m8w=ybXSO6Q@mail.gmail.com>
 MIME-Version: 1.0
-From:   Adam Kandur <sys.arch.adam@gmail.com>
-Date:   Mon, 27 Dec 2021 16:19:10 +0300
-Message-ID: <CAE28pkNNsUnp4UiaKX-OjAQHPGjSNY6+hn-oK39m8w=ybXSO6Q@mail.gmail.com>
-Subject: [PATCH] qlge: rewrite qlge_change_rx_buffers()
-To:     netdev@vger.kernel.org, linux-staging@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAE28pkNNsUnp4UiaKX-OjAQHPGjSNY6+hn-oK39m8w=ybXSO6Q@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I replaced while loop with for. It looks nicer to me.
+On Mon, Dec 27, 2021 at 04:19:10PM +0300, Adam Kandur wrote:
+> I replaced while loop with for. It looks nicer to me.
+> 
+> Signed-off-by: Adam Kandur <sys.arch.adam@gmail.com>
+> 
+> ---
+>  drivers/staging/qlge/qlge_main.c | 14 ++++++--------
+>  1 file changed, 6 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
+> index 9873bb2a9ee4..69d57c2e199a 100644
+> --- a/drivers/staging/qlge/qlge_main.c
+> +++ b/drivers/staging/qlge/qlge_main.c
+> @@ -4012,19 +4012,17 @@ static int qlge_change_rx_buffers(struct
+> qlge_adapter *qdev)
+> 
+>         /* Wait for an outstanding reset to complete. */
+>         if (!test_bit(QL_ADAPTER_UP, &qdev->flags)) {
+> -               int i = 4;
+> +               for (int i = 4; !test_bit(QL_ADAPTER_UP, &qdev->flags); i--) {
+> +                       if (!i) {
+> +                               netif_err(qdev, ifup, qdev->ndev,
+> +                                         "Timed out waiting for adapter UP\n");
+> +                               return -ETIMEDOUT;
+> +                       }
+> 
+> -               while (--i && !test_bit(QL_ADAPTER_UP, &qdev->flags)) {
+>                         netif_err(qdev, ifup, qdev->ndev,
+>                                   "Waiting for adapter UP...\n");
+>                         ssleep(1);
+>                 }
+> -
+> -               if (!i) {
+> -                       netif_err(qdev, ifup, qdev->ndev,
+> -                                 "Timed out waiting for adapter UP\n");
+> -                       return -ETIMEDOUT;
+> -               }
+>         }
+> 
+>         status = qlge_adapter_down(qdev);
+> -- 
+> 2.34.0
+> 
 
-Signed-off-by: Adam Kandur <sys.arch.adam@gmail.com>
+Hi,
 
----
- drivers/staging/qlge/qlge_main.c | 14 ++++++--------
- 1 file changed, 6 insertions(+), 8 deletions(-)
+This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
+a patch that has triggered this response.  He used to manually respond
+to these common problems, but in order to save his sanity (he kept
+writing the same thing over and over, yet to different people), I was
+created.  Hopefully you will not take offence and will fix the problem
+in your patch and resubmit it so that it can be accepted into the Linux
+kernel tree.
 
-diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
-index 9873bb2a9ee4..69d57c2e199a 100644
---- a/drivers/staging/qlge/qlge_main.c
-+++ b/drivers/staging/qlge/qlge_main.c
-@@ -4012,19 +4012,17 @@ static int qlge_change_rx_buffers(struct
-qlge_adapter *qdev)
+You are receiving this message because of the following common error(s)
+as indicated below:
 
-        /* Wait for an outstanding reset to complete. */
-        if (!test_bit(QL_ADAPTER_UP, &qdev->flags)) {
--               int i = 4;
-+               for (int i = 4; !test_bit(QL_ADAPTER_UP, &qdev->flags); i--) {
-+                       if (!i) {
-+                               netif_err(qdev, ifup, qdev->ndev,
-+                                         "Timed out waiting for adapter UP\n");
-+                               return -ETIMEDOUT;
-+                       }
+- Your patch is malformed (tabs converted to spaces, linewrapped, etc.)
+  and can not be applied.  Please read the file,
+  Documentation/email-clients.txt in order to fix this.
 
--               while (--i && !test_bit(QL_ADAPTER_UP, &qdev->flags)) {
-                        netif_err(qdev, ifup, qdev->ndev,
-                                  "Waiting for adapter UP...\n");
-                        ssleep(1);
-                }
--
--               if (!i) {
--                       netif_err(qdev, ifup, qdev->ndev,
--                                 "Timed out waiting for adapter UP\n");
--                       return -ETIMEDOUT;
--               }
-        }
+- You did not specify a description of why the patch is needed, or
+  possibly, any description at all, in the email body.  Please read the
+  section entitled "The canonical patch format" in the kernel file,
+  Documentation/SubmittingPatches for what is needed in order to
+  properly describe the change.
 
-        status = qlge_adapter_down(qdev);
--- 
-2.34.0
+- You did not write a descriptive Subject: for the patch, allowing Greg,
+  and everyone else, to know what this patch is all about.  Please read
+  the section entitled "The canonical patch format" in the kernel file,
+  Documentation/SubmittingPatches for what a proper Subject: line should
+  look like.
+
+If you wish to discuss this problem further, or you have questions about
+how to resolve this issue, please feel free to respond to this email and
+Greg will reply once he has dug out from the pending patches received
+from other developers.
+
+thanks,
+
+greg k-h's patch email bot
