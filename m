@@ -2,78 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 48BA147FC55
-	for <lists+netdev@lfdr.de>; Mon, 27 Dec 2021 12:51:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BB8D47FC5C
+	for <lists+netdev@lfdr.de>; Mon, 27 Dec 2021 12:53:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236517AbhL0Lvt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Dec 2021 06:51:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42968 "EHLO
+        id S236543AbhL0Lxb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Dec 2021 06:53:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233644AbhL0Lvr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Dec 2021 06:51:47 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D338BC06173E;
-        Mon, 27 Dec 2021 03:51:47 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S233640AbhL0Lxb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Dec 2021 06:53:31 -0500
+Received: from mail.marcansoft.com (marcansoft.com [IPv6:2a01:298:fe:f::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 073DBC06173E;
+        Mon, 27 Dec 2021 03:53:30 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 73C9460F8D;
-        Mon, 27 Dec 2021 11:51:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CA0CC36AE7;
-        Mon, 27 Dec 2021 11:51:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1640605906;
-        bh=1BnnIqoK6MlJteUTtWztTf7Gtju/mdvIX754NFttH70=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=J+AK5OdpGffw2+VOn2yiS9tEBaWCnw8vpdk7XhM6c9bBMeQVOSgTJ2z/spdPqZ3SP
-         Ayooshz9NTBYE/inqxiE7ArzQ+YJ6CN4TtseB+7jVFB7+b+fDtoxcXfMpsi86GCBd9
-         zxH5xSoMn3LvfWnuUnebvTfURQBT/nPlstdSpYgs=
-Date:   Mon, 27 Dec 2021 12:51:44 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: Re: [PATCH v2] asix: Use min() instead of doing it manually
-Message-ID: <Ycmo0A/fnezdGhSa@kroah.com>
-References: <20211227113839.92352-1-jiapeng.chong@linux.alibaba.com>
+        (Authenticated sender: marcan@marcan.st)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id 51CFA419BC;
+        Mon, 27 Dec 2021 11:53:20 +0000 (UTC)
+Subject: Re: [RFC PATCH 00/34] brcmfmac: Support Apple T2 and M1 platforms
+To:     Hans de Goede <hdegoede@redhat.com>, Lukas Wunner <lukas@wunner.de>
+Cc:     Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
+        Wright Feng <wright.feng@infineon.com>,
+        Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Mark Kettenis <kettenis@openbsd.org>,
+        Rafa?? Mi??ecki <zajec5@gmail.com>,
+        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        "John W. Linville" <linville@tuxdriver.com>,
+        "brian m. carlson" <sandals@crustytoothpaste.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-acpi@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com
+References: <20211226153624.162281-1-marcan@marcan.st>
+ <20211226191728.GA687@wunner.de>
+ <06e801a0-7580-48ed-cac2-227c32a74ec2@redhat.com>
+From:   Hector Martin <marcan@marcan.st>
+Message-ID: <0a028b79-01eb-b69f-79b2-c9588dd31ad1@marcan.st>
+Date:   Mon, 27 Dec 2021 20:53:14 +0900
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.7.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211227113839.92352-1-jiapeng.chong@linux.alibaba.com>
+In-Reply-To: <06e801a0-7580-48ed-cac2-227c32a74ec2@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 27, 2021 at 07:38:39PM +0800, Jiapeng Chong wrote:
-> Eliminate following coccicheck warning:
+On 2021/12/27 6:42, Hans de Goede wrote:
+> Hi,
 > 
-> ./drivers/net/usb/asix_common.c:545:12-13: WARNING opportunity for
-> min().
+> On 12/26/21 20:17, Lukas Wunner wrote:
+>> On Mon, Dec 27, 2021 at 12:35:50AM +0900, Hector Martin wrote:
+>>> # On firmware
+>>>
+>>> As you might expect, the firmware for these machines is not available
+>>> under a redistributable license; however, every owner of one of these
+>>> machines *is* implicitly licensed to posess the firmware, and the OS
+>>> packages containing it are available under well-known URLs on Apple's
+>>> CDN with no authentication.
+>>
+>> Apple's EFI firmware contains a full-fledged network stack for
+>> downloading macOS images from osrecovery.apple.com.  I suspect
+>> that it also contains wifi firmware.
+>>
+>> You may want to check if it's passed to the OS as an EFI property.
+>> Using that would sidestep license issues.  There's EDID data,
+>> Thunderbolt DROM data and whatnot in those properties, so I
+>> wouldn't be surprised if it contained wifi stuff as well.
+>>
+>> Enable CONFIG_APPLE_PROPERTIES and pass "dump_apple_properties"
+>> on the command line to see all EFI properties in dmesg.
+>> Alternatively, check "ioreg -l" on macOS.  Generally, what's
+>> available in the I/O registry should also be available on Linux
+>> either as an ACPI or EFI property.
 > 
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-> ---
-> Changes in v2:
->   -Modified commmit message.
+> Interesting, note that even if the files are not available as
+> a property we also have CONFIG_EFI_EMBEDDED_FIRMWARE, see:
 > 
->  drivers/net/usb/asix_common.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> drivers/firmware/efi/embedded-firmware.c
+> Documentation/driver-api/firmware/fallback-mechanisms.rst
 > 
-> diff --git a/drivers/net/usb/asix_common.c b/drivers/net/usb/asix_common.c
-> index 71682970be58..da5a7df312d2 100644
-> --- a/drivers/net/usb/asix_common.c
-> +++ b/drivers/net/usb/asix_common.c
-> @@ -542,7 +542,7 @@ static int __asix_mdio_write(struct net_device *netdev, int phy_id, int loc,
->  out:
->  	mutex_unlock(&dev->phy_mutex);
->  
-> -	return ret < 0 ? ret : 0;
-> +	return min(ret, 0);
+> I wrote this to pry/dig out some touchscreen firmwares (where
+> we have been unable to get permission to redistribute) out of
+> EFI boot_services_code mem regions on tablets where
+> the touchsceen is supported under the EFI environment.
+> 
+> This may need some tweaks, but if there is an embedded copy
+> of the firmware files in the EFI mem regions somewhere it
+> should be possible to adjust this code to grab it and present
+> it to the firmware-loader mechanism as a fallback option.
 
-This is not a good idea, as was already pointed out.  Please fix your
-tools.
+Note that this wouldn't work on M1 Macs anyway, since those don't have
+EFI (we provide EFI via U-Boot as a chained bootloader on those), and
+their bootloader doesn't support any networking (it doesn't even do USB
+or any kind of UI).
 
-thanks,
+Quick recap for those not familiar with the M1 boot process: the
+bootloader is iBoot, which is extremely simple (at least compared to
+EFI). All it can do is boot kernels from APFS volumes on internal NVMe.
+The boot selection menu and recovery options are implemented as macOS
+apps running from a recovery image (~1GB), and "USB boot" is implemented
+by copying the macOS equivalent of /boot to NVMe. There is a global
+recovery image as well as per-OS recovery image. The WiFi firmware is
+present in this image as well as on normal macOS root volumes.
 
-greg k-h
+Our Linux install script is actually mostly a macOS install script that
+sets up all the boot components that macOS would normally have,
+including the recovery image, minus the main root filesystem. This is
+all required to work properly within Apple's security and multi-boot
+framework. So, since we're installing the recovery image, we're already
+in an easy position to pull the firmware out and stick it in the EFI
+partition for Linux to easily use. The alternative would be for Linux
+userspace to read it from APFS directly, but that seems unlikely to be
+practical until linux-apfs is upstreamed.
+
+For T2 Macs I'm sure the firmware will be in EFI somewhere, but even if
+we can get it from there (I wouldn't be surprised if it's e.g. still
+compressed in the normal boot path that doesn't start network services),
+I'm not sure it's worth implementing yet another mechanism for those
+machines. Once we have the vendor-firmware mechanism implemented for M1,
+it's easy to just run the same script on T2s and get the proper firmware
+from macOS (which might even be different from the EFI firmware...).
+macOS definitely doesn't read the firmware from EFI on those machines,
+so a hack to do it by scanning the code would probably not be something
+we can rely on to continue working across firmware updates (and they do
+update WiFi firmware; it's a rather well known source of security
+issues... so then we'd have to play the update-the-sha256 cat and mouse
+game). I'm pretty sure there's no property containing the big firmware
+blob passed explicitly to the OS; it has its own copy.
+
+-- 
+Hector Martin (marcan@marcan.st)
+Public Key: https://mrcn.st/pub
