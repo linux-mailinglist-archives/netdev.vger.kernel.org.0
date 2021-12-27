@@ -2,74 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 84DBE480506
-	for <lists+netdev@lfdr.de>; Mon, 27 Dec 2021 23:03:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 52B5848056E
+	for <lists+netdev@lfdr.de>; Tue, 28 Dec 2021 01:57:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231628AbhL0WDG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Dec 2021 17:03:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39290 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229626AbhL0WDF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Dec 2021 17:03:05 -0500
-Received: from mail-oo1-xc35.google.com (mail-oo1-xc35.google.com [IPv6:2607:f8b0:4864:20::c35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98A48C06173E
-        for <netdev@vger.kernel.org>; Mon, 27 Dec 2021 14:03:05 -0800 (PST)
-Received: by mail-oo1-xc35.google.com with SMTP id v7-20020a4a2447000000b002daf9b0cb1eso3837625oov.8
-        for <netdev@vger.kernel.org>; Mon, 27 Dec 2021 14:03:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=pzTNKZFgTEOIyo2c3jdIvHY79QMTMB8IJ5P3NaJqyw4=;
-        b=CW/KqwhVIkDeEMiS0qeqTwQOuVNdjxQDxOIABfcMY92pYQAi4EvijJsFs2MusRtFzg
-         71ZAuj3lgO16EUmjXPbEuPe0oqVtH7dR6GheqgM6zHo/IdjPE7/JVYsKdXPcLJYWPDJs
-         6Kk9aKiupiF4lmGyMGy/QaZHy1eH/qRbX33A99uB50TCWlhoe9DXfYUKtAC1o35x8X39
-         02ngzYzeohhqPhzGqcVeQg01MQbJjzQ5MY0OZja/5uyYhsjwT+Nu/pbb1ddLt/PHkIim
-         jR6UK1z0WCem+5wkjLx+tqXW4oXHl9AwuSUYCHFnAYMzAQxp5R8FUKiu+Oib8z8fsBl3
-         w9cg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=pzTNKZFgTEOIyo2c3jdIvHY79QMTMB8IJ5P3NaJqyw4=;
-        b=d6tHz2bYYoO++hqcvQmEZLxLuPobvNRh+gHT8oJ+pozz5BC4YmAq2dF9jieokOsdL5
-         c14I6IPT4hDbZnnpDf8hHHuXfkVstXhvzqbqE0zO7Mxa1uxNU+v1Gsti329LGUZAEET/
-         2etFM2rCn9JcKSr1xYCPpzklCLa4RsWP2uzw9r1KXALILIiThARfBOr2FpOjBJ2EF0QZ
-         oAVQf7cK5K/oELpZhlVX28ktsOH+pF1MFyauf5pyWwmZEUgL/ZSD7Hh1OzsWqF5BQJJC
-         tpQ9LPYa1IyiS1z6K58+KHDGlRodBNrvPsp6xYNilCElC0WsC9jqL/XamRjF2mq4TJrq
-         Oasw==
-X-Gm-Message-State: AOAM532TbRsuWesnOMjEsQkPqX1CNG2N9G3y54gmsh/lQn1jAa8gzVkE
-        Sv+z4MuQjmIDXaa1I/yDl10+2xIyyuvrkAP+VxM=
-X-Google-Smtp-Source: ABdhPJzkFoEvo83Sze6q2wdf6/sQQpOIRJZp+QHZpV37EW9dxJKvFig89M0mfvF+4dTDNM5zGr6KrU9sewPoCxeieGk=
-X-Received: by 2002:a4a:3e8d:: with SMTP id t135mr12154177oot.78.1640642583983;
- Mon, 27 Dec 2021 14:03:03 -0800 (PST)
+        id S234252AbhL1A5z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Dec 2021 19:57:55 -0500
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:25026 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230423AbhL1A5y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Dec 2021 19:57:54 -0500
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 1BRI8xBY021958;
+        Mon, 27 Dec 2021 16:57:51 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=pfpt0220; bh=X5NsQZav2d8wen4c9lzEoLTEFjg3MBPcUaL6A3f31g0=;
+ b=aGq9dskywFM0RcCErWFDmvbZel4p8bqSQlqk5pMwG9ijC9lAocr0XvvwN+8Jt7wPkq/s
+ ohF63jaN1DLWO+m/aPSrYQdxpaECACtM6V5GQS3fYLErO3iVHtiL/DoY5pJmwviIq2b0
+ 1hjfMPMmXTZOcP/BYrmXkMIOrAvLgjYaS5T1ahI0iO0NeDc6HaWBV5T49c2oq1GdfhXB
+ TqzgSrd5NxFPg/lz3TM1KA/QnJ1wdqzMutdr4iISDBGPfOLblMApdUtBNMijIaybOtSQ
+ 1tmIKRaAcHRu+MFP4k6r7pVOVaWiDvmIHeVa1/gt0r497zTcWpnu2caZtr6PNDqNs2zh Dg== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3d7jgsgwgc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Mon, 27 Dec 2021 16:57:51 -0800
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 27 Dec
+ 2021 16:57:49 -0800
+Received: from ahp-hp.devlab.local (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
+ Transport; Mon, 27 Dec 2021 16:57:48 -0800
+From:   Venkata Sudheer Kumar Bhavaraju <vbhavaraju@marvell.com>
+To:     <andrew@lunn.ch>
+CC:     <netdev@vger.kernel.org>,
+        Venkata Sudheer Kumar Bhavaraju <vbhavaraju@marvell.com>,
+        Ariel Elior <aelior@marvell.com>,
+        Alok Prasad <palok@marvell.com>
+Subject: [PATCH net-next v2 1/1] qed: add prints if request_firmware() failed
+Date:   Mon, 27 Dec 2021 09:56:56 -0800
+Message-ID: <20211227175656.267184-1-vbhavaraju@marvell.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Received: by 2002:a9d:321:0:0:0:0:0 with HTTP; Mon, 27 Dec 2021 14:03:03 -0800 (PST)
-Reply-To: infoowenfermor@gmail.com
-From:   Owen Fermore <infonedweb@gmail.com>
-Date:   Tue, 28 Dec 2021 00:03:03 +0200
-Message-ID: <CAJLH5Q++56WDF3vVCRC5nAokfVuH00CqqPcih7XUUhcm334npQ@mail.gmail.com>
-Subject: project financing
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: QHnJuo6VesoHWD8Og8xIpAKUNEKUq3Ck
+X-Proofpoint-GUID: QHnJuo6VesoHWD8Og8xIpAKUNEKUq3Ck
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2021-12-27_10,2021-12-24_01,2021-12-02_01
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Sir/Madam
+If driver load failed due to request_firmware() not finding the device
+firmware file, add prints that help remedy the situation.
 
-We invite all interested project owners and investors to our project
-financing programme. I am the investment officer of a UAE based
-investment company.
+Signed-off-by: Ariel Elior <aelior@marvell.com>
+Signed-off-by: Alok Prasad <palok@marvell.com>
+Signed-off-by: Venkata Sudheer Kumar Bhavaraju <vbhavaraju@marvell.com>
+---
+Changes in v2:
+ - Rename QED_FW_REPO to FW_REPO
+ - Move FW_REPO macro to qed_if.h
+---
+ drivers/net/ethernet/qlogic/qed/qed_main.c | 3 +++
+ include/linux/qed/qed_if.h                 | 3 +++
+ 2 files changed, 6 insertions(+)
 
-We are ready to fund projects outside the UAE, in the form of debt
-finance, We grant loans to both Corporate and private entities at a
-low interest rate of 2.5% ROI per annul.
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_main.c b/drivers/net/ethernet/qlogic/qed/qed_main.c
+index 46d4207f22a3..845c151c5def 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_main.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_main.c
+@@ -1285,6 +1285,9 @@ static int qed_slowpath_start(struct qed_dev *cdev,
+ 			DP_NOTICE(cdev,
+ 				  "Failed to find fw file - /lib/firmware/%s\n",
+ 				  QED_FW_FILE_NAME);
++			DP_NOTICE(cdev,
++				  "you may need to download firmware from %s",
++				  FW_REPO);
+ 			goto err;
+ 		}
+ 
+diff --git a/include/linux/qed/qed_if.h b/include/linux/qed/qed_if.h
+index 6dc4943d8aec..f063d82ef8f9 100644
+--- a/include/linux/qed/qed_if.h
++++ b/include/linux/qed/qed_if.h
+@@ -1210,6 +1210,9 @@ struct qed_common_ops {
+ 	int (*get_esl_status)(struct qed_dev *cdev, bool *esl_active);
+ };
+ 
++#define FW_REPO		\
++	"https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git"
++
+ #define MASK_FIELD(_name, _value) \
+ 	((_value) &= (_name ## _MASK))
+ 
+-- 
+2.27.0
 
-The terms are very flexible and interesting. Kindly revert back if you
-have projects that need funding for further discussion and
-negotiation.
-
-Kindly reply to my email: infoowenfermor@gmail.com
-
-Thanks
-Mr. Owen  Fermore
