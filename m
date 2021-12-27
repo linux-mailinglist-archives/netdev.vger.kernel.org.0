@@ -2,94 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA1E647FADB
+	by mail.lfdr.de (Postfix) with ESMTP id F2F8047FADC
 	for <lists+netdev@lfdr.de>; Mon, 27 Dec 2021 09:01:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231620AbhL0IBB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S231705AbhL0IBB (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Mon, 27 Dec 2021 03:01:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48492 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231636AbhL0IA5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Dec 2021 03:00:57 -0500
-Received: from mail-vk1-xa2b.google.com (mail-vk1-xa2b.google.com [IPv6:2607:f8b0:4864:20::a2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1299C06173E
-        for <netdev@vger.kernel.org>; Mon, 27 Dec 2021 00:00:56 -0800 (PST)
-Received: by mail-vk1-xa2b.google.com with SMTP id h5so29712vkp.5
-        for <netdev@vger.kernel.org>; Mon, 27 Dec 2021 00:00:56 -0800 (PST)
+        with ESMTP id S231658AbhL0IA7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Dec 2021 03:00:59 -0500
+Received: from mail-ua1-x933.google.com (mail-ua1-x933.google.com [IPv6:2607:f8b0:4864:20::933])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61F8CC061401
+        for <netdev@vger.kernel.org>; Mon, 27 Dec 2021 00:00:58 -0800 (PST)
+Received: by mail-ua1-x933.google.com with SMTP id v12so13805714uar.7
+        for <netdev@vger.kernel.org>; Mon, 27 Dec 2021 00:00:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=4RKSOTRrMkqrtJyZWXv6wz2/LLnRjZJjA6dq6sZqh1Y=;
-        b=W72pWNBrQ3gb8Ksrc8Z2UCVQ/66AF1BUNWkdh4GcBMGzMZQC79vkegR32uXjWuS1LX
-         L44D4zbneZZa1z5KihRmD1+dgxwlsI25rBiZ0gmiDjg1B0VZXouoKJQ5gVtBHOmniEAQ
-         n5SIbtQ/BwT28tGNjtJ6osj4fVJ/g1vI7fohg=
+        bh=WUIm1s+fXtr2DAYShVoLDIsQK5CyUbbl2KG6OIu7XCM=;
+        b=WvXQIUoah24r+NjFdkcMr1KyG9fWdJXGaDM8MbCC7GxOSMGL0LERaTi1NX6gjmbF+/
+         P+j5vkL6IMURSY0qb1GMZpxJxu7+SxzGiiU7Ko+mRTZ1+J6V2ffKYyQqUyDHX8hEdTQG
+         +mDnsEafdE/3SY8IuQHnwc68/U6E1hz97E0eY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=4RKSOTRrMkqrtJyZWXv6wz2/LLnRjZJjA6dq6sZqh1Y=;
-        b=jRmRV0rzBDVSgw4pWXX87Wmm9uIUHQ1k8VD/9LHAWbpg604sIgnXSMlyR1CsETirG4
-         AUZlYM5EmHxJtoT8ySRZVbQXGngh3Uv++O0l8pEYtofq/ZxvLFG2HcQPv519Coi2WR0d
-         Bd/bYKhdnoxraTtrEGt3xcEqpZONrS7Je+RBwz3WUgu6dk/vjBdzgafE92cvA3DKORAf
-         PMp2l3OhT7cc4H0/43LasSaPUGec44W7r8xVasroF1Iy6gMZPGGvcn8EcWBQSMvtXyeu
-         6FcHXjbLn86vrHjNUWj3FnJhNJhszueaaJcdIvi2FsgjT1iiGZG+kh3iLGuwmME3EDRP
-         2IgQ==
-X-Gm-Message-State: AOAM531q1IRSdsECfjNFLzEffIBf+FC4t6DCYXuxlc+LGYMbYkG/JFjR
-        LjrDOJhmQA9eOEvPU4PJzFduNg==
-X-Google-Smtp-Source: ABdhPJxFdgnBm8eyVOBnJX0S7Y6XqqrT6DxNFlpQdutlgGc1yLtJhpIFsqSCuLuefVL8rNOZhy2SWA==
-X-Received: by 2002:a05:6122:201e:: with SMTP id l30mr4487237vkd.10.1640592055990;
-        Mon, 27 Dec 2021 00:00:55 -0800 (PST)
+        bh=WUIm1s+fXtr2DAYShVoLDIsQK5CyUbbl2KG6OIu7XCM=;
+        b=Ulglc1NR2w/Rat4XPeaWlcglUh2hL6cqo472lHh1LGSSz1izuJwiCxtoqUtcx4XQ/A
+         qIAeyu1o3LFT1l4lyM8898zq8Y9IR3IR+bXD+qLHN3j6GMO5ooWSYKXatsEOdh6EPeaB
+         oqSfmxhMevBIxRnXg60wgj68OExQY/+LgHjs/E7VxBsYUTLq/7qsiW585LUKxiJ68nf/
+         T1LTpidqDg/5WmIxgkOrwXGdw6EQuH0EdYfhJtexQWhFiSzDfXKDsisHuyVKkr6zQ66D
+         501t2nCgaaaeopmJhh+lIna2PSPJiU92xREP5usRE9njmet+7IiZuCTXqFHqK9YYL41+
+         1BdQ==
+X-Gm-Message-State: AOAM530EFpxFQ0i7eol66kZ6ToMG1mbMFVnHdJoUOG6TYevfAO2B0KWF
+        BB8jorKGzr2tJcZOpEUJIRxI+esb7cRBSxZ7
+X-Google-Smtp-Source: ABdhPJzlILoh5M+RqeIoOqp4mVx9Kf9CU/9ZEF+QN2S73AWkGQQP9uZTOdGkcFk28sxqo0nJTY/c3Q==
+X-Received: by 2002:a05:6102:21c1:: with SMTP id r1mr3902293vsg.61.1640592057164;
+        Mon, 27 Dec 2021 00:00:57 -0800 (PST)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id o1sm2907587vkc.35.2021.12.27.00.00.54
+        by smtp.gmail.com with ESMTPSA id o1sm2907587vkc.35.2021.12.27.00.00.56
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 27 Dec 2021 00:00:55 -0800 (PST)
+        Mon, 27 Dec 2021 00:00:56 -0800 (PST)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com,
-        Edwin Peer <edwin.peer@broadcom.com>
-Subject: [PATCH net-next 6/7] bnxt_en: convert to xdp_do_flush
-Date:   Mon, 27 Dec 2021 03:00:31 -0500
-Message-Id: <1640592032-8927-7-git-send-email-michael.chan@broadcom.com>
+        Vikas Gupta <vikas.gupta@broadcom.com>
+Subject: [PATCH net-next 7/7] bnxt_en: Use page frag RX buffers for better software GRO performance
+Date:   Mon, 27 Dec 2021 03:00:32 -0500
+Message-Id: <1640592032-8927-8-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1640592032-8927-1-git-send-email-michael.chan@broadcom.com>
 References: <1640592032-8927-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000bceda905d41c1a49"
+        boundary="000000000000d31b3b05d41c1aec"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000bceda905d41c1a49
+--000000000000d31b3b05d41c1aec
 
-From: Edwin Peer <edwin.peer@broadcom.com>
+From: Jakub Kicinski <kuba@kernel.org>
 
-The xdp_do_flush_map function has been replaced with the more general
-xdp_do_flush().
+If NETIF_F_GRO_HW is disabled, the existing driver code uses kmalloc'ed
+data for RX buffers.  This causes inefficient SW GRO performance
+because the GRO data is merged using the less efficient frag_list.
+Use netdev_alloc_frag() and friends instead so that GRO data can be
+merged into skb_shinfo(skb)->frags for better performance.
 
-Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
+[Use skb_free_frag() - Vikas Gupta]
+
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
+Reviewed-by: Andy Gospodarek <gospo@broadcom.com>
+Signed-off-by: Vikas Gupta <vikas.gupta@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 27 +++++++++++++----------
+ 1 file changed, 15 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 48e61355ca00..ea5b072ba292 100644
+index ea5b072ba292..4d7ea62e24fb 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -2429,7 +2429,7 @@ static int __bnxt_poll_work(struct bnxt *bp, struct bnxt_cp_ring_info *cpr,
+@@ -741,13 +741,16 @@ static struct page *__bnxt_alloc_rx_page(struct bnxt *bp, dma_addr_t *mapping,
+ 	return page;
+ }
+ 
+-static inline u8 *__bnxt_alloc_rx_data(struct bnxt *bp, dma_addr_t *mapping,
++static inline u8 *__bnxt_alloc_rx_frag(struct bnxt *bp, dma_addr_t *mapping,
+ 				       gfp_t gfp)
+ {
+ 	u8 *data;
+ 	struct pci_dev *pdev = bp->pdev;
+ 
+-	data = kmalloc(bp->rx_buf_size, gfp);
++	if (gfp == GFP_ATOMIC)
++		data = napi_alloc_frag(bp->rx_buf_size);
++	else
++		data = netdev_alloc_frag(bp->rx_buf_size);
+ 	if (!data)
+ 		return NULL;
+ 
+@@ -756,7 +759,7 @@ static inline u8 *__bnxt_alloc_rx_data(struct bnxt *bp, dma_addr_t *mapping,
+ 					DMA_ATTR_WEAK_ORDERING);
+ 
+ 	if (dma_mapping_error(&pdev->dev, *mapping)) {
+-		kfree(data);
++		skb_free_frag(data);
+ 		data = NULL;
+ 	}
+ 	return data;
+@@ -779,7 +782,7 @@ int bnxt_alloc_rx_data(struct bnxt *bp, struct bnxt_rx_ring_info *rxr,
+ 		rx_buf->data = page;
+ 		rx_buf->data_ptr = page_address(page) + bp->rx_offset;
+ 	} else {
+-		u8 *data = __bnxt_alloc_rx_data(bp, &mapping, gfp);
++		u8 *data = __bnxt_alloc_rx_frag(bp, &mapping, gfp);
+ 
+ 		if (!data)
+ 			return -ENOMEM;
+@@ -1021,11 +1024,11 @@ static struct sk_buff *bnxt_rx_skb(struct bnxt *bp,
+ 		return NULL;
  	}
  
- 	if (event & BNXT_REDIRECT_EVENT)
--		xdp_do_flush_map();
-+		xdp_do_flush();
+-	skb = build_skb(data, 0);
++	skb = build_skb(data, bp->rx_buf_size);
+ 	dma_unmap_single_attrs(&bp->pdev->dev, dma_addr, bp->rx_buf_use_size,
+ 			       bp->rx_dir, DMA_ATTR_WEAK_ORDERING);
+ 	if (!skb) {
+-		kfree(data);
++		skb_free_frag(data);
+ 		return NULL;
+ 	}
  
- 	if (event & BNXT_TX_EVENT) {
- 		struct bnxt_tx_ring_info *txr = bnapi->tx_ring;
+@@ -1613,7 +1616,7 @@ static inline struct sk_buff *bnxt_tpa_end(struct bnxt *bp,
+ 		u8 *new_data;
+ 		dma_addr_t new_mapping;
+ 
+-		new_data = __bnxt_alloc_rx_data(bp, &new_mapping, GFP_ATOMIC);
++		new_data = __bnxt_alloc_rx_frag(bp, &new_mapping, GFP_ATOMIC);
+ 		if (!new_data) {
+ 			bnxt_abort_tpa(cpr, idx, agg_bufs);
+ 			cpr->sw_stats.rx.rx_oom_discards += 1;
+@@ -1624,13 +1627,13 @@ static inline struct sk_buff *bnxt_tpa_end(struct bnxt *bp,
+ 		tpa_info->data_ptr = new_data + bp->rx_offset;
+ 		tpa_info->mapping = new_mapping;
+ 
+-		skb = build_skb(data, 0);
++		skb = build_skb(data, bp->rx_buf_size);
+ 		dma_unmap_single_attrs(&bp->pdev->dev, mapping,
+ 				       bp->rx_buf_use_size, bp->rx_dir,
+ 				       DMA_ATTR_WEAK_ORDERING);
+ 
+ 		if (!skb) {
+-			kfree(data);
++			skb_free_frag(data);
+ 			bnxt_abort_tpa(cpr, idx, agg_bufs);
+ 			cpr->sw_stats.rx.rx_oom_discards += 1;
+ 			return NULL;
+@@ -2796,7 +2799,7 @@ static void bnxt_free_one_rx_ring_skbs(struct bnxt *bp, int ring_nr)
+ 
+ 		tpa_info->data = NULL;
+ 
+-		kfree(data);
++		skb_free_frag(data);
+ 	}
+ 
+ skip_rx_tpa_free:
+@@ -2822,7 +2825,7 @@ static void bnxt_free_one_rx_ring_skbs(struct bnxt *bp, int ring_nr)
+ 			dma_unmap_single_attrs(&pdev->dev, mapping,
+ 					       bp->rx_buf_use_size, bp->rx_dir,
+ 					       DMA_ATTR_WEAK_ORDERING);
+-			kfree(data);
++			skb_free_frag(data);
+ 		}
+ 	}
+ 
+@@ -3526,7 +3529,7 @@ static int bnxt_alloc_one_rx_ring(struct bnxt *bp, int ring_nr)
+ 		u8 *data;
+ 
+ 		for (i = 0; i < bp->max_tpa; i++) {
+-			data = __bnxt_alloc_rx_data(bp, &mapping, GFP_KERNEL);
++			data = __bnxt_alloc_rx_frag(bp, &mapping, GFP_KERNEL);
+ 			if (!data)
+ 				return -ENOMEM;
+ 
 -- 
 2.18.1
 
 
---000000000000bceda905d41c1a49
+--000000000000d31b3b05d41c1aec
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -160,13 +262,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEINjW1cBH4MJLBDuMvLOttQlY9sQmPza9
-vavOMBBSHpJdMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMTIy
-NzA4MDA1NlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIMKB93XMyiNbs0q1EiRx5ErFg43FLWfp
+d51ayZ4u6km0MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMTIy
+NzA4MDA1N1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQBap+Foy1Ssu8Cl546afEN4Ey/7xAuMOR25B7kx9UBFuxrfvsVK
-EDSwgfwzPhu3IpQdq15k5LBK5127zRBcflQk4/ajxUm0yU89xuRyDKOfoaPEYgifRRT/OWWB0npN
-v16xlWN4vM83TyAEjVam3kHMKok9sXlPBt6iR/e+9ggW/MAgBxnaXQQi7eosS3nWQPZnB/kW0Shd
-C0i5fA30RDk5Q+ExQOMLTJKsVy4RBax8ZIVRUskN6IaiP5QxXEf+nJ7Ns711PFtdOXKtHhIFfu4Y
-rjIXCDWhgqyvIN8ryr3nZoAsEW65L9elSn934XM8+Y1zdKp+5JLKCD/EM0TOy1qA
---000000000000bceda905d41c1a49--
+ATANBgkqhkiG9w0BAQEFAASCAQC+WGod/gHmvumb3yazducTgCNO04SN07FlU0nfIFIHIKpKuN8F
+pIJZYOHwW2oHc4gmwYUGDSZJooyrmtdG9xKUYfZnTqsQikJe/ltc3Zg4D/5tHFGQrbZ0E/NoheVn
+Fck8ygCu1AfYU2UhKK7xpp0zfw5v8WEZWrvjFHMNdP0f36FPgAv8iQTwOYihOsRd7UFV/eb7Ph4/
+YSk12sIsWbljW0I4xkqFZVDPO0vHh+ca/ruyEOpzWvfbgsL/A+HBt+cRRTEZ/8OClatE9TrllslD
+tcD7a2jUKBmG61isrwybQQrTCmgRiLTv2fppyP6ZQXej+qYxi7y88Qc6GEnOXr/j
+--000000000000d31b3b05d41c1aec--
