@@ -2,93 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 94AB847FAD5
+	by mail.lfdr.de (Postfix) with ESMTP id DDC8C47FAD6
 	for <lists+netdev@lfdr.de>; Mon, 27 Dec 2021 09:01:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231447AbhL0IAv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Dec 2021 03:00:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48448 "EHLO
+        id S231465AbhL0IAw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Dec 2021 03:00:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231146AbhL0IAu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Dec 2021 03:00:50 -0500
-Received: from mail-ua1-x931.google.com (mail-ua1-x931.google.com [IPv6:2607:f8b0:4864:20::931])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30BBBC06173E
-        for <netdev@vger.kernel.org>; Mon, 27 Dec 2021 00:00:50 -0800 (PST)
-Received: by mail-ua1-x931.google.com with SMTP id az37so4766040uab.12
-        for <netdev@vger.kernel.org>; Mon, 27 Dec 2021 00:00:50 -0800 (PST)
+        with ESMTP id S231146AbhL0IAv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Dec 2021 03:00:51 -0500
+Received: from mail-vk1-xa2c.google.com (mail-vk1-xa2c.google.com [IPv6:2607:f8b0:4864:20::a2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5470BC06173E
+        for <netdev@vger.kernel.org>; Mon, 27 Dec 2021 00:00:51 -0800 (PST)
+Received: by mail-vk1-xa2c.google.com with SMTP id u198so8192367vkb.13
+        for <netdev@vger.kernel.org>; Mon, 27 Dec 2021 00:00:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=43UEYK3dV5a1uBBnd/iU28AhK7ZmuHis0tqztFLj81o=;
-        b=RukjKeBXgp0VHYza3YGc7YvFCP/8F9oIzTciLIuVIOvEj2UCYmgYaLmdOBP2GPr3FR
-         4ejZoicWSnMq3UpoyJwdnRjYU6dL7neMmkYGxDkSJNFTXLF+tE0wE/RlYUE+JbuMcPBo
-         p5Pg6CI2Nk43dodKekLe5BtLwIz9xyedHpysk=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=etKw1bTtU9vS5rVhdOjIgo9POKFLqemVr+IQ/9JZu7g=;
+        b=bjS7kNpSnZnuJnAJ0AStEiMNupgAE1uLgvaAUxifjESIcXA07Qj2pVCOrBxGLIra1U
+         Cd0jYLAfP8RdMkQNmOUvKE0c85fnJJSrHaGSTRv3Scw0rUasNLDCysqEHDD8Hez/dsuw
+         i72gGToE9LjPfCMExLMk8efZ3/8K79Kgkv5ow=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=43UEYK3dV5a1uBBnd/iU28AhK7ZmuHis0tqztFLj81o=;
-        b=0kBurOVXS3v6l3N01g4L/q/AghVH2uiHomq0UaWeSsx6jTIX3C0xuwokLSE4wC+mu/
-         YeXS2gL4A9Iq8b//kuYNonnS19b4+9ZheJaXR++M86IdS5/1Tilz8QWIjxGT3Vxr4F9I
-         j/dtrNVIzyoRtDes/ag1jg65eURjElCX629bUZL+HwUaDdBU5dniK/iemk08yeSj1lql
-         b310Wo1PnxcLFiCed8xDVnuDO8zYhPUcHhopSqyySDjjfIsO+zZTzUhc0wikgw2hJ3xQ
-         XM164fQqxaMpCw8xBvz6ZJdhZVSmnAQThzChgZYp39uHq3w1TsAnOAN/7ydy9UwOnlOo
-         Gzxg==
-X-Gm-Message-State: AOAM531T844O+DAeHaKXWhOpwjgAy526/eWG8yQ9V2jCAJYWv6FqwEXl
-        FtUiV9WSgZLHrQ3ouYl5338jW0dkZ/RTONbn
-X-Google-Smtp-Source: ABdhPJwFwb89l+8CLvTr6331tC6vWHD6EON97fwSNBmRDfpW+sVmNp8nhLUXc8UxL0uX1t6GcSKB/g==
-X-Received: by 2002:ab0:7243:: with SMTP id d3mr1584486uap.27.1640592049109;
-        Mon, 27 Dec 2021 00:00:49 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=etKw1bTtU9vS5rVhdOjIgo9POKFLqemVr+IQ/9JZu7g=;
+        b=DLJzAGzJwNRGHbbQW77GNEcGC1TsT/jvNKFzmqz1N5ITlyrszGRgRBcK8EVxGsVuhh
+         m9kV5EDw3xkK65H8kgUSh7IWuz2XNVlGoWAd2flBIlTvJxb1zXyGfo7HNX1Y0q8FUrgu
+         pzPpJrZc27mE/1nRyFTNfnjldhWZIuUkaCu8UFXcs/W0IxDq9AFA/zy0HKy918+42/Gy
+         Eg3V0K5mfXKAfdziCkplF9zX4aduB1ovCruIkvzdjG1VkG/6tli4rN09K6+qYJvbHg7o
+         WAslK+0BagSXpDIKdeTUBXtua7ZeNsX42sq830OQNTB7IiX7dNIpes6KYTfKGhTWp2JZ
+         vM/A==
+X-Gm-Message-State: AOAM532QjnrizIHC1aySY9rs2fnrGKrtiXYRTz2owI/Pu8nvnX6qwv5A
+        cbHa/kyNg75DIQVkiPfkj5isNKd8zz/WXafN
+X-Google-Smtp-Source: ABdhPJyIzahNTWfYc0ZQOkx4evJtmRlW/p1YYTTSoETH+F9UTPdB36nRQfdYi9a5/o+TJxXtOVtcGg==
+X-Received: by 2002:a05:6122:2001:: with SMTP id l1mr4767125vkd.16.1640592050339;
+        Mon, 27 Dec 2021 00:00:50 -0800 (PST)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id o1sm2907587vkc.35.2021.12.27.00.00.48
+        by smtp.gmail.com with ESMTPSA id o1sm2907587vkc.35.2021.12.27.00.00.49
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 27 Dec 2021 00:00:48 -0800 (PST)
+        Mon, 27 Dec 2021 00:00:49 -0800 (PST)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
-Subject: [PATCH net-next 0/7] bnxt_en: Update for net-next
-Date:   Mon, 27 Dec 2021 03:00:25 -0500
-Message-Id: <1640592032-8927-1-git-send-email-michael.chan@broadcom.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com,
+        Somnath Kotur <somnath.kotur@broadcom.com>
+Subject: [PATCH net-next 1/7] bnxt_en: Add event handler for PAUSE Storm event
+Date:   Mon, 27 Dec 2021 03:00:26 -0500
+Message-Id: <1640592032-8927-2-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <1640592032-8927-1-git-send-email-michael.chan@broadcom.com>
+References: <1640592032-8927-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="00000000000055614905d41c1a88"
+        boundary="000000000000669e3a05d41c1a21"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---00000000000055614905d41c1a88
+--000000000000669e3a05d41c1a21
 
-This series includes some added error logging for firmware error reports,
-DIM interrupt sampling for the latest 5750X chips, CQE interrupt
-coalescing mode support, and to use RX page frag buffers for better
-software GRO performance.
+From: Somnath Kotur <somnath.kotur@broadcom.com>
 
-Andy Gospodarek (1):
-  bnxt_en: enable interrupt sampling on 5750X for DIM
+FW has been modified to send a new async event when it detects
+a pause storm. Register for this new event and log it upon receipt.
 
-Edwin Peer (1):
-  bnxt_en: convert to xdp_do_flush
+Reviewed-by: Andy Gospodarek <gospo@broadcom.com>
+Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
+Signed-off-by: Somnath Kotur <somnath.kotur@broadcom.com>
+Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+---
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-Jakub Kicinski (1):
-  bnxt_en: Use page frag RX buffers for better software GRO performance
-
-Michael Chan (3):
-  bnxt_en: Log error report for dropped doorbell
-  bnxt_en: Support configurable CQE coalescing mode
-  bnxt_en: Support CQE coalescing mode in ethtool
-
-Somnath Kotur (1):
-  bnxt_en: Add event handler for PAUSE Storm event
-
- drivers/net/ethernet/broadcom/bnxt/bnxt.c     | 72 +++++++++++++------
- drivers/net/ethernet/broadcom/bnxt/bnxt.h     |  1 +
- .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 24 ++++++-
- 3 files changed, 75 insertions(+), 22 deletions(-)
-
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index c057b1df86a9..11255131abbc 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -2049,6 +2049,9 @@ static void bnxt_event_error_report(struct bnxt *bp, u32 data1, u32 data2)
+ 		netdev_err(bp->dev, "1PPS: Received invalid signal on pin%lu from the external source. Please fix the signal and reconfigure the pin\n",
+ 			   BNXT_EVENT_INVALID_SIGNAL_DATA(data2));
+ 		break;
++	case ASYNC_EVENT_CMPL_ERROR_REPORT_BASE_EVENT_DATA1_ERROR_TYPE_PAUSE_STORM:
++		netdev_warn(bp->dev, "Pause Storm detected!\n");
++		break;
+ 	default:
+ 		netdev_err(bp->dev, "FW reported unknown error type\n");
+ 		break;
 -- 
 2.18.1
 
 
---00000000000055614905d41c1a88
+--000000000000669e3a05d41c1a21
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -159,13 +163,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIIIj89mGYC1vF63giDQ7P+xXW4iCSzhz
-gCoLjdsyRkLMMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMTIy
-NzA4MDA0OVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEINtmmlFMnPY0kqbflJNdYhpkBULW4bFk
+WiwRPQ11so4/MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMTIy
+NzA4MDA1MFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQBtSnoHuzgcEphNFhmADKFHst6Lut2phMuOJdHCpj6f5SEBT9mI
-KgTS9JT47vQ0Caocd6DLeO2sJrpbYYs7b2yHa0jx1JtpD6DDe7907oBGqnRVlV90RyVMQ/61zI8t
-i0wNwHdPCfqXaH5kAks+dVanAvSxxf5N14nyhfWE/eG8ZvReFYilcFV853/RVaLGYd+QZ5p8rDN7
-8MxcKbjvcma9lHFIz7UezN6ua7waYDpcoeyT1Co8xtYB8CcMyUwS8YyeyfJbLyKERaG6ZqzNNpPk
-kx5JPq1FaOhPeeES0w/oRkO+QDbSLZARjUtHTClzlik19zxh0NfejxhDZLM8rl9w
---00000000000055614905d41c1a88--
+ATANBgkqhkiG9w0BAQEFAASCAQCwntZIqSFfccP6slfmipqOcCTlQTBSmmqO+m+i0BffJnZ9cMOc
+Fe8KnqPkybJvw2rfmpi78Ojmf/5MtDwQyyok4D66/Qz5YKIQWoUOiJKPZ2TGuDEHKVGIsfL3l615
+xzio/9vPh4dWCoOeHcjWPGh9R+peICb1lZr2Ehj0oKVpQ/zyGotZLMthooQMIKN7moQBwqVmspA9
+xHK/Y75estHTk4a9/UlMR/PzZCwsDAKvYndS2ZLwZ4v99gzq8D0WZs/byk9D7oA3GvgqhsE2JGjN
+S/nV4f9AZDHoY09cv34ociigmy8h8UvKwUXlDgEqYeumjE4xTD0Um7/8T2he2LbD
+--000000000000669e3a05d41c1a21--
