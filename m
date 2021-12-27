@@ -2,105 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 69EA447FBAC
-	for <lists+netdev@lfdr.de>; Mon, 27 Dec 2021 10:56:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9907047FBB2
+	for <lists+netdev@lfdr.de>; Mon, 27 Dec 2021 11:03:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231951AbhL0J4u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Dec 2021 04:56:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45894 "EHLO
+        id S233255AbhL0KDA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Dec 2021 05:03:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229734AbhL0J4u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Dec 2021 04:56:50 -0500
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C181C06173E;
-        Mon, 27 Dec 2021 01:56:49 -0800 (PST)
-Received: by mail-lf1-x129.google.com with SMTP id x21so33733854lfa.5;
-        Mon, 27 Dec 2021 01:56:49 -0800 (PST)
+        with ESMTP id S229734AbhL0KDA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Dec 2021 05:03:00 -0500
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BB79C06173E;
+        Mon, 27 Dec 2021 02:03:00 -0800 (PST)
+Received: by mail-pl1-x62c.google.com with SMTP id c7so11080371plg.5;
+        Mon, 27 Dec 2021 02:03:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:organization:in-reply-to
+        h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=9fWHcMAbQHI5xWkUx6lceWEkgpVdlT25SBzMHtgoJuQ=;
-        b=PcjF9f0adWqt2K0TqtF9/SOC0EGi3xlg2BuYA+TsuGheXaGDVE77l81O6CnIvuAWki
-         nhhy/1bLfJiLHfCOGQgqjVC6uRmTum9LV2yE/tEVauZsrAiYybP4Bh4SpG2KsoGeNJ1L
-         8TePxw7UCLXiwX+T0QbRO9C71SGen934CNPJL7Sd2zLHziIORWRvReovpktfZJpeZuhd
-         RWYVQmc+8R0nsINO3uFyAYHfemJBycFDE46rT1t6EJ/RwrJf31PFGWI7XDypx25Qfx1C
-         xBFln0ju7DaVFQc63bclYmVbNM6E1ZxnIe+V3iejDwab4oRaXcOY84Y+8ZedKj4sltuT
-         P13A==
+        bh=spiBO7RcelBoWJsHJgjaqtJZ8AewlTURu3j1x2nh8H4=;
+        b=SyPvt54EEXcW8cbIgAkzTA2wYhE4xwq4gpA4edkaYa27dcmyJNecQEURMcMnUCt9w8
+         yXrTaaqzoz1LDdqfrQFuzbm0nyOxLx1Rft4zlB0sgOP8NP2aA1UNT5jF9kYyxT+hXTZE
+         Ue7nzvVtZekADn144w51hJ0XJWHthLNGA0ifVxkML3hJgvDgG4hBmBdd6q5Dvv4ctuKr
+         erQ0YXQg4FOjGarx9XygOAHp5wwm2idUYy1pEzrmrCvpuejJGBNi6QgqZlEnICK2ebeU
+         tZ+PLr14azABfQZUO03Hn0P2YmHxWOVom6Qk5gkSfNrWo/50z2tiasKq2LGEPzoICx1L
+         8zqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=9fWHcMAbQHI5xWkUx6lceWEkgpVdlT25SBzMHtgoJuQ=;
-        b=zX/3iiK6E/ZzFl7BuVdua9ckbLa9unBMuz4fKJNrupAEyuzAS8uV8LNr2pbOJ/+hFb
-         bDbWEz6CgxNCFuzW985m/yS5vw5j4lVq1d97bld8+GDygcY+BO4QQPyAebEd/u2e+gai
-         RTQ+1RZM6Wxuih95ejAJovAzZLOSgdzbSYigYeoIvN1zuPckjDFUqk954YlUdFjH0c5j
-         oTkIaWl5gOgksCXWvEkvaN7xd4OmxtgSOOXK1MD2kTUCjipL9/bNsK0qjTKh2kYi1mHK
-         bNkkKyBN1eESJkUcbgMjutOvtquEPSj5tWGZs3d7dsflDVOr4Gfxs5Zn3sHTjLWQGdew
-         rIfQ==
-X-Gm-Message-State: AOAM530mu4DZ6HHqIbTTQbLnRyqRZgNRD2UcaP3Qr/TiW0BdPdDctz5R
-        DJyZgW4apVS7Qn5EZqhGj5YZBMSyBBs=
-X-Google-Smtp-Source: ABdhPJwhawMF7oBUEgjR2M9jLXUxf5U42a9pnF10LwKNy02G77chpTMStVAFjvntoQ4p4Bb1/MEekQ==
-X-Received: by 2002:a05:6512:308a:: with SMTP id z10mr15046128lfd.594.1640599007838;
-        Mon, 27 Dec 2021 01:56:47 -0800 (PST)
-Received: from [192.168.1.100] ([178.176.79.51])
-        by smtp.gmail.com with ESMTPSA id g11sm1585418lfr.236.2021.12.27.01.56.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 27 Dec 2021 01:56:47 -0800 (PST)
-Message-ID: <36ee5c5c-a03c-c9f5-dd5c-9e3a04b0374a@gmail.com>
-Date:   Mon, 27 Dec 2021 12:56:41 +0300
+        bh=spiBO7RcelBoWJsHJgjaqtJZ8AewlTURu3j1x2nh8H4=;
+        b=2r6IPQfVkvOOujU/bWHApUy71IXRZRrAouo9842Pd3adyNZPuZULMEl/npkCW2bXBI
+         ihxjXIF71LEZfUwdeN/GVJPf3ziC+5SDP6Ej55ZipDECqH/Xx/eAIqnFs/5dSnwaT4FR
+         aYypSd/UShRNNP4aXdwVN+hM7N0WQNEXX8zoWH4Dk6zcar2cspHwO80R6tpnqBZ7CfCr
+         CoC0ESRwqWzlt/4ooFmmYwZeEr8ainA7kHcSyHGFPDi0R80kd4SmVmLaj61IdyeoDtxb
+         z1rwk5csGgCb8eVP0eqOpPyELxRQoFHoUOvjDtiqEykEW+pXNjvz2gax+GtLD/OgorJM
+         Nuig==
+X-Gm-Message-State: AOAM532sxYC740B1ULnPEpeuFF60exp5WabM9Ms2PXAdMGQaGUXA0/PP
+        NmI2MMmk7vCqsr+Sj4w/CPQ=
+X-Google-Smtp-Source: ABdhPJyJ0SYYOd8MPDHZyOKXN5Lt7VlHkMj2r33h696SFRVl7km1IF+SymVmy8tXE8/rohaCTWibDg==
+X-Received: by 2002:a17:90b:1c07:: with SMTP id oc7mr19961024pjb.127.1640599379320;
+        Mon, 27 Dec 2021 02:02:59 -0800 (PST)
+Received: from localhost.localdomain (61-231-124-66.dynamic-ip.hinet.net. [61.231.124.66])
+        by smtp.gmail.com with ESMTPSA id k6sm17533671pff.106.2021.12.27.02.02.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Dec 2021 02:02:58 -0800 (PST)
+From:   Joseph CHAMG <josright123@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Joseph CHANG <josright123@gmail.com>,
+        joseph_chang@davicom.com.tw
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v9, 0/2] ADD DM9051 ETHERNET DRIVER
+Date:   Mon, 27 Dec 2021 18:02:31 +0800
+Message-Id: <20211227100233.8037-1-josright123@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH] net: usb: pegasus: Do not drop long Ethernet frames
-Content-Language: en-US
-To:     Matthias-Christian Ott <ott@mirix.org>,
-        Petko Manolov <petkan@nucleusys.com>
-Cc:     linux-usb@vger.kernel.org, netdev@vger.kernel.org
-References: <20211226132930.7220-1-ott@mirix.org>
-From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
-Organization: Brain-dead Software
-In-Reply-To: <20211226132930.7220-1-ott@mirix.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello!
+DM9051 is a spi interface chip,
+need cs/mosi/miso/clock with an interrupt gpio pin
 
-On 26.12.2021 16:29, Matthias-Christian Ott wrote:
+Joseph CHAMG (1):
+  net: Add dm9051 driver
 
-> The D-Link DSB-650TX (2001:4002) is unable to receive Ethernet frames
-> that are longer than 1518 octets, for example, Ethernet frames that
-> contain 802.1Q VLAN tags.
-> 
-> The frames are sent to the pegasus driver via USB but the driver
-> discards them because they have the Long_pkt field set to 1 in the
-> received status report. The function read_bulk_callback of the pegasus
-> driver treats such received "packets" (in the terminology of the
-> hardware) as errors but the field simply does just indicate that the
-> Ethernet frame (MAC destination to FCS) is longer than 1518 octets.
-> 
-> It seems that in the 1990s there was a distinction between
-> "giant" (> 1518) and "runt" (< 64) frames and the hardware includes
-> flags to indicate this distinction. It seems that the purpose of the
-> distinction "giant" frames was to not allow infinitely long frames due
-> to transmission errors and to allow hardware to have an upper limit of
-> the frame size. However, the hardware already has such limit with its
-> 2048 octet receive buffer and, therefore, Long_pkt is merely a
-> convention and should not be treated as a receive error.
-> 
-> Actually, the hardware is even able to receive Ethernet frames with 2048
-> octets which exceeds the claimed limit frame size limit of the driver of
-                                    ^^^^^            ^^^^^
-    Too many limits. :-)
+JosephCHANG (1):
+  yaml: Add dm9051 SPI network yaml file
+  net: Add dm9051 driver
 
-> 1536 octets (PEGASUS_MTU).
-> 
-> Signed-off-by: Matthias-Christian Ott <ott@mirix.org>
-[...]
+ .../bindings/net/davicom,dm9051.yaml          |   62 +
+ drivers/net/ethernet/davicom/Kconfig          |   29 +
+ drivers/net/ethernet/davicom/Makefile         |    1 +
+ drivers/net/ethernet/davicom/dm9051.c         | 1019 +++++++++++++++++
+ drivers/net/ethernet/davicom/dm9051.h         |  189 +++
+ 5 files changed, 1300 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/davicom,dm9051.yaml
+ create mode 100644 drivers/net/ethernet/davicom/dm9051.c
+ create mode 100644 drivers/net/ethernet/davicom/dm9051.h
 
-MBR, Sergey
+
+base-commit: 9d922f5df53844228b9f7c62f2593f4f06c0b69b
+-- 
+2.20.1
+
