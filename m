@@ -2,120 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F05B47FAD8
+	by mail.lfdr.de (Postfix) with ESMTP id E80BC47FAD9
 	for <lists+netdev@lfdr.de>; Mon, 27 Dec 2021 09:01:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231486AbhL0IAz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Dec 2021 03:00:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48470 "EHLO
+        id S231491AbhL0IA4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Dec 2021 03:00:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231469AbhL0IAy (ORCPT
+        with ESMTP id S231485AbhL0IAy (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 27 Dec 2021 03:00:54 -0500
-Received: from mail-vk1-xa36.google.com (mail-vk1-xa36.google.com [IPv6:2607:f8b0:4864:20::a36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A535C06173E
-        for <netdev@vger.kernel.org>; Mon, 27 Dec 2021 00:00:53 -0800 (PST)
-Received: by mail-vk1-xa36.google.com with SMTP id c10so8060368vkn.2
-        for <netdev@vger.kernel.org>; Mon, 27 Dec 2021 00:00:53 -0800 (PST)
+Received: from mail-ua1-x933.google.com (mail-ua1-x933.google.com [IPv6:2607:f8b0:4864:20::933])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4EE4C061401
+        for <netdev@vger.kernel.org>; Mon, 27 Dec 2021 00:00:54 -0800 (PST)
+Received: by mail-ua1-x933.google.com with SMTP id i6so25444910uae.6
+        for <netdev@vger.kernel.org>; Mon, 27 Dec 2021 00:00:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=dRxzgutPaQTL/WfU6FZJSbzbe7oatnNbXSwAWEml6M0=;
-        b=XIGdCcxyYtkp8lpuyY66GolnpfLQDH/vMTK3SlmxLkLGUpPQ0oVPhuUSTkOKVY7osj
-         4Hz2bbHGTrWUHPE6f82SNJwe7u8CAZhbBTog5edvybbX/M5dTmDXSwY7WLtu4zE/18W9
-         S+fIkuL0JQEHY2EvxAKi5y4YcUCXOPAWeKvjI=
+        bh=n4qeT8Pa+JIDYqoGrEyiUQDlYPL/LnsJgMGOiP+1xhU=;
+        b=cavtnbm/93qCp6p+7cEll4sZos/q7lmtn6uC+uZBfwGG1a66Bt6eIHr+QSZsSWWS8m
+         m9JIxBuqKV2UCwYCn/1etRTuHhqJP5BZeqDwKtLLI63jrr71Ag9Lzki8hR7UmkGKcLwi
+         8pyCZPTvcy9qCHJnqXUCyFYNCWunCQMcEllmE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=dRxzgutPaQTL/WfU6FZJSbzbe7oatnNbXSwAWEml6M0=;
-        b=jl0wkJdUWWf9JeH6+cKNfl41Xvxh0+3nfdw8Tsncqmh5kZLifHFfSz61JITaw0/VOM
-         QLGbNnKqJZeyF1xp5onAAVBTndBWvGu+JHdWW17ePkCwjgYajKn+4s5WpSuaf63QAQ3R
-         PmHYoPrG+FgMUnIjdBS6DMNIgkp/PwTLfTss1MsyGHayG25oD0/vw2W7DSq8BmotWvuM
-         XWUdjeq7cofiA+v3GGZmO3Khgx8V6MJoUZfXt8Uuq7q32VlbSpHOC3PNHI2/FvWug/ks
-         ZQiuedyD226vP37mHr2UtQysLQZOnGnEj4pekNu5B58176WY6vCXEyPSmHfmhZ+rXcB0
-         htIQ==
-X-Gm-Message-State: AOAM531kxMXnt8+XuHQbbFnpCqMDtni+/3Z2jy+rjdKNS4i/n1E/N3bI
-        KC/4JqcNwePh7nLHSmSKhze0LA==
-X-Google-Smtp-Source: ABdhPJx5/vcC7VFtDzhUXb+hKkVZ2uAwbXP2Ouo9D74ZjiHIo6ojwSEVA/+4wiCcmpEmduPkZb61Kg==
-X-Received: by 2002:a05:6122:a17:: with SMTP id 23mr4589064vkn.8.1640592052554;
-        Mon, 27 Dec 2021 00:00:52 -0800 (PST)
+        bh=n4qeT8Pa+JIDYqoGrEyiUQDlYPL/LnsJgMGOiP+1xhU=;
+        b=JZXXrGHyshNqvUsIV4ZMHGI8C07f8Rzc/A+MeSgqkW5fFw2nwhmbulRg/Qje9TSSVw
+         AfrzI3DZykA+A5a1Xh3NDKL2nM04fKjDESYchRLDOAyAbZk1+rwsurOo/zK7igENxK/J
+         bzozMHhZi7C20eo3L3noF96HNeuKJEc2WJpgQWW/whjKhBMpobQGGukhPUDaycH3TNig
+         Z8dDRbeFL1fBNixU25TGw/ogVm46aKVI1JAi1V7ZudjAFOKUBH7rPQIk3xy2SqFek5qA
+         sEZZlohA6CePxdyRi4u8p+FuAQNnYxAM5jh3awJIPYWgButJ6QqKWExMMhHRJ7JJMUTL
+         Xz8w==
+X-Gm-Message-State: AOAM5305j5EZrP8m+DuUQN9Mw1vX5akHC+5HkRcBXFNfOeAAalWhQ2SN
+        PpUQ4fbMXOlwT3SDZV60BDLypg==
+X-Google-Smtp-Source: ABdhPJyLaQWg59gNCtBxtXmTr6E5EB+kL8khO2WJPvcwV2wKtgjhWpR6UHfcb8pgeHPNcFGS2KIGYQ==
+X-Received: by 2002:a05:6102:3910:: with SMTP id e16mr4170711vsu.0.1640592053608;
+        Mon, 27 Dec 2021 00:00:53 -0800 (PST)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id o1sm2907587vkc.35.2021.12.27.00.00.51
+        by smtp.gmail.com with ESMTPSA id o1sm2907587vkc.35.2021.12.27.00.00.52
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 27 Dec 2021 00:00:52 -0800 (PST)
+        Mon, 27 Dec 2021 00:00:53 -0800 (PST)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
-Subject: [PATCH net-next 3/7] bnxt_en: enable interrupt sampling on 5750X for DIM
-Date:   Mon, 27 Dec 2021 03:00:28 -0500
-Message-Id: <1640592032-8927-4-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next 4/7] bnxt_en: Support configurable CQE coalescing mode
+Date:   Mon, 27 Dec 2021 03:00:29 -0500
+Message-Id: <1640592032-8927-5-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1640592032-8927-1-git-send-email-michael.chan@broadcom.com>
 References: <1640592032-8927-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="00000000000088bd1205d41c1ac9"
+        boundary="0000000000009a298705d41c1a7f"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---00000000000088bd1205d41c1ac9
+--0000000000009a298705d41c1a7f
 
-From: Andy Gospodarek <gospo@broadcom.com>
+CQE coalescing mode is the same as the timer reset coalescing mode
+on Broadcom devices.  Currently this mode is always enabled if it
+is supported by the device.  Restructure the code slightly to support
+dynamically changing this mode.
 
-5750X (P5) chips handle receiving packets on the NQ rather than the main
-completion queue so we need to get and set stats from the correct spots
-for dynamic interrupt moderation.
+Add a flags field to struct bnxt_coal.  Initially, the CQE flag will
+be set for the RX and TX side if the device supports it.  We need to
+move bnxt_init_dflt_coal() to set up default coalescing until the
+capability is determined.
 
-Signed-off-by: Andy Gospodarek <gospo@broadcom.com>
+Reviewed-by: Andy Gospodarek <gospo@broadcom.com>
+Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 14 +++++++++++++-
- 1 file changed, 13 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 16 +++++++++++-----
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h |  1 +
+ 2 files changed, 12 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 53101d00768c..11df2fc05f6a 100644
+index 11df2fc05f6a..48e61355ca00 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -2632,6 +2632,7 @@ static int bnxt_poll_p5(struct napi_struct *napi, int budget)
+@@ -6496,8 +6496,8 @@ static void bnxt_hwrm_set_coal_params(struct bnxt *bp,
+ 	struct hwrm_ring_cmpl_ring_cfg_aggint_params_input *req)
  {
- 	struct bnxt_napi *bnapi = container_of(napi, struct bnxt_napi, napi);
- 	struct bnxt_cp_ring_info *cpr = &bnapi->cp_ring;
-+	struct bnxt_cp_ring_info *cpr_rx;
- 	u32 raw_cons = cpr->cp_raw_cons;
- 	struct bnxt *bp = bnapi->bp;
- 	struct nqe_cn *nqcmp;
-@@ -2659,7 +2660,7 @@ static int bnxt_poll_p5(struct napi_struct *napi, int budget)
- 			if (napi_complete_done(napi, work_done))
- 				BNXT_DB_NQ_ARM_P5(&cpr->cp_db,
- 						  cpr->cp_raw_cons);
--			return work_done;
-+			goto poll_done;
- 		}
+ 	struct bnxt_coal_cap *coal_cap = &bp->coal_cap;
++	u16 val, tmr, max, flags = hw_coal->flags;
+ 	u32 cmpl_params = coal_cap->cmpl_params;
+-	u16 val, tmr, max, flags = 0;
  
- 		/* The valid test of the entry must be done first before
-@@ -2685,6 +2686,17 @@ static int bnxt_poll_p5(struct napi_struct *napi, int budget)
- 		cpr->cp_raw_cons = raw_cons;
- 		BNXT_DB_NQ_P5(&cpr->cp_db, raw_cons);
+ 	max = hw_coal->bufs_per_record * 128;
+ 	if (hw_coal->budget)
+@@ -6540,8 +6540,6 @@ static void bnxt_hwrm_set_coal_params(struct bnxt *bp,
+ 			cpu_to_le16(BNXT_COAL_CMPL_AGGR_TMR_DURING_INT_ENABLE);
  	}
-+poll_done:
-+	cpr_rx = cpr->cp_ring_arr[BNXT_RX_HDL];
-+	if (cpr_rx && (bp->flags & BNXT_FLAG_DIM)) {
-+		struct dim_sample dim_sample = {};
-+
-+		dim_update_sample(cpr->event_ctr,
-+				  cpr_rx->rx_packets,
-+				  cpr_rx->rx_bytes,
-+				  &dim_sample);
-+		net_dim(&cpr->dim, dim_sample);
-+	}
- 	return work_done;
- }
  
+-	if (cmpl_params & RING_AGGINT_QCAPS_RESP_CMPL_PARAMS_TIMER_RESET)
+-		flags |= RING_CMPL_RING_CFG_AGGINT_PARAMS_REQ_FLAGS_TIMER_RESET;
+ 	if ((cmpl_params & RING_AGGINT_QCAPS_RESP_CMPL_PARAMS_RING_IDLE) &&
+ 	    hw_coal->idle_thresh && hw_coal->coal_ticks < hw_coal->idle_thresh)
+ 		flags |= RING_CMPL_RING_CFG_AGGINT_PARAMS_REQ_FLAGS_RING_IDLE;
+@@ -11897,7 +11895,13 @@ static void bnxt_cleanup_pci(struct bnxt *bp)
+ 
+ static void bnxt_init_dflt_coal(struct bnxt *bp)
+ {
++	struct bnxt_coal_cap *coal_cap = &bp->coal_cap;
+ 	struct bnxt_coal *coal;
++	u16 flags = 0;
++
++	if (coal_cap->cmpl_params &
++	    RING_AGGINT_QCAPS_RESP_CMPL_PARAMS_TIMER_RESET)
++		flags |= RING_CMPL_RING_CFG_AGGINT_PARAMS_REQ_FLAGS_TIMER_RESET;
+ 
+ 	/* Tick values in micro seconds.
+ 	 * 1 coal_buf x bufs_per_record = 1 completion record.
+@@ -11910,6 +11914,7 @@ static void bnxt_init_dflt_coal(struct bnxt *bp)
+ 	coal->idle_thresh = 50;
+ 	coal->bufs_per_record = 2;
+ 	coal->budget = 64;		/* NAPI budget */
++	coal->flags = flags;
+ 
+ 	coal = &bp->tx_coal;
+ 	coal->coal_ticks = 28;
+@@ -11917,6 +11922,7 @@ static void bnxt_init_dflt_coal(struct bnxt *bp)
+ 	coal->coal_ticks_irq = 2;
+ 	coal->coal_bufs_irq = 2;
+ 	coal->bufs_per_record = 1;
++	coal->flags = flags;
+ 
+ 	bp->stats_coal_ticks = BNXT_DEF_STATS_COAL_TICKS;
+ }
+@@ -12403,8 +12409,6 @@ static int bnxt_init_board(struct pci_dev *pdev, struct net_device *dev)
+ 	bp->rx_ring_size = BNXT_DEFAULT_RX_RING_SIZE;
+ 	bp->tx_ring_size = BNXT_DEFAULT_TX_RING_SIZE;
+ 
+-	bnxt_init_dflt_coal(bp);
+-
+ 	timer_setup(&bp->timer, bnxt_timer, 0);
+ 	bp->current_interval = BNXT_TIMER_INTERVAL;
+ 
+@@ -13424,6 +13428,8 @@ static int bnxt_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 
+ 	bnxt_fw_init_one_p3(bp);
+ 
++	bnxt_init_dflt_coal(bp);
++
+ 	if (dev->hw_features & BNXT_HW_FEATURE_VLAN_ALL_RX)
+ 		bp->flags |= BNXT_FLAG_STRIP_VLAN;
+ 
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+index 4c9507d82fd0..7bd9c5d237d9 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+@@ -847,6 +847,7 @@ struct bnxt_coal {
+ 	u16			idle_thresh;
+ 	u8			bufs_per_record;
+ 	u8			budget;
++	u16			flags;
+ };
+ 
+ struct bnxt_tpa_info {
 -- 
 2.18.1
 
 
---00000000000088bd1205d41c1ac9
+--0000000000009a298705d41c1a7f
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -186,13 +236,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIISEbqbckqk3kYUoHffJMVUVQZrclpBt
-Jk2efKsUeAJeMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMTIy
-NzA4MDA1MlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIIpQZyZCU37lSsV+niRdOlGYvGe1TQc7
+dxAR3D5SSOGRMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMTIy
+NzA4MDA1NFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQCzkHGYH42fWiCJCz+5k/FM/vF1pptvnjVCAgRQ36XFUE2WGvjI
-8uawkITaE9ag33HlWMMvKWEJetrnfoujGVVBdC4h+53uAhrFbIkTUXDj/oa0lTZ8pjwDw8eCkoPW
-RlwYxmWRNYhX5eQSP8wHLR5SLo45qIBKiqQKLCLIU7Y6sHkABLER3jOFOJ9KLRmEp+vqFTg6tU1Z
-e3SyOZ8Ey5vA5+/mruDN/tI8ENyuyz6zWsMozM34oWa0Hoq/j/ty9fv5hxEldOmdoLgiqB2AGRIg
-CS6+GzLe7X5dqWvSkfe5QFUpXVfxil+/IFZ36D93GTKgX4UGBQEplli2Q/7+v57c
---00000000000088bd1205d41c1ac9--
+ATANBgkqhkiG9w0BAQEFAASCAQAMOe+cKAsMBSyc4ZrqC9tTWBbqvXRWyzS+yWS7QXOPX0PoPFz7
+V/iK+ftR8GdRT4YvwJLo5RiORf1jwKJ1orvL0bgYmml95WGOxr/S4m8JgUBWkpLgVpoA+GSOwXIY
+XhYPZ/wYYi8QM6IIX04tQyG2cJTiBos5foDlBMn2vMTDm8MyZMnvSa3xDguWRiEHXJyu/cpJjxNE
+n1p7/oPT8ILljEYNCBivmZ+5Y1xlfQ35BZ8allsZbVSAO5bB0vGTNNruARYC981MuAYNTMdjhtlb
+eZwzyikTAdzR+3zxkKI2Cq3w95c/cFopatuQdEhzyCXbEMXpr758tMe5va0u2ISw
+--0000000000009a298705d41c1a7f--
