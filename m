@@ -2,91 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D1C71480461
-	for <lists+netdev@lfdr.de>; Mon, 27 Dec 2021 20:18:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 16A18480489
+	for <lists+netdev@lfdr.de>; Mon, 27 Dec 2021 21:34:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232114AbhL0TSK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Dec 2021 14:18:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59942 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231442AbhL0TSK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Dec 2021 14:18:10 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3B2BC06173E;
-        Mon, 27 Dec 2021 11:18:09 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 859FD6112D;
-        Mon, 27 Dec 2021 19:18:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44B2CC36AEA;
-        Mon, 27 Dec 2021 19:18:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1640632688;
-        bh=n5gKVOMAx5d3Lm9+UJVfBhmS+gppM0kjtgJrzvZySQo=;
-        h=From:To:Cc:Subject:Date:From;
-        b=OTn+aDN93CQcpoBpQH7fKL7Vmm2o6JTMsGal7zmx0Cqd5+RTzsx3or0rwT81VTax7
-         gNXTetjD0PhVDRZ8HgczJElJfhJ9udTr1WZT85l9KtbUlsY10MCuWFQx/hi6qzps3d
-         nOKQ1R792h/KbDpgxpasvUR8uCVR88hWpp9WQ/HBbJb+ChtYWIm0CerPv02cQBST8K
-         ITORhEg5MnPFq6w8mp8jFji6v8BGr9tKqERDtjh+6GPlpuyEDsYiHyvgp+DEr/3zf+
-         Fl1j/n7teqF2tWXjl8tBiHwUmlcReQz7v1KvkabTwOn0iE5dKBmurJi2uNWzqLWSoV
-         uBgljiECpFiZg==
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Luca Coelho <luciano.coelho@intel.com>
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        Johannes Berg <johannes.berg@intel.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>
-Subject: [PATCH] iwlwifi: mvm: Use div_s64 instead of do_div in iwl_mvm_ftm_rtt_smoothing()
-Date:   Mon, 27 Dec 2021 12:17:57 -0700
-Message-Id: <20211227191757.2354329-1-nathan@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        id S232848AbhL0UeY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Dec 2021 15:34:24 -0500
+Received: from mga05.intel.com ([192.55.52.43]:32592 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229843AbhL0UeX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Dec 2021 15:34:23 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1640637263; x=1672173263;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=iG1ggZ11L9JNjcVM2LtagDTWszVONzK5iQFTRN1NBe4=;
+  b=Cf5UncOdawXp9ha85Ukg1xQKVxOHJNJO4CUUKUYH4u+mRipybY5m4UTs
+   yU9EsLFPTltzonRXnKMplHluMy/V6+ZluyEooH7EcJZdSLpCM04TksCNd
+   UgqzryOzWE1KG7qXrdVHdFHvcDUyNyh8S0P/B4nlQfglonDY6p3c1wxla
+   rxWfcieLfItHqcM9g7nN+HxApGHiDXfFaY9B9BkPa1VwR/2kpMvXcs4Ia
+   0h/Cp7nIEft0aEShUlZsEg1oJT54Nka3y19R5FqJQv9PBZGaXbscnr7qc
+   lg+qb4cpi56v+Bh2Lvot47BYDYuULjqxa9VkEn+9V+Td/cUVV05Lj9iFm
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10210"; a="327592401"
+X-IronPort-AV: E=Sophos;i="5.88,240,1635231600"; 
+   d="scan'208";a="327592401"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Dec 2021 12:34:23 -0800
+X-IronPort-AV: E=Sophos;i="5.88,240,1635231600"; 
+   d="scan'208";a="523405879"
+Received: from krausnex-mobl.ger.corp.intel.com (HELO [10.255.195.237]) ([10.255.195.237])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Dec 2021 12:34:18 -0800
+Message-ID: <e7145513-1808-fb59-35cc-37169ecec047@linux.intel.com>
+Date:   Mon, 27 Dec 2021 22:34:10 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.2
+Subject: Re: [Intel-wired-lan] [PATCH v4 net-next 6/9] igc: don't reserve
+ excessive XDP_PACKET_HEADROOM on XSK Rx to skb
+Content-Language: en-US
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        intel-wired-lan@lists.osuosl.org
+Cc:     Song Liu <songliubraving@fb.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        KP Singh <kpsingh@kernel.org>, bpf@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org
+References: <20211208140702.642741-1-alexandr.lobakin@intel.com>
+ <20211208140702.642741-7-alexandr.lobakin@intel.com>
+From:   "Kraus, NechamaX" <nechamax.kraus@linux.intel.com>
+In-Reply-To: <20211208140702.642741-7-alexandr.lobakin@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When building ARCH=arm allmodconfig:
-
-drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c: In function ‘iwl_mvm_ftm_rtt_smoothing’:
-./include/asm-generic/div64.h:222:35: error: comparison of distinct pointer types lacks a cast [-Werror]
-  222 |         (void)(((typeof((n)) *)0) == ((uint64_t *)0));  \
-      |                                   ^~
-drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c:1070:9: note: in expansion of macro ‘do_div’
- 1070 |         do_div(rtt_avg, 100);
-      |         ^~~~~~
-
-do_div() has to be used with an unsigned 64-bit integer dividend but
-rtt_avg is a signed 64-bit integer.
-
-div_s64() expects a signed 64-bit integer dividend and signed 32-bit
-divisor, which fits this scenario, so use that function here to fix the
-warning.
-
-Fixes: 8b0f92549f2c ("iwlwifi: mvm: fix 32-bit build in FTM")
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
----
- drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c b/drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c
-index 9449d1af3c11..628aee634b2a 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c
-@@ -1066,8 +1066,7 @@ static void iwl_mvm_ftm_rtt_smoothing(struct iwl_mvm *mvm,
- 	overshoot = IWL_MVM_FTM_INITIATOR_SMOOTH_OVERSHOOT;
- 	alpha = IWL_MVM_FTM_INITIATOR_SMOOTH_ALPHA;
- 
--	rtt_avg = alpha * rtt + (100 - alpha) * resp->rtt_avg;
--	do_div(rtt_avg, 100);
-+	rtt_avg = div_s64(alpha * rtt + (100 - alpha) * resp->rtt_avg, 100);
- 
- 	IWL_DEBUG_INFO(mvm,
- 		       "%pM: prev rtt_avg=%lld, new rtt_avg=%lld, rtt=%lld\n",
-
-base-commit: bcbddc4f9d020a4a0b881cc065729c3aaeb28098
--- 
-2.34.1
+On 12/8/2021 16:06, Alexander Lobakin wrote:
+> {__,}napi_alloc_skb() allocates and reserves additional NET_SKB_PAD
+> + NET_IP_ALIGN for any skb.
+> OTOH, igc_construct_skb_zc() currently allocates and reserves
+> additional `xdp->data_meta - xdp->data_hard_start`, which is about
+> XDP_PACKET_HEADROOM for XSK frames.
+> There's no need for that at all as the frame is post-XDP and will
+> go only to the networking stack core.
+> Pass the size of the actual data only (+ meta) to
+> __napi_alloc_skb() and don't reserve anything. This will give
+> enough headroom for stack processing.
+> Also, net_prefetch() xdp->data_meta and align the copy size to
+> speed-up memcpy() a little and better match igc_costruct_skb().
+> 
+> Fixes: fc9df2a0b520 ("igc: Enable RX via AF_XDP zero-copy")
+> Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+> Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+> ---
+>   drivers/net/ethernet/intel/igc/igc_main.c | 13 +++++++------
+>   1 file changed, 7 insertions(+), 6 deletions(-)
+>
+Tested-by: Nechama Kraus <nechamax.kraus@linux.intel.com>
 
