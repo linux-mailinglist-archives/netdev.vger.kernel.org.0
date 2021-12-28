@@ -2,140 +2,234 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E8A23480BB9
-	for <lists+netdev@lfdr.de>; Tue, 28 Dec 2021 18:02:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AF7E5480BFF
+	for <lists+netdev@lfdr.de>; Tue, 28 Dec 2021 18:13:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236504AbhL1RCX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Dec 2021 12:02:23 -0500
-Received: from mail-io1-f69.google.com ([209.85.166.69]:49068 "EHLO
-        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235947AbhL1RCX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Dec 2021 12:02:23 -0500
-Received: by mail-io1-f69.google.com with SMTP id i12-20020a056602134c00b0060211f8b5b7so4017279iov.15
-        for <netdev@vger.kernel.org>; Tue, 28 Dec 2021 09:02:23 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=Elz8FkYtiNR+oWGYVYY+4bZsQT+pCjbnV2l/cLFCBOI=;
-        b=p6tdt0iuSxIyvLcZjcGYEr705lhVGOh9HSzNbYQWKIsK+d3Sdr/0IagSRne4Hufu3U
-         FD1yNlxqD9ZHNaLZcW75A/WAbCRpOGmKWy+v0D/tRBHnKf2s4oGqvMMVRh/RSrRTElZP
-         90Ie+hjn2k4pvp8MmGR2paH7FPw3vD8kHsbY91so1ngF0WlG5mDSWTCUG9Vyc7Tw98qY
-         eVZwv8YzzBDPTDwutfV1x2bzOLSAwc8goV2W1ptD3Amh/zPljcILUTORjjSgL/nfwr81
-         /xlq9u4dX834lZFusQ+/wTMS+s5thm9R5Lsehi32ylPCBA0v5z+QWKWjujRA9YHZRIEw
-         IVDw==
-X-Gm-Message-State: AOAM531A4Nxq160zATLmkhG//y7RnjP7oc1IzeGV20b49dhg9VWDp82N
-        yckIv1DmrTxrjWSgpuXceVU7RKviwbgA0qBIFiipZoxSEmhB
-X-Google-Smtp-Source: ABdhPJzeywTUU05+9GxB2u6Yr/SzFJoLeNd5prGngvOMMrmG+u33GhwzB0Q5KCUECZV1QxDHQvNndWXRbhWA5PgamPw2TU3ClDH1
+        id S236734AbhL1RNZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Dec 2021 12:13:25 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:55424 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233056AbhL1RNU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Dec 2021 12:13:20 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2B9F3B8168C;
+        Tue, 28 Dec 2021 17:13:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3EC36C36AF0;
+        Tue, 28 Dec 2021 17:13:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1640711595;
+        bh=T3HUEllg1Pw7vYBFjSPgjWTc0i5UwlDCIB5VYMi9zQk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=aC2AgnEYsVn8ajMr8WXjrdgvYdxaICxzBEIqsQvRNJDdSNTmgYKxxE13ldY57jvt6
+         wtSnEDHwfFeP7WPa1v2BXHsL164j0gjjc1waprQ7FxnadoJwpFcS8YPlJ1fRUUEgNG
+         1n8B6ybs2qiYbmmANluzHzAR+HA2JhBdfnB5r0OInhaGxnhy9LnnhUQ0kSAmYqyjvt
+         U8WA12Q8XWC6B4+2O+Uw+3c+bVIkQEInrB+E4lsE9bM/HIbStWglKd4TfiZn9oNjTC
+         71qzDaDkiqAQz8JEolGNowQ5U8m10M955+gDpfmp1KuoHVnN/ysNieqn8T0FB5YrhX
+         IQJmZwEC33MlQ==
+Date:   Tue, 28 Dec 2021 18:12:58 +0100
+From:   Mauro Carvalho Chehab <mchehab@kernel.org>
+To:     Niklas Schnelle <schnelle@linux.ibm.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Ettore Chimenti <ek5.chimenti@gmail.com>
+Cc:     Bjorn Helgaas <helgaas@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Arnd Bergmann <arnd@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        John Garry <john.garry@huawei.com>,
+        Nick Hu <nickhu@andestech.com>,
+        Greentime Hu <green.hu@gmail.com>,
+        Vincent Chen <deanbo422@gmail.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>, Guo Ren <guoren@kernel.org>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Ian Abbott <abbotti@mev.co.uk>,
+        H Hartley Sweeten <hsweeten@visionengravers.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Karsten Keil <isdn@linux-pingi.de>,
+        Sathya Prakash <sathya.prakash@broadcom.com>,
+        Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
+        Suganath Prabu Subramani 
+        <suganath-prabu.subramani@broadcom.com>,
+        Michael Grzeschik <m.grzeschik@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Kalle Valo <kvalo@kernel.org>, Jouni Malinen <j@w1.fi>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Hannes Reinecke <hare@suse.com>,
+        Kashyap Desai <kashyap.desai@broadcom.com>,
+        Sumit Saxena <sumit.saxena@broadcom.com>,
+        Shivasharan S <shivasharan.srikanteshwara@broadcom.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        GR-QLogic-Storage-Upstream@marvell.com,
+        Mark Brown <broonie@kernel.org>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        Teddy Wang <teddy.wang@siliconmotion.com>,
+        Forest Bond <forest@alittletooquiet.net>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, linux-kernel@vger.kernel.org,
+        linux-arch@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-riscv@lists.infradead.org, linux-csky@vger.kernel.org,
+        linux-ide@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-hwmon@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-input@vger.kernel.org, netdev@vger.kernel.org,
+        linux-media@vger.kernel.org, MPT-FusionLinux.pdl@broadcom.com,
+        linux-scsi@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        linux-wireless@vger.kernel.org, megaraidlinux.pdl@broadcom.com,
+        linux-spi@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        linux-staging@lists.linux.dev, linux-serial@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linux-watchdog@vger.kernel.org,
+        alsa-devel@alsa-project.org
+Subject: Re: [RFC 01/32] Kconfig: introduce and depend on LEGACY_PCI
+Message-ID: <20211228181107.2d476028@coco.lan>
+In-Reply-To: <4b630b7b87bd983291f628c42a1394fc0d2d86bd.camel@linux.ibm.com>
+References: <20211227164317.4146918-1-schnelle@linux.ibm.com>
+        <20211227164317.4146918-2-schnelle@linux.ibm.com>
+        <YcrJAwsKIxxX18pW@kroah.com>
+        <20211228101435.3a55b983@coco.lan>
+        <b1475f6aecb752a858941f44a957b2183cd68405.camel@linux.ibm.com>
+        <20211228135425.0a69168c@coco.lan>
+        <4b630b7b87bd983291f628c42a1394fc0d2d86bd.camel@linux.ibm.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.30; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1989:: with SMTP id g9mr9710032ilf.88.1640710942975;
- Tue, 28 Dec 2021 09:02:22 -0800 (PST)
-Date:   Tue, 28 Dec 2021 09:02:22 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000ef6c6c05d437c830@google.com>
-Subject: [syzbot] WARNING in kvm_mmu_notifier_invalidate_range_start
-From:   syzbot <syzbot+4e697fe80a31aa7efe21@syzkaller.appspotmail.com>
-To:     changbin.du@intel.com, christian.brauner@ubuntu.com,
-        daniel@iogearbox.net, davem@davemloft.net, edumazet@google.com,
-        hkallweit1@gmail.com, kuba@kernel.org, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        pbonzini@redhat.com, syzkaller-bugs@googlegroups.com,
-        yajun.deng@linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Em Tue, 28 Dec 2021 16:06:44 +0100
+Niklas Schnelle <schnelle@linux.ibm.com> escreveu:
 
-syzbot found the following issue on:
+(on a side note: the c/c list of this patch is too long. I would try to
+avoid using a too long list, as otherwise this e-mail may end being rejected
+by mail servers)
 
-HEAD commit:    ea586a076e8a Add linux-next specific files for 20211224
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=12418ea5b00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=a9c4e3dde2c568fb
-dashboard link: https://syzkaller.appspot.com/bug?extid=4e697fe80a31aa7efe21
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15724985b00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12d1aedbb00000
+> On Tue, 2021-12-28 at 13:54 +0100, Mauro Carvalho Chehab wrote:
+> >  
+> ---8<---
+> >     
+> > > > > All you really care about is the "legacy" I/O spaces here, this isn't
+> > > > > tied to PCI specifically at all, right?
+> > > > > 
+> > > > > So why not just have a OLD_STYLE_IO config option or something like
+> > > > > that, to show that it's the i/o functions we care about here, not PCI at
+> > > > > all?
+> > > > > 
+> > > > > And maybe not call it "old" or "legacy" as time constantly goes forward,
+> > > > > just describe it as it is, "DIRECT_IO"?    
+> > > > 
+> > > > Agreed. HAVE_PCI_DIRECT_IO (or something similar) seems a more appropriate
+> > > > name for it.
+> > > > 
+> > > > Thanks,
+> > > > Mauro    
+> > > 
+> > > Hmm, I might be missing something here but that sounds a lot like the
+> > > HAS_IOPORT option added in patch 02.
+> > > 
+> > > We add both LEGACY_PCI and HAS_IOPORT to differentiate between two
+> > > cases. HAS_IOPORT is for PC-style devices that are not on a PCI card
+> > > while LEGACY_PCI is for PCI drivers that require port I/O.   
+> > 
+> > I didn't look at the other patches on this series, but why it is needed
+> > to deal with them on a separate way? Won't "PCI" and "HAS_IOPORT" be enough? 
+> > 
+> > I mean, are there any architecture where HAVE_PCI=y and HAS_IOPORT=y
+> > where LEGACY_PCI shall be "n"?  
+> 
+> In the current patch set LEGACY_PCI is not currently selected by
+> architectures, though of course it could be if we know that an
+> architecture requires it. We should probably also set it in any
+> defconfig that has devices depending on it so as not to break these.
+> 
+> Other than that it would be set during kernel configuration if one
+> wants/needs support for legacy PCI devices. For testing I ran with
+> HAVE_PCI=y, HAS_IOPORT=y and LEGACY_PCI=n on both my local Ryzen 3990X
+> based workstation and Raspberry Pi 4 (DT). I guess at the moment it
+> would make most sense for special configs such as those tailored for
+> vitualization guets but in the end that would be something for
+> distributions to decide.
 
-The issue was bisected to:
+IMO, it makes sense to have a "default y" there, as on systems that
+support I/O space, disabling it will just randomly disable some drivers
+that could be required by some hardware. I won't doubt that some of 
+those could be ported from using inb/outb to use, instead, readb/writeb.
 
-commit e4b8954074f6d0db01c8c97d338a67f9389c042f
-Author: Eric Dumazet <edumazet@google.com>
-Date:   Tue Dec 7 01:30:37 2021 +0000
+> 
+> Arnd described the options here:
+> https://lore.kernel.org/lkml/CAK8P3a3HHeP+Gw_k2P7Qtig0OmErf0HN30G22+qHic_uZTh11Q@mail.gmail.com/
 
-    netlink: add net device refcount tracker to struct ethnl_req_info
+Based on Arnd's description, LEGACY_PCI should depend on HAS_IOPORT.
+This is missing on patch 1. You should probably reorder your patch
+series to first create HAS_IOPORT and then add LEGACY_PCI with
+depends on, as otherwise it may cause randconfig build issues
+at robots and/or git bisect.
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1640902db00000
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=1540902db00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=1140902db00000
+I would also suggest to first introduce such change and then send
+a per-subsystem LEGACY_PCI patch, as it would be a lot easier for
+maintainers to review.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+4e697fe80a31aa7efe21@syzkaller.appspotmail.com
-Fixes: e4b8954074f6 ("netlink: add net device refcount tracker to struct ethnl_req_info")
+> 
+> >   
+> > > This
+> > > includes pre-PCIe devices as well as PCIe devices which require
+> > > features like I/O spaces. The "legacy" naming is comes from the PCIe
+> > > spec which in section 2.1.1.2 says "PCI Express supports I/O Space for
+> > > compatibility with legacy devices which require their use. Future
+> > > revisions of this specification may deprecate the use of I/O Space."  
+> > 
+> > I would still avoid calling it LEGACY_PCI, as this sounds too generic.
+> > 
+> > I didn't read the PCI/PCIe specs, but I suspect that are a lot more
+> > features that were/will be deprecated on PCI specs as time goes by.
+> > 
+> > So, I would, instead, use something like PCI_LEGACY_IO_SPACE or 
+> > HAVE_PCI_LEGACY_IO_SPACE, in order to let it clear what "legacy"
+> > means.  
+> 
+> Hmm, I'd like to hear Bjorn's opinion on this. Personally I feel like
+> LEGACY_PCI is pretty clear since most devices are either pre-PCIe
+> devices or a compatibility feature allowing drivers for a pre-PCIe
+> device to work with a PCIe device.
 
-L1TF CPU bug present and SMT on, data leak possible. See CVE-2018-3646 and https://www.kernel.org/doc/html/latest/admin-guide/hw-vuln/l1tf.html for details.
-------------[ cut here ]------------
-WARNING: CPU: 0 PID: 3605 at arch/x86/kvm/../../../virt/kvm/kvm_main.c:532 __kvm_handle_hva_range arch/x86/kvm/../../../virt/kvm/kvm_main.c:532 [inline]
-WARNING: CPU: 0 PID: 3605 at arch/x86/kvm/../../../virt/kvm/kvm_main.c:532 kvm_mmu_notifier_invalidate_range_start+0x91b/0xa80 arch/x86/kvm/../../../virt/kvm/kvm_main.c:714
-Modules linked in:
-CPU: 0 PID: 3605 Comm: syz-executor402 Not tainted 5.16.0-rc6-next-20211224-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:__kvm_handle_hva_range arch/x86/kvm/../../../virt/kvm/kvm_main.c:532 [inline]
-RIP: 0010:kvm_mmu_notifier_invalidate_range_start+0x91b/0xa80 arch/x86/kvm/../../../virt/kvm/kvm_main.c:714
-Code: 00 48 c7 c2 20 08 a2 89 be b9 01 00 00 48 c7 c7 c0 0b a2 89 c6 05 4c 4e 75 0c 01 e8 f3 22 09 08 e9 76 ff ff ff e8 25 e0 6e 00 <0f> 0b e9 8f fc ff ff e8 19 e0 6e 00 0f 0b e9 5f fc ff ff e8 0d e0
-RSP: 0018:ffffc900028bf5a0 EFLAGS: 00010293
-RAX: 0000000000000000 RBX: 0000000020800000 RCX: 0000000000000000
-RDX: ffff88801ccc3a80 RSI: ffffffff8109245b RDI: 0000000000000003
-RBP: ffffc900029e0290 R08: 0000000020800000 R09: ffffc900029e0293
-R10: ffffffff81091d04 R11: 0000000000000001 R12: ffffc900029e9168
-R13: ffffc900029df000 R14: ffffc900028bf868 R15: 0000000020800000
-FS:  0000555555953300(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fd0eb9e48d0 CR3: 00000000749c0000 CR4: 00000000003526e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- mn_hlist_invalidate_range_start mm/mmu_notifier.c:493 [inline]
- __mmu_notifier_invalidate_range_start+0x2ff/0x800 mm/mmu_notifier.c:548
- mmu_notifier_invalidate_range_start include/linux/mmu_notifier.h:459 [inline]
- __unmap_hugepage_range+0xdd3/0x1170 mm/hugetlb.c:4961
- unmap_hugepage_range+0xa8/0x100 mm/hugetlb.c:5072
- hugetlb_vmdelete_list+0x134/0x190 fs/hugetlbfs/inode.c:439
- hugetlbfs_punch_hole fs/hugetlbfs/inode.c:616 [inline]
- hugetlbfs_fallocate+0xf31/0x1550 fs/hugetlbfs/inode.c:646
- vfs_fallocate+0x48d/0xe10 fs/open.c:308
- madvise_remove mm/madvise.c:959 [inline]
- madvise_vma_behavior+0x9ca/0x1fa0 mm/madvise.c:982
- madvise_walk_vmas mm/madvise.c:1207 [inline]
- do_madvise mm/madvise.c:1385 [inline]
- do_madvise+0x3d6/0x660 mm/madvise.c:1343
- __do_sys_madvise mm/madvise.c:1398 [inline]
- __se_sys_madvise mm/madvise.c:1396 [inline]
- __x64_sys_madvise+0xa6/0x110 mm/madvise.c:1396
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7f64377bd039
-Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fff39388f08 EFLAGS: 00000246 ORIG_RAX: 000000000000001c
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f64377bd039
-RDX: 0000000000000009 RSI: 0000000000800000 RDI: 0000000020000000
-RBP: 00007f6437781020 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007f64377810b0
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
- </TASK>
+That's the main point: it is *not* disabling pre-PCIe devices or
+even legacy PCI drivers. It just disables a random set of drivers just
+because they use inb/outb instead of readb/writeb. It keeps several pure 
+PCI drivers selected, and disables some PCIe for no real reason.
 
+Just to give one example, this symbol:
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+> diff --git a/drivers/media/cec/platform/Kconfig b/drivers/media/cec/platform/Kconfig
+> index b672d3142eb7..5e92ece5b104 100644
+> --- a/drivers/media/cec/platform/Kconfig
+> +++ b/drivers/media/cec/platform/Kconfig
+> @@ -100,7 +100,7 @@ config CEC_TEGRA
+>  config CEC_SECO
+>  	tristate "SECO Boards HDMI CEC driver"
+>  	depends on (X86 || IA64) || COMPILE_TEST
+> -	depends on PCI && DMI
+> +	depends on LEGACY_PCI && DMI
+>  	select CEC_CORE
+>  	select CEC_NOTIFIER
+>  	help
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+Disables HDMI CEC support on some Intel motherboards.
+Any distro meant to run on generic hardware should keep it selected.
+
+I can see some value of a "PCI_LEGACY" option to disable all
+non-PCIe drivers, but this is not the case here.
+
+Thanks,
+Mauro
