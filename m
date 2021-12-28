@@ -2,1148 +2,283 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 44C60480D95
-	for <lists+netdev@lfdr.de>; Tue, 28 Dec 2021 23:04:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C304480D9A
+	for <lists+netdev@lfdr.de>; Tue, 28 Dec 2021 23:10:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231807AbhL1WEv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Dec 2021 17:04:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44340 "EHLO
+        id S231233AbhL1WKR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Dec 2021 17:10:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231784AbhL1WEt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Dec 2021 17:04:49 -0500
-Received: from smtp-190d.mail.infomaniak.ch (smtp-190d.mail.infomaniak.ch [IPv6:2001:1600:3:17::190d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75144C061574
-        for <netdev@vger.kernel.org>; Tue, 28 Dec 2021 14:04:49 -0800 (PST)
-Received: from smtp-3-0000.mail.infomaniak.ch (unknown [10.4.36.107])
-        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4JNpVQ0SpBzMs923;
-        Tue, 28 Dec 2021 23:04:46 +0100 (CET)
-Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
-        by smtp-3-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4JNpVN64mPzlkSY8;
-        Tue, 28 Dec 2021 23:04:44 +0100 (CET)
-Message-ID: <d9aa57a7-9978-d0a4-3aa0-4512fd9459df@digikod.net>
-Date:   Tue, 28 Dec 2021 23:09:05 +0100
+        with ESMTP id S230144AbhL1WKP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Dec 2021 17:10:15 -0500
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BEA0C061574
+        for <netdev@vger.kernel.org>; Tue, 28 Dec 2021 14:10:15 -0800 (PST)
+Received: by mail-ed1-x532.google.com with SMTP id b13so78899554edd.8
+        for <netdev@vger.kernel.org>; Tue, 28 Dec 2021 14:10:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Ah/li73ZJpq1ojPJFP/2IIyYYfvEMBKyMVPwxk0qq3I=;
+        b=nh0R1zv7jF5Xu3fPuVnjggYzWhanSpdWHfrQnNBl+kNkKlPXyBiBFDpM5o9WLM7esd
+         FnXleECjTukFR37b0alXtJEPLjDvirzH9qIP3V1b5Bn25ydnBH228E/60hCI8H1h0kj5
+         sbRqRFyVkKO/H/eZUN/nI5v3lHYZbWG0WEicw5CVEllMWxuPcAHBXhfHTO9tZfE7Ghd1
+         HZiBocBJh1tUZTBjmNcOfAiLtyK/iGD3s+rKHBir6suNHd+UqStVDNNgKXo/wKBIPt2n
+         Z13dWsB9K7d4WHEmRK+txkyAIz6LbhHFfQndw9+uJqHxFZesXnR/u96RwWG6Jz/caA3Y
+         4/OQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Ah/li73ZJpq1ojPJFP/2IIyYYfvEMBKyMVPwxk0qq3I=;
+        b=SscAGYNDs9lxYPLoh67UWt7YHkqhc3u9PKnjAf1PtpoOIdOokpkbBVLI5eDdPrBf0q
+         91XZjN2DIwoEEoe1kHd4clPLd39EK+jCjlXaTH1WW41EeEIELmYKDPzdGdnyL4EhvW4v
+         AxMy6P7Tzi2FvCw7SEk1nOOMyYO/03CeXGgRr6wjPX8W22UkJws07+YqHTCzBwq1UpaP
+         hAVSCr4CZgebYE6V93bLqYO0B9iFgdKutMloblTu4NK89ZKe0NzRP9/Zj5zBKRFlqKl7
+         T02QTRHgN5KxiWabZokDQsVkaJndR0N/89rjRqFU1nQlK9ZVoQOhEeeuK17mL1O3zEKX
+         Vvig==
+X-Gm-Message-State: AOAM533ZJJK3FoObP6uvffum5vUOUWPlwg8yRl+Bto7GgCdeNvs/LBDC
+        UKU7yFsq/viDBuqJyC2toK+YbIeJ3wk=
+X-Google-Smtp-Source: ABdhPJyf53lBcKlWKqVTaFb2z590ZjaFsPDSVGNoTeA8t3S37MDQO5KfSllMrJ7g3G2gZATSBeDNEw==
+X-Received: by 2002:a05:6402:c0a:: with SMTP id co10mr22880364edb.295.1640729413977;
+        Tue, 28 Dec 2021 14:10:13 -0800 (PST)
+Received: from localhost.localdomain ([2a00:f41:3894:b142:1667:a0ff:5387:8a85])
+        by smtp.gmail.com with ESMTPSA id oz20sm6316330ejc.60.2021.12.28.14.10.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Dec 2021 14:10:13 -0800 (PST)
+From:   =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com,
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>
+Subject: [PATCH] net: dsa: bcm_sf2: refactor LED regs access
+Date:   Tue, 28 Dec 2021 23:09:51 +0100
+Message-Id: <20211228220951.17751-1-zajec5@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-User-Agent: 
-From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-To:     Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
-Cc:     linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter@vger.kernel.org, yusongping@huawei.com,
-        artem.kuzin@huawei.com
-References: <20211228115212.703084-1-konstantin.meskhidze@huawei.com>
-Content-Language: en-US
-Subject: Re: [RFC PATCH 0/1] Landlock network PoC
-In-Reply-To: <20211228115212.703084-1-konstantin.meskhidze@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Konstantin,
+From: Rafał Miłecki <rafal@milecki.pl>
 
-Please read the full how-to about sending patches: 
-https://www.kernel.org/doc/html/latest/process/submitting-patches.html
+1. Define more regs. Some switches (e.g. BCM4908) have up to 6 regs.
+2. Add helper for handling non-lineral port <-> reg mappings.
+3. Add support for 12 B LED reg blocks on BCM4908 (different layout)
 
-There are at least these issues:
-- no link to the previous version: 
-https://lore.kernel.org/linux-security-module/20211210072123.386713-1-konstantin.meskhidze@huawei.com/
-- no version: [RFC PATCH v2 0/1]
-- even if there is only one patch, please make the cover letter a 
-separate email (i.e. git format-patch --cover-letter).
+Complete support for LEDs setup will be implemented once Linux receives
+a proper design & implementation for "hardware" LEDs.
 
-It seems that you missed some of my previous (inlined) comments, you 
-didn't reply to most of them: 
-https://lore.kernel.org/linux-security-module/b50ed53a-683e-77cf-9dc2-f4ae1b5fa0fd@digikod.net/
+Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+---
+ drivers/net/dsa/bcm_sf2.c      | 60 +++++++++++++++++++++++++++----
+ drivers/net/dsa/bcm_sf2.h      | 10 ++++++
+ drivers/net/dsa/bcm_sf2_regs.h | 65 +++++++++++++++++++++++++++++++---
+ 3 files changed, 125 insertions(+), 10 deletions(-)
 
-Did you test your changes before submitting this patch series?
-
-This series can only forbids TCP connects and binds to processes other 
-than the one creating the ruleset, which doesn't make sense here (as I 
-already explained). TCP ports are not checked.
-
-If you have any doubts about any of the comments, please rephrase, 
-challenge them and ask questions.
-
-
-On 28/12/2021 12:52, Konstantin Meskhidze wrote:
-> Hi, all!
-> Here is another PoC patch for Landlock network confinement.
-> Now 2 hooks are supported for TCP sockets:
-> 	- hook_socket_bind()
-> 	- hook_socket_connect()
-> 
-> After architectuire has been more clear, there will be a patch with
-> selftests.
-> 
-> Please welcome with any comments and suggestions.
-> 
-> 
-> Implementation related issues
-> =============================
-> 
-> 1. It was suggested by Mickaёl using new network rules
-> attributes, like:
-> 
-> struct landlock_net_service_attr {
->        __u64 allowed_access; // LANDLOCK_NET_*_TCP
->        __u16 port;
-> } __attribute__((packed));
-> 
-> I found that, if we want to support inserting port attributes,
-> it's needed to add port member into struct landlock_rule:
-> 
-> struct landlock_rule {
-> 	...
-> 	struct landlock_object *object;
-> 	/**
-> 	 * @num_layers: Number of entries in @layers.
-> 	 */
-> 	u32 num_layers;
-> 
-> 	u16 port;
-
-In this case the "object" is indeed defined by a port. You can then 
-create an union containing either a struct landlock_object pointer or a 
-raw value (here a u16 port). Of course, every code that use the object 
-field must be audited and updated accordingly. I think the following 
-update should be a good approach (with updated documentation):
-
-struct landlock_rule {
-[...]
-	union {
-		struct landlock_object *ptr;
-		uintptr_t data;
-	} object;
-[...]
-};
-
-…and then a function helper to convert raw data to/from port.
-
-It would be a good idea to use a dedicated tree for objects identified 
-by (typed) data vs. pointer:
-
-struct landlock_ruleset {
-	struct rb_root root_inode; // i.e. the current "root" field.
-	struct rb_root root_net_port;
-[...]
-};
-
-
-> 	...
-> };
-> 
-> In this case 2 functions landlock_insert_rule() and insert_rule()
-> must be refactored;
-> 
-> But, if struct landlock_layer be modified -
-> 
-> struct landlock_layer {
-> 	/**
-> 	 * @level: Position of this layer in the layer stack.
-> 	 */
-> 	u16 level;
-> 	/**
-> 	 * @access: Bitfield of allowed actions on the kernel object.  They are
-> 	 * relative to the object type (e.g. %LANDLOCK_ACTION_FS_READ).
-> 	 */
-> 	u16 access;
-> 
-> 	u16 port;
-
-No, struct landlock_layer doesn't need to be modified. This struct is 
-independent from the type of object. I talked about that in the previous 
-series.
-
-> };
-> so, just one landlock_insert_rule() must be slightly refactored.
-> Also many new attributes could be easily supported in future versions.
-> 
-> 2. access_masks[] member of struct landlock_ruleset was modified
-> to support multiple rule type masks.
-> I suggest using 2D array semantic for convenient usage:
-> 	access_masks[rule_type][layer_level]
-> 
-> But its also possible to use 1D array with modulo arithmetic:
-> 	access_masks[rule_type % layer_level]
-
-What about my previous suggestion to use a (well defined) upper bit to 
-identify the type of access?
-
-> 
-> 3. Kernel objects.
-> As was disscussed earlier, base Landlock version supports some file access
-> rules, and inodes objects (files' and directories' inodes) are used to tie
-> filesystem landlock rules.
-> For socket operations it makes sense tagging underlying socket inode by
-> landlock rules and it's perfectly fits to subject-object concept where
-> proccess is a subject and object is one of kernel objects: inodes, sockets,
-> ect. But here is one issue that should be also discussed and solved.
-> Now there is an undergoing work for Landlock support in RUNC and other
-> container environments:
-> 	https://github.com/opencontainers/runtime-spec/issues/1110
-> 	https://github.com/opencontainers/runc/issues/2859
-> 
-> When RUNC wants to launch a container it first reads a spec.json file
-> with container specification. Here is an example landlock rules
-> specification in spec.json:
-> 
-> 	"landlock": {
-> 		"rules": [
->              	{
-> 			"type": "path_beneath",
-> 			"restrictPaths": {
-> 				"allowedAccess": [
-> 					"LANDLOCK_ACCESS_FS_EXECUTE",
-> 					"LANDLOCK_ACCESS_FS_READ_FILE",
-> 					"LANDLOCK_ACCESS_FS_READ_DIR"
-> 				],
-> 				"paths": [
-> 					"/usr",
-> 					"/bin"
-> 				]
-> 			}
->              	},
-> 		{
-> 			"type": "net_service",
-> 			"tcp_net_service":
-> 				"allowedAccess": [
-> 					"LANDLOCK_ACCESS_NET_CONNECT_TCP",
-> 					"LANDLOCK_ACCESS_NET_BIND_TCP",
-> 				],
-> 				"port": [
-> 					"3920"
-> 				],
-> 			}
->              	},
-> 	]
-> 
-> For fs part RUNC can easily create rules and tie them to underlying
-> inodes of filesystem. Then, when it starts a container all fs rules will
-> be inherited by the container proccess.
-> But for network rules it's impossible, because there no any socket object
-> created during RUNC phase. All socket objects are created after an
-> application has started in the container.
-> Possible solution:
->   - All network rules from spec.json are tied to task_struct object of the
->   container process. In this case, RUNC creates network rules, attach them
->   to itself and, then rules are inherited by the launched container
->   proccess. These rules are global for all sockets in a container and,
->   then user could add additional restrictions to any socket connection,
->   imposing some kind of granularity.
-
-The proposed net_service mechanism doesn't tie anything to socket. I 
-don't see any issue here.
-
-> 
-> Konstantin Meskhidze (1):
->    landlock: TCP network hooks implementation
-> 
->   include/uapi/linux/landlock.h |  52 +++++++++
->   security/landlock/Makefile    |   2 +-
->   security/landlock/fs.c        |   8 +-
->   security/landlock/limits.h    |   5 +
->   security/landlock/net.c       | 213 ++++++++++++++++++++++++++++++++++
->   security/landlock/net.h       |  40 +++++++
->   security/landlock/ruleset.c   |  70 +++++++++--
->   security/landlock/ruleset.h   |  19 +--
->   security/landlock/setup.c     |   3 +
->   security/landlock/syscalls.c  | 141 +++++++++++++++-------
->   10 files changed, 487 insertions(+), 66 deletions(-)
->   create mode 100644 security/landlock/net.c
->   create mode 100644 security/landlock/net.h
-> 
-> --
-> 2.25.1
-> 
-
-The following should be an independent email.
-
->>From fee4f0dbec1e4a8fa8d34cec57a8cdbf351e9c12 Mon Sep 17 00:00:00 2001
-> From: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
-> Date: Tue, 28 Dec 2021 14:47:39 +0800
-> Subject: [RFC PATCH 1/1] landlock: TCP network hooks implementation
-> 
-> Support of socket_bind() and socket_connect() hooks.
-> Current prototype can restrict binding and connecting of TCP
-> types of sockets. Its just basic idea how Landlock could support
-> network confinement.
-> 
-> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
-> ---
->   include/uapi/linux/landlock.h |  52 +++++++++
->   security/landlock/Makefile    |   2 +-
->   security/landlock/fs.c        |   8 +-
->   security/landlock/limits.h    |   5 +
->   security/landlock/net.c       | 213 ++++++++++++++++++++++++++++++++++
->   security/landlock/net.h       |  40 +++++++
->   security/landlock/ruleset.c   |  70 +++++++++--
->   security/landlock/ruleset.h   |  19 +--
->   security/landlock/setup.c     |   3 +
->   security/landlock/syscalls.c  | 141 +++++++++++++++-------
->   10 files changed, 487 insertions(+), 66 deletions(-)
->   create mode 100644 security/landlock/net.c
->   create mode 100644 security/landlock/net.h
-> 
-> diff --git a/include/uapi/linux/landlock.h b/include/uapi/linux/landlock.h
-> index b3d952067f59..1745a3a2f7a9 100644
-> --- a/include/uapi/linux/landlock.h
-> +++ b/include/uapi/linux/landlock.h
-> @@ -25,6 +25,15 @@ struct landlock_ruleset_attr {
->   	 * compatibility reasons.
->   	 */
->   	__u64 handled_access_fs;
-> +
-> +	/**
-> +	 * @handled_access_net: Bitmask of actions (cf. `Network flags`_)
-> +	 * that is handled by this ruleset and should then be forbidden if no
-> +	 * rule explicitly allow them.  This is needed for backward
-> +	 * compatibility reasons.
-> +	 */
-> +	__u64 handled_access_net;
-> +
->   };
-> 
->   /*
-> @@ -46,6 +55,12 @@ enum landlock_rule_type {
->   	 * landlock_path_beneath_attr .
->   	 */
->   	LANDLOCK_RULE_PATH_BENEATH = 1,
-> +
-> +	/**
-> +	 * @LANDLOCK_RULE_NET_SERVICE: Type of a &struct
-> +	 * landlock_net_service_attr .
-> +	 */
-> +	LANDLOCK_RULE_NET_SERVICE = 2,
->   };
-> 
->   /**
-> @@ -70,6 +85,24 @@ struct landlock_path_beneath_attr {
->   	 */
->   } __attribute__((packed));
-> 
-> +/**
-> + * struct landlock_net_service_attr - TCP subnet definition
-
-No subnet here.
-
-> + *
-> + * Argument of sys_landlock_add_rule().
-> + */
-> +struct landlock_net_service_attr {
-> +	/**
-> +	 * @allowed_access: Bitmask of allowed access network for services
-> +	 * (cf. `Network flags`_).
-> +	 */
-> +	__u64 allowed_access;
-> +	/**
-> +	 * @port: Network port
-> +	 */
-> +	__u16 port;
-> +
-> +} __attribute__((packed));
-> +
->   /**
->    * DOC: fs_access
->    *
-> @@ -134,4 +167,23 @@ struct landlock_path_beneath_attr {
->   #define LANDLOCK_ACCESS_FS_MAKE_BLOCK			(1ULL << 11)
->   #define LANDLOCK_ACCESS_FS_MAKE_SYM			(1ULL << 12)
-> 
-> +/**
-> + * DOC: net_access
-> + *
-> + * Network flags
-> + * ~~~~~~~~~~~~~~~~
-> + *
-> + * These flags enable to restrict a sandboxed process to a set of network
-> + * actions.
-> + *
-> + * TCP sockets with allowed actions:
-> + *
-> + * - %LANDLOCK_ACCESS_NET_BIND_TCP: Bind a TCP socket to a IP address.
-
-Bind a TCP socket to a local port.
-
-> + * - %LANDLOCK_ACCESS_NET_CONNECT_TCP: Connect an active TCP socket to
-> + *   a listening one.
-
-Connect a TCP socket to a remote port.
-
-> + */
-> +#define LANDLOCK_ACCESS_NET_BIND_TCP			(1ULL << 0)
-> +#define LANDLOCK_ACCESS_NET_CONNECT_TCP			(1ULL << 1)
-> +
-> +
->   #endif /* _UAPI_LINUX_LANDLOCK_H */
-> diff --git a/security/landlock/Makefile b/security/landlock/Makefile
-> index 7bbd2f413b3e..afa44baaa83a 100644
-> --- a/security/landlock/Makefile
-> +++ b/security/landlock/Makefile
-> @@ -1,4 +1,4 @@
->   obj-$(CONFIG_SECURITY_LANDLOCK) := landlock.o
-> 
->   landlock-y := setup.o syscalls.o object.o ruleset.o \
-> -	cred.o ptrace.o fs.o
-> +	cred.o ptrace.o fs.o net.o
-> diff --git a/security/landlock/fs.c b/security/landlock/fs.c
-> index 97b8e421f617..a27ac76ea1ee 100644
-> --- a/security/landlock/fs.c
-> +++ b/security/landlock/fs.c
-> @@ -154,6 +154,7 @@ int landlock_append_fs_rule(struct landlock_ruleset *const ruleset,
->   {
->   	int err;
->   	struct landlock_object *object;
-> +	u8 rule_fs_type;
-> 
->   	/* Files only get access rights that make sense. */
->   	if (!d_is_dir(path->dentry) && (access_rights | ACCESS_FILE) !=
-> @@ -162,8 +163,9 @@ int landlock_append_fs_rule(struct landlock_ruleset *const ruleset,
->   	if (WARN_ON_ONCE(ruleset->num_layers != 1))
->   		return -EINVAL;
-> 
-> +	rule_fs_type = LANDLOCK_RULE_PATH_BENEATH - 1;
->   	/* Transforms relative access rights to absolute ones. */
-> -	access_rights |= LANDLOCK_MASK_ACCESS_FS & ~ruleset->fs_access_masks[0];
-> +	access_rights |= LANDLOCK_MASK_ACCESS_FS & ~ruleset->access_masks[rule_fs_type][0];
->   	object = get_inode_object(d_backing_inode(path->dentry));
->   	if (IS_ERR(object))
->   		return PTR_ERR(object);
-> @@ -229,6 +231,7 @@ static int check_access_path(const struct landlock_ruleset *const domain,
->   	struct path walker_path;
->   	u64 layer_mask;
->   	size_t i;
-> +	u8 rule_fs_type;
-> 
->   	/* Make sure all layers can be checked. */
->   	BUILD_BUG_ON(BITS_PER_TYPE(layer_mask) < LANDLOCK_MAX_NUM_LAYERS);
-> @@ -249,10 +252,11 @@ static int check_access_path(const struct landlock_ruleset *const domain,
->   	if (WARN_ON_ONCE(domain->num_layers < 1))
->   		return -EACCES;
-> 
-> +	rule_fs_type = LANDLOCK_RULE_PATH_BENEATH - 1;
->   	/* Saves all layers handling a subset of requested accesses. */
->   	layer_mask = 0;
->   	for (i = 0; i < domain->num_layers; i++) {
-> -		if (domain->fs_access_masks[i] & access_request)
-> +		if (domain->access_masks[rule_fs_type][i] & access_request)
->   			layer_mask |= BIT_ULL(i);
->   	}
->   	/* An access request not handled by the domain is allowed. */
-> diff --git a/security/landlock/limits.h b/security/landlock/limits.h
-> index 2a0a1095ee27..6a1e5ea4c7d2 100644
-> --- a/security/landlock/limits.h
-> +++ b/security/landlock/limits.h
-> @@ -18,4 +18,9 @@
->   #define LANDLOCK_LAST_ACCESS_FS		LANDLOCK_ACCESS_FS_MAKE_SYM
->   #define LANDLOCK_MASK_ACCESS_FS		((LANDLOCK_LAST_ACCESS_FS << 1) - 1)
-> 
-> +#define LANDLOCK_LAST_ACCESS_NET	LANDLOCK_ACCESS_NET_CONNECT_TCP
-> +#define LANDLOCK_MASK_ACCESS_NET	((LANDLOCK_LAST_ACCESS_NET << 1) - 1)
-> +
-> +#define LANDLOCK_RULE_TYPE_NUM		LANDLOCK_RULE_NET_SERVICE
-> +
->   #endif /* _SECURITY_LANDLOCK_LIMITS_H */
-> diff --git a/security/landlock/net.c b/security/landlock/net.c
-> new file mode 100644
-> index 000000000000..443933db3e23
-> --- /dev/null
-> +++ b/security/landlock/net.c
-> @@ -0,0 +1,213 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/*
-> + * Landlock LSM - Filesystem management and hooks
-> + *
-> + * Copyright © 2016-2020 Mickaël Salaün <mic@digikod.net>
-> + * Copyright © 2018-2020 ANSSI
-> + */
-> +
-> +#include <linux/socket.h>
-> +#include <linux/net.h>
-> +
-> +#include "cred.h"
-> +#include "limits.h"
-> +#include "net.h"
-> +
-> +/* Underlying object management */
-> +static void release_task_object(struct landlock_object *const object)
-> +{
-> +	/* Untie landlock object from a process task_struct */
-> +	object->underobj = NULL;
-> +}
-> +
-> +static const struct landlock_object_underops landlock_net_underops = {
-> +	.release = release_task_object
-> +};
-> +
-> +static struct landlock_object *get_task_object(struct task_struct *const task)
-> +{
-> +	struct landlock_object *object, *new_object;
-> +	struct landlock_task_security *task_sec = landlock_task(task);
-> +
-> +	object = task_sec->object;
-> +	/* There is no race condition here, cause a process
-> +	 * creating a landlock object (for network rules) ties
-> +	 * one to itself, but it better to save landlock object
-> +	 * refcounter usage logic here.
-> +	 */
-> +	if (object)
-> +		if (likely(refcount_inc_not_zero(&object->usage)))
-> +			return object;
-> +
-> +	/*
-> +	 * If there is no object tied to task, then create a new one.
-> +	 */
-> +	new_object = landlock_create_object(&landlock_net_underops, task);
-> +	if (IS_ERR(new_object))
-> +		return new_object;
-> +
-> +	task_sec->object = new_object;
-> +	return new_object;
-> +}
-> +
-> +int landlock_append_net_rule(struct landlock_ruleset *const ruleset,
-> +						     u32 access_rights)
-> +{
-> +	int err;
-> +	struct landlock_object *object;
-> +	u8 rule_net_type;
-> +
-> +	rule_net_type = LANDLOCK_RULE_NET_SERVICE - 1;
-> +	/* Transforms relative access rights to absolute ones. */
-> +	access_rights |= LANDLOCK_MASK_ACCESS_NET & ~ruleset->access_masks[rule_net_type][0];
-> +
-> +	/* Get the current proccess's landlock object */
-> +	object = get_task_object(current);
-> +	if (IS_ERR(object))
-> +		return PTR_ERR(object);
-> +	mutex_lock(&ruleset->lock);
-> +	err = landlock_insert_rule(ruleset, object, access_rights);
-> +	mutex_unlock(&ruleset->lock);
-> +	/*
-> +	 * No need to check for an error because landlock_insert_rule()
-> +	 * increments the refcount for the new object if needed.
-> +	 */
-> +	landlock_put_object(object);
-> +	return err;
-> +}
-> +
-> +/* Access-control management */
-> +static inline bool unmask_layers(
-> +		const struct landlock_ruleset *const domain,
-> +		const u32 access_request, u64 layer_mask)
-> +{
-> +	const struct landlock_rule *rule;
-> +	const struct task_struct *task;
-> +	size_t i;
-> +	bool allowed = false;
-> +
-> +	/* Get current procces task_struct */
-> +	task = current;
-> +
-> +	rule = landlock_find_rule(domain, landlock_task(task)->object);
-
-Again, it doesn't make sense to check tasks in this use case. The 
-subject is already the current task. The object should be a TCP port.
-
-Please take a look at my previous review.
-
-> +
-> +	/* Grant access if there is no rule for an oject */
-> +	if (!rule)
-> +		return allowed = true;
-> +
-> +	/*
-> +	 * An access is granted if, for each policy layer, at least one rule
-> +	 * encountered on network actions requested,
-> +	 * regardless of their position in the layer stack. We must then check
-> +	 * the remaining layers, from the first added layer to
-> +	 * the last one.
-> +	 */
-> +	for (i = 0; i < rule->num_layers; i++) {
-> +		const struct landlock_layer *const layer = &rule->layers[i];
-> +		const u64 layer_level = BIT_ULL(layer->level - 1);
-> +
-> +		/* Checks that the layer grants access to the request. */
-> +		if ((layer->access & access_request) == access_request) {
-> +			layer_mask &= ~layer_level;
-> +			allowed = true;
-> +
-> +			if (layer_mask == 0)
-> +				return allowed;
-> +		} else {
-> +			layer_mask &= ~layer_level;
-> +
-> +			if (layer_mask == 0)
-> +				return allowed;
-> +		}
-> +	}
-> +	return allowed;
-> +}
-> +
-> +static int check_socket_access(const struct landlock_ruleset *const domain,
-> +			       u32 access_request)
-> +{
-> +	bool allowed = false;
-> +	u64 layer_mask;
-> +	size_t i;
-> +	u8 rule_net_type;
-> +
-> +	/* Make sure all layers can be checked. */
-> +	BUILD_BUG_ON(BITS_PER_TYPE(layer_mask) < LANDLOCK_MAX_NUM_LAYERS);
-> +
-> +	if (WARN_ON_ONCE(!domain))
-> +		return 0;
-> +	if (WARN_ON_ONCE(domain->num_layers < 1))
-> +		return -EACCES;
-> +
-> +	/* Saves all layers handling a subset of requested
-> +	 * socket access rules.
-> +	 */
-> +	rule_net_type = LANDLOCK_RULE_NET_SERVICE - 1;
-> +	layer_mask = 0;
-> +	for (i = 0; i < domain->num_layers; i++) {
-> +		if (domain->access_masks[rule_net_type][i] & access_request)
-> +			layer_mask |= BIT_ULL(i);
-> +	}
-> +	/* An access request not handled by the domain is allowed. */
-> +	if (layer_mask == 0)
-> +		return 0;
-> +
-> +	/*
-> +	 * We need to walk through all the hierarchy to not miss any relevant
-> +	 * restriction.
-> +	 */
-> +	allowed = unmask_layers(domain, access_request, layer_mask);
-> +
-> +	return allowed ? 0 : -EACCES;
-> +}
-> +
-> +static int hook_socket_bind(struct socket *sock, struct sockaddr *address, int addrlen)
-> +{
-> +	short socket_type;
-> +	const struct landlock_ruleset *const dom = landlock_get_current_domain();
-> +
-> +	/* Check if the hook catches AF_INET* socket's action */
-> +	if ((address->sa_family != AF_INET) && (address->sa_family != AF_INET6))
-> +		return 0;
-> +
-> +	socket_type = sock->type;
-> +	/* Check if it's a TCP socket */
-> +	if (socket_type != SOCK_STREAM)
-> +		return 0;
-> +
-> +	if (!dom)
-> +		return 0;
-> +
-> +	return check_socket_access(dom, LANDLOCK_ACCESS_NET_BIND_TCP);
-
-There is no port check.
-
-> +}
-> +
-> +static int hook_socket_connect(struct socket *sock, struct sockaddr *address, int addrlen)
-> +{
-> +	short socket_type;
-> +	const struct landlock_ruleset *const dom = landlock_get_current_domain();
-> +
-> +	/* Check if the hook catches AF_INET* socket's action */
-> +	if ((address->sa_family != AF_INET) && (address->sa_family != AF_INET6))
-> +		return 0;
-> +
-> +	socket_type = sock->type;
-> +	/* Check if it's a TCP socket */
-> +	if (socket_type != SOCK_STREAM)
-> +		return 0;
-> +
-> +	if (!dom)
-> +		return 0;
-> +
-> +	return check_socket_access(dom, LANDLOCK_ACCESS_NET_CONNECT_TCP);
-
-There is no port check.
-
-> +}
-> +
-> +static struct security_hook_list landlock_hooks[] __lsm_ro_after_init = {
-> +	LSM_HOOK_INIT(socket_bind, hook_socket_bind),
-> +	LSM_HOOK_INIT(socket_connect, hook_socket_connect),
-> +};
-> +
-> +__init void landlock_add_net_hooks(void)
-> +{
-> +	security_add_hooks(landlock_hooks, ARRAY_SIZE(landlock_hooks),
-> +			LANDLOCK_NAME);
-> +}
-> diff --git a/security/landlock/net.h b/security/landlock/net.h
-> new file mode 100644
-> index 000000000000..27ef59a42a1e
-> --- /dev/null
-> +++ b/security/landlock/net.h
-> @@ -0,0 +1,40 @@
-> +/* SPDX-License-Identifier: GPL-2.0-only */
-> +/*
-> + * Landlock LSM - Network management and hooks
-> + *
-> + * Copyright © 2017-2020 Mickaël Salaün <mic@digikod.net>
-> + * Copyright © 2018-2020 ANSSI
-> + */
-> +
-> +#ifndef _SECURITY_LANDLOCK_NET_H
-> +#define _SECURITY_LANDLOCK_NET_H
-> +
-> +#include "common.h"
-> +#include "ruleset.h"
-> +#include "setup.h"
-> +
-> +/**
-> + * struct landlock_task_security - Process task security blob
-> + *
-> + * Enable to reference a &struct landlock_object tied to a task (i.e.
-> + * underlying object).
-> + */
-> +struct landlock_task_security {
-> +	/**
-> +	 * @object: Pointer to an allocated object.
-> +	 */
-> +	struct landlock_object *object;
-> +};
-> +
-> +static inline struct landlock_task_security *landlock_task(
-> +		const struct task_struct *const task)
-> +{
-> +	return task->security + landlock_blob_sizes.lbs_task;
-> +}
-> +
-> +__init void landlock_add_net_hooks(void);
-> +
-> +int landlock_append_net_rule(struct landlock_ruleset *const ruleset,
-> +						     u32 access_hierarchy);
-> +
-> +#endif /* _SECURITY_LANDLOCK_NET_H */
-> diff --git a/security/landlock/ruleset.c b/security/landlock/ruleset.c
-> index ec72b9262bf3..a335c475965c 100644
-> --- a/security/landlock/ruleset.c
-> +++ b/security/landlock/ruleset.c
-> @@ -27,9 +27,24 @@
->   static struct landlock_ruleset *create_ruleset(const u32 num_layers)
->   {
->   	struct landlock_ruleset *new_ruleset;
-> +	u16 row, col, rules_types_num;
-> +
-> +	new_ruleset = kzalloc(sizeof *new_ruleset +
-> +			      sizeof *(new_ruleset->access_masks),
-
-sizeof(access_masks) is 0.
-
-> +			      GFP_KERNEL_ACCOUNT);
-> +
-> +	rules_types_num = LANDLOCK_RULE_TYPE_NUM;
-> +	/* Initializes access_mask array for multiple rule types.
-> +	 * Double array semantic is used convenience: access_mask[rule_type][num_layer].
-> +	 */
-> +	for (row = 0; row < rules_types_num; row++) {
-> +		new_ruleset->access_masks[row] = kzalloc(sizeof
-> +					*(new_ruleset->access_masks[row]),
-> +					GFP_KERNEL_ACCOUNT);
-> +		for (col = 0; col < num_layers; col++)
-> +			new_ruleset->access_masks[row][col] = 0;
-> +	}
-
-This code may segfault. I guess it wasn't tested. Please enable most 
-test/check features as I suggested in the previous series.
-
-> 
-> -	new_ruleset = kzalloc(struct_size(new_ruleset, fs_access_masks,
-> -				num_layers), GFP_KERNEL_ACCOUNT);
-
-What about my comment in the previous series?
-
->   	if (!new_ruleset)
->   		return ERR_PTR(-ENOMEM);
->   	refcount_set(&new_ruleset->usage, 1);
-> @@ -39,21 +54,30 @@ static struct landlock_ruleset *create_ruleset(const u32 num_layers)
->   	/*
->   	 * hierarchy = NULL
->   	 * num_rules = 0
-> -	 * fs_access_masks[] = 0
-> +	 * access_masks[][] = 0
->   	 */
->   	return new_ruleset;
->   }
-> 
-> -struct landlock_ruleset *landlock_create_ruleset(const u32 fs_access_mask)
-> +struct landlock_ruleset *landlock_create_ruleset(const u32 fs_access_mask,
-> +						 const u32 net_access_mask)
->   {
->   	struct landlock_ruleset *new_ruleset;
-> +	u8 rule_fs_type, rule_net_type;
-> 
->   	/* Informs about useless ruleset. */
-> -	if (!fs_access_mask)
-> +	if (!fs_access_mask && !net_access_mask)
->   		return ERR_PTR(-ENOMSG);
->   	new_ruleset = create_ruleset(1);
-> -	if (!IS_ERR(new_ruleset))
-> -		new_ruleset->fs_access_masks[0] = fs_access_mask;
-> +
-> +	rule_fs_type = LANDLOCK_RULE_PATH_BENEATH - 1;
-> +	if (!IS_ERR(new_ruleset) && fs_access_mask)
-> +		new_ruleset->access_masks[rule_fs_type][0] = fs_access_mask;
-> +
-> +	rule_net_type = LANDLOCK_RULE_NET_SERVICE - 1;
-> +	if (!IS_ERR(new_ruleset) && net_access_mask)
-> +		new_ruleset->access_masks[rule_net_type][0] = net_access_mask;
-> +
->   	return new_ruleset;
->   }
-> 
-> @@ -112,15 +136,23 @@ static void free_rule(struct landlock_rule *const rule)
-> 
->   static void build_check_ruleset(void)
->   {
-> +	u8 rule_fs_type, rule_net_type;
-> +
->   	const struct landlock_ruleset ruleset = {
->   		.num_rules = ~0,
->   		.num_layers = ~0,
->   	};
-> -	typeof(ruleset.fs_access_masks[0]) fs_access_mask = ~0;
-> +
-> +	rule_fs_type = LANDLOCK_RULE_PATH_BENEATH - 1;
-> +	rule_net_type = LANDLOCK_RULE_NET_SERVICE - 1;
-> +
-> +	typeof(ruleset.access_masks[rule_fs_type][0]) fs_access_mask = ~0;
-> +	typeof(ruleset.access_masks[rule_net_type][0]) net_access_mask = ~0;
-> 
->   	BUILD_BUG_ON(ruleset.num_rules < LANDLOCK_MAX_NUM_RULES);
->   	BUILD_BUG_ON(ruleset.num_layers < LANDLOCK_MAX_NUM_LAYERS);
->   	BUILD_BUG_ON(fs_access_mask < LANDLOCK_MASK_ACCESS_FS);
-> +	BUILD_BUG_ON(net_access_mask < LANDLOCK_MASK_ACCESS_NET);
->   }
-> 
->   /**
-> @@ -260,8 +292,12 @@ static int merge_ruleset(struct landlock_ruleset *const dst,
->   		struct landlock_ruleset *const src)
->   {
->   	struct landlock_rule *walker_rule, *next_rule;
-> +	u8 rule_fs_type, rule_net_type;
->   	int err = 0;
-> 
-> +	rule_fs_type = LANDLOCK_RULE_PATH_BENEATH - 1;
-> +	rule_net_type = LANDLOCK_RULE_NET_SERVICE - 1;
-> +
->   	might_sleep();
->   	/* Should already be checked by landlock_merge_ruleset() */
->   	if (WARN_ON_ONCE(!src))
-> @@ -279,7 +315,14 @@ static int merge_ruleset(struct landlock_ruleset *const dst,
->   		err = -EINVAL;
->   		goto out_unlock;
->   	}
-> -	dst->fs_access_masks[dst->num_layers - 1] = src->fs_access_masks[0];
-> +
-> +	/* Copy fs access masks. */
-> +	dst->access_masks[rule_fs_type][dst->num_layers - 1] =
-> +					src->access_masks[rule_fs_type][0];
-> +	/* Copy network access masks. */
-> +	dst->access_masks[rule_net_type][dst->num_layers - 1] =
-> +					src->access_masks[rule_net_type][0];
-> +
-> 
->   	/* Merges the @src tree. */
->   	rbtree_postorder_for_each_entry_safe(walker_rule, next_rule,
-> @@ -336,9 +379,12 @@ static int inherit_ruleset(struct landlock_ruleset *const parent,
->   		err = -EINVAL;
->   		goto out_unlock;
->   	}
-> -	/* Copies the parent layer stack and leaves a space for the new layer. */
-> -	memcpy(child->fs_access_masks, parent->fs_access_masks,
-> -			flex_array_size(parent, fs_access_masks, parent->num_layers));
-> +	/* Copies the parent layer stack and leaves a space for the new layer.
-> +	 * Remember to copy num_layers*num_tule_types size.
-> +	 */
-> +	memcpy(child->access_masks, parent->access_masks,
-> +			flex_array_size(parent, access_masks, LANDLOCK_RULE_TYPE_NUM *
-> +							      parent->num_layers));
-> 
->   	if (WARN_ON_ONCE(!parent->hierarchy)) {
->   		err = -EINVAL;
-> diff --git a/security/landlock/ruleset.h b/security/landlock/ruleset.h
-> index 2d3ed7ec5a0a..965a69a108e9 100644
-> --- a/security/landlock/ruleset.h
-> +++ b/security/landlock/ruleset.h
-> @@ -124,23 +124,24 @@ struct landlock_ruleset {
->   			 */
->   			u32 num_layers;
->   			/**
-> -			 * @fs_access_masks: Contains the subset of filesystem
-> -			 * actions that are restricted by a ruleset.  A domain
-> -			 * saves all layers of merged rulesets in a stack
-> -			 * (FAM), starting from the first layer to the last
-> -			 * one.  These layers are used when merging rulesets,
-> -			 * for user space backward compatibility (i.e.
-> -			 * future-proof), and to properly handle merged
-> +			 * @access_masks: Contains the subset of filesystem
-> +			 * or network actions that are restricted by a ruleset.
-> +			 * A domain saves all layers of merged rulesets in a
-> +			 * stack(FAM), starting from the first layer to the
-> +			 * last one. These layers are used when merging
-> +			 * rulesets, for user space backward compatibility
-> +			 * (i.e. future-proof), and to properly handle merged
->   			 * rulesets without overlapping access rights.  These
->   			 * layers are set once and never changed for the
->   			 * lifetime of the ruleset.
->   			 */
-> -			u16 fs_access_masks[];
-> +			u16 *access_masks[];
->   		};
->   	};
->   };
-> 
-> -struct landlock_ruleset *landlock_create_ruleset(const u32 fs_access_mask);
-> +struct landlock_ruleset *landlock_create_ruleset(const u32 fs_access_mask,
-> +						 const u32 net_access_mask);
-> 
->   void landlock_put_ruleset(struct landlock_ruleset *const ruleset);
->   void landlock_put_ruleset_deferred(struct landlock_ruleset *const ruleset);
-> diff --git a/security/landlock/setup.c b/security/landlock/setup.c
-> index f8e8e980454c..91ab06ec8ce0 100644
-> --- a/security/landlock/setup.c
-> +++ b/security/landlock/setup.c
-> @@ -14,6 +14,7 @@
->   #include "fs.h"
->   #include "ptrace.h"
->   #include "setup.h"
-> +#include "net.h"
-> 
->   bool landlock_initialized __lsm_ro_after_init = false;
-> 
-> @@ -21,6 +22,7 @@ struct lsm_blob_sizes landlock_blob_sizes __lsm_ro_after_init = {
->   	.lbs_cred = sizeof(struct landlock_cred_security),
->   	.lbs_inode = sizeof(struct landlock_inode_security),
->   	.lbs_superblock = sizeof(struct landlock_superblock_security),
-> +	.lbs_task = sizeof(struct landlock_task_security),
->   };
-> 
->   static int __init landlock_init(void)
-> @@ -28,6 +30,7 @@ static int __init landlock_init(void)
->   	landlock_add_cred_hooks();
->   	landlock_add_ptrace_hooks();
->   	landlock_add_fs_hooks();
-> +	landlock_add_net_hooks();
->   	landlock_initialized = true;
->   	pr_info("Up and running.\n");
->   	return 0;
-> diff --git a/security/landlock/syscalls.c b/security/landlock/syscalls.c
-> index 32396962f04d..0dad22e99500 100644
-> --- a/security/landlock/syscalls.c
-> +++ b/security/landlock/syscalls.c
-> @@ -31,6 +31,7 @@
->   #include "limits.h"
->   #include "ruleset.h"
->   #include "setup.h"
-> +#include "net.h"
-> 
->   /**
->    * copy_min_struct_from_user - Safe future-proof argument copying
-> @@ -73,7 +74,8 @@ static void build_check_abi(void)
->   {
->   	struct landlock_ruleset_attr ruleset_attr;
->   	struct landlock_path_beneath_attr path_beneath_attr;
-> -	size_t ruleset_size, path_beneath_size;
-> +	struct landlock_net_service_attr net_service_attr;
-> +	size_t ruleset_size, path_beneath_size, net_service_size;
-> 
->   	/*
->   	 * For each user space ABI structures, first checks that there is no
-> @@ -81,17 +83,22 @@ static void build_check_abi(void)
->   	 * struct size.
->   	 */
->   	ruleset_size = sizeof(ruleset_attr.handled_access_fs);
-> +	ruleset_size += sizeof(ruleset_attr.handled_access_net);
->   	BUILD_BUG_ON(sizeof(ruleset_attr) != ruleset_size);
-> -	BUILD_BUG_ON(sizeof(ruleset_attr) != 8);
-> +	BUILD_BUG_ON(sizeof(ruleset_attr) != 16);
-> 
->   	path_beneath_size = sizeof(path_beneath_attr.allowed_access);
->   	path_beneath_size += sizeof(path_beneath_attr.parent_fd);
->   	BUILD_BUG_ON(sizeof(path_beneath_attr) != path_beneath_size);
->   	BUILD_BUG_ON(sizeof(path_beneath_attr) != 12);
-> +
-> +	net_service_size = sizeof(net_service_attr.allowed_access);
-> +	net_service_size += sizeof(net_service_attr.port);
-> +	BUILD_BUG_ON(sizeof(net_service_attr) != net_service_size);
-> +	BUILD_BUG_ON(sizeof(net_service_attr) != 10);
->   }
-> 
->   /* Ruleset handling */
-> -
->   static int fop_ruleset_release(struct inode *const inode,
->   		struct file *const filp)
->   {
-> @@ -176,18 +183,24 @@ SYSCALL_DEFINE3(landlock_create_ruleset,
-> 
->   	/* Copies raw user space buffer. */
->   	err = copy_min_struct_from_user(&ruleset_attr, sizeof(ruleset_attr),
-> -			offsetofend(typeof(ruleset_attr), handled_access_fs),
-> +			offsetofend(typeof(ruleset_attr), handled_access_net),
->   			attr, size);
->   	if (err)
->   		return err;
-> 
-> -	/* Checks content (and 32-bits cast). */
-> +	/* Checks fs content (and 32-bits cast). */
->   	if ((ruleset_attr.handled_access_fs | LANDLOCK_MASK_ACCESS_FS) !=
->   			LANDLOCK_MASK_ACCESS_FS)
->   		return -EINVAL;
-> 
-> +	/* Checks network content (and 32-bits cast). */
-> +	if ((ruleset_attr.handled_access_net | LANDLOCK_MASK_ACCESS_NET) !=
-> +			LANDLOCK_MASK_ACCESS_NET)
-> +		return -EINVAL;
-> +
->   	/* Checks arguments and transforms to kernel struct. */
-> -	ruleset = landlock_create_ruleset(ruleset_attr.handled_access_fs);
-> +	ruleset = landlock_create_ruleset(ruleset_attr.handled_access_fs,
-> +					  ruleset_attr.handled_access_net);
->   	if (IS_ERR(ruleset))
->   		return PTR_ERR(ruleset);
-> 
-> @@ -306,6 +319,7 @@ SYSCALL_DEFINE4(landlock_add_rule,
->   		const void __user *const, rule_attr, const __u32, flags)
->   {
->   	struct landlock_path_beneath_attr path_beneath_attr;
-> +	struct landlock_net_service_attr  net_service_attr;
->   	struct path path;
->   	struct landlock_ruleset *ruleset;
->   	int res, err;
-> @@ -317,47 +331,90 @@ SYSCALL_DEFINE4(landlock_add_rule,
->   	if (flags)
->   		return -EINVAL;
-> 
-> -	if (rule_type != LANDLOCK_RULE_PATH_BENEATH)
-> +	if ((rule_type != LANDLOCK_RULE_PATH_BENEATH) &&
-> +		(rule_type != LANDLOCK_RULE_NET_SERVICE))
->   		return -EINVAL;
-> 
-> -	/* Copies raw user space buffer, only one type for now. */
-> -	res = copy_from_user(&path_beneath_attr, rule_attr,
-> -			sizeof(path_beneath_attr));
-> -	if (res)
-> -		return -EFAULT;
-> -
-> -	/* Gets and checks the ruleset. */
-> -	ruleset = get_ruleset_from_fd(ruleset_fd, FMODE_CAN_WRITE);
-> -	if (IS_ERR(ruleset))
-> -		return PTR_ERR(ruleset);
-> -
-> -	/*
-> -	 * Informs about useless rule: empty allowed_access (i.e. deny rules)
-> -	 * are ignored in path walks.
-> -	 */
-> -	if (!path_beneath_attr.allowed_access) {
-> -		err = -ENOMSG;
-> -		goto out_put_ruleset;
-> -	}
-> -	/*
-> -	 * Checks that allowed_access matches the @ruleset constraints
-> -	 * (ruleset->fs_access_masks[0] is automatically upgraded to 64-bits).
-> -	 */
-> -	if ((path_beneath_attr.allowed_access | ruleset->fs_access_masks[0]) !=
-> -			ruleset->fs_access_masks[0]) {
-> -		err = -EINVAL;
-> -		goto out_put_ruleset;
-> +	switch (rule_type) {
-> +	case LANDLOCK_RULE_PATH_BENEATH:
-> +		/* Copies raw user space buffer, for fs rule type. */
-> +		res = copy_from_user(&path_beneath_attr, rule_attr,
-> +					sizeof(path_beneath_attr));
-> +		if (res)
-> +			return -EFAULT;
-> +		break;
-> +
-> +	case LANDLOCK_RULE_NET_SERVICE:
-> +		/* Copies raw user space buffer, for net rule type. */
-> +		res = copy_from_user(&net_service_attr, rule_attr,
-> +				sizeof(net_service_attr));
-> +		if (res)
-> +			return -EFAULT;
-> +		break;
->   	}
-> 
-> -	/* Gets and checks the new rule. */
-> -	err = get_path_from_fd(path_beneath_attr.parent_fd, &path);
-> -	if (err)
-> -		goto out_put_ruleset;
-> +	if (rule_type == LANDLOCK_RULE_PATH_BENEATH) {
-> +		/* Gets and checks the ruleset. */
-> +		ruleset = get_ruleset_from_fd(ruleset_fd, FMODE_CAN_WRITE);
-> +		if (IS_ERR(ruleset))
-> +			return PTR_ERR(ruleset);
-> +
-> +		/*
-> +		 * Informs about useless rule: empty allowed_access (i.e. deny rules)
-> +		 * are ignored in path walks.
-> +		 */
-> +		if (!path_beneath_attr.allowed_access) {
-> +			err = -ENOMSG;
-> +			goto out_put_ruleset;
-> +		}
-> +		/*
-> +		 * Checks that allowed_access matches the @ruleset constraints
-> +		 * (ruleset->access_masks[fs_type][0] is automatically upgraded to 64-bits).
-> +		 */
-> +		if ((path_beneath_attr.allowed_access | ruleset->access_masks[rule_type-1][0]) !=
-> +							ruleset->access_masks[rule_type-1][0]) {
-> +			err = -EINVAL;
-> +			goto out_put_ruleset;
-> +		}
-> +
-> +		/* Gets and checks the new rule. */
-> +		err = get_path_from_fd(path_beneath_attr.parent_fd, &path);
-> +		if (err)
-> +			goto out_put_ruleset;
-> +
-> +		/* Imports the new rule. */
-> +		err = landlock_append_fs_rule(ruleset, &path,
-> +				path_beneath_attr.allowed_access);
-> +		path_put(&path);
-> +	}
-> 
-> -	/* Imports the new rule. */
-> -	err = landlock_append_fs_rule(ruleset, &path,
-> -			path_beneath_attr.allowed_access);
-> -	path_put(&path);
-> +	if (rule_type == LANDLOCK_RULE_NET_SERVICE) {
-> +		/* Gets and checks the ruleset. */
-> +		ruleset = get_ruleset_from_fd(ruleset_fd, FMODE_CAN_WRITE);
-> +		if (IS_ERR(ruleset))
-> +			return PTR_ERR(ruleset);
-> +
-> +		/*
-> +		 * Informs about useless rule: empty allowed_access (i.e. deny rules)
-> +		 * are ignored in network actions
-> +		 */
-> +		if (!net_service_attr.allowed_access) {
-> +			err = -ENOMSG;
-> +			goto out_put_ruleset;
-> +		}
-> +		/*
-> +		 * Checks that allowed_access matches the @ruleset constraints
-> +		 * (ruleset->access_masks[net_type][0] is automatically upgraded to 64-bits).
-> +		 */
-> +		if ((net_service_attr.allowed_access | ruleset->access_masks[rule_type - 1][0]) !=
-> +							ruleset->access_masks[rule_type - 1][0]) {
-> +			err = -EINVAL;
-> +			goto out_put_ruleset;
-> +		}
-> +
-> +		/* Imports the new rule. */
-> +		err = landlock_append_net_rule(ruleset, net_service_attr.allowed_access);
-> +	}
-> 
->   out_put_ruleset:
->   	landlock_put_ruleset(ruleset);
-> --
-> 2.25.1
-> 
+diff --git a/drivers/net/dsa/bcm_sf2.c b/drivers/net/dsa/bcm_sf2.c
+index 13aa43b5cffd..c2447de9d441 100644
+--- a/drivers/net/dsa/bcm_sf2.c
++++ b/drivers/net/dsa/bcm_sf2.c
+@@ -62,6 +62,44 @@ static u16 bcm_sf2_reg_rgmii_cntrl(struct bcm_sf2_priv *priv, int port)
+ 	return REG_SWITCH_STATUS;
+ }
+ 
++static u16 bcm_sf2_reg_led_base(struct bcm_sf2_priv *priv, int port)
++{
++	switch (priv->type) {
++	case BCM4908_DEVICE_ID:
++		switch (port) {
++		case 0:
++			return REG_LED_0_CNTRL;
++		case 1:
++			return REG_LED_1_CNTRL;
++		case 2:
++			return REG_LED_2_CNTRL;
++		case 3:
++			return REG_LED_3_CNTRL;
++		case 7:
++			return REG_LED_4_CNTRL;
++		default:
++			break;
++		}
++		break;
++	default:
++		switch (port) {
++		case 0:
++			return REG_LED_0_CNTRL;
++		case 1:
++			return REG_LED_1_CNTRL;
++		case 2:
++			return REG_LED_2_CNTRL;
++		default:
++			break;
++		}
++	}
++
++	WARN_ONCE(1, "Unsupported port %d\n", port);
++
++	/* RO fallback reg */
++	return REG_SWITCH_STATUS;
++}
++
+ /* Return the number of active ports, not counting the IMP (CPU) port */
+ static unsigned int bcm_sf2_num_active_ports(struct dsa_switch *ds)
+ {
+@@ -187,9 +225,14 @@ static void bcm_sf2_gphy_enable_set(struct dsa_switch *ds, bool enable)
+ 
+ 	/* Use PHY-driven LED signaling */
+ 	if (!enable) {
+-		reg = reg_readl(priv, REG_LED_CNTRL(0));
+-		reg |= SPDLNK_SRC_SEL;
+-		reg_writel(priv, reg, REG_LED_CNTRL(0));
++		u16 led_ctrl = bcm_sf2_reg_led_base(priv, 0);
++
++		if (priv->type == BCM7278_DEVICE_ID ||
++		    priv->type == BCM7445_DEVICE_ID) {
++			reg = reg_led_readl(priv, led_ctrl, 0);
++			reg |= LED_CNTRL_SPDLNK_SRC_SEL;
++			reg_led_writel(priv, reg, led_ctrl, 0);
++		}
+ 	}
+ }
+ 
+@@ -1232,9 +1275,14 @@ static const u16 bcm_sf2_4908_reg_offsets[] = {
+ 	[REG_SPHY_CNTRL]	= 0x24,
+ 	[REG_CROSSBAR]		= 0xc8,
+ 	[REG_RGMII_11_CNTRL]	= 0x014c,
+-	[REG_LED_0_CNTRL]	= 0x40,
+-	[REG_LED_1_CNTRL]	= 0x4c,
+-	[REG_LED_2_CNTRL]	= 0x58,
++	[REG_LED_0_CNTRL]		= 0x40,
++	[REG_LED_1_CNTRL]		= 0x4c,
++	[REG_LED_2_CNTRL]		= 0x58,
++	[REG_LED_3_CNTRL]		= 0x64,
++	[REG_LED_4_CNTRL]		= 0x88,
++	[REG_LED_5_CNTRL]		= 0xa0,
++	[REG_LED_AGGREGATE_CTRL]	= 0xb8,
++
+ };
+ 
+ static const struct bcm_sf2_of_data bcm_sf2_4908_data = {
+diff --git a/drivers/net/dsa/bcm_sf2.h b/drivers/net/dsa/bcm_sf2.h
+index 0d48402068d3..00afc94ce522 100644
+--- a/drivers/net/dsa/bcm_sf2.h
++++ b/drivers/net/dsa/bcm_sf2.h
+@@ -210,6 +210,16 @@ SF2_IO_MACRO(acb);
+ SWITCH_INTR_L2(0);
+ SWITCH_INTR_L2(1);
+ 
++static inline u32 reg_led_readl(struct bcm_sf2_priv *priv, u16 off, u16 reg)
++{
++	return readl_relaxed(priv->reg + priv->reg_offsets[off] + reg);
++}
++
++static inline void reg_led_writel(struct bcm_sf2_priv *priv, u32 val, u16 off, u16 reg)
++{
++	writel_relaxed(val, priv->reg + priv->reg_offsets[off] + reg);
++}
++
+ /* RXNFC */
+ int bcm_sf2_get_rxnfc(struct dsa_switch *ds, int port,
+ 		      struct ethtool_rxnfc *nfc, u32 *rule_locs);
+diff --git a/drivers/net/dsa/bcm_sf2_regs.h b/drivers/net/dsa/bcm_sf2_regs.h
+index 7bffc80f241f..da0dedbd6555 100644
+--- a/drivers/net/dsa/bcm_sf2_regs.h
++++ b/drivers/net/dsa/bcm_sf2_regs.h
+@@ -25,6 +25,10 @@ enum bcm_sf2_reg_offs {
+ 	REG_LED_0_CNTRL,
+ 	REG_LED_1_CNTRL,
+ 	REG_LED_2_CNTRL,
++	REG_LED_3_CNTRL,
++	REG_LED_4_CNTRL,
++	REG_LED_5_CNTRL,
++	REG_LED_AGGREGATE_CTRL,
+ 	REG_SWITCH_REG_MAX,
+ };
+ 
+@@ -56,6 +60,63 @@ enum bcm_sf2_reg_offs {
+ #define CROSSBAR_BCM4908_EXT_GPHY4	1
+ #define CROSSBAR_BCM4908_EXT_RGMII	2
+ 
++/* Relative to REG_LED_*_CNTRL (BCM7278, BCM7445) */
++#define  LED_CNTRL_NO_LINK_ENCODE_SHIFT		0
++#define  LED_CNTRL_M10_ENCODE_SHIFT		2
++#define  LED_CNTRL_M100_ENCODE_SHIFT		4
++#define  LED_CNTRL_M1000_ENCODE_SHIFT		6
++#define  LED_CNTRL_SEL_NO_LINK_ENCODE_SHIFT	8
++#define  LED_CNTRL_SEL_10M_ENCODE_SHIFT		10
++#define  LED_CNTRL_SEL_100M_ENCODE_SHIFT	12
++#define  LED_CNTRL_SEL_1000M_ENCODE_SHIFT	14
++#define  LED_CNTRL_RX_DV_EN			(1 << 16)
++#define  LED_CNTRL_TX_EN_EN			(1 << 17)
++#define  LED_CNTRL_SPDLNK_LED0_ACT_SEL_SHIFT	18
++#define  LED_CNTRL_SPDLNK_LED1_ACT_SEL_SHIFT	20
++#define  LED_CNTRL_ACT_LED_ACT_SEL_SHIFT	22
++#define  LED_CNTRL_SPDLNK_SRC_SEL		(1 << 24)
++#define  LED_CNTRL_SPDLNK_LED0_ACT_POL_SEL	(1 << 25)
++#define  LED_CNTRL_SPDLNK_LED1_ACT_POL_SEL	(1 << 26)
++#define  LED_CNTRL_ACT_LED_POL_SEL		(1 << 27)
++#define  LED_CNTRL_MASK				0x3
++
++/* Register relative to REG_LED_*_CNTRL (BCM4908) */
++#define REG_LED_CTRL				0x0
++#define  LED_CTRL_RX_ACT_EN			0x00000001
++#define  LED_CTRL_TX_ACT_EN			0x00000002
++#define  LED_CTRL_SPDLNK_LED0_ACT_SEL		0x00000004
++#define  LED_CTRL_SPDLNK_LED1_ACT_SEL		0x00000008
++#define  LED_CTRL_SPDLNK_LED2_ACT_SEL		0x00000010
++#define  LED_CTRL_ACT_LED_ACT_SEL		0x00000020
++#define  LED_CTRL_SPDLNK_LED0_ACT_POL_SEL	0x00000040
++#define  LED_CTRL_SPDLNK_LED1_ACT_POL_SEL	0x00000080
++#define  LED_CTRL_SPDLNK_LED2_ACT_POL_SEL	0x00000100
++#define  LED_CTRL_ACT_LED_POL_SEL		0x00000200
++#define  LED_CTRL_LED_SPD_OVRD			0x00001c00
++#define  LED_CTRL_LNK_STATUS_OVRD		0x00002000
++#define  LED_CTRL_SPD_OVRD_EN			0x00004000
++#define  LED_CTRL_LNK_OVRD_EN			0x00008000
++
++/* Register relative to REG_LED_*_CNTRL (BCM4908) */
++#define REG_LED_LINK_SPEED_ENC_SEL		0x4
++#define  LED_LINK_SPEED_ENC_SEL_NO_LINK_SHIFT	0
++#define  LED_LINK_SPEED_ENC_SEL_10M_SHIFT	3
++#define  LED_LINK_SPEED_ENC_SEL_100M_SHIFT	6
++#define  LED_LINK_SPEED_ENC_SEL_1000M_SHIFT	9
++#define  LED_LINK_SPEED_ENC_SEL_2500M_SHIFT	12
++#define  LED_LINK_SPEED_ENC_SEL_10G_SHIFT	15
++#define  LED_LINK_SPEED_ENC_SEL_MASK		0x7
++
++/* Register relative to REG_LED_*_CNTRL (BCM4908) */
++#define REG_LED_LINK_SPEED_ENC			0x8
++#define  LED_LINK_SPEED_ENC_NO_LINK_SHIFT	0
++#define  LED_LINK_SPEED_ENC_M10_SHIFT		3
++#define  LED_LINK_SPEED_ENC_M100_SHIFT		6
++#define  LED_LINK_SPEED_ENC_M1000_SHIFT		9
++#define  LED_LINK_SPEED_ENC_M2500_SHIFT		12
++#define  LED_LINK_SPEED_ENC_M10G_SHIFT		15
++#define  LED_LINK_SPEED_ENC_MASK		0x7
++
+ /* Relative to REG_RGMII_CNTRL */
+ #define  RGMII_MODE_EN			(1 << 0)
+ #define  ID_MODE_DIS			(1 << 1)
+@@ -73,10 +134,6 @@ enum bcm_sf2_reg_offs {
+ #define  LPI_COUNT_SHIFT		9
+ #define  LPI_COUNT_MASK			0x3F
+ 
+-#define REG_LED_CNTRL(x)		(REG_LED_0_CNTRL + (x))
+-
+-#define  SPDLNK_SRC_SEL			(1 << 24)
+-
+ /* Register set relative to 'INTRL2_0' and 'INTRL2_1' */
+ #define INTRL2_CPU_STATUS		0x00
+ #define INTRL2_CPU_SET			0x04
+-- 
+2.31.1
 
