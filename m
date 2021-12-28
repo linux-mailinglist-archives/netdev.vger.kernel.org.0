@@ -2,283 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C304480D9A
-	for <lists+netdev@lfdr.de>; Tue, 28 Dec 2021 23:10:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 93CBF480D9D
+	for <lists+netdev@lfdr.de>; Tue, 28 Dec 2021 23:11:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231233AbhL1WKR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Dec 2021 17:10:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45528 "EHLO
+        id S233451AbhL1WL5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Dec 2021 17:11:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230144AbhL1WKP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Dec 2021 17:10:15 -0500
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BEA0C061574
-        for <netdev@vger.kernel.org>; Tue, 28 Dec 2021 14:10:15 -0800 (PST)
-Received: by mail-ed1-x532.google.com with SMTP id b13so78899554edd.8
-        for <netdev@vger.kernel.org>; Tue, 28 Dec 2021 14:10:15 -0800 (PST)
+        with ESMTP id S230144AbhL1WL5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Dec 2021 17:11:57 -0500
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F9B8C061574
+        for <netdev@vger.kernel.org>; Tue, 28 Dec 2021 14:11:56 -0800 (PST)
+Received: by mail-wr1-x432.google.com with SMTP id k18so4009072wrg.11
+        for <netdev@vger.kernel.org>; Tue, 28 Dec 2021 14:11:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Ah/li73ZJpq1ojPJFP/2IIyYYfvEMBKyMVPwxk0qq3I=;
-        b=nh0R1zv7jF5Xu3fPuVnjggYzWhanSpdWHfrQnNBl+kNkKlPXyBiBFDpM5o9WLM7esd
-         FnXleECjTukFR37b0alXtJEPLjDvirzH9qIP3V1b5Bn25ydnBH228E/60hCI8H1h0kj5
-         sbRqRFyVkKO/H/eZUN/nI5v3lHYZbWG0WEicw5CVEllMWxuPcAHBXhfHTO9tZfE7Ghd1
-         HZiBocBJh1tUZTBjmNcOfAiLtyK/iGD3s+rKHBir6suNHd+UqStVDNNgKXo/wKBIPt2n
-         Z13dWsB9K7d4WHEmRK+txkyAIz6LbhHFfQndw9+uJqHxFZesXnR/u96RwWG6Jz/caA3Y
-         4/OQ==
+        h=message-id:date:mime-version:user-agent:subject:content-language
+         :from:to:cc:references:in-reply-to:content-transfer-encoding;
+        bh=4+fNuvMIzktHZcAPTAkp0zD3O+2nYAT63n5vQR/X5Ko=;
+        b=mXjjDgsrnFyPevtRIupiHP3085fVrY//gSs9dlxUmWZhwLp0WrrLtYYEBGzTJZqE0b
+         QuONiiWq46E/RTnDwnfIHH5+QqWpZySRVAuoCG5a63zz/AmELxw1k54XY/9SOAl3hm35
+         O3em1A6e3/jjO8liNKwwoToEMfcUq+wPk+mlxOX5Z0cKwX2E8F0VlMunGOiUkp5PXsDR
+         Hk7a/1m7N5Rtf1ZJOYZ4Zg3sQEqo7AVktiJ2SjfKABUgJ5zmnrgZnTYKWO0IicjV3ong
+         LJSRpEgCHAjcl7wTuHORNjomiy32e4la6ocoOw8bGOgAUZ4lxMh1Xjy3lXjtrLRKXCa8
+         3vgw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:from:to:cc:references:in-reply-to
          :content-transfer-encoding;
-        bh=Ah/li73ZJpq1ojPJFP/2IIyYYfvEMBKyMVPwxk0qq3I=;
-        b=SscAGYNDs9lxYPLoh67UWt7YHkqhc3u9PKnjAf1PtpoOIdOokpkbBVLI5eDdPrBf0q
-         91XZjN2DIwoEEoe1kHd4clPLd39EK+jCjlXaTH1WW41EeEIELmYKDPzdGdnyL4EhvW4v
-         AxMy6P7Tzi2FvCw7SEk1nOOMyYO/03CeXGgRr6wjPX8W22UkJws07+YqHTCzBwq1UpaP
-         hAVSCr4CZgebYE6V93bLqYO0B9iFgdKutMloblTu4NK89ZKe0NzRP9/Zj5zBKRFlqKl7
-         T02QTRHgN5KxiWabZokDQsVkaJndR0N/89rjRqFU1nQlK9ZVoQOhEeeuK17mL1O3zEKX
-         Vvig==
-X-Gm-Message-State: AOAM533ZJJK3FoObP6uvffum5vUOUWPlwg8yRl+Bto7GgCdeNvs/LBDC
-        UKU7yFsq/viDBuqJyC2toK+YbIeJ3wk=
-X-Google-Smtp-Source: ABdhPJyf53lBcKlWKqVTaFb2z590ZjaFsPDSVGNoTeA8t3S37MDQO5KfSllMrJ7g3G2gZATSBeDNEw==
-X-Received: by 2002:a05:6402:c0a:: with SMTP id co10mr22880364edb.295.1640729413977;
-        Tue, 28 Dec 2021 14:10:13 -0800 (PST)
-Received: from localhost.localdomain ([2a00:f41:3894:b142:1667:a0ff:5387:8a85])
-        by smtp.gmail.com with ESMTPSA id oz20sm6316330ejc.60.2021.12.28.14.10.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Dec 2021 14:10:13 -0800 (PST)
-From:   =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org,
-        bcm-kernel-feedback-list@broadcom.com,
-        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>
-Subject: [PATCH] net: dsa: bcm_sf2: refactor LED regs access
-Date:   Tue, 28 Dec 2021 23:09:51 +0100
-Message-Id: <20211228220951.17751-1-zajec5@gmail.com>
-X-Mailer: git-send-email 2.31.1
+        bh=4+fNuvMIzktHZcAPTAkp0zD3O+2nYAT63n5vQR/X5Ko=;
+        b=D7kt8DzsGfXddTjcRQ9ekar+fg0nbBGIXyu6sfrRplmjtaq8mif1uJOslpJ3PZDZA/
+         GvXtN7vAy07LenY1gLkNeMg6s1sAuo1hSffjVWV1CaPYo9vs3Erq605OQuOu4YHYE8eq
+         poMWGzcG4yCU0e04xBhva5EPmHIlUsrUdts/yE99CkR1mpnKEmfAqOLS3duL0je5uEoC
+         QILNaJxGVD/nvY5iAT0MzPWpeRQ4NL9SBGBdgezOmDXbv7ss2DonVChsdQWs7xITcOy0
+         YWLE3xHKeYJcz6JIHX7Ua+ainQFgZ+qPdye1NB7dAKkXMR/xwU604UEIYQRIE2koOwvx
+         Z69A==
+X-Gm-Message-State: AOAM5305g2JQx1w7dwLqTXgf/swCCc8hcdJAPQv3jAmmdb4PyMqvme5V
+        gYUeD+b/NMcRRSvAHmP/d6M=
+X-Google-Smtp-Source: ABdhPJxv5C2Snua8aIPVyWuGRiUqBj3pljXdwTMvsG3SOHMbDqL117krw9kgYFYGRJkUDKmTiMQt0A==
+X-Received: by 2002:a05:6000:2c6:: with SMTP id o6mr18116784wry.286.1640729514986;
+        Tue, 28 Dec 2021 14:11:54 -0800 (PST)
+Received: from ?IPV6:2003:ea:8f24:fd00:1db4:9082:d8f:5ea5? (p200300ea8f24fd001db490820d8f5ea5.dip0.t-ipconnect.de. [2003:ea:8f24:fd00:1db4:9082:d8f:5ea5])
+        by smtp.googlemail.com with ESMTPSA id bg34sm24439066wmb.47.2021.12.28.14.11.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 28 Dec 2021 14:11:54 -0800 (PST)
+Message-ID: <70cd60cd-5472-25b6-91f5-a2d313dc6294@gmail.com>
+Date:   Tue, 28 Dec 2021 23:11:47 +0100
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH net-next] r8169: don't use pci_irq_vector() in atomic
+ context
+Content-Language: en-US
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>
+References: <3cd24763-f307-78f5-76ed-a5fbf315fb28@gmail.com>
+In-Reply-To: <3cd24763-f307-78f5-76ed-a5fbf315fb28@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Rafał Miłecki <rafal@milecki.pl>
+On 28.12.2021 22:02, Heiner Kallweit wrote:
+> From: Thomas Gleixner <tglx@linutronix.de>
+> 
+> Since referenced change pci_irq_vector() can't be used in atomic
+> context any longer. This conflicts with our usage of this function
+> in rtl8169_netpoll(). Therefore store the interrupt number in
+> struct rtl8169_private.
+> 
+> Fixes: 495c66aca3da ("genirq/msi: Convert to new functions")
 
-1. Define more regs. Some switches (e.g. BCM4908) have up to 6 regs.
-2. Add helper for handling non-lineral port <-> reg mappings.
-3. Add support for 12 B LED reg blocks on BCM4908 (different layout)
+Seeing the "fail" in patchwork: The referenced commit just recently
+showed up in linux-next and isn't in net-next yet.
 
-Complete support for LEDs setup will be implemented once Linux receives
-a proper design & implementation for "hardware" LEDs.
 
-Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
----
- drivers/net/dsa/bcm_sf2.c      | 60 +++++++++++++++++++++++++++----
- drivers/net/dsa/bcm_sf2.h      | 10 ++++++
- drivers/net/dsa/bcm_sf2_regs.h | 65 +++++++++++++++++++++++++++++++---
- 3 files changed, 125 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/net/dsa/bcm_sf2.c b/drivers/net/dsa/bcm_sf2.c
-index 13aa43b5cffd..c2447de9d441 100644
---- a/drivers/net/dsa/bcm_sf2.c
-+++ b/drivers/net/dsa/bcm_sf2.c
-@@ -62,6 +62,44 @@ static u16 bcm_sf2_reg_rgmii_cntrl(struct bcm_sf2_priv *priv, int port)
- 	return REG_SWITCH_STATUS;
- }
- 
-+static u16 bcm_sf2_reg_led_base(struct bcm_sf2_priv *priv, int port)
-+{
-+	switch (priv->type) {
-+	case BCM4908_DEVICE_ID:
-+		switch (port) {
-+		case 0:
-+			return REG_LED_0_CNTRL;
-+		case 1:
-+			return REG_LED_1_CNTRL;
-+		case 2:
-+			return REG_LED_2_CNTRL;
-+		case 3:
-+			return REG_LED_3_CNTRL;
-+		case 7:
-+			return REG_LED_4_CNTRL;
-+		default:
-+			break;
-+		}
-+		break;
-+	default:
-+		switch (port) {
-+		case 0:
-+			return REG_LED_0_CNTRL;
-+		case 1:
-+			return REG_LED_1_CNTRL;
-+		case 2:
-+			return REG_LED_2_CNTRL;
-+		default:
-+			break;
-+		}
-+	}
-+
-+	WARN_ONCE(1, "Unsupported port %d\n", port);
-+
-+	/* RO fallback reg */
-+	return REG_SWITCH_STATUS;
-+}
-+
- /* Return the number of active ports, not counting the IMP (CPU) port */
- static unsigned int bcm_sf2_num_active_ports(struct dsa_switch *ds)
- {
-@@ -187,9 +225,14 @@ static void bcm_sf2_gphy_enable_set(struct dsa_switch *ds, bool enable)
- 
- 	/* Use PHY-driven LED signaling */
- 	if (!enable) {
--		reg = reg_readl(priv, REG_LED_CNTRL(0));
--		reg |= SPDLNK_SRC_SEL;
--		reg_writel(priv, reg, REG_LED_CNTRL(0));
-+		u16 led_ctrl = bcm_sf2_reg_led_base(priv, 0);
-+
-+		if (priv->type == BCM7278_DEVICE_ID ||
-+		    priv->type == BCM7445_DEVICE_ID) {
-+			reg = reg_led_readl(priv, led_ctrl, 0);
-+			reg |= LED_CNTRL_SPDLNK_SRC_SEL;
-+			reg_led_writel(priv, reg, led_ctrl, 0);
-+		}
- 	}
- }
- 
-@@ -1232,9 +1275,14 @@ static const u16 bcm_sf2_4908_reg_offsets[] = {
- 	[REG_SPHY_CNTRL]	= 0x24,
- 	[REG_CROSSBAR]		= 0xc8,
- 	[REG_RGMII_11_CNTRL]	= 0x014c,
--	[REG_LED_0_CNTRL]	= 0x40,
--	[REG_LED_1_CNTRL]	= 0x4c,
--	[REG_LED_2_CNTRL]	= 0x58,
-+	[REG_LED_0_CNTRL]		= 0x40,
-+	[REG_LED_1_CNTRL]		= 0x4c,
-+	[REG_LED_2_CNTRL]		= 0x58,
-+	[REG_LED_3_CNTRL]		= 0x64,
-+	[REG_LED_4_CNTRL]		= 0x88,
-+	[REG_LED_5_CNTRL]		= 0xa0,
-+	[REG_LED_AGGREGATE_CTRL]	= 0xb8,
-+
- };
- 
- static const struct bcm_sf2_of_data bcm_sf2_4908_data = {
-diff --git a/drivers/net/dsa/bcm_sf2.h b/drivers/net/dsa/bcm_sf2.h
-index 0d48402068d3..00afc94ce522 100644
---- a/drivers/net/dsa/bcm_sf2.h
-+++ b/drivers/net/dsa/bcm_sf2.h
-@@ -210,6 +210,16 @@ SF2_IO_MACRO(acb);
- SWITCH_INTR_L2(0);
- SWITCH_INTR_L2(1);
- 
-+static inline u32 reg_led_readl(struct bcm_sf2_priv *priv, u16 off, u16 reg)
-+{
-+	return readl_relaxed(priv->reg + priv->reg_offsets[off] + reg);
-+}
-+
-+static inline void reg_led_writel(struct bcm_sf2_priv *priv, u32 val, u16 off, u16 reg)
-+{
-+	writel_relaxed(val, priv->reg + priv->reg_offsets[off] + reg);
-+}
-+
- /* RXNFC */
- int bcm_sf2_get_rxnfc(struct dsa_switch *ds, int port,
- 		      struct ethtool_rxnfc *nfc, u32 *rule_locs);
-diff --git a/drivers/net/dsa/bcm_sf2_regs.h b/drivers/net/dsa/bcm_sf2_regs.h
-index 7bffc80f241f..da0dedbd6555 100644
---- a/drivers/net/dsa/bcm_sf2_regs.h
-+++ b/drivers/net/dsa/bcm_sf2_regs.h
-@@ -25,6 +25,10 @@ enum bcm_sf2_reg_offs {
- 	REG_LED_0_CNTRL,
- 	REG_LED_1_CNTRL,
- 	REG_LED_2_CNTRL,
-+	REG_LED_3_CNTRL,
-+	REG_LED_4_CNTRL,
-+	REG_LED_5_CNTRL,
-+	REG_LED_AGGREGATE_CTRL,
- 	REG_SWITCH_REG_MAX,
- };
- 
-@@ -56,6 +60,63 @@ enum bcm_sf2_reg_offs {
- #define CROSSBAR_BCM4908_EXT_GPHY4	1
- #define CROSSBAR_BCM4908_EXT_RGMII	2
- 
-+/* Relative to REG_LED_*_CNTRL (BCM7278, BCM7445) */
-+#define  LED_CNTRL_NO_LINK_ENCODE_SHIFT		0
-+#define  LED_CNTRL_M10_ENCODE_SHIFT		2
-+#define  LED_CNTRL_M100_ENCODE_SHIFT		4
-+#define  LED_CNTRL_M1000_ENCODE_SHIFT		6
-+#define  LED_CNTRL_SEL_NO_LINK_ENCODE_SHIFT	8
-+#define  LED_CNTRL_SEL_10M_ENCODE_SHIFT		10
-+#define  LED_CNTRL_SEL_100M_ENCODE_SHIFT	12
-+#define  LED_CNTRL_SEL_1000M_ENCODE_SHIFT	14
-+#define  LED_CNTRL_RX_DV_EN			(1 << 16)
-+#define  LED_CNTRL_TX_EN_EN			(1 << 17)
-+#define  LED_CNTRL_SPDLNK_LED0_ACT_SEL_SHIFT	18
-+#define  LED_CNTRL_SPDLNK_LED1_ACT_SEL_SHIFT	20
-+#define  LED_CNTRL_ACT_LED_ACT_SEL_SHIFT	22
-+#define  LED_CNTRL_SPDLNK_SRC_SEL		(1 << 24)
-+#define  LED_CNTRL_SPDLNK_LED0_ACT_POL_SEL	(1 << 25)
-+#define  LED_CNTRL_SPDLNK_LED1_ACT_POL_SEL	(1 << 26)
-+#define  LED_CNTRL_ACT_LED_POL_SEL		(1 << 27)
-+#define  LED_CNTRL_MASK				0x3
-+
-+/* Register relative to REG_LED_*_CNTRL (BCM4908) */
-+#define REG_LED_CTRL				0x0
-+#define  LED_CTRL_RX_ACT_EN			0x00000001
-+#define  LED_CTRL_TX_ACT_EN			0x00000002
-+#define  LED_CTRL_SPDLNK_LED0_ACT_SEL		0x00000004
-+#define  LED_CTRL_SPDLNK_LED1_ACT_SEL		0x00000008
-+#define  LED_CTRL_SPDLNK_LED2_ACT_SEL		0x00000010
-+#define  LED_CTRL_ACT_LED_ACT_SEL		0x00000020
-+#define  LED_CTRL_SPDLNK_LED0_ACT_POL_SEL	0x00000040
-+#define  LED_CTRL_SPDLNK_LED1_ACT_POL_SEL	0x00000080
-+#define  LED_CTRL_SPDLNK_LED2_ACT_POL_SEL	0x00000100
-+#define  LED_CTRL_ACT_LED_POL_SEL		0x00000200
-+#define  LED_CTRL_LED_SPD_OVRD			0x00001c00
-+#define  LED_CTRL_LNK_STATUS_OVRD		0x00002000
-+#define  LED_CTRL_SPD_OVRD_EN			0x00004000
-+#define  LED_CTRL_LNK_OVRD_EN			0x00008000
-+
-+/* Register relative to REG_LED_*_CNTRL (BCM4908) */
-+#define REG_LED_LINK_SPEED_ENC_SEL		0x4
-+#define  LED_LINK_SPEED_ENC_SEL_NO_LINK_SHIFT	0
-+#define  LED_LINK_SPEED_ENC_SEL_10M_SHIFT	3
-+#define  LED_LINK_SPEED_ENC_SEL_100M_SHIFT	6
-+#define  LED_LINK_SPEED_ENC_SEL_1000M_SHIFT	9
-+#define  LED_LINK_SPEED_ENC_SEL_2500M_SHIFT	12
-+#define  LED_LINK_SPEED_ENC_SEL_10G_SHIFT	15
-+#define  LED_LINK_SPEED_ENC_SEL_MASK		0x7
-+
-+/* Register relative to REG_LED_*_CNTRL (BCM4908) */
-+#define REG_LED_LINK_SPEED_ENC			0x8
-+#define  LED_LINK_SPEED_ENC_NO_LINK_SHIFT	0
-+#define  LED_LINK_SPEED_ENC_M10_SHIFT		3
-+#define  LED_LINK_SPEED_ENC_M100_SHIFT		6
-+#define  LED_LINK_SPEED_ENC_M1000_SHIFT		9
-+#define  LED_LINK_SPEED_ENC_M2500_SHIFT		12
-+#define  LED_LINK_SPEED_ENC_M10G_SHIFT		15
-+#define  LED_LINK_SPEED_ENC_MASK		0x7
-+
- /* Relative to REG_RGMII_CNTRL */
- #define  RGMII_MODE_EN			(1 << 0)
- #define  ID_MODE_DIS			(1 << 1)
-@@ -73,10 +134,6 @@ enum bcm_sf2_reg_offs {
- #define  LPI_COUNT_SHIFT		9
- #define  LPI_COUNT_MASK			0x3F
- 
--#define REG_LED_CNTRL(x)		(REG_LED_0_CNTRL + (x))
--
--#define  SPDLNK_SRC_SEL			(1 << 24)
--
- /* Register set relative to 'INTRL2_0' and 'INTRL2_1' */
- #define INTRL2_CPU_STATUS		0x00
- #define INTRL2_CPU_SET			0x04
--- 
-2.31.1
+> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+> ---
+>  drivers/net/ethernet/realtek/r8169_main.c | 14 +++++++-------
+>  1 file changed, 7 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+> index 3d6843332..7161a5b1c 100644
+> --- a/drivers/net/ethernet/realtek/r8169_main.c
+> +++ b/drivers/net/ethernet/realtek/r8169_main.c
+> @@ -615,6 +615,7 @@ struct rtl8169_private {
+>  	struct ring_info tx_skb[NUM_TX_DESC];	/* Tx data buffers */
+>  	u16 cp_cmd;
+>  	u32 irq_mask;
+> +	int irq;
+>  	struct clk *clk;
+>  
+>  	struct {
+> @@ -4712,7 +4713,7 @@ static int rtl8169_close(struct net_device *dev)
+>  
+>  	cancel_work_sync(&tp->wk.work);
+>  
+> -	free_irq(pci_irq_vector(pdev, 0), tp);
+> +	free_irq(tp->irq, tp);
+>  
+>  	phy_disconnect(tp->phydev);
+>  
+> @@ -4733,7 +4734,7 @@ static void rtl8169_netpoll(struct net_device *dev)
+>  {
+>  	struct rtl8169_private *tp = netdev_priv(dev);
+>  
+> -	rtl8169_interrupt(pci_irq_vector(tp->pci_dev, 0), tp);
+> +	rtl8169_interrupt(tp->irq, tp);
+>  }
+>  #endif
+>  
+> @@ -4767,8 +4768,7 @@ static int rtl_open(struct net_device *dev)
+>  	rtl_request_firmware(tp);
+>  
+>  	irqflags = pci_dev_msi_enabled(pdev) ? IRQF_NO_THREAD : IRQF_SHARED;
+> -	retval = request_irq(pci_irq_vector(pdev, 0), rtl8169_interrupt,
+> -			     irqflags, dev->name, tp);
+> +	retval = request_irq(tp->irq, rtl8169_interrupt, irqflags, dev->name, tp);
+>  	if (retval < 0)
+>  		goto err_release_fw_2;
+>  
+> @@ -4785,7 +4785,7 @@ static int rtl_open(struct net_device *dev)
+>  	return retval;
+>  
+>  err_free_irq:
+> -	free_irq(pci_irq_vector(pdev, 0), tp);
+> +	free_irq(tp->irq, tp);
+>  err_release_fw_2:
+>  	rtl_release_firmware(tp);
+>  	rtl8169_rx_clear(tp);
+> @@ -5360,6 +5360,7 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+>  		dev_err(&pdev->dev, "Can't allocate interrupt\n");
+>  		return rc;
+>  	}
+> +	tp->irq = pci_irq_vector(pdev, 0);
+>  
+>  	INIT_WORK(&tp->wk.work, rtl_task);
+>  
+> @@ -5435,8 +5436,7 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+>  		return rc;
+>  
+>  	netdev_info(dev, "%s, %pM, XID %03x, IRQ %d\n",
+> -		    rtl_chip_infos[chipset].name, dev->dev_addr, xid,
+> -		    pci_irq_vector(pdev, 0));
+> +		    rtl_chip_infos[chipset].name, dev->dev_addr, xid, tp->irq);
+>  
+>  	if (jumbo_max)
+>  		netdev_info(dev, "jumbo features [frames: %d bytes, tx checksumming: %s]\n",
 
