@@ -2,43 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 68F474805B9
-	for <lists+netdev@lfdr.de>; Tue, 28 Dec 2021 03:21:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 973B54805C0
+	for <lists+netdev@lfdr.de>; Tue, 28 Dec 2021 03:35:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232330AbhL1CV3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Dec 2021 21:21:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38776 "EHLO
+        id S234599AbhL1Cfo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Dec 2021 21:35:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230372AbhL1CV3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Dec 2021 21:21:29 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B3F2C06173E
-        for <netdev@vger.kernel.org>; Mon, 27 Dec 2021 18:21:28 -0800 (PST)
+        with ESMTP id S230372AbhL1Cfo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Dec 2021 21:35:44 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D56CBC06173E
+        for <netdev@vger.kernel.org>; Mon, 27 Dec 2021 18:35:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 278E2CE10D1
-        for <netdev@vger.kernel.org>; Tue, 28 Dec 2021 02:21:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72E03C36AE7;
-        Tue, 28 Dec 2021 02:21:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6BC5561165
+        for <netdev@vger.kernel.org>; Tue, 28 Dec 2021 02:35:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91957C36AEA;
+        Tue, 28 Dec 2021 02:35:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1640658085;
-        bh=SFIvM3d9w+BZ4pJPMI9U9MCXgno+/HQnLOe+H+YvpxA=;
+        s=k20201202; t=1640658942;
+        bh=q8nzCZYDl7ghNkaaf1MV36AL6x4tL6y1eda/VKJrtFU=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=f4Q7OhnaTs+z6uKozHHemdQxMVaeyYjy3f5nfSdZZ7cJOE/4lufbTXqIO5Y37pdxp
-         HktF8ncL47CnLblK0B+5ypL8Q3Y2marfjf7gRFGryNO4v6B+Vlxe6bYAsL1XdignA4
-         x2mw+eHVbFKBihRRaz2xnYy0KNeW1CJP7tADwaF6nDB7UySYsIdn/TPaSwDYfmbwVz
-         xFb9wIMLF6v7bg5NhaDnzhUmuvGcbyq4ksHTr3veTbzvI7z2+6BoUaYSnNA99NULlZ
-         1LeL+lMZdbs2sh0uTdzwHucbx6OLq8ZvE39pBBKBvYqaQyNPa9Zt0OqEGYDgoNf8OG
-         d3bMQyZHm32ng==
-Date:   Mon, 27 Dec 2021 18:21:24 -0800
+        b=cA/dr4ChZzA6+CWgeJUr6s3EcVC6IKXPuHuTywZmWaUmvZ7fbL+nek63ku1qR5ylY
+         s2yvcDG48DAYLjfcezXb7fl+5z0Z5V1ONPjmq6ZPcAjJtztgw1R9PJtXZ9S5i03+cL
+         glSGlhLdHw6tBV7HD3YDbmSJZSNei3HTm6kRpQx93SCZpCfm7hNKexDFokN9By+Wfo
+         uTWD8dktZjKJ2F/SbJwoMYHxA88NayjGbjV5TcTvEzKs9aITBL1UB6uqAlkthyeMBi
+         mziiSvB1/0XinVoYaJq5jzvVMq7VoDKhbU4HpRY6ZZ0Uua1gMf2vcmSE9kHKLR3UAK
+         vn4MpMi99VODw==
+Date:   Mon, 27 Dec 2021 18:35:41 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Ryan Lahfa <ryan@lahfa.xyz>
-Cc:     netdev@vger.kernel.org, Hayes Wang <hayeswang@realtek.com>
-Subject: Re: RTL8156(A|B) chip requires r8156 to be force loaded to operate
-Message-ID: <20211227182124.5cbc0d07@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20211224203018.z2n7sylht47ownga@Thors>
-References: <20211224203018.z2n7sylht47ownga@Thors>
+To:     conleylee@foxmail.com
+Cc:     davem@davemloft.net, mripard@kernel.org, wens@csie.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v4] sun4i-emac.c: add dma support
+Message-ID: <20211227183541.3a9f2963@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <tencent_95A0609A0DC523F7DDAE60A8746EABAA8905@qq.com>
+References: <tencent_95A0609A0DC523F7DDAE60A8746EABAA8905@qq.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -46,39 +47,236 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 24 Dec 2021 21:30:18 +0100 Ryan Lahfa wrote:
-> Hi all,
+On Fri, 24 Dec 2021 22:44:31 +0800 conleylee@foxmail.com wrote:
+> From: Conley Lee <conleylee@foxmail.com>
 > 
-> I recently bought an USB-C 2.5Gbps external network card, which shows in
-> `lsusb` as:
+> This patch adds support for the emac rx dma present on sun4i.
+> The emac is able to move packets from rx fifo to RAM by using dma.
 > 
-> > Bus 002 Device 003: ID 0bda:8156 Realtek Semiconductor Corp. USB 10/100/1G/2.5G LAN  
+> Signed-off-by: Conley Lee <conleylee@foxmail.com>
+> ---
+>  drivers/net/ethernet/allwinner/sun4i-emac.c | 209 +++++++++++++++++++-
+>  1 file changed, 200 insertions(+), 9 deletions(-)
 > 
-> By default, on my distribution (NixOS "21.11pre319254.b5182c214fa")'s
-> latest kernel (`pkgs.linuxPackages_latest`) which shows in `uname -nar`
-> as:
-> 
-> > Linux $machine 5.15.10 #1-NixOS SMP Fri Dec 17 09:30:17 UTC 2021 x86_64 GNU/Linux  
-> 
-> The network card is loaded with `cdc_ncm` driver and is unable to detect
-> any carrier even when one is actually plugged in, I tried multiple
-> things, I confirmed independently that the carrier is working.
-> 
-> Through further investigations and with the help of a user on
-> Libera.Chat #networking channel, we blacklisted `cdc_ncm`, but nothing
-> get loaded in turn.
-> 
-> Then, I forced the usage of r8152 for the device 0bda:8156 using `echo
-> 0bda 8156 > /sys/bus/usb/drivers/r8152/new_id`, and... miracle.
-> Everything just worked.
-> 
-> I am uncertain whether this falls in kernel's responsibility or not, it
-> seems indeed that my device is listed for r8152: https://github.com/torvalds/linux/blob/master/drivers/net/usb/r8152.c#L9790 introduced by this commit https://github.com/torvalds/linux/commit/195aae321c829dd1945900d75561e6aa79cce208 if I understand well, which is tagged for 5.15.
-> 
-> I am curious to see how difficult would that be to write a patch for
-> this and fix it, meanwhile, here is my modest contribution with this bug
-> report, hopefully, this is the right place for them.
+> diff --git a/drivers/net/ethernet/allwinner/sun4i-emac.c b/drivers/net/ethernet/allwinner/sun4i-emac.c
+> index cccf8a3ead5e..b17d2df17335 100644
+> --- a/drivers/net/ethernet/allwinner/sun4i-emac.c
+> +++ b/drivers/net/ethernet/allwinner/sun4i-emac.c
+> @@ -29,6 +29,7 @@
+>  #include <linux/platform_device.h>
+>  #include <linux/phy.h>
+>  #include <linux/soc/sunxi/sunxi_sram.h>
+> +#include <linux/dmaengine.h>
+>  
+>  #include "sun4i-emac.h"
+>  
+> @@ -86,6 +87,16 @@ struct emac_board_info {
+>  	unsigned int		duplex;
+>  
+>  	phy_interface_t		phy_interface;
+> +	struct dma_chan	*rx_chan;
+> +	phys_addr_t emac_rx_fifo;
+> +};
+> +
+> +struct emac_dma_req {
+> +	struct emac_board_info *db;
+> +	struct dma_async_tx_descriptor *desc;
+> +	struct sk_buff *sbk;
 
-Can you please share the output of lsusb -d '0bda:8156' -vv ?
+sbk -> skb ?
 
-Adding Hayes to the CC list.
+> +	dma_addr_t rxbuf;
+> +	int count;
+>  };
+>  
+>  static void emac_update_speed(struct net_device *dev)
+> @@ -205,6 +216,113 @@ static void emac_inblk_32bit(void __iomem *reg, void *data, int count)
+>  	readsl(reg, data, round_up(count, 4) / 4);
+>  }
+>  
+> +static struct emac_dma_req *
+> +alloc_emac_dma_req(struct emac_board_info *db,
+
+nit: please use "emac" as a prefix of the name, instead of putting it
+     inside the name.
+
+> +		   struct dma_async_tx_descriptor *desc, struct sk_buff *skb,
+> +		   dma_addr_t rxbuf, int count)
+> +{
+> +	struct emac_dma_req *req =
+> +		kzalloc(sizeof(struct emac_dma_req), GFP_KERNEL);
+
+Please don't put complex initializers inline, also missing an empty
+line between variable declaration and code. Should be:
+
+	struct emac_dma_req *req;
+
+	req = kzalloc(...);
+	if (!req)
+		...
+
+You seem to call this from an IRQ handler, shouldn't the flags be
+GFP_ATOMIC? Please test with CONFIG_DEBUG_ATOMIC_SLEEP=y.
+
+> +	if (!req)
+> +		return NULL;
+> +
+> +	req->db = db;
+> +	req->desc = desc;
+> +	req->sbk = skb;
+> +	req->rxbuf = rxbuf;
+> +	req->count = count;
+> +	return req;
+> +}
+> +
+> +static void free_emac_dma_req(struct emac_dma_req *req)
+> +{
+> +	kfree(req);
+> +}
+> +
+> +static void emac_dma_done_callback(void *arg)
+> +{
+> +	struct emac_dma_req *req = arg;
+> +	struct emac_board_info *db = req->db;
+> +	struct sk_buff *skb = req->sbk;
+> +	struct net_device *dev = db->ndev;
+> +	int rxlen = req->count;
+> +	u32 reg_val;
+> +
+> +	dma_unmap_single(db->dev, req->rxbuf, rxlen, DMA_FROM_DEVICE);
+> +
+> +	skb->protocol = eth_type_trans(skb, dev);
+> +	netif_rx(skb);
+> +	dev->stats.rx_bytes += rxlen;
+> +	/* Pass to upper layer */
+> +	dev->stats.rx_packets++;
+> +
+> +	//re enable cpu receive
+
+Please use the /**/ comment style consistently
+
+> +	reg_val = readl(db->membase + EMAC_RX_CTL_REG);
+> +	reg_val &= ~EMAC_RX_CTL_DMA_EN;
+> +	writel(reg_val, db->membase + EMAC_RX_CTL_REG);
+> +
+> +	//re enable interrupt
+> +	reg_val = readl(db->membase + EMAC_INT_CTL_REG);
+> +	reg_val |= (0x01 << 8);
+> +	writel(reg_val, db->membase + EMAC_INT_CTL_REG);
+> +
+> +	db->emacrx_completed_flag = 1;
+> +	free_emac_dma_req(req);
+> +}
+> +
+> +static void emac_dma_inblk_32bit(struct emac_board_info *db,
+> +				 struct sk_buff *skb, int count)
+> +{
+> +	struct dma_async_tx_descriptor *desc;
+> +	dma_cookie_t cookie;
+> +	dma_addr_t rxbuf;
+> +	void *rdptr;
+> +	struct emac_dma_req *req;
+> +
+> +	rdptr = skb_put(skb, count - 4);
+
+The skb_put can be factored out from both branches it seems.
+
+> +	rxbuf = dma_map_single(db->dev, rdptr, count, DMA_FROM_DEVICE);
+> +
+> +	if (dma_mapping_error(db->dev, rxbuf)) {
+> +		dev_err(db->dev, "dma mapping error.\n");
+> +		return;
+
+You seem to leak the skb if this function fails, no?
+
+> +	}
+> +
+> +	desc = dmaengine_prep_slave_single(db->rx_chan, rxbuf, count,
+> +					   DMA_DEV_TO_MEM,
+> +					   DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
+> +	if (!desc) {
+> +		dev_err(db->dev, "prepare slave single failed\n");
+> +		goto prepare_err;
+> +	}
+> +
+> +	req = alloc_emac_dma_req(db, desc, skb, rxbuf, count);
+> +	if (!req) {
+> +		dev_err(db->dev, "alloc emac dma req error.\n");
+> +		goto alloc_req_err;
+> +	}
+> +
+> +	desc->callback_param = req;
+> +	desc->callback = emac_dma_done_callback;
+> +
+> +	cookie = dmaengine_submit(desc);
+> +	if (dma_submit_error(cookie)) {
+> +		dev_err(db->dev, "dma submit error.\n");
+> +		goto submit_err;
+> +	}
+> +
+> +	dma_async_issue_pending(db->rx_chan);
+> +	return;
+> +
+> +submit_err:
+> +	free_emac_dma_req(req);
+> +
+> +alloc_req_err:
+> +	dmaengine_desc_free(desc);
+> +
+> +prepare_err:
+> +	dma_unmap_single(db->dev, rxbuf, count, DMA_FROM_DEVICE);
+> +}
+
+> -			/* Pass to upper layer */
+> -			skb->protocol = eth_type_trans(skb, dev);
+> -			netif_rx(skb);
+> -			dev->stats.rx_packets++;
+> +			if (rxlen < dev->mtu || !db->rx_chan) {
+> +				rdptr = skb_put(skb, rxlen - 4);
+> +				emac_inblk_32bit(db->membase + EMAC_RX_IO_DATA_REG,
+> +						rdptr, rxlen);
+> +				dev->stats.rx_bytes += rxlen;
+> +
+> +				/* Pass to upper layer */
+> +				skb->protocol = eth_type_trans(skb, dev);
+> +				netif_rx(skb);
+> +				dev->stats.rx_packets++;
+> +			} else {
+> +				reg_val = readl(db->membase + EMAC_RX_CTL_REG);
+> +				reg_val |= EMAC_RX_CTL_DMA_EN;
+> +				writel(reg_val, db->membase + EMAC_RX_CTL_REG);
+> +				emac_dma_inblk_32bit(db, skb, rxlen);
+> +				break;
+> +			}
+>  		}
+
+> +static int emac_configure_dma(struct emac_board_info *db)
+> +{
+> +	struct platform_device *pdev = db->pdev;
+> +	struct net_device *ndev = db->ndev;
+> +	struct dma_slave_config conf = {};
+> +	struct resource *regs;
+> +	int err = 0;
+> +
+> +	regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +	if (!regs) {
+> +		netdev_err(ndev, "get io resource from device failed.\n");
+> +		err = -ENOMEM;
+> +		goto out_clear_chan;
+> +	}
+> +
+> +	netdev_info(ndev, "get io resource from device: 0x%x, size = %u\n",
+> +		    regs->start, resource_size(regs));
+> +	db->emac_rx_fifo = regs->start + EMAC_RX_IO_DATA_REG;
+> +
+> +	db->rx_chan = dma_request_chan(&pdev->dev, "rx");
+> +	if (IS_ERR(db->rx_chan)) {
+> +		netdev_err(ndev,
+> +			   "failed to request dma channel. dma is disabled");
+
+nit: this message lacks '\n' at the end
+
+> +		err = PTR_ERR(db->rx_chan);
+> +		goto out_clear_chan;
+> +	}
+
