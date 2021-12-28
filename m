@@ -2,123 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EF7E9480966
-	for <lists+netdev@lfdr.de>; Tue, 28 Dec 2021 14:07:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 45E2C480971
+	for <lists+netdev@lfdr.de>; Tue, 28 Dec 2021 14:10:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232119AbhL1NHL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Dec 2021 08:07:11 -0500
-Received: from out30-44.freemail.mail.aliyun.com ([115.124.30.44]:36963 "EHLO
-        out30-44.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232060AbhL1NHK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Dec 2021 08:07:10 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R961e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0V06pjS-_1640696827;
-Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0V06pjS-_1640696827)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Tue, 28 Dec 2021 21:07:07 +0800
-From:   Tony Lu <tonylu@linux.alibaba.com>
-To:     kgraul@linux.ibm.com
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
-Subject: [PATCH 4/4] net/smc: Add net namespace for tracepoints
-Date:   Tue, 28 Dec 2021 21:06:12 +0800
-Message-Id: <20211228130611.19124-5-tonylu@linux.alibaba.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20211228130611.19124-1-tonylu@linux.alibaba.com>
-References: <20211228130611.19124-1-tonylu@linux.alibaba.com>
+        id S232176AbhL1NKe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Dec 2021 08:10:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38696 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232128AbhL1NKd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Dec 2021 08:10:33 -0500
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3446AC061574;
+        Tue, 28 Dec 2021 05:10:33 -0800 (PST)
+Received: by mail-pg1-x52c.google.com with SMTP id s1so14456163pga.5;
+        Tue, 28 Dec 2021 05:10:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=AaV3U4Q/YoY3GBRDKrb7mtceSC4KeM61/N6BjB4XkOM=;
+        b=WCnV7riryFUCC8EyXq6wGlThahzfdlZn9gcTEcnphg57+EEz12W3qWsjq1fkIdCi+E
+         pqXwPgs41MWob46EPMnm6ZalHdCkTNw+C258iV5PU9OelrVzIFWiPYjm3H9+8sBwebLQ
+         DtWuC4Gnp8TE7SWQA4ZFs9H54135/WV+9nPSJtOFgdSBsHz3FFm0l8t81PWsOiwLZ7Ph
+         6M/N4yTOehI1KRMdF+6u+CGSEPpNrhn4H5ryCH+n8KG7s9uie10L/6bL7G4VPl6pmJOo
+         P+pLLr4vVXCb96uoRTMsTLCOpvb21XpgEIKZ/QaW9rvd50gI7aoKSmclDiqYO5ekrGjG
+         CioA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=AaV3U4Q/YoY3GBRDKrb7mtceSC4KeM61/N6BjB4XkOM=;
+        b=ZRGqGL4ifBscK8oza4dNGGvgs1g0Aey2Y1w2ljig+fDPWBO7G7gOoa50/7AbIoVWyV
+         JpkpOhzHJpsy4K9hWKS0d0dKLDypJnhvtuutXF2uGlVOzSoTfRvhdJz0QWvIVup3ILcS
+         TMP8Q3JLRpQRGdSW1jRLJjxAjvSjedvHOij9p6jyFoo94lfJXMHd6HA9guTjIGDQDfL9
+         A+K47OJdYXkuzPl8iBkwyeTB5T9UsV6H4hc5az3XP/zRnYpummh6dVWxDQceCkH5xHdc
+         iiGG9Dae+OYGxFkcKd1SHy/C8pNSFtpVCBUI6fEsf5IcOvXSF2vufxfsN/O66vXjjIQu
+         ZS4Q==
+X-Gm-Message-State: AOAM530/2zaEnf+GMLd+v5f8o1YPPZtqTf/AK+r6Bd7ETaacePJBDKiF
+        fm0BuncZ0oLkVEek87+nAVg=
+X-Google-Smtp-Source: ABdhPJzvP5bNSxfiXDIWQbXdmBTcpzQthLPZHQaONqRgeUch0HAQkHQf6eE56pcFkU9sRoBYl80crQ==
+X-Received: by 2002:a05:6a00:1a03:b0:4ba:c23e:df67 with SMTP id g3-20020a056a001a0300b004bac23edf67mr22021603pfv.63.1640697032658;
+        Tue, 28 Dec 2021 05:10:32 -0800 (PST)
+Received: from gagan ([45.116.106.186])
+        by smtp.gmail.com with ESMTPSA id mw8sm18813610pjb.42.2021.12.28.05.10.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Dec 2021 05:10:32 -0800 (PST)
+From:   Gagan Kumar <gagan1kumar.cs@gmail.com>
+To:     jk@codeconstruct.com.au, matt@codeconstruct.com.au,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Gagan Kumar <gagan1kumar.cs@gmail.com>
+Subject: [PATCH] mctp: Remove only static neighbour on RTM_DELNEIGH
+Date:   Tue, 28 Dec 2021 18:39:56 +0530
+Message-Id: <20211228130956.8553-1-gagan1kumar.cs@gmail.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This prints net namespace ID, helps us to distinguish different net
-namespaces when using tracepoints.
+Add neighbour source flag in mctp_neigh_remove(...) to allow removal of
+only static neighbours.
 
-Signed-off-by: Tony Lu <tonylu@linux.alibaba.com>
+Signed-off-by: Gagan Kumar <gagan1kumar.cs@gmail.com>
 ---
- net/smc/smc_tracepoint.h | 23 ++++++++++++++++-------
- 1 file changed, 16 insertions(+), 7 deletions(-)
+ net/mctp/neigh.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/net/smc/smc_tracepoint.h b/net/smc/smc_tracepoint.h
-index ec17f29646f5..9fc5e586d24a 100644
---- a/net/smc/smc_tracepoint.h
-+++ b/net/smc/smc_tracepoint.h
-@@ -22,6 +22,7 @@ TRACE_EVENT(smc_switch_to_fallback,
- 	    TP_STRUCT__entry(
- 			     __field(const void *, sk)
- 			     __field(const void *, clcsk)
-+			     __field(u64, net_cookie)
- 			     __field(int, fallback_rsn)
- 	    ),
+diff --git a/net/mctp/neigh.c b/net/mctp/neigh.c
+index 5cc042121493..a90723ae66d7 100644
+--- a/net/mctp/neigh.c
++++ b/net/mctp/neigh.c
+@@ -85,8 +85,8 @@ void mctp_neigh_remove_dev(struct mctp_dev *mdev)
+ 	mutex_unlock(&net->mctp.neigh_lock);
+ }
  
-@@ -31,11 +32,13 @@ TRACE_EVENT(smc_switch_to_fallback,
+-// TODO: add a "source" flag so netlink can only delete static neighbours?
+-static int mctp_neigh_remove(struct mctp_dev *mdev, mctp_eid_t eid)
++static int mctp_neigh_remove(struct mctp_dev *mdev, mctp_eid_t eid,
++			     enum mctp_neigh_source source)
+ {
+ 	struct net *net = dev_net(mdev->dev);
+ 	struct mctp_neigh *neigh, *tmp;
+@@ -94,7 +94,7 @@ static int mctp_neigh_remove(struct mctp_dev *mdev, mctp_eid_t eid)
  
- 			   __entry->sk = sk;
- 			   __entry->clcsk = clcsk;
-+			   __entry->net_cookie = sock_net(sk)->net_cookie;
- 			   __entry->fallback_rsn = fallback_rsn;
- 	    ),
+ 	mutex_lock(&net->mctp.neigh_lock);
+ 	list_for_each_entry_safe(neigh, tmp, &net->mctp.neighbours, list) {
+-		if (neigh->dev == mdev && neigh->eid == eid) {
++		if (neigh->dev == mdev && neigh->eid == eid && neigh->source == source) {
+ 			list_del_rcu(&neigh->list);
+ 			/* TODO: immediate RTM_DELNEIGH */
+ 			call_rcu(&neigh->rcu, __mctp_neigh_free);
+@@ -202,7 +202,7 @@ static int mctp_rtm_delneigh(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 	if (!mdev)
+ 		return -ENODEV;
  
--	    TP_printk("sk=%p clcsk=%p fallback_rsn=%d",
--		      __entry->sk, __entry->clcsk, __entry->fallback_rsn)
-+	    TP_printk("sk=%p clcsk=%p net=%llu fallback_rsn=%d",
-+		      __entry->sk, __entry->clcsk,
-+		      __entry->net_cookie, __entry->fallback_rsn)
- );
+-	return mctp_neigh_remove(mdev, eid);
++	return mctp_neigh_remove(mdev, eid, MCTP_NEIGH_STATIC);
+ }
  
- DECLARE_EVENT_CLASS(smc_msg_event,
-@@ -46,19 +49,23 @@ DECLARE_EVENT_CLASS(smc_msg_event,
- 
- 		    TP_STRUCT__entry(
- 				     __field(const void *, smc)
-+				     __field(u64, net_cookie)
- 				     __field(size_t, len)
- 				     __string(name, smc->conn.lnk->ibname)
- 		    ),
- 
- 		    TP_fast_assign(
-+				   const struct sock *sk = &smc->sk;
-+
- 				   __entry->smc = smc;
-+				   __entry->net_cookie = sock_net(sk)->net_cookie;
- 				   __entry->len = len;
- 				   __assign_str(name, smc->conn.lnk->ibname);
- 		    ),
- 
--		    TP_printk("smc=%p len=%zu dev=%s",
--			      __entry->smc, __entry->len,
--			      __get_str(name))
-+		    TP_printk("smc=%p net=%llu len=%zu dev=%s",
-+			      __entry->smc, __entry->net_cookie,
-+			      __entry->len, __get_str(name))
- );
- 
- DEFINE_EVENT(smc_msg_event, smc_tx_sendmsg,
-@@ -84,6 +91,7 @@ TRACE_EVENT(smcr_link_down,
- 	    TP_STRUCT__entry(
- 			     __field(const void *, lnk)
- 			     __field(const void *, lgr)
-+			     __field(u64, net_cookie)
- 			     __field(int, state)
- 			     __string(name, lnk->ibname)
- 			     __field(void *, location)
-@@ -94,13 +102,14 @@ TRACE_EVENT(smcr_link_down,
- 
- 			   __entry->lnk = lnk;
- 			   __entry->lgr = lgr;
-+			   __entry->net_cookie = lgr->net->net_cookie;
- 			   __entry->state = lnk->state;
- 			   __assign_str(name, lnk->ibname);
- 			   __entry->location = location;
- 	    ),
- 
--	    TP_printk("lnk=%p lgr=%p state=%d dev=%s location=%pS",
--		      __entry->lnk, __entry->lgr,
-+	    TP_printk("lnk=%p lgr=%p net=%llu state=%d dev=%s location=%pS",
-+		      __entry->lnk, __entry->lgr, __entry->net_cookie,
- 		      __entry->state, __get_str(name),
- 		      __entry->location)
- );
+ static int mctp_fill_neigh(struct sk_buff *skb, u32 portid, u32 seq, int event,
 -- 
-2.32.0.3.g01195cf9f
+2.32.0
 
