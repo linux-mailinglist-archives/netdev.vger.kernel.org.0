@@ -2,55 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 631B9480586
-	for <lists+netdev@lfdr.de>; Tue, 28 Dec 2021 02:43:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A885480594
+	for <lists+netdev@lfdr.de>; Tue, 28 Dec 2021 02:50:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234426AbhL1BnG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Dec 2021 20:43:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58686 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232933AbhL1BnG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Dec 2021 20:43:06 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D25F8C06173E;
-        Mon, 27 Dec 2021 17:43:05 -0800 (PST)
+        id S234488AbhL1Bt7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Dec 2021 20:49:59 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:36586 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234477AbhL1Bt6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Dec 2021 20:49:58 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 167186117D;
-        Tue, 28 Dec 2021 01:43:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5F37C36AE7;
-        Tue, 28 Dec 2021 01:43:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2A8FEB81185;
+        Tue, 28 Dec 2021 01:49:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D505C36AE7;
+        Tue, 28 Dec 2021 01:49:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1640655784;
-        bh=tm2ezZym6nmRnMFof2gET1bE3Gm3gtZFjJBuqcI1dVs=;
+        s=k20201202; t=1640656195;
+        bh=kbm0qdsE3K55z11kzBPcoPlelzmKe3s6q4qARM5HFxo=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=GpwoqgL3hN+CpF+au5xOM7La9VTu0aFYJ3Ys6SPZYna4fXuZJiSrx2hlzUiMqW9c+
-         JjDISMTXh+N0JUjt2CTJ+uX9MsYyafmITaM6ijFMO7moC+6OW1JhU/LlNtmaBtdf/P
-         N7kgyybkEsviIrx5FWdOEBKWlqj8bNmiJiPd67v6qlSVScJ1wGjD90SVhl8VBlG9lQ
-         t/hlsUx496uH1Fd/+U9TPnULK74z/+6TLLdaRIPHSoyJukiY3/H3EODB78L9MGcFuT
-         8WNs6Qk5eY6BI/4MvrHrKf/W5xPWLUKsxDkFVswdJEGrFziUTFMXP+tNN3uY1wYfV5
-         pteFO/mhw5u4w==
-Date:   Mon, 27 Dec 2021 17:43:02 -0800
+        b=RUS34wVAsjVmGTdtTXOI2qeyuK/K4VMoA4HPLZ0LskU2+ZKi/osGN9YYN5lAWD9K5
+         tqeYMuEZgJQK5ElzMXG4Tbn7p7zzDajIeNPkc9EqV2gHuXhU4eWYHXuXwLn2wuAgB4
+         STLTv5+mpHr9txNoVpHyo6MclQzj96lyWmgYvZ7ANf5yOoTzZH+vIWrsUd/xKtj4p9
+         CS4cFCjLqY9x9GlxirGG0DJuOgsMg+ChM7cArfNZ9lQsA7Mqyg0e+bGb4cjoBAbYlr
+         FYO6HSFznVZ8yC4NtNImFqltwDo2hTZxjoaYyGRcfL5W04RBqH8GrK+Y7SkiNA/1ys
+         rUB3KutB5mD6w==
+Date:   Mon, 27 Dec 2021 17:49:54 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Daniel Golle <daniel@makrotopia.org>
-Cc:     linux-mediatek@lists.infradead.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: Re: [PATCH v7 0/2] net: ethernet: mtk_soc_eth: implement Clause 45
- MDIO access
-Message-ID: <20211227174302.79379151@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <Ycpj/cEdjb0BMrny@makrotopia.org>
-References: <YcnoAscVe+2YILT8@shell.armlinux.org.uk>
-        <YcpVmlb1jFavCBpS@makrotopia.org>
-        <YcpVtjykiS7mgtT5@makrotopia.org>
-        <Ycpj/cEdjb0BMrny@makrotopia.org>
+To:     Joseph CHAMG <josright123@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>, joseph_chang@davicom.com.tw,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Leon Romanovsky <leon@kernel.org>
+Subject: Re: [PATCH v9, 2/2] net: Add dm9051 driver
+Message-ID: <20211227174954.1411a643@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20211227100233.8037-3-josright123@gmail.com>
+References: <20211227100233.8037-1-josright123@gmail.com>
+        <20211227100233.8037-3-josright123@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -58,29 +48,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 28 Dec 2021 01:10:21 +0000 Daniel Golle wrote:
-> As it turned out some clean-up would be needed, first address return
-> value and type of mdio read and write functions in mtk_eth_soc and
-> generally clean up and unify both functions.
-> Then add support to access Clause 45 phy registers.
-> 
-> Both commits are tested on the Bananapi BPi-R64 board having MediaTek
-> MT7531BE DSA gigE switch using clause 22 MDIO and Ubiquiti UniFi 6 LR
-> access point having Aquantia AQR112C PHY using clause 45 MDIO.
-> 
-> v7: remove unneeded variables and order OR-ed call parameters
-> v6: further clean up functions and more cleanly separate patches
-> v5: fix wrong variable name in first patch covered by follow-up patch
-> v4: clean-up return values and types, split into two commits
-> v3: return -1 instead of 0xffff on error in _mtk_mdio_write
-> v2: use MII_DEVADDR_C45_SHIFT and MII_REGADDR_C45_MASK to extract
->     device id and register address. Unify read and write functions to
->     have identical types and parameter names where possible as we are
->     anyway already replacing both function bodies.
+On Mon, 27 Dec 2021 18:02:33 +0800 Joseph CHAMG wrote:
+> +static inline void dm9051_phyup_lock(struct board_info *db)
+> +{
+> +	int val, ret;
+> +
+> +	mutex_lock(&db->addr_lock);
+> +
+> +	ret = dm9051_phy_read(db, MII_BMCR, &val);
+> +	if (ret)
+> +		return;
+> +
+> +	/* BMCR Power-up PHY */
+> +	ret = dm9051_phy_write(db, MII_BMCR, val & ~0x0800);
+> +	if (ret)
+> +		return;
+> +
+> +	/* GPR Power-up PHY */
+> +	dm9051_iow(db, DM9051_GPR, 0);
+> +	mdelay(1); /* need for activate phyxcer */
+> +
+> +	mutex_unlock(&db->addr_lock);
+> +}
+> +
+> +static inline void dm9051_phydown_lock(struct board_info *db)
+> +{
+> +	mutex_lock(&db->addr_lock);
+> +	dm9051_iow(db, DM9051_GPR, 0x01); /* Power-Down PHY */
+> +	mutex_unlock(&db->addr_lock);
+> +}
 
-Please stop reposting this series (1) so often; (2) as a flat response
-to an old version. You are completely confusing patch series detection,
-at least in patchwork.
-
-Try git send-email and please allow at least 12 hours between postings
-for reviewers to comment.
+Please remove the 'inline' qualifier from functions in C sources.
+Compiler will know which static functions to inline these days.
