@@ -2,200 +2,248 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D600348093A
-	for <lists+netdev@lfdr.de>; Tue, 28 Dec 2021 13:52:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EFB90480952
+	for <lists+netdev@lfdr.de>; Tue, 28 Dec 2021 13:54:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231713AbhL1Mw3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Dec 2021 07:52:29 -0500
-Received: from mail-il1-f197.google.com ([209.85.166.197]:47025 "EHLO
-        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231132AbhL1Mw2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Dec 2021 07:52:28 -0500
-Received: by mail-il1-f197.google.com with SMTP id i9-20020a056e021d0900b002b3e956903dso11396822ila.13
-        for <netdev@vger.kernel.org>; Tue, 28 Dec 2021 04:52:28 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=11nooCWDtmvUpI55+wRB4ob0xvfeRFlvs5fIqAgkHbo=;
-        b=zIt7mugpZ2QpgUWBJMqMM2EyvNt7rCzPQPDnk1/nOd/J7p3gzx7BDHZOYRxekyLAK3
-         3r0DNgI4tBMXnY7shovLAiyvuZ/pZn6nacIVOdBLBAOrwuJlqmpkMlPwknF0ZmtfaBKp
-         jPQdZWRkFfj0rGjxnp96rW5/s7vtFFVCPZ08XTMJ3993q8qcTv2lJ/mqRSyjXDMxPamB
-         SpMpi13ci6SKCDLO+5DUnPywwTJGqpPjmeTlXMb1xPRniD9tKdBpO+NoKPZoPbhwYXrI
-         fa0e/Mr1nejkgLJnI86EfIK4JbRyexab1cKfWF54ZhcoCzz0izPS61WvlBPLu1Orfjpl
-         4pJQ==
-X-Gm-Message-State: AOAM530Lbb2TysvG/bFm4iEb/HAcmHubqTmnj6sZoQpjQl92ECfaU0jk
-        At3jYpzhUWUYNx6WQf6fqVvLQiV6eBQWFLlsiSqBnLmdUMJf
-X-Google-Smtp-Source: ABdhPJwRk6mBOOEdLxiEKFf3BqHUTu280FpyfIsQH09g1gDlmrAgp6AI4OHM7M08bYcLPyFcmZfaZIUdc0Z5gKEmMG1Ipv0jZXTJ
+        id S231927AbhL1Myw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Dec 2021 07:54:52 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:45878 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231695AbhL1Myr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Dec 2021 07:54:47 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 55AA6B811D9;
+        Tue, 28 Dec 2021 12:54:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4546BC36AE8;
+        Tue, 28 Dec 2021 12:54:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1640696083;
+        bh=Gap0GwZ7QhskHCBuxCWJ0ehIbXdcDMw/3DRBfuFroAo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=uT1Bi526RdiqCovjK+BsZ0LQ21O6eAGdLfperJgxt/T4KZXCQHLowjI+U/BnL+30l
+         HJRegFW6ceEx7gRTUzAnY/lOi8+345syFMoVZJg23IyMTVv8lxOmatGJsejunnysTY
+         b7cgtAhK1rV1ciaHNDicksS8OtcQVVqsJ8fTaLs35K3JpOGyDL1M7tu/pQlaK0TC5o
+         847l3oZwcFMOo4LfbX6OTisn674FFeznktD1n6AMeVW9VoFWIsJndv9O02I/tcIR5D
+         xfPFEZmvAPeSdi4V+6+pSCDV5v0lZDnuzytqnQmuAjGw0iIL513WDap3bYMORE0U6k
+         6wPKV3GCt3SBA==
+Date:   Tue, 28 Dec 2021 13:54:25 +0100
+From:   Mauro Carvalho Chehab <mchehab@kernel.org>
+To:     Niklas Schnelle <schnelle@linux.ibm.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Arnd Bergmann <arnd@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        John Garry <john.garry@huawei.com>,
+        Nick Hu <nickhu@andestech.com>,
+        Greentime Hu <green.hu@gmail.com>,
+        Vincent Chen <deanbo422@gmail.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>, Guo Ren <guoren@kernel.org>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Ian Abbott <abbotti@mev.co.uk>,
+        H Hartley Sweeten <hsweeten@visionengravers.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Karsten Keil <isdn@linux-pingi.de>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Sathya Prakash <sathya.prakash@broadcom.com>,
+        Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
+        Suganath Prabu Subramani 
+        <suganath-prabu.subramani@broadcom.com>,
+        Michael Grzeschik <m.grzeschik@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Kalle Valo <kvalo@kernel.org>, Jouni Malinen <j@w1.fi>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Hannes Reinecke <hare@suse.com>,
+        Kashyap Desai <kashyap.desai@broadcom.com>,
+        Sumit Saxena <sumit.saxena@broadcom.com>,
+        Shivasharan S <shivasharan.srikanteshwara@broadcom.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        GR-QLogic-Storage-Upstream@marvell.com,
+        Mark Brown <broonie@kernel.org>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        Teddy Wang <teddy.wang@siliconmotion.com>,
+        Forest Bond <forest@alittletooquiet.net>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, linux-kernel@vger.kernel.org,
+        linux-arch@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-riscv@lists.infradead.org, linux-csky@vger.kernel.org,
+        linux-ide@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-hwmon@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-input@vger.kernel.org, netdev@vger.kernel.org,
+        linux-media@vger.kernel.org, MPT-FusionLinux.pdl@broadcom.com,
+        linux-scsi@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        linux-wireless@vger.kernel.org, megaraidlinux.pdl@broadcom.com,
+        linux-spi@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        linux-staging@lists.linux.dev, linux-serial@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linux-watchdog@vger.kernel.org,
+        alsa-devel@alsa-project.org
+Subject: Re: [RFC 01/32] Kconfig: introduce and depend on LEGACY_PCI
+Message-ID: <20211228135425.0a69168c@coco.lan>
+In-Reply-To: <b1475f6aecb752a858941f44a957b2183cd68405.camel@linux.ibm.com>
+References: <20211227164317.4146918-1-schnelle@linux.ibm.com>
+        <20211227164317.4146918-2-schnelle@linux.ibm.com>
+        <YcrJAwsKIxxX18pW@kroah.com>
+        <20211228101435.3a55b983@coco.lan>
+        <b1475f6aecb752a858941f44a957b2183cd68405.camel@linux.ibm.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.30; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-X-Received: by 2002:a05:6602:204d:: with SMTP id z13mr7002170iod.13.1640695947684;
- Tue, 28 Dec 2021 04:52:27 -0800 (PST)
-Date:   Tue, 28 Dec 2021 04:52:27 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000256dc405d4344bce@google.com>
-Subject: [syzbot] INFO: rcu detected stall in tx (2)
-From:   syzbot <syzbot+da7323ba082560434f17@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, jhs@mojatatu.com, jiri@resnulli.us,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        xiyou.wangcong@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Em Tue, 28 Dec 2021 11:58:55 +0100
+Niklas Schnelle <schnelle@linux.ibm.com> escreveu:
 
-syzbot found the following issue on:
+> On Tue, 2021-12-28 at 10:15 +0100, Mauro Carvalho Chehab wrote:
+> > Em Tue, 28 Dec 2021 09:21:23 +0100
+> > Greg Kroah-Hartman <gregkh@linuxfoundation.org> escreveu:
+> >   
+> > > On Mon, Dec 27, 2021 at 05:42:46PM +0100, Niklas Schnelle wrote:  
+> > > > --- a/drivers/pci/Kconfig
+> > > > +++ b/drivers/pci/Kconfig
+> > > > @@ -23,6 +23,17 @@ menuconfig PCI
+> > > >  
+> > > >  if PCI
+> > > >  
+> > > > +config LEGACY_PCI
+> > > > +	bool "Enable support for legacy PCI devices"
+> > > > +	depends on HAVE_PCI
+> > > > +	help
+> > > > +	   This option enables support for legacy PCI devices. This includes
+> > > > +	   PCI devices attached directly or via a bridge on a PCI Express bus.
+> > > > +	   It also includes compatibility features on PCI Express devices which
+> > > > +	   make use of legacy I/O spaces.    
+> > 
+> > This Kconfig doesn't seem what it is needed there, as this should be an 
+> > arch-dependent feature, and not something that the poor user should be
+> > aware if a given architecture supports it or not. Also, the above will keep
+> > causing warnings or errors with randconfigs.
+> > 
+> > Also, the "depends on HAVE_CPI" is bogus, as PCI already depends on 
+> > HAVE_PCI:  
+> 
+> Ah yes you're right.
+> 
+> > 
+> > 	menuconfig PCI
+> > 	bool "PCI support"
+> > 	depends on HAVE_PCI
+> > 	help
+> > 	  This option enables support for the PCI local bus, including
+> > 	  support for PCI-X and the foundations for PCI Express support.
+> > 	  Say 'Y' here unless you know what you are doing.
+> > 
+> > So, instead, I would expect that a new HAVE_xxx option would be
+> > added at arch/*/Kconfig, like:
+> > 
+> > 	config X86
+> > 		...
+> > 		select HAVE_PCI_DIRECT_IO
+> > 
+> > It would also make sense to document it at Documentation/features/.  
+> 
+> I'll look into that, thanks.
+> 
+> >   
+> > > All you really care about is the "legacy" I/O spaces here, this isn't
+> > > tied to PCI specifically at all, right?
+> > > 
+> > > So why not just have a OLD_STYLE_IO config option or something like
+> > > that, to show that it's the i/o functions we care about here, not PCI at
+> > > all?
+> > > 
+> > > And maybe not call it "old" or "legacy" as time constantly goes forward,
+> > > just describe it as it is, "DIRECT_IO"?  
+> > 
+> > Agreed. HAVE_PCI_DIRECT_IO (or something similar) seems a more appropriate
+> > name for it.
+> > 
+> > Thanks,
+> > Mauro  
+> 
+> Hmm, I might be missing something here but that sounds a lot like the
+> HAS_IOPORT option added in patch 02.
+> 
+> We add both LEGACY_PCI and HAS_IOPORT to differentiate between two
+> cases. HAS_IOPORT is for PC-style devices that are not on a PCI card
+> while LEGACY_PCI is for PCI drivers that require port I/O. 
 
-HEAD commit:    a8ad9a2434dc Merge tag 'efi-urgent-for-v5.16-2' of git://g..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=1342610db00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=1a86c22260afac2f
-dashboard link: https://syzkaller.appspot.com/bug?extid=da7323ba082560434f17
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+I didn't look at the other patches on this series, but why it is needed
+to deal with them on a separate way? Won't "PCI" and "HAS_IOPORT" be enough? 
 
-Unfortunately, I don't have any reproducer for this issue yet.
+I mean, are there any architecture where HAVE_PCI=y and HAS_IOPORT=y
+where LEGACY_PCI shall be "n"?
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+da7323ba082560434f17@syzkaller.appspotmail.com
+> This
+> includes pre-PCIe devices as well as PCIe devices which require
+> features like I/O spaces. The "legacy" naming is comes from the PCIe
+> spec which in section 2.1.1.2 says "PCI Express supports I/O Space for
+> compatibility with legacy devices which require their use. Future
+> revisions of this specification may deprecate the use of I/O Space."
 
-rcu: INFO: rcu_preempt self-detected stall on CPU
-rcu: 	0-...!: (1 GPs behind) idle=cb1/1/0x4000000000000000 softirq=63991/63995 fqs=2539 
-	(t=10502 jiffies g=99869 q=2637)
-rcu: rcu_preempt kthread starved for 5423 jiffies! g99869 f0x0 RCU_GP_WAIT_FQS(5) ->state=0x0 ->cpu=1
-rcu: 	Unless rcu_preempt kthread gets sufficient CPU time, OOM is now expected behavior.
-rcu: RCU grace-period kthread stack dump:
-task:rcu_preempt     state:R  running task     stack:28680 pid:   14 ppid:     2 flags:0x00004000
-Call Trace:
- <TASK>
- context_switch kernel/sched/core.c:4972 [inline]
- __schedule+0xa9a/0x4900 kernel/sched/core.c:6253
- schedule+0xd2/0x260 kernel/sched/core.c:6326
- schedule_timeout+0x14a/0x2a0 kernel/time/timer.c:1881
- rcu_gp_fqs_loop+0x186/0x810 kernel/rcu/tree.c:1955
- rcu_gp_kthread+0x1de/0x320 kernel/rcu/tree.c:2128
- kthread+0x405/0x4f0 kernel/kthread.c:327
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
- </TASK>
-rcu: Stack dump where RCU GP kthread last ran:
-Sending NMI from CPU 0 to CPUs 1:
-NMI backtrace for cpu 1
-CPU: 1 PID: 11226 Comm: kworker/1:3 Not tainted 5.16.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: events ser_release
-RIP: 0010:pv_wait_head_or_lock kernel/locking/qspinlock_paravirt.h:434 [inline]
-RIP: 0010:__pv_queued_spin_lock_slowpath+0x3ba/0xb40 kernel/locking/qspinlock.c:508
-Code: eb c6 45 01 01 41 bc 00 80 00 00 48 c1 e9 03 83 e3 07 41 be 01 00 00 00 48 b8 00 00 00 00 00 fc ff df 4c 8d 2c 01 eb 0c f3 90 <41> 83 ec 01 0f 84 72 04 00 00 41 0f b6 45 00 38 d8 7f 08 84 c0 0f
-RSP: 0018:ffffc900036278c0 EFLAGS: 00000206
-RAX: 0000000000000003 RBX: 0000000000000000 RCX: 1ffff1100fcb8d10
-RDX: 0000000000000001 RSI: 0000000000000202 RDI: 0000000000000000
-RBP: ffff88807e5c6880 R08: 0000000000000001 R09: ffffffff8ff76b6f
-R10: 0000000000000001 R11: 000000000000000f R12: 0000000000006327
-R13: ffffed100fcb8d10 R14: 0000000000000001 R15: ffff8880b9d3a880
-FS:  0000000000000000(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000561790f9c9e8 CR3: 000000000b88e000 CR4: 0000000000350ee0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000ffff0ff0 DR7: 0000000000000600
-Call Trace:
- <TASK>
- pv_queued_spin_lock_slowpath arch/x86/include/asm/paravirt.h:591 [inline]
- queued_spin_lock_slowpath arch/x86/include/asm/qspinlock.h:51 [inline]
- queued_spin_lock include/asm-generic/qspinlock.h:85 [inline]
- do_raw_spin_lock+0x200/0x2b0 kernel/locking/spinlock_debug.c:115
- spin_lock include/linux/spinlock.h:349 [inline]
- __netif_tx_lock include/linux/netdevice.h:4406 [inline]
- netif_tx_lock include/linux/netdevice.h:4491 [inline]
- netif_tx_lock_bh include/linux/netdevice.h:4500 [inline]
- dev_watchdog_down net/sched/sch_generic.c:511 [inline]
- dev_deactivate_many+0x277/0xc60 net/sched/sch_generic.c:1278
- __dev_close_many+0x133/0x2e0 net/core/dev.c:1561
- dev_close_many+0x22c/0x620 net/core/dev.c:1599
- dev_close net/core/dev.c:1625 [inline]
- dev_close+0x16d/0x210 net/core/dev.c:1619
- ser_release+0x162/0x270 drivers/net/caif/caif_serial.c:309
- process_one_work+0x9b2/0x1660 kernel/workqueue.c:2298
- worker_thread+0x65d/0x1130 kernel/workqueue.c:2445
- kthread+0x405/0x4f0 kernel/kthread.c:327
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
- </TASK>
-NMI backtrace for cpu 0
-CPU: 0 PID: 1224 Comm: aoe_tx0 Not tainted 5.16.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- <IRQ>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- nmi_cpu_backtrace.cold+0x47/0x144 lib/nmi_backtrace.c:111
- nmi_trigger_cpumask_backtrace+0x1b3/0x230 lib/nmi_backtrace.c:62
- trigger_single_cpu_backtrace include/linux/nmi.h:164 [inline]
- rcu_dump_cpu_stacks+0x25e/0x3f0 kernel/rcu/tree_stall.h:343
- print_cpu_stall kernel/rcu/tree_stall.h:627 [inline]
- check_cpu_stall kernel/rcu/tree_stall.h:711 [inline]
- rcu_pending kernel/rcu/tree.c:3878 [inline]
- rcu_sched_clock_irq.cold+0x5c/0x759 kernel/rcu/tree.c:2597
- update_process_times+0x16d/0x200 kernel/time/timer.c:1785
- tick_sched_handle+0x9b/0x180 kernel/time/tick-sched.c:226
- tick_sched_timer+0x1b0/0x2d0 kernel/time/tick-sched.c:1428
- __run_hrtimer kernel/time/hrtimer.c:1685 [inline]
- __hrtimer_run_queues+0x1c0/0xe50 kernel/time/hrtimer.c:1749
- hrtimer_interrupt+0x31c/0x790 kernel/time/hrtimer.c:1811
- local_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1086 [inline]
- __sysvec_apic_timer_interrupt+0x146/0x530 arch/x86/kernel/apic/apic.c:1103
- sysvec_apic_timer_interrupt+0x8e/0xc0 arch/x86/kernel/apic/apic.c:1097
- </IRQ>
- <TASK>
- asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:638
-RIP: 0010:__raw_spin_unlock_irqrestore include/linux/spinlock_api_smp.h:152 [inline]
-RIP: 0010:_raw_spin_unlock_irqrestore+0x38/0x70 kernel/locking/spinlock.c:194
-Code: 74 24 10 e8 fa db 15 f8 48 89 ef e8 b2 51 16 f8 81 e3 00 02 00 00 75 25 9c 58 f6 c4 02 75 2d 48 85 db 74 01 fb bf 01 00 00 00 <e8> f3 1b 09 f8 65 8b 05 0c a1 bb 76 85 c0 74 0a 5b 5d c3 e8 20 03
-RSP: 0018:ffffc9000537fab8 EFLAGS: 00000206
-RAX: 0000000000000002 RBX: 0000000000000200 RCX: 1ffffffff1fffe6e
-RDX: 0000000000000000 RSI: 0000000000000202 RDI: 0000000000000001
-RBP: ffffffff90790558 R08: 0000000000000001 R09: ffffffff8ff76b6f
-R10: 0000000000000001 R11: 0000000000000001 R12: 00000000ffffffff
-R13: ffff8880281b8001 R14: 0000000000000020 R15: 0000000000000020
- spin_unlock_irqrestore include/linux/spinlock.h:404 [inline]
- uart_write_room+0x174/0x2f0 drivers/tty/serial/serial_core.c:611
- tty_write_room+0x61/0x80 drivers/tty/tty_ioctl.c:79
- handle_tx+0x159/0x610 drivers/net/caif/caif_serial.c:226
- __netdev_start_xmit include/linux/netdevice.h:4994 [inline]
- netdev_start_xmit include/linux/netdevice.h:5008 [inline]
- xmit_one net/core/dev.c:3590 [inline]
- dev_hard_start_xmit+0x1eb/0x920 net/core/dev.c:3606
- __dev_queue_xmit+0x299a/0x3650 net/core/dev.c:4229
- tx+0x68/0xb0 drivers/block/aoe/aoenet.c:63
- kthread+0x1e7/0x3b0 drivers/block/aoe/aoecmd.c:1230
- kthread+0x405/0x4f0 kernel/kthread.c:327
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
- </TASK>
-----------------
-Code disassembly (best guess):
-   0:	eb c6                	jmp    0xffffffc8
-   2:	45 01 01             	add    %r8d,(%r9)
-   5:	41 bc 00 80 00 00    	mov    $0x8000,%r12d
-   b:	48 c1 e9 03          	shr    $0x3,%rcx
-   f:	83 e3 07             	and    $0x7,%ebx
-  12:	41 be 01 00 00 00    	mov    $0x1,%r14d
-  18:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
-  1f:	fc ff df
-  22:	4c 8d 2c 01          	lea    (%rcx,%rax,1),%r13
-  26:	eb 0c                	jmp    0x34
-  28:	f3 90                	pause
-* 2a:	41 83 ec 01          	sub    $0x1,%r12d <-- trapping instruction
-  2e:	0f 84 72 04 00 00    	je     0x4a6
-  34:	41 0f b6 45 00       	movzbl 0x0(%r13),%eax
-  39:	38 d8                	cmp    %bl,%al
-  3b:	7f 08                	jg     0x45
-  3d:	84 c0                	test   %al,%al
-  3f:	0f                   	.byte 0xf
+I would still avoid calling it LEGACY_PCI, as this sounds too generic.
 
+I didn't read the PCI/PCIe specs, but I suspect that are a lot more
+features that were/will be deprecated on PCI specs as time goes by.
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+So, I would, instead, use something like PCI_LEGACY_IO_SPACE or 
+HAVE_PCI_LEGACY_IO_SPACE, in order to let it clear what "legacy"
+means.
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> These two separate config options allow us to compile without support
+> for these legacy PCI devices even on a system where inb()/outb() and
+> friends are required for some PC style devices and for example ACPI.
+
+Hmm... why this patch make SND_BT87X dependent on LEGACY_PCI?
+
+> @@ -172,6 +177,7 @@ config SND_AZT3328
+>  
+>  config SND_BT87X
+>  	tristate "Bt87x Audio Capture"
+> +	depends on LEGACY_PCI
+>  	select SND_PCM
+>  	help
+>  	  If you want to record audio from TV cards based on
+
+I couldn't find any usage of inb/outb & friends on it:
+
+	$ grep -E '(inb|outb|inw|outw|inl|outl)\b' ./sound/pci/bt87x.c
+
+It uses, instead, readl/writel:
+
+	static inline u32 snd_bt87x_readl(struct snd_bt87x *chip, u32 reg)
+	{
+	        return readl(chip->mmio + reg);
+	}
+
+	static inline void snd_bt87x_writel(struct snd_bt87x *chip, u32 reg, u32 value)
+	{
+	        writel(value, chip->mmio + reg);
+	}
+
+I failed to see what makes it different from VIDEO_BT848 and
+DVB_BT8XX drivers. They all support exactly the same chipset:
+Brooktree/Conexant BT8xx. On those devices, depending on the exact
+model, up to three separate interfaces are provided, each one with
+its own Kconfig var:
+
+	- audio I/O (SND_BT87X);
+	- video I/O (VIDEO_BT848);
+	- MPEG-TS I/O (DVB_BT8XX).
+
+Thanks,
+Mauro
