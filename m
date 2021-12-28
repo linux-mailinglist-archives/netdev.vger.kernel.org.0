@@ -2,74 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D4D9B480C82
-	for <lists+netdev@lfdr.de>; Tue, 28 Dec 2021 19:25:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C8A8480C83
+	for <lists+netdev@lfdr.de>; Tue, 28 Dec 2021 19:25:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237031AbhL1SZG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Dec 2021 13:25:06 -0500
+        id S237033AbhL1SZH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Dec 2021 13:25:07 -0500
 Received: from mga09.intel.com ([134.134.136.24]:29449 "EHLO mga09.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229915AbhL1SZF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S237027AbhL1SZF (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 28 Dec 2021 13:25:05 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1640715905; x=1672251905;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=9sH+wGcABgORGWi4PwMUgkxSBDftHsnC0PzfnHWynf8=;
-  b=IX923tAfxPVYJARlwf00b7Rsjfwrk/j2bN0PdAie1bXtC72o1ImYUhUt
-   QVuAfFKeX8BK7wP3tXvGX/4m0QeQHWkUuShIv98vOy15wjXufqO3bpjcD
-   b/8637eyP+nY2IMYuomEMLX6ZxHG9uaKdaqNVAi5qDhwX/rxKx94q/c43
-   cHOY3t7/dOuxgg2gS+Gj1lRVUaJF1DJYtfsZQgP9JRBsVODBLv8tVlENI
-   RP7wq9dv+y3o+RX4Y+huFY9Z5+YE9h9dTrMjxbDUbX/aJrpn0QpeS9mmc
-   WdTxc8JGyCjmftAu/wohLJIiTJFJvx7UqwiVe/MwvytwSu1bTY+jH0qDL
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=jCbSOb7D3ACGo8X1FFMKpIcfwzs0tg6Z20Q5aWCAVgY=;
+  b=cev7WlJovRP4Wv7Ru0HWkyE4/MbgFksIscwg1+fWK1Kh8ulfejOVQZCT
+   e6HPO3kyoPf+ECtBStSRcDFU7aXsEKLag//e0DCL08cRJiwTTrC25H6zm
+   LTv4tEzipE6LeBlBNoHRGHux8LziZFPfYMJp0yZb6Hx5MjqbCYd9JEeK4
+   lBDg5Q2sk9H/eaG2zfZHunD4IlCBTBOpik/53vAZFRlzcVHpD252wnAMY
+   hMkpuobirczkMNoRk1/Hk7r/eqI07a2JGv66XxHRnwHc7FuL7Pu5DqDiz
+   huTVE7fl3twiDys5I19Y/9h4wadWxl3Dfhxf6xtoJ0c+zrVw8VOhVfeIE
    Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10211"; a="241206669"
+X-IronPort-AV: E=McAfee;i="6200,9189,10211"; a="241206670"
 X-IronPort-AV: E=Sophos;i="5.88,242,1635231600"; 
-   d="scan'208";a="241206669"
+   d="scan'208";a="241206670"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
   by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Dec 2021 10:25:05 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,242,1635231600"; 
-   d="scan'208";a="666075951"
+   d="scan'208";a="666075955"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by fmsmga001.fm.intel.com with ESMTP; 28 Dec 2021 10:25:04 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
-        sasha.neftin@intel.com, vitaly.lifshits@intel.com
-Subject: [PATCH net 0/2][pull request] Intel Wired LAN Driver Updates 2021-12-28
-Date:   Tue, 28 Dec 2021 10:24:19 -0800
-Message-Id: <20211228182421.340354-1-anthony.l.nguyen@intel.com>
+Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
+        sasha.neftin@intel.com, vitaly.lifshits@intel.com,
+        Stefan Dietrich <roots@gmx.de>,
+        Nechama Kraus <nechamax.kraus@linux.intel.com>
+Subject: [PATCH net 1/2] igc: Do not enable crosstimestamping for i225-V models
+Date:   Tue, 28 Dec 2021 10:24:20 -0800
+Message-Id: <20211228182421.340354-2-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20211228182421.340354-1-anthony.l.nguyen@intel.com>
+References: <20211228182421.340354-1-anthony.l.nguyen@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series contains updates to igc driver only.
+From: Vinicius Costa Gomes <vinicius.gomes@intel.com>
 
-Vinicius disables support for crosstimestamp on i225-V as lockups are being
-observed.
+It was reported that when PCIe PTM is enabled, some lockups could
+be observed with some integrated i225-V models.
 
-James McLaughlin fixes Tx timestamping support on non-MSI-X platforms.
+While the issue is investigated, we can disable crosstimestamp for
+those models and see no loss of functionality, because those models
+don't have any support for time synchronization.
 
-The following are changes since commit 16fa29aef7963293f8792789210002ec9f9607ac:
-  Merge branch 'smc-fixes'
-and are available in the git repository at:
-  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue 1GbE
+Fixes: a90ec8483732 ("igc: Add support for PTP getcrosststamp()")
+Link: https://lore.kernel.org/all/924175a188159f4e03bd69908a91e606b574139b.camel@gmx.de/
+Reported-by: Stefan Dietrich <roots@gmx.de>
+Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Tested-by: Nechama Kraus <nechamax.kraus@linux.intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+---
+ drivers/net/ethernet/intel/igc/igc_ptp.c | 15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
 
-James McLaughlin (1):
-  igc: Fix TX timestamp support for non-MSI-X platforms
-
-Vinicius Costa Gomes (1):
-  igc: Do not enable crosstimestamping for i225-V models
-
- drivers/net/ethernet/intel/igc/igc_main.c |  6 ++++++
- drivers/net/ethernet/intel/igc/igc_ptp.c  | 15 ++++++++++++++-
- 2 files changed, 20 insertions(+), 1 deletion(-)
-
+diff --git a/drivers/net/ethernet/intel/igc/igc_ptp.c b/drivers/net/ethernet/intel/igc/igc_ptp.c
+index 30568e3544cd..4f9245aa79a1 100644
+--- a/drivers/net/ethernet/intel/igc/igc_ptp.c
++++ b/drivers/net/ethernet/intel/igc/igc_ptp.c
+@@ -768,7 +768,20 @@ int igc_ptp_get_ts_config(struct net_device *netdev, struct ifreq *ifr)
+  */
+ static bool igc_is_crosststamp_supported(struct igc_adapter *adapter)
+ {
+-	return IS_ENABLED(CONFIG_X86_TSC) ? pcie_ptm_enabled(adapter->pdev) : false;
++	if (!IS_ENABLED(CONFIG_X86_TSC))
++		return false;
++
++	/* FIXME: it was noticed that enabling support for PCIe PTM in
++	 * some i225-V models could cause lockups when bringing the
++	 * interface up/down. There should be no downsides to
++	 * disabling crosstimestamping support for i225-V, as it
++	 * doesn't have any PTP support. That way we gain some time
++	 * while root causing the issue.
++	 */
++	if (adapter->pdev->device == IGC_DEV_ID_I225_V)
++		return false;
++
++	return pcie_ptm_enabled(adapter->pdev);
+ }
+ 
+ static struct system_counterval_t igc_device_tstamp_to_system(u64 tstamp)
 -- 
 2.31.1
 
