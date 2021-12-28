@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE7AB480C39
-	for <lists+netdev@lfdr.de>; Tue, 28 Dec 2021 18:59:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A89C480C3A
+	for <lists+netdev@lfdr.de>; Tue, 28 Dec 2021 18:59:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236829AbhL1R7E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Dec 2021 12:59:04 -0500
-Received: from mga02.intel.com ([134.134.136.20]:41226 "EHLO mga02.intel.com"
+        id S236834AbhL1R7F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Dec 2021 12:59:05 -0500
+Received: from mga02.intel.com ([134.134.136.20]:41229 "EHLO mga02.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233467AbhL1R7D (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Dec 2021 12:59:03 -0500
+        id S233481AbhL1R7E (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Dec 2021 12:59:04 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1640714343; x=1672250343;
+  t=1640714344; x=1672250344;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=csKwla5a5wzK7Q6Sqj3lLGvBQvVOtqdOdA98qBoi0NY=;
-  b=duUpwd9RTwIR4Myk4ADrpv9CSX2BE7wpl3hgKp5kO1TEl3aSiEIbCUrs
-   jkqAicEDRkjm/i7N5yXZfc+Io/LnHe6yt9LCfNfCQU15TygMREQiHLAV7
-   hjUMwZX9MtQ2L5/CLw7/gK90VZ9fNsLvPxOL6cEotaI0D/PNZCLvET/GM
-   /9IQ7H98NQi6t49RAR3jbcrak75RDn9TnQFt1N6G60qz2e9lyxSG2we9V
-   ezMtGHB256HaE0PmOnwuDMBCkvPMwA5ki0hEnyl+uHAgwfYoBTo8BUSxM
-   rl17sTzKe+mqJ/xc0qq3keA19qjUndoepji4r74O355mBrvb3jeUSrbx8
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10211"; a="228705144"
+  bh=YK2NPgWUUXAmUYCO3ChcqFpTX8iRsAEMMmkSR0Tt0Ms=;
+  b=AsEsejGDHvRIbym2R9xURnaui+Ssu1XNU+5/0iwCOIVvem+n7UYpj6Ps
+   jeqPmf8qgfHBp2YKZ/AaYUZoG+AiUacrf6Ao65wQEtjDvb3CqNyOg9FNr
+   hSRSh/MjRl0hiW4ZObpA0qTtTcVztFlZDLdCu1eAU/eD8aOdkroJbm/aF
+   jJzyK3r70bQgzT5ALnG1TDuD6Un8wE2BVq0wU//7INo0ZJCZqvcz/jbxR
+   42sGgrsYWx1E3kbyjFBSglxXIhQ7bQ2AA7dRo8fvJm0HgSsf0M96/8Rk5
+   OBmSheuYgcdG3GTDZqEmMVOYU1RZm4QLWyH4ugXIgarJXsq5yh9eamvaJ
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10211"; a="228705146"
 X-IronPort-AV: E=Sophos;i="5.88,242,1635231600"; 
-   d="scan'208";a="228705144"
+   d="scan'208";a="228705146"
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Dec 2021 09:59:02 -0800
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Dec 2021 09:59:03 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,242,1635231600"; 
-   d="scan'208";a="589071989"
+   d="scan'208";a="589071993"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by fmsmga004.fm.intel.com with ESMTP; 28 Dec 2021 09:59:02 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
@@ -40,9 +40,9 @@ Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
         netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
         Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
         Tony Brelinski <tony.brelinski@intel.com>
-Subject: [PATCH net-next 1/9] e1000: switch to napi_consume_skb()
-Date:   Tue, 28 Dec 2021 09:58:07 -0800
-Message-Id: <20211228175815.281449-2-anthony.l.nguyen@intel.com>
+Subject: [PATCH net-next 2/9] e1000: switch to napi_build_skb()
+Date:   Tue, 28 Dec 2021 09:58:08 -0800
+Message-Id: <20211228175815.281449-3-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211228175815.281449-1-anthony.l.nguyen@intel.com>
 References: <20211228175815.281449-1-anthony.l.nguyen@intel.com>
@@ -54,83 +54,36 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Alexander Lobakin <alexandr.lobakin@intel.com>
 
-In order to take the best from per-cpu NAPI skbuff_head caches and
-CPU cycles, let's switch from dev_kfree_skb_any(), which passes skb
-back to the mm layer, to napi_consume_skb(), which feeds those
-caches on non-zero budget instead (falls back to the former on 0).
-Do the replacement in e1000_unmap_and_free_tx_resource(). There are
-4 call sites of this function throughout the driver:
- * e1000_clean_tx_ring(). Slowpath, process context, cleans the
-   whole Tx ring on ifdown. Use budget of 0 here;
- * e1000_tx_map(). Hotpath, net Tx softirq, unmaps the buffers in
-   case of error. Use 0 as well;
- * e1000_clean_tx_irq(). Hotpath, NAPI Tx completion polling cycle.
-   As the driver doesn't count completed Tx entries towards the NAPI
-   budget, just use the poll budget of 64 to utilize caches.
-
-Apart from being a preparation for switching to napi_build_skb(),
-this is useful on its own as well, as napi_consume_skb() flushes
-skb caches by batches of 32 instead of one-at-a-time.
+napi_build_skb() reuses per-cpu NAPI skbuff_head cache in order
+to save some cycles on freeing/allocating skbuff_heads on every
+new Rx or completed Tx element.
+e1000 driver runs Tx completion polling cycle right before the Rx
+one. Now that e1000 uses napi_consume_skb() to put skbuff_heads of
+completed entries into the cache, it will never empty and always
+warm at that moment. Switch to the napi_build_skb() to relax mm
+pressure on heavy Rx and increase throughput.
 
 Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
 Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
 Tested-by: Tony Brelinski <tony.brelinski@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/e1000/e1000_main.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/intel/e1000/e1000_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/intel/e1000/e1000_main.c b/drivers/net/ethernet/intel/e1000/e1000_main.c
-index 669060a2e6aa..975a145d48ef 100644
+index 975a145d48ef..3f5feb55cfba 100644
 --- a/drivers/net/ethernet/intel/e1000/e1000_main.c
 +++ b/drivers/net/ethernet/intel/e1000/e1000_main.c
-@@ -1953,7 +1953,8 @@ void e1000_free_all_tx_resources(struct e1000_adapter *adapter)
+@@ -4384,7 +4384,7 @@ static bool e1000_clean_rx_irq(struct e1000_adapter *adapter,
+ 		if (!skb) {
+ 			unsigned int frag_len = e1000_frag_len(adapter);
  
- static void
- e1000_unmap_and_free_tx_resource(struct e1000_adapter *adapter,
--				 struct e1000_tx_buffer *buffer_info)
-+				 struct e1000_tx_buffer *buffer_info,
-+				 int budget)
- {
- 	if (buffer_info->dma) {
- 		if (buffer_info->mapped_as_page)
-@@ -1966,7 +1967,7 @@ e1000_unmap_and_free_tx_resource(struct e1000_adapter *adapter,
- 		buffer_info->dma = 0;
- 	}
- 	if (buffer_info->skb) {
--		dev_kfree_skb_any(buffer_info->skb);
-+		napi_consume_skb(buffer_info->skb, budget);
- 		buffer_info->skb = NULL;
- 	}
- 	buffer_info->time_stamp = 0;
-@@ -1990,7 +1991,7 @@ static void e1000_clean_tx_ring(struct e1000_adapter *adapter,
- 
- 	for (i = 0; i < tx_ring->count; i++) {
- 		buffer_info = &tx_ring->buffer_info[i];
--		e1000_unmap_and_free_tx_resource(adapter, buffer_info);
-+		e1000_unmap_and_free_tx_resource(adapter, buffer_info, 0);
- 	}
- 
- 	netdev_reset_queue(adapter->netdev);
-@@ -2958,7 +2959,7 @@ static int e1000_tx_map(struct e1000_adapter *adapter,
- 			i += tx_ring->count;
- 		i--;
- 		buffer_info = &tx_ring->buffer_info[i];
--		e1000_unmap_and_free_tx_resource(adapter, buffer_info);
-+		e1000_unmap_and_free_tx_resource(adapter, buffer_info, 0);
- 	}
- 
- 	return 0;
-@@ -3856,7 +3857,8 @@ static bool e1000_clean_tx_irq(struct e1000_adapter *adapter,
- 				}
- 
- 			}
--			e1000_unmap_and_free_tx_resource(adapter, buffer_info);
-+			e1000_unmap_and_free_tx_resource(adapter, buffer_info,
-+							 64);
- 			tx_desc->upper.data = 0;
- 
- 			if (unlikely(++i == tx_ring->count))
+-			skb = build_skb(data - E1000_HEADROOM, frag_len);
++			skb = napi_build_skb(data - E1000_HEADROOM, frag_len);
+ 			if (!skb) {
+ 				adapter->alloc_rx_buff_failed++;
+ 				break;
 -- 
 2.31.1
 
