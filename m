@@ -2,93 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 30168480DB1
-	for <lists+netdev@lfdr.de>; Tue, 28 Dec 2021 23:26:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D9FF5480DD1
+	for <lists+netdev@lfdr.de>; Tue, 28 Dec 2021 23:52:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237621AbhL1W0V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Dec 2021 17:26:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49134 "EHLO
+        id S237700AbhL1WwC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Dec 2021 17:52:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237598AbhL1W0V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Dec 2021 17:26:21 -0500
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB2E8C061574
-        for <netdev@vger.kernel.org>; Tue, 28 Dec 2021 14:26:20 -0800 (PST)
-Received: by mail-pl1-x635.google.com with SMTP id v19so14525753plo.7
-        for <netdev@vger.kernel.org>; Tue, 28 Dec 2021 14:26:20 -0800 (PST)
+        with ESMTP id S229882AbhL1WwC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Dec 2021 17:52:02 -0500
+Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6DAFC061574
+        for <netdev@vger.kernel.org>; Tue, 28 Dec 2021 14:52:01 -0800 (PST)
+Received: by mail-io1-xd33.google.com with SMTP id x6so23964384iol.13
+        for <netdev@vger.kernel.org>; Tue, 28 Dec 2021 14:52:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=3jpnFYyU1UvK2qtPGd0z/wd/hya+F4jiLnmmdr9GXaY=;
-        b=lUSNHxvHtkgI97VY4BNHsI8aGGvWFzcNyLEczitXX2GAu6UfkWCeA4fPS7M5ihYtBF
-         R2vIXAHPuxna50R0Cs9fT7CemGFJv6g7fO0rkVFwKzDWc1QEiV8rHvLUtM5lTlFPX2UN
-         TysjcC3EtVvf/TT+K0MEMj/2dG7uX55DG2P/sa6InIcei83woXrbsBruBpXGU75yTxsS
-         dXgVVJZVlKbPDw+ldethhaGjmRjOXQ4N55UUqHwmgL8YbYhUiiAPk2xStYTpWJ8rvgsE
-         IXy0lgL2Mce9N2DSZ/y94l9eYcKDu+he794dqgjMONViLrP2RSVK3abog12ExpHe/aKu
-         fn0Q==
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=qEXmzVyaItN3cl3tOu5TQi7kLZactQM5WjyBCOBHTxA=;
+        b=b2DSnRt2cCKOgOkGe1W0HNv5m74f4XPBwkcYO3dgB5zrgLRkefdUXl7AS9s3z9x4T9
+         jRu3aG9jalwjCZ1nveRq376zm0j+9WzU6fk4amLVhhRiYA9x7PClqTDr7CNyK2oD5CmQ
+         VLwhwtIAVU9VA2MvdOm5/eGNGj33+XJUC8V/PNJCUbfXXgKcxXKcdTiv11+ZPGaTjs03
+         OjBFoAM8ILp8pnMMwq5yyOZ1RKANIf3l1N8K9cKyeHSFrxTmHYkGqxBEQ7FirdyVPH+J
+         AdiPyqhnLSjxwq2PVCZ+c9SGVwol5+hcPgONsydOXxCQjXJLYUHrINdRZ51BwjqmWTlz
+         wRng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=3jpnFYyU1UvK2qtPGd0z/wd/hya+F4jiLnmmdr9GXaY=;
-        b=HD/j1KoieUAGxudywsj15Ul0Oy/lnyuxVC/t4a1R36dM0nUuijKI4bCFyEJIaOalf8
-         T4UIy1SZrHsenbeASbHQUd+PXscif4+DXyuDMnZxPNiI8V7yqAfGXdWlhrmK/8go/L+l
-         wCKr9DCNkrs9dCNsGhTKpcwCcZhzcsLdo/IqmyH3NNoYN3APbbFlIApvvBSgIoOh3g6/
-         bXhd6FP1rGrz32E6nzOjCHJErUMJ2xMrahcENMEHIe/N9uhJ//ctLMVMUt/j4HhXca+S
-         otil5kZZ+TtEHn9gIvtmLh6q34zAAI7lTNlwl4XOky9cs5ot9EIf/c/cEUr6qMWN4TH3
-         8xew==
-X-Gm-Message-State: AOAM533hFVrgDZiHvplvFOksoPqYO/2gfa6UAv6PZb2DvAXFOIDNi4iV
-        ldqdxf5uZ4Qr6zrbKKljfx5dVg==
-X-Google-Smtp-Source: ABdhPJw9pY6bU/ixHEj19r6nqHSjypC3pzEscKgxKQVE846L338oJSTiWn3H18Q4b3PTpHGB3RxyEQ==
-X-Received: by 2002:a17:90a:f0cc:: with SMTP id fa12mr4452980pjb.134.1640730380358;
-        Tue, 28 Dec 2021 14:26:20 -0800 (PST)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id s6sm2724082pjp.19.2021.12.28.14.26.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Dec 2021 14:26:19 -0800 (PST)
-Date:   Tue, 28 Dec 2021 22:26:16 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     syzbot <syzbot+4e697fe80a31aa7efe21@syzkaller.appspotmail.com>
-Cc:     changbin.du@intel.com, christian.brauner@ubuntu.com,
-        daniel@iogearbox.net, davem@davemloft.net, edumazet@google.com,
-        hkallweit1@gmail.com, kuba@kernel.org, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        pbonzini@redhat.com, syzkaller-bugs@googlegroups.com,
-        yajun.deng@linux.dev
-Subject: Re: [syzbot] WARNING in kvm_mmu_notifier_invalidate_range_start
-Message-ID: <YcuPCI+Nq2ixPGPD@google.com>
-References: <000000000000ef6c6c05d437c830@google.com>
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=qEXmzVyaItN3cl3tOu5TQi7kLZactQM5WjyBCOBHTxA=;
+        b=oi7mE4Br61uco4XdxUwjJOCaKONrpFw5FjBIqiSSM/xHXW475e/rY/CyY2HdGEM7LS
+         99EKij+yg56R2assJUQQwn+RQ3aHhiwCf0d3NvHesp285p4wPdnmYoC8BcLk+i+ag6Fp
+         A2ZpQ6+Nj+CTbbUPAGdcDfCq4Vx36VskM+BkE8TNaQ5yX7RReLy9P/TaG5wSJUwVWlVJ
+         ggfWP+EcMmhPOohasVkhQWCjECO2CY9h0zK6OUor2NQhNHXHBvGEr804s3Px3Q1USHIg
+         pVdGw+ltbPQAdpNSe7L6a7ieLqSEbRNNZKIeO0zFouym31etq5N1xAie0FGSv0opF+CZ
+         aaMg==
+X-Gm-Message-State: AOAM531eJrpFkmOji4bNUH30phlAuW3fDxQwSuxqODLWqndMMNnrSglx
+        TMa9SeReVhivGimTQFRmEaYJ2X6XpZuxwtW930M=
+X-Google-Smtp-Source: ABdhPJxCr3YBr2F8eVAA9xMlEuvhIcuxTZ4golaQH3Em5nj74SK0kJpQxm7hHJm4Xa1k2/V0j+xj0y770tKS/LUzzaA=
+X-Received: by 2002:a05:6602:2c94:: with SMTP id i20mr10406429iow.99.1640731920882;
+ Tue, 28 Dec 2021 14:52:00 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <000000000000ef6c6c05d437c830@google.com>
+Received: by 2002:a05:6e02:198c:0:0:0:0 with HTTP; Tue, 28 Dec 2021 14:52:00
+ -0800 (PST)
+Reply-To: mrskathleen37@gmail.com
+From:   "Mrs. Gottfried S. Kathleen" <mrsayakaazumi@gmail.com>
+Date:   Tue, 28 Dec 2021 14:52:00 -0800
+Message-ID: <CAO7ZDwyRy9KSRniZLeWKYtWrCTmpwN9NhGaCRsTcCnhrL2U7dQ@mail.gmail.com>
+Subject: From Mrs Gottfried S. Kathleen
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 28, 2021, syzbot wrote:
-> Hello,
-> 
-> syzbot found the following issue on:
-> 
-> HEAD commit:    ea586a076e8a Add linux-next specific files for 20211224
-> git tree:       linux-next
-> console output: https://syzkaller.appspot.com/x/log.txt?x=12418ea5b00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=a9c4e3dde2c568fb
-> dashboard link: https://syzkaller.appspot.com/bug?extid=4e697fe80a31aa7efe21
-> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15724985b00000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12d1aedbb00000
-> 
-> The issue was bisected to:
-> 
-> commit e4b8954074f6d0db01c8c97d338a67f9389c042f
-> Author: Eric Dumazet <edumazet@google.com>
-> Date:   Tue Dec 7 01:30:37 2021 +0000
-> 
->     netlink: add net device refcount tracker to struct ethnl_req_info
+Dearest  Beloved.
 
-Heh, while I'd love to blame someone else, there's zero chance this is the
-offending commit.  The WARN repros on kvm/queue, it's likely related to the KVM
-memslot changes queued for 5.17.  I'll take a look.
+I am Mrs. Gottfried S. Kathleen, I decided to donate what I have to
+you for investment towards the good work of charity organization, and
+qlso to help the motherless and the less privileged ones and to carry
+out a charitable works in your Country and around the World on my
+Behalf.
+
+I am diagnosing of throat Cancer, hospitalize for good 2 years and
+some months now and quite obvious that I have few days to live, and I
+am a Widow no child; I decided to will/donate the sum of $7.8 million
+to you for the good work of God, and also to help the motherless
+endless privilege and also forth assistance of the widows. At the
+moment I cannot take any telephone calls right now due to the fact
+that my relatives (that have squandered the funds for this purpose
+before) are round me and my health status also. I have adjusted my
+will and my Bank is aware.
+
+I have willed those properties to you by quoting my Personal File
+Routing and Account Information. And I have also notified the bank
+that I am willing that properties to you for a good effective and
+prudent work. It is right to say that I have been directed to do this
+by God. I will be going in for a surgery soon and I want to make sure
+that I make this donation before undergoing this surgery.
+
+I will need your support to make this dream come through, could you
+let me know your interest to enable me give you further information.
+Thanks
+Yours Sick Sister in Christ.
+Mrs. Gottfried S. Kathleen
