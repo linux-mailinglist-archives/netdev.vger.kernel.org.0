@@ -2,106 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 239C14809DF
-	for <lists+netdev@lfdr.de>; Tue, 28 Dec 2021 15:20:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DEC94809E7
+	for <lists+netdev@lfdr.de>; Tue, 28 Dec 2021 15:26:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232796AbhL1OUh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Dec 2021 09:20:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54136 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231821AbhL1OUh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Dec 2021 09:20:37 -0500
-Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8C4EC061574
-        for <netdev@vger.kernel.org>; Tue, 28 Dec 2021 06:20:36 -0800 (PST)
-Received: by mail-qt1-x829.google.com with SMTP id q14so16244758qtx.10
-        for <netdev@vger.kernel.org>; Tue, 28 Dec 2021 06:20:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:sender:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=zwa5SmF7AqJ7b8ziq0P2tazEHmZcmrR0jeKQIZMxvV0=;
-        b=IC8eXbdNVq2xNtTenhaNZW2mnIxRZ52NNhTrzD+r9HCZ0glW8K5RFczveOAA66PJ+4
-         w8b/xS0F3/0HSiCO/bh8uHiFBtZshoK5Tn5vuOjGH5QfhakWlf8qd5CvptM1s66TexQO
-         AglvKfUUmOO2Rdhrua3P2LkA0F+6j9xcdm1F050wPfpAa4gXEBXt4yJC55g7+pQynHBn
-         z5wGr1cgVSnKAZZj87lWpFtrUtbcN3Xuc5/sGxdn3GVThNDtyCqTi/lgdtJTm7p/DgB9
-         po7i1fKmptw1oCxn0G8a/5W075w4tAO2tI6R25guIEuL3MH5sAOumwT8Oss4PSWs7dtk
-         VL8g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to:content-transfer-encoding;
-        bh=zwa5SmF7AqJ7b8ziq0P2tazEHmZcmrR0jeKQIZMxvV0=;
-        b=gD0C6716SNXWHGBTA62ykY1VtokRB7nuorjCPBdMfueiINKI4AFbz9zQx/TTXzY1he
-         KbL489DSbpyhnqohLx3M9kxTcCPazC/aEyw1JOYyS1VTEcHYtgV5pE/8YbV7Q9tAvwuL
-         ECqm0SThbC/pRg4ewXrIHDTmOfYZ83JMdv8PRyt9g8kr1gcn2bZP8b828SenzBjolzaK
-         iwsZo+0JrqIM4DBdso7hBfvgwcCE/k7BSfcuoMhVtLBdXkY8DeCey97y+HdkWy2siK9j
-         41/JkOiWKNLfEbhymTEh4mUcKGpQbr5WmNADOh5Fd/DpTKUyVm5xf52HdWxWFqmezYmg
-         iRuw==
-X-Gm-Message-State: AOAM532cW+STril5f7b/JV8cY8/uP08DwevKUxPSvk+VliQfzYlrRIgb
-        8gJHqi+0FmP9lRd455Zr0wmdGHSEw/zRGKbHveU=
-X-Google-Smtp-Source: ABdhPJz4TD1+ltSI0guFbADyVa/O4Mz9/t8IJySQNFVZMK4FAxnXbL8wBm1BEezE18HYSP9h0LIj/X1dE/br3aF4amQ=
-X-Received: by 2002:ac8:5f93:: with SMTP id j19mr18673507qta.596.1640701235994;
- Tue, 28 Dec 2021 06:20:35 -0800 (PST)
+        id S233659AbhL1O0Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Dec 2021 09:26:16 -0500
+Received: from ssl.serverraum.org ([176.9.125.105]:41727 "EHLO
+        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231821AbhL1O0Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Dec 2021 09:26:16 -0500
+Received: from mwalle01.kontron.local. (unknown [IPv6:2a02:810b:4340:43bf:fa59:71ff:fe9b:b851])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 759F122246;
+        Tue, 28 Dec 2021 15:26:12 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1640701574;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=R7nzXrrSsFrUHRSgijOJS8QeBq0JY35WUr2whTQ6JzM=;
+        b=Mdr6LWqzC3IcHb3GPTOPvu6mLduLfAc1d91yRwpVrPDM3N1JMBc9TFFErc3tdNqHi8WSVR
+        /634D2XTLXxZlujv0T7ReIQoXRFDx5uTdST3fuARDna6iOoZ1WVWlfe8nT2PO+aa7aD2uu
+        wAHqRd6bUXoMDoYzRB8oWR2jUxT3+D8=
+From:   Michael Walle <michael@walle.cc>
+To:     linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        netdev@vger.kernel.org
+Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ansuel Smith <ansuelsmth@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, Michael Walle <michael@walle.cc>
+Subject: [PATCH 0/8] nvmem: add ethernet address offset support
+Date:   Tue, 28 Dec 2021 15:25:41 +0100
+Message-Id: <20211228142549.1275412-1-michael@walle.cc>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Sender: zaring.kkipkalya@gmail.com
-Received: by 2002:ac8:5c8f:0:0:0:0:0 with HTTP; Tue, 28 Dec 2021 06:20:35
- -0800 (PST)
-From:   Jackie Fowler <jackiefowler597@gmail.com>
-Date:   Tue, 28 Dec 2021 14:20:35 +0000
-X-Google-Sender-Auth: 1q_WOpbiJ2YvIKgG04Gh6AOuQIE
-Message-ID: <CANmOZ0xV_p-oUVgGVBGVghfncdJwNn=5wpfU2QTRUv=7hQv0EQ@mail.gmail.com>
-Subject: Hello
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Gooday my beloved,
+This is my second attempt to solve the use case where there is only the
+base MAC address stored in an EEPROM or similar storage provider. This
+is the case for the Kontron sl28 board and multiple openwrt supported
+boards.
 
- I sent this mail praying it will get to you in a good condition of
-health, since I myself are in a very critical health condition in
-which I sleep every night without knowing if I may be alive to see the
-next day. I bring peace and love to you. It is by the grace of God, I
-had no choice than to do what is lawful and right in the sight of God
-for eternal life and in the sight of man, for witness of God=E2=80=99s merc=
-y
-and glory upon my life. I am Mrs.Fowler,Jackie,a widow and citizen of
-Canada. I am suffering from a long time brain tumor, It has defiled
-all forms of medical treatment, and right now I have about a few
-months to leave, according to medical experts.
+Introduce an NVMEM transformation op. This can then be used to parse or
+swap bytes of the NVMEM cell value. A transformation might also have
+multiple output values, like in the base mac address case. It reads the mac
+address from the nvmem storage and generates multiple individual addresses,
+i.e. on our board we reserve 8 consecutive addresses. These addresses then
+can be assigned to different network interfaces. To make it possible to
+reference different values we need to introduce an argument to the phandle.
+This additional argument is then an index which is can be used by the
+transformation op.
 
- The situation has gotten complicated recently with my inability to
-hear proper, am communicating with you with the help of the chief
-nurse herein the hospital, from all indication my conditions is really
-deteriorating and it is quite obvious that, according to my doctors
-they have advised me that I may not live too long, Because this
-illness has gotten to a very bad stage. I plead that you will not
-expose or betray this trust and confidence that I am about to repose
-on you for the mutual benefit of the orphans and the less privilege. I
-have some funds I inherited from my late husband, the sum of ($
-12,500,000.00 Dollars).Having known my condition, I decided to donate
-this fund to you believing that you will utilize it the way i am going
-to instruct herein.
- I need you to assist me and reclaim this money and use it for Charity
-works, for orphanages and gives justice and help to the poor, needy
-and widows says The Lord." Jeremiah 22:15-16.=E2=80=9C and also build schoo=
-ls
-for less privilege that will be named after my late husband if
-possible and to promote the word of God and the effort that the house
-of God is maintained. I do not want a situation where this money will
-be used in an ungodly manner. That's why I'm taking this decision. I'm
-not afraid of death, so I know where I'm going.
- I accept this decision because I do not have any child who will
-inherit this money after I die. Please I want your sincerely and
-urgent answer to know if you will be able to execute this project for
-the glory of God, and I will give you more information on how the fund
-will be transferred to your bank account. May the grace, peace, love
-and the truth in the Word of God be with you and all those that you
-love and care for.
-I'm waiting for your immediate reply.
-May God Bless you,
-Best Regards.
-Mrs.Jackie,Fowler.
+Previous discussion can be found here:
+https://lore.kernel.org/linux-devicetree/20211123134425.3875656-1-michael@walle.cc/
+
+Michael Walle (8):
+  of: base: add of_parse_phandle_with_optional_args()
+  dt-bindings: nvmem: add transformation bindings
+  nvmem: core: add an index parameter to the cell
+  nvmem: core: add transformations support
+  net: add helper eth_addr_add()
+  nvmem: transformations: ethernet address offset support
+  arm64: dts: ls1028a: sl28: get MAC addresses from VPD
+  arm64: defconfig: enable NVMEM transformations
+
+ .../devicetree/bindings/mtd/mtd.yaml          |  7 +-
+ .../bindings/nvmem/nvmem-transformations.yaml | 46 ++++++++++++
+ .../fsl-ls1028a-kontron-kbox-a-230-ls.dts     |  8 ++
+ .../fsl-ls1028a-kontron-sl28-var1.dts         |  2 +
+ .../fsl-ls1028a-kontron-sl28-var2.dts         |  4 +
+ .../fsl-ls1028a-kontron-sl28-var4.dts         |  2 +
+ .../freescale/fsl-ls1028a-kontron-sl28.dts    | 17 +++++
+ arch/arm64/configs/defconfig                  |  1 +
+ drivers/nvmem/Kconfig                         |  7 ++
+ drivers/nvmem/Makefile                        |  1 +
+ drivers/nvmem/core.c                          | 44 ++++++++---
+ drivers/nvmem/imx-ocotp.c                     |  4 +-
+ drivers/nvmem/transformations.c               | 73 +++++++++++++++++++
+ drivers/of/base.c                             | 23 ++++++
+ include/linux/etherdevice.h                   | 14 ++++
+ include/linux/nvmem-provider.h                | 13 +++-
+ include/linux/of.h                            | 12 +++
+ 17 files changed, 260 insertions(+), 18 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/nvmem/nvmem-transformations.yaml
+ create mode 100644 drivers/nvmem/transformations.c
+
+-- 
+2.30.2
+
