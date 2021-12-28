@@ -2,82 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DE09480ADC
-	for <lists+netdev@lfdr.de>; Tue, 28 Dec 2021 16:34:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EFB6C480B07
+	for <lists+netdev@lfdr.de>; Tue, 28 Dec 2021 17:00:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235145AbhL1Pe1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Dec 2021 10:34:27 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:43512 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232237AbhL1Pe1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Dec 2021 10:34:27 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
-        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
-        In-Reply-To:References; bh=peJ8ThJwAnCjEpl/WdWsbtE6zOJhQZGwgZ32zqc1md8=; b=En
-        6DeGR4MhDcRjOkzTxvfGjeVs6LGZpdiq6n2Hoq97XIydxxLZdESnW+j8pLoCFbPhl/5fhUCjLMqCk
-        UXZRRdaMsam/7orpMeBayUnQzQ96KXFljgW9JqxdfAV8wPMx87QOYbM66zjB9S0Mq1Ls0QoyzlPDR
-        uvndUEOOdhU3H5g=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1n2EUS-0002mX-7h; Tue, 28 Dec 2021 16:34:16 +0100
-Date:   Tue, 28 Dec 2021 16:34:16 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Joseph CHAMG <josright123@gmail.com>,
+        id S235485AbhL1QAy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Dec 2021 11:00:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48610 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235480AbhL1QAy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Dec 2021 11:00:54 -0500
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF70FC061574
+        for <netdev@vger.kernel.org>; Tue, 28 Dec 2021 08:00:53 -0800 (PST)
+Received: by mail-pj1-x1032.google.com with SMTP id y16-20020a17090a6c9000b001b13ffaa625so21971944pjj.2
+        for <netdev@vger.kernel.org>; Tue, 28 Dec 2021 08:00:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=+EErxxyRGrc3fIcdCuA+M5TmuzvvFgyPQfNF+QKyEJA=;
+        b=bypY8ngWBwcgkxdKMtgGYXT7/IQ6MPDnRPU3k2FPRYMvuHE/T/g5/vqEKlXAXxqXhl
+         CwA9Iwd8GXMX2X0JZhYtE+1Y/Me3/NA2GV90YN5+YqRbLO2Rl0YcPw9VCnt5Ne1pQwDK
+         hmK6xGdHcm8GAP48+QR8jfwsiE+9Nt6Xl9W9OSW30xr6eGd0xko4p+5vB0vRNZ/BEBB2
+         zGWXR+bzk7zsX7hEyjVdu/UP3H0gBsol7Lnry3o7obAQLrRQ24msI/SrONpBbbo+0NQv
+         ZeyU591cQeTIbxx6UjOMnsij0HE/RtkBTCKJ0BvizDDNPhXTkcykHr6hlmVQACArUL+n
+         vB2A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=+EErxxyRGrc3fIcdCuA+M5TmuzvvFgyPQfNF+QKyEJA=;
+        b=alT0XVjXdezbLe+zjLYIIXNkywp1PAjOhhvtdGRPHvhmTqabvGUR4oVpXlMoNvfOmN
+         rBi1y1ARXYYIUQpKTt/FAAcIUqqgHzixg7nkzOIV5Ax6uSARLa2lDwwCOAhkcJMJ/dWD
+         y1UWTCopTn/lE2wVr5Bp8JF6aUR8pdvRLPVpMLnCwXrtBhn2TPFlGcYySxqLqTrJUtc9
+         pbz8G64UNL3nqSOT7TS0UWmg05KIzzDOCNeFFvuYdV6k9U2ZN7+jg7dbCIb/PJvDi8tT
+         YligklkRLECNgg5CcyGGo+sSVV+1OiBT+LEmx4Df2rrzx/SrvNLUd7Z5xO/WDp74jiVA
+         WsqQ==
+X-Gm-Message-State: AOAM532XvXa631+WlAzR3e21bGT51WoS3ccnqJYrBqkFzg8RsRNLE9pV
+        qpvSvwiGzM96nsFMWWgth7A=
+X-Google-Smtp-Source: ABdhPJyaFLrmxEzAEEKLqm3HuivOclWe8MAdl09XDL5dvVerhd+Ai2TOUa9lkRYCrYG57TikhPDU2g==
+X-Received: by 2002:a17:902:bb8c:b0:149:8f60:a526 with SMTP id m12-20020a170902bb8c00b001498f60a526mr4786862pls.25.1640707253239;
+        Tue, 28 Dec 2021 08:00:53 -0800 (PST)
+Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id y8sm22980755pjt.25.2021.12.28.08.00.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Dec 2021 08:00:52 -0800 (PST)
+Date:   Tue, 28 Dec 2021 08:00:50 -0800
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Hangbin Liu <liuhangbin@gmail.com>, netdev@vger.kernel.org,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
         "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "joseph_chang@davicom.com.tw" <joseph_chang@davicom.com.tw>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Leon Romanovsky <leon@kernel.org>
-Subject: Re: [PATCH v9, 2/2] net: Add dm9051 driver
-Message-ID: <YcsueIU3ynUJrMVt@lunn.ch>
-References: <20211227100233.8037-1-josright123@gmail.com>
- <20211227100233.8037-3-josright123@gmail.com>
- <CAHp75Vfgd=O_SukOrD4Adw4v7JdPBWsVsjwkj2-TiRy=Vk1mPA@mail.gmail.com>
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCHv3 net-next 1/2] net_tstamp: add new flag
+ HWTSTAMP_FLAG_BONDED_PHC_INDEX
+Message-ID: <20211228160050.GA13274@hoboy.vegasvil.org>
+References: <20211210085959.2023644-1-liuhangbin@gmail.com>
+ <20211210085959.2023644-2-liuhangbin@gmail.com>
+ <Ycq2Ofad9UHur0qE@Laptop-X1>
+ <20211228071528.040fd3e3@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAHp75Vfgd=O_SukOrD4Adw4v7JdPBWsVsjwkj2-TiRy=Vk1mPA@mail.gmail.com>
+In-Reply-To: <20211228071528.040fd3e3@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->     +static int dm9051_mdio_read(struct mii_bus *mdiobus, int phy_id, int reg)
->     +{
->     +       struct board_info *db = mdiobus->priv;
->     +       int val, ret;
->     +
->     +       if (phy_id == DM9051_PHY_ID) {
->     +               mutex_lock(&db->addr_lock);
->     +               ret = dm9051_phy_read(db, reg, &val);
->     +               mutex_unlock(&db->addr_lock);
->     +               if (ret)
->     +                       return ret;
->     +               return val;
->     +       }
->     +
->     +       return 0xffff;
+On Tue, Dec 28, 2021 at 07:15:28AM -0800, Jakub Kicinski wrote:
+> On Tue, 28 Dec 2021 15:01:13 +0800 Hangbin Liu wrote:
+> > When implement the user space support for this feature. I realized that
+> > we can't use the new flag directly as the user space tool needs to have
+> > backward compatibility. Because run the new tool with this flag enabled
+> > on old kernel will get -EINVAL error. And we also could not use #ifdef
+> > directly as HWTSTAMP_FLAG_BONDED_PHC_INDEX is a enum.
+> > 
+> > Do you think if we could add a #define in linux/net_tstamp.h like
+> > 
+> > #define HWTSTAMP_FLAGS_SUPPORT 1
+> > 
+> > So that the user space tool could use it like
+> > 
+> > #ifdef HWTSTAMP_FLAGS_SUPPORT
+> >        cfg->flags = HWTSTAMP_FLAG_BONDED_PHC_INDEX;
+> > #endif
 > 
-> 
-> 
-> Hmm.. can we rather use regmap APIs for SPI and MDIO?
+> We could set it on SIOCGHWTSTAMP to let user space know that it's
+> necessary for a given netdev.
 
-Hi Andy
+What about adding matching #defines into the enum declaration?
 
-regmap via MDIO is very new, but yes it exists. This driver just needs
-SPI which has had regmap support for a long time.
+enum hwtstamp_flags {
+	HWTSTAMP_FLAG_BONDED_PHC_INDEX = (1<<0),
+#define HWTSTAMP_FLAG_BONDED_PHC_INDEX (1<<0)
+};
 
-However, i suspect the submitter is trying hard to keep the driver in
-a shape they can reuse the core with other OSes. At least that is my
-feeling give the way requests for changes are handled. Maybe forcing
-the use of regmap is actually a good idea, to break them away from
-that bad idea.
+IIRC I have seen this pattern used in the kernel, but ATM I can't find any example :(
 
-     Andrew
+Thanks,
+Richard
