@@ -2,134 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D1BE480D1F
-	for <lists+netdev@lfdr.de>; Tue, 28 Dec 2021 22:02:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B78FC480D1E
+	for <lists+netdev@lfdr.de>; Tue, 28 Dec 2021 22:02:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237336AbhL1VCo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Dec 2021 16:02:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58648 "EHLO
+        id S237294AbhL1VCk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Dec 2021 16:02:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234329AbhL1VCm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Dec 2021 16:02:42 -0500
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28321C061574;
-        Tue, 28 Dec 2021 13:02:42 -0800 (PST)
-Received: by mail-lf1-x136.google.com with SMTP id bq20so43742603lfb.4;
-        Tue, 28 Dec 2021 13:02:42 -0800 (PST)
+        with ESMTP id S234329AbhL1VCk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Dec 2021 16:02:40 -0500
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99F3CC061574
+        for <netdev@vger.kernel.org>; Tue, 28 Dec 2021 13:02:39 -0800 (PST)
+Received: by mail-wr1-x42a.google.com with SMTP id j18so40525384wrd.2
+        for <netdev@vger.kernel.org>; Tue, 28 Dec 2021 13:02:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=dt9CXasnk9PIgbcivdQVB6XtSwuQfSI3t6oImYWBzNo=;
-        b=bo7+m1NH/V6Kcm0kBa6EghKnKim+5KC0KiXfd+reE3NRJxIy1snuCmWBzgMxBXM1mf
-         FgteJZVx7GInbq7h4HXWHVbWiU8wjPro8akCRwUhe9eYZ/7rk5UViBmaI9prRVG5J1Y4
-         UegTxlHV4t70Azf2dNHiuLyKwOY0iVFTbA/OfK3cV46tGDOwsOXlN0U+JUrY6sOepOTs
-         OLAv3ZGvYeCn/QSAA8d4fjH+h/lTSpCOROiTuhNE1dmmB6lk6GEo6tMX+N367M58XgYE
-         1I4hQcHpStaYu8U8nSPwux9wX9CsWAG/VJ5mNofzByPm0IYI80vXTLWcyzDOHvmMESTD
-         a8AQ==
+        h=message-id:date:mime-version:user-agent:from:to:cc:content-language
+         :subject:content-transfer-encoding;
+        bh=KTNNB8Gazwf17/yaGpHolRJvfa9KIrx12W556P4gHzQ=;
+        b=Pm2bC+Mc3mIX7xF2cXg/EySVQOsXvvt784ekydTZtIEJ6hLGzkv8GnFb6XBbXNuxjy
+         cMRH6W1nWql0O4JIfrRpd+Si47Qq9I2E4bIVhG4b+3NWubHsnYJD8dDKdS8cpfL35Agt
+         OhtHYbZs2JlNZ0P8ekEKpULRSS440RoSjiG4Q1ywkymNkZ4PkZpFqXGc8y2+Z8gucHLy
+         a1HiefMHfxPcOs368egeMW2tYt5Rg0rsx8kMj4y79PG1WmeDIGJu3MxUDn0A68YEJWJL
+         l18m5cxGa3h2iHO7O/sFueNxn653MFP1bzIId7caCNRdy6ZqWa3ghgBARRXLCNmwku/P
+         FPsg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=dt9CXasnk9PIgbcivdQVB6XtSwuQfSI3t6oImYWBzNo=;
-        b=RhCSDpwRh1MJqLPEOseM87WnQfMm7fSEc2CpJNk/7sy9YAtxEuUCGqanIkmPRvj2hG
-         uZzeaxhOnqzgVbi3KrmeYJtjgpSLlFlpfk9KasHEnUw8Z+X6uxhBCLVN8WXkNRXsFxDh
-         ZqZXCzRRFfa0uTM25v5UGfAPRQaLmLOQPrk1sZ3sPG/8/tgS7X0T/9sQs4c/3ccaeIRF
-         yJ6CxicOoLqu+znwH5pGRKL/OUOn5h9l5b9V6jrXgcriV9AHCJuSF24Im0EIIRP6XaFc
-         e+XckZYyv9g/Aut17vJPcO3CXuysLRHFKAomRSF5DcV4vQ82WUvdVHT6kdE+5fzZYNeg
-         kM2w==
-X-Gm-Message-State: AOAM531ScQbr0HK8hv/N+TbtTdWmHHwpwk9Cea5rR5BBq6Yhd7z3K/ZQ
-        zIXhvcVJpxUaZPIoE/IuNNpLYG9eVQ/kAjGlDq6gfJTCOzM=
-X-Google-Smtp-Source: ABdhPJw4vbvQNTZ+e3b0r0P5JkNug8I4q9aCVpxRgPgpVWtwSN8AnxCM1Qgl0WzSeBngfSjJ+DgYvza4EwOfg1xJZ8o=
-X-Received: by 2002:ac2:5238:: with SMTP id i24mr21128618lfl.467.1640725360019;
- Tue, 28 Dec 2021 13:02:40 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:from:to
+         :cc:content-language:subject:content-transfer-encoding;
+        bh=KTNNB8Gazwf17/yaGpHolRJvfa9KIrx12W556P4gHzQ=;
+        b=OC3MQXRN20ffCIEGhGv7chklTx0LY2r7CET+W/dKqHDU/2W7oTOQwJsf6ru3dvG69D
+         sSqRy5qBJkBdpboQMNb8syZkyRGCZaEkjvynO8ipSzs7DRWbIq5E982rndqHrS7FdAbm
+         6imAKwM3ijhaKO8c7eOXDg1tPDwdYsSuoRKA66kYXTwIAEfxvI7S5wbT/gKGHSki+13A
+         6xGBUs6VDAO93/8L/jq78IGnI9BCHy83aZqFppT7ZJ8QghGyGW/d16eWcumKlAXo6S0I
+         +wmn0g+s8r+nQR/7AMLfKHu9TlRiVC3Y6bVn204Udy9WCLTTVedOTcNoo+q8HdfBQxHC
+         5oCQ==
+X-Gm-Message-State: AOAM5318H/AIdf9iSO2+bpXRHzKJvXzh45T6MhPCejH8tY2jNx85i5bl
+        B2Ggtvg17csA5pZeQPwBKBA=
+X-Google-Smtp-Source: ABdhPJy/xlveaGkDlX8CZSlRXOHqOimKp1Mb/cDISmaKfxS14euEPkgHPDeB2tWWTS53w5EDUQn5aw==
+X-Received: by 2002:adf:aa9d:: with SMTP id h29mr17500668wrc.120.1640725358089;
+        Tue, 28 Dec 2021 13:02:38 -0800 (PST)
+Received: from ?IPV6:2003:ea:8f24:fd00:1db4:9082:d8f:5ea5? (p200300ea8f24fd001db490820d8f5ea5.dip0.t-ipconnect.de. [2003:ea:8f24:fd00:1db4:9082:d8f:5ea5])
+        by smtp.googlemail.com with ESMTPSA id c8sm18989587wrp.40.2021.12.28.13.02.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 28 Dec 2021 13:02:37 -0800 (PST)
+Message-ID: <3cd24763-f307-78f5-76ed-a5fbf315fb28@gmail.com>
+Date:   Tue, 28 Dec 2021 22:02:30 +0100
 MIME-Version: 1.0
-References: <CAJ-ks9kd6wWi1S8GSCf1f=vJER=_35BGZzLnXwz36xDQPacyRw@mail.gmail.com>
-In-Reply-To: <CAJ-ks9kd6wWi1S8GSCf1f=vJER=_35BGZzLnXwz36xDQPacyRw@mail.gmail.com>
-From:   Tamir Duberstein <tamird@gmail.com>
-Date:   Tue, 28 Dec 2021 16:02:29 -0500
-Message-ID: <CAJ-ks9=41PuzGkXmi0-aZPEWicWJ5s2gW2zL+jSHuDjaJ5Lhsg@mail.gmail.com>
-Subject: Re: [PATCH] net: check passed optlen before reading
-To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>
+Content-Language: en-US
+Subject: [PATCH net-next] r8169: don't use pci_irq_vector() in atomic context
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Errant brace in the earlier version.
+From: Thomas Gleixner <tglx@linutronix.de>
 
-From 8586be4d72c6c583b1085d2239076987e1b7c43a Mon Sep 17 00:00:00 2001
-From: Tamir Duberstein <tamird@gmail.com>
-Date: Tue, 28 Dec 2021 15:09:11 -0500
-Subject: [PATCH v2] net: check passed optlen before reading
+Since referenced change pci_irq_vector() can't be used in atomic
+context any longer. This conflicts with our usage of this function
+in rtl8169_netpoll(). Therefore store the interrupt number in
+struct rtl8169_private.
 
-Add a check that the user-provided option is at least as long as the
-number of bytes we intend to read. Before this patch we would blindly
-read sizeof(int) bytes even in cases where the user passed
-optlen<sizeof(int), which would potentially read garbage or fault.
-
-Discovered by new tests in https://github.com/google/gvisor/pull/6957 .
-
-Signed-off-by: Tamir Duberstein <tamird@gmail.com>
+Fixes: 495c66aca3da ("genirq/msi: Convert to new functions")
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- net/ipv6/raw.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/ethernet/realtek/r8169_main.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/net/ipv6/raw.c b/net/ipv6/raw.c
-index 60f1e4f5be5a..c51d5ce3711c 100644
---- a/net/ipv6/raw.c
-+++ b/net/ipv6/raw.c
-@@ -1020,6 +1020,9 @@ static int do_rawv6_setsockopt(struct sock *sk,
-int level, int optname,
-        struct raw6_sock *rp = raw6_sk(sk);
-        int val;
-
-+       if (optlen < sizeof(val))
-+               return -EINVAL;
-+
-        if (copy_from_sockptr(&val, optval, sizeof(val)))
-                return -EFAULT;
-
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index 3d6843332..7161a5b1c 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -615,6 +615,7 @@ struct rtl8169_private {
+ 	struct ring_info tx_skb[NUM_TX_DESC];	/* Tx data buffers */
+ 	u16 cp_cmd;
+ 	u32 irq_mask;
++	int irq;
+ 	struct clk *clk;
+ 
+ 	struct {
+@@ -4712,7 +4713,7 @@ static int rtl8169_close(struct net_device *dev)
+ 
+ 	cancel_work_sync(&tp->wk.work);
+ 
+-	free_irq(pci_irq_vector(pdev, 0), tp);
++	free_irq(tp->irq, tp);
+ 
+ 	phy_disconnect(tp->phydev);
+ 
+@@ -4733,7 +4734,7 @@ static void rtl8169_netpoll(struct net_device *dev)
+ {
+ 	struct rtl8169_private *tp = netdev_priv(dev);
+ 
+-	rtl8169_interrupt(pci_irq_vector(tp->pci_dev, 0), tp);
++	rtl8169_interrupt(tp->irq, tp);
+ }
+ #endif
+ 
+@@ -4767,8 +4768,7 @@ static int rtl_open(struct net_device *dev)
+ 	rtl_request_firmware(tp);
+ 
+ 	irqflags = pci_dev_msi_enabled(pdev) ? IRQF_NO_THREAD : IRQF_SHARED;
+-	retval = request_irq(pci_irq_vector(pdev, 0), rtl8169_interrupt,
+-			     irqflags, dev->name, tp);
++	retval = request_irq(tp->irq, rtl8169_interrupt, irqflags, dev->name, tp);
+ 	if (retval < 0)
+ 		goto err_release_fw_2;
+ 
+@@ -4785,7 +4785,7 @@ static int rtl_open(struct net_device *dev)
+ 	return retval;
+ 
+ err_free_irq:
+-	free_irq(pci_irq_vector(pdev, 0), tp);
++	free_irq(tp->irq, tp);
+ err_release_fw_2:
+ 	rtl_release_firmware(tp);
+ 	rtl8169_rx_clear(tp);
+@@ -5360,6 +5360,7 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 		dev_err(&pdev->dev, "Can't allocate interrupt\n");
+ 		return rc;
+ 	}
++	tp->irq = pci_irq_vector(pdev, 0);
+ 
+ 	INIT_WORK(&tp->wk.work, rtl_task);
+ 
+@@ -5435,8 +5436,7 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 		return rc;
+ 
+ 	netdev_info(dev, "%s, %pM, XID %03x, IRQ %d\n",
+-		    rtl_chip_infos[chipset].name, dev->dev_addr, xid,
+-		    pci_irq_vector(pdev, 0));
++		    rtl_chip_infos[chipset].name, dev->dev_addr, xid, tp->irq);
+ 
+ 	if (jumbo_max)
+ 		netdev_info(dev, "jumbo features [frames: %d bytes, tx checksumming: %s]\n",
 -- 
-2.34.1.448.ga2b2bfdf31-goog
+2.34.1
 
-On Tue, Dec 28, 2021 at 3:18 PM Tamir Duberstein <tamird@gmail.com> wrote:
->
-> From 52e464972f88ff5e9647d92b63c815e1f350f65e Mon Sep 17 00:00:00 2001
-> From: Tamir Duberstein <tamird@gmail.com>
-> Date: Tue, 28 Dec 2021 15:09:11 -0500
-> Subject: [PATCH] net: check passed optlen before reading
->
-> Add a check that the user-provided option is at least as long as the
-> number of bytes we intend to read. Before this patch we would blindly
-> read sizeof(int) bytes even in cases where the user passed
-> optlen<sizeof(int), which would potentially read garbage or fault.
->
-> Discovered by new tests in https://github.com/google/gvisor/pull/6957.
->
-> Signed-off-by: Tamir Duberstein <tamird@gmail.com>
-> ---
->  net/ipv6/raw.c | 3 +++
->  1 file changed, 3 insertions(+)
->
-> diff --git a/net/ipv6/raw.c b/net/ipv6/raw.c
-> index 60f1e4f5be5a..547613058182 100644
-> --- a/net/ipv6/raw.c
-> +++ b/net/ipv6/raw.c
-> @@ -1020,6 +1020,9 @@ static int do_rawv6_setsockopt(struct sock *sk,
-> int level, int optname,
->         struct raw6_sock *rp = raw6_sk(sk);
->         int val;
->
-> +       if (optlen < sizeof(val)) {
-> +               return -EINVAL;
-> +
->         if (copy_from_sockptr(&val, optval, sizeof(val)))
->                 return -EFAULT;
->
-> --
-> 2.34.1.448.ga2b2bfdf31-goog
