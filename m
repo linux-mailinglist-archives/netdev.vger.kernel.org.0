@@ -2,156 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B990480C8E
-	for <lists+netdev@lfdr.de>; Tue, 28 Dec 2021 19:40:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DF8C480CAC
+	for <lists+netdev@lfdr.de>; Tue, 28 Dec 2021 19:56:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237064AbhL1SkM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Dec 2021 13:40:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55950 "EHLO
+        id S237107AbhL1S4L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Dec 2021 13:56:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237060AbhL1SkL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Dec 2021 13:40:11 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E91BC061574;
-        Tue, 28 Dec 2021 10:40:11 -0800 (PST)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1640716808;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=XPuWFS2LRu0bJ7y/UPZbd1DHkOBoE3Cl/eUAuhfdAKU=;
-        b=zYyRwapDcF+8airlB20kHJ5N1WQQRujSNdtUjgNpMkjwJEeZ6QrsvmtTrcrVm0Wg7rwt7B
-        UEc5txeeOunIYHaHwIN0vjE0jQy1WmDMR5pQH76cjFNImCbNj1mKPFU/h7plVlN1Vg9x7f
-        evKgt+a49P9OUK2NlqHGnwY52G+RNmQImPc0JQT3rC7MGjre6MbwIlpZImhDty1P71m5xS
-        YSXvAQQHaHaxr3qUa7JGHHzskvzBuA6e4F7hqxJ58r10cqrt/xgxR7LfdTHWEhx9UfQ5xa
-        TvweKcDkUGbyGJN9RZQ/BZjRH9oCRueAJqrhcSikI97OILWoB16H0w7m6ZaR+A==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1640716808;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=XPuWFS2LRu0bJ7y/UPZbd1DHkOBoE3Cl/eUAuhfdAKU=;
-        b=LBeThSdJP5ohQmbtej/tAT1PCU/vl0dB8h/kqjQV53yWg5SBuHicbdIs4dXLonuwVcOuE1
-        k0EB9jAMen3qnQAw==
-To:     kernel test robot <oliver.sang@intel.com>
-Cc:     Michael Kelley <mikelley@microsoft.com>,
-        Nishanth Menon <nm@ti.com>, Jason Gunthorpe <jgg@nvidia.com>,
-        LKML <linux-kernel@vger.kernel.org>, x86@kernel.org,
-        lkp@lists.01.org, lkp@intel.com,
-        Heiner Kallweit <hkallweit1@gmail.com>, nic_swsd@realtek.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: Re: [genirq/msi]  495c66aca3:
- BUG:sleeping_function_called_from_invalid_context_at_kernel/locking/mutex.c
-In-Reply-To: <20211227150535.GA16252@xsang-OptiPlex-9020>
-References: <20211227150535.GA16252@xsang-OptiPlex-9020>
-Date:   Tue, 28 Dec 2021 19:40:07 +0100
-Message-ID: <87czlgd14o.ffs@tglx>
+        with ESMTP id S233920AbhL1S4K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Dec 2021 13:56:10 -0500
+Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E4CFC06173E
+        for <netdev@vger.kernel.org>; Tue, 28 Dec 2021 10:56:09 -0800 (PST)
+Received: by mail-lj1-x234.google.com with SMTP id h15so18674221ljh.12
+        for <netdev@vger.kernel.org>; Tue, 28 Dec 2021 10:56:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=OxdfxLuiSeWnXlU6gfhg71wxiE+vMrvatpHVdz5QN7g=;
+        b=Ras2/40KS2Q64dMJMWOqT02xLehnyD9+zE9s4u71NAFP7NawCp4DUYULihV9fus3RP
+         ALyQKuaOOAH0lWSb453txIGSfhV+pIOaoLS9cxI/lfw3q59NXIp5yCSK+NIhCS9HsqNy
+         FzweukWxgmcCnSqkf28bmkySDucRpjSaGZubd87qkka5xdiBdZ4YaSX6NpRFasCAt3pc
+         DLcfmQIxWW3ff+h1y5KQhbPc6dI1454ukl6B5pQVXRxp8Eq6jqGzUZdJP42V6+ujDHFH
+         KXznw2J0FudkddglGUcHE0hoXGEmbM82vK1bp5a8ekWIc5bdUiaBFhoHOgwfQaFRG0pr
+         ApBQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=OxdfxLuiSeWnXlU6gfhg71wxiE+vMrvatpHVdz5QN7g=;
+        b=4ryYpXuKUs2/c1iVNN7jRYzo7rphz0h8ZR1TvoergCpu0PEoxaC3qkukCQvpT2l4d8
+         p+X7J7xDljucFp1uR/9pdn31rckpp3Ret2Ma+Vwu1rmgAv4z27ylV68EcKfNMoUhfddo
+         V4oEohDSyJGGjAp+0dyegJeLQUnglYxPq/1ZXn0a50x4NESxxAwzW8/VaTHP9VPz+KJb
+         gkriXuhai5avRdAYMiAKyOhADKqREOHJgPG16UTSZ6k1W3/obMBbLN1rNd2nkeh2wzNp
+         dbc+B2h3PyWHOJBvaYkihP+LACYOyfzdC1zmGwOzdrhlgdQ4seonAMCE+m8bJLFV15wi
+         yvMQ==
+X-Gm-Message-State: AOAM531lqYsXHvwNCidIu7zF6CBCN+9JxiYO3QMOpLeSkRLxzYrMAzoD
+        Rye0FnhjCEw4P/vASOIoE09hBa7KP4TC9wUUh247vQ==
+X-Google-Smtp-Source: ABdhPJxSHEH7S9BL9eRVIvEVwtJoh0q7t8Ea+aoQCnO5P1krfwZ0pAqTW/eFTemIqU9uH8bmc+kunDU8qLoyC8UA3jk=
+X-Received: by 2002:a2e:141c:: with SMTP id u28mr19256751ljd.338.1640717767195;
+ Tue, 28 Dec 2021 10:56:07 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20211223162848.3243702-1-trix@redhat.com> <CAKwvOd=dLjMAim_FRNyWegzEjy0_1vF2xVW1hNPQ55=32qO4Wg@mail.gmail.com>
+ <b3ef8d23-7c77-7c83-0bc8-2054b7ac1d8b@redhat.com>
+In-Reply-To: <b3ef8d23-7c77-7c83-0bc8-2054b7ac1d8b@redhat.com>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Tue, 28 Dec 2021 10:55:55 -0800
+Message-ID: <CAKwvOdkUQARWd7qG_hkUJYuVcvObMYTif_HDSEmJ5mSXP6y1=A@mail.gmail.com>
+Subject: Re: [PATCH] mac80211: initialize variable have_higher_than_11mbit
+To:     Tom Rix <trix@redhat.com>
+Cc:     johannes@sipsolutions.net, davem@davemloft.net, kuba@kernel.org,
+        nathan@kernel.org, linville@tuxdriver.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 27 2021 at 23:05, kernel test robot wrote:
+On Fri, Dec 24, 2021 at 6:01 AM Tom Rix <trix@redhat.com> wrote:
 >
-> FYI, we noticed the following commit (built with gcc-9):
 >
-> commit: 495c66aca3da704e063fa373fdbe371e71d3f4ee ("genirq/msi: Convert to new functions")
-> https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git irq/msi
-> kern  :err   : [  126.209306] BUG: sleeping function called from invalid context at kernel/locking/mutex.c:280
-> kern  :err   : [  126.209308] in_atomic(): 1, irqs_disabled(): 1, non_block: 0, pid: 5183, name: ls
-> kern  :err   : [  126.209311] preempt_count: 2, expected: 0
-> kern  :warn  : [  126.209312] CPU: 2 PID: 5183 Comm: ls Not tainted 5.16.0-rc5-00091-g495c66aca3da #1
-> kern  :warn  : [  126.209315] Hardware name: Hewlett-Packard HP Pro 3340 MT/17A1, BIOS 8.07 01/24/2013
-> kern  :warn  : [  126.209316] Call Trace:
-> kern  :warn  : [  126.209318]  <TASK>
-> kern :warn : [  126.209319] dump_stack_lvl (lib/dump_stack.c:107) 
-> kern :warn : [  126.209323] __might_resched.cold (kernel/sched/core.c:9539 kernel/sched/core.c:9492) 
-> kern :warn : [  126.209326] ? kasan_unpoison (mm/kasan/shadow.c:108 mm/kasan/shadow.c:142) 
-> kern :warn : [  126.209330] mutex_lock (kernel/locking/mutex.c:280) 
-> kern :warn : [  126.209335] ? __mutex_lock_slowpath (kernel/locking/mutex.c:279) 
-> kern :warn : [  126.209339] ? _raw_spin_lock_irqsave (arch/x86/include/asm/atomic.h:202 include/linux/atomic/atomic-instrumented.h:513 include/asm-generic/qspinlock.h:82 include/linux/spinlock.h:185 include/linux/spinlock_api_smp.h:111 kernel/locking/spinlock.c:162) 
-> kern :warn : [  126.209342] ? _raw_read_unlock_irqrestore (kernel/locking/spinlock.c:161) 
-> kern :warn : [  126.209344] msi_get_virq (kernel/irq/msi.c:332) 
-> kern :warn : [  126.209349] pci_irq_vector (drivers/pci/msi/msi.c:1085 drivers/pci/msi/msi.c:1077) 
-> kern :warn : [  126.209354] rtl8169_netpoll (drivers/net/ethernet/realtek/r8169_main.c:4722) 
-> kern :warn : [  126.209358] netpoll_poll_dev (net/core/netpoll.c:166 net/core/netpoll.c:195) 
-> kern :warn : [  126.209363] netpoll_send_skb (net/core/netpoll.c:350 net/core/netpoll.c:376) 
-> kern :warn : [  126.209367] write_msg (drivers/net/netconsole.c:862 drivers/net/netconsole.c:836) netconsole
+> On 12/23/21 12:30 PM, Nick Desaulniers wrote:
+> > On Thu, Dec 23, 2021 at 8:29 AM <trix@redhat.com> wrote:
+> >> From: Tom Rix <trix@redhat.com>
+> >>
+> >> Clang static analysis reports this warnings
+> >>
+> >> mlme.c:5332:7: warning: Branch condition evaluates to a
+> >>    garbage value
+> >>      have_higher_than_11mbit)
+> >>      ^~~~~~~~~~~~~~~~~~~~~~~
+> >>
+> >> have_higher_than_11mbit is only set to true some of the time in
+> >> ieee80211_get_rates() but is checked all of the time.  So
+> >> have_higher_than_11mbit needs to be initialized to false.
+> > LGTM. There's only one caller of ieee80211_get_rates() today; if there
+> > were others, they could make a similar mistake in the future. An
+> > alternate approach: ieee80211_get_rates() could unconditionally write
+> > false before the loop that could later write true. Then call sites
+> > don't need to worry about this conditional assignment. Perhaps that
+> > would be preferable? If not:
+>
+> The have_higher_than_11mbit variable had previously be initialized to false.
+>
+> The commit 5d6a1b069b7f moved the variable without initializing.
 
-Fix below.
+I'm not disagreeing with that.
 
+My point is that these sometimes uninitialized warnings you're
+finding+fixing with clang static analyzer are demonstrating a
+recurring pattern with code.
+
+When _not_ using the static analyzer, -Wuninitialized and
+-Wsometimes-uninitialized work in Clang by building a control flow
+graph, but they only analyze a function locally.
+
+For example, consider the following code:
+```
+_Bool is_thursday(void);
+void hello(int);
+
+void init (int* x) {
+  if (is_thursday())
+    *x = 1;
+}
+
+void foo (void) {
+  int x;
+  init(&x);
+  hello(x);
+}
+```
+(Clang+GCC today will warn on the above; x is considered to "escape"
+the scope of foo as init could write the address of x to a global.
+Instead clang's static analyzer will take the additional time to
+analyze the callee.  But here's a spooky question: what happens when
+init is in another translation unit? IIRC, the static analyzer doesn't
+do cross TU analysis; I could be wrong though, I haven't run it in a
+while.)
+
+My point is that you're sending patches initializing x, when I think
+it might be nicer to instead have functions like init always write a
+value (unconditionally, rather than conditionally).  That way other
+callers of init don't have to worry about sometimes initialized
+variables.
+
+>
+> Tom
+>
+> >
+> > Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+> >
+> >> Fixes: 5d6a1b069b7f ("mac80211: set basic rates earlier")
+> >> Signed-off-by: Tom Rix <trix@redhat.com>
+> >> ---
+> >>   net/mac80211/mlme.c | 2 +-
+> >>   1 file changed, 1 insertion(+), 1 deletion(-)
+> >>
+> >> diff --git a/net/mac80211/mlme.c b/net/mac80211/mlme.c
+> >> index 51f55c4ee3c6e..766cbbc9c3a72 100644
+> >> --- a/net/mac80211/mlme.c
+> >> +++ b/net/mac80211/mlme.c
+> >> @@ -5279,7 +5279,7 @@ static int ieee80211_prep_connection(struct ieee80211_sub_if_data *sdata,
+> >>           */
+> >>          if (new_sta) {
+> >>                  u32 rates = 0, basic_rates = 0;
+> >> -               bool have_higher_than_11mbit;
+> >> +               bool have_higher_than_11mbit = false;
+> >>                  int min_rate = INT_MAX, min_rate_index = -1;
+> >>                  const struct cfg80211_bss_ies *ies;
+> >>                  int shift = ieee80211_vif_get_shift(&sdata->vif);
+> >> --
+> >> 2.26.3
+> >>
+> >
+>
+
+
+-- 
 Thanks,
-
-        tglx
----
- drivers/net/ethernet/realtek/r8169_main.c |   14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
-
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -615,6 +615,7 @@ struct rtl8169_private {
- 	struct ring_info tx_skb[NUM_TX_DESC];	/* Tx data buffers */
- 	u16 cp_cmd;
- 	u32 irq_mask;
-+	int irq;
- 	struct clk *clk;
- 
- 	struct {
-@@ -4698,7 +4699,7 @@ static int rtl8169_close(struct net_devi
- 
- 	cancel_work_sync(&tp->wk.work);
- 
--	free_irq(pci_irq_vector(pdev, 0), tp);
-+	free_irq(tp->irq, tp);
- 
- 	phy_disconnect(tp->phydev);
- 
-@@ -4719,7 +4720,7 @@ static void rtl8169_netpoll(struct net_d
- {
- 	struct rtl8169_private *tp = netdev_priv(dev);
- 
--	rtl8169_interrupt(pci_irq_vector(tp->pci_dev, 0), tp);
-+	rtl8169_interrupt(tp->irq, tp);
- }
- #endif
- 
-@@ -4753,8 +4754,7 @@ static int rtl_open(struct net_device *d
- 	rtl_request_firmware(tp);
- 
- 	irqflags = pci_dev_msi_enabled(pdev) ? IRQF_NO_THREAD : IRQF_SHARED;
--	retval = request_irq(pci_irq_vector(pdev, 0), rtl8169_interrupt,
--			     irqflags, dev->name, tp);
-+	retval = request_irq(tp->irq, rtl8169_interrupt, irqflags, dev->name, tp);
- 	if (retval < 0)
- 		goto err_release_fw_2;
- 
-@@ -4771,7 +4771,7 @@ static int rtl_open(struct net_device *d
- 	return retval;
- 
- err_free_irq:
--	free_irq(pci_irq_vector(pdev, 0), tp);
-+	free_irq(tp->irq, tp);
- err_release_fw_2:
- 	rtl_release_firmware(tp);
- 	rtl8169_rx_clear(tp);
-@@ -5341,6 +5341,7 @@ static int rtl_init_one(struct pci_dev *
- 		dev_err(&pdev->dev, "Can't allocate interrupt\n");
- 		return rc;
- 	}
-+	tp->irq = pci_irq_vector(pdev, 0);
- 
- 	INIT_WORK(&tp->wk.work, rtl_task);
- 
-@@ -5416,8 +5417,7 @@ static int rtl_init_one(struct pci_dev *
- 		return rc;
- 
- 	netdev_info(dev, "%s, %pM, XID %03x, IRQ %d\n",
--		    rtl_chip_infos[chipset].name, dev->dev_addr, xid,
--		    pci_irq_vector(pdev, 0));
-+		    rtl_chip_infos[chipset].name, dev->dev_addr, xid, tp->irq);
- 
- 	if (jumbo_max)
- 		netdev_info(dev, "jumbo features [frames: %d bytes, tx checksumming: %s]\n",
+~Nick Desaulniers
