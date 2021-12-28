@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C8A8480C83
+	by mail.lfdr.de (Postfix) with ESMTP id D756B480C84
 	for <lists+netdev@lfdr.de>; Tue, 28 Dec 2021 19:25:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237033AbhL1SZH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Dec 2021 13:25:07 -0500
+        id S237035AbhL1SZI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Dec 2021 13:25:08 -0500
 Received: from mga09.intel.com ([134.134.136.24]:29449 "EHLO mga09.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237027AbhL1SZF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Dec 2021 13:25:05 -0500
+        id S237030AbhL1SZG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Dec 2021 13:25:06 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1640715905; x=1672251905;
+  t=1640715906; x=1672251906;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=jCbSOb7D3ACGo8X1FFMKpIcfwzs0tg6Z20Q5aWCAVgY=;
-  b=cev7WlJovRP4Wv7Ru0HWkyE4/MbgFksIscwg1+fWK1Kh8ulfejOVQZCT
-   e6HPO3kyoPf+ECtBStSRcDFU7aXsEKLag//e0DCL08cRJiwTTrC25H6zm
-   LTv4tEzipE6LeBlBNoHRGHux8LziZFPfYMJp0yZb6Hx5MjqbCYd9JEeK4
-   lBDg5Q2sk9H/eaG2zfZHunD4IlCBTBOpik/53vAZFRlzcVHpD252wnAMY
-   hMkpuobirczkMNoRk1/Hk7r/eqI07a2JGv66XxHRnwHc7FuL7Pu5DqDiz
-   huTVE7fl3twiDys5I19Y/9h4wadWxl3Dfhxf6xtoJ0c+zrVw8VOhVfeIE
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10211"; a="241206670"
+  bh=b05DCDJ4y7WLj9M00yi9+3L2x6Ad3xY9Tzc0kftGRsY=;
+  b=XL9GinEYfmZ0V6CV9T9XkbO+QEVXQ4qFODldOp4+N91V+XqOr8d6cb9/
+   fzwalqeXzjfslyNKqNrN4O8nz11frfHYiYFwgs9eWOcQ+9LS3eZX1eq/7
+   qvaBxs2LhfRcoxAHjl+CGJtlRL84xybDMclfij1OZLFW232u6XGgomjLA
+   FNE0/EcoQaMEXOnhFbKFCV2lxWLytYpMKRUEuUVJz6d57DhafQD5PBs4o
+   X1eE1bPUsZ8nazT0gdnynBCnEa/zmPbYRkW8E6+2mMMSakcvcUuR1owlF
+   V49emGHQy6a4Wdfwce0/chxbMi5etZP/OBbRGG1oKVbFMDTTF8MY5nSuS
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10211"; a="241206671"
 X-IronPort-AV: E=Sophos;i="5.88,242,1635231600"; 
-   d="scan'208";a="241206670"
+   d="scan'208";a="241206671"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
   by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Dec 2021 10:25:05 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,242,1635231600"; 
-   d="scan'208";a="666075955"
+   d="scan'208";a="666075959"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by fmsmga001.fm.intel.com with ESMTP; 28 Dec 2021 10:25:04 -0800
+  by fmsmga001.fm.intel.com with ESMTP; 28 Dec 2021 10:25:05 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+Cc:     James McLaughlin <james.mclaughlin@qsc.com>,
         netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
         sasha.neftin@intel.com, vitaly.lifshits@intel.com,
-        Stefan Dietrich <roots@gmx.de>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
         Nechama Kraus <nechamax.kraus@linux.intel.com>
-Subject: [PATCH net 1/2] igc: Do not enable crosstimestamping for i225-V models
-Date:   Tue, 28 Dec 2021 10:24:20 -0800
-Message-Id: <20211228182421.340354-2-anthony.l.nguyen@intel.com>
+Subject: [PATCH net 2/2] igc: Fix TX timestamp support for non-MSI-X platforms
+Date:   Tue, 28 Dec 2021 10:24:21 -0800
+Message-Id: <20211228182421.340354-3-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211228182421.340354-1-anthony.l.nguyen@intel.com>
 References: <20211228182421.340354-1-anthony.l.nguyen@intel.com>
@@ -53,51 +53,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+From: James McLaughlin <james.mclaughlin@qsc.com>
 
-It was reported that when PCIe PTM is enabled, some lockups could
-be observed with some integrated i225-V models.
+Time synchronization was not properly enabled on non-MSI-X platforms.
 
-While the issue is investigated, we can disable crosstimestamp for
-those models and see no loss of functionality, because those models
-don't have any support for time synchronization.
-
-Fixes: a90ec8483732 ("igc: Add support for PTP getcrosststamp()")
-Link: https://lore.kernel.org/all/924175a188159f4e03bd69908a91e606b574139b.camel@gmx.de/
-Reported-by: Stefan Dietrich <roots@gmx.de>
-Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Fixes: 2c344ae24501 ("igc: Add support for TX timestamping")
+Signed-off-by: James McLaughlin <james.mclaughlin@qsc.com>
+Reviewed-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
 Tested-by: Nechama Kraus <nechamax.kraus@linux.intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/igc/igc_ptp.c | 15 ++++++++++++++-
- 1 file changed, 14 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/intel/igc/igc_main.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/net/ethernet/intel/igc/igc_ptp.c b/drivers/net/ethernet/intel/igc/igc_ptp.c
-index 30568e3544cd..4f9245aa79a1 100644
---- a/drivers/net/ethernet/intel/igc/igc_ptp.c
-+++ b/drivers/net/ethernet/intel/igc/igc_ptp.c
-@@ -768,7 +768,20 @@ int igc_ptp_get_ts_config(struct net_device *netdev, struct ifreq *ifr)
-  */
- static bool igc_is_crosststamp_supported(struct igc_adapter *adapter)
- {
--	return IS_ENABLED(CONFIG_X86_TSC) ? pcie_ptm_enabled(adapter->pdev) : false;
-+	if (!IS_ENABLED(CONFIG_X86_TSC))
-+		return false;
-+
-+	/* FIXME: it was noticed that enabling support for PCIe PTM in
-+	 * some i225-V models could cause lockups when bringing the
-+	 * interface up/down. There should be no downsides to
-+	 * disabling crosstimestamping support for i225-V, as it
-+	 * doesn't have any PTP support. That way we gain some time
-+	 * while root causing the issue.
-+	 */
-+	if (adapter->pdev->device == IGC_DEV_ID_I225_V)
-+		return false;
-+
-+	return pcie_ptm_enabled(adapter->pdev);
- }
+diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
+index 8e448288ee26..d28a80a00953 100644
+--- a/drivers/net/ethernet/intel/igc/igc_main.c
++++ b/drivers/net/ethernet/intel/igc/igc_main.c
+@@ -5467,6 +5467,9 @@ static irqreturn_t igc_intr_msi(int irq, void *data)
+ 			mod_timer(&adapter->watchdog_timer, jiffies + 1);
+ 	}
  
- static struct system_counterval_t igc_device_tstamp_to_system(u64 tstamp)
++	if (icr & IGC_ICR_TS)
++		igc_tsync_interrupt(adapter);
++
+ 	napi_schedule(&q_vector->napi);
+ 
+ 	return IRQ_HANDLED;
+@@ -5510,6 +5513,9 @@ static irqreturn_t igc_intr(int irq, void *data)
+ 			mod_timer(&adapter->watchdog_timer, jiffies + 1);
+ 	}
+ 
++	if (icr & IGC_ICR_TS)
++		igc_tsync_interrupt(adapter);
++
+ 	napi_schedule(&q_vector->napi);
+ 
+ 	return IRQ_HANDLED;
 -- 
 2.31.1
 
