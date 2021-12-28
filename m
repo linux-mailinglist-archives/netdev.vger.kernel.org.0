@@ -2,59 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FC24480DDA
-	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 00:06:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EDC0480DFC
+	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 00:55:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237712AbhL1XGL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Dec 2021 18:06:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58420 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237710AbhL1XGK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Dec 2021 18:06:10 -0500
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3322C061574
-        for <netdev@vger.kernel.org>; Tue, 28 Dec 2021 15:06:10 -0800 (PST)
-Received: by mail-pl1-x62e.google.com with SMTP id c3so1348858pls.5
-        for <netdev@vger.kernel.org>; Tue, 28 Dec 2021 15:06:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=Av10FJHZ16PNlaWBwLeHhLYMKvHi/4lm87heoggNDKA=;
-        b=hP6OsgRnVWbIWxpX3nkx7UcVDxj72rgqvWPo4u4mUd5yOIkSibWq3BNzRychj9rkyK
-         nOyYDZZO4tzNNbopxFVeuavB1cwlJzGlpKpMaf/qNjb9EHTL39R8JG45Qp2jk9WlfQV2
-         cILdfjcoDGKo019LrXzdrYPXdGKU3cC+6MtIkjAQ8Axlie8wpoVqp9quP1h1duepwrPR
-         o8CFWJQ/cXZsESn8S5p2yVLSdCmYDBlKAc3sk/F0KuniJcHrrvHAkE9HWDmPTgotOgIp
-         IGzPa2bXk8s1VSejC7oeJ4T598KReqtEbao+dRWvZcG1V+OfOlWBmNDlPEQBUUrxyDL/
-         g7tA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=Av10FJHZ16PNlaWBwLeHhLYMKvHi/4lm87heoggNDKA=;
-        b=MgcPCWj0MjW+3tmeorxFHTMXXfw5kCZ9D50j201T/Nwm1Ph7zO/3kNhYAj9LA9qEoh
-         5iSUrNryMHZLPQmIaL3J1+pvQtjkJSwGH8Zt1VpF9zRWzsgr5S+WzPiE8zHI6vO1Uf+8
-         fxXId2SJqJz+hboEi34fBfbViRoLO/zLEJtH5tFw6UB3Hv6NuuCjqJNsLJqQkKkR4NAn
-         ngU7bHy9cCmOV+mGTstfK0K9SVD/9tCw2VllMEAMRp/IKOOQtY9N1Y8HZRLlFC3J4fo2
-         eGLm97RjFjK9OmxbZhg+wAu2LDA/hM0rjENv2D2Y76mPMb83TTrog69Pqc7okpPdoPnG
-         EDew==
-X-Gm-Message-State: AOAM530cUe794VU0+PuJ3Azps2RHHa/RWUIFWopjxji4t6fVnn/eGL3o
-        ADW+QWJLXUT9W6TvaTY3hi/7jhAAIq7U8TxT5K4=
-X-Google-Smtp-Source: ABdhPJzhr0rd9BJ5iXll8JuFYVjzBaC37xsiXCYWprkd9Z2Nh/v2jAxDuogNAnffct5ORaSVWARhOzO6nH/wn9HqGLo=
-X-Received: by 2002:a17:90b:f17:: with SMTP id br23mr29145962pjb.178.1640732770205;
- Tue, 28 Dec 2021 15:06:10 -0800 (PST)
+        id S237882AbhL1Xyn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Dec 2021 18:54:43 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:60108 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237858AbhL1Xyh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Dec 2021 18:54:37 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 54B3BB808CF;
+        Tue, 28 Dec 2021 23:54:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3EEFC36AEC;
+        Tue, 28 Dec 2021 23:54:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1640735675;
+        bh=Cd+vCGWXVUexZihsjOT5+/8eHjF77KFyeP2BJSmdcVs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=bFpNWBO6l2Zybqoz7RJPz6rNxUsOKLQEdw2w3zNSNA7JRIXcgcvGILXD+ZDBpTvAF
+         OTDzuIRFeCkw6hSKPOBQ8QfGXPFfPuheX8BX3lk6OocQxNKH65vSgO+NedhWJmO+5p
+         SCmqVDwjUzjvgXNW0DRdFKH/73dbOEvDdsv815TULzaWK5POSsXgvZXtw6VDVoKj32
+         ieGYYgxz1n/yJ9SwVHwYotBv9TNWdcDufslXDAwxjS+QeYDYoh95HHSYdeCttpBBtK
+         Vz+ETKHVbvrls6HqMAOitd7x3qVIvZF3AWGcWzWHyGgfzJiPUnddDe7Bs08kdnxuLh
+         oErqVcEYd03Pw==
+Date:   Tue, 28 Dec 2021 15:54:33 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Tamir Duberstein <tamird@gmail.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: check passed optlen before reading
+Message-ID: <20211228155433.3b1c71e5@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <CAJ-ks9=41PuzGkXmi0-aZPEWicWJ5s2gW2zL+jSHuDjaJ5Lhsg@mail.gmail.com>
+References: <CAJ-ks9kd6wWi1S8GSCf1f=vJER=_35BGZzLnXwz36xDQPacyRw@mail.gmail.com>
+        <CAJ-ks9=41PuzGkXmi0-aZPEWicWJ5s2gW2zL+jSHuDjaJ5Lhsg@mail.gmail.com>
 MIME-Version: 1.0
-Received: by 2002:a05:6a11:390:0:0:0:0 with HTTP; Tue, 28 Dec 2021 15:06:09
- -0800 (PST)
-Reply-To: fionahill.usa@hotmail.com
-From:   Fiona Hill <tonyelumelu67@gmail.com>
-Date:   Tue, 28 Dec 2021 15:06:09 -0800
-Message-ID: <CAAVnhxJ8GBs7r6PByEz0cSPEO0Q_dN65j9V3LUcNsPgKezXZMw@mail.gmail.com>
-Subject: 
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
-Hi, did you receive my message  i send to you?
+On Tue, 28 Dec 2021 16:02:29 -0500 Tamir Duberstein wrote:
+> Errant brace in the earlier version.
+> 
+> From 8586be4d72c6c583b1085d2239076987e1b7c43a Mon Sep 17 00:00:00 2001
+> From: Tamir Duberstein <tamird@gmail.com>
+> Date: Tue, 28 Dec 2021 15:09:11 -0500
+> Subject: [PATCH v2] net: check passed optlen before reading
+> 
+> Add a check that the user-provided option is at least as long as the
+> number of bytes we intend to read. Before this patch we would blindly
+> read sizeof(int) bytes even in cases where the user passed
+> optlen<sizeof(int), which would potentially read garbage or fault.
+> 
+> Discovered by new tests in https://github.com/google/gvisor/pull/6957 .
+> 
+> Signed-off-by: Tamir Duberstein <tamird@gmail.com>
+
+Your patches are corrupted by your email client.
+
+Can you try sending the latest version with git send-email?
