@@ -2,168 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 749F2480D2A
-	for <lists+netdev@lfdr.de>; Tue, 28 Dec 2021 22:06:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 13EAC480D35
+	for <lists+netdev@lfdr.de>; Tue, 28 Dec 2021 22:15:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234329AbhL1VGF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Dec 2021 16:06:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59420 "EHLO
+        id S236368AbhL1VPV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Dec 2021 16:15:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237385AbhL1VGE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Dec 2021 16:06:04 -0500
-Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EFF5C06173E;
-        Tue, 28 Dec 2021 13:06:04 -0800 (PST)
-Received: from local
-        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
-         (Exim 4.94.2)
-        (envelope-from <daniel@makrotopia.org>)
-        id 1n2JfV-0004Ju-Vb; Tue, 28 Dec 2021 22:06:02 +0100
-Date:   Tue, 28 Dec 2021 21:05:54 +0000
-From:   Daniel Golle <daniel@makrotopia.org>
-To:     linux-mediatek@lists.infradead.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>, Michael Lee <igvtee@gmail.com>
-Subject: [PATCH v8 3/3] net: ethernet: mtk_eth_soc: implement Clause 45 MDIO
- access
-Message-ID: <Yct8MnI/J9Yqd2Zx@makrotopia.org>
-References: <Ycr5Cna76eg2B0An@shell.armlinux.org.uk>
+        with ESMTP id S231871AbhL1VPV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Dec 2021 16:15:21 -0500
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97195C061574;
+        Tue, 28 Dec 2021 13:15:20 -0800 (PST)
+Received: by mail-wm1-x332.google.com with SMTP id c66so12364034wma.5;
+        Tue, 28 Dec 2021 13:15:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CzlhoSU/pOiVyXee3kNsw2hksYzIheCUqtx/f2txkkg=;
+        b=HdBnvWb9tw87lcNiEqu22C6OoNShxUnwemrncXp9lKUx8XMsvIOWOhtPOeSK6smU4Z
+         P3nRJ/JkzblktJvCeyUmd0TsfCfzeNiIAnN3hRHfJ3gbq5rGtWn1W8NYdTQcBDn4YzQq
+         gaQKqfjCSSifzezuZPRWhqZXiMGXhA5KE8YzEyOkCd+xBtjBtlSkZHeHNpwLnn6hLkEc
+         ZXckBtYMjh5m57/MPB2lllD+oY91z+XT0Fq/ipDa2f10eLnGTRsoK0MrnacSNLK1wx2a
+         FswiA7/LpRy6CjBu64h0p1P5bqys9+yGonxbwWu2HtjmfQ1yTf+RXgM8Xhj7KJR1XBvW
+         GDqA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CzlhoSU/pOiVyXee3kNsw2hksYzIheCUqtx/f2txkkg=;
+        b=y4zqJkA47hhr8w6b4AFfe07bkKCwn0/23Iv5wzoGdvmoAu8EcOt5AIb4fgbbc7lsKy
+         4T4oJddWdsZryF/4YF8St0t4dj5hs91XQQqhINCXU/sQtrKulf6IgBtww89WxaffLhwL
+         5vO0MdGtH9h//UNnEm/3XAv02tSygrnDlMZRU7qrF095hE9HmKU11XUDjJ10pab7tVvd
+         tjSt1/BrTEAPLy1E4zTPB0SijU2A6RZNvUSKfFGajlnnkFmROx0KoHMjQ0DU930f22Fv
+         5gNeKlTkjLg1NxMFsNXd9OOTYU7lrzgAtzwXuk6g6xdCU2oCaKL7Z1bDX7WImV2AiiVk
+         +qIg==
+X-Gm-Message-State: AOAM530CjxzSDxytVk7spgMFQSQExngUQrrUbEuazwJ72p7Z7K4+/7ep
+        xvu3sbw1BeKyfPZMbiUmGjjAvKtcK80=
+X-Google-Smtp-Source: ABdhPJzkrK0OrdINgMoBVIa8GgpKot110yJKfw67O5Jm52mF/0hT16ZYW8zintLZSh7q/3qnsZpTQQ==
+X-Received: by 2002:a7b:ce8e:: with SMTP id q14mr19384307wmj.51.1640726118769;
+        Tue, 28 Dec 2021 13:15:18 -0800 (PST)
+Received: from localhost.localdomain (dynamic-2a01-0c23-c1d2-d400-f22f-74ff-fe21-0725.c23.pool.telefonica.de. [2a01:c23:c1d2:d400:f22f:74ff:fe21:725])
+        by smtp.googlemail.com with ESMTPSA id o11sm21939036wmq.15.2021.12.28.13.15.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Dec 2021 13:15:18 -0800 (PST)
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+To:     linux-wireless@vger.kernel.org
+Cc:     tony0620emma@gmail.com, kvalo@codeaurora.org,
+        johannes@sipsolutions.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Neo Jou <neojou@gmail.com>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Pkshih <pkshih@realtek.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Subject: [PATCH 0/9] rtw88: prepare locking for SDIO support
+Date:   Tue, 28 Dec 2021 22:14:52 +0100
+Message-Id: <20211228211501.468981-1-martin.blumenstingl@googlemail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Ycr5Cna76eg2B0An@shell.armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Implement read and write access to IEEE 802.3 Clause 45 Ethernet
-phy registers while making use of new mdiobus_c45_regad and
-mdiobus_c45_devad helpers.
-Improve readability by using bitfield helper macros which makes the
-register definitions in the header file resemble the exact values
-stated in the Reference Manual.
+Hello rtw88 and mac80211 maintainers/contributors,
 
-Tested on the Ubiquiti UniFi 6 LR access point featuring
-MediaTek MT7622BV WiSoC with Aquantia AQR112C.
+there is an ongoing effort where Jernej and I are working on adding
+SDIO support to the rtw88 driver [0].
+The hardware we use at the moment is RTL8822BS and RTL8822CS.
+We are at a point where scanning, assoc etc. works (though it's not
+fast yet, in my tests I got ~6Mbit/s in either direction).
 
-Signed-off-by: Daniel Golle <daniel@makrotopia.org>
----
-v8: switch to bitfield helper macros, incl. newly introduced ones
-v7: remove unneeded variables and order OR-ed call parameters
-v6: further clean up functions and more cleanly separate patches
-v5: fix wrong variable name in first patch covered by follow-up patch
-v4: clean-up return values and types, split into two commits
-v3: return -1 instead of 0xffff on error in _mtk_mdio_write
-v2: use MII_DEVADDR_C45_SHIFT and MII_REGADDR_C45_MASK to extract
-    device id and register address. Unify read and write functions to
-    have identical types and parameter names where possible as we are
-    anyway already replacing both function bodies.
+This series contains some preparation work for adding SDIO support.
+While testing our changes we found that there are some "scheduling
+while atomic" errors in the kernel log. These are due to the fact
+that the SDIO accessors (sdio_readb, sdio_writeb and friends) may
+sleep internally.
 
- drivers/net/ethernet/mediatek/mtk_eth_soc.c | 52 +++++++++++++++++----
- drivers/net/ethernet/mediatek/mtk_eth_soc.h |  3 ++
- 2 files changed, 46 insertions(+), 9 deletions(-)
+Some background on why SDIO access (for example: sdio_writeb) cannot
+be done with a spinlock held (this is a copy from my previous mail,
+see [1]):
+- when using for example sdio_writeb the MMC subsystem in Linux
+  prepares a so-called MMC request
+- this request is submitted to the MMC host controller hardware
+- the host controller hardware forwards the MMC request to the card
+- the card signals when it's done processing the request
+- the MMC subsystem in Linux waits for the card to signal that it's
+done processing the request in mmc_wait_for_req_done() -> this uses
+wait_for_completion() internally, which might sleep (which is not
+allowed while a spinlock is held)
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index e3d0a617df196..2ce142352616c 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -100,11 +100,28 @@ static int _mtk_mdio_write(struct mtk_eth *eth, u32 phy_addr, u32 phy_reg,
- 	if (mtk_mdio_busy_wait(eth))
- 		return -EBUSY;
- 
--	mtk_w32(eth, PHY_IAC_ACCESS | PHY_IAC_START_C22 | PHY_IAC_CMD_WRITE |
--		PHY_IAC_REG(phy_reg) |
--		PHY_IAC_ADDR(phy_addr) |
--		PHY_IAC_DATA(write_data),
--		MTK_PHY_IAC);
-+	if (phy_reg & MII_ADDR_C45) {
-+		mtk_w32(eth, PHY_IAC_ACCESS | PHY_IAC_START_C45 | PHY_IAC_CMD_C45_ADDR |
-+			PHY_IAC_REG(mdiobus_c45_devad(phy_reg)) |
-+			PHY_IAC_ADDR(phy_addr) |
-+			PHY_IAC_DATA(mdiobus_c45_regad(phy_reg)),
-+			MTK_PHY_IAC);
-+
-+		if (mtk_mdio_busy_wait(eth))
-+			return -EBUSY;
-+
-+		mtk_w32(eth, PHY_IAC_ACCESS | PHY_IAC_START_C45 | PHY_IAC_CMD_WRITE |
-+			PHY_IAC_REG(mdiobus_c45_devad(phy_reg)) |
-+			PHY_IAC_ADDR(phy_addr) |
-+			PHY_IAC_DATA(write_data),
-+			MTK_PHY_IAC);
-+	} else {
-+		mtk_w32(eth, PHY_IAC_ACCESS | PHY_IAC_START_C22 | PHY_IAC_CMD_WRITE |
-+			PHY_IAC_REG(phy_reg) |
-+			PHY_IAC_ADDR(phy_addr) |
-+			PHY_IAC_DATA(write_data),
-+			MTK_PHY_IAC);
-+	}
- 
- 	if (mtk_mdio_busy_wait(eth))
- 		return -EBUSY;
-@@ -117,10 +134,26 @@ static int _mtk_mdio_read(struct mtk_eth *eth, u32 phy_addr, u32 phy_reg)
- 	if (mtk_mdio_busy_wait(eth))
- 		return -EBUSY;
- 
--	mtk_w32(eth, PHY_IAC_ACCESS | PHY_IAC_START_C22 | PHY_IAC_CMD_C22_READ |
--		PHY_IAC_REG(phy_reg) |
--		PHY_IAC_ADDR(phy_addr),
--		MTK_PHY_IAC);
-+	if (phy_reg & MII_ADDR_C45) {
-+		mtk_w32(eth, PHY_IAC_ACCESS | PHY_IAC_START_C45 | PHY_IAC_CMD_C45_ADDR |
-+			PHY_IAC_REG(mdiobus_c45_devad(phy_reg)) |
-+			PHY_IAC_ADDR(phy_addr) |
-+			PHY_IAC_DATA(mdiobus_c45_regad(phy_reg)),
-+			MTK_PHY_IAC);
-+
-+		if (mtk_mdio_busy_wait(eth))
-+			return -EBUSY;
-+
-+		mtk_w32(eth, PHY_IAC_ACCESS | PHY_IAC_START_C45 | PHY_IAC_CMD_C45_READ |
-+			PHY_IAC_REG(mdiobus_c45_devad(phy_reg)) |
-+			PHY_IAC_ADDR(phy_addr),
-+			MTK_PHY_IAC);
-+	} else {
-+		mtk_w32(eth, PHY_IAC_ACCESS | PHY_IAC_START_C22 | PHY_IAC_CMD_C22_READ |
-+			PHY_IAC_REG(phy_reg) |
-+			PHY_IAC_ADDR(phy_addr),
-+			MTK_PHY_IAC);
-+	}
- 
- 	if (mtk_mdio_busy_wait(eth))
- 		return -EBUSY;
-@@ -492,6 +525,7 @@ static int mtk_mdio_init(struct mtk_eth *eth)
- 	eth->mii_bus->name = "mdio";
- 	eth->mii_bus->read = mtk_mdio_read;
- 	eth->mii_bus->write = mtk_mdio_write;
-+	eth->mii_bus->probe_capabilities = MDIOBUS_C22_C45;
- 	eth->mii_bus->priv = eth;
- 	eth->mii_bus->parent = eth->dev;
- 
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-index f2d90639d7ed1..c9d42be314b5a 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-@@ -346,9 +346,12 @@
- #define PHY_IAC_ADDR_MASK	GENMASK(24, 20)
- #define PHY_IAC_ADDR(x)		FIELD_PREP(PHY_IAC_ADDR_MASK, (x))
- #define PHY_IAC_CMD_MASK	GENMASK(19, 18)
-+#define PHY_IAC_CMD_C45_ADDR	FIELD_PREP(PHY_IAC_CMD_MASK, 0)
- #define PHY_IAC_CMD_WRITE	FIELD_PREP(PHY_IAC_CMD_MASK, 1)
- #define PHY_IAC_CMD_C22_READ	FIELD_PREP(PHY_IAC_CMD_MASK, 2)
-+#define PHY_IAC_CMD_C45_READ	FIELD_PREP(PHY_IAC_CMD_MASK, 3)
- #define PHY_IAC_START_MASK	GENMASK(17, 16)
-+#define PHY_IAC_START_C45	FIELD_PREP(PHY_IAC_START_MASK, 0)
- #define PHY_IAC_START_C22	FIELD_PREP(PHY_IAC_START_MASK, 1)
- #define PHY_IAC_DATA_MASK	GENMASK(15, 0)
- #define PHY_IAC_DATA(x)		FIELD_PREP(PHY_IAC_DATA_MASK, (x))
+Based on Ping-Ke's suggestion I came up with the code in this series.
+The goal is to use non-atomic locking for all register access in the
+rtw88 driver. One patch adds a new function to mac80211 which did not
+have a "non-atomic" version of it's "atomic" counterpart yet.
+
+As mentioned before I don't have any rtw88 PCIe device so I am unable
+to test on that hardware.
+I am sending this as an RFC series since I am new to the mac80211
+subsystem as well as the rtw88 driver. So any kind of feedback is
+very welcome!
+The actual changes for adding SDIO support will be sent separately in
+the future.
+
+
+Changes since v1 at [2] (which I sent back in summer):
+- patch #1: fixed kernel doc copy & paste (remove _atomic) as suggested
+  by Ping-Ke and Johannes
+- patch #1: added paragraph about driver authors having to be careful
+  where they use this new function as suggested by Johannes
+- patch #2 (new): keep rtw_iterate_vifs_atomic() to not undo the fix
+  from commit 5b0efb4d670c8 ("rtw88: avoid circular locking between
+  local->iflist_mtx and rtwdev->mutex") and instead call
+  rtw_bf_cfg_csi_rate() from rtw_watch_dog_work() (outside the atomic
+  section) as suggested by Ping-Ke.
+- patch #3 (new): keep rtw_iterate_vifs_atomic() to prevent deadlocks
+  as Johannes suggested. Keep track of all relevant stations inside
+  rtw_ra_mask_info_update_iter() and the iter-data and then call
+  rtw_update_sta_info() while held under rtwdev->mutex instead
+- patch #7: shrink the critical section as suggested by Ping-Ke
+
+
+[0] https://github.com/xdarklight/linux/tree/rtw88-sdio-locking-prep-linux-next-20211226
+[1] https://lore.kernel.org/linux-wireless/CAFBinCDMPPJ7qW7xTkep1Trg+zP0B9Jxei6sgjqmF4NDA1JAhQ@mail.gmail.com/
+[2] https://lore.kernel.org/netdev/2170471a1c144adb882d06e08f3c9d1a@realtek.com/T/
+
+
+Martin Blumenstingl (9):
+  mac80211: Add stations iterator where the iterator function may sleep
+  rtw88: Move rtw_chip_cfg_csi_rate() out of rtw_vif_watch_dog_iter()
+  rtw88: Move rtw_update_sta_info() out of
+    rtw_ra_mask_info_update_iter()
+  rtw88: Use rtw_iterate_vifs where the iterator reads or writes
+    registers
+  rtw88: Use rtw_iterate_stas where the iterator reads or writes
+    registers
+  rtw88: Replace usage of rtw_iterate_keys_rcu() with rtw_iterate_keys()
+  rtw88: Configure the registers from rtw_bf_assoc() outside the RCU
+    lock
+  rtw88: hci: Convert rf_lock from a spinlock to a mutex
+  rtw88: fw: Convert h2c.lock from a spinlock to a mutex
+
+ drivers/net/wireless/realtek/rtw88/bf.c       | 13 ++---
+ drivers/net/wireless/realtek/rtw88/fw.c       | 14 +++---
+ drivers/net/wireless/realtek/rtw88/hci.h      | 11 ++---
+ drivers/net/wireless/realtek/rtw88/mac80211.c | 14 +++++-
+ drivers/net/wireless/realtek/rtw88/main.c     | 47 +++++++++----------
+ drivers/net/wireless/realtek/rtw88/main.h     |  4 +-
+ drivers/net/wireless/realtek/rtw88/phy.c      |  4 +-
+ drivers/net/wireless/realtek/rtw88/ps.c       |  2 +-
+ drivers/net/wireless/realtek/rtw88/util.h     |  4 +-
+ drivers/net/wireless/realtek/rtw88/wow.c      |  2 +-
+ include/net/mac80211.h                        | 21 +++++++++
+ net/mac80211/util.c                           | 13 +++++
+ 12 files changed, 94 insertions(+), 55 deletions(-)
+
 -- 
 2.34.1
 
