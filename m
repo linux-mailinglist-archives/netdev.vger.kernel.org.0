@@ -2,124 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C160E480D28
-	for <lists+netdev@lfdr.de>; Tue, 28 Dec 2021 22:05:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 749F2480D2A
+	for <lists+netdev@lfdr.de>; Tue, 28 Dec 2021 22:06:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237375AbhL1VF5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Dec 2021 16:05:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59388 "EHLO
+        id S234329AbhL1VGF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Dec 2021 16:06:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234329AbhL1VF4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Dec 2021 16:05:56 -0500
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C4D4C061574;
-        Tue, 28 Dec 2021 13:05:56 -0800 (PST)
-Received: by mail-wr1-x42d.google.com with SMTP id w20so31506995wra.9;
-        Tue, 28 Dec 2021 13:05:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=qy+EN1lEEGLvFLWU5Lg6MhBBtKBXhty/n19mTqx1M+Y=;
-        b=mW1eywlqHMpCc/0xSL16ALeiB5YKscP6ggephiuxpezOWfLa0Wc2HIisMBJaFNq60a
-         wJAQOZ1kwHmsv4eJzH8YJ3nsN1knIg4m0oO35NNj3/69DX7qHhGCpCoF2LdaJmEsdtsW
-         9GqdC/aWJ8n7vFNihjG0IVtg9B8SiVFqNCatv9txyBEUs7yP4j83T0JpQBDDllq4TvqV
-         pAFOc8gs0GCea1bFqLcZDkugvGYCZAOwBufWc73eHL+nT3MPIcDbmNIVHmKnung3SGDu
-         s1HjCe5JgpSBhkd7/6yXJXl6X5H+afSM1lDu2Zs/Ro6l4vhaapV+Tziqb7Q7YSbiwMOt
-         Ht4g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=qy+EN1lEEGLvFLWU5Lg6MhBBtKBXhty/n19mTqx1M+Y=;
-        b=di0OJ2DJ9z9TMO1fbeau5zoXyKgbgx/ZiXHuawtbDj7LQCmI81mQpoQM97ZlyCyM9N
-         1yrMqtQTaAEEW2vydA+3GKJAB+47D7A7HGPwSYm/dGZRREV88N22OHdPgo7yqumMym4F
-         RK6aV97E3E48JIqgdQbWuZHZwgxjwfWZn4e0pMh+n6FUNu3QKKWje13Xur74MgX0fAVq
-         uosNFHp7CGI2TUAAnq20ONrdYKExxJUDzQ0Ny37OwUAeVmmcFDtuEHwy5GWVnEsq4cJi
-         SZS718ccBi5VdhzcVw8eXkMhkS14PwdY7KW87g6p7XqgrAdUI0qDgVXHMajIN1sMb0cT
-         M0cQ==
-X-Gm-Message-State: AOAM533OnppPyyRJaRLSzY9uaOQlrLf78Utrj0fkRDWSCqsCbNl3sKIx
-        TtZheHNCp5wunx6x4uo+mu5Nz7zJNzQqzpZqefk=
-X-Google-Smtp-Source: ABdhPJwgSX7LvSGdN6JoCzUtXHv3hQpgoAcX4eT2jSwcbhfNuNn0v5EAVoanuWWKelRz3a7cL6loM4afEFyClzoXdKM=
-X-Received: by 2002:adf:d1c2:: with SMTP id b2mr18095209wrd.81.1640725554288;
- Tue, 28 Dec 2021 13:05:54 -0800 (PST)
-MIME-Version: 1.0
-References: <20211222155743.256280-1-miquel.raynal@bootlin.com> <20211222155743.256280-2-miquel.raynal@bootlin.com>
-In-Reply-To: <20211222155743.256280-2-miquel.raynal@bootlin.com>
-From:   Alexander Aring <alex.aring@gmail.com>
-Date:   Tue, 28 Dec 2021 16:05:43 -0500
-Message-ID: <CAB_54W7BeSA+2GVzb9Yvz1kj12wkRSqHj9Ybr8cK7oYd7804RQ@mail.gmail.com>
-Subject: Re: [net-next 01/18] ieee802154: hwsim: Ensure proper channel
- selection at probe time
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S237385AbhL1VGE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Dec 2021 16:06:04 -0500
+Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EFF5C06173E;
+        Tue, 28 Dec 2021 13:06:04 -0800 (PST)
+Received: from local
+        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
+         (Exim 4.94.2)
+        (envelope-from <daniel@makrotopia.org>)
+        id 1n2JfV-0004Ju-Vb; Tue, 28 Dec 2021 22:06:02 +0100
+Date:   Tue, 28 Dec 2021 21:05:54 +0000
+From:   Daniel Golle <daniel@makrotopia.org>
+To:     linux-mediatek@lists.infradead.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        kernel list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>, Michael Lee <igvtee@gmail.com>
+Subject: [PATCH v8 3/3] net: ethernet: mtk_eth_soc: implement Clause 45 MDIO
+ access
+Message-ID: <Yct8MnI/J9Yqd2Zx@makrotopia.org>
+References: <Ycr5Cna76eg2B0An@shell.armlinux.org.uk>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Ycr5Cna76eg2B0An@shell.armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Implement read and write access to IEEE 802.3 Clause 45 Ethernet
+phy registers while making use of new mdiobus_c45_regad and
+mdiobus_c45_devad helpers.
+Improve readability by using bitfield helper macros which makes the
+register definitions in the header file resemble the exact values
+stated in the Reference Manual.
 
-On Wed, 22 Dec 2021 at 10:57, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
->
-> A default channel is selected by default (13), let's clarify that this
-> is page 0 channel 13. Call the right helper to ensure the necessary
-> configuration for this channel has been applied.
->
-> So far there is very little configuration done in this helper but we
-> will soon add more information (like the symbol duration which is
-> missing) and having this helper called at probe time will prevent us to
-> this type of initialization at two different locations.
->
+Tested on the Ubiquiti UniFi 6 LR access point featuring
+MediaTek MT7622BV WiSoC with Aquantia AQR112C.
 
-I see why this patch is necessary because in later patches the symbol
-duration is set at ".set_channel()" callback like the at86rf230 driver
-is doing it.
-However there is an old TODO [0]. I think we should combine it and
-implement it in ieee802154_set_channel() of "net/mac802154/cfg.c".
-Also do the symbol duration setting according to the channel/page when
-we call ieee802154_register_hw(), so we have it for the default
-settings.
+Signed-off-by: Daniel Golle <daniel@makrotopia.org>
+---
+v8: switch to bitfield helper macros, incl. newly introduced ones
+v7: remove unneeded variables and order OR-ed call parameters
+v6: further clean up functions and more cleanly separate patches
+v5: fix wrong variable name in first patch covered by follow-up patch
+v4: clean-up return values and types, split into two commits
+v3: return -1 instead of 0xffff on error in _mtk_mdio_write
+v2: use MII_DEVADDR_C45_SHIFT and MII_REGADDR_C45_MASK to extract
+    device id and register address. Unify read and write functions to
+    have identical types and parameter names where possible as we are
+    anyway already replacing both function bodies.
 
-> So far there is very little configuration done in this helper but thanks
-> to this improvement, future enhancements in this area (like setting a
-> symbol duration, which is missing) will be reflected automatically in
-> the default probe state.
->
-> Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-> ---
->  drivers/net/ieee802154/mac802154_hwsim.c | 7 +++++--
->  1 file changed, 5 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/net/ieee802154/mac802154_hwsim.c b/drivers/net/ieee802154/mac802154_hwsim.c
-> index 62ced7a30d92..b1a4ee7dceda 100644
-> --- a/drivers/net/ieee802154/mac802154_hwsim.c
-> +++ b/drivers/net/ieee802154/mac802154_hwsim.c
-> @@ -778,8 +778,6 @@ static int hwsim_add_one(struct genl_info *info, struct device *dev,
->
->         ieee802154_random_extended_addr(&hw->phy->perm_extended_addr);
->
-> -       /* hwsim phy channel 13 as default */
-> -       hw->phy->current_channel = 13;
->         pib = kzalloc(sizeof(*pib), GFP_KERNEL);
->         if (!pib) {
->                 err = -ENOMEM;
-> @@ -793,6 +791,11 @@ static int hwsim_add_one(struct genl_info *info, struct device *dev,
->         hw->flags = IEEE802154_HW_PROMISCUOUS | IEEE802154_HW_RX_DROP_BAD_CKSUM;
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c | 52 +++++++++++++++++----
+ drivers/net/ethernet/mediatek/mtk_eth_soc.h |  3 ++
+ 2 files changed, 46 insertions(+), 9 deletions(-)
 
-sadly this patch doesn't apply on current net-next/master because
-IEEE802154_HW_RX_DROP_BAD_CKSUM is not set.
-I agree that it should be set, so we need a patch for it.
+diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+index e3d0a617df196..2ce142352616c 100644
+--- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
++++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+@@ -100,11 +100,28 @@ static int _mtk_mdio_write(struct mtk_eth *eth, u32 phy_addr, u32 phy_reg,
+ 	if (mtk_mdio_busy_wait(eth))
+ 		return -EBUSY;
+ 
+-	mtk_w32(eth, PHY_IAC_ACCESS | PHY_IAC_START_C22 | PHY_IAC_CMD_WRITE |
+-		PHY_IAC_REG(phy_reg) |
+-		PHY_IAC_ADDR(phy_addr) |
+-		PHY_IAC_DATA(write_data),
+-		MTK_PHY_IAC);
++	if (phy_reg & MII_ADDR_C45) {
++		mtk_w32(eth, PHY_IAC_ACCESS | PHY_IAC_START_C45 | PHY_IAC_CMD_C45_ADDR |
++			PHY_IAC_REG(mdiobus_c45_devad(phy_reg)) |
++			PHY_IAC_ADDR(phy_addr) |
++			PHY_IAC_DATA(mdiobus_c45_regad(phy_reg)),
++			MTK_PHY_IAC);
++
++		if (mtk_mdio_busy_wait(eth))
++			return -EBUSY;
++
++		mtk_w32(eth, PHY_IAC_ACCESS | PHY_IAC_START_C45 | PHY_IAC_CMD_WRITE |
++			PHY_IAC_REG(mdiobus_c45_devad(phy_reg)) |
++			PHY_IAC_ADDR(phy_addr) |
++			PHY_IAC_DATA(write_data),
++			MTK_PHY_IAC);
++	} else {
++		mtk_w32(eth, PHY_IAC_ACCESS | PHY_IAC_START_C22 | PHY_IAC_CMD_WRITE |
++			PHY_IAC_REG(phy_reg) |
++			PHY_IAC_ADDR(phy_addr) |
++			PHY_IAC_DATA(write_data),
++			MTK_PHY_IAC);
++	}
+ 
+ 	if (mtk_mdio_busy_wait(eth))
+ 		return -EBUSY;
+@@ -117,10 +134,26 @@ static int _mtk_mdio_read(struct mtk_eth *eth, u32 phy_addr, u32 phy_reg)
+ 	if (mtk_mdio_busy_wait(eth))
+ 		return -EBUSY;
+ 
+-	mtk_w32(eth, PHY_IAC_ACCESS | PHY_IAC_START_C22 | PHY_IAC_CMD_C22_READ |
+-		PHY_IAC_REG(phy_reg) |
+-		PHY_IAC_ADDR(phy_addr),
+-		MTK_PHY_IAC);
++	if (phy_reg & MII_ADDR_C45) {
++		mtk_w32(eth, PHY_IAC_ACCESS | PHY_IAC_START_C45 | PHY_IAC_CMD_C45_ADDR |
++			PHY_IAC_REG(mdiobus_c45_devad(phy_reg)) |
++			PHY_IAC_ADDR(phy_addr) |
++			PHY_IAC_DATA(mdiobus_c45_regad(phy_reg)),
++			MTK_PHY_IAC);
++
++		if (mtk_mdio_busy_wait(eth))
++			return -EBUSY;
++
++		mtk_w32(eth, PHY_IAC_ACCESS | PHY_IAC_START_C45 | PHY_IAC_CMD_C45_READ |
++			PHY_IAC_REG(mdiobus_c45_devad(phy_reg)) |
++			PHY_IAC_ADDR(phy_addr),
++			MTK_PHY_IAC);
++	} else {
++		mtk_w32(eth, PHY_IAC_ACCESS | PHY_IAC_START_C22 | PHY_IAC_CMD_C22_READ |
++			PHY_IAC_REG(phy_reg) |
++			PHY_IAC_ADDR(phy_addr),
++			MTK_PHY_IAC);
++	}
+ 
+ 	if (mtk_mdio_busy_wait(eth))
+ 		return -EBUSY;
+@@ -492,6 +525,7 @@ static int mtk_mdio_init(struct mtk_eth *eth)
+ 	eth->mii_bus->name = "mdio";
+ 	eth->mii_bus->read = mtk_mdio_read;
+ 	eth->mii_bus->write = mtk_mdio_write;
++	eth->mii_bus->probe_capabilities = MDIOBUS_C22_C45;
+ 	eth->mii_bus->priv = eth;
+ 	eth->mii_bus->parent = eth->dev;
+ 
+diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+index f2d90639d7ed1..c9d42be314b5a 100644
+--- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
++++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+@@ -346,9 +346,12 @@
+ #define PHY_IAC_ADDR_MASK	GENMASK(24, 20)
+ #define PHY_IAC_ADDR(x)		FIELD_PREP(PHY_IAC_ADDR_MASK, (x))
+ #define PHY_IAC_CMD_MASK	GENMASK(19, 18)
++#define PHY_IAC_CMD_C45_ADDR	FIELD_PREP(PHY_IAC_CMD_MASK, 0)
+ #define PHY_IAC_CMD_WRITE	FIELD_PREP(PHY_IAC_CMD_MASK, 1)
+ #define PHY_IAC_CMD_C22_READ	FIELD_PREP(PHY_IAC_CMD_MASK, 2)
++#define PHY_IAC_CMD_C45_READ	FIELD_PREP(PHY_IAC_CMD_MASK, 3)
+ #define PHY_IAC_START_MASK	GENMASK(17, 16)
++#define PHY_IAC_START_C45	FIELD_PREP(PHY_IAC_START_MASK, 0)
+ #define PHY_IAC_START_C22	FIELD_PREP(PHY_IAC_START_MASK, 1)
+ #define PHY_IAC_DATA_MASK	GENMASK(15, 0)
+ #define PHY_IAC_DATA(x)		FIELD_PREP(PHY_IAC_DATA_MASK, (x))
+-- 
+2.34.1
 
-- Alex
-
-[0] https://elixir.bootlin.com/linux/v5.16-rc7/source/drivers/net/ieee802154/at86rf230.c#L1059
