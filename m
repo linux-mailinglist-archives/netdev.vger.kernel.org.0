@@ -2,113 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E7DA480717
-	for <lists+netdev@lfdr.de>; Tue, 28 Dec 2021 08:49:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F0E80480768
+	for <lists+netdev@lfdr.de>; Tue, 28 Dec 2021 09:32:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235397AbhL1Htq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Dec 2021 02:49:46 -0500
-Received: from out30-45.freemail.mail.aliyun.com ([115.124.30.45]:57203 "EHLO
-        out30-45.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235393AbhL1Htq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Dec 2021 02:49:46 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0V04IY3i_1640677771;
-Received: from e02h04404.eu6sqa(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0V04IY3i_1640677771)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Tue, 28 Dec 2021 15:49:44 +0800
-From:   Wen Gu <guwen@linux.alibaba.com>
-To:     kgraul@linux.ibm.com, davem@davemloft.net, kuba@kernel.org
-Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [RFC PATCH net] net/smc: Reset conn->lgr when link group registration fails
-Date:   Tue, 28 Dec 2021 15:49:30 +0800
-Message-Id: <1640677770-112053-1-git-send-email-guwen@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S235666AbhL1IcO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Dec 2021 03:32:14 -0500
+Received: from mail-m963.mail.126.com ([123.126.96.3]:27037 "EHLO
+        mail-m963.mail.126.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231670AbhL1IcN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Dec 2021 03:32:13 -0500
+X-Greylist: delayed 1835 seconds by postgrey-1.27 at vger.kernel.org; Tue, 28 Dec 2021 03:32:13 EST
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=Azxdj
+        j1CNPaPOY6/HrK6QCQg9xOVBLTNVC7zi08tf+4=; b=dwkwmNVwRn8NS/D0F+fgt
+        im13Tv5pH3UDZJsacdjJx7OkRQPgQzu0CsTynLQks+nPXfy7B5St1qQlFTeSEuYq
+        99zYtMgAjKQ7+n0njp3yIL5Rr3x9tbvRoG4+V4qgNykTymebVgjluB1HXBmeDz8b
+        73r075uIMg9UVorqMkTDqc=
+Received: from localhost.localdomain (unknown [116.128.244.169])
+        by smtp8 (Coremail) with SMTP id NORpCgCnY99axMph0YuIBA--.26886S2;
+        Tue, 28 Dec 2021 16:01:31 +0800 (CST)
+From:   wolfgang9277@126.com
+To:     isdn@linux-pingi.de
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH] mISDN: change function names to avoid conflicts
+Date:   Tue, 28 Dec 2021 16:01:20 +0800
+Message-Id: <20211228080120.2105702-1-wolfgang9277@126.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: NORpCgCnY99axMph0YuIBA--.26886S2
+X-Coremail-Antispam: 1Uf129KBjvJXoWxXrWDAw15Cr4DKw43tFy7Jrb_yoW5XFyUpa
+        9rXFyDCr48JayxK3yUJ3s8ZFy5Xws5C3y8KasrZ343Xr4DArWDJrn5JaySvF1kCr4S9ay3
+        Ca40gw4fKFyDG37anT9S1TB71UUUUUJqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07j8nYwUUUUU=
+X-Originating-IP: [116.128.244.169]
+X-CM-SenderInfo: xzrowwpdqjmjixx6ij2wof0z/1tbi3Bt3FVpECoXIKAAAsU
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SMC connections might fail to be registered to a link group due to
-things like unable to find a link to assign to in its creation. As
-a result, connection creation will return a failure and most
-resources related to the connection won't be applied or initialized,
-such as conn->abort_work or conn->lnk.
+From: wolfgang huang <huangjinhui@kylinos.cn>
 
-If smc_conn_free() is invoked later, it will try to access the
-resources related to the connection, which wasn't initialized, thus
-causing a panic.
+As we build for mips, we meet following error. l1_init error with
+multiple definition. Some architecture devices usually marked with
+l1, l2, lxx as the start-up phase. so we change the mISDN function
+names, align with Isdnl2_xxx.
 
-Here is an example, a SMC-R connection failed to be registered
-to a link group and conn->lnk is NULL. The following crash will
-happen if smc_conn_free() tries to access conn->lnk in
-smc_cdc_tx_dismiss_slots().
+mips-linux-gnu-ld: drivers/isdn/mISDN/layer1.o: in function `l1_init':
+(.text+0x890): multiple definition of `l1_init'; \
+arch/mips/kernel/bmips_5xxx_init.o:(.text+0xf0): first defined here
+make[1]: *** [home/mips/kernel-build/linux/Makefile:1161: vmlinux] Error 1
 
- BUG: kernel NULL pointer dereference, address: 0000000000000168
- #PF: supervisor read access in kernel mode
- #PF: error_code(0x0000) - not-present page
- PGD 0 P4D 0
- Oops: 0000 [#1] PREEMPT SMP PTI
- CPU: 4 PID: 68 Comm: kworker/4:1 Kdump: loaded Tainted: G E     5.16.0-rc5+ #52
- Workqueue: smc_hs_wq smc_listen_work [smc]
- RIP: 0010:smc_wr_tx_dismiss_slots+0x1e/0xc0 [smc]
- Call Trace:
-  <TASK>
-  smc_conn_free+0xd8/0x100 [smc]
-  smc_lgr_cleanup_early+0x15/0x90 [smc]
-  smc_listen_work+0x302/0x1230 [smc]
-  ? process_one_work+0x25c/0x600
-  process_one_work+0x25c/0x600
-  worker_thread+0x4f/0x3a0
-  ? process_one_work+0x600/0x600
-  kthread+0x15d/0x1a0
-  ? set_kthread_struct+0x40/0x40
-  ret_from_fork+0x1f/0x30
-  </TASK>
-
-This patch tries to fix this by resetting conn->lgr to NULL if an
-abnormal exit due to lgr register failure occurs in smc_conn_create(),
-thus avoiding the crash caused by accessing the uninitialized resources
-in smc_conn_free().
-
-Signed-off-by: Wen Gu <guwen@linux.alibaba.com>
+Signed-off-by: wolfgang huang <huangjinhui@kylinos.cn>
+Reported-by: k2ci <kernel-bot@kylinos.cn>
 ---
- net/smc/smc_core.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/isdn/mISDN/core.c   | 6 +++---
+ drivers/isdn/mISDN/core.h   | 4 ++--
+ drivers/isdn/mISDN/layer1.c | 4 ++--
+ 3 files changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
-index 412bc85..1f40b8e 100644
---- a/net/smc/smc_core.c
-+++ b/net/smc/smc_core.c
-@@ -1815,7 +1815,7 @@ int smc_conn_create(struct smc_sock *smc, struct smc_init_info *ini)
- 	}
- 	spin_unlock_bh(lgr_lock);
- 	if (rc)
--		return rc;
-+		goto out_unreg;
+diff --git a/drivers/isdn/mISDN/core.c b/drivers/isdn/mISDN/core.c
+index 55891e420446..a41b4b264594 100644
+--- a/drivers/isdn/mISDN/core.c
++++ b/drivers/isdn/mISDN/core.c
+@@ -381,7 +381,7 @@ mISDNInit(void)
+ 	err = mISDN_inittimer(&debug);
+ 	if (err)
+ 		goto error2;
+-	err = l1_init(&debug);
++	err = Isdnl1_Init(&debug);
+ 	if (err)
+ 		goto error3;
+ 	err = Isdnl2_Init(&debug);
+@@ -395,7 +395,7 @@ mISDNInit(void)
+ error5:
+ 	Isdnl2_cleanup();
+ error4:
+-	l1_cleanup();
++	Isdnl1_cleanup();
+ error3:
+ 	mISDN_timer_cleanup();
+ error2:
+@@ -408,7 +408,7 @@ static void mISDN_cleanup(void)
+ {
+ 	misdn_sock_cleanup();
+ 	Isdnl2_cleanup();
+-	l1_cleanup();
++	Isdnl1_cleanup();
+ 	mISDN_timer_cleanup();
+ 	class_unregister(&mISDN_class);
  
- 	if (role == SMC_CLNT && !ini->first_contact_peer &&
- 	    ini->first_contact_local) {
-@@ -1836,7 +1836,7 @@ int smc_conn_create(struct smc_sock *smc, struct smc_init_info *ini)
- 		rc = smc_lgr_register_conn(conn, true);
- 		write_unlock_bh(&lgr->conns_lock);
- 		if (rc)
--			goto out;
-+			goto out_unreg;
- 	}
- 	conn->local_tx_ctrl.common.type = SMC_CDC_MSG_TYPE;
- 	conn->local_tx_ctrl.len = SMC_WR_TX_SIZE;
-@@ -1855,6 +1855,12 @@ int smc_conn_create(struct smc_sock *smc, struct smc_init_info *ini)
+diff --git a/drivers/isdn/mISDN/core.h b/drivers/isdn/mISDN/core.h
+index 23b44d303327..42599f49c189 100644
+--- a/drivers/isdn/mISDN/core.h
++++ b/drivers/isdn/mISDN/core.h
+@@ -60,8 +60,8 @@ struct Bprotocol	*get_Bprotocol4id(u_int);
+ extern int	mISDN_inittimer(u_int *);
+ extern void	mISDN_timer_cleanup(void);
  
- out:
- 	return rc;
-+out_unreg:
-+	/* fail to register connection into a link group */
-+	if (!lgr->conns_num && !delayed_work_pending(&lgr->free_work))
-+		smc_lgr_schedule_free_work(lgr);
-+	conn->lgr = NULL;
-+	return rc;
+-extern int	l1_init(u_int *);
+-extern void	l1_cleanup(void);
++extern int	Isdnl1_Init(u_int *);
++extern void	Isdnl1_cleanup(void);
+ extern int	Isdnl2_Init(u_int *);
+ extern void	Isdnl2_cleanup(void);
+ 
+diff --git a/drivers/isdn/mISDN/layer1.c b/drivers/isdn/mISDN/layer1.c
+index 98a3bc6c1700..7b31c25a550e 100644
+--- a/drivers/isdn/mISDN/layer1.c
++++ b/drivers/isdn/mISDN/layer1.c
+@@ -398,7 +398,7 @@ create_l1(struct dchannel *dch, dchannel_l1callback *dcb) {
+ EXPORT_SYMBOL(create_l1);
+ 
+ int
+-l1_init(u_int *deb)
++Isdnl1_Init(u_int *deb)
+ {
+ 	debug = deb;
+ 	l1fsm_s.state_count = L1S_STATE_COUNT;
+@@ -409,7 +409,7 @@ l1_init(u_int *deb)
  }
  
- #define SMCD_DMBE_SIZES		6 /* 0 -> 16KB, 1 -> 32KB, .. 6 -> 1MB */
+ void
+-l1_cleanup(void)
++Isdnl1_cleanup(void)
+ {
+ 	mISDN_FsmFree(&l1fsm_s);
+ }
 -- 
-1.8.3.1
+2.25.1
 
