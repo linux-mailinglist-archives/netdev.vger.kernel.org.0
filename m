@@ -2,118 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 80F21480DA6
-	for <lists+netdev@lfdr.de>; Tue, 28 Dec 2021 23:20:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F223480DAA
+	for <lists+netdev@lfdr.de>; Tue, 28 Dec 2021 23:22:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237469AbhL1WUA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Dec 2021 17:20:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47648 "EHLO
+        id S237551AbhL1WWw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Dec 2021 17:22:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230144AbhL1WT7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Dec 2021 17:19:59 -0500
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 716B2C061574
-        for <netdev@vger.kernel.org>; Tue, 28 Dec 2021 14:19:59 -0800 (PST)
-Received: by mail-pl1-x632.google.com with SMTP id p14so14519924plf.3
-        for <netdev@vger.kernel.org>; Tue, 28 Dec 2021 14:19:59 -0800 (PST)
+        with ESMTP id S237488AbhL1WWv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Dec 2021 17:22:51 -0500
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67945C061574;
+        Tue, 28 Dec 2021 14:22:51 -0800 (PST)
+Received: by mail-wm1-x335.google.com with SMTP id d198-20020a1c1dcf000000b0034569cdd2a2so10777898wmd.5;
+        Tue, 28 Dec 2021 14:22:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Lf/S2LPQ9iI7bcBTT4neE6R0mg+6glQTGFFuCfpCfPU=;
-        b=H27QTjm7//8xn5TkIeh4DbZhOQBBWPJMp9HmbhnsxgcUzz+QDTgPo5g1YVW2POQEXt
-         7JH1x52wN7F2GPOv0WZxGqsKvO3KhlsZDC8nTS9UwNez14WdJ/VBnMSHf4KRvpqTBY2Z
-         LsGJV+yTGEjBRGlfzNYKE9QE8PGX4SrP5IISidTwx35seExtzdFznI8Rw+NdQTuJJzdP
-         bmX5FqpJhUqYiruuLiDFV1DVhWAhhnkf1fQKq1r1z52pq7G0iFNhzQIRQbT1cX8AErAr
-         I2B8Kvmwk8nA4HNd5zSI77YHvMNse1hmJ5C8XEfu3GZ6onwwsD6/grrGKDZNCEIGCPxe
-         Pfig==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=4M2fYiV8osMi/K8zko/E+wLNgrYelg1lIier9ENbgz4=;
+        b=MTKPBFoweWQAhvBXIY2VwrdoTs5ZERc088ZFz7/vRSsKUJDkmBhSTGP/gaPPiD8OQH
+         OjaQ2FRKJ++BwUGIqqWroyrNS/UipVg0pDStLTa4ZU2aswCOg5JfOR71rXH1E83hwcZa
+         /uJMCWnXKlyuBidjzrDACpO4QcJtP1MEm1Z+icdpOahf1g35t/N+YegnDtCJZI/SUtWx
+         R8oLCbrZb8jdHBHtDaK914vY6A/7iNkvyanveUqZWaUSl1xpOZ8CODNKoBfxMIJSstDx
+         tXAIhmZFo61uZgRy/E05mfrhfl0q6uyMCw7sstDkmn2jveTMPKZQrGrK53EAmQXQnFbZ
+         E4aw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Lf/S2LPQ9iI7bcBTT4neE6R0mg+6glQTGFFuCfpCfPU=;
-        b=7tUGGRPJPWUfCd2ZdLu8sQd33gyNfNUi6lPXQRTjhrNX6mK7k7AlHjVHM/AaVPGiN4
-         KQylDuIEoGxDax4j4EilbK/VJKKVqpLjudgdPUgilVhDFOuFH/3ByLQqqz2XPaqDcelS
-         XM0gLsHFxzObxk6CHvlbPVLK5yRPvWk4lgzL/N5faknng8M3MI9i+Y+CmC5F+evcwQh+
-         Azlss+cTatoVMYxdpphwkUzIpG+Ai+qoCV8q6/EycZGak2zAei/bcUF/H1Sez0KgNIV/
-         pVG87ASFs4cLXiRiIbrRrsqbsclpsj4AEcOMSaFHFy7ZtpMnKQg++7IhB/y2mBXH0FT7
-         o3MA==
-X-Gm-Message-State: AOAM532aMY67px01iC+DJaukNaScLrcET7obxxP0eoxVwnRX9PAztjGJ
-        I/FlLJE9JdxRMcE2Yddr9aFBgQ==
-X-Google-Smtp-Source: ABdhPJxbJ0Ghxhf4j2KXJuAZGS3rqzQ0STdUeiLcJPn08C8tH2xoq1KqTCRw10/cERp7eAdhkUvK+w==
-X-Received: by 2002:a17:90b:4b0e:: with SMTP id lx14mr28606702pjb.132.1640729998902;
-        Tue, 28 Dec 2021 14:19:58 -0800 (PST)
-Received: from [192.168.0.2] ([50.53.47.17])
-        by smtp.gmail.com with ESMTPSA id u33sm23597804pfg.4.2021.12.28.14.19.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 28 Dec 2021 14:19:58 -0800 (PST)
-Message-ID: <ffe00c2d-f2a6-1d64-e6d4-ba3063856879@pensando.io>
-Date:   Tue, 28 Dec 2021 14:21:32 -0800
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4M2fYiV8osMi/K8zko/E+wLNgrYelg1lIier9ENbgz4=;
+        b=UkymKyGCTQFl/cOCpweELmgn6BJM62DUN8jIspMr6HNJaYeENkJQc+INt8OgLNndiO
+         AY1+BY2cb/gno4xGXr7iyDHn8qQkF7jHviWHrJI1cTK7Z0j8PiRDtDzzBuwAytrGxQg5
+         GRoPV9Aih8UQmFieUlqDNgn5dRmt6LJ+w/IEjN+eUFRtF5GLnXtWtZa+V/sQJJINEM5H
+         MNYj7zCXLvO+N9x8CBy69GL1+cR6odGLWtAWO+w4WbtnWGGZ29uCUBfLwI2pIskJVgCi
+         Pf7zq7gHKoPU+UFe5Dl7ZUO3HpreWJ2NGQTxV+hUdPOm1YcOPkv/4PMjMNobYywpvT6f
+         VeDA==
+X-Gm-Message-State: AOAM531MlL8SVky1TmgRozl77oPiI8yLEa0HHoePOom0QqTvF+z/Z7uF
+        qv/rORzKXi+QIxPjAVAZLpek3qliIE1EOGnAeWM=
+X-Google-Smtp-Source: ABdhPJxbN5uJV2qwOV1CevVgZ2wlylt+xml/HywNaRnBImF/FE4LIZ3QJQ//TL4sRCsZvSzPrxKW/TijM58nSoABn3A=
+X-Received: by 2002:a7b:c745:: with SMTP id w5mr18697759wmk.167.1640730169930;
+ Tue, 28 Dec 2021 14:22:49 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.4.1
-Subject: Re: [PATCH] ionic: Initialize the 'lif->dbid_inuse' bitmap
-Content-Language: en-US
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        drivers@pensando.io, davem@davemloft.net, kuba@kernel.org,
-        allenbh@pensando.io
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-References: <6a478eae0b5e6c63774e1f0ddb1a3f8c38fa8ade.1640527506.git.christophe.jaillet@wanadoo.fr>
-From:   Shannon Nelson <snelson@pensando.io>
-In-Reply-To: <6a478eae0b5e6c63774e1f0ddb1a3f8c38fa8ade.1640527506.git.christophe.jaillet@wanadoo.fr>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <20211222155743.256280-1-miquel.raynal@bootlin.com> <20211222155743.256280-9-miquel.raynal@bootlin.com>
+In-Reply-To: <20211222155743.256280-9-miquel.raynal@bootlin.com>
+From:   Alexander Aring <alex.aring@gmail.com>
+Date:   Tue, 28 Dec 2021 17:22:38 -0500
+Message-ID: <CAB_54W786n6_4FAMc7VMAX0nuyd6r2Hi+wYEEbd5Bjdrd8ArpA@mail.gmail.com>
+Subject: Re: [net-next 08/18] net: ieee802154: Add support for internal PAN management
+To:     Miquel Raynal <miquel.raynal@bootlin.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        kernel list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/26/21 6:06 AM, Christophe JAILLET wrote:
-> When allocated, this bitmap is not initialized. Only the first bit is set a
-> few lines below.
+Hi,
+
+On Wed, 22 Dec 2021 at 10:57, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
 >
-> Use bitmap_zalloc() to make sure that it is cleared before being used.
+> Let's introduce the basics of PAN management:
+> - structures defining PANs
+> - helpers for PANs registration
+> - helpers discarding old PANs
 >
-> Fixes: 6461b446f2a0 ("ionic: Add interrupts and doorbells")
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-Signed-off-by: Shannon Nelson <snelson@pensando.io>
+I think there exists a little misunderstanding about how the
+architecture is between the structures wpan_phy, wpan_dev and
+cfg802154.
 
-> ---
-> The 'dbid_inuse' bitmap seems to be unused.
-> So it is certainly better to remove it completely instead of "fixing" it.
->
-> Let me know if it is the way to go or if it is there for future use.
->
-> If it should be left in place, the corresponding kfree() should also be
-> replaces by some bitmap_free() to keep consistency.
+ - wpan_phy: represents the PHY layer of IEEE 802154 and is a
+registered device class.
+ - wpan_dev: represents the MAC layer of IEEE 802154 and is a netdev interface.
 
-This looks like one of those small bits that creeps in from the 
-out-of-tree incarnation, is expected to used Real Soon Now, but is not 
-really useful yet.  Yes, this probably should come out until actually 
-useful.  When we get back from the holiday vacations we'll take a closer 
-look at it and make sure we're not causing any unforeseen issues by 
-pulling it out for now.
+You can have multiple wpan_dev operate on one wpan_phy. To my best
+knowledge it's like having multiple access points running on one phy
+(wireless) or macvlan on ethernet. You can actually do that with the
+mac802154_hwsim driver. However as there exists currently no (as my
+knowledge) hardware which supports e.g. multiple address filters we
+wanted to be prepared for to support such handling. Although, there
+exists some transceivers which support something like a "pan bridge"
+which goes into such a direction.
 
-Thanks,
-sln
+What is a cfg802154 registered device? Well, at first it offers an
+interface between SoftMAC and HardMAC from nl802154, that's the
+cfg802154_ops structure. In theory a HardMAC transceiver would bypass
+the SoftMAC stack by implementing "cfg802154_ops" on the driver layer
+and try to do everything there as much as possible to support it. It
+is not a registered device class but the instance is tight to a
+wpan_phy. There can be multiple wpan_dev's (MAC layer instances on a
+phy/cfg802154 registered device). We currently don't support a HardMAC
+transceiver and I think because this misunderstanding came up.
 
-> ---
->   drivers/net/ethernet/pensando/ionic/ionic_lif.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-> index 63f8a8163b5f..2ff7be17e5af 100644
-> --- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-> +++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-> @@ -3135,7 +3135,7 @@ int ionic_lif_init(struct ionic_lif *lif)
->   		return -EINVAL;
->   	}
->   
-> -	lif->dbid_inuse = bitmap_alloc(lif->dbid_count, GFP_KERNEL);
-> +	lif->dbid_inuse = bitmap_zalloc(lif->dbid_count, GFP_KERNEL);
->   	if (!lif->dbid_inuse) {
->   		dev_err(dev, "Failed alloc doorbell id bitmap, aborting\n");
->   		return -ENOMEM;
+That means as far I see you should move the most of those attributes
+to per wpan_dev instead of per cfg802154.
 
+- Alex
