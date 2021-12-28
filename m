@@ -2,179 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B4FA0480A77
-	for <lists+netdev@lfdr.de>; Tue, 28 Dec 2021 15:45:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C5EC0480A82
+	for <lists+netdev@lfdr.de>; Tue, 28 Dec 2021 15:48:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234157AbhL1Opg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Dec 2021 09:45:36 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:31911 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229480AbhL1Opg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Dec 2021 09:45:36 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1640702735;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=rkR3Og/uvPg2B0LclcpSelNSBv7NaBt9VBoAHT0i0tE=;
-        b=FEQrGRiU5MSGmJ6VFL6pp7KaXGiTm3N5TOGewhrR1YW3XT3pkCbfL1yqUzgOFsDu5dIVDE
-        3MY4KAgs3YcPZ18GGxVdxJJ4N/Rl35UWWX7AiZJw6fxwpgVxttsNOFUKtUlpNHbcj2zXVb
-        DEo3OGqJG4hT6F0HJlAGOo7PU4TVN5A=
-Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
- [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-611-_gamRshrMqiYY2hhx1tL7w-1; Tue, 28 Dec 2021 09:45:34 -0500
-X-MC-Unique: _gamRshrMqiYY2hhx1tL7w-1
-Received: by mail-qk1-f198.google.com with SMTP id bi22-20020a05620a319600b00468606d7e7fso11563236qkb.10
-        for <netdev@vger.kernel.org>; Tue, 28 Dec 2021 06:45:33 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=rkR3Og/uvPg2B0LclcpSelNSBv7NaBt9VBoAHT0i0tE=;
-        b=gYi8M/ExpVF1cAHgth4BPsfAEs4tsGUz+b51mItW9GYW2ok9EmSCxTiRsKHAUXxYPj
-         Z3hb09c6eKD/4CuMvt4h+exnpMVHTeBIgPZqSOfWdp86V5Htx/bLMgTnEH4DiuoEvI5B
-         0AysE7wHTnekxlXu6jp3jdElylLEMJ8/N/T8DBdgg3moeohw9/9Go9lACAAwI2MdmYLw
-         p23i//reteTjRLv8YdeK3fSd2AwNRJMRquvnGycQ/vr3BOqWFnx9KJDLhHkj1RQozQI2
-         V+WMIyXS2BxYzJ3RuwVRk3WJnVn7/o8ThA5acucZGkRd09tLy0ZA5MEwRXpFONL3/DSp
-         SN+g==
-X-Gm-Message-State: AOAM5301vHmglKweSppO1nMMf2BTbDPaSWHiyIEMrydfbQkRM5+78uBj
-        +iSRTVI/oIziAs3ndMLdBNm+1BonFGFV0Fa1EWgoVm/KinxBY+x4J9F7lgJ894k2oOJMC2m52jJ
-        kQY42J43ToKXi5wQY
-X-Received: by 2002:a05:622a:245:: with SMTP id c5mr18382550qtx.189.1640702733293;
-        Tue, 28 Dec 2021 06:45:33 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJymnTJG22e2FOSz5RSgDUOTP0uTlCGK6R859we9rbRw9gTQEhMlQB5Mq1DKLRe8rVCpyUvBTw==
-X-Received: by 2002:a05:622a:245:: with SMTP id c5mr18382524qtx.189.1640702733085;
-        Tue, 28 Dec 2021 06:45:33 -0800 (PST)
-Received: from localhost (net-2-32-198-212.cust.dsl.teletu.it. [2.32.198.212])
-        by smtp.gmail.com with ESMTPSA id z8sm16079872qta.50.2021.12.28.06.45.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Dec 2021 06:45:32 -0800 (PST)
-Date:   Tue, 28 Dec 2021 15:45:20 +0100
-From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, davem@davemloft.net,
-        kuba@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        shayagr@amazon.com, john.fastabend@gmail.com, dsahern@kernel.org,
-        brouer@redhat.com, echaudro@redhat.com, jasowang@redhat.com,
-        alexander.duyck@gmail.com, saeed@kernel.org,
-        maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
-        tirthendu.sarkar@intel.com, toke@redhat.com
-Subject: Re: [PATCH v20 bpf-next 00/23] mvneta: introduce XDP multi-buffer
- support
-Message-ID: <YcsjAP383AmEb4pQ@localhost.localdomain>
-References: <cover.1639162845.git.lorenzo@kernel.org>
+        id S234654AbhL1Os3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Dec 2021 09:48:29 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:56522 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229480AbhL1Os3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Dec 2021 09:48:29 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2D3C1B8122C;
+        Tue, 28 Dec 2021 14:48:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FAD5C36AE8;
+        Tue, 28 Dec 2021 14:48:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1640702907;
+        bh=CyQJyk0HvSNVhixuKb9a3dLBsqlKf7j34qj2YxYKiVM=;
+        h=From:To:Cc:Subject:Date:From;
+        b=CgIRjhScbDIs8gz9Ge6YPqHpwrrrcjvRopO2iAkgrPgC5b1m2ZO6+ahDft2AGm/Bu
+         hdfTb4/46AGbxt2l/4CJmzG0JkFKU2OFvWa9tHQ+DKkB71HIJEEfeHYniciaY3CbbA
+         /1hOXqbU8VgBMbHCOkzmet82KePTu68L2JDaTKoY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "J. Bruce Fields" <bfields@fieldses.org>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        linux-nfs@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH] SUNRPC: use default_groups in kobj_type
+Date:   Tue, 28 Dec 2021 15:48:23 +0100
+Message-Id: <20211228144823.393067-1-gregkh@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="OBmxxoznn81budC6"
-Content-Disposition: inline
-In-Reply-To: <cover.1639162845.git.lorenzo@kernel.org>
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2138; h=from:subject; bh=CyQJyk0HvSNVhixuKb9a3dLBsqlKf7j34qj2YxYKiVM=; b=owGbwMvMwCRo6H6F97bub03G02pJDImnlberfvt6KPDyU5vGKxM3z3jDq9NwXfJod4xL1INN7b62 i++/7IhlYRBkYpAVU2T5so3n6P6KQ4pehranYeawMoEMYeDiFICbrMMwz9Y/uvbmxqf7+z2bZCUDzv 25FZurz7Bgxiztzy+KrzC8K85QfZ8iJnr/ut8bAA==
+X-Developer-Key: i=gregkh@linuxfoundation.org; a=openpgp; fpr=F4B60CC5BF78C2214A313DCB3147D40DDB2DFB29
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+There are currently 2 ways to create a set of sysfs files for a
+kobj_type, through the default_attrs field, and the default_groups
+field.  Move the sunrpc sysfs code to use default_groups field which has
+been the preferred way since aa30f47cf666 ("kobject: Add support for
+default attribute groups to kobj_type") so that we can soon get rid of
+the obsolete default_attrs field.
 
---OBmxxoznn81budC6
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Cc: "J. Bruce Fields" <bfields@fieldses.org>
+Cc: Chuck Lever <chuck.lever@oracle.com>
+Cc: Trond Myklebust <trond.myklebust@hammerspace.com>
+Cc: Anna Schumaker <anna.schumaker@netapp.com>
+Cc: linux-nfs@vger.kernel.org
+Cc: netdev@vger.kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ net/sunrpc/sysfs.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-[...]
->=20
-> Eelco Chaudron (3):
->   bpf: add multi-buff support to the bpf_xdp_adjust_tail() API
->   bpf: add multi-buffer support to xdp copy helpers
->   bpf: selftests: update xdp_adjust_tail selftest to include
->     multi-buffer
->=20
-> Lorenzo Bianconi (19):
->   net: skbuff: add size metadata to skb_shared_info for xdp
->   xdp: introduce flags field in xdp_buff/xdp_frame
->   net: mvneta: update mb bit before passing the xdp buffer to eBPF layer
->   net: mvneta: simplify mvneta_swbm_add_rx_fragment management
->   net: xdp: add xdp_update_skb_shared_info utility routine
->   net: marvell: rely on xdp_update_skb_shared_info utility routine
->   xdp: add multi-buff support to xdp_return_{buff/frame}
->   net: mvneta: add multi buffer support to XDP_TX
->   bpf: introduce BPF_F_XDP_MB flag in prog_flags loading the ebpf
->     program
->   net: mvneta: enable jumbo frames if the loaded XDP program support mb
->   bpf: introduce bpf_xdp_get_buff_len helper
->   bpf: move user_size out of bpf_test_init
->   bpf: introduce multibuff support to bpf_prog_test_run_xdp()
->   bpf: test_run: add xdp_shared_info pointer in bpf_test_finish
->     signature
->   libbpf: Add SEC name for xdp_mb programs
->   net: xdp: introduce bpf_xdp_pointer utility routine
->   bpf: selftests: introduce bpf_xdp_{load,store}_bytes selftest
->   bpf: selftests: add CPUMAP/DEVMAP selftests for xdp multi-buff
->   xdp: disable XDP_REDIRECT for xdp multi-buff
->=20
-> Toke Hoiland-Jorgensen (1):
->   bpf: generalise tail call map compatibility check
-
-Hi Alexei and Daniel,
-
-I noticed this series's state is now set to "New, archived" in patchwork.
-Is it due to conflicts? Do I need to repost?
-
-Regards,
-Lorenzo
-
->=20
->  drivers/net/ethernet/marvell/mvneta.c         | 204 +++++++++------
->  include/linux/bpf.h                           |  32 ++-
->  include/linux/skbuff.h                        |   1 +
->  include/net/xdp.h                             | 108 +++++++-
->  include/uapi/linux/bpf.h                      |  30 +++
->  kernel/bpf/arraymap.c                         |   4 +-
->  kernel/bpf/core.c                             |  28 +-
->  kernel/bpf/cpumap.c                           |   8 +-
->  kernel/bpf/devmap.c                           |   3 +-
->  kernel/bpf/syscall.c                          |  25 +-
->  kernel/trace/bpf_trace.c                      |   3 +
->  net/bpf/test_run.c                            | 115 +++++++--
->  net/core/filter.c                             | 244 +++++++++++++++++-
->  net/core/xdp.c                                |  78 +++++-
->  tools/include/uapi/linux/bpf.h                |  30 +++
->  tools/lib/bpf/libbpf.c                        |   8 +
->  .../bpf/prog_tests/xdp_adjust_frags.c         | 103 ++++++++
->  .../bpf/prog_tests/xdp_adjust_tail.c          | 131 ++++++++++
->  .../selftests/bpf/prog_tests/xdp_bpf2bpf.c    | 151 ++++++++---
->  .../bpf/prog_tests/xdp_cpumap_attach.c        |  65 ++++-
->  .../bpf/prog_tests/xdp_devmap_attach.c        |  56 ++++
->  .../bpf/progs/test_xdp_adjust_tail_grow.c     |  10 +-
->  .../bpf/progs/test_xdp_adjust_tail_shrink.c   |  32 ++-
->  .../selftests/bpf/progs/test_xdp_bpf2bpf.c    |   2 +-
->  .../bpf/progs/test_xdp_update_frags.c         |  42 +++
->  .../bpf/progs/test_xdp_with_cpumap_helpers.c  |   6 +
->  .../progs/test_xdp_with_cpumap_mb_helpers.c   |  27 ++
->  .../bpf/progs/test_xdp_with_devmap_helpers.c  |   7 +
->  .../progs/test_xdp_with_devmap_mb_helpers.c   |  27 ++
->  29 files changed, 1368 insertions(+), 212 deletions(-)
->  create mode 100644 tools/testing/selftests/bpf/prog_tests/xdp_adjust_fra=
-gs.c
->  create mode 100644 tools/testing/selftests/bpf/progs/test_xdp_update_fra=
-gs.c
->  create mode 100644 tools/testing/selftests/bpf/progs/test_xdp_with_cpuma=
-p_mb_helpers.c
->  create mode 100644 tools/testing/selftests/bpf/progs/test_xdp_with_devma=
-p_mb_helpers.c
->=20
-> --=20
-> 2.33.1
->=20
-
---OBmxxoznn81budC6
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYcsi/QAKCRA6cBh0uS2t
-rGmbAQDHOc/OZzf/gfVAAoRISlZ5td+5tfcYlbM5TI7e8l27WwD+I2h0bEOExp09
-ezm0HeWE3RNNaz7VvO5S1zyxqHDKJAI=
-=bmeW
------END PGP SIGNATURE-----
-
---OBmxxoznn81budC6--
+diff --git a/net/sunrpc/sysfs.c b/net/sunrpc/sysfs.c
+index 2766dd21935b..b1aea3419218 100644
+--- a/net/sunrpc/sysfs.c
++++ b/net/sunrpc/sysfs.c
+@@ -422,6 +422,7 @@ static struct attribute *rpc_sysfs_xprt_attrs[] = {
+ 	&rpc_sysfs_xprt_change_state.attr,
+ 	NULL,
+ };
++ATTRIBUTE_GROUPS(rpc_sysfs_xprt);
+ 
+ static struct kobj_attribute rpc_sysfs_xprt_switch_info =
+ 	__ATTR(xprt_switch_info, 0444, rpc_sysfs_xprt_switch_info_show, NULL);
+@@ -430,6 +431,7 @@ static struct attribute *rpc_sysfs_xprt_switch_attrs[] = {
+ 	&rpc_sysfs_xprt_switch_info.attr,
+ 	NULL,
+ };
++ATTRIBUTE_GROUPS(rpc_sysfs_xprt_switch);
+ 
+ static struct kobj_type rpc_sysfs_client_type = {
+ 	.release = rpc_sysfs_client_release,
+@@ -439,14 +441,14 @@ static struct kobj_type rpc_sysfs_client_type = {
+ 
+ static struct kobj_type rpc_sysfs_xprt_switch_type = {
+ 	.release = rpc_sysfs_xprt_switch_release,
+-	.default_attrs = rpc_sysfs_xprt_switch_attrs,
++	.default_groups = rpc_sysfs_xprt_switch_groups,
+ 	.sysfs_ops = &kobj_sysfs_ops,
+ 	.namespace = rpc_sysfs_xprt_switch_namespace,
+ };
+ 
+ static struct kobj_type rpc_sysfs_xprt_type = {
+ 	.release = rpc_sysfs_xprt_release,
+-	.default_attrs = rpc_sysfs_xprt_attrs,
++	.default_groups = rpc_sysfs_xprt_groups,
+ 	.sysfs_ops = &kobj_sysfs_ops,
+ 	.namespace = rpc_sysfs_xprt_namespace,
+ };
+-- 
+2.34.1
 
