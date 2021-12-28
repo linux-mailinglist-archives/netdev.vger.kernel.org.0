@@ -2,81 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC7BB480DAE
-	for <lists+netdev@lfdr.de>; Tue, 28 Dec 2021 23:25:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 30168480DB1
+	for <lists+netdev@lfdr.de>; Tue, 28 Dec 2021 23:26:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237584AbhL1WZY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Dec 2021 17:25:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48826 "EHLO
+        id S237621AbhL1W0V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Dec 2021 17:26:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237488AbhL1WZX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Dec 2021 17:25:23 -0500
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CFF1C061574;
-        Tue, 28 Dec 2021 14:25:23 -0800 (PST)
-Received: by mail-wm1-x330.google.com with SMTP id l4so12463088wmq.3;
-        Tue, 28 Dec 2021 14:25:23 -0800 (PST)
+        with ESMTP id S237598AbhL1W0V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Dec 2021 17:26:21 -0500
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB2E8C061574
+        for <netdev@vger.kernel.org>; Tue, 28 Dec 2021 14:26:20 -0800 (PST)
+Received: by mail-pl1-x635.google.com with SMTP id v19so14525753plo.7
+        for <netdev@vger.kernel.org>; Tue, 28 Dec 2021 14:26:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=J8LoOMksFX8CI0QJpXomJXWXSGzLukaJKYwJljG6uWY=;
-        b=ZhSvdql+i2v/qh6IKx8Ia+1bW0uSqTYxbMf6Op8o2u2jnzRwhZabkcAo5Qrf+vn8gX
-         KP1jV3uDFkWWWaomSZX8phf6As3wQDX691z+PRWG2P5cKRv2M1Jd0BKq1uYZ9nlK/i0p
-         tk2g401KUY5+rxZ1Co9q88lliSQ5C4qR+FyowYPVsxRFYV3fCp1YmMBuaK8gKGt9oICE
-         PShtHFWPAtg6oIE5+4L9CBe2f8O6sdr5egThQmZ81YvyFCnn3OpvZmajtri+xMuYbwVE
-         6ZC2oGNTwmGXDDR5ykde3gcSfSlXyDLikGLe5O47JCASbCXmX0ywKrm7Jqh1/bOtfG+l
-         lyig==
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=3jpnFYyU1UvK2qtPGd0z/wd/hya+F4jiLnmmdr9GXaY=;
+        b=lUSNHxvHtkgI97VY4BNHsI8aGGvWFzcNyLEczitXX2GAu6UfkWCeA4fPS7M5ihYtBF
+         R2vIXAHPuxna50R0Cs9fT7CemGFJv6g7fO0rkVFwKzDWc1QEiV8rHvLUtM5lTlFPX2UN
+         TysjcC3EtVvf/TT+K0MEMj/2dG7uX55DG2P/sa6InIcei83woXrbsBruBpXGU75yTxsS
+         dXgVVJZVlKbPDw+ldethhaGjmRjOXQ4N55UUqHwmgL8YbYhUiiAPk2xStYTpWJ8rvgsE
+         IXy0lgL2Mce9N2DSZ/y94l9eYcKDu+he794dqgjMONViLrP2RSVK3abog12ExpHe/aKu
+         fn0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=J8LoOMksFX8CI0QJpXomJXWXSGzLukaJKYwJljG6uWY=;
-        b=ptNXzEEvH+LYi956jrWR/gNXC0GdpR8n2d/5yJhocZGQpztuW+mtZEE/HMMjQWFht7
-         Wo6ykC/m5studvLJfYvQIxets2p7DtxCV//4aR0LAS3i9aXdyfJ/T8Of6ILz4uFEkC7N
-         1LxkTN92Y9jeEkiq241ztTwVnYLLkL70FJxqMhm8NcKcFXK9KDzlXDVodTowZ87ypuE/
-         yl3XCEocUmT30J/DtxsxpPRffEoFU9AvRmAwZS9aoi/m0V0p/iw09Qk8OfasbUJzIkdu
-         BZJaNO5pVJEHnxMZM3gip++wgLSjOmRgjwtfDikKfdMf1PZOo9yaEpUOVbs7IVGHeBVC
-         jH5Q==
-X-Gm-Message-State: AOAM532ywlIAya65QbQZ4TKNWBp7XsLge9mAhJNr52rJLYc+W+Da4SFm
-        l95C4i4YqMowezdYnxpSvR5YaXOUFaiRYX0mHxuWpRt9
-X-Google-Smtp-Source: ABdhPJyEH9ab4C24qv9761MGC9VAmxNzmekvDA0t8/nsCO/JEtUE61/V/o7GyHccPitbF9Nl7R4NeEWVwwvvr6BoNz8=
-X-Received: by 2002:a05:600c:3b12:: with SMTP id m18mr18511117wms.54.1640730321807;
- Tue, 28 Dec 2021 14:25:21 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=3jpnFYyU1UvK2qtPGd0z/wd/hya+F4jiLnmmdr9GXaY=;
+        b=HD/j1KoieUAGxudywsj15Ul0Oy/lnyuxVC/t4a1R36dM0nUuijKI4bCFyEJIaOalf8
+         T4UIy1SZrHsenbeASbHQUd+PXscif4+DXyuDMnZxPNiI8V7yqAfGXdWlhrmK/8go/L+l
+         wCKr9DCNkrs9dCNsGhTKpcwCcZhzcsLdo/IqmyH3NNoYN3APbbFlIApvvBSgIoOh3g6/
+         bXhd6FP1rGrz32E6nzOjCHJErUMJ2xMrahcENMEHIe/N9uhJ//ctLMVMUt/j4HhXca+S
+         otil5kZZ+TtEHn9gIvtmLh6q34zAAI7lTNlwl4XOky9cs5ot9EIf/c/cEUr6qMWN4TH3
+         8xew==
+X-Gm-Message-State: AOAM533hFVrgDZiHvplvFOksoPqYO/2gfa6UAv6PZb2DvAXFOIDNi4iV
+        ldqdxf5uZ4Qr6zrbKKljfx5dVg==
+X-Google-Smtp-Source: ABdhPJw9pY6bU/ixHEj19r6nqHSjypC3pzEscKgxKQVE846L338oJSTiWn3H18Q4b3PTpHGB3RxyEQ==
+X-Received: by 2002:a17:90a:f0cc:: with SMTP id fa12mr4452980pjb.134.1640730380358;
+        Tue, 28 Dec 2021 14:26:20 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id s6sm2724082pjp.19.2021.12.28.14.26.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Dec 2021 14:26:19 -0800 (PST)
+Date:   Tue, 28 Dec 2021 22:26:16 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     syzbot <syzbot+4e697fe80a31aa7efe21@syzkaller.appspotmail.com>
+Cc:     changbin.du@intel.com, christian.brauner@ubuntu.com,
+        daniel@iogearbox.net, davem@davemloft.net, edumazet@google.com,
+        hkallweit1@gmail.com, kuba@kernel.org, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        pbonzini@redhat.com, syzkaller-bugs@googlegroups.com,
+        yajun.deng@linux.dev
+Subject: Re: [syzbot] WARNING in kvm_mmu_notifier_invalidate_range_start
+Message-ID: <YcuPCI+Nq2ixPGPD@google.com>
+References: <000000000000ef6c6c05d437c830@google.com>
 MIME-Version: 1.0
-References: <20211222155743.256280-1-miquel.raynal@bootlin.com> <20211222155743.256280-18-miquel.raynal@bootlin.com>
-In-Reply-To: <20211222155743.256280-18-miquel.raynal@bootlin.com>
-From:   Alexander Aring <alex.aring@gmail.com>
-Date:   Tue, 28 Dec 2021 17:25:10 -0500
-Message-ID: <CAB_54W7o5b7a-2Gg5ZnzPj3o4Yw9FOAxJfykrA=LtpVf9naAng@mail.gmail.com>
-Subject: Re: [net-next 17/18] net: mac802154: Let drivers provide their own
- beacons implementation
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        kernel list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <000000000000ef6c6c05d437c830@google.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Tue, Dec 28, 2021, syzbot wrote:
+> Hello,
+> 
+> syzbot found the following issue on:
+> 
+> HEAD commit:    ea586a076e8a Add linux-next specific files for 20211224
+> git tree:       linux-next
+> console output: https://syzkaller.appspot.com/x/log.txt?x=12418ea5b00000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=a9c4e3dde2c568fb
+> dashboard link: https://syzkaller.appspot.com/bug?extid=4e697fe80a31aa7efe21
+> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15724985b00000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12d1aedbb00000
+> 
+> The issue was bisected to:
+> 
+> commit e4b8954074f6d0db01c8c97d338a67f9389c042f
+> Author: Eric Dumazet <edumazet@google.com>
+> Date:   Tue Dec 7 01:30:37 2021 +0000
+> 
+>     netlink: add net device refcount tracker to struct ethnl_req_info
 
-On Wed, 22 Dec 2021 at 10:58, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
->
-> So far only a pure software procedure for sending beacons was possible.
-> Let's create a couple of driver's hooks in order to allow the device
-> drivers to provide their own implementation. If not provided, fallback
-> to the pure software logic.
->
-
-Can you name a SoftMAC transceiver which provides such an "offload" feature?
-
-- Alex
+Heh, while I'd love to blame someone else, there's zero chance this is the
+offending commit.  The WARN repros on kvm/queue, it's likely related to the KVM
+memslot changes queued for 5.17.  I'll take a look.
