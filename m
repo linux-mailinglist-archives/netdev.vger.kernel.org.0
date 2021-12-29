@@ -2,76 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D21048162A
-	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 20:13:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 24D9248162B
+	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 20:14:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230181AbhL2TNy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Dec 2021 14:13:54 -0500
-Received: from sin.source.kernel.org ([145.40.73.55]:34498 "EHLO
-        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229958AbhL2TNy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Dec 2021 14:13:54 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 9C860CE1A14
-        for <netdev@vger.kernel.org>; Wed, 29 Dec 2021 19:13:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7935BC36AE9;
-        Wed, 29 Dec 2021 19:13:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1640805230;
-        bh=0xokU4hs4lavhz61rzr3CnV8pLNCBIAS1epk3E8BnFs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=egRJxdflgbi2I6JUYs0BiKIA41f6DEVt/MQYWcF7tgw6mOtesvToS91A6wA4fO6bt
-         PGMW5GxgkjLSIHr2twSVTEkWYBPQpszZeaj/geqLtcHS8czzMc/Lc+BR3ZZxxItNEe
-         hUmWBWQlk31slIvkJjyCQ0zIvYuMzBvOERp8/jgQwWVIwVB1FTc8GpLR6sCBjE/0Sa
-         ybHIc6hZ7xnkumg/rJCQZ+vegCCLuhZ7hngPnzFIlO1Dy4xQBF2wYADLAy3t4My7Xe
-         jWvPUImn6o+T6GW0GoNd3Y7nzkgqgO3GfS3lOk/NBqNfbjLBcl4sxhpQH5IDAI2QJk
-         i1aJzNkoCd23g==
-Date:   Wed, 29 Dec 2021 11:13:49 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Venkata Sudheer Kumar Bhavaraju <vbhavaraju@marvell.com>
-Cc:     <andrew@lunn.ch>, <aelior@marvell.com>, <netdev@vger.kernel.org>,
-        <palok@marvell.com>
-Subject: Re: [PATCH net-next v2 1/1] qed: add prints if request_firmware()
- failed
-Message-ID: <20211229111349.15f28b34@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20211229110232.336845-1-vbhavaraju@marvell.com>
-References: <YcrmpvMAD5zKHqTE@lunn.ch>
-        <20211229110232.336845-1-vbhavaraju@marvell.com>
+        id S230184AbhL2TOD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Dec 2021 14:14:03 -0500
+Received: from mga12.intel.com ([192.55.52.136]:38228 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229958AbhL2TOD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Dec 2021 14:14:03 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1640805243; x=1672341243;
+  h=from:to:cc:subject:in-reply-to:references:date:
+   message-id:mime-version;
+  bh=ZPhwE10OK5EgjmXYm/gtOuEv6n/rFe1OjWbPWqtq9GQ=;
+  b=YHVSFMhqFXjDbujwr16FxItWDux0jXPUDlr/xoFlBprcxrO2yJB+wpfB
+   REoJmSwToQHYs4Y5NeJVIRTQ6UMDGr1j3rQaJcV7Rn436WTEJV40b0jy2
+   PmMYwjAVBqUYUQp6oGbMwBQDYs3peM2HQI95apXzMksJLhEkuV14W60Fp
+   LmgXPcOf29KSXi4+ohnYKmVvPKWFhqtvMLRuhQv02UteXZADf9qU+Fu+b
+   KoZuEEzWD9AdLub+VW/fwVB2LNhUwB0MhyADM2VKn+X7x1w1BlFZNjWWs
+   N9jqWCNebpI5j2VSNP5tEcfjSflbLvAQDNHZ2PgSHLw1ZjNi5I1zPBHUY
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10212"; a="221556523"
+X-IronPort-AV: E=Sophos;i="5.88,246,1635231600"; 
+   d="scan'208";a="221556523"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Dec 2021 11:14:03 -0800
+X-IronPort-AV: E=Sophos;i="5.88,246,1635231600"; 
+   d="scan'208";a="554591645"
+Received: from andreev1-mobl1.amr.corp.intel.com (HELO vcostago-mobl3) ([10.212.96.86])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Dec 2021 11:13:54 -0800
+From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
+To:     xiangxia.m.yue@gmail.com, netdev@vger.kernel.org
+Cc:     Tonghao Zhang <xiangxia.m.yue@gmail.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Talal Ahmad <talalahmad@google.com>,
+        Kevin Hao <haokexin@gmail.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Kees Cook <keescook@chromium.org>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Wei Wang <weiwan@google.com>, Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [net-next v5 1/2] net: sched: use queue_mapping to pick tx queue
+In-Reply-To: <20211220123839.54664-2-xiangxia.m.yue@gmail.com>
+References: <20211220123839.54664-1-xiangxia.m.yue@gmail.com>
+ <20211220123839.54664-2-xiangxia.m.yue@gmail.com>
+Date:   Wed, 29 Dec 2021 16:13:50 -0300
+Message-ID: <87k0fn2pht.fsf@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 29 Dec 2021 03:02:32 -0800 Venkata Sudheer Kumar Bhavaraju
-wrote:
-> > Hi Venkata
-> > 
-> > When you decide to do something different to what has been requested,
-> > it is a good idea to say why. There might be a very good reason for
-> > this, but unless you explain it, i have no idea what it is.
-> 
-> I moved the FW_REPO macro to qed_if.h under include/linux since I didn't
-> want to bloat something like include/linux/firmware.h. It's really used
-> (exact URL in a print after request_firmware() fails) at two other places.
-> 
-> If you think it's more useful in include/linux/firmware.h so that other
-> drivers can make use of it in future, I can move it there.
+xiangxia.m.yue@gmail.com writes:
 
-If printing this information made sense it should have been done by the
-core, not each driver. In fact your existing print:
+> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+>
+> This patch fixes issue:
+> * If we install tc filters with act_skbedit in clsact hook.
+>   It doesn't work, because netdev_core_pick_tx() overwrites
+>   queue_mapping.
+>
+>   $ tc filter ... action skbedit queue_mapping 1
+>
+> And this patch is useful:
+> * We can use FQ + EDT to implement efficient policies. Tx queues
+>   are picked by xps, ndo_select_queue of netdev driver, or skb hash
+>   in netdev_core_pick_tx(). In fact, the netdev driver, and skb
+>   hash are _not_ under control. xps uses the CPUs map to select Tx
+>   queues, but we can't figure out which task_struct of pod/containter
+>   running on this cpu in most case. We can use clsact filters to classify
+>   one pod/container traffic to one Tx queue. Why ?
+>
+>   In containter networking environment, there are two kinds of pod/
+>   containter/net-namespace. One kind (e.g. P1, P2), the high throughput
+>   is key in these applications. But avoid running out of network resource,
+>   the outbound traffic of these pods is limited, using or sharing one
+>   dedicated Tx queues assigned HTB/TBF/FQ Qdisc. Other kind of pods
+>   (e.g. Pn), the low latency of data access is key. And the traffic is not
+>   limited. Pods use or share other dedicated Tx queues assigned FIFO Qdisc.
+>   This choice provides two benefits. First, contention on the HTB/FQ Qdisc
+>   lock is significantly reduced since fewer CPUs contend for the same queue.
+>   More importantly, Qdisc contention can be eliminated completely if each
+>   CPU has its own FIFO Qdisc for the second kind of pods.
+>
+>   There must be a mechanism in place to support classifying traffic based on
+>   pods/container to different Tx queues. Note that clsact is outside of Qdisc
+>   while Qdisc can run a classifier to select a sub-queue under the
+>   lock.
 
- 			DP_NOTICE(cdev,
- 				  "Failed to find fw file - /lib/firmware/%s\n",
- 				  QED_FW_FILE_NAME);
+One alternative, I don't know if it would work for you, it to use the
+net_prio cgroup + mqprio.
 
-is redundant and potentially incorrect. Firmware path is configurable,
-it does not have to be /lib/firmware. request_firmware() does not set
-FW_OPT_NO_WARN, so core will already print the warning.
+Something like this:
 
-As for your current patch vast majority of users will get the firmware
-from distro packages. I don't know why you're trying to print the repo
-link.
+* create the cgroup
+  $ mkdir -p /sys/fs/cgroup/net_prio/<CGROUP_NAME>
+* assign priorities to the cgroup (per interface)
+  $ echo "<IFACE> <PRIO>" >> /sys/fs/cgroup/net_prio/<CGROUP_NAME>/net_prio.ifpriomap"
+* use the cgroup in applications that do not set SO_PRIORITY
+  $ cgexec -g net_prio:<CGROUP_NAME> <application>
+* configure mqprio
+  $ tc qdisc replace dev $IFACE parent root handle 100 mqprio \
+      num_tc 3 \
+      map 2 2 1 0 2 2 2 2 2 2 2 2 2 2 2 2 \
+      queues 1@0 1@1 2@2 \
+      hw 0
+
+This would map all traffic with SO_PRIORITY 3 to TX queue 0, for example.
+
+But I agree that skbedit's queue_mapping not working is unexpected and
+should be fixed.
+
+
+Cheers,
+-- 
+Vinicius
