@@ -2,109 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE81D480F30
-	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 04:12:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 99EF6480F35
+	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 04:21:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238483AbhL2DMy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Dec 2021 22:12:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55812 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232913AbhL2DMx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Dec 2021 22:12:53 -0500
-Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F6D7C061574;
-        Tue, 28 Dec 2021 19:12:53 -0800 (PST)
-Received: by mail-qt1-x830.google.com with SMTP id j17so17830157qtx.2;
-        Tue, 28 Dec 2021 19:12:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=CWajVAM/CofGIyu/UgB14ELKgBM5UfoqrcGTS6HVdrw=;
-        b=M0HYVdM1LB1ODR6IbUkd6r9SdSXTBTIVXhtAwWk/Ps/PNBQK3KHWoJ3rNvIKlJ5vp+
-         l2dYHqPYFxLKfYfxvWD8/gfXUl2xCwPLFkmvGcNwMgEVCsVclGKdsgOBTthJn7jpvz94
-         l27Yeba35g7gQtwbkfhR09ucZkKE+WKdJVQQSbHaSFMhWrXE9mzUpeKEbJyrL9T8iy4L
-         9kNfDSoXF6NWdXgMD6M5kaXhrbu0vB8Tgv5gzMDhSGT8+kPfYtZQreLfRij3zw72eZlh
-         HOEL+LyvhrpAKp2WofrK0Pd0au5g8JgtjbRRuPKBynOZ5CkVUMbUT3rVlSZY5yP2ajRh
-         BXwg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=CWajVAM/CofGIyu/UgB14ELKgBM5UfoqrcGTS6HVdrw=;
-        b=wg+x83V2bQiRtwESQ6nyfZt+Jr7MbegHj36WDpO9V5UGBoBTtyuuFkAEgja1aR6hn/
-         KUN3d9kiDyDo+ZugAfOVdxpJEur1gh7kGB7+lJMaau4L6DfVz+KfyaeqYs3rgNB5issh
-         6S8J7mxJbC5jhMkmSTSuNo4FGHChLoWaNo0BjhWmB1kXQIJ2Up7ZApxkq7KoSU9DwRPm
-         NoIDLjOsPeZ3lw9AVxoYgcktytpdrSBJ9V/HzLfnfgGjlCOsxvFhNthn6v8wP7olFcSX
-         CLoKtKnLb6HgSKQ+afegOLOz3CKugz6SwovwYQSiA7Ux7/Cd9L8d4yQgwF9j3dy+ICzC
-         rRJA==
-X-Gm-Message-State: AOAM530GmOLCmH/u9g7X6loMsoNA82a6ue7WixU9AIaIH/6DcqJ8Yr2R
-        NoDJaJhFLioDkgMQR2s1qow=
-X-Google-Smtp-Source: ABdhPJyEjdm/+u2HjWz7v0WCSc3hGEIARUz4YKJ55KY0OnWjnRy8tfYmyj4eiVAB8bq8OCpoUqvbKA==
-X-Received: by 2002:a05:622a:14d0:: with SMTP id u16mr21354453qtx.641.1640747572450;
-        Tue, 28 Dec 2021 19:12:52 -0800 (PST)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id t15sm17739972qta.45.2021.12.28.19.12.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Dec 2021 19:12:51 -0800 (PST)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: xu.xin16@zte.com.cn
-To:     davem@davemloft.net
-Cc:     kuba@kernel.org, corbet@lwn.net, netdev@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        xu xin <xu.xin16@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH linux-next] Documentation: fix outdated interpretation of ip_no_pmtu_disc
-Date:   Wed, 29 Dec 2021 03:12:45 +0000
-Message-Id: <20211229031245.582451-1-xu.xin16@zte.com.cn>
+        id S238496AbhL2DVv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Dec 2021 22:21:51 -0500
+Received: from smtp25.cstnet.cn ([159.226.251.25]:37550 "EHLO cstnet.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S231775AbhL2DVv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Dec 2021 22:21:51 -0500
+Received: from localhost.localdomain (unknown [124.16.138.126])
+        by APP-05 (Coremail) with SMTP id zQCowAB3fAAv1MthVhA+BQ--.4374S2;
+        Wed, 29 Dec 2021 11:21:20 +0800 (CST)
+From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
+To:     sam@mendozajonas.com, davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Subject: [PATCH] net/ncsi: check for error return from call to nla_put_u32
+Date:   Wed, 29 Dec 2021 11:21:18 +0800
+Message-Id: <20211229032118.1706294-1-jiasheng@iscas.ac.cn>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: zQCowAB3fAAv1MthVhA+BQ--.4374S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7CFy7try5Jw18WrWrWF15urg_yoW8JF47pr
+        W8KF93tw4kJ3y0grykA3W8urW5ZrsrXrW3Cryagw4rZFn5X3WqvF9rZFZaqr1fCrWvqw1x
+        Ar4jqr1Y9Fs0ya7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUkl14x267AKxVWUJVW8JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26ryj6F1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
+        6F4UM28EF7xvwVC2z280aVAFwI0_Cr1j6rxdM28EF7xvwVC2z280aVCY1x0267AKxVWxJr
+        0_GcWle2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
+        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
+        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc2xSY4AK67AK6r48
+        MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr
+        0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWUtwCIc40Y0x0E
+        wIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJV
+        W8JwCI42IY6xAIw20EY4v20xvaj40_Wr1j6rW3Jr1lIxAIcVC2z280aVAFwI0_Jr0_Gr1l
+        IxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUj8uctUUUU
+        U==
+X-Originating-IP: [124.16.138.126]
+X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: xu xin <xu.xin16@zte.com.cn>
+As we can see from the comment of the nla_put() that it could return
+-EMSGSIZE if the tailroom of the skb is insufficient.
+Therefore, it should be better to check the return value of the
+nla_put_u32 and return the error code if error accurs.
+Also, there are many other functions have the same problem, and if this
+patch is correct, I will commit a new version to fix all.
 
-The updating way of pmtu has changed, but documentation is still in the
-old way. See commit-id 28d35bcdd3925e7293408cdb8aa5f2aac5f0d6e3. So This
-patch fix interpretation of ip_no_pmtu_disc.
-
-Besides, min_pmtu seems not to be discoverd, but set.
-
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: xu xin <xu.xin16@zte.com.cn>
+Fixes: 955dc68cb9b2 ("net/ncsi: Add generic netlink family")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 ---
- Documentation/networking/ip-sysctl.rst | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ net/ncsi/ncsi-netlink.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
-index c04431144f7a..dd5e53318805 100644
---- a/Documentation/networking/ip-sysctl.rst
-+++ b/Documentation/networking/ip-sysctl.rst
-@@ -25,9 +25,11 @@ ip_default_ttl - INTEGER
- ip_no_pmtu_disc - INTEGER
- 	Disable Path MTU Discovery. If enabled in mode 1 and a
- 	fragmentation-required ICMP is received, the PMTU to this
--	destination will be set to min_pmtu (see below). You will need
--	to raise min_pmtu to the smallest interface MTU on your system
--	manually if you want to avoid locally generated fragments.
-+	destination will be set to the smallest of the old MTU
-+        and ip_rt_min_pmtu (see __ip_rt_update_pmtu() in
-+        net/ipv4/route.c). You will need to raise min_pmtu to the
-+        smallest interface MTU on your system manually if you want to
-+        avoid locally generated fragments.
- 
- 	In mode 2 incoming Path MTU Discovery messages will be
- 	discarded. Outgoing frames are handled the same as in mode 1,
-@@ -49,7 +51,7 @@ ip_no_pmtu_disc - INTEGER
- 	Default: FALSE
- 
- min_pmtu - INTEGER
--	default 552 - minimum discovered Path MTU
-+	default 552 - minimum set Path MTU
- 
- ip_forward_use_pmtu - BOOLEAN
- 	By default we don't trust protocol path MTUs while forwarding
+diff --git a/net/ncsi/ncsi-netlink.c b/net/ncsi/ncsi-netlink.c
+index bb5f1650f11c..c189b4c8a182 100644
+--- a/net/ncsi/ncsi-netlink.c
++++ b/net/ncsi/ncsi-netlink.c
+@@ -112,7 +112,11 @@ static int ncsi_write_package_info(struct sk_buff *skb,
+ 		pnest = nla_nest_start_noflag(skb, NCSI_PKG_ATTR);
+ 		if (!pnest)
+ 			return -ENOMEM;
+-		nla_put_u32(skb, NCSI_PKG_ATTR_ID, np->id);
++		rc = nla_put_u32(skb, NCSI_PKG_ATTR_ID, np->id);
++		if (rc) {
++			nla_nest_cancel(skb, pnest);
++			return rc;
++		}
+ 		if ((0x1 << np->id) == ndp->package_whitelist)
+ 			nla_put_flag(skb, NCSI_PKG_ATTR_FORCED);
+ 		cnest = nla_nest_start_noflag(skb, NCSI_PKG_ATTR_CHANNEL_LIST);
 -- 
 2.25.1
 
