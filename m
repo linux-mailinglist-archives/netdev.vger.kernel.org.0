@@ -2,141 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A28D481528
-	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 17:40:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 952B8481530
+	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 17:42:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240840AbhL2QkL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Dec 2021 11:40:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35484 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240794AbhL2QkK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Dec 2021 11:40:10 -0500
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6F24C061574
-        for <netdev@vger.kernel.org>; Wed, 29 Dec 2021 08:40:10 -0800 (PST)
-Received: by mail-pf1-x42e.google.com with SMTP id 196so19149659pfw.10
-        for <netdev@vger.kernel.org>; Wed, 29 Dec 2021 08:40:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=jin73F7ZfhBvwpBkId2yd1nLKoteULf0CVHPl8kI8BA=;
-        b=pGzsJ8oE903rOgpFVDJPo3IMvWm0gP+NZ3VrXzJ8pUqB1RLRYQdfWVLS7YYEGtI9V6
-         7MiOmtDyG5/lKDyCwotwCT5aeCpdbSP/M7gAO+IwsEhRCelg1WeYYOuSVqHFhnCaw/my
-         bavLHCnuFcS4sBdJPXea73YoCRqVaR/6P9Rj/hnTyFP4SQWmU7JfbRE1NvX3AR4GAPjS
-         SyekDfQ15B5ivro8sYPpIVF6+0E0roCydqJOwvQKG4HTDjbmhzrp6aJCRHaRITiKfV56
-         cdIAwjZluGWO89hq0g1gB8EuI82olbOD8uGqMgUJZzpqHhZnOtZZjp7TItO72cjc5/G3
-         NSig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=jin73F7ZfhBvwpBkId2yd1nLKoteULf0CVHPl8kI8BA=;
-        b=OMQ30Vx7heJvqKUu23v4vSWH0KtrFjTKaVxprv13lEQanG6WRHky7SBoF5uC6xmomc
-         BMiPTQRn1Q7+9THUB8JryX+7Cv3hB5mPfnoI97Cqnscj4TBC14cZnpsycWbQ9XNeVrdZ
-         1AEMEdyqN03gOXHqVW8W3yGhTMLjr9Rp379qx6YeR+BEz+F0ofAzvRt8mTVJxkrgY4Bl
-         8VCDP8adjXucWGwln7SPRDwBE9Of2BFuNZPR10WbOFzm5W5/RnFE9hOP5ChfimB319Te
-         btv0eptbQQGLbwpbmWmWvXi/Ru+Rl3sv6ova4ZWVmBH95Ec6Uhj7eVk7EYe4F1ams3Ew
-         tUeg==
-X-Gm-Message-State: AOAM5329fdNyXliqYW0GAZMrv0rf9/BBTWlcsJKyHdS2hL/Zdl8f78IQ
-        pXe17v8C9Z3ONE9zuVhbHzA=
-X-Google-Smtp-Source: ABdhPJx+pssjN1kAFOZ+uLCHpmfVx3qEF6sOHoHxoKYkeOOwckIr5TNXQFmDukjuGggby3angJ6BTA==
-X-Received: by 2002:a63:6942:: with SMTP id e63mr23843737pgc.451.1640796010172;
-        Wed, 29 Dec 2021 08:40:10 -0800 (PST)
-Received: from [10.230.2.158] ([192.19.161.250])
-        by smtp.gmail.com with ESMTPSA id f10sm27502351pfj.145.2021.12.29.08.40.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 29 Dec 2021 08:40:09 -0800 (PST)
-Message-ID: <097bb80d-a5c5-3884-4ce4-64c9fec1b26a@gmail.com>
-Date:   Wed, 29 Dec 2021 08:40:08 -0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH] net: dsa: bcm_sf2: refactor LED regs access
-Content-Language: en-US
-To:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
-References: <20211228220951.17751-1-zajec5@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20211228220951.17751-1-zajec5@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+        id S240862AbhL2QmU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Dec 2021 11:42:20 -0500
+Received: from sibelius.xs4all.nl ([83.163.83.176]:50403 "EHLO
+        sibelius.xs4all.nl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234322AbhL2QmU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Dec 2021 11:42:20 -0500
+Received: from localhost (bloch.sibelius.xs4all.nl [local])
+        by bloch.sibelius.xs4all.nl (OpenSMTPD) with ESMTPA id 079f839a;
+        Wed, 29 Dec 2021 17:42:17 +0100 (CET)
+Date:   Wed, 29 Dec 2021 17:42:17 +0100 (CET)
+From:   Mark Kettenis <mark.kettenis@xs4all.nl>
+To:     Hector Martin <marcan@marcan.st>
+Cc:     kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org,
+        robh+dt@kernel.org, rafael@kernel.org, lenb@kernel.org,
+        aspriel@gmail.com, franky.lin@broadcom.com,
+        hante.meuleman@broadcom.com, chi-hsien.lin@infineon.com,
+        wright.feng@infineon.com, chung-hsien.hsu@infineon.com,
+        marcan@marcan.st, sven@svenpeter.dev, alyssa@rosenzweig.io,
+        kettenis@openbsd.org, zajec5@gmail.com,
+        pieter-paul.giesberts@broadcom.com, linus.walleij@linaro.org,
+        hdegoede@redhat.com, linville@tuxdriver.com, dekim@broadcom.com,
+        sandals@crustytoothpaste.net, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com
+In-Reply-To: <20211226153624.162281-2-marcan@marcan.st> (message from Hector
+        Martin on Mon, 27 Dec 2021 00:35:51 +0900)
+Subject: Re: [PATCH 01/34] dt-bindings: net: bcm4329-fmac: Add Apple properties & chips
+References: <20211226153624.162281-1-marcan@marcan.st> <20211226153624.162281-2-marcan@marcan.st>
+MIME-version: 1.0
+Content-type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
+Message-ID: <d3cb7b3782b16029@bloch.sibelius.xs4all.nl>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 12/28/2021 2:09 PM, Rafał Miłecki wrote:
-> From: Rafał Miłecki <rafal@milecki.pl>
+> From: Hector Martin <marcan@marcan.st>
+> Cc: Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
+>         Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+>         Mark Kettenis <kettenis@openbsd.org>,
+>         Rafał Miłecki <zajec5@gmail.com>,
+>         Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
+>         Linus Walleij <linus.walleij@linaro.org>,
+>         Hans de Goede <hdegoede@redhat.com>,
+>         "John W. Linville" <linville@tuxdriver.com>,
+>         "Daniel (Deognyoun) Kim" <dekim@broadcom.com>,
+>         "brian m. carlson" <sandals@crustytoothpaste.net>,
+>         linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+>         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+>         linux-acpi@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com,
+>         SHA-cyfmac-dev-list@infineon.com
+> Date: Mon, 27 Dec 2021 00:35:51 +0900
 > 
-> 1. Define more regs. Some switches (e.g. BCM4908) have up to 6 regs.
-> 2. Add helper for handling non-lineral port <-> reg mappings.
-> 3. Add support for 12 B LED reg blocks on BCM4908 (different layout)
+> This binding is currently used for SDIO devices, but these chips are
+> also used as PCIe devices on DT platforms and may be represented in the
+> DT. Re-use the existing binding and add chip compatibles used by Apple
+> T2 and M1 platforms (the T2 ones are not known to be used in DT
+> platforms, but we might as well document them).
 > 
-> Complete support for LEDs setup will be implemented once Linux receives
-> a proper design & implementation for "hardware" LEDs.
+> Then, add properties required for firmware selection and calibration on
+> M1 machines.
 > 
-> Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
-
-This looks good for the most part, just one nit below:
-
+> Signed-off-by: Hector Martin <marcan@marcan.st>
 > ---
->   drivers/net/dsa/bcm_sf2.c      | 60 +++++++++++++++++++++++++++----
->   drivers/net/dsa/bcm_sf2.h      | 10 ++++++
->   drivers/net/dsa/bcm_sf2_regs.h | 65 +++++++++++++++++++++++++++++++---
->   3 files changed, 125 insertions(+), 10 deletions(-)
+>  .../net/wireless/brcm,bcm4329-fmac.yaml       | 32 +++++++++++++++++--
+>  1 file changed, 29 insertions(+), 3 deletions(-)
 > 
-> diff --git a/drivers/net/dsa/bcm_sf2.c b/drivers/net/dsa/bcm_sf2.c
-> index 13aa43b5cffd..c2447de9d441 100644
-> --- a/drivers/net/dsa/bcm_sf2.c
-> +++ b/drivers/net/dsa/bcm_sf2.c
-> @@ -62,6 +62,44 @@ static u16 bcm_sf2_reg_rgmii_cntrl(struct bcm_sf2_priv *priv, int port)
->   	return REG_SWITCH_STATUS;
->   }
->   
-> +static u16 bcm_sf2_reg_led_base(struct bcm_sf2_priv *priv, int port)
-> +{
-> +	switch (priv->type) {
-> +	case BCM4908_DEVICE_ID:
-> +		switch (port) {
-> +		case 0:
-> +			return REG_LED_0_CNTRL;
-> +		case 1:
-> +			return REG_LED_1_CNTRL;
-> +		case 2:
-> +			return REG_LED_2_CNTRL;
+> diff --git a/Documentation/devicetree/bindings/net/wireless/brcm,bcm4329-fmac.yaml b/Documentation/devicetree/bindings/net/wireless/brcm,bcm4329-fmac.yaml
+> index c11f23b20c4c..2530ff3e7b90 100644
+> --- a/Documentation/devicetree/bindings/net/wireless/brcm,bcm4329-fmac.yaml
+> +++ b/Documentation/devicetree/bindings/net/wireless/brcm,bcm4329-fmac.yaml
+> @@ -4,7 +4,7 @@
+>  $id: http://devicetree.org/schemas/net/wireless/brcm,bcm4329-fmac.yaml#
+>  $schema: http://devicetree.org/meta-schemas/core.yaml#
+>  
+> -title: Broadcom BCM4329 family fullmac wireless SDIO devices
+> +title: Broadcom BCM4329 family fullmac wireless SDIO/PCIE devices
+>  
+>  maintainers:
+>    - Arend van Spriel <arend@broadcom.com>
+> @@ -36,16 +36,22 @@ properties:
+>                - brcm,bcm43455-fmac
+>                - brcm,bcm43456-fmac
+>                - brcm,bcm4354-fmac
+> +              - brcm,bcm4355c1-fmac
+>                - brcm,bcm4356-fmac
+>                - brcm,bcm4359-fmac
+> +              - brcm,bcm4364b2-fmac
+> +              - brcm,bcm4364b3-fmac
+> +              - brcm,bcm4377b3-fmac
+> +              - brcm,bcm4378b1-fmac
+> +              - brcm,bcm4387c2-fmac
+>                - cypress,cyw4373-fmac
+>                - cypress,cyw43012-fmac
+>            - const: brcm,bcm4329-fmac
+>        - const: brcm,bcm4329-fmac
 
-Up until that port count, we have a common path, it is only after port > 
-2 that we stop having a common path. Only BCM7445 and BCM7278 have two 
-external ports, 63138 (and 63148 when that gets added eventually) as 
-well as a 4908 have more ports, so I would do something like this:
+I suppose this helps with validation of device trees.  However, nodes
+for PCI devices are not supposed to have a "compatible" property as
+the PCI vendor and device IDs are supposed to be used to identify a
+device.
 
-switch (port) {
-case 0:
-	return REG_LED_0_CNTRL;
-case 1:
-	return REG_LED_1_CNTRL;
-case 2:
-	return REG_LED_2_CNTRL;
-default:
-	break;
-}
+That does raise the question how a schema for additional properties
+for PCI device nodes is supposed to be defined...
 
-if (priv->type == BCM7445_DEVICE_ID || priv->type == BCM7278_DEVICE_ID)
-	goto out;
-
-Also, this LED controller is also present in the GENETv5 adapters, so we 
-may have some value in writing a common LED framework driver for it at 
-some point.
-
-Thanks!
--- 
-Florian
+>    reg:
+> -    description: SDIO function number for the device, for most cases
+> -      this will be 1.
+> +    description: SDIO function number for the device (for most cases
+> +      this will be 1) or PCI device identifier.
+>  
+>    interrupts:
+>      maxItems: 1
+> @@ -75,6 +81,26 @@ properties:
+>      items:
+>        pattern: '^[A-Z][A-Z]-[A-Z][0-9A-Z]-[0-9]+$'
+>  
+> +  brcm,cal-blob:
+> +    $ref: /schemas/types.yaml#/definitions/uint8-array
+> +    description: A per-device calibration blob for the Wi-Fi radio. This
+> +      should be filled in by the bootloader from platform configuration
+> +      data, if necessary, and will be uploaded to the device if present.
+> +
+> +  apple,module-instance:
+> +    $ref: /schemas/types.yaml#/definitions/string
+> +    description: Module codename used to identify a specific board on
+> +      Apple platforms. This is used to build the firmware filenames, to allow
+> +      different platforms to have different firmware and/or NVRAM config.
+> +
+> +  apple,antenna-sku:
+> +    $def: /schemas/types.yaml#/definitions/string
+> +    description: Antenna SKU used to identify a specific antenna configuration
+> +      on Apple platforms. This is use to build firmware filenames, to allow
+> +      platforms with different antenna configs to have different firmware and/or
+> +      NVRAM. This would normally be filled in by the bootloader from platform
+> +      configuration data.
+> +
+>  required:
+>    - compatible
+>    - reg
+> -- 
+> 2.33.0
+> 
+> 
