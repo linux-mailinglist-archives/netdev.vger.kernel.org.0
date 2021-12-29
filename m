@@ -2,106 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FB1E481698
-	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 21:15:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 090A848169C
+	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 21:18:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231830AbhL2UPj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Dec 2021 15:15:39 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:33654 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231773AbhL2UPj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Dec 2021 15:15:39 -0500
+        id S231875AbhL2USV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Dec 2021 15:18:21 -0500
+Received: from sin.source.kernel.org ([145.40.73.55]:42284 "EHLO
+        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231773AbhL2USU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Dec 2021 15:18:20 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F3DB9614D9;
-        Wed, 29 Dec 2021 20:15:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00303C36AEA;
-        Wed, 29 Dec 2021 20:15:37 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 6BC63CE1A32;
+        Wed, 29 Dec 2021 20:18:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D4F6C36AE9;
+        Wed, 29 Dec 2021 20:18:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1640808938;
-        bh=7iyaFWLPgYjnHDSKKvd0Mh8/pRpkgZcI8x6NKYB2mnU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=WX82uNED7rbYUY9uxhIffcoGboMiIvqurlmdOLXYH+QmXSA6PIIUQ3LPeXjUgn7SW
-         6CmL7+ZSc3Jcx5nzEsFuqF30IMMQ/WYHRiJPznqfwAQsxYvxr6AaA9u9ODXtpKCYzr
-         j25LGAsMyo/UBdu2lN/uOTFSS6fBPHOwU0AbmUKvYuJdTIPTlC9j2L4RHA3/4uDfth
-         hNTiizJA4l/3iVj9/oCnWDTvRtLN0JIUi2RYD20YTM43TQusv033n1cWnVVXBcc5h8
-         0a84MFo09GzI7KT4aTz8P2sdsOzqLFDYX43mw1Y2hgssFuFCY6sZpUYzFfpqBt+Qa7
-         8ts7LjuJOAU7w==
-Date:   Wed, 29 Dec 2021 12:15:36 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     cgel.zte@gmail.com
-Cc:     davem@davemloft.net, corbet@lwn.net, netdev@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        xu xin <xu.xin16@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>
-Subject: Re: [PATCH linux-next] Documentation: fix outdated interpretation
- of ip_no_pmtu_disc
-Message-ID: <20211229121536.06d270e5@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20211229031245.582451-1-xu.xin16@zte.com.cn>
-References: <20211229031245.582451-1-xu.xin16@zte.com.cn>
+        s=k20201202; t=1640809096;
+        bh=OO/7H+q1tJgl+UkE2VDhBPwDsy+1vjPE6DQfF6j9qh0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=F+Plc0rWh9Hck56YGRXWzhcF6epaqqsaGxlZKhJf/NeCFraR983xCbxZDBKcRbZkx
+         juf5NnrJY1i/98V7kQj68uTTQLMxwlr+/R9eLPlbzzk2kFei4csC47gNrNaEF5DZOO
+         XY/lu9IIGzN4bMtI9XYsV61B0yi2x9pXI9xzWs38prFy/SbMvwEDMxP4Lj6cX1QF09
+         mhaFPtq8mWPwjj59u+d+KOcAh6SdqiZ4iE/gRCACCYmGTXGk9PbzVnt2utVHgAq7Tc
+         +KQYvJ3/1hyVXCQknQ2K3B3gvKSWZsUTc23UPMJ1ih+RYV/IgIkve9qqF252408jiW
+         BFED9/DlyB9ag==
+Date:   Wed, 29 Dec 2021 14:18:14 -0600
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
+Cc:     m.chetan.kumar@intel.com, linuxwwan@intel.com,
+        linux-pci@vger.kernel.org, linux-pm@vger.kernel.org,
+        Loic Poulain <loic.poulain@linaro.org>,
+        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Vaibhav Gupta <vaibhavgupta40@gmail.com>
+Subject: Re: [PATCH 2/2] net: wwan: iosm: Keep device at D0 for s2idle case
+Message-ID: <20211229201814.GA1699315@bhelgaas>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211224081914.345292-2-kai.heng.feng@canonical.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 29 Dec 2021 03:12:45 +0000 cgel.zte@gmail.com wrote:
-> From: xu xin <xu.xin16@zte.com.cn>
+[+cc Rafael, Vaibhav]
+
+On Fri, Dec 24, 2021 at 04:19:14PM +0800, Kai-Heng Feng wrote:
+> We are seeing spurious wakeup caused by Intel 7560 WWAN on AMD laptops.
+> This prevent those laptops to stay in s2idle state.
 > 
-> The updating way of pmtu has changed, but documentation is still in the
-> old way. See commit-id 28d35bcdd3925e7293408cdb8aa5f2aac5f0d6e3. So This
-
-not a correct way to quote a commit, please use: %h (\"%s\")
-as the format.
-
-> patch fix interpretation of ip_no_pmtu_disc.
+> From what I can understand, the intention of ipc_pcie_suspend() is to
+> put the device to D3cold, and ipc_pcie_suspend_s2idle() is to keep the
+> device at D0. However, the device can still be put to D3hot/D3cold by
+> PCI core.
 > 
-> Besides, min_pmtu seems not to be discoverd, but set.
+> So explicitly let PCI core know this device should stay at D0, to solve
+> the spurious wakeup.
 > 
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-
-How does the bot discover this sort of problem?
-
-> Signed-off-by: xu xin <xu.xin16@zte.com.cn>
+> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
 > ---
->  Documentation/networking/ip-sysctl.rst | 10 ++++++----
->  1 file changed, 6 insertions(+), 4 deletions(-)
+>  drivers/net/wwan/iosm/iosm_ipc_pcie.c | 3 +++
+>  1 file changed, 3 insertions(+)
 > 
-> diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
-> index c04431144f7a..dd5e53318805 100644
-> --- a/Documentation/networking/ip-sysctl.rst
-> +++ b/Documentation/networking/ip-sysctl.rst
-> @@ -25,9 +25,11 @@ ip_default_ttl - INTEGER
->  ip_no_pmtu_disc - INTEGER
->  	Disable Path MTU Discovery. If enabled in mode 1 and a
->  	fragmentation-required ICMP is received, the PMTU to this
-> -	destination will be set to min_pmtu (see below). You will need
-> -	to raise min_pmtu to the smallest interface MTU on your system
-> -	manually if you want to avoid locally generated fragments.
-> +	destination will be set to the smallest of the old MTU
-> +        and ip_rt_min_pmtu (see __ip_rt_update_pmtu() in
-
-I don't see how this is a meaningful distinction to someone reading
-this documentation, more of a corner case.
-
-> +        net/ipv4/route.c). You will need to raise min_pmtu to the
-> +        smallest interface MTU on your system manually if you want to
-> +        avoid locally generated fragments.
-
-Use tabs instead of spaces.
- 
->  	In mode 2 incoming Path MTU Discovery messages will be
->  	discarded. Outgoing frames are handled the same as in mode 1,
-> @@ -49,7 +51,7 @@ ip_no_pmtu_disc - INTEGER
->  	Default: FALSE
+> diff --git a/drivers/net/wwan/iosm/iosm_ipc_pcie.c b/drivers/net/wwan/iosm/iosm_ipc_pcie.c
+> index d73894e2a84ed..af1d0e837fe99 100644
+> --- a/drivers/net/wwan/iosm/iosm_ipc_pcie.c
+> +++ b/drivers/net/wwan/iosm/iosm_ipc_pcie.c
+> @@ -340,6 +340,9 @@ static int __maybe_unused ipc_pcie_suspend_s2idle(struct iosm_pcie *ipc_pcie)
 >  
->  min_pmtu - INTEGER
-> -	default 552 - minimum discovered Path MTU
-> +	default 552 - minimum set Path MTU
+>  	ipc_imem_pm_s2idle_sleep(ipc_pcie->imem, true);
+>  
+> +	/* Let PCI core know this device should stay at D0 */
+> +	pci_save_state(ipc_pcie->pci);
 
-Also not must of an improvement IMHO.
+This is a weird and non-obvious way to say "this device should stay at
+D0".  It's also fairly expensive since pci_save_state() does a lot of
+slow PCI config reads.
 
->  ip_forward_use_pmtu - BOOLEAN
->  	By default we don't trust protocol path MTUs while forwarding
-
+>  	return 0;
+>  }
+>  
+> -- 
+> 2.33.1
+> 
