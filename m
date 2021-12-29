@@ -2,84 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E4767480EAE
-	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 02:45:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 46086480EC5
+	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 03:03:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238243AbhL2Bpr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Dec 2021 20:45:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36932 "EHLO
+        id S238323AbhL2CDo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Dec 2021 21:03:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232602AbhL2Bpq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Dec 2021 20:45:46 -0500
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3180CC061574;
-        Tue, 28 Dec 2021 17:45:46 -0800 (PST)
-Received: by mail-wm1-x336.google.com with SMTP id j140-20020a1c2392000000b003399ae48f58so13649235wmj.5;
-        Tue, 28 Dec 2021 17:45:46 -0800 (PST)
+        with ESMTP id S238317AbhL2CDo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Dec 2021 21:03:44 -0500
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17B7BC061574
+        for <netdev@vger.kernel.org>; Tue, 28 Dec 2021 18:03:43 -0800 (PST)
+Received: by mail-pf1-x431.google.com with SMTP id v11so17535266pfu.2
+        for <netdev@vger.kernel.org>; Tue, 28 Dec 2021 18:03:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kMVKjCl04dw0PGuDwWt7IinMb2TiSh25Rh+lXPqPFbI=;
-        b=SCCNyvQg7iXPbiZPdRR2LY1DBUkkHUrTJQ9Ulv0ztBotO32vDDmJDNTn7lSppjcgoe
-         SyxAFqH2cfu9oIPFSpPFSiOBJrnGdL9rA5pgxnScrQduKqzAj7Cbi83i9MKnXlV1D6AW
-         Ndd1/Jwe7y4aZrJ+YKaKdnn9jEqTRp+h8f+/HEVq5aChQsS5Sp1K0bFfDZ6k2KlTR0Ft
-         DxJ8Jq2TA5jZUOWJH2Nj1cUmXoffzm2wews31upvF/dQ618wghnzJBNYKtg5SDjB1m2A
-         +oy1eezZiellDqdDXydB+7W4wRpKOlTTmNGXWi+bEXtGgIp3t4VOOEN/o+u8lhsT/QSK
-         NL4A==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=jwx9oYDYYtkijtgGI7nMiqny5yngEF+z4nqoWlAzOfs=;
+        b=IuLSF18Y3hXjgqKSRBxl3XzEYPW5E+4hdSS50mnfxFoFrNYVjzX7r3sEW/aFRkQPr9
+         lWl4e4VtTXpNJblDNuR0OY+NdBJQJ3gQ6Ch0jSO1N3+Q/dCuP+qtjHWCS7/c11vVM4JY
+         A54NLfuAXSRZuvHvtdAMMwOkf4e9WMjqFTIE/JYewOi6HpeBPhFNa6RDEP/f2TYKPtFw
+         O+Dlpff7Bss0/Mwt8KgPFhkgxEFzAFOuUixBcmPX1bRMzj4gsBxC7wAB+PR6JknxfGWD
+         ytG+HL5kJKsJOeoXm03JAYe1BoJzDjvEbMaPewRPk/Hf/rXM2UTToR/CLY2Kz1T+pEoC
+         Mtbg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kMVKjCl04dw0PGuDwWt7IinMb2TiSh25Rh+lXPqPFbI=;
-        b=PCulj9+hZAo3NqpcjbtyQp3AaUVvsaqRi60Xn3/ad03NfaKU/RIFdaANLXkHlf49uv
-         yX2vPJjmElk0NPgv52ZG9Pt6MR3z6NllAfsNgovWzSLBp83uLEcW4SITpwKjxCSHkJxx
-         VaAg0EQYP69k08DADVmwfSFD/3aDNEpV6KstHLLvw5lA5o5Non024Fy9TpL5HUextuWj
-         lc5e/1HTV0TFX4YT80xz6KN7Yfl0VwksW+4qsouV6YRqxyr9E/d/09uT8CkGiwNAvDmU
-         xoXKcpajuExd+3JST1hxjquhvZ/rsYNKmng9UeG3BvyJ+4OAc8MCWKeMv8I8rnwDUO5h
-         SWyA==
-X-Gm-Message-State: AOAM532AmW4YyoNa/luyTH0zMyDAIupmkEtzWqYZyc2Z/c4EcQWiUZYO
-        +9qSqu0jaSX3XhfebkqHSumwqVukCj5Fdve03Jo=
-X-Google-Smtp-Source: ABdhPJx0tjGKzj8i/l6FP7eKW9dyVRnwdtuuj/WDM9AR3Mmhc8CSeoTst/aSp0ee1EAyiFDU+TzkIgUf4wrd7BYO4oU=
-X-Received: by 2002:a7b:c745:: with SMTP id w5mr19219810wmk.167.1640742344307;
- Tue, 28 Dec 2021 17:45:44 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=jwx9oYDYYtkijtgGI7nMiqny5yngEF+z4nqoWlAzOfs=;
+        b=duiR94I8Dlhq22Hg16Vz6/qjhWbBOV5o/YFIVRaCSHZZbvKZ8qvQE22ZNcuVwyvjyE
+         GHB9LlyT79Kalij9ghUqAQmBfMICa55BJaosRpbWBM/7UDQ8B+Z3DqAjK95ShFQMoP5z
+         tKrEdV0bQMAuTxzgVUdJJwcz47+/qLD8qqzU8SaAjOQQ0gul0RKeKDLwmdsUbtUIjWqj
+         +6kADrb/+nH2T++Ff2NawwpQdfzprdEcxEo8rbGwFoTqMSjduRoNbPkOmC7yI+rofAKo
+         uTAffnUWoZaRzKVrTSeCVb+i3/xhTj77zQn2QwtKct3WTWGhzWXQqDZA3B78UqrA6Zdz
+         BglA==
+X-Gm-Message-State: AOAM532m7zSnGpcGH0mlRqLNrubqX+BredyiosFzW9YOywra/7+ubJtg
+        J7NXMEx7LT+b1XFSiVYhgy0=
+X-Google-Smtp-Source: ABdhPJxhoxlyIl16QFgky7OadekYGfQsApCYp/ZbFQaBCQ0JXldYkHQadQ2NrcEtn6zyvglYTKKB3A==
+X-Received: by 2002:a62:33c6:0:b0:4a0:3a81:3489 with SMTP id z189-20020a6233c6000000b004a03a813489mr24796127pfz.59.1640743422635;
+        Tue, 28 Dec 2021 18:03:42 -0800 (PST)
+Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id s34sm23511567pfg.198.2021.12.28.18.03.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Dec 2021 18:03:41 -0800 (PST)
+Date:   Tue, 28 Dec 2021 18:03:39 -0800
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Hangbin Liu <liuhangbin@gmail.com>, netdev@vger.kernel.org,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S . Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCHv3 net-next 1/2] net_tstamp: add new flag
+ HWTSTAMP_FLAG_BONDED_PHC_INDEX
+Message-ID: <20211229020339.GA3213@hoboy.vegasvil.org>
+References: <20211210085959.2023644-1-liuhangbin@gmail.com>
+ <20211210085959.2023644-2-liuhangbin@gmail.com>
+ <Ycq2Ofad9UHur0qE@Laptop-X1>
+ <20211228071528.040fd3e3@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <20211228160050.GA13274@hoboy.vegasvil.org>
+ <20211228081748.084e9215@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
 MIME-Version: 1.0
-References: <20211222155743.256280-1-miquel.raynal@bootlin.com>
- <20211222155743.256280-9-miquel.raynal@bootlin.com> <CAB_54W786n6_4FAMc7VMAX0nuyd6r2Hi+wYEEbd5Bjdrd8ArpA@mail.gmail.com>
-In-Reply-To: <CAB_54W786n6_4FAMc7VMAX0nuyd6r2Hi+wYEEbd5Bjdrd8ArpA@mail.gmail.com>
-From:   Alexander Aring <alex.aring@gmail.com>
-Date:   Tue, 28 Dec 2021 20:45:33 -0500
-Message-ID: <CAB_54W5pj=zFwfDh7=0Nh-FivGb6Edjosd19dzmH_k0C5mszmw@mail.gmail.com>
-Subject: Re: [net-next 08/18] net: ieee802154: Add support for internal PAN management
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        kernel list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211228081748.084e9215@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Tue, Dec 28, 2021 at 08:17:48AM -0800, Jakub Kicinski wrote:
+> That's still just a compile-time fix,
 
-On Tue, 28 Dec 2021 at 17:22, Alexander Aring <alex.aring@gmail.com> wrote:
-...
-> That means as far I see you should move the most of those attributes
-> to per wpan_dev instead of per cfg802154.
+I think Hangbin's immediate question was about compilation.  linuxptp
+needs to be able to compile against older system headers.
 
-Sorry that's wrong.
+> if the user space binary 
+> is distributed in binary form (distro package) there is no knowing
+> on which kernel versions it will run. I think runtime probing will
+> be necessary.
 
-I see now, that the result for a scan on every possible wpan_dev for a
-specific wpan_phy should return the same result, that's why it belongs
-to cfg802154 and this is correct (as a cfg802154 has a 1:1 mapping to
-wpan_phy).
-Same as in wireless...
+Yes, that too.
+ 
+> If we want the define it should be to the enum name:
+> 
+> What about adding matching #defines into the enum declaration?
+> 
+> enum hwtstamp_flags {
+> 	HWTSTAMP_FLAG_BONDED_PHC_INDEX = (1<<0),
+> #define HWTSTAMP_FLAG_BONDED_PHC_INDEX HWTSTAMP_FLAG_BONDED_PHC_INDEX
+> };
+> 
+> Examples in include/uapi/linux/rtnetlink.h
 
-- Alex
+Ha!  I knew I saw this somewhere.
+
+Thanks,
+Richard
