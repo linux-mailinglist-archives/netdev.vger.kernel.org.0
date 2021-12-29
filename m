@@ -2,75 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C56954811A0
-	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 11:22:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 947584811CD
+	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 11:58:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235515AbhL2KWI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Dec 2021 05:22:08 -0500
-Received: from smtp25.cstnet.cn ([159.226.251.25]:43446 "EHLO cstnet.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231732AbhL2KWH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Dec 2021 05:22:07 -0500
-Received: from localhost.localdomain (unknown [124.16.138.126])
-        by APP-05 (Coremail) with SMTP id zQCowACHa0G1Nsxhi1hCBQ--.9142S2;
-        Wed, 29 Dec 2021 18:21:41 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: [PATCH] fjes: Check possible NULL pointer returned by vzalloc
-Date:   Wed, 29 Dec 2021 18:21:40 +0800
-Message-Id: <20211229102140.1776466-1-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+        id S239800AbhL2K63 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Dec 2021 05:58:29 -0500
+Received: from m12-16.163.com ([220.181.12.16]:54369 "EHLO m12-16.163.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S239798AbhL2K62 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Dec 2021 05:58:28 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=Message-ID:Date:MIME-Version:From:Subject; bh=mqgrx
+        JiH65XQQm1qcbiC2nXc24ljlfOxEspWfg5t59Y=; b=RaZ0mdvGaw0ObVJ+nZq1C
+        OwR0uDFm4lSOXFTmDNg6zzHyQj/L0c3gBceFaHbaP/l0mcDe/ZXou1raQ8iNwHvX
+        wGPWIE6isbCDnhQlgQ/evWCYlGgD2/kWdErt9WUJ7FDqbIkOONpMqMBjmYoLS4og
+        badLTLUcqhQHmal3lRW4Po=
+Received: from [192.168.16.193] (unknown [110.80.1.44])
+        by smtp12 (Coremail) with SMTP id EMCowAD3_4dCP8xhNN99Dw--.114S2;
+        Wed, 29 Dec 2021 18:58:16 +0800 (CST)
+Message-ID: <ff620d9f-5b52-06ab-5286-44b945453002@163.com>
+Date:   Wed, 29 Dec 2021 18:58:10 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: zQCowACHa0G1Nsxhi1hCBQ--.9142S2
-X-Coremail-Antispam: 1UD129KBjvdXoWrZw18Kry5Gr4DKrW3urW7urg_yoWfGFb_ur
-        s2qF13W34qgr1ktF1UAr43ZryqyrWvqr1Ig34ftrWaq3yDC3Z3AryxurnrG3yUW3y5ZFnr
-        Jr9Fqr13A34SqjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbcxFF20E14v26r1j6r4UM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Gr0_Xr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr0_
-        Cr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s
-        1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0
-        cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJVW8Jw
-        ACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc2xSY4AK67AK6r4DMxAI
-        w28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr
-        4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWUtwCIc40Y0x0EwIxG
-        rwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJVW8Jw
-        CI42IY6xAIw20EY4v20xvaj40_Wr1j6rW3Jr1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAI
-        cVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUboKZJUUUUU==
-X-Originating-IP: [124.16.138.126]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+To:     willemb@google.com, Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org
+From:   Jianguo Wu <wujianguo106@163.com>
+Subject: [PATCH] selftests/net: udpgso_bench_tx: fix dst ip argument
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-CM-TRANSID: EMCowAD3_4dCP8xhNN99Dw--.114S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW7ury8Zry3KFWDZry8urWkCrg_yoW8Wry7pa
+        4kKayjyrWkXFy3t3W0yr4kWw1rZrZrJrW2ka97Z34Uuw4rWrn2qrW7KFWIyF9rXrZYyFZ8
+        Zwsa9a43Zan5Jw7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jzv3bUUUUU=
+X-Originating-IP: [110.80.1.44]
+X-CM-SenderInfo: 5zxmxt5qjx0iiqw6il2tof0z/1tbiRAh4kFSIjod4QQAAsI
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As the possible alloc failure of the vzalloc(), the 'hw->hw_info.trace'
-could be NULL pointer.
-Therefore it should be better to check it to guarantee the complete
-success of the initiation.
+From: wujianguo <wujianguo@chinatelecom.cn>
 
-Fixes: 8cdc3f6c5d22 ("fjes: Hardware initialization routine")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+udpgso_bench_tx call setup_sockaddr() for dest address before
+parsing all arguments, if we specify "-p ${dst_port}" after "-D ${dst_ip}",
+then ${dst_port} will be ignored, and using default cfg_port 8000.
+
+This will cause test case "multiple GRO socks" failed in udpgro.sh.
+
+Setup sockaddr after after parsing all arguments.
+
+Fixes: 3a687bef148d ("selftests: udp gso benchmark")
+Signed-off-by: Jianguo Wu <wujianguo@chinatelecom.cn>
 ---
- drivers/net/fjes/fjes_hw.c | 3 +++
- 1 file changed, 3 insertions(+)
+ tools/testing/selftests/net/udpgso_bench_tx.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/fjes/fjes_hw.c b/drivers/net/fjes/fjes_hw.c
-index 065bb0a40b1d..4c83f637a135 100644
---- a/drivers/net/fjes/fjes_hw.c
-+++ b/drivers/net/fjes/fjes_hw.c
-@@ -329,6 +329,9 @@ int fjes_hw_init(struct fjes_hw *hw)
- 	ret = fjes_hw_setup(hw);
- 
- 	hw->hw_info.trace = vzalloc(FJES_DEBUG_BUFFER_SIZE);
-+	if (!hw->hw_info.trace)
-+		return -ENOMEM;
+diff --git a/tools/testing/selftests/net/udpgso_bench_tx.c b/tools/testing/selftests/net/udpgso_bench_tx.c
+index 17512a4..f1fdaa2 100644
+--- a/tools/testing/selftests/net/udpgso_bench_tx.c
++++ b/tools/testing/selftests/net/udpgso_bench_tx.c
+@@ -419,6 +419,7 @@ static void usage(const char *filepath)
+
+ static void parse_opts(int argc, char **argv)
+ {
++	const char *bind_addr = NULL;
+ 	int max_len, hdrlen;
+ 	int c;
+
+@@ -446,7 +447,7 @@ static void parse_opts(int argc, char **argv)
+ 			cfg_cpu = strtol(optarg, NULL, 0);
+ 			break;
+ 		case 'D':
+-			setup_sockaddr(cfg_family, optarg, &cfg_dst_addr);
++			bind_addr = optarg;
+ 			break;
+ 		case 'l':
+ 			cfg_runtime_ms = strtoul(optarg, NULL, 10) * 1000;
+@@ -492,6 +493,11 @@ static void parse_opts(int argc, char **argv)
+ 		}
+ 	}
+
++	if (!bind_addr)
++		bind_addr = cfg_family == PF_INET6 ? "::" : "0.0.0.0";
 +
- 	hw->hw_info.trace_size = FJES_DEBUG_BUFFER_SIZE;
- 
- 	return ret;
++	setup_sockaddr(cfg_family, bind_addr, &cfg_dst_addr);
++
+ 	if (optind != argc)
+ 		usage(argv[0]);
+
 -- 
-2.25.1
+1.8.3.1
 
