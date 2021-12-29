@@ -2,102 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CB19C48166D
-	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 20:47:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E202481680
+	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 20:58:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231272AbhL2Tq4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Dec 2021 14:46:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48134 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230494AbhL2Tq4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Dec 2021 14:46:56 -0500
-Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71D7CC061574;
-        Wed, 29 Dec 2021 11:46:55 -0800 (PST)
-Received: by mail-lj1-x230.google.com with SMTP id t14so8888263ljh.8;
-        Wed, 29 Dec 2021 11:46:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=qVJ/y+64l3sbtg3AQgJAEvi8CQ3pfU+MbHqQhMEFY30=;
-        b=OnPePvU1bXSMAsVXP285imYJz6zhETG+GPOpfoZ6DxhtUCSQK0UaoOIfelgIkSpDKH
-         euAD/aGOfuwgYQvRqkTkO98XPCaFB2SS7DsTWe4y9V6WTDYU2qMDKrakn2DirBRKeTZf
-         +pnVWKBCNyYSjNjztxOm81CwKnyhjayaLsNDYBG6Ltg2vsmtQdAXirfJ51TF/zTpN+0c
-         T/wU5cArvxdDvNR+6hNhhfPllFyTrVzP0KCPBrRlPkrBvyIqhYVe/tyIn4wINrKMdv26
-         VjSPoCruptHSYgxpIqWNwRo7K0A025nRUAWMZjBBUi3eaYLD2rrZRPPb6ikvRHwDxKNI
-         MbXg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=qVJ/y+64l3sbtg3AQgJAEvi8CQ3pfU+MbHqQhMEFY30=;
-        b=F3NT9GVs3vnyBy4y4YABGrWRiA2/F741nVOt1lQhVkXHAAx4XVWhqR5pmwTW5ipOGz
-         sqhC2lf005VfosErb2YGDLNJuLrzbKX8I4X/cXYqgyT7oD0eZOP4KzUNyH1i2YiwdPSj
-         ipe1t10PCdYXUGFZWus3OleAwrtsqs8WqTm/nCS5CwNIIH/mhyB4+H7J8Gabg4cCZsFY
-         Ou6iUYS+nb/7kwGLcAVi7Ddww9Xw+3c3VImnV/TubOZtP3UBSTaYL/m33lgXR/0fdY5C
-         Hpwac21qcuY4WsJJw4D39/pdjgwpEkc6KfQonNYDlYwJgenmKTLjI28w1XjITnNEnTUc
-         CjPw==
-X-Gm-Message-State: AOAM531j2W+Amp521Wcyp2jI5pLloxrCpa4zs0wwOPw7GjHUwooSY2w0
-        sY50yNZ6llRXAy3PI9jtX+2IVJqheRqvQSKdxhhmkfGg1/M=
-X-Google-Smtp-Source: ABdhPJyfY2mufyPMdyy8F9EqizAC9SnjkCDslGjUAcSoIKMi0atP4YtWsIy3x9E/30/JDqnUgrwOPzvgE2HTnEDkosM=
-X-Received: by 2002:a05:651c:d5:: with SMTP id 21mr20529658ljr.433.1640807212809;
- Wed, 29 Dec 2021 11:46:52 -0800 (PST)
+        id S231624AbhL2T65 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Dec 2021 14:58:57 -0500
+Received: from poczta.tygrys.net ([213.108.112.254]:39854 "EHLO tygrys.net"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S231419AbhL2T64 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Dec 2021 14:58:56 -0500
+X-Greylist: delayed 488 seconds by postgrey-1.27 at vger.kernel.org; Wed, 29 Dec 2021 14:58:56 EST
+Received: from psi-laptop-x1 (unknown [192.168.0.142])
+        by tygrys.net (Postfix) with ESMTPSA id 9CB5C446E576;
+        Wed, 29 Dec 2021 20:50:43 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nowatel.com;
+        s=default; t=1640807443;
+        bh=5BD2b+T6U2hmby/6i6WoBWmilFcjZsapkFQ/yKYHX/s=;
+        h=Date:From:Reply-To:To:CC:Subject;
+        b=NfBtoV4U/Npg4ECw4lB8+e3eJ8UCu7vfAiVpDk55pQ3GLo7qsW2UEAhqrH6zZ9ENu
+         JCvG4jaES5ZuXnID4ZKEOaY6B63hMKv4rkM6JP+4+TK4mJZ10o4s6Ah5zHwVWACBtX
+         fMykvyQDm/CzQpyArnhdRT/pyj1Quv86AFQf9ES8=
+Date:   Wed, 29 Dec 2021 20:50:44 +0100
+From:   =?utf-8?Q?Stanis=C5=82aw_Czech?= <s.czech@nowatel.com>
+Reply-To: =?utf-8?Q?Stanis=C5=82aw_Czech?= <s.czech@nowatel.com>
+Organization: Nowatel Sp. z o.o.
+Message-ID: <1429844592.20211229205044@nowatel.com>
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     Maxim Mikityanskiy <maximmi@mellanox.com>
+Subject: htb offload support in i40e (intel nic)
 MIME-Version: 1.0
-References: <CAJ-ks9kd6wWi1S8GSCf1f=vJER=_35BGZzLnXwz36xDQPacyRw@mail.gmail.com>
- <CAJ-ks9=41PuzGkXmi0-aZPEWicWJ5s2gW2zL+jSHuDjaJ5Lhsg@mail.gmail.com>
- <20211228155433.3b1c71e5@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net> <CA+FuTSeDTJxbPvN6hkXFMaBspVHwL+crOxzC2ukWRzxvKma9bA@mail.gmail.com>
-In-Reply-To: <CA+FuTSeDTJxbPvN6hkXFMaBspVHwL+crOxzC2ukWRzxvKma9bA@mail.gmail.com>
-From:   Tamir Duberstein <tamird@gmail.com>
-Date:   Wed, 29 Dec 2021 14:46:41 -0500
-Message-ID: <CAJ-ks9=3o+rVJd5ztYbkgpcYiWjV+3qajCgOmM7AfjhoZvuOHw@mail.gmail.com>
-Subject: Re: [PATCH] net: check passed optlen before reading
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I'm having some trouble sending this using git send-email because of
-the firewall I'm behind.
+Hi,
 
-Please pull from
-  git://github.com/tamird/linux raw-check-optlen
-to get these changes:
-  280c5742aab2 ipv6: raw: check passed optlen before reading
+I saw that the htb offload needs additional changes in the mlx5 driver to s=
+upport it.
+I couldn't find any info regarding the htb offload support on any other dri=
+vers/vendors like intel
+nic (i40e) We use multiple XL710 that seems to support hardware tc queues:
 
-If this is not acceptable, I'll send the patch again when I'm outside
-the firewall. Apologies.
+qdisc noqueue 0: dev lo root refcnt 2
+qdisc mq 0: dev enp65s0f1 root
+qdisc fq_codel 0: dev enp65s0f1 parent :18 limit 10240p flows 1024 quantum =
+1514                                                                       =
+                                       target 5ms interval 100ms memory_lim=
+it 32Mb ecn drop_batch 64
+qdisc fq_codel 0: dev enp65s0f1 parent :17 limit 10240p flows 1024 quantum =
+1514                                                                       =
+                                       target 5ms interval 100ms memory_lim=
+it 32Mb ecn drop_batch 64
+qdisc fq_codel 0: dev enp65s0f1 parent :16 limit 10240p flows 1024 quantum =
+1514                                                                       =
+                                       target 5ms interval 100ms memory_lim=
+it 32Mb ecn drop_batch 64
+qdisc fq_codel 0: dev enp65s0f1 parent :15 limit 10240p flows 1024 quantum =
+1514                                                                       =
+                                       target 5ms interval 100ms memory_lim=
+it 32Mb ecn drop_batch 64
+qdisc fq_codel 0: dev enp65s0f1 parent :14 limit 10240p flows 1024 quantum =
+1514                                                                       =
+                                       target 5ms interval 100ms memory_lim=
+it 32Mb ecn drop_batch 64
+qdisc fq_codel 0: dev enp65s0f1 parent :13 limit 10240p flows 1024 quantum =
+1514                                                                       =
+                                       target 5ms interval 100ms memory_lim=
+it 32Mb ecn drop_batch 64
+qdisc fq_codel 0: dev enp65s0f1 parent :12 limit 10240p flows 1024 quantum =
+1514                                                                       =
+                                       target 5ms interval 100ms memory_lim=
+it 32Mb ecn drop_batch 64
+qdisc fq_codel 0: dev enp65s0f1 parent :11 limit 10240p flows 1024 quantum =
+1514                                                                       =
+                                       target 5ms interval 100ms memory_lim=
+it 32Mb ecn drop_batch 64
+qdisc fq_codel 0: dev enp65s0f1 parent :10 limit 10240p flows 1024 quantum =
+1514                                                                       =
+                                       target 5ms interval 100ms memory_lim=
+it 32Mb ecn drop_batch 64
+qdisc fq_codel 0: dev enp65s0f1 parent :f limit 10240p flows 1024 quantum 1=
+514 t                                                                      =
+                                       arget 5ms interval 100ms memory_limi=
+t 32Mb ecn drop_batch 64
+qdisc fq_codel 0: dev enp65s0f1 parent :e limit 10240p flows 1024 quantum 1=
+514 t                                                                      =
+                                       arget 5ms interval 100ms memory_limi=
+t 32Mb ecn drop_batch 64
+qdisc fq_codel 0: dev enp65s0f1 parent :d limit 10240p flows 1024 quantum 1=
+514 t                                                                      =
+                                       arget 5ms interval 100ms memory_limi=
+t 32Mb ecn drop_batch 64
+qdisc fq_codel 0: dev enp65s0f1 parent :c limit 10240p flows 1024 quantum 1=
+514 t                                                                      =
+                                       arget 5ms interval 100ms memory_limi=
+t 32Mb ecn drop_batch 64
+qdisc fq_codel 0: dev enp65s0f1 parent :b limit 10240p flows 1024 quantum 1=
+514 t                                                                      =
+                                       arget 5ms interval 100ms memory_limi=
+t 32Mb ecn drop_batch 64
+qdisc fq_codel 0: dev enp65s0f1 parent :a limit 10240p flows 1024 quantum 1=
+514 t                                                                      =
+                                       arget 5ms interval 100ms memory_limi=
+t 32Mb ecn drop_batch 64
+qdisc fq_codel 0: dev enp65s0f1 parent :9 limit 10240p flows 1024 quantum 1=
+514 t                                                                      =
+                                       arget 5ms interval 100ms memory_limi=
+t 32Mb ecn drop_batch 64
+qdisc fq_codel 0: dev enp65s0f1 parent :8 limit 10240p flows 1024 quantum 1=
+514 t                                                                      =
+                                       arget 5ms interval 100ms memory_limi=
+t 32Mb ecn drop_batch 64
+qdisc fq_codel 0: dev enp65s0f1 parent :7 limit 10240p flows 1024 quantum 1=
+514 t                                                                      =
+                                       arget 5ms interval 100ms memory_limi=
+t 32Mb ecn drop_batch 64
+qdisc fq_codel 0: dev enp65s0f1 parent :6 limit 10240p flows 1024 quantum 1=
+514 t                                                                      =
+                                       arget 5ms interval 100ms memory_limi=
+t 32Mb ecn drop_batch 64
+qdisc fq_codel 0: dev enp65s0f1 parent :5 limit 10240p flows 1024 quantum 1=
+514 t                                                                      =
+                                       arget 5ms interval 100ms memory_limi=
+t 32Mb ecn drop_batch 64
+qdisc fq_codel 0: dev enp65s0f1 parent :4 limit 10240p flows 1024 quantum 1=
+514 t                                                                      =
+                                       arget 5ms interval 100ms memory_limi=
+t 32Mb ecn drop_batch 64
+qdisc fq_codel 0: dev enp65s0f1 parent :3 limit 10240p flows 1024 quantum 1=
+514 t                                                                      =
+                                       arget 5ms interval 100ms memory_limi=
+t 32Mb ecn drop_batch 64
+qdisc fq_codel 0: dev enp65s0f1 parent :2 limit 10240p flows 1024 quantum 1=
+514 t                                                                      =
+                                       arget 5ms interval 100ms memory_limi=
+t 32Mb ecn drop_batch 64
+qdisc fq_codel 0: dev enp65s0f1 parent :1 limit 10240p flows 1024 quantum 1=
+514 t                                                                      =
+                                       arget 5ms interval 100ms memory_limi=
+t 32Mb ecn drop_batch 64
 
-On Wed, Dec 29, 2021 at 10:09 AM Willem de Bruijn
-<willemdebruijn.kernel@gmail.com> wrote:
->
-> On Tue, Dec 28, 2021 at 6:54 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> >
-> > On Tue, 28 Dec 2021 16:02:29 -0500 Tamir Duberstein wrote:
-> > > Errant brace in the earlier version.
-> > >
-> > > From 8586be4d72c6c583b1085d2239076987e1b7c43a Mon Sep 17 00:00:00 2001
-> > > From: Tamir Duberstein <tamird@gmail.com>
-> > > Date: Tue, 28 Dec 2021 15:09:11 -0500
-> > > Subject: [PATCH v2] net: check passed optlen before reading
-> > >
-> > > Add a check that the user-provided option is at least as long as the
-> > > number of bytes we intend to read. Before this patch we would blindly
-> > > read sizeof(int) bytes even in cases where the user passed
-> > > optlen<sizeof(int), which would potentially read garbage or fault.
-> > >
-> > > Discovered by new tests in https://github.com/google/gvisor/pull/6957 .
-> > >
-> > > Signed-off-by: Tamir Duberstein <tamird@gmail.com>
-> >
-> > Your patches are corrupted by your email client.
-> >
-> > Can you try sending the latest version with git send-email?
->
-> Then perhaps also update the subject line to make it more clear where
-> this applies: "ipv6: raw: check passed optlen before reading".
+Is this enough to support the htb offload or we must wait for the driver up=
+date to support it?
+
+
+
+Greetings,
+Stanis=C5=82aw Czech
+
+=C2=A0
+
