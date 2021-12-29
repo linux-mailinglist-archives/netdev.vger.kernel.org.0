@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E5236481534
-	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 17:44:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 831F448153C
+	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 17:46:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240869AbhL2QoV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Dec 2021 11:44:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36410 "EHLO
+        id S240888AbhL2QqO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Dec 2021 11:46:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234322AbhL2QoU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Dec 2021 11:44:20 -0500
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E4A3C061574;
-        Wed, 29 Dec 2021 08:44:20 -0800 (PST)
-Received: by mail-pj1-x102a.google.com with SMTP id l10-20020a17090a384a00b001b22190e075so19963204pjf.3;
-        Wed, 29 Dec 2021 08:44:20 -0800 (PST)
+        with ESMTP id S234322AbhL2QqN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Dec 2021 11:46:13 -0500
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40CAFC061574;
+        Wed, 29 Dec 2021 08:46:13 -0800 (PST)
+Received: by mail-pj1-x102d.google.com with SMTP id iy13so18946232pjb.5;
+        Wed, 29 Dec 2021 08:46:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=u9SlnkqK38gbFa/5lQSVkRrNE/pyi+RpdtYH3JSS99M=;
-        b=H9TuCnsiq/c74xXRy4eTZ2x8gALL/l3hL3Vr32hYYTnpdTCQ7HDKph6mfL2EVW25KJ
-         nJAlYAdFAMX9n+Umn2FplyKNagbTdaNI3KKNWRIWOYbIlY9A6ZY68S5yaqJeD/qYJmJ8
-         t66cTk1dvDBfD/G8L/Nmf2fvRB12wwAGjzvAr0icqZ4Ff/WuZfuVdqFVmMtB5GtsHFZP
-         mbLIEMPah/zascpsGeWXuj4UVLe7A71LOM+CLt5BXlogswpbKKBt8w2vEyAFG9Jt4x2o
-         +/XI1nfpoTG1AWCerJT9p8w9yM+/G3W/DZDpdiJECFWYsY6wttpCiFteZt8dR3P+Ci+0
-         vt0w==
+        bh=m2VHGpOsSlqMAvp8eXPTyOqpWd6XOjYOHnMNBcpT7VE=;
+        b=oKbLmkhWLxseBbzoAoTc/1plIjTZRWHEGAHqnj1kwtYvy3JElApZ+OAMUCnHRXzNRz
+         lw9q1GLyJM7oroeJSRLDxD1FUPpGKGMPgKsk3MU7+xi07w2bKMUFdhIjVwaVEwlBmSeA
+         UVdOTp+XxufSakob4eI7BFNvEYXoSouwV8+zK/r4s/zcWR6IDQzN0YDLJDinIM6G3uxQ
+         oMs9mG/SCsMYe3LUCKsU68XgiKB99Plydq69kUz4z3HgeZWQal9Dc3boWCHOsu5XsBsn
+         mAcH4sWzinqY7i8QPl284mab6nghjV7j+9oRJkzg6yALSOfDJDqanEbGav9tWQ5OOSxE
+         dggA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=u9SlnkqK38gbFa/5lQSVkRrNE/pyi+RpdtYH3JSS99M=;
-        b=Xy2QS0lQM6V1Qk5fwDZDB6Vd31ovNZ3Gn3LhvKlnr6ejVZKEEQsfScVECIeo7V9LgC
-         uXOFV0JRXP2aZTSJmSBk/DThSRXs23h6ol8IkGlpkZehTzth9+NRI5TeJb0i+FWQwckn
-         w0Z6wyoFqH+qYoZhLd4zd1Apl0fiCPdLqOGH1QUMoawYlXMpL2yCm/JZxSZ7sOXeTNqv
-         WgrCFny/0YI+1m+uNxRkHUBH4WB1BpmVlLrkLN8hJRes9qv5h+FWWDg354rl2U9iBSqf
-         tNqARzGpxau18caVt6zVE9Z7T/cL1AzDquJ5cfF8vMRsx/oOcyjpqWaGuA712Og2T4OT
-         wXGQ==
-X-Gm-Message-State: AOAM530arEsXHjgXix7rkAaqGnysPz2EB1OgDygdx2KcsEix8lCLgxRp
-        KmNoHAojY1YQSahS8cQ82Ynq02XU+fQTqJ7ZHVM=
-X-Google-Smtp-Source: ABdhPJwPURyGVwWf33T/6i51jvI8jx135wluxLNbRczUNmaGMT6NYDtgjrFxUSgqWfx/xKnnCtj7b3V5pnY3X8m4oHQ=
-X-Received: by 2002:a17:902:6502:b0:149:1162:f0b5 with SMTP id
- b2-20020a170902650200b001491162f0b5mr26758521plk.126.1640796259801; Wed, 29
- Dec 2021 08:44:19 -0800 (PST)
+        bh=m2VHGpOsSlqMAvp8eXPTyOqpWd6XOjYOHnMNBcpT7VE=;
+        b=qXA8hyG6RM/mxWwKOIQkiCvN4V3eQlBnJw+cZgArdAtDiKxo++DJN7gR0rntcHm+JP
+         RCJcY0MHzun551LXzesF/Mm+WcSAOvqoPdtMukoIRDbfKKZnkgFAAlyIjuF3ySaQTU9i
+         /1+n6ILZ1yWoyS2ODKEykmiT6ZwhHvQ8twRlRM6JJmxtAmCpqZ/x3F+I5ZlsfyACHS9E
+         mfRCUfp4si56pksTfLGMVfYAW/Um3B3gj0MGEUL0SAf3BfTMS/2ESB1DmBQcfRLj3FhG
+         URXUf7ZJik6BigiSLikKAmMALGu8S+TTCHFB1S2YcQBFEiNakSm31WIJCcHL/F2bF6Cj
+         dOxQ==
+X-Gm-Message-State: AOAM532/Y0MFjdJCP6ilXGCjQSTltjDeHcUaqRkYZMF8dtolhDV1Q6J5
+        SyY499mCmUeJZjjNWgRDpFrk+DtldcJhEMeHrmE=
+X-Google-Smtp-Source: ABdhPJweW9lxYzxvvOvJG1pq8rjphOJ/T0YrCCS9hDcP87ZqGhZs+grOrfogTU65rUakkFU/BBmS0S6Ied8nspKeTs4=
+X-Received: by 2002:a17:902:860c:b0:149:1017:25f0 with SMTP id
+ f12-20020a170902860c00b00149101725f0mr26992202plo.116.1640796372752; Wed, 29
+ Dec 2021 08:46:12 -0800 (PST)
 MIME-Version: 1.0
-References: <20211229085547.206008-1-imagedong@tencent.com>
-In-Reply-To: <20211229085547.206008-1-imagedong@tencent.com>
+References: <20211229113256.299024-1-imagedong@tencent.com>
+In-Reply-To: <20211229113256.299024-1-imagedong@tencent.com>
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 29 Dec 2021 08:44:08 -0800
-Message-ID: <CAADnVQLiqRdE0iqSFM7za2g5UVNDE-ZZmS7+pca176_ePKsZvA@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: bpf: hook for inet port bind conflict check
+Date:   Wed, 29 Dec 2021 08:46:01 -0800
+Message-ID: <CAADnVQLY2i+2YTj+Oi7+70e98sRC-t6rr536sc=3WYghpki+ug@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: bpf: add hook for close of tcp timewait sock
 To:     menglong8.dong@gmail.com
 Cc:     Daniel Borkmann <daniel@iogearbox.net>,
         Alexei Starovoitov <ast@kernel.org>,
@@ -63,6 +63,7 @@ Cc:     Daniel Borkmann <daniel@iogearbox.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
         David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
         Network Development <netdev@vger.kernel.org>,
         bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
         Menglong Dong <imagedong@tencent.com>
@@ -71,23 +72,24 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 29, 2021 at 12:56 AM <menglong8.dong@gmail.com> wrote:
+On Wed, Dec 29, 2021 at 3:33 AM <menglong8.dong@gmail.com> wrote:
 >
 > From: Menglong Dong <imagedong@tencent.com>
 >
-> This hook of cgroup is called while TCP/UDP local port bind conflict
-> check. This is different from the 'commit aac3fc320d94 ("bpf: Post-hooks
-> for sys_bind")', as it is also called in autobind case.
+> The cgroup eBPF attach type 'CGROUP_SOCK_OPS' is able to monitor the
+> state change of a tcp connect with 'BPF_SOCK_OPS_STATE_CB' ops.
 >
-> For TCP, this hook is called during sys_bind() and autobind. And it
-> is also called during tcp_v4_connect() before hash the sock to ehash,
-> during which src ip, src port, dst ip, and dst port is already
-> allocated, means that we have a chance to determine whether this
-> connect should continue.
+> However, it can't trace the whole state change of a tcp connect. While
+> a connect becomes 'TCP_TIME_WAIT' state, this sock will be release and
+> a tw sock will be created. While tcp sock release, 'TCP_CLOSE' state
+> change will be passed to eBPF program. Howeven, the real state of this
+> connect is 'TCP_TIME_WAIT'.
 >
-> This can be useful when we want some applications not to use some
-> port (include auto bind port). For autobind, the kernel has the chance
-> to choose another port.
+> To make eBPF get the real state change of a tcp connect, add
+> 'CGROUP_TWSK_CLOSE' cgroup attach type, which will be called when
+> tw sock release and tcp connect become CLOSE.
 
-The use case is too vague to consider adding a new hook.
+The use case is not explained.
+Why bpf tracing cannot be used to achieve the same?
+
 Also there are no selftests.
