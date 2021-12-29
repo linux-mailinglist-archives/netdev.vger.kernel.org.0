@@ -2,164 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA91848104B
-	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 07:25:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0308248104E
+	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 07:25:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238940AbhL2GZH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Dec 2021 01:25:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41052 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238936AbhL2GZG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Dec 2021 01:25:06 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7452BC061574
-        for <netdev@vger.kernel.org>; Tue, 28 Dec 2021 22:25:06 -0800 (PST)
+        id S238950AbhL2GZK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Dec 2021 01:25:10 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:58250 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238945AbhL2GZI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Dec 2021 01:25:08 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A65B861445
-        for <netdev@vger.kernel.org>; Wed, 29 Dec 2021 06:25:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C52EBC36AE9;
-        Wed, 29 Dec 2021 06:25:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 10E7DB81823
+        for <netdev@vger.kernel.org>; Wed, 29 Dec 2021 06:25:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E556C36AEE;
+        Wed, 29 Dec 2021 06:25:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1640759105;
-        bh=A92RIvCCKXS4SnLp87ZVeDSXdE1UMLMQ/DTq0taSnxY=;
-        h=From:To:Cc:Subject:Date:From;
-        b=jaF5JxAGHe9qJSk0vAjAEnt/85svAVGuQvdH9HTm6brUDDQq593ymoDYOlwvmhB3L
-         EYYdaxJJ+0ZLuqB7vZLgnZKC0C2SYh5HJe9HOPnDfBdXLdqHQml4dapTkk7hMOuZe/
-         3GMDC8MtiDJfkn531zG6RFlACSTaQxwAsziABLtmv9gLZigmY3lYhtOzHbx/1EVrv5
-         l52t/Ef4JAd0igxLcGNJf7dg53QrhMV7PY6wFwIZqCyljk1obRN6S3E9Pz5mc7b1yX
-         GhqSGuVjjTLfB+UN7AuZIiNR034XU6xHMavBt9Y+7EDnPB2sYps9OSgvZatbk5CJGn
-         oXTjuwSE0Ljkw==
+        bh=sW4vLbuXWJ7nLfxXxUYnz5Qzo8U1aSw+b46JR31J1vQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=AIXRujPySD2sBtxnyWru5Pdsh5x1tbJGJZcBYivDZz4pgn9ZI/xo/4+fCexMzCPMY
+         kGVxBOAYwW0dxxzhsFYuYI4SPcyGh0kVEd16FJdN3GnuBHgQjB9eWP9MR6YGLHbUDu
+         Cwo+zuVX+6boqLpQOYBDGHIEhJZi8t1J4t7sJWqTDr5OI+/2vrdgqvBBosR3yjUqef
+         gHXk+8WZ6hcmzNNspNkFpyJbZfIew2sBx0bJAMatpOPU7YvkEUdOs5aiwzfO3fykbO
+         jxkY9lVYtZMlPhqT2D8PpOc8GhBYjFxKW3zc7liiZ8KRPHXpOdrNS1pzFSAGU/ThXv
+         30WII+ib7GdPQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>
-Subject: [pull request][net-next 00/16] mlx5 updates 2021-12-28
-Date:   Tue, 28 Dec 2021 22:24:46 -0800
-Message-Id: <20211229062502.24111-1-saeed@kernel.org>
+Cc:     netdev@vger.kernel.org, Yevgeny Kliteynik <kliteyn@nvidia.com>,
+        Alex Vesker <valex@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [net-next  01/16] net/mlx5: DR, Fix error flow in creating matcher
+Date:   Tue, 28 Dec 2021 22:24:47 -0800
+Message-Id: <20211229062502.24111-2-saeed@kernel.org>
 X-Mailer: git-send-email 2.33.1
+In-Reply-To: <20211229062502.24111-1-saeed@kernel.org>
+References: <20211229062502.24111-1-saeed@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Saeed Mahameed <saeedm@nvidia.com>
+From: Yevgeny Kliteynik <kliteyn@nvidia.com>
 
-Hi Dave, Hi Jakub,
+The error code of nic matcher init functions wasn't checked.
+This patch improves the matcher init function and fix error flow bug:
+the handling of match parameter is moved into a separate function
+and error flow is simplified.
 
-Sorry for posting 16 patches this time of year :), but most of the patches
-are trivial and basic, the only patch worth mentioning is the addition of
-debugfs entry for dumping software steering state, as we are defaulting
-to SW steering in this patchset, so we would like to be prepared for any
-debug, just in case.
+Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
+Reviewed-by: Alex Vesker <valex@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+---
+ .../mellanox/mlx5/core/steering/dr_matcher.c  | 53 +++++++++++--------
+ 1 file changed, 32 insertions(+), 21 deletions(-)
 
-For more information please see tag log below.
-Please pull and let me know if there is any problem.
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c
+index 793365242e85..3d0cdc36a91a 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c
+@@ -872,13 +872,12 @@ static int dr_matcher_init_fdb(struct mlx5dr_matcher *matcher)
+ 	return ret;
+ }
+ 
+-static int dr_matcher_init(struct mlx5dr_matcher *matcher,
+-			   struct mlx5dr_match_parameters *mask)
++static int dr_matcher_copy_param(struct mlx5dr_matcher *matcher,
++				 struct mlx5dr_match_parameters *mask)
+ {
++	struct mlx5dr_domain *dmn = matcher->tbl->dmn;
+ 	struct mlx5dr_match_parameters consumed_mask;
+-	struct mlx5dr_table *tbl = matcher->tbl;
+-	struct mlx5dr_domain *dmn = tbl->dmn;
+-	int i, ret;
++	int i, ret = 0;
+ 
+ 	if (matcher->match_criteria >= DR_MATCHER_CRITERIA_MAX) {
+ 		mlx5dr_err(dmn, "Invalid match criteria attribute\n");
+@@ -898,10 +897,36 @@ static int dr_matcher_init(struct mlx5dr_matcher *matcher,
+ 		consumed_mask.match_sz = mask->match_sz;
+ 		memcpy(consumed_mask.match_buf, mask->match_buf, mask->match_sz);
+ 		mlx5dr_ste_copy_param(matcher->match_criteria,
+-				      &matcher->mask, &consumed_mask,
+-				      true);
++				      &matcher->mask, &consumed_mask, true);
++
++		/* Check that all mask data was consumed */
++		for (i = 0; i < consumed_mask.match_sz; i++) {
++			if (!((u8 *)consumed_mask.match_buf)[i])
++				continue;
++
++			mlx5dr_dbg(dmn,
++				   "Match param mask contains unsupported parameters\n");
++			ret = -EOPNOTSUPP;
++			break;
++		}
++
++		kfree(consumed_mask.match_buf);
+ 	}
+ 
++	return ret;
++}
++
++static int dr_matcher_init(struct mlx5dr_matcher *matcher,
++			   struct mlx5dr_match_parameters *mask)
++{
++	struct mlx5dr_table *tbl = matcher->tbl;
++	struct mlx5dr_domain *dmn = tbl->dmn;
++	int ret;
++
++	ret = dr_matcher_copy_param(matcher, mask);
++	if (ret)
++		return ret;
++
+ 	switch (dmn->type) {
+ 	case MLX5DR_DOMAIN_TYPE_NIC_RX:
+ 		matcher->rx.nic_tbl = &tbl->rx;
+@@ -919,22 +944,8 @@ static int dr_matcher_init(struct mlx5dr_matcher *matcher,
+ 	default:
+ 		WARN_ON(true);
+ 		ret = -EINVAL;
+-		goto free_consumed_mask;
+-	}
+-
+-	/* Check that all mask data was consumed */
+-	for (i = 0; i < consumed_mask.match_sz; i++) {
+-		if (!((u8 *)consumed_mask.match_buf)[i])
+-			continue;
+-
+-		mlx5dr_dbg(dmn, "Match param mask contains unsupported parameters\n");
+-		ret = -EOPNOTSUPP;
+-		goto free_consumed_mask;
+ 	}
+ 
+-	ret =  0;
+-free_consumed_mask:
+-	kfree(consumed_mask.match_buf);
+ 	return ret;
+ }
+ 
+-- 
+2.33.1
 
-If time and window permit, I am planing for one or two more pure mlx5
-net-next PRs, mainly trivial stuff.  Just FYI and I hope it's ok with you.
-
-Happy holidays,
-Saeed.
-
-The following changes since commit 271d3be1c3b6b0be083a99254a0ecac41789929b:
-
-  Merge branch '10GbE' of git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue (2021-12-28 16:16:57 -0800)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2021-12-28
-
-for you to fetch changes up to c9009d8f4ca73ef8ae33c68e7fcc3dcddc39f81c:
-
-  net/mlx5: Set SMFS as a default steering mode if device supports it (2021-12-28 22:17:50 -0800)
-
-----------------------------------------------------------------
-mlx5-updates-2021-12-28
-
-mlx5 Software steering, New features and optimizations
-
-This patch series brings various SW steering features, optimizations and
-debug-ability focused improvements.
-
- 1) Expose debugfs for dumping the SW steering resources
- 2) Removing unused fields
- 3) support for matching on new fields
- 4) steering optimization for RX/TX-only rules
- 5) Make Software steering the default steering mechanism when
-    available, applies only to Switchdev mode FDB
-
-From Yevgeny Kliteynik and Muhammad Sammar:
-
- - Patch 1 fixes an error flow in creating matchers
- - Patch 2 fix lower case macro prefix "mlx5_" to "MLX5_"
- - Patch 3 removes unused struct member in mlx5dr_matcher
- - Patch 4 renames list field in matcher struct to list_node to reflect the
-   fact that is field is for list node that is stored on another struct's lists
- - Patch 5 adds checking for valid Flex parser ID value
- - Patch 6 adds the missing reserved fields to dr_match_param and aligns it to
-   the format that is defined by HW spec
- - Patch 7 adds support for dumping SW steering (SMFS) resources using debugfs
-   in CSV format: domain and its tables, matchers and rules
- - Patch 8 adds support for a new destination type - UPLINK
- - Patch 9 adds WARN_ON_ONCE on refcount checks in SW steering object destructors
- - Patches 10, 11, 12 add misc5 flow table match parameters and add support for
-   matching on tunnel headers 0 and 1
- - Patch 13 adds support for matching on geneve_tlv_option_0_exist field
- - Patch 14 implements performance optimization for for empty or RX/TX-only
-   matchers by splitting RX and TX matchers handling: matcher connection in the
-   matchers chain is split into two separate lists (RX only and TX only), which
-   solves a usecase of many RX or TX only rules that create a long chain of
-   RX/TX-only paths w/o the actual rules
- - Patch 15 ignores modify TTL if device doesn't support it instead of
-   adding and unsupported action
- - Patch 16 sets SMFS as a default steering mode
-
-----------------------------------------------------------------
-Muhammad Sammar (5):
-      net/mlx5: DR, Add missing reserved fields to dr_match_param
-      net/mlx5: DR, Add support for dumping steering info
-      net/mlx5: Add misc5 flow table match parameters
-      net/mlx5: DR, Add misc5 to match_param structs
-      net/mlx5: DR, Support matching on tunnel headers 0 and 1
-
-Yevgeny Kliteynik (11):
-      net/mlx5: DR, Fix error flow in creating matcher
-      net/mlx5: DR, Fix lower case macro prefix "mlx5_" to "MLX5_"
-      net/mlx5: DR, Remove unused struct member in matcher
-      net/mlx5: DR, Rename list field in matcher struct to list_node
-      net/mlx5: DR, Add check for flex parser ID value
-      net/mlx5: DR, Add support for UPLINK destination type
-      net/mlx5: DR, Warn on failure to destroy objects due to refcount
-      net/mlx5: DR, Add support for matching on geneve_tlv_option_0_exist field
-      net/mlx5: DR, Improve steering for empty or RX/TX-only matchers
-      net/mlx5: DR, Ignore modify TTL if device doesn't support it
-      net/mlx5: Set SMFS as a default steering mode if device supports it
-
- drivers/net/ethernet/mellanox/mlx5/core/Makefile   |   3 +-
- drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.c   |   3 +-
- drivers/net/ethernet/mellanox/mlx5/core/fs_core.c  |   8 +-
- drivers/net/ethernet/mellanox/mlx5/core/fs_core.h  |   2 +-
- .../mellanox/mlx5/core/steering/dr_action.c        |  23 +-
- .../ethernet/mellanox/mlx5/core/steering/dr_cmd.c  |  29 +-
- .../ethernet/mellanox/mlx5/core/steering/dr_dbg.c  | 668 +++++++++++++++++++++
- .../ethernet/mellanox/mlx5/core/steering/dr_dbg.h  |  15 +
- .../mellanox/mlx5/core/steering/dr_domain.c        |   5 +-
- .../mellanox/mlx5/core/steering/dr_matcher.c       | 250 ++++----
- .../ethernet/mellanox/mlx5/core/steering/dr_rule.c |  47 +-
- .../ethernet/mellanox/mlx5/core/steering/dr_ste.c  |  61 ++
- .../ethernet/mellanox/mlx5/core/steering/dr_ste.h  |   2 +
- .../mellanox/mlx5/core/steering/dr_ste_v0.c        |  25 +-
- .../mellanox/mlx5/core/steering/dr_ste_v1.c        |  52 +-
- .../mellanox/mlx5/core/steering/dr_table.c         |  94 +--
- .../mellanox/mlx5/core/steering/dr_types.h         | 262 +++++---
- .../ethernet/mellanox/mlx5/core/steering/fs_dr.c   |  18 +-
- .../mellanox/mlx5/core/steering/mlx5_ifc_dr.h      |  16 +
- include/linux/mlx5/device.h                        |   1 +
- include/linux/mlx5/mlx5_ifc.h                      |  35 +-
- include/uapi/rdma/mlx5_user_ioctl_cmds.h           |   2 +-
- 22 files changed, 1342 insertions(+), 279 deletions(-)
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/steering/dr_dbg.c
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/steering/dr_dbg.h
