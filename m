@@ -2,122 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 04BA6481684
-	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 21:00:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BD0A481676
+	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 20:53:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231419AbhL2UA0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Dec 2021 15:00:26 -0500
-Received: from ofcsgdbm.dwd.de ([141.38.3.245]:43571 "EHLO ofcsgdbm.dwd.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231664AbhL2UA0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Dec 2021 15:00:26 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by ofcsg2dn2.dwd.de (Postfix) with ESMTP id 4JPMV81MTqz2ym8
-        for <netdev@vger.kernel.org>; Wed, 29 Dec 2021 19:51:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=dwd.de; h=
-        content-type:content-type:mime-version:message-id:subject
-        :subject:from:from:date:date:received:received:received:received
-        :received:received:received:received; s=dwd-csg20210107; t=
-        1640807488; x=1642017089; bh=G0+ktz/mXWsTWCyQVR/K1IMbKOf3E3xkd+g
-        PxC8B3x0=; b=7mqyOr5Ne1yv/cad8qZXsf8Rux16DuchvaxsHmbR9BhnrgeHimg
-        Boy+WaeFFG8q+zrQrIZ3CpwDPDSlzDJevCot9AkIzQQKr532L/D59Sm6IIF+hjXN
-        gwHk09lEPHHw0MKrDdqssbdNSsi3G3wFclCQjLO9Tgidr1WyigzItob6j2dZR1R7
-        anHMIuXaVgF//xRF9QjXMQuMGscJgyteWhoOt4sub46ZJ1MqAcf3avA3pQNvhlig
-        NA+rnCi8u1Y9wMMYEhn3YAv+T/mYmOQrcMF2IxyO/DoTCJwJwd8QaubSnbMGnnGL
-        Z3q8xhyzFuSbw5mIVkxw8srux7xu+KniJoQ==
-X-Virus-Scanned: by amavisd-new at csg.dwd.de
-Received: from ofcsg2cteh1.dwd.de ([172.30.232.65])
-        by localhost (ofcsg2dn2.dwd.de [172.30.232.25]) (amavisd-new, port 10024)
-        with ESMTP id jyFxKAcx_pDp for <netdev@vger.kernel.org>;
-        Wed, 29 Dec 2021 19:51:28 +0000 (UTC)
-Received: from ofcsg2cteh1.dwd.de (unknown [127.0.0.1])
-        by DDEI (Postfix) with ESMTP id 005DAC90148B
-        for <root@ofcsg2dn2.dwd.de>; Wed, 29 Dec 2021 19:51:28 +0000 (UTC)
-Received: from ofcsg2cteh1.dwd.de (unknown [127.0.0.1])
-        by DDEI (Postfix) with ESMTP id E77B5C900CC1
-        for <root@ofcsg2dn2.dwd.de>; Wed, 29 Dec 2021 19:51:27 +0000 (UTC)
-X-DDEI-TLS-USAGE: Unused
-Received: from ofcsgdbm.dwd.de (unknown [172.30.232.25])
-        by ofcsg2cteh1.dwd.de (Postfix) with ESMTP
-        for <root@ofcsg2dn2.dwd.de>; Wed, 29 Dec 2021 19:51:27 +0000 (UTC)
-Received: from ofcsgdbm.dwd.de by localhost (Postfix XFORWARD proxy);
- Wed, 29 Dec 2021 19:51:27 -0000
-Received: from ofcsg2dvf1.dwd.de (ofcsg2dvf1.dwd.de [172.30.232.10])
-        by ofcsg2dn2.dwd.de (Postfix) with ESMTPS id 4JPMV76CCCz2ym8;
-        Wed, 29 Dec 2021 19:51:27 +0000 (UTC)
-Received: from ofmailhub.dwd.de (ofmailhub.dwd.de [141.38.39.208])
-        by ofcsg2dvf1.dwd.de  with ESMTP id 1BTJpR3x004009-1BTJpR40004009;
-        Wed, 29 Dec 2021 19:51:27 GMT
-Received: from diagnostix.dwd.de (diagnostix.dwd.de [141.38.44.45])
-        by ofmailhub.dwd.de (Postfix) with ESMTP id BB779453F9;
-        Wed, 29 Dec 2021 19:51:27 +0000 (UTC)
-Date:   Wed, 29 Dec 2021 19:51:27 +0000 (GMT)
-From:   Holger Kiehl <Holger.Kiehl@dwd.de>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: bpfilter: write fail messages with 5.15.x and centos 7.9.2009
- (fwd)
-Message-ID: <a12e914c-4be1-85d9-5242-34855f9eeac@diagnostix.dwd.de>
+        id S231464AbhL2Txt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Dec 2021 14:53:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49658 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231454AbhL2Txs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Dec 2021 14:53:48 -0500
+Received: from mail-ua1-x92f.google.com (mail-ua1-x92f.google.com [IPv6:2607:f8b0:4864:20::92f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91348C06173E
+        for <netdev@vger.kernel.org>; Wed, 29 Dec 2021 11:53:48 -0800 (PST)
+Received: by mail-ua1-x92f.google.com with SMTP id o63so39093440uao.5
+        for <netdev@vger.kernel.org>; Wed, 29 Dec 2021 11:53:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=z1QQXB5NMfTnekeDLJGGA6zJ11Nn8nyuGQX8tb9YWGw=;
+        b=YtDaC6Shnz7T/74O0ipqKBpmYPowLS9vCnSjiWvoHYN/1RFLCCZFzUkT26TXW19bA3
+         1gjIfzUceXFgVCQAQTnFs263Fq0RxEctD5VI6Yco62HSq/RHhtAzDsCJxP06hBesLNZV
+         em4s08aQY4gNeQ7zzBaV5NtjUEyhRdnWySLtZXnZoqd1ZZvfJ7RTSjt3kHPWd0+MZbBI
+         VFjc1z/Acxcpv9ZbH7ICejTvJQlzCw92EiHFtlmk2apoop6hwYG9oRHEFYOewflalVVJ
+         5A9heDO+dj/H7irHedJ++5G4CyDI5rUc0TbjaBWy6kfsN8bfrtZfHQkae8YZ1ekJ9EPm
+         9uOg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=z1QQXB5NMfTnekeDLJGGA6zJ11Nn8nyuGQX8tb9YWGw=;
+        b=meOLOoLu8YcxDYdPKkL0DENVr//JE+Dp3Pvar57CwL9TjzX8RwUSXOtpDjEoezpS5K
+         ZqYdTzBOO2P4nWUI2ogp3LgtmCAWNj/ddMCj6gMdzzBL8Gd92DCtQAuFrnq+HOhNzlR+
+         0kYsZO64KSwzXRfbDQXrmad/Nq5R35hFIpGAqxunKkzgdmCKOKvv9UZ6qASC7Qbtt7Um
+         X2hSmhr4e/nRqiq1lTKazD/OORqtxFDn499vvqSs4yiE2Vh15+ptmZq1iZqXtaW0LSFV
+         R8aYMXf0xn1YfKtVx2VBtqFsaW+RaaI1RHHhjNO3Q8ecX+5AAyKNycdgj/fIZSJ0+WZW
+         5LEw==
+X-Gm-Message-State: AOAM530hxqFI89Q7w4uXT6PoL6iqeBnqLFuayHnkVFdjN10/x7MwjDQX
+        yPZxfPjMFOexLG/H25WqhMVivmcl4tY=
+X-Google-Smtp-Source: ABdhPJwPBvZjZotjYuC5iQV0BfkBWRho/FrjpXm7VUY+AjdBJdPj+6oVjdby2flYFF2kYZYIb3+tMg==
+X-Received: by 2002:a05:6102:c4:: with SMTP id u4mr4267842vsp.71.1640807627770;
+        Wed, 29 Dec 2021 11:53:47 -0800 (PST)
+Received: from mail-ua1-f46.google.com (mail-ua1-f46.google.com. [209.85.222.46])
+        by smtp.gmail.com with ESMTPSA id v4sm4345590vkf.15.2021.12.29.11.53.47
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 29 Dec 2021 11:53:47 -0800 (PST)
+Received: by mail-ua1-f46.google.com with SMTP id u6so31709046uaq.0
+        for <netdev@vger.kernel.org>; Wed, 29 Dec 2021 11:53:47 -0800 (PST)
+X-Received: by 2002:a05:6102:31b3:: with SMTP id d19mr8227138vsh.79.1640807626985;
+ Wed, 29 Dec 2021 11:53:46 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII; format=flowed
-X-FE-Policy-ID: 2:2:1:SYSTEM
-X-TMASE-Version: DDEI-5.1-8.6.1018-26622.002
-X-TMASE-Result: 10--9.132200-10.000000
-X-TMASE-MatchedRID: VDoNChkxNB7mzYT8cOkbWbxygpRxo469pWOBfK9L1z/qhznGDJ0qbWk6
-        SkG4JvUZIXuvUou2O0KimSJP5hNpi8+9kIneOZlhHmtCXih7f9MpA2ExuipmWp+4ziUPq4LxbYJ
-        NfOu+O6NO0Or7SjyKaK0Yi0eH5gffbvLgaIkO7vKeAiCmPx4NwFsKO+9Zlb5J9VtWc97tWtMXeu
-        QCqIxled934/rDAK3zhG2qikEpQGU48KxzGT4fhKgVlx2/8uQQutPON7fSDcEmvhPF731mqrClN
-        kgvr+26
-X-TMASE-SNAP-Result: 1.821001.0001-0-1-22:0,33:0,34:0-0
-X-TMASE-INERTIA: 0-0;;;;
-X-DDEI-PROCESSED-RESULT: Safe
+References: <CAJ-ks9kd6wWi1S8GSCf1f=vJER=_35BGZzLnXwz36xDQPacyRw@mail.gmail.com>
+ <CAJ-ks9=41PuzGkXmi0-aZPEWicWJ5s2gW2zL+jSHuDjaJ5Lhsg@mail.gmail.com>
+ <20211228155433.3b1c71e5@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <CA+FuTSeDTJxbPvN6hkXFMaBspVHwL+crOxzC2ukWRzxvKma9bA@mail.gmail.com> <CAJ-ks9=3o+rVJd5ztYbkgpcYiWjV+3qajCgOmM7AfjhoZvuOHw@mail.gmail.com>
+In-Reply-To: <CAJ-ks9=3o+rVJd5ztYbkgpcYiWjV+3qajCgOmM7AfjhoZvuOHw@mail.gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Wed, 29 Dec 2021 14:53:10 -0500
+X-Gmail-Original-Message-ID: <CA+FuTSe0yPhca+2ZdyJD4FZumLPd85sChGhZPpXhu=ADuwtYrQ@mail.gmail.com>
+Message-ID: <CA+FuTSe0yPhca+2ZdyJD4FZumLPd85sChGhZPpXhu=ADuwtYrQ@mail.gmail.com>
+Subject: Re: [PATCH] net: check passed optlen before reading
+To:     Tamir Duberstein <tamird@gmail.com>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Wed, Dec 29, 2021 at 2:50 PM Tamir Duberstein <tamird@gmail.com> wrote:
+>
+> I'm having some trouble sending this using git send-email because of
+> the firewall I'm behind.
+>
+> Please pull from
+>   git://github.com/tamird/linux raw-check-optlen
+> to get these changes:
+>   280c5742aab2 ipv6: raw: check passed optlen before reading
+>
+> If this is not acceptable, I'll send the patch again when I'm outside
+> the firewall. Apologies.
 
-hope I am now sending it to the correct list.
-
-Please, what else can I do to solve this?
-
-Thanks,
-Holger
-
----------- Forwarded message ----------
-Date: Wed, 29 Dec 2021 13:27:58 +0000 (GMT)
-From: Holger Kiehl <Holger.Kiehl@dwd.de>
-To: linux-kernel <linux-kernel@vger.kernel.org>
-Cc: Christoph Hellwig <hch@lst.de>
-Subject: bpfilter: write fail messages with 5.15.x and centos 7.9.2009
-
-Hello,
-
-I just upgraded the kernel from 5.10.x to 5.15.12 on an old Centos
-7.9.2009 server. The kernel is build on a new fedora 35 system
-via 'make binrpm-pkg'. With this I see the following errors:
-
-    [  232.140766] bpfilter: Loaded bpfilter_umh pid 6327
-    [  232.152144] bpfilter: write fail -32
-    [  232.187175] bpfilter: Loaded bpfilter_umh pid 6330
-    [  232.198540] bpfilter: write fail -32
-    [  232.234604] bpfilter: Loaded bpfilter_umh pid 6332
-    [  232.245916] bpfilter: write fail -32
-    [  232.281883] bpfilter: Loaded bpfilter_umh pid 6337
-    [  232.293222] bpfilter: write fail -32
-    [  232.335798] bpfilter: Loaded bpfilter_umh pid 6380
-    [  232.347157] bpfilter: write fail -32
-    [  244.411821] bpfilter: Loaded bpfilter_umh pid 6712
-    [  244.423216] bpfilter: write fail -32
-
-These appear as soon as something is done via iptables (setting
-something or just viewing). Is this something I need to worry
-about? Under 5.10.81 I did not see these messages.
-
-In Jul 2020 I see a similar report 'bpfilter logging write errors in
-dmesg', but could not find a solution.
-
-Any hint what I can do to fix this?
-
-Thanks,
-Holger
-
+I can send it on your behalf, Tamir.
