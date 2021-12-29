@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BDAE948141F
-	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 15:32:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BF8F4481421
+	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 15:32:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240274AbhL2Oc3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Dec 2021 09:32:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35464 "EHLO
+        id S240288AbhL2Ocl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Dec 2021 09:32:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236856AbhL2Oc2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Dec 2021 09:32:28 -0500
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAE45C061574;
-        Wed, 29 Dec 2021 06:32:28 -0800 (PST)
-Received: by mail-pg1-x541.google.com with SMTP id a23so18685111pgm.4;
-        Wed, 29 Dec 2021 06:32:28 -0800 (PST)
+        with ESMTP id S240307AbhL2Ock (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Dec 2021 09:32:40 -0500
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31FABC061574;
+        Wed, 29 Dec 2021 06:32:40 -0800 (PST)
+Received: by mail-pj1-x1044.google.com with SMTP id a11-20020a17090a854b00b001b11aae38d6so20102175pjw.2;
+        Wed, 29 Dec 2021 06:32:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=w4MIWnUQ311oZUFyrFV2+/Ms9zwvUduBI6ULnxlTFuc=;
-        b=jGtzIm3GHEAjyxn1c7KXPFRCacon4pxORuv6HqLdHGQ11vzUsDVzrotEZOsuRYRF5m
-         5gldPepOnIPnFD8Onan8ErytY+v4+ZhFJqeuMTmpugz4Pexor13FE/2i6tI5cg9aF9jq
-         nyz9wv4zHHoQtMHOCZ4NSDEFKq7kfAE1gZ2C4IA3X05efH+7NiKxK5YoWcyBQuUuEj0Z
-         PTEU5N+KPKEKZE/Xy7CVbxNegmFWHqfAfLNS09yq6ayBX88JPHhPkeJ/YNpfBS/6KJpk
-         4FIo+WSt/MLVOl+Zu8XhBlTtSXyVWuAoQ3TylS8VW1pqJxj2gNRQcaG6Q3PnWR+P2C+4
-         UGJA==
+        bh=ftgRhaFoF0uJiV/41YkRikVf0UZIjoIH5cO3oYaR7Lc=;
+        b=ZvOOOTpoOXaaPukDubhHiTuSiOZJ8Q946A2m6uRMxhJ+UkiSOsfUemmSolCbJt/C0m
+         6X9MwB/H1r9a/OHCe+yw2oEjVBgJNkNxiY3qOTiKrKxaNiXIrTLdoBh7vI5XWP6J/Sct
+         Kx8x44mpUUX7gB7cIl28t5mkj/zuKInUqxlEbW4ryqOSFFPIO9EJbWYieiRumK6MFeIL
+         dAsXM8DHCK7cxTfFkgHfOay6aqClHGM+4fCOiqIsgdSMfJvIQ/DVrifcSzh24O9IEC2P
+         9yLA8LNRwFGCLbuAxTMWcK968c8w+fsI+4MQz2/glItuj4TAP7CM3YQcM4TD9owtcRXN
+         3u/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=w4MIWnUQ311oZUFyrFV2+/Ms9zwvUduBI6ULnxlTFuc=;
-        b=KuIsy1eGGD9HCzDai84c85hiakHOC5bk1EoiIA87E7AjSScITNk5b3Ed75biUYCtuF
-         Z1AF0XPfn1NFEImONeESlHtS3XXR61jh1jZJld1LM7oT+6K1qIVcOImbMzQVOEeegyKF
-         /k6beQQyjRvZeYi/rEj+Zkozt1+oh72NKoHcb9qae8tNwIftRRk8u9MjXHIs4tgJtsZC
-         +J38Wort9Fq8jeJjbUm5Nhalh4B8ltj80SUSMrUzAwq/oFBEDnD+QbyNNxDDhebVZTvF
-         w+jhQJtV0ohXmcud+B+UoWJgtkz+fLJrCaIaSNNKf/a4cix77PAo0qrUKUwNrZBy3pDj
-         CIUA==
-X-Gm-Message-State: AOAM530MtmptMYx3/ZubPhHUw39bo0bhO5hyXek3pTNCDa1gAFtQq8PK
-        9imlh6zBPfOSWQHULZnsjRzLf4TeidA=
-X-Google-Smtp-Source: ABdhPJyGlJf/4DapuMtTSjO2nugeQ1NaHfQ4fdxIlqXMI6JHuQbP/e4CK0vMjpfK2YRZ8yno2zpTyA==
-X-Received: by 2002:a63:ea0c:: with SMTP id c12mr23145483pgi.378.1640788348157;
-        Wed, 29 Dec 2021 06:32:28 -0800 (PST)
+        bh=ftgRhaFoF0uJiV/41YkRikVf0UZIjoIH5cO3oYaR7Lc=;
+        b=3gYDgIYpnvsfI18lwYa0a2hU4rI9rUbyQaLV42JbeltvpbwsRhFXNqSd7eKDApEHBz
+         oF/jfadyCJqtt4lxXco24T2uwHWB07b5P1HQFlWm7ObssV5pEDpxNv8chHXydz+whZkK
+         8dIAQNnnA+8ZAKO9HyRi4tbvLYSRZbuH2eR1HBlvL4tBig1Itrs7PJ4Rwc9wfUf4LKHp
+         ygQFGsgowznQhIRrd2hI+UYJBrN1GYB17VUNvywFlEJLC+qKUZ0fZlnRixFRAEwxPNi/
+         qOw7UQrA6rOvywsjG8mx9pN41BD12CmZqEXB2SRKa9dpeLALitI4EgiXWiQ22Exja8Zl
+         iV/A==
+X-Gm-Message-State: AOAM531sRR1ESzizUENRBgmpq+7eJtXo2Dmflhj78Da05rLUAD9dljYj
+        Y8flAdJRyoit+BkJNpiN5rA=
+X-Google-Smtp-Source: ABdhPJxF6jZJpOa6go3FPc+464NZRGv+RFPif813Pq0QQP6YQPXBcxg0W5t0yOjxMsrG8gAFATCigg==
+X-Received: by 2002:a17:902:c407:b0:149:2ef4:b6b2 with SMTP id k7-20020a170902c40700b001492ef4b6b2mr27413504plk.112.1640788359771;
+        Wed, 29 Dec 2021 06:32:39 -0800 (PST)
 Received: from localhost.localdomain ([43.132.141.9])
-        by smtp.gmail.com with ESMTPSA id v16sm24860393pfu.131.2021.12.29.06.32.24
+        by smtp.gmail.com with ESMTPSA id v16sm24860393pfu.131.2021.12.29.06.32.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Dec 2021 06:32:27 -0800 (PST)
+        Wed, 29 Dec 2021 06:32:39 -0800 (PST)
 From:   menglong8.dong@gmail.com
 X-Google-Original-From: imagedong@tencent.com
 To:     rostedt@goodmis.org, dsahern@kernel.org
@@ -58,9 +58,9 @@ Cc:     mingo@redhat.com, davem@davemloft.net, kuba@kernel.org,
         atenart@kernel.org, bigeasy@linutronix.de, weiwan@google.com,
         arnd@arndb.de, vvs@virtuozzo.com, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [PATCH net-next 1/2] net: skb: introduce kfree_skb_with_reason()
-Date:   Wed, 29 Dec 2021 22:32:04 +0800
-Message-Id: <20211229143205.410731-2-imagedong@tencent.com>
+Subject: [PATCH net-next 2/2] net: skb: use kfree_skb_with_reason() in tcp_v4_rcv()
+Date:   Wed, 29 Dec 2021 22:32:05 +0800
+Message-Id: <20211229143205.410731-3-imagedong@tencent.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20211229143205.410731-1-imagedong@tencent.com>
 References: <20211229143205.410731-1-imagedong@tencent.com>
@@ -72,202 +72,108 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Menglong Dong <imagedong@tencent.com>
 
-Introduce the interface kfree_skb_with_reason(), which is used to pass
-the reason why the skb is dropped to 'kfree_skb' tracepoint.
+Replace kfree_skb() with kfree_skb_with_reason() in tcp_v4_rcv().
+Following drop reason are added:
 
-Add the 'reason' field to 'trace_kfree_skb', therefor user can get
-more detail information about abnormal skb with 'drop_monitor' or
-eBPF.
+SKB_DROP_REASON_NO_SOCK
+SKB_DROP_REASON_BAD_PACKET
+SKB_DROP_REASON_TCP_CSUM
+
+After this patch, 'kfree_skb' event will print message like this:
+
+$           TASK-PID     CPU#  |||||  TIMESTAMP  FUNCTION
+$              | |         |   |||||     |         |
+          <idle>-0       [000] ..s1.    36.113438: kfree_skb: skbaddr=(____ptrval____) protocol=2048 location=(____ptrval____) reason: NO_SOCK
+
+The reason of skb drop is printed too.
 
 Signed-off-by: Menglong Dong <imagedong@tencent.com>
 ---
- include/linux/skbuff.h     | 13 +++++++++++++
- include/trace/events/skb.h | 36 +++++++++++++++++++++++++++++-------
- net/core/dev.c             |  3 ++-
- net/core/drop_monitor.c    | 10 +++++++---
- net/core/skbuff.c          | 22 +++++++++++++++++++++-
- 5 files changed, 72 insertions(+), 12 deletions(-)
+ include/linux/skbuff.h     |  3 +++
+ include/trace/events/skb.h |  3 +++
+ net/ipv4/tcp_ipv4.c        | 10 ++++++++--
+ 3 files changed, 14 insertions(+), 2 deletions(-)
 
 diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index aa9d42724e20..3620b3ff2154 100644
+index 3620b3ff2154..f85db6c035d1 100644
 --- a/include/linux/skbuff.h
 +++ b/include/linux/skbuff.h
-@@ -305,6 +305,17 @@ struct sk_buff_head {
+@@ -313,6 +313,9 @@ struct sk_buff;
+  */
+ enum skb_drop_reason {
+ 	SKB_DROP_REASON_NOT_SPECIFIED,
++	SKB_DROP_REASON_NO_SOCK,
++	SKB_DROP_REASON_BAD_PACKET,
++	SKB_DROP_REASON_TCP_CSUM,
+ 	SKB_DROP_REASON_MAX,
+ };
  
- struct sk_buff;
- 
-+/* The reason of skb drop, which is used in kfree_skb_with_reason().
-+ * en...maybe they should be splited by group?
-+ *
-+ * Each item here should also be in 'TRACE_SKB_DROP_REASON', which is
-+ * used to translate the reason to string.
-+ */
-+enum skb_drop_reason {
-+	SKB_DROP_REASON_NOT_SPECIFIED,
-+	SKB_DROP_REASON_MAX,
-+};
-+
- /* To allow 64K frame to be packed as single skb without frag_list we
-  * require 64K/PAGE_SIZE pages plus 1 additional page to allow for
-  * buffers which do not start on a page boundary.
-@@ -1087,6 +1098,8 @@ static inline bool skb_unref(struct sk_buff *skb)
- 
- void skb_release_head_state(struct sk_buff *skb);
- void kfree_skb(struct sk_buff *skb);
-+void kfree_skb_with_reason(struct sk_buff *skb,
-+			   enum skb_drop_reason reason);
- void kfree_skb_list(struct sk_buff *segs);
- void skb_dump(const char *level, const struct sk_buff *skb, bool full_pkt);
- void skb_tx_error(struct sk_buff *skb);
 diff --git a/include/trace/events/skb.h b/include/trace/events/skb.h
-index 9e92f22eb086..cab1c08a30cd 100644
+index cab1c08a30cd..b9ea6b4ed7ec 100644
 --- a/include/trace/events/skb.h
 +++ b/include/trace/events/skb.h
-@@ -9,29 +9,51 @@
- #include <linux/netdevice.h>
- #include <linux/tracepoint.h>
+@@ -11,6 +11,9 @@
  
-+#define TRACE_SKB_DROP_REASON					\
-+	EM(SKB_DROP_REASON_NOT_SPECIFIED, NOT_SPECIFIED)	\
-+	EMe(SKB_DROP_REASON_MAX, HAHA_MAX)
-+
-+#undef EM
-+#undef EMe
-+
-+#define EM(a, b)	TRACE_DEFINE_ENUM(a);
-+#define EMe(a, b)	TRACE_DEFINE_ENUM(a);
-+
-+TRACE_SKB_DROP_REASON
-+
-+#undef EM
-+#undef EMe
-+#define EM(a, b)	{ a, #b },
-+#define EMe(a, b)	{ a, #b }
-+
-+
- /*
-  * Tracepoint for free an sk_buff:
-  */
- TRACE_EVENT(kfree_skb,
+ #define TRACE_SKB_DROP_REASON					\
+ 	EM(SKB_DROP_REASON_NOT_SPECIFIED, NOT_SPECIFIED)	\
++	EM(SKB_DROP_REASON_NO_SOCK, NO_SOCK)			\
++	EM(SKB_DROP_REASON_BAD_PACKET, BAD_PACKET)		\
++	EM(SKB_DROP_REASON_TCP_CSUM, TCP_CSUM)			\
+ 	EMe(SKB_DROP_REASON_MAX, HAHA_MAX)
  
--	TP_PROTO(struct sk_buff *skb, void *location),
-+	TP_PROTO(struct sk_buff *skb, void *location,
-+		 enum skb_drop_reason reason),
+ #undef EM
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index ac10e4cdd8d0..03dc4c79b84b 100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -1971,8 +1971,10 @@ int tcp_v4_rcv(struct sk_buff *skb)
+ 	const struct tcphdr *th;
+ 	bool refcounted;
+ 	struct sock *sk;
++	int drop_reason;
+ 	int ret;
  
--	TP_ARGS(skb, location),
-+	TP_ARGS(skb, location, reason),
++	drop_reason = 0;
+ 	if (skb->pkt_type != PACKET_HOST)
+ 		goto discard_it;
  
- 	TP_STRUCT__entry(
--		__field(	void *,		skbaddr		)
--		__field(	void *,		location	)
--		__field(	unsigned short,	protocol	)
-+		__field(void *,		skbaddr)
-+		__field(void *,		location)
-+		__field(unsigned short,	protocol)
-+		__field(enum skb_drop_reason,	reason)
- 	),
+@@ -1984,8 +1986,10 @@ int tcp_v4_rcv(struct sk_buff *skb)
  
- 	TP_fast_assign(
- 		__entry->skbaddr = skb;
- 		__entry->location = location;
- 		__entry->protocol = ntohs(skb->protocol);
-+		__entry->reason = reason;
- 	),
+ 	th = (const struct tcphdr *)skb->data;
  
--	TP_printk("skbaddr=%p protocol=%u location=%p",
--		__entry->skbaddr, __entry->protocol, __entry->location)
-+	TP_printk("skbaddr=%p protocol=%u location=%p reason: %s",
-+		__entry->skbaddr, __entry->protocol, __entry->location,
-+		__print_symbolic(__entry->reason, TRACE_SKB_DROP_REASON))
- );
+-	if (unlikely(th->doff < sizeof(struct tcphdr) / 4))
++	if (unlikely(th->doff < sizeof(struct tcphdr) / 4)) {
++		drop_reason = SKB_DROP_REASON_BAD_PACKET;
+ 		goto bad_packet;
++	}
+ 	if (!pskb_may_pull(skb, th->doff * 4))
+ 		goto discard_it;
  
- TRACE_EVENT(consume_skb,
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 644b9c8be3a8..9464dbf9e3d6 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -4899,7 +4899,8 @@ static __latent_entropy void net_tx_action(struct softirq_action *h)
- 			if (likely(get_kfree_skb_cb(skb)->reason == SKB_REASON_CONSUMED))
- 				trace_consume_skb(skb);
- 			else
--				trace_kfree_skb(skb, net_tx_action);
-+				trace_kfree_skb(skb, net_tx_action,
-+						SKB_DROP_REASON_NOT_SPECIFIED);
+@@ -2124,6 +2128,7 @@ int tcp_v4_rcv(struct sk_buff *skb)
+ 	return ret;
  
- 			if (skb->fclone != SKB_FCLONE_UNAVAILABLE)
- 				__kfree_skb(skb);
-diff --git a/net/core/drop_monitor.c b/net/core/drop_monitor.c
-index 3d0ab2eec916..7b288a121a41 100644
---- a/net/core/drop_monitor.c
-+++ b/net/core/drop_monitor.c
-@@ -110,7 +110,8 @@ static u32 net_dm_queue_len = 1000;
+ no_tcp_socket:
++	drop_reason = SKB_DROP_REASON_NO_SOCK;
+ 	if (!xfrm4_policy_check(NULL, XFRM_POLICY_IN, skb))
+ 		goto discard_it;
  
- struct net_dm_alert_ops {
- 	void (*kfree_skb_probe)(void *ignore, struct sk_buff *skb,
--				void *location);
-+				void *location,
-+				enum skb_drop_reason reason);
- 	void (*napi_poll_probe)(void *ignore, struct napi_struct *napi,
- 				int work, int budget);
- 	void (*work_item_func)(struct work_struct *work);
-@@ -262,7 +263,9 @@ static void trace_drop_common(struct sk_buff *skb, void *location)
- 	spin_unlock_irqrestore(&data->lock, flags);
- }
+@@ -2131,6 +2136,7 @@ int tcp_v4_rcv(struct sk_buff *skb)
  
--static void trace_kfree_skb_hit(void *ignore, struct sk_buff *skb, void *location)
-+static void trace_kfree_skb_hit(void *ignore, struct sk_buff *skb,
-+				void *location,
-+				enum skb_drop_reason reason)
- {
- 	trace_drop_common(skb, location);
- }
-@@ -490,7 +493,8 @@ static const struct net_dm_alert_ops net_dm_alert_summary_ops = {
+ 	if (tcp_checksum_complete(skb)) {
+ csum_error:
++		drop_reason = SKB_DROP_REASON_TCP_CSUM;
+ 		trace_tcp_bad_csum(skb);
+ 		__TCP_INC_STATS(net, TCP_MIB_CSUMERRORS);
+ bad_packet:
+@@ -2141,7 +2147,7 @@ int tcp_v4_rcv(struct sk_buff *skb)
  
- static void net_dm_packet_trace_kfree_skb_hit(void *ignore,
- 					      struct sk_buff *skb,
--					      void *location)
-+					      void *location,
-+					      enum skb_drop_reason reason)
- {
- 	ktime_t tstamp = ktime_get_real();
- 	struct per_cpu_dm_data *data;
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 275f7b8416fe..570dc022a8a1 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -770,11 +770,31 @@ void kfree_skb(struct sk_buff *skb)
- 	if (!skb_unref(skb))
- 		return;
+ discard_it:
+ 	/* Discard frame. */
+-	kfree_skb(skb);
++	kfree_skb_with_reason(skb, drop_reason);
+ 	return 0;
  
--	trace_kfree_skb(skb, __builtin_return_address(0));
-+	trace_kfree_skb(skb, __builtin_return_address(0),
-+			SKB_DROP_REASON_NOT_SPECIFIED);
- 	__kfree_skb(skb);
- }
- EXPORT_SYMBOL(kfree_skb);
- 
-+/**
-+ *	kfree_skb_with_reason - free an sk_buff with reason
-+ *	@skb: buffer to free
-+ *	@reason: reason why this skb is dropped
-+ *
-+ *	The same as kfree_skb() except that this function will pass
-+ *	the drop reason to 'kfree_skb' tracepoint.
-+ */
-+void kfree_skb_with_reason(struct sk_buff *skb,
-+			   enum skb_drop_reason reason)
-+{
-+	if (!skb_unref(skb))
-+		return;
-+
-+	trace_kfree_skb(skb, __builtin_return_address(0), reason);
-+	__kfree_skb(skb);
-+}
-+EXPORT_SYMBOL(kfree_skb_with_reason);
-+
- void kfree_skb_list(struct sk_buff *segs)
- {
- 	while (segs) {
+ discard_and_relse:
 -- 
 2.30.2
 
