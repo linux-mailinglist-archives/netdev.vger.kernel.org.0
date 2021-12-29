@@ -2,129 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 24D9248162B
-	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 20:14:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4ADD4481643
+	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 20:26:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230184AbhL2TOD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Dec 2021 14:14:03 -0500
-Received: from mga12.intel.com ([192.55.52.136]:38228 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229958AbhL2TOD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Dec 2021 14:14:03 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1640805243; x=1672341243;
-  h=from:to:cc:subject:in-reply-to:references:date:
-   message-id:mime-version;
-  bh=ZPhwE10OK5EgjmXYm/gtOuEv6n/rFe1OjWbPWqtq9GQ=;
-  b=YHVSFMhqFXjDbujwr16FxItWDux0jXPUDlr/xoFlBprcxrO2yJB+wpfB
-   REoJmSwToQHYs4Y5NeJVIRTQ6UMDGr1j3rQaJcV7Rn436WTEJV40b0jy2
-   PmMYwjAVBqUYUQp6oGbMwBQDYs3peM2HQI95apXzMksJLhEkuV14W60Fp
-   LmgXPcOf29KSXi4+ohnYKmVvPKWFhqtvMLRuhQv02UteXZADf9qU+Fu+b
-   KoZuEEzWD9AdLub+VW/fwVB2LNhUwB0MhyADM2VKn+X7x1w1BlFZNjWWs
-   N9jqWCNebpI5j2VSNP5tEcfjSflbLvAQDNHZ2PgSHLw1ZjNi5I1zPBHUY
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10212"; a="221556523"
-X-IronPort-AV: E=Sophos;i="5.88,246,1635231600"; 
-   d="scan'208";a="221556523"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Dec 2021 11:14:03 -0800
-X-IronPort-AV: E=Sophos;i="5.88,246,1635231600"; 
-   d="scan'208";a="554591645"
-Received: from andreev1-mobl1.amr.corp.intel.com (HELO vcostago-mobl3) ([10.212.96.86])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Dec 2021 11:13:54 -0800
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     xiangxia.m.yue@gmail.com, netdev@vger.kernel.org
-Cc:     Tonghao Zhang <xiangxia.m.yue@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Talal Ahmad <talalahmad@google.com>,
-        Kevin Hao <haokexin@gmail.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Kees Cook <keescook@chromium.org>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        Wei Wang <weiwan@google.com>, Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [net-next v5 1/2] net: sched: use queue_mapping to pick tx queue
-In-Reply-To: <20211220123839.54664-2-xiangxia.m.yue@gmail.com>
-References: <20211220123839.54664-1-xiangxia.m.yue@gmail.com>
- <20211220123839.54664-2-xiangxia.m.yue@gmail.com>
-Date:   Wed, 29 Dec 2021 16:13:50 -0300
-Message-ID: <87k0fn2pht.fsf@intel.com>
+        id S230336AbhL2T0I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Dec 2021 14:26:08 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:56109 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229627AbhL2T0H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Dec 2021 14:26:07 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1640805965;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=7X92anWu7YA4HMgaOFRPoEtvjubDlUwqFYaCnsFgT4Q=;
+        b=TGhTI2c67L/KOKblpmm7GjfA7peS1ec5ovgmnQ8WCjdh3oxRg/MfUMLbutxZpOZxksgTQB
+        /nRGhSfZuJL8j0kUli6Dk2IkSSZZ0aro8gjqM7ZWQKzFKZOjh2pVb8YtgfS5MuuiyMrG6o
+        Eo6F3kFtf3ZCES8woMpkU/ITBMnNhcs=
+Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
+ [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-196-733KVwPKNK6zEP5TOR6Etg-1; Wed, 29 Dec 2021 14:26:04 -0500
+X-MC-Unique: 733KVwPKNK6zEP5TOR6Etg-1
+Received: by mail-qt1-f199.google.com with SMTP id d26-20020ac800da000000b002c43d2f6c7fso14614339qtg.14
+        for <netdev@vger.kernel.org>; Wed, 29 Dec 2021 11:26:04 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=7X92anWu7YA4HMgaOFRPoEtvjubDlUwqFYaCnsFgT4Q=;
+        b=cLynrd7u6b2CK03oMX02uENsyTBtaBbT7wkQ1KequVfo2rJ8kOqSi7Dd6A3FRWe5je
+         i3AAEW0UkdtynlwIh1QyuTB7Qp9ZIu+6d5FKRaC91fMxRNigej4Ae1trlcPw+12y4ndl
+         4gsFjRyc84xAp92TqL6oizixRbRMtagm+cALPBPOe8OpvWmciY2gIHcvW4tSURnKyrCu
+         B+tc8DkjVq71A6gJb1JYTIN1SEaSKFHa0VvowXODhMxI5+shkjXZXicp0R69pLKPd4u/
+         j3ocuibXbM45fXTMm2qsNbcV0CxD6EFDn1KUx6hiOmz7VS+rXs9roAr1qbs4w9sHalcS
+         ZH3Q==
+X-Gm-Message-State: AOAM530kVDZfCAOBWh0/aVkcwKUShHlyg/jyAoPQ4p4w5nMuQUrd4DsL
+        7ggmYAupffD7TMQwUofEZj7OVrSKej08u10E/Ea4at+LWw11ykewV28nyIkTfIyk+ORBK45Mn/m
+        eC5soLrZdE/EXijHS
+X-Received: by 2002:a05:622a:180c:: with SMTP id t12mr24151798qtc.507.1640805963404;
+        Wed, 29 Dec 2021 11:26:03 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyCMkCBBIEHoU7TQXcXidUDS5rm91MbIisjUvsPSiogTt212anKiDlDRNSIU+0yzvg7HIrUDQ==
+X-Received: by 2002:a05:622a:180c:: with SMTP id t12mr24151786qtc.507.1640805963173;
+        Wed, 29 Dec 2021 11:26:03 -0800 (PST)
+Received: from localhost.localdomain (075-142-250-213.res.spectrum.com. [75.142.250.213])
+        by smtp.gmail.com with ESMTPSA id p16sm15294493qtx.19.2021.12.29.11.26.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 29 Dec 2021 11:26:02 -0800 (PST)
+Subject: Re: [PATCH] mac80211: initialize variable have_higher_than_11mbit
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     johannes@sipsolutions.net, davem@davemloft.net, kuba@kernel.org,
+        nathan@kernel.org, linville@tuxdriver.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
+        Linus Torvalds <torvalds@linux-foundation.org>
+References: <20211223162848.3243702-1-trix@redhat.com>
+ <CAKwvOd=dLjMAim_FRNyWegzEjy0_1vF2xVW1hNPQ55=32qO4Wg@mail.gmail.com>
+ <b3ef8d23-7c77-7c83-0bc8-2054b7ac1d8b@redhat.com>
+ <CAKwvOdkUQARWd7qG_hkUJYuVcvObMYTif_HDSEmJ5mSXP6y1=A@mail.gmail.com>
+From:   Tom Rix <trix@redhat.com>
+Message-ID: <3db47d49-68fb-c286-b237-bfce1cb0ff08@redhat.com>
+Date:   Wed, 29 Dec 2021 11:26:00 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <CAKwvOdkUQARWd7qG_hkUJYuVcvObMYTif_HDSEmJ5mSXP6y1=A@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-xiangxia.m.yue@gmail.com writes:
 
-> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+On 12/28/21 10:55 AM, Nick Desaulniers wrote:
+> On Fri, Dec 24, 2021 at 6:01 AM Tom Rix <trix@redhat.com> wrote:
+>>
+>> On 12/23/21 12:30 PM, Nick Desaulniers wrote:
+>>> On Thu, Dec 23, 2021 at 8:29 AM <trix@redhat.com> wrote:
+>>>> From: Tom Rix <trix@redhat.com>
+>>>>
+>>>> Clang static analysis reports this warnings
+>>>>
+>>>> mlme.c:5332:7: warning: Branch condition evaluates to a
+>>>>     garbage value
+>>>>       have_higher_than_11mbit)
+>>>>       ^~~~~~~~~~~~~~~~~~~~~~~
+>>>>
+>>>> have_higher_than_11mbit is only set to true some of the time in
+>>>> ieee80211_get_rates() but is checked all of the time.  So
+>>>> have_higher_than_11mbit needs to be initialized to false.
+>>> LGTM. There's only one caller of ieee80211_get_rates() today; if there
+>>> were others, they could make a similar mistake in the future. An
+>>> alternate approach: ieee80211_get_rates() could unconditionally write
+>>> false before the loop that could later write true. Then call sites
+>>> don't need to worry about this conditional assignment. Perhaps that
+>>> would be preferable? If not:
+>> The have_higher_than_11mbit variable had previously be initialized to false.
+>>
+>> The commit 5d6a1b069b7f moved the variable without initializing.
+> I'm not disagreeing with that.
 >
-> This patch fixes issue:
-> * If we install tc filters with act_skbedit in clsact hook.
->   It doesn't work, because netdev_core_pick_tx() overwrites
->   queue_mapping.
+> My point is that these sometimes uninitialized warnings you're
+> finding+fixing with clang static analyzer are demonstrating a
+> recurring pattern with code.
 >
->   $ tc filter ... action skbedit queue_mapping 1
+> When _not_ using the static analyzer, -Wuninitialized and
+> -Wsometimes-uninitialized work in Clang by building a control flow
+> graph, but they only analyze a function locally.
 >
-> And this patch is useful:
-> * We can use FQ + EDT to implement efficient policies. Tx queues
->   are picked by xps, ndo_select_queue of netdev driver, or skb hash
->   in netdev_core_pick_tx(). In fact, the netdev driver, and skb
->   hash are _not_ under control. xps uses the CPUs map to select Tx
->   queues, but we can't figure out which task_struct of pod/containter
->   running on this cpu in most case. We can use clsact filters to classify
->   one pod/container traffic to one Tx queue. Why ?
+> For example, consider the following code:
+> ```
+> _Bool is_thursday(void);
+> void hello(int);
 >
->   In containter networking environment, there are two kinds of pod/
->   containter/net-namespace. One kind (e.g. P1, P2), the high throughput
->   is key in these applications. But avoid running out of network resource,
->   the outbound traffic of these pods is limited, using or sharing one
->   dedicated Tx queues assigned HTB/TBF/FQ Qdisc. Other kind of pods
->   (e.g. Pn), the low latency of data access is key. And the traffic is not
->   limited. Pods use or share other dedicated Tx queues assigned FIFO Qdisc.
->   This choice provides two benefits. First, contention on the HTB/FQ Qdisc
->   lock is significantly reduced since fewer CPUs contend for the same queue.
->   More importantly, Qdisc contention can be eliminated completely if each
->   CPU has its own FIFO Qdisc for the second kind of pods.
+> void init (int* x) {
+>    if (is_thursday())
+>      *x = 1;
+> }
 >
->   There must be a mechanism in place to support classifying traffic based on
->   pods/container to different Tx queues. Note that clsact is outside of Qdisc
->   while Qdisc can run a classifier to select a sub-queue under the
->   lock.
+> void foo (void) {
+>    int x;
+>    init(&x);
+>    hello(x);
+> }
+> ```
+> (Clang+GCC today will warn on the above; x is considered to "escape"
+> the scope of foo as init could write the address of x to a global.
+> Instead clang's static analyzer will take the additional time to
+> analyze the callee.  But here's a spooky question: what happens when
+> init is in another translation unit? IIRC, the static analyzer doesn't
+> do cross TU analysis; I could be wrong though, I haven't run it in a
+> while.)
+>
+> My point is that you're sending patches initializing x, when I think
+> it might be nicer to instead have functions like init always write a
+> value (unconditionally, rather than conditionally).  That way other
+> callers of init don't have to worry about sometimes initialized
+> variables.
 
-One alternative, I don't know if it would work for you, it to use the
-net_prio cgroup + mqprio.
+The variable is passed to only to the static function ieee80211_get_rates().
 
-Something like this:
+Tom
 
-* create the cgroup
-  $ mkdir -p /sys/fs/cgroup/net_prio/<CGROUP_NAME>
-* assign priorities to the cgroup (per interface)
-  $ echo "<IFACE> <PRIO>" >> /sys/fs/cgroup/net_prio/<CGROUP_NAME>/net_prio.ifpriomap"
-* use the cgroup in applications that do not set SO_PRIORITY
-  $ cgexec -g net_prio:<CGROUP_NAME> <application>
-* configure mqprio
-  $ tc qdisc replace dev $IFACE parent root handle 100 mqprio \
-      num_tc 3 \
-      map 2 2 1 0 2 2 2 2 2 2 2 2 2 2 2 2 \
-      queues 1@0 1@1 2@2 \
-      hw 0
+>
+>> Tom
+>>
+>>> Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+>>>
+>>>> Fixes: 5d6a1b069b7f ("mac80211: set basic rates earlier")
+>>>> Signed-off-by: Tom Rix <trix@redhat.com>
+>>>> ---
+>>>>    net/mac80211/mlme.c | 2 +-
+>>>>    1 file changed, 1 insertion(+), 1 deletion(-)
+>>>>
+>>>> diff --git a/net/mac80211/mlme.c b/net/mac80211/mlme.c
+>>>> index 51f55c4ee3c6e..766cbbc9c3a72 100644
+>>>> --- a/net/mac80211/mlme.c
+>>>> +++ b/net/mac80211/mlme.c
+>>>> @@ -5279,7 +5279,7 @@ static int ieee80211_prep_connection(struct ieee80211_sub_if_data *sdata,
+>>>>            */
+>>>>           if (new_sta) {
+>>>>                   u32 rates = 0, basic_rates = 0;
+>>>> -               bool have_higher_than_11mbit;
+>>>> +               bool have_higher_than_11mbit = false;
+>>>>                   int min_rate = INT_MAX, min_rate_index = -1;
+>>>>                   const struct cfg80211_bss_ies *ies;
+>>>>                   int shift = ieee80211_vif_get_shift(&sdata->vif);
+>>>> --
+>>>> 2.26.3
+>>>>
+>
 
-This would map all traffic with SO_PRIORITY 3 to TX queue 0, for example.
-
-But I agree that skbedit's queue_mapping not working is unexpected and
-should be fixed.
-
-
-Cheers,
--- 
-Vinicius
